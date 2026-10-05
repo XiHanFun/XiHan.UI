@@ -109,7 +109,7 @@
   }
 
   /* 裁切出来的形状画不出空心：隐藏的项改为淡出，名字的删除线与次级字色照常 */
-  [data-scope='cartesian-chart'][data-part='legend-item'][aria-pressed='false'] > [data-part='legend-swatch'][data-mark='point']:not([data-symbol='circle'], [data-symbol='square']) {
+  [data-scope='cartesian-chart'][data-part='legend-item'][aria-pressed='false'] > [data-part='legend-swatch'][data-mark='point']:where([data-scope='cartesian-chart']):not([data-symbol='circle'], [data-symbol='square']) {
     background: var(--xh-_chart-series);
     opacity: var(--xh-chart-dim-alpha);
   }
@@ -241,7 +241,7 @@
     cursor: grab;
   }
 
-  [data-scope='cartesian-chart'][data-part='zoom-slider'][data-dragging] [data-part='zoom-window'] {
+  [data-scope='cartesian-chart'][data-part='zoom-slider'][data-dragging] [data-part='zoom-window']:where([data-scope='cartesian-chart']) {
     cursor: grabbing;
   }
 
@@ -633,15 +633,15 @@
 
   /* —— 纹理：颜色不可用或不可靠时（强制色、打印、祖先写了 data-xh-chart-patterns），柱与面积改用本系列在
      defs 里的纹理填充、描出轮廓，折线换线型；压在柱上的标签改用标签色、描一圈承载面色。色标的纹理在配方里 —— */
-  :where([data-xh-chart-patterns]) [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='bar'],
-  :where([data-xh-chart-patterns]) [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='area-fill'] {
+  :where([data-xh-chart-patterns]) [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='bar']:where([data-scope='cartesian-chart']),
+  :where([data-xh-chart-patterns]) [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='area-fill']:where([data-scope='cartesian-chart']) {
     fill: var(--xh-_chart-pattern);
     fill-opacity: 1;
     stroke: var(--xh-_chart-series);
     stroke-width: var(--xh-stroke-thin);
   }
 
-  :where([data-xh-chart-patterns]) [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='line']:not([data-drawing]) {
+  :where([data-xh-chart-patterns]) [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='line']:where([data-scope='cartesian-chart']):not([data-drawing]) {
     stroke-dasharray: var(--xh-_chart-dash);
   }
 
@@ -775,8 +775,8 @@
       stroke: Highlight;
     }
 
-    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='bar'],
-    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='area-fill'] {
+    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='bar']:where([data-scope='cartesian-chart']),
+    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='area-fill']:where([data-scope='cartesian-chart']) {
       forced-color-adjust: none;
       fill: var(--xh-_chart-pattern);
       fill-opacity: 1;
@@ -784,7 +784,7 @@
       stroke-width: var(--xh-stroke-thin);
     }
 
-    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='line']:not([data-drawing]) {
+    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='line']:where([data-scope='cartesian-chart']):not([data-drawing]) {
       stroke-dasharray: var(--xh-_chart-dash);
     }
 
@@ -803,15 +803,15 @@
       display: none;
     }
 
-    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='bar'],
-    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='area-fill'] {
+    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='bar']:where([data-scope='cartesian-chart']),
+    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='area-fill']:where([data-scope='cartesian-chart']) {
       fill: var(--xh-_chart-pattern);
       fill-opacity: 1;
       stroke: var(--xh-_chart-series);
       stroke-width: var(--xh-stroke-thin);
     }
 
-    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='line']:not([data-drawing]) {
+    [data-scope='cartesian-chart'][data-xh-chart-pattern] > [data-part='line']:where([data-scope='cartesian-chart']):not([data-drawing]) {
       stroke-dasharray: var(--xh-_chart-dash);
     }
 

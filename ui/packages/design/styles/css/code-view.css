@@ -91,7 +91,7 @@
   }
 
   /* 折叠时 <pre> 的高度被连接层写死，超出部分沿圆角收边 */
-  [data-scope='code-view'][data-part='root'][data-clamped] [data-part='pre'] {
+  [data-scope='code-view'][data-part='root'][data-clamped] [data-part='pre']:where([data-scope='code-view']) {
     overflow-y: hidden;
   }
 
@@ -163,13 +163,13 @@
 
   /* 开了换行：pre-wrap 仍保留缩进与连续空白，只是允许行尾折下来；
      anywhere 让没有空格的长串（url、base64）也能断，否则照样撑出横向滚动 */
-  [data-scope='code-view'][data-part='code'][data-wrap] [data-part='line-content'] {
+  [data-scope='code-view'][data-part='code'][data-wrap] [data-part='line-content']:where([data-scope='code-view']) {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
 
   /* 没开行号时正文自带左内衬；开了行号则由行号槽的内衬顶开 */
-  [data-scope='code-view'][data-part='root']:not([data-line-numbers]) [data-part='line-content'] {
+  [data-scope='code-view'][data-part='root']:not([data-line-numbers]) [data-part='line-content']:where([data-scope='code-view']) {
     padding-inline-start: var(--xh-code-view-px, var(--xh-space-3));
   }
 
@@ -233,12 +233,12 @@
     --xh-_code-view-fold-col: var(--xh-code-view-fold-col, var(--xh-code-view-line-height, var(--xh-text-code-leading)));
   }
 
-  [data-scope='code-view'][data-part='root'][data-block-folding] [data-part='line-content'] {
+  [data-scope='code-view'][data-part='root'][data-block-folding] [data-part='line-content']:where([data-scope='code-view']) {
     position: relative;
     padding-inline-start: var(--xh-_code-view-fold-col);
   }
 
-  [data-scope='code-view'][data-part='root'][data-block-folding]:not([data-line-numbers]) [data-part='line-content'] {
+  [data-scope='code-view'][data-part='root'][data-block-folding]:not([data-line-numbers]) [data-part='line-content']:where([data-scope='code-view']) {
     padding-inline-start: calc(var(--xh-code-view-px, var(--xh-space-3)) + var(--xh-_code-view-fold-col));
   }
 
@@ -258,7 +258,7 @@
     block-size: var(--xh-_code-view-fold-col);
   }
 
-  [data-scope='code-view'][data-part='root'][data-block-folding]:not([data-line-numbers]) [data-part='line-fold-trigger'] {
+  [data-scope='code-view'][data-part='root'][data-block-folding]:not([data-line-numbers]) [data-part='line-fold-trigger']:where([data-scope='code-view']) {
     inset-inline-start: var(--xh-code-view-px, var(--xh-space-3));
   }
 

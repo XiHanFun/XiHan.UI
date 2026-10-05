@@ -121,7 +121,7 @@
   /* 盒内 input：无边框无底无圆角无落影由家族重置，观感全归 control。
      数字居中排在两个按钮之间，行内内衬留给它自己（control 不给内衬）；
      前后缀图标/文字直接流式排在 input 两侧，不用再绝对定位 */
-  [data-scope='number-field'][data-part='control'] [data-part='input'] {
+  [data-scope='number-field'][data-part='control'] [data-part='input']:where([data-scope='number-field']) {
     --xh-field-input-fg: var(--xh-number-field-input-fg, var(--xh-fg-default));
     --xh-field-input-font-size: var(--xh-number-field-input-font-size, var(--xh-_number-field-font-size));
     --xh-field-placeholder-fg: var(--xh-number-field-placeholder-fg, var(--xh-fg-subtle));
@@ -137,8 +137,8 @@
   /* 盒内按钮：正方视觉盒、inset 圆角、悬停 100 / 按下 200 与 0.97 按压、粗指针热区与
      :focus-visible 关环全由 Action Control 的 field-inset ghost 档给，组件只映射既有覆盖槽。
      常态只剩符号，符号取默认前景，悬停与按下才浮出底色 */
-  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger'],
-  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'] {
+  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:where([data-scope='number-field']),
+  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:where([data-scope='number-field']) {
     --xh-action-visual-size: var(--xh-number-field-trigger-size, var(--xh-_action-profile-visual-size));
     --xh-action-min-inline-size: var(--xh-number-field-trigger-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-number-field-trigger-radius, var(--xh-shape-inset));
@@ -159,16 +159,16 @@
   }
 
   /* DOM 顺序不承担视觉位置：既有用法即使把减钮写在 input 前面，默认仍统一收进右侧动作组。 */
-  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'] {
+  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:where([data-scope='number-field']) {
     order: 1;
   }
 
-  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger'] {
+  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:where([data-scope='number-field']) {
     order: 2;
   }
 
-  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger'][hidden],
-  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'][hidden] {
+  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger'][hidden]:where([data-scope='number-field']),
+  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'][hidden]:where([data-scope='number-field']) {
     display: none;
   }
 
@@ -177,7 +177,7 @@
      ::before 已被兜底字形占着，::after 在粗指针下是家族给的 44px 热区，几何只能落在
      background-image 上：一条 1px × 半高的渐变贴在逻辑起始侧，底色换态时它仍叠在上层。
      线只画在动作组第一颗减钮的逻辑起始侧；background-position 是物理轴，RTL 另给一条换边。 */
-  [data-scope='number-field'][data-part='control']:has([data-part='input']) [data-part='decrement-trigger'] {
+  [data-scope='number-field'][data-part='control']:has([data-part='input']) [data-part='decrement-trigger']:where([data-scope='number-field']) {
     background-image: linear-gradient(
       var(--xh-number-field-trigger-divider, var(--xh-material-soft-separator)),
       var(--xh-number-field-trigger-divider, var(--xh-material-soft-separator))
@@ -187,12 +187,12 @@
     background-size: var(--xh-stroke-thin) var(--xh-number-field-trigger-divider-h, var(--xh-_number-field-divider-h));
   }
 
-  [dir='rtl'] [data-scope='number-field'][data-part='control']:has([data-part='input']) [data-part='decrement-trigger'] {
+  [dir='rtl'] [data-scope='number-field'][data-part='control']:has([data-part='input']) [data-part='decrement-trigger']:where([data-scope='number-field']) {
     background-position: 100% 50%;
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
-  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:empty::before {
+  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:where([data-scope='number-field']):empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -203,7 +203,7 @@
     mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
   }
 
-  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:empty::before {
+  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:where([data-scope='number-field']):empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -216,7 +216,7 @@
 
   /* 高对比档整层丢弃 background-image，分隔线改用系统色重画，并关掉这一颗钮的强制换色 */
   @media (forced-colors: active) {
-    [data-scope='number-field'][data-part='control']:has([data-part='input']) [data-part='decrement-trigger'] {
+    [data-scope='number-field'][data-part='control']:has([data-part='input']) [data-part='decrement-trigger']:where([data-scope='number-field']) {
       background-image: linear-gradient(ButtonText, ButtonText);
       forced-color-adjust: none;
     }
@@ -233,19 +233,19 @@
        字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
        按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
        禁用取 GrayText */
-    [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:empty::before,
-    [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:empty::before {
+    [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:where([data-scope='number-field']):empty::before,
+    [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:where([data-scope='number-field']):empty::before {
       forced-color-adjust: none;
       background-color: ButtonText;
     }
 
-    [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before,
-    [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:where([data-scope='number-field']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before,
+    [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:where([data-scope='number-field']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
       background-color: HighlightText;
     }
 
-    [data-scope='number-field'][data-part='control'] [data-part='increment-trigger'][data-disabled]:empty::before,
-    [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'][data-disabled]:empty::before {
+    [data-scope='number-field'][data-part='control'] [data-part='increment-trigger'][data-disabled]:where([data-scope='number-field']):empty::before,
+    [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'][data-disabled]:where([data-scope='number-field']):empty::before {
       background-color: GrayText;
     }
   }

@@ -164,7 +164,7 @@
   /* 窄档的并排视图：一行的两侧改成上下两段，旧行在上、新行在下。
      行由横排 flex 换成两列栅格——行号一列、正文一列，一行里的四个格按 DOM 次序
      自然落成两行，正文列因此只按单侧的最长行撑宽，不再是两侧之和 */
-  [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='row']:not([hidden]) {
+  [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='row']:where([data-scope='diff-view']):not([hidden]) {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
   }
@@ -197,13 +197,13 @@
 
   /* 开了换行：pre-wrap 仍保留缩进与连续空白，只是允许行尾折下来；
      anywhere 让没有空格的长串（url、base64）也能断 */
-  [data-scope='diff-view'][data-part='root'][data-wrap] [data-part='line-content'] {
+  [data-scope='diff-view'][data-part='root'][data-wrap] [data-part='line-content']:where([data-scope='diff-view']) {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
 
   /* 正文原本按最长行撑宽，不解除就折不下来 */
-  [data-scope='diff-view'][data-part='root'][data-wrap] [data-part='body'] {
+  [data-scope='diff-view'][data-part='root'][data-wrap] [data-part='body']:where([data-scope='diff-view']) {
     min-inline-size: 0;
   }
 
@@ -348,7 +348,7 @@
     --xh-_diff-view-comment-col: var(--xh-diff-view-comment-col, var(--xh-diff-view-line-height, var(--xh-text-code-leading)));
   }
 
-  [data-scope='diff-view'][data-part='root'][data-commentable] [data-part='line-content'] {
+  [data-scope='diff-view'][data-part='root'][data-commentable] [data-part='line-content']:where([data-scope='diff-view']) {
     position: relative;
     padding-inline-start: var(--xh-_diff-view-comment-col);
   }
@@ -387,8 +387,8 @@
       --xh-action-opacity-rest: 0;
     }
 
-    [data-scope='diff-view'][data-part='row']:hover [data-part='comment-trigger'],
-    [data-scope='diff-view'][data-part='viewport']:focus-within [data-part='comment-trigger'] {
+    [data-scope='diff-view'][data-part='row']:hover [data-part='comment-trigger']:where([data-scope='diff-view']),
+    [data-scope='diff-view'][data-part='viewport']:focus-within [data-part='comment-trigger']:where([data-scope='diff-view']) {
       --xh-action-opacity-rest: 1;
     }
   }
@@ -434,13 +434,13 @@
 
   /* 宽档：视口放得下两列，并排视图回到一行两侧 */
   @media (min-width: 1024px) {
-    [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='row']:not([hidden]) {
+    [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='row']:where([data-scope='diff-view']):not([hidden]) {
       display: flex;
     }
 
     /* 两列之间的接缝：新侧的行号槽再补一条左边线。只在并排时是接缝，
        堆叠时它落在段首，成了一条与任何东西都不相接的竖线 */
-    [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='line-number'][data-side='new'] {
+    [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='line-number'][data-side='new']:where([data-scope='diff-view']) {
       border-inline-start: var(--xh-stroke-thin) solid var(--xh-diff-view-divider, var(--xh-border-subtle));
     }
   }

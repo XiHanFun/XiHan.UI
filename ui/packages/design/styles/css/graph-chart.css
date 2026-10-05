@@ -162,7 +162,7 @@
 
   /* —— 直接操纵：能拖的节点给抓手，拖着时整张图是抓紧的手；放大后空白处也能拖着平移。
      触屏在节点上的拖动归图，其余地方照常滚动页面 —— */
-  [data-scope='graph-chart'][data-part='plot'][data-draggable] [data-part='node'] {
+  [data-scope='graph-chart'][data-part='plot'][data-draggable] [data-part='node']:where([data-scope='graph-chart']) {
     cursor: grab;
     touch-action: none;
   }
@@ -173,7 +173,7 @@
   }
 
   [data-scope='graph-chart'][data-part='plot'][data-dragging],
-  [data-scope='graph-chart'][data-part='plot'][data-dragging] [data-part='node'] {
+  [data-scope='graph-chart'][data-part='plot'][data-dragging] [data-part='node']:where([data-scope='graph-chart']) {
     cursor: grabbing;
   }
 

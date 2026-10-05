@@ -44,7 +44,7 @@
 
   /* 占位层还在（正淡出）时图片不再自己淡入：它在占位层底下直接落位，由占位层的淡出揭开，
      模糊小图与图片交叉，不先透出一拍底色 */
-  [data-scope='image'][data-part='root']:has(> [data-part='placeholder']:not([hidden])) > [data-part='image'] {
+  [data-scope='image'][data-part='root']:has(> [data-part='placeholder']:not([hidden])) > [data-part='image']:where([data-scope='image']) {
     animation: none;
   }
 

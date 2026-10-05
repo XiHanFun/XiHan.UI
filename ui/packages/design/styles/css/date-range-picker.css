@@ -239,8 +239,14 @@
     color: transparent;
   }
 
-  [data-scope='date-range-picker'][data-part='segment-group'][data-placeholder-shown] > * {
-    opacity: 0;
+  /* 段位与分隔符（后者是不带解剖的文字节点）一起淡出：显隐写在 segment-group 自己的私有槽上，
+     子节点只读槽——主体无特征的规则不挂在 data-placeholder-shown 后面，输入时翻转只让这一组失效 */
+  [data-scope='date-range-picker'][data-part='segment-group'][data-placeholder-shown] {
+    --xh-_date-range-picker-segment-opacity: 0;
+  }
+
+  [data-scope='date-range-picker'][data-part='segment-group'] > * {
+    opacity: var(--xh-_date-range-picker-segment-opacity, 1);
   }
 
   [data-scope='date-range-picker'][data-part='segment-group'][data-placeholder-shown]::before {
@@ -553,7 +559,7 @@
   }
 
   /* 确认按钮沉到所在那一行的底边：它是整块面板的出口，不跟日历顶边对齐 */
-  [data-scope='date-range-picker'][data-part='content']:has(> [data-part='column-group']) > [data-part='confirm-trigger'] {
+  [data-scope='date-range-picker'][data-part='content']:has(> [data-part='column-group']) > [data-part='confirm-trigger']:where([data-scope='date-range-picker']) {
     align-self: flex-end;
   }
 
@@ -735,7 +741,7 @@
 
   /* 列整体禁用时格没有自己的 aria-disabled，禁用面按列的 aria-disabled 映射到家族槽：
      字色降级、悬停 / 高亮 / 按下不换面、光标 not-allowed */
-  [data-scope='date-range-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item'] {
+  [data-scope='date-range-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item']:where([data-scope='date-range-picker']) {
     --xh-collection-fg-rest: var(--xh-fg-disabled);
     --xh-collection-fg-hover: var(--xh-fg-disabled);
     --xh-collection-fg-keyboard-highlight: var(--xh-fg-disabled);
@@ -754,7 +760,7 @@
     --xh-collection-cursor-selected: not-allowed;
   }
 
-  [data-scope='date-range-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item']::after {
+  [data-scope='date-range-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item']:where([data-scope='date-range-picker'])::after {
     background-color: var(--xh-fg-disabled);
   }
 
@@ -833,13 +839,13 @@
 
     [data-scope='date-range-picker'][data-part='preset'][data-disabled]::after,
     [data-scope='date-range-picker'][data-part='time-item'][data-disabled]::after,
-    [data-scope='date-range-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item']::after {
+    [data-scope='date-range-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item']:where([data-scope='date-range-picker'])::after {
       background-color: GrayText;
     }
 
     [data-scope='date-range-picker'][data-part='preset'][data-disabled],
     [data-scope='date-range-picker'][data-part='time-item'][data-disabled],
-    [data-scope='date-range-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item'] {
+    [data-scope='date-range-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item']:where([data-scope='date-range-picker']) {
       color: GrayText;
     }
 

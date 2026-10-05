@@ -153,10 +153,11 @@ for (const { dir, file, label } of files) {
     for (const n of m[0].matchAll(/(?<![-\w])(xh-[a-z0-9-]+)/g))
       consume(n[1])
   }
-  // 关键帧名经自定义属性转一道：槽里装的是名字，animation / animation-name 引的是这个槽
+  // 关键帧名经自定义属性转一道：槽里装的是名字（或以名字开头的整条 animation 简写），
+  // animation / animation-name 引的是这个槽
   const referencedSlots = new Set([...css.matchAll(/animation(?:-name)?\s*:[^;}]*/g)]
     .flatMap(m => [...m[0].matchAll(/var\(\s*(--[\w-]+)/g)].map(n => n[1])))
-  for (const m of css.matchAll(/(--[\w-]+)\s*:\s*(xh-[a-z0-9-]+)\s*[;}]/g)) {
+  for (const m of css.matchAll(/(--[\w-]+)\s*:\s*(xh-[a-z0-9-]+)(?=[\s;}])/g)) {
     if (referencedSlots.has(m[1]))
       consume(m[2])
   }

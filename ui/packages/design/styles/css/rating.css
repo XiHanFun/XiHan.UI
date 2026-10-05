@@ -78,7 +78,7 @@
     justify-content: start;
   }
 
-  [data-scope='rating'][data-part='root']:has(> [data-part='value-text']) > [data-part='label'] {
+  [data-scope='rating'][data-part='root']:has(> [data-part='value-text']) > [data-part='label']:where([data-scope='rating']) {
     grid-column: 1 / -1;
   }
 

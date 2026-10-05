@@ -422,7 +422,7 @@
   }
 
   [data-scope='carousel'][data-part='root'][data-orientation='vertical']
-    > :is([data-part='prev-trigger'], [data-part='next-trigger']) {
+    > :is([data-part='prev-trigger'], [data-part='next-trigger']):where([data-scope='carousel']) {
     inset-inline-start: 50%;
     inset-inline-end: auto;
     translate: -50% 0;
@@ -430,23 +430,23 @@
   }
 
   [data-scope='carousel'][data-part='root'][data-orientation='vertical']
-    > :is([data-part='prev-trigger'], [data-part='next-trigger']):dir(rtl) {
+    > :is([data-part='prev-trigger'], [data-part='next-trigger']):where([data-scope='carousel']):dir(rtl) {
     translate: 50% 0;
   }
 
   /* 纵轨的翻页钮整颗转了 90°，形变会跟着转到错的方向，这一档不挂 */
   :where([data-material='liquid']) [data-scope='carousel'][data-part='root'][data-orientation='vertical']
-    > :is([data-part='prev-trigger'], [data-part='next-trigger'])[data-xh-liquid] {
+    > :is([data-part='prev-trigger'], [data-part='next-trigger']):where([data-scope='carousel'])[data-xh-liquid] {
     transform: none;
   }
 
   [data-scope='carousel'][data-part='root'][data-orientation='vertical']
-    > [data-part='prev-trigger'] {
+    > [data-part='prev-trigger']:where([data-scope='carousel']) {
     inset-block-start: var(--xh-carousel-control-inset, var(--xh-space-3));
   }
 
   [data-scope='carousel'][data-part='root'][data-orientation='vertical']
-    > [data-part='next-trigger'] {
+    > [data-part='next-trigger']:where([data-scope='carousel']) {
     inset-block-start: auto;
     inset-block-end: var(--xh-carousel-control-inset, var(--xh-space-3));
   }

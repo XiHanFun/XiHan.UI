@@ -109,8 +109,8 @@
   }
 
   /* 文字靠边：靠哪边就把那一侧的线收成一小截，另一侧照旧等分 */
-  [data-scope='separator'][data-part='root'][data-align='start'] > [data-part='line']:first-child,
-  [data-scope='separator'][data-part='root'][data-align='end'] > [data-part='line']:last-child {
+  [data-scope='separator'][data-part='root'][data-align='start'] > [data-part='line']:where([data-scope='separator']):first-child,
+  [data-scope='separator'][data-part='root'][data-align='end'] > [data-part='line']:where([data-scope='separator']):last-child {
     flex: 0 0 var(--xh-separator-align-length, var(--xh-space-6));
   }
 

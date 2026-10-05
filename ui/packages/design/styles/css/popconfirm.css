@@ -145,7 +145,7 @@
   }
 
   /* 箭头绝对定位挂在 content 上，不占格：吃到栅格位的话它的贴边就从格线起算，被内衬推进面里 */
-  [data-scope='popconfirm'][data-part='content'] > [data-part='arrow'] {
+  [data-scope='popconfirm'][data-part='content'] > [data-part='arrow']:where([data-scope='popconfirm']) {
     grid-column: auto;
   }
 
@@ -234,11 +234,11 @@
   }
 
   /* 并排落在最后一行的右侧两格；取消在左、确认在右 */
-  [data-scope='popconfirm'][data-part='content'] > [data-part='cancel-trigger'] {
+  [data-scope='popconfirm'][data-part='content'] > [data-part='cancel-trigger']:where([data-scope='popconfirm']) {
     grid-column: 2;
   }
 
-  [data-scope='popconfirm'][data-part='content'] > [data-part='confirm-trigger'] {
+  [data-scope='popconfirm'][data-part='content'] > [data-part='confirm-trigger']:where([data-scope='popconfirm']) {
     grid-column: 3;
   }
 

@@ -247,7 +247,7 @@
 
   /* 摘要显出时条目逐条入场，越靠后起步越晚。
      backwards 让还没轮到的条目停在首帧，不是先显出再重播 */
-  [data-scope='form'][data-part='error-summary'][data-state='invalid'] [data-part='error-summary-item'] {
+  [data-scope='form'][data-part='error-summary'][data-state='invalid'] [data-part='error-summary-item']:where([data-scope='form']) {
     animation: xh-drop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
   }
 
@@ -256,14 +256,14 @@
      每多一节 ~ 就多要求前面多一条露面的条目，链越长的规则排得越后、赢过短链 */
   [data-scope='form'][data-part='error-summary'][data-state='invalid']
     [data-part='error-summary-item']:not([hidden])
-    ~ [data-part='error-summary-item']:not([hidden]) {
+    ~ [data-part='error-summary-item']:where([data-scope='form']):not([hidden]) {
     animation-delay: var(--xh-motion-stagger-step);
   }
 
   [data-scope='form'][data-part='error-summary'][data-state='invalid']
     [data-part='error-summary-item']:not([hidden])
     ~ [data-part='error-summary-item']:not([hidden])
-    ~ [data-part='error-summary-item']:not([hidden]) {
+    ~ [data-part='error-summary-item']:where([data-scope='form']):not([hidden]) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 2);
   }
 
@@ -271,7 +271,7 @@
     [data-part='error-summary-item']:not([hidden])
     ~ [data-part='error-summary-item']:not([hidden])
     ~ [data-part='error-summary-item']:not([hidden])
-    ~ [data-part='error-summary-item']:not([hidden]) {
+    ~ [data-part='error-summary-item']:where([data-scope='form']):not([hidden]) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 3);
   }
 
@@ -280,7 +280,7 @@
     ~ [data-part='error-summary-item']:not([hidden])
     ~ [data-part='error-summary-item']:not([hidden])
     ~ [data-part='error-summary-item']:not([hidden])
-    ~ [data-part='error-summary-item']:not([hidden]) {
+    ~ [data-part='error-summary-item']:where([data-scope='form']):not([hidden]) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 4);
   }
 
@@ -292,7 +292,7 @@
     ~ [data-part='error-summary-item']:not([hidden])
     ~ [data-part='error-summary-item']:not([hidden])
     ~ [data-part='error-summary-item']:not([hidden])
-    ~ [data-part='error-summary-item']:not([hidden]) {
+    ~ [data-part='error-summary-item']:where([data-scope='form']):not([hidden]) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 5);
   }
 

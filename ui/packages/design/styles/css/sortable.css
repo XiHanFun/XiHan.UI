@@ -50,7 +50,7 @@
      其余项反过来要过渡：它们是被让开的，瞬移会看不出发生了什么。
      键盘拖动时被拖那一项不跟手、逐格挪，与让位的邻项同一段一起滑；抓起时的抬升照常淡变。
      同组别的列表的一项悬在这里（data-drop='inside'）时，插入点及其后的项同样是被让开的 */
-  [data-scope='sortable'][data-part='root']:is([data-dragging], [data-drop='inside']) [data-part='item']:not([data-dragging]) {
+  [data-scope='sortable'][data-part='root']:is([data-dragging], [data-drop='inside']) [data-part='item']:where([data-scope='sortable']):not([data-dragging]) {
     transition: translate var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
   }
 
@@ -62,7 +62,7 @@
     flex: 0 0 var(--xh-_sortable-incoming-size);
   }
 
-  [data-scope='sortable'][data-part='root'][data-drag-mode='keyboard'] [data-part='item'][data-dragging] {
+  [data-scope='sortable'][data-part='root'][data-drag-mode='keyboard'] [data-part='item'][data-dragging]:where([data-scope='sortable']) {
     transition:
       translate var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),

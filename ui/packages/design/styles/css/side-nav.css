@@ -112,11 +112,11 @@
 
   /* 折叠一开始搜索框就与行文字一起淡出，展开等整栏宽度落定才淡入；落成图标栏之后让位：
      留着高度、不可见也不可聚焦（过滤此时暂停），下面的行不上下跳 */
-  [data-scope='side-nav'][data-part='root']:is([data-collapsed], [data-animating]) [data-part='input'] {
+  [data-scope='side-nav'][data-part='root']:is([data-collapsed], [data-animating]) [data-part='input']:where([data-scope='side-nav']) {
     opacity: 0;
   }
 
-  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='input'] {
+  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='input']:where([data-scope='side-nav']) {
     visibility: hidden;
   }
 
@@ -171,13 +171,13 @@
 
   /* 图标栏里分组标题没有落点：字淡成透明、仍参与播报，标题留着自己的高度，下面的行不上下跳；
      折叠一开始就淡出，展开等整栏宽度落定才淡入。落成图标栏之后在这一格里画一道细分隔，分组仍看得出来 */
-  [data-scope='side-nav'][data-part='root']:is([data-collapsed], [data-animating]) [data-part='group-label'] {
+  [data-scope='side-nav'][data-part='root']:is([data-collapsed], [data-animating]) [data-part='group-label']:where([data-scope='side-nav']) {
     overflow: hidden;
     color: transparent;
     white-space: nowrap;
   }
 
-  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='group-label']::after {
+  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='group-label']:where([data-scope='side-nav'])::after {
     content: '';
     position: absolute;
     inset-inline: var(--xh-_side-nav-row-px);
@@ -275,9 +275,9 @@
 
   /* 行文字与展开箭头的淡变：折叠一开始就淡出，此时仍在行里、由收窄的行宽裁着；展开时等整栏宽度落定才淡入。
      弹出面板里的行不在此列 */
-  [data-scope='side-nav'][data-part='root']:is([data-collapsed], [data-animating]) [data-part='branch-text']:not([data-popout] *),
-  [data-scope='side-nav'][data-part='root']:is([data-collapsed], [data-animating]) [data-part='link-text']:not([data-popout] *),
-  [data-scope='side-nav'][data-part='root']:is([data-collapsed], [data-animating]) [data-part='branch-indicator']:not([data-popout] *) {
+  [data-scope='side-nav'][data-part='root']:is([data-collapsed], [data-animating]) [data-part='branch-text']:where([data-scope='side-nav']):not([data-popout] :where([data-scope='side-nav'])),
+  [data-scope='side-nav'][data-part='root']:is([data-collapsed], [data-animating]) [data-part='link-text']:where([data-scope='side-nav']):not([data-popout] :where([data-scope='side-nav'])),
+  [data-scope='side-nav'][data-part='root']:is([data-collapsed], [data-animating]) [data-part='branch-indicator']:where([data-scope='side-nav']):not([data-popout] :where([data-scope='side-nav'])) {
     opacity: 0;
   }
 
@@ -286,8 +286,8 @@
      藏成 display:none 它们就一个名字都没有了。
      white-space: nowrap 防止 1px 宽把文本挤成竖排。
      弹出面板里的行不在此列——面板是正常宽度的浮层，文字照常显示 */
-  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='branch-text']:not([data-popout] *),
-  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='link-text']:not([data-popout] *) {
+  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='branch-text']:where([data-scope='side-nav']):not([data-popout] :where([data-scope='side-nav'])),
+  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='link-text']:where([data-scope='side-nav']):not([data-popout] :where([data-scope='side-nav'])) {
     position: absolute;
     inline-size: 1px;
     block-size: 1px;
@@ -300,12 +300,12 @@
   }
 
   /* 展开指示是纯装饰（aria-hidden），落成图标栏之后整个不占位 */
-  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='branch-indicator']:not([data-popout] *) {
+  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='branch-indicator']:where([data-scope='side-nav']):not([data-popout] :where([data-scope='side-nav'])) {
     display: none;
   }
 
-  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='branch-trigger']:not([data-popout] *),
-  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='link']:not([data-popout] *) {
+  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='branch-trigger']:where([data-scope='side-nav']):not([data-popout] :where([data-scope='side-nav'])),
+  [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='link']:where([data-scope='side-nav']):not([data-popout] :where([data-scope='side-nav'])) {
     --xh-collection-inline-padding: 0;
 
     justify-content: center;
@@ -441,7 +441,7 @@
 
   @media (forced-colors: active) {
     /* 图标栏里分组之间那道细分隔画的是一块底色，这一档里底色被统一换成 Canvas、整道消失；换成 GrayText 画回来 */
-    [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='group-label']::after {
+    [data-scope='side-nav'][data-part='root'][data-collapsed]:not([data-animating]) [data-part='group-label']:where([data-scope='side-nav'])::after {
       background: GrayText;
     }
   }

@@ -4144,7 +4144,7 @@
   /* 窄档的并排视图：一行的两侧改成上下两段，旧行在上、新行在下。
      行由横排 flex 换成两列栅格——行号一列、正文一列，一行里的四个格按 DOM 次序
      自然落成两行，正文列因此只按单侧的最长行撑宽，不再是两侧之和 */
-  .xh-scope-diff-view[data-part='root'][data-view='split'] [data-part='row']:not([hidden]) {
+  .xh-scope-diff-view[data-part='root'][data-view='split'] [data-part='row']:where(.xh-scope-diff-view):not([hidden]) {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
   }
@@ -4177,13 +4177,13 @@
 
   /* 开了换行：pre-wrap 仍保留缩进与连续空白，只是允许行尾折下来；
      anywhere 让没有空格的长串（url、base64）也能断 */
-  .xh-scope-diff-view[data-part='root'][data-wrap] [data-part='line-content'] {
+  .xh-scope-diff-view[data-part='root'][data-wrap] [data-part='line-content']:where(.xh-scope-diff-view) {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
 
   /* 正文原本按最长行撑宽，不解除就折不下来 */
-  .xh-scope-diff-view[data-part='root'][data-wrap] [data-part='body'] {
+  .xh-scope-diff-view[data-part='root'][data-wrap] [data-part='body']:where(.xh-scope-diff-view) {
     min-inline-size: 0;
   }
 
@@ -4328,7 +4328,7 @@
     --xh-_diff-view-comment-col: var(--xh-diff-view-comment-col, var(--xh-diff-view-line-height, var(--xh-text-code-leading)));
   }
 
-  .xh-scope-diff-view[data-part='root'][data-commentable] [data-part='line-content'] {
+  .xh-scope-diff-view[data-part='root'][data-commentable] [data-part='line-content']:where(.xh-scope-diff-view) {
     position: relative;
     padding-inline-start: var(--xh-_diff-view-comment-col);
   }
@@ -4367,8 +4367,8 @@
       --xh-action-opacity-rest: 0;
     }
 
-    .xh-scope-diff-view[data-part='row']:hover [data-part='comment-trigger'],
-    .xh-scope-diff-view[data-part='viewport']:focus-within [data-part='comment-trigger'] {
+    .xh-scope-diff-view[data-part='row']:hover [data-part='comment-trigger']:where(.xh-scope-diff-view),
+    .xh-scope-diff-view[data-part='viewport']:focus-within [data-part='comment-trigger']:where(.xh-scope-diff-view) {
       --xh-action-opacity-rest: 1;
     }
   }
@@ -4414,13 +4414,13 @@
 
   /* 宽档：视口放得下两列，并排视图回到一行两侧 */
   @media (min-width: 1024px) {
-    .xh-scope-diff-view[data-part='root'][data-view='split'] [data-part='row']:not([hidden]) {
+    .xh-scope-diff-view[data-part='root'][data-view='split'] [data-part='row']:where(.xh-scope-diff-view):not([hidden]) {
       display: flex;
     }
 
     /* 两列之间的接缝：新侧的行号槽再补一条左边线。只在并排时是接缝，
        堆叠时它落在段首，成了一条与任何东西都不相接的竖线 */
-    .xh-scope-diff-view[data-part='root'][data-view='split'] [data-part='line-number'][data-side='new'] {
+    .xh-scope-diff-view[data-part='root'][data-view='split'] [data-part='line-number'][data-side='new']:where(.xh-scope-diff-view) {
       border-inline-start: var(--xh-stroke-thin) solid var(--xh-diff-view-divider, var(--xh-border-subtle));
     }
   }
@@ -4675,7 +4675,7 @@
   }
 
   /* 新增的行进场，同一批按到达顺序错开；首帧就在的直接呈现（自己或根节点带 data-instant） */
-  .xh-scope-field-array[data-part='item']:not([data-instant], [data-instant] > *) {
+  .xh-scope-field-array[data-part='item']:not([data-instant], [data-instant] > :where(.xh-scope-field-array)) {
     animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
     animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
   }
@@ -5791,10 +5791,12 @@
   }
 
   /* 逐条依次冒出来，离触发器最近的那条先到。backwards 让每条在自己那份延迟里保持起始帧。
-     挂载时就展开着的那一段（data-instant）属于首帧，直接呈现。守卫包在 :where 里不加特异性：
-     后面的交错延迟、液态分离块与收起那几条要照旧压得过这一条 */
-  .xh-scope-float-button[data-part='list']:where(:not([data-instant])) > * {
-    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+     挂载时就展开着的那一段（data-instant）属于首帧，直接呈现。
+     动作项是作者放进来的任意节点，规则主体没有可认的特征：冒出、缩回与交错写成 list 自己的私有槽，
+     动作项只读槽。主体无特征的规则挂在 data-instant / data-state 后面，页面上任何元素翻转这两个属性
+     都会让它整棵子树重算 */
+  .xh-scope-float-button[data-part='list']:where(:not([data-instant])) {
+    --xh-_float-button-item-enter: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
   }
 
   /* 原生按钮直接作为动作项时，沿用触发器的视觉面（同一组公开槽、同一张形态表）；XhButton 保留自己的皮肤。 */
@@ -5851,42 +5853,55 @@
   /* 交错的间隔：第二条起逐级往后推，第五条起统一钉在第四级——与收起、与列表动效同一个封顶，
      动作再多也不会拖出一条越来越慢的尾巴 */
   .xh-scope-float-button[data-part='list'] > *:nth-child(2) {
-    animation-delay: var(--xh-motion-stagger-step);
+    --xh-_float-button-item-rank: 1;
   }
 
   .xh-scope-float-button[data-part='list'] > *:nth-child(3) {
-    animation-delay: calc(2 * var(--xh-motion-stagger-step));
+    --xh-_float-button-item-rank: 2;
   }
 
   .xh-scope-float-button[data-part='list'] > *:nth-child(4) {
-    animation-delay: calc(3 * var(--xh-motion-stagger-step));
+    --xh-_float-button-item-rank: 3;
   }
 
   .xh-scope-float-button[data-part='list'] > *:nth-child(n + 5) {
-    animation-delay: calc(4 * var(--xh-motion-stagger-step));
+    --xh-_float-button-item-rank: 4;
   }
 
   /* 收起：逆着冒出的次序逐条缩回，离触发器最远的先走、最近的最后收，连接层等它们播完才藏起展开组。
      液态档里从触发器拆出来的那几块由液态组融回，不挂这段 */
-  .xh-scope-float-button[data-part='list'][data-state='closed'] > :not([data-xh-liquid-goo-split]) {
+  .xh-scope-float-button[data-part='list'][data-state='closed'] {
+    --xh-_float-button-item-exit: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    --xh-_float-button-item-exiting: 1;
     pointer-events: none;
-    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
-  .xh-scope-float-button[data-part='list'][data-state='closed'] > :not([data-xh-liquid-goo-split]):nth-last-child(2) {
-    animation-delay: var(--xh-motion-stagger-step);
+  /* 动作项只读槽：收起档压过进场档；延迟展开按正序名次、收起按倒序名次（收起标记为 1 时取后者） */
+  .xh-scope-float-button[data-part='list'] > :not([data-xh-liquid-goo-split]) {
+    animation: var(--xh-_float-button-item-exit, var(--xh-_float-button-item-enter, none));
+    animation-delay: calc(
+      var(--xh-motion-stagger-step) *
+        (
+          var(--xh-_float-button-item-rank, 0) * (1 - var(--xh-_float-button-item-exiting, 0)) +
+            var(--xh-_float-button-item-rank-back, 0) * var(--xh-_float-button-item-exiting, 0)
+        )
+    );
   }
 
-  .xh-scope-float-button[data-part='list'][data-state='closed'] > :not([data-xh-liquid-goo-split]):nth-last-child(3) {
-    animation-delay: calc(2 * var(--xh-motion-stagger-step));
+  .xh-scope-float-button[data-part='list'] > :not([data-xh-liquid-goo-split]):nth-last-child(2) {
+    --xh-_float-button-item-rank-back: 1;
   }
 
-  .xh-scope-float-button[data-part='list'][data-state='closed'] > :not([data-xh-liquid-goo-split]):nth-last-child(4) {
-    animation-delay: calc(3 * var(--xh-motion-stagger-step));
+  .xh-scope-float-button[data-part='list'] > :not([data-xh-liquid-goo-split]):nth-last-child(3) {
+    --xh-_float-button-item-rank-back: 2;
   }
 
-  .xh-scope-float-button[data-part='list'][data-state='closed'] > :not([data-xh-liquid-goo-split]):nth-last-child(n + 5) {
-    animation-delay: calc(4 * var(--xh-motion-stagger-step));
+  .xh-scope-float-button[data-part='list'] > :not([data-xh-liquid-goo-split]):nth-last-child(4) {
+    --xh-_float-button-item-rank-back: 3;
+  }
+
+  .xh-scope-float-button[data-part='list'] > :not([data-xh-liquid-goo-split]):nth-last-child(n + 5) {
+    --xh-_float-button-item-rank-back: 4;
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中。
@@ -8143,7 +8158,7 @@
 
   /* 语气落在根上而不是每个 mark 上：命中片段有好几个，用哪族颜色是整段的属性。
      使用者槽排在语气之前：写死了 mark 的底与字色，六族语气一并让位 */
-  .xh-scope-highlight[data-part='root'][data-tone] [data-part='mark'] {
+  .xh-scope-highlight[data-part='root'][data-tone] [data-part='mark']:where(.xh-scope-highlight) {
     background: var(--xh-highlight-mark-bg, var(--xh-_tone-subtle));
     color: var(--xh-highlight-mark-fg, var(--xh-_tone-fg));
   }
@@ -11062,7 +11077,7 @@
      标记读定位层那一份：候选被搬到 portal 落点，根上的只读标记够不着它们。
      排掉禁用条目是因为这条选择器权重高过上面那条，不排就会把 not-allowed 覆盖回 default */
   .xh-scope-mention[data-part='positioner'][data-readonly]
-    [data-part='item']:not([data-disabled]) {
+    [data-part='item']:where(.xh-scope-mention):not([data-disabled]) {
     cursor: default;
   }
 
@@ -11346,7 +11361,7 @@
   }
 
   .xh-scope-page-header[data-part='root']:has(> [data-part='description'])
-    > :is([data-part='back-trigger'], [data-part='media'], [data-part='extra']) {
+    > :is([data-part='back-trigger'], [data-part='media'], [data-part='extra']):where(.xh-scope-page-header) {
     grid-row: span 2;
   }
 
@@ -11363,7 +11378,7 @@
       grid-column: 2;
     }
 
-    .xh-scope-page-header[data-part='root'] > [data-part='extra'] {
+    .xh-scope-page-header[data-part='root'] > [data-part='extra']:where(.xh-scope-page-header) {
       grid-column: 1 / -1;
       grid-row: auto;
       margin-inline-start: 0;
@@ -11578,7 +11593,7 @@
      分不出焦点在框里还是在钮上，所以钮上再画一圈自己的环（家族只对不占 Tab 位的内嵌钮关环）。
      环往内收，压在按钮自己的方框里，不与盒子外面那一圈叠在一起。
      指示焦点只能用环不能用底色：可用的几档底色压在盒底上都到不了 3:1，换了色也等于没画 */
-  .xh-scope-password-input[data-part='control'] [data-part='visibility-trigger']:focus-visible {
+  .xh-scope-password-input[data-part='control'] [data-part='visibility-trigger']:where(.xh-scope-password-input):focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_password-input-ring);
     outline-offset: var(--xh-ring-offset);
   }
@@ -11733,7 +11748,7 @@
 
     /* 关掉强制换色后，上面那圈自留的 :focus-visible 环与家族普通态的焦点底/字都会按作者色落地；
        家族高对比块的特指度压不过它们，这里用同一选择器把环、底、字改回系统色 */
-    .xh-scope-password-input[data-part='control'] [data-part='visibility-trigger']:focus-visible {
+    .xh-scope-password-input[data-part='control'] [data-part='visibility-trigger']:where(.xh-scope-password-input):focus-visible {
       outline-color: Highlight;
       background-color: ButtonFace;
       color: ButtonText;
@@ -11905,7 +11920,7 @@
   }
 
   /* 箭头绝对定位挂在 content 上，不占格：吃到栅格位的话它的贴边就从格线起算，被内衬推进面里 */
-  .xh-scope-popconfirm[data-part='content'] > [data-part='arrow'] {
+  .xh-scope-popconfirm[data-part='content'] > [data-part='arrow']:where(.xh-scope-popconfirm) {
     grid-column: auto;
   }
 
@@ -11994,11 +12009,11 @@
   }
 
   /* 并排落在最后一行的右侧两格；取消在左、确认在右 */
-  .xh-scope-popconfirm[data-part='content'] > [data-part='cancel-trigger'] {
+  .xh-scope-popconfirm[data-part='content'] > [data-part='cancel-trigger']:where(.xh-scope-popconfirm) {
     grid-column: 2;
   }
 
-  .xh-scope-popconfirm[data-part='content'] > [data-part='confirm-trigger'] {
+  .xh-scope-popconfirm[data-part='content'] > [data-part='confirm-trigger']:where(.xh-scope-popconfirm) {
     grid-column: 3;
   }
 
@@ -15239,8 +15254,8 @@
   }
 
   /* 列里的两段文字不再参与 root 那一行的伸缩：宽度由列自己给 */
-  .xh-scope-alert[data-part='content'] [data-part='title'],
-  .xh-scope-alert[data-part='content'] [data-part='description'] {
+  .xh-scope-alert[data-part='content'] [data-part='title']:where(.xh-scope-alert),
+  .xh-scope-alert[data-part='content'] [data-part='description']:where(.xh-scope-alert) {
     flex: none;
   }
 
@@ -15631,13 +15646,13 @@
    * 微光扫的是一道亮带，呼吸改的是整根的浓淡——两者都表达"还在等"，
    * 换哪一档由作者定，缺省仍是微光。
    */
-  .xh-scope-skeleton[data-part='root'][data-animation='pulse'] [data-part='item'] {
+  .xh-scope-skeleton[data-part='root'][data-animation='pulse'] [data-part='item']:where(.xh-scope-skeleton) {
     background-image: none;
     animation: xh-skeleton-pulse var(--xh-skeleton-pulse-duration, var(--xh-motion-loop-shimmer)) var(--xh-motion-ease-sweep) infinite alternate;
   }
 
   /* 静止档：底色留着，两层动效都撤掉 */
-  .xh-scope-skeleton[data-part='root'][data-animation='none'] [data-part='item'] {
+  .xh-scope-skeleton[data-part='root'][data-animation='none'] [data-part='item']:where(.xh-scope-skeleton) {
     background-image: none;
     animation: none;
   }
@@ -15645,17 +15660,17 @@
   /* 呼吸档自带一条动画，压不住下面基础降级里的 animation: none，这一档各自再写一份。
      两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
-    .xh-scope-skeleton[data-part='root'][data-animation='pulse'] [data-part='item'] {
+    .xh-scope-skeleton[data-part='root'][data-animation='pulse'] [data-part='item']:where(.xh-scope-skeleton) {
       animation: none;
     }
   }
 
-  :where([data-motion='reduce']) .xh-scope-skeleton[data-part='root'][data-animation='pulse'] [data-part='item'] {
+  :where([data-motion='reduce']) .xh-scope-skeleton[data-part='root'][data-animation='pulse'] [data-part='item']:where(.xh-scope-skeleton) {
     animation: none;
   }
 
   @media print {
-    .xh-scope-skeleton[data-part='root'][data-animation='pulse'] [data-part='item'] {
+    .xh-scope-skeleton[data-part='root'][data-animation='pulse'] [data-part='item']:where(.xh-scope-skeleton) {
       animation: none;
     }
   }
@@ -16487,7 +16502,7 @@
   }
 
   /* 卡片出现时滑入；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
-  .xh-scope-approval[data-part='root']:not([data-scope][data-part='item'][data-instant] *) {
+  .xh-scope-approval[data-part='root']:not([data-scope][data-part='item'][data-instant] :where(.xh-scope-approval)) {
     animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -16691,12 +16706,12 @@
     color: var(--xh-approval-item-text-fg, var(--xh-fg-muted));
   }
 
-  .xh-scope-approval[data-part='item'][data-state='checked'] [data-part='item-text'] {
+  .xh-scope-approval[data-part='item'][data-state='checked'] [data-part='item-text']:where(.xh-scope-approval) {
     color: var(--xh-approval-item-text-fg-checked, var(--xh-fg-default));
   }
 
   /* 排在勾选档之后：禁用项无论勾没勾都是禁用色 */
-  .xh-scope-approval[data-part='item'][data-disabled] [data-part='item-text'] {
+  .xh-scope-approval[data-part='item'][data-disabled] [data-part='item-text']:where(.xh-scope-approval) {
     color: var(--xh-fg-disabled);
   }
 
@@ -16764,7 +16779,7 @@
   }
 
   /* 落定结果弹出；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
-  .xh-scope-approval[data-part='result']:not([data-scope][data-part='item'][data-instant] *) {
+  .xh-scope-approval[data-part='result']:not([data-scope][data-part='item'][data-instant] :where(.xh-scope-approval)) {
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -17670,16 +17685,20 @@
     content: none;
   }
 
+  /* 作者的图形是任意节点，规则主体没有可认的特征：加载与否写在 indicator 自己的私有槽上，
+     图形只读槽。翻转 data-loading 时失效的只有 indicator 本身，不会让全页同名属性的变化整棵子树重算 */
   .xh-scope-button[data-part='indicator'] > * {
-    opacity: 0;
+    opacity: var(--xh-_button-indicator-opacity, 0);
     transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition-delay: calc(var(--xh-motion-duration-micro) * var(--xh-_button-indicator-delay, 0));
     animation: xh-spin var(--xh-button-spin-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite paused;
+    animation-play-state: var(--xh-_button-indicator-play, paused);
   }
 
-  .xh-scope-button[data-part='root'][data-loading] > .xh-scope-button[data-part='indicator'] > * {
-    opacity: 1;
-    transition-delay: var(--xh-motion-duration-micro);
-    animation-play-state: running;
+  .xh-scope-button[data-part='root'][data-loading] > .xh-scope-button[data-part='indicator'] {
+    --xh-_button-indicator-opacity: 1;
+    --xh-_button-indicator-delay: 1;
+    --xh-_button-indicator-play: running;
   }
 
   /* 钮里原有的内容与环交叉：进入在途同样等一个 micro 才淡出、留位不塌，退出不等 */
@@ -18066,7 +18085,7 @@
   }
 
   /* 周期格沿横轴铺开，但始终保持控制件高度；选中面只换颜色，不改变几何尺寸。 */
-  .xh-scope-calendar-picker[data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) [data-part='cell-trigger'] {
+  .xh-scope-calendar-picker[data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) [data-part='cell-trigger']:where(.xh-scope-calendar-picker) {
     flex: 0 0 auto;
     aspect-ratio: auto;
     min-inline-size: 0;
@@ -18075,7 +18094,7 @@
     border-radius: var(--xh-calendar-picker-period-radius, var(--xh-shape-control));
   }
 
-  .xh-scope-calendar-picker[data-part='grid'][data-view='week'] [data-part='cell-trigger'] {
+  .xh-scope-calendar-picker[data-part='grid'][data-view='week'] [data-part='cell-trigger']:where(.xh-scope-calendar-picker) {
     flex: 1 1 auto;
     justify-content: flex-start;
     inline-size: 100%;
@@ -18284,7 +18303,7 @@
      只收日视图这一档：粗粒度视图（月格、年格）点一格是往下钻一层，只读也照做，
      那些格子仍是按得动的按钮，手型不能撤 */
   .xh-scope-calendar-picker[data-part='grid'][data-readonly][data-view='day']
-    [data-part='cell-trigger']:not([data-disabled]) {
+    [data-part='cell-trigger']:where(.xh-scope-calendar-picker):not([data-disabled]) {
     --xh-action-cursor-rest: default;
     --xh-action-cursor-hover: default;
     --xh-action-cursor-pressed: default;
@@ -18526,7 +18545,7 @@
   }
 
   /* 周期格沿横轴铺开，但始终保持控制件高度；选中面只换颜色，不改变几何尺寸。 */
-  .xh-scope-calendar-range-picker[data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) [data-part='cell-trigger'] {
+  .xh-scope-calendar-range-picker[data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) [data-part='cell-trigger']:where(.xh-scope-calendar-range-picker) {
     flex: 0 0 auto;
     aspect-ratio: auto;
     min-inline-size: 0;
@@ -18535,7 +18554,7 @@
     border-radius: var(--xh-calendar-range-picker-period-radius, var(--xh-shape-control));
   }
 
-  .xh-scope-calendar-range-picker[data-part='grid'][data-view='week'] [data-part='cell-trigger'] {
+  .xh-scope-calendar-range-picker[data-part='grid'][data-view='week'] [data-part='cell-trigger']:where(.xh-scope-calendar-range-picker) {
     flex: 1 1 auto;
     justify-content: flex-start;
     inline-size: 100%;
@@ -18647,13 +18666,13 @@
 
   /* 行首与行尾收圆：区间跨周时每一行各是一条两头圆的横杠。
      摆了周序号格的行里，行首那一格排在它后面 */
-  .xh-scope-calendar-range-picker[data-part='week-row'] > [data-part='cell'][data-in-range]:first-child::before,
-  .xh-scope-calendar-range-picker[data-part='week-row'] > [data-part='week-number'] + [data-part='cell'][data-in-range]::before {
+  .xh-scope-calendar-range-picker[data-part='week-row'] > [data-part='cell'][data-in-range]:where(.xh-scope-calendar-range-picker):first-child::before,
+  .xh-scope-calendar-range-picker[data-part='week-row'] > [data-part='week-number'] + [data-part='cell'][data-in-range]:where(.xh-scope-calendar-range-picker)::before {
     border-start-start-radius: var(--xh-calendar-range-picker-range-row-radius, var(--xh-shape-inset));
     border-end-start-radius: var(--xh-calendar-range-picker-range-row-radius, var(--xh-shape-inset));
   }
 
-  .xh-scope-calendar-range-picker[data-part='week-row'] > [data-part='cell'][data-in-range]:last-child::before {
+  .xh-scope-calendar-range-picker[data-part='week-row'] > [data-part='cell'][data-in-range]:where(.xh-scope-calendar-range-picker):last-child::before {
     border-start-end-radius: var(--xh-calendar-range-picker-range-row-radius, var(--xh-shape-inset));
     border-end-end-radius: var(--xh-calendar-range-picker-range-row-radius, var(--xh-shape-inset));
   }
@@ -18669,7 +18688,7 @@
   }
 
   /* 粗粒度的格子之间有间隙，底色本就接不成一条，每一格各自收圆 */
-  .xh-scope-calendar-range-picker[data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) > [data-part='cell'][data-in-range]::before {
+  .xh-scope-calendar-range-picker[data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) > [data-part='cell'][data-in-range]:where(.xh-scope-calendar-range-picker)::before {
     border-radius: var(--xh-calendar-range-picker-cell-radius, var(--xh-shape-inset));
   }
 
@@ -18824,7 +18843,7 @@
      只收日视图这一档：粗粒度视图（月格、年格）点一格是往下钻一层，只读也照做，
      那些格子仍是按得动的按钮，手型不能撤 */
   .xh-scope-calendar-range-picker[data-part='grid'][data-readonly][data-view='day']
-    [data-part='cell-trigger']:not([data-disabled]) {
+    [data-part='cell-trigger']:where(.xh-scope-calendar-range-picker):not([data-disabled]) {
     --xh-action-cursor-rest: default;
     --xh-action-cursor-hover: default;
     --xh-action-cursor-pressed: default;
@@ -19569,7 +19588,7 @@
   }
 
   .xh-scope-carousel[data-part='root'][data-orientation='vertical']
-    > :is([data-part='prev-trigger'], [data-part='next-trigger']) {
+    > :is([data-part='prev-trigger'], [data-part='next-trigger']):where(.xh-scope-carousel) {
     inset-inline-start: 50%;
     inset-inline-end: auto;
     translate: -50% 0;
@@ -19577,23 +19596,23 @@
   }
 
   .xh-scope-carousel[data-part='root'][data-orientation='vertical']
-    > :is([data-part='prev-trigger'], [data-part='next-trigger']):dir(rtl) {
+    > :is([data-part='prev-trigger'], [data-part='next-trigger']):where(.xh-scope-carousel):dir(rtl) {
     translate: 50% 0;
   }
 
   /* 纵轨的翻页钮整颗转了 90°，形变会跟着转到错的方向，这一档不挂 */
   :where([data-material='liquid']) .xh-scope-carousel[data-part='root'][data-orientation='vertical']
-    > :is([data-part='prev-trigger'], [data-part='next-trigger'])[data-xh-liquid] {
+    > :is([data-part='prev-trigger'], [data-part='next-trigger']):where(.xh-scope-carousel)[data-xh-liquid] {
     transform: none;
   }
 
   .xh-scope-carousel[data-part='root'][data-orientation='vertical']
-    > [data-part='prev-trigger'] {
+    > [data-part='prev-trigger']:where(.xh-scope-carousel) {
     inset-block-start: var(--xh-carousel-control-inset, var(--xh-space-3));
   }
 
   .xh-scope-carousel[data-part='root'][data-orientation='vertical']
-    > [data-part='next-trigger'] {
+    > [data-part='next-trigger']:where(.xh-scope-carousel) {
     inset-block-start: auto;
     inset-block-end: var(--xh-carousel-control-inset, var(--xh-space-3));
   }
@@ -19960,7 +19979,7 @@
   }
 
   /* 裁切出来的形状画不出空心：隐藏的项改为淡出，名字的删除线与次级字色照常 */
-  .xh-scope-cartesian-chart[data-part='legend-item'][aria-pressed='false'] > [data-part='legend-swatch'][data-mark='point']:not([data-symbol='circle'], [data-symbol='square']) {
+  .xh-scope-cartesian-chart[data-part='legend-item'][aria-pressed='false'] > [data-part='legend-swatch'][data-mark='point']:where(.xh-scope-cartesian-chart):not([data-symbol='circle'], [data-symbol='square']) {
     background: var(--xh-_chart-series);
     opacity: var(--xh-chart-dim-alpha);
   }
@@ -20092,7 +20111,7 @@
     cursor: grab;
   }
 
-  .xh-scope-cartesian-chart[data-part='zoom-slider'][data-dragging] [data-part='zoom-window'] {
+  .xh-scope-cartesian-chart[data-part='zoom-slider'][data-dragging] [data-part='zoom-window']:where(.xh-scope-cartesian-chart) {
     cursor: grabbing;
   }
 
@@ -20484,15 +20503,15 @@
 
   /* —— 纹理：颜色不可用或不可靠时（强制色、打印、祖先写了 data-xh-chart-patterns），柱与面积改用本系列在
      defs 里的纹理填充、描出轮廓，折线换线型；压在柱上的标签改用标签色、描一圈承载面色。色标的纹理在配方里 —— */
-  :where([data-xh-chart-patterns]) .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='bar'],
-  :where([data-xh-chart-patterns]) .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='area-fill'] {
+  :where([data-xh-chart-patterns]) .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='bar']:where(.xh-scope-cartesian-chart),
+  :where([data-xh-chart-patterns]) .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='area-fill']:where(.xh-scope-cartesian-chart) {
     fill: var(--xh-_chart-pattern);
     fill-opacity: 1;
     stroke: var(--xh-_chart-series);
     stroke-width: var(--xh-stroke-thin);
   }
 
-  :where([data-xh-chart-patterns]) .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='line']:not([data-drawing]) {
+  :where([data-xh-chart-patterns]) .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='line']:where(.xh-scope-cartesian-chart):not([data-drawing]) {
     stroke-dasharray: var(--xh-_chart-dash);
   }
 
@@ -20626,8 +20645,8 @@
       stroke: Highlight;
     }
 
-    .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='bar'],
-    .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='area-fill'] {
+    .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='bar']:where(.xh-scope-cartesian-chart),
+    .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='area-fill']:where(.xh-scope-cartesian-chart) {
       forced-color-adjust: none;
       fill: var(--xh-_chart-pattern);
       fill-opacity: 1;
@@ -20635,7 +20654,7 @@
       stroke-width: var(--xh-stroke-thin);
     }
 
-    .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='line']:not([data-drawing]) {
+    .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='line']:where(.xh-scope-cartesian-chart):not([data-drawing]) {
       stroke-dasharray: var(--xh-_chart-dash);
     }
 
@@ -20654,15 +20673,15 @@
       display: none;
     }
 
-    .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='bar'],
-    .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='area-fill'] {
+    .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='bar']:where(.xh-scope-cartesian-chart),
+    .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='area-fill']:where(.xh-scope-cartesian-chart) {
       fill: var(--xh-_chart-pattern);
       fill-opacity: 1;
       stroke: var(--xh-_chart-series);
       stroke-width: var(--xh-stroke-thin);
     }
 
-    .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='line']:not([data-drawing]) {
+    .xh-scope-cartesian-chart[data-xh-chart-pattern] > [data-part='line']:where(.xh-scope-cartesian-chart):not([data-drawing]) {
       stroke-dasharray: var(--xh-_chart-dash);
     }
 
@@ -20890,14 +20909,14 @@
 
   /* 标签行露面时 value-text 让位：两者是触发器里的同一格，占位文字与标签不同屏。
      value-text 留在 DOM 里，trigger 的可及名仍从它取到完整的选中路径文本 */
-  .xh-scope-cascader[data-part='trigger']:has([data-part='tag-list']:not([hidden])) [data-part='value-text'] {
+  .xh-scope-cascader[data-part='trigger']:has([data-part='tag-list']:not([hidden])) [data-part='value-text']:where(.xh-scope-cascader) {
     display: none;
   }
 
   /* 有值时清空钮顶上来，箭头让位：两个图标并排堆着，用户分不清点哪个。
      判据查的是盒里此刻真有一颗没收起的清空钮，不是「有没有值」——
      作者没摆清空钮时箭头照常留着，不然让了位没人接，指示符整个消失 */
-  .xh-scope-cascader[data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='indicator'] {
+  .xh-scope-cascader[data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='indicator']:where(.xh-scope-cascader) {
     display: none;
   }
 
@@ -21174,29 +21193,29 @@
   /* 一列开幕：条目自上而下逐条淡入。只在列头一次出现时播（浮层展开、此前收着的子列铺出来）；
      列此前就在、展开路径换到同列另一个父项时（悬停扫过），连接层给露面的条目标 data-instant，
      换内容不重播。backwards 让每条在自己那份延迟里保持起始帧 */
-  .xh-scope-cascader[data-part='column'] [data-part='item']:not([data-instant]) {
+  .xh-scope-cascader[data-part='column'] [data-part='item']:where(.xh-scope-cascader):not([data-instant]) {
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) backwards;
   }
 
   /* 交错的间隔：第二条起逐级往后推，第六条起统一钉在第五级，条目再多也不会拖出一条越来越慢的尾巴。
      列里同时挂着别的父节点下的条目（收起态），计数把它们排掉，序号才对得上看得见的那几条 */
-  .xh-scope-cascader[data-part='column'] [data-part='item']:nth-child(2 of :not([hidden])) {
+  .xh-scope-cascader[data-part='column'] [data-part='item']:where(.xh-scope-cascader):nth-child(2 of :not([hidden])) {
     animation-delay: var(--xh-motion-stagger-step);
   }
 
-  .xh-scope-cascader[data-part='column'] [data-part='item']:nth-child(3 of :not([hidden])) {
+  .xh-scope-cascader[data-part='column'] [data-part='item']:where(.xh-scope-cascader):nth-child(3 of :not([hidden])) {
     animation-delay: calc(2 * var(--xh-motion-stagger-step));
   }
 
-  .xh-scope-cascader[data-part='column'] [data-part='item']:nth-child(4 of :not([hidden])) {
+  .xh-scope-cascader[data-part='column'] [data-part='item']:where(.xh-scope-cascader):nth-child(4 of :not([hidden])) {
     animation-delay: calc(3 * var(--xh-motion-stagger-step));
   }
 
-  .xh-scope-cascader[data-part='column'] [data-part='item']:nth-child(5 of :not([hidden])) {
+  .xh-scope-cascader[data-part='column'] [data-part='item']:where(.xh-scope-cascader):nth-child(5 of :not([hidden])) {
     animation-delay: calc(4 * var(--xh-motion-stagger-step));
   }
 
-  .xh-scope-cascader[data-part='column'] [data-part='item']:nth-child(n + 6 of :not([hidden])) {
+  .xh-scope-cascader[data-part='column'] [data-part='item']:where(.xh-scope-cascader):nth-child(n + 6 of :not([hidden])) {
     animation-delay: calc(5 * var(--xh-motion-stagger-step));
   }
 
@@ -21381,7 +21400,7 @@
   }
 
   /* 搜索视图里列整体让位 */
-  .xh-scope-cascader[data-part='content'][data-searching] [data-part='column'] {
+  .xh-scope-cascader[data-part='content'][data-searching] [data-part='column']:where(.xh-scope-cascader) {
     display: none;
   }
 
@@ -21480,7 +21499,7 @@
 
   /* —— 空态：当前视图没有条目时由 empty 部件出面，文案由适配器或作者供给，皮肤只管排版 —— */
   /* 根列没有条目时那条空列让位，占位面接管整个浮层 */
-  .xh-scope-cascader[data-part='content'][data-empty] [data-part='column'] {
+  .xh-scope-cascader[data-part='content'][data-empty] [data-part='column']:where(.xh-scope-cascader) {
     display: none;
   }
 
@@ -22616,7 +22635,7 @@
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  .xh-scope-citation[data-part='source'][data-state='active'] [data-part='source-index'] {
+  .xh-scope-citation[data-part='source'][data-state='active'] [data-part='source-index']:where(.xh-scope-citation) {
     background: var(--xh-citation-index-active-bg, var(--xh-bg-brand));
     color: var(--xh-citation-index-active-fg, var(--xh-fg-on-brand));
   }
@@ -22644,7 +22663,7 @@
   }
 
   @media (forced-colors: active) {
-    .xh-scope-citation[data-part='source'][data-state='active'] [data-part='source-index'] {
+    .xh-scope-citation[data-part='source'][data-state='active'] [data-part='source-index']:where(.xh-scope-citation) {
       background: Highlight;
       color: HighlightText;
     }
@@ -23094,7 +23113,7 @@
   }
 
   /* 折叠时 <pre> 的高度被连接层写死，超出部分沿圆角收边 */
-  .xh-scope-code-view[data-part='root'][data-clamped] [data-part='pre'] {
+  .xh-scope-code-view[data-part='root'][data-clamped] [data-part='pre']:where(.xh-scope-code-view) {
     overflow-y: hidden;
   }
 
@@ -23166,13 +23185,13 @@
 
   /* 开了换行：pre-wrap 仍保留缩进与连续空白，只是允许行尾折下来；
      anywhere 让没有空格的长串（url、base64）也能断，否则照样撑出横向滚动 */
-  .xh-scope-code-view[data-part='code'][data-wrap] [data-part='line-content'] {
+  .xh-scope-code-view[data-part='code'][data-wrap] [data-part='line-content']:where(.xh-scope-code-view) {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
 
   /* 没开行号时正文自带左内衬；开了行号则由行号槽的内衬顶开 */
-  .xh-scope-code-view[data-part='root']:not([data-line-numbers]) [data-part='line-content'] {
+  .xh-scope-code-view[data-part='root']:not([data-line-numbers]) [data-part='line-content']:where(.xh-scope-code-view) {
     padding-inline-start: var(--xh-code-view-px, var(--xh-space-3));
   }
 
@@ -23236,12 +23255,12 @@
     --xh-_code-view-fold-col: var(--xh-code-view-fold-col, var(--xh-code-view-line-height, var(--xh-text-code-leading)));
   }
 
-  .xh-scope-code-view[data-part='root'][data-block-folding] [data-part='line-content'] {
+  .xh-scope-code-view[data-part='root'][data-block-folding] [data-part='line-content']:where(.xh-scope-code-view) {
     position: relative;
     padding-inline-start: var(--xh-_code-view-fold-col);
   }
 
-  .xh-scope-code-view[data-part='root'][data-block-folding]:not([data-line-numbers]) [data-part='line-content'] {
+  .xh-scope-code-view[data-part='root'][data-block-folding]:not([data-line-numbers]) [data-part='line-content']:where(.xh-scope-code-view) {
     padding-inline-start: calc(var(--xh-code-view-px, var(--xh-space-3)) + var(--xh-_code-view-fold-col));
   }
 
@@ -23261,7 +23280,7 @@
     block-size: var(--xh-_code-view-fold-col);
   }
 
-  .xh-scope-code-view[data-part='root'][data-block-folding]:not([data-line-numbers]) [data-part='line-fold-trigger'] {
+  .xh-scope-code-view[data-part='root'][data-block-folding]:not([data-line-numbers]) [data-part='line-fold-trigger']:where(.xh-scope-code-view) {
     inset-inline-start: var(--xh-code-view-px, var(--xh-space-3));
   }
 
@@ -24802,10 +24821,12 @@
   }
 
   /* 作者塞进来的图形跟着勾同一套显隐 */
+  /* 显隐写在 indicator 自己的私有槽上、图形只读槽：作者的图形没有可认的特征，
+     规则主体不能挂在 data-state 后面（翻转时会让全页同名属性的变化整棵子树重算） */
   .xh-scope-color-swatch-picker[data-part='indicator'] > * {
     position: relative;
     color: var(--xh-color-swatch-picker-indicator-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
-    opacity: 0;
+    opacity: var(--xh-_color-swatch-picker-glyph-opacity, 0);
     transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -24815,8 +24836,11 @@
     scale: 1;
   }
 
-  .xh-scope-color-swatch-picker[data-part='indicator'][data-state='checked']:empty::after,
-  .xh-scope-color-swatch-picker[data-part='indicator'][data-state='checked'] > * {
+  .xh-scope-color-swatch-picker[data-part='indicator'][data-state='checked'] {
+    --xh-_color-swatch-picker-glyph-opacity: 1;
+  }
+
+  .xh-scope-color-swatch-picker[data-part='indicator'][data-state='checked']:empty::after {
     opacity: 1;
   }
 
@@ -24843,7 +24867,7 @@
    */
   @media (forced-colors: active) {
     /* 家族在这一档把色块描边统一钉成 CanvasText，选中的那一格要在它之上换成高亮色 */
-    .xh-scope-color-swatch-picker[data-part='item'][data-state='checked'] > [data-part='swatch'] {
+    .xh-scope-color-swatch-picker[data-part='item'][data-state='checked'] > [data-part='swatch']:where(.xh-scope-color-swatch-picker) {
       border-color: Highlight;
     }
 
@@ -25087,14 +25111,19 @@
   /* 有值时清空钮顶上来，展开钮让位：两颗并排堆着用户分不清点哪个，换来换去还会让盒的宽度跳一下。
      判据是盒里此刻有一颗没收起的清空钮——没写清空钮的结构里展开钮照常留着；
      输入框仍是展开的入口（打字、方向键、openOnClick） */
-  .xh-scope-combobox[data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='trigger'] {
+  .xh-scope-combobox[data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='trigger']:where(.xh-scope-combobox) {
     display: none;
   }
 
   /* 展开时箭头翻个面，指向与列表的去向一致。转的是字形或作者塞的图形，不转按钮本体：
      按钮自带悬停底色，整个按钮转会带着底色一起转；家族按压缩放的是整钮，不影响这里的转向 */
-  .xh-scope-combobox[data-part='trigger']:empty::before,
+  .xh-scope-combobox[data-part='trigger']:empty::before {
+    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
+  }
+
+  /* 作者的箭头是任意节点：转向写在 trigger 自己的私有槽上，箭头只读槽（规则主体无特征时不挂在 data-state 后面） */
   .xh-scope-combobox[data-part='trigger'] > * {
+    rotate: var(--xh-_combobox-trigger-turn, none);
     transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
@@ -25123,9 +25152,12 @@
   }
 
   /* 打开中与悬停同档：展开钮不另上底，方向由箭头转向承担 */
-  .xh-scope-combobox[data-part='trigger'][data-state='open']:empty::before,
-  .xh-scope-combobox[data-part='trigger'][data-state='open'] > * {
+  .xh-scope-combobox[data-part='trigger'][data-state='open']:empty::before {
     rotate: 180deg;
+  }
+
+  .xh-scope-combobox[data-part='trigger'][data-state='open'] {
+    --xh-_combobox-trigger-turn: 180deg;
   }
 
   .xh-scope-combobox[data-part='content'] {
@@ -25708,7 +25740,7 @@
      不会拖出一条越来越慢的尾巴）。打开时已有的结果直接呈现：自己或本列表带 data-instant。
      检索过滤筛掉的条目带 hidden 不生成盒子，重新露面只是换一批已有结果，机器给它打上 data-instant 直接呈现。
      backwards 让每条在自己那份延迟里保持起始帧 */
-  .xh-scope-command[data-part='list'] [data-part='item']:not([data-instant], .xh-scope-command[data-part='list'][data-instant] *) {
+  .xh-scope-command[data-part='list'] [data-part='item']:where(.xh-scope-command):not([data-instant], .xh-scope-command[data-part='list'][data-instant] :where(.xh-scope-command)) {
     animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
     animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
   }
@@ -26347,8 +26379,14 @@
     color: transparent;
   }
 
-  .xh-scope-date-field[data-part='segment-group'][data-placeholder-shown] > * {
-    opacity: 0;
+  /* 段位与分隔符（后者是不带解剖的文字节点）一起淡出：显隐写在 segment-group 自己的私有槽上，
+     子节点只读槽——主体无特征的规则不挂在 data-placeholder-shown 后面，输入时翻转只让这一组失效 */
+  .xh-scope-date-field[data-part='segment-group'][data-placeholder-shown] {
+    --xh-_date-field-segment-opacity: 0;
+  }
+
+  .xh-scope-date-field[data-part='segment-group'] > * {
+    opacity: var(--xh-_date-field-segment-opacity, 1);
   }
 
   .xh-scope-date-field[data-part='segment-group'][data-placeholder-shown]::before {
@@ -26729,8 +26767,14 @@
     color: transparent;
   }
 
-  .xh-scope-date-picker[data-part='segment-group'][data-placeholder-shown] > * {
-    opacity: 0;
+  /* 段位与分隔符（后者是不带解剖的文字节点）一起淡出：显隐写在 segment-group 自己的私有槽上，
+     子节点只读槽——主体无特征的规则不挂在 data-placeholder-shown 后面，输入时翻转只让这一组失效 */
+  .xh-scope-date-picker[data-part='segment-group'][data-placeholder-shown] {
+    --xh-_date-picker-segment-opacity: 0;
+  }
+
+  .xh-scope-date-picker[data-part='segment-group'] > * {
+    opacity: var(--xh-_date-picker-segment-opacity, 1);
   }
 
   .xh-scope-date-picker[data-part='segment-group'][data-placeholder-shown]::before {
@@ -26919,7 +26963,7 @@
   }
 
   /* 确认按钮沉到所在那一行的底边：它是整块面板的出口，不跟日历顶边对齐 */
-  .xh-scope-date-picker[data-part='content']:has(> [data-part='time-column']) > [data-part='confirm-trigger'] {
+  .xh-scope-date-picker[data-part='content']:has(> [data-part='time-column']) > [data-part='confirm-trigger']:where(.xh-scope-date-picker) {
     align-self: flex-end;
   }
 
@@ -27239,7 +27283,7 @@
 
   /* 列整体禁用时格没有自己的 aria-disabled，禁用面按列的 aria-disabled 映射到家族槽：
      字色降级、悬停 / 高亮 / 按下不换面、光标 not-allowed */
-  .xh-scope-date-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item'] {
+  .xh-scope-date-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item']:where(.xh-scope-date-picker) {
     --xh-collection-fg-rest: var(--xh-fg-disabled);
     --xh-collection-fg-hover: var(--xh-fg-disabled);
     --xh-collection-fg-keyboard-highlight: var(--xh-fg-disabled);
@@ -27258,7 +27302,7 @@
     --xh-collection-cursor-selected: not-allowed;
   }
 
-  .xh-scope-date-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item']::after {
+  .xh-scope-date-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item']:where(.xh-scope-date-picker)::after {
     background-color: var(--xh-fg-disabled);
   }
 
@@ -27338,13 +27382,13 @@
 
     .xh-scope-date-picker[data-part='preset'][data-disabled]::after,
     .xh-scope-date-picker[data-part='time-item'][data-disabled]::after,
-    .xh-scope-date-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item']::after {
+    .xh-scope-date-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item']:where(.xh-scope-date-picker)::after {
       background-color: GrayText;
     }
 
     .xh-scope-date-picker[data-part='preset'][data-disabled],
     .xh-scope-date-picker[data-part='time-item'][data-disabled],
-    .xh-scope-date-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item'] {
+    .xh-scope-date-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item']:where(.xh-scope-date-picker) {
       color: GrayText;
     }
   }
@@ -27610,8 +27654,14 @@
     color: transparent;
   }
 
-  .xh-scope-date-range-picker[data-part='segment-group'][data-placeholder-shown] > * {
-    opacity: 0;
+  /* 段位与分隔符（后者是不带解剖的文字节点）一起淡出：显隐写在 segment-group 自己的私有槽上，
+     子节点只读槽——主体无特征的规则不挂在 data-placeholder-shown 后面，输入时翻转只让这一组失效 */
+  .xh-scope-date-range-picker[data-part='segment-group'][data-placeholder-shown] {
+    --xh-_date-range-picker-segment-opacity: 0;
+  }
+
+  .xh-scope-date-range-picker[data-part='segment-group'] > * {
+    opacity: var(--xh-_date-range-picker-segment-opacity, 1);
   }
 
   .xh-scope-date-range-picker[data-part='segment-group'][data-placeholder-shown]::before {
@@ -27924,7 +27974,7 @@
   }
 
   /* 确认按钮沉到所在那一行的底边：它是整块面板的出口，不跟日历顶边对齐 */
-  .xh-scope-date-range-picker[data-part='content']:has(> [data-part='column-group']) > [data-part='confirm-trigger'] {
+  .xh-scope-date-range-picker[data-part='content']:has(> [data-part='column-group']) > [data-part='confirm-trigger']:where(.xh-scope-date-range-picker) {
     align-self: flex-end;
   }
 
@@ -28106,7 +28156,7 @@
 
   /* 列整体禁用时格没有自己的 aria-disabled，禁用面按列的 aria-disabled 映射到家族槽：
      字色降级、悬停 / 高亮 / 按下不换面、光标 not-allowed */
-  .xh-scope-date-range-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item'] {
+  .xh-scope-date-range-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item']:where(.xh-scope-date-range-picker) {
     --xh-collection-fg-rest: var(--xh-fg-disabled);
     --xh-collection-fg-hover: var(--xh-fg-disabled);
     --xh-collection-fg-keyboard-highlight: var(--xh-fg-disabled);
@@ -28125,7 +28175,7 @@
     --xh-collection-cursor-selected: not-allowed;
   }
 
-  .xh-scope-date-range-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item']::after {
+  .xh-scope-date-range-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item']:where(.xh-scope-date-range-picker)::after {
     background-color: var(--xh-fg-disabled);
   }
 
@@ -28204,13 +28254,13 @@
 
     .xh-scope-date-range-picker[data-part='preset'][data-disabled]::after,
     .xh-scope-date-range-picker[data-part='time-item'][data-disabled]::after,
-    .xh-scope-date-range-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item']::after {
+    .xh-scope-date-range-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item']:where(.xh-scope-date-range-picker)::after {
       background-color: GrayText;
     }
 
     .xh-scope-date-range-picker[data-part='preset'][data-disabled],
     .xh-scope-date-range-picker[data-part='time-item'][data-disabled],
-    .xh-scope-date-range-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item'] {
+    .xh-scope-date-range-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item']:where(.xh-scope-date-range-picker) {
       color: GrayText;
     }
 
@@ -29879,7 +29929,7 @@
     transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
-  .xh-scope-file-upload[data-part='item']:not([data-instant], [data-instant] > *) {
+  .xh-scope-file-upload[data-part='item']:not([data-instant], [data-instant] > :where(.xh-scope-file-upload)) {
     animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
     animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
   }
@@ -30365,7 +30415,7 @@
 
   /* 摘要显出时条目逐条入场，越靠后起步越晚。
      backwards 让还没轮到的条目停在首帧，不是先显出再重播 */
-  .xh-scope-form[data-part='error-summary'][data-state='invalid'] [data-part='error-summary-item'] {
+  .xh-scope-form[data-part='error-summary'][data-state='invalid'] [data-part='error-summary-item']:where(.xh-scope-form) {
     animation: xh-drop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
   }
 
@@ -30374,14 +30424,14 @@
      每多一节 ~ 就多要求前面多一条露面的条目，链越长的规则排得越后、赢过短链 */
   .xh-scope-form[data-part='error-summary'][data-state='invalid']
     [data-part='error-summary-item']:not([hidden])
-    ~ [data-part='error-summary-item']:not([hidden]) {
+    ~ [data-part='error-summary-item']:where(.xh-scope-form):not([hidden]) {
     animation-delay: var(--xh-motion-stagger-step);
   }
 
   .xh-scope-form[data-part='error-summary'][data-state='invalid']
     [data-part='error-summary-item']:not([hidden])
     ~ [data-part='error-summary-item']:not([hidden])
-    ~ [data-part='error-summary-item']:not([hidden]) {
+    ~ [data-part='error-summary-item']:where(.xh-scope-form):not([hidden]) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 2);
   }
 
@@ -30389,7 +30439,7 @@
     [data-part='error-summary-item']:not([hidden])
     ~ [data-part='error-summary-item']:not([hidden])
     ~ [data-part='error-summary-item']:not([hidden])
-    ~ [data-part='error-summary-item']:not([hidden]) {
+    ~ [data-part='error-summary-item']:where(.xh-scope-form):not([hidden]) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 3);
   }
 
@@ -30398,7 +30448,7 @@
     ~ [data-part='error-summary-item']:not([hidden])
     ~ [data-part='error-summary-item']:not([hidden])
     ~ [data-part='error-summary-item']:not([hidden])
-    ~ [data-part='error-summary-item']:not([hidden]) {
+    ~ [data-part='error-summary-item']:where(.xh-scope-form):not([hidden]) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 4);
   }
 
@@ -30410,7 +30460,7 @@
     ~ [data-part='error-summary-item']:not([hidden])
     ~ [data-part='error-summary-item']:not([hidden])
     ~ [data-part='error-summary-item']:not([hidden])
-    ~ [data-part='error-summary-item']:not([hidden]) {
+    ~ [data-part='error-summary-item']:where(.xh-scope-form):not([hidden]) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 5);
   }
 
@@ -30767,7 +30817,7 @@
 
   /* —— 直接操纵：能拖的节点给抓手，拖着时整张图是抓紧的手；放大后空白处也能拖着平移。
      触屏在节点上的拖动归图，其余地方照常滚动页面 —— */
-  .xh-scope-graph-chart[data-part='plot'][data-draggable] [data-part='node'] {
+  .xh-scope-graph-chart[data-part='plot'][data-draggable] [data-part='node']:where(.xh-scope-graph-chart) {
     cursor: grab;
     touch-action: none;
   }
@@ -30778,7 +30828,7 @@
   }
 
   .xh-scope-graph-chart[data-part='plot'][data-dragging],
-  .xh-scope-graph-chart[data-part='plot'][data-dragging] [data-part='node'] {
+  .xh-scope-graph-chart[data-part='plot'][data-dragging] [data-part='node']:where(.xh-scope-graph-chart) {
     cursor: grabbing;
   }
 
@@ -31811,7 +31861,7 @@
 
   /* 占位层还在（正淡出）时图片不再自己淡入：它在占位层底下直接落位，由占位层的淡出揭开，
      模糊小图与图片交叉，不先透出一拍底色 */
-  .xh-scope-image[data-part='root']:has(> [data-part='placeholder']:not([hidden])) > [data-part='image'] {
+  .xh-scope-image[data-part='root']:has(> [data-part='placeholder']:not([hidden])) > [data-part='image']:where(.xh-scope-image) {
     animation: none;
   }
 
@@ -33828,7 +33878,7 @@
 
   /* 新到的消息进场，同一批按到达顺序错开；首帧就在的历史消息直接呈现（自己或 list 带 data-instant）。
      进场只动 opacity 与 translate：改高度会扰动粘底补偿量到的 scrollHeight */
-  .xh-scope-message-feed[data-part='item']:not([data-instant], [data-instant] > *) {
+  .xh-scope-message-feed[data-part='item']:not([data-instant], [data-instant] > :where(.xh-scope-message-feed)) {
     animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
     animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
   }
@@ -34983,7 +35033,7 @@
   }
 
   /* 轻提示：方盒自带一圈内衬，与间距合起来让出字形到正文的那段距离 */
-  .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-indicator'] {
+  .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-indicator']:where(.xh-scope-notification) {
     flex: none;
     box-sizing: content-box;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -35020,17 +35070,17 @@
     transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  .xh-scope-notification[data-part='item'][data-tone='success'] [data-part='item-indicator']:empty::after {
+  .xh-scope-notification[data-part='item'][data-tone='success'] [data-part='item-indicator']:where(.xh-scope-notification):empty::after {
     -webkit-mask-image: var(--xh-glyph-mark-check);
     mask-image: var(--xh-glyph-mark-check);
   }
 
-  .xh-scope-notification[data-part='item'][data-tone='warning'] [data-part='item-indicator']:empty::after {
+  .xh-scope-notification[data-part='item'][data-tone='warning'] [data-part='item-indicator']:where(.xh-scope-notification):empty::after {
     -webkit-mask-image: var(--xh-glyph-mark-warning);
     mask-image: var(--xh-glyph-mark-warning);
   }
 
-  .xh-scope-notification[data-part='item'][data-tone='danger'] [data-part='item-indicator']:empty::after {
+  .xh-scope-notification[data-part='item'][data-tone='danger'] [data-part='item-indicator']:where(.xh-scope-notification):empty::after {
     -webkit-mask-image: var(--xh-glyph-mark-close);
     mask-image: var(--xh-glyph-mark-close);
   }
@@ -35049,7 +35099,7 @@
     min-inline-size: 0;
   }
 
-  .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-content'] {
+  .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-content']:where(.xh-scope-notification) {
     flex: 1 1 auto;
     align-self: center;
     row-gap: 0;
@@ -35069,14 +35119,14 @@
   }
 
   /* 轻提示的语气落到标题与行首字形：一句话的结果，颜色本身就是信息 */
-  .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-title'] {
+  .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-title']:where(.xh-scope-notification) {
     min-inline-size: 0;
     color: var(--xh-notification-title-fg, var(--xh-_tone-fg));
   }
 
   /* 卡片的叉钉在右上角，标题得给它让位；说明与操作在第二行往下，不受影响。
      让位量与叉的贴边取同一个值，作者改了贴边槽，标题让出的那段跟着走 */
-  .xh-scope-notification[data-part='item'][data-preset='card']:has([data-part='item-close-trigger']) [data-part='item-title'] {
+  .xh-scope-notification[data-part='item'][data-preset='card']:has([data-part='item-close-trigger']) [data-part='item-title']:where(.xh-scope-notification) {
     padding-inline-end: calc(
       var(--xh-notification-close-size, var(--xh-control-h-sm)) +
       var(--xh-notification-close-inset, var(--xh-surface-action-inset))
@@ -35096,7 +35146,7 @@
   }
 
   /* 轻提示的说明只是一行短上下文，行高收紧到正文之下 */
-  .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-description'] {
+  .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-description']:where(.xh-scope-notification) {
     min-inline-size: 0;
     line-height: var(--xh-notification-description-leading, var(--xh-leading-normal));
   }
@@ -35131,7 +35181,7 @@
   }
 
   /* 卡片：横跨整张卡片的一行，它不是正文的一部分，不跟着第二列走；两端取胶囊 */
-  .xh-scope-notification[data-part='item'][data-preset='card'] [data-part='item-progress'] {
+  .xh-scope-notification[data-part='item'][data-preset='card'] [data-part='item-progress']:where(.xh-scope-notification) {
     --xh-_countdown-radius: var(--xh-notification-progress-radius, var(--xh-shape-pill));
 
     grid-column: 1 / -1;
@@ -35139,7 +35189,7 @@
   }
 
   /* 轻提示：贴着卡片底边走 */
-  .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-progress'] {
+  .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-progress']:where(.xh-scope-notification) {
     position: absolute;
     inset-block-end: 0;
     inset-inline-start: 0;
@@ -35157,7 +35207,7 @@
     animation-timing-function: steps(var(--xh-_notification-progress-steps, 1), end);
   }
 
-  .xh-scope-notification[data-part='item'][data-paused] [data-part='item-progress'] {
+  .xh-scope-notification[data-part='item'][data-paused] [data-part='item-progress']:where(.xh-scope-notification) {
     animation-play-state: paused;
   }
 
@@ -35195,7 +35245,7 @@
   }
 
   /* 轻提示是单行 flex，按钮不参与伸缩：文案长了该换行的是文字 */
-  .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-action-trigger'] {
+  .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-action-trigger']:where(.xh-scope-notification) {
     flex: none;
     align-self: center;
   }
@@ -35228,14 +35278,14 @@
   }
 
   /* 卡片：钉在右上角的内衬处，不参与网格排布——留在流里它会变成正文下面的第三行 */
-  .xh-scope-notification[data-part='item'][data-preset='card'] [data-part='item-close-trigger'] {
+  .xh-scope-notification[data-part='item'][data-preset='card'] [data-part='item-close-trigger']:where(.xh-scope-notification) {
     position: absolute;
     inset-block-start: var(--xh-notification-close-inset, var(--xh-surface-action-inset));
     inset-inline-end: var(--xh-notification-close-inset, var(--xh-surface-action-inset));
   }
 
   /* 轻提示：排在一行短消息的行尾，与文本列一起垂直居中 */
-  .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-close-trigger'] {
+  .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-close-trigger']:where(.xh-scope-notification) {
     flex: none;
     align-self: center;
   }
@@ -35244,13 +35294,13 @@
      hover-focus 显示策略：那一档用 visibility 收起，这颗叉占 Tab 位，收成 visibility: hidden
      后键盘就够不到它了；这里只压 opacity 与 pointer-events，焦点仍能落进来 */
   @media (hover: hover) {
-    .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-close-trigger'] {
+    .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-close-trigger']:where(.xh-scope-notification) {
       opacity: 0;
       pointer-events: none;
     }
 
-    .xh-scope-notification[data-part='item'][data-preset='toast']:hover [data-part='item-close-trigger'],
-    .xh-scope-notification[data-part='item'][data-preset='toast']:focus-within [data-part='item-close-trigger'] {
+    .xh-scope-notification[data-part='item'][data-preset='toast']:hover [data-part='item-close-trigger']:where(.xh-scope-notification),
+    .xh-scope-notification[data-part='item'][data-preset='toast']:focus-within [data-part='item-close-trigger']:where(.xh-scope-notification) {
       opacity: 1;
       pointer-events: auto;
     }
@@ -35258,7 +35308,7 @@
 
   /* 收拢的后层只允许最前一条露出关闭入口；触屏没有 hover，必须显式收起后层的叉 */
   .xh-scope-notification[data-part='group'][data-stacked] .xh-scope-notification[data-part='item'][data-stack-index]:not([data-frontmost]):not([data-expanded])
-  [data-part='item-close-trigger'] {
+  [data-part='item-close-trigger']:where(.xh-scope-notification) {
     opacity: 0;
     pointer-events: none;
   }
@@ -35434,7 +35484,7 @@
   /* 盒内 input：无边框无底无圆角无落影由家族重置，观感全归 control。
      数字居中排在两个按钮之间，行内内衬留给它自己（control 不给内衬）；
      前后缀图标/文字直接流式排在 input 两侧，不用再绝对定位 */
-  .xh-scope-number-field[data-part='control'] [data-part='input'] {
+  .xh-scope-number-field[data-part='control'] [data-part='input']:where(.xh-scope-number-field) {
     --xh-field-input-fg: var(--xh-number-field-input-fg, var(--xh-fg-default));
     --xh-field-input-font-size: var(--xh-number-field-input-font-size, var(--xh-_number-field-font-size));
     --xh-field-placeholder-fg: var(--xh-number-field-placeholder-fg, var(--xh-fg-subtle));
@@ -35450,8 +35500,8 @@
   /* 盒内按钮：正方视觉盒、inset 圆角、悬停 100 / 按下 200 与 0.97 按压、粗指针热区与
      :focus-visible 关环全由 Action Control 的 field-inset ghost 档给，组件只映射既有覆盖槽。
      常态只剩符号，符号取默认前景，悬停与按下才浮出底色 */
-  .xh-scope-number-field[data-part='control'] [data-part='increment-trigger'],
-  .xh-scope-number-field[data-part='control'] [data-part='decrement-trigger'] {
+  .xh-scope-number-field[data-part='control'] [data-part='increment-trigger']:where(.xh-scope-number-field),
+  .xh-scope-number-field[data-part='control'] [data-part='decrement-trigger']:where(.xh-scope-number-field) {
     --xh-action-visual-size: var(--xh-number-field-trigger-size, var(--xh-_action-profile-visual-size));
     --xh-action-min-inline-size: var(--xh-number-field-trigger-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-number-field-trigger-radius, var(--xh-shape-inset));
@@ -35472,16 +35522,16 @@
   }
 
   /* DOM 顺序不承担视觉位置：既有用法即使把减钮写在 input 前面，默认仍统一收进右侧动作组。 */
-  .xh-scope-number-field[data-part='control'] [data-part='decrement-trigger'] {
+  .xh-scope-number-field[data-part='control'] [data-part='decrement-trigger']:where(.xh-scope-number-field) {
     order: 1;
   }
 
-  .xh-scope-number-field[data-part='control'] [data-part='increment-trigger'] {
+  .xh-scope-number-field[data-part='control'] [data-part='increment-trigger']:where(.xh-scope-number-field) {
     order: 2;
   }
 
-  .xh-scope-number-field[data-part='control'] [data-part='increment-trigger'][hidden],
-  .xh-scope-number-field[data-part='control'] [data-part='decrement-trigger'][hidden] {
+  .xh-scope-number-field[data-part='control'] [data-part='increment-trigger'][hidden]:where(.xh-scope-number-field),
+  .xh-scope-number-field[data-part='control'] [data-part='decrement-trigger'][hidden]:where(.xh-scope-number-field) {
     display: none;
   }
 
@@ -35490,7 +35540,7 @@
      ::before 已被兜底字形占着，::after 在粗指针下是家族给的 44px 热区，几何只能落在
      background-image 上：一条 1px × 半高的渐变贴在逻辑起始侧，底色换态时它仍叠在上层。
      线只画在动作组第一颗减钮的逻辑起始侧；background-position 是物理轴，RTL 另给一条换边。 */
-  .xh-scope-number-field[data-part='control']:has([data-part='input']) [data-part='decrement-trigger'] {
+  .xh-scope-number-field[data-part='control']:has([data-part='input']) [data-part='decrement-trigger']:where(.xh-scope-number-field) {
     background-image: linear-gradient(
       var(--xh-number-field-trigger-divider, var(--xh-material-soft-separator)),
       var(--xh-number-field-trigger-divider, var(--xh-material-soft-separator))
@@ -35500,12 +35550,12 @@
     background-size: var(--xh-stroke-thin) var(--xh-number-field-trigger-divider-h, var(--xh-_number-field-divider-h));
   }
 
-  [dir='rtl'] .xh-scope-number-field[data-part='control']:has([data-part='input']) [data-part='decrement-trigger'] {
+  [dir='rtl'] .xh-scope-number-field[data-part='control']:has([data-part='input']) [data-part='decrement-trigger']:where(.xh-scope-number-field) {
     background-position: 100% 50%;
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
-  .xh-scope-number-field[data-part='control'] [data-part='increment-trigger']:empty::before {
+  .xh-scope-number-field[data-part='control'] [data-part='increment-trigger']:where(.xh-scope-number-field):empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -35516,7 +35566,7 @@
     mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
   }
 
-  .xh-scope-number-field[data-part='control'] [data-part='decrement-trigger']:empty::before {
+  .xh-scope-number-field[data-part='control'] [data-part='decrement-trigger']:where(.xh-scope-number-field):empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -35529,7 +35579,7 @@
 
   /* 高对比档整层丢弃 background-image，分隔线改用系统色重画，并关掉这一颗钮的强制换色 */
   @media (forced-colors: active) {
-    .xh-scope-number-field[data-part='control']:has([data-part='input']) [data-part='decrement-trigger'] {
+    .xh-scope-number-field[data-part='control']:has([data-part='input']) [data-part='decrement-trigger']:where(.xh-scope-number-field) {
       background-image: linear-gradient(ButtonText, ButtonText);
       forced-color-adjust: none;
     }
@@ -35546,19 +35596,19 @@
        字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
        按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
        禁用取 GrayText */
-    .xh-scope-number-field[data-part='control'] [data-part='increment-trigger']:empty::before,
-    .xh-scope-number-field[data-part='control'] [data-part='decrement-trigger']:empty::before {
+    .xh-scope-number-field[data-part='control'] [data-part='increment-trigger']:where(.xh-scope-number-field):empty::before,
+    .xh-scope-number-field[data-part='control'] [data-part='decrement-trigger']:where(.xh-scope-number-field):empty::before {
       forced-color-adjust: none;
       background-color: ButtonText;
     }
 
-    .xh-scope-number-field[data-part='control'] [data-part='increment-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before,
-    .xh-scope-number-field[data-part='control'] [data-part='decrement-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+    .xh-scope-number-field[data-part='control'] [data-part='increment-trigger']:where(.xh-scope-number-field):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before,
+    .xh-scope-number-field[data-part='control'] [data-part='decrement-trigger']:where(.xh-scope-number-field):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
       background-color: HighlightText;
     }
 
-    .xh-scope-number-field[data-part='control'] [data-part='increment-trigger'][data-disabled]:empty::before,
-    .xh-scope-number-field[data-part='control'] [data-part='decrement-trigger'][data-disabled]:empty::before {
+    .xh-scope-number-field[data-part='control'] [data-part='increment-trigger'][data-disabled]:where(.xh-scope-number-field):empty::before,
+    .xh-scope-number-field[data-part='control'] [data-part='decrement-trigger'][data-disabled]:where(.xh-scope-number-field):empty::before {
       background-color: GrayText;
     }
   }
@@ -37250,7 +37300,7 @@
   }
 
   /* 卡片出现时滑入；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
-  .xh-scope-question-flow[data-part='root']:not([data-scope][data-part='item'][data-instant] *) {
+  .xh-scope-question-flow[data-part='root']:not([data-scope][data-part='item'][data-instant] :where(.xh-scope-question-flow)) {
     animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -37410,27 +37460,27 @@
      位次就是到达顺序。落在首帧就在的列表条目里（历史消息）时直接呈现。
      backwards 不能省：等待期间起帧不生效的话，后面几条会先露一下再跳回去。
      第 6 条起并到同一拍上 */
-  .xh-scope-question-flow[data-part='question'][data-current] [data-part='item']:not([data-scope][data-part='item'][data-instant] *) {
+  .xh-scope-question-flow[data-part='question'][data-current] [data-part='item']:where(.xh-scope-question-flow):not([data-scope][data-part='item'][data-instant] :where(.xh-scope-question-flow)) {
     animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
   }
 
-  .xh-scope-question-flow[data-part='question'][data-current] [data-part='item']:nth-child(2):not([data-scope][data-part='item'][data-instant] *) {
+  .xh-scope-question-flow[data-part='question'][data-current] [data-part='item']:where(.xh-scope-question-flow):nth-child(2):not([data-scope][data-part='item'][data-instant] :where(.xh-scope-question-flow)) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 1);
   }
 
-  .xh-scope-question-flow[data-part='question'][data-current] [data-part='item']:nth-child(3):not([data-scope][data-part='item'][data-instant] *) {
+  .xh-scope-question-flow[data-part='question'][data-current] [data-part='item']:where(.xh-scope-question-flow):nth-child(3):not([data-scope][data-part='item'][data-instant] :where(.xh-scope-question-flow)) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 2);
   }
 
-  .xh-scope-question-flow[data-part='question'][data-current] [data-part='item']:nth-child(4):not([data-scope][data-part='item'][data-instant] *) {
+  .xh-scope-question-flow[data-part='question'][data-current] [data-part='item']:where(.xh-scope-question-flow):nth-child(4):not([data-scope][data-part='item'][data-instant] :where(.xh-scope-question-flow)) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 3);
   }
 
-  .xh-scope-question-flow[data-part='question'][data-current] [data-part='item']:nth-child(5):not([data-scope][data-part='item'][data-instant] *) {
+  .xh-scope-question-flow[data-part='question'][data-current] [data-part='item']:where(.xh-scope-question-flow):nth-child(5):not([data-scope][data-part='item'][data-instant] :where(.xh-scope-question-flow)) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 4);
   }
 
-  .xh-scope-question-flow[data-part='question'][data-current] [data-part='item']:nth-child(n + 6):not([data-scope][data-part='item'][data-instant] *) {
+  .xh-scope-question-flow[data-part='question'][data-current] [data-part='item']:where(.xh-scope-question-flow):nth-child(n + 6):not([data-scope][data-part='item'][data-instant] :where(.xh-scope-question-flow)) {
     animation-delay: calc(var(--xh-motion-stagger-step) * 5);
   }
 
@@ -37713,7 +37763,7 @@
   }
 
   /* 落定结果弹出；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
-  .xh-scope-question-flow[data-part='result']:not([data-scope][data-part='item'][data-instant] *) {
+  .xh-scope-question-flow[data-part='result']:not([data-scope][data-part='item'][data-instant] :where(.xh-scope-question-flow)) {
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -37923,12 +37973,12 @@
 
   /* —— 纹理：颜色不可用或不可靠时（强制色、打印、祖先写了 data-xh-chart-patterns），面积改用本系列在 defs 里的
      纹理填充、描出轮廓，轮廓换线型。色标的纹理在配方里 —— */
-  :where([data-xh-chart-patterns]) .xh-scope-radar-chart[data-xh-chart-pattern] > [data-part='area-fill'] {
+  :where([data-xh-chart-patterns]) .xh-scope-radar-chart[data-xh-chart-pattern] > [data-part='area-fill']:where(.xh-scope-radar-chart) {
     fill: var(--xh-_chart-pattern);
     fill-opacity: 1;
   }
 
-  :where([data-xh-chart-patterns]) .xh-scope-radar-chart[data-xh-chart-pattern] > [data-part='line'] {
+  :where([data-xh-chart-patterns]) .xh-scope-radar-chart[data-xh-chart-pattern] > [data-part='line']:where(.xh-scope-radar-chart) {
     stroke-dasharray: var(--xh-_chart-dash);
   }
 
@@ -37960,13 +38010,13 @@
       stroke: Canvas;
     }
 
-    .xh-scope-radar-chart[data-xh-chart-pattern] > [data-part='area-fill'] {
+    .xh-scope-radar-chart[data-xh-chart-pattern] > [data-part='area-fill']:where(.xh-scope-radar-chart) {
       forced-color-adjust: none;
       fill: var(--xh-_chart-pattern);
       fill-opacity: 1;
     }
 
-    .xh-scope-radar-chart[data-xh-chart-pattern] > [data-part='line'] {
+    .xh-scope-radar-chart[data-xh-chart-pattern] > [data-part='line']:where(.xh-scope-radar-chart) {
       stroke-dasharray: var(--xh-_chart-dash);
     }
   }
@@ -37977,12 +38027,12 @@
       display: none;
     }
 
-    .xh-scope-radar-chart[data-xh-chart-pattern] > [data-part='area-fill'] {
+    .xh-scope-radar-chart[data-xh-chart-pattern] > [data-part='area-fill']:where(.xh-scope-radar-chart) {
       fill: var(--xh-_chart-pattern);
       fill-opacity: 1;
     }
 
-    .xh-scope-radar-chart[data-xh-chart-pattern] > [data-part='line'] {
+    .xh-scope-radar-chart[data-xh-chart-pattern] > [data-part='line']:where(.xh-scope-radar-chart) {
       stroke-dasharray: var(--xh-_chart-dash);
     }
   }
@@ -38654,7 +38704,7 @@
     justify-content: start;
   }
 
-  .xh-scope-rating[data-part='root']:has(> [data-part='value-text']) > [data-part='label'] {
+  .xh-scope-rating[data-part='root']:has(> [data-part='value-text']) > [data-part='label']:where(.xh-scope-rating) {
     grid-column: 1 / -1;
   }
 
@@ -39491,7 +39541,7 @@
 
   /* 标签行露面时 value-text 让位：两者是触发器里的同一格，占位文字与标签不同屏。
      value-text 留在 DOM 里，trigger 的可及名仍从它取到完整的选中项文本 */
-  .xh-scope-select[data-part='trigger']:has([data-part='tag-list']:not([hidden])) [data-part='value-text'] {
+  .xh-scope-select[data-part='trigger']:has([data-part='tag-list']:not([hidden])) [data-part='value-text']:where(.xh-scope-select) {
     display: none;
   }
 
@@ -39523,7 +39573,7 @@
   /* 有值时清空钮顶上来，箭头让位：两个图标并排堆着，用户分不清点哪个。
      判据查的是盒里此刻真有一颗没收起的清空钮，不是「有没有值」——
      作者没摆清空钮时箭头照常留着，不然让了位没人接，指示符整个消失 */
-  .xh-scope-select[data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='indicator'] {
+  .xh-scope-select[data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='indicator']:where(.xh-scope-select) {
     display: none;
   }
 
@@ -39985,8 +40035,8 @@
   }
 
   /* 文字靠边：靠哪边就把那一侧的线收成一小截，另一侧照旧等分 */
-  .xh-scope-separator[data-part='root'][data-align='start'] > [data-part='line']:first-child,
-  .xh-scope-separator[data-part='root'][data-align='end'] > [data-part='line']:last-child {
+  .xh-scope-separator[data-part='root'][data-align='start'] > [data-part='line']:where(.xh-scope-separator):first-child,
+  .xh-scope-separator[data-part='root'][data-align='end'] > [data-part='line']:where(.xh-scope-separator):last-child {
     flex: 0 0 var(--xh-separator-align-length, var(--xh-space-6));
   }
 
@@ -40184,7 +40234,7 @@
   }
 
   /* 高对比仍保持反白语义：compact 配方已把 tint / blur / shadow 换成实体档，此处只加强同色边界。 */
-  :is([data-contrast='more'] *, [data-contrast='more']).xh-scope-tooltip[data-part='content'] {
+  :is([data-contrast='more'] :where(.xh-scope-tooltip), [data-contrast='more']).xh-scope-tooltip[data-part='content'] {
     --xh-_tooltip-border: var(--xh-_tooltip-on);
   }
 
@@ -40317,11 +40367,11 @@
 
   /* 折叠一开始搜索框就与行文字一起淡出，展开等整栏宽度落定才淡入；落成图标栏之后让位：
      留着高度、不可见也不可聚焦（过滤此时暂停），下面的行不上下跳 */
-  .xh-scope-side-nav[data-part='root']:is([data-collapsed], [data-animating]) [data-part='input'] {
+  .xh-scope-side-nav[data-part='root']:is([data-collapsed], [data-animating]) [data-part='input']:where(.xh-scope-side-nav) {
     opacity: 0;
   }
 
-  .xh-scope-side-nav[data-part='root'][data-collapsed]:not([data-animating]) [data-part='input'] {
+  .xh-scope-side-nav[data-part='root'][data-collapsed]:not([data-animating]) [data-part='input']:where(.xh-scope-side-nav) {
     visibility: hidden;
   }
 
@@ -40376,13 +40426,13 @@
 
   /* 图标栏里分组标题没有落点：字淡成透明、仍参与播报，标题留着自己的高度，下面的行不上下跳；
      折叠一开始就淡出，展开等整栏宽度落定才淡入。落成图标栏之后在这一格里画一道细分隔，分组仍看得出来 */
-  .xh-scope-side-nav[data-part='root']:is([data-collapsed], [data-animating]) [data-part='group-label'] {
+  .xh-scope-side-nav[data-part='root']:is([data-collapsed], [data-animating]) [data-part='group-label']:where(.xh-scope-side-nav) {
     overflow: hidden;
     color: transparent;
     white-space: nowrap;
   }
 
-  .xh-scope-side-nav[data-part='root'][data-collapsed]:not([data-animating]) [data-part='group-label']::after {
+  .xh-scope-side-nav[data-part='root'][data-collapsed]:not([data-animating]) [data-part='group-label']:where(.xh-scope-side-nav)::after {
     content: '';
     position: absolute;
     inset-inline: var(--xh-_side-nav-row-px);
@@ -40480,9 +40530,9 @@
 
   /* 行文字与展开箭头的淡变：折叠一开始就淡出，此时仍在行里、由收窄的行宽裁着；展开时等整栏宽度落定才淡入。
      弹出面板里的行不在此列 */
-  .xh-scope-side-nav[data-part='root']:is([data-collapsed], [data-animating]) [data-part='branch-text']:not([data-popout] *),
-  .xh-scope-side-nav[data-part='root']:is([data-collapsed], [data-animating]) [data-part='link-text']:not([data-popout] *),
-  .xh-scope-side-nav[data-part='root']:is([data-collapsed], [data-animating]) [data-part='branch-indicator']:not([data-popout] *) {
+  .xh-scope-side-nav[data-part='root']:is([data-collapsed], [data-animating]) [data-part='branch-text']:where(.xh-scope-side-nav):not([data-popout] :where(.xh-scope-side-nav)),
+  .xh-scope-side-nav[data-part='root']:is([data-collapsed], [data-animating]) [data-part='link-text']:where(.xh-scope-side-nav):not([data-popout] :where(.xh-scope-side-nav)),
+  .xh-scope-side-nav[data-part='root']:is([data-collapsed], [data-animating]) [data-part='branch-indicator']:where(.xh-scope-side-nav):not([data-popout] :where(.xh-scope-side-nav)) {
     opacity: 0;
   }
 
@@ -40491,8 +40541,8 @@
      藏成 display:none 它们就一个名字都没有了。
      white-space: nowrap 防止 1px 宽把文本挤成竖排。
      弹出面板里的行不在此列——面板是正常宽度的浮层，文字照常显示 */
-  .xh-scope-side-nav[data-part='root'][data-collapsed]:not([data-animating]) [data-part='branch-text']:not([data-popout] *),
-  .xh-scope-side-nav[data-part='root'][data-collapsed]:not([data-animating]) [data-part='link-text']:not([data-popout] *) {
+  .xh-scope-side-nav[data-part='root'][data-collapsed]:not([data-animating]) [data-part='branch-text']:where(.xh-scope-side-nav):not([data-popout] :where(.xh-scope-side-nav)),
+  .xh-scope-side-nav[data-part='root'][data-collapsed]:not([data-animating]) [data-part='link-text']:where(.xh-scope-side-nav):not([data-popout] :where(.xh-scope-side-nav)) {
     position: absolute;
     inline-size: 1px;
     block-size: 1px;
@@ -40505,12 +40555,12 @@
   }
 
   /* 展开指示是纯装饰（aria-hidden），落成图标栏之后整个不占位 */
-  .xh-scope-side-nav[data-part='root'][data-collapsed]:not([data-animating]) [data-part='branch-indicator']:not([data-popout] *) {
+  .xh-scope-side-nav[data-part='root'][data-collapsed]:not([data-animating]) [data-part='branch-indicator']:where(.xh-scope-side-nav):not([data-popout] :where(.xh-scope-side-nav)) {
     display: none;
   }
 
-  .xh-scope-side-nav[data-part='root'][data-collapsed]:not([data-animating]) [data-part='branch-trigger']:not([data-popout] *),
-  .xh-scope-side-nav[data-part='root'][data-collapsed]:not([data-animating]) [data-part='link']:not([data-popout] *) {
+  .xh-scope-side-nav[data-part='root'][data-collapsed]:not([data-animating]) [data-part='branch-trigger']:where(.xh-scope-side-nav):not([data-popout] :where(.xh-scope-side-nav)),
+  .xh-scope-side-nav[data-part='root'][data-collapsed]:not([data-animating]) [data-part='link']:where(.xh-scope-side-nav):not([data-popout] :where(.xh-scope-side-nav)) {
     --xh-collection-inline-padding: 0;
 
     justify-content: center;
@@ -40646,7 +40696,7 @@
 
   @media (forced-colors: active) {
     /* 图标栏里分组之间那道细分隔画的是一块底色，这一档里底色被统一换成 Canvas、整道消失；换成 GrayText 画回来 */
-    .xh-scope-side-nav[data-part='root'][data-collapsed]:not([data-animating]) [data-part='group-label']::after {
+    .xh-scope-side-nav[data-part='root'][data-collapsed]:not([data-animating]) [data-part='group-label']:where(.xh-scope-side-nav)::after {
       background: GrayText;
     }
   }
@@ -40742,7 +40792,7 @@
      排了刻度文案的横轨两侧各让出一段，那半个文案落进让出来的这一段里。
      让在控件上而不是根上：轨道、刻度、拇指的坐标都以控件为基准，一起让开才不会彼此错位。 */
   .xh-scope-slider[data-part='root']:has([data-part='tick-label'])
-    [data-part='control'][data-orientation='horizontal'] {
+    [data-part='control'][data-orientation='horizontal']:where(.xh-scope-slider) {
     margin-inline: var(--xh-slider-control-gutter, var(--xh-space-6));
   }
 
@@ -41013,27 +41063,27 @@
 
   /* 禁用：刻度点与文案由 tick-group 上的 data-disabled 下发（连接层不给每个刻度单发），
      已过的刻度点与区间同色，文案换禁用前景，点它跳档的手型收掉 */
-  .xh-scope-slider[data-part='tick-group'][data-disabled] [data-part='tick'] {
+  .xh-scope-slider[data-part='tick-group'][data-disabled] [data-part='tick']:where(.xh-scope-slider) {
     background: var(--xh-slider-tick-bg-disabled, var(--xh-border-default));
   }
 
-  .xh-scope-slider[data-part='tick-group'][data-disabled] [data-part='tick'][data-passed] {
+  .xh-scope-slider[data-part='tick-group'][data-disabled] [data-part='tick'][data-passed]:where(.xh-scope-slider) {
     background: var(--xh-slider-tick-bg-active-disabled, var(--xh-fg-disabled));
   }
 
-  .xh-scope-slider[data-part='tick-group'][data-disabled] [data-part='tick-label'] {
+  .xh-scope-slider[data-part='tick-group'][data-disabled] [data-part='tick-label']:where(.xh-scope-slider) {
     color: var(--xh-slider-tick-label-fg-disabled, var(--xh-fg-disabled));
     cursor: not-allowed;
   }
 
   /* 竖直轨道：点与文案换轴，坐标由连接层写在 block 轴上 */
-  .xh-scope-slider[data-part='root'][data-orientation='vertical'] [data-part='tick'] {
+  .xh-scope-slider[data-part='root'][data-orientation='vertical'] [data-part='tick']:where(.xh-scope-slider) {
     inset-block-start: auto;
     inset-inline-start: 50%;
     translate: calc(-50% * var(--xh-direction-sign)) 50%;
   }
 
-  .xh-scope-slider[data-part='root'][data-orientation='vertical'] [data-part='tick-label'] {
+  .xh-scope-slider[data-part='root'][data-orientation='vertical'] [data-part='tick-label']:where(.xh-scope-slider) {
     inset-block-start: auto;
     inset-inline-start: 100%;
     margin-block-start: 0;
@@ -41098,7 +41148,7 @@
      其余项反过来要过渡：它们是被让开的，瞬移会看不出发生了什么。
      键盘拖动时被拖那一项不跟手、逐格挪，与让位的邻项同一段一起滑；抓起时的抬升照常淡变。
      同组别的列表的一项悬在这里（data-drop='inside'）时，插入点及其后的项同样是被让开的 */
-  .xh-scope-sortable[data-part='root']:is([data-dragging], [data-drop='inside']) [data-part='item']:not([data-dragging]) {
+  .xh-scope-sortable[data-part='root']:is([data-dragging], [data-drop='inside']) [data-part='item']:where(.xh-scope-sortable):not([data-dragging]) {
     transition: translate var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
   }
 
@@ -41110,7 +41160,7 @@
     flex: 0 0 var(--xh-_sortable-incoming-size);
   }
 
-  .xh-scope-sortable[data-part='root'][data-drag-mode='keyboard'] [data-part='item'][data-dragging] {
+  .xh-scope-sortable[data-part='root'][data-drag-mode='keyboard'] [data-part='item'][data-dragging]:where(.xh-scope-sortable) {
     transition:
       translate var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -42967,8 +43017,8 @@
   }
 
   /* root 恒报两端（没有冻结列时两端都算贴着）；虚拟滚动的行隔着视口，按后代认 */
-  .xh-scope-table[data-part='root']:not([data-at-min-horizontal]) :is([data-part='column-header'], [data-part='cell'])[data-frozen-edge][data-frozen='start']::after,
-  .xh-scope-table[data-part='root']:not([data-at-max-horizontal]) :is([data-part='column-header'], [data-part='cell'])[data-frozen-edge][data-frozen='end']::after {
+  .xh-scope-table[data-part='root']:not([data-at-min-horizontal]) :is([data-part='column-header'], [data-part='cell']):where(.xh-scope-table)[data-frozen-edge][data-frozen='start']::after,
+  .xh-scope-table[data-part='root']:not([data-at-max-horizontal]) :is([data-part='column-header'], [data-part='cell']):where(.xh-scope-table)[data-frozen-edge][data-frozen='end']::after {
     opacity: 1;
   }
 
@@ -45031,7 +45081,7 @@
 
   /* 新落下的标签原地弹出，同一批按到达顺序错开；首帧就在的直接呈现（自己或 control 带 data-instant）。
      横排胶囊不用竖向上浮：与来源方向不符，还会探出字段外壳的底边 */
-  .xh-scope-tags-input[data-part='item']:not([data-instant], [data-instant] > *) {
+  .xh-scope-tags-input[data-part='item']:not([data-instant], [data-instant] > :where(.xh-scope-tags-input)) {
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
     animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
   }
@@ -47686,7 +47736,7 @@
   }
 
   /* 卡片出现时滑入；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
-  .xh-scope-tool-call[data-part='root']:not([data-scope][data-part='item'][data-instant] *) {
+  .xh-scope-tool-call[data-part='root']:not([data-scope][data-part='item'][data-instant] :where(.xh-scope-tool-call)) {
     animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
   }
 
@@ -47819,7 +47869,7 @@
   }
 
   /* 有摘要时把剩余宽度让给它：工具名只要放得下自己，摘要才是这一行里最想读到的东西 */
-  .xh-scope-tool-call[data-part='trigger']:has([data-part='summary']) [data-part='label'] {
+  .xh-scope-tool-call[data-part='trigger']:has([data-part='summary']) [data-part='label']:where(.xh-scope-tool-call) {
     flex: 0 1 auto;
   }
 
@@ -47886,7 +47936,7 @@
   /* 在跑的时候状态文字自己扫一道光：data-loading 此前在皮肤里没有任何表达，
      参数在传与参数齐了两档在屏幕上一模一样。
      渐变画在背景上再裁进字形，前景与 WebKit 的字形填充色都要透明才透得出底下那道光 */
-  .xh-scope-tool-call[data-part='root'][data-loading] [data-part='status'] {
+  .xh-scope-tool-call[data-part='root'][data-loading] [data-part='status']:where(.xh-scope-tool-call) {
     background-image: linear-gradient(
       90deg,
       var(--xh-tool-call-status-shimmer-base, var(--xh-fg-subtle)) 35%,
@@ -47904,7 +47954,7 @@
   /* 减少动效：整道光撤掉换回平色，"在跑"仍由状态文字本身表达——只停动画的话，
      字形里会留着一段冻住的渐变。两条规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
-    .xh-scope-tool-call[data-part='root'][data-loading] [data-part='status'] {
+    .xh-scope-tool-call[data-part='root'][data-loading] [data-part='status']:where(.xh-scope-tool-call) {
       background-image: none;
       color: var(--xh-tool-call-status-fg, var(--xh-fg-muted));
       -webkit-text-fill-color: currentColor;
@@ -47912,7 +47962,7 @@
     }
   }
 
-  :where([data-motion='reduce']) .xh-scope-tool-call[data-part='root'][data-loading] [data-part='status'] {
+  :where([data-motion='reduce']) .xh-scope-tool-call[data-part='root'][data-loading] [data-part='status']:where(.xh-scope-tool-call) {
     background-image: none;
     color: var(--xh-tool-call-status-fg, var(--xh-fg-muted));
     -webkit-text-fill-color: currentColor;
@@ -48049,7 +48099,7 @@
        取值与减弱动效那一档相同。两档各写一块、不并进一条媒体查询列表：减弱动效另有一份
        :where([data-motion='reduce']) 的钩子版本与它成对，打印没有对应的钩子可配，
        并成一条之后这层配对关系在文本上就断了。 */
-    .xh-scope-tool-call[data-part='root'][data-loading] [data-part='status'] {
+    .xh-scope-tool-call[data-part='root'][data-loading] [data-part='status']:where(.xh-scope-tool-call) {
       background-image: none;
       color: var(--xh-tool-call-status-fg, var(--xh-fg-muted));
       -webkit-text-fill-color: currentColor;
@@ -48062,7 +48112,7 @@
    * 把两处填充都还回去，在跑这件事仍由状态文字本身表出。
    */
   @media (forced-colors: active) {
-    .xh-scope-tool-call[data-part='root'][data-loading] [data-part='status'] {
+    .xh-scope-tool-call[data-part='root'][data-loading] [data-part='status']:where(.xh-scope-tool-call) {
       background-image: none;
       -webkit-background-clip: border-box;
       background-clip: border-box;
@@ -50497,14 +50547,14 @@
 
   /* 标签行露面时 value-text 让位：两者是触发器里的同一格，占位文字与标签不同屏。
      value-text 留在 DOM 里，trigger 的可及名仍从它取到完整的选中项文本 */
-  .xh-scope-tree-select[data-part='trigger']:has([data-part='tag-list']:not([hidden])) [data-part='value-text'] {
+  .xh-scope-tree-select[data-part='trigger']:has([data-part='tag-list']:not([hidden])) [data-part='value-text']:where(.xh-scope-tree-select) {
     display: none;
   }
 
   /* 有值时清空钮顶上来，箭头让位：两个图标并排堆着，用户分不清点哪个。
      判据查的是盒里此刻真有一颗没收起的清空钮，不是「有没有值」——
      作者没摆清空钮时箭头照常留着，不然让了位没人接，指示符整个消失 */
-  .xh-scope-tree-select[data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='indicator'] {
+  .xh-scope-tree-select[data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='indicator']:where(.xh-scope-tree-select) {
     display: none;
   }
 

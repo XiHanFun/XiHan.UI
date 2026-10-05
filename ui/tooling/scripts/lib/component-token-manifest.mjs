@@ -214,7 +214,11 @@ function partsOf(selector) {
   return parts.length ? sorted(parts) : ['*']
 }
 
-function statesOf(selector, atRules) {
+/** 主体上的组件限定 `:where([data-scope='x'])`：只为让失效与分桶认得出组件，不是状态。 */
+const SCOPE_QUALIFIER = /:where\(\s*\[data-scope\s*=\s*['"][^'"]+['"]\]\s*\)/g
+
+function statesOf(rawSelector, atRules) {
+  const selector = rawSelector.replace(SCOPE_QUALIFIER, '')
   const states = []
   for (const match of selector.matchAll(/\[([^\]]+)\]/g)) {
     const content = match[1].trim()
