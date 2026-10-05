@@ -7,7 +7,7 @@
 
 import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { SelectApi, SelectSchema } from '../select'
+import type { SelectApi, SelectSchema } from '../select/select.types'
 import type { PaginationEllipsisSide, PaginationEntryRange, PaginationPage, PaginationPageItem } from './pagination.range'
 
 export interface PaginationPageSizeChangeDetails {

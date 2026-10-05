@@ -5,7 +5,7 @@
 
 // 简体中文语言包。
 
-import type { ChartDatumDetails } from '../shared/chart'
+import type { ChartDatumDetails } from '../shared/chart/types'
 import type { KeyTextTable } from './key-text'
 import type { XhLocale, XhLocaleTranslations } from './types'
 import { keyText } from './key-text'

@@ -1,7 +1,8 @@
 // 拖拽重排的共用纯函数。四处（table 行/列、tree 节点、tabs 标签）吃的是同一套判定，
 // 这份测试钉的就是那套判定本身。
 import { describe, expect, it } from 'vitest'
-import { dragAnnouncement, hitAlong, hitAlongNested, insertionIndex } from '../src/shared/drag'
+import { hitAlong, hitAlongNested, insertionIndex } from '../src/shared/drag'
+import { dragAnnouncement } from '../src/shared/drag-announce'
 
 /** 三块等宽、首尾相接：0-100 / 100-200 / 200-300。 */
 const RECTS = [

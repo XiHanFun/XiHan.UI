@@ -3,13 +3,14 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 拖拽重排的共用纯函数：沿轴的落点判定与读屏播报。
+// 拖拽重排的共用纯函数：沿轴的落点判定与读屏播报的文案契约。
 // 不碰 DOM、不认识状态机——矩形由连接层在事件处理器里量好交进来。
 //
 // 放在 shared/ 而不是某个组件里：table 的行与列、tree 的节点、tabs 的标签
 // 四处吃同一套判定与同一套播报，四处的落点语义必须一模一样。
-
-import { DRAG_EN_US } from '../locale/en-US'
+//
+// 拼播报句要取英文语言包，放在 drag-announce.ts：组件的类型契约引这里的类型，
+// 不能经它够到语言包，否则语言包的类型又回头引组件契约，成环。
 
 /** 落在参照项的哪一侧。`inside` 只有层级结构（树）才用得上。 */
 export type DropPosition = 'before' | 'after' | 'inside'
@@ -133,47 +134,6 @@ export interface DragAnnounceInput {
    */
   into?: string | null
   translations?: Partial<DragTranslations>
-}
-
-/**
- * 拼一句播报。
- *
- * `rejected` 这一档是给 indicator-only 补的：落点不合法时界面上只是「那条线没出现」，
- * 看得见的人懂了，听的人只会听到一片安静。
- */
-export function dragAnnouncement(kind: DragAnnounceKind, input: DragAnnounceInput): string {
-  const { value, position, total, into, translations: t } = input
-  const name = t?.item?.(value) ?? value
-
-  // 给了 into 就报带容器的那一套。rejected 那一档没有落点可言，恒走原句
-  if (into !== undefined && kind !== 'rejected') {
-    const container = into ?? t?.rootLevel ?? DRAG_EN_US.rootLevel
-    switch (kind) {
-      case 'moved':
-        return t?.movedInto?.(name, container, position, total)
-          ?? t?.moved?.(name, position, total)
-          ?? DRAG_EN_US.movedInto(name, container, position, total)
-      case 'dropped':
-        return t?.droppedInto?.(name, container, position)
-          ?? t?.dropped?.(name, position)
-          ?? DRAG_EN_US.droppedInto(name, container, position)
-      case 'canceled':
-        return t?.canceledInto?.(name, container, position)
-          ?? t?.canceled?.(name, position)
-          ?? DRAG_EN_US.canceledInto(name, container, position)
-    }
-  }
-
-  switch (kind) {
-    case 'moved':
-      return t?.moved?.(name, position, total) ?? DRAG_EN_US.moved(name, position, total)
-    case 'dropped':
-      return t?.dropped?.(name, position) ?? DRAG_EN_US.dropped(name, position)
-    case 'canceled':
-      return t?.canceled?.(name, position) ?? DRAG_EN_US.canceled(name, position)
-    case 'rejected':
-      return t?.rejected?.(name) ?? DRAG_EN_US.rejected(name)
-  }
 }
 
 /**

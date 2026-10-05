@@ -6,8 +6,8 @@
 // 导出 reasoning 模块的公共接口。
 
 export { reasoningAnatomy } from './reasoning.anatomy'
-export { connectReasoning } from './reasoning.connect'
+export { connectReasoning, reasoningStatusText } from './reasoning.connect'
 export { reasoningKeyboard } from './reasoning.keyboard'
 export { reasoningMeta } from './reasoning.meta'
-export { reasoningDuration, reasoningStatusText } from './reasoning.types'
+export { reasoningDuration } from './reasoning.types'
 export type { ReasoningApi, ReasoningProps, ReasoningTranslations } from './reasoning.types'

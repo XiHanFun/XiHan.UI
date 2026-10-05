@@ -7,7 +7,7 @@
 
 import type {
   ChartTranslations,
-} from '../shared/chart'
+} from '../shared/chart/types'
 
 /** 形态：donut 环形（缺省），pie 实心饼。 */
 export type PieVariant = 'pie' | 'donut'

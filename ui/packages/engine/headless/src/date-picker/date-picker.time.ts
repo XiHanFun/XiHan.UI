@@ -6,7 +6,7 @@
 // showTime 的日期与时间拆并：值升格为 'YYYY-MM-DDTHH:mm[:ss]'，
 // 日历与段位只认日期段、时间列只认时间段，拆并全在编排边界完成。纯运算，不碰 DOM。
 import type { TimeColumn, TimeColumnUnit, TimeStep, TimeUnavailablePredicate } from '../shared/time-constraint'
-import type { TimeGranularity, TimeHourCycle } from '../time-field'
+import type { TimeGranularity, TimeHourCycle } from '../time-field/time-field.types'
 import { dayPeriodLabel } from '../shared/day-period'
 import {
   isTimeItemUnavailable,
@@ -17,7 +17,7 @@ import {
   timeDraftPeriod,
   timeItemValue,
 } from '../shared/time-constraint'
-import { draftFromTime, formatTimeValue, parseTimeValue, segmentNumber, setTimeSegment } from '../time-field'
+import { draftFromTime, formatTimeValue, parseTimeValue, segmentNumber, setTimeSegment } from '../time-field/time-field.machine'
 
 /** showTime 下时间段的精度：分或秒（时间列没有只到小时的形态）。 */
 export type DatePickerTimeGranularity = Extract<TimeGranularity, 'minute' | 'second'>

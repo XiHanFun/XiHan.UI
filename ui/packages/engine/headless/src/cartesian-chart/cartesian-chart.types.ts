@@ -12,7 +12,7 @@ import type {
   ChartKey,
   ChartSummary,
   ChartTranslations,
-} from '../shared/chart'
+} from '../shared/chart/types'
 
 /** 朝向：vertical 自变量横排（柱状图），horizontal 即转置，自变量竖排（条形图）。 */
 export type CartesianOrientation = 'vertical' | 'horizontal'

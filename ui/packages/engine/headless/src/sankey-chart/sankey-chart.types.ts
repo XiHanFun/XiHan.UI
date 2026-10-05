@@ -5,7 +5,7 @@
 
 // 定义 sankey chart 类型契约。
 
-import type { ChartTranslations } from '../shared/chart'
+import type { ChartTranslations } from '../shared/chart/types'
 
 /** 一个节点：身份、显示的名字与分组；分组决定颜色与图例。 */
 export interface SankeyNodeDatum {

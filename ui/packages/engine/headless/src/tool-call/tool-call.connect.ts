@@ -6,13 +6,32 @@
 // 提供 tool call 相关实现。
 
 import type { NormalizeProps, PropTypes, Service, Tone } from '@xihan-ui/core'
-import type { ToolCallApi, ToolCallPhase, ToolCallProps, ToolCallSchema } from './tool-call.types'
+import type { ToolCallApi, ToolCallPhase, ToolCallProps, ToolCallSchema, ToolCallTranslations } from './tool-call.types'
 import { dataAttr } from '@xihan-ui/core'
+import { TOOL_CALL_EN_US } from '../locale/en-US'
 import { pressHandlers } from '../shared/press'
+import { resolveTranslations } from '../shared/translations'
 import { toolCallAnatomy } from './tool-call.anatomy'
-import { isToolCallErrored, isToolCallRunning, isToolCallSettled, toolCallDuration, toolCallStatusText } from './tool-call.types'
+import { isToolCallErrored, isToolCallRunning, isToolCallSettled, toolCallDuration } from './tool-call.types'
 
 const parts = toolCallAnatomy.build()
+
+/** 阶段对应的兜底播报文案。 */
+export function toolCallStatusText(phase: ToolCallPhase, translations?: Partial<ToolCallTranslations>): string {
+  const text = resolveTranslations(TOOL_CALL_EN_US, translations)
+  switch (phase) {
+    case 'input-streaming':
+      return text.inputStreaming
+    case 'awaiting-approval':
+      return text.awaitingApproval
+    case 'output-available':
+      return text.outputAvailable
+    case 'output-error':
+      return text.outputError
+    default:
+      return text.inputAvailable
+  }
+}
 
 /**
  * 视图属性走第二参而不是机器 props：Web Components 侧按机器名给全局文案分桶，

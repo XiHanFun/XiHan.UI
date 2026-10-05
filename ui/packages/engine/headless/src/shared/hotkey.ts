@@ -7,32 +7,12 @@
 //
 // 翻写与判定全程不读 navigator：服务端渲染时没有它，读了会炸；平台由适配器挂载后
 // 调 detectKbdPlatform 测出来往下传。
-import type { KbdTranslations } from '../kbd/kbd.types'
+import type { HotkeySegment, KbdPlatform, KbdResolvedPlatform, KbdTranslations } from '../kbd/kbd.types'
 import { isHTMLElement } from '@xihan-ui/core'
 import { KBD_EN_US } from '../locale/en-US'
 
-/** 平台写法。'auto' 表示还没测出来，由适配器挂载后换成实测值。 */
-export type KbdPlatform = 'auto' | 'mac' | 'other'
-
-/** 落定后的平台写法，只有两种。 */
-export type KbdResolvedPlatform = 'mac' | 'other'
-
 /** 归一化后的修饰键名，与 KeyboardEvent 上那四个开关一一对应。 */
 type HotkeyModifier = 'Alt' | 'Control' | 'Meta' | 'Shift'
-
-/** 一枚键翻好的几种写法。 */
-export interface HotkeySegment {
-  /** keys 里原样写的那个词；键帽部件按它认领自己是哪一枚。 */
-  readonly source: string
-  /** 归一化键名：修饰键是 Meta / Control / Alt / Shift，主键是 KeyboardEvent.key 的写法。 */
-  readonly key: string
-  /** 键帽上显示的字，取自语言包。 */
-  readonly label: string
-  /** 读屏念的名字，取自语言包。 */
-  readonly name: string
-  /** 是不是修饰键。 */
-  readonly modifier: boolean
-}
 
 /** 作者可以写的修饰键别名 → 归一化键名；'Mod' 留到定平台时再决定。 */
 const MODIFIER_ALIAS: Record<string, HotkeyModifier | 'Mod'> = {

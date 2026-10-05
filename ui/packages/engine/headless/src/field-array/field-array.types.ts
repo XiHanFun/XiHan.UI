@@ -6,7 +6,8 @@
 // 定义 field array 类型契约。
 
 import type { MachineSchema, PropTypes, Service } from '@xihan-ui/core'
-import type { FormPath, FormSchema } from '../form'
+import type { FormPath } from '../form/form.path'
+import type { FormSchema } from '../form/form.types'
 
 export interface FieldArrayValueChangeDetails {
   /** 变化后的整份数据数组，顺序即界面上从上到下的顺序。 */

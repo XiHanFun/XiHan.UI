@@ -5,7 +5,7 @@
 
 // 各语言包写键名与键帽字共用的查表：表里只写有专名的键，字母、数字、标点照大写形式写。
 
-import type { KbdResolvedPlatform } from '../shared/hotkey'
+import type { KbdResolvedPlatform } from '../kbd/kbd.types'
 
 /** 一张键名表：同一枚键在两个平台上叫法不同时写成 { mac, other }。 */
 export type KeyTextTable = Readonly<Record<string, string | { readonly mac: string, readonly other: string }>>

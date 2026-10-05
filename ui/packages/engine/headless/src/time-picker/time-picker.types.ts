@@ -8,7 +8,7 @@
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { ResolvedTimeStep, TimeColumn, TimeColumnUnit, TimeStep, TimeUnavailablePredicate } from '../shared/time-constraint'
-import type { TimeDayPeriod, TimeDraft, TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-field'
+import type { TimeDayPeriod, TimeDraft, TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-field/time-field.types'
 
 /**
  * 浮层中成列排布的单位，与分段输入中的段同名同域：列上选择与段上输入写入的是同一个值。

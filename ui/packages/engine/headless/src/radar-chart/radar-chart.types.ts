@@ -7,7 +7,7 @@
 
 import type {
   ChartTranslations,
-} from '../shared/chart'
+} from '../shared/chart/types'
 
 /** 一个指标：数据里的字段、显示的名字与量程；量程不写时下限取 0（有负值时取最小值），上限按数据取整。 */
 export interface RadarIndicator {

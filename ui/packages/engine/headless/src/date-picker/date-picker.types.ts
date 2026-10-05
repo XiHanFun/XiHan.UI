@@ -7,12 +7,12 @@
 
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { CalendarPickerApi, CalendarPickerSchema, CalendarPickerSelectionMode, CalendarPickerTranslations } from '../calendar-picker'
-import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateSegmentPlaceholders, DateSegmentSet } from '../date-field'
+import type { CalendarPickerApi, CalendarPickerSchema, CalendarPickerSelectionMode, CalendarPickerTranslations } from '../calendar-picker/calendar-picker.types'
+import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateSegmentPlaceholders, DateSegmentSet } from '../date-field/date-field.types'
 import type { CalendarGranularity, CalendarPeriodValue, CalendarView, CalendarViewChangeDetails } from '../shared/calendar'
 import type { ResolvedTimeStep, TimeStep, TimeUnavailablePredicate } from '../shared/time-constraint'
-import type { TimeHourCycle } from '../time-field'
-import type { TimePickerColumn, TimePickerColumnUnit } from '../time-picker'
+import type { TimeHourCycle } from '../time-field/time-field.types'
+import type { TimePickerColumn, TimePickerColumnUnit } from '../time-picker/time-picker.types'
 import type { DatePickerTimeGranularity } from './date-picker.time'
 
 /** 值的来源；calendar 与 preset 两路参与选完即收起的判定，field 是段位输入。 */
