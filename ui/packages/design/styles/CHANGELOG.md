@@ -1,5 +1,34 @@
 # @xihan-ui/styles
 
+## 3.2.0
+
+### Minor Changes
+
+- 0d4e616: Carousel 分页点新增组件槽 `--xh-carousel-indicator-thickness`：垂直于轨道的粗细单独可调（横轨管高、纵轨管宽），缺省与 `--xh-carousel-indicator-size` 同值，现有圆点与胶囊不变。此前分页点的宽高共用一个长度槽，只画得出圆点与拉长的胶囊，想要细横条只能覆盖指示点盒子本身的尺寸与底色，粗指针下盒子撑成 44px 命中区、点改由伪元素画，覆盖的底色就把整块命中区涂满。现在粗细调小即成细横条（圆角另把 `--xh-carousel-indicator-radius` 换成 `var(--xh-shape-pill)`）：细指针的命中区垂直于轨道多外扩一些、不低于 24px，粗指针下伪元素画的点与自动播放进度条同样按粗细画，44px 命中区不变。
+- 8b8d520: 浮在内容之上的圆钮（Action Control `floating` 档）整体下移一档：sm / md / lg 由 40 / 48 / 56px 改为 32 / 40 / 48px（compact 28 / 36 / 44px），图标 16 / 20 / 24px，缺省 md 即 40px。48px 的钮在矮视口与小卡片里会叠住内容与彼此（走马灯的翻页钮与播放钮、纵向轨道压住正文）。
+
+  视觉默认变化：BackTop、FloatButton（含展开列表里的动作项）缺省由 48px 变为 40px，`size="lg"` 由 56px 变为 48px；ImageViewer 翻页钮由 48px 变为 40px、关闭钮由 40px 变为 32px；Carousel 翻页与播放钮为 40px。Log / MessageFeed 的回到底部钮缺省仍是 32px。
+
+  新增尺寸档：
+
+  - Carousel 新增 `size`（sm / md / lg，缺省 md），翻页、播放三颗钮同档。
+  - ImageViewer 新增 `size`（sm / md / lg，缺省 md），翻页钮同档，关闭钮比它低一档、最低 sm。
+  - Log、MessageFeed 的回到底部钮随组件已有的 `size` 换档：比组件低一档、最低 sm（sm / md 时 32px，lg 时 40px）。
+
+  新增的 `size` 与其他组件一样接全局配置，没写时取全局尺寸。
+
+- 831acc9: 每个角色节点另带皮肤挂载类 `xh-scope-<组件名>`，与 `data-scope` 一一对应（`data-scope="dialog"` 的节点带 `xh-scope-dialog`）。解剖产出的 attrs 多一项 `class`，Vue 与作者的 class 合并、React 落成 `className` 并与作者的拼接、Web Components 按词增删不覆盖作者写的类；asChild 把部件属性合进自带解剖的子节点时，挂载类随 `data-scope` 一起让位，一个节点不会同时吃两个组件的皮肤。core 新增导出 `SCOPE_CLASS_PREFIX`、`scopeClass()` 与 `stripScopeClass()`。
+
+  挂载类是皮肤产物改以类名领头的前提：浏览器按类名给规则分桶，属性选择器只按属性名分桶，几千条以 `[data-scope=…]` 领头的皮肤规则挤在同一个桶里，每个组件节点每次样式重算都要逐条试一遍。`data-scope` / `data-part` 仍是公开的样式契约，作者的覆盖写法不变。节点的 class 属性因此多了一个词：对 DOM 做快照或精确比对 `className` 的测试需要随之更新。只用 `@xihan-ui/styles`、自己书写标记的页面，要给每个带 `data-scope="x"` 的节点补上 `class="xh-scope-x"`，否则皮肤不命中。
+
+### Patch Changes
+
+- fca75b0: 皮肤里挂在运行期状态后面的后代与兄弟规则，主体都带上了组件特征。浏览器按属性名 / 伪类全局登记「某个属性一变要重算哪些节点」，不看取值也不看同一节里的组件限定：主体只靠 `[data-part]`（或 `> *` 这类没有特征的主体）时，页面上任何元素翻转 `data-state`、`data-current`、`data-disabled`、`data-instant` 等，都会把它整棵子树一起标脏。3500 个组件节点的容器上翻一次 `data-state` 由 150ms 降到 4ms，`data-current` 152ms → 2ms，`data-disabled` 155ms → 8ms，`data-instant` 80ms → 11ms。
+
+  本组件的部件补 `:where([data-scope='x'])`（产物里成为 `:where(.xh-scope-x)`，不加特异性，层叠不变）；作者放进来的任意子节点（按钮加载环与色板徽标里的图形、组合框展开钮的箭头、日期输入的段位、浮动按钮的动作项）改为由父节点写私有槽、子节点只读槽。浮动按钮动作项的冒出与缩回交错改由名次与收起标记算出，收起时的指针关闭挪到 list 上继承。
+
+  - @xihan-ui/tokens@3.2.0
+
 ## 3.1.0
 
 ### Minor Changes
