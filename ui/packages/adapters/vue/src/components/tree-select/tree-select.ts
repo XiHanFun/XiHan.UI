@@ -672,9 +672,9 @@ export const XhTreeSelectHiddenInput = defineComponent({
   setup(_, { attrs }) {
     const ctx = useTreeSelectContext()
     // 表单出口，不写这个部件即不参与表单提交
+    // 合并而不是展开：作者的 class 与部件的挂载类拼起来，不互相覆盖
     return () => ctx.api.value.value.map(value => h('input', {
-      ...ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown>,
-      ...attrs,
+      ...mergeProps(ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown>, attrs),
       key: value,
     }))
   },

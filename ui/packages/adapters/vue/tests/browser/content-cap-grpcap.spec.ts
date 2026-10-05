@@ -62,11 +62,11 @@ describe('标签输入：标签越加越多，框不会一直长高', () => {
   // 框的高度由字段家族（data-xh-field-chrome + layout=multi-tag）给，夹具与 connect 的投影带齐同一组属性
   function mountTags(n: number): HTMLElement {
     mount(`
-      <div data-scope="tags-input" data-part="root">
-        <div data-scope="tags-input" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-xh-field-layout="multi-tag" data-variant="outline" id="control">
-          ${rep(n, i => `<span data-scope="tags-input" data-part="item" data-value="标签${i}"><span data-scope="tag" data-part="root" data-variant="subtle" data-state="open"><span data-scope="tag" data-part="label">标签${i}</span><button data-scope="tag" data-part="close-trigger" type="button"></button></span></span>`)}
-          <input data-scope="tags-input" data-part="input" />
-          <button data-scope="tags-input" data-part="clear-trigger"></button>
+      <div data-scope="tags-input" class="xh-scope-tags-input" data-part="root">
+        <div data-scope="tags-input" class="xh-scope-tags-input" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-xh-field-layout="multi-tag" data-variant="outline" id="control">
+          ${rep(n, i => `<span data-scope="tags-input" class="xh-scope-tags-input" data-part="item" data-value="标签${i}"><span data-scope="tag" class="xh-scope-tag" data-part="root" data-variant="subtle" data-state="open"><span data-scope="tag" class="xh-scope-tag" data-part="label">标签${i}</span><button data-scope="tag" class="xh-scope-tag" data-part="close-trigger" type="button"></button></span></span>`)}
+          <input data-scope="tags-input" class="xh-scope-tags-input" data-part="input" />
+          <button data-scope="tags-input" class="xh-scope-tags-input" data-part="clear-trigger"></button>
         </div>
       </div>`)
     return pick('#control')
@@ -116,10 +116,10 @@ describe('多行输入：自增高的框不会一直长高', () => {
   // 没给 maxRows 时这个数没有上限，这里照它写下的形状复现。
   function mountArea(px: number, autoResize = true): HTMLElement {
     mount(`
-      <div data-scope="text-field" data-part="root">
-        <div data-scope="text-field" data-part="control" id="control">
+      <div data-scope="text-field" class="xh-scope-text-field" data-part="root">
+        <div data-scope="text-field" class="xh-scope-text-field" data-part="control" id="control">
           <textarea
-            data-scope="text-field" data-part="input" data-xh-field-input data-xh-field-layout="textarea"
+            data-scope="text-field" class="xh-scope-text-field" data-part="input" data-xh-field-input data-xh-field-layout="textarea"
             ${autoResize ? 'data-xh-field-auto-size' : ''}
             style="block-size: ${px}px; overflow-y: hidden"></textarea>
         </div>
@@ -155,10 +155,10 @@ describe('多行输入：自增高的框不会一直长高', () => {
 describe('文件上传：文件列表不会一直长高', () => {
   function mountList(n: number): HTMLElement {
     mount(`
-      <div data-scope="file-upload" data-part="root">
-        <div data-scope="file-upload" data-part="dropzone">拖到这里</div>
-        <ul data-scope="file-upload" data-part="list" id="list">
-          ${rep(n, i => `<li data-scope="file-upload" data-part="item"><span data-scope="file-upload" data-part="item-name">文件${i}.png</span><span data-scope="file-upload" data-part="item-size-text">12 KB</span><button data-scope="file-upload" data-part="item-delete-trigger"></button></li>`)}
+      <div data-scope="file-upload" class="xh-scope-file-upload" data-part="root">
+        <div data-scope="file-upload" class="xh-scope-file-upload" data-part="dropzone">拖到这里</div>
+        <ul data-scope="file-upload" class="xh-scope-file-upload" data-part="list" id="list">
+          ${rep(n, i => `<li data-scope="file-upload" class="xh-scope-file-upload" data-part="item"><span data-scope="file-upload" class="xh-scope-file-upload" data-part="item-name">文件${i}.png</span><span data-scope="file-upload" class="xh-scope-file-upload" data-part="item-size-text">12 KB</span><button data-scope="file-upload" class="xh-scope-file-upload" data-part="item-delete-trigger"></button></li>`)}
         </ul>`)
     return pick('#list')
   }

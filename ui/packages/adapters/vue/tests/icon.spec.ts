@@ -70,8 +70,8 @@ describe('xhIcon 标记形状', () => {
     const glyph = root.firstElementChild!
     expect(glyph.tagName).toBe('g')
     expect(glyph.namespaceURI).toBe('http://www.w3.org/2000/svg')
-    // glyph 只带身份标记，别的一概不写
-    expect(attrNames(glyph).sort()).toEqual(['data-part', 'data-scope'])
+    // glyph 只带身份标记与皮肤挂载类，别的一概不写
+    expect(attrNames(glyph).sort()).toEqual(['class', 'data-part', 'data-scope'])
     expect(glyph.getAttribute('data-scope')).toBe('icon')
     expect(glyph.getAttribute('data-part')).toBe('glyph')
   })
@@ -236,7 +236,7 @@ describe('xhIcon 服务端渲染', () => {
     expect(html).toContain('role="img"')
     expect(html).toContain('aria-label="已通过"')
     expect(html).not.toContain('aria-hidden')
-    expect(html).toContain('<g data-scope="icon" data-part="glyph">')
+    expect(html).toContain('<g data-scope="icon" data-part="glyph" class="xh-scope-icon">')
     expect(html).toContain('d="M20 6 9 17l-5-5"')
   })
 

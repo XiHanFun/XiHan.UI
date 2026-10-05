@@ -11,11 +11,11 @@ function mount(): void {
   host = document.createElement('div')
   host.innerHTML = FAMILIES.map(family => `
     <div data-family="${family}">
-      <div data-scope="${family}" data-part="root">
-        <div data-scope="${family}" data-part="control">
-          <div data-scope="${family}" data-part="segment-group"></div>
-          <button data-scope="${family}" data-part="clear-trigger" data-xh-action-control="" data-xh-action-profile="field-inset" data-xh-action-variant="ghost" data-xh-action-display="has-value" hidden></button>
-          <button data-scope="${family}" data-part="trigger" data-xh-action-control="" data-xh-action-profile="field-inset" data-xh-action-variant="ghost" data-xh-action-display="always"></button>
+      <div data-scope="${family}" class="xh-scope-${family}" data-part="root">
+        <div data-scope="${family}" class="xh-scope-${family}" data-part="control">
+          <div data-scope="${family}" class="xh-scope-${family}" data-part="segment-group"></div>
+          <button data-scope="${family}" class="xh-scope-${family}" data-part="clear-trigger" data-xh-action-control="" data-xh-action-profile="field-inset" data-xh-action-variant="ghost" data-xh-action-display="has-value" hidden></button>
+          <button data-scope="${family}" class="xh-scope-${family}" data-part="trigger" data-xh-action-control="" data-xh-action-profile="field-inset" data-xh-action-variant="ghost" data-xh-action-display="always"></button>
         </div>
       </div>
     </div>

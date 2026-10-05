@@ -46,8 +46,8 @@ describe('connectBreadcrumb', () => {
   it('list 与 item 只带身份标记：有序与层级由 ol/li 标签自己给，不再补 role', () => {
     const list = api().getListProps() as Props
     const item = api().getItemProps() as Props
-    expect(list).toEqual({ 'data-scope': 'breadcrumb', 'data-part': 'list' })
-    expect(item).toEqual({ 'data-scope': 'breadcrumb', 'data-part': 'item' })
+    expect(list).toEqual({ 'data-scope': 'breadcrumb', 'data-part': 'list', 'class': 'xh-scope-breadcrumb' })
+    expect(item).toEqual({ 'data-scope': 'breadcrumb', 'data-part': 'item', 'class': 'xh-scope-breadcrumb' })
   })
 
   it('当前页那条：aria-current=page + aria-disabled=true + 脱出 Tab 序列', () => {

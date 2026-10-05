@@ -30,16 +30,16 @@ const TRANSPARENT = 'rgba(0, 0, 0, 0)'
 /** 铺三行两列的日历：每行行首一个星期名，量出来的都是皮肤算完的结果。 */
 function probe(size: string | null, vars: Record<string, string> = {}): Probe {
   const rows = [0, 1, 2, 3, 4, 5, 6].map(weekDay => `
-    <div data-scope="heatmap" data-part="row" data-week-day="${weekDay}">
-      <span data-scope="heatmap" data-part="week-day" data-week-day="${weekDay}">${'一二三四五六日'[weekDay]}</span>
-      <div data-scope="heatmap" data-part="cell" data-value="2024-01-0${weekDay + 1}"></div>
-      <div data-scope="heatmap" data-part="cell" data-value="2024-01-1${weekDay + 1}"></div>
+    <div data-scope="heatmap" class="xh-scope-heatmap" data-part="row" data-week-day="${weekDay}">
+      <span data-scope="heatmap" class="xh-scope-heatmap" data-part="week-day" data-week-day="${weekDay}">${'一二三四五六日'[weekDay]}</span>
+      <div data-scope="heatmap" class="xh-scope-heatmap" data-part="cell" data-value="2024-01-0${weekDay + 1}"></div>
+      <div data-scope="heatmap" class="xh-scope-heatmap" data-part="cell" data-value="2024-01-1${weekDay + 1}"></div>
     </div>
   `).join('')
   host = document.createElement('div')
   host.innerHTML = `
-    <div data-scope="heatmap" data-part="root"${size ? ` data-size="${size}"` : ''}>
-      <div data-scope="heatmap" data-part="grid">${rows}</div>
+    <div data-scope="heatmap" class="xh-scope-heatmap" data-part="root"${size ? ` data-size="${size}"` : ''}>
+      <div data-scope="heatmap" class="xh-scope-heatmap" data-part="grid">${rows}</div>
     </div>
   `
   document.body.append(host)
@@ -158,14 +158,14 @@ describe('月历形态的星期名', () => {
     const days = [0, 1, 2, 3, 4, 5, 6]
     host = document.createElement('div')
     host.innerHTML = `
-      <div data-scope="heatmap" data-part="root" data-variant="month" style="${style}">
-        <div data-scope="heatmap" data-part="grid">
-          <div data-scope="heatmap" data-part="month-block" data-value="2024-01">
-            <div data-scope="heatmap" data-part="row" aria-hidden="true">
-              ${days.map(d => `<span data-scope="heatmap" data-part="week-day" data-week-day="${d}">${'一二三四五六日'[d]}</span>`).join('')}
+      <div data-scope="heatmap" class="xh-scope-heatmap" data-part="root" data-variant="month" style="${style}">
+        <div data-scope="heatmap" class="xh-scope-heatmap" data-part="grid">
+          <div data-scope="heatmap" class="xh-scope-heatmap" data-part="month-block" data-value="2024-01">
+            <div data-scope="heatmap" class="xh-scope-heatmap" data-part="row" aria-hidden="true">
+              ${days.map(d => `<span data-scope="heatmap" class="xh-scope-heatmap" data-part="week-day" data-week-day="${d}">${'一二三四五六日'[d]}</span>`).join('')}
             </div>
-            <div data-scope="heatmap" data-part="row" data-week="0">
-              ${days.map(d => `<div data-scope="heatmap" data-part="cell" data-value="2024-01-0${d + 1}"></div>`).join('')}
+            <div data-scope="heatmap" class="xh-scope-heatmap" data-part="row" data-week="0">
+              ${days.map(d => `<div data-scope="heatmap" class="xh-scope-heatmap" data-part="cell" data-value="2024-01-0${d + 1}"></div>`).join('')}
             </div>
           </div>
         </div>

@@ -6,6 +6,7 @@
 // 测试宿主的视口固定在一个宽度上，改不动。这里改用内嵌 iframe：布局按 iframe 自己的视口算，
 // 宽度由这边的 width 说了算。皮肤与令牌以 <style> 注入主文档，克隆一份进 iframe 的 head 才生效。
 import { afterEach, describe, expect, it } from 'vitest'
+import { sourceSelector } from './scope-selector'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -51,9 +52,9 @@ const TIERS = [375, 768, 1280]
 
 describe('pin-input：一行格子放不下时逐格收窄', () => {
   // 每格 input 自身即 Field Chrome 的 chrome 节点：Headless 在格子上投影 chrome / 尺寸档 / variant，静态标记照抄
-  const markup = `<div data-scope="pin-input" data-part="root" data-size="lg">
-    <label data-scope="pin-input" data-part="label">验证码</label>
-    <div style="display:flex">${'<input data-scope="pin-input" data-part="input" data-xh-field-chrome data-xh-field-size="lg" data-variant="outline">'.repeat(8)}</div>
+  const markup = `<div data-scope="pin-input" class="xh-scope-pin-input" data-part="root" data-size="lg">
+    <label data-scope="pin-input" class="xh-scope-pin-input" data-part="label">验证码</label>
+    <div style="display:flex">${'<input data-scope="pin-input" class="xh-scope-pin-input" data-part="input" data-xh-field-chrome data-xh-field-size="lg" data-variant="outline">'.repeat(8)}</div>
   </div>`
 
   it.each(TIERS)('%ipx 下不顶出页面', (width) => {
@@ -77,16 +78,16 @@ describe('pin-input：一行格子放不下时逐格收窄', () => {
 })
 
 describe('question-flow：页脚摆不下就换行', () => {
-  const markup = `<div data-scope="question-flow" data-part="root" data-size="lg">
-    <div data-scope="question-flow" data-part="footer">
+  const markup = `<div data-scope="question-flow" class="xh-scope-question-flow" data-part="root" data-size="lg">
+    <div data-scope="question-flow" class="xh-scope-question-flow" data-part="footer">
       <div style="display:flex;align-items:center;gap:4px">
-        <button data-scope="question-flow" data-part="prev-trigger"></button>
-        <span data-scope="question-flow" data-part="counter">第 3 题 / 共 12 题</span>
-        <button data-scope="question-flow" data-part="next-trigger"></button>
+        <button data-scope="question-flow" class="xh-scope-question-flow" data-part="prev-trigger"></button>
+        <span data-scope="question-flow" class="xh-scope-question-flow" data-part="counter">第 3 题 / 共 12 题</span>
+        <button data-scope="question-flow" class="xh-scope-question-flow" data-part="next-trigger"></button>
       </div>
       <div style="display:flex;align-items:center;gap:6px">
-        <button data-scope="question-flow" data-part="skip-trigger">先跳过这一题</button>
-        <button data-scope="question-flow" data-part="submit-trigger">保存答案并继续下一题</button>
+        <button data-scope="question-flow" class="xh-scope-question-flow" data-part="skip-trigger">先跳过这一题</button>
+        <button data-scope="question-flow" class="xh-scope-question-flow" data-part="submit-trigger">保存答案并继续下一题</button>
       </div>
     </div>
   </div>`
@@ -116,11 +117,11 @@ describe('question-flow：页脚摆不下就换行', () => {
 
 describe('radio-group：横排摆不下就换行，不压条目', () => {
   const options = ['灰度发布', '全量发布', '只推预发环境', '回滚上一版', '暂不发布']
-  const markup = `<div data-scope="radio-group" data-part="root" data-orientation="horizontal">
-    <span data-scope="radio-group" data-part="label">部署方式</span>
-    ${options.map(text => `<div data-scope="radio-group" data-part="item">
-      <span data-scope="radio-group" data-part="indicator"></span>
-      <span data-scope="radio-group" data-part="item-text">${text}</span>
+  const markup = `<div data-scope="radio-group" class="xh-scope-radio-group" data-part="root" data-orientation="horizontal">
+    <span data-scope="radio-group" class="xh-scope-radio-group" data-part="label">部署方式</span>
+    ${options.map(text => `<div data-scope="radio-group" class="xh-scope-radio-group" data-part="item">
+      <span data-scope="radio-group" class="xh-scope-radio-group" data-part="indicator"></span>
+      <span data-scope="radio-group" class="xh-scope-radio-group" data-part="item-text">${text}</span>
     </div>`).join('')}
   </div>`
 
@@ -144,13 +145,13 @@ describe('radio-group：横排摆不下就换行，不压条目', () => {
 
 describe('alert：图标、文本列、叉恒在同一行', () => {
   // 关闭钮与连接层投影一致带上 Action Control 家族标记：正方盒与行内盒都由家族给，裸按钮没有几何
-  const markup = `<div data-scope="alert" data-part="root" data-tone="info">
-    <span data-scope="alert" data-part="indicator"></span>
-    <div data-scope="alert" data-part="content">
-      <div data-scope="alert" data-part="title">磁盘快满了</div>
-      <div data-scope="alert" data-part="description">这台机器的系统盘只剩下不到一成的空间，构建产物再堆几次就会写不进去，建议先清一遍缓存目录。</div>
+  const markup = `<div data-scope="alert" class="xh-scope-alert" data-part="root" data-tone="info">
+    <span data-scope="alert" class="xh-scope-alert" data-part="indicator"></span>
+    <div data-scope="alert" class="xh-scope-alert" data-part="content">
+      <div data-scope="alert" class="xh-scope-alert" data-part="title">磁盘快满了</div>
+      <div data-scope="alert" class="xh-scope-alert" data-part="description">这台机器的系统盘只剩下不到一成的空间，构建产物再堆几次就会写不进去，建议先清一遍缓存目录。</div>
     </div>
-    <button data-scope="alert" data-part="close-trigger" data-xh-action-control data-xh-action-profile="icon" data-xh-action-variant="ghost" data-xh-action-display="always" data-xh-action-size="sm"></button>
+    <button data-scope="alert" class="xh-scope-alert" data-part="close-trigger" data-xh-action-control data-xh-action-profile="icon" data-xh-action-variant="ghost" data-xh-action-display="always" data-xh-action-size="sm"></button>
   </div>`
 
   // 说明越长，content 那条伸缩基准取 auto 时撑得越宽；三档窄视口都要压得住
@@ -174,21 +175,21 @@ describe('alert：图标、文本列、叉恒在同一行', () => {
 })
 
 describe('slider：刻度文案不顶出页面', () => {
-  const markup = `<div data-scope="slider" data-part="root">
-    <label data-scope="slider" data-part="label">水温</label>
-    <div data-scope="slider" data-part="control" data-orientation="horizontal">
-      <div data-scope="slider" data-part="track" data-orientation="horizontal">
-        <div data-scope="slider" data-part="range" data-orientation="horizontal" style="inset-inline-start:0%;inline-size:26%"></div>
+  const markup = `<div data-scope="slider" class="xh-scope-slider" data-part="root">
+    <label data-scope="slider" class="xh-scope-slider" data-part="label">水温</label>
+    <div data-scope="slider" class="xh-scope-slider" data-part="control" data-orientation="horizontal">
+      <div data-scope="slider" class="xh-scope-slider" data-part="track" data-orientation="horizontal">
+        <div data-scope="slider" class="xh-scope-slider" data-part="range" data-orientation="horizontal" style="inset-inline-start:0%;inline-size:26%"></div>
       </div>
-      <div data-scope="slider" data-part="tick-group">
-        <span data-scope="slider" data-part="tick" style="inset-inline-start:0%"></span>
-        <span data-scope="slider" data-part="tick-label" style="inset-inline-start:0%">0°C</span>
-        <span data-scope="slider" data-part="tick" style="inset-inline-start:26%"></span>
-        <span data-scope="slider" data-part="tick-label" style="inset-inline-start:26%">26°C</span>
-        <span data-scope="slider" data-part="tick" style="inset-inline-start:100%"></span>
-        <span data-scope="slider" data-part="tick-label" style="inset-inline-start:100%">沸腾了</span>
+      <div data-scope="slider" class="xh-scope-slider" data-part="tick-group">
+        <span data-scope="slider" class="xh-scope-slider" data-part="tick" style="inset-inline-start:0%"></span>
+        <span data-scope="slider" class="xh-scope-slider" data-part="tick-label" style="inset-inline-start:0%">0°C</span>
+        <span data-scope="slider" class="xh-scope-slider" data-part="tick" style="inset-inline-start:26%"></span>
+        <span data-scope="slider" class="xh-scope-slider" data-part="tick-label" style="inset-inline-start:26%">26°C</span>
+        <span data-scope="slider" class="xh-scope-slider" data-part="tick" style="inset-inline-start:100%"></span>
+        <span data-scope="slider" class="xh-scope-slider" data-part="tick-label" style="inset-inline-start:100%">沸腾了</span>
       </div>
-      <div data-scope="slider" data-part="thumb" data-orientation="horizontal" style="inset-inline-start:26%"></div>
+      <div data-scope="slider" class="xh-scope-slider" data-part="thumb" data-orientation="horizontal" style="inset-inline-start:26%"></div>
     </div>
   </div>`
 
@@ -205,7 +206,7 @@ describe('slider：刻度文案不顶出页面', () => {
   })
 
   it('没有刻度文案的滑块不让出这一段', () => {
-    const bare = markup.replace(/<span data-scope="slider" data-part="tick-label"[\s\S]*?<\/span>/g, '')
+    const bare = markup.replace(/<span data-scope="slider" class="xh-scope-slider" data-part="tick-label"[\s\S]*?<\/span>/g, '')
     const doc = mount(375, bare)
     const control = doc.querySelector('[data-part="control"]')!.getBoundingClientRect()
     expect(Math.round(control.width)).toBe(375)
@@ -213,10 +214,10 @@ describe('slider：刻度文案不顶出页面', () => {
 })
 
 describe('image-cropper：两条控制轴不顶出容器', () => {
-  const markup = `<div data-scope="image-cropper" data-part="root">
-    <div data-scope="image-cropper" data-part="viewport" style="height:120px"></div>
-    <input type="range" data-scope="image-cropper" data-part="zoom-slider">
-    <input type="range" data-scope="image-cropper" data-part="rotate-slider">
+  const markup = `<div data-scope="image-cropper" class="xh-scope-image-cropper" data-part="root">
+    <div data-scope="image-cropper" class="xh-scope-image-cropper" data-part="viewport" style="height:120px"></div>
+    <input type="range" data-scope="image-cropper" class="xh-scope-image-cropper" data-part="zoom-slider">
+    <input type="range" data-scope="image-cropper" class="xh-scope-image-cropper" data-part="rotate-slider">
   </div>`
 
   it.each(TIERS)('%ipx 下 root 没有横向溢出', (width) => {
@@ -248,7 +249,7 @@ describe('dialog：定位层的内衬与安全区取大的一头', () => {
       for (const rule of collect(rules)) {
         if (!(rule instanceof CSSStyleRule))
           continue
-        const selector = rule.selectorText
+        const selector = sourceSelector(rule.selectorText)
         if (/data-scope=['"]dialog['"]/.test(selector) && /data-part=['"]positioner['"]/.test(selector) && rule.cssText.includes('padding'))
           return rule.cssText
       }

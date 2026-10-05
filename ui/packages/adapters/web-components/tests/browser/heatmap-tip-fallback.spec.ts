@@ -28,8 +28,8 @@ function mount(vars: Record<string, string>, attrs: string): { root: HTMLElement
   const style = `position: relative; inline-size: ${ROOT_W}px; block-size: ${ROOT_H}px; --xh-_heatmap-gap: ${GAP}px;`
   host = document.createElement('div')
   host.innerHTML = `
-    <div data-scope="heatmap" data-part="root" style="${style}">
-      <div data-scope="heatmap" data-part="tooltip" ${attrs}>条</div>
+    <div data-scope="heatmap" class="xh-scope-heatmap" data-part="root" style="${style}">
+      <div data-scope="heatmap" class="xh-scope-heatmap" data-part="tooltip" ${attrs}>条</div>
     </div>
   `
   document.body.append(host)

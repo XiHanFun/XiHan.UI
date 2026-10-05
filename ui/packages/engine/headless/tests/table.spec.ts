@@ -1116,7 +1116,7 @@ describe('指针与表头把手', () => {
     // 把手是它的兄弟，不是它的孩子：排序钮紧随其后
     expect(label.nextElementSibling).toBe(h.sortTrigger('name'))
     // 排序状态只落在列头与排序钮上，列名一个状态属性都不带
-    expect(Object.keys(h.api().getColumnLabelProps() as Record<string, unknown>).sort()).toEqual(['data-part', 'data-scope'])
+    expect(Object.keys(h.api().getColumnLabelProps() as Record<string, unknown>).sort()).toEqual(['class', 'data-part', 'data-scope'])
     expect(label.hasAttribute('data-sort')).toBe(false)
     expect(label.hasAttribute('role')).toBe(false)
     expect(tableAnatomy.parts).toContain('column-label')

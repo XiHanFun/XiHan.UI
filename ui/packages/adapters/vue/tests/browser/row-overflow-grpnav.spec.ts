@@ -86,29 +86,29 @@ function items(labels: string[], render: (label: string) => string): string {
   return labels.map(render).join('')
 }
 
-const TABS = `<div data-scope="tabs" data-part="root" data-orientation="horizontal" data-variant="line">
-  <div data-scope="tabs" data-part="list" role="tablist">
-    ${items(['概览', '账号设置', '通知偏好', '安全与隐私', '计费与订阅', '开发者选项'], t => `<button data-scope="tabs" data-part="trigger" role="tab" data-xh-collection-item data-xh-collection-size="md" data-xh-collection-context="nav">${t}</button>`)}
+const TABS = `<div data-scope="tabs" class="xh-scope-tabs" data-part="root" data-orientation="horizontal" data-variant="line">
+  <div data-scope="tabs" class="xh-scope-tabs" data-part="list" role="tablist">
+    ${items(['概览', '账号设置', '通知偏好', '安全与隐私', '计费与订阅', '开发者选项'], t => `<button data-scope="tabs" class="xh-scope-tabs" data-part="trigger" role="tab" data-xh-collection-item data-xh-collection-size="md" data-xh-collection-context="nav">${t}</button>`)}
   </div>
-  <div data-scope="tabs" data-part="content">内容</div>
+  <div data-scope="tabs" class="xh-scope-tabs" data-part="content">内容</div>
 </div>`
 
-const TOOLBAR = `<div data-scope="toolbar" data-part="root" data-orientation="horizontal" role="toolbar">
-  ${items(['撤销', '重做', '加粗', '倾斜', '下划线', '删除线', '左对齐', '居中', '右对齐', '插入链接', '插入图片'], t => `<button data-scope="toolbar" data-part="item">${t}</button>`)}
+const TOOLBAR = `<div data-scope="toolbar" class="xh-scope-toolbar" data-part="root" data-orientation="horizontal" role="toolbar">
+  ${items(['撤销', '重做', '加粗', '倾斜', '下划线', '删除线', '左对齐', '居中', '右对齐', '插入链接', '插入图片'], t => `<button data-scope="toolbar" class="xh-scope-toolbar" data-part="item">${t}</button>`)}
 </div>`
 
-const MENUBAR = `<div data-scope="menubar" data-part="root" data-orientation="horizontal" role="menubar">
-  ${items(['文件', '编辑', '选择', '视图', '转到', '运行', '终端', '帮助'], t => `<button data-scope="menubar" data-part="trigger" role="menuitem">${t}</button>`)}
+const MENUBAR = `<div data-scope="menubar" class="xh-scope-menubar" data-part="root" data-orientation="horizontal" role="menubar">
+  ${items(['文件', '编辑', '选择', '视图', '转到', '运行', '终端', '帮助'], t => `<button data-scope="menubar" class="xh-scope-menubar" data-part="trigger" role="menuitem">${t}</button>`)}
 </div>`
 
-const NAVIGATION_MENU = `<nav data-scope="navigation-menu" data-part="root">
-  <ul data-scope="navigation-menu" data-part="list" data-orientation="horizontal">
-    ${items(['产品概览', '解决方案', '开发者文档', '定价方案', '客户案例', '关于我们'], t => `<li data-scope="navigation-menu" data-part="item"><button data-scope="navigation-menu" data-part="trigger">${t}</button></li>`)}
+const NAVIGATION_MENU = `<nav data-scope="navigation-menu" class="xh-scope-navigation-menu" data-part="root">
+  <ul data-scope="navigation-menu" class="xh-scope-navigation-menu" data-part="list" data-orientation="horizontal">
+    ${items(['产品概览', '解决方案', '开发者文档', '定价方案', '客户案例', '关于我们'], t => `<li data-scope="navigation-menu" class="xh-scope-navigation-menu" data-part="item"><button data-scope="navigation-menu" class="xh-scope-navigation-menu" data-part="trigger">${t}</button></li>`)}
   </ul>
 </nav>`
 
-const SEGMENTED = `<div data-scope="radio-group" data-part="root" data-variant="segmented" data-orientation="horizontal" role="radiogroup">
-  ${items(['日视图', '周视图', '月视图', '季度视图', '年度视图'], t => `<div data-scope="radio-group" data-part="item" role="radio"><span data-scope="radio-group" data-part="item-text">${t}</span></div>`)}
+const SEGMENTED = `<div data-scope="radio-group" class="xh-scope-radio-group" data-part="root" data-variant="segmented" data-orientation="horizontal" role="radiogroup">
+  ${items(['日视图', '周视图', '月视图', '季度视图', '年度视图'], t => `<div data-scope="radio-group" class="xh-scope-radio-group" data-part="item" role="radio"><span data-scope="radio-group" class="xh-scope-radio-group" data-part="item-text">${t}</span></div>`)}
 </div>`
 
 // [名字, 标记, 数行数用的部件]
@@ -211,10 +211,10 @@ describe('折行不改单行时的几何', () => {
 
 describe('竖排不跟着折行', () => {
   const VERTICAL: [string, string][] = [
-    ['tabs', `<div data-scope="tabs" data-part="root" data-orientation="vertical"><div data-scope="tabs" data-part="list" role="tablist" aria-orientation="vertical" style="block-size:60px">${items(['概览', '账号设置', '通知偏好', '安全与隐私'], t => `<button data-scope="tabs" data-part="trigger" role="tab" data-xh-collection-item data-xh-collection-size="md" data-xh-collection-context="nav">${t}</button>`)}</div></div>`],
-    ['toolbar', `<div data-scope="toolbar" data-part="root" data-orientation="vertical" role="toolbar" style="block-size:60px">${items(['撤销', '重做', '加粗', '倾斜'], t => `<button data-scope="toolbar" data-part="item">${t}</button>`)}</div>`],
-    ['menubar', `<div data-scope="menubar" data-part="root" data-orientation="vertical" role="menubar" style="block-size:60px">${items(['文件', '编辑', '选择', '视图'], t => `<button data-scope="menubar" data-part="trigger" role="menuitem">${t}</button>`)}</div>`],
-    ['toggle-group', `<div data-scope="toggle-group" data-part="root" data-orientation="vertical" role="group" style="block-size:60px">${items(['左对齐', '水平居中', '右对齐', '两端对齐'], t => `<button data-scope="toggle-group" data-part="item" data-xh-action-control data-xh-action-profile="text" data-xh-action-display="always" data-xh-action-size="md" data-xh-action-variant="subtle">${t}</button>`)}</div>`],
+    ['tabs', `<div data-scope="tabs" class="xh-scope-tabs" data-part="root" data-orientation="vertical"><div data-scope="tabs" class="xh-scope-tabs" data-part="list" role="tablist" aria-orientation="vertical" style="block-size:60px">${items(['概览', '账号设置', '通知偏好', '安全与隐私'], t => `<button data-scope="tabs" class="xh-scope-tabs" data-part="trigger" role="tab" data-xh-collection-item data-xh-collection-size="md" data-xh-collection-context="nav">${t}</button>`)}</div></div>`],
+    ['toolbar', `<div data-scope="toolbar" class="xh-scope-toolbar" data-part="root" data-orientation="vertical" role="toolbar" style="block-size:60px">${items(['撤销', '重做', '加粗', '倾斜'], t => `<button data-scope="toolbar" class="xh-scope-toolbar" data-part="item">${t}</button>`)}</div>`],
+    ['menubar', `<div data-scope="menubar" class="xh-scope-menubar" data-part="root" data-orientation="vertical" role="menubar" style="block-size:60px">${items(['文件', '编辑', '选择', '视图'], t => `<button data-scope="menubar" class="xh-scope-menubar" data-part="trigger" role="menuitem">${t}</button>`)}</div>`],
+    ['toggle-group', `<div data-scope="toggle-group" class="xh-scope-toggle-group" data-part="root" data-orientation="vertical" role="group" style="block-size:60px">${items(['左对齐', '水平居中', '右对齐', '两端对齐'], t => `<button data-scope="toggle-group" class="xh-scope-toggle-group" data-part="item" data-xh-action-control data-xh-action-profile="text" data-xh-action-display="always" data-xh-action-size="md" data-xh-action-variant="subtle">${t}</button>`)}</div>`],
   ]
 
   // 竖排的主轴是块轴，容器被作者定高时 wrap 会把条目甩成好几列，
@@ -230,11 +230,11 @@ describe('连续分段组不折行也不自己翻竖排', () => {
   // 段与段共边焊成一条，两端圆角只补在首末两段上：折了行，中间那两个角就是直角。
   // 皮肤自己翻竖排则会与 data-orientation 脱钩——合边收哪个轴、圆角补哪一对角、
   // 连接层给分隔线派的朝向，三处都由它决定。朝向是使用者的事。
-  const BUTTON_GROUP = (orientation: string): string => `<div data-scope="button-group" data-part="root" data-orientation="${orientation}" role="group">
-    ${items(['新建文档', '从模板新建', '导入文件', '更多操作'], t => `<button data-scope="button" data-part="root" data-variant="solid" data-xh-action-control data-xh-action-profile="text" data-xh-action-display="always" data-xh-action-size="md" data-xh-action-variant="solid">${t}</button>`)}
+  const BUTTON_GROUP = (orientation: string): string => `<div data-scope="button-group" class="xh-scope-button-group" data-part="root" data-orientation="${orientation}" role="group">
+    ${items(['新建文档', '从模板新建', '导入文件', '更多操作'], t => `<button data-scope="button" class="xh-scope-button" data-part="root" data-variant="solid" data-xh-action-control data-xh-action-profile="text" data-xh-action-display="always" data-xh-action-size="md" data-xh-action-variant="solid">${t}</button>`)}
   </div>`
-  const TOGGLE_GROUP = (orientation: string): string => `<div data-scope="toggle-group" data-part="root" data-orientation="${orientation}" role="group">
-    ${items(['左对齐', '水平居中', '右对齐', '两端对齐', '分散对齐'], t => `<button data-scope="toggle-group" data-part="item" data-xh-action-control data-xh-action-profile="text" data-xh-action-display="always" data-xh-action-size="md" data-xh-action-variant="subtle">${t}</button>`)}
+  const TOGGLE_GROUP = (orientation: string): string => `<div data-scope="toggle-group" class="xh-scope-toggle-group" data-part="root" data-orientation="${orientation}" role="group">
+    ${items(['左对齐', '水平居中', '右对齐', '两端对齐', '分散对齐'], t => `<button data-scope="toggle-group" class="xh-scope-toggle-group" data-part="item" data-xh-action-control data-xh-action-profile="text" data-xh-action-display="always" data-xh-action-size="md" data-xh-action-variant="subtle">${t}</button>`)}
   </div>`
 
   // [名字, 按朝向出标记, 段的选择器]

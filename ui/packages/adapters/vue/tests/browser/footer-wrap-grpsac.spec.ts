@@ -38,13 +38,13 @@ afterEach(() => {
 })
 
 function markup(approve: string, deny: string): string {
-  return `<div data-scope="approval" data-part="root">
-    <div data-scope="approval" data-part="header">
-      <span data-scope="approval" data-part="title">删除生产数据库</span>
+  return `<div data-scope="approval" class="xh-scope-approval" data-part="root">
+    <div data-scope="approval" class="xh-scope-approval" data-part="header">
+      <span data-scope="approval" class="xh-scope-approval" data-part="title">删除生产数据库</span>
     </div>
-    <div data-scope="approval" data-part="footer" id="footer">
-      <button data-scope="approval" data-part="deny-trigger" type="button">${deny}</button>
-      <button data-scope="approval" data-part="approve-trigger" type="button">${approve}</button>
+    <div data-scope="approval" class="xh-scope-approval" data-part="footer" id="footer">
+      <button data-scope="approval" class="xh-scope-approval" data-part="deny-trigger" type="button">${deny}</button>
+      <button data-scope="approval" class="xh-scope-approval" data-part="approve-trigger" type="button">${approve}</button>
     </div>
   </div>`
 }

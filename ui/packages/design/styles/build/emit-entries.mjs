@@ -52,6 +52,12 @@ const SOURCE = path.join(pkgRoot, 'index.source.css')
 /** 源入口里标出配方内联点的那一行；缺失、重复或排在令牌之前都判错。 */
 const FAMILY_MARK = '/* emit-entries: family */'
 const FAMILY_DIR = path.join(pkgRoot, 'family')
+/** 带取值的 data-scope 精确匹配：产物里换成挂载类（见 mountScopeClasses）。 */
+const SCOPE_ATTR = /\[data-scope=(['"]?)([a-z][a-z0-9-]*)\1\]/g
+/** 与 @xihan-ui/core 的 SCOPE_CLASS_PREFIX 同值：本包只出 CSS，不依赖 core 的运行时。 */
+const SCOPE_CLASS_PREFIX = 'xh-scope-'
+/** 按需子路径导出指向的两个源目录，产物按同样的相对结构落在 dist/ 下。 */
+const SUBPATH_DIRS = ['css', 'family']
 const FAMILY_ROOT_ATTR = /\[data-xh-(?:action-control|field-chrome|collection-item|collection-separator|swatch|tag-list|menu-choice-indicator(?:='[a-z-]+')?|check-mark(?:='[a-z-]+')?|chart-part='[a-z-]+')\]/g
 /**
  * 先于一切皮肤内联的配方，顺序固定：四个家族互不引用，谁先谁后不影响级联；
@@ -92,8 +98,85 @@ const ENTRIES = [
 
 for (const entry of ENTRIES) {
   const outFile = path.join(pkgRoot, entry.file)
-  fs.writeFileSync(outFile, applyFileHeader(outFile, `${emitEntry(entry).replace(/\n{3,}/g, '\n\n').trim()}\n`))
+  fs.writeFileSync(outFile, applyFileHeader(outFile, `${mountScopeClasses(emitEntry(entry)).replace(/\n{3,}/g, '\n\n').trim()}\n`))
   console.log(`已生成 ${path.relative(pkgRoot, outFile)}`)
+}
+
+// 按需子路径（@xihan-ui/styles/dialog.css 一类）同样以挂载类领头：css/ 与 family/ 逐份转一遍放进 dist/，
+// 相对 @import 的目录结构不变（dist/css/x.css 里的 ../family/y.css 仍指得到）。dist/ 不入库，随 build 生成
+for (const dir of SUBPATH_DIRS) {
+  const from = path.join(pkgRoot, dir)
+  const to = path.join(pkgRoot, 'dist', dir)
+  fs.rmSync(to, { recursive: true, force: true })
+  fs.mkdirSync(to, { recursive: true })
+  const names = fs.readdirSync(from).filter(name => name.endsWith('.css'))
+  for (const name of names)
+    fs.writeFileSync(path.join(to, name), mountScopeClasses(fs.readFileSync(path.join(from, name), 'utf8')))
+  console.log(`已生成 dist/${dir}/（${names.length} 份）`)
+}
+
+/**
+ * 皮肤挂载类：产物里的 `[data-scope='x']` 一律换成 `.xh-scope-x`，源文件仍按属性书写。
+ *
+ * 浏览器给规则分桶时认类名，属性选择器只按属性名归桶：几千条皮肤规则都以 [data-scope=…] 领头，
+ * 就全挤进 data-scope 一个桶，每个组件节点每次样式重算都要逐条试一遍（大页面一次 inert 开关上百毫秒）。
+ * 换成挂载类后每个组件的规则各占一个桶。两者特异性同为 (0,1,0)，层叠结果不变；
+ * connect 给每个角色节点带的 class（@xihan-ui/core 的 SCOPE_CLASS_PREFIX）与 data-scope 一一对应，
+ * 命中范围也不变。只换带取值的精确匹配，存在式的 [data-scope] 照旧。
+ * 只改选择器（含 CSS 嵌套里的内层规则），声明值、@ 规则头与注释外的字符串原样保留。
+ */
+function mountScopeClasses(css) {
+  return rewriteSelectors(css, selector => selector.replace(SCOPE_ATTR, (_, _quote, scope) => `.${SCOPE_CLASS_PREFIX}${scope}`))
+}
+
+/**
+ * 逐字符扫描，把每条样式规则的选择器交给 map：注释与字符串整体跳过；`;` 与 `}` 之前的是声明或
+ * @ 语句，原样照抄；遇到 `{` 时前面攒下的是规则头——@ 规则头原样、样式规则的选择器过 map，
+ * 再递归处理块内（@media 里的规则、CSS 嵌套的内层规则）。
+ */
+function rewriteSelectors(css, map) {
+  let out = ''
+  let prelude = ''
+  let i = 0
+  while (i < css.length) {
+    const c = css[i]
+    // 注释并进规则头一起走：选择器中间夹注释时不至于前半截漏转
+    if (c === '/' && css[i + 1] === '*') {
+      const end = css.indexOf('*/', i + 2)
+      const stop = end === -1 ? css.length : end + 2
+      prelude += css.slice(i, stop)
+      i = stop
+      continue
+    }
+    if (c === '"' || c === '\'') {
+      const end = skipString(css, i)
+      prelude += css.slice(i, end + 1)
+      i = end + 1
+      continue
+    }
+    if (c === ';' || c === '}') {
+      out += prelude + c
+      prelude = ''
+      i++
+      continue
+    }
+    if (c === '{') {
+      const isAtRule = prelude.replace(/\/\*[\s\S]*?\*\//g, '').trimStart().startsWith('@')
+      out += isAtRule ? prelude : map(prelude)
+      prelude = ''
+      const close = matchBrace(css, i)
+      if (close === -1) {
+        out += css.slice(i)
+        return out
+      }
+      out += `{${rewriteSelectors(css.slice(i + 1, close), map)}}`
+      i = close + 1
+      continue
+    }
+    prelude += c
+    i++
+  }
+  return out + prelude
 }
 
 /**

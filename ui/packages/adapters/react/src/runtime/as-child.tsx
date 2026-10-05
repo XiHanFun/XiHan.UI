@@ -6,7 +6,7 @@
 // 提供 as child 相关实现。
 
 import type { ReactElement, ReactNode } from 'react'
-import { isEventHandlerKey } from '@xihan-ui/core'
+import { isEventHandlerKey, stripScopeClass } from '@xihan-ui/core'
 import { Children, cloneElement, Fragment, isValidElement } from 'react'
 import { mergePartProps, mergeReactProps } from './merge-props'
 
@@ -82,6 +82,13 @@ export function mergeIntoChild(
   for (const [key, value] of Object.entries(props)) {
     if (!keepAnatomy && isRoleMarker(key))
       continue
+    // 挂载类随 data-scope 一起让位：作者写的类照合，部件那份的 xh-scope-* 不落到别人的根上
+    if (!keepAnatomy && key === 'className') {
+      const extra = typeof value === 'string' ? stripScopeClass(value) : ''
+      if (extra)
+        own.className = extra
+      continue
+    }
     own[key] = value
   }
 

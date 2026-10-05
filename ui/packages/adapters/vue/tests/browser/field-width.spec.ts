@@ -41,9 +41,9 @@ function measure(container: number, markup: string, hostStyle = '', scope?: stri
 /** 触发器族：root > control > trigger > value-text，值文字故意很长，缺省宽不许被它撑开 */
 function trigger(scope: string) {
   return `
-    <div data-scope="${scope}" data-part="root">
-      <button data-scope="${scope}" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline">
-        <span data-scope="${scope}" data-part="trigger"><span data-scope="${scope}" data-part="value-text">旗舰版 · 含无限席位与专属客户成功经理的年度合约</span></span>
+    <div data-scope="${scope}" class="xh-scope-${scope}" data-part="root">
+      <button data-scope="${scope}" class="xh-scope-${scope}" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline">
+        <span data-scope="${scope}" class="xh-scope-${scope}" data-part="trigger"><span data-scope="${scope}" class="xh-scope-${scope}" data-part="value-text">旗舰版 · 含无限席位与专属客户成功经理的年度合约</span></span>
       </button>
     </div>`
 }
@@ -51,9 +51,9 @@ function trigger(scope: string) {
 /** 分段族：root > control > segment-group > segment */
 function segments(scope: string) {
   return `
-    <div data-scope="${scope}" data-part="root">
-      <div data-scope="${scope}" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline">
-        <div data-scope="${scope}" data-part="segment-group"><span data-scope="${scope}" data-part="segment">10</span></div>
+    <div data-scope="${scope}" class="xh-scope-${scope}" data-part="root">
+      <div data-scope="${scope}" class="xh-scope-${scope}" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline">
+        <div data-scope="${scope}" class="xh-scope-${scope}" data-part="segment-group"><span data-scope="${scope}" class="xh-scope-${scope}" data-part="segment">10</span></div>
       </div>
     </div>`
 }
@@ -61,18 +61,18 @@ function segments(scope: string) {
 /** 分段区间族：起止两组段位 + 分隔符 + 日历钮排在一行 */
 function rangeSegments(scope: string, segment: string) {
   const group = (index: number) => `
-        <div data-scope="${scope}" data-part="segment-group" data-index="${index}">
-          <span data-scope="${scope}" data-part="segment">${segment}</span><span>/</span>
-          <span data-scope="${scope}" data-part="segment">mm</span><span>/</span>
-          <span data-scope="${scope}" data-part="segment">dd</span>
+        <div data-scope="${scope}" class="xh-scope-${scope}" data-part="segment-group" data-index="${index}">
+          <span data-scope="${scope}" class="xh-scope-${scope}" data-part="segment">${segment}</span><span>/</span>
+          <span data-scope="${scope}" class="xh-scope-${scope}" data-part="segment">mm</span><span>/</span>
+          <span data-scope="${scope}" class="xh-scope-${scope}" data-part="segment">dd</span>
         </div>`
   return `
-    <div data-scope="${scope}" data-part="root">
-      <div data-scope="${scope}" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline">
+    <div data-scope="${scope}" class="xh-scope-${scope}" data-part="root">
+      <div data-scope="${scope}" class="xh-scope-${scope}" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline">
         ${group(0)}
-        <span data-scope="${scope}" data-part="range-separator">–</span>
+        <span data-scope="${scope}" class="xh-scope-${scope}" data-part="range-separator">–</span>
         ${group(1)}
-        <button data-scope="${scope}" data-part="trigger"></button>
+        <button data-scope="${scope}" class="xh-scope-${scope}" data-part="trigger"></button>
       </div>
     </div>`
 }
@@ -83,50 +83,50 @@ function rangeSegments(scope: string, segment: string) {
  * 缺省宽钉住之后这个数不再露出来。
  */
 const TEXT_FIELD = `
-  <div data-scope="text-field" data-part="root">
-    <div data-scope="text-field" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline">
-      <input data-scope="text-field" data-part="input" data-xh-field-input data-xh-field-layout="single-line" />
+  <div data-scope="text-field" class="xh-scope-text-field" data-part="root">
+    <div data-scope="text-field" class="xh-scope-text-field" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline">
+      <input data-scope="text-field" class="xh-scope-text-field" data-part="input" data-xh-field-input data-xh-field-layout="single-line" />
     </div>
   </div>`
 
 const NUMBER_FIELD = `
-  <div data-scope="number-field" data-part="root">
-    <div data-scope="number-field" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline">
-      <input data-scope="number-field" data-part="input" data-xh-field-input data-xh-field-layout="single-line" />
-      <button data-scope="number-field" data-part="increment-trigger"></button>
+  <div data-scope="number-field" class="xh-scope-number-field" data-part="root">
+    <div data-scope="number-field" class="xh-scope-number-field" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline">
+      <input data-scope="number-field" class="xh-scope-number-field" data-part="input" data-xh-field-input data-xh-field-layout="single-line" />
+      <button data-scope="number-field" class="xh-scope-number-field" data-part="increment-trigger"></button>
     </div>
   </div>`
 
 /** clipboard：输入框与复制钮并排，值故意很长，钮不许被顶出去 */
 const CLIPBOARD = `
-  <div data-scope="clipboard" data-part="root">
-    <div data-scope="clipboard" data-part="control">
-      <input data-scope="clipboard" data-part="input" readonly value="npm i @xihan-ui/vue @xihan-ui/styles @xihan-ui/tokens @xihan-ui/icons" />
-      <button data-scope="clipboard" data-part="copy-trigger"></button>
+  <div data-scope="clipboard" class="xh-scope-clipboard" data-part="root">
+    <div data-scope="clipboard" class="xh-scope-clipboard" data-part="control">
+      <input data-scope="clipboard" class="xh-scope-clipboard" data-part="input" readonly value="npm i @xihan-ui/vue @xihan-ui/styles @xihan-ui/tokens @xihan-ui/icons" />
+      <button data-scope="clipboard" class="xh-scope-clipboard" data-part="copy-trigger"></button>
     </div>
   </div>`
 
 /** clipboard 只放复制钮的用法：一颗独立按钮，不吃字段缺省宽 */
 const CLIPBOARD_TRIGGER_ONLY = `
-  <div data-scope="clipboard" data-part="root">
-    <button data-scope="clipboard" data-part="copy-trigger">复制链接</button>
+  <div data-scope="clipboard" class="xh-scope-clipboard" data-part="root">
+    <button data-scope="clipboard" class="xh-scope-clipboard" data-part="copy-trigger">复制链接</button>
   </div>`
 
 const TAGS_INPUT = `
-  <div data-scope="tags-input" data-part="root">
-    <div data-scope="tags-input" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline" data-xh-field-layout="multi-tag">
-      <input data-scope="tags-input" data-part="input" data-xh-field-input data-xh-field-layout="multi-tag" />
+  <div data-scope="tags-input" class="xh-scope-tags-input" data-part="root">
+    <div data-scope="tags-input" class="xh-scope-tags-input" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline" data-xh-field-layout="multi-tag">
+      <input data-scope="tags-input" class="xh-scope-tags-input" data-part="input" data-xh-field-input data-xh-field-layout="multi-tag" />
     </div>
   </div>`
 
 const MENTION = `
-  <div data-scope="mention" data-part="root">
-    <textarea data-scope="mention" data-part="input" data-xh-field-chrome data-xh-field-size="md" data-variant="outline"></textarea>
+  <div data-scope="mention" class="xh-scope-mention" data-part="root">
+    <textarea data-scope="mention" class="xh-scope-mention" data-part="input" data-xh-field-chrome data-xh-field-size="md" data-variant="outline"></textarea>
   </div>`
 
 const INPUT_GROUP = `
-  <div data-scope="input-group" data-part="root">
-    <span data-scope="input-group" data-part="item">https://</span>
+  <div data-scope="input-group" class="xh-scope-input-group" data-part="root">
+    <span data-scope="input-group" class="xh-scope-input-group" data-part="item">https://</span>
     ${TEXT_FIELD}
   </div>`
 
@@ -178,11 +178,11 @@ describe('不传尺寸时一族同宽', () => {
 
   it('date-range-picker 按年的内容比缺省宽窄时顶住缺省宽，不比别的字段窄', () => {
     const markup = `
-      <div data-scope="date-range-picker" data-part="root">
-        <div data-scope="date-range-picker" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline">
-          <div data-scope="date-range-picker" data-part="segment-group"><span data-scope="date-range-picker" data-part="segment">yyyy</span></div>
-          <span data-scope="date-range-picker" data-part="range-separator">–</span>
-          <div data-scope="date-range-picker" data-part="segment-group"><span data-scope="date-range-picker" data-part="segment">yyyy</span></div>
+      <div data-scope="date-range-picker" class="xh-scope-date-range-picker" data-part="root">
+        <div data-scope="date-range-picker" class="xh-scope-date-range-picker" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline">
+          <div data-scope="date-range-picker" class="xh-scope-date-range-picker" data-part="segment-group"><span data-scope="date-range-picker" class="xh-scope-date-range-picker" data-part="segment">yyyy</span></div>
+          <span data-scope="date-range-picker" class="xh-scope-date-range-picker" data-part="range-separator">–</span>
+          <div data-scope="date-range-picker" class="xh-scope-date-range-picker" data-part="segment-group"><span data-scope="date-range-picker" class="xh-scope-date-range-picker" data-part="segment">yyyy</span></div>
         </div>
       </div>`
     expect(measure(480, markup).width).toBe(DEFAULT)
@@ -216,7 +216,7 @@ describe('缺省宽由槽给', () => {
 
 /** 套一层表单字段：标签在上、控件在下。 */
 function inField(markup: string): string {
-  return `<div data-scope="field" data-part="root"><label data-scope="field" data-part="label">套餐</label>${markup}</div>`
+  return `<div data-scope="field" class="xh-scope-field" data-part="root"><label data-scope="field" class="xh-scope-field" data-part="label">套餐</label>${markup}</div>`
 }
 
 describe('放进表单字段时铺满字段宽', () => {
@@ -226,13 +226,13 @@ describe('放进表单字段时铺满字段宽', () => {
   })
 
   it('网格表单里铺满所在那一列', () => {
-    const markup = `<form data-scope="form" data-part="root" data-layout="grid" data-columns="2" style="column-gap:0">${inField(trigger('select'))}${inField(TEXT_FIELD)}</form>`
+    const markup = `<form data-scope="form" class="xh-scope-form" data-part="root" data-layout="grid" data-columns="2" style="column-gap:0">${inField(trigger('select'))}${inField(TEXT_FIELD)}</form>`
     expect(measure(600, markup, '', 'select').width).toBe(300)
     expect(measure(600, markup, '', 'text-field').width).toBe(300)
   })
 
   it('横排一行流的表单里字段按内容收，控件仍取缺省宽', () => {
-    const markup = `<form data-scope="form" data-part="root" data-layout="inline">${inField(trigger('select'))}${inField(TEXT_FIELD)}</form>`
+    const markup = `<form data-scope="form" class="xh-scope-form" data-part="root" data-layout="inline">${inField(trigger('select'))}${inField(TEXT_FIELD)}</form>`
     expect(measure(1200, markup, '', 'select').width).toBe(DEFAULT)
     expect(measure(1200, markup, '', 'text-field').width).toBe(DEFAULT)
     // 表单上改了缺省宽，一行流里的字段跟着走

@@ -28,14 +28,14 @@ function mount(options: { presentation?: 'inline' | 'sheet', placement?: 'start'
   hosts.push(host)
   const presentation = options.presentation ?? 'inline'
   host.innerHTML = `
-    <div data-scope="layout" data-part="root" data-sider-presentation="${presentation}">
-      <header data-scope="layout" data-part="header">
-        <button data-scope="layout" data-part="sider-trigger" ${TRIGGER_ATTRS}>菜单</button>
+    <div data-scope="layout" class="xh-scope-layout" data-part="root" data-sider-presentation="${presentation}">
+      <header data-scope="layout" class="xh-scope-layout" data-part="header">
+        <button data-scope="layout" class="xh-scope-layout" data-part="sider-trigger" ${TRIGGER_ATTRS}>菜单</button>
       </header>
-      <aside data-scope="layout" data-part="sider" data-presentation="${presentation}" data-placement="${options.placement ?? 'start'}">
-        <button data-scope="layout" data-part="sider-trigger" ${TRIGGER_ATTRS}>收起</button>
+      <aside data-scope="layout" class="xh-scope-layout" data-part="sider" data-presentation="${presentation}" data-placement="${options.placement ?? 'start'}">
+        <button data-scope="layout" class="xh-scope-layout" data-part="sider-trigger" ${TRIGGER_ATTRS}>收起</button>
       </aside>
-      <main data-scope="layout" data-part="content">内容</main>
+      <main data-scope="layout" class="xh-scope-layout" data-part="content">内容</main>
     </div>`
   document.body.append(host)
   const triggers = [...host.querySelectorAll<HTMLElement>('[data-part="sider-trigger"]')]

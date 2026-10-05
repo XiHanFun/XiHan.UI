@@ -123,6 +123,7 @@ describe('组合框 M2 浮层', () => {
     const outer = part('positioner')
     const inner = document.createElement('div')
     inner.dataset.scope = 'combobox'
+    inner.classList.add('xh-scope-combobox')
     inner.dataset.part = 'positioner'
     outer.dataset.placement = 'bottom-start'
     outer.append(inner)

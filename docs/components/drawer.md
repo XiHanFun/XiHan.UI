@@ -259,7 +259,7 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 
 ### 皮肤
 
-`@xihan-ui/styles/drawer.css` 使用 `[data-scope="drawer"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/drawer.css` 按 `[data-scope="drawer"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-drawer` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

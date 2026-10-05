@@ -14,10 +14,10 @@ function mount(radius: string) {
   host?.remove()
   host = document.createElement('div')
   host.innerHTML = `
-    <div data-scope="resizable" data-part="root" style="inline-size: 200px; block-size: 120px; border-radius: ${radius}">
-      <span data-scope="resizable" data-part="handle" data-edge="e" tabindex="0"></span>
-      <span data-scope="resizable" data-part="handle" data-edge="s"></span>
-      <span data-scope="resizable" data-part="handle" data-edge="se" tabindex="0"></span>
+    <div data-scope="resizable" class="xh-scope-resizable" data-part="root" style="inline-size: 200px; block-size: 120px; border-radius: ${radius}">
+      <span data-scope="resizable" class="xh-scope-resizable" data-part="handle" data-edge="e" tabindex="0"></span>
+      <span data-scope="resizable" class="xh-scope-resizable" data-part="handle" data-edge="s"></span>
+      <span data-scope="resizable" class="xh-scope-resizable" data-part="handle" data-edge="se" tabindex="0"></span>
     </div>`
   document.body.append(host)
 

@@ -22,6 +22,7 @@ async function focusVisible(scope: string, part: string, tag = 'button', attrs: 
   host = document.createElement('div')
   const el = document.createElement(tag)
   el.dataset.scope = scope
+  el.classList.add(`xh-scope-${scope}`)
   el.dataset.part = part
   for (const [k, v] of Object.entries(attrs))
     el.setAttribute(k, v)

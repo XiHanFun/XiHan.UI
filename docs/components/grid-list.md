@@ -245,7 +245,7 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 
 ### 皮肤
 
-`@xihan-ui/styles/grid-list.css` 使用 `[data-scope="grid-list"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/grid-list.css` 按 `[data-scope="grid-list"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-grid-list` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 

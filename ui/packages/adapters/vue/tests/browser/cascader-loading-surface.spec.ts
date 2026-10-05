@@ -135,6 +135,7 @@ describe('级联选择首次加载表面', () => {
     outer.dataset.placement = 'bottom-start'
     const nested = document.createElement('div')
     nested.dataset.scope = 'cascader'
+    nested.classList.add('xh-scope-cascader')
     nested.dataset.part = 'positioner'
     nested.dataset.placement = 'right-start'
     outer.append(nested)

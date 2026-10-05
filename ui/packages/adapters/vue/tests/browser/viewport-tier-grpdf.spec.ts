@@ -29,11 +29,11 @@ function mountBox(container: number, markup: string): HTMLElement {
 /** 八组「标签 + 取值」，取值是一段带空格的时间戳，压窄了会竖成好几行。 */
 function descriptions(columns: number, placement: 'left' | 'top' = 'left'): string {
   const items = Array.from({ length: 8 }, (_, i) => `
-    <div data-scope="descriptions" data-part="item">
-      <dt data-scope="descriptions" data-part="label">创建时间${i}</dt>
-      <dd data-scope="descriptions" data-part="value">2026-09-08 12:34:56</dd>
+    <div data-scope="descriptions" class="xh-scope-descriptions" data-part="item">
+      <dt data-scope="descriptions" class="xh-scope-descriptions" data-part="label">创建时间${i}</dt>
+      <dd data-scope="descriptions" class="xh-scope-descriptions" data-part="value">2026-09-08 12:34:56</dd>
     </div>`).join('')
-  return `<dl data-scope="descriptions" data-part="root" data-columns="${columns}"
+  return `<dl data-scope="descriptions" class="xh-scope-descriptions" data-part="root" data-columns="${columns}"
     data-placement="${placement}" data-variant="outline">${items}</dl>`
 }
 
@@ -180,10 +180,10 @@ describe('descriptions 边线跟着实际摆位走', () => {
 describe('field 横排标签收进自己那一列', () => {
   /** 横排表单里一个字段，标签是一段不带空格的长标识。 */
   const FORM = `
-    <form data-scope="form" data-part="root" data-layout="horizontal">
-      <div data-scope="field" data-part="root">
-        <label data-scope="field" data-part="label">DatabaseConnectionString</label>
-        <input data-scope="field" data-part="control" />
+    <form data-scope="form" class="xh-scope-form" data-part="root" data-layout="horizontal">
+      <div data-scope="field" class="xh-scope-field" data-part="root">
+        <label data-scope="field" class="xh-scope-field" data-part="label">DatabaseConnectionString</label>
+        <input data-scope="field" class="xh-scope-field" data-part="control" />
       </div>
     </form>`
 

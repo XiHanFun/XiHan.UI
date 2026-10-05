@@ -36,11 +36,11 @@ function mount(variant?: 'card' | 'line' | 'segment'): { list: HTMLElement, acti
   // card / segment 不归族，只带 activation 族的 data-state
   const family = variant == null || variant === 'line' ? ' data-xh-collection-item data-xh-collection-context="nav" data-xh-collection-size="md"' : ''
   host.innerHTML = `
-    <div data-scope="tabs" data-part="root" data-orientation="horizontal"${variant ? ` data-variant="${variant}"` : ''}>
-      <div data-scope="tabs" data-part="list">
-        <button data-scope="tabs" data-part="trigger" data-state="active" data-current${family}>概览</button>
-        <button data-scope="tabs" data-part="trigger" data-state="inactive"${family}>分析</button>
-        <span data-scope="tabs" data-part="indicator" data-orientation="horizontal"${variant ? ` data-variant="${variant}"` : ' data-variant="line"'} style="--xh-_tabs-indicator-x:0;--xh-_tabs-indicator-y:0;--xh-_tabs-indicator-w:40px;--xh-_tabs-indicator-h:36px"></span>
+    <div data-scope="tabs" class="xh-scope-tabs" data-part="root" data-orientation="horizontal"${variant ? ` data-variant="${variant}"` : ''}>
+      <div data-scope="tabs" class="xh-scope-tabs" data-part="list">
+        <button data-scope="tabs" class="xh-scope-tabs" data-part="trigger" data-state="active" data-current${family}>概览</button>
+        <button data-scope="tabs" class="xh-scope-tabs" data-part="trigger" data-state="inactive"${family}>分析</button>
+        <span data-scope="tabs" class="xh-scope-tabs" data-part="indicator" data-orientation="horizontal"${variant ? ` data-variant="${variant}"` : ' data-variant="line"'} style="--xh-_tabs-indicator-x:0;--xh-_tabs-indicator-y:0;--xh-_tabs-indicator-w:40px;--xh-_tabs-indicator-h:36px"></span>
       </div>
     </div>`
   document.body.append(host)

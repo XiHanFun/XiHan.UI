@@ -4,6 +4,7 @@
 // 这一份核这一组 18 个 root 三件事：作者写的 style 与 className 落到了 root 元素上、
 // connect 自己产出的属性一个没被顶掉、交给机器的那几个取值没有漏成 DOM 属性。
 import type { ReactElement } from 'react'
+import { scopeClass } from '@xihan-ui/core'
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -313,14 +314,15 @@ describe.each(CASES)('$name 的 root 接住作者写的属性', (item) => {
     host!.remove()
 
     const el = mount(item, { className: 'probe-a probe-b', style: { [item.token]: 'red' } })
-    expect([...el.classList]).toEqual(['probe-a', 'probe-b'])
+    // 挂载类在前，作者的两个类拼在后面，谁也不顶掉谁
+    expect([...el.classList]).toEqual([scopeClass(el.getAttribute('data-scope')!), 'probe-a', 'probe-b'])
 
     const after = attrsOf(el)
-    // 作者写的两样之外，属性名与取值与不写任何属性时逐个相同
+    // 作者写的两样之外，属性名与取值与不写任何属性时逐个相同（class 上面逐个类比过）
     expect(Object.keys(after).filter(k => k !== 'class' && k !== 'style').sort())
-      .toEqual(Object.keys(base).filter(k => k !== 'style').sort())
+      .toEqual(Object.keys(base).filter(k => k !== 'class' && k !== 'style').sort())
     for (const [key, value] of Object.entries(base)) {
-      if (key !== 'style')
+      if (key !== 'class' && key !== 'style')
         expect(after[key], `${item.name} 的 ${key} 被顶掉了`).toBe(value)
     }
   })

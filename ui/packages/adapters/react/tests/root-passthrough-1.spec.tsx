@@ -3,6 +3,7 @@
 // Root 上的透传：作者写在根部件上的 style / className 落到 root 元素，schema props 一个都不进 DOM。
 // 逐实例令牌覆盖是这个库的主题通道，Root 收不住作者的属性就等于这一级通道在 React 侧不存在。
 import type { CSSProperties, ReactNode } from 'react'
+import { scopeClass } from '@xihan-ui/core'
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -275,7 +276,8 @@ describe('root 透传：不写属性时 root 元素一个字都不多', () => {
   it.each(cases)('$name', ({ render }) => {
     mount(render({}))
     const el = rootEl()
-    expect(el.classList.length).toBe(0)
+    // 唯一的类是解剖带的皮肤挂载类，与 data-scope 同名
+    expect([...el.classList]).toEqual([scopeClass(el.getAttribute('data-scope')!)])
     expect(el.style.getPropertyValue(PROBE_TOKEN)).toBe('')
     expectNoReactWarning()
   })

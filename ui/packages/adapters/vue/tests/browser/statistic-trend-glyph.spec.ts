@@ -15,11 +15,11 @@ function mount(size?: 'sm' | 'md' | 'lg', style?: string) {
   const host = document.createElement('div')
   hosts.push(host)
   host.innerHTML = `
-    <div data-scope="statistic" data-part="root"${size ? ` data-size="${size}"` : ''}${style ? ` style="${style}"` : ''}>
-      <div data-scope="statistic" data-part="label">活跃用户</div>
-      <span data-scope="statistic" data-part="value">1,024</span>
-      <span data-scope="statistic" data-part="suffix">人</span>
-      <span data-scope="statistic" data-part="trend" data-direction="up">12%</span>
+    <div data-scope="statistic" class="xh-scope-statistic" data-part="root"${size ? ` data-size="${size}"` : ''}${style ? ` style="${style}"` : ''}>
+      <div data-scope="statistic" class="xh-scope-statistic" data-part="label">活跃用户</div>
+      <span data-scope="statistic" class="xh-scope-statistic" data-part="value">1,024</span>
+      <span data-scope="statistic" class="xh-scope-statistic" data-part="suffix">人</span>
+      <span data-scope="statistic" class="xh-scope-statistic" data-part="trend" data-direction="up">12%</span>
     </div>`
   document.body.append(host)
   return {

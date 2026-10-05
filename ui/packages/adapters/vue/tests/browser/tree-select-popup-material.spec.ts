@@ -134,6 +134,7 @@ describe('树选择 M2 浮层', () => {
     const outer = part('positioner')
     const inner = document.createElement('div')
     inner.dataset.scope = 'tree-select'
+    inner.classList.add('xh-scope-tree-select')
     inner.dataset.part = 'positioner'
     outer.dataset.placement = 'bottom-start'
     outer.append(inner)

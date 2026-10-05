@@ -23,14 +23,14 @@ function mount(variant: 'ghost' | 'outline' | 'subtle' = 'ghost', size?: 'sm' | 
   const host = document.createElement('div')
   hosts.push(host)
   host.innerHTML = `
-    <dl data-scope="descriptions" data-part="root" data-variant="${variant}"${size ? ` data-size="${size}"` : ''}>
-      <div data-scope="descriptions" data-part="item">
-        <dt data-scope="descriptions" data-part="label">收货人</dt>
-        <dd data-scope="descriptions" data-part="value">张三</dd>
+    <dl data-scope="descriptions" class="xh-scope-descriptions" data-part="root" data-variant="${variant}"${size ? ` data-size="${size}"` : ''}>
+      <div data-scope="descriptions" class="xh-scope-descriptions" data-part="item">
+        <dt data-scope="descriptions" class="xh-scope-descriptions" data-part="label">收货人</dt>
+        <dd data-scope="descriptions" class="xh-scope-descriptions" data-part="value">张三</dd>
       </div>
-      <div data-scope="descriptions" data-part="item">
-        <dt data-scope="descriptions" data-part="label">联系电话</dt>
-        <dd data-scope="descriptions" data-part="value">138 0000 0000</dd>
+      <div data-scope="descriptions" class="xh-scope-descriptions" data-part="item">
+        <dt data-scope="descriptions" class="xh-scope-descriptions" data-part="label">联系电话</dt>
+        <dd data-scope="descriptions" class="xh-scope-descriptions" data-part="value">138 0000 0000</dd>
       </div>
     </dl>`
   document.body.append(host)

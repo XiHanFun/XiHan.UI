@@ -23,9 +23,9 @@ function mount() {
   host = document.createElement('div')
   host.style.cssText = 'position: relative; block-size: 160px; inline-size: 120px;'
   host.innerHTML = `
-    <div data-scope="scrollbar" data-part="root" data-orientation="vertical" data-state="visible">
-      <div data-scope="scrollbar" data-part="track">
-        <div data-scope="scrollbar" data-part="thumb" data-orientation="vertical" style="inset-block-start: 0; block-size: 64px"></div>
+    <div data-scope="scrollbar" class="xh-scope-scrollbar" data-part="root" data-orientation="vertical" data-state="visible">
+      <div data-scope="scrollbar" class="xh-scope-scrollbar" data-part="track">
+        <div data-scope="scrollbar" class="xh-scope-scrollbar" data-part="thumb" data-orientation="vertical" style="inset-block-start: 0; block-size: 64px"></div>
       </div>
     </div>`
   document.body.append(host)
@@ -54,7 +54,7 @@ describe('scrollbar 默认视觉', () => {
   it('组件内部原生滚动面复用同一套窄轨道与低对比色阶', () => {
     host = document.createElement('div')
     host.innerHTML = `
-      <div data-scope="time-picker" data-part="column" style="block-size: 80px; overflow-y: auto">
+      <div data-scope="time-picker" class="xh-scope-time-picker" data-part="column" style="block-size: 80px; overflow-y: auto">
         <div style="block-size: 240px"></div>
       </div>`
     document.body.append(host)
@@ -69,6 +69,7 @@ describe('scrollbar 默认视觉', () => {
     host = document.createElement('div')
     const grid = document.createElement('div')
     grid.dataset.scope = 'calendar-picker'
+    grid.classList.add('xh-scope-calendar-picker')
     grid.dataset.part = 'grid'
     grid.dataset.view = 'year'
     grid.style.inlineSize = '240px'
@@ -76,6 +77,7 @@ describe('scrollbar 默认视觉', () => {
     for (let year = 1900; year <= 2099; year += 1) {
       const cell = document.createElement('button')
       cell.dataset.scope = 'calendar-picker'
+      cell.classList.add('xh-scope-calendar-picker')
       cell.dataset.part = 'cell-trigger'
       cell.textContent = `${year}年`
       grid.append(cell)
@@ -110,7 +112,7 @@ describe('scrollbar 默认视觉', () => {
   it('typography prose 里的 pre 不带 data-part 也吃到同一套细条', () => {
     host = document.createElement('div')
     host.innerHTML = `
-      <div data-scope="typography" data-part="prose">
+      <div data-scope="typography" class="xh-scope-typography" data-part="prose">
         <pre style="inline-size: 120px">${'x'.repeat(400)}</pre>
       </div>
       <div data-probe style="color: var(--xh-fg-scrollbar-thumb); background-color: var(--xh-bg-scrollbar-track)"></div>`

@@ -173,6 +173,7 @@ describe('mention 单一状态表面', () => {
     outer.dataset.placement = 'bottom-start'
     const inner = document.createElement('div')
     inner.dataset.scope = 'mention'
+    inner.classList.add('xh-scope-mention')
     inner.dataset.part = 'positioner'
     inner.dataset.placement = 'top-start'
     outer.append(inner)

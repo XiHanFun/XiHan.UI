@@ -141,6 +141,7 @@ describe('时间选择浮层', () => {
     const outer = part('positioner')
     const inner = document.createElement('div')
     inner.dataset.scope = 'time-picker'
+    inner.classList.add('xh-scope-time-picker')
     inner.dataset.part = 'positioner'
     outer.dataset.placement = 'bottom-start'
     outer.append(inner)

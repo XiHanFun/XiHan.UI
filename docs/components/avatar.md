@@ -171,7 +171,7 @@ tone 改变淡底与回退文字的配色组；不写 tone 即中性默认，直
 
 ### 皮肤
 
-`@xihan-ui/styles/avatar.css` 使用 `[data-scope="avatar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/avatar.css` 按 `[data-scope="avatar"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-avatar` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 

@@ -263,10 +263,12 @@ describe('每份浮层皮肤都消费落位后的可用宽度', () => {
     host = document.createElement('div')
     const positioner = document.createElement('div')
     positioner.dataset.scope = scope
+    positioner.classList.add(`xh-scope-${scope}`)
     positioner.dataset.part = 'positioner'
     positioner.style.setProperty(`--xh-_${scope}-available-w`, `${AVAILABLE}px`)
     const content = document.createElement('div')
     content.dataset.scope = scope
+    content.classList.add(`xh-scope-${scope}`)
     content.dataset.part = part
     for (const [name, value] of Object.entries(attrs))
       content.setAttribute(name, value)

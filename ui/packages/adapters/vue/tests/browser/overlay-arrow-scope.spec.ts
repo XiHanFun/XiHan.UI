@@ -8,11 +8,14 @@ let host: HTMLElement | null = null
 function mount(scope?: string): HTMLElement {
   host = document.createElement('div')
   host.dataset.scope = scope && scopes.includes(scope) ? scope : 'popover'
+  host.classList.add(`xh-scope-${host.dataset.scope}`)
   host.dataset.part = 'content'
   host.style.cssText = 'position:relative;width:100px;height:100px;--xh-_overlay-arrow-size:8px;--xh-_overlay-arrow-x:50px;--xh-_overlay-arrow-y:50px'
   const arrow = document.createElement('div')
-  if (scope)
+  if (scope) {
     arrow.dataset.scope = scope
+    arrow.classList.add(`xh-scope-${scope}`)
+  }
   arrow.dataset.part = 'arrow'
   arrow.dataset.placement = 'bottom'
   host.append(arrow)

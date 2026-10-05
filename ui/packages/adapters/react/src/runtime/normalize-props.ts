@@ -13,6 +13,8 @@ import { createNormalizer } from '@xihan-ui/core'
 
 // DOM 属性名 → React 属性名。括号里是该键在 headless 各 connect 里出现的处数。
 const ATTR_ALIAS: Record<string, string> = {
+  // 解剖给每个角色节点带的皮肤挂载类（xh-scope-*）；mergeProps 对 className 做空格拼接
+  'class': 'className',
   'tabindex': 'tabIndex', // 137
   'readonly': 'readOnly', // 13
   'for': 'htmlFor', // 11

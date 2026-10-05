@@ -229,11 +229,14 @@ describe('根部件接住作者传的属性（第五组）', () => {
         expect(el.classList.contains(AUTHOR_CLASS)).toBe(true)
         expect(el.getAttribute('data-author')).toBe('yes')
         // 部件那一份不因为作者写了 className / data-* 而掉队。
-        // 这十四个根部件当下都不写 class，partClasses 因此是空的；真正逐条比的是下面那份属性
+        // 部件自己写的 class 只有挂载类（xh-scope-*）；真正逐条比的是下面那份属性
         for (const cls of partClasses)
           expect(el.classList.contains(cls)).toBe(true)
         for (const [name, value] of partAttrs) {
           expect(el.hasAttribute(name)).toBe(true)
+          // class 由上面逐个类比过：作者的类拼在后面，整串取值不再相同
+          if (name === 'class')
+            continue
           // 指向别的节点的那几个属性写的是每次挂载都不同的生成 id，只比在场不比取值
           if (!ID_REF_ATTRS.has(name))
             expect(`${name}=${el.getAttribute(name)}`).toBe(`${name}=${value}`)

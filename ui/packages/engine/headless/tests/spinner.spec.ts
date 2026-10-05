@@ -30,7 +30,7 @@ function root(props: SpinnerProps = {}): Dict {
 
 describe('spinner 解剖', () => {
   it('两个部件：活区容器与可选的可见文案节点，只有 root 是必需的', () => {
-    expect(spinnerAnatomy.build().root.attrs).toEqual({ 'data-scope': 'spinner', 'data-part': 'root' })
+    expect(spinnerAnatomy.build().root.attrs).toEqual({ 'data-scope': 'spinner', 'data-part': 'root', 'class': 'xh-scope-spinner' })
     expect(spinnerMeta.requiredParts).toEqual(['root'])
   })
 })
@@ -90,7 +90,7 @@ describe('connectSpinner 尺寸', () => {
 
 describe('connectSpinner 文案节点', () => {
   it('label 部件只带身份标记：内容是作者的，角色与活区都在 root 上', () => {
-    expect(api().getLabelProps()).toEqual({ 'data-scope': 'spinner', 'data-part': 'label' })
+    expect(api().getLabelProps()).toEqual({ 'data-scope': 'spinner', 'data-part': 'label', 'class': 'xh-scope-spinner' })
   })
 })
 

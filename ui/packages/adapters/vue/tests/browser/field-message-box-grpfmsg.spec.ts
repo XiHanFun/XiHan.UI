@@ -124,11 +124,11 @@ describe('横排表单里同样不改变高度', () => {
     host = document.createElement('div')
     host.style.cssText = 'width: 520px'
     document.body.append(host)
-    host.innerHTML = `<div data-scope="form" data-part="root" data-layout="horizontal" style="--xh-form-label-w:120px">
-      <div data-scope="field" data-part="root"${invalid ? ' data-invalid' : ''}>
-        <label data-scope="field" data-part="label">邮箱</label>
-        <div data-scope="field" data-part="control"></div>
-        <p data-scope="field" data-part="error-text"${invalid ? '' : ' hidden'}>格式不对</p>
+    host.innerHTML = `<div data-scope="form" class="xh-scope-form" data-part="root" data-layout="horizontal" style="--xh-form-label-w:120px">
+      <div data-scope="field" class="xh-scope-field" data-part="root"${invalid ? ' data-invalid' : ''}>
+        <label data-scope="field" class="xh-scope-field" data-part="label">邮箱</label>
+        <div data-scope="field" class="xh-scope-field" data-part="control"></div>
+        <p data-scope="field" class="xh-scope-field" data-part="error-text"${invalid ? '' : ' hidden'}>格式不对</p>
       </div></div>`
     return {
       height: part('root').getBoundingClientRect().height,

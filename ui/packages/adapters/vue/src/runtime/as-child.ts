@@ -6,8 +6,8 @@
 // 提供 as child 相关实现。
 
 import type { VNode, VNodeChild } from 'vue'
-import { isEventHandlerKey } from '@xihan-ui/core'
-import { cloneVNode, Comment, Fragment, Text } from 'vue'
+import { isEventHandlerKey, stripScopeClass } from '@xihan-ui/core'
+import { cloneVNode, Comment, Fragment, normalizeClass, Text } from 'vue'
 import { mergePartProps } from './merge-props'
 
 /**
@@ -104,6 +104,13 @@ export function mergeIntoChild(
   for (const [key, value] of Object.entries(props)) {
     if (!keepAnatomy && isRoleMarker(key))
       continue
+    // 挂载类随 data-scope 一起让位：作者写的类照合，部件那份的 xh-scope-* 不落到别人的根上
+    if (!keepAnatomy && key === 'class') {
+      const extra = stripScopeClass(normalizeClass(value))
+      if (extra)
+        merged.class = extra
+      continue
+    }
     merged[key] = value
   }
   if (typeof merged.ref === 'function') {

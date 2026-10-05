@@ -6,11 +6,12 @@
 // 一个角色节点同时接两份 connect 产出：自己组件的那份（带解剖），再合进另一个部件的接线。
 //
 // 与 Vue / React 的 asChild 同一套合并，三端落到节点上的属性因此逐字一样：
-// - 部件那份的解剖标记（data-scope、data-part、data-variant、data-xh-*）让位给节点自己的解剖；
+// - 部件那份的解剖标记（data-scope、data-part、data-variant、data-xh-*）与挂载类让位给节点自己的解剖；
+//   class 两份拼起来，部件那份去掉挂载类（xh-scope-*）；
 // - 其余普通值部件说了算（id 与 aria 接线是部件的身份）；
 // - 同名处理器节点自己的先跑，它 preventDefault 了，部件的就不跑。
 
-import { isEventHandlerKey } from '@xihan-ui/core'
+import { isEventHandlerKey, stripScopeClass } from '@xihan-ui/core'
 
 /** 解剖两位、家族标记与随视觉盒走的形态轴。 */
 function isRoleMarker(key: string): boolean {
@@ -48,6 +49,12 @@ export function mergeAsChildProps(part: Record<string, unknown>, own: Record<str
   for (const [key, value] of Object.entries(part)) {
     if (isRoleMarker(key))
       continue
+    if (key === 'class') {
+      const extra = typeof value === 'string' ? stripScopeClass(value) : ''
+      if (extra)
+        merged.class = typeof merged.class === 'string' && merged.class ? `${merged.class} ${extra}` : extra
+      continue
+    }
     if (isEventHandlerKey(key))
       collect(key, value, 'part')
     else

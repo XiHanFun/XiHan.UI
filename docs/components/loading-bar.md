@@ -194,7 +194,7 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 
 ### 皮肤
 
-`@xihan-ui/styles/loading-bar.css` 使用 `[data-scope="loading-bar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/loading-bar.css` 按 `[data-scope="loading-bar"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-loading-bar` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 

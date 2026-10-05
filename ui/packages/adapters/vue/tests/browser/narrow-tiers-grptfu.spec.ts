@@ -28,14 +28,14 @@ function itemAt(width: number, state = 'uploading'): ItemMetrics {
   host = document.createElement('div')
   host.style.cssText = `width: ${width}px`
   host.innerHTML = `
-    <div data-scope="file-upload" data-part="root">
-      <div data-scope="file-upload" data-part="list">
-        <div data-scope="file-upload" data-part="item" data-state="${state}">
-          <span data-scope="file-upload" data-part="item-preview" data-file-type="image/png"></span>
-          <span data-scope="file-upload" data-part="item-name">annual-report-final-v3.pdf</span>
-          <span data-scope="file-upload" data-part="item-size-text">12.4 MB</span>
-          <div data-scope="file-upload" data-part="item-progress" data-state="uploading"></div>
-          <button data-scope="file-upload" data-part="item-delete-trigger"></button>
+    <div data-scope="file-upload" class="xh-scope-file-upload" data-part="root">
+      <div data-scope="file-upload" class="xh-scope-file-upload" data-part="list">
+        <div data-scope="file-upload" class="xh-scope-file-upload" data-part="item" data-state="${state}">
+          <span data-scope="file-upload" class="xh-scope-file-upload" data-part="item-preview" data-file-type="image/png"></span>
+          <span data-scope="file-upload" class="xh-scope-file-upload" data-part="item-name">annual-report-final-v3.pdf</span>
+          <span data-scope="file-upload" class="xh-scope-file-upload" data-part="item-size-text">12.4 MB</span>
+          <div data-scope="file-upload" class="xh-scope-file-upload" data-part="item-progress" data-state="uploading"></div>
+          <button data-scope="file-upload" class="xh-scope-file-upload" data-part="item-delete-trigger"></button>
         </div>
       </div>
     </div>`
@@ -73,7 +73,7 @@ function tableMaxHeightIn(viewportHeight: number): number {
   for (const node of document.querySelectorAll('style, link[rel="stylesheet"]'))
     doc.head.append(node.cloneNode(true))
   doc.body.style.margin = '0'
-  doc.body.innerHTML = `<div data-scope="table" data-part="root"></div>`
+  doc.body.innerHTML = `<div data-scope="table" class="xh-scope-table" data-part="root"></div>`
 
   const root = doc.querySelector('[data-part="root"]')
   if (!root)

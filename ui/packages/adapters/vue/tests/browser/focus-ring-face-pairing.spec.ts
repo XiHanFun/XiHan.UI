@@ -131,7 +131,7 @@ describe('实心面上的环取面自己的前景色', () => {
   describe('开关的选中轨道', () => {
     it.each(组合)('$theme · $tone', async ({ theme, tone }) => {
       const stage = mount(
-        `<div data-tone="${tone}"><button data-scope="switch" data-part="root" ${SWITCH_TRACK} data-state="checked"></button></div>`,
+        `<div data-tone="${tone}"><button data-scope="switch" class="xh-scope-switch" data-part="root" ${SWITCH_TRACK} data-state="checked"></button></div>`,
         theme,
       )
       const track = stage.querySelector<HTMLElement>('[data-part=\'root\']')!
@@ -146,7 +146,7 @@ describe('实心面上的环取面自己的前景色', () => {
 
     it.each(THEMES)('%s · 只读的选中轨道换成中性底，环仍读得出', async (theme) => {
       const stage = mount(
-        `<div data-tone="warning"><button data-scope="switch" data-part="root" ${SWITCH_TRACK} data-state="checked" data-readonly></button></div>`,
+        `<div data-tone="warning"><button data-scope="switch" class="xh-scope-switch" data-part="root" ${SWITCH_TRACK} data-state="checked" data-readonly></button></div>`,
         theme,
       )
       const track = stage.querySelector<HTMLElement>('[data-part=\'root\']')!
@@ -159,7 +159,7 @@ describe('实心面上的环取面自己的前景色', () => {
   describe('气泡确认的取消钮', () => {
     const 取消钮 = (theme: string) => {
       const stage = mount(
-        `<div data-scope="popconfirm" data-part="content"><button data-scope="popconfirm" data-part="cancel-trigger" ${CANCEL_TRIGGER}>取消</button></div>`,
+        `<div data-scope="popconfirm" class="xh-scope-popconfirm" data-part="content"><button data-scope="popconfirm" class="xh-scope-popconfirm" data-part="cancel-trigger" ${CANCEL_TRIGGER}>取消</button></div>`,
         theme,
       )
       return stage.querySelector<HTMLElement>('[data-part=\'cancel-trigger\']')!
@@ -217,11 +217,11 @@ describe('实心面上的环取面自己的前景色', () => {
   describe('标签输入里反白标签上的删除叉', () => {
     // 标签就是 tag：反白画在 tag 的 root 上，叉是它的 close-trigger，字随 root 换成配对的那支，环取 currentColor
     const 反白标签 = (tone: string) =>
-      `<div data-scope="tags-input" data-part="root" data-tone="${tone}">`
-      + '<span data-scope="tags-input" data-part="item" data-highlighted>'
-      + '<span data-scope="tag" data-part="root" data-variant="subtle">'
-      + '<span data-scope="tag" data-part="label">标签</span>'
-      + '<button data-scope="tag" data-part="close-trigger"></button>'
+      `<div data-scope="tags-input" class="xh-scope-tags-input" data-part="root" data-tone="${tone}">`
+      + '<span data-scope="tags-input" class="xh-scope-tags-input" data-part="item" data-highlighted>'
+      + '<span data-scope="tag" class="xh-scope-tag" data-part="root" data-variant="subtle">'
+      + '<span data-scope="tag" class="xh-scope-tag" data-part="label">标签</span>'
+      + '<button data-scope="tag" class="xh-scope-tag" data-part="close-trigger"></button>'
       + '</span></span></div>'
 
     it.each(组合)('$theme · $tone · 叉的环取反白档换过的字，压在反白的实心底上仍有 3:1', async ({ theme, tone }) => {

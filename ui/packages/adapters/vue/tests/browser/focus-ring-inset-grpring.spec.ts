@@ -22,6 +22,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
 import surfaceRegistry from '../../../../../tooling/scripts/focus-ring-surface-registry.json'
 import { splitTop, staticKey } from './focus-ring-surface-key'
+import { sourceSelector } from './scope-selector'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -39,6 +40,7 @@ function mount(scope: string, part: string, attrs: Record<string, string> = {}, 
   host = document.createElement('div')
   const el = document.createElement(tag)
   el.dataset.scope = scope
+  el.classList.add(`xh-scope-${scope}`)
   el.dataset.part = part
   for (const [k, v] of Object.entries(attrs))
     el.setAttribute(k, v)
@@ -50,6 +52,7 @@ function mount(scope: string, part: string, attrs: Record<string, string> = {}, 
   else {
     const root = document.createElement('div')
     root.dataset.scope = scope
+    root.classList.add(`xh-scope-${scope}`)
     root.dataset.part = 'root'
     root.append(el)
     host.append(root)
@@ -127,9 +130,9 @@ describe('聚焦环画在元素自己那一圈', () => {
     host?.remove()
     host = document.createElement('div')
     host.innerHTML = `
-      <div data-scope="${scope}" data-part="root">
-        <div data-scope="${scope}" data-part="control" data-xh-field-chrome data-xh-field-size="md">
-          <${tag} data-scope="${scope}" data-part="${inner}"></${tag}>
+      <div data-scope="${scope}" class="xh-scope-${scope}" data-part="root">
+        <div data-scope="${scope}" class="xh-scope-${scope}" data-part="control" data-xh-field-chrome data-xh-field-size="md">
+          <${tag} data-scope="${scope}" class="xh-scope-${scope}" data-part="${inner}"></${tag}>
         </div>
       </div>`
     document.body.append(host)
@@ -324,6 +327,7 @@ function mountBranch(branch: string): HTMLElement {
   for (const at of scopes.filter(s => !roots.has(s))) {
     const root = document.createElement('div')
     root.dataset.scope = at
+    root.classList.add(`xh-scope-${at}`)
     root.dataset.part = 'root'
     parent.append(root)
     parent = root
@@ -339,6 +343,8 @@ function mountBranch(branch: string): HTMLElement {
     }
     if (!el.hasAttribute('data-scope') && scope)
       el.dataset.scope = scope
+    if (el.dataset.scope)
+      el.classList.add(`xh-scope-${el.dataset.scope}`)
     if (el.dataset.part === 'positioner')
       el.dataset.positioned = ''
     parent.append(el)
@@ -439,7 +445,7 @@ function pouredRingRules(): RingRule[] {
     const assignments = ringAssignmentsOf(rule.style)
     if (!assignments.length)
       continue
-    for (const raw of splitTop(rule.selectorText, ch => ch === ',')) {
+    for (const raw of splitTop(sourceSelector(rule.selectorText), ch => ch === ',')) {
       const keyboardFocus = isKeyboardFocus(raw)
       const key = staticKey(raw) ?? raw
       for (const branch of expandGroups(raw.replace(/\s+/g, ' '))) {
@@ -534,9 +540,9 @@ describe('引导气泡接焦点', () => {
     host?.remove()
     host = document.createElement('div')
     host.innerHTML = `
-      <div data-scope="tour" data-part="root">
-        <div data-scope="tour" data-part="positioner" data-positioned data-position="center">
-          <div data-scope="tour" data-part="content" role="dialog" tabindex="-1">文</div>
+      <div data-scope="tour" class="xh-scope-tour" data-part="root">
+        <div data-scope="tour" class="xh-scope-tour" data-part="positioner" data-positioned data-position="center">
+          <div data-scope="tour" class="xh-scope-tour" data-part="content" role="dialog" tabindex="-1">文</div>
         </div>
       </div>`
     document.body.append(host)

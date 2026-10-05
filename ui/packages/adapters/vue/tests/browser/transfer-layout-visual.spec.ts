@@ -17,10 +17,10 @@ afterEach(async () => {
 function mountOneWay(): { root: HTMLElement, trigger: HTMLButtonElement } {
   host = document.createElement('div')
   host.innerHTML = `
-    <div data-scope="transfer" data-part="root" data-one-way style="inline-size: 520px">
-      <section data-scope="transfer" data-part="source-panel" style="block-size: 240px"></section>
-      <button data-scope="transfer" data-part="to-target-trigger" type="button"></button>
-      <section data-scope="transfer" data-part="target-panel" style="block-size: 240px"></section>
+    <div data-scope="transfer" class="xh-scope-transfer" data-part="root" data-one-way style="inline-size: 520px">
+      <section data-scope="transfer" class="xh-scope-transfer" data-part="source-panel" style="block-size: 240px"></section>
+      <button data-scope="transfer" class="xh-scope-transfer" data-part="to-target-trigger" type="button"></button>
+      <section data-scope="transfer" class="xh-scope-transfer" data-part="target-panel" style="block-size: 240px"></section>
     </div>`
   document.body.append(host)
   return {

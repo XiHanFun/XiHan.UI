@@ -313,7 +313,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 
 ### 皮肤
 
-`@xihan-ui/styles/command.css` 使用 `[data-scope="command"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/command.css` 按 `[data-scope="command"][data-part="trigger"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-command` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 

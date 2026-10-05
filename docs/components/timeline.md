@@ -164,7 +164,7 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 
 ### 皮肤
 
-`@xihan-ui/styles/timeline.css` 使用 `[data-scope="timeline"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/timeline.css` 按 `[data-scope="timeline"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-timeline` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 

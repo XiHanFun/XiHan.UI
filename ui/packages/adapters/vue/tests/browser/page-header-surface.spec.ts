@@ -23,9 +23,9 @@ function mount(variant?: 'ghost' | 'outline' | 'subtle', split = false) {
   const host = document.createElement('div')
   hosts.push(host)
   host.innerHTML = `
-    <header data-scope="page-header" data-part="root"${variant ? ` data-variant="${variant}"` : ''}${split ? ' data-split' : ''}>
-      <h1 data-scope="page-header" data-part="title">订单详情</h1>
-      <p data-scope="page-header" data-part="description">查看这笔订单的收货与付款信息</p>
+    <header data-scope="page-header" class="xh-scope-page-header" data-part="root"${variant ? ` data-variant="${variant}"` : ''}${split ? ' data-split' : ''}>
+      <h1 data-scope="page-header" class="xh-scope-page-header" data-part="title">订单详情</h1>
+      <p data-scope="page-header" class="xh-scope-page-header" data-part="description">查看这笔订单的收货与付款信息</p>
     </header>`
   document.body.append(host)
   return {

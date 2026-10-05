@@ -29,13 +29,13 @@ function mount(attrs = '') {
   host.style.setProperty('--xh-motion-duration-press', '0ms')
   host.style.setProperty('--xh-motion-duration-release', '0ms')
   host.innerHTML = `
-    <div data-scope="rating" data-part="root" ${attrs}>
-      <span data-scope="rating" data-part="label" ${attrs}>满意度</span>
-      <div data-scope="rating" data-part="control" ${attrs}>
-        <span data-scope="rating" data-part="item" data-highlighted ${STAR} ${attrs}></span>
-        <span data-scope="rating" data-part="item" ${STAR} ${attrs}></span>
+    <div data-scope="rating" class="xh-scope-rating" data-part="root" ${attrs}>
+      <span data-scope="rating" class="xh-scope-rating" data-part="label" ${attrs}>满意度</span>
+      <div data-scope="rating" class="xh-scope-rating" data-part="control" ${attrs}>
+        <span data-scope="rating" class="xh-scope-rating" data-part="item" data-highlighted ${STAR} ${attrs}></span>
+        <span data-scope="rating" class="xh-scope-rating" data-part="item" ${STAR} ${attrs}></span>
       </div>
-      <span data-scope="rating" data-part="value-text" ${attrs}>1 / 2</span>
+      <span data-scope="rating" class="xh-scope-rating" data-part="value-text" ${attrs}>1 / 2</span>
     </div>`
   document.body.append(host)
   const part = (name: string) => host!.querySelector<HTMLElement>(`[data-part="${name}"]`)!

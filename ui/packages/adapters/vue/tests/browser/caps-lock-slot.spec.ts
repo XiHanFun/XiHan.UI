@@ -19,13 +19,13 @@ function mount(message: string): { control: HTMLElement, indicator: HTMLElement 
   host = document.createElement('div')
   host.style.cssText = 'inline-size: 900px; display: flex'
   host.innerHTML = `
-    <div data-scope="password-input" data-part="root">
-      <div data-scope="password-input" data-part="control">
-        <input data-scope="password-input" data-part="input" />
-        <span data-scope="password-input" data-part="caps-lock-indicator"
+    <div data-scope="password-input" class="xh-scope-password-input" data-part="root">
+      <div data-scope="password-input" class="xh-scope-password-input" data-part="control">
+        <input data-scope="password-input" class="xh-scope-password-input" data-part="input" />
+        <span data-scope="password-input" class="xh-scope-password-input" data-part="caps-lock-indicator"
               role="status" aria-live="polite"
               data-state="${message ? 'visible' : 'hidden'}">${message}</span>
-        <button data-scope="password-input" data-part="visibility-trigger"></button>
+        <button data-scope="password-input" class="xh-scope-password-input" data-part="visibility-trigger"></button>
       </div>
     </div>`
   document.body.append(host)

@@ -192,7 +192,7 @@ scrollTo 滚动视口，reach-end 在滚到底那一下通知一次，常用来�
 
 ### 皮肤
 
-`@xihan-ui/styles/scroll-area.css` 使用 `[data-scope="scroll-area"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/scroll-area.css` 按 `[data-scope="scroll-area"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-scroll-area` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
 ### 数据属性
 

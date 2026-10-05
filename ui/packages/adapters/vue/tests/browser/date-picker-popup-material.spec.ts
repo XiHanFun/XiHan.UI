@@ -179,6 +179,7 @@ describe('日期选择浮层', () => {
     const outer = part('positioner')
     const inner = document.createElement('div')
     inner.dataset.scope = 'date-picker'
+    inner.classList.add('xh-scope-date-picker')
     inner.dataset.part = 'positioner'
     outer.dataset.placement = 'bottom-start'
     outer.append(inner)

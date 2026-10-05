@@ -26,12 +26,19 @@ const index = await readFile(`${PKG}/index.source.css`, 'utf8')
 const flat = await readFile(`${PKG}/index.css`, 'utf8')
 const imported = [...index.matchAll(/@import '\.\/css\/([\w-]+\.css)'/g)].map(match => match[1])
 
+// 子路径导出指向 build 产出的 dist/css/：源文件按属性书写，产物换成以挂载类领头（见 build/emit-entries.mjs）
+const SUBPATH_PREFIX = './dist/css/'
 const manifest = JSON.parse(await readFile(`${PKG}/package.json`, 'utf8'))
 const exported = Object.values(manifest.exports)
-  .filter(target => typeof target === 'string' && target.startsWith('./css/'))
-  .map(target => target.slice('./css/'.length))
+  .filter(target => typeof target === 'string' && target.startsWith(SUBPATH_PREFIX))
+  .map(target => target.slice(SUBPATH_PREFIX.length))
+const stale = Object.values(manifest.exports)
+  .filter(target => typeof target === 'string' && /^\.\/(?:css|family)\//.test(target))
 
 const errors = []
+
+for (const target of stale)
+  errors.push(`exports 直指源文件 ${target}：按需引入拿到的是未转换的属性选择器，改指 ${target.replace('./', './dist/')}`)
 
 try {
   await emitActionControlRecipe({ check: true })

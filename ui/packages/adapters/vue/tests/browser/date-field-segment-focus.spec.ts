@@ -16,11 +16,11 @@ function mountSegments(scope: 'date-field' | 'time-field', motion?: 'reduce'): H
   if (motion)
     host.dataset.motion = motion
   host.innerHTML = `
-    <div data-scope="${scope}" data-part="root">
-      <div data-scope="${scope}" data-part="control">
-        <div data-scope="${scope}" data-part="segment-group">
-          <span data-scope="${scope}" data-part="segment" tabindex="0">2026</span>
-          <span data-scope="${scope}" data-part="segment" tabindex="-1">09</span>
+    <div data-scope="${scope}" class="xh-scope-${scope}" data-part="root">
+      <div data-scope="${scope}" class="xh-scope-${scope}" data-part="control">
+        <div data-scope="${scope}" class="xh-scope-${scope}" data-part="segment-group">
+          <span data-scope="${scope}" class="xh-scope-${scope}" data-part="segment" tabindex="0">2026</span>
+          <span data-scope="${scope}" class="xh-scope-${scope}" data-part="segment" tabindex="-1">09</span>
         </div>
       </div>
     </div>`

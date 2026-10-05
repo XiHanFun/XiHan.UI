@@ -22,7 +22,7 @@ function columnsAt(width: number, attrs: string): number {
   for (const node of document.querySelectorAll('style, link[rel="stylesheet"]'))
     doc.head.append(node.cloneNode(true))
   doc.body.style.margin = '0'
-  doc.body.innerHTML = `<div data-scope="form" data-part="root" data-layout="grid" ${attrs}></div>`
+  doc.body.innerHTML = `<div data-scope="form" class="xh-scope-form" data-part="root" data-layout="grid" ${attrs}></div>`
 
   const root = doc.querySelector('[data-part="root"]')
   if (!root)
