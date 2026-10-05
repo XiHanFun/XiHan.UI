@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { getMotionOverride, setMotionOverride } from '@xihan-ui/motion'
 import { afterEach, describe, expect, it } from 'vitest'
-import { getXhConfig, setXhConfig, withXhConfig } from '../src/config'
+import { getXhConfig, onXhConfigChange, setXhConfig, withXhConfig } from '../src/config'
 import { defineXhElements } from '../src/define'
 import { enUS, jaJP, zhCN } from '../src/locale'
 
@@ -252,5 +252,38 @@ describe('接到真元素上', () => {
     await element.updateComplete
     await element.updateComplete
     expect(trigger?.getAttribute('aria-label')).toBe('Close it')
+  })
+})
+
+describe('配置变化只叫醒受影响的子树', () => {
+  it('<xh-config> 改了配置项只通知它子树里的订阅者；只改视觉轴不通知；全局配置变化通知全部', async () => {
+    const host = document.createElement('div')
+    host.innerHTML = '<xh-config id="a" locale="zh-CN"><span id="in-a"></span></xh-config><xh-config id="b" locale="zh-CN"><span id="in-b"></span></xh-config>'
+    document.body.appendChild(host)
+    const a = host.querySelector('#a') as Updatable & { locale?: string, mode?: string }
+    const b = host.querySelector('#b') as Updatable
+    await a.updateComplete
+    await b.updateComplete
+    const calls: string[] = []
+    const stopA = onXhConfigChange(() => calls.push('a'), host.querySelector('#in-a')!)
+    const stopB = onXhConfigChange(() => calls.push('b'), host.querySelector('#in-b')!)
+    const stopGlobal = onXhConfigChange(() => calls.push('global'))
+
+    a.locale = 'en-US'
+    await a.updateComplete
+    expect(calls).toEqual(['a', 'global'])
+
+    calls.length = 0
+    a.mode = 'dark'
+    await a.updateComplete
+    expect(calls).toEqual([])
+
+    calls.length = 0
+    setXhConfig({ locale: 'ja-JP' })
+    expect(calls.sort()).toEqual(['a', 'b', 'global'])
+
+    stopA()
+    stopB()
+    stopGlobal()
   })
 })

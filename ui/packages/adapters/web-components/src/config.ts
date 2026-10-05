@@ -30,7 +30,8 @@ export interface XhConfig extends XhConfigBase {
 
 let current: XhConfig = {}
 let currentVisualEnvironment: VisualEnvironmentController | undefined
-const listeners = new Set<() => void>()
+/** 订阅者 → 它所在的元素；全局订阅（不在哪棵子树里）记 null，任何变化都叫它。 */
+const listeners = new Map<() => void, Element | null>()
 
 let generation = 0
 
@@ -42,10 +43,17 @@ export function xhConfigGeneration(): number {
   return generation
 }
 
-/** 配置变了就叫一遍：全局那份改了、任一 <xh-config> 改了或进出文档，都走这里。 */
-export function notifyXhConfigChange(): void {
+/**
+ * 配置变了就叫一遍：全局那份改了、任一 <xh-config> 改了或进出文档，都走这里。
+ * 给了 root（某个 <xh-config>）时只叫它子树里的订阅者：别处的元素解析到的那条链没变，
+ * 叫醒它们只会让每个元素各自重新接线一遍。代号照样自增，各元素的解析缓存随之作废、下次用到时重算。
+ */
+export function notifyXhConfigChange(root?: Node): void {
   generation += 1
-  for (const listener of listeners) listener()
+  for (const [listener, host] of [...listeners]) {
+    if (!root || !host || root === host || root.contains(host))
+      listener()
+  }
 }
 
 /** 覆写全局配置。整份替换，不做深合并：需要修改一处时把整份取出修改后写回。 */
@@ -62,9 +70,12 @@ export function getXhConfig(): Readonly<XhConfig> {
   return current
 }
 
-/** 订阅配置变更，返回退订函数。已挂载的元素靠它在切语言时重渲。 */
-export function onXhConfigChange(listener: () => void): () => void {
-  listeners.add(listener)
+/**
+ * 订阅配置变更，返回退订函数。已挂载的元素靠它在切语言时重渲。
+ * 给了 host 时只在它所在子树的配置变化时收到通知（全局配置变化照常收到）；不给即全局订阅。
+ */
+export function onXhConfigChange(listener: () => void, host?: Element): () => void {
+  listeners.set(listener, host ?? null)
   return () => void listeners.delete(listener)
 }
 
