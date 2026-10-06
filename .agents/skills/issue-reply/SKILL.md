@@ -12,6 +12,7 @@ description: 调查、分类、起草或发布 XiHan.UI GitHub Issue 回复时�
 3. Bug 至少核对组件/包、版本或 commit、框架适配器、浏览器/运行环境、复现步骤、实际与期望行为。
 4. 视觉问题检查主题、密度、RTL、缩放、输入设备和截图；行为问题检查 Headless 契约及三端是否一致。
 5. 没有证据时不承诺修复、不猜版本、不把使用问题直接判成 Bug。
+6. 需要在 worktree 里复现或修复时，分支用 `issue/<编号>`，规则见 `AGENTS.md`「分支与 worktree」。
 
 ## 回复
 
