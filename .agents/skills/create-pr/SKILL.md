@@ -8,6 +8,7 @@ description: 为 XiHan.UI 准备、审查或创建 Pull Request 时使用。适�
 ## 前置检查
 
 - 读取 `git status --short --branch`；存在 rebase、merge、未解决冲突或 detached HEAD 时，不创建 PR。
+- 分支名按 `AGENTS.md`「分支与 worktree」分组；仍是 `claude/<名>`、`codex/<名>` 等工具前缀时，推送前先按任务改名，不把工具前缀推到远端。分支为 `issue/<编号>` 时在「关联 Issue」填写该编号。
 - 根据用户意图、当前分支上游和远端分支确定 base；普通开发通常面向 `dev`，不得无依据改成 `main`。
 - 使用 `git log <base>..HEAD`、`git diff --stat <base>...HEAD` 和完整 diff 总结整条分支，不只看最后一个提交。
 - 检查提交信息、changeset、公开面、生成物、文档和测试是否与实际变更一致。

@@ -24,7 +24,7 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 
 1. 按任务读取对应技能：组件视觉、交互与文档呈现读取 `.agents/skills/component-design/SKILL.md`；组件实现与重构读取 `.agents/skills/component-development/SKILL.md`；三端接法与适配器差异读取 `.agents/skills/framework-adapters/SKILL.md`。
 2. 同时涉及多个职责时加载对应多个技能，不要一次读取无关资料。
-3. 检查当前分支、`git status` 和最近提交；保留用户已有改动。
+3. 检查当前分支、`git status` 和最近提交；保留用户已有改动。在 worktree 中还要按「分支与 worktree」核对分支分组和基线。
 4. 先检查现有组件、Core 原语、Headless 契约、Family Recipe、令牌和门禁，确认没有重复建设。
 5. 组件设计、样式修改和视觉重构必须读取 `.agents/skills/component-design/references/component-design.md`。
 
@@ -184,6 +184,26 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 5. 生成 CEM、组件令牌、无层 CSS、文档和公开面。
 6. 完成真实浏览器与三端一致性验证。
 7. 添加 changeset，并按一个组件一个提交收口。
+
+## 分支与 worktree
+
+在主检出上的日常改动直接提交到当前分支（通常是 `dev`），不另开分支。新功能或并行开发开启 worktree 时，分支按用途分组命名，不保留工具生成的 `claude/<名>`、`codex/<名>` 等前缀：
+
+| 分组 | 用途 | 分支名 |
+| --- | --- | --- |
+| `feat/` | 新组件、新能力、增强，以及重构、性能、文档、测试等非缺陷改动 | `feat/<worktree 名>`，如 `feat/confident-morse-925efe` |
+| `fix/` | 缺陷修复 | `fix/<worktree 名>`，如 `fix/confident-morse-925efe` |
+| `issue/` | 处理指定的 GitHub Issue | `issue/<编号>`，如 `issue/46` |
+| `pr/` | 审阅或接手已有 Pull Request | 拉取他人 PR 审阅用 `pr/<编号>-review`；没有编号时用 `pr/<worktree 名>` |
+
+- 任务对应 Issue 或 PR 编号时归入 `issue/`、`pr/` 并以编号命名；其余按改动性质取 `feat/` 或 `fix/`，后缀沿用 worktree 目录名。
+- 进入 worktree 后先看 `git branch --show-current`。分支是工具生成的 `claude/<名>` 等形式时，在首次提交前就地改名：`git branch -m <分组>/<名>`；worktree 目录名不变。改名后上游若指向 `main` 等别的分支，执行 `git branch --unset-upstream`。分支已推送到远端时不改名，先向用户说明。
+- 自行创建时直接带分组：`git worktree add -b feat/<名> .claude/worktrees/<名> dev`。审阅他人 PR 时先 `git fetch origin pull/<编号>/head:pr/<编号>-review`，再 `git worktree add .claude/worktrees/pr-<编号> pr/<编号>-review`。
+- 基线默认是本地 `dev`；用户指定 `release/*` 时以其为准。工具从 `main` 或 `origin/main` 切出且还没有提交时，用 `git merge --ff-only dev` 对齐；不能快进就停下说明，不 reset。
+- 一个 worktree 只承载一项任务、一条分支。并行任务会改到同一组件、同一共享配方、令牌或生成物（无层 CSS、CEM、公开面、组件文档）时，先说明冲突风险再动手。
+- 新 worktree 没有 `node_modules` 和 dist：先在 `ui/` 执行 `pnpm install --frozen-lockfile` 和 `pnpm build`，改文档时再安装 `docs/` 依赖。
+- turbo 本地缓存在各 worktree 之间共享；怀疑缓存命中掩盖了真实结果（如体积测量、跨包改名）时，用 `TURBO_FORCE=true pnpm build` 强制重建。
+- worktree 分支的合并、推送、创建 PR 以及 worktree 和分支的删除，只在用户明确要求时执行。路径过长导致 `git worktree remove` 失败时，用 PowerShell `Remove-Item -LiteralPath "\\?\<worktree 绝对路径>" -Recurse -Force` 删除目录后再 `git worktree prune`。
 
 ## Git 与提交
 
