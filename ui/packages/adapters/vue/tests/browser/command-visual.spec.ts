@@ -70,8 +70,8 @@ describe('command 面板与命令', () => {
     expect(content.borderTopColor).toBe(resolve('--xh-material-elevated-border', 'border-color'))
     expect(content.backgroundColor).toBe(resolve('--xh-material-elevated-bg'))
     expect(content.boxShadow).toBe(resolve('--xh-material-elevated-shadow', 'box-shadow'))
-    expect(content.borderTopLeftRadius).toBe(getComputedStyle(part('content')).borderTopLeftRadius)
-    expect(Number.parseFloat(content.borderTopLeftRadius)).toBe(12)
+    // 浮层形状档 --xh-shape-overlay：4px
+    expect(Number.parseFloat(content.borderTopLeftRadius)).toBe(4)
   })
 
   it('进场从上方落下：起点在终点之上一小段，缩放锚在面板顶缘，位移与缩放同向', async () => {
