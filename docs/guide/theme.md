@@ -89,7 +89,7 @@ Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Col
 | 角色 | 字号 / 字重 / 颜色 | 与相邻元素的间距 |
 | --- | --- | --- |
 | 字段标签（单字段与 Slider、Rating、Signature、Color* 等复合单字段） | `--xh-text-label-size` 14 / `--xh-text-label-weight` 400 / `--xh-fg-default` | 贴控件 `--xh-space-1` |
-| 集合标题（RadioGroup、CheckboxGroup、Listbox、Tree、TagGroup、Descriptions） | 14 / 500 / `--xh-fg-muted` | 与集合 `--xh-space-2` |
+| 集合标题（RadioGroup、CheckboxGroup、Listbox、Tree、TagGroup、Descriptions） | 14 / `--xh-text-label-weight` 400 / `--xh-fg-muted` | 与集合 `--xh-space-2` |
 | 说明 / helper | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal` | 与控件 `--xh-space-1` |
 | 错误文案 | 13 / `--xh-fg-danger` | 与控件 `--xh-space-1` |
 | 浮层内与小面标题（Popover、HoverCard、Popconfirm、FloatingPanel、Approval、Timeline、EmptyState、Citation） | 14 / `--xh-font-weight-medium` | — |
