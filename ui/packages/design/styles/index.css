@@ -13253,10 +13253,10 @@
 
   /* 三个尺寸档只换这几个私有槽，各段从 root 继承它们，换档不必给每个部件各写一条选择器 */
   .xh-scope-statistic[data-part='root'] {
-    --xh-_statistic-label-size: var(--xh-control-caption-md);
+    --xh-_statistic-label-size: var(--xh-control-font-md);
     --xh-_statistic-value-size: var(--xh-text-heading-1-size);
     --xh-_statistic-affix-size: var(--xh-control-font-md);
-    --xh-_statistic-row-gap: var(--xh-space-1);
+    --xh-_statistic-row-gap: var(--xh-space-2);
     /* 涨跌箭头与作者塞进来的图标同一把尺：跟着前后缀那一档字（14px）走，取 sm 字形 16px，大档抬到 md */
     --xh-_statistic-icon-size: var(--xh-glyph-size-sm);
     --xh-icon-size: var(--xh-statistic-icon-size, var(--xh-_statistic-icon-size));
@@ -13278,17 +13278,17 @@
 
   /* —— 尺寸 —— */
   .xh-scope-statistic[data-part='root'][data-size='sm'] {
-    --xh-_statistic-label-size: var(--xh-control-caption-sm);
+    --xh-_statistic-label-size: var(--xh-control-font-sm);
     --xh-_statistic-value-size: var(--xh-text-heading-2-size);
     --xh-_statistic-affix-size: var(--xh-control-font-sm);
-    --xh-_statistic-row-gap: var(--xh-space-0_5);
+    --xh-_statistic-row-gap: var(--xh-space-1);
   }
 
   .xh-scope-statistic[data-part='root'][data-size='lg'] {
-    --xh-_statistic-label-size: var(--xh-control-caption-lg);
+    --xh-_statistic-label-size: var(--xh-control-font-lg);
     --xh-_statistic-value-size: var(--xh-text-display-size);
     --xh-_statistic-affix-size: var(--xh-control-font-lg);
-    --xh-_statistic-row-gap: var(--xh-space-1_5);
+    --xh-_statistic-row-gap: var(--xh-space-3);
     --xh-_statistic-icon-size: var(--xh-glyph-size-md);
   }
 
@@ -13307,17 +13307,17 @@
     color: var(--xh-statistic-value-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
     font-size: var(--xh-statistic-value-font-size, var(--xh-_statistic-value-size));
     font-variant-numeric: tabular-nums;
-    font-weight: var(--xh-font-weight-semibold);
-    line-height: var(--xh-leading-tight);
+    font-weight: var(--xh-font-weight-medium);
+    line-height: var(--xh-leading-normal);
   }
 
-  /* 前后缀比数值小一档、跟着数值的语气走；没写语气时退成弱前景 */
+  /* 前后缀比数值小一档，颜色与字重同数值：它们是这个数的一部分（货币符号、单位），不是旁注 */
   .xh-scope-statistic[data-part='prefix'],
   .xh-scope-statistic[data-part='suffix'] {
-    color: var(--xh-statistic-affix-fg, var(--xh-_tone-fg, var(--xh-fg-muted)));
+    color: var(--xh-statistic-affix-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
     font-size: var(--xh-statistic-affix-font-size, var(--xh-_statistic-affix-size));
     font-variant-numeric: tabular-nums;
-    font-weight: var(--xh-font-weight-regular);
+    font-weight: var(--xh-font-weight-medium);
     line-height: var(--xh-leading-tight);
   }
 
