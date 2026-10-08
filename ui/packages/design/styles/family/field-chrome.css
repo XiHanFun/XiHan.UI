@@ -131,7 +131,7 @@
     flex-wrap: wrap;
     block-size: auto;
     min-block-size: var(--xh-field-control-height, var(--xh-_field-size-control-height));
-    padding-block: var(--xh-space-1);
+    padding-block: var(--xh-space-0_5);
   }
 
   [data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover {

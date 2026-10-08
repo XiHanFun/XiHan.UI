@@ -65649,6 +65649,9 @@
               "name": "--xh-tags-input-item-font-size"
             },
             {
+              "name": "--xh-tags-input-item-h"
+            },
+            {
               "name": "--xh-tags-input-item-input-bg"
             },
             {

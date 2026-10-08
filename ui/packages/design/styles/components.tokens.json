@@ -73313,6 +73313,24 @@
       "description": "tags-input 的 item-input 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-tags-input-item-h",
+      "component": "tags-input",
+      "part": [
+        "item-input"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_tags-input-item-h"
+      ],
+      "visibility": "public",
+      "description": "tags-input 的 item-input 部件 min-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-tags-input-item-input-bg",
       "component": "tags-input",
       "part": [
