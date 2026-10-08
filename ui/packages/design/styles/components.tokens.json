@@ -42978,6 +42978,24 @@
       "description": "list 的 item、root 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-list-item-content-py",
+      "component": "list",
+      "part": [
+        "item-content"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "list 的 item-content 部件 padding-block 覆盖槽。"
+    },
+    {
       "name": "--xh-list-item-gap",
       "component": "list",
       "part": [

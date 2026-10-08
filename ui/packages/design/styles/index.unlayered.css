@@ -9782,7 +9782,7 @@
   flex-direction: column;
   gap: var(--xh-list-content-gap, var(--xh-space-0_5));
   /* 标题与说明两行再上下各让出 4px，两行条目与单行条目的高度差拉开，扫读时一条一块 */
-  padding-block: var(--xh-space-1);
+  padding-block: var(--xh-list-item-content-py, var(--xh-space-1));
   /* flex 项默认不肯收到内容以下，这行让长文本能被压窄 */
   min-inline-size: 0;
 }
