@@ -9,7 +9,7 @@
     <rect x="44" y="66" width="16" height="16" rx="2" fill="var(--xh-bg-brand)" />
     <path d="M48 74l2.5 2.5 5.5-5.5" stroke="var(--xh-fg-on-brand)" stroke-width="2" />
     <path d="M71 74h58" stroke="var(--xh-fg-muted)" stroke-width="6" />
-    <rect x="44.5" y="90.5" width="15" height="15" rx="2" stroke="var(--xh-border-control)" />
+    <rect x="44.5" y="90.5" width="15" height="15" rx="2" stroke="var(--xh-border-strong)" />
     <path d="M71 98h74" stroke="var(--xh-fg-muted)" stroke-width="6" />
     <rect x="92.5" y="112.5" width="47" height="23" rx="2" stroke="var(--xh-border-default)" />
     <path d="M106 124h20" stroke="var(--xh-fg-default)" stroke-width="4" />

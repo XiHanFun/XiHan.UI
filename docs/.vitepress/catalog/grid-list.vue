@@ -8,12 +8,12 @@
     <path d="M62 50h92" stroke="var(--xh-fg-on-brand-subtle)" stroke-width="4" />
     <path d="M191 42h0m5 0h0m5 0h0" stroke="var(--xh-fg-on-brand-subtle)" stroke-width="2" />
     <path d="M24 63.5h192" stroke="var(--xh-border-subtle)" />
-    <rect x="36.5" y="74.5" width="15" height="15" rx="2" stroke="var(--xh-border-control)" />
+    <rect x="36.5" y="74.5" width="15" height="15" rx="2" stroke="var(--xh-border-strong)" />
     <path d="M63 76h50" stroke="var(--xh-fg-muted)" stroke-width="6" />
     <path d="M62 90h84" stroke="var(--xh-fg-subtle)" stroke-width="4" />
     <path d="M191 82h0m5 0h0m5 0h0" stroke="var(--xh-fg-muted)" stroke-width="2" />
     <path d="M24 103.5h192" stroke="var(--xh-border-subtle)" />
-    <rect x="36.5" y="114.5" width="15" height="15" rx="2" stroke="var(--xh-border-control)" />
+    <rect x="36.5" y="114.5" width="15" height="15" rx="2" stroke="var(--xh-border-strong)" />
     <path d="M63 116h58" stroke="var(--xh-fg-muted)" stroke-width="6" />
     <path d="M62 130h68" stroke="var(--xh-fg-subtle)" stroke-width="4" />
     <path d="M191 122h0m5 0h0m5 0h0" stroke="var(--xh-fg-muted)" stroke-width="2" />
