@@ -14639,7 +14639,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "collapsible 的 content 部件 color 覆盖槽。"
@@ -14657,7 +14657,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "collapsible 的 content 部件 font-size 覆盖槽。"
@@ -14681,6 +14681,26 @@
       ],
       "visibility": "public",
       "description": "collapsible 的 content 部件 padding-block-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-collapsible-content-pt",
+      "component": "collapsible",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "padding-block-start"
+      ],
+      "state": [
+        "@keyframes xh-disclosure-collapse",
+        "@keyframes xh-disclosure-expand",
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_collapsible-content-pt"
+      ],
+      "visibility": "public",
+      "description": "collapsible 的 content 部件 padding-block-start 覆盖槽。"
     },
     {
       "name": "--xh-collapsible-content-px",
@@ -14732,8 +14752,8 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-glyph-size",
-        "--xh-glyph-size-md"
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
       "description": "collapsible 的 root、trigger 部件 --xh-icon-size 覆盖槽。"
@@ -14751,7 +14771,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "collapsible 的 indicator 部件 color 覆盖槽。"
@@ -14905,6 +14925,24 @@
       "description": "collapsible 的 trigger 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-collapsible-trigger-font-weight-open",
+      "component": "collapsible",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "state=open"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
+      ],
+      "visibility": "public",
+      "description": "collapsible 的 trigger 部件 font-weight 覆盖槽。"
+    },
+    {
       "name": "--xh-collapsible-trigger-gap",
       "component": "collapsible",
       "part": [
@@ -14955,7 +14993,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-padding-inline"
+        "--xh-_collapsible-trigger-px"
       ],
       "visibility": "public",
       "description": "collapsible 的 trigger 部件 padding-inline 覆盖槽。"
@@ -14973,7 +15011,7 @@
         "xh-action-profile=disclosure-trigger"
       ],
       "defaultToken": [
-        "--xh-_action-profile-padding-block"
+        "--xh-_collapsible-trigger-py"
       ],
       "visibility": "public",
       "description": "collapsible 的 trigger 部件 padding-block 覆盖槽。"

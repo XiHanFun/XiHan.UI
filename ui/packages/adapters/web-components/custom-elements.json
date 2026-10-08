@@ -11759,6 +11759,9 @@
               "name": "--xh-collapsible-content-pb"
             },
             {
+              "name": "--xh-collapsible-content-pt"
+            },
+            {
               "name": "--xh-collapsible-content-px"
             },
             {
@@ -11790,6 +11793,9 @@
             },
             {
               "name": "--xh-collapsible-trigger-font-weight"
+            },
+            {
+              "name": "--xh-collapsible-trigger-font-weight-open"
             },
             {
               "name": "--xh-collapsible-trigger-gap"
