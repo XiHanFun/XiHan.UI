@@ -1,5 +1,5 @@
 {
-  "$description": "Collection Item 家族配方：尺寸节奏、内容列、上下文与状态矩阵只有这一份生成真源；组件只投影角色、上下文与状态事实。浮层集合（overlay）选中 = 透明底 + 行尾对号；页内持久集合（page）选中 = 品牌淡底行面 + 行尾对号，导航当前页（current）= 品牌淡底行面 + 起始侧 2px 指示条；横向导航（nav：Tabs line trigger / Anchor link / Breadcrumb link / Menubar 与 NavigationMenu trigger）自带一整套白底承载阶梯：rest 透明面 + muted 字，hover 100 → pressed 200 只换面，open-path 与 hover 同档，current = 透明面 + --xh-fg-brand-strong + medium（指示条不由配方画），terminal = 不可点的当前页（--xh-fg-default + medium，无 hover / pressed）。page 选中态的说明行保留 muted 前景，与正文维持层级。",
+  "$description": "Collection Item 家族配方：尺寸节奏、内容列、上下文与状态矩阵只有这一份生成真源；组件只投影角色、上下文与状态事实。浮层集合（overlay）选中 = 透明底 + 行尾对号；页内持久集合（page）选中 = 品牌淡底行面 + 行尾对号，导航当前页（current）= 品牌淡底行面 + 起始侧 2px 指示条；横向导航（nav：Tabs line trigger / Anchor link / Breadcrumb link / Menubar 与 NavigationMenu trigger）自带一整套白底承载阶梯：rest 透明面 + muted 字，hover 100 → pressed 200 只换面，open-path 与 hover 同档，current = 透明面 + --xh-fg-brand + medium（指示条不由配方画），terminal = 不可点的当前页（--xh-fg-default + medium，无 hover / pressed）。page 选中态的说明行保留 muted 前景，与正文维持层级。",
   "version": 3,
   "sizes": ["sm", "md", "lg"],
   "columns": ["prefix", "text", "description", "shortcut", "suffix", "indicator"],
@@ -315,7 +315,7 @@
       },
       "current": {
         "backgroundColor": "transparent",
-        "color": "var(--xh-fg-brand-strong)",
+        "color": "var(--xh-fg-brand)",
         "descriptionColor": "var(--xh-fg-muted)",
         "indicatorColor": "var(--xh-fg-brand)",
         "outlineColor": "transparent",
@@ -325,7 +325,7 @@
       },
       "current+hover": {
         "backgroundColor": "var(--xh-bg-subtle)",
-        "color": "var(--xh-fg-brand-strong)",
+        "color": "var(--xh-fg-brand)",
         "descriptionColor": "var(--xh-fg-muted)",
         "indicatorColor": "var(--xh-fg-brand)",
         "outlineColor": "transparent",
@@ -335,7 +335,7 @@
       },
       "current+highlight": {
         "backgroundColor": "var(--xh-bg-subtle)",
-        "color": "var(--xh-fg-brand-strong)",
+        "color": "var(--xh-fg-brand)",
         "descriptionColor": "var(--xh-fg-muted)",
         "indicatorColor": "var(--xh-fg-brand)",
         "outlineColor": "var(--xh-ring-focus)",
@@ -345,7 +345,7 @@
       },
       "current+pressed": {
         "backgroundColor": "var(--xh-bg-subtle-hover)",
-        "color": "var(--xh-fg-brand-strong)",
+        "color": "var(--xh-fg-brand)",
         "descriptionColor": "var(--xh-fg-muted)",
         "indicatorColor": "var(--xh-fg-brand)",
         "outlineColor": "transparent",

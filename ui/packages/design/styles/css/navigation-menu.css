@@ -38,7 +38,7 @@
     --xh-_navigation-menu-highlight-bg: var(--xh-bg-subtle);
 
     /* 语气只落在指示条上；没写 data-tone 时 --xh-_tone 没被声明，退回品牌色。
-       当前链接的字色不随语气：导航当前页恒取 --xh-fg-brand-strong。聚焦环恒是 --xh-ring-focus */
+       当前链接的字色不随语气：导航当前页恒取 --xh-fg-brand。聚焦环恒是 --xh-ring-focus */
     --xh-_navigation-menu-accent: var(--xh-_tone, var(--xh-fg-brand));
 
     position: relative;
@@ -224,7 +224,7 @@
     --xh-collection-bg-hover: var(--xh-navigation-menu-link-bg-hover, var(--xh-_navigation-menu-highlight-bg));
     --xh-collection-bg-keyboard-highlight: var(--xh-navigation-menu-link-bg-hover, var(--xh-_navigation-menu-highlight-bg));
     --xh-collection-bg-pressed: var(--xh-navigation-menu-link-bg-pressed, var(--xh-bg-subtle-hover));
-    --xh-collection-fg-current: var(--xh-navigation-menu-link-fg-current, var(--xh-fg-brand-strong));
+    --xh-collection-fg-current: var(--xh-navigation-menu-link-fg-current, var(--xh-fg-brand));
     --xh-collection-font-weight-current: var(--xh-navigation-menu-link-font-weight-current, var(--xh-font-weight-medium));
 
     position: relative;

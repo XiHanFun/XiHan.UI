@@ -49308,7 +49308,7 @@
         "xh-collection-context=nav"
       ],
       "defaultToken": [
-        "--xh-fg-brand-strong"
+        "--xh-fg-brand"
       ],
       "visibility": "public",
       "description": "navigation-menu 的 link 部件 color 覆盖槽。"

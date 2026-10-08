@@ -40,7 +40,7 @@
     /* 语气落在选中态：指示条与选中标签的文字。
        没写 data-tone 时 --xh-_tone 一族没被声明，两个槽都退回原来的取色 */
     --xh-_tabs-accent: var(--xh-_tone, var(--xh-bg-brand));
-    --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+    --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand));
 
     /* 翻页钮的盖底：标签带放不下时它浮在两端，挪到它底下的那截标签要被盖住。line / card 档的标签带是透明的，
        盖底取 surface；坐在别的面上（画布、淡底面板）时由使用者槽换成所在的面。segment 档取轨道的淡底。

@@ -166,11 +166,11 @@ describe('collection Item recipe', () => {
     expect(css.indexOf(contextSelector('nav', 'rest'))).toBeGreaterThan(css.indexOf(`[data-xh-collection-item]${GUARD}${PRESSED} {`))
   })
 
-  it('nav 当前页 = 透明面 + 品牌深字 + medium，叠加 hover 100 / pressed 200；不读 aria-selected', async () => {
+  it('nav 当前页 = 透明面 + 品牌字 + medium，叠加 hover 100 / pressed 200；不读 aria-selected', async () => {
     const css = compileCollectionItemRecipe(await source())
     const current = ruleBody(css, contextSelector('nav', 'current'))
     expect(fallbackOf(current, 'bg')).toBe('transparent')
-    expect(fallbackOf(current, 'fg')).toBe('var(--xh-fg-brand-strong)')
+    expect(fallbackOf(current, 'fg')).toBe('var(--xh-fg-brand)')
     expect(fallbackOf(current, 'font-weight')).toBe('var(--xh-font-weight-medium)')
     expect(fallbackOf(ruleBody(css, contextSelector('nav', 'current', 'hover')), 'bg')).toBe('var(--xh-bg-subtle)')
     expect(fallbackOf(ruleBody(css, contextSelector('nav', 'current', 'pressed')), 'bg')).toBe('var(--xh-bg-subtle-hover)')
