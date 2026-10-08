@@ -59559,10 +59559,13 @@
               "name": "--xh-slider-thumb-bg-disabled"
             },
             {
-              "name": "--xh-slider-thumb-bg-invalid"
+              "name": "--xh-slider-thumb-border"
             },
             {
-              "name": "--xh-slider-thumb-border"
+              "name": "--xh-slider-thumb-border-disabled"
+            },
+            {
+              "name": "--xh-slider-thumb-border-invalid"
             },
             {
               "name": "--xh-slider-thumb-radius"
@@ -59586,13 +59589,16 @@
               "name": "--xh-slider-tick-bg"
             },
             {
-              "name": "--xh-slider-tick-bg-active"
+              "name": "--xh-slider-tick-border"
             },
             {
-              "name": "--xh-slider-tick-bg-active-disabled"
+              "name": "--xh-slider-tick-border-active"
             },
             {
-              "name": "--xh-slider-tick-bg-disabled"
+              "name": "--xh-slider-tick-border-active-disabled"
+            },
+            {
+              "name": "--xh-slider-tick-border-disabled"
             },
             {
               "name": "--xh-slider-tick-label-fg"

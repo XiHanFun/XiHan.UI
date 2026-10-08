@@ -111,9 +111,9 @@ const EXPECTED = {
   'popover': { content: ['frosted'] },
   'select': { content: ['frosted'] },
   'side-nav': { 'branch-content': ['floating'] },
-  // 拇指静止时是 raised，带 data-dragging 的那一档走 lifted：跟着手走的元素抬高一档，
-  // 又不与下拉面板同深
-  'slider': { thumb: ['raised', 'lifted'] },
+  // 滑杆拇指静止时是白底 + 2px 强调色描边的平面圆：边界由强调色描边承担，不是 border-default 的抬起面，
+  // 不走 raised；带 data-dragging 的那一档走 lifted：跟着手走的元素离开页面一档，又不与下拉面板同深
+  'slider': { thumb: ['lifted'] },
   'color-slider': { thumb: ['raised', 'lifted'] },
   'switch': { thumb: ['raised'] },
   // segment 档的白色抬起面：放了 indicator 部件长在部件上跟着滑，没放长在选中标签上，两处同一块 raised 面

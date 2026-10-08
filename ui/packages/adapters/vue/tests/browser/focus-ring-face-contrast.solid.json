@@ -49,16 +49,6 @@
     "theme": "light",
     "tone": null
   },
-  "slider [data-invalid][data-part='thumb'][data-scope='slider']": {
-    "ratio": 1.05,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "slider [data-part='thumb'][data-scope='slider']": {
-    "ratio": 1,
-    "theme": "light",
-    "tone": "brand"
-  },
   "splitter [data-dragging][data-part='resize-trigger'][data-scope='splitter']": {
     "ratio": 1,
     "theme": "light",
