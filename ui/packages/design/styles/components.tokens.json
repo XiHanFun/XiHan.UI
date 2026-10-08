@@ -71824,6 +71824,7 @@
       "state": [
         "disabled",
         "tone",
+        "variant=solid",
         "xh-ink-surface"
       ],
       "defaultToken": [
