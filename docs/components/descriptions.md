@@ -199,8 +199,8 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 | `--xh-descriptions-pair-gap` | `item` | `gap` | `default` | `--xh-_descriptions-pair-gap` | descriptions 的 item 部件 gap 覆盖槽。 |
 | `--xh-descriptions-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | descriptions 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-descriptions-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | descriptions 的 title 部件 color 覆盖槽。 |
-| `--xh-descriptions-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | descriptions 的 title 部件 font-size 覆盖槽。 |
-| `--xh-descriptions-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | descriptions 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-descriptions-title-font-size` | `title` | `font-size` | `default` | `--xh-text-heading-3-size` | descriptions 的 title 部件 font-size 覆盖槽。 |
+| `--xh-descriptions-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-heading-3-weight` | descriptions 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-descriptions-value-fg` | `value` | `color` | `default` | `--xh-fg-default` | descriptions 的 value 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

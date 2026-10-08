@@ -110,7 +110,7 @@
     margin: 0;
     color: var(--xh-empty-state-title-fg, var(--xh-fg-default));
     font-size: var(--xh-empty-state-title-font-size, var(--xh-_empty-state-title-size));
-    font-weight: var(--xh-empty-state-title-font-weight, var(--xh-font-weight-semibold));
+    font-weight: var(--xh-empty-state-title-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-empty-state-title-leading, var(--xh-leading-tight));
   }
 

@@ -196,7 +196,7 @@ tone 为图标区上语气色，与全库同一根轴；绘制什么图标仍由
 | `--xh-empty-state-py` | `root` | `padding-block` | `default` | `--xh-_empty-state-py` | empty-state 的 root 部件 padding-block 覆盖槽。 |
 | `--xh-empty-state-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | empty-state 的 title 部件 color 覆盖槽。 |
 | `--xh-empty-state-title-font-size` | `title` | `font-size` | `default` | `--xh-_empty-state-title-size` | empty-state 的 title 部件 font-size 覆盖槽。 |
-| `--xh-empty-state-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | empty-state 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-empty-state-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-medium` | empty-state 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-empty-state-title-leading` | `title` | `line-height` | `default` | `--xh-leading-tight` | empty-state 的 title 部件 line-height 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

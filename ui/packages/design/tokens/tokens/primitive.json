@@ -287,15 +287,23 @@
     },
     "xl": {
       "$type": "dimension",
-      "$value": "1.125rem"
+      "$value": "1.25rem"
     },
     "2xl": {
       "$type": "dimension",
-      "$value": "1.375rem"
+      "$value": "1.5rem"
     },
     "3xl": {
       "$type": "dimension",
       "$value": "1.75rem"
+    },
+    "4xl": {
+      "$type": "dimension",
+      "$value": "2rem"
+    },
+    "5xl": {
+      "$type": "dimension",
+      "$value": "2.25rem"
     }
   },
   "font-weight": {

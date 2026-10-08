@@ -15,7 +15,7 @@
     /* 尺寸档只换这三个私有槽，各段从根上继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_page-header-py: var(--xh-space-4);
     --xh-_page-header-row-gap: var(--xh-space-2);
-    --xh-_page-header-title-size: var(--xh-text-heading-3-size);
+    --xh-_page-header-title-size: var(--xh-text-heading-2-size);
     /* 形态档只换这两个：不画面的那一档左右不留内衬、也不切圆角 */
     --xh-_page-header-px: 0;
     --xh-_page-header-radius: 0;
@@ -47,7 +47,7 @@
   [data-scope='page-header'][data-part='root'][data-size='lg'] {
     --xh-_page-header-py: var(--xh-space-6);
     --xh-_page-header-row-gap: var(--xh-space-3);
-    --xh-_page-header-title-size: var(--xh-text-heading-2-size);
+    --xh-_page-header-title-size: var(--xh-text-heading-1-size);
   }
 
   /* —— 分隔线 —— */
@@ -115,7 +115,7 @@
     color: var(--xh-page-header-title-fg, var(--xh-fg-default));
     font-size: var(--xh-page-header-title-font-size, var(--xh-_page-header-title-size));
     /* 页面级标题：字重走标题档令牌，不直接下探字重原语 */
-    font-weight: var(--xh-page-header-title-font-weight, var(--xh-text-heading-3-weight));
+    font-weight: var(--xh-page-header-title-font-weight, var(--xh-text-heading-2-weight));
     line-height: var(--xh-leading-tight);
   }
 

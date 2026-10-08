@@ -8,7 +8,8 @@
 // 颜色 --xh-fg-default；
 // 集合标题（RadioGroup / CheckboxGroup / Listbox / Tree / TagGroup / Descriptions）= --xh-fg-muted，与集合 --xh-space-2；
 // 说明 = --xh-text-secondary-size 13 / --xh-fg-muted / --xh-leading-normal；错误文案 = 13 / --xh-fg-danger；
-// Surface / Feedback / 浮层内标题 = --xh-text-label-size + --xh-font-weight-semibold，页面级面板（Dialog / Drawer / Tour）= heading-3；
+// Surface / 浮层内标题 = --xh-text-label-size + --xh-font-weight-medium；区块标题（Card / Descriptions / Alert / Notification / Steps）
+// 与面板标题（Dialog / Drawer / Tour）= heading-3（16 / 500）；页面标题（PageHeader）= heading-2（20 / 500）；
 // 禁用标签 --xh-fg-subtle；控件内图标 --xh-icon-size 兜底只能是 --xh-glyph-size-sm / md / lg（按 data-size），
 // --xh-glyph-size-text 只许纯行内文字组件（Tag / Kbd / Breadcrumb / Typography / Highlight）；
 // Feedback 指示符（Alert / Notification）统一 --xh-glyph-size-md。
@@ -61,15 +62,10 @@ const COLLECTION_TITLE = {
   'tag-group': 'root',
   'descriptions': 'item',
 }
-/** Surface / Feedback / 浮层内标题：scope → 标题部件。 */
+/** Surface / 浮层内标题：scope → 标题部件。 */
 const SURFACE_TITLE = {
-  'card': 'title',
-  'descriptions': 'title',
-  'alert': 'title',
-  'notification': 'item-title',
   'floating-panel': 'title',
   'approval': 'title',
-  'steps': 'title',
   'timeline': 'title',
   'popover': 'title',
   'hover-card': 'title',
@@ -87,8 +83,19 @@ const DISCLOSURE_LABEL = {
   'reasoning': 'label',
   'tool-call': 'label',
 }
-/** 页面级标题：heading-3（Dialog / Drawer / Tour 的面板标题与 PageHeader 的页面标题）。 */
-const PAGE_TITLE = new Set(['dialog', 'drawer', 'tour', 'page-header'])
+/** 区块与面板标题：scope → 标题部件，取 heading-3（16 / 500）。 */
+const SECTION_TITLE = {
+  'card': 'title',
+  'descriptions': 'title',
+  'alert': 'title',
+  'notification': 'item-title',
+  'steps': 'title',
+  'dialog': 'title',
+  'drawer': 'title',
+  'tour': 'title',
+}
+/** 页面标题：heading-2（PageHeader）。 */
+const PAGE_TITLE = new Set(['page-header'])
 /**
  * 纯行内文字组件：图标随文（--xh-glyph-size-text）。
  * tag-group 的条目就是 tag 的 root，格子里的选中标记（item-indicator）与 tag 关闭钮的叉同一把随文尺，
@@ -312,7 +319,7 @@ for (const skin of skins) {
 }
 
 // 标题
-for (const [scope, part] of [...Object.entries(SURFACE_TITLE), ...[...PAGE_TITLE].map(s => [s, 'title'])]) {
+for (const [scope, part] of [...Object.entries(SURFACE_TITLE), ...Object.entries(SECTION_TITLE), ...[...PAGE_TITLE].map(s => [s, 'title'])]) {
   if (!scopes.has(scope)) {
     problems.push(`${scope}.css 读不到——标题名单过期`)
     continue
@@ -323,12 +330,16 @@ for (const [scope, part] of [...Object.entries(SURFACE_TITLE), ...[...PAGE_TITLE
     continue
   }
   if (PAGE_TITLE.has(scope)) {
-    expect(scope, part, title, 'font-size', '--xh-text-heading-3-size', '页面级标题')
-    expect(scope, part, title, 'font-weight', '--xh-text-heading-3-weight', '页面级标题')
+    expect(scope, part, title, 'font-size', '--xh-text-heading-2-size', '页面标题')
+    expect(scope, part, title, 'font-weight', '--xh-text-heading-2-weight', '页面标题')
+  }
+  else if (scope in SECTION_TITLE) {
+    expect(scope, part, title, 'font-size', '--xh-text-heading-3-size', '区块与面板标题')
+    expect(scope, part, title, 'font-weight', '--xh-text-heading-3-weight', '区块与面板标题')
   }
   else {
-    expect(scope, part, title, 'font-size', '--xh-text-label-size', 'Surface / Feedback / 浮层内标题')
-    expect(scope, part, title, 'font-weight', '--xh-font-weight-semibold', 'Surface / Feedback / 浮层内标题')
+    expect(scope, part, title, 'font-size', '--xh-text-label-size', 'Surface / 浮层内标题')
+    expect(scope, part, title, 'font-weight', '--xh-font-weight-medium', 'Surface / 浮层内标题')
   }
 }
 
@@ -381,7 +392,7 @@ if (problems.length) {
   console.error('[check-text-role] ✗ 文字与图标没按角色取令牌：')
   for (const p of problems)
     console.error(`  ${p}`)
-  console.error('\n字段标签 14/500/fg-default 贴控件 space-1 · 集合标题 fg-muted + space-2 · 说明 13/fg-muted · 标题 14/600 · 图标随档 sm/md/lg。存量登 family-backlog.json text 段。')
+  console.error('\n字段标签 14/400/fg-default 贴控件 space-1 · 集合标题 fg-muted + space-2 · 说明 13/fg-muted · 浮层内标题 14/500 · 区块与面板标题 heading-3 · 页面标题 heading-2 · 图标随档 sm/md/lg。存量登 family-backlog.json text 段。')
   process.exit(1)
 }
 

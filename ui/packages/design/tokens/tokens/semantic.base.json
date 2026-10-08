@@ -1118,28 +1118,35 @@
       "$value": "{font-size.sm}"
     },
     "heading-3-size": {
+      "$description": "面板与区块标题：Dialog、Drawer、Tour、Card、Descriptions、Alert、Notification、Steps。",
       "$type": "dimension",
-      "$value": "{font-size.xl}"
+      "$value": "{font-size.lg}"
     },
     "heading-3-weight": {
       "$type": "number",
-      "$value": "{font-weight.semibold}"
+      "$value": "{font-weight.medium}"
     },
     "heading-1-size": {
       "$type": "dimension",
-      "$value": "{font-size.3xl}"
+      "$value": "{font-size.2xl}"
     },
     "heading-1-weight": {
       "$type": "number",
-      "$value": "{font-weight.semibold}"
+      "$value": "{font-weight.medium}"
     },
     "heading-2-size": {
+      "$description": "页面标题：PageHeader。",
       "$type": "dimension",
-      "$value": "{font-size.2xl}"
+      "$value": "{font-size.xl}"
     },
     "heading-2-weight": {
       "$type": "number",
-      "$value": "{font-weight.semibold}"
+      "$value": "{font-weight.medium}"
+    },
+    "display-size": {
+      "$description": "大号数值展示：Statistic、Timer、NumberAnimation 的 lg 档，比 heading-1 高一档。",
+      "$type": "dimension",
+      "$value": "{font-size.3xl}"
     },
     "caption-size": {
       "$type": "dimension",

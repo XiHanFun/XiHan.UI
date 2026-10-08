@@ -125,8 +125,8 @@
   [data-scope='alert'][data-part='title'] {
     flex: none;
     color: var(--xh-alert-title-fg, var(--xh-fg-default));
-    font-size: var(--xh-alert-title-font-size, var(--xh-text-label-size));
-    font-weight: var(--xh-alert-title-font-weight, var(--xh-font-weight-semibold));
+    font-size: var(--xh-alert-title-font-size, var(--xh-text-heading-3-size));
+    font-weight: var(--xh-alert-title-font-weight, var(--xh-text-heading-3-weight));
     line-height: var(--xh-alert-title-leading, var(--xh-leading-tight));
   }
 
