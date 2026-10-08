@@ -57341,6 +57341,9 @@
               "name": "--xh-separator-content-font-size"
             },
             {
+              "name": "--xh-separator-content-font-weight"
+            },
+            {
               "name": "--xh-separator-dash-gap"
             },
             {
@@ -57348,6 +57351,12 @@
             },
             {
               "name": "--xh-separator-gap"
+            },
+            {
+              "name": "--xh-separator-mx"
+            },
+            {
+              "name": "--xh-separator-my"
             },
             {
               "name": "--xh-separator-radius"

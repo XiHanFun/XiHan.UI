@@ -63332,8 +63332,8 @@
         "variant=subtle"
       ],
       "defaultToken": [
+        "--xh-border-default",
         "--xh-border-strong",
-        "--xh-material-frosted-separator",
         "--xh-material-soft-separator"
       ],
       "visibility": "public",
@@ -63352,7 +63352,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "separator 的 content 部件 color 覆盖槽。"
@@ -63370,10 +63370,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "separator 的 content 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-separator-content-font-weight",
+      "component": "separator",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
+      ],
+      "visibility": "public",
+      "description": "separator 的 content 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-separator-dash-gap",
@@ -63430,10 +63448,48 @@
         "has([data-part='content'])"
       ],
       "defaultToken": [
-        "--xh-space-3"
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "separator 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-separator-mx",
+      "component": "separator",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "margin-inline"
+      ],
+      "state": [
+        "orientation=vertical"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "separator 的 root 部件 margin-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-separator-my",
+      "component": "separator",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "margin-block"
+      ],
+      "state": [
+        "has([data-part='content'])",
+        "orientation=horizontal"
+      ],
+      "defaultToken": [
+        "--xh-space-2_5",
+        "--xh-space-5"
+      ],
+      "visibility": "public",
+      "description": "separator 的 root 部件 margin-block 覆盖槽。"
     },
     {
       "name": "--xh-separator-radius",

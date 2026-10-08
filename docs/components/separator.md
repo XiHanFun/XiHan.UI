@@ -131,6 +131,8 @@
 
 `@xihan-ui/styles/separator.css` 按 `[data-scope="separator"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-separator` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -151,12 +153,15 @@
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-separator-align-length` | `line`<br>`root` | `flex` | `align=end`<br>`align=start`<br>`first-child`<br>`last-child` | `--xh-space-6` | separator 的 line、root 部件 flex 覆盖槽。 |
-| `--xh-separator-color` | `line`<br>`root` | `background` | `dashed`<br>`default`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=strong`<br>`variant=subtle` | `--xh-border-strong`<br>`--xh-material-frosted-separator`<br>`--xh-material-soft-separator` | separator 的 line、root 部件 background 覆盖槽。 |
-| `--xh-separator-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` | separator 的 content 部件 color 覆盖槽。 |
-| `--xh-separator-content-font-size` | `content` | `font-size` | `default` | `--xh-text-secondary-size` | separator 的 content 部件 font-size 覆盖槽。 |
+| `--xh-separator-color` | `line`<br>`root` | `background` | `dashed`<br>`default`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=strong`<br>`variant=subtle` | `--xh-border-default`<br>`--xh-border-strong`<br>`--xh-material-soft-separator` | separator 的 line、root 部件 background 覆盖槽。 |
+| `--xh-separator-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | separator 的 content 部件 color 覆盖槽。 |
+| `--xh-separator-content-font-size` | `content` | `font-size` | `default` | `--xh-text-body-size` | separator 的 content 部件 font-size 覆盖槽。 |
+| `--xh-separator-content-font-weight` | `content` | `font-weight` | `default` | `--xh-font-weight-medium` | separator 的 content 部件 font-weight 覆盖槽。 |
 | `--xh-separator-dash-gap` | `line`<br>`root` | `background` | `dashed`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1_5` | separator 的 line、root 部件 background 覆盖槽。 |
 | `--xh-separator-dash-length` | `line`<br>`root` | `background` | `dashed`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1_5` | separator 的 line、root 部件 background 覆盖槽。 |
-| `--xh-separator-gap` | `root` | `gap` | `has([data-part='content'])` | `--xh-space-3` | separator 的 root 部件 gap 覆盖槽。 |
+| `--xh-separator-gap` | `root` | `gap` | `has([data-part='content'])` | `--xh-space-4` | separator 的 root 部件 gap 覆盖槽。 |
+| `--xh-separator-mx` | `root` | `margin-inline` | `orientation=vertical` | `--xh-space-3` | separator 的 root 部件 margin-inline 覆盖槽。 |
+| `--xh-separator-my` | `root` | `margin-block` | `has([data-part='content'])`<br>`orientation=horizontal` | `--xh-space-2_5`<br>`--xh-space-5` | separator 的 root 部件 margin-block 覆盖槽。 |
 | `--xh-separator-radius` | `line`<br>`root` | `border-radius` | `default` | `--xh-shape-pill` | separator 的 line、root 部件 border-radius 覆盖槽。 |
 | `--xh-separator-thickness` | `line`<br>`root` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | separator 的 line、root 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
@@ -164,3 +169,7 @@
 ### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+
+### RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
