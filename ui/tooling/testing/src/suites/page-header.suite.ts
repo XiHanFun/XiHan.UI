@@ -2,7 +2,7 @@ import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { pageHeaderAnatomy, pageHeaderKeyboard } from '@xihan-ui/headless'
 
 // 页头是容器，APG 没有对应模式；判据只锁「两个轴与分隔线如实落到根上、各段拿得到自己的身份、
-// 返回位除身份外一个属性都不多写」。
+// 返回位接动作钮家族的 icon ghost 档、不补语义属性」。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/'
 
 /** 一整块页头：返回位、标题、副标题、行尾操作、整行另起的页脚。 */
@@ -83,6 +83,9 @@ export const pageHeaderSuite: ConformanceSuite = {
             'aria-hidden': null,
             'type': 'button',
             'aria-label': '返回上一页',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-size': 'sm',
           },
         },
       },

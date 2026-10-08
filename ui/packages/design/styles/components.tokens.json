@@ -51672,6 +51672,48 @@
       "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-page-header-back-fg",
+      "component": "page-header",
+      "part": [
+        "back-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "page-header 的 back-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-page-header-back-fg-hover",
+      "component": "page-header",
+      "part": [
+        "back-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "page-header 的 back-trigger 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-page-header-bg",
       "component": "page-header",
       "part": [
@@ -51707,8 +51749,7 @@
         "variant=outline"
       ],
       "defaultToken": [
-        "--xh-border-default",
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "page-header 的 root 部件 border、border-block-end 覆盖槽。"
@@ -51783,7 +51824,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "page-header 的 description 部件 color 覆盖槽。"
@@ -51801,10 +51842,29 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "page-header 的 description 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-page-header-divider",
+      "component": "page-header",
+      "part": [
+        "description",
+        "title"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "page-header 的 description、title 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-page-header-extra-gap",

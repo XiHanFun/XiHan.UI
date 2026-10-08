@@ -17,7 +17,6 @@ export default function Demo(): ReactNode {
       <XhPageHeaderBackTrigger
         type="button"
         aria-label="返回订单列表"
-        style={{ inlineSize: "36px", blockSize: "36px", border: 0, borderRadius: "var(--xh-shape-control)", background: "transparent", color: "inherit", font: "inherit", cursor: "pointer" }}
       >
         <XhIcon icon={ArrowLeftIcon} />
       </XhPageHeaderBackTrigger>
