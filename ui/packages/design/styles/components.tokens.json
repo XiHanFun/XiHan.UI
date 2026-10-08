@@ -52170,6 +52170,61 @@
       "description": "pagination 的 item 部件 background-color 覆盖槽。"
     },
     {
+      "name": "--xh-pagination-item-border",
+      "component": "pagination",
+      "part": [
+        "ellipsis-trigger",
+        "first-trigger",
+        "item",
+        "last-trigger",
+        "next-trigger",
+        "prev-trigger"
+      ],
+      "property": [
+        "border",
+        "border-color"
+      ],
+      "state": [
+        "default",
+        "disabled",
+        "focus-visible"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "pagination 的 ellipsis-trigger、first-trigger、item、last-trigger、next-trigger、prev-trigger 部件 border、border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-pagination-item-border-hover",
+      "component": "pagination",
+      "part": [
+        "ellipsis-trigger",
+        "first-trigger",
+        "item",
+        "last-trigger",
+        "next-trigger",
+        "prev-trigger"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-border-strong"
+      ],
+      "visibility": "public",
+      "description": "pagination 的 ellipsis-trigger、first-trigger、item、last-trigger、next-trigger、prev-trigger 部件 border-color 覆盖槽。"
+    },
+    {
       "name": "--xh-pagination-item-border-selected",
       "component": "pagination",
       "part": [
@@ -52184,7 +52239,7 @@
         "focus-visible"
       ],
       "defaultToken": [
-        "--xh-_pagination-selected-bg"
+        "--xh-_pagination-selected-border"
       ],
       "visibility": "public",
       "description": "pagination 的 item 部件 border、border-color 覆盖槽。"
@@ -52208,7 +52263,7 @@
         "pressed"
       ],
       "defaultToken": [
-        "--xh-_pagination-selected-bg-active"
+        "--xh-_pagination-selected-border"
       ],
       "visibility": "public",
       "description": "pagination 的 item 部件 border-color 覆盖槽。"
@@ -52231,7 +52286,7 @@
         "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-_pagination-selected-bg-hover"
+        "--xh-_pagination-selected-border"
       ],
       "visibility": "public",
       "description": "pagination 的 item 部件 border-color 覆盖槽。"
@@ -52263,8 +52318,6 @@
         "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_action-variant-fg-hover",
-        "--xh-_action-variant-fg-pressed",
         "--xh-_action-variant-fg-rest",
         "--xh-fg-default"
       ],
@@ -52422,7 +52475,8 @@
         "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-control",
+        "--xh-shape-surface"
       ],
       "visibility": "public",
       "description": "pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger 部件 border-radius 覆盖槽。"

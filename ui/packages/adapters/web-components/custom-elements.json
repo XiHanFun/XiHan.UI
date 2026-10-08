@@ -46616,6 +46616,12 @@
               "name": "--xh-pagination-item-bg-selected-hover"
             },
             {
+              "name": "--xh-pagination-item-border"
+            },
+            {
+              "name": "--xh-pagination-item-border-hover"
+            },
+            {
               "name": "--xh-pagination-item-border-selected"
             },
             {

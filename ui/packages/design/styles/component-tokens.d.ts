@@ -2627,6 +2627,8 @@ export type ComponentTokenName
     | '--xh-pagination-item-bg-selected'
     | '--xh-pagination-item-bg-selected-active'
     | '--xh-pagination-item-bg-selected-hover'
+    | '--xh-pagination-item-border'
+    | '--xh-pagination-item-border-hover'
     | '--xh-pagination-item-border-selected'
     | '--xh-pagination-item-border-selected-active'
     | '--xh-pagination-item-border-selected-hover'
