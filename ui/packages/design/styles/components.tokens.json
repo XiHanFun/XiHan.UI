@@ -7337,7 +7337,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-glyph-size"
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
       "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 --xh-icon-size 覆盖槽。"
@@ -7504,7 +7504,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "carousel 的 indicator-group 部件 gap 覆盖槽。"
@@ -7631,7 +7631,7 @@
         "paused"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1_5"
       ],
       "visibility": "public",
       "description": "carousel 的 indicator、indicator-group、root 部件 block-size、inline-size、inset-block、inset-inline 覆盖槽。"
@@ -7931,17 +7931,18 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
         "default",
         "xh-action-profile=floating"
       ],
       "defaultToken": [
-        "--xh-_action-profile-visual-size"
+        "--xh-control-action-size"
       ],
       "visibility": "public",
-      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-carousel-viewport-radius",

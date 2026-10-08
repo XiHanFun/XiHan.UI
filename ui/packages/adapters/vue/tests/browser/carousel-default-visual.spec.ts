@@ -62,24 +62,25 @@ describe('carousel 默认视觉', () => {
     expect(root.height).toBe(viewport.height)
     expect(getComputedStyle(carousel.viewport).overflow).toBe('hidden')
     expect(getComputedStyle(carousel.indicators).position).toBe('absolute')
-    // 翻页钮走 Action Control floating 档 md：40px 正圆
-    expect([prev.width, prev.height, next.width, next.height]).toEqual([40, 40, 40, 40])
+    // 翻页钮走 Action Control floating 档，视觉盒取 xs 动作钮的尺：24px 正圆、字形 16px
+    expect([prev.width, prev.height, next.width, next.height]).toEqual([24, 24, 24, 24])
     expect(getComputedStyle(carousel.prev).borderRadius).toBe('50%')
+    expect(getComputedStyle(carousel.prev, '::before').width).toBe('16px')
   })
 
-  it('翻页与播放钮是 40px 圆钮：矮到 144px 的视口里右侧居中的翻页钮与右下角的播放钮仍不相叠', () => {
+  it('翻页与播放钮是 24px 圆钮：矮到 96px 的视口里右侧居中的翻页钮与右下角的播放钮仍不相叠', () => {
     const carousel = mount()
-    // 居中的钮占下半 20px、角上的钮连 12px 控件内距占 52px：h / 2 + 20 ≤ h − 52 即 h ≥ 144；48px 钮在这个高度下会叠上 12px
-    carousel.viewport.style.blockSize = '144px'
+    // 居中的钮占下半 12px、角上的钮连 12px 控件内距占 36px：h / 2 + 12 ≤ h − 36 即 h ≥ 96
+    carousel.viewport.style.blockSize = '96px'
     for (const trigger of [carousel.prev, carousel.next, carousel.autoplay]) {
       const rect = trigger.getBoundingClientRect()
-      expect([rect.width, rect.height]).toEqual([40, 40])
+      expect([rect.width, rect.height]).toEqual([24, 24])
       expect(getComputedStyle(trigger).borderRadius).toBe('50%')
     }
     expect(carousel.next.getBoundingClientRect().bottom).toBeLessThanOrEqual(carousel.autoplay.getBoundingClientRect().top)
   })
 
-  it('分页点是 8px 圆点，当前页拉长成 20px 品牌胶囊', () => {
+  it('分页点是 6px 圆点、点距 8px，当前页拉长成 20px 品牌胶囊', () => {
     const carousel = mount()
     const [current, other] = [...carousel.indicators.querySelectorAll<HTMLElement>('[data-part="indicator"]')]
     const currentRect = current!.getBoundingClientRect()
@@ -90,9 +91,10 @@ describe('carousel 默认视觉', () => {
     const brand = getComputedStyle(probe).backgroundColor
     probe.remove()
 
-    expect([otherRect.width, otherRect.height]).toEqual([8, 8])
+    expect([otherRect.width, otherRect.height]).toEqual([6, 6])
     expect(getComputedStyle(other!).borderRadius).toBe('50%')
-    expect([currentRect.width, currentRect.height]).toEqual([20, 8])
+    expect([currentRect.width, currentRect.height]).toEqual([20, 6])
+    expect(otherRect.left - currentRect.right).toBe(8)
     expect(getComputedStyle(current!).borderRadius).toBe('9999px')
     expect(getComputedStyle(current!).backgroundColor).toBe(brand)
   })
@@ -112,7 +114,7 @@ describe('carousel 默认视觉', () => {
     expect(prev.bottom).toBeLessThan(next.top)
     expect(indicators.right).toBeLessThanOrEqual(viewport.right)
     expect(indicators.top + indicators.height / 2).toBe(viewport.top + viewport.height / 2)
-    expect([current.width, current.height]).toEqual([8, 20])
+    expect([current.width, current.height]).toEqual([6, 20])
     expect(getComputedStyle(carousel.prev).rotate).toBe('90deg')
   })
 
@@ -150,14 +152,22 @@ describe('carousel 默认视觉', () => {
     else
       expect(first!.bottom).toBeLessThanOrEqual(second!.top)
 
-    // 盒子只管命中，点改由 ::after 画：当前项 20×8 的胶囊、其余 8×8 的圆点
+    // 盒子只管命中，点改由 ::after 画：当前项 20×6 的胶囊、其余 6×6 的圆点
     const currentMark = getComputedStyle(carousel.current, '::after')
     expect([currentMark.width, currentMark.height]).toEqual(
-      orientation === 'horizontal' ? ['20px', '8px'] : ['8px', '20px'],
+      orientation === 'horizontal' ? ['20px', '6px'] : ['6px', '20px'],
     )
     expect(getComputedStyle(carousel.current).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     const otherMark = getComputedStyle(indicators[1]!, '::after')
-    expect([otherMark.width, otherMark.height]).toEqual(['8px', '8px'])
+    expect([otherMark.width, otherMark.height]).toEqual(['6px', '6px'])
+  })
+
+  it.each(['horizontal', 'vertical'] as const)('%s 细指针下 6px 圆点的命中区两向都不低于 24px', (orientation) => {
+    const carousel = mount(orientation)
+    const other = carousel.indicators.querySelectorAll<HTMLElement>('[data-part="indicator"]')[1]!
+    const hit = getComputedStyle(other, '::after')
+    expect(Number.parseFloat(hit.width)).toBeGreaterThanOrEqual(24)
+    expect(Number.parseFloat(hit.height)).toBeGreaterThanOrEqual(24)
   })
 
   /** 细横条风格：沿轨道 16px、当前页 28px，垂直于轨道只有 4px；横条不是正方盒，圆角改走胶囊 */
