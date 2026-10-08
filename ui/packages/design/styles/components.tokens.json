@@ -66991,7 +66991,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "steps 的 description 部件 color 覆盖槽。"
@@ -67009,7 +67009,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "steps 的 description 部件 font-size 覆盖槽。"
@@ -67093,7 +67093,7 @@
       ],
       "defaultToken": [
         "--xh-_steps-accent-mark",
-        "--xh-bg-subtle"
+        "--xh-_steps-accent-subtle"
       ],
       "visibility": "public",
       "description": "steps 的 indicator、trigger 部件 background、border-color 覆盖槽。"
@@ -67118,7 +67118,33 @@
         "variant=dot"
       ],
       "defaultToken": [
-        "--xh-_steps-host-bg-hover"
+        "--xh-_steps-accent-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "steps 的 indicator、trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-steps-indicator-bg-completed-pressed",
+      "component": "steps",
+      "part": [
+        "indicator",
+        "trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled], [data-readonly])",
+        "not([data-variant='dot'])",
+        "pressed",
+        "readonly",
+        "state=completed",
+        "variant=dot"
+      ],
+      "defaultToken": [
+        "--xh-_steps-accent-subtle-active"
       ],
       "visibility": "public",
       "description": "steps 的 indicator、trigger 部件 background 覆盖槽。"
@@ -67151,6 +67177,7 @@
       "component": "steps",
       "part": [
         "indicator",
+        "item",
         "trigger"
       ],
       "property": [
@@ -67167,13 +67194,14 @@
         "readonly",
         "state=current",
         "state=incomplete",
+        "tone",
         "variant=dot"
       ],
       "defaultToken": [
         "--xh-_tone-active"
       ],
       "visibility": "public",
-      "description": "steps 的 indicator、trigger 部件 background、border-color 覆盖槽。"
+      "description": "steps 的 indicator、item、trigger 部件 background、border-color 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-bg-disabled",
@@ -67236,13 +67264,10 @@
       "state": [
         "disabled",
         "is(:active, [data-pressed])",
-        "is([data-state='incomplete'], [data-state='completed']:not([data-variant='dot'])",
         "not([data-disabled], [data-readonly])",
         "pressed",
         "readonly",
-        "state=completed",
-        "state=incomplete",
-        "variant=dot"
+        "state=incomplete"
       ],
       "defaultToken": [
         "--xh-_steps-host-bg-pressed"
@@ -67255,20 +67280,24 @@
       "component": "steps",
       "part": [
         "indicator",
-        "item"
+        "item",
+        "trigger"
       ],
       "property": [
         "background"
       ],
       "state": [
+        "not([data-variant='dot'])",
         "state=incomplete",
-        "tone"
+        "tone",
+        "variant=dot"
       ],
       "defaultToken": [
+        "--xh-_steps-accent",
         "--xh-_tone-subtle"
       ],
       "visibility": "public",
-      "description": "steps 的 indicator、item 部件 background 覆盖槽。"
+      "description": "steps 的 indicator、item、trigger 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-border",
@@ -67353,20 +67382,23 @@
       "component": "steps",
       "part": [
         "indicator",
-        "item"
+        "item",
+        "trigger"
       ],
       "property": [
         "border-color"
       ],
       "state": [
+        "not([data-variant='dot'])",
         "state=incomplete",
-        "tone"
+        "tone",
+        "variant=dot"
       ],
       "defaultToken": [
         "--xh-_steps-accent"
       ],
       "visibility": "public",
-      "description": "steps 的 indicator、item 部件 border-color 覆盖槽。"
+      "description": "steps 的 indicator、item、trigger 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-fg",
@@ -67469,20 +67501,23 @@
       "component": "steps",
       "part": [
         "indicator",
-        "item"
+        "item",
+        "trigger"
       ],
       "property": [
         "color"
       ],
       "state": [
+        "not([data-variant='dot'])",
         "state=incomplete",
-        "tone"
+        "tone",
+        "variant=dot"
       ],
       "defaultToken": [
-        "--xh-_steps-accent-text"
+        "--xh-_steps-on-accent"
       ],
       "visibility": "public",
-      "description": "steps 的 indicator、item 部件 color 覆盖槽。"
+      "description": "steps 的 indicator、item、trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-font-size",
@@ -67497,7 +67532,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_steps-caption-font-size"
+        "--xh-_steps-indicator-font-size"
       ],
       "visibility": "public",
       "description": "steps 的 indicator 部件 font-size 覆盖槽。"
@@ -67606,7 +67641,7 @@
         "state=current"
       ],
       "defaultToken": [
-        "--xh-_steps-highlight"
+        "none"
       ],
       "visibility": "public",
       "description": "steps 的 indicator 部件 box-shadow 覆盖槽。"
@@ -67780,7 +67815,7 @@
         "orientation=vertical"
       ],
       "defaultToken": [
-        "--xh-stroke-thick"
+        "--xh-stroke-thin"
       ],
       "visibility": "public",
       "description": "steps 的 separator 部件 block-size、inline-size、margin-inline-start、min-inline-size 覆盖槽。"
@@ -67818,7 +67853,7 @@
         "state=current"
       ],
       "defaultToken": [
-        "--xh-_steps-accent-text"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "steps 的 title 部件 color 覆盖槽。"
@@ -67837,7 +67872,7 @@
         "tone"
       ],
       "defaultToken": [
-        "--xh-_steps-accent-text"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "steps 的 item、title 部件 color 覆盖槽。"
@@ -67874,6 +67909,24 @@
       ],
       "defaultToken": [
         "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "steps 的 title 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-steps-title-font-weight-current",
+      "component": "steps",
+      "part": [
+        "title"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "state=current"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "steps 的 title 部件 font-weight 覆盖槽。"

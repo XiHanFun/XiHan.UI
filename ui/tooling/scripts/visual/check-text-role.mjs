@@ -7,7 +7,8 @@
 // --xh-control-font-sm / md / lg（控件字号随档，与 checkbox-group / radio-group 的条目文字同一把尺），
 // 颜色 --xh-fg-default；
 // 集合标题（RadioGroup / CheckboxGroup / Listbox / Tree / TagGroup / Descriptions）= --xh-fg-muted，与集合 --xh-space-2；
-// 说明 = --xh-text-secondary-size 13 / --xh-fg-muted / --xh-leading-normal；错误文案 = 13 / --xh-fg-danger；
+// 说明 = --xh-text-secondary-size 13 / --xh-fg-muted / --xh-leading-normal（CAPTION_DESCRIPTION 里的组件取次级标注
+// 12 / --xh-fg-subtle）；错误文案 = 13 / --xh-fg-danger；
 // Surface / Feedback / 浮层内标题 = --xh-text-label-size + --xh-font-weight-semibold，页面级面板（Dialog / Drawer / Tour）= heading-3；
 // 禁用标签 --xh-fg-subtle；控件内图标 --xh-icon-size 兜底只能是 --xh-glyph-size-sm / md / lg（按 data-size），
 // --xh-glyph-size-text 只许纯行内文字组件（Tag / Kbd / Breadcrumb / Typography / Highlight）；
@@ -122,6 +123,13 @@ const GLYPH_EXEMPT = {
 }
 /** 控件内图标允许的档。 */
 const GLYPH_STEPS = new Set(['--xh-glyph-size-sm', '--xh-glyph-size-md', '--xh-glyph-size-lg'])
+/**
+ * description 部件取次级标注角色（--xh-text-caption-size 12 / --xh-fg-subtle / --xh-leading-normal）而不是说明角色的组件。
+ * 照样逐条核，只是换一组期望值。
+ */
+const CAPTION_DESCRIPTION = {
+  steps: '步骤说明压在流程轴的标题下面，比标题低两级：12px 弱化色，与正文 14 / 次级色的标题拉开层级',
+}
 
 const backlog = await openBacklog('text')
 const problems = [...backlog.problems]
@@ -299,7 +307,12 @@ for (const [scope, container] of Object.entries(COLLECTION_TITLE)) {
 // 说明与错误文案：所有写了这两个部件的皮肤
 for (const skin of skins) {
   const description = declsFor(skin.comp, 'description')
-  if (description.size) {
+  if (description.size && skin.comp in CAPTION_DESCRIPTION) {
+    expect(skin.comp, 'description', description, 'font-size', '--xh-text-caption-size', '次级标注')
+    expect(skin.comp, 'description', description, 'color', '--xh-fg-subtle', '次级标注')
+    expect(skin.comp, 'description', description, 'line-height', '--xh-leading-normal', '次级标注')
+  }
+  else if (description.size) {
     expect(skin.comp, 'description', description, 'font-size', '--xh-text-secondary-size', '说明文字')
     expect(skin.comp, 'description', description, 'color', '--xh-fg-muted', '说明文字')
     expect(skin.comp, 'description', description, 'line-height', '--xh-leading-normal', '说明文字')

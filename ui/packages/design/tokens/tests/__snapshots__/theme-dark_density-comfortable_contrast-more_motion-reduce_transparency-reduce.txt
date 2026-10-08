@@ -290,6 +290,9 @@
 --xh-list-option-py-lg: 8px  ← var(--xh-space-2)
 --xh-list-option-py-md: 6px  ← var(--xh-space-1_5)
 --xh-list-option-py-sm: 4px  ← var(--xh-space-1)
+--xh-marker-size-lg: 32px  ← var(--xh-control-h-md)
+--xh-marker-size-md: 28px  ← var(--xh-control-h-sm)
+--xh-marker-size-sm: 24px  ← var(--xh-control-action-size)
 --xh-measure-prose: 32rem
 --xh-motion-distance-lg: 0px
 --xh-motion-distance-md: 0px

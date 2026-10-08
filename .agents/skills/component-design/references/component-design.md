@@ -315,7 +315,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 正方盒（inline-size 与 block-size 同槽）必须取 circle，不得用 pill 冒充圆。
 - 位置指示点（Carousel indicator、Tour progress-dot）统一为一种语言：8px 圆点（circle），当前项拉长为 20px 胶囊（pill）。
 - 序号状态圆点（Steps / Timeline indicator）取 circle；可点分页按钮（Pagination item）是描边方块，取 surface，二者不互相对齐。
-- 盛内容的圆（Avatar、带框 Icon、Steps 序号圆点）直径同一把尺：`--xh-control-h-sm/md/lg`，随密度换档，与同档控件等高；圆里的字形另按字形或指示符档取尺。Timeline 圆点与 Steps 点状形态（`variant="dot"`）的圆点不盛内容，是纯位置标记，走自己的小尺（`--xh-space-*` 相邻三格，sm / md / lg = 8 / 10 / 12px，不随密度换档），不在此列。
+- 盛内容的圆（Avatar、带框 Icon）直径同一把尺：`--xh-control-h-sm/md/lg`，随密度换档，与同档控件等高；圆里的字形另按字形或指示符档取尺。Steps 序号圆点是状态圆，取 `--xh-marker-size-sm/md/lg`（24 / 28 / 32px，比同档控件矮一档，随密度换档），圆里的序号 16px（sm 14px）。Timeline 圆点与 Steps 点状形态（`variant="dot"`）的圆点不盛内容，是纯位置标记，走自己的小尺（`--xh-space-*`，不随密度换档）：Timeline sm / md / lg = 8 / 10 / 12px；Steps 点状 md 8px、当前步放大一档到 10px（sm 6 / 8px、lg 10 / 12px），每个点都按当前步的直径占位。
 - 组件不得写 6px、10px 等独立圆角。
 - 内层圆角不得大于外层圆角减去内边距（surface 4px 轨道内 2px 内距，滑块 2px 满足）。
 - 相连控件消除相接侧圆角，不使用负 margin 伪造连接。
@@ -416,6 +416,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | `--xh-control-box-sm` / `md` / `lg` | 28 / 36 / 44px | 24 / 32 / 40px | 方格：PinInput 格、floating 动作钮 |
 | `--xh-control-action-size` | 24px | 20px | xs 动作钮、sm 字段里的 field-inset 钮 |
 | `--xh-chip-h-sm` / `md` / `lg` | 20 / 24 / 28px | 18 / 20 / 24px | 状态 chip（Tag）的块尺寸：比同档控件矮一截 |
+| `--xh-marker-size-sm` / `md` / `lg` | 24 / 28 / 32px | 20 / 24 / 28px | 盛序号或对号的状态圆（Steps 序号圆点）的直径：比同档控件矮一档 |
 | `--xh-nav-row-h-sm` / `md` / `lg` | 32 / 40 / 44px | 28 / 36 / 40px | 导航行（SideNav 分支与链接）：比同档控件高一截，整列扫读更松 |
 | `--xh-control-indicator-sm` / `md` / `lg` | 12 / 16 / 20px | 10 / 14 / 18px | 勾选方框、单选圆、状态字形、行内拖拽把手 |
 | `--xh-glyph-size-sm` … `4xl` | 16 / 20 / 24 / 32 / 40 / 56 / 72px | | 图标与插图，见 §6.5 |
@@ -522,8 +523,9 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 组件 | 缺省 | sm / lg |
 | --- | --- | --- |
 | Avatar、AvatarGroup、Icon 底框 | `control-h-md` | `control-h-sm` / `control-h-lg` |
-| Steps 序号圆 | `control-h-md` | `control-h-sm` / `control-h-lg` |
-| Steps 点状、Timeline 圆点 | 10px | 8 / 12px |
+| Steps 序号圆 | `marker-size-md`（28px），序号 16px | `marker-size-sm` / `marker-size-lg`（24 / 32px），序号 14 / 16px |
+| Steps 点状 | 8px，当前步 10px | 6 / 8px、10 / 12px |
+| Timeline 圆点 | 10px | 8 / 12px |
 | Badge 计数 | 最小 20px | 14 / 24px |
 | Badge 圆点 | 8px | 6 / 10px |
 | Spinner | 20px | 16 / 24px |
@@ -551,7 +553,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 - 背景：canvas、surface、surface-raised、subtle、overlay。
 - 前景：default、muted、subtle、disabled、inverse。
-- 品牌：brand / fg-on-brand、brand-subtle / fg-on-brand-subtle。brand-subtle 为 12% 品牌拼色（与 tone subtle 同曲线 12 / 20 / 28），专属「选中 / 当前」语义，不再用于 today、completed、open 等未选中语义。
+- 品牌：brand / fg-on-brand、brand-subtle / fg-on-brand-subtle。brand-subtle 为 12% 品牌拼色（与 tone subtle 同曲线 12 / 20 / 28），专属「选中 / 当前」语义，不再用于 today、open 等未选中语义；Steps 走过的步是唯一登记的例外（§7.3）。
 - 状态：info、success、warning、danger、neutral。
 - 边界：default（一切根面外边与 raised 面描边）、subtle（仅内部分隔线与分隔伪元素）、strong（仅 contrast-more 与刻意登记的强调边）、control / control-hover / control-focus（字段与焦点边）、danger。
 
@@ -589,7 +591,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 展开路径 / 打开中（不是选中） | Menu / Menubar / NavigationMenu trigger open、Cascader in-path、SideNav in-path、Date / Time trigger open | 与所在家族 hover 同档的中性面，不用品牌色、不加粗；非颜色通道由 chevron 转向与子面板承担。Menubar / NavigationMenu trigger 投影 `data-in-path`，`nav` 语境 open-path = `--xh-bg-subtle` | — | — |
 | 图例显隐（开是常态） | 图表图例项（`aria-pressed`） | 显示：实心色标 + `--xh-fg-default` 文字；隐藏：空心色标（只留描边）+ `--xh-fg-subtle` 文字 + 删除线；不用品牌淡底，否则整排图例都成了品牌底 | hover 100 → pressed 200（白底承载面阶梯） | 色标 CanvasText；隐藏态保留空心与删除线 |
 
-- `--xh-bg-brand-subtle` 退出 today、completed、open 语义：Calendar today 改 inset 1px `--xh-fg-brand` 环 + 品牌字；Steps completed 改中性面 + 品牌对号；点状形态没有放对号的地方，三态改由形状区分：没走到的空心圈、走过的实心标记色（`--xh-fg-brand`）、当前步实心品牌（格状当前）外加一圈同色环。
+- `--xh-bg-brand-subtle` 退出 today、open 语义：Calendar today 改 inset 1px `--xh-fg-brand` 环 + 品牌字。Steps 序号圆点三态都无边无影：没走到的 `--xh-bg-subtle` + `--xh-fg-muted`，当前步实心品牌（格状当前）+ 反白字，走过的步是登记的例外，取 `--xh-bg-brand-subtle` + 品牌对号（走过的步与当前步同属一段已点亮的进度，阶梯 12 → 20 → 28）；标了语气又没走到的步取语气实心 + 反白字（出错的那一步是危险色实心）。标题当前步 medium、正文色，走过的步正文色，没走到的步次级色；说明 12px `--xh-fg-subtle`；连接线 1px，没走到的那截 `--xh-border-default`、走过的那截品牌色。点状形态没有放对号的地方，三态改由形状区分：没走到的空心圈、走过的实心标记色（`--xh-fg-brand`）、当前步实心品牌（格状当前）并放大一档。
 - 集合行不允许零按压反馈；pressed 只换面（§9.2）。
 - 锚定浮层里的列表（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列）行是通栏：面板只留块向内衬（`--xh-space-1`），侧边内衬 0，行不取圆角，悬停淡底铺满整行；页内列表（Listbox、Transfer、Tree）仍按 inset 内缩。
 - 选中对号一律落在行尾（`indicator` 列），不放行首：行首一格归前导图标、展开箭头、拖拽把手与勾选框；TagGroup 选中标签的对号同样在标签尾部（2026-09-24 起）。

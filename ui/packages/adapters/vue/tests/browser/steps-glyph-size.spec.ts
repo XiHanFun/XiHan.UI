@@ -1,7 +1,7 @@
 // 步骤条自绘的状态字形——走过的步里皮肤画的兜底对号——是指示符，不是控件内图标：它与序号圆点同属
 // --xh-control-indicator-* 一族，root 上的 --xh-icon-size（桥自 --xh-steps-icon-size，按尺寸档取字形尺，
 // md 20px）只管作者放进标题 / 说明里的图标。两档密度一起量：对号与作者塞进圆点里的 XhIcon 走指示符档
-// 16 / 14，作者放进标题里的图标两档都是 md 档的字形尺；圆点自己走 control-h 尺，随密度换档。
+// 16 / 14，作者放进标题里的图标两档都是 md 档的字形尺；圆点自己走 marker-size 尺，随密度换档。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
@@ -106,9 +106,9 @@ describe.each(['comfortable', 'compact'] as const)('步骤条自绘状态字形�
     const observed = describeGlyph(dot, '::before')
     expect(check.width, observed).toBe(indicator)
     expect(check.height, observed).toBe(indicator)
-    // 圆点走 control-h-md，随密度换档；对号落得进去
+    // 圆点走 marker-size-md，随密度换档；对号落得进去
     const rect = dot.getBoundingClientRect()
-    const diameter = tokenPx('--xh-control-h-md')
+    const diameter = tokenPx('--xh-marker-size-md')
     expect(rect.width, `圆点 ${rect.width}×${rect.height}`).toBe(diameter)
     expect(rect.height, `圆点 ${rect.width}×${rect.height}`).toBe(diameter)
     expect(check.width, observed).toBeLessThan(rect.width)

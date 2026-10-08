@@ -61597,6 +61597,9 @@
               "name": "--xh-steps-indicator-bg-completed-hover"
             },
             {
+              "name": "--xh-steps-indicator-bg-completed-pressed"
+            },
+            {
               "name": "--xh-steps-indicator-bg-current"
             },
             {
@@ -61709,6 +61712,9 @@
             },
             {
               "name": "--xh-steps-title-font-weight"
+            },
+            {
+              "name": "--xh-steps-title-font-weight-current"
             },
             {
               "name": "--xh-steps-trigger-bg-hover"

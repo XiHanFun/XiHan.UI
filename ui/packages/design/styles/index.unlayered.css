@@ -41354,36 +41354,35 @@
   --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-md));
 
   /* 尺寸档只换这三个私有槽，序号圆点、标题与圆点里的序号都从 root 继承它们，
-     换档不必给每个部件各写一条选择器；说明走说明角色（13px），不随档。
-     圆点与 Avatar、带框 Icon 同一把尺：control-h 的 sm / md / lg，随密度换档 */
-  --xh-_steps-indicator-size: var(--xh-control-h-md);
+     换档不必给每个部件各写一条选择器；说明走次级标注（12px），不随档。
+     圆点取状态圆那把尺：marker-size 的 sm / md / lg（24 / 28 / 32），比同档控件矮一档，随密度换档；
+     圆里的序号比同档控件字大一档（sm 14、md / lg 16） */
+  --xh-_steps-indicator-size: var(--xh-marker-size-md);
   --xh-_steps-title-font-size: var(--xh-control-font-md);
-  --xh-_steps-caption-font-size: var(--xh-text-caption-size);
+  --xh-_steps-indicator-font-size: var(--xh-control-font-lg);
   /* 圆点一圈边的宽：序号圆点是细边（多数状态透明占位），点状形态的空心圈要粗一档才读得出是个圈 */
   --xh-_steps-indicator-border-width: var(--xh-stroke-thin);
-  /* 圆点四周给当前步那圈环留的位置：序号圆点不留，点状形态留出环的宽度，换步不挪版面 */
+  /* 圆点四周的留位：序号圆点不留；点状形态按当前步放大后的直径给每个点留位，换步不挪版面 */
   --xh-_steps-indicator-margin: var(--xh-space-0);
-  /* 当前步那圈环：离圆点边一道缝，环本身一道粗描边宽 */
+  /* 当前步的进度环：离圆点边一道缝，环本身一道粗描边宽 */
   --xh-_steps-ring-gap: var(--xh-space-0_5);
   --xh-_steps-ring-thickness: var(--xh-stroke-thick);
 
-  /* 语气落在当前步的标记、走过那几步的对号与连接线上：强调色画描边与填充，
-     accent-text 是普通底上的强调文字（走过与当前步的标题），on-accent 是实心底上的前景。
-     没写 data-tone 时 --xh-_tone 一族没被声明，三个槽都退回原来的品牌配色。
-     走过的步不再用品牌淡底（brand-subtle 退出 completed 语义），淡底那两支私有槽随之撤掉 */
+  /* 语气落在当前步的标记、走过那几步的淡底与对号、连接线上：强调色画描边与填充，
+     accent-subtle 一族是走过那几步的淡底三档（静息 / 悬停 / 按下），on-accent 是实心底上的前景。
+     没写 data-tone 时 --xh-_tone 一族没被声明，这几个槽都退回品牌配色 */
   --xh-_steps-accent: var(--xh-_tone, var(--xh-bg-brand));
-  --xh-_steps-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
-  /* 走过的步里那枚对号：中性淡底上的品牌色标记，不用标题那档更深的字色 */
+  --xh-_steps-accent-subtle: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+  --xh-_steps-accent-subtle-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-brand-subtle-hover));
+  --xh-_steps-accent-subtle-active: var(--xh-_tone-subtle-active, var(--xh-bg-brand-subtle-active));
+  /* 走过的步里那枚对号：淡底上的强调色标记 */
   --xh-_steps-accent-mark: var(--xh-_tone-fg, var(--xh-fg-brand));
   --xh-_steps-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
-  /* 触发器是序号圆点的承载面：圆点静息就坐在 --xh-bg-subtle（100）的淡底上，阶梯按淡底容器走
+  /* 触发器是序号圆点的承载面：没走到的圆点静息就坐在 --xh-bg-subtle（100）的淡底上，阶梯按淡底容器走
      （hover 200 → pressed 300）。两支私有槽是这一档的唯一来源——触发器拿它们给
      --xh-action-host-bg-* 赋值（桥接槽只写不读），圆点悬停 / 按下读同一支私有槽，即与宿主的 host 槽同源 */
   --xh-_steps-host-bg-hover: var(--xh-bg-subtle-hover);
   --xh-_steps-host-bg-pressed: var(--xh-bg-subtle-active);
-  /* 走过的那几步是实心圆，顶边画一条极浅的内高光把它衬出厚度 */
-  --xh-_steps-highlight: inset 0 var(--xh-stroke-thin) 0 0
-    color-mix(in oklab, var(--xh-_steps-on-accent) 14%, transparent);
 
   display: flex;
   flex-direction: column;
@@ -41409,33 +41408,37 @@
 /* 缺省档写在上面的基础规则里 */
 .xh-scope-steps[data-part='root'][data-size='sm'] {
   --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-sm));
-  --xh-_steps-indicator-size: var(--xh-control-h-sm);
+  --xh-_steps-indicator-size: var(--xh-marker-size-sm);
   --xh-_steps-title-font-size: var(--xh-control-font-sm);
-  /* 字号档最小就是 xs，序号不再往下走，故不重声明 caption */
+  --xh-_steps-indicator-font-size: var(--xh-control-font-md);
 }
 
+/* 大档的序号与中档同为 16px：圆只大一档，字再放大就顶到圆边 */
 .xh-scope-steps[data-part='root'][data-size='lg'] {
   --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-lg));
-  --xh-_steps-indicator-size: var(--xh-control-h-lg);
+  --xh-_steps-indicator-size: var(--xh-marker-size-lg);
   --xh-_steps-title-font-size: var(--xh-control-font-lg);
-  --xh-_steps-caption-font-size: var(--xh-text-secondary-size);
 }
 
 /* —— 点状形态 —— */
-/* 圆点不盛内容，是纯位置标记：直径不在控件高度那把尺上，与 Timeline 圆点同走空间尺相邻的三格，
-   不随密度换档；描边粗一档，四周留出当前步那圈环的宽度 */
+/* 圆点不盛内容，是纯位置标记：直径不在控件高度那把尺上，走空间尺，不随密度换档；描边粗一档。
+   走过与没走到的点 8px，当前步放大一档到 10px（sm 6 / 8、lg 10 / 12）：大小是当前步与走过的步之间的形状通道。
+   每个点都按当前步的直径占位，小一档的点四周补半档留位，换步时版面不挪、点心仍在同一条线上 */
 .xh-scope-steps[data-part='root'][data-variant='dot'] {
-  --xh-_steps-indicator-size: var(--xh-space-2_5);
+  --xh-_steps-indicator-size: var(--xh-space-2);
+  --xh-_steps-indicator-current-size: var(--xh-space-2_5);
   --xh-_steps-indicator-border-width: var(--xh-stroke-thick);
-  --xh-_steps-indicator-margin: calc(var(--xh-_steps-ring-gap) + var(--xh-_steps-ring-thickness));
+  --xh-_steps-indicator-margin: calc((var(--xh-_steps-indicator-current-size) - var(--xh-_steps-indicator-size)) * 0.5);
 }
 
 .xh-scope-steps[data-part='root'][data-variant='dot'][data-size='sm'] {
-  --xh-_steps-indicator-size: var(--xh-space-2);
+  --xh-_steps-indicator-size: var(--xh-space-1_5);
+  --xh-_steps-indicator-current-size: var(--xh-space-2);
 }
 
 .xh-scope-steps[data-part='root'][data-variant='dot'][data-size='lg'] {
-  --xh-_steps-indicator-size: var(--xh-space-3);
+  --xh-_steps-indicator-size: var(--xh-space-2_5);
+  --xh-_steps-indicator-current-size: var(--xh-space-3);
 }
 
 /* 步骤与连接线必须保持在同一条流程轴上，空间不足时由标题省略而不是拆成两行。 */
@@ -41553,14 +41556,14 @@
   color: var(--xh-fg-disabled);
 }
 
-/* 序号圆点：未开始使用中性面，当前步骤实心强调，已完成步骤中性面上画品牌对号。 */
+/* 序号圆点：没走到的中性淡底配次级字色，当前步品牌实心配反白字，走过的步品牌淡底配品牌对号；三态都无边无影 */
 .xh-scope-steps[data-part='indicator'] {
   /* 圆点里的字形是指示符：对号按指示符档取尺、随密度换档（comfortable 16 / compact 14），
      不读 root 上只管作者标题 / 说明图标的 --xh-steps-icon-size；作者塞进圆点的 XhIcon 与兜底对号同一把尺。
-     圆点自己走 control-h 的尺（最小 compact sm 的 28px），两档字形在三档圆点里都留得出边距 */
+     圆点自己走 marker-size 的尺（最小 compact sm 的 20px），两档字形在三档圆点里都留得出边距 */
   --xh-icon-size: var(--xh-steps-indicator-mark-size, var(--xh-control-indicator-size));
 
-  /* 当前步那圈环（::after）以圆点为准绳定位 */
+  /* 当前步的进度环（::after）以圆点为准绳定位 */
   position: relative;
   display: inline-flex;
   grid-row: 1 / span 2;
@@ -41573,7 +41576,7 @@
   border-radius: var(--xh-steps-indicator-radius, var(--xh-shape-circle));
   background: var(--xh-steps-indicator-bg, var(--xh-bg-subtle));
   color: var(--xh-steps-indicator-fg, var(--xh-fg-muted));
-  font-size: var(--xh-steps-indicator-font-size, var(--xh-_steps-caption-font-size));
+  font-size: var(--xh-steps-indicator-font-size, var(--xh-_steps-indicator-font-size));
   font-weight: var(--xh-font-weight-medium);
   /* 等宽数字：1 与 7 的字形宽度在比例字体里并不相同，不定住会让序号左右抖一格 */
   font-variant-numeric: tabular-nums;
@@ -41591,23 +41594,30 @@
 
 /* 圆点是格状当前的标记，但不是激活宿主：宿主是投影了 row 档的触发器；圆点在宿主的
    :hover / :is(:active, [data-pressed]) 下读宿主 host 槽的同一来源换面，同一时间线，不缩放——
-   圆点自己是 100 的淡底，坐在触发器的 hover 面（100）上，再上一档到 200 才与承载面分得开，按下到 300；
-   当前步的实心面按下换语气 active 档 */
+   没走到的圆点自己是 100 的淡底，坐在触发器的 hover 面（100）上，再上一档到 200 才与承载面分得开，按下到 300；
+   走过的圆点走品牌淡底的阶梯（12% → 悬停 20% → 按下 28%）；当前步的实心面按下换语气 active 档 */
 .xh-scope-steps[data-part='trigger']:hover:not([data-disabled], [data-readonly])
   .xh-scope-steps[data-part='indicator'][data-state='incomplete'] {
   background: var(--xh-steps-indicator-bg-hover, var(--xh-_steps-host-bg-hover));
   color: var(--xh-steps-indicator-fg-hover, var(--xh-fg-default));
 }
 
-/* 点状形态里走过的点是实心标记色，悬停不换成中性面：承载它的行换面即是悬停反馈 */
+/* 点状形态里走过的点是实心标记色，悬停不换面：承载它的行换面即是悬停反馈 */
 .xh-scope-steps[data-part='trigger']:hover:not([data-disabled], [data-readonly])
   .xh-scope-steps[data-part='indicator'][data-state='completed']:not([data-variant='dot']) {
-  background: var(--xh-steps-indicator-bg-completed-hover, var(--xh-_steps-host-bg-hover));
+  background: var(--xh-steps-indicator-bg-completed-hover, var(--xh-_steps-accent-subtle-hover));
 }
 
 .xh-scope-steps[data-part='trigger']:not([data-disabled], [data-readonly]):is(:active, [data-pressed])
-  .xh-scope-steps[data-part='indicator']:is([data-state='incomplete'], [data-state='completed']:not([data-variant='dot'])) {
+  .xh-scope-steps[data-part='indicator'][data-state='incomplete'] {
   background: var(--xh-steps-indicator-bg-pressed, var(--xh-_steps-host-bg-pressed));
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
+}
+
+.xh-scope-steps[data-part='trigger']:not([data-disabled], [data-readonly]):is(:active, [data-pressed])
+  .xh-scope-steps[data-part='indicator'][data-state='completed']:not([data-variant='dot']) {
+  background: var(--xh-steps-indicator-bg-completed-pressed, var(--xh-_steps-accent-subtle-active));
   transition-duration: var(--xh-motion-duration-press);
   transition-timing-function: var(--xh-motion-ease-press);
 }
@@ -41623,19 +41633,19 @@
   border-color: var(--xh-steps-indicator-border-current, var(--xh-_steps-accent));
   background: var(--xh-steps-indicator-bg-current, var(--xh-_steps-accent));
   color: var(--xh-steps-indicator-fg-current, var(--xh-_steps-on-accent));
-  box-shadow: var(--xh-steps-indicator-shadow, var(--xh-_steps-highlight));
+  box-shadow: var(--xh-steps-indicator-shadow, none);
 }
 
-/* 走过的步：中性淡底（透明边位）承一枚品牌色对号；标了语气的步对号跟语气的前景走 */
+/* 走过的步：品牌淡底（透明边位）承一枚品牌色对号；标了语气的步淡底与对号跟语气走 */
 .xh-scope-steps[data-part='indicator'][data-state='completed'] {
   border-color: var(--xh-steps-indicator-border-completed, transparent);
-  background: var(--xh-steps-indicator-bg-completed, var(--xh-bg-subtle));
+  background: var(--xh-steps-indicator-bg-completed, var(--xh-_steps-accent-subtle));
   color: var(--xh-steps-indicator-fg-completed, var(--xh-_steps-accent-mark));
 }
 
 /* 点状形态的三态：没走到的空心粗圈（墨色与序号形态的序号同一支），走过的实心标记色（序号形态里那枚对号的颜色），
-   当前步实心品牌（格状当前）外加一圈同色环。空心 / 实心 / 带环是形状通道，不只靠颜色分三态；
-   四周留出环的宽度，换步时版面不挪 */
+   当前步实心品牌（格状当前）并放大一档。空心 / 实心 / 放大是形状通道，不只靠颜色分三态；
+   每个点都按当前步的直径占位，换步时版面不挪 */
 .xh-scope-steps[data-part='indicator'][data-variant='dot'] {
   margin: var(--xh-_steps-indicator-margin);
   border-color: var(--xh-steps-indicator-border, var(--xh-fg-muted));
@@ -41643,15 +41653,16 @@
 }
 
 /* 实心的点底与圈同一色，取自 --xh-_steps-dot：走过的标记色、当前步品牌，按下换语气 active 档
-   （与序号圆点当前步按下同一档），动不了的禁用墨色。小圆点上画不下实心那档的内高光 */
+   （与序号圆点当前步按下同一档），动不了的禁用墨色 */
 .xh-scope-steps[data-part='indicator'][data-variant='dot'][data-state='completed'] {
   --xh-_steps-dot: var(--xh-steps-indicator-bg-completed, var(--xh-_steps-accent-mark));
 }
 
+/* 当前步的点放大一档、收掉补位：占的位置与别的点一样大 */
 .xh-scope-steps[data-part='indicator'][data-variant='dot'][data-state='current'] {
   --xh-_steps-dot: var(--xh-steps-indicator-bg-current, var(--xh-_steps-accent));
-
-  box-shadow: none;
+  --xh-_steps-indicator-size: var(--xh-_steps-indicator-current-size);
+  --xh-_steps-indicator-margin: var(--xh-space-0);
 }
 
 .xh-scope-steps[data-part='trigger']:not([data-disabled], [data-readonly]):is(:active, [data-pressed])
@@ -41677,11 +41688,10 @@
   background: var(--xh-_steps-dot);
 }
 
-/* 当前步那圈环：离圆点边一道缝、一道粗描边宽，叠在圆点外面、不接指针；环面由一圈角向渐变经环形遮罩挖空中心得来。
-   弧（arc）从 12 点顺时针走到完成比例，其余是轨道（track）：点状形态不带比例，轨道与弧同色，就是整圈实心环；
-   序号圆点带了比例（data-progress），轨道取连接线的底色，弧就是这一步走了多少。时钟式的走向是稳定身份，不随书写方向镜像。
-   静息收着，点状形态的当前步与带比例的当前步才亮出来，走到 / 离开这一步时按状态角色淡入淡出；
-   比例变化时弧按数值角色走（move / continuous），首帧直接落位 */
+/* 当前步的进度环：离圆点边一道缝、一道粗描边宽，叠在圆点外面、不接指针；环面由一圈角向渐变经环形遮罩挖空中心得来。
+   弧（arc）从 12 点顺时针走到完成比例，其余是轨道（track），取连接线的底色：弧就是这一步走了多少。
+   时钟式的走向是稳定身份，不随书写方向镜像。静息收着，序号圆点带了比例（data-progress）的当前步才亮出来，
+   走到 / 离开这一步时按状态角色淡入淡出；比例变化时弧按数值角色走（move / continuous），首帧直接落位 */
 .xh-scope-steps[data-part='indicator']::after {
   --xh-_steps-ring-arc: var(--xh-steps-indicator-ring-bg, var(--xh-_steps-accent));
   --xh-_steps-ring-track: var(--xh-_steps-ring-arc);
@@ -41703,7 +41713,7 @@
     --xh-_steps-progress var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
 }
 
-.xh-scope-steps[data-part='indicator'][data-state='current']:is([data-variant='dot'], [data-progress])::after {
+.xh-scope-steps[data-part='indicator'][data-state='current'][data-progress]::after {
   opacity: 1;
 }
 
@@ -41715,28 +41725,46 @@
   --xh-_steps-ring-arc: var(--xh-steps-indicator-ring-bg-disabled, var(--xh-fg-disabled));
 }
 
-/* 单步语气：tones / collection 给某一步标了 data-tone，四个强调槽在这一步重新从语气层取值，
-   它的标记、标题与连接线照旧从祖先继承——只有这一步换色，状态那一档照算 */
+/* 单步语气：tones / collection 给某一步标了 data-tone，强调槽在这一步重新从语气层取值，
+   它的标记与连接线照旧从祖先继承——只有这一步换色，状态那一档照算 */
 .xh-scope-steps[data-part='item'][data-tone] {
   --xh-_steps-accent: var(--xh-_tone);
-  --xh-_steps-accent-text: var(--xh-_tone-fg);
+  --xh-_steps-accent-subtle: var(--xh-_tone-subtle);
+  --xh-_steps-accent-subtle-hover: var(--xh-_tone-subtle-hover);
+  --xh-_steps-accent-subtle-active: var(--xh-_tone-subtle-active);
   --xh-_steps-accent-mark: var(--xh-_tone-fg);
   --xh-_steps-on-accent: var(--xh-_tone-on);
 }
 
-/* 标了语气的那一步还没走到也得被看见：空心描边加同色数字，不动实心那档的内高光 */
+/* 标了语气的那一步还没走到也得被看见：与当前步同一副语气实心面配反白字（出错的那一步是危险色实心）。
+   带上触发器这一层祖先，特指度才压得过没走到的圆点的悬停与按下面：悬停不换中性面，按下换语气 active 档 */
+.xh-scope-steps[data-part='item'][data-tone] .xh-scope-steps[data-part='trigger']
+  .xh-scope-steps[data-part='indicator'][data-state='incomplete']:not([data-variant='dot']) {
+  border-color: var(--xh-steps-indicator-border-toned, var(--xh-_steps-accent));
+  background: var(--xh-steps-indicator-bg-toned, var(--xh-_steps-accent));
+  color: var(--xh-steps-indicator-fg-toned, var(--xh-_steps-on-accent));
+}
+
 .xh-scope-steps[data-part='item'][data-tone]
-  .xh-scope-steps[data-part='indicator'][data-state='incomplete'] {
+  .xh-scope-steps[data-part='trigger']:not([data-disabled], [data-readonly]):is(:active, [data-pressed])
+  .xh-scope-steps[data-part='indicator'][data-state='incomplete']:not([data-variant='dot']) {
+  background: var(--xh-steps-indicator-bg-current-pressed, var(--xh-_tone-active));
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
+}
+
+/* 点状形态里放不下实心面上的字，标了语气又没走到的点仍是空心圈：圈换语气色、心里只铺语气淡底 */
+.xh-scope-steps[data-part='item'][data-tone]
+  .xh-scope-steps[data-part='indicator'][data-state='incomplete'][data-variant='dot'] {
   border-color: var(--xh-steps-indicator-border-toned, var(--xh-_steps-accent));
   background: var(--xh-steps-indicator-bg-toned, var(--xh-_tone-subtle));
-  color: var(--xh-steps-indicator-fg-toned, var(--xh-_steps-accent-text));
 }
 
 .xh-scope-steps[data-part='item'][data-disabled] .xh-scope-steps[data-part='indicator'] {
   border-color: var(--xh-steps-indicator-border-disabled, var(--xh-border-default));
   background: var(--xh-steps-indicator-bg-disabled, var(--xh-bg-muted));
   color: var(--xh-steps-indicator-fg-disabled, var(--xh-fg-disabled));
-  /* 这一步动不了，实心那档的内高光跟着收掉 */
+  /* 这一步动不了，作者给圆点加的影跟着收掉 */
   box-shadow: none;
 }
 
@@ -41755,20 +41783,25 @@
   transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
+/* 走到与走过的步标题取正文色，没走到的留在次级色；当前步再提到 medium */
 .xh-scope-steps[data-part='title']:is([data-state='current'], [data-state='completed']) {
-  color: var(--xh-steps-title-fg-active, var(--xh-_steps-accent-text));
+  color: var(--xh-steps-title-fg-active, var(--xh-fg-default));
 }
 
-/* 标了语气的那一步标题跟着换色，不论走到没走到 */
+.xh-scope-steps[data-part='title'][data-state='current'] {
+  font-weight: var(--xh-steps-title-font-weight-current, var(--xh-font-weight-medium));
+}
+
+/* 标了语气的那一步标题取正文色，不论走到没走到：语气由圆点的语气面表达，标题不染色 */
 .xh-scope-steps[data-part='item'][data-tone] .xh-scope-steps[data-part='title'] {
-  color: var(--xh-steps-title-fg-toned, var(--xh-_steps-accent-text));
+  color: var(--xh-steps-title-fg-toned, var(--xh-fg-default));
 }
 
-/* 说明走说明角色：13 / fg-muted / leading-normal，不随 size 档 */
+/* 说明走次级标注：12 / fg-subtle / leading-normal，不随 size 档 */
 .xh-scope-steps[data-part='description'] {
   grid-column: 2;
-  color: var(--xh-steps-description-fg, var(--xh-fg-muted));
-  font-size: var(--xh-steps-description-font-size, var(--xh-text-secondary-size));
+  color: var(--xh-steps-description-fg, var(--xh-fg-subtle));
+  font-size: var(--xh-steps-description-font-size, var(--xh-text-caption-size));
   line-height: var(--xh-leading-normal);
   overflow: hidden;
   white-space: nowrap;
@@ -41781,7 +41814,7 @@
   position: relative;
   flex: 1;
   min-inline-size: var(--xh-steps-separator-min-length, var(--xh-space-4));
-  block-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
+  block-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thin));
   border-radius: var(--xh-steps-separator-radius, var(--xh-shape-pill));
   background: var(--xh-steps-separator-bg, var(--xh-border-default));
 }
@@ -41808,15 +41841,15 @@
 /* 纵向时连接线转成竖的一条，缩进到与序号圆点同一条竖线上 */
 .xh-scope-steps[data-part='separator'][data-orientation='vertical'] {
   flex: none;
-  inline-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
-  min-inline-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
+  inline-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thin));
+  min-inline-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thin));
   block-size: var(--xh-steps-separator-min-length, var(--xh-space-7));
   /* 圆点半径加上它四周留给环的位置，减去线宽的一半：calc 里的除法要写成乘 0.5，除号在这儿是无效语法 */
   margin-inline-start: calc(
     var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size)) * 0.5
     + var(--xh-_steps-indicator-margin)
     + var(--xh-steps-trigger-p, var(--xh-control-px-sm))
-    - var(--xh-steps-separator-thickness, var(--xh-stroke-thick)) * 0.5
+    - var(--xh-steps-separator-thickness, var(--xh-stroke-thin)) * 0.5
   );
 }
 
@@ -41879,7 +41912,7 @@
   }
 
   /* 点状形态的点靠底色画实心，这一档里底色被换成 Canvas，走过与当前步的点会与空心的圈混成一样。
-     实心的点与当前步那圈环换成 CanvasText：整行悬停涂成 Highlight 时照样看得见，走过与当前步靠那圈环分开；
+     实心的点换成 CanvasText：整行悬停涂成 Highlight 时照样看得见，走过与当前步靠当前步放大的那一档分开；
      动不了的取 GrayText */
   .xh-scope-steps[data-part='trigger'] .xh-scope-steps[data-part='indicator'][data-variant='dot']:not([data-state='incomplete']) {
     border-color: CanvasText;
@@ -41918,20 +41951,16 @@
 }
 
 @media print {
-  /* 打印默认丢背景：走过那几步的实心底与里面那枚勾都印不出来，
-     当前步与走过的步只剩一模一样的一圈细描边。改用描边的粗细与字重表达同一件事 */
-  .xh-scope-steps[data-part='indicator']:is([data-state='current'], [data-state='completed']) {
-    border-width: var(--xh-stroke-thick);
+  /* 打印默认丢背景：当前步的实心底、走过那几步的淡底与里面那枚勾（mask 挖出的一块底色）都印不出来，
+     走过的步还是透明边位，连圈都不剩。圆点、兜底对号与进度环照原色印，当前步标题再加粗一档 */
+  .xh-scope-steps[data-part='indicator'],
+  .xh-scope-steps[data-part='indicator']::before,
+  .xh-scope-steps[data-part='indicator']::after {
+    print-color-adjust: exact;
   }
 
   .xh-scope-steps[data-part='title'][data-state='current'] {
     font-weight: var(--xh-font-weight-semibold);
-  }
-
-  /* 点状形态的点与当前步那圈环都是底色画的，丢了底色走过与当前步就只剩空心圈：这两样照原色印 */
-  .xh-scope-steps[data-part='indicator'][data-variant='dot'],
-  .xh-scope-steps[data-part='indicator']::after {
-    print-color-adjust: exact;
   }
 }
 
