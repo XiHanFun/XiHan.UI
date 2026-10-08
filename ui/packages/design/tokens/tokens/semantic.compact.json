@@ -190,6 +190,10 @@
     "pad-lg": {
       "$type": "dimension",
       "$value": "{space.3}"
+    },
+    "pad-xl": {
+      "$type": "dimension",
+      "$value": "{space.4}"
     }
   },
   "section": {

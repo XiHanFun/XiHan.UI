@@ -336,6 +336,8 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 说明 / helper | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal` | 与控件 `--xh-space-1` |
 | 错误文案 | 13 / `--xh-fg-danger` | 与控件 `--xh-space-1` |
 | Surface / Feedback / 浮层内标题 | 14 / `--xh-font-weight-semibold` | — |
+| 气泡标题（Popover、Popconfirm、HoverCard） | 14 / `--xh-font-weight-medium` / `--xh-fg-default` | 与正文 `--xh-space-1` |
+| 气泡正文（上述三家的 description） | `--xh-text-body-size` 14 / `--xh-fg-muted` / `--xh-leading-normal` | — |
 | 页面级面板标题（Dialog、Drawer、Tour） | heading-3 | — |
 | 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
 | 图表轴标签、数据标签、轴标题 | `--xh-text-caption-size` 12 / `--xh-fg-muted`；轴刻度用等宽数字（`tabular-nums`）；不使用系列色 | 刻度标签与刻度线 `--xh-space-1` |

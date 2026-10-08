@@ -1202,6 +1202,11 @@
       "$type": "dimension",
       "$value": "{space.4}"
     },
+    "pad-xl": {
+      "$description": "比 pad-lg 再宽一档：气泡（Popover、Popconfirm、HoverCard）横向内衬比纵向高一档，大号档的横向取它。",
+      "$type": "dimension",
+      "$value": "{space.5}"
+    },
     "action-inset": {
       "$description": "钉在面板角上的钮离两条边的距离。标题给这颗钮让出的那一段也取它，让位量与实际落点恒一致。",
       "$type": "dimension",
