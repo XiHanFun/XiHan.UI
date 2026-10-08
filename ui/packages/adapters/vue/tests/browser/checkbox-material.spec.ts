@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhCheckbox } from '../../src'
+import { pressScale } from './design-token'
 import { shownMask } from './glyph-mask'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -128,7 +129,7 @@ afterEach(async () => {
 })
 
 describe('checkbox 字段家族控制盒与三态', () => {
-  it('方框是字段家族的控制盒：不填底 + border-control 描边（与装饰边同色）+ 无影无顶光，勾中后以语气色填充', async () => {
+  it('方框是控制盒：不填底 + border-strong 描边（比字段边重一档）+ 无影无顶光，勾中后以语气色填充', async () => {
     await mount([
       h(XhCheckbox, { 'data-testid': 'off' }, () => '未勾'),
       h(XhCheckbox, { 'data-testid': 'on', 'defaultChecked': true }, () => '勾中'),
@@ -137,8 +138,7 @@ describe('checkbox 字段家族控制盒与三态', () => {
     const off = labelledBox('off')
     const idle = getComputedStyle(off)
     expect(idle.backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(idle.borderColor).toBe(resolveColor(off, 'var(--xh-border-control)'))
-    expect(idle.borderColor).toBe(resolveColor(off, 'var(--xh-border-default)'))
+    expect(idle.borderColor).toBe(resolveColor(off, 'var(--xh-border-strong)'))
     expect(idle.boxShadow).toBe('none')
     expect(noHighlight(idle)).toBe(true)
     const on = getComputedStyle(labelledBox('on'))
@@ -254,11 +254,11 @@ describe('checkbox 字段家族控制盒与三态', () => {
     await userEvent.unhover(live)
 
     await holdSpace(live)
-    expect(getComputedStyle(live).scale).toBe('0.97')
+    expect(getComputedStyle(live).scale).toBe(pressScale(live))
     expect(getComputedStyle(live).backgroundColor).toBe(resolveColor(live, 'var(--xh-bg-subtle-hover)'))
     await releaseSpace()
     await holdSpace(on)
-    expect(getComputedStyle(on).scale).toBe('0.97')
+    expect(getComputedStyle(on).scale).toBe(pressScale(on))
     expect(getComputedStyle(on).backgroundColor).toBe(resolveColor(on, 'var(--xh-bg-brand-active)'))
     await releaseSpace()
     // 只读：按住不缩放、底不换（家族的按压块被只读映射钉回静息面）

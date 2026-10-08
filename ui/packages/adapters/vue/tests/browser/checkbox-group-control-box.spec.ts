@@ -98,12 +98,12 @@ describe('checkboxGroup 控制盒', () => {
     })
   }
 
-  it('方框是字段家族的控制盒：不填底 + border-control 描边 + 无影，勾中后以语气色填充', async () => {
+  it('方框是控制盒：不填底 + border-strong 描边 + 无影，勾中后以语气色填充', async () => {
     await mountPair(false)
     const root = getPart('checkbox-group', 'root')
     const idle = getComputedStyle(getPart('checkbox-group', 'indicator'))
     expect(idle.backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(idle.borderTopColor).toBe(resolveColor('--xh-border-control', root))
+    expect(idle.borderTopColor).toBe(resolveColor('--xh-border-strong', root))
     expect(idle.boxShadow).toBe('none')
     expect(idle.backgroundImage).toBe('none')
     await mountPair(true)
