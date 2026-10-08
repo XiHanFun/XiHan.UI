@@ -103,14 +103,21 @@ describe('日期选择浮层', () => {
     const control = getComputedStyle(part('control'))
     const content = getComputedStyle(part('content'))
     expect(control.backdropFilter).toBe('none')
-    expect(alpha(control.backgroundColor)).toBe(0)
-    expect(control.outlineStyle).toBe('solid')
+    // 字段静息铺字段淡底，不再透出宿主
+    expect(alpha(control.backgroundColor)).toBeGreaterThan(0)
+    // 字段聚焦不画环：焦点由描边换色与底色差标出，静息也不留环位
+    expect(control.outlineStyle).toBe('none')
     expect(part('positioner').closest<HTMLElement>('[data-theme]')?.dataset.theme).toBe(theme)
     expect(content.backdropFilter).toBe('none')
     expect(alpha(content.backgroundColor)).toBe(255)
     expect(content.boxShadow).not.toBe('none')
-    expect(content.borderRadius).toBe('12px')
-    expect(content.padding).toBe('8px')
+    const shape = document.createElement('span')
+    shape.style.borderRadius = 'var(--xh-shape-overlay)'
+    part('content').append(shape)
+    expect(content.borderTopLeftRadius).toBe(getComputedStyle(shape).borderTopLeftRadius)
+    shape.remove()
+    // 面板自己不留内衬：标题栏、网格与各列自带内衬
+    expect(content.padding).toBe('0px')
     // floating 材质：实体底 + 可见描边 + 落影，不画顶光伪元素
     expect(content.borderTopStyle).toBe('solid')
     // 描边是墨色按比例透明：画了就不是 0，不再是实色
@@ -135,9 +142,9 @@ describe('日期选择浮层', () => {
   it.each(['presets', 'show-time'] as const)('%s：内部结构使用统一分隔线', async (shape) => {
     await mount('dark', shape)
     const target = part(shape === 'presets' ? 'preset-group' : 'time-column')
-    // 面板是 floating 材质（实体面），面内分隔取实体面的分隔令牌
+    // 面板是 floating 材质（实体面），面内分隔取实体面的描边令牌（border-default 档）
     const expected = document.createElement('span')
-    expected.style.color = 'var(--xh-material-solid-separator)'
+    expected.style.color = 'var(--xh-material-solid-border)'
     part('content').append(expected)
     const color = getComputedStyle(expected).color
     const style = getComputedStyle(target)
@@ -150,7 +157,7 @@ describe('日期选择浮层', () => {
     expected.remove()
   })
 
-  it('日期时间组合面板的时间列与日期网格顶部对齐', async () => {
+  it('日期时间组合面板的时间列顶边接着标题栏的分隔线、底边与日期网格对齐', async () => {
     await mount('light', 'show-time')
     const grid = document.querySelector<HTMLElement>(`[data-scope='calendar-picker'][data-part='grid']`)
     if (!grid)
@@ -160,7 +167,10 @@ describe('日期选择浮层', () => {
     const timeColumn = part('time-column')
     const timeRect = timeColumn.getBoundingClientRect()
     const gridRect = grid.getBoundingClientRect()
-    expect(timeRect.top).toBeCloseTo(gridRect.top, 1)
+    const header = document.querySelector<HTMLElement>(`[data-scope='calendar-picker'][data-part='header']`)!.getBoundingClientRect()
+    // 列顶那道描边接着标题栏下沿的分隔线画，两段落在同一行
+    expect(timeRect.top).toBeCloseTo(header.bottom - 1, 1)
+    expect(Number.parseFloat(getComputedStyle(timeColumn).borderTopWidth)).toBe(1)
     expect(timeRect.bottom).toBeCloseTo(gridRect.bottom, 1)
     expect(getComputedStyle(timeColumn).overflowX).toBe('hidden')
 

@@ -1017,9 +1017,9 @@
       "$value": "calc({control.h-sm} - {space.1})"
     },
     "calendar-column-h": {
-      "$description": "与日历并排的时间列高度：与日历网格（周名一行加六周）同高，时间列的底边与网格底边对齐。网格按控件高与间距排，两者都是 px，这一档也只按 px 结算，不随根字号变。",
+      "$description": "与日历并排的时间列高度：与日历网格（上下各 12 的内衬、星期行加六周 36 的行距）同高，时间列的底边与网格底边对齐。网格按控件高与间距排，两者都是 px，这一档也只按 px 结算，不随根字号变。",
       "$type": "dimension",
-      "$value": "calc({control.h-sm} * 7 + {space.7})"
+      "$value": "calc({control.h-md} + ({control.action-size} + {space.1_5} * 2) * 6 + {space.3} * 2)"
     },
     "menu-max-h": {
       "$type": "dimension",

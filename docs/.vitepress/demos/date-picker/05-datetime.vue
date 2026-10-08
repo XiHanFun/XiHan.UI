@@ -80,7 +80,7 @@ function literalBefore(type: string, index: number): string {
           </XhDatePickerCalendar>
           <XhDatePickerTimePanel />
         </div>
-        <div style="display: flex; align-items: center; justify-content: flex-end; margin-block-start: var(--xh-space-2); margin-inline: calc(-1 * var(--xh-space-2)); margin-block-end: calc(-1 * var(--xh-space-2)); padding-block: var(--xh-space-1); padding-inline: var(--xh-space-2); border-block-start: var(--xh-stroke-thin) solid var(--xh-border-subtle)">
+        <div style="display: flex; align-items: center; justify-content: flex-end; padding: var(--xh-space-2); border-block-start: var(--xh-stroke-thin) solid var(--xh-border-default)">
           <XhDatePickerConfirmTrigger>确定</XhDatePickerConfirmTrigger>
         </div>
       </XhDatePickerContent>

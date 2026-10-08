@@ -23071,21 +23071,19 @@
       "name": "--xh-date-picker-calendar-gap",
       "component": "date-picker",
       "part": [
-        "calendar",
-        "time-column"
+        "calendar"
       ],
       "property": [
-        "gap",
-        "margin-block-start"
+        "gap"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-0"
       ],
       "visibility": "public",
-      "description": "date-picker 的 calendar、time-column 部件 gap、margin-block-start 覆盖槽。"
+      "description": "date-picker 的 calendar 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-column-divider",
@@ -23098,8 +23096,8 @@
       "property": [
         "background",
         "border-block-end",
-        "border-inline-end",
-        "border-inline-start"
+        "border-block-start",
+        "border-inline-end"
       ],
       "state": [
         "@media (min-width: 768px)",
@@ -23107,10 +23105,10 @@
         "has(+ [data-part='time-column'])"
       ],
       "defaultToken": [
-        "--xh-material-solid-separator"
+        "--xh-material-solid-border"
       ],
       "visibility": "public",
-      "description": "date-picker 的 calendar、preset-group、time-column 部件 background、border-block-end、border-inline-end、border-inline-start 覆盖槽。"
+      "description": "date-picker 的 calendar、preset-group、time-column 部件 background、border-block-end、border-block-start、border-inline-end 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-confirm-trigger-bg",
@@ -23205,6 +23203,24 @@
       "description": "date-picker 的 confirm-trigger 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-date-picker-confirm-trigger-font-size",
+      "component": "date-picker",
+      "part": [
+        "confirm-trigger"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-caption-size"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 confirm-trigger 部件 font-size 覆盖槽。"
+    },
+    {
       "name": "--xh-date-picker-confirm-trigger-h",
       "component": "date-picker",
       "part": [
@@ -23225,6 +23241,25 @@
       "description": "date-picker 的 confirm-trigger 部件 block-size、inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-date-picker-confirm-trigger-margin",
+      "component": "date-picker",
+      "part": [
+        "confirm-trigger",
+        "content"
+      ],
+      "property": [
+        "margin"
+      ],
+      "state": [
+        "has(> [data-part='time-column'])"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 confirm-trigger、content 部件 margin 覆盖槽。"
+    },
+    {
       "name": "--xh-date-picker-confirm-trigger-px",
       "component": "date-picker",
       "part": [
@@ -23237,7 +23272,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-padding-inline"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "date-picker 的 confirm-trigger 部件 padding-inline 覆盖槽。"
@@ -23349,11 +23384,10 @@
         "padding-inline"
       ],
       "state": [
-        "@media not all and (min-width: 768px)",
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "date-picker 的 content 部件 padding-inline 覆盖槽。"
@@ -23371,7 +23405,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "date-picker 的 content 部件 padding-block 覆盖槽。"
@@ -23791,6 +23825,27 @@
       "description": "date-picker 的 root 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-date-picker-heading-font-weight",
+      "component": "date-picker",
+      "part": [
+        "calendar",
+        "heading",
+        "heading-month-trigger",
+        "heading-year-trigger"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-regular"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 calendar、heading、heading-month-trigger、heading-year-trigger 部件 font-weight 覆盖槽。"
+    },
+    {
       "name": "--xh-date-picker-icon-size",
       "component": "date-picker",
       "part": [
@@ -23944,47 +23999,6 @@
       "description": "date-picker 的 content 部件 max-block-size 覆盖槽。"
     },
     {
-      "name": "--xh-date-picker-panel-divider",
-      "component": "date-picker",
-      "part": [
-        "calendar"
-      ],
-      "property": [
-        "border-block-start",
-        "border-inline-start"
-      ],
-      "state": [
-        "@media (min-width: 768px)",
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-material-solid-separator"
-      ],
-      "visibility": "public",
-      "description": "date-picker 的 calendar 部件 border-block-start、border-inline-start 覆盖槽。"
-    },
-    {
-      "name": "--xh-date-picker-panel-gap",
-      "component": "date-picker",
-      "part": [
-        "calendar",
-        "preset-group"
-      ],
-      "property": [
-        "padding-block-start",
-        "padding-inline-start"
-      ],
-      "state": [
-        "@media (min-width: 768px)",
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-space-3"
-      ],
-      "visibility": "public",
-      "description": "date-picker 的 calendar、preset-group 部件 padding-block-start、padding-inline-start 覆盖槽。"
-    },
-    {
       "name": "--xh-date-picker-placeholder-fg",
       "component": "date-picker",
       "part": [
@@ -24002,6 +24016,30 @@
       ],
       "visibility": "public",
       "description": "date-picker 的 segment-group、tag-list 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-preset-bg",
+      "component": "date-picker",
+      "part": [
+        "preset"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "default",
+        "disabled",
+        "error",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
+        "xh-collection-context=overlay"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 preset 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-preset-bg-hover",
@@ -24024,7 +24062,7 @@
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "date-picker 的 preset 部件 background-color 覆盖槽。"
@@ -24049,7 +24087,7 @@
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-bg-subtle-active"
       ],
       "visibility": "public",
       "description": "date-picker 的 preset 部件 background-color 覆盖槽。"
@@ -24087,10 +24125,39 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-indicator-size"
+        "--xh-control-indicator-sm"
       ],
       "visibility": "public",
       "description": "date-picker 的 preset 部件 block-size、inline-size、padding-inline-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-preset-fg",
+      "component": "date-picker",
+      "part": [
+        "preset"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default",
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "selected",
+        "xh-collection-context=overlay"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 preset 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-preset-fg-disabled",
@@ -24113,32 +24180,22 @@
       "description": "date-picker 的 preset 部件 background-color、color 覆盖槽。"
     },
     {
-      "name": "--xh-date-picker-preset-fg-selected",
+      "name": "--xh-date-picker-preset-font-size",
       "component": "date-picker",
       "part": [
         "preset"
       ],
       "property": [
-        "color"
+        "font-size"
       ],
       "state": [
-        "disabled",
-        "error",
-        "highlighted",
-        "hover",
-        "is(:active, [data-pressed])",
-        "is(:focus-visible, [data-highlighted])",
-        "is([aria-selected='true'], [data-selected])",
-        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed",
-        "selected",
-        "xh-collection-context=overlay"
+        "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
-      "description": "date-picker 的 preset 部件 color 覆盖槽。"
+      "description": "date-picker 的 preset 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-preset-group-gap",
@@ -24153,7 +24210,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-list-option-gap"
+        "--xh-space-2_5"
       ],
       "visibility": "public",
       "description": "date-picker 的 preset-group 部件 gap 覆盖槽。"
@@ -24177,22 +24234,59 @@
       "description": "date-picker 的 preset-group 部件 max-block-size 覆盖槽。"
     },
     {
-      "name": "--xh-date-picker-preset-group-padding",
+      "name": "--xh-date-picker-preset-group-px",
       "component": "date-picker",
       "part": [
         "preset-group"
       ],
       "property": [
-        "padding"
+        "padding-inline"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "date-picker 的 preset-group 部件 padding 覆盖槽。"
+      "description": "date-picker 的 preset-group 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-preset-group-py",
+      "component": "date-picker",
+      "part": [
+        "preset-group"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2_5"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 preset-group 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-preset-h",
+      "component": "date-picker",
+      "part": [
+        "preset"
+      ],
+      "property": [
+        "block-size",
+        "line-height"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-action-size"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 preset 部件 block-size、line-height 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-preset-px",
@@ -24209,28 +24303,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-3"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "date-picker 的 preset 部件 inset-inline-end、padding-inline、padding-inline-end 覆盖槽。"
-    },
-    {
-      "name": "--xh-date-picker-preset-py",
-      "component": "date-picker",
-      "part": [
-        "preset"
-      ],
-      "property": [
-        "padding-block"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-space-1"
-      ],
-      "visibility": "public",
-      "description": "date-picker 的 preset 部件 padding-block 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-preset-radius",
@@ -24245,7 +24321,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "date-picker 的 preset 部件 border-radius 覆盖槽。"
@@ -24281,7 +24357,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "date-picker 的 time-column 部件 gap 覆盖槽。"
@@ -24293,7 +24369,8 @@
         "time-column"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "padding-block"
       ],
       "state": [
         "default"
@@ -24302,7 +24379,7 @@
         "--xh-overlay-calendar-column-h"
       ],
       "visibility": "public",
-      "description": "date-picker 的 time-column 部件 block-size 覆盖槽。"
+      "description": "date-picker 的 time-column 部件 block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-time-column-min-w",
@@ -24353,28 +24430,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-control-action-size"
       ],
       "visibility": "public",
       "description": "date-picker 的 time-column 部件 margin-block-start 覆盖槽。"
-    },
-    {
-      "name": "--xh-date-picker-time-column-padding",
-      "component": "date-picker",
-      "part": [
-        "time-column"
-      ],
-      "property": [
-        "padding-block"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-space-1"
-      ],
-      "visibility": "public",
-      "description": "date-picker 的 time-column 部件 padding-block 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-time-column-px",
@@ -24411,6 +24470,24 @@
       ],
       "visibility": "public",
       "description": "date-picker 的 time-column 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-time-column-py",
+      "component": "date-picker",
+      "part": [
+        "time-column"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 time-column 部件 padding-block 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-time-item-bg-hover",
@@ -24610,19 +24687,21 @@
       "name": "--xh-date-picker-time-item-h",
       "component": "date-picker",
       "part": [
+        "time-column",
         "time-item"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "padding-block"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "auto"
+        "--xh-control-action-size"
       ],
       "visibility": "public",
-      "description": "date-picker 的 time-item 部件 block-size 覆盖槽。"
+      "description": "date-picker 的 time-column、time-item 部件 block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-time-item-px",
@@ -24644,24 +24723,6 @@
       "description": "date-picker 的 time-item 部件 inset-inline-end、padding-inline 覆盖槽。"
     },
     {
-      "name": "--xh-date-picker-time-item-py",
-      "component": "date-picker",
-      "part": [
-        "time-item"
-      ],
-      "property": [
-        "padding-block"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_date-picker-item-py"
-      ],
-      "visibility": "public",
-      "description": "date-picker 的 time-item 部件 padding-block 覆盖槽。"
-    },
-    {
       "name": "--xh-date-picker-time-item-radius",
       "component": "date-picker",
       "part": [
@@ -24674,7 +24735,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "0"
       ],
       "visibility": "public",
       "description": "date-picker 的 time-item 部件 border-radius 覆盖槽。"

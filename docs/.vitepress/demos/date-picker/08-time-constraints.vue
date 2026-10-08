@@ -98,7 +98,7 @@ function literalBefore(type: string, index: number): string {
           <!-- 界外与判为不可用的格留在列里、按不下去，列长不随所选的日子变 -->
           <XhDatePickerTimePanel />
         </div>
-        <div style="display: flex; align-items: center; justify-content: flex-end; margin-block-start: var(--xh-space-2); margin-inline: calc(-1 * var(--xh-space-2)); margin-block-end: calc(-1 * var(--xh-space-2)); padding-block: var(--xh-space-1); padding-inline: var(--xh-space-2); border-block-start: var(--xh-stroke-thin) solid var(--xh-border-subtle)">
+        <div style="display: flex; align-items: center; justify-content: flex-end; padding: var(--xh-space-2); border-block-start: var(--xh-stroke-thin) solid var(--xh-border-default)">
           <XhDatePickerConfirmTrigger>确定</XhDatePickerConfirmTrigger>
         </div>
       </XhDatePickerContent>
