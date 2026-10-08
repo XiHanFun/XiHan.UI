@@ -63,11 +63,12 @@ describe('descriptions 头部排版', () => {
     expect(Math.round(title.left)).toBe(Math.round(header.left))
     expect(Math.round(extra.right)).toBe(Math.round(header.right))
     expect(list.top - header.bottom).toBeGreaterThan(0)
-    // 标题的 h3 不带 UA 的外边距与放大字号
+    // 标题的 h3 不带 UA 的外边距，字号字重取区块标题档（16 / 500），比取值大一号
     const style = getComputedStyle(part('title'))
     expect(style.marginBlockStart).toBe('0px')
-    expect(Number(style.fontWeight)).toBeGreaterThanOrEqual(600)
-    expect(style.fontSize).toBe(getComputedStyle(part('value')).fontSize)
+    expect(style.fontWeight).toBe('500')
+    expect(style.fontSize).toBe('16px')
+    expect(Number.parseFloat(style.fontSize)).toBeGreaterThan(Number.parseFloat(getComputedStyle(part('value')).fontSize))
   })
 
   it('rtl 下附加内容贴到左侧的行尾', async () => {
