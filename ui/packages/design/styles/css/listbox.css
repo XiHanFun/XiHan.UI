@@ -287,10 +287,10 @@
     --xh-collection-fg-selected-hover: var(--xh-listbox-item-fg-selected, var(--xh-listbox-item-fg, var(--xh-fg-default)));
     --xh-collection-fg-selected-highlight: var(--xh-listbox-item-fg-selected, var(--xh-listbox-item-fg, var(--xh-fg-default)));
     --xh-collection-fg-selected-pressed: var(--xh-listbox-item-fg-selected, var(--xh-listbox-item-fg, var(--xh-fg-default)));
-    --xh-collection-font-weight-selected: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-regular));
-    --xh-collection-font-weight-selected-hover: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-regular));
-    --xh-collection-font-weight-selected-highlight: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-regular));
-    --xh-collection-font-weight-selected-pressed: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-selected: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-medium));
+    --xh-collection-font-weight-selected-hover: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-medium));
+    --xh-collection-font-weight-selected-highlight: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-medium));
+    --xh-collection-font-weight-selected-pressed: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-medium));
     --xh-collection-bg-hover: var(--xh-listbox-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-keyboard-highlight: var(--xh-listbox-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-pressed: var(--xh-listbox-item-bg-pressed, var(--xh-bg-subtle-hover));

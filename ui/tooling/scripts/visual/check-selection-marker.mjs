@@ -3,7 +3,7 @@
 //
 // 设计真源的选中与当前态分类：
 // 对号集合（Select / Combobox / TreeSelect / Cascader / 时间列 / Mention / Tree / Listbox / TagGroup）= 透明底 + 行尾对号，
-//   正文颜色与字重保持 rest（TagGroup 保持标签自身的面）；
+//   正文颜色保持 rest、字重升到 medium（TagGroup 保持标签自身的面）；
 // 页内持久集合（Table row / Transfer / GridList / SideNav 当前项）
 //   = --xh-bg-brand-subtle 行面 + --xh-fg-on-brand-subtle；
 // 导航当前页（Tabs line / Anchor / NavigationMenu）= 指示条 + --xh-fg-brand-strong + medium，
@@ -38,7 +38,7 @@ const OVERLAY_STATES = [':hover', ':active', '[data-pressed]', ':focus', '[data-
  * 键里的 `宿主:scope/部件` 与 check-press-feedback 同形：皮肤把规则写在了内嵌的别家部件上。
  */
 const SEMANTIC = {
-  // 浮层瞬态集合：透明底 + 行尾对号，正文颜色与字重保持 rest
+  // 浮层瞬态集合：透明底 + 行尾对号，正文颜色保持 rest，字重升到 medium
   'select:item': [{ kind: 'overlay', state: '[data-state=\'checked\']' }],
   'combobox:item': [{ kind: 'overlay', state: '[data-state=\'checked\']' }],
   'tree-select:item': [{ kind: 'overlay', state: '[data-selected]' }],
@@ -328,8 +328,8 @@ for (const [key, rules] of Object.entries(SEMANTIC)) {
       case 'overlay':
         if (bg != null && !NO_BG.has(bg))
           report(`浮层瞬态集合的选中底色是 ${bg}，应为透明底 + 行尾对号`)
-        if (weight != null && !REST_WEIGHT.has(weight))
-          report(`浮层瞬态集合的选中字重是 ${weight}，应保持 rest 不加粗`)
+        if (weight != null && weight !== '--xh-font-weight-medium')
+          report(`浮层瞬态集合的选中字重是 ${weight}，应为 --xh-font-weight-medium`)
         if (color != null && color !== '--xh-fg-default' && color !== 'inherit' && color !== restColor)
           report(`浮层瞬态集合的选中字色是 ${color}，正文颜色应保持 rest（${restColor ?? '--xh-fg-default'}）`)
         break

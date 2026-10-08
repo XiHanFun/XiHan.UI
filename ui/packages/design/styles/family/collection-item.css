@@ -217,7 +217,7 @@
     --xh-_collection-description-fg: var(--xh-collection-description-fg-selected, var(--xh-material-frosted-fg-muted));
     --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected, var(--xh-fg-brand));
     --xh-_collection-outline: var(--xh-collection-outline-selected, transparent);
-    --xh-_collection-font-weight: var(--xh-collection-font-weight-selected, var(--xh-font-weight-regular));
+    --xh-_collection-font-weight: var(--xh-collection-font-weight-selected, var(--xh-font-weight-medium));
     --xh-_collection-cursor: var(--xh-collection-cursor-selected, pointer);
     --xh-_collection-opacity: var(--xh-collection-opacity-selected, 1);
   }
@@ -228,7 +228,7 @@
     --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-hover, var(--xh-material-frosted-fg-muted));
     --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-hover, var(--xh-fg-brand));
     --xh-_collection-outline: var(--xh-collection-outline-selected-hover, transparent);
-    --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-hover, var(--xh-font-weight-regular));
+    --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-hover, var(--xh-font-weight-medium));
     --xh-_collection-cursor: var(--xh-collection-cursor-selected-hover, pointer);
     --xh-_collection-opacity: var(--xh-collection-opacity-selected-hover, 1);
   }
@@ -239,7 +239,7 @@
     --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-highlight, var(--xh-material-frosted-fg-muted));
     --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-highlight, var(--xh-fg-brand));
     --xh-_collection-outline: var(--xh-collection-outline-selected-highlight, var(--xh-ring-focus));
-    --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-highlight, var(--xh-font-weight-regular));
+    --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-highlight, var(--xh-font-weight-medium));
     --xh-_collection-cursor: var(--xh-collection-cursor-selected-highlight, pointer);
     --xh-_collection-opacity: var(--xh-collection-opacity-selected-highlight, 1);
   }
@@ -250,7 +250,7 @@
     --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-pressed, var(--xh-material-frosted-fg-muted));
     --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-pressed, var(--xh-fg-brand));
     --xh-_collection-outline: var(--xh-collection-outline-selected-pressed, transparent);
-    --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-pressed, var(--xh-font-weight-regular));
+    --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-pressed, var(--xh-font-weight-medium));
     --xh-_collection-cursor: var(--xh-collection-cursor-selected-pressed, pointer);
     --xh-_collection-opacity: var(--xh-collection-opacity-selected-pressed, 1);
   }

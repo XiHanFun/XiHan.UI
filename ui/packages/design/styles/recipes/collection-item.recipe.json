@@ -145,7 +145,7 @@
         "descriptionColor": "var(--xh-material-frosted-fg-muted)",
         "indicatorColor": "var(--xh-fg-brand)",
         "outlineColor": "transparent",
-        "fontWeight": "var(--xh-font-weight-regular)",
+        "fontWeight": "var(--xh-font-weight-medium)",
         "cursor": "pointer",
         "opacity": "1"
       },
@@ -155,7 +155,7 @@
         "descriptionColor": "var(--xh-material-frosted-fg-muted)",
         "indicatorColor": "var(--xh-fg-brand)",
         "outlineColor": "transparent",
-        "fontWeight": "var(--xh-font-weight-regular)",
+        "fontWeight": "var(--xh-font-weight-medium)",
         "cursor": "pointer",
         "opacity": "1"
       },
@@ -165,7 +165,7 @@
         "descriptionColor": "var(--xh-material-frosted-fg-muted)",
         "indicatorColor": "var(--xh-fg-brand)",
         "outlineColor": "var(--xh-ring-focus)",
-        "fontWeight": "var(--xh-font-weight-regular)",
+        "fontWeight": "var(--xh-font-weight-medium)",
         "cursor": "pointer",
         "opacity": "1"
       },
@@ -175,7 +175,7 @@
         "descriptionColor": "var(--xh-material-frosted-fg-muted)",
         "indicatorColor": "var(--xh-fg-brand)",
         "outlineColor": "transparent",
-        "fontWeight": "var(--xh-font-weight-regular)",
+        "fontWeight": "var(--xh-font-weight-medium)",
         "cursor": "pointer",
         "opacity": "1"
       }

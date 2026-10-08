@@ -8954,7 +8954,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "0"
       ],
       "visibility": "public",
       "description": "cascader 的 column 部件 padding-inline 覆盖槽。"
@@ -10082,7 +10082,7 @@
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-font-weight-regular"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "cascader 的 item、search-item 部件 font-weight 覆盖槽。"
@@ -10260,7 +10260,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "0"
       ],
       "visibility": "public",
       "description": "cascader 的 item、search-item 部件 border-radius 覆盖槽。"
@@ -18593,7 +18593,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "0"
       ],
       "visibility": "public",
       "description": "combobox 的 content 部件 padding-inline 覆盖槽。"
@@ -19493,7 +19493,7 @@
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-font-weight-regular"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "combobox 的 item 部件 font-weight 覆盖槽。"
@@ -19637,7 +19637,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "0"
       ],
       "visibility": "public",
       "description": "combobox 的 item 部件 border-radius 覆盖槽。"
@@ -21032,7 +21032,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-surface-pad-xs"
+        "0"
       ],
       "visibility": "public",
       "description": "context-menu 的 content 部件 padding-inline 覆盖槽。"
@@ -21509,7 +21509,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "0"
       ],
       "visibility": "public",
       "description": "context-menu 的 item 部件 border-radius 覆盖槽。"
@@ -24228,7 +24228,7 @@
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-font-weight-regular"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "date-picker 的 time-item 部件 font-weight 覆盖槽。"
@@ -26101,7 +26101,7 @@
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-font-weight-regular"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "date-range-picker 的 time-item 部件 font-weight 覆盖槽。"
@@ -43477,7 +43477,7 @@
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-font-weight-regular"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "listbox 的 item 部件 font-weight 覆盖槽。"
@@ -45485,7 +45485,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "0"
       ],
       "visibility": "public",
       "description": "mention 的 content 部件 padding-inline 覆盖槽。"
@@ -46165,7 +46165,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "0"
       ],
       "visibility": "public",
       "description": "mention 的 item 部件 border-radius 覆盖槽。"
@@ -46517,7 +46517,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-surface-pad-xs"
+        "0"
       ],
       "visibility": "public",
       "description": "menu 的 content 部件 padding-inline 覆盖槽。"
@@ -46993,7 +46993,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "0"
       ],
       "visibility": "public",
       "description": "menu 的 item 部件 border-radius 覆盖槽。"
@@ -47348,7 +47348,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-surface-pad-xs"
+        "0"
       ],
       "visibility": "public",
       "description": "menubar 的 content 部件 padding-inline 覆盖槽。"
@@ -47865,7 +47865,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "0"
       ],
       "visibility": "public",
       "description": "menubar 的 item 部件 border-radius 覆盖槽。"
@@ -61694,7 +61694,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "0"
       ],
       "visibility": "public",
       "description": "select 的 content 部件 padding-inline 覆盖槽。"
@@ -62641,7 +62641,7 @@
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-font-weight-regular"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "select 的 item 部件 font-weight 覆盖槽。"
@@ -62755,7 +62755,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "0"
       ],
       "visibility": "public",
       "description": "select 的 item 部件 border-radius 覆盖槽。"
@@ -76180,7 +76180,7 @@
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-font-weight-regular"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "time-picker 的 item 部件 font-weight 覆盖槽。"
@@ -77935,7 +77935,7 @@
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-font-weight-regular"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 item 部件 font-weight 覆盖槽。"
@@ -86512,7 +86512,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "0"
       ],
       "visibility": "public",
       "description": "tree-select 的 content 部件 padding-inline 覆盖槽。"
@@ -87467,7 +87467,7 @@
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-font-weight-regular"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "tree-select 的 branch-control、item 部件 font-weight 覆盖槽。"
@@ -87618,7 +87618,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "0"
       ],
       "visibility": "public",
       "description": "tree-select 的 branch-control、item 部件 border-radius 覆盖槽。"

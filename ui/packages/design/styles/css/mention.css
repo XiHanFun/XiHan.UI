@@ -216,7 +216,7 @@
     min-block-size: var(--xh-mention-content-min-h, var(--xh-_mention-h));
     max-block-size: min(var(--xh-mention-content-max-h, var(--xh-overlay-max-h)), var(--xh-_mention-available-h));
     padding-block: var(--xh-mention-content-py, var(--xh-space-1));
-    padding-inline: var(--xh-mention-content-px, var(--xh-space-1));
+    padding-inline: var(--xh-mention-content-px, 0);
     border-radius: var(--xh-mention-content-radius, var(--xh-shape-overlay));
     overflow-y: auto;
     /* 浮层滚动面：滚到头不把页面一起带走 */
@@ -254,7 +254,7 @@
     --xh-collection-inline-padding: var(--xh-mention-item-px, var(--xh-_mention-item-px));
     --xh-collection-gap: var(--xh-mention-item-gap, var(--xh-_mention-gap));
     --xh-collection-font-size: var(--xh-mention-item-font-size, var(--xh-_mention-font-size));
-    --xh-collection-radius: var(--xh-mention-item-radius, var(--xh-shape-inset));
+    --xh-collection-radius: var(--xh-mention-item-radius, 0);
     --xh-collection-fg-rest: var(--xh-mention-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-hover: var(--xh-mention-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-keyboard-highlight: var(--xh-mention-item-fg, var(--xh-material-frosted-fg));
