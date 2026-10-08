@@ -1075,6 +1075,7 @@ export type ComponentTokenName
     | '--xh-context-menu-group-label-fg'
     | '--xh-context-menu-group-label-font-size'
     | '--xh-context-menu-group-label-font-weight'
+    | '--xh-context-menu-group-label-mt'
     | '--xh-context-menu-group-label-px'
     | '--xh-context-menu-group-label-py'
     | '--xh-context-menu-highlight'
