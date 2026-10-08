@@ -2360,6 +2360,7 @@ export type ComponentTokenName
     | '--xh-menu-group-label-fg'
     | '--xh-menu-group-label-font-size'
     | '--xh-menu-group-label-font-weight'
+    | '--xh-menu-group-label-mt'
     | '--xh-menu-group-label-px'
     | '--xh-menu-group-label-py'
     | '--xh-menu-highlight'
