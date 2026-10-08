@@ -13,6 +13,7 @@ const FILES = [
   'XhDemo.vue',
   'XhFrameworkSwitch.vue',
   'XhStageAxes.vue',
+  'XhThemeDesigner.vue',
   'XhTokenSwatches.vue',
   'XhTokenTable.vue',
   'overrides.css',
