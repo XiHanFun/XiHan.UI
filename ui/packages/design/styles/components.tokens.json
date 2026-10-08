@@ -55750,7 +55750,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "progress 的 label 部件 color 覆盖槽。"
@@ -55768,7 +55768,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "progress 的 label 部件 font-size 覆盖槽。"
@@ -56012,7 +56012,7 @@
         "--xh-space-2",
         "--xh-space-3",
         "--xh-space-4",
-        "--xh-track-thickness"
+        "--xh-stroke-strong"
       ],
       "visibility": "public",
       "description": "progress 的 root、target、track 部件 block-size 覆盖槽。"
@@ -56054,7 +56054,7 @@
         "variant=dashboard"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "progress 的 track 部件 background、stroke 覆盖槽。"
