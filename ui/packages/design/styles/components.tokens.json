@@ -38931,7 +38931,7 @@
       ],
       "defaultToken": [
         "--xh-_tone-subtle",
-        "--xh-bg-brand-subtle"
+        "--xh-bg-mark"
       ],
       "visibility": "public",
       "description": "highlight 的 mark、root 部件 background 覆盖槽。"
@@ -38952,7 +38952,7 @@
       ],
       "defaultToken": [
         "--xh-_tone-fg",
-        "--xh-fg-brand-strong"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "highlight 的 mark、root 部件 color 覆盖槽。"
