@@ -5428,11 +5428,11 @@
      所以别往覆盖钩子里加这几个属性。 */
   .xh-scope-float-button[data-part='root'] {
     --xh-_float-button-offset: var(--xh-space-6);
-    /* 展开列表里原生动作项的身量与字形尺：触发器自己走 Action Control floating 档
-       （sm = box-sm / md = box-md / lg = box-lg，字形 sm / md / lg），
-       原生动作项不是 Headless 部件、配方打不到它，这两支私有槽按同一张表镜像，换档只改这里 */
-    --xh-_float-button-size: var(--xh-control-box-md);
-    --xh-_float-button-glyph-size: var(--xh-glyph-size-md);
+    /* 触发器与展开列表里原生动作项的身量与字形尺，同一张表：md 取独立浮钮的直径（40px），
+       sm / lg 取方格档；字形比控件内图标低一档（sm / md 16px、lg 20px）。
+       原生动作项不是 Headless 部件、配方打不到它，触发器也读这两支私有槽，换档只改这里 */
+    --xh-_float-button-size: var(--xh-control-float-md);
+    --xh-_float-button-glyph-size: var(--xh-glyph-size-sm);
     /* 作者塞进指示符槽的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-float-button-icon-size, var(--xh-_float-button-glyph-size));
 
@@ -5571,17 +5571,15 @@
   /* —— 尺寸：原生动作项与触发器的 floating 档逐档同表 —— */
   .xh-scope-float-button[data-part='root'][data-size='sm'] {
     --xh-_float-button-size: var(--xh-control-box-sm);
-    --xh-_float-button-glyph-size: var(--xh-glyph-size-sm);
   }
 
   .xh-scope-float-button[data-part='root'][data-size='md'] {
-    --xh-_float-button-size: var(--xh-control-box-md);
-    --xh-_float-button-glyph-size: var(--xh-glyph-size-md);
+    --xh-_float-button-size: var(--xh-control-float-md);
   }
 
   .xh-scope-float-button[data-part='root'][data-size='lg'] {
     --xh-_float-button-size: var(--xh-control-box-lg);
-    --xh-_float-button-glyph-size: var(--xh-glyph-size-lg);
+    --xh-_float-button-glyph-size: var(--xh-glyph-size-md);
   }
 
   /* —— 形态：给展开列表里原生动作项用的面 ——
@@ -5605,7 +5603,8 @@
     --xh-_float-button-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle-opaque));
     --xh-_float-button-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover-opaque));
     --xh-_float-button-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active-opaque));
-    --xh-_float-button-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+    /* 与形态矩阵 subtle 档的中性字同一支（次要字色），触发器与动作项一致 */
+    --xh-_float-button-fg: var(--xh-_tone-fg, var(--xh-fg-muted));
     --xh-_float-button-border: transparent;
     --xh-_float-button-border-hover: transparent;
     --xh-_float-button-shadow: none;
@@ -5632,8 +5631,8 @@
   }
 
   /* —— 触发器 ——
-     浮在内容之上的单图标圆钮，接 Action Control floating 档：盒型（md = box-lg 48px，圆形）、
-     四态面、0.97 按压与 44px 命中区由家族配方按 data-xh-action-variant / -size 给出。
+     浮在内容之上的单图标圆钮，接 Action Control floating 档：圆形、四态面、按压与 44px 命中区
+     由家族配方按 data-xh-action-variant / -size 给出；视觉盒与字形取根上按档给的尺（与动作项同一张表）。
      这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与几何槽映射 */
   .xh-scope-float-button[data-part='trigger'] {
     --xh-action-bg-rest: var(--xh-float-button-bg, var(--xh-_action-variant-bg-rest));
@@ -5657,9 +5656,20 @@
     --xh-action-shadow-focus-visible: var(--xh-float-button-shadow, none);
     --xh-action-shadow-disabled: var(--xh-float-button-shadow, none);
     --xh-action-radius: var(--xh-float-button-radius, var(--xh-_action-profile-radius));
-    --xh-action-visual-size: var(--xh-float-button-size, var(--xh-_action-profile-visual-size));
-    /* 作者塞进来的图标跟着 floating 档走（md 24px），与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-float-button-icon-size, var(--xh-_action-profile-glyph-size));
+    --xh-action-visual-size: var(--xh-float-button-size, var(--xh-_float-button-size));
+    --xh-action-min-inline-size: var(--xh-float-button-size, var(--xh-_float-button-size));
+    /* 作者塞进来的图标与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-float-button-icon-size, var(--xh-_float-button-glyph-size));
+  }
+
+  /* subtle 档：形态矩阵的淡底是半透明的墨色，钮钉在内容之上盖不住底下的字；触发器改读上面
+     不透明的那组淡底（与展开组里的原生动作项同一块面），写了语气仍是语气淡底 */
+  .xh-scope-float-button[data-part='root'][data-variant='subtle']
+    .xh-scope-float-button[data-part='trigger'] {
+    --xh-action-bg-rest: var(--xh-float-button-bg, var(--xh-_float-button-bg));
+    --xh-action-bg-hover: var(--xh-float-button-bg-hover, var(--xh-_float-button-bg-hover));
+    --xh-action-bg-pressed: var(--xh-float-button-bg-active, var(--xh-_float-button-bg-active));
+    --xh-action-bg-focus-visible: var(--xh-float-button-bg, var(--xh-_float-button-bg));
   }
 
   /* 缺省 outline 是 frosted 材质面：连接层只在这一档投影 data-xh-material，面由材质家族配方给——
