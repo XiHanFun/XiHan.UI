@@ -303,8 +303,6 @@ variant 更换正文框的描边与底色，候选面板不受影响
 
 `@xihan-ui/styles/mention.css` 按 `[data-scope="mention"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-mention` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
-`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
-
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -392,11 +390,11 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `--xh-mention-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | mention 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-mention-input-bg` | `input` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | mention 的 input 部件 background-color 覆盖槽。 |
 | `--xh-mention-input-bg-disabled` | `input` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | mention 的 input 部件 background-color 覆盖槽。 |
-| `--xh-mention-input-bg-hover` | `input` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | mention 的 input 部件 background-color 覆盖槽。 |
+| `--xh-mention-input-bg-hover` | `input` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | mention 的 input 部件 background-color 覆盖槽。 |
 | `--xh-mention-input-bg-readonly` | `input` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | mention 的 input 部件 background-color 覆盖槽。 |
 | `--xh-mention-input-border` | `input` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | mention 的 input 部件 border 覆盖槽。 |
 | `--xh-mention-input-border-focus` | `input` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | mention 的 input 部件 border-color 覆盖槽。 |
-| `--xh-mention-input-border-hover` | `input` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | mention 的 input 部件 border-color 覆盖槽。 |
+| `--xh-mention-input-border-hover` | `input` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | mention 的 input 部件 border-color 覆盖槽。 |
 | `--xh-mention-input-border-invalid` | `input` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | mention 的 input 部件 border-color 覆盖槽。 |
 | `--xh-mention-input-fg` | `input` | `color` | `xh-field-chrome` | `--xh-fg-default` | mention 的 input 部件 color 覆盖槽。 |
 | `--xh-mention-input-font-size` | `input` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 input 部件 font-size 覆盖槽。 |

@@ -1,5 +1,5 @@
 // Pagination 行里的两个字段：每页条数控制器按内容定宽（字段缺省宽 16rem 在分页行里过宽）；
-// 跳页框接字段家族——静息 canvas 底上的控件描边、悬停升控件悬停边、聚焦换聚焦边与承载面、不画环、校验失败换失败边。
+// 跳页框接字段家族——静息 canvas 底上的控件描边、悬停升控件悬停边、聚焦换聚焦边加环、校验失败换失败边。
 // 判据是几何与计算样式，jsdom 不排版。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -89,15 +89,15 @@ describe('pagination 的跳页框接字段家族', () => {
       .toBe(resolved(jumper, 'border-top-color', 'var(--xh-border-control-hover)'))
   })
 
-  it('聚焦换聚焦边与承载面，不画环', async () => {
+  it('聚焦换聚焦边并画环', async () => {
     await mount()
     const jumper = part('pagination', 'jumper')
+    // 指针挪开：悬停档与聚焦档同时命中时悬停那条更特定，这里只看聚焦
+    await userEvent.hover(part('pagination', 'item'))
     jumper.focus()
     await expect.poll(() => getComputedStyle(jumper).borderTopColor)
       .toBe(resolved(jumper, 'border-top-color', 'var(--xh-border-control-focus)'))
-    await expect.poll(() => getComputedStyle(jumper).backgroundColor)
-      .toBe(resolved(jumper, 'background-color', 'var(--xh-bg-surface)'))
-    expect(getComputedStyle(jumper).outlineStyle).toBe('none')
+    expect(getComputedStyle(jumper).outlineStyle).toBe('solid')
   })
 
   it('越界的页码判校验失败：换失败边', async () => {

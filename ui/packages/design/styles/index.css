@@ -871,7 +871,7 @@
     padding-block: var(--xh-space-0_5);
   }
 
-  [data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):not(:focus-within):hover {
+  [data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover {
     background-color: var(--xh-field-bg-hover, var(--xh-_field-variant-bg-hover));
     border-color: var(--xh-field-border-hover, var(--xh-_field-variant-border-hover));
   }
@@ -983,7 +983,7 @@
       opacity: 1;
     }
 
-    [data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):not(:focus-within):hover {
+    [data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover {
       border-color: Highlight;
     }
 
@@ -10980,12 +10980,6 @@
     line-height: var(--xh-leading-normal);
   }
 
-  /* 输入框自身就是字段外壳：公共层的 :focus-visible 环会画在盒上，与家族的聚焦面（承载面 + 聚焦描边）
-     重复，这里关掉；强制色档描边换色未必分得出来，在本皮肤的强制色块里补一圈 Highlight 环 */
-  .xh-scope-mention[data-part='input']:focus-visible {
-    outline: none;
-  }
-
   .xh-scope-mention[data-part='input'][hidden] {
     display: none;
   }
@@ -11209,13 +11203,6 @@
        收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
     .xh-scope-mention[data-part='positioner'] {
       display: none;
-    }
-  }
-
-  @media (forced-colors: active) {
-    .xh-scope-mention[data-part='input']:focus-visible {
-      outline: var(--xh-ring-width) solid Highlight;
-      outline-offset: var(--xh-ring-offset);
     }
   }
 }
@@ -29768,12 +29755,6 @@
     font-size: var(--xh-field-control-font-size, var(--xh-text-body-size));
   }
 
-  /* 作者的输入控件自身就是字段外壳：公共层的 :focus-visible 环会画在盒上，与家族的聚焦面（承载面 + 聚焦描边）
-     重复，这里关掉；强制色档描边换色未必分得出来，在本皮肤的强制色块里补一圈 Highlight 环 */
-  .xh-scope-field[data-part='control']:focus-visible {
-    outline: none;
-  }
-
   /* 无效标签色的默认在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
   .xh-scope-field[data-part='label'][data-invalid] {
     color: var(--xh-field-label-fg-invalid, var(--xh-fg-danger));
@@ -29824,13 +29805,6 @@
   .xh-scope-field[data-part='root'][hidden],
   .xh-scope-form[data-part='root'][hidden] {
     display: none;
-  }
-
-  @media (forced-colors: active) {
-    .xh-scope-field[data-part='control']:focus-visible {
-      outline: var(--xh-ring-width) solid Highlight;
-      outline-offset: var(--xh-ring-offset);
-    }
   }
 }
 
@@ -35910,12 +35884,6 @@
     appearance: none;
   }
 
-  /* 跳页框自身就是字段外壳：公共层的 :focus-visible 环会画在盒上，与家族的聚焦面（承载面 + 聚焦描边）
-     重复，这里关掉；强制色档描边换色未必分得出来，在本皮肤的强制色块里补一圈 Highlight 环 */
-  .xh-scope-pagination[data-part='jumper']:focus-visible {
-    outline: none;
-  }
-
   .xh-scope-pagination[data-part='jumper'][hidden] {
     display: none;
   }
@@ -36126,11 +36094,6 @@
   }
 
   @media (forced-colors: active) {
-    .xh-scope-pagination[data-part='jumper']:focus-visible {
-      outline: var(--xh-ring-width) solid Highlight;
-      outline-offset: var(--xh-ring-offset);
-    }
-
     /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
        字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
        按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
@@ -36527,19 +36490,19 @@
     color: var(--xh-pin-input-placeholder-fg, var(--xh-fg-subtle));
   }
 
-  /* 一行格子长得一模一样，光标那道竖线太细，看不出正在填哪一格：当前格与字段外壳的聚焦态同一副面——
-     换承载面 + 聚焦描边，压在别的格子的字段淡底之间一眼分得出，不另画环（强制色档补一圈 Highlight 环，见下）。
-     data-focus 由机器给（它知道谁是当前格），家族的 :focus-within 兜住机器状态还没回流的那一帧，
-     两条同时写不冲突。焦点边一律家族的 --xh-border-control-focus，不随 tone */
+  /* 一行格子长得一模一样，光标那道竖线太细，看不出正在填哪一格：
+     当前格必须有明显的环。data-focus 由机器给（它知道谁是当前格），
+     家族的 :focus-within 兜住机器状态还没回流的那一帧，两条同时写不冲突。
+     焦点边一律家族的 --xh-border-control-focus，不随 tone */
   .xh-scope-pin-input[data-part='input'][data-focus] {
     border-color: var(--xh-pin-input-box-border-focus, var(--xh-_field-variant-border-focus));
-    background-color: var(--xh-_field-variant-bg-focus);
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
   }
 
-  /* 每一格自身就是字段外壳：公共层的 :focus-visible 环会画在盒上，与家族的聚焦面（承载面 + 聚焦描边）
-     重复，这里关掉；强制色档描边换色未必分得出来，在本皮肤的强制色块里补一圈 Highlight 环 */
-  .xh-scope-pin-input[data-part='input']:focus-visible {
-    outline: none;
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  .xh-scope-pin-input[data-part='input'][data-invalid][data-focus] {
+    outline-color: var(--xh-ring-invalid);
   }
 
   /* 填满只代表"格子都有字"，不代表"验证码对"，所以用品牌色而不是成功色收个尾。
@@ -36581,13 +36544,6 @@
     clip-path: inset(50%);
     white-space: nowrap;
     pointer-events: none;
-  }
-
-  @media (forced-colors: active) {
-    .xh-scope-pin-input[data-part='input']:focus-visible {
-      outline: var(--xh-ring-width) solid Highlight;
-      outline-offset: var(--xh-ring-offset);
-    }
   }
 }
 

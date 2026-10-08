@@ -161,12 +161,6 @@
     line-height: var(--xh-leading-normal);
   }
 
-  /* 输入框自身就是字段外壳：公共层的 :focus-visible 环会画在盒上，与家族的聚焦面（承载面 + 聚焦描边）
-     重复，这里关掉；强制色档描边换色未必分得出来，在本皮肤的强制色块里补一圈 Highlight 环 */
-  [data-scope='mention'][data-part='input']:focus-visible {
-    outline: none;
-  }
-
   [data-scope='mention'][data-part='input'][hidden] {
     display: none;
   }
@@ -392,13 +386,6 @@
        收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
     [data-scope='mention'][data-part='positioner'] {
       display: none;
-    }
-  }
-
-  @media (forced-colors: active) {
-    [data-scope='mention'][data-part='input']:focus-visible {
-      outline: var(--xh-ring-width) solid Highlight;
-      outline-offset: var(--xh-ring-offset);
     }
   }
 }
