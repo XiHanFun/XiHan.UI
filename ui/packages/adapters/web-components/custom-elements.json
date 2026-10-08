@@ -42726,6 +42726,9 @@
               "name": "--xh-menubar-group-label-font-weight"
             },
             {
+              "name": "--xh-menubar-group-label-mt"
+            },
+            {
               "name": "--xh-menubar-group-label-px"
             },
             {
