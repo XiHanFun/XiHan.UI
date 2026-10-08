@@ -45,19 +45,41 @@ const EXPORT_BRAND = "custom";
 const STEPS: BrandStep[] = ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900", "950"];
 const KEYS: (keyof DesignerState)[] = ["seed", "mode", "density", "contrast", "radius"];
 
-/** 第一项是组件库的基线主题 */
-const presets: Preset[] = [
-  { id: "default", name: "默认", seed: "#0067ea", mode: "light", density: "comfortable", contrast: "default", radius: "default" },
-  { id: "dark", name: "暗黑", seed: "#0067ea", mode: "dark", density: "comfortable", contrast: "default", radius: "default" },
-  { id: "compact", name: "紧凑", seed: "#0067ea", mode: "light", density: "compact", contrast: "default", radius: "default" },
-  { id: "contrast", name: "高对比", seed: "#0067ea", mode: "light", density: "comfortable", contrast: "more", radius: "default" },
-  { id: "slate", name: "墨石", seed: "#475569", mode: "light", density: "compact", contrast: "default", radius: "tight" },
-  { id: "jade", name: "青翠", seed: "#059669", mode: "light", density: "comfortable", contrast: "default", radius: "round" },
-  { id: "violet", name: "暮紫", seed: "#7c3aed", mode: "light", density: "comfortable", contrast: "default", radius: "round" },
-  { id: "sunset", name: "落日", seed: "#ea580c", mode: "light", density: "comfortable", contrast: "default", radius: "default" },
-  { id: "rose", name: "胭脂", seed: "#e11d48", mode: "light", density: "comfortable", contrast: "default", radius: "round" },
-  { id: "ocean", name: "深海", seed: "#0d9488", mode: "dark", density: "comfortable", contrast: "default", radius: "default" },
+/** 基础一组只换明暗、密度与对比度，风格一组换品牌色与圆角；第一项是组件库的基线主题 */
+const presetGroups: { label: string; presets: Preset[] }[] = [
+  {
+    label: "基础",
+    presets: [
+      { id: "default", name: "默认", seed: "#0067ea", mode: "light", density: "comfortable", contrast: "default", radius: "default" },
+      { id: "dark", name: "暗黑", seed: "#0067ea", mode: "dark", density: "comfortable", contrast: "default", radius: "default" },
+      { id: "compact", name: "紧凑", seed: "#0067ea", mode: "light", density: "compact", contrast: "default", radius: "default" },
+      { id: "contrast", name: "高对比", seed: "#0067ea", mode: "light", density: "comfortable", contrast: "more", radius: "default" },
+      { id: "dark-compact", name: "暗黑紧凑", seed: "#0067ea", mode: "dark", density: "compact", contrast: "default", radius: "default" },
+      { id: "dark-contrast", name: "暗黑高对比", seed: "#0067ea", mode: "dark", density: "comfortable", contrast: "more", radius: "default" },
+    ],
+  },
+  {
+    label: "风格",
+    presets: [
+      { id: "slate", name: "墨石", seed: "#475569", mode: "light", density: "compact", contrast: "default", radius: "tight" },
+      { id: "ink", name: "素墨", seed: "#18181b", mode: "light", density: "comfortable", contrast: "default", radius: "tight" },
+      { id: "sky", name: "天青", seed: "#0284c7", mode: "light", density: "comfortable", contrast: "default", radius: "round" },
+      { id: "turquoise", name: "松石", seed: "#0891b2", mode: "light", density: "compact", contrast: "default", radius: "default" },
+      { id: "jade", name: "青翠", seed: "#059669", mode: "light", density: "comfortable", contrast: "default", radius: "round" },
+      { id: "bamboo", name: "竹青", seed: "#65a30d", mode: "light", density: "comfortable", contrast: "default", radius: "default" },
+      { id: "amber", name: "琥珀", seed: "#d97706", mode: "light", density: "comfortable", contrast: "default", radius: "round" },
+      { id: "sunset", name: "落日", seed: "#ea580c", mode: "light", density: "comfortable", contrast: "default", radius: "default" },
+      { id: "rose", name: "胭脂", seed: "#e11d48", mode: "light", density: "comfortable", contrast: "default", radius: "round" },
+      { id: "sakura", name: "樱粉", seed: "#db2777", mode: "light", density: "comfortable", contrast: "default", radius: "default" },
+      { id: "wisteria", name: "紫藤", seed: "#c026d3", mode: "light", density: "compact", contrast: "default", radius: "round" },
+      { id: "violet", name: "暮紫", seed: "#7c3aed", mode: "light", density: "comfortable", contrast: "default", radius: "round" },
+      { id: "starry", name: "星夜", seed: "#6366f1", mode: "dark", density: "comfortable", contrast: "default", radius: "round" },
+      { id: "ocean", name: "深海", seed: "#0d9488", mode: "dark", density: "comfortable", contrast: "default", radius: "default" },
+      { id: "gilded", name: "鎏金", seed: "#ca8a04", mode: "dark", density: "comfortable", contrast: "default", radius: "tight" },
+    ],
+  },
 ];
+const presets = presetGroups.flatMap(group => group.presets);
 const baseline = presets[0];
 
 const swatches = [...new Set(presets.map(preset => preset.seed))];
@@ -222,23 +244,34 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="xh-designer">
-    <div class="xh-designer__presets" role="group" aria-label="主题预设">
-      <button
-        v-for="preset in presets"
-        :key="preset.id"
-        class="xh-designer__preset"
-        type="button"
-        :aria-pressed="activePreset === preset.id"
-        @click="apply(preset)"
+    <div class="xh-designer__presets">
+      <div
+        v-for="group in presetGroups"
+        :key="group.label"
+        class="xh-designer__preset-group"
+        role="group"
+        :aria-label="`${group.label}预设`"
       >
-        <span
-          class="xh-designer__preset-dot"
-          :data-mode="preset.mode"
-          :style="{ background: preset.seed }"
-          aria-hidden="true"
-        />
-        {{ preset.name }}
-      </button>
+        <span class="xh-designer__label" aria-hidden="true">{{ group.label }}</span>
+        <div class="xh-designer__preset-list">
+          <button
+            v-for="preset in group.presets"
+            :key="preset.id"
+            class="xh-designer__preset"
+            type="button"
+            :aria-pressed="activePreset === preset.id"
+            @click="apply(preset)"
+          >
+            <span
+              class="xh-designer__preset-dot"
+              :data-mode="preset.mode"
+              :style="{ background: preset.seed }"
+              aria-hidden="true"
+            />
+            {{ preset.name }}
+          </button>
+        </div>
+      </div>
     </div>
 
     <section class="xh-designer__toolbar" aria-label="主题设置">
@@ -333,6 +366,33 @@ onBeforeUnmount(() => {
 }
 
 .xh-designer__presets {
+  display: grid;
+  gap: var(--xh-space-3);
+}
+
+/* 组名在左、预设在右；窄屏组名落到上一行 */
+.xh-designer__preset-group {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--xh-space-2) var(--xh-space-4);
+}
+
+.xh-designer__preset-group > .xh-designer__label {
+  padding-block-start: var(--xh-space-1);
+}
+
+@media (max-width: 767px) {
+  .xh-designer__preset-group {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .xh-designer__preset-group > .xh-designer__label {
+    padding-block-start: 0;
+  }
+}
+
+.xh-designer__preset-list {
   display: flex;
   flex-wrap: wrap;
   gap: var(--xh-space-2);
