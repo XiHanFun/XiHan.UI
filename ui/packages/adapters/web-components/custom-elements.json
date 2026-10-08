@@ -22259,6 +22259,9 @@
               "name": "--xh-descriptions-item-py"
             },
             {
+              "name": "--xh-descriptions-label-bg"
+            },
+            {
               "name": "--xh-descriptions-label-fg"
             },
             {

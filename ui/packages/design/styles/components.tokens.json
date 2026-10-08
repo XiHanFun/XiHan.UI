@@ -26320,20 +26320,24 @@
       "component": "descriptions",
       "part": [
         "item",
+        "label",
         "root"
       ],
       "property": [
         "border-block-start",
+        "border-inline-end",
         "border-inline-start"
       ],
       "state": [
+        "@media (min-width: 768px)",
+        "placement=left",
         "variant=outline"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
-      "description": "descriptions 的 item、root 部件 border-block-start、border-inline-start 覆盖槽。"
+      "description": "descriptions 的 item、label、root 部件 border-block-start、border-inline-end、border-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-descriptions-extra-gap",
@@ -26402,7 +26406,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_descriptions-gap"
+        "--xh-_descriptions-row-gap"
       ],
       "visibility": "public",
       "description": "descriptions 的 root 部件 gap 覆盖槽。"
@@ -26448,38 +26452,70 @@
       "component": "descriptions",
       "part": [
         "item",
-        "root"
+        "label",
+        "root",
+        "value"
       ],
       "property": [
         "padding-inline"
       ],
       "state": [
+        "@media (min-width: 768px)",
+        "is([data-scope='descriptions'][data-part='label'], [data-scope='descriptions'][data-part='value'])",
+        "placement=left",
         "variant=outline"
       ],
       "defaultToken": [
         "--xh-_descriptions-px"
       ],
       "visibility": "public",
-      "description": "descriptions 的 item、root 部件 padding-inline 覆盖槽。"
+      "description": "descriptions 的 item、label、root、value 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-descriptions-item-py",
       "component": "descriptions",
       "part": [
         "item",
-        "root"
+        "label",
+        "root",
+        "value"
       ],
       "property": [
         "padding-block"
       ],
       "state": [
+        "@media (min-width: 768px)",
+        "is([data-scope='descriptions'][data-part='label'], [data-scope='descriptions'][data-part='value'])",
+        "placement=left",
         "variant=outline"
       ],
       "defaultToken": [
         "--xh-_descriptions-py"
       ],
       "visibility": "public",
-      "description": "descriptions 的 item、root 部件 padding-block 覆盖槽。"
+      "description": "descriptions 的 item、label、root、value 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-descriptions-label-bg",
+      "component": "descriptions",
+      "part": [
+        "item",
+        "label",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "@media (min-width: 768px)",
+        "placement=left",
+        "variant=outline"
+      ],
+      "defaultToken": [
+        "--xh-bg-muted"
+      ],
+      "visibility": "public",
+      "description": "descriptions 的 item、label、root 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-descriptions-label-fg",
@@ -26512,7 +26548,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-weight"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "descriptions 的 label 部件 font-weight 覆盖槽。"

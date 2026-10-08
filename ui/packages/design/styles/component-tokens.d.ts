@@ -1334,6 +1334,7 @@ export type ComponentTokenName
     | '--xh-descriptions-header-mb'
     | '--xh-descriptions-item-px'
     | '--xh-descriptions-item-py'
+    | '--xh-descriptions-label-bg'
     | '--xh-descriptions-label-fg'
     | '--xh-descriptions-label-font-weight'
     | '--xh-descriptions-label-gap'

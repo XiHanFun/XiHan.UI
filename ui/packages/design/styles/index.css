@@ -3701,12 +3701,16 @@
   .xh-scope-descriptions[data-part='root'] {
     /* 一个尺寸档只换这几个私有槽，每一格与格内两段都从根上继承它们，
        换档不必给每个部件各写一条选择器 */
-    --xh-_descriptions-gap: var(--xh-space-3);
-    /* 标签是每一格的集合标题：叠着排时与取值隔 space-2（集合标题与集合的间距） */
+    /* 格与格之间行距窄、列距宽：一行里的几组左右分得开，上下读起来连成一列 */
+    --xh-_descriptions-row-gap: var(--xh-space-2);
+    --xh-_descriptions-column-gap: var(--xh-space-5);
+    /* 标签是每一格的集合标题：叠着排时与取值隔 space-2（集合标题与集合的间距）；标签在左时隔 20px */
     --xh-_descriptions-pair-gap: var(--xh-space-2);
-    --xh-_descriptions-label-gap: var(--xh-space-2);
-    --xh-_descriptions-py: var(--xh-space-2);
-    --xh-_descriptions-px: var(--xh-space-3);
+    --xh-_descriptions-label-gap: var(--xh-space-5);
+    /* 描边档的单元格：上下 6px、左右 20px，单行格高约 33px */
+    --xh-_descriptions-py: var(--xh-space-1_5);
+    --xh-_descriptions-px: var(--xh-space-5);
+    /* 字号三档同为正文字号：尺寸档只换间距与格内距，不换字 */
     --xh-_descriptions-font-size: var(--xh-control-font-md);
     /* 标签在左时那一列的宽度：收到最长的那个标签 */
     --xh-_descriptions-label-w: max-content;
@@ -3714,7 +3718,7 @@
     display: grid;
     /* 不写 columns 即每行一组；二到六列各有一条规则 */
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--xh-descriptions-gap, var(--xh-_descriptions-gap));
+    gap: var(--xh-descriptions-gap, var(--xh-_descriptions-row-gap) var(--xh-_descriptions-column-gap));
     /* 根可能写成 dl，UA 的上下外边距在这里清掉 */
     margin: 0;
     color: var(--xh-descriptions-fg, var(--xh-fg-default));
@@ -3750,19 +3754,20 @@
 
   /* —— 尺寸 —— */
   .xh-scope-descriptions[data-part='root'][data-size='sm'] {
-    --xh-_descriptions-gap: var(--xh-space-2);
+    --xh-_descriptions-row-gap: var(--xh-space-1);
+    --xh-_descriptions-column-gap: var(--xh-space-4);
+    --xh-_descriptions-label-gap: var(--xh-space-4);
     --xh-_descriptions-py: var(--xh-space-1);
-    --xh-_descriptions-px: var(--xh-space-2);
-    --xh-_descriptions-font-size: var(--xh-control-font-sm);
+    --xh-_descriptions-px: var(--xh-space-4);
   }
 
   .xh-scope-descriptions[data-part='root'][data-size='lg'] {
-    --xh-_descriptions-gap: var(--xh-space-4);
+    --xh-_descriptions-row-gap: var(--xh-space-4);
+    --xh-_descriptions-column-gap: var(--xh-space-6);
     --xh-_descriptions-pair-gap: var(--xh-space-2);
-    --xh-_descriptions-label-gap: var(--xh-space-3);
-    --xh-_descriptions-py: var(--xh-space-3);
-    --xh-_descriptions-px: var(--xh-space-4);
-    --xh-_descriptions-font-size: var(--xh-control-font-lg);
+    --xh-_descriptions-label-gap: var(--xh-space-6);
+    --xh-_descriptions-py: var(--xh-space-2);
+    --xh-_descriptions-px: var(--xh-space-6);
   }
 
   /* —— 头部 ——
@@ -3819,9 +3824,10 @@
     gap: var(--xh-descriptions-pair-gap, var(--xh-_descriptions-pair-gap));
   }
 
+  /* 标签比取值重一档、颜色弱一档：扫读时先抓标签，读值时不被标签抢走 */
   .xh-scope-descriptions[data-part='label'] {
     color: var(--xh-descriptions-label-fg, var(--xh-fg-muted));
-    font-weight: var(--xh-descriptions-label-font-weight, var(--xh-text-label-weight));
+    font-weight: var(--xh-descriptions-label-font-weight, var(--xh-font-weight-medium));
   }
 
   .xh-scope-descriptions[data-part='value'] {
@@ -3848,9 +3854,9 @@
     > .xh-scope-descriptions[data-part='item'] {
     padding-block: var(--xh-descriptions-item-py, var(--xh-_descriptions-py));
     padding-inline: var(--xh-descriptions-item-px, var(--xh-_descriptions-px));
-    border-block-start: var(--xh-stroke-thin) solid var(--xh-descriptions-divider, var(--xh-border-subtle));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-descriptions-divider, var(--xh-border-default));
     /* 每行一组时左边没有邻居，宽度按列数补回来 */
-    border-inline-start: 0 solid var(--xh-descriptions-divider, var(--xh-border-subtle));
+    border-inline-start: 0 solid var(--xh-descriptions-divider, var(--xh-border-default));
   }
 
   .xh-scope-descriptions[data-part='root'][data-variant='outline']
@@ -3880,6 +3886,28 @@
       grid-template-columns: var(--xh-descriptions-label-w, var(--xh-_descriptions-label-w)) minmax(0, 1fr);
       align-items: baseline;
       column-gap: var(--xh-descriptions-label-gap, var(--xh-_descriptions-label-gap));
+    }
+
+    /* 描边档标签在左：标签单成一列淡底格，与取值之间一条竖线；内距从格上下放到标签与取值各自身上 */
+    .xh-scope-descriptions[data-part='root'][data-variant='outline'][data-placement='left']
+      > .xh-scope-descriptions[data-part='item'] {
+      align-items: stretch;
+      column-gap: 0;
+      padding: 0;
+    }
+
+    .xh-scope-descriptions[data-part='root'][data-variant='outline'][data-placement='left']
+      > .xh-scope-descriptions[data-part='item']
+      > :is(.xh-scope-descriptions[data-part='label'], .xh-scope-descriptions[data-part='value']) {
+      padding-block: var(--xh-descriptions-item-py, var(--xh-_descriptions-py));
+      padding-inline: var(--xh-descriptions-item-px, var(--xh-_descriptions-px));
+    }
+
+    .xh-scope-descriptions[data-part='root'][data-variant='outline'][data-placement='left']
+      > .xh-scope-descriptions[data-part='item']
+      > .xh-scope-descriptions[data-part='label'] {
+      border-inline-end: var(--xh-stroke-thin) solid var(--xh-descriptions-divider, var(--xh-border-default));
+      background: var(--xh-descriptions-label-bg, var(--xh-bg-muted));
     }
 
     /* 二列与三列在这一档按作者写的列数摆，作者写在格上的 span 从这一档起认 */
