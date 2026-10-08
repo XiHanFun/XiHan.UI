@@ -389,7 +389,7 @@
 
     position: absolute;
     /* 钮的视觉盒在头部带里竖向居中：按钮自己的边长从带高里扣掉再对半 */
-    inset-block-start: calc(var(--xh-_dialog-header-top) + (var(--xh-_dialog-header-h) - var(--xh-action-visual-size)) / 2);
+    inset-block-start: calc(var(--xh-_dialog-header-top) + (var(--xh-_dialog-header-h) - var(--xh-dialog-close-size, var(--xh-_action-profile-visual-size))) / 2);
     inset-inline-end: var(--xh-space-4);
   }
 
