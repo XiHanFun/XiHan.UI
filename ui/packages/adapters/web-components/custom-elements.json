@@ -38692,7 +38692,7 @@
               "type": {
                 "text": "string | number | undefined"
               },
-              "description": "进度条厚度：纯数字按像素，其余按 CSS 长度；默认 2px",
+              "description": "进度条厚度：纯数字按像素，其余按 CSS 长度；默认 --xh-stroke-strong（3px）",
               "name": "height",
               "fieldName": "height"
             },
@@ -38758,6 +38758,9 @@
             },
             {
               "name": "--xh-loading-bar-range"
+            },
+            {
+              "name": "--xh-loading-bar-range-radius"
             },
             {
               "name": "--xh-loading-bar-speed"

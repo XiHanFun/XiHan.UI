@@ -2219,6 +2219,7 @@ export type ComponentTokenName
     | '--xh-loading-bar-peg-fg'
     | '--xh-loading-bar-peg-w'
     | '--xh-loading-bar-range'
+    | '--xh-loading-bar-range-radius'
     | '--xh-loading-bar-speed'
     | '--xh-loading-bar-track'
     | '--xh-log-ansi-black'

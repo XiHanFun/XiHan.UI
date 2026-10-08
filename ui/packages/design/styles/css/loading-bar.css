@@ -68,6 +68,9 @@
   [data-scope='loading-bar'][data-part='range'] {
     inline-size: 100%;
     block-size: 100%;
+    /* 露出的前端（行尾）是一维对象的圆头；行首一端由轨道与视口边裁掉，保持方头贴边 */
+    border-start-end-radius: var(--xh-loading-bar-range-radius, var(--xh-shape-pill));
+    border-end-end-radius: var(--xh-loading-bar-range-radius, var(--xh-shape-pill));
     background: var(--xh-loading-bar-range, var(--xh-_tone-soft, var(--xh-bg-brand)));
     translate: calc((var(--xh-_loading-bar-value, 0) - 1) * 100%) 0;
     transition: translate var(--xh-loading-bar-speed, var(--xh-motion-duration-move)) var(--xh-motion-ease-continuous);
