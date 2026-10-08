@@ -43679,7 +43679,7 @@
   /* 取下一页的按钮：铺满一行摆在表尾——铺满一行的独立动作条目，接 Action Control 的 row 档、
      ghost 形态：宽度由容器给、高度随内容、按下只换面不缩放；盒几何、悬停 / 按下 / 禁用面、
      焦点环与粗指针热区全由家族给，白底承载 hover 100 → pressed 200。
-     这里只把使用者槽映射到桥接槽并把文案居中：它是一行里唯一的东西，靠起始缘会像一条没对齐的行 */
+     这里只把使用者槽映射到桥接槽，文案居中写在下一条 */
   .xh-scope-table[data-part='load-more-trigger'] {
     --xh-action-gap: var(--xh-table-load-more-trigger-gap, var(--xh-space-2));
     --xh-action-padding-block: var(--xh-table-load-more-trigger-py, var(--xh-space-3));
@@ -43691,10 +43691,15 @@
     --xh-action-fg-pressed: var(--xh-table-load-more-trigger-fg, var(--xh-fg-brand-strong));
     --xh-action-font-size: var(--xh-table-load-more-trigger-font-size, var(--xh-_table-font-size));
 
-    justify-content: center;
-    text-align: center;
     /* row 档允许换行、高度随内容，折行的文案走正文行高 */
     line-height: var(--xh-leading-normal);
+  }
+
+  /* 文案居中（单行整段居中，折行逐行居中），盖掉 row 档的靠起始缘排布：它是一行里唯一的东西，
+     靠起始缘会像一条没对齐的行。选择器点名 row 档，有层与无层两份产物里都压得住它 */
+  .xh-scope-table[data-part='load-more-trigger'][data-xh-action-profile='row'] {
+    justify-content: center;
+    text-align: center;
   }
 
   .xh-scope-table[data-part='load-more-trigger'][hidden] {
