@@ -95,6 +95,8 @@
     --xh-_dialog-header-h: var(--xh-overlay-header-h);
     /* 标题首行在带里居中要让出的上内衬：带高减标题行高再对半 */
     --xh-_dialog-header-pt: calc((var(--xh-_dialog-header-h) - var(--xh-text-heading-3-size) * var(--xh-leading-normal)) / 2);
+    /* 分三段时头的下内衬扣掉分隔线那 1px，只有标题时整条带恰好是带高 */
+    --xh-_dialog-header-pb: calc(var(--xh-_dialog-header-pt) - var(--xh-stroke-thin));
 
     /* positioner 不吃指针，面板自身恢复交互。 */
     pointer-events: auto;
@@ -245,7 +247,7 @@
     justify-content: center;
     min-block-size: var(--xh-_dialog-header-h);
     padding-block-start: var(--xh-dialog-header-pt, var(--xh-_dialog-header-pt));
-    padding-block-end: var(--xh-dialog-header-pb, calc(var(--xh-_dialog-header-pt) - var(--xh-stroke-thin)));
+    padding-block-end: var(--xh-dialog-header-pb, var(--xh-_dialog-header-pb));
     padding-inline: var(--xh-dialog-header-px, var(--xh-overlay-sheet-px));
     border-block-end: var(--xh-stroke-thin) solid var(--xh-dialog-separator, var(--xh-material-elevated-separator));
   }

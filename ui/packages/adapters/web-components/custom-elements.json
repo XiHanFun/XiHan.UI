@@ -24313,6 +24313,12 @@
               "name": "--xh-drawer-bg"
             },
             {
+              "name": "--xh-drawer-body-px"
+            },
+            {
+              "name": "--xh-drawer-body-py"
+            },
+            {
               "name": "--xh-drawer-border"
             },
             {
@@ -24355,6 +24361,12 @@
               "name": "--xh-drawer-footer-pt"
             },
             {
+              "name": "--xh-drawer-footer-px"
+            },
+            {
+              "name": "--xh-drawer-footer-py"
+            },
+            {
               "name": "--xh-drawer-gap"
             },
             {
@@ -24362,6 +24374,12 @@
             },
             {
               "name": "--xh-drawer-header-pb"
+            },
+            {
+              "name": "--xh-drawer-header-pt"
+            },
+            {
+              "name": "--xh-drawer-header-px"
             },
             {
               "name": "--xh-drawer-icon-size"
@@ -24398,6 +24416,9 @@
             },
             {
               "name": "--xh-drawer-resize-trigger-size"
+            },
+            {
+              "name": "--xh-drawer-separator"
             },
             {
               "name": "--xh-drawer-shadow"

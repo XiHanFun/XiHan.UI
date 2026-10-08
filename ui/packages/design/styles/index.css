@@ -28390,6 +28390,8 @@
     --xh-_dialog-header-h: var(--xh-overlay-header-h);
     /* 标题首行在带里居中要让出的上内衬：带高减标题行高再对半 */
     --xh-_dialog-header-pt: calc((var(--xh-_dialog-header-h) - var(--xh-text-heading-3-size) * var(--xh-leading-normal)) / 2);
+    /* 分三段时头的下内衬扣掉分隔线那 1px，只有标题时整条带恰好是带高 */
+    --xh-_dialog-header-pb: calc(var(--xh-_dialog-header-pt) - var(--xh-stroke-thin));
 
     /* positioner 不吃指针，面板自身恢复交互。 */
     pointer-events: auto;
@@ -28540,7 +28542,7 @@
     justify-content: center;
     min-block-size: var(--xh-_dialog-header-h);
     padding-block-start: var(--xh-dialog-header-pt, var(--xh-_dialog-header-pt));
-    padding-block-end: var(--xh-dialog-header-pb, calc(var(--xh-_dialog-header-pt) - var(--xh-stroke-thin)));
+    padding-block-end: var(--xh-dialog-header-pb, var(--xh-_dialog-header-pb));
     padding-inline: var(--xh-dialog-header-px, var(--xh-overlay-sheet-px));
     border-block-end: var(--xh-stroke-thin) solid var(--xh-dialog-separator, var(--xh-material-elevated-separator));
   }
@@ -28858,11 +28860,16 @@
     position: absolute;
   }
 
-  /* 挂在局部容器里的面板碰不到屏幕边，安全区那一段让位收回去：留着会在容器内白让出一条。 */
+  /* 挂在局部容器里的面板碰不到屏幕边，安全区那一段让位收回去：留着会在容器内白让出一条。
+     三段排版读的那几支安全区私有槽一并归零 */
   .xh-scope-drawer[data-part='content'][data-contained] {
-    padding-block-start: var(--xh-drawer-py, var(--xh-surface-py-md));
-    padding-block-end: var(--xh-drawer-py, var(--xh-surface-py-md));
-    padding-inline: var(--xh-drawer-px, var(--xh-surface-px-md));
+    --xh-_drawer-safe-top: var(--xh-space-0);
+    --xh-_drawer-safe-bottom: var(--xh-space-0);
+    --xh-_drawer-safe-inline: var(--xh-space-0);
+
+    padding-block-start: var(--xh-drawer-py, var(--xh-_drawer-header-pt));
+    padding-block-end: var(--xh-drawer-py, var(--xh-overlay-sheet-footer-py));
+    padding-inline: var(--xh-drawer-px, var(--xh-surface-px-sm));
   }
 
   /* 同一层底色之上再糊背后的页面；与 dialog 同写法，两个前缀都写 */
@@ -28910,25 +28917,38 @@
        两种取法都在下面「四条边」那两条规则里。声明在 content 而不是 root：
        content 会被 portal 到 body，root 上的槽位继承不过来（data-side 也是同一个道理） */
     --xh-_drawer-size: var(--xh-overlay-drawer-w-md);
+    /* 系统占着的那几段：分三段时面板一层只让出它们，设计内衬交给三段各自给。
+       安全区只有物理方向的四个名字，行内轴上两侧同取较宽的那一段，RTL 下不会翻错边 */
+    --xh-_drawer-safe-top: env(safe-area-inset-top, 0px);
+    --xh-_drawer-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --xh-_drawer-safe-inline: max(env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+    /* 头部带：标题首行与角上的关闭钮都落在这条带的中线上，与对话框同一组槽 */
+    --xh-_drawer-header-h: var(--xh-overlay-header-h);
+    /* 标题首行在带里居中要让出的上内衬：带高减标题行高再对半 */
+    --xh-_drawer-header-pt: calc((var(--xh-_drawer-header-h) - var(--xh-text-heading-3-size) * var(--xh-leading-normal)) / 2);
+    /* 分三段时头的下内衬扣掉分隔线那 1px，只有标题时整条带恰好是带高 */
+    --xh-_drawer-header-pb: calc(var(--xh-_drawer-header-pt) - var(--xh-stroke-thin));
+    /* 带的上沿：不分三段时上内衬与安全区取大的一头，安全区更深时整条带往下让出差值 */
+    --xh-_drawer-header-top: calc(max(var(--xh-_drawer-header-pt), var(--xh-_drawer-safe-top)) - var(--xh-_drawer-header-pt));
 
     position: fixed;
     z-index: var(--xh-drawer-layer, var(--xh-_layer, var(--xh-layer-drawer)));
     display: flex;
     flex-direction: column;
     gap: var(--xh-drawer-gap, var(--xh-stack-gap-md));
-    /* 面板贴死视口的某一条边、另一向满铺，内衬与安全区取大的一头：
+    /* 不分三段时内衬由面板一层给：上沿让标题行落在头部带中线，横向 16px。
+       面板贴死视口的某一条边、另一向满铺，内衬与安全区取大的一头：
        刘海、圆角与底部横条压住的那一段由系统给出，内衬比它窄时首尾两行会被切掉。
-       桌面上 env() 恒为 0，取值与内衬槽完全一致。安全区只有物理方向的四个名字，
-       行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。 */
-    padding-block-start: max(var(--xh-drawer-py, var(--xh-surface-py-md)), env(safe-area-inset-top));
-    padding-block-end: max(var(--xh-drawer-py, var(--xh-surface-py-md)), env(safe-area-inset-bottom));
+       桌面上 env() 恒为 0，取值与内衬槽完全一致。 */
+    padding-block-start: max(var(--xh-drawer-py, var(--xh-_drawer-header-pt)), env(safe-area-inset-top));
+    padding-block-end: max(var(--xh-drawer-py, var(--xh-overlay-sheet-footer-py)), env(safe-area-inset-bottom));
     padding-inline: max(
-      var(--xh-drawer-px, var(--xh-surface-px-md)),
+      var(--xh-drawer-px, var(--xh-surface-px-sm)),
       env(safe-area-inset-left),
       env(safe-area-inset-right)
     );
-    /* M4 sheet 三件套：任何浮层不得只靠 box-shadow 分层，亮色下面板与页面同色，
-       1px 描边才是它的边界；影只是加成 */
+    /* sheet 三件套：任何浮层不得只靠 box-shadow 分层，亮色下面板与页面同色，
+       1px 描边才是它的边界；影只是加成。面就是实体底，不叠渐变与顶光 */
     border: var(--xh-stroke-thin) solid var(--xh-drawer-border, var(--xh-material-elevated-border));
     background: var(--xh-drawer-bg, var(--xh-material-elevated-bg));
     color: var(--xh-drawer-fg, var(--xh-material-elevated-fg));
@@ -28986,17 +29006,18 @@
     max-inline-size: 100%;
   }
 
-  /* 只圆朝向页面那两个角：贴住视口的那条边圆角是看不见的，圆了反而露出底下的页面 */
+  /* 贴边面不取圆角：它的边就是视口（或容器）的边。作者写了 --xh-drawer-radius 时也只圆朝向页面那两个角：
+     贴住视口的那条边圆角是看不见的，圆了反而露出底下的页面 */
   .xh-scope-drawer[data-part='content'][data-side='left'] {
     inset-inline-start: 0;
-    border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
-    border-end-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
+    border-start-end-radius: var(--xh-drawer-radius, 0);
+    border-end-end-radius: var(--xh-drawer-radius, 0);
   }
 
   .xh-scope-drawer[data-part='content'][data-side='right'] {
     inset-inline-end: 0;
-    border-start-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
-    border-end-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
+    border-start-start-radius: var(--xh-drawer-radius, 0);
+    border-end-start-radius: var(--xh-drawer-radius, 0);
   }
 
   /* 上下：满宽、定高 */
@@ -29009,14 +29030,14 @@
 
   .xh-scope-drawer[data-part='content'][data-side='top'] {
     inset-block-start: 0;
-    border-end-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
-    border-end-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
+    border-end-start-radius: var(--xh-drawer-radius, 0);
+    border-end-end-radius: var(--xh-drawer-radius, 0);
   }
 
   .xh-scope-drawer[data-part='content'][data-side='bottom'] {
     inset-block-end: 0;
-    border-start-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
-    border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
+    border-start-start-radius: var(--xh-drawer-radius, 0);
+    border-start-end-radius: var(--xh-drawer-radius, 0);
   }
 
   /* 滑入/滑出共用整幅滑入关键帧，四条边只在两个方向槽里写起点。位移取整幅位移令牌，
@@ -29062,11 +29083,16 @@
   /* —— 面板三段 —— */
   /* header / body / footer 把面板切成「头尾定在原处、正文自己滚」三段，
      与弹窗、浮动面板同一套角色划分：头尾不参与压缩，正文吃掉剩下的高度并自己滚。
-     面板的内衬与安全区让位仍由 content 一层给出，三段只接手段与段之间那道缝；
+     分三段时面板一层只让出安全区，设计内衬由三段各自给：头下、尾上的分隔线才能贴着面板两侧的边；
      整块的滚动交还给正文段——两层都能滚时滚轮落在哪一层要看指针停在哪，
      贴边的头尾会跟着一起走。 */
   .xh-scope-drawer[data-part='content']:has(.xh-scope-drawer[data-part='body']) {
+    --xh-_drawer-header-top: var(--xh-_drawer-safe-top);
+
     gap: 0;
+    padding-block-start: var(--xh-_drawer-safe-top);
+    padding-block-end: var(--xh-_drawer-safe-bottom);
+    padding-inline: var(--xh-_drawer-safe-inline);
     overflow: hidden;
   }
 
@@ -29079,14 +29105,30 @@
     padding-block-end: var(--xh-drawer-header-pb, var(--xh-space-2));
   }
 
+  /* 三段结构的头：一条 48px 的头部带，标题首行落在带的中线上（说明在下面接着排，带随之长高），
+     横向内衬 16px；下沿一条 1px 的内部分隔线走 sheet 分隔令牌，贴着面板两侧的边。
+     下内衬扣掉分隔线那 1px，只有标题时整条带恰好是带高 */
+  .xh-scope-drawer[data-part='content']:has(.xh-scope-drawer[data-part='body'])
+    .xh-scope-drawer[data-part='header'] {
+    justify-content: center;
+    min-block-size: var(--xh-_drawer-header-h);
+    padding-block-start: var(--xh-drawer-header-pt, var(--xh-_drawer-header-pt));
+    padding-block-end: var(--xh-drawer-header-pb, var(--xh-_drawer-header-pb));
+    padding-inline: var(--xh-drawer-header-px, var(--xh-surface-px-sm));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-drawer-separator, var(--xh-material-elevated-separator));
+  }
+
   /* 正文段：面板里唯一会滚的一段。最小高度归零，
      否则弹性项按内容撑高，容器再矮也不产生溢出，滚动条永远出不来。
-     模态 body 是原生细条滚动面：细条由 reset 层统一给，滚到头不把页面一起带走 */
+     模态 body 是原生细条滚动面：细条由 reset 层统一给，滚到头不把页面一起带走。
+     内衬纵 12 横 16 */
   .xh-scope-drawer[data-part='body'] {
     flex: 1 1 auto;
     min-block-size: 0;
     overflow: auto;
     overscroll-behavior: contain;
+    padding-block: var(--xh-drawer-body-py, var(--xh-surface-py-sm));
+    padding-inline: var(--xh-drawer-body-px, var(--xh-surface-px-sm));
   }
 
   /* 正文高度随交互变化（表单校验、展开段落）：还在用原生滚动条的正文留一条稳定空道，
@@ -29105,6 +29147,14 @@
     padding-block-start: var(--xh-drawer-footer-pt, var(--xh-space-2));
   }
 
+  /* 三段结构的尾：纵 16 横 16，上沿一条贴边的 1px 内部分隔线 */
+  .xh-scope-drawer[data-part='content']:has(.xh-scope-drawer[data-part='body'])
+    .xh-scope-drawer[data-part='footer'] {
+    padding-block: var(--xh-drawer-footer-py, var(--xh-overlay-sheet-footer-py));
+    padding-inline: var(--xh-drawer-footer-px, var(--xh-surface-px-sm));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-drawer-separator, var(--xh-material-elevated-separator));
+  }
+
   /* 声明过 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
   .xh-scope-drawer[data-part='header'][hidden],
   .xh-scope-drawer[data-part='body'][hidden],
@@ -29112,10 +29162,12 @@
     display: none;
   }
 
+  /* 面板标题：页面级面板标题档、正文色；行高钉在 normal，头部带按它算标题行居中 */
   .xh-scope-drawer[data-part='title'] {
     margin: 0;
     font-size: var(--xh-drawer-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-drawer-title-font-weight, var(--xh-text-heading-3-weight));
+    line-height: var(--xh-leading-normal);
     color: var(--xh-drawer-title-fg, var(--xh-fg-default));
   }
 
@@ -29130,15 +29182,16 @@
      否则长标题会直接钻到按钮底下。只在真有关闭按钮时让位。 */
   .xh-scope-drawer[data-part='content']:has(.xh-scope-drawer[data-part='close-trigger'])
     .xh-scope-drawer[data-part='title'] {
-    padding-inline-end: calc(var(--xh-drawer-close-size, var(--xh-control-h-sm)) + var(--xh-surface-action-inset));
+    padding-inline-end: calc(var(--xh-drawer-close-size, var(--xh-control-h-sm)) + var(--xh-space-4));
   }
 
   /*
-   * 关闭钮是面板角落的单图标钮：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
+   * 关闭钮是面板角落的单图标钮：正方盒、sm 档几何、ghost 四态面、按压换底与粗指针命中区
    * 由家族配方给出——白面上走画布承载阶梯悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200），
    * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与摆放，
    * 聚焦档的 -bg-focus / -fg-focus 两槽同样桥到配方的 focus-visible 面（与 dialog 一致），缺省仍是透明底与悬停字色；
    * 静息前景取 muted 字色，悬停 / 按下回到 fg-default。
+   * 叉取 12px（--xh-glyph-size-xs），比钮的随档字形低一档；钮距右 16px，竖向落在头部带的中线上。
    */
   .xh-scope-drawer[data-part='close-trigger'] {
     --xh-action-visual-size: var(--xh-drawer-close-size, var(--xh-_action-profile-visual-size));
@@ -29150,12 +29203,13 @@
     --xh-action-fg-hover: var(--xh-drawer-close-fg-hover, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-drawer-close-fg-hover, var(--xh-_action-variant-fg-pressed));
     --xh-action-fg-focus-visible: var(--xh-drawer-close-fg-focus, var(--xh-drawer-close-fg-hover, var(--xh-_action-variant-fg-focus-visible)));
-    /* 作者塞进按钮的图标随档取字形尺（sm = 16px），与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-drawer-icon-size, var(--xh-_action-profile-glyph-size));
+    /* 作者塞进按钮的图标与皮肤画的兜底叉同一把尺 */
+    --xh-icon-size: var(--xh-drawer-icon-size, var(--xh-glyph-size-xs));
 
     position: absolute;
-    inset-block-start: var(--xh-surface-action-inset);
-    inset-inline-end: var(--xh-surface-action-inset);
+    /* 钮的视觉盒在头部带里竖向居中：按钮自己的边长从带高里扣掉再对半 */
+    inset-block-start: calc(var(--xh-_drawer-header-top) + (var(--xh-_drawer-header-h) - var(--xh-drawer-close-size, var(--xh-_action-profile-visual-size))) / 2);
+    inset-inline-end: var(--xh-space-4);
   }
 
   .xh-scope-drawer[data-part='close-trigger'][hidden] {

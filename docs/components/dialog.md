@@ -330,7 +330,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `--xh-dialog-footer-py` | `content`<br>`footer` | `padding-block` | `has([data-scope='dialog'][data-part='body'])` | `--xh-overlay-sheet-footer-py` | dialog 的 content、footer 部件 padding-block 覆盖槽。 |
 | `--xh-dialog-gap` | `content` | `gap` | `default` | `--xh-stack-gap-md` | dialog 的 content 部件 gap 覆盖槽。 |
 | `--xh-dialog-header-gap` | `header` | `gap` | `default` | `--xh-stack-gap-sm` | dialog 的 header 部件 gap 覆盖槽。 |
-| `--xh-dialog-header-pb` | `content`<br>`header` | `padding-block-end` | `default`<br>`has([data-scope='dialog'][data-part='body'])` | `--xh-_dialog-header-pt`<br>`--xh-space-2` | dialog 的 content、header 部件 padding-block-end 覆盖槽。 |
+| `--xh-dialog-header-pb` | `content`<br>`header` | `padding-block-end` | `default`<br>`has([data-scope='dialog'][data-part='body'])` | `--xh-_dialog-header-pb`<br>`--xh-space-2` | dialog 的 content、header 部件 padding-block-end 覆盖槽。 |
 | `--xh-dialog-header-pt` | `content`<br>`header` | `padding-block-start` | `has([data-scope='dialog'][data-part='body'])` | `--xh-_dialog-header-pt` | dialog 的 content、header 部件 padding-block-start 覆盖槽。 |
 | `--xh-dialog-header-px` | `content`<br>`header` | `padding-inline` | `has([data-scope='dialog'][data-part='body'])` | `--xh-overlay-sheet-px` | dialog 的 content、header 部件 padding-inline 覆盖槽。 |
 | `--xh-dialog-icon-size` | `close-trigger`<br>`content`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-xs` | dialog 的 close-trigger、content、trigger 部件 --xh-icon-size 覆盖槽。 |
