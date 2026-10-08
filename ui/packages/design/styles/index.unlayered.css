@@ -28507,9 +28507,9 @@
 }
 
 @media (forced-colors: active) {
-  /* 强制色会接管渐变；改回同名实体 M4 底，保留 Canvas / CanvasText 的轮廓与正文。 */
+  /* 强制色会接管渐变；改回系统画布色的实体底，保留 CanvasText 的轮廓与正文。 */
   .xh-scope-dialog[data-part='content'] {
-    background: var(--xh-dialog-bg, var(--xh-material-elevated-bg));
+    background: Canvas;
   }
 }
 

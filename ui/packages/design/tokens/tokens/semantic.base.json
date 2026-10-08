@@ -2,27 +2,27 @@
   "control": {
     "h-sm": {
       "$type": "dimension",
-      "$value": "32px"
+      "$value": "28px"
     },
     "h-md": {
       "$type": "dimension",
-      "$value": "36px"
+      "$value": "32px"
     },
     "h-lg": {
       "$type": "dimension",
-      "$value": "40px"
+      "$value": "36px"
     },
     "box-sm": {
       "$type": "dimension",
-      "$value": "32px"
+      "$value": "28px"
     },
     "box-md": {
       "$type": "dimension",
-      "$value": "40px"
+      "$value": "36px"
     },
     "box-lg": {
       "$type": "dimension",
-      "$value": "48px"
+      "$value": "44px"
     },
     "w": {
       "$description": "单行字段根的缺省宽度：不传尺寸时下拉、日期、文本框等一律这么宽，宽度不再随内容走。",
@@ -412,15 +412,15 @@
   "table": {
     "cell-py-sm": {
       "$type": "dimension",
-      "$value": "{space.1}"
+      "$value": "{space.2}"
     },
     "cell-py-md": {
       "$type": "dimension",
-      "$value": "{space.2}"
+      "$value": "{space.3}"
     },
     "cell-py-lg": {
       "$type": "dimension",
-      "$value": "{space.3}"
+      "$value": "{space.4}"
     }
   },
   "shape": {
@@ -443,7 +443,7 @@
     "overlay": {
       "$description": "脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Notification。",
       "$type": "dimension",
-      "$value": "{radius.lg}"
+      "$value": "{radius.md}"
     },
     "circle": {
       "$description": "正圆：头像、圆形图标按钮、单选指示器。",
@@ -480,20 +480,20 @@
   "elevation": {
     "raised": {
       "$type": "shadow",
-      "$value": "{shadow.sm}"
+      "$value": "none"
     },
     "lifted": {
       "$description": "被指针拎起来、正跟着手移动的东西：滑杆拇指、拖动中的排序项、取色器的拇指。它比贴在页面上的 raised 抬得高，又没到 floating 那一层——floating 是 portal 出去的锚定浮层，抬到那一档，拖动中的拇指会和下拉面板一样重。三层与投影色都照 shadow.* 那份配方，取值逐层落在 raised 与 floating 中间：主层偏移 2→3→4、模糊 3→6→8，环境层偏移 3→6→10。不写 shadow.* 原语是因为原语只有 sm / md / lg / xl 四档，两档之间没有位置。",
       "$type": "shadow",
-      "$value": "0 1px 2px -0.5px oklch(0.145 0.005 258 / 0.06), 0 3px 6px -2px oklch(0.145 0.005 258 / 0.06), 0 6px 12px -5px oklch(0.145 0.005 258 / 0.05)"
+      "$value": "0 4px 10px oklch(0 0 0 / 0.1)"
     },
     "floating": {
       "$type": "shadow",
-      "$value": "{shadow.md}"
+      "$value": "0 4px 10px oklch(0 0 0 / 0.1)"
     },
     "sheet": {
       "$type": "shadow",
-      "$value": "{shadow.lg}"
+      "$value": "0 4px 12px oklch(0 0 0 / 0.15)"
     }
   },
   "motion": {
@@ -699,7 +699,7 @@
     },
     "scale-press": {
       "$type": "number",
-      "$value": 0.97
+      "$value": 1
     },
     "scale-drag": {
       "$description": "拖拽中的拇指放大比例（滑杆、取色器）。",
@@ -713,48 +713,102 @@
     },
     "spring-snappy": {
       "$description": "干脆的弹簧：阻尼比 0.77，超调约 2.2%，落定约 370ms。质量恒为 1，只登记刚度与阻尼。减弱动效下由 JS 直接落到终态，不走 reduce 档。",
-      "stiffness": { "$type": "number", "$value": 380 },
-      "damping": { "$type": "number", "$value": 30 }
+      "stiffness": {
+        "$type": "number",
+        "$value": 380
+      },
+      "damping": {
+        "$type": "number",
+        "$value": 30
+      }
     },
     "spring-smooth": {
       "$description": "手势松手的缺省弹簧：阻尼比 0.87，超调约 0.4%，落定约 280ms。归位、快甩与面板弹回都取它。",
-      "stiffness": { "$type": "number", "$value": 300 },
-      "damping": { "$type": "number", "$value": 30 }
+      "stiffness": {
+        "$type": "number",
+        "$value": 300
+      },
+      "damping": {
+        "$type": "number",
+        "$value": 30
+      }
     },
     "spring-gentle": {
       "$description": "临界阻尼的慢弹簧：不超调，落定约 570ms。",
-      "stiffness": { "$type": "number", "$value": 170 },
-      "damping": { "$type": "number", "$value": 26 }
+      "stiffness": {
+        "$type": "number",
+        "$value": 170
+      },
+      "damping": {
+        "$type": "number",
+        "$value": 26
+      }
     },
     "spring-bouncy": {
       "$description": "明显回弹的弹簧：阻尼比 0.45，超调约 20%。超过核心组件 3% 的超调上限，只供作者与功能包使用。",
-      "stiffness": { "$type": "number", "$value": 400 },
-      "damping": { "$type": "number", "$value": 18 }
+      "stiffness": {
+        "$type": "number",
+        "$value": 400
+      },
+      "damping": {
+        "$type": "number",
+        "$value": 18
+      }
     },
     "spring-stiff": {
       "$description": "硬弹簧：阻尼比 0.86，超调约 0.5%，落定约 195ms。越界回弹取它。",
-      "stiffness": { "$type": "number", "$value": 600 },
-      "damping": { "$type": "number", "$value": 42 }
+      "stiffness": {
+        "$type": "number",
+        "$value": 600
+      },
+      "damping": {
+        "$type": "number",
+        "$value": 42
+      }
     },
     "spring-toggle": {
       "$description": "liquid 档的切换滑块：阻尼比 0.63，超调约 7.5%，在 liquid 档 8% 的上限之内。",
-      "stiffness": { "$type": "number", "$value": 420 },
-      "damping": { "$type": "number", "$value": 26 }
+      "stiffness": {
+        "$type": "number",
+        "$value": 420
+      },
+      "damping": {
+        "$type": "number",
+        "$value": 26
+      }
     },
     "spring-lead": {
       "$description": "liquid 档双沿指示器的前沿：去向那一侧的沿，超调约 2.9%，落定约 310ms。",
-      "stiffness": { "$type": "number", "$value": 520 },
-      "damping": { "$type": "number", "$value": 34 }
+      "stiffness": {
+        "$type": "number",
+        "$value": 520
+      },
+      "damping": {
+        "$type": "number",
+        "$value": 34
+      }
     },
     "spring-trail": {
       "$description": "liquid 档双沿指示器的后沿：比前沿软，追随前沿并在移动中把指示器拉长，超调约 0.9%，落定约 485ms。",
-      "stiffness": { "$type": "number", "$value": 210 },
-      "damping": { "$type": "number", "$value": 24 }
+      "stiffness": {
+        "$type": "number",
+        "$value": 210
+      },
+      "damping": {
+        "$type": "number",
+        "$value": 24
+      }
     },
     "spring-merge": {
       "$description": "liquid 档的融合分离：液态组里的块从源块中分出来、收起时融回，超调约 5.8%，在 liquid 档 8% 的上限之内。",
-      "stiffness": { "$type": "number", "$value": 320 },
-      "damping": { "$type": "number", "$value": 24 }
+      "stiffness": {
+        "$type": "number",
+        "$value": 320
+      },
+      "damping": {
+        "$type": "number",
+        "$value": 24
+      }
     }
   },
   "layer": {
@@ -1008,7 +1062,7 @@
     },
     "label-weight": {
       "$type": "number",
-      "$value": "{font-weight.medium}"
+      "$value": "{font-weight.regular}"
     },
     "body-size": {
       "$type": "dimension",
@@ -1067,11 +1121,11 @@
   "switch": {
     "track-h-sm": {
       "$type": "dimension",
-      "$value": "18px"
+      "$value": "16px"
     },
     "track-h-md": {
       "$type": "dimension",
-      "$value": "22px"
+      "$value": "24px"
     },
     "track-h-lg": {
       "$type": "dimension",

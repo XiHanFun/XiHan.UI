@@ -176,10 +176,22 @@ function parseBlocks(src) {
 
 /** 摘掉 @supports 块：现推那一档要 color(from …)，本脚本只解兜底那一档，两档的面同值。 */
 function dropSupports(src) {
+  return dropAtRule(src, '@supports')
+}
+
+/**
+ * 摘掉 @media 块：强制色、减少透明、打印都是条件档，块里同样挂着 :where(:root)，不摘会把
+ * 浮层底这类只在根上声明的令牌盖成 Canvas。本脚本判的是缺省档的面。
+ */
+function dropMedia(src) {
+  return dropAtRule(src, '@media')
+}
+
+function dropAtRule(src, rule) {
   let out = ''
   let i = 0
   while (i < src.length) {
-    const at = src.indexOf('@supports', i)
+    const at = src.indexOf(rule, i)
     if (at === -1) {
       out += src.slice(i)
       break
@@ -423,7 +435,7 @@ function contrast(x, y) {
   return (Math.max(lx, ly) + 0.05) / (Math.min(lx, ly) + 0.05)
 }
 
-const themes = loadThemes(parseBlocks(await readFile(TOKENS, 'utf8')))
+const themes = loadThemes(parseBlocks(dropMedia(stripComments(await readFile(TOKENS, 'utf8')))))
 const toneSrc = loadTones(parseBlocks(dropSupports(stripComments(await readFile(TONE_FILE, 'utf8')))))
 
 /** 库环两支令牌与它们在 tokens.css 里顺着解到底经过的每个名字：皮肤里给这些名字赋值就是在子树上换掉库环。 */
@@ -455,12 +467,11 @@ function scopeFor(theme, tone) {
 }
 
 /**
- * 墨色面叠上去判的几种容器面：页面底、画布、缺省面，以及对话框、抽屉那层 elevated 面。
- * 抬起面（--xh-bg-surface-raised）只给分段滑块、开关拇指这类小部件，上面不再放别的组件，不在其列；
- * 磨砂面本身半透明，同样不在其列。
+ * 墨色面叠上去判的几种容器面：页面底、画布与缺省面。对话框、抽屉那层 elevated 面与下拉、气泡那层浮层面
+ * 都取缺省面（--xh-bg-surface）作底，已在其中；抬起面（--xh-bg-surface-raised）只给分段滑块、开关拇指
+ * 这类小部件，上面不再放别的组件，不在其列。
  */
-// elevated 面按缺省对比度分支取：主题表里公开名最后一次声明落在强制色块上（Canvas）
-const GROUNDS = ['--xh-bg-page', '--xh-bg-canvas', '--xh-bg-surface', '--xh-_contrast-default-material-elevated-bg']
+const GROUNDS = ['--xh-bg-page', '--xh-bg-canvas', '--xh-bg-surface']
 
 /** 表达式顺着令牌链有没有取到墨色（--xh-ink）。 */
 function viaInk(expr, scope, seen = new Set()) {

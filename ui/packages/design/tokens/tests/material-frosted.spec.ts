@@ -101,37 +101,32 @@ describe('m2 Frosted Surface 材质令牌', () => {
     ])
   })
 
-  it.each(['light', 'dark'] as const)('%s 档配方完整，只有 tint 和边缘光透明', (theme) => {
+  it.each(['light', 'dark'] as const)('%s 档配方完整：浮层面是实体底 + 实色描边 + 一层投影，不采样背后内容', (theme) => {
     const tokens = themeTokens(theme)
     expect(materialNames(tokens)).toEqual(REQUIRED_RECIPE)
 
-    expect(parseColorToOklch(resolve('material.frosted.bg', tokens)).a).toBe(0.88)
+    expect(parseColorToOklch(resolve('material.frosted.bg', tokens)).a).toBe(1)
     expect(parseColorToOklch(resolve('material.frosted.fg', tokens)).a).toBe(1)
     expect(parseColorToOklch(resolve('material.frosted.fg-muted', tokens)).a).toBe(1)
     expect(parseColorToOklch(resolve('material.frosted.focus-surface', tokens)).a).toBe(1)
-    expect(parseColorToOklch(resolve('material.frosted.border', tokens)).a).toBeLessThanOrEqual(0.16)
-    expect(parseColorToOklch(resolve('material.frosted.highlight', tokens)).a).toBeLessThanOrEqual(0.52)
-    expect(resolve('material.frosted.backdrop', tokens)).toBe('blur(16px) saturate(108%)')
-    expect(Number(resolve('material.frosted.compact.alpha', tokens))).toBe(0.94)
-    expect(resolve('material.frosted.compact.backdrop', tokens)).toBe('blur(8px) saturate(104%)')
-    expect(resolve('material.frosted.shadow', tokens).split(',')).toHaveLength(2)
-    expect(resolve('material.frosted.shadow', tokens)).not.toContain('inset')
-    const compactShadow = resolve('material.frosted.compact.shadow', tokens)
-    expect(compactShadow.split(',')).toHaveLength(2)
-    expect(compactShadow).toContain('0 6px 16px -8px')
-    expect(compactShadow).not.toContain('inset')
+    // 描边取装饰边（中性色原值，墨色比例由构建另行换算），不再是半透明的磨砂边缘
+    expect(tokens.get('material.frosted.border')?.value).toBe('{border.default}')
+    expect(parseColorToOklch(resolve('material.frosted.highlight', tokens)).a).toBe(0)
+    expect(resolve('material.frosted.backdrop', tokens)).toBe('none')
+    expect(Number(resolve('material.frosted.compact.alpha', tokens))).toBe(1)
+    expect(resolve('material.frosted.compact.backdrop', tokens)).toBe('none')
+    const shadow = resolve('material.frosted.shadow', tokens)
+    expect(shadow.split(',')).toHaveLength(1)
+    expect(shadow).toMatch(/^0 4px 10px oklch\(0 0 0 \/ 0\.\d+\)$/)
+    expect(resolve('material.frosted.compact.shadow', tokens)).toBe(shadow)
   })
 
-  it('紧凑投影按亮暗主题独立取值，且外扩小于标准 M2', () => {
-    const light = themeTokens('light')
-    const dark = themeTokens('dark')
-    const lightCompact = resolve('material.frosted.compact.shadow', light)
-    const darkCompact = resolve('material.frosted.compact.shadow', dark)
-    expect(lightCompact).not.toBe(darkCompact)
-    expect(resolve('material.frosted.shadow', light)).toContain('28px')
-    expect(resolve('material.frosted.shadow', dark)).toContain('28px')
-    expect(lightCompact).not.toContain('28px')
-    expect(darkCompact).not.toContain('28px')
+  it('投影按亮暗主题独立取值：深色底上同一层投影要更浓才看得出', () => {
+    const light = resolve('material.frosted.shadow', themeTokens('light'))
+    const dark = resolve('material.frosted.shadow', themeTokens('dark'))
+    expect(light).not.toBe(dark)
+    const alpha = (shadow: string): number => Number(/\/ ([\d.]+)\)$/.exec(shadow)![1])
+    expect(alpha(dark)).toBeGreaterThan(alpha(light))
   })
 
   it.each(['light', 'dark'] as const)('%s 紧凑 alpha 托住六种反白 tone 与默认反白正文', (theme) => {

@@ -98,69 +98,69 @@
     },
     "frosted": {
       "id": "M2",
-      "description": "M2 磨砂面：用于导航与锚定浮层，正文和焦点隔离面保持实体。",
+      "description": "M2 浮层面：下拉、菜单、气泡等锚定瞬态浮层。实体白底 + 1px 描边 + 一层柔和投影，不采样背后内容。",
       "light": {
-        "tint": "oklch(0.99 0.003 258)",
-        "alpha": "{alpha.high}",
+        "tint": "{bg.surface}",
+        "alpha": "{alpha.opaque}",
         "backdrop": {
-          "blur": "{blur.md}",
-          "saturation": "108%",
+          "blur": "{blur.none}",
+          "saturation": "100%",
           "contrast": "100%"
         },
-        "edge": "oklch(0.145 0.005 258 / 0.14)",
-        "highlight": "oklch(1 0 0 / 0.52)",
+        "edge": "{border.default}",
+        "highlight": "oklch(0 0 0 / 0)",
         "shadows": {
-          "contact": "0 2px 4px -2px oklch(0.145 0.005 258 / 0.1)",
-          "ambient": "0 12px 28px -12px oklch(0.145 0.005 258 / 0.16)",
+          "contact": "none",
+          "ambient": "0 4px 10px oklch(0 0 0 / 0.1)",
           "sheet": "none"
         },
-        "separator": "oklch(0.145 0.005 258 / 0.12)",
+        "separator": "{border.subtle}",
         "foreground": "{fg.default}",
         "mutedForeground": "{fg.muted}",
         "focusSurface": "{bg.surface}",
         "compact": {
-          "alpha": "{alpha.ultra-high}",
+          "alpha": "{alpha.opaque}",
           "backdrop": {
-            "blur": "{blur.sm}",
-            "saturation": "104%",
+            "blur": "{blur.none}",
+            "saturation": "100%",
             "contrast": "100%"
           },
           "shadows": {
-            "contact": "0 1px 2px -1px oklch(0.145 0.005 258 / 0.08)",
-            "ambient": "0 6px 16px -8px oklch(0.145 0.005 258 / 0.12)",
+            "contact": "none",
+            "ambient": "0 4px 10px oklch(0 0 0 / 0.1)",
             "sheet": "none"
           }
         }
       },
       "dark": {
-        "tint": "oklch(0.19 0.008 258)",
-        "alpha": "{alpha.high}",
+        "tint": "{bg.surface}",
+        "alpha": "{alpha.opaque}",
         "backdrop": {
-          "blur": "{blur.md}",
-          "saturation": "108%",
+          "blur": "{blur.none}",
+          "saturation": "100%",
           "contrast": "100%"
         },
-        "edge": "oklch(1 0 0 / 0.16)",
-        "highlight": "oklch(1 0 0 / 0.14)",
+        "edge": "{border.default}",
+        "highlight": "oklch(0 0 0 / 0)",
         "shadows": {
-          "contact": "0 2px 4px -2px oklch(0 0 0 / 0.42)",
-          "ambient": "0 12px 28px -12px oklch(0 0 0 / 0.52)",
+          "contact": "none",
+          "ambient": "0 4px 10px oklch(0 0 0 / 0.36)",
           "sheet": "none"
         },
-        "separator": "oklch(1 0 0 / 0.12)",
+        "separator": "{border.subtle}",
         "foreground": "{fg.default}",
         "mutedForeground": "{fg.muted}",
         "focusSurface": "{bg.surface}",
         "compact": {
-          "alpha": "{alpha.ultra-high}",
+          "alpha": "{alpha.opaque}",
           "backdrop": {
-            "blur": "{blur.sm}",
-            "saturation": "104%",
+            "blur": "{blur.none}",
+            "saturation": "100%",
             "contrast": "100%"
           },
           "shadows": {
-            "contact": "0 1px 2px -1px oklch(0 0 0 / 0.38)",
-            "ambient": "0 6px 16px -8px oklch(0 0 0 / 0.46)",
+            "contact": "none",
+            "ambient": "0 4px 10px oklch(0 0 0 / 0.36)",
             "sheet": "none"
           }
         }
@@ -168,43 +168,43 @@
     },
     "elevated": {
       "id": "M4",
-      "description": "M4 高层实体面（sheet）：Dialog、Drawer 等模态主阅读面，不透明、不采样背景，只以三段高层投影表达层级。",
+      "description": "M4 高层实体面（sheet）：Dialog、Drawer、Notification 等模态与强反馈面，不透明、不采样背景，1px 描边 + 一层投影。",
       "light": {
-        "tint": "oklch(0.99 0.003 258)",
+        "tint": "{bg.surface}",
         "alpha": "{alpha.opaque}",
         "backdrop": {
           "blur": "{blur.none}",
           "saturation": "100%",
           "contrast": "100%"
         },
-        "edge": "oklch(0.145 0.005 258 / 0.28)",
+        "edge": "{border.default}",
         "highlight": "oklch(0 0 0 / 0)",
         "shadows": {
-          "contact": "0 2px 4px -2px oklch(0.145 0.005 258 / 0.12)",
-          "ambient": "0 12px 28px -12px oklch(0.145 0.005 258 / 0.16)",
-          "sheet": "0 32px 64px -20px oklch(0.145 0.005 258 / 0.18)"
+          "contact": "none",
+          "ambient": "0 4px 12px oklch(0 0 0 / 0.15)",
+          "sheet": "none"
         },
-        "separator": "oklch(0.145 0.005 258 / 0.2)",
+        "separator": "{border.subtle}",
         "foreground": "{fg.default}",
         "mutedForeground": "{color.neutral.700}",
         "focusSurface": "{bg.surface}"
       },
       "dark": {
-        "tint": "oklch(0.19 0.008 258)",
+        "tint": "{bg.surface}",
         "alpha": "{alpha.opaque}",
         "backdrop": {
           "blur": "{blur.none}",
           "saturation": "100%",
           "contrast": "100%"
         },
-        "edge": "oklch(1 0 0 / 0.28)",
+        "edge": "{border.default}",
         "highlight": "oklch(0 0 0 / 0)",
         "shadows": {
-          "contact": "0 2px 4px -2px oklch(0 0 0 / 0.5)",
-          "ambient": "0 12px 28px -12px oklch(0 0 0 / 0.55)",
-          "sheet": "0 32px 64px -20px oklch(0 0 0 / 0.6)"
+          "contact": "none",
+          "ambient": "0 4px 12px oklch(0 0 0 / 0.4)",
+          "sheet": "none"
         },
-        "separator": "oklch(1 0 0 / 0.2)",
+        "separator": "{border.subtle}",
         "foreground": "{fg.default}",
         "mutedForeground": "{color.neutral.300}",
         "focusSurface": "{bg.surface}"

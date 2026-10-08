@@ -3,7 +3,7 @@
     "page": {
       "$description": "页面底：面之下的那一层，铺满视口、不承载任何部件。比 {bg.surface} 暗一档，面才浮得出来。控件盒的底是 {bg.canvas}，两者取值不同。",
       "$type": "color",
-      "$value": "{color.neutral.50}"
+      "$value": "{color.neutral.100}"
     },
     "canvas": {
       "$type": "color",
@@ -70,7 +70,7 @@
   "fg": {
     "default": {
       "$type": "color",
-      "$value": "{color.neutral.950}"
+      "$value": "{color.neutral.900}"
     },
     "muted": {
       "$type": "color",
