@@ -14243,6 +14243,7 @@
     "--xh-alpha-opaque",
     "--xh-alpha-ultra-high",
     "--xh-alpha-ultra-low",
+    "--xh-app-header-h",
     "--xh-bg-brand",
     "--xh-bg-brand-active",
     "--xh-bg-brand-hover",

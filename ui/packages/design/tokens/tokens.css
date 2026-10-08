@@ -471,7 +471,8 @@
     --xh-nav-row-h-md: calc(var(--xh-control-h-lg) + var(--xh-space-1));
     --xh-nav-row-h-lg: var(--xh-control-box-lg);
     --xh-nav-link-max-w: 12rem;
-    --xh-sider-w: 15rem;
+    --xh-app-header-h: 3.75rem;
+    --xh-sider-w: 13.75rem;
     --xh-sider-collapsed-w: 4rem;
     --xh-viewport-max-h: 24rem;
     --xh-viewport-h-sm: 12rem;

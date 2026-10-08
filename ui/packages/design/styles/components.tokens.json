@@ -42287,6 +42287,7 @@
         "border-inline-start"
       ],
       "state": [
+        "default",
         "fixed",
         "material=liquid",
         "placement=end",
@@ -42298,6 +42299,7 @@
       ],
       "defaultToken": [
         "--xh-border-default",
+        "--xh-border-subtle",
         "--xh-material-elevated-border",
         "--xh-material-liquid-border"
       ],
@@ -42438,7 +42440,7 @@
         "sider-fixed"
       ],
       "defaultToken": [
-        "3.5rem"
+        "--xh-app-header-h"
       ],
       "visibility": "public",
       "description": "layout 的 header、root、sider 部件 block-size、grid-template-rows、inset-block-start、max-block-size 覆盖槽。"
@@ -42549,7 +42551,7 @@
         "presentation=sheet"
       ],
       "defaultToken": [
-        "--xh-bg-subtle",
+        "--xh-bg-surface",
         "--xh-material-elevated-bg"
       ],
       "visibility": "public",

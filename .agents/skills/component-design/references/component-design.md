@@ -434,7 +434,8 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | `--xh-overlay-sheet-w-sm` / `md` / `lg` | 24 / 32 / 48rem | | Dialog、Command 宽的上限 |
 | `--xh-overlay-drawer-w-sm` / `md` / `lg` | 16 / 20 / 28rem | | Drawer 厚度 |
 | `--xh-overlay-toast-w` | 28.75rem | | 轻提示卡宽：一行排开指示符、正文、行内动作与关闭钮 |
-| `--xh-sider-w`、`--xh-sider-collapsed-w` | 15rem、4rem | | 侧栏展开与收起宽 |
+| `--xh-sider-w`、`--xh-sider-collapsed-w` | 13.75rem、4rem | | 侧栏展开与收起宽 |
+| `--xh-app-header-h` | 3.75rem | | 应用顶栏高 |
 | `--xh-nav-link-max-w` | 12rem | | 导航链接上限 |
 | `--xh-measure-prose` | 32rem | | 说明文字行宽上限 |
 | `--xh-chart-height`、`--xh-chart-bar-max` | 20rem、24px | | 图表视口高、柱厚上限 |
@@ -542,8 +543,8 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 | 组件 | 尺寸 |
 | --- | --- |
-| Layout | 页头高 3.5rem；侧栏 15rem，收起 4rem；侧栏限高 100vh |
-| SideNav | 宽 15rem，收起 4rem；行高 `control-h` 随 size |
+| Layout | 页头高 `--xh-app-header-h`（3.75rem）；侧栏 13.75rem，收起 4rem；侧栏限高 100vh；头与侧栏同是白底，缺省各画一条 `--xh-border-subtle` 内部分隔 |
+| SideNav | 宽 13.75rem，收起 4rem；行高 `nav.row-h` 随 size |
 | Tabs、NavigationMenu | trigger 高 `control-h` 随 size |
 | Breadcrumb、Anchor | 链接上限 12rem，超出截断 |
 | Splitter、Resizable | Splitter 拖拽条 4px；Resizable 边柄 8px、角柄 16px |
