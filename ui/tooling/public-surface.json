@@ -14584,6 +14584,7 @@
     "--xh-control-caption-lg",
     "--xh-control-caption-md",
     "--xh-control-caption-sm",
+    "--xh-control-float-md",
     "--xh-control-font-lg",
     "--xh-control-font-md",
     "--xh-control-font-sm",

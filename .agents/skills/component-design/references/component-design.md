@@ -417,6 +417,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | --- | --- | --- | --- |
 | `--xh-control-h-sm` / `md` / `lg` | 28 / 32 / 36px | 24 / 28 / 32px | 单行控件、按钮、集合行、标签页与导航 trigger 的高；盛内容的圆的直径 |
 | `--xh-control-box-sm` / `md` / `lg` | 28 / 36 / 44px | 24 / 32 / 40px | 方格：PinInput 格、floating 动作钮 |
+| `--xh-control-float-md` | 40px | 36px | 独立浮在页面一角的圆钮（BackTop、FloatButton）md 档的直径 |
 | `--xh-control-action-size` | 24px | 20px | xs 动作钮、sm 字段里的 field-inset 钮 |
 | `--xh-chip-h-sm` / `md` / `lg` | 20 / 24 / 28px | 18 / 20 / 24px | 状态 chip（Tag）的块尺寸：比同档控件矮一截 |
 | `--xh-nav-row-h-sm` / `md` / `lg` | 32 / 40 / 44px | 28 / 36 / 40px | 导航行（SideNav 分支与链接）：比同档控件高一截，整列扫读更松 |
@@ -451,7 +452,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 - text 档宽按内容，下限等于高；icon、field-inset、floating 是正方盒。
 - 字形：text / icon 为 16 / 16 / 20 / 24px；field-inset 为 `control-indicator-sm`、`control-indicator-md`、16px、20px；floating 为 16 / 16 / 20 / 24px。
-- floating 缺省 md（40px，compact 36px）：浮在内容之上的圆钮在矮视口与小卡片里不叠住内容与彼此。主控制钮（Carousel 与 ImageViewer 的翻页、BackTop、FloatButton）随组件 `size` 同档；从属的钮（Log / MessageFeed 的回到底部）比组件低一档、最低 sm。Carousel 没有尺寸轴，翻页与播放钮视觉盒取 `control-action-size`（24px）、字形 16px。ImageViewer 的翻页与关闭钮同档，视觉盒取控件高 `control-h-*`（md 32px）、字形 sm / md 16px、lg 20px，距边分别为 20px 与 32px：看片台上的媒体控制不压画面。
+- floating 缺省 md（box-md 36px，compact 32px）：浮在内容之上的圆钮在矮视口与小卡片里不叠住内容与彼此。独立浮在页面一角的 BackTop 的 md 档取 `control-float-md`（40px，compact 36px），sm / lg 仍取 box 档，字形 sm / md 16px、lg 20px，贴视口边 24px。主控制钮（Carousel 与 ImageViewer 的翻页、BackTop、FloatButton）随组件 `size` 同档；从属的钮（Log / MessageFeed 的回到底部）比组件低一档、最低 sm。Carousel 没有尺寸轴，翻页与播放钮视觉盒取 `control-action-size`（24px）、字形 16px。ImageViewer 的翻页与关闭钮同档，视觉盒取控件高 `control-h-*`（md 32px）、字形 sm / md 16px、lg 20px，距边分别为 20px 与 32px：看片台上的媒体控制不压画面。
 - Dialog、Drawer、Popover、Tour、Notification 的关闭钮取 `control-h-sm`。
 
 #### 字段

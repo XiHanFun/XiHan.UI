@@ -24,6 +24,11 @@
       "$type": "dimension",
       "$value": "44px"
     },
+    "float-md": {
+      "$description": "独立浮在页面一角的圆钮（回到顶部、悬浮按钮）md 档的直径：比方格 md 大一档，在角落里一眼找得到，又比 lg 小、不挡内容。",
+      "$type": "dimension",
+      "$value": "40px"
+    },
     "w": {
       "$description": "单行字段根的缺省宽度：不传尺寸时下拉、日期、文本框等一律这么宽，宽度不再随内容走。",
       "$type": "dimension",

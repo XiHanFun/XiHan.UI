@@ -3215,7 +3215,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-glyph-size"
+        "--xh-_back-top-glyph-size"
       ],
       "visibility": "public",
       "description": "back-top 的 trigger 部件 --xh-icon-size 覆盖槽。"
@@ -3233,7 +3233,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-8"
+        "--xh-space-6"
       ],
       "visibility": "public",
       "description": "back-top 的 root 部件 inset-block-end 覆盖槽。"
@@ -3251,7 +3251,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-8"
+        "--xh-space-6"
       ],
       "visibility": "public",
       "description": "back-top 的 root 部件 inset-inline-end 覆盖槽。"
@@ -3329,17 +3329,18 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
         "default",
         "xh-action-profile=floating"
       ],
       "defaultToken": [
-        "--xh-_action-profile-visual-size"
+        "--xh-_back-top-size"
       ],
       "visibility": "public",
-      "description": "back-top 的 trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "back-top 的 trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-badge-bg",

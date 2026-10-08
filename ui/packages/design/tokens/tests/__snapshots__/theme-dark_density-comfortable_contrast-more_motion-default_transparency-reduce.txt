@@ -166,6 +166,7 @@
 --xh-control-caption-lg: 0.875rem  ← var(--xh-font-size-md)
 --xh-control-caption-md: 0.8125rem  ← var(--xh-font-size-sm)
 --xh-control-caption-sm: 0.75rem  ← var(--xh-font-size-xs)
+--xh-control-float-md: 40px
 --xh-control-font-lg: 1rem  ← var(--xh-font-size-lg)
 --xh-control-font-md: 0.875rem  ← var(--xh-font-size-md)
 --xh-control-font-sm: 0.8125rem  ← var(--xh-font-size-sm)
