@@ -923,6 +923,21 @@
       "$value": "18px"
     }
   },
+  "chip": {
+    "h-sm": {
+      "$description": "状态 chip（Tag 等随文标签）的块尺寸：比控件矮一档，sm / md / lg 与指示符大档、xs 动作钮、sm 控件同高，随密度换档。",
+      "$type": "dimension",
+      "$value": "{control.indicator-lg}"
+    },
+    "h-md": {
+      "$type": "dimension",
+      "$value": "{control.action-size}"
+    },
+    "h-lg": {
+      "$type": "dimension",
+      "$value": "{control.h-sm}"
+    }
+  },
   "nav": {
     "row-h-sm": {
       "$description": "导航行（侧栏菜单的分支与链接）的块尺寸。比同档控件高一截：侧栏是整列扫读的目标，行距松一些更好点也更好读。",

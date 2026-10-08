@@ -3618,6 +3618,7 @@ export type ComponentTokenName
     | '--xh-tag-group-label-font-size'
     | '--xh-tag-group-label-font-weight'
     | '--xh-tag-group-list-gap'
+    | '--xh-tag-h'
     | '--xh-tag-icon-size'
     | '--xh-tag-px'
     | '--xh-tag-py'

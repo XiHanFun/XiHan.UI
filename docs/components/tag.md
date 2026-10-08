@@ -224,24 +224,25 @@ readOnly 只锁定关闭按钮：按钮留在原地但不可按下，标签本�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-tag-bg` | `root` | `--xh-ink-surface`<br>`background` | `default`<br>`tone`<br>`variant=solid`<br>`variant=subtle`<br>`xh-ink-surface` | `--xh-_tone`<br>`--xh-_tone-subtle`<br>`--xh-bg-brand`<br>`--xh-material-soft-bg` | tag 的 root 部件 --xh-ink-surface、background 覆盖槽。 |
+| `--xh-tag-bg` | `root` | `--xh-ink-surface`<br>`background` | `default`<br>`is(:not([data-variant])`<br>`tone`<br>`variant`<br>`variant=outline`<br>`variant=solid`<br>`variant=subtle`<br>`xh-ink-surface` | `--xh-_tone`<br>`--xh-_tone-subtle`<br>`--xh-bg-brand`<br>`--xh-bg-subtle` | tag 的 root 部件 --xh-ink-surface、background 覆盖槽。 |
 | `--xh-tag-bg-disabled` | `root` | `--xh-ink-surface`<br>`background` | `disabled`<br>`tone`<br>`xh-ink-surface` | `--xh-bg-muted`<br>`--xh-bg-muted-opaque` | tag 的 root 部件 --xh-ink-surface、background 覆盖槽。 |
-| `--xh-tag-border` | `root` | `border`<br>`border-color` | `default`<br>`tone`<br>`variant=outline`<br>`variant=subtle` | `--xh-_tone-border-control`<br>`--xh-border-default`<br>`--xh-material-soft-border` | tag 的 root 部件 border、border-color 覆盖槽。 |
+| `--xh-tag-border` | `root` | `border`<br>`border-color` | `default`<br>`tone`<br>`variant=outline`<br>`variant=subtle` | `--xh-_tone-border-control`<br>`--xh-border-default`<br>`transparent` | tag 的 root 部件 border、border-color 覆盖槽。 |
 | `--xh-tag-border-disabled` | `root` | `border-color` | `disabled`<br>`tone` | `--xh-border-default` | tag 的 root 部件 border-color 覆盖槽。 |
 | `--xh-tag-close-bg-active` | `close-trigger` | `background` | `is(:active, [data-pressed])`<br>`not(:disabled)`<br>`pressed` | `color-mix(in oklab, currentColor 22%, transparent)` | tag 的 close-trigger 部件 background 覆盖槽。 |
 | `--xh-tag-close-bg-hover` | `close-trigger` | `background` | `hover`<br>`not(:disabled)` | `color-mix(in oklab, currentColor 14%, transparent)` | tag 的 close-trigger 部件 background 覆盖槽。 |
 | `--xh-tag-close-fg` | `close-trigger` | `color` | `default` | `currentColor` | tag 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-tag-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-inset` | tag 的 close-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-tag-close-size` | `close-trigger` | `block-size`<br>`inline-size`<br>`inset` | `default` | `--xh-control-indicator-size` | tag 的 close-trigger 部件 block-size、inline-size、inset 覆盖槽。 |
-| `--xh-tag-fg` | `root` | `color` | `default`<br>`tone`<br>`variant=ghost`<br>`variant=outline`<br>`variant=solid`<br>`variant=subtle` | `--xh-_tone-fg`<br>`--xh-_tone-on`<br>`--xh-fg-default`<br>`--xh-fg-on-brand`<br>`--xh-material-soft-fg` | tag 的 root 部件 color 覆盖槽。 |
+| `--xh-tag-fg` | `root` | `color` | `default`<br>`is(:not([data-variant])`<br>`tone`<br>`variant`<br>`variant=ghost`<br>`variant=outline`<br>`variant=solid`<br>`variant=subtle` | `--xh-_tone-fg`<br>`--xh-_tone-on`<br>`--xh-fg-default`<br>`--xh-fg-on-brand` | tag 的 root 部件 color 覆盖槽。 |
 | `--xh-tag-font-size` | `root` | `font-size` | `default` | `--xh-_tag-font-size` | tag 的 root 部件 font-size 覆盖槽。 |
 | `--xh-tag-font-weight` | `root` | `font-weight` | `default` | `--xh-font-weight-medium` | tag 的 root 部件 font-weight 覆盖槽。 |
 | `--xh-tag-gap` | `root` | `gap` | `default` | `--xh-_tag-gap` | tag 的 root 部件 gap 覆盖槽。 |
+| `--xh-tag-h` | `root` | `min-block-size` | `default` | `--xh-_tag-h` | tag 的 root 部件 min-block-size 覆盖槽。 |
 | `--xh-tag-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | tag 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tag-px` | `root` | `padding-inline` | `default` | `--xh-_tag-px` | tag 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-tag-py` | `root` | `padding-block` | `default` | `--xh-_tag-py` | tag 的 root 部件 padding-block 覆盖槽。 |
-| `--xh-tag-radius` | `root` | `border-radius` | `default` | `--xh-shape-pill` | tag 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-tag-shadow` | `root` | `box-shadow` | `default`<br>`variant=solid` | `--xh-_tag-highlight`<br>`--xh-material-soft-shadow` | tag 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-tag-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | tag 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-tag-shadow` | `root` | `box-shadow` | `default`<br>`variant=solid` | `none` | tag 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

@@ -154,6 +154,9 @@
 --xh-chart-sequential-start: oklch(0.936 0.032 258)  ← var(--xh-color-brand-100)
 --xh-chart-surface: oklch(1 0 0)  ← var(--xh-bg-surface)
 --xh-chart-tick-length: 4px  ← var(--xh-space-1)
+--xh-chip-h-lg: 28px  ← var(--xh-control-h-sm)
+--xh-chip-h-md: 24px  ← var(--xh-control-action-size)
+--xh-chip-h-sm: 20px  ← var(--xh-control-indicator-lg)
 --xh-control-action-size: 24px
 --xh-control-box-lg: 44px
 --xh-control-box-md: 36px
