@@ -2,3 +2,6 @@ shellEmulator: true
 
 allowBuilds:
   esbuild: true
+
+minimumReleaseAgeExclude:
+  - '@xihanfun/vitepress-theme@1.0.0'
