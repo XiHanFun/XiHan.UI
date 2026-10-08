@@ -26,7 +26,7 @@
 --xh-bg-field: color-mix(in oklab, color-mix(in oklab, oklch(0 0 0) 4.7%, transparent) 55%, transparent)  ← color-mix(in oklab, var(--xh-bg-subtle) 55%, transparent)
 --xh-bg-mark: oklch(0.885 0.062 95)  ← var(--xh-color-yellow-200)
 --xh-bg-muted: color-mix(in oklab, oklch(0 0 0) 4.7%, transparent)  ← color-mix(in oklab, var(--xh-ink) 4.7%, transparent)
---xh-bg-overlay: oklch(0 0 0 / 0.45)
+--xh-bg-overlay: color-mix(in oklab, oklch(0.208 0.006 258) 60%, transparent)  ← color-mix(in oklab, var(--xh-color-neutral-900) 60%, transparent)
 --xh-bg-page: oklch(0.964 0.004 265)  ← var(--xh-color-neutral-100)
 --xh-bg-scrollbar-track: oklch(0 0 0 / 0)
 --xh-bg-subtle: color-mix(in oklab, oklch(0 0 0) 4.7%, transparent)  ← color-mix(in oklab, var(--xh-ink) 4.7%, transparent)
@@ -326,7 +326,7 @@
 --xh-motion-loop-breathe: 3600ms
 --xh-motion-loop-caret: 1000ms
 --xh-motion-loop-shimmer: 1600ms
---xh-motion-loop-spin: 640ms
+--xh-motion-loop-spin: 1000ms
 --xh-motion-scale-breathe: 1
 --xh-motion-scale-drag: 1
 --xh-motion-scale-enter: 1

@@ -404,7 +404,7 @@
     --xh-motion-ease-press: var(--xh-ease-standard);
     --xh-motion-ease-release: var(--xh-ease-out-strong);
     --xh-motion-ease-breathe: var(--xh-ease-sine-in-out);
-    --xh-motion-loop-spin: 640ms;
+    --xh-motion-loop-spin: 1000ms;
     --xh-motion-loop-caret: 1000ms;
     --xh-motion-loop-shimmer: 1600ms;
     --xh-motion-loop-breathe: 3600ms;
@@ -700,7 +700,7 @@
     --xh-bg-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 12%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-hover: color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-active: color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface));
-    --xh-bg-overlay: oklch(0 0 0 / 0.45);
+    --xh-bg-overlay: color-mix(in oklab, var(--xh-color-neutral-900) 60%, transparent);
     --xh-bg-scrollbar-track: oklch(0 0 0 / 0);
     --xh-fg-default: var(--xh-color-neutral-900);
     --xh-fg-muted: var(--xh-color-neutral-600);

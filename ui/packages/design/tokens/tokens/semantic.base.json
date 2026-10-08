@@ -628,7 +628,7 @@
     "loop-spin": {
       "$description": "旋转指示器转一圈的周期。减弱动效下由各皮肤停掉动画，周期本身不降级。",
       "$type": "duration",
-      "$value": "640ms"
+      "$value": "1000ms"
     },
     "loop-caret": {
       "$description": "文本光标闪一次的周期。减弱动效下由皮肤停掉动画，光标停在实心。",
