@@ -13,7 +13,7 @@
     '--xh-shape-surface': '8px · 成面的静态容器：Card、Alert、Panel、列表容器、Tabs segment 的轨道',
     '--xh-shape-overlay': '12px · 脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Notification',
     '--xh-shape-circle': '50% · 宽高相等的圆：头像、单选圈、开关与滑杆的拇指、步骤圆点、加载环、悬浮单图标动作',
-    '--xh-shape-pill': '9999px · 只两类身份：状态 chip（Badge、Tag、结果标记）与一维对象（轨道、进度条、指示条、手柄、滚动条滑块）',
+    '--xh-shape-pill': '9999px · 只两类身份：状态 chip（Badge；Tag 与结果标记是方签，取 control）与一维对象（轨道、进度条、指示条、手柄、滚动条滑块）',
   }"
 />
 

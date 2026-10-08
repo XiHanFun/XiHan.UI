@@ -307,16 +307,18 @@
     display: none;
   }
 
-  /* 判定结果条：判过了才露出，语气随判定走 */
+  /* 判定结果条：判过了才露出，语气随判定走。与 Tag 的 sm 档同一副方签——control 圆角、块尺寸取 chip 档、竖向内衬为 0 */
   [data-scope='approval'][data-part='result'] {
     display: inline-flex;
     align-self: flex-start;
     align-items: center;
+    box-sizing: border-box;
     gap: var(--xh-approval-result-gap, var(--xh-space-1));
+    min-block-size: var(--xh-approval-result-h, var(--xh-chip-h-sm));
     padding-inline: var(--xh-approval-result-px, var(--xh-space-1_5));
-    padding-block: var(--xh-approval-result-py, var(--xh-space-0_5));
+    padding-block: var(--xh-approval-result-py, 0);
     border: var(--xh-stroke-thin) solid transparent;
-    border-radius: var(--xh-approval-result-radius, var(--xh-shape-pill));
+    border-radius: var(--xh-approval-result-radius, var(--xh-shape-control));
     background: var(--xh-approval-result-bg, var(--xh-_tone-subtle));
     color: var(--xh-approval-result-fg, var(--xh-_tone-fg));
     font-size: var(--xh-approval-result-font-size, var(--xh-text-caption-size));

@@ -2533,6 +2533,24 @@
       "description": "approval 的 result 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-approval-result-h",
+      "component": "approval",
+      "part": [
+        "result"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chip-h-sm"
+      ],
+      "visibility": "public",
+      "description": "approval 的 result 部件 min-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-approval-result-px",
       "component": "approval",
       "part": [
@@ -2563,7 +2581,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-0_5"
+        "0"
       ],
       "visibility": "public",
       "description": "approval 的 result 部件 padding-block 覆盖槽。"
@@ -2581,7 +2599,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "approval 的 result 部件 border-radius 覆盖槽。"
@@ -57973,6 +57991,24 @@
       "description": "question-flow 的 result 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-question-flow-result-h",
+      "component": "question-flow",
+      "part": [
+        "result"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chip-h-sm"
+      ],
+      "visibility": "public",
+      "description": "question-flow 的 result 部件 min-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-question-flow-result-px",
       "component": "question-flow",
       "part": [
@@ -58003,7 +58039,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-0_5"
+        "0"
       ],
       "visibility": "public",
       "description": "question-flow 的 result 部件 padding-block 覆盖槽。"
@@ -58021,7 +58057,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "question-flow 的 result 部件 border-radius 覆盖槽。"
@@ -81575,6 +81611,24 @@
       "description": "tool-call 的 duration、error、status 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-tool-call-status-h",
+      "component": "tool-call",
+      "part": [
+        "status"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "tone"
+      ],
+      "defaultToken": [
+        "--xh-chip-h-sm"
+      ],
+      "visibility": "public",
+      "description": "tool-call 的 status 部件 min-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-tool-call-status-px",
       "component": "tool-call",
       "part": [
@@ -81605,7 +81659,7 @@
         "tone"
       ],
       "defaultToken": [
-        "--xh-space-0_5"
+        "0"
       ],
       "visibility": "public",
       "description": "tool-call 的 status 部件 padding-block 覆盖槽。"
@@ -81623,7 +81677,7 @@
         "tone"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "tool-call 的 status 部件 border-radius 覆盖槽。"

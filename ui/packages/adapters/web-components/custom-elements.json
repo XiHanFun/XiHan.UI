@@ -1865,6 +1865,9 @@
               "name": "--xh-approval-result-gap"
             },
             {
+              "name": "--xh-approval-result-h"
+            },
+            {
               "name": "--xh-approval-result-px"
             },
             {
@@ -51453,6 +51456,9 @@
               "name": "--xh-question-flow-result-gap"
             },
             {
+              "name": "--xh-question-flow-result-h"
+            },
+            {
               "name": "--xh-question-flow-result-px"
             },
             {
@@ -71397,6 +71403,9 @@
             },
             {
               "name": "--xh-tool-call-status-font-size"
+            },
+            {
+              "name": "--xh-tool-call-status-h"
             },
             {
               "name": "--xh-tool-call-status-px"

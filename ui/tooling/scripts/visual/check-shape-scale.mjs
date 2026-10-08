@@ -119,9 +119,6 @@ const IDENTITY = {
   'message-feed:unread-count': 'pill',
   // liquid 档下看图的计数是一行字的 chip（standard 档仍是控件档）
   'image-viewer:counter[data-xh-liquid]': 'pill',
-  'tool-call:status': 'pill',
-  'approval:result': 'pill',
-  'question-flow:result': 'pill',
   // pill：(b) 一维对象
   'citation:trigger': 'pill',
   // liquid 档下不贴边的一维栏：轮播分页条、看图工具条（standard 档分页条没有面、工具条是 surface）
