@@ -3265,10 +3265,16 @@
               "name": "--xh-breadcrumb-link-fg-hover"
             },
             {
+              "name": "--xh-breadcrumb-link-fg-pressed"
+            },
+            {
               "name": "--xh-breadcrumb-link-font-weight-current"
             },
             {
               "name": "--xh-breadcrumb-link-gap"
+            },
+            {
+              "name": "--xh-breadcrumb-link-h"
             },
             {
               "name": "--xh-breadcrumb-link-icon-size"

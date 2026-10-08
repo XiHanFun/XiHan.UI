@@ -200,6 +200,11 @@
       "$type": "icon",
       "$value": "minus"
     },
+    "mark-slash": {
+      "$description": "路径分隔的斜线（面包屑分隔符）：没有方向，RTL 下不翻转。",
+      "$type": "icon",
+      "$value": "slash"
+    },
     "mark-plus": {
       "$type": "icon",
       "$value": "plus"
