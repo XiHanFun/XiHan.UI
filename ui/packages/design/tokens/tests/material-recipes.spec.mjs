@@ -172,8 +172,6 @@ describe('material Recipe 生成', () => {
     expect(fullEntry.match(/@import '@xihan-ui\/tokens\/tokens\.css';/g)).toHaveLength(1)
 
     const representatives = {
-      // Switch 的滑块已改 raised 抬起面（a8f421f52），soft 配方的消费者只剩 Tag
-      soft: 'tag.css',
       frosted: 'popover.css',
       elevated: 'dialog.css',
     }
@@ -184,6 +182,10 @@ describe('material Recipe 生成', () => {
       expect(css, file).toContain(`--xh-material-${recipe}-border`)
       expect(css, file).not.toMatch(new RegExp(`--xh-_material-${recipe}-(?:bg|border)`))
     }
+    // Tag 改成淡底方签后，soft 配方不再有面的消费者，只剩分隔线取它的分隔色
+    const separator = await readFile(join(STYLES_ROOT, 'css', 'separator.css'), 'utf8')
+    expect(fullEntry).toContain(`@import './css/separator.css';`)
+    expect(separator).toContain('--xh-material-soft-separator')
   })
 
   it.each([
