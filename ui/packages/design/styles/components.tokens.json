@@ -27120,7 +27120,7 @@
         "has([data-scope='dialog'][data-part='body'])"
       ],
       "defaultToken": [
-        "--xh-_dialog-header-pt",
+        "--xh-_dialog-header-pb",
         "--xh-space-2"
       ],
       "visibility": "public",
@@ -28881,6 +28881,42 @@
       "description": "drawer 的 content 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-drawer-body-px",
+      "component": "drawer",
+      "part": [
+        "body"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-px-sm"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 body 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-body-py",
+      "component": "drawer",
+      "part": [
+        "body"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-py-sm"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 body 部件 padding-block 覆盖槽。"
+    },
+    {
       "name": "--xh-drawer-border",
       "component": "drawer",
       "part": [
@@ -29053,6 +29089,7 @@
       "property": [
         "block-size",
         "inline-size",
+        "inset-block-start",
         "padding-inline-end"
       ],
       "state": [
@@ -29065,7 +29102,7 @@
         "--xh-control-h-sm"
       ],
       "visibility": "public",
-      "description": "drawer 的 close-trigger、content、title 部件 block-size、inline-size、padding-inline-end 覆盖槽。"
+      "description": "drawer 的 close-trigger、content、title 部件 block-size、inline-size、inset-block-start、padding-inline-end 覆盖槽。"
     },
     {
       "name": "--xh-drawer-description-fg",
@@ -29158,6 +29195,44 @@
       "description": "drawer 的 footer 部件 padding-block-start 覆盖槽。"
     },
     {
+      "name": "--xh-drawer-footer-px",
+      "component": "drawer",
+      "part": [
+        "content",
+        "footer"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "has([data-scope='drawer'][data-part='body'])"
+      ],
+      "defaultToken": [
+        "--xh-surface-px-sm"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 content、footer 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-footer-py",
+      "component": "drawer",
+      "part": [
+        "content",
+        "footer"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "has([data-scope='drawer'][data-part='body'])"
+      ],
+      "defaultToken": [
+        "--xh-overlay-sheet-footer-py"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 content、footer 部件 padding-block 覆盖槽。"
+    },
+    {
       "name": "--xh-drawer-gap",
       "component": "drawer",
       "part": [
@@ -29197,19 +29272,60 @@
       "name": "--xh-drawer-header-pb",
       "component": "drawer",
       "part": [
+        "content",
         "header"
       ],
       "property": [
         "padding-block-end"
       ],
       "state": [
-        "default"
+        "default",
+        "has([data-scope='drawer'][data-part='body'])"
       ],
       "defaultToken": [
+        "--xh-_drawer-header-pb",
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "drawer 的 header 部件 padding-block-end 覆盖槽。"
+      "description": "drawer 的 content、header 部件 padding-block-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-header-pt",
+      "component": "drawer",
+      "part": [
+        "content",
+        "header"
+      ],
+      "property": [
+        "padding-block-start"
+      ],
+      "state": [
+        "has([data-scope='drawer'][data-part='body'])"
+      ],
+      "defaultToken": [
+        "--xh-_drawer-header-pt"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 content、header 部件 padding-block-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-header-px",
+      "component": "drawer",
+      "part": [
+        "content",
+        "header"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "has([data-scope='drawer'][data-part='body'])"
+      ],
+      "defaultToken": [
+        "--xh-surface-px-sm"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 content、header 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-drawer-icon-size",
@@ -29228,7 +29344,8 @@
       ],
       "defaultToken": [
         "--xh-_action-profile-glyph-size",
-        "--xh-glyph-size-md"
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-xs"
       ],
       "visibility": "public",
       "description": "drawer 的 close-trigger、content、root、trigger 部件 --xh-icon-size 覆盖槽。"
@@ -29266,7 +29383,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-surface-px-md"
+        "--xh-surface-px-sm"
       ],
       "visibility": "public",
       "description": "drawer 的 content 部件 padding-inline 覆盖槽。"
@@ -29286,7 +29403,8 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-surface-py-md"
+        "--xh-_drawer-header-pt",
+        "--xh-overlay-sheet-footer-py"
       ],
       "visibility": "public",
       "description": "drawer 的 content 部件 padding-block-end、padding-block-start 覆盖槽。"
@@ -29310,7 +29428,7 @@
         "side=top"
       ],
       "defaultToken": [
-        "--xh-shape-overlay"
+        "0"
       ],
       "visibility": "public",
       "description": "drawer 的 content 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
@@ -29456,6 +29574,27 @@
       ],
       "visibility": "public",
       "description": "drawer 的 resize-trigger 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-separator",
+      "component": "drawer",
+      "part": [
+        "content",
+        "footer",
+        "header"
+      ],
+      "property": [
+        "border-block-end",
+        "border-block-start"
+      ],
+      "state": [
+        "has([data-scope='drawer'][data-part='body'])"
+      ],
+      "defaultToken": [
+        "--xh-material-elevated-separator"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 content、footer、header 部件 border-block-end、border-block-start 覆盖槽。"
     },
     {
       "name": "--xh-drawer-shadow",

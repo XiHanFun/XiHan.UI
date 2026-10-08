@@ -120,6 +120,7 @@ const GLYPH_EXEMPT = {
   'combobox:item-indicator': '浮层条目里勾选标记所在的标记盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，兜底的勾与作者塞进去的图标都与盒同尺，不按图标档取',
   'steps:indicator': '走过的步里的对号是指示符，按 16px 指示符档走 --xh-control-indicator-size（公开槽 --xh-steps-indicator-mark-size），作者塞进圆点的图标与它同尺，不按图标档取',
   'dialog:close-trigger': '面板角上关闭钮的叉取 --xh-glyph-size-xs（12px），比控件内图标低一档，不按 sm / md / lg 取',
+  'drawer:close-trigger': '面板角上关闭钮的叉取 --xh-glyph-size-xs（12px），比控件内图标低一档，不按 sm / md / lg 取',
 }
 /** 控件内图标允许的档。 */
 const GLYPH_STEPS = new Set(['--xh-glyph-size-sm', '--xh-glyph-size-md', '--xh-glyph-size-lg'])
