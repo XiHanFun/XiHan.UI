@@ -344,7 +344,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 图表轴标签、数据标签、轴标题 | `--xh-text-caption-size` 12 / `--xh-fg-muted`；轴刻度用等宽数字（`tabular-nums`）；不使用系列色 | 刻度标签与刻度线 `--xh-space-1` |
 
 - 必填星号与错误文案是公共层规则：星号 `--xh-glyph-mark-required` 排在标签文字之前（`::before`），取 `--xh-text-caption-size` + `--xh-fg-danger`、与文字隔 `--xh-space-1`，自带标签的字段不得各画一套。
-- 表单项距 `--xh-space-5`，字段的辅助行算在项距里：带说明或给错误文案留了一行的字段，那一行（最小高 `--xh-space-5`）就是项距，不再另留；一行流档列距 `--xh-space-6`、行距 `--xh-space-2`；字段集组内项距 `--xh-space-5`。出错的字段不另画起始缘色带，错误由警示色标签与错误文案承担。
+- 表单项距 `--xh-space-5`，字段的辅助行算在项距里：带说明或给错误文案留了一行的字段，那一行（最小高 `--xh-space-5`）就是项距，不再另留；一行流档列距 `--xh-space-6`、行距 `--xh-space-2`；字段集组内项距 `--xh-space-5`，组标题取 heading-3 + `--xh-fg-default`、与组内首项隔 `--xh-space-4`。出错的字段不另画起始缘色带，错误由警示色标签与错误文案承担。
 - 字段标签禁用取 `--xh-fg-disabled`（静息已是 muted，subtle 与它分不出；禁用文字不计对比度）；其余标签禁用取 `--xh-fg-subtle`；单行标签 `--xh-leading-none`。
 - 层级通过字号、字重、行高和间距共同表达，不能只调颜色。
 - 不使用极小字号换取信息密度。

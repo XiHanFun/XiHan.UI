@@ -115,6 +115,22 @@ describe('字段的辅助行', () => {
   })
 })
 
+describe('字段集的组标题', () => {
+  it('取区块标题 heading-3 与正文色，与组内首项隔 --xh-space-4', async () => {
+    await mount(() => h(XhFieldsetRoot, null, () => [
+      h(XhFieldsetLegend, null, () => '账号'),
+      h('div', { 'data-testid': 'first' }, '第一项'),
+    ]))
+    const legend = all('fieldset', 'legend')[0]!
+    const first = host!.querySelector<HTMLElement>(`[data-testid='first']`)!
+    const style = getComputedStyle(legend)
+    expect(style.fontSize).toBe(resolve('var(--xh-text-heading-3-size)', 'font-size'))
+    expect(style.fontWeight).toBe(resolve('var(--xh-text-heading-3-weight)', 'font-weight'))
+    expect(style.color).toBe(resolve('var(--xh-fg-default)'))
+    expect(Math.round(first.getBoundingClientRect().top - legend.getBoundingClientRect().bottom)).toBe(px('--xh-space-4'))
+  })
+})
+
 describe('表单项距', () => {
   it('没有辅助行的字段之间隔 --xh-space-5', async () => {
     await mount(() => h(XhFormRoot, null, () => [field('甲'), field('乙')]))

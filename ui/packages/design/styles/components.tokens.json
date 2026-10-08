@@ -32656,7 +32656,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "fieldset 的 legend 部件 color 覆盖槽。"
@@ -32711,7 +32711,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-size"
+        "--xh-text-heading-3-size"
       ],
       "visibility": "public",
       "description": "fieldset 的 legend 部件 font-size 覆盖槽。"
@@ -32729,7 +32729,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-weight"
+        "--xh-text-heading-3-weight"
       ],
       "visibility": "public",
       "description": "fieldset 的 legend 部件 font-weight 覆盖槽。"
@@ -32747,7 +32747,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "fieldset 的 legend 部件 margin-block-end 覆盖槽。"
