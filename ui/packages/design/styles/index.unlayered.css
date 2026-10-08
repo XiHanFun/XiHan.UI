@@ -486,19 +486,19 @@
 
 [data-scope][data-xh-action-control][data-xh-action-profile='field-inset'][data-xh-action-size='sm'] {
   --xh-_action-profile-visual-size: var(--xh-control-action-size);
-  --xh-_action-profile-glyph-size: var(--xh-control-indicator-md);
+  --xh-_action-profile-glyph-size: var(--xh-control-indicator-sm);
   --xh-_action-profile-font-size: var(--xh-control-caption-sm);
 }
 
 [data-scope][data-xh-action-control][data-xh-action-profile='field-inset'][data-xh-action-size='md'] {
   --xh-_action-profile-visual-size: var(--xh-control-h-sm);
-  --xh-_action-profile-glyph-size: var(--xh-glyph-size-sm);
+  --xh-_action-profile-glyph-size: var(--xh-control-indicator-sm);
   --xh-_action-profile-font-size: var(--xh-control-caption-md);
 }
 
 [data-scope][data-xh-action-control][data-xh-action-profile='field-inset'][data-xh-action-size='lg'] {
   --xh-_action-profile-visual-size: var(--xh-control-h-md);
-  --xh-_action-profile-glyph-size: var(--xh-glyph-size-md);
+  --xh-_action-profile-glyph-size: var(--xh-control-indicator-md);
   --xh-_action-profile-font-size: var(--xh-control-caption-lg);
 }
 

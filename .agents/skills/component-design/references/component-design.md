@@ -357,7 +357,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 控件内图标随 size 档：sm 16 / md 20 / lg 24（`--xh-glyph-size-sm/md/lg`）；Action Control、Field Chrome、Collection Item 三份配方按档下发，皮肤缺省值只能是 `var(--xh-<comp>-icon-size, var(--xh-glyph-size-md))` 并随 `data-size` 换档。
 - `--xh-glyph-size-text`（随文 1em）只允许在纯行内文字组件（Tag、Kbd、Breadcrumb、Typography、Highlight）里使用。
 - Feedback 指示符（Alert、Notification）统一 `--xh-glyph-size-md`。
-- 配方内不写 24px / 12px / 14px 等字面尺寸：xs 视觉盒（含 field-inset sm）走 `--xh-control-action-size`；field-inset 字形 xs 走 `--xh-control-indicator-sm`、sm 走 `--xh-control-indicator-md`、md 走 `--xh-glyph-size-sm`，随密度换档。
+- 配方内不写 24px / 12px / 14px 等字面尺寸：xs 视觉盒（含 field-inset sm）走 `--xh-control-action-size`；field-inset 字形 xs / sm / md 走 `--xh-control-indicator-sm`、lg 走 `--xh-control-indicator-md`，随密度换档（字段里的钮是辅助动作，字形比控件内图标小一圈）。
 - 组件自绘的状态字形（排序方向、勾、半选杠、展开方向、抓手等）是指示符，不是控件内图标：按指示符档 `--xh-control-indicator-*` 取尺、与它所在的方盒 / 把手同一支令牌（勾选格里的勾与半选杠按方盒边长 × 0.75，与 Checkbox 同比例；方向字形与盒同边长），随密度一起换档（comfortable 16 / compact 14）。`--xh-<comp>-icon-size` / `--xh-icon-size` 只管作者放进单元格、把手与插槽里的图标，状态字形不得读它——按图标档取的 20px 会比 16px 的方盒与同行文字都大一圈。
 
 ### 6.6 组件内滚动
@@ -451,7 +451,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | floating | FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer | `control-action-size` | `control-box-sm` | `control-box-md` | `control-box-lg` |
 
 - text 档宽按内容，下限等于高；icon、field-inset、floating 是正方盒。
-- 字形：text / icon 为 16 / 16 / 20 / 24px；field-inset 为 `control-indicator-sm`、`control-indicator-md`、16px、20px；floating 为 16 / 16 / 20 / 24px。
+- 字形：text / icon 为 16 / 16 / 20 / 24px；field-inset 为 `control-indicator-sm`、`control-indicator-sm`、`control-indicator-sm`、`control-indicator-md`（12 / 12 / 12 / 16px）；floating 为 16 / 16 / 20 / 24px。
 - floating 缺省 md（40px，compact 36px）：浮在内容之上的圆钮在矮视口与小卡片里不叠住内容与彼此。主控制钮（Carousel 与 ImageViewer 的翻页、BackTop、FloatButton）随组件 `size` 同档；从属的钮（ImageViewer 的关闭、Log / MessageFeed 的回到底部）比组件低一档、最低 sm。
 - Dialog、Drawer、Popover、Tour、Notification 的关闭钮取 `control-h-sm`。
 
