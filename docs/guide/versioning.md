@@ -133,7 +133,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-样式钩子。自带皮肤消费了 261 个属性名 / 1140 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
+样式钩子。自带皮肤消费了 261 个属性名 / 1141 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -196,13 +196,13 @@ brand  neutral  success  warning  danger  info
 
 | 类别 | 数量 | 排除原因 |
 | --- | --- | --- |
-| 其余 `--xh-_` 私有槽 | 816 | 皮肤内部的回退中转（`--xh-_bg`、`--xh-_bg-hover`、`--xh-_mention-py` 等），变体只改槽位、不重写规则依赖它。不应在外部设置它们。core 写入内联 `style` 的层级、动效与液态材质取值（`--xh-_layer`、`--xh-_stagger-index`、`--xh-_enter-from-opacity` 等）同属此档：层级的公开入口是 `--xh-<组件>-layer` 覆盖槽，私有值只作回落；后两类缺失时只少一段过渡或材质效果，组件功能不受影响 |
+| 其余 `--xh-_` 私有槽 | 818 | 皮肤内部的回退中转（`--xh-_bg`、`--xh-_bg-hover`、`--xh-_mention-py` 等），变体只改槽位、不重写规则依赖它。不应在外部设置它们。core 写入内联 `style` 的层级、动效与液态材质取值（`--xh-_layer`、`--xh-_stagger-index`、`--xh-_enter-from-opacity` 等）同属此档：层级的公开入口是 `--xh-<组件>-layer` 覆盖槽，私有值只作回落；后两类缺失时只少一段过渡或材质效果，组件功能不受影响 |
 | 令牌的取值 | — | `--xh-color-brand-500` 这个名字受约束，其对应的 `oklch()` 值不受约束。调色板随视觉迭代变化，这正是令牌存在的意义 |
 | `index.css` 的内部结构 | — | 它是生成的扁平文件：家族配方只内联一次、排在皮肤之前，皮肤段的顺序即源序。段标记注释（`/* styles/xxx.css */`）只作阅读定位，不是承诺 |
 | `index.unlayered.css` 的内部结构 | — | 它是同一源序的扁平镜像，不带 `@layer`。使用该入口时没有 `xihan.overrides` 覆盖槽位，层名承诺不适用 |
 
 ::: warning 命名前缀不能反推归属
-`--xh-field-py` 形似 `field` 组件的覆盖槽，实际是全局语义令牌，`field.css` 本身并不使用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 741 个全局令牌里，不按前缀推断。
+`--xh-field-py` 形似 `field` 组件的覆盖槽，实际是全局语义令牌，`field.css` 本身并不使用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 742 个全局令牌里，不按前缀推断。
 :::
 
 ---
@@ -393,7 +393,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 | `@xihan-ui/web-components` | 145 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
 | `@xihan-ui/styles` | 140 份组件皮肤、5 个层名 |
-| `@xihan-ui/tokens` | 741 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
+| `@xihan-ui/tokens` | 742 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
 | `@xihan-ui/icons` | 图标集 |
 | `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约；另有 `./date` 子入口的全部导出（`PlainDate` / `PlainTime` / `PlainDateTime` / `ZonedDateTime`、时区换算、周规则、边界函数与格式化器） |
 | `@xihan-ui/position` | `createPositionEngine` 与它的选项；其余 9 个导出是内部算子 |
@@ -421,11 +421,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，18564 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，18565 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
 覆盖：包名与 214 条子入口、9574 个导出名、140 个 `data-scope` 与 1342 条部件配对、
-140 个组件的 2111 个 prop 名、314 种 `data-*`、33 个 `data-state` 取值、741 个令牌、
+140 个组件的 2111 个 prop 名、314 种 `data-*`、33 个 `data-state` 取值、742 个令牌、
 5 个 `@layer` 名、4482 个组件覆盖槽、144 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改
