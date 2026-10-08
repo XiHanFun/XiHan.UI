@@ -182,9 +182,19 @@ function assertVariantMatrix(source) {
       throw new Error(`[field-chrome-recipe] variantValues.${variant}.readOnly.backgroundColor 必须为 var(--xh-bg-subtle)`)
   }
   const outline = source.variantValues.outline
-  // 描边档静息不填底：盒里露出宿主的面，与浮层面板、卡片同一条边线、同一块底
-  if (outline.rest.backgroundColor !== 'transparent' || outline.rest.borderColor !== 'var(--xh-border-control)')
-    throw new Error('[field-chrome-recipe] variantValues.outline.rest 必须为 transparent + border-control')
+  // 描边档静息：字段淡底 + 控件边，与浮层面板、卡片同一条边线；聚焦换回承载面，底色差就是「正在填」的提示
+  if (outline.rest.backgroundColor !== 'var(--xh-bg-field)' || outline.rest.borderColor !== 'var(--xh-border-control)')
+    throw new Error('[field-chrome-recipe] variantValues.outline.rest 必须为 bg-field + border-control')
+  if (outline.focus.backgroundColor !== 'var(--xh-bg-surface)')
+    throw new Error('[field-chrome-recipe] variantValues.outline.focus.backgroundColor 必须为 var(--xh-bg-surface)')
+  // 环色 none 表示不画环：焦点由描边换成 --xh-border-control-focus 标出（上面已钉住），聚焦与失效两档要一致
+  for (const state of ['focus', 'invalid']) {
+    const ring = source.stateValues[state].ringColor
+    if (ring !== 'none' && !/^var\(--xh-ring-[a-z-]+\)$/.test(ring))
+      throw new Error(`[field-chrome-recipe] stateValues.${state}.ringColor 只能是 none 或 var(--xh-ring-*)`)
+  }
+  if ((source.stateValues.focus.ringColor === 'none') !== (source.stateValues.invalid.ringColor === 'none'))
+    throw new Error('[field-chrome-recipe] stateValues.focus / invalid 的 ringColor 要么都画环、要么都是 none')
   for (const variant of ['subtle', 'ghost']) {
     const value = source.variantValues[variant]
     if (value.rest.borderColor !== 'transparent')
@@ -250,6 +260,8 @@ function forcedDeclarations(source, state, extra = []) {
 
 export function compileFieldChromeRecipe(source) {
   assertFieldChromeRecipe(source)
+  // 环色 none：不画聚焦环，焦点只由描边换色标出；基础规则也不再预留透明环
+  const ringed = source.stateValues.focus.ringColor !== 'none'
   const selectors = new Set()
   const chunks = []
   const rule = (selector, body, context = 'root', target = chunks, indent = '  ') => {
@@ -278,8 +290,7 @@ export function compileFieldChromeRecipe(source) {
     variantOutputs(source, DEFAULT_VARIANT),
     `    border: var(--xh-stroke-thin) solid ${stateValue(source, 'rest', 'borderColor')};`,
     '    border-radius: var(--xh-field-control-radius, var(--xh-shape-control));',
-    '    outline: var(--xh-ring-width) solid transparent;',
-    '    outline-offset: var(--xh-ring-offset);',
+    ...(ringed ? ['    outline: var(--xh-ring-width) solid transparent;', '    outline-offset: var(--xh-ring-offset);'] : []),
     `    background-color: ${stateValue(source, 'rest', 'backgroundColor')};`,
     `    color: ${stateValue(source, 'rest', 'color')};`,
     `    box-shadow: ${stateValue(source, 'rest', 'shadow')};`,
@@ -317,15 +328,18 @@ export function compileFieldChromeRecipe(source) {
   rule('[data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover', stateDeclarations(source, 'hover'))
   rule('[data-xh-field-chrome]:focus-within:not([data-disabled])', [
     stateDeclarations(source, 'focus'),
-    `    outline: var(--xh-ring-width) solid var(--xh-field-ring-focus, ${source.stateValues.focus.ringColor});`,
-    '    outline-offset: var(--xh-ring-offset);',
+    ...(ringed
+      ? [`    outline: var(--xh-ring-width) solid var(--xh-field-ring-focus, ${source.stateValues.focus.ringColor});`, '    outline-offset: var(--xh-ring-offset);']
+      : []),
   ].filter(Boolean).join('\n'))
   rule('[data-xh-field-chrome][data-readonly]', stateDeclarations(source, 'readOnly'))
   rule('[data-xh-field-chrome][data-loading]', stateDeclarations(source, 'loading'))
   rule('[data-xh-field-chrome][data-invalid]', stateDeclarations(source, 'invalid'))
-  rule('[data-xh-field-chrome][data-invalid]:focus-within:not([data-disabled])', [
-    `    outline-color: var(--xh-field-ring-invalid, ${source.stateValues.invalid.ringColor});`,
-  ].join('\n'))
+  if (ringed) {
+    rule('[data-xh-field-chrome][data-invalid]:focus-within:not([data-disabled])', [
+      `    outline-color: var(--xh-field-ring-invalid, ${source.stateValues.invalid.ringColor});`,
+    ].join('\n'))
+  }
   rule('[data-xh-field-chrome][data-disabled]', stateDeclarations(source, 'disabled'))
 
   rule('[data-xh-field-affix]', [
@@ -387,7 +401,10 @@ export function compileFieldChromeRecipe(source) {
   )
   forcedRule('[data-xh-field-chrome]', 'rest')
   forcedRule('[data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover', 'hover')
-  forcedRule('[data-xh-field-chrome]:focus-within:not([data-disabled])', 'focus', [`      outline-color: ${source.forcedColors.focus.outlineColor};`])
+  // 常规档不画环时，强制色档仍补一圈系统色环：这一档里描边换色未必分得出来
+  forcedRule('[data-xh-field-chrome]:focus-within:not([data-disabled])', 'focus', ringed
+    ? [`      outline-color: ${source.forcedColors.focus.outlineColor};`]
+    : [`      outline: var(--xh-ring-width) solid ${source.forcedColors.focus.outlineColor};`, '      outline-offset: var(--xh-ring-offset);'])
   forcedRule('[data-xh-field-chrome][data-readonly]', 'readOnly')
   forcedRule('[data-xh-field-chrome][data-loading]', 'loading', ['      border-style: dashed;'])
   forcedRule('[data-xh-field-chrome][data-invalid]', 'invalid')

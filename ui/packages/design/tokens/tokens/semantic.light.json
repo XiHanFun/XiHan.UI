@@ -29,6 +29,11 @@
       "$type": "color",
       "$value": "{color.neutral.300}"
     },
+    "field": {
+      "$description": "字段外壳的静息底：淡底兑一半，比淡底再浅一档，字段在白卡与灰页上都读得出是一块可填的盒。悬停不变，聚焦换成承载面。",
+      "$type": "color",
+      "$value": "color-mix(in oklab, {bg.subtle} 55%, transparent)"
+    },
     "muted": {
       "$type": "color",
       "$value": "{color.neutral.100}"

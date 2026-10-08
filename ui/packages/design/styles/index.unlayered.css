@@ -748,19 +748,19 @@
   padding-inline: var(--xh-field-control-padding-inline, var(--xh-_field-size-padding-inline));
   padding-block: 0;
   --xh-icon-size: var(--xh-field-glyph-size, var(--xh-_field-size-glyph-size));
-  --xh-_field-variant-bg-rest: transparent;
+  --xh-_field-variant-bg-rest: var(--xh-bg-field);
   --xh-_field-variant-border-rest: var(--xh-border-control);
-  --xh-_field-variant-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent);
-  --xh-_field-variant-border-hover: var(--xh-border-control-hover);
+  --xh-_field-variant-bg-hover: var(--xh-bg-field);
+  --xh-_field-variant-border-hover: var(--xh-border-strong);
+  --xh-_field-variant-bg-focus: var(--xh-bg-surface);
   --xh-_field-variant-border-focus: var(--xh-border-control-focus);
+  --xh-_field-variant-bg-invalid: color-mix(in oklab, var(--xh-border-invalid) 4%, transparent);
   --xh-_field-variant-border-invalid: var(--xh-border-invalid);
   --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
   --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
   --xh-_field-variant-border-disabled: var(--xh-border-default);
   border: var(--xh-stroke-thin) solid var(--xh-field-border-rest, var(--xh-_field-variant-border-rest));
   border-radius: var(--xh-field-control-radius, var(--xh-shape-control));
-  outline: var(--xh-ring-width) solid transparent;
-  outline-offset: var(--xh-ring-offset);
   background-color: var(--xh-field-bg-rest, var(--xh-_field-variant-bg-rest));
   color: var(--xh-field-fg-rest, var(--xh-fg-default));
   box-shadow: var(--xh-field-shadow-rest, none);
@@ -772,11 +772,13 @@
 }
 
 [data-scope][data-xh-field-chrome][data-variant='outline'] {
-  --xh-_field-variant-bg-rest: transparent;
+  --xh-_field-variant-bg-rest: var(--xh-bg-field);
   --xh-_field-variant-border-rest: var(--xh-border-control);
-  --xh-_field-variant-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent);
-  --xh-_field-variant-border-hover: var(--xh-border-control-hover);
+  --xh-_field-variant-bg-hover: var(--xh-bg-field);
+  --xh-_field-variant-border-hover: var(--xh-border-strong);
+  --xh-_field-variant-bg-focus: var(--xh-bg-surface);
   --xh-_field-variant-border-focus: var(--xh-border-control-focus);
+  --xh-_field-variant-bg-invalid: color-mix(in oklab, var(--xh-border-invalid) 4%, transparent);
   --xh-_field-variant-border-invalid: var(--xh-border-invalid);
   --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
   --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
@@ -788,7 +790,9 @@
   --xh-_field-variant-border-rest: transparent;
   --xh-_field-variant-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_field-variant-border-hover: var(--xh-border-control);
+  --xh-_field-variant-bg-focus: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_field-variant-border-focus: var(--xh-border-control-focus);
+  --xh-_field-variant-bg-invalid: color-mix(in oklab, var(--xh-border-invalid) 4%, transparent);
   --xh-_field-variant-border-invalid: var(--xh-border-invalid);
   --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
   --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
@@ -800,7 +804,9 @@
   --xh-_field-variant-border-rest: transparent;
   --xh-_field-variant-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent);
   --xh-_field-variant-border-hover: var(--xh-border-control);
+  --xh-_field-variant-bg-focus: transparent;
   --xh-_field-variant-border-focus: var(--xh-border-control-focus);
+  --xh-_field-variant-bg-invalid: color-mix(in oklab, var(--xh-border-invalid) 4%, transparent);
   --xh-_field-variant-border-invalid: var(--xh-border-invalid);
   --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
   --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
@@ -864,9 +870,8 @@
 }
 
 [data-scope][data-xh-field-chrome]:focus-within:not([data-disabled]) {
+  background-color: var(--xh-field-bg-focus, var(--xh-_field-variant-bg-focus));
   border-color: var(--xh-field-border-focus, var(--xh-_field-variant-border-focus));
-  outline: var(--xh-ring-width) solid var(--xh-field-ring-focus, var(--xh-ring-focus));
-  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope][data-xh-field-chrome][data-readonly] {
@@ -880,11 +885,8 @@
 }
 
 [data-scope][data-xh-field-chrome][data-invalid] {
+  background-color: var(--xh-field-bg-invalid, var(--xh-_field-variant-bg-invalid));
   border-color: var(--xh-field-border-invalid, var(--xh-_field-variant-border-invalid));
-}
-
-[data-scope][data-xh-field-chrome][data-invalid]:focus-within:not([data-disabled]) {
-  outline-color: var(--xh-field-ring-invalid, var(--xh-ring-invalid));
 }
 
 [data-scope][data-xh-field-chrome][data-disabled] {
@@ -980,7 +982,8 @@
 
   [data-scope][data-xh-field-chrome]:focus-within:not([data-disabled]) {
     border-color: Highlight;
-    outline-color: Highlight;
+    outline: var(--xh-ring-width) solid Highlight;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope][data-xh-field-chrome][data-readonly] {
@@ -10857,8 +10860,6 @@
   --xh-field-border-hover: var(--xh-mention-input-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-mention-input-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-mention-input-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-mention-input-shadow, none);
 
   inline-size: 100%;
@@ -11411,8 +11412,6 @@
   --xh-field-border-hover: var(--xh-password-input-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-password-input-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-password-input-control-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-password-input-control-shadow, none);
   /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
   --xh-field-glyph-size: var(--xh-password-input-icon-size, var(--xh-_field-size-glyph-size));
@@ -20676,8 +20675,6 @@
   --xh-field-border-hover: var(--xh-cascader-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-cascader-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-cascader-control-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-cascader-control-shadow, none);
   --xh-field-cursor-rest: pointer;
   /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
@@ -23472,8 +23469,6 @@
   --xh-field-border-hover: var(--xh-color-field-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-color-field-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-color-field-control-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-color-field-control-shadow, none);
   /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
   --xh-field-glyph-size: var(--xh-color-field-icon-size, var(--xh-_field-size-glyph-size));
@@ -23586,9 +23581,6 @@
   --xh-_color-picker-px: var(--xh-control-px-md);
   --xh-_color-picker-gap: var(--xh-control-gap-md);
 
-  /* 聚焦环恒用固定环色 */
-  --xh-_color-picker-ring: var(--xh-ring-focus);
-
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-color-picker-gap, var(--xh-space-1));
@@ -23639,7 +23631,6 @@
   --xh-field-border-rest: var(--xh-color-picker-control-border, var(--xh-_field-variant-border-rest));
   --xh-field-border-hover: var(--xh-color-picker-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-color-picker-control-border-focus, var(--xh-_field-variant-border-focus));
-  --xh-field-ring-focus: var(--xh-_color-picker-ring);
   --xh-field-shadow-rest: var(--xh-color-picker-control-shadow, none);
   --xh-field-cursor-rest: pointer;
 }
@@ -24852,8 +24843,6 @@
   --xh-field-border-hover: var(--xh-combobox-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-combobox-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-combobox-control-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-combobox-control-shadow, none);
   /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
   --xh-field-glyph-size: var(--xh-combobox-icon-size, var(--xh-_field-size-glyph-size));
@@ -26145,8 +26134,6 @@
   --xh-field-border-hover: var(--xh-date-field-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-date-field-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-date-field-control-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-date-field-control-shadow, none);
   --xh-field-cursor-rest: default;
   /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
@@ -26525,8 +26512,6 @@
   --xh-field-border-hover: var(--xh-date-picker-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-date-picker-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-date-picker-control-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-date-picker-control-shadow, none);
   /* 段位靠键盘编辑，盒上不是文本光标 */
   --xh-field-cursor-rest: default;
@@ -27381,8 +27366,6 @@
   --xh-field-border-hover: var(--xh-date-range-picker-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-date-range-picker-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-date-range-picker-control-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-date-range-picker-control-shadow, none);
   /* 段位靠键盘编辑，盒上不是文本光标 */
   --xh-field-cursor-rest: default;
@@ -29247,8 +29230,6 @@
   --xh-field-border-focus: var(--xh-editable-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-editable-control-border-invalid, var(--xh-_field-variant-border-invalid));
   --xh-field-border-disabled: var(--xh-editable-control-border-disabled, var(--xh-_field-variant-border-disabled));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-editable-control-shadow, none);
   /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
   --xh-field-glyph-size: var(--xh-editable-icon-size, var(--xh-_field-size-glyph-size));
@@ -29473,8 +29454,6 @@
   --xh-field-border-focus: var(--xh-field-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-field-control-border-invalid, var(--xh-_field-variant-border-invalid));
   /* 焦点环与家族同一支公共环，不再留逐组件的环色槽（焦点边与环一律公共） */
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-field-control-shadow, none);
 
   inline-size: 100%;
@@ -35211,8 +35190,6 @@
   --xh-field-border-hover: var(--xh-number-field-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-number-field-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-number-field-control-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-number-field-control-shadow, none);
   /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
   --xh-field-glyph-size: var(--xh-number-field-icon-size, var(--xh-_field-size-glyph-size));
@@ -35562,8 +35539,6 @@
   --xh-field-border-hover: var(--xh-pagination-jumper-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-pagination-jumper-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-pagination-jumper-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: none;
 
   flex: none;
@@ -35579,14 +35554,10 @@
   display: none;
 }
 
-/* 越界的页码（超出 1 到总页数）：浏览器的约束校验在用户动过之后判失败，与字段家族的校验失败同一副边与环。
+/* 越界的页码（超出 1 到总页数）：浏览器的约束校验在用户动过之后判失败，与字段家族的校验失败同一副边。
    家族的失败档认 data-invalid，跳页框的取值不进状态机，失败由原生约束给出 */
 .xh-scope-pagination[data-part='jumper']:user-invalid {
   border-color: var(--xh-field-border-invalid, var(--xh-_field-variant-border-invalid));
-}
-
-.xh-scope-pagination[data-part='jumper']:user-invalid:focus-within {
-  outline-color: var(--xh-field-ring-invalid, var(--xh-ring-invalid));
 }
 
 /* 摊开省略位的定位层。三处坐标系必须同为 fixed：机器交给引擎的 strategy、
@@ -36151,8 +36122,6 @@
   --xh-field-border-hover: var(--xh-pin-input-box-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-pin-input-box-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-pin-input-box-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-pin-input-box-shadow, none);
 
   /* 一行放不下时逐格收窄，收不动就整行顶出屏幕。
@@ -39203,8 +39172,6 @@
   --xh-field-border-hover: var(--xh-select-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-select-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-select-control-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-select-control-shadow, none);
   --xh-field-cursor-rest: pointer;
   /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
@@ -44735,8 +44702,6 @@
   --xh-field-border-hover: var(--xh-tags-input-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-tags-input-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-tags-input-control-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-tags-input-control-shadow, none);
   --xh-field-cursor-read-only: default;
   /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
@@ -45026,8 +44991,6 @@
   --xh-field-border-hover: var(--xh-text-field-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-text-field-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-text-field-control-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-text-field-control-shadow, none);
   /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
   --xh-field-glyph-size: var(--xh-text-field-icon-size, var(--xh-_field-size-glyph-size));
@@ -45225,8 +45188,6 @@
   --xh-field-border-hover: var(--xh-time-field-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-time-field-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-time-field-control-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-time-field-control-shadow, none);
   --xh-field-cursor-rest: default;
   /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
@@ -45545,8 +45506,6 @@
   --xh-field-border-hover: var(--xh-time-picker-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-time-picker-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-time-picker-control-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-time-picker-control-shadow, none);
   /* 段位靠键盘编辑，盒上不是文本光标 */
   --xh-field-cursor-rest: default;
@@ -46245,8 +46204,6 @@
   --xh-field-border-hover: var(--xh-time-range-picker-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-time-range-picker-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-time-range-picker-control-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-time-range-picker-control-shadow, none);
   /* 段位靠键盘编辑，盒上不是文本光标 */
   --xh-field-cursor-rest: default;
@@ -50154,8 +50111,6 @@
   --xh-field-border-hover: var(--xh-tree-select-control-border-hover, var(--xh-_field-variant-border-hover));
   --xh-field-border-focus: var(--xh-tree-select-control-border-focus, var(--xh-_field-variant-border-focus));
   --xh-field-border-invalid: var(--xh-tree-select-control-border-invalid, var(--xh-_field-variant-border-invalid));
-  --xh-field-ring-focus: var(--xh-ring-focus);
-  --xh-field-ring-invalid: var(--xh-ring-invalid);
   --xh-field-shadow-rest: var(--xh-tree-select-control-shadow, none);
   --xh-field-cursor-rest: pointer;
   /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */

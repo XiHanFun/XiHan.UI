@@ -144,8 +144,6 @@
     --xh-field-border-hover: var(--xh-time-picker-control-border-hover, var(--xh-_field-variant-border-hover));
     --xh-field-border-focus: var(--xh-time-picker-control-border-focus, var(--xh-_field-variant-border-focus));
     --xh-field-border-invalid: var(--xh-time-picker-control-border-invalid, var(--xh-_field-variant-border-invalid));
-    --xh-field-ring-focus: var(--xh-ring-focus);
-    --xh-field-ring-invalid: var(--xh-ring-invalid);
     --xh-field-shadow-rest: var(--xh-time-picker-control-shadow, none);
     /* 段位靠键盘编辑，盒上不是文本光标 */
     --xh-field-cursor-rest: default;
