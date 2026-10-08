@@ -2407,6 +2407,7 @@ export type ComponentTokenName
     | '--xh-menubar-group-label-fg'
     | '--xh-menubar-group-label-font-size'
     | '--xh-menubar-group-label-font-weight'
+    | '--xh-menubar-group-label-mt'
     | '--xh-menubar-group-label-px'
     | '--xh-menubar-group-label-py'
     | '--xh-menubar-highlight'
