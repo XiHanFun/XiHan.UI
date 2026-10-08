@@ -107,3 +107,14 @@
     flex: 1;
   }
 }
+
+/* 主题设计器：去掉侧栏后放宽正文，给整面预览留出三栏 */
+@media (min-width: 60rem) {
+  .xh-designer-page .VPDoc:not(.has-sidebar) .container.container {
+    max-width: 88rem;
+  }
+
+  .xh-designer-page .VPDoc:not(.has-sidebar) .content.content {
+    max-width: none;
+  }
+}
