@@ -21,6 +21,27 @@
       "description": "accordion 的 root 部件 border 覆盖槽。"
     },
     {
+      "name": "--xh-accordion-content-bg",
+      "component": "accordion",
+      "part": [
+        "content",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default",
+        "variant=subtle"
+      ],
+      "defaultToken": [
+        "--xh-bg-muted",
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "accordion 的 content、root 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-accordion-content-fg",
       "component": "accordion",
       "part": [
@@ -33,7 +54,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "accordion 的 content 部件 color 覆盖槽。"
@@ -51,7 +72,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "accordion 的 content 部件 font-size 覆盖槽。"
@@ -75,6 +96,26 @@
       ],
       "visibility": "public",
       "description": "accordion 的 content 部件 padding-block-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-accordion-content-pt",
+      "component": "accordion",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "padding-block-start"
+      ],
+      "state": [
+        "@keyframes xh-disclosure-collapse",
+        "@keyframes xh-disclosure-expand",
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_accordion-content-pt"
+      ],
+      "visibility": "public",
+      "description": "accordion 的 content 部件 padding-block-start 覆盖槽。"
     },
     {
       "name": "--xh-accordion-content-px",
@@ -108,8 +149,8 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-glyph-size",
-        "--xh-glyph-size-md"
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
       "description": "accordion 的 root、trigger 部件 --xh-icon-size 覆盖槽。"
@@ -127,7 +168,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "accordion 的 indicator 部件 color 覆盖槽。"
@@ -156,6 +197,7 @@
       "name": "--xh-accordion-item-border",
       "component": "accordion",
       "part": [
+        "content",
         "item",
         "item-separator",
         "root"
@@ -170,14 +212,15 @@
         "is([data-variant='outline'], [data-variant='subtle'])",
         "not(:last-child)",
         "orientation=horizontal",
+        "state=open",
         "variant=outline",
         "variant=subtle"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
-      "description": "accordion 的 item、item-separator、root 部件 background、border-block-start、border-inline-start 覆盖槽。"
+      "description": "accordion 的 content、item、item-separator、root 部件 background、border-block-start、border-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-accordion-item-radius",
@@ -366,6 +409,24 @@
       "description": "accordion 的 trigger 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-accordion-trigger-font-weight-open",
+      "component": "accordion",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "state=open"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
+      ],
+      "visibility": "public",
+      "description": "accordion 的 trigger 部件 font-weight 覆盖槽。"
+    },
+    {
       "name": "--xh-accordion-trigger-gap",
       "component": "accordion",
       "part": [
@@ -416,7 +477,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-padding-inline"
+        "--xh-_accordion-trigger-px"
       ],
       "visibility": "public",
       "description": "accordion 的 trigger 部件 padding-inline 覆盖槽。"
@@ -434,7 +495,7 @@
         "xh-action-profile=disclosure-trigger"
       ],
       "defaultToken": [
-        "--xh-_action-profile-padding-block"
+        "--xh-_accordion-trigger-py"
       ],
       "visibility": "public",
       "description": "accordion 的 trigger 部件 padding-block 覆盖槽。"
