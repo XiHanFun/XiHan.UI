@@ -13562,14 +13562,15 @@
 .xh-scope-timeline[data-part='root'] {
   /* 尺寸档只换这几个私有槽，条目、圆点与文字都从 root 继承它们，
      换档不必给每个部件各写一条选择器 */
-  --xh-_timeline-dot-size: var(--xh-space-2_5);
-  --xh-_timeline-gutter: var(--xh-space-3);
-  --xh-_timeline-item-gap: var(--xh-space-5);
+  /* 圆点只标位置，6px 实心；圆点到内容 16px；条目之间 32px，事件一条条分得开 */
+  --xh-_timeline-dot-size: var(--xh-space-1_5);
+  --xh-_timeline-gutter: var(--xh-space-4);
+  --xh-_timeline-item-gap: var(--xh-space-8);
   --xh-_timeline-title-font-size: var(--xh-control-font-md);
   --xh-_timeline-caption-font-size: var(--xh-text-caption-size);
   /* 标题首行占多高。圆点按它居中下移，圆心才落在标题这一行的中线上 */
   --xh-_timeline-line-h: calc(
-    var(--xh-timeline-title-font-size, var(--xh-_timeline-title-font-size)) * var(--xh-leading-tight)
+    var(--xh-timeline-title-font-size, var(--xh-_timeline-title-font-size)) * var(--xh-leading-normal)
   );
 
   /* 条目之间不设 gap：留白由 content 自己的边距撑出来，连线才连得到下一条的圆点。
@@ -13599,17 +13600,17 @@
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里。圆点直径不在控件高度那把尺上，三档走空间尺相邻的三格 */
 .xh-scope-timeline[data-part='root'][data-size='sm'] {
-  --xh-_timeline-dot-size: var(--xh-space-2);
-  --xh-_timeline-gutter: var(--xh-space-2);
-  --xh-_timeline-item-gap: var(--xh-space-4);
+  --xh-_timeline-dot-size: var(--xh-space-1);
+  --xh-_timeline-gutter: var(--xh-space-3);
+  --xh-_timeline-item-gap: var(--xh-space-6);
   --xh-_timeline-title-font-size: var(--xh-control-font-sm);
   /* 字号档最小就是 xs，时刻文本不再往下走，故不重声明 caption */
 }
 
 .xh-scope-timeline[data-part='root'][data-size='lg'] {
-  --xh-_timeline-dot-size: var(--xh-space-3);
-  --xh-_timeline-gutter: var(--xh-space-4);
-  --xh-_timeline-item-gap: var(--xh-space-6);
+  --xh-_timeline-dot-size: var(--xh-space-2);
+  --xh-_timeline-gutter: var(--xh-space-5);
+  --xh-_timeline-item-gap: calc(var(--xh-space-8) + var(--xh-space-2));
   --xh-_timeline-title-font-size: var(--xh-control-font-lg);
   --xh-_timeline-caption-font-size: var(--xh-text-secondary-size);
 }
@@ -13647,8 +13648,8 @@
   inline-size: var(--xh-timeline-indicator-size, var(--xh-_timeline-dot-size));
   block-size: var(--xh-timeline-indicator-size, var(--xh-_timeline-dot-size));
   border-radius: var(--xh-timeline-indicator-radius, var(--xh-shape-circle));
-  /* 使用者令牌排在语气之前；两者都没有时退回一个中性的实心点 */
-  background: var(--xh-timeline-indicator-bg, var(--xh-_tone-soft, var(--xh-fg-muted)));
+  /* 使用者令牌排在语气之前；两者都没有时退回品牌色的实心点 */
+  background: var(--xh-timeline-indicator-bg, var(--xh-_tone-soft, var(--xh-fg-brand)));
   color: var(--xh-timeline-indicator-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
   font-size: var(--xh-timeline-indicator-font-size, var(--xh-_timeline-caption-font-size));
   line-height: var(--xh-leading-none);
@@ -13688,7 +13689,7 @@
   grid-column: 1;
   grid-row: 2;
   justify-self: center;
-  inline-size: var(--xh-timeline-connector-thickness, var(--xh-stroke-thick));
+  inline-size: var(--xh-timeline-connector-thickness, var(--xh-stroke-thin));
   min-block-size: var(--xh-timeline-connector-min-length, var(--xh-space-4));
   margin-block-start: var(--xh-space-1);
 }
@@ -13771,7 +13772,8 @@
   font-size: var(--xh-timeline-label-font-size, var(--xh-_timeline-caption-font-size));
   /* 等宽数字：日期里的 1 与 7 在比例字体里宽度不同，不定住会让整列坐标左右抖一格 */
   font-variant-numeric: tabular-nums;
-  line-height: var(--xh-leading-tight);
+  /* 坐标的行盒与标题首行同高，小一号的坐标字落在标题那一行的中线上 */
+  line-height: var(--xh-_timeline-line-h);
   text-align: var(--xh-_timeline-label-align, end);
 }
 
@@ -13859,17 +13861,17 @@
     justify-self: stretch;
     inline-size: auto;
     min-inline-size: var(--xh-timeline-connector-min-length, var(--xh-space-4));
-    block-size: var(--xh-timeline-connector-thickness, var(--xh-stroke-thick));
+    block-size: var(--xh-timeline-connector-thickness, var(--xh-stroke-thin));
     min-block-size: 0;
     margin-block-start: 0;
-    margin-inline-start: var(--xh-space-1);
+    margin-inline: var(--xh-space-1_5) var(--xh-space-1);
   }
 
   .xh-scope-timeline[data-part='item'][data-orientation='horizontal'] .xh-scope-timeline[data-part='content'],
   .xh-scope-timeline[data-part='item'][data-orientation='horizontal']:has(> .xh-scope-timeline[data-part='label']) > .xh-scope-timeline[data-part='content'] {
     grid-column: 1 / -1;
     grid-row: 2;
-    padding-block-start: var(--xh-timeline-content-pt, var(--xh-space-2));
+    padding-block-start: var(--xh-timeline-content-pt, var(--xh-space-4));
     padding-block-end: 0;
     padding-inline-end: var(--xh-timeline-item-gap, var(--xh-_timeline-item-gap));
   }
@@ -13901,7 +13903,7 @@
     grid-row: 1;
     align-self: end;
     padding-block-start: 0;
-    padding-block-end: var(--xh-timeline-content-pb, var(--xh-space-2));
+    padding-block-end: var(--xh-timeline-content-pb, var(--xh-space-4));
   }
 
   .xh-scope-timeline[data-part='item'][data-orientation='horizontal'][data-placement='alternate'] {
@@ -13922,7 +13924,7 @@
     grid-row: 1;
     align-self: end;
     padding-block-start: 0;
-    padding-block-end: var(--xh-timeline-content-pb, var(--xh-space-2));
+    padding-block-end: var(--xh-timeline-content-pb, var(--xh-space-4));
   }
 }
 
@@ -13937,7 +13939,7 @@
   color: var(--xh-timeline-title-fg, var(--xh-fg-default));
   font-size: var(--xh-timeline-title-font-size, var(--xh-_timeline-title-font-size));
   font-weight: var(--xh-timeline-title-font-weight, var(--xh-text-label-weight));
-  line-height: var(--xh-leading-tight);
+  line-height: var(--xh-leading-normal);
 }
 
 .xh-scope-timeline[data-part='description'] {
@@ -13959,6 +13961,21 @@
  * 只剩几段没有次序的文字。两处都改由描边承载：圆点成一个空心圈，
  * 连线的两条边合起来就是那条线（线本身只有一个描边厚，两边各画一半正好填满）。
  */
+/* 强制色：圆点与连线都是底色画的，系统会把底色换成 Canvas，整条轴就此消失。
+   两处退出强制换色、直接写系统色；圆点里的序号字取 Canvas 压在 CanvasText 上 */
+@media (forced-colors: active) {
+  .xh-scope-timeline[data-part='indicator'] {
+    forced-color-adjust: none;
+    background: CanvasText;
+    color: Canvas;
+  }
+
+  .xh-scope-timeline[data-part='connector'] {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+}
+
 @media print {
   .xh-scope-timeline[data-part='indicator'] {
     border: var(--xh-stroke-thick) solid currentColor;

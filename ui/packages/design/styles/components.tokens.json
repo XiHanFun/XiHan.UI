@@ -78877,7 +78877,7 @@
         "orientation=horizontal"
       ],
       "defaultToken": [
-        "--xh-stroke-thick"
+        "--xh-stroke-thin"
       ],
       "visibility": "public",
       "description": "timeline 的 connector、item 部件 block-size、inline-size 覆盖槽。"
@@ -78918,7 +78918,7 @@
         "placement=start"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "timeline 的 content、item 部件 padding-block-end 覆盖槽。"
@@ -78939,7 +78939,7 @@
         "orientation=horizontal"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "timeline 的 content、item 部件 padding-block-start 覆盖槽。"
@@ -79228,11 +79228,13 @@
       "part": [
         "indicator",
         "item",
+        "label",
         "root",
         "title"
       ],
       "property": [
         "font-size",
+        "line-height",
         "margin-block-start"
       ],
       "state": [
@@ -79242,7 +79244,7 @@
         "--xh-_timeline-title-font-size"
       ],
       "visibility": "public",
-      "description": "timeline 的 indicator、item、root、title 部件 font-size、margin-block-start 覆盖槽。"
+      "description": "timeline 的 indicator、item、label、root、title 部件 font-size、line-height、margin-block-start 覆盖槽。"
     },
     {
       "name": "--xh-timeline-title-font-weight",

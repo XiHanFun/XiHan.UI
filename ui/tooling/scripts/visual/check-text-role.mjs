@@ -66,7 +66,6 @@ const COLLECTION_TITLE = {
 const SURFACE_TITLE = {
   'floating-panel': 'title',
   'approval': 'title',
-  'timeline': 'title',
   'popover': 'title',
   'hover-card': 'title',
   'popconfirm': 'title',
