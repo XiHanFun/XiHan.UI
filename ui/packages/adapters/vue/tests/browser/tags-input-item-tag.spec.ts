@@ -178,6 +178,18 @@ describe('标签输入的框：一行控件高，标签多了按行长', () => {
     expect(height(part('control'))).toBe(tokenPx('--xh-control-h-md'))
   })
 
+  it.each(SIZES)('compact 密度 %s 档：装一枚标签时框仍是本档的控件高', async (size) => {
+    document.documentElement.dataset.density = 'compact'
+    try {
+      await mountTags({ size })
+      expect(height(part('control'))).toBe(tokenPx(`--xh-control-h-${size}`))
+      expect(height(pills()[0]!)).toBe(tokenPx(`--xh-chip-h-${size}`))
+    }
+    finally {
+      delete document.documentElement.dataset.density
+    }
+  })
+
   it.each(SIZES)('%s 档：标签换行时按行长高，行距取控件档的间距，每行的高由行里最高的那个定', async (size) => {
     // 六枚标签：字段缺省宽 16rem 下 lg 档两枚一行，四行正好在框的最大高（12rem）以内，量的才是长高不是滚动
     await mountTags({ size, tags: Array.from({ length: 6 }, (_, i) => `标签${i + 1}`) })
@@ -230,17 +242,20 @@ describe('框里的标签就是库里的 tag', () => {
     expect(hosted.close).toBe(tokenPx('--xh-control-indicator-size'))
   })
 
-  it('三档标签的高是 22 / 26 / 30，比同档控件矮一截，装进去框不长高', async () => {
+  it('三档标签的高取状态 chip 档，比同档控件矮一截，装进去框不长高', async () => {
     const heights: number[] = []
+    const chips: number[] = []
     for (const size of SIZES) {
       await mountTags({ size })
       heights.push(height(pills()[0]!))
+      chips.push(tokenPx(`--xh-chip-h-${size}`))
       expect(height(pills()[0]!)).toBeLessThan(tokenPx(`--xh-control-h-${size}`))
+      expect(height(part('control'))).toBe(tokenPx(`--xh-control-h-${size}`))
       app?.unmount()
       host?.remove()
     }
 
-    expect(heights).toEqual([22, 26, 30])
+    expect(heights).toEqual(chips)
   })
 
   it('形态按控件的面派：缺省与 outline / ghost 控件里是柔和淡底标签，subtle 控件里是描边标签', async () => {

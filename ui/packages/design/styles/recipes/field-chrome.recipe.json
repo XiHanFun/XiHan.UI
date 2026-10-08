@@ -48,7 +48,7 @@
       "alignItems": "center",
       "blockSize": "auto",
       "minBlockSize": "var(--xh-field-control-height, var(--xh-_field-size-control-height))",
-      "paddingBlock": "var(--xh-space-1)",
+      "paddingBlock": "var(--xh-space-0_5)",
       "flexWrap": "wrap"
     }
   },

@@ -3675,6 +3675,7 @@ export type ComponentTokenName
     | '--xh-tags-input-item-bg-highlight'
     | '--xh-tags-input-item-fg-highlight'
     | '--xh-tags-input-item-font-size'
+    | '--xh-tags-input-item-h'
     | '--xh-tags-input-item-input-bg'
     | '--xh-tags-input-item-input-border'
     | '--xh-tags-input-item-input-fg'

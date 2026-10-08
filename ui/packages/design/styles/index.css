@@ -868,7 +868,7 @@
     flex-wrap: wrap;
     block-size: auto;
     min-block-size: var(--xh-field-control-height, var(--xh-_field-size-control-height));
-    padding-block: var(--xh-space-1);
+    padding-block: var(--xh-space-0_5);
   }
 
   [data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover {
@@ -45010,15 +45010,17 @@
     /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
     --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-md));
 
-    /* 尺寸档只换这九个私有槽，标题、框、输入框与就地编辑框都从 root 继承它们，
+    /* 尺寸档只换这几个私有槽，标题、框、输入框与就地编辑框都从 root 继承它们，
        换档不必给每个部件各写一条选择器。标签本身是 tag，档位由 data-size 传下去，不走这些槽；
-       就地编辑框的四个槽照 tag 那一档的行框、内衬与字号写，换进换出时与标签一样高 */
+       就地编辑框的块尺寸、行框、内衬与字号照 tag 那一档写（块尺寸取状态 chip 档、竖向内衬为 0），
+       换进换出时与标签一样高 */
     --xh-_tags-input-control-h: var(--xh-control-h-md);
     --xh-_tags-input-control-px: var(--xh-control-px-md);
     --xh-_tags-input-control-gap: var(--xh-control-gap-md);
     --xh-_tags-input-input-font-size: var(--xh-control-font-md);
     --xh-_tags-input-item-font-size: var(--xh-control-caption-md);
-    --xh-_tags-input-item-py: var(--xh-space-1);
+    --xh-_tags-input-item-h: var(--xh-chip-h-md);
+    --xh-_tags-input-item-py: 0;
     --xh-_tags-input-item-px: var(--xh-space-2);
     --xh-_tags-input-item-line-h: var(--xh-control-indicator-md);
     /* 光标走到的那颗标签是「当前项」，不是选中：淡底 + 淡底前景，随语气走。
@@ -45049,7 +45051,7 @@
     --xh-_tags-input-control-gap: var(--xh-control-gap-sm);
     --xh-_tags-input-input-font-size: var(--xh-control-font-sm);
     --xh-_tags-input-item-font-size: var(--xh-control-caption-sm);
-    --xh-_tags-input-item-py: var(--xh-space-0_5);
+    --xh-_tags-input-item-h: var(--xh-chip-h-sm);
     --xh-_tags-input-item-px: var(--xh-space-1_5);
   }
 
@@ -45060,6 +45062,7 @@
     --xh-_tags-input-control-gap: var(--xh-control-gap-lg);
     --xh-_tags-input-input-font-size: var(--xh-control-font-lg);
     --xh-_tags-input-item-font-size: var(--xh-control-caption-lg);
+    --xh-_tags-input-item-h: var(--xh-chip-h-lg);
     --xh-_tags-input-item-px: var(--xh-space-3);
     --xh-_tags-input-item-line-h: var(--xh-control-indicator-lg);
   }
@@ -45193,6 +45196,8 @@
     inline-size: auto;
     min-inline-size: 3ch;
     max-inline-size: 100%;
+    box-sizing: border-box;
+    min-block-size: var(--xh-tags-input-item-h, var(--xh-_tags-input-item-h));
     padding-block: var(--xh-tags-input-item-py, var(--xh-_tags-input-item-py));
     padding-inline: var(--xh-tags-input-item-px, var(--xh-_tags-input-item-px));
     border: var(--xh-stroke-thin) solid var(--xh-tags-input-item-input-border, var(--xh-border-control));
