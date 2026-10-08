@@ -24,10 +24,10 @@
     --xh-_anchor-link-px: var(--xh-control-px-md);
     /* 当前那一节的指示条与文字随语气走。没写 data-tone 时这两个槽都没被声明，退回品牌色。
        指示条是装饰性的色条，取柔和档；文字要压在普通背景上读，取语气的文字档——
-       导航当前页缺省是 --xh-fg-brand-strong，比指示条深一档。
+       导航当前页缺省是 --xh-fg-brand，与指示条同一档主色。
        聚焦环不在其列，它恒是 --xh-ring-focus */
     --xh-_anchor-accent: var(--xh-_tone-soft, var(--xh-fg-brand));
-    --xh-_anchor-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+    --xh-_anchor-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand));
 
     color: var(--xh-anchor-fg, var(--xh-fg-muted));
     font-size: var(--xh-anchor-font-size, var(--xh-_anchor-font-size));

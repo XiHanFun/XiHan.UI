@@ -6,7 +6,7 @@
 //   正文颜色保持 rest、字重升到 medium（TagGroup 保持标签自身的面）；
 // 页内持久集合（Table row / Transfer / GridList / SideNav 当前项）
 //   = --xh-bg-brand-subtle 行面 + --xh-fg-on-brand-subtle；
-// 导航当前页（Tabs line / Anchor / NavigationMenu）= 指示条 + --xh-fg-brand-strong + medium，
+// 导航当前页（Tabs line / Anchor / NavigationMenu）= 指示条 + --xh-fg-brand + medium，
 //   Breadcrumb 当前页是不可点位置，保留 --xh-fg-default + medium；两者都是 Collection Item 的 nav 语境；
 // 格状当前（Pagination item / Steps indicator / Calendar 选中格）= 实心 --xh-bg-brand + --xh-fg-on-brand，不加粗；
 // 有滑块开关（RadioGroup segmented 的 thumb / Tabs segment 的 indicator）= --xh-bg-surface-raised + --xh-border-default + --xh-elevation-raised；
@@ -18,7 +18,7 @@
 // ② 已投影 collection-item 的部件，皮肤不得再写选中态的 background / color / font-weight（由家族配方给）；
 //    导航当前页（nav / nav-terminal）的部件接了配方就必须投影 nav 语境，当前页 / 不可点当前页的字色与字重
 //    由配方的 nav.current / nav.terminal 给：皮肤在部件基础块里映射了 --xh-collection-fg-current /
-//    -font-weight-current（terminal 同名后缀）就把映射解到底核 brand-strong + medium（terminal：fg-default +
+//    -font-weight-current（terminal 同名后缀）就把映射解到底核 fg-brand + medium（terminal：fg-default +
 //    medium），没映射就核配方缺省是这三值；
 // ③ 未接配方的部件按 SEMANTIC 登记的语义类查上表；open / in-path 的底色要与同部件 hover 档同值；
 //    投影 data-xh-action-control 的部件（无滑块开关、字段内展开钮）读它在该状态里映射的
@@ -105,7 +105,7 @@ const NO_BG = new Set(['transparent', 'none', 'unset', 'initial'])
 /** Collection Item 配方真源：nav 部件没在皮肤里映射当前页 / 不可点当前页的字色与字重时，核的是这里的缺省。 */
 const RECIPE = JSON.parse(await readFile('packages/design/styles/recipes/collection-item.recipe.json', 'utf8'))
 const NAV_EXPECTED = {
-  'nav': { state: 'current', color: '--xh-fg-brand-strong', weight: '--xh-font-weight-medium', label: '导航当前页' },
+  'nav': { state: 'current', color: '--xh-fg-brand', weight: '--xh-font-weight-medium', label: '导航当前页' },
   'nav-terminal': { state: 'terminal', color: '--xh-fg-default', weight: '--xh-font-weight-medium', label: '面包屑当前页是不可点位置，' },
 }
 
@@ -354,8 +354,8 @@ for (const [key, rules] of Object.entries(SEMANTIC)) {
         break
       }
       case 'nav':
-        if (color !== '--xh-fg-brand-strong')
-          report(`导航当前页字色是 ${color ?? '（没写 color）'}，应为 --xh-fg-brand-strong`)
+        if (color !== '--xh-fg-brand')
+          report(`导航当前页字色是 ${color ?? '（没写 color）'}，应为 --xh-fg-brand`)
         if (weight !== '--xh-font-weight-medium')
           report(`导航当前页字重是 ${weight ?? '（没写 font-weight）'}，应为 --xh-font-weight-medium`)
         break
