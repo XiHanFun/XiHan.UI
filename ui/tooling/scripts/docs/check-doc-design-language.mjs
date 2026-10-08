@@ -14,6 +14,7 @@ const FILES = [
   'XhFrameworkSwitch.vue',
   'XhStageAxes.vue',
   'XhThemeDesigner.vue',
+  'XhThemePreview.vue',
   'XhTokenSwatches.vue',
   'XhTokenTable.vue',
   'overrides.css',
