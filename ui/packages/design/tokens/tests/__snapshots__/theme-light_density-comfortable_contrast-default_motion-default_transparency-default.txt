@@ -3,7 +3,7 @@
 # 命中的取值块，按 tokens.css 的书写顺序：
 #   [1] :where(:root)
 #   [2] :where(:root), :where([data-density='comfortable'])
-#   [3] :where(:root), :where([data-theme])
+#   [3] :where(:root), :where([data-theme]), :where([data-contrast])
 #   [6] :where(:root)
 #   [7] :where(:root), :where([data-theme='light'])
 #   [9] :where([data-contrast='default'])
