@@ -608,15 +608,15 @@ export function connectTransfer<T extends PropTypes>(
 
     // 两颗搬运钮是本组件唯一的操作出口，且默认只画一枚箭头、没有可读文字，
     // 名字无条件发：缺了它读屏就只念得出「按钮」，整个组件对读屏不可用。
-    // 它们是只有字形的离散动作钮：接 Action Control 的 icon 档、outline 形态（中性描边、透明底），
-    // 盒、悬停 / 按下与 0.97 按压、粗指针热区、禁用面由家族按这几位给；正方盒固定取 sm 档一个控件高
+    // 它们是只有字形的离散动作钮：接 Action Control 的 icon 档、subtle 形态（淡底、无边的圆钮），
+    // 盒、悬停 / 按下与按压、粗指针热区、禁用面由家族按这几位给；正方盒固定取 sm 档一个控件高
     getToTargetTriggerProps: () => normalize.button({
       ...parts['to-target-trigger'].attrs,
       // Space / Enter 与触屏按住投影 data-pressed；没有勾中的条目时原生 disabled，机器守卫同步不进
       ...press('to-target', !canMove('target')),
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
-      'data-xh-action-variant': 'outline',
+      'data-xh-action-variant': 'subtle',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'sm',
       'type': 'button',
@@ -638,7 +638,7 @@ export function connectTransfer<T extends PropTypes>(
       ...press('to-source', !canMove('source')),
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
-      'data-xh-action-variant': 'outline',
+      'data-xh-action-variant': 'subtle',
       'data-xh-action-display': 'always',
       'data-xh-action-size': 'sm',
       'type': 'button',
