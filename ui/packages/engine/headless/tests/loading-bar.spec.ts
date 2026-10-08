@@ -592,6 +592,8 @@ describe('connectLoadingBar', () => {
 
   it('厚度写进 root 的内联样式：数字按像素，字符串原样，缺省有兜底', () => {
     expect((makeLoadingBar().root().style as Dict).blockSize).toBe(LOADING_BAR_HEIGHT)
+    // 缺省厚度取强调线宽令牌，主题改令牌即改条子
+    expect(LOADING_BAR_HEIGHT).toBe('var(--xh-stroke-strong)')
     expect((makeLoadingBar({ height: 6 }).root().style as Dict).blockSize).toBe('6px')
     expect((makeLoadingBar({ height: '0.5rem' }).root().style as Dict).blockSize).toBe('0.5rem')
   })

@@ -43,7 +43,7 @@ const HEIGHT_CONVERTER = {
  * @attr {number} value - 受控进度值（0-100）；提供后即为确定进度，内部爬升整体让位
  * @attr {number} default-value - 非受控初值，默认 0
  * @attr {boolean} loading - 加载开关：属性存在即开始，`loading="false"` 或移除即结束
- * @attr {string|number} height - 进度条厚度：纯数字按像素，其余按 CSS 长度；默认 2px
+ * @attr {string|number} height - 进度条厚度：纯数字按像素，其余按 CSS 长度；默认 --xh-stroke-strong（3px）
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定进度段使用哪族颜色；提供 color 时以 color 为准
  * @attr {boolean} trickle - 不确定进度时自行向前爬升，默认开启；`trickle="false"` 关闭
  * @attr {number} trickle-speed - 爬升节拍毫秒，默认 200；<=0 等同于关闭爬升

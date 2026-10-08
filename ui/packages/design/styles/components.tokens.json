@@ -44176,6 +44176,25 @@
       "description": "loading-bar 的 peg、range 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-loading-bar-range-radius",
+      "component": "loading-bar",
+      "part": [
+        "range"
+      ],
+      "property": [
+        "border-end-end-radius",
+        "border-start-end-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-pill"
+      ],
+      "visibility": "public",
+      "description": "loading-bar 的 range 部件 border-end-end-radius、border-start-end-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-loading-bar-speed",
       "component": "loading-bar",
       "part": [
