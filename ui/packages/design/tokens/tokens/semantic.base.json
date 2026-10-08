@@ -1105,6 +1105,11 @@
       "$type": "number",
       "$value": "{leading.normal}"
     },
+    "body-line-h": {
+      "$description": "一行正文的行框高（正文字号 × 正文行高）：骨架屏的文本条、行内迷你图这类占一行正文位置的块按它取高。",
+      "$type": "dimension",
+      "$value": "calc({text.body-size} * {text.body-leading})"
+    },
     "prose-leading": {
       "$description": "成段正文的行高，比控件文字松一档。",
       "$type": "number",

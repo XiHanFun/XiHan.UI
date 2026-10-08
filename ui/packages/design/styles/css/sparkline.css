@@ -30,9 +30,9 @@
 
     display: inline-block;
     inline-size: var(--xh-sparkline-width, 6rem);
-    /* 级联兜底：先写一行的高度算式（正文字号 × 正文行距），再写 1lh。
+    /* 级联兜底：先写一行正文的行框令牌（正文字号 × 正文行距），再写 1lh。
        1lh 晚于本库声明的浏览器地板，取不到时旧引擎丢掉后一条、留下前一条。 */
-    block-size: var(--xh-sparkline-height, calc(var(--xh-text-body-size) * var(--xh-text-body-leading)));
+    block-size: var(--xh-sparkline-height, var(--xh-text-body-line-h));
     block-size: var(--xh-sparkline-height, 1lh);
     /* 高度正好是一个行盒：顶边贴行盒顶边，行高不被撑开；居中对齐会按字的 x 高度再挪半格，行盒就多出一截 */
     vertical-align: top;

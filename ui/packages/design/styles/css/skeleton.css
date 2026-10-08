@@ -27,7 +27,7 @@
   [data-scope='skeleton'][data-part='root'] {
     display: flex;
     flex-direction: column;
-    gap: var(--xh-skeleton-gap, var(--xh-space-3));
+    gap: var(--xh-skeleton-gap, var(--xh-space-4));
   }
 
   /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，补这条兜住加载结束后的收起态 */
@@ -45,8 +45,8 @@
   /*
    * 单根骨架条。底色与微光两层叠在一起：
    * background-color 是静止时看到的那层，background-image 是扫过去的那道光。
-   * 微光取比底亮一档的那支面色：浅色下比 bg-subtle 亮、深色下同样比它亮，
-   * 两个主题里扫过去的都是一道亮带，而不是浅色下反倒扫出一道暗带。
+   * 微光取淡底一档叠在条底上：浅色下黑墨叠深、扫过去是一道比条底深的暗带，
+   * 深色下白墨叠亮、是一道亮带；两个主题里都是条底往前景方向再进一档。
    */
   [data-scope='skeleton'][data-part='item'] {
     inline-size: 100%;
@@ -56,7 +56,7 @@
     background-image: linear-gradient(
       90deg,
       transparent 20%,
-      var(--xh-skeleton-sheen, var(--xh-bg-surface-raised)) 50%,
+      var(--xh-skeleton-sheen, var(--xh-bg-subtle)) 50%,
       transparent 80%
     );
     background-repeat: no-repeat;
@@ -65,10 +65,10 @@
     animation: xh-shimmer var(--xh-skeleton-duration, var(--xh-motion-loop-shimmer)) var(--xh-motion-ease-loop) infinite;
   }
 
-  /* 一行文字的高度取正文字号，圆角拉满，看起来就是一行还没排出来的字 */
+  /* 一行文字的高度取一行正文的行框，小圆角的方条，看起来就是一行还没排出来的字 */
   [data-scope='skeleton'][data-part='item'][data-shape='text'] {
-    block-size: var(--xh-skeleton-text-block-size, var(--xh-text-caption-size));
-    border-radius: var(--xh-skeleton-text-radius, var(--xh-shape-pill));
+    block-size: var(--xh-skeleton-text-block-size, var(--xh-text-body-line-h));
+    border-radius: var(--xh-skeleton-text-radius, var(--xh-shape-inset));
   }
 
   /* 头像位：正方形加满圆角。宽度定死不跟着容器拉长，高度也不许被主轴压扁 */
