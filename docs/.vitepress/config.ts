@@ -135,6 +135,11 @@ const designSidebar: DefaultTheme.SidebarItem[] = [
       { text: "停留时长", link: "/design/dwell" },
     ],
   },
+  {
+    text: "工具",
+    collapsed: false,
+    items: [{ text: "主题设计器", link: "/design/theme-designer" }],
+  },
 ];
 
 const startSidebar: DefaultTheme.SidebarItem[] = [
@@ -286,8 +291,9 @@ const nav: DefaultTheme.NavItem[] = [
       },
     ],
   },
-  { text: "设计", link: "/design/", activeMatch: "/design/" },
+  { text: "设计", link: "/design/", activeMatch: "^/design/(?!theme-designer)" },
   { text: "组件", link: "/components/", activeMatch: "/components/" },
+  { text: "主题设计器", link: "/design/theme-designer", activeMatch: "^/design/theme-designer" },
   {
     text: "生态",
     items: [
