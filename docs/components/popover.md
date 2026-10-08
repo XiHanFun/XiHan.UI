@@ -105,7 +105,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 - `end` 等对齐是逻辑方向，跟随书写方向，不是物理左右。
 - `disabled` 让浮层不可打开：触发器转原生 disabled（退出 Tab 序列、画禁用面），点按与 `setOpen(true)` 都不展开，展开途中转为禁用即收起；与文字提示、悬浮卡片的 `disabled` 同名同义。
 
-默认内容面使用 M2 磨砂配方，背景模糊只发生在浮层本体，箭头复用底色和边界，不重复模糊。正文保持不透明。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`，与指针按下同一副按压面。说明文字为 13px 说明档。系统减少透明度、高对比与强制色时，原位切换为实体表面；打印时收起交互浮层。
+默认内容面走 frosted 配方：实体底、1px 描边与一层浮层投影，圆角 4px；箭头复用底色和边界。内衬纵 12 横 16（`sm` 纵 8 横 12、`lg` 纵 16 横 20），标题 14px / medium / 正文色，说明即气泡正文，14px 次级色，与标题相距 4px。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`，与指针按下同一副按压面。系统减少透明度、高对比与强制色时，原位切换为实体表面；打印时收起交互浮层。
 
 ### 组合
 
@@ -300,20 +300,20 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | `--xh-popover-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | popover 的 close-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-popover-close-size` | `close-trigger`<br>`content`<br>`title` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default`<br>`has([data-scope='popover'][data-part='close-trigger'])`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size`<br>`--xh-control-h-sm` | popover 的 close-trigger、content、title 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
 | `--xh-popover-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | popover 的 description 部件 color 覆盖槽。 |
-| `--xh-popover-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | popover 的 description 部件 font-size 覆盖槽。 |
+| `--xh-popover-description-font-size` | `description` | `font-size` | `default` | `--xh-text-body-size` | popover 的 description 部件 font-size 覆盖槽。 |
 | `--xh-popover-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | popover 的 content 部件 color 覆盖槽。 |
-| `--xh-popover-gap` | `content` | `gap` | `default` | `--xh-space-2` | popover 的 content 部件 gap 覆盖槽。 |
+| `--xh-popover-gap` | `content` | `gap` | `default` | `--xh-space-1` | popover 的 content 部件 gap 覆盖槽。 |
 | `--xh-popover-icon-size` | `close-trigger`<br>`content`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | popover 的 close-trigger、content、trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-popover-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | popover 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-popover-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | popover 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-popover-max-w` | `content` | `max-inline-size` | `default` | `--xh-_popover-max-w` | popover 的 content 部件 max-inline-size 覆盖槽。 |
-| `--xh-popover-px` | `content` | `padding-inline` | `default` | `--xh-_popover-pad` | popover 的 content 部件 padding-inline 覆盖槽。 |
-| `--xh-popover-py` | `content` | `padding-block` | `default` | `--xh-_popover-pad` | popover 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-popover-px` | `content` | `padding-inline` | `default` | `--xh-_popover-px` | popover 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-popover-py` | `content` | `padding-block` | `default` | `--xh-_popover-py` | popover 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-popover-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | popover 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-popover-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | popover 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-popover-title-fg` | `title` | `color` | `default` | `--xh-material-frosted-fg` | popover 的 title 部件 color 覆盖槽。 |
 | `--xh-popover-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | popover 的 title 部件 font-size 覆盖槽。 |
-| `--xh-popover-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | popover 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-popover-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-medium` | popover 的 title 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

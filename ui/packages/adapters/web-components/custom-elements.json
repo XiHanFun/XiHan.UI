@@ -49114,6 +49114,9 @@
               "name": "--xh-popconfirm-action-font-weight"
             },
             {
+              "name": "--xh-popconfirm-action-mt"
+            },
+            {
               "name": "--xh-popconfirm-action-px"
             },
             {
@@ -49157,6 +49160,9 @@
             },
             {
               "name": "--xh-popconfirm-cancel-fg-focus"
+            },
+            {
+              "name": "--xh-popconfirm-column-gap"
             },
             {
               "name": "--xh-popconfirm-confirm-bg"

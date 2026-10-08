@@ -406,6 +406,7 @@
 --xh-surface-pad-lg: 16px  ← var(--xh-space-4)
 --xh-surface-pad-md: 12px  ← var(--xh-space-3)
 --xh-surface-pad-sm: 8px  ← var(--xh-space-2)
+--xh-surface-pad-xl: 20px  ← var(--xh-space-5)
 --xh-surface-pad-xs: 4px  ← var(--xh-space-1)
 --xh-surface-px-md: 16px  ← var(--xh-space-4)
 --xh-surface-px-sm: 16px  ← var(--xh-space-4)

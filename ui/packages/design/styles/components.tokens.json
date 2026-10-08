@@ -38915,7 +38915,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "hover-card 的 description 部件 font-size 覆盖槽。"
@@ -38952,7 +38952,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "hover-card 的 content 部件 gap 覆盖槽。"
@@ -39024,7 +39024,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_hover-card-pad"
+        "--xh-_hover-card-px"
       ],
       "visibility": "public",
       "description": "hover-card 的 content 部件 padding-inline 覆盖槽。"
@@ -39042,7 +39042,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_hover-card-pad"
+        "--xh-_hover-card-py"
       ],
       "visibility": "public",
       "description": "hover-card 的 content 部件 padding-block 覆盖槽。"
@@ -39133,7 +39133,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "hover-card 的 title 部件 font-weight 覆盖槽。"
@@ -54476,6 +54476,25 @@
       "description": "popconfirm 的 cancel-trigger、confirm-trigger 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-popconfirm-action-mt",
+      "component": "popconfirm",
+      "part": [
+        "cancel-trigger",
+        "confirm-trigger"
+      ],
+      "property": [
+        "margin-block-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "popconfirm 的 cancel-trigger、confirm-trigger 部件 margin-block-start 覆盖槽。"
+    },
+    {
       "name": "--xh-popconfirm-action-px",
       "component": "popconfirm",
       "part": [
@@ -54786,6 +54805,24 @@
       "description": "popconfirm 的 cancel-trigger 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-popconfirm-column-gap",
+      "component": "popconfirm",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "column-gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "popconfirm 的 content 部件 column-gap 覆盖槽。"
+    },
+    {
       "name": "--xh-popconfirm-confirm-bg",
       "component": "popconfirm",
       "part": [
@@ -54895,7 +54932,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "popconfirm 的 description 部件 font-size 覆盖槽。"
@@ -54932,7 +54969,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "popconfirm 的 content 部件 gap 覆盖槽。"
@@ -55044,7 +55081,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_popconfirm-pad"
+        "--xh-_popconfirm-px"
       ],
       "visibility": "public",
       "description": "popconfirm 的 content 部件 padding-inline 覆盖槽。"
@@ -55062,7 +55099,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_popconfirm-pad"
+        "--xh-_popconfirm-py"
       ],
       "visibility": "public",
       "description": "popconfirm 的 content 部件 padding-block 覆盖槽。"
@@ -55153,7 +55190,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "popconfirm 的 title 部件 font-weight 覆盖槽。"
@@ -55439,7 +55476,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "popover 的 description 部件 font-size 覆盖槽。"
@@ -55476,7 +55513,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "popover 的 content 部件 gap 覆盖槽。"
@@ -55569,7 +55606,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_popover-pad"
+        "--xh-_popover-px"
       ],
       "visibility": "public",
       "description": "popover 的 content 部件 padding-inline 覆盖槽。"
@@ -55587,7 +55624,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_popover-pad"
+        "--xh-_popover-py"
       ],
       "visibility": "public",
       "description": "popover 的 content 部件 padding-block 覆盖槽。"
@@ -55678,7 +55715,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "popover 的 title 部件 font-weight 覆盖槽。"
