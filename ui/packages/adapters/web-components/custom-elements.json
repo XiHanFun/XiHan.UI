@@ -41845,6 +41845,9 @@
               "name": "--xh-menu-group-label-font-weight"
             },
             {
+              "name": "--xh-menu-group-label-mt"
+            },
+            {
               "name": "--xh-menu-group-label-px"
             },
             {
