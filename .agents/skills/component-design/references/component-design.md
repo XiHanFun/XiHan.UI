@@ -150,8 +150,8 @@ Vue、React、Web Components 只负责：
 | Tag、Badge、ToolCall status、Approval result、QuestionFlow result | 状态 chip | 形状 pill；见 §6.3 |
 | 图表根 | 无壳 | 不画外边、不填底，透出宿主面；需要框时由作者放进 Card |
 | 图例项 | Action Control `text` profile、ghost、xs 档 | 按压换面；显隐标记见 §7.3「图例显隐」 |
-| 面板内关闭钮（Dialog、Drawer、Tour、Notification 卡片预设、Popover、Citation 预览） | Action Control `icon` profile、ghost、sm 档（Citation 为 xs），control 形状 | 绝对定位在右上角，内缩 `--xh-surface-action-inset`；Dialog、Drawer 的叉取 `--xh-glyph-size-xs`（12px），钮距右 `--xh-space-4`、竖向落在头部带（`--xh-overlay-header-h`）的中线上；Popover 气泡内衬比面板小一档，内缩取 `--xh-space-2`，否则叉会伸出气泡的盒子被裁掉；FloatingPanel 的叉排在 header 流里；Alert 的叉行内垂直居中 |
-| Notification 轻提示预设的关闭钮 | Action Control `icon` profile、ghost、xs 档 | 轻提示一句话一行，叉排在行尾、取 xs；可悬停设备上悬停或聚焦才显，触屏常显 |
+| 面板内关闭钮（Dialog、Drawer、Tour、Notification 卡片预设、Popover、Citation 预览） | Action Control `icon` profile、ghost、sm 档（Citation 为 xs），control 形状 | 绝对定位在右上角，内缩 `--xh-surface-action-inset`；Dialog、Drawer 的叉取 `--xh-glyph-size-xs`（12px），钮距右 `--xh-space-4`、竖向落在头部带（`--xh-overlay-header-h`）的中线上；Notification 卡片的叉同取 12px，钮距上、右各 `--xh-surface-action-inset`；Popover 气泡内衬比面板小一档，内缩取 `--xh-space-2`，否则叉会伸出气泡的盒子被裁掉；FloatingPanel 的叉排在 header 流里；Alert 的叉行内垂直居中 |
+| Notification 轻提示预设的关闭钮 | Action Control `icon` profile、ghost、xs 档 | 轻提示一句话一行，叉排在行尾、取 xs，叉 12px（`--xh-glyph-size-xs`）；可悬停设备上悬停或聚焦才显，触屏常显 |
 | ImageViewer 关闭钮 | Action Control `floating` profile、sm 档（40px）、circle | 悬浮在媒体上的单图标动作，与翻页钮同一身份 |
 | Tag / TagsInput 标签内的移除钮 | 行内标记，不投影 Action Control | 字形与命中区取指示符档（`--xh-control-indicator-size`），悬停只换 currentColor 淡底；胶囊内放不下 xs 视觉盒 |
 | 图例色标 | 标记 | 柱、面积系列为方块（inset）；折线为 2px 短线（pill）；散点为该系列的符号 |
@@ -305,7 +305,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | inset | 2px | 嵌在 control 内的小块：checkbox 系方框、页内列表的候选行（Listbox / Command / Transfer / Tree 的行，日期与时间面板的预设项与时间格）、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
 | control | 2px | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close/clear trigger、kbd、tooltip、rating item、tabs / steps trigger；随文方签 Tag；Alert 提示条 |
 | surface | 4px | Card、Panel、列表容器、RadioGroup segmented 形态与 Tabs segment 的轨道、选择卡片（RadioGroup / CheckboxGroup card 档条目） |
-| overlay | 4px | Popover、Menu、Dialog、Notification（Drawer 贴边，不取圆角） |
+| overlay | 4px | Popover、Menu、Dialog、Notification 卡片预设（Drawer 贴边，不取圆角；Notification 轻提示预设是一行短消息，取 control） |
 | circle | 50% | 宽高相等的圆形对象：avatar、加了底框的 icon、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle、Citation 来源列表的序号；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页与关闭，走 Action Control `floating` profile）；图表的数据点与端点、关系图节点 |
 | pill | 9999px | 仅两类身份：(a) 状态 chip：Badge、ToolCall status、Approval result、QuestionFlow result（Tag 是方签，取 control）；(b) 一维对象：switch 轨道、slider / progress / strength / upload 的 track 与 range、tick、hairline separator、tabs / anchor / navigation-menu 滑动指示条、resize / drag 手柄、scrollbar thumb、sortable 落点线、skeleton text、位置指示点的当前拉长态、图例的折线色标、图表缩放手柄、不贴边的 liquid 一维栏（§8.5）、随文的引用编号（Citation trigger） |
 
@@ -339,7 +339,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | Surface / Feedback / 浮层内标题 | 14 / `--xh-font-weight-semibold` | — |
 | 气泡标题（Popover、Popconfirm、HoverCard） | 14 / `--xh-font-weight-medium` / `--xh-fg-default` | 与正文 `--xh-space-1` |
 | 气泡正文（上述三家的 description） | `--xh-text-body-size` 14 / `--xh-fg-muted` / `--xh-leading-normal` | — |
-| 页面级面板标题（Dialog、Drawer、Tour） | heading-3 | — |
+| 页面级面板标题（Dialog、Drawer、Tour）与 Notification 卡片标题 | heading-3 / `--xh-fg-default` | — |
 | 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
 | 图表轴标签、数据标签、轴标题 | `--xh-text-caption-size` 12 / `--xh-fg-muted`；轴刻度用等宽数字（`tabular-nums`）；不使用系列色 | 刻度标签与刻度线 `--xh-space-1` |
 
@@ -355,7 +355,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 - 控件内图标随 size 档：sm 16 / md 20 / lg 24（`--xh-glyph-size-sm/md/lg`）；Action Control、Field Chrome、Collection Item 三份配方按档下发，皮肤缺省值只能是 `var(--xh-<comp>-icon-size, var(--xh-glyph-size-md))` 并随 `data-size` 换档。
 - `--xh-glyph-size-text`（随文 1em）只允许在纯行内文字组件（Tag、Kbd、Breadcrumb、Typography、Highlight）里使用。
-- Feedback 指示符（Alert、Notification）统一 `--xh-glyph-size-md`。
+- Feedback 指示符（Alert、Notification）统一 `--xh-glyph-size-md`；Notification 卡片预设左列那枚类型字形是例外，取 `--xh-glyph-size-lg`（24px），与面板标题的一行同高。
 - 配方内不写 24px / 12px / 14px 等字面尺寸：xs 视觉盒（含 field-inset sm）走 `--xh-control-action-size`；field-inset 字形 xs 走 `--xh-control-indicator-sm`、sm 走 `--xh-control-indicator-md`、md 走 `--xh-glyph-size-sm`，随密度换档。
 - 组件自绘的状态字形（排序方向、勾、半选杠、展开方向、抓手等）是指示符，不是控件内图标：按指示符档 `--xh-control-indicator-*` 取尺、与它所在的方盒 / 把手同一支令牌（勾选格里的勾与半选杠按方盒边长 × 0.75，与 Checkbox 同比例；方向字形与盒同边长），随密度一起换档（comfortable 16 / compact 14）。`--xh-<comp>-icon-size` / `--xh-icon-size` 只管作者放进单元格、把手与插槽里的图标，状态字形不得读它——按图标档取的 20px 会比 16px 的方盒与同行文字都大一圈。
 
@@ -436,7 +436,8 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | `--xh-overlay-sheet-w-sm` / `md` / `lg` | 24 / 32 / 48rem | | Dialog、Command 宽的上限 |
 | `--xh-overlay-drawer-w-sm` / `md` / `lg` | 16 / 20 / 28rem | | Drawer 厚度 |
 | `--xh-overlay-header-h` | 48px | 44px | Dialog、Drawer 头部带：一颗中号控件加上下各 `space-2`，标题首行与关闭钮落在它的中线上 |
-| `--xh-overlay-sheet-px`、`-body-py`、`-footer-py` | 20、24、16px | 16、20、12px | Dialog 三段的横向内衬、正文与尾段的纵向内衬；Drawer 的尾段纵向同取 `-footer-py` |
+| `--xh-overlay-sheet-px`、`-body-py`、`-footer-py` | 20、24、16px | 16、20、12px | Dialog 三段的横向内衬、正文与尾段的纵向内衬；Drawer 的尾段纵向同取 `-footer-py`；Notification 卡片四边内衬取 `-px` |
+| `--xh-overlay-notification-w` | 18.75rem | | 通知卡片缺省宽 |
 | `--xh-overlay-toast-w` | 28.75rem | | 轻提示卡宽：一行排开指示符、正文、行内动作与关闭钮 |
 | `--xh-sider-w`、`--xh-sider-collapsed-w` | 15rem、4rem | | 侧栏展开与收起宽 |
 | `--xh-nav-link-max-w` | 12rem | | 导航链接上限 |
@@ -502,7 +503,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | Command | 铺满可用宽，上限随 size 24 / 32 / 48rem | 上限 `overlay-max-h` |
 | Drawer | 厚度随 size 16 / 20 / 28rem，不超过视口；可拖拽时夹在 `minPanelSize`（缺省 160px）与 `maxPanelSize` 之间 | 贴边铺满；分三段时面板一层只让出安全区，三段横向内衬 `--xh-surface-px-sm`（16px），正文纵向 `--xh-surface-py-sm`（12px），尾段纵向 16px，头下尾上各一条贴边的 1px `--xh-border-subtle` 分隔线 |
 | FloatingPanel | 缺省 360 × 240px，下限 `minSize` 缺省 160 × 120px，上限 `maxSize` 缺省不封顶 | 同左 |
-| Notification | 卡宽 `overlay-max-w-lg`，toast 档 `overlay-toast-w`；不超过视口宽 − 32px | 描述上限 `viewport-h-md`，超出内滚 |
+| Notification | 卡宽 `overlay-notification-w`（300px），toast 档 `overlay-toast-w`；不超过视口宽 − 32px | 描述上限 `viewport-h-md`，超出内滚 |
 | ImageViewer | 图片上限 90% 视口宽 | 图片上限 85% 视口高 |
 
 #### 页内滚动面与数据展示

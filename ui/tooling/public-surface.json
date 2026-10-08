@@ -14875,6 +14875,7 @@
     "--xh-overlay-menu-max-h",
     "--xh-overlay-menu-min-w",
     "--xh-overlay-min-w",
+    "--xh-overlay-notification-w",
     "--xh-overlay-sheet-body-py",
     "--xh-overlay-sheet-footer-py",
     "--xh-overlay-sheet-px",

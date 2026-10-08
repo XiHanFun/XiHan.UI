@@ -50157,37 +50157,43 @@
       "name": "--xh-notification-description-fg",
       "component": "notification",
       "part": [
+        "item",
         "item-description"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "preset=toast"
       ],
       "defaultToken": [
+        "--xh-fg-default",
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "notification 的 item-description 部件 color 覆盖槽。"
+      "description": "notification 的 item、item-description 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-notification-description-font-size",
       "component": "notification",
       "part": [
+        "item",
         "item-description"
       ],
       "property": [
         "font-size"
       ],
       "state": [
-        "default"
+        "default",
+        "preset=toast"
       ],
       "defaultToken": [
+        "--xh-text-body-size",
         "--xh-text-secondary-size"
       ],
       "visibility": "public",
-      "description": "notification 的 item-description 部件 font-size 覆盖槽。"
+      "description": "notification 的 item、item-description 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-notification-description-leading",
@@ -50242,7 +50248,8 @@
       ],
       "defaultToken": [
         "--xh-_action-profile-glyph-size",
-        "--xh-glyph-size-md"
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-xs"
       ],
       "visibility": "public",
       "description": "notification 的 item、item-action-trigger、item-close-trigger 部件 --xh-icon-size 覆盖槽。"
@@ -50298,6 +50305,7 @@
       "name": "--xh-notification-indicator-size",
       "component": "notification",
       "part": [
+        "item",
         "item-indicator"
       ],
       "property": [
@@ -50305,13 +50313,15 @@
         "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "preset=toast"
       ],
       "defaultToken": [
+        "--xh-glyph-size-lg",
         "--xh-glyph-size-md"
       ],
       "visibility": "public",
-      "description": "notification 的 item-indicator 部件 --xh-icon-size、inline-size 覆盖槽。"
+      "description": "notification 的 item、item-indicator 部件 --xh-icon-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-notification-inset",
@@ -50472,8 +50482,8 @@
         "preset=toast"
       ],
       "defaultToken": [
-        "--xh-space-4",
-        "--xh-surface-pad-lg"
+        "--xh-overlay-sheet-px",
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "notification 的 item 部件 inset-inline-start、padding-inline 覆盖槽。"
@@ -50493,8 +50503,8 @@
         "preset=toast"
       ],
       "defaultToken": [
-        "--xh-space-3",
-        "--xh-surface-pad-lg"
+        "--xh-overlay-sheet-px",
+        "--xh-space-2_5"
       ],
       "visibility": "public",
       "description": "notification 的 item 部件 inset-block-start、padding-block 覆盖槽。"
@@ -50509,9 +50519,11 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "default",
+        "preset=toast"
       ],
       "defaultToken": [
+        "--xh-shape-control",
         "--xh-shape-overlay"
       ],
       "visibility": "public",
@@ -50570,7 +50582,7 @@
         "stacked"
       ],
       "defaultToken": [
-        "--xh-overlay-max-w-lg",
+        "--xh-overlay-notification-w",
         "--xh-overlay-toast-w"
       ],
       "visibility": "public",
@@ -50717,6 +50729,7 @@
       "name": "--xh-notification-title-font-size",
       "component": "notification",
       "part": [
+        "item",
         "item-indicator",
         "item-title"
       ],
@@ -50725,49 +50738,57 @@
         "font-size"
       ],
       "state": [
-        "default"
+        "default",
+        "preset=toast"
       ],
       "defaultToken": [
-        "--xh-text-label-size"
+        "--xh-text-body-size",
+        "--xh-text-heading-3-size"
       ],
       "visibility": "public",
-      "description": "notification 的 item-indicator、item-title 部件 block-size、font-size 覆盖槽。"
+      "description": "notification 的 item、item-indicator、item-title 部件 block-size、font-size 覆盖槽。"
     },
     {
       "name": "--xh-notification-title-font-weight",
       "component": "notification",
       "part": [
+        "item",
         "item-title"
       ],
       "property": [
         "font-weight"
       ],
       "state": [
-        "default"
+        "default",
+        "preset=toast"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium",
+        "--xh-text-heading-3-weight"
       ],
       "visibility": "public",
-      "description": "notification 的 item-title 部件 font-weight 覆盖槽。"
+      "description": "notification 的 item、item-title 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-notification-title-leading",
       "component": "notification",
       "part": [
+        "item",
         "item-title"
       ],
       "property": [
         "line-height"
       ],
       "state": [
-        "default"
+        "default",
+        "preset=toast"
       ],
       "defaultToken": [
+        "--xh-leading-normal",
         "--xh-leading-tight"
       ],
       "visibility": "public",
-      "description": "notification 的 item-title 部件 line-height 覆盖槽。"
+      "description": "notification 的 item、item-title 部件 line-height 覆盖槽。"
     },
     {
       "name": "--xh-number-animation-fg",
