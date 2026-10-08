@@ -88,6 +88,14 @@
        选择器只认得它自己身上那一份 data-size。 */
     --xh-_dialog-max-w: var(--xh-overlay-sheet-w-md);
 
+    /* 头部带：标题首行与角上的关闭钮都落在这条带的中线上。分三段时它就是 header，
+       不分三段时它是面板顶上那一截——两种写法的标题行与叉落在同一处。
+       带的上沿就是面板内沿（安全区由 positioner 让出），与抽屉同一组槽，抽屉在这里补安全区 */
+    --xh-_dialog-header-top: var(--xh-space-0);
+    --xh-_dialog-header-h: var(--xh-overlay-header-h);
+    /* 标题首行在带里居中要让出的上内衬：带高减标题行高再对半 */
+    --xh-_dialog-header-pt: calc((var(--xh-_dialog-header-h) - var(--xh-text-heading-3-size) * var(--xh-leading-normal)) / 2);
+
     /* positioner 不吃指针，面板自身恢复交互。 */
     pointer-events: auto;
 
@@ -97,26 +105,14 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-dialog-gap, var(--xh-stack-gap-md));
-    padding-block: var(--xh-dialog-py, var(--xh-surface-py-md));
-    padding-inline: var(--xh-dialog-px, var(--xh-surface-px-md));
+    /* 不分三段时内衬由面板一层给：上沿让标题行落在头部带中线，横向与三段同一档 */
+    padding-block-start: var(--xh-dialog-py, var(--xh-_dialog-header-pt));
+    padding-block-end: var(--xh-dialog-py, var(--xh-overlay-sheet-body-py));
+    padding-inline: var(--xh-dialog-px, var(--xh-overlay-sheet-px));
     border: var(--xh-stroke-thin) solid var(--xh-dialog-border, var(--xh-material-elevated-border));
     border-radius: var(--xh-dialog-radius, var(--xh-shape-overlay));
-    /* M4 是不透明的 sheet 实体面；顶部 lens 与正文同一实体面，作者可用 --xh-dialog-header-bg 单独换头部底色，
-       让标题保留空间感而不把长正文也放进透明区。两层都先留组件公开槽。 */
-    background:
-      linear-gradient(
-        to bottom,
-        var(--xh-dialog-highlight, var(--xh-material-elevated-highlight)) 0 var(--xh-stroke-thin),
-        transparent var(--xh-stroke-thin)
-      ),
-      linear-gradient(
-        to bottom,
-        var(--xh-dialog-content-lens-bg, var(--xh-dialog-header-bg, var(--xh-material-elevated-bg))),
-        var(
-          --xh-dialog-bg,
-          var(--xh-material-elevated-bg)
-        ) var(--xh-dialog-content-lens-depth, var(--xh-dialog-header-lens-depth, calc(var(--xh-dialog-py, var(--xh-surface-py-md)) + var(--xh-control-h-md))))
-      );
+    /* sheet 实体面：1px 描边 + 不透明底 + 单层投影，不叠渐变与顶光 */
+    background: var(--xh-dialog-bg, var(--xh-material-elevated-bg));
     color: var(--xh-dialog-fg, var(--xh-material-elevated-fg));
     box-shadow: var(--xh-dialog-shadow, var(--xh-material-elevated-shadow));
     -webkit-backdrop-filter: var(--xh-dialog-content-backdrop-filter, var(--xh-dialog-backdrop-filter, var(--xh-material-elevated-backdrop)));
@@ -222,12 +218,13 @@
   /* —— 面板三段 —— */
   /* header / body / footer 把面板切成「头尾定在原处、正文自己滚」三段，
      与抽屉、浮动面板同一套角色划分：头尾不参与压缩，正文吃掉剩下的高度并自己滚。
-     面板的内衬仍由 content 一层给出，三段只接手段与段之间那道缝——
-     内衬换成三段各留一份，安全区与局部容器两档就要在三处各算一遍。
+     分三段时内衬由三段各自给，面板一层归零：头下、尾上的分隔线才能贴着面板两侧的边。
+     安全区由 positioner 让出，面板自己不碰视口边，三段不用各算一遍。
      写了正文段的这一档同时封顶：不封顶正文永远没有可滚的余量，滚动条出不来。 */
   [data-scope='dialog'][data-part='content']:has([data-scope='dialog'][data-part='body']) {
     max-block-size: 100%;
     gap: 0;
+    padding: 0;
     overflow: hidden;
   }
 
@@ -240,9 +237,16 @@
     padding-block-end: var(--xh-dialog-header-pb, var(--xh-space-2));
   }
 
-  /* 三段结构出现时，分隔线走 M4 令牌；无 body / footer 的轻量对话框不会凭空多一条线。 */
+  /* 三段结构的头：一条 48px 的头部带，标题首行落在带的中线上（说明在下面接着排，带随之长高），
+     横向内衬 20px；下沿一条 1px 的内部分隔线走 sheet 分隔令牌，贴着面板两侧的边。
+     下内衬扣掉分隔线那 1px，只有标题时整条带恰好是带高。无 body 的轻量对话框不会凭空多一条线 */
   [data-scope='dialog'][data-part='content']:has([data-scope='dialog'][data-part='body'])
     [data-scope='dialog'][data-part='header'] {
+    justify-content: center;
+    min-block-size: var(--xh-_dialog-header-h);
+    padding-block-start: var(--xh-dialog-header-pt, var(--xh-_dialog-header-pt));
+    padding-block-end: var(--xh-dialog-header-pb, calc(var(--xh-_dialog-header-pt) - var(--xh-stroke-thin)));
+    padding-inline: var(--xh-dialog-header-px, var(--xh-overlay-sheet-px));
     border-block-end: var(--xh-stroke-thin) solid var(--xh-dialog-separator, var(--xh-material-elevated-separator));
   }
 
@@ -293,12 +297,15 @@
 
   /* 正文段：面板里唯一会滚的一段。最小高度归零，
      否则弹性项按内容撑高，容器再矮也不产生溢出，滚动条永远出不来。
-     模态 body 是原生细条滚动面：细条由 reset 层统一给，滚到头不把页面一起带走 */
+     模态 body 是原生细条滚动面：细条由 reset 层统一给，滚到头不把页面一起带走。
+     内衬纵 24 横 20 */
   [data-scope='dialog'][data-part='body'] {
     flex: 1 1 auto;
     min-block-size: 0;
     overflow: auto;
     overscroll-behavior: contain;
+    padding-block: var(--xh-dialog-body-py, var(--xh-overlay-sheet-body-py));
+    padding-inline: var(--xh-dialog-body-px, var(--xh-overlay-sheet-px));
   }
 
   /* 正文高度随交互变化（表单校验、展开段落）：还在用原生滚动条的正文留一条稳定空道，
@@ -322,6 +329,13 @@
     border-block-start: var(--xh-stroke-thin) solid var(--xh-dialog-separator, var(--xh-material-elevated-separator));
   }
 
+  /* 三段结构的尾：纵 16 横 20，上沿的分隔线随尾段铺满面板宽 */
+  [data-scope='dialog'][data-part='content']:has([data-scope='dialog'][data-part='body'])
+    [data-scope='dialog'][data-part='footer'] {
+    padding-block: var(--xh-dialog-footer-py, var(--xh-overlay-sheet-footer-py));
+    padding-inline: var(--xh-dialog-footer-px, var(--xh-overlay-sheet-px));
+  }
+
   /* 声明过 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
   [data-scope='dialog'][data-part='header'][hidden],
   [data-scope='dialog'][data-part='body'][hidden],
@@ -329,10 +343,12 @@
     display: none;
   }
 
+  /* 面板标题：页面级面板标题档、正文色；行高钉在 normal，头部带按它算标题行居中 */
   [data-scope='dialog'][data-part='title'] {
     margin: 0;
     font-size: var(--xh-dialog-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-dialog-title-font-weight, var(--xh-text-heading-3-weight));
+    line-height: var(--xh-leading-normal);
     color: var(--xh-dialog-title-fg, var(--xh-fg-default));
   }
 
@@ -347,15 +363,16 @@
      否则长标题会直接钻到按钮底下。只在真有关闭按钮时让位。 */
   [data-scope='dialog'][data-part='content']:has([data-scope='dialog'][data-part='close-trigger'])
     [data-scope='dialog'][data-part='title'] {
-    padding-inline-end: calc(var(--xh-dialog-close-size, var(--xh-control-h-sm)) + var(--xh-surface-action-inset));
+    padding-inline-end: calc(var(--xh-dialog-close-size, var(--xh-control-h-sm)) + var(--xh-space-4));
   }
 
   /*
-   * 关闭钮是面板角落的单图标钮：正方盒、sm 档几何、ghost 四态面、0.97 按压并换底与粗指针命中区
+   * 关闭钮是面板角落的单图标钮：正方盒、sm 档几何、ghost 四态面、按压换底与粗指针命中区
    * 由家族配方给出——白面上走画布承载阶梯悬停 --xh-bg-subtle（100）→ 按下 --xh-bg-subtle-hover（200），
    * 焦点面透明吃库环。这里只把公开槽桥接到矩阵之前（使用者槽 → 形态矩阵 → 家族缺省）与摆放，
    * 聚焦档的 -bg-focus / -fg-focus 两槽同样桥到配方的 focus-visible 面，缺省仍是透明底与悬停字色；
    * 静息前景取 muted 字色，悬停 / 按下回到 fg-default。
+   * 叉取 12px（--xh-glyph-size-xs），比钮的随档字形低一档；钮距右 16px，竖向落在头部带的中线上。
    */
   [data-scope='dialog'][data-part='close-trigger'] {
     --xh-action-visual-size: var(--xh-dialog-close-size, var(--xh-_action-profile-visual-size));
@@ -367,12 +384,13 @@
     --xh-action-fg-hover: var(--xh-dialog-close-fg-hover, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-dialog-close-fg-hover, var(--xh-_action-variant-fg-pressed));
     --xh-action-fg-focus-visible: var(--xh-dialog-close-fg-focus, var(--xh-dialog-close-fg-hover, var(--xh-_action-variant-fg-focus-visible)));
-    /* 作者塞进按钮的图标随档取字形尺（sm = 16px），与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-dialog-icon-size, var(--xh-_action-profile-glyph-size));
+    /* 作者塞进按钮的图标与皮肤画的兜底叉同一把尺 */
+    --xh-icon-size: var(--xh-dialog-icon-size, var(--xh-glyph-size-xs));
 
     position: absolute;
-    inset-block-start: var(--xh-surface-action-inset);
-    inset-inline-end: var(--xh-surface-action-inset);
+    /* 钮的视觉盒在头部带里竖向居中：按钮自己的边长从带高里扣掉再对半 */
+    inset-block-start: calc(var(--xh-_dialog-header-top) + (var(--xh-_dialog-header-h) - var(--xh-action-visual-size)) / 2);
+    inset-inline-end: var(--xh-space-4);
   }
 
   [data-scope='dialog'][data-part='close-trigger'][hidden] {
@@ -409,13 +427,6 @@
     [data-scope='dialog'][data-part='backdrop'][data-variant='blur'] {
       -webkit-backdrop-filter: none;
       backdrop-filter: none;
-    }
-  }
-
-  @media (forced-colors: active) {
-    /* 强制色会接管渐变；改回系统画布色的实体底，保留 CanvasText 的轮廓与正文。 */
-    [data-scope='dialog'][data-part='content'] {
-      background: Canvas;
     }
   }
 
