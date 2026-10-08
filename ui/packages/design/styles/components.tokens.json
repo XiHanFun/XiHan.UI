@@ -3733,6 +3733,24 @@
       "description": "breadcrumb 的 ellipsis 部件 min-inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-breadcrumb-ellipsis-trigger-h",
+      "component": "breadcrumb",
+      "part": [
+        "ellipsis-trigger"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-breadcrumb-link-h"
+      ],
+      "visibility": "public",
+      "description": "breadcrumb 的 ellipsis-trigger 部件 min-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-breadcrumb-fg",
       "component": "breadcrumb",
       "part": [

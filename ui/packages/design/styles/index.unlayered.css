@@ -17475,7 +17475,7 @@
 
   display: inline-flex;
   align-items: center;
-  min-block-size: var(--xh-breadcrumb-link-h, var(--xh-control-action-size));
+  min-block-size: var(--xh-breadcrumb-ellipsis-trigger-h, var(--xh-breadcrumb-link-h, var(--xh-control-action-size)));
   line-height: var(--xh-breadcrumb-leading, var(--xh-leading-tight));
 }
 

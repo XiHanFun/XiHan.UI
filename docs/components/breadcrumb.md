@@ -235,6 +235,7 @@
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-breadcrumb-ellipsis-size` | `ellipsis` | `min-inline-size` | `default` | `--xh-space-5` | breadcrumb 的 ellipsis 部件 min-inline-size 覆盖槽。 |
+| `--xh-breadcrumb-ellipsis-trigger-h` | `ellipsis-trigger` | `min-block-size` | `default` | `--xh-breadcrumb-link-h` | breadcrumb 的 ellipsis-trigger 部件 min-block-size 覆盖槽。 |
 | `--xh-breadcrumb-fg` | `ellipsis-trigger`<br>`link`<br>`root` | `color` | `default`<br>`xh-collection-context=nav` | `--xh-fg-muted` | breadcrumb 的 ellipsis-trigger、link、root 部件 color 覆盖槽。 |
 | `--xh-breadcrumb-font-size` | `ellipsis-trigger`<br>`link`<br>`root` | `font-size` | `default` | `--xh-_breadcrumb-font-size` | breadcrumb 的 ellipsis-trigger、link、root 部件 font-size 覆盖槽。 |
 | `--xh-breadcrumb-gap` | `list` | `gap` | `default` | `--xh-_breadcrumb-gap` | breadcrumb 的 list 部件 gap 覆盖槽。 |
