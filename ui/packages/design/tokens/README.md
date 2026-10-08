@@ -40,7 +40,7 @@ pnpm add @xihan-ui/tokens
 
 按口径已对齐的三组值（根字号 16 时像素不变）：
 
-- `font-size.*` 七档是 rem（0.75 / 0.8125 / 0.875 / 1 / 1.125 / 1.375 / 1.75），对应 12 / 13 / 14 / 16 / 18 / 22 / 28px。
+- `font-size.*` 九档是 rem（0.75 / 0.8125 / 0.875 / 1 / 1.25 / 1.5 / 1.75 / 2 / 2.25），对应 12 / 13 / 14 / 16 / 20 / 24 / 28 / 32 / 36px。
 - `glyph.size-sm/md/lg` 是 px（16 / 20 / 24），与单行控件三档对齐；`glyph.size-xl/2xl/3xl/4xl` 是 px（32 / 40 / 56 / 72）。`glyph.size-text` 仍是 `1em`。
 - `control.action-size`（24px，compact 20px）与 `control.indicator-size`（16px，compact 14px）是 px：单行控件里的动作钮与指示器是控件几何。
 

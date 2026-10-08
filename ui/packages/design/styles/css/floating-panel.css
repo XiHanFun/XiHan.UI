@@ -178,7 +178,7 @@
     flex: 1 1 auto;
     overflow: hidden;
     font-size: var(--xh-floating-panel-title-font-size, var(--xh-text-label-size));
-    font-weight: var(--xh-floating-panel-title-font-weight, var(--xh-font-weight-semibold));
+    font-weight: var(--xh-floating-panel-title-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-tight);
     white-space: nowrap;
     text-overflow: ellipsis;

@@ -17,7 +17,7 @@
   /* 三个尺寸档只换这两个私有槽，各部件从 root 继承它们，换档不必给每个部件各写一条选择器；
      起停钮的档位由连接层直接投给家族，这里不再中转 */
   [data-scope='timer'][data-part='root'] {
-    --xh-_timer-digit-size: var(--xh-text-heading-2-size);
+    --xh-_timer-digit-size: var(--xh-text-heading-1-size);
     --xh-_timer-gap: var(--xh-space-3);
 
     display: inline-flex;
@@ -33,12 +33,12 @@
 
   /* —— 尺寸 —— */
   [data-scope='timer'][data-part='root'][data-size='sm'] {
-    --xh-_timer-digit-size: var(--xh-text-heading-3-size);
+    --xh-_timer-digit-size: var(--xh-text-heading-2-size);
     --xh-_timer-gap: var(--xh-space-2);
   }
 
   [data-scope='timer'][data-part='root'][data-size='lg'] {
-    --xh-_timer-digit-size: var(--xh-text-heading-1-size);
+    --xh-_timer-digit-size: var(--xh-text-display-size);
     --xh-_timer-gap: var(--xh-space-4);
   }
 

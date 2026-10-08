@@ -104,8 +104,8 @@
     min-inline-size: 0;
     margin: 0;
     color: var(--xh-descriptions-title-fg, var(--xh-fg-default));
-    font-size: var(--xh-descriptions-title-font-size, var(--xh-text-label-size));
-    font-weight: var(--xh-descriptions-title-font-weight, var(--xh-font-weight-semibold));
+    font-size: var(--xh-descriptions-title-font-size, var(--xh-text-heading-3-size));
+    font-weight: var(--xh-descriptions-title-font-weight, var(--xh-text-heading-3-weight));
     line-height: var(--xh-leading-relaxed);
   }
 

@@ -165,7 +165,7 @@ ghost 贴在页面底色上，outline 为带描边的独立面，subtle 淡底
 | `--xh-page-header-row-gap` | `root` | `row-gap` | `default` | `--xh-_page-header-row-gap` | page-header 的 root 部件 row-gap 覆盖槽。 |
 | `--xh-page-header-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | page-header 的 title 部件 color 覆盖槽。 |
 | `--xh-page-header-title-font-size` | `title` | `font-size` | `default` | `--xh-_page-header-title-size` | page-header 的 title 部件 font-size 覆盖槽。 |
-| `--xh-page-header-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-heading-3-weight` | page-header 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-page-header-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-heading-2-weight` | page-header 的 title 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

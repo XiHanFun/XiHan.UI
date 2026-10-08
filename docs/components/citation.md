@@ -362,7 +362,7 @@ preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指
 | `--xh-citation-text-fg` | `text` | `color` | `default` | `--xh-fg-default` | citation 的 text 部件 color 覆盖槽。 |
 | `--xh-citation-title-fg` | `preview-title` | `color` | `default` | `--xh-fg-default` | citation 的 preview-title 部件 color 覆盖槽。 |
 | `--xh-citation-title-font-size` | `preview-title` | `font-size` | `default` | `--xh-text-label-size` | citation 的 preview-title 部件 font-size 覆盖槽。 |
-| `--xh-citation-title-font-weight` | `preview-title` | `font-weight` | `default` | `--xh-font-weight-semibold` | citation 的 preview-title 部件 font-weight 覆盖槽。 |
+| `--xh-citation-title-font-weight` | `preview-title` | `font-weight` | `default` | `--xh-font-weight-medium` | citation 的 preview-title 部件 font-weight 覆盖槽。 |
 | `--xh-citation-trigger-fg` | `trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-brand` | citation 的 trigger 部件 color 覆盖槽。 |
 | `--xh-citation-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-text-caption-size` | citation 的 trigger 部件 font-size 覆盖槽。 |
 | `--xh-citation-trigger-h` | `trigger` | `block-size`<br>`inline-size`<br>`min-block-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon`<br>`xh-action-profile=row` | `--xh-space-6` | citation 的 trigger 部件 block-size、inline-size、min-block-size、min-inline-size 覆盖槽。 |

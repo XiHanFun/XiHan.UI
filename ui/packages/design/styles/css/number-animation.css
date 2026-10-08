@@ -35,10 +35,10 @@
   }
 
   [data-scope='number-animation'][data-part='root'][data-size='md'] {
-    --xh-_number-animation-size: var(--xh-text-heading-2-size);
+    --xh-_number-animation-size: var(--xh-text-heading-1-size);
   }
 
   [data-scope='number-animation'][data-part='root'][data-size='lg'] {
-    --xh-_number-animation-size: var(--xh-text-heading-1-size);
+    --xh-_number-animation-size: var(--xh-text-display-size);
   }
 }

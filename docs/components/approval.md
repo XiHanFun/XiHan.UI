@@ -429,7 +429,7 @@ requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或
 | `--xh-approval-timer-font-size` | `timer` | `font-size` | `default` | `--xh-text-caption-size` | approval 的 timer 部件 font-size 覆盖槽。 |
 | `--xh-approval-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | approval 的 title 部件 color 覆盖槽。 |
 | `--xh-approval-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | approval 的 title 部件 font-size 覆盖槽。 |
-| `--xh-approval-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | approval 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-approval-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-medium` | approval 的 title 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

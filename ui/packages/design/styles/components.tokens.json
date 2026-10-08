@@ -940,7 +940,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-size"
+        "--xh-text-heading-3-size"
       ],
       "visibility": "public",
       "description": "alert 的 title 部件 font-size 覆盖槽。"
@@ -958,7 +958,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-text-heading-3-weight"
       ],
       "visibility": "public",
       "description": "alert 的 title 部件 font-weight 覆盖槽。"
@@ -2689,7 +2689,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "approval 的 title 部件 font-weight 覆盖槽。"
@@ -12865,7 +12865,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "citation 的 preview-title 部件 font-weight 覆盖槽。"
@@ -26526,7 +26526,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-size"
+        "--xh-text-heading-3-size"
       ],
       "visibility": "public",
       "description": "descriptions 的 title 部件 font-size 覆盖槽。"
@@ -26544,7 +26544,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-text-heading-3-weight"
       ],
       "visibility": "public",
       "description": "descriptions 的 title 部件 font-weight 覆盖槽。"
@@ -31000,7 +31000,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "empty-state 的 title 部件 font-weight 覆盖槽。"
@@ -35014,7 +35014,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "floating-panel 的 title 部件 font-weight 覆盖槽。"
@@ -51789,7 +51789,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-heading-3-weight"
+        "--xh-text-heading-2-weight"
       ],
       "visibility": "public",
       "description": "page-header 的 title 部件 font-weight 覆盖槽。"

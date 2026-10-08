@@ -3763,8 +3763,8 @@
   min-inline-size: 0;
   margin: 0;
   color: var(--xh-descriptions-title-fg, var(--xh-fg-default));
-  font-size: var(--xh-descriptions-title-font-size, var(--xh-text-label-size));
-  font-weight: var(--xh-descriptions-title-font-weight, var(--xh-font-weight-semibold));
+  font-size: var(--xh-descriptions-title-font-size, var(--xh-text-heading-3-size));
+  font-weight: var(--xh-descriptions-title-font-weight, var(--xh-text-heading-3-weight));
   line-height: var(--xh-leading-relaxed);
 }
 
@@ -6089,7 +6089,7 @@
   flex: 1 1 auto;
   overflow: hidden;
   font-size: var(--xh-floating-panel-title-font-size, var(--xh-text-label-size));
-  font-weight: var(--xh-floating-panel-title-font-weight, var(--xh-font-weight-semibold));
+  font-weight: var(--xh-floating-panel-title-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-tight);
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -11127,11 +11127,11 @@
 }
 
 .xh-scope-number-animation[data-part='root'][data-size='md'] {
-  --xh-_number-animation-size: var(--xh-text-heading-2-size);
+  --xh-_number-animation-size: var(--xh-text-heading-1-size);
 }
 
 .xh-scope-number-animation[data-part='root'][data-size='lg'] {
-  --xh-_number-animation-size: var(--xh-text-heading-1-size);
+  --xh-_number-animation-size: var(--xh-text-display-size);
 }
 
 /* styles/page-header.css */
@@ -11146,7 +11146,7 @@
   /* 尺寸档只换这三个私有槽，各段从根上继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_page-header-py: var(--xh-space-4);
   --xh-_page-header-row-gap: var(--xh-space-2);
-  --xh-_page-header-title-size: var(--xh-text-heading-3-size);
+  --xh-_page-header-title-size: var(--xh-text-heading-2-size);
   /* 形态档只换这两个：不画面的那一档左右不留内衬、也不切圆角 */
   --xh-_page-header-px: 0;
   --xh-_page-header-radius: 0;
@@ -11178,7 +11178,7 @@
 .xh-scope-page-header[data-part='root'][data-size='lg'] {
   --xh-_page-header-py: var(--xh-space-6);
   --xh-_page-header-row-gap: var(--xh-space-3);
-  --xh-_page-header-title-size: var(--xh-text-heading-2-size);
+  --xh-_page-header-title-size: var(--xh-text-heading-1-size);
 }
 
 /* —— 分隔线 —— */
@@ -11246,7 +11246,7 @@
   color: var(--xh-page-header-title-fg, var(--xh-fg-default));
   font-size: var(--xh-page-header-title-font-size, var(--xh-_page-header-title-size));
   /* 页面级标题：字重走标题档令牌，不直接下探字重原语 */
-  font-weight: var(--xh-page-header-title-font-weight, var(--xh-text-heading-3-weight));
+  font-weight: var(--xh-page-header-title-font-weight, var(--xh-text-heading-2-weight));
   line-height: var(--xh-leading-tight);
 }
 
@@ -13125,7 +13125,7 @@
 /* 三个尺寸档只换这几个私有槽，各段从 root 继承它们，换档不必给每个部件各写一条选择器 */
 .xh-scope-statistic[data-part='root'] {
   --xh-_statistic-label-size: var(--xh-control-caption-md);
-  --xh-_statistic-value-size: var(--xh-text-heading-2-size);
+  --xh-_statistic-value-size: var(--xh-text-heading-1-size);
   --xh-_statistic-affix-size: var(--xh-control-font-md);
   --xh-_statistic-row-gap: var(--xh-space-1);
   /* 涨跌箭头与作者塞进来的图标同一把尺：跟着前后缀那一档字（14px）走，取 sm 字形 16px，大档抬到 md */
@@ -13150,14 +13150,14 @@
 /* —— 尺寸 —— */
 .xh-scope-statistic[data-part='root'][data-size='sm'] {
   --xh-_statistic-label-size: var(--xh-control-caption-sm);
-  --xh-_statistic-value-size: var(--xh-text-heading-3-size);
+  --xh-_statistic-value-size: var(--xh-text-heading-2-size);
   --xh-_statistic-affix-size: var(--xh-control-font-sm);
   --xh-_statistic-row-gap: var(--xh-space-0_5);
 }
 
 .xh-scope-statistic[data-part='root'][data-size='lg'] {
   --xh-_statistic-label-size: var(--xh-control-caption-lg);
-  --xh-_statistic-value-size: var(--xh-text-heading-1-size);
+  --xh-_statistic-value-size: var(--xh-text-display-size);
   --xh-_statistic-affix-size: var(--xh-control-font-lg);
   --xh-_statistic-row-gap: var(--xh-space-1_5);
   --xh-_statistic-icon-size: var(--xh-glyph-size-md);
@@ -13982,7 +13982,7 @@
 /* 三个尺寸档只换这两个私有槽，各部件从 root 继承它们，换档不必给每个部件各写一条选择器；
    起停钮的档位由连接层直接投给家族，这里不再中转 */
 .xh-scope-timer[data-part='root'] {
-  --xh-_timer-digit-size: var(--xh-text-heading-2-size);
+  --xh-_timer-digit-size: var(--xh-text-heading-1-size);
   --xh-_timer-gap: var(--xh-space-3);
 
   display: inline-flex;
@@ -13998,12 +13998,12 @@
 
 /* —— 尺寸 —— */
 .xh-scope-timer[data-part='root'][data-size='sm'] {
-  --xh-_timer-digit-size: var(--xh-text-heading-3-size);
+  --xh-_timer-digit-size: var(--xh-text-heading-2-size);
   --xh-_timer-gap: var(--xh-space-2);
 }
 
 .xh-scope-timer[data-part='root'][data-size='lg'] {
-  --xh-_timer-digit-size: var(--xh-text-heading-1-size);
+  --xh-_timer-digit-size: var(--xh-text-display-size);
   --xh-_timer-gap: var(--xh-space-4);
 }
 
@@ -15159,8 +15159,8 @@
 .xh-scope-alert[data-part='title'] {
   flex: none;
   color: var(--xh-alert-title-fg, var(--xh-fg-default));
-  font-size: var(--xh-alert-title-font-size, var(--xh-text-label-size));
-  font-weight: var(--xh-alert-title-font-weight, var(--xh-font-weight-semibold));
+  font-size: var(--xh-alert-title-font-size, var(--xh-text-heading-3-size));
+  font-weight: var(--xh-alert-title-font-weight, var(--xh-text-heading-3-weight));
   line-height: var(--xh-alert-title-leading, var(--xh-leading-tight));
 }
 
@@ -15384,7 +15384,7 @@
   margin: 0;
   color: var(--xh-empty-state-title-fg, var(--xh-fg-default));
   font-size: var(--xh-empty-state-title-font-size, var(--xh-_empty-state-title-size));
-  font-weight: var(--xh-empty-state-title-font-weight, var(--xh-font-weight-semibold));
+  font-weight: var(--xh-empty-state-title-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-empty-state-title-leading, var(--xh-leading-tight));
 }
 
@@ -16451,7 +16451,7 @@
   margin: 0;
   color: var(--xh-approval-title-fg, var(--xh-fg-default));
   font-size: var(--xh-approval-title-font-size, var(--xh-text-label-size));
-  font-weight: var(--xh-approval-title-font-weight, var(--xh-font-weight-semibold));
+  font-weight: var(--xh-approval-title-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-tight);
 }
 
@@ -22345,7 +22345,7 @@
   overflow: hidden;
   color: var(--xh-citation-title-fg, var(--xh-fg-default));
   font-size: var(--xh-citation-title-font-size, var(--xh-text-label-size));
-  font-weight: var(--xh-citation-title-font-weight, var(--xh-font-weight-semibold));
+  font-weight: var(--xh-citation-title-font-weight, var(--xh-font-weight-medium));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -36031,7 +36031,7 @@
   /* 尺寸档只换这三个私有槽，格子与分隔都从 root 继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_pin-input-box-size: var(--xh-control-box-md);
   --xh-_pin-input-box-gap: var(--xh-control-gap-md);
-  --xh-_pin-input-box-font-size: var(--xh-text-heading-3-size);
+  --xh-_pin-input-box-font-size: var(--xh-text-heading-2-size);
   /* 填满态的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回品牌色 */
   --xh-_pin-input-accent: var(--xh-_tone, var(--xh-bg-brand));
 
@@ -36060,7 +36060,7 @@
 .xh-scope-pin-input[data-part='root'][data-size='lg'] {
   --xh-_pin-input-box-size: var(--xh-control-box-lg);
   --xh-_pin-input-box-gap: var(--xh-control-gap-lg);
-  --xh-_pin-input-box-font-size: var(--xh-text-heading-2-size);
+  --xh-_pin-input-box-font-size: var(--xh-text-heading-1-size);
 }
 
 .xh-scope-pin-input[data-part='label'] {
