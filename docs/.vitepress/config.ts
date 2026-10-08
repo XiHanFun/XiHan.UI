@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { defineXiHanConfig } from "@xihanfun/vitepress-theme/config";
 import { demoScriptPlugin } from "./demo-script.ts";
 // @ts-expect-error 纯 JS 生成器，没有类型声明
-import { renderPageMarkdown, writeLlmsAssets } from "./gen-llms.mjs";
+import { transformPage, writeUiAssets } from "./gen-llms.mjs";
 
 const require = createRequire(import.meta.url);
 const repositoryRoot = fileURLToPath(new URL("../..", import.meta.url));
@@ -298,8 +298,37 @@ export default defineXiHanConfig({
   description,
   keywords,
   repo: "XiHan.UI",
-  pageMarkdown: renderPageMarkdown,
-  async buildEnd(siteConfig) {
+  llms: {
+    title: "曦寒视图组件",
+    summary: "框架无关的设计系统运行时：无头内核提供行为与无障碍，Vue、React 与 Web Components 三个适配器只负责把属性铺到宿主元素上，纯 CSS 皮肤认 `data-scope` / `data-part` 而不是类名。",
+    sections: [
+      { dir: ".", label: "开始" },
+      { dir: "design", label: "设计" },
+      { dir: "guide", label: "核心概念" },
+      { dir: "adapters", label: "适配器" },
+      { dir: "runtime", label: "服务与运行时" },
+      { dir: "examples", label: "场景" },
+      { dir: "components", label: "组件" },
+    ],
+    bundles: [
+      {
+        name: "components",
+        label: "组件参考",
+        dirs: ["components"],
+        description: "每页含解剖部件、Props、事件、状态、键盘、数据属性、CSS 变量与两个适配器的示例源码。",
+      },
+      {
+        name: "guide",
+        label: "核心概念、适配器与运行时",
+        dirs: ["guide", "adapters", "runtime"],
+        description: "核心概念、两个适配器的接法、以及命令式服务与运行时。",
+      },
+    ],
+    fullDescription: "示例已按适配器内联为代码块",
+    transform: transformPage,
+    assets: writeUiAssets,
+  },
+  buildEnd() {
     if (renderErrors.length > 0) {
       const list = renderErrors
         .map(
@@ -311,8 +340,6 @@ export default defineXiHanConfig({
         `渲染页面阶段抛了 ${renderErrors.length} 个异常，出错的示例在静态页里整块缺失（完整栈见上方日志）：\n${list}`,
       );
     }
-    // 机读资产排在抛异常之后：构建没通过就不产出
-    await writeLlmsAssets(siteConfig.outDir);
   },
   vite: {
     plugins: [demoScriptPlugin()],
