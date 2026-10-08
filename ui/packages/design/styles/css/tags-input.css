@@ -80,13 +80,15 @@
   }
 
   [data-scope='tags-input'][data-part='label'] {
-    color: var(--xh-tags-input-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-tags-input-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-tags-input-label-gap, var(--xh-space-2)) - var(--xh-tags-input-gap, var(--xh-space-1)));
+    color: var(--xh-tags-input-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-tags-input-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-tags-input-label-font-weight, var(--xh-text-label-weight));
   }
 
   [data-scope='tags-input'][data-part='label'][data-disabled] {
-    color: var(--xh-tags-input-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-tags-input-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 标签换行排，输入框跟在最后一个标签后面：描边、底色、圆角、聚焦环、五态与悬停由 Field Chrome

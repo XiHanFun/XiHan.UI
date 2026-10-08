@@ -23,20 +23,20 @@
     gap: var(--xh-signature-pad-gap, var(--xh-space-2));
   }
 
-  /* 复合单字段的标签：14 / 500 / fg-default，不随档；贴画布 space-1——
+  /* 复合单字段的标签：14 / 400 / fg-muted，不随档；与画布隔 space-2——
      容器的 gap 归画布之后的部件，标签在它之上补一段差值把距离收成目标值 */
   [data-scope='signature-pad'][data-part='label'] {
     margin-block-end: calc(
-      var(--xh-signature-pad-label-gap, var(--xh-space-1))
+      var(--xh-signature-pad-label-gap, var(--xh-space-2))
       - var(--xh-signature-pad-gap, var(--xh-space-2))
     );
-    color: var(--xh-signature-pad-label-fg, var(--xh-fg-default));
+    color: var(--xh-signature-pad-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-signature-pad-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-signature-pad-label-font-weight, var(--xh-text-label-weight));
   }
 
   [data-scope='signature-pad'][data-part='label'][data-disabled] {
-    color: var(--xh-signature-pad-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-signature-pad-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 画布是块状的写字区：宽度铺满外层，高度由宽高比决定。

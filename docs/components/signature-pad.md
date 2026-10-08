@@ -354,11 +354,11 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 | `--xh-signature-pad-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-2` | signature-pad 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-signature-pad-guide-stroke` | `guide` | `stroke` | `default` | `--xh-border-control` | signature-pad 的 guide 部件 stroke 覆盖槽。 |
 | `--xh-signature-pad-ink` | `path` | `fill` | `default` | `--xh-fg-default` | signature-pad 的 path 部件 fill 覆盖槽。 |
-| `--xh-signature-pad-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | signature-pad 的 label 部件 color 覆盖槽。 |
-| `--xh-signature-pad-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | signature-pad 的 label 部件 color 覆盖槽。 |
+| `--xh-signature-pad-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | signature-pad 的 label 部件 color 覆盖槽。 |
+| `--xh-signature-pad-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | signature-pad 的 label 部件 color 覆盖槽。 |
 | `--xh-signature-pad-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | signature-pad 的 label 部件 font-size 覆盖槽。 |
 | `--xh-signature-pad-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | signature-pad 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-signature-pad-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-1` | signature-pad 的 label 部件 margin-block-end 覆盖槽。 |
+| `--xh-signature-pad-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | signature-pad 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-signature-pad-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | signature-pad 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-signature-pad-status-fg` | `status` | `color` | `default` | `--xh-fg-muted` | signature-pad 的 status 部件 color 覆盖槽。 |
 | `--xh-signature-pad-status-font-size` | `status` | `font-size` | `default` | `--xh-text-secondary-size` | signature-pad 的 status 部件 font-size 覆盖槽。 |

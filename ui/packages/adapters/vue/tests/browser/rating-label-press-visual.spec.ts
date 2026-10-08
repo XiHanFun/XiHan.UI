@@ -43,13 +43,14 @@ function mount(attrs = '') {
 }
 
 describe('rating 字段标签、星形尺度与按压', () => {
-  it('字段标签 14 / 500 / fg-default，贴控件 space-1', () => {
+  it('字段标签 14 / 400 / fg-muted，与控件隔 space-2（根的 gap 4 + 标签补白 4）', () => {
     const { root, label } = mount()
     const style = getComputedStyle(label)
     expect(style.fontSize).toBe('14px')
-    expect(style.fontWeight).toBe('500')
-    expect(style.color).toBe(resolvedToken('--xh-fg-default'))
+    expect(style.fontWeight).toBe('400')
+    expect(style.color).toBe(resolvedToken('--xh-fg-muted'))
     expect(getComputedStyle(root).rowGap).toBe('4px')
+    expect(style.marginBlockEnd).toBe('4px')
   })
 
   it('星按档取字形尺：md 20px，盒仍是 24px 正方', () => {
@@ -76,9 +77,9 @@ describe('rating 字段标签、星形尺度与按压', () => {
     expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
   })
 
-  it('禁用：标签换到 fg-subtle 而不压暗，星带整体压暗一次，按下不再换面', () => {
+  it('禁用：标签换到 fg-disabled 而不压暗，星带整体压暗一次，按下不再换面', () => {
     const { label, control, item, valueText } = mount('data-disabled')
-    expect(getComputedStyle(label).color).toBe(resolvedToken('--xh-fg-subtle'))
+    expect(getComputedStyle(label).color).toBe(resolvedToken('--xh-fg-disabled'))
     expect(getComputedStyle(label).opacity).toBe('1')
     expect(getComputedStyle(valueText).color).toBe(resolvedToken('--xh-fg-subtle'))
     expect(getComputedStyle(control).opacity).toBe('0.5')

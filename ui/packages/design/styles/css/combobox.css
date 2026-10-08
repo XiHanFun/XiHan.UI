@@ -137,14 +137,16 @@
   }
 
   [data-scope='combobox'][data-part='label'] {
-    color: var(--xh-combobox-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-combobox-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-combobox-label-gap, var(--xh-space-2)) - var(--xh-combobox-gap, var(--xh-space-1)));
+    color: var(--xh-combobox-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-combobox-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-combobox-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
   }
 
   [data-scope='combobox'][data-part='label'][data-disabled] {
-    color: var(--xh-combobox-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-combobox-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 画成一个框的是 control 而不是 input：输入框、展开按钮、清空按钮三者要看起来是一体的，

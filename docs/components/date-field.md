@@ -330,12 +330,13 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 | `--xh-date-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | date-field 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-date-field-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | date-field 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-date-field-font-size` | `control` | `font-size` | `default` | `--xh-_date-field-font-size` | date-field 的 control 部件 font-size 覆盖槽。 |
-| `--xh-date-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-field 的 root 部件 gap 覆盖槽。 |
+| `--xh-date-field-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | date-field 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-date-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | date-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-date-field-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | date-field 的 label 部件 color 覆盖槽。 |
-| `--xh-date-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | date-field 的 label 部件 color 覆盖槽。 |
+| `--xh-date-field-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | date-field 的 label 部件 color 覆盖槽。 |
+| `--xh-date-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | date-field 的 label 部件 color 覆盖槽。 |
 | `--xh-date-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | date-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-date-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | date-field 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-date-field-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | date-field 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-date-field-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | date-field 的 segment-group 部件 color 覆盖槽。 |
 | `--xh-date-field-placeholder-fg` | `segment`<br>`segment-group` | `color` | `placeholder`<br>`placeholder-shown` | `--xh-fg-subtle` | date-field 的 segment、segment-group 部件 color 覆盖槽。 |
 | `--xh-date-field-segment-bg-focus` | `segment` | `background` | `focus`<br>`focus-visible` | `--xh-_date-field-segment-bg` | date-field 的 segment 部件 background 覆盖槽。 |

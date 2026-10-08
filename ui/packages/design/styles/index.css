@@ -76,8 +76,8 @@
 /*
  * 字段族标签的公共层，按 [data-part='label'] 匹配下面逐个列出的 scope。
  *
- * 收在这里的是逐值相同的四条：行距取 --xh-leading-none，禁用档字色取 --xh-fg-subtle，
- * 必填星号取 --xh-glyph-mark-required + --xh-space-1 + --xh-fg-danger，无效档字色取 --xh-fg-danger。
+ * 收在这里的是逐值相同的四条：行距取 --xh-leading-none，禁用档字色取 --xh-fg-disabled，
+ * 必填星号取 --xh-glyph-mark-required + --xh-space-1 + --xh-fg-danger、排在标签文字之前，无效档字色取 --xh-fg-danger。
  * 字色、字号、字重三条留在各组件皮肤——它们挂着 --xh-<组件>-label-* 覆盖槽，
  * 槽名里带组件名，写不进一条共享规则。
  *
@@ -112,29 +112,33 @@
   }
 
   /*
-   * 禁用档的字色：公共层默认统一 --xh-fg-subtle。这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，
-   * 取值只有这一处；挂了那个槽的组件在各自皮肤里另写一条，排在本份之后，压过这里。
+   * 禁用档的字色：公共层默认统一 --xh-fg-disabled。字段标签静息已是 --xh-fg-muted，禁用再取
+   * --xh-fg-subtle 与它几乎分不出，改取与控件内禁用文字同一档的 --xh-fg-disabled（禁用文字不计对比度）。
+   * 这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，取值只有这一处；挂了那个槽的组件在各自皮肤里另写一条，
+   * 排在本份之后，压过这里。
    */
   .xh-scope-color-picker[data-part='label'][data-disabled],
   .xh-scope-rating[data-part='label'][data-disabled],
   .xh-scope-signature-pad[data-part='label'][data-disabled],
   .xh-scope-slider[data-part='label'][data-disabled] {
-    color: var(--xh-fg-subtle);
+    color: var(--xh-fg-disabled);
   }
 
   /*
-   * 必填星号：跟着标签自己的 data-required 亮，选填不标。字形、间距、颜色是公共层规则，
-   * 自带标签的字段不得各画一套。
+   * 必填星号：跟着标签自己的 data-required 亮，选填不标。字形、字号、间距、颜色是公共层规则，
+   * 自带标签的字段不得各画一套。星号排在标签文字之前（一列标签的星号在同一条起始线上，扫读时先看到），
+   * 取说明字号——它是标记，不与标签文字抢层级。
    *
    * 接入 = connect 在标签部件投影 data-required + 把 scope 加进这张列表；控件本体不画。
    * 有 --xh-<组件>-label-star 覆盖槽的组件在各自皮肤里只另写一条 color 压过这里（field 的
-   * --xh-field-label-star、fieldset 的 --xh-fieldset-legend-star），content 与间距不再重写。
+   * --xh-field-label-star、fieldset 的 --xh-fieldset-legend-star），content、字号与间距不再重写。
    */
-  .xh-scope-field[data-part='label'][data-required]::after,
-  .xh-scope-fieldset[data-part='legend'][data-required]::after {
+  .xh-scope-field[data-part='label'][data-required]::before,
+  .xh-scope-fieldset[data-part='legend'][data-required]::before {
     content: var(--xh-glyph-mark-required);
-    margin-inline-start: var(--xh-space-1);
+    margin-inline-end: var(--xh-space-1);
     color: var(--xh-fg-danger);
+    font-size: var(--xh-text-caption-size);
   }
 
   /*
@@ -4909,8 +4913,8 @@
     color: var(--xh-fieldset-legend-fg-disabled, var(--xh-fg-subtle));
   }
 
-  /* 必填星号的字形、间距与默认色在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
-  .xh-scope-fieldset[data-part='legend'][data-required]::after {
+  /* 必填星号的字形、字号、间距与默认色在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
+  .xh-scope-fieldset[data-part='legend'][data-required]::before {
     color: var(--xh-fieldset-legend-star, var(--xh-fg-danger));
   }
 
@@ -10917,8 +10921,8 @@
   /* 标题：与输入框上下排，行距不留额外空白 */
   .xh-scope-mention[data-part='label'] {
     display: block;
-    margin-block-end: var(--xh-mention-label-gap, var(--xh-space-1));
-    color: var(--xh-mention-label-fg, var(--xh-fg-default));
+    margin-block-end: var(--xh-mention-label-gap, var(--xh-space-2));
+    color: var(--xh-mention-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-mention-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-mention-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
@@ -10929,7 +10933,7 @@
   }
 
   .xh-scope-mention[data-part='label'][data-disabled] {
-    color: var(--xh-mention-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-mention-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* —— 尺寸 —— */
@@ -11502,13 +11506,15 @@
 
   /* —— 标题 —— */
   .xh-scope-password-input[data-part='label'] {
-    color: var(--xh-password-input-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-password-input-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-password-input-label-gap, var(--xh-space-2)) - var(--xh-password-input-gap, var(--xh-space-1)));
+    color: var(--xh-password-input-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-password-input-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-password-input-label-font-weight, var(--xh-text-label-weight));
   }
 
   .xh-scope-password-input[data-part='label'][data-disabled] {
-    color: var(--xh-password-input-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-password-input-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* —— 一体式 control：输入框、切换钮与提示同框 —— */
@@ -13090,20 +13096,20 @@
     gap: var(--xh-signature-pad-gap, var(--xh-space-2));
   }
 
-  /* 复合单字段的标签：14 / 500 / fg-default，不随档；贴画布 space-1——
+  /* 复合单字段的标签：14 / 400 / fg-muted，不随档；与画布隔 space-2——
      容器的 gap 归画布之后的部件，标签在它之上补一段差值把距离收成目标值 */
   .xh-scope-signature-pad[data-part='label'] {
     margin-block-end: calc(
-      var(--xh-signature-pad-label-gap, var(--xh-space-1))
+      var(--xh-signature-pad-label-gap, var(--xh-space-2))
       - var(--xh-signature-pad-gap, var(--xh-space-2))
     );
-    color: var(--xh-signature-pad-label-fg, var(--xh-fg-default));
+    color: var(--xh-signature-pad-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-signature-pad-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-signature-pad-label-font-weight, var(--xh-text-label-weight));
   }
 
   .xh-scope-signature-pad[data-part='label'][data-disabled] {
-    color: var(--xh-signature-pad-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-signature-pad-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 画布是块状的写字区：宽度铺满外层，高度由宽高比决定。
@@ -20869,7 +20875,9 @@
   }
 
   .xh-scope-cascader[data-part='label'] {
-    color: var(--xh-cascader-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-cascader-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-cascader-label-gap, var(--xh-space-2)) - var(--xh-cascader-gap, var(--xh-space-1)));
+    color: var(--xh-cascader-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-cascader-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-cascader-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
@@ -20877,7 +20885,7 @@
 
   /* 整个控件禁用会把 data-disabled 一路打到 label / value-text / indicator 上，各处观感保持一致 */
   .xh-scope-cascader[data-part='label'][data-disabled] {
-    color: var(--xh-cascader-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-cascader-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 盒：描边、底色、圆角、控件高度、行内内衬、聚焦环、五态与悬停由 Field Chrome 家族画在这一层，
@@ -23704,13 +23712,15 @@
   }
 
   .xh-scope-color-field[data-part='label'] {
-    color: var(--xh-color-field-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-color-field-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-color-field-label-gap, var(--xh-space-2)) - var(--xh-color-field-gap, var(--xh-space-1)));
+    color: var(--xh-color-field-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-color-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-color-field-label-font-weight, var(--xh-text-label-weight));
   }
 
   .xh-scope-color-field[data-part='label'][data-disabled] {
-    color: var(--xh-color-field-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-color-field-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   .xh-scope-color-field[data-part='control'] {
@@ -23869,7 +23879,9 @@
   }
 
   .xh-scope-color-picker[data-part='label'] {
-    color: var(--xh-color-picker-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-color-picker-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-color-picker-label-gap, var(--xh-space-2)) - var(--xh-color-picker-gap, var(--xh-space-1)));
+    color: var(--xh-color-picker-label-fg, var(--xh-fg-muted));
     /* 字段标签不随档：与同族字段同一档标签字号 */
     font-size: var(--xh-color-picker-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-color-picker-label-font-weight, var(--xh-text-label-weight));
@@ -24436,15 +24448,17 @@
   /* 禁用不整体压暗：标签是文字，换到禁用前景；颜色带与拇指画的是颜色本身，换不得色，
      压暗只做一次、落在 control 上（track / thumb 各自再叠一层 opacity 会越叠越黑），拇指另收掉抬升 */
 
-  /* 字段标签：14 / 500 / fg-default，禁用换到 --xh-fg-subtle */
+  /* 字段标签：14 / 400 / fg-muted，与控件隔 space-2，禁用换到 --xh-fg-disabled */
   .xh-scope-color-slider[data-part='label'] {
-    color: var(--xh-color-slider-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-color-slider-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-color-slider-label-gap, var(--xh-space-2)) - var(--xh-color-slider-gap, var(--xh-space-1)));
+    color: var(--xh-color-slider-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-color-slider-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-color-slider-label-font-weight, var(--xh-text-label-weight));
   }
 
   .xh-scope-color-slider[data-part='label'][data-disabled] {
-    color: var(--xh-color-slider-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-color-slider-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 拇指以它为定位上下文（拇指常常浮出轨道，挂在 track 上会被轨道的盒子束住）。
@@ -24757,21 +24771,21 @@
     --xh-_color-swatch-picker-indicator: var(--xh-control-indicator-lg);
   }
 
-  /* 标题独占一行，格子从下一行起排。复合单字段的标签：14 / 500 / fg-default，不随档；
-     与格子的距离贴控件 space-1——容器的 gap 归格子之间，标签在它之上补一段差值把距离收成目标值 */
+  /* 标题独占一行，格子从下一行起排。复合单字段的标签：14 / 400 / fg-muted，不随档；
+     与格子隔 space-2——容器的 gap 归格子之间，标签在它之上补一段差值把距离收成目标值 */
   .xh-scope-color-swatch-picker[data-part='label'] {
     flex-basis: 100%;
     margin-block-end: calc(
-      var(--xh-color-swatch-picker-label-gap, var(--xh-space-1))
+      var(--xh-color-swatch-picker-label-gap, var(--xh-space-2))
       - var(--xh-color-swatch-picker-gap, var(--xh-_color-swatch-picker-gap))
     );
-    color: var(--xh-color-swatch-picker-label-fg, var(--xh-fg-default));
+    color: var(--xh-color-swatch-picker-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-color-swatch-picker-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-color-swatch-picker-label-font-weight, var(--xh-text-label-weight));
   }
 
   .xh-scope-color-swatch-picker[data-part='label'][data-disabled] {
-    color: var(--xh-color-swatch-picker-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-color-swatch-picker-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 一格：正方形命中区，里面铺满色块面。
@@ -25083,14 +25097,16 @@
   }
 
   .xh-scope-combobox[data-part='label'] {
-    color: var(--xh-combobox-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-combobox-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-combobox-label-gap, var(--xh-space-2)) - var(--xh-combobox-gap, var(--xh-space-1)));
+    color: var(--xh-combobox-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-combobox-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-combobox-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
   }
 
   .xh-scope-combobox[data-part='label'][data-disabled] {
-    color: var(--xh-combobox-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-combobox-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 画成一个框的是 control 而不是 input：输入框、展开按钮、清空按钮三者要看起来是一体的，
@@ -26381,7 +26397,9 @@
   }
 
   .xh-scope-date-field[data-part='label'] {
-    color: var(--xh-date-field-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-date-field-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-date-field-label-gap, var(--xh-space-2)) - var(--xh-date-field-gap, var(--xh-space-1)));
+    color: var(--xh-date-field-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-date-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-date-field-label-font-weight, var(--xh-text-label-weight));
   }
@@ -26391,7 +26409,7 @@
   }
 
   .xh-scope-date-field[data-part='label'][data-disabled] {
-    color: var(--xh-date-field-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-date-field-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 分段框整体长得像一个输入框：描边、底色、圆角、聚焦环、五态与悬停由 Field Chrome 家族画在
@@ -26758,7 +26776,9 @@
   }
 
   .xh-scope-date-picker[data-part='label'] {
-    color: var(--xh-date-picker-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-date-picker-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-date-picker-label-gap, var(--xh-space-2)) - var(--xh-date-picker-gap, var(--xh-space-1)));
+    color: var(--xh-date-picker-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-date-picker-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-date-picker-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
@@ -26769,7 +26789,7 @@
   }
 
   .xh-scope-date-picker[data-part='label'][data-disabled] {
-    color: var(--xh-date-picker-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-date-picker-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 画成一个框的是 control 而不是 input：段位、清空按钮、日历按钮三者要看起来是一体的，
@@ -27616,7 +27636,9 @@
   }
 
   .xh-scope-date-range-picker[data-part='label'] {
-    color: var(--xh-date-range-picker-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-date-range-picker-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-date-range-picker-label-gap, var(--xh-space-2)) - var(--xh-date-range-picker-gap, var(--xh-space-1)));
+    color: var(--xh-date-range-picker-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-date-range-picker-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-date-range-picker-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
@@ -27627,7 +27649,7 @@
   }
 
   .xh-scope-date-range-picker[data-part='label'][data-disabled] {
-    color: var(--xh-date-range-picker-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-date-range-picker-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 画成一个框的是 control 而不是 input：段位、清空按钮、日历按钮三者要看起来是一体的，
@@ -29417,7 +29439,9 @@
   }
 
   .xh-scope-editable[data-part='label'] {
-    color: var(--xh-editable-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-editable-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-editable-label-gap, var(--xh-space-2)) - var(--xh-editable-gap, var(--xh-space-1)));
+    color: var(--xh-editable-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-editable-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-editable-label-font-weight, var(--xh-text-label-weight));
     /* 点标题会把人送进编辑态（预览态下 for 指着的输入框是收起的，点了没反应），
@@ -29426,7 +29450,7 @@
   }
 
   .xh-scope-editable[data-part='label'][data-disabled] {
-    color: var(--xh-editable-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-editable-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 预览区只是 control 里的内容段，不再自成一只带圆角的盒子。 */
@@ -29673,8 +29697,8 @@
      整表据此对齐；描述与错误文案跟着控件走第二列 */
   .xh-scope-form[data-part='root'][data-layout='horizontal'] .xh-scope-field[data-part='root'] {
     display: grid;
-    grid-template-columns: var(--xh-form-label-w, 30%) minmax(0, 1fr);
-    column-gap: var(--xh-field-label-gap, var(--xh-space-3));
+    grid-template-columns: var(--xh-form-label-w, calc(100% * 5 / 24)) minmax(0, 1fr);
+    column-gap: var(--xh-field-label-gap, var(--xh-space-4));
     align-items: start;
   }
 
@@ -29707,12 +29731,11 @@
        横排表单里标签列是一段比例宽度，这行让标签在那一列里折行，而不是从列的左边顶出去 */
     overflow-wrap: anywhere;
     /* 竖排时标签与控件之间的距离：容器的 gap 之上补一段差值，
-       --xh-field-label-gap-block 给多少最终就是多少；不给时差值算成 0，
-       这段距离仍由 --xh-field-gap 与描述、错误文案那两段同宽。 */
+       --xh-field-label-gap-block 给多少最终就是多少，与描述、错误文案那两段（归 --xh-field-gap）各管各的 */
     margin-block-end: calc(
-      var(--xh-field-label-gap-block, var(--xh-field-gap, var(--xh-space-1))) - var(--xh-field-gap, var(--xh-space-1))
+      var(--xh-field-label-gap-block, var(--xh-space-2)) - var(--xh-field-gap, var(--xh-space-1))
     );
-    color: var(--xh-field-label-fg, var(--xh-fg-default));
+    color: var(--xh-field-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-field-label-font-weight, var(--xh-text-label-weight));
     /* 转无效或转禁用时标签换色，两档之间接一段过渡（与字段集组标题同一档） */
@@ -29720,11 +29743,11 @@
   }
 
   .xh-scope-field[data-part='label'][data-disabled] {
-    color: var(--xh-field-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-field-label-fg-disabled, var(--xh-fg-disabled));
   }
 
-  /* 必填星号的字形、间距与默认色在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
-  .xh-scope-field[data-part='label'][data-required]::after {
+  /* 必填星号的字形、字号、间距与默认色在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
+  .xh-scope-field[data-part='label'][data-required]::before {
     color: var(--xh-field-label-star, var(--xh-fg-danger));
   }
 
@@ -29836,13 +29859,15 @@
   }
 
   .xh-scope-file-upload[data-part='label'] {
-    color: var(--xh-file-upload-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-file-upload-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-file-upload-label-gap, var(--xh-space-2)) - var(--xh-file-upload-gap, var(--xh-space-3)));
+    color: var(--xh-file-upload-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-file-upload-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-file-upload-label-font-weight, var(--xh-text-label-weight));
   }
 
   .xh-scope-file-upload[data-part='label'][data-disabled] {
-    color: var(--xh-file-upload-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-file-upload-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 虚线框是"这里能放东西"的通用说法，实线框看起来只是一个普通面板。
@@ -35494,13 +35519,15 @@
   }
 
   .xh-scope-number-field[data-part='label'] {
-    color: var(--xh-number-field-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-number-field-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-number-field-label-gap, var(--xh-space-2)) - var(--xh-number-field-gap, var(--xh-space-1)));
+    color: var(--xh-number-field-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-number-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-number-field-label-font-weight, var(--xh-text-label-weight));
   }
 
   .xh-scope-number-field[data-part='label'][data-disabled] {
-    color: var(--xh-number-field-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-number-field-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* —— 一体式 control：输入框与加减钮同框 —— */
@@ -36402,13 +36429,15 @@
   }
 
   .xh-scope-pin-input[data-part='label'] {
-    color: var(--xh-pin-input-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-pin-input-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-pin-input-label-gap, var(--xh-space-2)) - var(--xh-pin-input-gap, var(--xh-space-1)));
+    color: var(--xh-pin-input-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-pin-input-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-pin-input-label-font-weight, var(--xh-text-label-weight));
   }
 
   .xh-scope-pin-input[data-part='label'][data-disabled] {
-    color: var(--xh-pin-input-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-pin-input-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 分段：连着的几格圈成一段。它只排版，格间距仍由格子自己的相邻兄弟规则给 */
@@ -38728,15 +38757,17 @@
     --xh-_rating-font-size: var(--xh-control-font-lg);
   }
 
-  /* 字段标签：14 / 500 / fg-default，禁用换到 --xh-fg-subtle；文字部件不叠 opacity */
+  /* 字段标签：14 / 400 / fg-muted，与控件隔 space-2，禁用换到 --xh-fg-disabled；文字部件不叠 opacity */
   .xh-scope-rating[data-part='label'] {
-    color: var(--xh-rating-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-rating-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-rating-label-gap, var(--xh-space-2)) - var(--xh-rating-gap, var(--xh-space-1)));
+    color: var(--xh-rating-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-rating-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-rating-label-font-weight, var(--xh-text-label-weight));
   }
 
   .xh-scope-rating[data-part='label'][data-disabled] {
-    color: var(--xh-rating-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-rating-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   .xh-scope-rating[data-part='control'] {
@@ -39502,14 +39533,16 @@
   }
 
   .xh-scope-select[data-part='label'] {
-    color: var(--xh-select-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-select-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-select-label-gap, var(--xh-space-2)) - var(--xh-select-gap, var(--xh-space-1)));
+    color: var(--xh-select-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-select-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-select-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
   }
 
   .xh-scope-select[data-part='label'][data-disabled] {
-    color: var(--xh-select-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-select-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 盒：描边、底色、圆角、控件高度、行内内衬、聚焦环、五态与悬停由 Field Chrome 家族画在这一层，
@@ -40825,15 +40858,17 @@
   /* 禁用不整体压暗：前景与表面各自降级——连接层把 data-disabled 发到每个角色节点上，
      轨道、区间、拇指、刻度与标签就近消费，写在各自的规则里 */
 
-  /* 字段标签：14 / 500 / fg-default，禁用换到 --xh-fg-subtle */
+  /* 字段标签：14 / 400 / fg-muted，与控件隔 space-2，禁用换到 --xh-fg-disabled */
   .xh-scope-slider[data-part='label'] {
-    color: var(--xh-slider-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-slider-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-slider-label-gap, var(--xh-space-2)) - var(--xh-slider-gap, var(--xh-space-1)));
+    color: var(--xh-slider-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-slider-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-slider-label-font-weight, var(--xh-text-label-weight));
   }
 
   .xh-scope-slider[data-part='label'][data-disabled] {
-    color: var(--xh-slider-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-slider-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 拇指以它为定位上下文（拇指常常浮出轨道，挂在 track 上会被轨道的盒子束住）。
@@ -45071,13 +45106,15 @@
   }
 
   .xh-scope-tags-input[data-part='label'] {
-    color: var(--xh-tags-input-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-tags-input-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-tags-input-label-gap, var(--xh-space-2)) - var(--xh-tags-input-gap, var(--xh-space-1)));
+    color: var(--xh-tags-input-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-tags-input-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-tags-input-label-font-weight, var(--xh-text-label-weight));
   }
 
   .xh-scope-tags-input[data-part='label'][data-disabled] {
-    color: var(--xh-tags-input-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-tags-input-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 标签换行排，输入框跟在最后一个标签后面：描边、底色、圆角、聚焦环、五态与悬停由 Field Chrome
@@ -45367,13 +45404,15 @@
   }
 
   .xh-scope-text-field[data-part='label'] {
-    color: var(--xh-text-field-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-text-field-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-text-field-label-gap, var(--xh-space-2)) - var(--xh-text-field-gap, var(--xh-space-1)));
+    color: var(--xh-text-field-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-text-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-text-field-label-font-weight, var(--xh-text-label-weight));
   }
 
   .xh-scope-text-field[data-part='label'][data-disabled] {
-    color: var(--xh-text-field-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-text-field-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   .xh-scope-text-field[data-part='control'] {
@@ -45564,13 +45603,15 @@
   }
 
   .xh-scope-time-field[data-part='label'] {
-    color: var(--xh-time-field-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-time-field-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-time-field-label-gap, var(--xh-space-2)) - var(--xh-time-field-gap, var(--xh-space-1)));
+    color: var(--xh-time-field-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-time-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-time-field-label-font-weight, var(--xh-text-label-weight));
   }
 
   .xh-scope-time-field[data-part='label'][data-disabled] {
-    color: var(--xh-time-field-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-time-field-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 几段合起来看着像一个输入框：描边、底色、圆角、聚焦环、五态与悬停由 Field Chrome 家族画在
@@ -45881,14 +45922,16 @@
   }
 
   .xh-scope-time-picker[data-part='label'] {
-    color: var(--xh-time-picker-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-time-picker-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-time-picker-label-gap, var(--xh-space-2)) - var(--xh-time-picker-gap, var(--xh-space-1)));
+    color: var(--xh-time-picker-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-time-picker-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-time-picker-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
   }
 
   .xh-scope-time-picker[data-part='label'][data-disabled] {
-    color: var(--xh-time-picker-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-time-picker-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 画成一个框的是 control：几段文字、展开按钮、清空按钮要看起来是一体的，
@@ -46583,14 +46626,16 @@
   }
 
   .xh-scope-time-range-picker[data-part='label'] {
-    color: var(--xh-time-range-picker-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-time-range-picker-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-time-range-picker-label-gap, var(--xh-space-2)) - var(--xh-time-range-picker-gap, var(--xh-space-1)));
+    color: var(--xh-time-range-picker-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-time-range-picker-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-time-range-picker-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
   }
 
   .xh-scope-time-range-picker[data-part='label'][data-disabled] {
-    color: var(--xh-time-range-picker-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-time-range-picker-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 画成一个框的是 control：几段文字、展开按钮、清空按钮要看起来是一体的，
@@ -50516,7 +50561,9 @@
   }
 
   .xh-scope-tree-select[data-part='label'] {
-    color: var(--xh-tree-select-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-tree-select-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-tree-select-label-gap, var(--xh-space-2)) - var(--xh-tree-select-gap, var(--xh-space-1)));
+    color: var(--xh-tree-select-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-tree-select-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-tree-select-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
@@ -50524,7 +50571,7 @@
 
   /* 整个控件禁用会把 data-disabled 一路打到 label / value-text / indicator 上，各处观感保持一致 */
   .xh-scope-tree-select[data-part='label'][data-disabled] {
-    color: var(--xh-fg-subtle);
+    color: var(--xh-tree-select-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 盒：描边、底色、圆角、控件高度、行内内衬、聚焦环、五态与悬停由 Field Chrome 家族画在这一层，

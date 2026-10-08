@@ -8738,6 +8738,9 @@
               "name": "--xh-cascader-label-font-weight"
             },
             {
+              "name": "--xh-cascader-label-gap"
+            },
+            {
               "name": "--xh-cascader-layer"
             },
             {
@@ -12369,6 +12372,9 @@
               "name": "--xh-color-field-label-font-weight"
             },
             {
+              "name": "--xh-color-field-label-gap"
+            },
+            {
               "name": "--xh-color-field-placeholder-fg"
             },
             {
@@ -13749,6 +13755,9 @@
               "name": "--xh-color-picker-label-font-weight"
             },
             {
+              "name": "--xh-color-picker-label-gap"
+            },
+            {
               "name": "--xh-color-picker-layer"
             },
             {
@@ -14278,6 +14287,9 @@
             },
             {
               "name": "--xh-color-slider-label-font-weight"
+            },
+            {
+              "name": "--xh-color-slider-label-gap"
             },
             {
               "name": "--xh-color-slider-thumb-bg"
@@ -16203,6 +16215,9 @@
             },
             {
               "name": "--xh-combobox-label-font-weight"
+            },
+            {
+              "name": "--xh-combobox-label-gap"
             },
             {
               "name": "--xh-combobox-layer"
@@ -18854,6 +18869,9 @@
               "name": "--xh-date-field-label-font-weight"
             },
             {
+              "name": "--xh-date-field-label-gap"
+            },
+            {
               "name": "--xh-date-field-literal-fg"
             },
             {
@@ -20369,6 +20387,9 @@
             },
             {
               "name": "--xh-date-picker-label-font-weight"
+            },
+            {
+              "name": "--xh-date-picker-label-gap"
             },
             {
               "name": "--xh-date-picker-layer"
@@ -21957,6 +21978,9 @@
             },
             {
               "name": "--xh-date-range-picker-label-font-weight"
+            },
+            {
+              "name": "--xh-date-range-picker-label-gap"
             },
             {
               "name": "--xh-date-range-picker-layer"
@@ -25076,6 +25100,9 @@
               "name": "--xh-editable-label-font-weight"
             },
             {
+              "name": "--xh-editable-label-gap"
+            },
+            {
               "name": "--xh-editable-placeholder-fg"
             },
             {
@@ -27350,6 +27377,9 @@
             },
             {
               "name": "--xh-file-upload-label-font-weight"
+            },
+            {
+              "name": "--xh-file-upload-label-gap"
             },
             {
               "name": "--xh-file-upload-list-max-h"
@@ -45570,6 +45600,9 @@
               "name": "--xh-number-field-label-font-weight"
             },
             {
+              "name": "--xh-number-field-label-gap"
+            },
+            {
               "name": "--xh-number-field-placeholder-fg"
             },
             {
@@ -47215,6 +47248,9 @@
               "name": "--xh-password-input-label-font-weight"
             },
             {
+              "name": "--xh-password-input-label-gap"
+            },
+            {
               "name": "--xh-password-input-placeholder-fg"
             },
             {
@@ -48644,6 +48680,9 @@
             },
             {
               "name": "--xh-pin-input-label-font-weight"
+            },
+            {
+              "name": "--xh-pin-input-label-gap"
             },
             {
               "name": "--xh-pin-input-placeholder-fg"
@@ -53496,6 +53535,9 @@
               "name": "--xh-rating-label-font-weight"
             },
             {
+              "name": "--xh-rating-label-gap"
+            },
+            {
               "name": "--xh-rating-value-text-fg"
             },
             {
@@ -57142,6 +57184,9 @@
               "name": "--xh-select-label-font-weight"
             },
             {
+              "name": "--xh-select-label-gap"
+            },
+            {
               "name": "--xh-select-layer"
             },
             {
@@ -59563,6 +59608,9 @@
             },
             {
               "name": "--xh-slider-label-font-weight"
+            },
+            {
+              "name": "--xh-slider-label-gap"
             },
             {
               "name": "--xh-slider-range-bg"
@@ -65682,6 +65730,9 @@
               "name": "--xh-tags-input-label-font-weight"
             },
             {
+              "name": "--xh-tags-input-label-gap"
+            },
+            {
               "name": "--xh-tags-input-placeholder-fg"
             }
           ]
@@ -66338,6 +66389,9 @@
               "name": "--xh-text-field-label-font-weight"
             },
             {
+              "name": "--xh-text-field-label-gap"
+            },
+            {
               "name": "--xh-text-field-placeholder-fg"
             },
             {
@@ -66899,6 +66953,9 @@
             },
             {
               "name": "--xh-time-field-label-font-weight"
+            },
+            {
+              "name": "--xh-time-field-label-gap"
             },
             {
               "name": "--xh-time-field-literal-fg"
@@ -68054,6 +68111,9 @@
               "name": "--xh-time-picker-label-font-weight"
             },
             {
+              "name": "--xh-time-picker-label-gap"
+            },
+            {
               "name": "--xh-time-picker-layer"
             },
             {
@@ -69097,6 +69157,9 @@
             },
             {
               "name": "--xh-time-range-picker-label-font-weight"
+            },
+            {
+              "name": "--xh-time-range-picker-label-gap"
             },
             {
               "name": "--xh-time-range-picker-layer"
@@ -75485,10 +75548,16 @@
               "name": "--xh-tree-select-label-fg"
             },
             {
+              "name": "--xh-tree-select-label-fg-disabled"
+            },
+            {
               "name": "--xh-tree-select-label-font-size"
             },
             {
               "name": "--xh-tree-select-label-font-weight"
+            },
+            {
+              "name": "--xh-tree-select-label-gap"
             },
             {
               "name": "--xh-tree-select-layer"

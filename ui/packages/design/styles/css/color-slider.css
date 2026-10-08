@@ -36,15 +36,17 @@
   /* 禁用不整体压暗：标签是文字，换到禁用前景；颜色带与拇指画的是颜色本身，换不得色，
      压暗只做一次、落在 control 上（track / thumb 各自再叠一层 opacity 会越叠越黑），拇指另收掉抬升 */
 
-  /* 字段标签：14 / 500 / fg-default，禁用换到 --xh-fg-subtle */
+  /* 字段标签：14 / 400 / fg-muted，与控件隔 space-2，禁用换到 --xh-fg-disabled */
   [data-scope='color-slider'][data-part='label'] {
-    color: var(--xh-color-slider-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-color-slider-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-color-slider-label-gap, var(--xh-space-2)) - var(--xh-color-slider-gap, var(--xh-space-1)));
+    color: var(--xh-color-slider-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-color-slider-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-color-slider-label-font-weight, var(--xh-text-label-weight));
   }
 
   [data-scope='color-slider'][data-part='label'][data-disabled] {
-    color: var(--xh-color-slider-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-color-slider-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 拇指以它为定位上下文（拇指常常浮出轨道，挂在 track 上会被轨道的盒子束住）。

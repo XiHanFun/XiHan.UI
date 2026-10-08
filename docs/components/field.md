@@ -219,13 +219,13 @@
 | `--xh-field-error-fg` | `error-text` | `color` | `default` | `--xh-fg-danger` | field 的 error-text 部件 color 覆盖槽。 |
 | `--xh-field-error-font-size` | `error-text`<br>`root` | `block-size`<br>`font-size` | `default`<br>`not(:has(> [data-scope='field'][data-part='description']:not([hidden])` | `--xh-text-secondary-size` | field 的 error-text、root 部件 block-size、font-size 覆盖槽。 |
 | `--xh-field-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | field 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
-| `--xh-field-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | field 的 label 部件 color 覆盖槽。 |
-| `--xh-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | field 的 label 部件 color 覆盖槽。 |
+| `--xh-field-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | field 的 label 部件 color 覆盖槽。 |
+| `--xh-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | field 的 label 部件 color 覆盖槽。 |
 | `--xh-field-label-fg-invalid` | `label` | `color` | `invalid` | `--xh-fg-danger` | field 的 label 部件 color 覆盖槽。 |
 | `--xh-field-label-font-size` | `label`<br>`root` | `font-size`<br>`padding-block` | `default`<br>`layout=horizontal` | `--xh-text-label-size` | field 的 label、root 部件 font-size、padding-block 覆盖槽。 |
 | `--xh-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | field 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-field-label-gap` | `root` | `column-gap` | `layout=horizontal` | `--xh-space-3` | field 的 root 部件 column-gap 覆盖槽。 |
-| `--xh-field-label-gap-block` | `label` | `margin-block-end` | `default` | `--xh-field-gap` | field 的 label 部件 margin-block-end 覆盖槽。 |
+| `--xh-field-label-gap` | `root` | `column-gap` | `layout=horizontal` | `--xh-space-4` | field 的 root 部件 column-gap 覆盖槽。 |
+| `--xh-field-label-gap-block` | `label` | `margin-block-end` | `default` | `--xh-space-2` | field 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-field-label-leading` | `label`<br>`root` | `line-height`<br>`padding-block` | `layout=horizontal` | `--xh-leading-normal` | field 的 label、root 部件 line-height、padding-block 覆盖槽。 |
 | `--xh-field-label-star` | `label` | `color` | `required` | `--xh-fg-danger` | field 的 label 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->

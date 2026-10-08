@@ -2,7 +2,8 @@
 // 门禁：文字按角色取排版令牌，图标按档取字形尺寸。
 //
 // 文字角色与字形尺寸：
-// 字段标签 = --xh-text-label-size 14 / --xh-text-label-weight 500 / --xh-fg-default，贴控件 --xh-space-1，不随 size 档；
+// 字段标签 = --xh-text-label-size 14 / --xh-text-label-weight 400 / --xh-fg-muted，竖排与控件隔 --xh-space-2，不随 size 档，
+// 禁用 --xh-fg-disabled（静息已是 muted，subtle 与它分不出）；
 // 控件随文标签（Checkbox / Switch 的 <label> 整行：方框 / 轨道 + 它自己的文字）= 控件文字，字号随档取
 // --xh-control-font-sm / md / lg（控件字号随档，与 checkbox-group / radio-group 的条目文字同一把尺），
 // 颜色 --xh-fg-default；
@@ -10,7 +11,7 @@
 // 说明 = --xh-text-secondary-size 13 / --xh-fg-muted / --xh-leading-normal；错误文案 = 13 / --xh-fg-danger；
 // Surface / 浮层内标题 = --xh-text-label-size + --xh-font-weight-medium；区块标题（Card / Descriptions / Alert / Notification / Steps）
 // 与面板标题（Dialog / Drawer / Tour）= heading-3（16 / 500）；页面标题（PageHeader）= heading-2（20 / 500）；
-// 禁用标签 --xh-fg-subtle；控件内图标 --xh-icon-size 兜底只能是 --xh-glyph-size-sm / md / lg（按 data-size），
+// 其余标签禁用 --xh-fg-subtle；控件内图标 --xh-icon-size 兜底只能是 --xh-glyph-size-sm / md / lg（按 data-size），
 // --xh-glyph-size-text 只许纯行内文字组件（Tag / Kbd / Breadcrumb / Typography / Highlight）；
 // Feedback 指示符（Alert / Notification）统一 --xh-glyph-size-md。
 //
@@ -272,10 +273,10 @@ for (const scope of FIELD_LABEL) {
   const label = declsFor(scope, 'label')
   expect(scope, 'label', label, 'font-size', '--xh-text-label-size', '字段标签字号不随档，')
   expect(scope, 'label', label, 'font-weight', '--xh-text-label-weight', '字段标签')
-  expect(scope, 'label', label, 'color', '--xh-fg-default', '字段标签')
-  expectSpacing(scope, 'label', label, '--xh-space-1', '字段标签贴控件')
+  expect(scope, 'label', label, 'color', '--xh-fg-muted', '字段标签')
+  expectSpacing(scope, 'label', label, '--xh-space-2', '字段标签与控件')
   const disabled = declsFor(scope, 'label', '[data-disabled]')
-  expect(scope, 'label', disabled, 'color', '--xh-fg-subtle', '禁用标签色统一')
+  expect(scope, 'label', disabled, 'color', '--xh-fg-disabled', '字段标签静息已是 muted，禁用')
 }
 
 // 控件随文标签
@@ -392,7 +393,7 @@ if (problems.length) {
   console.error('[check-text-role] ✗ 文字与图标没按角色取令牌：')
   for (const p of problems)
     console.error(`  ${p}`)
-  console.error('\n字段标签 14/400/fg-default 贴控件 space-1 · 集合标题 fg-muted + space-2 · 说明 13/fg-muted · 浮层内标题 14/500 · 区块与面板标题 heading-3 · 页面标题 heading-2 · 图标随档 sm/md/lg。存量登 family-backlog.json text 段。')
+  console.error('\n字段标签 14/400/fg-muted 与控件 space-2、禁用 fg-disabled · 集合标题 fg-muted + space-2 · 说明 13/fg-muted · 浮层内标题 14/500 · 区块与面板标题 heading-3 · 页面标题 heading-2 · 图标随档 sm/md/lg。存量登 family-backlog.json text 段。')
   process.exit(1)
 }
 
