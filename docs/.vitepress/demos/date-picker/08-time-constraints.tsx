@@ -109,7 +109,7 @@ export default function Demo(): ReactNode {
                   {/* 界外与判为不可用的格留在列里、按不下去，列长不随所选的日子变 */}
                   <XhDatePickerTimePanel />
                 </div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBlockStart: "var(--xh-space-2)", marginInline: "calc(-1 * var(--xh-space-2))", marginBlockEnd: "calc(-1 * var(--xh-space-2))", paddingBlock: "var(--xh-space-1)", paddingInline: "var(--xh-space-2)", borderBlockStart: "var(--xh-stroke-thin) solid var(--xh-border-subtle)" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", padding: "var(--xh-space-2)", borderBlockStart: "var(--xh-stroke-thin) solid var(--xh-border-default)" }}>
                   <XhDatePickerConfirmTrigger>确定</XhDatePickerConfirmTrigger>
                 </div>
               </XhDatePickerContent>

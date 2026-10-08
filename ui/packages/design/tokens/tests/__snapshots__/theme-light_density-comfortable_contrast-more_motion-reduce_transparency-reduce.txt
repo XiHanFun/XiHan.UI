@@ -358,7 +358,7 @@
 --xh-nav-row-h-sm: 32px  ← var(--xh-control-h-md)
 --xh-overlay-arrow-size: 8px  ← var(--xh-space-2)
 --xh-overlay-backdrop-blur: 12px
---xh-overlay-calendar-column-h: calc(28px * 7 + 28px)  ← calc(var(--xh-control-h-sm) * 7 + var(--xh-space-7))
+--xh-overlay-calendar-column-h: calc(32px + (24px + 6px * 2) * 6 + 12px * 2)  ← calc(var(--xh-control-h-md) + (var(--xh-control-action-size) + var(--xh-space-1_5) * 2) * 6 + var(--xh-space-3) * 2)
 --xh-overlay-column-item-h: calc(28px - 4px)  ← calc(var(--xh-control-h-sm) - var(--xh-space-1))
 --xh-overlay-column-min-w: 3.5rem
 --xh-overlay-drawer-w-lg: 28rem

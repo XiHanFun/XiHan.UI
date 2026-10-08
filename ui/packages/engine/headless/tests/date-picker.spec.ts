@@ -1525,13 +1525,13 @@ describe('connectDatePicker 家族角色', () => {
     expect(mount({ size: 'sm' }).trigger.getAttribute('data-xh-action-size')).toBe('sm')
   })
 
-  it('确认钮走 Action Control 的 text solid 档（面板内唯一主要动作），固定 sm 档', () => {
+  it('确认钮走 Action Control 的 text solid 档（面板内唯一主要动作），固定 xs 档', () => {
     const confirm = mount({ showTime: true }).api().getConfirmTriggerProps() as Record<string, unknown>
     expect(confirm['data-xh-action-control']).toBe('')
     expect(confirm['data-xh-action-profile']).toBe('text')
     expect(confirm['data-xh-action-variant']).toBe('solid')
     expect(confirm['data-xh-action-display']).toBe('always')
-    expect(confirm['data-xh-action-size']).toBe('sm')
+    expect(confirm['data-xh-action-size']).toBe('xs')
   })
 
   it('快捷选项与时间格都投影 Collection Item 的 overlay 语境与尺寸档', () => {

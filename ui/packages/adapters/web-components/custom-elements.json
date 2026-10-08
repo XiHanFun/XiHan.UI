@@ -20314,7 +20314,13 @@
               "name": "--xh-date-picker-confirm-trigger-fg"
             },
             {
+              "name": "--xh-date-picker-confirm-trigger-font-size"
+            },
+            {
               "name": "--xh-date-picker-confirm-trigger-h"
+            },
+            {
+              "name": "--xh-date-picker-confirm-trigger-margin"
             },
             {
               "name": "--xh-date-picker-confirm-trigger-px"
@@ -20404,6 +20410,9 @@
               "name": "--xh-date-picker-gap"
             },
             {
+              "name": "--xh-date-picker-heading-font-weight"
+            },
+            {
               "name": "--xh-date-picker-icon-size"
             },
             {
@@ -20428,13 +20437,10 @@
               "name": "--xh-date-picker-max-h"
             },
             {
-              "name": "--xh-date-picker-panel-divider"
-            },
-            {
-              "name": "--xh-date-picker-panel-gap"
-            },
-            {
               "name": "--xh-date-picker-placeholder-fg"
+            },
+            {
+              "name": "--xh-date-picker-preset-bg"
             },
             {
               "name": "--xh-date-picker-preset-bg-hover"
@@ -20449,10 +20455,13 @@
               "name": "--xh-date-picker-preset-check-size"
             },
             {
+              "name": "--xh-date-picker-preset-fg"
+            },
+            {
               "name": "--xh-date-picker-preset-fg-disabled"
             },
             {
-              "name": "--xh-date-picker-preset-fg-selected"
+              "name": "--xh-date-picker-preset-font-size"
             },
             {
               "name": "--xh-date-picker-preset-group-gap"
@@ -20461,13 +20470,16 @@
               "name": "--xh-date-picker-preset-group-h"
             },
             {
-              "name": "--xh-date-picker-preset-group-padding"
+              "name": "--xh-date-picker-preset-group-px"
+            },
+            {
+              "name": "--xh-date-picker-preset-group-py"
+            },
+            {
+              "name": "--xh-date-picker-preset-h"
             },
             {
               "name": "--xh-date-picker-preset-px"
-            },
-            {
-              "name": "--xh-date-picker-preset-py"
             },
             {
               "name": "--xh-date-picker-preset-radius"
@@ -20491,13 +20503,13 @@
               "name": "--xh-date-picker-time-column-offset"
             },
             {
-              "name": "--xh-date-picker-time-column-padding"
-            },
-            {
               "name": "--xh-date-picker-time-column-px"
             },
             {
               "name": "--xh-date-picker-time-column-px-mobile"
+            },
+            {
+              "name": "--xh-date-picker-time-column-py"
             },
             {
               "name": "--xh-date-picker-time-item-bg-hover"
@@ -20528,9 +20540,6 @@
             },
             {
               "name": "--xh-date-picker-time-item-px"
-            },
-            {
-              "name": "--xh-date-picker-time-item-py"
             },
             {
               "name": "--xh-date-picker-time-item-radius"

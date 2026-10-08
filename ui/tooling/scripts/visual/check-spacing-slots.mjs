@@ -123,6 +123,8 @@ const CROSS_PART = {
   // 预设列与时间列并排在同一行，分隔线取同一族，两列之间只有一道等宽的线
   'time-picker.column': ['preset-group'],
   'time-range-picker.column': ['preset-group'],
+  // 时间列底的留白要让末格也能滚到列顶：留白 = 列高 − 一格的高 − 列顶内衬，读格子的高度槽
+  'date-picker.time-item': ['time-column'],
   // 工具名用等宽字族，摘要行里跟着它排；耗时与错误行与状态标签同一档字号
   'tool-call.label': ['summary'],
   'tool-call.status': ['duration', 'error'],
