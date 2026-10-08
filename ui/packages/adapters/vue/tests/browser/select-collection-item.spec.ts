@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhSelectRoot } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -114,7 +115,7 @@ describe('select 使用 Collection Item', () => {
     expect(new Set(measurements.map(value => value.glyphSize)).size).toBe(3)
   })
 
-  it('selected 与 checked 保留对号，hover 和键盘高亮分别叠加且不改变字重或宽度', async () => {
+  it('selected 与 checked 保留对号、字重升到 medium，hover 和键盘高亮分别叠加且不改变字重或宽度', async () => {
     // 指针点开：随后划过条目时脚本搬去的焦点不带 :focus-visible，指针高亮只换面、不画环。
     // defaultOpen 那条路的焦点带 :focus-visible，公共聚焦环会照画——描边色不再过渡后同步读也读得到它
     const [plain, selected, disabled] = await mountSelect('md', 'pointer')
@@ -123,7 +124,8 @@ describe('select 使用 Collection Item', () => {
     expect(selected!.dataset.state).toBe('checked')
     expect(disabled!.getAttribute('aria-disabled')).toBe('true')
     expect(getComputedStyle(indicator).opacity).toBe('1')
-    expect(getComputedStyle(selected!).fontWeight).toBe(getComputedStyle(plain!).fontWeight)
+    expect(getComputedStyle(selected!).fontWeight).toBe(tokenValue('font-weight', '--xh-font-weight-medium', selected!))
+    expect(getComputedStyle(plain!).fontWeight).toBe(tokenValue('font-weight', '--xh-font-weight-regular', plain!))
 
     const width = selected!.getBoundingClientRect().width
     const rest = getComputedStyle(plain!).backgroundColor

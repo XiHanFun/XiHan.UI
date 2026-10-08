@@ -2,6 +2,7 @@ import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import { XhSelectRoot } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles/layers.css'
 import '@xihan-ui/styles/tone.css'
@@ -43,7 +44,7 @@ describe('collection Item 单皮肤入口', () => {
     expect(selectedStyle.paddingBlockStart).toBe('6px')
     expect(selectedStyle.paddingInlineStart).toBe('12px')
     expect(selectedStyle.fontSize).toBe('14px')
-    expect(selectedStyle.fontWeight).toBe('400')
+    expect(selectedStyle.fontWeight).toBe(tokenValue('font-weight', '--xh-font-weight-medium', selected!))
     expect(getComputedStyle(indicator).opacity).toBe('1')
     expect(getComputedStyle(disabled!).cursor).toBe('not-allowed')
   })
