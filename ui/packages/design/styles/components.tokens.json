@@ -3913,7 +3913,30 @@
         "xh-collection-context=nav"
       ],
       "defaultToken": [
-        "--xh-_breadcrumb-accent-text"
+        "--xh-_tone-fg"
+      ],
+      "visibility": "public",
+      "description": "breadcrumb 的 link 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-breadcrumb-link-fg-pressed",
+      "component": "breadcrumb",
+      "part": [
+        "link"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "is(:active, [data-pressed])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=nav"
+      ],
+      "defaultToken": [
+        "--xh-_tone-fg"
       ],
       "visibility": "public",
       "description": "breadcrumb 的 link 部件 color 覆盖槽。"
@@ -3955,6 +3978,25 @@
       ],
       "visibility": "public",
       "description": "breadcrumb 的 link 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-breadcrumb-link-h",
+      "component": "breadcrumb",
+      "part": [
+        "ellipsis-trigger",
+        "link"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-action-size"
+      ],
+      "visibility": "public",
+      "description": "breadcrumb 的 ellipsis-trigger、link 部件 min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-breadcrumb-link-icon-size",
@@ -4043,7 +4085,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-disabled"
       ],
       "visibility": "public",
       "description": "breadcrumb 的 ellipsis、separator 部件 color 覆盖槽。"

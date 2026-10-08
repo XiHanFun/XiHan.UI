@@ -27,11 +27,11 @@ function mount() {
   host.style.setProperty('--xh-motion-duration-press', '0ms')
   host.style.setProperty('--xh-motion-duration-release', '0ms')
   host.innerHTML = `
-    <nav data-scope="breadcrumb" data-part="root">
-      <ol data-scope="breadcrumb" data-part="list">
-        <li data-scope="breadcrumb" data-part="item"><a data-scope="breadcrumb" data-part="link" data-xh-collection-item data-xh-collection-context="nav" data-xh-collection-size="md" href="#a">首页</a></li>
-        <li data-scope="breadcrumb" data-part="separator" aria-hidden="true"></li>
-        <li data-scope="breadcrumb" data-part="item"><a data-scope="breadcrumb" data-part="link" data-current aria-current="page" aria-disabled="true" data-xh-collection-item data-xh-collection-context="nav" data-xh-collection-size="md" data-xh-collection-terminal>订单</a></li>
+    <nav data-scope="breadcrumb" class="xh-scope-breadcrumb" data-part="root">
+      <ol data-scope="breadcrumb" class="xh-scope-breadcrumb" data-part="list">
+        <li data-scope="breadcrumb" class="xh-scope-breadcrumb" data-part="item"><a data-scope="breadcrumb" class="xh-scope-breadcrumb" data-part="link" data-xh-collection-item data-xh-collection-context="nav" data-xh-collection-size="md" href="#a">首页</a></li>
+        <li data-scope="breadcrumb" class="xh-scope-breadcrumb" data-part="separator" aria-hidden="true"></li>
+        <li data-scope="breadcrumb" class="xh-scope-breadcrumb" data-part="item"><a data-scope="breadcrumb" class="xh-scope-breadcrumb" data-part="link" data-current aria-current="page" aria-disabled="true" data-xh-collection-item data-xh-collection-context="nav" data-xh-collection-size="md" data-xh-collection-terminal>订单</a></li>
       </ol>
     </nav>`
   document.body.append(host)
@@ -39,13 +39,16 @@ function mount() {
 }
 
 describe('breadcrumb 链接阶梯与当前页', () => {
-  it('白底承载的阶梯：hover 100 → pressed 200，只换面不缩放', async () => {
+  it('白底承载的阶梯：hover 100 + 品牌字 → pressed 200 + 深一档品牌字，只换面不缩放；链接盒至少 24px 高', async () => {
     const [link] = mount()
     expect(getComputedStyle(link!).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(link!.getBoundingClientRect().height).toBeGreaterThanOrEqual(24)
     await userEvent.hover(link!)
     expect(getComputedStyle(link!).backgroundColor).toBe(resolvedToken('--xh-bg-subtle'))
+    expect(getComputedStyle(link!).color).toBe(resolvedToken('--xh-fg-brand'))
     link!.setAttribute('data-pressed', '')
     expect(getComputedStyle(link!).backgroundColor).toBe(resolvedToken('--xh-bg-subtle-hover'))
+    expect(getComputedStyle(link!).color).toBe(resolvedToken('--xh-fg-brand-strong'))
     expect(getComputedStyle(link!).scale).toBe('none')
   })
 

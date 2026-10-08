@@ -59,7 +59,7 @@
 - `collection` 可直接生成完整路径，也支持手写部件。
 - `maxItems` 将过长路径的中间层折叠为一个省略位。省略位里的 `ellipsis-trigger` 是被折叠层级的入口：它是一枚按钮，键盘可达、读屏念出 `translations.ellipsis`（缺省 Show full path），按下即就地展开完整路径，省略位收起，焦点落到第一条展开出来的链接上；展开后不再折回。
 - Vue / React 由 `collection` 铺开时自动折叠与展开；Web Components 把完整路径逐层写成部件，在首层之后放一个装着触发器的省略位，元素按 `max-items` 收起中间层，展开后放出来。
-- 默认分隔符为箭头，可通过插槽或渲染函数替换。
+- 默认分隔符为一条斜线，可通过插槽或渲染函数替换。
 - 当前页使用 `aria-current="page"`，不参与键盘导航。
 
 ### 组合
@@ -243,14 +243,16 @@
 | `--xh-breadcrumb-link-bg-hover` | `link` | `background-color` | `disabled`<br>`error`<br>`hover`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`xh-collection-context=nav` | `--xh-bg-subtle` | breadcrumb 的 link 部件 background-color 覆盖槽。 |
 | `--xh-breadcrumb-link-bg-pressed` | `link` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=nav` | `--xh-bg-subtle-hover` | breadcrumb 的 link 部件 background-color 覆盖槽。 |
 | `--xh-breadcrumb-link-fg-current` | `link` | `color` | `current`<br>`xh-collection-context=nav`<br>`xh-collection-terminal` | `--xh-_breadcrumb-accent-text` | breadcrumb 的 link 部件 color 覆盖槽。 |
-| `--xh-breadcrumb-link-fg-hover` | `link` | `color` | `disabled`<br>`error`<br>`hover`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`xh-collection-context=nav` | `--xh-_breadcrumb-accent-text` | breadcrumb 的 link 部件 color 覆盖槽。 |
+| `--xh-breadcrumb-link-fg-hover` | `link` | `color` | `disabled`<br>`error`<br>`hover`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`xh-collection-context=nav` | `--xh-_tone-fg` | breadcrumb 的 link 部件 color 覆盖槽。 |
+| `--xh-breadcrumb-link-fg-pressed` | `link` | `color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=nav` | `--xh-_tone-fg` | breadcrumb 的 link 部件 color 覆盖槽。 |
 | `--xh-breadcrumb-link-font-weight-current` | `link` | `font-weight` | `current`<br>`xh-collection-context=nav`<br>`xh-collection-terminal` | `--xh-font-weight-medium` | breadcrumb 的 link 部件 font-weight 覆盖槽。 |
 | `--xh-breadcrumb-link-gap` | `link` | `gap` | `default` | `--xh-space-1` | breadcrumb 的 link 部件 gap 覆盖槽。 |
+| `--xh-breadcrumb-link-h` | `ellipsis-trigger`<br>`link` | `min-block-size` | `default` | `--xh-control-action-size` | breadcrumb 的 ellipsis-trigger、link 部件 min-block-size 覆盖槽。 |
 | `--xh-breadcrumb-link-icon-size` | `link-icon` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-text` | breadcrumb 的 link-icon 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-breadcrumb-link-max-w` | `link` | `max-inline-size` | `default` | `--xh-nav-link-max-w` | breadcrumb 的 link 部件 max-inline-size 覆盖槽。 |
 | `--xh-breadcrumb-link-px` | `link` | `padding-inline` | `default` | `--xh-space-1` | breadcrumb 的 link 部件 padding-inline 覆盖槽。 |
 | `--xh-breadcrumb-link-radius` | `link` | `border-radius` | `default` | `--xh-shape-control` | breadcrumb 的 link 部件 border-radius 覆盖槽。 |
-| `--xh-breadcrumb-separator-fg` | `ellipsis`<br>`separator` | `color` | `default` | `--xh-fg-subtle` | breadcrumb 的 ellipsis、separator 部件 color 覆盖槽。 |
+| `--xh-breadcrumb-separator-fg` | `ellipsis`<br>`separator` | `color` | `default` | `--xh-fg-disabled` | breadcrumb 的 ellipsis、separator 部件 color 覆盖槽。 |
 | `--xh-breadcrumb-separator-size` | `separator` | `inline-size` | `default` | `--xh-glyph-size-text` | breadcrumb 的 separator 部件 inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
@@ -259,7 +261,3 @@
 动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
-
-### RTL
-
-另有按 `dir` 分支的规则。
