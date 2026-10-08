@@ -35614,10 +35614,16 @@
               "name": "--xh-image-viewer-layer"
             },
             {
+              "name": "--xh-image-viewer-nav-size"
+            },
+            {
               "name": "--xh-image-viewer-overlay-radius"
             },
             {
               "name": "--xh-image-viewer-status-size"
+            },
+            {
+              "name": "--xh-image-viewer-toolbar-bg"
             },
             {
               "name": "--xh-image-viewer-toolbar-gap"

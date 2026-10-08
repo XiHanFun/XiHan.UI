@@ -9,6 +9,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhButton,
+  XhImageViewerCloseTrigger,
   XhImageViewerContent,
   XhImageViewerImage,
   XhImageViewerRoot,
@@ -154,18 +155,24 @@ describe('tooltip 反白面', () => {
 })
 
 describe('imageViewer 看片层', () => {
-  it('整层是白墨域：焦点环取白墨', async () => {
+  it('整层是白墨域：焦点环取白墨；工具条是页面主题面，条里的钮按它的底色另取墨色', async () => {
     const PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
     await mount(() => h(XhImageViewerRoot, { collection: [{ src: PIXEL, alt: '一张' }], defaultOpen: true }, () => [
       h(XhImageViewerContent, () => [
         h(XhImageViewerViewport, () => h(XhImageViewerImage)),
         h(XhImageViewerToolbar, () => [h(XhImageViewerZoomInTrigger)]),
+        h(XhImageViewerCloseTrigger),
       ]),
     ]), { 'data-theme': 'light' })
     const content = document.querySelector<HTMLElement>('[data-scope="image-viewer"][data-part="content"]')!
     expect(content.getAttribute('data-xh-ink')).toBe('light')
+    const close = document.querySelector<HTMLElement>('[data-scope="image-viewer"][data-part="close-trigger"]')!
+    expect(rgba(getComputedStyle(close).getPropertyValue('--xh-ring-focus'))).toEqual([1, 1, 1, 1])
+    // 亮色页面上工具条是白面：条里的钮成了黑墨域，焦点环取黑墨
+    const toolbar = document.querySelector<HTMLElement>('[data-scope="image-viewer"][data-part="toolbar"]')!
+    expect(toolbar.hasAttribute('data-xh-ink-surface')).toBe(true)
     const trigger = document.querySelector<HTMLElement>('[data-scope="image-viewer"][data-part="zoom-in-trigger"]')!
-    expect(rgba(getComputedStyle(trigger).getPropertyValue('--xh-ring-focus'))).toEqual([1, 1, 1, 1])
+    expect(rgba(getComputedStyle(trigger).getPropertyValue('--xh-ring-focus'))).toEqual([0, 0, 0, 1])
     // 这一层自己的字色取原语，不受域改写
     expect(rgba(getComputedStyle(content).color)).toEqual([1, 1, 1, 1])
   })

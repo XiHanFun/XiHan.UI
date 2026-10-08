@@ -40247,7 +40247,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-color-neutral-950"
+        "--xh-bg-overlay"
       ],
       "visibility": "public",
       "description": "image-viewer 的 backdrop 部件 background 覆盖槽。"
@@ -40434,7 +40434,8 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
         "default",
@@ -40442,10 +40443,10 @@
         "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-_action-profile-visual-size"
+        "--xh-_image-viewer-nav-size"
       ],
       "visibility": "public",
-      "description": "image-viewer 的 close-trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "image-viewer 的 close-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-image-viewer-counter-padding",
@@ -40540,6 +40541,7 @@
       ],
       "defaultToken": [
         "--xh-_action-profile-glyph-size",
+        "--xh-_image-viewer-nav-glyph",
         "--xh-glyph-size-md"
       ],
       "visibility": "public",
@@ -40562,6 +40564,29 @@
       ],
       "visibility": "public",
       "description": "image-viewer 的 positioner 部件 z-index 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-viewer-nav-size",
+      "component": "image-viewer",
+      "part": [
+        "next-trigger",
+        "prev-trigger"
+      ],
+      "property": [
+        "block-size",
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default",
+        "xh-action-profile=floating",
+        "xh-action-profile=icon"
+      ],
+      "defaultToken": [
+        "--xh-_image-viewer-nav-size"
+      ],
+      "visibility": "public",
+      "description": "image-viewer 的 next-trigger、prev-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-image-viewer-overlay-radius",
@@ -40607,6 +40632,25 @@
       ],
       "visibility": "public",
       "description": "image-viewer 的 viewport 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-viewer-toolbar-bg",
+      "component": "image-viewer",
+      "part": [
+        "toolbar"
+      ],
+      "property": [
+        "--xh-ink-surface",
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_image-viewer-page-surface"
+      ],
+      "visibility": "public",
+      "description": "image-viewer 的 toolbar 部件 --xh-ink-surface、background 覆盖槽。"
     },
     {
       "name": "--xh-image-viewer-toolbar-gap",

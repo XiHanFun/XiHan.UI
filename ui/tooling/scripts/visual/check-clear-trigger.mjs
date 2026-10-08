@@ -25,13 +25,19 @@ const EMBEDDED = ['cascader', 'tree-select', 'combobox', 'date-picker', 'date-ra
 const STANDALONE = ['file-upload', 'signature-pad']
 /**
  * ③ 浮层角落关闭钮；值是尺寸基准的例外。
- * image-viewer：悬浮在媒体上的叉与翻页钮同走 floating 档、比翻页钮低一档（圆形）：组件 sm / md 时 sm（--xh-control-box-sm），lg 时 md（--xh-control-box-md）。
+ * image-viewer：悬浮在媒体上的叉与翻页钮同走 floating 档、与组件同档（圆形），视觉盒取控件高：组件 sm / md / lg 时
+ * --xh-control-h-sm / -md / -lg（尺由皮肤私有槽 --xh-_image-viewer-nav-size 按档给出，与翻页钮同一把）。
  * notification：按预设分两档。卡片的叉钉在面板角上，走 --xh-control-h-sm；轻提示的叉排在单行短消息里，
  * 不在面板角上——28px 比一行正文的行盒还高，走行级动作钮那一档。
  */
-const CLOSE = { 'dialog': null, 'drawer': null, 'popover': null, 'tour': null, 'alert': null, 'floating-panel': null, 'image-viewer': ['--xh-control-box-sm', '--xh-control-box-md'], 'notification': ['--xh-control-h-sm', '--xh-control-action-size'] }
+const CLOSE = { 'dialog': null, 'drawer': null, 'popover': null, 'tour': null, 'alert': null, 'floating-panel': null, 'image-viewer': ['--xh-control-h-sm', '--xh-control-h-md', '--xh-control-h-lg'], 'notification': ['--xh-control-h-sm', '--xh-control-action-size'] }
 /** 部件名与 close-trigger 不同的，逐条登记（通知的叉在卡片那一层，叫 item-close-trigger）。 */
 const CLOSE_PART = { notification: 'item-close-trigger' }
+/**
+ * ③ 使用者尺寸槽的兜底不是家族档位尺、而是皮肤自己按档给的尺：逐条登记。
+ * image-viewer：叉与两颗翻页钮共用一把按档的控件高，floating 档自己的尺（box）比它大一圈。
+ */
+const CLOSE_SIZE_FALLBACK = { 'image-viewer': '--xh-_image-viewer-nav-size' }
 /**
  * ③ 前景槽的例外：这颗叉不自定前景，颜色随别处走。
  * 登记了却其实有槽的照样报，免得名单变成过期的免检通行证。
@@ -264,10 +270,13 @@ for (const c of STANDALONE) {
 }
 
 /** ③ 尺寸基准与 Action Control 档位的对应：接了家族的叉由连接层投 data-xh-action-size，档位得与基准同高。 */
-const CLOSE_ACTION_SIZE = { '--xh-control-h-sm': 'sm', '--xh-control-action-size': 'xs', '--xh-control-h-lg': 'lg', '--xh-control-box-sm': 'sm', '--xh-control-box-md': 'md' }
+const CLOSE_ACTION_SIZE = { '--xh-control-h-sm': 'sm', '--xh-control-action-size': 'xs', '--xh-control-h-md': 'md', '--xh-control-h-lg': 'lg', '--xh-control-box-sm': 'sm', '--xh-control-box-md': 'md' }
 
 /** 共用取档函数投出的档位：表达式里没有字面量可读，按函数的取值范围登记（shared/floating-size.ts）。 */
 const SIZE_HELPERS = { floatingSizeBelow: ['md', 'sm'] }
+
+/** 把组件 size 原样投出的变量名：三档都可能。 */
+const SIZE_PASSTHROUGH = { size: ['lg', 'md', 'sm'] }
 
 /** 基础块里某条桥接槽的取值（选择器尾巴为空的那些规则）。 */
 function bridgeIn(rules, name) {
@@ -310,9 +319,10 @@ for (const [c, sizeException] of Object.entries(CLOSE)) {
   if (sharedAction) {
     const family = await readFile(ACTION_FAMILY, 'utf8')
     const rules = rulesOf(css, c, part)
-    const sizeRe = new RegExp(`--xh-action-visual-size:\\s*var\\(--xh-${esc(c)}-close-size,\\s*var\\(--xh-_action-profile-visual-size\\)\\)`)
+    const fallback = CLOSE_SIZE_FALLBACK[c] ?? '--xh-_action-profile-visual-size'
+    const sizeRe = new RegExp(`--xh-action-visual-size:\\s*var\\(--xh-${esc(c)}-close-size,\\s*var\\(${esc(fallback)}\\)\\)`)
     if (!has(rules, (t, b) => t.trim() === '' && sizeRe.test(b)))
-      problems.push(`${c}.css [${part}] 没把 --xh-${c}-close-size 映到家族正方盒（--xh-action-visual-size）`)
+      problems.push(`${c}.css [${part}] 没把 --xh-${c}-close-size 映到家族正方盒（--xh-action-visual-size: var(--xh-${c}-close-size, var(${fallback}))）`)
     const shape = profile === 'floating' ? '--xh-shape-circle' : '--xh-shape-control'
     const radiusRe = new RegExp(`--xh-action-radius:\\s*var\\(--xh-${esc(c)}-close-radius,\\s*var\\(${shape}\\)\\)`)
     if (!has(rules, (t, b) => t.trim() === '' && radiusRe.test(b)))
@@ -325,7 +335,7 @@ for (const [c, sizeException] of Object.entries(CLOSE)) {
     const bases = [sizeException ?? '--xh-control-h-sm'].flat()
     const want = [...new Set(bases.map(base => CLOSE_ACTION_SIZE[base]))].sort()
     const expr = /['"]data-xh-action-size['"]\s*:\s*([^,\n]+)/.exec(g ?? '')?.[1] ?? ''
-    const helper = Object.entries(SIZE_HELPERS).find(([name]) => expr.includes(`${name}(`))?.[1]
+    const helper = Object.entries(SIZE_HELPERS).find(([name]) => expr.includes(`${name}(`))?.[1] ?? SIZE_PASSTHROUGH[expr.trim()]
     const sizes = helper ? [...helper].sort() : [...new Set([...expr.matchAll(/['"]([a-z]+)['"]/g)].map(m => m[1]))].sort()
     if (sizes.join() !== want.join())
       problems.push(`${c}.connect.ts 的 ${part} 投的 data-xh-action-size 是 ${sizes.join(' / ') || '（没投）'}，尺寸基准 ${bases.join(' / ')} 对应 ${want.join(' / ')} 档`)

@@ -152,7 +152,8 @@ Vue、React、Web Components 只负责：
 | 图例项 | Action Control `text` profile、ghost、xs 档 | 按压换面；显隐标记见 §7.3「图例显隐」 |
 | 面板内关闭钮（Dialog、Drawer、Tour、Notification 卡片预设、Popover、Citation 预览） | Action Control `icon` profile、ghost、sm 档（Citation 为 xs），control 形状 | 绝对定位在右上角，内缩 `--xh-surface-action-inset`；Popover 气泡内衬比面板小一档，内缩取 `--xh-space-2`，否则叉会伸出气泡的盒子被裁掉；FloatingPanel 的叉排在 header 流里；Alert 的叉行内垂直居中 |
 | Notification 轻提示预设的关闭钮 | Action Control `icon` profile、ghost、xs 档 | 轻提示一句话一行，叉排在行尾、取 xs；可悬停设备上悬停或聚焦才显，触屏常显 |
-| ImageViewer 关闭钮 | Action Control `floating` profile、sm 档（40px）、circle | 悬浮在媒体上的单图标动作，与翻页钮同一身份 |
+| ImageViewer 关闭钮 | Action Control `floating` profile、与组件同档、视觉盒取控件高（md 32px）、circle | 悬浮在媒体上的单图标动作，与翻页钮同一身份、同一把尺 |
+| ImageViewer 工具条 | 页面主题的实体面 + 1px `--xh-border-default`、surface 形状 | 压在看片层的白墨域里：面色在域外取，连接层投影 `data-xh-ink-surface`，条里七颗钮（icon 档 xs 字形 16px、视觉盒 `control-box-md`）按它的底色自成墨色域，悬停 / 按下走白底阶梯；翻页钮、关闭钮与计数留在深纱上（白面压在亮图上分不出来） |
 | Tag / TagsInput 标签内的移除钮 | 行内标记，不投影 Action Control | 字形与命中区取指示符档（`--xh-control-indicator-size`），悬停只换 currentColor 淡底；胶囊内放不下 xs 视觉盒 |
 | 图例色标 | 标记 | 柱、面积系列为方块（inset）；折线为 2px 短线（pill）；散点为该系列的符号 |
 | 图表提示框（含 Heatmap 详情条） | Overlay：frosted | 不反白；见 §8.4 |
@@ -450,7 +451,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 - text 档宽按内容，下限等于高；icon、field-inset、floating 是正方盒。
 - 字形：text / icon 为 16 / 16 / 20 / 24px；field-inset 为 `control-indicator-sm`、`control-indicator-md`、16px、20px；floating 为 16 / 16 / 20 / 24px。
-- floating 缺省 md（40px，compact 36px）：浮在内容之上的圆钮在矮视口与小卡片里不叠住内容与彼此。主控制钮（Carousel 与 ImageViewer 的翻页、BackTop、FloatButton）随组件 `size` 同档；从属的钮（ImageViewer 的关闭、Log / MessageFeed 的回到底部）比组件低一档、最低 sm。
+- floating 缺省 md（40px，compact 36px）：浮在内容之上的圆钮在矮视口与小卡片里不叠住内容与彼此。主控制钮（Carousel 与 ImageViewer 的翻页、BackTop、FloatButton）随组件 `size` 同档；从属的钮（Log / MessageFeed 的回到底部）比组件低一档、最低 sm。ImageViewer 的翻页与关闭钮同档，视觉盒取控件高 `control-h-*`（md 32px）、字形 sm / md 16px、lg 20px，距边分别为 20px 与 32px：看片台上的媒体控制不压画面。
 - Dialog、Drawer、Popover、Tour、Notification 的关闭钮取 `control-h-sm`。
 
 #### 字段
@@ -731,7 +732,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 | 面 | 做法 |
 | --- | --- |
 | 实心语气面（Action Control 实心档、Tag solid）、Tooltip 反白面 | 连接层打 `data-xh-ink-surface`，皮肤把自己当前的底色写进 `--xh-ink-surface`；域落在面的直接子元素上，按 auto 同一套规则选墨，更深的后代沿继承取值。面自身的底、字与焦点环仍按外层取值 |
-| ImageViewer 看片层 | 两种主题下都压在深色遮罩上，content 声明 `data-xh-ink="light"`；这一层自己的面取原语 |
+| ImageViewer 看片层 | 两种主题下都压在深色遮罩上，content 声明 `data-xh-ink="light"`；这一层自己的面取原语。底部工具条是页面主题的实体面：面色、描边与字色在域外（定位层）取，连接层在它身上打 `data-xh-ink-surface`，条里的钮按它的底色取墨色 |
 | liquid 材质 | 液态面按下层写 `data-xh-ink`（§8.5） |
 
 - 域不落在彩色面自己身上：这些面的底色取自 `--xh-bg-brand`、`--xh-fg-default` 等被域改写的令牌，落在自身时底色随域翻转，auto 下还会与墨色互相引用成环。作者自己的区块同理：声明了域的区块，底色取原语或在域外取值。
