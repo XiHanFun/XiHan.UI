@@ -1,8 +1,8 @@
 <template>
   <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-    <path d="M8 0h224a8 8 0 0 1 8 8v144a8 8 0 0 1-8 8h-224a8 8 0 0 1-8-8v-144a8 8 0 0 1 8-8z" fill="var(--xh-bg-overlay)" />
-    <rect x="56" y="20" width="128" height="96" rx="4" fill="var(--xh-bg-subtle-hover-opaque)" />
-    <path d="M56 116l44.8 -48l25.6 21.12l25.6 -32.64l32 38.4V112a4 4 0 0 1-4 4H60a4 4 0 0 1-4-4z" fill="var(--xh-bg-subtle-active-opaque)" />
+    <path d="M4 0h232a4 4 0 0 1 4 4v152a4 4 0 0 1-4 4h-232a4 4 0 0 1-4-4v-152a4 4 0 0 1 4-4z" fill="var(--xh-bg-overlay)" />
+    <rect x="56" y="20" width="128" height="96" rx="2" fill="var(--xh-bg-subtle-hover-opaque)" />
+    <path d="M56 116l44.8 -48l25.6 21.12l25.6 -32.64l32 38.4V114a2 2 0 0 1-2 2H58a2 2 0 0 1-2-2z" fill="var(--xh-bg-subtle-active-opaque)" />
     <circle cx="86.5" cy="49" r="9.5" fill="var(--xh-bg-subtle-active-opaque)" />
     <circle cx="216" cy="24" r="12" fill="var(--xh-bg-surface-raised)" />
     <path d="M212 20l8 8m0-8l-8 8" stroke="var(--xh-fg-default)" stroke-width="2" />

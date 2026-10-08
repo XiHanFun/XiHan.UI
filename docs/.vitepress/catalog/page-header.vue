@@ -4,7 +4,7 @@
     <path d="M34 56l-4 4 4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
     <path d="M52 60h80" stroke="var(--xh-fg-default)" stroke-width="8" />
     <path d="M50 82h108" stroke="var(--xh-fg-muted)" stroke-width="4" />
-    <rect x="152" y="44" width="64" height="32" rx="4" fill="var(--xh-bg-brand)" />
+    <rect x="152" y="44" width="64" height="32" rx="2" fill="var(--xh-bg-brand)" />
     <path d="M171 60h26" stroke="var(--xh-fg-on-brand)" stroke-width="6" />
     <path d="M24 132.5h192" stroke="var(--xh-border-default)" />
     <path d="M51 116h26" stroke="var(--xh-fg-brand)" stroke-width="6" />

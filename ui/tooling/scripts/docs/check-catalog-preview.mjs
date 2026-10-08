@@ -15,7 +15,8 @@
 //   令牌产物或语气轴里声明过；--xh-tone-* 只在 <g data-tone> 里取；基础色板 --xh-color-* 只给
 //   COLOR_SAMPLES 里画颜色本身的组件。
 // - 透明度只取令牌：fill-opacity 取图表的面积 / 流带透明度，stop-opacity 只取 0 / 1。
-// - 线宽只有 1 / 2 / 4 / 6 / 8 五档，虚线只取 "4 4"；rect 的 rx 只取 4 / 8 / 12 或短边一半（胶囊）；
+// - 线宽只有 1 / 2 / 4 / 6 / 8 五档，虚线只取 "4 4"；rect 的 rx 只取 2（控件与内层）/ 4（表面与
+//   浮层）或短边一半（胶囊）；
 //   rect / circle 的坐标与尺寸取 0.5 的倍数。
 // - 渐变 id 以文件名开头（总览页上全部示意图同处一个 document，整页不重名由 check-demo-ids 核）；
 //   每张图元素不超过 MAX_ELEMENTS 个。
@@ -37,7 +38,7 @@ const VIEW_BOX = '0 0 240 160'
 const MAX_ELEMENTS = 40
 const STROKE_WIDTHS = new Set(['1', '2', '4', '6', '8'])
 const DASH = '4 4'
-const RADII = new Set([4, 8, 12])
+const RADII = new Set([2, 4])
 const TONES = new Set(['brand', 'neutral', 'info', 'success', 'warning', 'danger'])
 
 /** 画颜色本身的组件：示意里的样色取基础色板。 */
@@ -278,7 +279,7 @@ for (const file of files) {
       const rx = num(attrs.get('rx'))
       const short = Math.min(num(attrs.get('width')), num(attrs.get('height')))
       if (!RADII.has(rx) && rx * 2 !== short)
-        report(line, `<rect rx="${attrs.get('rx')}"> —— 圆角只取 4 / 8 / 12，或等于短边一半（胶囊）`)
+        report(line, `<rect rx="${attrs.get('rx')}"> —— 圆角只取 ${[...RADII].join(' / ')}，或等于短边一半（胶囊）`)
     }
 
     if (attrs.has('id')) {

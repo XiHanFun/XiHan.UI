@@ -6,13 +6,13 @@
     <path d="M41.93 49.44A52 52 0 0 1 84 28L84 48A32 32 0 0 0 58.11 61.19z" fill="var(--xh-chart-categorical-4)" stroke="var(--xh-chart-surface)" stroke-width="2" />
     <path d="M76 76h16" stroke="var(--xh-fg-default)" stroke-width="8" />
     <path d="M74 94h20" stroke="var(--xh-fg-subtle)" stroke-width="4" />
-    <rect x="156" y="46" width="12" height="12" rx="4" fill="var(--xh-chart-categorical-1)" />
+    <rect x="156" y="46" width="12" height="12" rx="2" fill="var(--xh-chart-categorical-1)" />
     <path d="M176 52h28" stroke="var(--xh-chart-label)" stroke-width="4" />
-    <rect x="156" y="66" width="12" height="12" rx="4" fill="var(--xh-chart-categorical-2)" />
+    <rect x="156" y="66" width="12" height="12" rx="2" fill="var(--xh-chart-categorical-2)" />
     <path d="M176 72h20" stroke="var(--xh-chart-label)" stroke-width="4" />
-    <rect x="156" y="86" width="12" height="12" rx="4" fill="var(--xh-chart-categorical-3)" />
+    <rect x="156" y="86" width="12" height="12" rx="2" fill="var(--xh-chart-categorical-3)" />
     <path d="M176 92h24" stroke="var(--xh-chart-label)" stroke-width="4" />
-    <rect x="156" y="106" width="12" height="12" rx="4" fill="var(--xh-chart-categorical-4)" />
+    <rect x="156" y="106" width="12" height="12" rx="2" fill="var(--xh-chart-categorical-4)" />
     <path d="M176 112h16" stroke="var(--xh-chart-label)" stroke-width="4" />
   </svg>
 </template>

@@ -1,11 +1,11 @@
 <template>
   <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-    <rect x="24.5" y="16.5" width="191" height="127" rx="12" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <rect x="24.5" y="16.5" width="191" height="127" rx="4" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
     <path d="M48 32a5 5 0 1 1-10 0a5 5 0 1 1 10 0m-1.5 3.5l3.5 3.5" stroke="var(--xh-fg-muted)" stroke-width="2" />
     <path d="M63 33h66" stroke="var(--xh-fg-disabled)" stroke-width="6" />
     <path d="M24 49.5h192" stroke="var(--xh-border-subtle)" />
     <path d="M38 62h24" stroke="var(--xh-fg-subtle)" stroke-width="4" />
-    <rect x="28" y="70" width="184" height="24" rx="4" fill="var(--xh-bg-subtle)" />
+    <rect x="28" y="70" width="184" height="24" rx="2" fill="var(--xh-bg-subtle)" />
     <path d="M37 76h6l4 4v8h-10zm6 0v4h4" stroke="var(--xh-fg-muted)" stroke-width="2" />
     <path d="M59 82h50" stroke="var(--xh-fg-muted)" stroke-width="6" />
     <path d="M182 82h20" stroke="var(--xh-fg-subtle)" stroke-width="4" />

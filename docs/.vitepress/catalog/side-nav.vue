@@ -6,7 +6,7 @@
     <path d="M48 76h4l2 2h6v7h-12z" stroke="var(--xh-fg-muted)" stroke-width="2" />
     <path d="M71 80h54" stroke="var(--xh-fg-muted)" stroke-width="6" />
     <path d="M180 82l4-4 4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
-    <rect x="64" y="96" width="136" height="24" rx="4" fill="var(--xh-bg-brand-subtle)" />
+    <rect x="64" y="96" width="136" height="24" rx="2" fill="var(--xh-bg-brand-subtle)" />
     <path d="M75 108h46" stroke="var(--xh-fg-on-brand-subtle)" stroke-width="6" />
     <path d="M75 136h38" stroke="var(--xh-fg-muted)" stroke-width="6" />
   </svg>
