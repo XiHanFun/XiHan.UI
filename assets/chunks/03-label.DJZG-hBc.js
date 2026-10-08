@@ -1,0 +1,1 @@
+import{it as e}from"./theme.CLRs_MM8.js";import{t}from"./jsx-runtime.CWLBoBiw.js";import{t as n}from"./icon.ClhCCHb3.js";var r=t();function i(){return(0,r.jsx)(n,{icon:e,label:`关闭`})}export{i as default};

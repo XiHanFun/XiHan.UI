@@ -1,1 +1,0 @@
-import{$t as e,Et as t,ft as n,lt as r,mt as i}from"./framework.8UxoGp64.js";import{Nu as a}from"./theme.CZaS8O1o.js";var o={style:{display:`flex`,"align-items":`center`,gap:`12px`}},s=i({__name:`01-basic`,setup(i){return(i,s)=>(t(),r(`div`,o,[n(e(a),{keys:[`Escape`]}),n(e(a),{keys:[`Mod`,`K`]})]))}});export{s as default};

@@ -1,0 +1,1 @@
+import{$t as e,Et as t,Ot as n,ft as r,lt as i,mt as a,tt as o}from"./framework.8UxoGp64.js";import{X as s,hd as c}from"./theme.CLRs_MM8.js";var l=a({__name:`05-tone`,setup(a){let l=[`brand`,`success`,`warning`,`danger`,`info`];return(a,u)=>(t(),i(o,null,n(l,t=>r(e(c),{key:t,icon:e(s),tone:t,size:`lg`},null,8,[`icon`,`tone`])),64))}});export{l as default};

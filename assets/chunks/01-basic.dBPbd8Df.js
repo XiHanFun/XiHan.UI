@@ -1,1 +1,0 @@
-import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{Ma as i}from"./theme.CZaS8O1o.js";var a=n({__name:`01-basic`,setup(n){return(n,a)=>(t(),r(e(i),{label:`加载中`}))}});export{a as default};

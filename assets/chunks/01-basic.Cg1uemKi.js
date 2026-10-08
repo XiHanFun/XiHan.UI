@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{dv as i}from"./theme.CLRs_MM8.js";var a=n({__name:`01-basic`,setup(n){return(n,a)=>(t(),r(e(i),{value:`XH-2026-0915`}))}});export{a as default};

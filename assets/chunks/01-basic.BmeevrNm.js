@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{Vg as i}from"./theme.CLRs_MM8.js";var a=n({__name:`01-basic`,setup(n){let a=[{value:`email`,label:`邮件`},{value:`sms`,label:`短信`},{value:`push`,label:`推送通知`}];return(n,o)=>(t(),r(e(i),{collection:a,"default-value":[`email`],label:`通知方式`,name:`notification`}))}});export{a as default};

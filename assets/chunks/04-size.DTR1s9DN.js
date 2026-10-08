@@ -1,1 +1,0 @@
-import{$t as e,Et as t,Ot as n,ft as r,lt as i,mt as a,tt as o,zt as s}from"./framework.8UxoGp64.js";import{if as c,nf as l,rf as u}from"./theme.CZaS8O1o.js";var d=a({__name:`04-size`,setup(a){let d=[`sm`,`md`,`lg`];return(a,f)=>(t(),i(o,null,n(d,t=>r(e(u),{key:t,style:{position:`static`},size:t},{default:s(()=>[r(e(c)),r(e(l))]),_:1},8,[`size`])),64))}});export{d as default};

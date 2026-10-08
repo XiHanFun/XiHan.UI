@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{a as t,i as n,n as r,t as i}from"./field.5XydmZ62.js";var a=e();function o(){return(0,a.jsxs)(t,{disabled:!0,style:{inlineSize:`280px`},children:[(0,a.jsx)(n,{children:`登录账号`}),(0,a.jsx)(i,{children:(0,a.jsx)(`input`,{defaultValue:`zhaifanhua`,disabled:!0})}),(0,a.jsx)(r,{children:`账号创建后不可更改`})]})}export{o as default};

@@ -1,0 +1,1 @@
+import{f as e}from"./theme.CLRs_MM8.js";import{t}from"./jsx-runtime.CWLBoBiw.js";import{t as n}from"./icon.ClhCCHb3.js";var r=t(),i=[`solid`,`subtle`,`outline`,`ghost`];function a(){return(0,r.jsx)(`div`,{style:{display:`flex`,alignItems:`center`,gap:`12px`},children:i.map(t=>(0,r.jsx)(n,{icon:e,frame:t},t))})}export{a as default};

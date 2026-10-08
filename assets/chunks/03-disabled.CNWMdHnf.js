@@ -1,0 +1,1 @@
+import{$t as e,Et as t,ft as n,lt as r,mt as i,tt as a}from"./framework.8UxoGp64.js";import{fa as o}from"./theme.CLRs_MM8.js";var s=i({__name:`03-disabled`,setup(i){return(i,s)=>(t(),r(a,null,[n(e(o),{disabled:``}),n(e(o),{disabled:``,"default-checked":``})],64))}});export{s as default};

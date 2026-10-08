@@ -1,0 +1,4 @@
+import{$t as e,Et as t,dt as n,ft as r,lt as i,mt as a,zt as o}from"./framework.8UxoGp64.js";import{Hs as s,Us as c,Vs as l}from"./theme.CLRs_MM8.js";var u={style:{display:`grid`,gap:`12px`}},d=`第一行
+第二行
+第三行
+再多敲几行，框会继续往下长`,f=a({__name:`07-autosize`,setup(a){return(a,f)=>(t(),i(`div`,u,[r(e(s),{translations:{input:`给助手写点什么`}},{default:o(()=>[r(e(l),{rows:`1`,placeholder:`按 Shift+Enter 换行试试`}),r(e(c),null,{default:o(()=>[...f[0]||=[n(`发送`,-1)]]),_:1})]),_:1}),r(e(s),{"default-value":d,translations:{input:`已经有草稿的输入框`}},{default:o(()=>[r(e(l),{rows:`1`}),r(e(c),null,{default:o(()=>[...f[1]||=[n(`发送`,-1)]]),_:1})]),_:1})]))}});export{f as default};

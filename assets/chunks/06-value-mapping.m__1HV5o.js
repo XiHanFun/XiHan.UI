@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./checkbox.BCPBNZVW.js";var n=e();function r(){return(0,n.jsx)(t,{invalid:!0,required:!0,children:`我同意服务条款`})}export{r as default};

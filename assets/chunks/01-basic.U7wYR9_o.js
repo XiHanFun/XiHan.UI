@@ -1,1 +1,0 @@
-import{$t as e,Et as t,dt as n,ft as r,mt as i,st as a,zt as o}from"./framework.8UxoGp64.js";import{ar as s,hd as c,w as l}from"./theme.CZaS8O1o.js";var u=i({__name:`01-basic`,setup(i){return(i,u)=>(t(),a(e(s),null,{default:o(()=>[r(e(c),{icon:e(l)},null,8,[`icon`]),u[0]||=n(` 点赞 `,-1)]),_:1}))}});export{u as default};
