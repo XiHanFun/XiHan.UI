@@ -143,8 +143,8 @@ describe('当前步的进度环', () => {
     expect(ring.opacity).toBe('1')
     expect(Number.parseFloat(ring.width)).toBe(dot.width + 2 * (gap + thick))
     expect(Number.parseFloat(ring.height)).toBe(dot.height + 2 * (gap + thick))
-    // 圆点仍是同档控件高的实心品牌圆
-    expect(dot.width).toBe(tokenPx('--xh-control-h-md'))
+    // 圆点仍是 marker-size 档的实心品牌圆
+    expect(dot.width).toBe(tokenPx('--xh-marker-size-md'))
     expect(getComputedStyle(current).backgroundColor).toBe(token('--xh-bg-brand'))
 
     const box = triggers[1]!.getBoundingClientRect()
@@ -177,7 +177,7 @@ describe('当前步的进度环', () => {
         const reach = tokenPx('--xh-space-0_5') + tokenPx('--xh-stroke-thick')
         const dot = indicators[1]!.getBoundingClientRect()
         const box = triggers[1]!.getBoundingClientRect()
-        expect(dot.width, `${density} ${size}`).toBe(tokenPx(`--xh-control-h-${size}`))
+        expect(dot.width, `${density} ${size}`).toBe(tokenPx(`--xh-marker-size-${size}`))
         expect(dot.top - reach, `${density} ${size}`).toBeGreaterThanOrEqual(box.top)
         expect(dot.bottom + reach, `${density} ${size}`).toBeLessThanOrEqual(box.bottom)
         app!.unmount()

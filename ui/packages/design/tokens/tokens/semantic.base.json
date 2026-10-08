@@ -938,6 +938,21 @@
       "$value": "{control.h-sm}"
     }
   },
+  "marker": {
+    "size-sm": {
+      "$description": "盛序号或对号的状态圆（Steps 序号圆点）的直径：比同档控件矮一档，sm / md / lg 与 xs 动作钮、sm 控件、md 控件同高，随密度换档。",
+      "$type": "dimension",
+      "$value": "{control.action-size}"
+    },
+    "size-md": {
+      "$type": "dimension",
+      "$value": "{control.h-sm}"
+    },
+    "size-lg": {
+      "$type": "dimension",
+      "$value": "{control.h-md}"
+    }
+  },
   "nav": {
     "row-h-sm": {
       "$description": "导航行（侧栏菜单的分支与链接）的块尺寸。比同档控件高一截：侧栏是整列扫读的目标，行距松一些更好点也更好读。",
