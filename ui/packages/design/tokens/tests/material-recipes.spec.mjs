@@ -19,8 +19,8 @@ const TARGETS = [
 ]
 const PRE_RECIPE_HASHES = {
   'semantic.base.json': '4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945',
-  'semantic.light.json': 'ef95019b4d67b9256504e5ad156bfedf7f38b0400d1d269d51a9648bf6da6da3',
-  'semantic.dark.json': '66ffa323a8e7079a306defe7fcd2c3f09977beff44a7113604985ffffe1ac8a4',
+  'semantic.light.json': '53f6f686bf6b42aa2edcadf7015a6307b8c54cd1d0a2de1405bc9682d8e28d5b',
+  'semantic.dark.json': 'd81c1c0e506560cd2ea1f54ea406e3e17078a476c6b6d24a0c2879f7f50c85e7',
   'semantic.light.more.json': '1fb9412c8c8a4c6b9d71e5b4cf67facb391f65af02ffca854c9ffb50265aad0a',
   'semantic.dark.more.json': '1fb9412c8c8a4c6b9d71e5b4cf67facb391f65af02ffca854c9ffb50265aad0a',
   'semantic.transparency.reduce.json': '3a6161972abaa3cf6119b41ee68dce090bc8e22d52e0fee0f26b52de30b348dc',
@@ -125,10 +125,10 @@ describe('material Recipe 生成', () => {
     for (const theme of ['semantic.light.json', 'semantic.dark.json'])
       expect(compiled[theme].solid).toBeUndefined()
 
-    expect(compiled['semantic.light.json'].frosted.backdrop.$value).toBe('blur({blur.md}) saturate(108%)')
-    expect(compiled['semantic.light.json'].elevated.bg.$value).toBe('oklch(0.99 0.003 258)')
+    expect(compiled['semantic.light.json'].frosted.backdrop.$value).toBe('none')
+    expect(compiled['semantic.light.json'].elevated.bg.$value).toBe('{bg.surface}')
     expect(compiled['semantic.light.json'].elevated.backdrop.$value).toBe('none')
-    expect(compiled['semantic.light.json'].elevated.shadow.$value.split(', ')).toHaveLength(3)
+    expect(compiled['semantic.light.json'].elevated.shadow.$value.split(', ')).toHaveLength(1)
   })
 
   it('m5 liquid 按主题出着色、通透档与可读下限、背光亮边与 bezel；静态面取可读下限', async () => {

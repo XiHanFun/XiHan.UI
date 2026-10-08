@@ -47,7 +47,7 @@ describe('tokens.css 里的墨色域', () => {
     const lightAt = css.indexOf(`:where(:root), :where([data-theme='light']), :where([data-xh-ink='dark']) {`)
     const light = css.slice(lightAt, css.indexOf('\n  }', lightAt))
     expect(light).toContain('--xh-ink: oklch(0 0 0);')
-    expect(light).toContain('--xh-bg-subtle: color-mix(in oklab, var(--xh-ink) 4.3%, transparent);')
+    expect(light).toContain('--xh-bg-subtle: color-mix(in oklab, var(--xh-ink) 4.7%, transparent);')
     expect(light).toContain('--xh-_contrast-default-border-default: color-mix(in oklab, var(--xh-ink) 10.2%, transparent);')
     // 高对比分支仍取实色
     expect(light).toMatch(/--xh-_contrast-more-border-default: var\(--xh-color-neutral-\d+\);/)
@@ -68,14 +68,14 @@ describe('tokens.css 里的墨色域', () => {
     // 中性装饰由主题块给出，域块不再重复；置灰字属于文字，只在域里换成墨色
     expect(block).not.toContain('--xh-border-default:')
     expect(block).not.toContain('--xh-ink:')
-    expect(block).toContain('--xh-fg-disabled: color-mix(in oklab, var(--xh-ink) 37%, transparent);')
+    expect(block).toContain('--xh-fg-disabled: color-mix(in oklab, var(--xh-ink) 37.9%, transparent);')
   })
 
   it('缺省面上置灰字保持实色；淡底各有一支叠在缺省面上的不透明档', () => {
     const lightAt = css.indexOf(`:where(:root), :where([data-theme='light']), :where([data-xh-ink='dark']) {`)
     const light = css.slice(lightAt, css.indexOf('\n  }', lightAt))
     expect(light).toMatch(/--xh-fg-disabled: var\(--xh-color-neutral-\d+\);/)
-    for (const [name, alpha] of [['subtle', '4.3%'], ['subtle-hover', '10.2%'], ['subtle-active', '16.9%'], ['muted', '4.3%']])
+    for (const [name, alpha] of [['subtle', '4.7%'], ['subtle-hover', '10.2%'], ['subtle-active', '16.9%'], ['muted', '4.7%']])
       expect(light).toContain(`--xh-bg-${name}-opaque: color-mix(in srgb, var(--xh-ink) ${alpha}, var(--xh-bg-surface));`)
   })
 

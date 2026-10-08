@@ -285,35 +285,35 @@
       "palette-muted": {
         "1": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.indigo.500} 45%, {color.neutral.450})"
+          "$value": "color-mix(in oklab, {color.indigo.500} 40%, {color.neutral.450})"
         },
         "2": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.orange.600} 45%, {color.neutral.500})"
+          "$value": "color-mix(in oklab, {color.amber.600} 55%, {color.neutral.500})"
         },
         "3": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.pink.500} 45%, {color.neutral.450})"
+          "$value": "color-mix(in oklab, {color.green.500} 40%, {color.neutral.450})"
         },
         "4": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.lime.600} 45%, {color.neutral.500})"
+          "$value": "color-mix(in oklab, {color.blue.600} 55%, {color.neutral.500})"
         },
         "5": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.blue.600} 45%, {color.neutral.500})"
+          "$value": "color-mix(in oklab, {color.orange.500} 40%, {color.neutral.450})"
         },
         "6": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.amber.500} 45%, {color.neutral.450})"
+          "$value": "color-mix(in oklab, {color.purple.600} 40%, {color.neutral.500})"
         },
         "7": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.purple.600} 45%, {color.neutral.500})"
+          "$value": "color-mix(in oklab, {color.lime.600} 40%, {color.neutral.500})"
         },
         "8": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.green.500} 45%, {color.neutral.450})"
+          "$value": "color-mix(in oklab, {color.pink.500} 40%, {color.neutral.450})"
         },
         "$description": "莫兰迪柔彩：基础色板的色与明度相近的中性档在 oklab 里混合，彩度 0.035–0.10。"
       },
@@ -336,11 +336,11 @@
         },
         "5": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.neutral.950}"
+          "$value": "{color.neutral.0}"
         },
         "7": {
           "$type": "color",
@@ -639,35 +639,35 @@
       "palette-muted": {
         "1": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.indigo.400} 45%, {color.neutral.400})"
+          "$value": "color-mix(in oklab, {color.indigo.400} 40%, {color.neutral.400})"
         },
         "2": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.orange.600} 45%, {color.neutral.500})"
+          "$value": "color-mix(in oklab, {color.amber.600} 55%, {color.neutral.500})"
         },
         "3": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.pink.500} 45%, {color.neutral.450})"
+          "$value": "color-mix(in oklab, {color.green.400} 55%, {color.neutral.400})"
         },
         "4": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.lime.600} 45%, {color.neutral.500})"
+          "$value": "color-mix(in oklab, {color.blue.600} 55%, {color.neutral.500})"
         },
         "5": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.blue.600} 45%, {color.neutral.500})"
+          "$value": "color-mix(in oklab, {color.orange.400} 40%, {color.neutral.400})"
         },
         "6": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.amber.400} 45%, {color.neutral.400})"
+          "$value": "color-mix(in oklab, {color.purple.600} 40%, {color.neutral.500})"
         },
         "7": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.purple.600} 45%, {color.neutral.500})"
+          "$value": "color-mix(in oklab, {color.lime.600} 40%, {color.neutral.500})"
         },
         "8": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.green.400} 45%, {color.neutral.400})"
+          "$value": "color-mix(in oklab, {color.pink.500} 40%, {color.neutral.450})"
         },
         "$description": "莫兰迪柔彩：基础色板的色与明度相近的中性档在 oklab 里混合，彩度 0.035–0.10。"
       },
@@ -690,11 +690,11 @@
         },
         "5": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.neutral.950}"
+          "$value": "{color.neutral.0}"
         },
         "7": {
           "$type": "color",

@@ -26655,7 +26655,6 @@
         "background"
       ],
       "state": [
-        "@media (forced-colors: active)",
         "default"
       ],
       "defaultToken": [

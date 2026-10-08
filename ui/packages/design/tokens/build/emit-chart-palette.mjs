@@ -84,7 +84,7 @@ export const BRAND_PER_HUE = 2
 export const BRAND_RULES = { ...RULES, hueCluster: null, anyPair: 7 }
 
 /** 莫兰迪柔彩：色与明度最接近的中性档按这几个比例在 oklab 里混合（色占的百分比）。 */
-export const MUTED_MIX = [45, 60]
+export const MUTED_MIX = [40, 55]
 export const MUTED_RULES = {
   ...RULES,
   lightness: { light: [0.52, 0.68], dark: [0.55, 0.72] },

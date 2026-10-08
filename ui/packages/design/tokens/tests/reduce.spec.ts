@@ -72,7 +72,9 @@ describe('semantic.reduce.json', () => {
 
   it('基线里每一个可降级的动效令牌都被覆盖到（淡变档另核）', () => {
     const covered = new Set(reduce.map(t => t.name))
-    const shouldCover = base.filter(t => t.name.startsWith('motion-') && DEGRADABLE.has(t.type) && !FADE.has(t.name) && !isSpring(t.name) && !isLoop(t.name))
+    // 基线本就不缩放（倍率 1）的缩放令牌已是降级后的样子，再覆盖一遍是等值死重
+    const alreadyStill = (t: { name: string, value: unknown }): boolean => t.name.startsWith('motion-scale-') && Number(t.value) === 1
+    const shouldCover = base.filter(t => t.name.startsWith('motion-') && DEGRADABLE.has(t.type) && !FADE.has(t.name) && !isSpring(t.name) && !isLoop(t.name) && !alreadyStill(t))
     expect(shouldCover.length).toBeGreaterThan(0)
     for (const t of shouldCover)
       expect(covered.has(t.name), `${t.name} 是可降级的动效令牌，但 reduce 档没有覆盖它`).toBe(true)
