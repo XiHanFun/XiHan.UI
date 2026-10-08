@@ -8657,7 +8657,10 @@
   /* 整组是一个字段：不传尺寸时与单个字段同宽，组里的字段让位占满前后缀之外的那段 */
   inline-size: var(--xh-input-group-w, var(--xh-control-w));
   border-radius: var(--xh-input-group-radius, var(--xh-shape-control));
-  background: var(--xh-input-group-bg, var(--xh-_input-group-bg));
+  /* 面只在这一处画：各状态只换 --xh-_input-group-face 这一个槽，静息、悬停、失效、只读、禁用与聚焦
+     顺着同一条声明换色，过渡也只认这一处 */
+  --xh-_input-group-face: var(--xh-input-group-bg, var(--xh-_input-group-bg));
+  background: var(--xh-_input-group-face);
   box-shadow: var(--xh-input-group-shadow, var(--xh-_input-group-shadow));
 
   /* 父容器给不出这么宽时整组跟着收，不越出父容器 */
@@ -8700,7 +8703,7 @@
 }
 
 .xh-scope-input-group[data-part='root']:not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])):not(:focus-within):hover {
-  background: var(--xh-input-group-bg-hover, var(--xh-_input-group-bg-hover));
+  --xh-_input-group-face: var(--xh-input-group-bg-hover, var(--xh-_input-group-bg-hover));
 }
 
 .xh-scope-input-group[data-part='root']:not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])):not(:focus-within):hover::before {
@@ -8709,7 +8712,7 @@
 
 /* 组里的字段校验失败：失效描边 + 4% 失效色淡底，与字段外壳的失效档同一副面 */
 .xh-scope-input-group[data-part='root']:has([data-invalid], [aria-invalid='true']) {
-  background: var(--xh-input-group-bg-invalid, color-mix(in oklab, var(--xh-border-invalid) 4%, transparent));
+  --xh-_input-group-face: var(--xh-input-group-bg-invalid, color-mix(in oklab, var(--xh-border-invalid) 4%, transparent));
 }
 
 .xh-scope-input-group[data-part='root']:has([data-invalid], [aria-invalid='true'])::before {
@@ -8720,11 +8723,11 @@
    只认带字段外壳的那一段，组里单独禁用一颗按钮不让整组变灰。
    只读用 :where() 压低特指度，拿到焦点时与字段外壳一样让位给聚焦态 */
 .xh-scope-input-group[data-part='root']:has(:where([data-xh-field-chrome][data-readonly])) {
-  background: var(--xh-input-group-bg-read-only, var(--xh-bg-subtle));
+  --xh-_input-group-face: var(--xh-input-group-bg-read-only, var(--xh-bg-subtle));
 }
 
 .xh-scope-input-group[data-part='root']:has([data-xh-field-chrome][data-disabled]) {
-  background: var(--xh-input-group-bg-disabled, var(--xh-bg-subtle));
+  --xh-_input-group-face: var(--xh-input-group-bg-disabled, var(--xh-bg-subtle));
 }
 
 .xh-scope-input-group[data-part='root']:has([data-xh-field-chrome][data-disabled])::before {
@@ -8734,7 +8737,7 @@
 /* 聚焦排在失效之后：校验失败的字段拿到焦点时让位给聚焦态。
    焦点由描边换色与承载面的底色差标出，不画聚焦环 */
 .xh-scope-input-group[data-part='root']:focus-within {
-  background: var(--xh-input-group-bg-focus, var(--xh-_input-group-bg-focus));
+  --xh-_input-group-face: var(--xh-input-group-bg-focus, var(--xh-_input-group-bg-focus));
 }
 
 .xh-scope-input-group[data-part='root']:focus-within::before {
