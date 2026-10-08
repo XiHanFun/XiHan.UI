@@ -8698,11 +8698,13 @@
     --xh-_input-group-h: var(--xh-control-h-md);
     --xh-_input-group-px: var(--xh-control-px-md);
     --xh-_input-group-font-size: var(--xh-control-font-md);
-    --xh-_input-group-bg: transparent;
-    --xh-_input-group-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent);
-    /* 组壳按字段外壳画 outline 描边：静息 --xh-border-control、悬停升 -hover、聚焦换 -focus，无影 */
+    /* 组壳与字段外壳同形：静息字段淡底 + --xh-border-control；悬停底不变、描边升 --xh-border-strong；
+       聚焦换承载面 + --xh-border-control-focus，不画聚焦环（强制色档补一圈 Highlight 环）；无影 */
+    --xh-_input-group-bg: var(--xh-bg-field);
+    --xh-_input-group-bg-hover: var(--xh-bg-field);
+    --xh-_input-group-bg-focus: var(--xh-bg-surface);
     --xh-_input-group-border: var(--xh-border-control);
-    --xh-_input-group-border-hover: var(--xh-border-control-hover);
+    --xh-_input-group-border-hover: var(--xh-border-strong);
     --xh-_input-group-border-focus: var(--xh-border-control-focus);
     --xh-_input-group-shadow: none;
 
@@ -8739,6 +8741,7 @@
   .xh-scope-input-group[data-part='root'][data-variant='subtle'] {
     --xh-_input-group-bg: var(--xh-bg-subtle);
     --xh-_input-group-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-_input-group-bg-focus: var(--xh-bg-subtle);
     --xh-_input-group-border: transparent;
     --xh-_input-group-border-hover: var(--xh-border-control);
     --xh-_input-group-shadow: none;
@@ -8747,34 +8750,53 @@
   /* ghost：静息不画壳，悬停与聚焦沿用下面的 hover / focus 规则浮出 --xh-border-control 与底 */
   .xh-scope-input-group[data-part='root'][data-variant='ghost'] {
     --xh-_input-group-bg: transparent;
+    --xh-_input-group-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent);
+    --xh-_input-group-bg-focus: transparent;
     --xh-_input-group-border: transparent;
     --xh-_input-group-border-hover: var(--xh-border-control);
     --xh-_input-group-shadow: none;
   }
 
-  .xh-scope-input-group[data-part='root']:not(:has([data-disabled])):hover {
+  .xh-scope-input-group[data-part='root']:not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])):not(:focus-within):hover {
     background: var(--xh-input-group-bg-hover, var(--xh-_input-group-bg-hover));
   }
 
-  .xh-scope-input-group[data-part='root']:not(:has([data-disabled])):hover::before {
+  .xh-scope-input-group[data-part='root']:not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])):not(:focus-within):hover::before {
     border-color: var(--xh-input-group-border-hover, var(--xh-_input-group-border-hover));
   }
 
-  .xh-scope-input-group[data-part='root']:focus-within {
-    outline: var(--xh-ring-width) solid var(--xh-input-group-ring-focus, var(--xh-ring-focus));
-    outline-offset: var(--xh-ring-offset);
-  }
-
-  .xh-scope-input-group[data-part='root']:focus-within::before {
-    border-color: var(--xh-input-group-border-focus, var(--xh-_input-group-border-focus));
+  /* 组里的字段校验失败：失效描边 + 4% 失效色淡底，与字段外壳的失效档同一副面 */
+  .xh-scope-input-group[data-part='root']:has([data-invalid], [aria-invalid='true']) {
+    background: var(--xh-input-group-bg-invalid, color-mix(in oklab, var(--xh-border-invalid) 4%, transparent));
   }
 
   .xh-scope-input-group[data-part='root']:has([data-invalid], [aria-invalid='true'])::before {
     border-color: var(--xh-input-group-border-invalid, var(--xh-border-invalid));
   }
 
-  .xh-scope-input-group[data-part='root']:has([data-invalid], [aria-invalid='true']):focus-within {
-    outline-color: var(--xh-input-group-ring-invalid, var(--xh-ring-invalid));
+  /* 组里的字段只读 / 禁用：组壳换淡底，禁用另把描边退到 --xh-border-default；
+     只认带字段外壳的那一段，组里单独禁用一颗按钮不让整组变灰。
+     只读用 :where() 压低特指度，拿到焦点时与字段外壳一样让位给聚焦态 */
+  .xh-scope-input-group[data-part='root']:has(:where([data-xh-field-chrome][data-readonly])) {
+    background: var(--xh-input-group-bg-read-only, var(--xh-bg-subtle));
+  }
+
+  .xh-scope-input-group[data-part='root']:has([data-xh-field-chrome][data-disabled]) {
+    background: var(--xh-input-group-bg-disabled, var(--xh-bg-subtle));
+  }
+
+  .xh-scope-input-group[data-part='root']:has([data-xh-field-chrome][data-disabled])::before {
+    border-color: var(--xh-input-group-border-disabled, var(--xh-border-default));
+  }
+
+  /* 聚焦排在失效之后：校验失败的字段拿到焦点时让位给聚焦态。
+     焦点由描边换色与承载面的底色差标出，不画聚焦环 */
+  .xh-scope-input-group[data-part='root']:focus-within {
+    background: var(--xh-input-group-bg-focus, var(--xh-_input-group-bg-focus));
+  }
+
+  .xh-scope-input-group[data-part='root']:focus-within::before {
+    border-color: var(--xh-input-group-border-focus, var(--xh-_input-group-border-focus));
   }
 
   /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
@@ -8839,7 +8861,7 @@
     transition: none;
   }
 
-  /* 焦点环由组的外表面绘制，子输入保留焦点语义但不再重复画第二圈。 */
+  /* 聚焦换色由组的外表面承担（强制色档的系统色环也画在组壳上），子输入保留焦点语义但不再自己画一圈。 */
   .xh-scope-input-group[data-part='root'] [data-xh-field-chrome]:focus-within {
     outline: none;
   }
@@ -8936,13 +8958,19 @@
       border-color: ButtonText;
     }
 
+    /* 常规档不画环、只换描边色；这一档里描边换色未必分得出来，补一圈系统色环 */
     .xh-scope-input-group[data-part='root']:focus-within {
-      outline-color: Highlight;
+      outline: var(--xh-ring-width) solid Highlight;
+      outline-offset: var(--xh-ring-offset);
     }
 
     .xh-scope-input-group[data-part='root']:focus-within::before,
     .xh-scope-input-group[data-part='root']:has([data-invalid], [aria-invalid='true'])::before {
       border-color: Highlight;
+    }
+
+    .xh-scope-input-group[data-part='root']:has([data-xh-field-chrome][data-disabled])::before {
+      border-color: GrayText;
     }
 
     .xh-scope-input-group[data-part='item'] {
