@@ -419,14 +419,14 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `to-target-trigger` | `data-xh-action-display` | 'always' |
 | `to-target-trigger` | `data-xh-action-profile` | 'icon' |
 | `to-target-trigger` | `data-xh-action-size` | 'sm' |
-| `to-target-trigger` | `data-xh-action-variant` | 'outline' |
+| `to-target-trigger` | `data-xh-action-variant` | 'subtle' |
 | `to-source-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `to-source-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `to-source-trigger` | `data-xh-action-control` | '' |
 | `to-source-trigger` | `data-xh-action-display` | 'always' |
 | `to-source-trigger` | `data-xh-action-profile` | 'icon' |
 | `to-source-trigger` | `data-xh-action-size` | 'sm' |
-| `to-source-trigger` | `data-xh-action-variant` | 'outline' |
+| `to-source-trigger` | `data-xh-action-variant` | 'subtle' |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-side` | panel.side |
@@ -463,7 +463,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `--xh-transfer-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 empty 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | transfer 的 empty 部件 padding-block 覆盖槽。 |
 | `--xh-transfer-fg` | `root` | `color` | `default` | `--xh-fg-default` | transfer 的 root 部件 color 覆盖槽。 |
-| `--xh-transfer-gap` | `root` | `gap` | `default` | `--xh-space-3` | transfer 的 root 部件 gap 覆盖槽。 |
+| `--xh-transfer-gap` | `root` | `gap` | `default` | `--xh-space-5` | transfer 的 root 部件 gap 覆盖槽。 |
 | `--xh-transfer-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | transfer 的 group 部件 gap 覆盖槽。 |
 | `--xh-transfer-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-muted` | transfer 的 group-label 部件 color 覆盖槽。 |
 | `--xh-transfer-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | transfer 的 group-label 部件 font-size 覆盖槽。 |
@@ -479,31 +479,33 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `--xh-transfer-item-fg-selected` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=page` | `--xh-fg-on-brand-subtle` | transfer 的 item 部件 color 覆盖槽。 |
 | `--xh-transfer-item-font-size` | `item` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 item 部件 font-size 覆盖槽。 |
 | `--xh-transfer-item-gap` | `item` | `gap` | `default` | `--xh-_transfer-gap` | transfer 的 item 部件 gap 覆盖槽。 |
+| `--xh-transfer-item-h` | `item` | `min-block-size` | `default` | `--xh-_transfer-item-h` | transfer 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-transfer-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | transfer 的 item 部件 line-height 覆盖槽。 |
 | `--xh-transfer-item-px` | `item` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-item-py` | `item` | `padding-block` | `default` | `--xh-_transfer-item-py` | transfer 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-transfer-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | transfer 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-transfer-item-radius` | `item` | `border-radius` | `default` | `0` | transfer 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-transfer-list-gap` | `list` | `gap` | `default` | `--xh-list-option-gap` | transfer 的 list 部件 gap 覆盖槽。 |
-| `--xh-transfer-list-h` | `list` | `block-size` | `default` | `--xh-viewport-h-md` | transfer 的 list 部件 block-size 覆盖槽。 |
-| `--xh-transfer-list-px` | `list` | `padding-inline` | `default` | `--xh-space-1` | transfer 的 list 部件 padding-inline 覆盖槽。 |
-| `--xh-transfer-list-py` | `list` | `padding-block` | `default` | `--xh-space-1` | transfer 的 list 部件 padding-block 覆盖槽。 |
+| `--xh-transfer-list-h` | `list` | `block-size` | `default` | `--xh-viewport-h-sm` | transfer 的 list 部件 block-size 覆盖槽。 |
+| `--xh-transfer-list-px` | `list` | `padding-inline` | `default` | `--xh-space-0` | transfer 的 list 部件 padding-inline 覆盖槽。 |
+| `--xh-transfer-list-py` | `list` | `padding-block` | `default` | `--xh-space-0` | transfer 的 list 部件 padding-block 覆盖槽。 |
 | `--xh-transfer-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | transfer 的 loading 部件 color 覆盖槽。 |
 | `--xh-transfer-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 loading 部件 font-size 覆盖槽。 |
 | `--xh-transfer-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 loading 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | transfer 的 loading 部件 padding-block 覆盖槽。 |
 | `--xh-transfer-panel-bg` | `source-panel`<br>`target-panel` | `background` | `default` | `--xh-bg-surface` | transfer 的 source-panel、target-panel 部件 background 覆盖槽。 |
 | `--xh-transfer-panel-bg-disabled` | `source-panel`<br>`target-panel` | `background` | `disabled` | `--xh-bg-muted` | transfer 的 source-panel、target-panel 部件 background 覆盖槽。 |
-| `--xh-transfer-panel-border` | `panel-header`<br>`source-panel`<br>`target-panel` | `border`<br>`border-block-end` | `default` | `--xh-border-default` | transfer 的 panel-header、source-panel、target-panel 部件 border、border-block-end 覆盖槽。 |
+| `--xh-transfer-panel-border` | `source-panel`<br>`target-panel` | `border` | `default` | `--xh-border-default` | transfer 的 source-panel、target-panel 部件 border 覆盖槽。 |
 | `--xh-transfer-panel-border-invalid` | `root`<br>`source-panel`<br>`target-panel` | `border-color` | `invalid`<br>`is([data-scope='transfer'][data-part='source-panel'], [data-scope='transfer'][data-part='target-panel'])` | `--xh-border-invalid` | transfer 的 root、source-panel、target-panel 部件 border-color 覆盖槽。 |
 | `--xh-transfer-panel-count-fg` | `panel-count` | `color` | `default` | `--xh-fg-subtle` | transfer 的 panel-count 部件 color 覆盖槽。 |
 | `--xh-transfer-panel-count-font-size` | `panel-count` | `font-size` | `default` | `--xh-text-caption-size` | transfer 的 panel-count 部件 font-size 覆盖槽。 |
+| `--xh-transfer-panel-header-bg` | `panel-header` | `background` | `default` | `--xh-bg-muted` | transfer 的 panel-header 部件 background 覆盖槽。 |
 | `--xh-transfer-panel-header-gap` | `panel-header` | `gap` | `default` | `--xh-_transfer-gap` | transfer 的 panel-header 部件 gap 覆盖槽。 |
 | `--xh-transfer-panel-header-px` | `panel-header` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 panel-header 部件 padding-inline 覆盖槽。 |
-| `--xh-transfer-panel-header-py` | `panel-header` | `padding-block` | `default` | `--xh-space-2` | transfer 的 panel-header 部件 padding-block 覆盖槽。 |
+| `--xh-transfer-panel-header-py` | `panel-header` | `padding-block` | `default` | `--xh-space-3` | transfer 的 panel-header 部件 padding-block 覆盖槽。 |
 | `--xh-transfer-panel-radius` | `source-panel`<br>`target-panel` | `border-radius` | `default` | `--xh-shape-surface` | transfer 的 source-panel、target-panel 部件 border-radius 覆盖槽。 |
 | `--xh-transfer-panel-title-fg` | `panel-title` | `color` | `default` | `--xh-fg-default` | transfer 的 panel-title 部件 color 覆盖槽。 |
 | `--xh-transfer-panel-title-font-size` | `panel-title` | `font-size` | `default` | `--xh-text-label-size` | transfer 的 panel-title 部件 font-size 覆盖槽。 |
-| `--xh-transfer-panel-title-font-weight` | `panel-title` | `font-weight` | `default` | `--xh-font-weight-semibold` | transfer 的 panel-title 部件 font-weight 覆盖槽。 |
+| `--xh-transfer-panel-title-font-weight` | `panel-title` | `font-weight` | `default` | `--xh-font-weight-medium` | transfer 的 panel-title 部件 font-weight 覆盖槽。 |
 | `--xh-transfer-placeholder-fg` | `search` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | transfer 的 search 部件 color 覆盖槽。 |
 | `--xh-transfer-search-bg` | `search` | `background` | `default` | `transparent` | transfer 的 search 部件 background 覆盖槽。 |
 | `--xh-transfer-search-border` | `search` | `border-block-end` | `default` | `--xh-material-solid-separator` | transfer 的 search 部件 border-block-end 覆盖槽。 |
@@ -524,7 +526,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `--xh-transfer-trigger-fg` | `to-source-trigger`<br>`to-target-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | transfer 的 to-source-trigger、to-target-trigger 部件 color 覆盖槽。 |
 | `--xh-transfer-trigger-font-size` | `to-source-trigger`<br>`to-target-trigger` | `font-size` | `default` | `--xh-text-label-size` | transfer 的 to-source-trigger、to-target-trigger 部件 font-size 覆盖槽。 |
 | `--xh-transfer-trigger-px` | `to-source-trigger`<br>`to-target-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | transfer 的 to-source-trigger、to-target-trigger 部件 padding-inline 覆盖槽。 |
-| `--xh-transfer-trigger-radius` | `to-source-trigger`<br>`to-target-trigger` | `border-radius` | `default` | `--xh-shape-control` | transfer 的 to-source-trigger、to-target-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-transfer-trigger-radius` | `to-source-trigger`<br>`to-target-trigger` | `border-radius` | `default` | `--xh-shape-circle` | transfer 的 to-source-trigger、to-target-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-transfer-trigger-shadow-active` | `to-source-trigger`<br>`to-target-trigger` | `box-shadow` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | transfer 的 to-source-trigger、to-target-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-transfer-trigger-shadow-hover` | `to-source-trigger`<br>`to-target-trigger` | `box-shadow` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `none` | transfer 的 to-source-trigger、to-target-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-transfer-trigger-size` | `to-source-trigger`<br>`to-target-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | transfer 的 to-source-trigger、to-target-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |

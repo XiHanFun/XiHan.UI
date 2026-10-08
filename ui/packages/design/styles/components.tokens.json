@@ -84122,7 +84122,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-3"
+        "--xh-space-5"
       ],
       "visibility": "public",
       "description": "transfer 的 root 部件 gap 覆盖槽。"
@@ -84439,6 +84439,24 @@
       "description": "transfer 的 item 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-transfer-item-h",
+      "component": "transfer",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_transfer-item-h"
+      ],
+      "visibility": "public",
+      "description": "transfer 的 item 部件 min-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-transfer-item-leading",
       "component": "transfer",
       "part": [
@@ -84505,7 +84523,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "0"
       ],
       "visibility": "public",
       "description": "transfer 的 item 部件 border-radius 覆盖槽。"
@@ -84541,7 +84559,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-viewport-h-md"
+        "--xh-viewport-h-sm"
       ],
       "visibility": "public",
       "description": "transfer 的 list 部件 block-size 覆盖槽。"
@@ -84559,7 +84577,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "transfer 的 list 部件 padding-inline 覆盖槽。"
@@ -84577,7 +84595,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "transfer 的 list 部件 padding-block 覆盖槽。"
@@ -84696,13 +84714,11 @@
       "name": "--xh-transfer-panel-border",
       "component": "transfer",
       "part": [
-        "panel-header",
         "source-panel",
         "target-panel"
       ],
       "property": [
-        "border",
-        "border-block-end"
+        "border"
       ],
       "state": [
         "default"
@@ -84711,7 +84727,7 @@
         "--xh-border-default"
       ],
       "visibility": "public",
-      "description": "transfer 的 panel-header、source-panel、target-panel 部件 border、border-block-end 覆盖槽。"
+      "description": "transfer 的 source-panel、target-panel 部件 border 覆盖槽。"
     },
     {
       "name": "--xh-transfer-panel-border-invalid",
@@ -84771,6 +84787,24 @@
       "description": "transfer 的 panel-count 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-transfer-panel-header-bg",
+      "component": "transfer",
+      "part": [
+        "panel-header"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-muted"
+      ],
+      "visibility": "public",
+      "description": "transfer 的 panel-header 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-transfer-panel-header-gap",
       "component": "transfer",
       "part": [
@@ -84819,7 +84853,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-3"
       ],
       "visibility": "public",
       "description": "transfer 的 panel-header 部件 padding-block 覆盖槽。"
@@ -84892,7 +84926,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "transfer 的 panel-title 部件 font-weight 覆盖槽。"
@@ -85326,7 +85360,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "transfer 的 to-source-trigger、to-target-trigger 部件 border-radius 覆盖槽。"

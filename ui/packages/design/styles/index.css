@@ -49176,6 +49176,8 @@
     /* 尺寸档只换这六个私有槽，面板头、搜索框、条目与勾选格都从 root 继承它们，
        换档不必给每个部件各写一条选择器 */
     --xh-_transfer-item-py: var(--xh-list-option-py-md);
+    /* 行至少一个控件高：md 36px，勾选格、文字与悬停面都有落脚的余量 */
+    --xh-_transfer-item-h: var(--xh-control-h-lg);
     --xh-_transfer-h: var(--xh-control-h-md);
     --xh-_transfer-px: var(--xh-control-px-md);
     --xh-_transfer-gap: var(--xh-control-gap-md);
@@ -49190,7 +49192,7 @@
     display: grid;
     grid-template-rows: auto auto;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    gap: var(--xh-transfer-gap, var(--xh-space-3));
+    gap: var(--xh-transfer-gap, var(--xh-space-5));
     align-items: center;
     color: var(--xh-transfer-fg, var(--xh-fg-default));
   }
@@ -49200,6 +49202,7 @@
   .xh-scope-transfer[data-part='root'][data-size='sm'] {
     --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-glyph-size-sm));
     --xh-_transfer-item-py: var(--xh-list-option-py-sm);
+    --xh-_transfer-item-h: var(--xh-control-h-md);
     --xh-_transfer-h: var(--xh-control-h-sm);
     --xh-_transfer-px: var(--xh-control-px-sm);
     --xh-_transfer-gap: var(--xh-control-gap-sm);
@@ -49210,6 +49213,7 @@
   .xh-scope-transfer[data-part='root'][data-size='lg'] {
     --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-glyph-size-lg));
     --xh-_transfer-item-py: var(--xh-list-option-py-lg);
+    --xh-_transfer-item-h: var(--xh-control-box-lg);
     --xh-_transfer-h: var(--xh-control-h-lg);
     --xh-_transfer-px: var(--xh-control-px-lg);
     --xh-_transfer-gap: var(--xh-control-gap-lg);
@@ -49273,14 +49277,15 @@
     background: var(--xh-transfer-panel-bg-disabled, var(--xh-bg-muted));
   }
 
-  /* 面板内三个角色的槽都带 panel- 段，与部件名逐字对上 */
+  /* 面板内三个角色的槽都带 panel- 段，与部件名逐字对上。
+     栏头是一条淡底：靠底色与下面的列表分开，不再画分隔线；上下 12px，单行约 40px 高 */
   .xh-scope-transfer[data-part='panel-header'] {
     display: flex;
     gap: var(--xh-transfer-panel-header-gap, var(--xh-_transfer-gap));
     align-items: center;
-    padding-block: var(--xh-transfer-panel-header-py, var(--xh-space-2));
+    padding-block: var(--xh-transfer-panel-header-py, var(--xh-space-3));
     padding-inline: var(--xh-transfer-panel-header-px, var(--xh-_transfer-px));
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-transfer-panel-border, var(--xh-border-default));
+    background: var(--xh-transfer-panel-header-bg, var(--xh-bg-muted));
   }
 
   /* 标题占满剩余宽度，把计数挤到行尾侧 */
@@ -49289,9 +49294,9 @@
     min-inline-size: 0;
     overflow: hidden;
     color: var(--xh-transfer-panel-title-fg, var(--xh-fg-default));
-    /* 面板标头是 Surface 内的标题：14 / 600 */
+    /* 面板标头是 Surface 内的标题：14 / 500 */
     font-size: var(--xh-transfer-panel-title-font-size, var(--xh-text-label-size));
-    font-weight: var(--xh-transfer-panel-title-font-weight, var(--xh-font-weight-semibold));
+    font-weight: var(--xh-transfer-panel-title-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -49351,9 +49356,10 @@
     flex: 1 1 auto;
     flex-direction: column;
     gap: var(--xh-transfer-list-gap, var(--xh-list-option-gap));
-    block-size: var(--xh-transfer-list-h, var(--xh-viewport-h-md));
-    padding-block: var(--xh-transfer-list-py, var(--xh-space-1));
-    padding-inline: var(--xh-transfer-list-px, var(--xh-space-1));
+    /* 行通栏：列表不留内衬，行面直接贴到面板两缘 */
+    block-size: var(--xh-transfer-list-h, var(--xh-viewport-h-sm));
+    padding-block: var(--xh-transfer-list-py, var(--xh-space-0));
+    padding-inline: var(--xh-transfer-list-px, var(--xh-space-0));
     overflow: auto;
     transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -49501,7 +49507,7 @@
     --xh-collection-inline-padding: var(--xh-transfer-item-px, var(--xh-_transfer-px));
     --xh-collection-gap: 0;
     --xh-collection-font-size: var(--xh-transfer-item-font-size, var(--xh-_transfer-font-size));
-    --xh-collection-radius: var(--xh-transfer-item-radius, var(--xh-shape-inset));
+    --xh-collection-radius: var(--xh-transfer-item-radius, 0);
     /* 作者的图标尺槽经桥接槽下发到条目，家族缺省按 data-xh-collection-size 取档 */
     --xh-collection-glyph-size: var(--xh-transfer-icon-size, var(--xh-_collection-glyph-size));
     --xh-collection-fg-rest: var(--xh-transfer-item-fg, var(--xh-fg-default));
@@ -49524,6 +49530,7 @@
     flex: none;
     gap: var(--xh-transfer-item-gap, var(--xh-_transfer-gap));
     align-items: center;
+    min-block-size: var(--xh-transfer-item-h, var(--xh-_transfer-item-h));
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
     line-height: var(--xh-transfer-item-leading, var(--xh-leading-normal));
     white-space: nowrap;
@@ -49630,16 +49637,15 @@
     font-weight: var(--xh-font-weight-medium);
   }
 
-  /* 两颗搬运钮是只有字形的离散动作钮：接 Action Control 的 icon 档、outline 形态（中性描边、透明底，
-     白底承载 hover 100 → pressed 200，按下 0.97 并同时换底），盒、焦点环、粗指针热区与禁用面由家族给；
-     此前的 raised 悬停抬升退役（边界只由描边承担）。这里只把使用者槽映射到桥接槽；
-     钮是正方盒，按 sm 档取一个控件高 */
+  /* 两颗搬运钮是只有字形的离散动作钮：接 Action Control 的 icon 档、subtle 形态（淡底、无边，
+     淡底阶梯 hover 200 → pressed 300），盒、焦点环、粗指针热区与禁用面由家族给。
+     钮是正方盒，按 sm 档取一个控件高，正方盒取圆形 */
   .xh-scope-transfer[data-part='to-target-trigger'],
   .xh-scope-transfer[data-part='to-source-trigger'] {
     --xh-action-visual-size: var(--xh-transfer-trigger-size, var(--xh-_action-profile-visual-size));
     --xh-action-min-inline-size: var(--xh-transfer-trigger-size, var(--xh-_action-profile-visual-size));
     --xh-action-padding-inline: var(--xh-transfer-trigger-px, var(--xh-_action-profile-padding-inline));
-    --xh-action-radius: var(--xh-transfer-trigger-radius, var(--xh-shape-control));
+    --xh-action-radius: var(--xh-transfer-trigger-radius, var(--xh-shape-circle));
     --xh-action-border-rest: var(--xh-transfer-trigger-border, var(--xh-_action-variant-border-rest));
     --xh-action-border-hover: var(--xh-transfer-trigger-border, var(--xh-_action-variant-border-hover));
     --xh-action-border-pressed: var(--xh-transfer-trigger-border, var(--xh-_action-variant-border-pressed));

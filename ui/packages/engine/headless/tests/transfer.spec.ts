@@ -1091,13 +1091,13 @@ describe('collection Item 家族投影', () => {
     expect((h.api().getItemCheckboxProps(item) as Record<string, unknown>)['data-xh-collection-slot']).toBe('prefix')
   })
 
-  it('两颗搬运钮接 Action Control 的 icon 档 outline 形态，正方盒固定 sm 档', () => {
+  it('两颗搬运钮接 Action Control 的 icon 档 subtle 形态，正方盒固定 sm 档', () => {
     const h = mount({ size: 'lg' })
     for (const el of [h.toTarget, h.toSource]) {
       expect(el.dataset).toMatchObject({
         xhActionControl: '',
         xhActionProfile: 'icon',
-        xhActionVariant: 'outline',
+        xhActionVariant: 'subtle',
         xhActionDisplay: 'always',
         xhActionSize: 'sm',
       })

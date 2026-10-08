@@ -73918,6 +73918,9 @@
               "name": "--xh-transfer-item-gap"
             },
             {
+              "name": "--xh-transfer-item-h"
+            },
+            {
               "name": "--xh-transfer-item-leading"
             },
             {
@@ -73970,6 +73973,9 @@
             },
             {
               "name": "--xh-transfer-panel-count-font-size"
+            },
+            {
+              "name": "--xh-transfer-panel-header-bg"
             },
             {
               "name": "--xh-transfer-panel-header-gap"
