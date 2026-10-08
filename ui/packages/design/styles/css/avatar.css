@@ -15,38 +15,40 @@
   }
 
   [data-scope='avatar'][data-part='root'] {
+    /* 直径：外层槽在前（头像组整排齐平走它），各档的档值在后 */
+    --xh-_avatar-size: var(--xh-avatar-size, var(--xh-control-h-md));
+    /* 回退字号取直径的一半：一两个字的缩写在圆里占得住，随直径一起缩放 */
+    --xh-_avatar-font-size: calc(var(--xh-_avatar-size) / 2);
+
     position: relative;
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    inline-size: var(--xh-avatar-size, var(--xh-control-h-md));
-    block-size: var(--xh-avatar-size, var(--xh-control-h-md));
+    inline-size: var(--xh-_avatar-size);
+    block-size: var(--xh-_avatar-size);
     border-radius: var(--xh-avatar-radius, var(--xh-shape-circle));
-    /* 头像在头像组里层叠：底取淡底的不透明档，半透明会透出压在下面的那一枚 */
-    background: var(--xh-avatar-bg, var(--xh-bg-subtle-opaque));
-    color: var(--xh-avatar-fg, var(--xh-fg-muted));
-    font-size: var(--xh-avatar-font-size, var(--xh-text-secondary-size));
+    /* 头像在头像组里层叠：底取淡底的不透明档，半透明会透出压在下面的那一枚。
+       取加深一档的不透明淡底、字取正文色：白字压在这层灰上只有 1.6:1，次要字色在暗色的加深底上
+       也到不了 4.5:1 */
+    background: var(--xh-avatar-bg, var(--xh-bg-subtle-active-opaque));
+    color: var(--xh-avatar-fg, var(--xh-fg-default));
+    font-size: var(--xh-avatar-font-size, var(--xh-_avatar-font-size));
     font-weight: var(--xh-avatar-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     user-select: none;
   }
 
-  /* 三档尺寸对齐控件档位，缺省档写在上面的基础规则里；
-     字号跟着一起缩放，回退字才在小头像里放得下、在大头像里不显小。
-     每一档都把 --xh-avatar-size / --xh-avatar-font-size 排在自己的档值前面：这两个槽是
-     外层统一整排头像的通道，档值直接写终值的话，写了 data-size 的那一枚就脱离外层控制 */
+  /* 三档尺寸对齐控件档位，缺省档写在上面的基础规则里；字号随直径取一半，跟着一起缩放。
+     每一档都把 --xh-avatar-size 排在自己的档值前面：这个槽是外层统一整排头像的通道，
+     档值直接写终值的话，写了 data-size 的那一枚就脱离外层控制 */
   [data-scope='avatar'][data-part='root'][data-size='sm'] {
-    inline-size: var(--xh-avatar-size, var(--xh-control-h-sm));
-    block-size: var(--xh-avatar-size, var(--xh-control-h-sm));
-    font-size: var(--xh-avatar-font-size, var(--xh-control-caption-sm));
+    --xh-_avatar-size: var(--xh-avatar-size, var(--xh-control-h-sm));
   }
 
   [data-scope='avatar'][data-part='root'][data-size='lg'] {
-    inline-size: var(--xh-avatar-size, var(--xh-control-h-lg));
-    block-size: var(--xh-avatar-size, var(--xh-control-h-lg));
-    font-size: var(--xh-avatar-font-size, var(--xh-control-caption-lg));
+    --xh-_avatar-size: var(--xh-avatar-size, var(--xh-control-h-lg));
   }
 
   /* —— 语气 ——
@@ -54,8 +56,8 @@
      两条声明都把 --xh-avatar-bg / --xh-avatar-fg 排在语气值前面：使用者槽仍是最外那一层，
      写了 tone 的那一枚照样受外层统一控制。整块带 [data-tone] 限定，没写语气的头像逐值不变 */
   [data-scope='avatar'][data-part='root'][data-tone] {
-    background: var(--xh-avatar-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle-opaque)));
-    color: var(--xh-avatar-fg, var(--xh-_tone-fg, var(--xh-fg-muted)));
+    background: var(--xh-avatar-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle-active-opaque)));
+    color: var(--xh-avatar-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
   }
 
   /* 不声明 display，加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起。
