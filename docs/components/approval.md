@@ -421,9 +421,10 @@ requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或
 | `--xh-approval-result-font-size` | `result` | `font-size` | `default` | `--xh-text-caption-size` | approval 的 result 部件 font-size 覆盖槽。 |
 | `--xh-approval-result-font-weight` | `result` | `font-weight` | `default` | `--xh-font-weight-medium` | approval 的 result 部件 font-weight 覆盖槽。 |
 | `--xh-approval-result-gap` | `result` | `gap` | `default` | `--xh-space-1` | approval 的 result 部件 gap 覆盖槽。 |
+| `--xh-approval-result-h` | `result` | `min-block-size` | `default` | `--xh-chip-h-sm` | approval 的 result 部件 min-block-size 覆盖槽。 |
 | `--xh-approval-result-px` | `result` | `padding-inline` | `default` | `--xh-space-1_5` | approval 的 result 部件 padding-inline 覆盖槽。 |
-| `--xh-approval-result-py` | `result` | `padding-block` | `default` | `--xh-space-0_5` | approval 的 result 部件 padding-block 覆盖槽。 |
-| `--xh-approval-result-radius` | `result` | `border-radius` | `default` | `--xh-shape-pill` | approval 的 result 部件 border-radius 覆盖槽。 |
+| `--xh-approval-result-py` | `result` | `padding-block` | `default` | `0` | approval 的 result 部件 padding-block 覆盖槽。 |
+| `--xh-approval-result-radius` | `result` | `border-radius` | `default` | `--xh-shape-control` | approval 的 result 部件 border-radius 覆盖槽。 |
 | `--xh-approval-shadow` | `root` | `box-shadow` | `default` | `none` | approval 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-approval-timer-fg` | `timer` | `color` | `default` | `--xh-fg-muted` | approval 的 timer 部件 color 覆盖槽。 |
 | `--xh-approval-timer-font-size` | `timer` | `font-size` | `default` | `--xh-text-caption-size` | approval 的 timer 部件 font-size 覆盖槽。 |

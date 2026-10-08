@@ -305,9 +305,10 @@
 | `--xh-tool-call-status-fg-done` | `status` | `color` | `state=output-available` | `--xh-_tone-fg` | tool-call 的 status 部件 color 覆盖槽。 |
 | `--xh-tool-call-status-fg-error` | `status` | `color` | `state=output-error` | `--xh-_tone-fg` | tool-call 的 status 部件 color 覆盖槽。 |
 | `--xh-tool-call-status-font-size` | `duration`<br>`error`<br>`status` | `font-size` | `default` | `--xh-text-caption-size` | tool-call 的 duration、error、status 部件 font-size 覆盖槽。 |
+| `--xh-tool-call-status-h` | `status` | `min-block-size` | `tone` | `--xh-chip-h-sm` | tool-call 的 status 部件 min-block-size 覆盖槽。 |
 | `--xh-tool-call-status-px` | `status` | `padding-inline` | `tone` | `--xh-space-1_5` | tool-call 的 status 部件 padding-inline 覆盖槽。 |
-| `--xh-tool-call-status-py` | `status` | `padding-block` | `tone` | `--xh-space-0_5` | tool-call 的 status 部件 padding-block 覆盖槽。 |
-| `--xh-tool-call-status-radius` | `status` | `border-radius` | `tone` | `--xh-shape-pill` | tool-call 的 status 部件 border-radius 覆盖槽。 |
+| `--xh-tool-call-status-py` | `status` | `padding-block` | `tone` | `0` | tool-call 的 status 部件 padding-block 覆盖槽。 |
+| `--xh-tool-call-status-radius` | `status` | `border-radius` | `tone` | `--xh-shape-control` | tool-call 的 status 部件 border-radius 覆盖槽。 |
 | `--xh-tool-call-status-shimmer-base` | `root`<br>`status` | `background-image` | `loading` | `--xh-fg-subtle` | tool-call 的 root、status 部件 background-image 覆盖槽。 |
 | `--xh-tool-call-status-shimmer-sheen` | `root`<br>`status` | `background-image` | `loading` | `--xh-fg-default` | tool-call 的 root、status 部件 background-image 覆盖槽。 |
 | `--xh-tool-call-summary-bg` | `summary` | `background` | `default` | `--xh-bg-subtle` | tool-call 的 summary 部件 background 覆盖槽。 |
