@@ -68170,8 +68170,8 @@
         "where([data-contrast='more'])"
       ],
       "defaultToken": [
-        "--xh-border-control",
-        "--xh-border-strong"
+        "--xh-border-strong",
+        "transparent"
       ],
       "visibility": "public",
       "description": "switch 的 root 部件 box-shadow 覆盖槽。"
