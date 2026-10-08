@@ -1,4 +1,4 @@
-// Alert 的中性抬升表面、语气文字与尾端操作依赖真实计算样式和布局。
+// Alert 的语气淡底面、信息层级与尾端操作依赖真实计算样式和布局。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
@@ -74,14 +74,20 @@ afterEach(async () => {
 })
 
 describe('警告提示的表面与信息层级', () => {
-  it('使用中性描边面（无影），语气只强调标题与图标', async () => {
+  it('使用语气淡底面（透明边位、无影、控件圆角），标题取正文色，彩色只落在底与图标上', async () => {
     await mount()
     const root = part('root')
+    const style = getComputedStyle(root)
 
-    expect(getComputedStyle(root).backgroundColor).toBe(tokenColor('--xh-bg-surface'))
-    expect(getComputedStyle(root).borderTopColor).toBe(tokenColor('--xh-border-default'))
-    expect(getComputedStyle(root).boxShadow).toBe('none')
-    expect(getComputedStyle(part('title')).color).toBe(getComputedStyle(part('indicator')).color)
+    expect(style.backgroundColor).toBe(tokenColor('--xh-_tone-subtle', root))
+    expect(style.borderTopWidth).toBe('1px')
+    expect(style.borderTopColor).toBe('rgba(0, 0, 0, 0)')
+    expect(style.boxShadow).toBe('none')
+    expect(style.borderRadius).toBe('2px')
+    expect(style.paddingTop).toBe('8px')
+    expect(getComputedStyle(part('title')).color).toBe(tokenColor('--xh-fg-default'))
+    expect(getComputedStyle(part('indicator')).color).toBe(tokenColor('--xh-_tone-fg', root))
+    expect(getComputedStyle(part('title')).color).not.toBe(getComputedStyle(part('indicator')).color)
     expect(getComputedStyle(part('description')).color).toBe(tokenColor('--xh-fg-muted'))
   })
 
@@ -98,7 +104,7 @@ describe('警告提示的表面与信息层级', () => {
     expect(part('content').childElementCount).toBe(2)
   })
 
-  it('关闭钮走 icon ghost 档：32px 正方盒、静息透明无影，悬停底跟着语气走', async () => {
+  it('关闭钮走 icon ghost sm 档：正方盒与 sm 档控件等高、静息透明无影，悬停底沿语气淡底升一档', async () => {
     await mount()
     const close = part('close-trigger')
     const rect = close.getBoundingClientRect()
@@ -106,8 +112,8 @@ describe('警告提示的表面与信息层级', () => {
 
     expect(close.dataset.xhActionProfile).toBe('icon')
     expect(close.dataset.xhActionVariant).toBe('ghost')
-    expect(rect.width).toBe(32)
-    expect(rect.height).toBe(32)
+    expect(rect.width).toBe(resolvedLength(part('root'), 'var(--xh-control-h-sm)'))
+    expect(rect.height).toBe(resolvedLength(part('root'), 'var(--xh-control-h-sm)'))
     expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(style.boxShadow).toBe('none')
     expect(style.color).toBe(tokenColor('--xh-fg-muted'))
@@ -115,8 +121,9 @@ describe('警告提示的表面与信息层级', () => {
     expect(getComputedStyle(close, '::before').width).toBe('16px')
     expect(resolvedLength(part('indicator'), 'var(--xh-icon-size)')).toBe(20)
 
+    // 本体已是语气 12% 淡底，叉的悬停面再升一档到 20%，才在底上看得出来
     await userEvent.hover(close)
-    await expect.poll(() => getComputedStyle(close).backgroundColor).toBe(tokenColor('--xh-_tone-subtle', part('root')))
+    await expect.poll(() => getComputedStyle(close).backgroundColor).toBe(tokenColor('--xh-_tone-subtle-hover', part('root')))
     expect(getComputedStyle(close).color).toBe(tokenColor('--xh-fg-default'))
   })
 })
