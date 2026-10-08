@@ -351,6 +351,9 @@
               "name": "--xh-accordion-border"
             },
             {
+              "name": "--xh-accordion-content-bg"
+            },
+            {
               "name": "--xh-accordion-content-fg"
             },
             {
@@ -358,6 +361,9 @@
             },
             {
               "name": "--xh-accordion-content-pb"
+            },
+            {
+              "name": "--xh-accordion-content-pt"
             },
             {
               "name": "--xh-accordion-content-px"
@@ -400,6 +406,9 @@
             },
             {
               "name": "--xh-accordion-trigger-font-weight"
+            },
+            {
+              "name": "--xh-accordion-trigger-font-weight-open"
             },
             {
               "name": "--xh-accordion-trigger-gap"

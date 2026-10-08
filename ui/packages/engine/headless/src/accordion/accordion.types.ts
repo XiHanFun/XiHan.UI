@@ -58,7 +58,7 @@ export interface AccordionSchema extends MachineSchema {
     loop?: boolean
     /** 整组禁用：所有条目都不可切换，条目上的 disabled 只能收紧不能放宽。 */
     disabled?: boolean
-    /** 形态：ghost 条目直接相邻不画容器（默认），outline 为单一连续表面，subtle 为淡底。默认 ghost。 */
+    /** 形态：outline 为单一连续描边面（默认），subtle 为淡底，ghost 条目直接相邻不画容器。默认 outline。 */
     variant?: ControlVariant
     /** 方向键轴向，默认 vertical。 */
     orientation?: Orientation

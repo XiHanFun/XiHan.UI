@@ -7,9 +7,11 @@
 
 export type ComponentTokenName
   = | '--xh-accordion-border'
+    | '--xh-accordion-content-bg'
     | '--xh-accordion-content-fg'
     | '--xh-accordion-content-font-size'
     | '--xh-accordion-content-pb'
+    | '--xh-accordion-content-pt'
     | '--xh-accordion-content-px'
     | '--xh-accordion-icon-size'
     | '--xh-accordion-indicator-fg'
@@ -24,6 +26,7 @@ export type ComponentTokenName
     | '--xh-accordion-trigger-fg-open'
     | '--xh-accordion-trigger-font-size'
     | '--xh-accordion-trigger-font-weight'
+    | '--xh-accordion-trigger-font-weight-open'
     | '--xh-accordion-trigger-gap'
     | '--xh-accordion-trigger-h'
     | '--xh-accordion-trigger-px'

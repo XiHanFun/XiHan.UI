@@ -27,7 +27,7 @@ function mount(variant?: 'ghost' | 'outline' | 'subtle') {
         <h3 data-scope="accordion" class="xh-scope-accordion" data-part="header">
           <button data-scope="accordion" class="xh-scope-accordion" data-part="trigger" data-state="open" data-xh-action-control data-xh-action-profile="disclosure-trigger" data-xh-action-variant="ghost" data-xh-action-display="always" data-xh-action-size="md">第一项</button>
         </h3>
-        <div data-scope="accordion" class="xh-scope-accordion" data-part="content">第一项内容</div>
+        <div data-scope="accordion" class="xh-scope-accordion" data-part="content" data-state="open" data-instant>第一项内容</div>
       </div>
       <div data-scope="accordion" class="xh-scope-accordion" data-part="item">
         <h3 data-scope="accordion" class="xh-scope-accordion" data-part="header">
@@ -46,18 +46,22 @@ function mount(variant?: 'ghost' | 'outline' | 'subtle') {
 }
 
 describe('accordion 默认视觉', () => {
-  it('标题栏使用舒展内边距，正文与标题对齐并保持次级层级', () => {
+  it('标题栏上下 10px 加一行正文行高共 41px，正文与标题同起点、淡底正文色，展开时与标题栏之间一条分隔线', () => {
     const accordion = mount()
     const trigger = getComputedStyle(accordion.triggers[0]!)
     const content = getComputedStyle(accordion.content)
 
-    expect(Number.parseFloat(trigger.paddingBlockStart)).toBe(16)
-    expect(Number.parseFloat(trigger.paddingInlineStart)).toBe(16)
-    expect(accordion.triggers[0]!.getBoundingClientRect().height).toBeGreaterThanOrEqual(46)
-    expect(Number.parseFloat(content.paddingBlockStart)).toBe(0)
-    expect(Number.parseFloat(content.paddingBlockEnd)).toBe(16)
+    expect(Number.parseFloat(trigger.paddingBlockStart)).toBe(10)
+    expect(Number.parseFloat(trigger.paddingInlineStart)).toBe(12)
+    expect(accordion.triggers[0]!.getBoundingClientRect().height).toBeCloseTo(41, 0)
+    expect(Number.parseFloat(content.paddingBlockStart)).toBe(8)
+    expect(Number.parseFloat(content.paddingBlockEnd)).toBe(8)
     expect(content.paddingInlineStart).toBe(trigger.paddingInlineStart)
-    expect(content.color).not.toBe(trigger.color)
+    expect(content.color).toBe(tokenColor('--xh-fg-default'))
+    expect(content.fontSize).toBe('14px')
+    expect(content.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+    expect(Number.parseFloat(content.borderTopWidth)).toBe(1)
+    expect(content.borderTopColor).toBe(tokenColor('--xh-border-default'))
   })
 
   it('标题栏悬停换面到白底承载的 hover 档（100），展开态与收起态同档，按下只换面不缩放', async () => {
@@ -85,7 +89,7 @@ describe('accordion 默认视觉', () => {
     await expect.poll(() => getComputedStyle(closed).backgroundColor).toBe(tokenColor('--xh-bg-subtle-hover'))
   })
 
-  it('outline 是一块 border-default 描边、无影的连续表面，分隔线内收且末项不留尾线', () => {
+  it('outline 是一块 border-default 描边、无影的连续表面，分隔线通栏且末项不留尾线', () => {
     const accordion = mount('outline')
     const root = getComputedStyle(accordion.root)
     const firstSeparator = getComputedStyle(accordion.items[0]!, '::after')
@@ -100,7 +104,8 @@ describe('accordion 默认视觉', () => {
     expect(Number.parseFloat(root.borderRadius)).toBeGreaterThan(0)
     expect(firstSeparator.content).toBe('""')
     expect(Number.parseFloat(firstSeparator.blockSize)).toBeGreaterThan(0)
-    expect(Number.parseFloat(firstSeparator.insetInlineStart) / accordion.root.clientWidth).toBeCloseTo(0.03, 2)
+    expect(Number.parseFloat(firstSeparator.insetInlineStart)).toBe(0)
+    expect(firstSeparator.backgroundColor).toBe(tokenColor('--xh-border-default'))
     expect(lastSeparator.content).toBe('none')
   })
 })

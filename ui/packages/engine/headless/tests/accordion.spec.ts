@@ -130,11 +130,11 @@ describe('connectAccordion 投影', () => {
     a.stop()
   })
 
-  it('形态恒有值：不写 variant 时 root 落 ghost，写了 outline / subtle 如实落', () => {
+  it('形态恒有值：不写 variant 时 root 落 outline，写了 ghost / subtle 如实落', () => {
     const a = makeAccordion()
-    expect(a.api().getRootProps()).toMatchObject({ 'data-variant': 'ghost' })
-    a.setProps({ variant: 'outline' })
     expect(a.api().getRootProps()).toMatchObject({ 'data-variant': 'outline' })
+    a.setProps({ variant: 'ghost' })
+    expect(a.api().getRootProps()).toMatchObject({ 'data-variant': 'ghost' })
     a.setProps({ variant: 'subtle' })
     expect(a.api().getRootProps()).toMatchObject({ 'data-variant': 'subtle' })
     a.stop()
