@@ -13413,16 +13413,17 @@
 }
 
 /* 实心档是一块彩色面（连接层打 data-xh-ink-surface）：面内的图标与作者内容按这块底取墨色。
-   底色随语气与禁用换，这里跟着换 */
-.xh-scope-tag[data-part='root'][data-xh-ink-surface] {
+   底色随语气与禁用换，这里跟着换。连接层只在实心档投影这个标记，选择器与形态写在一起，
+   别的形态（淡底、描边）的面不会被当成这块底去选墨 */
+.xh-scope-tag[data-part='root'][data-variant='solid'][data-xh-ink-surface] {
   --xh-ink-surface: var(--xh-tag-bg, var(--xh-bg-brand));
 }
 
-.xh-scope-tag[data-part='root'][data-xh-ink-surface][data-tone] {
+.xh-scope-tag[data-part='root'][data-variant='solid'][data-xh-ink-surface][data-tone] {
   --xh-ink-surface: var(--xh-tag-bg, var(--xh-_tone, var(--xh-bg-brand)));
 }
 
-.xh-scope-tag[data-part='root'][data-xh-ink-surface][data-disabled] {
+.xh-scope-tag[data-part='root'][data-variant='solid'][data-xh-ink-surface][data-disabled] {
   /* 置灰面是墨色淡底：选墨只看分量、不看透明度，取它的不透明档 */
   --xh-ink-surface: var(--xh-tag-bg-disabled, var(--xh-bg-muted-opaque));
 }
