@@ -22751,6 +22751,12 @@
               "name": "--xh-dialog-bg"
             },
             {
+              "name": "--xh-dialog-body-px"
+            },
+            {
+              "name": "--xh-dialog-body-py"
+            },
+            {
               "name": "--xh-dialog-border"
             },
             {
@@ -22781,12 +22787,6 @@
               "name": "--xh-dialog-content-backdrop-filter"
             },
             {
-              "name": "--xh-dialog-content-lens-bg"
-            },
-            {
-              "name": "--xh-dialog-content-lens-depth"
-            },
-            {
               "name": "--xh-dialog-description-fg"
             },
             {
@@ -22808,22 +22808,25 @@
               "name": "--xh-dialog-footer-pt"
             },
             {
-              "name": "--xh-dialog-gap"
+              "name": "--xh-dialog-footer-px"
             },
             {
-              "name": "--xh-dialog-header-bg"
+              "name": "--xh-dialog-footer-py"
+            },
+            {
+              "name": "--xh-dialog-gap"
             },
             {
               "name": "--xh-dialog-header-gap"
             },
             {
-              "name": "--xh-dialog-header-lens-depth"
-            },
-            {
               "name": "--xh-dialog-header-pb"
             },
             {
-              "name": "--xh-dialog-highlight"
+              "name": "--xh-dialog-header-pt"
+            },
+            {
+              "name": "--xh-dialog-header-px"
             },
             {
               "name": "--xh-dialog-icon-size"

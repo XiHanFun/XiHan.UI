@@ -160,6 +160,18 @@
     "max-h": {
       "$type": "dimension",
       "$value": "14rem"
+    },
+    "sheet-px": {
+      "$type": "dimension",
+      "$value": "{space.4}"
+    },
+    "sheet-body-py": {
+      "$type": "dimension",
+      "$value": "{space.5}"
+    },
+    "sheet-footer-py": {
+      "$type": "dimension",
+      "$value": "{space.3}"
     }
   },
   "surface": {

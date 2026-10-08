@@ -297,6 +297,7 @@
     --xh-scrollbar-thickness-lg: 8px;
     --xh-scrollbar-gutter: 1px;
     --xh-glyph-size-text: 1em;
+    --xh-glyph-size-xs: 12px;
     --xh-glyph-size-sm: 16px;
     --xh-glyph-size-md: 20px;
     --xh-glyph-size-lg: 24px;
@@ -493,6 +494,10 @@
     --xh-overlay-drawer-w-sm: 16rem;
     --xh-overlay-drawer-w-md: 20rem;
     --xh-overlay-drawer-w-lg: 28rem;
+    --xh-overlay-header-h: calc(var(--xh-control-h-md) + var(--xh-space-4));
+    --xh-overlay-sheet-px: var(--xh-space-5);
+    --xh-overlay-sheet-body-py: var(--xh-space-6);
+    --xh-overlay-sheet-footer-py: var(--xh-space-4);
     --xh-overlay-toast-w: 28.75rem;
     --xh-overlay-backdrop-blur: 12px;
     --xh-text-label-size: var(--xh-font-size-md);
@@ -619,6 +624,9 @@
     --xh-viewport-h-lg: 20rem;
     --xh-overlay-menu-max-h: 17rem;
     --xh-overlay-max-h: 14rem;
+    --xh-overlay-sheet-px: var(--xh-space-4);
+    --xh-overlay-sheet-body-py: var(--xh-space-5);
+    --xh-overlay-sheet-footer-py: var(--xh-space-3);
     --xh-surface-py-sm: var(--xh-space-2);
     --xh-surface-px-sm: var(--xh-space-3);
     --xh-surface-py-md: var(--xh-space-4);
@@ -655,6 +663,7 @@
     --xh-nav-row-h-lg: var(--xh-control-box-lg);
     --xh-overlay-column-item-h: calc(var(--xh-control-h-sm) - var(--xh-space-1));
     --xh-overlay-calendar-column-h: calc(var(--xh-control-h-sm) * 7 + var(--xh-space-7));
+    --xh-overlay-header-h: calc(var(--xh-control-h-md) + var(--xh-space-4));
   }
 
   /* direction 轴：书写方向的符号，给只认物理方向的量换向。就近的 dir 属性决定——dir 写在哪一层就在

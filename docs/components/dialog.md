@@ -92,7 +92,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 - `closeOnEscape` 与 `closeOnInteractOutside` 可分别关闭，避免填写中的表单因误点外部而丢失。
 - 内容区可以内部滚动。Body 是模态滚动面：滚到头不带动页面，内容高度变化时保留稳定的滚动条空道。
 - `draggable` 让面板可以挪走：指针按住标题栏（header，没写 header 时是 title）即跟手，落在标题栏里的按钮、链接与表单控件照常点；面板四边始终夹在视口内，每次打开都从居中落点起。键盘经 `drag-trigger` 挪：它是一块透明的把手，放在 header 里时铺满标题栏，焦点落在它上面时方向键挪一步（10px）、Shift 挪一大步（50px）、Enter / Space 回到居中；初始焦点越过它，落到第一个真正的控件上。位移写成 content 上的两个私有槽、按 transform 平移，与进出场的 translate / scale 叠加，拖过的面板从拖到的位置退场。Web Components 侧的属性是 `panel-draggable`：`draggable` 是 HTML 全局属性，写在宿主上会把它变成原生拖放源。
-- 面板走 M4 sheet 三件套（描边、不透明底、投影）。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`。标题为 heading-3，说明文字为 13px 说明档。
+- 面板走 sheet 三件套（1px 描边、不透明底、单层投影），圆角 4px，不叠渐变与顶光。分三段时头部是一条 48px 的带（紧凑档 44px），横向内衬 20px；正文纵 24 横 20，尾段纵 16 横 20；头下、尾上各一条贴边的 1px 内部分隔线。不分三段时标题行同样落在顶上那条 48px 带的中线上。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`。关闭钮的叉 12px，距右 16px、落在头部带的中线上。标题取页面级面板标题档（heading-3）、正文色，说明文字为 13px 说明档。
 - 关闭时内容立即失活并退出可访问树，内容与遮罩的有限退场动画全部完成后再释放模态资源，并发出 `onExitComplete` / `exit-complete`。重开撤销旧退出，卸载立即清理。
 - 内容第一次打开才挂载，缺省在退场动画播完后卸载、下次打开重新挂载。反复开合而内容又重时（设置面板、长表单）把 `unmountOnExit` 设为 false：打开过之后收起只隐藏——定位层以内联 `display: none` 收起、遮罩不留、Portal 视觉桥断开——面板里的组件状态、输入与滚动位置都留着，再打开不必重挂。Web Components 的作者节点一向常驻；写进 content 里一个 `<template>` 的内容按同一规则挂卸：第一次打开克隆，缺省退场播完撤走，`unmount-on-exit="false"` 时克隆一次之后常驻。
 - 另有命令式服务，业务代码一次调用即可弹出。
@@ -307,6 +307,8 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `--xh-dialog-backdrop-filter` | `backdrop`<br>`content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default`<br>`variant=blur` | `--xh-dialog-backdrop-blur`<br>`--xh-material-elevated-backdrop` | dialog 的 backdrop、content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-dialog-backdrop-layer` | `backdrop` | `z-index` | `default` | `--xh-_layer` | dialog 的 backdrop 部件 z-index 覆盖槽。 |
 | `--xh-dialog-bg` | `content` | `background` | `default` | `--xh-material-elevated-bg` | dialog 的 content 部件 background 覆盖槽。 |
+| `--xh-dialog-body-px` | `body` | `padding-inline` | `default` | `--xh-overlay-sheet-px` | dialog 的 body 部件 padding-inline 覆盖槽。 |
+| `--xh-dialog-body-py` | `body` | `padding-block` | `default` | `--xh-overlay-sheet-body-py` | dialog 的 body 部件 padding-block 覆盖槽。 |
 | `--xh-dialog-border` | `content` | `border` | `default` | `--xh-material-elevated-border` | dialog 的 content 部件 border 覆盖槽。 |
 | `--xh-dialog-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | dialog 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-dialog-close-bg-focus` | `close-trigger` | `background-color` | `focus-visible` | `--xh-_action-variant-bg-focus-visible` | dialog 的 close-trigger 部件 background-color 覆盖槽。 |
@@ -315,10 +317,8 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `--xh-dialog-close-fg-focus` | `close-trigger` | `color` | `focus-visible` | `--xh-dialog-close-fg-hover` | dialog 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-dialog-close-fg-hover` | `close-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed` | dialog 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-dialog-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | dialog 的 close-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-dialog-close-size` | `close-trigger`<br>`content`<br>`title` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default`<br>`has([data-scope='dialog'][data-part='close-trigger'])`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size`<br>`--xh-control-h-sm` | dialog 的 close-trigger、content、title 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
+| `--xh-dialog-close-size` | `close-trigger`<br>`content`<br>`title` | `block-size`<br>`inline-size`<br>`inset-block-start`<br>`padding-inline-end` | `default`<br>`has([data-scope='dialog'][data-part='close-trigger'])`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size`<br>`--xh-control-h-sm` | dialog 的 close-trigger、content、title 部件 block-size、inline-size、inset-block-start、padding-inline-end 覆盖槽。 |
 | `--xh-dialog-content-backdrop-filter` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-dialog-backdrop-filter` | dialog 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
-| `--xh-dialog-content-lens-bg` | `content` | `background` | `default` | `--xh-dialog-header-bg` | dialog 的 content 部件 background 覆盖槽。 |
-| `--xh-dialog-content-lens-depth` | `content` | `background` | `default` | `--xh-dialog-header-lens-depth` | dialog 的 content 部件 background 覆盖槽。 |
 | `--xh-dialog-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | dialog 的 description 部件 color 覆盖槽。 |
 | `--xh-dialog-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | dialog 的 description 部件 font-size 覆盖槽。 |
 | `--xh-dialog-drag-trigger-min-h` | `drag-trigger` | `min-block-size` | `default` | `--xh-space-6` | dialog 的 drag-trigger 部件 min-block-size 覆盖槽。 |
@@ -326,13 +326,14 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `--xh-dialog-fg` | `content` | `color` | `default` | `--xh-material-elevated-fg` | dialog 的 content 部件 color 覆盖槽。 |
 | `--xh-dialog-footer-gap` | `footer` | `gap` | `default` | `--xh-control-gap-md` | dialog 的 footer 部件 gap 覆盖槽。 |
 | `--xh-dialog-footer-pt` | `footer` | `padding-block-start` | `default` | `--xh-space-2` | dialog 的 footer 部件 padding-block-start 覆盖槽。 |
+| `--xh-dialog-footer-px` | `content`<br>`footer` | `padding-inline` | `has([data-scope='dialog'][data-part='body'])` | `--xh-overlay-sheet-px` | dialog 的 content、footer 部件 padding-inline 覆盖槽。 |
+| `--xh-dialog-footer-py` | `content`<br>`footer` | `padding-block` | `has([data-scope='dialog'][data-part='body'])` | `--xh-overlay-sheet-footer-py` | dialog 的 content、footer 部件 padding-block 覆盖槽。 |
 | `--xh-dialog-gap` | `content` | `gap` | `default` | `--xh-stack-gap-md` | dialog 的 content 部件 gap 覆盖槽。 |
-| `--xh-dialog-header-bg` | `content` | `background` | `default` | `--xh-material-elevated-bg` | dialog 的 content 部件 background 覆盖槽。 |
 | `--xh-dialog-header-gap` | `header` | `gap` | `default` | `--xh-stack-gap-sm` | dialog 的 header 部件 gap 覆盖槽。 |
-| `--xh-dialog-header-lens-depth` | `content` | `background` | `default` | `--xh-dialog-py` | dialog 的 content 部件 background 覆盖槽。 |
-| `--xh-dialog-header-pb` | `header` | `padding-block-end` | `default` | `--xh-space-2` | dialog 的 header 部件 padding-block-end 覆盖槽。 |
-| `--xh-dialog-highlight` | `content` | `background` | `default` | `--xh-material-elevated-highlight` | dialog 的 content 部件 background 覆盖槽。 |
-| `--xh-dialog-icon-size` | `close-trigger`<br>`content`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | dialog 的 close-trigger、content、trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-dialog-header-pb` | `content`<br>`header` | `padding-block-end` | `default`<br>`has([data-scope='dialog'][data-part='body'])` | `--xh-_dialog-header-pt`<br>`--xh-space-2` | dialog 的 content、header 部件 padding-block-end 覆盖槽。 |
+| `--xh-dialog-header-pt` | `content`<br>`header` | `padding-block-start` | `has([data-scope='dialog'][data-part='body'])` | `--xh-_dialog-header-pt` | dialog 的 content、header 部件 padding-block-start 覆盖槽。 |
+| `--xh-dialog-header-px` | `content`<br>`header` | `padding-inline` | `has([data-scope='dialog'][data-part='body'])` | `--xh-overlay-sheet-px` | dialog 的 content、header 部件 padding-inline 覆盖槽。 |
+| `--xh-dialog-icon-size` | `close-trigger`<br>`content`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-xs` | dialog 的 close-trigger、content、trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-dialog-indicator-bg` | `indicator` | `background` | `default` | `--xh-_tone-subtle` | dialog 的 indicator 部件 background 覆盖槽。 |
 | `--xh-dialog-indicator-fg` | `indicator` | `color` | `default` | `--xh-_tone-fg` | dialog 的 indicator 部件 color 覆盖槽。 |
 | `--xh-dialog-indicator-mark-size` | `indicator` | `--xh-icon-size` | `default` | `--xh-dialog-indicator-size` | dialog 的 indicator 部件 --xh-icon-size 覆盖槽。 |
@@ -341,8 +342,8 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `--xh-dialog-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | dialog 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-dialog-max-w` | `content` | `max-inline-size` | `default` | `--xh-_dialog-max-w` | dialog 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-dialog-positioner-padding` | `positioner` | `padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default` | `--xh-space-4` | dialog 的 positioner 部件 padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
-| `--xh-dialog-px` | `content` | `padding-inline` | `default` | `--xh-surface-px-md` | dialog 的 content 部件 padding-inline 覆盖槽。 |
-| `--xh-dialog-py` | `content` | `background`<br>`padding-block` | `default` | `--xh-surface-py-md` | dialog 的 content 部件 background、padding-block 覆盖槽。 |
+| `--xh-dialog-px` | `content` | `padding-inline` | `default` | `--xh-overlay-sheet-px` | dialog 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-dialog-py` | `content` | `padding-block-end`<br>`padding-block-start` | `default` | `--xh-_dialog-header-pt`<br>`--xh-overlay-sheet-body-py` | dialog 的 content 部件 padding-block-end、padding-block-start 覆盖槽。 |
 | `--xh-dialog-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | dialog 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-dialog-separator` | `content`<br>`footer`<br>`header` | `border-block-end`<br>`border-block-start` | `has([data-scope='dialog'][data-part='body'])`<br>`has([data-scope='dialog'][data-part='footer'])` | `--xh-material-elevated-separator` | dialog 的 content、footer、header 部件 border-block-end、border-block-start 覆盖槽。 |
 | `--xh-dialog-shadow` | `content` | `box-shadow` | `default` | `--xh-material-elevated-shadow` | dialog 的 content 部件 box-shadow 覆盖槽。 |
