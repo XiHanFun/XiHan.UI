@@ -3,10 +3,13 @@
 // 有层产物里皮肤靠特指度压过 Family Recipe（皮肤 (0,4,0) > 配方 (0,3,0)）；无层产物为了压住宿主
 // 正文规则把配方抬到与皮肤同档，同档只剩源序竞争——配方一旦排在皮肤之后，皮肤对配方物理属性
 // （outline / border-color / background）的直接覆盖就被反超，而单测、门禁与有层产物全绿。
-// InputGroup 正是这样在无层产物里叠出第二圈焦点环。这里把同一份 DOM 分别装进只引其中一份
-// 产物的 iframe，逐元素比对计算值，任何一处不一致都报出元素路径与属性。
+// InputGroup 正是这样在无层产物里叠出第二圈焦点环。复合配方规则（如 Action Control 的 row 档）
+// 抬档后比皮肤高一档，皮肤对它排版属性（display / justify-content / 宽度）的同档覆盖同样失效。
+// 这里把同一份 DOM 分别装进只引其中一份产物的 iframe，逐元素比对计算值，
+// 任何一处不一致都报出元素路径与属性。
 //
 // 判据是级联算出的取值，只有真实浏览器算得出来：jsdom 不解析样式表里的 var() 与层。
+import type { CitationSource } from '@xihan-ui/headless'
 import type { App, VNode } from 'vue'
 import layeredUrl from '@xihan-ui/styles/index.css?url'
 import unlayeredUrl from '@xihan-ui/styles/index.unlayered.css?url'
@@ -22,8 +25,17 @@ import {
   XhCheckboxGroupItemText,
   XhCheckboxGroupLabel,
   XhCheckboxGroupRoot,
+  XhCheckboxGroupSelectAllTrigger,
+  XhCitationList,
+  XhCitationRoot,
+  XhInfiniteScrollLoadMoreTrigger,
+  XhInfiniteScrollRoot,
   XhInputGroupItem,
   XhInputGroupRoot,
+  XhListboxContent,
+  XhListboxItem,
+  XhListboxLoadMoreTrigger,
+  XhListboxRoot,
   XhMenuContent,
   XhMenuItem,
   XhMenuItemText,
@@ -32,6 +44,7 @@ import {
   XhMenuSub,
   XhMenuSubTrigger,
   XhMenuTrigger,
+  XhRadioGroupRoot,
   XhSelectRoot,
   XhSideNavBranch,
   XhSideNavBranchContent,
@@ -43,6 +56,22 @@ import {
   XhSideNavLinkText,
   XhSideNavList,
   XhSideNavRoot,
+  XhStepsIndicator,
+  XhStepsItem,
+  XhStepsList,
+  XhStepsRoot,
+  XhStepsSeparator,
+  XhStepsTitle,
+  XhStepsTrigger,
+  XhTableBody,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableColumnLabel,
+  XhTableHeader,
+  XhTableLoadMoreTrigger,
+  XhTableRoot,
+  XhTableRow,
+  XhTableToolbar,
   XhTabsList,
   XhTabsRoot,
   XhTabsTrigger,
@@ -84,6 +113,14 @@ const PROPERTIES = [
   'padding-left',
   'opacity',
   'cursor',
+  'display',
+  'justify-content',
+  'align-items',
+  'text-align',
+  'white-space',
+  'grid-template-columns',
+  'width',
+  'height',
 ] as const
 
 interface Fixture {
@@ -118,6 +155,11 @@ function textField(label: string): VNode {
     ]),
   ])
 }
+
+const CITATION_SOURCES: CitationSource[] = [
+  { type: 'source-url', sourceId: 'report', title: '报告', url: 'https://example.com/report' },
+  { type: 'source-url', sourceId: 'dataset', title: '数据集', url: 'https://example.com/dataset' },
+]
 
 const FIXTURES: Fixture[] = [
   {
@@ -212,6 +254,75 @@ const FIXTURES: Fixture[] = [
       h(XhButton, { variant: 'solid' }, () => h(XhButtonLabel, null, () => '实心')),
       h(XhButton, { variant: 'outline' }, () => h(XhButtonLabel, null, () => '描边')),
     ]),
+  },
+  {
+    name: 'radio-group',
+    render: () => h(XhRadioGroupRoot, {
+      collection: [{ value: 'mail', label: '邮件' }, { value: 'sms', label: '短信' }],
+      defaultValue: 'mail',
+      label: '通知',
+      orientation: 'horizontal',
+    }),
+  },
+  {
+    name: 'checkbox-group-horizontal',
+    render: () => h(XhCheckboxGroupRoot, { defaultValue: ['mail'], itemValues: ['mail', 'sms'], orientation: 'horizontal' }, () => [
+      h(XhCheckboxGroupSelectAllTrigger, null, () => '全选'),
+      h(XhCheckboxGroupItem, { value: 'mail' }, () => [
+        h(XhCheckboxGroupIndicator),
+        h(XhCheckboxGroupItemText, null, () => '邮件'),
+      ]),
+      h(XhCheckboxGroupItem, { value: 'sms' }, () => [
+        h(XhCheckboxGroupIndicator),
+        h(XhCheckboxGroupItemText, null, () => '短信'),
+      ]),
+    ]),
+  },
+  {
+    name: 'steps',
+    render: () => h(XhStepsRoot, { count: 2, defaultValue: 0 }, () => h(XhStepsList, null, () => [0, 1].map(index =>
+      h(XhStepsItem, { key: index, value: index }, () => [
+        h(XhStepsTrigger, null, () => [
+          h(XhStepsIndicator, null, () => String(index + 1)),
+          h(XhStepsTitle, null, () => `步骤 ${index + 1}`),
+        ]),
+        h(XhStepsSeparator),
+      ])))),
+  },
+  {
+    name: 'infinite-scroll',
+    render: () => h(XhInfiniteScrollRoot, null, () => [
+      h('div', null, '第 1 条'),
+      h(XhInfiniteScrollLoadMoreTrigger, null, () => '加载更多'),
+    ]),
+  },
+  {
+    name: 'listbox',
+    render: () => h(XhListboxRoot, null, () => [
+      h(XhListboxContent, null, () => h(XhListboxItem, { value: 'apple' }, () => '苹果')),
+      h(XhListboxLoadMoreTrigger, null, () => '加载更多'),
+    ]),
+  },
+  {
+    // 取下一页按钮放在工具条里，是 root 的兄弟
+    name: 'table',
+    render: () => h(XhTableRoot, { columns: [{ id: 'name', label: '任务' }], rows: [{ id: 'a' }] }, {
+      toolbar: () => h(XhTableToolbar, null, { default: () => h(XhTableLoadMoreTrigger, null, { default: () => '加载更多' }) }),
+      default: () => [
+        h(XhTableHeader, null, {
+          default: () => h(XhTableRow, null, {
+            default: () => h(XhTableColumnHeader, { value: 'name' }, { default: () => h(XhTableColumnLabel, null, { default: () => '任务' }) }),
+          }),
+        }),
+        h(XhTableBody, null, {
+          default: () => h(XhTableRow, { value: 'a' }, { default: () => h(XhTableCell, { value: 'name' }, { default: () => '整理周报' }) }),
+        }),
+      ],
+    }),
+  },
+  {
+    name: 'citation',
+    render: () => h(XhCitationRoot, { sources: CITATION_SOURCES }, () => h(XhCitationList)),
   },
 ]
 
