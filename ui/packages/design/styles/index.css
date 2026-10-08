@@ -43852,7 +43852,8 @@
   .xh-scope-tabs[data-part='root'][data-variant='segment'] {
     --xh-_tabs-list-gap: var(--xh-space-0_5);
     --xh-_tabs-list-bg: var(--xh-bg-subtle);
-    --xh-_tabs-list-p: var(--xh-space-1);
+    /* 轨道内衬 2px：滑块的 control 圆角不得大于轨道 surface 圆角减去内衬 */
+    --xh-_tabs-list-p: var(--xh-space-0_5);
     --xh-_tabs-list-radius: var(--xh-shape-surface);
     --xh-_tabs-list-border-width: 0;
     --xh-_tabs-trigger-border-width: var(--xh-stroke-thin);
@@ -44474,6 +44475,8 @@
     grid-column: 2;
     align-self: center;
     margin-inline-start: var(--xh-space-1);
+    /* line 档标签带底边多一道基线，这一行比标签高出它的厚度：钮让出同样一截，居中才落在标签的中线上 */
+    margin-block-end: var(--xh-_tabs-list-border-width);
   }
 
   /* 竖排：标签带与钮上下叠成左侧一列（钮在列尾），面板占右侧那一轨、跨两行 */
@@ -44502,6 +44505,7 @@
     align-self: auto;
     margin-inline-start: 0;
     margin-block-start: var(--xh-space-1);
+    margin-block-end: 0;
   }
 
   /* 钮本身：接 Action Control icon 档 ghost 面（连接层投影 profile / variant / size），盒取标签同高的正方形，
