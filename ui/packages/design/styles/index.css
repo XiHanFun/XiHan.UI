@@ -911,6 +911,11 @@
     cursor: var(--xh-field-cursor-disabled, not-allowed);
   }
 
+  [data-xh-field-chrome]:not([data-variant='ghost']):not(:focus-within) {
+    --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
+  }
+
   [data-xh-field-affix] {
     display: inline-flex;
     flex: none;
