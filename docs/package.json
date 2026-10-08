@@ -31,7 +31,6 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@xihanfun/vitepress-theme": "^1.0.0",
     "@xihan-ui/animations": "link:../ui/packages/features/animations",
     "@xihan-ui/chat-stream": "link:../ui/packages/features/chat-stream",
     "@xihan-ui/code-highlight": "link:../ui/packages/features/code-highlight",
@@ -46,6 +45,7 @@
     "@xihan-ui/tokens": "link:../ui/packages/design/tokens",
     "@xihan-ui/vue": "link:../ui/packages/adapters/vue",
     "@xihan-ui/web-components": "link:../ui/packages/adapters/web-components",
+    "@xihanfun/vitepress-theme": "^1.0.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "vitepress": "2.0.0-alpha.20",

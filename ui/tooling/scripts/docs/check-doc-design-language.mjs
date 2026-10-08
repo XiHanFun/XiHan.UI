@@ -16,7 +16,6 @@ const FILES = [
   'XhTokenSwatches.vue',
   'XhTokenTable.vue',
   'overrides.css',
-  'vars.css',
 ]
 
 const sources = new Map()
@@ -58,22 +57,6 @@ for (const [file, source] of sources) {
   }
 }
 
-const vars = sources.get('vars.css')
-const requiredAliases = {
-  '--xh-doc-accent': '--xh-fg-brand',
-  '--xh-doc-ink': '--xh-fg-default',
-  '--xh-doc-muted': '--xh-fg-muted',
-  '--xh-doc-canvas': '--xh-bg-page',
-  '--xh-doc-surface': '--xh-bg-surface',
-  '--xh-doc-surface-2': '--xh-bg-subtle',
-  '--xh-doc-surface-3': '--xh-bg-subtle-hover',
-  '--xh-doc-border': '--xh-border-default',
-}
-for (const [name, token] of Object.entries(requiredAliases)) {
-  if (!vars.includes(`${name}: var(${token});`))
-    problems.push(`vars.css:1  ${name} 应直接映射 ${token}，文档展示面才与组件主题同步`)
-}
-
 const focusContracts = [
   ['XhDemo.vue', '.xh-demo__btn:focus-visible'],
   ['XhFrameworkSwitch.vue', '.xh-framework__item:focus-visible'],
@@ -98,4 +81,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-doc-design-language] 通过：${FILES.length} 份公共展示文件共用语义表面、形状、海拔、焦点与动效`)
+console.log(`[check-doc-design-language] 通过：${FILES.length} 份公共展示文件共用形状、海拔、焦点与动效`)

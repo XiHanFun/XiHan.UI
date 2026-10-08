@@ -18,7 +18,7 @@
   margin-inline-start: 6px;
   padding: 0 7px;
   border: 1px solid color-mix(in srgb, var(--vp-c-brand-1) 40%, transparent);
-  border-radius: 9999px;
+  border-radius: var(--xh-shape-pill);
   color: var(--vp-c-brand-1);
   background: var(--vp-c-bg);
   font-size: 12px;
