@@ -88282,6 +88282,26 @@
       "description": "typography 的 prose、text 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-typography-code-fg",
+      "component": "typography",
+      "part": [
+        "prose",
+        "text"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "variant=code",
+        "where(code)"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "typography 的 prose、text 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-typography-code-font",
       "component": "typography",
       "part": [
@@ -88338,7 +88358,7 @@
         "where(code)"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "typography 的 prose、text 部件 padding-inline 覆盖槽。"
@@ -88559,7 +88579,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "typography 的 heading 部件 font-weight 覆盖槽。"
@@ -88713,7 +88733,7 @@
       ],
       "defaultToken": [
         "--xh-_tone-subtle",
-        "--xh-bg-brand-subtle"
+        "--xh-bg-mark"
       ],
       "visibility": "public",
       "description": "typography 的 text 部件 background 覆盖槽。"
@@ -88733,7 +88753,7 @@
       ],
       "defaultToken": [
         "--xh-_tone-fg",
-        "--xh-fg-brand-strong"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "typography 的 text 部件 color 覆盖槽。"
@@ -89039,7 +89059,7 @@
         "where(h1, h2, h3, h4, h5, h6)"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "typography 的 prose 部件 font-weight 覆盖槽。"
@@ -89168,7 +89188,7 @@
         "where(ul, ol)"
       ],
       "defaultToken": [
-        "--xh-space-6"
+        "--xh-space-5"
       ],
       "visibility": "public",
       "description": "typography 的 prose 部件 padding-inline-start 覆盖槽。"
@@ -89240,7 +89260,7 @@
         "where(blockquote)"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-strong"
       ],
       "visibility": "public",
       "description": "typography 的 prose 部件 border-inline-start 覆盖槽。"
@@ -89258,7 +89278,7 @@
         "where(blockquote)"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "inherit"
       ],
       "visibility": "public",
       "description": "typography 的 prose 部件 color 覆盖槽。"
@@ -89276,7 +89296,7 @@
         "where(blockquote)"
       ],
       "defaultToken": [
-        "--xh-space-4"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "typography 的 prose 部件 padding-inline-start 覆盖槽。"
@@ -89312,7 +89332,7 @@
         "where(strong)"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "typography 的 prose 部件 font-weight 覆盖槽。"
@@ -89384,7 +89404,7 @@
         "variant=strong"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "typography 的 text 部件 font-weight 覆盖槽。"

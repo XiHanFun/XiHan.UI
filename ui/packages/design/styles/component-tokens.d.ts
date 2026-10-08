@@ -4421,6 +4421,7 @@ export type ComponentTokenName
     | '--xh-truncate-lines'
     | '--xh-typography-block-gap'
     | '--xh-typography-code-bg'
+    | '--xh-typography-code-fg'
     | '--xh-typography-code-font'
     | '--xh-typography-code-font-size'
     | '--xh-typography-code-px'
