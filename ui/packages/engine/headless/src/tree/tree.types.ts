@@ -148,7 +148,7 @@ export interface TreeSchema extends MachineSchema {
     collection?: TreeNode[]
     /** 完整 collection 与 Virtualizer 的焦点桥；count 必须等于当前 visibleNodes.length。 */
     virtualizer?: CollectionVirtualizer
-    /** 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留行。 */
+    /** 外框形态：ghost 去掉描边与底色只保留行（默认），outline 带描边与底色，subtle 淡底无描边。 */
     variant?: ControlVariant
     /** 尺寸：sm / md / lg，默认 md。行高、行内内衬、字号、指示符盒（展开箭头、对号、拖拽把手）与层级缩进随档。 */
     size?: Size

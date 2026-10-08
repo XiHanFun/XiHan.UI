@@ -49645,13 +49645,15 @@
 
   .xh-scope-tree[data-part='root'] {
     /* 尺寸档只换这几支私有槽，行、指示符盒、缩进与占位从 root 继承，走集合家族的尺寸档：
-       行的块向内衬取列表条目档、行内内衬 / 间距 / 字号取控件档、指示符盒取指示符档、缩进一档一格 */
+       行的块向内衬取列表条目档、间距 / 字号取控件档、指示符盒取指示符档。
+       行内内衬只留一条窄边（树行首就是箭头盒，不需要列表那样的起始留白）；
+       缩进 = 箭头盒 + 箭头到文字的间距，子节点的箭头正好对齐父节点的文字起点 */
     --xh-_tree-row-py: var(--xh-list-option-py-md);
-    --xh-_tree-row-px: var(--xh-control-px-md);
+    --xh-_tree-row-px: var(--xh-space-1);
     --xh-_tree-row-gap: var(--xh-control-gap-md);
     --xh-_tree-font-size: var(--xh-control-font-md);
     --xh-_tree-indicator: var(--xh-control-indicator-md);
-    --xh-_tree-indent: var(--xh-space-4);
+    --xh-_tree-indent: calc(var(--xh-_tree-indicator) + var(--xh-_tree-row-gap));
     /* 行外的字形（空态 / 在途占位里的加载环与作者塞的图标）按档取尺；行内的由家族随 data-xh-collection-size
        下发。这支只管作者放进行里的图标：树自绘的状态字形（展开方向、行尾对号与半选杠）是指示符，
        各部件在自己身上把 --xh-icon-size 改接到指示符盒的尺 */
@@ -49664,21 +49666,19 @@
 
   .xh-scope-tree[data-part='root'][data-size='sm'] {
     --xh-_tree-row-py: var(--xh-list-option-py-sm);
-    --xh-_tree-row-px: var(--xh-control-px-sm);
+    --xh-_tree-row-px: var(--xh-space-0_5);
     --xh-_tree-row-gap: var(--xh-control-gap-sm);
     --xh-_tree-font-size: var(--xh-control-font-sm);
     --xh-_tree-indicator: var(--xh-control-indicator-sm);
-    --xh-_tree-indent: var(--xh-space-3);
     --xh-icon-size: var(--xh-tree-icon-size, var(--xh-glyph-size-sm));
   }
 
   .xh-scope-tree[data-part='root'][data-size='lg'] {
     --xh-_tree-row-py: var(--xh-list-option-py-lg);
-    --xh-_tree-row-px: var(--xh-control-px-lg);
+    --xh-_tree-row-px: var(--xh-space-1_5);
     --xh-_tree-row-gap: var(--xh-control-gap-lg);
     --xh-_tree-font-size: var(--xh-control-font-lg);
     --xh-_tree-indicator: var(--xh-control-indicator-lg);
-    --xh-_tree-indent: var(--xh-space-5);
     --xh-icon-size: var(--xh-tree-icon-size, var(--xh-glyph-size-lg));
   }
 
@@ -49716,7 +49716,7 @@
   .xh-scope-tree[data-part='tree'] {
     display: flex;
     flex-direction: column;
-    gap: var(--xh-tree-tree-gap, var(--xh-list-option-gap));
+    gap: var(--xh-tree-tree-gap, var(--xh-space-0));
     max-block-size: var(--xh-tree-max-h, var(--xh-viewport-h-lg));
     padding-block: var(--xh-tree-py, var(--xh-space-1));
     padding-inline: var(--xh-tree-px, var(--xh-space-1));
@@ -49797,7 +49797,7 @@
   .xh-scope-tree[data-part='branch'] {
     display: flex;
     flex-direction: column;
-    gap: var(--xh-tree-branch-gap, var(--xh-list-option-gap));
+    gap: var(--xh-tree-branch-gap, var(--xh-space-0));
   }
 
   .xh-scope-tree[data-part='branch'][hidden] {
@@ -49964,7 +49964,7 @@
 
   /* 展开箭头与方向指示符：两者都可能被作者用作"点这里展开"的把手，
      所以尺寸与叶子的勾选标记一致，两种行的文字起点才对得齐。
-     盒里的 chevron 是指示符：与盒同边长，--xh-icon-size 在自己身上改接到盒的尺 */
+     盒里的 chevron 是指示符：盒与 --xh-icon-size 同边长，兜底字形只画盒的四分之三（16px 盒里 12px） */
   .xh-scope-tree[data-part='branch-trigger'],
   .xh-scope-tree[data-part='branch-indicator'] {
     --xh-icon-size: var(--xh-_tree-indicator-size);
@@ -49974,7 +49974,7 @@
     align-items: center;
     justify-content: center;
     inline-size: var(--xh-_tree-indicator-size);
-    color: var(--xh-tree-branch-indicator-fg, var(--xh-fg-subtle));
+    color: var(--xh-tree-branch-indicator-fg, var(--xh-fg-muted));
     transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
@@ -50005,7 +50005,7 @@
   .xh-scope-tree[data-part='branch-content'] {
     display: flex;
     flex-direction: column;
-    gap: var(--xh-tree-branch-content-gap, var(--xh-list-option-gap));
+    gap: var(--xh-tree-branch-content-gap, var(--xh-space-0));
     padding-inline-start: var(--xh-tree-indent, var(--xh-_tree-indent));
   }
 
@@ -50016,7 +50016,7 @@
    * 把竖线接过它整棵子树，交给下一个兄弟。子节点之间、分支行与子层之间的间距由线向上下伸出补齐，竖线不断开。
    * 只画在竖排的子层里：顶层节点没有父节点可连，横排的末端层没有行首可接。
    * 首个与末位子节点按子层里的结构次序认：子层里只放节点，收起的子树整块不显示、不影响次序。
-   * 它是内部分隔的一种，颜色取 border-subtle；行悬停与选中换面时线压在面上照样看得见
+   * 颜色取 border-default，与容器描边同一档；行悬停与选中换面时线压在面上照样看得见
    */
   .xh-scope-tree[data-part='tree'][data-lines] .xh-scope-tree[data-part='branch-content'] {
     position: relative;
@@ -50033,19 +50033,19 @@
         var(--xh-tree-indent, var(--xh-_tree-indent))
     );
     --xh-_tree-line-top: 0px;
-    --xh-_tree-line-bottom: var(--xh-tree-branch-content-gap, var(--xh-list-option-gap));
+    --xh-_tree-line-bottom: var(--xh-tree-branch-content-gap, var(--xh-space-0));
 
     position: relative;
   }
 
   .xh-scope-tree[data-part='tree'][data-lines] .xh-scope-tree[data-part='branch-content'][data-orientation='vertical'] > .xh-scope-tree[data-part='item']:first-child,
   .xh-scope-tree[data-part='tree'][data-lines] .xh-scope-tree[data-part='branch-content'][data-orientation='vertical'] > .xh-scope-tree[data-part='branch']:first-child > .xh-scope-tree[data-part='branch-control'] {
-    --xh-_tree-line-top: var(--xh-tree-branch-gap, var(--xh-list-option-gap));
+    --xh-_tree-line-top: var(--xh-tree-branch-gap, var(--xh-space-0));
   }
 
   /* 展开着的非末位分支：行下面先是它自己的子层，竖线只伸到子层顶上，余下那段由子层接着画 */
   .xh-scope-tree[data-part='tree'][data-lines] .xh-scope-tree[data-part='branch-content'][data-orientation='vertical'] > .xh-scope-tree[data-part='branch'] > .xh-scope-tree[data-part='branch-control'][data-state='open'] {
-    --xh-_tree-line-bottom: var(--xh-tree-branch-gap, var(--xh-list-option-gap));
+    --xh-_tree-line-bottom: var(--xh-tree-branch-gap, var(--xh-space-0));
   }
 
   .xh-scope-tree[data-part='tree'][data-lines] .xh-scope-tree[data-part='branch-content'][data-orientation='vertical'] > .xh-scope-tree[data-part='item']::before,
@@ -50056,9 +50056,9 @@
     inset-inline-start: var(--xh-_tree-line-x);
     /* 分支横出到展开箭头盒的起点；叶子没有箭头，横线穿过占位那一格接到正文前 */
     inline-size: calc(var(--xh-tree-row-px, var(--xh-_tree-row-px)) - var(--xh-_tree-line-x));
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-tree-line-color, var(--xh-border-subtle));
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-tree-line-color, var(--xh-border-default));
     /* 横出的那段落在行的中线：线盒上下伸出的量不对称时按差值的一半补回 */
-    background: linear-gradient(var(--xh-tree-line-color, var(--xh-border-subtle)), var(--xh-tree-line-color, var(--xh-border-subtle)))
+    background: linear-gradient(var(--xh-tree-line-color, var(--xh-border-default)), var(--xh-tree-line-color, var(--xh-border-default)))
       0 calc(50% + (var(--xh-_tree-line-top) - var(--xh-_tree-line-bottom)) / 2) / 100% var(--xh-stroke-thin) no-repeat;
     pointer-events: none;
   }
@@ -50075,7 +50075,7 @@
   .xh-scope-tree[data-part='tree'][data-lines] .xh-scope-tree[data-part='branch-content'][data-orientation='vertical'] > .xh-scope-tree[data-part='item']:last-child::before,
   .xh-scope-tree[data-part='tree'][data-lines] .xh-scope-tree[data-part='branch-content'][data-orientation='vertical'] > .xh-scope-tree[data-part='branch']:last-child > .xh-scope-tree[data-part='branch-control']::before {
     inset-block-end: calc(50% - var(--xh-stroke-thin) / 2);
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-tree-line-color, var(--xh-border-subtle));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-tree-line-color, var(--xh-border-default));
     background: none;
   }
 
@@ -50084,14 +50084,14 @@
   .xh-scope-tree[data-part='tree'][data-lines] .xh-scope-tree[data-part='branch-content'][data-orientation='vertical'] > .xh-scope-tree[data-part='branch']:not(:last-child) > .xh-scope-tree[data-part='branch-content']::after {
     content: '';
     position: absolute;
-    inset-block: 0 calc(var(--xh-tree-branch-content-gap, var(--xh-list-option-gap)) * -1);
+    inset-block: 0 calc(var(--xh-tree-branch-content-gap, var(--xh-space-0)) * -1);
     inset-inline-start: calc(
       var(--xh-tree-row-px, var(--xh-_tree-row-px)) +
         var(--xh-tree-indicator-size, var(--xh-_tree-indicator)) / 2 -
         var(--xh-stroke-thin) / 2 -
         var(--xh-tree-indent, var(--xh-_tree-indent))
     );
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-tree-line-color, var(--xh-border-subtle));
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-tree-line-color, var(--xh-border-default));
     pointer-events: none;
   }
 
@@ -50101,7 +50101,7 @@
     flex-flow: row wrap;
     align-items: center;
     column-gap: var(--xh-tree-leaf-row-gap, var(--xh-space-3));
-    row-gap: var(--xh-tree-branch-content-gap, var(--xh-list-option-gap));
+    row-gap: var(--xh-tree-branch-content-gap, var(--xh-space-0));
   }
 
   /* 横排的一层里节点并排，行盒不能再各自吃满一行 */
@@ -50126,8 +50126,8 @@
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
-    -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+    -webkit-mask: var(--xh-glyph-mark-chevron-right) center / 75% no-repeat;
+    mask: var(--xh-glyph-mark-chevron-right) center / 75% no-repeat;
   }
 
   /* 勾与半选杠叠成两层遮罩，按状态只换两层的尺寸：离开半选淡出的那一段里横杠留着，
@@ -50156,10 +50156,11 @@
     transition-delay: 0s;
   }
 
-  /* 这一枝在取子节点：展开箭头换成转圈，不再按开合转向；只换字形，颜色沿用箭头的弱前景 */
+  /* 这一枝在取子节点：展开箭头换成品牌色的转圈，不再按开合转向 */
   .xh-scope-tree[data-part='branch'][data-loading] > .xh-scope-tree[data-part='branch-control'] .xh-scope-tree[data-part='branch-trigger'],
   .xh-scope-tree[data-part='branch'][data-loading] > .xh-scope-tree[data-part='branch-control'] .xh-scope-tree[data-part='branch-indicator'] {
     rotate: none;
+    color: var(--xh-tree-branch-loading-fg, var(--xh-fg-brand));
   }
 
   .xh-scope-tree[data-part='branch'][data-loading] > .xh-scope-tree[data-part='branch-control'] .xh-scope-tree[data-part='branch-trigger']:empty::before,

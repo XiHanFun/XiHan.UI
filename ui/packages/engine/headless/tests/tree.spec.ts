@@ -454,8 +454,8 @@ describe('connectTree 属性输出', () => {
     expect(h.branch('src').branch.getAttribute('aria-disabled')).toBe('true')
   })
 
-  it('形态恒有值：不写 variant 时根落 outline，写了 subtle / ghost 如实落到根、不进 tree', () => {
-    expect(mount().root.getAttribute('data-variant')).toBe('outline')
+  it('形态恒有值：不写 variant 时根落 ghost，写了 subtle / outline 如实落到根、不进 tree', () => {
+    expect(mount().root.getAttribute('data-variant')).toBe('ghost')
     const h = mount({ variant: 'subtle' })
     expect(h.root.getAttribute('data-variant')).toBe('subtle')
     expect(h.treeEl.hasAttribute('data-variant')).toBe(false)

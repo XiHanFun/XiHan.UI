@@ -4269,6 +4269,7 @@ export type ComponentTokenName
     | '--xh-tree-branch-content-gap'
     | '--xh-tree-branch-gap'
     | '--xh-tree-branch-indicator-fg'
+    | '--xh-tree-branch-loading-fg'
     | '--xh-tree-drag-fg'
     | '--xh-tree-drag-fg-active'
     | '--xh-tree-drag-fg-disabled'

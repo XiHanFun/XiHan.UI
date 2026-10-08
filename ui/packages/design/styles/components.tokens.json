@@ -85096,7 +85096,7 @@
         "orientation=vertical"
       ],
       "defaultToken": [
-        "--xh-list-option-gap"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "tree 的 branch、branch-content、branch-control、item、tree 部件 background、gap、inset-block、row-gap 覆盖槽。"
@@ -85124,7 +85124,7 @@
         "state=open"
       ],
       "defaultToken": [
-        "--xh-list-option-gap"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "tree 的 branch、branch-content、branch-control、item、tree 部件 background、gap、inset-block 覆盖槽。"
@@ -85143,10 +85143,31 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "tree 的 branch-indicator、branch-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-branch-loading-fg",
+      "component": "tree",
+      "part": [
+        "branch",
+        "branch-control",
+        "branch-indicator",
+        "branch-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "loading"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand"
+      ],
+      "visibility": "public",
+      "description": "tree 的 branch、branch-control、branch-indicator、branch-trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-tree-drag-fg",
@@ -85715,7 +85736,7 @@
         "orientation=vertical"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "tree 的 branch、branch-content、branch-control、item、tree 部件 background、border-block-end、border-inline-start 覆盖槽。"
@@ -86182,7 +86203,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-list-option-gap"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "tree 的 tree 部件 gap 覆盖槽。"

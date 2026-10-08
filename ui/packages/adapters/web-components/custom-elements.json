@@ -76089,6 +76089,9 @@
               "name": "--xh-tree-branch-indicator-fg"
             },
             {
+              "name": "--xh-tree-branch-loading-fg"
+            },
+            {
               "name": "--xh-tree-drag-fg"
             },
             {
