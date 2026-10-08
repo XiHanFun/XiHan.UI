@@ -23,7 +23,6 @@ const TOKENS_CSS = 'packages/design/tokens/tokens.css'
 const ALLOWED = new Map([
   ['0', '零不是设计尺度（space-0 / radius-none 只是恰好也是 0）'],
   ['1', '倍数或比例 1（line-height、opacity、scale），不是 leading.none'],
-  ['layout.css:--xh-layout-header-h=3.5rem', '页面顶栏的高度，与浮层时列的最小列宽同值是巧合'],
   ['carousel.css:--xh-carousel-indicator-target-size=44px', '粗指针命中区的 44px 下限（WCAG 2.5.5），不随控件方格档位变；与 box-lg 同值是巧合'],
   ['marquee.css:--xh-marquee-block-size=10rem', '纵向跑马灯的视口高度，与菜单最小宽同值是巧合'],
   ['progress.css:--xh-progress-size=10rem', '环形进度大档直径，与菜单最小宽同值是巧合'],

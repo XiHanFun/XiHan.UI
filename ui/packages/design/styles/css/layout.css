@@ -33,7 +33,7 @@
     --xh-_layout-sider-expanded-w: var(--xh-layout-sider-w, var(--xh-sider-w));
     --xh-_layout-sider-w: var(--xh-_layout-sider-expanded-w);
     --xh-_layout-sider-collapsed-w: var(--xh-layout-sider-collapsed-w, var(--xh-sider-collapsed-w));
-    --xh-_layout-header-h: var(--xh-layout-header-h, 3.5rem);
+    --xh-_layout-header-h: var(--xh-layout-header-h, var(--xh-app-header-h));
     /* 侧栏吸附时钉在哪条线上：缺省贴滚动容器上沿，头也吸顶时改成让开头的高度 */
     --xh-_layout-sider-offset: 0px;
   }
@@ -92,11 +92,8 @@
   }
 
   /* 宽度过渡在这里声明一次，展开与折叠两档、以及 props 直接写进内联的宽度，走的都是这一条。
-     占位档的侧栏是淡底承载面：把手摆进来时由它下发 hover 200 → pressed 300；
-     覆盖档换成 elevated 白底，那一档的规则把阶梯写回 100 → 200 */
+     侧栏与头同是白底承载面，坐在灰的页面底上：把手摆进来走白底阶梯 hover 100 → pressed 200 */
   [data-scope='layout'][data-part='sider'] {
-    --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
-    --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
     /* 内衬缺省一档，装了 SideNav 的侧栏在下面归零；覆盖档与安全区取大时读的也是这一支 */
     --xh-_layout-sider-padding: var(--xh-space-3);
 
@@ -104,7 +101,7 @@
     inline-size: var(--xh-_layout-sider-w);
     overflow: hidden;
     padding: var(--xh-layout-sider-padding, var(--xh-_layout-sider-padding));
-    background: var(--xh-layout-sider-bg, var(--xh-bg-subtle));
+    background: var(--xh-layout-sider-bg, var(--xh-bg-surface));
     transition: inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
@@ -160,6 +157,20 @@
   }
 
   /* —— 分隔线 —— */
+  /* 头与侧栏都是白底：头的下沿与侧栏挨着内容的那一边缺省画一条内部分隔，两块白面才分得开；
+     作者开了 split 再换成 border-default，并把内容与尾也隔开 */
+  [data-scope='layout'][data-part='header'] {
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-subtle));
+  }
+
+  [data-scope='layout'][data-part='sider'][data-placement='start'] {
+    border-inline-end: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-subtle));
+  }
+
+  [data-scope='layout'][data-part='sider'][data-placement='end'] {
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-subtle));
+  }
+
   /* 后代选择器带上 data-scope：骨架里装着整页内容，光凭 data-part 会连里面别的组件同名段一起画上线 */
   [data-scope='layout'][data-part='root'][data-split] [data-scope='layout'][data-part='header'] {
     border-block-end: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-default));
@@ -251,10 +262,6 @@
        减弱动效下归零。写成槽位而不是写死物理方向：贴边用的是逻辑 inset，RTL 下行首落在物理右边，
        位移若写死物理方向就会出现「贴在右边、却从左边滑进来」 */
     --xh-_layout-sheet-shift: calc(-1 * var(--xh-motion-travel));
-    /* 这一档的底是 elevated 白底：交互阶梯按承载面走，把上面占位档下发的 200 → 300 写回
-       白底的 hover 100 → pressed 200 */
-    --xh-action-host-bg-hover: var(--xh-bg-subtle);
-    --xh-action-host-bg-pressed: var(--xh-bg-subtle-hover);
 
     position: fixed;
     z-index: var(--xh-layout-sider-layer, var(--xh-layer-drawer));

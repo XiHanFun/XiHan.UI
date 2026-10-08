@@ -16,6 +16,7 @@
 --xh-action-brand-solid-active: oklch(0.424 0.164 258)  ← var(--xh-color-brand-800)
 --xh-action-brand-solid-hover: oklch(0.488 0.196 258)  ← var(--xh-color-brand-700)
 --xh-action-on-brand-solid: oklch(1 0 0)  ← var(--xh-color-neutral-0)
+--xh-app-header-h: 3.75rem
 --xh-bg-brand: oklch(0.623 0.214 258)  ← var(--xh-color-brand-500)
 --xh-bg-brand-active: oklch(0.809 0.105 258)  ← var(--xh-color-brand-300)
 --xh-bg-brand-hover: oklch(0.702 0.165 258)  ← var(--xh-color-brand-400)
@@ -398,7 +399,7 @@
 --xh-shape-pill: 9999px  ← var(--xh-radius-full)
 --xh-shape-surface: 4px  ← var(--xh-radius-md)
 --xh-sider-collapsed-w: 4rem
---xh-sider-w: 15rem
+--xh-sider-w: 13.75rem
 --xh-stack-gap-lg: 20px  ← var(--xh-space-5)
 --xh-stack-gap-md: 12px  ← var(--xh-space-3)
 --xh-stack-gap-sm: 6px  ← var(--xh-space-1_5)

@@ -958,12 +958,20 @@
       "$value": "12rem"
     }
   },
+  "app": {
+    "$description": "应用外壳的固定几何。",
+    "header-h": {
+      "$description": "应用顶栏（Layout 的头）的高度：放得下一行导航与 32px 控件，上下各留 14px。",
+      "$type": "dimension",
+      "$value": "3.75rem"
+    }
+  },
   "sider": {
     "$description": "页面侧栏（Layout 的侧栏、SideNav 导航栏）的两档宽度，两件缺省同取这一处；只改一件时写该组件的覆盖槽。",
     "w": {
       "$description": "展开时的侧栏宽度。",
       "$type": "dimension",
-      "$value": "15rem"
+      "$value": "13.75rem"
     },
     "collapsed-w": {
       "$description": "折叠成图标栏时的宽度：一枚图标居中，两侧留得下行内衬。",
