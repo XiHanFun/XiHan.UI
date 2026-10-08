@@ -26179,15 +26179,16 @@
     display: none;
   }
 
-  /* 分组标题不是条目、进不了导航，画成小号次要文字，
+  /* 分组标题不是条目、进不了导航，画成小号常规字重的次要文字，上方让出 8px 与上一组分开；
      内缩与条目对齐（同一个 padding-inline），标题与条目文字才在一条竖线上 */
   .xh-scope-context-menu[data-part='group-label'] {
     display: block;
+    margin-block-start: var(--xh-context-menu-group-label-mt, var(--xh-space-2));
     padding-block: var(--xh-context-menu-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-context-menu-group-label-px, var(--xh-_context-menu-item-px));
     color: var(--xh-context-menu-group-label-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-context-menu-group-label-font-size, var(--xh-text-caption-size));
-    font-weight: var(--xh-context-menu-group-label-font-weight, var(--xh-font-weight-medium));
+    font-weight: var(--xh-context-menu-group-label-font-weight, var(--xh-font-weight-regular));
     line-height: var(--xh-leading-none);
     user-select: none;
   }
@@ -26248,7 +26249,7 @@
     margin-inline-start: auto;
     inline-size: var(--xh-context-menu-submenu-indicator-size, var(--xh-control-indicator-size));
     block-size: var(--xh-context-menu-submenu-indicator-size, var(--xh-control-indicator-size));
-    background-color: var(--xh-context-menu-submenu-indicator-fg, var(--xh-material-frosted-fg-muted));
+    background-color: var(--xh-context-menu-submenu-indicator-fg, currentColor);
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
     mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
   }

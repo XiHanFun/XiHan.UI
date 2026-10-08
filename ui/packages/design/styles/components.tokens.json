@@ -21317,10 +21317,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-font-weight-regular"
       ],
       "visibility": "public",
       "description": "context-menu 的 group-label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-context-menu-group-label-mt",
+      "component": "context-menu",
+      "part": [
+        "group-label"
+      ],
+      "property": [
+        "margin-block-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "context-menu 的 group-label 部件 margin-block-start 覆盖槽。"
     },
     {
       "name": "--xh-context-menu-group-label-px",
@@ -21829,7 +21847,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg-muted"
+        "currentColor"
       ],
       "visibility": "public",
       "description": "context-menu 的 item 部件 background-color 覆盖槽。"

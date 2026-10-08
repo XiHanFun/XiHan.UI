@@ -18219,6 +18219,9 @@
               "name": "--xh-context-menu-group-label-font-weight"
             },
             {
+              "name": "--xh-context-menu-group-label-mt"
+            },
+            {
               "name": "--xh-context-menu-group-label-px"
             },
             {
