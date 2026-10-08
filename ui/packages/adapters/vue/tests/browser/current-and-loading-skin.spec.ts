@@ -354,6 +354,8 @@ describe('判定闸门在途的那一档', () => {
 
 describe('开关的只读观感', () => {
   it('只读：不摆手型、选中档换中性底、滑块收掉浮起的投影', async () => {
+    // 抬起影缺省是平面（none），两只滑块看不出差别；主题给了抬起感时，只读档仍不画
+    setSlot('--xh-elevation-raised', `0 1px 2px ${BLUE}`)
     await mount(() => [
       h(XhSwitch, { defaultChecked: true }),
       h(XhSwitch, { defaultChecked: true, readOnly: true }),
@@ -366,7 +368,7 @@ describe('开关的只读观感', () => {
     expect(styleOf(readOnly, 'cursor')).toBe('default')
     expect(styleOf(readOnly, 'background-color')).not.toBe(styleOf(live, 'background-color'))
     expect(styleOf(part('switch', 'thumb', 1), 'box-shadow')).toBe('none')
-    expect(styleOf(part('switch', 'thumb', 0), 'box-shadow')).not.toBe('none')
+    expect(styleOf(part('switch', 'thumb', 0), 'box-shadow')).toContain(BLUE)
     // 只读不是禁用：不压透明度，值仍要读得清
     expect(styleOf(readOnly, 'opacity')).toBe('1')
   })
