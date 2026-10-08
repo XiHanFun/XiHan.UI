@@ -38,7 +38,7 @@ isDateUnavailable 与 min / max 都只阻止落值不阻止聚焦：方向键照
 
 ### 格子内放置内容
 
-cell-trigger 的内容全部由作者编写，日号之外还可放置自己的标记
+cell-trigger 的内容全部由作者编写，日号之外还可挂一枚徽标
 
 <XhDemo src="calendar-picker/04-cell-content" />
 
@@ -76,7 +76,7 @@ max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名
 - `isDateUnavailable` 与 `min` / `max` 只阻止取值，不阻止聚焦；粗粒度周期越过任一边界时整格不可选。
 - 多选时 `maxSelected` 限定最多选几个周期：选满后没选中的格子转为不可用（仍可聚焦），已选的点掉一个即腾出名额。它只拦用户的加选，`setValue` 与受控值原样收下。
 - 支持固定六行与显式多面板；翻页时整个视窗一起移动。
-- 日期、月份与年份格按下时轻微缩放，松开后复原；减弱动效下自动收敛。
+- 日期是 24px 见方的圆，月份、季度与年份格铺满格宽；按下只换底色，命中区铺满整格，点在格子边缘同样选中。
 - 年份网格采用三列紧凑滚动面，可由作者按业务上下界铺入连续年份，复用日历格的选中与键盘语义。
 - `calendarPeriodValue` 将选中的周期转换为 `{ granularity, start, end, keys }`，可直接用于查询参数。
 - 切换粒度会清空旧选择并保留浏览锚点，避免不同周期键之间发生隐式转换。
@@ -91,7 +91,7 @@ max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名
 
 ### 最佳实践
 
-- 今天使用 1px 品牌环 + 品牌字，选中使用实心强调面，两种状态必须能同时辨认。
+- 今天在数字下方标一颗品牌色圆点、数字保持正文色，选中使用实心强调面，两种状态必须能同时辨认。
 - 多选时使用 `aria-multiselectable` 告知读屏用户可以多选，不依赖视觉提示。
 - 设了 `maxSelected` 时在日历旁写明「已选几个 / 上限」：选满后格子只是转为不可用，本身不说明原因。
 - 格子中的内容超出时收起，避免某一行明显高于其他行。
@@ -260,28 +260,28 @@ max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名
 | `prev-year-trigger` | `data-xh-action-control` | '' |
 | `prev-year-trigger` | `data-xh-action-display` | 'always' |
 | `prev-year-trigger` | `data-xh-action-profile` | 'icon' |
-| `prev-year-trigger` | `data-xh-action-size` | 'sm' |
+| `prev-year-trigger` | `data-xh-action-size` | 'xs' |
 | `prev-year-trigger` | `data-xh-action-variant` | 'ghost' |
 | `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `prev-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `prev-trigger` | `data-xh-action-control` | '' |
 | `prev-trigger` | `data-xh-action-display` | 'always' |
 | `prev-trigger` | `data-xh-action-profile` | 'icon' |
-| `prev-trigger` | `data-xh-action-size` | 'sm' |
+| `prev-trigger` | `data-xh-action-size` | 'xs' |
 | `prev-trigger` | `data-xh-action-variant` | 'ghost' |
 | `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `next-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `next-trigger` | `data-xh-action-control` | '' |
 | `next-trigger` | `data-xh-action-display` | 'always' |
 | `next-trigger` | `data-xh-action-profile` | 'icon' |
-| `next-trigger` | `data-xh-action-size` | 'sm' |
+| `next-trigger` | `data-xh-action-size` | 'xs' |
 | `next-trigger` | `data-xh-action-variant` | 'ghost' |
 | `next-year-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `next-year-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `next-year-trigger` | `data-xh-action-control` | '' |
 | `next-year-trigger` | `data-xh-action-display` | 'always' |
 | `next-year-trigger` | `data-xh-action-profile` | 'icon' |
-| `next-year-trigger` | `data-xh-action-size` | 'sm' |
+| `next-year-trigger` | `data-xh-action-size` | 'xs' |
 | `next-year-trigger` | `data-xh-action-variant` | 'ghost' |
 | `heading` | `data-index` | frame.panelOf(panel).index |
 | `heading` | `data-view` | view |
@@ -292,7 +292,7 @@ max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名
 | `heading-year-trigger` | `data-xh-action-control` | '' |
 | `heading-year-trigger` | `data-xh-action-display` | 'always' |
 | `heading-year-trigger` | `data-xh-action-profile` | 'text' |
-| `heading-year-trigger` | `data-xh-action-size` | 'sm' |
+| `heading-year-trigger` | `data-xh-action-size` | 'xs' |
 | `heading-year-trigger` | `data-xh-action-variant` | 'ghost' |
 | `heading-month-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `heading-month-trigger` | `data-index` | frame.panelOf(panel).index |
@@ -301,7 +301,7 @@ max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名
 | `heading-month-trigger` | `data-xh-action-control` | '' |
 | `heading-month-trigger` | `data-xh-action-display` | 'always' |
 | `heading-month-trigger` | `data-xh-action-profile` | 'text' |
-| `heading-month-trigger` | `data-xh-action-size` | 'sm' |
+| `heading-month-trigger` | `data-xh-action-size` | 'xs' |
 | `heading-month-trigger` | `data-xh-action-variant` | 'ghost' |
 | `grid` | `data-disabled` | ''（条件成立时才出现） |
 | `grid` | `data-index` | frame.panelOf(panel).index |
@@ -312,16 +312,18 @@ max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名
 | `cell` | `data-outside-month` | ''（条件成立时才出现） |
 | `cell` | `data-selected` | ''（条件成立时才出现） |
 | `cell` | `data-today` | ''（条件成立时才出现） |
+| `cell` | `data-view` | view |
 | `cell-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `cell-trigger` | `data-focus` | ''（条件成立时才出现） |
 | `cell-trigger` | `data-outside-month` | ''（条件成立时才出现） |
 | `cell-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `cell-trigger` | `data-selected` | ''（条件成立时才出现） |
 | `cell-trigger` | `data-today` | ''（条件成立时才出现） |
+| `cell-trigger` | `data-view` | view |
 | `cell-trigger` | `data-xh-action-control` | '' |
 | `cell-trigger` | `data-xh-action-display` | 'always' |
 | `cell-trigger` | `data-xh-action-profile` | 'text' |
-| `cell-trigger` | `data-xh-action-size` | 'sm' |
+| `cell-trigger` | `data-xh-action-size` | 'xs' |
 | `cell-trigger` | `data-xh-action-variant` | 'ghost' |
 
 <!-- xh-component-tokens:start -->
@@ -331,54 +333,62 @@ max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
+| `--xh-calendar-picker-cell-bg-disabled` | `cell` | `background-color` | `disabled` | `--xh-bg-subtle` | calendar-picker 的 cell 部件 background-color 覆盖槽。 |
 | `--xh-calendar-picker-cell-bg-hover` | `cell-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | calendar-picker 的 cell-trigger 部件 background-color 覆盖槽。 |
 | `--xh-calendar-picker-cell-bg-pressed` | `cell-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | calendar-picker 的 cell-trigger 部件 background-color 覆盖槽。 |
 | `--xh-calendar-picker-cell-bg-selected` | `cell-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`selected`<br>`xh-ink-surface` | `--xh-bg-brand` | calendar-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-calendar-picker-cell-bg-selected-active` | `cell-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected` | `--xh-bg-brand-active` | calendar-picker 的 cell-trigger 部件 background-color 覆盖槽。 |
-| `--xh-calendar-picker-cell-bg-selected-disabled` | `cell-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`selected`<br>`xh-ink-surface` | `--xh-bg-subtle` | calendar-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-calendar-picker-cell-bg-selected-disabled` | `cell-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`selected`<br>`xh-ink-surface` | `--xh-bg-subtle-hover` | calendar-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-calendar-picker-cell-fg` | `cell-trigger` | `color` | `@media print`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected` | `--xh-fg-default` | calendar-picker 的 cell-trigger 部件 color 覆盖槽。 |
 | `--xh-calendar-picker-cell-fg-outside` | `cell-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`outside-month`<br>`pressed` | `--xh-fg-subtle` | calendar-picker 的 cell-trigger 部件 color 覆盖槽。 |
 | `--xh-calendar-picker-cell-fg-selected` | `cell-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected` | `--xh-fg-on-brand` | calendar-picker 的 cell-trigger 部件 color 覆盖槽。 |
 | `--xh-calendar-picker-cell-font-size` | `cell-trigger` | `font-size` | `default` | `--xh-text-body-size` | calendar-picker 的 cell-trigger 部件 font-size 覆盖槽。 |
 | `--xh-calendar-picker-cell-font-weight` | `cell-trigger` | `font-weight` | `default` | `--xh-font-weight-medium` | calendar-picker 的 cell-trigger 部件 font-weight 覆盖槽。 |
-| `--xh-calendar-picker-cell-gap` | `cell`<br>`cell-trigger` | `inset`<br>`padding` | `default` | `--xh-space-0_5` | calendar-picker 的 cell、cell-trigger 部件 inset、padding 覆盖槽。 |
-| `--xh-calendar-picker-cell-radius` | `cell-trigger` | `border-radius` | `default` | `--xh-shape-inset` | calendar-picker 的 cell-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-calendar-picker-cell-size` | `cell-trigger` | `min-inline-size` | `default` | `--xh-control-h-sm` | calendar-picker 的 cell-trigger 部件 min-inline-size 覆盖槽。 |
-| `--xh-calendar-picker-gap` | `root` | `gap` | `default` | `--xh-space-2` | calendar-picker 的 root 部件 gap 覆盖槽。 |
-| `--xh-calendar-picker-grid-gap` | `grid` | `gap` | `default` | `--xh-space-1` | calendar-picker 的 grid 部件 gap 覆盖槽。 |
-| `--xh-calendar-picker-header-gap` | `header` | `gap` | `default` | `--xh-space-2` | calendar-picker 的 header 部件 gap 覆盖槽。 |
-| `--xh-calendar-picker-heading-fg` | `heading`<br>`heading-month-trigger`<br>`heading-year-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`not([hidden])` | `--xh-fg-default` | calendar-picker 的 heading、heading-month-trigger、heading-year-trigger 部件 color 覆盖槽。 |
+| `--xh-calendar-picker-cell-font-weight-outside` | `cell-trigger` | `font-weight` | `outside-month` | `--xh-font-weight-regular` | calendar-picker 的 cell-trigger 部件 font-weight 覆盖槽。 |
+| `--xh-calendar-picker-cell-min-w` | `grid`<br>`week-row` | `grid-template-columns`<br>`min-inline-size` | `default`<br>`has(> [data-part='week-number'])`<br>`is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`not([hidden])`<br>`view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-control-h-md` | calendar-picker 的 grid、week-row 部件 grid-template-columns、min-inline-size 覆盖槽。 |
+| `--xh-calendar-picker-cell-px` | `cell` | `padding-inline` | `default` | `--xh-space-0` | calendar-picker 的 cell 部件 padding-inline 覆盖槽。 |
+| `--xh-calendar-picker-cell-py` | `cell` | `padding-block` | `default` | `--xh-space-1_5` | calendar-picker 的 cell 部件 padding-block 覆盖槽。 |
+| `--xh-calendar-picker-cell-radius` | `cell-trigger` | `border-radius` | `view=day` | `--xh-shape-circle` | calendar-picker 的 cell-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-calendar-picker-cell-size` | `cell`<br>`cell-trigger` | `block-size`<br>`inline-size`<br>`inset-block-start`<br>`min-inline-size` | `default`<br>`today`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size`<br>`--xh-control-action-size` | calendar-picker 的 cell、cell-trigger 部件 block-size、inline-size、inset-block-start、min-inline-size 覆盖槽。 |
+| `--xh-calendar-picker-disabled-inset` | `cell` | `inset-block` | `disabled` | `--xh-space-0_5` | calendar-picker 的 cell 部件 inset-block 覆盖槽。 |
+| `--xh-calendar-picker-gap` | `root` | `gap` | `default` | `--xh-space-0` | calendar-picker 的 root 部件 gap 覆盖槽。 |
+| `--xh-calendar-picker-grid-gap` | `grid` | `gap` | `default` | `--xh-space-0` | calendar-picker 的 grid 部件 gap 覆盖槽。 |
+| `--xh-calendar-picker-grid-px` | `grid` | `min-inline-size`<br>`padding-inline` | `default`<br>`is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-space-4` | calendar-picker 的 grid 部件 min-inline-size、padding-inline 覆盖槽。 |
+| `--xh-calendar-picker-grid-py` | `grid` | `padding-block` | `default` | `--xh-space-3` | calendar-picker 的 grid 部件 padding-block 覆盖槽。 |
+| `--xh-calendar-picker-header-border` | `header` | `border-block-end` | `default` | `--xh-material-solid-border` | calendar-picker 的 header 部件 border-block-end 覆盖槽。 |
+| `--xh-calendar-picker-header-gap` | `header` | `gap` | `default` | `--xh-space-1` | calendar-picker 的 header 部件 gap 覆盖槽。 |
+| `--xh-calendar-picker-header-px` | `header` | `padding-inline` | `default` | `--xh-space-4` | calendar-picker 的 header 部件 padding-inline 覆盖槽。 |
+| `--xh-calendar-picker-header-py` | `header` | `min-block-size`<br>`padding-block` | `default` | `--xh-space-2` | calendar-picker 的 header 部件 min-block-size、padding-block 覆盖槽。 |
+| `--xh-calendar-picker-heading-fg` | `heading`<br>`heading-month-trigger`<br>`heading-year-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([hidden])`<br>`pressed` | `--xh-fg-default` | calendar-picker 的 heading、heading-month-trigger、heading-year-trigger 部件 color 覆盖槽。 |
 | `--xh-calendar-picker-heading-font-size` | `heading`<br>`heading-month-trigger`<br>`heading-year-trigger` | `font-size` | `default`<br>`not([hidden])` | `--xh-text-label-size` | calendar-picker 的 heading、heading-month-trigger、heading-year-trigger 部件 font-size 覆盖槽。 |
-| `--xh-calendar-picker-heading-font-weight` | `heading`<br>`heading-month-trigger`<br>`heading-year-trigger` | `font-weight` | `default`<br>`not([hidden])` | `--xh-font-weight-semibold` | calendar-picker 的 heading、heading-month-trigger、heading-year-trigger 部件 font-weight 覆盖槽。 |
+| `--xh-calendar-picker-heading-font-weight` | `heading`<br>`heading-month-trigger`<br>`heading-year-trigger` | `font-weight` | `default`<br>`not([hidden])` | `--xh-font-weight-medium` | calendar-picker 的 heading、heading-month-trigger、heading-year-trigger 部件 font-weight 覆盖槽。 |
+| `--xh-calendar-picker-heading-trigger-bg-hover` | `heading-month-trigger`<br>`heading-year-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([hidden])` | `--xh-_action-variant-bg-hover` | calendar-picker 的 heading-month-trigger、heading-year-trigger 部件 background-color 覆盖槽。 |
 | `--xh-calendar-picker-heading-trigger-bg-pressed` | `heading-month-trigger`<br>`heading-year-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([hidden])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | calendar-picker 的 heading-month-trigger、heading-year-trigger 部件 background-color 覆盖槽。 |
-| `--xh-calendar-picker-heading-trigger-fg-hover` | `heading-month-trigger`<br>`heading-year-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([hidden])`<br>`pressed` | `--xh-fg-brand` | calendar-picker 的 heading-month-trigger、heading-year-trigger 部件 color 覆盖槽。 |
-| `--xh-calendar-picker-heading-trigger-px` | `heading-month-trigger`<br>`heading-year-trigger` | `padding-inline` | `not([hidden])` | `--xh-space-1` | calendar-picker 的 heading-month-trigger、heading-year-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-calendar-picker-heading-trigger-px` | `heading-month-trigger`<br>`heading-year-trigger` | `padding-inline` | `not([hidden])` | `--xh-space-0_5` | calendar-picker 的 heading-month-trigger、heading-year-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-calendar-picker-heading-trigger-radius` | `heading-month-trigger`<br>`heading-year-trigger` | `border-radius` | `not([hidden])` | `--xh-shape-control` | calendar-picker 的 heading-month-trigger、heading-year-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-calendar-picker-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-sm` | calendar-picker 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-calendar-picker-icon-size` | `header` | `--xh-icon-size` | `default` | `--xh-glyph-size-sm` | calendar-picker 的 header 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-calendar-picker-nav-bg` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest` | calendar-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-calendar-picker-nav-bg-hover` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | calendar-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 background-color 覆盖槽。 |
 | `--xh-calendar-picker-nav-bg-pressed` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | calendar-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 background-color 覆盖槽。 |
 | `--xh-calendar-picker-nav-fg` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `color` | `default`<br>`focus-visible` | `--xh-fg-muted` | calendar-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 color 覆盖槽。 |
 | `--xh-calendar-picker-nav-fg-hover` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | calendar-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 color 覆盖槽。 |
-| `--xh-calendar-picker-nav-radius` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `border-radius` | `default` | `--xh-shape-control` | calendar-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-calendar-picker-nav-radius` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `border-radius` | `default` | `--xh-shape-circle` | calendar-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-calendar-picker-nav-size` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | calendar-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
-| `--xh-calendar-picker-period-gap` | `grid` | `gap` | `view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-space-1` | calendar-picker 的 grid 部件 gap 覆盖槽。 |
-| `--xh-calendar-picker-period-py` | `cell-trigger`<br>`grid` | `padding-block` | `is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-space-2` | calendar-picker 的 cell-trigger、grid 部件 padding-block 覆盖槽。 |
-| `--xh-calendar-picker-period-radius` | `cell-trigger`<br>`grid` | `border-radius` | `is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-shape-control` | calendar-picker 的 cell-trigger、grid 部件 border-radius 覆盖槽。 |
+| `--xh-calendar-picker-period-gap` | `grid` | `gap` | `view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-space-0` | calendar-picker 的 grid 部件 gap 覆盖槽。 |
+| `--xh-calendar-picker-period-px` | `cell` | `padding-inline` | `is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-space-1` | calendar-picker 的 cell 部件 padding-inline 覆盖槽。 |
+| `--xh-calendar-picker-period-radius` | `cell-trigger` | `border-radius` | `default` | `--xh-shape-control` | calendar-picker 的 cell-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-calendar-picker-row-gap` | `grid-body`<br>`grid-head` | `gap` | `default` | `--xh-space-0` | calendar-picker 的 grid-body、grid-head 部件 gap 覆盖槽。 |
-| `--xh-calendar-picker-today-bg` | `cell-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`focus-visible`<br>`today`<br>`xh-ink-surface` | `transparent` | calendar-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
-| `--xh-calendar-picker-today-border` | `cell-trigger` | `border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`today` | `--xh-fg-brand` | calendar-picker 的 cell-trigger 部件 border、border-color 覆盖槽。 |
-| `--xh-calendar-picker-today-fg` | `cell-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`today` | `--xh-fg-brand` | calendar-picker 的 cell-trigger 部件 color 覆盖槽。 |
-| `--xh-calendar-picker-week-cell-px` | `cell-trigger`<br>`grid` | `padding-inline` | `view=week` | `--xh-space-3` | calendar-picker 的 cell-trigger、grid 部件 padding-inline 覆盖槽。 |
+| `--xh-calendar-picker-today-mark-bg` | `cell` | `background-color` | `today` | `--xh-fg-brand` | calendar-picker 的 cell 部件 background-color 覆盖槽。 |
+| `--xh-calendar-picker-today-mark-size` | `cell` | `block-size`<br>`border`<br>`inline-size` | `@media print`<br>`today` | `--xh-space-1` | calendar-picker 的 cell 部件 block-size、border、inline-size 覆盖槽。 |
+| `--xh-calendar-picker-week-cell-px` | `cell-trigger` | `padding-inline` | `view=week` | `--xh-space-3` | calendar-picker 的 cell-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-calendar-picker-week-day-fg` | `week-day` | `color` | `default` | `--xh-fg-subtle` | calendar-picker 的 week-day 部件 color 覆盖槽。 |
-| `--xh-calendar-picker-week-day-font-size` | `week-day` | `font-size` | `default` | `--xh-text-caption-size` | calendar-picker 的 week-day 部件 font-size 覆盖槽。 |
-| `--xh-calendar-picker-week-day-font-weight` | `week-day` | `font-weight` | `default` | `--xh-font-weight-medium` | calendar-picker 的 week-day 部件 font-weight 覆盖槽。 |
-| `--xh-calendar-picker-week-day-h` | `week-day` | `block-size` | `default` | `--xh-control-h-sm` | calendar-picker 的 week-day 部件 block-size 覆盖槽。 |
+| `--xh-calendar-picker-week-day-font-size` | `week-day` | `font-size` | `default` | `--xh-text-body-size` | calendar-picker 的 week-day 部件 font-size 覆盖槽。 |
+| `--xh-calendar-picker-week-day-font-weight` | `week-day` | `font-weight` | `default` | `--xh-font-weight-regular` | calendar-picker 的 week-day 部件 font-weight 覆盖槽。 |
+| `--xh-calendar-picker-week-day-h` | `week-day` | `block-size` | `default` | `--xh-control-h-md` | calendar-picker 的 week-day 部件 block-size 覆盖槽。 |
 | `--xh-calendar-picker-week-number-fg` | `week-number` | `color` | `default` | `--xh-fg-subtle` | calendar-picker 的 week-number 部件 color 覆盖槽。 |
 | `--xh-calendar-picker-week-number-font-size` | `week-number` | `font-size` | `default` | `--xh-text-caption-size` | calendar-picker 的 week-number 部件 font-size 覆盖槽。 |
 | `--xh-calendar-picker-week-number-w` | `week-row` | `grid-template-columns` | `has(> [data-part='week-number'])`<br>`not([hidden])` | `--xh-control-h-md` | calendar-picker 的 week-row 部件 grid-template-columns 覆盖槽。 |
 | `--xh-calendar-picker-year-grid-max-h` | `grid` | `max-block-size` | `view=year` | `--xh-viewport-h-sm` | calendar-picker 的 grid 部件 max-block-size 覆盖槽。 |
-| `--xh-calendar-picker-year-grid-pe` | `grid` | `padding-inline-end` | `view=year` | `--xh-space-1` | calendar-picker 的 grid 部件 padding-inline-end 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

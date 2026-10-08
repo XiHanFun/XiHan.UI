@@ -72,7 +72,7 @@ describe('calendar-range-picker 区间预览', () => {
     expect(Number(transition!.effect?.getComputedTiming().duration)).toBe(micro)
   })
 
-  it('强制色下底色被抹平，预览那一段在轨道上下沿画虚线，落定的区间不画', async () => {
+  it('强制色下底色被抹平，预览那一段在轨道上下沿画虚线，落定的区间画实线', async () => {
     await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [{ name: 'forced-colors', value: 'active' }] })
     const [, preview] = mountRow(true)
     expect(getComputedStyle(preview!, '::before').borderTopStyle).toBe('dashed')
@@ -80,6 +80,7 @@ describe('calendar-range-picker 区间预览', () => {
     host!.remove()
 
     const [, committed] = mountRow(false)
-    expect(getComputedStyle(committed!, '::before').borderTopStyle).toBe('none')
+    expect(getComputedStyle(committed!, '::before').borderTopStyle).toBe('solid')
+    expect(getComputedStyle(committed!, '::before').borderBottomStyle).toBe('solid')
   })
 })

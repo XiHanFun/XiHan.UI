@@ -183,7 +183,7 @@ export const calendarRangePickerSuite: ConformanceSuite = {
           },
           [`cell[${at(ANCHOR)}]`]: { 'role': 'gridcell', 'aria-selected': 'false', 'data-in-range': null },
           // 方向钮接 Action Control icon ghost sm 档，日期格接 text ghost 档（几何由网格给）
-          'prev-trigger': { 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'sm' },
+          'prev-trigger': { 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'xs' },
           [`cell-trigger[${at(ANCHOR)}]`]: {
             'role': 'button',
             'tabindex': '0',
@@ -192,7 +192,7 @@ export const calendarRangePickerSuite: ConformanceSuite = {
             'data-xh-action-profile': 'text',
             'data-xh-action-variant': 'ghost',
             'data-xh-action-display': 'always',
-            'data-xh-action-size': 'sm',
+            'data-xh-action-size': 'xs',
             'data-in-range': null,
             'data-range-start': null,
             'data-range-end': null,
