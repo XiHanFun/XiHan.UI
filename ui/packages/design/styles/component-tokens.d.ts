@@ -197,6 +197,7 @@ export type ComponentTokenName
     | '--xh-bar-code-radius'
     | '--xh-bar-code-text-fg'
     | '--xh-breadcrumb-ellipsis-size'
+    | '--xh-breadcrumb-ellipsis-trigger-h'
     | '--xh-breadcrumb-fg'
     | '--xh-breadcrumb-font-size'
     | '--xh-breadcrumb-gap'

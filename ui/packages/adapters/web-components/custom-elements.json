@@ -3238,6 +3238,9 @@
               "name": "--xh-breadcrumb-ellipsis-size"
             },
             {
+              "name": "--xh-breadcrumb-ellipsis-trigger-h"
+            },
+            {
               "name": "--xh-breadcrumb-fg"
             },
             {
