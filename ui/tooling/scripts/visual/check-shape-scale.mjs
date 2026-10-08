@@ -172,7 +172,7 @@ const IDENTITY = {
   'tour:progress-dot': 'circle',
   'tour:progress-dot[data-current]': 'pill',
   // control：在 chrome 内或随文的按钮与字段
-  'pagination:item': 'control',
+  'pagination:item': 'surface',
   // 看图器顶部一行字的计数气泡：与 tooltip / kbd 同档
   'image-viewer:counter': 'control',
   'kbd:root': 'control',

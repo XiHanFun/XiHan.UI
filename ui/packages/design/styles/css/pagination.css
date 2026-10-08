@@ -30,12 +30,12 @@
 
     /* 当前页的选中态随语气走。没写 data-tone 时这几个 --xh-_tone-* 都没被声明，
        退回原来的品牌底与其配色。聚焦环不在其列，它恒是 --xh-ring-focus */
-    --xh-_pagination-selected-bg: var(--xh-_tone, var(--xh-bg-brand));
-    --xh-_pagination-selected-bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
-    --xh-_pagination-selected-bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
-    --xh-_pagination-selected-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+    --xh-_pagination-selected-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+    --xh-_pagination-selected-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-brand-subtle-hover));
+    --xh-_pagination-selected-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-brand-subtle-active));
+    --xh-_pagination-selected-fg: var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle));
+    --xh-_pagination-selected-border: var(--xh-_tone-border-control, var(--xh-bg-brand));
     /* 当前页那一格是实心底，顶边画一条极浅的内高光把它衬出厚度（solid 面允许顶高光，经家族的 highlight 槽画） */
-    --xh-_pagination-highlight: var(--xh-_highlight-tone);
   }
 
   /* 根节点是 nav 地标，只负责把上一页 / 页码 / 下一页排成一行。
@@ -70,9 +70,9 @@
     display: none;
   }
 
-  /* 各类格子接 Action Control 的 text 档，缺省中性的 ghost 形态（只有 Button 品牌实心）：盒型、三档几何、
-     透明描边（省略号也占一条，两者内容盒等高，一行里对得齐）、悬停 100 → 按下 200（画布承载）、禁用面、按压缩放与
-     过渡都由家族给；这里只把使用者槽映射到桥接槽并保留分页自己的排版。
+  /* 各类格子接 Action Control 的 text 档（连接层投影 ghost 形态）：盒型、三档几何、禁用面、按压与过渡都由家族给。
+     分页把每一格画成描边方块：静息一道装饰边、透明底，悬停边加深一档、字转正文色，底走家族的承载面阶梯；
+     省略位也占同样一格，几种格子内容盒等高，一行里对得齐。这里把使用者槽映射到桥接槽并保留分页自己的排版。
      等宽的关键：1 与 10 的内容宽度不同，靠最小宽度把它们撑到同一格，行宽才不会随当前页左右抖动 */
   [data-scope='pagination'][data-part='first-trigger'],
   [data-scope='pagination'][data-part='prev-trigger'],
@@ -83,14 +83,19 @@
     --xh-action-min-inline-size: var(--xh-pagination-item-min-size, var(--xh-_pagination-item-size));
     --xh-action-visual-size: var(--xh-pagination-item-h, var(--xh-_pagination-item-size));
     --xh-action-padding-inline: var(--xh-pagination-item-px, var(--xh-_pagination-item-px));
-    --xh-action-radius: var(--xh-pagination-item-radius, var(--xh-shape-control));
+    --xh-action-radius: var(--xh-pagination-item-radius, var(--xh-shape-surface));
     --xh-action-font-size: var(--xh-pagination-font-size, var(--xh-_pagination-font-size));
     --xh-action-bg-rest: var(--xh-pagination-item-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-pagination-item-bg-hover, var(--xh-_action-variant-bg-hover));
     --xh-action-bg-pressed: var(--xh-pagination-item-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-border-rest: var(--xh-pagination-item-border, var(--xh-border-default));
+    --xh-action-border-hover: var(--xh-pagination-item-border-hover, var(--xh-border-strong));
+    --xh-action-border-pressed: var(--xh-pagination-item-border-hover, var(--xh-border-strong));
+    --xh-action-border-focus-visible: var(--xh-pagination-item-border, var(--xh-border-default));
+    --xh-action-border-disabled: var(--xh-pagination-item-border, var(--xh-border-default));
     --xh-action-fg-rest: var(--xh-pagination-item-fg, var(--xh-_action-variant-fg-rest));
-    --xh-action-fg-hover: var(--xh-pagination-item-fg, var(--xh-_action-variant-fg-hover));
-    --xh-action-fg-pressed: var(--xh-pagination-item-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-fg-hover: var(--xh-pagination-item-fg, var(--xh-fg-default));
+    --xh-action-fg-pressed: var(--xh-pagination-item-fg, var(--xh-fg-default));
     /* 作者塞进翻页钮的图标按档取字形尺，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-pagination-icon-size, var(--xh-_action-profile-glyph-size));
 
@@ -112,10 +117,9 @@
   /* 到头那一侧的翻页钮是原生 disabled（不可聚焦、进不了 Tab 序列），连接层同时给 data-disabled，
      家族按 data-disabled 画禁用面（透明底 + --xh-fg-disabled）；整组 disabled 时页码与省略位同样如此 */
 
-  /* 当前页（格状当前）：data-current 与 aria-current='page' 由连接层成对给出，样式挂在 data 钩子上，
-     无障碍语义留给 aria。实心品牌面 + 配对前景、不加粗——字重一变字形就变宽，页码格子会跟着长一点，
-     正是这里要避免的抖动；悬停 / 按下沿 brand → brand-hover → brand-active 走，三态都经桥接槽交给家族画，
-     solid 面允许一条顶高光，环色改取面自己的前景 */
+  /* 当前页：data-current 与 aria-current='page' 由连接层成对给出，样式挂在 data 钩子上，无障碍语义留给 aria。
+     品牌描边 + 品牌淡底 + 淡底前景、不加粗——字重一变字形就变宽，页码格子会跟着长一点，正是这里要避免的抖动；
+     悬停 / 按下沿淡底 12% → 20% → 28% 走，边不变，三态都经桥接槽交给家族画 */
   [data-scope='pagination'][data-part='item'][data-current] {
     --xh-action-bg-rest: var(--xh-pagination-item-bg-selected, var(--xh-_pagination-selected-bg));
     --xh-action-bg-hover: var(--xh-pagination-item-bg-selected-hover, var(--xh-_pagination-selected-bg-hover));
@@ -125,22 +129,17 @@
     --xh-action-fg-hover: var(--xh-pagination-item-fg-selected, var(--xh-_pagination-selected-fg));
     --xh-action-fg-pressed: var(--xh-pagination-item-fg-selected, var(--xh-_pagination-selected-fg));
     --xh-action-fg-focus-visible: var(--xh-pagination-item-fg-selected, var(--xh-_pagination-selected-fg));
-    --xh-action-border-rest: var(--xh-pagination-item-border-selected, var(--xh-_pagination-selected-bg));
-    --xh-action-border-hover: var(--xh-pagination-item-border-selected-hover, var(--xh-_pagination-selected-bg-hover));
-    --xh-action-border-pressed: var(--xh-pagination-item-border-selected-active, var(--xh-_pagination-selected-bg-active));
-    --xh-action-border-focus-visible: var(--xh-pagination-item-border-selected, var(--xh-_pagination-selected-bg));
-    --xh-action-highlight-rest: var(--xh-_pagination-highlight);
-    --xh-action-highlight-hover: var(--xh-_pagination-highlight);
-    --xh-action-highlight-pressed: var(--xh-_pagination-highlight);
-    --xh-action-highlight-focus-visible: var(--xh-_pagination-highlight);
+    --xh-action-border-rest: var(--xh-pagination-item-border-selected, var(--xh-_pagination-selected-border));
+    --xh-action-border-hover: var(--xh-pagination-item-border-selected-hover, var(--xh-_pagination-selected-border));
+    --xh-action-border-pressed: var(--xh-pagination-item-border-selected-active, var(--xh-_pagination-selected-border));
+    --xh-action-border-focus-visible: var(--xh-pagination-item-border-selected, var(--xh-_pagination-selected-border));
     --xh-action-shadow-rest: var(--xh-pagination-item-shadow, none);
     --xh-action-shadow-hover: var(--xh-pagination-item-shadow, none);
     --xh-action-shadow-pressed: var(--xh-pagination-item-shadow, none);
     --xh-action-shadow-focus-visible: var(--xh-pagination-item-shadow, none);
-    --xh-action-ring-color-focus-visible: currentColor;
   }
 
-  /* 整组禁用时当前页不跟着透明：实心品牌面退成淡底、字取禁用色，格子仍标得出位置，又一眼看得出按不动 */
+  /* 整组禁用时当前页不跟着透明：品牌淡底退成中性淡底、字取禁用色，格子仍标得出位置，又一眼看得出按不动 */
   [data-scope='pagination'][data-part='item'][data-current][data-disabled] {
     --xh-action-bg-disabled: var(--xh-bg-subtle);
     --xh-action-border-disabled: var(--xh-bg-subtle);

@@ -76,7 +76,7 @@ const SEMANTIC = {
   'navigation-menu:link': [{ kind: 'nav', state: '[data-current]' }],
   'breadcrumb:link': [{ kind: 'nav-terminal', state: '[data-current]' }],
   // 格状当前：实心品牌
-  'pagination:item': [{ kind: 'grid', state: '[data-current]' }],
+  'pagination:item': [{ kind: 'flat', state: '[data-current]' }],
   'steps:indicator': [{ kind: 'grid', state: '[data-state=\'current\']' }],
   'calendar-picker:cell-trigger': [{ kind: 'grid', state: '[data-selected]' }],
   'calendar-range-picker:cell-trigger': [{ kind: 'grid', state: '[data-selected]' }],
