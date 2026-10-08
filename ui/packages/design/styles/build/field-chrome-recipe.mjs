@@ -258,6 +258,8 @@ function forcedDeclarations(source, state, extra = []) {
   ].join('\n')
 }
 
+const HOVER = '[data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):not(:focus-within):hover'
+
 export function compileFieldChromeRecipe(source) {
   assertFieldChromeRecipe(source)
   // 环色 none：不画聚焦环，焦点只由描边换色标出；基础规则也不再预留透明环
@@ -325,7 +327,8 @@ export function compileFieldChromeRecipe(source) {
     ].join('\n'))
   }
 
-  rule('[data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover', stateDeclarations(source, 'hover'))
+  // 悬停排除聚焦着的盒：不画环时聚焦面是唯一的焦点指示，指针停在正在填的字段上也不能退回悬停面
+  rule(HOVER, stateDeclarations(source, 'hover'))
   rule('[data-xh-field-chrome]:focus-within:not([data-disabled])', [
     stateDeclarations(source, 'focus'),
     ...(ringed
@@ -400,7 +403,7 @@ export function compileFieldChromeRecipe(source) {
     '    ',
   )
   forcedRule('[data-xh-field-chrome]', 'rest')
-  forcedRule('[data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover', 'hover')
+  forcedRule(HOVER, 'hover')
   // 常规档不画环时，强制色档仍补一圈系统色环：这一档里描边换色未必分得出来
   forcedRule('[data-xh-field-chrome]:focus-within:not([data-disabled])', 'focus', ringed
     ? [`      outline-color: ${source.forcedColors.focus.outlineColor};`]

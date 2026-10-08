@@ -213,6 +213,12 @@
     appearance: none;
   }
 
+  /* 跳页框自身就是字段外壳：公共层的 :focus-visible 环会画在盒上，与家族的聚焦面（承载面 + 聚焦描边）
+     重复，这里关掉；强制色档描边换色未必分得出来，在本皮肤的强制色块里补一圈 Highlight 环 */
+  [data-scope='pagination'][data-part='jumper']:focus-visible {
+    outline: none;
+  }
+
   [data-scope='pagination'][data-part='jumper'][hidden] {
     display: none;
   }
@@ -423,6 +429,11 @@
   }
 
   @media (forced-colors: active) {
+    [data-scope='pagination'][data-part='jumper']:focus-visible {
+      outline: var(--xh-ring-width) solid Highlight;
+      outline-offset: var(--xh-ring-offset);
+    }
+
     /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
        字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
        按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；

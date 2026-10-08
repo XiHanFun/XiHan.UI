@@ -169,6 +169,8 @@
 
 `@xihan-ui/styles/field.css` 按 `[data-scope="field"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-field` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -201,11 +203,11 @@
 | `--xh-field-border-invalid` | `jumper` | `border-color` | `user-invalid` | `--xh-_field-variant-border-invalid` | field 的 jumper 部件 border-color 覆盖槽。 |
 | `--xh-field-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-field-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | field 的 control 部件 background-color 覆盖槽。 |
-| `--xh-field-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | field 的 control 部件 background-color 覆盖槽。 |
+| `--xh-field-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-field-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-field-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | field 的 control 部件 border 覆盖槽。 |
 | `--xh-field-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | field 的 control 部件 border-color 覆盖槽。 |
-| `--xh-field-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-field-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | field 的 control 部件 border-color 覆盖槽。 |
 | `--xh-field-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | field 的 control 部件 border-color 覆盖槽。 |
 | `--xh-field-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | field 的 control 部件 color 覆盖槽。 |
 | `--xh-field-control-font-size` | `control` | `font-size` | `default` | `--xh-text-body-size` | field 的 control 部件 font-size 覆盖槽。 |
