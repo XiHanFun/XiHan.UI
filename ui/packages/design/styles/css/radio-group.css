@@ -118,11 +118,14 @@
     --xh-action-host-bg-pressed: var(--xh-_radio-group-host-bg-pressed);
 
     position: relative;
-    /* row 档铺满容器（inline-size: 100%）会把竖排的命中区拉到整行空白处、横排 wrap 也塌：
-       沿用「条目按内容收宽」的既有决定，写法同 checkbox-group 条目 */
-    inline-size: auto;
     /* ghost 的 1px 透明边位会把圆圈列相对组标题错开 1px：边归零，几何保持不变 */
     border-width: 0;
+  }
+
+  /* 条目按内容收宽，盖掉 row 档的 inline-size: 100%（横排时每个条目会独占一行）。
+     从根往下写，特指度高过 row 档，有层与无层两份产物里都生效 */
+  [data-scope='radio-group'][data-part='root'] [data-scope='radio-group'][data-part='item'] {
+    inline-size: auto;
   }
 
   /* 只读整组都改不动，但不是禁用：颜色照常，把整行的悬停 / 按下面与"可点"这个暗示一起收回来。

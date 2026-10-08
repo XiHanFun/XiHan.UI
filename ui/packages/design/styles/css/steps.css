@@ -199,17 +199,20 @@
     --xh-action-host-bg-hover: var(--xh-_steps-host-bg-hover);
     --xh-action-host-bg-pressed: var(--xh-_steps-host-bg-pressed);
 
-    /* 皮肤规则排在 @import 之后，同特指度盖过 row 档的 display: flex */
-    display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     column-gap: var(--xh-steps-trigger-gap, var(--xh-control-gap-md));
-    /* row 档铺满容器（inline-size: 100%）会把横排的连接线压到最小长度 */
-    inline-size: auto;
     /* 纵向连接线的 margin-inline-start 按圆点半径 + trigger-p 对齐圆心，ghost 的 1px 透明边位会让它错 1px */
     border-width: 0;
     font: inherit;
     text-align: start;
+  }
+
+  /* 两列排版、按内容收宽，盖掉 row 档的 display: flex 与 inline-size: 100%（横排的连接线会被压到最小长度）。
+     从条目往下写，特指度高过 row 档，有层与无层两份产物里都生效；收起的触发器留给下面 [hidden] 那条 */
+  [data-scope='steps'][data-part='item'] [data-scope='steps'][data-part='trigger']:not([hidden]) {
+    display: grid;
+    inline-size: auto;
   }
 
   /* 只读展示：trigger 不投影 Action Control，只是「序号 + 标题 + 说明」的排版容器——内距与可操作时同一把尺，
