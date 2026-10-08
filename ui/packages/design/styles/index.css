@@ -40036,7 +40036,7 @@
    * 各自取用：换档只改槽，画在哪个节点上互不影响。
    */
   .xh-scope-separator[data-part='root'] {
-    --xh-_separator-color: var(--xh-separator-color, var(--xh-material-frosted-separator));
+    --xh-_separator-color: var(--xh-separator-color, var(--xh-border-default));
     --xh-_separator-dash: var(--xh-separator-dash-length, var(--xh-space-1_5));
     --xh-_separator-dash-gap: var(--xh-separator-dash-gap, var(--xh-space-1_5));
     --xh-_separator-paint: var(--xh-_separator-color);
@@ -40046,15 +40046,20 @@
     background: var(--xh-_separator-paint);
   }
 
+  /* 分隔线自带上下（竖向为左右）留白：横向上下各 20px，竖向左右各 12px，放进内容里不必另包一层加边距 */
   .xh-scope-separator[data-part='root'][data-orientation='horizontal'] {
     inline-size: 100%;
     block-size: var(--xh-separator-thickness, var(--xh-stroke-thin));
+    margin-block: var(--xh-separator-my, var(--xh-space-5));
   }
 
   .xh-scope-separator[data-part='root'][data-orientation='vertical'] {
     align-self: stretch;
     inline-size: var(--xh-separator-thickness, var(--xh-stroke-thin));
     block-size: 100%;
+    /* 父容器没有高度时也留一截与文字等高的线 */
+    min-block-size: var(--xh-glyph-size-text);
+    margin-inline: var(--xh-separator-mx, var(--xh-space-3));
   }
 
   /* —— 形态 ——
@@ -40094,7 +40099,9 @@
     align-items: center;
     inline-size: 100%;
     block-size: auto;
-    gap: var(--xh-separator-gap, var(--xh-space-3));
+    gap: var(--xh-separator-gap, var(--xh-space-4));
+    /* 文字自带一行行高，上下留白收一半，整段占的高度与单线时相当 */
+    margin-block: var(--xh-separator-my, var(--xh-space-2_5));
     background: none;
   }
 
@@ -40122,8 +40129,9 @@
   /* 分节文字：不参与等分，也不折行 */
   .xh-scope-separator[data-part='content'] {
     flex: none;
-    color: var(--xh-separator-content-fg, var(--xh-fg-muted));
-    font-size: var(--xh-separator-content-font-size, var(--xh-text-secondary-size));
+    color: var(--xh-separator-content-fg, var(--xh-fg-default));
+    font-size: var(--xh-separator-content-font-size, var(--xh-text-body-size));
+    font-weight: var(--xh-separator-content-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-normal);
     white-space: nowrap;
   }
@@ -40132,6 +40140,16 @@
   .xh-scope-separator[data-part='root'][data-align='start'] > [data-part='line']:where(.xh-scope-separator):first-child,
   .xh-scope-separator[data-part='root'][data-align='end'] > [data-part='line']:where(.xh-scope-separator):last-child {
     flex: 0 0 var(--xh-separator-align-length, var(--xh-space-6));
+  }
+
+  /* 强制色：线是底色（与虚线的渐变）画的，系统会把底色换成 Canvas，线就此消失。
+     线退出强制换色、颜色直接取 CanvasText，实线与虚线同一条槽 */
+  @media (forced-colors: active) {
+    .xh-scope-separator:is([data-part='root'], [data-part='line']) {
+      --xh-_separator-color: CanvasText;
+
+      forced-color-adjust: none;
+    }
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
