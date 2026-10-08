@@ -157,8 +157,6 @@
     --xh-field-border-hover: var(--xh-select-control-border-hover, var(--xh-_field-variant-border-hover));
     --xh-field-border-focus: var(--xh-select-control-border-focus, var(--xh-_field-variant-border-focus));
     --xh-field-border-invalid: var(--xh-select-control-border-invalid, var(--xh-_field-variant-border-invalid));
-    --xh-field-ring-focus: var(--xh-ring-focus);
-    --xh-field-ring-invalid: var(--xh-ring-invalid);
     --xh-field-shadow-rest: var(--xh-select-control-shadow, none);
     --xh-field-cursor-rest: pointer;
     /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */

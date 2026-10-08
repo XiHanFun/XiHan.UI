@@ -67,13 +67,13 @@
       "color": "var(--xh-fg-default)",
       "shadow": "none",
       "cursor": "text",
-      "ringColor": "var(--xh-ring-focus)"
+      "ringColor": "none"
     },
     "invalid": {
       "color": "var(--xh-fg-default)",
       "shadow": "none",
       "cursor": "text",
-      "ringColor": "var(--xh-ring-invalid)"
+      "ringColor": "none"
     },
     "readOnly": {
       "color": "var(--xh-fg-default)",
@@ -94,19 +94,19 @@
   "variantValues": {
     "outline": {
       "rest": {
-        "backgroundColor": "transparent",
+        "backgroundColor": "var(--xh-bg-field)",
         "borderColor": "var(--xh-border-control)"
       },
       "hover": {
-        "backgroundColor": "color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent)",
-        "borderColor": "var(--xh-border-control-hover)"
+        "backgroundColor": "var(--xh-bg-field)",
+        "borderColor": "var(--xh-border-strong)"
       },
       "focus": {
-        "backgroundColor": "transparent",
+        "backgroundColor": "var(--xh-bg-surface)",
         "borderColor": "var(--xh-border-control-focus)"
       },
       "invalid": {
-        "backgroundColor": "transparent",
+        "backgroundColor": "color-mix(in oklab, var(--xh-border-invalid) 4%, transparent)",
         "borderColor": "var(--xh-border-invalid)"
       },
       "readOnly": {
@@ -118,7 +118,7 @@
         "borderColor": "var(--xh-border-default)"
       },
       "loading": {
-        "backgroundColor": "transparent",
+        "backgroundColor": "var(--xh-bg-field)",
         "borderColor": "var(--xh-border-control)"
       }
     },
@@ -136,7 +136,7 @@
         "borderColor": "var(--xh-border-control-focus)"
       },
       "invalid": {
-        "backgroundColor": "var(--xh-_tone-subtle, var(--xh-bg-subtle))",
+        "backgroundColor": "color-mix(in oklab, var(--xh-border-invalid) 4%, transparent)",
         "borderColor": "var(--xh-border-invalid)"
       },
       "readOnly": {
@@ -166,7 +166,7 @@
         "borderColor": "var(--xh-border-control-focus)"
       },
       "invalid": {
-        "backgroundColor": "transparent",
+        "backgroundColor": "color-mix(in oklab, var(--xh-border-invalid) 4%, transparent)",
         "borderColor": "var(--xh-border-invalid)"
       },
       "readOnly": {

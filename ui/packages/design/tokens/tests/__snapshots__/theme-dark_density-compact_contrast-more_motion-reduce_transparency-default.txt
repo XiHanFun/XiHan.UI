@@ -23,6 +23,7 @@
 --xh-bg-brand-subtle-active: color-mix(in oklab, oklch(0.623 0.214 258) 28%, oklch(0.208 0.006 258))  ← color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface))
 --xh-bg-brand-subtle-hover: color-mix(in oklab, oklch(0.623 0.214 258) 20%, oklch(0.208 0.006 258))  ← color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface))
 --xh-bg-canvas: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
+--xh-bg-field: color-mix(in oklab, color-mix(in oklab, oklch(1 0 0) 6.2%, transparent) 55%, transparent)  ← color-mix(in oklab, var(--xh-bg-subtle) 55%, transparent)
 --xh-bg-muted: color-mix(in oklab, oklch(1 0 0) 6.2%, transparent)  ← color-mix(in oklab, var(--xh-ink) 6.2%, transparent)
 --xh-bg-overlay: oklch(0 0 0 / 0.6)
 --xh-bg-page: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)

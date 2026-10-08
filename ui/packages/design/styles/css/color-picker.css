@@ -30,8 +30,6 @@
     --xh-_color-picker-px: var(--xh-control-px-md);
     --xh-_color-picker-gap: var(--xh-control-gap-md);
 
-    /* 聚焦环恒用固定环色 */
-    --xh-_color-picker-ring: var(--xh-ring-focus);
 
     display: inline-flex;
     flex-direction: column;
@@ -83,7 +81,6 @@
     --xh-field-border-rest: var(--xh-color-picker-control-border, var(--xh-_field-variant-border-rest));
     --xh-field-border-hover: var(--xh-color-picker-control-border-hover, var(--xh-_field-variant-border-hover));
     --xh-field-border-focus: var(--xh-color-picker-control-border-focus, var(--xh-_field-variant-border-focus));
-    --xh-field-ring-focus: var(--xh-_color-picker-ring);
     --xh-field-shadow-rest: var(--xh-color-picker-control-shadow, none);
     --xh-field-cursor-rest: pointer;
   }

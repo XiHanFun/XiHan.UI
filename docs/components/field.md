@@ -228,7 +228,6 @@
 | `--xh-field-label-gap-block` | `label` | `margin-block-end` | `default` | `--xh-field-gap` | field 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-field-label-leading` | `label`<br>`root` | `line-height`<br>`padding-block` | `layout=horizontal` | `--xh-leading-normal` | field 的 label、root 部件 line-height、padding-block 覆盖槽。 |
 | `--xh-field-label-star` | `label` | `color` | `required` | `--xh-fg-danger` | field 的 label 部件 color 覆盖槽。 |
-| `--xh-field-ring-invalid` | `jumper` | `outline-color` | `focus-within`<br>`user-invalid` | `--xh-ring-invalid` | field 的 jumper 部件 outline-color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

@@ -31612,25 +31612,6 @@
       "description": "field 的 label 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-field-ring-invalid",
-      "component": "field",
-      "part": [
-        "jumper"
-      ],
-      "property": [
-        "outline-color"
-      ],
-      "state": [
-        "focus-within",
-        "user-invalid"
-      ],
-      "defaultToken": [
-        "--xh-ring-invalid"
-      ],
-      "visibility": "public",
-      "description": "field 的 jumper 部件 outline-color 覆盖槽。"
-    },
-    {
       "name": "--xh-field-array-action-gap",
       "component": "field-array",
       "part": [

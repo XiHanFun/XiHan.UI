@@ -203,8 +203,6 @@
     --xh-field-border-hover: var(--xh-pagination-jumper-border-hover, var(--xh-_field-variant-border-hover));
     --xh-field-border-focus: var(--xh-pagination-jumper-border-focus, var(--xh-_field-variant-border-focus));
     --xh-field-border-invalid: var(--xh-pagination-jumper-border-invalid, var(--xh-_field-variant-border-invalid));
-    --xh-field-ring-focus: var(--xh-ring-focus);
-    --xh-field-ring-invalid: var(--xh-ring-invalid);
     --xh-field-shadow-rest: none;
 
     flex: none;
@@ -220,14 +218,10 @@
     display: none;
   }
 
-  /* 越界的页码（超出 1 到总页数）：浏览器的约束校验在用户动过之后判失败，与字段家族的校验失败同一副边与环。
+  /* 越界的页码（超出 1 到总页数）：浏览器的约束校验在用户动过之后判失败，与字段家族的校验失败同一副边。
      家族的失败档认 data-invalid，跳页框的取值不进状态机，失败由原生约束给出 */
   [data-scope='pagination'][data-part='jumper']:user-invalid {
     border-color: var(--xh-field-border-invalid, var(--xh-_field-variant-border-invalid));
-  }
-
-  [data-scope='pagination'][data-part='jumper']:user-invalid:focus-within {
-    outline-color: var(--xh-field-ring-invalid, var(--xh-ring-invalid));
   }
 
   /* 摊开省略位的定位层。三处坐标系必须同为 fixed：机器交给引擎的 strategy、

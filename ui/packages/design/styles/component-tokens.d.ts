@@ -1626,7 +1626,6 @@ export type ComponentTokenName
     | '--xh-field-label-gap-block'
     | '--xh-field-label-leading'
     | '--xh-field-label-star'
-    | '--xh-field-ring-invalid'
     | '--xh-fieldset-actions-gap'
     | '--xh-fieldset-description-fg'
     | '--xh-fieldset-description-fg-disabled'

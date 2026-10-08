@@ -674,6 +674,7 @@
     --xh-bg-subtle: color-mix(in oklab, var(--xh-ink) 4.7%, transparent);
     --xh-bg-subtle-hover: color-mix(in oklab, var(--xh-ink) 10.2%, transparent);
     --xh-bg-subtle-active: color-mix(in oklab, var(--xh-ink) 16.9%, transparent);
+    --xh-bg-field: color-mix(in oklab, var(--xh-bg-subtle) 55%, transparent);
     --xh-bg-muted: color-mix(in oklab, var(--xh-ink) 4.7%, transparent);
     --xh-bg-brand: var(--xh-color-brand-600);
     --xh-bg-brand-hover: var(--xh-color-brand-700);
@@ -881,6 +882,7 @@
     --xh-bg-subtle: color-mix(in oklab, var(--xh-ink) 6.2%, transparent);
     --xh-bg-subtle-hover: color-mix(in oklab, var(--xh-ink) 17.4%, transparent);
     --xh-bg-subtle-active: color-mix(in oklab, var(--xh-ink) 20.7%, transparent);
+    --xh-bg-field: color-mix(in oklab, var(--xh-bg-subtle) 55%, transparent);
     --xh-bg-muted: color-mix(in oklab, var(--xh-ink) 6.2%, transparent);
     --xh-bg-brand: var(--xh-color-brand-500);
     --xh-bg-brand-hover: var(--xh-color-brand-400);
@@ -1208,6 +1210,7 @@
       --xh-material-liquid-rim-far: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-rim-far)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
       --xh-material-liquid-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
       --xh-material-soft-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-soft-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
+      --xh-bg-field: color-mix(in oklab, var(--xh-bg-subtle) 55%, transparent);
       --xh-fg-scrollbar-thumb: color-mix(in oklab, var(--xh-fg-default) 15%, transparent);
       --xh-fg-scrollbar-thumb-hover: color-mix(in oklab, var(--xh-fg-default) 25%, transparent);
       --xh-fg-scrollbar-thumb-active: color-mix(in oklab, var(--xh-fg-default) 35%, transparent);
