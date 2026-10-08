@@ -1,1 +1,0 @@
-import{aD as e}from"./theme.cPCAVZHb.js";import{r as t,t as n}from"./normalize-props.BdGLhJzN.js";import{t as r}from"./jsx-runtime.CWLBoBiw.js";import{r as i}from"./config.DXGIinEN.js";var a=r();function o({value:r,size:o,label:s,...c}){return(0,a.jsx)(`span`,{...t(e(i(`color-swatch`,{value:r,size:o,label:s}),n).getRootProps(),c)})}export{o as t};

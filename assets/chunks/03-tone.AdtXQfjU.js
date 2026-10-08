@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./checkbox.GgA7LbjJ.js";var n=e(),r=[`brand`,`neutral`,`success`,`warning`,`danger`,`info`];function i(){return(0,n.jsx)(`div`,{style:{display:`flex`,alignItems:`center`,gap:`16px`,flexWrap:`wrap`},children:r.map(e=>(0,n.jsx)(t,{tone:e,defaultChecked:!0,children:e},e))})}export{i as default};

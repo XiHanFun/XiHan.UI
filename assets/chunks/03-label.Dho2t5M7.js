@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{hd as i,it as a}from"./theme.CZaS8O1o.js";var o=n({__name:`03-label`,setup(n){return(n,o)=>(t(),r(e(i),{icon:e(a),label:`关闭`},null,8,[`icon`]))}});export{o as default};

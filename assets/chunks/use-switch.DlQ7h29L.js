@@ -1,0 +1,1 @@
+import{Gb as e,Kb as t}from"./theme.CZaS8O1o.js";import{t as n}from"./normalize-props.CT2tT-6j.js";import{i as r}from"./use-machine.Cu5bXdwT.js";function i(i){let a=r(e,()=>i);return{api:t(a,n),service:a}}export{i as t};

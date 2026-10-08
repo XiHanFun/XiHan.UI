@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{Pu as i}from"./theme.CZaS8O1o.js";var a=n({__name:`06-circular`,setup(n){let a={id:1},o={name:`root`,left:a,right:a};return o.parent=o,(n,a)=>(t(),r(e(i),{value:o,"default-expanded-depth":2,style:{"inline-size":`100%`,"max-inline-size":`420px`}}))}});export{a as default};

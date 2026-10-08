@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./icon.CByrwC4Z.js";import{rt as n}from"./dist.ZGSyedfl.js";var r=e();function i(){return(0,r.jsx)(t,{icon:n,label:`关闭`})}export{i as default};

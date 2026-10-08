@@ -1,0 +1,3 @@
+import{$t as e,Et as t,Ot as n,ft as r,lt as i,mt as a,tt as o,zt as s}from"./framework.8UxoGp64.js";import{Cg as c,Sg as l,_g as u,bg as d,vg as f}from"./theme.CZaS8O1o.js";var p={style:{display:`flex`,"flex-direction":`column`,gap:`12px`}},m=`export function clamp(n: number, min: number, max: number) {
+  return Math.min(Math.max(n, min), max)
+}`,h=a({__name:`08-size`,setup(a){return(a,h)=>(t(),i(`div`,p,[(t(),i(o,null,n([`sm`,`md`,`lg`],t=>r(e(c),{key:t,size:t,code:m,lang:`typescript`,filename:`clamp.${t}.ts`,complete:``,style:{"inline-size":`100%`}},{default:s(()=>[r(e(d),null,{default:s(()=>[r(e(f))]),_:1}),r(e(l),null,{default:s(()=>[r(e(u))]),_:1})]),_:1},8,[`size`,`filename`])),64))]))}});export{h as default};

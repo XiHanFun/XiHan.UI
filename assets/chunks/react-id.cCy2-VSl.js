@@ -1,1 +1,0 @@
-import{qk as e}from"./theme.cPCAVZHb.js";import{t}from"./react.CbNV8_UV.js";var n=t();function r(){let e=(0,n.useId)();return(0,n.useMemo)(()=>({scopeId:()=>e,partId:(e,t,n)=>`${e}:${t}:${n}`}),[e])}function i(){let t=r();return(0,n.useMemo)(()=>e(null,t),[t])}export{i as n,r as t};

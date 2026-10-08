@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{a as t,t as n}from"./typography.DLMEHZEi.js";var r=e(),i=[{level:1,label:`一级标题`},{level:2,label:`二级标题`},{level:3,label:`三级标题`},{level:4,label:`四级标题`},{level:5,label:`五级标题`},{level:6,label:`六级标题`}];function a(){return(0,r.jsx)(t,{children:i.map(e=>(0,r.jsx)(n,{level:e.level,children:e.label},e.level))})}export{a as default};

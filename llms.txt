@@ -6,7 +6,7 @@
 
 ## 机读资产
 
-- [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 196 页正文，示例已按适配器内联为代码块
+- [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 197 页正文，示例已按适配器内联为代码块
 - [llms-components.txt](https://ui.docs.xihanfun.com/llms-components.txt): 141 页组件参考
 - [llms-guide.txt](https://ui.docs.xihanfun.com/llms-guide.txt): 30 页核心概念、适配器与运行时
 - [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 667 支设计令牌的名字、类型与缺省取值
@@ -36,6 +36,7 @@
 - [设计原则](https://ui.docs.xihanfun.com/design/principles): 这几条贯穿所有组件，其余页面里的每张表都是它们在某个维度上的展开。
 - [阴影与材质](https://ui.docs.xihanfun.com/design/shadow): 阴影在这里只表达"离页面多远"，不表达边界——边界归描边。
 - [形状与边界](https://ui.docs.xihanfun.com/design/shape): 圆角与边线是最容易长出第二套规则的地方——一个组件 6px、另一个 5px，看着都"差不多"。
+- [主题设计器](https://ui.docs.xihanfun.com/design/theme-designer): 从一套预设出发，或者自己挑品牌色，再定明暗、密度、对比度与圆角，下方整面真实组件随之实时变化；满意后复制最下面的 CSS 与接入代码放进项目。
 - [字体](https://ui.docs.xihanfun.com/design/typography): 组件不指定正文字族：皮肤里写的是 `font-family: inherit`，控件与面板跟着宿主页面的字走，库只定等宽字族、字号阶梯、字重、行高与排版角色。
 
 ## 核心概念
