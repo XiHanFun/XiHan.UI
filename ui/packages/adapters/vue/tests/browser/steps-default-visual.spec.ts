@@ -21,6 +21,16 @@ function token(name: string): string {
   return value
 }
 
+/** 字号 / 字重令牌在夹具里解到的值。 */
+function font(property: 'font-size' | 'font-weight', name: string): string {
+  const probe = document.createElement('span')
+  probe.style.cssText = `${property}: var(${name})`
+  host!.append(probe)
+  const value = getComputedStyle(probe).getPropertyValue(property)
+  probe.remove()
+  return value
+}
+
 /** 夹具是手写 DOM，不经 connect：触发器上的五个家族属性照 Headless 的投影手补，家族选择器才落得到。 */
 function mount(orientation: 'horizontal' | 'vertical' = 'horizontal', tones: Record<number, string> = {}) {
   const states = ['completed', 'current', 'incomplete']
@@ -108,12 +118,16 @@ describe('steps 默认视觉', () => {
     expect(getComputedStyle(indicator).fontSize).toBe('14px')
   })
 
-  it('当前步标题 500 正文色，走过的步标题正文色，没走到的步标题次级色；说明 12px 弱化色', () => {
+  it('标题取区块标题字号，当前步取区块标题字重、正文色，走过的步正文色，没走到的步次级色；说明 12px 弱化色', () => {
     const steps = mount()
     const [completed, current, incomplete] = steps.titles.map(title => getComputedStyle(title))
     const description = getComputedStyle(steps.descriptions[0]!)
+    const heading = font('font-size', '--xh-text-heading-3-size')
 
-    expect(current!.fontWeight).toBe('500')
+    expect(current!.fontSize).toBe(heading)
+    expect(incomplete!.fontSize).toBe(heading)
+    expect(current!.fontWeight).toBe(font('font-weight', '--xh-text-heading-3-weight'))
+    expect(current!.fontWeight).not.toBe(incomplete!.fontWeight)
     expect(current!.color).toBe(token('--xh-fg-default'))
     expect(completed!.fontWeight).toBe('400')
     expect(completed!.color).toBe(token('--xh-fg-default'))
