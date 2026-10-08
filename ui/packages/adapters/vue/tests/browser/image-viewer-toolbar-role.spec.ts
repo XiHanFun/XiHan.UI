@@ -189,8 +189,52 @@ describe('看片浮层的控件带：报的角色与拿得到的走位一致', (
   })
 })
 
+const canvas = document.createElement('canvas')
+const ctx = canvas.getContext('2d', { willReadFrequently: true })!
+
+/** 把一串颜色按从下到上的顺序叠在白底上，返回叠完的 sRGB 三分量。 */
+function composite(...layers: string[]): [number, number, number] {
+  ctx.clearRect(0, 0, 1, 1)
+  ctx.fillStyle = '#fff'
+  ctx.fillRect(0, 0, 1, 1)
+  for (const layer of layers) {
+    ctx.fillStyle = 'transparent'
+    ctx.fillStyle = layer
+    ctx.fillRect(0, 0, 1, 1)
+  }
+  const d = ctx.getImageData(0, 0, 1, 1).data
+  return [d[0]!, d[1]!, d[2]!]
+}
+
+function luminance([r, g, b]: readonly [number, number, number]): number {
+  const lin = (c: number) => {
+    const s = c / 255
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4
+  }
+  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+}
+
+function contrast(a: readonly [number, number, number], b: readonly [number, number, number]): number {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x) as [number, number]
+  return (hi + 0.05) / (lo + 0.05)
+}
+
+/** 页面主题下（看片层的白墨域之外）某支颜色令牌算完之后的取值。 */
+function pageToken(name: string): string {
+  const probe = document.createElement('span')
+  probe.style.color = `var(${name})`
+  document.body.append(probe)
+  const color = getComputedStyle(probe).color
+  probe.remove()
+  return color
+}
+
 describe('看片浮层的 chrome 钮：Action Control 档位落到真实盒子上', () => {
-  it('翻页钮是 40px 正圆（floating 缺省 md）、关闭钮低一档 32px 正圆、工具条钮 24px；十颗钮的前景随 chrome 继承', async () => {
+  afterEach(() => {
+    delete document.documentElement.dataset.theme
+  })
+
+  it('翻页钮与关闭钮都是 32px 正圆、字形 16px，前景随深色 chrome 继承；工具条钮 36px、字形 16px', async () => {
     mount()
     await settle()
     const prev = part('prev-trigger')
@@ -201,20 +245,84 @@ describe('看片浮层的 chrome 钮：Action Control 档位落到真实盒子�
 
     for (const el of [prev, next]) {
       const rect = el.getBoundingClientRect()
-      expect([rect.width, rect.height]).toEqual([40, 40])
+      expect([rect.width, rect.height]).toEqual([32, 32])
       expect(getComputedStyle(el).borderRadius).toBe('50%')
       expect(getComputedStyle(el).color).toBe(chromeColor)
+      expect(getComputedStyle(el, '::before').width).toBe('16px')
     }
     const closeRect = close.getBoundingClientRect()
     expect([closeRect.width, closeRect.height]).toEqual([32, 32])
     // 悬浮在媒体上的单图标动作：与翻页钮同一身份，正圆
     expect(getComputedStyle(close).borderRadius).toBe('50%')
+    expect(getComputedStyle(close, '::before').width).toBe('16px')
     const zoomRect = zoomIn.getBoundingClientRect()
-    expect([zoomRect.width, zoomRect.height]).toEqual([24, 24])
-    expect(getComputedStyle(zoomIn).color).toBe(chromeColor)
-    // 工具条外壳与计数气泡按身份取圆角：容器 surface 8px、一行字的气泡 control 4px
-    expect(getComputedStyle(part('toolbar')).borderRadius).toBe('8px')
-    expect(getComputedStyle(part('counter')).borderRadius).toBe('4px')
+    expect([zoomRect.width, zoomRect.height]).toEqual([36, 36])
+    expect(getComputedStyle(zoomIn, '::before').width).toBe('16px')
+    // 工具条外壳与计数气泡按身份取圆角：容器 surface 4px、一行字的气泡 control 2px
+    expect(getComputedStyle(part('toolbar')).borderRadius).toBe('4px')
+    expect(getComputedStyle(part('counter')).borderRadius).toBe('2px')
+  })
+
+  it('翻页钮距左右边 20px，关闭钮距右上角 32px', async () => {
+    mount()
+    await settle()
+    const view = part('positioner').getBoundingClientRect()
+    const prev = part('prev-trigger').getBoundingClientRect()
+    const next = part('next-trigger').getBoundingClientRect()
+    const close = part('close-trigger').getBoundingClientRect()
+    expect(prev.left - view.left).toBe(20)
+    expect(view.right - next.right).toBe(20)
+    expect(close.top - view.top).toBe(32)
+    expect(view.right - close.right).toBe(32)
+  })
+
+  it('遮罩取全局遮罩令牌', async () => {
+    mount()
+    await settle()
+    expect(getComputedStyle(part('backdrop')).backgroundColor).toBe(pageToken('--xh-bg-overlay'))
+  })
+
+  it('工具条是页面主题的实体面：页面面色、1px 描边、内距 6 / 16；钮的悬停 / 按下走白底阶梯', async () => {
+    mount()
+    await settle()
+    const toolbar = getComputedStyle(part('toolbar'))
+    expect(toolbar.backgroundColor).toBe(pageToken('--xh-bg-surface'))
+    expect(toolbar.borderTopWidth).toBe('1px')
+    expect(toolbar.borderTopStyle).toBe('solid')
+    expect(composite(toolbar.backgroundColor, toolbar.borderTopColor))
+      .toEqual(composite(pageToken('--xh-bg-surface'), pageToken('--xh-border-default')))
+    expect([toolbar.paddingTop, toolbar.paddingBottom]).toEqual(['6px', '6px'])
+    expect([toolbar.paddingLeft, toolbar.paddingRight]).toEqual(['16px', '16px'])
+    expect(toolbar.gap).toBe('4px')
+
+    const zoomIn = part('zoom-in-trigger')
+    await userEvent.hover(zoomIn)
+    await expect.poll(() => composite(toolbar.backgroundColor, getComputedStyle(zoomIn).backgroundColor))
+      .toEqual(composite(pageToken('--xh-bg-surface'), pageToken('--xh-bg-subtle')))
+  })
+
+  it('工具条钮的字与焦点环在亮暗两种页面主题下都压得住工具条的面', async () => {
+    for (const theme of ['light', 'dark'] as const) {
+      document.documentElement.dataset.theme = theme
+      mount()
+      await settle()
+      const face = composite(getComputedStyle(part('toolbar')).backgroundColor)
+      const zoomIn = part('zoom-in-trigger')
+      expect(contrast(composite(getComputedStyle(part('toolbar')).backgroundColor, getComputedStyle(zoomIn).color), face), `${theme} 字色`)
+        .toBeGreaterThanOrEqual(4.5)
+      // 键盘走到钮上才画环：从下一颗钮反向 Tab 回来
+      part('zoom-out-trigger').focus()
+      await userEvent.tab({ shift: true })
+      expect(focusedPart()).toBe('zoom-in-trigger')
+      expect(getComputedStyle(zoomIn).outlineStyle).toBe('solid')
+      expect(contrast(composite(getComputedStyle(part('toolbar')).backgroundColor, getComputedStyle(zoomIn).outlineColor), face), `${theme} 焦点环`)
+        .toBeGreaterThanOrEqual(3)
+      app?.unmount()
+      app = null
+      host?.remove()
+      host = null
+      document.body.innerHTML = ''
+    }
   })
 
   it('粗指针下工具条七颗钮各自撑出 44×44 命中区，钮心点到的是自己', async () => {

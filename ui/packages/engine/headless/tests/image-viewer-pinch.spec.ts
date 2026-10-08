@@ -205,7 +205,7 @@ describe('看图 · 指头数变化', () => {
 })
 
 describe('看图 · 十颗 chrome 钮的 Action Control 档位', () => {
-  it('翻页钮接 floating md、关闭钮接 floating sm、工具条七钮接 icon xs；面由皮肤桥接，不投影 variant', () => {
+  it('翻页钮与关闭钮接 floating md、工具条七钮接 icon xs；面由皮肤桥接，不投影 variant', () => {
     const a = mount()
     const expectAction = (props: Dict, profile: string, size: string): void => {
       expect(props['data-xh-action-control']).toBe('')
@@ -216,7 +216,7 @@ describe('看图 · 十颗 chrome 钮的 Action Control 档位', () => {
     }
     expectAction(a.api().getPrevTriggerProps() as Dict, 'floating', 'md')
     expectAction(a.api().getNextTriggerProps() as Dict, 'floating', 'md')
-    expectAction(a.api().getCloseTriggerProps() as Dict, 'floating', 'sm')
+    expectAction(a.api().getCloseTriggerProps() as Dict, 'floating', 'md')
     for (const getter of ['getZoomInTriggerProps', 'getZoomOutTriggerProps', 'getRotateLeftTriggerProps', 'getRotateRightTriggerProps', 'getFlipHorizontalTriggerProps', 'getFlipVerticalTriggerProps', 'getResetTriggerProps'] as const)
       expectAction(a.api()[getter]() as Dict, 'icon', 'xs')
     // 触发区是作者自己的内容，不接配方
