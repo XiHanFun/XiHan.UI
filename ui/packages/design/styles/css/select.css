@@ -310,7 +310,7 @@
     max-inline-size: var(--xh-select-content-max-w, none);
     max-block-size: min(var(--xh-select-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_select-available-h));
     padding-block: var(--xh-select-content-py, var(--xh-space-1));
-    padding-inline: var(--xh-select-content-px, var(--xh-space-1));
+    padding-inline: var(--xh-select-content-px, 0);
     border-radius: var(--xh-select-content-radius, var(--xh-shape-overlay));
     /* 条目的悬停底色是方角，滚到两端时会探出外壳的圆角 */
     overflow: hidden;
@@ -463,7 +463,7 @@
     --xh-collection-inline-padding: var(--xh-select-item-px, var(--xh-_select-item-px));
     --xh-collection-gap: var(--xh-select-item-gap, var(--xh-_select-gap));
     --xh-collection-font-size: var(--xh-select-item-font-size, var(--xh-_select-font-size));
-    --xh-collection-radius: var(--xh-select-item-radius, var(--xh-shape-inset));
+    --xh-collection-radius: var(--xh-select-item-radius, 0);
     --xh-collection-fg-rest: var(--xh-select-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-hover: var(--xh-select-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-keyboard-highlight: var(--xh-select-item-fg, var(--xh-material-frosted-fg));
@@ -472,10 +472,10 @@
     --xh-collection-fg-selected-hover: var(--xh-select-item-fg-selected, var(--xh-select-item-fg, var(--xh-material-frosted-fg)));
     --xh-collection-fg-selected-pressed: var(--xh-select-item-fg-selected, var(--xh-select-item-fg, var(--xh-material-frosted-fg)));
     --xh-collection-fg-pressed: var(--xh-select-item-fg, var(--xh-material-frosted-fg));
-    --xh-collection-font-weight-selected: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-regular));
-    --xh-collection-font-weight-selected-highlight: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-regular));
-    --xh-collection-font-weight-selected-hover: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-regular));
-    --xh-collection-font-weight-selected-pressed: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-selected: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-medium));
+    --xh-collection-font-weight-selected-highlight: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-medium));
+    --xh-collection-font-weight-selected-hover: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-medium));
+    --xh-collection-font-weight-selected-pressed: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-medium));
     --xh-collection-bg-hover: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-keyboard-highlight: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-selected-highlight: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));

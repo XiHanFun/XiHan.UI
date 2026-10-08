@@ -309,7 +309,7 @@
     min-block-size: var(--xh-combobox-content-min-h, var(--xh-_combobox-h));
     max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_combobox-available-h));
     padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
-    padding-inline: var(--xh-combobox-content-px, var(--xh-space-1));
+    padding-inline: var(--xh-combobox-content-px, 0);
     border-radius: var(--xh-combobox-content-radius, var(--xh-shape-overlay));
     overflow-y: auto;
     /* 浮层滚动面：滚到头不把页面一起带走 */
@@ -385,7 +385,7 @@
     --xh-collection-inline-padding: var(--xh-combobox-item-px, var(--xh-_combobox-item-px));
     --xh-collection-gap: var(--xh-combobox-item-gap, var(--xh-_combobox-gap));
     --xh-collection-font-size: var(--xh-combobox-item-font-size, var(--xh-_combobox-font-size));
-    --xh-collection-radius: var(--xh-combobox-item-radius, var(--xh-shape-inset));
+    --xh-collection-radius: var(--xh-combobox-item-radius, 0);
     --xh-collection-fg-rest: var(--xh-combobox-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-hover: var(--xh-combobox-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-keyboard-highlight: var(--xh-combobox-item-fg, var(--xh-material-frosted-fg));
@@ -394,10 +394,10 @@
     --xh-collection-fg-selected-hover: var(--xh-combobox-item-fg-selected, var(--xh-combobox-item-fg, var(--xh-material-frosted-fg)));
     --xh-collection-fg-selected-pressed: var(--xh-combobox-item-fg-selected, var(--xh-combobox-item-fg, var(--xh-material-frosted-fg)));
     --xh-collection-fg-pressed: var(--xh-combobox-item-fg, var(--xh-material-frosted-fg));
-    --xh-collection-font-weight-selected: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-regular));
-    --xh-collection-font-weight-selected-highlight: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-regular));
-    --xh-collection-font-weight-selected-hover: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-regular));
-    --xh-collection-font-weight-selected-pressed: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-selected: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-medium));
+    --xh-collection-font-weight-selected-highlight: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-medium));
+    --xh-collection-font-weight-selected-hover: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-medium));
+    --xh-collection-font-weight-selected-pressed: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-medium));
     --xh-collection-bg-hover: var(--xh-combobox-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-keyboard-highlight: var(--xh-combobox-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-selected-highlight: var(--xh-combobox-item-bg-hover, var(--xh-bg-subtle));

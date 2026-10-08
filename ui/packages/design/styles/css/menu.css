@@ -102,7 +102,7 @@
        列表族的 16rem 对命令菜单偏矮，这里另给一档 */
     max-block-size: min(var(--xh-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menu-available-h));
     padding-block: var(--xh-menu-content-py, var(--xh-surface-pad-xs));
-    padding-inline: var(--xh-menu-content-px, var(--xh-surface-pad-xs));
+    padding-inline: var(--xh-menu-content-px, 0);
     border-radius: var(--xh-menu-content-radius, var(--xh-shape-overlay));
     /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着。
        浮层滚动面：到底后不把滚动链穿透给页面 */
@@ -162,7 +162,7 @@
     --xh-collection-inline-padding: var(--xh-menu-item-px, var(--xh-_menu-item-px));
     --xh-collection-gap: 0;
     --xh-collection-font-size: var(--xh-menu-item-font-size, var(--xh-_menu-font-size));
-    --xh-collection-radius: var(--xh-menu-item-radius, var(--xh-shape-inset));
+    --xh-collection-radius: var(--xh-menu-item-radius, 0);
     --xh-collection-fg-rest: var(--xh-menu-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-hover: var(--xh-menu-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-keyboard-highlight: var(--xh-menu-item-fg, var(--xh-material-frosted-fg));

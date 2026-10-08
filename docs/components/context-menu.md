@@ -365,7 +365,7 @@
 | `--xh-context-menu-content-bg` | `arrow`<br>`content` | `background` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg`<br>`--xh-material-frosted-bg` | context-menu 的 arrow、content 部件 background 覆盖槽。 |
 | `--xh-context-menu-content-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | context-menu 的 content 部件 color 覆盖槽。 |
 | `--xh-context-menu-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` | context-menu 的 content 部件 gap 覆盖槽。 |
-| `--xh-context-menu-content-px` | `content` | `padding-inline` | `default` | `--xh-surface-pad-xs` | context-menu 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-context-menu-content-px` | `content` | `padding-inline` | `default` | `0` | context-menu 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-context-menu-content-py` | `content` | `padding-block` | `default` | `--xh-surface-pad-xs` | context-menu 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-context-menu-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | context-menu 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-context-menu-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | context-menu 的 content 部件 box-shadow 覆盖槽。 |
@@ -390,7 +390,7 @@
 | `--xh-context-menu-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | context-menu 的 item 部件 line-height 覆盖槽。 |
 | `--xh-context-menu-item-px` | `item` | `padding-inline` | `default` | `--xh-_context-menu-item-px` | context-menu 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-context-menu-item-py` | `item` | `padding-block` | `default` | `--xh-_context-menu-item-py` | context-menu 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-context-menu-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | context-menu 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-context-menu-item-radius` | `item` | `border-radius` | `default` | `0` | context-menu 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-context-menu-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | context-menu 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-context-menu-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | context-menu 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-context-menu-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | context-menu 的 content 部件 max-inline-size 覆盖槽。 |

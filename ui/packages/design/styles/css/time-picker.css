@@ -546,10 +546,10 @@
     --xh-collection-fg-selected-highlight: var(--xh-time-picker-item-fg-selected, var(--xh-time-picker-item-fg, var(--xh-material-frosted-fg)));
     --xh-collection-fg-selected-hover: var(--xh-time-picker-item-fg-selected, var(--xh-time-picker-item-fg, var(--xh-material-frosted-fg)));
     --xh-collection-fg-selected-pressed: var(--xh-time-picker-item-fg-selected, var(--xh-time-picker-item-fg, var(--xh-material-frosted-fg)));
-    --xh-collection-font-weight-selected: var(--xh-time-picker-item-font-weight-selected, var(--xh-font-weight-regular));
-    --xh-collection-font-weight-selected-highlight: var(--xh-time-picker-item-font-weight-selected, var(--xh-font-weight-regular));
-    --xh-collection-font-weight-selected-hover: var(--xh-time-picker-item-font-weight-selected, var(--xh-font-weight-regular));
-    --xh-collection-font-weight-selected-pressed: var(--xh-time-picker-item-font-weight-selected, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-selected: var(--xh-time-picker-item-font-weight-selected, var(--xh-font-weight-medium));
+    --xh-collection-font-weight-selected-highlight: var(--xh-time-picker-item-font-weight-selected, var(--xh-font-weight-medium));
+    --xh-collection-font-weight-selected-hover: var(--xh-time-picker-item-font-weight-selected, var(--xh-font-weight-medium));
+    --xh-collection-font-weight-selected-pressed: var(--xh-time-picker-item-font-weight-selected, var(--xh-font-weight-medium));
     --xh-collection-bg-hover: var(--xh-time-picker-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-keyboard-highlight: var(--xh-time-picker-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-selected-highlight: var(--xh-time-picker-item-bg-hover, var(--xh-bg-subtle));

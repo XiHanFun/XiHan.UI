@@ -386,7 +386,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `--xh-menubar-content-bg` | `arrow`<br>`content` | `background` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg`<br>`--xh-material-frosted-bg` | menubar 的 arrow、content 部件 background 覆盖槽。 |
 | `--xh-menubar-content-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | menubar 的 content 部件 color 覆盖槽。 |
 | `--xh-menubar-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` | menubar 的 content 部件 gap 覆盖槽。 |
-| `--xh-menubar-content-px` | `content` | `padding-inline` | `default` | `--xh-surface-pad-xs` | menubar 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-menubar-content-px` | `content` | `padding-inline` | `default` | `0` | menubar 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-menubar-content-py` | `content` | `padding-block` | `default` | `--xh-surface-pad-xs` | menubar 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-menubar-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | menubar 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-menubar-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | menubar 的 content 部件 box-shadow 覆盖槽。 |
@@ -413,7 +413,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `--xh-menubar-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | menubar 的 item 部件 line-height 覆盖槽。 |
 | `--xh-menubar-item-px` | `item` | `padding-inline` | `default` | `--xh-_menubar-item-px` | menubar 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-menubar-item-py` | `item` | `padding-block` | `default` | `--xh-_menubar-item-py` | menubar 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-menubar-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | menubar 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-menubar-item-radius` | `item` | `border-radius` | `default` | `0` | menubar 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-menubar-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | menubar 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-menubar-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | menubar 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-menubar-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | menubar 的 content 部件 max-inline-size 覆盖槽。 |
