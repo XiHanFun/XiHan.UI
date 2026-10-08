@@ -41962,17 +41962,18 @@
 }
 
 .xh-scope-switch[data-part='root'] {
-  /* 尺寸档只换轨道高度这一个私有槽，其余几何都从它算出来：
-     滑块边长 = 轨道高 − 两条留白，轨道宽 = 两倍轨道高 − 两条留白，滑块行程因此正好等于自身边长 */
+  /* 尺寸档只换轨道高度与留白两个私有槽，其余几何都从它们算出来：
+     滑块边长 = 轨道高 − 两条留白，轨道宽 = 两倍轨道高 − 两条留白，滑块行程因此正好等于自身边长。
+     md 留白 4px：24px 轨道配 16px 滑块、40px 宽；sm 留白收到 2px，滑块不至于小到点不准 */
   --xh-_switch-track-h: var(--xh-switch-track-h-md);
-  --xh-_switch-pad: var(--xh-space-0_5);
+  --xh-_switch-pad: var(--xh-space-1);
   --xh-_switch-thumb-size: calc(var(--xh-_switch-track-h) - var(--xh-_switch-pad) * 2);
   --xh-_switch-thumb-press-stretch: var(--xh-switch-thumb-press-stretch, var(--xh-motion-distance-sm));
 
   /* 选中态轨道色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
   --xh-_switch-accent: var(--xh-_tone, var(--xh-bg-brand));
-  /* 轨道边界以内描边表达，不吃掉滑块行程；checked / readonly / invalid / disabled 只换这一支色。 */
-  --xh-_switch-track-border: var(--xh-switch-border, var(--xh-border-control));
+  /* 轨道的面就是边界：静息内描边透明；readonly / invalid 才换成有色的一圈，不吃掉滑块行程 */
+  --xh-_switch-track-border: var(--xh-switch-border, transparent);
   /* 轨道的面：未选中是 --xh-bg-subtle-active（300）的实体字段控件面；checked / readonly / disabled 换这一支。
      静息已是 300，中性阶梯再无更深一档可换：按下的底缺省仍是轨道静息面（使用者可经 --xh-switch-bg-pressed
      另给），换面的通道由下面滑块的橡皮带拉伸与压平投影承担；选中轨道按下换到语气的 active 档 */
@@ -41980,7 +41981,7 @@
   --xh-_switch-track-bg-pressed: var(--xh-switch-bg-pressed, var(--xh-_switch-track-bg));
   --xh-_switch-fg: var(--xh-switch-fg, var(--xh-fg-default));
 
-  /* 轨道接 Action Control text 档（定尺轨道）：悬停 / 按下 / 禁用面、0.97 缩放与换底、粗指针热区、
+  /* 轨道接 Action Control text 档（定尺轨道）：悬停 / 按下 / 禁用面、按压与换底、粗指针热区、
      焦点环与过渡由家族配方给，这里只把轨道的私有槽映射到桥接槽。轨道没有实描边（边界以内描边画，不吃行程），
      边位映射 transparent 并把 border 宽度归零；内描边经 shadow 通道各态同一支。悬停不换面（阶梯只给按下） */
   --xh-action-visual-size: var(--xh-_switch-track-h);
@@ -42077,6 +42078,7 @@
 /* 缺省档写在上面的基础规则里 */
 .xh-scope-switch[data-part='root'][data-size='sm'] {
   --xh-_switch-track-h: var(--xh-switch-track-h-sm);
+  --xh-_switch-pad: var(--xh-space-0_5);
 }
 
 .xh-scope-switch[data-part='root'][data-size='lg'] {
@@ -42103,7 +42105,7 @@
 }
 
 /* 滑块是 raised 抬起面（可拖起部件，逐部件登记）：--xh-bg-surface-raised 底 + --xh-border-default 描边 +
-   --xh-elevation-raised 影，无顶光；描边必须在，影只是加成 */
+   --xh-elevation-raised 影（缺省 none），无顶光；描边必须在，影只是加成 */
 .xh-scope-switch[data-part='thumb'] {
   position: relative;
   display: grid;
