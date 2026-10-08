@@ -2,7 +2,7 @@
   <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
     <rect x="28.5" y="16.5" width="183" height="127" rx="4" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
     <path d="M47 36h106" stroke="var(--xh-fg-default)" stroke-width="6" />
-    <circle cx="52" cy="60" r="7.5" stroke="var(--xh-border-control)" />
+    <circle cx="52" cy="60" r="7.5" stroke="var(--xh-border-strong)" />
     <path d="M71 60h58" stroke="var(--xh-fg-muted)" stroke-width="6" />
     <circle cx="52" cy="84" r="7.5" stroke="var(--xh-fg-brand)" />
     <circle cx="52" cy="84" r="4" fill="var(--xh-bg-brand)" />

@@ -1281,6 +1281,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 锚定浮层里的列表行（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列） | 高 24；通栏，悬停面铺满面板内沿，多列面板铺到列分隔线 | 不取圆角 |
 | 页内列表的行（Listbox、Tree、Transfer、Command、时间格）、面板里的紧凑按钮 | 高 24；行的悬停面左右各内缩 4 | 圆角 2 |
 | 复选框、色块 | 16 × 16、24 × 24 | 圆角 2 |
+| 分页的页码、翻页钮与省略位 | 32 × 32 | 圆角 4（描边方块） |
 | 单选圈、头像、浮动钮、节点 | — | `<circle>` |
 | 开关 | 32 × 16，拇指半径 6 | 胶囊 |
 | 轨道：滑块、进度、滚动条 | 线宽 4 / 6 的圆头线 | 胶囊 |
@@ -1323,9 +1324,12 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 内容面 | `--xh-bg-surface` 底 + `--xh-border-default` 描边 |
 | 浮层面 | `--xh-bg-surface-raised` 底 + `--xh-border-default` 描边 |
 | 字段外壳：输入框、选择器触发器、日期与时间字段、输入组、PinInput 格 | `--xh-bg-field` 底 + `--xh-border-control` 描边；聚焦换 `--xh-bg-surface` 底 + `--xh-border-control-focus`；校验失败换 `--xh-border-invalid` 描边，底仍取 `--xh-bg-field`（4% 失效色淡底没有语义令牌） |
-| 复选框、单选圈、拖放区、签名画布 | 只描 `--xh-border-control`，不填底 |
+| 只读输入框（Clipboard） | `--xh-bg-subtle` 底 + `--xh-border-control` 描边；与复制钮共一个外框时只铺输入框那段，复制钮那段透明 |
+| 复选框、单选圈 | 只描 `--xh-border-strong`（比字段边重一档），不填底 |
+| 拖放区、签名画布 | 只描 `--xh-border-control`，不填底 |
 | 按钮 | 主动作 `--xh-bg-brand` 实心；次要动作 `--xh-border-default` 描边；中性触发器 `--xh-bg-subtle` 淡底 |
 | 选中 / 当前 | 行与开关面 `--xh-bg-brand-subtle`；对号与指示条 `--xh-fg-brand`；格状当前 `--xh-bg-brand` |
+| 分页 | 页码、翻页钮与省略位都描 `--xh-border-default`、不填底；当前页 `--xh-bg-brand-subtle` 底 + `--xh-bg-brand` 描边，页码条取 `--xh-fg-on-brand-subtle` |
 | 悬停行、打开中的触发器 | `--xh-bg-subtle` |
 | 轨道 | `--xh-bg-subtle-active`，已走过的一段 `--xh-bg-brand` |
 | 分隔线 | `--xh-border-subtle`；面的外边 `--xh-border-default` |
