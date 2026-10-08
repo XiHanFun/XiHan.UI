@@ -41,20 +41,22 @@ function mount(state: 'closed' | 'open' = 'open') {
 }
 
 describe('collapsible 默认视觉', () => {
-  it('标题栏与正文沿同一边缘排布', () => {
+  it('标题栏与正文沿同一边缘排布：标题栏 41px 高，正文上下 8px、正文色 14px，指示器取弱一档的前景', () => {
     const collapsible = mount()
     const trigger = getComputedStyle(collapsible.trigger)
     const content = getComputedStyle(collapsible.content)
     const indicator = getComputedStyle(collapsible.indicator)
 
-    expect(Number.parseFloat(trigger.paddingBlockStart)).toBe(16)
-    expect(Number.parseFloat(trigger.paddingInlineStart)).toBe(16)
-    expect(collapsible.trigger.getBoundingClientRect().height).toBeGreaterThanOrEqual(46)
-    expect(Number.parseFloat(content.paddingBlockStart)).toBe(0)
-    expect(Number.parseFloat(content.paddingBlockEnd)).toBe(16)
+    expect(Number.parseFloat(trigger.paddingBlockStart)).toBe(10)
+    expect(Number.parseFloat(trigger.paddingInlineStart)).toBe(12)
+    expect(collapsible.trigger.getBoundingClientRect().height).toBeCloseTo(41, 0)
+    expect(trigger.fontWeight).toBe('500')
+    expect(Number.parseFloat(content.paddingBlockStart)).toBe(8)
+    expect(Number.parseFloat(content.paddingBlockEnd)).toBe(8)
     expect(content.paddingInlineStart).toBe(trigger.paddingInlineStart)
-    expect(content.color).not.toBe(trigger.color)
-    expect(indicator.color).toBe(content.color)
+    expect(content.color).toBe(tokenColor('--xh-fg-default'))
+    expect(content.fontSize).toBe('14px')
+    expect(indicator.color).toBe(tokenColor('--xh-fg-subtle'))
   })
 
   it('标题栏悬停换面到画布承载的 hover 档（100），展开态与收起态同档，按下只换面不缩放', async () => {
