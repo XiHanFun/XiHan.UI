@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`popover-event-log`),t=[];document.getElementById(`popover-event`).addEventListener(`open-change`,n=>{t.unshift(n.detail.open?`展开`:`收起`),t.length=Math.min(t.length,5),e.textContent=t.join(` ← `)})}export{e as default};

@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`loading-bar-trickle`),t=document.getElementById(`loading-bar-trickle-actions`);for(let n of t.querySelectorAll(`[data-loading]`))n.addEventListener(`click`,()=>{e.loading=n.dataset.loading===`on`})}export{e as default};

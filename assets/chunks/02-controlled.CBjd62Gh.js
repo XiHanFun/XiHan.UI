@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`toggle-group-controlled`);e.addEventListener(`value-change`,t=>{e.value=t.detail.value})}export{e as default};

@@ -1,1 +1,0 @@
-async function o(){const t=document.getElementById("dialog-basic"),e=t.querySelector('[data-xh-part="close-trigger"]');for(const c of t.querySelectorAll("[data-dismiss]"))c.addEventListener("click",()=>e.click())}export{o as default};

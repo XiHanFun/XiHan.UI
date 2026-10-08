@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`table-basic`);e.columns=[{id:`name`,label:`姓名`,width:`8rem`},{id:`dept`,label:`部门`},{id:`level`,label:`职级`,width:`6rem`}],e.rows=[{id:`u1`},{id:`u2`},{id:`u3`},{id:`u4`}]}export{e as default};

@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`affix-change-tpl`),t=e.content.firstElementChild,n=t.querySelector(`[data-xh-part="content"]`);t.target=document.getElementById(`affix-change-scroll`),e.replaceWith(t),t.addEventListener(`affix-change`,e=>{let{affixed:t}=e.detail;n.textContent=t?`已固定`:`工具栏`})}export{e as default};

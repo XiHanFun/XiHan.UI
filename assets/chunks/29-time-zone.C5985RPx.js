@@ -1,1 +1,0 @@
-async function i(){const e=document.getElementById("cartesian-chart-time-zone"),s=Array.from({length:13},(o,t)=>({time:new Date(Date.UTC(2024,2,1,15+t*6)),requests:Math.round(40+30*Math.sin(t/2))})),n=[{mark:"line",x:"time",y:"requests",name:"请求量"}],a={scale:"utc",timeZone:"Asia/Tokyo"};e.data=s,e.series=n,e.xAxis=a}export{i as default};

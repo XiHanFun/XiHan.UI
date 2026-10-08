@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./progress.BJxPCcs-.js";var n=e();function r(){return(0,n.jsxs)(`div`,{style:{width:`100%`,display:`grid`,gap:`12px`},children:[(0,n.jsx)(t,{value:45,striped:!0,"aria-label":`导出进度`}),(0,n.jsx)(t,{value:100,striped:!0,tone:`success`,"aria-label":`已完成的导出`})]})}export{r as default};

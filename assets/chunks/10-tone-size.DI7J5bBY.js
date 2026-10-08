@@ -1,0 +1,1 @@
+async function e(){let e=[{value:`read`,label:`查看`},{value:`create`,label:`新建`},{value:`update`,label:`编辑`}];for(let t of document.querySelectorAll(`.transfer-axes`))t.collection=e}export{e as default};

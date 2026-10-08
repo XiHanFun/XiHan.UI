@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./checkbox.IRsUHmch.js";var n=e();function r(){return(0,n.jsxs)(`div`,{style:{display:`grid`,gap:`12px`},children:[(0,n.jsx)(t,{disabled:!0,children:`禁用`}),(0,n.jsx)(t,{defaultChecked:!0,disabled:!0,children:`已选中且禁用`}),(0,n.jsx)(t,{defaultChecked:!0,readOnly:!0,children:`只读`})]})}export{r as default};

@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./icon.C4AxK619.js";import{d as n}from"./dist.ZGSyedfl.js";var r=e(),i=[`solid`,`subtle`,`outline`,`ghost`];function a(){return(0,r.jsx)(`div`,{style:{display:`flex`,alignItems:`center`,gap:`12px`},children:i.map(e=>(0,r.jsx)(t,{icon:n,frame:e},e))})}export{a as default};

@@ -1,1 +1,0 @@
-async function o(){for(const t of document.querySelectorAll("[data-format]"))t.addEventListener("click",()=>{t.setAttribute("aria-pressed",String(t.getAttribute("aria-pressed")!=="true"))});const e=document.querySelectorAll("[data-align]");for(const t of e)t.addEventListener("click",()=>{for(const r of e)r.setAttribute("aria-pressed",String(r===t))})}export{o as default};

@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./icon.C4AxK619.js";import{Y as n}from"./dist.ZGSyedfl.js";var r=e(),i=[`brand`,`success`,`warning`,`danger`,`info`];function a(){return(0,r.jsx)(`div`,{style:{display:`flex`,alignItems:`center`,gap:`12px`},children:i.map(e=>(0,r.jsx)(t,{icon:n,frame:`subtle`,tone:e},e))})}export{a as default};

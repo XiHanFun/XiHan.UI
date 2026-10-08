@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./sparkline.nuImyPbu.js";var n=e(),r=[150,162,148,171,188,214,196,172,165,158,231,204,179,168];function i(){return(0,n.jsx)(t,{data:r,band:[120,200],"aria-label":`近 14 天 P95 延迟，正常区间 120 到 200 毫秒`})}export{i as default};

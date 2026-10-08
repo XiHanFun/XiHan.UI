@@ -1,0 +1,1 @@
+async function e(){for(let e of document.getElementById(`avatar-status`).children){let t=e.querySelector(`[data-readout]`);e.querySelector(`xh-avatar`).addEventListener(`status-change`,e=>{t.textContent=e.detail.status})}}export{e as default};

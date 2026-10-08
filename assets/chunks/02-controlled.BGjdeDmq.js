@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`text-field-controlled`),t=document.getElementById(`text-field-controlled-value`),n=document.getElementById(`text-field-controlled-reset`);function r(n){e.value=n,t.textContent=n||`（空）`}e.addEventListener(`value-change`,e=>r(e.detail.value)),n.addEventListener(`click`,()=>r(`曦寒`))}export{e as default};

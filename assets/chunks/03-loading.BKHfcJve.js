@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`skeleton-loading`),t=document.getElementById(`skeleton-loading-toggle`),n=document.getElementById(`skeleton-loading-text`);t.addEventListener(`click`,()=>{let r=e.loading===!1;e.loading=r,t.textContent=r?`数据回来了`:`重新加载`,n.hidden=r})}export{e as default};

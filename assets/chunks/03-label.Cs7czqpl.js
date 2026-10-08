@@ -1,1 +1,0 @@
-import{lY as t,gu as n}from"./theme.CivESN_z.js";import{d as r,o as s,c as o,E as e,w as l,k as a,F as c}from"./framework.D1FqHTxE.js";const i=r({__name:"03-label",setup(p){return(_,m)=>(s(),o(c,null,[e(a(n),{label:"正在加载数据"},{default:l(()=>[e(a(t))]),_:1}),e(a(n),{translations:{label:"正在提交表单"}},{default:l(()=>[e(a(t))]),_:1})],64))}});export{i as default};

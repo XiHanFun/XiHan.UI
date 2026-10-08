@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`combobox-custom-content`),t=e.querySelector(`[data-xh-part="content"]`),n=[...t.children];e.addEventListener(`input-value-change`,e=>{let r=e.detail.inputValue.trim().toLowerCase();t.replaceChildren(...n.filter(e=>e.dataset.label.toLowerCase().includes(r)))})}export{e as default};

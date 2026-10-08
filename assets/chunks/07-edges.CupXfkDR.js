@@ -1,1 +1,0 @@
-async function g(){const t=document.getElementById("pagination-edges"),e=document.getElementById("pagination-edges-current"),n=document.getElementById("pagination-edges-total");t.addEventListener("page-change",a=>{t.page=a.detail.page,e.setAttribute("value",String(t.currentPage)),e.textContent=String(t.currentPage),n.textContent=`/ ${t.totalPages}`})}export{g as default};

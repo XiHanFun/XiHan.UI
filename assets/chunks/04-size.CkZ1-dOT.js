@@ -1,1 +1,0 @@
-async function l(){const e=[{id:"scope",prompt:"这次改动动到哪一层？",type:"single",options:[{value:"ui",label:"只改界面"},{value:"api",label:"改到接口"}]}];for(const o of document.querySelectorAll(".question-flow-size"))o.questions=e}export{l as default};

@@ -2,15 +2,15 @@
 
 > 框架无关的设计系统运行时：无头内核提供行为与无障碍，Vue、React 与 Web Components 三个适配器只负责把属性铺到宿主元素上，纯 CSS 皮肤认 `data-scope` / `data-part` 而不是类名。
 
-本文件由文档站构建期生成，内容与库同源。
+本文件由文档站构建期生成，内容与仓库文档同源。
 
 ## 机读资产
 
-- [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 196 页正文，示例已内联为代码块
+- [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 196 页正文，示例已按适配器内联为代码块
 - [llms-components.txt](https://ui.docs.xihanfun.com/llms-components.txt): 141 页组件参考
 - [llms-guide.txt](https://ui.docs.xihanfun.com/llms-guide.txt): 30 页核心概念、适配器与运行时
 - [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 667 支设计令牌的名字、类型与缺省取值
-- 每页 Markdown：把站点地址后缀成 `.md`，如 https://ui.docs.xihanfun.com/components/button.md
+- 每页 Markdown：把站点地址后缀成 `.md`，如 https://ui.docs.xihanfun.com/adapters/react.md
 
 ## 开始
 

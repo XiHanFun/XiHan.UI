@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`tag-group-selection`),t=document.getElementById(`tag-group-selection-value`);e.addEventListener(`value-change`,n=>{e.value=n.detail.value,t.textContent=n.detail.value.join(`、`)||`（无）`})}export{e as default};

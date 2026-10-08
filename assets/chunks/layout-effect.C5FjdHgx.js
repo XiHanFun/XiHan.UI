@@ -1,0 +1,1 @@
+import{t as e}from"./react.CbNV8_UV.js";var t=e(),n=typeof window>`u`?t.useEffect:t.useLayoutEffect;export{n as t};

@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`progress-steps`),t=3;function n(n){t=Math.min(5,Math.max(0,n)),e.setAttribute(`value`,t),e.setAttribute(`value-text`,`第 ${t} 步，共 5 步`)}document.getElementById(`progress-steps-prev`).addEventListener(`click`,()=>n(t-1)),document.getElementById(`progress-steps-next`).addEventListener(`click`,()=>n(t+1))}export{e as default};

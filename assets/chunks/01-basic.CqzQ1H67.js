@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{n as t,r as n}from"./marquee.BJvF07Yk.js";var r=e(),i=[`系统将于本周六 02:00 起停机维护两小时`,`新版导出支持按列脱敏`,`本月账单已生成`];function a(){return(0,r.jsx)(n,{style:{maxInlineSize:`420px`},children:(0,r.jsx)(t,{children:i.map(e=>(0,r.jsx)(`span`,{style:{marginInlineEnd:`32px`,whiteSpace:`nowrap`},children:e},e))})})}export{a as default};

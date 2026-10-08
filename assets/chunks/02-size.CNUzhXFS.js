@@ -1,0 +1,1 @@
+import{$t as e,Et as t,ft as n,lt as r,mt as i,tt as a}from"./framework.8UxoGp64.js";import{Di as o}from"./theme.89tuodeJ.js";var s=i({__name:`02-size`,setup(i){return(i,s)=>(t(),r(a,null,[n(e(o),{size:`sm`,label:`加载中`}),n(e(o),{label:`加载中`}),n(e(o),{size:`lg`,label:`加载中`})],64))}});export{s as default};

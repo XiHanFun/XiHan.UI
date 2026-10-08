@@ -1,0 +1,1 @@
+import{Fk as e,Ik as t,Pk as n}from"./theme.89tuodeJ.js";import{t as r}from"./react.CbNV8_UV.js";var i=r();function a(r,a){let o=e(r.machine);(0,i.useEffect)(()=>{if(!o)return;let e=t({getNode:()=>a.current,getFormId:()=>r.prop(`form`),onReset:()=>{r.getStatus()===`Started`&&r.send({type:n})}});return()=>{e?.dispose(),e=null}},[o,r,a])}export{a as t};

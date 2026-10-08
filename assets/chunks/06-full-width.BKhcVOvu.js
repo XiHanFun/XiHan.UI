@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{n as t}from"./toggle-group.2oVB5Jwr.js";var n=e(),r=[{value:`list`,label:`列表`},{value:`grid`,label:`网格`},{value:`board`,label:`看板`}];function i(){return(0,n.jsx)(`div`,{style:{inlineSize:`min(100%, 360px)`},children:(0,n.jsx)(t,{collection:r,defaultValue:`list`,fullWidth:!0})})}export{i as default};

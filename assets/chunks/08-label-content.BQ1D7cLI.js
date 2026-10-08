@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`pie-chart-label-content`);e.data=[{category:`服饰`,revenue:386},{category:`数码`,revenue:274},{category:`家居`,revenue:158},{category:`美妆`,revenue:96},{category:`图书`,revenue:42}],e.labelContent=e=>e.share<.05?``:`${e.name} ${e.formatted.value} 万（${e.formatted.share}）`}export{e as default};

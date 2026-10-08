@@ -1,0 +1,1 @@
+import{t as e}from"./react.CbNV8_UV.js";import{t}from"./jsx-runtime.CWLBoBiw.js";import{t as n}from"./checkbox.IRsUHmch.js";var r=e(),i=t();function a(){let[e,t]=(0,r.useState)(`indeterminate`);return(0,i.jsx)(n,{checked:e,onCheckedChange:e=>t(e.checked),children:`选择全部`})}export{a as default};

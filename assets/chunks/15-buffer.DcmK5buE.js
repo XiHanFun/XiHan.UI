@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{zo as i}from"./theme.89tuodeJ.js";var a=n({__name:`15-buffer`,setup(n){return(n,a)=>(t(),r(e(i),{value:30,buffer:65,"value-text":`已播放 30%`,"aria-label":`播放进度`,style:{width:`100%`}}))}});export{a as default};

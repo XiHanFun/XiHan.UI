@@ -1,0 +1,1 @@
+async function e(){let e={n:`上边`,e:`右边`,s:`下边`,w:`左边`,ne:`右上角`,se:`右下角`,sw:`左下角`,nw:`左上角`},t={default:`还原面板`,minimized:`收起面板`,maximized:`最大化面板`};document.getElementById(`floating-panel-translations`).translations={dragTrigger:`移动面板`,resizeTrigger:t=>`拖动${e[t]}改变大小`,resizeValueText:e=>`宽 ${e.width}、高 ${e.height} 像素`,windowStateTrigger:e=>t[e],close:`关闭面板`}}export{e as default};

@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`affix-basic-tpl`),t=e.content.firstElementChild;t.target=document.getElementById(`affix-basic-scroll`),e.replaceWith(t)}export{e as default};

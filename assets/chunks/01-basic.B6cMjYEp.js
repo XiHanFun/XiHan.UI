@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{a as t,n,r,t as i}from"./typography.2Ex80J3Z.js";var a=e();function o(){return(0,a.jsxs)(t,{children:[(0,a.jsx)(i,{as:`h3`,level:3,children:`构建一致的产品体验`}),(0,a.jsxs)(r,{children:[`使用清晰的层级和舒适的行距组织内容。`,(0,a.jsx)(n,{href:`#`,children:`阅读设计指南`})]})]})}export{o as default};

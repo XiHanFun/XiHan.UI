@@ -1,0 +1,1 @@
+async function e(){let e={highlight(e,t){return t===`yaml`?e.split(/(#[^\n]*)/).filter(e=>e!==``).map(e=>({text:e,kind:e.startsWith(`#`)?`comment`:`plain`})):null}},t=document.getElementById(`code-view-highlighter-custom`);t.highlighter=e,t.requestUpdate();let n=document.getElementById(`code-view-highlighter-off`);n.highlighter=null,n.requestUpdate()}export{e as default};

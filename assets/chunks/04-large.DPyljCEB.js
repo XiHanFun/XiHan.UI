@@ -1,0 +1,1 @@
+async function e(){document.getElementById(`json-large`).value={total:240,cursor:`eyJvZmZzZXQiOjAsImxpbWl0IjoyMCwic29ydCI6ImNyZWF0ZWRfYXQgZGVzYyJ9-very-long-token`,items:Array.from({length:240},(e,t)=>`第 ${t+1} 条`)}}export{e as default};

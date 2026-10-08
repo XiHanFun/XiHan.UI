@@ -1,0 +1,1 @@
+async function e(){for(let e of document.querySelectorAll(`[data-demo='sparkline-inline']`))e.data=[42,38,51,47,60,58,66]}export{e as default};

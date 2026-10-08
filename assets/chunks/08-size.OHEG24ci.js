@@ -1,0 +1,3 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{i as t,n,o as r,s as i,t as a}from"./code-view.Dpm1ARMa.js";var o=e(),s=`export function clamp(n: number, min: number, max: number) {
+  return Math.min(Math.max(n, min), max)
+}`,c=[`sm`,`md`,`lg`];function l(){return(0,o.jsx)(`div`,{style:{display:`flex`,flexDirection:`column`,gap:`12px`},children:c.map(e=>(0,o.jsxs)(i,{size:e,code:s,lang:`typescript`,filename:`clamp.${e}.ts`,complete:!0,style:{inlineSize:`100%`},children:[(0,o.jsx)(t,{children:(0,o.jsx)(n,{})}),(0,o.jsx)(r,{children:(0,o.jsx)(a,{})})]},e))})}export{l as default};

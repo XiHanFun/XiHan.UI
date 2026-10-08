@@ -1,0 +1,1 @@
+async function e(){for(let e of document.querySelectorAll(`.prompt-input-tone`))e.translations={input:`给助手写点什么`}}export{e as default};

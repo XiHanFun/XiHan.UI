@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`table-size`);for(let t of e.querySelectorAll(`xh-table`))t.columns=[{id:`name`,label:`姓名`},{id:`level`,label:`职级`}],t.rows=[{id:`u1`},{id:`u2`},{id:`u3`},{id:`u4`},{id:`u5`}]}export{e as default};

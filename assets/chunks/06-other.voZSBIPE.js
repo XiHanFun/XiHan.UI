@@ -1,1 +1,0 @@
-async function r(){document.getElementById("pie-chart-other").data=[{province:"广东",orders:3200},{province:"浙江",orders:2400},{province:"江苏",orders:2100},{province:"山东",orders:1300},{province:"四川",orders:800},{province:"湖北",orders:600},{province:"福建",orders:500},{province:"河南",orders:400}]}export{r as default};

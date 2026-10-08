@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`approval-reason`),t=document.getElementById(`approval-reason-decision`);e.translations={reason:`拒绝理由（必填）`,notePlaceholder:`说明为什么不让它做`},e.addEventListener(`decision`,e=>{let{decision:n,note:r}=e.detail;t.textContent=`判定：${n}（理由 ${r??`无`}）`})}export{e as default};

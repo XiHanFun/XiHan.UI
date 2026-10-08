@@ -1,0 +1,1 @@
+async function e(){let e=Date.now();document.getElementById(`timestamp-live-opened`).value=e,document.getElementById(`timestamp-live-meeting`).value=e+12e4+5e3}export{e as default};

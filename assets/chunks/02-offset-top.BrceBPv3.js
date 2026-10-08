@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`affix-offset-top-tpl`),t=e.content.firstElementChild;t.target=document.getElementById(`affix-offset-top-scroll`),e.replaceWith(t)}export{e as default};

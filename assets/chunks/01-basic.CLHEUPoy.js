@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{a as t,i as n,n as r,o as i,r as a,t as o}from"./number-field.DUmghM2I.js";var s=e();function c(){return(0,s.jsxs)(i,{defaultValue:`1024`,min:0,name:`width`,children:[(0,s.jsx)(t,{children:`宽度`}),(0,s.jsxs)(o,{children:[(0,s.jsx)(r,{}),(0,s.jsx)(n,{}),(0,s.jsx)(a,{})]})]})}export{c as default};

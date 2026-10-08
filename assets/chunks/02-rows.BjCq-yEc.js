@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`log-rows`),t=Array.from({length:24},(e,t)=>`12:0${Math.floor(t/10)}:${String(t%10).padStart(2,`0`)}  http  GET /api/items/${1e3+t}  200`);for(let n of e.querySelectorAll(`[data-xh-part="content"]`))for(let e of t){let t=document.createElement(`div`);t.dataset.xhPart=`line`,t.textContent=e,n.append(t)}}export{e as default};

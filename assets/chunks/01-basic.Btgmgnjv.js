@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{uu as i}from"./theme.89tuodeJ.js";import{d as a}from"./dist.ZGSyedfl.js";var o=n({__name:`01-basic`,setup(n){return(n,o)=>(t(),r(e(i),{icon:e(a)},null,8,[`icon`]))}});export{o as default};

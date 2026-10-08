@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`tool-call-grouped`);e.value=[`run`],e.addEventListener(`value-change`,t=>{e.value=t.detail.value})}export{e as default};

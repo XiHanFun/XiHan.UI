@@ -1,1 +1,0 @@
-async function d(){const t=document.getElementById("switch-event"),n=document.getElementById("switch-event-text");let e=0;t.addEventListener("checked-change",c=>{e+=1,n.textContent=`翻转 ${e} 次 · 最近落到 ${c.detail.checked?"开":"关"}`})}export{d as default};

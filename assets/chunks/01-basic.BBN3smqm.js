@@ -1,0 +1,1 @@
+import{$t as e,Et as t,ft as n,lt as r,mt as i,tt as a}from"./framework.8UxoGp64.js";import{qs as o}from"./theme.89tuodeJ.js";var s=i({__name:`01-basic`,setup(i){return(i,s)=>(t(),r(a,null,[n(e(o),{from:0,to:1024,size:`sm`}),n(e(o),{from:0,to:12480,size:`md`}),n(e(o),{from:0,to:98600,size:`lg`,tone:`brand`})],64))}});export{s as default};

@@ -1,0 +1,1 @@
+import{$t as e,Et as t,ft as n,lt as r,mt as i}from"./framework.8UxoGp64.js";import{zo as a}from"./theme.89tuodeJ.js";var o={style:{width:`100%`,display:`grid`,gap:`12px`}},s=i({__name:`03-max`,setup(i){return(i,s)=>(t(),r(`div`,o,[n(e(a),{value:3,max:8}),n(e(a),{value:8,max:8})]))}});export{s as default};

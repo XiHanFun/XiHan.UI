@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`approval-note`),t=document.getElementById(`approval-note-decision`);e.translations={notePlaceholder:`补充一句（可不填）`,note:`备注`},e.addEventListener(`decision`,e=>{let{decision:n,note:r}=e.detail;t.textContent=`判定：${n}（备注 ${r??`无`}）`})}export{e as default};

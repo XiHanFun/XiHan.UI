@@ -1,1 +1,0 @@
-async function o(){const n=document.getElementById("loading-bar-trickle"),e=document.getElementById("loading-bar-trickle-actions");for(const t of e.querySelectorAll("[data-loading]"))t.addEventListener("click",()=>{n.loading=t.dataset.loading==="on"})}export{o as default};

@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./json-viewer.Bink6Xeq.js";var n=e(),r={name:`曦寒视图`,version:`1.0.0-alpha.2`,stars:128,active:!0,homepage:null,tags:[`框架无关`,`跨端`,`无障碍`],author:{name:`曦寒`,site:`xihanfun.com`}};function i(){return(0,n.jsx)(t,{value:r,style:{inlineSize:`100%`,maxInlineSize:`420px`}})}export{i as default};

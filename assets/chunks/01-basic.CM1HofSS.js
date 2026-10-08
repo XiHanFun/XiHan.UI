@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{ki as i}from"./theme.89tuodeJ.js";var a=n({__name:`01-basic`,setup(n){let a=[320,356,341,398,420,388,452,470,431,498,520,548];return(n,o)=>(t(),r(e(i),{data:a,"aria-label":`近 12 周访问量`}))}});export{a as default};

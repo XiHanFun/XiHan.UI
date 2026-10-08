@@ -1,0 +1,1 @@
+async function e(){for(let e of document.querySelectorAll(`[data-demo='progress-gauge']`))e.thresholds=[{value:60,tone:`success`,label:`正常`},{value:85,tone:`warning`,label:`警戒`},{value:100,tone:`danger`,label:`过载`}],e.translations={segmentValueText:({value:e,label:t})=>`${e}，${t}`}}export{e as default};

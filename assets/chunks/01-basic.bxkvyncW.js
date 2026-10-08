@@ -1,1 +1,0 @@
-async function i(){const t=document.getElementById("prompt-input-basic"),n=[],e=document.getElementById("prompt-input-basic-sent");t.translations={input:"给助手写点什么"},t.addEventListener("submit",s=>{n.push(s.detail.value),e.textContent=`已发出：${n.join(" / ")}`})}export{i as default};

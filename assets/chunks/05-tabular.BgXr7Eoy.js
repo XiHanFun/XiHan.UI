@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`statistic-tabular`).querySelector(`[data-xh-part="value"]`);document.getElementById(`statistic-tabular-reroll`).addEventListener(`click`,()=>{let t=()=>String(Math.floor(Math.random()*10));e.textContent=`${t()},${t()}${t()}${t()}.${t()}${t()}`})}export{e as default};

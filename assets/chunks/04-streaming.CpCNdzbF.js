@@ -1,0 +1,2 @@
+async function e(){let e=document.getElementById(`code-view-streaming`),t=[`async function load(id: string) {`,"  const res = await fetch(`/api/items/${id}`)",`  return res.json()`,`}`].join(`
+`),n=0,r=()=>{if(e.isConnected){if(n=Math.min(n+2,t.length),e.setAttribute(`code`,t.slice(0,n)),n>=t.length){e.setAttribute(`complete`,``);return}setTimeout(r,60)}};r()}export{e as default};

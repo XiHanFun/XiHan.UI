@@ -1,1 +1,0 @@
-async function t(){const e=document.getElementById("transfer-rich").querySelector("xh-transfer");e.collection=[{value:"lin",label:"林可"},{value:"zhou",label:"周宁"},{value:"he",label:"何雨"},{value:"qin",label:"秦朗"},{value:"xu",label:"许知"}],e.value=["he"],e.addEventListener("value-change",l=>{e.value=l.detail.value})}export{t as default};

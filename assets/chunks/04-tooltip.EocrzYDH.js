@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./truncate.QKAj7pql.js";var n=e();function r(){return(0,n.jsx)(`div`,{style:{inlineSize:`240px`,maxInlineSize:`100%`},children:(0,n.jsx)(t,{tooltip:!0,children:`浙江省杭州市余杭区文一西路 969 号 3 号楼 12 层 1203 室`})})}export{r as default};

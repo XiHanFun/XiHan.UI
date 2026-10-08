@@ -1,5 +1,0 @@
-const t=`<!-- 基础用法 | 触发一次操作 -->
-<xh-button>
-  <button data-xh-part="root">按钮</button>
-</xh-button>
-`;export{t as default};

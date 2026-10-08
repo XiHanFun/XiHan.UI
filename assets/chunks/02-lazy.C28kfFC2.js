@@ -1,0 +1,3 @@
+import{$t as e,Et as t,dt as n,ft as r,mt as i,st as a,zt as o}from"./framework.8UxoGp64.js";import{Jd as s,uu as c}from"./theme.89tuodeJ.js";import{_ as l}from"./dist.ZGSyedfl.js";var u=i({__name:`02-lazy`,setup(i){async function u(){return await new Promise(e=>setTimeout(e,600)),`订单号,金额
+A-1001,128.00
+A-1002,96.50`}return(i,d)=>(t(),a(e(s),{data:u,"file-name":`orders.csv`,"mime-type":`text/csv`},{default:o(()=>[r(e(c),{icon:e(l)},null,8,[`icon`]),d[0]||=n(` 导出订单 `,-1)]),_:1}))}});export{u as default};

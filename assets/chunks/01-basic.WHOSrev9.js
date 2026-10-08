@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`hover-card-basic-follow`);e.addEventListener(`click`,()=>{e.textContent=e.textContent===`关注`?`已关注`:`关注`})}export{e as default};

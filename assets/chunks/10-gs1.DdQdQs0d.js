@@ -1,0 +1,1 @@
+async function e(){let e=[`0109501101530003`,`17250630`,`10ABC123`,``,`21SN001`].join(``);for(let t of[`matrix-code-gs1-dm`,`matrix-code-gs1-qr`])document.getElementById(t).value=e}export{e as default};

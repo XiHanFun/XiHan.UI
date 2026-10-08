@@ -1,1 +1,0 @@
-async function o(){const e=document.getElementById("radio-options"),t=document.getElementById("radio-options-readout");e.addEventListener("value-change",n=>{e.value=n.detail.value,t.textContent=`当前：${e.value??"（未选）"}`})}export{o as default};

@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`number-field-invalid`),t=document.getElementById(`number-field-invalid-hint`);e.addEventListener(`value-change`,n=>{let r=n.detail.valueAsNumber>5;e.invalid=r,t.textContent=r?`库存只有 5 件`:`库存充足`})}export{e as default};

@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`cartesian-chart-horizontal`);e.data=[{team:`支付与结算平台`,count:184},{team:`会员与营销中心`,count:152},{team:`订单履约服务`,count:131},{team:`商品与库存系统`,count:97},{team:`客服工作台`,count:64}],e.series=[{mark:`bar`,x:`team`,y:`count`,name:`工单数`}]}export{e as default};

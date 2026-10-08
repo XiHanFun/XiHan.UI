@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{a as t,n,o as r,r as i,t as a}from"./tooltip.Cdq70wps.js";var o=e();function s(){return(0,o.jsxs)(t,{followCursor:!0,openDelay:0,children:[(0,o.jsx)(r,{style:{inlineSize:`100%`,blockSize:`96px`},children:`在这块区域里移动指针`}),(0,o.jsx)(i,{children:(0,o.jsxs)(n,{children:[`提示跟着指针走`,(0,o.jsx)(a,{})]})})]})}export{s as default};

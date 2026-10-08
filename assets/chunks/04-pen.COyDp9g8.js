@@ -1,0 +1,1 @@
+async function e(){document.getElementById(`xh-signature-pen`).drawing={size:10,thinning:.8}}export{e as default};

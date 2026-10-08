@@ -1,0 +1,1 @@
+import{$t as e,Et as t,dt as n,mt as r,st as i,zt as a}from"./framework.8UxoGp64.js";import{Xg as o}from"./theme.89tuodeJ.js";var s=r({__name:`08-full-width`,setup(r){return(r,s)=>(t(),i(e(o),{"full-width":``},{default:a(()=>[...s[0]||=[n(`继续`,-1)]]),_:1}))}});export{s as default};

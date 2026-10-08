@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`text-field-password`),t=document.getElementById(`text-field-password-toggle`),n=!1;t.addEventListener(`click`,()=>{n=!n,e.type=n?`text`:`password`,t.setAttribute(`aria-pressed`,String(n)),t.textContent=n?`隐藏`:`显示`})}export{e as default};

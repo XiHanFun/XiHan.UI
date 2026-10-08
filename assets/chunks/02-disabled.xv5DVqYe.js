@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`fieldset-lock`),t=document.getElementById(`fieldset-billing`);e.addEventListener(`change`,()=>{t.disabled=e.checked})}export{e as default};

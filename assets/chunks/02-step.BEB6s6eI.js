@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`time-picker-step`),t=document.getElementById(`time-picker-step-value`);e.addEventListener(`value-change`,e=>{t.textContent=e.detail.value[0]??`（空）`})}export{e as default};

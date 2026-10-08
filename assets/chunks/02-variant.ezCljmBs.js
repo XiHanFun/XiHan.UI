@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./button.CoK9Lq-I.js";var n=e();function r(){return(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(t,{variant:`solid`,children:`主要`}),(0,n.jsx)(t,{variant:`subtle`,children:`次要`}),(0,n.jsx)(t,{variant:`outline`,children:`线框`}),(0,n.jsx)(t,{variant:`ghost`,children:`幽灵`})]})}export{r as default};

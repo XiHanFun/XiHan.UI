@@ -1,0 +1,1 @@
+async function e(){let e=[{value:`src`,label:`src`,children:[{value:`main`,label:`main.ts`},{value:`app`,label:`App.vue`}]},{value:`readme`,label:`README.md`}];for(let t of document.querySelectorAll(`#tree-size xh-tree`))t.collection=e,t.defaultExpandedValue=[`src`],t.defaultSelection=[`main`]}export{e as default};

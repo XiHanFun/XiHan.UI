@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`popover-modal`);e.translations={close:`关闭`};let t=document.getElementById(`popover-modal-picked`);for(let n of e.querySelectorAll(`[data-group]`))n.addEventListener(`click`,()=>{t.textContent=n.textContent})}export{e as default};

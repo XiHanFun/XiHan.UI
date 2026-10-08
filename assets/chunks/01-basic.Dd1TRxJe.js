@@ -1,1 +1,0 @@
-async function a(){const e=document.getElementById("color-field-basic"),t=document.getElementById("color-field-basic-value");e.addEventListener("value-change",n=>{t.textContent=n.detail.value||"（空）"})}export{a as default};

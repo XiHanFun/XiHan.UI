@@ -1,0 +1,1 @@
+async function e(){let e=[...document.querySelectorAll(`.color-slider-channels`)],t=document.getElementById(`color-slider-channels-swatch`),n=document.getElementById(`color-slider-channels-value`);function r(r){for(let t of e)t.value=r;t.value=r,n.textContent=r}r(`#3b82f680`);for(let t of e)t.addEventListener(`value-change`,e=>r(e.detail.value))}export{e as default};

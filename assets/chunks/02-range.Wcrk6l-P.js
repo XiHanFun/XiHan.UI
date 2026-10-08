@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`slider-range`);e.getValueText=({value:e,index:t})=>`${t===0?`起价`:`止价`} ${e} 元`;let t=document.getElementById(`slider-range-low`),n=document.getElementById(`slider-range-high`);e.addEventListener(`value-change`,e=>{t.textContent=e.detail.value[0],n.textContent=e.detail.value[1]})}export{e as default};

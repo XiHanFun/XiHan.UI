@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`text-field-clearable`),t=document.getElementById(`text-field-clearable-count`);e.addEventListener(`value-change`,e=>{let n=e.detail.value.length;t.textContent=`${n} / 10${n>=10?`（已到上限）`:``}`})}export{e as default};

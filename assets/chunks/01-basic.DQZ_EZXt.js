@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`color-slider-basic`),t=document.getElementById(`color-slider-basic-swatch`),n=document.getElementById(`color-slider-basic-value`);e.addEventListener(`value-change`,e=>{t.value=e.detail.value,n.textContent=e.detail.value})}export{e as default};

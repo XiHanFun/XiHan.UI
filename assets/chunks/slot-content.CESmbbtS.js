@@ -1,0 +1,1 @@
+import{t as e}from"./react.CbNV8_UV.js";var t=e();function n(e,t){return typeof e==`function`?e(t):e}function r(e){return t.Children.toArray(e).some(e=>typeof e!=`string`||e.trim()!==``)}function i(e){return r(e)&&t.Children.toArray(e).every(e=>typeof e==`string`||typeof e==`number`)}export{i as n,r,n as t};

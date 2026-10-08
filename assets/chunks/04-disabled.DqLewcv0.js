@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{nn as i}from"./theme.89tuodeJ.js";var a=n({__name:`04-disabled`,setup(n){let a=[{value:`left`,label:`左对齐`},{value:`center`,label:`居中`,disabled:!0},{value:`right`,label:`右对齐`}];return(n,o)=>(t(),r(e(i),{collection:a,"default-value":`center`}))}});export{a as default};

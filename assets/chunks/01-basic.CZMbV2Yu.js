@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{Hc as i}from"./theme.89tuodeJ.js";var a=n({__name:`01-basic`,setup(n){return(n,a)=>(t(),r(e(i),{value:`https://ui.xihanfun.com`}))}});export{a as default};

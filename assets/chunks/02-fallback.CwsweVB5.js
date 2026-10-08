@@ -1,1 +1,0 @@
-async function o(){const a=document.getElementById("image-fallback-readout"),e={ok:"idle",broken:"idle",none:"idle"};for(const t of document.getElementById("image-fallback").children)t.addEventListener("status-change",n=>{e[t.dataset.case]=n.detail.status,a.textContent=`状态：正常 ${e.ok} · 坏地址 ${e.broken} · 无 src ${e.none}`})}export{o as default};

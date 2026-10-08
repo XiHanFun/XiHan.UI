@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`highlight-search`),t=document.getElementById(`highlight-search-input`),n=e.querySelectorAll(`xh-highlight`);t.addEventListener(`input`,()=>{for(let e of n)e.keyword=t.value})}export{e as default};

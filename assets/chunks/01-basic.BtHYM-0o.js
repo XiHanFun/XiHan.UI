@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{g as t}from"./select.CCuJ9npl.js";var n=e(),r=[{value:`apple`,label:`苹果`},{value:`banana`,label:`香蕉`},{value:`blueberry`,label:`蓝莓`},{value:`cherry`,label:`樱桃（缺货）`,disabled:!0},{value:`durian`,label:`榴莲`}];function i(){return(0,n.jsx)(t,{collection:r,defaultValue:[`banana`],label:`水果`,placeholder:`请选择`})}export{i as default};

@@ -1,1 +1,0 @@
-async function e(){document.getElementById("json-sort-keys").value={zone:"cn-east-1",action:"deploy",meta:{retries:2,at:"2026-08-20",by:"ci"},steps:["build","test","publish"]}}export{e as default};

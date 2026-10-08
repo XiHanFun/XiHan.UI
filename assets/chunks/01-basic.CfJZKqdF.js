@@ -1,1 +1,0 @@
-async function d(){const e=document.getElementById("time-field-basic"),n=document.getElementById("time-field-basic-value");e.addEventListener("value-change",a=>{const t=a.detail.value;e.value=t,n.textContent=t||"（未填齐）"})}export{d as default};

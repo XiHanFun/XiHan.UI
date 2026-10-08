@@ -1,0 +1,1 @@
+import{$t as e,Et as t,dt as n,ft as r,lt as i,mt as a,zt as o}from"./framework.8UxoGp64.js";import{g as s}from"./theme.89tuodeJ.js";var c={style:{"inline-size":`280px`,"max-inline-size":`100%`}},l=a({__name:`01-basic`,setup(a){return(a,l)=>(t(),i(`div`,c,[r(e(s),null,{default:o(()=>[...l[0]||=[n(`XiHan.UI 提供框架无关的 Headless UI 组件与多端适配器。`,-1)]]),_:1})]))}});export{l as default};

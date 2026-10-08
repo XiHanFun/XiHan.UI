@@ -1,1 +1,0 @@
-async function d(){const e=document.getElementById("toggle-controlled");e.addEventListener("pressed-change",t=>{e.pressed=t.detail.pressed,e.querySelector("span").textContent=t.detail.pressed?"已点赞":"点赞"})}export{d as default};

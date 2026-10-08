@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`popconfirm-async`),t=document.getElementById(`popconfirm-async-confirm`),n=document.getElementById(`popconfirm-async-result`);e.confirmAction=()=>(n.textContent=`提交中…`,t.textContent=`提交中…`,new Promise(e=>{setTimeout(()=>{n.textContent=`已提交`,t.textContent=`提交`,e()},900)}))}export{e as default};

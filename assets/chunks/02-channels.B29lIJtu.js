@@ -1,1 +1,0 @@
-async function s(){const n=[...document.querySelectorAll(".color-slider-channels")],o=document.getElementById("color-slider-channels-swatch"),c=document.getElementById("color-slider-channels-value");function t(e){for(const l of n)l.value=e;o.value=e,c.textContent=e}t("#3b82f680");for(const e of n)e.addEventListener("value-change",l=>t(l.detail.value))}export{s as default};

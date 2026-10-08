@@ -1,1 +1,0 @@
-async function c(){const t=document.getElementById("dialog-scroll"),e=t.querySelector('[data-xh-part="close-trigger"]');for(const o of t.querySelectorAll("[data-dismiss]"))o.addEventListener("click",()=>e.click())}export{c as default};

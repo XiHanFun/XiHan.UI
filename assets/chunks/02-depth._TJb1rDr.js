@@ -1,0 +1,1 @@
+async function e(){let e={server:{host:`127.0.0.1`,port:5173,tls:{enabled:!1,cert:null}},build:{target:`es2022`,minify:!0}};for(let t of[`json-depth-1`,`json-depth-3`])document.getElementById(t).value=e}export{e as default};

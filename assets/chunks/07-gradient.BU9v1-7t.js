@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{a as t,o as n,t as r}from"./typography.2Ex80J3Z.js";var i=e();function a(){return(0,i.jsx)(t,{children:(0,i.jsxs)(r,{as:`h2`,level:1,children:[`快速、轻量的`,(0,i.jsx)(n,{variant:`gradient`,children:`Headless 组件库`})]})})}export{a as default};

@@ -1,1 +1,0 @@
-async function l(){const a=document.getElementById("time-picker-unavailable"),t=document.getElementById("time-picker-unavailable-value");a.isTimeUnavailable=(e,n,i)=>n==="minute"&&i.hour===9&&Number(e)<30,a.addEventListener("value-change",e=>{t.textContent=e.detail.value[0]??"（空）"})}export{l as default};

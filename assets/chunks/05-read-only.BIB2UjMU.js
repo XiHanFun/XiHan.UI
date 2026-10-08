@@ -1,0 +1,1 @@
+async function e(){document.getElementById(`steps-read-only`).translations={list:`物流进度`}}export{e as default};

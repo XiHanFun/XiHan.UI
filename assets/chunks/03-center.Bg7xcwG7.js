@@ -1,0 +1,1 @@
+async function e(){let e=[{status:`已完成`,count:72},{status:`进行中`,count:18},{status:`未开始`,count:10}];document.getElementById(`pie-chart-center`).data=e;let t=Math.round(e[0].count/e.reduce((e,t)=>e+t.count,0)*100);document.getElementById(`pie-chart-center-done`).textContent=`${t}%`}export{e as default};

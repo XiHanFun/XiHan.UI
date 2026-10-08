@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`steps-error`),t=[...e.querySelectorAll(`[data-xh-part="indicator"]`)];e.tones={1:`danger`},e.addEventListener(`value-change`,e=>{t.forEach((t,n)=>{n!==1&&(t.textContent=e.detail.value>n?``:String(n+1))})})}export{e as default};

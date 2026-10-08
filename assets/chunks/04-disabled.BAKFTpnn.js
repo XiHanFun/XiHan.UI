@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{ja as i}from"./theme.89tuodeJ.js";var a=n({__name:`04-disabled`,setup(n){let a=[{value:`apple`,label:`苹果`},{value:`banana`,label:`香蕉`}];return(n,o)=>(t(),r(e(i),{collection:a,"default-value":[`apple`],disabled:``,label:`水果`,placeholder:`请选择`}))}});export{a as default};

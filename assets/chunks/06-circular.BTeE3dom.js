@@ -1,0 +1,1 @@
+async function e(){let e={id:1},t={name:`root`,left:e,right:e};t.parent=t,document.getElementById(`json-circular`).value=t}export{e as default};

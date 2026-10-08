@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`accordion-sizes`);for(let t of e.querySelectorAll(`xh-accordion`))t.value=[`a`],t.addEventListener(`value-change`,e=>{t.value=e.detail.value})}export{e as default};

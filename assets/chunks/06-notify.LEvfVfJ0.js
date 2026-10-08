@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`timer-notify`),t=document.getElementById(`timer-notify-log`),n=document.getElementById(`timer-notify-control`),r=0,i=!1,a=()=>{t.textContent=`已经跳了 ${r} 拍${i?`，到点了`:``}`};e.addEventListener(`tick`,()=>{r+=1,a()}),e.addEventListener(`complete`,()=>{i=!0,a()}),n.addEventListener(`click`,()=>{r=0,i=!1,a()})}export{e as default};

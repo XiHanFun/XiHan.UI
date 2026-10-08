@@ -1,1 +1,0 @@
-import{fY as a}from"./theme.CivESN_z.js";import{d as l,o,b as t,k as n}from"./framework.D1FqHTxE.js";const d=l({__name:"04-disabled",setup(r){const e=[{value:"apple",label:"苹果"},{value:"banana",label:"香蕉"}];return(s,c)=>(o(),t(n(a),{collection:e,"default-value":["apple"],disabled:"",label:"水果",placeholder:"请选择"}))}});export{d as default};

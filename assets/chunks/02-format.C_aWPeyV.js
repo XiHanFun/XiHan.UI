@@ -1,1 +1,0 @@
-async function n(){const e=document.getElementById("color-field-format"),t=document.getElementById("color-field-format-value");e.addEventListener("value-change",o=>{t.textContent=o.detail.value||"（空）"})}export{n as default};

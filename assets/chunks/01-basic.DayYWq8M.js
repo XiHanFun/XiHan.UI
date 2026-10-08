@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`popconfirm-basic`),t=document.getElementById(`popconfirm-basic-answer`);e.addEventListener(`confirm`,()=>{t.textContent=`已删除`}),e.addEventListener(`cancel`,()=>{t.textContent=`已取消`})}export{e as default};

@@ -1,0 +1,1 @@
+async function e(){let e={id:7,label:`曦寒`,nested:{ok:!0}};for(let t of[`json-size-sm`,`json-size-md`,`json-size-lg`])document.getElementById(t).value=e}export{e as default};

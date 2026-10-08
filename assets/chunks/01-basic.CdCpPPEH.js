@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./sparkline.nuImyPbu.js";var n=e(),r=[320,356,341,398,420,388,452,470,431,498,520,548];function i(){return(0,n.jsx)(t,{data:r,"aria-label":`近 12 周访问量`})}export{i as default};

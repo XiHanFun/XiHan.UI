@@ -1,0 +1,5 @@
+import{ZT as e}from"./theme.89tuodeJ.js";import{t}from"./jsx-runtime.CWLBoBiw.js";import{i as n,n as r,o as i,r as a,t as o}from"./diff-view.bR7Am9V-.js";import{t as s}from"./dist.YQaPOLSi.js";var c=t(),l=e(`const endpoint = "https://api.example.com/v1/workspaces/{id}/documents?include=revisions&limit=50"
+const timeout = 3000
+export const client = createClient({ endpoint, timeout })`,`const endpoint = "https://api.example.com/v2/workspaces/{id}/documents?include=revisions,authors&limit=100"
+const timeout = 8000
+export const client = createClient({ endpoint, timeout })`,{lang:`typescript`,highlighter:s()});function u(){return(0,c.jsxs)(a,{model:l,wrap:!0,children:[(0,c.jsxs)(r,{children:[(0,c.jsx)(`span`,{children:`src/client.ts`}),(0,c.jsx)(n,{change:`added`}),(0,c.jsx)(n,{change:`removed`})]}),(0,c.jsx)(i,{children:(0,c.jsx)(o,{})})]})}export{u as default};

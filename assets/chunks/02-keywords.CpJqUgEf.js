@@ -1,1 +1,0 @@
-async function o(){const e=document.getElementById("highlight-keywords-many"),n=document.getElementById("highlight-keywords-overlapping");e.keyword=["曦寒","设计系统","行为"],n.keyword=["设计","设计系统"]}export{o as default};

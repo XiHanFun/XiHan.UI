@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{a as t,c as n,i as r,o as i,r as a,t as o}from"./slider.z49rM5sD.js";var s=e();function c(){return(0,s.jsxs)(t,{defaultValue:[18],min:0,max:40,orientation:`vertical`,inverted:!0,children:[(0,s.jsx)(a,{children:`潜水深度（米）`}),(0,s.jsxs)(o,{children:[(0,s.jsx)(n,{children:(0,s.jsx)(r,{})}),(0,s.jsx)(i,{})]})]})}export{c as default};

@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`select-focus`),t=e.querySelector(`[data-xh-part="trigger"]`),n=document.getElementById(`select-focus-tip`),r=[];e.addEventListener(`value-change`,e=>{r=e.detail.value,n.hidden=!0}),document.getElementById(`select-focus-submit`).addEventListener(`click`,()=>{r.length>0||(n.hidden=!1,t.focus())})}export{e as default};

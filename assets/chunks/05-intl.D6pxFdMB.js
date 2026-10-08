@@ -1,0 +1,1 @@
+async function e(){document.getElementById(`number-animation-intl-euro`).formatOptions={style:`currency`,currency:`EUR`,useGrouping:!0},document.getElementById(`number-animation-intl-percent`).formatOptions={style:`percent`},document.getElementById(`number-animation-intl-compact`).formatOptions={notation:`compact`}}export{e as default};

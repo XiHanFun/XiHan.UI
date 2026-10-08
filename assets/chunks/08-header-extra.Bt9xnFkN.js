@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`accordion-header-extra`);e.value=[`todo`],e.addEventListener(`value-change`,t=>{e.value=t.detail.value})}export{e as default};

@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./funnel-chart.BmOGjCho.js";var n=e(),r=[{stage:`普通会员`,users:48e3},{stage:`银卡`,users:12500},{stage:`金卡`,users:3100},{stage:`钻石`,users:420}];function i(){return(0,n.jsx)(t,{data:r,nameField:`stage`,valueField:`users`,direction:`up`,conversion:`none`,caption:`会员等级分布`})}export{i as default};

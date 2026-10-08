@@ -1,0 +1,1 @@
+async function e(){let e=[...document.querySelectorAll(`.color-slider-rgb`)],t=document.getElementById(`color-slider-rgb-swatch`),n=document.getElementById(`color-slider-rgb-value`);function r(r){for(let t of e)t.value=r;t.value=r,n.textContent=r}r(`rgba(59, 130, 246, 1)`);for(let t of e)t.addEventListener(`value-change`,e=>r(e.detail.value))}export{e as default};

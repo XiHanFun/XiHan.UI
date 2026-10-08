@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`radio-controlled`),t=document.getElementById(`radio-controlled-readout`),n=document.getElementById(`radio-controlled-clear`);function r(){t.textContent=`当前：${e.value??`（未选）`}`}e.addEventListener(`value-change`,t=>{e.value=t.detail.value,r()}),n.addEventListener(`click`,()=>{e.value=null,r()})}export{e as default};

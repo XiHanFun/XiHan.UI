@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{o as t}from"./radio-group.CILMbksI.js";var n=e(),r=[{value:`auto`,label:`自动`},{value:`manual`,label:`手动`},{value:`scheduled`,label:`按计划执行`}];function i(){return(0,n.jsx)(`div`,{style:{inlineSize:`420px`},children:(0,n.jsx)(t,{variant:`segmented`,block:!0,collection:r,defaultValue:`auto`,label:`执行方式`})})}export{i as default};

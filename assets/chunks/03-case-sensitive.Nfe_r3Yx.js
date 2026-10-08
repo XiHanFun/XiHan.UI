@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./highlight.De7mDsK4.js";var n=e(),r=`XiHan UI 与 xihan ui 是同一个名字的两种写法。`;function i(){return(0,n.jsxs)(`div`,{style:{display:`flex`,flexDirection:`column`,gap:`12px`},children:[(0,n.jsx)(t,{text:r,keyword:`ui`}),(0,n.jsx)(t,{text:r,keyword:`ui`,caseSensitive:!0})]})}export{i as default};

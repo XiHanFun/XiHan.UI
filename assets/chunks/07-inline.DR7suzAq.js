@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`color-picker-inline`),t=document.getElementById(`color-picker-inline-value`);e.addEventListener(`value-change`,e=>{t.textContent=e.detail.value[0]})}export{e as default};

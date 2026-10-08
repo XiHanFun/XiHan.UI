@@ -1,0 +1,1 @@
+async function e(){for(let e of[`slider-ltr`,`slider-rtl`]){let t=document.getElementById(e),n=document.getElementById(`${e}-value`);t.addEventListener(`value-change`,e=>{n.textContent=e.detail.value[0]})}}export{e as default};

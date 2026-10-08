@@ -1,0 +1,1 @@
+async function e(){for(let e of document.querySelectorAll(`.approval-axes`))e.scopes=[{value:`write`,label:`写回改动`}]}export{e as default};

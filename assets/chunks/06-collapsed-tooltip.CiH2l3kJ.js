@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`side-nav-collapsed-tooltip`);e.collection=[{value:`dashboard`,label:`工作台`,href:`#/dashboard`},{value:`user`,label:`用户管理`,href:`#/user`},{value:`order`,label:`订单管理`,href:`#/order`},{value:`system`,label:`系统设置`,href:`#/system`}]}export{e as default};

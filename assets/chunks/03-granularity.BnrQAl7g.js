@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`time-field-granularity`),t=document.getElementById(`time-field-granularity-readout`);e.addEventListener(`value-change`,e=>{t.textContent=e.detail.value||`（未填齐）`})}export{e as default};

@@ -1,0 +1,10 @@
+async function e(){let e=document.getElementById(`chat-page`),t=e.querySelector(`#chat-page-feed`),n=t.querySelector(`[data-xh-part="list"]`),r=e.querySelector(`#chat-page-reasoning`),i=e.querySelector(`#chat-page-stream`),a=e.querySelector(`#chat-page-code`),o=e.querySelector(`#chat-page-approval`),s=o.querySelector(`[data-xh-part="result"]`),c=e.querySelector(`#chat-page-input`),l=e.querySelector(`#chat-page-note`);r.translations={label:`思考过程`,thoughtFor:`想了 {seconds} 秒`},r.querySelector(`[data-xh-part="label"]`).textContent=r.statusText,i.blocks=[{key:`0:a`,kind:`markdown`,html:`<p>按你给的约束，改动落在<strong>一个文件</strong>里：</p>`,complete:!0},{key:`1:b`,kind:`markdown`,html:`<ul>
+<li>事件仍从内核发出，视图不新增状态</li>
+<li>退场那一档交给动效令牌，组件里不写时长</li>
+</ul>`,complete:!0}],a.code=`export function onClose(reason: CloseReason) {
+  if (reason === "escape") return restoreFocus()
+  return dismiss()
+}`,o.scopes=[{value:`read`,label:`读 src/ 下的文件`,required:!0},{value:`write`,label:`把这段改动写回去`}],o.addEventListener(`decision`,e=>{let t=e.detail.decision===`approved`?`已批准`:`已拒绝`;s.textContent=t,l.textContent=`批准闸门：${t}`,l.hidden=!1}),c.translations={input:`接着问点什么`};let u=2;c.addEventListener(`submit`,e=>{let r=document.createElement(`article`);r.setAttribute(`data-xh-part`,`item`),r.setAttribute(`item-id`,`q${u}`),r.setAttribute(`item-index`,String(u)),r.setAttribute(`item-role`,`user`);let i=document.createElement(`span`);i.setAttribute(`data-xh-part`,`item-label`),i.innerHTML=`<span style="display: inline-flex; align-items: center; gap: var(--xh-space-2)">
+      <xh-avatar size="sm"><span data-xh-part="root"><span data-xh-part="fallback">我</span></span></xh-avatar>
+      我
+    </span>`;let a=document.createElement(`p`);a.style.margin=`0`,a.textContent=e.detail.value,r.append(i,a),n.append(r),u+=1,t.setAttribute(`count`,String(u))})}export{e as default};

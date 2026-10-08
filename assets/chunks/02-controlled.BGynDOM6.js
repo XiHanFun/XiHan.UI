@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`switch-controlled`),t=document.getElementById(`switch-controlled-text`);e.addEventListener(`checked-change`,n=>{e.checked=n.detail.checked,t.textContent=`当前：${n.detail.checked?`开`:`关`}`})}export{e as default};

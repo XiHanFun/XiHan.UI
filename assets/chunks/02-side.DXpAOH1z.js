@@ -1,0 +1,1 @@
+async function e(){for(let e of document.getElementById(`drawer-sides`).children)e.translations={close:`关闭`}}export{e as default};

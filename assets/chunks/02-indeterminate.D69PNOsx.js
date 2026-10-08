@@ -1,0 +1,1 @@
+import{$t as e,Et as t,Kt as n,dt as r,mt as i,st as a,zt as o}from"./framework.8UxoGp64.js";import{jh as s}from"./theme.89tuodeJ.js";var c=i({__name:`02-indeterminate`,setup(i){let c=n(`indeterminate`);return(n,i)=>(t(),a(e(s),{checked:c.value,"onUpdate:checked":i[0]||=e=>c.value=e},{default:o(()=>[...i[1]||=[r(`选择全部`,-1)]]),_:1},8,[`checked`]))}});export{c as default};

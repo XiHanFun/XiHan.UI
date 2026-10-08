@@ -1,0 +1,1 @@
+async function e(){for(let[e,t]of Object.entries({"prompt-input-disabled-off":`已禁用的输入框`,"prompt-input-disabled-empty":`给助手写点什么`,"prompt-input-disabled-allow-empty":`带附件的输入框`}))document.getElementById(e).translations={input:t}}export{e as default};

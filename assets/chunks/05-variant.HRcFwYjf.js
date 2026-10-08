@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{a as t,i as n,n as r,r as i}from"./text-field.CK-z-aBc.js";var a=e(),o=[`outline`,`subtle`,`ghost`];function s(){return(0,a.jsx)(a.Fragment,{children:o.map(e=>(0,a.jsxs)(t,{variant:e,placeholder:`请输入内容`,children:[(0,a.jsx)(n,{children:e}),(0,a.jsx)(r,{children:(0,a.jsx)(i,{})})]},e))})}export{s as default};

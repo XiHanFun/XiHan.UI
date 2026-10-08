@@ -1,0 +1,1 @@
+import{t as e}from"./react.CbNV8_UV.js";var t=e(),n=(0,t.createContext)(void 0),r=n,i=(0,t.createContext)(null);function a(){let e=(0,t.useContext)(n);if(!e)throw Error(`XhTooltip 的部件要放在 XhTooltipRoot 里`);return e}export{r as n,a as r,i as t};

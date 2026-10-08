@@ -1,1 +1,0 @@
-async function o(){const e=document.getElementById("select-group"),t=document.getElementById("select-group-value");e.addEventListener("value-change",n=>{t.textContent=n.detail.value[0]??"（未选）"})}export{o as default};

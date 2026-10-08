@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`alert-closable`),t=document.getElementById(`alert-closable-reopen`);e.addEventListener(`open-change`,n=>{e.open=n.detail.open,t.style.display=n.detail.open?`none`:``}),t.addEventListener(`click`,()=>{e.open=!0,t.style.display=`none`})}export{e as default};

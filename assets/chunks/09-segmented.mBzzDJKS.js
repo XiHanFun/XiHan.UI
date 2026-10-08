@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{fo as i}from"./theme.89tuodeJ.js";var a=n({__name:`09-segmented`,setup(n){let a=[{value:`day`,label:`日`},{value:`week`,label:`周`},{value:`month`,label:`月`}];return(n,o)=>(t(),r(e(i),{variant:`segmented`,collection:a,"default-value":`week`,label:`时间粒度`}))}});export{a as default};

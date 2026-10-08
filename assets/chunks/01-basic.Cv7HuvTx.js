@@ -1,1 +1,0 @@
-async function a(){const e=document.getElementById("slider-basic"),t=document.getElementById("slider-basic-value");e.addEventListener("value-change",n=>{t.textContent=n.detail.value[0]})}export{a as default};

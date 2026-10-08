@@ -1,1 +1,0 @@
-async function n(){const e=document.getElementById("progress-bullet");e.thresholds=[{value:240,tone:"danger",label:"差"},{value:320,tone:"warning",label:"良"},{value:400,tone:"success",label:"优"}],e.translations={segmentValueText:({value:l,label:t})=>`${l}，${t}`}}export{n as default};

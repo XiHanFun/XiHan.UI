@@ -1,0 +1,1 @@
+import{$t as e,Et as t,ft as n,lt as r,mt as i,tt as a,zt as o}from"./framework.8UxoGp64.js";import{Di as s,Oi as c}from"./theme.89tuodeJ.js";var l=i({__name:`03-label`,setup(i){return(i,l)=>(t(),r(a,null,[n(e(s),{label:`正在加载数据`},{default:o(()=>[n(e(c))]),_:1}),n(e(s),{translations:{label:`正在提交表单`}},{default:o(()=>[n(e(c))]),_:1})],64))}});export{l as default};

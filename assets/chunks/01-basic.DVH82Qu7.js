@@ -1,1 +1,0 @@
-async function c(){const t=document.getElementById("back-top-basic-template"),e=t.content.firstElementChild;e.target=document.getElementById("back-top-basic-scroll"),t.replaceWith(e)}export{c as default};

@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{i as t,o as n,r,s as i}from"./alert.fYAcsvj4.js";var a=e();function o(){return(0,a.jsx)(`div`,{style:{width:`100%`,display:`grid`,gap:`12px`},children:(0,a.jsx)(n,{children:(0,a.jsxs)(r,{children:[(0,a.jsx)(i,{children:`部署已排队`}),(0,a.jsx)(t,{children:`构建完成后会自动发布。`})]})})})}export{o as default};

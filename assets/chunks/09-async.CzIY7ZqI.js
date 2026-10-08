@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`switch-async`),t=document.getElementById(`switch-async-text`);e.addEventListener(`checked-change`,n=>{e.loading=!0,t.textContent=`提交中…`,setTimeout(()=>{e.checked=n.detail.checked,e.loading=!1,t.textContent=n.detail.checked?`已开启`:`已关闭`},900)})}export{e as default};

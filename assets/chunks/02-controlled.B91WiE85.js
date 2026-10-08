@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`dialog-controlled`),t=document.getElementById(`dialog-controlled-open`),n=document.getElementById(`dialog-controlled-state`);function r(t){e.open=t,n.textContent=t?`展开`:`收起`}t.addEventListener(`click`,()=>r(!0)),e.addEventListener(`open-change`,e=>r(e.detail.open))}export{e as default};

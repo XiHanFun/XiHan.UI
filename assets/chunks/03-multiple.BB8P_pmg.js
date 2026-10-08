@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{nn as i}from"./theme.89tuodeJ.js";var a=n({__name:`03-multiple`,setup(n){let a=[{value:`bold`,label:`B`},{value:`italic`,label:`I`},{value:`underline`,label:`U`}];return(n,o)=>(t(),r(e(i),{collection:a,"default-value":[`bold`],multiple:``}))}});export{a as default};

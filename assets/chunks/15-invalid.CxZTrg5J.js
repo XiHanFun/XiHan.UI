@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`select-invalid`),t=e.querySelector(`[data-xh-part="trigger"]`),n=document.getElementById(`select-invalid-tip`);e.addEventListener(`value-change`,r=>{let i=r.detail.value.length===0;e.invalid=i,n.hidden=!i,i?t.setAttribute(`aria-describedby`,`select-invalid-tip`):t.removeAttribute(`aria-describedby`)})}export{e as default};

@@ -1,1 +1,0 @@
-async function o(){const t=document.getElementById("text-field-controlled"),l=document.getElementById("text-field-controlled-value"),d=document.getElementById("text-field-controlled-reset");function n(e){t.value=e,l.textContent=e||"（空）"}t.addEventListener("value-change",e=>n(e.detail.value)),d.addEventListener("click",()=>n("曦寒"))}export{o as default};

@@ -1,0 +1,1 @@
+async function e(){let e=[{key:`0:a`,kind:`markdown`,html:`<h2>结论</h2>`,complete:!0},{key:`1:b`,kind:`markdown`,html:`<p>先给<strong>结论</strong>：这段正文是一次性渲好的。</p>`,complete:!0}];for(let t of document.querySelectorAll(`.markdown-stream-size`))t.blocks=e}export{e as default};

@@ -1,1 +1,0 @@
-async function n(){const o=[...document.querySelectorAll(".color-slider-rgb")],r=document.getElementById("color-slider-rgb-swatch"),c=document.getElementById("color-slider-rgb-value");function l(e){for(const t of o)t.value=e;r.value=e,c.textContent=e}l("rgba(59, 130, 246, 1)");for(const e of o)e.addEventListener("value-change",t=>l(t.detail.value))}export{n as default};

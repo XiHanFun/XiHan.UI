@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`collapsible-marker`),t=document.getElementById(`collapsible-marker-text`);e.addEventListener(`open-change`,e=>{t.textContent=e.detail.open?`收起`:`展开`})}export{e as default};

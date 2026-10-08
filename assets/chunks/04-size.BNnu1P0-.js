@@ -1,0 +1,1 @@
+async function e(){for(let e of document.getElementById(`drawer-sizes`).children){e.translations={close:`关闭`};let t=e.querySelector(`[data-xh-part="close-trigger"]`);for(let n of e.querySelectorAll(`[data-dismiss]`))n.addEventListener(`click`,()=>t.click())}}export{e as default};

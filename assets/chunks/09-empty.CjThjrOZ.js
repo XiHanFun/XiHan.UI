@@ -1,0 +1,1 @@
+async function e(){let e=[`json-empty-a`,`json-empty-b`].map(e=>document.getElementById(e)),t=document.getElementById(`json-empty-toggle`);e[0].translations={empty:`这份接口还没有返回内容`},t.addEventListener(`click`,()=>{let n=e[0].value===void 0?{id:7,label:`曦寒`}:void 0;for(let t of e)t.value=n;t.textContent=n===void 0?`喂一份数据`:`把数据撤掉`})}export{e as default};

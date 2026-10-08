@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`select-group`),t=document.getElementById(`select-group-value`);e.addEventListener(`value-change`,e=>{t.textContent=e.detail.value[0]??`（未选）`})}export{e as default};

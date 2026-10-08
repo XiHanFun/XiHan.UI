@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`time-field-basic`),t=document.getElementById(`time-field-basic-value`);e.addEventListener(`value-change`,n=>{let r=n.detail.value;e.value=r,t.textContent=r||`（未填齐）`})}export{e as default};

@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`accordion-trigger-area`);e.value=[`profile`],e.addEventListener(`value-change`,t=>{e.value=t.detail.value})}export{e as default};

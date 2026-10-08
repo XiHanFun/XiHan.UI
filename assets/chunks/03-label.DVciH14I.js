@@ -1,0 +1,1 @@
+async function e(){document.getElementById(`spinner-label-i18n`).translations={label:`正在提交表单`};for(let e of document.querySelectorAll(`#spinner-label xh-spinner`)){await e.updateComplete;let t=e.querySelector(`[data-xh-part="root"]`);e.querySelector(`[data-xh-part="label"]`).textContent=t.getAttribute(`aria-label`)}}export{e as default};

@@ -1,1 +1,0 @@
-async function o(){const t={"prompt-input-disabled-off":"已禁用的输入框","prompt-input-disabled-empty":"给助手写点什么","prompt-input-disabled-allow-empty":"带附件的输入框"};for(const[e,n]of Object.entries(t))document.getElementById(e).translations={input:n}}export{o as default};

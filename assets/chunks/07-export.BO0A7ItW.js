@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`image-cropper-export`),t=document.getElementById(`image-cropper-export-result`);document.getElementById(`image-cropper-export-trigger`).addEventListener(`click`,()=>{let n=e.toCanvas({width:96});n&&(t.src=n.toDataURL(`image/png`),t.hidden=!1)})}export{e as default};

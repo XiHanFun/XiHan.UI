@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{l as t}from"./listbox.tngMm7Cz.js";var n=e(),r=Array.from({length:12},(e,t)=>({value:`track-${t+1}`,label:`曲目 ${String(t+1).padStart(2,`0`)}`}));function i(){return(0,n.jsx)(t,{collection:r,defaultValue:[`track-1`],label:`播放列表`,style:{inlineSize:`min(100%, 300px)`,"--xh-listbox-content-max-h":`180px`}})}export{i as default};

@@ -1,1 +1,0 @@
-async function a(){const t=document.getElementById("checkbox-group-limit"),e=document.getElementById("checkbox-group-limit-status");t.addEventListener("value-change",n=>{e.textContent=`已选 ${n.detail.value.length} 项${t.atMax?"，已达上限":""}`})}export{a as default};

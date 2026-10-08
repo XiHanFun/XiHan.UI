@@ -1,1 +1,0 @@
-async function t(){const s=document.getElementById("funnel-chart-pyramid"),e=[{stage:"普通会员",users:48e3},{stage:"银卡",users:12500},{stage:"金卡",users:3100},{stage:"钻石",users:420}];s.data=e}export{t as default};

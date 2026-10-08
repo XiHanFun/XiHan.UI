@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`menubar-choice`);e.defaultCheckboxValue=[`status`],e.defaultRadioValue={density:`comfortable`}}export{e as default};

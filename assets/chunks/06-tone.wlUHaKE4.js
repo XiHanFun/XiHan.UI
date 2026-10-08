@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./sparkline.nuImyPbu.js";var n=e(),r=[.4,.5,.3,.6,.9,1.4,1.2,1.8,2.3,2.1];function i(){return(0,n.jsx)(t,{data:r,tone:`danger`,"aria-label":`近 10 分钟错误率`})}export{i as default};

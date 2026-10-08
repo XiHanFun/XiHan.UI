@@ -1,1 +1,0 @@
-import{r as o}from"./index.Cgwy3NI6.js";const r=o.createContext(void 0),n=r,s=o.createContext(null);function i(){const t=o.useContext(r);if(!t)throw new Error("XhTooltip 的部件要放在 XhTooltipRoot 里");return t}export{s as T,n as a,i as u};

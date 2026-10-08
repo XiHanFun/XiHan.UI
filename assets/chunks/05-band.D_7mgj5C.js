@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{ki as i}from"./theme.89tuodeJ.js";var a=n({__name:`05-band`,setup(n){let a=[150,162,148,171,188,214,196,172,165,158,231,204,179,168];return(n,o)=>(t(),r(e(i),{data:a,band:[120,200],"aria-label":`近 14 天 P95 延迟，正常区间 120 到 200 毫秒`}))}});export{a as default};

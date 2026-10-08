@@ -1,1 +1,0 @@
-async function a(){const t=document.getElementById("sortable-basic"),e=t.querySelector('[data-xh-part="root"]');t.addEventListener("sort",o=>{t.ids=o.detail.ids;for(const r of o.detail.ids)e.insertBefore(e.querySelector(`[item-id="${r}"]`),e.querySelector('[data-xh-part="drop-indicator"]'))})}export{a as default};

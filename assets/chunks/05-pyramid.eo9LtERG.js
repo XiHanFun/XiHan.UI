@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`funnel-chart-pyramid`);e.data=[{stage:`普通会员`,users:48e3},{stage:`银卡`,users:12500},{stage:`金卡`,users:3100},{stage:`钻石`,users:420}]}export{e as default};

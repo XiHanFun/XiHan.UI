@@ -1,0 +1,5 @@
+var e=`<!-- 禁用 | 禁止触发下载 -->
+<xh-download-trigger disabled data="XiHan.UI" file-name="xihan-ui.txt">
+  <button data-xh-part="root">下载文件</button>
+</xh-download-trigger>
+`;export{e as default};

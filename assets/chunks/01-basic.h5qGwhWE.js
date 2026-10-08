@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`steps-basic`),t=[...e.querySelectorAll(`[data-xh-part="indicator"]`)];function n(e){t.forEach((t,n)=>{t.textContent=e>n?``:String(n+1)})}e.addEventListener(`value-change`,e=>n(e.detail.value)),n(1)}export{e as default};

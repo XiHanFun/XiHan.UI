@@ -1,1 +1,0 @@
-async function t(){const e=document.getElementById("table-footer");e.columns=[{id:"item",label:"条目",width:"10rem"},{id:"count",label:"数量",width:"5rem"},{id:"amount",label:"金额"}],e.rows=[{id:"l1"},{id:"l2"},{id:"l3"}]}export{t as default};

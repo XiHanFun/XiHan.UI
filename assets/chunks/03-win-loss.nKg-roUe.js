@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./sparkline.nuImyPbu.js";var n=e(),r=[120,-40,85,60,-15,-80,0,45,30,90,-25,70,55,-60,20,110];function i(){return(0,n.jsx)(t,{data:r,variant:`win-loss`,"aria-label":`近 16 个交易日盈亏`})}export{i as default};

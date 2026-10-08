@@ -1,1 +1,0 @@
-async function s(){const e=document.getElementById("select-focus"),n=e.querySelector('[data-xh-part="trigger"]'),t=document.getElementById("select-focus-tip");let c=[];e.addEventListener("value-change",d=>{c=d.detail.value,t.hidden=!0}),document.getElementById("select-focus-submit").addEventListener("click",()=>{c.length>0||(t.hidden=!1,n.focus())})}export{s as default};

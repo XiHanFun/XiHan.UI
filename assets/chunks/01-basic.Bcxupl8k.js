@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./number-animation.BuP9xZfZ.js";var n=e();function r(){return(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(t,{from:0,to:1024,size:`sm`}),(0,n.jsx)(t,{from:0,to:12480,size:`md`}),(0,n.jsx)(t,{from:0,to:98600,size:`lg`,tone:`brand`})]})}export{r as default};

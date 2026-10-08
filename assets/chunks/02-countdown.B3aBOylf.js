@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{sn as i}from"./theme.89tuodeJ.js";var a=12e4,o=n({__name:`02-countdown`,setup(n){return(n,o)=>(t(),r(e(i),{countdown:``,"start-ms":a,"auto-start":``}))}});export{o as default};

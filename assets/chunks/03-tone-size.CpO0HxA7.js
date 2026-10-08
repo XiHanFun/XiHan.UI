@@ -1,0 +1,1 @@
+async function e(){for(let e of document.querySelectorAll(`.reasoning-axes`))e.translations={label:`思考过程`,thinking:`正在思考…`,thoughtFor:`想了 {seconds} 秒`}}export{e as default};

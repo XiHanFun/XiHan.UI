@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`pagination-simple`),t=document.getElementById(`pagination-simple-current`),n=document.getElementById(`pagination-simple-total`);e.addEventListener(`page-change`,r=>{e.page=r.detail.page,t.setAttribute(`value`,String(e.currentPage)),t.textContent=String(e.currentPage),n.textContent=`/ ${e.totalPages}`})}export{e as default};

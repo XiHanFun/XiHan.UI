@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`fieldset-contact`),t=[...e.querySelectorAll(`input`)],n=()=>{e.invalid=t.every(e=>e.value===``)};for(let e of t)e.addEventListener(`input`,n);n()}export{e as default};

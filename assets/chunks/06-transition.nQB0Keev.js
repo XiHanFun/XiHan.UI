@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`collapsible-transition`),t=e.querySelector(`[data-label]`),n=e.querySelector(`[data-panel]`);e.addEventListener(`open-change`,e=>{t.textContent=e.detail.open?`收起详情`:`展开详情`,n.style.gridTemplateRows=e.detail.open?`1fr`:`0fr`})}export{e as default};

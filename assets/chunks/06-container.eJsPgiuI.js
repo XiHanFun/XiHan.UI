@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`loading-bar-container`);document.getElementById(`loading-bar-container-reload`).addEventListener(`click`,()=>{e.loading=!0,window.setTimeout(()=>{e.loading=!1},1600)})}export{e as default};

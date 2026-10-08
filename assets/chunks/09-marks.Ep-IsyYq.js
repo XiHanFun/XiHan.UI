@@ -1,1 +1,0 @@
-async function e(){document.getElementById("slider-snapped").marks=[{value:0,label:"0°C"},{value:26,label:"26°C"},{value:37,label:"37°C"},{value:100,label:"沸腾"}]}export{e as default};

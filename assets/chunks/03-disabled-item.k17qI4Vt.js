@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`transfer-disabled`).querySelector(`xh-transfer`);e.collection=[{value:`read`,label:`查看`},{value:`create`,label:`新建`},{value:`owner`,label:`所有者（内置）`,disabled:!0},{value:`delete`,label:`删除`}],e.value=[`owner`],e.addEventListener(`value-change`,t=>{e.value=t.detail.value})}export{e as default};

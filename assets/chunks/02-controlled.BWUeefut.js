@@ -1,0 +1,1 @@
+import{t as e}from"./react.CbNV8_UV.js";import{t}from"./jsx-runtime.CWLBoBiw.js";import{t as n}from"./switch.DQhOVmDU.js";var r=e(),i=t();function a(){let[e,t]=(0,r.useState)(!0);return(0,i.jsxs)(i.Fragment,{children:[(0,i.jsx)(n,{checked:e,onCheckedChange:e=>t(e.checked)}),(0,i.jsxs)(`span`,{children:[`当前：`,e?`开`:`关`]})]})}export{a as default};

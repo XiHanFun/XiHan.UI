@@ -1,1 +1,0 @@
-async function t(){const e=document.getElementById("transfer-one-way").querySelector("xh-transfer");e.collection=[{value:"cpu",label:"CPU 用量"},{value:"mem",label:"内存用量"},{value:"disk",label:"磁盘 IO"},{value:"net",label:"网络吞吐"},{value:"qps",label:"请求量"}],e.value=[],e.addEventListener("value-change",a=>{e.value=a.detail.value})}export{t as default};

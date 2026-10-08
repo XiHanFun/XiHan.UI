@@ -1,0 +1,1 @@
+async function e(){document.getElementById(`popover-scroll`).translations={close:`关闭`}}export{e as default};

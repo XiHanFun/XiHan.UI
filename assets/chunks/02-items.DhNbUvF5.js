@@ -1,1 +1,0 @@
-async function n(){const e=document.getElementById("swatch-picker-items"),a=document.getElementById("swatch-picker-items-value");e.addEventListener("value-change",t=>{e.value=t.detail.value,a.textContent=t.detail.value??"（未选）"})}export{n as default};

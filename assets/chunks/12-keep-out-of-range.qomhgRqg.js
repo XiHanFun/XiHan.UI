@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`number-field-out-of-range`),t=document.getElementById(`number-field-out-of-range-hint`);e.addEventListener(`value-change`,()=>{t.textContent=e.outOfRange?`请填 1 到 10 之间的天数`:`范围 1 到 10`})}export{e as default};

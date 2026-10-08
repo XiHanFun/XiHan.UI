@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./funnel-chart.BmOGjCho.js";var n=e(),r=[{stage:`浏览商品`,users:12800},{stage:`加入购物车`,users:5200},{stage:`提交订单`,users:2300},{stage:`完成支付`,users:1850},{stage:`再次购买`,users:620}];function i(){return(0,n.jsx)(t,{data:r,nameField:`stage`,valueField:`users`,caption:`本月购买流程`})}export{i as default};

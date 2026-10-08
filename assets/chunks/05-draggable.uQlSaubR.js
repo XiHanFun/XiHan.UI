@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`float-button-draggable`),t=document.getElementById(`float-button-draggable-position`),n=e=>{t.textContent=JSON.stringify(e)};e.position={edge:`inline-end`,ratio:.75},n(e.position),e.addEventListener(`position-change`,t=>{e.position=t.detail.position,n(t.detail.position)})}export{e as default};

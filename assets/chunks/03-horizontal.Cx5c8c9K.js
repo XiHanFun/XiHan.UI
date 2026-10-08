@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{fo as i}from"./theme.89tuodeJ.js";var a=n({__name:`03-horizontal`,setup(n){let a=[{value:`sm`,label:`小`},{value:`md`,label:`中`},{value:`lg`,label:`大`}];return(n,o)=>(t(),r(e(i),{collection:a,"default-value":`md`,label:`尺寸`,orientation:`horizontal`}))}});export{a as default};

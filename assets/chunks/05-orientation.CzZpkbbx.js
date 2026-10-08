@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{n as t}from"./toggle-group.2oVB5Jwr.js";var n=e(),r=[{value:`day`,label:`日`},{value:`week`,label:`周`},{value:`month`,label:`月`}];function i(){return(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(t,{collection:r,defaultValue:`day`}),(0,n.jsx)(t,{collection:r,defaultValue:`day`,orientation:`vertical`})]})}export{i as default};

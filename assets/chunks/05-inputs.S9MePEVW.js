@@ -1,0 +1,1 @@
+async function e(){document.getElementById(`color-picker-inputs`).translations={eyeDropperTrigger:`从屏幕上取色`}}export{e as default};

@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{n as t}from"./toggle-group.2oVB5Jwr.js";var n=e(),r=[{value:`left`,label:`左对齐`},{value:`center`,label:`居中`,disabled:!0},{value:`right`,label:`右对齐`}];function i(){return(0,n.jsx)(t,{collection:r,defaultValue:`center`})}export{i as default};

@@ -1,0 +1,13 @@
+var e=`<!-- 禁用 | disabled 同时阻止指针与键盘，状态机收不到 TOGGLE -->
+<xh-switch disabled>
+  <button data-xh-part="root">
+    <span data-xh-part="thumb"></span>
+  </button>
+</xh-switch>
+
+<xh-switch disabled default-checked>
+  <button data-xh-part="root">
+    <span data-xh-part="thumb"></span>
+  </button>
+</xh-switch>
+`;export{e as default};

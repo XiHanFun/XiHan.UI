@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./color-swatch.BvwB22eH.js";var n=e();function r(){return(0,n.jsxs)(`div`,{style:{display:`flex`,alignItems:`center`,gap:`12px`,flexWrap:`wrap`},children:[(0,n.jsx)(t,{value:`#3b82f6`,size:`sm`,label:`小`}),(0,n.jsx)(t,{value:`#3b82f6`,label:`中`}),(0,n.jsx)(t,{value:`#3b82f6`,size:`lg`,label:`大`})]})}export{r as default};

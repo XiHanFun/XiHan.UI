@@ -1,0 +1,4 @@
+import{$t as e,Ct as t,Et as n,Kt as r,St as i,ft as a,mt as o,st as s,zt as c}from"./framework.8UxoGp64.js";import{_h as l,fh as u,vh as d}from"./theme.89tuodeJ.js";var f=`async function load(id: string) {
+  const res = await fetch(\`/api/items/\${id}\`)
+  return res.json()
+}`,p=o({__name:`04-streaming`,setup(o){let p=r(``),m=r(!1),h=0;function g(){if(p.value.length>=f.length){m.value=!0;return}p.value=f.slice(0,p.value.length+2),h=window.setTimeout(g,60)}return t(g),i(()=>window.clearTimeout(h)),(t,r)=>(n(),s(e(d),{code:p.value,complete:m.value,lang:`typescript`,style:{"inline-size":`100%`}},{default:c(()=>[a(e(l),null,{default:c(()=>[a(e(u))]),_:1})]),_:1},8,[`code`,`complete`]))}});export{p as default};

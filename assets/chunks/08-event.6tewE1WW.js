@@ -1,1 +1,0 @@
-async function o(){const t=document.getElementById("popover-event-log"),e=[];document.getElementById("popover-event").addEventListener("open-change",n=>{e.unshift(n.detail.open?"展开":"收起"),e.length=Math.min(e.length,5),t.textContent=e.join(" ← ")})}export{o as default};

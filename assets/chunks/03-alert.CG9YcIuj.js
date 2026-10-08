@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`dialog-alert`),t=e.querySelector(`[data-xh-part="close-trigger"]`);for(let n of e.querySelectorAll(`[data-dismiss]`))n.addEventListener(`click`,()=>t.click())}export{e as default};

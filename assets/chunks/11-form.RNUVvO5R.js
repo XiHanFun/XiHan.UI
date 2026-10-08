@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`switch-form`),t=document.getElementById(`switch-form-result`);e.addEventListener(`submit`,n=>{n.preventDefault();let r=[...new FormData(e).entries()].map(([e,t])=>`${e}=${t}`);t.textContent=`表单收到：${r.length?r.join(`  `):`（一个字段都没提交）`}`})}export{e as default};

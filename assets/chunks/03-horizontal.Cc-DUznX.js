@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`anchor-h-nav`),t=e.content.firstElementChild;t.target=document.getElementById(`anchor-h-scroll`),e.replaceWith(t)}export{e as default};

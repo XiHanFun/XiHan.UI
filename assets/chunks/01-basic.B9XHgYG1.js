@@ -1,1 +1,0 @@
-async function t(){const i=document.getElementById("password-input-basic");i.translations={visibilityTriggerShow:"显示密码",visibilityTriggerHide:"隐藏密码",capsLockOn:"大写锁定已打开",strengthMeter:"密码强度"}}export{t as default};

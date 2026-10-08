@@ -1,0 +1,1 @@
+async function e(){document.getElementById(`drawer-contained`).translations={close:`关闭`}}export{e as default};

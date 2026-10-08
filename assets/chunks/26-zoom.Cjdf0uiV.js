@@ -1,1 +1,0 @@
-async function o(){const s=document.getElementById("cartesian-chart-zoom"),e=Array.from({length:365},(n,t)=>({date:new Date(2026,0,1+t),visits:Math.round(3200+t*6+Math.sin(t/7)*420+Math.sin(t/29)*650)})),a=[{mark:"line",x:"date",y:"visits",name:"访问量",symbols:"none"}];s.data=e,s.series=a,s.zoom="x"}export{o as default};

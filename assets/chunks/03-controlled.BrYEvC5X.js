@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`drawer-controlled`),t=document.getElementById(`drawer-controlled-open`),n=document.getElementById(`drawer-controlled-state`);e.translations={close:`关闭`};function r(t){e.open=t,n.textContent=`当前：${t?`展开`:`收起`}`}t.addEventListener(`click`,()=>r(!0)),e.addEventListener(`open-change`,e=>r(e.detail.open))}export{e as default};

@@ -1,1 +1,0 @@
-async function e(){document.getElementById("pie-chart-rose").data=[{quarter:"一季度",users:120},{quarter:"二季度",users:210},{quarter:"三季度",users:340},{quarter:"四季度",users:460}]}export{e as default};

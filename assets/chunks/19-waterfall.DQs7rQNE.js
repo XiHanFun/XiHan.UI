@@ -1,1 +1,0 @@
-async function a(){const t=document.getElementById("cartesian-chart-waterfall");t.data=[{item:"营收",amount:820},{item:"成本",amount:-410},{item:"毛利",total:!0},{item:"销售",amount:-120},{item:"研发",amount:-95},{item:"其他收益",amount:36},{item:"净利",total:!0}],t.series=[{mark:"bar",x:"item",y:"amount",name:"利润（万元）",waterfall:{total:"total"},labels:"end"}]}export{a as default};

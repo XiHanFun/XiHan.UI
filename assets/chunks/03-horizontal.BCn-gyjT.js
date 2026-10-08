@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{o as t}from"./radio-group.CILMbksI.js";var n=e(),r=[{value:`sm`,label:`小`},{value:`md`,label:`中`},{value:`lg`,label:`大`}];function i(){return(0,n.jsx)(t,{collection:r,defaultValue:`md`,label:`尺寸`,orientation:`horizontal`})}export{i as default};

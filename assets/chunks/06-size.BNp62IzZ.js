@@ -1,1 +1,0 @@
-async function c(){const a=document.getElementById("accordion-sizes");for(const e of a.querySelectorAll("xh-accordion"))e.value=["a"],e.addEventListener("value-change",o=>{e.value=o.detail.value})}export{c as default};

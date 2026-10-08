@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`checkbox-tristate`);e.addEventListener(`checked-change`,t=>{e.checked=t.detail.checked})}export{e as default};

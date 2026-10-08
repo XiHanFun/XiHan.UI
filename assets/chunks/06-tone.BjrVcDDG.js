@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{ki as i}from"./theme.89tuodeJ.js";var a=n({__name:`06-tone`,setup(n){let a=[.4,.5,.3,.6,.9,1.4,1.2,1.8,2.3,2.1];return(n,o)=>(t(),r(e(i),{data:a,tone:`danger`,"aria-label":`近 10 分钟错误率`}))}});export{a as default};

@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{o as t}from"./radio-group.CILMbksI.js";var n=e(),r=[{value:`free`,label:`免费版`},{value:`standard`,label:`标准版`},{value:`pro`,label:`专业版`}];function i(){return(0,n.jsx)(t,{collection:r,defaultValue:`standard`,label:`套餐`,name:`plan`})}export{i as default};

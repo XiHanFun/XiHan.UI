@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{a as t,i as n,n as r,t as i}from"./field.C2VZr4l5.js";var a=e();function o(){return(0,a.jsxs)(t,{style:{inlineSize:`280px`},children:[(0,a.jsx)(n,{children:`邮箱`}),(0,a.jsx)(i,{children:(0,a.jsx)(`input`,{type:`email`,placeholder:`you@example.com`})}),(0,a.jsx)(r,{children:`用于接收账单与安全提醒`})]})}export{o as default};

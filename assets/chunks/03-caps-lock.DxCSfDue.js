@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{a as t,i as n,n as r,o as i,r as a,t as o}from"./password-input.7qZxc8Gz.js";var s=e();function c(){return(0,s.jsxs)(t,{placeholder:`打开大写锁定再敲一个字`,translations:{capsLockOn:`大写锁定已打开`},children:[(0,s.jsx)(n,{children:`密码`}),(0,s.jsxs)(r,{children:[(0,s.jsx)(a,{}),(0,s.jsx)(o,{}),(0,s.jsx)(i,{})]})]})}export{c as default};

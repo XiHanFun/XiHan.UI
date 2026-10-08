@@ -1,0 +1,2 @@
+import{ZT as e}from"./theme.89tuodeJ.js";import{t}from"./jsx-runtime.CWLBoBiw.js";import{a as n,n as r,o as i,r as a,t as o}from"./diff-view.bR7Am9V-.js";var s=t(),c=Array.from({length:30},(e,t)=>`const item${t} = ${t}`).join(`
+`),l=c.replace(`const item2 = 2`,`const item2 = 200`),u=e(c,l,{maxLines:6});function d(){return(0,s.jsxs)(a,{model:u,contextLines:2,children:[(0,s.jsx)(r,{children:`src/items.ts`}),(0,s.jsx)(i,{children:(0,s.jsx)(o,{})}),(0,s.jsx)(n,{})]})}export{d as default};

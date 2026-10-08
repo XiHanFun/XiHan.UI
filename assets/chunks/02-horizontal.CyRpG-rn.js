@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`sortable-horizontal`),t=e.querySelector(`[data-xh-part="root"]`);e.addEventListener(`sort`,n=>{e.ids=n.detail.ids;for(let e of n.detail.ids)t.insertBefore(t.querySelector(`[data-xh-part="item"][item-id="${e}"]`),t.querySelector(`[data-xh-part="drop-indicator"]`))})}export{e as default};

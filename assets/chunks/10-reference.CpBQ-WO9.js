@@ -1,1 +1,0 @@
-async function n(){const e=[150,162,188,171,196,214,176,182,165,158,201,194,179,186];document.getElementById("sparkline-reference-target").data=e,document.getElementById("sparkline-reference-mean").data=e}export{n as default};

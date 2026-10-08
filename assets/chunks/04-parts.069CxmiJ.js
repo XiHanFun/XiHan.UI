@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`tag-group-parts`),t=document.getElementById(`tag-group-parts-value`);e.value=[`li`],e.addEventListener(`value-change`,n=>{e.value=n.detail.value,t.textContent=n.detail.value.join(`、`)||`（无）`}),e.addEventListener(`item-delete`,t=>{e.querySelector(`[data-xh-part="item"][value="${t.detail.value}"]`)?.remove()})}export{e as default};

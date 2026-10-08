@@ -1,1 +1,0 @@
-async function n(){var t;let e=0;(t=document.querySelector("#registered-kbd"))==null||t.addEventListener("hot-key",()=>{e+=1,document.querySelector("#kbd-count").textContent=`已触发 ${e} 次`})}export{n as default};

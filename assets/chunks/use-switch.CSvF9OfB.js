@@ -1,0 +1,1 @@
+import{By as e,Vy as t}from"./theme.89tuodeJ.js";import{t as n}from"./normalize-props.BAzx1i-K.js";import{i as r}from"./use-machine.eCBHaVTG.js";function i(i){let a=r(e,()=>i);return{api:t(a,n),service:a}}export{i as t};

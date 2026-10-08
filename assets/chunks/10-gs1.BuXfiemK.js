@@ -1,1 +1,0 @@
-async function n(){const o=["0109501101530003","17250630","10ABC123","","21SN001"].join("");for(const t of["matrix-code-gs1-dm","matrix-code-gs1-qr"])document.getElementById(t).value=o}export{n as default};

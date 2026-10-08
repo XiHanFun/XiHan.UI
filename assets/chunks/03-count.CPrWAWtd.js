@@ -1,1 +1,0 @@
-async function a(){const t=document.getElementById("rating-count"),n=document.getElementById("rating-count-value");t.addEventListener("value-change",e=>{t.value=e.detail.value,n.textContent=e.detail.value})}export{a as default};

@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{vu as i}from"./theme.89tuodeJ.js";var a=`曦寒 UI 是一套框架无关的设计系统运行时，组件的行为与皮肤各走各的。`,o=n({__name:`01-basic`,setup(n){return(n,o)=>(t(),r(e(i),{text:a,keyword:`组件`}))}});export{o as default};

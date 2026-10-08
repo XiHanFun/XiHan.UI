@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{o as t}from"./pie-chart.Bi1RlhuE.js";var n=e(),r=[{item:`已支出`,amount:62},{item:`已冻结`,amount:18},{item:`可用`,amount:20}];function i(){return(0,n.jsx)(t,{data:r,nameField:`item`,valueField:`amount`,sweep:`half`,sort:`none`,caption:`预算执行`})}export{i as default};

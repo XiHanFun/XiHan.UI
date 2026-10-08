@@ -1,1 +1,0 @@
-async function d(){const l=[{value:"docs",label:"docs",children:[{value:"guide",label:"guide.md"},{value:"api",label:"api.md"}]},{value:"readme",label:"README.md"}];for(const e of document.getElementById("tree-select-tone").children)e.collection=l,e.expandedValue=["docs"],e.addEventListener("expanded-value-change",a=>e.expandedValue=a.detail.value)}export{d as default};

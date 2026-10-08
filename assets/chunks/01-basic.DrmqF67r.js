@@ -1,1 +1,0 @@
-async function n(){const t=document.getElementById("cartesian-chart-basic");t.data=[{month:"一月",amount:1204},{month:"二月",amount:986},{month:"三月",amount:1530},{month:"四月",amount:1382},{month:"五月",amount:1745},{month:"六月",amount:1618}],t.series=[{mark:"bar",x:"month",y:"amount",name:"销售额"}]}export{n as default};

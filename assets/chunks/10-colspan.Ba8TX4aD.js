@@ -1,1 +1,0 @@
-async function l(){const e=document.getElementById("table-colspan");e.columns=[{id:"team",label:"小组",width:"8rem"},{id:"h1",label:"上半年"},{id:"h2",label:"下半年"}],e.rows=[{id:"t1"},{id:"t2"},{id:"sum"}]}export{l as default};

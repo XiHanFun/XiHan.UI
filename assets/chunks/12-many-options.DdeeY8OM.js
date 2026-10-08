@@ -1,0 +1,1 @@
+import{$t as e,Et as t,mt as n,st as r}from"./framework.8UxoGp64.js";import{ja as i}from"./theme.89tuodeJ.js";var a=`ABCDEFGHIJKLMNOPQRSTUVWXYZ`,o=n({__name:`12-many-options`,setup(n){let o=Array.from(a,e=>({value:e,label:`${e} 区`}));return(n,a)=>(t(),r(e(i),{collection:e(o),label:`仓位`,placeholder:`敲 M 试试`},null,8,[`collection`]))}});export{o as default};

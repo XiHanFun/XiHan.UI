@@ -1,0 +1,4 @@
+import{t as e}from"./react.CbNV8_UV.js";import{t}from"./jsx-runtime.CWLBoBiw.js";import{o as n,s as r,t as i}from"./code-view.Dpm1ARMa.js";var a=e(),o=t(),s=`async function load(id: string) {
+  const res = await fetch(\`/api/items/\${id}\`)
+  return res.json()
+}`;function c(){let[e,t]=(0,a.useState)(``),[c,l]=(0,a.useState)(!1);return(0,a.useEffect)(()=>{if(e.length>=s.length){l(!0);return}let n=window.setTimeout(()=>t(s.slice(0,e.length+2)),60);return()=>window.clearTimeout(n)},[e]),(0,o.jsx)(r,{code:e,complete:c,lang:`typescript`,style:{inlineSize:`100%`},children:(0,o.jsx)(n,{children:(0,o.jsx)(i,{})})})}export{c as default};

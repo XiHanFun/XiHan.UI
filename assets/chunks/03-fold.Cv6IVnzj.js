@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`code-view-fold`),t=e.querySelector(`[data-xh-part="fold-trigger"]`);e.addEventListener(`clamp-toggle`,n=>{e.toggleAttribute(`clamped`,n.detail.clamped),t.textContent=n.detail.clamped?`展开全部 24 行`:`收起`})}export{e as default};

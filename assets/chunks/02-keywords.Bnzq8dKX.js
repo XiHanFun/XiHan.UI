@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./highlight.De7mDsK4.js";var n=e(),r=`曦寒 UI 是一套框架无关的设计系统运行时，组件的行为与皮肤各走各的。`,i=[`曦寒`,`设计系统`,`行为`],a=[`设计`,`设计系统`];function o(){return(0,n.jsxs)(`div`,{style:{display:`flex`,flexDirection:`column`,gap:`12px`},children:[(0,n.jsx)(t,{text:r,keyword:i}),(0,n.jsx)(t,{text:r,keyword:a})]})}export{o as default};

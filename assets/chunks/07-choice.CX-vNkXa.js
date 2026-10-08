@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`menu-choice`);e.checkboxValue=[`wrap`],e.radioValue={density:`comfortable`},e.addEventListener(`checkbox-value-change`,t=>{e.checkboxValue=t.detail.value}),e.addEventListener(`radio-value-change`,t=>{e.radioValue=t.detail.value})}export{e as default};

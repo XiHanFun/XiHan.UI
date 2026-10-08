@@ -1,0 +1,1 @@
+import{t as e}from"./react.CbNV8_UV.js";import{t}from"./jsx-runtime.CWLBoBiw.js";import{n,r,t as i}from"./button.CoK9Lq-I.js";var a=e(),o=t();function s(){let[e,t]=(0,a.useState)(!1);async function s(){t(!0),await new Promise(e=>setTimeout(e,1200)),t(!1)}return(0,o.jsxs)(i,{loading:e,onClick:s,children:[(0,o.jsx)(n,{}),(0,o.jsx)(r,{children:`保存`})]})}export{s as default};

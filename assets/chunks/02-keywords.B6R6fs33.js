@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`highlight-keywords-many`),t=document.getElementById(`highlight-keywords-overlapping`);e.keyword=[`曦寒`,`设计系统`,`行为`],t.keyword=[`设计`,`设计系统`]}export{e as default};

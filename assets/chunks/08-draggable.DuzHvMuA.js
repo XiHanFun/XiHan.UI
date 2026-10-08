@@ -1,1 +1,0 @@
-async function o(){const e=document.getElementById("dialog-draggable");e.translations={close:"关闭",dragTrigger:"移动对话框"};const t=e.querySelector('[data-xh-part="close-trigger"]');for(const a of e.querySelectorAll("[data-dismiss]"))a.addEventListener("click",()=>t.click())}export{o as default};

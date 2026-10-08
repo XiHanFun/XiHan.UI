@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./truncate.QKAj7pql.js";var n=e(),r={expand:`展开`,collapse:`收起`};function i(){return(0,n.jsx)(`div`,{style:{inlineSize:`360px`,maxInlineSize:`100%`},children:(0,n.jsx)(t,{lines:2,expandable:!0,translations:r,children:`本次更新改进了组件主题、键盘交互与响应式布局。按下文字下方的按钮可查看完整内容，再按一次即可收起。`})})}export{i as default};

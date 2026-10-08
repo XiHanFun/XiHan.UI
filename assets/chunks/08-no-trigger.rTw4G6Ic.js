@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`number-field-no-trigger`),t=document.getElementById(`number-field-no-trigger-value`);e.addEventListener(`value-change`,e=>{t.textContent=e.detail.value===``?`（空）`:e.detail.value})}export{e as default};

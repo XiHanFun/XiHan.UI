@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`cartesian-chart-zoom`);e.data=Array.from({length:365},(e,t)=>({date:new Date(2026,0,1+t),visits:Math.round(3200+t*6+Math.sin(t/7)*420+Math.sin(t/29)*650)})),e.series=[{mark:`line`,x:`date`,y:`visits`,name:`访问量`,symbols:`none`}],e.zoom=`x`}export{e as default};

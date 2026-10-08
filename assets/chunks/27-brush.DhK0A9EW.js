@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`cartesian-chart-brush`);e.data=Array.from({length:60},(e,t)=>{let n=Math.round(40+Math.abs(Math.sin(t*12.9898)*43758.5453)%1*160);return{area:n,sales:Math.round((n*.9+(Math.abs(Math.sin(t*78.233)*12345.678)%1-.5)*60)*10)/10}}),e.series=[{mark:`scatter`,x:`area`,y:`sales`,name:`门店`}],e.brush=`xy`}export{e as default};

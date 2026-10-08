@@ -1,1 +1,0 @@
-async function a(){const t=document.getElementById("sortable-disabled"),e=t.querySelector('[data-xh-part="root"]');t.addEventListener("sort",o=>{t.ids=o.detail.ids;for(const r of o.detail.ids)e.insertBefore(e.querySelector(`[data-xh-part="item"][item-id="${r}"]`),e.querySelector('[data-xh-part="live-region"]'))})}export{a as default};

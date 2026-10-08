@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{t}from"./switch.DQhOVmDU.js";var n=e();function r(){return(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(t,{}),(0,n.jsx)(t,{defaultChecked:!0})]})}export{r as default};

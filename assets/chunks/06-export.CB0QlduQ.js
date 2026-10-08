@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`xh-signature-export`),t=document.getElementById(`xh-signature-submit`),n=document.getElementById(`xh-signature-size`);e.addEventListener(`draw-end`,e=>{n.textContent=`SVG ${e.detail.svg.length} 字节`,t.disabled=e.detail.svg.length===0})}export{e as default};

@@ -1,0 +1,1 @@
+async function e(){let e=[{key:`live`,kind:`markdown`,html:`<p>正在写的这一句。</p>`,complete:!1}];document.getElementById(`markdown-stream-caret-waiting`).blocks=[],document.getElementById(`markdown-stream-caret-growing`).blocks=e,document.getElementById(`markdown-stream-caret-off`).blocks=e}export{e as default};

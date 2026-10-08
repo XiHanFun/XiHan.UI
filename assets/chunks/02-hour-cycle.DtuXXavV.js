@@ -1,1 +1,0 @@
-async function d(){const e=document.getElementById("time-field-hour-cycle"),t=document.getElementById("time-field-hour-cycle-readout");e.addEventListener("value-change",n=>{t.textContent=n.detail.value||"（未填齐）"})}export{d as default};

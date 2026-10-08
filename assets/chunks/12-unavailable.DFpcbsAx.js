@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`time-picker-unavailable`),t=document.getElementById(`time-picker-unavailable-value`);e.isTimeUnavailable=(e,t,n)=>t===`minute`&&n.hour===9&&Number(e)<30,e.addEventListener(`value-change`,e=>{t.textContent=e.detail.value[0]??`（空）`})}export{e as default};

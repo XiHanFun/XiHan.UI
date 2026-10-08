@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`text-field-multiline`);e.autoSize={minRows:2,maxRows:6};let t=document.getElementById(`text-field-multiline-count`);e.addEventListener(`value-change`,e=>{let n=e.detail.value.length;t.textContent=`${n} / 120`,t.style.color=n>=120?`var(--xh-fg-danger)`:`var(--xh-fg-subtle)`})}export{e as default};

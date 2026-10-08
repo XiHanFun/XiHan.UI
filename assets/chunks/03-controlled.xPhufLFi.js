@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`select-controlled`),t=document.getElementById(`select-controlled-value`),n=[`banana`];e.addEventListener(`value-change`,r=>{let i=r.detail.value.includes(`cherry`);i||(n=r.detail.value,e.value=n),t.textContent=n.join(`、`)+(i?` · 上一次选择被拒绝`:``)})}export{e as default};

@@ -1,0 +1,2 @@
+import{t as e}from"./react.CbNV8_UV.js";import{t}from"./jsx-runtime.CWLBoBiw.js";import{o as n,r,s as i,t as a}from"./code-view.Dpm1ARMa.js";var o=e(),s=t(),c=Array.from({length:24},(e,t)=>`const step${t+1} = pipeline.at(${t})`).join(`
+`);function l(){let[e,t]=(0,o.useState)(!0);return(0,s.jsxs)(i,{clamped:e,onClampToggle:e=>t(e.clamped),code:c,lang:`typescript`,complete:!0,lineNumbers:!0,clamp:8,style:{inlineSize:`100%`},children:[(0,s.jsx)(n,{children:(0,s.jsx)(a,{})}),(0,s.jsx)(r,{children:e?`展开全部 24 行`:`收起`})]})}export{l as default};

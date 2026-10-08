@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`select-custom`),t=document.getElementById(`select-custom-initial`),n=document.getElementById(`select-custom-name`),r={liuyi:[`刘`,`刘一`],chener:[`陈`,`陈二`],zhangsan:[`张`,`张三`]};e.addEventListener(`value-change`,e=>{let[i,a]=r[e.detail.value[0]]??[``,`请选择成员`];t.textContent=i,n.textContent=a})}export{e as default};

@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`hover-card-disabled`).querySelector(`[data-xh-part="trigger"]`),t=document.getElementById(`hover-card-disabled-count`),n=0;e.addEventListener(`click`,()=>{n+=1,t.textContent=String(n)})}export{e as default};

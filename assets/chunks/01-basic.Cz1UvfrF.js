@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`tag-group-basic`),t=document.getElementById(`tag-group-basic-rest`);e.addEventListener(`item-delete`,n=>{e.querySelector(`[data-xh-part="item"][value="${n.detail.value}"]`)?.remove();let r=[...e.querySelectorAll(`[data-xh-part="item-text"]`)].map(e=>e.textContent);t.textContent=r.join(`、`)||`（空）`})}export{e as default};

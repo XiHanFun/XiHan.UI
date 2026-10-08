@@ -1,0 +1,1 @@
+async function e(){let e=[{value:`docs`,label:`docs`,children:[{value:`guide`,label:`guide.md`},{value:`api`,label:`api.md`}]},{value:`readme`,label:`README.md`}];for(let t of document.getElementById(`tree-select-tone`).children)t.collection=e,t.expandedValue=[`docs`],t.addEventListener(`expanded-value-change`,e=>t.expandedValue=e.detail.value)}export{e as default};

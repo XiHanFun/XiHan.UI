@@ -1,1 +1,0 @@
-async function l(){const e=document.getElementById("field-invalid"),n=e.querySelector('[data-xh-part="control"]'),t=()=>{e.invalid=n.value!==""&&!n.value.includes("@")};n.addEventListener("input",t),t()}export{l as default};

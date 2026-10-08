@@ -1,1 +1,0 @@
-async function n(){document.querySelector("#json-download").data=new Blob([JSON.stringify({name:"XiHan.UI",version:"1.1.0"},null,2)],{type:"application/json"})}export{n as default};

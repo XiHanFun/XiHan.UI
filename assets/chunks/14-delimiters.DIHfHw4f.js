@@ -1,0 +1,2 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{a as t,c as n,d as r,i,l as a,n as o,o as s,u as c}from"./tags-input.ZssTqN_x.js";var l=e(),u=[`,`,`，`,`;`,`
+`];function d(){return(0,l.jsx)(r,{delimiter:u,addOnPaste:!0,placeholder:`试试输入 北京，上海;广州`,style:{maxInlineSize:`420px`},children:({value:e})=>(0,l.jsxs)(l.Fragment,{children:[(0,l.jsx)(c,{children:`城市`}),(0,l.jsxs)(o,{children:[e.map(e=>(0,l.jsx)(t,{value:e,children:(0,l.jsxs)(n,{children:[(0,l.jsx)(a,{children:e}),(0,l.jsx)(s,{})]})},e)),(0,l.jsx)(i,{})]})]})})}export{d as default};
