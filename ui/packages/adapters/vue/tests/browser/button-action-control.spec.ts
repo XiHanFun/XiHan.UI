@@ -142,9 +142,9 @@ describe('action Control 四 profile', () => {
   })
 
   it.each([
-    { density: 'comfortable' as const, expected: ['12px', '16px', '16px', '20px'] },
-    { density: 'compact' as const, expected: ['10px', '14px', '16px', '20px'] },
-  ])('$density：field-inset 字形 xs / sm 取指示符档，随密度换档', ({ density, expected }) => {
+    { density: 'comfortable' as const, expected: ['12px', '12px', '12px', '16px'] },
+    { density: 'compact' as const, expected: ['10px', '10px', '10px', '14px'] },
+  ])('$density：field-inset 字形取指示符档（xs / sm / md 小档、lg 中档），随密度换档', ({ density, expected }) => {
     mount(() => h('div'), density)
     const sizes = ['xs', 'sm', 'md', 'lg'] as const
     sizes.forEach((size, index) => {
