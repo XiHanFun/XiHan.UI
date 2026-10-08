@@ -163,6 +163,99 @@ function toPx(value, locals, depth = 0) {
   return null
 }
 
+/**
+ * 伪元素外扩用的 inset 取值：另认 `min(…)`——「外扩一格」与「补足到最小目标」取大的那种写法，
+ * 其中补足那一项是 `calc((点的边长 - 最小目标) / 2)`，按四则运算算。
+ * min() 不大于其中任何一项，取算得出的那几项里最小的，外扩量只会少算、不会多算；一项都算不出才放弃。
+ */
+function insetPx(value, locals) {
+  const m = /^min\(([\s\S]*)\)$/.exec(value.trim())
+  if (!m)
+    return toPx(value, locals)
+  const known = splitTopLevel(m[1]).map(arg => toPx(arg, locals) ?? calcPx(arg, locals)).filter(px => px != null)
+  return known.length ? Math.min(...known) : null
+}
+
+/** `calc(…)` 里的四则运算：数（px / rem / 无单位）、var()、括号与 + - * /；任何一项算不出就返回 null。 */
+function calcPx(value, locals) {
+  const outer = /^calc\(([\s\S]*)\)$/.exec(value.trim())
+  if (!outer)
+    return null
+  const text = outer[1]
+  const tokens = []
+  let i = 0
+  while (i < text.length) {
+    const ch = text[i]
+    if (/\s/.test(ch)) {
+      i++
+      continue
+    }
+    if ('+-*/()'.includes(ch)) {
+      tokens.push(ch)
+      i++
+      continue
+    }
+    if (text.startsWith('var(', i)) {
+      let level = 0
+      let j = i
+      for (; j < text.length; j++) {
+        if (text[j] === '(')
+          level++
+        else if (text[j] === ')' && --level === 0)
+          break
+      }
+      const px = toPx(text.slice(i, j + 1), locals)
+      if (px == null)
+        return null
+      tokens.push(px)
+      i = j + 1
+      continue
+    }
+    const num = /^([\d.]+)(px|rem)?/.exec(text.slice(i))
+    if (!num)
+      return null
+    tokens.push(Number(num[1]) * (num[2] === 'rem' ? 16 : 1))
+    i += num[0].length
+  }
+  let at = 0
+  const factor = () => {
+    const t = tokens[at++]
+    if (t === '-') {
+      const inner = factor()
+      return inner == null ? null : -inner
+    }
+    if (t === '(') {
+      const inner = sum()
+      return tokens[at++] === ')' ? inner : null
+    }
+    return typeof t === 'number' ? t : null
+  }
+  const product = () => {
+    let left = factor()
+    while (left != null && (tokens[at] === '*' || tokens[at] === '/')) {
+      const op = tokens[at++]
+      const right = factor()
+      if (right == null)
+        return null
+      left = op === '*' ? left * right : left / right
+    }
+    return left
+  }
+  const sum = () => {
+    let left = product()
+    while (left != null && (tokens[at] === '+' || tokens[at] === '-')) {
+      const op = tokens[at++]
+      const right = product()
+      if (right == null)
+        return null
+      left = op === '+' ? left + right : left - right
+    }
+    return left
+  }
+  const result = sum()
+  return at === tokens.length ? result : null
+}
+
 /** 一条选择器分支的落点部件：最右边那个 data-part 就是规则的主语。 */
 function subjectPart(branch) {
   const hits = [...branch.matchAll(/\[data-part='([a-z0-9-]+)'\]/g)]
@@ -280,7 +373,7 @@ function scanSkin(css, parts, actionParts) {
           const values = splitTopLevel(decl.value, ch => ch === ' ' || ch === '\t' || ch === '\n')
           let least = null
           for (const one of values) {
-            const px = toPx(one, localsFor(part))
+            const px = insetPx(one, localsFor(part))
             if (px == null || px >= 0)
               continue
             least = least == null ? -px : Math.min(least, -px)
