@@ -18,6 +18,11 @@
 // - 线宽只有 1 / 2 / 4 / 6 / 8 五档，虚线只取 "4 4"；rect 的 rx 只取 2（控件与内层）/ 4（表面与
 //   浮层）或短边一半（胶囊）；
 //   rect / circle 的坐标与尺寸取 0.5 的倍数。
+// - 字段外壳（描控件边、短边不小于 FIELD_SHELL_MIN 的实线盒）按描边铺底：静息与校验失败铺
+//   --xh-bg-field，聚焦铺 --xh-bg-surface；刻意不铺的登记在 UNFILLED_CONTROL_BOX。
+// - 勾选方框与单选圈（不填底的 16px 小盒）描边取 CHECK_MARKER_STROKE。
+// - 锚定浮层里的列表（FLUSH_ROW_LISTS）行是通栏：浮层面里 24 高的淡底行不取圆角，左右贴面板
+//   内沿；多列面板（MULTI_COLUMN_LISTS）的行铺到列分隔线为止，只核左沿。
 // - 渐变 id 以文件名开头（总览页上全部示意图同处一个 document，整页不重名由 check-demo-ids 核）；
 //   每张图元素不超过 MAX_ELEMENTS 个。
 // - 方向固定的示意图（图表分类的全部卡片与 FIXED_DIRECTION 登记的组件）根上写
@@ -53,6 +58,30 @@ const FIXED_DIRECTION = {
   'json-viewer': '代码按从左到右排',
   'log': '日志按从左到右排',
 }
+
+/** 字段外壳按描边铺的底：静息与校验失败铺字段淡底（4% 失效色淡底没有语义令牌），聚焦换承载面。 */
+const FIELD_SHELL_FILL = {
+  'var(--xh-border-control)': 'var(--xh-bg-field)',
+  'var(--xh-border-invalid)': 'var(--xh-bg-field)',
+  'var(--xh-border-control-focus)': 'var(--xh-bg-surface)',
+}
+/** 字段盒的短边下限：再小就是 16px 的勾选方框。 */
+const FIELD_SHELL_MIN = 23
+
+/** 描着控件边、刻意不铺字段淡底的组件，连同理由。 */
+const UNFILLED_CONTROL_BOX = {
+  'clipboard': '只读输入框与复制钮共一个外框：输入框那段的底由框下的 path 铺 --xh-bg-subtle，复制钮那段透明',
+  'signature-pad': '画布型字段，静息不填底',
+}
+
+/** 勾选方框与单选圈的描边：16px 的小盒比字段边重一档。 */
+const CHECK_MARKER_STROKE = 'var(--xh-border-strong)'
+const CHECK_MARKER_MAX = 16
+
+/** 行是通栏的锚定浮层列表；其中多列面板的行铺到列分隔线为止。 */
+const FLUSH_ROW_LISTS = new Set(['menu', 'context-menu', 'menubar', 'select', 'combobox', 'tree-select', 'mention', 'cascader'])
+const MULTI_COLUMN_LISTS = new Set(['cascader'])
+const LIST_ROW_H = 24
 
 /** 每种元素允许的属性。 */
 const ATTRS = {
@@ -143,6 +172,7 @@ const num = value => Number(value)
 const files = (await readdir(CATALOG)).filter(file => file.endsWith('.vue')).sort()
 let elements = 0
 let widest = { id: '', count: 0 }
+const tally = { shells: 0, markers: 0, rows: 0 }
 
 for (const file of files) {
   const id = file.slice(0, -'.vue'.length)
@@ -166,6 +196,8 @@ for (const file of files) {
   const ids = new Set()
   const refs = []
   const usesPalette = []
+  const rects = []
+  let unfilledControlBoxes = 0
   let root = null
   let count = 0
   let hasDirection = false
@@ -282,6 +314,34 @@ for (const file of files) {
         report(line, `<rect rx="${attrs.get('rx')}"> —— 圆角只取 ${[...RADII].join(' / ')}，或等于短边一半（胶囊）`)
     }
 
+    const fill = attrs.get('fill')
+    const stroke = attrs.get('stroke')
+    const unfilled = fill === undefined || fill === 'none'
+    if (name === 'rect') {
+      const box = { x: num(attrs.get('x')), y: num(attrs.get('y')), w: num(attrs.get('width')), h: num(attrs.get('height')) }
+      rects.push({ ...box, attrs, line })
+      const short = Math.min(box.w, box.h)
+      if (Object.hasOwn(FIELD_SHELL_FILL, stroke) && !attrs.has('stroke-dasharray') && short >= FIELD_SHELL_MIN) {
+        if (Object.hasOwn(UNFILLED_CONTROL_BOX, id)) {
+          if (unfilled)
+            unfilledControlBoxes += 1
+        }
+        else {
+          tally.shells += 1
+          if (fill !== FIELD_SHELL_FILL[stroke])
+            report(line, `<rect stroke="${stroke}" fill="${fill ?? '缺省'}"> —— 字段外壳按描边铺底：${FIELD_SHELL_FILL[stroke]}（静息与校验失败铺字段淡底，聚焦铺承载面）`)
+        }
+      }
+    }
+    const marker = name === 'rect'
+      ? num(attrs.get('width')) === num(attrs.get('height')) && num(attrs.get('width')) <= CHECK_MARKER_MAX
+      : name === 'circle' && num(attrs.get('r')) * 2 <= CHECK_MARKER_MAX
+    if (marker && unfilled && stroke?.startsWith('var(--xh-border-')) {
+      tally.markers += 1
+      if (stroke !== CHECK_MARKER_STROKE)
+        report(line, `<${name} stroke="${stroke}"> —— ${name === 'rect' ? '勾选方框' : '单选圈'}描边取 ${CHECK_MARKER_STROKE}，比字段边重一档`)
+    }
+
     if (attrs.has('id')) {
       const value = attrs.get('id')
       if (!value.startsWith(`${id}-`))
@@ -299,6 +359,33 @@ for (const file of files) {
   for (const ref of refs) {
     if (!ids.has(ref.id))
       report(ref.line, `url(#${ref.id}) —— 本文件没有定义这个 id`)
+  }
+
+  if (Object.hasOwn(UNFILLED_CONTROL_BOX, id) && unfilledControlBoxes === 0)
+    report(1, `UNFILLED_CONTROL_BOX 登记了 ${id}，但示意图里没有不铺底的字段盒——名单过期了，删掉这条`)
+
+  if (FLUSH_ROW_LISTS.has(id)) {
+    // 浮层面：铺抬起面底、描装饰边的 rect；1 线宽描边落在半格，面板内沿比外框各收半格
+    const panels = rects.filter(r => r.attrs.get('fill') === 'var(--xh-bg-surface-raised)' && r.attrs.has('stroke'))
+    let rows = 0
+    for (const row of rects) {
+      if (row.h !== LIST_ROW_H || !row.attrs.get('fill')?.startsWith('var(--xh-bg-subtle'))
+        continue
+      const panel = panels.find(p => row.x >= p.x && row.x + row.w <= p.x + p.w && row.y >= p.y && row.y + row.h <= p.y + p.h)
+      if (!panel)
+        continue
+      rows += 1
+      tally.rows += 1
+      const inner = { start: panel.x + 0.5, end: panel.x + panel.w - 0.5 }
+      if (row.attrs.has('rx'))
+        report(row.line, `<rect rx="${row.attrs.get('rx')}"> —— 锚定浮层里的列表行是通栏，不取圆角`)
+      if (row.x !== inner.start)
+        report(row.line, `<rect x="${row.x}"> —— 锚定浮层里的列表行通栏，左沿贴面板内沿 x="${inner.start}"`)
+      if (!MULTI_COLUMN_LISTS.has(id) && row.x + row.w !== inner.end)
+        report(row.line, `<rect width="${row.w}"> —— 锚定浮层里的列表行通栏，右沿贴面板内沿（x + width = ${inner.end}，现在 ${row.x + row.w}）`)
+    }
+    if (rows === 0)
+      report(1, `FLUSH_ROW_LISTS 登记了 ${id}，但示意图的浮层面里没有 ${LIST_ROW_H} 高的淡底行——画一条悬停行，或把名单里这条删掉`)
   }
 
   if (fixedDirection.has(id) && !hasDirection)
@@ -328,6 +415,16 @@ for (const id of COLOR_SAMPLES) {
   if (!files.includes(`${id}.vue`))
     problems.push(`COLOR_SAMPLES 登记了 ${id}，但 ${CATALOG}/${id}.vue 不存在——名单过期了，删掉这条`)
 }
+for (const [list, ids] of [['UNFILLED_CONTROL_BOX', Object.keys(UNFILLED_CONTROL_BOX)], ['FLUSH_ROW_LISTS', FLUSH_ROW_LISTS], ['MULTI_COLUMN_LISTS', MULTI_COLUMN_LISTS]]) {
+  for (const id of ids) {
+    if (!files.includes(`${id}.vue`))
+      problems.push(`${list} 登记了 ${id}，但 ${CATALOG}/${id}.vue 不存在——名单过期了，删掉这条`)
+  }
+}
+for (const id of MULTI_COLUMN_LISTS) {
+  if (!FLUSH_ROW_LISTS.has(id))
+    problems.push(`MULTI_COLUMN_LISTS 登记了 ${id}，但它不在 FLUSH_ROW_LISTS 里——多列只放宽通栏行的右沿，先登记成通栏列表`)
+}
 
 if (problems.length) {
   console.error('[check-catalog-preview] ✗ 组件总览示意图偏离书写规范：')
@@ -338,5 +435,6 @@ if (problems.length) {
 
 console.log(
   `[check-catalog-preview] 通过：${files.length} 张总览示意图都是 ${VIEW_BOX} 画布上的纯 SVG，颜色只取语义令牌，`
-  + `合计 ${elements} 个元素（最多的 ${widest.id} ${widest.count} 个）；方向固定 ${fixedDirection.size} 张`,
+  + `合计 ${elements} 个元素（最多的 ${widest.id} ${widest.count} 个）；方向固定 ${fixedDirection.size} 张；`
+  + `字段外壳 ${tally.shells} 个按描边铺底，勾选标记 ${tally.markers} 个描重一档，浮层列表行 ${tally.rows} 条通栏`,
 )
