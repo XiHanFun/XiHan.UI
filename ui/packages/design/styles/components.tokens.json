@@ -42158,7 +42158,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-font-weight-regular"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 font-weight 覆盖槽。"
