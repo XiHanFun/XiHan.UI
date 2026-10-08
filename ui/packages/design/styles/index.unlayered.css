@@ -864,7 +864,7 @@
   padding-block: var(--xh-space-1);
 }
 
-[data-scope][data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover {
+[data-scope][data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):not(:focus-within):hover {
   background-color: var(--xh-field-bg-hover, var(--xh-_field-variant-bg-hover));
   border-color: var(--xh-field-border-hover, var(--xh-_field-variant-border-hover));
 }
@@ -872,6 +872,7 @@
 [data-scope][data-xh-field-chrome]:focus-within:not([data-disabled]) {
   background-color: var(--xh-field-bg-focus, var(--xh-_field-variant-bg-focus));
   border-color: var(--xh-field-border-focus, var(--xh-_field-variant-border-focus));
+  outline: none;
 }
 
 [data-scope][data-xh-field-chrome][data-readonly] {
@@ -976,7 +977,7 @@
     opacity: 1;
   }
 
-  [data-scope][data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover {
+  [data-scope][data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):not(:focus-within):hover {
     border-color: Highlight;
   }
 
