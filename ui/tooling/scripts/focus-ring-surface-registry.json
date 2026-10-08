@@ -175,20 +175,6 @@
       "ratio": 1,
       "ring": "poured"
     },
-    "slider [data-invalid][data-part='thumb'][data-scope='slider']": {
-      "parts": [
-        "thumb"
-      ],
-      "ratio": 1.05,
-      "ring": "poured"
-    },
-    "slider [data-part='thumb'][data-scope='slider']": {
-      "parts": [
-        "thumb"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
     "splitter [data-dragging][data-part='resize-trigger'][data-scope='splitter']": {
       "parts": [
         "resize-trigger"
