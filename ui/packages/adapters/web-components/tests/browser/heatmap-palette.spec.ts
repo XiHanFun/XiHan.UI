@@ -33,7 +33,7 @@ const HUES: Record<string, string> = {
 
 const INK: Record<string, { light: string, dark: string }> = {
   ...Object.fromEntries(Object.entries(HUES).map(([hue, ink]) => [hue, { light: ink, dark: ink }])),
-  gray: { light: 'oklch(0.439 0.006 258)', dark: 'oklch(0.65 0.006 258)' },
+  gray: { light: 'oklch(0.461 0.018 258)', dark: 'oklch(0.649 0.018 253)' },
 }
 
 /** 不写色板时的满档实心底：语义令牌 bg-brand，它本就按主题翻。 */
@@ -157,8 +157,8 @@ describe('热力图色板轴：兑出来的五档', () => {
 // 色板只改 root 上那一个私有槽，格子与图例都从 root 继承它，三种形态因此共用同一条色阶。
 // 这里逐形态各铺一张，量真正画出来的那一格：形态规则里若有谁另起炉灶写死了底色，这里会红。
 describe('热力图色板轴：三种形态都吃这条轴', () => {
-  /** 一格 50% 档在 purple 上兑出来的明度：0.967 与 0.546 的中点。 */
-  const MID_LIGHTNESS = 0.7565
+  /** 一格 50% 档在 purple 上兑出来的明度：空格面（--xh-bg-subtle-opaque，冷灰阶下约 0.9642）与 0.546 的中点。 */
+  const MID_LIGHTNESS = 0.7551
 
   /** 三种形态的角色节点身份各不相同：日历是星期行 + 日期，月历多一层月块，矩阵是行名 + 列名。 */
   const MARKUP: Record<string, string> = {
