@@ -32,7 +32,7 @@
     --xh-_tabs-list-bg: transparent;
     --xh-_tabs-list-p: var(--xh-space-0);
     --xh-_tabs-list-radius: 0;
-    --xh-_tabs-list-border-width: 0;
+    --xh-_tabs-list-border-width: var(--xh-stroke-thin);
     --xh-_tabs-trigger-border-width: 0;
     --xh-_tabs-trigger-border: transparent;
     --xh-_tabs-trigger-radius: var(--xh-shape-control);
@@ -77,13 +77,13 @@
   }
 
   /* —— 变体 —— */
-  /* 主变体的显式写法，与缺省视觉一致：透明标签带与底部基线，选中项由文字和滑动指示条强调。 */
+  /* 主变体的显式写法，与缺省视觉一致：透明标签带与 1px 底部基线，选中项由文字和滑动指示条强调。 */
   [data-scope='tabs'][data-part='root'][data-variant='line'] {
     --xh-_tabs-list-gap: var(--xh-space-0);
     --xh-_tabs-list-bg: transparent;
     --xh-_tabs-list-p: var(--xh-space-0);
     --xh-_tabs-list-radius: 0;
-    --xh-_tabs-list-border-width: 0;
+    --xh-_tabs-list-border-width: var(--xh-stroke-thin);
     --xh-_tabs-trigger-border-width: 0;
     --xh-_tabs-trigger-border: transparent;
     --xh-_tabs-trigger-radius: var(--xh-shape-control);
@@ -476,7 +476,8 @@
     /* 摆在行首，落点交给 transform（只走合成），长度跟着标签宽走。标签带挪动时整条孩子
        共用的 translate 叠在它之上，两者互不覆盖，过渡也只挂在 transform 上 */
     position: absolute;
-    inset-block-end: 0;
+    /* line 档标签带底边有一道 1px 基线，指示条压在它上面而不是悬在它上方 */
+    inset-block-end: calc(-1 * var(--xh-_tabs-list-border-width));
     inset-inline-start: 0;
     inline-size: var(--xh-_tabs-indicator-w);
     block-size: var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick));
