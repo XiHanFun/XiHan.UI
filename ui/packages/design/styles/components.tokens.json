@@ -30944,10 +30944,13 @@
       "name": "--xh-empty-state-gap",
       "component": "empty-state",
       "part": [
-        "root"
+        "description",
+        "root",
+        "title"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-start"
       ],
       "state": [
         "default"
@@ -30956,27 +30959,76 @@
         "--xh-_empty-state-gap"
       ],
       "visibility": "public",
-      "description": "empty-state 的 root 部件 gap 覆盖槽。"
+      "description": "empty-state 的 description、root、title 部件 gap、margin-block-start 覆盖槽。"
     },
     {
       "name": "--xh-empty-state-icon-size",
       "component": "empty-state",
       "part": [
-        "indicator"
+        "indicator",
+        "root"
       ],
       "property": [
         "--xh-icon-size",
         "block-size",
+        "font-size",
         "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "not([data-tone='brand'])",
+        "tone",
+        "tone=brand"
       ],
       "defaultToken": [
-        "--xh-_empty-state-icon-size"
+        "--xh-_empty-state-icon-size",
+        "--xh-glyph-size-md"
       ],
       "visibility": "public",
-      "description": "empty-state 的 indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
+      "description": "empty-state 的 indicator、root 部件 --xh-icon-size、block-size、font-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-empty-state-indicator-bg",
+      "component": "empty-state",
+      "part": [
+        "indicator",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "not([data-tone='brand'])",
+        "tone",
+        "tone=brand"
+      ],
+      "defaultToken": [
+        "--xh-_tone-subtle"
+      ],
+      "visibility": "public",
+      "description": "empty-state 的 indicator、root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-empty-state-indicator-box",
+      "component": "empty-state",
+      "part": [
+        "indicator",
+        "root"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "not([data-tone='brand'])",
+        "tone",
+        "tone=brand"
+      ],
+      "defaultToken": [
+        "--xh-control-box-lg"
+      ],
+      "visibility": "public",
+      "description": "empty-state 的 indicator、root 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-empty-state-indicator-fg",
@@ -31013,6 +31065,27 @@
       ],
       "visibility": "public",
       "description": "empty-state 的 indicator 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-empty-state-indicator-radius",
+      "component": "empty-state",
+      "part": [
+        "indicator",
+        "root"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "not([data-tone='brand'])",
+        "tone",
+        "tone=brand"
+      ],
+      "defaultToken": [
+        "--xh-shape-circle"
+      ],
+      "visibility": "public",
+      "description": "empty-state 的 indicator、root 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-empty-state-media-fg",
@@ -31153,7 +31226,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-leading-tight"
+        "--xh-leading-normal"
       ],
       "visibility": "public",
       "description": "empty-state 的 title 部件 line-height 覆盖槽。"

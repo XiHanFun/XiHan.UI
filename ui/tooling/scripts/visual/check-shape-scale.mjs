@@ -83,6 +83,7 @@ const IDENTITY = {
   'color-picker:area-thumb': 'circle',
   'steps:indicator': 'circle',
   'timeline:indicator': 'circle',
+  'empty-state:indicator': 'circle',
   'spinner:root::before': 'circle',
   'color-swatch-picker:indicator::before': 'circle',
   'skeleton:item[data-shape=\'circle\']': 'circle',

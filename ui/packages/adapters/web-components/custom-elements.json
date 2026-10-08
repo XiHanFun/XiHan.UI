@@ -25304,10 +25304,19 @@
               "name": "--xh-empty-state-icon-size"
             },
             {
+              "name": "--xh-empty-state-indicator-bg"
+            },
+            {
+              "name": "--xh-empty-state-indicator-box"
+            },
+            {
               "name": "--xh-empty-state-indicator-fg"
             },
             {
               "name": "--xh-empty-state-indicator-font-size"
+            },
+            {
+              "name": "--xh-empty-state-indicator-radius"
             },
             {
               "name": "--xh-empty-state-media-fg"
