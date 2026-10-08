@@ -351,6 +351,9 @@
 --xh-motion-travel: 0px
 --xh-motion-travel-opacity: 0
 --xh-nav-link-max-w: 12rem
+--xh-nav-row-h-lg: 44px  ← var(--xh-control-box-lg)
+--xh-nav-row-h-md: calc(36px + 4px)  ← calc(var(--xh-control-h-lg) + var(--xh-space-1))
+--xh-nav-row-h-sm: 32px  ← var(--xh-control-h-md)
 --xh-overlay-arrow-size: 8px  ← var(--xh-space-2)
 --xh-overlay-backdrop-blur: 12px
 --xh-overlay-calendar-column-h: calc(28px * 7 + 28px)  ← calc(var(--xh-control-h-sm) * 7 + var(--xh-space-7))

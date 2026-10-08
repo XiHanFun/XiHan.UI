@@ -443,13 +443,13 @@
 | `--xh-side-nav-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-surface` | side-nav 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-side-nav-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | side-nav 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-side-nav-input-font-size` | `input` | `font-size` | `default` | `--xh-_side-nav-row-font-size` | side-nav 的 input 部件 font-size 覆盖槽。 |
-| `--xh-side-nav-input-h` | `input` | `block-size` | `default` | `--xh-_side-nav-row-h` | side-nav 的 input 部件 block-size 覆盖槽。 |
+| `--xh-side-nav-input-h` | `input` | `block-size` | `default` | `--xh-_side-nav-input-h` | side-nav 的 input 部件 block-size 覆盖槽。 |
 | `--xh-side-nav-input-px` | `input` | `padding-inline` | `default` | `--xh-_side-nav-row-px` | side-nav 的 input 部件 padding-inline 覆盖槽。 |
 | `--xh-side-nav-link-font-size` | `branch-trigger`<br>`link` | `font-size` | `default` | `--xh-_side-nav-row-font-size` | side-nav 的 branch-trigger、link 部件 font-size 覆盖槽。 |
 | `--xh-side-nav-link-gap` | `branch-trigger`<br>`link` | `gap` | `default` | `--xh-_side-nav-row-gap` | side-nav 的 branch-trigger、link 部件 gap 覆盖槽。 |
 | `--xh-side-nav-link-h` | `branch-trigger`<br>`link` | `min-block-size` | `default` | `--xh-_side-nav-row-h` | side-nav 的 branch-trigger、link 部件 min-block-size 覆盖槽。 |
 | `--xh-side-nav-link-px` | `branch-trigger`<br>`link` | `padding-inline` | `default` | `--xh-_side-nav-row-px` | side-nav 的 branch-trigger、link 部件 padding-inline 覆盖槽。 |
-| `--xh-side-nav-link-radius` | `branch-trigger`<br>`link` | `border-radius` | `default` | `--xh-shape-control` | side-nav 的 branch-trigger、link 部件 border-radius 覆盖槽。 |
+| `--xh-side-nav-link-radius` | `branch-trigger`<br>`link` | `border-radius` | `default` | `--xh-shape-surface` | side-nav 的 branch-trigger、link 部件 border-radius 覆盖槽。 |
 | `--xh-side-nav-p` | `root` | `padding` | `default` | `--xh-space-2` | side-nav 的 root 部件 padding 覆盖槽。 |
 | `--xh-side-nav-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | side-nav 的 input 部件 color 覆盖槽。 |
 | `--xh-side-nav-popout-bg` | `branch-content` | `background` | `popout` | `--xh-bg-surface` | side-nav 的 branch-content 部件 background 覆盖槽。 |
@@ -468,7 +468,7 @@
 | `--xh-side-nav-row-fg` | `branch-trigger`<br>`link` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`in-path`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `currentColor` | side-nav 的 branch-trigger、link 部件 color 覆盖槽。 |
 | `--xh-side-nav-row-fg-active` | `branch-trigger`<br>`link` | `color` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=page` | `--xh-fg-on-brand-subtle` | side-nav 的 branch-trigger、link 部件 color 覆盖槽。 |
 | `--xh-side-nav-row-fg-in-path` | `branch-trigger`<br>`link` | `color` | `in-path` | `--xh-side-nav-row-fg` | side-nav 的 branch-trigger、link 部件 color 覆盖槽。 |
-| `--xh-side-nav-row-font-weight-active` | `branch-trigger`<br>`link` | `font-weight` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=page` | `--xh-font-weight-regular` | side-nav 的 branch-trigger、link 部件 font-weight 覆盖槽。 |
+| `--xh-side-nav-row-font-weight-active` | `branch-trigger`<br>`link` | `font-weight` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=page` | `--xh-font-weight-semibold` | side-nav 的 branch-trigger、link 部件 font-weight 覆盖槽。 |
 | `--xh-side-nav-search-divider` | `input` | `border-block-end` | `default` | `--xh-material-solid-separator` | side-nav 的 input 部件 border-block-end 覆盖槽。 |
 | `--xh-side-nav-w` | `root` | `inline-size` | `default` | `--xh-sider-w` | side-nav 的 root 部件 inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
