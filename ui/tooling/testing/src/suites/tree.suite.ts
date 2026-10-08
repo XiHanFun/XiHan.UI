@@ -149,12 +149,12 @@ export const treeSuite: ConformanceSuite = {
   fixture: FIXTURE,
   cases: [
     {
-      name: 'variant 落成根上的 data-variant，无框档只换外观、不动任何语义',
+      name: 'variant 落成根上的 data-variant，描边档只换外观、不动任何语义',
       spec: { apg: `${APG}#roles_states_properties` },
-      props: props({ variant: 'ghost' }),
+      props: props({ variant: 'outline' }),
       initial: {
         parts: {
-          root: { 'data-variant': 'ghost' },
+          root: { 'data-variant': 'outline' },
           tree: { 'role': 'tree', 'data-variant': null },
         },
       },
@@ -225,8 +225,8 @@ export const treeSuite: ConformanceSuite = {
           'node-drag-trigger': 7,
         },
         parts: {
-          // 形态恒有值：缺省 outline，读一眼 DOM 就知道这棵树有没有外框
-          'root': { 'data-disabled': null, 'data-variant': 'outline' },
+          // 形态恒有值：缺省 ghost，读一眼 DOM 就知道这棵树有没有外框
+          'root': { 'data-disabled': null, 'data-variant': 'ghost' },
           'label': { id: '@self' },
           'tree': {
             'id': '@self',
