@@ -79,7 +79,7 @@ function sidebarStatus(component: { status?: ComponentStatus }): string {
   return ` <span class="xh-sidebar-status xh-sidebar-status--${status}">${label}</span>`;
 }
 
-const title: string = "XiHan.UI";
+const title: string = "曦寒视图组件文档";
 const description: string = "框架无关的设计系统运行时与组件库";
 const keywords: string
   = "曦寒,曦寒懿,视图组件,组件库,设计系统,Vue,Web Components,官方文档,开源,XiHanFun,XiHan.UI";
