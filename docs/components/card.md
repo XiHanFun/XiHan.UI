@@ -64,7 +64,7 @@ interactive 加标题里的 trigger：整张卡片都是点击区，读屏只读
 
 - root 必需；header、title、description、content、footer 按内容组合。
 - `outline` 是默认卡面，`subtle` 用淡底嵌在别的面里，`ghost` 用于嵌套内容不再画面。
-- 根统一提供 16px 内边距、12px 段间距和 surface 圆角；横向布局与媒体比例由使用场景决定。
+- 根取 surface 圆角、1px 装饰边、无影，自己不留内衬：放在根下的 header 是一条头部条（一行标题时高 46px、紧凑密度 40px，横向内距 16px，底边一道 1px 内部分隔线），标题取区块标题档、正文色；content 四边内距 16px（紧凑密度纵向 12px）、14px 次级色；footer 与正文同起点、底边留同档内距。直接放进根的媒体贴边铺满；横向布局与媒体比例由使用场景决定。
 - 整卡可点用 `interactive` 加标题里的 `trigger`：trigger 是原生链接（给了 `href`）或 `<button type="button">`，路由链接等作者自己的节点用 `asChild`。它的点击区由伪元素铺满整张卡片，卡片里任一处点下去都是在点它；可及名只取 trigger 自己的文字，Tab 位也只有它这一个。不把整张卡片包进 `<a>`：那样读屏会把标题、说明、正文连成一整串链接名逐字念完，卡片里也不能再放按钮（交互元素不能嵌套）。
 - 可交互卡片的反馈按根面分：`outline` 是抬起面，悬停抬高一档海拔（raised → lifted），按下落回 raised 并换到白底阶梯第一档；`subtle` 悬停淡底 200、按下 300；`ghost` 悬停 100、按下 200。抬起只走影、不走位移，减弱动效下仍是淡变。按下只认 trigger 自己的按下，脚部按钮按下时整卡不跟着换面。
 - 键盘聚焦 trigger 时焦点环画在整张卡片外沿，与点击区是同一块轮廓；trigger 自己不再画环。
@@ -152,6 +152,8 @@ interactive 加标题里的 trigger：整张卡片都是点击区，读屏只读
 | `--xh-card-bg-hover` | `root` | `background` | `hover`<br>`interactive`<br>`variant=ghost`<br>`variant=subtle` | `--xh-_card-host-bg-hover`<br>`--xh-bg-subtle` | card 的 root 部件 background 覆盖槽。 |
 | `--xh-card-bg-pressed` | `root` | `background` | `active`<br>`interactive`<br>`not(:has([data-scope='card'][data-part='footer']:active)`<br>`variant=ghost`<br>`variant=outline`<br>`variant=subtle` | `--xh-_card-host-bg-pressed`<br>`--xh-bg-subtle-hover`<br>`--xh-bg-subtle-hover-opaque` | card 的 root 部件 background 覆盖槽。 |
 | `--xh-card-border` | `root` | `border` | `default` | `--xh-border-default` | card 的 root 部件 border 覆盖槽。 |
+| `--xh-card-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` | card 的 content 部件 color 覆盖槽。 |
+| `--xh-card-content-font-size` | `content` | `font-size` | `default` | `--xh-text-body-size` | card 的 content 部件 font-size 覆盖槽。 |
 | `--xh-card-content-gap` | `content` | `gap` | `default` | `--xh-space-1` | card 的 content 部件 gap 覆盖槽。 |
 | `--xh-card-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | card 的 description 部件 color 覆盖槽。 |
 | `--xh-card-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | card 的 description 部件 font-size 覆盖槽。 |
@@ -159,16 +161,19 @@ interactive 加标题里的 trigger：整张卡片都是点击区，读屏只读
 | `--xh-card-fg` | `root` | `color` | `default` | `--xh-fg-default` | card 的 root 部件 color 覆盖槽。 |
 | `--xh-card-font-size` | `root` | `font-size` | `default` | `--xh-text-label-size` | card 的 root 部件 font-size 覆盖槽。 |
 | `--xh-card-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | card 的 footer 部件 gap 覆盖槽。 |
-| `--xh-card-gap` | `root` | `gap` | `default` | `--xh-space-3` | card 的 root 部件 gap 覆盖槽。 |
+| `--xh-card-gap` | `root` | `gap` | `default` | `0` | card 的 root 部件 gap 覆盖槽。 |
 | `--xh-card-glint-duration` | `root` | `animation` | `@media (hover: hover) and (pointer: fine) and (forced-colors: none)`<br>`hover`<br>`interactive`<br>`material=liquid`<br>`where([data-material='liquid'])` | `--xh-motion-duration-glint` | card 的 root 部件 animation 覆盖槽。 |
+| `--xh-card-header-border` | `header`<br>`root` | `border-block-end` | `default` | `--xh-border-subtle` | card 的 header、root 部件 border-block-end 覆盖槽。 |
+| `--xh-card-header-h` | `header`<br>`root` | `min-block-size` | `default` | `--xh-surface-header-h` | card 的 header、root 部件 min-block-size 覆盖槽。 |
+| `--xh-card-header-py` | `header`<br>`root` | `padding-block` | `default` | `--xh-space-2` | card 的 header、root 部件 padding-block 覆盖槽。 |
 | `--xh-card-leading` | `root` | `line-height` | `default` | `--xh-text-body-leading` | card 的 root 部件 line-height 覆盖槽。 |
-| `--xh-card-p` | `root` | `padding` | `default` | `--xh-surface-pad-lg` | card 的 root 部件 padding 覆盖槽。 |
+| `--xh-card-p` | `content`<br>`footer`<br>`header`<br>`root` | `padding`<br>`padding-inline` | `default` | `--xh-space-4`<br>`--xh-surface-pad-lg` | card 的 content、footer、header、root 部件 padding、padding-inline 覆盖槽。 |
 | `--xh-card-radius` | `root`<br>`trigger` | `border-radius` | `default`<br>`interactive` | `--xh-shape-surface` | card 的 root、trigger 部件 border-radius 覆盖槽。 |
 | `--xh-card-shadow` | `root` | `box-shadow` | `default`<br>`variant=ghost`<br>`variant=subtle` | `--xh-elevation-raised`<br>`none` | card 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-card-shadow-hover` | `root` | `box-shadow` | `hover`<br>`interactive`<br>`variant=outline` | `--xh-elevation-lifted` | card 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-card-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | card 的 title 部件 color 覆盖槽。 |
-| `--xh-card-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | card 的 title 部件 font-size 覆盖槽。 |
-| `--xh-card-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | card 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-card-title-font-size` | `title` | `font-size` | `default` | `--xh-text-heading-3-size` | card 的 title 部件 font-size 覆盖槽。 |
+| `--xh-card-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-heading-3-weight` | card 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-card-title-leading` | `title` | `line-height` | `default` | `--xh-leading-tight` | card 的 title 部件 line-height 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
@@ -188,4 +193,4 @@ interactive 加标题里的 trigger：整张卡片都是点击区，读屏只读
 
 ### RTL
 
-只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走。

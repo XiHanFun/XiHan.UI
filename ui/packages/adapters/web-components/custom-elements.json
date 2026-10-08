@@ -5563,6 +5563,12 @@
               "name": "--xh-card-border"
             },
             {
+              "name": "--xh-card-content-fg"
+            },
+            {
+              "name": "--xh-card-content-font-size"
+            },
+            {
               "name": "--xh-card-content-gap"
             },
             {
@@ -5588,6 +5594,15 @@
             },
             {
               "name": "--xh-card-glint-duration"
+            },
+            {
+              "name": "--xh-card-header-border"
+            },
+            {
+              "name": "--xh-card-header-h"
+            },
+            {
+              "name": "--xh-card-header-py"
             },
             {
               "name": "--xh-card-leading"

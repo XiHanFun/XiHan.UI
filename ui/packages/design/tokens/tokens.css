@@ -526,6 +526,7 @@
     --xh-surface-pad-md: var(--xh-space-3);
     --xh-surface-pad-lg: var(--xh-space-4);
     --xh-surface-action-inset: var(--xh-space-3);
+    --xh-surface-header-h: 46px;
     --xh-chart-height: 20rem;
     --xh-chart-bar-max: var(--xh-space-6);
     --xh-chart-gap: var(--xh-stroke-thick);
@@ -628,6 +629,7 @@
     --xh-surface-pad-sm: var(--xh-space-1_5);
     --xh-surface-pad-md: var(--xh-space-2);
     --xh-surface-pad-lg: var(--xh-space-3);
+    --xh-surface-header-h: 40px;
     --xh-section-py-sm: var(--xh-space-3);
     --xh-section-py-md: var(--xh-space-4);
     --xh-section-py-lg: var(--xh-space-6);

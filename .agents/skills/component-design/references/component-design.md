@@ -419,6 +419,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | `--xh-control-action-size` | 24px | 20px | xs 动作钮、sm 字段里的 field-inset 钮 |
 | `--xh-chip-h-sm` / `md` / `lg` | 20 / 24 / 28px | 18 / 20 / 24px | 状态 chip（Tag）的块尺寸：比同档控件矮一截 |
 | `--xh-marker-size-sm` / `md` / `lg` | 24 / 28 / 32px | 20 / 24 / 28px | 盛序号或对号的状态圆（Steps 序号圆点）的直径：比同档控件矮一档 |
+| `--xh-surface-header-h` | 46px | 40px | 卡片头部条的最小块尺寸：一行区块标题加上下留白 |
 | `--xh-nav-row-h-sm` / `md` / `lg` | 32 / 40 / 44px | 28 / 36 / 40px | 导航行（SideNav 分支与链接）：比同档控件高一截，整列扫读更松 |
 | `--xh-control-indicator-sm` / `md` / `lg` | 12 / 16 / 20px | 10 / 14 / 18px | 勾选方框、单选圆、状态字形、行内拖拽把手 |
 | `--xh-glyph-size-sm` … `4xl` | 16 / 20 / 24 / 32 / 40 / 56 / 72px | | 图标与插图，见 §6.5 |
@@ -519,6 +520,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | EmptyState | 说明行宽上限 32rem |
 | CodeView | 页头最小高 `control-h-lg` |
 | Marquee | 块高 10rem |
+| Card | 根不留内衬；头部条最小高 `--xh-surface-header-h`（46 / 紧凑 40px）、横向内衬 16px、底边 1px `--xh-border-subtle`，标题 heading-3；正文内衬 16px（紧凑纵向 `--xh-surface-pad-lg` 12px）、14px `--xh-fg-muted`；页脚与正文同起点 |
 
 #### 标记与小件
 
