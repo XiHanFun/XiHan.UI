@@ -263,30 +263,52 @@ const sidebar: DefaultTheme.Sidebar = {
 
 const nav: DefaultTheme.NavItem[] = [
   {
-    text: "开始",
-    link: "/introduction",
+    text: "指南",
     activeMatch:
-      "^/(introduction|overview|installation|quickstart|npm-package-dependency|faq)$",
+      "^/(introduction|overview|installation|quickstart|npm-package-dependency|faq|(guide|adapters|runtime|examples)/.*)$",
+    items: [
+      {
+        text: "快速开始",
+        items: [
+          { text: "介绍", link: "/introduction" },
+          { text: "快速上手", link: "/quickstart" },
+          { text: "常见问题", link: "/faq" },
+        ],
+      },
+      {
+        text: "深入",
+        items: [
+          { text: "核心概念", link: "/guide/anatomy" },
+          { text: "适配器", link: "/adapters/vue" },
+          { text: "服务与运行时", link: "/runtime/" },
+          { text: "场景示例", link: "/examples/" },
+        ],
+      },
+    ],
   },
   { text: "设计", link: "/design/", activeMatch: "/design/" },
   { text: "组件", link: "/components/", activeMatch: "/components/" },
   {
-    text: "指南",
-    link: "/guide/anatomy",
-    activeMatch: "^/(guide|adapters|runtime)/",
-  },
-  { text: "示例", link: "/examples/", activeMatch: "/examples/" },
-  {
-    text: "社区",
+    text: "生态",
     items: [
-      { text: "官方网站", link: "https://www.xihanfun.com" },
       {
-        text: "贡献指南",
-        link: "https://docs.xihanfun.com/cosmos/contributing",
+        text: "官方生态",
+        items: [
+          { text: "开发框架", link: "https://framework.docs.xihanfun.com" },
+          { text: "视图组件", link: "/" },
+          { text: "基础应用", link: "https://basicapp.docs.xihanfun.com" },
+        ],
       },
     ],
   },
-  // 版本号本身就是一组：更新日志直接挂在它下面，不再套一层"版本"标题
+  {
+    text: "支持",
+    items: [
+      { text: "公约", link: "https://docs.xihanfun.com/cosmos/code-of-conduct" },
+      { text: "参与", link: "https://docs.xihanfun.com/cosmos/contributing" },
+      { text: "赞助", link: "https://docs.xihanfun.com/cosmos/sponsor" },
+    ],
+  },
   {
     text: `v${version}`,
     items: [{ text: "更新日志", link: "/changelog" }],
