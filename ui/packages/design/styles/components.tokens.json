@@ -36939,7 +36939,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "grid-list 的 label 部件 font-weight 覆盖槽。"
