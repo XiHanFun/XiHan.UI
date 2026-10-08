@@ -326,7 +326,7 @@
 --xh-motion-loop-breathe: 3600ms
 --xh-motion-loop-caret: 1000ms
 --xh-motion-loop-shimmer: 1600ms
---xh-motion-loop-spin: 640ms
+--xh-motion-loop-spin: 1000ms
 --xh-motion-scale-breathe: 0.82
 --xh-motion-scale-drag: 1.12
 --xh-motion-scale-enter: 0.96
