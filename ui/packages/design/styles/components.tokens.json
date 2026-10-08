@@ -72298,13 +72298,16 @@
         "highlighted",
         "is(:hover, [data-highlighted])",
         "not([data-disabled])",
+        "not([data-tone])",
         "not([data-variant='solid'])",
         "tone",
+        "variant=ghost",
         "variant=solid"
       ],
       "defaultToken": [
         "--xh-_tone-subtle-hover",
-        "--xh-bg-subtle"
+        "--xh-bg-subtle",
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "tag-group 的 list、root 部件 background 覆盖槽。"
@@ -72323,14 +72326,17 @@
         "disabled",
         "is(:active, [data-pressed])",
         "not([data-disabled])",
+        "not([data-tone])",
         "not([data-variant='solid'])",
         "pressed",
         "selectable",
         "tone",
+        "variant=ghost",
         "variant=solid"
       ],
       "defaultToken": [
         "--xh-_tone-subtle-active",
+        "--xh-bg-subtle-active",
         "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
@@ -72468,7 +72474,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1_5"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "tag-group 的 list 部件 gap 覆盖槽。"
