@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{o as t}from"./radio-group.0iUu0GI7.js";var n=e(),r=[{value:`day`,label:`日`},{value:`week`,label:`周`},{value:`month`,label:`月`}];function i(){return(0,n.jsx)(t,{variant:`segmented`,collection:r,defaultValue:`week`,label:`时间粒度`})}export{i as default};

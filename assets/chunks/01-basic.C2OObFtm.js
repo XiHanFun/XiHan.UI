@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CWLBoBiw.js";import{a as t,i as n,n as r,r as i,t as a}from"./text-field.F2YlhafU.js";var o=e();function s(){return(0,o.jsxs)(t,{name:`email`,type:`email`,placeholder:`输入你的邮箱`,clearable:!0,children:[(0,o.jsx)(n,{children:`邮箱`}),(0,o.jsxs)(r,{children:[(0,o.jsx)(i,{}),(0,o.jsx)(a,{})]})]})}export{s as default};
