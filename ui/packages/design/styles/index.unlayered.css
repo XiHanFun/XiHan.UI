@@ -16174,7 +16174,8 @@
 
 /* 展开着的标题栏与正文之间一条分隔线，与条与条之间的线同色 */
 .xh-scope-accordion[data-part='content'][data-state='open'] {
-  border-block-start: var(--xh-stroke-thin) solid var(--xh-accordion-item-border, var(--xh-border-default));
+  border-block-start: var(--xh-stroke-thin) solid
+    var(--xh-accordion-content-border, var(--xh-accordion-item-border, var(--xh-border-default)));
 }
 
 /* 展开与收起只在开合时播：首帧就在的展开 / 收起直接呈现（data-instant） */

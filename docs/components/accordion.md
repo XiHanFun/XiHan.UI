@@ -309,6 +309,7 @@ ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档�
 | --- | --- | --- | --- | --- | --- |
 | `--xh-accordion-border` | `root` | `border` | `variant=outline` | `--xh-border-default` | accordion 的 root 部件 border 覆盖槽。 |
 | `--xh-accordion-content-bg` | `content`<br>`root` | `background` | `default`<br>`variant=subtle` | `--xh-bg-muted`<br>`transparent` | accordion 的 content、root 部件 background 覆盖槽。 |
+| `--xh-accordion-content-border` | `content` | `border-block-start` | `state=open` | `--xh-accordion-item-border` | accordion 的 content 部件 border-block-start 覆盖槽。 |
 | `--xh-accordion-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | accordion 的 content 部件 color 覆盖槽。 |
 | `--xh-accordion-content-font-size` | `content` | `font-size` | `default` | `--xh-text-body-size` | accordion 的 content 部件 font-size 覆盖槽。 |
 | `--xh-accordion-content-pb` | `content` | `padding-block-end` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default` | `--xh-_accordion-content-pb` | accordion 的 content 部件 padding-block-end 覆盖槽。 |
