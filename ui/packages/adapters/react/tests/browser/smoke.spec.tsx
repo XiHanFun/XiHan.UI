@@ -28,16 +28,16 @@ describe('浏览器态地基', () => {
     // 皮肤在场的标记：switch.css 给整个 scope 灌的那个私有槽
     expect(style.getPropertyValue('--xh-switch-skin').trim()).toBe('1')
 
-    // 内衬 = --xh-space-0_5。皮肤缺席时这里是 UA 给按钮的 1px，两者不同值，量到的不是浏览器默认值
-    expect(style.paddingTop).toBe('2px')
-    expect(style.paddingLeft).toBe('2px')
+    // 内衬 = md 档的 --xh-space-1。皮肤缺席时这里是 UA 给按钮的 1px，两者不同值，量到的不是浏览器默认值
+    expect(style.paddingTop).toBe('4px')
+    expect(style.paddingLeft).toBe('4px')
 
     // 圆角 = --xh-shape-pill → --xh-radius-full
     expect(style.borderTopLeftRadius).toBe('9999px')
 
-    // 可见盒子：轨道高 = --xh-switch-track-h-md，轨道宽 = 两倍轨道高 − 两条内衬
+    // 可见盒子：轨道高 = --xh-switch-track-h-md（24px），轨道宽 = 两倍轨道高 − 两条内衬
     const rect = track.getBoundingClientRect()
-    expect(rect.height).toBe(22)
+    expect(rect.height).toBe(24)
     expect(rect.width).toBe(40)
 
     // 滑块边长 = 轨道高 − 两条内衬，行程因此正好等于自身边长
@@ -45,7 +45,7 @@ describe('浏览器态地基', () => {
     if (!thumb)
       throw new Error('switch 的 thumb 部件没渲出来')
     const thumbRect = thumb.getBoundingClientRect()
-    expect(thumbRect.height).toBe(18)
-    expect(thumbRect.width).toBe(18)
+    expect(thumbRect.height).toBe(16)
+    expect(thumbRect.width).toBe(16)
   })
 })
