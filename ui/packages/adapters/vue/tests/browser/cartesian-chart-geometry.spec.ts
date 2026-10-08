@@ -176,7 +176,7 @@ describe('提示框', () => {
     expect(style.borderTopStyle).toBe('solid')
     expect(style.borderTopColor).not.toBe('rgba(0, 0, 0, 0)')
     expect(style.boxShadow).toBe(tokenValue('box-shadow', '--xh-material-frosted-shadow'))
-    expect(style.borderTopLeftRadius).toBe('12px')
+    expect(style.borderTopLeftRadius).toBe(tokenValue('border-top-left-radius', '--xh-shape-overlay'))
     // 提示框不接指针：跟着指针走时不挡住下面的标记
     expect(style.pointerEvents).toBe('none')
     expect(tooltip.parentElement).toBe(one('root'))

@@ -3,11 +3,12 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhListboxRoot } from '../../src'
+import { tokenValue } from './design-token'
 import { pressPointer, releasePointer } from './pointer-press'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-// 列表框的选中与树选择同一种读法：透明底 + 行尾对号，正文颜色与字重保持 rest；
+// 列表框的选中与树选择同一种读法：透明底 + 行尾对号，正文颜色保持 rest、字重升到 medium；
 // 悬停 100 → 按下 200 只换面，选中行叠悬停 / 按下沿用同一条阶梯；真实选择不改变行几何。
 let app: App | null = null
 let host: HTMLElement | null = null
@@ -75,11 +76,12 @@ describe('列表框的选中反馈', () => {
         for (const row of [apple, banana])
           row.style.transition = 'none'
 
-        // 选中行：不换面、不换字色，字重与未选中一致；对号露面且在文字之后（行尾侧）
+        // 选中行：不换面、不换字色，字重升到 medium（未选中保持 regular）；对号露面且在文字之后（行尾侧）
         const appleStyle = getComputedStyle(apple)
         expect(appleStyle.backgroundColor).toBe('rgba(0, 0, 0, 0)')
         expect(appleStyle.color).toBe(resolve('--xh-fg-default', 'color'))
-        expect(appleStyle.fontWeight).toBe(getComputedStyle(banana).fontWeight)
+        expect(appleStyle.fontWeight).toBe(tokenValue('font-weight', '--xh-font-weight-medium', apple))
+        expect(getComputedStyle(banana).fontWeight).toBe(tokenValue('font-weight', '--xh-font-weight-regular', banana))
         expect(getComputedStyle(indicator(apple)).opacity).toBe('1')
         expect(getComputedStyle(indicator(banana)).opacity).toBe('0')
         const appleMark = indicator(apple).getBoundingClientRect()
