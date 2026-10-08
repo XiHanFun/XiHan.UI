@@ -58,7 +58,7 @@ const sources = new Map()
 for (const name of ASSETS) {
   const path = join(DIST, name)
   if (!(await exists(path)))
-    bail(`缺少 ${name}；生成器是 docs/.vitepress/gen-llms.mjs，接在 config.ts 的 buildEnd 上`)
+    bail(`缺少 ${name}；生成器是 config.ts 的 llms 选项，本站特有的部分在 docs/.vitepress/gen-llms.mjs`)
   sources.set(name, await readFile(path, 'utf8'))
 }
 
