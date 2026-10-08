@@ -34800,7 +34800,7 @@
    */
   .xh-scope-notification[data-part='group'][data-stacked] {
     inset: auto;
-    inline-size: min(var(--xh-notification-item-w, var(--xh-overlay-max-w-lg)), calc(100vw - var(--xh-space-8)));
+    inline-size: min(var(--xh-notification-item-w, var(--xh-overlay-notification-w)), calc(100vw - var(--xh-space-8)));
     block-size: 0;
     padding: 0;
   }
@@ -34876,8 +34876,9 @@
   /*
    * 一张通知：底与描边一律中性，面走 sheet 三件套（--xh-material-elevated-bg / -border / -shadow，
    * 亮暗两档同有 1px 描边）。两种预设共用这张面，排版分开写在下面：
-   * 卡片是两列网格，左列一枚类型字形、右列「标题 + 说明 + 操作」、叉钉在右上角；
-   * 轻提示是一行，行首字形、文本列、操作钮与叉依次排开。
+   * 卡片是两列网格，左列一枚 24px 类型字形、右列「标题 + 说明 + 操作」、叉钉在右上角，
+   * 缺省宽 300px、四边内衬 20px、浮层圆角；
+   * 轻提示是一行，行首字形、文本列、操作钮与叉依次排开，圆角取 control、内衬纵 10 横 16。
    *
    * 卡片的槽带 item 段（--xh-notification-item-*），与摞的 --xh-notification-inset 分开。
    */
@@ -34893,12 +34894,12 @@
     align-items: start;
     column-gap: var(--xh-notification-item-gap, var(--xh-space-3));
     row-gap: var(--xh-notification-item-row-gap, var(--xh-space-2));
-    inline-size: var(--xh-notification-item-w, var(--xh-overlay-max-w-lg));
+    inline-size: var(--xh-notification-item-w, var(--xh-overlay-notification-w));
     /* 摞是整面视口宽的定位面且带内边距，取 100% 就等于自动让出两侧留白，
        窄屏上不必再算一遍 viewport 减法 */
     max-inline-size: 100%;
-    padding-block: var(--xh-notification-item-py, var(--xh-surface-pad-lg));
-    padding-inline: var(--xh-notification-item-px, var(--xh-surface-pad-lg));
+    padding-block: var(--xh-notification-item-py, var(--xh-overlay-sheet-px));
+    padding-inline: var(--xh-notification-item-px, var(--xh-overlay-sheet-px));
     border: var(--xh-stroke-thin) solid var(--xh-notification-item-border, var(--xh-material-elevated-border));
     border-radius: var(--xh-notification-item-radius, var(--xh-shape-overlay));
     background: var(--xh-notification-item-bg, var(--xh-material-elevated-bg));
@@ -34921,8 +34922,10 @@
     align-items: flex-start;
     column-gap: var(--xh-notification-item-gap, var(--xh-space-2));
     inline-size: var(--xh-notification-item-w, var(--xh-overlay-toast-w));
-    padding-block: var(--xh-notification-item-py, var(--xh-space-3));
+    padding-block: var(--xh-notification-item-py, var(--xh-space-2_5));
     padding-inline: var(--xh-notification-item-px, var(--xh-space-4));
+    /* 一行短消息不是一块面板，形状取 control */
+    border-radius: var(--xh-notification-item-radius, var(--xh-shape-control));
     font-size: var(--xh-notification-item-font-size, var(--xh-text-label-size));
     /* 叠摞几何常驻：单独摆放时是恒等位移与比例，放进叠放的一摞后由那边换成层深，
        两处用同一套画法，卡片进出一摞时栅格不跳 */
@@ -35052,7 +35055,7 @@
   .xh-scope-notification[data-part='item'][data-preset='toast']::after {
     content: '';
     position: absolute;
-    inset-block-start: var(--xh-notification-item-py, var(--xh-space-3));
+    inset-block-start: var(--xh-notification-item-py, var(--xh-space-2_5));
     inset-inline-start: var(--xh-notification-item-px, var(--xh-space-4));
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -35089,9 +35092,9 @@
   }
 
   /* 卡片：独占第一列第一行，并与标题首行顶对齐：盒高取一行标题的行高，
-     字形在盒里居中，标题字号改了也不会错位 */
+     字形在盒里居中，标题字号改了也不会错位。卡片的类型字形 24px，与 16px 标题的一行（24px）同高 */
   .xh-scope-notification[data-part='item-indicator'] {
-    --xh-icon-size: var(--xh-notification-indicator-size, var(--xh-glyph-size-md));
+    --xh-icon-size: var(--xh-notification-indicator-size, var(--xh-glyph-size-lg));
 
     grid-column: 1;
     grid-row: 1;
@@ -35099,13 +35102,15 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    block-size: calc(var(--xh-notification-title-font-size, var(--xh-text-label-size)) * var(--xh-leading-tight));
-    inline-size: var(--xh-notification-indicator-size, var(--xh-glyph-size-md));
+    block-size: calc(var(--xh-notification-title-font-size, var(--xh-text-heading-3-size)) * var(--xh-leading-normal));
+    inline-size: var(--xh-notification-indicator-size, var(--xh-glyph-size-lg));
     color: var(--xh-notification-indicator-fg, var(--xh-_tone-fg));
   }
 
-  /* 轻提示：方盒自带一圈内衬，与间距合起来让出字形到正文的那段距离 */
+  /* 轻提示：字形取 md 档 20px；方盒自带一圈内衬，与间距合起来让出字形到正文的那段距离 */
   .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-indicator']:where(.xh-scope-notification) {
+    --xh-icon-size: var(--xh-notification-indicator-size, var(--xh-glyph-size-md));
+
     flex: none;
     box-sizing: content-box;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -35181,19 +35186,24 @@
     display: none;
   }
 
+  /* 卡片标题：面板标题档、正文色，一行 24px 与左列字形同高 */
   .xh-scope-notification[data-part='item-title'] {
     /* 作者可能把它写成 h2/p，外边距得先归零，否则卡片内的行距对不上 */
     margin: 0;
     color: var(--xh-notification-title-fg, var(--xh-fg-default));
-    font-size: var(--xh-notification-title-font-size, var(--xh-text-label-size));
-    font-weight: var(--xh-notification-title-font-weight, var(--xh-font-weight-semibold));
-    line-height: var(--xh-notification-title-leading, var(--xh-leading-tight));
+    font-size: var(--xh-notification-title-font-size, var(--xh-text-heading-3-size));
+    font-weight: var(--xh-notification-title-font-weight, var(--xh-text-heading-3-weight));
+    line-height: var(--xh-notification-title-leading, var(--xh-leading-normal));
   }
 
-  /* 轻提示的语气落到标题与行首字形：一句话的结果，颜色本身就是信息 */
+  /* 轻提示的语气落到标题与行首字形：一句话的结果，颜色本身就是信息。
+     一行短消息取正文 14px / medium，不用卡片的面板标题档 */
   .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-title']:where(.xh-scope-notification) {
     min-inline-size: 0;
     color: var(--xh-notification-title-fg, var(--xh-_tone-fg));
+    font-size: var(--xh-notification-title-font-size, var(--xh-text-body-size));
+    font-weight: var(--xh-notification-title-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-notification-title-leading, var(--xh-leading-tight));
   }
 
   /* 卡片的叉钉在右上角，标题得给它让位；说明与操作在第二行往下，不受影响。
@@ -35213,13 +35223,16 @@
     max-block-size: var(--xh-notification-description-max-h, var(--xh-viewport-h-md));
     overflow-y: auto;
     overscroll-behavior: contain;
-    color: var(--xh-notification-description-fg, var(--xh-fg-muted));
-    font-size: var(--xh-notification-description-font-size, var(--xh-text-secondary-size));
+    /* 卡片的说明就是正文：14px 正文色 */
+    color: var(--xh-notification-description-fg, var(--xh-fg-default));
+    font-size: var(--xh-notification-description-font-size, var(--xh-text-body-size));
   }
 
-  /* 轻提示的说明只是一行短上下文，行高收紧到正文之下 */
+  /* 轻提示的说明只是一行短上下文：说明档 13px 次级色，行高收紧到正文之下 */
   .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-description']:where(.xh-scope-notification) {
     min-inline-size: 0;
+    color: var(--xh-notification-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-notification-description-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-notification-description-leading, var(--xh-leading-normal));
   }
 
@@ -35327,8 +35340,9 @@
     display: none;
   }
 
-  /* 关闭钮是只有字形的离散动作钮：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环、禁用面全由 Action Control
-     的 icon ghost 档给（卡片投 sm：32px 正方盒；轻提示投 xs：24px，走行级动作钮那一档），组件只映射既有使用者槽。
+  /* 关闭钮是只有字形的离散动作钮：盒几何、悬停 / 按下与按压、粗指针热区、焦点环、禁用面全由 Action Control
+     的 icon ghost 档给（卡片投 sm；轻提示投 xs，走行级动作钮那一档），组件只映射既有使用者槽。
+     叉一律 12px（--xh-glyph-size-xs），比钮的随档字形低一档。
      静息透明，sheet 白面承载 hover 100 → pressed 200，写了语气时悬停底跟着语气走（--xh-_tone-subtle） */
   .xh-scope-notification[data-part='item-close-trigger'] {
     --xh-action-visual-size: var(--xh-notification-close-size, var(--xh-_action-profile-visual-size));
@@ -35345,11 +35359,11 @@
     --xh-action-shadow-rest: none;
     --xh-action-shadow-hover: none;
     --xh-action-shadow-pressed: none;
-    /* 叉的字形按钮档取值，与行首那枚 md 档的类型字形分开 */
-    --xh-icon-size: var(--xh-notification-icon-size, var(--xh-_action-profile-glyph-size));
+    /* 叉的字形与行首那枚类型字形分开取尺 */
+    --xh-icon-size: var(--xh-notification-icon-size, var(--xh-glyph-size-xs));
   }
 
-  /* 卡片：钉在右上角的内衬处，不参与网格排布——留在流里它会变成正文下面的第三行 */
+  /* 卡片：钉在右上角、距上与右各 12px，不参与网格排布——留在流里它会变成正文下面的第三行 */
   .xh-scope-notification[data-part='item'][data-preset='card'] [data-part='item-close-trigger']:where(.xh-scope-notification) {
     position: absolute;
     inset-block-start: var(--xh-notification-close-inset, var(--xh-surface-action-inset));

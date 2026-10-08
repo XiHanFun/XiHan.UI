@@ -491,6 +491,7 @@ export const tokens = {
   "--xh-overlay-sheet-px": "var(--xh-space-5)",
   "--xh-overlay-sheet-body-py": "var(--xh-space-6)",
   "--xh-overlay-sheet-footer-py": "var(--xh-space-4)",
+  "--xh-overlay-notification-w": "18.75rem",
   "--xh-overlay-toast-w": "28.75rem",
   "--xh-overlay-backdrop-blur": "12px",
   "--xh-text-label-size": "var(--xh-font-size-md)",
