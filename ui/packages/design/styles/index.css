@@ -44808,7 +44808,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--xh-tag-group-list-gap, var(--xh-space-1_5));
+    gap: var(--xh-tag-group-list-gap, var(--xh-space-2));
   }
 
   .xh-scope-tag-group[data-part='list'][hidden] {
@@ -44856,13 +44856,13 @@
     cursor: pointer;
   }
 
-  /* 按下去要有回应：可选的芯片是一颗定尺的离散控件，整枚轻微下压并同时换底
-     （白底承载 hover 100 → pressed 200），松手即弹回。置灰的不压；
-     指针 :active 与 Headless 投影的 data-pressed 看见同一副按压面 */
+  /* 按下去要有回应：可选的芯片是一颗定尺的离散控件，按下换底并取按压缩放，松手即弹回。
+     标签静息就是淡底，按淡底阶梯走 hover 200 → pressed 300；无壳档静息透明，走白底阶梯（见下）。
+     置灰的不压；指针 :active 与 Headless 投影的 data-pressed 看见同一副按压面 */
   .xh-scope-tag-group[data-part='list']
     > .xh-scope-tag[data-part='root'][data-selectable]:not([data-disabled]):not([data-variant='solid']):is(:active, [data-pressed]) {
     scale: var(--xh-motion-scale-press);
-    background: var(--xh-tag-group-item-bg-pressed, var(--xh-bg-subtle-hover));
+    background: var(--xh-tag-group-item-bg-pressed, var(--xh-bg-subtle-active));
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
   }
@@ -44890,13 +44890,24 @@
     background: var(--xh-tag-group-item-bg-pressed-solid, var(--xh-_tone-active, var(--xh-bg-brand-active)));
   }
 
-  /* 悬停与键盘锚点共用白底承载的 hover 档（hover 100 → pressed 200）：
+  /* 悬停与键盘锚点共用一档：标签静息淡底，hover 升到 200（与静息同为 100 就看不出悬停）。
      data-highlighted 跟的是连接层记的焦点标签，与选中互相独立。
      实心标签不进这里：它的字是实心底上配对的那支前景色，换成灰底就读不出来了；
      实心档在这两档里面不换，回执落在按压缩放与聚焦环上 */
   .xh-scope-tag-group[data-part='list']
     > .xh-scope-tag[data-part='root']:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) {
+    background: var(--xh-tag-group-item-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  /* 无壳档静息透明，坐在白底上：hover 100 → pressed 200 */
+  .xh-scope-tag-group[data-part='list']
+    > .xh-scope-tag[data-part='root'][data-variant='ghost']:not([data-tone]):not([data-disabled]):is(:hover, [data-highlighted]) {
     background: var(--xh-tag-group-item-bg-hover, var(--xh-bg-subtle));
+  }
+
+  .xh-scope-tag-group[data-part='list']
+    > .xh-scope-tag[data-part='root'][data-variant='ghost'][data-selectable]:not([data-tone]):not([data-disabled]):is(:active, [data-pressed]) {
+    background: var(--xh-tag-group-item-bg-pressed, var(--xh-bg-subtle-hover));
   }
 
   .xh-scope-tag-group[data-part='list']
