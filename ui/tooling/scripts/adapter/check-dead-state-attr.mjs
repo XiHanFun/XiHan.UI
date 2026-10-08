@@ -98,7 +98,6 @@ const HOOKS = {
   'download-trigger:data-size': '控件尺寸由同节点的 data-xh-action-size 交给 Action Control 配方；data-size 保留为作者样式钩子',
   'download-trigger:data-variant': '形态由同节点的 data-xh-action-variant 交给 Action Control 形态矩阵；data-variant 保留为作者样式钩子',
   'download-trigger:data-state': '在途的视觉由同节点的 data-loading 交给加载环配方与皮肤的淡出档；完整状态值（idle / preparing / done / error）保留为作者样式钩子',
-  'back-top:data-size': '回顶钮的尺寸由触发器身上的 data-xh-action-size 交给 Action Control floating 档；root 上的 data-size 保留为作者按整件尺寸写样式的钩子',
   'clipboard:data-variant': '复制钮的形态由它自己身上的 data-xh-action-variant 交给 Action Control 形态矩阵；root 上的 data-variant 保留为作者按整件形态写样式的钩子',
   'toggle:data-icon-only': '图标按钮几何由同节点的 data-xh-action-profile=icon 交给 Action Control 配方；data-icon-only 保留为作者样式钩子',
   'cascader:data-load-state': '懒分支的标准视觉由 data-loading、data-error 与它那一列里的状态部件承载；完整状态值保留为作者样式钩子',
