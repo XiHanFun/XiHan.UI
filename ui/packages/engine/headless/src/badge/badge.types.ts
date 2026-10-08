@@ -12,8 +12,8 @@ export type BadgePlacement = 'top-end' | 'top-start' | 'bottom-end' | 'bottom-st
 
 export interface BadgeProps {
   /**
-   * 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色，默认 neutral。
-   * 角标实际使用中主要为 danger（未读红点）与 success / neutral（在线 / 离线点）。
+   * 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色，默认 danger（未读红点）。
+   * 在线 / 离线这类状态点显式写 success / neutral。
    */
   tone?: Tone
   /** 尺寸：sm / md / lg。影响圆点直径、两位数时的最小宽度与字号。 */

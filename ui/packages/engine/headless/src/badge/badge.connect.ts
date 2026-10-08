@@ -21,7 +21,7 @@ export function connectBadge<T extends PropTypes>(
   const { prop, context, scope } = service
   const dot = prop('dot')
   const placement = prop('placement') ?? 'top-end'
-  const tone = prop('tone') ?? 'neutral'
+  const tone = prop('tone') ?? 'danger'
 
   // 没有未读就不该有角标；显式要求显示 0 的除外
   const visible = badgeVisible({ count: prop('count'), showZero: prop('showZero') })
