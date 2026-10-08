@@ -6,10 +6,13 @@ import { afterEach, describe, expect, it } from 'vitest'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-/** 与 css/tone.css 的四条 --xh-_tone-border-control 规则逐条对上。 */
+/**
+ * 与 css/tone.css 的四条 --xh-_tone-border-control 规则逐条对上：
+ * warning 取 700 / 600 档，neutral 取冷灰阶的 600 / 550 档。
+ */
 const BORDER_CONTROL: Record<string, { light: string, dark: string }> = {
   warning: { light: 'oklch(0.62 0.15 70)', dark: 'oklch(0.705 0.16 70)' },
-  neutral: { light: 'oklch(0.439 0.006 258)', dark: 'oklch(0.52 0.006 258)' },
+  neutral: { light: 'oklch(0.461 0.018 258)', dark: 'oklch(0.52 0.018 256)' },
 }
 
 let host: HTMLElement | null = null
