@@ -1,9 +1,10 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-// 字段族七家都已接入 Field Chrome 家族配方：静息即描边式（canvas 底、border-control 描边、无阴影），
+// 字段族七家都已接入 Field Chrome 家族配方：静息即描边式（字段淡底、border-control 描边、无阴影），
 // 视觉盒由 chrome 节点上的 data-xh-field-chrome / data-xh-field-size 画，这里的静态夹具照连接层的投影写。
 // field 的 control 就是作者的原生 input，它自身就是 chrome 节点。
 const FAMILIES = ['field', 'text-field', 'number-field', 'date-field', 'date-picker', 'time-field', 'time-picker'] as const
@@ -133,36 +134,36 @@ describe('字段族默认视觉盒', () => {
     mount()
     for (const family of FAMILIES) {
       const value = exterior(control(family))
-      expect(value.height, family).toBe(36)
-      expect(value.radius, family).toBe('4px')
+      expect(value.height, family).toBe(tokenLength('--xh-control-h-md'))
+      expect(value.radius, family).toBe(`${tokenLength('--xh-shape-control')}px`)
       expect(value.borderWidth, family).toBe('1px')
     }
   })
 
-  it('七个字段静息为描边式：不填底、border-control 描边（与装饰边 border-default 同色）、无阴影', () => {
+  it('七个字段静息为描边式：字段淡底、border-control 描边（与装饰边 border-default 同色）、无阴影', () => {
     mount()
     for (const family of FAMILIES) {
       const value = exterior(control(family))
-      expect(value.background, family).toBe('rgba(0, 0, 0, 0)')
+      expect(value.background, family).toBe(resolveColor('var(--xh-bg-field)'))
       expect(value.borderColor, family).toBe(resolveColor('var(--xh-border-control)'))
       expect(value.borderColor, family).toBe(resolveColor('var(--xh-border-default)'))
       expect(value.shadow, family).toBe('none')
     }
   })
 
-  it('七个字段悬停换 border-control-hover 描边与淡混底，仍无阴影', async () => {
+  it('七个字段悬停描边升 border-strong、底不变，仍无阴影', async () => {
     mount()
     for (const family of FAMILIES) {
       await userEvent.hover(control(family))
       await settle()
       const value = exterior(control(family))
-      expect(value.background, family).toBe(resolveColor('color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent)'))
-      expect(value.borderColor, family).toBe(resolveColor('var(--xh-border-control-hover)'))
+      expect(value.background, family).toBe(resolveColor('var(--xh-bg-field)'))
+      expect(value.borderColor, family).toBe(resolveColor('var(--xh-border-strong)'))
       expect(value.shadow, family).toBe('none')
     }
   })
 
-  it('七个字段聚焦时由同一外壳绘制描边与焦点环', async () => {
+  it('七个字段聚焦时由同一外壳换聚焦描边，不画焦点环', async () => {
     mount()
     const states: Array<Record<string, string>> = []
     const animated: boolean[] = []
@@ -182,7 +183,8 @@ describe('字段族默认视觉盒', () => {
       })
     }
     expect(animated.every(Boolean)).toBe(true)
-    expect(states[0]?.outlineStyle).toBe('solid')
+    expect(states[0]?.borderColor).toBe(resolveColor('var(--xh-border-control-focus)'))
+    expect(states[0]?.outlineStyle).toBe('none')
     for (const state of states.slice(1))
       expect(state).toEqual(states[0])
   })

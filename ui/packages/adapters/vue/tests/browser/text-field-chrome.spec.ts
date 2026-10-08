@@ -10,6 +10,7 @@ import {
   XhTextFieldRoot,
   XhTextFieldSuffix,
 } from '../../src'
+import { tokenLength, tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -56,16 +57,13 @@ afterEach(async () => {
 })
 
 describe('field Chrome 尺寸与布局', () => {
-  it.each([
-    { density: 'comfortable' as const, heights: [32, 36, 40] },
-    { density: 'compact' as const, heights: [28, 32, 36] },
-  ])('$density：TextField 三尺寸只跟语义密度令牌变化', ({ density, heights }) => {
+  it.each(['comfortable', 'compact'] as const)('%s：TextField 三尺寸只跟语义密度令牌变化', (density) => {
     mount(() => h('div', null, ['sm', 'md', 'lg'].map(size => field({ size }))), density)
     const controls = [...host!.querySelectorAll<HTMLElement>('[data-xh-field-chrome]')]
     expect(controls).toHaveLength(3)
     controls.forEach((control, index) => {
       expect(control.dataset.xhFieldSize).toBe(['sm', 'md', 'lg'][index])
-      expect(control.getBoundingClientRect().height).toBe(heights[index])
+      expect(control.getBoundingClientRect().height).toBe(tokenLength(`--xh-control-h-${['sm', 'md', 'lg'][index]}`))
     })
   })
 
@@ -75,8 +73,9 @@ describe('field Chrome 尺寸与布局', () => {
     const inputs = [...host!.querySelectorAll<HTMLElement>('[data-xh-field-input]')]
     expect(inputs[0]!.dataset.xhFieldLayout).toBe('single-line')
     expect(inputs[1]!.dataset.xhFieldLayout).toBe('textarea')
-    expect(single!.getBoundingClientRect().height).toBe(36)
-    expect(textarea!.getBoundingClientRect().height).toBeGreaterThanOrEqual(36)
+    const md = tokenLength('--xh-control-h-md')
+    expect(single!.getBoundingClientRect().height).toBe(md)
+    expect(textarea!.getBoundingClientRect().height).toBeGreaterThanOrEqual(md)
     expect(getComputedStyle(inputs[1]!).resize).toBe('vertical')
   })
 
@@ -89,7 +88,7 @@ describe('field Chrome 尺寸与布局', () => {
     control.append(document.createTextNode('Alpha Beta Gamma'))
     host!.append(control)
     expect(getComputedStyle(control).flexWrap).toBe('wrap')
-    expect(control.getBoundingClientRect().height).toBeGreaterThanOrEqual(36)
+    expect(control.getBoundingClientRect().height).toBeGreaterThanOrEqual(tokenLength('--xh-control-h-md'))
   })
 
   it('ime 组合事件保持原生输入路径，不改变 Field Chrome 几何', async () => {
@@ -125,7 +124,10 @@ describe('field Chrome 状态与字段内动作', () => {
     await userEvent.hover(ready)
     expect(getComputedStyle(ready).borderTopColor).not.toBe(restBorder)
     await userEvent.click(input)
-    expect(getComputedStyle(ready).outlineStyle).toBe('solid')
+    // 聚焦不画环：外壳换成聚焦描边与承载面，焦点由描边换色与底色差标出
+    expect(getComputedStyle(ready).outlineStyle).toBe('none')
+    expect(getComputedStyle(ready).borderTopColor).toBe(tokenValue('border-top-color', '--xh-border-control-focus', ready))
+    expect(getComputedStyle(ready).backgroundColor).toBe(tokenValue('background-color', '--xh-bg-surface', ready))
     expect(getComputedStyle(input).outlineStyle).toBe('none')
     await userEvent.tab()
     clear.focus()

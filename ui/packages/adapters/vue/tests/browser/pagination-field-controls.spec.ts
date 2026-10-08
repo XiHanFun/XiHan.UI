@@ -71,33 +71,33 @@ describe('pagination 的每页条数控制器', () => {
 })
 
 describe('pagination 的跳页框接字段家族', () => {
-  it('投影字段外壳，静息取控件描边、透明底、无影', async () => {
+  it('投影字段外壳，静息取控件描边、字段淡底、无影', async () => {
     await mount()
     const jumper = part('pagination', 'jumper')
     expect(jumper.hasAttribute('data-xh-field-chrome')).toBe(true)
     const style = getComputedStyle(jumper)
     expect(style.borderTopColor).toBe(resolved(jumper, 'border-top-color', 'var(--xh-border-control)'))
-    expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(style.backgroundColor).toBe(resolved(jumper, 'background-color', 'var(--xh-bg-field)'))
     expect(style.boxShadow).toBe('none')
   })
 
-  it('悬停升控件悬停边', async () => {
+  it('悬停描边升 strong 档', async () => {
     await mount()
     const jumper = part('pagination', 'jumper')
     await userEvent.hover(jumper)
     await expect.poll(() => getComputedStyle(jumper).borderTopColor)
-      .toBe(resolved(jumper, 'border-top-color', 'var(--xh-border-control-hover)'))
+      .toBe(resolved(jumper, 'border-top-color', 'var(--xh-border-strong)'))
   })
 
-  it('聚焦换聚焦边并画环', async () => {
+  it('聚焦换聚焦边、不画环', async () => {
     await mount()
     const jumper = part('pagination', 'jumper')
-    // 指针挪开：悬停档与聚焦档同时命中时悬停那条更特定，这里只看聚焦
+    // 指针挪开，这里只看聚焦档
     await userEvent.hover(part('pagination', 'item'))
     jumper.focus()
     await expect.poll(() => getComputedStyle(jumper).borderTopColor)
       .toBe(resolved(jumper, 'border-top-color', 'var(--xh-border-control-focus)'))
-    expect(getComputedStyle(jumper).outlineStyle).toBe('solid')
+    expect(getComputedStyle(jumper).outlineStyle).toBe('none')
   })
 
   it('越界的页码判校验失败：换失败边', async () => {

@@ -8,6 +8,7 @@ import {
   XhPromptInputRoot,
   XhPromptInputSubmitTrigger,
 } from '../../src'
+import { pressScale, tokenLength, tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -76,7 +77,7 @@ function tokenColor(name: string): string {
 }
 
 describe('prompt-input 的字段描边外壳', () => {
-  it.each(['light', 'dark'] as const)('%s：外壳走 Field Chrome 描边式（不填底 + border-control + 无影，无顶光无模糊），输入段透明', async (theme) => {
+  it.each(['light', 'dark'] as const)('%s：外壳走 Field Chrome 描边式（字段淡底 + border-control + 无影，无顶光无模糊），输入段透明', async (theme) => {
     document.documentElement.dataset.theme = theme
     mount()
     await settle()
@@ -86,12 +87,12 @@ describe('prompt-input 的字段描边外壳', () => {
     const rootStyle = getComputedStyle(root)
     const inputStyle = getComputedStyle(input)
     expect(root.getAttribute('data-xh-field-chrome')).toBe('')
-    // 描边式不填底：露出宿主的面，边界只由描边承担
-    expect(alpha(rootStyle.backgroundColor)).toBe(0)
+    // 描边式铺字段淡底，边界只由描边承担
+    expect(rootStyle.backgroundColor).toBe(tokenValue('background-color', '--xh-bg-field', root))
     expect(rootStyle.backgroundImage).toBe('none')
     expect(rootStyle.borderTopWidth).toBe('1px')
     expect(rootStyle.borderTopColor).toBe(tokenColor('--xh-border-control'))
-    expect(rootStyle.borderRadius).toBe('8px')
+    expect(rootStyle.borderRadius).toBe(tokenValue('border-top-left-radius', '--xh-shape-surface', root))
     expect(rootStyle.backdropFilter).toBe('none')
     expect(rootStyle.boxShadow).toBe('none')
     expect(input.getAttribute('data-xh-field-input')).toBe('')
@@ -103,12 +104,12 @@ describe('prompt-input 的字段描边外壳', () => {
     input.focus()
     await settle()
     expect(root.matches(':focus-within')).toBe(true)
-    expect(getComputedStyle(root).outlineStyle).toBe('solid')
+    expect(getComputedStyle(root).outlineStyle).toBe('none')
     expect(getComputedStyle(root).borderTopColor).toBe(tokenColor('--xh-border-control-focus'))
     expect(inputStyle.outlineStyle).toBe('none')
   })
 
-  it('发送钮是品牌实心的 Action Control：悬停换底、按下 0.97 缩放，输入为空转灰，生成中降为中性淡底的停止身份', async () => {
+  it('发送钮是品牌实心的 Action Control：悬停换底、按下按压缩放令牌，输入为空转灰，生成中降为中性淡底的停止身份', async () => {
     mount()
     await settle()
     const trigger = part('submit-trigger') as HTMLButtonElement
@@ -117,15 +118,15 @@ describe('prompt-input 的字段描边外壳', () => {
     expect(trigger.getAttribute('data-xh-action-variant')).toBe('solid')
     expect(getComputedStyle(trigger).backgroundColor).toBe(tokenBackground('--xh-bg-brand'))
     expect(getComputedStyle(trigger).color).toBe(tokenColor('--xh-fg-on-brand'))
-    expect(getComputedStyle(trigger).height).toBe('36px')
-    expect(getComputedStyle(trigger).borderRadius).toBe('4px')
+    expect(getComputedStyle(trigger).height).toBe(`${tokenLength('--xh-control-h-md')}px`)
+    expect(getComputedStyle(trigger).borderRadius).toBe(tokenValue('border-top-left-radius', '--xh-shape-control', trigger))
     // 发送身份顶边一条内高光
     expect(getComputedStyle(trigger).boxShadow).not.toBe('none')
     await userEvent.hover(trigger)
     expect(getComputedStyle(trigger).backgroundColor).toBe(tokenBackground('--xh-bg-brand-hover'))
     trigger.dataset.pressed = ''
     expect(getComputedStyle(trigger).backgroundColor).toBe(tokenBackground('--xh-bg-brand-active'))
-    expect(getComputedStyle(trigger).scale).toBe('0.97')
+    expect(getComputedStyle(trigger).scale).toBe(pressScale(trigger))
     delete trigger.dataset.pressed
 
     const input = part('input') as HTMLTextAreaElement
@@ -164,7 +165,7 @@ describe('prompt-input 的字段描边外壳', () => {
     expect(getComputedStyle(part('input')).color).toBe(tokenColor('--xh-fg-default'))
   })
 
-  it('高对比度保持实体描边面与整框焦点环', async () => {
+  it('高对比度保持描边面，聚焦换聚焦描边、不画环', async () => {
     document.documentElement.dataset.contrast = 'more'
     mount()
     await settle()
@@ -172,12 +173,13 @@ describe('prompt-input 的字段描边外壳', () => {
     const root = part('root')
     const input = part('input') as HTMLTextAreaElement
     const style = getComputedStyle(root)
-    expect(alpha(style.backgroundColor)).toBe(0)
+    expect(style.backgroundColor).toBe(tokenValue('background-color', '--xh-bg-field', root))
     expect(style.backdropFilter).toBe('none')
     expect(style.borderTopWidth).toBe('1px')
     input.focus()
     await settle()
-    expect(getComputedStyle(root).outlineStyle).toBe('solid')
+    expect(getComputedStyle(root).borderTopColor).toBe(tokenColor('--xh-border-control-focus'))
+    expect(getComputedStyle(root).outlineStyle).toBe('none')
   })
 
   it.each([
@@ -192,8 +194,8 @@ describe('prompt-input 的字段描边外壳', () => {
     const root = part('root')
     const input = part('input')
     const style = getComputedStyle(root)
-    // 强制色下底由系统 Canvas 顶上（不透明），减少透明度下仍是描边式的透明底
-    expect(alpha(style.backgroundColor)).toBe(feature.name === 'forced-colors' ? 255 : 0)
+    // 强制色下底由系统 Canvas 顶上（不透明），减少透明度下仍是描边式的字段淡底
+    expect(alpha(style.backgroundColor)).toBe(feature.name === 'forced-colors' ? 255 : alpha(tokenValue('background-color', '--xh-bg-field', root)))
     expect(style.backdropFilter).toBe('none')
     expect(style.boxShadow).toBe('none')
     expect(style.backgroundImage).toBe('none')
@@ -207,7 +209,7 @@ describe('prompt-input 的字段描边外壳', () => {
     await settle()
 
     const style = getComputedStyle(part('root'))
-    expect(alpha(style.backgroundColor)).toBe(0)
+    expect(style.backgroundColor).toBe(tokenValue('background-color', '--xh-bg-field', part('root')))
     expect(style.backdropFilter).toBe('none')
     expect(style.boxShadow).toBe('none')
     expect(style.borderTopWidth).toBe('1px')
