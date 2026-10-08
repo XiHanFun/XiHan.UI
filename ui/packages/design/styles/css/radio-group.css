@@ -140,7 +140,7 @@
     --xh-action-cursor-focus-visible: default;
   }
 
-  /* 圆圈是字段家族的控制盒（字段静息形态）：透明底 + --xh-border-control 描边 + 无影。
+  /* 圆圈是控件盒：透明底 + --xh-border-strong 描边（与 Checkbox 方框同一重量）+ 无影。
      不缩放（行级只换面），过渡只有底与描边；按下走 press 时间线、释放同走 micro */
   [data-scope='radio-group'][data-part='indicator'] {
     display: inline-flex;
@@ -149,7 +149,7 @@
     justify-content: center;
     inline-size: var(--xh-radio-group-indicator-size, var(--xh-_radio-group-indicator));
     block-size: var(--xh-radio-group-indicator-size, var(--xh-_radio-group-indicator));
-    border: var(--xh-stroke-thin) solid var(--xh-radio-group-indicator-border, var(--xh-border-control));
+    border: var(--xh-stroke-thin) solid var(--xh-radio-group-indicator-border, var(--xh-border-strong));
     border-radius: var(--xh-radio-group-indicator-radius, var(--xh-shape-circle));
     background: var(--xh-radio-group-indicator-bg, transparent);
     transition:

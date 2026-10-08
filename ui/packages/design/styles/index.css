@@ -21670,14 +21670,15 @@
     /* 实心底上的勾与横杠，同样没写 data-tone 时退回原来的品牌底前景色 */
     --xh-_checkbox-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
 
-    /* 方框接 Action Control icon 档（定尺方框）：盒型、悬停 / 按下 / 禁用面、0.97 缩放与换底、粗指针热区、
-       焦点环由家族配方给，这里只把使用者槽映射到桥接槽。面按字段静息形态取值：透明底 +
-       --xh-border-control 描边 + 无影，不消费海拔与顶光；悬停只把描边升一档，底不动；按下换到 200 档中性面
+    /* 方框接 Action Control icon 档（定尺方框）：盒型、悬停 / 按下 / 禁用面、按压与换底、粗指针热区、
+       焦点环由家族配方给，这里只把使用者槽映射到桥接槽。面取控件盒的静息形态：透明底 +
+       --xh-border-strong 描边（比字段边重一档，小方框要一眼认得出）+ 无影，不消费海拔与顶光；
+       悬停只把描边升一档，底不动；按下换到 200 档中性面
        （白底承载）；边长随 --xh-control-indicator-* 走，不取家族的 profile 尺寸。
        常态 / 勾中 / 校验失败 / 只读只换下面四支私有槽，桥接槽的映射写一次 */
     --xh-_checkbox-bg: var(--xh-checkbox-bg, transparent);
     --xh-_checkbox-bg-pressed: var(--xh-checkbox-bg-pressed, var(--xh-bg-subtle-hover));
-    --xh-_checkbox-border: var(--xh-checkbox-border, var(--xh-border-control));
+    --xh-_checkbox-border: var(--xh-checkbox-border, var(--xh-border-strong));
     --xh-_checkbox-border-hover: var(--xh-checkbox-border-hover, var(--xh-border-control-hover));
 
     --xh-action-visual-size: var(--xh-_checkbox-box);
@@ -21924,7 +21925,7 @@
        没写 data-tone 时退回品牌色 */
     --xh-_checkbox-group-accent: var(--xh-_tone-border-control, var(--xh-bg-brand));
     --xh-_checkbox-group-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
-    /* 方框是字段家族的控制盒（字段静息形态）：透明底 + --xh-border-control 描边 + 无影，不消费海拔与顶光 */
+    /* 方框是控件盒：透明底 + --xh-border-strong 描边（与 Checkbox 同一重量）+ 无影，不消费海拔与顶光 */
     --xh-_checkbox-group-bg: var(--xh-checkbox-group-indicator-bg, transparent);
     /* 条目与全选格是方框的承载面：行自己坐画布走 100 → 200，行面上的方框按淡底容器阶梯再上一档（200 → 300）。
        两支私有槽是这一档的唯一来源——宿主拿它们给 --xh-action-host-bg-* 赋值（桥接槽只写不读），
@@ -22052,7 +22053,7 @@
     justify-content: center;
     inline-size: var(--xh-checkbox-group-indicator-size, var(--xh-_checkbox-group-box));
     block-size: var(--xh-checkbox-group-indicator-size, var(--xh-_checkbox-group-box));
-    border: var(--xh-stroke-thin) solid var(--xh-checkbox-group-indicator-border, var(--xh-border-control));
+    border: var(--xh-stroke-thin) solid var(--xh-checkbox-group-indicator-border, var(--xh-border-strong));
     border-radius: var(--xh-checkbox-group-indicator-radius, var(--xh-shape-inset));
     background-color: var(--xh-_checkbox-group-bg);
     color: var(--xh-checkbox-group-indicator-fg, var(--xh-_checkbox-group-on-accent));
@@ -37483,7 +37484,7 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    border: var(--xh-stroke-thin) solid var(--xh-question-flow-indicator-border, var(--xh-border-control));
+    border: var(--xh-stroke-thin) solid var(--xh-question-flow-indicator-border, var(--xh-border-strong));
     border-radius: var(--xh-question-flow-indicator-radius, var(--xh-shape-inset));
     background: var(--xh-question-flow-indicator-bg, transparent);
     color: var(--xh-question-flow-indicator-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
@@ -38154,7 +38155,7 @@
     --xh-action-cursor-focus-visible: default;
   }
 
-  /* 圆圈是字段家族的控制盒（字段静息形态）：透明底 + --xh-border-control 描边 + 无影。
+  /* 圆圈是控件盒：透明底 + --xh-border-strong 描边（与 Checkbox 方框同一重量）+ 无影。
      不缩放（行级只换面），过渡只有底与描边；按下走 press 时间线、释放同走 micro */
   .xh-scope-radio-group[data-part='indicator'] {
     display: inline-flex;
@@ -38163,7 +38164,7 @@
     justify-content: center;
     inline-size: var(--xh-radio-group-indicator-size, var(--xh-_radio-group-indicator));
     block-size: var(--xh-radio-group-indicator-size, var(--xh-_radio-group-indicator));
-    border: var(--xh-stroke-thin) solid var(--xh-radio-group-indicator-border, var(--xh-border-control));
+    border: var(--xh-stroke-thin) solid var(--xh-radio-group-indicator-border, var(--xh-border-strong));
     border-radius: var(--xh-radio-group-indicator-radius, var(--xh-shape-circle));
     background: var(--xh-radio-group-indicator-bg, transparent);
     transition:
@@ -43151,7 +43152,7 @@
   .xh-scope-table[data-part='row-select-trigger'],
   .xh-scope-table[data-part='column-visibility-trigger'] {
     --xh-_table-trigger-bg: transparent;
-    --xh-_table-trigger-border: var(--xh-table-trigger-border, var(--xh-border-control));
+    --xh-_table-trigger-border: var(--xh-table-trigger-border, var(--xh-border-strong));
     --xh-_table-trigger-fg: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
     --xh-action-fg-rest: var(--xh-_table-trigger-fg);
     --xh-action-fg-hover: var(--xh-_table-trigger-fg);
@@ -49369,7 +49370,7 @@
     justify-content: center;
     inline-size: var(--xh-transfer-checkbox-size, var(--xh-_transfer-box));
     block-size: var(--xh-transfer-checkbox-size, var(--xh-_transfer-box));
-    border: var(--xh-stroke-thin) solid var(--xh-transfer-checkbox-border, var(--xh-border-control));
+    border: var(--xh-stroke-thin) solid var(--xh-transfer-checkbox-border, var(--xh-border-strong));
     border-radius: var(--xh-transfer-checkbox-radius, var(--xh-shape-inset));
     background: var(--xh-transfer-checkbox-bg, transparent);
     color: var(--xh-transfer-checkbox-fg, var(--xh-_transfer-on-accent));

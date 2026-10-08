@@ -563,7 +563,7 @@
   [data-scope='table'][data-part='row-select-trigger'],
   [data-scope='table'][data-part='column-visibility-trigger'] {
     --xh-_table-trigger-bg: transparent;
-    --xh-_table-trigger-border: var(--xh-table-trigger-border, var(--xh-border-control));
+    --xh-_table-trigger-border: var(--xh-table-trigger-border, var(--xh-border-strong));
     --xh-_table-trigger-fg: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
     --xh-action-fg-rest: var(--xh-_table-trigger-fg);
     --xh-action-fg-hover: var(--xh-_table-trigger-fg);

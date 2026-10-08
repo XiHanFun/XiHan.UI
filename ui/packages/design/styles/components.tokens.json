@@ -10711,7 +10711,6 @@
         "where([data-contrast='more'])"
       ],
       "defaultToken": [
-        "--xh-border-control",
         "--xh-border-strong"
       ],
       "visibility": "public",
@@ -11250,7 +11249,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-border-strong"
       ],
       "visibility": "public",
       "description": "checkbox-group 的 indicator、select-all-trigger 部件 border 覆盖槽。"
@@ -57194,7 +57193,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-border-strong"
       ],
       "visibility": "public",
       "description": "question-flow 的 item-indicator 部件 border 覆盖槽。"
@@ -58879,7 +58878,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-border-strong"
       ],
       "visibility": "public",
       "description": "radio-group 的 indicator 部件 border 覆盖槽。"
@@ -70577,7 +70576,7 @@
         "pressed"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-border-strong"
       ],
       "visibility": "public",
       "description": "table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border、border-color 覆盖槽。"
@@ -83430,7 +83429,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-border-strong"
       ],
       "visibility": "public",
       "description": "transfer 的 item-checkbox、select-all-trigger 部件 border 覆盖槽。"
