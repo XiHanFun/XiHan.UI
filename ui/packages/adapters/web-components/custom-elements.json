@@ -354,6 +354,9 @@
               "name": "--xh-accordion-content-bg"
             },
             {
+              "name": "--xh-accordion-content-border"
+            },
+            {
               "name": "--xh-accordion-content-fg"
             },
             {

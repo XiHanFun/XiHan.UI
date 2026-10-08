@@ -42,6 +42,24 @@
       "description": "accordion 的 content、root 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-accordion-content-border",
+      "component": "accordion",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "border-block-start"
+      ],
+      "state": [
+        "state=open"
+      ],
+      "defaultToken": [
+        "--xh-accordion-item-border"
+      ],
+      "visibility": "public",
+      "description": "accordion 的 content 部件 border-block-start 覆盖槽。"
+    },
+    {
       "name": "--xh-accordion-content-fg",
       "component": "accordion",
       "part": [

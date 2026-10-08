@@ -8,6 +8,7 @@
 export type ComponentTokenName
   = | '--xh-accordion-border'
     | '--xh-accordion-content-bg'
+    | '--xh-accordion-content-border'
     | '--xh-accordion-content-fg'
     | '--xh-accordion-content-font-size'
     | '--xh-accordion-content-pb'
