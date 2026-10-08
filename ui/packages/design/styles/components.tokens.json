@@ -39577,6 +39577,24 @@
       "description": "image 的 root 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-image-fallback-bg",
+      "component": "image",
+      "part": [
+        "fallback"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-opaque"
+      ],
+      "visibility": "public",
+      "description": "image 的 fallback 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-image-fallback-fg",
       "component": "image",
       "part": [
@@ -39589,7 +39607,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "image 的 fallback 部件 color 覆盖槽。"
@@ -39607,7 +39625,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "image 的 fallback 部件 font-size 覆盖槽。"
@@ -39629,6 +39647,42 @@
       ],
       "visibility": "public",
       "description": "image 的 fallback 部件 min-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-fallback-px",
+      "component": "image",
+      "part": [
+        "fallback"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-4"
+      ],
+      "visibility": "public",
+      "description": "image 的 fallback 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-fallback-py",
+      "component": "image",
+      "part": [
+        "fallback"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "image 的 fallback 部件 padding-block 覆盖槽。"
     },
     {
       "name": "--xh-image-fit",
@@ -39679,7 +39733,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover-opaque"
+        "--xh-bg-subtle-opaque"
       ],
       "visibility": "public",
       "description": "image 的 placeholder 部件 background 覆盖槽。"
