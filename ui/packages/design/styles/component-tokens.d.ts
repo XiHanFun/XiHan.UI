@@ -2156,6 +2156,7 @@ export type ComponentTokenName
     | '--xh-list-divider'
     | '--xh-list-fg'
     | '--xh-list-item-bg-hover'
+    | '--xh-list-item-content-py'
     | '--xh-list-item-gap'
     | '--xh-list-item-px'
     | '--xh-list-item-py'

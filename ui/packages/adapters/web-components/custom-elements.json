@@ -37790,6 +37790,9 @@
               "name": "--xh-list-item-bg-hover"
             },
             {
+              "name": "--xh-list-item-content-py"
+            },
+            {
               "name": "--xh-list-item-gap"
             },
             {
