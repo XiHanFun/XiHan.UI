@@ -417,7 +417,7 @@
     justify-content: center;
     inline-size: var(--xh-transfer-checkbox-size, var(--xh-_transfer-box));
     block-size: var(--xh-transfer-checkbox-size, var(--xh-_transfer-box));
-    border: var(--xh-stroke-thin) solid var(--xh-transfer-checkbox-border, var(--xh-border-control));
+    border: var(--xh-stroke-thin) solid var(--xh-transfer-checkbox-border, var(--xh-border-strong));
     border-radius: var(--xh-transfer-checkbox-radius, var(--xh-shape-inset));
     background: var(--xh-transfer-checkbox-bg, transparent);
     color: var(--xh-transfer-checkbox-fg, var(--xh-_transfer-on-accent));

@@ -415,7 +415,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `--xh-question-flow-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=md`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | question-flow 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-question-flow-indicator-bg` | `item-indicator` | `background` | `default` | `transparent` | question-flow 的 item-indicator 部件 background 覆盖槽。 |
 | `--xh-question-flow-indicator-bg-checked` | `item-indicator` | `background` | `state=checked` | `--xh-_tone` | question-flow 的 item-indicator 部件 background 覆盖槽。 |
-| `--xh-question-flow-indicator-border` | `item-indicator` | `border` | `default` | `--xh-border-control` | question-flow 的 item-indicator 部件 border 覆盖槽。 |
+| `--xh-question-flow-indicator-border` | `item-indicator` | `border` | `default` | `--xh-border-strong` | question-flow 的 item-indicator 部件 border 覆盖槽。 |
 | `--xh-question-flow-indicator-border-checked` | `item-indicator` | `border-color` | `state=checked` | `--xh-_tone` | question-flow 的 item-indicator 部件 border-color 覆盖槽。 |
 | `--xh-question-flow-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone-on` | question-flow 的 item-indicator 部件 color 覆盖槽。 |
 | `--xh-question-flow-indicator-icon-size` | `item-indicator` | `--xh-icon-size` | `default` | `--xh-_question-flow-indicator-glyph` | question-flow 的 item-indicator 部件 --xh-icon-size 覆盖槽。 |
