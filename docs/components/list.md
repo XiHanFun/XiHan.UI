@@ -158,10 +158,10 @@ size 改变条目的内边距、图文间距与两行文字的字号，不传 si
 | `--xh-list-action-gap` | `item-action` | `gap` | `default` | `--xh-space-2` | list 的 item-action 部件 gap 覆盖槽。 |
 | `--xh-list-bg` | `root` | `background` | `variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | list 的 root 部件 background 覆盖槽。 |
 | `--xh-list-border` | `root` | `border` | `variant=outline` | `--xh-border-default` | list 的 root 部件 border 覆盖槽。 |
-| `--xh-list-content-gap` | `item-content` | `gap` | `default` | `--xh-space-1` | list 的 item-content 部件 gap 覆盖槽。 |
+| `--xh-list-content-gap` | `item-content` | `gap` | `default` | `--xh-space-0_5` | list 的 item-content 部件 gap 覆盖槽。 |
 | `--xh-list-description-fg` | `item-description` | `color` | `default` | `--xh-fg-muted` | list 的 item-description 部件 color 覆盖槽。 |
 | `--xh-list-description-font-size` | `item-description` | `font-size` | `default` | `--xh-_list-description-size` | list 的 item-description 部件 font-size 覆盖槽。 |
-| `--xh-list-divider` | `item`<br>`root` | `border-block-start` | `split` | `--xh-border-subtle` | list 的 item、root 部件 border-block-start 覆盖槽。 |
+| `--xh-list-divider` | `item`<br>`root` | `border-block-start` | `split` | `--xh-border-default` | list 的 item、root 部件 border-block-start 覆盖槽。 |
 | `--xh-list-fg` | `root` | `color` | `default` | `--xh-fg-default` | list 的 root 部件 color 覆盖槽。 |
 | `--xh-list-item-bg-hover` | `item`<br>`root` | `background` | `@media (hover: hover)`<br>`hover`<br>`hoverable` | `--xh-_list-item-bg-hover` | list 的 item、root 部件 background 覆盖槽。 |
 | `--xh-list-item-gap` | `item` | `gap` | `default` | `--xh-_list-item-gap` | list 的 item 部件 gap 覆盖槽。 |
