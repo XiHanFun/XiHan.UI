@@ -49,13 +49,14 @@ function mount(attrs = '') {
 }
 
 describe('slider 字段标签、拇指描边与禁用面', () => {
-  it('字段标签 14 / 500 / fg-default，贴控件 space-1', () => {
+  it('字段标签 14 / 400 / fg-muted，与控件隔 space-2（根的 gap 4 + 标签补白 4）', () => {
     const { root, label } = mount()
     const style = getComputedStyle(label)
     expect(style.fontSize).toBe('14px')
-    expect(style.fontWeight).toBe('500')
-    expect(style.color).toBe(resolvedToken('--xh-fg-default'))
+    expect(style.fontWeight).toBe('400')
+    expect(style.color).toBe(resolvedToken('--xh-fg-muted'))
     expect(getComputedStyle(root).rowGap).toBe('4px')
+    expect(style.marginBlockEnd).toBe('4px')
   })
 
   it('拇指是 raised 面：品牌实心 + border-default 描边 + raised 影；刻度点取 circle', () => {
@@ -68,10 +69,10 @@ describe('slider 字段标签、拇指描边与禁用面', () => {
     expect(getComputedStyle(ticks[0]!).borderTopLeftRadius).toBe('50%')
   })
 
-  it('禁用：不整体压暗，轨道退 100 档、区间与已过刻度换禁用前景、拇指白面无影、标签 fg-subtle', () => {
+  it('禁用：不整体压暗，轨道退 100 档、区间与已过刻度换禁用前景、拇指白面无影、标签 fg-disabled', () => {
     const { root, label, track, range, thumb, ticks } = mount('data-disabled')
     expect(getComputedStyle(root).opacity).toBe('1')
-    expect(getComputedStyle(label).color).toBe(resolvedToken('--xh-fg-subtle'))
+    expect(getComputedStyle(label).color).toBe(resolvedToken('--xh-fg-disabled'))
     expect(getComputedStyle(track).backgroundColor).toBe(resolvedToken('--xh-bg-subtle', 'background-color'))
     expect(getComputedStyle(range).backgroundColor).toBe(resolvedToken('--xh-fg-disabled', 'background-color'))
     const thumbStyle = getComputedStyle(thumb)

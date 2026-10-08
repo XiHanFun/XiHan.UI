@@ -136,7 +136,9 @@
   }
 
   [data-scope='date-range-picker'][data-part='label'] {
-    color: var(--xh-date-range-picker-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-date-range-picker-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-date-range-picker-label-gap, var(--xh-space-2)) - var(--xh-date-range-picker-gap, var(--xh-space-1)));
+    color: var(--xh-date-range-picker-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-date-range-picker-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-date-range-picker-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
@@ -147,7 +149,7 @@
   }
 
   [data-scope='date-range-picker'][data-part='label'][data-disabled] {
-    color: var(--xh-date-range-picker-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-date-range-picker-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 画成一个框的是 control 而不是 input：段位、清空按钮、日历按钮三者要看起来是一体的，

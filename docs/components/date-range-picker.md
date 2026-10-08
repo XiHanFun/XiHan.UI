@@ -510,12 +510,13 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `--xh-date-range-picker-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | date-range-picker 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-date-range-picker-control-w` | `root` | `inline-size` | `default` | `max-content` | date-range-picker 的 root 部件 inline-size 覆盖槽。 |
 | `--xh-date-range-picker-font-size` | `segment-group` | `font-size` | `default` | `--xh-_date-range-picker-font-size` | date-range-picker 的 segment-group 部件 font-size 覆盖槽。 |
-| `--xh-date-range-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-range-picker 的 root 部件 gap 覆盖槽。 |
+| `--xh-date-range-picker-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | date-range-picker 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-date-range-picker-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | date-range-picker 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-date-range-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | date-range-picker 的 label 部件 color 覆盖槽。 |
-| `--xh-date-range-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | date-range-picker 的 label 部件 color 覆盖槽。 |
+| `--xh-date-range-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | date-range-picker 的 label 部件 color 覆盖槽。 |
+| `--xh-date-range-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | date-range-picker 的 label 部件 color 覆盖槽。 |
 | `--xh-date-range-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | date-range-picker 的 label 部件 font-size 覆盖槽。 |
 | `--xh-date-range-picker-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | date-range-picker 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-date-range-picker-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | date-range-picker 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-date-range-picker-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | date-range-picker 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-date-range-picker-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | date-range-picker 的 segment-group 部件 color 覆盖槽。 |
 | `--xh-date-range-picker-max-h` | `content` | `max-block-size` | `default` | `--xh-_date-range-picker-available-h` | date-range-picker 的 content 部件 max-block-size 覆盖槽。 |

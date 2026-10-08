@@ -326,12 +326,13 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态�
 | `--xh-time-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | time-field 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-time-field-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | time-field 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-time-field-font-size` | `control` | `font-size` | `default` | `--xh-_time-field-font-size` | time-field 的 control 部件 font-size 覆盖槽。 |
-| `--xh-time-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | time-field 的 root 部件 gap 覆盖槽。 |
+| `--xh-time-field-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | time-field 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-time-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | time-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-time-field-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | time-field 的 label 部件 color 覆盖槽。 |
-| `--xh-time-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | time-field 的 label 部件 color 覆盖槽。 |
+| `--xh-time-field-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | time-field 的 label 部件 color 覆盖槽。 |
+| `--xh-time-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | time-field 的 label 部件 color 覆盖槽。 |
 | `--xh-time-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | time-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-time-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | time-field 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-time-field-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | time-field 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-time-field-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | time-field 的 segment-group 部件 color 覆盖槽。 |
 | `--xh-time-field-placeholder-fg` | `segment` | `color` | `placeholder` | `--xh-fg-subtle` | time-field 的 segment 部件 color 覆盖槽。 |
 | `--xh-time-field-segment-bg-focus` | `segment` | `background` | `disabled`<br>`focus`<br>`focus-visible`<br>`not([data-disabled])` | `--xh-_time-field-segment-bg` | time-field 的 segment 部件 background 覆盖槽。 |

@@ -413,11 +413,11 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `--xh-mention-item-px` | `item` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-mention-item-py` | `item` | `padding-block` | `default` | `--xh-_mention-item-py` | mention 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-mention-item-radius` | `item` | `border-radius` | `default` | `0` | mention 的 item 部件 border-radius 覆盖槽。 |
-| `--xh-mention-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | mention 的 label 部件 color 覆盖槽。 |
-| `--xh-mention-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | mention 的 label 部件 color 覆盖槽。 |
+| `--xh-mention-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | mention 的 label 部件 color 覆盖槽。 |
+| `--xh-mention-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | mention 的 label 部件 color 覆盖槽。 |
 | `--xh-mention-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | mention 的 label 部件 font-size 覆盖槽。 |
 | `--xh-mention-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | mention 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-mention-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-1` | mention 的 label 部件 margin-block-end 覆盖槽。 |
+| `--xh-mention-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | mention 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-mention-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | mention 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-mention-loading-fg` | `loading` | `color` | `default` | `--xh-material-frosted-fg-muted` | mention 的 loading 部件 color 覆盖槽。 |
 | `--xh-mention-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 loading 部件 font-size 覆盖槽。 |

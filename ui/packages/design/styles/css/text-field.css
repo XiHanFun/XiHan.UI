@@ -56,13 +56,15 @@
   }
 
   [data-scope='text-field'][data-part='label'] {
-    color: var(--xh-text-field-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-text-field-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-text-field-label-gap, var(--xh-space-2)) - var(--xh-text-field-gap, var(--xh-space-1)));
+    color: var(--xh-text-field-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-text-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-text-field-label-font-weight, var(--xh-text-label-weight));
   }
 
   [data-scope='text-field'][data-part='label'][data-disabled] {
-    color: var(--xh-text-field-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-text-field-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   [data-scope='text-field'][data-part='control'] {

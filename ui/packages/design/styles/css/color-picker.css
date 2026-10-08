@@ -58,7 +58,9 @@
   }
 
   [data-scope='color-picker'][data-part='label'] {
-    color: var(--xh-color-picker-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-color-picker-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-color-picker-label-gap, var(--xh-space-2)) - var(--xh-color-picker-gap, var(--xh-space-1)));
+    color: var(--xh-color-picker-label-fg, var(--xh-fg-muted));
     /* 字段标签不随档：与同族字段同一档标签字号 */
     font-size: var(--xh-color-picker-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-color-picker-label-font-weight, var(--xh-text-label-weight));

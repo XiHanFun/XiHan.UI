@@ -28,8 +28,8 @@
      整表据此对齐；描述与错误文案跟着控件走第二列 */
   [data-scope='form'][data-part='root'][data-layout='horizontal'] [data-scope='field'][data-part='root'] {
     display: grid;
-    grid-template-columns: var(--xh-form-label-w, 30%) minmax(0, 1fr);
-    column-gap: var(--xh-field-label-gap, var(--xh-space-3));
+    grid-template-columns: var(--xh-form-label-w, calc(100% * 5 / 24)) minmax(0, 1fr);
+    column-gap: var(--xh-field-label-gap, var(--xh-space-4));
     align-items: start;
   }
 
@@ -62,12 +62,11 @@
        横排表单里标签列是一段比例宽度，这行让标签在那一列里折行，而不是从列的左边顶出去 */
     overflow-wrap: anywhere;
     /* 竖排时标签与控件之间的距离：容器的 gap 之上补一段差值，
-       --xh-field-label-gap-block 给多少最终就是多少；不给时差值算成 0，
-       这段距离仍由 --xh-field-gap 与描述、错误文案那两段同宽。 */
+       --xh-field-label-gap-block 给多少最终就是多少，与描述、错误文案那两段（归 --xh-field-gap）各管各的 */
     margin-block-end: calc(
-      var(--xh-field-label-gap-block, var(--xh-field-gap, var(--xh-space-1))) - var(--xh-field-gap, var(--xh-space-1))
+      var(--xh-field-label-gap-block, var(--xh-space-2)) - var(--xh-field-gap, var(--xh-space-1))
     );
-    color: var(--xh-field-label-fg, var(--xh-fg-default));
+    color: var(--xh-field-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-field-label-font-weight, var(--xh-text-label-weight));
     /* 转无效或转禁用时标签换色，两档之间接一段过渡（与字段集组标题同一档） */
@@ -75,11 +74,11 @@
   }
 
   [data-scope='field'][data-part='label'][data-disabled] {
-    color: var(--xh-field-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-field-label-fg-disabled, var(--xh-fg-disabled));
   }
 
-  /* 必填星号的字形、间距与默认色在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
-  [data-scope='field'][data-part='label'][data-required]::after {
+  /* 必填星号的字形、字号、间距与默认色在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
+  [data-scope='field'][data-part='label'][data-required]::before {
     color: var(--xh-field-label-star, var(--xh-fg-danger));
   }
 

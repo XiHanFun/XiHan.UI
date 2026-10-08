@@ -98,8 +98,8 @@
   /* 标题：与输入框上下排，行距不留额外空白 */
   [data-scope='mention'][data-part='label'] {
     display: block;
-    margin-block-end: var(--xh-mention-label-gap, var(--xh-space-1));
-    color: var(--xh-mention-label-fg, var(--xh-fg-default));
+    margin-block-end: var(--xh-mention-label-gap, var(--xh-space-2));
+    color: var(--xh-mention-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-mention-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-mention-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
@@ -110,7 +110,7 @@
   }
 
   [data-scope='mention'][data-part='label'][data-disabled] {
-    color: var(--xh-mention-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-mention-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* —— 尺寸 —— */

@@ -51,13 +51,15 @@
   }
 
   [data-scope='pin-input'][data-part='label'] {
-    color: var(--xh-pin-input-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-pin-input-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-pin-input-label-gap, var(--xh-space-2)) - var(--xh-pin-input-gap, var(--xh-space-1)));
+    color: var(--xh-pin-input-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-pin-input-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-pin-input-label-font-weight, var(--xh-text-label-weight));
   }
 
   [data-scope='pin-input'][data-part='label'][data-disabled] {
-    color: var(--xh-pin-input-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-pin-input-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 分段：连着的几格圈成一段。它只排版，格间距仍由格子自己的相邻兄弟规则给 */

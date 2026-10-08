@@ -15,7 +15,7 @@ const CEILING = {
   shape: 0,
   scroll: 0,
   press: 0,
-  text: 6,
+  text: 5,
   motion: 0,
 }
 

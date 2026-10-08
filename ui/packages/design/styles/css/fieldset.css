@@ -52,8 +52,8 @@
     color: var(--xh-fieldset-legend-fg-disabled, var(--xh-fg-subtle));
   }
 
-  /* 必填星号的字形、间距与默认色在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
-  [data-scope='fieldset'][data-part='legend'][data-required]::after {
+  /* 必填星号的字形、字号、间距与默认色在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
+  [data-scope='fieldset'][data-part='legend'][data-required]::before {
     color: var(--xh-fieldset-legend-star, var(--xh-fg-danger));
   }
 

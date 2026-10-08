@@ -335,7 +335,7 @@
 | `--xh-form-field-invalid-px` | `field-group` | `padding-inline-start` | `invalid` | `--xh-space-2` | form 的 field-group 部件 padding-inline-start 覆盖槽。 |
 | `--xh-form-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | form 的 root 部件 gap 覆盖槽。 |
 | `--xh-form-inline-gap` | `root` | `column-gap` | `layout=inline` | `--xh-space-4` | form 的 root 部件 column-gap 覆盖槽。 |
-| `--xh-form-label-w` | `root` | `grid-template-columns` | `layout=horizontal` | `30%` | form 的 root 部件 grid-template-columns 覆盖槽。 |
+| `--xh-form-label-w` | `root` | `grid-template-columns` | `layout=horizontal` | `calc(100% * 5 / 24)` | form 的 root 部件 grid-template-columns 覆盖槽。 |
 | `--xh-form-loading-duration` | `submit-trigger` | `animation` | `xh-loading-ring` | `--xh-motion-loop-spin` | form 的 submit-trigger 部件 animation 覆盖槽。 |
 | `--xh-form-submit-bg` | `submit-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | form 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-form-submit-bg-active` | `submit-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | form 的 submit-trigger 部件 background-color 覆盖槽。 |

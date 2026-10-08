@@ -67,13 +67,15 @@
   }
 
   [data-scope='number-field'][data-part='label'] {
-    color: var(--xh-number-field-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-number-field-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-number-field-label-gap, var(--xh-space-2)) - var(--xh-number-field-gap, var(--xh-space-1)));
+    color: var(--xh-number-field-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-number-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-number-field-label-font-weight, var(--xh-text-label-weight));
   }
 
   [data-scope='number-field'][data-part='label'][data-disabled] {
-    color: var(--xh-number-field-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-number-field-label-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* —— 一体式 control：输入框与加减钮同框 —— */
