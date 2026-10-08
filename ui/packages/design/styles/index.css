@@ -28384,11 +28384,12 @@
     --xh-_dialog-max-w: var(--xh-overlay-sheet-w-md);
 
     /* 头部带：标题首行与角上的关闭钮都落在这条带的中线上。分三段时它就是 header，
-       不分三段时它是面板顶上那一截——两种写法的标题行与叉落在同一处 */
+       不分三段时它是面板顶上那一截——两种写法的标题行与叉落在同一处。
+       带的上沿就是面板内沿（安全区由 positioner 让出），与抽屉同一组槽，抽屉在这里补安全区 */
+    --xh-_dialog-header-top: var(--xh-space-0);
     --xh-_dialog-header-h: var(--xh-overlay-header-h);
     /* 标题首行在带里居中要让出的上内衬：带高减标题行高再对半 */
     --xh-_dialog-header-pt: calc((var(--xh-_dialog-header-h) - var(--xh-text-heading-3-size) * var(--xh-leading-normal)) / 2);
-    --xh-_dialog-close-top: calc((var(--xh-_dialog-header-h) - var(--xh-dialog-close-size, var(--xh-control-h-sm))) / 2);
 
     /* positioner 不吃指针，面板自身恢复交互。 */
     pointer-events: auto;
@@ -28682,7 +28683,8 @@
     --xh-icon-size: var(--xh-dialog-icon-size, var(--xh-glyph-size-xs));
 
     position: absolute;
-    inset-block-start: var(--xh-_dialog-close-top);
+    /* 钮的视觉盒在头部带里竖向居中：按钮自己的边长从带高里扣掉再对半 */
+    inset-block-start: calc(var(--xh-_dialog-header-top) + (var(--xh-_dialog-header-h) - var(--xh-dialog-close-size, var(--xh-_action-profile-visual-size))) / 2);
     inset-inline-end: var(--xh-space-4);
   }
 
