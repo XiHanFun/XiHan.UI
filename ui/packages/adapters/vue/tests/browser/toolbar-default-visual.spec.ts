@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
+import { pressScale } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -168,6 +169,6 @@ describe('toolbar 默认视觉', () => {
     // 分段零间距直角相接：缩放会撕开两侧接缝
     expect(['none', '1'].includes(getComputedStyle(joined!).scale)).toBe(true)
     expect(getComputedStyle(joined!).backgroundColor).not.toBe(getComputedStyle(toolbar.items[2]!).backgroundColor)
-    expect(Number.parseFloat(getComputedStyle(loose!).scale)).toBeLessThan(1)
+    expect(getComputedStyle(loose!).scale).toBe(pressScale(loose!))
   })
 })
