@@ -35807,6 +35807,9 @@
               "name": "--xh-image-bg"
             },
             {
+              "name": "--xh-image-fallback-bg"
+            },
+            {
               "name": "--xh-image-fallback-fg"
             },
             {
@@ -35814,6 +35817,12 @@
             },
             {
               "name": "--xh-image-fallback-min-h"
+            },
+            {
+              "name": "--xh-image-fallback-px"
+            },
+            {
+              "name": "--xh-image-fallback-py"
             },
             {
               "name": "--xh-image-fit"
