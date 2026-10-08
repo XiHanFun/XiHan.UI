@@ -31,8 +31,8 @@
     --xh-alert-skin: 1;
   }
 
-  /* 提示本体是一层中性 surface：边界由 --xh-border-default 描边承担、无影（静态反馈面），
-     语气只落到图标与标题，不会用整块彩底抢走正文层级。 */
+  /* 提示本体是一块语气淡底面（淡底形态：透明边位 + 语气 12% 淡底、无影），语气由底色与图标表达；
+     标题与正文仍取正文色，彩色只落在底与图标上，不让整段文字变色抢走层级。 */
   [data-scope='alert'][data-part='root'] {
     /* 作者塞进指示符槽的图标与皮肤画的兜底字形同一把尺：Feedback 指示符统一 md 档 */
     --xh-icon-size: var(--xh-alert-icon-size, var(--xh-glyph-size-md));
@@ -41,19 +41,18 @@
     align-items: flex-start;
     /* 指示符盒自带 --xh-space-1 内衬：与间距合起来，字形到正文 12px，与 Notification 同一个距离 */
     gap: var(--xh-alert-gap, var(--xh-space-2));
-    padding-block: var(--xh-alert-py, var(--xh-surface-py-sm));
+    padding-block: var(--xh-alert-py, var(--xh-space-2));
     padding-inline: var(--xh-alert-px, var(--xh-surface-px-sm));
-    border: var(--xh-stroke-thin) solid var(--xh-alert-border, var(--xh-border-default));
-    border-radius: var(--xh-alert-radius, var(--xh-shape-surface));
-    background: var(--xh-alert-bg, var(--xh-bg-surface));
+    border: var(--xh-stroke-thin) solid var(--xh-alert-border, transparent);
+    border-radius: var(--xh-alert-radius, var(--xh-shape-control));
+    background: var(--xh-alert-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle)));
     box-shadow: var(--xh-alert-shadow, none);
     color: var(--xh-alert-fg, var(--xh-fg-default));
     font-size: var(--xh-alert-font-size, var(--xh-text-body-size));
     line-height: var(--xh-alert-leading, var(--xh-leading-normal));
   }
 
-  /* 横幅：页面顶部的通栏，贴着页面或容器的边铺满整行。贴边的三条边是页面自己的边，画出来只会压在边上；
-     边界只留朝向页面内容的块尾一道，与页面内容同一层、同一种描边。贴边铺满的栏不取圆角：
+  /* 横幅：页面顶部的通栏，贴着页面或容器的边铺满整行。面本身就是语气淡底，不另画边；贴边铺满的栏不取圆角：
      圆了会在两个角露出底下的页面。面与语气规则与页内提示相同，横幅不换底色 */
   [data-scope='alert'][data-part='root'][data-banner] {
     inline-size: 100%;
@@ -125,7 +124,7 @@
 
   [data-scope='alert'][data-part='title'] {
     flex: none;
-    color: var(--xh-alert-title-fg, var(--xh-_tone-fg));
+    color: var(--xh-alert-title-fg, var(--xh-fg-default));
     font-size: var(--xh-alert-title-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-alert-title-font-weight, var(--xh-font-weight-semibold));
     line-height: var(--xh-alert-title-leading, var(--xh-leading-tight));
@@ -142,16 +141,16 @@
     display: none;
   }
 
-  /* 关闭钮是只有字形的离散动作钮：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环、禁用面全由
+  /* 关闭钮是只有字形的离散动作钮：盒几何、悬停 / 按下与按压、粗指针热区、焦点环、禁用面全由
      Action Control 的 icon ghost 档给（连接层投 sm：与此前 --xh-control-h-sm 同尺寸），组件只映射既有使用者槽。
-     静息透明；提示本体是白底承载，hover 100 → pressed 200，写了语气时悬停底跟着语气走（--xh-_tone-subtle）。
+     静息透明；提示本体是语气淡底（12%），叉的悬停 / 按下沿语气淡底再升一档、两档（20% / 28%）。
      closable=false 时连接层同时给 hidden 与 disabled / data-disabled，家族按后者收掉反馈 */
   [data-scope='alert'][data-part='close-trigger'] {
     --xh-action-visual-size: var(--xh-alert-close-size, var(--xh-_action-profile-visual-size));
     --xh-action-min-inline-size: var(--xh-alert-close-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-alert-close-radius, var(--xh-shape-control));
-    --xh-action-bg-hover: var(--xh-alert-close-bg-hover, var(--xh-_action-variant-bg-hover));
-    --xh-action-bg-pressed: var(--xh-alert-close-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-hover: var(--xh-alert-close-bg-hover, var(--xh-_tone-subtle-hover, var(--xh-_action-variant-bg-hover)));
+    --xh-action-bg-pressed: var(--xh-alert-close-bg-active, var(--xh-_tone-subtle-active, var(--xh-_action-variant-bg-pressed)));
     --xh-action-fg-rest: var(--xh-alert-close-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-alert-close-fg-hover, var(--xh-fg-default));
     --xh-action-fg-pressed: var(--xh-alert-close-fg-hover, var(--xh-fg-default));

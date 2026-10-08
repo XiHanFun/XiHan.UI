@@ -205,12 +205,13 @@ const FAMILIES = [
     // 其余静态面一律无影，Card 的影是它一家的登记身份，不是分叉
     name: '内容面族',
     backlog: true,
-    members: ['card', 'alert', 'code-view', 'diff-view', 'log', 'json-viewer', 'tool-call', 'reasoning', 'approval', 'question-flow'],
+    // Alert 的面是语气淡底（淡底形态），不归描边内容面这一族
+    members: ['card', 'code-view', 'diff-view', 'log', 'json-viewer', 'tool-call', 'reasoning', 'approval', 'question-flow'],
     parts: [
       // json-viewer 的 root 只是壳，面画在树档容器 tree 上（原文档 text 与它同一套声明）；
       // reasoning 的缺省档按契约是 subtle 淡底，描边面写在 outline 档那条规则里，按那一档比
       { part: 'root', partBy: { 'json-viewer': 'tree' }, state: '', stateBy: { reasoning: '[data-variant=\'outline\']' }, props: ['border', 'background'] },
-      { part: 'root', partBy: { 'json-viewer': 'tree' }, state: '', props: ['box-shadow'], only: ['alert', 'code-view', 'diff-view', 'log', 'json-viewer', 'tool-call', 'reasoning', 'approval', 'question-flow'] },
+      { part: 'root', partBy: { 'json-viewer': 'tree' }, state: '', props: ['box-shadow'], only: ['code-view', 'diff-view', 'log', 'json-viewer', 'tool-call', 'reasoning', 'approval', 'question-flow'] },
     ],
   },
   {

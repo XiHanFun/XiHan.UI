@@ -193,7 +193,7 @@ Vue、React、Web Components 只负责：
 
 - 缺省 `ghost`：Accordion、Descriptions、List、PageHeader、Toolbar。它们是排版骨架，通常嵌在 Card、Panel 或页面分区里，自带一圈描边会与宿主面叠成两道边；需要独立成面时由作者显式写 `outline` / `subtle`。Headless 仍须显式给出 `ghost` 缺省，不允许「不传」成为第四种形态。
 - 结构形态轴：Tabs 的 `line | card | segment`（缺省 `line`）、RadioGroup / CheckboxGroup 的 `list | card`（缺省 `list`：一列「标记 + 文案」的行；`card`：一组可点的选择卡片，见 §4.1），RadioGroup 另有 `segmented`（一条淡底轨道里首尾相接的段，选中段由滑动的 `thumb` 标出；缺省横排，`block` 撑满行宽；原 Segmented 组件并入于此，见 §4.1、§7.3）、Steps 的 `number | dot`（缺省 `number`：盛内容的序号圆点；`dot`：不盛内容的小圆点，步数多或横向空间紧时用）。它们换的是条目的结构，不是有框 / 无框，不走 ControlVariant。
-- 不设 `variant` 轴：Alert（语义由 `tone` 承担，面固定为描边面）、CodeView / DiffView / Log（代码类面固定为描边面，行号槽与高亮依赖这层底）、Collapsible（只有触发条与内容，没有自己的壳）、Citation（随文引用，形态固定）。新增此类组件同样登记在这里，不用私有轴补形态。
+- 不设 `variant` 轴：Alert（语义由 `tone` 承担，面固定为语气淡底面：透明边位 + 语气 12% 淡底，标题与正文取正文色，彩色只落在底与图标上）、CodeView / DiffView / Log（代码类面固定为描边面，行号槽与高亮依赖这层底）、Collapsible（只有触发条与内容，没有自己的壳）、Citation（随文引用，形态固定）。新增此类组件同样登记在这里，不用私有轴补形态。
 - 预设轴 `preset`：只给 Notification（`card | toast`，缺省 `card`）。它打包一组缺省值：落位、上限、间距、停留、页面转入后台时是否暂停与是否叠摞仍可逐项覆盖，卡片排版与关闭钮档位随预设走（卡片是标题加正文的两列网格、叉 sm 钉在右上角；轻提示是一行、叉 xs 排在行尾）。它不是视觉轴，不表达语气或状态，缺省值由 Headless 定。新增此类组件同样登记在这里。
 - 放置 `banner`：只给 Alert（布尔，缺省 false）。它说的是提示贴在哪儿（贴着页面或容器顶边铺满整行的通栏，还是内容里的一块面），不是面的形态，也不打包缺省值：面、语气、实时区语义与关闭都不变，只把贴边的几条边与圆角交还给页面（§6.3、§8.3）。不走 `variant`：Alert 不设 variant 轴，通栏也不是描边 / 淡底 / 无壳之外的第四种面；不做成 `preset`：它不改任何行为缺省值。新增此类组件同样登记在这里。
 
@@ -303,8 +303,8 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 角色 | 圆角 | 给谁 |
 | --- | ---: | --- |
 | inset | 2px | 嵌在 control 内的小块：checkbox 系方框、页内列表的候选行（Listbox / Command / Transfer / Tree 的行，日期与时间面板的预设项与时间格）、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
-| control | 2px | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close/clear trigger、kbd、tooltip、rating item、tabs / steps trigger；随文方签 Tag |
-| surface | 4px | Card、Alert、Panel、列表容器、RadioGroup segmented 形态与 Tabs segment 的轨道、选择卡片（RadioGroup / CheckboxGroup card 档条目） |
+| control | 2px | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close/clear trigger、kbd、tooltip、rating item、tabs / steps trigger；随文方签 Tag；Alert 提示条 |
+| surface | 4px | Card、Panel、列表容器、RadioGroup segmented 形态与 Tabs segment 的轨道、选择卡片（RadioGroup / CheckboxGroup card 档条目） |
 | overlay | 4px | Popover、Menu、Dialog、Drawer、Notification |
 | circle | 50% | 宽高相等的圆形对象：avatar、加了底框的 icon、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle、Citation 来源列表的序号；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页与关闭，走 Action Control `floating` profile）；图表的数据点与端点、关系图节点 |
 | pill | 9999px | 仅两类身份：(a) 状态 chip：Badge、ToolCall status、Approval result、QuestionFlow result（Tag 是方签，取 control）；(b) 一维对象：switch 轨道、slider / progress / strength / upload 的 track 与 range、tick、hairline separator、tabs / anchor / navigation-menu 滑动指示条、resize / drag 手柄、scrollbar thumb、sortable 落点线、skeleton text、位置指示点的当前拉长态、图例的折线色标、图表缩放手柄、不贴边的 liquid 一维栏（§8.5）、随文的引用编号（Citation trigger） |
@@ -807,7 +807,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 - 字段的 `subtle` / `ghost` 只限有壳容器内（InputGroup、Command 面板、Toolbar）使用，hover / focus 必须浮出 `--xh-border-control`。
 - 刻意例外（须登记）：面板内嵌搜索（Command、Cascader、TreeSelect、Transfer、SideNav 的搜索框）不画字段外壳，只画一道 `border-block-end` 下划线，五处同一种写法：通栏一行，块尺寸取所在尺寸档的 `--xh-control-h-*`、字号取 `--xh-control-font-*`；下划线是面内分隔，取所在面材质的分隔令牌（实体面与 floating 取 `--xh-material-solid-separator`，sheet 取 `--xh-material-elevated-separator`），不取字段边 `--xh-border-control`；连接层投影 `data-xh-field-input`，重置与占位前景走字段家族，自动填充铺的底取所在面板的面；聚焦不画环、下划线也不换色，插入符就是焦点指示（框没有外壳，全局那圈环只会压在通栏一行上），五份皮肤各在搜索框的 `:focus-visible` 上关环并登进焦点环门禁的 ringless；PromptInput 允许 `--xh-shape-surface` 8px，但静息描边仍为 `--xh-border-control`、不用 soft；SignaturePad 画布是画布型字段，按 `aspect-ratio` 撑高、吃不下字段家族配方钉死的控件行高，允许不投影 `data-xh-field-chrome` 而自绘外壳，但值必须与字段规则一致（静息 `transparent` 底 + `--xh-border-control` + `--xh-shape-control` + 无影，落笔升 `--xh-border-control-hover`，disabled / readOnly 按 §7.2 第 9 条）。
 - Form 内外字段同形；InputGroup 组壳画 outline 描边并铺字段淡底，子字段压平为透明。
-- 贴边通栏（Alert `banner`）只画朝向页面内容的块尾一条 `--xh-border-default`：另外三条是页面或容器自己的边，重画只会压在边上。面仍是描边面，底色与页内提示相同。
+- 贴边通栏（Alert `banner`）不画边：面本身就是语气淡底，贴边的三条边是页面或容器自己的边。底色与页内提示相同。
 
 ### 8.4 浮层材质判据
 

@@ -222,10 +222,10 @@ banner 把提示贴在页面顶部铺满整行：不取圆角，只在朝向页�
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-alert-action-gap` | `action` | `gap` | `default` | `--xh-space-2` | alert 的 action 部件 gap 覆盖槽。 |
-| `--xh-alert-bg` | `root` | `background` | `default` | `--xh-bg-surface` | alert 的 root 部件 background 覆盖槽。 |
-| `--xh-alert-border` | `root` | `border` | `default` | `--xh-border-default` | alert 的 root 部件 border 覆盖槽。 |
-| `--xh-alert-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | alert 的 close-trigger 部件 background-color 覆盖槽。 |
-| `--xh-alert-close-bg-hover` | `close-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | alert 的 close-trigger 部件 background-color 覆盖槽。 |
+| `--xh-alert-bg` | `root` | `background` | `default` | `--xh-_tone-subtle` | alert 的 root 部件 background 覆盖槽。 |
+| `--xh-alert-border` | `root` | `border` | `default` | `transparent` | alert 的 root 部件 border 覆盖槽。 |
+| `--xh-alert-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_tone-subtle-active` | alert 的 close-trigger 部件 background-color 覆盖槽。 |
+| `--xh-alert-close-bg-hover` | `close-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_tone-subtle-hover` | alert 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-alert-close-fg` | `close-trigger` | `color` | `default` | `--xh-fg-muted` | alert 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-alert-close-fg-hover` | `close-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | alert 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-alert-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | alert 的 close-trigger 部件 border-radius 覆盖槽。 |
@@ -241,10 +241,10 @@ banner 把提示贴在页面顶部铺满整行：不取圆角，只在朝向页�
 | `--xh-alert-indicator-p` | `indicator` | `padding` | `default` | `--xh-space-1` | alert 的 indicator 部件 padding 覆盖槽。 |
 | `--xh-alert-leading` | `root` | `line-height` | `default` | `--xh-leading-normal` | alert 的 root 部件 line-height 覆盖槽。 |
 | `--xh-alert-px` | `root` | `padding-inline` | `default` | `--xh-surface-px-sm` | alert 的 root 部件 padding-inline 覆盖槽。 |
-| `--xh-alert-py` | `root` | `padding-block` | `default` | `--xh-surface-py-sm` | alert 的 root 部件 padding-block 覆盖槽。 |
-| `--xh-alert-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | alert 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-alert-py` | `root` | `padding-block` | `default` | `--xh-space-2` | alert 的 root 部件 padding-block 覆盖槽。 |
+| `--xh-alert-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | alert 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-alert-shadow` | `root` | `box-shadow` | `default` | `none` | alert 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-alert-title-fg` | `title` | `color` | `default` | `--xh-_tone-fg` | alert 的 title 部件 color 覆盖槽。 |
+| `--xh-alert-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | alert 的 title 部件 color 覆盖槽。 |
 | `--xh-alert-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | alert 的 title 部件 font-size 覆盖槽。 |
 | `--xh-alert-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | alert 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-alert-title-leading` | `title` | `line-height` | `default` | `--xh-leading-tight` | alert 的 title 部件 line-height 覆盖槽。 |
