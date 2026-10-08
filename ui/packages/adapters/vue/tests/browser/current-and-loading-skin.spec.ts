@@ -38,6 +38,7 @@ import {
   XhPopconfirmTrigger,
   XhSwitch,
 } from '../../src'
+import { tokenValue } from './design-token'
 // 皮肤与令牌一起加载：这里查的就是皮肤算出来的取值
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -366,7 +367,7 @@ describe('开关的只读观感', () => {
     expect(styleOf(readOnly, 'cursor')).toBe('default')
     expect(styleOf(readOnly, 'background-color')).not.toBe(styleOf(live, 'background-color'))
     expect(styleOf(part('switch', 'thumb', 1), 'box-shadow')).toBe('none')
-    expect(styleOf(part('switch', 'thumb', 0), 'box-shadow')).not.toBe('none')
+    expect(styleOf(part('switch', 'thumb', 0), 'box-shadow')).toBe(tokenValue('box-shadow', '--xh-elevation-raised', part('switch', 'thumb', 0)))
     // 只读不是禁用：不压透明度，值仍要读得清
     expect(styleOf(readOnly, 'opacity')).toBe('1')
   })
