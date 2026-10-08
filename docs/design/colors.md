@@ -214,6 +214,39 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
 
 满足全部检查的排法里，取相邻色槽在两种色觉障碍模拟下最小 ΔE 最大的一种。red 与发红的 orange 被「离开告警色」挡在外面；yellow 整族不取，同档同明度的色板里，它在对白底 3:1 的明度上只剩橄榄色。颜色按浏览器在 sRGB 显示器上的画法换算：基础色板的中档允许略出 sRGB 色域，出界的通道逐个截断。色觉障碍的模拟用 Machado–Oliveira–Fernandes 2009（严重度 1.0），与 `@xihan-ui/viz` 校验色板的函数同一口径，使用者可以用它复验自己覆盖后的色板。
 
+### 配色方案
+
+上面的分类色板是缺省的「多彩分类」。另有三套配色方案，在任意祖先上写 `data-xh-chart-palette` 即把分类色槽与色块内文字整套换掉：写在 `<html>` 上全站生效，写在一个容器或一张图上只换这一块。方案落在令牌层，八个图表组件、图例、提示框与画布渲染器都不用改，切换时画布跟着重画。
+
+```html
+<html data-xh-chart-palette="monochrome">
+  …
+  <!-- 这一块改回缺省的多彩分类 -->
+  <section data-xh-chart-palette="categorical">…</section>
+</html>
+```
+
+| 取值 | 方案 | 取色 | 适合 |
+| --- | --- | --- | --- |
+| `categorical`（缺省） | 多彩分类 | 上一节的 8 个色槽 | 系列多、要一眼分清 |
+| `monochrome` | 主题单色 | 品牌色阶由深到浅：亮色从 600（主题色）起逐档变浅，末两档再往承载面里混；暗色从 500 起往深走 | 仪表盘与指标卡统一成主题色；随 `data-brand` 换色 |
+| `brand` | 柔和品牌 | 品牌色相两侧的冷色一族加一抹粉，同一色相至多取两档 | 品牌感强、又要比单色好分辨 |
+| `muted` | 莫兰迪柔彩 | 基础色与明度相近的中性档在 oklab 里按比例混合，彩度压到 0.035–0.10 | 信息密集或偏克制的页面 |
+
+<XhTokenSwatches prefix="--xh-chart-palette-monochrome-" :steps="['1', '2', '3', '4', '5', '6', '7', '8']" on-prefix="--xh-chart-palette-monochrome-on-" label="主题单色" compact />
+<XhTokenSwatches prefix="--xh-chart-palette-brand-" :steps="['1', '2', '3', '4', '5', '6', '7', '8']" on-prefix="--xh-chart-palette-brand-on-" label="柔和品牌" compact />
+<XhTokenSwatches prefix="--xh-chart-palette-muted-" :steps="['1', '2', '3', '4', '5', '6', '7', '8']" on-prefix="--xh-chart-palette-muted-on-" label="莫兰迪柔彩" compact />
+
+三套方案同样由生成器算出、由门禁从 `tokens.css` 复验，各有自己的规则：
+
+| 方案 | 与多彩分类不同的检查 |
+| --- | --- |
+| 主题单色 | 只靠明度区分：色相随品牌、对承载面的对比度逐档递减、色槽 1 ≥ 3:1、前 4 个色槽相邻 ΔE ≥ 5。浅档低于 3:1，由图例、提示框与数据表补偿；系列超过 4 个时换多彩分类 |
+| 柔和品牌 | 不查色相分散；同一色相的两档只差一档明度，任意两色放宽到 ΔE ≥ 7。相邻色槽仍是正常视觉 ≥ 15、色觉障碍 ≥ 8 |
+| 莫兰迪柔彩 | 彩度 0.035–0.10；明度带收窄到亮色 0.52–0.68、暗色 0.55–0.72；相邻正常视觉 ΔE ≥ 12、色觉障碍 ≥ 6；任意两色 ≥ 8；任意 45° 扇区至多 3 个色槽 |
+
+对比度 ≥ 3:1（主题单色除外）、离开告警色与色块内文字 ≥ 4.5:1 三套都照常检查。有序与顺序色阶本来就是品牌色相，`data-brand` 换色时一起换，不随方案切换。
+
 ### 有序、顺序与发散
 
 <XhTokenSwatches prefix="--xh-chart-ordinal-" label="有序：漏斗阶段、档位" compact auto-ink />

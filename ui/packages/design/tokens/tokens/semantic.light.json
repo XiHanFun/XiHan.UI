@@ -240,44 +240,44 @@
       "$value": "{color.neutral.300}"
     },
     "sequential": {
-      "$description": "顺序色阶（大小）的三个锚点：单色相由浅到深，小值贴近承载面，暗色下锚点翻转。标记只带色阶位置，皮肤在锚点之间以 oklch 插值；缺省色相与分类色槽 1 相同。",
+      "$description": "顺序色阶（大小）的三个锚点：单色相由浅到深，小值贴近承载面，暗色下锚点翻转。标记只带色阶位置，皮肤在锚点之间以 oklch 插值；缺省取品牌色相，随 data-brand 换色。",
       "start": {
         "$type": "color",
-        "$value": "{color.indigo.100}"
+        "$value": "{color.brand.100}"
       },
       "mid": {
         "$type": "color",
-        "$value": "{color.indigo.400}"
+        "$value": "{color.brand.400}"
       },
       "end": {
         "$type": "color",
-        "$value": "{color.indigo.800}"
+        "$value": "{color.brand.800}"
       }
     },
     "ordinal": {
       "1": {
         "$type": "color",
-        "$value": "{color.indigo.900}"
+        "$value": "{color.brand.900}"
       },
       "2": {
         "$type": "color",
-        "$value": "{color.indigo.800}"
+        "$value": "{color.brand.800}"
       },
       "3": {
         "$type": "color",
-        "$value": "{color.indigo.700}"
+        "$value": "{color.brand.700}"
       },
       "4": {
         "$type": "color",
-        "$value": "{color.indigo.600}"
+        "$value": "{color.brand.600}"
       },
       "5": {
         "$type": "color",
-        "$value": "{color.indigo.500}"
+        "$value": "{color.brand.500}"
       },
       "6": {
         "$type": "color",
-        "$value": "{color.indigo.400}"
+        "$value": "{color.brand.400}"
       },
       "$description": "有序色阶（漏斗阶段、档位）：单色相，1 对承载面最强、逐档减弱，最弱一档仍 ≥ 2:1。"
     },

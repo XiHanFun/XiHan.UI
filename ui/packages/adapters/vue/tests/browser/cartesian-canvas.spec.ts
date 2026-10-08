@@ -134,6 +134,37 @@ describe('画布的颜色取自 CSS', () => {
     await compareBars()
   })
 
+  it('祖先写了配色方案：画布与 SVG 同样取方案的色槽', async () => {
+    document.documentElement.setAttribute('data-xh-chart-palette', 'muted')
+    try {
+      await compareBars()
+    }
+    finally {
+      document.documentElement.removeAttribute('data-xh-chart-palette')
+    }
+  })
+
+  it('图表自身改写配色方案：画布跟着重画', async () => {
+    const { host } = mount({ data: SALES, series: BARS, renderer: 'canvas' })
+    await settle()
+    const canvas = part(host, 'canvas')[0] as HTMLCanvasElement
+    const root = part(host, 'root')[0]!
+    // 第一个系列的第一根柱：画布上只有数据层，靠下的一行里从左数第一块不透明像素就落在它身上
+    const probe = part(host, 'bar')[0]!
+    const row = canvas.clientHeight - 24
+    let column = 0
+    while (column < canvas.clientWidth && pixel(canvas, column, row)[3] !== 255)
+      column++
+    expect(column).toBeLessThan(canvas.clientWidth)
+    const before = pixel(canvas, column + 3, row)
+    expect(near(before, rgba(getComputedStyle(probe).fill))).toBe(true)
+    root.setAttribute('data-xh-chart-palette', 'monochrome')
+    await settle()
+    const after = pixel(canvas, column + 3, row)
+    expect(near(after, before)).toBe(false)
+    expect(near(after, rgba(getComputedStyle(probe).fill))).toBe(true)
+  })
+
   it('作者在系列上覆盖系列色：画布同样取覆盖后的颜色', async () => {
     const style = document.createElement('style')
     style.textContent = `[data-scope='cartesian-chart'][data-part='series'][data-series-id='store'] { --xh-cartesian-chart-series-color: rgb(200, 30, 90); }`
