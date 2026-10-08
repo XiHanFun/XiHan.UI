@@ -50,14 +50,11 @@
     font-weight: var(--xh-button-font-weight, var(--xh-text-label-weight));
   }
 
-  /* Button soft 是登记在册的 raised 消费者：solid 一档静息带顶光与贴地软影，悬停抬到 raised，按下只留顶光。
-     成组时段与段共边焊成一条，静息不落软影、悬停不抬起——投影会压到左右两段的面上，
-     ButtonGroup 用 --xh-_button-group-shadow-rest / -hover 只留顶光 */
+  /* Button 是登记在册的 raised 消费者：solid 一档悬停抬到 raised。raised 缺省 none，实心钮是平的——
+     不画顶光、不落软影，层级只靠面色（主题给 raised 一层影，悬停才抬起来）。
+     成组时段与段共边焊成一条，悬停不抬起：投影会压到左右两段的面上，ButtonGroup 用 --xh-_button-group-shadow-hover 关掉 */
   [data-scope='button'][data-part='root'][data-variant='solid'] {
-    --xh-action-highlight-pressed: var(--xh-_highlight-tone);
-    --xh-_button-shadow-rest: var(--xh-_button-group-shadow-rest, var(--xh-_highlight-tone), var(--xh-material-soft-shadow));
-    --xh-_button-shadow-hover: var(--xh-_button-group-shadow-hover, var(--xh-_highlight-tone), var(--xh-elevation-raised));
-    --xh-_button-shadow-pressed: var(--xh-_highlight-tone);
+    --xh-_button-shadow-hover: var(--xh-_button-group-shadow-hover, var(--xh-elevation-raised));
   }
 
   /* 实心面用对比前景作内环，再加品牌外环；不覆盖表面 box-shadow。 */

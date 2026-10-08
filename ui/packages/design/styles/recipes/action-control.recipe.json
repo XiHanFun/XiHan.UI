@@ -12,9 +12,9 @@
       "layout": { "square": false, "fill": false, "justify": "center", "press": "scale", "radius": "var(--xh-shape-control)" },
       "sizes": {
         "xs": { "visualSize": "var(--xh-control-action-size)", "paddingInline": "var(--xh-space-1)", "paddingBlock": "0", "gap": "var(--xh-space-1)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
-        "sm": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "var(--xh-control-px-sm)", "paddingBlock": "0", "gap": "var(--xh-control-gap-sm)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
-        "md": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "var(--xh-control-px-md)", "paddingBlock": "0", "gap": "var(--xh-control-gap-md)", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
-        "lg": { "visualSize": "var(--xh-control-h-lg)", "paddingInline": "var(--xh-control-px-lg)", "paddingBlock": "0", "gap": "var(--xh-control-gap-lg)", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" }
+        "sm": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "var(--xh-space-3)", "paddingBlock": "0", "gap": "var(--xh-control-gap-sm)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "md": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "var(--xh-space-4)", "paddingBlock": "0", "gap": "var(--xh-control-gap-md)", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
+        "lg": { "visualSize": "var(--xh-control-h-lg)", "paddingInline": "var(--xh-space-5)", "paddingBlock": "0", "gap": "var(--xh-control-gap-lg)", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" }
       }
     },
     "icon": {
@@ -91,20 +91,20 @@
       "loading": { "backgroundColor": "var(--xh-_tone, var(--xh-bg-brand))", "color": "var(--xh-_tone-on, var(--xh-fg-on-brand))", "borderColor": "transparent" }
     },
     "subtle": {
-      "rest": { "backgroundColor": "var(--xh-_tone-subtle, var(--xh-bg-subtle))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "transparent" },
-      "hover": { "backgroundColor": "var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "transparent" },
-      "pressed": { "backgroundColor": "var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "transparent" },
-      "focus-visible": { "backgroundColor": "var(--xh-_tone-subtle, var(--xh-bg-subtle))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "transparent" },
+      "rest": { "backgroundColor": "var(--xh-_tone-subtle, var(--xh-bg-subtle))", "color": "var(--xh-_tone-fg, var(--xh-fg-muted))", "borderColor": "transparent" },
+      "hover": { "backgroundColor": "var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover))", "color": "var(--xh-_tone-fg, var(--xh-fg-muted))", "borderColor": "transparent" },
+      "pressed": { "backgroundColor": "var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active))", "color": "var(--xh-_tone-fg, var(--xh-fg-muted))", "borderColor": "transparent" },
+      "focus-visible": { "backgroundColor": "var(--xh-_tone-subtle, var(--xh-bg-subtle))", "color": "var(--xh-_tone-fg, var(--xh-fg-muted))", "borderColor": "transparent" },
       "disabled": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-disabled)", "borderColor": "transparent" },
-      "loading": { "backgroundColor": "var(--xh-_tone-subtle, var(--xh-bg-subtle))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "transparent" }
+      "loading": { "backgroundColor": "var(--xh-_tone-subtle, var(--xh-bg-subtle))", "color": "var(--xh-_tone-fg, var(--xh-fg-muted))", "borderColor": "transparent" }
     },
     "outline": {
-      "rest": { "backgroundColor": "transparent", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control))" },
-      "hover": { "backgroundColor": "var(--xh-_tone-subtle, var(--xh-action-host-bg-hover, var(--xh-bg-subtle)))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control-hover))" },
-      "pressed": { "backgroundColor": "var(--xh-_tone-subtle-hover, var(--xh-action-host-bg-pressed, var(--xh-bg-subtle-hover)))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control-hover))" },
-      "focus-visible": { "backgroundColor": "transparent", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control))" },
+      "rest": { "backgroundColor": "var(--xh-_tone-subtle, transparent)", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control))" },
+      "hover": { "backgroundColor": "var(--xh-_tone-subtle-hover, var(--xh-action-host-bg-hover, var(--xh-bg-subtle)))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control-hover))" },
+      "pressed": { "backgroundColor": "var(--xh-_tone-subtle-active, var(--xh-action-host-bg-pressed, var(--xh-bg-subtle-hover)))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control-hover))" },
+      "focus-visible": { "backgroundColor": "var(--xh-_tone-subtle, transparent)", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control))" },
       "disabled": { "backgroundColor": "transparent", "color": "var(--xh-fg-disabled)", "borderColor": "var(--xh-border-default)" },
-      "loading": { "backgroundColor": "transparent", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control))" }
+      "loading": { "backgroundColor": "var(--xh-_tone-subtle, transparent)", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control))" }
     },
     "ghost": {
       "rest": { "backgroundColor": "transparent", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "transparent" },
@@ -122,7 +122,7 @@
   },
   "coarsePointer": { "minimumTarget": "44px" },
   "motion": {
-    "$description": "统一点击触感：按下 120ms 进入 active 面并缩到 0.97；换面（底色、描边、字色）一律走 micro，只有缩放回到 1 走释放 200ms。",
+    "$description": "统一点击触感：按下 120ms 进入 active 面，缩放取 --xh-motion-scale-press（缺省 1，只换面）；换面（底色、描边、字色）一律走 micro，只有缩放回到 1 走释放 200ms。",
     "duration": "var(--xh-motion-duration-micro)",
     "easing": "var(--xh-motion-ease-enter)",
     "pressDuration": "var(--xh-motion-duration-press)",

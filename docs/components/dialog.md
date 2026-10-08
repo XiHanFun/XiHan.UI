@@ -306,7 +306,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `--xh-dialog-backdrop-blur` | `backdrop` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `variant=blur` | `--xh-overlay-backdrop-blur` | dialog 的 backdrop 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-dialog-backdrop-filter` | `backdrop`<br>`content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default`<br>`variant=blur` | `--xh-dialog-backdrop-blur`<br>`--xh-material-elevated-backdrop` | dialog 的 backdrop、content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-dialog-backdrop-layer` | `backdrop` | `z-index` | `default` | `--xh-_layer` | dialog 的 backdrop 部件 z-index 覆盖槽。 |
-| `--xh-dialog-bg` | `content` | `background` | `@media (forced-colors: active)`<br>`default` | `--xh-material-elevated-bg` | dialog 的 content 部件 background 覆盖槽。 |
+| `--xh-dialog-bg` | `content` | `background` | `default` | `--xh-material-elevated-bg` | dialog 的 content 部件 background 覆盖槽。 |
 | `--xh-dialog-border` | `content` | `border` | `default` | `--xh-material-elevated-border` | dialog 的 content 部件 border 覆盖槽。 |
 | `--xh-dialog-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | dialog 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-dialog-close-bg-focus` | `close-trigger` | `background-color` | `focus-visible` | `--xh-_action-variant-bg-focus-visible` | dialog 的 close-trigger 部件 background-color 覆盖槽。 |

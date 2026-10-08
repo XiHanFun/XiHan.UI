@@ -85,16 +85,23 @@ describe('action Control Family Recipe', () => {
   it('ghost / outline 的悬停与按下面走承载面阶梯，画布缺省 100 → 200；subtle 200 → 300', async () => {
     const recipe = await source()
     const css = compileActionControlRecipe(recipe)
-    for (const variant of ['ghost', 'outline']) {
-      const body = block(css, `[data-xh-action-control][data-xh-action-variant='${variant}']`)
-      expect(body).toContain('--xh-_action-variant-bg-rest: transparent;')
-      expect(body).toContain('--xh-_action-variant-bg-hover: var(--xh-_tone-subtle, var(--xh-action-host-bg-hover, var(--xh-bg-subtle)));')
-      expect(body).toContain('--xh-_action-variant-bg-pressed: var(--xh-_tone-subtle-hover, var(--xh-action-host-bg-pressed, var(--xh-bg-subtle-hover)));')
+    const ghost = block(css, `[data-xh-action-control][data-xh-action-variant='ghost']`)
+    expect(ghost).toContain('--xh-_action-variant-bg-rest: transparent;')
+    expect(ghost).toContain('--xh-_action-variant-bg-hover: var(--xh-_tone-subtle, var(--xh-action-host-bg-hover, var(--xh-bg-subtle)));')
+    expect(ghost).toContain('--xh-_action-variant-bg-pressed: var(--xh-_tone-subtle-hover, var(--xh-action-host-bg-pressed, var(--xh-bg-subtle-hover)));')
+    /* focus-visible 与 loading 保持 rest 面，不再退回家族默认的淡底。 */
+    expect(ghost).toContain('--xh-_action-variant-bg-focus-visible: transparent;')
+    expect(ghost).toContain('--xh-_action-variant-bg-loading: transparent;')
+    /* outline 带语气时是描边按钮：静息就铺语气淡底，悬停、按下各升一档；中性 outline 仍是透明面走承载面阶梯。 */
+    const tinted = block(css, `[data-xh-action-control][data-xh-action-variant='outline']`)
+    expect(tinted).toContain('--xh-_action-variant-bg-rest: var(--xh-_tone-subtle, transparent);')
+    expect(tinted).toContain('--xh-_action-variant-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-action-host-bg-hover, var(--xh-bg-subtle)));')
+    expect(tinted).toContain('--xh-_action-variant-bg-pressed: var(--xh-_tone-subtle-active, var(--xh-action-host-bg-pressed, var(--xh-bg-subtle-hover)));')
+    expect(tinted).toContain('--xh-_action-variant-bg-focus-visible: var(--xh-_tone-subtle, transparent);')
+    expect(tinted).toContain('--xh-_action-variant-bg-loading: var(--xh-_tone-subtle, transparent);')
+    for (const body of [ghost, tinted]) {
       /* 300 只留给淡底承载的 pressed，由容器经 --xh-action-host-bg-pressed 下发，家族里不直接写。 */
       expect(body).not.toContain('--xh-bg-subtle-active')
-      /* focus-visible 与 loading 保持 rest 面，不再退回家族默认的淡底。 */
-      expect(body).toContain('--xh-_action-variant-bg-focus-visible: transparent;')
-      expect(body).toContain('--xh-_action-variant-bg-loading: transparent;')
     }
     const outline = block(css, '[data-xh-action-control][data-xh-action-variant=\'outline\']')
     expect(outline).toContain('--xh-_action-variant-border-rest: var(--xh-_tone-border-control, var(--xh-border-control));')

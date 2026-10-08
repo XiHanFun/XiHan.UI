@@ -31,12 +31,10 @@
        后者是使用者的入口，写死它，进了组的胶囊按钮就再也圆不起来 */
     --xh-_button-group-radius: 0;
 
-    /* 段与段共边焊成一条，solid 段静息不落贴地软影、悬停那一档不抬：抬起其中一段，投影会压到
-       左右两段的面上。两档都只留实心面顶边那条高光；其余形态的影本来就是 none，这两支只被
-       button.css 的 solid 块消费。颜色不在这里灌：段自带 data-xh-action-variant，底 / 前景 / 描边由
-       家族形态矩阵按段自己的形态给出 */
-    --xh-_button-group-shadow-rest: var(--xh-_highlight-tone);
-    --xh-_button-group-shadow-hover: var(--xh-_highlight-tone);
+    /* 段与段共边焊成一条，solid 段悬停那一档不抬：抬起其中一段，投影会压到左右两段的面上。
+       其余形态的影本来就是 none，这一支只被 button.css 的 solid 块消费。颜色不在这里灌：段自带
+       data-xh-action-variant，底 / 前景 / 描边由家族形态矩阵按段自己的形态给出 */
+    --xh-_button-group-shadow-hover: none;
     --xh-_group-separator-size: calc(var(--xh-_button-group-h, var(--xh-control-h-md)) / 2);
 
     display: inline-flex;

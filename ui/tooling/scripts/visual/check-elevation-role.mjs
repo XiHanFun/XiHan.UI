@@ -57,7 +57,7 @@ const SLOTTED = /^var\((?:--xh-[a-z][a-z0-9-]*,\s*var\()+--xh-elevation-(?:raise
 const EXPECTED = {
   // 缺省 outline 的触发器投影 data-xh-material，面走材质家族配方
   'back-top': { trigger: ['frosted'] },
-  'button': { root: ['soft', 'raised'] },
+  'button': { root: ['raised'] },
   // 可交互卡片悬停时抬高一档：被指针指着、按下就会跳走的面，比贴在页面上的 raised 高一档
   'card': { root: ['raised', 'lifted'] },
   // 浮在媒体之上的三颗翻页 / 播放钮：与 back-top / float-button 同属角落浮钮族，面走材质家族配方

@@ -8,22 +8,22 @@
   [data-xh-action-control] {
     --xh-_action-current-highlight: var(--xh-action-highlight-rest, transparent);
     --xh-_action-variant-bg-rest: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_action-variant-fg-rest: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_action-variant-fg-rest: var(--xh-_tone-fg, var(--xh-fg-muted));
     --xh-_action-variant-border-rest: transparent;
     --xh-_action-variant-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-    --xh-_action-variant-fg-hover: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_action-variant-fg-hover: var(--xh-_tone-fg, var(--xh-fg-muted));
     --xh-_action-variant-border-hover: transparent;
     --xh-_action-variant-bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-    --xh-_action-variant-fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_action-variant-fg-pressed: var(--xh-_tone-fg, var(--xh-fg-muted));
     --xh-_action-variant-border-pressed: transparent;
     --xh-_action-variant-bg-focus-visible: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_action-variant-fg-focus-visible: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_action-variant-fg-focus-visible: var(--xh-_tone-fg, var(--xh-fg-muted));
     --xh-_action-variant-border-focus-visible: transparent;
     --xh-_action-variant-bg-disabled: var(--xh-bg-subtle);
     --xh-_action-variant-fg-disabled: var(--xh-fg-disabled);
     --xh-_action-variant-border-disabled: transparent;
     --xh-_action-variant-bg-loading: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_action-variant-fg-loading: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_action-variant-fg-loading: var(--xh-_tone-fg, var(--xh-fg-muted));
     --xh-_action-variant-border-loading: transparent;
 
     position: relative;
@@ -83,42 +83,42 @@
 
   [data-xh-action-control][data-xh-action-variant='subtle'] {
     --xh-_action-variant-bg-rest: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_action-variant-fg-rest: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_action-variant-fg-rest: var(--xh-_tone-fg, var(--xh-fg-muted));
     --xh-_action-variant-border-rest: transparent;
     --xh-_action-variant-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-    --xh-_action-variant-fg-hover: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_action-variant-fg-hover: var(--xh-_tone-fg, var(--xh-fg-muted));
     --xh-_action-variant-border-hover: transparent;
     --xh-_action-variant-bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-    --xh-_action-variant-fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_action-variant-fg-pressed: var(--xh-_tone-fg, var(--xh-fg-muted));
     --xh-_action-variant-border-pressed: transparent;
     --xh-_action-variant-bg-focus-visible: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_action-variant-fg-focus-visible: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_action-variant-fg-focus-visible: var(--xh-_tone-fg, var(--xh-fg-muted));
     --xh-_action-variant-border-focus-visible: transparent;
     --xh-_action-variant-bg-disabled: var(--xh-bg-subtle);
     --xh-_action-variant-fg-disabled: var(--xh-fg-disabled);
     --xh-_action-variant-border-disabled: transparent;
     --xh-_action-variant-bg-loading: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_action-variant-fg-loading: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_action-variant-fg-loading: var(--xh-_tone-fg, var(--xh-fg-muted));
     --xh-_action-variant-border-loading: transparent;
   }
 
   [data-xh-action-control][data-xh-action-variant='outline'] {
-    --xh-_action-variant-bg-rest: transparent;
+    --xh-_action-variant-bg-rest: var(--xh-_tone-subtle, transparent);
     --xh-_action-variant-fg-rest: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-_action-variant-border-rest: var(--xh-_tone-border-control, var(--xh-border-control));
-    --xh-_action-variant-bg-hover: var(--xh-_tone-subtle, var(--xh-action-host-bg-hover, var(--xh-bg-subtle)));
+    --xh-_action-variant-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-action-host-bg-hover, var(--xh-bg-subtle)));
     --xh-_action-variant-fg-hover: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-_action-variant-border-hover: var(--xh-_tone-border-control, var(--xh-border-control-hover));
-    --xh-_action-variant-bg-pressed: var(--xh-_tone-subtle-hover, var(--xh-action-host-bg-pressed, var(--xh-bg-subtle-hover)));
+    --xh-_action-variant-bg-pressed: var(--xh-_tone-subtle-active, var(--xh-action-host-bg-pressed, var(--xh-bg-subtle-hover)));
     --xh-_action-variant-fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-_action-variant-border-pressed: var(--xh-_tone-border-control, var(--xh-border-control-hover));
-    --xh-_action-variant-bg-focus-visible: transparent;
+    --xh-_action-variant-bg-focus-visible: var(--xh-_tone-subtle, transparent);
     --xh-_action-variant-fg-focus-visible: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-_action-variant-border-focus-visible: var(--xh-_tone-border-control, var(--xh-border-control));
     --xh-_action-variant-bg-disabled: transparent;
     --xh-_action-variant-fg-disabled: var(--xh-fg-disabled);
     --xh-_action-variant-border-disabled: var(--xh-border-default);
-    --xh-_action-variant-bg-loading: transparent;
+    --xh-_action-variant-bg-loading: var(--xh-_tone-subtle, transparent);
     --xh-_action-variant-fg-loading: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-_action-variant-border-loading: var(--xh-_tone-border-control, var(--xh-border-control));
   }
@@ -176,7 +176,7 @@
 
   [data-xh-action-control][data-xh-action-size='sm'] {
     --xh-_action-profile-visual-size: var(--xh-control-h-sm);
-    --xh-_action-profile-padding-inline: var(--xh-control-px-sm);
+    --xh-_action-profile-padding-inline: var(--xh-space-3);
     --xh-_action-profile-padding-block: 0;
     --xh-_action-profile-gap: var(--xh-control-gap-sm);
     --xh-_action-profile-glyph-size: var(--xh-glyph-size-sm);
@@ -185,7 +185,7 @@
 
   [data-xh-action-control][data-xh-action-size='md'] {
     --xh-_action-profile-visual-size: var(--xh-control-h-md);
-    --xh-_action-profile-padding-inline: var(--xh-control-px-md);
+    --xh-_action-profile-padding-inline: var(--xh-space-4);
     --xh-_action-profile-padding-block: 0;
     --xh-_action-profile-gap: var(--xh-control-gap-md);
     --xh-_action-profile-glyph-size: var(--xh-glyph-size-md);
@@ -194,7 +194,7 @@
 
   [data-xh-action-control][data-xh-action-size='lg'] {
     --xh-_action-profile-visual-size: var(--xh-control-h-lg);
-    --xh-_action-profile-padding-inline: var(--xh-control-px-lg);
+    --xh-_action-profile-padding-inline: var(--xh-space-5);
     --xh-_action-profile-padding-block: 0;
     --xh-_action-profile-gap: var(--xh-control-gap-lg);
     --xh-_action-profile-glyph-size: var(--xh-glyph-size-lg);
@@ -285,14 +285,17 @@
   }
 
   [data-xh-action-control][data-xh-action-profile='row'][data-xh-action-size='sm'] {
+    --xh-_action-profile-padding-inline: var(--xh-control-px-sm);
     --xh-_action-profile-padding-block: var(--xh-list-option-py-sm);
   }
 
   [data-xh-action-control][data-xh-action-profile='row'][data-xh-action-size='md'] {
+    --xh-_action-profile-padding-inline: var(--xh-control-px-md);
     --xh-_action-profile-padding-block: var(--xh-list-option-py-md);
   }
 
   [data-xh-action-control][data-xh-action-profile='row'][data-xh-action-size='lg'] {
+    --xh-_action-profile-padding-inline: var(--xh-control-px-lg);
     --xh-_action-profile-padding-block: var(--xh-list-option-py-lg);
   }
 
@@ -314,17 +317,14 @@
   }
 
   [data-xh-action-control][data-xh-action-profile='disclosure-trigger'][data-xh-action-size='sm'] {
-    --xh-_action-profile-padding-inline: var(--xh-space-3);
     --xh-_action-profile-padding-block: var(--xh-space-3);
   }
 
   [data-xh-action-control][data-xh-action-profile='disclosure-trigger'][data-xh-action-size='md'] {
-    --xh-_action-profile-padding-inline: var(--xh-space-4);
     --xh-_action-profile-padding-block: var(--xh-space-4);
   }
 
   [data-xh-action-control][data-xh-action-profile='disclosure-trigger'][data-xh-action-size='lg'] {
-    --xh-_action-profile-padding-inline: var(--xh-space-5);
     --xh-_action-profile-padding-block: var(--xh-space-5);
   }
 
