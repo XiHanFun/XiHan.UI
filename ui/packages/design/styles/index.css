@@ -41658,9 +41658,9 @@
     /* 尺寸档只换这三个私有槽，序号圆点、标题与圆点里的序号都从 root 继承它们，
        换档不必给每个部件各写一条选择器；说明走次级标注（12px），不随档。
        圆点取状态圆那把尺：marker-size 的 sm / md / lg（24 / 28 / 32），比同档控件矮一档，随密度换档；
-       圆里的序号比同档控件字大一档（sm 14、md / lg 16） */
+       圆里的序号比同档控件字大一档（sm 14、md / lg 16）；标题取区块标题档 heading-3（sm 收回正文字号） */
     --xh-_steps-indicator-size: var(--xh-marker-size-md);
-    --xh-_steps-title-font-size: var(--xh-control-font-md);
+    --xh-_steps-title-font-size: var(--xh-text-heading-3-size);
     --xh-_steps-indicator-font-size: var(--xh-control-font-lg);
     /* 圆点一圈边的宽：序号圆点是细边（多数状态透明占位），点状形态的空心圈要粗一档才读得出是个圈 */
     --xh-_steps-indicator-border-width: var(--xh-stroke-thin);
@@ -41711,15 +41711,14 @@
   .xh-scope-steps[data-part='root'][data-size='sm'] {
     --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-sm));
     --xh-_steps-indicator-size: var(--xh-marker-size-sm);
-    --xh-_steps-title-font-size: var(--xh-control-font-sm);
+    --xh-_steps-title-font-size: var(--xh-text-body-size);
     --xh-_steps-indicator-font-size: var(--xh-control-font-md);
   }
 
-  /* 大档的序号与中档同为 16px：圆只大一档，字再放大就顶到圆边 */
+  /* 大档的序号与标题都与中档同档：圆只大一档，字再放大就顶到圆边；标题已是区块标题档 */
   .xh-scope-steps[data-part='root'][data-size='lg'] {
     --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-lg));
     --xh-_steps-indicator-size: var(--xh-marker-size-lg);
-    --xh-_steps-title-font-size: var(--xh-control-font-lg);
   }
 
   /* —— 点状形态 —— */
@@ -42085,13 +42084,13 @@
     transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 走到与走过的步标题取正文色，没走到的留在次级色；当前步再提到 medium */
+  /* 走到与走过的步标题取正文色，没走到的留在次级色；当前步再取区块标题的字重 */
   .xh-scope-steps[data-part='title']:is([data-state='current'], [data-state='completed']) {
     color: var(--xh-steps-title-fg-active, var(--xh-fg-default));
   }
 
   .xh-scope-steps[data-part='title'][data-state='current'] {
-    font-weight: var(--xh-steps-title-font-weight-current, var(--xh-font-weight-medium));
+    font-weight: var(--xh-steps-title-font-weight-current, var(--xh-text-heading-3-weight));
   }
 
   /* 标了语气的那一步标题取正文色，不论走到没走到：语气由圆点的语气面表达，标题不染色 */

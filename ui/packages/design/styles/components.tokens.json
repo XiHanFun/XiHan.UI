@@ -67926,7 +67926,7 @@
         "state=current"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-text-heading-3-weight"
       ],
       "visibility": "public",
       "description": "steps 的 title 部件 font-weight 覆盖槽。"
