@@ -74,7 +74,7 @@
     padding-inline: var(--xh-grid-list-label-px, var(--xh-control-px-md));
     color: var(--xh-grid-list-label-fg, var(--xh-fg-default));
     font-size: var(--xh-grid-list-label-font-size, var(--xh-text-label-size));
-    font-weight: var(--xh-grid-list-label-font-weight, var(--xh-font-weight-semibold));
+    font-weight: var(--xh-grid-list-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-normal);
   }
 
