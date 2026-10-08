@@ -13,19 +13,21 @@
 
 ## 字号阶梯
 
-七档，以 `rem` 记，随宿主根字号缩放：
+九档，以 `rem` 记，随宿主根字号缩放：
 
 <XhTokenTable
   kind="text"
-  :names="['--xh-font-size-xs', '--xh-font-size-sm', '--xh-font-size-md', '--xh-font-size-lg', '--xh-font-size-xl', '--xh-font-size-2xl', '--xh-font-size-3xl']"
+  :names="['--xh-font-size-xs', '--xh-font-size-sm', '--xh-font-size-md', '--xh-font-size-lg', '--xh-font-size-xl', '--xh-font-size-2xl', '--xh-font-size-3xl', '--xh-font-size-4xl', '--xh-font-size-5xl']"
   :notes="{
     '--xh-font-size-xs': '12px · 次级标注：计数、快捷键、时间戳、序号',
     '--xh-font-size-sm': '13px · 说明、错误文案、sm 档控件',
-    '--xh-font-size-md': '14px · 正文、标签、md 档控件',
-    '--xh-font-size-lg': '16px · lg 档控件',
-    '--xh-font-size-xl': '18px · 三级标题：Dialog、Drawer、Tour 的面板标题',
-    '--xh-font-size-2xl': '22px · 二级标题',
-    '--xh-font-size-3xl': '28px · 一级标题',
+    '--xh-font-size-md': '14px · 正文、标签、浮层内与小面标题、md 档控件',
+    '--xh-font-size-lg': '16px · heading-3：区块与面板标题；lg 档控件',
+    '--xh-font-size-xl': '20px · heading-2：页面标题',
+    '--xh-font-size-2xl': '24px · heading-1',
+    '--xh-font-size-3xl': '28px · display：大号数值的 lg 档',
+    '--xh-font-size-4xl': '32px · 原语储备，暂无语义角色取用',
+    '--xh-font-size-5xl': '36px · 原语储备，暂无语义角色取用',
   }"
 />
 
@@ -36,10 +38,10 @@
 <XhTokenTable
   :names="['--xh-font-weight-regular', '--xh-font-weight-medium', '--xh-font-weight-semibold', '--xh-font-weight-bold', '--xh-leading-none', '--xh-leading-tight', '--xh-leading-normal', '--xh-leading-relaxed']"
   :notes="{
-    '--xh-font-weight-regular': '正文、字段标签、集合标题、按钮字',
-    '--xh-font-weight-medium': '选中的候选项、导航当前项、表格列头、当前页的面包屑',
-    '--xh-font-weight-semibold': '面板标题、各级标题、总览卡片标题',
-    '--xh-font-weight-bold': '只给 Typography 的加粗与个别强调（Alert 标题、日历的今天）',
+    '--xh-font-weight-regular': '正文、字段标签、按钮字',
+    '--xh-font-weight-medium': '各级标题（heading-1 / 2 / 3）、浮层内与小面标题、集合标题、选中的候选项、导航当前项、表格列头、当前页的面包屑',
+    '--xh-font-weight-semibold': 'SideNav 当前项；标题统一取 medium，不用它',
+    '--xh-font-weight-bold': '只给 Typography 的加粗与个别强调（打印时的 Alert 标题、日历的今天）',
     '--xh-leading-none': '单行标签、控件内文字',
     '--xh-leading-tight': '标题、色板标注',
     '--xh-leading-normal': '正文、说明',
@@ -54,12 +56,14 @@
 | 角色 | 字号 / 字重 / 颜色 | 与相邻元素的间距 |
 | --- | --- | --- |
 | 字段标签（单字段与 Slider、Rating、Signature、Color* 等复合单字段） | `--xh-text-label-size` 14 / `--xh-text-label-weight` 400 / `--xh-fg-default` | 贴控件 `--xh-space-1` |
-| 集合标题（RadioGroup、CheckboxGroup、Listbox、Tree、TagGroup、Descriptions） | 14 / `--xh-text-label-weight` 400 / `--xh-fg-muted` | 与集合 `--xh-space-2` |
+| 集合标题（RadioGroup、CheckboxGroup、Listbox、Tree、TagGroup、Descriptions） | 14 / 500 / `--xh-fg-muted` | 与集合 `--xh-space-2` |
 | 整行控件的标签（Checkbox、Switch） | 随档 `--xh-control-font-sm / md / lg` / regular / `--xh-fg-default`，禁用 `--xh-fg-subtle` | 与方框 `--xh-space-2` |
 | 说明 / helper | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal` | 与控件 `--xh-space-1` |
 | 错误文案 | 13 / `--xh-fg-danger` | 与控件 `--xh-space-1` |
-| Surface / Feedback / 浮层内标题 | 14 / `--xh-font-weight-semibold` | — |
-| 页面级面板标题（Dialog、Drawer、Tour） | heading-3（`--xh-text-heading-3-*`） | — |
+| 浮层内与小面标题（Popover、HoverCard、Popconfirm、FloatingPanel、Approval、Timeline、EmptyState、Citation） | 14 / `--xh-font-weight-medium` | — |
+| 区块与面板标题（Card、Descriptions、Alert、Notification、Steps；Dialog、Drawer、Tour） | heading-3（`--xh-text-heading-3-*`）：16 / 500 | — |
+| 页面标题（PageHeader） | heading-2（`--xh-text-heading-2-*`）：20 / 500 | — |
+| 大号数值（Statistic、Timer、NumberAnimation） | sm / md / lg 依次取 heading-2 / heading-1 / display（`--xh-text-display-size`）：20 / 24 / 28 | — |
 | 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
 | 代码 | `--xh-font-family-mono` / `--xh-text-code-leading` 1.5rem | — |
 
