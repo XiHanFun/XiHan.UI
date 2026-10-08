@@ -40106,13 +40106,14 @@
 
   .xh-scope-tooltip[data-part='content'] {
     /* 尺寸档只换这三个私有槽。tooltip 没有 root 部件，两轴都落在浮层树最外层的 content 上，
-       箭头是它的后代，语气槽一并继承 */
-    --xh-_tooltip-py: var(--xh-space-1);
-    --xh-_tooltip-px: var(--xh-space-2);
-    --xh-_tooltip-font-size: var(--xh-control-caption-md);
+       箭头是它的后代，语气槽一并继承。缺省档纵 8 横 12、正文 14px */
+    --xh-_tooltip-py: var(--xh-space-2);
+    --xh-_tooltip-px: var(--xh-space-3);
+    --xh-_tooltip-font-size: var(--xh-text-body-size);
     /* Tooltip 保留反白身份（登记的反白 compact frosted）：短提示要与可交互的普通主题浮层一眼分开。
-       94% 是六种 tone 在纯黑/纯白最坏底色上仍托住 4.5:1 正文的首个安全档。
-       边不取 --xh-material-frosted-border：那是深色 14% 的透明边，压在反白深底上看不见，
+       底取正文色、字取承载面色：浅色主题下是深底白字，深色主题下整块翻成浅底深字，两头都是同一对反色。
+       compact 档的透明度缺省不透明，底是实底；主题要透景时再由材质令牌给。
+       边不取 --xh-material-frosted-border：那是中性描边色，压在反白深底上看不见，
        浮层要的 1px 可见边界由 on 色 20% 拼色承担；浮层不用玻璃高光，顶光缺省不画 */
     --xh-_tooltip-solid: var(--xh-_tone, var(--xh-fg-default));
     --xh-_tooltip-on: var(--xh-_tone-on, var(--xh-bg-surface));
@@ -40129,8 +40130,8 @@
     max-inline-size: var(--xh-tooltip-max-w, var(--xh-overlay-max-w));
     padding-block: var(--xh-tooltip-py, var(--xh-_tooltip-py));
     padding-inline: var(--xh-tooltip-px, var(--xh-_tooltip-px));
-    /* 这里刻意用 control 而不是浮层那档 surface：提示气泡通常只有一行字、高度接近控件，
-       8px 圆角在这个尺寸上占比过大，看着会发胖。档位定义里为此单列了一条 */
+    /* 这里刻意用 control 而不是浮层那档 overlay：提示气泡通常只有一行字、高度接近控件，
+       与控件同一形状身份。档位定义里为此单列了一条 */
     border-radius: var(--xh-tooltip-radius, var(--xh-shape-control));
     border: var(--xh-stroke-thin) solid var(--xh-tooltip-border, var(--xh-_tooltip-border));
     background: transparent;
@@ -40187,18 +40188,16 @@
   }
 
   /* —— 尺寸 —— */
-  /* 缺省档写在 content 的基础规则里。提示的内边距与字号本就不在 control-* 那把尺上
-     （它是浮层不是控件），故按 space / font-size 档上下各挪一级 */
+  /* 缺省档写在 content 的基础规则里。提示的内边距与字号不在 control-* 那把尺上
+     （它是浮层不是控件）：三档字号都是正文 14px，一行字的提示不缩字，档位只换内距——
+     小号档只收纵向（纵 4 横 12），大号档纵横各放一档（纵 12 横 16） */
   .xh-scope-tooltip[data-part='content'][data-size='sm'] {
-    --xh-_tooltip-py: var(--xh-space-0_5);
-    --xh-_tooltip-px: var(--xh-space-1_5);
-    --xh-_tooltip-font-size: var(--xh-control-caption-sm);
+    --xh-_tooltip-py: var(--xh-space-1);
   }
 
   .xh-scope-tooltip[data-part='content'][data-size='lg'] {
-    --xh-_tooltip-py: var(--xh-space-1_5);
-    --xh-_tooltip-px: var(--xh-space-2_5);
-    --xh-_tooltip-font-size: var(--xh-control-caption-lg);
+    --xh-_tooltip-py: var(--xh-space-3);
+    --xh-_tooltip-px: var(--xh-space-4);
   }
 
   /* 箭头的底色与描边色，几何在 overlay-arrow.css。

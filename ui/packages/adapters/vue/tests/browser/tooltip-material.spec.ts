@@ -26,9 +26,23 @@ interface MountOptions {
   contrast?: 'more'
   maxWidth?: string
   placement?: Placement
+  size?: 'sm' | 'md' | 'lg'
   text?: string
   theme?: 'light' | 'dark'
   tone?: Tone
+}
+
+/**
+ * 在定位层里放一个探针，按气泡所在的主题解出某个颜色令牌。
+ * 不放进气泡：反白面内是墨色域，域里的正文色已被改写成墨色。
+ */
+function resolvedColor(token: string): string {
+  const probe = document.createElement('span')
+  probe.style.color = `var(${token})`
+  part('positioner').append(probe)
+  const color = getComputedStyle(probe).color
+  probe.remove()
+  return color
 }
 
 async function mountTooltip(options: MountOptions = {}): Promise<void> {
@@ -42,6 +56,7 @@ async function mountTooltip(options: MountOptions = {}): Promise<void> {
     render: () => h(XhTooltipRoot, {
       open: true,
       placement: options.placement ?? 'top',
+      size: options.size,
       tone: options.tone,
     }, () => [
       h(XhTooltipTrigger, null, () => '说明目标'),
@@ -68,18 +83,25 @@ afterEach(() => {
   host = null
 })
 
-describe('tooltip 紧凑反白 M2', () => {
-  it('以高遮蔽反白 tint、8px blur 和同面箭头绘制小型提示', async () => {
-    await mountTooltip()
+describe('tooltip 反白实底', () => {
+  it.each(['light', 'dark'] as const)('%s：反色中性实底、白面字色，14px 字、控件圆角，箭头与气泡同面同边', async (theme) => {
+    await mountTooltip({ theme })
     const content = getComputedStyle(part('content'))
     const surface = getComputedStyle(part('content'), '::before')
     const arrow = getComputedStyle(part('arrow'))
 
-    expect(surface.opacity).toBe('0.94')
-    expect(content.color).not.toContain('/ 0.')
-    expect(content.backdropFilter || content.getPropertyValue('-webkit-backdrop-filter')).toContain('blur(8px)')
+    // 底取正文色、字取承载面色：浅色主题下是深底白字，深色主题下整块翻过来
+    expect(surface.opacity).toBe('1')
+    expect(surface.backgroundColor).toBe(resolvedColor('--xh-fg-default'))
+    expect(content.color).toBe(resolvedColor('--xh-bg-surface'))
+    expect(content.backdropFilter || content.getPropertyValue('-webkit-backdrop-filter')).toBe('none')
+    expect(content.fontSize).toBe('14px')
+    expect(content.paddingTop).toBe('8px')
+    expect(content.paddingBottom).toBe('8px')
+    expect(content.paddingLeft).toBe('12px')
+    expect(content.paddingRight).toBe('12px')
     expect(content.borderTopWidth).toBe('1px')
-    expect(content.borderRadius).toBe('4px')
+    expect(content.borderRadius).toBe('2px')
     expect(content.boxShadow).not.toBe('none')
     // 不用顶部高光：内描边式顶光缺省透明，只剩海拔那一层影
     expect(content.boxShadow.startsWith('rgba(0, 0, 0, 0) 0px 1px 0px 0px inset')).toBe(true)
@@ -93,6 +115,17 @@ describe('tooltip 紧凑反白 M2', () => {
     ].filter(([width]) => width !== '0px')
     expect(visibleArrowEdges.length).toBe(2)
     expect(visibleArrowEdges.every(([, color]) => color === content.borderTopColor)).toBe(true)
+  })
+
+  it('小号档只收纵向内距：纵 4 横 12，字号仍是 14px', async () => {
+    await mountTooltip({ size: 'sm' })
+    const content = getComputedStyle(part('content'))
+
+    expect(content.paddingTop).toBe('4px')
+    expect(content.paddingBottom).toBe('4px')
+    expect(content.paddingLeft).toBe('12px')
+    expect(content.paddingRight).toBe('12px')
+    expect(content.fontSize).toBe('14px')
   })
 
   it('高对比暗色 tone 使用同语气实体面，不让背景继续参与文字合成', async () => {

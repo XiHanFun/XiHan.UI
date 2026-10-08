@@ -812,7 +812,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 ### 8.4 浮层材质判据
 
 - 内容为短列表、菜单、tooltip、气泡 → frosted 四件套（实体弹出层）。
-- 刻意例外（须登记）：Tooltip 保留反白身份，走 compact 档 frosted（`--xh-material-frosted-compact-*` 的 backdrop / shadow / alpha + 光学层，缺省都是实体），边不取 `--xh-material-frosted-border`（装饰边压在反白深底上不可见），改取 on 色 20% 拼色承担 §8.1 的 1px 可见边界。
+- 刻意例外（须登记）：Tooltip 保留反白身份，走 compact 档 frosted（`--xh-material-frosted-compact-*` 的 backdrop / shadow / alpha + 光学层，缺省都是实体），边不取 `--xh-material-frosted-border`（装饰边压在反白深底上不可见），改取 on 色 20% 拼色承担 §8.1 的 1px 可见边界。反白面底取 `--xh-fg-default`、字取 `--xh-bg-surface`（深色主题下整块翻成浅底深字）；正文 `--xh-text-body-size` 14px、control 圆角，内距纵 8 横 12，sm 只收纵向到 4，lg 纵 12 横 16，三档不换字号。
 - 刻意例外（须登记）：图表提示框（含 Heatmap 的详情条）走标准 frosted 四件套 + overlay 形状，不反白。提示框里有系列色标，色槽色按图表所在表面校准，反白深底会让色标失去校准；跟随指针时不做位置过渡；`aria-hidden`，朗读由数据标记承担（§13）。
 - 内容含网格或多列（日历、时间列、导航大面板）→ floating（solid + border-default + elevation-floating）。
 - 模态与强反馈面 → sheet 三件套；任何浮层不得只靠 box-shadow 分层，content / item 部件必须有非透明 border 或 material-*-border。
