@@ -76647,6 +76647,9 @@
               "name": "--xh-typography-code-bg"
             },
             {
+              "name": "--xh-typography-code-fg"
+            },
+            {
               "name": "--xh-typography-code-font"
             },
             {

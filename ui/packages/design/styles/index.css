@@ -14404,12 +14404,13 @@
     --xh-_typography-body-size: var(--xh-text-body-size);
     --xh-_typography-block-gap: var(--xh-space-4);
     --xh-_typography-heading-gap: var(--xh-space-6);
-    --xh-_typography-h1: var(--xh-font-size-3xl);
-    --xh-_typography-h2: var(--xh-font-size-2xl);
-    --xh-_typography-h3: var(--xh-font-size-xl);
-    --xh-_typography-h4: var(--xh-font-size-lg);
-    --xh-_typography-h5: var(--xh-font-size-md);
-    --xh-_typography-h6: var(--xh-font-size-sm);
+    /* 六级标题沿字号阶梯从 36 逐档降到 16：最小的 h6 仍比正文大一号 */
+    --xh-_typography-h1: var(--xh-font-size-5xl);
+    --xh-_typography-h2: var(--xh-font-size-4xl);
+    --xh-_typography-h3: var(--xh-font-size-3xl);
+    --xh-_typography-h4: var(--xh-font-size-2xl);
+    --xh-_typography-h5: var(--xh-font-size-xl);
+    --xh-_typography-h6: var(--xh-font-size-lg);
     /* 读行宽度：整块正文不收窄就会拉成一行行难读的长句 */
     --xh-_typography-measure: 68ch;
     /* 行内代码跟着所在那行的字号缩：以「随文字走」的字形尺寸为基数按比例收一点，不取固定档位 */
@@ -14441,15 +14442,15 @@
     --xh-_typography-body-size: var(--xh-font-size-sm);
     --xh-_typography-block-gap: var(--xh-space-3);
     --xh-_typography-heading-gap: var(--xh-space-5);
-    --xh-_typography-h1: var(--xh-font-size-2xl);
-    --xh-_typography-h2: var(--xh-font-size-xl);
-    --xh-_typography-h3: var(--xh-font-size-lg);
-    --xh-_typography-h4: var(--xh-font-size-md);
-    --xh-_typography-h5: var(--xh-font-size-sm);
-    --xh-_typography-h6: var(--xh-font-size-xs);
+    --xh-_typography-h1: var(--xh-font-size-4xl);
+    --xh-_typography-h2: var(--xh-font-size-3xl);
+    --xh-_typography-h3: var(--xh-font-size-2xl);
+    --xh-_typography-h4: var(--xh-font-size-xl);
+    --xh-_typography-h5: var(--xh-font-size-lg);
+    --xh-_typography-h6: var(--xh-font-size-md);
   }
 
-  /* 大档只放大正文与段距：标题档位在 3xl 见顶，六档保持原样 */
+  /* 大档只放大正文与段距：标题档位在 5xl 见顶，六档保持原样 */
   .xh-scope-typography[data-part='root'][data-size='lg'] {
     --xh-_typography-body-size: var(--xh-font-size-lg);
     --xh-_typography-block-gap: var(--xh-space-5);
@@ -14500,7 +14501,7 @@
   .xh-scope-typography[data-part='heading'] {
     color: var(--xh-typography-heading-fg, var(--xh-fg-default));
     font-size: var(--xh-typography-heading-font-size, var(--xh-_typography-h3));
-    font-weight: var(--xh-typography-heading-font-weight, var(--xh-font-weight-semibold));
+    font-weight: var(--xh-typography-heading-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-typography-heading-leading, var(--xh-leading-tight));
     /* 标题折行时把各行拉得一样长 */
     text-wrap: balance;
@@ -14554,14 +14555,15 @@
   }
 
   .xh-scope-typography[data-part='text'][data-variant='strong'] {
-    font-weight: var(--xh-typography-text-font-weight, var(--xh-font-weight-semibold));
+    font-weight: var(--xh-typography-text-font-weight, var(--xh-font-weight-medium));
   }
 
   .xh-scope-typography[data-part='text'][data-variant='code'] {
     padding-block: var(--xh-typography-code-py, var(--xh-space-0_5));
-    padding-inline: var(--xh-typography-code-px, var(--xh-space-1));
+    padding-inline: var(--xh-typography-code-px, var(--xh-space-2));
     border-radius: var(--xh-typography-code-radius, var(--xh-shape-inset));
     background: var(--xh-typography-code-bg, var(--xh-bg-subtle));
+    color: var(--xh-typography-code-fg, var(--xh-fg-muted));
     font-family: var(--xh-typography-code-font, var(--xh-font-family-mono));
     font-size: var(--xh-typography-code-font-size, var(--xh-_typography-code-size));
   }
@@ -14591,8 +14593,8 @@
   .xh-scope-typography[data-part='text'][data-marked] {
     padding-inline: var(--xh-typography-mark-px, var(--xh-space-0_5));
     border-radius: var(--xh-typography-mark-radius, var(--xh-shape-inset));
-    background: var(--xh-typography-mark-bg, var(--xh-bg-brand-subtle));
-    color: var(--xh-typography-mark-fg, var(--xh-fg-brand-strong));
+    background: var(--xh-typography-mark-bg, var(--xh-bg-mark));
+    color: var(--xh-typography-mark-fg, var(--xh-fg-default));
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
   }
@@ -14707,7 +14709,7 @@
 
   .xh-scope-typography[data-part='prose'] :where(h1, h2, h3, h4, h5, h6) {
     color: var(--xh-typography-prose-heading-fg, var(--xh-fg-default));
-    font-weight: var(--xh-typography-prose-heading-font-weight, var(--xh-font-weight-semibold));
+    font-weight: var(--xh-typography-prose-heading-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-tight);
     text-wrap: balance;
   }
@@ -14739,7 +14741,7 @@
 
   /* 列表：项目符号要留在容器里面，缩进画在列表自己的起始内衬上 */
   .xh-scope-typography[data-part='prose'] :where(ul, ol) {
-    padding-inline-start: var(--xh-typography-prose-list-ps, var(--xh-space-6));
+    padding-inline-start: var(--xh-typography-prose-list-ps, var(--xh-space-5));
   }
 
   .xh-scope-typography[data-part='prose'] :where(li + li) {
@@ -14763,15 +14765,16 @@
   }
 
   .xh-scope-typography[data-part='prose'] :where(strong) {
-    font-weight: var(--xh-typography-prose-strong-font-weight, var(--xh-font-weight-semibold));
+    font-weight: var(--xh-typography-prose-strong-font-weight, var(--xh-font-weight-medium));
   }
 
   /* 行内代码与 text 部件的 code 形态同源，同一块正文里两条路写出来一个样 */
   .xh-scope-typography[data-part='prose'] :where(code) {
     padding-block: var(--xh-typography-code-py, var(--xh-space-0_5));
-    padding-inline: var(--xh-typography-code-px, var(--xh-space-1));
+    padding-inline: var(--xh-typography-code-px, var(--xh-space-2));
     border-radius: var(--xh-typography-code-radius, var(--xh-shape-inset));
     background: var(--xh-typography-code-bg, var(--xh-bg-subtle));
+    color: var(--xh-typography-code-fg, var(--xh-fg-muted));
     font-family: var(--xh-typography-code-font, var(--xh-font-family-mono));
     font-size: var(--xh-typography-code-font-size, var(--xh-_typography-code-size));
   }
@@ -14795,10 +14798,10 @@
   }
 
   .xh-scope-typography[data-part='prose'] :where(blockquote) {
-    padding-inline-start: var(--xh-typography-prose-quote-ps, var(--xh-space-4));
+    padding-inline-start: var(--xh-typography-prose-quote-ps, var(--xh-space-2));
     border-inline-start: var(--xh-stroke-thick) solid
-      var(--xh-typography-prose-quote-border, var(--xh-border-subtle));
-    color: var(--xh-typography-prose-quote-fg, var(--xh-fg-muted));
+      var(--xh-typography-prose-quote-border, var(--xh-border-strong));
+    color: var(--xh-typography-prose-quote-fg, inherit);
   }
 
   .xh-scope-typography[data-part='prose'] :where(hr) {

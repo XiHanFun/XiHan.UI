@@ -34,6 +34,11 @@
       "$type": "color",
       "$value": "color-mix(in oklab, {bg.subtle} 55%, transparent)"
     },
+    "mark": {
+      "$description": "正文里的标记底（mark、搜索命中）：浅黄，字仍取正文色；与品牌淡底分开，品牌淡底专属选中 / 当前。",
+      "$type": "color",
+      "$value": "{color.yellow.200}"
+    },
     "muted": {
       "$type": "color",
       "$value": "{color.neutral.100}"
