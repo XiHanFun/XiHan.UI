@@ -30,8 +30,11 @@
        把 --xh-icon-size 改接到 --xh-control-indicator-* 一族的盒尺 */
     --xh-icon-size: var(--xh-side-nav-icon-size, var(--xh-glyph-size-md));
 
-    /* 尺寸档只换这三个私有槽，行从这两处继承它们，换档不必给每个部件各写一条选择器 */
-    --xh-_side-nav-row-h: var(--xh-control-h-md);
+    /* 尺寸档只换这三个私有槽，行从这两处继承它们，换档不必给每个部件各写一条选择器。
+       行高取导航行的尺（比同档控件高一截） */
+    --xh-_side-nav-row-h: var(--xh-nav-row-h-md);
+    /* 面板内的搜索框是字段，高度仍走控件尺 */
+    --xh-_side-nav-input-h: var(--xh-control-h-md);
     --xh-_side-nav-row-px: var(--xh-control-px-md);
     --xh-_side-nav-row-gap: var(--xh-control-gap-md);
     --xh-_side-nav-row-font-size: var(--xh-control-font-md);
@@ -41,7 +44,8 @@
   /* 缺省档写在上面那条里 */
   [data-scope='side-nav']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
     --xh-icon-size: var(--xh-side-nav-icon-size, var(--xh-glyph-size-sm));
-    --xh-_side-nav-row-h: var(--xh-control-h-sm);
+    --xh-_side-nav-row-h: var(--xh-nav-row-h-sm);
+    --xh-_side-nav-input-h: var(--xh-control-h-sm);
     --xh-_side-nav-row-px: var(--xh-control-px-sm);
     --xh-_side-nav-row-gap: var(--xh-control-gap-sm);
     --xh-_side-nav-row-font-size: var(--xh-control-font-sm);
@@ -49,7 +53,8 @@
 
   [data-scope='side-nav']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-icon-size: var(--xh-side-nav-icon-size, var(--xh-glyph-size-lg));
-    --xh-_side-nav-row-h: var(--xh-control-h-lg);
+    --xh-_side-nav-row-h: var(--xh-nav-row-h-lg);
+    --xh-_side-nav-input-h: var(--xh-control-h-lg);
     --xh-_side-nav-row-px: var(--xh-control-px-lg);
     --xh-_side-nav-row-gap: var(--xh-control-gap-lg);
     --xh-_side-nav-row-font-size: var(--xh-control-font-lg);
@@ -79,7 +84,7 @@
 
     flex: none;
     min-inline-size: 0;
-    block-size: var(--xh-side-nav-input-h, var(--xh-_side-nav-row-h));
+    block-size: var(--xh-side-nav-input-h, var(--xh-_side-nav-input-h));
     padding-block: 0;
     padding-inline: var(--xh-side-nav-input-px, var(--xh-_side-nav-row-px));
     border: none;
@@ -213,7 +218,7 @@
     --xh-collection-inline-padding: var(--xh-side-nav-link-px, var(--xh-_side-nav-row-px));
     --xh-collection-gap: 0;
     --xh-collection-font-size: var(--xh-side-nav-link-font-size, var(--xh-_side-nav-row-font-size));
-    --xh-collection-radius: var(--xh-side-nav-link-radius, var(--xh-shape-control));
+    --xh-collection-radius: var(--xh-side-nav-link-radius, var(--xh-shape-surface));
     /* 作者的图标尺槽经桥接槽下发到行，家族缺省按 data-xh-collection-size 取档 */
     --xh-collection-glyph-size: var(--xh-side-nav-icon-size, var(--xh-_collection-glyph-size));
     --xh-collection-fg-rest: var(--xh-side-nav-row-fg, currentColor);
@@ -223,16 +228,16 @@
     --xh-collection-bg-hover: var(--xh-side-nav-row-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-keyboard-highlight: var(--xh-side-nav-row-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-pressed: var(--xh-side-nav-row-bg-pressed, var(--xh-bg-subtle-hover));
-    /* 当前页：页内持久集合的唯一标记是品牌淡底行面 + 淡底前景，字重不变（与静息同为 regular） */
+    /* 当前页：页内持久集合的标记是品牌淡底行面 + 淡底前景；侧栏另把字重提到 semibold，整列扫读时当前项一眼可见 */
     --xh-collection-bg-current: var(--xh-side-nav-row-bg-active, var(--xh-bg-brand-subtle));
     --xh-collection-fg-current: var(--xh-side-nav-row-fg-active, var(--xh-fg-on-brand-subtle));
     --xh-collection-fg-current-hover: var(--xh-side-nav-row-fg-active, var(--xh-fg-on-brand-subtle));
     --xh-collection-fg-current-highlight: var(--xh-side-nav-row-fg-active, var(--xh-fg-on-brand-subtle));
     --xh-collection-fg-current-pressed: var(--xh-side-nav-row-fg-active, var(--xh-fg-on-brand-subtle));
-    --xh-collection-font-weight-current: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-regular));
-    --xh-collection-font-weight-current-hover: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-regular));
-    --xh-collection-font-weight-current-highlight: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-regular));
-    --xh-collection-font-weight-current-pressed: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-current: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-semibold));
+    --xh-collection-font-weight-current-hover: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-semibold));
+    --xh-collection-font-weight-current-highlight: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-semibold));
+    --xh-collection-font-weight-current-pressed: var(--xh-side-nav-row-font-weight-active, var(--xh-font-weight-semibold));
     --xh-collection-indicator-fg-current: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
     --xh-collection-indicator-fg-current-hover: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));
     --xh-collection-indicator-fg-current-highlight: var(--xh-side-nav-indicator-color, var(--xh-fg-brand));

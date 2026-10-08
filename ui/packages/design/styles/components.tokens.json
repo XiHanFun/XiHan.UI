@@ -63544,7 +63544,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_side-nav-row-h"
+        "--xh-_side-nav-input-h"
       ],
       "visibility": "public",
       "description": "side-nav 的 input 部件 block-size 覆盖槽。"
@@ -63657,7 +63657,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-surface"
       ],
       "visibility": "public",
       "description": "side-nav 的 branch-trigger、link 部件 border-radius 覆盖槽。"
@@ -64048,7 +64048,7 @@
         "xh-collection-context=page"
       ],
       "defaultToken": [
-        "--xh-font-weight-regular"
+        "--xh-font-weight-semibold"
       ],
       "visibility": "public",
       "description": "side-nav 的 branch-trigger、link 部件 font-weight 覆盖槽。"

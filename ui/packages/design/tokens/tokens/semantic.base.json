@@ -924,6 +924,19 @@
     }
   },
   "nav": {
+    "row-h-sm": {
+      "$description": "导航行（侧栏菜单的分支与链接）的块尺寸。比同档控件高一截：侧栏是整列扫读的目标，行距松一些更好点也更好读。",
+      "$type": "dimension",
+      "$value": "{control.h-md}"
+    },
+    "row-h-md": {
+      "$type": "dimension",
+      "$value": "calc({control.h-lg} + {space.1})"
+    },
+    "row-h-lg": {
+      "$type": "dimension",
+      "$value": "{control.box-lg}"
+    },
     "link-max-w": {
       "$description": "导航链接（锚点、面包屑）超长时截断的最大宽度。",
       "$type": "dimension",
