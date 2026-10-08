@@ -2,7 +2,6 @@ import { defineXiHanTheme } from "@xihanfun/vitepress-theme";
 import { h } from "vue";
 import XhComponentCard from "./XhComponentCard.vue";
 import XhDemo from "./XhDemo.vue";
-import XhDocsScrollbars from "./XhDocsScrollbars.vue";
 import XhFrameworkSwitch from "./XhFrameworkSwitch.vue";
 import XhTokenSwatches from "./XhTokenSwatches.vue";
 import XhTokenTable from "./XhTokenTable.vue";
@@ -24,7 +23,6 @@ export default defineXiHanTheme({
       { class: "xh-framework-mobile" },
       h(XhFrameworkSwitch),
     ),
-    "layout-bottom": () => h(XhDocsScrollbars),
   },
   enhanceApp(ctx) {
     // 组件页由生成器产出，示例统一写成 <XhDemo src="..." />，这里全局注册
