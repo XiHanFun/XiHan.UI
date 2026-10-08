@@ -34,7 +34,7 @@ const OVERLAY_STATES = [':hover', ':active', '[data-pressed]', ':focus', '[data-
 
 /**
  * 组件:部件 → 语义类与状态选择器，按选中语义与部件归族登记。
- * kind：overlay / page / nav / nav-terminal / grid / slider / flat / open。
+ * kind：overlay / page / nav / nav-terminal / grid / slider / segment / flat / open。
  * 键里的 `宿主:scope/部件` 与 check-press-feedback 同形：皮肤把规则写在了内嵌的别家部件上。
  */
 const SEMANTIC = {
@@ -80,8 +80,9 @@ const SEMANTIC = {
   'steps:indicator': [{ kind: 'grid', state: '[data-state=\'current\']' }],
   'calendar-picker:cell-trigger': [{ kind: 'grid', state: '[data-selected]' }],
   'calendar-range-picker:cell-trigger': [{ kind: 'grid', state: '[data-selected]' }],
-  // 有滑块开关：白色抬起的滑块（RadioGroup segmented 形态的 thumb）
-  'radio-group:thumb': [{ kind: 'slider' }],
+  // 分段选中滑块：RadioGroup segmented 形态的 thumb 是选中段的品牌淡底（--xh-bg-segment-selected），平面一块无影；
+  // 与 Tabs segment 的白色抬起滑块分开登记
+  'radio-group:thumb': [{ kind: 'segment' }],
   // 无滑块开关：品牌淡底
   'toggle:root': [{ kind: 'flat', state: '[data-state=\'on\']' }],
   'toggle-group:item': [{ kind: 'flat', state: '[data-state=\'on\']' }],
@@ -388,6 +389,14 @@ for (const [key, rules] of Object.entries(SEMANTIC)) {
           report(`滑块 indicator 的落影是 ${shadow ?? '（没写 box-shadow）'}，应为 --xh-elevation-raised`)
         break
       }
+      case 'segment': {
+        const shadow = tokenOf(decls.get('box-shadow'), slots)
+        if (bg !== '--xh-bg-segment-selected')
+          report(`分段选中滑块的底是 ${bg ?? '（没写 background）'}，应为 --xh-bg-segment-selected`)
+        if (shadow != null && shadow.startsWith('--xh-elevation-'))
+          report(`分段选中滑块落了 ${shadow}——它是平面的品牌淡底，不投影`)
+        break
+      }
       case 'open': {
         // 投影了 Action Control 的部件（字段内的展开钮）：底由家族按 --xh-action-bg-rest 画，打开态的面
         // 是皮肤在该状态里把 --xh-action-bg-rest 映到与基础块 --xh-action-bg-hover 同一支；两支都按槽解析到底
@@ -417,7 +426,7 @@ if (problems.length) {
   console.error('[check-selection-marker] ✗ 选中与当前态没按语义分类走：')
   for (const p of problems)
     console.error(`  ${p}`)
-  console.error('\n浮层集合透明底 + 对号 · 页内集合品牌淡底行面 · 导航当前品牌深字（配方 nav 语境） · 格状当前实心品牌 · 有滑块开关白色抬起 indicator · 无滑块开关品牌淡底 · 打开中与 hover 同档。存量登 family-backlog.json selection 段。')
+  console.error('\n浮层集合透明底 + 对号 · 页内集合品牌淡底行面 · 导航当前品牌深字（配方 nav 语境） · 格状当前实心品牌 · 有滑块开关白色抬起 indicator · 分段选中滑块品牌淡底 · 无滑块开关品牌淡底 · 打开中与 hover 同档。存量登 family-backlog.json selection 段。')
   process.exit(1)
 }
 

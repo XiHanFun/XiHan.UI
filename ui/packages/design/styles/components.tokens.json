@@ -59381,7 +59381,7 @@
         "variant=segmented"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "radio-group 的 item、root 部件 background-color 覆盖槽。"
@@ -59408,7 +59408,7 @@
         "variant=segmented"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "radio-group 的 item、root 部件 background-color 覆盖槽。"
@@ -59468,7 +59468,7 @@
         "variant=segmented"
       ],
       "defaultToken": [
-        "--xh-_radio-group-segment-fg-checked"
+        "--xh-_radio-group-segment-fg-checked-disabled"
       ],
       "visibility": "public",
       "description": "radio-group 的 item、root 部件 color 覆盖槽。"
@@ -59514,6 +59514,26 @@
       ],
       "defaultToken": [
         "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、root 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-segment-font-weight-checked",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "state=checked",
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "radio-group 的 item、root 部件 font-weight 覆盖槽。"
@@ -59578,6 +59598,26 @@
       "description": "radio-group 的 item、root 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-radio-group-segment-separator",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "orientation=horizontal",
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、root 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-radio-group-thumb-bg",
       "component": "radio-group",
       "part": [
@@ -59596,27 +59636,69 @@
       "description": "radio-group 的 thumb 部件 background 覆盖槽。"
     },
     {
-      "name": "--xh-radio-group-thumb-border",
+      "name": "--xh-radio-group-thumb-bg-disabled",
       "component": "radio-group",
       "part": [
         "root",
         "thumb"
       ],
       "property": [
-        "border",
-        "border-color"
+        "background"
       ],
       "state": [
-        "default",
-        "tone",
+        "disabled",
+        "has(> [data-scope='radio-group'][data-part='item'][data-state='checked'][data-disabled])",
+        "state=checked",
         "variant=segmented"
       ],
       "defaultToken": [
-        "--xh-_tone",
-        "--xh-border-default"
+        "--xh-_radio-group-thumb-bg-disabled"
       ],
       "visibility": "public",
-      "description": "radio-group 的 root、thumb 部件 border、border-color 覆盖槽。"
+      "description": "radio-group 的 root、thumb 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-thumb-bg-hover",
+      "component": "radio-group",
+      "part": [
+        "root",
+        "thumb"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "has(> [data-scope='radio-group'][data-part='item'][data-state='checked']:not([data-disabled])",
+        "hover",
+        "not([data-readonly])",
+        "readonly",
+        "state=checked",
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-_radio-group-thumb-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 root、thumb 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-thumb-border",
+      "component": "radio-group",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 thumb 部件 border 覆盖槽。"
     },
     {
       "name": "--xh-radio-group-thumb-radius",
@@ -59649,29 +59731,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
-      ],
-      "visibility": "public",
-      "description": "radio-group 的 thumb 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-radio-group-thumb-shadow-disabled",
-      "component": "radio-group",
-      "part": [
-        "root",
-        "thumb"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
         "none"
       ],
       "visibility": "public",
-      "description": "radio-group 的 root、thumb 部件 box-shadow 覆盖槽。"
+      "description": "radio-group 的 thumb 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-radio-group-track-bg",
@@ -59686,7 +59749,7 @@
         "variant=segmented"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-field"
       ],
       "visibility": "public",
       "description": "radio-group 的 root 部件 background 覆盖槽。"
@@ -59723,7 +59786,7 @@
         "variant=segmented"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-border-control"
       ],
       "visibility": "public",
       "description": "radio-group 的 root 部件 border 覆盖槽。"
@@ -59781,7 +59844,7 @@
         "variant=segmented"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "radio-group 的 root 部件 border-radius 覆盖槽。"
