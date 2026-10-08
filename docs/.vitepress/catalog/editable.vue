@@ -1,7 +1,7 @@
 <template>
   <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
     <path d="M26 52h36" stroke="var(--xh-fg-default)" stroke-width="4" />
-    <rect x="24.5" y="64.5" width="127" height="31" rx="2" stroke="var(--xh-border-control-focus)" />
+    <rect x="24.5" y="64.5" width="127" height="31" rx="2" fill="var(--xh-bg-surface)" stroke="var(--xh-border-control-focus)" />
     <path d="M39 80h58" stroke="var(--xh-fg-default)" stroke-width="6" />
     <path d="M105 72v16" stroke="var(--xh-fg-default)" stroke-width="2" />
     <rect x="156.5" y="64.5" width="31" height="31" rx="2" stroke="var(--xh-border-default)" />
