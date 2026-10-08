@@ -18,7 +18,7 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 | React | 19+ | React 适配器 |
 | Web Components | Light DOM | 原生适配器 |
 | Vitest + Playwright | 4.x / 1.62+ | 单测、一致性与浏览器测试 |
-| VitePress | 1.6+ | 文档站 |
+| VitePress | 2.0（预发布） | 文档站，主题取 @xihanfun/vitepress-theme |
 
 ## 开始前必须做
 
