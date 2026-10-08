@@ -21914,7 +21914,13 @@
               "name": "--xh-date-range-picker-confirm-trigger-fg"
             },
             {
+              "name": "--xh-date-range-picker-confirm-trigger-font-size"
+            },
+            {
               "name": "--xh-date-range-picker-confirm-trigger-h"
+            },
+            {
+              "name": "--xh-date-range-picker-confirm-trigger-margin"
             },
             {
               "name": "--xh-date-range-picker-confirm-trigger-px"
@@ -22001,6 +22007,9 @@
               "name": "--xh-date-range-picker-gap"
             },
             {
+              "name": "--xh-date-range-picker-heading-font-weight"
+            },
+            {
               "name": "--xh-date-range-picker-icon-size"
             },
             {
@@ -22025,13 +22034,10 @@
               "name": "--xh-date-range-picker-max-h"
             },
             {
-              "name": "--xh-date-range-picker-panel-divider"
-            },
-            {
-              "name": "--xh-date-range-picker-panel-gap"
-            },
-            {
               "name": "--xh-date-range-picker-placeholder-fg"
+            },
+            {
+              "name": "--xh-date-range-picker-preset-bg"
             },
             {
               "name": "--xh-date-range-picker-preset-bg-hover"
@@ -22046,10 +22052,13 @@
               "name": "--xh-date-range-picker-preset-check-size"
             },
             {
+              "name": "--xh-date-range-picker-preset-fg"
+            },
+            {
               "name": "--xh-date-range-picker-preset-fg-disabled"
             },
             {
-              "name": "--xh-date-range-picker-preset-fg-selected"
+              "name": "--xh-date-range-picker-preset-font-size"
             },
             {
               "name": "--xh-date-range-picker-preset-group-gap"
@@ -22058,13 +22067,16 @@
               "name": "--xh-date-range-picker-preset-group-h"
             },
             {
-              "name": "--xh-date-range-picker-preset-group-padding"
+              "name": "--xh-date-range-picker-preset-group-px"
+            },
+            {
+              "name": "--xh-date-range-picker-preset-group-py"
+            },
+            {
+              "name": "--xh-date-range-picker-preset-h"
             },
             {
               "name": "--xh-date-range-picker-preset-px"
-            },
-            {
-              "name": "--xh-date-range-picker-preset-py"
             },
             {
               "name": "--xh-date-range-picker-preset-radius"
@@ -22091,10 +22103,10 @@
               "name": "--xh-date-range-picker-time-column-min-w-mobile"
             },
             {
-              "name": "--xh-date-range-picker-time-column-padding"
+              "name": "--xh-date-range-picker-time-column-px"
             },
             {
-              "name": "--xh-date-range-picker-time-column-px"
+              "name": "--xh-date-range-picker-time-column-py"
             },
             {
               "name": "--xh-date-range-picker-time-item-bg-hover"
@@ -22125,9 +22137,6 @@
             },
             {
               "name": "--xh-date-range-picker-time-item-px"
-            },
-            {
-              "name": "--xh-date-range-picker-time-item-py"
             },
             {
               "name": "--xh-date-range-picker-time-item-radius"

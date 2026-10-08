@@ -129,35 +129,65 @@ afterEach(() => {
   host = null
 })
 
+/** 语义令牌在该元素里解到的圆角。 */
+function resolveRadius(token: string, scope: HTMLElement): string {
+  const probe = document.createElement('span')
+  probe.style.borderRadius = `var(${token})`
+  scope.append(probe)
+  const value = getComputedStyle(probe).borderTopLeftRadius
+  probe.remove()
+  return value
+}
+
+/** 语义令牌在该元素里解到的长度。 */
+function resolveLength(token: string, scope: HTMLElement): string {
+  const probe = document.createElement('span')
+  probe.style.display = 'block'
+  probe.style.inlineSize = `var(${token})`
+  scope.append(probe)
+  const value = getComputedStyle(probe).inlineSize
+  probe.remove()
+  return value
+}
+
+/** 语义令牌在该元素里解到的颜色。 */
+function resolveColor(token: string, scope: HTMLElement): string {
+  const probe = document.createElement('span')
+  probe.style.backgroundColor = `var(${token})`
+  scope.append(probe)
+  const value = getComputedStyle(probe).backgroundColor
+  probe.remove()
+  return value
+}
+
 const PRESETS = [
   { value: '2026-09-01/2026-09-30', label: '本月' },
   { value: '2026-10-01/2026-10-31', label: '下月' },
 ]
 
 describe('日期范围选择器的家族观感', () => {
-  it('输入行是描边式字段外壳：不填底 + 描边 + 无影，聚焦时描边换焦点色并带环', async () => {
+  it('输入行是描边式字段外壳：字段淡底 + 描边 + 无影，聚焦时描边换焦点色、不画环', async () => {
     await mountPicker()
     const control = part('control')
     control.style.transition = 'none'
     const rest = getComputedStyle(control)
     expect(control.getAttribute('data-xh-field-chrome')).toBe('')
-    expect(alpha(rest.backgroundColor)).toBe(0)
+    expect(alpha(rest.backgroundColor)).toBeGreaterThan(0)
     expect(rest.borderTopStyle).toBe('solid')
     // 描边是墨色按比例透明：画了就不是 0，不再是实色
     expect(alpha(rest.borderTopColor)).toBeGreaterThan(0)
     expect(rest.boxShadow).toBe('none')
-    expect(rest.borderRadius).toBe('4px')
-    expect(rest.height).toBe('36px')
+    expect(rest.borderTopLeftRadius).toBe(resolveRadius('--xh-shape-control', control))
+    expect(rest.height).toBe(resolveLength('--xh-control-h-md', control))
     const restBorder = rest.borderTopColor
     document.querySelector<HTMLElement>(`[data-scope='date-field'][data-part='segment']`)!.focus()
     await nextTick()
     const focused = getComputedStyle(control)
     expect(focused.borderTopColor).not.toBe(restBorder)
-    expect(focused.outlineStyle).toBe('solid')
-    expect(Number.parseFloat(focused.outlineWidth)).toBeGreaterThan(0)
+    expect(focused.outlineStyle === 'none' || Number.parseFloat(focused.outlineWidth) === 0).toBe(true)
   })
 
-  it('日历钮与清空钮是盒内 field-inset 正方钮：inset 圆角、悬停 100 / 按下 200 与 0.97 缩放', async () => {
+  it('日历钮与清空钮是盒内 field-inset 正方钮：inset 圆角、悬停 100 / 按下 200 只换面', async () => {
     await mountPicker({ defaultValue: ['2026-09-07', '2026-09-11'] })
     const clear = part('clear-trigger')
     clear.style.transition = 'none'
@@ -167,7 +197,7 @@ describe('日期范围选择器的家族观感', () => {
     // 有值时清空钮顶上来，日历钮让位
     expect(getComputedStyle(part('trigger')).display).toBe('none')
     const rest = getComputedStyle(clear)
-    expect(rest.borderRadius).toBe('4px')
+    expect(rest.borderTopLeftRadius).toBe(resolveRadius('--xh-shape-inset', clear))
     expect(rest.width).toBe(rest.height)
     expect(alpha(rest.backgroundColor)).toBe(0)
     const probe = document.createElement('span')
@@ -181,7 +211,7 @@ describe('日期范围选择器的家族观感', () => {
     expect(getComputedStyle(clear).backgroundColor).toBe(hover100)
     clear.dataset.pressed = ''
     expect(getComputedStyle(clear).backgroundColor).toBe(pressed200)
-    expect(getComputedStyle(clear).scale).toBe('0.97')
+    expect(['1', 'none']).toContain(getComputedStyle(clear).scale)
   })
 
   it('浮层是 floating 实体面：实体底 + 可见描边 + 落影，不透景、不画顶光', async () => {
@@ -194,12 +224,14 @@ describe('日期范围选择器的家族观感', () => {
     // 描边是墨色按比例透明：画了就不是 0，不再是实色
     expect(alpha(content.borderTopColor)).toBeGreaterThan(0)
     expect(content.boxShadow).not.toBe('none')
-    expect(content.borderRadius).toBe('12px')
+    expect(content.borderTopLeftRadius).toBe(resolveRadius('--xh-shape-overlay', part('content')))
+    // 面板自己不留内衬：标题栏、网格与各列自带内衬
+    expect(content.padding).toBe('0px')
     expect(content.overscrollBehaviorY).toBe('contain')
     expect(getComputedStyle(part('content'), '::before').content).toBe('none')
   })
 
-  it('快捷选项走浮层集合行：选中只留对号且透明底，悬停 100、按下 200；列后紧跟贴层的竖横两条条子', async () => {
+  it('快捷选项是 24 高的淡底小钮：选中只多一枚对号，悬停 200、按下 300；列后紧跟贴层的竖横两条条子', async () => {
     await mountPicker({ defaultOpen: true, defaultValue: ['2026-09-01', '2026-09-30'], presets: PRESETS })
     await nextTick()
     const [selected, plain] = document.querySelectorAll<HTMLElement>(`[data-scope='date-range-picker'][data-part='preset']`)
@@ -207,18 +239,20 @@ describe('日期范围选择器的家族观感', () => {
     plain!.style.transition = 'none'
     expect(selected!.getAttribute('data-state')).toBe('checked')
     expect(selected!.getAttribute('data-xh-collection-context')).toBe('overlay')
-    expect(alpha(getComputedStyle(selected!).backgroundColor)).toBe(0)
+    expect(getComputedStyle(selected!).backgroundColor).toBe(resolveColor('--xh-bg-subtle', selected!))
+    expect(getComputedStyle(selected!).backgroundColor).toBe(getComputedStyle(plain!).backgroundColor)
     expect(getComputedStyle(selected!).color).toBe(getComputedStyle(plain!).color)
+    expect(selected!.getBoundingClientRect().height).toBe(Number.parseFloat(resolveLength('--xh-control-action-size', selected!)))
     expect(getComputedStyle(selected!).fontWeight).toBe(getComputedStyle(plain!).fontWeight)
     expect(getComputedStyle(selected!, '::after').opacity).toBe('1')
     expect(getComputedStyle(plain!, '::after').opacity).toBe('0')
     await userEvent.hover(plain!)
     const hover = getComputedStyle(plain!).backgroundColor
-    // 中性底是墨色按比例透明：铺了就不是 0，不再是实色
-    expect(alpha(hover)).toBeGreaterThan(0)
+    // 钮坐在自己的淡底上：悬停 200、按下 300（淡底承载阶梯）
+    expect(hover).toBe(resolveColor('--xh-bg-subtle-hover', plain!))
     plain!.dataset.pressed = ''
     const pressed = getComputedStyle(plain!).backgroundColor
-    expect(pressed).not.toBe(hover)
+    expect(pressed).toBe(resolveColor('--xh-bg-subtle-active', plain!))
     expect(getComputedStyle(plain!).scale).toBe('none')
 
     const group = part('preset-group')
@@ -231,11 +265,11 @@ describe('日期范围选择器的家族观感', () => {
       expect(bar.getAttribute('data-size')).toBe('sm')
       expect(getComputedStyle(bar.querySelector<HTMLElement>('[data-part="track"]')!).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     }
-    // 选项列与日历之间的空当由 preset-group ~ calendar 给，条子节点夹在两者之间也接得上
+    // 选项列与日历之间不另留空当：选项列自带内衬，日历的标题栏与网格各带行内内衬；条子节点夹在两者之间也不占位
     const calendar = part('calendar')
     expect(calendar.previousElementSibling).not.toBe(group)
-    const wide = window.matchMedia('(min-width: 768px)').matches
-    expect(Number.parseFloat(getComputedStyle(calendar)[wide ? 'paddingInlineStart' : 'paddingBlockStart'])).toBeGreaterThan(0)
+    expect(Number.parseFloat(getComputedStyle(calendar).paddingInlineStart)).toBe(0)
+    expect(Number.parseFloat(getComputedStyle(group).paddingInlineStart)).toBeGreaterThan(0)
   })
 })
 
