@@ -56,7 +56,7 @@ describe('page-header 根面', () => {
     expect(style.boxShadow).toBe('none')
   })
 
-  it('贴底的 ghost 不画面；split 只在底下画一条 border-subtle 分隔线', () => {
+  it('贴底的 ghost 不画面；split 只在底下画一条 border-default 分隔线', () => {
     const plain = mount()
     expect(Number.parseFloat(getComputedStyle(plain.root).borderBottomWidth)).toBe(0)
     expect(getComputedStyle(plain.root).backgroundColor).toBe('rgba(0, 0, 0, 0)')
@@ -65,16 +65,17 @@ describe('page-header 根面', () => {
     const style = getComputedStyle(split.root)
     expect(Number.parseFloat(style.borderTopWidth)).toBe(0)
     expect(Number.parseFloat(style.borderBottomWidth)).toBe(1)
-    expect(style.borderBottomColor).toBe(tokenColor('--xh-border-subtle'))
+    expect(style.borderBottomColor).toBe(tokenColor('--xh-border-default'))
   })
 
-  it('标题走 heading-3 档字号与字重，说明是 13/fg-muted', () => {
+  it('标题走页面标题档 20 / 500，副标题 14px 弱前景', () => {
     const header = mount()
     const title = getComputedStyle(header.title)
     const description = getComputedStyle(header.description)
 
-    expect(title.fontWeight).toBe('600')
-    expect(Number.parseFloat(title.fontSize)).toBeGreaterThan(Number.parseFloat(description.fontSize))
-    expect(description.color).toBe(tokenColor('--xh-fg-muted'))
+    expect(title.fontWeight).toBe('500')
+    expect(title.fontSize).toBe('20px')
+    expect(description.fontSize).toBe('14px')
+    expect(description.color).toBe(tokenColor('--xh-fg-subtle'))
   })
 })

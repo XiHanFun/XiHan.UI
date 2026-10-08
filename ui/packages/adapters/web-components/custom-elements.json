@@ -45737,6 +45737,12 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-page-header-back-fg"
+            },
+            {
+              "name": "--xh-page-header-back-fg-hover"
+            },
+            {
               "name": "--xh-page-header-bg"
             },
             {
@@ -45756,6 +45762,9 @@
             },
             {
               "name": "--xh-page-header-description-font-size"
+            },
+            {
+              "name": "--xh-page-header-divider"
             },
             {
               "name": "--xh-page-header-extra-gap"

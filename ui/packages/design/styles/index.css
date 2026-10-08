@@ -11259,6 +11259,8 @@
 /* styles/page-header.css */
 /* 定义 page header 样式。 */
 
+/* 返回钮接动作钮家族：独立引入本皮肤时同样带上家族配方，full bundle 递归去重。 */
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   .xh-scope-page-header {
@@ -11268,16 +11270,16 @@
   .xh-scope-page-header[data-part='root'] {
     /* 尺寸档只换这三个私有槽，各段从根上继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_page-header-py: var(--xh-space-4);
-    --xh-_page-header-row-gap: var(--xh-space-2);
+    --xh-_page-header-row-gap: var(--xh-space-1);
     --xh-_page-header-title-size: var(--xh-text-heading-2-size);
     /* 形态档只换这两个：不画面的那一档左右不留内衬、也不切圆角 */
     --xh-_page-header-px: 0;
     --xh-_page-header-radius: 0;
 
-    /* 返回、媒体、标题区与操作区分列；标题与说明上下排列。 */
+    /* 返回、媒体、标题、副标题与操作区分列：副标题跟在标题后面同一行，中间一条竖线隔开 */
     display: grid;
     grid-auto-flow: dense;
-    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    grid-template-columns: auto auto auto minmax(0, 1fr) auto;
     align-items: center;
     row-gap: var(--xh-page-header-row-gap, var(--xh-_page-header-row-gap));
     padding-block: var(--xh-page-header-py, var(--xh-_page-header-py));
@@ -11294,21 +11296,26 @@
   /* —— 尺寸 —— */
   .xh-scope-page-header[data-part='root'][data-size='sm'] {
     --xh-_page-header-py: var(--xh-space-3);
-    --xh-_page-header-row-gap: var(--xh-space-1);
+    --xh-_page-header-row-gap: var(--xh-space-0_5);
     --xh-_page-header-title-size: var(--xh-control-font-lg);
   }
 
   .xh-scope-page-header[data-part='root'][data-size='lg'] {
     --xh-_page-header-py: var(--xh-space-6);
-    --xh-_page-header-row-gap: var(--xh-space-3);
+    --xh-_page-header-row-gap: var(--xh-space-2);
     --xh-_page-header-title-size: var(--xh-text-heading-1-size);
+  }
+
+  /* 带面包屑的缺省档上下收一档：面包屑本身已在标题之上占了一行 */
+  .xh-scope-page-header[data-part='root']:not([data-size='sm'], [data-size='lg']):has(> [data-part='breadcrumb']) {
+    --xh-_page-header-py: var(--xh-space-3);
   }
 
   /* —— 分隔线 —— */
   /* 只有贴底的 ghost 画这条下边线：一块切了圆角的面底下横一条直线，两头会露在圆角外面，
      有面的两档由自己的边界接手同一件事——把页头与下面的内容分开 */
   .xh-scope-page-header[data-part='root'][data-variant='ghost'][data-split] {
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-subtle));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-default));
   }
 
   /* —— 形态 —— */
@@ -11350,13 +11357,14 @@
     justify-content: center;
   }
 
-  /* 返回位只摆位置与对齐，外观归作者自己的按钮 */
+  /* 返回位是 icon ghost 档的动作钮：盒与三态面由家族给，这里只摆位置并把字色压到次级前景 */
   .xh-scope-page-header[data-part='back-trigger'] {
+    --xh-action-fg-rest: var(--xh-page-header-back-fg, var(--xh-fg-muted));
+    --xh-action-fg-hover: var(--xh-page-header-back-fg-hover, var(--xh-fg-default));
+    --xh-action-fg-pressed: var(--xh-page-header-back-fg-hover, var(--xh-fg-default));
+
     grid-column: 1;
     margin-inline-end: var(--xh-page-header-column-gap, var(--xh-space-3));
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
   }
 
   .xh-scope-page-header[data-part='title'] {
@@ -11373,19 +11381,32 @@
     line-height: var(--xh-leading-tight);
   }
 
-  /* 副标题吃掉标题与操作之间的剩余宽度，长文本在这里收窄换行 */
+  /* 副标题跟在标题后面、吃掉到操作区之间的剩余宽度，长文本在这里收窄换行；
+     与标题之间一条 1 × 16px 的竖线，两侧各 12px */
   .xh-scope-page-header[data-part='description'] {
-    grid-column: 3;
+    grid-column: 4;
+    display: flex;
+    align-items: center;
     margin: 0;
     min-inline-size: 0;
-    color: var(--xh-page-header-description-fg, var(--xh-fg-muted));
-    font-size: var(--xh-page-header-description-font-size, var(--xh-text-secondary-size));
+    color: var(--xh-page-header-description-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-page-header-description-font-size, var(--xh-text-body-size));
     line-height: var(--xh-leading-normal);
+  }
+
+  .xh-scope-page-header[data-part='title'] + .xh-scope-page-header[data-part='description']::before {
+    content: '';
+    flex: none;
+    align-self: center;
+    inline-size: var(--xh-stroke-thin);
+    block-size: var(--xh-glyph-size-sm);
+    margin-inline: var(--xh-space-3);
+    background: var(--xh-page-header-divider, var(--xh-border-default));
   }
 
   /* 操作区贴到行尾，没有副标题占位时也一样靠边 */
   .xh-scope-page-header[data-part='extra'] {
-    grid-column: 4;
+    grid-column: 5;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -11394,21 +11415,17 @@
     justify-self: end;
   }
 
-  /* 页脚占满一整行，前面有内容时自然被挤到下一行 */
+  /* 页脚占满一整行，前面有内容时自然被挤到下一行；与标题行之间再让出 12px */
   .xh-scope-page-header[data-part='footer'] {
     grid-column: 1 / -1;
+    margin-block-start: var(--xh-space-3);
     color: var(--xh-page-header-footer-fg, var(--xh-fg-muted));
     font-size: var(--xh-page-header-footer-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
   }
 
-  .xh-scope-page-header[data-part='root']:has(> [data-part='description'])
-    > :is([data-part='back-trigger'], [data-part='media'], [data-part='extra']):where(.xh-scope-page-header) {
-    grid-row: span 2;
-  }
-
-  /* 窄于 sm 断点时标题区占满第二列、操作区换到下一行。写成 min-width 的补集：640px 本身归宽档，
-     与其余皮肤在同一宽度切换 */
+  /* 窄于 sm 断点时标题区占满第二列、副标题回到标题下一行、操作区换到再下一行。
+     写成 min-width 的补集：640px 本身归宽档，与其余皮肤在同一宽度切换 */
   @media not all and (min-width: 640px) {
     .xh-scope-page-header[data-part='root'] {
       grid-template-columns: auto minmax(0, 1fr);
@@ -11420,11 +11437,28 @@
       grid-column: 2;
     }
 
+    .xh-scope-page-header[data-part='title'] + .xh-scope-page-header[data-part='description']::before {
+      display: none;
+    }
+
+    .xh-scope-page-header[data-part='root']:has(> [data-part='description'])
+      > :is([data-part='back-trigger'], [data-part='media']):where(.xh-scope-page-header) {
+      grid-row: span 2;
+    }
+
     .xh-scope-page-header[data-part='root'] > [data-part='extra']:where(.xh-scope-page-header) {
       grid-column: 1 / -1;
       grid-row: auto;
       margin-inline-start: 0;
       justify-self: start;
+    }
+  }
+
+  /* 强制色：标题与副标题之间的竖线是底色画的，系统换掉底色线就消失，改写 CanvasText */
+  @media (forced-colors: active) {
+    .xh-scope-page-header[data-part='title'] + .xh-scope-page-header[data-part='description']::before {
+      forced-color-adjust: none;
+      background: CanvasText;
     }
   }
 
