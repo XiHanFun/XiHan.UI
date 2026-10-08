@@ -711,10 +711,10 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `--xh-table-caption-py` | `caption` | `padding-block` | `default` | `--xh-space-2` | table 的 caption 部件 padding-block 覆盖槽。 |
 | `--xh-table-cell-gap` | `cell`<br>`column-header` | `gap` | `default` | `--xh-control-gap-md` | table 的 cell、column-header 部件 gap 覆盖槽。 |
 | `--xh-table-cell-min-w` | `cell`<br>`column-header` | `min-inline-size` | `default` | `3rem` | table 的 cell、column-header 部件 min-inline-size 覆盖槽。 |
-| `--xh-table-cell-px` | `cell`<br>`column-header` | `padding-inline` | `default` | `--xh-control-px-sm` | table 的 cell、column-header 部件 padding-inline 覆盖槽。 |
+| `--xh-table-cell-px` | `cell`<br>`column-header` | `padding-inline` | `default` | `--xh-space-4` | table 的 cell、column-header 部件 padding-inline 覆盖槽。 |
 | `--xh-table-cell-py` | `cell`<br>`column-header` | `padding-block` | `default` | `--xh-_table-cell-py` | table 的 cell、column-header 部件 padding-block 覆盖槽。 |
-| `--xh-table-column-fg` | `column-header` | `color` | `default` | `--xh-fg-muted` | table 的 column-header 部件 color 覆盖槽。 |
-| `--xh-table-column-font-weight` | `column-header` | `font-weight` | `default` | `--xh-text-label-weight` | table 的 column-header 部件 font-weight 覆盖槽。 |
+| `--xh-table-column-fg` | `column-header` | `color` | `default` | `--xh-fg-default` | table 的 column-header 部件 color 覆盖槽。 |
+| `--xh-table-column-font-weight` | `column-header` | `font-weight` | `default` | `--xh-font-weight-medium` | table 的 column-header 部件 font-weight 覆盖槽。 |
 | `--xh-table-column-list-fg` | `column-list` | `color` | `default` | `--xh-fg-default` | table 的 column-list 部件 color 覆盖槽。 |
 | `--xh-table-column-list-font-size` | `column-list` | `font-size` | `default` | `--xh-text-secondary-size` | table 的 column-list 部件 font-size 覆盖槽。 |
 | `--xh-table-column-list-gap` | `column-list` | `gap` | `default` | `--xh-_table-column-list-gap` | table 的 column-list 部件 gap 覆盖槽。 |

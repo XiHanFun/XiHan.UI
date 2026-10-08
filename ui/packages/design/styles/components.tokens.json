@@ -68865,7 +68865,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-sm"
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "table 的 cell、column-header 部件 padding-inline 覆盖槽。"
@@ -68902,7 +68902,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "table 的 column-header 部件 color 覆盖槽。"
@@ -68920,7 +68920,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-weight"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "table 的 column-header 部件 font-weight 覆盖槽。"

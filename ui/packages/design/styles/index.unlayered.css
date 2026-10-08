@@ -42571,7 +42571,7 @@
   gap: var(--xh-table-cell-gap, var(--xh-control-gap-md));
   min-inline-size: var(--xh-table-cell-min-w, 3rem);
   padding-block: var(--xh-table-cell-py, var(--xh-_table-cell-py));
-  padding-inline: var(--xh-table-cell-px, var(--xh-control-px-sm));
+  padding-inline: var(--xh-table-cell-px, var(--xh-space-4));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -42583,8 +42583,9 @@
 }
 
 .xh-scope-table[data-part='column-header'] {
-  color: var(--xh-table-column-fg, var(--xh-fg-muted));
-  font-weight: var(--xh-table-column-font-weight, var(--xh-text-label-weight));
+  /* 列头与正文同色、加一档字重：表头靠淡底与字重和表体分开，不再靠淡字 */
+  color: var(--xh-table-column-fg, var(--xh-fg-default));
+  font-weight: var(--xh-table-column-font-weight, var(--xh-font-weight-medium));
   text-align: start;
   user-select: none;
 }
