@@ -139,19 +139,19 @@
     color: var(--xh-pin-input-placeholder-fg, var(--xh-fg-subtle));
   }
 
-  /* 一行格子长得一模一样，光标那道竖线太细，看不出正在填哪一格：
-     当前格必须有明显的环。data-focus 由机器给（它知道谁是当前格），
-     家族的 :focus-within 兜住机器状态还没回流的那一帧，两条同时写不冲突。
-     焦点边一律家族的 --xh-border-control-focus，不随 tone */
+  /* 一行格子长得一模一样，光标那道竖线太细，看不出正在填哪一格：当前格与字段外壳的聚焦态同一副面——
+     换承载面 + 聚焦描边，压在别的格子的字段淡底之间一眼分得出，不另画环（强制色档补一圈 Highlight 环，见下）。
+     data-focus 由机器给（它知道谁是当前格），家族的 :focus-within 兜住机器状态还没回流的那一帧，
+     两条同时写不冲突。焦点边一律家族的 --xh-border-control-focus，不随 tone */
   [data-scope='pin-input'][data-part='input'][data-focus] {
     border-color: var(--xh-pin-input-box-border-focus, var(--xh-_field-variant-border-focus));
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
+    background-color: var(--xh-_field-variant-bg-focus);
   }
 
-  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
-  [data-scope='pin-input'][data-part='input'][data-invalid][data-focus] {
-    outline-color: var(--xh-ring-invalid);
+  /* 每一格自身就是字段外壳：公共层的 :focus-visible 环会画在盒上，与家族的聚焦面（承载面 + 聚焦描边）
+     重复，这里关掉；强制色档描边换色未必分得出来，在本皮肤的强制色块里补一圈 Highlight 环 */
+  [data-scope='pin-input'][data-part='input']:focus-visible {
+    outline: none;
   }
 
   /* 填满只代表"格子都有字"，不代表"验证码对"，所以用品牌色而不是成功色收个尾。
@@ -193,5 +193,12 @@
     clip-path: inset(50%);
     white-space: nowrap;
     pointer-events: none;
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='pin-input'][data-part='input']:focus-visible {
+      outline: var(--xh-ring-width) solid Highlight;
+      outline-offset: var(--xh-ring-offset);
+    }
   }
 }

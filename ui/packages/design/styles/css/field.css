@@ -110,6 +110,12 @@
     font-size: var(--xh-field-control-font-size, var(--xh-text-body-size));
   }
 
+  /* 作者的输入控件自身就是字段外壳：公共层的 :focus-visible 环会画在盒上，与家族的聚焦面（承载面 + 聚焦描边）
+     重复，这里关掉；强制色档描边换色未必分得出来，在本皮肤的强制色块里补一圈 Highlight 环 */
+  [data-scope='field'][data-part='control']:focus-visible {
+    outline: none;
+  }
+
   /* 无效标签色的默认在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
   [data-scope='field'][data-part='label'][data-invalid] {
     color: var(--xh-field-label-fg-invalid, var(--xh-fg-danger));
@@ -160,5 +166,12 @@
   [data-scope='field'][data-part='root'][hidden],
   [data-scope='form'][data-part='root'][hidden] {
     display: none;
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='field'][data-part='control']:focus-visible {
+      outline: var(--xh-ring-width) solid Highlight;
+      outline-offset: var(--xh-ring-offset);
+    }
   }
 }
