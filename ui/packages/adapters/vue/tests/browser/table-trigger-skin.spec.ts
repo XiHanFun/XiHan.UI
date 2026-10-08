@@ -1,5 +1,5 @@
 // 表格里的五颗把手（全选框、行勾选框、展开箭头、列设置勾选框、排序钮）都接入 Action Control icon 档：
-// 盒是 16px 指示符档、面按字段静息形态取值、按下由家族给 0.97 缩放并换底。
+// 盒是 16px 指示符档、面按字段静息形态取值、按下由家族给按压缩放并换底。
 // 排序钮是列名之后一颗独立的 ghost 图标钮，贴列头行尾与列宽把手并排，按表头 host 槽下发的淡底阶梯换面；
 // 列头文字不再是排序的命中区。jsdom 不排版，只有真实浏览器量得出来。
 import type { App } from 'vue'
@@ -20,6 +20,7 @@ import {
   XhTableSelectAllTrigger,
   XhTableSortTrigger,
 } from '../../src'
+import { pressScale } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -104,7 +105,7 @@ async function mount(): Promise<void> {
 }
 
 describe('table 把手接入 Action Control', () => {
-  it('三颗勾选框是 16px 的 outline 方框：canvas 底 + border-control 描边，勾中实心品牌面', async () => {
+  it('三颗勾选框是 16px 的 outline 方框：透明底 + border-strong 描边，勾中实心品牌面', async () => {
     await mount()
     const selectAll = part('select-all-trigger')
     const unchecked = part('row-select-trigger', 0)
@@ -115,19 +116,19 @@ describe('table 把手接入 Action Control', () => {
     expect(unchecked.getBoundingClientRect().width).toBe(16)
     expect(unchecked.getBoundingClientRect().height).toBe(16)
     expect(getComputedStyle(unchecked).backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(getComputedStyle(unchecked).borderTopColor).toBe(resolve('--xh-border-control'))
+    expect(getComputedStyle(unchecked).borderTopColor).toBe(resolve('--xh-border-strong'))
     expect(getComputedStyle(unchecked).boxShadow).toBe('none')
     expect(getComputedStyle(checked).backgroundColor).toBe(resolve('--xh-bg-brand'))
     expect(getComputedStyle(checked).borderTopColor).toBe(resolve('--xh-bg-brand'))
     expect(getComputedStyle(checked).color).toBe(resolve('--xh-fg-on-brand'))
   })
 
-  it('按下 0.97 缩放并换底：空框落 200 档，勾中的落 brand-active', async () => {
+  it('按下按压缩放并换底：空框落 200 档，勾中的落 brand-active', async () => {
     await mount()
     const unchecked = part('row-select-trigger', 0)
     const checked = part('row-select-trigger', 1)
     unchecked.setAttribute('data-pressed', '')
-    expect(getComputedStyle(unchecked).scale).toBe('0.97')
+    expect(getComputedStyle(unchecked).scale).toBe(pressScale(unchecked))
     expect(getComputedStyle(unchecked).backgroundColor).toBe(resolve('--xh-bg-subtle-hover'))
     unchecked.removeAttribute('data-pressed')
     checked.setAttribute('data-pressed', '')
@@ -145,7 +146,7 @@ describe('table 把手接入 Action Control', () => {
     expect(getComputedStyle(expand).borderTopColor).toBe('rgba(0, 0, 0, 0)')
     expect(getComputedStyle(expand).color).toBe(resolve('--xh-fg-subtle'))
     expand.setAttribute('data-pressed', '')
-    expect(getComputedStyle(expand).scale).toBe('0.97')
+    expect(getComputedStyle(expand).scale).toBe(pressScale(expand))
     expect(getComputedStyle(expand).backgroundColor).toBe(resolve('--xh-bg-subtle-hover'))
   })
 
@@ -178,7 +179,7 @@ describe('table 把手接入 Action Control', () => {
     expect(label.getBoundingClientRect().right).toBeLessThanOrEqual(box.left)
   })
 
-  it('点列头文字不排序，点钮才排序；钮的悬停 200 / 按下 300 与 0.97 缩放与展开箭头同款', async () => {
+  it('点列头文字不排序，点钮才排序；钮的悬停 200 / 按下 300 与按压缩放与展开箭头同款', async () => {
     await mount()
     const trigger = part('sort-trigger')
     const header = trigger.closest<HTMLElement>('[data-part="column-header"]')!
@@ -194,13 +195,13 @@ describe('table 把手接入 Action Control', () => {
     await expect.poll(() => header.getAttribute('aria-sort')).toBe('ascending')
     expect(trigger.getAttribute('data-sort')).toBe('asc')
     expect(getComputedStyle(trigger).color).toBe(resolve('--xh-fg-default'))
-    // 悬停 / 按下按表头淡底阶梯：200 → 300，按下同时 0.97 缩放（与展开箭头同一份家族配方）
+    // 悬停 / 按下按表头淡底阶梯：200 → 300，按下同时按压缩放（与展开箭头同一份家族配方）
     await userEvent.hover(trigger)
     await expect.poll(() => getComputedStyle(trigger).backgroundColor).toBe(resolve('--xh-bg-subtle-hover'))
     await userEvent.unhover(trigger)
     trigger.setAttribute('data-pressed', '')
     expect(getComputedStyle(trigger).backgroundColor).toBe(resolve('--xh-bg-subtle-active'))
-    expect(getComputedStyle(trigger).scale).toBe('0.97')
+    expect(getComputedStyle(trigger).scale).toBe(pressScale(trigger))
     trigger.removeAttribute('data-pressed')
     expect(getComputedStyle(trigger).scale).toBe('none')
   })
