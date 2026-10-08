@@ -130,7 +130,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 ### 特性
 
 - 展开集合与选中集合两套值各自可受控。
-- `variant` 决定外框形态，默认 `outline`；`subtle` 换成淡底无描边，`ghost` 让树直接落在页面上。
+- `variant` 决定外框形态，默认 `ghost`，树直接落在页面或宿主面上；`outline` 加一圈描边与底色，`subtle` 换成淡底无描边。
 - `size` 取 `sm` / `md` / `lg`，默认 `md`，走集合家族的尺寸档：行高、行内内衬、字号、展开箭头与对号盒、拖拽把手与层级缩进一起随档。
 - 选中与[树形选择器](./tree-select)同一种读法：行不换面，单选、多选与级联都只在行尾画对号；分支行也摆 `item-indicator`，级联下的半选画横杠。
 - `cascade` 与 `checkedStrategy` 决定勾选父节点是否带子节点，以及回显给哪一层。
@@ -179,7 +179,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | --- | --- | --- | --- |
 | `collection` | `TreeNode[]` |  | 树数据，层级元信息的唯一事实源。默认为空树。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 完整 collection 与 Virtualizer 的焦点桥；count 必须等于当前 visibleNodes.length。 |
-| `variant` | `ControlVariant` |  | 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留行。 |
+| `variant` | `ControlVariant` |  | 外框形态：ghost 去掉描边与底色只保留行（默认），outline 带描边与底色，subtle 淡底无描边。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，默认 md。行高、行内内衬、字号、指示符盒（展开箭头、对号、拖拽把手）与层级缩进随档。 |
 | `leafOrientation` | `Orientation` |  | 末端层的排布方式，默认 vertical（每行一个）。horizontal 使它们并排铺开。 只作用于子节点全是叶子的层：菜单授权中即按钮层： 一个菜单下十几个按钮，横向排成一行，省去纵向翻找。中间层与整棵树恒为纵向， 它们承载的是层级本身，横向排布会失去层级信息。 这是结构判据，逐层自动识别。需要精确指定哪一层横向排布时，在节点上标注 `childrenOrientation`，它优先于本项。 只影响排布，不改变键盘：方向键在树上是层级操作（左右收展、上下移动可见行）， 这是 treeview 的规范语义，不随排布方向改写。 |
 | `expandedValue` | `string[]` |  | 展开集合。提供即受控：cell 直读 prop，写入只发 onExpandedValueChange 不落内部值。 |
@@ -485,9 +485,10 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | --- | --- | --- | --- | --- | --- |
 | `--xh-tree-bg` | `root`<br>`tree` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | tree 的 root、tree 部件 background 覆盖槽。 |
 | `--xh-tree-border` | `tree` | `border` | `default` | `--xh-border-default` | tree 的 tree 部件 border 覆盖槽。 |
-| `--xh-tree-branch-content-gap` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`gap`<br>`inset-block`<br>`row-gap` | `default`<br>`lines`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-list-option-gap` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、gap、inset-block、row-gap 覆盖槽。 |
-| `--xh-tree-branch-gap` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`gap`<br>`inset-block` | `default`<br>`first-child`<br>`lines`<br>`orientation=vertical`<br>`state=open` | `--xh-list-option-gap` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、gap、inset-block 覆盖槽。 |
-| `--xh-tree-branch-indicator-fg` | `branch-indicator`<br>`branch-trigger` | `color` | `default` | `--xh-fg-subtle` | tree 的 branch-indicator、branch-trigger 部件 color 覆盖槽。 |
+| `--xh-tree-branch-content-gap` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`gap`<br>`inset-block`<br>`row-gap` | `default`<br>`lines`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-space-0` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、gap、inset-block、row-gap 覆盖槽。 |
+| `--xh-tree-branch-gap` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`gap`<br>`inset-block` | `default`<br>`first-child`<br>`lines`<br>`orientation=vertical`<br>`state=open` | `--xh-space-0` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、gap、inset-block 覆盖槽。 |
+| `--xh-tree-branch-indicator-fg` | `branch-indicator`<br>`branch-trigger` | `color` | `default` | `--xh-fg-muted` | tree 的 branch-indicator、branch-trigger 部件 color 覆盖槽。 |
+| `--xh-tree-branch-loading-fg` | `branch`<br>`branch-control`<br>`branch-indicator`<br>`branch-trigger` | `color` | `loading` | `--xh-fg-brand` | tree 的 branch、branch-control、branch-indicator、branch-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-drag-fg` | `node-drag-trigger` | `color` | `default` | `--xh-fg-subtle` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-drag-fg-active` | `node-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-drag-fg-disabled` | `node-drag-trigger` | `color` | `disabled` | `--xh-fg-disabled` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
@@ -514,7 +515,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `--xh-tree-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | tree 的 label 部件 font-size 覆盖槽。 |
 | `--xh-tree-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tree 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-tree-leaf-row-gap` | `branch-content` | `column-gap` | `orientation=horizontal` | `--xh-space-3` | tree 的 branch-content 部件 column-gap 覆盖槽。 |
-| `--xh-tree-line-color` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`border-block-end`<br>`border-inline-start` | `last-child`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-border-subtle` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、border-block-end、border-inline-start 覆盖槽。 |
+| `--xh-tree-line-color` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`border-block-end`<br>`border-inline-start` | `last-child`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-border-default` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、border-block-end、border-inline-start 覆盖槽。 |
 | `--xh-tree-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | tree 的 loading 部件 color 覆盖槽。 |
 | `--xh-tree-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_tree-font-size` | tree 的 loading 部件 font-size 覆盖槽。 |
 | `--xh-tree-loading-gap` | `loading` | `gap` | `default` | `--xh-_tree-row-gap` | tree 的 loading 部件 gap 覆盖槽。 |
@@ -536,7 +537,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `--xh-tree-row-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-_tree-row-py` | tree 的 branch-control、item 部件 padding-block 覆盖槽。 |
 | `--xh-tree-row-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `--xh-shape-inset` | tree 的 branch-control、item 部件 border-radius 覆盖槽。 |
 | `--xh-tree-row-selected-font-weight` | `branch-control`<br>`item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | tree 的 branch-control、item 部件 font-weight 覆盖槽。 |
-| `--xh-tree-tree-gap` | `tree` | `gap` | `default` | `--xh-list-option-gap` | tree 的 tree 部件 gap 覆盖槽。 |
+| `--xh-tree-tree-gap` | `tree` | `gap` | `default` | `--xh-space-0` | tree 的 tree 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

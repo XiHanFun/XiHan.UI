@@ -73,7 +73,7 @@ export function connectTree<T extends PropTypes>(
   const placeholderLoading = loading && (!counted || collection.length === 0)
   const refreshing = loading && !placeholderLoading
   // 形态恒有值：缺省 outline，读一眼 DOM 就知道这棵树有没有外框
-  const variant = prop('variant') ?? 'outline'
+  const variant = prop('variant') ?? 'ghost'
   // 尺寸恒有值：行、指示符盒与缩进都按这一档取尺，缺省 md
   const size = prop('size') ?? 'md'
   const dir = prop('dir') ?? 'ltr'
