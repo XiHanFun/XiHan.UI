@@ -361,7 +361,7 @@
     --xh-list-option-py-sm: var(--xh-space-1);
     --xh-list-option-py-md: var(--xh-space-1_5);
     --xh-list-option-py-lg: var(--xh-space-2);
-    --xh-list-option-gap: var(--xh-space-0_5);
+    --xh-list-option-gap: var(--xh-space-0);
     --xh-table-cell-py-sm: var(--xh-space-2);
     --xh-table-cell-py-md: var(--xh-space-3);
     --xh-table-cell-py-lg: var(--xh-space-4);
@@ -485,7 +485,7 @@
     --xh-overlay-column-min-w: 3.5rem;
     --xh-overlay-column-item-h: calc(var(--xh-control-h-sm) - var(--xh-space-1));
     --xh-overlay-calendar-column-h: calc(var(--xh-control-h-sm) * 7 + var(--xh-space-7));
-    --xh-overlay-menu-max-h: 20rem;
+    --xh-overlay-menu-max-h: 13rem;
     --xh-overlay-max-w-sm: 16rem;
     --xh-overlay-max-w: 20rem;
     --xh-overlay-max-w-lg: 24rem;
@@ -621,7 +621,7 @@
     --xh-viewport-h-sm: 10rem;
     --xh-viewport-h-md: 14rem;
     --xh-viewport-h-lg: 20rem;
-    --xh-overlay-menu-max-h: 17rem;
+    --xh-overlay-menu-max-h: 11rem;
     --xh-overlay-max-h: 14rem;
     --xh-surface-py-sm: var(--xh-space-2);
     --xh-surface-px-sm: var(--xh-space-3);

@@ -289,7 +289,7 @@
 --xh-list-item-py-lg: 16px  ← var(--xh-space-4)
 --xh-list-item-py-md: 12px  ← var(--xh-space-3)
 --xh-list-item-py-sm: 8px  ← var(--xh-space-2)
---xh-list-option-gap: 2px  ← var(--xh-space-0_5)
+--xh-list-option-gap: 0px  ← var(--xh-space-0)
 --xh-list-option-py-lg: 8px  ← var(--xh-space-2)
 --xh-list-option-py-md: 6px  ← var(--xh-space-1_5)
 --xh-list-option-py-sm: 4px  ← var(--xh-space-1)
@@ -373,7 +373,7 @@
 --xh-overlay-max-w-lg: 24rem
 --xh-overlay-max-w-sm: 16rem
 --xh-overlay-max-w-xl: 48rem
---xh-overlay-menu-max-h: 20rem
+--xh-overlay-menu-max-h: 13rem
 --xh-overlay-menu-min-w: 10rem
 --xh-overlay-min-w: 12rem
 --xh-overlay-sheet-w-lg: 48rem
