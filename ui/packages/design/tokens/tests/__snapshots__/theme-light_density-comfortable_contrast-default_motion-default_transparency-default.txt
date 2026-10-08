@@ -409,6 +409,7 @@
 --xh-state-disabled-opacity: 0.5
 --xh-state-dragging-opacity: 0.6
 --xh-surface-action-inset: 12px  ← var(--xh-space-3)
+--xh-surface-header-h: 46px
 --xh-surface-pad-lg: 16px  ← var(--xh-space-4)
 --xh-surface-pad-md: 12px  ← var(--xh-space-3)
 --xh-surface-pad-sm: 8px  ← var(--xh-space-2)

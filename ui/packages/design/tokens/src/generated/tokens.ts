@@ -519,6 +519,7 @@ export const tokens = {
   "--xh-surface-pad-md": "var(--xh-space-3)",
   "--xh-surface-pad-lg": "var(--xh-space-4)",
   "--xh-surface-action-inset": "var(--xh-space-3)",
+  "--xh-surface-header-h": "46px",
   "--xh-chart-height": "20rem",
   "--xh-chart-bar-max": "var(--xh-space-6)",
   "--xh-chart-gap": "var(--xh-stroke-thick)",

@@ -18962,17 +18962,22 @@
     --xh-card-skin: 1;
   }
 
-  /* Card 是带统一内边距与节奏的内容面；布局方向可由作者在根上覆盖。
+  /* Card 是一块描边内容面：根自己不留内衬，头部条、正文与页脚各带各的内衬，头部条的分隔线才能贯通整宽，
+     直接放进根的媒体也贴边铺满；布局方向可由作者在根上覆盖。
      边界由 --xh-border-default 描边承担，raised 落影只是抬起的加成（Card 是唯一登记 raised 的静态面，
-     且 raised 必带描边）；内衬只走 --xh-surface-* 阶梯。 */
+     且 raised 必带描边）。横向内衬 16px 不随密度；正文纵向内衬走 --xh-surface-pad-lg（16，紧凑 12）。
+     --xh-card-p 改的是各部件的内衬，四边同值 */
   .xh-scope-card[data-part='root'] {
+    --xh-_card-px: var(--xh-card-p, var(--xh-space-4));
+    --xh-_card-py: var(--xh-card-p, var(--xh-surface-pad-lg));
+
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: var(--xh-card-gap, var(--xh-space-3));
+    gap: var(--xh-card-gap, 0);
     min-inline-size: 0;
     overflow: visible;
-    padding: var(--xh-card-p, var(--xh-surface-pad-lg));
+    padding: 0;
     border: var(--xh-stroke-thin) solid var(--xh-card-border, var(--xh-border-default));
     border-radius: var(--xh-card-radius, var(--xh-shape-surface));
     background: var(--xh-card-bg, var(--xh-bg-surface));
@@ -19108,15 +19113,26 @@
     flex-direction: column;
   }
 
+  /* 头部条：根的直接子节点才是条——一行区块标题时高 46px（紧凑 40px），标题在条里竖向居中，
+     横向内衬与正文同起点，底边一道 1px 内部分隔线。嵌在正文里的 header（横向卡片把标题与正文排在一列）不画条 */
+  .xh-scope-card[data-part='root'] > .xh-scope-card[data-part='header'] {
+    justify-content: center;
+    min-block-size: var(--xh-card-header-h, var(--xh-surface-header-h));
+    padding-block: var(--xh-card-header-py, var(--xh-space-2));
+    padding-inline: var(--xh-_card-px);
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-card-header-border, var(--xh-border-subtle));
+  }
+
   .xh-scope-card[data-part='title'],
   .xh-scope-card[data-part='description'] {
     margin: 0;
   }
 
+  /* 标题取区块标题档（heading-3）、正文色 */
   .xh-scope-card[data-part='title'] {
     color: var(--xh-card-title-fg, var(--xh-fg-default));
-    font-size: var(--xh-card-title-font-size, var(--xh-text-label-size));
-    font-weight: var(--xh-card-title-font-weight, var(--xh-font-weight-semibold));
+    font-size: var(--xh-card-title-font-size, var(--xh-text-heading-3-size));
+    font-weight: var(--xh-card-title-font-weight, var(--xh-text-heading-3-weight));
     line-height: var(--xh-card-title-leading, var(--xh-leading-tight));
   }
 
@@ -19126,12 +19142,16 @@
     line-height: var(--xh-card-description-leading, var(--xh-leading-normal));
   }
 
+  /* 正文：四边内衬、14px 次级色 */
   .xh-scope-card[data-part='content'] {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
     gap: var(--xh-card-content-gap, var(--xh-space-1));
     min-inline-size: 0;
+    padding: var(--xh-_card-py) var(--xh-_card-px);
+    color: var(--xh-card-content-fg, var(--xh-fg-muted));
+    font-size: var(--xh-card-content-font-size, var(--xh-text-body-size));
   }
 
   .xh-scope-card[data-part='footer'] {
@@ -19139,6 +19159,12 @@
     flex-direction: row;
     align-items: center;
     gap: var(--xh-card-footer-gap, var(--xh-space-2));
+  }
+
+  /* 页脚是正文的延续：与正文同起点，顶上不再留白（正文的底内衬就是两者的间距），底边留正文同档的内衬。
+     嵌在正文里的页脚随正文的内衬走，不另加 */
+  .xh-scope-card[data-part='root'] > .xh-scope-card[data-part='footer'] {
+    padding: 0 var(--xh-_card-px) var(--xh-_card-py);
   }
 
   @media print {

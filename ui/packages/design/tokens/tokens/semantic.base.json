@@ -1221,6 +1221,11 @@
       "$description": "钉在面板角上的钮离两条边的距离。标题给这颗钮让出的那一段也取它，让位量与实际落点恒一致。",
       "$type": "dimension",
       "$value": "{space.3}"
+    },
+    "header-h": {
+      "$description": "卡片头部条的最小块尺寸：一行区块标题加上下留白，底边一道内部分隔线；紧凑档收到 40px。",
+      "$type": "dimension",
+      "$value": "46px"
     }
   },
   "chart": {
