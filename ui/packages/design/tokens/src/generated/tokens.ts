@@ -495,6 +495,7 @@ export const tokens = {
   "--xh-text-label-weight": "var(--xh-font-weight-regular)",
   "--xh-text-body-size": "var(--xh-font-size-md)",
   "--xh-text-body-leading": "var(--xh-leading-normal)",
+  "--xh-text-body-line-h": "calc(var(--xh-text-body-size) * var(--xh-text-body-leading))",
   "--xh-text-prose-leading": "var(--xh-leading-relaxed)",
   "--xh-text-body-weight": "var(--xh-font-weight-regular)",
   "--xh-text-code-leading": "1.5rem",

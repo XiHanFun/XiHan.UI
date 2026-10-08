@@ -422,6 +422,7 @@
 --xh-table-cell-py-md: 12px  ← var(--xh-space-3)
 --xh-table-cell-py-sm: 8px  ← var(--xh-space-2)
 --xh-text-body-leading: 1.5  ← var(--xh-leading-normal)
+--xh-text-body-line-h: calc(0.875rem * 1.5)  ← calc(var(--xh-text-body-size) * var(--xh-text-body-leading))
 --xh-text-body-size: 0.875rem  ← var(--xh-font-size-md)
 --xh-text-body-weight: 400  ← var(--xh-font-weight-regular)
 --xh-text-caption-size: 0.75rem  ← var(--xh-font-size-xs)

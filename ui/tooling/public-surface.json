@@ -14949,6 +14949,7 @@
     "--xh-table-cell-py-md",
     "--xh-table-cell-py-sm",
     "--xh-text-body-leading",
+    "--xh-text-body-line-h",
     "--xh-text-body-size",
     "--xh-text-body-weight",
     "--xh-text-caption-size",

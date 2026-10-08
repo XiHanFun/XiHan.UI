@@ -65075,7 +65075,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-3"
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "skeleton 的 root 部件 gap 覆盖槽。"
@@ -65166,7 +65166,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-surface-raised"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "skeleton 的 item 部件 background-image 覆盖槽。"
@@ -65184,7 +65184,7 @@
         "shape=text"
       ],
       "defaultToken": [
-        "--xh-text-caption-size"
+        "--xh-text-body-line-h"
       ],
       "visibility": "public",
       "description": "skeleton 的 item 部件 block-size 覆盖槽。"
@@ -65202,7 +65202,7 @@
         "shape=text"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "skeleton 的 item 部件 border-radius 覆盖槽。"
@@ -66440,7 +66440,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size",
+        "--xh-text-body-line-h",
         "1lh"
       ],
       "visibility": "public",

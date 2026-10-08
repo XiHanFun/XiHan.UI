@@ -166,7 +166,6 @@ const IDENTITY = {
   'image-cropper:crop-handle::after': 'pill',
   'scrollbar:thumb': 'pill',
   'sortable:drop-indicator': 'pill',
-  'skeleton:item[data-shape=\'text\']': 'pill',
 
   // 引导的分页点：圆点 circle，当前那颗拉长成 pill（分页点统一 tour 款）
   'tour:progress-dot': 'circle',
@@ -198,6 +197,8 @@ const IDENTITY = {
   'transfer:item-checkbox': 'inset',
   'transfer:select-all-trigger': 'inset',
   'color-swatch-picker:item': 'inset',
+  // 骨架屏的文本条是一行还没排出来的字：高一行正文行框的小圆角方条，不是一维对象
+  'skeleton:item[data-shape=\'text\']': 'inset',
   // RadioGroup segmented 形态轨道里的滑块：嵌在 surface 轨道内的小块（段与 Tabs segment 的标签同取 control）
   'radio-group:thumb': 'inset',
 }
