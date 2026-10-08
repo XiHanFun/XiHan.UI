@@ -50,6 +50,9 @@ const CROSS_PART = {
   // 摆了周序号的那一行是「序号列 + 七天」的网格，行首那一列的宽度按被排的那一列取名
   'calendar-picker.week-number': ['week-row'],
   'calendar-range-picker.week-number': ['week-row'],
+  // 七等分轨道的每一列就是日期格所在的那一格：列宽下限按格子取名；周期视图的网格与日视图同宽，按七列格子算
+  'calendar-picker.cell': ['week-row', 'grid'],
+  'calendar-range-picker.cell': ['week-row', 'grid'],
   // 搜索结果列表与空态占的都是一格列的位置，几何跟着 column 走，三种形态才等宽等高
   // 色块面铺满格子，两者的圆角必须是同一个值，否则四角露出格子的底
   'color-swatch-picker.item': ['swatch'],

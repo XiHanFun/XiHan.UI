@@ -4540,6 +4540,24 @@
       "description": "button-group 的 root 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。"
     },
     {
+      "name": "--xh-calendar-picker-cell-bg-disabled",
+      "component": "calendar-picker",
+      "part": [
+        "cell"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "calendar-picker 的 cell 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-calendar-picker-cell-bg-hover",
       "component": "calendar-picker",
       "part": [
@@ -4650,7 +4668,7 @@
         "xh-ink-surface"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "calendar-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
@@ -4772,24 +4790,85 @@
       "description": "calendar-picker 的 cell-trigger 部件 font-weight 覆盖槽。"
     },
     {
-      "name": "--xh-calendar-picker-cell-gap",
+      "name": "--xh-calendar-picker-cell-font-weight-outside",
       "component": "calendar-picker",
       "part": [
-        "cell",
         "cell-trigger"
       ],
       "property": [
-        "inset",
-        "padding"
+        "font-weight"
+      ],
+      "state": [
+        "outside-month"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-regular"
+      ],
+      "visibility": "public",
+      "description": "calendar-picker 的 cell-trigger 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-picker-cell-min-w",
+      "component": "calendar-picker",
+      "part": [
+        "grid",
+        "week-row"
+      ],
+      "property": [
+        "grid-template-columns",
+        "min-inline-size"
+      ],
+      "state": [
+        "default",
+        "has(> [data-part='week-number'])",
+        "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
+        "not([hidden])",
+        "view=month",
+        "view=quarter",
+        "view=week",
+        "view=year"
+      ],
+      "defaultToken": [
+        "--xh-control-h-md"
+      ],
+      "visibility": "public",
+      "description": "calendar-picker 的 grid、week-row 部件 grid-template-columns、min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-picker-cell-px",
+      "component": "calendar-picker",
+      "part": [
+        "cell"
+      ],
+      "property": [
+        "padding-inline"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-space-0_5"
+        "--xh-space-0"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 cell、cell-trigger 部件 inset、padding 覆盖槽。"
+      "description": "calendar-picker 的 cell 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-picker-cell-py",
+      "component": "calendar-picker",
+      "part": [
+        "cell"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1_5"
+      ],
+      "visibility": "public",
+      "description": "calendar-picker 的 cell 部件 padding-block 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-cell-radius",
@@ -4801,10 +4880,10 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "view=day"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "calendar-picker 的 cell-trigger 部件 border-radius 覆盖槽。"
@@ -4813,19 +4892,44 @@
       "name": "--xh-calendar-picker-cell-size",
       "component": "calendar-picker",
       "part": [
+        "cell",
         "cell-trigger"
       ],
       "property": [
+        "block-size",
+        "inline-size",
+        "inset-block-start",
         "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "today",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-_action-profile-visual-size",
+        "--xh-control-action-size"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 cell-trigger 部件 min-inline-size 覆盖槽。"
+      "description": "calendar-picker 的 cell、cell-trigger 部件 block-size、inline-size、inset-block-start、min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-picker-disabled-inset",
+      "component": "calendar-picker",
+      "part": [
+        "cell"
+      ],
+      "property": [
+        "inset-block"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "calendar-picker 的 cell 部件 inset-block 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-gap",
@@ -4840,7 +4944,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "calendar-picker 的 root 部件 gap 覆盖槽。"
@@ -4858,10 +4962,70 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "calendar-picker 的 grid 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-picker-grid-px",
+      "component": "calendar-picker",
+      "part": [
+        "grid"
+      ],
+      "property": [
+        "min-inline-size",
+        "padding-inline"
+      ],
+      "state": [
+        "default",
+        "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
+        "view=month",
+        "view=quarter",
+        "view=week",
+        "view=year"
+      ],
+      "defaultToken": [
+        "--xh-space-4"
+      ],
+      "visibility": "public",
+      "description": "calendar-picker 的 grid 部件 min-inline-size、padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-picker-grid-py",
+      "component": "calendar-picker",
+      "part": [
+        "grid"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "calendar-picker 的 grid 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-picker-header-border",
+      "component": "calendar-picker",
+      "part": [
+        "header"
+      ],
+      "property": [
+        "border-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-solid-border"
+      ],
+      "visibility": "public",
+      "description": "calendar-picker 的 header 部件 border-block-end 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-header-gap",
@@ -4876,10 +5040,47 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "calendar-picker 的 header 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-picker-header-px",
+      "component": "calendar-picker",
+      "part": [
+        "header"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-4"
+      ],
+      "visibility": "public",
+      "description": "calendar-picker 的 header 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-picker-header-py",
+      "component": "calendar-picker",
+      "part": [
+        "header"
+      ],
+      "property": [
+        "min-block-size",
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "calendar-picker 的 header 部件 min-block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-heading-fg",
@@ -4896,7 +5097,13 @@
         "default",
         "disabled",
         "focus-visible",
-        "not([hidden])"
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "not([hidden])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -4941,10 +5148,34 @@
         "not([hidden])"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "calendar-picker 的 heading、heading-month-trigger、heading-year-trigger 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-picker-heading-trigger-bg-hover",
+      "component": "calendar-picker",
+      "part": [
+        "heading-month-trigger",
+        "heading-year-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "not([hidden])"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "calendar-picker 的 heading-month-trigger、heading-year-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-heading-trigger-bg-pressed",
@@ -4972,32 +5203,6 @@
       "description": "calendar-picker 的 heading-month-trigger、heading-year-trigger 部件 background-color 覆盖槽。"
     },
     {
-      "name": "--xh-calendar-picker-heading-trigger-fg-hover",
-      "component": "calendar-picker",
-      "part": [
-        "heading-month-trigger",
-        "heading-year-trigger"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "disabled",
-        "hover",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "not([hidden])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-fg-brand"
-      ],
-      "visibility": "public",
-      "description": "calendar-picker 的 heading-month-trigger、heading-year-trigger 部件 color 覆盖槽。"
-    },
-    {
       "name": "--xh-calendar-picker-heading-trigger-px",
       "component": "calendar-picker",
       "part": [
@@ -5011,7 +5216,7 @@
         "not([hidden])"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0_5"
       ],
       "visibility": "public",
       "description": "calendar-picker 的 heading-month-trigger、heading-year-trigger 部件 padding-inline 覆盖槽。"
@@ -5039,7 +5244,7 @@
       "name": "--xh-calendar-picker-icon-size",
       "component": "calendar-picker",
       "part": [
-        "root"
+        "header"
       ],
       "property": [
         "--xh-icon-size"
@@ -5051,7 +5256,7 @@
         "--xh-glyph-size-sm"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "calendar-picker 的 header 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-nav-bg",
@@ -5194,7 +5399,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "calendar-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 border-radius 覆盖槽。"
@@ -5239,20 +5444,19 @@
         "view=year"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "calendar-picker 的 grid 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-calendar-picker-period-py",
+      "name": "--xh-calendar-picker-period-px",
       "component": "calendar-picker",
       "part": [
-        "cell-trigger",
-        "grid"
+        "cell"
       ],
       "property": [
-        "padding-block"
+        "padding-inline"
       ],
       "state": [
         "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
@@ -5262,33 +5466,28 @@
         "view=year"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 cell-trigger、grid 部件 padding-block 覆盖槽。"
+      "description": "calendar-picker 的 cell 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-period-radius",
       "component": "calendar-picker",
       "part": [
-        "cell-trigger",
-        "grid"
+        "cell-trigger"
       ],
       "property": [
         "border-radius"
       ],
       "state": [
-        "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
-        "view=month",
-        "view=quarter",
-        "view=week",
-        "view=year"
+        "default"
       ],
       "defaultToken": [
         "--xh-shape-control"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 cell-trigger、grid 部件 border-radius 覆盖槽。"
+      "description": "calendar-picker 的 cell-trigger 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-row-gap",
@@ -5310,86 +5509,49 @@
       "description": "calendar-picker 的 grid-body、grid-head 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-calendar-picker-today-bg",
+      "name": "--xh-calendar-picker-today-mark-bg",
       "component": "calendar-picker",
       "part": [
-        "cell-trigger"
+        "cell"
       ],
       "property": [
-        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "disabled",
-        "focus-visible",
-        "today",
-        "xh-ink-surface"
+        "today"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-fg-brand"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+      "description": "calendar-picker 的 cell 部件 background-color 覆盖槽。"
     },
     {
-      "name": "--xh-calendar-picker-today-border",
+      "name": "--xh-calendar-picker-today-mark-size",
       "component": "calendar-picker",
       "part": [
-        "cell-trigger"
+        "cell"
       ],
       "property": [
+        "block-size",
         "border",
-        "border-color"
+        "inline-size"
       ],
       "state": [
-        "disabled",
-        "focus-visible",
-        "hover",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed",
+        "@media print",
         "today"
       ],
       "defaultToken": [
-        "--xh-fg-brand"
+        "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 cell-trigger 部件 border、border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-calendar-picker-today-fg",
-      "component": "calendar-picker",
-      "part": [
-        "cell-trigger"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "disabled",
-        "focus-visible",
-        "hover",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed",
-        "today"
-      ],
-      "defaultToken": [
-        "--xh-fg-brand"
-      ],
-      "visibility": "public",
-      "description": "calendar-picker 的 cell-trigger 部件 color 覆盖槽。"
+      "description": "calendar-picker 的 cell 部件 block-size、border、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-week-cell-px",
       "component": "calendar-picker",
       "part": [
-        "cell-trigger",
-        "grid"
+        "cell-trigger"
       ],
       "property": [
         "padding-inline"
@@ -5401,7 +5563,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 cell-trigger、grid 部件 padding-inline 覆盖槽。"
+      "description": "calendar-picker 的 cell-trigger 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-week-day-fg",
@@ -5434,7 +5596,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-caption-size"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "calendar-picker 的 week-day 部件 font-size 覆盖槽。"
@@ -5452,7 +5614,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-font-weight-regular"
       ],
       "visibility": "public",
       "description": "calendar-picker 的 week-day 部件 font-weight 覆盖槽。"
@@ -5470,7 +5632,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-control-h-md"
       ],
       "visibility": "public",
       "description": "calendar-picker 的 week-day 部件 block-size 覆盖槽。"
@@ -5549,22 +5711,24 @@
       "description": "calendar-picker 的 grid 部件 max-block-size 覆盖槽。"
     },
     {
-      "name": "--xh-calendar-picker-year-grid-pe",
-      "component": "calendar-picker",
+      "name": "--xh-calendar-range-picker-cell-bg-disabled",
+      "component": "calendar-range-picker",
       "part": [
-        "grid"
+        "cell"
       ],
       "property": [
-        "padding-inline-end"
+        "background-color"
       ],
       "state": [
-        "view=year"
+        "disabled",
+        "in-range",
+        "not([data-in-range])"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 grid 部件 padding-inline-end 覆盖槽。"
+      "description": "calendar-range-picker 的 cell 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-cell-bg-hover",
@@ -5691,7 +5855,7 @@
         "xh-ink-surface"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
@@ -5827,72 +5991,148 @@
       "description": "calendar-range-picker 的 cell-trigger 部件 font-weight 覆盖槽。"
     },
     {
-      "name": "--xh-calendar-range-picker-cell-gap",
+      "name": "--xh-calendar-range-picker-cell-font-weight-outside",
       "component": "calendar-range-picker",
       "part": [
-        "cell",
         "cell-trigger"
       ],
       "property": [
-        "inset",
-        "inset-block",
-        "padding"
+        "font-weight"
       ],
       "state": [
-        "default",
-        "in-range",
-        "not([data-outside-month])",
         "outside-month"
       ],
       "defaultToken": [
-        "--xh-space-0_5"
+        "--xh-font-weight-regular"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell、cell-trigger 部件 inset、inset-block、padding 覆盖槽。"
+      "description": "calendar-range-picker 的 cell-trigger 部件 font-weight 覆盖槽。"
     },
     {
-      "name": "--xh-calendar-range-picker-cell-radius",
+      "name": "--xh-calendar-range-picker-cell-min-w",
       "component": "calendar-range-picker",
       "part": [
-        "cell",
-        "cell-trigger",
-        "grid"
+        "grid",
+        "week-row"
       ],
       "property": [
-        "border-radius"
+        "grid-template-columns",
+        "min-inline-size"
       ],
       "state": [
         "default",
-        "in-range",
+        "has(> [data-part='week-number'])",
         "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
+        "not([hidden])",
         "view=month",
         "view=quarter",
         "view=week",
         "view=year"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "--xh-control-h-md"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell、cell-trigger、grid 部件 border-radius 覆盖槽。"
+      "description": "calendar-range-picker 的 grid、week-row 部件 grid-template-columns、min-inline-size 覆盖槽。"
     },
     {
-      "name": "--xh-calendar-range-picker-cell-size",
+      "name": "--xh-calendar-range-picker-cell-px",
       "component": "calendar-range-picker",
       "part": [
-        "cell-trigger"
+        "cell"
       ],
       "property": [
-        "min-inline-size"
+        "padding-inline"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-space-0"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 min-inline-size 覆盖槽。"
+      "description": "calendar-range-picker 的 cell 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-cell-py",
+      "component": "calendar-range-picker",
+      "part": [
+        "cell"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1_5"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 cell 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-cell-radius",
+      "component": "calendar-range-picker",
+      "part": [
+        "cell-trigger"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "view=day"
+      ],
+      "defaultToken": [
+        "--xh-shape-circle"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 cell-trigger 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-cell-size",
+      "component": "calendar-range-picker",
+      "part": [
+        "cell",
+        "cell-trigger"
+      ],
+      "property": [
+        "block-size",
+        "inline-size",
+        "inset-block-start",
+        "min-inline-size"
+      ],
+      "state": [
+        "default",
+        "today",
+        "xh-action-profile=icon"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-visual-size",
+        "--xh-control-action-size"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 cell、cell-trigger 部件 block-size、inline-size、inset-block-start、min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-disabled-inset",
+      "component": "calendar-range-picker",
+      "part": [
+        "cell"
+      ],
+      "property": [
+        "inset-block"
+      ],
+      "state": [
+        "disabled",
+        "in-range",
+        "not([data-in-range])"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 cell 部件 inset-block 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-gap",
@@ -5907,7 +6147,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 root 部件 gap 覆盖槽。"
@@ -5925,10 +6165,70 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 grid 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-grid-px",
+      "component": "calendar-range-picker",
+      "part": [
+        "grid"
+      ],
+      "property": [
+        "min-inline-size",
+        "padding-inline"
+      ],
+      "state": [
+        "default",
+        "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
+        "view=month",
+        "view=quarter",
+        "view=week",
+        "view=year"
+      ],
+      "defaultToken": [
+        "--xh-space-4"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 grid 部件 min-inline-size、padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-grid-py",
+      "component": "calendar-range-picker",
+      "part": [
+        "grid"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 grid 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-header-border",
+      "component": "calendar-range-picker",
+      "part": [
+        "header"
+      ],
+      "property": [
+        "border-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-solid-border"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 header 部件 border-block-end 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-header-gap",
@@ -5943,10 +6243,47 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 header 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-header-px",
+      "component": "calendar-range-picker",
+      "part": [
+        "header"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-4"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 header 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-header-py",
+      "component": "calendar-range-picker",
+      "part": [
+        "header"
+      ],
+      "property": [
+        "min-block-size",
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 header 部件 min-block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-heading-fg",
@@ -5963,7 +6300,13 @@
         "default",
         "disabled",
         "focus-visible",
-        "not([hidden])"
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "not([hidden])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -6008,10 +6351,34 @@
         "not([hidden])"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 heading、heading-month-trigger、heading-year-trigger 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-picker-heading-trigger-bg-hover",
+      "component": "calendar-range-picker",
+      "part": [
+        "heading-month-trigger",
+        "heading-year-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "not([hidden])"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 heading-month-trigger、heading-year-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-heading-trigger-bg-pressed",
@@ -6039,32 +6406,6 @@
       "description": "calendar-range-picker 的 heading-month-trigger、heading-year-trigger 部件 background-color 覆盖槽。"
     },
     {
-      "name": "--xh-calendar-range-picker-heading-trigger-fg-hover",
-      "component": "calendar-range-picker",
-      "part": [
-        "heading-month-trigger",
-        "heading-year-trigger"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "disabled",
-        "hover",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "not([hidden])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-fg-brand"
-      ],
-      "visibility": "public",
-      "description": "calendar-range-picker 的 heading-month-trigger、heading-year-trigger 部件 color 覆盖槽。"
-    },
-    {
       "name": "--xh-calendar-range-picker-heading-trigger-px",
       "component": "calendar-range-picker",
       "part": [
@@ -6078,7 +6419,7 @@
         "not([hidden])"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0_5"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 heading-month-trigger、heading-year-trigger 部件 padding-inline 覆盖槽。"
@@ -6106,7 +6447,7 @@
       "name": "--xh-calendar-range-picker-icon-size",
       "component": "calendar-range-picker",
       "part": [
-        "root"
+        "header"
       ],
       "property": [
         "--xh-icon-size"
@@ -6118,7 +6459,7 @@
         "--xh-glyph-size-sm"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "calendar-range-picker 的 header 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-nav-bg",
@@ -6261,7 +6602,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 border-radius 覆盖槽。"
@@ -6306,20 +6647,19 @@
         "view=year"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 grid 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-calendar-range-picker-period-py",
+      "name": "--xh-calendar-range-picker-period-px",
       "component": "calendar-range-picker",
       "part": [
-        "cell-trigger",
-        "grid"
+        "cell"
       ],
       "property": [
-        "padding-block"
+        "padding-inline"
       ],
       "state": [
         "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
@@ -6329,33 +6669,28 @@
         "view=year"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger、grid 部件 padding-block 覆盖槽。"
+      "description": "calendar-range-picker 的 cell 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-period-radius",
       "component": "calendar-range-picker",
       "part": [
-        "cell-trigger",
-        "grid"
+        "cell-trigger"
       ],
       "property": [
         "border-radius"
       ],
       "state": [
-        "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
-        "view=month",
-        "view=quarter",
-        "view=week",
-        "view=year"
+        "default"
       ],
       "defaultToken": [
         "--xh-shape-control"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger、grid 部件 border-radius 覆盖槽。"
+      "description": "calendar-range-picker 的 cell-trigger 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-range-bg",
@@ -6364,7 +6699,7 @@
         "cell"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "in-range",
@@ -6375,7 +6710,7 @@
         "--xh-bg-brand-subtle"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell 部件 background 覆盖槽。"
+      "description": "calendar-range-picker 的 cell 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-range-cap-radius",
@@ -6395,7 +6730,7 @@
         "range-start"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "--xh-shape-pill"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 cell 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
@@ -6456,13 +6791,33 @@
       "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
     },
     {
+      "name": "--xh-calendar-range-picker-range-inset",
+      "component": "calendar-range-picker",
+      "part": [
+        "cell"
+      ],
+      "property": [
+        "inset-block"
+      ],
+      "state": [
+        "in-range",
+        "not([data-outside-month])",
+        "outside-month"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "calendar-range-picker 的 cell 部件 inset-block 覆盖槽。"
+    },
+    {
       "name": "--xh-calendar-range-picker-range-preview-bg",
       "component": "calendar-range-picker",
       "part": [
         "cell"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "in-range",
@@ -6474,7 +6829,7 @@
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell 部件 background 覆盖槽。"
+      "description": "calendar-range-picker 的 cell 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-range-preview-cell-bg-hover",
@@ -6534,31 +6889,6 @@
       "description": "calendar-range-picker 的 cell-trigger 部件 background-color 覆盖槽。"
     },
     {
-      "name": "--xh-calendar-range-picker-range-row-radius",
-      "component": "calendar-range-picker",
-      "part": [
-        "cell",
-        "week-number",
-        "week-row"
-      ],
-      "property": [
-        "border-end-end-radius",
-        "border-end-start-radius",
-        "border-start-end-radius",
-        "border-start-start-radius"
-      ],
-      "state": [
-        "first-child",
-        "in-range",
-        "last-child"
-      ],
-      "defaultToken": [
-        "--xh-shape-inset"
-      ],
-      "visibility": "public",
-      "description": "calendar-range-picker 的 cell、week-number、week-row 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
-    },
-    {
       "name": "--xh-calendar-range-picker-row-gap",
       "component": "calendar-range-picker",
       "part": [
@@ -6578,86 +6908,49 @@
       "description": "calendar-range-picker 的 grid-body、grid-head 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-calendar-range-picker-today-bg",
+      "name": "--xh-calendar-range-picker-today-mark-bg",
       "component": "calendar-range-picker",
       "part": [
-        "cell-trigger"
+        "cell"
       ],
       "property": [
-        "--xh-ink-surface",
         "background-color"
       ],
       "state": [
-        "disabled",
-        "focus-visible",
-        "today",
-        "xh-ink-surface"
+        "today"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-fg-brand"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+      "description": "calendar-range-picker 的 cell 部件 background-color 覆盖槽。"
     },
     {
-      "name": "--xh-calendar-range-picker-today-border",
+      "name": "--xh-calendar-range-picker-today-mark-size",
       "component": "calendar-range-picker",
       "part": [
-        "cell-trigger"
+        "cell"
       ],
       "property": [
+        "block-size",
         "border",
-        "border-color"
+        "inline-size"
       ],
       "state": [
-        "disabled",
-        "focus-visible",
-        "hover",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed",
+        "@media print",
         "today"
       ],
       "defaultToken": [
-        "--xh-fg-brand"
+        "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 border、border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-calendar-range-picker-today-fg",
-      "component": "calendar-range-picker",
-      "part": [
-        "cell-trigger"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "disabled",
-        "focus-visible",
-        "hover",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed",
-        "today"
-      ],
-      "defaultToken": [
-        "--xh-fg-brand"
-      ],
-      "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 color 覆盖槽。"
+      "description": "calendar-range-picker 的 cell 部件 block-size、border、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-week-cell-px",
       "component": "calendar-range-picker",
       "part": [
-        "cell-trigger",
-        "grid"
+        "cell-trigger"
       ],
       "property": [
         "padding-inline"
@@ -6669,7 +6962,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger、grid 部件 padding-inline 覆盖槽。"
+      "description": "calendar-range-picker 的 cell-trigger 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-week-day-fg",
@@ -6702,7 +6995,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-caption-size"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 week-day 部件 font-size 覆盖槽。"
@@ -6720,7 +7013,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-font-weight-regular"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 week-day 部件 font-weight 覆盖槽。"
@@ -6738,7 +7031,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-control-h-md"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 week-day 部件 block-size 覆盖槽。"
@@ -6815,24 +7108,6 @@
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 grid 部件 max-block-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-calendar-range-picker-year-grid-pe",
-      "component": "calendar-range-picker",
-      "part": [
-        "grid"
-      ],
-      "property": [
-        "padding-inline-end"
-      ],
-      "state": [
-        "view=year"
-      ],
-      "defaultToken": [
-        "--xh-space-1"
-      ],
-      "visibility": "public",
-      "description": "calendar-range-picker 的 grid 部件 padding-inline-end 覆盖槽。"
     },
     {
       "name": "--xh-card-bg",

@@ -4508,6 +4508,9 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-calendar-picker-cell-bg-disabled"
+            },
+            {
               "name": "--xh-calendar-picker-cell-bg-hover"
             },
             {
@@ -4538,7 +4541,16 @@
               "name": "--xh-calendar-picker-cell-font-weight"
             },
             {
-              "name": "--xh-calendar-picker-cell-gap"
+              "name": "--xh-calendar-picker-cell-font-weight-outside"
+            },
+            {
+              "name": "--xh-calendar-picker-cell-min-w"
+            },
+            {
+              "name": "--xh-calendar-picker-cell-px"
+            },
+            {
+              "name": "--xh-calendar-picker-cell-py"
             },
             {
               "name": "--xh-calendar-picker-cell-radius"
@@ -4547,13 +4559,31 @@
               "name": "--xh-calendar-picker-cell-size"
             },
             {
+              "name": "--xh-calendar-picker-disabled-inset"
+            },
+            {
               "name": "--xh-calendar-picker-gap"
             },
             {
               "name": "--xh-calendar-picker-grid-gap"
             },
             {
+              "name": "--xh-calendar-picker-grid-px"
+            },
+            {
+              "name": "--xh-calendar-picker-grid-py"
+            },
+            {
+              "name": "--xh-calendar-picker-header-border"
+            },
+            {
               "name": "--xh-calendar-picker-header-gap"
+            },
+            {
+              "name": "--xh-calendar-picker-header-px"
+            },
+            {
+              "name": "--xh-calendar-picker-header-py"
             },
             {
               "name": "--xh-calendar-picker-heading-fg"
@@ -4565,10 +4595,10 @@
               "name": "--xh-calendar-picker-heading-font-weight"
             },
             {
-              "name": "--xh-calendar-picker-heading-trigger-bg-pressed"
+              "name": "--xh-calendar-picker-heading-trigger-bg-hover"
             },
             {
-              "name": "--xh-calendar-picker-heading-trigger-fg-hover"
+              "name": "--xh-calendar-picker-heading-trigger-bg-pressed"
             },
             {
               "name": "--xh-calendar-picker-heading-trigger-px"
@@ -4604,7 +4634,7 @@
               "name": "--xh-calendar-picker-period-gap"
             },
             {
-              "name": "--xh-calendar-picker-period-py"
+              "name": "--xh-calendar-picker-period-px"
             },
             {
               "name": "--xh-calendar-picker-period-radius"
@@ -4613,13 +4643,10 @@
               "name": "--xh-calendar-picker-row-gap"
             },
             {
-              "name": "--xh-calendar-picker-today-bg"
+              "name": "--xh-calendar-picker-today-mark-bg"
             },
             {
-              "name": "--xh-calendar-picker-today-border"
-            },
-            {
-              "name": "--xh-calendar-picker-today-fg"
+              "name": "--xh-calendar-picker-today-mark-size"
             },
             {
               "name": "--xh-calendar-picker-week-cell-px"
@@ -4647,9 +4674,6 @@
             },
             {
               "name": "--xh-calendar-picker-year-grid-max-h"
-            },
-            {
-              "name": "--xh-calendar-picker-year-grid-pe"
             }
           ]
         }
@@ -5276,6 +5300,9 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-calendar-range-picker-cell-bg-disabled"
+            },
+            {
               "name": "--xh-calendar-range-picker-cell-bg-hover"
             },
             {
@@ -5306,7 +5333,16 @@
               "name": "--xh-calendar-range-picker-cell-font-weight"
             },
             {
-              "name": "--xh-calendar-range-picker-cell-gap"
+              "name": "--xh-calendar-range-picker-cell-font-weight-outside"
+            },
+            {
+              "name": "--xh-calendar-range-picker-cell-min-w"
+            },
+            {
+              "name": "--xh-calendar-range-picker-cell-px"
+            },
+            {
+              "name": "--xh-calendar-range-picker-cell-py"
             },
             {
               "name": "--xh-calendar-range-picker-cell-radius"
@@ -5315,13 +5351,31 @@
               "name": "--xh-calendar-range-picker-cell-size"
             },
             {
+              "name": "--xh-calendar-range-picker-disabled-inset"
+            },
+            {
               "name": "--xh-calendar-range-picker-gap"
             },
             {
               "name": "--xh-calendar-range-picker-grid-gap"
             },
             {
+              "name": "--xh-calendar-range-picker-grid-px"
+            },
+            {
+              "name": "--xh-calendar-range-picker-grid-py"
+            },
+            {
+              "name": "--xh-calendar-range-picker-header-border"
+            },
+            {
               "name": "--xh-calendar-range-picker-header-gap"
+            },
+            {
+              "name": "--xh-calendar-range-picker-header-px"
+            },
+            {
+              "name": "--xh-calendar-range-picker-header-py"
             },
             {
               "name": "--xh-calendar-range-picker-heading-fg"
@@ -5333,10 +5387,10 @@
               "name": "--xh-calendar-range-picker-heading-font-weight"
             },
             {
-              "name": "--xh-calendar-range-picker-heading-trigger-bg-pressed"
+              "name": "--xh-calendar-range-picker-heading-trigger-bg-hover"
             },
             {
-              "name": "--xh-calendar-range-picker-heading-trigger-fg-hover"
+              "name": "--xh-calendar-range-picker-heading-trigger-bg-pressed"
             },
             {
               "name": "--xh-calendar-range-picker-heading-trigger-px"
@@ -5372,7 +5426,7 @@
               "name": "--xh-calendar-range-picker-period-gap"
             },
             {
-              "name": "--xh-calendar-range-picker-period-py"
+              "name": "--xh-calendar-range-picker-period-px"
             },
             {
               "name": "--xh-calendar-range-picker-period-radius"
@@ -5390,6 +5444,9 @@
               "name": "--xh-calendar-range-picker-range-cell-bg-pressed"
             },
             {
+              "name": "--xh-calendar-range-picker-range-inset"
+            },
+            {
               "name": "--xh-calendar-range-picker-range-preview-bg"
             },
             {
@@ -5399,19 +5456,13 @@
               "name": "--xh-calendar-range-picker-range-preview-cell-bg-pressed"
             },
             {
-              "name": "--xh-calendar-range-picker-range-row-radius"
-            },
-            {
               "name": "--xh-calendar-range-picker-row-gap"
             },
             {
-              "name": "--xh-calendar-range-picker-today-bg"
+              "name": "--xh-calendar-range-picker-today-mark-bg"
             },
             {
-              "name": "--xh-calendar-range-picker-today-border"
-            },
-            {
-              "name": "--xh-calendar-range-picker-today-fg"
+              "name": "--xh-calendar-range-picker-today-mark-size"
             },
             {
               "name": "--xh-calendar-range-picker-week-cell-px"
@@ -5439,9 +5490,6 @@
             },
             {
               "name": "--xh-calendar-range-picker-year-grid-max-h"
-            },
-            {
-              "name": "--xh-calendar-range-picker-year-grid-pe"
             }
           ]
         }
