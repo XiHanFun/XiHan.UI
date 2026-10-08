@@ -189,11 +189,11 @@ describe('折行不改单行时的几何', () => {
       .toBeGreaterThan(trackHeight)
   })
 
-  it('tabs 排得下时主标签带保持单行，line 档的标签带就是一档控件高', () => {
+  it('tabs 排得下时主标签带保持单行，line 档的标签带是一档控件高加底边基线', () => {
     const wide = mount(1280, TABS)
     const list = wide.querySelector('[data-scope="tabs"][data-part="list"]') as HTMLElement
-    // line 档标签带不带衬距，高度只有标签自己的一档控件高
-    expect(list.offsetHeight).toBe(tokenPx(wide, '--xh-control-h-md'))
+    // line 档标签带不带衬距，高度是标签自己的一档控件高，再加底边那道细线基线
+    expect(list.offsetHeight).toBe(tokenPx(wide, '--xh-control-h-md') + tokenPx(wide, '--xh-stroke-thin'))
     expect(rowsOf(wide, 'trigger')).toBe(1)
   })
 
