@@ -149,6 +149,35 @@ describe('日期范围选择器 showTime', () => {
     expect(item(1, 'hour', '18').getAttribute('aria-selected')).toBe('true')
   })
 
+  it('时间列顶边接着标题栏的分隔线、列高与带星期行的日历网格同高；竖线只画在组边，组与组之间不另留空当', async () => {
+    await mount({ defaultValue: ['2026-09-10T09:30', '2026-09-12T18:00'] })
+    const header = document.querySelector<HTMLElement>(`[data-scope='calendar-range-picker'][data-part='header']`)!.getBoundingClientRect()
+    // 这份挂载没摆星期行：网格比列矮一行，列高按令牌（星期行加六周与上下内衬）再加列顶那道线核
+    const probe = document.createElement('span')
+    probe.style.cssText = 'display: block; inline-size: var(--xh-overlay-calendar-column-h)'
+    part('content').append(probe)
+    const columnHeight = probe.getBoundingClientRect().width + 1
+    probe.remove()
+    const columns = [...document.querySelectorAll<HTMLElement>(`[data-scope='date-range-picker'][data-part='time-column']:not([hidden])`)]
+    expect(columns.length).toBeGreaterThanOrEqual(4)
+    for (const column of columns) {
+      const box = column.getBoundingClientRect()
+      const style = getComputedStyle(column)
+      expect(box.top).toBeCloseTo(header.bottom - 1, 1)
+      expect(box.height).toBeCloseTo(columnHeight, 1)
+      expect(style.borderTopWidth).toBe('1px')
+      expect(style.borderTopColor).toBe(tokenColor('--xh-border-default'))
+      expect(style.borderInlineStartWidth).toBe('0px')
+    }
+    const start = part('column-group', 0)
+    const end = part('column-group', 1)
+    expect(getComputedStyle(start).borderInlineStartWidth).toBe('1px')
+    expect(getComputedStyle(end).borderInlineStartWidth).toBe('1px')
+    expect(end.getBoundingClientRect().left).toBe(start.getBoundingClientRect().right)
+    // 小标题占满列顶那一带：与标题栏的内容区等高
+    expect(part('column-group-label', 0).getBoundingClientRect().bottom).toBeCloseTo(header.bottom - 1, 1)
+  })
+
   it('defaultTime：只点日期时起止各补上时刻，浮层不收；确认钮收起', async () => {
     const h = await mount({ defaultTime: ['00:00', '23:59'] })
     await userEvent.click(cell('2026-09-10'))
