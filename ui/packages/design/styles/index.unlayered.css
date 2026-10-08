@@ -22433,10 +22433,15 @@
   --xh-action-radius: var(--xh-citation-source-radius, var(--xh-shape-control));
   --xh-action-fg-rest: var(--xh-citation-source-fg, var(--xh-fg-default));
 
-  display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: start;
   text-align: start;
+}
+
+/* 排成「序号 | 标题 / 来源」两列，盖掉 row 档的 display: flex。选择器点名 row 档，
+   有层与无层两份产物里都压得住它；收起的来源行留给 [hidden] 那条 */
+.xh-scope-citation[data-part='source-link'][data-xh-action-profile='row']:not([hidden]) {
+  display: grid;
 }
 
 .xh-scope-citation[data-part='source-link'][data-current] {
