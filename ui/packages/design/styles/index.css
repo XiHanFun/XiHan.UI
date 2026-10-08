@@ -2629,16 +2629,16 @@
 
 /* family/loading-ring.css */
 /*
- * 加载环家族配方：「这里正在等」的那枚圆环，与 Spinner 环档同一副画法——一整圈轨道色，
- * 只有起始边换成前景色，绕中心匀速转，转起来才看得出方向。
+ * 加载环家族配方：「这里正在等」的那枚圆环，与 Spinner 环档同一副画法——一段 270° 的弧，
+ * 不画轨道，起始边留空，绕中心匀速转，缺口转起来就看得出方向。
  *
  * 连接层在承载者上投影 data-xh-loading-ring，并用共享的 data-loading 说此刻在不在等。
  * 环画在承载者的 ::before 上：伪元素有没有、多大、摆在哪由皮肤决定（皮肤写 content 与尺寸），
  * 配方只负责把它画成环、随 data-loading 淡入淡出并转停。收起时环停在当前角度淡出，
  * 与皮肤里接替它的那枚字形交叉淡变；不在等时不转。
  *
- * 轨道取 --xh-border-default、环粗取 --xh-stroke-thick；起始边颜色走私有槽 --xh-_loading-ring-fg，
- * 皮肤按自己的语气与公开槽给，没给时取 currentColor。转一圈的时长走私有槽 --xh-_loading-ring-duration，
+ * 环粗取 --xh-stroke-thick；弧色走私有槽 --xh-_loading-ring-fg，皮肤按自己的语气与公开槽给，
+ * 没给时取品牌色（与 Spinner 同一枚）；压在动作钮上的那一档没给时随钮的字色。转一圈的时长走私有槽 --xh-_loading-ring-duration，
  * 皮肤把自己的公开时长槽接进来，没给时取 --xh-motion-loop-spin。
  *
  * 进行中的动作钮投影 data-xh-loading-ring="overlay"：环居中压在钮上、不占排布，钮宽不变，直径取钮的图标档。
@@ -2650,10 +2650,12 @@
  */
 @layer xihan.components {
   [data-xh-loading-ring]::before {
+    --xh-_loading-ring-color: var(--xh-_loading-ring-fg, var(--xh-fg-brand));
+
     /* 环粗算进直径，换厚度不会把环撑大 */
     box-sizing: border-box;
-    border: var(--xh-stroke-thick) solid var(--xh-border-default);
-    border-block-start-color: var(--xh-_loading-ring-fg, currentColor);
+    border: var(--xh-stroke-thick) solid var(--xh-_loading-ring-color);
+    border-block-start-color: transparent;
     border-radius: var(--xh-shape-circle);
     /* 承载者的这枚伪元素在别的状态下可能画着字形：环不带底、不带遮罩 */
     background: none;
@@ -2670,8 +2672,11 @@
     animation-play-state: running;
   }
 
-  /* 压在动作钮上的环：钮是定位盒（Action Control 给 position: relative），环在钮正中、不进排布 */
+  /* 压在动作钮上的环：钮是定位盒（Action Control 给 position: relative），环在钮正中、不进排布；
+     弧色没给时随钮的字色（实心钮上是钮面的前景色，不是品牌色） */
   [data-xh-loading-ring='overlay']::before {
+    --xh-_loading-ring-color: var(--xh-_loading-ring-fg, currentColor);
+
     content: '';
     position: absolute;
     inset: 0;
@@ -2691,30 +2696,32 @@
   @media (prefers-reduced-motion: reduce) {
     [data-xh-loading-ring]::before {
       border-style: dotted;
-      border-color: var(--xh-_loading-ring-fg, currentColor);
+      border-color: var(--xh-_loading-ring-color);
       animation: none;
     }
   }
 
   :where([data-motion='reduce']) [data-xh-loading-ring]::before {
     border-style: dotted;
-    border-color: var(--xh-_loading-ring-fg, currentColor);
+    border-color: var(--xh-_loading-ring-color);
     animation: none;
   }
 
   @media print {
     [data-xh-loading-ring]::before {
       border-style: dotted;
-      border-color: var(--xh-_loading-ring-fg, currentColor);
+      border-color: var(--xh-_loading-ring-color);
       animation: none;
     }
   }
 
-  /* 强制色：轨道取系统文字色，起始边取高亮色，转向照样读得出 */
+  /* 强制色：弧取高亮色，缺口取画布色（不画轨道，缺口就是转向的读法）；
+     退出强制换色，系统色直接写，缺口不被换成别的颜色 */
   @media (forced-colors: active) {
     [data-xh-loading-ring]::before {
-      border-color: CanvasText;
-      border-block-start-color: Highlight;
+      forced-color-adjust: none;
+      border-color: Highlight;
+      border-block-start-color: Canvas;
     }
   }
 }
@@ -15774,6 +15781,12 @@
     vertical-align: middle;
   }
 
+  /* 竖排：转圈在上、配文在下居中，整块区域的等待用它 */
+  .xh-scope-spinner[data-part='root'][data-orientation='vertical'] {
+    flex-direction: column;
+    gap: var(--xh-spinner-gap, var(--xh-space-1_5));
+  }
+
   /* 露面前的等待：整块藏起、位置照留，露面那一刻布局不跳；visibility 同时把它从读屏里摘掉 */
   .xh-scope-spinner[data-part='root'][data-state='hidden'] {
     visibility: hidden;
@@ -15787,10 +15800,10 @@
     flex: none;
     inline-size: var(--xh-spinner-size, var(--xh-glyph-size-md));
     block-size: var(--xh-spinner-size, var(--xh-glyph-size-md));
-    border: var(--xh-spinner-thickness, var(--xh-stroke-thick)) solid var(--xh-spinner-track, var(--xh-border-default));
+    border: var(--xh-spinner-thickness, var(--xh-stroke-thick)) solid var(--xh-spinner-fg, var(--xh-fg-brand));
 
-    /* 一整圈是轨道色，只有起始边换成前景色，转起来才看得出方向 */
-    border-block-start-color: var(--xh-spinner-fg, currentColor);
+    /* 一段 270° 的品牌色弧：起始边那一段是缺口（不画轨道，缺省透明），缺口转起来就看得出方向 */
+    border-block-start-color: var(--xh-spinner-track, transparent);
     border-radius: var(--xh-spinner-radius, var(--xh-shape-circle));
     animation: xh-spin var(--xh-spinner-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite;
   }
@@ -15807,12 +15820,12 @@
     block-size: var(--xh-glyph-size-lg);
   }
 
-  /* 语气只换起始边那一段，轨道留在中性描边上：轨道与起始边的反差就是转向的读法，
-     两者同时换成同一族颜色，转到哪儿就看不出来了。
+  /* 语气只换弧那三段，缺口照旧：弧与缺口的反差就是转向的读法。
      选择器上带 [data-tone] 是必需的：语气槽会沿继承流下来，不限定在写了语气的
      那个节点上，放在语气容器里的转圈会跟着一起改色 */
   .xh-scope-spinner[data-part='root'][data-tone]::before {
-    border-block-start-color: var(--xh-spinner-fg, var(--xh-_tone));
+    border-color: var(--xh-spinner-fg, var(--xh-_tone));
+    border-block-start-color: var(--xh-spinner-track, transparent);
   }
 
   /*
@@ -15822,7 +15835,7 @@
    */
   .xh-scope-spinner[data-part='root'][data-variant='arc']::before {
     border: 0;
-    background: conic-gradient(transparent, var(--xh-spinner-fg, currentColor));
+    background: conic-gradient(transparent, var(--xh-spinner-fg, var(--xh-fg-brand)));
     -webkit-mask: radial-gradient(
       farthest-side,
       transparent calc(100% - var(--xh-spinner-thickness, var(--xh-stroke-thick))),
@@ -15841,7 +15854,7 @@
 
   /*
    * 三点：一行三枚圆点，依次亮起成一道波。它不转，因此圆角与描边都撤掉，
-   * 图形改由三层径向渐变画；点的颜色走 currentColor，语气档只换这一处。
+   * 图形改由三层径向渐变画；点取品牌色，语气档只换这一处。
    * 明暗不靠整组的不透明度（那样三点同步明灭，读起来像整体在闪），而是一层三倍宽的遮罩：
    * 两端压在禁用档的不透明度，正中一道满不透明度的亮带，遮罩位置从行首外扫到行尾外，
    * 亮带依次掠过三枚点。
@@ -15852,9 +15865,9 @@
     border: 0;
     border-radius: 0;
     background:
-      radial-gradient(circle closest-side, var(--xh-spinner-fg, currentColor) 100%, transparent) 0 50% / 25% 25% no-repeat,
-      radial-gradient(circle closest-side, var(--xh-spinner-fg, currentColor) 100%, transparent) 50% 50% / 25% 25% no-repeat,
-      radial-gradient(circle closest-side, var(--xh-spinner-fg, currentColor) 100%, transparent) 100% 50% / 25% 25% no-repeat;
+      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-fg-brand)) 100%, transparent) 0 50% / 25% 25% no-repeat,
+      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-fg-brand)) 100%, transparent) 50% 50% / 25% 25% no-repeat,
+      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-fg-brand)) 100%, transparent) 100% 50% / 25% 25% no-repeat;
     -webkit-mask: linear-gradient(90deg, var(--xh-_spinner-dot-dim) 40%, currentColor 50%, var(--xh-_spinner-dot-dim) 60%) 100% 0 / 300% 100% no-repeat;
     mask: linear-gradient(90deg, var(--xh-_spinner-dot-dim) 40%, currentColor 50%, var(--xh-_spinner-dot-dim) 60%) 100% 0 / 300% 100% no-repeat;
     animation: xh-spinner-dots var(--xh-spinner-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite;
@@ -15893,9 +15906,11 @@
     }
   }
 
+  /* 配文与转圈同一族颜色：品牌色、正文字号、中等字重 */
   .xh-scope-spinner[data-part='label'] {
-    color: var(--xh-spinner-label-fg, var(--xh-fg-muted));
-    font-size: var(--xh-spinner-label-size, var(--xh-text-secondary-size));
+    color: var(--xh-spinner-label-fg, var(--xh-fg-brand));
+    font-size: var(--xh-spinner-label-size, var(--xh-text-body-size));
+    font-weight: var(--xh-spinner-label-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
   }
 
@@ -15905,7 +15920,7 @@
   @media (prefers-reduced-motion: reduce) {
     .xh-scope-spinner[data-part='root']::before {
       border-style: dotted;
-      border-color: var(--xh-spinner-fg, currentColor);
+      border-color: var(--xh-spinner-fg, var(--xh-fg-brand));
       animation: none;
     }
 
@@ -15917,7 +15932,7 @@
 
   :where([data-motion='reduce']) .xh-scope-spinner[data-part='root']::before {
     border-style: dotted;
-    border-color: var(--xh-spinner-fg, currentColor);
+    border-color: var(--xh-spinner-fg, var(--xh-fg-brand));
     animation: none;
   }
 
@@ -15938,7 +15953,7 @@
        并成一条之后这层配对关系在文本上就断了。 */
     .xh-scope-spinner[data-part='root']::before {
       border-style: dotted;
-      border-color: var(--xh-spinner-fg, currentColor);
+      border-color: var(--xh-spinner-fg, var(--xh-fg-brand));
       animation: none;
     }
 
@@ -15949,13 +15964,20 @@
 
   /*
    * 高对比档：这一档把整层背景图丢掉，而渐隐弧与三点都画在背景上——屏幕上会一片空白。
-   * 两档一并退回描边画法：一圈系统轨道色加一段高亮的起始边，转的还是同一条动画。
+   * 三档一并退回环档的画法：高亮色的弧加一段画布色的缺口，转的还是同一条动画。
+   * 伪元素退出强制换色、直接写系统色，缺口不被换成别的颜色
    */
   @media (forced-colors: active) {
+    .xh-scope-spinner[data-part='root']::before {
+      forced-color-adjust: none;
+      border-color: Highlight;
+      border-block-start-color: Canvas;
+    }
+
     .xh-scope-spinner[data-part='root'][data-variant='arc']::before,
     .xh-scope-spinner[data-part='root'][data-variant='dots']::before {
-      border: var(--xh-spinner-thickness, var(--xh-stroke-thick)) solid CanvasText;
-      border-block-start-color: Highlight;
+      border: var(--xh-spinner-thickness, var(--xh-stroke-thick)) solid Highlight;
+      border-block-start-color: Canvas;
       border-radius: var(--xh-spinner-radius, var(--xh-shape-circle));
       background-image: none;
     }

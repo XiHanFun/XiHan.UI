@@ -3355,6 +3355,7 @@ export type ComponentTokenName
     | '--xh-spinner-gap'
     | '--xh-spinner-label-fg'
     | '--xh-spinner-label-size'
+    | '--xh-spinner-label-weight'
     | '--xh-spinner-radius'
     | '--xh-spinner-size'
     | '--xh-spinner-thickness'

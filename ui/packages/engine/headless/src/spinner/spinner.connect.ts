@@ -39,6 +39,7 @@ export function connectSpinner<T extends PropTypes>(
     size: prop('size'),
     variant: prop('variant'),
     tone: prop('tone'),
+    orientation: prop('orientation'),
     translations: prop('translations'),
   }
   const label = resolveLabel(props)
@@ -61,6 +62,8 @@ export function connectSpinner<T extends PropTypes>(
       'data-size': props.size,
       'data-variant': variant,
       'data-tone': props.tone,
+      // 转圈与配文的排布显式写出，默认并排
+      'data-orientation': props.orientation ?? 'horizontal',
       // 露面前的等待是派生的显隐：皮肤藏起整块但保留位置，布局在露面那一刻不跳
       'data-state': visible ? 'visible' : 'hidden',
     }),

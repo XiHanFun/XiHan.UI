@@ -60518,7 +60518,7 @@
           "name": "XhSpinnerElement",
           "cssParts": [
             {
-              "description": "role=status 的活区容器，承载 aria-live / aria-label / data-size / data-variant / data-tone / data-state",
+              "description": "role=status 的活区容器，承载 aria-live / aria-label / data-size / data-variant / data-tone / data-orientation / data-state",
               "name": "root"
             },
             {
@@ -60574,6 +60574,15 @@
             },
             {
               "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "attribute": "orientation"
+            },
+            {
+              "kind": "field",
               "name": "delay",
               "privacy": "public",
               "type": {
@@ -60594,7 +60603,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<SpinnerSchema>(this, spinnerMachine, () => this.configured('spinner', { label: this.label, size: this.size, variant: this.variant, tone: this.tone, delay: this.delay, translations: this.translations, }))"
+              "default": "new MachineController<SpinnerSchema>(this, spinnerMachine, () => this.configured('spinner', { label: this.label, size: this.size, variant: this.variant, tone: this.tone, orientation: this.orientation, delay: this.delay, translations: this.translations, }))"
             },
             {
               "kind": "method",
@@ -60628,7 +60637,7 @@
               "type": {
                 "text": "SpinnerVariant | undefined"
               },
-              "description": "形态，默认 ring",
+              "description": "形态，默认 arc",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -60639,6 +60648,14 @@
               "description": "语气",
               "name": "tone",
               "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "description": "转圈与配文的排布，默认 horizontal；vertical 转圈在上、配文在下",
+              "name": "orientation",
+              "fieldName": "orientation"
             },
             {
               "type": {
@@ -60670,6 +60687,9 @@
             },
             {
               "name": "--xh-spinner-label-size"
+            },
+            {
+              "name": "--xh-spinner-label-weight"
             },
             {
               "name": "--xh-spinner-radius"

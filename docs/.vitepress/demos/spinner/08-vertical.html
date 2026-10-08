@@ -1,0 +1,14 @@
+<!-- 竖排配文 | orientation="vertical" 时转圈在上、配文在下居中，适合整块区域的等待 -->
+<xh-spinner id="spinner-vertical" orientation="vertical" label="正在加载数据">
+  <span data-xh-part="root">
+    <span data-xh-part="label"></span>
+  </span>
+</xh-spinner>
+
+<script type="module">
+  // 可见文字取元素解析后写在活区上的那个名字，两处于是恒等
+  const host = document.getElementById("spinner-vertical");
+  await host.updateComplete;
+  host.querySelector('[data-xh-part="label"]').textContent =
+    host.querySelector('[data-xh-part="root"]').getAttribute("aria-label");
+</script>

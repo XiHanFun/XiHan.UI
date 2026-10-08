@@ -13306,7 +13306,7 @@
         "copy-trigger"
       ],
       "property": [
-        "border-block-start-color",
+        "border",
         "border-color",
         "color"
       ],
@@ -13326,7 +13326,8 @@
         "pressed",
         "where([data-motion='reduce'])",
         "xh-action-variant=solid",
-        "xh-loading-ring"
+        "xh-loading-ring",
+        "xh-loading-ring=overlay"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-focus-visible",
@@ -13336,7 +13337,7 @@
         "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
-      "description": "clipboard 的 copy-trigger 部件 border-block-start-color、border-color、color 覆盖槽。"
+      "description": "clipboard 的 copy-trigger 部件 border、border-color、color 覆盖槽。"
     },
     {
       "name": "--xh-clipboard-copy-trigger-fg-copied",
@@ -28652,7 +28653,7 @@
         "root"
       ],
       "property": [
-        "border-block-start-color",
+        "border",
         "border-color",
         "color"
       ],
@@ -28670,7 +28671,8 @@
         "not([data-loading])",
         "pressed",
         "where([data-motion='reduce'])",
-        "xh-loading-ring"
+        "xh-loading-ring",
+        "xh-loading-ring=overlay"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-focus-visible",
@@ -28680,7 +28682,7 @@
         "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
-      "description": "download-trigger 的 root 部件 border-block-start-color、border-color、color 覆盖槽。"
+      "description": "download-trigger 的 root 部件 border、border-color、color 覆盖槽。"
     },
     {
       "name": "--xh-download-trigger-font-size",
@@ -28797,7 +28799,7 @@
         "root"
       ],
       "property": [
-        "border-block-start-color",
+        "border",
         "border-color"
       ],
       "state": [
@@ -28805,13 +28807,14 @@
         "@media print",
         "motion=reduce",
         "where([data-motion='reduce'])",
-        "xh-loading-ring"
+        "xh-loading-ring",
+        "xh-loading-ring=overlay"
       ],
       "defaultToken": [
         "--xh-download-trigger-fg"
       ],
       "visibility": "public",
-      "description": "download-trigger 的 root 部件 border-block-start-color、border-color 覆盖槽。"
+      "description": "download-trigger 的 root 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-download-trigger-px",
@@ -35502,7 +35505,7 @@
         "submit-trigger"
       ],
       "property": [
-        "border-block-start-color",
+        "border",
         "border-color",
         "color"
       ],
@@ -35519,7 +35522,8 @@
         "not([data-loading])",
         "pressed",
         "where([data-motion='reduce'])",
-        "xh-loading-ring"
+        "xh-loading-ring",
+        "xh-loading-ring=overlay"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-hover",
@@ -35528,7 +35532,7 @@
         "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
-      "description": "form 的 submit-trigger 部件 border-block-start-color、border-color、color 覆盖槽。"
+      "description": "form 的 submit-trigger 部件 border、border-color、color 覆盖槽。"
     },
     {
       "name": "--xh-form-submit-shadow",
@@ -50281,7 +50285,7 @@
       ],
       "property": [
         "background-color",
-        "border-block-start-color",
+        "border",
         "border-color",
         "color"
       ],
@@ -50292,13 +50296,14 @@
         "motion=reduce",
         "preset=toast",
         "where([data-motion='reduce'])",
-        "xh-loading-ring"
+        "xh-loading-ring",
+        "xh-loading-ring=overlay"
       ],
       "defaultToken": [
         "--xh-_tone-fg"
       ],
       "visibility": "public",
-      "description": "notification 的 item、item-indicator 部件 background-color、border-block-start-color、border-color、color 覆盖槽。"
+      "description": "notification 的 item、item-indicator 部件 background-color、border、border-color、color 覆盖槽。"
     },
     {
       "name": "--xh-notification-indicator-p",
@@ -55008,7 +55013,7 @@
         "confirm-trigger"
       ],
       "property": [
-        "border-block-start-color",
+        "border",
         "border-color",
         "color"
       ],
@@ -55026,7 +55031,8 @@
         "not([data-loading])",
         "pressed",
         "where([data-motion='reduce'])",
-        "xh-loading-ring"
+        "xh-loading-ring",
+        "xh-loading-ring=overlay"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-focus-visible",
@@ -55036,7 +55042,7 @@
         "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
-      "description": "popconfirm 的 confirm-trigger 部件 border-block-start-color、border-color、color 覆盖槽。"
+      "description": "popconfirm 的 confirm-trigger 部件 border、border-color、color 覆盖槽。"
     },
     {
       "name": "--xh-popconfirm-confirm-shadow",
@@ -66578,7 +66584,7 @@
       ],
       "property": [
         "background",
-        "border-block-start-color",
+        "border",
         "border-color"
       ],
       "state": [
@@ -66593,10 +66599,10 @@
       ],
       "defaultToken": [
         "--xh-_tone",
-        "currentColor"
+        "--xh-fg-brand"
       ],
       "visibility": "public",
-      "description": "spinner 的 root 部件 background、border-block-start-color、border-color 覆盖槽。"
+      "description": "spinner 的 root 部件 background、border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-spinner-gap",
@@ -66608,10 +66614,12 @@
         "gap"
       ],
       "state": [
-        "default"
+        "default",
+        "orientation=vertical"
       ],
       "defaultToken": [
-        "--xh-control-gap-md"
+        "--xh-control-gap-md",
+        "--xh-space-1_5"
       ],
       "visibility": "public",
       "description": "spinner 的 root 部件 gap 覆盖槽。"
@@ -66629,7 +66637,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-brand"
       ],
       "visibility": "public",
       "description": "spinner 的 label 部件 color 覆盖槽。"
@@ -66647,10 +66655,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "spinner 的 label 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-spinner-label-weight",
+      "component": "spinner",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
+      ],
+      "visibility": "public",
+      "description": "spinner 的 label 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-spinner-radius",
@@ -66722,16 +66748,17 @@
         "root"
       ],
       "property": [
-        "border"
+        "border-block-start-color"
       ],
       "state": [
-        "default"
+        "default",
+        "tone"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "transparent"
       ],
       "visibility": "public",
-      "description": "spinner 的 root 部件 border 覆盖槽。"
+      "description": "spinner 的 root 部件 border-block-start-color 覆盖槽。"
     },
     {
       "name": "--xh-splitter-disabled-opacity",
@@ -68694,7 +68721,7 @@
         "thumb"
       ],
       "property": [
-        "border-block-start-color",
+        "border",
         "border-color"
       ],
       "state": [
@@ -68702,13 +68729,14 @@
         "@media print",
         "motion=reduce",
         "where([data-motion='reduce'])",
-        "xh-loading-ring"
+        "xh-loading-ring",
+        "xh-loading-ring=overlay"
       ],
       "defaultToken": [
         "--xh-_switch-accent"
       ],
       "visibility": "public",
-      "description": "switch 的 thumb 部件 border-block-start-color、border-color 覆盖槽。"
+      "description": "switch 的 thumb 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-switch-radius",

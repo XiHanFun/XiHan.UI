@@ -4,16 +4,16 @@
  */
 
 /*
- * 加载环家族配方：「这里正在等」的那枚圆环，与 Spinner 环档同一副画法——一整圈轨道色，
- * 只有起始边换成前景色，绕中心匀速转，转起来才看得出方向。
+ * 加载环家族配方：「这里正在等」的那枚圆环，与 Spinner 环档同一副画法——一段 270° 的弧，
+ * 不画轨道，起始边留空，绕中心匀速转，缺口转起来就看得出方向。
  *
  * 连接层在承载者上投影 data-xh-loading-ring，并用共享的 data-loading 说此刻在不在等。
  * 环画在承载者的 ::before 上：伪元素有没有、多大、摆在哪由皮肤决定（皮肤写 content 与尺寸），
  * 配方只负责把它画成环、随 data-loading 淡入淡出并转停。收起时环停在当前角度淡出，
  * 与皮肤里接替它的那枚字形交叉淡变；不在等时不转。
  *
- * 轨道取 --xh-border-default、环粗取 --xh-stroke-thick；起始边颜色走私有槽 --xh-_loading-ring-fg，
- * 皮肤按自己的语气与公开槽给，没给时取 currentColor。转一圈的时长走私有槽 --xh-_loading-ring-duration，
+ * 环粗取 --xh-stroke-thick；弧色走私有槽 --xh-_loading-ring-fg，皮肤按自己的语气与公开槽给，
+ * 没给时取品牌色（与 Spinner 同一枚）；压在动作钮上的那一档没给时随钮的字色。转一圈的时长走私有槽 --xh-_loading-ring-duration，
  * 皮肤把自己的公开时长槽接进来，没给时取 --xh-motion-loop-spin。
  *
  * 进行中的动作钮投影 data-xh-loading-ring="overlay"：环居中压在钮上、不占排布，钮宽不变，直径取钮的图标档。
@@ -25,10 +25,12 @@
  */
 @layer xihan.components {
   [data-xh-loading-ring]::before {
+    --xh-_loading-ring-color: var(--xh-_loading-ring-fg, var(--xh-fg-brand));
+
     /* 环粗算进直径，换厚度不会把环撑大 */
     box-sizing: border-box;
-    border: var(--xh-stroke-thick) solid var(--xh-border-default);
-    border-block-start-color: var(--xh-_loading-ring-fg, currentColor);
+    border: var(--xh-stroke-thick) solid var(--xh-_loading-ring-color);
+    border-block-start-color: transparent;
     border-radius: var(--xh-shape-circle);
     /* 承载者的这枚伪元素在别的状态下可能画着字形：环不带底、不带遮罩 */
     background: none;
@@ -45,8 +47,11 @@
     animation-play-state: running;
   }
 
-  /* 压在动作钮上的环：钮是定位盒（Action Control 给 position: relative），环在钮正中、不进排布 */
+  /* 压在动作钮上的环：钮是定位盒（Action Control 给 position: relative），环在钮正中、不进排布；
+     弧色没给时随钮的字色（实心钮上是钮面的前景色，不是品牌色） */
   [data-xh-loading-ring='overlay']::before {
+    --xh-_loading-ring-color: var(--xh-_loading-ring-fg, currentColor);
+
     content: '';
     position: absolute;
     inset: 0;
@@ -66,30 +71,32 @@
   @media (prefers-reduced-motion: reduce) {
     [data-xh-loading-ring]::before {
       border-style: dotted;
-      border-color: var(--xh-_loading-ring-fg, currentColor);
+      border-color: var(--xh-_loading-ring-color);
       animation: none;
     }
   }
 
   :where([data-motion='reduce']) [data-xh-loading-ring]::before {
     border-style: dotted;
-    border-color: var(--xh-_loading-ring-fg, currentColor);
+    border-color: var(--xh-_loading-ring-color);
     animation: none;
   }
 
   @media print {
     [data-xh-loading-ring]::before {
       border-style: dotted;
-      border-color: var(--xh-_loading-ring-fg, currentColor);
+      border-color: var(--xh-_loading-ring-color);
       animation: none;
     }
   }
 
-  /* 强制色：轨道取系统文字色，起始边取高亮色，转向照样读得出 */
+  /* 强制色：弧取高亮色，缺口取画布色（不画轨道，缺口就是转向的读法）；
+     退出强制换色，系统色直接写，缺口不被换成别的颜色 */
   @media (forced-colors: active) {
     [data-xh-loading-ring]::before {
-      border-color: CanvasText;
-      border-block-start-color: Highlight;
+      forced-color-adjust: none;
+      border-color: Highlight;
+      border-block-start-color: Canvas;
     }
   }
 }

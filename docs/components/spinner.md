@@ -60,6 +60,12 @@ delay 让转圈挂载后等一段时间才出现：快请求在这之前就回�
 
 <XhDemo src="spinner/07-delay" />
 
+### 竖排配文
+
+orientation="vertical" 时转圈在上、配文在下居中，适合整块区域的等待
+
+<XhDemo src="spinner/08-vertical" />
+
 ## 设计指引
 
 ### 何时使用
@@ -77,7 +83,8 @@ delay 让转圈挂载后等一段时间才出现：快请求在这之前就回�
 
 - 可以配可见文案，也可以只通过 `translations` 提供给读屏。
 - 可以与宿主遮罩组合，盖住等待中的内容。
-- 默认使用渐隐弧；也可显式选择整圈轨道或三点。
+- 默认使用渐隐弧；也可显式选择整圈轨道或三点。转圈取品牌色，环档是一段 270° 的弧、不画轨道。
+- 配文取品牌色正文字号、中等字重；`orientation="vertical"` 时转圈在上、配文在下居中，适合整块区域的等待。
 - `delay` 让转圈挂载后等一段时间才露面：请求在这之前回来、转圈被卸掉时它从头到尾不出现，快请求不再闪一下。等待期间整块藏起但保留位置，读屏也读不到。
 
 ### 组合
@@ -111,6 +118,7 @@ delay 让转圈挂载后等一段时间才出现：快请求在这之前就回�
 | --- | --- | --- | --- |
 | `delay` | `number` |  | 挂载后等多少毫秒才露面，默认 0 即刻露面。等待期间 root 投影 data-state="hidden"， 皮肤按它把整块藏起、仍占着位置，读屏也读不到；加载在这之前结束、转圈被卸掉时它从头到尾不出现。 露面之后不再回到等待。 |
 | `label` | `string` |  | 该处的可及名，写在 root 上。 label 部件显示的应当是同一段文案：aria-label 会覆盖节点中的文字，两者不一致时 读屏朗读的与屏幕上看到的不匹配。 |
+| `orientation` | `Orientation` |  | 转圈与配文的排布，默认 horizontal：horizontal 并排、适合随文与行内； vertical 转圈在上、配文在下居中，适合整块区域的等待。 |
 | `size` | `Size` |  | 直径档位，默认 md；默认档不输出 data-size。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色 |
 | `translations` | `Partial<SpinnerTranslations>` |  |  |
@@ -171,6 +179,7 @@ delay 让转圈挂载后等一段时间才出现：快请求在这之前就回�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-orientation` | props.orientation |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'visible' \| 'hidden' |
 | `root` | `data-tone` | props.tone |
@@ -184,14 +193,15 @@ delay 让转圈挂载后等一段时间才出现：快请求在这之前就回�
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-spinner-duration` | `root` | `animation` | `default`<br>`variant=dots` | `--xh-motion-loop-spin` | spinner 的 root 部件 animation 覆盖槽。 |
-| `--xh-spinner-fg` | `root` | `background`<br>`border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`tone`<br>`variant=arc`<br>`variant=dots`<br>`where([data-motion='reduce'])` | `--xh-_tone`<br>`currentColor` | spinner 的 root 部件 background、border-block-start-color、border-color 覆盖槽。 |
-| `--xh-spinner-gap` | `root` | `gap` | `default` | `--xh-control-gap-md` | spinner 的 root 部件 gap 覆盖槽。 |
-| `--xh-spinner-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | spinner 的 label 部件 color 覆盖槽。 |
-| `--xh-spinner-label-size` | `label` | `font-size` | `default` | `--xh-text-secondary-size` | spinner 的 label 部件 font-size 覆盖槽。 |
+| `--xh-spinner-fg` | `root` | `background`<br>`border`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`tone`<br>`variant=arc`<br>`variant=dots`<br>`where([data-motion='reduce'])` | `--xh-_tone`<br>`--xh-fg-brand` | spinner 的 root 部件 background、border、border-color 覆盖槽。 |
+| `--xh-spinner-gap` | `root` | `gap` | `default`<br>`orientation=vertical` | `--xh-control-gap-md`<br>`--xh-space-1_5` | spinner 的 root 部件 gap 覆盖槽。 |
+| `--xh-spinner-label-fg` | `label` | `color` | `default` | `--xh-fg-brand` | spinner 的 label 部件 color 覆盖槽。 |
+| `--xh-spinner-label-size` | `label` | `font-size` | `default` | `--xh-text-body-size` | spinner 的 label 部件 font-size 覆盖槽。 |
+| `--xh-spinner-label-weight` | `label` | `font-weight` | `default` | `--xh-font-weight-medium` | spinner 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-spinner-radius` | `root` | `border-radius` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-shape-circle` | spinner 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-spinner-size` | `root` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-md` | spinner 的 root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-spinner-thickness` | `root` | `-webkit-mask`<br>`border`<br>`mask` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-stroke-thick` | spinner 的 root 部件 -webkit-mask、border、mask 覆盖槽。 |
-| `--xh-spinner-track` | `root` | `border` | `default` | `--xh-border-default` | spinner 的 root 部件 border 覆盖槽。 |
+| `--xh-spinner-track` | `root` | `border-block-start-color` | `default`<br>`tone` | `transparent` | spinner 的 root 部件 border-block-start-color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
