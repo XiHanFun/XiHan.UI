@@ -36164,10 +36164,25 @@
               "name": "--xh-input-group-bg"
             },
             {
+              "name": "--xh-input-group-bg-disabled"
+            },
+            {
+              "name": "--xh-input-group-bg-focus"
+            },
+            {
               "name": "--xh-input-group-bg-hover"
             },
             {
+              "name": "--xh-input-group-bg-invalid"
+            },
+            {
+              "name": "--xh-input-group-bg-read-only"
+            },
+            {
               "name": "--xh-input-group-border"
+            },
+            {
+              "name": "--xh-input-group-border-disabled"
             },
             {
               "name": "--xh-input-group-border-focus"
@@ -36192,12 +36207,6 @@
             },
             {
               "name": "--xh-input-group-radius"
-            },
-            {
-              "name": "--xh-input-group-ring-focus"
-            },
-            {
-              "name": "--xh-input-group-ring-invalid"
             },
             {
               "name": "--xh-input-group-shadow"

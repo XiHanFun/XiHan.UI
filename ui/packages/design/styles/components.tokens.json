@@ -40911,6 +40911,44 @@
       "description": "input-group 的 root 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-input-group-bg-disabled",
+      "component": "input-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "has([data-xh-field-chrome][data-disabled])",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "input-group 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-input-group-bg-focus",
+      "component": "input-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "focus-within"
+      ],
+      "defaultToken": [
+        "--xh-_input-group-bg-focus"
+      ],
+      "visibility": "public",
+      "description": "input-group 的 root 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-input-group-bg-hover",
       "component": "input-group",
       "part": [
@@ -40922,10 +40960,52 @@
       "state": [
         "disabled",
         "hover",
-        "not(:has([data-disabled])"
+        "invalid",
+        "not(:focus-within)",
+        "not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])",
+        "readonly"
       ],
       "defaultToken": [
         "--xh-_input-group-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "input-group 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-input-group-bg-invalid",
+      "component": "input-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "has([data-invalid], [aria-invalid='true'])",
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "input-group 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-input-group-bg-read-only",
+      "component": "input-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "has(:where([data-xh-field-chrome][data-readonly])",
+        "readonly",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "input-group 的 root 部件 background 覆盖槽。"
@@ -40947,6 +41027,26 @@
       ],
       "visibility": "public",
       "description": "input-group 的 root 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-input-group-border-disabled",
+      "component": "input-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "has([data-xh-field-chrome][data-disabled])",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "input-group 的 root 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-input-group-border-focus",
@@ -40978,7 +41078,10 @@
       "state": [
         "disabled",
         "hover",
-        "not(:has([data-disabled])"
+        "invalid",
+        "not(:focus-within)",
+        "not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])",
+        "readonly"
       ],
       "defaultToken": [
         "--xh-_input-group-border-hover"
@@ -41103,44 +41206,6 @@
       ],
       "visibility": "public",
       "description": "input-group 的 control、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-input-group-ring-focus",
-      "component": "input-group",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "outline"
-      ],
-      "state": [
-        "focus-within"
-      ],
-      "defaultToken": [
-        "--xh-ring-focus"
-      ],
-      "visibility": "public",
-      "description": "input-group 的 root 部件 outline 覆盖槽。"
-    },
-    {
-      "name": "--xh-input-group-ring-invalid",
-      "component": "input-group",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "outline-color"
-      ],
-      "state": [
-        "focus-within",
-        "has([data-invalid], [aria-invalid='true'])",
-        "invalid"
-      ],
-      "defaultToken": [
-        "--xh-ring-invalid"
-      ],
-      "visibility": "public",
-      "description": "input-group 的 root 部件 outline-color 覆盖槽。"
     },
     {
       "name": "--xh-input-group-shadow",
