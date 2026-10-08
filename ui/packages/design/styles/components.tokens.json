@@ -31622,7 +31622,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "field 的 description 部件 color 覆盖槽。"
@@ -31640,7 +31640,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-disabled"
       ],
       "visibility": "public",
       "description": "field 的 description 部件 color 覆盖槽。"
@@ -31658,7 +31658,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "field 的 description 部件 font-size 覆盖槽。"
@@ -31697,7 +31697,7 @@
         "not(:has(> [data-scope='field'][data-part='description']:not([hidden])"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "field 的 error-text、root 部件 block-size、font-size 覆盖槽。"
@@ -31717,7 +31717,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "field 的 label、root 部件 gap、margin-block-end 覆盖槽。"
@@ -32512,7 +32512,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "fieldset 的 description 部件 color 覆盖槽。"
@@ -32530,7 +32530,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-disabled"
       ],
       "visibility": "public",
       "description": "fieldset 的 description 部件 color 覆盖槽。"
@@ -32548,7 +32548,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "fieldset 的 description 部件 font-size 覆盖槽。"
@@ -32584,7 +32584,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "fieldset 的 error-text 部件 font-size 覆盖槽。"
@@ -32638,7 +32638,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-4"
+        "--xh-space-5"
       ],
       "visibility": "public",
       "description": "fieldset 的 root 部件 gap 覆盖槽。"
@@ -35465,58 +35465,25 @@
       "description": "form 的 field-group 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-form-field-invalid-border",
-      "component": "form",
-      "part": [
-        "field-group"
-      ],
-      "property": [
-        "border-inline-start"
-      ],
-      "state": [
-        "invalid"
-      ],
-      "defaultToken": [
-        "--xh-border-invalid"
-      ],
-      "visibility": "public",
-      "description": "form 的 field-group 部件 border-inline-start 覆盖槽。"
-    },
-    {
-      "name": "--xh-form-field-invalid-px",
-      "component": "form",
-      "part": [
-        "field-group"
-      ],
-      "property": [
-        "padding-inline-start"
-      ],
-      "state": [
-        "invalid"
-      ],
-      "defaultToken": [
-        "--xh-space-2"
-      ],
-      "visibility": "public",
-      "description": "form 的 field-group 部件 padding-inline-start 覆盖槽。"
-    },
-    {
       "name": "--xh-form-gap",
       "component": "form",
       "part": [
         "root"
       ],
       "property": [
-        "gap"
+        "column-gap",
+        "margin-block-end"
       ],
       "state": [
-        "default"
+        "layout=grid",
+        "where(:not(:last-child)",
+        "where([data-scope='form'][data-part='root'])"
       ],
       "defaultToken": [
-        "--xh-stack-gap-md"
+        "--xh-space-5"
       ],
       "visibility": "public",
-      "description": "form 的 root 部件 gap 覆盖槽。"
+      "description": "form 的 root 部件 column-gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-form-inline-gap",
@@ -35531,10 +35498,30 @@
         "layout=inline"
       ],
       "defaultToken": [
-        "--xh-space-4"
+        "--xh-space-6"
       ],
       "visibility": "public",
       "description": "form 的 root 部件 column-gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-form-inline-row-gap",
+      "component": "form",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "layout=inline",
+        "where(:not(:last-child)",
+        "where([data-scope='form'][data-part='root'])"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "form 的 root 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-form-label-w",

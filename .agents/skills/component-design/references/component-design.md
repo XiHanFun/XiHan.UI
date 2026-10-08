@@ -333,8 +333,9 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | --- | --- | --- |
 | 字段标签（单字段与复合单字段：Slider、Rating、Signature、Color*） | `--xh-text-label-size` 14 / `--xh-text-label-weight` 400 / `--xh-fg-muted` | 竖排与控件 `--xh-space-2`；Form 横排时标签列占一行的 5 / 24、与控件 `--xh-space-4` |
 | 集合标题（RadioGroup、CheckboxGroup、Listbox、Tree、TagGroup、Descriptions） | 14 / `--xh-text-label-weight` 400 / `--xh-fg-muted` | 与集合 `--xh-space-2` |
-| 说明 / helper | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal` | 与控件 `--xh-space-1` |
-| 错误文案 | 13 / `--xh-fg-danger` | 与控件 `--xh-space-1` |
+| 字段说明 / helper（Field、Fieldset） | `--xh-text-caption-size` 12 / `--xh-fg-subtle` / `--xh-leading-normal`；禁用 `--xh-fg-disabled` | 紧贴控件，辅助行最小高 `--xh-space-5` |
+| 其余说明（Card、Alert、Steps、Dialog 等面内的 description） | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal` | — |
+| 错误文案 | 12 / `--xh-fg-danger` | 与说明共用控件下方那一行辅助行 |
 | 浮层内与小面标题（Popover、HoverCard、Popconfirm、FloatingPanel、Approval、Timeline、EmptyState、Citation） | 14 / `--xh-font-weight-medium` | — |
 | 区块与面板标题（Card、Descriptions、Alert、Notification、Steps；Dialog、Drawer、Tour） | heading-3：16 / 500 | — |
 | 页面标题（PageHeader） | heading-2：20 / 500 | — |
@@ -343,6 +344,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 图表轴标签、数据标签、轴标题 | `--xh-text-caption-size` 12 / `--xh-fg-muted`；轴刻度用等宽数字（`tabular-nums`）；不使用系列色 | 刻度标签与刻度线 `--xh-space-1` |
 
 - 必填星号与错误文案是公共层规则：星号 `--xh-glyph-mark-required` 排在标签文字之前（`::before`），取 `--xh-text-caption-size` + `--xh-fg-danger`、与文字隔 `--xh-space-1`，自带标签的字段不得各画一套。
+- 表单项距 `--xh-space-5`，字段的辅助行算在项距里：带说明或给错误文案留了一行的字段，那一行（最小高 `--xh-space-5`）就是项距，不再另留；一行流档列距 `--xh-space-6`、行距 `--xh-space-2`；字段集组内项距 `--xh-space-5`。出错的字段不另画起始缘色带，错误由警示色标签与错误文案承担。
 - 字段标签禁用取 `--xh-fg-disabled`（静息已是 muted，subtle 与它分不出；禁用文字不计对比度）；其余标签禁用取 `--xh-fg-subtle`；单行标签 `--xh-leading-none`。
 - 层级通过字号、字重、行高和间距共同表达，不能只调颜色。
 - 不使用极小字号换取信息密度。
