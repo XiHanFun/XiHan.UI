@@ -8,7 +8,9 @@
 // --xh-control-font-sm / md / lg（控件字号随档，与 checkbox-group / radio-group 的条目文字同一把尺），
 // 颜色 --xh-fg-default；
 // 集合标题（RadioGroup / CheckboxGroup / Listbox / Tree / TagGroup / Descriptions）= --xh-fg-muted，与集合 --xh-space-2；
-// 说明 = --xh-text-secondary-size 13 / --xh-fg-muted / --xh-leading-normal；错误文案 = 13 / --xh-fg-danger；
+// 字段辅助行（Field / Fieldset 的说明与错误文案）= --xh-text-caption-size 12 / --xh-fg-subtle（错误 --xh-fg-danger）/
+// --xh-leading-normal，紧贴控件、最小高 --xh-space-5；其余组件的说明 = --xh-text-secondary-size 13 / --xh-fg-muted /
+// --xh-leading-normal；
 // Surface / 浮层内标题 = --xh-text-label-size + --xh-font-weight-medium；区块标题（Card / Descriptions / Alert / Notification / Steps）
 // 与面板标题（Dialog / Drawer / Tour）= heading-3（16 / 500）；页面标题（PageHeader）= heading-2（20 / 500）；
 // 其余标签禁用 --xh-fg-subtle；控件内图标 --xh-icon-size 兜底只能是 --xh-glyph-size-sm / md / lg（按 data-size），
@@ -50,6 +52,8 @@ const FIELD_LABEL = new Set([
   'color-swatch-picker',
   'file-upload',
 ])
+/** 字段辅助行：说明与错误文案排在控件下方的那一行，取说明字号。 */
+const FIELD_HELPER = new Set(['field', 'fieldset'])
 /** 控件随文标签：整行 <label> 包住控件与文字，文字是控件自己的文字，字号随 size 档。 */
 const CONTROL_LABEL = new Set(['checkbox', 'switch'])
 /** 控件文字允许的档。 */
@@ -304,18 +308,26 @@ for (const [scope, container] of Object.entries(COLLECTION_TITLE)) {
   expectSpacing(scope, 'label', label, '--xh-space-2', '集合标题与集合', container)
 }
 
-// 说明与错误文案：所有写了这两个部件的皮肤
+// 说明与错误文案：所有写了这两个部件的皮肤；字段辅助行取说明字号 + subtle，其余说明取次级字号 + muted
 for (const skin of skins) {
+  const helper = FIELD_HELPER.has(skin.comp)
   const description = declsFor(skin.comp, 'description')
   if (description.size) {
-    expect(skin.comp, 'description', description, 'font-size', '--xh-text-secondary-size', '说明文字')
-    expect(skin.comp, 'description', description, 'color', '--xh-fg-muted', '说明文字')
-    expect(skin.comp, 'description', description, 'line-height', '--xh-leading-normal', '说明文字')
+    const why = helper ? '字段辅助行的说明' : '说明文字'
+    expect(skin.comp, 'description', description, 'font-size', helper ? '--xh-text-caption-size' : '--xh-text-secondary-size', why)
+    expect(skin.comp, 'description', description, 'color', helper ? '--xh-fg-subtle' : '--xh-fg-muted', why)
+    expect(skin.comp, 'description', description, 'line-height', '--xh-leading-normal', why)
+    if (helper) {
+      expect(skin.comp, 'description', description, 'min-block-size', '--xh-space-5', why)
+      expect(skin.comp, 'description', declsFor(skin.comp, 'description', '[data-disabled]'), 'color', '--xh-fg-disabled', '静息已是 subtle，禁用的说明')
+    }
   }
   const error = declsFor(skin.comp, 'error-text')
   if (error.size) {
-    expect(skin.comp, 'error-text', error, 'font-size', '--xh-text-secondary-size', '错误文案')
+    expect(skin.comp, 'error-text', error, 'font-size', helper ? '--xh-text-caption-size' : '--xh-text-secondary-size', '错误文案')
     expect(skin.comp, 'error-text', error, 'color', '--xh-fg-danger', '错误文案')
+    if (helper)
+      expect(skin.comp, 'error-text', error, 'min-block-size', '--xh-space-5', '字段辅助行的错误文案')
   }
 }
 
@@ -393,7 +405,7 @@ if (problems.length) {
   console.error('[check-text-role] ✗ 文字与图标没按角色取令牌：')
   for (const p of problems)
     console.error(`  ${p}`)
-  console.error('\n字段标签 14/400/fg-muted 与控件 space-2、禁用 fg-disabled · 集合标题 fg-muted + space-2 · 说明 13/fg-muted · 浮层内标题 14/500 · 区块与面板标题 heading-3 · 页面标题 heading-2 · 图标随档 sm/md/lg。存量登 family-backlog.json text 段。')
+  console.error('\n字段标签 14/400/fg-muted 与控件 space-2、禁用 fg-disabled · 集合标题 fg-muted + space-2 · 字段辅助行 12/fg-subtle 最小高 space-5 · 其余说明 13/fg-muted · 浮层内标题 14/500 · 区块与面板标题 heading-3 · 页面标题 heading-2 · 图标随档 sm/md/lg。存量登 family-backlog.json text 段。')
   process.exit(1)
 }
 

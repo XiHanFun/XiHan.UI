@@ -213,12 +213,12 @@
 | `--xh-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_field-size-padding-inline` | field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-field-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | field 的 control 部件 box-shadow 覆盖槽。 |
-| `--xh-field-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | field 的 description 部件 color 覆盖槽。 |
-| `--xh-field-description-fg-disabled` | `description` | `color` | `disabled` | `--xh-fg-subtle` | field 的 description 部件 color 覆盖槽。 |
-| `--xh-field-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | field 的 description 部件 font-size 覆盖槽。 |
+| `--xh-field-description-fg` | `description` | `color` | `default` | `--xh-fg-subtle` | field 的 description 部件 color 覆盖槽。 |
+| `--xh-field-description-fg-disabled` | `description` | `color` | `disabled` | `--xh-fg-disabled` | field 的 description 部件 color 覆盖槽。 |
+| `--xh-field-description-font-size` | `description` | `font-size` | `default` | `--xh-text-caption-size` | field 的 description 部件 font-size 覆盖槽。 |
 | `--xh-field-error-fg` | `error-text` | `color` | `default` | `--xh-fg-danger` | field 的 error-text 部件 color 覆盖槽。 |
-| `--xh-field-error-font-size` | `error-text`<br>`root` | `block-size`<br>`font-size` | `default`<br>`not(:has(> [data-scope='field'][data-part='description']:not([hidden])` | `--xh-text-secondary-size` | field 的 error-text、root 部件 block-size、font-size 覆盖槽。 |
-| `--xh-field-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | field 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
+| `--xh-field-error-font-size` | `error-text`<br>`root` | `block-size`<br>`font-size` | `default`<br>`not(:has(> [data-scope='field'][data-part='description']:not([hidden])` | `--xh-text-caption-size` | field 的 error-text、root 部件 block-size、font-size 覆盖槽。 |
+| `--xh-field-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-0` | field 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-field-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | field 的 label 部件 color 覆盖槽。 |
 | `--xh-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | field 的 label 部件 color 覆盖槽。 |
 | `--xh-field-label-fg-invalid` | `label` | `color` | `invalid` | `--xh-fg-danger` | field 的 label 部件 color 覆盖槽。 |

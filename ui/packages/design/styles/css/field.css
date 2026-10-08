@@ -17,7 +17,8 @@
   [data-scope='field'][data-part='root'] {
     display: flex;
     flex-direction: column;
-    gap: var(--xh-field-gap, var(--xh-space-1));
+    /* 说明与错误文案紧贴控件：那一行辅助行自己有最小高（description.css），在表单里就是项距 */
+    gap: var(--xh-field-gap, var(--xh-space-0));
     /* 字段族控件放进字段即铺满字段宽：字段的宽由表单的列给，控件跟着列走，
        不必逐个组件在根上写 inline-size: 100%。单独摆放的控件仍是 16rem 缺省宽；
        单类钉宽（--xh-<组件>-control-w）照旧压过这一条 */
@@ -64,7 +65,7 @@
     /* 竖排时标签与控件之间的距离：容器的 gap 之上补一段差值，
        --xh-field-label-gap-block 给多少最终就是多少，与描述、错误文案那两段（归 --xh-field-gap）各管各的 */
     margin-block-end: calc(
-      var(--xh-field-label-gap-block, var(--xh-space-2)) - var(--xh-field-gap, var(--xh-space-1))
+      var(--xh-field-label-gap-block, var(--xh-space-2)) - var(--xh-field-gap, var(--xh-space-0))
     );
     color: var(--xh-field-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-field-label-font-size, var(--xh-text-label-size));
@@ -117,19 +118,19 @@
   /* 说明与错误文案的角色（外边距、行距、默认字号与字色）在 description.css 公共层；
      这里只把字色与字号接到本组件的覆盖槽上 */
   [data-scope='field'][data-part='description'] {
-    color: var(--xh-field-description-fg, var(--xh-fg-muted));
-    font-size: var(--xh-field-description-font-size, var(--xh-text-secondary-size));
+    color: var(--xh-field-description-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-field-description-font-size, var(--xh-text-caption-size));
     /* 与标签同一档过渡：整个字段转禁用时两处一起变淡 */
     transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='field'][data-part='description'][data-disabled] {
-    color: var(--xh-field-description-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-field-description-fg-disabled, var(--xh-fg-disabled));
   }
 
   [data-scope='field'][data-part='error-text'] {
     color: var(--xh-field-error-fg, var(--xh-fg-danger));
-    font-size: var(--xh-field-error-font-size, var(--xh-text-secondary-size));
+    font-size: var(--xh-field-error-font-size, var(--xh-text-caption-size));
   }
 
   /* 辅助文字那一行的占位：字段渲染了错误文案、当前又没在报错时，收起的错误文案自己留在流里占住一行
@@ -139,15 +140,16 @@
      没有在场的 description 才这样占：描述已经占着这一行了，报错时由描述让位给错误文案（见 description.css），
      收起的错误文案按公共层不占位。没渲染错误文案的字段本来就没有这一行。
 
-     高度按错误文案那一档的字号乘行距算，得到的正是它一行的高度。
+     高度取辅助行的最小高与错误文案一行（字号乘行距）里大的那个，得到的正是它报错时的高度。
      不写 1lh：那个单位晚于本库声明的浏览器地板，取不到时整条声明被丢弃、占位高退回 0，
      字段又会随报错撑高一次，而这种失效不报错。
      与前一块的距离由根的 gap 给，和错误文案顶上来时是同一段；横排表单里它与别的子块一样落在控件那一列。 */
   [data-scope='field'][data-part='root']:not(:has(> [data-scope='field'][data-part='description']:not([hidden])))
     > [data-scope='field'][data-part='error-text'][hidden] {
     position: static;
-    block-size: calc(
-      var(--xh-field-error-font-size, var(--xh-text-secondary-size)) * var(--xh-leading-normal)
+    block-size: max(
+      var(--xh-space-5),
+      calc(var(--xh-field-error-font-size, var(--xh-text-caption-size)) * var(--xh-leading-normal))
     );
     transition:
       opacity var(--xh-motion-duration-exit) var(--xh-motion-ease-exit),

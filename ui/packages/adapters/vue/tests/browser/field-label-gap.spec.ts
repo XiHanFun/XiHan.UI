@@ -83,7 +83,7 @@ describe('竖排字段的标签间距', () => {
   it('设了新槽只动标签那一段', () => {
     mount(field, '--xh-field-label-gap-block: 16px')
     expect(labelToControl()).toBe(16)
-    expect(controlToDescription()).toBe(4)
+    expect(controlToDescription()).toBe(0)
   })
 
   it('表单竖排与横排一行流两档都跟着走', () => {

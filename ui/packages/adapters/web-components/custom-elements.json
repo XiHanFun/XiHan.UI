@@ -29346,16 +29346,13 @@
               "name": "--xh-form-field-gap"
             },
             {
-              "name": "--xh-form-field-invalid-border"
-            },
-            {
-              "name": "--xh-form-field-invalid-px"
-            },
-            {
               "name": "--xh-form-gap"
             },
             {
               "name": "--xh-form-inline-gap"
+            },
+            {
+              "name": "--xh-form-inline-row-gap"
             },
             {
               "name": "--xh-form-label-w"

@@ -7,9 +7,10 @@
  * 字段族说明与错误文案的公共层，按 [data-part='description'] / [data-part='error-text']
  * 匹配下面逐个列出的 scope。
  *
- * 收在这里的是逐值相同的角色规则：说明 = --xh-text-secondary-size / --xh-fg-muted /
- * --xh-leading-normal；错误文案 = --xh-text-secondary-size / --xh-fg-danger / --xh-leading-normal；
- * 两者外边距归零，与控件的距离由字段根的 gap 给。挂了 --xh-<组件>-description-* /
+ * 收在这里的是逐值相同的角色规则：说明 = --xh-text-caption-size / --xh-fg-subtle /
+ * --xh-leading-normal；错误文案 = --xh-text-caption-size / --xh-fg-danger / --xh-leading-normal；
+ * 两者外边距归零、紧贴控件（字段根的 gap 缺省为 0），最小高 --xh-space-5：这一行辅助行在表单里
+ * 就是字段之间的项距，有它的字段不再另留项距。挂了 --xh-<组件>-description-* /
  * --xh-<组件>-error-* 覆盖槽的组件在各自皮肤里只另写带槽的 color / font-size 压过这里，
  * margin 与 line-height 不再重写。
  *
@@ -30,9 +31,10 @@
   [data-scope='field'][data-part='description'],
   [data-scope='fieldset'][data-part='description'] {
     margin: 0;
-    font-size: var(--xh-text-secondary-size);
+    min-block-size: var(--xh-space-5);
+    font-size: var(--xh-text-caption-size);
     line-height: var(--xh-leading-normal);
-    color: var(--xh-fg-muted);
+    color: var(--xh-fg-subtle);
   }
 
   /* 错误文案出现时淡入。不 invalid 时节点带 hidden，但不交给浏览器的 [hidden] 规则收成 display: none：
@@ -43,7 +45,8 @@
   [data-scope='field'][data-part='error-text'],
   [data-scope='fieldset'][data-part='error-text'] {
     margin: 0;
-    font-size: var(--xh-text-secondary-size);
+    min-block-size: var(--xh-space-5);
+    font-size: var(--xh-text-caption-size);
     line-height: var(--xh-leading-normal);
     color: var(--xh-fg-danger);
     transition: opacity var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
@@ -54,6 +57,7 @@
     display: block;
     position: absolute;
     block-size: 0;
+    min-block-size: 0;
     overflow: clip;
     visibility: hidden;
     opacity: 0;
