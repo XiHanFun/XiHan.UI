@@ -118,7 +118,6 @@ const EXPECTED = {
   'switch': { thumb: ['raised'] },
   // segment 档的白色抬起面：放了 indicator 部件长在部件上跟着滑，没放长在选中标签上，两处同一块 raised 面
   'tabs': { trigger: ['raised'], indicator: ['raised'] },
-  'tag': { root: ['soft'] },
   // 含时分秒多列的锚定面板：floating
   'time-picker': { content: ['floating'] },
   // 两组时列并排的锚定面板：floating

@@ -71709,7 +71709,10 @@
       ],
       "state": [
         "default",
+        "is(:not([data-variant])",
         "tone",
+        "variant",
+        "variant=outline",
         "variant=solid",
         "variant=subtle",
         "xh-ink-surface"
@@ -71718,7 +71721,7 @@
         "--xh-_tone",
         "--xh-_tone-subtle",
         "--xh-bg-brand",
-        "--xh-material-soft-bg"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "tag 的 root 部件 --xh-ink-surface、background 覆盖槽。"
@@ -71764,7 +71767,7 @@
       "defaultToken": [
         "--xh-_tone-border-control",
         "--xh-border-default",
-        "--xh-material-soft-border"
+        "transparent"
       ],
       "visibility": "public",
       "description": "tag 的 root 部件 border、border-color 覆盖槽。"
@@ -71894,7 +71897,9 @@
       ],
       "state": [
         "default",
+        "is(:not([data-variant])",
         "tone",
+        "variant",
         "variant=ghost",
         "variant=outline",
         "variant=solid",
@@ -71904,8 +71909,7 @@
         "--xh-_tone-fg",
         "--xh-_tone-on",
         "--xh-fg-default",
-        "--xh-fg-on-brand",
-        "--xh-material-soft-fg"
+        "--xh-fg-on-brand"
       ],
       "visibility": "public",
       "description": "tag 的 root 部件 color 覆盖槽。"
@@ -71963,6 +71967,24 @@
       ],
       "visibility": "public",
       "description": "tag 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-tag-h",
+      "component": "tag",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_tag-h"
+      ],
+      "visibility": "public",
+      "description": "tag 的 root 部件 min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-tag-icon-size",
@@ -72031,7 +72053,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "tag 的 root 部件 border-radius 覆盖槽。"
@@ -72050,8 +72072,7 @@
         "variant=solid"
       ],
       "defaultToken": [
-        "--xh-_tag-highlight",
-        "--xh-material-soft-shadow"
+        "none"
       ],
       "visibility": "public",
       "description": "tag 的 root 部件 box-shadow 覆盖槽。"

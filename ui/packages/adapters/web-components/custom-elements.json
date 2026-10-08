@@ -64849,6 +64849,9 @@
               "name": "--xh-tag-gap"
             },
             {
+              "name": "--xh-tag-h"
+            },
+            {
               "name": "--xh-tag-icon-size"
             },
             {

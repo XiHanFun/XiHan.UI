@@ -19,11 +19,13 @@
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-tag-icon-size, var(--xh-glyph-size-text));
 
-    /* 尺寸档只换这五个私有槽，下面的声明从它们取值；行框是标签里那一行的高，取指示符档 */
+    /* 尺寸档只换这几个私有槽，下面的声明从它们取值。块尺寸按状态 chip 的档取（sm / md / lg = 20 / 24 / 28），
+       竖向内衬为 0、字在盒里居中；行框是标签里那一行的高，取指示符档，关闭钮按它对齐 */
     --xh-_tag-gap: var(--xh-space-1);
     --xh-_tag-px: var(--xh-space-2);
-    --xh-_tag-py: var(--xh-space-1);
-    --xh-_tag-font-size: var(--xh-text-secondary-size);
+    --xh-_tag-py: 0;
+    --xh-_tag-h: var(--xh-chip-h-md);
+    --xh-_tag-font-size: var(--xh-text-caption-size);
     --xh-_tag-line-h: var(--xh-control-indicator-md);
 
     display: inline-flex;
@@ -33,12 +35,14 @@
     gap: var(--xh-tag-gap, var(--xh-_tag-gap));
     padding-inline: var(--xh-tag-px, var(--xh-_tag-px));
     padding-block: var(--xh-tag-py, var(--xh-_tag-py));
-    border: var(--xh-stroke-thin) solid var(--xh-tag-border, var(--xh-material-soft-border));
-    /* 状态 chip 的身份是胶囊（pill 只给状态 chip 与一维对象） */
-    border-radius: var(--xh-tag-radius, var(--xh-shape-pill));
-    background: var(--xh-tag-bg, var(--xh-material-soft-bg));
-    box-shadow: var(--xh-tag-shadow, var(--xh-material-soft-shadow));
-    color: var(--xh-tag-fg, var(--xh-material-soft-fg));
+    min-block-size: var(--xh-tag-h, var(--xh-_tag-h));
+    box-sizing: border-box;
+    /* 缺省是一块淡底的小方签：无边、无影，圆角与控件同档 */
+    border: var(--xh-stroke-thin) solid var(--xh-tag-border, transparent);
+    border-radius: var(--xh-tag-radius, var(--xh-shape-control));
+    background: var(--xh-tag-bg, var(--xh-bg-subtle));
+    box-shadow: var(--xh-tag-shadow, none);
+    color: var(--xh-tag-fg, var(--xh-fg-default));
     font-size: var(--xh-tag-font-size, var(--xh-_tag-font-size));
     font-weight: var(--xh-tag-font-weight, var(--xh-font-weight-medium));
     /* 行框不低于关闭钮，有没有关闭钮同档标签一样高；
@@ -138,15 +142,12 @@
      再是写了语气时的覆盖。语气槽会沿继承流下来，覆盖那条必须带 [data-tone] 限定，
      否则一枚没写语气的标签只要落在带 data-tone 的容器里（警告提示、吐司、按钮内）
      就会跟着染色。
-     实心档还在顶边画一条极浅的内高光，把整块底衬出厚度；语气那条同样从实心底上的前景色兑，
-     换语气时高光跟着换 */
+     实心档是平的一块底，不画高光与投影 */
   [data-scope='tag'][data-part='root'][data-variant='solid'] {
-    --xh-_tag-highlight: var(--xh-_highlight-brand);
-
     border-color: transparent;
     background: var(--xh-tag-bg, var(--xh-bg-brand));
     color: var(--xh-tag-fg, var(--xh-fg-on-brand));
-    box-shadow: var(--xh-tag-shadow, var(--xh-_tag-highlight));
+    box-shadow: var(--xh-tag-shadow, none);
   }
 
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
@@ -164,8 +165,6 @@
   }
 
   [data-scope='tag'][data-part='root'][data-variant='solid'][data-tone] {
-    --xh-_tag-highlight: var(--xh-_highlight-tone);
-
     background: var(--xh-tag-bg, var(--xh-_tone, var(--xh-bg-brand)));
     color: var(--xh-tag-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
   }
@@ -186,19 +185,21 @@
   }
 
   [data-scope='tag'][data-part='root'][data-variant='subtle'] {
-    border-color: var(--xh-tag-border, var(--xh-material-soft-border));
-    background: var(--xh-tag-bg, var(--xh-material-soft-bg));
-    color: var(--xh-tag-fg, var(--xh-material-soft-fg));
+    border-color: var(--xh-tag-border, transparent);
+    background: var(--xh-tag-bg, var(--xh-bg-subtle));
+    color: var(--xh-tag-fg, var(--xh-fg-default));
   }
 
-  [data-scope='tag'][data-part='root'][data-variant='subtle'][data-tone] {
+  /* 没写形态与 subtle 同一副：写了语气就换语气淡底与语气字 */
+  [data-scope='tag'][data-part='root']:is(:not([data-variant]), [data-variant='subtle'])[data-tone] {
     background: var(--xh-tag-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle)));
     color: var(--xh-tag-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
   }
 
+  /* 描边档在淡底上再加一道边：边是这一档唯一多出来的东西 */
   [data-scope='tag'][data-part='root'][data-variant='outline'] {
     border-color: var(--xh-tag-border, var(--xh-border-default));
-    background: transparent;
+    background: var(--xh-tag-bg, var(--xh-bg-subtle));
     box-shadow: none;
     color: var(--xh-tag-fg, var(--xh-fg-default));
   }
@@ -207,6 +208,7 @@
      兑了底色的 --xh-_tone-border 六族都在 1.44-2.18，当轮廓看不清 */
   [data-scope='tag'][data-part='root'][data-variant='outline'][data-tone] {
     border-color: var(--xh-tag-border, var(--xh-_tone-border-control, var(--xh-border-default)));
+    background: var(--xh-tag-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle)));
     color: var(--xh-tag-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
   }
 
@@ -226,14 +228,13 @@
   [data-scope='tag'][data-part='root'][data-size='sm'] {
     --xh-_tag-gap: var(--xh-space-0_5);
     --xh-_tag-px: var(--xh-space-1_5);
-    --xh-_tag-py: var(--xh-space-0_5);
-    --xh-_tag-font-size: var(--xh-text-caption-size);
+    --xh-_tag-h: var(--xh-chip-h-sm);
   }
 
-  /* 行框上到指示符的大档，竖向内衬沿用中档；关闭钮不换档 */
+  /* 大档换正文字号、行框上到指示符的大档；关闭钮不换档 */
   [data-scope='tag'][data-part='root'][data-size='lg'] {
     --xh-_tag-gap: var(--xh-space-1_5);
-    --xh-_tag-px: var(--xh-space-3);
+    --xh-_tag-h: var(--xh-chip-h-lg);
     --xh-_tag-font-size: var(--xh-text-body-size);
     --xh-_tag-line-h: var(--xh-control-indicator-lg);
   }
