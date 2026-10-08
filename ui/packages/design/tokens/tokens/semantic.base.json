@@ -410,8 +410,9 @@
       "$value": "{space.2}"
     },
     "option-gap": {
+      "$description": "列表行与行之间的缝：缺省不留，行面挨着行面，悬停与选中靠面本身区分。",
       "$type": "dimension",
-      "$value": "{space.0_5}"
+      "$value": "{space.0}"
     }
   },
   "table": {
@@ -1036,7 +1037,7 @@
     },
     "menu-max-h": {
       "$type": "dimension",
-      "$value": "20rem"
+      "$value": "13rem"
     },
     "max-w-sm": {
       "$type": "dimension",
