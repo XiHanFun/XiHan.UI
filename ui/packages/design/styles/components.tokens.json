@@ -2770,7 +2770,7 @@
       ],
       "defaultToken": [
         "--xh-_tone-subtle",
-        "--xh-bg-subtle-opaque"
+        "--xh-bg-subtle-active-opaque"
       ],
       "visibility": "public",
       "description": "avatar 的 root 部件 background 覆盖槽。"
@@ -2790,7 +2790,7 @@
       ],
       "defaultToken": [
         "--xh-_tone-fg",
-        "--xh-fg-muted"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "avatar 的 root 部件 color 覆盖槽。"
@@ -2805,14 +2805,10 @@
         "font-size"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-control-caption-lg",
-        "--xh-control-caption-sm",
-        "--xh-text-secondary-size"
+        "--xh-_avatar-font-size"
       ],
       "visibility": "public",
       "description": "avatar 的 root 部件 font-size 覆盖槽。"
@@ -2861,6 +2857,7 @@
       ],
       "property": [
         "block-size",
+        "font-size",
         "inline-size"
       ],
       "state": [
@@ -2874,7 +2871,7 @@
         "--xh-control-h-sm"
       ],
       "visibility": "public",
-      "description": "avatar 的 root 部件 block-size、inline-size 覆盖槽。"
+      "description": "avatar 的 root 部件 block-size、font-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-avatar-group-font-size",
@@ -2888,14 +2885,10 @@
         "font-size"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-control-caption-lg",
-        "--xh-control-caption-md",
-        "--xh-control-caption-sm"
+        "--xh-_avatar-group-half-size"
       ],
       "visibility": "public",
       "description": "avatar-group 的 overflow-item、root 部件 --xh-avatar-font-size、font-size 覆盖槽。"
@@ -2931,7 +2924,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-muted-opaque"
+        "--xh-bg-subtle-active-opaque"
       ],
       "visibility": "public",
       "description": "avatar-group 的 overflow-item 部件 background 覆盖槽。"
@@ -2949,7 +2942,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "avatar-group 的 overflow-item 部件 color 覆盖槽。"
@@ -2964,14 +2957,10 @@
         "margin-inline-start"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-space-2",
-        "--xh-space-2_5",
-        "--xh-space-3"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "avatar-group 的 root 部件 margin-inline-start 覆盖槽。"
@@ -3020,8 +3009,10 @@
         "root"
       ],
       "property": [
+        "--xh-avatar-font-size",
         "--xh-avatar-size",
         "block-size",
+        "font-size",
         "inline-size"
       ],
       "state": [
@@ -3035,7 +3026,7 @@
         "--xh-control-h-sm"
       ],
       "visibility": "public",
-      "description": "avatar-group 的 overflow-item、root 部件 --xh-avatar-size、block-size、inline-size 覆盖槽。"
+      "description": "avatar-group 的 overflow-item、root 部件 --xh-avatar-font-size、--xh-avatar-size、block-size、font-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-back-top-bg",

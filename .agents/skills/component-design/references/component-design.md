@@ -316,7 +316,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 正方盒（inline-size 与 block-size 同槽）必须取 circle，不得用 pill 冒充圆。
 - 位置指示点（Carousel indicator、Tour progress-dot）统一为一种语言：圆点（circle），当前项拉长为 20px 胶囊（pill）；Carousel 压在媒体上的一排点 6px、点距 8px，Tour 气泡里的进度点 8px。
 - 序号状态圆点（Steps / Timeline indicator）取 circle；可点分页按钮（Pagination item）是描边方块，取 surface，二者不互相对齐。
-- 盛内容的圆（Avatar、带框 Icon、Steps 序号圆点）直径同一把尺：`--xh-control-h-sm/md/lg`，随密度换档，与同档控件等高；圆里的字形另按字形或指示符档取尺。Timeline 圆点与 Steps 点状形态（`variant="dot"`）的圆点不盛内容，是纯位置标记，走自己的小尺（`--xh-space-*` 相邻三格，sm / md / lg = 8 / 10 / 12px，不随密度换档），不在此列。
+- 盛内容的圆（Avatar、带框 Icon、Steps 序号圆点）直径同一把尺：`--xh-control-h-sm/md/lg`，随密度换档，与同档控件等高；圆里的字形另按字形或指示符档取尺。Avatar 的回退字号取直径的一半，底取 `--xh-bg-subtle-active-opaque`、字取 `--xh-fg-default`；AvatarGroup 三档叠放量同为 8px，「+N」与组里的头像同一副面。Timeline 圆点与 Steps 点状形态（`variant="dot"`）的圆点不盛内容，是纯位置标记，走自己的小尺（`--xh-space-*` 相邻三格，sm / md / lg = 8 / 10 / 12px，不随密度换档），不在此列。
 - 组件不得写 6px、10px 等独立圆角。
 - 内层圆角不得大于外层圆角减去内边距（surface 4px 轨道内 2px 内距，滑块 2px 满足）。
 - 相连控件消除相接侧圆角，不使用负 margin 伪造连接。
