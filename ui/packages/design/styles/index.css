@@ -17080,12 +17080,12 @@
   .xh-scope-badge[data-part='indicator'] {
     /* 每一档的盒都要大于字号：两位数在等高的盒里会被撑破。
        字号刻度最小就是 12px，所以往上抬盒子而不是往下压字。
-       盒比字高两档：20px 扣掉两道 1px 描边还剩 18px 内高，12px 的两位数与「99+」立得住，
+       盒比字高一档半：20px 扣掉两道 1px 描边还剩 18px 内高，13px 的两位数与「99+」立得住，
        角标又不会大过它贴着的宿主文字；圆点 6px，只标存在、不抢宿主 */
     --xh-_badge-dot: var(--xh-space-1_5);
     --xh-_badge-min: var(--xh-space-5);
     --xh-_badge-px: var(--xh-space-1);
-    --xh-_badge-font: var(--xh-text-caption-size);
+    --xh-_badge-font: var(--xh-text-secondary-size);
 
     /* 不设 z-index：角标在 DOM 序里排在宿主之后，本来就压在上面 */
     position: absolute;

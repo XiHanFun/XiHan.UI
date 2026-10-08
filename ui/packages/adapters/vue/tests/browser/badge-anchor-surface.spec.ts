@@ -41,7 +41,7 @@ afterEach(teardown)
 describe('徽标的计数盒与附着位置', () => {
   it.each([
     { size: 'sm', edge: 14, font: 12 },
-    { size: undefined, edge: 20, font: 12 },
+    { size: undefined, edge: 20, font: 13 },
     { size: 'lg', edge: 24, font: 14 },
   ] as const)('$size 档的最小计数盒为 $edge px、字号 $font px', async ({ size, edge, font }) => {
     await mount(size)
