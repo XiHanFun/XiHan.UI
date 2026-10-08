@@ -20,7 +20,7 @@
     --xh-_empty-state-gap: var(--xh-stack-gap-md);
     --xh-_empty-state-py: var(--xh-section-py-md);
     --xh-_empty-state-icon-size: var(--xh-glyph-size-2xl);
-    /* 标题走 Surface / Feedback 标题档 14/600；sm 同档只缩图形与留白，lg 升到页面级 heading-3 */
+    /* 标题走小面标题档 14/500；sm 同档只缩图形与留白，lg 升到区块标题 heading-3 */
     --xh-_empty-state-title-size: var(--xh-text-label-size);
     /* 图标区的强调色：由 data-status（状态码）或 data-tone（语气）换掉；两样都没写就退成中性 */
     --xh-_empty-state-accent: var(--xh-fg-subtle);
@@ -76,6 +76,18 @@
     --xh-_empty-state-accent: var(--xh-_tone-fg);
   }
 
+  /* 结果页（写了成功 / 警示 / 出错 / 提示语气）：图标坐进一枚 44px 语气淡底圆，字形收到 20px。
+     品牌语气不画圆：品牌淡底专属「选中 / 当前」 */
+  [data-scope='empty-state'][data-part='root'][data-tone]:not([data-tone='brand']) [data-scope='empty-state'][data-part='indicator'] {
+    --xh-icon-size: var(--xh-empty-state-icon-size, var(--xh-glyph-size-md));
+
+    inline-size: var(--xh-empty-state-indicator-box, var(--xh-control-box-lg));
+    block-size: var(--xh-empty-state-indicator-box, var(--xh-control-box-lg));
+    border-radius: var(--xh-empty-state-indicator-radius, var(--xh-shape-circle));
+    background: var(--xh-empty-state-indicator-bg, var(--xh-_tone-subtle));
+    font-size: var(--xh-empty-state-icon-size, var(--xh-glyph-size-md));
+  }
+
   /*
    * 插画槽。它与图标槽二选一，尺寸另走一档：插画塞进按字形量的图标槽会被压到 40px 以下，
    * 而空状态的插画通常是这个尺度的两倍。默认由图标档翻一倍派生，跟着三个尺寸档一起走。
@@ -111,7 +123,12 @@
     color: var(--xh-empty-state-title-fg, var(--xh-fg-default));
     font-size: var(--xh-empty-state-title-font-size, var(--xh-_empty-state-title-size));
     font-weight: var(--xh-empty-state-title-font-weight, var(--xh-font-weight-medium));
-    line-height: var(--xh-empty-state-title-leading, var(--xh-leading-tight));
+    line-height: var(--xh-empty-state-title-leading, var(--xh-leading-normal));
+  }
+
+  /* 标题与说明是一组：两者之间只留 4px，图形与它们、它们与动作之间才是整档间距 */
+  [data-scope='empty-state'][data-part='title'] + [data-scope='empty-state'][data-part='description'] {
+    margin-block-start: calc(var(--xh-space-1) - var(--xh-empty-state-gap, var(--xh-_empty-state-gap)));
   }
 
   [data-scope='empty-state'][data-part='description'] {
@@ -128,6 +145,8 @@
     align-items: center;
     justify-content: center;
     gap: var(--xh-empty-state-action-gap, var(--xh-space-2));
+    /* 动作区比图文之间多让出 4px，操作与说明分得开 */
+    margin-block-start: var(--xh-space-1);
   }
 
   /* 图标、标题、说明、动作按次序开幕，间隔由交错步长派生。
