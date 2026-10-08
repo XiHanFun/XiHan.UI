@@ -1,9 +1,8 @@
-import type { Plugin } from "vite";
-import type { DefaultTheme, HeadConfig } from "vitepress";
+import type { DefaultTheme } from "vitepress";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
-import { defineConfig } from "vitepress";
-import { demoScriptPlugin } from "./demo-script";
+import { defineXiHanConfig } from "@xihanfun/vitepress-theme/config";
+import { demoScriptPlugin } from "./demo-script.ts";
 // @ts-expect-error 纯 JS 生成器，没有类型声明
 import { renderPageMarkdown, writeLlmsAssets } from "./gen-llms.mjs";
 
@@ -38,33 +37,6 @@ const transitiveXihanPackages = [
 const localXihanOptimizeExclusions = [
   ...new Set([...linkedXihanPackages, ...transitiveXihanPackages]),
 ].sort();
-
-function devMarkdownPlugin(): Plugin {
-  return {
-    name: "xihan-doc-page-markdown",
-    configureServer(server) {
-      server.middlewares.use(async (request, response, next) => {
-        const pathname = new URL(request.url ?? "/", "http://localhost").pathname;
-        const prefix = "/__markdown/";
-        if (!pathname.startsWith(prefix)) {
-          next();
-          return;
-        }
-
-        const markdown = await renderPageMarkdown(decodeURIComponent(pathname.slice(prefix.length)));
-        if (markdown === null) {
-          response.statusCode = 404;
-          response.end("Not Found");
-          return;
-        }
-
-        response.statusCode = 200;
-        response.setHeader("Content-Type", "text/markdown; charset=utf-8");
-        response.end(markdown);
-      });
-    },
-  };
-}
 
 // 渲染页面阶段组件抛的异常被 Vue 接住后只打进 console.error，构建仍退出 0：
 // 出错的示例在静态页里整块缺失，而流水线什么都看不见。这里把这一路的异常收下来，
@@ -111,18 +83,6 @@ const title: string = "XiHan.UI";
 const description: string = "框架无关的设计系统运行时与组件库";
 const keywords: string
   = "曦寒,曦寒懿,视图组件,组件库,设计系统,Vue,Web Components,官方文档,开源,XiHanFun,XiHan.UI";
-const logo: string = "/images/logo.png";
-const head: HeadConfig[] = [
-  ["meta", { name: "author", content: "XiHanFun" }],
-  [
-    "meta",
-    {
-      name: "keywords",
-      content: keywords,
-    },
-  ],
-  ["link", { rel: "icon", href: "/favicon.ico" }],
-];
 
 // 核心概念：按序编号；组件参考另成一册
 const guideChapters: [text: string, name: string][] = [
@@ -333,57 +293,12 @@ const nav: DefaultTheme.NavItem[] = [
   },
 ];
 
-function searchOptions(): Partial<DefaultTheme.AlgoliaSearchOptions> {
-  return {
-    placeholder: "搜索文档",
-    translations: {
-      button: {
-        buttonText: "搜索文档",
-        buttonAriaLabel: "搜索文档",
-      },
-      modal: {
-        searchBox: {
-          resetButtonTitle: "清除查询条件",
-          resetButtonAriaLabel: "清除查询条件",
-          cancelButtonText: "取消",
-          cancelButtonAriaLabel: "取消",
-        },
-        startScreen: {
-          recentSearchesTitle: "搜索历史",
-          noRecentSearchesText: "没有搜索历史",
-          saveRecentSearchButtonTitle: "保存至搜索历史",
-          removeRecentSearchButtonTitle: "从搜索历史中移除",
-          favoriteSearchesTitle: "收藏",
-          removeFavoriteSearchButtonTitle: "从收藏中移除",
-        },
-        errorScreen: {
-          titleText: "无法获取结果",
-          helpText: "你可能需要检查你的网络连接",
-        },
-        footer: {
-          selectText: "选择",
-          navigateText: "切换",
-          closeText: "关闭",
-          searchByText: "搜索提供者",
-        },
-        noResultsScreen: {
-          noResultsText: "无法找到相关结果",
-          suggestedQueryText: "你可以尝试查询",
-          reportMissingResultsText: "你认为该查询应该有结果？",
-          reportMissingResultsLinkText: "点击反馈",
-        },
-      },
-    },
-  };
-}
-
-export default defineConfig({
-  lang: "zh-CN",
+export default defineXiHanConfig({
   title,
   description,
-  head,
-  lastUpdated: true,
-  cleanUrls: true,
+  keywords,
+  repo: "XiHan.UI",
+  pageMarkdown: renderPageMarkdown,
   async buildEnd(siteConfig) {
     if (renderErrors.length > 0) {
       const list = renderErrors
@@ -400,14 +315,16 @@ export default defineConfig({
     await writeLlmsAssets(siteConfig.outDir);
   },
   vite: {
-    plugins: [devMarkdownPlugin(), demoScriptPlugin()],
-    esbuild: {
-      jsx: "automatic",
-      jsxImportSource: "react",
+    plugins: [demoScriptPlugin()],
+    oxc: {
+      jsx: {
+        runtime: "automatic",
+        importSource: "react",
+      },
     },
     // 适配器是 link: 进来的，dist 里的 import "react" 会按真实路径解析到 ui/ 工作区自己装的那一份，
     // 与文档站挂示例用的 react-dom 不是同一份：hooks 调度器只挂在渲染器那一份上，React 示例全部读 null 崩掉。
-    // vue 由 VitePress 自己去重，不用列
+    // vue 由主题配置统一去重，不用列
     resolve: {
       dedupe: ["react", "react-dom"],
     },
@@ -425,52 +342,7 @@ export default defineConfig({
     },
   },
   themeConfig: {
-    logo,
-    socialLinks: [
-      { icon: "github", link: "https://github.com/XiHanFun/XiHan.UI" },
-      { icon: "gitee", link: "https://gitee.com/XiHanFun/XiHan.UI" },
-      { icon: "gitcode", link: "https://gitcode.com/XiHanFun/XiHan.UI" },
-    ],
-    search: {
-      provider: "local",
-      options: searchOptions(),
-    },
     nav,
     sidebar,
-    docFooter: {
-      prev: "上一页",
-      next: "下一页",
-    },
-    outline: {
-      label: "目录",
-      level: "deep",
-    },
-    langMenuLabel: "多语言",
-    returnToTopLabel: "回到顶部",
-    sidebarMenuLabel: "菜单",
-    darkModeSwitchLabel: "主题",
-    lightModeSwitchTitle: "切换到浅色模式",
-    darkModeSwitchTitle: "切换到深色模式",
-    skipToContentLabel: "跳转到内容",
-    notFound: {
-      title: "页面未找到",
-      quote:
-        "但如果你不改变方向，并且继续寻找，你可能最终会到达你所前往的地方。",
-      linkLabel: "前往首页",
-      linkText: "带我回首页",
-    },
-    editLink: {
-      text: "在 GitHub 上编辑此页",
-      pattern: "https://github.com/XiHanFun/XiHan.UI/tree/main/docs/:path",
-    },
-    lastUpdated: {
-      text: "最后更新于",
-    },
-    footer: {
-      message:
-        "Released under The <a href='https://opensource.org/license/MIT' target='_blank'>MIT</a> License",
-      copyright:
-        "Copyright ©2021-Present <a href='https://www.xihanfun.com' target='_blank'>XiHanFun</a> and contributors.",
-    },
   },
 });

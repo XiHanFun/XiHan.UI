@@ -1,52 +1,4 @@
-html {
-  background: var(--vp-c-bg);
-}
-
-body {
-  letter-spacing: -0.006em;
-}
-
-.VPNavBar .container.container {
-  max-width: none;
-}
-
-.VPSidebar {
-  border-inline-end: var(--xh-stroke-thin) solid var(--xh-border-subtle);
-  background: var(--vp-c-bg);
-}
-
-.VPSidebarItem.level-0 {
-  padding-bottom: 8px;
-}
-
-.VPSidebarItem.level-0 > .item > .text {
-  color: var(--vp-c-text-1);
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.VPSidebarItem.level-1 > .item {
-  min-height: 36px;
-  margin: 1px 0;
-  padding: 0 10px;
-  border-radius: var(--xh-shape-control);
-}
-
-.VPSidebarItem.level-1 > .item:hover {
-  background: color-mix(in oklab, var(--vp-c-bg-soft) 72%, transparent);
-}
-
-.VPSidebarItem.level-1.is-active > .item {
-  background: var(--xh-bg-brand-subtle);
-  box-shadow: var(--xh-elevation-raised);
-}
-
-.VPSidebarItem.level-1 .text {
-  color: var(--vp-c-text-2);
-  font-size: 13px;
-  line-height: 20px;
-}
-
+/* 侧栏组件条目：英文名后的中文名与状态标 */
 .VPSidebarItem .xh-sidebar-cn {
   margin-inline-start: 0.32em;
   color: var(--vp-c-text-3);
@@ -54,176 +6,33 @@ body {
   font-weight: 400;
 }
 
-.VPSidebarItem .xh-sidebar-status {
-  display: inline-flex;
-  align-items: center;
-  margin-inline-start: 0.45em;
-  padding-inline: 0.45em;
-  border-radius: var(--xh-shape-pill);
-  color: var(--vp-c-brand-1);
-  background: var(--xh-bg-brand-subtle);
-  font-size: 0.72em;
-  font-weight: 600;
-  line-height: 1.5;
-  vertical-align: 0.08em;
-}
-
-.VPSidebarItem .xh-sidebar-status--alpha {
-  color: var(--vp-c-text-3);
-  background: var(--vp-c-default-soft);
-  font-weight: 500;
-}
-
-.VPSidebarItem.level-1.is-active > .item .xh-sidebar-cn {
+.VPSidebarItem.is-active > .item .xh-sidebar-cn {
   color: inherit;
   opacity: 0.66;
 }
 
-.VPSidebarItem.level-1.is-active > .item.item .link.link,
-.VPSidebarItem.level-1.is-active > .item.item .text.text {
-  color: var(--xh-fg-brand-strong);
-  font-weight: 500;
-}
-
-.VPDoc {
-  padding-top: 42px;
-}
-
-.VPDoc.has-aside .content-container.content-container {
-  max-width: none;
-}
-
-.VPDoc .container.container {
-  max-width: none;
-}
-
-.vp-doc > p,
-.vp-doc > ul,
-.vp-doc > ol {
-  max-width: 80ch;
-}
-
-.vp-doc table {
-  display: table;
-  width: 100%;
-}
-
-.vp-doc h1 {
-  margin-top: 0;
-  font-size: 32px;
-  line-height: 1.2;
-  font-weight: 720;
-  letter-spacing: -0.035em;
-}
-
-.vp-doc h2 {
-  margin-top: 48px;
-  padding-top: 0;
-  border-top: 0;
-  font-size: 24px;
-  line-height: 1.25;
-  font-weight: 680;
-  letter-spacing: -0.025em;
-}
-
-.vp-doc h2 .header-anchor {
-  top: 0;
-}
-
-.vp-doc h3 {
-  margin-top: 34px;
-  font-size: 18px;
-  line-height: 1.35;
-  font-weight: 650;
-}
-
-.vp-doc p,
-.vp-doc li {
-  color: var(--vp-c-text-2);
-  font-size: 15px;
-  line-height: 1.75;
-}
-
-.vp-doc strong,
-.vp-doc th {
-  color: var(--vp-c-text-1);
-}
-
-.vp-doc a {
-  color: var(--vp-c-text-1);
-  text-decoration-color: color-mix(in oklab, var(--vp-c-text-1) 35%, transparent);
-  text-underline-offset: 3px;
-}
-
-.vp-doc a:hover {
+.VPSidebarItem .xh-sidebar-status {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  margin-inline-start: 6px;
+  padding: 0 7px;
+  border: 1px solid color-mix(in srgb, var(--vp-c-brand-1) 40%, transparent);
+  border-radius: 9999px;
   color: var(--vp-c-brand-1);
-}
-
-.vp-doc :not(pre) > code {
-  border-radius: var(--xh-shape-inset);
-  color: var(--vp-c-text-1);
-  background: var(--vp-c-bg-soft);
-}
-
-.vp-doc div[class*="language-"] {
-  border: var(--xh-stroke-thin) solid var(--xh-border-default);
-  border-radius: var(--xh-shape-surface);
-  box-shadow: none;
-}
-
-.VPDocAsideOutline .outline-title {
-  color: var(--vp-c-text-2);
+  background: var(--vp-c-bg);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
+  line-height: 1;
+  vertical-align: middle;
 }
 
-.VPDocAsideOutline .outline-link {
-  border-radius: var(--xh-shape-control);
-  color: var(--vp-c-text-2);
-  font-size: 12px;
+.VPSidebarItem .xh-sidebar-status--alpha {
+  border-color: var(--vp-c-divider);
+  color: var(--vp-c-text-3);
 }
 
-.VPDocAsideOutline .outline-link.active {
-  color: var(--vp-c-text-1);
-}
-
-.pager-link {
-  border-color: transparent !important;
-  border-radius: var(--xh-shape-surface) !important;
-  background: var(--vp-c-bg-soft);
-}
-
-.pager-link:hover {
-  border-color: transparent !important;
-  background: var(--vp-c-bg-elv);
-  box-shadow: var(--xh-elevation-raised);
-}
-
-.VPLocalSearchBox .result {
-  padding: 4px !important;
-  border: 1px solid var(--vp-c-divider) !important;
-  border-radius: var(--xh-shape-overlay) !important;
-  background: var(--vp-c-bg-elv) !important;
-}
-
-.VPLocalSearchBox .result.selected {
-  background: var(--vp-c-bg-soft) !important;
-}
-
-.VPLocalSearchBox .title-icon {
-  display: none;
-}
-
-.VPLocalSearchBox .excerpt-wrapper {
-  margin-top: 4px;
-}
-
-.message a,
-.copyright a,
-.custom-block.tip .custom-block-title {
-  color: var(--vp-c-brand-1);
-}
-
+/* 页面顶部的资源直链 */
 .xh-resource-links {
   display: flex;
   flex-wrap: wrap;
@@ -263,6 +72,7 @@ body {
   outline-offset: var(--xh-ring-offset);
 }
 
+/* 框架切换器：宽屏排在搜索框右侧，窄屏移进侧边栏顶部 */
 .xh-framework-mobile {
   display: none;
 }
@@ -275,47 +85,6 @@ body {
 
   .VPNavBar .content-body > .xh-framework {
     margin-inline: 12px auto;
-  }
-}
-
-@media (min-width: 1440px) {
-  .VPSidebar.VPSidebar {
-    width: var(--vp-sidebar-width);
-    padding-left: 24px;
-  }
-
-  .VPContent.has-sidebar.has-sidebar {
-    padding-right: 0;
-    padding-left: var(--vp-sidebar-width);
-  }
-
-  .VPLocalNav.has-sidebar.has-sidebar {
-    padding-left: var(--vp-sidebar-width);
-  }
-
-  .VPNavBar.has-sidebar .title.title {
-    width: var(--vp-sidebar-width);
-    padding-left: 24px;
-  }
-
-  .VPNavBar.has-sidebar .content.content {
-    padding-right: 24px;
-    padding-left: var(--vp-sidebar-width);
-  }
-
-  .VPNavBar.has-sidebar .divider.divider {
-    padding-left: var(--vp-sidebar-width);
-  }
-
-}
-
-@media (max-width: 959px) {
-  .VPDoc {
-    padding-top: 28px;
-  }
-
-  .vp-doc h1 {
-    font-size: 29px;
   }
 }
 
@@ -336,12 +105,5 @@ body {
 
   .xh-framework-mobile .xh-framework__item {
     flex: 1;
-  }
-
-  .vp-doc table {
-    display: block;
-    max-width: 100%;
-    overflow-x: auto;
-    white-space: nowrap;
   }
 }
