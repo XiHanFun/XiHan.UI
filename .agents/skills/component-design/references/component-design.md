@@ -532,7 +532,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | EmptyState 图标 | 40px；媒体区高为图标 2 倍 | 32 / 56px |
 | Kbd | 高 24px，最小宽 24px | |
 | Skeleton | 圆与矩形 `control-h-lg`；文本行高等于说明字号 | |
-| Progress | 线形厚 6px；环形直径 7.5rem | |
+| Progress | 线形厚 4px，底槽 `--xh-bg-subtle-hover`；环形直径 7.5rem；环心文字 12px `--xh-fg-muted` | 线形厚 3 / 8px |
 | Carousel、Tour 位置点 | 8px，当前项 20px；Carousel 点命中区 44px | |
 | Sparkline | 6rem × 一行正文高 | |
 | 图表视口 | 高 20rem，含坐标轴带；缩放条高 24px | |
