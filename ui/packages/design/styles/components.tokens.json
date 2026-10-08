@@ -34116,6 +34116,7 @@
         "material=liquid",
         "not([data-scope])",
         "variant=outline",
+        "variant=subtle",
         "where([data-material='liquid'])",
         "xh-ink-surface",
         "xh-liquid",
@@ -34157,6 +34158,7 @@
         "not([data-scope])",
         "pressed",
         "variant=outline",
+        "variant=subtle",
         "where([data-material='liquid'])",
         "xh-liquid",
         "xh-liquid-goo"
@@ -34194,6 +34196,7 @@
         "not([data-loading])",
         "not([data-scope])",
         "variant=outline",
+        "variant=subtle",
         "where([data-material='liquid'])",
         "xh-liquid",
         "xh-liquid-goo"
@@ -34355,7 +34358,6 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-glyph-size",
         "--xh-_float-button-glyph-size"
       ],
       "visibility": "public",
@@ -34452,6 +34454,7 @@
         "inset-inline-end",
         "inset-inline-start",
         "left",
+        "min-inline-size",
         "top"
       ],
       "state": [
@@ -34468,11 +34471,10 @@
         "xh-action-profile=floating"
       ],
       "defaultToken": [
-        "--xh-_action-profile-visual-size",
         "--xh-_float-button-size"
       ],
       "visibility": "public",
-      "description": "float-button 的 list、root、trigger 部件 block-size、bottom、inline-size、inset-block-end、inset-block-start、inset-inline-end、inset-inline-start、left、top 覆盖槽。"
+      "description": "float-button 的 list、root、trigger 部件 block-size、bottom、inline-size、inset-block-end、inset-block-start、inset-inline-end、inset-inline-start、left、min-inline-size、top 覆盖槽。"
     },
     {
       "name": "--xh-floating-panel-action-bg-active",
