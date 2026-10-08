@@ -180,8 +180,9 @@ const IDENTITY = {
   'rating:item': 'control',
   'tabs:trigger': 'control',
   'steps:trigger': 'control',
-  // surface：轨道与容器（RadioGroup segmented 形态的根就是那条轨道）
-  'radio-group:root': 'surface',
+  // RadioGroup segmented 形态的根就是那条轨道：与字段外壳同款（淡底 + 字段描边），取 control
+  'radio-group:root': 'control',
+  // surface：轨道与容器
   // 看图器底部的工具条外壳：容器不是一维对象，与 toolbar 根面同身份
   'image-viewer:toolbar': 'surface',
   'tabs:list': 'surface',

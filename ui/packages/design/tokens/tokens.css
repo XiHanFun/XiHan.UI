@@ -700,6 +700,9 @@
     --xh-bg-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 12%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-hover: color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-active: color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface));
+    --xh-bg-segment-selected: var(--xh-bg-brand-subtle);
+    --xh-bg-segment-selected-hover: color-mix(in oklab, var(--xh-bg-brand) 18%, var(--xh-bg-surface));
+    --xh-bg-segment-selected-disabled: color-mix(in oklab, var(--xh-bg-brand) 8%, var(--xh-bg-surface));
     --xh-bg-overlay: oklch(0 0 0 / 0.45);
     --xh-bg-scrollbar-track: oklch(0 0 0 / 0);
     --xh-fg-default: var(--xh-color-neutral-900);
@@ -710,6 +713,8 @@
     --xh-fg-on-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 60%, var(--xh-fg-default));
     --xh-fg-brand: var(--xh-color-brand-600);
     --xh-fg-brand-strong: var(--xh-color-brand-700);
+    --xh-fg-segment-selected: var(--xh-fg-brand-strong);
+    --xh-fg-segment-selected-disabled: color-mix(in oklab, var(--xh-fg-brand) 50%, var(--xh-bg-surface));
     --xh-fg-success: var(--xh-color-success-700);
     --xh-fg-warning: var(--xh-color-warning-700);
     --xh-fg-info: var(--xh-color-info-700);
@@ -908,6 +913,9 @@
     --xh-bg-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 12%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-hover: color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-active: color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface));
+    --xh-bg-segment-selected: var(--xh-bg-brand-subtle-hover);
+    --xh-bg-segment-selected-hover: var(--xh-bg-brand-subtle-active);
+    --xh-bg-segment-selected-disabled: color-mix(in oklab, var(--xh-bg-brand) 8%, var(--xh-bg-surface));
     --xh-bg-overlay: oklch(0 0 0 / 0.6);
     --xh-bg-scrollbar-track: oklch(0 0 0 / 0);
     --xh-fg-default: var(--xh-color-neutral-50);
@@ -918,6 +926,8 @@
     --xh-fg-on-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 60%, var(--xh-fg-default));
     --xh-fg-brand: var(--xh-color-brand-400);
     --xh-fg-brand-strong: var(--xh-color-brand-300);
+    --xh-fg-segment-selected: var(--xh-fg-brand-strong);
+    --xh-fg-segment-selected-disabled: color-mix(in oklab, var(--xh-fg-brand) 50%, var(--xh-bg-surface));
     --xh-fg-success: var(--xh-color-success-500);
     --xh-fg-warning: var(--xh-color-warning-500);
     --xh-fg-info: var(--xh-color-info-500);
@@ -1229,6 +1239,9 @@
       --xh-material-liquid-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
       --xh-material-soft-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-soft-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
       --xh-bg-field: color-mix(in oklab, var(--xh-bg-subtle) 55%, transparent);
+      --xh-bg-segment-selected-disabled: color-mix(in oklab, var(--xh-bg-brand) 8%, var(--xh-bg-surface));
+      --xh-fg-segment-selected: var(--xh-fg-brand-strong);
+      --xh-fg-segment-selected-disabled: color-mix(in oklab, var(--xh-fg-brand) 50%, var(--xh-bg-surface));
       --xh-fg-scrollbar-thumb: color-mix(in oklab, var(--xh-fg-default) 15%, transparent);
       --xh-fg-scrollbar-thumb-hover: color-mix(in oklab, var(--xh-fg-default) 25%, transparent);
       --xh-fg-scrollbar-thumb-active: color-mix(in oklab, var(--xh-fg-default) 35%, transparent);

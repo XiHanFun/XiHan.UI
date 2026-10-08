@@ -52965,6 +52965,9 @@
               "name": "--xh-radio-group-segment-font-weight"
             },
             {
+              "name": "--xh-radio-group-segment-font-weight-checked"
+            },
+            {
               "name": "--xh-radio-group-segment-h"
             },
             {
@@ -52974,7 +52977,16 @@
               "name": "--xh-radio-group-segment-radius"
             },
             {
+              "name": "--xh-radio-group-segment-separator"
+            },
+            {
               "name": "--xh-radio-group-thumb-bg"
+            },
+            {
+              "name": "--xh-radio-group-thumb-bg-disabled"
+            },
+            {
+              "name": "--xh-radio-group-thumb-bg-hover"
             },
             {
               "name": "--xh-radio-group-thumb-border"
@@ -52984,9 +52996,6 @@
             },
             {
               "name": "--xh-radio-group-thumb-shadow"
-            },
-            {
-              "name": "--xh-radio-group-thumb-shadow-disabled"
             },
             {
               "name": "--xh-radio-group-track-bg"
