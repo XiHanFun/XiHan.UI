@@ -382,15 +382,15 @@
     },
     "item-px-sm": {
       "$type": "dimension",
-      "$value": "{space.3}"
+      "$value": "{space.4}"
     },
     "item-px-md": {
       "$type": "dimension",
-      "$value": "{space.4}"
+      "$value": "{space.5}"
     },
     "item-px-lg": {
       "$type": "dimension",
-      "$value": "{space.5}"
+      "$value": "{space.6}"
     },
     "option-py-sm": {
       "$type": "dimension",

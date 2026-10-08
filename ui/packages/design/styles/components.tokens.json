@@ -42803,7 +42803,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0_5"
       ],
       "visibility": "public",
       "description": "list 的 item-content 部件 gap 覆盖槽。"
@@ -42858,7 +42858,7 @@
         "split"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "list 的 item、root 部件 border-block-start 覆盖槽。"

@@ -72,7 +72,7 @@ describe('list 根面', () => {
     expect(list.root.getBoundingClientRect().height).toBe(mount('outline').root.getBoundingClientRect().height)
   })
 
-  it('ghost 不画壳，split 只在条目之间画一条 border-subtle 分隔线', () => {
+  it('ghost 不画壳，split 只在条目之间画一条 border-default 分隔线', () => {
     const list = mount()
     const style = getComputedStyle(list.root)
 
@@ -81,7 +81,7 @@ describe('list 根面', () => {
     expect(style.boxShadow).toBe('none')
     expect(Number.parseFloat(getComputedStyle(list.items[0]!).borderTopWidth)).toBe(0)
     expect(Number.parseFloat(getComputedStyle(list.items[1]!).borderTopWidth)).toBe(1)
-    expect(getComputedStyle(list.items[1]!).borderTopColor).toBe(tokenColor('--xh-border-subtle'))
+    expect(getComputedStyle(list.items[1]!).borderTopColor).toBe(tokenColor('--xh-border-default'))
   })
 })
 
@@ -97,14 +97,15 @@ describe('list 条目', () => {
     expect(getComputedStyle(onSubtle).backgroundColor).toBe(tokenColor('--xh-bg-subtle-hover'))
   })
 
-  it('标题 500 字重、说明 13 / fg-muted', () => {
+  it('标题 500 字重、说明与标题同为 14px / fg-muted，条目横向内距 20px', () => {
     const list = mount()
     const title = getComputedStyle(list.title)
     const description = getComputedStyle(list.description)
 
     expect(title.fontWeight).toBe('500')
     expect(title.color).toBe(tokenColor('--xh-fg-default'))
-    expect(Number.parseFloat(description.fontSize)).toBe(13)
+    expect(Number.parseFloat(description.fontSize)).toBe(14)
     expect(description.color).toBe(tokenColor('--xh-fg-muted'))
+    expect(Number.parseFloat(getComputedStyle(list.items[0]!).paddingInlineStart)).toBe(20)
   })
 })
