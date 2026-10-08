@@ -6,7 +6,7 @@
     <path d="M108 70h8v8h-8zm-4 4v-8h8" stroke="var(--xh-fg-muted)" stroke-width="2" />
     <path d="M127 72h34" stroke="var(--xh-fg-muted)" stroke-width="6" />
     <path d="M190 72h12" stroke="var(--xh-fg-subtle)" stroke-width="4" />
-    <rect x="96" y="84" width="116" height="24" rx="2" fill="var(--xh-bg-subtle)" />
+    <rect x="93" y="84" width="122" height="24" fill="var(--xh-bg-subtle)" />
     <path d="M104 102l1-4 8-8 3 3-8 8z" stroke="var(--xh-fg-muted)" stroke-width="2" />
     <path d="M127 96h42" stroke="var(--xh-fg-muted)" stroke-width="6" />
     <path d="M190 96h12" stroke="var(--xh-fg-subtle)" stroke-width="4" />

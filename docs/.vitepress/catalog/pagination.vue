@@ -9,7 +9,7 @@
     <path d="M182 68h4" stroke="var(--xh-fg-default)" stroke-width="6" />
     <path d="M202 64l4 4-4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
     <path d="M30 116h60" stroke="var(--xh-fg-subtle)" stroke-width="4" />
-    <rect x="140.5" y="104.5" width="75" height="23" rx="2" stroke="var(--xh-border-control)" />
+    <rect x="140.5" y="104.5" width="75" height="23" rx="2" fill="var(--xh-bg-field)" stroke="var(--xh-border-control)" />
     <path d="M153 116h26" stroke="var(--xh-fg-default)" stroke-width="6" />
     <path d="M196 114l4 4 4-4" stroke="var(--xh-fg-muted)" stroke-width="2" />
   </svg>

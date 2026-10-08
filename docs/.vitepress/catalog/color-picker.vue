@@ -19,7 +19,7 @@
         <stop offset="1" stop-color="var(--xh-color-red-500)" />
       </linearGradient>
     </defs>
-    <rect x="24.5" y="16.5" width="95" height="31" rx="2" stroke="var(--xh-border-control)" />
+    <rect x="24.5" y="16.5" width="95" height="31" rx="2" fill="var(--xh-bg-field)" stroke="var(--xh-border-control)" />
     <rect x="32" y="24" width="16" height="16" rx="2" fill="var(--xh-color-blue-500)" />
     <path d="M59 32h30" stroke="var(--xh-fg-default)" stroke-width="6" />
     <path d="M100 34l4-4 4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
