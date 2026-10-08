@@ -36,8 +36,8 @@
 <XhTokenTable
   :names="['--xh-font-weight-regular', '--xh-font-weight-medium', '--xh-font-weight-semibold', '--xh-font-weight-bold', '--xh-leading-none', '--xh-leading-tight', '--xh-leading-normal', '--xh-leading-relaxed']"
   :notes="{
-    '--xh-font-weight-regular': '正文',
-    '--xh-font-weight-medium': '字段标签、集合标题、当前页的面包屑',
+    '--xh-font-weight-regular': '正文、字段标签、集合标题、按钮字',
+    '--xh-font-weight-medium': '选中的候选项、导航当前项、表格列头、当前页的面包屑',
     '--xh-font-weight-semibold': '面板标题、各级标题、总览卡片标题',
     '--xh-font-weight-bold': '只给 Typography 的加粗与个别强调（Alert 标题、日历的今天）',
     '--xh-leading-none': '单行标签、控件内文字',
@@ -53,8 +53,8 @@
 
 | 角色 | 字号 / 字重 / 颜色 | 与相邻元素的间距 |
 | --- | --- | --- |
-| 字段标签（单字段与 Slider、Rating、Signature、Color* 等复合单字段） | `--xh-text-label-size` 14 / `--xh-text-label-weight` 500 / `--xh-fg-default` | 贴控件 `--xh-space-1` |
-| 集合标题（RadioGroup、CheckboxGroup、Listbox、Tree、TagGroup、Descriptions） | 14 / 500 / `--xh-fg-muted` | 与集合 `--xh-space-2` |
+| 字段标签（单字段与 Slider、Rating、Signature、Color* 等复合单字段） | `--xh-text-label-size` 14 / `--xh-text-label-weight` 400 / `--xh-fg-default` | 贴控件 `--xh-space-1` |
+| 集合标题（RadioGroup、CheckboxGroup、Listbox、Tree、TagGroup、Descriptions） | 14 / `--xh-text-label-weight` 400 / `--xh-fg-muted` | 与集合 `--xh-space-2` |
 | 整行控件的标签（Checkbox、Switch） | 随档 `--xh-control-font-sm / md / lg` / regular / `--xh-fg-default`，禁用 `--xh-fg-subtle` | 与方框 `--xh-space-2` |
 | 说明 / helper | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal` | 与控件 `--xh-space-1` |
 | 错误文案 | 13 / `--xh-fg-danger` | 与控件 `--xh-space-1` |
