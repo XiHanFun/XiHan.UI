@@ -1,0 +1,54 @@
+<!-- 配色方案 | 祖先写上 data-xh-chart-palette 整套换掉分类色槽：主题单色随品牌色由深到浅，柔和品牌、莫兰迪柔彩各是一套；写在 html 上即全站生效 -->
+<div style="display: grid; gap: var(--xh-space-3); justify-items: start; width: 100%">
+  <xh-radio-group id="cartesian-chart-palette-choice" variant="segmented" default-value="monochrome">
+    <div data-xh-part="root" aria-label="配色方案">
+      <span data-xh-part="thumb"></span>
+      <div data-xh-part="item" value="categorical">
+        <span data-xh-part="item-text">多彩分类</span>
+      </div>
+      <div data-xh-part="item" value="monochrome">
+        <span data-xh-part="item-text">主题单色</span>
+      </div>
+      <div data-xh-part="item" value="brand">
+        <span data-xh-part="item-text">柔和品牌</span>
+      </div>
+      <div data-xh-part="item" value="muted">
+        <span data-xh-part="item-text">莫兰迪柔彩</span>
+      </div>
+    </div>
+  </xh-radio-group>
+  <div id="cartesian-chart-palette-host" data-xh-chart-palette="monochrome" style="width: 100%">
+    <xh-cartesian-chart id="cartesian-chart-palette">
+      <figure data-xh-part="root">
+        <figcaption data-xh-part="caption">各区域季度销售额（万元）</figcaption>
+        <div data-xh-part="legend"></div>
+        <div data-xh-part="viewport">
+          <svg data-xh-part="plot"></svg>
+          <div data-xh-part="empty"></div>
+        </div>
+        <div data-xh-part="tooltip"></div>
+      </figure>
+    </xh-cartesian-chart>
+  </div>
+</div>
+
+<script type="module">
+  const chart = document.getElementById("cartesian-chart-palette");
+  const host = document.getElementById("cartesian-chart-palette-host");
+  chart.data = [
+    { quarter: "一季度", north: 42, east: 51, south: 38, west: 26 },
+    { quarter: "二季度", north: 48, east: 56, south: 41, west: 30 },
+    { quarter: "三季度", north: 45, east: 62, south: 47, west: 33 },
+    { quarter: "四季度", north: 57, east: 68, south: 52, west: 37 },
+  ];
+  chart.series = [
+    { mark: "bar", x: "quarter", y: "north", name: "华北" },
+    { mark: "bar", x: "quarter", y: "east", name: "华东" },
+    { mark: "bar", x: "quarter", y: "south", name: "华南" },
+    { mark: "bar", x: "quarter", y: "west", name: "西部" },
+  ];
+  // 配色方案是环境属性：写在任意祖先上，其中的图表一起换色
+  document.getElementById("cartesian-chart-palette-choice").addEventListener("value-change", (event) => {
+    host.setAttribute("data-xh-chart-palette", event.detail.value);
+  });
+</script>

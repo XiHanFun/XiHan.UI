@@ -61,8 +61,11 @@ export interface ChartCanvasOptions<S extends ChartCanvasSchema> {
   readonly paint: (params: EffectParams<S>, frame: ChartCanvasFrame) => boolean
 }
 
-/** 视觉环境之外还要盯的祖先属性：纹理开关、作者改主题的类名与内联的令牌覆盖。 */
-const EXTRA_ATTRIBUTES = ['data-xh-chart-patterns', 'class', 'style'] as const
+/** 视觉环境之外还要盯的祖先属性：纹理开关、配色方案、作者改主题的类名与内联的令牌覆盖。 */
+const EXTRA_ATTRIBUTES = ['data-xh-chart-patterns', 'data-xh-chart-palette', 'class', 'style'] as const
+
+/** 根自己身上也会写的属性：作者把配色方案直接写在图表上。根的类名与内联样式随状态频繁变，不在此列。 */
+const ROOT_ATTRIBUTES = ['data-xh-chart-palette', 'data-xh-chart-patterns'] as const
 
 /** 这些媒体条件一变，探针的计算样式就可能变。 */
 const MEDIA = ['(forced-colors: active)', '(prefers-color-scheme: dark)', '(prefers-contrast: more)', '(prefers-reduced-transparency: reduce)'] as const
@@ -203,6 +206,7 @@ export function trackChartCanvas<S extends ChartCanvasSchema>(options: ChartCanv
         return
       if (typeof win.MutationObserver === 'function') {
         const observer = new win.MutationObserver(request)
+        observer.observe(root, { attributes: true, attributeFilter: [...ROOT_ATTRIBUTES] })
         for (let el: Element | null = root.parentElement; el; el = el.parentElement)
           observer.observe(el, { attributes: true, attributeFilter: [...VISUAL_ENVIRONMENT_ATTRIBUTES, ...EXTRA_ATTRIBUTES] })
         cleanups.push(() => observer.disconnect())

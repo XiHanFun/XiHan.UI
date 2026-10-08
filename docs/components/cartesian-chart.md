@@ -234,6 +234,12 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 
 <XhDemo src="cartesian-chart/36-market" />
 
+### 配色方案
+
+祖先写上 data-xh-chart-palette 整套换掉分类色槽：主题单色随品牌色由深到浅，柔和品牌、莫兰迪柔彩各是一套；写在 html 上即全站生效
+
+<XhDemo src="cartesian-chart/37-palette" />
+
 ## 设计指引
 
 ### 何时使用

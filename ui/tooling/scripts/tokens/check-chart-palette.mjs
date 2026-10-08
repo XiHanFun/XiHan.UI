@@ -13,11 +13,15 @@
 //   发散              两臂等档、两端 ≥ 3 且色觉障碍下可分、两端离开 danger 各档、中点中性且贴近表面
 //   涨跌              对比度、色觉障碍与正常视觉 ΔE、涨为成功色相、跌为危险色相
 //   其他 / 淡出        都是中性色；其他照常可读且与各色槽拉得开，淡出弱于每个色槽
+//   配色方案          data-xh-chart-palette 的每个取值块叠到主题取值上：主题单色走单色规则（品牌色相、由深到浅、
+//                     色槽 1 ≥ 3）；柔和品牌、莫兰迪柔彩走各自的分类规则与亮暗同色相；色块内文字 ≥ 4.5；
+//                     categorical 取值块与缺省分类色槽逐个同色
 // 这里不另写一份颜色数学：检查与度量都从生成器模块引，与 @xihan-ui/viz 的对拍由 tooling/testing 的
 // chart-palette 用例负责。
 import { readFile } from 'node:fs/promises'
 import {
   checkCategorical,
+  checkScheme,
   checkDiverging,
   checkNeutrals,
   checkOnColors,
@@ -27,8 +31,11 @@ import {
   checkSequential,
   contrastRatio,
   formatHex,
+  mixOklab,
   MODES,
   parseOklch,
+  parseOklchRaw,
+  SCHEMES,
   SLOTS,
 } from '../../../packages/design/tokens/build/emit-chart-palette.mjs'
 
@@ -71,6 +78,15 @@ function parseBlocks(css) {
   return blocks
 }
 
+/** 配色方案的取值块：选择器里有该方案自身的 :where([data-xh-chart-palette='…'])。 */
+function schemeBlock(blocks, scheme) {
+  const own = `:where([data-xh-chart-palette='${scheme}'])`
+  const hit = blocks.find(({ selectors }) => selectors.includes(own))
+  if (!hit)
+    throw new Error(`tokens.css 里没有配色方案 ${scheme} 的取值块`)
+  return hit.decls
+}
+
 /** 根块（原语、基线）叠上主题块，按书写顺序后者覆盖前者。 */
 function themeValues(blocks, theme) {
   const own = `:where([data-theme='${theme}'])`
@@ -102,11 +118,22 @@ const blocks = parseBlocks(await readFile(TOKENS, 'utf8'))
 const failures = []
 const lines = []
 
+/** 一支颜色令牌 → sRGB：沿 var() 追到 oklch 字面量；生成器写出的 color-mix(in oklab, var(a) p%, var(b)) 两侧各追到底再混。 */
+function colorReader(resolve) {
+  const raw = name => parseOklchRaw(resolve(name).value)
+  return (name) => {
+    const { value } = resolve(name)
+    const mix = /^color-mix\(in oklab, var\((--xh-[\w-]+)\) ([\d.]+)%, var\((--xh-[\w-]+)\)\)$/.exec(value)
+    return mix ? mixOklab(raw(mix[1]), raw(mix[3]), Number(mix[2])) : parseOklch(value)
+  }
+}
+
 const colorsOf = {}
+const schemeColors = Object.fromEntries(SCHEMES.map(scheme => [scheme, {}]))
 for (const mode of MODES) {
   const values = themeValues(blocks, mode)
   const resolve = resolver(values, mode)
-  const color = name => parseOklch(resolve(name).value)
+  const color = colorReader(resolve)
   const origin = name => resolve(name).chain.at(-1).replace('--xh-color-', '')
   const surface = color('--xh-bg-surface')
   const danger = [...values.keys()].filter(name => /^--xh-color-danger-\d+$/.test(name)).map(color)
@@ -130,6 +157,27 @@ for (const mode of MODES) {
     }),
     ...checkNeutrals({ other: color('--xh-chart-categorical-other'), deemphasis: color('--xh-chart-deemphasis') }, categorical, { surface }),
   ]
+  report(checks, mode)
+
+  // 配色方案：把方案的取值块叠到这一主题的取值上，分类色槽与色块内文字改指到方案自己的一组
+  const brand = color('--xh-color-brand-600')
+  for (const scheme of SCHEMES) {
+    const scoped = new Map([...values, ...schemeBlock(blocks, scheme)])
+    const schemeColor = colorReader(resolver(scoped, `${mode} · ${scheme}`))
+    const fills = Array.from({ length: SLOTS }, (_, i) => schemeColor(`--xh-chart-categorical-${i + 1}`))
+    const texts = Array.from({ length: SLOTS }, (_, i) => schemeColor(`--xh-chart-on-categorical-${i + 1}`))
+    schemeColors[scheme][mode] = fills
+    lines.push(`  ${mode} · 方案 ${scheme}  ${fills.map(c => `${formatHex(c)} ${contrastRatio(c, surface).toFixed(2)}`).join(' · ')}`)
+    if (scheme === 'categorical') {
+      const same = fills.every((c, i) => formatHex(c) === formatHex(categorical[i])) && texts.every((c, i) => formatHex(c) === formatHex(on[i]))
+      report([{ label: '方案 categorical 同缺省', worst: null, limit: '逐个同色', pass: same, where: '' }], mode)
+      continue
+    }
+    report([...checkScheme(scheme, fills, { mode, surface, danger, brand }), ...checkOnColors(fills, texts)].map(check => ({ ...check, label: `${scheme} ${check.label}` })), mode)
+  }
+}
+
+function report(checks, mode) {
   for (const check of checks) {
     const measured = check.worst === null ? '' : `${check.worst.toFixed(2)}${check.where ? `（${check.where}）` : ''}`
     lines.push(`    ${check.pass ? '✓' : '✗'} ${check.label.padEnd(18)} ${measured.padEnd(14)} ${check.limit}`)
@@ -138,10 +186,16 @@ for (const mode of MODES) {
   }
 }
 
-for (const check of checkOrder(colorsOf.light.categorical, colorsOf.dark.categorical, colorsOf.light.brand)) {
-  lines.push(`  ${check.pass ? '✓' : '✗'} ${check.label} ${check.worst.toFixed(1)}° ${check.limit}`)
-  if (!check.pass)
-    failures.push(`${check.label}：${check.worst.toFixed(1)}°，要求 ${check.limit}`)
+const orders = [
+  ['', colorsOf.light.categorical, colorsOf.dark.categorical],
+  ...['brand', 'muted'].map(scheme => [`${scheme} `, schemeColors[scheme].light, schemeColors[scheme].dark]),
+]
+for (const [prefix, light, dark] of orders) {
+  for (const check of checkOrder(light, dark, colorsOf.light.brand)) {
+    lines.push(`  ${check.pass ? '✓' : '✗'} ${prefix}${check.label} ${check.worst.toFixed(1)}° ${check.limit}`)
+    if (!check.pass)
+      failures.push(`${prefix}${check.label}：${check.worst.toFixed(1)}°，要求 ${check.limit}`)
+  }
 }
 
 if (process.argv.includes('--verbose') || failures.length > 0)
@@ -155,4 +209,4 @@ if (failures.length > 0) {
   process.exit(1)
 }
 
-console.log(`[check-chart-palette] 通过：亮暗两套 × 分类 ${SLOTS} 色、有序 ${ORDINAL} 档、顺序、发散、涨跌与中性色全部达标（--verbose 打印度量）`)
+console.log(`[check-chart-palette] 通过：亮暗两套 × 分类 ${SLOTS} 色、有序 ${ORDINAL} 档、顺序、发散、涨跌、中性色与 ${SCHEMES.length} 套配色方案全部达标（--verbose 打印度量）`)

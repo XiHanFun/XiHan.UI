@@ -85,41 +85,41 @@
     "sequential": {
       "start": {
         "$type": "color",
-        "$value": "{color.indigo.900}"
+        "$value": "{color.brand.900}"
       },
       "mid": {
         "$type": "color",
-        "$value": "{color.indigo.500}"
+        "$value": "{color.brand.500}"
       },
       "end": {
         "$type": "color",
-        "$value": "{color.indigo.200}"
+        "$value": "{color.brand.200}"
       }
     },
     "ordinal": {
       "1": {
         "$type": "color",
-        "$value": "{color.indigo.200}"
+        "$value": "{color.brand.200}"
       },
       "2": {
         "$type": "color",
-        "$value": "{color.indigo.300}"
+        "$value": "{color.brand.300}"
       },
       "3": {
         "$type": "color",
-        "$value": "{color.indigo.400}"
+        "$value": "{color.brand.400}"
       },
       "4": {
         "$type": "color",
-        "$value": "{color.indigo.500}"
+        "$value": "{color.brand.500}"
       },
       "5": {
         "$type": "color",
-        "$value": "{color.indigo.600}"
+        "$value": "{color.brand.600}"
       },
       "6": {
         "$type": "color",
-        "$value": "{color.indigo.700}"
+        "$value": "{color.brand.700}"
       }
     },
     "diverging": {

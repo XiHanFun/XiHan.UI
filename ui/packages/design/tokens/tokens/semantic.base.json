@@ -1178,9 +1178,9 @@
       "$value": "calc({space.8} * 3)"
     },
     "area-alpha": {
-      "$description": "面积淡洗的不透明度：系列色按它铺在面积下，上沿仍是实色折线。",
+      "$description": "面积淡洗的不透明度：系列色按它铺在面积下，上沿仍是实色折线。取 0.2：两条面积叠在一起时仍分得出上下层。",
       "$type": "number",
-      "$value": 0.1
+      "$value": 0.2
     },
     "link-alpha": {
       "$description": "桑基流带的不透明度。",

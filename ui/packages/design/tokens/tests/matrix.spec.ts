@@ -67,6 +67,14 @@ function isDirectionBranch(selector: string): boolean {
   return /\[dir=/.test(selector)
 }
 
+/**
+ * 图表配色方案不是这 32 格的轴：矩阵模拟的是没写 data-xh-chart-palette 的文档，分类色槽取主题块那一支。
+ * 写给配色方案的分支在矩阵里永不命中，各套方案的取值由 check-chart-palette 门禁与浏览器用例对账。
+ */
+function isChartPaletteBranch(selector: string): boolean {
+  return /\[data-xh-chart-palette=/.test(selector)
+}
+
 function combinations(): Combination[] {
   const out: Combination[] = []
   for (const theme of AXES.theme) {
@@ -126,7 +134,7 @@ function toMatcher(selector: string): Partial<Record<Axis, string>> {
   return req
 }
 
-interface Parsed { blocks: Block[], mediaConditions: string[], supportsConditions: string[], surfaceSelectors: string[], directionSelectors: string[] }
+interface Parsed { blocks: Block[], mediaConditions: string[], supportsConditions: string[], surfaceSelectors: string[], directionSelectors: string[], chartPaletteSelectors: string[] }
 
 /**
  * 逐行扫 tokens.css。产物的形状是固定的：一行一条声明，选择器与开花括号同行，
@@ -141,6 +149,7 @@ function parse(source: string): Parsed {
   const supportsConditions: string[] = []
   const surfaceSelectors: string[] = []
   const directionSelectors: string[] = []
+  const chartPaletteSelectors: string[] = []
   let inComment = false
   let inMedia = 0
   let depth = 0
@@ -199,8 +208,10 @@ function parse(source: string): Parsed {
         continue
       }
       const branches = selector.split(',').map(s => s.trim())
-      const environment = branches.filter(branch => !isSurfaceBranch(branch) && !isDirectionBranch(branch))
-      surfaceSelectors.push(...branches.filter(isSurfaceBranch))
+      const chartPalette = branches.filter(isChartPaletteBranch)
+      chartPaletteSelectors.push(...chartPalette)
+      const environment = branches.filter(branch => !isChartPaletteBranch(branch) && !isSurfaceBranch(branch) && !isDirectionBranch(branch))
+      surfaceSelectors.push(...branches.filter(branch => !isChartPaletteBranch(branch) && isSurfaceBranch(branch)))
       directionSelectors.push(...branches.filter(isDirectionBranch))
       if (environment.length === 0) {
         // 只写给墨色域的块：不进矩阵，花括号照样配平
@@ -232,10 +243,10 @@ function parse(source: string): Parsed {
   }
 
   // @media 里那些块占了 index -1，不参与层叠
-  return { blocks: blocks.filter(b => b.index > 0), mediaConditions, supportsConditions, surfaceSelectors, directionSelectors }
+  return { blocks: blocks.filter(b => b.index > 0), mediaConditions, supportsConditions, surfaceSelectors, directionSelectors, chartPaletteSelectors }
 }
 
-const { blocks, mediaConditions, supportsConditions, surfaceSelectors, directionSelectors } = parse(css)
+const { blocks, mediaConditions, supportsConditions, surfaceSelectors, directionSelectors, chartPaletteSelectors } = parse(css)
 
 /* ---------- 层叠 ---------- */
 
@@ -469,6 +480,17 @@ describe('快照的前提', () => {
     const root = blocks.filter(b => b.decls.some(d => d.name === '--xh-direction-sign'))
     expect(root).toHaveLength(1)
     expect(root[0]!.decls.find(d => d.name === '--xh-direction-sign')!.value).toBe('1')
+  })
+
+  it('图表配色方案的取值块只有四套，每套命中自身与其下的主题边界、墨色域', () => {
+    // 配色方案按就近声明的祖先生效，不是这 32 格的轴：新的方案或新的分支冒出来时这里判红
+    const schemes = ['brand', 'categorical', 'monochrome', 'muted']
+    expect([...new Set(chartPaletteSelectors)].sort()).toEqual(schemes.flatMap(scheme => [
+      `:where([data-xh-chart-palette='${scheme}'])`,
+      `:where([data-xh-chart-palette='${scheme}'] [data-theme])`,
+      `:where([data-xh-chart-palette='${scheme}'] [data-xh-ink])`,
+      `:where([data-xh-chart-palette='${scheme}'] [data-xh-ink-surface] > *)`,
+    ]).sort())
   })
 
   it('不带 data-theme 的默认档与浅色档逐条同名同值', () => {

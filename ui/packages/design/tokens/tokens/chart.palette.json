@@ -1,5 +1,5 @@
 {
-  "$description": "由 build/emit-chart-palette.mjs 从基础色板计算，不要手改；emit-tokens.mjs 把 light / dark 两组并进对应主题的 chart 组。相邻色槽在红色弱、绿色弱模拟下的最小 ΔE 17.94，任意两色正常视觉 ΔE 的最小值 12.61。",
+  "$description": "由 build/emit-chart-palette.mjs 从基础色板计算，不要手改；emit-tokens.mjs 把 light / dark 两组并进对应主题的 chart 组。缺省的多彩分类：相邻色槽在红色弱、绿色弱模拟下的最小 ΔE 17.94，任意两色正常视觉 ΔE 的最小值 12.61。palette-<方案> 是 data-xh-chart-palette 可切换的各套配色。",
   "light": {
     "chart": {
       "categorical": {
@@ -71,6 +71,286 @@
           "$value": "{color.neutral.950}"
         },
         "$description": "写在对应色块内部的文字色，按对比度在纯白与最深的中性档之间取一个，对色块 ≥ 4.5:1。色块外的文字一律用文字令牌。"
+      },
+      "palette-categorical": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.indigo.500}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.lime.500}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.pink.600}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.amber.500}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.blue.700}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.green.700}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.purple.500}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.teal.500}"
+        },
+        "$description": "多彩分类（缺省）：与 chart.categorical 同值，供嵌套区域用 data-xh-chart-palette=\"categorical\" 改回缺省。"
+      },
+      "palette-categorical-on": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "$description": "palette-categorical 各色块内部的文字色，对色块 ≥ 4.5:1。"
+      },
+      "palette-monochrome": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.brand.600}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.brand.500}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.brand.400}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.brand.300}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.brand.200}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.brand.100}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.brand.50}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.brand.50} 50%, {bg.surface})"
+        },
+        "$description": "主题单色：品牌色阶由深到浅，色槽 1 是主题色；随 data-brand 换色。浅档低于 3:1，靠图例与数据表补偿，单色方案适合四个以内的系列。"
+      },
+      "palette-monochrome-on": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "$description": "palette-monochrome 各色块内部的文字色，对色块 ≥ 4.5:1。"
+      },
+      "palette-brand": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.indigo.600}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.teal.500}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.pink.600}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.blue.500}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.purple.600}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.cyan.600}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.purple.500}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.blue.700}"
+        },
+        "$description": "柔和品牌：品牌色相两侧的冷色一族加一抹粉，同一色相至多两档。"
+      },
+      "palette-brand-on": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "$description": "palette-brand 各色块内部的文字色，对色块 ≥ 4.5:1。"
+      },
+      "palette-muted": {
+        "1": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.indigo.500} 45%, {color.neutral.450})"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.orange.600} 45%, {color.neutral.500})"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.pink.500} 45%, {color.neutral.450})"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.lime.600} 45%, {color.neutral.500})"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.blue.600} 45%, {color.neutral.500})"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.amber.500} 45%, {color.neutral.450})"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.purple.600} 45%, {color.neutral.500})"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.green.500} 45%, {color.neutral.450})"
+        },
+        "$description": "莫兰迪柔彩：基础色板的色与明度相近的中性档在 oklab 里混合，彩度 0.035–0.10。"
+      },
+      "palette-muted-on": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "$description": "palette-muted 各色块内部的文字色，对色块 ≥ 4.5:1。"
       }
     }
   },
@@ -145,6 +425,286 @@
           "$value": "{color.neutral.950}"
         },
         "$description": "写在对应色块内部的文字色，按对比度在纯白与最深的中性档之间取一个，对色块 ≥ 4.5:1。色块外的文字一律用文字令牌。"
+      },
+      "palette-categorical": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.indigo.500}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.lime.500}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.pink.600}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.amber.500}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.blue.700}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.green.700}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.purple.500}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.teal.500}"
+        },
+        "$description": "多彩分类（缺省）：与 chart.categorical 同值，供嵌套区域用 data-xh-chart-palette=\"categorical\" 改回缺省。"
+      },
+      "palette-categorical-on": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "$description": "palette-categorical 各色块内部的文字色，对色块 ≥ 4.5:1。"
+      },
+      "palette-monochrome": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.brand.500}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.brand.600}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.brand.700}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.brand.800}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.brand.900}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.brand.950}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.brand.950} 60%, {bg.surface})"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.brand.950} 30%, {bg.surface})"
+        },
+        "$description": "主题单色：品牌色阶由深到浅，色槽 1 是主题色；随 data-brand 换色。浅档低于 3:1，靠图例与数据表补偿，单色方案适合四个以内的系列。"
+      },
+      "palette-monochrome-on": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "$description": "palette-monochrome 各色块内部的文字色，对色块 ≥ 4.5:1。"
+      },
+      "palette-brand": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.indigo.600}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.teal.500}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.pink.600}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.blue.500}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.purple.600}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.cyan.600}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.purple.500}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.blue.700}"
+        },
+        "$description": "柔和品牌：品牌色相两侧的冷色一族加一抹粉，同一色相至多两档。"
+      },
+      "palette-brand-on": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "$description": "palette-brand 各色块内部的文字色，对色块 ≥ 4.5:1。"
+      },
+      "palette-muted": {
+        "1": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.indigo.400} 45%, {color.neutral.400})"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.orange.600} 45%, {color.neutral.500})"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.pink.500} 45%, {color.neutral.450})"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.lime.600} 45%, {color.neutral.500})"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.blue.600} 45%, {color.neutral.500})"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.amber.400} 45%, {color.neutral.400})"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.purple.600} 45%, {color.neutral.500})"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "color-mix(in oklab, {color.green.400} 45%, {color.neutral.400})"
+        },
+        "$description": "莫兰迪柔彩：基础色板的色与明度相近的中性档在 oklab 里混合，彩度 0.035–0.10。"
+      },
+      "palette-muted-on": {
+        "1": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "7": {
+          "$type": "color",
+          "$value": "{color.neutral.0}"
+        },
+        "8": {
+          "$type": "color",
+          "$value": "{color.neutral.950}"
+        },
+        "$description": "palette-muted 各色块内部的文字色，对色块 ≥ 4.5:1。"
       }
     }
   }
