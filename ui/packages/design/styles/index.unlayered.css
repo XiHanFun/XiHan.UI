@@ -2770,6 +2770,12 @@
   flex: none;
 }
 
+/* 盒里有标签时起始内衬收到 --xh-space-1：标签自带内距，行首再留一整段控件内衬就显得空。
+   标签自己的面（没聚焦时白底 + 描边）写在 tag.css 的字段宿主档 */
+[data-scope][data-xh-field-chrome]:has([data-scope][data-xh-tag-list]:not([hidden])) {
+  padding-inline-start: var(--xh-space-1);
+}
+
 /* family/motion.css */
 /* 定义 motion 样式。 */
 
@@ -13532,6 +13538,29 @@
   --xh-_tag-h: var(--xh-chip-h-lg);
   --xh-_tag-font-size: var(--xh-text-body-size);
   --xh-_tag-line-h: var(--xh-control-indicator-lg);
+}
+
+/* —— 字段里的已选标签 —— */
+/* 坐在字段盒里的标签（Select / Combobox / Cascader / TreeSelect / 各类 Picker 的标签行与 TagsInput）是已选值的摘要：
+   大档字段里字号也钉在说明档，换成正文字号会与输入的文字抢层级。排在尺寸档之后，同特指度下压得住 */
+:where([data-xh-field-chrome]) .xh-scope-tag[data-part='root'][data-size='lg'] {
+  --xh-_tag-font-size: var(--xh-text-caption-size);
+}
+
+/* 盒没聚焦时铺着字段淡底，淡底标签几乎化进底里：换成白底 + 缺省描边一枚枚立出来，叉的悬停 / 按下随之
+   走白底阶梯 100 → 200；聚焦后盒换成白色承载面，标签回到自己的淡底。禁用的盒不换（标签照禁用档置灰），
+   写了语气的、实心与无壳的标签保留自己的面；--xh-tag-* 覆盖槽照旧优先 */
+:where([data-xh-field-chrome]:not(:focus-within):not([data-disabled])) .xh-scope-tag[data-part='root']:is(:not([data-variant]), [data-variant='subtle'], [data-variant='outline']):not([data-tone], [data-disabled]) {
+  border-color: var(--xh-tag-border, var(--xh-border-default));
+  background: var(--xh-tag-bg, var(--xh-bg-surface));
+}
+
+:where([data-xh-field-chrome]:not(:focus-within):not([data-disabled])) .xh-scope-tag[data-part='root']:is(:not([data-variant]), [data-variant='subtle'], [data-variant='outline']):not([data-tone], [data-disabled]) .xh-scope-tag[data-part='close-trigger']:hover:not(:disabled) {
+  background: var(--xh-tag-close-bg-hover, var(--xh-bg-subtle));
+}
+
+:where([data-xh-field-chrome]:not(:focus-within):not([data-disabled])) .xh-scope-tag[data-part='root']:is(:not([data-variant]), [data-variant='subtle'], [data-variant='outline']):not([data-tone], [data-disabled]) .xh-scope-tag[data-part='close-trigger']:not(:disabled):is(:active, [data-pressed]) {
+  background: var(--xh-tag-close-bg-active, var(--xh-bg-subtle-hover));
 }
 
 /* —— 禁用 —— */
@@ -44792,7 +44821,7 @@
      换进换出时与标签一样高 */
   --xh-_tags-input-control-h: var(--xh-control-h-md);
   --xh-_tags-input-control-px: var(--xh-control-px-md);
-  --xh-_tags-input-control-gap: var(--xh-control-gap-md);
+  --xh-_tags-input-control-gap: var(--xh-space-1);
   --xh-_tags-input-input-font-size: var(--xh-control-font-md);
   --xh-_tags-input-item-font-size: var(--xh-control-caption-md);
   --xh-_tags-input-item-h: var(--xh-chip-h-md);
@@ -44824,7 +44853,6 @@
   --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-sm));
   --xh-_tags-input-control-h: var(--xh-control-h-sm);
   --xh-_tags-input-control-px: var(--xh-control-px-sm);
-  --xh-_tags-input-control-gap: var(--xh-control-gap-sm);
   --xh-_tags-input-input-font-size: var(--xh-control-font-sm);
   --xh-_tags-input-item-font-size: var(--xh-control-caption-sm);
   --xh-_tags-input-item-h: var(--xh-chip-h-sm);
@@ -44835,7 +44863,6 @@
   --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-lg));
   --xh-_tags-input-control-h: var(--xh-control-h-lg);
   --xh-_tags-input-control-px: var(--xh-control-px-lg);
-  --xh-_tags-input-control-gap: var(--xh-control-gap-lg);
   --xh-_tags-input-input-font-size: var(--xh-control-font-lg);
   --xh-_tags-input-item-font-size: var(--xh-control-caption-lg);
   --xh-_tags-input-item-h: var(--xh-chip-h-lg);
@@ -44888,6 +44915,12 @@
 
 .xh-scope-tags-input[data-part='control'][hidden] {
   display: none;
+}
+
+/* 盒里有标签时起始内衬收到 --xh-space-1，标签之间、标签与输入框之间隔 --xh-space-1（盒的 gap 缺省就是它）：
+   标签自带内距，行首再留一整段控件内衬就显得空。标签自己的面（没聚焦时白底 + 描边）写在 tag.css 的字段宿主档 */
+.xh-scope-tags-input[data-part='control']:has(> .xh-scope-tags-input[data-part='item']) {
+  padding-inline-start: var(--xh-space-1);
 }
 
 /* 顶到上限是 TagsInput 独有状态：再加进不去，边框先给个提示；invalid 同时出现时由 Field Chrome 的
