@@ -69,11 +69,11 @@ function resolvePx(token: string, scope: HTMLElement): number {
 }
 
 describe('radio-group 默认视觉', () => {
-  it('集合标题 14 / 500 / fg-muted，字号不随档；标题到集合与条目之间都是 space-2', () => {
+  it('集合标题 14 / 400 / fg-muted，字号不随档；标题到集合与条目之间都是 space-2', () => {
     const { root, label, items } = mount(' data-size="lg"')
     const style = getComputedStyle(label)
     expect(Number.parseFloat(style.fontSize)).toBe(resolvePx('--xh-text-label-size', root))
-    expect(style.fontWeight).toBe('500')
+    expect(style.fontWeight).toBe('400')
     expect(style.color).toBe(resolveColor('--xh-fg-muted', root))
     // lg 档的条目文字随档，标题不随
     expect(Number.parseFloat(getComputedStyle(items[0]!).fontSize)).toBe(resolvePx('--xh-control-font-lg', root))
