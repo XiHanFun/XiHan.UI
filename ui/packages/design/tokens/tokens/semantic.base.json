@@ -217,6 +217,11 @@
       "$type": "icon",
       "$value": "download"
     },
+    "mark-file": {
+      "$description": "文件：文件上传条目没放缩略图时缩略图位上画的那枚字形。",
+      "$type": "icon",
+      "$value": "file"
+    },
     "mark-chevron-down": {
       "$type": "icon",
       "$value": "chevron-down"
@@ -979,6 +984,13 @@
       "$description": "折叠成图标栏时的宽度：一枚图标居中，两侧留得下行内衬。",
       "$type": "dimension",
       "$value": "4rem"
+    }
+  },
+  "dropzone": {
+    "min-h": {
+      "$description": "拖放区（文件上传）的最小高：内容很少时也留出一块够放下文件的面，拖着文件过来容易对准。",
+      "$type": "dimension",
+      "$value": "10rem"
     }
   },
   "viewport": {

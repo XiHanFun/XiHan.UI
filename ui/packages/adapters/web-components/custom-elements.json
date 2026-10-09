@@ -27286,6 +27286,9 @@
               "name": "--xh-file-upload-item-bg"
             },
             {
+              "name": "--xh-file-upload-item-bg-error"
+            },
+            {
               "name": "--xh-file-upload-item-border"
             },
             {
