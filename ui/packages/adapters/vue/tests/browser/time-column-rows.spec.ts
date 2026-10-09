@@ -86,10 +86,25 @@ function select(size: Size): VNode {
   ])
 }
 
-async function measure(render: () => VNode, scope: string, part: string): Promise<{ height: number, font: string }> {
+/** 令牌在该元素所在处解到的长度（px）：尺寸档与密度都写在祖先上，要在格子旁边解才对得上。 */
+function resolveLength(token: string, scope: HTMLElement): number {
+  const probe = document.createElement('span')
+  probe.style.display = 'block'
+  probe.style.inlineSize = `var(${token})`
+  scope.append(probe)
+  const value = Number.parseFloat(getComputedStyle(probe).inlineSize)
+  probe.remove()
+  return value
+}
+
+async function measure(render: () => VNode, scope: string, part: string): Promise<{ height: number, font: string, action: number }> {
   await mount(render)
   const el = first(scope, part)
-  const out = { height: el.getBoundingClientRect().height, font: getComputedStyle(el).fontSize }
+  const out = {
+    height: el.getBoundingClientRect().height,
+    font: getComputedStyle(el).fontSize,
+    action: resolveLength('--xh-control-action-size', el.parentElement!),
+  }
   app!.unmount()
   host!.remove()
   document.getElementById('xh-portal-root')?.remove()
@@ -103,8 +118,8 @@ describe.each(['sm', 'md', 'lg'] as const)('%s 档的时间行', (size) => {
     const option = await measure(() => select(size), 'select', 'item')
     const timeItem = await measure(() => time(size), 'time-picker', 'item')
     const dateItem = await measure(() => date(size), 'date-picker', 'time-item')
-    expect(timeItem.height).toBe(24)
-    expect(dateItem.height).toBe(24)
+    expect(timeItem.height).toBe(timeItem.action)
+    expect(dateItem.height).toBe(dateItem.action)
     expect(timeItem.font).toBe(option.font)
     expect(dateItem.font).toBe(option.font)
   })
