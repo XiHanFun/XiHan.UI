@@ -152,7 +152,7 @@ describe('几何', () => {
   it('扇区四角取与柱同一档圆角（度量槽），焦点环的圆角放大一道间隙', async () => {
     const rig = await makeRig(BASE)
     const radius = rig.service.context.get('metrics').radius
-    expect(radius).toBe(4)
+    expect(radius).toBe(2)
     expect(slices(rig.api()).every(a => a.cornerRadius === radius)).toBe(true)
     rig.service.send({ type: 'DATUM.FOCUS', ref: slices(rig.api())[0]!.datum!, key: '华东', focus: true, visible: true })
     await settle()
