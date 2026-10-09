@@ -1,6 +1,6 @@
 <template>
   <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" data-direction="fixed" aria-hidden="true" focusable="false">
-    <rect x="28.5" y="20.5" width="183" height="119" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <rect x="28.5" y="20.5" width="183" height="119" rx="4" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
     <path d="M40 34l4 4 4-4" stroke="var(--xh-fg-muted)" stroke-width="2" />
     <path d="M59 36h6" stroke="var(--xh-fg-muted)" stroke-width="6" />
     <path d="M67 56h22" stroke="var(--xh-fg-brand-strong)" stroke-width="6" />

@@ -1,8 +1,8 @@
 <template>
   <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" data-direction="fixed" aria-hidden="true" focusable="false">
-    <rect x="72" y="8" width="12" height="12" rx="4" fill="var(--xh-chart-categorical-1)" />
+    <rect x="72" y="8" width="12" height="12" rx="2" fill="var(--xh-chart-categorical-1)" />
     <path d="M92 14h24" stroke="var(--xh-chart-label)" stroke-width="4" />
-    <rect x="132" y="8" width="12" height="12" rx="4" fill="var(--xh-chart-categorical-2)" />
+    <rect x="132" y="8" width="12" height="12" rx="2" fill="var(--xh-chart-categorical-2)" />
     <path d="M152 14h24" stroke="var(--xh-chart-label)" stroke-width="4" />
     <path d="M120 36L169.45 71.93L150.56 130.07L89.44 130.07L70.55 71.93zM120 53.33L152.97 77.29L140.38 116.05L99.62 116.05L87.03 77.29zM120 70.67L136.48 82.64L130.19 102.02L109.81 102.02L103.52 82.64zM120 88L120 36M120 88L169.45 71.93M120 88L150.56 130.07M120 88L89.44 130.07M120 88L70.55 71.93" stroke="var(--xh-chart-grid)" />
     <path d="M120 41.2L154.62 76.75L144.45 121.66L104.72 109.03L90.33 78.36z" fill="var(--xh-chart-categorical-1)" fill-opacity="var(--xh-chart-area-alpha)" stroke="var(--xh-chart-categorical-1)" stroke-width="2" />

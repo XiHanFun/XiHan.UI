@@ -15,7 +15,7 @@ primitive  ──►  semantic  ──►  组件私有槽
 --xh-color-brand-500: oklch(0.623 0.214 258);
 --xh-color-neutral-950: oklch(0.145 0.005 258);
 --xh-space-4: 16px;
---xh-radius-md: 8px;
+--xh-radius-md: 4px;
 ```
 
 颜色使用 `oklch` 而不是 `hex` / `hsl`：同一明度的不同色相在感知上亮度一致，深色反转与对比度调整不需要逐色手工修正。
@@ -26,12 +26,12 @@ primitive  ──►  semantic  ──►  组件私有槽
 --xh-bg-canvas: var(--xh-color-neutral-0);
 --xh-bg-surface: var(--xh-color-neutral-0);
 --xh-bg-brand: var(--xh-color-brand-600);
---xh-fg-default: var(--xh-color-neutral-950);
+--xh-fg-default: var(--xh-color-neutral-900);
 --xh-fg-muted: var(--xh-color-neutral-600);
---xh-border-subtle: var(--xh-color-neutral-100);
---xh-control-h-md: 36px;
+--xh-border-subtle: color-mix(in oklab, var(--xh-ink) 4.7%, transparent);
+--xh-control-h-md: 32px;
 --xh-shape-control: var(--xh-radius-sm);
---xh-elevation-floating: var(--xh-shadow-md);
+--xh-elevation-floating: 0 4px 10px oklch(0 0 0 / 0.1);
 --xh-motion-duration-enter: var(--xh-duration-normal);
 --xh-layer-modal: var(--xh-z-modal);
 --xh-overlay-max-w: 20rem;
@@ -47,14 +47,14 @@ primitive  ──►  semantic  ──►  组件私有槽
 
 | 令牌 | 值 | 用途 |
 | --- | ---: | --- |
-| `--xh-shape-inset` | 4px | 嵌在控件里的内层：菜单项、标签内部、微型状态块 |
-| `--xh-shape-control` | 4px | 控件本体：Button、Input、Select Trigger、Toggle、分页按钮 |
-| `--xh-shape-surface` | 8px | 成面的静态容器：Card、Alert、Panel、列表容器、Tabs segment 的轨道 |
-| `--xh-shape-overlay` | 12px | 脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Notification |
+| `--xh-shape-inset` | 2px | 嵌在控件里的内层：勾选方框、页内列表的候选行、字段内的清空钮、色块 |
+| `--xh-shape-control` | 2px | 控件本体：Button、Input、Select Trigger、Toggle、kbd、tooltip、单选组 segmented 形态的轨道；方签 Tag、状态方签与 Alert 提示条 |
+| `--xh-shape-surface` | 4px | 成面的静态容器：Card、Panel、列表容器、Tabs segment 的轨道、分页的描边方块 |
+| `--xh-shape-overlay` | 4px | 脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Notification |
 | `--xh-shape-circle` | 50% | 正圆：头像、圆形图标按钮、单选指示器 |
 | `--xh-shape-pill` | 9999px | 胶囊：Badge 等状态 chip（Tag 与结果标记是方签，取 control），以及轨道、指示条、手柄、滚动条滑块等一维对象 |
 
-普通按钮、字段、卡片与浮层不使用 pill；内层圆角不超过外层圆角减去内边距；相连控件消除相接侧圆角。亮色、暗色与紧凑密度不改变形状身份。正方盒取 circle，不用 pill 冒充圆。
+形状令牌引用原始阶梯 `--xh-radius-sm / md / lg`（2 / 4 / 8px）：inset 与 control 取 sm，surface 与 overlay 取 md。普通按钮、字段、卡片与浮层不使用 pill，Tag 与结果标记是方签；锚定浮层里的列表行与 Command、Transfer 的列表行是通栏行，不取圆角；内层圆角不超过外层圆角减去内边距；相连控件消除相接侧圆角。亮色、暗色与紧凑密度不改变形状身份。正方盒取 circle，不用 pill 冒充圆。
 
 ## 点击触感
 
@@ -62,8 +62,10 @@ primitive  ──►  semantic  ──►  组件私有槽
 
 | 阶段 | 时长 | 缓动 | 结果 |
 | --- | ---: | --- | --- |
-| 按下 | `--xh-motion-duration-press`（120ms） | `--xh-motion-ease-press` | scale 1 → `--xh-motion-scale-press`（0.97），背景进入 active |
+| 按下 | `--xh-motion-duration-press`（120ms） | `--xh-motion-ease-press` | 背景进入 active；scale 1 → `--xh-motion-scale-press`（缺省 1，只换面） |
 | 释放 | `--xh-motion-duration-release`（200ms） | `--xh-motion-ease-release` | scale 回到 1；背景、描边、字色按 `--xh-motion-duration-micro` 回到 hover / rest |
+
+缺省只换面不缩放；要按下回弹，在根上把 `--xh-motion-scale-press` 写回 0.97，时间线不用改。
 
 Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Collapsible 等 disclosure trigger 使用同一节奏（按下 120ms 换到 active 面，松开按 micro 回到 hover / rest），但只切换表面，不缩放整条，也不允许零反馈。减少动效时 `--xh-motion-scale-press` 归 1、两段时长归 1ms，颜色反馈保留。
 
@@ -86,12 +88,14 @@ Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Col
 
 | 角色 | 字号 / 字重 / 颜色 | 与相邻元素的间距 |
 | --- | --- | --- |
-| 字段标签（单字段与 Slider、Rating、Signature、Color* 等复合单字段） | `--xh-text-label-size` 14 / `--xh-text-label-weight` 500 / `--xh-fg-default` | 贴控件 `--xh-space-1` |
-| 集合标题（RadioGroup、CheckboxGroup、Listbox、Tree、TagGroup、Descriptions） | 14 / 500 / `--xh-fg-muted` | 与集合 `--xh-space-2` |
+| 字段标签（单字段与 Slider、Rating、Signature、Color* 等复合单字段） | `--xh-text-label-size` 14 / `--xh-text-label-weight` 400 / `--xh-fg-default` | 贴控件 `--xh-space-1` |
+| 集合标题（RadioGroup、CheckboxGroup、Listbox、Tree、TagGroup、Descriptions） | 14 / `--xh-text-label-weight` 400 / `--xh-fg-muted` | 与集合 `--xh-space-2` |
 | 说明 / helper | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal` | 与控件 `--xh-space-1` |
 | 错误文案 | 13 / `--xh-fg-danger` | 与控件 `--xh-space-1` |
-| Surface / Feedback / 浮层内标题 | 14 / `--xh-font-weight-semibold` | — |
-| 页面级面板标题（Dialog、Drawer、Tour） | heading-3（`--xh-text-heading-3-*`） | — |
+| 浮层内与小面标题（Popover、HoverCard、Popconfirm、FloatingPanel、Approval、Timeline、EmptyState、Citation） | 14 / `--xh-font-weight-medium` | — |
+| 区块与面板标题（Card、Descriptions、Alert、Notification、Steps；Dialog、Drawer、Tour） | heading-3（`--xh-text-heading-3-*`）：16 / 500 | — |
+| 页面标题（PageHeader） | heading-2（`--xh-text-heading-2-*`）：20 / 500 | — |
+| 大号数值（Statistic、Timer、NumberAnimation） | sm / md / lg 依次取 heading-2 / heading-1 / display（`--xh-text-display-size`）：20 / 24 / 28 | — |
 | 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
 
 必填星号与错误文案是公共层规则：`--xh-glyph-mark-required` + `--xh-space-1` + `--xh-fg-danger`，自带标签的字段不各画一套；禁用标签色统一 `--xh-fg-subtle`，单行标签 `--xh-leading-none`。控件内图标随 size 档取 `--xh-glyph-size-sm / md / lg`（16 / 20 / 24）；`--xh-glyph-size-text`（随文 1em）只给 Tag、Kbd、Breadcrumb、Typography、Highlight 这类纯行内文字组件。
@@ -161,7 +165,7 @@ brand、density、dir、material 没有平台媒体查询，因此不接受伪�
 | `dir` | 由逻辑属性驱动 LTR / RTL 布局；只认物理方向的量（translate、渐变角度、clip-path 左右两侧）乘 `--xh-direction-sign` 换向——它按就近的 `dir` 继承（ltr 为 1、rtl 为 -1），局部写回 `ltr` 的子树跟着翻回；`transform-origin` 这类物理坐标取 `--xh-direction-start` / `--xh-direction-end`（行内起始缘 / 末尾缘的水平位置，ltr 为 0% / 100%，rtl 反过来） |
 | `data-contrast` | `more` 加强边界；`default` 显式回到常规档 |
 | `data-motion` | `reduce` 触发局部 CSS 动效降级 |
-| `data-transparency` | `reduce` 把磨砂材质切成实体配方 |
+| `data-transparency` | `reduce` 把主题开出的透景材质切回实体配方 |
 | `data-material` | `liquid` 让浮在内容之上的导航层部件（浮动钮、媒体控制、吸顶顶栏）换成液态面；`standard` 保持原材质，最近的祖先生效 |
 
 ## 父作用域、Portal 与回收
@@ -190,17 +194,17 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 
 ## 材质配方
 
-令牌配方五档，每档都提供同名九项令牌：`bg`、`backdrop`、`border`、`highlight`、`shadow`、`separator`、`fg`、`fg-muted`、`focus-surface`；M5 liquid 另有五项专用令牌。透明的磨砂面只允许用于瞬态浮层；不提供玻璃材质，也不提供任何兼容别名。另有 raised / floating 两个由海拔令牌组成的叠加档：它们没有 `--xh-material-*` 令牌，只能写成 solid 描边 + solid 底 + 对应海拔的组合。
+令牌配方五档，每档都提供同名九项令牌：`bg`、`backdrop`、`border`、`highlight`、`shadow`、`separator`、`fg`、`fg-muted`、`focus-surface`；M5 liquid 另有五项专用令牌。缺省各档都是实体面；透景（半透明底 + 背景滤镜）只允许主题给瞬态浮层开；不提供玻璃材质，也不提供任何兼容别名。另有 raised / floating 两个由海拔令牌组成的叠加档：它们没有 `--xh-material-*` 令牌，只能写成 solid 描边 + solid 底 + 对应海拔的组合。
 
 | 编号 | 令牌 | 用途 | 光学 |
 | --- | --- | --- | --- |
-| M0 solid | `--xh-material-solid-*` | 静态内容面缺省：border-default 描边 + surface 底 + 无影；字段静息同为描边式 | 实体底色，无高光、无投影 |
-| M1 soft | `--xh-material-soft-*` | Button soft、Tag、Popconfirm 动作等次级操作；不用于 Card 与字段 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
-| M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等需要透景的锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 0.88 不透明度，16px 模糊，108% 饱和度，1px 可见边界 |
-| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 完全不透明，无背景模糊，三层高层投影 |
+| M0 solid | `--xh-material-solid-*` | 静态内容面缺省：border-default 描边 + surface 底 + 无影；字段静息同为描边式，另铺 `--xh-bg-field` 淡底 | 实体底色，无高光、无投影 |
+| M1 soft | `--xh-material-soft-*` | 柔和淡底的次级面；不用于 Card 与字段。Button 与 Tag 是平面面，不取它的顶光与投影 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
+| M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 实体 surface 底，无背景模糊，1px border-default 描边，一层 `0 4px 10px` 柔和投影，无顶光 |
+| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 实体 surface 底，无背景模糊，一层 `0 4px 12px` 投影 |
 | M5 liquid | `--xh-material-liquid-*` | 只在 `data-material="liquid"` 下出现：浮在内容之上的导航层——浮动钮（FloatButton、BackTop、MessageFeed / Log 的回到底部）、媒体控制（Carousel 控制钮与分页条、ImageViewer 控制层）、吸顶的 Layout 顶栏 | 可读下限浅 0.48 / 深 0.61 不透明度，8px 模糊，140% 饱和度，墨色细线 + 1px 边缘光，Chromium 下边缘折射 |
-| raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（Tabs segment 的滑块、开关拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色，一层低海拔投影 |
-| floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，中海拔投影 |
+| raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（Tabs segment 的滑块、开关拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色；`--xh-elevation-raised` 缺省 none（平面），主题要抬起感时再给一层影 |
+| floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，一层 `0 4px 10px` 柔和投影 |
 
 | 后缀 | 用途 |
 | --- | --- |
@@ -210,31 +214,31 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 | `fg` / `fg-muted` | 正文与次要文字，始终不透明 |
 | `focus-surface` | 键盘聚焦时铺在焦点环内侧的实体隔离底 |
 
-M2 frosted 在库里只有一份实现：材质家族配方 `@xihan-ui/styles/material.css`。组件在部件上投影 `data-xh-material="frosted"`，锚定浮层的内容面由配方画描边、底、1px 顶光、前景、投影与背景滤镜；浮动钮的面归 Action Control，由配方给交互阶梯（悬停 / 按下换不透明淡底一档、二档，键盘聚焦铺 `focus-surface`）。自定义的浮层面写同一个属性即可接入，用 `--xh-frosted-bg`、`--xh-frosted-border`、`--xh-frosted-fg`、`--xh-frosted-shadow`、`--xh-frosted-backdrop`、`--xh-frosted-highlight` 覆盖。
+M2 frosted 在库里只有一份实现：材质家族配方 `@xihan-ui/styles/material.css`。组件在部件上投影 `data-xh-material="frosted"`，锚定浮层的内容面由配方画描边、底、前景与投影，背景滤镜与 1px 顶光两条通道缺省为空、留给要透景的主题；浮动钮的面归 Action Control，由配方给交互阶梯（悬停 / 按下换不透明淡底一档、二档，键盘聚焦铺 `focus-surface`）。自定义的浮层面写同一个属性即可接入，用 `--xh-frosted-bg`、`--xh-frosted-border`、`--xh-frosted-fg`、`--xh-frosted-shadow`、`--xh-frosted-backdrop`、`--xh-frosted-highlight` 覆盖。
 
-Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--xh-elevation-raised`）、`subtle`（`--xh-bg-subtle` + 透明占位边 + 无影）、`ghost`（不写边、底与影，只允许分隔线）。边界只由描边承担，阴影与淡底都不作为边界。
+Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--xh-elevation-raised`，缺省 none）、`subtle`（`--xh-bg-subtle` + 透明占位边 + 无影）、`ghost`（不写边、底与影，只允许分隔线）。边界只由描边承担，阴影与淡底都不作为边界。
 
-环境轴在同一令牌名上原位降级：高对比档提高不透明度并加强边界；减少透明度与打印改为实体底并关闭背景滤镜；强制色改由 `Canvas` / `CanvasText` 表达。四档在浅色、深色两套主题下都按黑、白、中灰、页面与品牌背景验证正文至少 4.5:1、焦点环对隔离底至少 3:1。
+环境轴在同一令牌名上原位降级：高对比档加强边界；减少透明度与打印强制实体底、关闭背景滤镜（主题开了透景也一样）；强制色改由 `Canvas` / `CanvasText` 表达。四档在浅色、深色两套主题下都按黑、白、中灰、页面与品牌背景验证正文至少 4.5:1、焦点环对隔离底至少 3:1。
 
 主题与对比度可以分别声明在不同层级：每一层采用最近的 `data-theme` 和 `data-contrast`。子主题不撤销祖先的高对比度，`data-contrast="default"` 可以局部恢复常规档；兄弟区域互不影响。
 
-### 磨砂面的使用范围
+### frosted 浮层面的使用范围
 
-- 只用于需要保留背景空间感的瞬态浮层，正文、表单主体、Card、Table、Notification 与 Dialog 主阅读面不使用。
-- 不把 `backdrop-filter` 放在页面根、大滚动区或重叠的多层表面，不对模糊半径做动画。
-- 焦点环必须搭配 `focus-surface` 对应的实体隔离面。
+- 名字沿用 frosted，缺省取值是实体弹出层：不采样背后内容，没有顶部边界光，1px 描边承担可见边界，不能只靠投影分层。
+- 只用于锚定瞬态浮层，正文、表单主体、Card、Table、Notification 与 Dialog 主阅读面不使用。
+- 主题要磨砂透景时，给 `--xh-material-frosted-bg` 半透明底、给 backdrop 一档 blur（不高于 16px，saturate 不高于 1.08）、给 highlight 不超过 1px 的内侧顶光；开了透景就不把 `backdrop-filter` 放在页面根、大滚动区或重叠的多层表面，不对模糊半径做动画，焦点环搭配 `focus-surface` 对应的实体隔离面。
 
-### 紧凑磨砂
+### 紧凑配方（Tooltip）
 
-Tooltip 等小型反白表面使用三支 compact 配方组合 M2 的边界、前景与高光：
+Tooltip 保留反白身份，用三支 compact 配方组合 M2 的前景；边不取 frosted 描边（装饰边压在反白深底上看不见），改取 on 色 20% 拼色承担 1px 可见边界：
 
 | 配方 | 常规值 |
 | --- | --- |
-| `--xh-material-frosted-compact-alpha` | 0.94，按内置反白与六种 tone 在黑、白、灰、页面和品牌底上验证正文对比度 |
-| `--xh-material-frosted-compact-backdrop` | 8px 模糊、104% 饱和度 |
-| `--xh-material-frosted-compact-shadow` | 明暗独立的两层小投影 |
+| `--xh-material-frosted-compact-alpha` | 不透明（`--xh-alpha-opaque`） |
+| `--xh-material-frosted-compact-backdrop` | none，无模糊 |
+| `--xh-material-frosted-compact-shadow` | 一层 `0 4px 10px` 投影（浅色 10% 黑、深色 36% 黑） |
 
-高对比、强制颜色和打印分别改为不透明、无模糊、无投影；减少透明时保留小投影表达浮层位置。组件只经这三支配方消费光学参数，不直接选择 alpha 或 blur 原语。
+高对比、强制颜色和打印去掉投影；减少透明时保留小投影表达浮层位置。组件只经这三支配方消费光学参数，不直接选择 alpha 或 blur 原语。
 
 ### 液态材质
 

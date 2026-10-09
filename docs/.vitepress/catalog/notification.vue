@@ -1,8 +1,8 @@
 <template>
   <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-    <rect x="16.5" y="16.5" width="207" height="127" rx="8" stroke="var(--xh-border-default)" />
+    <rect x="16.5" y="16.5" width="207" height="127" rx="4" stroke="var(--xh-border-default)" />
     <path d="M30 32h44M30 44h28" stroke="var(--xh-fg-muted)" stroke-width="4" />
-    <rect x="60.5" y="24.5" width="151" height="63" rx="12" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <rect x="60.5" y="24.5" width="151" height="63" rx="4" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
     <g data-tone="info">
       <path d="M86 44a6 6 0 1 1-12 0a6 6 0 1 1 12 0m-6-.5v3.5m0-6h0" stroke="var(--xh-tone-fg)" stroke-width="2" />
     </g>
@@ -10,7 +10,7 @@
     <path d="M98 60h88" stroke="var(--xh-fg-muted)" stroke-width="4" />
     <path d="M98 74h28" stroke="var(--xh-fg-brand)" stroke-width="4" />
     <path d="M192 36l8 8m0-8l-8 8" stroke="var(--xh-fg-subtle)" stroke-width="2" />
-    <rect x="60.5" y="96.5" width="151" height="39" rx="12" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <rect x="60.5" y="96.5" width="151" height="39" rx="4" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
     <g data-tone="success">
       <path d="M86 116a6 6 0 1 1-12 0a6 6 0 1 1 12 0m-8.5 0l2 2 3-3.5" stroke="var(--xh-tone-fg)" stroke-width="2" />
     </g>

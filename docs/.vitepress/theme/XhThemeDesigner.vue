@@ -84,11 +84,16 @@ const baseline = presets[0];
 
 const swatches = [...new Set(presets.map(preset => preset.seed))];
 
-/** 原始圆角阶梯：sm 给控件与内层，md 给表面，lg 给浮层 */
-const radiusScales: Record<Radius, { sm: number; md: number; lg: number }> = {
-  tight: { sm: 2, md: 4, lg: 8 },
-  default: { sm: 4, md: 8, lg: 12 },
-  round: { sm: 8, md: 12, lg: 16 },
+type RadiusStep = "sm" | "md" | "lg";
+
+/** 令牌里的原始圆角（px） */
+const tokenRadius = (step: RadiusStep): number => Number.parseFloat(tokens[`--xh-radius-${step}`]);
+
+/** 原始圆角阶梯：sm 给控件与内层，md 给表面与浮层；默认一档就是令牌本身，导出时不写覆盖 */
+const radiusScales: Record<Radius, Record<RadiusStep, number>> = {
+  tight: { sm: 0, md: 2, lg: 4 },
+  default: { sm: tokenRadius("sm"), md: tokenRadius("md"), lg: tokenRadius("lg") },
+  round: { sm: 4, md: 8, lg: 12 },
 };
 
 const seed = ref<string[]>([baseline.seed]);
