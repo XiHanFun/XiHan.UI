@@ -59,7 +59,7 @@ function mountSections(): void {
 }
 
 /** 在定位层里放一个探针，按面板所在的主题解出某个令牌。 */
-function resolved(prop: 'color' | 'font-size' | 'font-weight', token: string): string {
+function resolved(prop: 'color' | 'font-size' | 'font-weight' | 'box-shadow', token: string): string {
   const probe = document.createElement('span')
   probe.style.setProperty(prop, `var(${token})`)
   part('positioner').append(probe)
@@ -110,7 +110,8 @@ describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
     expect(content.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
     expect(content.backgroundColor).not.toMatch(/\/ 0\.\d/)
     expect(content.backgroundImage).toBe('none')
-    expect(content.boxShadow).toContain('0px 4px 12px')
+    expect(content.boxShadow).toBe(resolved('box-shadow', '--xh-material-elevated-shadow'))
+    expect(content.boxShadow).not.toBe('none')
     // 遮罩的模糊两个前缀都写
     expect(getComputedStyle(part('backdrop')).backdropFilter).toContain('blur(12px)')
   })
