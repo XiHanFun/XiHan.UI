@@ -30832,44 +30832,6 @@
       "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background-color 覆盖槽。"
     },
     {
-      "name": "--xh-editable-trigger-divider",
-      "component": "editable",
-      "part": [
-        "edit-trigger",
-        "submit-trigger"
-      ],
-      "property": [
-        "background-image"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-material-soft-separator"
-      ],
-      "visibility": "public",
-      "description": "editable 的 edit-trigger、submit-trigger 部件 background-image 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-trigger-divider-h",
-      "component": "editable",
-      "part": [
-        "edit-trigger",
-        "submit-trigger"
-      ],
-      "property": [
-        "background-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_editable-divider-h"
-      ],
-      "visibility": "public",
-      "description": "editable 的 edit-trigger、submit-trigger 部件 background-size 覆盖槽。"
-    },
-    {
       "name": "--xh-editable-trigger-fg",
       "component": "editable",
       "part": [
@@ -30884,7 +30846,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 color 覆盖槽。"
@@ -30971,7 +30933,7 @@
         "xh-action-profile=field-inset"
       ],
       "defaultToken": [
-        "--xh-_action-profile-visual-size"
+        "--xh-control-action-size"
       ],
       "visibility": "public",
       "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"

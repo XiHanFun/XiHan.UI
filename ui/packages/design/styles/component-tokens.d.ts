@@ -1556,8 +1556,6 @@ export type ComponentTokenName
     | '--xh-editable-trigger-bg-active'
     | '--xh-editable-trigger-bg-disabled'
     | '--xh-editable-trigger-bg-hover'
-    | '--xh-editable-trigger-divider'
-    | '--xh-editable-trigger-divider-h'
     | '--xh-editable-trigger-fg'
     | '--xh-editable-trigger-fg-hover'
     | '--xh-editable-trigger-font-size'

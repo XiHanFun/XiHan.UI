@@ -25130,12 +25130,6 @@
               "name": "--xh-editable-trigger-bg-hover"
             },
             {
-              "name": "--xh-editable-trigger-divider"
-            },
-            {
-              "name": "--xh-editable-trigger-divider-h"
-            },
-            {
               "name": "--xh-editable-trigger-fg"
             },
             {
