@@ -50,12 +50,17 @@ function part(scope: Scope, name: string): HTMLElement {
 
 /** 在定位层里放一个探针，按气泡所在的主题解出某个颜色令牌。 */
 function resolvedColor(scope: Scope, token: string): string {
+  return resolved(scope, 'color', token)
+}
+
+/** 在定位层里放一个探针，把令牌写进 property 读回计算值（投影这类非颜色取值用）。 */
+function resolved(scope: Scope, property: string, token: string): string {
   const probe = document.createElement('span')
-  probe.style.color = `var(${token})`
+  probe.style.setProperty(property, `var(${token})`)
   part(scope, 'positioner').append(probe)
-  const color = getComputedStyle(probe).color
+  const value = getComputedStyle(probe).getPropertyValue(property)
   probe.remove()
-  return color
+  return value
 }
 
 const RENDER: Record<Scope, (size: Size) => VNode> = {
@@ -112,8 +117,9 @@ describe('气泡族的面与排版', () => {
     expect(content.paddingRight).toBe('16px')
     expect(content.borderRadius).toBe('4px')
     expect(content.borderTopWidth).toBe('1px')
-    expect(content.borderTopColor).toBe(resolvedColor(scope, '--xh-border-default'))
-    expect(content.boxShadow).toContain('0px 4px 10px')
+    expect(content.borderTopColor).toBe(resolvedColor(scope, '--xh-material-frosted-border'))
+    expect(content.boxShadow).toBe(resolved(scope, 'box-shadow', '--xh-material-frosted-shadow'))
+    expect(content.boxShadow).not.toBe('none')
   })
 
   it.each(['popover', 'popconfirm', 'hover-card'] as const)('%s：标题 14px / 500 / 正文色，正文 14px / 次级色，两行相距 4px', async (scope) => {
