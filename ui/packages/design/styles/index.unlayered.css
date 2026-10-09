@@ -19400,8 +19400,9 @@
 .xh-scope-carousel[data-part='root'] {
   /* 自动播放开启时由 Headless 写入真实间隔；0ms 只用于未接入运行时的静态标记。 */
   --xh-_carousel-autoplay-duration: 0ms;
-  --xh-_carousel-progress-from: 0 1;
-  --xh-_carousel-progress-to: 1 1;
+  /* 进度条起步时裁掉的四边（inset 的上 右 下 左）：横轨从行尾那一侧整条裁掉。
+     clip-path 只认物理方向，行内轴两侧取书写方向的位置，rtl 下改从左往右收 */
+  --xh-_carousel-progress-cut: 0 var(--xh-direction-end) 0 var(--xh-direction-start);
 
   position: relative;
   display: block;
@@ -19413,9 +19414,9 @@
   display: none;
 }
 
+/* 纵轨：从下沿整条裁掉，进度条从上往下长 */
 .xh-scope-carousel[data-part='root'][data-orientation='vertical'] {
-  --xh-_carousel-progress-from: 1 0;
-  --xh-_carousel-progress-to: 1 1;
+  --xh-_carousel-progress-cut: 0 0 100% 0;
 }
 
 /* 视口是裁切窗口：轨道比它宽（高），露在外面的那些张全靠它切掉。
@@ -19514,6 +19515,8 @@
 /* 两端按钮与播放开关：浮在媒体之上的单图标圆钮，接 Action Control floating 档：
    圆形、四态面、按压与 44px 命中区由家族配方给出；视觉盒比 floating 档小，不压画面：
    sm / md / lg 取 24 / 24 / 28px、字形 12 / 16 / 20px（sm 不低于 24px 的最小目标，只把字形收小）。
+   sm / md 直接取细指针最小目标 --xh-control-target-min，不随密度收：floating 档在细指针下不外扩命中区，
+   视觉盒就是命中区，紧凑档再收到 20px 就够不着 24px。
    连接层不投影 variant：面由这里桥接到磨砂缺省（使用者槽 → 磨砂面），悬停 / 按下的底走画布承载的阶梯
    （100 → 200，取不透明档：钮压在图上，半透明的墨色盖不住画面），边缘与投影不动；这里只留定位、桥接槽与图标尺 */
 .xh-scope-carousel[data-part='prev-trigger'],
@@ -19549,7 +19552,7 @@
   --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-hover-opaque));
   /* M2 顶光走配方的高光通道 */
   --xh-action-radius: var(--xh-carousel-trigger-radius, var(--xh-_action-profile-radius));
-  --xh-_carousel-trigger-size: var(--xh-control-action-size);
+  --xh-_carousel-trigger-size: var(--xh-control-target-min);
   --xh-_carousel-trigger-glyph: var(--xh-glyph-size-sm);
   --xh-action-visual-size: var(--xh-carousel-trigger-size, var(--xh-_carousel-trigger-size));
   --xh-action-min-inline-size: var(--xh-carousel-trigger-size, var(--xh-_carousel-trigger-size));
@@ -19679,8 +19682,8 @@
   border-radius: var(--xh-carousel-indicator-radius, var(--xh-shape-circle));
   background: var(--xh-carousel-indicator-bg, var(--xh-bg-subtle-hover-opaque));
   font-size: 0;
-  /* 自动播放的进度条画在点里，超出胶囊的那截裁掉 */
-  overflow: hidden;
+  /* 不裁切：细指针下 ::after 把命中区外扩到点外，overflow 一裁命中区就缩回 6px 的点里；
+     自动播放的进度条自己带圆角、由 clip-path 裁出来，不靠点来裁 */
   cursor: pointer;
   transition:
     inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
@@ -19693,18 +19696,19 @@
   display: none;
 }
 
-/* 细指针的命中区外扩到不低于 24×24：两向都取「外扩 8px」与「补足到 24px」中大的一头（6px 点四面各扩 9px）；
-   粗指针下这颗伪元素改画点，盒子自己承担命中。点调细了，垂直于轨道那一向照样补足 */
+/* 细指针的命中区外扩到不低于 24×24：两向都取「外扩 8px」与「补足到最小目标 --xh-control-target-min」
+   中大的一头（6px 点四面各扩 9px）；粗指针下这颗伪元素改画点，盒子自己承担命中。点调细了，垂直于轨道那一向照样补足。
+   相邻两点节距 14px，命中区沿轨道互相叠一截：后一颗画在上层，叠住的那段归它，每颗点自己的盒子仍只命中自己 */
 .xh-scope-carousel[data-part='indicator']::after {
   content: '';
   position: absolute;
   inset-inline: min(
     calc(-1 * var(--xh-space-2)),
-    calc((var(--xh-carousel-indicator-size, var(--xh-space-1_5)) - var(--xh-space-6)) / 2)
+    calc((var(--xh-carousel-indicator-size, var(--xh-space-1_5)) - var(--xh-control-target-min)) / 2)
   );
   inset-block: min(
     calc(-1 * var(--xh-space-2)),
-    calc((var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5))) - var(--xh-space-6)) / 2)
+    calc((var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5))) - var(--xh-control-target-min)) / 2)
   );
 }
 
@@ -19712,11 +19716,11 @@
   > .xh-scope-carousel[data-part='indicator']::after {
   inset-inline: min(
     calc(-1 * var(--xh-space-2)),
-    calc((var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5))) - var(--xh-space-6)) / 2)
+    calc((var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5))) - var(--xh-control-target-min)) / 2)
   );
   inset-block: min(
     calc(-1 * var(--xh-space-2)),
-    calc((var(--xh-carousel-indicator-size, var(--xh-space-1_5)) - var(--xh-space-6)) / 2)
+    calc((var(--xh-carousel-indicator-size, var(--xh-space-1_5)) - var(--xh-control-target-min)) / 2)
   );
 }
 
@@ -19771,7 +19775,9 @@
 
 /* 自动播放的进度：胶囊是品牌淡底当轨道（仍是「当前」语义；淡底上公共环够对比，不灌环色），
    品牌填充条从起点沿轨道方向长满这一页的时长。计时器每次恢复都重计一整个间隔，
-   进度条跟它同一口径：暂停时回到起点，恢复时从头走 */
+   进度条跟它同一口径：暂停时回到起点，恢复时从头走。
+   填充条铺满胶囊、自己带同一副圆角，未走的那一截由 clip-path 从行尾（纵轨从下沿）裁掉，裁口也取圆角：
+   不缩放就不会把圆头压扁，也不用点的盒子来裁——盒子一裁，细指针外扩的命中区跟着被裁掉 */
 .xh-scope-carousel[data-part='root'][data-autoplay]
   .xh-scope-carousel[data-part='indicator'][data-current],
 .xh-scope-carousel[data-part='root'][data-paused]
@@ -19783,19 +19789,20 @@
   .xh-scope-carousel[data-part='indicator'][data-current]::before,
 .xh-scope-carousel[data-part='root'][data-paused]
   .xh-scope-carousel[data-part='indicator'][data-current]::before {
+  --xh-_carousel-progress-radius: var(--xh-carousel-indicator-radius-current, var(--xh-shape-pill));
+
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: inherit;
+  border-radius: var(--xh-_carousel-progress-radius);
   background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
-  transform-origin: left center;
   animation: xh-carousel-indicator-progress var(--xh-_carousel-autoplay-duration) var(--xh-motion-ease-loop) both;
 }
 
 .xh-scope-carousel[data-part='root'][data-paused]
   .xh-scope-carousel[data-part='indicator'][data-current]::before {
   animation: none;
-  scale: var(--xh-_carousel-progress-from);
+  clip-path: inset(var(--xh-_carousel-progress-cut) round var(--xh-_carousel-progress-radius));
 }
 
 /* 纵轨：胶囊沿块轴拉长，进度条从上往下长 */
@@ -19809,16 +19816,6 @@
   > .xh-scope-carousel[data-part='indicator'][data-current] {
   inline-size: var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5)));
   block-size: var(--xh-carousel-indicator-size-current, var(--xh-space-5));
-}
-
-.xh-scope-carousel[data-part='indicator-group'][data-orientation='vertical']
-  > .xh-scope-carousel[data-part='indicator'][data-current]::before {
-  transform-origin: center top;
-}
-
-[dir='rtl'] .xh-scope-carousel[data-part='indicator-group'][data-orientation='horizontal']
-  > .xh-scope-carousel[data-part='indicator']::before {
-  transform-origin: right center;
 }
 
 .xh-scope-carousel[data-part='root'][data-orientation='vertical']
@@ -19860,7 +19857,7 @@
 
   .xh-scope-carousel[data-part='indicator'][data-current]::before {
     animation: none;
-    scale: var(--xh-_carousel-progress-to);
+    clip-path: none;
   }
 }
 
@@ -19870,7 +19867,7 @@
 
 :where([data-motion='reduce']) .xh-scope-carousel[data-part='indicator'][data-current]::before {
   animation: none;
-  scale: var(--xh-_carousel-progress-to);
+  clip-path: none;
 }
 
 @media (forced-colors: active) {
@@ -19978,7 +19975,6 @@
     min-block-size: var(--xh-carousel-indicator-target-size, 44px);
     border-radius: 0;
     background: transparent;
-    overflow: visible;
   }
 
   .xh-scope-carousel[data-part='indicator']::after {
@@ -20096,13 +20092,14 @@
   }
 }
 
+/* 进度条从整条裁掉长到整条露出：只重绘、不重排，裁口取填充条自己的圆角 */
 @keyframes xh-carousel-indicator-progress {
   from {
-    scale: var(--xh-_carousel-progress-from);
+    clip-path: inset(var(--xh-_carousel-progress-cut) round var(--xh-_carousel-progress-radius));
   }
 
   to {
-    scale: var(--xh-_carousel-progress-to);
+    clip-path: inset(0 round var(--xh-_carousel-progress-radius));
   }
 }
 
