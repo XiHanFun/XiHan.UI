@@ -30,6 +30,7 @@ import {
   XhImageViewerZoomInTrigger,
   XhImageViewerZoomOutTrigger,
 } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -190,7 +191,7 @@ describe('看片浮层的控件带：报的角色与拿得到的走位一致', (
 })
 
 describe('看片浮层的 chrome 钮：Action Control 档位落到真实盒子上', () => {
-  it('翻页钮是 40px 正圆（floating 缺省 md）、关闭钮低一档 32px 正圆、工具条钮 24px；十颗钮的前景随 chrome 继承', async () => {
+  it('翻页钮是 36px 正圆（floating 缺省 md）、关闭钮低一档 28px 正圆、工具条钮 24px；十颗钮的前景随 chrome 继承', async () => {
     mount()
     await settle()
     const prev = part('prev-trigger')
@@ -201,20 +202,20 @@ describe('看片浮层的 chrome 钮：Action Control 档位落到真实盒子�
 
     for (const el of [prev, next]) {
       const rect = el.getBoundingClientRect()
-      expect([rect.width, rect.height]).toEqual([40, 40])
+      expect([rect.width, rect.height]).toEqual([36, 36])
       expect(getComputedStyle(el).borderRadius).toBe('50%')
       expect(getComputedStyle(el).color).toBe(chromeColor)
     }
     const closeRect = close.getBoundingClientRect()
-    expect([closeRect.width, closeRect.height]).toEqual([32, 32])
+    expect([closeRect.width, closeRect.height]).toEqual([28, 28])
     // 悬浮在媒体上的单图标动作：与翻页钮同一身份，正圆
     expect(getComputedStyle(close).borderRadius).toBe('50%')
     const zoomRect = zoomIn.getBoundingClientRect()
     expect([zoomRect.width, zoomRect.height]).toEqual([24, 24])
     expect(getComputedStyle(zoomIn).color).toBe(chromeColor)
-    // 工具条外壳与计数气泡按身份取圆角：容器 surface 8px、一行字的气泡 control 4px
-    expect(getComputedStyle(part('toolbar')).borderRadius).toBe('8px')
-    expect(getComputedStyle(part('counter')).borderRadius).toBe('4px')
+    // 工具条外壳与计数气泡按身份取圆角：容器取 surface、一行字的气泡取 control
+    expect(getComputedStyle(part('toolbar')).borderRadius).toBe(tokenValue('border-radius', '--xh-shape-surface'))
+    expect(getComputedStyle(part('counter')).borderRadius).toBe(tokenValue('border-radius', '--xh-shape-control'))
   })
 
   it('粗指针下工具条七颗钮各自撑出 44×44 命中区，钮心点到的是自己', async () => {
