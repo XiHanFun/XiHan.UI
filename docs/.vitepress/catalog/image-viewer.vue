@@ -10,7 +10,7 @@
     <path d="M30 64l-4 4 4 4" stroke="var(--xh-fg-default)" stroke-width="2" />
     <circle cx="212" cy="68" r="12" fill="var(--xh-bg-surface-raised)" />
     <path d="M210 64l4 4-4 4" stroke="var(--xh-fg-default)" stroke-width="2" />
-    <rect x="64" y="124" width="112" height="28" rx="14" fill="var(--xh-bg-surface-raised)" />
-    <path d="M88 137a5 5 0 1 1-10 0a5 5 0 1 1 10 0m-1.5 3.5l3.5 3.5m-9-7h4M112 137a5 5 0 1 1-10 0a5 5 0 1 1 10 0m-1.5 3.5l3.5 3.5m-7-9v4m-2-2h4M127 138a5 5 0 1 1 1.5 3.5m-1.5 2.5v-4h4M161 138a5 5 0 1 1-1.5-3.5m1.5-2.5v4h-4" stroke="var(--xh-fg-default)" stroke-width="2" />
+    <rect x="64.5" y="124.5" width="111" height="27" rx="4" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <path d="M88 137a5 5 0 1 1-10 0a5 5 0 1 1 10 0m-1.5 3.5l3.5 3.5m-9-7h4M112 137a5 5 0 1 1-10 0a5 5 0 1 1 10 0m-1.5 3.5l3.5 3.5m-7-9v4m-2-2h4M127 138a5 5 0 1 1 1.5 3.5m-1.5 2.5v-4h4M161 138a5 5 0 1 1-1.5-3.5m1.5-2.5v4h-4" stroke="var(--xh-fg-muted)" stroke-width="2" />
   </svg>
 </template>

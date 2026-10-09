@@ -24,10 +24,11 @@
     <path d="M59 32h30" stroke="var(--xh-fg-default)" stroke-width="6" />
     <path d="M100 34l4-4 4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
     <rect x="24.5" y="52.5" width="191" height="91" rx="4" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
-    <rect x="36" y="64" width="168" height="44" rx="2" fill="url(#color-picker-saturation)" />
-    <rect x="36" y="64" width="168" height="44" rx="2" fill="url(#color-picker-value)" />
-    <circle cx="160" cy="78" r="6" stroke="var(--xh-bg-surface-raised)" stroke-width="2" />
+    <path d="M29 53h182a4 4 0 0 1 4 4v48h-190v-48a4 4 0 0 1 4-4z" fill="url(#color-picker-saturation)" />
+    <path d="M29 53h182a4 4 0 0 1 4 4v48h-190v-48a4 4 0 0 1 4-4z" fill="url(#color-picker-value)" />
+    <circle cx="160" cy="72" r="7" stroke="var(--xh-bg-surface-raised)" stroke-width="2" />
     <rect x="36" y="118" width="168" height="12" rx="6" fill="url(#color-picker-hue)" />
     <circle cx="140" cy="124" r="7.5" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <circle cx="140" cy="124" r="4" fill="var(--xh-color-blue-500)" />
   </svg>
 </template>
