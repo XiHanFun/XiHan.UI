@@ -167,7 +167,7 @@ interactive 加标题里的 trigger：整张卡片都是点击区，读屏只读
 | `--xh-card-header-h` | `header`<br>`root` | `min-block-size` | `default` | `--xh-surface-header-h` | card 的 header、root 部件 min-block-size 覆盖槽。 |
 | `--xh-card-header-py` | `header`<br>`root` | `padding-block` | `default` | `--xh-space-2` | card 的 header、root 部件 padding-block 覆盖槽。 |
 | `--xh-card-leading` | `root` | `line-height` | `default` | `--xh-text-body-leading` | card 的 root 部件 line-height 覆盖槽。 |
-| `--xh-card-p` | `content`<br>`footer`<br>`header`<br>`root` | `padding`<br>`padding-inline` | `default` | `--xh-space-4`<br>`--xh-surface-pad-lg` | card 的 content、footer、header、root 部件 padding、padding-inline 覆盖槽。 |
+| `--xh-card-p` | `content`<br>`footer`<br>`header`<br>`root` | `padding`<br>`padding-block-end`<br>`padding-inline` | `default` | `--xh-space-4`<br>`--xh-surface-pad-lg` | card 的 content、footer、header、root 部件 padding、padding-block-end、padding-inline 覆盖槽。 |
 | `--xh-card-radius` | `root`<br>`trigger` | `border-radius` | `default`<br>`interactive` | `--xh-shape-surface` | card 的 root、trigger 部件 border-radius 覆盖槽。 |
 | `--xh-card-shadow` | `root` | `box-shadow` | `default`<br>`variant=ghost`<br>`variant=subtle` | `--xh-elevation-raised`<br>`none` | card 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-card-shadow-hover` | `root` | `box-shadow` | `hover`<br>`interactive`<br>`variant=outline` | `--xh-elevation-lifted` | card 的 root 部件 box-shadow 覆盖槽。 |

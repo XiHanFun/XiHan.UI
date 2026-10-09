@@ -7570,6 +7570,7 @@
       ],
       "property": [
         "padding",
+        "padding-block-end",
         "padding-inline"
       ],
       "state": [
@@ -7580,7 +7581,7 @@
         "--xh-surface-pad-lg"
       ],
       "visibility": "public",
-      "description": "card 的 content、footer、header、root 部件 padding、padding-inline 覆盖槽。"
+      "description": "card 的 content、footer、header、root 部件 padding、padding-block-end、padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-card-radius",
