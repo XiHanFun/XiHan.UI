@@ -92,7 +92,7 @@
       var(--xh-_tour-spotlight-radius, var(--xh-shape-surface))
     );
     box-shadow:
-      0 0 0 var(--xh-stroke-thick) var(--xh-tour-spotlight-ring, var(--xh-ring-focus)),
+      0 0 0 var(--xh-stroke-thick) var(--xh-tour-spotlight-ring, var(--xh-_tour-spotlight-ring, var(--xh-ring-focus))),
       0 0 0 100vmax var(--xh-_tour-spotlight-shroud);
   }
 
@@ -113,8 +113,10 @@
       top var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
+  /* 压暗时暗幕本身已把目标框出来，高亮框不再描一圈环；不压暗时那圈环是唯一的指示 */
   [data-scope='tour'][data-part='spotlight'][data-dimmed] {
     --xh-_tour-spotlight-shroud: var(--xh-tour-spotlight-shroud, var(--xh-bg-overlay));
+    --xh-_tour-spotlight-ring: transparent;
   }
 
   [data-scope='tour'][data-part='spotlight'][hidden] {
@@ -197,7 +199,7 @@
     inline-size: max-content;
     /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
     max-inline-size: min(var(--xh-tour-max-w, var(--xh-overlay-max-w-lg)), var(--xh-_tour-available-w));
-    padding-block: var(--xh-tour-py, var(--xh-surface-py-md));
+    padding-block: var(--xh-tour-py, var(--xh-surface-py-sm));
     padding-inline: var(--xh-tour-px, var(--xh-surface-px-md));
     /* 引导步骤的正文长度由作者定，矮视口下不限高气泡会整块伸出视口 */
     max-block-size: min(var(--xh-tour-max-h, var(--xh-overlay-max-h)), var(--xh-_tour-available-h));
@@ -235,6 +237,11 @@
     font-size: var(--xh-tour-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-tour-title-font-weight, var(--xh-text-heading-3-weight));
     color: var(--xh-tour-title-fg, var(--xh-fg-default));
+  }
+
+  /* 标题与说明是一组：两者之间只留 4px，其余部件之间才是整档间距 */
+  [data-scope='tour'][data-part='title'] + [data-scope='tour'][data-part='description'] {
+    margin-block-start: calc(var(--xh-space-1) - var(--xh-tour-gap, var(--xh-space-2)));
   }
 
   /* 关闭按钮是绝对定位的，不占流内宽度：标题得自己让出右上角那块，
