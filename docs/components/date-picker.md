@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="date-picker"`：`root` · `label` · **`control`** · `tag-list` · `segment-group` · `trigger` · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · **`calendar`** · `time-column` · `time-item` · `confirm-trigger`
+`data-scope="date-picker"`：`root` · `label` · **`control`** · `tag-list` · `segment-group` · `trigger` · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · **`calendar`** · `time-column` · `time-item` · `footer` · `confirm-trigger`
 
 ## 示例
 
@@ -97,7 +97,8 @@ selectionMode="multiple" 时选中的日期在输入行里排成标签，点标�
 - `showTime` 在 `granularity=day + selectionMode=single` 时让输入行显示完整日期时间，并加入时、分或秒选择列。
 - 时间列与时间选择器共用一份约束：`hourCycle={12}` 多出上下午列与上下午段（缺省按 `locale` 推断，没给 `locale` 时 24）；`timeStep` 按时、分、秒各设步长；`isTimeUnavailable` 逐格判定，第三个参数带已选的时分与这份时间所属的日期。
 - `min` / `max` 可以带时间段（`2026-09-28T09:30`）：日历按日期段收，与它同一天时界外的时刻留在列里、标为不可选，列长不随所选的日子变。
-- 日期时间组合面板的时间列顶边接着日历标题栏的分隔线、底边与日期网格对齐，列与列之间不画线；各时间列只纵向滚动，列底留白让末尾几格也能滚到列顶；底部操作独占一行。
+- 日期时间组合面板的时间列顶边接着日历标题栏的分隔线、底边与日期网格对齐，列与列之间不画线；各时间列只纵向滚动，列底留白让末尾几格也能滚到列顶。
+- 确认钮写在底栏（`footer`）里：底栏是浮层底部的通栏操作区，独占一行，上沿一道分隔线、四周 8 的内衬；作者另放的说明文字排在行首、取弱化的说明档字，确认钮落在行尾。底栏里只有确认钮时，未开 `showTime` 它随确认钮一并收起，不留空栏。
 - 输入值、展开状态和聚焦日期均可受控。
 - 输入行的写法随 `locale` 与 `granularity` / `segments` 走，不接受 `formatOptions` 或格式串，理由见[日期字段](./date-field)。
 - 点击输入行可以继续逐段键入，点击日历图标则把焦点送入日历；展开期间输入框保持激活边界。
@@ -120,6 +121,7 @@ selectionMode="multiple" 时选中的日期在输入行里排成标签，点标�
 - 快速选年可在 `year` 网格中渲染受范围约束的年份集合；网格使用三列紧凑布局与内部滚动。
 - 不可用日期应同时提供原因。
 - 常用日期优先提供快捷项。
+- 开了 `showTime` 时把确认钮放进底栏，不在 `content` 里另写带样式的包裹块。
 
 ### 反模式
 
@@ -322,6 +324,7 @@ selectionMode="multiple" 时选中的日期在输入行里排成标签，点标�
 | `getCalendarProps` | `() => T['element']` | 内嵌日历的挂载点，同时充当日历的根节点。 |
 | `getTimeColumnProps` | `(props: DatePickerTimeColumnProps) => T['element']` | 时间列容器（时 / 分[/ 秒]各一列）；未开启 showTime 时带 hidden。 |
 | `getTimeItemProps` | `(props: DatePickerTimeItemProps) => T['element']` | 时间选项：点击把该单位写入值（没有日期时以聚焦日作为日期段起值）。 |
+| `getFooterProps` | `() => T['element']` | 浮层底部的操作区：放在 content 中、排在面板主体之后，确认按钮通常写在这里；不进入任何集合的拥有关系，方向键也无法到达。 |
 | `getConfirmTriggerProps` | `() => T['button']` | 确认按钮：showTime 的收口；未开启 showTime 时带 hidden。 |
 
 ## 无障碍
@@ -528,6 +531,12 @@ selectionMode="multiple" 时选中的日期在输入行里排成标签，点标�
 | `--xh-date-picker-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | date-picker 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-date-picker-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | date-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-date-picker-font-size` | `segment-group`<br>`tag-list` | `font-size` | `default` | `--xh-_date-picker-font-size` | date-picker 的 segment-group、tag-list 部件 font-size 覆盖槽。 |
+| `--xh-date-picker-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-solid-border` | date-picker 的 footer 部件 border-block-start 覆盖槽。 |
+| `--xh-date-picker-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | date-picker 的 footer 部件 color 覆盖槽。 |
+| `--xh-date-picker-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-caption-size` | date-picker 的 footer 部件 font-size 覆盖槽。 |
+| `--xh-date-picker-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | date-picker 的 footer 部件 gap 覆盖槽。 |
+| `--xh-date-picker-footer-px` | `footer` | `padding-inline` | `default` | `--xh-space-2` | date-picker 的 footer 部件 padding-inline 覆盖槽。 |
+| `--xh-date-picker-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | date-picker 的 footer 部件 padding-block 覆盖槽。 |
 | `--xh-date-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-date-picker-heading-font-weight` | `calendar`<br>`heading`<br>`heading-month-trigger`<br>`heading-year-trigger` | `font-weight` | `default` | `--xh-font-weight-regular` | date-picker 的 calendar、heading、heading-month-trigger、heading-year-trigger 部件 font-weight 覆盖槽。 |
 | `--xh-date-picker-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | date-picker 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |

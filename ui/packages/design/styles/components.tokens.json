@@ -23807,6 +23807,114 @@
       "description": "date-picker 的 segment-group、tag-list 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-date-picker-footer-border",
+      "component": "date-picker",
+      "part": [
+        "footer"
+      ],
+      "property": [
+        "border-block-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-solid-border"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 footer 部件 border-block-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-footer-fg",
+      "component": "date-picker",
+      "part": [
+        "footer"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 footer 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-footer-font-size",
+      "component": "date-picker",
+      "part": [
+        "footer"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-caption-size"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 footer 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-footer-gap",
+      "component": "date-picker",
+      "part": [
+        "footer"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 footer 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-footer-px",
+      "component": "date-picker",
+      "part": [
+        "footer"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 footer 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-footer-py",
+      "component": "date-picker",
+      "part": [
+        "footer"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 footer 部件 padding-block 覆盖槽。"
+    },
+    {
       "name": "--xh-date-picker-gap",
       "component": "date-picker",
       "part": [

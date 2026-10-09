@@ -231,7 +231,7 @@ function presetGroupFixture(base: FixtureNode, presets: readonly { value: string
 }
 
 /**
- * showTime 的时间面板与确认钮：Vue / React 的时间列整组自动铺（time-panel），Web Components 由作者自己写列与格，
+ * showTime 的时间面板与底栏里的确认钮：Vue / React 的时间列整组自动铺（time-panel），Web Components 由作者自己写列与格，
  * 两种写法在 DOM 里落成同一副 time-column / time-item 部件。只有用到它的那条用例派生这一份；
  * 精度取缺省的 minute，只铺时、分两列（Vue 侧逐格重渲，列越多用例越慢）。
  */
@@ -254,7 +254,8 @@ function showTimeFixture(base: FixtureNode, options: { columns?: boolean, hourCy
         timeColumn('minute', Array.from({ length: 60 }, (_, i) => pad(i))),
         ...(twelve ? [timeColumn('dayPeriod', ['00', '01'])] : []),
       ]
-  const extra: FixtureNode[] = [...columns, { part: 'confirm-trigger', tag: 'button', text: '确定' }]
+  // 确认钮写在底栏里：底栏是浮层底部的通栏操作区，三家都按 footer 部件接线
+  const extra: FixtureNode[] = [...columns, { part: 'footer', children: [{ part: 'confirm-trigger', tag: 'button', text: '确定' }] }]
   return {
     ...base,
     children: base.children?.map((node) => {
@@ -1054,6 +1055,34 @@ export const datePickerSuite: ConformanceSuite = {
           until: { attr: { part: 'confirm-trigger', name: 'data-pressed', value: null } },
           expect: { parts: { content: { hidden: null } } },
         },
+      ],
+    },
+    {
+      name: 'showTime 的底栏是 content 里的通栏操作区：不报角色、不占 Tab 位，确认钮写在它里面照常收口',
+      spec: { apg: APG },
+      fixture: showTimeFixture,
+      props: { ...BASE_PROPS, defaultValue: '2024-02-15T09:30', showTime: true },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'content', name: 'hidden', value: null } },
+          expect: { parts: { footer: { role: null, tabindex: null, hidden: null } } },
+        },
+        {
+          kind: 'raw',
+          why: '底栏与确认钮的父子关系只能看 DOM',
+          run: ({ doc }) => {
+            const footer = doc.querySelector('[data-scope="date-picker"][data-part="footer"]')
+            if (!footer)
+              throw new Error('找不到底栏')
+            if (footer.parentElement?.getAttribute('data-part') !== 'content')
+              throw new Error('底栏应是 content 的直接子节点')
+            if (!footer.querySelector(':scope > [data-scope="date-picker"][data-part="confirm-trigger"]'))
+              throw new Error('确认钮应写在底栏里')
+          },
+        },
+        { kind: 'click', part: 'confirm-trigger', expect: { parts: { content: { hidden: '' } } } },
       ],
     },
     {

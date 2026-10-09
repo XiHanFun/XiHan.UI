@@ -10,6 +10,7 @@ import {
   XhDatePickerClearTrigger,
   XhDatePickerContent,
   XhDatePickerControl,
+  XhDatePickerFooter,
   XhDatePickerGrid,
   XhDatePickerGridBody,
   XhDatePickerGridHead,
@@ -141,13 +142,13 @@ export default function Demo(): ReactNode {
                 </XhDatePickerCalendar>
               ))}
 
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--xh-space-3)", marginBlockStart: "var(--xh-space-2)", paddingBlockStart: "var(--xh-space-2)", borderBlockStart: "var(--xh-stroke-thin) solid var(--xh-border-subtle)" }}>
+              <XhDatePickerFooter>
                 <span>{summary}</span>
                 <div style={{ display: "flex", gap: "var(--xh-space-2)" }}>
                   <XhButton variant="ghost" size="sm" disabled={value.length === 0} onClick={clear}>清空</XhButton>
                   <XhButton size="sm" disabled={value.length === 0} onClick={() => setOpen(false)}>确定</XhButton>
                 </div>
-              </div>
+              </XhDatePickerFooter>
             </XhDatePickerContent>
           </XhDatePickerPositioner>
         </>

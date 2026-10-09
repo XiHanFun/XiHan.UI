@@ -8,6 +8,7 @@ import {
   XhDatePickerConfirmTrigger,
   XhDatePickerContent,
   XhDatePickerControl,
+  XhDatePickerFooter,
   XhDatePickerGrid,
   XhDatePickerGridBody,
   XhDatePickerGridHead,
@@ -80,9 +81,9 @@ function literalBefore(type: string, index: number): string {
           </XhDatePickerCalendar>
           <XhDatePickerTimePanel />
         </div>
-        <div style="display: flex; align-items: center; justify-content: flex-end; padding: var(--xh-space-2); border-block-start: var(--xh-stroke-thin) solid var(--xh-border-default)">
+        <XhDatePickerFooter>
           <XhDatePickerConfirmTrigger>确定</XhDatePickerConfirmTrigger>
-        </div>
+        </XhDatePickerFooter>
       </XhDatePickerContent>
     </XhDatePickerPositioner>
   </XhDatePickerRoot>

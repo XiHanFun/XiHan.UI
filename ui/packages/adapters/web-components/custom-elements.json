@@ -19031,6 +19031,10 @@
               "name": "time-item"
             },
             {
+              "description": "浮层底部的通栏操作区，写在 content 里、排在面板主体之后；确认钮通常放在这里，不进入任何集合的拥有关系",
+              "name": "footer"
+            },
+            {
               "description": "showTime 的收口按钮；未开启时带 hidden",
               "name": "confirm-trigger"
             },
@@ -20405,6 +20409,24 @@
             },
             {
               "name": "--xh-date-picker-font-size"
+            },
+            {
+              "name": "--xh-date-picker-footer-border"
+            },
+            {
+              "name": "--xh-date-picker-footer-fg"
+            },
+            {
+              "name": "--xh-date-picker-footer-font-size"
+            },
+            {
+              "name": "--xh-date-picker-footer-gap"
+            },
+            {
+              "name": "--xh-date-picker-footer-px"
+            },
+            {
+              "name": "--xh-date-picker-footer-py"
             },
             {
               "name": "--xh-date-picker-gap"
