@@ -334,7 +334,7 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 | `--xh-signature-pad-bg` | `control` | `background` | `default` | `--xh-bg-field` | signature-pad 的 control 部件 background 覆盖槽。 |
 | `--xh-signature-pad-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | signature-pad 的 control 部件 background 覆盖槽。 |
 | `--xh-signature-pad-bg-drawing` | `control` | `background` | `drawing` | `--xh-bg-surface` | signature-pad 的 control 部件 background 覆盖槽。 |
-| `--xh-signature-pad-bg-invalid` | `control` | `background` | `invalid` | `--xh-border-invalid` | signature-pad 的 control 部件 background 覆盖槽。 |
+| `--xh-signature-pad-bg-invalid` | `control` | `background` | `invalid` | `--xh-bg-field-invalid` | signature-pad 的 control 部件 background 覆盖槽。 |
 | `--xh-signature-pad-bg-readonly` | `control` | `background` | `disabled`<br>`not([data-disabled])`<br>`readonly` | `--xh-bg-subtle` | signature-pad 的 control 部件 background 覆盖槽。 |
 | `--xh-signature-pad-border` | `control` | `border` | `default` | `--xh-border-control` | signature-pad 的 control 部件 border 覆盖槽。 |
 | `--xh-signature-pad-border-disabled` | `control` | `border-color` | `disabled` | `--xh-border-default` | signature-pad 的 control 部件 border-color 覆盖槽。 |

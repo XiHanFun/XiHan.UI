@@ -24,7 +24,7 @@
     --xh-_field-variant-border-hover: var(--xh-border-strong);
     --xh-_field-variant-bg-focus: var(--xh-bg-surface);
     --xh-_field-variant-border-focus: var(--xh-border-control-focus);
-    --xh-_field-variant-bg-invalid: color-mix(in oklab, var(--xh-border-invalid) 4%, transparent);
+    --xh-_field-variant-bg-invalid: var(--xh-bg-field-invalid);
     --xh-_field-variant-border-invalid: var(--xh-border-invalid);
     --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
     --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
@@ -48,7 +48,7 @@
     --xh-_field-variant-border-hover: var(--xh-border-strong);
     --xh-_field-variant-bg-focus: var(--xh-bg-surface);
     --xh-_field-variant-border-focus: var(--xh-border-control-focus);
-    --xh-_field-variant-bg-invalid: color-mix(in oklab, var(--xh-border-invalid) 4%, transparent);
+    --xh-_field-variant-bg-invalid: var(--xh-bg-field-invalid);
     --xh-_field-variant-border-invalid: var(--xh-border-invalid);
     --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
     --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
@@ -62,7 +62,7 @@
     --xh-_field-variant-border-hover: var(--xh-border-control);
     --xh-_field-variant-bg-focus: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_field-variant-border-focus: var(--xh-border-control-focus);
-    --xh-_field-variant-bg-invalid: color-mix(in oklab, var(--xh-border-invalid) 4%, transparent);
+    --xh-_field-variant-bg-invalid: var(--xh-bg-field-invalid);
     --xh-_field-variant-border-invalid: var(--xh-border-invalid);
     --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
     --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
@@ -76,7 +76,7 @@
     --xh-_field-variant-border-hover: var(--xh-border-control);
     --xh-_field-variant-bg-focus: transparent;
     --xh-_field-variant-border-focus: var(--xh-border-control-focus);
-    --xh-_field-variant-bg-invalid: color-mix(in oklab, var(--xh-border-invalid) 4%, transparent);
+    --xh-_field-variant-bg-invalid: var(--xh-bg-field-invalid);
     --xh-_field-variant-border-invalid: var(--xh-border-invalid);
     --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
     --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);

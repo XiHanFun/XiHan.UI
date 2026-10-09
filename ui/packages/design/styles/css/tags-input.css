@@ -127,7 +127,7 @@
   /* 盒里有标签时起始内衬收到 --xh-space-1，标签之间、标签与输入框之间隔 --xh-space-1（盒的 gap 缺省就是它）：
      标签自带内距，行首再留一整段控件内衬就显得空。标签自己的面（没聚焦时白底 + 描边）写在 tag.css 的字段宿主档 */
   [data-scope='tags-input'][data-part='control']:has(> [data-scope='tags-input'][data-part='item']) {
-    padding-inline-start: var(--xh-space-1);
+    padding-inline-start: var(--xh-tags-input-control-ps, var(--xh-space-1));
   }
 
   /* 顶到上限是 TagsInput 独有状态：再加进不去，边框先给个提示；invalid 同时出现时由 Field Chrome 的

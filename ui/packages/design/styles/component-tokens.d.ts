@@ -3674,6 +3674,7 @@ export type ComponentTokenName
     | '--xh-tags-input-control-h'
     | '--xh-tags-input-control-max-h'
     | '--xh-tags-input-control-min-w'
+    | '--xh-tags-input-control-ps'
     | '--xh-tags-input-control-px'
     | '--xh-tags-input-control-radius'
     | '--xh-tags-input-control-shadow'

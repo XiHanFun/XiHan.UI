@@ -65646,6 +65646,9 @@
               "name": "--xh-tags-input-control-min-w"
             },
             {
+              "name": "--xh-tags-input-control-ps"
+            },
+            {
               "name": "--xh-tags-input-control-px"
             },
             {
