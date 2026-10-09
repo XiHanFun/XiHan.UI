@@ -566,7 +566,8 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | --- | --- |
 | Layout | 页头高 `--xh-app-header-h`（3.75rem）；侧栏 13.75rem，收起 4rem；侧栏限高 100vh；头与侧栏同是白底，缺省各画一条 `--xh-border-subtle` 内部分隔 |
 | SideNav | 宽 13.75rem，收起 4rem；行高 `nav.row-h` 随 size |
-| Tabs、NavigationMenu | trigger 高 `control-h` 随 size |
+| Tabs line | trigger 高取导航行高 `nav.row-h` 随 size（32 / 40 / 44，紧凑 28 / 36 / 40）；标签之间不留缝，横内衬 12 / 16 / 20，相邻两段文字隔两倍内衬 |
+| Tabs card / segment、NavigationMenu | trigger 高 `control-h` 随 size |
 | Breadcrumb、Anchor | 链接上限 12rem，超出截断 |
 | Splitter、Resizable | Splitter 拖拽条 4px；Resizable 边柄 8px、角柄 16px |
 

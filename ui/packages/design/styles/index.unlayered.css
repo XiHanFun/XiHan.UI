@@ -44327,9 +44327,11 @@
 }
 
 .xh-scope-tabs[data-part='root'] {
-  /* 尺寸档只换这三个私有槽，标签从 root 继承它们，换档不必给每个部件各写一条选择器 */
-  --xh-_tabs-trigger-h: var(--xh-control-h-md);
-  --xh-_tabs-trigger-px: var(--xh-control-px-md);
+  /* 尺寸档只换这三个私有槽，标签从 root 继承它们，换档不必给每个部件各写一条选择器。
+     缺省的 line 档是导航：标签带取导航行高（md 40px），标签之间不留缝、横内衬 16px，
+     相邻两段文字隔 32px、首个标签的文字离起始边 16px；card / segment 是控件，在各自的形态块里换回控件尺 */
+  --xh-_tabs-trigger-h: var(--xh-nav-row-h-md);
+  --xh-_tabs-trigger-px: var(--xh-space-4);
   --xh-_tabs-trigger-font-size: var(--xh-control-font-md);
 
   /* 缺省是 line 变体：透明标签带，选中项由文字与底部指示条表达。Web Components 升级前还没有
@@ -44375,15 +44377,31 @@
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
 .xh-scope-tabs[data-part='root'][data-size='sm'] {
-  --xh-_tabs-trigger-h: var(--xh-control-h-sm);
-  --xh-_tabs-trigger-px: var(--xh-control-px-sm);
+  --xh-_tabs-trigger-h: var(--xh-nav-row-h-sm);
+  --xh-_tabs-trigger-px: var(--xh-space-3);
   --xh-_tabs-trigger-font-size: var(--xh-control-font-sm);
 }
 
 .xh-scope-tabs[data-part='root'][data-size='lg'] {
+  --xh-_tabs-trigger-h: var(--xh-nav-row-h-lg);
+  --xh-_tabs-trigger-px: var(--xh-space-5);
+  --xh-_tabs-trigger-font-size: var(--xh-control-font-lg);
+}
+
+/* card / segment 的标签是控件：高度与横内衬回到控件尺，三档逐档对齐 */
+.xh-scope-tabs[data-part='root']:is([data-variant='card'], [data-variant='segment']) {
+  --xh-_tabs-trigger-h: var(--xh-control-h-md);
+  --xh-_tabs-trigger-px: var(--xh-control-px-md);
+}
+
+.xh-scope-tabs[data-part='root']:is([data-variant='card'], [data-variant='segment'])[data-size='sm'] {
+  --xh-_tabs-trigger-h: var(--xh-control-h-sm);
+  --xh-_tabs-trigger-px: var(--xh-control-px-sm);
+}
+
+.xh-scope-tabs[data-part='root']:is([data-variant='card'], [data-variant='segment'])[data-size='lg'] {
   --xh-_tabs-trigger-h: var(--xh-control-h-lg);
   --xh-_tabs-trigger-px: var(--xh-control-px-lg);
-  --xh-_tabs-trigger-font-size: var(--xh-control-font-lg);
 }
 
 /* —— 变体 —— */
