@@ -50,7 +50,7 @@ primitive  ──►  semantic  ──►  组件私有槽
 | `--xh-shape-inset` | 2px | 嵌在控件里的内层：勾选方框、页内列表的候选行、字段内的清空钮、色块 |
 | `--xh-shape-control` | 2px | 控件本体：Button、Input、Select Trigger、Toggle、kbd、tooltip、单选组 segmented 形态的轨道；方签 Tag、状态方签与 Alert 提示条 |
 | `--xh-shape-surface` | 4px | 成面的静态容器：Card、Panel、列表容器、Tabs segment 的轨道、分页的描边方块 |
-| `--xh-shape-overlay` | 4px | 脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Notification |
+| `--xh-shape-overlay` | 4px | 脱离文档流的浮层：Popover、Menu、Dialog、Notification 卡片预设（Drawer 贴边不取圆角，轻提示预设取 control） |
 | `--xh-shape-circle` | 50% | 正圆：头像、圆形图标按钮、单选指示器 |
 | `--xh-shape-pill` | 9999px | 胶囊：Badge 等状态 chip（Tag 与结果标记是方签，取 control），以及轨道、指示条、手柄、滚动条滑块等一维对象 |
 
