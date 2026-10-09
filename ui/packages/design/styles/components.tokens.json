@@ -8907,7 +8907,7 @@
         "branch"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "cascader 的 item 部件 background-color 覆盖槽。"
@@ -9020,7 +9020,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-solid-separator"
+        "--xh-material-solid-border"
       ],
       "visibility": "public",
       "description": "cascader 的 column 部件 border-inline-start 覆盖槽。"
@@ -9075,7 +9075,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-menu-min-w"
+        "--xh-overlay-cascade-min-w"
       ],
       "visibility": "public",
       "description": "cascader 的 column 部件 min-inline-size 覆盖槽。"
@@ -9201,7 +9201,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-menu-min-w"
+        "--xh-overlay-cascade-min-w"
       ],
       "visibility": "public",
       "description": "cascader 的 content 部件 min-inline-size 覆盖槽。"
@@ -9578,10 +9578,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "cascader 的 empty 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-empty-min-h",
+      "component": "cascader",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-viewport-h-sm"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 empty 部件 min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-cascader-empty-p",
@@ -9614,7 +9632,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-material-solid-border"
       ],
       "visibility": "public",
       "description": "cascader 的 footer 部件 border-block-start 覆盖槽。"
@@ -9650,7 +9668,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-_cascader-font-size"
       ],
       "visibility": "public",
       "description": "cascader 的 footer 部件 font-size 覆盖槽。"
@@ -9686,7 +9704,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-_cascader-row-px"
       ],
       "visibility": "public",
       "description": "cascader 的 footer 部件 padding-inline 覆盖槽。"
@@ -9758,7 +9776,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "cascader 的 group-label 部件 color 覆盖槽。"
@@ -9794,7 +9812,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-font-weight-regular"
       ],
       "visibility": "public",
       "description": "cascader 的 group-label 部件 font-weight 覆盖槽。"
@@ -10507,7 +10525,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "cascader 的 loading 部件 color 覆盖槽。"
@@ -10531,6 +10549,24 @@
       "description": "cascader 的 loading 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-cascader-loading-min-h",
+      "component": "cascader",
+      "part": [
+        "loading"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-viewport-h-sm"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 loading 部件 min-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-cascader-loading-p",
       "component": "cascader",
       "part": [
@@ -10547,6 +10583,29 @@
       ],
       "visibility": "public",
       "description": "cascader 的 loading 部件 padding 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-loading-ring-fg",
+      "component": "cascader",
+      "part": [
+        "loading"
+      ],
+      "property": [
+        "border-block-start-color",
+        "border-color"
+      ],
+      "state": [
+        "@media (prefers-reduced-motion: reduce)",
+        "@media print",
+        "motion=reduce",
+        "where([data-motion='reduce'])",
+        "xh-loading-ring"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 loading 部件 border-block-start-color、border-color 覆盖槽。"
     },
     {
       "name": "--xh-cascader-placeholder-fg",
@@ -10581,7 +10640,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-solid-separator"
+        "--xh-material-solid-border"
       ],
       "visibility": "public",
       "description": "cascader 的 input 部件 border-block-end 覆盖槽。"

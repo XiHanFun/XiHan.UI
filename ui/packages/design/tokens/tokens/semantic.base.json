@@ -1020,6 +1020,11 @@
       "$type": "dimension",
       "$value": "10rem"
     },
+    "cascade-min-w": {
+      "$description": "级联面板里一列的最小宽度：一列只放一级的名字，比菜单窄一档，四五级并排也放得下。",
+      "$type": "dimension",
+      "$value": "7.5rem"
+    },
     "column-min-w": {
       "$description": "浮层里成列排布的选项列（时 / 分 / 秒）的最小宽度：两位数字加两侧标记轨。",
       "$type": "dimension",
