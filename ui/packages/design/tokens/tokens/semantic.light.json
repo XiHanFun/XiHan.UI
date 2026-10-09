@@ -93,6 +93,19 @@
       "$type": "color",
       "$value": "color-mix(in oklab, {color.neutral.900} 60%, transparent)"
     },
+    "media-chrome": {
+      "$description": "压在图片与视频上的控件面（看片层的翻页钮、关闭钮与计数）：近黑兑 55% 的深纱。亮暗两档同值——它跟的是底下的画面不是页面主题，白面压在亮图上分不出来。",
+      "$type": "color",
+      "$value": "color-mix(in oklab, {color.neutral.950} 55%, transparent)"
+    },
+    "media-chrome-hover": {
+      "$type": "color",
+      "$value": "color-mix(in oklab, {color.neutral.950} 70%, transparent)"
+    },
+    "media-chrome-active": {
+      "$type": "color",
+      "$value": "color-mix(in oklab, {color.neutral.950} 80%, transparent)"
+    },
     "scrollbar-track": {
       "$type": "color",
       "$value": "oklch(0 0 0 / 0)"
@@ -123,6 +136,11 @@
       "$description": "品牌淡底（{bg.brand-subtle} 及其 -hover / -active 三档）上的文字与字形。与语气层 --xh-_tone-fg 同式：往正文色兑到 60%，浅色态变深、深色态变浅。浅色实测压 12% / 20% / 28% 三档为 8.49 / 7.60 / 6.78；直接取 brand.700 在 28% 按下面只有 4.42，够不到 AA。",
       "$type": "color",
       "$value": "color-mix(in oklab, {bg.brand} 60%, {fg.default})"
+    },
+    "on-media-chrome": {
+      "$description": "{bg.media-chrome} 深纱上的文字与字形：纯白，亮暗两档同值。",
+      "$type": "color",
+      "$value": "{color.neutral.0}"
     },
     "brand": {
       "$type": "color",

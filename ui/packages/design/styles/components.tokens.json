@@ -41842,8 +41842,8 @@
       ],
       "defaultToken": [
         "--xh-_liquid-bg-pressed",
-        "--xh-bg-subtle-hover",
-        "--xh-color-neutral-950"
+        "--xh-bg-media-chrome-active",
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 background-color 覆盖槽。"
@@ -41873,8 +41873,8 @@
       ],
       "defaultToken": [
         "--xh-_liquid-bg-hover",
-        "--xh-bg-subtle",
-        "--xh-color-neutral-950"
+        "--xh-bg-media-chrome-hover",
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 background-color 覆盖槽。"
@@ -41961,7 +41961,7 @@
       ],
       "defaultToken": [
         "--xh-_liquid-bg",
-        "--xh-color-neutral-950",
+        "--xh-bg-media-chrome",
         "--xh-material-liquid-focus-surface"
       ],
       "visibility": "public",
@@ -42163,7 +42163,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-color-neutral-0"
+        "--xh-fg-on-media-chrome"
       ],
       "visibility": "public",
       "description": "image-viewer 的 content 部件 color 覆盖槽。"
