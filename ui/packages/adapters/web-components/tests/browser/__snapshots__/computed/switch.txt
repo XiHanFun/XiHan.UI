@@ -1,10 +1,10 @@
 # switch
 
 [root]
-padding-top: 2px
-padding-right: 2px
-padding-bottom: 2px
-padding-left: 2px
+padding-top: 4px
+padding-right: 4px
+padding-bottom: 4px
+padding-left: 4px
 row-gap: 0px
 column-gap: 0px
 border-top-left-radius: 9999px
@@ -23,7 +23,7 @@ min-height: 0px
 font-size: 14px
 line-height: 14px
 font-weight: 400
-color: oklch(0.145 0.005 258)
+color: oklch(0.208 0.006 258)
 background-color: oklab(0 0 0 / 0.169)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -33,7 +33,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
+outline-color: oklch(0.208 0.006 258)
 
 [thumb]
 padding-top: 0px
@@ -58,7 +58,7 @@ min-height: auto
 font-size: 14px
 line-height: 0px
 font-weight: 400
-color: oklch(0.145 0.005 258)
+color: oklch(0.208 0.006 258)
 background-color: oklch(1 0 0)
 transition-property: translate, inline-size, box-shadow
 transition-duration: 0.12s, 0.12s, 0.12s
@@ -68,4 +68,4 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
+outline-color: oklch(0.208 0.006 258)

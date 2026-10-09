@@ -50,16 +50,16 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(0.145 0.005 258)
-border-right-color: oklch(0.145 0.005 258)
-border-bottom-color: oklch(0.145 0.005 258)
-border-left-color: oklch(0.145 0.005 258)
+border-top-color: oklch(0.208 0.006 258)
+border-right-color: oklch(0.208 0.006 258)
+border-bottom-color: oklch(0.208 0.006 258)
+border-left-color: oklch(0.208 0.006 258)
 min-height: 0px
 font-size: 16px
 line-height: normal
 font-weight: 400
-color: oklch(0.145 0.005 258)
-background-color: oklab(0.145 -0.00103956 -0.00489074 / 0.15)
+color: oklch(0.208 0.006 258)
+background-color: oklab(0.208 -0.00124747 -0.00586889 / 0.15)
 transition-property: background-color, color
 transition-duration: 0.12s, 0.12s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1)
@@ -68,7 +68,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
+outline-color: oklch(0.208 0.006 258)
 
 [track]
 padding-top: 1px

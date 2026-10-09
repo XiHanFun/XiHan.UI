@@ -7,23 +7,23 @@ padding-bottom: 6px
 padding-left: 12px
 row-gap: 8px
 column-gap: 8px
-border-top-left-radius: 4px
-border-top-right-radius: 4px
-border-bottom-right-radius: 4px
-border-bottom-left-radius: 4px
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
 border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(0.145 0.005 258)
-border-right-color: oklch(0.145 0.005 258)
-border-bottom-color: oklch(0.145 0.005 258)
-border-left-color: oklch(0.145 0.005 258)
-min-height: 0px
+border-top-color: oklch(0.208 0.006 258)
+border-right-color: oklch(0.208 0.006 258)
+border-bottom-color: oklch(0.208 0.006 258)
+border-left-color: oklch(0.208 0.006 258)
+min-height: 32px
 font-size: 14px
 line-height: 21px
 font-weight: 400
-color: oklch(0.145 0.005 258)
+color: oklch(0.208 0.006 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, color, opacity
 transition-duration: 0.12s, 0.12s, 0.12s
@@ -42,18 +42,18 @@ padding-bottom: 0px
 padding-left: 0px
 row-gap: normal
 column-gap: normal
-border-top-left-radius: 4px
-border-top-right-radius: 4px
-border-bottom-right-radius: 4px
-border-bottom-left-radius: 4px
+border-top-left-radius: 2px
+border-top-right-radius: 2px
+border-bottom-right-radius: 2px
+border-bottom-left-radius: 2px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
 border-left-width: 1px
-border-top-color: oklab(0 0 0 / 0.102)
-border-right-color: oklab(0 0 0 / 0.102)
-border-bottom-color: oklab(0 0 0 / 0.102)
-border-left-color: oklab(0 0 0 / 0.102)
+border-top-color: oklab(0 0 0 / 0.169)
+border-right-color: oklab(0 0 0 / 0.169)
+border-bottom-color: oklab(0 0 0 / 0.169)
+border-left-color: oklab(0 0 0 / 0.169)
 min-height: 0px
 font-size: 12px
 line-height: 12px
@@ -85,15 +85,15 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(0.145 0.005 258)
-border-right-color: oklch(0.145 0.005 258)
-border-bottom-color: oklch(0.145 0.005 258)
-border-left-color: oklch(0.145 0.005 258)
+border-top-color: oklch(0.208 0.006 258)
+border-right-color: oklch(0.208 0.006 258)
+border-bottom-color: oklch(0.208 0.006 258)
+border-left-color: oklch(0.208 0.006 258)
 min-height: 0px
 font-size: 14px
 line-height: 21px
 font-weight: 400
-color: oklch(0.145 0.005 258)
+color: oklch(0.208 0.006 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
@@ -103,15 +103,15 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
+outline-color: oklch(0.208 0.006 258)
 
 [list]
-padding-top: 4px
-padding-right: 4px
-padding-bottom: 4px
-padding-left: 4px
-row-gap: 2px
-column-gap: 2px
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: 0px
+column-gap: 0px
 border-top-left-radius: 0px
 border-top-right-radius: 0px
 border-bottom-right-radius: 0px
@@ -120,15 +120,15 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(0.145 0.005 258)
-border-right-color: oklch(0.145 0.005 258)
-border-bottom-color: oklch(0.145 0.005 258)
-border-left-color: oklch(0.145 0.005 258)
+border-top-color: oklch(0.208 0.006 258)
+border-right-color: oklch(0.208 0.006 258)
+border-bottom-color: oklch(0.208 0.006 258)
+border-left-color: oklch(0.208 0.006 258)
 min-height: auto
 font-size: 16px
 line-height: normal
 font-weight: 400
-color: oklch(0.145 0.005 258)
+color: oklch(0.208 0.006 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: opacity
 transition-duration: 0.12s
@@ -138,7 +138,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
+outline-color: oklch(0.208 0.006 258)
 
 [panel-count]
 padding-top: 0px
@@ -155,15 +155,15 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(0.52 0.006 258)
-border-right-color: oklch(0.52 0.006 258)
-border-bottom-color: oklch(0.52 0.006 258)
-border-left-color: oklch(0.52 0.006 258)
+border-top-color: oklch(0.52 0.018 256)
+border-right-color: oklch(0.52 0.018 256)
+border-bottom-color: oklch(0.52 0.018 256)
+border-left-color: oklch(0.52 0.018 256)
 min-height: auto
 font-size: 12px
 line-height: 12px
 font-weight: 400
-color: oklch(0.52 0.006 258)
+color: oklch(0.52 0.018 256)
 background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
@@ -173,12 +173,12 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.52 0.006 258)
+outline-color: oklch(0.52 0.018 256)
 
 [panel-header]
-padding-top: 8px
+padding-top: 12px
 padding-right: 12px
-padding-bottom: 8px
+padding-bottom: 12px
 padding-left: 12px
 row-gap: 8px
 column-gap: 8px
@@ -188,18 +188,18 @@ border-bottom-right-radius: 0px
 border-bottom-left-radius: 0px
 border-top-width: 0px
 border-right-width: 0px
-border-bottom-width: 1px
+border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(0.145 0.005 258)
-border-right-color: oklch(0.145 0.005 258)
-border-bottom-color: oklab(0 0 0 / 0.102)
-border-left-color: oklch(0.145 0.005 258)
+border-top-color: oklch(0.208 0.006 258)
+border-right-color: oklch(0.208 0.006 258)
+border-bottom-color: oklch(0.208 0.006 258)
+border-left-color: oklch(0.208 0.006 258)
 min-height: auto
 font-size: 16px
 line-height: normal
 font-weight: 400
-color: oklch(0.145 0.005 258)
-background-color: rgba(0, 0, 0, 0)
+color: oklch(0.208 0.006 258)
+background-color: oklab(0 0 0 / 0.047)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
@@ -208,7 +208,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
+outline-color: oklch(0.208 0.006 258)
 
 [panel-title]
 padding-top: 0px
@@ -225,15 +225,15 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(0.145 0.005 258)
-border-right-color: oklch(0.145 0.005 258)
-border-bottom-color: oklch(0.145 0.005 258)
-border-left-color: oklch(0.145 0.005 258)
+border-top-color: oklch(0.208 0.006 258)
+border-right-color: oklch(0.208 0.006 258)
+border-bottom-color: oklch(0.208 0.006 258)
+border-left-color: oklch(0.208 0.006 258)
 min-height: auto
 font-size: 14px
 line-height: 14px
-font-weight: 600
-color: oklch(0.145 0.005 258)
+font-weight: 500
+color: oklch(0.208 0.006 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
@@ -243,15 +243,15 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
+outline-color: oklch(0.208 0.006 258)
 
 [root]
 padding-top: 0px
 padding-right: 0px
 padding-bottom: 0px
 padding-left: 0px
-row-gap: 12px
-column-gap: 12px
+row-gap: 20px
+column-gap: 20px
 border-top-left-radius: 0px
 border-top-right-radius: 0px
 border-bottom-right-radius: 0px
@@ -260,15 +260,15 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(0.145 0.005 258)
-border-right-color: oklch(0.145 0.005 258)
-border-bottom-color: oklch(0.145 0.005 258)
-border-left-color: oklch(0.145 0.005 258)
+border-top-color: oklch(0.208 0.006 258)
+border-right-color: oklch(0.208 0.006 258)
+border-bottom-color: oklch(0.208 0.006 258)
+border-left-color: oklch(0.208 0.006 258)
 min-height: 0px
 font-size: 16px
 line-height: normal
 font-weight: 400
-color: oklch(0.145 0.005 258)
+color: oklch(0.208 0.006 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
@@ -278,7 +278,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
+outline-color: oklch(0.208 0.006 258)
 
 [search]
 padding-top: 0px
@@ -295,15 +295,15 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 1px
 border-left-width: 0px
-border-top-color: oklch(0.145 0.005 258)
-border-right-color: oklch(0.145 0.005 258)
-border-bottom-color: oklab(0 0 0 / 0.043)
-border-left-color: oklch(0.145 0.005 258)
+border-top-color: oklch(0.208 0.006 258)
+border-right-color: oklch(0.208 0.006 258)
+border-bottom-color: oklab(0 0 0 / 0.047)
+border-left-color: oklch(0.208 0.006 258)
 min-height: 0px
 font-size: 14px
 line-height: normal
 font-weight: 400
-color: oklch(0.145 0.005 258)
+color: oklch(0.208 0.006 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
@@ -313,7 +313,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
+outline-color: oklch(0.208 0.006 258)
 
 [select-all-trigger]
 padding-top: 0px
@@ -322,10 +322,10 @@ padding-bottom: 0px
 padding-left: 0px
 row-gap: 4px
 column-gap: 4px
-border-top-left-radius: 4px
-border-top-right-radius: 4px
-border-bottom-right-radius: 4px
-border-bottom-left-radius: 4px
+border-top-left-radius: 2px
+border-top-right-radius: 2px
+border-bottom-right-radius: 2px
+border-bottom-left-radius: 2px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
@@ -338,7 +338,7 @@ min-height: auto
 font-size: 12px
 line-height: 12px
 font-weight: 500
-color: oklch(0.708 0.005 258)
+color: oklch(0.7 0.016 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -348,7 +348,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.708 0.005 258)
+outline-color: oklch(0.7 0.016 258)
 
 [source-panel]
 padding-top: 0px
@@ -357,10 +357,10 @@ padding-bottom: 0px
 padding-left: 0px
 row-gap: normal
 column-gap: normal
-border-top-left-radius: 8px
-border-top-right-radius: 8px
-border-bottom-right-radius: 8px
-border-bottom-left-radius: 8px
+border-top-left-radius: 4px
+border-top-right-radius: 4px
+border-bottom-right-radius: 4px
+border-bottom-left-radius: 4px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
@@ -373,7 +373,7 @@ min-height: auto
 font-size: 16px
 line-height: normal
 font-weight: 400
-color: oklch(0.145 0.005 258)
+color: oklch(0.208 0.006 258)
 background-color: oklch(1 0 0)
 transition-property: all
 transition-duration: 0s
@@ -383,7 +383,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
+outline-color: oklch(0.208 0.006 258)
 
 [target-panel]
 padding-top: 0px
@@ -392,10 +392,10 @@ padding-bottom: 0px
 padding-left: 0px
 row-gap: normal
 column-gap: normal
-border-top-left-radius: 8px
-border-top-right-radius: 8px
-border-bottom-right-radius: 8px
-border-bottom-left-radius: 8px
+border-top-left-radius: 4px
+border-top-right-radius: 4px
+border-bottom-right-radius: 4px
+border-bottom-left-radius: 4px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
@@ -408,7 +408,7 @@ min-height: auto
 font-size: 16px
 line-height: normal
 font-weight: 400
-color: oklch(0.145 0.005 258)
+color: oklch(0.208 0.006 258)
 background-color: oklch(1 0 0)
 transition-property: all
 transition-duration: 0s
@@ -418,7 +418,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
+outline-color: oklch(0.208 0.006 258)
 
 [to-source-trigger]
 padding-top: 1px
@@ -427,24 +427,24 @@ padding-bottom: 1px
 padding-left: 0px
 row-gap: 0px
 column-gap: 0px
-border-top-left-radius: 4px
-border-top-right-radius: 4px
-border-bottom-right-radius: 4px
-border-bottom-left-radius: 4px
+border-top-left-radius: 50%
+border-top-right-radius: 50%
+border-bottom-right-radius: 50%
+border-bottom-left-radius: 50%
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
 border-left-width: 1px
-border-top-color: oklab(0 0 0 / 0.102)
-border-right-color: oklab(0 0 0 / 0.102)
-border-bottom-color: oklab(0 0 0 / 0.102)
-border-left-color: oklab(0 0 0 / 0.102)
+border-top-color: rgba(0, 0, 0, 0)
+border-right-color: rgba(0, 0, 0, 0)
+border-bottom-color: rgba(0, 0, 0, 0)
+border-left-color: rgba(0, 0, 0, 0)
 min-height: auto
 font-size: 14px
 line-height: 14px
 font-weight: 400
-color: oklch(0.708 0.005 258)
-background-color: rgba(0, 0, 0, 0)
+color: oklch(0.7 0.016 258)
+background-color: oklab(0 0 0 / 0.047)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
@@ -453,7 +453,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.708 0.005 258)
+outline-color: oklch(0.7 0.016 258)
 
 [to-target-trigger]
 padding-top: 1px
@@ -462,24 +462,24 @@ padding-bottom: 1px
 padding-left: 0px
 row-gap: 0px
 column-gap: 0px
-border-top-left-radius: 4px
-border-top-right-radius: 4px
-border-bottom-right-radius: 4px
-border-bottom-left-radius: 4px
+border-top-left-radius: 50%
+border-top-right-radius: 50%
+border-bottom-right-radius: 50%
+border-bottom-left-radius: 50%
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
 border-left-width: 1px
-border-top-color: oklab(0 0 0 / 0.102)
-border-right-color: oklab(0 0 0 / 0.102)
-border-bottom-color: oklab(0 0 0 / 0.102)
-border-left-color: oklab(0 0 0 / 0.102)
+border-top-color: rgba(0, 0, 0, 0)
+border-right-color: rgba(0, 0, 0, 0)
+border-bottom-color: rgba(0, 0, 0, 0)
+border-left-color: rgba(0, 0, 0, 0)
 min-height: auto
 font-size: 14px
 line-height: 14px
 font-weight: 400
-color: oklch(0.708 0.005 258)
-background-color: rgba(0, 0, 0, 0)
+color: oklch(0.7 0.016 258)
+background-color: oklab(0 0 0 / 0.047)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
@@ -488,4 +488,4 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.708 0.005 258)
+outline-color: oklch(0.7 0.016 258)

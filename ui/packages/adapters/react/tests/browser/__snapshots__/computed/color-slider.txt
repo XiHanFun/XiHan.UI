@@ -85,15 +85,15 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(0.145 0.005 258)
-border-right-color: oklch(0.145 0.005 258)
-border-bottom-color: oklch(0.145 0.005 258)
-border-left-color: oklch(0.145 0.005 258)
+border-top-color: oklch(0.461 0.018 258)
+border-right-color: oklch(0.461 0.018 258)
+border-bottom-color: oklch(0.461 0.018 258)
+border-left-color: oklch(0.461 0.018 258)
 min-height: auto
 font-size: 14px
 line-height: normal
-font-weight: 500
-color: oklch(0.145 0.005 258)
+font-weight: 400
+color: oklch(0.461 0.018 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
@@ -103,7 +103,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
+outline-color: oklch(0.461 0.018 258)
 
 [root]
 padding-top: 0px
@@ -217,10 +217,10 @@ padding-bottom: 2px
 padding-left: 8px
 row-gap: normal
 column-gap: normal
-border-top-left-radius: 4px
-border-top-right-radius: 4px
-border-bottom-right-radius: 4px
-border-bottom-left-radius: 4px
+border-top-left-radius: 2px
+border-top-right-radius: 2px
+border-bottom-right-radius: 2px
+border-bottom-left-radius: 2px
 border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px

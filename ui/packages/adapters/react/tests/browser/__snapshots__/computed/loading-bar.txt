@@ -43,8 +43,8 @@ padding-left: 0px
 row-gap: normal
 column-gap: normal
 border-top-left-radius: 0px
-border-top-right-radius: 0px
-border-bottom-right-radius: 0px
+border-top-right-radius: 9999px
+border-bottom-right-radius: 9999px
 border-bottom-left-radius: 0px
 border-top-width: 0px
 border-right-width: 0px
