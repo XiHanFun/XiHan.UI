@@ -944,6 +944,21 @@
       "$value": "{control.h-sm}"
     }
   },
+  "marker": {
+    "size-sm": {
+      "$description": "盛序号或对号的状态圆（Steps 序号圆点）的直径：比同档控件矮一档，sm / md / lg 与 xs 动作钮、sm 控件、md 控件同高，随密度换档。",
+      "$type": "dimension",
+      "$value": "{control.action-size}"
+    },
+    "size-md": {
+      "$type": "dimension",
+      "$value": "{control.h-sm}"
+    },
+    "size-lg": {
+      "$type": "dimension",
+      "$value": "{control.h-md}"
+    }
+  },
   "nav": {
     "row-h-sm": {
       "$description": "导航行（侧栏菜单的分支与链接）的块尺寸。比同档控件高一截：侧栏是整列扫读的目标，行距松一些更好点也更好读。",
@@ -1232,6 +1247,11 @@
       "$description": "钉在面板角上的钮离两条边的距离。标题给这颗钮让出的那一段也取它，让位量与实际落点恒一致。",
       "$type": "dimension",
       "$value": "{space.3}"
+    },
+    "header-h": {
+      "$description": "卡片头部条的最小块尺寸：一行区块标题加上下留白，底边一道内部分隔线；紧凑档收到 40px。",
+      "$type": "dimension",
+      "$value": "46px"
     }
   },
   "chart": {

@@ -1877,6 +1877,9 @@
               "name": "--xh-approval-result-gap"
             },
             {
+              "name": "--xh-approval-result-h"
+            },
+            {
               "name": "--xh-approval-result-px"
             },
             {
@@ -5584,6 +5587,12 @@
               "name": "--xh-card-border"
             },
             {
+              "name": "--xh-card-content-fg"
+            },
+            {
+              "name": "--xh-card-content-font-size"
+            },
+            {
               "name": "--xh-card-content-gap"
             },
             {
@@ -5609,6 +5618,15 @@
             },
             {
               "name": "--xh-card-glint-duration"
+            },
+            {
+              "name": "--xh-card-header-border"
+            },
+            {
+              "name": "--xh-card-header-h"
+            },
+            {
+              "name": "--xh-card-header-py"
             },
             {
               "name": "--xh-card-leading"
@@ -51507,6 +51525,9 @@
               "name": "--xh-question-flow-result-gap"
             },
             {
+              "name": "--xh-question-flow-result-h"
+            },
+            {
               "name": "--xh-question-flow-result-px"
             },
             {
@@ -53034,6 +53055,9 @@
               "name": "--xh-radio-group-segment-font-weight"
             },
             {
+              "name": "--xh-radio-group-segment-font-weight-checked"
+            },
+            {
               "name": "--xh-radio-group-segment-h"
             },
             {
@@ -53043,7 +53067,16 @@
               "name": "--xh-radio-group-segment-radius"
             },
             {
+              "name": "--xh-radio-group-segment-separator"
+            },
+            {
               "name": "--xh-radio-group-thumb-bg"
+            },
+            {
+              "name": "--xh-radio-group-thumb-bg-disabled"
+            },
+            {
+              "name": "--xh-radio-group-thumb-bg-hover"
             },
             {
               "name": "--xh-radio-group-thumb-border"
@@ -53053,9 +53086,6 @@
             },
             {
               "name": "--xh-radio-group-thumb-shadow"
-            },
-            {
-              "name": "--xh-radio-group-thumb-shadow-disabled"
             },
             {
               "name": "--xh-radio-group-track-bg"
@@ -59637,10 +59667,13 @@
               "name": "--xh-slider-thumb-bg-disabled"
             },
             {
-              "name": "--xh-slider-thumb-bg-invalid"
+              "name": "--xh-slider-thumb-border"
             },
             {
-              "name": "--xh-slider-thumb-border"
+              "name": "--xh-slider-thumb-border-disabled"
+            },
+            {
+              "name": "--xh-slider-thumb-border-invalid"
             },
             {
               "name": "--xh-slider-thumb-radius"
@@ -59664,13 +59697,16 @@
               "name": "--xh-slider-tick-bg"
             },
             {
-              "name": "--xh-slider-tick-bg-active"
+              "name": "--xh-slider-tick-border"
             },
             {
-              "name": "--xh-slider-tick-bg-active-disabled"
+              "name": "--xh-slider-tick-border-active"
             },
             {
-              "name": "--xh-slider-tick-bg-disabled"
+              "name": "--xh-slider-tick-border-active-disabled"
+            },
+            {
+              "name": "--xh-slider-tick-border-disabled"
             },
             {
               "name": "--xh-slider-tick-label-fg"
@@ -61675,6 +61711,9 @@
               "name": "--xh-steps-indicator-bg-completed-hover"
             },
             {
+              "name": "--xh-steps-indicator-bg-completed-pressed"
+            },
+            {
               "name": "--xh-steps-indicator-bg-current"
             },
             {
@@ -61787,6 +61826,9 @@
             },
             {
               "name": "--xh-steps-title-font-weight"
+            },
+            {
+              "name": "--xh-steps-title-font-weight-current"
             },
             {
               "name": "--xh-steps-trigger-bg-hover"
@@ -71439,6 +71481,9 @@
             },
             {
               "name": "--xh-tool-call-status-font-size"
+            },
+            {
+              "name": "--xh-tool-call-status-h"
             },
             {
               "name": "--xh-tool-call-status-px"

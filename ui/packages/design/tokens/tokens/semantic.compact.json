@@ -190,6 +190,10 @@
     "pad-lg": {
       "$type": "dimension",
       "$value": "{space.3}"
+    },
+    "header-h": {
+      "$type": "dimension",
+      "$value": "40px"
     }
   },
   "section": {

@@ -16900,16 +16900,18 @@
     display: none;
   }
 
-  /* 判定结果条：判过了才露出，语气随判定走 */
+  /* 判定结果条：判过了才露出，语气随判定走。与 Tag 的 sm 档同一副方签——control 圆角、块尺寸取 chip 档、竖向内衬为 0 */
   .xh-scope-approval[data-part='result'] {
     display: inline-flex;
     align-self: flex-start;
     align-items: center;
+    box-sizing: border-box;
     gap: var(--xh-approval-result-gap, var(--xh-space-1));
+    min-block-size: var(--xh-approval-result-h, var(--xh-chip-h-sm));
     padding-inline: var(--xh-approval-result-px, var(--xh-space-1_5));
-    padding-block: var(--xh-approval-result-py, var(--xh-space-0_5));
+    padding-block: var(--xh-approval-result-py, 0);
     border: var(--xh-stroke-thin) solid transparent;
-    border-radius: var(--xh-approval-result-radius, var(--xh-shape-pill));
+    border-radius: var(--xh-approval-result-radius, var(--xh-shape-control));
     background: var(--xh-approval-result-bg, var(--xh-_tone-subtle));
     color: var(--xh-approval-result-fg, var(--xh-_tone-fg));
     font-size: var(--xh-approval-result-font-size, var(--xh-text-caption-size));
@@ -19102,17 +19104,22 @@
     --xh-card-skin: 1;
   }
 
-  /* Card 是带统一内边距与节奏的内容面；布局方向可由作者在根上覆盖。
+  /* Card 是一块描边内容面：根自己不留内衬，头部条、正文与页脚各带各的内衬，头部条的分隔线才能贯通整宽，
+     直接放进根的媒体也贴边铺满；布局方向可由作者在根上覆盖。
      边界由 --xh-border-default 描边承担，raised 落影只是抬起的加成（Card 是唯一登记 raised 的静态面，
-     且 raised 必带描边）；内衬只走 --xh-surface-* 阶梯。 */
+     且 raised 必带描边）。横向内衬 16px 不随密度；正文纵向内衬走 --xh-surface-pad-lg（16，紧凑 12）。
+     --xh-card-p 改的是各部件的内衬，四边同值 */
   .xh-scope-card[data-part='root'] {
+    --xh-_card-px: var(--xh-card-p, var(--xh-space-4));
+    --xh-_card-py: var(--xh-card-p, var(--xh-surface-pad-lg));
+
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: var(--xh-card-gap, var(--xh-space-3));
+    gap: var(--xh-card-gap, 0);
     min-inline-size: 0;
     overflow: visible;
-    padding: var(--xh-card-p, var(--xh-surface-pad-lg));
+    padding: 0;
     border: var(--xh-stroke-thin) solid var(--xh-card-border, var(--xh-border-default));
     border-radius: var(--xh-card-radius, var(--xh-shape-surface));
     background: var(--xh-card-bg, var(--xh-bg-surface));
@@ -19248,15 +19255,26 @@
     flex-direction: column;
   }
 
+  /* 头部条：根的直接子节点才是条——一行区块标题时高 46px（紧凑 40px），标题在条里竖向居中，
+     横向内衬与正文同起点，底边一道 1px 内部分隔线。嵌在正文里的 header（横向卡片把标题与正文排在一列）不画条 */
+  .xh-scope-card[data-part='root'] > .xh-scope-card[data-part='header'] {
+    justify-content: center;
+    min-block-size: var(--xh-card-header-h, var(--xh-surface-header-h));
+    padding-block: var(--xh-card-header-py, var(--xh-space-2));
+    padding-inline: var(--xh-_card-px);
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-card-header-border, var(--xh-border-subtle));
+  }
+
   .xh-scope-card[data-part='title'],
   .xh-scope-card[data-part='description'] {
     margin: 0;
   }
 
+  /* 标题取区块标题档（heading-3）、正文色 */
   .xh-scope-card[data-part='title'] {
     color: var(--xh-card-title-fg, var(--xh-fg-default));
-    font-size: var(--xh-card-title-font-size, var(--xh-text-label-size));
-    font-weight: var(--xh-card-title-font-weight, var(--xh-font-weight-semibold));
+    font-size: var(--xh-card-title-font-size, var(--xh-text-heading-3-size));
+    font-weight: var(--xh-card-title-font-weight, var(--xh-text-heading-3-weight));
     line-height: var(--xh-card-title-leading, var(--xh-leading-tight));
   }
 
@@ -19266,12 +19284,16 @@
     line-height: var(--xh-card-description-leading, var(--xh-leading-normal));
   }
 
+  /* 正文：四边内衬、14px 次级色 */
   .xh-scope-card[data-part='content'] {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
     gap: var(--xh-card-content-gap, var(--xh-space-1));
     min-inline-size: 0;
+    padding: var(--xh-_card-py) var(--xh-_card-px);
+    color: var(--xh-card-content-fg, var(--xh-fg-muted));
+    font-size: var(--xh-card-content-font-size, var(--xh-text-body-size));
   }
 
   .xh-scope-card[data-part='footer'] {
@@ -19279,6 +19301,12 @@
     flex-direction: row;
     align-items: center;
     gap: var(--xh-card-footer-gap, var(--xh-space-2));
+  }
+
+  /* 页脚是正文的延续：与正文同起点，顶上不再留白（正文的底内衬就是两者的间距），底边留正文同档的内衬。
+     嵌在正文里的页脚随正文的内衬走，不另加 */
+  .xh-scope-card[data-part='root'] > .xh-scope-card[data-part='footer'] {
+    padding: 0 var(--xh-_card-px) var(--xh-_card-py);
   }
 
   @media print {
@@ -36950,10 +36978,10 @@
     --xh-progress-skin: 1;
   }
 
-  /* 私有槽位：组件令牌 → 中档字面量两级回退。厚度写在 root 上而不是 track 上，
-     尺寸档才改得动一处就够，track 靠继承拿到值。 */
+  /* 私有槽位：组件令牌 → 中档两级回退。厚度写在 root 上而不是 track 上，
+     尺寸档才改得动一处就够，track 靠继承拿到值。线形是一条细轨：sm / md / lg = 3 / 4 / 8px */
   .xh-scope-progress[data-part='root'] {
-    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-track-thickness));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-space-1));
 
     /* 目标刻度与环形的刻度值按根落位 */
     position: relative;
@@ -36970,7 +36998,8 @@
     inline-size: 100%;
     block-size: var(--xh-_progress-thickness);
     border-radius: var(--xh-progress-track-radius, var(--xh-shape-pill));
-    background: var(--xh-progress-track, var(--xh-bg-subtle-active));
+    /* 底槽取 fill-3 级中性填充（淡底阶梯的 200 档），环形的底槽同一支 */
+    background: var(--xh-progress-track, var(--xh-bg-subtle-hover));
   }
 
   /* 语气槽由 root 上的 data-tone 声明、经继承发下来；没写 data-tone 时退回原来的品牌色。
@@ -37048,7 +37077,7 @@
   /* —— 尺寸 —— */
   /* 线形只有厚度分档；中间档不写规则，缺省即中档 */
   .xh-scope-progress[data-part='root'][data-size='sm'] {
-    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-space-1));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-stroke-strong));
   }
 
   .xh-scope-progress[data-part='root'][data-size='lg'] {
@@ -37088,10 +37117,10 @@
     block-size: 100%;
   }
 
-  /* 环心文字：占位不撑格子，长内容自己换行由作者定 */
+  /* 环心文字：12px 次级色，占位不撑格子，长内容自己换行由作者定 */
   .xh-scope-progress[data-part='label'] {
-    color: var(--xh-progress-label-fg, var(--xh-fg-default));
-    font-size: var(--xh-progress-label-font-size, var(--xh-text-body-size));
+    color: var(--xh-progress-label-fg, var(--xh-fg-muted));
+    font-size: var(--xh-progress-label-font-size, var(--xh-text-caption-size));
     line-height: var(--xh-leading-none);
     text-align: center;
   }
@@ -37100,7 +37129,7 @@
      底槽不跟着语气换族：只有已完成的那段换色，才读得出"完成了多少" */
   .xh-scope-progress[data-part='track'][data-variant='circle'],
   .xh-scope-progress[data-part='track'][data-variant='dashboard'] {
-    stroke: var(--xh-progress-track, var(--xh-bg-subtle-active));
+    stroke: var(--xh-progress-track, var(--xh-bg-subtle-hover));
   }
 
   .xh-scope-progress[data-part='range'][data-variant='circle'],
@@ -37892,16 +37921,18 @@
     --xh-action-ring-color-focus-visible: currentColor;
   }
 
-  /* 交卷之后才露出的那一格 */
+  /* 交卷之后才露出的那一格：与 Tag 的 sm 档同一副方签——control 圆角、块尺寸取 chip 档、竖向内衬为 0 */
   .xh-scope-question-flow[data-part='result'] {
     display: inline-flex;
     align-self: flex-start;
     align-items: center;
+    box-sizing: border-box;
     gap: var(--xh-question-flow-result-gap, var(--xh-space-1));
+    min-block-size: var(--xh-question-flow-result-h, var(--xh-chip-h-sm));
     padding-inline: var(--xh-question-flow-result-px, var(--xh-space-1_5));
-    padding-block: var(--xh-question-flow-result-py, var(--xh-space-0_5));
+    padding-block: var(--xh-question-flow-result-py, 0);
     border: var(--xh-stroke-thin) solid transparent;
-    border-radius: var(--xh-question-flow-result-radius, var(--xh-shape-pill));
+    border-radius: var(--xh-question-flow-result-radius, var(--xh-shape-control));
     background: var(--xh-question-flow-result-bg, var(--xh-_tone-subtle));
     color: var(--xh-question-flow-result-fg, var(--xh-_tone-fg));
     font-size: var(--xh-question-flow-result-font-size, var(--xh-text-caption-size));
@@ -38473,27 +38504,31 @@
   }
 
   /* —— segmented 形态 ——
-     一条淡底轨道装着首尾相接的若干段，选中段由 thumb 部件标出：一块白色抬起的滑块，换段时滑过去。
+     一条轨道装着首尾相接的若干段，选中段由 thumb 部件标出：一块品牌淡底的滑块，换段时滑过去。
      轨道就是 root：滑块绝对定位于它，段与段之间不留缝，所以 gap 归零。
-     轨道是一块淡底面：--xh-bg-subtle 底 + 同宽透明占位边 + 无影，边界由滑块的描边与轨道底色的落差承担。
+     轨道与字段外壳同款：最浅一档淡底（--xh-bg-field）+ 1px 字段描边（--xh-border-control）+ control 圆角，
+     内衬 2px，加上描边段离外沿 3px。
      一行排不下就折行：每个选项都必须看得见、点得到；不改成横向滚动是因为段离轨道内沿只有一格衬距，
      轨道一旦成为滚动容器，段的焦点环（画在段外侧 2px 处）会被裁掉 */
   .xh-scope-radio-group[data-part='root'][data-variant='segmented'] {
-    /* 滑块（有滑块开关的白色抬起面）的底与选中段的文字色；没写 data-tone 时就是这里的取值 */
-    --xh-_radio-group-thumb-bg: var(--xh-bg-surface-raised);
-    --xh-_radio-group-segment-fg-checked: var(--xh-fg-default);
-    /* 轨道是淡底承载面：段坐在它上面，悬停 200 → 按下 300，host 槽向内下发同一副阶梯 */
-    --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
-    --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
+    /* 滑块（选中段的品牌淡底）静息 / 悬停 / 禁用三档与选中段的文字色；没写 data-tone 时就是这里的取值 */
+    --xh-_radio-group-thumb-bg: var(--xh-bg-segment-selected);
+    --xh-_radio-group-thumb-bg-hover: var(--xh-bg-segment-selected-hover);
+    --xh-_radio-group-thumb-bg-disabled: var(--xh-bg-segment-selected-disabled);
+    --xh-_radio-group-segment-fg-checked: var(--xh-fg-segment-selected);
+    --xh-_radio-group-segment-fg-checked-disabled: var(--xh-fg-segment-selected-disabled);
+    /* 轨道底是最浅一档淡底，按白底承载：段悬停 100 → 按下 200，host 槽向内下发同一副阶梯 */
+    --xh-action-host-bg-hover: var(--xh-bg-subtle);
+    --xh-action-host-bg-pressed: var(--xh-bg-subtle-hover);
 
     position: relative;
     display: inline-flex;
     flex-wrap: wrap;
     gap: 0;
     padding: var(--xh-radio-group-track-padding, var(--xh-space-0_5));
-    border: var(--xh-stroke-thin) solid var(--xh-radio-group-track-border, transparent);
-    border-radius: var(--xh-radio-group-track-radius, var(--xh-shape-surface));
-    background: var(--xh-radio-group-track-bg, var(--xh-bg-subtle));
+    border: var(--xh-stroke-thin) solid var(--xh-radio-group-track-border, var(--xh-border-control));
+    border-radius: var(--xh-radio-group-track-radius, var(--xh-shape-control));
+    background: var(--xh-radio-group-track-bg, var(--xh-bg-field));
     font-size: var(--xh-radio-group-item-font-size, var(--xh-_radio-group-font-size));
   }
 
@@ -38549,10 +38584,11 @@
   }
 
   /* 语气：选择器带 [data-tone] 限定，不限定的话放在语气容器里的分段会跟着改色。
-     语气档的滑块是实心语气面，选中段的字取语气面上的前景 */
+     语气档的滑块换语气淡底（静息 / 悬停两档），选中段的字取语气字色 */
   .xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-tone] {
-    --xh-_radio-group-thumb-bg: var(--xh-_tone, var(--xh-bg-surface-raised));
-    --xh-_radio-group-segment-fg-checked: var(--xh-_tone-on, var(--xh-fg-default));
+    --xh-_radio-group-thumb-bg: var(--xh-_tone-subtle, var(--xh-bg-segment-selected));
+    --xh-_radio-group-thumb-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-segment-selected-hover));
+    --xh-_radio-group-segment-fg-checked: var(--xh-_tone-fg, var(--xh-fg-segment-selected));
   }
 
   /* 段：轨道里铺开的一格，不投影 Action Control 家族（与 Tabs segment 档同），面与字写在段自己身上。
@@ -38598,32 +38634,51 @@
     display: none;
   }
 
-  /* 选中态读 data-state，不读 ARIA。文字色也要跟着变——滑块是可选部件，作者不渲染它时"当前是哪一段"仍然要看得出来 */
+  /* 选中态读 data-state，不读 ARIA：品牌字 + medium。字也要跟着变——滑块是可选部件，作者不渲染它时"当前是哪一段"仍然要看得出来 */
   .xh-scope-radio-group[data-part='root'][data-variant='segmented']
     > .xh-scope-radio-group[data-part='item'][data-state='checked'] {
     color: var(--xh-radio-group-segment-fg-checked, var(--xh-_radio-group-segment-fg-checked));
+    font-weight: var(--xh-radio-group-segment-font-weight-checked, var(--xh-font-weight-medium));
   }
 
-  /* 滑块在场时选中段自己透空，环紧挨着的是压在它底下、与它同一块矩形的滑块实心底；
-     环色与那块底同族就看不出来，改取选中段自己的前景色——那一支本来就配着这块底定的 */
-  .xh-scope-radio-group[data-part='root'][data-variant='segmented']:has(> .xh-scope-radio-group[data-part='thumb']:not([hidden]))
-    > .xh-scope-radio-group[data-part='item'][data-state='checked']:focus-visible {
-    --xh-_ring-color: currentColor;
+  /* 段间分隔线：1px 装饰边色，长度取段高的一半再收一格半阶（md 档 32 / 2 − 2 = 14px），竖在后一段的起始缘上。
+     只在横排画：竖排的段上下相接，分隔交给轨道的留白。与选中段、悬停段相邻的那几道收起（底色淡成透明）——
+     那两段铺了面，再夹一道线就把面切出了缺口 */
+  .xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-orientation='horizontal']
+    > .xh-scope-radio-group[data-part='item'] + .xh-scope-radio-group[data-part='item']::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 0;
+    inline-size: var(--xh-stroke-thin);
+    block-size: calc(var(--xh-radio-group-segment-h, var(--xh-_radio-group-segment-h)) / 2 - var(--xh-space-0_5));
+    background-color: var(--xh-radio-group-segment-separator, var(--xh-border-default));
+    translate: 0 -50%;
+    pointer-events: none;
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 悬停只提亮未选中的那几段：选中段的底下压着滑块，再变色就成了两套强调。
-     底色用中性的悬停档：段坐在淡底轨道里，悬停取 200；只读收回悬停，与列表形态同一个决定 */
+  .xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-orientation='horizontal']
+    > .xh-scope-radio-group[data-part='item']:is([data-state='checked'], :not([data-disabled], [data-readonly]):hover)::after,
+  .xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-orientation='horizontal']
+    > .xh-scope-radio-group[data-part='item']:is([data-state='checked'], :not([data-disabled], [data-readonly]):hover)
+    + .xh-scope-radio-group[data-part='item']::after {
+    background-color: transparent;
+  }
+
+  /* 悬停时未选中段自己换面：选中段的底下压着滑块，悬停由滑块升一档表出（见滑块块）。
+     底色用中性的悬停档：轨道底是最浅一档淡底，按白底承载取 100；只读收回悬停，与列表形态同一个决定 */
   .xh-scope-radio-group[data-part='root'][data-variant='segmented']
     > .xh-scope-radio-group[data-part='item']:not([data-disabled]):not([data-readonly]):not([data-state='checked']):hover {
-    background-color: var(--xh-radio-group-segment-bg-hover, var(--xh-bg-subtle-hover));
+    background-color: var(--xh-radio-group-segment-bg-hover, var(--xh-bg-subtle));
     color: var(--xh-radio-group-segment-fg-hover, var(--xh-fg-default));
   }
 
-  /* 按下去要有回应：未选中段换到按下面（淡底承载 300），几何不动。
-     选中段不叠按下面：它压着的白色滑块本身就是选中身份（有滑块开关无叠加态） */
+  /* 按下去要有回应：未选中段换到按下面（白底承载 200），几何不动。
+     选中段不叠按下面：它压着的品牌淡底滑块本身就是选中身份（有滑块开关无叠加态） */
   .xh-scope-radio-group[data-part='root'][data-variant='segmented']
     > .xh-scope-radio-group[data-part='item']:not([data-disabled]):not([data-readonly]):not([data-state='checked']):is(:active, [data-pressed]) {
-    background-color: var(--xh-radio-group-segment-bg-pressed, var(--xh-bg-subtle-active));
+    background-color: var(--xh-radio-group-segment-bg-pressed, var(--xh-bg-subtle-hover));
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
   }
@@ -38642,11 +38697,10 @@
     cursor: not-allowed;
   }
 
-  /* 禁用且选中的那一段不换文字色：它压着的是滑块的实心底，换成 fg-disabled 后六族语气只剩 1.04–3.01 的对比度，
-     「当前选的是哪一段」当场看不见。禁用由轨道底色、未选中段的文字色与光标表达，选中段保持可读 */
+  /* 禁用且选中的那一段：字退到浅品牌色、滑块退到 8% 淡底，仍看得出选的是哪一段 */
   .xh-scope-radio-group[data-part='root'][data-variant='segmented']
     > .xh-scope-radio-group[data-part='item'][data-disabled][data-state='checked'] {
-    color: var(--xh-radio-group-segment-fg-checked-disabled, var(--xh-_radio-group-segment-fg-checked));
+    color: var(--xh-radio-group-segment-fg-checked-disabled, var(--xh-_radio-group-segment-fg-checked-disabled));
   }
 
   .xh-scope-radio-group[data-part='thumb'] {
@@ -38667,38 +38721,43 @@
     inline-size: var(--xh-_radio-group-thumb-w);
     block-size: var(--xh-_radio-group-thumb-h);
     translate: calc(var(--xh-_radio-group-thumb-x) * var(--xh-direction-sign)) var(--xh-_radio-group-thumb-y);
-    /* 白色抬起面三件（有滑块开关）：surface-raised 底 + border-default 描边 + raised 影，描边必须在，影只是加成。
+    /* 选中段的品牌淡底：平面一块，无边无影。描边位留着透明（作者给槽才画），
        尺寸由连接层按段的盒量出，描边吃进盒里（border-box），滑块与段仍是同一块矩形 */
-    border: var(--xh-stroke-thin) solid var(--xh-radio-group-thumb-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-radio-group-thumb-border, transparent);
     border-radius: var(--xh-radio-group-thumb-radius, var(--xh-shape-inset));
     background: var(--xh-radio-group-thumb-bg, var(--xh-_radio-group-thumb-bg));
-    box-shadow: var(--xh-radio-group-thumb-shadow, var(--xh-elevation-raised));
+    box-shadow: var(--xh-radio-group-thumb-shadow, none);
     /* 段压在它上面，点击一律交给段；作者把它写在段之后时也不至于吞掉点击 */
     pointer-events: none;
     /* 用连续档而不是进场那条：滑块是被推过去的，起步就该有速度，纯减速曲线看着像自己飘过去。
-       四个几何量同时走，段宽不等时才不会先变形再挪位。投影单列一项：整组禁用时滑块落回轨道平面，那层投影跟着收 */
+       四个几何量同时走，段宽不等时才不会先变形再挪位。底色单列一项：选中段悬停、禁用时滑块换档是淡变 */
     transition:
       translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
       block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 语气档的滑块是实心语气面，描边与底同色：raised 面必带描边，这里的描边只是把边位补齐，不另画一圈 */
-  .xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-tone] > .xh-scope-radio-group[data-part='thumb'] {
-    border-color: var(--xh-radio-group-thumb-border, var(--xh-_tone, var(--xh-border-default)));
+  /* 选中段悬停：滑块压在它底下，由滑块升一档表出 */
+  .xh-scope-radio-group[data-part='root'][data-variant='segmented']:has(
+      > .xh-scope-radio-group[data-part='item'][data-state='checked']:not([data-disabled]):not([data-readonly]):hover
+    )
+    > .xh-scope-radio-group[data-part='thumb'] {
+    background: var(--xh-radio-group-thumb-bg-hover, var(--xh-_radio-group-thumb-bg-hover));
   }
 
-  /* 整组禁用时滑块落回轨道平面（不再浮起），但底色一点不兑淡：
-     它上面压着选中段的文字，往 muted 兑哪怕一成，brand 的对比度就从 5.08 掉到 4.24 */
-  .xh-scope-radio-group[data-part='root'][data-disabled] > .xh-scope-radio-group[data-part='thumb'] {
-    box-shadow: var(--xh-radio-group-thumb-shadow-disabled, none);
+  /* 选中段禁用（含整组禁用）：滑块退到 8% 淡底，与退到浅品牌色的字一起读出「选着、但动不了」 */
+  .xh-scope-radio-group[data-part='root'][data-variant='segmented']:has(
+      > .xh-scope-radio-group[data-part='item'][data-state='checked'][data-disabled]
+    )
+    > .xh-scope-radio-group[data-part='thumb'] {
+    background: var(--xh-radio-group-thumb-bg-disabled, var(--xh-_radio-group-thumb-bg-disabled));
   }
 
   /* 首次落位与同一项的重量（窗口缩放、换上正式字体）直接到位，只有换项才滑：连接层在这一落点投影
-     data-instant。投影的淡变照留，整组禁用时滑块落回轨道平面仍是淡变 */
+     data-instant。底色的淡变照留 */
   .xh-scope-radio-group[data-part='thumb'][data-instant] {
-    transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 液态档：两沿由弹簧逐帧推着走（连接层每一帧写好盒子），几何量不再补过渡；
@@ -38707,7 +38766,7 @@
     --xh-_radio-group-thumb-squash: max(var(--xh-motion-scale-squash), calc(1 - var(--xh-_radio-group-thumb-stretch) * (1 - var(--xh-motion-scale-squash))));
 
     scale: 1 var(--xh-_radio-group-thumb-squash);
-    transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   :where([data-material='liquid']) .xh-scope-radio-group[data-part='root'][data-orientation='vertical']
@@ -38724,11 +38783,11 @@
 
     /* segmented 的段不归家族：手指的落点比一段高，命中区由伪元素向块轴两侧外扩，段的盒与轨道内的分格一点不动。
        只扩块轴——段与段在行内轴上首尾相接，往两侧扩会与相邻段的命中区叠上。
-       外扩一格 space-2 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕 */
+       外扩一格 space-4 是按最矮的紧凑 sm 档算的（24 − 2 × 2 − 2 = 18，18 + 16 × 2 = 50），其余档更宽裕 */
     .xh-scope-radio-group[data-part='root'][data-variant='segmented'] > .xh-scope-radio-group[data-part='item']::before {
       content: '';
       position: absolute;
-      inset-block: calc(-1 * var(--xh-space-2));
+      inset-block: calc(-1 * var(--xh-space-4));
       inset-inline: 0;
     }
   }
@@ -38762,6 +38821,12 @@
       background-color: Highlight;
       color: HighlightText;
     }
+
+    /* 选中段的品牌淡底在这一档里被换成 Canvas，与没选中的段一模一样：滑块描一圈系统前景边框出选中段 */
+    .xh-scope-radio-group[data-part='root'][data-variant='segmented'] > .xh-scope-radio-group[data-part='thumb'] {
+      border-color: ButtonText;
+    }
+
   }
 
   @media print {
@@ -38771,7 +38836,7 @@
       border: var(--xh-stroke-thick) solid currentColor;
     }
 
-    /* segmented 的滑块那块底与它的落影都不画，「当前选的是哪一段」在纸上没了：选中段改画一圈实边、字加粗 */
+    /* segmented 的滑块那块淡底不画，「当前选的是哪一段」在纸上没了：选中段改画一圈实边、字加粗 */
     .xh-scope-radio-group[data-part='root'][data-variant='segmented']
       > .xh-scope-radio-group[data-part='item'][data-state='checked'] {
       border: var(--xh-stroke-thin) solid currentColor;
@@ -40916,11 +40981,12 @@
      切换 orientation 的那一帧还会跟连接层清空另一轴的动作抢位置，把拇指钉在两轴都被约束的地方。
      皮肤只管另一条轴（交叉轴）的尺寸、颜色、圆角与状态表现。 */
 
-  /* 私有槽位：组件令牌 → 中档字面量两级回退。轨道厚度与拇指直径同时被 control / track / thumb
-     三个角色节点用到，收成两个槽位挂在 root 上，尺寸档只改这两处，靠继承发到子部件。 */
+  /* 私有槽位：组件令牌 → 中档两级回退。轨道厚度与拇指直径同时被 control / track / thumb
+     三个角色节点用到，收成两个槽位挂在 root 上，尺寸档只改这两处，靠继承发到子部件。
+     中档是一条 2px 的细轨（描边粗档）配 12px 的拇指 */
   .xh-scope-slider[data-part='root'] {
-    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-track-thumb-size));
-    --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-track-thickness));
+    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-3));
+    --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-stroke-thick));
 
     display: flex;
     flex-direction: column;
@@ -40987,12 +41053,31 @@
     cursor: not-allowed;
   }
 
+  /* 粗指针：拇指只有 12px，控件的命中区沿交叉轴两侧各外扩一格 space-4（中档 12 + 16 × 2 = 44）。
+     落指在轨道上下这一截也能按下即跳、接着拖；伪元素排在刻度之前，刻度文案仍压在它上面接得到点按 */
+  @media (pointer: coarse) {
+    .xh-scope-slider[data-part='control'][data-orientation='horizontal']::before {
+      content: '';
+      position: absolute;
+      inset-block: calc(-1 * var(--xh-space-4));
+      inset-inline: 0;
+    }
+
+    .xh-scope-slider[data-part='control'][data-orientation='vertical']::before {
+      content: '';
+      position: absolute;
+      inset-block: 0;
+      inset-inline: calc(-1 * var(--xh-space-4));
+    }
+  }
+
   /* 已选区间以它为定位上下文。不写 overflow: hidden：作者把拇指写进轨道里也是合法结构，
      一裁就把拇指切掉半个；区间的圆角由它自己那条 border-radius 兜住，本就不靠轨道来裁。 */
   .xh-scope-slider[data-part='track'] {
     position: relative;
     border-radius: var(--xh-slider-track-radius, var(--xh-shape-pill));
-    background: var(--xh-slider-track-bg, var(--xh-bg-subtle-active));
+    /* 底槽取 fill-3 级中性填充（淡底阶梯的 200 档） */
+    background: var(--xh-slider-track-bg, var(--xh-bg-subtle-hover));
   }
 
   .xh-scope-slider[data-part='track'][data-orientation='horizontal'] {
@@ -41005,7 +41090,7 @@
     inline-size: var(--xh-_track-thickness);
   }
 
-  /* 禁用：底槽退到 100 档淡底，已选区间换成禁用前景——两者仍分得开，值还读得出，只是没了品牌色 */
+  /* 禁用：底槽退到 100 档淡底，已选区间退到 200 档——两者仍分得开，值还读得出，只是没了品牌色 */
   .xh-scope-slider[data-part='track'][data-disabled] {
     background: var(--xh-slider-track-bg-disabled, var(--xh-bg-subtle));
   }
@@ -41045,39 +41130,35 @@
     background: var(--xh-slider-range-bg-invalid, var(--xh-border-invalid));
   }
 
+  /* 区间叠在底槽上：取不透明档，半透明的墨色压在半透明的底槽上会再叠深一层 */
   .xh-scope-slider[data-part='range'][data-disabled] {
-    background: var(--xh-slider-range-bg-disabled, var(--xh-fg-disabled));
+    background: var(--xh-slider-range-bg-disabled, var(--xh-bg-subtle-hover-opaque));
   }
 
   /* 圆点浮在轨道之上：轨道是流内的，拇指是绝对定位的，天然后来居上，不必再堆 z-index。
      box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比 --xh-_thumb-size 宽两条边，
      下面按半个直径回拉的负外边距就对不上圆心。
-     拇指是可拖起的 raised 面：描边取装饰边（不透明档），raised 影只是加成、不作边界 */
+     拇指是平面的白底圆：2px 强调色描边就是它的边界，静止不投影；跟着手走时才抬起（见拖动那档） */
   .xh-scope-slider[data-part='thumb'] {
     position: absolute;
     box-sizing: border-box;
     inline-size: var(--xh-_thumb-size);
     block-size: var(--xh-_thumb-size);
-    /* 描边取装饰边的不透明档：墨色描边半透明，压在圆点自己的底上只会是底色的深一档，框不住圆点，
-       拇指就与同色的已选区间糊成一片 */
-    border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-border-default-opaque));
+    border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-_tone, var(--xh-bg-brand)));
     border-radius: var(--xh-slider-thumb-radius, var(--xh-shape-circle));
-    background: var(--xh-slider-thumb-bg, var(--xh-_tone, var(--xh-bg-brand)));
-    /* 圆点上没有字，这一支是给环用的：环灌 currentColor 时取到的是与这块底配对的前景色，
-       不写就取到从页面继承下来的正文色 */
-    color: var(--xh-_tone-on, var(--xh-fg-on-brand));
-    box-shadow: var(--xh-slider-thumb-shadow, var(--xh-elevation-raised));
+    background: var(--xh-slider-thumb-bg, var(--xh-bg-surface));
+    box-shadow: var(--xh-slider-thumb-shadow, none);
     cursor: grab;
     transition:
       scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
-     禁用的拇指退成白面，不在这一档里，吃库环 */
-  .xh-scope-slider[data-part='thumb']:not([data-disabled]):focus-visible {
-    --xh-_ring-color: currentColor;
+  /* 可悬停设备上指针落到拇指即放大一档，与拖动中同一比例：提示它抓得起来 */
+  @media (hover: hover) {
+    .xh-scope-slider[data-part='thumb']:hover:not([data-disabled], [data-readonly]) {
+      scale: var(--xh-slider-thumb-scale-dragging, var(--xh-motion-scale-drag));
+    }
   }
 
   /* 内联样式把 inset-inline-start 定在值所在的比例上，那是拇指的**起始边**不是圆心；
@@ -41100,7 +41181,7 @@
 
   /* 多拇指时只有手真正推着的那一个带 data-dragging，放大与光标因此不会全组一起变。
      放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动，负外边距的算式也不用跟着改。
-     海拔从静态的 raised 换到 lifted：跟着手走的东西比贴在页面上的抬得高一档，
+     静止时不投影，拖动中才抬起到 lifted：跟着手走的东西离开页面一档，
      又不到锚定浮层那一层——用 floating 会让拇指和下拉面板一样重。 */
   .xh-scope-slider[data-part='thumb'][data-dragging] {
     /* 放大比例落进私有槽：挂在拇指里的值气泡读同一支反向缩回原尺寸 */
@@ -41112,16 +41193,16 @@
   }
 
   .xh-scope-slider[data-part='thumb'][data-invalid] {
-    background: var(--xh-slider-thumb-bg-invalid, var(--xh-border-invalid));
+    border-color: var(--xh-slider-thumb-border-invalid, var(--xh-border-invalid));
   }
 
   .xh-scope-slider[data-part='thumb'][data-readonly]:not([data-disabled]) {
     cursor: default;
   }
 
-  /* 禁用：面退到实体白面、描边留着、影收掉——拖不起来的东西不该看着像浮在轨道上。
-     不写 color：圆点上没有字，禁用拇指不进 Tab 序列也不会聚焦，环的前景在这里没有消费者 */
+  /* 禁用：白面留着、描边退到 200 档（不透明档：描边压在拇指自己的白底上，半透明的墨色要先兑实）、影收掉 */
   .xh-scope-slider[data-part='thumb'][data-disabled] {
+    border-color: var(--xh-slider-thumb-border-disabled, var(--xh-bg-subtle-hover-opaque));
     background: var(--xh-slider-thumb-bg-disabled, var(--xh-bg-surface));
     box-shadow: var(--xh-slider-thumb-shadow-disabled, none);
     cursor: not-allowed;
@@ -41179,15 +41260,14 @@
 
   /* —— 尺寸 —— */
   /* 尺寸只改 root 上那两个槽位，control / track / thumb 跟着一起走；中间档不写规则，缺省即中档。
-     两档都保持"拇指是轨道的三倍厚"这个比例，换档时圆点与底槽的关系看着不变。 */
+     拇指 10 / 12 / 16px；轨道小档沿用中档的 2px（再细就读不出是条轨道），大档加到 3px */
   .xh-scope-slider[data-part='root'][data-size='sm'] {
-    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-3));
-    --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-space-1));
+    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-2_5));
   }
 
   .xh-scope-slider[data-part='root'][data-size='lg'] {
-    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-6));
-    --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-space-2));
+    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-4));
+    --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-stroke-strong));
   }
 
   /* —— 刻度：圆点钉在轨道上、文案排在轨道外侧，坐标由连接层按百分比内联给出 —— */
@@ -41197,21 +41277,24 @@
     pointer-events: none;
   }
 
-  /* 刻度点是正方盒，取 circle（正方盒不得用 pill 冒充圆） */
+  /* 刻度点是 8px 的白底小圆，2px 描边取轨道色；正方盒取 circle（正方盒不得用 pill 冒充圆）。
+     box-sizing 显式写：描边吃进直径里，平移回中才落在比例点上 */
   .xh-scope-slider[data-part='tick'] {
     position: absolute;
     inset-block-start: 50%;
-    inline-size: var(--xh-slider-tick-size, var(--xh-space-1));
-    block-size: var(--xh-slider-tick-size, var(--xh-space-1));
+    box-sizing: border-box;
+    inline-size: var(--xh-slider-tick-size, var(--xh-space-2));
+    block-size: var(--xh-slider-tick-size, var(--xh-space-2));
+    border: var(--xh-stroke-thick) solid var(--xh-slider-tick-border, var(--xh-bg-subtle-hover));
     border-radius: var(--xh-slider-tick-radius, var(--xh-shape-circle));
-    background: var(--xh-slider-tick-bg, var(--xh-border-strong));
+    background: var(--xh-slider-tick-bg, var(--xh-bg-surface));
     /* 连接层把比例点写在 inset-inline-start 上：平移的行内分量乘书写方向的符号，rtl 下掉头，刻度点才以比例点为中心 */
     translate: calc(-50% * var(--xh-direction-sign)) -50%;
   }
 
-  /* 落进已选区间的刻度点跟 range 同色 */
+  /* 落进已选区间的刻度点描边跟 range 同色 */
   .xh-scope-slider[data-part='tick'][data-passed] {
-    background: var(--xh-slider-tick-bg-active, var(--xh-_tone, var(--xh-bg-brand)));
+    border-color: var(--xh-slider-tick-border-active, var(--xh-_tone, var(--xh-bg-brand)));
   }
 
   .xh-scope-slider[data-part='tick-label'] {
@@ -41233,13 +41316,13 @@
   }
 
   /* 禁用：刻度点与文案由 tick-group 上的 data-disabled 下发（连接层不给每个刻度单发），
-     已过的刻度点与区间同色，文案换禁用前景，点它跳档的手型收掉 */
+     刻度点描边与底槽同退到 100 档、已过的与区间同退到 200 档，文案换禁用前景，点它跳档的手型收掉 */
   .xh-scope-slider[data-part='tick-group'][data-disabled] [data-part='tick']:where(.xh-scope-slider) {
-    background: var(--xh-slider-tick-bg-disabled, var(--xh-border-default));
+    border-color: var(--xh-slider-tick-border-disabled, var(--xh-bg-subtle));
   }
 
   .xh-scope-slider[data-part='tick-group'][data-disabled] [data-part='tick'][data-passed]:where(.xh-scope-slider) {
-    background: var(--xh-slider-tick-bg-active-disabled, var(--xh-fg-disabled));
+    border-color: var(--xh-slider-tick-border-active-disabled, var(--xh-bg-subtle-hover-opaque));
   }
 
   .xh-scope-slider[data-part='tick-group'][data-disabled] [data-part='tick-label']:where(.xh-scope-slider) {
@@ -41840,36 +41923,35 @@
     --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-md));
 
     /* 尺寸档只换这三个私有槽，序号圆点、标题与圆点里的序号都从 root 继承它们，
-       换档不必给每个部件各写一条选择器；说明走说明角色（13px），不随档。
-       圆点与 Avatar、带框 Icon 同一把尺：control-h 的 sm / md / lg，随密度换档 */
-    --xh-_steps-indicator-size: var(--xh-control-h-md);
-    --xh-_steps-title-font-size: var(--xh-control-font-md);
-    --xh-_steps-caption-font-size: var(--xh-text-caption-size);
+       换档不必给每个部件各写一条选择器；说明走次级标注（12px），不随档。
+       圆点取状态圆那把尺：marker-size 的 sm / md / lg（24 / 28 / 32），比同档控件矮一档，随密度换档；
+       圆里的序号比同档控件字大一档（sm 14、md / lg 16）；标题取区块标题档 heading-3（sm 收回正文字号） */
+    --xh-_steps-indicator-size: var(--xh-marker-size-md);
+    --xh-_steps-title-font-size: var(--xh-text-heading-3-size);
+    --xh-_steps-indicator-font-size: var(--xh-control-font-lg);
     /* 圆点一圈边的宽：序号圆点是细边（多数状态透明占位），点状形态的空心圈要粗一档才读得出是个圈 */
     --xh-_steps-indicator-border-width: var(--xh-stroke-thin);
-    /* 圆点四周给当前步那圈环留的位置：序号圆点不留，点状形态留出环的宽度，换步不挪版面 */
+    /* 圆点四周的留位：序号圆点不留；点状形态按当前步放大后的直径给每个点留位，换步不挪版面 */
     --xh-_steps-indicator-margin: var(--xh-space-0);
-    /* 当前步那圈环：离圆点边一道缝，环本身一道粗描边宽 */
+    /* 当前步的进度环：离圆点边一道缝，环本身一道粗描边宽 */
     --xh-_steps-ring-gap: var(--xh-space-0_5);
     --xh-_steps-ring-thickness: var(--xh-stroke-thick);
 
-    /* 语气落在当前步的标记、走过那几步的对号与连接线上：强调色画描边与填充，
-       accent-text 是普通底上的强调文字（走过与当前步的标题），on-accent 是实心底上的前景。
-       没写 data-tone 时 --xh-_tone 一族没被声明，三个槽都退回原来的品牌配色。
-       走过的步不再用品牌淡底（brand-subtle 退出 completed 语义），淡底那两支私有槽随之撤掉 */
+    /* 语气落在当前步的标记、走过那几步的淡底与对号、连接线上：强调色画描边与填充，
+       accent-subtle 一族是走过那几步的淡底三档（静息 / 悬停 / 按下），on-accent 是实心底上的前景。
+       没写 data-tone 时 --xh-_tone 一族没被声明，这几个槽都退回品牌配色 */
     --xh-_steps-accent: var(--xh-_tone, var(--xh-bg-brand));
-    --xh-_steps-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
-    /* 走过的步里那枚对号：中性淡底上的品牌色标记，不用标题那档更深的字色 */
+    --xh-_steps-accent-subtle: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+    --xh-_steps-accent-subtle-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-brand-subtle-hover));
+    --xh-_steps-accent-subtle-active: var(--xh-_tone-subtle-active, var(--xh-bg-brand-subtle-active));
+    /* 走过的步里那枚对号：淡底上的强调色标记 */
     --xh-_steps-accent-mark: var(--xh-_tone-fg, var(--xh-fg-brand));
     --xh-_steps-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
-    /* 触发器是序号圆点的承载面：圆点静息就坐在 --xh-bg-subtle（100）的淡底上，阶梯按淡底容器走
+    /* 触发器是序号圆点的承载面：没走到的圆点静息就坐在 --xh-bg-subtle（100）的淡底上，阶梯按淡底容器走
        （hover 200 → pressed 300）。两支私有槽是这一档的唯一来源——触发器拿它们给
        --xh-action-host-bg-* 赋值（桥接槽只写不读），圆点悬停 / 按下读同一支私有槽，即与宿主的 host 槽同源 */
     --xh-_steps-host-bg-hover: var(--xh-bg-subtle-hover);
     --xh-_steps-host-bg-pressed: var(--xh-bg-subtle-active);
-    /* 走过的那几步是实心圆，顶边画一条极浅的内高光把它衬出厚度 */
-    --xh-_steps-highlight: inset 0 var(--xh-stroke-thin) 0 0
-      color-mix(in oklab, var(--xh-_steps-on-accent) 14%, transparent);
 
     display: flex;
     flex-direction: column;
@@ -41895,33 +41977,36 @@
   /* 缺省档写在上面的基础规则里 */
   .xh-scope-steps[data-part='root'][data-size='sm'] {
     --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-sm));
-    --xh-_steps-indicator-size: var(--xh-control-h-sm);
-    --xh-_steps-title-font-size: var(--xh-control-font-sm);
-    /* 字号档最小就是 xs，序号不再往下走，故不重声明 caption */
+    --xh-_steps-indicator-size: var(--xh-marker-size-sm);
+    --xh-_steps-title-font-size: var(--xh-text-body-size);
+    --xh-_steps-indicator-font-size: var(--xh-control-font-md);
   }
 
+  /* 大档的序号与标题都与中档同档：圆只大一档，字再放大就顶到圆边；标题已是区块标题档 */
   .xh-scope-steps[data-part='root'][data-size='lg'] {
     --xh-icon-size: var(--xh-steps-icon-size, var(--xh-glyph-size-lg));
-    --xh-_steps-indicator-size: var(--xh-control-h-lg);
-    --xh-_steps-title-font-size: var(--xh-control-font-lg);
-    --xh-_steps-caption-font-size: var(--xh-text-secondary-size);
+    --xh-_steps-indicator-size: var(--xh-marker-size-lg);
   }
 
   /* —— 点状形态 —— */
-  /* 圆点不盛内容，是纯位置标记：直径不在控件高度那把尺上，与 Timeline 圆点同走空间尺相邻的三格，
-     不随密度换档；描边粗一档，四周留出当前步那圈环的宽度 */
+  /* 圆点不盛内容，是纯位置标记：直径不在控件高度那把尺上，走空间尺，不随密度换档；描边粗一档。
+     走过与没走到的点 8px，当前步放大一档到 10px（sm 6 / 8、lg 10 / 12）：大小是当前步与走过的步之间的形状通道。
+     每个点都按当前步的直径占位，小一档的点四周补半档留位，换步时版面不挪、点心仍在同一条线上 */
   .xh-scope-steps[data-part='root'][data-variant='dot'] {
-    --xh-_steps-indicator-size: var(--xh-space-2_5);
+    --xh-_steps-indicator-size: var(--xh-space-2);
+    --xh-_steps-indicator-current-size: var(--xh-space-2_5);
     --xh-_steps-indicator-border-width: var(--xh-stroke-thick);
-    --xh-_steps-indicator-margin: calc(var(--xh-_steps-ring-gap) + var(--xh-_steps-ring-thickness));
+    --xh-_steps-indicator-margin: calc((var(--xh-_steps-indicator-current-size) - var(--xh-_steps-indicator-size)) * 0.5);
   }
 
   .xh-scope-steps[data-part='root'][data-variant='dot'][data-size='sm'] {
-    --xh-_steps-indicator-size: var(--xh-space-2);
+    --xh-_steps-indicator-size: var(--xh-space-1_5);
+    --xh-_steps-indicator-current-size: var(--xh-space-2);
   }
 
   .xh-scope-steps[data-part='root'][data-variant='dot'][data-size='lg'] {
-    --xh-_steps-indicator-size: var(--xh-space-3);
+    --xh-_steps-indicator-size: var(--xh-space-2_5);
+    --xh-_steps-indicator-current-size: var(--xh-space-3);
   }
 
   /* 步骤与连接线必须保持在同一条流程轴上，空间不足时由标题省略而不是拆成两行。 */
@@ -42039,14 +42124,14 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 序号圆点：未开始使用中性面，当前步骤实心强调，已完成步骤中性面上画品牌对号。 */
+  /* 序号圆点：没走到的中性淡底配次级字色，当前步品牌实心配反白字，走过的步品牌淡底配品牌对号；三态都无边无影 */
   .xh-scope-steps[data-part='indicator'] {
     /* 圆点里的字形是指示符：对号按指示符档取尺、随密度换档（comfortable 16 / compact 14），
        不读 root 上只管作者标题 / 说明图标的 --xh-steps-icon-size；作者塞进圆点的 XhIcon 与兜底对号同一把尺。
-       圆点自己走 control-h 的尺（最小 compact sm 的 28px），两档字形在三档圆点里都留得出边距 */
+       圆点自己走 marker-size 的尺（最小 compact sm 的 20px），两档字形在三档圆点里都留得出边距 */
     --xh-icon-size: var(--xh-steps-indicator-mark-size, var(--xh-control-indicator-size));
 
-    /* 当前步那圈环（::after）以圆点为准绳定位 */
+    /* 当前步的进度环（::after）以圆点为准绳定位 */
     position: relative;
     display: inline-flex;
     grid-row: 1 / span 2;
@@ -42059,7 +42144,7 @@
     border-radius: var(--xh-steps-indicator-radius, var(--xh-shape-circle));
     background: var(--xh-steps-indicator-bg, var(--xh-bg-subtle));
     color: var(--xh-steps-indicator-fg, var(--xh-fg-muted));
-    font-size: var(--xh-steps-indicator-font-size, var(--xh-_steps-caption-font-size));
+    font-size: var(--xh-steps-indicator-font-size, var(--xh-_steps-indicator-font-size));
     font-weight: var(--xh-font-weight-medium);
     /* 等宽数字：1 与 7 的字形宽度在比例字体里并不相同，不定住会让序号左右抖一格 */
     font-variant-numeric: tabular-nums;
@@ -42077,23 +42162,30 @@
 
   /* 圆点是格状当前的标记，但不是激活宿主：宿主是投影了 row 档的触发器；圆点在宿主的
      :hover / :is(:active, [data-pressed]) 下读宿主 host 槽的同一来源换面，同一时间线，不缩放——
-     圆点自己是 100 的淡底，坐在触发器的 hover 面（100）上，再上一档到 200 才与承载面分得开，按下到 300；
-     当前步的实心面按下换语气 active 档 */
+     没走到的圆点自己是 100 的淡底，坐在触发器的 hover 面（100）上，再上一档到 200 才与承载面分得开，按下到 300；
+     走过的圆点走品牌淡底的阶梯（12% → 悬停 20% → 按下 28%）；当前步的实心面按下换语气 active 档 */
   .xh-scope-steps[data-part='trigger']:hover:not([data-disabled], [data-readonly])
     .xh-scope-steps[data-part='indicator'][data-state='incomplete'] {
     background: var(--xh-steps-indicator-bg-hover, var(--xh-_steps-host-bg-hover));
     color: var(--xh-steps-indicator-fg-hover, var(--xh-fg-default));
   }
 
-  /* 点状形态里走过的点是实心标记色，悬停不换成中性面：承载它的行换面即是悬停反馈 */
+  /* 点状形态里走过的点是实心标记色，悬停不换面：承载它的行换面即是悬停反馈 */
   .xh-scope-steps[data-part='trigger']:hover:not([data-disabled], [data-readonly])
     .xh-scope-steps[data-part='indicator'][data-state='completed']:not([data-variant='dot']) {
-    background: var(--xh-steps-indicator-bg-completed-hover, var(--xh-_steps-host-bg-hover));
+    background: var(--xh-steps-indicator-bg-completed-hover, var(--xh-_steps-accent-subtle-hover));
   }
 
   .xh-scope-steps[data-part='trigger']:not([data-disabled], [data-readonly]):is(:active, [data-pressed])
-    .xh-scope-steps[data-part='indicator']:is([data-state='incomplete'], [data-state='completed']:not([data-variant='dot'])) {
+    .xh-scope-steps[data-part='indicator'][data-state='incomplete'] {
     background: var(--xh-steps-indicator-bg-pressed, var(--xh-_steps-host-bg-pressed));
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
+  }
+
+  .xh-scope-steps[data-part='trigger']:not([data-disabled], [data-readonly]):is(:active, [data-pressed])
+    .xh-scope-steps[data-part='indicator'][data-state='completed']:not([data-variant='dot']) {
+    background: var(--xh-steps-indicator-bg-completed-pressed, var(--xh-_steps-accent-subtle-active));
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
   }
@@ -42109,19 +42201,19 @@
     border-color: var(--xh-steps-indicator-border-current, var(--xh-_steps-accent));
     background: var(--xh-steps-indicator-bg-current, var(--xh-_steps-accent));
     color: var(--xh-steps-indicator-fg-current, var(--xh-_steps-on-accent));
-    box-shadow: var(--xh-steps-indicator-shadow, var(--xh-_steps-highlight));
+    box-shadow: var(--xh-steps-indicator-shadow, none);
   }
 
-  /* 走过的步：中性淡底（透明边位）承一枚品牌色对号；标了语气的步对号跟语气的前景走 */
+  /* 走过的步：品牌淡底（透明边位）承一枚品牌色对号；标了语气的步淡底与对号跟语气走 */
   .xh-scope-steps[data-part='indicator'][data-state='completed'] {
     border-color: var(--xh-steps-indicator-border-completed, transparent);
-    background: var(--xh-steps-indicator-bg-completed, var(--xh-bg-subtle));
+    background: var(--xh-steps-indicator-bg-completed, var(--xh-_steps-accent-subtle));
     color: var(--xh-steps-indicator-fg-completed, var(--xh-_steps-accent-mark));
   }
 
   /* 点状形态的三态：没走到的空心粗圈（墨色与序号形态的序号同一支），走过的实心标记色（序号形态里那枚对号的颜色），
-     当前步实心品牌（格状当前）外加一圈同色环。空心 / 实心 / 带环是形状通道，不只靠颜色分三态；
-     四周留出环的宽度，换步时版面不挪 */
+     当前步实心品牌（格状当前）并放大一档。空心 / 实心 / 放大是形状通道，不只靠颜色分三态；
+     每个点都按当前步的直径占位，换步时版面不挪 */
   .xh-scope-steps[data-part='indicator'][data-variant='dot'] {
     margin: var(--xh-_steps-indicator-margin);
     border-color: var(--xh-steps-indicator-border, var(--xh-fg-muted));
@@ -42129,15 +42221,16 @@
   }
 
   /* 实心的点底与圈同一色，取自 --xh-_steps-dot：走过的标记色、当前步品牌，按下换语气 active 档
-     （与序号圆点当前步按下同一档），动不了的禁用墨色。小圆点上画不下实心那档的内高光 */
+     （与序号圆点当前步按下同一档），动不了的禁用墨色 */
   .xh-scope-steps[data-part='indicator'][data-variant='dot'][data-state='completed'] {
     --xh-_steps-dot: var(--xh-steps-indicator-bg-completed, var(--xh-_steps-accent-mark));
   }
 
+  /* 当前步的点放大一档、收掉补位：占的位置与别的点一样大 */
   .xh-scope-steps[data-part='indicator'][data-variant='dot'][data-state='current'] {
     --xh-_steps-dot: var(--xh-steps-indicator-bg-current, var(--xh-_steps-accent));
-
-    box-shadow: none;
+    --xh-_steps-indicator-size: var(--xh-_steps-indicator-current-size);
+    --xh-_steps-indicator-margin: var(--xh-space-0);
   }
 
   .xh-scope-steps[data-part='trigger']:not([data-disabled], [data-readonly]):is(:active, [data-pressed])
@@ -42163,11 +42256,10 @@
     background: var(--xh-_steps-dot);
   }
 
-  /* 当前步那圈环：离圆点边一道缝、一道粗描边宽，叠在圆点外面、不接指针；环面由一圈角向渐变经环形遮罩挖空中心得来。
-     弧（arc）从 12 点顺时针走到完成比例，其余是轨道（track）：点状形态不带比例，轨道与弧同色，就是整圈实心环；
-     序号圆点带了比例（data-progress），轨道取连接线的底色，弧就是这一步走了多少。时钟式的走向是稳定身份，不随书写方向镜像。
-     静息收着，点状形态的当前步与带比例的当前步才亮出来，走到 / 离开这一步时按状态角色淡入淡出；
-     比例变化时弧按数值角色走（move / continuous），首帧直接落位 */
+  /* 当前步的进度环：离圆点边一道缝、一道粗描边宽，叠在圆点外面、不接指针；环面由一圈角向渐变经环形遮罩挖空中心得来。
+     弧（arc）从 12 点顺时针走到完成比例，其余是轨道（track），取连接线的底色：弧就是这一步走了多少。
+     时钟式的走向是稳定身份，不随书写方向镜像。静息收着，序号圆点带了比例（data-progress）的当前步才亮出来，
+     走到 / 离开这一步时按状态角色淡入淡出；比例变化时弧按数值角色走（move / continuous），首帧直接落位 */
   .xh-scope-steps[data-part='indicator']::after {
     --xh-_steps-ring-arc: var(--xh-steps-indicator-ring-bg, var(--xh-_steps-accent));
     --xh-_steps-ring-track: var(--xh-_steps-ring-arc);
@@ -42189,7 +42281,7 @@
       --xh-_steps-progress var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
-  .xh-scope-steps[data-part='indicator'][data-state='current']:is([data-variant='dot'], [data-progress])::after {
+  .xh-scope-steps[data-part='indicator'][data-state='current'][data-progress]::after {
     opacity: 1;
   }
 
@@ -42201,28 +42293,46 @@
     --xh-_steps-ring-arc: var(--xh-steps-indicator-ring-bg-disabled, var(--xh-fg-disabled));
   }
 
-  /* 单步语气：tones / collection 给某一步标了 data-tone，四个强调槽在这一步重新从语气层取值，
-     它的标记、标题与连接线照旧从祖先继承——只有这一步换色，状态那一档照算 */
+  /* 单步语气：tones / collection 给某一步标了 data-tone，强调槽在这一步重新从语气层取值，
+     它的标记与连接线照旧从祖先继承——只有这一步换色，状态那一档照算 */
   .xh-scope-steps[data-part='item'][data-tone] {
     --xh-_steps-accent: var(--xh-_tone);
-    --xh-_steps-accent-text: var(--xh-_tone-fg);
+    --xh-_steps-accent-subtle: var(--xh-_tone-subtle);
+    --xh-_steps-accent-subtle-hover: var(--xh-_tone-subtle-hover);
+    --xh-_steps-accent-subtle-active: var(--xh-_tone-subtle-active);
     --xh-_steps-accent-mark: var(--xh-_tone-fg);
     --xh-_steps-on-accent: var(--xh-_tone-on);
   }
 
-  /* 标了语气的那一步还没走到也得被看见：空心描边加同色数字，不动实心那档的内高光 */
+  /* 标了语气的那一步还没走到也得被看见：与当前步同一副语气实心面配反白字（出错的那一步是危险色实心）。
+     带上触发器这一层祖先，特指度才压得过没走到的圆点的悬停与按下面：悬停不换中性面，按下换语气 active 档 */
+  .xh-scope-steps[data-part='item'][data-tone] .xh-scope-steps[data-part='trigger']
+    .xh-scope-steps[data-part='indicator'][data-state='incomplete']:not([data-variant='dot']) {
+    border-color: var(--xh-steps-indicator-border-toned, var(--xh-_steps-accent));
+    background: var(--xh-steps-indicator-bg-toned, var(--xh-_steps-accent));
+    color: var(--xh-steps-indicator-fg-toned, var(--xh-_steps-on-accent));
+  }
+
   .xh-scope-steps[data-part='item'][data-tone]
-    .xh-scope-steps[data-part='indicator'][data-state='incomplete'] {
+    .xh-scope-steps[data-part='trigger']:not([data-disabled], [data-readonly]):is(:active, [data-pressed])
+    .xh-scope-steps[data-part='indicator'][data-state='incomplete']:not([data-variant='dot']) {
+    background: var(--xh-steps-indicator-bg-current-pressed, var(--xh-_tone-active));
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
+  }
+
+  /* 点状形态里放不下实心面上的字，标了语气又没走到的点仍是空心圈：圈换语气色、心里只铺语气淡底 */
+  .xh-scope-steps[data-part='item'][data-tone]
+    .xh-scope-steps[data-part='indicator'][data-state='incomplete'][data-variant='dot'] {
     border-color: var(--xh-steps-indicator-border-toned, var(--xh-_steps-accent));
     background: var(--xh-steps-indicator-bg-toned, var(--xh-_tone-subtle));
-    color: var(--xh-steps-indicator-fg-toned, var(--xh-_steps-accent-text));
   }
 
   .xh-scope-steps[data-part='item'][data-disabled] .xh-scope-steps[data-part='indicator'] {
     border-color: var(--xh-steps-indicator-border-disabled, var(--xh-border-default));
     background: var(--xh-steps-indicator-bg-disabled, var(--xh-bg-muted));
     color: var(--xh-steps-indicator-fg-disabled, var(--xh-fg-disabled));
-    /* 这一步动不了，实心那档的内高光跟着收掉 */
+    /* 这一步动不了，作者给圆点加的影跟着收掉 */
     box-shadow: none;
   }
 
@@ -42241,20 +42351,25 @@
     transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
+  /* 走到与走过的步标题取正文色，没走到的留在次级色；当前步再取区块标题的字重 */
   .xh-scope-steps[data-part='title']:is([data-state='current'], [data-state='completed']) {
-    color: var(--xh-steps-title-fg-active, var(--xh-_steps-accent-text));
+    color: var(--xh-steps-title-fg-active, var(--xh-fg-default));
   }
 
-  /* 标了语气的那一步标题跟着换色，不论走到没走到 */
+  .xh-scope-steps[data-part='title'][data-state='current'] {
+    font-weight: var(--xh-steps-title-font-weight-current, var(--xh-text-heading-3-weight));
+  }
+
+  /* 标了语气的那一步标题取正文色，不论走到没走到：语气由圆点的语气面表达，标题不染色 */
   .xh-scope-steps[data-part='item'][data-tone] .xh-scope-steps[data-part='title'] {
-    color: var(--xh-steps-title-fg-toned, var(--xh-_steps-accent-text));
+    color: var(--xh-steps-title-fg-toned, var(--xh-fg-default));
   }
 
-  /* 说明走说明角色：13 / fg-muted / leading-normal，不随 size 档 */
+  /* 说明走次级标注：12 / fg-subtle / leading-normal，不随 size 档 */
   .xh-scope-steps[data-part='description'] {
     grid-column: 2;
-    color: var(--xh-steps-description-fg, var(--xh-fg-muted));
-    font-size: var(--xh-steps-description-font-size, var(--xh-text-secondary-size));
+    color: var(--xh-steps-description-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-steps-description-font-size, var(--xh-text-caption-size));
     line-height: var(--xh-leading-normal);
     overflow: hidden;
     white-space: nowrap;
@@ -42267,7 +42382,7 @@
     position: relative;
     flex: 1;
     min-inline-size: var(--xh-steps-separator-min-length, var(--xh-space-4));
-    block-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
+    block-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thin));
     border-radius: var(--xh-steps-separator-radius, var(--xh-shape-pill));
     background: var(--xh-steps-separator-bg, var(--xh-border-default));
   }
@@ -42294,15 +42409,15 @@
   /* 纵向时连接线转成竖的一条，缩进到与序号圆点同一条竖线上 */
   .xh-scope-steps[data-part='separator'][data-orientation='vertical'] {
     flex: none;
-    inline-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
-    min-inline-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
+    inline-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thin));
+    min-inline-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thin));
     block-size: var(--xh-steps-separator-min-length, var(--xh-space-7));
     /* 圆点半径加上它四周留给环的位置，减去线宽的一半：calc 里的除法要写成乘 0.5，除号在这儿是无效语法 */
     margin-inline-start: calc(
       var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size)) * 0.5
       + var(--xh-_steps-indicator-margin)
       + var(--xh-steps-trigger-p, var(--xh-control-px-sm))
-      - var(--xh-steps-separator-thickness, var(--xh-stroke-thick)) * 0.5
+      - var(--xh-steps-separator-thickness, var(--xh-stroke-thin)) * 0.5
     );
   }
 
@@ -42365,7 +42480,7 @@
     }
 
     /* 点状形态的点靠底色画实心，这一档里底色被换成 Canvas，走过与当前步的点会与空心的圈混成一样。
-       实心的点与当前步那圈环换成 CanvasText：整行悬停涂成 Highlight 时照样看得见，走过与当前步靠那圈环分开；
+       实心的点换成 CanvasText：整行悬停涂成 Highlight 时照样看得见，走过与当前步靠当前步放大的那一档分开；
        动不了的取 GrayText */
     .xh-scope-steps[data-part='trigger'] .xh-scope-steps[data-part='indicator'][data-variant='dot']:not([data-state='incomplete']) {
       border-color: CanvasText;
@@ -42404,20 +42519,16 @@
   }
 
   @media print {
-    /* 打印默认丢背景：走过那几步的实心底与里面那枚勾都印不出来，
-       当前步与走过的步只剩一模一样的一圈细描边。改用描边的粗细与字重表达同一件事 */
-    .xh-scope-steps[data-part='indicator']:is([data-state='current'], [data-state='completed']) {
-      border-width: var(--xh-stroke-thick);
+    /* 打印默认丢背景：当前步的实心底、走过那几步的淡底与里面那枚勾（mask 挖出的一块底色）都印不出来，
+       走过的步还是透明边位，连圈都不剩。圆点、兜底对号与进度环照原色印，当前步标题再加粗一档 */
+    .xh-scope-steps[data-part='indicator'],
+    .xh-scope-steps[data-part='indicator']::before,
+    .xh-scope-steps[data-part='indicator']::after {
+      print-color-adjust: exact;
     }
 
     .xh-scope-steps[data-part='title'][data-state='current'] {
       font-weight: var(--xh-font-weight-semibold);
-    }
-
-    /* 点状形态的点与当前步那圈环都是底色画的，丢了底色走过与当前步就只剩空心圈：这两样照原色印 */
-    .xh-scope-steps[data-part='indicator'][data-variant='dot'],
-    .xh-scope-steps[data-part='indicator']::after {
-      print-color-adjust: exact;
     }
   }
 
@@ -48090,13 +48201,15 @@
     display: none;
   }
 
-  /* 三档落定的阶段收成状态 chip：几何与 Tag 的 sm 档同一把尺，淡底 + 同族可读字取连接层投影的语气。
-     在跑的两档不带底，让扫光自己说话 */
+  /* 三档落定的阶段收成状态 chip：与 Tag 的 sm 档同一副方签——control 圆角、块尺寸取 chip 档、竖向内衬为 0，
+     淡底 + 同族可读字取连接层投影的语气。在跑的两档不带底，让扫光自己说话 */
   .xh-scope-tool-call[data-part='status'][data-tone] {
-    padding-block: var(--xh-tool-call-status-py, var(--xh-space-0_5));
+    box-sizing: border-box;
+    min-block-size: var(--xh-tool-call-status-h, var(--xh-chip-h-sm));
+    padding-block: var(--xh-tool-call-status-py, 0);
     padding-inline: var(--xh-tool-call-status-px, var(--xh-space-1_5));
     border: var(--xh-stroke-thin) solid transparent;
-    border-radius: var(--xh-tool-call-status-radius, var(--xh-shape-pill));
+    border-radius: var(--xh-tool-call-status-radius, var(--xh-shape-control));
     font-weight: var(--xh-font-weight-medium);
     line-height: var(--xh-control-indicator-md);
   }
