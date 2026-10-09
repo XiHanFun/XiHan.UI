@@ -82545,7 +82545,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-gap-sm"
+        "--xh-_action-profile-gap"
       ],
       "visibility": "public",
       "description": "toolbar 的 item 部件 gap 覆盖槽。"
@@ -82708,7 +82708,7 @@
         "orientation=vertical"
       ],
       "defaultToken": [
-        "--xh-space-0"
+        "--xh-space-3"
       ],
       "visibility": "public",
       "description": "toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。"
@@ -82780,8 +82780,8 @@
       "property": [
         "block-size",
         "inline-size",
-        "margin-block-start",
-        "margin-inline-start"
+        "margin-block",
+        "margin-inline"
       ],
       "state": [
         "orientation=horizontal",
@@ -82791,7 +82791,7 @@
         "--xh-stroke-thin"
       ],
       "visibility": "public",
-      "description": "toolbar 的 group、separator 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。"
+      "description": "toolbar 的 group、separator 部件 block-size、inline-size、margin-block、margin-inline 覆盖槽。"
     },
     {
       "name": "--xh-toolbar-shadow",

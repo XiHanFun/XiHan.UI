@@ -48454,7 +48454,7 @@
      200 → 300）；这里只把使用者槽映射到桥接槽（-gap / -h / -px / -radius / -bg / -bg-hover /
      -bg-active / -bg-disabled / -fg / -font-size 保留为第一参数）。作者仍可用类名或内联样式完整覆盖。 */
   .xh-scope-toolbar[data-part='item'] {
-    --xh-action-gap: var(--xh-toolbar-item-gap, var(--xh-control-gap-sm));
+    --xh-action-gap: var(--xh-toolbar-item-gap, var(--xh-_action-profile-gap));
     --xh-action-visual-size: var(--xh-toolbar-item-h, var(--xh-_action-profile-visual-size));
     --xh-action-padding-inline: var(--xh-toolbar-item-px, var(--xh-_action-profile-padding-inline));
     --xh-action-radius: var(--xh-toolbar-item-radius, var(--xh-_action-profile-radius));
@@ -48542,13 +48542,14 @@
     inline-size: var(--xh-toolbar-separator-thickness, var(--xh-stroke-thin));
     block-size: var(--xh-_toolbar-separator-size);
     margin-block: var(--xh-toolbar-separator-inset, var(--xh-space-0));
-    margin-inline: var(--xh-toolbar-separator-gap, var(--xh-space-0));
+    /* 散落的分隔线两侧各让出 12px，与工具条间距叠起来把前后两组分开 */
+    margin-inline: var(--xh-toolbar-separator-gap, var(--xh-space-3));
   }
 
   .xh-scope-toolbar[data-part='separator'][data-orientation='horizontal'] {
     block-size: var(--xh-toolbar-separator-thickness, var(--xh-stroke-thin));
     inline-size: var(--xh-_toolbar-separator-size);
-    margin-block: var(--xh-toolbar-separator-gap, var(--xh-space-0));
+    margin-block: var(--xh-toolbar-separator-gap, var(--xh-space-3));
     margin-inline: var(--xh-toolbar-separator-inset, var(--xh-space-0));
   }
 
@@ -48560,11 +48561,11 @@
   }
 
   .xh-scope-toolbar[data-part='group'] > .xh-scope-toolbar[data-part='separator'][data-orientation='vertical'] {
-    margin-inline-start: calc(-1 * var(--xh-toolbar-separator-thickness, var(--xh-stroke-thin)));
+    margin-inline: calc(-1 * var(--xh-toolbar-separator-thickness, var(--xh-stroke-thin))) 0;
   }
 
   .xh-scope-toolbar[data-part='group'] > .xh-scope-toolbar[data-part='separator'][data-orientation='horizontal'] {
-    margin-block-start: calc(-1 * var(--xh-toolbar-separator-thickness, var(--xh-stroke-thin)));
+    margin-block: calc(-1 * var(--xh-toolbar-separator-thickness, var(--xh-stroke-thin))) 0;
   }
 
   /* —— 收纳 —— */
