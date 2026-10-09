@@ -5064,16 +5064,20 @@
       "name": "--xh-calendar-picker-grid-px",
       "component": "calendar-picker",
       "part": [
-        "grid"
+        "grid",
+        "week-row"
       ],
       "property": [
+        "grid-template-columns",
         "min-inline-size",
         "padding-inline"
       ],
       "state": [
         "@media (pointer: coarse)",
         "default",
+        "has(> [data-part='week-number'])",
         "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
+        "not([hidden])",
         "view=month",
         "view=quarter",
         "view=week",
@@ -5083,7 +5087,7 @@
         "--xh-space-4"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 grid 部件 min-inline-size、padding-inline 覆盖槽。"
+      "description": "calendar-picker 的 grid、week-row 部件 grid-template-columns、min-inline-size、padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-grid-py",
@@ -6292,16 +6296,20 @@
       "name": "--xh-calendar-range-picker-grid-px",
       "component": "calendar-range-picker",
       "part": [
-        "grid"
+        "grid",
+        "week-row"
       ],
       "property": [
+        "grid-template-columns",
         "min-inline-size",
         "padding-inline"
       ],
       "state": [
         "@media (pointer: coarse)",
         "default",
+        "has(> [data-part='week-number'])",
         "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
+        "not([hidden])",
         "view=month",
         "view=quarter",
         "view=week",
@@ -6311,7 +6319,7 @@
         "--xh-space-4"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 grid 部件 min-inline-size、padding-inline 覆盖槽。"
+      "description": "calendar-range-picker 的 grid、week-row 部件 grid-template-columns、min-inline-size、padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-grid-py",
