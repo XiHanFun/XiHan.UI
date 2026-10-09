@@ -6,7 +6,6 @@ import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import { XhMessageFeedItem, XhMessageFeedList, XhMessageFeedRoot, XhMessageFeedScrollToEndTrigger, XhMessageFeedViewport } from '../../src'
-import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -21,8 +20,16 @@ afterEach(() => {
   document.documentElement.removeAttribute('data-material')
 })
 
+/**
+ * 缺省档的 frosted 是实体面：背景滤镜 none、顶光透明，与「部件没接这两支令牌」读出来一样。
+ * 宿主上给两支令牌各一个看得见的值，断言才分得出部件从配方接了令牌。
+ */
+const BACKDROP = 'blur(3px)'
+const HIGHLIGHT = 'rgb(0, 255, 0)'
+const VISIBLE_FROSTED = `--xh-material-frosted-backdrop: ${BACKDROP}; --xh-material-frosted-highlight: ${HIGHLIGHT}`
+
 function probe(attrs: Record<string, string>, parent: HTMLElement = document.body): HTMLElement {
-  host ??= Object.assign(document.createElement('div'), { style: 'position: relative' })
+  host ??= Object.assign(document.createElement('div'), { style: `position: relative; ${VISIBLE_FROSTED}` })
   if (!host.isConnected)
     document.body.append(host)
   const el = document.createElement('div')
@@ -57,8 +64,8 @@ describe('材质家族配方', () => {
     expect(style.backgroundColor).toBe(tokenColor(surface, '--xh-material-frosted-bg'))
     expect(style.color).toBe(tokenColor(surface, '--xh-material-frosted-fg'))
     expect(style.boxShadow).not.toBe('none')
-    expect(style.backdropFilter).toBe(tokenValue('backdrop-filter', '--xh-material-frosted-backdrop', surface))
-    expect(highlightOf(surface)).toBe(tokenColor(surface, '--xh-material-frosted-highlight'))
+    expect(style.backdropFilter).toBe(BACKDROP)
+    expect(highlightOf(surface)).toBe(HIGHLIGHT)
     expect(getComputedStyle(surface, '::before').content).toBe('none')
   })
 
@@ -74,7 +81,7 @@ describe('材质家族配方', () => {
   it('圆钮：面归 Action Control，配方不画描边与底，只补背景滤镜', () => {
     const button = probe({ 'data-xh-material': 'frosted', 'data-xh-action-control': '', 'data-xh-action-variant': 'ghost', 'data-xh-action-profile': 'floating' })
     const style = getComputedStyle(button)
-    expect(style.backdropFilter).toBe(tokenValue('backdrop-filter', '--xh-material-frosted-backdrop', button))
+    expect(style.backdropFilter).toBe(BACKDROP)
     // 描边与底来自 Action Control 的 ghost 档（透明），不是 frosted 的面
     expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(style.borderTopColor).not.toBe(tokenColor(button, '--xh-material-frosted-border'))
@@ -87,13 +94,14 @@ describe('材质家族配方', () => {
     expect(getComputedStyle(liquid).backdropFilter).toContain('blur(8px)')
     expect(getComputedStyle(liquid).backgroundColor).toBe(tokenColor(liquid, '--xh-material-liquid-bg'))
     expect(highlightOf(liquid)).toBe('rgba(0, 0, 0, 0)')
-    expect(getComputedStyle(frosted).backdropFilter).toBe(tokenValue('backdrop-filter', '--xh-material-frosted-backdrop', frosted))
+    expect(getComputedStyle(frosted).backdropFilter).toBe(BACKDROP)
   })
 })
 
 describe('浮动钮的交互阶梯一致', () => {
   it('回到底部：悬停 / 按下换不透明淡底，键盘聚焦铺 focus surface，带 1px 顶光', async () => {
     host = document.createElement('div')
+    host.style.cssText = VISIBLE_FROSTED
     document.body.append(host)
     const lines = Array.from({ length: 40 }, (_, i) => `第 ${i + 1} 行`)
     app = createApp({
@@ -117,6 +125,6 @@ describe('浮动钮的交互阶梯一致', () => {
     expect(read('--xh-action-bg-hover')).toBe(read('--xh-bg-subtle-opaque'))
     expect(read('--xh-action-bg-pressed')).toBe(read('--xh-bg-subtle-hover-opaque'))
     expect(read('--xh-action-bg-focus-visible')).toBe(read('--xh-material-frosted-focus-surface'))
-    expect(read('--xh-action-highlight-rest')).toBe(read('--xh-material-frosted-highlight'))
+    expect(read('--xh-action-highlight-rest')).toBe(HIGHLIGHT)
   })
 })

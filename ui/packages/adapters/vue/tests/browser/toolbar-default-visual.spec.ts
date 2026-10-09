@@ -161,6 +161,8 @@ describe('toolbar 默认视觉', () => {
 
   it('组内相接的分段按下只换面不缩放，散落的条目照常缩放', async () => {
     const toolbar = mount({ loose: true })
+    // 按压比例缺省 1（只换面），缩不缩放读出来都是 1：主题写回 0.97，才分得出相接分段是不是关掉了缩放
+    host!.style.setProperty('--xh-motion-scale-press', '0.97')
     const [loose, joined] = toolbar.items
     for (const item of [loose!, joined!])
       item.setAttribute('data-pressed', '')
@@ -169,6 +171,7 @@ describe('toolbar 默认视觉', () => {
     // 分段零间距直角相接：缩放会撕开两侧接缝
     expect(['none', '1'].includes(getComputedStyle(joined!).scale)).toBe(true)
     expect(getComputedStyle(joined!).backgroundColor).not.toBe(getComputedStyle(toolbar.items[2]!).backgroundColor)
+    expect(pressScale(loose!)).toBe('0.97')
     expect(getComputedStyle(loose!).scale).toBe(pressScale(loose!))
   })
 })
