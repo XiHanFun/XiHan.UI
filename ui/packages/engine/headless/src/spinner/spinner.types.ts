@@ -5,7 +5,7 @@
 
 // 定义 spinner 类型契约。
 
-import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 转圈的形态：整圈轨道加一段起始边、渐隐弧、三点。 */
 export type SpinnerVariant = 'ring' | 'arc' | 'dots'
@@ -29,6 +29,11 @@ export interface SpinnerProps {
   variant?: SpinnerVariant
   /** 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色 */
   tone?: Tone
+  /**
+   * 转圈与配文的排布，默认 horizontal：horizontal 并排、适合随文与行内；
+   * vertical 转圈在上、配文在下居中，适合整块区域的等待。
+   */
+  orientation?: Orientation
   /**
    * 挂载后等多少毫秒才露面，默认 0 即刻露面。等待期间 root 投影 data-state="hidden"，
    * 皮肤按它把整块藏起、仍占着位置，读屏也读不到；加载在这之前结束、转圈被卸掉时它从头到尾不出现。

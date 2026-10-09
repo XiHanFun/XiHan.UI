@@ -21,8 +21,8 @@ const { createMachine } = setup<LoadingBarSchema>()
 
 /** 爬升节拍缺省毫秒。 */
 export const LOADING_BAR_TRICKLE_SPEED = 200
-/** 条子厚度缺省，由连接层写进内联样式。 */
-export const LOADING_BAR_HEIGHT = '2px'
+/** 条子厚度缺省（强调线宽令牌，3px），由连接层写进内联样式。 */
+export const LOADING_BAR_HEIGHT = 'var(--xh-stroke-strong)'
 
 /** 节拍归一。返回 0 表示不起计时器：<=0 与非有限数都按不自行爬升处理。 */
 export function resolveLoadingBarTrickleSpeed(speed: number | undefined): number {

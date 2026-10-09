@@ -39,7 +39,14 @@ describe('加载指示器的默认渐隐弧', () => {
     expect(Number.parseFloat(graphic.width)).toBe(edge)
     expect(Number.parseFloat(graphic.height)).toBe(edge)
     expect(graphic.backgroundImage).toContain('conic-gradient')
-    expect(graphic.backgroundImage).toContain('rgb(120, 80, 200)')
+    // 弧取品牌色，不随宿主的字色
+    const probe = document.createElement('span')
+    probe.style.color = 'var(--xh-fg-brand)'
+    root.append(probe)
+    const brand = getComputedStyle(probe).color
+    probe.remove()
+    expect(graphic.backgroundImage).toContain(brand)
+    expect(graphic.backgroundImage).not.toContain('rgb(120, 80, 200)')
     expect(getComputedStyle(root).pointerEvents).toBe('none')
   })
 })

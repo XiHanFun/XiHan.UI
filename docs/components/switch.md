@@ -297,7 +297,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照常触发�
 | `--xh-switch-label-gap` | `label` | `gap` | `default` | `--xh-control-gap-md` | switch 的 label 部件 gap 覆盖槽。 |
 | `--xh-switch-label-leading` | `label` | `line-height` | `default` | `--xh-leading-normal` | switch 的 label 部件 line-height 覆盖槽。 |
 | `--xh-switch-loading-duration` | `thumb` | `animation` | `xh-loading-ring` | `--xh-motion-loop-spin` | switch 的 thumb 部件 animation 覆盖槽。 |
-| `--xh-switch-loading-fg` | `thumb` | `border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`motion=reduce`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring` | `--xh-_switch-accent` | switch 的 thumb 部件 border-block-start-color、border-color 覆盖槽。 |
+| `--xh-switch-loading-fg` | `thumb` | `border`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`motion=reduce`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring`<br>`xh-loading-ring=overlay` | `--xh-_switch-accent` | switch 的 thumb 部件 border、border-color 覆盖槽。 |
 | `--xh-switch-radius` | `root` | `border-radius` | `default` | `--xh-shape-pill` | switch 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-switch-thumb` | `thumb` | `background` | `default` | `--xh-bg-surface-raised` | switch 的 thumb 部件 background 覆盖槽。 |
 | `--xh-switch-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default` | switch 的 thumb 部件 border 覆盖槽。 |

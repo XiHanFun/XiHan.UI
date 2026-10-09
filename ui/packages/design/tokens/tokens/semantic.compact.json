@@ -25,6 +25,10 @@
       "$type": "dimension",
       "$value": "40px"
     },
+    "float-md": {
+      "$type": "dimension",
+      "$value": "36px"
+    },
     "px-sm": {
       "$type": "dimension",
       "$value": "{space.1_5}"

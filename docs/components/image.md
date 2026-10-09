@@ -218,12 +218,15 @@ src 是响应式的：进入视口前不提供地址，观察器命中后再换�
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-image-bg` | `root` | `background` | `default` | `--xh-bg-subtle` | image 的 root 部件 background 覆盖槽。 |
-| `--xh-image-fallback-fg` | `fallback` | `color` | `default` | `--xh-fg-muted` | image 的 fallback 部件 color 覆盖槽。 |
-| `--xh-image-fallback-font-size` | `fallback` | `font-size` | `default` | `--xh-text-secondary-size` | image 的 fallback 部件 font-size 覆盖槽。 |
+| `--xh-image-fallback-bg` | `fallback` | `background` | `default` | `--xh-bg-subtle-opaque` | image 的 fallback 部件 background 覆盖槽。 |
+| `--xh-image-fallback-fg` | `fallback` | `color` | `default` | `--xh-fg-subtle` | image 的 fallback 部件 color 覆盖槽。 |
+| `--xh-image-fallback-font-size` | `fallback` | `font-size` | `default` | `--xh-text-caption-size` | image 的 fallback 部件 font-size 覆盖槽。 |
 | `--xh-image-fallback-min-h` | `fallback` | `min-block-size` | `default` | `--xh-control-h-lg` | image 的 fallback 部件 min-block-size 覆盖槽。 |
+| `--xh-image-fallback-px` | `fallback` | `padding-inline` | `default` | `--xh-space-4` | image 的 fallback 部件 padding-inline 覆盖槽。 |
+| `--xh-image-fallback-py` | `fallback` | `padding-block` | `default` | `--xh-space-2` | image 的 fallback 部件 padding-block 覆盖槽。 |
 | `--xh-image-fit` | `image` | `object-fit` | `default` | `cover` | image 的 image 部件 object-fit 覆盖槽。 |
 | `--xh-image-h` | `root` | `block-size` | `default` | `auto` | image 的 root 部件 block-size 覆盖槽。 |
-| `--xh-image-placeholder-bg` | `placeholder` | `background` | `default` | `--xh-bg-subtle-hover-opaque` | image 的 placeholder 部件 background 覆盖槽。 |
+| `--xh-image-placeholder-bg` | `placeholder` | `background` | `default` | `--xh-bg-subtle-opaque` | image 的 placeholder 部件 background 覆盖槽。 |
 | `--xh-image-placeholder-fg` | `placeholder` | `color` | `default` | `--xh-fg-subtle` | image 的 placeholder 部件 color 覆盖槽。 |
 | `--xh-image-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | image 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-image-ratio` | `root` | `aspect-ratio` | `default` | `auto` | image 的 root 部件 aspect-ratio 覆盖槽。 |
@@ -237,3 +240,7 @@ src 是响应式的：进入视口前不提供地址，观察器命中后再换�
 共享关键帧 `xh-fade-in` · `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+### RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

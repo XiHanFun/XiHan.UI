@@ -104,7 +104,7 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 | `value` | `number` |  | 受控进度值（0-100）。提供后即为确定进度：宽度按它显示，内部爬升停止。 |
 | `defaultValue` | `number` |  | 非受控初值，默认 0。 |
 | `loading` | `boolean` |  | 加载开关：true 开始，false 结束（走满 100 后淡出归零）。只由宿主写入，无配套回调。 |
-| `height` | `string \| number` |  | 进度条厚度：数字按像素，字符串按任意 CSS 长度。默认 2px。 |
+| `height` | `string \| number` |  | 进度条厚度：数字按像素，字符串按任意 CSS 长度。默认 --xh-stroke-strong（3px）。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定进度段使用哪族颜色。需要其他颜色时修改皮肤槽 --xh-loading-bar-range。 |
 | `trickle` | `boolean` |  | 不确定进度时自行向前爬升，默认开启。关闭则停在起步值等待宿主收尾。 |
 | `trickleSpeed` | `number` |  | 爬升节拍毫秒，默认 200；&lt;=0 或非有限数等同于关闭爬升。 |
@@ -221,6 +221,7 @@ tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，
 | `--xh-loading-bar-peg-fg` | `peg` | `background` | `default` | `--xh-loading-bar-range` | loading-bar 的 peg 部件 background 覆盖槽。 |
 | `--xh-loading-bar-peg-w` | `peg` | `inline-size` | `default` | `--xh-space-8` | loading-bar 的 peg 部件 inline-size 覆盖槽。 |
 | `--xh-loading-bar-range` | `peg`<br>`range` | `background` | `default` | `--xh-_tone-soft` | loading-bar 的 peg、range 部件 background 覆盖槽。 |
+| `--xh-loading-bar-range-radius` | `range` | `border-end-end-radius`<br>`border-start-end-radius` | `default` | `--xh-shape-pill` | loading-bar 的 range 部件 border-end-end-radius、border-start-end-radius 覆盖槽。 |
 | `--xh-loading-bar-speed` | `range` | `transition` | `default` | `--xh-motion-duration-move` | loading-bar 的 range 部件 transition 覆盖槽。 |
 | `--xh-loading-bar-track` | `track` | `background` | `default` | `transparent` | loading-bar 的 track 部件 background 覆盖槽。 |
 <!-- xh-component-tokens:end -->

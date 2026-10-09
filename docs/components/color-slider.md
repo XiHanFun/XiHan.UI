@@ -269,7 +269,7 @@ orientation 竖排时渐变自下而上；禁用时标签换禁用前景、颜�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-color-slider-checker` | `track` | `background-image` | `channel=alpha` | `--xh-color-neutral-300` | color-slider 的 track 部件 background-image 覆盖槽。 |
+| `--xh-color-slider-checker` | `track` | `background-image` | `channel=alpha` | `--xh-bg-subtle` | color-slider 的 track 部件 background-image 覆盖槽。 |
 | `--xh-color-slider-checker-base` | `track` | `background-color` | `channel=alpha` | `--xh-bg-surface` | color-slider 的 track 部件 background-color 覆盖槽。 |
 | `--xh-color-slider-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | color-slider 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-color-slider-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | color-slider 的 label 部件 color 覆盖槽。 |
@@ -286,7 +286,7 @@ orientation 竖排时渐变自下而上；禁用时标签换禁用前景、颜�
 | `--xh-color-slider-thumb-shadow-disabled` | `thumb` | `box-shadow` | `disabled` | `none` | color-slider 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-color-slider-thumb-shadow-dragging` | `thumb` | `box-shadow` | `dragging` | `--xh-elevation-lifted` | color-slider 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-color-slider-thumb-size` | `control`<br>`root`<br>`thumb` | `block-size`<br>`inline-size`<br>`margin-block-end`<br>`margin-block-start`<br>`margin-inline-start` | `default`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`size=lg`<br>`size=sm` | `--xh-space-3`<br>`--xh-space-6`<br>`--xh-track-thumb-size` | color-slider 的 control、root、thumb 部件 block-size、inline-size、margin-block-end、margin-block-start、margin-inline-start 覆盖槽。 |
-| `--xh-color-slider-track-border` | `track` | `box-shadow` | `default` | `--xh-border-subtle` | color-slider 的 track 部件 box-shadow 覆盖槽。 |
+| `--xh-color-slider-track-border` | `track` | `box-shadow` | `default` | `--xh-border-default` | color-slider 的 track 部件 box-shadow 覆盖槽。 |
 | `--xh-color-slider-track-radius` | `track` | `border-radius` | `default` | `--xh-shape-pill` | color-slider 的 track 部件 border-radius 覆盖槽。 |
 | `--xh-color-slider-track-thickness` | `control`<br>`root`<br>`track` | `block-size`<br>`inline-size` | `default`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`size=lg`<br>`size=sm` | `--xh-space-2`<br>`--xh-space-3`<br>`--xh-space-4` | color-slider 的 control、root、track 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-color-slider-value-text-bg` | `value-text` | `background` | `default` | `--xh-bg-brand` | color-slider 的 value-text 部件 background 覆盖槽。 |

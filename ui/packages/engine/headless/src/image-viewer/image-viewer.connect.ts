@@ -9,7 +9,6 @@ import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-u
 import type { ImageViewerApi, ImageViewerPressedPart, ImageViewerSchema, ImageViewerTransform } from './image-viewer.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { IMAGE_VIEWER_EN_US } from '../locale/en-US'
-import { floatingSizeBelow } from '../shared/floating-size'
 import { resolveTranslations } from '../shared/translations'
 import { imageViewerAnatomy } from './image-viewer.anatomy'
 import {
@@ -51,7 +50,7 @@ export function connectImageViewer<T extends PropTypes>(
   const loop = prop('loop') ?? true
   const minScale = prop('minScale') ?? IMAGE_VIEWER_MIN_SCALE
   const maxScale = prop('maxScale') ?? IMAGE_VIEWER_MAX_SCALE
-  // 翻页钮的 floating 档与组件同档（缺省 md 40px），关闭钮低一档
+  // 翻页钮与关闭钮的 floating 档与组件同档（缺省 md），视觉盒由皮肤按档取控件高
   const size = prop('size') ?? 'md'
   const canPrev = count > 1 && (loop || index > 0)
   const canNext = count > 1 && (loop || index < count - 1)
@@ -277,10 +276,12 @@ export function connectImageViewer<T extends PropTypes>(
       'data-state': stateAttr,
       // 浮在图上的导航层部件：data-material="liquid" 下换成液态面，standard 档下这个标记没人读
       'data-xh-liquid': '',
+      // 工具条是压在看片层白墨域里的页面主题面：钮与作者放进来的内容按工具条的底色自成墨色域
+      'data-xh-ink-surface': '',
     }),
 
     getZoomInTriggerProps: () => toolButton('zoom-in-trigger', label.zoomIn, () => send({ type: 'ZOOM.BY', delta: 1 }), transform.scale >= maxScale, {
-      // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
+      // 工具条里的图标钮：接 Action Control icon 档 xs（字形 16px，视觉盒由皮肤放到 box md），面由工具条给、按压与命中区由配方给
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
@@ -288,7 +289,7 @@ export function connectImageViewer<T extends PropTypes>(
       ...press('zoom-in-trigger', transform.scale >= maxScale),
     }),
     getZoomOutTriggerProps: () => toolButton('zoom-out-trigger', label.zoomOut, () => send({ type: 'ZOOM.BY', delta: -1 }), transform.scale <= minScale, {
-      // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
+      // 工具条里的图标钮：接 Action Control icon 档 xs（字形 16px，视觉盒由皮肤放到 box md），面由工具条给、按压与命中区由配方给
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
@@ -296,7 +297,7 @@ export function connectImageViewer<T extends PropTypes>(
       ...press('zoom-out-trigger', transform.scale <= minScale),
     }),
     getRotateLeftTriggerProps: () => toolButton('rotate-left-trigger', label.rotateLeft, () => send({ type: 'ROTATE.BY', delta: -90 }), false, {
-      // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
+      // 工具条里的图标钮：接 Action Control icon 档 xs（字形 16px，视觉盒由皮肤放到 box md），面由工具条给、按压与命中区由配方给
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
@@ -304,7 +305,7 @@ export function connectImageViewer<T extends PropTypes>(
       ...press('rotate-left-trigger'),
     }),
     getRotateRightTriggerProps: () => toolButton('rotate-right-trigger', label.rotateRight, () => send({ type: 'ROTATE.BY', delta: 90 }), false, {
-      // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
+      // 工具条里的图标钮：接 Action Control icon 档 xs（字形 16px，视觉盒由皮肤放到 box md），面由工具条给、按压与命中区由配方给
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
@@ -312,7 +313,7 @@ export function connectImageViewer<T extends PropTypes>(
       ...press('rotate-right-trigger'),
     }),
     getFlipHorizontalTriggerProps: () => toolButton('flip-horizontal-trigger', label.flipHorizontal, () => send({ type: 'FLIP', axis: 'x' }), false, {
-      // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
+      // 工具条里的图标钮：接 Action Control icon 档 xs（字形 16px，视觉盒由皮肤放到 box md），面由工具条给、按压与命中区由配方给
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
@@ -320,7 +321,7 @@ export function connectImageViewer<T extends PropTypes>(
       ...press('flip-horizontal-trigger'),
     }),
     getFlipVerticalTriggerProps: () => toolButton('flip-vertical-trigger', label.flipVertical, () => send({ type: 'FLIP', axis: 'y' }), false, {
-      // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
+      // 工具条里的图标钮：接 Action Control icon 档 xs（字形 16px，视觉盒由皮肤放到 box md），面由工具条给、按压与命中区由配方给
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
@@ -328,7 +329,7 @@ export function connectImageViewer<T extends PropTypes>(
       ...press('flip-vertical-trigger'),
     }),
     getResetTriggerProps: () => toolButton('reset-trigger', label.reset, () => send({ type: 'TRANSFORM.RESET' }), false, {
-      // 工具条里的图标钮：接 Action Control icon 档 xs（24px 视觉盒），面由工具条给、按压与命中区由配方给
+      // 工具条里的图标钮：接 Action Control icon 档 xs（字形 16px，视觉盒由皮肤放到 box md），面由工具条给、按压与命中区由配方给
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
@@ -336,7 +337,7 @@ export function connectImageViewer<T extends PropTypes>(
       ...press('reset-trigger'),
     }),
     getPrevTriggerProps: () => toolButton('prev-trigger', label.prev, () => send({ type: 'INDEX.PREV' }), !canPrev, {
-      // 浮在图上的翻页圆钮：接 Action Control floating 档，与组件同档（缺省 md 40px 圆形），面由皮肤桥接到自家深色 chrome
+      // 浮在图上的翻页圆钮：接 Action Control floating 档，与组件同档（缺省 md、圆形），面由皮肤桥接到自家深色 chrome
       'data-xh-action-control': '',
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
@@ -345,7 +346,7 @@ export function connectImageViewer<T extends PropTypes>(
       ...press('prev-trigger', !canPrev),
     }),
     getNextTriggerProps: () => toolButton('next-trigger', label.next, () => send({ type: 'INDEX.NEXT' }), !canNext, {
-      // 浮在图上的翻页圆钮：接 Action Control floating 档，与组件同档（缺省 md 40px 圆形），面由皮肤桥接到自家深色 chrome
+      // 浮在图上的翻页圆钮：接 Action Control floating 档，与组件同档（缺省 md、圆形），面由皮肤桥接到自家深色 chrome
       'data-xh-action-control': '',
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
@@ -366,12 +367,12 @@ export function connectImageViewer<T extends PropTypes>(
     }),
 
     getCloseTriggerProps: () => toolButton('close-trigger', label.close, () => send({ type: 'CLOSE', src: 'close-trigger' }), false, {
-      // 右上角的叉：悬浮在媒体上的单图标动作，与翻页钮同走 Action Control floating 档、比它低一档（缺省 sm 32px、圆形），
+      // 右上角的叉：悬浮在媒体上的单图标动作，与翻页钮同走 Action Control floating 档、同一档（缺省 md、圆形），
       // 面由皮肤桥接到自家深色 chrome
       'data-xh-action-control': '',
       'data-xh-action-profile': 'floating',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': floatingSizeBelow(size),
+      'data-xh-action-size': size,
       'data-xh-liquid': '',
       ...press('close-trigger'),
     }),

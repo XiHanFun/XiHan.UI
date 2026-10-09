@@ -2806,7 +2806,7 @@
       ],
       "defaultToken": [
         "--xh-_tone-subtle",
-        "--xh-bg-subtle-opaque"
+        "--xh-bg-subtle-active-opaque"
       ],
       "visibility": "public",
       "description": "avatar 的 root 部件 background 覆盖槽。"
@@ -2826,7 +2826,7 @@
       ],
       "defaultToken": [
         "--xh-_tone-fg",
-        "--xh-fg-muted"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "avatar 的 root 部件 color 覆盖槽。"
@@ -2841,14 +2841,10 @@
         "font-size"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-control-caption-lg",
-        "--xh-control-caption-sm",
-        "--xh-text-secondary-size"
+        "--xh-_avatar-font-size"
       ],
       "visibility": "public",
       "description": "avatar 的 root 部件 font-size 覆盖槽。"
@@ -2897,6 +2893,7 @@
       ],
       "property": [
         "block-size",
+        "font-size",
         "inline-size"
       ],
       "state": [
@@ -2910,7 +2907,7 @@
         "--xh-control-h-sm"
       ],
       "visibility": "public",
-      "description": "avatar 的 root 部件 block-size、inline-size 覆盖槽。"
+      "description": "avatar 的 root 部件 block-size、font-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-avatar-group-font-size",
@@ -2924,14 +2921,10 @@
         "font-size"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-control-caption-lg",
-        "--xh-control-caption-md",
-        "--xh-control-caption-sm"
+        "--xh-_avatar-group-half-size"
       ],
       "visibility": "public",
       "description": "avatar-group 的 overflow-item、root 部件 --xh-avatar-font-size、font-size 覆盖槽。"
@@ -2967,7 +2960,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-muted-opaque"
+        "--xh-bg-subtle-active-opaque"
       ],
       "visibility": "public",
       "description": "avatar-group 的 overflow-item 部件 background 覆盖槽。"
@@ -2985,7 +2978,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "avatar-group 的 overflow-item 部件 color 覆盖槽。"
@@ -3000,14 +2993,10 @@
         "margin-inline-start"
       ],
       "state": [
-        "default",
-        "size=lg",
-        "size=sm"
+        "default"
       ],
       "defaultToken": [
-        "--xh-space-2",
-        "--xh-space-2_5",
-        "--xh-space-3"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "avatar-group 的 root 部件 margin-inline-start 覆盖槽。"
@@ -3056,8 +3045,10 @@
         "root"
       ],
       "property": [
+        "--xh-avatar-font-size",
         "--xh-avatar-size",
         "block-size",
+        "font-size",
         "inline-size"
       ],
       "state": [
@@ -3071,7 +3062,7 @@
         "--xh-control-h-sm"
       ],
       "visibility": "public",
-      "description": "avatar-group 的 overflow-item、root 部件 --xh-avatar-size、block-size、inline-size 覆盖槽。"
+      "description": "avatar-group 的 overflow-item、root 部件 --xh-avatar-font-size、--xh-avatar-size、block-size、font-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-back-top-bg",
@@ -3251,7 +3242,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-glyph-size"
+        "--xh-_back-top-glyph-size"
       ],
       "visibility": "public",
       "description": "back-top 的 trigger 部件 --xh-icon-size 覆盖槽。"
@@ -3269,7 +3260,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-8"
+        "--xh-space-6"
       ],
       "visibility": "public",
       "description": "back-top 的 root 部件 inset-block-end 覆盖槽。"
@@ -3287,7 +3278,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-8"
+        "--xh-space-6"
       ],
       "visibility": "public",
       "description": "back-top 的 root 部件 inset-inline-end 覆盖槽。"
@@ -3365,17 +3356,18 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
         "default",
         "xh-action-profile=floating"
       ],
       "defaultToken": [
-        "--xh-_action-profile-visual-size"
+        "--xh-_back-top-size"
       ],
       "visibility": "public",
-      "description": "back-top 的 trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "back-top 的 trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-badge-bg",
@@ -7531,7 +7523,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-glyph-size"
+        "--xh-_carousel-trigger-glyph"
       ],
       "visibility": "public",
       "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 --xh-icon-size 覆盖槽。"
@@ -7698,7 +7690,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "carousel 的 indicator-group 部件 gap 覆盖槽。"
@@ -7825,7 +7817,7 @@
         "paused"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1_5"
       ],
       "visibility": "public",
       "description": "carousel 的 indicator、indicator-group、root 部件 block-size、inline-size、inset-block、inset-inline 覆盖槽。"
@@ -8125,17 +8117,18 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
         "default",
         "xh-action-profile=floating"
       ],
       "defaultToken": [
-        "--xh-_action-profile-visual-size"
+        "--xh-_carousel-trigger-size"
       ],
       "visibility": "public",
-      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-carousel-viewport-radius",
@@ -10729,7 +10722,7 @@
         "loading"
       ],
       "property": [
-        "border-block-start-color",
+        "border",
         "border-color"
       ],
       "state": [
@@ -10737,13 +10730,14 @@
         "@media print",
         "motion=reduce",
         "where([data-motion='reduce'])",
-        "xh-loading-ring"
+        "xh-loading-ring",
+        "xh-loading-ring=overlay"
       ],
       "defaultToken": [
         "--xh-fg-brand"
       ],
       "visibility": "public",
-      "description": "cascader 的 loading 部件 border-block-start-color、border-color 覆盖槽。"
+      "description": "cascader 的 loading 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-cascader-placeholder-fg",
@@ -13588,7 +13582,7 @@
         "copy-trigger"
       ],
       "property": [
-        "border-block-start-color",
+        "border",
         "border-color",
         "color"
       ],
@@ -13608,7 +13602,8 @@
         "pressed",
         "where([data-motion='reduce'])",
         "xh-action-variant=solid",
-        "xh-loading-ring"
+        "xh-loading-ring",
+        "xh-loading-ring=overlay"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-focus-visible",
@@ -13618,7 +13613,7 @@
         "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
-      "description": "clipboard 的 copy-trigger 部件 border-block-start-color、border-color、color 覆盖槽。"
+      "description": "clipboard 的 copy-trigger 部件 border、border-color、color 覆盖槽。"
     },
     {
       "name": "--xh-clipboard-copy-trigger-fg-copied",
@@ -16390,7 +16385,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-visual-size"
+        "--xh-control-action-size"
       ],
       "visibility": "public",
       "description": "color-picker 的 confirm-trigger 部件 block-size 覆盖槽。"
@@ -16532,37 +16527,52 @@
       "name": "--xh-color-picker-content-px",
       "component": "color-picker",
       "part": [
-        "content"
+        "content",
+        "recent-swatch-picker",
+        "saturation-area",
+        "swatch-picker"
       ],
       "property": [
+        "margin-inline",
         "padding-inline"
       ],
       "state": [
-        "default"
+        "default",
+        "first-child",
+        "is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])",
+        "not(:is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])"
       ],
       "defaultToken": [
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "color-picker 的 content 部件 padding-inline 覆盖槽。"
+      "description": "color-picker 的 content、recent-swatch-picker、saturation-area、swatch-picker 部件 margin-inline、padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-content-py",
       "component": "color-picker",
       "part": [
-        "content"
+        "content",
+        "recent-swatch-picker",
+        "saturation-area",
+        "swatch-picker"
       ],
       "property": [
-        "padding-block"
+        "margin-block-start",
+        "padding-block",
+        "padding-block-start"
       ],
       "state": [
-        "default"
+        "default",
+        "first-child",
+        "is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])",
+        "not(:is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])"
       ],
       "defaultToken": [
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "color-picker 的 content 部件 padding-block 覆盖槽。"
+      "description": "color-picker 的 content、recent-swatch-picker、saturation-area、swatch-picker 部件 margin-block-start、padding-block、padding-block-start 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-content-radius",
@@ -16617,7 +16627,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-min-w"
+        "--xh-overlay-max-w-sm"
       ],
       "visibility": "public",
       "description": "color-picker 的 content 部件 inline-size 覆盖槽。"
@@ -16997,7 +17007,7 @@
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-bg-field"
       ],
       "visibility": "public",
       "description": "color-picker 的 channel-input 部件 background 覆盖槽。"
@@ -17016,6 +17026,24 @@
       ],
       "defaultToken": [
         "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 channel-input 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-input-bg-focus",
+      "component": "color-picker",
+      "part": [
+        "channel-input"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "focus"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
       ],
       "visibility": "public",
       "description": "color-picker 的 channel-input 部件 background 覆盖槽。"
@@ -17066,10 +17094,31 @@
         "border-color"
       ],
       "state": [
-        "focus-visible"
+        "focus"
       ],
       "defaultToken": [
         "--xh-border-control-focus"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 channel-input 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-input-border-hover",
+      "component": "color-picker",
+      "part": [
+        "channel-input"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "hover",
+        "invalid",
+        "not(:disabled, :focus, [data-readonly], [data-invalid])",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-border-strong"
       ],
       "visibility": "public",
       "description": "color-picker 的 channel-input 部件 border-color 覆盖槽。"
@@ -17105,7 +17154,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "color-picker 的 channel-input 部件 font-size 覆盖槽。"
@@ -17123,7 +17172,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-control-action-size"
       ],
       "visibility": "public",
       "description": "color-picker 的 channel-input 部件 block-size 覆盖槽。"
@@ -17267,7 +17316,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-viewport-h-md"
+        "--xh-viewport-h-lg"
       ],
       "visibility": "public",
       "description": "color-picker 的 content 部件 max-block-size 覆盖槽。"
@@ -17285,7 +17334,7 @@
         "default"
       ],
       "defaultToken": [
-        "9rem"
+        "--xh-overlay-color-area-h"
       ],
       "visibility": "public",
       "description": "color-picker 的 saturation-area 部件 block-size 覆盖槽。"
@@ -17294,19 +17343,63 @@
       "name": "--xh-color-picker-saturation-area-radius",
       "component": "color-picker",
       "part": [
+        "content",
         "saturation-area"
       ],
       "property": [
         "border-radius"
       ],
       "state": [
-        "default"
+        "default",
+        "first-child"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-control",
+        "0"
       ],
       "visibility": "public",
-      "description": "color-picker 的 saturation-area 部件 border-radius 覆盖槽。"
+      "description": "color-picker 的 content、saturation-area 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-separator",
+      "component": "color-picker",
+      "part": [
+        "content",
+        "recent-swatch-picker",
+        "swatch-picker"
+      ],
+      "property": [
+        "border-block-start"
+      ],
+      "state": [
+        "is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])",
+        "not(:is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])"
+      ],
+      "defaultToken": [
+        "--xh-material-solid-border"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 content、recent-swatch-picker、swatch-picker 部件 border-block-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-slider-thumb-bg",
+      "component": "color-picker",
+      "part": [
+        "alpha-slider",
+        "hue-slider",
+        "thumb"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "is([data-part='hue-slider'], [data-part='alpha-slider'])"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface-raised"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 alpha-slider、hue-slider、thumb 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-slider-thumb-size",
@@ -17322,7 +17415,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-track-thumb-size"
+        "--xh-control-indicator-md"
       ],
       "visibility": "public",
       "description": "color-picker 的 alpha-slider、hue-slider 部件 --xh-_thumb-size 覆盖槽。"
@@ -17375,10 +17468,12 @@
         "--xh-_color-swatch-picker-cell"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-control-h-sm",
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
       "description": "color-picker 的 recent-swatch-picker、swatch-picker 部件 --xh-_color-swatch-picker-cell 覆盖槽。"
@@ -17397,7 +17492,7 @@
         "is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])"
       ],
       "defaultToken": [
-        "--xh-control-gap-sm"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "color-picker 的 recent-swatch-picker、swatch-picker 部件 gap 覆盖槽。"
@@ -17621,7 +17716,7 @@
         "default"
       ],
       "defaultToken": [
-        "14px"
+        "--xh-control-indicator-md"
       ],
       "visibility": "public",
       "description": "color-picker 的 area-thumb 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。"
@@ -17729,7 +17824,7 @@
         "channel=alpha"
       ],
       "defaultToken": [
-        "--xh-color-neutral-300"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "color-slider 的 track 部件 background-image 覆盖槽。"
@@ -18050,7 +18145,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "color-slider 的 track 部件 box-shadow 覆盖槽。"
@@ -29168,7 +29263,7 @@
         "root"
       ],
       "property": [
-        "border-block-start-color",
+        "border",
         "border-color",
         "color"
       ],
@@ -29186,7 +29281,8 @@
         "not([data-loading])",
         "pressed",
         "where([data-motion='reduce'])",
-        "xh-loading-ring"
+        "xh-loading-ring",
+        "xh-loading-ring=overlay"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-focus-visible",
@@ -29196,7 +29292,7 @@
         "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
-      "description": "download-trigger 的 root 部件 border-block-start-color、border-color、color 覆盖槽。"
+      "description": "download-trigger 的 root 部件 border、border-color、color 覆盖槽。"
     },
     {
       "name": "--xh-download-trigger-font-size",
@@ -29313,7 +29409,7 @@
         "root"
       ],
       "property": [
-        "border-block-start-color",
+        "border",
         "border-color"
       ],
       "state": [
@@ -29321,13 +29417,14 @@
         "@media print",
         "motion=reduce",
         "where([data-motion='reduce'])",
-        "xh-loading-ring"
+        "xh-loading-ring",
+        "xh-loading-ring=overlay"
       ],
       "defaultToken": [
         "--xh-download-trigger-fg"
       ],
       "visibility": "public",
-      "description": "download-trigger 的 root 部件 border-block-start-color、border-color 覆盖槽。"
+      "description": "download-trigger 的 root 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-download-trigger-px",
@@ -33606,7 +33703,7 @@
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "file-upload 的 dropzone 部件 background 覆盖槽。"
@@ -33642,7 +33739,7 @@
         "dragging"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "file-upload 的 dropzone 部件 background 覆盖槽。"
@@ -33664,7 +33761,7 @@
         "not([data-disabled], [data-invalid], [data-dragging])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "file-upload 的 dropzone 部件 background 覆盖槽。"
@@ -33744,7 +33841,7 @@
         "not([data-disabled], [data-invalid], [data-dragging])"
       ],
       "defaultToken": [
-        "--xh-border-control-hover"
+        "--xh-border-strong"
       ],
       "visibility": "public",
       "description": "file-upload 的 dropzone 部件 border-color 覆盖槽。"
@@ -33780,7 +33877,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "file-upload 的 dropzone 部件 color 覆盖槽。"
@@ -33834,7 +33931,7 @@
         "default"
       ],
       "defaultToken": [
-        "8rem"
+        "--xh-dropzone-min-h"
       ],
       "visibility": "public",
       "description": "file-upload 的 dropzone 部件 min-block-size 覆盖槽。"
@@ -33888,7 +33985,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "file-upload 的 dropzone 部件 border-radius 覆盖槽。"
@@ -33944,6 +34041,26 @@
         "default"
       ],
       "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "file-upload 的 item 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-file-upload-item-bg-error",
+      "component": "file-upload",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "has(> [data-part='item-progress'][data-state='error'])",
+        "state=closed",
+        "state=error"
+      ],
+      "defaultToken": [
         "--xh-bg-surface"
       ],
       "visibility": "public",
@@ -33962,7 +34079,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "transparent"
       ],
       "visibility": "public",
       "description": "file-upload 的 item 部件 border 覆盖槽。"
@@ -33982,7 +34099,7 @@
         "state=error"
       ],
       "defaultToken": [
-        "--xh-border-invalid"
+        "transparent"
       ],
       "visibility": "public",
       "description": "file-upload 的 item 部件 border-color 覆盖槽。"
@@ -34029,9 +34146,11 @@
       "name": "--xh-file-upload-item-fg-error",
       "component": "file-upload",
       "part": [
-        "item"
+        "item",
+        "item-name"
       ],
       "property": [
+        "background-color",
         "color"
       ],
       "state": [
@@ -34043,7 +34162,7 @@
         "--xh-fg-danger"
       ],
       "visibility": "public",
-      "description": "file-upload 的 item 部件 color 覆盖槽。"
+      "description": "file-upload 的 item、item-name 部件 background-color、color 覆盖槽。"
     },
     {
       "name": "--xh-file-upload-item-font-size",
@@ -34076,7 +34195,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-3"
       ],
       "visibility": "public",
       "description": "file-upload 的 list 部件 gap 覆盖槽。"
@@ -34094,7 +34213,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-gap-md"
+        "--xh-space-3"
       ],
       "visibility": "public",
       "description": "file-upload 的 item 部件 gap 覆盖槽。"
@@ -34405,7 +34524,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "transparent"
       ],
       "visibility": "public",
       "description": "file-upload 的 item-preview 部件 background 覆盖槽。"
@@ -34423,7 +34542,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-brand"
       ],
       "visibility": "public",
       "description": "file-upload 的 item-preview 部件 color 覆盖槽。"
@@ -34478,7 +34597,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-h-md"
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
       "description": "file-upload 的 item-preview 部件 block-size、inline-size 覆盖槽。"
@@ -34833,6 +34952,7 @@
         "material=liquid",
         "not([data-scope])",
         "variant=outline",
+        "variant=subtle",
         "where([data-material='liquid'])",
         "xh-ink-surface",
         "xh-liquid",
@@ -34874,6 +34994,7 @@
         "not([data-scope])",
         "pressed",
         "variant=outline",
+        "variant=subtle",
         "where([data-material='liquid'])",
         "xh-liquid",
         "xh-liquid-goo"
@@ -34911,6 +35032,7 @@
         "not([data-loading])",
         "not([data-scope])",
         "variant=outline",
+        "variant=subtle",
         "where([data-material='liquid'])",
         "xh-liquid",
         "xh-liquid-goo"
@@ -35072,7 +35194,6 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-glyph-size",
         "--xh-_float-button-glyph-size"
       ],
       "visibility": "public",
@@ -35169,6 +35290,7 @@
         "inset-inline-end",
         "inset-inline-start",
         "left",
+        "min-inline-size",
         "top"
       ],
       "state": [
@@ -35185,11 +35307,10 @@
         "xh-action-profile=floating"
       ],
       "defaultToken": [
-        "--xh-_action-profile-visual-size",
         "--xh-_float-button-size"
       ],
       "visibility": "public",
-      "description": "float-button 的 list、root、trigger 部件 block-size、bottom、inline-size、inset-block-end、inset-block-start、inset-inline-end、inset-inline-start、left、top 覆盖槽。"
+      "description": "float-button 的 list、root、trigger 部件 block-size、bottom、inline-size、inset-block-end、inset-block-start、inset-inline-end、inset-inline-start、left、min-inline-size、top 覆盖槽。"
     },
     {
       "name": "--xh-floating-panel-action-bg-active",
@@ -36213,7 +36334,7 @@
         "submit-trigger"
       ],
       "property": [
-        "border-block-start-color",
+        "border",
         "border-color",
         "color"
       ],
@@ -36230,7 +36351,8 @@
         "not([data-loading])",
         "pressed",
         "where([data-motion='reduce'])",
-        "xh-loading-ring"
+        "xh-loading-ring",
+        "xh-loading-ring=overlay"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-hover",
@@ -36239,7 +36361,7 @@
         "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
-      "description": "form 的 submit-trigger 部件 border-block-start-color、border-color、color 覆盖槽。"
+      "description": "form 的 submit-trigger 部件 border、border-color、color 覆盖槽。"
     },
     {
       "name": "--xh-form-submit-shadow",
@@ -40162,6 +40284,7 @@
         "item-close-trigger",
         "item-delete-trigger",
         "item-indicator",
+        "item-preview",
         "last-trigger",
         "line-content",
         "line-fold-trigger",
@@ -40240,7 +40363,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、comment-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、last-trigger、line-content、line-fold-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、comment-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、item-preview、last-trigger、line-content、line-fold-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",
@@ -40283,6 +40406,24 @@
       "description": "image 的 root 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-image-fallback-bg",
+      "component": "image",
+      "part": [
+        "fallback"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-opaque"
+      ],
+      "visibility": "public",
+      "description": "image 的 fallback 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-image-fallback-fg",
       "component": "image",
       "part": [
@@ -40295,7 +40436,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "image 的 fallback 部件 color 覆盖槽。"
@@ -40313,7 +40454,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "image 的 fallback 部件 font-size 覆盖槽。"
@@ -40335,6 +40476,42 @@
       ],
       "visibility": "public",
       "description": "image 的 fallback 部件 min-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-fallback-px",
+      "component": "image",
+      "part": [
+        "fallback"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-4"
+      ],
+      "visibility": "public",
+      "description": "image 的 fallback 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-fallback-py",
+      "component": "image",
+      "part": [
+        "fallback"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "image 的 fallback 部件 padding-block 覆盖槽。"
     },
     {
       "name": "--xh-image-fit",
@@ -40385,7 +40562,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover-opaque"
+        "--xh-bg-subtle-opaque"
       ],
       "visibility": "public",
       "description": "image 的 placeholder 部件 background 覆盖槽。"
@@ -40899,7 +41076,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-color-neutral-950"
+        "--xh-bg-overlay"
       ],
       "visibility": "public",
       "description": "image-viewer 的 backdrop 部件 background 覆盖槽。"
@@ -41086,7 +41263,8 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
         "default",
@@ -41094,10 +41272,10 @@
         "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-_action-profile-visual-size"
+        "--xh-_image-viewer-nav-size"
       ],
       "visibility": "public",
-      "description": "image-viewer 的 close-trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "image-viewer 的 close-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-image-viewer-counter-padding",
@@ -41192,6 +41370,7 @@
       ],
       "defaultToken": [
         "--xh-_action-profile-glyph-size",
+        "--xh-_image-viewer-nav-glyph",
         "--xh-glyph-size-md"
       ],
       "visibility": "public",
@@ -41214,6 +41393,29 @@
       ],
       "visibility": "public",
       "description": "image-viewer 的 positioner 部件 z-index 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-viewer-nav-size",
+      "component": "image-viewer",
+      "part": [
+        "next-trigger",
+        "prev-trigger"
+      ],
+      "property": [
+        "block-size",
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default",
+        "xh-action-profile=floating",
+        "xh-action-profile=icon"
+      ],
+      "defaultToken": [
+        "--xh-_image-viewer-nav-size"
+      ],
+      "visibility": "public",
+      "description": "image-viewer 的 next-trigger、prev-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-image-viewer-overlay-radius",
@@ -41259,6 +41461,25 @@
       ],
       "visibility": "public",
       "description": "image-viewer 的 viewport 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-viewer-toolbar-bg",
+      "component": "image-viewer",
+      "part": [
+        "toolbar"
+      ],
+      "property": [
+        "--xh-ink-surface",
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_image-viewer-page-surface"
+      ],
+      "visibility": "public",
+      "description": "image-viewer 的 toolbar 部件 --xh-ink-surface、background 覆盖槽。"
     },
     {
       "name": "--xh-image-viewer-toolbar-gap",
@@ -44908,6 +45129,25 @@
       ],
       "visibility": "public",
       "description": "loading-bar 的 peg、range 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-loading-bar-range-radius",
+      "component": "loading-bar",
+      "part": [
+        "range"
+      ],
+      "property": [
+        "border-end-end-radius",
+        "border-start-end-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-pill"
+      ],
+      "visibility": "public",
+      "description": "loading-bar 的 range 部件 border-end-end-radius、border-start-end-radius 覆盖槽。"
     },
     {
       "name": "--xh-loading-bar-speed",
@@ -51064,7 +51304,7 @@
       ],
       "property": [
         "background-color",
-        "border-block-start-color",
+        "border",
         "border-color",
         "color"
       ],
@@ -51075,13 +51315,14 @@
         "motion=reduce",
         "preset=toast",
         "where([data-motion='reduce'])",
-        "xh-loading-ring"
+        "xh-loading-ring",
+        "xh-loading-ring=overlay"
       ],
       "defaultToken": [
         "--xh-_tone-fg"
       ],
       "visibility": "public",
-      "description": "notification 的 item、item-indicator 部件 background-color、border-block-start-color、border-color、color 覆盖槽。"
+      "description": "notification 的 item、item-indicator 部件 background-color、border、border-color、color 覆盖槽。"
     },
     {
       "name": "--xh-notification-indicator-p",
@@ -55989,7 +56230,7 @@
         "confirm-trigger"
       ],
       "property": [
-        "border-block-start-color",
+        "border",
         "border-color",
         "color"
       ],
@@ -56007,7 +56248,8 @@
         "not([data-loading])",
         "pressed",
         "where([data-motion='reduce'])",
-        "xh-loading-ring"
+        "xh-loading-ring",
+        "xh-loading-ring=overlay"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-focus-visible",
@@ -56017,7 +56259,7 @@
         "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
-      "description": "popconfirm 的 confirm-trigger 部件 border-block-start-color、border-color、color 覆盖槽。"
+      "description": "popconfirm 的 confirm-trigger 部件 border、border-color、color 覆盖槽。"
     },
     {
       "name": "--xh-popconfirm-confirm-shadow",
@@ -66299,7 +66541,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-3"
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "skeleton 的 root 部件 gap 覆盖槽。"
@@ -66390,7 +66632,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-surface-raised"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "skeleton 的 item 部件 background-image 覆盖槽。"
@@ -66408,7 +66650,7 @@
         "shape=text"
       ],
       "defaultToken": [
-        "--xh-text-caption-size"
+        "--xh-text-body-line-h"
       ],
       "visibility": "public",
       "description": "skeleton 的 item 部件 block-size 覆盖槽。"
@@ -66426,7 +66668,7 @@
         "shape=text"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "skeleton 的 item 部件 border-radius 覆盖槽。"
@@ -67723,7 +67965,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size",
+        "--xh-text-body-line-h",
         "1lh"
       ],
       "visibility": "public",
@@ -67861,7 +68103,7 @@
       ],
       "property": [
         "background",
-        "border-block-start-color",
+        "border",
         "border-color"
       ],
       "state": [
@@ -67876,10 +68118,10 @@
       ],
       "defaultToken": [
         "--xh-_tone",
-        "currentColor"
+        "--xh-fg-brand"
       ],
       "visibility": "public",
-      "description": "spinner 的 root 部件 background、border-block-start-color、border-color 覆盖槽。"
+      "description": "spinner 的 root 部件 background、border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-spinner-gap",
@@ -67891,10 +68133,12 @@
         "gap"
       ],
       "state": [
-        "default"
+        "default",
+        "orientation=vertical"
       ],
       "defaultToken": [
-        "--xh-control-gap-md"
+        "--xh-control-gap-md",
+        "--xh-space-1_5"
       ],
       "visibility": "public",
       "description": "spinner 的 root 部件 gap 覆盖槽。"
@@ -67912,7 +68156,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-brand"
       ],
       "visibility": "public",
       "description": "spinner 的 label 部件 color 覆盖槽。"
@@ -67930,10 +68174,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "spinner 的 label 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-spinner-label-weight",
+      "component": "spinner",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
+      ],
+      "visibility": "public",
+      "description": "spinner 的 label 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-spinner-radius",
@@ -68005,16 +68267,17 @@
         "root"
       ],
       "property": [
-        "border"
+        "border-block-start-color"
       ],
       "state": [
-        "default"
+        "default",
+        "tone"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "transparent"
       ],
       "visibility": "public",
-      "description": "spinner 的 root 部件 border 覆盖槽。"
+      "description": "spinner 的 root 部件 border-block-start-color 覆盖槽。"
     },
     {
       "name": "--xh-splitter-disabled-opacity",
@@ -70030,7 +70293,7 @@
         "thumb"
       ],
       "property": [
-        "border-block-start-color",
+        "border",
         "border-color"
       ],
       "state": [
@@ -70038,13 +70301,14 @@
         "@media print",
         "motion=reduce",
         "where([data-motion='reduce'])",
-        "xh-loading-ring"
+        "xh-loading-ring",
+        "xh-loading-ring=overlay"
       ],
       "defaultToken": [
         "--xh-_switch-accent"
       ],
       "visibility": "public",
-      "description": "switch 的 thumb 部件 border-block-start-color、border-color 覆盖槽。"
+      "description": "switch 的 thumb 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-switch-radius",
@@ -84875,7 +85139,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "tour 的 progress-indicator 部件 gap 覆盖槽。"

@@ -122,7 +122,7 @@ export interface ImageViewerSchema extends MachineSchema {
     restoreFocus?: boolean
     /** 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 */
     variant?: OverlayBackdropVariant
-    /** 尺寸：sm / md / lg，默认 md；翻页钮走 Action Control floating 档（32 / 40 / 48px），关闭钮比它低一档、最低 sm。 */
+    /** 尺寸：sm / md / lg，默认 md；翻页钮与关闭钮随它取控件高（28 / 32 / 36px 圆形）。 */
     size?: Size
     translations?: Partial<ImageViewerTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */

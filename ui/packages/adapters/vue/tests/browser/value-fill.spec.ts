@@ -118,6 +118,22 @@ describe('加载条的填充', () => {
     expect(dir === 'ltr' ? peg.right : peg.left).toBeCloseTo(front, 0)
   })
 
+  it.each(['ltr', 'rtl'] as const)('%s：缺省厚 3px（--xh-stroke-strong），进度段露出的前端取胶囊圆头、行首一端方头', async (dir) => {
+    document.documentElement.dir = dir
+    await mount(() => h(XhLoadingBarRoot, { loading: true, value: 40, trickle: false }, () => [
+      h(XhLoadingBarTrack, null, () => [h(XhLoadingBarRange)]),
+    ]))
+    const root = part('loading-bar', 'root')
+    const range = getComputedStyle(part('loading-bar', 'range'))
+    expect(root.getBoundingClientRect().height).toBe(3)
+    // 露出的前端是进度段的行尾：ltr 在右、rtl 在左
+    const [front, back] = dir === 'ltr'
+      ? [[range.borderTopRightRadius, range.borderBottomRightRadius], [range.borderTopLeftRadius, range.borderBottomLeftRadius]]
+      : [[range.borderTopLeftRadius, range.borderBottomLeftRadius], [range.borderTopRightRadius, range.borderBottomRightRadius]]
+    expect(front).toEqual(['9999px', '9999px'])
+    expect(back).toEqual(['0px', '0px'])
+  })
+
   it('收尾先把条子走满、满格停一拍再淡出：填充到头之前根节点一直不透明', async () => {
     const loading = ref(true)
     await mount(() => h(XhLoadingBarRoot, { loading: loading.value, trickle: false }, () => [

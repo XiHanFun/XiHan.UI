@@ -88,6 +88,16 @@ describe('connectSpinner 尺寸', () => {
   })
 })
 
+describe('connectSpinner 排布', () => {
+  it('不写排布时显式落 horizontal：转圈与配文并排', () => {
+    expect(root()['data-orientation']).toBe('horizontal')
+  })
+
+  it('vertical 原样写出：转圈在上、配文在下', () => {
+    expect(root({ orientation: 'vertical' })['data-orientation']).toBe('vertical')
+  })
+})
+
 describe('connectSpinner 文案节点', () => {
   it('label 部件只带身份标记：内容是作者的，角色与活区都在 root 上', () => {
     expect(api().getLabelProps()).toEqual({ 'data-scope': 'spinner', 'data-part': 'label', 'class': 'xh-scope-spinner' })

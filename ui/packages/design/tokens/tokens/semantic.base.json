@@ -24,6 +24,11 @@
       "$type": "dimension",
       "$value": "44px"
     },
+    "float-md": {
+      "$description": "独立浮在页面一角的圆钮（回到顶部、悬浮按钮）md 档的直径：比方格 md 大一档，在角落里一眼找得到，又比 lg 小、不挡内容。",
+      "$type": "dimension",
+      "$value": "40px"
+    },
     "w": {
       "$description": "单行字段根的缺省宽度：不传尺寸时下拉、日期、文本框等一律这么宽，宽度不再随内容走。",
       "$type": "dimension",
@@ -221,6 +226,11 @@
     "mark-download": {
       "$type": "icon",
       "$value": "download"
+    },
+    "mark-file": {
+      "$description": "文件：文件上传条目没放缩略图时缩略图位上画的那枚字形。",
+      "$type": "icon",
+      "$value": "file"
     },
     "mark-chevron-down": {
       "$type": "icon",
@@ -717,6 +727,11 @@
       "$type": "number",
       "$value": 1.12
     },
+    "scale-emphasis": {
+      "$description": "指针悬停或键盘聚焦时把一枚小字形放大强调的比例（评分的星）。减弱动效下为 1：只留换色。",
+      "$type": "number",
+      "$value": 1.2
+    },
     "scale-squash": {
       "$description": "液态形变里被拉长的块在另一个方向上最多压到的比例，表达体积守恒（液态档的双沿指示器、按下的液态面）。",
       "$type": "number",
@@ -1005,6 +1020,13 @@
       "$value": "4rem"
     }
   },
+  "dropzone": {
+    "min-h": {
+      "$description": "拖放区（文件上传）的最小高：内容很少时也留出一块够放下文件的面，拖着文件过来容易对准。",
+      "$type": "dimension",
+      "$value": "10rem"
+    }
+  },
   "viewport": {
     "max-h": {
       "$description": "页内滚动面（表格、树、JSON 视图）的高度上限，内容不满时按内容收。与 h-lg 同值但语义不同：这条是上限，h-lg 是定高。",
@@ -1049,6 +1071,11 @@
       "$description": "浮层里成列排布的选项列（时 / 分 / 秒）的最小宽度：两位数字加两侧标记轨。",
       "$type": "dimension",
       "$value": "3.5rem"
+    },
+    "color-area-h": {
+      "$description": "取色面板顶部二维取色区（饱和度 × 明度）的高度：与面板宽配成接近 3:2 的取色面，拖动时纵向有足够的行程。",
+      "$type": "dimension",
+      "$value": "11rem"
     },
     "column-item-h": {
       "$description": "浮层时列里一格的高度：比小号控件行矮一档，列里十几格并排时才不显得稀疏。",
@@ -1163,6 +1190,11 @@
     "body-leading": {
       "$type": "number",
       "$value": "{leading.normal}"
+    },
+    "body-line-h": {
+      "$description": "一行正文的行框高（正文字号 × 正文行高）：骨架屏的文本条、行内迷你图这类占一行正文位置的块按它取高。",
+      "$type": "dimension",
+      "$value": "calc({text.body-size} * {text.body-leading})"
     },
     "prose-leading": {
       "$description": "成段正文的行高，比控件文字松一档。",

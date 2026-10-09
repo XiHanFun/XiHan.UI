@@ -21,8 +21,8 @@
     position: fixed;
     inset: 0;
     z-index: var(--xh-image-viewer-backdrop-layer, var(--xh-_layer, var(--xh-layer-modal)));
-    /* 看片要压住页面底色，遮罩比普通对话框更深 */
-    background: var(--xh-image-viewer-backdrop-bg, color-mix(in oklab, var(--xh-color-neutral-950) 78%, transparent));
+    /* 与对话框同一层全局遮罩：看片台的深浅由遮罩令牌统一定 */
+    background: var(--xh-image-viewer-backdrop-bg, var(--xh-bg-overlay));
   }
 
   /* 同一层底色之上再糊背后的页面 */
@@ -45,6 +45,12 @@
   }
 
   [data-scope='image-viewer'][data-part='positioner'] {
+    /* 工具条是页面主题的实体面，看片层（content）却整层是白墨域：页面主题下的面色、描边与字色
+       在域外的这一层取一次，交给工具条 */
+    --xh-_image-viewer-page-surface: var(--xh-bg-surface);
+    --xh-_image-viewer-page-border: var(--xh-border-default);
+    --xh-_image-viewer-page-fg: var(--xh-fg-muted);
+
     position: fixed;
     inset: 0;
     z-index: var(--xh-image-viewer-layer, var(--xh-_layer, var(--xh-layer-modal)));
@@ -60,7 +66,8 @@
 
     /* 作者塞进浮层的图标：内容层给一档 md 的尺，十颗钮各自再按 Action Control 档位覆盖 */
     --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-glyph-size-md));
-    /* 十颗钮共用的深色 chrome：压在使用者的图片上的半透明深底，是这一层自己的面，不取页面语义面 */
+    /* 翻页钮、关闭钮与计数共用的深色 chrome：压在使用者的图片上的半透明深底，是这一层自己的面，
+       不取页面语义面。白面压在亮图上分不出来（白 30% 的面压亮图不到 1.4:1），这几件留在深纱上 */
     --xh-_image-viewer-chrome-bg: var(--xh-image-viewer-chrome-bg, color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent));
     --xh-_image-viewer-chrome-bg-hover: var(--xh-image-viewer-action-bg-hover, color-mix(in oklab, var(--xh-color-neutral-950) 70%, transparent));
     --xh-_image-viewer-chrome-bg-active: var(--xh-image-viewer-action-bg-active, color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent));
@@ -169,7 +176,7 @@
     will-change: translate;
   }
 
-  /* —— 悬浮件共用：半透明深底加浅字 ——
+  /* —— 悬浮件 ——
      四件都钉在铺满视口的那一层的边上，贴边一律与安全区取大的一头：刘海、圆角与
      底部横条压住的那一段由系统给出，贴边比它窄时钮会被切掉一角；桌面上 env() 恒为 0。
      安全区只有物理方向的四个名字，行内轴上两侧同取较宽的那一段，RTL 下不会翻错边。
@@ -179,20 +186,33 @@
   [data-scope='image-viewer'][data-part='counter'] {
     position: absolute;
     z-index: 1;
+  }
+
+  /* 计数：一行浅字压在深纱上 */
+  [data-scope='image-viewer'][data-part='counter'] {
     background: var(--xh-_image-viewer-chrome-bg);
     color: inherit;
     border: none;
   }
 
+  /* 工具条：页面主题的实体面（亮色白面、暗色深面）+ 1px 描边。面色在看片层的白墨域之外取
+     （定位层捕获的页面取值），连接层在它身上打 data-xh-ink-surface：七颗钮与作者放进来的内容
+     按这块底自成墨色域，字色、悬停阶梯与焦点环都随面的深浅走，不再钉在浅字上。
+     强制色下面被换成 Canvas、与遮罩同色，边界只剩这圈描边 */
   [data-scope='image-viewer'][data-part='toolbar'] {
+    --xh-ink-surface: var(--xh-image-viewer-toolbar-bg, var(--xh-_image-viewer-page-surface));
+
     inset-block-end: max(var(--xh-space-6), env(safe-area-inset-bottom));
     inset-inline-start: 50%;
     translate: -50% 0;
     display: flex;
     align-items: center;
     gap: var(--xh-image-viewer-toolbar-gap, var(--xh-space-1));
-    padding: var(--xh-image-viewer-toolbar-padding, var(--xh-space-1_5) var(--xh-space-3));
+    padding: var(--xh-image-viewer-toolbar-padding, var(--xh-space-1_5) var(--xh-space-4));
+    border: var(--xh-stroke-thin) solid var(--xh-_image-viewer-page-border);
     border-radius: var(--xh-image-viewer-toolbar-radius-outer, var(--xh-image-viewer-overlay-radius, var(--xh-shape-surface)));
+    background: var(--xh-image-viewer-toolbar-bg, var(--xh-_image-viewer-page-surface));
+    color: var(--xh-_image-viewer-page-fg);
   }
 
   /* 起点是逻辑属性、平移是物理通道：rtl 下行内分量掉头，工具条与计数才落回中线 */
@@ -200,20 +220,23 @@
     translate: 50% 0;
   }
 
-  /* 工具条里的七颗钮：接 Action Control icon 档 xs（24px 视觉盒），底色交给工具条，本体只管命中区与按压。
-     悬停 / 按下的底从 chrome 那层深底派生，不取页面的 --xh-bg-subtle-* 阶梯。
+  /* 工具条里的七颗钮：接 Action Control icon 档 xs（字形 16px），视觉盒放大到 box md（36px），
+     底色交给工具条，本体只管命中区与按压。钮是工具条这块面上的墨色域：悬停 / 按下走白底阶梯
+     （100 → 200），字取次要字色，都按工具条的底色求值。
      position 交给配方的 relative：粗指针下 44px 命中区 ::after 以钮自身为包含块；
      这里若写 static，七块命中区会一起以工具条为包含块、彼此盖住，触屏上只剩最后一颗可点 */
   [data-scope='image-viewer'][data-part='toolbar'] > [data-part] {
+    --xh-action-visual-size: var(--xh-control-box-md);
+    --xh-action-min-inline-size: var(--xh-control-box-md);
     --xh-action-bg-rest: transparent;
-    --xh-action-bg-hover: var(--xh-_image-viewer-chrome-bg-hover);
-    --xh-action-bg-pressed: var(--xh-_image-viewer-chrome-bg-active);
+    --xh-action-bg-hover: var(--xh-bg-subtle);
+    --xh-action-bg-pressed: var(--xh-bg-subtle-hover);
     --xh-action-bg-focus-visible: transparent;
     --xh-action-bg-disabled: transparent;
-    --xh-action-fg-rest: currentColor;
-    --xh-action-fg-hover: currentColor;
-    --xh-action-fg-pressed: currentColor;
-    --xh-action-fg-focus-visible: currentColor;
+    --xh-action-fg-rest: var(--xh-fg-muted);
+    --xh-action-fg-hover: var(--xh-fg-muted);
+    --xh-action-fg-pressed: var(--xh-fg-muted);
+    --xh-action-fg-focus-visible: var(--xh-fg-muted);
     --xh-action-fg-disabled: var(--xh-fg-disabled);
     --xh-action-border-rest: transparent;
     --xh-action-border-hover: transparent;
@@ -237,7 +260,23 @@
     translate: 50% 0;
   }
 
-  /* 两颗翻页钮：浮在图上的单图标圆钮，接 Action Control floating 档 md（48px，正方盒取 circle）。
+  /* 翻页与关闭钮的尺：看片台上的媒体控制钮与同档控件等高（control-h，md 32px），字形比控件内
+     图标低一档（sm / md 16px、lg 20px），不压画面。三颗钮与组件同档 */
+  [data-scope='image-viewer']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger']) {
+    --xh-_image-viewer-nav-size: var(--xh-control-h-md);
+    --xh-_image-viewer-nav-glyph: var(--xh-glyph-size-sm);
+  }
+
+  [data-scope='image-viewer']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger'])[data-xh-action-size='sm'] {
+    --xh-_image-viewer-nav-size: var(--xh-control-h-sm);
+  }
+
+  [data-scope='image-viewer']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger'])[data-xh-action-size='lg'] {
+    --xh-_image-viewer-nav-size: var(--xh-control-h-lg);
+    --xh-_image-viewer-nav-glyph: var(--xh-glyph-size-md);
+  }
+
+  /* 两颗翻页钮：浮在图上的单图标圆钮，接 Action Control floating 档（正方盒取 circle），视觉盒改走上面的尺。
      面桥接到自家深色 chrome：跟的是图上那层半透明深底不是页面底色，所以不取 frosted 缺省面，
      也不取语义档的 --xh-bg-subtle-*；到头时是原生 disabled，压不动的东西不给回应 */
   [data-scope='image-viewer'][data-part='prev-trigger'],
@@ -258,26 +297,28 @@
     --xh-action-border-focus-visible: transparent;
     --xh-action-border-disabled: transparent;
     --xh-action-radius: var(--xh-image-viewer-overlay-radius, var(--xh-_action-profile-radius));
-    --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-_action-profile-glyph-size));
+    --xh-action-visual-size: var(--xh-image-viewer-nav-size, var(--xh-_image-viewer-nav-size));
+    --xh-action-min-inline-size: var(--xh-image-viewer-nav-size, var(--xh-_image-viewer-nav-size));
+    --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-_image-viewer-nav-glyph));
 
     position: absolute;
     z-index: 1;
   }
 
   [data-scope='image-viewer'][data-part='prev-trigger'] {
-    inset-inline-start: max(var(--xh-space-6), env(safe-area-inset-left), env(safe-area-inset-right));
+    inset-inline-start: max(var(--xh-space-5), env(safe-area-inset-left), env(safe-area-inset-right));
     inset-block-start: 50%;
     translate: 0 -50%;
   }
 
   [data-scope='image-viewer'][data-part='next-trigger'] {
-    inset-inline-end: max(var(--xh-space-6), env(safe-area-inset-left), env(safe-area-inset-right));
+    inset-inline-end: max(var(--xh-space-5), env(safe-area-inset-left), env(safe-area-inset-right));
     inset-block-start: 50%;
     translate: 0 -50%;
   }
 
-  /* 右上角的关闭钮：悬浮在媒体上的单图标动作，与翻页钮同走 Action Control floating 档（sm = 40px、圆形）；
-     面与翻页钮同一层深色 chrome */
+  /* 右上角的关闭钮：悬浮在媒体上的单图标动作，与翻页钮同走 Action Control floating 档、同一把尺（圆形）；
+     面与翻页钮同一层深色 chrome，离右上角比翻页钮离边远一档，不与画面边角的内容挤在一起 */
   [data-scope='image-viewer'][data-part='close-trigger'] {
     --xh-action-bg-rest: var(--xh-_image-viewer-chrome-bg);
     --xh-action-bg-hover: var(--xh-image-viewer-close-bg-hover, var(--xh-_image-viewer-chrome-bg-hover));
@@ -296,13 +337,14 @@
     --xh-action-border-focus-visible: transparent;
     --xh-action-border-disabled: transparent;
     --xh-action-radius: var(--xh-image-viewer-close-radius, var(--xh-shape-circle));
-    --xh-action-visual-size: var(--xh-image-viewer-close-size, var(--xh-_action-profile-visual-size));
-    --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-_action-profile-glyph-size));
+    --xh-action-visual-size: var(--xh-image-viewer-close-size, var(--xh-_image-viewer-nav-size));
+    --xh-action-min-inline-size: var(--xh-image-viewer-close-size, var(--xh-_image-viewer-nav-size));
+    --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-_image-viewer-nav-glyph));
 
     position: absolute;
     z-index: 1;
-    inset-block-start: max(var(--xh-space-6), env(safe-area-inset-top));
-    inset-inline-end: max(var(--xh-space-6), env(safe-area-inset-left), env(safe-area-inset-right));
+    inset-block-start: max(var(--xh-space-8), env(safe-area-inset-top));
+    inset-inline-end: max(var(--xh-space-8), env(safe-area-inset-left), env(safe-area-inset-right));
   }
 
   /* liquid 档：data-material="liquid" 下控制层换成液态面，深色纱那一套只属于 standard 档。
@@ -324,7 +366,11 @@
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
+  /* 液态工具条自己就是墨色域（按下层写 data-xh-ink）：钮不再按页面面色另取墨色，
+     撤掉 ink-surface，钮里的墨色随这块液态面的域走 */
   :where([data-material='liquid']) [data-scope='image-viewer'][data-part='toolbar'][data-xh-liquid] {
+    --xh-ink-surface: initial;
+
     border-radius: var(--xh-image-viewer-toolbar-radius-outer, var(--xh-image-viewer-overlay-radius, var(--xh-shape-pill)));
   }
 
@@ -336,6 +382,10 @@
   :where([data-material='liquid']) [data-scope='image-viewer'][data-part='toolbar'][data-xh-liquid] > [data-part] {
     --xh-action-bg-hover: var(--xh-image-viewer-action-bg-hover, var(--xh-bg-subtle));
     --xh-action-bg-pressed: var(--xh-image-viewer-action-bg-active, var(--xh-bg-subtle-hover));
+    --xh-action-fg-rest: currentColor;
+    --xh-action-fg-hover: currentColor;
+    --xh-action-fg-pressed: currentColor;
+    --xh-action-fg-focus-visible: currentColor;
   }
 
   :where([data-material='liquid']) [data-scope='image-viewer'][data-part='prev-trigger'][data-xh-liquid],

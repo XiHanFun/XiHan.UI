@@ -384,33 +384,34 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `--xh-file-upload-delete-fg-hover` | `item-delete-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-danger-hover` | file-upload 的 item-delete-trigger 部件 color 覆盖槽。 |
 | `--xh-file-upload-delete-radius` | `item-delete-trigger` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 item-delete-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-file-upload-delete-size` | `item-delete-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | file-upload 的 item-delete-trigger 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-file-upload-dropzone-bg` | `dropzone` | `background` | `default` | `transparent` | file-upload 的 dropzone 部件 background 覆盖槽。 |
+| `--xh-file-upload-dropzone-bg` | `dropzone` | `background` | `default` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
 | `--xh-file-upload-dropzone-bg-disabled` | `dropzone` | `background` | `disabled` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
-| `--xh-file-upload-dropzone-bg-dragging` | `dropzone` | `background` | `dragging` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
-| `--xh-file-upload-dropzone-bg-hover` | `dropzone` | `background` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
+| `--xh-file-upload-dropzone-bg-dragging` | `dropzone` | `background` | `dragging` | `--xh-bg-subtle-hover` | file-upload 的 dropzone 部件 background 覆盖槽。 |
+| `--xh-file-upload-dropzone-bg-hover` | `dropzone` | `background` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-bg-subtle-hover` | file-upload 的 dropzone 部件 background 覆盖槽。 |
 | `--xh-file-upload-dropzone-border` | `dropzone` | `border` | `default` | `--xh-border-control` | file-upload 的 dropzone 部件 border 覆盖槽。 |
 | `--xh-file-upload-dropzone-border-dragging` | `dropzone` | `border-color` | `dragging` | `--xh-bg-brand` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
 | `--xh-file-upload-dropzone-border-focus` | `dropzone` | `border-color` | `disabled`<br>`dragging`<br>`focus-visible`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-_tone` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
-| `--xh-file-upload-dropzone-border-hover` | `dropzone` | `border-color` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-border-control-hover` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
+| `--xh-file-upload-dropzone-border-hover` | `dropzone` | `border-color` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-border-strong` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
 | `--xh-file-upload-dropzone-border-invalid` | `dropzone` | `border-color` | `invalid` | `--xh-border-invalid` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
-| `--xh-file-upload-dropzone-fg` | `dropzone` | `color` | `default` | `--xh-fg-muted` | file-upload 的 dropzone 部件 color 覆盖槽。 |
+| `--xh-file-upload-dropzone-fg` | `dropzone` | `color` | `default` | `--xh-fg-default` | file-upload 的 dropzone 部件 color 覆盖槽。 |
 | `--xh-file-upload-dropzone-font-size` | `dropzone` | `font-size` | `default` | `--xh-text-body-size` | file-upload 的 dropzone 部件 font-size 覆盖槽。 |
 | `--xh-file-upload-dropzone-gap` | `dropzone` | `gap` | `default` | `--xh-space-2` | file-upload 的 dropzone 部件 gap 覆盖槽。 |
-| `--xh-file-upload-dropzone-min-h` | `dropzone` | `min-block-size` | `default` | `8rem` | file-upload 的 dropzone 部件 min-block-size 覆盖槽。 |
+| `--xh-file-upload-dropzone-min-h` | `dropzone` | `min-block-size` | `default` | `--xh-dropzone-min-h` | file-upload 的 dropzone 部件 min-block-size 覆盖槽。 |
 | `--xh-file-upload-dropzone-px` | `dropzone` | `padding-inline` | `default` | `--xh-space-4` | file-upload 的 dropzone 部件 padding-inline 覆盖槽。 |
 | `--xh-file-upload-dropzone-py` | `dropzone` | `padding-block` | `default` | `--xh-space-5` | file-upload 的 dropzone 部件 padding-block 覆盖槽。 |
-| `--xh-file-upload-dropzone-radius` | `dropzone` | `border-radius` | `default` | `--xh-shape-surface` | file-upload 的 dropzone 部件 border-radius 覆盖槽。 |
+| `--xh-file-upload-dropzone-radius` | `dropzone` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 dropzone 部件 border-radius 覆盖槽。 |
 | `--xh-file-upload-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-3` | file-upload 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-file-upload-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | file-upload 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-file-upload-item-bg` | `item` | `background` | `default` | `--xh-bg-surface` | file-upload 的 item 部件 background 覆盖槽。 |
-| `--xh-file-upload-item-border` | `item` | `border` | `default` | `--xh-border-default` | file-upload 的 item 部件 border 覆盖槽。 |
-| `--xh-file-upload-item-border-error` | `item` | `border-color` | `has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=error` | `--xh-border-invalid` | file-upload 的 item 部件 border-color 覆盖槽。 |
+| `--xh-file-upload-item-bg` | `item` | `background` | `default` | `--xh-bg-subtle` | file-upload 的 item 部件 background 覆盖槽。 |
+| `--xh-file-upload-item-bg-error` | `item` | `background` | `has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=error` | `--xh-bg-surface` | file-upload 的 item 部件 background 覆盖槽。 |
+| `--xh-file-upload-item-border` | `item` | `border` | `default` | `transparent` | file-upload 的 item 部件 border 覆盖槽。 |
+| `--xh-file-upload-item-border-error` | `item` | `border-color` | `has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=error` | `transparent` | file-upload 的 item 部件 border-color 覆盖槽。 |
 | `--xh-file-upload-item-fg` | `item` | `color` | `default` | `--xh-fg-default` | file-upload 的 item 部件 color 覆盖槽。 |
 | `--xh-file-upload-item-fg-done` | `item` | `background-color` | `has(> [data-part='item-progress'][data-state='done'])`<br>`state=closed`<br>`state=done` | `--xh-fg-success` | file-upload 的 item 部件 background-color 覆盖槽。 |
-| `--xh-file-upload-item-fg-error` | `item` | `color` | `has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=error` | `--xh-fg-danger` | file-upload 的 item 部件 color 覆盖槽。 |
+| `--xh-file-upload-item-fg-error` | `item`<br>`item-name` | `background-color`<br>`color` | `has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=error` | `--xh-fg-danger` | file-upload 的 item、item-name 部件 background-color、color 覆盖槽。 |
 | `--xh-file-upload-item-font-size` | `item` | `font-size` | `default` | `--xh-text-body-size` | file-upload 的 item 部件 font-size 覆盖槽。 |
-| `--xh-file-upload-item-gap` | `list` | `gap` | `default` | `--xh-space-2` | file-upload 的 list 部件 gap 覆盖槽。 |
-| `--xh-file-upload-item-inner-gap` | `item` | `gap` | `default` | `--xh-control-gap-md` | file-upload 的 item 部件 gap 覆盖槽。 |
+| `--xh-file-upload-item-gap` | `list` | `gap` | `default` | `--xh-space-3` | file-upload 的 list 部件 gap 覆盖槽。 |
+| `--xh-file-upload-item-inner-gap` | `item` | `gap` | `default` | `--xh-space-3` | file-upload 的 item 部件 gap 覆盖槽。 |
 | `--xh-file-upload-item-mark-size` | `item` | `block-size`<br>`inline-size` | `has(> [data-part='item-progress'][data-state='done'])`<br>`has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=done`<br>`state=error` | `--xh-control-indicator-size` | file-upload 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-file-upload-item-name-min-w` | `item-name` | `min-inline-size` | `default` | `--xh-control-min-w` | file-upload 的 item-name 部件 min-inline-size 覆盖槽。 |
 | `--xh-file-upload-item-progress-fill` | `item-progress` | `background` | `default` | `--xh-bg-brand` | file-upload 的 item-progress 部件 background 覆盖槽。 |
@@ -427,11 +428,11 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `--xh-file-upload-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | file-upload 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-file-upload-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | file-upload 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-file-upload-list-max-h` | `list` | `max-block-size` | `default` | `--xh-viewport-h-md` | file-upload 的 list 部件 max-block-size 覆盖槽。 |
-| `--xh-file-upload-preview-bg` | `item-preview` | `background` | `default` | `--xh-bg-subtle` | file-upload 的 item-preview 部件 background 覆盖槽。 |
-| `--xh-file-upload-preview-fg` | `item-preview` | `color` | `default` | `--xh-fg-muted` | file-upload 的 item-preview 部件 color 覆盖槽。 |
+| `--xh-file-upload-preview-bg` | `item-preview` | `background` | `default` | `transparent` | file-upload 的 item-preview 部件 background 覆盖槽。 |
+| `--xh-file-upload-preview-fg` | `item-preview` | `color` | `default` | `--xh-fg-brand` | file-upload 的 item-preview 部件 color 覆盖槽。 |
 | `--xh-file-upload-preview-fg-image` | `item-preview` | `color` | `file-type=image/` | `--xh-fg-brand` | file-upload 的 item-preview 部件 color 覆盖槽。 |
 | `--xh-file-upload-preview-radius` | `item-preview` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 item-preview 部件 border-radius 覆盖槽。 |
-| `--xh-file-upload-preview-size` | `item-preview` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-md` | file-upload 的 item-preview 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-file-upload-preview-size` | `item-preview` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-sm` | file-upload 的 item-preview 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-file-upload-size-fg` | `item-size-text` | `color` | `default` | `--xh-fg-subtle` | file-upload 的 item-size-text 部件 color 覆盖槽。 |
 | `--xh-file-upload-size-font-size` | `item-size-text` | `font-size` | `default` | `--xh-text-caption-size` | file-upload 的 item-size-text 部件 font-size 覆盖槽。 |
 | `--xh-file-upload-trigger-bg` | `trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | file-upload 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |

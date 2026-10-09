@@ -27,6 +27,7 @@
     "cascader [data-part='input'][data-scope='cascader']": "面板内嵌的搜索框不画环：插入符就是焦点指示；框没有字段外壳，全局那圈环只会压在通栏一行上",
     "color-field [data-part='control'][data-scope='color-field'] [data-part='input'][data-scope='color-field']": "焦点由 control 的 :focus-within 换成聚焦描边标在外框上",
     "color-field [data-part='control'][data-scope='color-field'] [data-xh-action-profile='field-inset']": "焦点由 control 的 :focus-within 换成聚焦描边标在外框上",
+    "color-picker [data-part='channel-input'][data-scope='color-picker']": "通道输入照字段外壳：聚焦换承载面底与 --xh-border-control-focus 描边、不画环，焦点由描边换色与底色差标出；强制色档在皮肤里补一圈 Highlight 环",
     "color-picker [data-part='content'][data-scope='color-picker']": "浮层只是容器，tabindex=-1 是焦点域的兜底落点，环长在里面的控件上",
     "color-picker [data-part='control'][data-scope='color-picker'] [data-part='input'][data-scope='color-picker']": "家族随皮肤引入的规则：color-picker 的内容区是 trigger 按钮、不投影 data-xh-field-input，这条命不中；焦点由 control 的 :focus-within 换成聚焦描边标在外框上",
     "color-picker [data-part='control'][data-scope='color-picker'] [data-xh-action-profile='field-inset']": "家族随皮肤引入的规则：color-picker 的盒里没有字段内嵌钮（吸管钮长在浮层里），这条命不中；焦点由 control 的 :focus-within 换成聚焦描边标在外框上",

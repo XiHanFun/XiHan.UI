@@ -246,7 +246,7 @@ describe('安全区', () => {
     expect(toastBottomEnd.bottom).toBe('59px')
     expect(toastBottomEnd.right).toBe('17px')
 
-    // 贴边 --xh-space-8 = 32px，底部那一段 59px 更宽
+    // 贴边 --xh-space-6 = 24px，底部那一段 59px 更宽
     expect(styleOf('[data-scope="back-top"][data-part="root"]').bottom).toBe('59px')
     // 顶部进度条整条让到状态栏下面
     expect(styleOf('[data-scope="loading-bar"][data-part="root"]').top).toBe('47px')
@@ -322,9 +322,9 @@ describe('安全区', () => {
       <div data-scope="loading-bar" class="xh-scope-loading-bar" data-part="root"></div>
     `)
     const backTop = styleOf('[data-scope="back-top"][data-part="root"]')
-    // --xh-space-8 = 32px；声明若因 env() 不认而整条失效，这里会读到 auto
-    expect(backTop.bottom).toBe('32px')
-    expect(backTop.right).toBe('32px')
+    // --xh-space-6 = 24px；声明若因 env() 不认而整条失效，这里会读到 auto
+    expect(backTop.bottom).toBe('24px')
+    expect(backTop.right).toBe('24px')
     expect(styleOf('[data-scope="loading-bar"][data-part="root"]').top).toBe('0px')
   })
 })

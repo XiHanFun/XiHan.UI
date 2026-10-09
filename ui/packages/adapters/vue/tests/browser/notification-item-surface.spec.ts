@@ -154,7 +154,7 @@ describe('通知卡片的表面与两颗钮', () => {
 })
 
 describe('通知卡片的加载指示', () => {
-  it('加载中画的是与 Spinner 环档同一副加载环：轨道中性、起始边语气色，转起来，语气字形让位', async () => {
+  it('加载中画的是与 Spinner 环档同一副加载环：270° 的语气色弧、起始边留缺口，转起来，语气字形让位', async () => {
     notify = createNotificationService()
     notify.create({ title: '正在上传', loading: true, tone: 'info', duration: 0 })
     await tick()
@@ -163,8 +163,8 @@ describe('通知卡片的加载指示', () => {
     expect(ring.maskImage).toBe('none')
     expect(ring.borderTopStyle).toBe('solid')
     expect(ring.borderTopLeftRadius).toBe('50%')
-    expect(ring.borderRightColor).toBe(tokenColor('--xh-border-default'))
-    expect(ring.borderTopColor).toBe(getComputedStyle(indicator).color)
+    expect(ring.borderRightColor).toBe(getComputedStyle(indicator).color)
+    expect(ring.borderTopColor).toBe('rgba(0, 0, 0, 0)')
     expect(ring.animationName).toBe('xh-spin')
     expect(ring.animationPlayState).toBe('running')
     expect(ring.opacity).toBe('1')
