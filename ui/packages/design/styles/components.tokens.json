@@ -83496,7 +83496,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "tour 的 progress-indicator 部件 gap 覆盖槽。"
