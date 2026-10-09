@@ -11,12 +11,12 @@ afterEach(async () => {
   host = null
 })
 
-function mount(orientation: 'horizontal' | 'vertical' = 'horizontal', autoplay = false) {
+function mount(orientation: 'horizontal' | 'vertical' = 'horizontal', autoplay = false, size: 'sm' | 'md' | 'lg' = 'md') {
   host = document.createElement('div')
   host.style.inlineSize = orientation === 'horizontal' ? '560px' : '360px'
   host.innerHTML = `
     <div data-scope="carousel" class="xh-scope-carousel" data-part="root" data-orientation="${orientation}"${autoplay ? ' data-autoplay style="--xh-_carousel-autoplay-duration:2500ms"' : ''}>
-      <button data-scope="carousel" class="xh-scope-carousel" data-part="prev-trigger" data-orientation="${orientation}" data-xh-action-control data-xh-action-profile="floating" data-xh-action-display="always" data-xh-action-size="md"></button>
+      <button data-scope="carousel" class="xh-scope-carousel" data-part="prev-trigger" data-orientation="${orientation}" data-xh-action-control data-xh-action-profile="floating" data-xh-action-display="always" data-xh-action-size="${size}"></button>
       <div data-scope="carousel" class="xh-scope-carousel" data-part="viewport" data-orientation="${orientation}" style="block-size:176px">
         <div data-scope="carousel" class="xh-scope-carousel" data-part="list" data-orientation="${orientation}">
           <div data-scope="carousel" class="xh-scope-carousel" data-part="item" data-orientation="${orientation}" style="flex-basis:100%">
@@ -24,8 +24,8 @@ function mount(orientation: 'horizontal' | 'vertical' = 'horizontal', autoplay =
           </div>
         </div>
       </div>
-      <button data-scope="carousel" class="xh-scope-carousel" data-part="next-trigger" data-orientation="${orientation}" data-xh-action-control data-xh-action-profile="floating" data-xh-action-display="always" data-xh-action-size="md"></button>
-      <button data-scope="carousel" class="xh-scope-carousel" data-part="autoplay-trigger" data-state="running" data-xh-action-control data-xh-action-profile="floating" data-xh-action-display="always" data-xh-action-size="md"></button>
+      <button data-scope="carousel" class="xh-scope-carousel" data-part="next-trigger" data-orientation="${orientation}" data-xh-action-control data-xh-action-profile="floating" data-xh-action-display="always" data-xh-action-size="${size}"></button>
+      <button data-scope="carousel" class="xh-scope-carousel" data-part="autoplay-trigger" data-state="running" data-xh-action-control data-xh-action-profile="floating" data-xh-action-display="always" data-xh-action-size="${size}"></button>
       <div data-scope="carousel" class="xh-scope-carousel" data-part="indicator-group" data-orientation="${orientation}">
         <button data-scope="carousel" class="xh-scope-carousel" data-part="indicator" data-current></button>
         <button data-scope="carousel" class="xh-scope-carousel" data-part="indicator"></button>
@@ -66,6 +66,19 @@ describe('carousel 默认视觉', () => {
     expect([prev.width, prev.height, next.width, next.height]).toEqual([24, 24, 24, 24])
     expect(getComputedStyle(carousel.prev).borderRadius).toBe('50%')
     expect(getComputedStyle(carousel.prev, '::before').width).toBe('16px')
+  })
+
+  it.each([
+    ['sm', 24, 12],
+    ['md', 24, 16],
+    ['lg', 28, 20],
+  ] as const)('%s 档：翻页与播放钮 %ipx 圆钮、字形 %ipx（sm 不低于 24px 的最小目标，只收字形）', (size, box, glyph) => {
+    const carousel = mount('horizontal', false, size)
+    for (const trigger of [carousel.prev, carousel.next, carousel.autoplay]) {
+      const rect = trigger.getBoundingClientRect()
+      expect([rect.width, rect.height]).toEqual([box, box])
+      expect(getComputedStyle(trigger, '::before').width).toBe(`${glyph}px`)
+    }
   })
 
   it('翻页与播放钮是 24px 圆钮：矮到 96px 的视口里右侧居中的翻页钮与右下角的播放钮仍不相叠', () => {
