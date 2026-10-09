@@ -1,6 +1,7 @@
 // 范围日历格与翻页钮的皮肤（与 calendar-picker 同构，另加区间轨道与中段的品牌淡底阶梯）：
 // 日期格是 24 见方的圆，今天是数字下方一颗 4px 品牌圆点；格子坐在白底上，悬停 100 档、按下 200 档只换面；
 // 区间端点实心品牌，按下压到 active 档；区间轨道 32 高（行距 36 上下各收 2），两端收成半圆帽、跨周折行处是直边；
+// 格子随容器铺宽时帽仍与端点的实心圆同心；
 // 强制色下落定的区间中段在轨道上下沿画实线；快速选年的网格是页内结构容器，滚动链保持 auto。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -44,9 +45,9 @@ function otherRange(): [string, string] {
   return inside ? [iso(16), iso(20)] : [iso(10), iso(14)]
 }
 
-async function mountCalendar(): Promise<void> {
+async function mountCalendar(width = 320): Promise<void> {
   host = document.createElement('div')
-  host.style.inlineSize = '320px'
+  host.style.inlineSize = `${width}px`
   document.body.append(host)
   // 断言的是稳定态的颜色与几何，不是过渡中间帧
   host.style.setProperty('--xh-motion-duration-micro', '0ms')
@@ -130,7 +131,7 @@ describe('calendarRangePicker 格子与翻页钮的皮肤', () => {
     expect(getComputedStyle(start).borderTopLeftRadius).toBe('50%')
   })
 
-  it('区间轨道 32 高、横向铺满格子；两端收成半圆帽，跨周折行处是直边', async () => {
+  it('区间轨道 32 高、行尾一侧铺满格子；两端收成半圆帽，跨周折行处是直边', async () => {
     await mountCalendar()
     const root = part('root')
     const startCell = part('cell', '[data-range-start]')
@@ -138,7 +139,7 @@ describe('calendarRangePicker 格子与翻页钮的皮肤', () => {
     expect(track.backgroundColor).toBe(resolveColor('--xh-bg-brand-subtle', root))
     expect(track.top).toBe('2px')
     expect(track.bottom).toBe('2px')
-    expect(track.left).toBe('0px')
+    // 起点格只在行尾一侧铺到格边，与下一格的轨道接上；行首一侧由帽的位置定（下一条）
     expect(track.right).toBe('0px')
     const cellHeight = startCell.getBoundingClientRect().height
     expect(cellHeight - 4).toBe(resolveLength('--xh-control-action-size', root) + 8)
@@ -158,6 +159,27 @@ describe('calendarRangePicker 格子与翻页钮的皮肤', () => {
     const middles = [...host!.querySelectorAll<HTMLElement>(`[data-scope='calendar-range-picker'][data-part='cell'][data-in-range]:not([data-range-start]):not([data-range-end])`)]
     for (const cell of middles)
       expect(getComputedStyle(cell, '::before').borderStartStartRadius).toBe('0px')
+  })
+
+  it.each([320, 480])('宿主 %ipx：格子随容器铺宽时，两端的帽与端点的实心圆同心', async (width) => {
+    await mountCalendar(width)
+    for (const edge of ['start', 'end'] as const) {
+      const cell = part('cell', `[data-range-${edge}]`)
+      const dot = part('cell-trigger', `[data-range-${edge}]`).getBoundingClientRect()
+      const rect = cell.getBoundingClientRect()
+      const track = getComputedStyle(cell, '::before')
+      const top = Number.parseFloat(track.top)
+      const radius = (rect.height - top - Number.parseFloat(track.bottom)) / 2
+      // 格子比钮宽得多，从格边起算的帽会偏到圆的外侧
+      expect(rect.width).toBeGreaterThan(2 * radius)
+      // 帽是半高为半径的半圆：圆心在轨道这一端往里一个半径处
+      const capX = edge === 'start'
+        ? rect.left + Number.parseFloat(track.left) + radius
+        : rect.right - Number.parseFloat(track.right) - radius
+      const observed = `${edge} cell ${JSON.stringify(rect)} track ${track.left}/${track.right}/${track.top}/${track.bottom} dot ${JSON.stringify(dot)}`
+      expect(Math.abs(capX - (dot.left + dot.width / 2)), observed).toBeLessThanOrEqual(0.5)
+      expect(Math.abs(rect.top + top + radius - (dot.top + dot.height / 2)), observed).toBeLessThanOrEqual(0.5)
+    }
   })
 
   it('格子悬停 100 档、按下 200 档只换面；今天走同一条阶梯；端点按下压到 active 档；区间中段走品牌淡底阶梯', async () => {
