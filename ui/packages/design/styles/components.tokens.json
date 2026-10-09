@@ -16087,7 +16087,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-visual-size"
+        "--xh-control-action-size"
       ],
       "visibility": "public",
       "description": "color-picker 的 confirm-trigger 部件 block-size 覆盖槽。"
@@ -16229,37 +16229,52 @@
       "name": "--xh-color-picker-content-px",
       "component": "color-picker",
       "part": [
-        "content"
+        "content",
+        "recent-swatch-picker",
+        "saturation-area",
+        "swatch-picker"
       ],
       "property": [
+        "margin-inline",
         "padding-inline"
       ],
       "state": [
-        "default"
+        "default",
+        "first-child",
+        "is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])",
+        "not(:is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])"
       ],
       "defaultToken": [
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "color-picker 的 content 部件 padding-inline 覆盖槽。"
+      "description": "color-picker 的 content、recent-swatch-picker、saturation-area、swatch-picker 部件 margin-inline、padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-content-py",
       "component": "color-picker",
       "part": [
-        "content"
+        "content",
+        "recent-swatch-picker",
+        "saturation-area",
+        "swatch-picker"
       ],
       "property": [
-        "padding-block"
+        "margin-block-start",
+        "padding-block",
+        "padding-block-start"
       ],
       "state": [
-        "default"
+        "default",
+        "first-child",
+        "is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])",
+        "not(:is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])"
       ],
       "defaultToken": [
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "color-picker 的 content 部件 padding-block 覆盖槽。"
+      "description": "color-picker 的 content、recent-swatch-picker、saturation-area、swatch-picker 部件 margin-block-start、padding-block、padding-block-start 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-content-radius",
@@ -16314,7 +16329,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-min-w"
+        "--xh-overlay-max-w-sm"
       ],
       "visibility": "public",
       "description": "color-picker 的 content 部件 inline-size 覆盖槽。"
@@ -16690,7 +16705,7 @@
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-bg-field"
       ],
       "visibility": "public",
       "description": "color-picker 的 channel-input 部件 background 覆盖槽。"
@@ -16709,6 +16724,24 @@
       ],
       "defaultToken": [
         "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 channel-input 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-input-bg-focus",
+      "component": "color-picker",
+      "part": [
+        "channel-input"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "focus"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
       ],
       "visibility": "public",
       "description": "color-picker 的 channel-input 部件 background 覆盖槽。"
@@ -16759,10 +16792,31 @@
         "border-color"
       ],
       "state": [
-        "focus-visible"
+        "focus"
       ],
       "defaultToken": [
         "--xh-border-control-focus"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 channel-input 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-input-border-hover",
+      "component": "color-picker",
+      "part": [
+        "channel-input"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "hover",
+        "invalid",
+        "not(:disabled, :focus, [data-readonly], [data-invalid])",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-border-strong"
       ],
       "visibility": "public",
       "description": "color-picker 的 channel-input 部件 border-color 覆盖槽。"
@@ -16798,7 +16852,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "color-picker 的 channel-input 部件 font-size 覆盖槽。"
@@ -16816,7 +16870,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-control-action-size"
       ],
       "visibility": "public",
       "description": "color-picker 的 channel-input 部件 block-size 覆盖槽。"
@@ -16942,7 +16996,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-viewport-h-md"
+        "--xh-viewport-h-lg"
       ],
       "visibility": "public",
       "description": "color-picker 的 content 部件 max-block-size 覆盖槽。"
@@ -16960,7 +17014,7 @@
         "default"
       ],
       "defaultToken": [
-        "9rem"
+        "--xh-overlay-color-area-h"
       ],
       "visibility": "public",
       "description": "color-picker 的 saturation-area 部件 block-size 覆盖槽。"
@@ -16969,19 +17023,63 @@
       "name": "--xh-color-picker-saturation-area-radius",
       "component": "color-picker",
       "part": [
+        "content",
         "saturation-area"
       ],
       "property": [
         "border-radius"
       ],
       "state": [
-        "default"
+        "default",
+        "first-child"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-control",
+        "0"
       ],
       "visibility": "public",
-      "description": "color-picker 的 saturation-area 部件 border-radius 覆盖槽。"
+      "description": "color-picker 的 content、saturation-area 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-separator",
+      "component": "color-picker",
+      "part": [
+        "content",
+        "recent-swatch-picker",
+        "swatch-picker"
+      ],
+      "property": [
+        "border-block-start"
+      ],
+      "state": [
+        "is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])",
+        "not(:is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])"
+      ],
+      "defaultToken": [
+        "--xh-material-solid-border"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 content、recent-swatch-picker、swatch-picker 部件 border-block-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-slider-thumb-bg",
+      "component": "color-picker",
+      "part": [
+        "alpha-slider",
+        "hue-slider",
+        "thumb"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "is([data-part='hue-slider'], [data-part='alpha-slider'])"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface-raised"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 alpha-slider、hue-slider、thumb 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-slider-thumb-size",
@@ -16997,7 +17095,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-track-thumb-size"
+        "--xh-control-indicator-md"
       ],
       "visibility": "public",
       "description": "color-picker 的 alpha-slider、hue-slider 部件 --xh-_thumb-size 覆盖槽。"
@@ -17050,10 +17148,12 @@
         "--xh-_color-swatch-picker-cell"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-control-h-sm",
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
       "description": "color-picker 的 recent-swatch-picker、swatch-picker 部件 --xh-_color-swatch-picker-cell 覆盖槽。"
@@ -17072,7 +17172,7 @@
         "is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])"
       ],
       "defaultToken": [
-        "--xh-control-gap-sm"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "color-picker 的 recent-swatch-picker、swatch-picker 部件 gap 覆盖槽。"
@@ -17296,7 +17396,7 @@
         "default"
       ],
       "defaultToken": [
-        "14px"
+        "--xh-control-indicator-md"
       ],
       "visibility": "public",
       "description": "color-picker 的 area-thumb 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。"
@@ -17404,7 +17504,7 @@
         "channel=alpha"
       ],
       "defaultToken": [
-        "--xh-color-neutral-300"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "color-slider 的 track 部件 background-image 覆盖槽。"
@@ -17705,7 +17805,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "color-slider 的 track 部件 box-shadow 覆盖槽。"

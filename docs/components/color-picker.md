@@ -444,7 +444,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `--xh-color-picker-confirm-trigger-bg-active` | `confirm-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | color-picker 的 confirm-trigger 部件 background-color 覆盖槽。 |
 | `--xh-color-picker-confirm-trigger-bg-hover` | `confirm-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | color-picker 的 confirm-trigger 部件 background-color 覆盖槽。 |
 | `--xh-color-picker-confirm-trigger-fg` | `confirm-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | color-picker 的 confirm-trigger 部件 color 覆盖槽。 |
-| `--xh-color-picker-confirm-trigger-h` | `confirm-trigger` | `block-size` | `default` | `--xh-_action-profile-visual-size` | color-picker 的 confirm-trigger 部件 block-size 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-h` | `confirm-trigger` | `block-size` | `default` | `--xh-control-action-size` | color-picker 的 confirm-trigger 部件 block-size 覆盖槽。 |
 | `--xh-color-picker-confirm-trigger-px` | `confirm-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | color-picker 的 confirm-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-color-picker-confirm-trigger-radius` | `confirm-trigger` | `border-radius` | `default` | `--xh-shape-control` | color-picker 的 confirm-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-confirm-trigger-shadow` | `confirm-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | color-picker 的 confirm-trigger 部件 box-shadow 覆盖槽。 |
@@ -452,11 +452,11 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `--xh-color-picker-content-border` | `content` | `border` | `default` | `--xh-border-default` | color-picker 的 content 部件 border 覆盖槽。 |
 | `--xh-color-picker-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | color-picker 的 content 部件 color 覆盖槽。 |
 | `--xh-color-picker-content-gap` | `content` | `gap` | `default` | `--xh-space-3` | color-picker 的 content 部件 gap 覆盖槽。 |
-| `--xh-color-picker-content-px` | `content` | `padding-inline` | `default` | `--xh-space-3` | color-picker 的 content 部件 padding-inline 覆盖槽。 |
-| `--xh-color-picker-content-py` | `content` | `padding-block` | `default` | `--xh-space-3` | color-picker 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-color-picker-content-px` | `content`<br>`recent-swatch-picker`<br>`saturation-area`<br>`swatch-picker` | `margin-inline`<br>`padding-inline` | `default`<br>`first-child`<br>`is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])`<br>`not(:is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-space-3` | color-picker 的 content、recent-swatch-picker、saturation-area、swatch-picker 部件 margin-inline、padding-inline 覆盖槽。 |
+| `--xh-color-picker-content-py` | `content`<br>`recent-swatch-picker`<br>`saturation-area`<br>`swatch-picker` | `margin-block-start`<br>`padding-block`<br>`padding-block-start` | `default`<br>`first-child`<br>`is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])`<br>`not(:is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-space-3` | color-picker 的 content、recent-swatch-picker、saturation-area、swatch-picker 部件 margin-block-start、padding-block、padding-block-start 覆盖槽。 |
 | `--xh-color-picker-content-radius` | `content` | `border-radius` | `default`<br>`inline` | `--xh-shape-overlay`<br>`--xh-shape-surface` | color-picker 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-content-shadow` | `content` | `box-shadow` | `default`<br>`inline` | `--xh-elevation-floating`<br>`none` | color-picker 的 content 部件 box-shadow 覆盖槽。 |
-| `--xh-color-picker-content-w` | `content` | `inline-size` | `default` | `--xh-overlay-min-w` | color-picker 的 content 部件 inline-size 覆盖槽。 |
+| `--xh-color-picker-content-w` | `content` | `inline-size` | `default` | `--xh-overlay-max-w-sm` | color-picker 的 content 部件 inline-size 覆盖槽。 |
 | `--xh-color-picker-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | color-picker 的 control 部件 background-color 覆盖槽。 |
 | `--xh-color-picker-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | color-picker 的 control 部件 background-color 覆盖槽。 |
 | `--xh-color-picker-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | color-picker 的 control 部件 background-color 覆盖槽。 |
@@ -475,28 +475,32 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `--xh-color-picker-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | color-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-color-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | color-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-color-picker-hue-slider-gap` | `hue-slider` | `gap` | `default` | `--xh-stack-gap-md` | color-picker 的 hue-slider 部件 gap 覆盖槽。 |
-| `--xh-color-picker-input-bg` | `channel-input` | `background` | `default` | `transparent` | color-picker 的 channel-input 部件 background 覆盖槽。 |
+| `--xh-color-picker-input-bg` | `channel-input` | `background` | `default` | `--xh-bg-field` | color-picker 的 channel-input 部件 background 覆盖槽。 |
 | `--xh-color-picker-input-bg-disabled` | `channel-input` | `background` | `disabled` | `--xh-bg-subtle` | color-picker 的 channel-input 部件 background 覆盖槽。 |
+| `--xh-color-picker-input-bg-focus` | `channel-input` | `background` | `focus` | `--xh-bg-surface` | color-picker 的 channel-input 部件 background 覆盖槽。 |
 | `--xh-color-picker-input-bg-readonly` | `channel-input` | `background` | `readonly` | `--xh-bg-subtle` | color-picker 的 channel-input 部件 background 覆盖槽。 |
 | `--xh-color-picker-input-border` | `channel-input` | `border` | `default` | `--xh-border-control` | color-picker 的 channel-input 部件 border 覆盖槽。 |
-| `--xh-color-picker-input-border-focus` | `channel-input` | `border-color` | `focus-visible` | `--xh-border-control-focus` | color-picker 的 channel-input 部件 border-color 覆盖槽。 |
+| `--xh-color-picker-input-border-focus` | `channel-input` | `border-color` | `focus` | `--xh-border-control-focus` | color-picker 的 channel-input 部件 border-color 覆盖槽。 |
+| `--xh-color-picker-input-border-hover` | `channel-input` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, :focus, [data-readonly], [data-invalid])`<br>`readonly` | `--xh-border-strong` | color-picker 的 channel-input 部件 border-color 覆盖槽。 |
 | `--xh-color-picker-input-border-invalid` | `channel-input` | `border-color` | `invalid` | `--xh-border-invalid` | color-picker 的 channel-input 部件 border-color 覆盖槽。 |
-| `--xh-color-picker-input-font-size` | `channel-input` | `font-size` | `default` | `--xh-text-secondary-size` | color-picker 的 channel-input 部件 font-size 覆盖槽。 |
-| `--xh-color-picker-input-h` | `channel-input` | `block-size` | `default` | `--xh-control-h-sm` | color-picker 的 channel-input 部件 block-size 覆盖槽。 |
+| `--xh-color-picker-input-font-size` | `channel-input` | `font-size` | `default` | `--xh-text-caption-size` | color-picker 的 channel-input 部件 font-size 覆盖槽。 |
+| `--xh-color-picker-input-h` | `channel-input` | `block-size` | `default` | `--xh-control-action-size` | color-picker 的 channel-input 部件 block-size 覆盖槽。 |
 | `--xh-color-picker-input-px` | `channel-input` | `padding-inline` | `default` | `--xh-control-px-sm` | color-picker 的 channel-input 部件 padding-inline 覆盖槽。 |
 | `--xh-color-picker-input-radius` | `channel-input` | `border-radius` | `default` | `--xh-shape-control` | color-picker 的 channel-input 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | color-picker 的 label 部件 color 覆盖槽。 |
 | `--xh-color-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | color-picker 的 label 部件 font-size 覆盖槽。 |
 | `--xh-color-picker-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | color-picker 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-color-picker-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | color-picker 的 positioner 部件 z-index 覆盖槽。 |
-| `--xh-color-picker-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-md` | color-picker 的 content 部件 max-block-size 覆盖槽。 |
-| `--xh-color-picker-saturation-area-h` | `saturation-area` | `block-size` | `default` | `9rem` | color-picker 的 saturation-area 部件 block-size 覆盖槽。 |
-| `--xh-color-picker-saturation-area-radius` | `saturation-area` | `border-radius` | `default` | `--xh-shape-control` | color-picker 的 saturation-area 部件 border-radius 覆盖槽。 |
-| `--xh-color-picker-slider-thumb-size` | `alpha-slider`<br>`hue-slider` | `--xh-_thumb-size` | `default` | `--xh-track-thumb-size` | color-picker 的 alpha-slider、hue-slider 部件 --xh-_thumb-size 覆盖槽。 |
+| `--xh-color-picker-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-lg` | color-picker 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-color-picker-saturation-area-h` | `saturation-area` | `block-size` | `default` | `--xh-overlay-color-area-h` | color-picker 的 saturation-area 部件 block-size 覆盖槽。 |
+| `--xh-color-picker-saturation-area-radius` | `content`<br>`saturation-area` | `border-radius` | `default`<br>`first-child` | `--xh-shape-control`<br>`0` | color-picker 的 content、saturation-area 部件 border-radius 覆盖槽。 |
+| `--xh-color-picker-separator` | `content`<br>`recent-swatch-picker`<br>`swatch-picker` | `border-block-start` | `is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])`<br>`not(:is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-material-solid-border` | color-picker 的 content、recent-swatch-picker、swatch-picker 部件 border-block-start 覆盖槽。 |
+| `--xh-color-picker-slider-thumb-bg` | `alpha-slider`<br>`hue-slider`<br>`thumb` | `background` | `is([data-part='hue-slider'], [data-part='alpha-slider'])` | `--xh-bg-surface-raised` | color-picker 的 alpha-slider、hue-slider、thumb 部件 background 覆盖槽。 |
+| `--xh-color-picker-slider-thumb-size` | `alpha-slider`<br>`hue-slider` | `--xh-_thumb-size` | `default` | `--xh-control-indicator-md` | color-picker 的 alpha-slider、hue-slider 部件 --xh-_thumb-size 覆盖槽。 |
 | `--xh-color-picker-slider-track-thickness` | `alpha-slider`<br>`hue-slider` | `--xh-_track-thickness` | `default` | `--xh-space-3` | color-picker 的 alpha-slider、hue-slider 部件 --xh-_track-thickness 覆盖槽。 |
 | `--xh-color-picker-swatch-border` | `swatch` | `--xh-swatch-border` | `default` | `--xh-border-default` | color-picker 的 swatch 部件 --xh-swatch-border 覆盖槽。 |
-| `--xh-color-picker-swatch-cell` | `recent-swatch-picker`<br>`swatch-picker` | `--xh-_color-swatch-picker-cell` | `is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-control-h-sm` | color-picker 的 recent-swatch-picker、swatch-picker 部件 --xh-_color-swatch-picker-cell 覆盖槽。 |
-| `--xh-color-picker-swatch-gap` | `recent-swatch-picker`<br>`swatch-picker` | `gap` | `is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-control-gap-sm` | color-picker 的 recent-swatch-picker、swatch-picker 部件 gap 覆盖槽。 |
+| `--xh-color-picker-swatch-cell` | `recent-swatch-picker`<br>`swatch-picker` | `--xh-_color-swatch-picker-cell` | `@media (pointer: coarse)`<br>`is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-control-h-sm`<br>`--xh-glyph-size-sm` | color-picker 的 recent-swatch-picker、swatch-picker 部件 --xh-_color-swatch-picker-cell 覆盖槽。 |
+| `--xh-color-picker-swatch-gap` | `recent-swatch-picker`<br>`swatch-picker` | `gap` | `is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-space-2` | color-picker 的 recent-swatch-picker、swatch-picker 部件 gap 覆盖槽。 |
 | `--xh-color-picker-swatch-icon-size` | `recent-swatch-picker`<br>`swatch-picker` | `--xh-icon-size` | `is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-_color-swatch-picker-mark` | color-picker 的 recent-swatch-picker、swatch-picker 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-color-picker-swatch-picker-gap` | `recent-swatch-picker`<br>`swatch-picker` | `gap` | `is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-_color-swatch-picker-gap` | color-picker 的 recent-swatch-picker、swatch-picker 部件 gap 覆盖槽。 |
 | `--xh-color-picker-swatch-radius` | `swatch` | `--xh-swatch-radius` | `default` | `--xh-shape-inset` | color-picker 的 swatch 部件 --xh-swatch-radius 覆盖槽。 |
@@ -508,7 +512,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `--xh-color-picker-thumb-radius` | `area-thumb` | `border-radius` | `default` | `--xh-shape-circle` | color-picker 的 area-thumb 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-thumb-scale-dragging` | `area-thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` | color-picker 的 area-thumb 部件 scale 覆盖槽。 |
 | `--xh-color-picker-thumb-shadow` | `area-thumb` | `box-shadow` | `default` | `--xh-elevation-raised` | color-picker 的 area-thumb 部件 box-shadow 覆盖槽。 |
-| `--xh-color-picker-thumb-size` | `area-thumb` | `block-size`<br>`inline-size`<br>`margin-block-start`<br>`margin-inline-start` | `default` | `14px` | color-picker 的 area-thumb 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。 |
+| `--xh-color-picker-thumb-size` | `area-thumb` | `block-size`<br>`inline-size`<br>`margin-block-start`<br>`margin-inline-start` | `default` | `--xh-control-indicator-md` | color-picker 的 area-thumb 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。 |
 | `--xh-color-picker-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | color-picker 的 trigger 部件 color 覆盖槽。 |
 | `--xh-color-picker-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-text-body-size` | color-picker 的 trigger 部件 font-size 覆盖槽。 |
 | `--xh-color-picker-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_color-picker-gap` | color-picker 的 trigger 部件 gap 覆盖槽。 |
@@ -529,6 +533,8 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### 响应式
+
+皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 - 浮层的宽度与高度分别受可用空间约束，窄视口下面板不会超出屏幕，容纳不下时在面板内滚动。
 - 粗指针下命中区是取色面、滑块整条与色板整格。

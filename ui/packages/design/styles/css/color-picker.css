@@ -221,16 +221,20 @@
   }
 
   [data-scope='color-picker'][data-part='content'] {
+    /* 内衬落进私有槽：贴顶通栏的取色区与色板区的通栏分隔按同一份内衬往外撑 */
+    --xh-_color-picker-content-py: var(--xh-color-picker-content-py, var(--xh-space-3));
+    --xh-_color-picker-content-px: var(--xh-color-picker-content-px, var(--xh-space-3));
+
     position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--xh-color-picker-content-gap, var(--xh-space-3));
-    inline-size: var(--xh-color-picker-content-w, var(--xh-overlay-min-w));
+    inline-size: var(--xh-color-picker-content-w, var(--xh-overlay-max-w-sm));
     /* 定宽的面板也要夹一道：窄视口下伸出去，右半边的取色区就点不到了 */
     max-inline-size: var(--xh-_color-picker-available-w);
-    padding-block: var(--xh-color-picker-content-py, var(--xh-space-3));
-    padding-inline: var(--xh-color-picker-content-px, var(--xh-space-3));
-    max-block-size: min(var(--xh-color-picker-max-h, var(--xh-viewport-h-md)), var(--xh-_color-picker-available-h));
+    padding-block: var(--xh-_color-picker-content-py);
+    padding-inline: var(--xh-_color-picker-content-px);
+    max-block-size: min(var(--xh-color-picker-max-h, var(--xh-viewport-h-lg)), var(--xh-_color-picker-available-h));
     overflow-y: auto;
     /* 浮层滚动面：滚到头不把页面一起带走 */
     overscroll-behavior: contain;
@@ -284,9 +288,18 @@
   [data-scope='color-picker'][data-part='saturation-area'] {
     position: relative;
     display: block;
-    block-size: var(--xh-color-picker-saturation-area-h, 9rem);
+    flex: none;
+    block-size: var(--xh-color-picker-saturation-area-h, var(--xh-overlay-color-area-h));
     border-radius: var(--xh-color-picker-saturation-area-radius, var(--xh-shape-control));
     cursor: crosshair;
+  }
+
+  /* 取色区排在面板最前时贴着面板顶边通栏：往外撑掉顶边与两侧的内衬、不取圆角，
+     四角由面板（滚动面）自己的圆角裁出；后面的内容照常留内衬 */
+  [data-scope='color-picker'][data-part='content'] > [data-part='saturation-area']:first-child:where([data-scope='color-picker']) {
+    margin-block-start: calc(-1 * var(--xh-_color-picker-content-py));
+    margin-inline: calc(-1 * var(--xh-_color-picker-content-px));
+    border-radius: var(--xh-color-picker-saturation-area-radius, 0);
   }
 
   /* white / black 是 HSV 色彩空间自带的两个端点，不是主题色，因此不走令牌 */
@@ -325,9 +338,9 @@
   [data-scope='color-picker'][data-part='area-thumb'] {
     position: absolute;
     box-sizing: border-box;
-    inline-size: var(--xh-color-picker-thumb-size, 14px);
-    block-size: var(--xh-color-picker-thumb-size, 14px);
-    margin-inline-start: calc(var(--xh-color-picker-thumb-size, 14px) / -2);
+    inline-size: var(--xh-color-picker-thumb-size, var(--xh-control-indicator-md));
+    block-size: var(--xh-color-picker-thumb-size, var(--xh-control-indicator-md));
+    margin-inline-start: calc(var(--xh-color-picker-thumb-size, var(--xh-control-indicator-md)) / -2);
     border: var(--xh-stroke-thick) solid var(--xh-color-picker-thumb-border, var(--xh-color-neutral-0));
     border-radius: var(--xh-color-picker-thumb-radius, var(--xh-shape-circle));
     background: transparent;
@@ -338,7 +351,7 @@
 
   /* 取色区的纵轴也由连接层给（inset-block-start），回拉同样按 block-start 那侧 */
   [data-scope='color-picker'][data-part='area-thumb'] {
-    margin-block-start: calc(var(--xh-color-picker-thumb-size, 14px) / -2);
+    margin-block-start: calc(var(--xh-color-picker-thumb-size, var(--xh-control-indicator-md)) / -2);
   }
 
   /* 只有手真正拖着时带 data-dragging：放大与光标不会几处一起变。
@@ -358,11 +371,21 @@
      滑块内部的皮仍归 color-slider 那一份。尺寸档跟着浮层上的 data-size 走，不必再各写一遍 */
   [data-scope='color-picker'][data-part='hue-slider'],
   [data-scope='color-picker'][data-part='alpha-slider'] {
-    --xh-_thumb-size: var(--xh-color-picker-slider-thumb-size, var(--xh-track-thumb-size));
+    --xh-_thumb-size: var(--xh-color-picker-slider-thumb-size, var(--xh-control-indicator-md));
     --xh-_track-thickness: var(--xh-color-picker-slider-track-thickness, var(--xh-space-3));
 
     display: flex;
     flex-direction: column;
+  }
+
+  /* 面板里两条滑块的拇指：一枚承载面色的白盘 + 1px 描边，正中一颗 8px 的当前色点。
+     颜色带本身就是一排颜色，拇指整颗填当前色会融进色带里，留白盘才分得出拇指在哪；
+     当前色点读滑块自己按拇指写的那支色 */
+  [data-scope='color-picker']:is([data-part='hue-slider'], [data-part='alpha-slider']) [data-scope='color-slider'][data-part='thumb'] {
+    border-width: var(--xh-stroke-thin);
+    background:
+      radial-gradient(circle, var(--xh-_color-slider-thumb-color) 0 var(--xh-space-1), transparent var(--xh-space-1)),
+      var(--xh-color-picker-slider-thumb-bg, var(--xh-bg-surface-raised));
   }
 
   /* 标题与轨道之间的间隙 */
@@ -380,26 +403,35 @@
     opacity: var(--xh-state-disabled-opacity);
   }
 
+  /* 通道输入照字段外壳：字段淡底 + 控件描边、24px 小号盒、说明档字号；悬停描边升一档，
+     聚焦换承载面底 + 品牌描边、不画环（焦点由描边换色与底色差标出，强制色档补一圈 Highlight 环） */
   [data-scope='color-picker'][data-part='channel-input'] {
     inline-size: 100%;
     min-inline-size: 0;
-    block-size: var(--xh-color-picker-input-h, var(--xh-control-h-sm));
+    block-size: var(--xh-color-picker-input-h, var(--xh-control-action-size));
     padding-inline: var(--xh-color-picker-input-px, var(--xh-control-px-sm));
     border: var(--xh-stroke-thin) solid var(--xh-color-picker-input-border, var(--xh-border-control));
     border-radius: var(--xh-color-picker-input-radius, var(--xh-shape-control));
-    background: var(--xh-color-picker-input-bg, transparent);
+    background: var(--xh-color-picker-input-bg, var(--xh-bg-field));
     color: inherit;
     /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
     font-family: inherit;
-    font-size: var(--xh-color-picker-input-font-size, var(--xh-text-secondary-size));
+    font-size: var(--xh-color-picker-input-font-size, var(--xh-text-caption-size));
     text-align: center;
   }
 
-  [data-scope='color-picker'][data-part='channel-input']:focus-visible {
+  [data-scope='color-picker'][data-part='channel-input']:hover:not(:disabled, :focus, [data-readonly], [data-invalid]) {
+    border-color: var(--xh-color-picker-input-border-hover, var(--xh-border-strong));
+  }
+
+  [data-scope='color-picker'][data-part='channel-input']:focus {
     /* 焦点边一律 --xh-border-control-focus，不随语气 */
     border-color: var(--xh-color-picker-input-border-focus, var(--xh-border-control-focus));
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
+    background: var(--xh-color-picker-input-bg-focus, var(--xh-bg-surface));
+  }
+
+  [data-scope='color-picker'][data-part='channel-input']:focus-visible {
+    outline: none;
   }
 
   /* 打到一半的串：框里留着草稿，但值没动——描边提示"这串还没被收下" */
@@ -475,7 +507,7 @@
   /* 「添加」是面板里唯一的主要动作：品牌实心、悬停 / 按下与 0.97 按压、焦点环全由 Action Control 的
      text solid 档给；槽名统一按部件取 --xh-color-picker-confirm-trigger-*，只映射到家族桥接槽 */
   [data-scope='color-picker'][data-part='confirm-trigger'] {
-    --xh-action-visual-size: var(--xh-color-picker-confirm-trigger-h, var(--xh-_action-profile-visual-size));
+    --xh-action-visual-size: var(--xh-color-picker-confirm-trigger-h, var(--xh-control-action-size));
     --xh-action-padding-inline: var(--xh-color-picker-confirm-trigger-px, var(--xh-_action-profile-padding-inline));
     --xh-action-radius: var(--xh-color-picker-confirm-trigger-radius, var(--xh-shape-control));
     --xh-action-bg-rest: var(--xh-color-picker-confirm-trigger-bg, var(--xh-_action-variant-bg-rest));
@@ -505,8 +537,8 @@
      浮层里的色板走小号格子：与滑块的拇指、数值框一个量级，整块面板才不会被色板撑开。
      最近使用色是同一台色块选择器，挂载点同一套 */
   [data-scope='color-picker']:is([data-part='swatch-picker'], [data-part='recent-swatch-picker']) {
-    --xh-_color-swatch-picker-cell: var(--xh-color-picker-swatch-cell, var(--xh-control-h-sm));
-    --xh-_color-swatch-picker-gap: var(--xh-color-picker-swatch-gap, var(--xh-control-gap-sm));
+    --xh-_color-swatch-picker-cell: var(--xh-color-picker-swatch-cell, var(--xh-glyph-size-sm));
+    --xh-_color-swatch-picker-gap: var(--xh-color-picker-swatch-gap, var(--xh-space-2));
     --xh-_color-swatch-picker-indicator: var(--xh-control-indicator-sm);
     --xh-_color-swatch-picker-mark: calc(var(--xh-_color-swatch-picker-indicator) - var(--xh-space-1));
     --xh-_color-swatch-picker-accent: var(--xh-_tone, var(--xh-bg-brand));
@@ -520,6 +552,23 @@
 
   [data-scope='color-picker']:is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])[data-disabled] {
     cursor: not-allowed;
+  }
+
+  /* 粗指针：16px 的格子手指压不准，格子回到小号控件高 */
+  @media (pointer: coarse) {
+    [data-scope='color-picker']:is([data-part='swatch-picker'], [data-part='recent-swatch-picker']) {
+      --xh-_color-swatch-picker-cell: var(--xh-color-picker-swatch-cell, var(--xh-control-h-sm));
+    }
+  }
+
+  /* 色板区与上面的取色控件之间一条通栏分隔：撑掉两侧内衬铺满面板宽，线取面板材质的描边档；
+     两块色板挨着时只在头一块上画 */
+  [data-scope='color-picker'][data-part='content']
+    > :is([data-part='swatch-picker'], [data-part='recent-swatch-picker']):where([data-scope='color-picker']):not(:is([data-part='swatch-picker'], [data-part='recent-swatch-picker']) + *) {
+    margin-inline: calc(-1 * var(--xh-_color-picker-content-px));
+    padding-block-start: var(--xh-_color-picker-content-py);
+    padding-inline: var(--xh-_color-picker-content-px);
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-color-picker-separator, var(--xh-material-solid-border));
   }
 
   /* 任何 display 都会盖掉 UA 的 [hidden]{display:none}：
@@ -581,6 +630,12 @@
     [data-scope='color-picker'][data-part='saturation-area'] {
       outline: var(--xh-stroke-thin) solid ButtonBorder;
       outline-offset: calc(-1 * var(--xh-stroke-thin));
+    }
+
+    /* 通道输入聚焦不画环，靠描边换色；这一档描边被换成系统色，补一圈 Highlight 环 */
+    [data-scope='color-picker'][data-part='channel-input']:focus {
+      outline: var(--xh-ring-width) solid Highlight;
+      outline-offset: var(--xh-ring-offset);
     }
 
     /* 标签前的色点画的也是颜色本身：同样退出强制着色，用系统文字色描一圈 */

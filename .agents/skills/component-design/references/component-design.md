@@ -495,7 +495,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | Cascader | 每列自然宽、下限 10rem，条目上限 20rem；整面上限为可用宽，超出横滚 | 列定高 `viewport-h-sm`，列内滚 |
 | DatePicker、DateRangePicker | 内容宽；时间列下限 3.5rem | 上限为可用高；时间列高 `control-h-sm` × 7 + 28px；预设组上限 `viewport-h-lg` |
 | TimePicker、TimeRangePicker | 内容宽；列下限 3.5rem | 列定高 `viewport-h-sm`；面板上限 `viewport-h-lg`；预设组上限 `viewport-h-sm` |
-| ColorPicker | 定宽 12rem；饱和区高 9rem | 上限 `viewport-h-md` |
+| ColorPicker | 定宽 `overlay-max-w-sm`（16rem）；取色区高 `--xh-overlay-color-area-h`（11rem），排在最前时贴顶通栏、不取圆角；取色区拇指与内嵌滑块拇指 `control-indicator-md`（16px），滑块拇指是白盘 + 1px 描边 + 8px 当前色点；色板区上方一条通栏分隔（材质描边档），预设色块 16px、间距 8px（16px 格要 24px 间距才过 2.5.8 的间隔例外），粗指针格子回到 `control-h-sm`；通道输入照字段外壳、高 `control-action-size`、说明档字号 | 上限 `viewport-h-lg` |
 | Pagination 下拉 | 上限 20rem | 上限 `overlay-max-h` |
 | Dialog | 铺满可用宽，上限随 size 24 / 32 / 48rem | 上限为视口可用高，正文内滚 |
 | Command | 铺满可用宽，上限随 size 24 / 32 / 48rem | 上限 `overlay-max-h` |

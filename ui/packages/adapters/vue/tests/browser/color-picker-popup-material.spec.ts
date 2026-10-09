@@ -73,6 +73,16 @@ afterEach(() => {
   host = null
 })
 
+/** 盒那一侧（没被搬进 Portal）某个语义令牌解算出来的颜色 */
+function tokenColorIn(host: HTMLElement, token: string): string {
+  const probe = document.createElement('div')
+  probe.style.setProperty('color', `var(${token})`)
+  host.append(probe)
+  const color = getComputedStyle(probe).color
+  probe.remove()
+  return color
+}
+
 /** 同一棵子树里某个语义令牌解算出来的颜色：探针挂在面板旁边，主题与对比度轴一起继承 */
 function tokenColor(token: string): string {
   const probe = document.createElement('div')
@@ -89,7 +99,8 @@ describe('颜色选择器浮层：floating 实体面', () => {
     part('content').getAnimations().forEach(animation => animation.finish())
     const control = getComputedStyle(part('control'))
     const content = getComputedStyle(part('content'))
-    expect(alpha(control.backgroundColor)).toBe(0)
+    // 盒是字段外壳：静息铺字段淡底（挂载时盒的底色有一段 micro 换色，等它落定再读）
+    await expect.poll(() => getComputedStyle(part('control')).backgroundColor).toBe(tokenColorIn(part('root'), '--xh-bg-field'))
     expect(control.backdropFilter).toBe('none')
     expect(part('positioner').closest<HTMLElement>('[data-theme]')?.dataset.theme).toBe(theme)
     // floating：实体底 + --xh-border-default 描边 + --xh-elevation-floating 落影，不透景、不画顶部边界光
@@ -107,7 +118,8 @@ describe('颜色选择器浮层：floating 实体面', () => {
     // 色相带归内嵌的 color-slider：轨道渐变由连接层内联给，挂载点把滑块 root 上的两个私有槽接上
     expect(getComputedStyle(part('track', 'color-slider')).backgroundImage).toContain('linear-gradient')
     expect(part('thumb', 'color-slider').getBoundingClientRect().width).toBeGreaterThan(0)
-    expect(alpha(getComputedStyle(part('channel-input')).backgroundColor)).toBe(0)
+    // 通道输入照字段外壳：字段淡底
+    expect(getComputedStyle(part('channel-input')).backgroundColor).toBe(tokenColor('--xh-bg-field'))
   })
 
   it.each(['light', 'dark'] as const)('%s：增强对比度时壳仍是实体表面，色板仍保留原色', async (theme) => {

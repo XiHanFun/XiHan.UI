@@ -13716,6 +13716,9 @@
               "name": "--xh-color-picker-input-bg-disabled"
             },
             {
+              "name": "--xh-color-picker-input-bg-focus"
+            },
+            {
               "name": "--xh-color-picker-input-bg-readonly"
             },
             {
@@ -13723,6 +13726,9 @@
             },
             {
               "name": "--xh-color-picker-input-border-focus"
+            },
+            {
+              "name": "--xh-color-picker-input-border-hover"
             },
             {
               "name": "--xh-color-picker-input-border-invalid"
@@ -13759,6 +13765,12 @@
             },
             {
               "name": "--xh-color-picker-saturation-area-radius"
+            },
+            {
+              "name": "--xh-color-picker-separator"
+            },
+            {
+              "name": "--xh-color-picker-slider-thumb-bg"
             },
             {
               "name": "--xh-color-picker-slider-thumb-size"
