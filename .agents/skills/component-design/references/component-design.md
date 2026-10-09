@@ -432,6 +432,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | `--xh-surface-header-h` | 46px | 40px | 卡片头部条的最小块尺寸：一行区块标题加上下留白 |
 | `--xh-nav-row-h-sm` / `md` / `lg` | 32 / 40 / 44px | 28 / 36 / 40px | 导航行（SideNav 分支与链接）：比同档控件高一截，整列扫读更松 |
 | `--xh-control-indicator-sm` / `md` / `lg` | 12 / 16 / 20px | 10 / 14 / 18px | 勾选方框、单选圆、状态字形、行内拖拽把手 |
+| `--xh-control-indicator-xs` | 10px | 8px | 只有半个控件高的盒里的字形（NumberField 叠放步进钮的上下箭头），不高过钮 |
 | `--xh-glyph-size-sm` … `4xl` | 16 / 20 / 24 / 32 / 40 / 56 / 72px | | 图标与插图，见 §6.5 |
 | `--xh-glyph-size-xs` | 12px | | 面板角上关闭钮的叉，比控件内图标低一档 |
 | `--xh-switch-track-h-sm` / `md` / `lg` | 16 / 24 / 28px | 14 / 20 / 24px | Switch 轨道高 |
@@ -470,7 +471,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 字形：text / icon 为 16 / 16 / 20 / 24px；field-inset 为 `control-indicator-sm`、`control-indicator-sm`、`control-indicator-sm`、`control-indicator-md`（12 / 12 / 12 / 16px）；floating 为 16 / 16 / 20 / 24px。
 - floating 缺省 md（box-md 36px，compact 32px）：浮在内容之上的圆钮在矮视口与小卡片里不叠住内容与彼此。独立浮在页面一角的 BackTop 与 FloatButton 的 md 档取 `control-float-md`（40px，compact 36px），sm / lg 仍取 box 档，字形 sm / md 16px、lg 20px，贴视口边 24px；FloatButton 的触发器与展开组里的动作项同一张尺寸表、同一块面（subtle 档取不透明淡底）。主控制钮（Carousel 与 ImageViewer 的翻页、BackTop、FloatButton）随组件 `size` 同档；从属的钮（Log / MessageFeed 的回到底部）比组件低一档、最低 sm。Carousel 的翻页与播放钮随组件 `size` 取 24 / 24 / 28px（`control-action-size` / 同 / `control-h-sm`）、字形 12 / 16 / 20px：钮不压画面，sm 不低于 24px 的最小目标、只把字形收小。ImageViewer 的翻页与关闭钮同档，视觉盒取控件高 `control-h-*`（md 32px）、字形 sm / md 16px、lg 20px，距边分别为 20px 与 32px：看片台上的媒体控制不压画面。
 - Dialog、Drawer、Popover、Tour、Notification 的关闭钮取 `control-h-sm`。
-- NumberField 的增减钮：可悬停的精细指针下上下叠在盒的逻辑末端（宽 `--xh-control-indicator-lg`、四周内收 `--xh-space-1`，sm 档 `--xh-space-0_5`，各占盒内高一半、共边相接只换面），平时收起、悬停或聚焦字段时显出（`data-xh-action-display="hover-focus"`），淡底 `--xh-bg-subtle` → 悬停 200 → 按下 300、上下箭头字形取 `--xh-control-indicator-sm`；粗指针与不能悬停的设备上是两颗 field-inset 正方钮横排在末端、常显：叠放的一颗只有半个控件高，够不着触控目标尺寸。叠放钮在精细指针下也到不了 SC 2.5.8 的 24×24、凑不出间距例外，按其「等价控件」例外处理——同一个值由旁边不低于 24px 高的 spinbutton 键入或按 ↑ / ↓ 同样改得了，粗指针下横排钮另有 44px 外扩兜底；登在 check-coarse-target 登记表的 `equivalent` 段，不进 backlog。
+- NumberField 的增减钮：可悬停的精细指针下上下叠在盒的逻辑末端（宽 `--xh-control-indicator-lg`、四周内收 `--xh-space-1`，sm 档 `--xh-space-0_5`，各占盒内高一半、共边相接只换面），平时收起、悬停或聚焦字段时显出（`data-xh-action-display="hover-focus"`），淡底 `--xh-bg-subtle` → 悬停 200 → 按下 300、上下箭头字形取 `--xh-control-indicator-xs`（一颗钮 sm / md 档只有 11px、紧凑 9px，字形不高过钮）；粗指针与不能悬停的设备上是两颗 field-inset 正方钮横排在末端、常显：叠放的一颗只有半个控件高，够不着触控目标尺寸。叠放钮在精细指针下也到不了 SC 2.5.8 的 24×24、凑不出间距例外，按其「等价控件」例外处理——同一个值由旁边不低于 24px 高的 spinbutton 键入或按 ↑ / ↓ 同样改得了，粗指针下横排钮另有 44px 外扩兜底；登在 check-coarse-target 登记表的 `equivalent` 段，不进 backlog。
 
 #### 字段
 
