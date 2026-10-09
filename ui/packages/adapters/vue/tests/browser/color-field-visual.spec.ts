@@ -12,6 +12,7 @@ import {
   XhColorFieldRoot,
   XhColorFieldSwatch,
 } from '../../src'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -67,7 +68,7 @@ describe('颜色字段的盒与色块', () => {
     const control = part('control')
     const swatch = part('swatch')
     const input = part('input')
-    expect(control.getBoundingClientRect().height).toBe(36)
+    expect(control.getBoundingClientRect().height).toBe(tokenLength('--xh-control-h-md'))
     expect(swatch.getBoundingClientRect().width).toBe(20)
     expect(swatch.getBoundingClientRect().right).toBeLessThanOrEqual(input.getBoundingClientRect().left)
     // 色块垂直居中在盒里
@@ -91,7 +92,7 @@ describe('颜色字段的盒与色块', () => {
     expect(input.value).toBe('tomato')
   })
 
-  it('输入与清空按钮聚焦时只由字段外壳画一圈', async () => {
+  it('输入与清空按钮聚焦时只由字段外壳换聚焦描边，三者都不画环', async () => {
     await mountField()
     const control = part('control')
     const input = part('input') as HTMLInputElement
@@ -99,19 +100,21 @@ describe('颜色字段的盒与色块', () => {
 
     await userEvent.click(input)
     expect(control.matches(':focus-within')).toBe(true)
-    expect(getComputedStyle(control).outlineStyle).toBe('solid')
+    expect(getComputedStyle(control).borderTopColor).toBe(resolvedToken('--xh-border-control-focus'))
+    expect(getComputedStyle(control).outlineStyle).toBe('none')
     expect(getComputedStyle(input).outlineStyle).toBe('none')
 
     await userEvent.tab()
     clear.focus()
     expect(document.activeElement).toBe(clear)
-    expect(getComputedStyle(control).outlineStyle).toBe('solid')
+    expect(getComputedStyle(control).borderTopColor).toBe(resolvedToken('--xh-border-control-focus'))
+    expect(getComputedStyle(control).outlineStyle).toBe('none')
     expect(getComputedStyle(clear).outlineStyle).toBe('none')
   })
 
   it('尺寸档同时换盒高与色块边长；清空后色块只剩棋盘格', async () => {
     await mountField({ size: 'lg' })
-    expect(part('control').getBoundingClientRect().height).toBe(40)
+    expect(part('control').getBoundingClientRect().height).toBe(tokenLength('--xh-control-h-lg'))
     expect(part('swatch').getBoundingClientRect().width).toBe(24)
     await userEvent.click(part('input'))
     await userEvent.keyboard('{Escape}')

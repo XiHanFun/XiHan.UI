@@ -1,9 +1,10 @@
-// 标签的形状身份：根是状态 chip，取胶囊；关闭钮是随文标记档的 16px 正方盒，取 inset 4px（与 checkbox 系方框同档）。
+// 标签的形状身份：根是随文方签，取 control 圆角；关闭钮是随文标记档的 16px 正方盒，取 inset 圆角（与 checkbox 系方框同档）。
 // 三档与四种形态都是同一身份，作者槽 --xh-tag-radius / --xh-tag-close-radius 仍能覆盖。
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from '../../src'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -43,25 +44,25 @@ function tag(props: { size?: Tier, variant?: Variant }): VNode {
 }
 
 describe('标签的形状身份', () => {
-  it.each<Tier>(['sm', 'md', 'lg'])('%s 档：根是胶囊，圆角不小于半高；关闭钮是 inset 4px 的正方盒', async (size) => {
+  it.each<Tier>(['sm', 'md', 'lg'])('%s 档：根是方签，圆角取 control 档；关闭钮是 inset 圆角的正方盒', async (size) => {
     await mount(() => tag({ size }))
     const root = part('root')
     const close = part('close-trigger')
 
-    expect(Number.parseFloat(getComputedStyle(root).borderTopLeftRadius)).toBeGreaterThanOrEqual(root.getBoundingClientRect().height / 2)
-    expect(getComputedStyle(close).borderTopLeftRadius).toBe('4px')
+    expect(getComputedStyle(root).borderTopLeftRadius).toBe(`${tokenLength('--xh-shape-control')}px`)
+    expect(getComputedStyle(close).borderTopLeftRadius).toBe(`${tokenLength('--xh-shape-inset')}px`)
     expect(close.getBoundingClientRect().width).toBe(close.getBoundingClientRect().height)
   })
 
-  it.each<Variant>(['solid', 'subtle', 'outline', 'ghost'])('%s 形态不改变胶囊身份', async (variant) => {
+  it.each<Variant>(['solid', 'subtle', 'outline', 'ghost'])('%s 形态不改变方签身份', async (variant) => {
     await mount(() => tag({ variant }))
     const root = part('root')
-    expect(Number.parseFloat(getComputedStyle(root).borderTopLeftRadius)).toBeGreaterThanOrEqual(root.getBoundingClientRect().height / 2)
+    expect(getComputedStyle(root).borderTopLeftRadius).toBe(`${tokenLength('--xh-shape-control')}px`)
   })
 
   it('作者槽仍能把根与关闭钮的圆角改回去', async () => {
-    await mount(() => tag({}), '--xh-tag-radius: 3px; --xh-tag-close-radius: 2px')
+    await mount(() => tag({}), '--xh-tag-radius: 3px; --xh-tag-close-radius: 1px')
     expect(getComputedStyle(part('root')).borderTopLeftRadius).toBe('3px')
-    expect(getComputedStyle(part('close-trigger')).borderTopLeftRadius).toBe('2px')
+    expect(getComputedStyle(part('close-trigger')).borderTopLeftRadius).toBe('1px')
   })
 })
