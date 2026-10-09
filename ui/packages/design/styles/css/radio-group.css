@@ -373,11 +373,21 @@
   }
 
   /* 语气：选择器带 [data-tone] 限定，不限定的话放在语气容器里的分段会跟着改色。
-     语气档的滑块换语气淡底（静息 / 悬停两档），选中段的字取语气字色 */
+     语气档的滑块换语气淡底（静息 / 悬停 / 禁用三档），选中段的字取语气字色；禁用的选中段与品牌档同口径——
+     滑块退到 8%、字往承载面兑一半，不回落到品牌色 */
   [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-tone] {
     --xh-_radio-group-thumb-bg: var(--xh-_tone-subtle, var(--xh-bg-segment-selected));
     --xh-_radio-group-thumb-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-segment-selected-hover));
+    --xh-_radio-group-thumb-bg-disabled: color-mix(in oklab, var(--xh-_tone) 8%, var(--xh-bg-surface));
     --xh-_radio-group-segment-fg-checked: var(--xh-_tone-fg, var(--xh-fg-segment-selected));
+    --xh-_radio-group-segment-fg-checked-disabled: color-mix(in oklab, var(--xh-_tone-fg) 50%, var(--xh-bg-surface));
+  }
+
+  /* 深色档与品牌档同口径：选中面提到 20%、悬停 28%，深底上 12% 读不出是一块选中面。
+     语气淡底三档是语气层按固定比例兑的、不随主题换，这里按主题各取一档 */
+  :is([data-theme='dark'] *, [data-theme='dark'])[data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-tone] {
+    --xh-_radio-group-thumb-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-segment-selected));
+    --xh-_radio-group-thumb-bg-hover: var(--xh-_tone-subtle-active, var(--xh-bg-segment-selected-hover));
   }
 
   /* 段：轨道里铺开的一格，不投影 Action Control 家族（与 Tabs segment 档同），面与字写在段自己身上。
