@@ -57,7 +57,7 @@ afterEach(async () => {
 })
 
 describe('通知卡片的表面与两颗钮', () => {
-  it('卡片走 sheet 三件套：elevated 底 + 1px 描边 + 落影；指示符 md 档', async () => {
+  it('卡片走 sheet 三件套：elevated 底 + 1px 描边 + 单层落影，缺省宽 300px、四边内衬 20px、浮层圆角', async () => {
     notify = createNotificationService()
     notify.success('已保存', { description: '内容已同步到云端', duration: 0 })
     await tick()
@@ -65,15 +65,45 @@ describe('通知卡片的表面与两颗钮', () => {
     const style = getComputedStyle(item)
 
     expect(style.backgroundColor).toBe(tokenColor('--xh-material-elevated-bg'))
+    expect(style.borderTopWidth).toBe('1px')
     expect(style.borderTopColor).toBe(tokenColor('--xh-material-elevated-border'))
     expect(style.borderTopColor).not.toBe('rgba(0, 0, 0, 0)')
-    expect(style.boxShadow).not.toBe('none')
+    expect(style.boxShadow).toContain('0px 4px 12px')
+    expect(style.borderRadius).toBe('4px')
+    expect(item.getBoundingClientRect().width).toBe(300)
+    expect(item.getBoundingClientRect().width).toBe(resolvedLength(item, 'var(--xh-overlay-notification-w)'))
+    expect(style.paddingTop).toBe('20px')
+    expect(style.paddingBottom).toBe('20px')
+    expect(style.paddingLeft).toBe('20px')
+    expect(style.paddingRight).toBe('20px')
+    // 卡片里作者塞的图标仍按 Feedback 指示符的 md 档；左列那枚类型字形另取 24px
     expect(resolvedLength(item, 'var(--xh-icon-size)')).toBe(resolvedLength(item, 'var(--xh-glyph-size-md)'))
-    expect(getComputedStyle(part('item-title')).fontWeight).toBe('600')
-    expect(getComputedStyle(part('item-description')).color).toBe(tokenColor('--xh-fg-muted'))
+    expect(getComputedStyle(part('item-indicator'), '::after').width).toBe('24px')
   })
 
-  it('叉走 icon ghost sm：32px 正方盒钉在右上角、静息透明无影，悬停底跟着语气走', async () => {
+  it('标题取面板标题令牌、正文色，与 24px 字形首行对齐；正文 14px 正文色', async () => {
+    notify = createNotificationService()
+    notify.success('已保存', { description: '内容已同步到云端', duration: 0 })
+    await tick()
+    const item = part('item')
+    const title = getComputedStyle(part('item-title'))
+    const description = getComputedStyle(part('item-description'))
+
+    expect(title.fontSize).toBe(`${resolvedLength(item, 'var(--xh-text-heading-3-size)')}px`)
+    expect(title.color).toBe(tokenColor('--xh-fg-default'))
+    const weight = document.createElement('span')
+    weight.style.fontWeight = 'var(--xh-text-heading-3-weight)'
+    item.append(weight)
+    expect(title.fontWeight).toBe(getComputedStyle(weight).fontWeight)
+    weight.remove()
+    expect(description.fontSize).toBe('14px')
+    expect(description.color).toBe(tokenColor('--xh-fg-default'))
+    const indicator = part('item-indicator').getBoundingClientRect()
+    const titleRect = part('item-title').getBoundingClientRect()
+    expect(indicator.top + indicator.height / 2).toBeCloseTo(titleRect.top + titleRect.height / 2, 0)
+  })
+
+  it('叉走 icon ghost sm：正方盒距上、右各 12px，叉 12px，静息透明无影，悬停底跟着语气走', async () => {
     notify = createNotificationService()
     notify.success('已保存', { duration: 0 })
     await tick()
@@ -85,21 +115,22 @@ describe('通知卡片的表面与两颗钮', () => {
 
     expect(close.dataset.xhActionProfile).toBe('icon')
     expect(close.dataset.xhActionVariant).toBe('ghost')
-    expect(rect.width).toBe(32)
-    expect(rect.height).toBe(32)
-    expect(rect.right).toBeLessThanOrEqual(itemRect.right)
-    expect(rect.top).toBeGreaterThanOrEqual(itemRect.top)
+    expect(rect.width).toBe(resolvedLength(item, 'var(--xh-control-h-sm)'))
+    expect(rect.height).toBe(resolvedLength(item, 'var(--xh-control-h-sm)'))
+    // 绝对定位从卡片的内沿量起：1px 描边以内再让 12px
+    expect(itemRect.right - 1 - rect.right).toBeCloseTo(12, 0)
+    expect(rect.top - itemRect.top - 1).toBeCloseTo(12, 0)
     expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(style.boxShadow).toBe('none')
     expect(style.color).toBe(tokenColor('--xh-fg-muted'))
-    expect(getComputedStyle(close, '::before').width).toBe('16px')
+    expect(getComputedStyle(close, '::before').width).toBe('12px')
 
     await userEvent.hover(close)
     await expect.poll(() => getComputedStyle(close).backgroundColor).toBe(tokenColor('--xh-_tone-subtle', item))
     expect(getComputedStyle(close).color).toBe(tokenColor('--xh-fg-default'))
   })
 
-  it('操作钮走 text outline sm：透明底 + 中性控件描边、32px 高，不随语气，悬停落白面阶梯的 100', async () => {
+  it('操作钮走 text outline sm：透明底 + 中性控件描边、与 sm 档控件等高，不随语气，悬停落白面阶梯的 100', async () => {
     notify = createNotificationService()
     notify.success('已保存', { duration: 0, actionLabel: '查看' })
     await tick()

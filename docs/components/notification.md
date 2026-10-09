@@ -101,7 +101,8 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 - 同一个 id 再次发出即就地改写，位置不变，用于“处理中 → 已完成”；`loading` 期间换为加载环且不自动消失。
 - 每条自带计时与暂停：指针停在卡片上或焦点进入时暂停计时。`duration` 为 0 时常驻不消失。
 - `stacked` 把同一位置的几条叠成一摞：最新一条在最前，后层按层深收拢；鼠标或焦点进入后按真实高度展开，整摞计时一并按住，`Escape` 收起。
-- 轻提示预设的关闭按钮排在行尾，可悬停设备上悬停或焦点进入卡片时才显示；卡片预设的关闭按钮钉在右上角。
+- 轻提示预设的关闭按钮排在行尾，可悬停设备上悬停或焦点进入卡片时才显示；卡片预设的关闭按钮钉在右上角，距上、右各 12px。两种预设的叉都是 12px。
+- 卡片走 sheet 面（1px 描边、不透明底、单层投影），圆角 4px、缺省宽 300px（`--xh-overlay-notification-w`）、四边内衬 20px；左列类型字形 24px，标题取面板标题档、正文色，说明是 14px 正文色的正文。轻提示圆角 2px、内衬纵 10 横 16，行首字形 20px，标题 14px / medium、带语气色，说明 13px 次级色。
 
 ### 组合
 
@@ -345,14 +346,14 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 | `--xh-notification-close-inset` | `item`<br>`item-close-trigger`<br>`item-title` | `inset-block-start`<br>`inset-inline-end`<br>`padding-inline-end` | `has([data-part='item-close-trigger'])`<br>`preset=card` | `--xh-surface-action-inset` | notification 的 item、item-close-trigger、item-title 部件 inset-block-start、inset-inline-end、padding-inline-end 覆盖槽。 |
 | `--xh-notification-close-radius` | `item-close-trigger` | `border-radius` | `default` | `--xh-shape-control` | notification 的 item-close-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-notification-close-size` | `item`<br>`item-close-trigger`<br>`item-title` | `block-size`<br>`inline-size`<br>`min-inline-size`<br>`padding-inline-end` | `default`<br>`has([data-part='item-close-trigger'])`<br>`preset=card`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size`<br>`--xh-control-h-sm` | notification 的 item、item-close-trigger、item-title 部件 block-size、inline-size、min-inline-size、padding-inline-end 覆盖槽。 |
-| `--xh-notification-description-fg` | `item-description` | `color` | `default` | `--xh-fg-muted` | notification 的 item-description 部件 color 覆盖槽。 |
-| `--xh-notification-description-font-size` | `item-description` | `font-size` | `default` | `--xh-text-secondary-size` | notification 的 item-description 部件 font-size 覆盖槽。 |
+| `--xh-notification-description-fg` | `item`<br>`item-description` | `color` | `default`<br>`preset=toast` | `--xh-fg-default`<br>`--xh-fg-muted` | notification 的 item、item-description 部件 color 覆盖槽。 |
+| `--xh-notification-description-font-size` | `item`<br>`item-description` | `font-size` | `default`<br>`preset=toast` | `--xh-text-body-size`<br>`--xh-text-secondary-size` | notification 的 item、item-description 部件 font-size 覆盖槽。 |
 | `--xh-notification-description-leading` | `item`<br>`item-description` | `line-height` | `preset=toast` | `--xh-leading-normal` | notification 的 item、item-description 部件 line-height 覆盖槽。 |
 | `--xh-notification-description-max-h` | `item-description` | `max-block-size` | `default` | `--xh-viewport-h-md` | notification 的 item-description 部件 max-block-size 覆盖槽。 |
-| `--xh-notification-icon-size` | `item`<br>`item-action-trigger`<br>`item-close-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | notification 的 item、item-action-trigger、item-close-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-notification-icon-size` | `item`<br>`item-action-trigger`<br>`item-close-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-xs` | notification 的 item、item-action-trigger、item-close-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-notification-indicator-fg` | `item`<br>`item-indicator` | `background-color`<br>`border-block-start-color`<br>`border-color`<br>`color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`preset=toast`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring` | `--xh-_tone-fg` | notification 的 item、item-indicator 部件 background-color、border-block-start-color、border-color、color 覆盖槽。 |
 | `--xh-notification-indicator-p` | `item`<br>`item-indicator` | `padding` | `preset=toast` | `--xh-space-1` | notification 的 item、item-indicator 部件 padding 覆盖槽。 |
-| `--xh-notification-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`inline-size` | `default` | `--xh-glyph-size-md` | notification 的 item-indicator 部件 --xh-icon-size、inline-size 覆盖槽。 |
+| `--xh-notification-indicator-size` | `item`<br>`item-indicator` | `--xh-icon-size`<br>`inline-size` | `default`<br>`preset=toast` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md` | notification 的 item、item-indicator 部件 --xh-icon-size、inline-size 覆盖槽。 |
 | `--xh-notification-inset` | `group` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start`<br>`padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default`<br>`not([data-stacked])`<br>`placement=-end`<br>`placement=-start`<br>`placement=bottom`<br>`placement=top`<br>`preset=toast`<br>`stacked` | `--xh-space-4`<br>`--xh-space-6` | notification 的 group 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start、padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
 | `--xh-notification-item-bg` | `item` | `background` | `default` | `--xh-material-elevated-bg` | notification 的 item 部件 background 覆盖槽。 |
 | `--xh-notification-item-border` | `item` | `border` | `default` | `--xh-material-elevated-border` | notification 的 item 部件 border 覆盖槽。 |
@@ -360,12 +361,12 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 | `--xh-notification-item-font-size` | `item` | `font-size` | `default`<br>`preset=toast` | `--xh-text-body-size`<br>`--xh-text-label-size` | notification 的 item 部件 font-size 覆盖槽。 |
 | `--xh-notification-item-gap` | `item` | `column-gap` | `default`<br>`preset=toast` | `--xh-space-2`<br>`--xh-space-3` | notification 的 item 部件 column-gap 覆盖槽。 |
 | `--xh-notification-item-leading` | `item` | `line-height` | `default` | `--xh-text-body-leading` | notification 的 item 部件 line-height 覆盖槽。 |
-| `--xh-notification-item-px` | `item` | `inset-inline-start`<br>`padding-inline` | `default`<br>`preset=toast` | `--xh-space-4`<br>`--xh-surface-pad-lg` | notification 的 item 部件 inset-inline-start、padding-inline 覆盖槽。 |
-| `--xh-notification-item-py` | `item` | `inset-block-start`<br>`padding-block` | `default`<br>`preset=toast` | `--xh-space-3`<br>`--xh-surface-pad-lg` | notification 的 item 部件 inset-block-start、padding-block 覆盖槽。 |
-| `--xh-notification-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-overlay` | notification 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-notification-item-px` | `item` | `inset-inline-start`<br>`padding-inline` | `default`<br>`preset=toast` | `--xh-overlay-sheet-px`<br>`--xh-space-4` | notification 的 item 部件 inset-inline-start、padding-inline 覆盖槽。 |
+| `--xh-notification-item-py` | `item` | `inset-block-start`<br>`padding-block` | `default`<br>`preset=toast` | `--xh-overlay-sheet-px`<br>`--xh-space-2_5` | notification 的 item 部件 inset-block-start、padding-block 覆盖槽。 |
+| `--xh-notification-item-radius` | `item` | `border-radius` | `default`<br>`preset=toast` | `--xh-shape-control`<br>`--xh-shape-overlay` | notification 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-notification-item-row-gap` | `item`<br>`item-content` | `row-gap` | `default` | `--xh-space-2` | notification 的 item、item-content 部件 row-gap 覆盖槽。 |
 | `--xh-notification-item-shadow` | `item` | `box-shadow` | `default` | `--xh-material-elevated-shadow` | notification 的 item 部件 box-shadow 覆盖槽。 |
-| `--xh-notification-item-w` | `group`<br>`item` | `inline-size` | `default`<br>`preset=toast`<br>`stacked` | `--xh-overlay-max-w-lg`<br>`--xh-overlay-toast-w` | notification 的 group、item 部件 inline-size 覆盖槽。 |
+| `--xh-notification-item-w` | `group`<br>`item` | `inline-size` | `default`<br>`preset=toast`<br>`stacked` | `--xh-overlay-notification-w`<br>`--xh-overlay-toast-w` | notification 的 group、item 部件 inline-size 覆盖槽。 |
 | `--xh-notification-layer` | `group` | `z-index` | `default` | `--xh-layer-toast` | notification 的 group 部件 z-index 覆盖槽。 |
 | `--xh-notification-progress-bg` | `item-progress` | `background` | `default` | `--xh-_tone-soft` | notification 的 item-progress 部件 background 覆盖槽。 |
 | `--xh-notification-progress-duration` | `item-progress` | `animation` | `default` | `--xh-motion-duration-slide` | notification 的 item-progress 部件 animation 覆盖槽。 |
@@ -373,9 +374,9 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 | `--xh-notification-progress-thickness` | `item-progress` | `block-size` | `default` | `--xh-space-0_5` | notification 的 item-progress 部件 block-size 覆盖槽。 |
 | `--xh-notification-stack-scale` | `*`<br>`group`<br>`item` | `scale` | `@keyframes xh-notification-stack-in`<br>`@keyframes xh-notification-stack-out`<br>`preset=toast`<br>`stacked` | `--xh-_notification-stack-scale` | notification 的 *、group、item 部件 scale 覆盖槽。 |
 | `--xh-notification-title-fg` | `item`<br>`item-title` | `color` | `default`<br>`preset=toast` | `--xh-_tone-fg`<br>`--xh-fg-default` | notification 的 item、item-title 部件 color 覆盖槽。 |
-| `--xh-notification-title-font-size` | `item-indicator`<br>`item-title` | `block-size`<br>`font-size` | `default` | `--xh-text-label-size` | notification 的 item-indicator、item-title 部件 block-size、font-size 覆盖槽。 |
-| `--xh-notification-title-font-weight` | `item-title` | `font-weight` | `default` | `--xh-font-weight-semibold` | notification 的 item-title 部件 font-weight 覆盖槽。 |
-| `--xh-notification-title-leading` | `item-title` | `line-height` | `default` | `--xh-leading-tight` | notification 的 item-title 部件 line-height 覆盖槽。 |
+| `--xh-notification-title-font-size` | `item`<br>`item-indicator`<br>`item-title` | `block-size`<br>`font-size` | `default`<br>`preset=toast` | `--xh-text-body-size`<br>`--xh-text-heading-3-size` | notification 的 item、item-indicator、item-title 部件 block-size、font-size 覆盖槽。 |
+| `--xh-notification-title-font-weight` | `item`<br>`item-title` | `font-weight` | `default`<br>`preset=toast` | `--xh-font-weight-medium`<br>`--xh-text-heading-3-weight` | notification 的 item、item-title 部件 font-weight 覆盖槽。 |
+| `--xh-notification-title-leading` | `item`<br>`item-title` | `line-height` | `default`<br>`preset=toast` | `--xh-leading-normal`<br>`--xh-leading-tight` | notification 的 item、item-title 部件 line-height 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

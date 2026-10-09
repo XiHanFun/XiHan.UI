@@ -85,14 +85,15 @@ describe('轻提示预设的中性浮层', () => {
       resolvedWidth(item, 'var(--xh-overlay-toast-w)'),
       item.parentElement!.getBoundingClientRect().width,
     ))
-    expect(style.paddingBlock).toBe('12px')
+    expect(style.paddingBlock).toBe('10px')
     expect(style.paddingInline).toBe('16px')
-    expect(style.borderRadius).toBe('12px')
+    expect(style.borderRadius).toBe('2px')
     expect(style.backgroundColor).toBe(resolvedColor(item, 'background', 'var(--xh-material-elevated-bg)'))
     expect(style.borderTopColor).toBe(resolvedColor(item, 'color', 'var(--xh-material-elevated-border)'))
     expect(style.borderTopColor).not.toBe('rgba(0, 0, 0, 0)')
     expect(style.boxShadow).not.toBe('none')
-    expect(getComputedStyle(title).fontWeight).toBe('600')
+    expect(getComputedStyle(title).fontWeight).toBe('500')
+    expect(getComputedStyle(title).fontSize).toBe('14px')
     expect(getComputedStyle(description).fontSize).toBe(`${resolvedWidth(item, 'var(--xh-text-secondary-size)')}px`)
     expect(getComputedStyle(indicator).opacity).toBe('1')
     expect(getComputedStyle(title).opacity).toBe('1')
@@ -129,13 +130,16 @@ describe('轻提示预设的中性浮层', () => {
     expect(closeRect.height).toBe(24)
     expect(getComputedStyle(close).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(getComputedStyle(close).boxShadow).toBe('none')
+    expect(getComputedStyle(close, '::before').width).toBe('12px')
     expect(closeRect.left).toBeGreaterThanOrEqual(itemRect.left)
     expect(closeRect.right).toBeLessThanOrEqual(itemRect.right)
     expect(Math.abs((closeRect.top + closeRect.bottom - itemRect.top - itemRect.bottom) / 2)).toBeLessThan(1)
   })
 
-  it('操作钮走 text outline 档：透明底 + 控件描边、32px 高，悬停落白面阶梯的 100', async () => {
+  it('操作钮走 text outline 档：透明底 + 控件描边、与 sm 档控件等高，悬停落白面阶梯的 100', async () => {
     const item = await mount(0, '撤销')
+    // 进场带缩放：几何要等它落定再量，否则两边各按自己的位置取整、差在小数末位
+    await settled(item)
     const action = item.querySelector<HTMLButtonElement>('[data-part="item-action-trigger"]')!
     const style = getComputedStyle(action)
 

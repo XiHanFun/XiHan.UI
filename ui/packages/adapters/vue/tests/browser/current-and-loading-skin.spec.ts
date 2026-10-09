@@ -355,6 +355,8 @@ describe('判定闸门在途的那一档', () => {
 
 describe('开关的只读观感', () => {
   it('只读：不摆手型、选中档换中性底、滑块收掉浮起的投影', async () => {
+    // 抬起影缺省是平面（none），两只滑块看不出差别；主题给了抬起感时，只读档仍不画
+    setSlot('--xh-elevation-raised', `0 1px 2px ${BLUE}`)
     await mount(() => [
       h(XhSwitch, { defaultChecked: true }),
       h(XhSwitch, { defaultChecked: true, readOnly: true }),

@@ -71,7 +71,7 @@ disabled 只关闭卡片本身，触发器照常可点击、可聚焦，也照�
 
 - `openDelay` 与 `closeDelay` 成对：进入需要停留、离开有宽限，指针斜向移到卡片上不会误收。
 - 开合状态可受控。
-- 内容与 Popover 共用 M2 磨砂面：单层背景模糊、柔和顶光和浮层阴影，正文保持不透明。箭头只复用底色与边界，不叠加模糊；减少透明、高对比与强制色偏好由材质令牌统一响应。`--xh-hover-card-backdrop` 可覆盖模糊配方；打印时整块预览收起。
+- 内容与 Popover 共用 frosted 面：实体底、1px 描边与一层浮层投影，内衬、标题与说明的排版同 Popover。箭头只复用底色与边界；减少透明、高对比与强制色偏好由材质令牌统一响应。`--xh-hover-card-backdrop` 可给面加背景滤镜；打印时整块预览收起。
 
 ### 组合
 
@@ -242,19 +242,19 @@ disabled 只关闭卡片本身，触发器照常可点击、可聚焦，也照�
 | `--xh-hover-card-bg` | `arrow`<br>`content` | `background` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg`<br>`--xh-material-frosted-bg` | hover-card 的 arrow、content 部件 background 覆盖槽。 |
 | `--xh-hover-card-border` | `arrow`<br>`content` | `border` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-border`<br>`--xh-material-frosted-border` | hover-card 的 arrow、content 部件 border 覆盖槽。 |
 | `--xh-hover-card-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | hover-card 的 description 部件 color 覆盖槽。 |
-| `--xh-hover-card-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | hover-card 的 description 部件 font-size 覆盖槽。 |
+| `--xh-hover-card-description-font-size` | `description` | `font-size` | `default` | `--xh-text-body-size` | hover-card 的 description 部件 font-size 覆盖槽。 |
 | `--xh-hover-card-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | hover-card 的 content 部件 color 覆盖槽。 |
-| `--xh-hover-card-gap` | `content` | `gap` | `default` | `--xh-space-2` | hover-card 的 content 部件 gap 覆盖槽。 |
+| `--xh-hover-card-gap` | `content` | `gap` | `default` | `--xh-space-1` | hover-card 的 content 部件 gap 覆盖槽。 |
 | `--xh-hover-card-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | hover-card 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-hover-card-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | hover-card 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-hover-card-max-w` | `content` | `max-inline-size` | `default` | `--xh-_hover-card-max-w` | hover-card 的 content 部件 max-inline-size 覆盖槽。 |
-| `--xh-hover-card-px` | `content` | `padding-inline` | `default` | `--xh-_hover-card-pad` | hover-card 的 content 部件 padding-inline 覆盖槽。 |
-| `--xh-hover-card-py` | `content` | `padding-block` | `default` | `--xh-_hover-card-pad` | hover-card 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-hover-card-px` | `content` | `padding-inline` | `default` | `--xh-_hover-card-px` | hover-card 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-hover-card-py` | `content` | `padding-block` | `default` | `--xh-_hover-card-py` | hover-card 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-hover-card-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | hover-card 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-hover-card-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | hover-card 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-hover-card-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | hover-card 的 title 部件 color 覆盖槽。 |
 | `--xh-hover-card-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | hover-card 的 title 部件 font-size 覆盖槽。 |
-| `--xh-hover-card-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | hover-card 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-hover-card-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-medium` | hover-card 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-hover-card-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-sm` | hover-card 的 trigger 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

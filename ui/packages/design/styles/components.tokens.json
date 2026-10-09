@@ -27083,6 +27083,42 @@
       "description": "dialog 的 content 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-dialog-body-px",
+      "component": "dialog",
+      "part": [
+        "body"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-overlay-sheet-px"
+      ],
+      "visibility": "public",
+      "description": "dialog 的 body 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-dialog-body-py",
+      "component": "dialog",
+      "part": [
+        "body"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-overlay-sheet-body-py"
+      ],
+      "visibility": "public",
+      "description": "dialog 的 body 部件 padding-block 覆盖槽。"
+    },
+    {
       "name": "--xh-dialog-border",
       "component": "dialog",
       "part": [
@@ -27255,6 +27291,7 @@
       "property": [
         "block-size",
         "inline-size",
+        "inset-block-start",
         "padding-inline-end"
       ],
       "state": [
@@ -27267,7 +27304,7 @@
         "--xh-control-h-sm"
       ],
       "visibility": "public",
-      "description": "dialog 的 close-trigger、content、title 部件 block-size、inline-size、padding-inline-end 覆盖槽。"
+      "description": "dialog 的 close-trigger、content、title 部件 block-size、inline-size、inset-block-start、padding-inline-end 覆盖槽。"
     },
     {
       "name": "--xh-dialog-content-backdrop-filter",
@@ -27287,42 +27324,6 @@
       ],
       "visibility": "public",
       "description": "dialog 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
-    },
-    {
-      "name": "--xh-dialog-content-lens-bg",
-      "component": "dialog",
-      "part": [
-        "content"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-dialog-header-bg"
-      ],
-      "visibility": "public",
-      "description": "dialog 的 content 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-dialog-content-lens-depth",
-      "component": "dialog",
-      "part": [
-        "content"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-dialog-header-lens-depth"
-      ],
-      "visibility": "public",
-      "description": "dialog 的 content 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-dialog-description-fg",
@@ -27451,6 +27452,44 @@
       "description": "dialog 的 footer 部件 padding-block-start 覆盖槽。"
     },
     {
+      "name": "--xh-dialog-footer-px",
+      "component": "dialog",
+      "part": [
+        "content",
+        "footer"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "has([data-scope='dialog'][data-part='body'])"
+      ],
+      "defaultToken": [
+        "--xh-overlay-sheet-px"
+      ],
+      "visibility": "public",
+      "description": "dialog 的 content、footer 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-dialog-footer-py",
+      "component": "dialog",
+      "part": [
+        "content",
+        "footer"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "has([data-scope='dialog'][data-part='body'])"
+      ],
+      "defaultToken": [
+        "--xh-overlay-sheet-footer-py"
+      ],
+      "visibility": "public",
+      "description": "dialog 的 content、footer 部件 padding-block 覆盖槽。"
+    },
+    {
       "name": "--xh-dialog-gap",
       "component": "dialog",
       "part": [
@@ -27467,24 +27506,6 @@
       ],
       "visibility": "public",
       "description": "dialog 的 content 部件 gap 覆盖槽。"
-    },
-    {
-      "name": "--xh-dialog-header-bg",
-      "component": "dialog",
-      "part": [
-        "content"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-material-elevated-bg"
-      ],
-      "visibility": "public",
-      "description": "dialog 的 content 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-dialog-header-gap",
@@ -27505,58 +27526,63 @@
       "description": "dialog 的 header 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-dialog-header-lens-depth",
-      "component": "dialog",
-      "part": [
-        "content"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-dialog-py"
-      ],
-      "visibility": "public",
-      "description": "dialog 的 content 部件 background 覆盖槽。"
-    },
-    {
       "name": "--xh-dialog-header-pb",
       "component": "dialog",
       "part": [
+        "content",
         "header"
       ],
       "property": [
         "padding-block-end"
       ],
       "state": [
-        "default"
+        "default",
+        "has([data-scope='dialog'][data-part='body'])"
       ],
       "defaultToken": [
+        "--xh-_dialog-header-pb",
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "dialog 的 header 部件 padding-block-end 覆盖槽。"
+      "description": "dialog 的 content、header 部件 padding-block-end 覆盖槽。"
     },
     {
-      "name": "--xh-dialog-highlight",
+      "name": "--xh-dialog-header-pt",
       "component": "dialog",
       "part": [
-        "content"
+        "content",
+        "header"
       ],
       "property": [
-        "background"
+        "padding-block-start"
       ],
       "state": [
-        "default"
+        "has([data-scope='dialog'][data-part='body'])"
       ],
       "defaultToken": [
-        "--xh-material-elevated-highlight"
+        "--xh-_dialog-header-pt"
       ],
       "visibility": "public",
-      "description": "dialog 的 content 部件 background 覆盖槽。"
+      "description": "dialog 的 content、header 部件 padding-block-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-dialog-header-px",
+      "component": "dialog",
+      "part": [
+        "content",
+        "header"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "has([data-scope='dialog'][data-part='body'])"
+      ],
+      "defaultToken": [
+        "--xh-overlay-sheet-px"
+      ],
+      "visibility": "public",
+      "description": "dialog 的 content、header 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-dialog-icon-size",
@@ -27574,7 +27600,8 @@
       ],
       "defaultToken": [
         "--xh-_action-profile-glyph-size",
-        "--xh-glyph-size-md"
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-xs"
       ],
       "visibility": "public",
       "description": "dialog 的 close-trigger、content、trigger 部件 --xh-icon-size 覆盖槽。"
@@ -27740,7 +27767,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-surface-px-md"
+        "--xh-overlay-sheet-px"
       ],
       "visibility": "public",
       "description": "dialog 的 content 部件 padding-inline 覆盖槽。"
@@ -27752,17 +27779,18 @@
         "content"
       ],
       "property": [
-        "background",
-        "padding-block"
+        "padding-block-end",
+        "padding-block-start"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-surface-py-md"
+        "--xh-_dialog-header-pt",
+        "--xh-overlay-sheet-body-py"
       ],
       "visibility": "public",
-      "description": "dialog 的 content 部件 background、padding-block 覆盖槽。"
+      "description": "dialog 的 content 部件 padding-block-end、padding-block-start 覆盖槽。"
     },
     {
       "name": "--xh-dialog-radius",
@@ -29273,6 +29301,42 @@
       "description": "drawer 的 content 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-drawer-body-px",
+      "component": "drawer",
+      "part": [
+        "body"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-px-sm"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 body 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-body-py",
+      "component": "drawer",
+      "part": [
+        "body"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-py-sm"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 body 部件 padding-block 覆盖槽。"
+    },
+    {
       "name": "--xh-drawer-border",
       "component": "drawer",
       "part": [
@@ -29445,6 +29509,7 @@
       "property": [
         "block-size",
         "inline-size",
+        "inset-block-start",
         "padding-inline-end"
       ],
       "state": [
@@ -29457,7 +29522,7 @@
         "--xh-control-h-sm"
       ],
       "visibility": "public",
-      "description": "drawer 的 close-trigger、content、title 部件 block-size、inline-size、padding-inline-end 覆盖槽。"
+      "description": "drawer 的 close-trigger、content、title 部件 block-size、inline-size、inset-block-start、padding-inline-end 覆盖槽。"
     },
     {
       "name": "--xh-drawer-description-fg",
@@ -29550,6 +29615,44 @@
       "description": "drawer 的 footer 部件 padding-block-start 覆盖槽。"
     },
     {
+      "name": "--xh-drawer-footer-px",
+      "component": "drawer",
+      "part": [
+        "content",
+        "footer"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "has([data-scope='drawer'][data-part='body'])"
+      ],
+      "defaultToken": [
+        "--xh-surface-px-sm"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 content、footer 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-footer-py",
+      "component": "drawer",
+      "part": [
+        "content",
+        "footer"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "has([data-scope='drawer'][data-part='body'])"
+      ],
+      "defaultToken": [
+        "--xh-overlay-sheet-footer-py"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 content、footer 部件 padding-block 覆盖槽。"
+    },
+    {
       "name": "--xh-drawer-gap",
       "component": "drawer",
       "part": [
@@ -29589,19 +29692,60 @@
       "name": "--xh-drawer-header-pb",
       "component": "drawer",
       "part": [
+        "content",
         "header"
       ],
       "property": [
         "padding-block-end"
       ],
       "state": [
-        "default"
+        "default",
+        "has([data-scope='drawer'][data-part='body'])"
       ],
       "defaultToken": [
+        "--xh-_drawer-header-pb",
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "drawer 的 header 部件 padding-block-end 覆盖槽。"
+      "description": "drawer 的 content、header 部件 padding-block-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-header-pt",
+      "component": "drawer",
+      "part": [
+        "content",
+        "header"
+      ],
+      "property": [
+        "padding-block-start"
+      ],
+      "state": [
+        "has([data-scope='drawer'][data-part='body'])"
+      ],
+      "defaultToken": [
+        "--xh-_drawer-header-pt"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 content、header 部件 padding-block-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-header-px",
+      "component": "drawer",
+      "part": [
+        "content",
+        "header"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "has([data-scope='drawer'][data-part='body'])"
+      ],
+      "defaultToken": [
+        "--xh-surface-px-sm"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 content、header 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-drawer-icon-size",
@@ -29620,7 +29764,8 @@
       ],
       "defaultToken": [
         "--xh-_action-profile-glyph-size",
-        "--xh-glyph-size-md"
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-xs"
       ],
       "visibility": "public",
       "description": "drawer 的 close-trigger、content、root、trigger 部件 --xh-icon-size 覆盖槽。"
@@ -29658,7 +29803,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-surface-px-md"
+        "--xh-surface-px-sm"
       ],
       "visibility": "public",
       "description": "drawer 的 content 部件 padding-inline 覆盖槽。"
@@ -29678,7 +29823,8 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-surface-py-md"
+        "--xh-_drawer-header-pt",
+        "--xh-overlay-sheet-footer-py"
       ],
       "visibility": "public",
       "description": "drawer 的 content 部件 padding-block-end、padding-block-start 覆盖槽。"
@@ -29702,7 +29848,7 @@
         "side=top"
       ],
       "defaultToken": [
-        "--xh-shape-overlay"
+        "0"
       ],
       "visibility": "public",
       "description": "drawer 的 content 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
@@ -29848,6 +29994,27 @@
       ],
       "visibility": "public",
       "description": "drawer 的 resize-trigger 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-drawer-separator",
+      "component": "drawer",
+      "part": [
+        "content",
+        "footer",
+        "header"
+      ],
+      "property": [
+        "border-block-end",
+        "border-block-start"
+      ],
+      "state": [
+        "has([data-scope='drawer'][data-part='body'])"
+      ],
+      "defaultToken": [
+        "--xh-material-elevated-separator"
+      ],
+      "visibility": "public",
+      "description": "drawer 的 content、footer、header 部件 border-block-end、border-block-start 覆盖槽。"
     },
     {
       "name": "--xh-drawer-shadow",
@@ -39404,7 +39571,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "hover-card 的 description 部件 font-size 覆盖槽。"
@@ -39441,7 +39608,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "hover-card 的 content 部件 gap 覆盖槽。"
@@ -39513,7 +39680,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_hover-card-pad"
+        "--xh-_hover-card-px"
       ],
       "visibility": "public",
       "description": "hover-card 的 content 部件 padding-inline 覆盖槽。"
@@ -39531,7 +39698,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_hover-card-pad"
+        "--xh-_hover-card-py"
       ],
       "visibility": "public",
       "description": "hover-card 的 content 部件 padding-block 覆盖槽。"
@@ -39622,7 +39789,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "hover-card 的 title 部件 font-weight 覆盖槽。"
@@ -50537,37 +50704,43 @@
       "name": "--xh-notification-description-fg",
       "component": "notification",
       "part": [
+        "item",
         "item-description"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "preset=toast"
       ],
       "defaultToken": [
+        "--xh-fg-default",
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "notification 的 item-description 部件 color 覆盖槽。"
+      "description": "notification 的 item、item-description 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-notification-description-font-size",
       "component": "notification",
       "part": [
+        "item",
         "item-description"
       ],
       "property": [
         "font-size"
       ],
       "state": [
-        "default"
+        "default",
+        "preset=toast"
       ],
       "defaultToken": [
+        "--xh-text-body-size",
         "--xh-text-secondary-size"
       ],
       "visibility": "public",
-      "description": "notification 的 item-description 部件 font-size 覆盖槽。"
+      "description": "notification 的 item、item-description 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-notification-description-leading",
@@ -50622,7 +50795,8 @@
       ],
       "defaultToken": [
         "--xh-_action-profile-glyph-size",
-        "--xh-glyph-size-md"
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-xs"
       ],
       "visibility": "public",
       "description": "notification 的 item、item-action-trigger、item-close-trigger 部件 --xh-icon-size 覆盖槽。"
@@ -50678,6 +50852,7 @@
       "name": "--xh-notification-indicator-size",
       "component": "notification",
       "part": [
+        "item",
         "item-indicator"
       ],
       "property": [
@@ -50685,13 +50860,15 @@
         "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "preset=toast"
       ],
       "defaultToken": [
+        "--xh-glyph-size-lg",
         "--xh-glyph-size-md"
       ],
       "visibility": "public",
-      "description": "notification 的 item-indicator 部件 --xh-icon-size、inline-size 覆盖槽。"
+      "description": "notification 的 item、item-indicator 部件 --xh-icon-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-notification-inset",
@@ -50852,8 +51029,8 @@
         "preset=toast"
       ],
       "defaultToken": [
-        "--xh-space-4",
-        "--xh-surface-pad-lg"
+        "--xh-overlay-sheet-px",
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "notification 的 item 部件 inset-inline-start、padding-inline 覆盖槽。"
@@ -50873,8 +51050,8 @@
         "preset=toast"
       ],
       "defaultToken": [
-        "--xh-space-3",
-        "--xh-surface-pad-lg"
+        "--xh-overlay-sheet-px",
+        "--xh-space-2_5"
       ],
       "visibility": "public",
       "description": "notification 的 item 部件 inset-block-start、padding-block 覆盖槽。"
@@ -50889,9 +51066,11 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "default",
+        "preset=toast"
       ],
       "defaultToken": [
+        "--xh-shape-control",
         "--xh-shape-overlay"
       ],
       "visibility": "public",
@@ -50950,7 +51129,7 @@
         "stacked"
       ],
       "defaultToken": [
-        "--xh-overlay-max-w-lg",
+        "--xh-overlay-notification-w",
         "--xh-overlay-toast-w"
       ],
       "visibility": "public",
@@ -51097,6 +51276,7 @@
       "name": "--xh-notification-title-font-size",
       "component": "notification",
       "part": [
+        "item",
         "item-indicator",
         "item-title"
       ],
@@ -51105,49 +51285,57 @@
         "font-size"
       ],
       "state": [
-        "default"
+        "default",
+        "preset=toast"
       ],
       "defaultToken": [
-        "--xh-text-label-size"
+        "--xh-text-body-size",
+        "--xh-text-heading-3-size"
       ],
       "visibility": "public",
-      "description": "notification 的 item-indicator、item-title 部件 block-size、font-size 覆盖槽。"
+      "description": "notification 的 item、item-indicator、item-title 部件 block-size、font-size 覆盖槽。"
     },
     {
       "name": "--xh-notification-title-font-weight",
       "component": "notification",
       "part": [
+        "item",
         "item-title"
       ],
       "property": [
         "font-weight"
       ],
       "state": [
-        "default"
+        "default",
+        "preset=toast"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium",
+        "--xh-text-heading-3-weight"
       ],
       "visibility": "public",
-      "description": "notification 的 item-title 部件 font-weight 覆盖槽。"
+      "description": "notification 的 item、item-title 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-notification-title-leading",
       "component": "notification",
       "part": [
+        "item",
         "item-title"
       ],
       "property": [
         "line-height"
       ],
       "state": [
-        "default"
+        "default",
+        "preset=toast"
       ],
       "defaultToken": [
+        "--xh-leading-normal",
         "--xh-leading-tight"
       ],
       "visibility": "public",
-      "description": "notification 的 item-title 部件 line-height 覆盖槽。"
+      "description": "notification 的 item、item-title 部件 line-height 覆盖槽。"
     },
     {
       "name": "--xh-number-animation-fg",
@@ -55091,6 +55279,25 @@
       "description": "popconfirm 的 cancel-trigger、confirm-trigger 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-popconfirm-action-mt",
+      "component": "popconfirm",
+      "part": [
+        "cancel-trigger",
+        "confirm-trigger"
+      ],
+      "property": [
+        "margin-block-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "popconfirm 的 cancel-trigger、confirm-trigger 部件 margin-block-start 覆盖槽。"
+    },
+    {
       "name": "--xh-popconfirm-action-px",
       "component": "popconfirm",
       "part": [
@@ -55401,6 +55608,24 @@
       "description": "popconfirm 的 cancel-trigger 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-popconfirm-column-gap",
+      "component": "popconfirm",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "column-gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "popconfirm 的 content 部件 column-gap 覆盖槽。"
+    },
+    {
       "name": "--xh-popconfirm-confirm-bg",
       "component": "popconfirm",
       "part": [
@@ -55510,7 +55735,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "popconfirm 的 description 部件 font-size 覆盖槽。"
@@ -55547,7 +55772,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "popconfirm 的 content 部件 gap 覆盖槽。"
@@ -55659,7 +55884,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_popconfirm-pad"
+        "--xh-_popconfirm-px"
       ],
       "visibility": "public",
       "description": "popconfirm 的 content 部件 padding-inline 覆盖槽。"
@@ -55677,7 +55902,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_popconfirm-pad"
+        "--xh-_popconfirm-py"
       ],
       "visibility": "public",
       "description": "popconfirm 的 content 部件 padding-block 覆盖槽。"
@@ -55768,7 +55993,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "popconfirm 的 title 部件 font-weight 覆盖槽。"
@@ -56054,7 +56279,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "popover 的 description 部件 font-size 覆盖槽。"
@@ -56091,7 +56316,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "popover 的 content 部件 gap 覆盖槽。"
@@ -56184,7 +56409,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_popover-pad"
+        "--xh-_popover-px"
       ],
       "visibility": "public",
       "description": "popover 的 content 部件 padding-inline 覆盖槽。"
@@ -56202,7 +56427,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_popover-pad"
+        "--xh-_popover-py"
       ],
       "visibility": "public",
       "description": "popover 的 content 部件 padding-block 覆盖槽。"
@@ -56293,7 +56518,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "popover 的 title 部件 font-weight 覆盖槽。"

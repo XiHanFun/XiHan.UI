@@ -143,6 +143,11 @@
       "$type": "dimension",
       "$value": "1em"
     },
+    "size-xs": {
+      "$description": "面板角上关闭钮（对话框、抽屉、通知）的叉：比控件内图标低一档，叉在钮里留足悬停面。",
+      "$type": "dimension",
+      "$value": "12px"
+    },
     "size-sm": {
       "$type": "dimension",
       "$value": "16px"
@@ -1106,8 +1111,33 @@
       "$type": "dimension",
       "$value": "28rem"
     },
+    "header-h": {
+      "$description": "对话框与抽屉头部的块尺寸：一颗中号控件加上下各一个 space-2，随控件档换密度。标题行与角上的关闭钮都落在这条带的中线上。",
+      "$type": "dimension",
+      "$value": "calc({control.h-md} + {space.4})"
+    },
+    "sheet-px": {
+      "$description": "sheet 面的内衬：对话框头、正文、尾三段的横向，通知卡片的四边。",
+      "$type": "dimension",
+      "$value": "{space.5}"
+    },
+    "sheet-body-py": {
+      "$description": "对话框正文段的纵向内衬。",
+      "$type": "dimension",
+      "$value": "{space.6}"
+    },
+    "sheet-footer-py": {
+      "$description": "对话框与抽屉尾段（动作行）的纵向内衬。",
+      "$type": "dimension",
+      "$value": "{space.4}"
+    },
+    "notification-w": {
+      "$description": "通知卡片的缺省宽：左列一枚类型字形、右列标题与正文，两列排得下一句短通知。",
+      "$type": "dimension",
+      "$value": "18.75rem"
+    },
     "toast-w": {
-      "$description": "轻提示的卡宽：指示符、正文、行内动作与关闭钮排成一行，比通知卡片（max-w-lg）宽一截。",
+      "$description": "轻提示的卡宽：指示符、正文、行内动作与关闭钮排成一行，比通知卡片（notification-w）宽一截。",
       "$type": "dimension",
       "$value": "28.75rem"
     },
@@ -1242,6 +1272,11 @@
     "pad-lg": {
       "$type": "dimension",
       "$value": "{space.4}"
+    },
+    "pad-xl": {
+      "$description": "比 pad-lg 再宽一档：气泡（Popover、Popconfirm、HoverCard）横向内衬比纵向高一档，大号档的横向取它。",
+      "$type": "dimension",
+      "$value": "{space.5}"
     },
     "action-inset": {
       "$description": "钉在面板角上的钮离两条边的距离。标题给这颗钮让出的那一段也取它，让位量与实际落点恒一致。",

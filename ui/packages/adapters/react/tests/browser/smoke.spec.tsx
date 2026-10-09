@@ -47,7 +47,7 @@ describe('浏览器态地基', () => {
     // 圆角 = --xh-shape-pill → --xh-radius-full
     expect(style.borderTopLeftRadius).toBe('9999px')
 
-    // 可见盒子：轨道高 = --xh-switch-track-h-md，轨道宽 = 两倍轨道高 − 两条内衬
+    // 可见盒子：轨道高 = --xh-switch-track-h-md（24px），轨道宽 = 两倍轨道高 − 两条内衬
     const rect = track.getBoundingClientRect()
     const trackHeight = px('--xh-switch-track-h-md', track)
     expect(rect.height).toBe(trackHeight)

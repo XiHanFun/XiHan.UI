@@ -9,7 +9,6 @@
     "transfer [data-part='item-checkbox'][data-scope='transfer'][data-state='checked']": "连接层给这颗把手发 aria-hidden: true，焦点落不上去，这条 :focus-visible 规则画不出来"
   },
   "opaque": {
-    "dialog [content] linear-gradient(\n        to bottom,\n        var(--xh-dialog-highlight, var(--xh-material-elevated-highlight)) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      linear-gradient(\n        to bottom,\n        var(--xh-dialog-content-lens-bg, var(--xh-dialog-header-bg, var(--xh-material-elevated-bg))),\n        var(\n          --xh-dialog-bg,\n          var(--xh-material-elevated-bg)\n        ) var(--xh-dialog-content-lens-depth, var(--xh-dialog-header-lens-depth, calc(var(--xh-dialog-py, var(--xh-surface-py-md)) + var(--xh-control-h-md))))\n      )": "M4 内容面由透明顶光与 lens 到正文的同一实体面渐变叠合，静态工具无法按单一实体色求环对比；content 已在同表 ringless 登记为焦点陷阱的 tabindex=-1 兜底，真实交互控件各自铺实体焦点面并由浏览器回归覆盖。",
     "heatmap [cell] color-mix(in oklab, var(--xh-_heatmap-ink) var(--xh-_heatmap-level), var(--xh-_heatmap-empty))": "档位是连着的百分比、由连接层内联写进 style，皮肤里恒是 0%，静态解不出格子的实际颜色；满档那一格的面就是 --xh-_heatmap-ink（缺省即 --xh-bg-brand），环压上去大概率不到 3:1，要浏览器态判据接",
     "scrollbar [thumb] var(--xh-fg-scrollbar-thumb-active)": "滑块拖动态仍叠在作者内容上，最终颜色随宿主背景变化；可聚焦滑块另以不透明 currentColor 绘制焦点环",
     "scrollbar [thumb] var(--xh-fg-scrollbar-thumb)": "滑块静息面叠在作者内容上，最终颜色随宿主背景变化；可聚焦滑块另以不透明 currentColor 绘制焦点环"

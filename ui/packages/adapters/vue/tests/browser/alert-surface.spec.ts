@@ -78,6 +78,7 @@ describe('警告提示的表面与信息层级', () => {
   it('使用语气淡底面（透明边位、无影），彩色只落在底与图标上，标题取正文色', async () => {
     await mount()
     const root = part('root')
+    const style = getComputedStyle(root)
 
     expect(getComputedStyle(root).backgroundColor).toBe(tokenColor('--xh-_tone-subtle', root))
     expect(getComputedStyle(root).borderTopColor).toBe('rgba(0, 0, 0, 0)')
@@ -118,6 +119,7 @@ describe('警告提示的表面与信息层级', () => {
     expect(getComputedStyle(close, '::before').width).toBe('16px')
     expect(resolvedLength(part('indicator'), 'var(--xh-icon-size)')).toBe(20)
 
+    // 本体已是语气 12% 淡底，叉的悬停面再升一档到 20%，才在底上看得出来
     await userEvent.hover(close)
     await expect.poll(() => getComputedStyle(close).backgroundColor).toBe(tokenColor('--xh-_tone-subtle-hover', part('root')))
     expect(getComputedStyle(close).color).toBe(tokenColor('--xh-fg-default'))
