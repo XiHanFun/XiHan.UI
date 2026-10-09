@@ -27704,8 +27704,14 @@
    确认钮总落在行尾；只放了确认钮时它独占那条轨道，靠 justify-self 贴到行尾。
    底栏不参与撑宽：面板换行排布时，Chrome 把每个子项的固有宽相加当作面板的固有宽，
    底栏的字与钮会把面板多撑出一截、日历与时间列末端空出一块。inline-size 包含让它的内容不计入固有宽，
-   行内内衬也就不能写在它自己身上（内衬照样计入），改由首末两个子节点的外边距让出 */
+   行内内衬也就不能写在它自己身上（内衬照样计入），改由两端各一个定宽占位让出（见下面那条） */
 .xh-scope-date-picker[data-part='footer'] {
+  /* 两端占位的宽：占位与相邻项之间本来就隔着一道 gap，占位自己只补到内衬的差额 */
+  --xh-_date-picker-footer-inset: max(
+    var(--xh-space-0),
+    calc(var(--xh-date-picker-footer-px, var(--xh-space-2)) - var(--xh-date-picker-footer-gap, var(--xh-space-2)))
+  );
+
   display: grid;
   contain: inline-size;
   flex-basis: 100%;
@@ -27733,12 +27739,18 @@
   justify-self: end;
 }
 
-.xh-scope-date-picker[data-part='footer'] > :first-child {
-  margin-inline-start: var(--xh-date-picker-footer-px, var(--xh-space-2));
+/* 行首行尾的内衬由两端的定宽占位让出，不挂在首末子节点上：首个子节点可能是裸文本，
+   末一个可能是按状态收起的确认钮，外边距都接不住。占位与其余子项一样在 inline-size 包含之内，不计入面板的固有宽 */
+.xh-scope-date-picker[data-part='footer']::before,
+.xh-scope-date-picker[data-part='footer']::after {
+  content: '';
+  inline-size: var(--xh-_date-picker-footer-inset);
 }
 
-.xh-scope-date-picker[data-part='footer'] > :last-child {
-  margin-inline-end: var(--xh-date-picker-footer-px, var(--xh-space-2));
+/* 行首占位落在那条撑满余宽的显式轨道之前（在它前面长出一条隐式列），首个子节点仍落在那条轨道上。
+   占位不进显式轨道：尺寸包含照样计入显式轨道与轨道间的 gap，多一条显式列面板就多撑出一道 gap */
+.xh-scope-date-picker[data-part='footer']::before {
+  grid-column: span 1 / 1;
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -28630,8 +28642,14 @@
    确认钮总落在行尾；只放了确认钮时它独占那条轨道，靠 justify-self 贴到行尾。
    底栏不参与撑宽：面板换行排布时，Chrome 把每个子项的固有宽相加当作面板的固有宽，
    底栏的字与钮会把面板多撑出一截、日历与时间组末端空出一块。inline-size 包含让它的内容不计入固有宽，
-   行内内衬也就不能写在它自己身上（内衬照样计入），改由首末两个子节点的外边距让出 */
+   行内内衬也就不能写在它自己身上（内衬照样计入），改由两端各一个定宽占位让出（见下面那条） */
 .xh-scope-date-range-picker[data-part='footer'] {
+  /* 两端占位的宽：占位与相邻项之间本来就隔着一道 gap，占位自己只补到内衬的差额 */
+  --xh-_date-range-picker-footer-inset: max(
+    var(--xh-space-0),
+    calc(var(--xh-date-range-picker-footer-px, var(--xh-space-2)) - var(--xh-date-range-picker-footer-gap, var(--xh-space-2)))
+  );
+
   display: grid;
   contain: inline-size;
   flex-basis: 100%;
@@ -28659,12 +28677,18 @@
   justify-self: end;
 }
 
-.xh-scope-date-range-picker[data-part='footer'] > :first-child {
-  margin-inline-start: var(--xh-date-range-picker-footer-px, var(--xh-space-2));
+/* 行首行尾的内衬由两端的定宽占位让出，不挂在首末子节点上：首个子节点可能是裸文本，
+   末一个可能是按状态收起的确认钮，外边距都接不住。占位与其余子项一样在 inline-size 包含之内，不计入面板的固有宽 */
+.xh-scope-date-range-picker[data-part='footer']::before,
+.xh-scope-date-range-picker[data-part='footer']::after {
+  content: '';
+  inline-size: var(--xh-_date-range-picker-footer-inset);
 }
 
-.xh-scope-date-range-picker[data-part='footer'] > :last-child {
-  margin-inline-end: var(--xh-date-range-picker-footer-px, var(--xh-space-2));
+/* 行首占位落在那条撑满余宽的显式轨道之前（在它前面长出一条隐式列），首个子节点仍落在那条轨道上。
+   占位不进显式轨道：尺寸包含照样计入显式轨道与轨道间的 gap，多一条显式列面板就多撑出一道 gap */
+.xh-scope-date-range-picker[data-part='footer']::before {
+  grid-column: span 1 / 1;
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -46817,8 +46841,14 @@
    「添加」总落在行尾；只放了「添加」时它独占那条轨道，靠 justify-self 贴到行尾。
    底栏不参与撑宽：面板换行排布时，Chrome 把每个子项的固有宽相加当作面板的固有宽，
    底栏的字与钮会把面板多撑出一截、最后一列末端空出一块。inline-size 包含让它的内容不计入固有宽，
-   行内内衬也就不能写在它自己身上（内衬照样计入），改由首末两个子节点的外边距让出 */
+   行内内衬也就不能写在它自己身上（内衬照样计入），改由两端各一个定宽占位让出（见下面那条） */
 .xh-scope-time-picker[data-part='footer'] {
+  /* 两端占位的宽：占位与相邻项之间本来就隔着一道 gap，占位自己只补到内衬的差额 */
+  --xh-_time-picker-footer-inset: max(
+    var(--xh-space-0),
+    calc(var(--xh-time-picker-footer-px, var(--xh-space-2)) - var(--xh-time-picker-footer-gap, var(--xh-space-2)))
+  );
+
   display: grid;
   contain: inline-size;
   flex-basis: 100%;
@@ -46846,12 +46876,18 @@
   justify-self: end;
 }
 
-.xh-scope-time-picker[data-part='footer'] > :first-child {
-  margin-inline-start: var(--xh-time-picker-footer-px, var(--xh-space-2));
+/* 行首行尾的内衬由两端的定宽占位让出，不挂在首末子节点上：首个子节点可能是裸文本，
+   末一个可能是按状态收起的「添加」，外边距都接不住。占位与其余子项一样在 inline-size 包含之内，不计入面板的固有宽 */
+.xh-scope-time-picker[data-part='footer']::before,
+.xh-scope-time-picker[data-part='footer']::after {
+  content: '';
+  inline-size: var(--xh-_time-picker-footer-inset);
 }
 
-.xh-scope-time-picker[data-part='footer'] > :last-child {
-  margin-inline-end: var(--xh-time-picker-footer-px, var(--xh-space-2));
+/* 行首占位落在那条撑满余宽的显式轨道之前（在它前面长出一条隐式列），首个子节点仍落在那条轨道上。
+   占位不进显式轨道：尺寸包含照样计入显式轨道与轨道间的 gap，多一条显式列面板就多撑出一道 gap */
+.xh-scope-time-picker[data-part='footer']::before {
+  grid-column: span 1 / 1;
 }
 
 /* 快捷选项也是一列，与时分秒那几列并排，排在行内起始一侧；限高与时间列同一档 */

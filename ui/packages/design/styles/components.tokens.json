@@ -24476,7 +24476,8 @@
         "footer"
       ],
       "property": [
-        "gap"
+        "gap",
+        "inline-size"
       ],
       "state": [
         "default"
@@ -24485,7 +24486,7 @@
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "date-picker 的 footer 部件 gap 覆盖槽。"
+      "description": "date-picker 的 footer 部件 gap、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-footer-px",
@@ -24494,18 +24495,16 @@
         "footer"
       ],
       "property": [
-        "margin-inline-end",
-        "margin-inline-start"
+        "inline-size"
       ],
       "state": [
-        "first-child",
-        "last-child"
+        "default"
       ],
       "defaultToken": [
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "date-picker 的 footer 部件 margin-inline-end、margin-inline-start 覆盖槽。"
+      "description": "date-picker 的 footer 部件 inline-size 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-footer-py",
@@ -26574,7 +26573,8 @@
         "footer"
       ],
       "property": [
-        "gap"
+        "gap",
+        "inline-size"
       ],
       "state": [
         "default"
@@ -26583,7 +26583,7 @@
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "date-range-picker 的 footer 部件 gap 覆盖槽。"
+      "description": "date-range-picker 的 footer 部件 gap、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-date-range-picker-footer-px",
@@ -26592,18 +26592,16 @@
         "footer"
       ],
       "property": [
-        "margin-inline-end",
-        "margin-inline-start"
+        "inline-size"
       ],
       "state": [
-        "first-child",
-        "last-child"
+        "default"
       ],
       "defaultToken": [
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "date-range-picker 的 footer 部件 margin-inline-end、margin-inline-start 覆盖槽。"
+      "description": "date-range-picker 的 footer 部件 inline-size 覆盖槽。"
     },
     {
       "name": "--xh-date-range-picker-footer-py",
@@ -78922,7 +78920,8 @@
         "footer"
       ],
       "property": [
-        "gap"
+        "gap",
+        "inline-size"
       ],
       "state": [
         "default"
@@ -78931,7 +78930,7 @@
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "time-picker 的 footer 部件 gap 覆盖槽。"
+      "description": "time-picker 的 footer 部件 gap、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-time-picker-footer-px",
@@ -78940,18 +78939,16 @@
         "footer"
       ],
       "property": [
-        "margin-inline-end",
-        "margin-inline-start"
+        "inline-size"
       ],
       "state": [
-        "first-child",
-        "last-child"
+        "default"
       ],
       "defaultToken": [
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "time-picker 的 footer 部件 margin-inline-end、margin-inline-start 覆盖槽。"
+      "description": "time-picker 的 footer 部件 inline-size 覆盖槽。"
     },
     {
       "name": "--xh-time-picker-footer-py",

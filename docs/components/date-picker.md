@@ -534,8 +534,8 @@ selectionMode="multiple" 时选中的日期在输入行里排成标签，点标�
 | `--xh-date-picker-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-solid-border` | date-picker 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-date-picker-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | date-picker 的 footer 部件 color 覆盖槽。 |
 | `--xh-date-picker-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-caption-size` | date-picker 的 footer 部件 font-size 覆盖槽。 |
-| `--xh-date-picker-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | date-picker 的 footer 部件 gap 覆盖槽。 |
-| `--xh-date-picker-footer-px` | `footer` | `margin-inline-end`<br>`margin-inline-start` | `first-child`<br>`last-child` | `--xh-space-2` | date-picker 的 footer 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-date-picker-footer-gap` | `footer` | `gap`<br>`inline-size` | `default` | `--xh-space-2` | date-picker 的 footer 部件 gap、inline-size 覆盖槽。 |
+| `--xh-date-picker-footer-px` | `footer` | `inline-size` | `default` | `--xh-space-2` | date-picker 的 footer 部件 inline-size 覆盖槽。 |
 | `--xh-date-picker-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | date-picker 的 footer 部件 padding-block 覆盖槽。 |
 | `--xh-date-picker-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | date-picker 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-date-picker-heading-font-weight` | `calendar`<br>`heading`<br>`heading-month-trigger`<br>`heading-year-trigger` | `font-weight` | `default` | `--xh-font-weight-regular` | date-picker 的 calendar、heading、heading-month-trigger、heading-year-trigger 部件 font-weight 覆盖槽。 |
