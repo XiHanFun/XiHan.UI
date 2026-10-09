@@ -146,12 +146,16 @@ const CAPTION_DESCRIPTION = {
   steps: '步骤说明压在流程轴的标题下面，比标题低两级：12px 弱化色，与正文 14 / 次级色的标题拉开层级',
 }
 
-/** 内容说明：description 部件装的是内容本身而不是控件下的提示，取正文字号 14；颜色逐个登记。 */
+/**
+ * 内容说明：description 部件装的是内容本身而不是控件下的提示，取正文字号 14；颜色逐个登记。
+ * 说明部件不叫 description 的（notification 的 item-description）在 part 里写明，与 SECTION_TITLE 同一种映射。
+ */
 const BODY_DESCRIPTION = {
   'popover': { color: '--xh-fg-muted', reason: '气泡正文就是这块浮层的内容，与标题同为正文字号、低一档颜色' },
   'popconfirm': { color: '--xh-fg-muted', reason: '确认气泡的正文，与 Popover 同一副排版' },
   'hover-card': { color: '--xh-fg-muted', reason: '悬停卡片的正文，与 Popover 同一副排版' },
   'page-header': { color: '--xh-fg-subtle', reason: '页头副标题跟在标题同一行、隔一条竖线，正文字号、比标题低两档颜色' },
+  'notification': { part: 'item-description', color: '--xh-fg-default', reason: '通知卡片的说明就是这条通知的正文：卡片是一块面板，标题取面板标题档，说明取正文字号与正文色；轻提示预设的说明挂在祖先预设条件下，不进基础块，仍按其余说明档' },
 }
 
 const backlog = await openBacklog('text')
@@ -330,16 +334,17 @@ for (const [scope, container] of Object.entries(COLLECTION_TITLE)) {
 // 说明与错误文案：所有写了这两个部件的皮肤；字段辅助行取说明字号 + subtle，其余说明取次级字号 + muted
 for (const skin of skins) {
   const helper = FIELD_HELPER.has(skin.comp)
-  const description = declsFor(skin.comp, 'description')
+  const descriptionPart = BODY_DESCRIPTION[skin.comp]?.part ?? 'description'
+  const description = declsFor(skin.comp, descriptionPart)
   if (description.size && skin.comp in CAPTION_DESCRIPTION) {
     expect(skin.comp, 'description', description, 'font-size', '--xh-text-caption-size', '次级标注')
     expect(skin.comp, 'description', description, 'color', '--xh-fg-subtle', '次级标注')
     expect(skin.comp, 'description', description, 'line-height', '--xh-leading-normal', '次级标注')
   }
   else if (description.size && skin.comp in BODY_DESCRIPTION) {
-    expect(skin.comp, 'description', description, 'font-size', '--xh-text-body-size', '内容说明')
-    expect(skin.comp, 'description', description, 'color', BODY_DESCRIPTION[skin.comp].color, '内容说明')
-    expect(skin.comp, 'description', description, 'line-height', '--xh-leading-normal', '内容说明')
+    expect(skin.comp, descriptionPart, description, 'font-size', '--xh-text-body-size', '内容说明')
+    expect(skin.comp, descriptionPart, description, 'color', BODY_DESCRIPTION[skin.comp].color, '内容说明')
+    expect(skin.comp, descriptionPart, description, 'line-height', '--xh-leading-normal', '内容说明')
   }
   else if (description.size) {
     const why = helper ? '字段辅助行的说明' : '说明文字'

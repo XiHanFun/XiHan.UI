@@ -345,6 +345,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 区块与面板标题（Card、Descriptions、Alert、Notification、Steps；Dialog、Drawer、Tour） | heading-3：16 / 500 | — |
 | 页面标题（PageHeader） | heading-2：20 / 500 | — |
 | 气泡正文（Popover、Popconfirm、HoverCard 的 description） | `--xh-text-body-size` 14 / `--xh-fg-muted` / `--xh-leading-normal` | 与标题 `--xh-space-1` |
+| 通知卡片正文（Notification 卡片预设的 item-description；轻提示预设的说明仍按其余说明档） | `--xh-text-body-size` 14 / `--xh-fg-default`，行高随卡片取 `--xh-text-body-leading` | 与标题 `--xh-space-2` |
 | 页头副标题（PageHeader description） | `--xh-text-body-size` 14 / `--xh-fg-subtle` | 与标题同一行，中间 1 × 16px 竖线、两侧 `--xh-space-3` |
 | 大号数值（Statistic、Timer、NumberAnimation） | sm / md / lg 依次取 heading-2 / heading-1 / display（20 / 24 / 28） | — |
 | 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
