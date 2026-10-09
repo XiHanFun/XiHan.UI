@@ -2,6 +2,7 @@
 // 这两件只有真实浏览器量得出来：jsdom 不算样式，animation-duration 与描边色都要皮肤真的加载进来才有计算值。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
+import { cdp } from 'vitest/browser'
 import { createApp, h, nextTick, ref } from 'vue'
 import {
   XhButton,
@@ -88,7 +89,13 @@ async function mountThenOpen(side: 'left' | 'right' | 'top' | 'bottom'): Promise
   await settle()
 }
 
-afterEach(() => {
+/** 让系统占住四周各一段，env(safe-area-inset-*) 随之给出这几个值；四边给 0 即让回来。 */
+async function emulateSafeArea(insets: { top: number, bottom: number, left: number, right: number }): Promise<void> {
+  await cdp().send('Emulation.setSafeAreaInsetsOverride' as never, { insets } as never)
+}
+
+afterEach(async () => {
+  await emulateSafeArea({ top: 0, bottom: 0, left: 0, right: 0 })
   app?.unmount()
   app = null
   document.body.innerHTML = ''
@@ -173,6 +180,29 @@ describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
     const headerRect = part('header').getBoundingClientRect()
     expect(box.right - closeRect.right).toBeCloseTo(16, 0)
     expect(closeRect.top + closeRect.height / 2).toBeCloseTo(headerRect.top + headerRect.height / 2, 0)
+  })
+
+  it('横屏刘海占住行内一侧时，关闭钮先让出安全区再距边 16px：分三段与不分三段同一个落点', async () => {
+    await emulateSafeArea({ top: 0, bottom: 0, left: 44, right: 0 })
+    mountSections()
+    await settle()
+    let box = paddingBox(part('content'))
+    expect(box.right - part('close-trigger').getBoundingClientRect().right).toBeCloseTo(44 + 16, 0)
+
+    app?.unmount()
+    document.body.innerHTML = ''
+    const host = document.createElement('div')
+    document.body.append(host)
+    app = createApp({
+      render: () => h(XhDrawerRoot, { open: true }, () => [
+        h(XhDrawerTrigger, null, () => '打开'),
+        h(XhDrawerContent, null, () => [h(XhDrawerTitle, null, () => '设置'), h(XhDrawerCloseTrigger, { 'aria-label': '关闭' })]),
+      ]),
+    })
+    app.mount(host)
+    await settle()
+    box = paddingBox(part('content'))
+    expect(box.right - part('close-trigger').getBoundingClientRect().right).toBeCloseTo(44 + 16, 0)
   })
 
   it('紧凑密度下头部随控件档收到 44px', async () => {
