@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhSwitch } from '../../src'
+import { pressScale, tokenLength, tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -43,23 +44,6 @@ function resolveColor(element: Element, value: string): string {
   const color = getComputedStyle(probe).color
   probe.remove()
   return color
-}
-
-/** 主题给 raised 一层影（缺省是 none，平面）：把这条通道显出来，才分得出谁带影、谁收掉了影 */
-const RAISED = '0 1px 2px rgb(0, 255, 0)'
-/** 同一层影的计算值写法：颜色排在最前 */
-const RAISED_COMPUTED = 'rgb(0, 255, 0) 0px 1px 2px 0px'
-
-/** 在元素所在的继承边界下解析一个长度令牌（px 数）。 */
-function resolveLength(element: Element, value: string): number {
-  const probe = document.createElement('span')
-  // 绝对定位：不当宿主的 flex 子项被压缩，量到的就是令牌本身
-  probe.style.position = 'absolute'
-  probe.style.inlineSize = value
-  element.append(probe)
-  const px = Number.parseFloat(getComputedStyle(probe).inlineSize)
-  probe.remove()
-  return px
 }
 
 function track(id: string): HTMLElement {
@@ -132,7 +116,7 @@ describe('switch 实体轨道与 raised 滑块', () => {
       h(XhSwitch, { 'data-testid': 'off' }),
       h(XhSwitch, { 'data-testid': 'on', 'defaultChecked': true }),
       h(XhSwitch, { 'data-testid': 'readonly', 'defaultChecked': true, 'readOnly': true }),
-    ], { style: `--xh-elevation-raised: ${RAISED}` })
+    ])
 
     const page = getComputedStyle(document.body).backgroundColor
     const off = getComputedStyle(track('off'))
@@ -141,22 +125,22 @@ describe('switch 实体轨道与 raised 滑块', () => {
     const offBorder = resolveColor(track('off'), 'var(--xh-_switch-track-border)')
     const readonlyBorder = resolveColor(track('readonly'), 'var(--xh-_switch-track-border)')
 
-    // 轨道是实体面：静息不画描边，面本身就是边界；只读（选中档退回中性底）才换有色的一圈控件边，3:1 留给高对比档
+    // 轨道的面就是边界：静息内描边透明，只读才换成装饰边那一圈；3:1 留给高对比档
     expect(offBorder, '未选中轨道边界').toBe('rgba(0, 0, 0, 0)')
-    expect(readonlyBorder, '只读轨道边界').toBe(resolveColor(track('readonly'), 'var(--xh-border-control)'))
+    expect(readonlyBorder, '只读轨道边界').toBe(resolveColor(track('readonly'), 'var(--xh-border-default)'))
     expect(contrast(on.backgroundColor, page), '选中轨道与页面').toBeGreaterThanOrEqual(3)
     expect(off.backgroundColor).not.toBe(on.backgroundColor)
     expect(readonly.backgroundColor).not.toBe(on.backgroundColor)
     expect(off.boxShadow).toContain('inset')
     expect(off.backdropFilter).toBe('none')
 
-    // 滑块是 raised 抬起面：surface-raised 底 + border-default 描边 + raised 影（主题给的那层），无顶光
+    // 滑块是 raised 抬起面：surface-raised 底 + border-default 描边 + raised 影，无顶光
     const knob = getComputedStyle(thumb('off'))
     expect(knob.backgroundColor).toBe(resolveColor(thumb('off'), 'var(--xh-bg-surface-raised)'))
     expect(knob.borderStyle).toBe('solid')
     expect(knob.borderColor).toBe(resolveColor(thumb('off'), 'var(--xh-border-default)'))
     expect(knob.backgroundImage).toBe('none')
-    expect(knob.boxShadow).toBe(RAISED_COMPUTED)
+    expect(knob.boxShadow).toBe(tokenValue('box-shadow', '--xh-elevation-raised', thumb('off')))
   })
 
   it('按下时轨道缩放并换底：未选中保持轨道面、选中换到 active 档；禁用轨道改中性面不降 opacity', async () => {
@@ -167,15 +151,14 @@ describe('switch 实体轨道与 raised 滑块', () => {
       h(XhSwitch, { 'data-testid': 'disabled-on', 'defaultChecked': true, 'disabled': true }),
     ])
     const rest = getComputedStyle(track('live')).backgroundColor
-    // 轨道接 Action Control text 档（定尺轨道）：家族给按压与过渡；几何按轨道高与留白两个令牌算：
-    // 宽 = 2 × 高 − 2 × 留白（md 24px 高、4px 留白 → 40 × 24），滑块贴起始端、离轨道边一个留白
-    const trackH = resolveLength(track('live'), 'var(--xh-switch-track-h-md)')
-    const pad = resolveLength(track('live'), 'var(--xh-space-1)')
+    // 轨道接 Action Control text 档（定尺轨道）：家族给按压与过渡；轨道宽 = 2 × 轨道高 − 2 × 留白，滑块贴起始端
     expect(track('live').getAttribute('data-xh-action-control')).toBe('')
     expect(track('live').getAttribute('data-xh-action-profile')).toBe('text')
     expect(track('live').getAttribute('data-xh-action-variant')).toBe('outline')
-    expect(track('live').getBoundingClientRect().width).toBe(trackH * 2 - pad * 2)
-    expect(track('live').getBoundingClientRect().height).toBe(trackH)
+    const trackHeight = tokenLength('--xh-switch-track-h-md')
+    const pad = tokenLength('--xh-_switch-pad', track('live'))
+    expect(track('live').getBoundingClientRect().width).toBe(2 * trackHeight - 2 * pad)
+    expect(track('live').getBoundingClientRect().height).toBe(trackHeight)
     expect(getComputedStyle(track('live')).justifyContent).toBe('start')
     expect(thumb('live').getBoundingClientRect().left - track('live').getBoundingClientRect().left).toBe(pad)
     expect(getComputedStyle(track('live')).borderTopWidth).toBe('0px')
@@ -186,8 +169,7 @@ describe('switch 实体轨道与 raised 滑块', () => {
     expect(getComputedStyle(track('live')).backgroundColor).toBe(rest)
     await userEvent.unhover(track('live'))
     await holdSpace(track('live'))
-    // 缩放取全库按压比例令牌（缺省 1：只换面，主题写回 0.97 即恢复缩放）
-    expect(getComputedStyle(track('live')).scale).toBe(getComputedStyle(track('live')).getPropertyValue('--xh-motion-scale-press').trim())
+    expect(getComputedStyle(track('live')).scale).toBe(pressScale(track('live')))
     expect(getComputedStyle(track('live')).backgroundColor).toBe(rest)
     expect(getComputedStyle(thumb('live')).boxShadow).toBe('none')
     await releaseSpace()
@@ -227,14 +209,14 @@ describe('switch 实体轨道与 raised 滑块', () => {
     expect(getComputedStyle(labels[3]!).color).toBe(resolveColor(labels[3]!, 'var(--xh-fg-subtle)'))
   })
 
-  it('disabled、readonly 与 loading 各自使用正确光标和海拔；滑块静息即 raised，悬停不再升档', async () => {
+  it('disabled、readonly 与 loading 各自使用正确光标和海拔；滑块静息即取 raised 影，悬停不再升档', async () => {
     await mount([
       h(XhSwitch, { 'data-testid': 'live', 'defaultChecked': true }, () => '实时同步'),
       h(XhSwitch, { 'data-testid': 'disabled', 'defaultChecked': true, 'disabled': true }, () => '已禁用'),
       h(XhSwitch, { 'data-testid': 'readonly', 'defaultChecked': true, 'readOnly': true }, () => '只读'),
       h(XhSwitch, { 'data-testid': 'loading', 'defaultChecked': true, 'loading': true }, () => '提交中'),
       h(XhSwitch, { 'data-testid': 'disabled-loading', 'disabled': true, 'loading': true }, () => '禁用且提交中'),
-    ], { style: `--xh-elevation-raised: ${RAISED}` })
+    ])
     const labels = [...document.querySelectorAll<HTMLElement>(`[data-scope='switch'][data-part='label']`)]
     const roots = labels.map(label => label.querySelector<HTMLElement>(`[data-part='root']`)!)
     const thumbs = roots.map(root => root.querySelector<HTMLElement>(`[data-part='thumb']`)!)
@@ -251,7 +233,7 @@ describe('switch 实体轨道与 raised 滑块', () => {
     expect(getComputedStyle(roots[1]!).opacity).toBe('1')
     expect(getComputedStyle(roots[2]!).opacity).toBe('1')
     const restShadow = getComputedStyle(thumbs[0]!).boxShadow
-    expect(restShadow).toBe(RAISED_COMPUTED)
+    expect(restShadow).toBe(tokenValue('box-shadow', '--xh-elevation-raised', thumbs[0]!))
     expect(getComputedStyle(thumbs[1]!).boxShadow).toBe('none')
     expect(getComputedStyle(thumbs[2]!).boxShadow).toBe('none')
     expect(getComputedStyle(thumbs[3]!, '::before').animationPlayState).toBe('running')

@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhBackTopRoot, XhBackTopTrigger } from '../../src'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -135,9 +136,9 @@ describe('back-top 的 M2 磨砂皮肤', () => {
     // 不传 variant 时连接层显式落 outline：描边 + 磨砂面的中性圆钮
     expect(root().getAttribute('data-variant')).toBe('outline')
     expect(element.getAttribute('data-xh-action-variant')).toBe('outline')
-    // 浮钮 md 档：40px 圆形（--xh-control-float-md），与 float-button 同档
-    expect(element.getBoundingClientRect().width).toBe(40)
-    expect(element.getBoundingClientRect().height).toBe(40)
+    // 浮钮 md 档：control-float-md 的圆形，与 float-button 同档
+    expect(element.getBoundingClientRect().width).toBe(tokenLength('--xh-control-float-md'))
+    expect(element.getBoundingClientRect().height).toBe(tokenLength('--xh-control-float-md'))
     expect(style.backgroundColor).toBe(resolve(element, 'background-color', 'var(--xh-material-frosted-bg)'))
     expect(style.borderTopColor).toBe(resolve(element, 'border-top-color', 'var(--xh-material-frosted-border)'))
     expect(style.color).toBe(resolve(element, 'color', 'var(--xh-material-frosted-fg)'))
