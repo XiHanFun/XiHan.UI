@@ -7,6 +7,11 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
+  XhClipboardControl,
+  XhClipboardCopyTrigger,
+  XhClipboardInput,
+  XhClipboardLabel,
+  XhClipboardRoot,
   XhFieldControl,
   XhFieldLabel,
   XhFieldRoot,
@@ -122,6 +127,19 @@ describe('字段标签角色', () => {
     expect(style.fontSize).toBe(resolve('var(--xh-text-label-size)', 'font-size'))
     expect(style.fontWeight).toBe(resolve('var(--xh-text-label-weight)', 'font-weight'))
     expect(Math.round(control.getBoundingClientRect().top - label.getBoundingClientRect().bottom)).toBe(px('--xh-space-2'))
+  })
+
+  it('clipboard：带输入框的用法是单行字段，标签同一副字段标签排版，与控件隔 --xh-space-2', async () => {
+    await mount(() => h(XhClipboardRoot, { value: 'pnpm add @xihan-ui/vue' }, () => [
+      h(XhClipboardLabel, null, () => '安装命令'),
+      h(XhClipboardControl, null, () => [h(XhClipboardInput), h(XhClipboardCopyTrigger, null, () => '复制')]),
+    ]))
+    const label = part('clipboard', 'label')
+    const style = getComputedStyle(label)
+    expect(style.color).toBe(resolve('var(--xh-fg-muted)'))
+    expect(style.fontSize).toBe(resolve('var(--xh-text-label-size)', 'font-size'))
+    expect(style.fontWeight).toBe(resolve('var(--xh-text-label-weight)', 'font-weight'))
+    expect(Math.round(part('clipboard', 'input').getBoundingClientRect().top - label.getBoundingClientRect().bottom)).toBe(px('--xh-space-2'))
   })
 
   it.each(CASES)('%s：禁用时标签不另变色，仍是 --xh-fg-muted（对比度照样够）', async (scope, render) => {

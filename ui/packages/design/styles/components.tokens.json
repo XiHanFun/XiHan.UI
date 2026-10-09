@@ -14071,10 +14071,12 @@
       "name": "--xh-clipboard-gap",
       "component": "clipboard",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -14083,7 +14085,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "clipboard 的 root 部件 gap 覆盖槽。"
+      "description": "clipboard 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-clipboard-indicator-fg-copied",
@@ -14321,7 +14323,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "clipboard 的 label 部件 color 覆盖槽。"
@@ -14361,6 +14363,24 @@
       ],
       "visibility": "public",
       "description": "clipboard 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-clipboard-label-gap",
+      "component": "clipboard",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "clipboard 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-clipboard-loading-duration",
