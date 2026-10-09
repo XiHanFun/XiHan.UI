@@ -219,7 +219,7 @@
    * 一张通知：底与描边一律中性，面走 sheet 三件套（--xh-material-elevated-bg / -border / -shadow，
    * 亮暗两档同有 1px 描边）。两种预设共用这张面，排版分开写在下面：
    * 卡片是两列网格，左列一枚 24px 类型字形、右列「标题 + 说明 + 操作」、叉钉在右上角，
-   * 缺省宽 300px、四边内衬 20px、浮层圆角；
+   * 缺省宽 300px、四边内衬 20px（--xh-overlay-notification-p，紧凑 16px）、浮层圆角；
    * 轻提示是一行，行首字形、文本列、操作钮与叉依次排开，圆角取 control、内衬纵 10 横 16。
    *
    * 卡片的槽带 item 段（--xh-notification-item-*），与摞的 --xh-notification-inset 分开。
@@ -240,8 +240,8 @@
     /* 摞是整面视口宽的定位面且带内边距，取 100% 就等于自动让出两侧留白，
        窄屏上不必再算一遍 viewport 减法 */
     max-inline-size: 100%;
-    padding-block: var(--xh-notification-item-py, var(--xh-overlay-sheet-px));
-    padding-inline: var(--xh-notification-item-px, var(--xh-overlay-sheet-px));
+    padding-block: var(--xh-notification-item-py, var(--xh-overlay-notification-p));
+    padding-inline: var(--xh-notification-item-px, var(--xh-overlay-notification-p));
     border: var(--xh-stroke-thin) solid var(--xh-notification-item-border, var(--xh-material-elevated-border));
     border-radius: var(--xh-notification-item-radius, var(--xh-shape-overlay));
     background: var(--xh-notification-item-bg, var(--xh-material-elevated-bg));

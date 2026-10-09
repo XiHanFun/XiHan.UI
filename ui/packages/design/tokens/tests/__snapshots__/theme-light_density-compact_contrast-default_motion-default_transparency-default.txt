@@ -397,6 +397,7 @@
 --xh-overlay-menu-max-h: 11rem
 --xh-overlay-menu-min-w: 10rem
 --xh-overlay-min-w: 12rem
+--xh-overlay-notification-p: 16px  ← var(--xh-space-4)
 --xh-overlay-notification-w: 18.75rem
 --xh-overlay-sheet-body-py: 20px  ← var(--xh-space-5)
 --xh-overlay-sheet-footer-py: 12px  ← var(--xh-space-3)

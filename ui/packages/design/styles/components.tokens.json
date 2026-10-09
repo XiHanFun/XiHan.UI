@@ -52326,7 +52326,7 @@
         "preset=toast"
       ],
       "defaultToken": [
-        "--xh-overlay-sheet-px",
+        "--xh-overlay-notification-p",
         "--xh-space-4"
       ],
       "visibility": "public",
@@ -52347,7 +52347,7 @@
         "preset=toast"
       ],
       "defaultToken": [
-        "--xh-overlay-sheet-px",
+        "--xh-overlay-notification-p",
         "--xh-space-2_5"
       ],
       "visibility": "public",

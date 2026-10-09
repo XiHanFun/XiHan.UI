@@ -449,8 +449,8 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | `--xh-overlay-sheet-w-sm` / `md` / `lg` | 24 / 32 / 48rem | | Dialog、Command 宽的上限 |
 | `--xh-overlay-drawer-w-sm` / `md` / `lg` | 16 / 20 / 28rem | | Drawer 厚度 |
 | `--xh-overlay-header-h` | 48px | 44px | Dialog、Drawer 头部带：一颗中号控件加上下各 `space-2`，标题首行与关闭钮落在它的中线上 |
-| `--xh-overlay-sheet-px`、`-body-py`、`-footer-py` | 20、24、16px | 16、20、12px | Dialog 三段的横向内衬、正文与尾段的纵向内衬；Drawer 的尾段纵向同取 `-footer-py`；Notification 卡片四边内衬取 `-px` |
-| `--xh-overlay-notification-w` | 18.75rem | | 通知卡片缺省宽 |
+| `--xh-overlay-sheet-px`、`-body-py`、`-footer-py` | 20、24、16px | 16、20、12px | Dialog 三段的横向内衬、正文与尾段的纵向内衬；Drawer 的尾段纵向同取 `-footer-py` |
+| `--xh-overlay-notification-w`、`--xh-overlay-notification-p` | 18.75rem、20px | —、16px | 通知卡片缺省宽、四边内衬（上下与左右同值） |
 | `--xh-overlay-toast-w` | 28.75rem | | 轻提示卡宽：一行排开指示符、正文、行内动作与关闭钮 |
 | `--xh-sider-w`、`--xh-sider-collapsed-w` | 13.75rem、4rem | | 侧栏展开与收起宽 |
 | `--xh-app-header-h` | 3.75rem | | 应用顶栏高 |
