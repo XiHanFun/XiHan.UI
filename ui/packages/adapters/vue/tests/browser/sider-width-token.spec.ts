@@ -44,9 +44,9 @@ function rem(n: number): number {
 }
 
 describe('侧栏宽度令牌', () => {
-  it('缺省展开 15rem、折叠 4rem，Layout 侧栏与 SideNav 同宽', () => {
+  it('缺省展开 13.75rem、折叠 4rem，Layout 侧栏与 SideNav 同宽', () => {
     const widths = mount()
-    expect(widths.layoutExpanded).toBe(rem(15))
+    expect(widths.layoutExpanded).toBe(rem(13.75))
     expect(widths.layoutCollapsed).toBe(rem(4))
     expect(widths.navExpanded).toBe(widths.layoutExpanded)
     expect(widths.navCollapsed).toBe(widths.layoutCollapsed)

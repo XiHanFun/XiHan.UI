@@ -104,8 +104,8 @@ const PART: Record<Scope, string> = { 'cascader': 'input', 'command': 'input', '
 
 /** 下划线是面内分隔：取所在面材质的分隔令牌。 */
 const DIVIDER: Record<Scope, string> = {
-  'cascader': '--xh-material-solid-separator',
-  'command': '--xh-material-elevated-separator',
+  'cascader': '--xh-material-solid-border',
+  'command': '--xh-material-elevated-border',
   'side-nav': '--xh-material-solid-separator',
   'transfer': '--xh-material-solid-separator',
   'tree-select': '--xh-material-frosted-separator',

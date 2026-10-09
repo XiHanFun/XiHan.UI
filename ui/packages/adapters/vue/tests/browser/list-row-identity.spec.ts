@@ -1,5 +1,5 @@
-// 形状与分隔按身份取令牌：候选与菜单的集合行是嵌在面里的小块，圆角取 inset（与 control 同为 4px，但身份不同，
-// 主题改 inset 时行跟着变、按钮与字段不动）；floating 面板（日期、时间）里时间列之间的分隔取实体面的描边令牌
+// 形状与分隔按身份取令牌：锚定浮层里的候选行贴着面板两侧铺满、不画圆角，主题改 inset 时行与字段盒都不动；
+// floating 面板（日期、时间）里时间列之间的分隔取实体面的描边令牌
 // （border-default 档），不取 frosted 的。判据是计算样式：把令牌换成一眼能认出的值，看部件是否跟着变。
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -22,6 +22,7 @@ import {
   XhTimePickerSegment,
   XhTimePickerSegmentGroup,
 } from '../../src'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -56,16 +57,16 @@ function part(scope: string, name: string, index = 0): HTMLElement {
   return el
 }
 
-describe('候选行的形状身份是 inset', () => {
-  it('select 的选项圆角跟着 --xh-shape-inset 走，字段盒不动', async () => {
+describe('浮层里的候选行贴边铺满', () => {
+  it('select 的选项不取 --xh-shape-inset 圆角，字段盒仍是 control 圆角', async () => {
     document.documentElement.style.setProperty('--xh-shape-inset', '3px')
     await mount(() => h(XhSelectRoot, { collection: [{ value: 'a', label: '甲' }], defaultOpen: true }, () => [
       h(XhSelectControl, null, () => h(XhSelectTrigger)),
       h(XhSelectPositioner, null, () => h(XhSelectContent, null, () => h(XhSelectList, null, () =>
         h(XhSelectItem, { value: 'a' }, () => h(XhSelectItemText, null, () => '甲'))))),
     ]))
-    expect(getComputedStyle(part('select', 'item')).borderTopLeftRadius).toBe('3px')
-    expect(getComputedStyle(part('select', 'control')).borderTopLeftRadius).toBe('4px')
+    expect(getComputedStyle(part('select', 'item')).borderTopLeftRadius).toBe('0px')
+    expect(getComputedStyle(part('select', 'control')).borderTopLeftRadius).toBe(`${tokenLength('--xh-shape-control')}px`)
   })
 })
 
