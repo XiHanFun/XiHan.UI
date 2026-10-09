@@ -451,7 +451,9 @@
     position: absolute;
     /* 钮的视觉盒在头部带里竖向居中：按钮自己的边长从带高里扣掉再对半 */
     inset-block-start: calc(var(--xh-_drawer-header-top) + (var(--xh-_drawer-header-h) - var(--xh-drawer-close-size, var(--xh-_action-profile-visual-size))) / 2);
-    inset-inline-end: var(--xh-space-4);
+    /* 行向先让出安全区再距边 16px：绝对定位从面板的内边距盒量起，横屏刘海压住的那一段不让，叉就落进去；
+       局部容器里的抽屉安全区槽归零，仍是 16px */
+    inset-inline-end: calc(var(--xh-_drawer-safe-inline) + var(--xh-space-4));
   }
 
   [data-scope='drawer'][data-part='close-trigger'][hidden] {

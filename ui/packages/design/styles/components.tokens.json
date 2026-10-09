@@ -8093,9 +8093,11 @@
         "root"
       ],
       "property": [
-        "border-radius"
+        "border-radius",
+        "clip-path"
       ],
       "state": [
+        "@keyframes xh-carousel-indicator-progress",
         "@media (pointer: coarse)",
         "autoplay",
         "current",
@@ -8105,7 +8107,7 @@
         "--xh-shape-pill"
       ],
       "visibility": "public",
-      "description": "carousel 的 indicator、root 部件 border-radius 覆盖槽。"
+      "description": "carousel 的 indicator、root 部件 border-radius、clip-path 覆盖槽。"
     },
     {
       "name": "--xh-carousel-indicator-size",
@@ -52006,6 +52008,7 @@
         "preset=card"
       ],
       "defaultToken": [
+        "--xh-notification-item-py",
         "--xh-surface-action-inset"
       ],
       "visibility": "public",
@@ -52040,6 +52043,7 @@
       "property": [
         "block-size",
         "inline-size",
+        "inset-block-start",
         "min-inline-size",
         "padding-inline-end"
       ],
@@ -52054,7 +52058,7 @@
         "--xh-control-h-sm"
       ],
       "visibility": "public",
-      "description": "notification 的 item、item-close-trigger、item-title 部件 block-size、inline-size、min-inline-size、padding-inline-end 覆盖槽。"
+      "description": "notification 的 item、item-close-trigger、item-title 部件 block-size、inline-size、inset-block-start、min-inline-size、padding-inline-end 覆盖槽。"
     },
     {
       "name": "--xh-notification-description-fg",
@@ -52386,7 +52390,7 @@
         "preset=toast"
       ],
       "defaultToken": [
-        "--xh-overlay-sheet-px",
+        "--xh-overlay-notification-p",
         "--xh-space-4"
       ],
       "visibility": "public",
@@ -52396,7 +52400,8 @@
       "name": "--xh-notification-item-py",
       "component": "notification",
       "part": [
-        "item"
+        "item",
+        "item-close-trigger"
       ],
       "property": [
         "inset-block-start",
@@ -52404,14 +52409,15 @@
       ],
       "state": [
         "default",
+        "preset=card",
         "preset=toast"
       ],
       "defaultToken": [
-        "--xh-overlay-sheet-px",
+        "--xh-overlay-notification-p",
         "--xh-space-2_5"
       ],
       "visibility": "public",
-      "description": "notification 的 item 部件 inset-block-start、padding-block 覆盖槽。"
+      "description": "notification 的 item、item-close-trigger 部件 inset-block-start、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-notification-item-radius",
@@ -52634,15 +52640,18 @@
       "component": "notification",
       "part": [
         "item",
+        "item-close-trigger",
         "item-indicator",
         "item-title"
       ],
       "property": [
         "block-size",
-        "font-size"
+        "font-size",
+        "inset-block-start"
       ],
       "state": [
         "default",
+        "preset=card",
         "preset=toast"
       ],
       "defaultToken": [
@@ -52650,7 +52659,7 @@
         "--xh-text-heading-3-size"
       ],
       "visibility": "public",
-      "description": "notification 的 item、item-indicator、item-title 部件 block-size、font-size 覆盖槽。"
+      "description": "notification 的 item、item-close-trigger、item-indicator、item-title 部件 block-size、font-size、inset-block-start 覆盖槽。"
     },
     {
       "name": "--xh-notification-title-font-weight",
@@ -52678,13 +52687,16 @@
       "component": "notification",
       "part": [
         "item",
+        "item-close-trigger",
         "item-title"
       ],
       "property": [
+        "inset-block-start",
         "line-height"
       ],
       "state": [
         "default",
+        "preset=card",
         "preset=toast"
       ],
       "defaultToken": [
@@ -52692,7 +52704,7 @@
         "--xh-leading-tight"
       ],
       "visibility": "public",
-      "description": "notification 的 item、item-title 部件 line-height 覆盖槽。"
+      "description": "notification 的 item、item-close-trigger、item-title 部件 inset-block-start、line-height 覆盖槽。"
     },
     {
       "name": "--xh-number-animation-fg",
@@ -57057,7 +57069,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-popconfirm-gap"
       ],
       "visibility": "public",
       "description": "popconfirm 的 content 部件 column-gap 覆盖槽。"
@@ -57204,16 +57216,18 @@
         "content"
       ],
       "property": [
+        "column-gap",
         "gap"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-1",
+        "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "popconfirm 的 content 部件 gap 覆盖槽。"
+      "description": "popconfirm 的 content 部件 column-gap、gap 覆盖槽。"
     },
     {
       "name": "--xh-popconfirm-icon-size",
@@ -69102,6 +69116,7 @@
       "state": [
         "@media (forced-colors: active)",
         "default",
+        "tone",
         "variant=arc",
         "variant=dots"
       ],
@@ -69144,6 +69159,7 @@
       "state": [
         "@media (forced-colors: active)",
         "default",
+        "tone",
         "variant=arc",
         "variant=dots"
       ],

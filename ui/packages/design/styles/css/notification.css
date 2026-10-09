@@ -219,7 +219,7 @@
    * 一张通知：底与描边一律中性，面走 sheet 三件套（--xh-material-elevated-bg / -border / -shadow，
    * 亮暗两档同有 1px 描边）。两种预设共用这张面，排版分开写在下面：
    * 卡片是两列网格，左列一枚 24px 类型字形、右列「标题 + 说明 + 操作」、叉钉在右上角，
-   * 缺省宽 300px、四边内衬 20px、浮层圆角；
+   * 缺省宽 300px、四边内衬 20px（--xh-overlay-notification-p，紧凑 16px）、浮层圆角；
    * 轻提示是一行，行首字形、文本列、操作钮与叉依次排开，圆角取 control、内衬纵 10 横 16。
    *
    * 卡片的槽带 item 段（--xh-notification-item-*），与摞的 --xh-notification-inset 分开。
@@ -240,8 +240,8 @@
     /* 摞是整面视口宽的定位面且带内边距，取 100% 就等于自动让出两侧留白，
        窄屏上不必再算一遍 viewport 减法 */
     max-inline-size: 100%;
-    padding-block: var(--xh-notification-item-py, var(--xh-overlay-sheet-px));
-    padding-inline: var(--xh-notification-item-px, var(--xh-overlay-sheet-px));
+    padding-block: var(--xh-notification-item-py, var(--xh-overlay-notification-p));
+    padding-inline: var(--xh-notification-item-px, var(--xh-overlay-notification-p));
     border: var(--xh-stroke-thin) solid var(--xh-notification-item-border, var(--xh-material-elevated-border));
     border-radius: var(--xh-notification-item-radius, var(--xh-shape-overlay));
     background: var(--xh-notification-item-bg, var(--xh-material-elevated-bg));
@@ -707,10 +707,22 @@
     --xh-icon-size: var(--xh-notification-icon-size, var(--xh-glyph-size-xs));
   }
 
-  /* 卡片：钉在右上角、距上与右各 12px，不参与网格排布——留在流里它会变成正文下面的第三行 */
+  /* 卡片：钉在右上角，不参与网格排布——留在流里它会变成正文下面的第三行。
+     距右取面内动作的内缩；竖向与标题首行同一条中线：上内衬加上「标题行高 − 钮边长」的一半
+     （舒适档 20 + (24 − 28) / 2 = 18、紧凑档 16 + (24 − 24) / 2 = 16），作者改了贴边槽仍按它两向一起贴 */
   [data-scope='notification'][data-part='item'][data-preset='card'] [data-part='item-close-trigger']:where([data-scope='notification']) {
     position: absolute;
-    inset-block-start: var(--xh-notification-close-inset, var(--xh-surface-action-inset));
+    inset-block-start: var(
+      --xh-notification-close-inset,
+      calc(
+        var(--xh-notification-item-py, var(--xh-overlay-notification-p)) +
+        (
+          var(--xh-notification-title-font-size, var(--xh-text-heading-3-size)) *
+          var(--xh-notification-title-leading, var(--xh-leading-normal)) -
+          var(--xh-notification-close-size, var(--xh-control-h-sm))
+        ) / 2
+      )
+    );
     inset-inline-end: var(--xh-notification-close-inset, var(--xh-surface-action-inset));
   }
 

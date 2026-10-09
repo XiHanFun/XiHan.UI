@@ -198,9 +198,9 @@ orientation="vertical" 时转圈在上、配文在下居中，适合整块区域
 | `--xh-spinner-label-fg` | `label` | `color` | `default` | `--xh-fg-brand` | spinner 的 label 部件 color 覆盖槽。 |
 | `--xh-spinner-label-size` | `label` | `font-size` | `default` | `--xh-text-body-size` | spinner 的 label 部件 font-size 覆盖槽。 |
 | `--xh-spinner-label-weight` | `label` | `font-weight` | `default` | `--xh-font-weight-medium` | spinner 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-spinner-radius` | `root` | `border-radius` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-shape-circle` | spinner 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-spinner-radius` | `root` | `border-radius` | `@media (forced-colors: active)`<br>`default`<br>`tone`<br>`variant=arc`<br>`variant=dots` | `--xh-shape-circle` | spinner 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-spinner-size` | `root` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-md` | spinner 的 root 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-spinner-thickness` | `root` | `-webkit-mask`<br>`border`<br>`mask` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-stroke-thick` | spinner 的 root 部件 -webkit-mask、border、mask 覆盖槽。 |
+| `--xh-spinner-thickness` | `root` | `-webkit-mask`<br>`border`<br>`mask` | `@media (forced-colors: active)`<br>`default`<br>`tone`<br>`variant=arc`<br>`variant=dots` | `--xh-stroke-thick` | spinner 的 root 部件 -webkit-mask、border、mask 覆盖槽。 |
 | `--xh-spinner-track` | `root` | `border-block-start-color` | `default`<br>`tone` | `transparent` | spinner 的 root 部件 border-block-start-color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
