@@ -4904,15 +4904,34 @@
 
 /* 抹掉 UA 给 <fieldset> 的边框、内外边距与 min-content 下限，间距全部改由令牌给。
    display 落在 fieldset 的匿名内容盒上：首个 <legend> 不在这个盒子里，
-   所以 gap 只作用于组内各块，legend 与内容之间的留白由 legend 自己的下外边距给。 */
+   legend 与内容之间的留白由 legend 自己的下外边距给。
+   组内项距与 Form 同一套，不走 gap：字段带辅助行（说明，或给错误文案留的那一行）时那一行就是项距，
+   没有辅助行的块才在下方补一段项距（见下面两条） */
 .xh-scope-fieldset[data-part='root'] {
+  --xh-_fieldset-item-gap: var(--xh-fieldset-gap, var(--xh-space-5));
+
   display: flex;
   flex-direction: column;
-  gap: var(--xh-fieldset-gap, var(--xh-space-5));
+  row-gap: 0;
   margin: 0;
   border: 0;
   padding: 0;
   min-inline-size: 0;
+}
+
+/* 每一块在下方留一段项距，最后一块不留。:where() 不计特指度：legend 的下外边距、组说明与错误文案
+   归零的外边距（description.css）和作者给自己节点写的外边距都压得过它 */
+:where(.xh-scope-fieldset[data-part='root']) > :where(:not(:last-child)) {
+  margin-block-end: var(--xh-_fieldset-item-gap);
+}
+
+/* 字段或并排的一段里有字段带辅助行：辅助行（最小高 --xh-space-5）紧贴控件、自己就是项距，不再另留；
+   只留错误文案占位的那一行同样算，无效时被收起的说明不算（判据与 Form 的项同一条） */
+.xh-scope-fieldset[data-part='root'] > :is(.xh-scope-field[data-part='root'], .xh-scope-fieldset[data-part='field-group']):has(
+  .xh-scope-field[data-part='error-text'],
+  .xh-scope-field[data-part='description']:not([hidden], .xh-scope-field[data-part='root'][data-invalid] > *)
+) {
+  margin-block-end: 0;
 }
 
 .xh-scope-fieldset[data-part='root'][hidden] {

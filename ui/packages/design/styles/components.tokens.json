@@ -33994,16 +33994,17 @@
         "root"
       ],
       "property": [
-        "gap"
+        "margin-block-end"
       ],
       "state": [
-        "default"
+        "where(:not(:last-child)",
+        "where([data-scope='fieldset'][data-part='root'])"
       ],
       "defaultToken": [
         "--xh-space-5"
       ],
       "visibility": "public",
-      "description": "fieldset 的 root 部件 gap 覆盖槽。"
+      "description": "fieldset 的 root 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-fieldset-legend-fg",
