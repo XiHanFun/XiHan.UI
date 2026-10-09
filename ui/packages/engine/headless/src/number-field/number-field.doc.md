@@ -19,13 +19,12 @@
 - `parse` / `format` 成对，用于接入固定小数位、千分位、货币符号或自定义换算。
 - 越界的值在失焦规范化时被夹回区间；`clampValueOnBlur` 关掉后越界值原样留在框里（仍按 `format` 补格式），由 `outOfRange` 与根上的 `data-out-of-range` 报出来，交给表单层提示。步进在两种情形下都不会越界。
 - `prefix` / `suffix` 在框内放置货币符、单位或图标，两段对读屏隐藏。
-- `control` 是必需部件，也是输入、前后缀与两个动作共用的唯一视觉盒，投影 Field Chrome 家族（`data-xh-field-chrome`、`data-xh-field-size`、`data-variant`），输入与前后缀分别投影 `data-xh-field-input` 与 `data-xh-field-affix`；默认即 `outline`：`--xh-bg-canvas` 底、`--xh-border-control` 描边、control 圆角、无阴影，不写 `variant` 时 root 与 control 都落 `data-variant="outline"`，悬停与聚焦由整体盒统一反馈，聚焦描边一律 `--xh-border-control-focus`。减、加两颗动作依次收在右侧，走 Action Control 的 `field-inset` ghost 档：正方视觉盒、inset 圆角、在控件里垂直居中，悬停 `--xh-bg-subtle`（100）、按下 `--xh-bg-subtle-hover`（200）中性底并带 0.97 按压缩放，粗指针命中区由家族伪元素外扩到 44px。
+- `control` 是必需部件，也是输入、前后缀与两个动作共用的唯一视觉盒，投影 Field Chrome 家族（`data-xh-field-chrome`、`data-xh-field-size`、`data-variant`），输入与前后缀分别投影 `data-xh-field-input` 与 `data-xh-field-affix`；默认即 `outline`：字段淡底 `--xh-bg-field`、`--xh-border-control` 描边、control 圆角、无阴影，不写 `variant` 时 root 与 control 都落 `data-variant="outline"`，悬停与聚焦由整体盒统一反馈，聚焦描边一律 `--xh-border-control-focus`。减、加两颗动作走 Action Control 的 `field-inset` ghost 档，control 投影 `data-xh-action-owner`、两颗钮投影 `data-xh-action-display="hover-focus"`：可悬停的精细指针下两颗钮上下叠在盒的逻辑末端（宽取 `--xh-control-indicator-lg`、四周内收一截、各占盒内高的一半），平时收起，指针落到盒上或盒里有焦点时显出，显出时铺 `--xh-bg-subtle` 淡底、悬停升一档、按下升两档，字形是上下箭头；粗指针与不能悬停的设备上两颗钮是正方视觉盒、横排在末端、常显，命中区由家族伪元素外扩到 44px。钮字取次要前景 `--xh-fg-muted`。
 - `subtle` 为中性填充、`ghost` 为透明底，两者在悬停与聚焦时浮出描边；三档都由统一输入壳承担交互反馈。
-- comfortable 下 `sm` / `md` / `lg` 控件高为 32 / 36 / 40px；compact 下分别为 28 / 32 / 36px。
-  右侧动作区宽度跟随密度档，数字使用等宽字形，前缀、数值和后缀共用中线。
-- 粗指针环境不放大视觉盒：控件高与两颗钮的正方盒保持原档，命中区由家族 `::after` 伪元素以钮盒中心外扩到至少 44px，`control` 保持 `overflow: visible` 不裁掉它。热区比钮盒大，相邻两颗钮的热区会彼此重叠并伸进输入区边缘；指针落在重叠处时由排在后面的增钮接收，落在输入区边缘的外扩带时由相邻的那颗钮接收。
-- Tab 只停在 `spinbutton` 输入框，聚焦环由整个 `control` 统一绘制；加减按钮退出 Tab 序列，但仍可由指针和公开 API 操作。到达 `min` / `max` 时只禁用对应方向，`disabled` / `readOnly` 才同时锁住两侧。
-- 输入与右侧动作组之间使用一条半高、垂直居中的柔和分隔线，画在减钮的背景层上；RTL 下换到另一边。
+- comfortable 下 `sm` / `md` / `lg` 控件高为 28 / 32 / 36px；compact 下分别为 24 / 28 / 32px。
+  末端动作区宽度跟随密度档，数字从起始缘排起、使用等宽字形，前缀、数值和后缀共用中线；叠放的两颗钮浮在盒上，盒的末端让出那一截，数值与后缀不会排到钮底下，钮收起时也不跳。
+- 粗指针环境不放大视觉盒：控件高与横排的两颗正方钮保持原档，命中区由家族 `::after` 伪元素以钮盒中心外扩到至少 44px，`control` 保持 `overflow: visible` 不裁掉它。热区比钮盒大，相邻两颗钮的热区会彼此重叠并伸进输入区边缘；指针落在重叠处时由排在后面的增钮接收，落在输入区边缘的外扩带时由相邻的那颗钮接收。
+- Tab 只停在 `spinbutton` 输入框，聚焦由整个 `control` 换聚焦描边与承载面标出；加减按钮退出 Tab 序列（精细指针下收起不影响键盘：↑ / ↓ 照常步进），仍可由指针和公开 API 操作。到达 `min` / `max` 时只禁用对应方向，`disabled` / `readOnly` 才同时锁住两侧。
 
 ## 组合
 

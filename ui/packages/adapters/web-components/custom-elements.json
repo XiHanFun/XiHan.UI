@@ -45603,13 +45603,19 @@
               "name": "--xh-number-field-placeholder-fg"
             },
             {
+              "name": "--xh-number-field-stepper-bg"
+            },
+            {
+              "name": "--xh-number-field-stepper-bg-hover"
+            },
+            {
+              "name": "--xh-number-field-stepper-inset"
+            },
+            {
+              "name": "--xh-number-field-stepper-w"
+            },
+            {
               "name": "--xh-number-field-trigger-bg-active"
-            },
-            {
-              "name": "--xh-number-field-trigger-divider"
-            },
-            {
-              "name": "--xh-number-field-trigger-divider-h"
             },
             {
               "name": "--xh-number-field-trigger-fg"

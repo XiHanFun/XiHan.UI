@@ -1,4 +1,5 @@
-// NumberField 的 Field Chrome、内嵌动作、前后缀与触摸命中区依赖真实布局和伪类，只在 Chromium 验证。
+// NumberField 的 Field Chrome、内嵌增减钮、前后缀与触摸命中区依赖真实布局、媒体条件和伪类，只在 Chromium 验证。
+// 可悬停的精细指针：两颗钮上下叠在盒的逻辑末端，平时收起、悬停或聚焦字段时显出；粗指针：两颗正方钮横排在末端、常显。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
@@ -15,15 +16,7 @@ import {
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-/** 钮走 field-inset 档：sm 固定 24px，md / lg 取小一档的控件高；控件高随语义密度令牌变化。 */
-const SIZE_CASES = [
-  { density: 'comfortable', size: 'sm', control: 32, trigger: 24 },
-  { density: 'comfortable', size: 'md', control: 36, trigger: 32 },
-  { density: 'comfortable', size: 'lg', control: 40, trigger: 36 },
-  { density: 'compact', size: 'sm', control: 28, trigger: 20 },
-  { density: 'compact', size: 'md', control: 32, trigger: 28 },
-  { density: 'compact', size: 'lg', control: 36, trigger: 32 },
-] as const
+const SIZES = ['sm', 'md', 'lg'] as const
 
 let app: App | null = null
 let host: HTMLElement | null = null
@@ -76,14 +69,18 @@ async function emulatePointer(value?: 'coarse'): Promise<void> {
   })
 }
 
-/** 把令牌解析成这台浏览器上的最终颜色，用来与各态底色对账。 */
-function tokenColor(token: string): string {
+/** 把一个值放进探针的某个属性，读回这台浏览器上的计算值，用来与各态对账。 */
+function resolve(value: string, property = 'color', within: HTMLElement = host ?? document.body): string {
   const probe = document.createElement('span')
-  probe.style.color = `var(${token})`
-  document.body.append(probe)
-  const color = getComputedStyle(probe).color
+  probe.style.setProperty(property, value)
+  within.append(probe)
+  const out = getComputedStyle(probe).getPropertyValue(property)
   probe.remove()
-  return color
+  return out
+}
+
+function px(token: string, within?: HTMLElement): number {
+  return Number.parseFloat(resolve(`var(${token})`, 'inline-size', within))
 }
 
 function teardown(): void {
@@ -100,30 +97,87 @@ afterEach(async () => {
   await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
 })
 
-describe('数字输入的尺寸与内部节奏', () => {
-  it.each(SIZE_CASES)('$density / $size：右侧动作是 field-inset 档的正方盒，在控件里垂直居中', async (item) => {
-    mountField({ size: item.size }, { density: item.density })
+describe('精细指针：增减钮上下叠在盒的末端', () => {
+  it.each(SIZES)('%s：两颗钮宽取指示符大档、各占盒内高的一半（四周内收），右缘对齐、上下相接', async (size) => {
+    expect(matchMedia('(hover: hover) and (pointer: fine)').matches).toBe(true)
+    mountField({ size })
     await settle()
-    const control = part('control').getBoundingClientRect()
-    const decrement = part('decrement-trigger').getBoundingClientRect()
-    const input = part('input').getBoundingClientRect()
+    const control = part('control')
+    const box = control.getBoundingClientRect()
     const increment = part('increment-trigger').getBoundingClientRect()
+    const decrement = part('decrement-trigger').getBoundingClientRect()
+    const inset = size === 'sm' ? px('--xh-space-0_5', control) : px('--xh-space-1', control)
+    const border = Number.parseFloat(getComputedStyle(control).borderTopWidth)
 
-    expect(control.height).toBe(item.control)
-    expect(decrement.width).toBe(item.trigger)
-    expect(decrement.height).toBe(item.trigger)
-    expect(increment.width).toBe(item.trigger)
-    expect(increment.height).toBe(item.trigger)
-    expect(centerY(part('decrement-trigger'))).toBeCloseTo(centerY(part('control')), 1)
-    expect(centerY(part('increment-trigger'))).toBeCloseTo(centerY(part('control')), 1)
-    expect(input.right).toBeLessThanOrEqual(decrement.left)
-    expect(decrement.right).toBeLessThanOrEqual(increment.left)
-    expect(input.width).toBeGreaterThan(0)
-    // 钮的圆角是 inset 档，不再与控件同角
-    expect(getComputedStyle(part('increment-trigger')).borderRadius).toBe('4px')
+    expect(box.height).toBe(px(`--xh-control-h-${size}`, control))
+    expect(increment.width).toBe(px('--xh-control-indicator-lg', control))
+    expect(decrement.width).toBe(increment.width)
+    expect(increment.right).toBeCloseTo(box.right - border - inset, 1)
+    expect(decrement.right).toBeCloseTo(increment.right, 1)
+    expect(increment.top).toBeCloseTo(box.top + border + inset, 1)
+    expect(decrement.bottom).toBeCloseTo(box.bottom - border - inset, 1)
+    expect(decrement.top).toBeCloseTo(increment.bottom, 1)
+    expect(increment.height).toBeCloseTo((box.height - 2 * border) / 2 - inset, 1)
+    // 输入框排在钮让出来的那一截之前，数字不会落到钮底下
+    expect(part('input').getBoundingClientRect().right).toBeLessThanOrEqual(increment.left)
   })
 
-  it('前缀、数值与后缀在同一中线，间距互不挤压且数字使用等宽字形', async () => {
+  it('平时收起，指针落到盒上或盒里有焦点时显出', async () => {
+    mountField()
+    await settle()
+    const increment = part('increment-trigger')
+    expect(getComputedStyle(increment).visibility).toBe('hidden')
+
+    await userEvent.hover(part('control'))
+    await expect.poll(() => getComputedStyle(increment).visibility).toBe('visible')
+    await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
+    await expect.poll(() => getComputedStyle(increment).visibility).toBe('hidden')
+
+    part('input').focus()
+    await expect.poll(() => getComputedStyle(increment).visibility).toBe('visible')
+  })
+
+  it('显出时铺淡底，悬停升 --xh-bg-subtle-hover；字形是上下箭头、取指示符小档，字取次要前景', async () => {
+    mountField()
+    await settle()
+    const increment = part('increment-trigger')
+    const decrement = part('decrement-trigger')
+    await userEvent.hover(part('control'))
+    await expect.poll(() => getComputedStyle(increment).backgroundColor).toBe(resolve('var(--xh-bg-subtle)', 'background-color'))
+    expect(getComputedStyle(increment).color).toBe(resolve('var(--xh-fg-muted)'))
+    expect(getComputedStyle(increment, '::before').maskImage).toBe(resolve('var(--xh-glyph-mark-chevron-up)', 'mask-image'))
+    expect(getComputedStyle(decrement, '::before').maskImage).toBe(resolve('var(--xh-glyph-mark-chevron-down)', 'mask-image'))
+    expect(getComputedStyle(increment, '::before').inlineSize).toBe(`${px('--xh-control-indicator-sm')}px`)
+
+    await userEvent.hover(increment)
+    await expect.poll(() => getComputedStyle(increment).backgroundColor).toBe(resolve('var(--xh-bg-subtle-hover)', 'background-color'))
+  })
+
+  it('数字从起始缘排起，盒内不再画分隔线', async () => {
+    mountField()
+    await settle()
+    expect(getComputedStyle(part('input')).textAlign).toBe('start')
+    expect(getComputedStyle(part('decrement-trigger')).backgroundSize).not.toBe('1px 50%')
+  })
+
+  it('rtl：两颗钮叠在逻辑末端（左侧），前后缀照常镜像', async () => {
+    document.documentElement.dir = 'rtl'
+    mountField({}, { affixes: true })
+    await settle()
+    const box = part('control').getBoundingClientRect()
+    const increment = part('increment-trigger').getBoundingClientRect()
+    const prefix = part('prefix').getBoundingClientRect()
+    const input = part('input').getBoundingClientRect()
+    const suffix = part('suffix').getBoundingClientRect()
+    expect(increment.left - box.left).toBeLessThan(box.right - increment.right)
+    expect(prefix.left).toBeGreaterThanOrEqual(input.right)
+    expect(input.left).toBeGreaterThanOrEqual(suffix.right)
+    expect(suffix.left).toBeGreaterThanOrEqual(increment.right)
+  })
+})
+
+describe('数字输入的前后缀、边界与焦点', () => {
+  it('前缀、数值与后缀在同一中线，间距互不挤压且数字使用等宽字形；后缀不落到钮底下', async () => {
     mountField({}, { affixes: true })
     await settle()
     const control = part('control')
@@ -136,44 +190,8 @@ describe('数字输入的尺寸与内部节奏', () => {
     expect(centerY(suffix)).toBeCloseTo(centerY(control), 1)
     expect(prefix.getBoundingClientRect().right).toBeLessThanOrEqual(input.getBoundingClientRect().left)
     expect(input.getBoundingClientRect().right).toBeLessThanOrEqual(suffix.getBoundingClientRect().left)
+    expect(suffix.getBoundingClientRect().right).toBeLessThanOrEqual(part('increment-trigger').getBoundingClientRect().left)
     expect(getComputedStyle(input).fontVariantNumeric).toContain('tabular-nums')
-  })
-
-  it('rtl 只镜像物理顺序，不改变前后缀中线或让动作命中盒重叠', async () => {
-    document.documentElement.dir = 'rtl'
-    mountField({}, { affixes: true })
-    await settle()
-    const decrement = part('decrement-trigger').getBoundingClientRect()
-    const prefix = part('prefix').getBoundingClientRect()
-    const input = part('input').getBoundingClientRect()
-    const suffix = part('suffix').getBoundingClientRect()
-    const increment = part('increment-trigger').getBoundingClientRect()
-
-    expect(prefix.left).toBeGreaterThanOrEqual(input.right)
-    expect(input.left).toBeGreaterThanOrEqual(suffix.right)
-    expect(suffix.left).toBeGreaterThanOrEqual(decrement.right)
-    expect(decrement.left).toBeGreaterThanOrEqual(increment.right)
-    expect(centerY(part('prefix'))).toBeCloseTo(centerY(part('suffix')), 1)
-  })
-})
-
-describe('数字输入的边界、只读与焦点', () => {
-  it('边界只由描边承担：outline 静息不填底 + 控件描边、无影；subtle 淡底、描边透明、同样无影', async () => {
-    mountField()
-    await settle()
-    const control = part('control')
-    expect(control.dataset.xhFieldChrome).toBe('')
-    expect(control.dataset.variant).toBe('outline')
-    expect(getComputedStyle(control).boxShadow).toBe('none')
-    expect(getComputedStyle(control).backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(getComputedStyle(control).borderTopColor).toBe(tokenColor('--xh-border-control'))
-    teardown()
-
-    mountField({ variant: 'subtle' })
-    await settle()
-    expect(getComputedStyle(part('control')).boxShadow).toBe('none')
-    expect(getComputedStyle(part('control')).backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
-    expect(getComputedStyle(part('control')).borderTopColor).toBe('rgba(0, 0, 0, 0)')
   })
 
   it('到达 min/max 只禁用对应动作；整控件禁用与只读才同时禁用两侧', async () => {
@@ -204,33 +222,7 @@ describe('数字输入的边界、只读与焦点', () => {
     expect((part('increment-trigger') as HTMLButtonElement).disabled).toBe(true)
   })
 
-  it('动作静息透明，悬停浮出 canvas 承载面的 100 档底并带按压缩放过渡；输入壳同时给悬停回执', async () => {
-    mountField()
-    await settle()
-    const increment = part('increment-trigger')
-    const control = part('control')
-    const controlRest = getComputedStyle(control).backgroundColor
-    expect(getComputedStyle(increment).backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(getComputedStyle(increment).transitionProperty).toContain('scale')
-
-    await userEvent.hover(increment)
-    // 底色带 120ms 过渡，等过渡走完再对账
-    await expect.poll(() => getComputedStyle(increment).backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
-    expect(getComputedStyle(control).backgroundColor).not.toBe(controlRest)
-  })
-
-  it('贴住 min 的钮禁用后不再响应悬停，分隔线仍在', async () => {
-    mountField({ min: 5 })
-    await settle()
-    const decrement = part('decrement-trigger')
-    const rest = getComputedStyle(decrement).backgroundColor
-    await userEvent.hover(decrement)
-    await new Promise<void>(resolve => setTimeout(resolve, 200))
-    expect(getComputedStyle(decrement).backgroundColor).toBe(rest)
-    expect(getComputedStyle(decrement).backgroundSize).toBe('1px 50%')
-  })
-
-  it('tab 只停在输入框，control 画唯一焦点环，两颗动作仍退出 Tab 序列', async () => {
+  it('tab 只停在输入框，聚焦由 control 换聚焦描边标出、不画环，两颗动作退出 Tab 序列', async () => {
     mountField()
     await settle()
     await userEvent.tab()
@@ -238,7 +230,7 @@ describe('数字输入的边界、只读与焦点', () => {
     const control = part('control')
 
     expect(document.activeElement).toBe(input)
-    expect(getComputedStyle(control).outlineStyle).toBe('solid')
+    await expect.poll(() => getComputedStyle(control).borderTopColor).toBe(resolve('var(--xh-border-control-focus)'))
     expect(getComputedStyle(input).outlineStyle).toBe('none')
     expect(part('decrement-trigger').tabIndex).toBe(-1)
     expect(part('increment-trigger').tabIndex).toBe(-1)
@@ -246,22 +238,24 @@ describe('数字输入的边界、只读与焦点', () => {
 })
 
 describe('数字输入的粗指针目标', () => {
-  it.each([
-    { density: 'comfortable', control: 36, trigger: 32 },
-    { density: 'compact', control: 32, trigger: 28 },
-  ] as const)('$density：视觉盒不放大，两颗钮各自由家族伪元素外扩到 44px 命中区', async ({ density, control: controlH, trigger }) => {
+  it.each(['comfortable', 'compact'] as const)('%s：两颗 field-inset 正方钮横排在末端、常显，视觉盒不放大，各自由家族伪元素外扩到 44px 命中区', async (density) => {
     await emulatePointer('coarse')
     expect(matchMedia('(pointer: coarse)').matches).toBe(true)
     mountField({}, { density, width: 160 })
     await settle()
-    const control = part('control').getBoundingClientRect()
+    const controlEl = part('control')
+    const control = controlEl.getBoundingClientRect()
     const decrement = part('decrement-trigger').getBoundingClientRect()
     const input = part('input').getBoundingClientRect()
     const increment = part('increment-trigger').getBoundingClientRect()
+    const trigger = px('--xh-control-h-sm', controlEl)
 
-    expect(control.height).toBe(controlH)
+    expect(control.height).toBe(px('--xh-control-h-md', controlEl))
     expect(decrement.width).toBe(trigger)
     expect(increment.width).toBe(trigger)
+    expect(decrement.height).toBe(trigger)
+    expect(getComputedStyle(part('increment-trigger')).visibility).toBe('visible')
+    expect(centerY(part('increment-trigger'))).toBeCloseTo(centerY(controlEl), 1)
     expect(input.width).toBeGreaterThan(0)
     expect(input.right).toBeLessThanOrEqual(decrement.left)
     expect(decrement.right).toBeLessThanOrEqual(increment.left)
@@ -272,6 +266,6 @@ describe('数字输入的粗指针目标', () => {
       expect(Number.parseFloat(target.minBlockSize)).toBeGreaterThanOrEqual(44)
     }
     // 热区伪元素不能被视觉盒裁掉，否则外扩只是纸面上的
-    expect(getComputedStyle(part('control')).overflow).toBe('visible')
+    expect(getComputedStyle(controlEl).overflow).toBe('visible')
   })
 })
