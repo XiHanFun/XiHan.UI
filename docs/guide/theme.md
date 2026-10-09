@@ -93,7 +93,7 @@ Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Col
 | 字段说明 / helper（Field、Fieldset） | `--xh-text-caption-size` 12 / `--xh-fg-subtle` / `--xh-leading-normal`；禁用不另变色 | 紧贴控件，辅助行最小高 `--xh-space-5` |
 | 其余说明（Card、Alert、Dialog 等面内的 description） | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal`；Steps 的步骤说明取次级标注 12 / `--xh-fg-subtle` | — |
 | 错误文案 | 12 / `--xh-fg-danger` | 与说明共用控件下方那一行辅助行 |
-| 浮层内与小面标题（Popover、HoverCard、Popconfirm、FloatingPanel、Approval、Timeline、EmptyState、Citation） | 14 / `--xh-font-weight-medium` | — |
+| 浮层内与小面标题（Popover、HoverCard、Popconfirm、FloatingPanel、Approval、EmptyState、Citation） | 14 / `--xh-font-weight-medium` | — |
 | 区块与面板标题（Card、Descriptions、Alert、Notification、Steps；Dialog、Drawer、Tour） | heading-3（`--xh-text-heading-3-*`）：16 / 500 | — |
 | 页面标题（PageHeader） | heading-2（`--xh-text-heading-2-*`）：20 / 500 | — |
 | 大号数值（Statistic、Timer、NumberAnimation） | sm / md / lg 依次取 heading-2 / heading-1 / display（`--xh-text-display-size`）：20 / 24 / 28 | — |

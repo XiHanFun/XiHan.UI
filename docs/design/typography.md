@@ -20,7 +20,7 @@
   :names="['--xh-font-size-xs', '--xh-font-size-sm', '--xh-font-size-md', '--xh-font-size-lg', '--xh-font-size-xl', '--xh-font-size-2xl', '--xh-font-size-3xl', '--xh-font-size-4xl', '--xh-font-size-5xl']"
   :notes="{
     '--xh-font-size-xs': '12px · 次级标注：计数、快捷键、时间戳、序号',
-    '--xh-font-size-sm': '13px · 说明、错误文案、sm 档控件',
+    '--xh-font-size-sm': '13px · 说明、sm 档控件',
     '--xh-font-size-md': '14px · 正文、标签、浮层内与小面标题、md 档控件',
     '--xh-font-size-lg': '16px · heading-3：区块与面板标题；lg 档控件',
     '--xh-font-size-xl': '20px · heading-2：页面标题',
@@ -61,7 +61,7 @@
 | 字段说明 / helper（Field、Fieldset） | `--xh-text-caption-size` 12 / `--xh-fg-subtle` / `--xh-leading-normal`；禁用不另变色 | 紧贴控件，辅助行最小高 `--xh-space-5` |
 | 其余说明（Card、Alert、Dialog 等面内的 description） | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal`；Steps 的步骤说明取次级标注 12 / `--xh-fg-subtle` | — |
 | 错误文案 | 12 / `--xh-fg-danger` | 与说明共用控件下方那一行辅助行 |
-| 浮层内与小面标题（Popover、HoverCard、Popconfirm、FloatingPanel、Approval、Timeline、EmptyState、Citation） | 14 / `--xh-font-weight-medium` | — |
+| 浮层内与小面标题（Popover、HoverCard、Popconfirm、FloatingPanel、Approval、EmptyState、Citation） | 14 / `--xh-font-weight-medium` | — |
 | 区块与面板标题（Card、Descriptions、Alert、Notification、Steps；Dialog、Drawer、Tour） | heading-3（`--xh-text-heading-3-*`）：16 / 500 | — |
 | 页面标题（PageHeader） | heading-2（`--xh-text-heading-2-*`）：20 / 500 | — |
 | 大号数值（Statistic、Timer、NumberAnimation） | sm / md / lg 依次取 heading-2 / heading-1 / display（`--xh-text-display-size`）：20 / 24 / 28 | — |
