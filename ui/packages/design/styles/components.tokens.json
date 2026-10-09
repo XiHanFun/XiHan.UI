@@ -58224,11 +58224,12 @@
         "variant=line"
       ],
       "defaultToken": [
-        "--xh-space-1",
-        "--xh-space-2",
-        "--xh-space-3",
-        "--xh-space-4",
-        "--xh-stroke-strong"
+        "--xh-track-band-thickness-lg",
+        "--xh-track-band-thickness-md",
+        "--xh-track-band-thickness-sm",
+        "--xh-track-thickness-lg",
+        "--xh-track-thickness-md",
+        "--xh-track-thickness-sm"
       ],
       "visibility": "public",
       "description": "progress 的 root、target、track 部件 block-size 覆盖槽。"
@@ -67903,9 +67904,9 @@
         "size=sm"
       ],
       "defaultToken": [
-        "--xh-space-2_5",
-        "--xh-space-3",
-        "--xh-space-4"
+        "--xh-track-thumb-size-lg",
+        "--xh-track-thumb-size-md",
+        "--xh-track-thumb-size-sm"
       ],
       "visibility": "public",
       "description": "slider 的 control、root、thumb 部件 block-size、inline-size、margin-block-end、margin-block-start、margin-inline-start 覆盖槽。"

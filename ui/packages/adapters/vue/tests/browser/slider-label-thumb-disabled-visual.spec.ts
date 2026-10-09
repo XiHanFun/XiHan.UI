@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -82,6 +83,13 @@ describe('slider 字段标签、轨道、拇指与禁用面', () => {
     expect(style.borderTopColor).toBe(resolvedToken('--xh-bg-brand'))
     expect(style.backgroundColor).toBe(resolvedToken('--xh-bg-surface', 'background-color'))
     expect(style.boxShadow).toBe('none')
+  })
+
+  it.each(['sm', 'md', 'lg'] as const)('%s 档拇指直径取轨道拇指的同档令牌', (tier) => {
+    // md 是缺省档：不写 data-size
+    const { thumb } = mount(tier === 'md' ? '' : `data-size="${tier}"`)
+    expect(thumb.getBoundingClientRect().width).toBe(tokenLength(`--xh-track-thumb-size-${tier}`))
+    expect(thumb.getBoundingClientRect().height).toBe(tokenLength(`--xh-track-thumb-size-${tier}`))
   })
 
   it('拖动中的拇指放大一档并抬起', () => {

@@ -952,14 +952,55 @@
     }
   },
   "track": {
-    "$description": "滑杆与进度条共用的轨道几何。",
+    "$description": "滑杆、进度条与强度条的轨道几何。分档的几支按 sm / md / lg 取，不随密度换档。",
     "thickness": {
+      "$description": "强度条（密码输入的强度指示）的厚度，不分档。",
       "$type": "dimension",
       "$value": "6px"
     },
     "thumb-size": {
+      "$description": "颜色滑杆的拇指直径：颜色带比普通滑杆的细轨粗得多，拇指跟着大一档，不分档。",
       "$type": "dimension",
       "$value": "18px"
+    },
+    "thickness-sm": {
+      "$description": "线形进度条的轨道厚度：细轨两端全圆，sm / md / lg = 3 / 4 / 8px。",
+      "$type": "dimension",
+      "$value": "{stroke.strong}"
+    },
+    "thickness-md": {
+      "$type": "dimension",
+      "$value": "{space.1}"
+    },
+    "thickness-lg": {
+      "$type": "dimension",
+      "$value": "{space.2}"
+    },
+    "band-thickness-sm": {
+      "$description": "带分段色带的线形进度条（子弹图）的轨道厚度：各比同档线形厚一档，填充收成中间一条压在色带上，sm / md / lg = 8 / 12 / 16px。",
+      "$type": "dimension",
+      "$value": "{space.2}"
+    },
+    "band-thickness-md": {
+      "$type": "dimension",
+      "$value": "{space.3}"
+    },
+    "band-thickness-lg": {
+      "$type": "dimension",
+      "$value": "{space.4}"
+    },
+    "thumb-size-sm": {
+      "$description": "滑杆拇指的直径：白底配描边的平面圆，压在 2–3px 的细轨上，sm / md / lg = 10 / 12 / 16px。",
+      "$type": "dimension",
+      "$value": "{space.2_5}"
+    },
+    "thumb-size-md": {
+      "$type": "dimension",
+      "$value": "{space.3}"
+    },
+    "thumb-size-lg": {
+      "$type": "dimension",
+      "$value": "{space.4}"
     }
   },
   "chip": {
