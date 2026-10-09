@@ -23,10 +23,11 @@
     --xh-_page-header-px: 0;
     --xh-_page-header-radius: 0;
 
-    /* 返回、媒体、标题、副标题与操作区分列：副标题跟在标题后面同一行，中间一条竖线隔开 */
+    /* 返回、媒体、标题、副标题与操作区分列：副标题跟在标题后面同一行，中间一条竖线隔开。
+       标题列按内容宽、但能收到 0，副标题列至少留下竖线与一个字：不可断的长标题在列内断行，不把页头撑出容器 */
     display: grid;
     grid-auto-flow: dense;
-    grid-template-columns: auto auto auto minmax(0, 1fr) auto;
+    grid-template-columns: auto auto minmax(0, max-content) minmax(min-content, 1fr) auto;
     align-items: center;
     row-gap: var(--xh-page-header-row-gap, var(--xh-_page-header-row-gap));
     padding-block: var(--xh-page-header-py, var(--xh-_page-header-py));
