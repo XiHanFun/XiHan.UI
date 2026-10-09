@@ -21,7 +21,7 @@
 // - 字段外壳（描控件边、短边不小于 FIELD_SHELL_MIN 的实线盒）按描边铺底：静息与校验失败铺
 //   --xh-bg-field，聚焦铺 --xh-bg-surface；刻意不铺的登记在 UNFILLED_CONTROL_BOX。
 // - 勾选方框与单选圈（不填底的 16px 小盒）描边取 CHECK_MARKER_STROKE。
-// - 通栏列表（FLUSH_ROW_LISTS：锚定浮层里的列表、Command、Transfer）：面板里 24 高的悬停 / 选中行
+// - 通栏列表（FLUSH_ROW_LISTS：锚定浮层里的列表与时间列、Command、Transfer）：面板里 24 高的悬停 / 选中行
 //   不取圆角，左右贴面板内沿；多列面板（MULTI_COLUMN_LISTS）的行铺到列分隔线为止，只核左沿。
 // - 渐变 id 以文件名开头（总览页上全部示意图同处一个 document，整页不重名由 check-demo-ids 核）；
 //   每张图元素不超过 MAX_ELEMENTS 个。
@@ -79,12 +79,12 @@ const CHECK_MARKER_STROKE = 'var(--xh-border-strong)'
 const CHECK_MARKER_MAX = 16
 
 /** 行是通栏的列表：锚定浮层里的列表、Command 结果列表与 Transfer 列表；其中多列面板的行铺到列分隔线为止。 */
-const FLUSH_ROW_LISTS = new Set(['menu', 'context-menu', 'menubar', 'select', 'combobox', 'tree-select', 'mention', 'cascader', 'command', 'transfer'])
+const FLUSH_ROW_LISTS = new Set(['menu', 'context-menu', 'menubar', 'select', 'combobox', 'tree-select', 'mention', 'cascader', 'time-picker', 'time-range-picker', 'command', 'transfer'])
 /** 承载列表的面板底：浮层面与页内面。 */
 const LIST_PANEL_FILLS = new Set(['var(--xh-bg-surface-raised)', 'var(--xh-bg-surface)'])
 /** 列表行的面：悬停淡底，或页内持久集合的选中面。 */
 const LIST_ROW_FILL = /^var\(--xh-bg-(?:subtle(?:-hover)?|brand-subtle)\)$/
-const MULTI_COLUMN_LISTS = new Set(['cascader'])
+const MULTI_COLUMN_LISTS = new Set(['cascader', 'time-picker', 'time-range-picker'])
 const LIST_ROW_H = 24
 
 /** 每种元素允许的属性。 */
