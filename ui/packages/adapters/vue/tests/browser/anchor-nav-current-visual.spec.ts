@@ -27,10 +27,10 @@ function mount() {
   host.style.setProperty('--xh-motion-duration-press', '0ms')
   host.style.setProperty('--xh-motion-duration-release', '0ms')
   host.innerHTML = `
-    <nav data-scope="anchor" data-part="root">
-      <ul data-scope="anchor" data-part="list">
-        <li data-scope="anchor" data-part="item"><a data-scope="anchor" data-part="link" data-current data-xh-collection-item data-xh-collection-context="nav" data-xh-collection-size="md" href="#a">概述</a></li>
-        <li data-scope="anchor" data-part="item"><a data-scope="anchor" data-part="link" data-xh-collection-item data-xh-collection-context="nav" data-xh-collection-size="md" href="#b">用法</a></li>
+    <nav data-scope="anchor" class="xh-scope-anchor" data-part="root">
+      <ul data-scope="anchor" class="xh-scope-anchor" data-part="list">
+        <li data-scope="anchor" class="xh-scope-anchor" data-part="item"><a data-scope="anchor" class="xh-scope-anchor" data-part="link" data-current data-xh-collection-item data-xh-collection-context="nav" data-xh-collection-size="md" href="#a">概述</a></li>
+        <li data-scope="anchor" class="xh-scope-anchor" data-part="item"><a data-scope="anchor" class="xh-scope-anchor" data-part="link" data-xh-collection-item data-xh-collection-context="nav" data-xh-collection-size="md" href="#b">用法</a></li>
       </ul>
     </nav>`
   document.body.append(host)
