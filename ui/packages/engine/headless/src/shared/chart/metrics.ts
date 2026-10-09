@@ -20,7 +20,7 @@ export const CHART_METRICS: ChartMetrics = Object.freeze({
   hitMin: 24,
   tickLength: 4,
   labelGap: 4,
-  radius: 4,
+  radius: 2,
   font: Object.freeze({ family: 'sans-serif', size: 12, weight: 400, lineHeight: 15 }),
 })
 
