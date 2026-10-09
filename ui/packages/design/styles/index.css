@@ -36046,10 +36046,22 @@
     --xh-icon-size: var(--xh-notification-icon-size, var(--xh-glyph-size-xs));
   }
 
-  /* 卡片：钉在右上角、距上与右各 12px，不参与网格排布——留在流里它会变成正文下面的第三行 */
+  /* 卡片：钉在右上角，不参与网格排布——留在流里它会变成正文下面的第三行。
+     距右取面内动作的内缩；竖向与标题首行同一条中线：上内衬加上「标题行高 − 钮边长」的一半
+     （舒适档 20 + (24 − 28) / 2 = 18、紧凑档 16 + (24 − 24) / 2 = 16），作者改了贴边槽仍按它两向一起贴 */
   .xh-scope-notification[data-part='item'][data-preset='card'] [data-part='item-close-trigger']:where(.xh-scope-notification) {
     position: absolute;
-    inset-block-start: var(--xh-notification-close-inset, var(--xh-surface-action-inset));
+    inset-block-start: var(
+      --xh-notification-close-inset,
+      calc(
+        var(--xh-notification-item-py, var(--xh-overlay-notification-p)) +
+        (
+          var(--xh-notification-title-font-size, var(--xh-text-heading-3-size)) *
+          var(--xh-notification-title-leading, var(--xh-leading-normal)) -
+          var(--xh-notification-close-size, var(--xh-control-h-sm))
+        ) / 2
+      )
+    );
     inset-inline-end: var(--xh-notification-close-inset, var(--xh-surface-action-inset));
   }
 
