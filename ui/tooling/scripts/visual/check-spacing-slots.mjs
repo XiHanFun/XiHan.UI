@@ -120,8 +120,9 @@ const CROSS_PART = {
   'table.row': ['cell'],
   // 表头单元格铺的就是表头那一行的底色，两处不同源就会在吸顶时看出色差
   'table.header': ['column-header'],
-  // 预设列与时间列并排在同一行，分隔线取同一族，两列之间只有一道等宽的线
-  'time-picker.column': ['preset-group'],
+  // 预设列与时间列并排在同一行，分隔线取同一族，两列之间只有一道等宽的线；
+  // 时间格的命中区向上下各补半个列内间距，读列的间距槽
+  'time-picker.column': ['preset-group', 'item'],
   'time-range-picker.column': ['preset-group'],
   // 时间列底的留白要让末格也能滚到列顶：留白 = 列高 − 一格的高 − 列顶内衬，读格子的高度槽
   'date-picker.time-item': ['time-column'],

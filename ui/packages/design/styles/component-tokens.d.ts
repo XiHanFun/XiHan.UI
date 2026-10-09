@@ -3871,6 +3871,7 @@ export type ComponentTokenName
     | '--xh-time-picker-preset-check-size'
     | '--xh-time-picker-preset-fg'
     | '--xh-time-picker-preset-fg-disabled'
+    | '--xh-time-picker-preset-fg-hover'
     | '--xh-time-picker-preset-font-size'
     | '--xh-time-picker-preset-group-gap'
     | '--xh-time-picker-preset-group-h'

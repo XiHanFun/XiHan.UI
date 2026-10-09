@@ -228,8 +228,27 @@ describe('time-picker 统一选中反馈', () => {
     expect(preset.matches(':focus-visible')).toBe(true)
     // 快捷项坐在自己的淡底上：高亮走淡底阶梯的 200 档
     expect(getComputedStyle(preset).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', preset))
+    // 高亮时字换正文色：底升到 200 之后，次级前景在暗色下不足 4.5:1
+    const fg = document.createElement('span')
+    fg.style.color = 'var(--xh-fg-default)'
+    preset.append(fg)
+    expect(getComputedStyle(preset).color).toBe(getComputedStyle(fg).color)
+    fg.remove()
     // 键盘焦点出现时底色与环当帧到位，不压在家族背景过渡的中间帧上
     expect(getComputedStyle(preset).transitionProperty).toBe('none')
+  })
+
+  it('数字格的命中区补满列内间距：两格之间的缝落在上下两格上', async () => {
+    await mountTimePicker()
+    // 选中的 09 停在列顶：量它与下面那一格之间的缝
+    const upper = byTestId('hour-09')
+    const lower = byTestId('hour-10')
+    const gap = lower.getBoundingClientRect().top - upper.getBoundingClientRect().bottom
+    expect(gap).toBeGreaterThan(0)
+    const x = upper.getBoundingClientRect().left + upper.getBoundingClientRect().width / 2
+    const hit = (y: number): Element | null => document.elementFromPoint(x, y)?.closest("[data-part='item']") ?? null
+    expect(hit(upper.getBoundingClientRect().bottom + gap / 2 - 1)).toBe(upper)
+    expect(hit(lower.getBoundingClientRect().top - gap / 2 + 1)).toBe(lower)
   })
 
   it.each(['ltr', 'rtl'] as const)('%s：数字保持数学居中，对号只翻转到逻辑末端', async (dir) => {
