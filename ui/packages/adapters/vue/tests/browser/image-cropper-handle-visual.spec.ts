@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -78,7 +79,7 @@ describe('image-cropper 把手视觉', () => {
     const square = mount('0px')
     const squareIndicator = getComputedStyle(square.corner, '::after')
     expect(squareIndicator.borderTopLeftRadius).toBe('0px')
-    expect(squareIndicator.borderBottomRightRadius).toBe('4px')
+    expect(squareIndicator.borderBottomRightRadius).toBe(`${tokenLength('--xh-shape-control')}px`)
   })
 
   it('聚焦时高亮指示器本身，不给透明命中盒或伪元素画外框', async () => {
@@ -101,6 +102,6 @@ describe('image-cropper 把手视觉', () => {
     expect(getComputedStyle(cropper.corner).outlineStyle).toBe('none')
     expect(cornerIndicator.outlineStyle).toBe('none')
     expect(cornerIndicator.borderBottomColor).not.toBe(cornerIdle)
-    expect(cornerIndicator.borderBottomRightRadius).toBe('4px')
+    expect(cornerIndicator.borderBottomRightRadius).toBe(`${tokenLength('--xh-shape-control')}px`)
   })
 })

@@ -108,8 +108,8 @@ describe('float-button 的 M2 磨砂皮肤', () => {
     // 不传 variant 时连接层显式落 outline：描边 + 磨砂面的中性圆钮
     expect(element.closest('[data-part=\'root\']')!.getAttribute('data-variant')).toBe('outline')
     expect(element.getAttribute('data-xh-action-variant')).toBe('outline')
-    // floating 档 md：方格 box-md 的圆形
-    const box = tokenLength('--xh-control-box-md', host!)
+    // 缺省 md：独立浮钮直径 float-md 的圆形
+    const box = tokenLength('--xh-control-float-md', host!)
     expect(element.getBoundingClientRect().width).toBe(box)
     expect(element.getBoundingClientRect().height).toBe(box)
     expect(style.backgroundColor).toBe(resolve(element, 'background-color', 'var(--xh-material-frosted-bg)'))

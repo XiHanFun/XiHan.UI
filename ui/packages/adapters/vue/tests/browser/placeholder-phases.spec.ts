@@ -136,7 +136,7 @@ const CASES: Case[] = [
         ])),
       ],
     }),
-    muted: '--xh-fg-muted',
+    muted: '--xh-fg-subtle',
     dim: 'column',
   },
   {

@@ -14,6 +14,7 @@ import {
   XhAccordionItem,
   XhAccordionRoot,
   XhAccordionTrigger,
+  XhCardContent,
   XhCardDescription,
   XhCardHeader,
   XhCardRoot,
@@ -169,10 +170,17 @@ describe('card 的中性内容面槽', () => {
   it('统一内边距与段间距都可覆盖', async () => {
     setSlot('--xh-card-p', '29px')
     setSlot('--xh-card-gap', '31px')
-    await mount(CARD)
+    await mount(() => h(XhCardRoot, null, () => [
+      h(XhCardHeader, null, () => h(XhCardTitle, null, () => '标题')),
+      h(XhCardContent, null, () => '正文'),
+    ]))
     const root = part('card', 'root')
 
-    expect(styleOf(root, 'padding-top')).toBe('29px')
+    // 根自己不留内衬，头部条的横向内衬与正文的四边内衬一起跟着这个槽走
+    expect(styleOf(root, 'padding-top')).toBe('0px')
+    expect(styleOf(part('card', 'header'), 'padding-left')).toBe('29px')
+    expect(styleOf(part('card', 'content'), 'padding-top')).toBe('29px')
+    expect(styleOf(part('card', 'content'), 'padding-left')).toBe('29px')
     expect(styleOf(root, 'row-gap')).toBe('31px')
   })
 

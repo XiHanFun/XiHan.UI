@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhTimerControl, XhTimerDisplay, XhTimerItem, XhTimerRoot, XhTimerSeparator } from '../../src'
+import { pressScale, tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -62,25 +63,25 @@ describe('计时器的起停钮', () => {
     mountTimer()
     await settle()
     const button = control()
-    expect(button.getBoundingClientRect().height).toBe(36)
+    expect(button.getBoundingClientRect().height).toBe(tokenLength('--xh-control-h-md'))
     const style = getComputedStyle(button)
     expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(style.borderTopColor).toBe(tokenColor('--xh-border-control'))
     expect(style.borderTopWidth).toBe('1px')
-    expect(style.borderRadius).toBe('4px')
+    expect(style.borderRadius).toBe(`${tokenLength('--xh-shape-control')}px`)
     expect(style.boxShadow).toBe('none')
     expect(style.color).toBe(tokenColor('--xh-fg-default'))
   })
 
-  it('尺寸档随 size 换：sm 32px、lg 40px', async () => {
+  it('尺寸档随 size 换：sm、lg 各取一个同档控件高', async () => {
     mountTimer({ size: 'sm' })
     await settle()
-    expect(control().getBoundingClientRect().height).toBe(32)
+    expect(control().getBoundingClientRect().height).toBe(tokenLength('--xh-control-h-sm'))
     app?.unmount()
     host?.remove()
     mountTimer({ size: 'lg' })
     await settle()
-    expect(control().getBoundingClientRect().height).toBe(40)
+    expect(control().getBoundingClientRect().height).toBe(tokenLength('--xh-control-h-lg'))
   })
 
   it('悬停落白底阶梯的 100 并加深描边，不再抬升', async () => {
@@ -94,7 +95,7 @@ describe('计时器的起停钮', () => {
     expect(style.boxShadow).toBe('none')
   })
 
-  it('按住落 200 并缩到 0.97，松手回 1', async () => {
+  it('按住落 200 并取按压缩放令牌，松手回 1', async () => {
     mountTimer()
     await settle()
     const button = control()
@@ -102,7 +103,7 @@ describe('计时器的起停钮', () => {
     await press(button)
     await settle()
     expect(getComputedStyle(button).backgroundColor).toBe(tokenColor('--xh-bg-subtle-hover'))
-    expect(getComputedStyle(button).scale).toBe('0.97')
+    expect(getComputedStyle(button).scale).toBe(pressScale())
     await release(button)
     // 回程 200ms 缓动，采样时可能还差最后一点
     await settle()
