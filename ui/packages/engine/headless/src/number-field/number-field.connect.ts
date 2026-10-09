@@ -122,11 +122,13 @@ export function connectNumberField<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
-    // control 是纯视觉包裹：盒子的描边/底色/聚焦环由 Field Chrome 家族画在它身上，
-    // 三个状态属性供家族按禁用/只读/校验切换盒观感；size 缺省 md，variant 与 root 同源
+    // control 是纯视觉包裹：盒子的描边/底色/聚焦换色由 Field Chrome 家族画在它身上，
+    // 三个状态属性供家族按禁用/只读/校验切换盒观感；size 缺省 md，variant 与 root 同源。
+    // 它也是加减钮显隐的宿主：可悬停的精细指针下，指针落在盒上或盒里有焦点时两颗钮才显出
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
       'data-xh-field-chrome': '',
+      'data-xh-action-owner': '',
       'data-xh-field-size': prop('size') ?? 'md',
       'data-variant': variant,
       'data-disabled': dataAttr(disabled),
@@ -202,13 +204,14 @@ export function connectNumberField<T extends PropTypes>(
       },
     }),
 
-    // 加减钮走 Action Control 的 field-inset ghost 档：正方视觉盒、inset 圆角、悬停 100 / 按下 200
+    // 加减钮走 Action Control 的 field-inset ghost 档：可悬停的精细指针下平时收起、悬停或聚焦字段时显出
+    // （键盘靠 ↑↓ 步进，钮不占 Tab 位，收起不丢功能）；粗指针与不能悬停的设备上常显
     getIncrementTriggerProps: () => normalize.button({
       ...parts['increment-trigger'].attrs,
       'data-xh-action-control': '',
       'data-xh-action-profile': 'field-inset',
       'data-xh-action-variant': 'ghost',
-      'data-xh-action-display': 'always',
+      'data-xh-action-display': 'hover-focus',
       'data-xh-action-size': prop('size') ?? 'md',
       'type': 'button',
       'disabled': !canIncrement || undefined,
@@ -223,7 +226,7 @@ export function connectNumberField<T extends PropTypes>(
       'data-xh-action-control': '',
       'data-xh-action-profile': 'field-inset',
       'data-xh-action-variant': 'ghost',
-      'data-xh-action-display': 'always',
+      'data-xh-action-display': 'hover-focus',
       'data-xh-action-size': prop('size') ?? 'md',
       'type': 'button',
       'disabled': !canDecrement || undefined,

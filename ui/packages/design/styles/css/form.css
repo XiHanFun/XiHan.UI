@@ -17,12 +17,26 @@
     --xh-form-skin: 1;
   }
 
-  /* 表单是一列字段：竖排、字段之间留一档间距。root 就是那个原生 <form> */
+  /* 表单是一列字段，root 就是那个原生 <form>。项距不走 gap：字段带辅助行（说明，或给错误文案留的那一行）时
+     那一行就是项距，没有辅助行的项才在下方补一段项距（见下面两条）。一行流档的项距另取一档 */
   [data-scope='form'][data-part='root'] {
+    --xh-_form-item-gap: var(--xh-form-gap, var(--xh-space-5));
+
     display: flex;
     flex-direction: column;
-    gap: var(--xh-form-gap, var(--xh-stack-gap-md));
+    row-gap: 0;
     margin: 0;
+  }
+
+  /* 每一项在下方留一段项距，最后一项不留。:where() 不计特指度，作者给自己的节点写外边距照样压得过 */
+  :where([data-scope='form'][data-part='root']) > :where(:not(:last-child)) {
+    margin-block-end: var(--xh-_form-item-gap);
+  }
+
+  /* 字段带辅助行：辅助行（最小高 --xh-space-5）紧贴控件、自己就是项距，这一项不再另留；
+     说明收起、只留错误文案占位的那一行同样算 */
+  [data-scope='form'][data-part='field-group']:has([data-scope='field'][data-part='error-text'], [data-scope='field'][data-part='description']:not([hidden])) {
+    margin-block-end: 0;
   }
 
   /* 网格：字段排进等宽列，各列下限写 0，一段长文本不会把自己那列撑宽。
@@ -30,6 +44,7 @@
   [data-scope='form'][data-part='root'][data-layout='grid'] {
     display: grid;
     grid-template-columns: repeat(var(--xh-_form-cols), minmax(0, 1fr));
+    column-gap: var(--xh-form-gap, var(--xh-space-5));
 
     --xh-_form-cols: 1;
   }
@@ -41,9 +56,11 @@
 
   /* 横排一行流：字段并肩排，放不下自动折行 */
   [data-scope='form'][data-part='root'][data-layout='inline'] {
+    --xh-_form-item-gap: var(--xh-form-inline-row-gap, var(--xh-space-2));
+
     flex-flow: row wrap;
     align-items: start;
-    column-gap: var(--xh-form-inline-gap, var(--xh-space-4));
+    column-gap: var(--xh-form-inline-gap, var(--xh-space-6));
     /* 一行流里字段按内容收，没有列宽可铺：在表单根上取下此处的字段缺省宽，交给下面的字段还原 */
     --xh-_form-inline-control-w: var(--xh-control-w);
   }
@@ -176,13 +193,6 @@
   /* 占满整行：从第一条列线排到最后一条，列数换档时不必跟着改跨度 */
   [data-scope='form'][data-part='field-group'][data-span='full'] {
     --xh-_form-span: 1 / -1;
-  }
-
-  /* 出错的字段在起始缘竖一条色带：读屏之外还得有一眼看得见的定位标记。
-     用逻辑属性，RTL 下自动换到右侧 */
-  [data-scope='form'][data-part='field-group'][data-invalid] {
-    padding-inline-start: var(--xh-form-field-invalid-px, var(--xh-space-2));
-    border-inline-start: var(--xh-stroke-thick) solid var(--xh-form-field-invalid-border, var(--xh-border-invalid));
   }
 
   /* 提交失败后的错误汇总。role=alert 常挂，靠 hidden 显隐 */

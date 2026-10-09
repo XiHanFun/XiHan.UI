@@ -240,6 +240,29 @@
     --xh-_tag-line-h: var(--xh-control-indicator-lg);
   }
 
+  /* —— 字段里的已选标签 —— */
+  /* 坐在字段盒里的标签（Select / Combobox / Cascader / TreeSelect / 各类 Picker 的标签行与 TagsInput）是已选值的摘要：
+     大档字段里字号也钉在说明档，换成正文字号会与输入的文字抢层级。排在尺寸档之后，同特指度下压得住 */
+  :where([data-xh-field-chrome]) [data-scope='tag'][data-part='root'][data-size='lg'] {
+    --xh-_tag-font-size: var(--xh-text-caption-size);
+  }
+
+  /* 盒没聚焦时铺着字段淡底，淡底标签几乎化进底里：换成白底 + 缺省描边一枚枚立出来，叉的悬停 / 按下随之
+     走白底阶梯 100 → 200；聚焦后盒换成白色承载面，标签回到自己的淡底。禁用的盒不换（标签照禁用档置灰），
+     写了语气的、实心与无壳的标签保留自己的面；--xh-tag-* 覆盖槽照旧优先 */
+  :where([data-xh-field-chrome]:not(:focus-within):not([data-disabled])) [data-scope='tag'][data-part='root']:is(:not([data-variant]), [data-variant='subtle'], [data-variant='outline']):not([data-tone], [data-disabled]) {
+    border-color: var(--xh-tag-border, var(--xh-border-default));
+    background: var(--xh-tag-bg, var(--xh-bg-surface));
+  }
+
+  :where([data-xh-field-chrome]:not(:focus-within):not([data-disabled])) [data-scope='tag'][data-part='root']:is(:not([data-variant]), [data-variant='subtle'], [data-variant='outline']):not([data-tone], [data-disabled]) [data-scope='tag'][data-part='close-trigger']:hover:not(:disabled) {
+    background: var(--xh-tag-close-bg-hover, var(--xh-bg-subtle));
+  }
+
+  :where([data-xh-field-chrome]:not(:focus-within):not([data-disabled])) [data-scope='tag'][data-part='root']:is(:not([data-variant]), [data-variant='subtle'], [data-variant='outline']):not([data-tone], [data-disabled]) [data-scope='tag'][data-part='close-trigger']:not(:disabled):is(:active, [data-pressed]) {
+    background: var(--xh-tag-close-bg-active, var(--xh-bg-subtle-hover));
+  }
+
   /* —— 禁用 —— */
   /* 排在形态之后，靠源序压过形态给的配色。第二条选择器专为写了语气的标签而设：
      语气覆盖那几条比第一条多一个属性，不把 [data-tone] 一起写上，

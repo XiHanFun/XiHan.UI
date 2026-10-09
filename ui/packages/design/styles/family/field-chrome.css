@@ -24,7 +24,7 @@
     --xh-_field-variant-border-hover: var(--xh-border-strong);
     --xh-_field-variant-bg-focus: var(--xh-bg-surface);
     --xh-_field-variant-border-focus: var(--xh-border-control-focus);
-    --xh-_field-variant-bg-invalid: color-mix(in oklab, var(--xh-border-invalid) 4%, transparent);
+    --xh-_field-variant-bg-invalid: var(--xh-bg-field-invalid);
     --xh-_field-variant-border-invalid: var(--xh-border-invalid);
     --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
     --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
@@ -48,7 +48,7 @@
     --xh-_field-variant-border-hover: var(--xh-border-strong);
     --xh-_field-variant-bg-focus: var(--xh-bg-surface);
     --xh-_field-variant-border-focus: var(--xh-border-control-focus);
-    --xh-_field-variant-bg-invalid: color-mix(in oklab, var(--xh-border-invalid) 4%, transparent);
+    --xh-_field-variant-bg-invalid: var(--xh-bg-field-invalid);
     --xh-_field-variant-border-invalid: var(--xh-border-invalid);
     --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
     --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
@@ -62,7 +62,7 @@
     --xh-_field-variant-border-hover: var(--xh-border-control);
     --xh-_field-variant-bg-focus: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_field-variant-border-focus: var(--xh-border-control-focus);
-    --xh-_field-variant-bg-invalid: color-mix(in oklab, var(--xh-border-invalid) 4%, transparent);
+    --xh-_field-variant-bg-invalid: var(--xh-bg-field-invalid);
     --xh-_field-variant-border-invalid: var(--xh-border-invalid);
     --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
     --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
@@ -76,7 +76,7 @@
     --xh-_field-variant-border-hover: var(--xh-border-control);
     --xh-_field-variant-bg-focus: transparent;
     --xh-_field-variant-border-focus: var(--xh-border-control-focus);
-    --xh-_field-variant-bg-invalid: color-mix(in oklab, var(--xh-border-invalid) 4%, transparent);
+    --xh-_field-variant-bg-invalid: var(--xh-bg-field-invalid);
     --xh-_field-variant-border-invalid: var(--xh-border-invalid);
     --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
     --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
@@ -131,7 +131,7 @@
     flex-wrap: wrap;
     block-size: auto;
     min-block-size: var(--xh-field-control-height, var(--xh-_field-size-control-height));
-    padding-block: var(--xh-space-1);
+    padding-block: var(--xh-space-0_5);
   }
 
   [data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):not(:focus-within):hover {
@@ -165,6 +165,11 @@
     color: var(--xh-field-fg-disabled, var(--xh-fg-disabled));
     border-color: var(--xh-field-border-disabled, var(--xh-_field-variant-border-disabled));
     cursor: var(--xh-field-cursor-disabled, not-allowed);
+  }
+
+  [data-xh-field-chrome]:not([data-variant='ghost']):not(:focus-within) {
+    --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
   }
 
   [data-xh-field-affix] {
@@ -218,7 +223,7 @@
   [data-xh-field-input][data-xh-field-layout='textarea'] {
     block-size: auto;
     max-inline-size: 100%;
-    padding-block: var(--xh-field-textarea-padding-block, var(--xh-space-2));
+    padding-block: var(--xh-field-textarea-padding-block, var(--xh-space-1));
     overflow: auto;
     resize: vertical;
   }

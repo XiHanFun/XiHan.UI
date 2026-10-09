@@ -28,9 +28,8 @@
     --xh-_number-field-gap: 0;
     --xh-_number-field-font-size: var(--xh-control-font-md);
     --xh-_number-field-trigger-font-size: var(--xh-control-font-md);
-
-    /* 盒内那道分隔线的长度：取钮高的一半，线的上下各留一截空白，不与钮等高 */
-    --xh-_number-field-divider-h: 50%;
+    /* 精细指针下上下叠放的两颗钮离盒边的内收：sm 档盒矮，收半档，钮才留得出字形的高 */
+    --xh-_number-field-stepper-inset: var(--xh-space-1);
 
     display: inline-flex;
     flex-direction: column;
@@ -56,6 +55,7 @@
     --xh-_number-field-px: var(--xh-control-px-sm);
     --xh-_number-field-font-size: var(--xh-control-font-sm);
     --xh-_number-field-trigger-font-size: var(--xh-control-font-sm);
+    --xh-_number-field-stepper-inset: var(--xh-space-0_5);
   }
 
   [data-scope='number-field'][data-part='root'][data-size='lg'] {
@@ -67,13 +67,15 @@
   }
 
   [data-scope='number-field'][data-part='label'] {
-    color: var(--xh-number-field-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-number-field-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-number-field-label-gap, var(--xh-space-2)) - var(--xh-number-field-gap, var(--xh-space-1)));
+    color: var(--xh-number-field-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-number-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-number-field-label-font-weight, var(--xh-text-label-weight));
   }
 
   [data-scope='number-field'][data-part='label'][data-disabled] {
-    color: var(--xh-number-field-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-number-field-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* —— 一体式 control：输入框与加减钮同框 —— */
@@ -117,7 +119,7 @@
   }
 
   /* 盒内 input：无边框无底无圆角无落影由家族重置，观感全归 control。
-     数字居中排在两个按钮之间，行内内衬留给它自己（control 不给内衬）；
+     数字从起始缘排起，与同一列里别的字段的文字对齐，行内内衬留给它自己（control 不给内衬）；
      前后缀图标/文字直接流式排在 input 两侧，不用再绝对定位 */
   [data-scope='number-field'][data-part='control'] [data-part='input']:where([data-scope='number-field']) {
     --xh-field-input-fg: var(--xh-number-field-input-fg, var(--xh-fg-default));
@@ -129,12 +131,13 @@
     inline-size: var(--xh-number-field-input-w, 5em);
     padding-inline: var(--xh-number-field-input-px, var(--xh-_number-field-px));
     font-variant-numeric: tabular-nums;
-    text-align: var(--xh-number-field-input-align, center);
+    text-align: var(--xh-number-field-input-align, start);
   }
 
-  /* 盒内按钮：正方视觉盒、inset 圆角、悬停 100 / 按下 200 与 0.97 按压、粗指针热区与
-     :focus-visible 关环全由 Action Control 的 field-inset ghost 档给，组件只映射既有覆盖槽。
-     常态只剩符号，符号取默认前景，悬停与按下才浮出底色 */
+  /* 盒内按钮：正方视觉盒、inset 圆角、按承载面取的悬停 / 按下阶梯、粗指针热区与 :focus-visible 关环
+     全由 Action Control 的 field-inset ghost 档给，组件只映射既有覆盖槽。
+     常态只剩符号，符号取次要前景（钮是辅助动作，不与数字抢层级），悬停与按下才浮出底色。
+     可悬停的精细指针下平时收起、悬停或聚焦字段时显出（家族 hover-focus 档），并改成上下叠放，见下 */
   [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:where([data-scope='number-field']),
   [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:where([data-scope='number-field']) {
     --xh-action-visual-size: var(--xh-number-field-trigger-size, var(--xh-_action-profile-visual-size));
@@ -142,7 +145,7 @@
     --xh-action-radius: var(--xh-number-field-trigger-radius, var(--xh-shape-inset));
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-pressed: var(--xh-number-field-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
-    --xh-action-fg-rest: var(--xh-number-field-trigger-fg, var(--xh-fg-default));
+    --xh-action-fg-rest: var(--xh-number-field-trigger-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-number-field-trigger-fg-hover, var(--xh-fg-default));
     --xh-action-border-rest: transparent;
     --xh-action-highlight-rest: transparent;
@@ -170,25 +173,6 @@
     display: none;
   }
 
-  /* 右侧动作组与输入之间的细线：把「按的」与「填的」分成两块。
-     线不画在钮的边框上：边框会跟着钮的圆角与悬停底走，而这道线要独立于钮的各态，长度也短于钮自己。
-     ::before 已被兜底字形占着，::after 在粗指针下是家族给的 44px 热区，几何只能落在
-     background-image 上：一条 1px × 半高的渐变贴在逻辑起始侧，底色换态时它仍叠在上层。
-     线只画在动作组第一颗减钮的逻辑起始侧；background-position 是物理轴，RTL 另给一条换边。 */
-  [data-scope='number-field'][data-part='control']:has([data-part='input']) [data-part='decrement-trigger']:where([data-scope='number-field']) {
-    background-image: linear-gradient(
-      var(--xh-number-field-trigger-divider, var(--xh-material-soft-separator)),
-      var(--xh-number-field-trigger-divider, var(--xh-material-soft-separator))
-    );
-    background-repeat: no-repeat;
-    background-position: 0 50%;
-    background-size: var(--xh-stroke-thin) var(--xh-number-field-trigger-divider-h, var(--xh-_number-field-divider-h));
-  }
-
-  [dir='rtl'] [data-scope='number-field'][data-part='control']:has([data-part='input']) [data-part='decrement-trigger']:where([data-scope='number-field']) {
-    background-position: 100% 50%;
-  }
-
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
   [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:where([data-scope='number-field']):empty::before {
     content: '';
@@ -212,11 +196,51 @@
     mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
   }
 
-  /* 高对比档整层丢弃 background-image，分隔线改用系统色重画，并关掉这一颗钮的强制换色 */
-  @media (forced-colors: active) {
-    [data-scope='number-field'][data-part='control']:has([data-part='input']) [data-part='decrement-trigger']:where([data-scope='number-field']) {
-      background-image: linear-gradient(ButtonText, ButtonText);
-      forced-color-adjust: none;
+  /* 可悬停的精细指针：两颗钮上下叠在盒的逻辑末端，各占盒高一半（四周内收一截），宽取指示符大档；
+     显出时铺一层淡底，悬停 / 按下沿淡底阶梯升一档、两档，字形换成上下箭头、取指示符小档。
+     两颗钮共边相接，按下只换面不缩放。钮浮在盒上、不占流：盒的末端让出钮那一截，
+     输入与后缀不会排到钮底下，钮收起时也不跳。粗指针与不能悬停的设备仍是两颗正方钮横排在末端、常显，
+     那里一颗叠放的钮只有半个控件高，够不着触控目标尺寸 */
+  @media (hover: hover) and (pointer: fine) {
+    [data-scope='number-field'][data-part='control']:has([data-part='increment-trigger'], [data-part='decrement-trigger']) {
+      padding-inline-end: calc(
+        var(--xh-number-field-stepper-w, var(--xh-control-indicator-lg))
+        + 2 * var(--xh-number-field-stepper-inset, var(--xh-_number-field-stepper-inset))
+      );
+    }
+
+    [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:where([data-scope='number-field']),
+    [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:where([data-scope='number-field']) {
+      --xh-action-bg-rest: var(--xh-number-field-stepper-bg, var(--xh-bg-subtle));
+      --xh-action-bg-hover: var(--xh-number-field-stepper-bg-hover, var(--xh-bg-subtle-hover));
+      --xh-action-bg-pressed: var(--xh-number-field-trigger-bg-active, var(--xh-bg-subtle-active));
+      --xh-action-bg-disabled: var(--xh-number-field-stepper-bg, var(--xh-bg-subtle));
+      --xh-action-scale-pressed: none;
+      --xh-icon-size: var(--xh-control-indicator-sm);
+
+      position: absolute;
+      inset-inline-end: var(--xh-number-field-stepper-inset, var(--xh-_number-field-stepper-inset));
+      inline-size: var(--xh-number-field-stepper-w, var(--xh-control-indicator-lg));
+      min-inline-size: 0;
+      block-size: calc(50% - var(--xh-number-field-stepper-inset, var(--xh-_number-field-stepper-inset)));
+    }
+
+    [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:where([data-scope='number-field']) {
+      inset-block-start: var(--xh-number-field-stepper-inset, var(--xh-_number-field-stepper-inset));
+    }
+
+    [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:where([data-scope='number-field']) {
+      inset-block-end: var(--xh-number-field-stepper-inset, var(--xh-_number-field-stepper-inset));
+    }
+
+    [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:where([data-scope='number-field']):empty::before {
+      -webkit-mask-image: var(--xh-glyph-mark-chevron-up);
+      mask-image: var(--xh-glyph-mark-chevron-up);
+    }
+
+    [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:where([data-scope='number-field']):empty::before {
+      -webkit-mask-image: var(--xh-glyph-mark-chevron-down);
+      mask-image: var(--xh-glyph-mark-chevron-down);
     }
   }
 

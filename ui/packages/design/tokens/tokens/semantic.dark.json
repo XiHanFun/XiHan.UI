@@ -8,6 +8,7 @@
     "subtle-hover": { "$type": "color", "$value": "{color.neutral.700}" },
     "subtle-active": { "$description": "淡底承载阶梯的按下面（300）。取半档 650 而不是 600：焦点环保留在按下面上，默认环 brand.400 压 600 只有 2.93，压 650 是 3.39，与浅色档同一余量。", "$type": "color", "$value": "{color.neutral.650}" },
     "field": { "$description": "字段外壳的静息底：淡底兑一半。", "$type": "color", "$value": "color-mix(in oklab, {bg.subtle} 55%, transparent)" },
+    "field-invalid": { "$description": "字段外壳校验失败时的底：失效色兑 4%，聚焦时让位给承载面。", "$type": "color", "$value": "color-mix(in oklab, {border.invalid} 4%, transparent)" },
     "mark": { "$description": "正文里的标记底：深黄，字仍取正文色。", "$type": "color", "$value": "{color.yellow.900}" },
     "muted": { "$type": "color", "$value": "{color.neutral.800}" },
     "brand": { "$type": "color", "$value": "{color.brand.500}" },

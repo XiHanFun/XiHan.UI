@@ -6,8 +6,8 @@
 /*
  * 字段族标签的公共层，按 [data-part='label'] 匹配下面逐个列出的 scope。
  *
- * 收在这里的是逐值相同的四条：行距取 --xh-leading-none，禁用档字色取 --xh-fg-subtle，
- * 必填星号取 --xh-glyph-mark-required + --xh-space-1 + --xh-fg-danger，无效档字色取 --xh-fg-danger。
+ * 收在这里的是逐值相同的四条：行距取 --xh-leading-none，禁用档字色留在 --xh-fg-muted，
+ * 必填星号取 --xh-glyph-mark-required + --xh-space-1 + --xh-fg-danger、排在标签文字之前，无效档字色取 --xh-fg-danger。
  * 字色、字号、字重三条留在各组件皮肤——它们挂着 --xh-<组件>-label-* 覆盖槽，
  * 槽名里带组件名，写不进一条共享规则。
  *
@@ -42,29 +42,33 @@
   }
 
   /*
-   * 禁用档的字色：公共层默认统一 --xh-fg-subtle。这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，
-   * 取值只有这一处；挂了那个槽的组件在各自皮肤里另写一条，排在本份之后，压过这里。
+   * 禁用档的字色：字段标签禁用不另变色，留在静息的 --xh-fg-muted。再淡一档的 --xh-fg-subtle 与它几乎分不出，
+   * --xh-fg-disabled 只有 2.66:1，读屏与无障碍扫描都把关联禁用控件的标签当正文判对比度；禁用由控件自己的
+   * 禁用面表出。这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，取值只有这一处；挂了那个槽的组件在各自皮肤里
+   * 另写一条，排在本份之后，压过这里。
    */
   [data-scope='color-picker'][data-part='label'][data-disabled],
   [data-scope='rating'][data-part='label'][data-disabled],
   [data-scope='signature-pad'][data-part='label'][data-disabled],
   [data-scope='slider'][data-part='label'][data-disabled] {
-    color: var(--xh-fg-subtle);
+    color: var(--xh-fg-muted);
   }
 
   /*
-   * 必填星号：跟着标签自己的 data-required 亮，选填不标。字形、间距、颜色是公共层规则，
-   * 自带标签的字段不得各画一套。
+   * 必填星号：跟着标签自己的 data-required 亮，选填不标。字形、字号、间距、颜色是公共层规则，
+   * 自带标签的字段不得各画一套。星号排在标签文字之前（一列标签的星号在同一条起始线上，扫读时先看到），
+   * 取说明字号——它是标记，不与标签文字抢层级。
    *
    * 接入 = connect 在标签部件投影 data-required + 把 scope 加进这张列表；控件本体不画。
    * 有 --xh-<组件>-label-star 覆盖槽的组件在各自皮肤里只另写一条 color 压过这里（field 的
-   * --xh-field-label-star、fieldset 的 --xh-fieldset-legend-star），content 与间距不再重写。
+   * --xh-field-label-star、fieldset 的 --xh-fieldset-legend-star），content、字号与间距不再重写。
    */
-  [data-scope='field'][data-part='label'][data-required]::after,
-  [data-scope='fieldset'][data-part='legend'][data-required]::after {
+  [data-scope='field'][data-part='label'][data-required]::before,
+  [data-scope='fieldset'][data-part='legend'][data-required]::before {
     content: var(--xh-glyph-mark-required);
-    margin-inline-start: var(--xh-space-1);
+    margin-inline-end: var(--xh-space-1);
     color: var(--xh-fg-danger);
+    font-size: var(--xh-text-caption-size);
   }
 
   /*

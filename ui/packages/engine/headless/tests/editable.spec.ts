@@ -299,13 +299,17 @@ describe('editableMachine 写值', () => {
 })
 
 describe('connectEditable 结构与标注', () => {
-  it('不写 variant 时 root 与 control 都落 outline；写 subtle 如实落', () => {
-    const fallback = makeService().api()
-    expect((fallback.getRootProps() as Dict)['data-variant']).toBe('outline')
-    expect((fallback.getControlProps() as Dict)['data-variant']).toBe('outline')
-    const subtle = makeService({ variant: 'subtle' }).api()
-    expect((subtle.getRootProps() as Dict)['data-variant']).toBe('subtle')
-    expect((subtle.getControlProps() as Dict)['data-variant']).toBe('subtle')
+  it('不写 variant 时 root 落 outline；control 预览态恒为无壳 ghost（读起来是一段文字），进编辑态才换成 root 的形态', () => {
+    const fallback = makeService()
+    expect((fallback.api().getRootProps() as Dict)['data-variant']).toBe('outline')
+    expect((fallback.api().getControlProps() as Dict)['data-variant']).toBe('ghost')
+    fallback.service.send({ type: 'EDIT.START' })
+    expect((fallback.api().getControlProps() as Dict)['data-variant']).toBe('outline')
+    const subtle = makeService({ variant: 'subtle' })
+    expect((subtle.api().getRootProps() as Dict)['data-variant']).toBe('subtle')
+    expect((subtle.api().getControlProps() as Dict)['data-variant']).toBe('ghost')
+    subtle.service.send({ type: 'EDIT.START' })
+    expect((subtle.api().getControlProps() as Dict)['data-variant']).toBe('subtle')
   })
 
   it('control 投影 Field Chrome 稳定角色、尺寸档与只读态，input 投影单行输入角色', () => {

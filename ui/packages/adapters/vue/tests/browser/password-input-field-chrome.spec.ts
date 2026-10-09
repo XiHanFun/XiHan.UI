@@ -94,19 +94,30 @@ afterEach(async () => {
 })
 
 describe('password-input Field Chrome 细节', () => {
-  it('三尺寸与 compact 同步缩放高度与间距，切换钮取 field-inset 档正方盒并带半高分隔', async () => {
-    // 钮走 field-inset 档：sm 取控件内动作档（comfortable 24px、compact 20px），md / lg 取小一档的控件高
+  it('三尺寸与 compact 同步缩放高度与间距，切换钮三档都是 --xh-control-action-size 的正方盒，不再画分隔线', async () => {
+    // 钮的视觉盒固定取控件内动作档（comfortable 24px、compact 20px），不随字段档长大；字段高与间距随档
     const cases = [
-      ['comfortable-sm', 'comfortable', 'sm', 32, 4, 24],
-      ['comfortable-md', 'comfortable', 'md', 36, 8, 32],
-      ['comfortable-lg', 'comfortable', 'lg', 40, 12, 36],
-      ['compact-sm', 'compact', 'sm', 28, 4, 20],
-      ['compact-md', 'compact', 'md', 32, 6, 28],
-      ['compact-lg', 'compact', 'lg', 36, 8, 32],
+      ['comfortable-sm', 'comfortable', 'sm'],
+      ['comfortable-md', 'comfortable', 'md'],
+      ['comfortable-lg', 'comfortable', 'lg'],
+      ['compact-sm', 'compact', 'sm'],
+      ['compact-md', 'compact', 'md'],
+      ['compact-lg', 'compact', 'lg'],
     ] as const
     await mount(cases.map(([id, density, size]) => fieldNode(id, { density, size })))
+    const tokenPx = (within: HTMLElement, token: string): number => {
+      const probe = document.createElement('span')
+      probe.style.cssText = `position:absolute;inline-size:var(${token})`
+      within.append(probe)
+      const value = probe.getBoundingClientRect().width
+      probe.remove()
+      return value
+    }
 
-    for (const [id, , , height, gap, action] of cases) {
+    for (const [id, , size] of cases) {
+      const height = tokenPx(field(id), `--xh-control-h-${size}`)
+      const gap = tokenPx(field(id), `--xh-control-gap-${size}`)
+      const action = tokenPx(field(id), '--xh-control-action-size')
       const control = part(id, 'control')
       const input = part(id, 'input')
       const trigger = part(id, 'visibility-trigger')
@@ -122,15 +133,13 @@ describe('password-input Field Chrome 细节', () => {
       expect(distance(prefix.getBoundingClientRect(), input.getBoundingClientRect())).toBeCloseTo(gap, 1)
       expect(distance(input.getBoundingClientRect(), suffix.getBoundingClientRect())).toBeCloseTo(gap, 1)
       expect(distance(caps.getBoundingClientRect(), trigger.getBoundingClientRect())).toBeCloseTo(gap, 1)
-      // 分隔线画在钮的背景层：1px × 钮半高，贴在靠输入的那一侧（钮排在输入之后即逻辑起始侧）
-      expect(separator.backgroundSize).toBe('1px 50%')
-      expect(separator.backgroundPosition).toBe('0px 50%')
-      expect(separator.backgroundRepeat).toBe('no-repeat')
-      expect(getComputedStyle(trigger).borderRadius).toBe('4px')
+      // 钮与输入之间不再画半高分隔线；圆角取 inset 档
+      expect(separator.backgroundSize).not.toBe('1px 50%')
+      expect(getComputedStyle(trigger).borderRadius).toBe(getComputedStyle(field(id)).getPropertyValue('--xh-shape-inset').trim())
     }
   })
 
-  it('只读仍可揭示并保留双焦点位置；禁用态统一输入、按钮与 Caps Lock 墨色', async () => {
+  it('只读仍可揭示并保留双焦点位置（盒换聚焦描边、钮画自己的环）；禁用态统一输入、按钮与 Caps Lock 墨色', async () => {
     await mount([
       fieldNode('readonly', { readOnly: true, theme: 'dark' }),
       fieldNode('disabled', { disabled: true, theme: 'dark' }),
@@ -143,7 +152,8 @@ describe('password-input Field Chrome 细节', () => {
 
     await userEvent.keyboard('{Tab}')
     expect(document.activeElement).toBe(readonlyInput)
-    expect(getComputedStyle(readonlyControl).outlineStyle).toBe('solid')
+    // 盒聚焦不画环，由聚焦描边标出；钮自己占一个 Tab 位，落到钮上时钮画自己的环
+    expect(getComputedStyle(readonlyControl).outlineStyle).toBe('none')
     expect(getComputedStyle(readonlyInput).outlineStyle).toBe('none')
     await userEvent.keyboard('{Tab}')
     expect(document.activeElement).toBe(readonlyTrigger)
@@ -197,39 +207,28 @@ describe('password-input Field Chrome 细节', () => {
     expect(mask()).not.toBe(hiddenMask)
   })
 
-  it('forced-colors 保留动作分隔，禁用分隔改用系统禁用色，键盘焦点环与字色回到系统色', async () => {
+  it('forced-colors：钮不再关强制换色、不画分隔线，键盘焦点环取系统高亮色', async () => {
     await cdp().send('Emulation.setEmulatedMedia', {
       media: '',
       features: [{ name: 'forced-colors', value: 'active' }],
     })
-    await mount([fieldNode('enabled'), fieldNode('forced-disabled', { disabled: true })])
+    await mount([fieldNode('enabled')])
     const trigger = part('enabled', 'visibility-trigger')
     const enabled = getComputedStyle(trigger)
-    const disabled = getComputedStyle(part('forced-disabled', 'visibility-trigger'))
-    // 高对比档整层丢弃 background-image，分隔线由皮肤用系统色重画
-    expect(enabled.backgroundImage).not.toBe('none')
-    expect(disabled.backgroundImage).not.toBe('none')
-    expect(enabled.backgroundSize).toBe('1px 50%')
-    expect(enabled.backgroundImage).not.toBe(disabled.backgroundImage)
+    expect(enabled.forcedColorAdjust).toBe('auto')
+    expect(enabled.backgroundSize).not.toBe('1px 50%')
 
-    // 分隔线要求关掉这颗钮的强制换色，皮肤自留的焦点环与家族焦点底/字不能因此按作者色落地
     const probe = document.createElement('span')
-    probe.style.cssText = 'color: Highlight; background-color: ButtonFace; forced-color-adjust: none'
+    probe.style.cssText = 'color: Highlight'
     document.body.append(probe)
     const highlight = getComputedStyle(probe).color
-    const buttonFace = getComputedStyle(probe).backgroundColor
-    probe.style.color = 'ButtonText'
-    const buttonText = getComputedStyle(probe).color
     probe.remove()
 
-    // 断的是聚焦后的终态：换面的过渡在整套并行跑时会被读在中途
-    trigger.style.transition = 'none'
     part('enabled', 'input').focus()
     await userEvent.keyboard('{Tab}')
     expect(document.activeElement).toBe(trigger)
     expect(trigger.matches(':focus-visible')).toBe(true)
+    expect(enabled.outlineStyle).toBe('solid')
     expect(enabled.outlineColor).toBe(highlight)
-    expect(enabled.backgroundColor).toBe(buttonFace)
-    expect(enabled.color).toBe(buttonText)
   })
 })

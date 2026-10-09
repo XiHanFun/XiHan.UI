@@ -430,6 +430,8 @@ async function inspect(label: string, hovered: Set<string>): Promise<string[]> {
     await hoverPointer(host)
     if (!drawn(glyph))
       continue
+    // 静息时藏着、悬停或聚焦才露面的字形（字段内按需显示的动作钮）在这一遍才算扫到
+    found.add(glyph.key)
     hovered.add(glyph.key)
     const problem = problemOf(glyph, `${label} · 悬停`)
     if (problem)

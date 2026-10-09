@@ -1,4 +1,4 @@
-// 竖排字段里标签与控件之间那一段距离由 --xh-field-label-gap-block 单独管，
+// 竖排字段里标签与控件之间那一段距离由 --xh-field-label-gap-block 单独管（缺省 --xh-space-2），
 // 描述与错误文案那两段仍归 --xh-field-gap。横排（标签左置）下这段补白清零，
 // 那一档的间距是列间距，归 --xh-field-label-gap。
 // 判据是级联算出来的几何：距离由容器 gap 与标签补白合成，只有真排一遍版才量得出来。
@@ -74,15 +74,16 @@ function inForm(layout: FormLayout): unknown {
 }
 
 describe('竖排字段的标签间距', () => {
-  it('不设新槽时与字段内其余几段同宽', () => {
+  it('不设新槽时标签与控件隔 --xh-space-2，与字段内其余几段各管各的', () => {
     mount(field)
-    expect(labelToControl()).toBe(controlToDescription())
+    expect(labelToControl()).toBe(8)
+    expect(controlToDescription()).not.toBe(labelToControl())
   })
 
   it('设了新槽只动标签那一段', () => {
     mount(field, '--xh-field-label-gap-block: 16px')
     expect(labelToControl()).toBe(16)
-    expect(controlToDescription()).toBe(4)
+    expect(controlToDescription()).toBe(0)
   })
 
   it('表单竖排与横排一行流两档都跟着走', () => {

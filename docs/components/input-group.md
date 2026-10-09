@@ -56,7 +56,7 @@ outline 画描边输入面，subtle 用淡底嵌入已有表面
 
 ### 特性
 
-- 所有内容共享一个背景、外轮廓和焦点环。
+- 所有内容共享一个背景与外轮廓，聚焦时整组换成承载面与聚焦描边。
 - 支持 `outline`、`subtle` 与 `ghost` 三种形态，与组内字段同一套词。
 - 前后缀不参与交互，控件保留自身语义。
 - 支持 `sm`、`md` 和 `lg` 三种尺寸。
@@ -137,18 +137,23 @@ outline 画描边输入面，subtle 用淡底嵌入已有表面
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-input-group-bg` | `root` | `background` | `default` | `--xh-_input-group-bg` | input-group 的 root 部件 background 覆盖槽。 |
-| `--xh-input-group-bg-hover` | `root` | `background` | `disabled`<br>`hover`<br>`not(:has([data-disabled])` | `--xh-_input-group-bg-hover` | input-group 的 root 部件 background 覆盖槽。 |
+| `--xh-input-group-bg-disabled` | `root` | `background` | `disabled`<br>`has([data-xh-field-chrome][data-disabled])`<br>`xh-field-chrome` | `--xh-bg-subtle` | input-group 的 root 部件 background 覆盖槽。 |
+| `--xh-input-group-bg-focus` | `root` | `background` | `focus-within` | `--xh-_input-group-bg-focus` | input-group 的 root 部件 background 覆盖槽。 |
+| `--xh-input-group-bg-hover` | `root` | `background` | `disabled`<br>`hover`<br>`invalid`<br>`not(:focus-within)`<br>`not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])`<br>`readonly` | `--xh-_input-group-bg-hover` | input-group 的 root 部件 background 覆盖槽。 |
+| `--xh-input-group-bg-invalid` | `root` | `background` | `has([data-invalid], [aria-invalid='true'])`<br>`invalid` | `--xh-bg-field-invalid` | input-group 的 root 部件 background 覆盖槽。 |
+| `--xh-input-group-bg-read-only` | `root` | `background` | `has(:where([data-xh-field-chrome][data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-bg-subtle` | input-group 的 root 部件 background 覆盖槽。 |
 | `--xh-input-group-border` | `root` | `border` | `default` | `--xh-_input-group-border` | input-group 的 root 部件 border 覆盖槽。 |
+| `--xh-input-group-border-disabled` | `root` | `border-color` | `disabled`<br>`has([data-xh-field-chrome][data-disabled])`<br>`xh-field-chrome` | `--xh-border-default` | input-group 的 root 部件 border-color 覆盖槽。 |
 | `--xh-input-group-border-focus` | `root` | `border-color` | `focus-within` | `--xh-_input-group-border-focus` | input-group 的 root 部件 border-color 覆盖槽。 |
-| `--xh-input-group-border-hover` | `root` | `border-color` | `disabled`<br>`hover`<br>`not(:has([data-disabled])` | `--xh-_input-group-border-hover` | input-group 的 root 部件 border-color 覆盖槽。 |
+| `--xh-input-group-border-hover` | `root` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not(:focus-within)`<br>`not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])`<br>`readonly` | `--xh-_input-group-border-hover` | input-group 的 root 部件 border-color 覆盖槽。 |
 | `--xh-input-group-border-invalid` | `root` | `border-color` | `has([data-invalid], [aria-invalid='true'])`<br>`invalid` | `--xh-border-invalid` | input-group 的 root 部件 border-color 覆盖槽。 |
-| `--xh-input-group-item-fg` | `item` | `color` | `default` | `--xh-fg-muted` | input-group 的 item 部件 color 覆盖槽。 |
+| `--xh-input-group-item-bg` | `item` | `background-color` | `default` | `--xh-bg-subtle` | input-group 的 item 部件 background-color 覆盖槽。 |
+| `--xh-input-group-item-divider` | `item`<br>`root` | `border-inline-end`<br>`border-inline-start` | `not(:first-child)`<br>`not(:has(+ [data-scope='input-group'][data-part='item'])`<br>`not(:last-child)` | `--xh-border-default` | input-group 的 item、root 部件 border-inline-end、border-inline-start 覆盖槽。 |
+| `--xh-input-group-item-fg` | `item` | `color` | `default` | `--xh-fg-default` | input-group 的 item 部件 color 覆盖槽。 |
 | `--xh-input-group-item-font-size` | `item` | `font-size` | `default` | `--xh-_input-group-font-size` | input-group 的 item 部件 font-size 覆盖槽。 |
 | `--xh-input-group-item-h` | `item` | `block-size` | `default` | `--xh-_input-group-h` | input-group 的 item 部件 block-size 覆盖槽。 |
 | `--xh-input-group-item-px` | `item` | `padding-inline` | `default` | `--xh-_input-group-px` | input-group 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-input-group-radius` | `control`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `default`<br>`first-child`<br>`is(*, [data-part='control'], [data-part='root'])`<br>`is([data-part='control'], [data-part='root'])`<br>`last-child` | `--xh-shape-control` | input-group 的 control、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
-| `--xh-input-group-ring-focus` | `root` | `outline` | `focus-within` | `--xh-ring-focus` | input-group 的 root 部件 outline 覆盖槽。 |
-| `--xh-input-group-ring-invalid` | `root` | `outline-color` | `focus-within`<br>`has([data-invalid], [aria-invalid='true'])`<br>`invalid` | `--xh-ring-invalid` | input-group 的 root 部件 outline-color 覆盖槽。 |
 | `--xh-input-group-shadow` | `root` | `box-shadow` | `default` | `--xh-_input-group-shadow` | input-group 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-input-group-w` | `root` | `inline-size` | `default` | `--xh-control-w` | input-group 的 root 部件 inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->

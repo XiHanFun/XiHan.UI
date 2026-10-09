@@ -217,7 +217,6 @@
   "[data-scope=\"input-group\"][data-part=\"root\"] [data-xh-field-chrome][data-disabled]": "分支没点名部件",
   "[data-scope=\"input-group\"][data-part=\"root\"] [data-xh-field-chrome][data-invalid]": "分支没点名部件",
   "[data-scope=\"input-group\"][data-part=\"root\"] [data-xh-field-chrome][data-readonly]": "分支没点名部件",
-  "[data-scope=\"input-group\"][data-part=\"root\"]:not(:has([data-disabled])):hover": "写法挂不出来：:has(",
   "[data-scope=\"json-viewer\"][data-part=\"branch-control\"]:hover": "写法挂不出来：:hover",
   "[data-scope=\"json-viewer\"][data-part=\"branch-control\"]:not([data-disabled]):active": "写法挂不出来：:active",
   "[data-scope=\"json-viewer\"][data-part=\"branch-indicator\"]:empty::before": "写法挂不出来：:empty",

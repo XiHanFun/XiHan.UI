@@ -129,7 +129,9 @@
   }
 
   [data-scope='tree-select'][data-part='label'] {
-    color: var(--xh-tree-select-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-tree-select-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-tree-select-label-gap, var(--xh-space-2)) - var(--xh-tree-select-gap, var(--xh-space-1)));
+    color: var(--xh-tree-select-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-tree-select-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-tree-select-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
@@ -137,7 +139,7 @@
 
   /* 整个控件禁用会把 data-disabled 一路打到 label / value-text / indicator 上，各处观感保持一致 */
   [data-scope='tree-select'][data-part='label'][data-disabled] {
-    color: var(--xh-fg-subtle);
+    color: var(--xh-tree-select-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 盒：描边、底色、圆角、控件高度、行内内衬、聚焦环、五态与悬停由 Field Chrome 家族画在这一层，

@@ -9849,10 +9849,12 @@
       "name": "--xh-cascader-gap",
       "component": "cascader",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -9861,7 +9863,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "cascader 的 root 部件 gap 覆盖槽。"
+      "description": "cascader 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-cascader-group-gap",
@@ -10553,7 +10555,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "cascader 的 label 部件 color 覆盖槽。"
@@ -10571,7 +10573,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "cascader 的 label 部件 color 覆盖槽。"
@@ -10611,6 +10613,24 @@
       ],
       "visibility": "public",
       "description": "cascader 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-label-gap",
+      "component": "cascader",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-cascader-layer",
@@ -15780,10 +15800,12 @@
       "name": "--xh-color-field-gap",
       "component": "color-field",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -15792,7 +15814,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "color-field 的 root 部件 gap 覆盖槽。"
+      "description": "color-field 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-color-field-icon-size",
@@ -15908,7 +15930,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "color-field 的 label 部件 color 覆盖槽。"
@@ -15926,7 +15948,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "color-field 的 label 部件 color 覆盖槽。"
@@ -15966,6 +15988,24 @@
       ],
       "visibility": "public",
       "description": "color-field 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-label-gap",
+      "component": "color-field",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-color-field-placeholder-fg",
@@ -16910,10 +16950,12 @@
       "name": "--xh-color-picker-gap",
       "component": "color-picker",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -16922,7 +16964,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "color-picker 的 root 部件 gap 覆盖槽。"
+      "description": "color-picker 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-hue-slider-gap",
@@ -17135,7 +17177,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "color-picker 的 label 部件 color 覆盖槽。"
@@ -17175,6 +17217,24 @@
       ],
       "visibility": "public",
       "description": "color-picker 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-label-gap",
+      "component": "color-picker",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-layer",
@@ -17696,10 +17756,12 @@
       "name": "--xh-color-slider-gap",
       "component": "color-slider",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -17708,7 +17770,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "color-slider 的 root 部件 gap 覆盖槽。"
+      "description": "color-slider 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-color-slider-label-fg",
@@ -17723,7 +17785,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "color-slider 的 label 部件 color 覆盖槽。"
@@ -17741,7 +17803,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "color-slider 的 label 部件 color 覆盖槽。"
@@ -17781,6 +17843,24 @@
       ],
       "visibility": "public",
       "description": "color-slider 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-label-gap",
+      "component": "color-slider",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-color-slider-thumb-bg",
@@ -18403,7 +18483,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "color-swatch-picker 的 label 部件 color 覆盖槽。"
@@ -18421,7 +18501,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "color-swatch-picker 的 label 部件 color 覆盖槽。"
@@ -18475,7 +18555,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "color-swatch-picker 的 label 部件 margin-block-end 覆盖槽。"
@@ -19413,10 +19493,12 @@
       "name": "--xh-combobox-gap",
       "component": "combobox",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -19425,7 +19507,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "combobox 的 root 部件 gap 覆盖槽。"
+      "description": "combobox 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-combobox-group-gap",
@@ -20014,7 +20096,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "combobox 的 label 部件 color 覆盖槽。"
@@ -20032,7 +20114,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "combobox 的 label 部件 color 覆盖槽。"
@@ -20072,6 +20154,24 @@
       ],
       "visibility": "public",
       "description": "combobox 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-combobox-label-gap",
+      "component": "combobox",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "combobox 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-combobox-layer",
@@ -22599,10 +22699,12 @@
       "name": "--xh-date-field-gap",
       "component": "date-field",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -22611,7 +22713,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "date-field 的 root 部件 gap 覆盖槽。"
+      "description": "date-field 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-date-field-icon-size",
@@ -22651,7 +22753,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "date-field 的 label 部件 color 覆盖槽。"
@@ -22669,7 +22771,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "date-field 的 label 部件 color 覆盖槽。"
@@ -22709,6 +22811,24 @@
       ],
       "visibility": "public",
       "description": "date-field 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-field-label-gap",
+      "component": "date-field",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "date-field 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-date-field-literal-fg",
@@ -23784,10 +23904,12 @@
       "name": "--xh-date-picker-gap",
       "component": "date-picker",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -23796,7 +23918,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "date-picker 的 root 部件 gap 覆盖槽。"
+      "description": "date-picker 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-icon-size",
@@ -23838,7 +23960,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "date-picker 的 label 部件 color 覆盖槽。"
@@ -23856,7 +23978,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "date-picker 的 label 部件 color 覆盖槽。"
@@ -23896,6 +24018,24 @@
       ],
       "visibility": "public",
       "description": "date-picker 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-label-gap",
+      "component": "date-picker",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-layer",
@@ -25659,10 +25799,12 @@
       "name": "--xh-date-range-picker-gap",
       "component": "date-range-picker",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -25671,7 +25813,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "date-range-picker 的 root 部件 gap 覆盖槽。"
+      "description": "date-range-picker 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-date-range-picker-icon-size",
@@ -25713,7 +25855,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "date-range-picker 的 label 部件 color 覆盖槽。"
@@ -25731,7 +25873,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "date-range-picker 的 label 部件 color 覆盖槽。"
@@ -25771,6 +25913,24 @@
       ],
       "visibility": "public",
       "description": "date-range-picker 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-label-gap",
+      "component": "date-range-picker",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-date-range-picker-layer",
@@ -30751,10 +30911,12 @@
       "name": "--xh-editable-gap",
       "component": "editable",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -30763,7 +30925,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "editable 的 root 部件 gap 覆盖槽。"
+      "description": "editable 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-editable-icon-size",
@@ -30897,7 +31059,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "editable 的 label 部件 color 覆盖槽。"
@@ -30915,7 +31077,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "editable 的 label 部件 color 覆盖槽。"
@@ -30955,6 +31117,24 @@
       ],
       "visibility": "public",
       "description": "editable 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-label-gap",
+      "component": "editable",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "editable 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-editable-placeholder-fg",
@@ -31142,44 +31322,6 @@
       "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background-color 覆盖槽。"
     },
     {
-      "name": "--xh-editable-trigger-divider",
-      "component": "editable",
-      "part": [
-        "edit-trigger",
-        "submit-trigger"
-      ],
-      "property": [
-        "background-image"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-material-soft-separator"
-      ],
-      "visibility": "public",
-      "description": "editable 的 edit-trigger、submit-trigger 部件 background-image 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-trigger-divider-h",
-      "component": "editable",
-      "part": [
-        "edit-trigger",
-        "submit-trigger"
-      ],
-      "property": [
-        "background-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_editable-divider-h"
-      ],
-      "visibility": "public",
-      "description": "editable 的 edit-trigger、submit-trigger 部件 background-size 覆盖槽。"
-    },
-    {
       "name": "--xh-editable-trigger-fg",
       "component": "editable",
       "part": [
@@ -31194,7 +31336,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 color 覆盖槽。"
@@ -31281,7 +31423,7 @@
         "xh-action-profile=field-inset"
       ],
       "defaultToken": [
-        "--xh-_action-profile-visual-size"
+        "--xh-control-action-size"
       ],
       "visibility": "public",
       "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
@@ -31999,7 +32141,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "field 的 description 部件 color 覆盖槽。"
@@ -32035,7 +32177,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "field 的 description 部件 font-size 覆盖槽。"
@@ -32074,7 +32216,7 @@
         "not(:has(> [data-scope='field'][data-part='description']:not([hidden])"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "field 的 error-text、root 部件 block-size、font-size 覆盖槽。"
@@ -32094,7 +32236,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "field 的 label、root 部件 gap、margin-block-end 覆盖槽。"
@@ -32112,7 +32254,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "field 的 label 部件 color 覆盖槽。"
@@ -32130,7 +32272,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "field 的 label 部件 color 覆盖槽。"
@@ -32205,7 +32347,7 @@
         "layout=horizontal"
       ],
       "defaultToken": [
-        "--xh-space-3"
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "field 的 root 部件 column-gap 覆盖槽。"
@@ -32223,7 +32365,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-field-gap"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "field 的 label 部件 margin-block-end 覆盖槽。"
@@ -32889,7 +33031,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "fieldset 的 description 部件 color 覆盖槽。"
@@ -32925,7 +33067,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "fieldset 的 description 部件 font-size 覆盖槽。"
@@ -32961,7 +33103,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "fieldset 的 error-text 部件 font-size 覆盖槽。"
@@ -33015,7 +33157,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-4"
+        "--xh-space-5"
       ],
       "visibility": "public",
       "description": "fieldset 的 root 部件 gap 覆盖槽。"
@@ -33033,7 +33175,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "fieldset 的 legend 部件 color 覆盖槽。"
@@ -33088,7 +33230,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-size"
+        "--xh-text-heading-3-size"
       ],
       "visibility": "public",
       "description": "fieldset 的 legend 部件 font-size 覆盖槽。"
@@ -33106,7 +33248,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-weight"
+        "--xh-text-heading-3-weight"
       ],
       "visibility": "public",
       "description": "fieldset 的 legend 部件 font-weight 覆盖槽。"
@@ -33124,7 +33266,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "fieldset 的 legend 部件 margin-block-end 覆盖槽。"
@@ -33755,10 +33897,12 @@
       "name": "--xh-file-upload-gap",
       "component": "file-upload",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -33767,7 +33911,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "file-upload 的 root 部件 gap 覆盖槽。"
+      "description": "file-upload 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-file-upload-icon-size",
@@ -34153,7 +34297,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "file-upload 的 label 部件 color 覆盖槽。"
@@ -34171,7 +34315,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "file-upload 的 label 部件 color 覆盖槽。"
@@ -34211,6 +34355,24 @@
       ],
       "visibility": "public",
       "description": "file-upload 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-file-upload-label-gap",
+      "component": "file-upload",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "file-upload 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-file-upload-list-max-h",
@@ -35822,58 +35984,25 @@
       "description": "form 的 field-group 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-form-field-invalid-border",
-      "component": "form",
-      "part": [
-        "field-group"
-      ],
-      "property": [
-        "border-inline-start"
-      ],
-      "state": [
-        "invalid"
-      ],
-      "defaultToken": [
-        "--xh-border-invalid"
-      ],
-      "visibility": "public",
-      "description": "form 的 field-group 部件 border-inline-start 覆盖槽。"
-    },
-    {
-      "name": "--xh-form-field-invalid-px",
-      "component": "form",
-      "part": [
-        "field-group"
-      ],
-      "property": [
-        "padding-inline-start"
-      ],
-      "state": [
-        "invalid"
-      ],
-      "defaultToken": [
-        "--xh-space-2"
-      ],
-      "visibility": "public",
-      "description": "form 的 field-group 部件 padding-inline-start 覆盖槽。"
-    },
-    {
       "name": "--xh-form-gap",
       "component": "form",
       "part": [
         "root"
       ],
       "property": [
-        "gap"
+        "column-gap",
+        "margin-block-end"
       ],
       "state": [
-        "default"
+        "layout=grid",
+        "where(:not(:last-child)",
+        "where([data-scope='form'][data-part='root'])"
       ],
       "defaultToken": [
-        "--xh-stack-gap-md"
+        "--xh-space-5"
       ],
       "visibility": "public",
-      "description": "form 的 root 部件 gap 覆盖槽。"
+      "description": "form 的 root 部件 column-gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-form-inline-gap",
@@ -35888,10 +36017,30 @@
         "layout=inline"
       ],
       "defaultToken": [
-        "--xh-space-4"
+        "--xh-space-6"
       ],
       "visibility": "public",
       "description": "form 的 root 部件 column-gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-form-inline-row-gap",
+      "component": "form",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "layout=inline",
+        "where(:not(:last-child)",
+        "where([data-scope='form'][data-part='root'])"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "form 的 root 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-form-label-w",
@@ -35906,7 +36055,7 @@
         "layout=horizontal"
       ],
       "defaultToken": [
-        "30%"
+        "calc(100% * 5 / 24)"
       ],
       "visibility": "public",
       "description": "form 的 root 部件 grid-template-columns 覆盖槽。"
@@ -41468,6 +41617,44 @@
       "description": "input-group 的 root 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-input-group-bg-disabled",
+      "component": "input-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "has([data-xh-field-chrome][data-disabled])",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "input-group 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-input-group-bg-focus",
+      "component": "input-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "focus-within"
+      ],
+      "defaultToken": [
+        "--xh-_input-group-bg-focus"
+      ],
+      "visibility": "public",
+      "description": "input-group 的 root 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-input-group-bg-hover",
       "component": "input-group",
       "part": [
@@ -41479,10 +41666,52 @@
       "state": [
         "disabled",
         "hover",
-        "not(:has([data-disabled])"
+        "invalid",
+        "not(:focus-within)",
+        "not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])",
+        "readonly"
       ],
       "defaultToken": [
         "--xh-_input-group-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "input-group 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-input-group-bg-invalid",
+      "component": "input-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "has([data-invalid], [aria-invalid='true'])",
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-bg-field-invalid"
+      ],
+      "visibility": "public",
+      "description": "input-group 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-input-group-bg-read-only",
+      "component": "input-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "has(:where([data-xh-field-chrome][data-readonly])",
+        "readonly",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "input-group 的 root 部件 background 覆盖槽。"
@@ -41504,6 +41733,26 @@
       ],
       "visibility": "public",
       "description": "input-group 的 root 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-input-group-border-disabled",
+      "component": "input-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "has([data-xh-field-chrome][data-disabled])",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "input-group 的 root 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-input-group-border-focus",
@@ -41535,7 +41784,10 @@
       "state": [
         "disabled",
         "hover",
-        "not(:has([data-disabled])"
+        "invalid",
+        "not(:focus-within)",
+        "not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])",
+        "readonly"
       ],
       "defaultToken": [
         "--xh-_input-group-border-hover"
@@ -41563,6 +41815,46 @@
       "description": "input-group 的 root 部件 border-color 覆盖槽。"
     },
     {
+      "name": "--xh-input-group-item-bg",
+      "component": "input-group",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "input-group 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-input-group-item-divider",
+      "component": "input-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "border-inline-end",
+        "border-inline-start"
+      ],
+      "state": [
+        "not(:first-child)",
+        "not(:has(+ [data-scope='input-group'][data-part='item'])",
+        "not(:last-child)"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "input-group 的 item、root 部件 border-inline-end、border-inline-start 覆盖槽。"
+    },
+    {
       "name": "--xh-input-group-item-fg",
       "component": "input-group",
       "part": [
@@ -41575,7 +41867,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "input-group 的 item 部件 color 覆盖槽。"
@@ -41660,44 +41952,6 @@
       ],
       "visibility": "public",
       "description": "input-group 的 control、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-input-group-ring-focus",
-      "component": "input-group",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "outline"
-      ],
-      "state": [
-        "focus-within"
-      ],
-      "defaultToken": [
-        "--xh-ring-focus"
-      ],
-      "visibility": "public",
-      "description": "input-group 的 root 部件 outline 覆盖槽。"
-    },
-    {
-      "name": "--xh-input-group-ring-invalid",
-      "component": "input-group",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "outline-color"
-      ],
-      "state": [
-        "focus-within",
-        "has([data-invalid], [aria-invalid='true'])",
-        "invalid"
-      ],
-      "defaultToken": [
-        "--xh-ring-invalid"
-      ],
-      "visibility": "public",
-      "description": "input-group 的 root 部件 outline-color 覆盖槽。"
     },
     {
       "name": "--xh-input-group-shadow",
@@ -46860,7 +47114,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "mention 的 label 部件 color 覆盖槽。"
@@ -46878,7 +47132,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "mention 的 label 部件 color 覆盖槽。"
@@ -46932,7 +47186,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "mention 的 label 部件 margin-block-end 覆盖槽。"
@@ -47058,7 +47312,7 @@
         "xh-field-layout=textarea"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "mention 的 input 部件 padding-block 覆盖槽。"
@@ -51760,10 +52014,12 @@
       "name": "--xh-number-field-gap",
       "component": "number-field",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -51772,7 +52028,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "number-field 的 root 部件 gap 覆盖槽。"
+      "description": "number-field 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-number-field-icon-size",
@@ -51813,7 +52069,7 @@
         "default"
       ],
       "defaultToken": [
-        "center"
+        "start"
       ],
       "visibility": "public",
       "description": "number-field 的 control、input 部件 text-align 覆盖槽。"
@@ -51949,7 +52205,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "number-field 的 label 部件 color 覆盖槽。"
@@ -51967,7 +52223,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "number-field 的 label 部件 color 覆盖槽。"
@@ -52009,6 +52265,24 @@
       "description": "number-field 的 label 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-number-field-label-gap",
+      "component": "number-field",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "number-field 的 label 部件 margin-block-end 覆盖槽。"
+    },
+    {
       "name": "--xh-number-field-placeholder-fg",
       "component": "number-field",
       "part": [
@@ -52029,6 +52303,101 @@
       "description": "number-field 的 control、input 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-number-field-stepper-bg",
+      "component": "number-field",
+      "part": [
+        "control",
+        "decrement-trigger",
+        "increment-trigger"
+      ],
+      "property": [
+        "--xh-ink-surface",
+        "background-color"
+      ],
+      "state": [
+        "@media (hover: hover) and (pointer: fine)",
+        "disabled",
+        "xh-ink-surface"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-number-field-stepper-bg-hover",
+      "component": "number-field",
+      "part": [
+        "control",
+        "decrement-trigger",
+        "increment-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "@media (hover: hover) and (pointer: fine)",
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-number-field-stepper-inset",
+      "component": "number-field",
+      "part": [
+        "control",
+        "decrement-trigger",
+        "increment-trigger"
+      ],
+      "property": [
+        "block-size",
+        "inset-block-end",
+        "inset-block-start",
+        "inset-inline-end",
+        "padding-inline-end"
+      ],
+      "state": [
+        "@media (hover: hover) and (pointer: fine)",
+        "has([data-part='increment-trigger'], [data-part='decrement-trigger'])"
+      ],
+      "defaultToken": [
+        "--xh-_number-field-stepper-inset"
+      ],
+      "visibility": "public",
+      "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 block-size、inset-block-end、inset-block-start、inset-inline-end、padding-inline-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-number-field-stepper-w",
+      "component": "number-field",
+      "part": [
+        "control",
+        "decrement-trigger",
+        "increment-trigger"
+      ],
+      "property": [
+        "inline-size",
+        "padding-inline-end"
+      ],
+      "state": [
+        "@media (hover: hover) and (pointer: fine)",
+        "has([data-part='increment-trigger'], [data-part='decrement-trigger'])"
+      ],
+      "defaultToken": [
+        "--xh-control-indicator-lg"
+      ],
+      "visibility": "public",
+      "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 inline-size、padding-inline-end 覆盖槽。"
+    },
+    {
       "name": "--xh-number-field-trigger-bg-active",
       "component": "number-field",
       "part": [
@@ -52040,6 +52409,7 @@
         "background-color"
       ],
       "state": [
+        "@media (hover: hover) and (pointer: fine)",
         "disabled",
         "is(:active, [data-pressed])",
         "loading",
@@ -52048,48 +52418,11 @@
         "pressed"
       ],
       "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
+        "--xh-_action-variant-bg-pressed",
+        "--xh-bg-subtle-active"
       ],
       "visibility": "public",
       "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 background-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-number-field-trigger-divider",
-      "component": "number-field",
-      "part": [
-        "control",
-        "decrement-trigger"
-      ],
-      "property": [
-        "background-image"
-      ],
-      "state": [
-        "has([data-part='input'])"
-      ],
-      "defaultToken": [
-        "--xh-material-soft-separator"
-      ],
-      "visibility": "public",
-      "description": "number-field 的 control、decrement-trigger 部件 background-image 覆盖槽。"
-    },
-    {
-      "name": "--xh-number-field-trigger-divider-h",
-      "component": "number-field",
-      "part": [
-        "control",
-        "decrement-trigger"
-      ],
-      "property": [
-        "background-size"
-      ],
-      "state": [
-        "has([data-part='input'])"
-      ],
-      "defaultToken": [
-        "--xh-_number-field-divider-h"
-      ],
-      "visibility": "public",
-      "description": "number-field 的 control、decrement-trigger 部件 background-size 覆盖槽。"
     },
     {
       "name": "--xh-number-field-trigger-fg",
@@ -52106,7 +52439,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。"
@@ -53911,10 +54244,12 @@
       "name": "--xh-password-input-gap",
       "component": "password-input",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -53923,7 +54258,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "password-input 的 root 部件 gap 覆盖槽。"
+      "description": "password-input 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-password-input-icon-size",
@@ -54039,7 +54374,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "password-input 的 label 部件 color 覆盖槽。"
@@ -54057,7 +54392,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "password-input 的 label 部件 color 覆盖槽。"
@@ -54097,6 +54432,24 @@
       ],
       "visibility": "public",
       "description": "password-input 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-password-input-label-gap",
+      "component": "password-input",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "password-input 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-password-input-placeholder-fg",
@@ -54346,50 +54699,10 @@
         "xh-action-profile=field-inset"
       ],
       "defaultToken": [
-        "--xh-_action-profile-visual-size"
+        "--xh-control-action-size"
       ],
       "visibility": "public",
       "description": "password-input 的 visibility-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-visibility-trigger-separator-color",
-      "component": "password-input",
-      "part": [
-        "control",
-        "input",
-        "visibility-trigger"
-      ],
-      "property": [
-        "background-image"
-      ],
-      "state": [
-        "has(~ [data-scope='password-input'][data-part='input'])"
-      ],
-      "defaultToken": [
-        "--xh-border-subtle"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 control、input、visibility-trigger 部件 background-image 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-visibility-trigger-separator-h",
-      "component": "password-input",
-      "part": [
-        "control",
-        "input",
-        "visibility-trigger"
-      ],
-      "property": [
-        "background-size"
-      ],
-      "state": [
-        "has(~ [data-scope='password-input'][data-part='input'])"
-      ],
-      "defaultToken": [
-        "--xh-_password-input-divider-h"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 control、input、visibility-trigger 部件 background-size 覆盖槽。"
     },
     {
       "name": "--xh-pie-chart-center-gap",
@@ -55083,10 +55396,12 @@
       "name": "--xh-pin-input-gap",
       "component": "pin-input",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -55095,7 +55410,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "pin-input 的 root 部件 gap 覆盖槽。"
+      "description": "pin-input 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-pin-input-label-fg",
@@ -55110,7 +55425,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "pin-input 的 label 部件 color 覆盖槽。"
@@ -55128,7 +55443,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "pin-input 的 label 部件 color 覆盖槽。"
@@ -55168,6 +55483,24 @@
       ],
       "visibility": "public",
       "description": "pin-input 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-pin-input-label-gap",
+      "component": "pin-input",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "pin-input 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-pin-input-placeholder-fg",
@@ -60713,10 +61046,12 @@
       "name": "--xh-rating-gap",
       "component": "rating",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -60725,7 +61060,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "rating 的 root 部件 gap 覆盖槽。"
+      "description": "rating 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-rating-item-bg-pressed",
@@ -60882,7 +61217,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "rating 的 label 部件 color 覆盖槽。"
@@ -60900,7 +61235,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "rating 的 label 部件 color 覆盖槽。"
@@ -60940,6 +61275,24 @@
       ],
       "visibility": "public",
       "description": "rating 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-rating-label-gap",
+      "component": "rating",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "rating 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-rating-value-text-fg",
@@ -63239,10 +63592,12 @@
       "name": "--xh-select-gap",
       "component": "select",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -63251,7 +63606,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "select 的 root 部件 gap 覆盖槽。"
+      "description": "select 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-select-group-gap",
@@ -63751,7 +64106,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "select 的 label 部件 color 覆盖槽。"
@@ -63769,7 +64124,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "select 的 label 部件 color 覆盖槽。"
@@ -63809,6 +64164,24 @@
       ],
       "visibility": "public",
       "description": "select 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-select-label-gap",
+      "component": "select",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "select 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-select-layer",
@@ -65154,7 +65527,7 @@
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-bg-field"
       ],
       "visibility": "public",
       "description": "signature-pad 的 control 部件 background 覆盖槽。"
@@ -65173,6 +65546,42 @@
       ],
       "defaultToken": [
         "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "signature-pad 的 control 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-signature-pad-bg-drawing",
+      "component": "signature-pad",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "drawing"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "signature-pad 的 control 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-signature-pad-bg-invalid",
+      "component": "signature-pad",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-bg-field-invalid"
       ],
       "visibility": "public",
       "description": "signature-pad 的 control 部件 background 覆盖槽。"
@@ -65246,7 +65655,33 @@
         "drawing"
       ],
       "defaultToken": [
-        "--xh-border-control-hover"
+        "--xh-border-control-focus"
+      ],
+      "visibility": "public",
+      "description": "signature-pad 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-signature-pad-border-hover",
+      "component": "signature-pad",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "drawing",
+        "hover",
+        "invalid",
+        "not([data-disabled])",
+        "not([data-drawing])",
+        "not([data-invalid])",
+        "not([data-readonly])",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-border-strong"
       ],
       "visibility": "public",
       "description": "signature-pad 的 control 部件 border-color 覆盖槽。"
@@ -65648,7 +66083,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "signature-pad 的 label 部件 color 覆盖槽。"
@@ -65666,7 +66101,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "signature-pad 的 label 部件 color 覆盖槽。"
@@ -65720,7 +66155,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "signature-pad 的 label 部件 margin-block-end 覆盖槽。"
@@ -66020,10 +66455,12 @@
       "name": "--xh-slider-gap",
       "component": "slider",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -66032,7 +66469,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "slider 的 root 部件 gap 覆盖槽。"
+      "description": "slider 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-slider-label-fg",
@@ -66047,7 +66484,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "slider 的 label 部件 color 覆盖槽。"
@@ -66065,7 +66502,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "slider 的 label 部件 color 覆盖槽。"
@@ -66105,6 +66542,24 @@
       ],
       "visibility": "public",
       "description": "slider 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-slider-label-gap",
+      "component": "slider",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "slider 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-slider-range-bg",
@@ -72835,19 +73290,25 @@
       ],
       "state": [
         "default",
+        "disabled",
         "is(:not([data-variant])",
+        "not([data-disabled])",
+        "not([data-tone], [data-disabled])",
         "tone",
         "variant",
         "variant=outline",
         "variant=solid",
         "variant=subtle",
+        "where([data-xh-field-chrome]:not(:focus-within)",
+        "xh-field-chrome",
         "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_tone",
         "--xh-_tone-subtle",
         "--xh-bg-brand",
-        "--xh-bg-subtle"
+        "--xh-bg-subtle",
+        "--xh-bg-surface"
       ],
       "visibility": "public",
       "description": "tag 的 root 部件 --xh-ink-surface、background 覆盖槽。"
@@ -72887,9 +73348,16 @@
       ],
       "state": [
         "default",
+        "disabled",
+        "is(:not([data-variant])",
+        "not([data-disabled])",
+        "not([data-tone], [data-disabled])",
         "tone",
+        "variant",
         "variant=outline",
-        "variant=subtle"
+        "variant=subtle",
+        "where([data-xh-field-chrome]:not(:focus-within)",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_tone-border-control",
@@ -72922,40 +73390,64 @@
       "name": "--xh-tag-close-bg-active",
       "component": "tag",
       "part": [
-        "close-trigger"
+        "close-trigger",
+        "root"
       ],
       "property": [
         "background"
       ],
       "state": [
+        "disabled",
         "is(:active, [data-pressed])",
+        "is(:not([data-variant])",
         "not(:disabled)",
-        "pressed"
+        "not([data-disabled])",
+        "not([data-tone], [data-disabled])",
+        "pressed",
+        "tone",
+        "variant",
+        "variant=outline",
+        "variant=subtle",
+        "where([data-xh-field-chrome]:not(:focus-within)",
+        "xh-field-chrome"
       ],
       "defaultToken": [
+        "--xh-bg-subtle-hover",
         "color-mix(in oklab, currentColor 22%, transparent)"
       ],
       "visibility": "public",
-      "description": "tag 的 close-trigger 部件 background 覆盖槽。"
+      "description": "tag 的 close-trigger、root 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-tag-close-bg-hover",
       "component": "tag",
       "part": [
-        "close-trigger"
+        "close-trigger",
+        "root"
       ],
       "property": [
         "background"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "is(:not([data-variant])",
+        "not(:disabled)",
+        "not([data-disabled])",
+        "not([data-tone], [data-disabled])",
+        "tone",
+        "variant",
+        "variant=outline",
+        "variant=subtle",
+        "where([data-xh-field-chrome]:not(:focus-within)",
+        "xh-field-chrome"
       ],
       "defaultToken": [
+        "--xh-bg-subtle",
         "color-mix(in oklab, currentColor 14%, transparent)"
       ],
       "visibility": "public",
-      "description": "tag 的 close-trigger 部件 background 覆盖槽。"
+      "description": "tag 的 close-trigger、root 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-tag-close-fg",
@@ -73871,6 +74363,24 @@
       "description": "tags-input 的 control、root 部件 min-inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-tags-input-control-ps",
+      "component": "tags-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "padding-inline-start"
+      ],
+      "state": [
+        "has(> [data-scope='tags-input'][data-part='item'])"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "tags-input 的 control 部件 padding-inline-start 覆盖槽。"
+    },
+    {
       "name": "--xh-tags-input-control-px",
       "component": "tags-input",
       "part": [
@@ -74019,10 +74529,12 @@
       "name": "--xh-tags-input-gap",
       "component": "tags-input",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -74031,7 +74543,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "tags-input 的 root 部件 gap 覆盖槽。"
+      "description": "tags-input 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-tags-input-icon-size",
@@ -74231,6 +74743,24 @@
       "description": "tags-input 的 item-input 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-tags-input-item-h",
+      "component": "tags-input",
+      "part": [
+        "item-input"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_tags-input-item-h"
+      ],
+      "visibility": "public",
+      "description": "tags-input 的 item-input 部件 min-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-tags-input-item-input-bg",
       "component": "tags-input",
       "part": [
@@ -74351,7 +74881,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "tags-input 的 label 部件 color 覆盖槽。"
@@ -74369,7 +74899,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "tags-input 的 label 部件 color 覆盖槽。"
@@ -74409,6 +74939,24 @@
       ],
       "visibility": "public",
       "description": "tags-input 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-tags-input-label-gap",
+      "component": "tags-input",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "tags-input 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-tags-input-placeholder-fg",
@@ -75090,10 +75638,12 @@
       "name": "--xh-text-field-gap",
       "component": "text-field",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -75102,7 +75652,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "text-field 的 root 部件 gap 覆盖槽。"
+      "description": "text-field 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-text-field-icon-size",
@@ -75218,7 +75768,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "text-field 的 label 部件 color 覆盖槽。"
@@ -75236,7 +75786,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "text-field 的 label 部件 color 覆盖槽。"
@@ -75278,6 +75828,24 @@
       "description": "text-field 的 label 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-text-field-label-gap",
+      "component": "text-field",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "text-field 的 label 部件 margin-block-end 覆盖槽。"
+    },
+    {
       "name": "--xh-text-field-placeholder-fg",
       "component": "text-field",
       "part": [
@@ -75310,7 +75878,7 @@
         "xh-field-layout=textarea"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "text-field 的 input 部件 padding-block 覆盖槽。"
@@ -75824,10 +76392,12 @@
       "name": "--xh-time-field-gap",
       "component": "time-field",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -75836,7 +76406,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "time-field 的 root 部件 gap 覆盖槽。"
+      "description": "time-field 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-time-field-icon-size",
@@ -75876,7 +76446,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "time-field 的 label 部件 color 覆盖槽。"
@@ -75894,7 +76464,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "time-field 的 label 部件 color 覆盖槽。"
@@ -75934,6 +76504,24 @@
       ],
       "visibility": "public",
       "description": "time-field 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-field-label-gap",
+      "component": "time-field",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "time-field 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-time-field-literal-fg",
@@ -77114,10 +77702,12 @@
       "name": "--xh-time-picker-gap",
       "component": "time-picker",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -77126,7 +77716,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "time-picker 的 root 部件 gap 覆盖槽。"
+      "description": "time-picker 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-time-picker-icon-size",
@@ -77432,7 +78022,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "time-picker 的 label 部件 color 覆盖槽。"
@@ -77450,7 +78040,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "time-picker 的 label 部件 color 覆盖槽。"
@@ -77490,6 +78080,24 @@
       ],
       "visibility": "public",
       "description": "time-picker 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-picker-label-gap",
+      "component": "time-picker",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "time-picker 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-time-picker-layer",
@@ -78871,10 +79479,12 @@
       "name": "--xh-time-range-picker-gap",
       "component": "time-range-picker",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -78883,7 +79493,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "time-range-picker 的 root 部件 gap 覆盖槽。"
+      "description": "time-range-picker 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-icon-size",
@@ -79189,7 +79799,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 label 部件 color 覆盖槽。"
@@ -79207,7 +79817,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 label 部件 color 覆盖槽。"
@@ -79247,6 +79857,24 @@
       ],
       "visibility": "public",
       "description": "time-range-picker 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-range-picker-label-gap",
+      "component": "time-range-picker",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "time-range-picker 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-layer",
@@ -88323,10 +88951,12 @@
       "name": "--xh-tree-select-gap",
       "component": "tree-select",
       "part": [
+        "label",
         "root"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-end"
       ],
       "state": [
         "default"
@@ -88335,7 +88965,7 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "tree-select 的 root 部件 gap 覆盖槽。"
+      "description": "tree-select 的 label、root 部件 gap、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-icon-size",
@@ -88880,7 +89510,25 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-select-label-fg-disabled",
+      "component": "tree-select",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "tree-select 的 label 部件 color 覆盖槽。"
@@ -88920,6 +89568,24 @@
       ],
       "visibility": "public",
       "description": "tree-select 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-select-label-gap",
+      "component": "tree-select",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 label 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-layer",

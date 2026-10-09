@@ -98,8 +98,8 @@
   /* 标题：与输入框上下排，行距不留额外空白 */
   [data-scope='mention'][data-part='label'] {
     display: block;
-    margin-block-end: var(--xh-mention-label-gap, var(--xh-space-1));
-    color: var(--xh-mention-label-fg, var(--xh-fg-default));
+    margin-block-end: var(--xh-mention-label-gap, var(--xh-space-2));
+    color: var(--xh-mention-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-mention-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-mention-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
@@ -110,7 +110,7 @@
   }
 
   [data-scope='mention'][data-part='label'][data-disabled] {
-    color: var(--xh-mention-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-mention-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* —— 尺寸 —— */
@@ -168,7 +168,7 @@
   /* 多行形态：正文可以换行，框随 rows 定起始高度、不钉单行控件高（家族的多行布局给）；
      框自己就是 chrome，家族多行布局把上下内衬归零，这里按文本字段多行档同一支令牌补回，只许纵向拉伸 */
   [data-scope='mention'][data-part='input'][data-xh-field-layout='textarea'] {
-    padding-block: var(--xh-mention-textarea-py, var(--xh-space-2));
+    padding-block: var(--xh-mention-textarea-py, var(--xh-space-1));
     resize: vertical;
   }
 

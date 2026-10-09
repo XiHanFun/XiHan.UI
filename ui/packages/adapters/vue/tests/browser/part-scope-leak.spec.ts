@@ -68,7 +68,7 @@ describe('部件规则不越过 scope', () => {
     const fieldLabel = all('[data-scope="field"][data-part="label"]')[0]!
     const switchLabel = all('[data-scope="switch"][data-part="label"]')[0]!
     // 字段自己的标签该有星号，开关的标签不该有——两边都断言，免得改成谁都没有也算过
-    expect(getComputedStyle(fieldLabel, '::after').content).not.toBe('none')
-    expect(getComputedStyle(switchLabel, '::after').content).toBe('none')
+    expect(getComputedStyle(fieldLabel, '::before').content).not.toBe('none')
+    expect(getComputedStyle(switchLabel, '::before').content).toBe('none')
   })
 })

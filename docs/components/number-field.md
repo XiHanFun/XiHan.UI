@@ -109,13 +109,12 @@ parse 把显示串读为数值、format 把数值写回显示串；两个方向�
 - `parse` / `format` 成对，用于接入固定小数位、千分位、货币符号或自定义换算。
 - 越界的值在失焦规范化时被夹回区间；`clampValueOnBlur` 关掉后越界值原样留在框里（仍按 `format` 补格式），由 `outOfRange` 与根上的 `data-out-of-range` 报出来，交给表单层提示。步进在两种情形下都不会越界。
 - `prefix` / `suffix` 在框内放置货币符、单位或图标，两段对读屏隐藏。
-- `control` 是必需部件，也是输入、前后缀与两个动作共用的唯一视觉盒，投影 Field Chrome 家族（`data-xh-field-chrome`、`data-xh-field-size`、`data-variant`），输入与前后缀分别投影 `data-xh-field-input` 与 `data-xh-field-affix`；默认即 `outline`：`--xh-bg-canvas` 底、`--xh-border-control` 描边、control 圆角、无阴影，不写 `variant` 时 root 与 control 都落 `data-variant="outline"`，悬停与聚焦由整体盒统一反馈，聚焦描边一律 `--xh-border-control-focus`。减、加两颗动作依次收在右侧，走 Action Control 的 `field-inset` ghost 档：正方视觉盒、inset 圆角、在控件里垂直居中，悬停 `--xh-bg-subtle`（100）、按下 `--xh-bg-subtle-hover`（200）中性底并带 0.97 按压缩放，粗指针命中区由家族伪元素外扩到 44px。
+- `control` 是必需部件，也是输入、前后缀与两个动作共用的唯一视觉盒，投影 Field Chrome 家族（`data-xh-field-chrome`、`data-xh-field-size`、`data-variant`），输入与前后缀分别投影 `data-xh-field-input` 与 `data-xh-field-affix`；默认即 `outline`：字段淡底 `--xh-bg-field`、`--xh-border-control` 描边、control 圆角、无阴影，不写 `variant` 时 root 与 control 都落 `data-variant="outline"`，悬停与聚焦由整体盒统一反馈，聚焦描边一律 `--xh-border-control-focus`。减、加两颗动作走 Action Control 的 `field-inset` ghost 档，control 投影 `data-xh-action-owner`、两颗钮投影 `data-xh-action-display="hover-focus"`：可悬停的精细指针下两颗钮上下叠在盒的逻辑末端（宽取 `--xh-control-indicator-lg`、四周内收一截、各占盒内高的一半），平时收起，指针落到盒上或盒里有焦点时显出，显出时铺 `--xh-bg-subtle` 淡底、悬停升一档、按下升两档，字形是上下箭头；粗指针与不能悬停的设备上两颗钮是正方视觉盒、横排在末端、常显，命中区由家族伪元素外扩到 44px。钮字取次要前景 `--xh-fg-muted`。
 - `subtle` 为中性填充、`ghost` 为透明底，两者在悬停与聚焦时浮出描边；三档都由统一输入壳承担交互反馈。
-- comfortable 下 `sm` / `md` / `lg` 控件高为 32 / 36 / 40px；compact 下分别为 28 / 32 / 36px。
-  右侧动作区宽度跟随密度档，数字使用等宽字形，前缀、数值和后缀共用中线。
-- 粗指针环境不放大视觉盒：控件高与两颗钮的正方盒保持原档，命中区由家族 `::after` 伪元素以钮盒中心外扩到至少 44px，`control` 保持 `overflow: visible` 不裁掉它。热区比钮盒大，相邻两颗钮的热区会彼此重叠并伸进输入区边缘；指针落在重叠处时由排在后面的增钮接收，落在输入区边缘的外扩带时由相邻的那颗钮接收。
-- Tab 只停在 `spinbutton` 输入框，聚焦环由整个 `control` 统一绘制；加减按钮退出 Tab 序列，但仍可由指针和公开 API 操作。到达 `min` / `max` 时只禁用对应方向，`disabled` / `readOnly` 才同时锁住两侧。
-- 输入与右侧动作组之间使用一条半高、垂直居中的柔和分隔线，画在减钮的背景层上；RTL 下换到另一边。
+- comfortable 下 `sm` / `md` / `lg` 控件高为 28 / 32 / 36px；compact 下分别为 24 / 28 / 32px。
+  末端动作区宽度跟随密度档，数字从起始缘排起、使用等宽字形，前缀、数值和后缀共用中线；叠放的两颗钮浮在盒上，盒的末端让出那一截，数值与后缀不会排到钮底下，钮收起时也不跳。
+- 粗指针环境不放大视觉盒：控件高与横排的两颗正方钮保持原档，命中区由家族 `::after` 伪元素以钮盒中心外扩到至少 44px，`control` 保持 `overflow: visible` 不裁掉它。热区比钮盒大，相邻两颗钮的热区会彼此重叠并伸进输入区边缘；指针落在重叠处时由排在后面的增钮接收，落在输入区边缘的外扩带时由相邻的那颗钮接收。
+- Tab 只停在 `spinbutton` 输入框，聚焦由整个 `control` 换聚焦描边与承载面标出；加减按钮退出 Tab 序列（精细指针下收起不影响键盘：↑ / ↓ 照常步进），仍可由指针和公开 API 操作。到达 `min` / `max` 时只禁用对应方向，`disabled` / `readOnly` 才同时锁住两侧。
 
 ### 组合
 
@@ -299,6 +298,7 @@ parse 把显示串读为数值、format 把数值写回显示串；两个方向�
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-variant` | props.variant |
+| `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `prefix` | `data-disabled` | ''（条件成立时才出现） |
@@ -313,14 +313,14 @@ parse 把显示串读为数值、format 把数值写回显示串；两个方向�
 | `increment-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `increment-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `increment-trigger` | `data-xh-action-control` | '' |
-| `increment-trigger` | `data-xh-action-display` | 'always' |
+| `increment-trigger` | `data-xh-action-display` | 'hover-focus' |
 | `increment-trigger` | `data-xh-action-profile` | 'field-inset' |
 | `increment-trigger` | `data-xh-action-size` | props.size |
 | `increment-trigger` | `data-xh-action-variant` | 'ghost' |
 | `decrement-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `decrement-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `decrement-trigger` | `data-xh-action-control` | '' |
-| `decrement-trigger` | `data-xh-action-display` | 'always' |
+| `decrement-trigger` | `data-xh-action-display` | 'hover-focus' |
 | `decrement-trigger` | `data-xh-action-profile` | 'field-inset' |
 | `decrement-trigger` | `data-xh-action-size` | props.size |
 | `decrement-trigger` | `data-xh-action-variant` | 'ghost' |
@@ -351,24 +351,27 @@ parse 把显示串读为数值、format 把数值写回显示串；两个方向�
 | `--xh-number-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | number-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-number-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | number-field 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-number-field-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | number-field 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
-| `--xh-number-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | number-field 的 root 部件 gap 覆盖槽。 |
+| `--xh-number-field-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | number-field 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-number-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | number-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-number-field-input-align` | `control`<br>`input` | `text-align` | `default` | `center` | number-field 的 control、input 部件 text-align 覆盖槽。 |
+| `--xh-number-field-input-align` | `control`<br>`input` | `text-align` | `default` | `start` | number-field 的 control、input 部件 text-align 覆盖槽。 |
 | `--xh-number-field-input-autofill-bg` | `control`<br>`input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | number-field 的 control、input 部件 box-shadow 覆盖槽。 |
 | `--xh-number-field-input-autofill-fg` | `control`<br>`input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-fg-default` | number-field 的 control、input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-number-field-input-fg` | `control`<br>`input` | `color` | `xh-field-input` | `--xh-fg-default` | number-field 的 control、input 部件 color 覆盖槽。 |
 | `--xh-number-field-input-font-size` | `control`<br>`input` | `font-size` | `xh-field-input` | `--xh-_number-field-font-size` | number-field 的 control、input 部件 font-size 覆盖槽。 |
 | `--xh-number-field-input-px` | `control`<br>`input` | `padding-inline` | `default` | `--xh-_number-field-px` | number-field 的 control、input 部件 padding-inline 覆盖槽。 |
 | `--xh-number-field-input-w` | `control`<br>`input` | `inline-size` | `default` | `5em` | number-field 的 control、input 部件 inline-size 覆盖槽。 |
-| `--xh-number-field-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | number-field 的 label 部件 color 覆盖槽。 |
-| `--xh-number-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | number-field 的 label 部件 color 覆盖槽。 |
+| `--xh-number-field-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | number-field 的 label 部件 color 覆盖槽。 |
+| `--xh-number-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | number-field 的 label 部件 color 覆盖槽。 |
 | `--xh-number-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | number-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-number-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | number-field 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-number-field-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | number-field 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-number-field-placeholder-fg` | `control`<br>`input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | number-field 的 control、input 部件 color 覆盖槽。 |
-| `--xh-number-field-trigger-bg-active` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | number-field 的 control、decrement-trigger、increment-trigger 部件 background-color 覆盖槽。 |
-| `--xh-number-field-trigger-divider` | `control`<br>`decrement-trigger` | `background-image` | `has([data-part='input'])` | `--xh-material-soft-separator` | number-field 的 control、decrement-trigger 部件 background-image 覆盖槽。 |
-| `--xh-number-field-trigger-divider-h` | `control`<br>`decrement-trigger` | `background-size` | `has([data-part='input'])` | `--xh-_number-field-divider-h` | number-field 的 control、decrement-trigger 部件 background-size 覆盖槽。 |
-| `--xh-number-field-trigger-fg` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `color` | `default` | `--xh-fg-default` | number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。 |
+| `--xh-number-field-stepper-bg` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `--xh-ink-surface`<br>`background-color` | `@media (hover: hover) and (pointer: fine)`<br>`disabled`<br>`xh-ink-surface` | `--xh-bg-subtle` | number-field 的 control、decrement-trigger、increment-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-number-field-stepper-bg-hover` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `background-color` | `@media (hover: hover) and (pointer: fine)`<br>`disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle-hover` | number-field 的 control、decrement-trigger、increment-trigger 部件 background-color 覆盖槽。 |
+| `--xh-number-field-stepper-inset` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `block-size`<br>`inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`padding-inline-end` | `@media (hover: hover) and (pointer: fine)`<br>`has([data-part='increment-trigger'], [data-part='decrement-trigger'])` | `--xh-_number-field-stepper-inset` | number-field 的 control、decrement-trigger、increment-trigger 部件 block-size、inset-block-end、inset-block-start、inset-inline-end、padding-inline-end 覆盖槽。 |
+| `--xh-number-field-stepper-w` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `inline-size`<br>`padding-inline-end` | `@media (hover: hover) and (pointer: fine)`<br>`has([data-part='increment-trigger'], [data-part='decrement-trigger'])` | `--xh-control-indicator-lg` | number-field 的 control、decrement-trigger、increment-trigger 部件 inline-size、padding-inline-end 覆盖槽。 |
+| `--xh-number-field-trigger-bg-active` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `background-color` | `@media (hover: hover) and (pointer: fine)`<br>`disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed`<br>`--xh-bg-subtle-active` | number-field 的 control、decrement-trigger、increment-trigger 部件 background-color 覆盖槽。 |
+| `--xh-number-field-trigger-fg` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `color` | `default` | `--xh-fg-muted` | number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。 |
 | `--xh-number-field-trigger-fg-hover` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。 |
 | `--xh-number-field-trigger-font-size` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `font-size` | `default` | `--xh-_number-field-trigger-font-size` | number-field 的 control、decrement-trigger、increment-trigger 部件 font-size 覆盖槽。 |
 | `--xh-number-field-trigger-radius` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `border-radius` | `default` | `--xh-shape-inset` | number-field 的 control、decrement-trigger、increment-trigger 部件 border-radius 覆盖槽。 |
@@ -381,6 +384,10 @@ parse 把显示串读为数值、format 把数值写回显示串；两个方向�
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
+### 响应式
+
+皮肤另按输入能力分档：`hover: hover`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

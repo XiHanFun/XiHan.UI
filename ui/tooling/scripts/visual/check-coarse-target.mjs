@@ -15,12 +15,14 @@
 // 可聚焦的判据取连接层：props 走 normalize.button / .input / .textarea / .select，
 // 或者自己写了 tabindex 的那些 getter，它们挂的部件就是可聚焦部件。
 //
-// 登记表 coarse-target-registry.json 分四张：
+// 登记表 coarse-target-registry.json 分五张：
 //   exempt      量得出边长但不是指针落点的部件（藏起来的原生 input）
 //   inlineMark  随文排的标记档：视觉盒 16px，尺寸基准与圆角两项旁证由本脚本复核
+//   equivalent  SC 2.5.8 的等价控件例外：到不了 24×24、也凑不出间距例外，但同一件事在同一处有一个达标的控件
+//               做得到；不是待修的存量，不进 backlog。键 → 理由，写清等价的那个控件是谁、粗指针下怎么兜底
 //   backlog     A 档存量：低于 24px 且还没做外扩的部件，逐条带理由，门禁放行
 //   coarseTargets  B 档名单：独立触控目标，没做粗指针放大的带 pending 理由，门禁放行
-// 四张表两侧都反查：登记了却不再命中（部件退役、尺寸改了、外扩补上了）一律判红。
+// 五张表两侧都反查：登记了却不再命中（部件退役、尺寸改了、外扩补上了）一律判红。
 // `--update` 只刷新表里的 px 与新增的 A 档命中，理由留空由人补，不删条目。
 import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -378,7 +380,7 @@ for (const file of files) {
 }
 
 /** 读登记表；缺文件时按空表起步，`--update` 会把它写出来。 */
-let registry = { exempt: {}, inlineMark: {}, backlog: {}, coarseTargets: {} }
+let registry = { exempt: {}, inlineMark: {}, equivalent: {}, backlog: {}, coarseTargets: {} }
 try {
   registry = { ...registry, ...JSON.parse(await readFile(REGISTRY, 'utf8')) }
 }
@@ -392,6 +394,7 @@ catch {
 const registered = new Set([
   ...Object.keys(registry.exempt),
   ...Object.keys(registry.inlineMark),
+  ...Object.keys(registry.equivalent),
   ...Object.keys(registry.backlog),
 ])
 
@@ -399,6 +402,7 @@ if (process.argv.includes('--update')) {
   const next = {
     exempt: registry.exempt,
     inlineMark: registry.inlineMark,
+    equivalent: registry.equivalent,
     backlog: { ...registry.backlog },
     coarseTargets: { ...registry.coarseTargets },
   }
@@ -419,6 +423,7 @@ if (process.argv.includes('--update')) {
   const out = {
     exempt: sortKeys(next.exempt),
     inlineMark: sortKeys(next.inlineMark),
+    equivalent: sortKeys(next.equivalent),
     backlog: sortKeys(next.backlog),
     coarseTargets: sortKeys(next.coarseTargets),
   }
@@ -442,9 +447,11 @@ for (const [key, info] of measured) {
       problems.push(`${key}（${info.at}）命中区已到 ${info.fine}px——exempt 里那条过期了`)
     if (key in registry.inlineMark)
       problems.push(`${key}（${info.at}）命中区已到 ${info.fine}px——inlineMark 里那条过期了`)
+    if (key in registry.equivalent)
+      problems.push(`${key}（${info.at}）命中区已到 ${info.fine}px——equivalent 里那条过期了`)
     continue
   }
-  if (key in registry.exempt || key in registry.inlineMark || key in registry.backlog)
+  if (key in registry.exempt || key in registry.inlineMark || key in registry.equivalent || key in registry.backlog)
     continue
   problems.push(
     `${key}（${info.at}）${info.prop}: ${info.value} = ${info.px}px，`
@@ -455,7 +462,7 @@ for (const [key, info] of measured) {
 
 // 三张表反查：登记的键得还在，还得真的不达标；一个键只能落在其中一张表里
 const placed = new Map()
-for (const [table, entries] of [['exempt', registry.exempt], ['inlineMark', registry.inlineMark], ['backlog', registry.backlog]]) {
+for (const [table, entries] of [['exempt', registry.exempt], ['inlineMark', registry.inlineMark], ['equivalent', registry.equivalent], ['backlog', registry.backlog]]) {
   for (const key of Object.keys(entries)) {
     if (placed.has(key))
       problems.push(`${key} 同时登在 ${placed.get(key)} 与 ${table} 里——一个部件只能定性一次`)
@@ -474,6 +481,8 @@ for (const [table, entries] of [['exempt', registry.exempt], ['inlineMark', regi
     }
     if (table === 'exempt' && !entries[key])
       problems.push(`${key} 登在 exempt 里没写理由——补一句「为什么它不是指针落点」`)
+    if (table === 'equivalent' && !entries[key])
+      problems.push(`${key} 登在 equivalent 里没写理由——补一句「等价的那个控件是谁、粗指针下怎么兜底」`)
   }
 }
 
@@ -560,7 +569,7 @@ console.log(
   `[check-coarse-target] 通过：${files.length} 份皮肤 · ${measured.size} 个可聚焦部件量得出视觉盒，`
   + `其中 ${finePass} 个细指针命中区到 ${FINE_MIN}px；`
   + `A 档存量 ${backlogCount} 条、随文标记例外 ${Object.keys(registry.inlineMark).length} 条、`
-  + `不作落点 ${Object.keys(registry.exempt).length} 条；`
+  + `不作落点 ${Object.keys(registry.exempt).length} 条、等价控件例外 ${Object.keys(registry.equivalent).length} 条；`
   + `B 档独立触控目标 ${Object.keys(registry.coarseTargets).length} 个，`
   + `${coarsePass} 个粗指针下到 ${COARSE_MIN}px、${pending} 个待做`,
 )

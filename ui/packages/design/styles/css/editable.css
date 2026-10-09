@@ -26,9 +26,6 @@
     --xh-_editable-font-size: var(--xh-control-font-md);
     --xh-_editable-control-gap: 0;
 
-    /* 盒内那道分隔线的长度：取钮高的一半，线的上下各留一截空白，不与钮等高 */
-    --xh-_editable-divider-h: 50%;
-
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-editable-gap, var(--xh-space-1));
@@ -61,7 +58,9 @@
   }
 
   [data-scope='editable'][data-part='label'] {
-    color: var(--xh-editable-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-editable-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-editable-label-gap, var(--xh-space-2)) - var(--xh-editable-gap, var(--xh-space-1)));
+    color: var(--xh-editable-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-editable-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-editable-label-font-weight, var(--xh-text-label-weight));
     /* 点标题会把人送进编辑态（预览态下 for 指着的输入框是收起的，点了没反应），
@@ -70,7 +69,7 @@
   }
 
   [data-scope='editable'][data-part='label'][data-disabled] {
-    color: var(--xh-editable-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-editable-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 预览区只是 control 里的内容段，不再自成一只带圆角的盒子。 */
@@ -177,21 +176,22 @@
     display: none;
   }
 
-  /* 三颗动作与 NumberField 的加减钮一样是 control 内部的分段：正方视觉盒、inset 圆角、
-     悬停 100 / 按下 200 与 0.97 按压、粗指针热区、:focus-visible 关环与禁用面全由 Action Control 的
-     field-inset ghost 档给，组件只映射既有覆盖槽。常态只剩符号，悬停与按下才浮出底色 */
+  /* 三颗动作是 control 内部的分段：inset 圆角、按承载面取的悬停 / 按下阶梯、粗指针热区、
+     :focus-visible 关环与禁用面全由 Action Control 的 field-inset ghost 档给，组件只映射既有覆盖槽。
+     视觉盒三档都取控件内动作档（24px，compact 20px），不随字段档长大；常态只剩符号、取次要前景，
+     悬停与按下才浮出底色 */
   [data-scope='editable'][data-part='edit-trigger'],
   [data-scope='editable'][data-part='submit-trigger'],
   [data-scope='editable'][data-part='cancel-trigger'] {
-    --xh-action-visual-size: var(--xh-editable-trigger-size, var(--xh-_action-profile-visual-size));
-    --xh-action-min-inline-size: var(--xh-editable-trigger-size, var(--xh-_action-profile-visual-size));
+    --xh-action-visual-size: var(--xh-editable-trigger-size, var(--xh-control-action-size));
+    --xh-action-min-inline-size: var(--xh-editable-trigger-size, var(--xh-control-action-size));
     --xh-action-radius: var(--xh-editable-trigger-radius, var(--xh-shape-inset));
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-editable-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-editable-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
     --xh-action-bg-pressed: var(--xh-editable-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
     --xh-action-bg-disabled: var(--xh-editable-trigger-bg-disabled, var(--xh-_action-variant-bg-disabled));
-    --xh-action-fg-rest: var(--xh-editable-trigger-fg, var(--xh-fg-default));
+    --xh-action-fg-rest: var(--xh-editable-trigger-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-editable-trigger-fg-hover, var(--xh-fg-default));
     --xh-action-border-rest: transparent;
     --xh-action-highlight-rest: transparent;
@@ -234,42 +234,12 @@
     --xh-_editable-trigger-glyph: var(--xh-glyph-mark-close);
   }
 
-  /* 动作组第一颗与内容段之间只有一道短分隔线；确认与取消之间不再拼第二个按钮框。
-     线不画在钮的边框上：边框会跟着钮的圆角与悬停底走，而这道线要独立于钮的各态，长度也短于钮自己。
-     ::before 已被兜底字形占着，::after 在粗指针下是家族给的 44px 热区，几何只能落在
-     background-image 上：一条 1px × 半高的渐变贴在逻辑起始侧，底色换态时它仍叠在上层。
-     background-position 是物理轴，RTL 另给一条换边 */
-  [data-scope='editable'][data-part='edit-trigger'],
-  [data-scope='editable'][data-part='submit-trigger'] {
-    background-image: linear-gradient(
-      var(--xh-editable-trigger-divider, var(--xh-material-soft-separator)),
-      var(--xh-editable-trigger-divider, var(--xh-material-soft-separator))
-    );
-    background-repeat: no-repeat;
-    background-position: 0 50%;
-    background-size: var(--xh-stroke-thin) var(--xh-editable-trigger-divider-h, var(--xh-_editable-divider-h));
-  }
-
-  [dir='rtl'] [data-scope='editable'][data-part='edit-trigger'],
-  [dir='rtl'] [data-scope='editable'][data-part='submit-trigger'] {
-    background-position: 100% 50%;
-  }
-
   /* 三颗按钮按形态轮流收起，连接层给的是 hidden 属性；
      家族那条 display 已把 UA 规则盖掉，少了这里三条按钮就一直杵着 */
   [data-scope='editable'][data-part='edit-trigger'][hidden],
   [data-scope='editable'][data-part='submit-trigger'][hidden],
   [data-scope='editable'][data-part='cancel-trigger'][hidden] {
     display: none;
-  }
-
-  /* 高对比档整层丢弃 background-image，分隔线改用系统色重画，并关掉这两颗钮的强制换色 */
-  @media (forced-colors: active) {
-    [data-scope='editable'][data-part='edit-trigger'],
-    [data-scope='editable'][data-part='submit-trigger'] {
-      background-image: linear-gradient(ButtonText, ButtonText);
-      forced-color-adjust: none;
-    }
   }
 
   @media (forced-colors: active) {

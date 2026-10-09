@@ -379,18 +379,19 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `--xh-text-field-count-fg-at-max` | `count` | `color` | `at-max` | `--xh-fg-warning` | text-field 的 count 部件 color 覆盖槽。 |
 | `--xh-text-field-count-fg-disabled` | `count` | `color` | `disabled` | `--xh-fg-disabled` | text-field 的 count 部件 color 覆盖槽。 |
 | `--xh-text-field-count-font-size` | `count` | `font-size` | `default` | `--xh-_text-field-action-font-size` | text-field 的 count 部件 font-size 覆盖槽。 |
-| `--xh-text-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | text-field 的 root 部件 gap 覆盖槽。 |
+| `--xh-text-field-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | text-field 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-text-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | text-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-text-field-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | text-field 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-text-field-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-fg-default` | text-field 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-text-field-input-fg` | `input` | `color` | `xh-field-input` | `--xh-fg-default` | text-field 的 input 部件 color 覆盖槽。 |
 | `--xh-text-field-input-font-size` | `input` | `font-size` | `xh-field-input` | `--xh-_text-field-font-size` | text-field 的 input 部件 font-size 覆盖槽。 |
-| `--xh-text-field-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | text-field 的 label 部件 color 覆盖槽。 |
-| `--xh-text-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | text-field 的 label 部件 color 覆盖槽。 |
+| `--xh-text-field-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | text-field 的 label 部件 color 覆盖槽。 |
+| `--xh-text-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | text-field 的 label 部件 color 覆盖槽。 |
 | `--xh-text-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | text-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-text-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | text-field 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-text-field-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | text-field 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-text-field-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | text-field 的 input 部件 color 覆盖槽。 |
-| `--xh-text-field-textarea-py` | `input` | `padding-block` | `xh-field-input`<br>`xh-field-layout=textarea` | `--xh-space-2` | text-field 的 input 部件 padding-block 覆盖槽。 |
+| `--xh-text-field-textarea-py` | `input` | `padding-block` | `xh-field-input`<br>`xh-field-layout=textarea` | `--xh-space-1` | text-field 的 input 部件 padding-block 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

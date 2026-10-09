@@ -346,6 +346,12 @@ export function compileFieldChromeRecipe(source) {
     ].join('\n'))
   }
   rule('[data-xh-field-chrome][data-disabled]', stateDeclarations(source, 'disabled'))
+  // 盒里的 field-inset 钮按所在承载面取阶梯：没聚焦时描边档与淡底档的盒铺着淡底，钮走淡底阶梯 200 → 300；
+  // 聚焦后盒换成白色承载面、ghost 档静息透明，钮留在 Action Control 缺省的白底阶梯 100 → 200
+  rule('[data-xh-field-chrome]:not([data-variant=\'ghost\']):not(:focus-within)', [
+    '    --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);',
+    '    --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);',
+  ].join('\n'))
 
   rule('[data-xh-field-affix]', [
     '    display: inline-flex;',

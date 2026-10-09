@@ -456,7 +456,7 @@ describe('有层与无层产物计算样式一致', () => {
     expect(diff(layered, unlayered)).toEqual([])
   })
 
-  it.each(['layered', 'unlayered'] as const)('input-group 聚焦时只有组壳画环，内嵌字段外壳不画（%s）', async (sheet) => {
+  it.each(['layered', 'unlayered'] as const)('input-group 聚焦时组壳换聚焦描边、不画环，内嵌字段外壳也不画（%s）', async (sheet) => {
     const markup = await serialize(FIXTURES[0]!)
     const doc = await stage(markup, sheet)
     const input = doc.querySelector<HTMLInputElement>('[data-scope="input-group"] input')!
@@ -466,10 +466,10 @@ describe('有层与无层产物计算样式一致', () => {
     expect(root.matches(':focus-within')).toBe(true)
 
     const view = doc.defaultView!
-    const rootStyle = view.getComputedStyle(root)
-    expect(rootStyle.outlineStyle).toBe('solid')
-    expect(rootStyle.outlineWidth).toBe(resolveToken(doc, '--xh-ring-width', 'outline-width'))
-    expect(rootStyle.outlineColor).toBe(resolveToken(doc, '--xh-ring-focus', 'outline-color'))
-    expect(view.getComputedStyle(control).outlineStyle, '内嵌字段外壳叠出了第二圈焦点环').toBe('none')
+    expect(view.getComputedStyle(root).outlineStyle).toBe('none')
+    expect(view.getComputedStyle(root, '::before').borderTopColor)
+      .toBe(resolveToken(doc, '--xh-border-control-focus', 'outline-color'))
+    expect(view.getComputedStyle(control).outlineStyle, '内嵌字段外壳叠出了一圈焦点环').toBe('none')
+    expect(view.getComputedStyle(input).outlineStyle, '输入框自己画了焦点环').toBe('none')
   })
 })

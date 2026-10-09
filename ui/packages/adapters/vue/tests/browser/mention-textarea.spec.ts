@@ -59,8 +59,9 @@ describe('提及的多行形态', () => {
     const multi = await mountMention('textarea')
     const style = getComputedStyle(multi)
     expect(Math.round(multi.getBoundingClientRect().height)).toBeGreaterThan(controlH)
-    expect(Math.round(Number.parseFloat(style.paddingBlockStart))).toBe(tokenPx('--xh-space-2'))
-    expect(Math.round(Number.parseFloat(style.paddingBlockEnd))).toBe(tokenPx('--xh-space-2'))
+    // 多行档上下内衬与字段外壳的多行档同为 --xh-space-1
+    expect(Math.round(Number.parseFloat(style.paddingBlockStart))).toBe(tokenPx('--xh-space-1'))
+    expect(Math.round(Number.parseFloat(style.paddingBlockEnd))).toBe(tokenPx('--xh-space-1'))
     expect(style.resize).toBe('vertical')
   })
 

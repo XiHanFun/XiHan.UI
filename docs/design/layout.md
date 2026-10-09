@@ -87,7 +87,7 @@
 
 ## 表单排布
 
-[Form](/components/form) 四种排布：`vertical`（缺省，纵向一列）、`horizontal`（标签左置两列，整表标签列宽由 `--xh-form-label-w` 统一对齐）、`inline`（横向一行流，放不下自动换行）、`grid`（等宽列网格，列数 1 – 4 逐断点声明，单个字段可跨列或占满整行）。字段标签贴控件 `--xh-space-1`，说明与错误文案同样 `--xh-space-1`，字段与字段之间走 `--xh-form-gap`（缺省 `--xh-stack-gap-md`）。
+[Form](/components/form) 四种排布：`vertical`（缺省，纵向一列）、`horizontal`（标签左置两列，整表标签列宽由 `--xh-form-label-w` 统一对齐）、`inline`（横向一行流，放不下自动换行）、`grid`（等宽列网格，列数 1 – 4 逐断点声明，单个字段可跨列或占满整行）。字段标签与控件隔 `--xh-space-2`，说明与错误文案紧贴控件、占一行最小高 `--xh-space-5` 的辅助行；字段与字段之间走 `--xh-form-gap`（缺省 `--xh-space-5`），带辅助行的字段那一行就是项距，不再另留；`inline` 列距 `--xh-form-inline-gap`（缺省 `--xh-space-6`）、行距 `--xh-form-inline-row-gap`（缺省 `--xh-space-2`）。
 
 ## 浮层尺寸
 

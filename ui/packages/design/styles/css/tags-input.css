@@ -22,15 +22,17 @@
     /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
     --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-md));
 
-    /* 尺寸档只换这九个私有槽，标题、框、输入框与就地编辑框都从 root 继承它们，
+    /* 尺寸档只换这几个私有槽，标题、框、输入框与就地编辑框都从 root 继承它们，
        换档不必给每个部件各写一条选择器。标签本身是 tag，档位由 data-size 传下去，不走这些槽；
-       就地编辑框的四个槽照 tag 那一档的行框、内衬与字号写，换进换出时与标签一样高 */
+       就地编辑框的块尺寸、行框、内衬与字号照 tag 那一档写（块尺寸取状态 chip 档、竖向内衬为 0），
+       换进换出时与标签一样高 */
     --xh-_tags-input-control-h: var(--xh-control-h-md);
     --xh-_tags-input-control-px: var(--xh-control-px-md);
-    --xh-_tags-input-control-gap: var(--xh-control-gap-md);
+    --xh-_tags-input-control-gap: var(--xh-space-1);
     --xh-_tags-input-input-font-size: var(--xh-control-font-md);
     --xh-_tags-input-item-font-size: var(--xh-control-caption-md);
-    --xh-_tags-input-item-py: var(--xh-space-1);
+    --xh-_tags-input-item-h: var(--xh-chip-h-md);
+    --xh-_tags-input-item-py: 0;
     --xh-_tags-input-item-px: var(--xh-space-2);
     --xh-_tags-input-item-line-h: var(--xh-control-indicator-md);
     /* 光标走到的那颗标签是「当前项」，不是选中：淡底 + 淡底前景，随语气走。
@@ -58,10 +60,9 @@
     --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-sm));
     --xh-_tags-input-control-h: var(--xh-control-h-sm);
     --xh-_tags-input-control-px: var(--xh-control-px-sm);
-    --xh-_tags-input-control-gap: var(--xh-control-gap-sm);
     --xh-_tags-input-input-font-size: var(--xh-control-font-sm);
     --xh-_tags-input-item-font-size: var(--xh-control-caption-sm);
-    --xh-_tags-input-item-py: var(--xh-space-0_5);
+    --xh-_tags-input-item-h: var(--xh-chip-h-sm);
     --xh-_tags-input-item-px: var(--xh-space-1_5);
   }
 
@@ -69,21 +70,23 @@
     --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-lg));
     --xh-_tags-input-control-h: var(--xh-control-h-lg);
     --xh-_tags-input-control-px: var(--xh-control-px-lg);
-    --xh-_tags-input-control-gap: var(--xh-control-gap-lg);
     --xh-_tags-input-input-font-size: var(--xh-control-font-lg);
     --xh-_tags-input-item-font-size: var(--xh-control-caption-lg);
+    --xh-_tags-input-item-h: var(--xh-chip-h-lg);
     --xh-_tags-input-item-px: var(--xh-space-3);
     --xh-_tags-input-item-line-h: var(--xh-control-indicator-lg);
   }
 
   [data-scope='tags-input'][data-part='label'] {
-    color: var(--xh-tags-input-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-tags-input-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-tags-input-label-gap, var(--xh-space-2)) - var(--xh-tags-input-gap, var(--xh-space-1)));
+    color: var(--xh-tags-input-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-tags-input-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-tags-input-label-font-weight, var(--xh-text-label-weight));
   }
 
   [data-scope='tags-input'][data-part='label'][data-disabled] {
-    color: var(--xh-tags-input-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-tags-input-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 标签换行排，输入框跟在最后一个标签后面：描边、底色、圆角、聚焦环、五态与悬停由 Field Chrome
@@ -119,6 +122,12 @@
 
   [data-scope='tags-input'][data-part='control'][hidden] {
     display: none;
+  }
+
+  /* 盒里有标签时起始内衬收到 --xh-space-1，标签之间、标签与输入框之间隔 --xh-space-1（盒的 gap 缺省就是它）：
+     标签自带内距，行首再留一整段控件内衬就显得空。标签自己的面（没聚焦时白底 + 描边）写在 tag.css 的字段宿主档 */
+  [data-scope='tags-input'][data-part='control']:has(> [data-scope='tags-input'][data-part='item']) {
+    padding-inline-start: var(--xh-tags-input-control-ps, var(--xh-space-1));
   }
 
   /* 顶到上限是 TagsInput 独有状态：再加进不去，边框先给个提示；invalid 同时出现时由 Field Chrome 的
@@ -205,6 +214,8 @@
     inline-size: auto;
     min-inline-size: 3ch;
     max-inline-size: 100%;
+    box-sizing: border-box;
+    min-block-size: var(--xh-tags-input-item-h, var(--xh-_tags-input-item-h));
     padding-block: var(--xh-tags-input-item-py, var(--xh-_tags-input-item-py));
     padding-inline: var(--xh-tags-input-item-px, var(--xh-_tags-input-item-px));
     border: var(--xh-stroke-thin) solid var(--xh-tags-input-item-input-border, var(--xh-border-control));
