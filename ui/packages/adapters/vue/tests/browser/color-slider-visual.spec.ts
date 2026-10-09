@@ -128,10 +128,10 @@ describe('颜色滑块的轨道与拇指', () => {
     expect(thumb.boxShadow).not.toBe('none')
   })
 
-  it('禁用：不整体压暗，标签换 fg-disabled，颜色带与拇指压暗一次、拇指不再抬起且面仍是当前色', async () => {
+  it('禁用：不整体压暗，标签不另变色，颜色带与拇指压暗一次、拇指不再抬起且面仍是当前色', async () => {
     await mountSlider({ disabled: true })
     expect(getComputedStyle(part('root')).opacity).toBe('1')
-    expect(getComputedStyle(part('label')).color).toBe(resolvedToken('--xh-fg-disabled'))
+    expect(getComputedStyle(part('label')).color).toBe(resolvedToken('--xh-fg-muted'))
     expect(getComputedStyle(part('control')).opacity).toBe('0.5')
     expect(getComputedStyle(part('control')).cursor).toBe('not-allowed')
     const thumb = getComputedStyle(part('thumb'))

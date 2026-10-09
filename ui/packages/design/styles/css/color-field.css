@@ -65,7 +65,7 @@
   }
 
   [data-scope='color-field'][data-part='label'][data-disabled] {
-    color: var(--xh-color-field-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-color-field-label-fg-disabled, var(--xh-fg-muted));
   }
 
   [data-scope='color-field'][data-part='control'] {

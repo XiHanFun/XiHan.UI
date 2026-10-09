@@ -386,7 +386,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `--xh-text-field-input-fg` | `input` | `color` | `xh-field-input` | `--xh-fg-default` | text-field 的 input 部件 color 覆盖槽。 |
 | `--xh-text-field-input-font-size` | `input` | `font-size` | `xh-field-input` | `--xh-_text-field-font-size` | text-field 的 input 部件 font-size 覆盖槽。 |
 | `--xh-text-field-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | text-field 的 label 部件 color 覆盖槽。 |
-| `--xh-text-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | text-field 的 label 部件 color 覆盖槽。 |
+| `--xh-text-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | text-field 的 label 部件 color 覆盖槽。 |
 | `--xh-text-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | text-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-text-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | text-field 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-text-field-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | text-field 的 label 部件 margin-block-end 覆盖槽。 |

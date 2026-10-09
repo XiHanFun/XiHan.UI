@@ -537,7 +537,7 @@
 | `--xh-combobox-item-py` | `item` | `padding-block` | `default` | `--xh-_combobox-item-py` | combobox 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-combobox-item-radius` | `item` | `border-radius` | `default` | `0` | combobox 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-combobox-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | combobox 的 label 部件 color 覆盖槽。 |
-| `--xh-combobox-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | combobox 的 label 部件 color 覆盖槽。 |
+| `--xh-combobox-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | combobox 的 label 部件 color 覆盖槽。 |
 | `--xh-combobox-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | combobox 的 label 部件 font-size 覆盖槽。 |
 | `--xh-combobox-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | combobox 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-combobox-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | combobox 的 label 部件 margin-block-end 覆盖槽。 |

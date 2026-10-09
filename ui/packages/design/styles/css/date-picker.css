@@ -148,7 +148,7 @@
   }
 
   [data-scope='date-picker'][data-part='label'][data-disabled] {
-    color: var(--xh-date-picker-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-date-picker-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 画成一个框的是 control 而不是 input：段位、清空按钮、日历按钮三者要看起来是一体的，

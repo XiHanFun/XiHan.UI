@@ -68,7 +68,7 @@
   }
 
   [data-scope='fieldset'][data-part='description'][data-disabled] {
-    color: var(--xh-fieldset-description-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-fieldset-description-fg-disabled, var(--xh-fg-subtle));
   }
 
   /* 并排字段的一段：窄屏一列，够宽了按列宽自动分栏。列宽下限由槽给，作者按字段类型改 */

@@ -77,9 +77,9 @@ describe('rating 字段标签、星形尺度与按压', () => {
     expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
   })
 
-  it('禁用：标签换到 fg-disabled 而不压暗，星带整体压暗一次，按下不再换面', () => {
+  it('禁用：标签不另变色、不压暗，星带整体压暗一次，按下不再换面', () => {
     const { label, control, item, valueText } = mount('data-disabled')
-    expect(getComputedStyle(label).color).toBe(resolvedToken('--xh-fg-disabled'))
+    expect(getComputedStyle(label).color).toBe(resolvedToken('--xh-fg-muted'))
     expect(getComputedStyle(label).opacity).toBe('1')
     expect(getComputedStyle(valueText).color).toBe(resolvedToken('--xh-fg-subtle'))
     expect(getComputedStyle(control).opacity).toBe('0.5')

@@ -740,7 +740,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `--xh-tree-select-item-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-_tree-select-row-py` | tree-select 的 branch-control、item 部件 padding-block 覆盖槽。 |
 | `--xh-tree-select-item-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `0` | tree-select 的 branch-control、item 部件 border-radius 覆盖槽。 |
 | `--xh-tree-select-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tree-select 的 label 部件 color 覆盖槽。 |
-| `--xh-tree-select-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | tree-select 的 label 部件 color 覆盖槽。 |
+| `--xh-tree-select-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | tree-select 的 label 部件 color 覆盖槽。 |
 | `--xh-tree-select-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | tree-select 的 label 部件 font-size 覆盖槽。 |
 | `--xh-tree-select-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tree-select 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-tree-select-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | tree-select 的 label 部件 margin-block-end 覆盖槽。 |

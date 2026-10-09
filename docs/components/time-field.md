@@ -329,7 +329,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态�
 | `--xh-time-field-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | time-field 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-time-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | time-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-time-field-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | time-field 的 label 部件 color 覆盖槽。 |
-| `--xh-time-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | time-field 的 label 部件 color 覆盖槽。 |
+| `--xh-time-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | time-field 的 label 部件 color 覆盖槽。 |
 | `--xh-time-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | time-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-time-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | time-field 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-time-field-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | time-field 的 label 部件 margin-block-end 覆盖槽。 |

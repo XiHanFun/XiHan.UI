@@ -356,7 +356,7 @@ draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽�
 | `--xh-slider-control-gutter` | `control`<br>`root` | `margin-inline` | `has([data-part='tick-label'])`<br>`orientation=horizontal` | `--xh-space-6` | slider 的 control、root 部件 margin-inline 覆盖槽。 |
 | `--xh-slider-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | slider 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-slider-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | slider 的 label 部件 color 覆盖槽。 |
-| `--xh-slider-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | slider 的 label 部件 color 覆盖槽。 |
+| `--xh-slider-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | slider 的 label 部件 color 覆盖槽。 |
 | `--xh-slider-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | slider 的 label 部件 font-size 覆盖槽。 |
 | `--xh-slider-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | slider 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-slider-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | slider 的 label 部件 margin-block-end 覆盖槽。 |

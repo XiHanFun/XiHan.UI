@@ -71,7 +71,7 @@
   }
 
   [data-scope='time-field'][data-part='label'][data-disabled] {
-    color: var(--xh-time-field-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-time-field-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 几段合起来看着像一个输入框：描边、底色、圆角、聚焦环、五态与悬停由 Field Chrome 家族画在

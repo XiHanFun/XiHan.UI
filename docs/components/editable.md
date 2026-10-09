@@ -324,7 +324,7 @@
 | `--xh-editable-input-font-size` | `input` | `font-size` | `xh-field-input` | `--xh-_editable-font-size` | editable 的 input 部件 font-size 覆盖槽。 |
 | `--xh-editable-input-px` | `input` | `padding-inline` | `default` | `--xh-_editable-px` | editable 的 input 部件 padding-inline 覆盖槽。 |
 | `--xh-editable-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | editable 的 label 部件 color 覆盖槽。 |
-| `--xh-editable-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | editable 的 label 部件 color 覆盖槽。 |
+| `--xh-editable-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | editable 的 label 部件 color 覆盖槽。 |
 | `--xh-editable-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | editable 的 label 部件 font-size 覆盖槽。 |
 | `--xh-editable-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | editable 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-editable-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | editable 的 label 部件 margin-block-end 覆盖槽。 |

@@ -46,7 +46,7 @@
     --xh-_rating-font-size: var(--xh-control-font-lg);
   }
 
-  /* 字段标签：14 / 400 / fg-muted，与控件隔 space-2，禁用换到 --xh-fg-disabled；文字部件不叠 opacity */
+  /* 字段标签：14 / 400 / fg-muted，与控件隔 space-2，禁用不另变色；文字部件不叠 opacity */
   [data-scope='rating'][data-part='label'] {
     /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-rating-label-gap 给多少最终就是多少 */
     margin-block-end: calc(var(--xh-rating-label-gap, var(--xh-space-2)) - var(--xh-rating-gap, var(--xh-space-1)));
@@ -56,7 +56,7 @@
   }
 
   [data-scope='rating'][data-part='label'][data-disabled] {
-    color: var(--xh-rating-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-rating-label-fg-disabled, var(--xh-fg-muted));
   }
 
   [data-scope='rating'][data-part='control'] {

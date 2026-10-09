@@ -69,7 +69,7 @@
   }
 
   [data-scope='editable'][data-part='label'][data-disabled] {
-    color: var(--xh-editable-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-editable-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 预览区只是 control 里的内容段，不再自成一只带圆角的盒子。 */

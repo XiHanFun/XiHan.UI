@@ -75,7 +75,7 @@
   }
 
   [data-scope='field'][data-part='label'][data-disabled] {
-    color: var(--xh-field-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-field-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 必填星号的字形、字号、间距与默认色在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
@@ -125,7 +125,7 @@
   }
 
   [data-scope='field'][data-part='description'][data-disabled] {
-    color: var(--xh-field-description-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-field-description-fg-disabled, var(--xh-fg-subtle));
   }
 
   [data-scope='field'][data-part='error-text'] {

@@ -422,7 +422,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `--xh-file-upload-item-py` | `item` | `padding-block` | `default` | `--xh-space-2` | file-upload 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-file-upload-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-file-upload-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | file-upload 的 label 部件 color 覆盖槽。 |
-| `--xh-file-upload-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | file-upload 的 label 部件 color 覆盖槽。 |
+| `--xh-file-upload-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | file-upload 的 label 部件 color 覆盖槽。 |
 | `--xh-file-upload-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | file-upload 的 label 部件 font-size 覆盖槽。 |
 | `--xh-file-upload-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | file-upload 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-file-upload-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | file-upload 的 label 部件 margin-block-end 覆盖槽。 |

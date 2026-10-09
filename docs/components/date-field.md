@@ -333,7 +333,7 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 | `--xh-date-field-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | date-field 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-date-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | date-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-date-field-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | date-field 的 label 部件 color 覆盖槽。 |
-| `--xh-date-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | date-field 的 label 部件 color 覆盖槽。 |
+| `--xh-date-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | date-field 的 label 部件 color 覆盖槽。 |
 | `--xh-date-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | date-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-date-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | date-field 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-date-field-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | date-field 的 label 部件 margin-block-end 覆盖槽。 |

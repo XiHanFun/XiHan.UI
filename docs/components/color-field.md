@@ -293,7 +293,7 @@
 | `--xh-color-field-input-fg` | `input` | `color` | `xh-field-input` | `--xh-fg-default` | color-field 的 input 部件 color 覆盖槽。 |
 | `--xh-color-field-input-font-size` | `input` | `font-size` | `xh-field-input` | `--xh-_color-field-font-size` | color-field 的 input 部件 font-size 覆盖槽。 |
 | `--xh-color-field-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | color-field 的 label 部件 color 覆盖槽。 |
-| `--xh-color-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | color-field 的 label 部件 color 覆盖槽。 |
+| `--xh-color-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | color-field 的 label 部件 color 覆盖槽。 |
 | `--xh-color-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | color-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-color-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | color-field 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-color-field-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | color-field 的 label 部件 margin-block-end 覆盖槽。 |

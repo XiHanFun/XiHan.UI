@@ -196,7 +196,7 @@ required 写为 data-required，皮肤据此为组标题加星号；星号只是
 | --- | --- | --- | --- | --- | --- |
 | `--xh-fieldset-actions-gap` | `actions` | `gap` | `default` | `--xh-space-2` | fieldset 的 actions 部件 gap 覆盖槽。 |
 | `--xh-fieldset-description-fg` | `description` | `color` | `default` | `--xh-fg-subtle` | fieldset 的 description 部件 color 覆盖槽。 |
-| `--xh-fieldset-description-fg-disabled` | `description` | `color` | `disabled` | `--xh-fg-disabled` | fieldset 的 description 部件 color 覆盖槽。 |
+| `--xh-fieldset-description-fg-disabled` | `description` | `color` | `disabled` | `--xh-fg-subtle` | fieldset 的 description 部件 color 覆盖槽。 |
 | `--xh-fieldset-description-font-size` | `description` | `font-size` | `default` | `--xh-text-caption-size` | fieldset 的 description 部件 font-size 覆盖槽。 |
 | `--xh-fieldset-error-fg` | `error-text` | `color` | `default` | `--xh-fg-danger` | fieldset 的 error-text 部件 color 覆盖槽。 |
 | `--xh-fieldset-error-font-size` | `error-text` | `font-size` | `default` | `--xh-text-caption-size` | fieldset 的 error-text 部件 font-size 覆盖槽。 |

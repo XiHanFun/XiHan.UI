@@ -6,7 +6,7 @@
 /*
  * 字段族标签的公共层，按 [data-part='label'] 匹配下面逐个列出的 scope。
  *
- * 收在这里的是逐值相同的四条：行距取 --xh-leading-none，禁用档字色取 --xh-fg-disabled，
+ * 收在这里的是逐值相同的四条：行距取 --xh-leading-none，禁用档字色留在 --xh-fg-muted，
  * 必填星号取 --xh-glyph-mark-required + --xh-space-1 + --xh-fg-danger、排在标签文字之前，无效档字色取 --xh-fg-danger。
  * 字色、字号、字重三条留在各组件皮肤——它们挂着 --xh-<组件>-label-* 覆盖槽，
  * 槽名里带组件名，写不进一条共享规则。
@@ -42,16 +42,16 @@
   }
 
   /*
-   * 禁用档的字色：公共层默认统一 --xh-fg-disabled。字段标签静息已是 --xh-fg-muted，禁用再取
-   * --xh-fg-subtle 与它几乎分不出，改取与控件内禁用文字同一档的 --xh-fg-disabled（禁用文字不计对比度）。
-   * 这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，取值只有这一处；挂了那个槽的组件在各自皮肤里另写一条，
-   * 排在本份之后，压过这里。
+   * 禁用档的字色：字段标签禁用不另变色，留在静息的 --xh-fg-muted。再淡一档的 --xh-fg-subtle 与它几乎分不出，
+   * --xh-fg-disabled 只有 2.66:1，读屏与无障碍扫描都把关联禁用控件的标签当正文判对比度；禁用由控件自己的
+   * 禁用面表出。这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，取值只有这一处；挂了那个槽的组件在各自皮肤里
+   * 另写一条，排在本份之后，压过这里。
    */
   [data-scope='color-picker'][data-part='label'][data-disabled],
   [data-scope='rating'][data-part='label'][data-disabled],
   [data-scope='signature-pad'][data-part='label'][data-disabled],
   [data-scope='slider'][data-part='label'][data-disabled] {
-    color: var(--xh-fg-disabled);
+    color: var(--xh-fg-muted);
   }
 
   /*

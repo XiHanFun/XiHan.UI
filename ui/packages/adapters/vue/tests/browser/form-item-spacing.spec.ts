@@ -95,10 +95,10 @@ describe('字段的辅助行', () => {
     expect(error.getBoundingClientRect().height).toBe(px('--xh-space-5'))
   })
 
-  it('禁用时说明换 --xh-fg-disabled，与静息的 subtle 分得开', async () => {
+  it('禁用时说明不另变色，仍是 --xh-fg-subtle（对比度照样够）', async () => {
     await mount(() => h(XhFormRoot, null, () => [field('邮箱', { description: '工作邮箱', disabled: true })]))
     const description = all('field', 'description')[0]!
-    await expect.poll(() => getComputedStyle(description).color).toBe(resolve('var(--xh-fg-disabled)'))
+    expect(getComputedStyle(description).color).toBe(resolve('var(--xh-fg-subtle)'))
   })
 
   it('字段集的说明与字段的说明同一副排版，组内项距 --xh-space-5', async () => {

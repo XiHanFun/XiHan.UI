@@ -138,7 +138,7 @@
   }
 
   [data-scope='select'][data-part='label'][data-disabled] {
-    color: var(--xh-select-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-select-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 盒：描边、底色、圆角、控件高度、行内内衬、聚焦环、五态与悬停由 Field Chrome 家族画在这一层，

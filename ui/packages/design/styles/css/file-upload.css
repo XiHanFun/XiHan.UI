@@ -40,7 +40,7 @@
   }
 
   [data-scope='file-upload'][data-part='label'][data-disabled] {
-    color: var(--xh-file-upload-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-file-upload-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 虚线框是"这里能放东西"的通用说法，实线框看起来只是一个普通面板。

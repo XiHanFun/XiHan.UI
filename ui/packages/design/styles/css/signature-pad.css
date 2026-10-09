@@ -36,7 +36,7 @@
   }
 
   [data-scope='signature-pad'][data-part='label'][data-disabled] {
-    color: var(--xh-signature-pad-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-signature-pad-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 画布是块状的写字区：宽度铺满外层，高度由宽高比决定。

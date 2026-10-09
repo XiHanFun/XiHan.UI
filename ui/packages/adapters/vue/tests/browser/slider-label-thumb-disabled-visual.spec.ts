@@ -69,10 +69,10 @@ describe('slider 字段标签、拇指描边与禁用面', () => {
     expect(getComputedStyle(ticks[0]!).borderTopLeftRadius).toBe('50%')
   })
 
-  it('禁用：不整体压暗，轨道退 100 档、区间与已过刻度换禁用前景、拇指白面无影、标签 fg-disabled', () => {
+  it('禁用：不整体压暗，轨道退 100 档、区间与已过刻度换禁用前景、拇指白面无影、标签不另变色', () => {
     const { root, label, track, range, thumb, ticks } = mount('data-disabled')
     expect(getComputedStyle(root).opacity).toBe('1')
-    expect(getComputedStyle(label).color).toBe(resolvedToken('--xh-fg-disabled'))
+    expect(getComputedStyle(label).color).toBe(resolvedToken('--xh-fg-muted'))
     expect(getComputedStyle(track).backgroundColor).toBe(resolvedToken('--xh-bg-subtle', 'background-color'))
     expect(getComputedStyle(range).backgroundColor).toBe(resolvedToken('--xh-fg-disabled', 'background-color'))
     const thumbStyle = getComputedStyle(thumb)
