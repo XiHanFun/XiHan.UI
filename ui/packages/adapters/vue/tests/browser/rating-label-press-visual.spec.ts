@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
+import { pressScale } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -62,7 +63,7 @@ describe('rating 字段标签、星形尺度与按压', () => {
     expect(item.getBoundingClientRect().height).toBe(24)
   })
 
-  it('按下 0.97 缩放并同时换到 200 档底，松手回到透明；点亮色在按下时保持', () => {
+  it('按下缩放走按压令牌并同时换到 200 档底，松手回到透明；点亮色在按下时保持', () => {
     const { item } = mount()
     expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(getComputedStyle(item).transitionProperty.split(', ')).toContain('scale')
@@ -70,7 +71,7 @@ describe('rating 字段标签、星形尺度与按压', () => {
     expect(lit).not.toBe(resolvedToken('--xh-fg-subtle'))
     item.setAttribute('data-pressed', '')
     expect(getComputedStyle(item).color).toBe(lit)
-    expect(getComputedStyle(item).scale).toBe('0.97')
+    expect(getComputedStyle(item).scale).toBe(pressScale())
     expect(getComputedStyle(item).backgroundColor).toBe(resolvedToken('--xh-bg-subtle-hover'))
     item.removeAttribute('data-pressed')
     expect(getComputedStyle(item).scale).toBe('none')
