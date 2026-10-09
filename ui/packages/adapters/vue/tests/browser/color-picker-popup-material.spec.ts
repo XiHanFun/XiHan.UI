@@ -14,6 +14,7 @@ import {
   XhColorPickerSwatchPicker,
   XhColorPickerTrigger,
 } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -89,7 +90,8 @@ describe('颜色选择器浮层：floating 实体面', () => {
     part('content').getAnimations().forEach(animation => animation.finish())
     const control = getComputedStyle(part('control'))
     const content = getComputedStyle(part('content'))
-    expect(alpha(control.backgroundColor)).toBe(0)
+    // 字段外壳静息铺字段淡底
+    expect(control.backgroundColor).toBe(tokenValue('background-color', '--xh-bg-field', part('control')))
     expect(control.backdropFilter).toBe('none')
     expect(part('positioner').closest<HTMLElement>('[data-theme]')?.dataset.theme).toBe(theme)
     // floating：实体底 + --xh-border-default 描边 + --xh-elevation-floating 落影，不透景、不画顶部边界光
