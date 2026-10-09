@@ -241,13 +241,13 @@ describe('标签页 · 「更多」下拉（真实排版）', () => {
 
   it('竖排：限了高才放不下，钮排在标签带那一列的列尾、横贯列宽', async () => {
     const p = mountTabs({ orientation: 'vertical', height: 200, width: 480 })
-    // 限了高也不把标签压扁：每枚仍是控件高，放不下的那截靠位移露出
+    // 限了高也不把标签压扁：每枚仍是 line 档的导航行高，放不下的那截靠位移露出
     const probe = document.createElement('div')
-    probe.style.blockSize = 'var(--xh-control-h-md)'
+    probe.style.blockSize = 'var(--xh-nav-row-h-md)'
     host!.append(probe)
-    const controlHeight = probe.getBoundingClientRect().height
+    const rowHeight = probe.getBoundingClientRect().height
     probe.remove()
-    expect(Math.round(p.trigger('tab-1').getBoundingClientRect().height)).toBe(Math.round(controlHeight))
+    expect(Math.round(p.trigger('tab-1').getBoundingClientRect().height)).toBe(Math.round(rowHeight))
     await expect.poll(() => p.more().hidden).toBe(false)
     const list = p.list().getBoundingClientRect()
     const more = p.more().getBoundingClientRect()
