@@ -83373,10 +83373,13 @@
       "name": "--xh-tour-gap",
       "component": "tour",
       "part": [
-        "content"
+        "content",
+        "description",
+        "title"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-start"
       ],
       "state": [
         "default"
@@ -83385,7 +83388,7 @@
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "tour 的 content 部件 gap 覆盖槽。"
+      "description": "tour 的 content、description、title 部件 gap、margin-block-start 覆盖槽。"
     },
     {
       "name": "--xh-tour-icon-size",
@@ -83713,7 +83716,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-surface-py-md"
+        "--xh-surface-py-sm"
       ],
       "visibility": "public",
       "description": "tour 的 content 部件 padding-block 覆盖槽。"
@@ -83823,7 +83826,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-ring-focus"
+        "--xh-_tour-spotlight-ring"
       ],
       "visibility": "public",
       "description": "tour 的 spotlight 部件 box-shadow 覆盖槽。"
