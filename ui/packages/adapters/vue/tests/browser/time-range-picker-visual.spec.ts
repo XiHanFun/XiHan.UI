@@ -309,16 +309,17 @@ describe('时间范围选择器的家族观感', () => {
     expect(clearRest.width).toBe(clearRest.height)
     expect(alpha(clearRest.backgroundColor)).toBe(0)
     const probe = document.createElement('span')
-    probe.style.background = 'var(--xh-bg-subtle)'
-    control.append(probe)
-    const hover100 = getComputedStyle(probe).backgroundColor
+    // 盒没聚焦、也不是 ghost 档：钮落在字段淡底上，走淡底承载阶梯 subtle-hover → subtle-active
     probe.style.background = 'var(--xh-bg-subtle-hover)'
-    const pressed200 = getComputedStyle(probe).backgroundColor
+    control.append(probe)
+    const hostHover = getComputedStyle(probe).backgroundColor
+    probe.style.background = 'var(--xh-bg-subtle-active)'
+    const hostPressed = getComputedStyle(probe).backgroundColor
     probe.remove()
     await userEvent.hover(clear)
-    expect(getComputedStyle(clear).backgroundColor).toBe(hover100)
+    expect(getComputedStyle(clear).backgroundColor).toBe(hostHover)
     clear.dataset.pressed = ''
-    expect(getComputedStyle(clear).backgroundColor).toBe(pressed200)
+    expect(getComputedStyle(clear).backgroundColor).toBe(hostPressed)
     expect(['1', 'none']).toContain(getComputedStyle(clear).scale)
   })
 

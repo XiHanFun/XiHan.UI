@@ -187,7 +187,7 @@ describe('日期范围选择器的家族观感', () => {
     expect(focused.outlineStyle === 'none' || Number.parseFloat(focused.outlineWidth) === 0).toBe(true)
   })
 
-  it('日历钮与清空钮是盒内 field-inset 正方钮：inset 圆角、悬停 100 / 按下 200 只换面', async () => {
+  it('日历钮与清空钮是盒内 field-inset 正方钮：inset 圆角，按盒的淡底承载阶梯悬停 / 按下只换面', async () => {
     await mountPicker({ defaultValue: ['2026-09-07', '2026-09-11'] })
     const clear = part('clear-trigger')
     clear.style.transition = 'none'
@@ -201,16 +201,17 @@ describe('日期范围选择器的家族观感', () => {
     expect(rest.width).toBe(rest.height)
     expect(alpha(rest.backgroundColor)).toBe(0)
     const probe = document.createElement('span')
-    probe.style.background = 'var(--xh-bg-subtle)'
-    part('control').append(probe)
-    const hover100 = getComputedStyle(probe).backgroundColor
+    // 盒没聚焦、也不是 ghost 档：钮落在字段淡底上，走淡底承载阶梯 subtle-hover → subtle-active
     probe.style.background = 'var(--xh-bg-subtle-hover)'
-    const pressed200 = getComputedStyle(probe).backgroundColor
+    part('control').append(probe)
+    const hostHover = getComputedStyle(probe).backgroundColor
+    probe.style.background = 'var(--xh-bg-subtle-active)'
+    const hostPressed = getComputedStyle(probe).backgroundColor
     probe.remove()
     await userEvent.hover(clear)
-    expect(getComputedStyle(clear).backgroundColor).toBe(hover100)
+    expect(getComputedStyle(clear).backgroundColor).toBe(hostHover)
     clear.dataset.pressed = ''
-    expect(getComputedStyle(clear).backgroundColor).toBe(pressed200)
+    expect(getComputedStyle(clear).backgroundColor).toBe(hostPressed)
     expect(['1', 'none']).toContain(getComputedStyle(clear).scale)
   })
 
