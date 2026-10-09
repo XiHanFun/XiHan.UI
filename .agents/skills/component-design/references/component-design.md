@@ -478,6 +478,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | Switch | 轨道高 `switch-track-h` 随 size；宽 = 2 × 高 − 2 × 内距；滑块 = 高 − 2 × 内距 |
 | Slider | 轨道 6px、滑块 18px、刻度 4px；竖向长度 10rem |
 | ColorSlider | 轨道 12px、滑块 18px；竖向长度 10rem |
+| Rating | 星 sm / md / lg 取 `glyph-size-md / lg / xl`（20 / 24 / 32px，星是主体，比控件内图标大一档），盒比星大 4px；悬停与键盘聚焦放大到 `--xh-motion-scale-emphasis`（1.2，减弱动效 1），按下保持放大并换 200 档面 |
 
 #### 浮层
 

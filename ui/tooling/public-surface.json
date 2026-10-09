@@ -14830,6 +14830,7 @@
     "--xh-motion-loop-spin",
     "--xh-motion-scale-breathe",
     "--xh-motion-scale-drag",
+    "--xh-motion-scale-emphasis",
     "--xh-motion-scale-enter",
     "--xh-motion-scale-exit",
     "--xh-motion-scale-halo",

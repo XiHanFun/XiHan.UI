@@ -711,6 +711,11 @@
       "$type": "number",
       "$value": 1.12
     },
+    "scale-emphasis": {
+      "$description": "指针悬停或键盘聚焦时把一枚小字形放大强调的比例（评分的星）。减弱动效下为 1：只留换色。",
+      "$type": "number",
+      "$value": 1.2
+    },
     "scale-squash": {
       "$description": "液态形变里被拉长的块在另一个方向上最多压到的比例，表达体积守恒（液态档的双沿指示器、按下的液态面）。",
       "$type": "number",

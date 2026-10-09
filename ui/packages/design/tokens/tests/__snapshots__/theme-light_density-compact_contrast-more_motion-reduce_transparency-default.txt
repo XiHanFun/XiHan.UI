@@ -327,6 +327,7 @@
 --xh-motion-loop-spin: 640ms
 --xh-motion-scale-breathe: 1
 --xh-motion-scale-drag: 1
+--xh-motion-scale-emphasis: 1
 --xh-motion-scale-enter: 1
 --xh-motion-scale-exit: 1
 --xh-motion-scale-halo: 1
