@@ -419,7 +419,7 @@ delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号�
 | `--xh-tags-input-item-py` | `item-input` | `padding-block` | `default` | `--xh-_tags-input-item-py` | tags-input 的 item-input 部件 padding-block 覆盖槽。 |
 | `--xh-tags-input-item-radius` | `item-input` | `border-radius` | `default` | `--xh-shape-control` | tags-input 的 item-input 部件 border-radius 覆盖槽。 |
 | `--xh-tags-input-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tags-input 的 label 部件 color 覆盖槽。 |
-| `--xh-tags-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | tags-input 的 label 部件 color 覆盖槽。 |
+| `--xh-tags-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | tags-input 的 label 部件 color 覆盖槽。 |
 | `--xh-tags-input-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | tags-input 的 label 部件 font-size 覆盖槽。 |
 | `--xh-tags-input-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tags-input 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-tags-input-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | tags-input 的 label 部件 margin-block-end 覆盖槽。 |

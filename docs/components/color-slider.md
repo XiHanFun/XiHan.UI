@@ -273,7 +273,7 @@ orientation 竖排时渐变自下而上；禁用时标签换禁用前景、颜�
 | `--xh-color-slider-checker-base` | `track` | `background-color` | `channel=alpha` | `--xh-bg-surface` | color-slider 的 track 部件 background-color 覆盖槽。 |
 | `--xh-color-slider-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | color-slider 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-color-slider-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | color-slider 的 label 部件 color 覆盖槽。 |
-| `--xh-color-slider-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | color-slider 的 label 部件 color 覆盖槽。 |
+| `--xh-color-slider-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | color-slider 的 label 部件 color 覆盖槽。 |
 | `--xh-color-slider-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | color-slider 的 label 部件 font-size 覆盖槽。 |
 | `--xh-color-slider-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | color-slider 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-color-slider-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | color-slider 的 label 部件 margin-block-end 覆盖槽。 |

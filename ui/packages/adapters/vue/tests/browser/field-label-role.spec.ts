@@ -1,5 +1,5 @@
-// 字段标签角色：14 / 400 / --xh-fg-muted，竖排与控件隔 --xh-space-2，禁用换 --xh-fg-disabled
-// （静息已是 muted，再取 subtle 与它分不出）；必填星号排在标签文字之前、取说明字号；
+// 字段标签角色：14 / 400 / --xh-fg-muted，竖排与控件隔 --xh-space-2，禁用不另变色
+// （再淡一档的 subtle 与 muted 分不出，fg-disabled 对比不足，禁用由控件自己的禁用面表出）；必填星号排在标签文字之前、取说明字号；
 // 表单横排时标签列占一行的 5 / 24、与控件隔 --xh-space-4。
 // 判据是级联算出来的颜色与排出来的几何，jsdom 不排版。
 import type { App, VNode } from 'vue'
@@ -93,12 +93,11 @@ describe('字段标签角色', () => {
     expect(Math.round(control.getBoundingClientRect().top - label.getBoundingClientRect().bottom)).toBe(px('--xh-space-2'))
   })
 
-  it.each(CASES)('%s：禁用时标签换 --xh-fg-disabled，与静息的 muted 分得开', async (scope, render) => {
+  it.each(CASES)('%s：禁用时标签不另变色，仍是 --xh-fg-muted（对比度照样够）', async (scope, render) => {
     await mount(() => render(true))
     const label = part(scope, 'label')
     expect(label.hasAttribute('data-disabled')).toBe(true)
-    await expect.poll(() => getComputedStyle(label).color).toBe(resolve('var(--xh-fg-disabled)'))
-    expect(getComputedStyle(label).color).not.toBe(resolve('var(--xh-fg-muted)'))
+    expect(getComputedStyle(label).color).toBe(resolve('var(--xh-fg-muted)'))
   })
 })
 

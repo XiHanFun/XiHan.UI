@@ -3,7 +3,7 @@
 //
 // 文字角色与字形尺寸：
 // 字段标签 = --xh-text-label-size 14 / --xh-text-label-weight 400 / --xh-fg-muted，竖排与控件隔 --xh-space-2，不随 size 档，
-// 禁用 --xh-fg-disabled（静息已是 muted，subtle 与它分不出）；
+// 禁用不另变色（仍取 --xh-fg-muted：subtle 与它分不出，fg-disabled 对比不足）；
 // 控件随文标签（Checkbox / Switch 的 <label> 整行：方框 / 轨道 + 它自己的文字）= 控件文字，字号随档取
 // --xh-control-font-sm / md / lg（控件字号随档，与 checkbox-group / radio-group 的条目文字同一把尺），
 // 颜色 --xh-fg-default；
@@ -280,7 +280,7 @@ for (const scope of FIELD_LABEL) {
   expect(scope, 'label', label, 'color', '--xh-fg-muted', '字段标签')
   expectSpacing(scope, 'label', label, '--xh-space-2', '字段标签与控件')
   const disabled = declsFor(scope, 'label', '[data-disabled]')
-  expect(scope, 'label', disabled, 'color', '--xh-fg-disabled', '字段标签静息已是 muted，禁用')
+  expect(scope, 'label', disabled, 'color', '--xh-fg-muted', '字段标签禁用不另变色，')
 }
 
 // 控件随文标签
@@ -319,7 +319,7 @@ for (const skin of skins) {
     expect(skin.comp, 'description', description, 'line-height', '--xh-leading-normal', why)
     if (helper) {
       expect(skin.comp, 'description', description, 'min-block-size', '--xh-space-5', why)
-      expect(skin.comp, 'description', declsFor(skin.comp, 'description', '[data-disabled]'), 'color', '--xh-fg-disabled', '静息已是 subtle，禁用的说明')
+      expect(skin.comp, 'description', declsFor(skin.comp, 'description', '[data-disabled]'), 'color', '--xh-fg-subtle', '字段辅助行的说明禁用不另变色，')
     }
   }
   const error = declsFor(skin.comp, 'error-text')
@@ -405,7 +405,7 @@ if (problems.length) {
   console.error('[check-text-role] ✗ 文字与图标没按角色取令牌：')
   for (const p of problems)
     console.error(`  ${p}`)
-  console.error('\n字段标签 14/400/fg-muted 与控件 space-2、禁用 fg-disabled · 集合标题 fg-muted + space-2 · 字段辅助行 12/fg-subtle 最小高 space-5 · 其余说明 13/fg-muted · 浮层内标题 14/500 · 区块与面板标题 heading-3 · 页面标题 heading-2 · 图标随档 sm/md/lg。存量登 family-backlog.json text 段。')
+  console.error('\n字段标签 14/400/fg-muted 与控件 space-2、禁用不变色 · 集合标题 fg-muted + space-2 · 字段辅助行 12/fg-subtle 最小高 space-5 · 其余说明 13/fg-muted · 浮层内标题 14/500 · 区块与面板标题 heading-3 · 页面标题 heading-2 · 图标随档 sm/md/lg。存量登 family-backlog.json text 段。')
   process.exit(1)
 }
 

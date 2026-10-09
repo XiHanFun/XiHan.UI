@@ -76,7 +76,7 @@
 /*
  * 字段族标签的公共层，按 [data-part='label'] 匹配下面逐个列出的 scope。
  *
- * 收在这里的是逐值相同的四条：行距取 --xh-leading-none，禁用档字色取 --xh-fg-disabled，
+ * 收在这里的是逐值相同的四条：行距取 --xh-leading-none，禁用档字色留在 --xh-fg-muted，
  * 必填星号取 --xh-glyph-mark-required + --xh-space-1 + --xh-fg-danger、排在标签文字之前，无效档字色取 --xh-fg-danger。
  * 字色、字号、字重三条留在各组件皮肤——它们挂着 --xh-<组件>-label-* 覆盖槽，
  * 槽名里带组件名，写不进一条共享规则。
@@ -112,16 +112,16 @@
   }
 
   /*
-   * 禁用档的字色：公共层默认统一 --xh-fg-disabled。字段标签静息已是 --xh-fg-muted，禁用再取
-   * --xh-fg-subtle 与它几乎分不出，改取与控件内禁用文字同一档的 --xh-fg-disabled（禁用文字不计对比度）。
-   * 这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，取值只有这一处；挂了那个槽的组件在各自皮肤里另写一条，
-   * 排在本份之后，压过这里。
+   * 禁用档的字色：字段标签禁用不另变色，留在静息的 --xh-fg-muted。再淡一档的 --xh-fg-subtle 与它几乎分不出，
+   * --xh-fg-disabled 只有 2.66:1，读屏与无障碍扫描都把关联禁用控件的标签当正文判对比度；禁用由控件自己的
+   * 禁用面表出。这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，取值只有这一处；挂了那个槽的组件在各自皮肤里
+   * 另写一条，排在本份之后，压过这里。
    */
   .xh-scope-color-picker[data-part='label'][data-disabled],
   .xh-scope-rating[data-part='label'][data-disabled],
   .xh-scope-signature-pad[data-part='label'][data-disabled],
   .xh-scope-slider[data-part='label'][data-disabled] {
-    color: var(--xh-fg-disabled);
+    color: var(--xh-fg-muted);
   }
 
   /*
@@ -4944,7 +4944,7 @@
   }
 
   .xh-scope-fieldset[data-part='description'][data-disabled] {
-    color: var(--xh-fieldset-description-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-fieldset-description-fg-disabled, var(--xh-fg-subtle));
   }
 
   /* 并排字段的一段：窄屏一列，够宽了按列宽自动分栏。列宽下限由槽给，作者按字段类型改 */
@@ -10955,7 +10955,7 @@
   }
 
   .xh-scope-mention[data-part='label'][data-disabled] {
-    color: var(--xh-mention-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-mention-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* —— 尺寸 —— */
@@ -11534,7 +11534,7 @@
   }
 
   .xh-scope-password-input[data-part='label'][data-disabled] {
-    color: var(--xh-password-input-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-password-input-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* —— 一体式 control：输入框、切换钮与提示同框 —— */
@@ -13074,7 +13074,7 @@
   }
 
   .xh-scope-signature-pad[data-part='label'][data-disabled] {
-    color: var(--xh-signature-pad-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-signature-pad-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 画布是块状的写字区：宽度铺满外层，高度由宽高比决定。
@@ -20887,7 +20887,7 @@
 
   /* 整个控件禁用会把 data-disabled 一路打到 label / value-text / indicator 上，各处观感保持一致 */
   .xh-scope-cascader[data-part='label'][data-disabled] {
-    color: var(--xh-cascader-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-cascader-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 盒：描边、底色、圆角、控件高度、行内内衬、聚焦环、五态与悬停由 Field Chrome 家族画在这一层，
@@ -23722,7 +23722,7 @@
   }
 
   .xh-scope-color-field[data-part='label'][data-disabled] {
-    color: var(--xh-color-field-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-color-field-label-fg-disabled, var(--xh-fg-muted));
   }
 
   .xh-scope-color-field[data-part='control'] {
@@ -24450,7 +24450,7 @@
   /* 禁用不整体压暗：标签是文字，换到禁用前景；颜色带与拇指画的是颜色本身，换不得色，
      压暗只做一次、落在 control 上（track / thumb 各自再叠一层 opacity 会越叠越黑），拇指另收掉抬升 */
 
-  /* 字段标签：14 / 400 / fg-muted，与控件隔 space-2，禁用换到 --xh-fg-disabled */
+  /* 字段标签：14 / 400 / fg-muted，与控件隔 space-2，禁用不另变色 */
   .xh-scope-color-slider[data-part='label'] {
     /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-color-slider-label-gap 给多少最终就是多少 */
     margin-block-end: calc(var(--xh-color-slider-label-gap, var(--xh-space-2)) - var(--xh-color-slider-gap, var(--xh-space-1)));
@@ -24460,7 +24460,7 @@
   }
 
   .xh-scope-color-slider[data-part='label'][data-disabled] {
-    color: var(--xh-color-slider-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-color-slider-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 拇指以它为定位上下文（拇指常常浮出轨道，挂在 track 上会被轨道的盒子束住）。
@@ -24787,7 +24787,7 @@
   }
 
   .xh-scope-color-swatch-picker[data-part='label'][data-disabled] {
-    color: var(--xh-color-swatch-picker-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-color-swatch-picker-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 一格：正方形命中区，里面铺满色块面。
@@ -25108,7 +25108,7 @@
   }
 
   .xh-scope-combobox[data-part='label'][data-disabled] {
-    color: var(--xh-combobox-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-combobox-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 画成一个框的是 control 而不是 input：输入框、展开按钮、清空按钮三者要看起来是一体的，
@@ -26411,7 +26411,7 @@
   }
 
   .xh-scope-date-field[data-part='label'][data-disabled] {
-    color: var(--xh-date-field-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-date-field-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 分段框整体长得像一个输入框：描边、底色、圆角、聚焦环、五态与悬停由 Field Chrome 家族画在
@@ -26791,7 +26791,7 @@
   }
 
   .xh-scope-date-picker[data-part='label'][data-disabled] {
-    color: var(--xh-date-picker-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-date-picker-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 画成一个框的是 control 而不是 input：段位、清空按钮、日历按钮三者要看起来是一体的，
@@ -27651,7 +27651,7 @@
   }
 
   .xh-scope-date-range-picker[data-part='label'][data-disabled] {
-    color: var(--xh-date-range-picker-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-date-range-picker-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 画成一个框的是 control 而不是 input：段位、清空按钮、日历按钮三者要看起来是一体的，
@@ -29449,7 +29449,7 @@
   }
 
   .xh-scope-editable[data-part='label'][data-disabled] {
-    color: var(--xh-editable-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-editable-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 预览区只是 control 里的内容段，不再自成一只带圆角的盒子。 */
@@ -29714,7 +29714,7 @@
   }
 
   .xh-scope-field[data-part='label'][data-disabled] {
-    color: var(--xh-field-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-field-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 必填星号的字形、字号、间距与默认色在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
@@ -29764,7 +29764,7 @@
   }
 
   .xh-scope-field[data-part='description'][data-disabled] {
-    color: var(--xh-field-description-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-field-description-fg-disabled, var(--xh-fg-subtle));
   }
 
   .xh-scope-field[data-part='error-text'] {
@@ -29839,7 +29839,7 @@
   }
 
   .xh-scope-file-upload[data-part='label'][data-disabled] {
-    color: var(--xh-file-upload-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-file-upload-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 虚线框是"这里能放东西"的通用说法，实线框看起来只是一个普通面板。
@@ -35509,7 +35509,7 @@
   }
 
   .xh-scope-number-field[data-part='label'][data-disabled] {
-    color: var(--xh-number-field-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-number-field-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* —— 一体式 control：输入框与加减钮同框 —— */
@@ -36439,7 +36439,7 @@
   }
 
   .xh-scope-pin-input[data-part='label'][data-disabled] {
-    color: var(--xh-pin-input-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-pin-input-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 分段：连着的几格圈成一段。它只排版，格间距仍由格子自己的相邻兄弟规则给 */
@@ -38753,7 +38753,7 @@
     --xh-_rating-font-size: var(--xh-control-font-lg);
   }
 
-  /* 字段标签：14 / 400 / fg-muted，与控件隔 space-2，禁用换到 --xh-fg-disabled；文字部件不叠 opacity */
+  /* 字段标签：14 / 400 / fg-muted，与控件隔 space-2，禁用不另变色；文字部件不叠 opacity */
   .xh-scope-rating[data-part='label'] {
     /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-rating-label-gap 给多少最终就是多少 */
     margin-block-end: calc(var(--xh-rating-label-gap, var(--xh-space-2)) - var(--xh-rating-gap, var(--xh-space-1)));
@@ -38763,7 +38763,7 @@
   }
 
   .xh-scope-rating[data-part='label'][data-disabled] {
-    color: var(--xh-rating-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-rating-label-fg-disabled, var(--xh-fg-muted));
   }
 
   .xh-scope-rating[data-part='control'] {
@@ -39538,7 +39538,7 @@
   }
 
   .xh-scope-select[data-part='label'][data-disabled] {
-    color: var(--xh-select-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-select-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 盒：描边、底色、圆角、控件高度、行内内衬、聚焦环、五态与悬停由 Field Chrome 家族画在这一层，
@@ -40854,7 +40854,7 @@
   /* 禁用不整体压暗：前景与表面各自降级——连接层把 data-disabled 发到每个角色节点上，
      轨道、区间、拇指、刻度与标签就近消费，写在各自的规则里 */
 
-  /* 字段标签：14 / 400 / fg-muted，与控件隔 space-2，禁用换到 --xh-fg-disabled */
+  /* 字段标签：14 / 400 / fg-muted，与控件隔 space-2，禁用不另变色 */
   .xh-scope-slider[data-part='label'] {
     /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-slider-label-gap 给多少最终就是多少 */
     margin-block-end: calc(var(--xh-slider-label-gap, var(--xh-space-2)) - var(--xh-slider-gap, var(--xh-space-1)));
@@ -40864,7 +40864,7 @@
   }
 
   .xh-scope-slider[data-part='label'][data-disabled] {
-    color: var(--xh-slider-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-slider-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 拇指以它为定位上下文（拇指常常浮出轨道，挂在 track 上会被轨道的盒子束住）。
@@ -45108,7 +45108,7 @@
   }
 
   .xh-scope-tags-input[data-part='label'][data-disabled] {
-    color: var(--xh-tags-input-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-tags-input-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 标签换行排，输入框跟在最后一个标签后面：描边、底色、圆角、聚焦环、五态与悬停由 Field Chrome
@@ -45412,7 +45412,7 @@
   }
 
   .xh-scope-text-field[data-part='label'][data-disabled] {
-    color: var(--xh-text-field-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-text-field-label-fg-disabled, var(--xh-fg-muted));
   }
 
   .xh-scope-text-field[data-part='control'] {
@@ -45611,7 +45611,7 @@
   }
 
   .xh-scope-time-field[data-part='label'][data-disabled] {
-    color: var(--xh-time-field-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-time-field-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 几段合起来看着像一个输入框：描边、底色、圆角、聚焦环、五态与悬停由 Field Chrome 家族画在
@@ -45931,7 +45931,7 @@
   }
 
   .xh-scope-time-picker[data-part='label'][data-disabled] {
-    color: var(--xh-time-picker-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-time-picker-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 画成一个框的是 control：几段文字、展开按钮、清空按钮要看起来是一体的，
@@ -46635,7 +46635,7 @@
   }
 
   .xh-scope-time-range-picker[data-part='label'][data-disabled] {
-    color: var(--xh-time-range-picker-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-time-range-picker-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 画成一个框的是 control：几段文字、展开按钮、清空按钮要看起来是一体的，
@@ -50571,7 +50571,7 @@
 
   /* 整个控件禁用会把 data-disabled 一路打到 label / value-text / indicator 上，各处观感保持一致 */
   .xh-scope-tree-select[data-part='label'][data-disabled] {
-    color: var(--xh-tree-select-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-tree-select-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 盒：描边、底色、圆角、控件高度、行内内衬、聚焦环、五态与悬停由 Field Chrome 家族画在这一层，

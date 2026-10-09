@@ -606,7 +606,7 @@ outline、subtle 和 ghost
 | `--xh-select-item-py` | `item` | `padding-block` | `default` | `--xh-_select-item-py` | select 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-select-item-radius` | `item` | `border-radius` | `default` | `0` | select 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-select-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | select 的 label 部件 color 覆盖槽。 |
-| `--xh-select-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | select 的 label 部件 color 覆盖槽。 |
+| `--xh-select-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | select 的 label 部件 color 覆盖槽。 |
 | `--xh-select-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | select 的 label 部件 font-size 覆盖槽。 |
 | `--xh-select-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | select 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-select-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | select 的 label 部件 margin-block-end 覆盖槽。 |

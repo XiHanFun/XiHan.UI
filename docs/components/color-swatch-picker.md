@@ -291,7 +291,7 @@
 | `--xh-color-swatch-picker-item-radius` | `item`<br>`swatch` | `--xh-swatch-radius`<br>`border-radius` | `default` | `--xh-shape-inset` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-radius、border-radius 覆盖槽。 |
 | `--xh-color-swatch-picker-item-size` | `item` | `block-size`<br>`inline-size` | `default` | `--xh-_color-swatch-picker-cell` | color-swatch-picker 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-color-swatch-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | color-swatch-picker 的 label 部件 color 覆盖槽。 |
-| `--xh-color-swatch-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | color-swatch-picker 的 label 部件 color 覆盖槽。 |
+| `--xh-color-swatch-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | color-swatch-picker 的 label 部件 color 覆盖槽。 |
 | `--xh-color-swatch-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | color-swatch-picker 的 label 部件 font-size 覆盖槽。 |
 | `--xh-color-swatch-picker-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | color-swatch-picker 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-color-swatch-picker-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | color-swatch-picker 的 label 部件 margin-block-end 覆盖槽。 |

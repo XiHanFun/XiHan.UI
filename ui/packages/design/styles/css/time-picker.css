@@ -124,7 +124,7 @@
   }
 
   [data-scope='time-picker'][data-part='label'][data-disabled] {
-    color: var(--xh-time-picker-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-time-picker-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 画成一个框的是 control：几段文字、展开按钮、清空按钮要看起来是一体的，

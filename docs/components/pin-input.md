@@ -301,7 +301,7 @@ pattern 是一段正则源码，逐个字符整格匹配；写法无效时退回
 | `--xh-pin-input-box-size` | `input` | `block-size`<br>`inline-size`<br>`min-block-size` | `default`<br>`has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_pin-input-box-size` | pin-input 的 input 部件 block-size、inline-size、min-block-size 覆盖槽。 |
 | `--xh-pin-input-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | pin-input 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-pin-input-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | pin-input 的 label 部件 color 覆盖槽。 |
-| `--xh-pin-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | pin-input 的 label 部件 color 覆盖槽。 |
+| `--xh-pin-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | pin-input 的 label 部件 color 覆盖槽。 |
 | `--xh-pin-input-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | pin-input 的 label 部件 font-size 覆盖槽。 |
 | `--xh-pin-input-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | pin-input 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-pin-input-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | pin-input 的 label 部件 margin-block-end 覆盖槽。 |

@@ -506,7 +506,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `--xh-time-range-picker-item-py` | `item` | `padding-block` | `default` | `--xh-_time-range-picker-item-py` | time-range-picker 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-time-range-picker-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | time-range-picker 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-time-range-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | time-range-picker 的 label 部件 color 覆盖槽。 |
-| `--xh-time-range-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | time-range-picker 的 label 部件 color 覆盖槽。 |
+| `--xh-time-range-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | time-range-picker 的 label 部件 color 覆盖槽。 |
 | `--xh-time-range-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | time-range-picker 的 label 部件 font-size 覆盖槽。 |
 | `--xh-time-range-picker-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | time-range-picker 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-time-range-picker-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | time-range-picker 的 label 部件 margin-block-end 覆盖槽。 |

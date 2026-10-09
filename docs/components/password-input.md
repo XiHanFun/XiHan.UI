@@ -336,7 +336,7 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 | `--xh-password-input-input-fg` | `input` | `color` | `xh-field-input` | `--xh-fg-default` | password-input 的 input 部件 color 覆盖槽。 |
 | `--xh-password-input-input-font-size` | `input` | `font-size` | `xh-field-input` | `--xh-_password-input-font-size` | password-input 的 input 部件 font-size 覆盖槽。 |
 | `--xh-password-input-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | password-input 的 label 部件 color 覆盖槽。 |
-| `--xh-password-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | password-input 的 label 部件 color 覆盖槽。 |
+| `--xh-password-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | password-input 的 label 部件 color 覆盖槽。 |
 | `--xh-password-input-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | password-input 的 label 部件 font-size 覆盖槽。 |
 | `--xh-password-input-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | password-input 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-password-input-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | password-input 的 label 部件 margin-block-end 覆盖槽。 |

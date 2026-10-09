@@ -65,7 +65,7 @@
   }
 
   [data-scope='color-swatch-picker'][data-part='label'][data-disabled] {
-    color: var(--xh-color-swatch-picker-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-color-swatch-picker-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 一格：正方形命中区，里面铺满色块面。

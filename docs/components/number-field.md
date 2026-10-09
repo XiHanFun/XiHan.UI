@@ -361,7 +361,7 @@ parse 把显示串读为数值、format 把数值写回显示串；两个方向�
 | `--xh-number-field-input-px` | `control`<br>`input` | `padding-inline` | `default` | `--xh-_number-field-px` | number-field 的 control、input 部件 padding-inline 覆盖槽。 |
 | `--xh-number-field-input-w` | `control`<br>`input` | `inline-size` | `default` | `5em` | number-field 的 control、input 部件 inline-size 覆盖槽。 |
 | `--xh-number-field-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | number-field 的 label 部件 color 覆盖槽。 |
-| `--xh-number-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | number-field 的 label 部件 color 覆盖槽。 |
+| `--xh-number-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | number-field 的 label 部件 color 覆盖槽。 |
 | `--xh-number-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | number-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-number-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | number-field 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-number-field-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | number-field 的 label 部件 margin-block-end 覆盖槽。 |

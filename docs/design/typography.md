@@ -56,7 +56,7 @@
 | 字段标签（单字段与 Slider、Rating、Signature、Color* 等复合单字段） | `--xh-text-label-size` 14 / `--xh-text-label-weight` 400 / `--xh-fg-muted` | 竖排与控件 `--xh-space-2`；Form 横排时标签列占一行的 5 / 24、与控件 `--xh-space-4` |
 | 集合标题（RadioGroup、CheckboxGroup、Listbox、Tree、TagGroup、Descriptions） | 14 / 500 / `--xh-fg-muted` | 与集合 `--xh-space-2` |
 | 整行控件的标签（Checkbox、Switch） | 随档 `--xh-control-font-sm / md / lg` / regular / `--xh-fg-default`，禁用 `--xh-fg-subtle` | 与方框 `--xh-space-2` |
-| 字段说明 / helper（Field、Fieldset） | `--xh-text-caption-size` 12 / `--xh-fg-subtle` / `--xh-leading-normal`；禁用 `--xh-fg-disabled` | 紧贴控件，辅助行最小高 `--xh-space-5` |
+| 字段说明 / helper（Field、Fieldset） | `--xh-text-caption-size` 12 / `--xh-fg-subtle` / `--xh-leading-normal`；禁用不另变色 | 紧贴控件，辅助行最小高 `--xh-space-5` |
 | 其余说明（Card、Alert、Steps、Dialog 等面内的 description） | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal` | — |
 | 错误文案 | 12 / `--xh-fg-danger` | 与说明共用控件下方那一行辅助行 |
 | Surface / Feedback / 浮层内标题 | 14 / `--xh-font-weight-semibold` | — |
@@ -64,7 +64,7 @@
 | 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
 | 代码 | `--xh-font-family-mono` / `--xh-text-code-leading` 1.5rem | — |
 
-必填星号与错误文案是公共层规则：星号 `--xh-glyph-mark-required` 排在标签文字之前，取 `--xh-text-caption-size` + `--xh-fg-danger`、与文字隔 `--xh-space-1`，自带标签的字段不各画一套；字段标签禁用取 `--xh-fg-disabled`，其余标签禁用取 `--xh-fg-subtle`；单行标签 `--xh-leading-none`。
+必填星号与错误文案是公共层规则：星号 `--xh-glyph-mark-required` 排在标签文字之前，取 `--xh-text-caption-size` + `--xh-fg-danger`、与文字隔 `--xh-space-1`，自带标签的字段不各画一套；字段标签与字段说明禁用不另变色，其余标签禁用取 `--xh-fg-subtle`；单行标签 `--xh-leading-none`。
 
 ## 文案
 

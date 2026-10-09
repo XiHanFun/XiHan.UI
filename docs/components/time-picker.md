@@ -561,7 +561,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `--xh-time-picker-item-py` | `item` | `padding-block` | `default` | `--xh-_time-picker-item-py` | time-picker 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-time-picker-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | time-picker 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-time-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | time-picker 的 label 部件 color 覆盖槽。 |
-| `--xh-time-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-disabled` | time-picker 的 label 部件 color 覆盖槽。 |
+| `--xh-time-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | time-picker 的 label 部件 color 覆盖槽。 |
 | `--xh-time-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | time-picker 的 label 部件 font-size 覆盖槽。 |
 | `--xh-time-picker-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | time-picker 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-time-picker-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | time-picker 的 label 部件 margin-block-end 覆盖槽。 |

@@ -86,7 +86,7 @@
   }
 
   [data-scope='tags-input'][data-part='label'][data-disabled] {
-    color: var(--xh-tags-input-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-tags-input-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 标签换行排，输入框跟在最后一个标签后面：描边、底色、圆角、聚焦环、五态与悬停由 Field Chrome

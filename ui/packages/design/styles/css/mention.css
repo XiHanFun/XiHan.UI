@@ -110,7 +110,7 @@
   }
 
   [data-scope='mention'][data-part='label'][data-disabled] {
-    color: var(--xh-mention-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-mention-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* —— 尺寸 —— */
