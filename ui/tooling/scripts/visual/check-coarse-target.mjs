@@ -217,20 +217,20 @@ function calcPx(value, locals) {
     tokens.push(Number(num[1]) * (num[2] === 'rem' ? 16 : 1))
     i += num[0].length
   }
+  // 递归下降：和 → 积 → 因子（带一元负号与括号）；三层互相调用，写成函数声明
   let at = 0
-  const factor = () => {
-    const t = tokens[at++]
-    if (t === '-') {
-      const inner = factor()
-      return inner == null ? null : -inner
+  function sum() {
+    let left = product()
+    while (left != null && (tokens[at] === '+' || tokens[at] === '-')) {
+      const op = tokens[at++]
+      const right = product()
+      if (right == null)
+        return null
+      left = op === '+' ? left + right : left - right
     }
-    if (t === '(') {
-      const inner = sum()
-      return tokens[at++] === ')' ? inner : null
-    }
-    return typeof t === 'number' ? t : null
+    return left
   }
-  const product = () => {
+  function product() {
     let left = factor()
     while (left != null && (tokens[at] === '*' || tokens[at] === '/')) {
       const op = tokens[at++]
@@ -241,16 +241,17 @@ function calcPx(value, locals) {
     }
     return left
   }
-  const sum = () => {
-    let left = product()
-    while (left != null && (tokens[at] === '+' || tokens[at] === '-')) {
-      const op = tokens[at++]
-      const right = product()
-      if (right == null)
-        return null
-      left = op === '+' ? left + right : left - right
+  function factor() {
+    const t = tokens[at++]
+    if (t === '-') {
+      const inner = factor()
+      return inner == null ? null : -inner
     }
-    return left
+    if (t === '(') {
+      const inner = sum()
+      return tokens[at++] === ')' ? inner : null
+    }
+    return typeof t === 'number' ? t : null
   }
   const result = sum()
   return at === tokens.length ? result : null
