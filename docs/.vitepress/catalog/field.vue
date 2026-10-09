@@ -6,7 +6,7 @@
     <path d="M55 44h66" stroke="var(--xh-fg-default)" stroke-width="6" />
     <path d="M42 72h116" stroke="var(--xh-fg-subtle)" stroke-width="4" />
     <path d="M42 92h44" stroke="var(--xh-fg-default)" stroke-width="4" />
-    <rect x="40.5" y="100.5" width="159" height="31" rx="2" fill="var(--xh-bg-field)" stroke="var(--xh-border-invalid)" />
+    <rect x="40.5" y="100.5" width="159" height="31" rx="2" fill="var(--xh-bg-field-invalid)" stroke="var(--xh-border-invalid)" />
     <path d="M55 116h50" stroke="var(--xh-fg-default)" stroke-width="6" />
     <path d="M182 110l6.5 11.5h-13zm0 4.5v3m0 2.5h0" stroke="var(--xh-fg-danger)" stroke-width="2" />
     <path d="M42 144h92" stroke="var(--xh-fg-danger)" stroke-width="4" />
