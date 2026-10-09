@@ -468,8 +468,17 @@
 --xh-text-label-weight: 400  ← var(--xh-font-weight-regular)
 --xh-text-prose-leading: 1.625  ← var(--xh-leading-relaxed)
 --xh-text-secondary-size: 0.8125rem  ← var(--xh-font-size-sm)
+--xh-track-band-thickness-lg: 16px  ← var(--xh-space-4)
+--xh-track-band-thickness-md: 12px  ← var(--xh-space-3)
+--xh-track-band-thickness-sm: 8px  ← var(--xh-space-2)
 --xh-track-thickness: 6px
+--xh-track-thickness-lg: 8px  ← var(--xh-space-2)
+--xh-track-thickness-md: 4px  ← var(--xh-space-1)
+--xh-track-thickness-sm: 3px  ← var(--xh-stroke-strong)
 --xh-track-thumb-size: 18px
+--xh-track-thumb-size-lg: 16px  ← var(--xh-space-4)
+--xh-track-thumb-size-md: 12px  ← var(--xh-space-3)
+--xh-track-thumb-size-sm: 10px  ← var(--xh-space-2_5)
 --xh-viewport-h-lg: 24rem
 --xh-viewport-h-md: 16rem
 --xh-viewport-h-sm: 12rem

@@ -4,6 +4,7 @@ import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import { XhProgress } from '../../src'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -49,6 +50,17 @@ describe('线形轨道', () => {
     const track = one('track') as HTMLElement
     expect(track.getBoundingClientRect().height).toBe(px)
     expect(getComputedStyle(track).borderTopLeftRadius).toBe('9999px')
+  })
+
+  it.each(['sm', 'md', 'lg'] as const)('%s 档厚度取轨道厚度的同档令牌，子弹图取加厚一档的色带轨道令牌', async (tier) => {
+    // md 是缺省档：不写 size
+    const size = tier === 'md' ? undefined : tier
+    await mount({ size })
+    expect((one('track') as HTMLElement).getBoundingClientRect().height).toBe(tokenLength(`--xh-track-thickness-${tier}`))
+    app!.unmount()
+    host!.remove()
+    await mount({ size, semantics: 'meter', thresholds: [{ value: 60, tone: 'success' }, { value: 100, tone: 'danger' }] })
+    expect((one('track') as HTMLElement).getBoundingClientRect().height).toBe(tokenLength(`--xh-track-band-thickness-${tier}`))
   })
 
   it('轨道取 fill-3 级中性填充，已完成的那段取品牌色', async () => {

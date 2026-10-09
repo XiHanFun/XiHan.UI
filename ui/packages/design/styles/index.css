@@ -37585,9 +37585,9 @@
   }
 
   /* 私有槽位：组件令牌 → 中档两级回退。厚度写在 root 上而不是 track 上，
-     尺寸档才改得动一处就够，track 靠继承拿到值。线形是一条细轨：sm / md / lg = 3 / 4 / 8px */
+     尺寸档才改得动一处就够，track 靠继承拿到值。线形是一条细轨，按轨道厚度三档取 sm / md / lg = 3 / 4 / 8px */
   .xh-scope-progress[data-part='root'] {
-    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-space-1));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-track-thickness-md));
 
     /* 目标刻度与环形的刻度值按根落位 */
     position: relative;
@@ -37683,11 +37683,11 @@
   /* —— 尺寸 —— */
   /* 线形只有厚度分档；中间档不写规则，缺省即中档 */
   .xh-scope-progress[data-part='root'][data-size='sm'] {
-    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-stroke-strong));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-track-thickness-sm));
   }
 
   .xh-scope-progress[data-part='root'][data-size='lg'] {
-    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-space-2));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-track-thickness-lg));
   }
 
   /* —— 环形 —— */
@@ -37751,16 +37751,16 @@
   /* 子弹图：有分段时轨道加厚一档，填充收窄成中间一条压在色带上，色带在填充两侧照样读得出。
      三档厚度各比普通线形高一档，阶梯次序不变 */
   .xh-scope-progress[data-part='root'][data-variant='line'][data-banded] {
-    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-space-3));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-track-band-thickness-md));
     --xh-_progress-range-size: 50%;
   }
 
   .xh-scope-progress[data-part='root'][data-variant='line'][data-banded][data-size='sm'] {
-    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-space-2));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-track-band-thickness-sm));
   }
 
   .xh-scope-progress[data-part='root'][data-variant='line'][data-banded][data-size='lg'] {
-    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-space-4));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-track-band-thickness-lg));
   }
 
   /* 色带取本段语气的淡色：同一族颜色里填充是实色、色带浅一档，读得出填充落在哪一段 */
@@ -41604,9 +41604,9 @@
 
   /* 私有槽位：组件令牌 → 中档两级回退。轨道厚度与拇指直径同时被 control / track / thumb
      三个角色节点用到，收成两个槽位挂在 root 上，尺寸档只改这两处，靠继承发到子部件。
-     中档是一条 2px 的细轨（描边粗档）配 12px 的拇指 */
+     中档是一条 2px 的细轨（描边粗档）配 12px 的拇指（轨道拇指的 md 档） */
   .xh-scope-slider[data-part='root'] {
-    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-3));
+    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-track-thumb-size-md));
     --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-stroke-thick));
 
     display: flex;
@@ -41883,13 +41883,13 @@
 
   /* —— 尺寸 —— */
   /* 尺寸只改 root 上那两个槽位，control / track / thumb 跟着一起走；中间档不写规则，缺省即中档。
-     拇指 10 / 12 / 16px；轨道小档沿用中档的 2px（再细就读不出是条轨道），大档加到 3px */
+     拇指按轨道拇指的三档取 10 / 12 / 16px；轨道小档沿用中档的 2px（再细就读不出是条轨道），大档加到 3px */
   .xh-scope-slider[data-part='root'][data-size='sm'] {
-    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-2_5));
+    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-track-thumb-size-sm));
   }
 
   .xh-scope-slider[data-part='root'][data-size='lg'] {
-    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-4));
+    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-track-thumb-size-lg));
     --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-stroke-strong));
   }
 

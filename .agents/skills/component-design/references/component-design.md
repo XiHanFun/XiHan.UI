@@ -435,7 +435,10 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | `--xh-glyph-size-sm` … `4xl` | 16 / 20 / 24 / 32 / 40 / 56 / 72px | | 图标与插图，见 §6.5 |
 | `--xh-glyph-size-xs` | 12px | | 面板角上关闭钮的叉，比控件内图标低一档 |
 | `--xh-switch-track-h-sm` / `md` / `lg` | 16 / 24 / 28px | 14 / 20 / 24px | Switch 轨道高 |
-| `--xh-track-thickness`、`--xh-track-thumb-size` | 6px、18px | | 轨道与滑块 |
+| `--xh-track-thumb-size-sm` / `md` / `lg` | 10 / 12 / 16px | | Slider 拇指直径 |
+| `--xh-track-thickness-sm` / `md` / `lg` | 3 / 4 / 8px | | Progress 线形轨道厚度 |
+| `--xh-track-band-thickness-sm` / `md` / `lg` | 8 / 12 / 16px | | Progress 带分段色带（子弹图）的轨道厚度，各比同档线形厚一档 |
+| `--xh-track-thickness`、`--xh-track-thumb-size` | 6px、18px | | 不分档的两支：PasswordInput 强度条厚度、ColorSlider 拇指直径 |
 | `--xh-control-w`、`--xh-control-min-w`、`--xh-control-input-min-w` | 16rem、12rem、4rem | | 字段缺省宽、压缩底线、标签旁输入框的最小宽 |
 | `--xh-viewport-h-sm` / `md` / `lg` | 12 / 16 / 24rem | 10 / 14 / 20rem | 页内与面板内滚动面的定高与限高 |
 | `--xh-viewport-max-h` | 24rem | 20rem | 长文本视口限高 |
@@ -493,8 +496,8 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | RadioGroup segmented | 轨道外盒高 `control-h`（段高 = control-h − 2 × 2px 内衬 − 2 × 1px 描边），内衬 `--xh-space-0_5`；段横向内距 `control-px`（md 12px）；段间分隔线长 control-h / 2 − 2px（md 14px） |
 | ColorSwatchPicker 色块 | `control-h` 随 size |
 | Switch | 轨道高 `switch-track-h` 随 size；宽 = 2 × 高 − 2 × 内距；滑块 = 高 − 2 × 内距 |
-| Slider | 轨道 2px（`--xh-stroke-thick`，lg 3px）、拇指 12px（sm 10 / lg 16px；悬停与拖动放大 `--xh-motion-scale-drag`）、刻度点 8px；竖向长度 10rem。拇指是白底 + 2px 品牌描边的平面圆，静止不投影、拖动中 lifted，不走 raised |
-| ColorSlider | 轨道 12px、滑块 18px；竖向长度 10rem |
+| Slider | 轨道 2px（`--xh-stroke-thick`，lg 3px）、拇指 `--xh-track-thumb-size-*` 12px（sm 10 / lg 16px；悬停与拖动放大 `--xh-motion-scale-drag`）、刻度点 8px；竖向长度 10rem。拇指是白底 + 2px 品牌描边的平面圆，静止不投影、拖动中 lifted，不走 raised |
+| ColorSlider | 轨道 12px、滑块 `--xh-track-thumb-size` 18px；竖向长度 10rem |
 | Rating | 星 sm / md / lg 取 `glyph-size-md / lg / xl`（20 / 24 / 32px，星是主体，比控件内图标大一档），盒比星大 4px；悬停与键盘聚焦放大到 `--xh-motion-scale-emphasis`（1.2，减弱动效 1），按下保持放大并换 200 档面 |
 
 #### 浮层
@@ -554,7 +557,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | EmptyState 图标 | 40px；媒体区高为图标 2 倍 | 32 / 56px |
 | Kbd | 高 24px，最小宽 24px | |
 | Skeleton | 圆与矩形 `control-h-lg`；文本条高一行正文行框 `--xh-text-body-line-h`（14 × 1.5 = 21px）、条间距 16px；扫光取 `--xh-bg-subtle` 叠在条底上（浅色暗带、深色亮带） | |
-| Progress | 线形厚 4px，底槽 `--xh-bg-subtle-hover`；环形直径 7.5rem；环心文字 12px `--xh-fg-muted` | 线形厚 3 / 8px |
+| Progress | 线形厚 `--xh-track-thickness-md` 4px，带分段色带时 `--xh-track-band-thickness-md` 12px；底槽 `--xh-bg-subtle-hover`；环形直径 7.5rem；环心文字 12px `--xh-fg-muted` | 线形厚 3 / 8px，带色带 8 / 16px |
 | LoadingBar | 厚 `--xh-stroke-strong`（3px），缺省值由 Headless 写进内联样式 | |
 | Carousel、Tour 位置点 | 6px、点距 8px；当前项 20px；Carousel 点细指针命中区两向不低于 24px，粗指针 44px | |
 | Sparkline | 6rem × 一行正文高 | |
