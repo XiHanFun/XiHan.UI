@@ -77643,9 +77643,11 @@
       "component": "time-range-picker",
       "part": [
         "column",
+        "column-group",
         "preset-group"
       ],
       "property": [
+        "border-block-start",
         "border-inline-end",
         "border-inline-start"
       ],
@@ -77653,10 +77655,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-solid-separator"
+        "--xh-material-solid-border"
       ],
       "visibility": "public",
-      "description": "time-range-picker 的 column、preset-group 部件 border-inline-end、border-inline-start 覆盖槽。"
+      "description": "time-range-picker 的 column、column-group、preset-group 部件 border-block-start、border-inline-end、border-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-column-gap",
@@ -77671,7 +77673,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 column 部件 gap 覆盖槽。"
@@ -77689,7 +77691,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-solid-separator"
+        "--xh-material-solid-border"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 column-group 部件 border-inline-start 覆盖槽。"
@@ -77708,7 +77710,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 column-group 部件 margin-inline-start、padding-inline-start 覆盖槽。"
@@ -77797,16 +77799,17 @@
         "column"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "padding-block"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-viewport-h-sm"
+        "--xh-overlay-time-column-h"
       ],
       "visibility": "public",
-      "description": "time-range-picker 的 column 部件 block-size 覆盖槽。"
+      "description": "time-range-picker 的 column 部件 block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-column-min-w",
@@ -77821,7 +77824,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-column-min-w"
+        "--xh-overlay-time-column-w"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 column 部件 min-inline-size 覆盖槽。"
@@ -77843,6 +77846,24 @@
       ],
       "visibility": "public",
       "description": "time-range-picker 的 column 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-range-picker-column-py",
+      "component": "time-range-picker",
+      "part": [
+        "column"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "time-range-picker 的 column 部件 padding-block 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-content-bg",
@@ -77929,7 +77950,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 content 部件 padding-inline 覆盖槽。"
@@ -77947,7 +77968,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 content 部件 padding-block 覆盖槽。"
@@ -78573,19 +78594,21 @@
       "name": "--xh-time-range-picker-item-h",
       "component": "time-range-picker",
       "part": [
+        "column",
         "item"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "padding-block"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "auto"
+        "--xh-control-action-size"
       ],
       "visibility": "public",
-      "description": "time-range-picker 的 item 部件 block-size 覆盖槽。"
+      "description": "time-range-picker 的 column、item 部件 block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-item-px",
@@ -78606,24 +78629,6 @@
       "description": "time-range-picker 的 item 部件 padding-inline 覆盖槽。"
     },
     {
-      "name": "--xh-time-range-picker-item-py",
-      "component": "time-range-picker",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "padding-block"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_time-range-picker-item-py"
-      ],
-      "visibility": "public",
-      "description": "time-range-picker 的 item 部件 padding-block 覆盖槽。"
-    },
-    {
       "name": "--xh-time-range-picker-item-radius",
       "component": "time-range-picker",
       "part": [
@@ -78636,7 +78641,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "0"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 item 部件 border-radius 覆盖槽。"
@@ -78768,6 +78773,30 @@
       "description": "time-range-picker 的 segment 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-time-range-picker-preset-bg",
+      "component": "time-range-picker",
+      "part": [
+        "preset"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "default",
+        "disabled",
+        "error",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
+        "xh-collection-context=overlay"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "time-range-picker 的 preset 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-time-range-picker-preset-bg-hover",
       "component": "time-range-picker",
       "part": [
@@ -78788,7 +78817,7 @@
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 preset 部件 background-color 覆盖槽。"
@@ -78813,7 +78842,7 @@
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-bg-subtle-active"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 preset 部件 background-color 覆盖槽。"
@@ -78851,7 +78880,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-indicator-size"
+        "--xh-control-indicator-sm"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 preset 部件 block-size、inline-size、padding-inline-end 覆盖槽。"
@@ -78880,35 +78909,7 @@
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-fg-default"
-      ],
-      "visibility": "public",
-      "description": "time-range-picker 的 preset 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-time-range-picker-preset-fg-checked",
-      "component": "time-range-picker",
-      "part": [
-        "preset"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "disabled",
-        "error",
-        "highlighted",
-        "hover",
-        "is(:active, [data-pressed])",
-        "is(:focus-visible, [data-highlighted])",
-        "is([aria-selected='true'], [data-selected])",
-        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed",
-        "selected",
-        "xh-collection-context=overlay"
-      ],
-      "defaultToken": [
-        "--xh-time-range-picker-preset-fg"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 preset 部件 color 覆盖槽。"
@@ -78934,6 +78935,24 @@
       "description": "time-range-picker 的 preset 部件 background-color、color 覆盖槽。"
     },
     {
+      "name": "--xh-time-range-picker-preset-font-size",
+      "component": "time-range-picker",
+      "part": [
+        "preset"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-caption-size"
+      ],
+      "visibility": "public",
+      "description": "time-range-picker 的 preset 部件 font-size 覆盖槽。"
+    },
+    {
       "name": "--xh-time-range-picker-preset-group-gap",
       "component": "time-range-picker",
       "part": [
@@ -78946,7 +78965,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-list-option-gap"
+        "--xh-space-2_5"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 preset-group 部件 gap 覆盖槽。"
@@ -78964,7 +78983,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-viewport-h-sm"
+        "--xh-overlay-time-column-h"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 preset-group 部件 max-block-size 覆盖槽。"
@@ -78982,10 +79001,47 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 preset-group 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-range-picker-preset-group-py",
+      "component": "time-range-picker",
+      "part": [
+        "preset-group"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2_5"
+      ],
+      "visibility": "public",
+      "description": "time-range-picker 的 preset-group 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-range-picker-preset-h",
+      "component": "time-range-picker",
+      "part": [
+        "preset"
+      ],
+      "property": [
+        "block-size",
+        "line-height"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-action-size"
+      ],
+      "visibility": "public",
+      "description": "time-range-picker 的 preset 部件 block-size、line-height 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-preset-px",
@@ -79002,28 +79058,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-3"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 preset 部件 inset-inline-end、padding-inline、padding-inline-end 覆盖槽。"
-    },
-    {
-      "name": "--xh-time-range-picker-preset-py",
-      "component": "time-range-picker",
-      "part": [
-        "preset"
-      ],
-      "property": [
-        "padding-block"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-space-1"
-      ],
-      "visibility": "public",
-      "description": "time-range-picker 的 preset 部件 padding-block 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-preset-radius",
@@ -79038,7 +79076,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 preset 部件 border-radius 覆盖槽。"

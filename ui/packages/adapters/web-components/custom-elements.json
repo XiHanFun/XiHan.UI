@@ -69033,6 +69033,9 @@
               "name": "--xh-time-range-picker-column-px"
             },
             {
+              "name": "--xh-time-range-picker-column-py"
+            },
+            {
               "name": "--xh-time-range-picker-content-bg"
             },
             {
@@ -69144,9 +69147,6 @@
               "name": "--xh-time-range-picker-item-px"
             },
             {
-              "name": "--xh-time-range-picker-item-py"
-            },
-            {
               "name": "--xh-time-range-picker-item-radius"
             },
             {
@@ -69171,6 +69171,9 @@
               "name": "--xh-time-range-picker-placeholder-fg"
             },
             {
+              "name": "--xh-time-range-picker-preset-bg"
+            },
+            {
               "name": "--xh-time-range-picker-preset-bg-hover"
             },
             {
@@ -69186,10 +69189,10 @@
               "name": "--xh-time-range-picker-preset-fg"
             },
             {
-              "name": "--xh-time-range-picker-preset-fg-checked"
+              "name": "--xh-time-range-picker-preset-fg-disabled"
             },
             {
-              "name": "--xh-time-range-picker-preset-fg-disabled"
+              "name": "--xh-time-range-picker-preset-font-size"
             },
             {
               "name": "--xh-time-range-picker-preset-group-gap"
@@ -69201,10 +69204,13 @@
               "name": "--xh-time-range-picker-preset-group-px"
             },
             {
-              "name": "--xh-time-range-picker-preset-px"
+              "name": "--xh-time-range-picker-preset-group-py"
             },
             {
-              "name": "--xh-time-range-picker-preset-py"
+              "name": "--xh-time-range-picker-preset-h"
+            },
+            {
+              "name": "--xh-time-range-picker-preset-px"
             },
             {
               "name": "--xh-time-range-picker-preset-radius"
