@@ -7,6 +7,7 @@
 @layer xihan.components {
   [data-xh-collection-item] {
     --xh-_collection-block-padding: var(--xh-list-option-py-md);
+    --xh-_collection-overlay-row-h: var(--xh-list-option-h-md);
     --xh-_collection-inline-padding: var(--xh-control-px-md);
     --xh-_collection-gap: var(--xh-control-gap-md);
     --xh-_collection-font-size: var(--xh-control-font-md);
@@ -63,6 +64,7 @@
 
   [data-xh-collection-item][data-xh-collection-size='sm'] {
     --xh-_collection-block-padding: var(--xh-list-option-py-sm);
+    --xh-_collection-overlay-row-h: var(--xh-list-option-h-sm);
     --xh-_collection-inline-padding: var(--xh-control-px-sm);
     --xh-_collection-gap: var(--xh-control-gap-sm);
     --xh-_collection-font-size: var(--xh-control-font-sm);
@@ -71,6 +73,7 @@
 
   [data-xh-collection-item][data-xh-collection-size='md'] {
     --xh-_collection-block-padding: var(--xh-list-option-py-md);
+    --xh-_collection-overlay-row-h: var(--xh-list-option-h-md);
     --xh-_collection-inline-padding: var(--xh-control-px-md);
     --xh-_collection-gap: var(--xh-control-gap-md);
     --xh-_collection-font-size: var(--xh-control-font-md);
@@ -79,10 +82,20 @@
 
   [data-xh-collection-item][data-xh-collection-size='lg'] {
     --xh-_collection-block-padding: var(--xh-list-option-py-lg);
+    --xh-_collection-overlay-row-h: var(--xh-list-option-h-lg);
     --xh-_collection-inline-padding: var(--xh-control-px-lg);
     --xh-_collection-gap: var(--xh-control-gap-lg);
     --xh-_collection-font-size: var(--xh-control-font-lg);
     --xh-_collection-glyph-size: var(--xh-glyph-size-lg);
+  }
+
+  /* 浮层集合的行有定高：一行文字的行比同档字段高一级，带说明的行照常撑高。条目是内容盒，
+     最小块尺寸扣掉上下内距，内距被皮肤或使用者改了也照样落在同一行高上 */
+  [data-xh-collection-item][data-xh-collection-context='overlay'] {
+    min-block-size: calc(
+      var(--xh-collection-row-h, var(--xh-_collection-overlay-row-h)) -
+      2 * var(--xh-collection-block-padding, var(--xh-_collection-block-padding))
+    );
   }
 
   [data-xh-collection-slot='prefix'] {

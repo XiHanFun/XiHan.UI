@@ -424,6 +424,19 @@
       "$type": "dimension",
       "$value": "{space.2}"
     },
+    "option-h-sm": {
+      "$description": "浮层集合（下拉、菜单、级联、命令面板）里一行文字的行高：比同档字段高一级，sm / md / lg 为 32 / 36 / 40（紧凑 28 / 32 / 36）；带说明的行照常撑高。页内列表与树不取这一档，仍由内距加一行文字撑开。",
+      "$type": "dimension",
+      "$value": "{control.h-md}"
+    },
+    "option-h-md": {
+      "$type": "dimension",
+      "$value": "{control.h-lg}"
+    },
+    "option-h-lg": {
+      "$type": "dimension",
+      "$value": "calc({control.h-lg} + {space.1})"
+    },
     "option-gap": {
       "$description": "列表行与行之间的缝：缺省不留，行面挨着行面，悬停与选中靠面本身区分。",
       "$type": "dimension",

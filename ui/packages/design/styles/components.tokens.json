@@ -10781,16 +10781,18 @@
         "search-item"
       ],
       "property": [
+        "min-block-size",
         "padding-block"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-_cascader-row-py"
       ],
       "visibility": "public",
-      "description": "cascader 的 item、search-item 部件 padding-block 覆盖槽。"
+      "description": "cascader 的 item、search-item 部件 min-block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-cascader-item-radius",
@@ -20425,16 +20427,18 @@
         "item"
       ],
       "property": [
+        "min-block-size",
         "padding-block"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-_combobox-item-py"
       ],
       "visibility": "public",
-      "description": "combobox 的 item 部件 padding-block 覆盖槽。"
+      "description": "combobox 的 item 部件 min-block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-combobox-item-radius",
@@ -21413,16 +21417,18 @@
         "item"
       ],
       "property": [
+        "min-block-size",
         "padding-block"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-_command-item-py"
       ],
       "visibility": "public",
-      "description": "command 的 item 部件 padding-block 覆盖槽。"
+      "description": "command 的 item 部件 min-block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-command-item-radius",
@@ -22333,16 +22339,18 @@
         "item"
       ],
       "property": [
+        "min-block-size",
         "padding-block"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-_context-menu-item-py"
       ],
       "visibility": "public",
-      "description": "context-menu 的 item 部件 padding-block 覆盖槽。"
+      "description": "context-menu 的 item 部件 min-block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-context-menu-item-radius",
@@ -45420,16 +45428,18 @@
         "item"
       ],
       "property": [
+        "min-block-size",
         "padding-block"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-_listbox-item-py"
       ],
       "visibility": "public",
-      "description": "listbox 的 item 部件 padding-block 覆盖槽。"
+      "description": "listbox 的 item 部件 min-block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-listbox-item-radius",
@@ -47985,16 +47995,18 @@
         "item"
       ],
       "property": [
+        "min-block-size",
         "padding-block"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-_mention-item-py"
       ],
       "visibility": "public",
-      "description": "mention 的 item 部件 padding-block 覆盖槽。"
+      "description": "mention 的 item 部件 min-block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-mention-item-radius",
@@ -48831,16 +48843,18 @@
         "item"
       ],
       "property": [
+        "min-block-size",
         "padding-block"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-_menu-item-py"
       ],
       "visibility": "public",
-      "description": "menu 的 item 部件 padding-block 覆盖槽。"
+      "description": "menu 的 item 部件 min-block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-menu-item-radius",
@@ -49721,16 +49735,18 @@
         "item"
       ],
       "property": [
+        "min-block-size",
         "padding-block"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-_menubar-item-py"
       ],
       "visibility": "public",
-      "description": "menubar 的 item 部件 padding-block 覆盖槽。"
+      "description": "menubar 的 item 部件 min-block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-menubar-item-radius",
@@ -50129,16 +50145,18 @@
         "trigger"
       ],
       "property": [
+        "min-block-size",
         "padding-block"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-_menubar-trigger-py"
       ],
       "visibility": "public",
-      "description": "menubar 的 trigger 部件 padding-block 覆盖槽。"
+      "description": "menubar 的 trigger 部件 min-block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-menubar-trigger-radius",
@@ -64980,16 +64998,18 @@
         "item"
       ],
       "property": [
+        "min-block-size",
         "padding-block"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-_select-item-py"
       ],
       "visibility": "public",
-      "description": "select 的 item 部件 padding-block 覆盖槽。"
+      "description": "select 的 item 部件 min-block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-select-item-radius",
@@ -88997,16 +89017,18 @@
         "item"
       ],
       "property": [
+        "min-block-size",
         "padding-block"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-_tree-row-py"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、item 部件 padding-block 覆盖槽。"
+      "description": "tree 的 branch-control、item 部件 min-block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-tree-row-radius",
@@ -90657,16 +90679,18 @@
         "item"
       ],
       "property": [
+        "min-block-size",
         "padding-block"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-_tree-select-row-py"
       ],
       "visibility": "public",
-      "description": "tree-select 的 branch-control、item 部件 padding-block 覆盖槽。"
+      "description": "tree-select 的 branch-control、item 部件 min-block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-item-radius",

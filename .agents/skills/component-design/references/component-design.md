@@ -673,12 +673,13 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 | 语境 | 组件 | 行高来源 |
 | --- | --- | --- |
-| 候选与菜单 | Menu 族、Listbox、Select / Combobox / Cascader 选项、Tree、Command | `--xh-list-option-py-*` 内距加一行文字撑开，说明行再撑高一行 |
+| 浮层集合 | 锚定浮层里的 Menu 族、Select / Combobox / Cascader / Mention 选项、Command | 一行文字的行定高 `--xh-list-option-h-*`（32 / 36 / 40，紧凑 28 / 32 / 36），比同档字段高一级；内距仍取 `--xh-list-option-py-*`，说明行再撑高一行 |
+| 页内候选 | Listbox、Tree | `--xh-list-option-py-*` 内距加一行文字撑开，说明行再撑高一行 |
 | 时间列 | TimePicker、TimeRangePicker 与 DatePicker / DateRangePicker 的时间格 | 24 高的通栏条（`--xh-control-action-size`），列内间距 `--xh-space-2` 撑出 32 的行距，不随尺寸档变高；列底留白让末尾几格也能滚到列顶 |
 | 页面级导航 | SideNav | 最小行高取 `--xh-control-h-*`，与折叠窄栏的方形图标位、同档控件等高 |
 | 随文目录 | Anchor | 块向内距 `--xh-space-1`，贴近正文阅读节奏，不按控件高 |
 
-- 新增集合组件从这三种语境里取一种，不另立行高；同一语境内 sm / md / lg 只随控件档变。
+- 新增集合组件从上表的语境里取一种，不另立行高；同一语境内 sm / md / lg 只随控件档变。
 - 行高不随选中、当前或语气改变：这些状态只换面与字色。
 
 ### 7.6 数据色

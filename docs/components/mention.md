@@ -411,7 +411,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `--xh-mention-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_mention-gap` | mention 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-mention-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | mention 的 item 部件 line-height 覆盖槽。 |
 | `--xh-mention-item-px` | `item` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-mention-item-py` | `item` | `padding-block` | `default` | `--xh-_mention-item-py` | mention 的 item 部件 padding-block 覆盖槽。 |
+| `--xh-mention-item-py` | `item` | `min-block-size`<br>`padding-block` | `default`<br>`xh-collection-context=overlay` | `--xh-_mention-item-py` | mention 的 item 部件 min-block-size、padding-block 覆盖槽。 |
 | `--xh-mention-item-radius` | `item` | `border-radius` | `default` | `0` | mention 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-mention-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | mention 的 label 部件 color 覆盖槽。 |
 | `--xh-mention-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | mention 的 label 部件 color 覆盖槽。 |

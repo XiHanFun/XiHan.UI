@@ -25,6 +25,7 @@
   "sizeValues": {
     "sm": {
       "blockPadding": "var(--xh-list-option-py-sm)",
+      "overlayRowHeight": "var(--xh-list-option-h-sm)",
       "inlinePadding": "var(--xh-control-px-sm)",
       "gap": "var(--xh-control-gap-sm)",
       "fontSize": "var(--xh-control-font-sm)",
@@ -32,6 +33,7 @@
     },
     "md": {
       "blockPadding": "var(--xh-list-option-py-md)",
+      "overlayRowHeight": "var(--xh-list-option-h-md)",
       "inlinePadding": "var(--xh-control-px-md)",
       "gap": "var(--xh-control-gap-md)",
       "fontSize": "var(--xh-control-font-md)",
@@ -39,6 +41,7 @@
     },
     "lg": {
       "blockPadding": "var(--xh-list-option-py-lg)",
+      "overlayRowHeight": "var(--xh-list-option-h-lg)",
       "inlinePadding": "var(--xh-control-px-lg)",
       "gap": "var(--xh-control-gap-lg)",
       "fontSize": "var(--xh-control-font-lg)",
