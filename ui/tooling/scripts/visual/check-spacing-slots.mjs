@@ -101,6 +101,9 @@ const CROSS_PART = {
   'pagination.item': ['summary', 'jumper'],
   // 星星之间的间距由装它们的那一行排
   'rating.item': ['control'],
+  // 粗指针下控件的命中区朝标签那一侧最多扩到标签与控件之间的间距：上限读标签间距槽，
+  // 作者改了标签间距，命中区的上限一起跟，点在标签上才始终归标签
+  'slider.label': ['control'],
   // 叠成一摞时各条在定位面里绝对定位、铺满它的宽：定位面的宽就是每条的宽，读同一个按条目取名的宽度槽
   'notification.item': ['group'],
   // 文件条目之间的间距由装它们的那一列排

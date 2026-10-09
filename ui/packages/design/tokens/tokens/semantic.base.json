@@ -24,6 +24,11 @@
       "$type": "dimension",
       "$value": "44px"
     },
+    "hit-coarse": {
+      "$description": "粗指针下命中区的最小边长（WCAG 2.5.5 的 44px）：视觉盒不够时由伪元素外扩补足到它，不改布局盒，不随密度换档。",
+      "$type": "dimension",
+      "$value": "44px"
+    },
     "float-md": {
       "$description": "独立浮在页面一角的圆钮（回到顶部、悬浮按钮）md 档的直径：比方格 md 大一档，在角落里一眼找得到，又比 lg 小、不挡内容。",
       "$type": "dimension",

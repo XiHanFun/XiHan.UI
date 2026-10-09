@@ -182,6 +182,7 @@
 --xh-control-h-lg: 32px
 --xh-control-h-md: 28px
 --xh-control-h-sm: 24px
+--xh-control-hit-coarse: 44px
 --xh-control-indicator-lg: 18px
 --xh-control-indicator-md: 14px
 --xh-control-indicator-size: 14px  ← var(--xh-control-indicator-md)
