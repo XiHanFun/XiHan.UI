@@ -417,7 +417,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 令牌 | comfortable | compact | 用途 |
 | --- | --- | --- | --- |
 | `--xh-control-h-sm` / `md` / `lg` | 28 / 32 / 36px | 24 / 28 / 32px | 单行控件、按钮、集合行、标签页与导航 trigger 的高；盛内容的圆的直径 |
-| `--xh-control-box-sm` / `md` / `lg` | 28 / 36 / 44px | 24 / 32 / 40px | 方格：PinInput 格、floating 动作钮 |
+| `--xh-control-box-sm` / `md` / `lg` | 28 / 36 / 44px | 24 / 32 / 40px | 方格：floating 动作钮 |
 | `--xh-control-action-size` | 24px | 20px | xs 动作钮、sm 字段里的 field-inset 钮 |
 | `--xh-chip-h-sm` / `md` / `lg` | 20 / 24 / 28px | 18 / 20 / 24px | 状态 chip（Tag）的块尺寸：比同档控件矮一截 |
 | `--xh-nav-row-h-sm` / `md` / `lg` | 32 / 40 / 44px | 28 / 36 / 40px | 导航行（SideNav 分支与链接）：比同档控件高一截，整列扫读更松 |
@@ -467,7 +467,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 多选 Combobox | 标签与输入框同行 | 输入框 4rem | 标签先截断、再折进 +N |
 | PromptInput | 铺满宿主 | 一行 | 8 行，超出内滚 |
 | NumberField 输入框 | 5em | | |
-| PinInput | 格 `control-box` 随 size；根宽 = 格数 × 格宽 + 间距 | | |
+| PinInput | 格边长取 `control-h` 随 size，格间距 `--xh-space-1`，字号取 `--xh-control-font-*`；根宽 = 格数 × 格宽 + 间距；当前格换承载面 + 聚焦描边，不另画环 | | |
 | DateRangePicker | `max-content` | 16rem | 100% |
 | Pagination 每页条数、跳页框 | `max-content`、64px | 放开 | |
 

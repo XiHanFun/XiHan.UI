@@ -54,7 +54,7 @@ describe('pin-input：一行格子放不下时逐格收窄', () => {
   // 每格 input 自身即 Field Chrome 的 chrome 节点：Headless 在格子上投影 chrome / 尺寸档 / variant，静态标记照抄
   const markup = `<div data-scope="pin-input" class="xh-scope-pin-input" data-part="root" data-size="lg">
     <label data-scope="pin-input" class="xh-scope-pin-input" data-part="label">验证码</label>
-    <div style="display:flex">${'<input data-scope="pin-input" class="xh-scope-pin-input" data-part="input" data-xh-field-chrome data-xh-field-size="lg" data-variant="outline">'.repeat(8)}</div>
+    <div style="display:flex">${'<input data-scope="pin-input" class="xh-scope-pin-input" data-part="input" data-xh-field-chrome data-xh-field-size="lg" data-variant="outline">'.repeat(12)}</div>
   </div>`
 
   it.each(TIERS)('%ipx 下不顶出页面', (width) => {
@@ -64,16 +64,16 @@ describe('pin-input：一行格子放不下时逐格收窄', () => {
   it('375 下格子收窄而不是溢出，高度不跟着收', () => {
     const doc = mount(375, markup)
     const box = doc.querySelector('[data-part="input"]')!.getBoundingClientRect()
-    // 八格定宽 48 加七道 12 的间距合计 468，比视口宽 93
-    expect(box.width).toBeLessThan(48)
-    expect(Math.round(box.height)).toBe(48)
+    // 十二格定宽 36（lg 档取控件高）加十一道 4 的间距合计 476，比视口宽 101
+    expect(box.width).toBeLessThan(36)
+    expect(Math.round(box.height)).toBe(36)
   })
 
   it('放得下就一格不收：1280 下仍是尺寸档给的边长', () => {
     const doc = mount(1280, markup)
     const box = doc.querySelector('[data-part="input"]')!.getBoundingClientRect()
-    expect(Math.round(box.width)).toBe(48)
-    expect(Math.round(box.height)).toBe(48)
+    expect(Math.round(box.width)).toBe(36)
+    expect(Math.round(box.height)).toBe(36)
   })
 })
 
