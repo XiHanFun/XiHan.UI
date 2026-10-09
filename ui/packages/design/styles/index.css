@@ -12057,9 +12057,10 @@
     display: grid;
     grid-template-columns: 1fr auto auto;
     align-items: center;
-    /* 行距与气泡族同一档：标题与说明之间只留 4px；两颗钮之间的列距另由 column-gap 放宽 */
+    /* 行距与气泡族同一档：标题与说明之间只留 4px；两颗钮之间的列距另由 column-gap 放宽。
+       column-gap 写在 gap 之后，先回落到 gap 槽再取缺省：作者只写 --xh-popconfirm-gap 时行列一起跟着它走 */
     gap: var(--xh-popconfirm-gap, var(--xh-space-1));
-    column-gap: var(--xh-popconfirm-column-gap, var(--xh-space-2));
+    column-gap: var(--xh-popconfirm-column-gap, var(--xh-popconfirm-gap, var(--xh-space-2)));
     inline-size: max-content;
     /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的两颗钮就点不到了 */
     max-inline-size: min(var(--xh-popconfirm-max-w, var(--xh-_popconfirm-max-w)), var(--xh-_popconfirm-available-w));
@@ -16178,17 +16179,22 @@
   /*
    * 高对比档：这一档把整层背景图丢掉，而渐隐弧与三点都画在背景上——屏幕上会一片空白。
    * 三档一并退回环档的画法：高亮色的弧加一段画布色的缺口，转的还是同一条动画。
-   * 伪元素退出强制换色、直接写系统色，缺口不被换成别的颜色
+   * 伪元素退出强制换色、直接写系统色，缺口不被换成别的颜色。
+   * 带语气的那几条（[data-tone]、[data-variant][data-tone]）特指度更高，这里逐条写上同样的限定：
+   * 退出了强制换色的伪元素不会再被系统改色，少一条语气色的弧或渐变就原样画出来
    */
   @media (forced-colors: active) {
-    .xh-scope-spinner[data-part='root']::before {
+    .xh-scope-spinner[data-part='root']::before,
+    .xh-scope-spinner[data-part='root'][data-tone]::before {
       forced-color-adjust: none;
       border-color: Highlight;
       border-block-start-color: Canvas;
     }
 
     .xh-scope-spinner[data-part='root'][data-variant='arc']::before,
-    .xh-scope-spinner[data-part='root'][data-variant='dots']::before {
+    .xh-scope-spinner[data-part='root'][data-variant='arc'][data-tone]::before,
+    .xh-scope-spinner[data-part='root'][data-variant='dots']::before,
+    .xh-scope-spinner[data-part='root'][data-variant='dots'][data-tone]::before {
       border: var(--xh-spinner-thickness, var(--xh-stroke-thick)) solid Highlight;
       border-block-start-color: Canvas;
       border-radius: var(--xh-spinner-radius, var(--xh-shape-circle));
@@ -19667,8 +19673,9 @@
   .xh-scope-carousel[data-part='root'] {
     /* 自动播放开启时由 Headless 写入真实间隔；0ms 只用于未接入运行时的静态标记。 */
     --xh-_carousel-autoplay-duration: 0ms;
-    --xh-_carousel-progress-from: 0 1;
-    --xh-_carousel-progress-to: 1 1;
+    /* 进度条起步时裁掉的四边（inset 的上 右 下 左）：横轨从行尾那一侧整条裁掉。
+       clip-path 只认物理方向，行内轴两侧取书写方向的位置，rtl 下改从左往右收 */
+    --xh-_carousel-progress-cut: 0 var(--xh-direction-end) 0 var(--xh-direction-start);
 
     position: relative;
     display: block;
@@ -19680,9 +19687,9 @@
     display: none;
   }
 
+  /* 纵轨：从下沿整条裁掉，进度条从上往下长 */
   .xh-scope-carousel[data-part='root'][data-orientation='vertical'] {
-    --xh-_carousel-progress-from: 1 0;
-    --xh-_carousel-progress-to: 1 1;
+    --xh-_carousel-progress-cut: 0 0 100% 0;
   }
 
   /* 视口是裁切窗口：轨道比它宽（高），露在外面的那些张全靠它切掉。
@@ -19781,6 +19788,8 @@
   /* 两端按钮与播放开关：浮在媒体之上的单图标圆钮，接 Action Control floating 档：
      圆形、四态面、按压与 44px 命中区由家族配方给出；视觉盒比 floating 档小，不压画面：
      sm / md / lg 取 24 / 24 / 28px、字形 12 / 16 / 20px（sm 不低于 24px 的最小目标，只把字形收小）。
+     sm / md 直接取细指针最小目标 --xh-control-target-min，不随密度收：floating 档在细指针下不外扩命中区，
+     视觉盒就是命中区，紧凑档再收到 20px 就够不着 24px。
      连接层不投影 variant：面由这里桥接到磨砂缺省（使用者槽 → 磨砂面），悬停 / 按下的底走画布承载的阶梯
      （100 → 200，取不透明档：钮压在图上，半透明的墨色盖不住画面），边缘与投影不动；这里只留定位、桥接槽与图标尺 */
   .xh-scope-carousel[data-part='prev-trigger'],
@@ -19816,7 +19825,7 @@
     --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-hover-opaque));
     /* M2 顶光走配方的高光通道 */
     --xh-action-radius: var(--xh-carousel-trigger-radius, var(--xh-_action-profile-radius));
-    --xh-_carousel-trigger-size: var(--xh-control-action-size);
+    --xh-_carousel-trigger-size: var(--xh-control-target-min);
     --xh-_carousel-trigger-glyph: var(--xh-glyph-size-sm);
     --xh-action-visual-size: var(--xh-carousel-trigger-size, var(--xh-_carousel-trigger-size));
     --xh-action-min-inline-size: var(--xh-carousel-trigger-size, var(--xh-_carousel-trigger-size));
@@ -19946,8 +19955,8 @@
     border-radius: var(--xh-carousel-indicator-radius, var(--xh-shape-circle));
     background: var(--xh-carousel-indicator-bg, var(--xh-bg-subtle-hover-opaque));
     font-size: 0;
-    /* 自动播放的进度条画在点里，超出胶囊的那截裁掉 */
-    overflow: hidden;
+    /* 不裁切：细指针下 ::after 把命中区外扩到点外，overflow 一裁命中区就缩回 6px 的点里；
+       自动播放的进度条自己带圆角、由 clip-path 裁出来，不靠点来裁 */
     cursor: pointer;
     transition:
       inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
@@ -19960,18 +19969,19 @@
     display: none;
   }
 
-  /* 细指针的命中区外扩到不低于 24×24：两向都取「外扩 8px」与「补足到 24px」中大的一头（6px 点四面各扩 9px）；
-     粗指针下这颗伪元素改画点，盒子自己承担命中。点调细了，垂直于轨道那一向照样补足 */
+  /* 细指针的命中区外扩到不低于 24×24：两向都取「外扩 8px」与「补足到最小目标 --xh-control-target-min」
+     中大的一头（6px 点四面各扩 9px）；粗指针下这颗伪元素改画点，盒子自己承担命中。点调细了，垂直于轨道那一向照样补足。
+     相邻两点节距 14px，命中区沿轨道互相叠一截：后一颗画在上层，叠住的那段归它，每颗点自己的盒子仍只命中自己 */
   .xh-scope-carousel[data-part='indicator']::after {
     content: '';
     position: absolute;
     inset-inline: min(
       calc(-1 * var(--xh-space-2)),
-      calc((var(--xh-carousel-indicator-size, var(--xh-space-1_5)) - var(--xh-space-6)) / 2)
+      calc((var(--xh-carousel-indicator-size, var(--xh-space-1_5)) - var(--xh-control-target-min)) / 2)
     );
     inset-block: min(
       calc(-1 * var(--xh-space-2)),
-      calc((var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5))) - var(--xh-space-6)) / 2)
+      calc((var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5))) - var(--xh-control-target-min)) / 2)
     );
   }
 
@@ -19979,11 +19989,11 @@
     > .xh-scope-carousel[data-part='indicator']::after {
     inset-inline: min(
       calc(-1 * var(--xh-space-2)),
-      calc((var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5))) - var(--xh-space-6)) / 2)
+      calc((var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5))) - var(--xh-control-target-min)) / 2)
     );
     inset-block: min(
       calc(-1 * var(--xh-space-2)),
-      calc((var(--xh-carousel-indicator-size, var(--xh-space-1_5)) - var(--xh-space-6)) / 2)
+      calc((var(--xh-carousel-indicator-size, var(--xh-space-1_5)) - var(--xh-control-target-min)) / 2)
     );
   }
 
@@ -20038,7 +20048,9 @@
 
   /* 自动播放的进度：胶囊是品牌淡底当轨道（仍是「当前」语义；淡底上公共环够对比，不灌环色），
      品牌填充条从起点沿轨道方向长满这一页的时长。计时器每次恢复都重计一整个间隔，
-     进度条跟它同一口径：暂停时回到起点，恢复时从头走 */
+     进度条跟它同一口径：暂停时回到起点，恢复时从头走。
+     填充条铺满胶囊、自己带同一副圆角，未走的那一截由 clip-path 从行尾（纵轨从下沿）裁掉，裁口也取圆角：
+     不缩放就不会把圆头压扁，也不用点的盒子来裁——盒子一裁，细指针外扩的命中区跟着被裁掉 */
   .xh-scope-carousel[data-part='root'][data-autoplay]
     .xh-scope-carousel[data-part='indicator'][data-current],
   .xh-scope-carousel[data-part='root'][data-paused]
@@ -20050,19 +20062,20 @@
     .xh-scope-carousel[data-part='indicator'][data-current]::before,
   .xh-scope-carousel[data-part='root'][data-paused]
     .xh-scope-carousel[data-part='indicator'][data-current]::before {
+    --xh-_carousel-progress-radius: var(--xh-carousel-indicator-radius-current, var(--xh-shape-pill));
+
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: inherit;
+    border-radius: var(--xh-_carousel-progress-radius);
     background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
-    transform-origin: left center;
     animation: xh-carousel-indicator-progress var(--xh-_carousel-autoplay-duration) var(--xh-motion-ease-loop) both;
   }
 
   .xh-scope-carousel[data-part='root'][data-paused]
     .xh-scope-carousel[data-part='indicator'][data-current]::before {
     animation: none;
-    scale: var(--xh-_carousel-progress-from);
+    clip-path: inset(var(--xh-_carousel-progress-cut) round var(--xh-_carousel-progress-radius));
   }
 
   /* 纵轨：胶囊沿块轴拉长，进度条从上往下长 */
@@ -20076,16 +20089,6 @@
     > .xh-scope-carousel[data-part='indicator'][data-current] {
     inline-size: var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5)));
     block-size: var(--xh-carousel-indicator-size-current, var(--xh-space-5));
-  }
-
-  .xh-scope-carousel[data-part='indicator-group'][data-orientation='vertical']
-    > .xh-scope-carousel[data-part='indicator'][data-current]::before {
-    transform-origin: center top;
-  }
-
-  [dir='rtl'] .xh-scope-carousel[data-part='indicator-group'][data-orientation='horizontal']
-    > .xh-scope-carousel[data-part='indicator']::before {
-    transform-origin: right center;
   }
 
   .xh-scope-carousel[data-part='root'][data-orientation='vertical']
@@ -20127,7 +20130,7 @@
 
     .xh-scope-carousel[data-part='indicator'][data-current]::before {
       animation: none;
-      scale: var(--xh-_carousel-progress-to);
+      clip-path: none;
     }
   }
 
@@ -20137,7 +20140,7 @@
 
   :where([data-motion='reduce']) .xh-scope-carousel[data-part='indicator'][data-current]::before {
     animation: none;
-    scale: var(--xh-_carousel-progress-to);
+    clip-path: none;
   }
 
   @media (forced-colors: active) {
@@ -20245,7 +20248,6 @@
       min-block-size: var(--xh-carousel-indicator-target-size, 44px);
       border-radius: 0;
       background: transparent;
-      overflow: visible;
     }
 
     .xh-scope-carousel[data-part='indicator']::after {
@@ -20365,13 +20367,14 @@
 }
 
 @layer xihan.motion {
+  /* 进度条从整条裁掉长到整条露出：只重绘、不重排，裁口取填充条自己的圆角 */
   @keyframes xh-carousel-indicator-progress {
     from {
-      scale: var(--xh-_carousel-progress-from);
+      clip-path: inset(var(--xh-_carousel-progress-cut) round var(--xh-_carousel-progress-radius));
     }
 
     to {
-      scale: var(--xh-_carousel-progress-to);
+      clip-path: inset(0 round var(--xh-_carousel-progress-radius));
     }
   }
 }
@@ -29129,6 +29132,8 @@
        不分三段时它是面板顶上那一截——两种写法的标题行与叉落在同一处。
        带的上沿就是面板内沿（安全区由 positioner 让出），与抽屉同一组槽，抽屉在这里补安全区 */
     --xh-_dialog-header-top: var(--xh-space-0);
+    /* 关闭钮行向让出的安全区：对话框不贴屏幕边（安全区同样由 positioner 让出），与抽屉同一组槽，抽屉在这里补安全区 */
+    --xh-_dialog-safe-inline: var(--xh-space-0);
     --xh-_dialog-header-h: var(--xh-overlay-header-h);
     /* 标题首行在带里居中要让出的上内衬：带高减标题行高再对半 */
     --xh-_dialog-header-pt: calc((var(--xh-_dialog-header-h) - var(--xh-text-heading-3-size) * var(--xh-leading-normal)) / 2);
@@ -29429,7 +29434,7 @@
     position: absolute;
     /* 钮的视觉盒在头部带里竖向居中：按钮自己的边长从带高里扣掉再对半 */
     inset-block-start: calc(var(--xh-_dialog-header-top) + (var(--xh-_dialog-header-h) - var(--xh-dialog-close-size, var(--xh-_action-profile-visual-size))) / 2);
-    inset-inline-end: var(--xh-space-4);
+    inset-inline-end: calc(var(--xh-_dialog-safe-inline) + var(--xh-space-4));
   }
 
   .xh-scope-dialog[data-part='close-trigger'][hidden] {
@@ -29951,7 +29956,9 @@
     position: absolute;
     /* 钮的视觉盒在头部带里竖向居中：按钮自己的边长从带高里扣掉再对半 */
     inset-block-start: calc(var(--xh-_drawer-header-top) + (var(--xh-_drawer-header-h) - var(--xh-drawer-close-size, var(--xh-_action-profile-visual-size))) / 2);
-    inset-inline-end: var(--xh-space-4);
+    /* 行向先让出安全区再距边 16px：绝对定位从面板的内边距盒量起，横屏刘海压住的那一段不让，叉就落进去；
+       局部容器里的抽屉安全区槽归零，仍是 16px */
+    inset-inline-end: calc(var(--xh-_drawer-safe-inline) + var(--xh-space-4));
   }
 
   .xh-scope-drawer[data-part='close-trigger'][hidden] {
@@ -30737,12 +30744,15 @@
   /* 上传失败的那一行必须一眼认出来：不标出来的话它跟传完的行渲染完全一致，
      用户不知道该按哪一条的重试。文件名标红之外再补一枚警示字形——只靠颜色的话，
      色觉障碍用户与灰度打印下这一档等于没有。行底换回承载面：危险色字压在淡底（暗色下连字段淡底）上到不了 4.5:1，
-     描边位仍透明。
+     描边位仍透明。行里的删除钮跟着换回白底承载阶梯（100 → 200）：留在淡底阶梯上，悬停就一步跳到 200。
      警示与下面的勾都是固定状态标记（不是 :empty 兜底，作者塞进条目的部件顶不掉）：按指示符档取尺
      （comfortable 16 / compact 14，随密度换档），不读只管作者图标的 --xh-icon-size——随文 1em 落在
      14 上下，comfortable 下比同一行里的指示符档小一圈、compact 下又不换档 */
   .xh-scope-file-upload[data-part='item'][data-state='error'],
   .xh-scope-file-upload[data-part='item'][data-state='closed']:has(> [data-part='item-progress'][data-state='error']) {
+    --xh-action-host-bg-hover: var(--xh-bg-subtle);
+    --xh-action-host-bg-pressed: var(--xh-bg-subtle-hover);
+
     border-color: var(--xh-file-upload-item-border-error, transparent);
     background: var(--xh-file-upload-item-bg-error, var(--xh-bg-surface));
   }
@@ -35711,7 +35721,7 @@
    * 一张通知：底与描边一律中性，面走 sheet 三件套（--xh-material-elevated-bg / -border / -shadow，
    * 亮暗两档同有 1px 描边）。两种预设共用这张面，排版分开写在下面：
    * 卡片是两列网格，左列一枚 24px 类型字形、右列「标题 + 说明 + 操作」、叉钉在右上角，
-   * 缺省宽 300px、四边内衬 20px、浮层圆角；
+   * 缺省宽 300px、四边内衬 20px（--xh-overlay-notification-p，紧凑 16px）、浮层圆角；
    * 轻提示是一行，行首字形、文本列、操作钮与叉依次排开，圆角取 control、内衬纵 10 横 16。
    *
    * 卡片的槽带 item 段（--xh-notification-item-*），与摞的 --xh-notification-inset 分开。
@@ -35732,8 +35742,8 @@
     /* 摞是整面视口宽的定位面且带内边距，取 100% 就等于自动让出两侧留白，
        窄屏上不必再算一遍 viewport 减法 */
     max-inline-size: 100%;
-    padding-block: var(--xh-notification-item-py, var(--xh-overlay-sheet-px));
-    padding-inline: var(--xh-notification-item-px, var(--xh-overlay-sheet-px));
+    padding-block: var(--xh-notification-item-py, var(--xh-overlay-notification-p));
+    padding-inline: var(--xh-notification-item-px, var(--xh-overlay-notification-p));
     border: var(--xh-stroke-thin) solid var(--xh-notification-item-border, var(--xh-material-elevated-border));
     border-radius: var(--xh-notification-item-radius, var(--xh-shape-overlay));
     background: var(--xh-notification-item-bg, var(--xh-material-elevated-bg));
@@ -36199,10 +36209,22 @@
     --xh-icon-size: var(--xh-notification-icon-size, var(--xh-glyph-size-xs));
   }
 
-  /* 卡片：钉在右上角、距上与右各 12px，不参与网格排布——留在流里它会变成正文下面的第三行 */
+  /* 卡片：钉在右上角，不参与网格排布——留在流里它会变成正文下面的第三行。
+     距右取面内动作的内缩；竖向与标题首行同一条中线：上内衬加上「标题行高 − 钮边长」的一半
+     （舒适档 20 + (24 − 28) / 2 = 18、紧凑档 16 + (24 − 24) / 2 = 16），作者改了贴边槽仍按它两向一起贴 */
   .xh-scope-notification[data-part='item'][data-preset='card'] [data-part='item-close-trigger']:where(.xh-scope-notification) {
     position: absolute;
-    inset-block-start: var(--xh-notification-close-inset, var(--xh-surface-action-inset));
+    inset-block-start: var(
+      --xh-notification-close-inset,
+      calc(
+        var(--xh-notification-item-py, var(--xh-overlay-notification-p)) +
+        (
+          var(--xh-notification-title-font-size, var(--xh-text-heading-3-size)) *
+          var(--xh-notification-title-leading, var(--xh-leading-normal)) -
+          var(--xh-notification-close-size, var(--xh-control-h-sm))
+        ) / 2
+      )
+    );
     inset-inline-end: var(--xh-notification-close-inset, var(--xh-surface-action-inset));
   }
 
@@ -39744,10 +39766,12 @@
 
   /* 条目固定成一枚方形图标盒：连接层用 clientWidth 判定指针落在左半还是右半，
      固定盒能让半档分界与图形中心严格重合。
-     星接 Action Control icon 档（定尺的星）：盒型、按下 / 禁用面、0.97 缩放与换底、焦点环与过渡由家族配方给，
+     星接 Action Control icon 档（定尺的星）：盒型、按下 / 禁用面、换底、焦点环与过渡由家族配方给，
      这里只把使用者槽映射到桥接槽。静息透明（ghost 形态）；悬停不换底——悬停预览由点亮的星形（data-highlighted）
-     表达，再给盒换面是重复的通道。悬停与键盘聚焦把这颗星放大到 --xh-motion-scale-emphasis（1.2）强调落点，
-     按下保持放大并换到 200 档中性面（白底承载）——按压的回执是换面，不往回缩。减弱动效下放大比例为 1，只留换色。
+     表达，再给盒换面是重复的通道。缩放是统一按压反馈的登记例外：悬停与键盘聚焦把这颗星放大到
+     --xh-motion-scale-emphasis（1.2）强调落点，按下保持放大（不取 --xh-motion-scale-press）并换到 200 档中性面
+     （白底承载）——按压的回执是换面，不往回缩。悬停放大只给能悬停的设备：触屏点过之后 :hover 会一直留在那颗星上，
+     放大跟着停住。减弱动效下放大比例为 1，只留换色。
      前景五态映射同一个值：点亮时五态一起换到点亮色，家族的悬停 / 按下块才不会把点亮色换回静息色；
      禁用不换前景，星带整体的压暗落在 control 的 opacity 上 */
   .xh-scope-rating[data-part='item'] {
@@ -39759,7 +39783,6 @@
     --xh-action-font-size: var(--xh-rating-item-font-size, var(--xh-_rating-item-size));
     --xh-action-bg-hover: transparent;
     --xh-action-bg-pressed: var(--xh-_rating-item-bg-pressed);
-    --xh-action-scale-hover: var(--xh-motion-scale-emphasis);
     --xh-action-scale-focus-visible: var(--xh-motion-scale-emphasis);
     --xh-action-scale-pressed: var(--xh-motion-scale-emphasis);
     --xh-action-fg-rest: var(--xh-rating-item-fg, var(--xh-fg-subtle));
@@ -39772,6 +39795,12 @@
     --xh-action-border-pressed: transparent;
     --xh-action-border-focus-visible: transparent;
     --xh-action-border-disabled: transparent;
+  }
+
+  @media (hover: hover) {
+    .xh-scope-rating[data-part='item'] {
+      --xh-action-scale-hover: var(--xh-motion-scale-emphasis);
+    }
   }
 
   /* 家族 icon 档在粗指针下用 ::after 扩热区到 44px：五颗星密排，44px 热区会压住相邻的星，

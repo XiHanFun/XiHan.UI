@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { cdp } from 'vitest/browser'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -81,6 +82,17 @@ describe('carousel 默认视觉', () => {
     }
   })
 
+  it.each(['sm', 'md', 'lg'] as const)('紧凑档 %s：翻页与播放钮的视觉盒仍不低于细指针最小目标（floating 档在细指针下不外扩命中区）', (size) => {
+    const carousel = mount('horizontal', false, size)
+    host!.dataset.density = 'compact'
+    const target = tokenLength('--xh-control-target-min', carousel.root)
+    for (const trigger of [carousel.prev, carousel.next, carousel.autoplay]) {
+      const rect = trigger.getBoundingClientRect()
+      expect(rect.width).toBeGreaterThanOrEqual(target)
+      expect(rect.height).toBeGreaterThanOrEqual(target)
+    }
+  })
+
   it('翻页与播放钮是 24px 圆钮：矮到 96px 的视口里右侧居中的翻页钮与右下角的播放钮仍不相叠', () => {
     const carousel = mount()
     // 居中的钮占下半 12px、角上的钮连 12px 控件内距占 36px：h / 2 + 12 ≤ h − 36 即 h ≥ 96
@@ -144,7 +156,27 @@ describe('carousel 默认视觉', () => {
     carousel.root.setAttribute('data-paused', '')
     const paused = getComputedStyle(carousel.current, '::before')
     expect(paused.animationName).toBe('none')
-    expect(paused.scale).toBe(getComputedStyle(carousel.current).getPropertyValue('--xh-_carousel-progress-from').trim())
+    // 回到起点：行尾那一侧整条裁掉
+    expect(paused.clipPath).toMatch(/^inset\(0px 100% 0px 0(?:px|%) round /)
+  })
+
+  it('进度条自己带圆角、由 clip-path 裁出，点的盒子不裁切：rtl 从右往左长，纵轨从上往下长', () => {
+    const carousel = mount('horizontal', true)
+    expect(getComputedStyle(carousel.current).overflow).toBe('visible')
+    const running = getComputedStyle(carousel.current, '::before')
+    expect(running.borderRadius).toBe(getComputedStyle(carousel.current).borderRadius)
+    expect(running.scale).toBe('none')
+
+    carousel.root.removeAttribute('data-autoplay')
+    carousel.root.setAttribute('data-paused', '')
+    carousel.root.setAttribute('dir', 'rtl')
+    expect(getComputedStyle(carousel.current, '::before').clipPath).toMatch(/^inset\(0px 0(?:px|%) 0px 100% round /)
+
+    host!.remove()
+    const vertical = mount('vertical', true)
+    vertical.root.removeAttribute('data-autoplay')
+    vertical.root.setAttribute('data-paused', '')
+    expect(getComputedStyle(vertical.current, '::before').clipPath).toMatch(/^inset\(0px 0px 100%(?: 0px)? round /)
   })
 
   it.each(['horizontal', 'vertical'] as const)('%s 粗指针分页划成不重叠的 44px 分区，圆点与胶囊的视觉尺寸不变', async (orientation) => {
@@ -175,12 +207,25 @@ describe('carousel 默认视觉', () => {
     expect([otherMark.width, otherMark.height]).toEqual(['6px', '6px'])
   })
 
-  it.each(['horizontal', 'vertical'] as const)('%s 细指针下 6px 圆点的命中区两向都不低于 24px', (orientation) => {
-    const carousel = mount(orientation)
-    const other = carousel.indicators.querySelectorAll<HTMLElement>('[data-part="indicator"]')[1]!
-    const hit = getComputedStyle(other, '::after')
-    expect(Number.parseFloat(hit.width)).toBeGreaterThanOrEqual(24)
-    expect(Number.parseFloat(hit.height)).toBeGreaterThanOrEqual(24)
+  it.each([
+    ['horizontal', false],
+    ['vertical', false],
+    ['horizontal', true],
+    ['vertical', true],
+  ] as const)('%s（自动播放 %s）细指针下点外 24px 命中区里的落点命中那颗点，每颗点的中心命中它自己', (orientation, autoplay) => {
+    const carousel = mount(orientation, autoplay)
+    expect(matchMedia('(pointer: fine)').matches).toBe(true)
+    const target = tokenLength('--xh-control-target-min', carousel.root)
+    for (const indicator of carousel.indicators.querySelectorAll<HTMLElement>('[data-part="indicator"]')) {
+      const rect = indicator.getBoundingClientRect()
+      const x = rect.left + rect.width / 2
+      const y = rect.top + rect.height / 2
+      expect(document.elementFromPoint(x, y)).toBe(indicator)
+      // 垂直于轨道离中心 10px：落在 6px 点之外、24px 命中区之内，命中要算到这颗点上
+      const reach = target / 2 - 2
+      const [px, py] = orientation === 'horizontal' ? [x, y + reach] : [x + reach, y]
+      expect(document.elementFromPoint(px, py)).toBe(indicator)
+    }
   })
 
   /** 细横条风格：沿轨道 16px、当前页 28px，垂直于轨道只有 4px；横条不是正方盒，圆角改走胶囊 */

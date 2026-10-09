@@ -41,6 +41,16 @@ function tokenColor(token: string, scope: HTMLElement = document.body): string {
   return color
 }
 
+/** 在某个部件里把令牌写进 property，读回这台浏览器上的计算值（投影这类非颜色取值用）。 */
+function tokenValue(property: string, token: string, scope: HTMLElement): string {
+  const probe = document.createElement('span')
+  probe.style.setProperty(property, `var(${token})`)
+  scope.append(probe)
+  const value = getComputedStyle(probe).getPropertyValue(property)
+  probe.remove()
+  return value
+}
+
 function resolvedLength(scope: HTMLElement, value: string): number {
   const probe = document.createElement('span')
   probe.style.cssText = `position:absolute;inline-size:${value}`
@@ -57,7 +67,7 @@ afterEach(async () => {
 })
 
 describe('通知卡片的表面与两颗钮', () => {
-  it('卡片走 sheet 三件套：elevated 底 + 1px 描边 + 单层落影，缺省宽 300px、四边内衬 20px、浮层圆角', async () => {
+  it('卡片走 sheet 三件套：elevated 底 + 1px 描边 + 单层落影，缺省宽取通知卡宽、四边内衬取通知卡内衬、浮层圆角', async () => {
     notify = createNotificationService()
     notify.success('已保存', { description: '内容已同步到云端', duration: 0 })
     await tick()
@@ -68,14 +78,13 @@ describe('通知卡片的表面与两颗钮', () => {
     expect(style.borderTopWidth).toBe('1px')
     expect(style.borderTopColor).toBe(tokenColor('--xh-material-elevated-border'))
     expect(style.borderTopColor).not.toBe('rgba(0, 0, 0, 0)')
-    expect(style.boxShadow).toContain('0px 4px 12px')
+    expect(style.boxShadow).toBe(tokenValue('box-shadow', '--xh-material-elevated-shadow', item))
+    expect(style.boxShadow).not.toBe('none')
     expect(style.borderRadius).toBe('4px')
-    expect(item.getBoundingClientRect().width).toBe(300)
     expect(item.getBoundingClientRect().width).toBe(resolvedLength(item, 'var(--xh-overlay-notification-w)'))
-    expect(style.paddingTop).toBe('20px')
-    expect(style.paddingBottom).toBe('20px')
-    expect(style.paddingLeft).toBe('20px')
-    expect(style.paddingRight).toBe('20px')
+    // 四边同一支名实相符的内衬令牌：横向内衬那支（overlay-sheet-px）只管对话框三段的行内两侧
+    const pad = `${resolvedLength(item, 'var(--xh-overlay-notification-p)')}px`
+    expect([style.paddingTop, style.paddingRight, style.paddingBottom, style.paddingLeft]).toEqual([pad, pad, pad, pad])
     // 卡片里作者塞的图标仍按 Feedback 指示符的 md 档；左列那枚类型字形另取 24px
     expect(resolvedLength(item, 'var(--xh-icon-size)')).toBe(resolvedLength(item, 'var(--xh-glyph-size-md)'))
     expect(getComputedStyle(part('item-indicator'), '::after').width).toBe('24px')
@@ -103,7 +112,7 @@ describe('通知卡片的表面与两颗钮', () => {
     expect(indicator.top + indicator.height / 2).toBeCloseTo(titleRect.top + titleRect.height / 2, 0)
   })
 
-  it('叉走 icon ghost sm：正方盒距上、右各 12px，叉 12px，静息透明无影，悬停底跟着语气走', async () => {
+  it('叉走 icon ghost sm：正方盒距右取面内动作内缩、竖向与标题首行同一条中线，叉 12px，静息透明无影，悬停底跟着语气走', async () => {
     notify = createNotificationService()
     notify.success('已保存', { duration: 0 })
     await tick()
@@ -117,9 +126,11 @@ describe('通知卡片的表面与两颗钮', () => {
     expect(close.dataset.xhActionVariant).toBe('ghost')
     expect(rect.width).toBe(resolvedLength(item, 'var(--xh-control-h-sm)'))
     expect(rect.height).toBe(resolvedLength(item, 'var(--xh-control-h-sm)'))
-    // 绝对定位从卡片的内沿量起：1px 描边以内再让 12px
-    expect(itemRect.right - 1 - rect.right).toBeCloseTo(12, 0)
-    expect(rect.top - itemRect.top - 1).toBeCloseTo(12, 0)
+    // 绝对定位从卡片的内沿量起：1px 描边以内再让面内动作内缩
+    expect(itemRect.right - 1 - rect.right).toBeCloseTo(resolvedLength(item, 'var(--xh-surface-action-inset)'), 0)
+    const title = part('item-title').getBoundingClientRect()
+    const firstLine = Number.parseFloat(getComputedStyle(part('item-title')).lineHeight)
+    expect(rect.top + rect.height / 2).toBeCloseTo(title.top + firstLine / 2, 0)
     expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(style.boxShadow).toBe('none')
     expect(style.color).toBe(tokenColor('--xh-fg-muted'))
@@ -128,6 +139,26 @@ describe('通知卡片的表面与两颗钮', () => {
     await userEvent.hover(close)
     await expect.poll(() => getComputedStyle(close).backgroundColor).toBe(tokenColor('--xh-_tone-subtle', item))
     expect(getComputedStyle(close).color).toBe(tokenColor('--xh-fg-default'))
+  })
+
+  it('紧凑档：内衬与钮一起收小，叉仍落在标题首行的中线上', async () => {
+    document.documentElement.dataset.density = 'compact'
+    try {
+      notify = createNotificationService()
+      notify.success('已保存', { description: '内容已同步到云端', duration: 0 })
+      await tick()
+      const item = part('item')
+      const close = part('item-close-trigger').getBoundingClientRect()
+      const title = part('item-title')
+      const pad = `${resolvedLength(item, 'var(--xh-overlay-notification-p)')}px`
+      expect(getComputedStyle(item).paddingTop).toBe(pad)
+      expect(close.height).toBe(resolvedLength(item, 'var(--xh-control-h-sm)'))
+      const firstLine = Number.parseFloat(getComputedStyle(title).lineHeight)
+      expect(close.top + close.height / 2).toBeCloseTo(title.getBoundingClientRect().top + firstLine / 2, 0)
+    }
+    finally {
+      delete document.documentElement.dataset.density
+    }
   })
 
   it('操作钮走 text outline sm：透明底 + 中性控件描边、与 sm 档控件等高，不随语气，悬停落白面阶梯的 100', async () => {

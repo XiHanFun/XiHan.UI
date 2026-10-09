@@ -162,4 +162,18 @@ describe('file-upload 文件行', () => {
     const face = composite(page, row.backgroundColor)
     expect(contrast(composite(page, row.backgroundColor, name.color), face)).toBeGreaterThanOrEqual(4.5)
   })
+
+  it.each([undefined, 'dark'] as const)('失败行（%s）的底换回承载面，删除钮的悬停 / 按下跟着换回白底阶梯 100 → 200', async (theme) => {
+    const { error } = mount(theme)
+    host!.style.setProperty('--xh-motion-duration-press', '0ms')
+    host!.style.setProperty('--xh-motion-duration-release', '0ms')
+    expect(getComputedStyle(error).backgroundColor).toBe(token('backgroundColor', '--xh-bg-surface'))
+    const remove = error.querySelector<HTMLElement>('[data-part="item-delete-trigger"]')!
+    await userEvent.hover(remove)
+    expect(getComputedStyle(remove).backgroundColor).toBe(token('backgroundColor', '--xh-bg-subtle'))
+    remove.setAttribute('data-pressed', '')
+    expect(getComputedStyle(remove).backgroundColor).toBe(token('backgroundColor', '--xh-bg-subtle-hover'))
+    remove.removeAttribute('data-pressed')
+    await userEvent.unhover(remove)
+  })
 })

@@ -31,7 +31,7 @@ function part(name: string): HTMLElement {
 }
 
 /** 在定位层里放一个探针，按面板所在的主题解出某个令牌。 */
-function resolved(prop: 'color' | 'font-size' | 'font-weight', token: string): string {
+function resolved(prop: 'color' | 'font-size' | 'font-weight' | 'box-shadow', token: string): string {
   const probe = document.createElement('span')
   probe.style.setProperty(prop, `var(${token})`)
   part('positioner').append(probe)
@@ -104,7 +104,8 @@ describe('dialog 的实体 sheet 面', () => {
     expect(content.backgroundImage).toBe('none')
     expect(content.backgroundColor).toBe(resolved('color', '--xh-bg-surface'))
     expect(content.backdropFilter).toBe('none')
-    expect(content.boxShadow).toContain('0px 4px 12px')
+    expect(content.boxShadow).toBe(resolved('box-shadow', '--xh-material-elevated-shadow'))
+    expect(content.boxShadow).not.toBe('none')
     expect(backdrop.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
     expect(backdrop.backdropFilter).toContain('blur(12px)')
   })
@@ -169,7 +170,7 @@ describe('dialog 的实体 sheet 面', () => {
     expect(part('header').getBoundingClientRect().height).toBeCloseTo(44, 0)
   })
 
-  it('rtL 下关闭钮落在行尾那一侧（左边），距边仍是 16px', async () => {
+  it('rtl 下关闭钮落在行尾那一侧（左边），距边仍是 16px', async () => {
     document.documentElement.setAttribute('dir', 'rtl')
     mount()
     await settle()
