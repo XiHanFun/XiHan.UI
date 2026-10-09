@@ -427,7 +427,8 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | `--xh-viewport-h-sm` / `md` / `lg` | 12 / 16 / 24rem | 10 / 14 / 20rem | 页内与面板内滚动面的定高与限高 |
 | `--xh-viewport-max-h` | 24rem | 20rem | 长文本视口限高 |
 | `--xh-overlay-menu-min-w`、`--xh-overlay-min-w` | 10rem、12rem | | 菜单与候选面板的下限；带输入的面板宽 |
-| `--xh-overlay-column-min-w` | 3.5rem | | 时间列下限 |
+| `--xh-overlay-column-min-w` | 3.5rem | | 与日历并排的时间列下限 |
+| `--xh-overlay-time-column-w`、`--xh-overlay-time-column-h` | 4rem、224px | —、196px | 时间选择器一列的宽与定高（七格整行：一格 `control-action-size` 加 `space-2` 列内间距） |
 | `--xh-overlay-max-w-sm`、`--xh-overlay-max-w`、`-lg`、`-xl` | 16、20、24、48rem | | 浮层宽的上限 |
 | `--xh-overlay-max-h` | 16rem | 14rem | 卡片类浮层限高 |
 | `--xh-overlay-menu-max-h` | 20rem | 17rem | 菜单与候选列表限高 |
@@ -491,7 +492,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | Mention | 下限 12rem，上限 20rem | 下限一行 `control-h`，上限 `overlay-max-h` |
 | Cascader | 每列自然宽、下限 10rem，条目上限 20rem；整面上限为可用宽，超出横滚 | 列定高 `viewport-h-sm`，列内滚 |
 | DatePicker、DateRangePicker | 内容宽（面板不留内衬，由日历的七列与内衬撑出）；时间列下限 3.5rem | 上限为可用高；时间列与日历网格同高（`overlay-calendar-column-h`），列顶让出标题栏那一带；时间格 `control-action-size` 高、列内间距 8；快捷项 `control-action-size` 高；预设组上限 `viewport-h-lg` |
-| TimePicker、TimeRangePicker | 内容宽；列下限 3.5rem | 列定高 `viewport-h-sm`；面板上限 `viewport-h-lg`；预设组上限 `viewport-h-sm` |
+| TimePicker、TimeRangePicker | 内容宽（面板不留内衬）；列宽 `overlay-time-column-w` | 列定高 `overlay-time-column-h`，列底留白让末格滚到列顶；面板上限 `viewport-h-lg`；预设组上限 `overlay-time-column-h` |
 | ColorPicker | 定宽 12rem；饱和区高 9rem | 上限 `viewport-h-md` |
 | Pagination 下拉 | 上限 20rem | 上限 `overlay-max-h` |
 | Dialog | 铺满可用宽，上限随 size 24 / 32 / 48rem | 上限为视口可用高，正文内滚 |

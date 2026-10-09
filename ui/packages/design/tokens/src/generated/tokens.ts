@@ -476,6 +476,8 @@ export const tokens = {
   "--xh-overlay-column-min-w": "3.5rem",
   "--xh-overlay-column-item-h": "calc(var(--xh-control-h-sm) - var(--xh-space-1))",
   "--xh-overlay-calendar-column-h": "calc(var(--xh-control-h-md) + (var(--xh-control-action-size) + var(--xh-space-1_5) * 2) * 6 + var(--xh-space-3) * 2)",
+  "--xh-overlay-time-column-w": "4rem",
+  "--xh-overlay-time-column-h": "calc((var(--xh-control-action-size) + var(--xh-space-2)) * 7)",
   "--xh-overlay-menu-max-h": "20rem",
   "--xh-overlay-max-w-sm": "16rem",
   "--xh-overlay-max-w": "20rem",

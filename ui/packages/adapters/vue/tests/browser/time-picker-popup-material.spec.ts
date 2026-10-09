@@ -77,20 +77,51 @@ afterEach(() => {
   host = null
 })
 
+/** 语义令牌在该元素里解到的圆角、长度与颜色。 */
+function resolveRadius(token: string, scope: HTMLElement): string {
+  const probe = document.createElement('span')
+  probe.style.borderRadius = `var(${token})`
+  scope.append(probe)
+  const value = getComputedStyle(probe).borderTopLeftRadius
+  probe.remove()
+  return value
+}
+
+function resolveLength(token: string, scope: HTMLElement): number {
+  const probe = document.createElement('span')
+  probe.style.display = 'block'
+  probe.style.inlineSize = `var(${token})`
+  scope.append(probe)
+  const value = Number.parseFloat(getComputedStyle(probe).inlineSize)
+  probe.remove()
+  return value
+}
+
+function resolveColor(token: string, scope: HTMLElement): string {
+  const probe = document.createElement('span')
+  probe.style.backgroundColor = `var(${token})`
+  scope.append(probe)
+  const value = getComputedStyle(probe).backgroundColor
+  probe.remove()
+  return value
+}
+
 describe('时间选择浮层', () => {
   it.each(['light', 'dark'] as const)('%s：输入与时间面板均使用实体表面，局部主题跨 Portal 生效', async (theme) => {
     await mount(theme)
     const control = getComputedStyle(part('control'))
     const content = getComputedStyle(part('content'))
     expect(control.backdropFilter).toBe('none')
-    expect(alpha(control.backgroundColor)).toBe(0)
-    expect(control.outlineStyle).toBe('solid')
+    // 字段静息铺字段淡底；聚焦不画环，静息也不留环位
+    expect(alpha(control.backgroundColor)).toBeGreaterThan(0)
+    expect(control.outlineStyle).toBe('none')
     expect(part('positioner').closest<HTMLElement>('[data-theme]')?.dataset.theme).toBe(theme)
     expect(content.backdropFilter).toBe('none')
     expect(alpha(content.backgroundColor)).toBe(255)
     expect(content.boxShadow).not.toBe('none')
-    expect(content.borderRadius).toBe('12px')
-    expect(content.padding).toBe('4px')
+    expect(content.borderTopLeftRadius).toBe(resolveRadius('--xh-shape-overlay', part('content')))
+    // 面板自己不留内衬：各列与快捷选项列自带内衬
+    expect(content.padding).toBe('0px')
     // floating 材质：实体底 + 可见描边 + 落影，不画顶光伪元素
     expect(content.borderTopStyle).toBe('solid')
     // 描边是墨色按比例透明：画了就不是 0，不再是实色
@@ -124,9 +155,9 @@ describe('时间选择浮层', () => {
     const columns = document.querySelectorAll<HTMLElement>(`[data-scope='time-picker'][data-part='column']`)
     const preset = getComputedStyle(part('preset-group'))
     const secondColumn = getComputedStyle(columns[1]!)
-    // 面板是 floating 材质（实体面），面内分隔取实体面的分隔令牌
+    // 面板是 floating 材质（实体面），面内分隔取实体面的描边令牌（border-default 档）
     const expected = document.createElement('span')
-    expected.style.color = 'var(--xh-material-solid-separator)'
+    expected.style.color = 'var(--xh-material-solid-border)'
     part('content').append(expected)
     const separator = getComputedStyle(expected).color
     expect(preset.borderInlineEndColor).toBe(separator)
@@ -187,14 +218,11 @@ describe('时间选择浮层', () => {
     const columns = document.querySelectorAll<HTMLElement>(`[data-scope='time-picker'][data-part='column']`)
     const hours = columns[0]!
     const minutes = columns[1]!
-    expect(hours.getBoundingClientRect().width).toBeLessThanOrEqual(64)
-    // 时间格是 md 档的候选行：list-option-py-md 内距加一行 control-font-md 文字撑开
-    const row = document.createElement('div')
-    row.style.cssText = 'padding-block: var(--xh-list-option-py-md); font-size: var(--xh-control-font-md); line-height: var(--xh-leading-normal)'
-    row.textContent = '00'
-    document.body.append(row)
-    expect(part('item').getBoundingClientRect().height).toBe(row.getBoundingClientRect().height)
-    row.remove()
+    // 列宽取时间列档、列高七格整行；时间格是 24 高的通栏条，不随尺寸档变高
+    expect(hours.getBoundingClientRect().width).toBe(resolveLength('--xh-overlay-time-column-w', content))
+    expect(hours.getBoundingClientRect().height).toBe(resolveLength('--xh-overlay-time-column-h', content))
+    expect(part('item').getBoundingClientRect().height).toBe(resolveLength('--xh-control-action-size', content))
+    expect(getComputedStyle(part('item')).borderTopLeftRadius).toBe('0px')
     expect(hours.scrollHeight).toBeGreaterThan(hours.clientHeight)
     const minuteScroll = minutes.scrollTop
     hours.scrollTop = 80

@@ -375,6 +375,8 @@
 --xh-overlay-sheet-w-lg: 48rem
 --xh-overlay-sheet-w-md: 32rem
 --xh-overlay-sheet-w-sm: 24rem
+--xh-overlay-time-column-h: calc((24px + 8px) * 7)  ← calc((var(--xh-control-action-size) + var(--xh-space-2)) * 7)
+--xh-overlay-time-column-w: 4rem
 --xh-overlay-toast-w: 28.75rem
 --xh-ring-focus: oklch(0.702 0.165 258)  ← var(--xh-color-brand-400)
 --xh-ring-invalid: oklch(0.7 0.185 25)  ← var(--xh-color-danger-400)

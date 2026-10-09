@@ -899,7 +899,8 @@ export function connectTimePicker<T extends PropTypes>(
       })
     },
 
-    // 「添加」：多选时把浮层里拼好的草稿收进值，浮层不收；单选时整个收起。文字由作者写
+    // 「添加」：多选时把浮层里拼好的草稿收进值，浮层不收；单选时整个收起。文字由作者写。
+    // 面板内部件不随字段尺寸档：钮取 xs（24 高的小号主钮）
     getConfirmTriggerProps: () => normalize.button({
       ...parts['confirm-trigger'].attrs,
       'data-xh-action-control': '',
@@ -907,7 +908,7 @@ export function connectTimePicker<T extends PropTypes>(
       'data-xh-action-variant': 'solid',
       'data-xh-ink-surface': '',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'sm',
+      'data-xh-action-size': 'xs',
       'type': 'button',
       'hidden': !multiple || undefined,
       // 草稿没填全、越界、已选过或选满了都按不下去，原生 disabled 一并退出 Tab 序列
