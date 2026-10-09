@@ -421,6 +421,7 @@ export {
   XhDateRangePickerConfirmTrigger,
   XhDateRangePickerContent,
   XhDateRangePickerControl,
+  XhDateRangePickerFooter,
   XhDateRangePickerGrid,
   XhDateRangePickerGridBody,
   XhDateRangePickerGridHead,

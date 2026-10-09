@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="date-range-picker"`：`root` · `label` · **`control`** · `segment-group` · `range-separator` · `trigger` · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · **`calendar`** · `column-group` · `column-group-label` · `time-column` · `time-item` · `confirm-trigger`
+`data-scope="date-range-picker"`：`root` · `label` · **`control`** · `segment-group` · `range-separator` · `trigger` · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · **`calendar`** · `column-group` · `column-group-label` · `time-column` · `time-item` · `footer` · `confirm-trigger`
 
 ## 示例
 
@@ -89,6 +89,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 - `firstDayOfWeek`（0 = 星期日 … 6 = 星期六）原样交给浮层里的日历，只改表头、行首与 Home / End，两组段位的段序仍按 `locale`；用法见[日历选择器](./calendar-picker)的示例。
 - `showTime`（仅 `granularity=day`）让两端都升格为不带时区的 `YYYY-MM-DDTHH:mm[:ss]`：两组段位带上时刻段，浮层里起止各多出一组时间列（`column-group` 里的 `time-column` / `time-item`：列与格与日期选择器的时间部件同名，一端的外壳与小标题与时间范围选择器同名），选完日期不收起，由 `confirm-trigger` 收口。`timeZone` 仍只决定「今天」。
 - 起止两组时间列的顶边接着日历标题栏的分隔线、底边与日期网格对齐；日历与起点组、起点组与终点组之间各隔一道竖线，组内列与列之间不画线。
+- 确认钮写在底栏（`footer`）里：底栏是浮层底部的通栏操作区，落在日历与两组时间列下面独占一行，上沿一道分隔线、四周 8 的内衬；作者另放的说明文字排在行首、取弱化的说明档字，确认钮落在行尾。底栏里只有确认钮时，未开 `showTime` 它随确认钮一并收起，不留空栏。
 - `defaultTime`（如 `['00:00:00', '23:59:59']`）在只点日期时给起止各补上对应时刻；已经挑过时刻的一端换日期时时刻原样留着。快捷选项同样是「日期拼上这一端此刻的时刻」，没有就按 `defaultTime`。
 - 时间列与时间选择器共用一份约束：`hourCycle`、按单位的 `timeStep`、带上下文的 `isTimeUnavailable`（`context.index` 是哪一端、`context.date` 是这一端的日期）；`min` / `max` 可以带时间段，同一天界外的时刻标为不可选。起止落在同一天时，终点列早于起点时刻的格自动不可选；两端按日期时间比先后，终点早于起点即整份标为不合法。
 - `activeIndex` 表示当前编辑哪一端，可受控：从终点那组段位展开（点它或在它上面按 Alt+ArrowDown）为 1，其余为 0；聚焦某一组段位、点某一端的时间格时随之改写，正在编辑的那一组时间列小标题加强调。为 1 且已有起点时日历只改终点——点在起点那一天或之后即落终点、起点不动，点在起点之前的日子从那一天重新开始挑；从触发钮展开照旧是先点起点再点终点。这与 antd 的「从终点输入框继续改」一致，React Aria 的区间日历每次点选都重新开始、没有这一档。
@@ -105,6 +106,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 - 起止常跨月时显式传 `visibleCount="2"`，并排查看两页。两页始终联动、一起翻页，不提供解绑，理由见[日历范围选择器](./calendar-range-picker)。
 - 需要统一查询值时，读取 `api.periodValue` 得到周期首尾与回显键。
 - 常用区间优先提供快捷项，日期在 computed / memo 中计算后再传入。
+- 开了 `showTime` 时把确认钮放进底栏，不在 `content` 里另写带样式的包裹块。
 
 ### 反模式
 
@@ -119,7 +121,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-date-range-picker>` |
-| Vue 组件 | `XhDateRangePickerCalendar` `XhDateRangePickerCell` `XhDateRangePickerCellTrigger` `XhDateRangePickerClearTrigger` `XhDateRangePickerConfirmTrigger` `XhDateRangePickerContent` `XhDateRangePickerControl` `XhDateRangePickerGrid` `XhDateRangePickerGridBody` `XhDateRangePickerGridHead` `XhDateRangePickerHeader` `XhDateRangePickerHeading` `XhDateRangePickerHeadingMonthTrigger` `XhDateRangePickerHeadingYearTrigger` `XhDateRangePickerHiddenInput` `XhDateRangePickerLabel` `XhDateRangePickerNextTrigger` `XhDateRangePickerNextYearTrigger` `XhDateRangePickerPositioner` `XhDateRangePickerPreset` `XhDateRangePickerPresetGroup` `XhDateRangePickerPrevTrigger` `XhDateRangePickerPrevYearTrigger` `XhDateRangePickerRangeSeparator` `XhDateRangePickerRoot` `XhDateRangePickerSegment` `XhDateRangePickerSegmentGroup` `XhDateRangePickerTimePanel` `XhDateRangePickerTrigger` `XhDateRangePickerWeekDay` `XhDateRangePickerWeekNumber` `XhDateRangePickerWeekRow` |
+| Vue 组件 | `XhDateRangePickerCalendar` `XhDateRangePickerCell` `XhDateRangePickerCellTrigger` `XhDateRangePickerClearTrigger` `XhDateRangePickerConfirmTrigger` `XhDateRangePickerContent` `XhDateRangePickerControl` `XhDateRangePickerFooter` `XhDateRangePickerGrid` `XhDateRangePickerGridBody` `XhDateRangePickerGridHead` `XhDateRangePickerHeader` `XhDateRangePickerHeading` `XhDateRangePickerHeadingMonthTrigger` `XhDateRangePickerHeadingYearTrigger` `XhDateRangePickerHiddenInput` `XhDateRangePickerLabel` `XhDateRangePickerNextTrigger` `XhDateRangePickerNextYearTrigger` `XhDateRangePickerPositioner` `XhDateRangePickerPreset` `XhDateRangePickerPresetGroup` `XhDateRangePickerPrevTrigger` `XhDateRangePickerPrevYearTrigger` `XhDateRangePickerRangeSeparator` `XhDateRangePickerRoot` `XhDateRangePickerSegment` `XhDateRangePickerSegmentGroup` `XhDateRangePickerTimePanel` `XhDateRangePickerTrigger` `XhDateRangePickerWeekDay` `XhDateRangePickerWeekNumber` `XhDateRangePickerWeekRow` |
 | 组合式函数 | `useDateRangePicker` |
 | 状态机 | `dateRangePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/date-range-picker.css` |
@@ -300,6 +302,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `getColumnGroupLabelProps` | `(props: DateRangePickerColumnGroupProps) => T['element']` | 时间组顶部的小标题，纯视觉，退出可访问树。 |
 | `getTimeColumnProps` | `(props: DateRangePickerTimeColumnProps) => T['element']` | 一端的一列（role=listbox）：时 / 分[/ 秒][/ 上下午]。 |
 | `getTimeItemProps` | `(props: DateRangePickerTimeItemProps) => T['element']` | 时间选项：点击把该单位写进这一端的时刻（那一端还没有日期时借另一端的日期，再没有就用聚焦日）。 |
+| `getFooterProps` | `() => T['element']` | 浮层底部的操作区：放在 content 中、排在面板主体之后，确认按钮通常写在这里；不进入任何集合的拥有关系，方向键也无法到达。 |
 | `getConfirmTriggerProps` | `() => T['button']` | 确认按钮：showTime 的收口；未开启 showTime 时带 hidden。 |
 
 ## 无障碍
@@ -513,6 +516,12 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `--xh-date-range-picker-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | date-range-picker 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-date-range-picker-control-w` | `root` | `inline-size` | `default` | `max-content` | date-range-picker 的 root 部件 inline-size 覆盖槽。 |
 | `--xh-date-range-picker-font-size` | `segment-group` | `font-size` | `default` | `--xh-_date-range-picker-font-size` | date-range-picker 的 segment-group 部件 font-size 覆盖槽。 |
+| `--xh-date-range-picker-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-solid-border` | date-range-picker 的 footer 部件 border-block-start 覆盖槽。 |
+| `--xh-date-range-picker-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | date-range-picker 的 footer 部件 color 覆盖槽。 |
+| `--xh-date-range-picker-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-caption-size` | date-range-picker 的 footer 部件 font-size 覆盖槽。 |
+| `--xh-date-range-picker-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | date-range-picker 的 footer 部件 gap 覆盖槽。 |
+| `--xh-date-range-picker-footer-px` | `footer` | `padding-inline` | `default` | `--xh-space-2` | date-range-picker 的 footer 部件 padding-inline 覆盖槽。 |
+| `--xh-date-range-picker-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | date-range-picker 的 footer 部件 padding-block 覆盖槽。 |
 | `--xh-date-range-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-range-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-date-range-picker-heading-font-weight` | `calendar`<br>`heading`<br>`heading-month-trigger`<br>`heading-year-trigger` | `font-weight` | `default` | `--xh-font-weight-regular` | date-range-picker 的 calendar、heading、heading-month-trigger、heading-year-trigger 部件 font-weight 覆盖槽。 |
 | `--xh-date-range-picker-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | date-range-picker 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |

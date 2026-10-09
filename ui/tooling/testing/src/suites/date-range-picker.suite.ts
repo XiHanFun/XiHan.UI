@@ -261,7 +261,7 @@ function presetGroupFixture(base: FixtureNode, presets: readonly { value: string
 }
 
 /**
- * showTime 的起止两组时间列与确认钮：Vue / React 的时间组整组自动铺（time-panel），Web Components 由作者自己写
+ * showTime 的起止两组时间列与底栏里的确认钮：Vue / React 的时间组整组自动铺（time-panel），Web Components 由作者自己写
  * 组、小标题、列与格，两种写法在 DOM 里落成同一副 column-group / column-group-label / time-column / time-item 部件。
  * 精度取缺省的 minute，每组只铺时、分两列。
  */
@@ -286,7 +286,8 @@ function showTimeFixture(base: FixtureNode): FixtureNode {
     { part: 'time-panel', only: ['vue', 'react'] },
     columnGroup(0, 'Start time'),
     columnGroup(1, 'End time'),
-    { part: 'confirm-trigger', tag: 'button', text: '确定' },
+    // 确认钮写在底栏里：底栏是浮层底部的通栏操作区，三家都按 footer 部件接线
+    { part: 'footer', children: [{ part: 'confirm-trigger', tag: 'button', text: '确定' }] },
   ]
   return {
     ...base,
@@ -771,6 +772,34 @@ export const dateRangePickerSuite: ConformanceSuite = {
             events: [{ type: 'open-change', detail: { open: false } }],
           },
         },
+      ],
+    },
+    {
+      name: 'showTime 的底栏是 content 里的通栏操作区：不报角色、不占 Tab 位，确认钮写在它里面照常收口',
+      spec: { apg: APG },
+      fixture: showTimeFixture,
+      props: { ...EMPTY_PROPS, showTime: true, defaultValue: ['2024-02-10T09:30', '2024-02-12T18:00'] },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'content', name: 'hidden', value: null } },
+          expect: { parts: { footer: { role: null, tabindex: null, hidden: null } } },
+        },
+        {
+          kind: 'raw',
+          why: '底栏与确认钮的父子关系只能看 DOM',
+          run: ({ doc }) => {
+            const footer = doc.querySelector('[data-scope="date-range-picker"][data-part="footer"]')
+            if (!footer)
+              throw new Error('找不到底栏')
+            if (footer.parentElement?.getAttribute('data-part') !== 'content')
+              throw new Error('底栏应是 content 的直接子节点')
+            if (!footer.querySelector(':scope > [data-scope="date-range-picker"][data-part="confirm-trigger"]'))
+              throw new Error('确认钮应写在底栏里')
+          },
+        },
+        { kind: 'click', part: 'confirm-trigger', expect: { parts: { content: { hidden: '' } } } },
       ],
     },
     {
