@@ -140,20 +140,22 @@ describe('tour 的 M4 sheet 气泡与 Action Control 动作钮', () => {
     expect(closeStyle.backgroundColor).toBe(TRANSPARENT)
   })
 
-  it('分页点：未到与走过的是 8px 正圆，当前那颗拉成 20px 胶囊', async () => {
+  it('分页点与走马灯同一种语言：未到与走过的是 6px 正圆、点距 8px，当前那颗拉成 20px 胶囊', async () => {
     mount()
     await settle()
 
     const done = getComputedStyle(part('progress-dot', 0))
-    expect(done.width).toBe('8px')
-    expect(done.height).toBe('8px')
+    expect(done.width).toBe('6px')
+    expect(done.height).toBe('6px')
     // circle 档：半径不小于半边长
-    expect(Number.parseFloat(done.borderTopLeftRadius)).toBeGreaterThanOrEqual(4)
+    expect(Number.parseFloat(done.borderTopLeftRadius)).toBeGreaterThanOrEqual(3)
 
     const current = getComputedStyle(part('progress-dot', 1))
     expect(current.width).toBe('20px')
-    expect(current.height).toBe('8px')
-    expect(Number.parseFloat(current.borderTopLeftRadius)).toBeGreaterThanOrEqual(4)
+    expect(current.height).toBe('6px')
+    expect(Number.parseFloat(current.borderTopLeftRadius)).toBeGreaterThanOrEqual(3)
+
+    expect(part('progress-dot', 1).getBoundingClientRect().left - part('progress-dot', 0).getBoundingClientRect().right).toBe(8)
   })
 
   it('说明文字走说明档 13px，滚动面自己收住滚动', async () => {
