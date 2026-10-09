@@ -20269,7 +20269,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-elevated-separator"
+        "--xh-material-elevated-border"
       ],
       "visibility": "public",
       "description": "command 的 footer 部件 border-block-start 覆盖槽。"
@@ -20395,7 +20395,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "command 的 group-label 部件 color 覆盖槽。"
@@ -20431,7 +20431,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-font-weight-regular"
       ],
       "visibility": "public",
       "description": "command 的 group-label 部件 font-weight 覆盖槽。"
@@ -20485,7 +20485,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1_5"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "command 的 group 部件 margin-block-start 覆盖槽。"
@@ -20564,7 +20564,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-elevated-separator"
+        "--xh-material-elevated-border"
       ],
       "visibility": "public",
       "description": "command 的 input 部件 border-block-end 覆盖槽。"
@@ -20842,7 +20842,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "0"
       ],
       "visibility": "public",
       "description": "command 的 item 部件 border-radius 覆盖槽。"
@@ -20914,7 +20914,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "command 的 list 部件 padding-inline 覆盖槽。"
@@ -20932,7 +20932,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "command 的 list 部件 padding-block 覆盖槽。"

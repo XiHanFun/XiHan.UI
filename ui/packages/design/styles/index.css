@@ -25774,7 +25774,7 @@
     padding-block: 0;
     padding-inline: var(--xh-command-input-px, var(--xh-_command-px));
     border: 0;
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-command-input-border, var(--xh-material-elevated-separator));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-command-input-border, var(--xh-material-elevated-border));
     border-radius: 0;
     background: transparent;
     color: var(--xh-command-input-fg, var(--xh-fg-default));
@@ -25811,8 +25811,9 @@
     flex-direction: column;
     gap: var(--xh-command-list-gap, var(--xh-list-option-gap));
     min-block-size: 0;
-    padding-block: var(--xh-command-list-py, var(--xh-space-2));
-    padding-inline: var(--xh-command-list-px, var(--xh-space-2));
+    /* 行通栏：列表左右不留内衬，行面贴到面板两缘；上下各留 4px */
+    padding-block: var(--xh-command-list-py, var(--xh-space-1));
+    padding-inline: var(--xh-command-list-px, var(--xh-space-0));
     /* 模态面板里的滚动面：到底后不把滚动链穿透给页面 */
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -25843,7 +25844,7 @@
 
   /* 组间留白只加在后继分组上：首组顶上已经有列表的内边距，再加一层会显得头重 */
   .xh-scope-command[data-part='group'] + .xh-scope-command[data-part='group'] {
-    margin-block-start: var(--xh-command-group-spacing, var(--xh-space-1_5));
+    margin-block-start: var(--xh-command-group-spacing, var(--xh-space-2));
   }
 
   /* 分组标题不是命令、进不了导航，画成小号次要文字，内缩与条目对齐 */
@@ -25851,9 +25852,9 @@
     display: block;
     padding-block: var(--xh-command-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-command-group-label-px, var(--xh-_command-px));
-    color: var(--xh-command-group-label-fg, var(--xh-fg-muted));
+    color: var(--xh-command-group-label-fg, var(--xh-fg-subtle));
     font-size: var(--xh-command-group-label-font-size, var(--xh-text-caption-size));
-    font-weight: var(--xh-command-group-label-font-weight, var(--xh-font-weight-medium));
+    font-weight: var(--xh-command-group-label-font-weight, var(--xh-font-weight-regular));
     line-height: var(--xh-leading-none);
     user-select: none;
   }
@@ -25869,7 +25870,7 @@
     --xh-collection-inline-padding: var(--xh-command-item-px, var(--xh-_command-px));
     --xh-collection-gap: 0;
     --xh-collection-font-size: var(--xh-command-item-font-size, var(--xh-_command-font-size));
-    --xh-collection-radius: var(--xh-command-item-radius, var(--xh-shape-inset));
+    --xh-collection-radius: var(--xh-command-item-radius, 0);
     --xh-collection-fg-rest: var(--xh-command-item-fg, var(--xh-fg-default));
     --xh-collection-fg-hover: var(--xh-command-item-fg, var(--xh-fg-default));
     --xh-collection-fg-keyboard-highlight: var(--xh-command-item-fg, var(--xh-fg-default));
@@ -25971,7 +25972,7 @@
     gap: var(--xh-command-footer-gap, var(--xh-space-2));
     padding-block: var(--xh-command-footer-py, var(--xh-space-2));
     padding-inline: var(--xh-command-footer-px, var(--xh-_command-px));
-    border-block-start: var(--xh-stroke-thin) solid var(--xh-command-footer-border, var(--xh-material-elevated-separator));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-command-footer-border, var(--xh-material-elevated-border));
     color: var(--xh-command-footer-fg, var(--xh-fg-muted));
     font-size: var(--xh-command-footer-font-size, var(--xh-text-caption-size));
   }

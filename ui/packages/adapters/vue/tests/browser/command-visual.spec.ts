@@ -20,7 +20,7 @@ afterEach(async () => {
 })
 
 /** 在宿主的主题下把令牌解析成最终值，断言不写死任何色值。 */
-function resolve(token: string, property: 'background-color' | 'color' | 'border-color' | 'box-shadow' = 'background-color'): string {
+function resolve(token: string, property: 'background-color' | 'color' | 'border-color' | 'box-shadow' | 'border-top-left-radius' = 'background-color'): string {
   const probe = document.createElement('span')
   probe.style.setProperty(property, `var(${token})`)
   host!.append(probe)
@@ -71,7 +71,7 @@ describe('command 面板与命令', () => {
     expect(content.backgroundColor).toBe(resolve('--xh-material-elevated-bg'))
     expect(content.boxShadow).toBe(resolve('--xh-material-elevated-shadow', 'box-shadow'))
     expect(content.borderTopLeftRadius).toBe(getComputedStyle(part('content')).borderTopLeftRadius)
-    expect(Number.parseFloat(content.borderTopLeftRadius)).toBe(12)
+    expect(content.borderTopLeftRadius).toBe(resolve('--xh-shape-overlay', 'border-top-left-radius'))
   })
 
   it('进场从上方落下：起点在终点之上一小段，缩放锚在面板顶缘，位移与缩放同向', async () => {
