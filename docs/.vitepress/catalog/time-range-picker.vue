@@ -10,19 +10,13 @@
     <path d="M127 28h6" stroke="var(--xh-fg-default)" stroke-width="6" />
     <path d="M210 28a6 6 0 1 1-12 0a6 6 0 1 1 12 0m-6-3v3l2 2" stroke="var(--xh-fg-muted)" stroke-width="2" />
     <rect x="16.5" y="48.5" width="207" height="99" rx="4" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
-    <path d="M30 62h28M126 62h28" stroke="var(--xh-fg-subtle)" stroke-width="4" />
-    <path d="M120.5 49v98" stroke="var(--xh-border-subtle)" />
-    <path d="M35 84h6" stroke="var(--xh-fg-default)" stroke-width="6" />
-    <path d="M51 84l3 3 7-7" stroke="var(--xh-fg-brand)" stroke-width="2" />
-    <path d="M35 108h6M35 132h6" stroke="var(--xh-fg-muted)" stroke-width="6" />
-    <path d="M75 84h6" stroke="var(--xh-fg-default)" stroke-width="6" />
-    <path d="M91 84l3 3 7-7" stroke="var(--xh-fg-brand)" stroke-width="2" />
-    <path d="M75 108h6M75 132h6M131 84h6" stroke="var(--xh-fg-muted)" stroke-width="6" />
-    <path d="M131 108h6" stroke="var(--xh-fg-default)" stroke-width="6" />
-    <path d="M147 108l3 3 7-7" stroke="var(--xh-fg-brand)" stroke-width="2" />
-    <path d="M131 132h6M171 84h6" stroke="var(--xh-fg-muted)" stroke-width="6" />
-    <path d="M171 108h6" stroke="var(--xh-fg-default)" stroke-width="6" />
-    <path d="M187 108l3 3 7-7" stroke="var(--xh-fg-brand)" stroke-width="2" />
-    <path d="M171 132h6" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <rect x="17" y="97" width="51" height="24" fill="var(--xh-bg-subtle)" />
+    <path d="M55 61h28M158 61h28" stroke="var(--xh-fg-subtle)" stroke-width="4" />
+    <path d="M17 72.5h206M68.5 73v74M120.5 49v98M172.5 73v74" stroke="var(--xh-border-default)" />
+    <path d="M33 85h6M84 85h6" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M49 85l3 3 7-7M100 85l3 3 7-7" stroke="var(--xh-fg-brand)" stroke-width="2" />
+    <path d="M33 109h6M33 133h6M84 109h6M84 133h6M136 85h6M136 133h6M188 85h6M188 133h6" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M136 109h6M188 109h6" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M152 109l3 3 7-7M204 109l3 3 7-7" stroke="var(--xh-fg-brand)" stroke-width="2" />
   </svg>
 </template>
