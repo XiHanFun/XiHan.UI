@@ -10,7 +10,7 @@
     <path d="M36 76l4 4 4-4" stroke="var(--xh-fg-muted)" stroke-width="2" />
     <path d="M58 78h56" stroke="var(--xh-fg-default)" stroke-width="4" />
     <g data-tone="success">
-      <rect x="156" y="70" width="48" height="16" rx="8" fill="var(--xh-tone-subtle)" />
+      <rect x="156" y="70" width="48" height="16" rx="2" fill="var(--xh-tone-subtle)" />
       <path d="M164 78h32" stroke="var(--xh-tone-fg)" stroke-width="4" />
     </g>
     <path d="M24 95.5h192" stroke="var(--xh-border-subtle)" />
