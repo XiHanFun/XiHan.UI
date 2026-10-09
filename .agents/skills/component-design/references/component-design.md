@@ -1284,7 +1284,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 分页的页码、翻页钮与省略位 | 32 × 32 | 圆角 4（描边方块） |
 | 单选圈、头像、浮动钮、节点 | — | `<circle>` |
 | 开关 | 32 × 16，拇指半径 6 | 胶囊 |
-| 轨道：滑块、进度、滚动条 | 线宽 4 / 6 的圆头线 | 胶囊 |
+| 轨道：滑块、进度、滚动条 | 线宽 2 / 4 / 6 的圆头线（Slider 2，Progress 4） | 胶囊 |
 | 标签与状态方签（Tag、ToolCall 状态、Approval / QuestionFlow 结果） | 高 16–20 | 圆角 2 |
 | 徽标（Badge） | 高 16–20 | 胶囊 |
 | 内容面：Card、列表与表格容器 | — | 圆角 4 |
@@ -1331,7 +1331,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 选中 / 当前 | 行与开关面 `--xh-bg-brand-subtle`；对号与指示条 `--xh-fg-brand`；格状当前 `--xh-bg-brand` |
 | 分页 | 页码、翻页钮与省略位都描 `--xh-border-default`、不填底；当前页 `--xh-bg-brand-subtle` 底 + `--xh-bg-brand` 描边，页码条取 `--xh-fg-on-brand-subtle` |
 | 悬停行、打开中的触发器 | `--xh-bg-subtle` |
-| 轨道 | `--xh-bg-subtle-active`，已走过的一段 `--xh-bg-brand` |
+| 轨道 | Slider 与 Progress 的底槽 `--xh-bg-subtle-hover`，已走过的一段 `--xh-bg-brand`；Slider 拇指 `--xh-bg-surface` 底 + 2 线宽 `--xh-bg-brand` 描边；开关等其余轨道 `--xh-bg-subtle-active` |
 | 分隔线 | `--xh-border-subtle`；面的外边 `--xh-border-default` |
 | 图片占位 | `--xh-bg-subtle-hover-opaque` 底，山与日 `--xh-bg-subtle-active-opaque` |
 | 遮罩 | `--xh-bg-overlay` |
