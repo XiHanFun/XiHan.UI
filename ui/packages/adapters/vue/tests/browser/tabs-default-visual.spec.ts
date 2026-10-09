@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
+import { tokenLength } from './design-token'
 import { pressPointer, releasePointerAway } from './pointer-press'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -66,6 +67,16 @@ function shapePx(element: HTMLElement, token: string): number {
   return value
 }
 
+/** 投影令牌在该元素上解到的 box-shadow（令牌取 none 时就是 none）。 */
+function resolveShadow(token: string, scope: HTMLElement): string {
+  const probe = document.createElement('span')
+  probe.style.boxShadow = `var(${token})`
+  scope.append(probe)
+  const value = getComputedStyle(probe).boxShadow
+  probe.remove()
+  return value
+}
+
 describe('tabs 默认视觉', () => {
   it('不写变体与显式 line 画成同一套：透明标签带，选中项只靠文字与指示条', () => {
     const plain = mount()
@@ -108,7 +119,7 @@ describe('tabs 默认视觉', () => {
     expect(Number.parseFloat(segmentPaint.listPadding)).toBeGreaterThan(0)
     expect(paint(segment.indicator, 'display')).not.toBe('none')
     expect(segmentPaint.indicatorBackground).not.toBe('rgba(0, 0, 0, 0)')
-    expect(segmentPaint.indicatorShadow).not.toBe('none')
+    expect(segmentPaint.indicatorShadow).toBe(resolveShadow('--xh-elevation-raised', segment.list))
     // 部件按机器写的四支私有槽落位；面搬走后选中标签透空、不再叠一层
     expect(getComputedStyle(segment.indicator).position).toBe('absolute')
     expect(getComputedStyle(segment.indicator).width).toBe('40px')
@@ -125,20 +136,22 @@ describe('tabs 默认视觉', () => {
     expect(segment.active.offsetWidth).toBe(segment.inactive.offsetWidth)
   })
 
-  it('line 保持透明标签带：当前页透明面 + 品牌深字 + medium，未选中 muted + regular，悬停走白底承载 100 + default 字', async () => {
+  it('line 保持透明标签带与底部基线：当前页透明面 + 品牌字色 + medium，未选中 muted + regular，悬停走白底承载 100 + default 字', async () => {
     const line = mount('line')
     freezeMotion()
     const style = getComputedStyle(line.list)
 
     expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(Number.parseFloat(style.paddingInlineStart)).toBe(0)
-    expect(Number.parseFloat(style.borderBottomWidth)).toBe(0)
-    expect(getComputedStyle(line.indicator).bottom).toBe('0px')
-    // 当前页（导航当前页，Collection Item nav 语境）：透明面 + --xh-fg-brand-strong + medium
+    // 底边一道细线基线（border-default），指示条压在基线上而不是悬在它上方
+    expect(Number.parseFloat(style.borderBottomWidth)).toBe(tokenLength('--xh-stroke-thin', line.list))
+    expect(style.borderBottomColor).toBe(resolveColor('--xh-border-default', line.list))
+    expect(getComputedStyle(line.indicator).bottom).toBe(`-${style.borderBottomWidth}`)
+    // 当前页（导航当前页，Collection Item nav 语境）：透明面 + --xh-fg-brand + medium
     const active = getComputedStyle(line.active)
     expect(active.boxShadow).toBe('none')
     expect(active.backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(active.color).toBe(resolveColor('--xh-fg-brand-strong', line.list))
+    expect(active.color).toBe(resolveColor('--xh-fg-brand', line.list))
     expect(active.fontWeight).toBe('500')
     // 未选中：muted + regular（与 Anchor / Breadcrumb / Menubar 同一档静息）
     const rest = getComputedStyle(line.inactive)
@@ -150,10 +163,10 @@ describe('tabs 默认视觉', () => {
     await userEvent.hover(line.inactive)
     expect(getComputedStyle(line.inactive).backgroundColor).toBe(resolveColor('--xh-bg-subtle', line.list))
     expect(getComputedStyle(line.inactive).color).toBe(resolveColor('--xh-fg-default', line.list))
-    // 当前页叠悬停：保留品牌深字，面走 100
+    // 当前页叠悬停：保留品牌字色，面走 100
     await userEvent.hover(line.active)
     expect(getComputedStyle(line.active).backgroundColor).toBe(resolveColor('--xh-bg-subtle', line.list))
-    expect(getComputedStyle(line.active).color).toBe(resolveColor('--xh-fg-brand-strong', line.list))
+    expect(getComputedStyle(line.active).color).toBe(resolveColor('--xh-fg-brand', line.list))
   })
 
   it('card 只保留选中标签的卡片面', () => {
@@ -173,7 +186,7 @@ describe('tabs 默认视觉', () => {
     expect(slider.backgroundColor).toBe(resolveColor('--xh-bg-surface-raised', segment.list))
     expect(slider.borderTopColor).toBe(resolveColor('--xh-border-default', segment.list))
     expect(Number.parseFloat(slider.borderTopWidth)).toBe(1)
-    expect(slider.boxShadow).not.toBe('none')
+    expect(slider.boxShadow).toBe(resolveShadow('--xh-elevation-raised', segment.list))
     // 作者没放 indicator 部件：面回到选中标签自己身上（面的过渡归零，读到的才是终值）
     freezeMotion()
     segment.indicator.remove()
@@ -181,7 +194,7 @@ describe('tabs 默认视觉', () => {
     expect(active.backgroundColor).toBe(resolveColor('--xh-bg-surface-raised', segment.list))
     expect(active.borderTopColor).toBe(resolveColor('--xh-border-default', segment.list))
     expect(Number.parseFloat(active.borderTopWidth)).toBe(1)
-    expect(active.boxShadow).not.toBe('none')
+    expect(active.boxShadow).toBe(resolveShadow('--xh-elevation-raised', segment.list))
     const list = getComputedStyle(segment.list)
     expect(Number.parseFloat(list.borderTopWidth)).toBe(1)
     expect(list.borderTopColor).toBe('rgba(0, 0, 0, 0)')

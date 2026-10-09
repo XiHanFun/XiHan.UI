@@ -17,6 +17,7 @@ import {
   XhContextMenuSeparator,
   XhContextMenuTrigger,
 } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -137,7 +138,7 @@ describe('右键菜单 M2 表面', () => {
     expect(contextContent.color).toBe(menuContent.color)
     expect(contextContent.boxShadow).toBe(menuContent.boxShadow)
     expect(backdrop(contextContent)).toBe(backdrop(menuContent))
-    expect(backdrop(contextContent)).toContain('blur(16px)')
+    expect(backdrop(contextContent)).toBe(tokenValue('backdrop-filter', '--xh-material-frosted-backdrop', part('content')))
 
     expect(highlightOf(part('content'))).toBe(highlightOf(menuContentNode))
 

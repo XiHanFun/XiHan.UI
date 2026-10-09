@@ -1,4 +1,4 @@
-// 字段外壳的焦点环即时出现：键盘用户要焦点当场落位，环不淡入；描边换色照常淡变。
+// 字段外壳聚焦不画环：焦点由描边换色与底色差标出，描边换色照常淡变，outline 也不进过渡清单。
 // 过渡是否在播只有真实浏览器看得见。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -19,7 +19,7 @@ afterEach(() => {
 })
 
 describe('字段外壳焦点环', () => {
-  it('键盘聚焦：环当场画出，没有 outline-color 过渡；描边换色仍在淡变', async () => {
+  it('键盘聚焦：不画环、没有 outline-color 过渡；描边换色仍在淡变', async () => {
     host = document.createElement('div')
     document.body.append(host)
     app = createApp({
@@ -34,6 +34,6 @@ describe('字段外壳焦点环', () => {
       .map(animation => animation.transitionProperty)
     expect(running).not.toContain('outline-color')
     expect(running.some(name => name.startsWith('border'))).toBe(true)
-    expect(getComputedStyle(control).outlineColor).not.toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(control).outlineStyle).toBe('none')
   })
 })

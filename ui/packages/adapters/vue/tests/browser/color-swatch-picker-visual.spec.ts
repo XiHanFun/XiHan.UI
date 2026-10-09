@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhColorSwatchPickerRoot } from '../../src'
+import { pressScale } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -134,7 +135,7 @@ describe('颜色色块选择器的格子', () => {
     const item = part('item', 2)
     const face = getComputedStyle(part('swatch', 2)).backgroundImage
     item.setAttribute('data-pressed', '')
-    expect(getComputedStyle(item).scale).toBe('0.97')
+    expect(getComputedStyle(item).scale).toBe(pressScale(item))
     expect(getComputedStyle(part('swatch', 2)).backgroundImage).toBe(face)
     expect(getComputedStyle(part('swatch', 2)).borderTopColor).toBe(resolvedToken('--xh-fg-brand'))
   })

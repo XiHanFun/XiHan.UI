@@ -38,6 +38,7 @@ import {
   XhMessageFeedScrollToEndTrigger,
   XhMessageFeedViewport,
 } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -242,7 +243,7 @@ async function judged(el: HTMLElement): Promise<void> {
 }
 
 describe('接入液态面', () => {
-  it('消息流与日志的回到底部：liquid 档挂进液态面，standard 档保持磨砂', async () => {
+  it('消息流与日志的回到底部：liquid 档挂进液态面，standard 档取 frosted 配方', async () => {
     for (const [scope, render] of [['message-feed', messageFeed], ['log', log]] as const) {
       await mount(render, 'oklch(0.96 0.02 100)')
       const trigger = await scrollAwayFromBottom(scope)
@@ -257,7 +258,7 @@ describe('接入液态面', () => {
       await mount(render, 'oklch(0.96 0.02 100)', null)
       const standard = await scrollAwayFromBottom(scope)
       expect(standard.hasAttribute('data-xh-ink')).toBe(false)
-      expect(getComputedStyle(standard).backdropFilter).toContain('blur(16px)')
+      expect(getComputedStyle(standard).backdropFilter).toBe(tokenValue('backdrop-filter', '--xh-material-frosted-backdrop', standard))
       app!.unmount()
       host!.remove()
       under!.remove()

@@ -7,6 +7,7 @@ import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import { XhAvatarFallback, XhAvatarRoot, XhIcon } from '../../src'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -19,10 +20,10 @@ const CHECK: IconRecord = {
 
 const SIZES: readonly Size[] = ['sm', 'md', 'lg']
 
-/** 两档密度下三档框（= 头像）的直径与框里图元的直径。 */
+/** 三档框（= 头像）的直径取同档控件高、随密度换档；框里图元取同档字形直径。 */
 const EXPECTED = {
-  comfortable: { box: { sm: 32, md: 36, lg: 40 }, glyph: { sm: 16, md: 20, lg: 24 } },
-  compact: { box: { sm: 28, md: 32, lg: 36 }, glyph: { sm: 16, md: 20, lg: 24 } },
+  box: { sm: '--xh-control-h-sm', md: '--xh-control-h-md', lg: '--xh-control-h-lg' },
+  glyph: { sm: 16, md: 20, lg: 24 },
 } as const
 
 const TRANSPARENT = 'rgba(0, 0, 0, 0)'
@@ -90,8 +91,8 @@ describe('icon 底框的尺寸', () => {
       SIZES.forEach((size, index) => {
         const icon = icons()[index]!.getBoundingClientRect()
         const avatar = avatars()[index]!.getBoundingClientRect()
-        const box = EXPECTED[density].box[size as 'sm' | 'md' | 'lg']
-        const glyph = EXPECTED[density].glyph[size as 'sm' | 'md' | 'lg']
+        const box = tokenLength(EXPECTED.box[size as 'sm' | 'md' | 'lg'], host!)
+        const glyph = EXPECTED.glyph[size as 'sm' | 'md' | 'lg']
         expect([icon.width, icon.height], `${size} 框`).toEqual([box, box])
         expect([icon.width, icon.height], `${size} 与头像同档`).toEqual([avatar.width, avatar.height])
         expect(contentBox(icons()[index]!), `${size} 图元`).toEqual({ width: glyph, height: glyph })
@@ -130,7 +131,7 @@ describe('icon 底框的尺寸', () => {
     const [plain, framed] = icons()
     // 不加框的图标照旧跟随外层通道
     expect(plain!.getBoundingClientRect().width).toBe(12)
-    expect(framed!.getBoundingClientRect().width).toBe(40)
+    expect(framed!.getBoundingClientRect().width).toBe(tokenLength('--xh-control-h-lg', host!))
     expect(contentBox(framed!)).toEqual({ width: 24, height: 24 })
   })
 

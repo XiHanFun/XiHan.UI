@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhButton, XhButtonGroup, XhButtonIndicator, XhButtonLabel, XhToggle } from '../../src'
+import { pressScale, tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -100,11 +101,16 @@ afterEach(async () => {
   await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
 })
 
+/** 四 profile 在 xs / sm / md / lg 上取的视觉盒令牌：text / icon 走控件高，field-inset 低一档，floating 走方格。 */
+const VISUAL_SIZE = {
+  'text': ['--xh-control-action-size', '--xh-control-h-sm', '--xh-control-h-md', '--xh-control-h-lg'],
+  'icon': ['--xh-control-action-size', '--xh-control-h-sm', '--xh-control-h-md', '--xh-control-h-lg'],
+  'field-inset': ['--xh-control-action-size', '--xh-control-action-size', '--xh-control-h-sm', '--xh-control-h-md'],
+  'floating': ['--xh-control-action-size', '--xh-control-box-sm', '--xh-control-box-md', '--xh-control-box-lg'],
+} as const
+
 describe('action Control 四 profile', () => {
-  it.each([
-    { density: 'comfortable' as const, expected: { 'text': [24, 32, 36, 40], 'icon': [24, 32, 36, 40], 'field-inset': [24, 24, 32, 36], 'floating': [24, 32, 40, 48] } },
-    { density: 'compact' as const, expected: { 'text': [20, 28, 32, 36], 'icon': [20, 28, 32, 36], 'field-inset': [20, 20, 28, 32], 'floating': [20, 28, 36, 44] } },
-  ])('$density：四 profile × xs/sm/md/lg 的视觉盒由同一配方解析', ({ density, expected }) => {
+  it.each(['comfortable', 'compact'] as const)('%s：四 profile × xs/sm/md/lg 的视觉盒由同一配方解析', (density) => {
     mount(() => h('div'), density)
     const sizes = ['xs', 'sm', 'md', 'lg'] as const
     const profiles = ['text', 'icon', 'field-inset', 'floating'] as const
@@ -112,7 +118,7 @@ describe('action Control 四 profile', () => {
       sizes.forEach((size, index) => {
         const element = rawAction(profile, size)
         const rect = element.getBoundingClientRect()
-        expect(rect.height, `${profile}/${size}`).toBe(expected[profile][index])
+        expect(rect.height, `${profile}/${size}`).toBe(tokenLength(VISUAL_SIZE[profile][index]!, host!))
         if (profile === 'text')
           expect(rect.width, `${profile}/${size} 文字动作不低于视觉尺寸`).toBeGreaterThanOrEqual(rect.height)
         else
@@ -121,10 +127,7 @@ describe('action Control 四 profile', () => {
     }
   })
 
-  it.each([
-    { density: 'comfortable' as const, minimum: [24, 32, 36, 40] },
-    { density: 'compact' as const, minimum: [20, 28, 32, 36] },
-  ])('$density：row / disclosure-trigger 铺满容器宽度，高度不低于视觉尺寸', ({ density, minimum }) => {
+  it.each(['comfortable', 'compact'] as const)('%s：row / disclosure-trigger 铺满容器宽度，高度不低于视觉尺寸', (density) => {
     mount(() => h('div'), density)
     const container = document.createElement('div')
     container.style.inlineSize = '320px'
@@ -135,7 +138,7 @@ describe('action Control 四 profile', () => {
         const element = rawAction(profile, size, container)
         const rect = element.getBoundingClientRect()
         expect(rect.width, `${profile}/${size} 宽度由容器给`).toBe(320)
-        expect(rect.height, `${profile}/${size} 高度不低于视觉尺寸`).toBeGreaterThanOrEqual(minimum[index]!)
+        expect(rect.height, `${profile}/${size} 高度不低于视觉尺寸`).toBeGreaterThanOrEqual(tokenLength(VISUAL_SIZE.text[index]!, host!))
         expect(getComputedStyle(element).display).toBe('flex')
       })
     }
@@ -227,7 +230,7 @@ describe('action Control 状态与命中区', () => {
     await press(onCanvas)
     expect(onCanvas.matches(':active')).toBe(true)
     expect(getComputedStyle(onCanvas).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover'))
-    expect(getComputedStyle(onCanvas).scale).toBe('0.97')
+    expect(getComputedStyle(onCanvas).scale).toBe(pressScale(onCanvas))
     await release(onCanvas)
 
     await userEvent.hover(onTinted)
@@ -240,7 +243,7 @@ describe('action Control 状态与命中区', () => {
   it.each([
     { label: 'XhButton', render: () => h(XhButton, { variant: 'ghost' }, () => '按钮') },
     { label: 'XhToggle', render: () => h(XhToggle, { variant: 'ghost' }, () => '开关') },
-  ])('$label：键盘 Space / Enter 按住投影 data-pressed，解出与指针 :active 同一副按压面（scale 0.97、pressed 底）', async ({ render }) => {
+  ])('$label：键盘 Space / Enter 按住投影 data-pressed，解出与指针 :active 同一副按压面（按压缩放令牌、pressed 底）', async ({ render }) => {
     document.documentElement.dataset.theme = 'light'
     mount(render)
     freezeMotion()
@@ -276,7 +279,7 @@ describe('action Control 状态与命中区', () => {
       expect(element.hasAttribute('data-pressed'), `${JSON.stringify(key)} 按住`).toBe(true)
       if (key === 'Enter')
         expect(element.matches(':active'), 'Enter 按住没有 :active，这一副面只能来自 data-pressed').toBe(false)
-      expect(getComputedStyle(element).scale, `${JSON.stringify(key)} 按住的缩放`).toBe('0.97')
+      expect(getComputedStyle(element).scale, `${JSON.stringify(key)} 按住的缩放`).toBe(pressScale(element))
       expect(getComputedStyle(element).backgroundColor, `${JSON.stringify(key)} 按住的底`).toBe(isOn() ? onPressedBg : offPressedBg)
 
       await keyUp(key)

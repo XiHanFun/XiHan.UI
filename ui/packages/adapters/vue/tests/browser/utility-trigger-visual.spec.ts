@@ -9,6 +9,7 @@ import {
   XhClipboardRoot,
   XhDownloadTrigger,
 } from '../../src'
+import { pressScale } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -89,7 +90,7 @@ describe('工具触发器视觉合同', () => {
     }
   })
 
-  it('按下同时换底并缩到 0.97：定尺的独立动作钮由家族按压块给触感，布局盒不变', async () => {
+  it('按下同时换底并按按压缩放令牌缩放：定尺的独立动作钮由家族按压块给触感，布局盒不变', async () => {
     host = document.createElement('div')
     document.body.append(host)
     // 过渡即时完成：断言的是按住的稳定态，不是过渡中间帧
@@ -111,8 +112,8 @@ describe('工具触发器视觉合同', () => {
     await nextTick()
 
     const utilities = [
-      { el: host.querySelector<HTMLElement>(`[data-scope='download-trigger'][data-part='root']`)!, scale: '0.97' },
-      { el: host.querySelector<HTMLElement>(`[data-scope='clipboard'][data-part='copy-trigger']`)!, scale: '0.97' },
+      { el: host.querySelector<HTMLElement>(`[data-scope='download-trigger'][data-part='root']`)!, scale: pressScale() },
+      { el: host.querySelector<HTMLElement>(`[data-scope='clipboard'][data-part='copy-trigger']`)!, scale: pressScale() },
     ]
 
     for (const { el: utility, scale } of utilities) {

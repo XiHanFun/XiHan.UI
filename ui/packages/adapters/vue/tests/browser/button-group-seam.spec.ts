@@ -137,7 +137,12 @@ describe('按钮组轮廓', () => {
     const root = host!.querySelector<HTMLElement>(`[data-scope='button-group'][data-part='root']`)!
     const separator = root.querySelector<HTMLElement>('[data-xh-button-group-separator]')!
     const separatorStyle = getComputedStyle(separator)
-    expect(separatorStyle.backgroundColor).toBe(getComputedStyle(buttons()[0]!).color)
+    // 缺省 subtle 面上的分隔线取面的墨色（正文色）按分隔透明度画，段自己的次要字色更淡，不跟它走
+    const ink = document.createElement('span')
+    ink.style.color = 'var(--xh-fg-default)'
+    root.append(ink)
+    expect(separatorStyle.backgroundColor).toBe(getComputedStyle(ink).color)
+    ink.remove()
     expect(separatorStyle.backgroundColor).not.toBe(getComputedStyle(buttons()[0]!).backgroundColor)
     expect(Number.parseFloat(separatorStyle.opacity)).toBeGreaterThan(0)
   })

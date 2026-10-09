@@ -12,32 +12,24 @@ import '@xihan-ui/styles'
 
 defineXhElements()
 
+const HUES = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'teal', 'cyan', 'blue', 'indigo', 'purple', 'pink'] as const
+
 /**
- * 与皮肤里 [data-palette] 各条规则一一对上的满档实心底：十二个色相都取基础色板的 600 档，
+ * 与皮肤里 [data-palette] 各条规则一一对上的满档实心底（令牌名）：十二个色相都取基础色板的 600 档，
  * 与 brand 同明度，只换色相与各自的彩度上限；gray 取中性色，深色态换到 450 档。
  */
-const HUES: Record<string, string> = {
-  red: 'oklch(0.546 0.216 25)',
-  orange: 'oklch(0.546 0.216 50)',
-  amber: 'oklch(0.546 0.183 70)',
-  yellow: 'oklch(0.546 0.171 95)',
-  lime: 'oklch(0.546 0.206 125)',
-  green: 'oklch(0.546 0.205 149)',
-  teal: 'oklch(0.546 0.131 180)',
-  cyan: 'oklch(0.546 0.129 215)',
-  blue: 'oklch(0.546 0.163 237)',
-  indigo: 'oklch(0.546 0.216 258)',
-  purple: 'oklch(0.546 0.216 302)',
-  pink: 'oklch(0.546 0.216 345)',
-}
-
 const INK: Record<string, { light: string, dark: string }> = {
-  ...Object.fromEntries(Object.entries(HUES).map(([hue, ink]) => [hue, { light: ink, dark: ink }])),
-  gray: { light: 'oklch(0.439 0.006 258)', dark: 'oklch(0.65 0.006 258)' },
+  ...Object.fromEntries(HUES.map(hue => [hue, { light: `--xh-color-${hue}-600`, dark: `--xh-color-${hue}-600` }])),
+  gray: { light: '--xh-color-neutral-600', dark: '--xh-color-neutral-450' },
 }
 
 /** 不写色板时的满档实心底：语义令牌 bg-brand，它本就按主题翻。 */
-const DEFAULT_INK = 'oklch(0.546 0.216 258)'
+const DEFAULT_INK = '--xh-bg-brand'
+
+/** 令牌在根上解出的值：原语与浅色主题下的语义令牌都写在根上。 */
+function token(name: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+}
 
 const LEVELS = 5
 
@@ -91,24 +83,24 @@ describe('热力图色板轴：属性接到私有槽', () => {
     it(`palette="${palette}" 落成 data-palette 并定住满档实心底`, async () => {
       const root = await mount(` palette="${palette}"`)
       expect(root.dataset.palette).toBe(palette)
-      expect(ink(root)).toBe(INK[palette]!.light)
+      expect(ink(root)).toBe(token(INK[palette]!.light))
     })
   }
 
   it('不写色板时与色板轴加进来之前逐字一致', async () => {
     const root = await mount('')
     expect(root.hasAttribute('data-palette')).toBe(false)
-    expect(ink(root)).toBe(DEFAULT_INK)
+    expect(ink(root)).toBe(token(DEFAULT_INK))
   })
 
   it('拼错取值退回不写色板那一档，不是悬空', async () => {
-    expect(ink(await mount(' palette="magenta"'))).toBe(DEFAULT_INK)
+    expect(ink(await mount(' palette="magenta"'))).toBe(token(DEFAULT_INK))
   })
 })
 
 describe('热力图色板轴：与语气轴的先后', () => {
   it('两个都写时色板赢——色板指名了一个具体颜色，语气只是推得出一个颜色', async () => {
-    expect(ink(await mount(' palette="green" tone="danger"'))).toBe(INK.green!.light)
+    expect(ink(await mount(' palette="green" tone="danger"'))).toBe(token(INK.green!.light))
   })
 
   it('只写语气时照旧走语气', async () => {
@@ -150,15 +142,24 @@ describe('热力图色板轴：兑出来的五档', () => {
   it('dark gray：深色标记写在热力图自己身上也换档', async () => {
     const root = await mount(' palette="gray"')
     root.dataset.theme = 'dark'
-    expect(ink(root)).toBe(INK.gray!.dark)
+    expect(ink(root)).toBe(token(INK.gray!.dark))
   })
 })
 
 // 色板只改 root 上那一个私有槽，格子与图例都从 root 继承它，三种形态因此共用同一条色阶。
 // 这里逐形态各铺一张，量真正画出来的那一格：形态规则里若有谁另起炉灶写死了底色，这里会红。
 describe('热力图色板轴：三种形态都吃这条轴', () => {
-  /** 一格 50% 档在 purple 上兑出来的明度：0.967 与 0.546 的中点。 */
-  const MID_LIGHTNESS = 0.7565
+  /** 一格 50% 档在 purple 上兑出来的明度：满档色与空格底（淡底的不透明档）在 oklab 里各取一半。 */
+  function midLightness(root: HTMLElement): number {
+    const probe = document.createElement('span')
+    probe.style.backgroundColor = `color-mix(in oklab, var(${INK.purple!.light}) 50%, var(--xh-bg-subtle-opaque))`
+    root.append(probe)
+    const m = /oklab\(\s*([\d.]+)/.exec(getComputedStyle(probe).backgroundColor)
+    probe.remove()
+    if (!m)
+      throw new Error('兑出来的颜色不是 oklab')
+    return Number(m[1])
+  }
 
   /** 三种形态的角色节点身份各不相同：日历是星期行 + 日期，月历多一层月块，矩阵是行名 + 列名。 */
   const MARKUP: Record<string, string> = {
@@ -206,12 +207,12 @@ describe('热力图色板轴：三种形态都吃这条轴', () => {
   for (const variant of ['calendar', 'month', 'matrix']) {
     it(`${variant}：格子按色板兑出来`, async () => {
       const root = await mountVariant(variant)
-      expect(ink(root)).toBe(INK.purple!.light)
+      expect(ink(root)).toBe(token(INK.purple!.light))
       const cell = root.querySelector<HTMLElement>('[data-part="cell"]')!
       expect(cell.dataset.level).toBe('2')
       const m = /oklab\(\s*([\d.]+)/.exec(getComputedStyle(cell).backgroundColor)
       expect(m).not.toBeNull()
-      expect(Number(m![1])).toBeCloseTo(MID_LIGHTNESS, 3)
+      expect(Number(m![1])).toBeCloseTo(midLightness(root), 3)
     })
   }
 })
