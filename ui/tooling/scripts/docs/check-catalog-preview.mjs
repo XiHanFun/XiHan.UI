@@ -21,8 +21,8 @@
 // - 字段外壳（描控件边、短边不小于 FIELD_SHELL_MIN 的实线盒）按描边铺底：静息与校验失败铺
 //   --xh-bg-field，聚焦铺 --xh-bg-surface；刻意不铺的登记在 UNFILLED_CONTROL_BOX。
 // - 勾选方框与单选圈（不填底的 16px 小盒）描边取 CHECK_MARKER_STROKE。
-// - 锚定浮层里的列表（FLUSH_ROW_LISTS）行是通栏：浮层面里 24 高的淡底行不取圆角，左右贴面板
-//   内沿；多列面板（MULTI_COLUMN_LISTS）的行铺到列分隔线为止，只核左沿。
+// - 通栏列表（FLUSH_ROW_LISTS：锚定浮层里的列表、Command、Transfer）：面板里 24 高的悬停 / 选中行
+//   不取圆角，左右贴面板内沿；多列面板（MULTI_COLUMN_LISTS）的行铺到列分隔线为止，只核左沿。
 // - 渐变 id 以文件名开头（总览页上全部示意图同处一个 document，整页不重名由 check-demo-ids 核）；
 //   每张图元素不超过 MAX_ELEMENTS 个。
 // - 方向固定的示意图（图表分类的全部卡片与 FIXED_DIRECTION 登记的组件）根上写
@@ -78,8 +78,12 @@ const UNFILLED_CONTROL_BOX = {
 const CHECK_MARKER_STROKE = 'var(--xh-border-strong)'
 const CHECK_MARKER_MAX = 16
 
-/** 行是通栏的锚定浮层列表；其中多列面板的行铺到列分隔线为止。 */
-const FLUSH_ROW_LISTS = new Set(['menu', 'context-menu', 'menubar', 'select', 'combobox', 'tree-select', 'mention', 'cascader'])
+/** 行是通栏的列表：锚定浮层里的列表、Command 结果列表与 Transfer 列表；其中多列面板的行铺到列分隔线为止。 */
+const FLUSH_ROW_LISTS = new Set(['menu', 'context-menu', 'menubar', 'select', 'combobox', 'tree-select', 'mention', 'cascader', 'command', 'transfer'])
+/** 承载列表的面板底：浮层面与页内面。 */
+const LIST_PANEL_FILLS = new Set(['var(--xh-bg-surface-raised)', 'var(--xh-bg-surface)'])
+/** 列表行的面：悬停淡底，或页内持久集合的选中面。 */
+const LIST_ROW_FILL = /^var\(--xh-bg-(?:subtle(?:-hover)?|brand-subtle)\)$/
 const MULTI_COLUMN_LISTS = new Set(['cascader'])
 const LIST_ROW_H = 24
 
@@ -365,11 +369,11 @@ for (const file of files) {
     report(1, `UNFILLED_CONTROL_BOX 登记了 ${id}，但示意图里没有不铺底的字段盒——名单过期了，删掉这条`)
 
   if (FLUSH_ROW_LISTS.has(id)) {
-    // 浮层面：铺抬起面底、描装饰边的 rect；1 线宽描边落在半格，面板内沿比外框各收半格
-    const panels = rects.filter(r => r.attrs.get('fill') === 'var(--xh-bg-surface-raised)' && r.attrs.has('stroke'))
+    // 列表面板：铺浮层面或页内面、描装饰边的 rect；1 线宽描边落在半格，面板内沿比外框各收半格
+    const panels = rects.filter(r => LIST_PANEL_FILLS.has(r.attrs.get('fill')) && r.attrs.has('stroke'))
     let rows = 0
     for (const row of rects) {
-      if (row.h !== LIST_ROW_H || !row.attrs.get('fill')?.startsWith('var(--xh-bg-subtle'))
+      if (row.h !== LIST_ROW_H || !LIST_ROW_FILL.test(row.attrs.get('fill') ?? ''))
         continue
       const panel = panels.find(p => row.x >= p.x && row.x + row.w <= p.x + p.w && row.y >= p.y && row.y + row.h <= p.y + p.h)
       if (!panel)
@@ -378,14 +382,14 @@ for (const file of files) {
       tally.rows += 1
       const inner = { start: panel.x + 0.5, end: panel.x + panel.w - 0.5 }
       if (row.attrs.has('rx'))
-        report(row.line, `<rect rx="${row.attrs.get('rx')}"> —— 锚定浮层里的列表行是通栏，不取圆角`)
+        report(row.line, `<rect rx="${row.attrs.get('rx')}"> —— 通栏列表的行不取圆角`)
       if (row.x !== inner.start)
-        report(row.line, `<rect x="${row.x}"> —— 锚定浮层里的列表行通栏，左沿贴面板内沿 x="${inner.start}"`)
+        report(row.line, `<rect x="${row.x}"> —— 通栏列表的行左沿贴面板内沿 x="${inner.start}"`)
       if (!MULTI_COLUMN_LISTS.has(id) && row.x + row.w !== inner.end)
-        report(row.line, `<rect width="${row.w}"> —— 锚定浮层里的列表行通栏，右沿贴面板内沿（x + width = ${inner.end}，现在 ${row.x + row.w}）`)
+        report(row.line, `<rect width="${row.w}"> —— 通栏列表的行右沿贴面板内沿（x + width = ${inner.end}，现在 ${row.x + row.w}）`)
     }
     if (rows === 0)
-      report(1, `FLUSH_ROW_LISTS 登记了 ${id}，但示意图的浮层面里没有 ${LIST_ROW_H} 高的淡底行——画一条悬停行，或把名单里这条删掉`)
+      report(1, `FLUSH_ROW_LISTS 登记了 ${id}，但示意图的列表面板里没有 ${LIST_ROW_H} 高的悬停或选中行——画一条，或把名单里这条删掉`)
   }
 
   if (fixedDirection.has(id) && !hasDirection)
@@ -436,5 +440,5 @@ if (problems.length) {
 console.log(
   `[check-catalog-preview] 通过：${files.length} 张总览示意图都是 ${VIEW_BOX} 画布上的纯 SVG，颜色只取语义令牌，`
   + `合计 ${elements} 个元素（最多的 ${widest.id} ${widest.count} 个）；方向固定 ${fixedDirection.size} 张；`
-  + `字段外壳 ${tally.shells} 个按描边铺底，勾选标记 ${tally.markers} 个描重一档，浮层列表行 ${tally.rows} 条通栏`,
+  + `字段外壳 ${tally.shells} 个按描边铺底，勾选标记 ${tally.markers} 个描重一档，通栏列表行 ${tally.rows} 条`,
 )

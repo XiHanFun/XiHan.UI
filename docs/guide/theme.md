@@ -54,7 +54,7 @@ primitive  ──►  semantic  ──►  组件私有槽
 | `--xh-shape-circle` | 50% | 正圆：头像、圆形图标按钮、单选指示器 |
 | `--xh-shape-pill` | 9999px | 胶囊：Badge 等状态 chip（Tag 与结果标记是方签，取 control），以及轨道、指示条、手柄、滚动条滑块等一维对象 |
 
-形状令牌引用原始阶梯 `--xh-radius-sm / md / lg`（2 / 4 / 8px）：inset 与 control 取 sm，surface 与 overlay 取 md。普通按钮、字段、卡片与浮层不使用 pill，Tag 与结果标记是方签；锚定浮层里的列表行是通栏行，不取圆角；内层圆角不超过外层圆角减去内边距；相连控件消除相接侧圆角。亮色、暗色与紧凑密度不改变形状身份。正方盒取 circle，不用 pill 冒充圆。
+形状令牌引用原始阶梯 `--xh-radius-sm / md / lg`（2 / 4 / 8px）：inset 与 control 取 sm，surface 与 overlay 取 md。普通按钮、字段、卡片与浮层不使用 pill，Tag 与结果标记是方签；锚定浮层里的列表行与 Command、Transfer 的列表行是通栏行，不取圆角；内层圆角不超过外层圆角减去内边距；相连控件消除相接侧圆角。亮色、暗色与紧凑密度不改变形状身份。正方盒取 circle，不用 pill 冒充圆。
 
 ## 点击触感
 

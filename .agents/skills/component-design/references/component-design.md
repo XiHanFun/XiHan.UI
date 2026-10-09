@@ -305,7 +305,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 | 角色 | 圆角 | 给谁 |
 | --- | ---: | --- |
-| inset | 2px | 嵌在 control 内的小块：checkbox 系方框、页内列表的候选行（Listbox / Command / Transfer / Tree 的行，日期与时间面板的预设项与时间格）、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
+| inset | 2px | 嵌在 control 内的小块：checkbox 系方框、页内列表的候选行（Listbox / Tree 的行，日期与时间面板的预设项与时间格）、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
 | control | 2px | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close/clear trigger、kbd、tooltip、rating item、tabs / steps trigger；随文方签 Tag 与状态方签 ToolCall status、Approval result、QuestionFlow result；Alert 提示条；RadioGroup segmented 形态的轨道与段 |
 | surface | 4px | Card、Panel、列表容器、Tabs segment 的轨道、选择卡片（RadioGroup / CheckboxGroup card 档条目） |
 | overlay | 4px | Popover、Menu、Dialog、Drawer、Notification |
@@ -602,7 +602,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 - `--xh-bg-brand-subtle` 退出 today、open 语义：Calendar today 改 inset 1px `--xh-fg-brand` 环 + 品牌字。Steps 序号圆点三态都无边无影：没走到的 `--xh-bg-subtle` + `--xh-fg-muted`，当前步实心品牌（格状当前）+ 反白字，走过的步是登记的例外，取 `--xh-bg-brand-subtle` + 品牌对号（走过的步与当前步同属一段已点亮的进度，阶梯 12 → 20 → 28）；标了语气又没走到的步取语气实心 + 反白字（出错的那一步是危险色实心）。标题取 heading-3 字号（sm 收回正文字号），当前步取 heading-3 字重、正文色，走过的步正文色，没走到的步次级色；说明 12px `--xh-fg-subtle`；连接线 1px，没走到的那截 `--xh-border-default`、走过的那截品牌色。点状形态没有放对号的地方，三态改由形状区分：没走到的空心圈、走过的实心标记色（`--xh-fg-brand`）、当前步实心品牌（格状当前）并放大一档。
 - 集合行不允许零按压反馈；pressed 只换面（§9.2）。
-- 锚定浮层里的列表（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列）行是通栏：面板只留块向内衬（`--xh-space-1`），侧边内衬 0，行不取圆角，悬停淡底铺满整行；页内列表（Listbox、Transfer、Tree）仍按 inset 内缩。
+- 锚定浮层里的列表（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列）与 Command 结果列表的行是通栏：面板只留块向内衬（`--xh-space-1`），侧边内衬 0，行不取圆角，悬停淡底铺满整行；Transfer 列表同样通栏，上下也不留内衬，选中行的品牌淡底铺满整行；Listbox、Tree 仍按 inset 内缩。
 - 选中对号一律落在行尾（`indicator` 列），不放行首：行首一格归前导图标、展开箭头、拖拽把手与勾选框；TagGroup 选中标签的对号同样在标签尾部（2026-09-24 起）。
 
 ### 7.4 集合行的语气
@@ -1278,8 +1278,8 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 构件 | 尺寸 | 形状 |
 | --- | --- | --- |
 | 控件：按钮、字段、触发器 | 高 32 | 圆角 2 |
-| 锚定浮层里的列表行（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列） | 高 24；通栏，悬停面铺满面板内沿，多列面板铺到列分隔线 | 不取圆角 |
-| 页内列表的行（Listbox、Tree、Transfer、Command、时间格）、面板里的紧凑按钮 | 高 24；行的悬停面左右各内缩 4 | 圆角 2 |
+| 通栏列表的行（锚定浮层里的 Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列，Command、Transfer） | 高 24；悬停面与选中面铺满面板内沿，多列面板铺到列分隔线 | 不取圆角 |
+| 页内列表的行（Listbox、Tree、时间格）、面板里的紧凑按钮 | 高 24；行的悬停面左右各内缩 4 | 圆角 2 |
 | 复选框、色块 | 16 × 16、24 × 24 | 圆角 2 |
 | 分页的页码、翻页钮与省略位 | 32 × 32 | 圆角 4（描边方块） |
 | 单选圈、头像、浮动钮、节点 | — | `<circle>` |
