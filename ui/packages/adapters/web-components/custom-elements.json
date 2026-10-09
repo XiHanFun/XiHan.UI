@@ -58722,6 +58722,12 @@
               "name": "--xh-signature-pad-bg-disabled"
             },
             {
+              "name": "--xh-signature-pad-bg-drawing"
+            },
+            {
+              "name": "--xh-signature-pad-bg-invalid"
+            },
+            {
               "name": "--xh-signature-pad-bg-readonly"
             },
             {
@@ -58732,6 +58738,9 @@
             },
             {
               "name": "--xh-signature-pad-border-drawing"
+            },
+            {
+              "name": "--xh-signature-pad-border-hover"
             },
             {
               "name": "--xh-signature-pad-clear-bg"
