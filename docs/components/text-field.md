@@ -391,7 +391,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `--xh-text-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | text-field 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-text-field-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | text-field 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-text-field-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | text-field 的 input 部件 color 覆盖槽。 |
-| `--xh-text-field-textarea-py` | `input` | `padding-block` | `xh-field-input`<br>`xh-field-layout=textarea` | `--xh-space-2` | text-field 的 input 部件 padding-block 覆盖槽。 |
+| `--xh-text-field-textarea-py` | `input` | `padding-block` | `xh-field-input`<br>`xh-field-layout=textarea` | `--xh-space-1` | text-field 的 input 部件 padding-block 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

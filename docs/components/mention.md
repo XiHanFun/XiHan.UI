@@ -424,7 +424,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `--xh-mention-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 loading 部件 padding-inline 覆盖槽。 |
 | `--xh-mention-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | mention 的 loading 部件 padding-block 覆盖槽。 |
 | `--xh-mention-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | mention 的 input 部件 color 覆盖槽。 |
-| `--xh-mention-textarea-py` | `input` | `padding-block` | `xh-field-layout=textarea` | `--xh-space-2` | mention 的 input 部件 padding-block 覆盖槽。 |
+| `--xh-mention-textarea-py` | `input` | `padding-block` | `xh-field-layout=textarea` | `--xh-space-1` | mention 的 input 部件 padding-block 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

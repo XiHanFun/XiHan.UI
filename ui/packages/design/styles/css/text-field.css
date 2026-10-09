@@ -100,7 +100,7 @@
     --xh-field-placeholder-fg: var(--xh-text-field-placeholder-fg, var(--xh-fg-subtle));
     --xh-field-autofill-bg: var(--xh-text-field-input-autofill-bg, var(--xh-bg-canvas));
     --xh-field-autofill-fg: var(--xh-text-field-input-autofill-fg, var(--xh-fg-default));
-    --xh-field-textarea-padding-block: var(--xh-text-field-textarea-py, var(--xh-space-2));
+    --xh-field-textarea-padding-block: var(--xh-text-field-textarea-py, var(--xh-space-1));
   }
 
   [data-scope='text-field'][data-part='control'][hidden] {

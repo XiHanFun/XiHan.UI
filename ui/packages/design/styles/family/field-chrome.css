@@ -222,7 +222,7 @@
   [data-xh-field-input][data-xh-field-layout='textarea'] {
     block-size: auto;
     max-inline-size: 100%;
-    padding-block: var(--xh-field-textarea-padding-block, var(--xh-space-2));
+    padding-block: var(--xh-field-textarea-padding-block, var(--xh-space-1));
     overflow: auto;
     resize: vertical;
   }
