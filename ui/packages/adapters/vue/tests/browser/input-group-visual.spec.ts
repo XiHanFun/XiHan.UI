@@ -155,9 +155,14 @@ describe('input-group 单一输入表面', () => {
 
   it('组里的字段禁用：组壳换禁用面（淡底 + 缺省描边），悬停不升描边', async () => {
     await mount()
+    // 描边换色带 micro 过渡：时长归零，悬停后当场读到的就是终值，悬停抑制回退了这条负断言才会红
+    host!.style.setProperty('--xh-motion-duration-micro', '0ms')
     const root = group('disabled')
     expect(getComputedStyle(root).backgroundColor).toBe(token('--xh-bg-subtle', 'background-color'))
     expect(getComputedStyle(root, '::before').borderTopColor).toBe(token('--xh-border-default'))
+    // 对照：可悬停的组同样当场读得到升档描边，说明下面那一读不是落在过渡途中
+    await userEvent.hover(group('outline'))
+    expect(getComputedStyle(group('outline'), '::before').borderTopColor).toBe(token('--xh-border-strong'))
     await userEvent.hover(root)
     expect(getComputedStyle(root, '::before').borderTopColor).toBe(token('--xh-border-default'))
   })
