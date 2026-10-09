@@ -16,6 +16,28 @@ function block(css, selector) {
   return css.slice(start, end)
 }
 
+/** 强制色档里的规则块：媒体查询内的规则多缩进一级。 */
+function forcedBlock(css, selector) {
+  const media = css.indexOf('@media (forced-colors: active) {')
+  if (media < 0)
+    throw new Error('未找到强制色档')
+  const start = css.indexOf(`\n    ${selector} {\n`, media)
+  if (start < 0)
+    throw new Error(`强制色档未找到规则块：${selector}`)
+  const end = css.indexOf('\n    }', start)
+  return css.slice(start, end)
+}
+
+const FOCUS = '[data-xh-field-chrome]:focus-within:not([data-disabled])'
+const INVALID_FOCUS = '[data-xh-field-chrome][data-invalid]:focus-within:not([data-disabled])'
+
+async function withRing(focus, invalid) {
+  const recipe = await source()
+  recipe.stateValues.focus.ringColor = focus
+  recipe.stateValues.invalid.ringColor = invalid
+  return compileFieldChromeRecipe(recipe)
+}
+
 function variantSlots(body) {
   return body.match(/--xh-_field-variant-[a-z-]+: [^;]+;/g) ?? []
 }
@@ -71,13 +93,35 @@ describe('field Chrome Family Recipe', () => {
     // 悬停让位给聚焦：已聚焦的字段被指针悬停时不换回悬停面
     const hover = block(css, '[data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):not(:focus-within):hover')
     expect(hover).toContain('var(--xh-_field-variant-border-hover)')
-    // 环色取 none 时聚焦块撤环：外壳自己就是原生控件时，公共层的聚焦环同样不画到它身上
-    if (recipe.stateValues.focus.ringColor === 'none')
-      expect(block(css, '[data-xh-field-chrome]:focus-within:not([data-disabled])')).toContain('outline: none;')
+    // 字段聚焦不画环：焦点由描边换色与底色差标出（两种环色的编译结果各自见下面两条）
+    expect(recipe.stateValues.focus.ringColor).toBe('none')
+    expect(recipe.stateValues.invalid.ringColor).toBe('none')
     const disabled = block(css, '[data-xh-field-chrome][data-disabled]')
     expect(disabled).toContain('var(--xh-_field-variant-border-disabled)')
     expect(disabled).not.toContain('box-shadow')
     expect(block(css, '[data-xh-field-chrome][data-readonly]')).not.toContain('box-shadow')
+  })
+
+  it('环色 none：常规档撤环、不预留透明环，强制色档在同一选择器上补回 Highlight 环', async () => {
+    const css = await withRing('none', 'none')
+    // 外壳自己就是原生控件时，公共层的聚焦环同样不画到它身上
+    expect(block(css, FOCUS)).toContain('outline: none;')
+    expect(block(css, '[data-xh-field-chrome]')).not.toContain('outline')
+    expect(css).not.toContain(INVALID_FOCUS)
+    const forced = forcedBlock(css, FOCUS)
+    expect(forced).toContain('outline: var(--xh-ring-width) solid Highlight;')
+    expect(forced).toContain('outline-offset: var(--xh-ring-offset);')
+  })
+
+  it('环色取 ring 令牌：常规档预留透明环、聚焦画环、失效换环色，强制色档只把环色换成 Highlight', async () => {
+    const css = await withRing('var(--xh-ring-focus)', 'var(--xh-ring-invalid)')
+    expect(block(css, '[data-xh-field-chrome]')).toContain('outline: var(--xh-ring-width) solid transparent;')
+    expect(block(css, FOCUS)).toContain('outline: var(--xh-ring-width) solid var(--xh-field-ring-focus, var(--xh-ring-focus));')
+    expect(block(css, FOCUS)).not.toContain('outline: none;')
+    expect(block(css, INVALID_FOCUS)).toContain('outline-color: var(--xh-field-ring-invalid, var(--xh-ring-invalid));')
+    const forced = forcedBlock(css, FOCUS)
+    expect(forced).toContain('outline-color: Highlight;')
+    expect(forced).not.toContain('outline: var(')
   })
 
   it('输入能力覆盖装饰段、占位、自动填充、textarea 与原生 IME', async () => {
