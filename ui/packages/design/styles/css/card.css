@@ -215,7 +215,9 @@
   /* 页脚是正文的延续：与正文同起点，顶上不再留白（正文的底内衬就是两者的间距），底边留正文同档的内衬。
      嵌在正文里的页脚随正文的内衬走，不另加 */
   [data-scope='card'][data-part='root'] > [data-scope='card'][data-part='footer'] {
-    padding: 0 var(--xh-_card-px) var(--xh-_card-py);
+    padding-block-start: 0;
+    padding-block-end: var(--xh-_card-py);
+    padding-inline: var(--xh-_card-px);
   }
 
   @media print {
