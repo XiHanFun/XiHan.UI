@@ -37,15 +37,15 @@ outline-color: rgb(0, 0, 0)
 
 [trigger]
 padding-top: 1px
-padding-right: 12px
+padding-right: 16px
 padding-bottom: 1px
-padding-left: 12px
+padding-left: 16px
 row-gap: 8px
 column-gap: 8px
-border-top-left-radius: 4px
-border-top-right-radius: 4px
-border-bottom-right-radius: 4px
-border-bottom-left-radius: 4px
+border-top-left-radius: 2px
+border-top-right-radius: 2px
+border-bottom-right-radius: 2px
+border-bottom-left-radius: 2px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
@@ -57,8 +57,8 @@ border-left-color: oklab(0 0 0 / 0.102)
 min-height: 0px
 font-size: 14px
 line-height: 14px
-font-weight: 500
-color: oklch(0.145 0.005 258)
+font-weight: 400
+color: oklch(0.208 0.006 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -68,4 +68,4 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
+outline-color: oklch(0.208 0.006 258)

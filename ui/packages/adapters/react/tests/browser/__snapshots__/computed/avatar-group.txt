@@ -15,16 +15,16 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(0.439 0.006 258)
-border-right-color: oklch(0.439 0.006 258)
-border-bottom-color: oklch(0.439 0.006 258)
-border-left-color: oklch(0.439 0.006 258)
+border-top-color: oklch(0.208 0.006 258)
+border-right-color: oklch(0.208 0.006 258)
+border-bottom-color: oklch(0.208 0.006 258)
+border-left-color: oklch(0.208 0.006 258)
 min-height: auto
-font-size: 13px
-line-height: 13px
+font-size: 16px
+line-height: 16px
 font-weight: 500
-color: oklch(0.439 0.006 258)
-background-color: color(srgb 0.956876 0.957051 0.957067)
+color: oklch(0.208 0.006 258)
+background-color: color(srgb 0.830892 0.831044 0.831058)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
@@ -33,7 +33,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.439 0.006 258)
+outline-color: oklch(0.208 0.006 258)
 
 [root]
 padding-top: 0px

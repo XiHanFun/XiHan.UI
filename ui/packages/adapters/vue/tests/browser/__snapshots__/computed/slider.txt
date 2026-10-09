@@ -85,15 +85,15 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(0.145 0.005 258)
-border-right-color: oklch(0.145 0.005 258)
-border-bottom-color: oklch(0.145 0.005 258)
-border-left-color: oklch(0.145 0.005 258)
+border-top-color: oklch(0.461 0.018 258)
+border-right-color: oklch(0.461 0.018 258)
+border-bottom-color: oklch(0.461 0.018 258)
+border-left-color: oklch(0.461 0.018 258)
 min-height: auto
 font-size: 14px
 line-height: 14px
-font-weight: 500
-color: oklch(0.145 0.005 258)
+font-weight: 400
+color: oklch(0.461 0.018 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
@@ -103,7 +103,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
+outline-color: oklch(0.461 0.018 258)
 
 [range]
 padding-top: 0px
@@ -190,16 +190,16 @@ border-top-width: 2px
 border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
-border-top-color: color(srgb 0.897884 0.898048 0.898063)
-border-right-color: color(srgb 0.897884 0.898048 0.898063)
-border-bottom-color: color(srgb 0.897884 0.898048 0.898063)
-border-left-color: color(srgb 0.897884 0.898048 0.898063)
+border-top-color: oklch(0.546 0.216 258)
+border-right-color: oklch(0.546 0.216 258)
+border-bottom-color: oklch(0.546 0.216 258)
+border-left-color: oklch(0.546 0.216 258)
 min-height: 0px
 font-size: 16px
 line-height: normal
 font-weight: 400
-color: oklch(1 0 0)
-background-color: oklch(0.546 0.216 258)
+color: rgb(0, 0, 0)
+background-color: oklch(1 0 0)
 transition-property: scale, box-shadow
 transition-duration: 0.12s, 0.12s
 transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1), cubic-bezier(0, 0, 0.2, 1)
@@ -208,7 +208,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(1 0 0)
+outline-color: rgb(0, 0, 0)
 
 [track]
 padding-top: 0px
@@ -234,7 +234,7 @@ font-size: 16px
 line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
-background-color: oklab(0 0 0 / 0.169)
+background-color: oklab(0 0 0 / 0.102)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease

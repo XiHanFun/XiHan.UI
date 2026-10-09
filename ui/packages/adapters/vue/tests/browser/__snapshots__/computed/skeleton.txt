@@ -24,7 +24,7 @@ font-size: 16px
 line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
-background-color: oklab(0 0 0 / 0.043)
+background-color: oklab(0 0 0 / 0.047)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
@@ -40,8 +40,8 @@ padding-top: 0px
 padding-right: 0px
 padding-bottom: 0px
 padding-left: 0px
-row-gap: 12px
-column-gap: 12px
+row-gap: 16px
+column-gap: 16px
 border-top-left-radius: 0px
 border-top-right-radius: 0px
 border-bottom-right-radius: 0px

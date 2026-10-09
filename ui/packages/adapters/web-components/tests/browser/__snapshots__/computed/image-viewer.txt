@@ -24,7 +24,7 @@ font-size: 16px
 line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
-background-color: oklab(0.145 -0.00103956 -0.00489074 / 0.78)
+background-color: oklab(0.208 -0.00124747 -0.00586889 / 0.6)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
@@ -55,10 +55,10 @@ border-right-color: rgba(0, 0, 0, 0)
 border-bottom-color: rgba(0, 0, 0, 0)
 border-left-color: rgba(0, 0, 0, 0)
 min-height: 0px
-font-size: 13px
-line-height: 13px
+font-size: 14px
+line-height: 14px
 font-weight: 400
-color: oklch(1 0 0)
+color: color(srgb-linear 0 0 0 / 0.72)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -68,7 +68,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(1 0 0)
+outline-color: color(srgb-linear 0 0 0 / 0.72)
 
 [content]
 padding-top: 0px
@@ -112,10 +112,10 @@ padding-bottom: 4px
 padding-left: 12px
 row-gap: normal
 column-gap: normal
-border-top-left-radius: 4px
-border-top-right-radius: 4px
-border-bottom-right-radius: 4px
-border-bottom-left-radius: 4px
+border-top-left-radius: 2px
+border-top-right-radius: 2px
+border-bottom-right-radius: 2px
+border-bottom-left-radius: 2px
 border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
@@ -147,10 +147,10 @@ padding-bottom: 1px
 padding-left: 0px
 row-gap: 0px
 column-gap: 0px
-border-top-left-radius: 4px
-border-top-right-radius: 4px
-border-bottom-right-radius: 4px
-border-bottom-left-radius: 4px
+border-top-left-radius: 2px
+border-top-right-radius: 2px
+border-bottom-right-radius: 2px
+border-bottom-left-radius: 2px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
@@ -163,7 +163,7 @@ min-height: 0px
 font-size: 13px
 line-height: 13px
 font-weight: 400
-color: oklch(1 0 0)
+color: color(srgb-linear 0 0 0 / 0.72)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -173,7 +173,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(1 0 0)
+outline-color: color(srgb-linear 0 0 0 / 0.72)
 
 [flip-vertical-trigger]
 padding-top: 1px
@@ -182,10 +182,10 @@ padding-bottom: 1px
 padding-left: 0px
 row-gap: 0px
 column-gap: 0px
-border-top-left-radius: 4px
-border-top-right-radius: 4px
-border-bottom-right-radius: 4px
-border-bottom-left-radius: 4px
+border-top-left-radius: 2px
+border-top-right-radius: 2px
+border-bottom-right-radius: 2px
+border-bottom-left-radius: 2px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
@@ -198,7 +198,7 @@ min-height: 0px
 font-size: 13px
 line-height: 13px
 font-weight: 400
-color: oklch(1 0 0)
+color: color(srgb-linear 0 0 0 / 0.72)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -208,7 +208,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(1 0 0)
+outline-color: color(srgb-linear 0 0 0 / 0.72)
 
 [image]
 padding-top: 0px
@@ -268,7 +268,7 @@ min-height: 0px
 font-size: 14px
 line-height: 14px
 font-weight: 400
-color: oklab(1 0 0 / 0.294)
+color: color(srgb-linear 0 0 0 / 0.379)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -278,7 +278,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklab(1 0 0 / 0.294)
+outline-color: color(srgb-linear 0 0 0 / 0.379)
 
 [positioner]
 padding-top: 0px
@@ -338,7 +338,7 @@ min-height: 0px
 font-size: 14px
 line-height: 14px
 font-weight: 400
-color: oklab(1 0 0 / 0.294)
+color: color(srgb-linear 0 0 0 / 0.379)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -348,7 +348,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklab(1 0 0 / 0.294)
+outline-color: color(srgb-linear 0 0 0 / 0.379)
 
 [reset-trigger]
 padding-top: 1px
@@ -357,10 +357,10 @@ padding-bottom: 1px
 padding-left: 0px
 row-gap: 0px
 column-gap: 0px
-border-top-left-radius: 4px
-border-top-right-radius: 4px
-border-bottom-right-radius: 4px
-border-bottom-left-radius: 4px
+border-top-left-radius: 2px
+border-top-right-radius: 2px
+border-bottom-right-radius: 2px
+border-bottom-left-radius: 2px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
@@ -373,7 +373,7 @@ min-height: 0px
 font-size: 13px
 line-height: 13px
 font-weight: 400
-color: oklch(1 0 0)
+color: color(srgb-linear 0 0 0 / 0.72)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -383,7 +383,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(1 0 0)
+outline-color: color(srgb-linear 0 0 0 / 0.72)
 
 [rotate-left-trigger]
 padding-top: 1px
@@ -392,10 +392,10 @@ padding-bottom: 1px
 padding-left: 0px
 row-gap: 0px
 column-gap: 0px
-border-top-left-radius: 4px
-border-top-right-radius: 4px
-border-bottom-right-radius: 4px
-border-bottom-left-radius: 4px
+border-top-left-radius: 2px
+border-top-right-radius: 2px
+border-bottom-right-radius: 2px
+border-bottom-left-radius: 2px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
@@ -408,7 +408,7 @@ min-height: 0px
 font-size: 13px
 line-height: 13px
 font-weight: 400
-color: oklch(1 0 0)
+color: color(srgb-linear 0 0 0 / 0.72)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -418,7 +418,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(1 0 0)
+outline-color: color(srgb-linear 0 0 0 / 0.72)
 
 [rotate-right-trigger]
 padding-top: 1px
@@ -427,10 +427,10 @@ padding-bottom: 1px
 padding-left: 0px
 row-gap: 0px
 column-gap: 0px
-border-top-left-radius: 4px
-border-top-right-radius: 4px
-border-bottom-right-radius: 4px
-border-bottom-left-radius: 4px
+border-top-left-radius: 2px
+border-top-right-radius: 2px
+border-bottom-right-radius: 2px
+border-bottom-left-radius: 2px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
@@ -443,7 +443,7 @@ min-height: 0px
 font-size: 13px
 line-height: 13px
 font-weight: 400
-color: oklch(1 0 0)
+color: color(srgb-linear 0 0 0 / 0.72)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -453,33 +453,33 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(1 0 0)
+outline-color: color(srgb-linear 0 0 0 / 0.72)
 
 [toolbar]
 padding-top: 6px
-padding-right: 12px
+padding-right: 16px
 padding-bottom: 6px
-padding-left: 12px
+padding-left: 16px
 row-gap: 4px
 column-gap: 4px
-border-top-left-radius: 8px
-border-top-right-radius: 8px
-border-bottom-right-radius: 8px
-border-bottom-left-radius: 8px
-border-top-width: 0px
-border-right-width: 0px
-border-bottom-width: 0px
-border-left-width: 0px
-border-top-color: oklch(1 0 0)
-border-right-color: oklch(1 0 0)
-border-bottom-color: oklch(1 0 0)
-border-left-color: oklch(1 0 0)
+border-top-left-radius: 4px
+border-top-right-radius: 4px
+border-bottom-right-radius: 4px
+border-bottom-left-radius: 4px
+border-top-width: 1px
+border-right-width: 1px
+border-bottom-width: 1px
+border-left-width: 1px
+border-top-color: oklab(0 0 0 / 0.102)
+border-right-color: oklab(0 0 0 / 0.102)
+border-bottom-color: oklab(0 0 0 / 0.102)
+border-left-color: oklab(0 0 0 / 0.102)
 min-height: 0px
 font-size: 16px
 line-height: normal
 font-weight: 400
-color: oklch(1 0 0)
-background-color: oklab(0.145 -0.00103956 -0.00489074 / 0.55)
+color: oklch(0.461 0.018 258)
+background-color: oklch(1 0 0)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
@@ -488,7 +488,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(1 0 0)
+outline-color: oklch(0.461 0.018 258)
 
 [trigger]
 padding-top: 1px
@@ -567,10 +567,10 @@ padding-bottom: 1px
 padding-left: 0px
 row-gap: 0px
 column-gap: 0px
-border-top-left-radius: 4px
-border-top-right-radius: 4px
-border-bottom-right-radius: 4px
-border-bottom-left-radius: 4px
+border-top-left-radius: 2px
+border-top-right-radius: 2px
+border-bottom-right-radius: 2px
+border-bottom-left-radius: 2px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
@@ -583,7 +583,7 @@ min-height: 0px
 font-size: 13px
 line-height: 13px
 font-weight: 400
-color: oklch(1 0 0)
+color: color(srgb-linear 0 0 0 / 0.72)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -593,7 +593,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(1 0 0)
+outline-color: color(srgb-linear 0 0 0 / 0.72)
 
 [zoom-out-trigger]
 padding-top: 1px
@@ -602,10 +602,10 @@ padding-bottom: 1px
 padding-left: 0px
 row-gap: 0px
 column-gap: 0px
-border-top-left-radius: 4px
-border-top-right-radius: 4px
-border-bottom-right-radius: 4px
-border-bottom-left-radius: 4px
+border-top-left-radius: 2px
+border-top-right-radius: 2px
+border-bottom-right-radius: 2px
+border-bottom-left-radius: 2px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
@@ -618,7 +618,7 @@ min-height: 0px
 font-size: 13px
 line-height: 13px
 font-weight: 400
-color: oklch(1 0 0)
+color: color(srgb-linear 0 0 0 / 0.72)
 background-color: rgba(0, 0, 0, 0)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -628,4 +628,4 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(1 0 0)
+outline-color: color(srgb-linear 0 0 0 / 0.72)

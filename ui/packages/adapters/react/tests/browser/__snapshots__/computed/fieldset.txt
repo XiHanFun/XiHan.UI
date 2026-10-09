@@ -15,15 +15,15 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(0.439 0.006 258)
-border-right-color: oklch(0.439 0.006 258)
-border-bottom-color: oklch(0.439 0.006 258)
-border-left-color: oklch(0.439 0.006 258)
-min-height: auto
-font-size: 13px
-line-height: 19.5px
+border-top-color: oklch(0.52 0.018 256)
+border-right-color: oklch(0.52 0.018 256)
+border-bottom-color: oklch(0.52 0.018 256)
+border-left-color: oklch(0.52 0.018 256)
+min-height: 20px
+font-size: 12px
+line-height: 18px
 font-weight: 400
-color: oklch(0.439 0.006 258)
+color: oklch(0.52 0.018 256)
 background-color: rgba(0, 0, 0, 0)
 transition-property: color
 transition-duration: 0.12s
@@ -33,7 +33,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.439 0.006 258)
+outline-color: oklch(0.52 0.018 256)
 
 [error-text]
 padding-top: 0px
@@ -55,8 +55,8 @@ border-right-color: oklch(0.577 0.213 25)
 border-bottom-color: oklch(0.577 0.213 25)
 border-left-color: oklch(0.577 0.213 25)
 min-height: 0px
-font-size: 13px
-line-height: 19.5px
+font-size: 12px
+line-height: 18px
 font-weight: 400
 color: oklch(0.577 0.213 25)
 background-color: rgba(0, 0, 0, 0)
@@ -85,15 +85,15 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(0.439 0.006 258)
-border-right-color: oklch(0.439 0.006 258)
-border-bottom-color: oklch(0.439 0.006 258)
-border-left-color: oklch(0.439 0.006 258)
+border-top-color: oklch(0.208 0.006 258)
+border-right-color: oklch(0.208 0.006 258)
+border-bottom-color: oklch(0.208 0.006 258)
+border-left-color: oklch(0.208 0.006 258)
 min-height: auto
-font-size: 14px
-line-height: 17.5px
+font-size: 16px
+line-height: 20px
 font-weight: 500
-color: oklch(0.439 0.006 258)
+color: oklch(0.208 0.006 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: color
 transition-duration: 0.12s
@@ -103,15 +103,15 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.439 0.006 258)
+outline-color: oklch(0.208 0.006 258)
 
 [root]
 padding-top: 0px
 padding-right: 0px
 padding-bottom: 0px
 padding-left: 0px
-row-gap: 16px
-column-gap: 16px
+row-gap: 20px
+column-gap: 20px
 border-top-left-radius: 0px
 border-top-right-radius: 0px
 border-bottom-right-radius: 0px
