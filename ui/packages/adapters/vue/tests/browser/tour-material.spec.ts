@@ -1,4 +1,4 @@
-// 引导气泡的 M4 sheet 三件套、三颗动作钮的形态矩阵与分页点的形状：边界由描边承担而不是只靠影分层，
+// 引导气泡的 sheet 三件套、三颗动作钮的形态矩阵与分页点的形状：边界由描边承担而不是只靠影分层，
 // 下一步是品牌实心、上一步中性描边、跳过无壳。这几件只有真实浏览器量得出来：jsdom 不算样式，
 // 描边色、底色与圆角都要皮肤真的加载进来才有计算值。
 import type { App } from 'vue'
@@ -32,6 +32,16 @@ async function settle(): Promise<void> {
   await nextTick()
   await new Promise(resolve => requestAnimationFrame(resolve))
   await nextTick()
+}
+
+/** 在某个部件的继承边界下解析一条声明：主题与对比度轴跟着部件走，不把字面值写进验收。 */
+function resolved(host: HTMLElement, property: string, value: string): string {
+  const probe = document.createElement('span')
+  probe.style.setProperty(property, value)
+  host.append(probe)
+  const out = getComputedStyle(probe).getPropertyValue(property)
+  probe.remove()
+  return out
 }
 
 function part(name: string, index = 0): HTMLElement {
@@ -84,8 +94,8 @@ afterEach(() => {
   delete document.documentElement.dataset.theme
 })
 
-describe('tour 的 M4 sheet 气泡与 Action Control 动作钮', () => {
-  it.each(['light', 'dark'] as const)('%s：气泡有 1px 非透明描边、不透明底与 M4 投影，箭头同色', async (theme) => {
+describe('tour 的 sheet 气泡与 Action Control 动作钮', () => {
+  it.each(['light', 'dark'] as const)('%s：气泡有 1px 非透明描边、不透明底与 sheet 投影，箭头同色', async (theme) => {
     document.documentElement.dataset.theme = theme
     mount()
     await settle()
@@ -97,8 +107,9 @@ describe('tour 的 M4 sheet 气泡与 Action Control 动作钮', () => {
     // 不透明底：末位 alpha 不是 0，也不是半透明 tint
     expect(content.backgroundColor).not.toBe(TRANSPARENT)
     expect(content.backgroundColor).not.toMatch(/\/ 0\.\d/)
-    expect(content.boxShadow).toContain('2px 4px')
-    expect(content.boxShadow).toContain('32px 64px')
+    // sheet 投影取材质令牌（缺省一层 0 4px 12px），边界仍由上面那圈描边承担
+    expect(content.boxShadow).not.toBe('none')
+    expect(content.boxShadow).toBe(resolved(part('positioner'), 'box-shadow', 'var(--xh-material-elevated-shadow)'))
 
     const arrow = getComputedStyle(part('arrow'))
     expect(arrow.backgroundColor).toBe(content.backgroundColor)
@@ -109,13 +120,15 @@ describe('tour 的 M4 sheet 气泡与 Action Control 动作钮', () => {
     mount()
     await settle()
 
+    // 三颗同高、关闭钮的正方盒同尺：都是 sm 档 --xh-control-h-sm
+    const controlH = resolved(part('content'), 'inline-size', 'var(--xh-control-h-sm)')
+
     const next = part('next-trigger')
     expect(next.getAttribute('data-xh-action-variant')).toBe('solid')
     const nextStyle = getComputedStyle(next)
     expect(nextStyle.backgroundColor).not.toBe(TRANSPARENT)
     expect(nextStyle.borderTopColor).toBe(TRANSPARENT)
-    // 三颗同高：sm 档（standard 密度 --xh-control-h-sm = 32px）
-    expect(nextStyle.height).toBe('32px')
+    expect(nextStyle.height).toBe(controlH)
 
     const prev = part('prev-trigger')
     expect(prev.getAttribute('data-xh-action-variant')).toBe('outline')
@@ -123,20 +136,20 @@ describe('tour 的 M4 sheet 气泡与 Action Control 动作钮', () => {
     expect(prevStyle.backgroundColor).toBe(TRANSPARENT)
     expect(prevStyle.borderTopWidth).toBe('1px')
     expect(prevStyle.borderTopColor).not.toBe(TRANSPARENT)
-    expect(prevStyle.height).toBe('32px')
+    expect(prevStyle.height).toBe(controlH)
 
     const skip = part('skip-trigger')
     expect(skip.getAttribute('data-xh-action-variant')).toBe('ghost')
     const skipStyle = getComputedStyle(skip)
     expect(skipStyle.backgroundColor).toBe(TRANSPARENT)
     expect(skipStyle.borderTopColor).toBe(TRANSPARENT)
-    expect(skipStyle.height).toBe('32px')
+    expect(skipStyle.height).toBe(controlH)
 
     const close = part('close-trigger')
     expect(close.getAttribute('data-xh-action-profile')).toBe('icon')
     const closeStyle = getComputedStyle(close)
-    expect(closeStyle.width).toBe('32px')
-    expect(closeStyle.height).toBe('32px')
+    expect(closeStyle.width).toBe(controlH)
+    expect(closeStyle.height).toBe(controlH)
     expect(closeStyle.backgroundColor).toBe(TRANSPARENT)
   })
 
