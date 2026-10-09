@@ -14617,6 +14617,7 @@
     "--xh-control-indicator-md",
     "--xh-control-indicator-size",
     "--xh-control-indicator-sm",
+    "--xh-control-indicator-xs",
     "--xh-control-input-min-w",
     "--xh-control-min-w",
     "--xh-control-px-lg",

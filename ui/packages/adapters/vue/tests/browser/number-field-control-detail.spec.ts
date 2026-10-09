@@ -122,6 +122,17 @@ describe('精细指针：增减钮上下叠在盒的末端', () => {
     expect(part('input').getBoundingClientRect().right).toBeLessThanOrEqual(increment.left)
   })
 
+  it.each((['comfortable', 'compact'] as const).flatMap(density => SIZES.map(size => [density, size] as const)))('%s %s：上下箭头装得进叠放钮，字形高不超过钮高', async (density, size) => {
+    mountField({ size }, { density })
+    await settle()
+    for (const name of ['increment-trigger', 'decrement-trigger']) {
+      const trigger = part(name)
+      const glyph = Number.parseFloat(getComputedStyle(trigger, '::before').blockSize)
+      expect(glyph).toBeGreaterThan(0)
+      expect(glyph).toBeLessThanOrEqual(trigger.getBoundingClientRect().height)
+    }
+  })
+
   it('平时收起，指针落到盒上或盒里有焦点时显出', async () => {
     mountField()
     await settle()
@@ -137,7 +148,7 @@ describe('精细指针：增减钮上下叠在盒的末端', () => {
     await expect.poll(() => getComputedStyle(increment).visibility).toBe('visible')
   })
 
-  it('显出时铺淡底，悬停升 --xh-bg-subtle-hover；字形是上下箭头、取指示符小档，字取次要前景', async () => {
+  it('显出时铺淡底，悬停升 --xh-bg-subtle-hover；字形是上下箭头、取指示符最小档，字取次要前景', async () => {
     mountField()
     await settle()
     const increment = part('increment-trigger')
@@ -147,7 +158,7 @@ describe('精细指针：增减钮上下叠在盒的末端', () => {
     expect(getComputedStyle(increment).color).toBe(resolve('var(--xh-fg-muted)'))
     expect(getComputedStyle(increment, '::before').maskImage).toBe(resolve('var(--xh-glyph-mark-chevron-up)', 'mask-image'))
     expect(getComputedStyle(decrement, '::before').maskImage).toBe(resolve('var(--xh-glyph-mark-chevron-down)', 'mask-image'))
-    expect(getComputedStyle(increment, '::before').inlineSize).toBe(`${px('--xh-control-indicator-sm')}px`)
+    expect(getComputedStyle(increment, '::before').inlineSize).toBe(`${px('--xh-control-indicator-xs')}px`)
 
     await userEvent.hover(increment)
     await expect.poll(() => getComputedStyle(increment).backgroundColor).toBe(resolve('var(--xh-bg-subtle-hover)', 'background-color'))

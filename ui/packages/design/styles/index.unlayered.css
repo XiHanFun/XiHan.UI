@@ -35948,7 +35948,7 @@
   --xh-_number-field-gap: 0;
   --xh-_number-field-font-size: var(--xh-control-font-md);
   --xh-_number-field-trigger-font-size: var(--xh-control-font-md);
-  /* 精细指针下上下叠放的两颗钮离盒边的内收：sm 档盒矮，收半档，钮才留得出字形的高 */
+  /* 精细指针下上下叠放的两颗钮离盒边的内收：sm 档盒矮，收半档，两颗钮与 md 档等高 */
   --xh-_number-field-stepper-inset: var(--xh-space-1);
 
   display: inline-flex;
@@ -36117,7 +36117,8 @@
 }
 
 /* 可悬停的精细指针：两颗钮上下叠在盒的逻辑末端，各占盒高一半（四周内收一截），宽取指示符大档；
-   显出时铺一层淡底，悬停 / 按下沿淡底阶梯升一档、两档，字形换成上下箭头、取指示符小档。
+   显出时铺一层淡底，悬停 / 按下沿淡底阶梯升一档、两档，字形换成上下箭头、取指示符最小档：
+   一颗钮只有盒内高的一半减内收（sm / md 11px，紧凑 9px），小档 12px 的字形会比钮高出一截。
    两颗钮共边相接，按下只换面不缩放。钮浮在盒上、不占流：盒的末端让出钮那一截，
    输入与后缀不会排到钮底下，钮收起时也不跳。粗指针与不能悬停的设备仍是两颗正方钮横排在末端、常显，
    那里一颗叠放的钮只有半个控件高，够不着触控目标尺寸 */
@@ -36136,7 +36137,7 @@
     --xh-action-bg-pressed: var(--xh-number-field-trigger-bg-active, var(--xh-bg-subtle-active));
     --xh-action-bg-disabled: var(--xh-number-field-stepper-bg, var(--xh-bg-subtle));
     --xh-action-scale-pressed: none;
-    --xh-icon-size: var(--xh-control-indicator-sm);
+    --xh-icon-size: var(--xh-control-indicator-xs);
 
     position: absolute;
     inset-inline-end: var(--xh-number-field-stepper-inset, var(--xh-_number-field-stepper-inset));

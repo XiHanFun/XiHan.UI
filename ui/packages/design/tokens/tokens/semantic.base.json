@@ -112,6 +112,11 @@
       "$type": "dimension",
       "$value": "{control.indicator-md}"
     },
+    "indicator-xs": {
+      "$description": "比小档再低一档，给只有半个控件高的盒里的字形（NumberField 精细指针下上下叠放的步进钮）。",
+      "$type": "dimension",
+      "$value": "10px"
+    },
     "indicator-sm": {
       "$type": "dimension",
       "$value": "12px"
