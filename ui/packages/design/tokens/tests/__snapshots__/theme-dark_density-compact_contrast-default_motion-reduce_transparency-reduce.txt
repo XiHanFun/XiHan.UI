@@ -174,6 +174,7 @@
 --xh-control-caption-lg: 0.875rem  ← var(--xh-font-size-md)
 --xh-control-caption-md: 0.8125rem  ← var(--xh-font-size-sm)
 --xh-control-caption-sm: 0.75rem  ← var(--xh-font-size-xs)
+--xh-control-float-md: 36px
 --xh-control-font-lg: 1rem  ← var(--xh-font-size-lg)
 --xh-control-font-md: 0.875rem  ← var(--xh-font-size-md)
 --xh-control-font-sm: 0.8125rem  ← var(--xh-font-size-sm)
@@ -202,6 +203,7 @@
 --xh-direction-end: 100%
 --xh-direction-sign: 1
 --xh-direction-start: 0%
+--xh-dropzone-min-h: 10rem
 --xh-elevation-floating: 0 1px 2px -0.5px oklch(0 0 0 / 0.5), 0 4px 8px -2px oklch(0 0 0 / 0.45), 0 10px 20px -6px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.06)
 --xh-elevation-lifted: 0 1px 2px -0.5px oklch(0 0 0 / 0.45), 0 3px 6px -2px oklch(0 0 0 / 0.42), 0 6px 12px -5px oklch(0 0 0 / 0.36), inset 0 1px 0 0 oklch(1 0 0 / 0.06)
 --xh-elevation-raised: 0 1px 1px -0.5px oklch(0 0 0 / 0.4), 0 2px 3px -1.5px oklch(0 0 0 / 0.36), 0 3px 6px -3px oklch(0 0 0 / 0.3), inset 0 1px 0 0 oklch(1 0 0 / 0.05)
@@ -243,6 +245,7 @@
 --xh-glyph-mark-ellipsis: url("data:image/svg+xml,…")  sha256:e7bb8cccc041
 --xh-glyph-mark-eye: url("data:image/svg+xml,…")  sha256:0038fceca8f4
 --xh-glyph-mark-eye-off: url("data:image/svg+xml,…")  sha256:9adea7064151
+--xh-glyph-mark-file: url("data:image/svg+xml,…")  sha256:6e09bba9bc10
 --xh-glyph-mark-flip-horizontal: url("data:image/svg+xml,…")  sha256:e520b8e3e17b
 --xh-glyph-mark-flip-vertical: url("data:image/svg+xml,…")  sha256:f6c503e8eff7
 --xh-glyph-mark-info: url("data:image/svg+xml,…")  sha256:a5b7023be26e
@@ -341,6 +344,7 @@
 --xh-motion-loop-spin: 1000ms
 --xh-motion-scale-breathe: 1
 --xh-motion-scale-drag: 1
+--xh-motion-scale-emphasis: 1
 --xh-motion-scale-enter: 1
 --xh-motion-scale-exit: 1
 --xh-motion-scale-halo: 1
@@ -376,6 +380,7 @@
 --xh-overlay-backdrop-blur: 12px
 --xh-overlay-calendar-column-h: calc(24px * 7 + 28px)  ← calc(var(--xh-control-h-sm) * 7 + var(--xh-space-7))
 --xh-overlay-cascade-min-w: 7.5rem
+--xh-overlay-color-area-h: 11rem
 --xh-overlay-column-item-h: calc(24px - 4px)  ← calc(var(--xh-control-h-sm) - var(--xh-space-1))
 --xh-overlay-column-min-w: 3.5rem
 --xh-overlay-drawer-w-lg: 28rem
@@ -444,6 +449,7 @@
 --xh-table-cell-py-md: 8px  ← var(--xh-space-2)
 --xh-table-cell-py-sm: 4px  ← var(--xh-space-1)
 --xh-text-body-leading: 1.5  ← var(--xh-leading-normal)
+--xh-text-body-line-h: calc(0.875rem * 1.5)  ← calc(var(--xh-text-body-size) * var(--xh-text-body-leading))
 --xh-text-body-size: 0.875rem  ← var(--xh-font-size-md)
 --xh-text-body-weight: 400  ← var(--xh-font-weight-regular)
 --xh-text-caption-size: 0.75rem  ← var(--xh-font-size-xs)

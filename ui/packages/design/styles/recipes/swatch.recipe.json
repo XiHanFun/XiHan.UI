@@ -24,7 +24,7 @@
     "radius": "var(--xh-shape-inset)",
     "borderColor": "var(--xh-border-default)",
     "checkerBase": "var(--xh-bg-surface)",
-    "checkerColor": "var(--xh-color-neutral-300)"
+    "checkerColor": "var(--xh-bg-subtle)"
   },
   "print": {
     "strategy": "exact-color"

@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -22,14 +23,14 @@ function resolvedToken(name: string): string {
 const STAR = 'data-xh-action-control data-xh-action-profile="icon" data-xh-action-variant="ghost" data-xh-action-display="always" data-xh-action-size="xs"'
 
 /** 评分的静态投影：标签 + 星带 + 分值。 */
-function mount(attrs = '') {
+function mount(attrs = '', rootAttrs = '') {
   host = document.createElement('div')
   // 断言读的是终值：按压与释放的过渡时长归零
   host.style.setProperty('--xh-motion-duration-micro', '0ms')
   host.style.setProperty('--xh-motion-duration-press', '0ms')
   host.style.setProperty('--xh-motion-duration-release', '0ms')
   host.innerHTML = `
-    <div data-scope="rating" class="xh-scope-rating" data-part="root" ${attrs}>
+    <div data-scope="rating" class="xh-scope-rating" data-part="root" ${attrs} ${rootAttrs}>
       <span data-scope="rating" class="xh-scope-rating" data-part="label" ${attrs}>满意度</span>
       <div data-scope="rating" class="xh-scope-rating" data-part="control" ${attrs}>
         <span data-scope="rating" class="xh-scope-rating" data-part="item" data-highlighted ${STAR} ${attrs}></span>
@@ -53,28 +54,50 @@ describe('rating 字段标签、星形尺度与按压', () => {
     expect(style.marginBlockEnd).toBe('4px')
   })
 
-  it('星按档取字形尺：md 20px，盒仍是 24px 正方', () => {
-    const { item } = mount()
+  it.each([
+    ['sm', 20, 24],
+    ['', 24, 28],
+    ['lg', 32, 36],
+  ] as const)('星按档取字形尺 %s：星 %ipx，盒比星大一圈取 %ipx 正方', (size, star, box) => {
+    const { item } = mount('', size ? `data-size="${size}"` : '')
     const before = getComputedStyle(item, '::before')
-    expect(before.width).toBe('20px')
-    expect(before.height).toBe('20px')
-    expect(item.getBoundingClientRect().width).toBe(24)
-    expect(item.getBoundingClientRect().height).toBe(24)
+    expect(before.width).toBe(`${star}px`)
+    expect(before.height).toBe(`${star}px`)
+    expect(item.getBoundingClientRect().width).toBe(box)
+    expect(item.getBoundingClientRect().height).toBe(box)
   })
 
-  it('按下 0.97 缩放并同时换到 200 档底，松手回到透明；点亮色在按下时保持', () => {
+  it('悬停与键盘聚焦把星放大到 1.2 强调；按下保持放大并换到 200 档底，松手回到透明；点亮色在按下时保持', async () => {
     const { item } = mount()
     expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(getComputedStyle(item).transitionProperty.split(', ')).toContain('scale')
     const lit = getComputedStyle(item).color
     expect(lit).not.toBe(resolvedToken('--xh-fg-subtle'))
+    await userEvent.hover(item)
+    expect(getComputedStyle(item).scale).toBe('1.2')
+    expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     item.setAttribute('data-pressed', '')
     expect(getComputedStyle(item).color).toBe(lit)
-    expect(getComputedStyle(item).scale).toBe('0.97')
+    expect(getComputedStyle(item).scale).toBe('1.2')
     expect(getComputedStyle(item).backgroundColor).toBe(resolvedToken('--xh-bg-subtle-hover'))
     item.removeAttribute('data-pressed')
+    await userEvent.unhover(item)
     expect(getComputedStyle(item).scale).toBe('none')
     expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+
+    item.tabIndex = 0
+    await userEvent.keyboard('{Tab}')
+    item.focus()
+    expect(item.matches(':focus-visible')).toBe(true)
+    expect(getComputedStyle(item).scale).toBe('1.2')
+  })
+
+  it('减弱动效：悬停不放大，只留点亮换色', async () => {
+    const { item } = mount()
+    host!.dataset.motion = 'reduce'
+    await userEvent.hover(item)
+    expect(getComputedStyle(item).scale).toBe('1')
+    await userEvent.unhover(item)
   })
 
   it('禁用：标签不另变色、不压暗，星带整体压暗一次，按下不再换面', () => {
@@ -88,14 +111,17 @@ describe('rating 字段标签、星形尺度与按压', () => {
     expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
   })
 
-  it('只读：手型收回，按下不缩放不换底；星形本身不被家族的粗指针热区撑大', () => {
+  it('只读：手型收回，悬停与按下都不缩放不换底；星形本身不被家族的粗指针热区撑大', async () => {
     const { item } = mount('data-readonly')
     expect(getComputedStyle(item).cursor).toBe('default')
+    await userEvent.hover(item)
+    expect(getComputedStyle(item).scale).toBe('none')
     item.setAttribute('data-pressed', '')
     expect(getComputedStyle(item).scale).toBe('none')
     expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    await userEvent.unhover(item)
     const after = getComputedStyle(item, '::after')
-    expect(after.width).toBe('20px')
+    expect(after.width).toBe('24px')
     expect(after.minWidth).toBe('0px')
   })
 })

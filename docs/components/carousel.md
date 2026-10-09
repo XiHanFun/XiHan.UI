@@ -89,7 +89,7 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 - `slidesPerPage` 与 `slidesPerMove` 分开：可以一屏三张、一次移动一张。
 - 支持纵向轨道、指针拖拽、循环与自动播放。
 - 拖拽松手后轨道带着松手速度落到目标页：轻甩一下也能翻页，往回甩则收回；不循环时首末页往外拖越拉越沉，松手弹回。
-- 分页点为 8px 圆点，当前页拉长为 20px 品牌胶囊；自动播放时胶囊按停留间隔显示进度。悬停、聚焦等临时暂停时进度回到起点，恢复后与计时器一起从头计满一整个间隔。
+- 分页点为 6px 圆点、点距 8px，当前页拉长为 20px 品牌胶囊；自动播放时胶囊按停留间隔显示进度。悬停、聚焦等临时暂停时进度回到起点，恢复后与计时器一起从头计满一整个间隔。
 - 分页点沿轨道的长度取 `--xh-carousel-indicator-size`（当前页 `--xh-carousel-indicator-size-current`），垂直于轨道的粗细取 `--xh-carousel-indicator-thickness`，缺省与长度同值、仍是圆点。粗细单独调小就成细横条；横条不是正方盒，圆角同时把 `--xh-carousel-indicator-radius` 换成 `var(--xh-shape-pill)`。点调细时细指针的命中区垂直于轨道多外扩一些，不低于 24px；粗指针下 44px 的命中区与伪元素画点的方式不变，点与进度条同样按粗细画。
 - `loop` 下从末页往后翻（或首页往前翻）轨道继续朝同一方向走一张，接到首页（或末页），不倒着刷过全部页。
 - `effect="fade"` 换成淡入淡出：各张叠放在同一格，新一张淡入、旧一张同时淡出，时长与平移同一档，减弱动效下直接换；一页只放一张。
@@ -105,7 +105,7 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 - 开启自动播放时渲染 `autoplay-trigger`：它是唯一能停止自动翻页且不会被其他交互重新启动的入口。
 - 自动播放在指针悬停或焦点进入时自动暂停，离开后重新计满一个间隔再翻页。
 - 减弱动效时自动播放不会自行启动，播放开关是用户唯一的启动入口。
-- 分页点应能看出总屏数与当前位置；自动播放时还应反馈本页剩余时间。翻页与播放按钮走 Action Control floating 档，随 `size` 取 sm / md / lg（32 / 40 / 48px，默认 md 40px）圆形磨砂面，按下缩放并换底。三颗钮浮在内容之上：翻页钮在两侧居中、播放钮贴右下角，视口不低于 3 × 钮径 + 24px（两倍控件内距）时互不相叠，即 sm 120 / md 144 / lg 168px。
+- 分页点应能看出总屏数与当前位置；自动播放时还应反馈本页剩余时间。翻页与播放按钮走 Action Control floating 档，随 `size` 取 sm / md / lg（24 / 24 / 28px、字形 12 / 16 / 20px，默认 md 24px；sm 不低于 24px 的最小目标，只把字形收小）圆形浮层面，按下换底。三颗钮浮在内容之上：翻页钮在两侧居中、播放钮贴右下角，视口不低于 3 × 钮径 + 24px（两倍控件内距）时互不相叠，即 sm / md 96px、lg 108px。
 
 ### 反模式
 
@@ -140,7 +140,7 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 | `allowPointerDrag` | `boolean` |  | 允许指针拖拽切页，默认 false。鼠标、触摸、触控笔一并门控。 开启后沿轨道轴的原生滚动让位给拖拽，关闭则完全没有拖拽、触摸使用原生滚动。 |
 | `spacing` | `string` |  | 张与张之间的间距，任意 CSS 长度（如 '12px'）。落为条目自身的内边距，不影响位移计算。 |
 | `effect` | `CarouselEffect` |  | 换页方式，默认 slide（轨道平移）。fade 时条目叠放、新一页淡入旧一页淡出，与平移同一段时长与曲线， 减弱动效下直接换；loop 回绕也只是一次淡变。拖拽仍按方向与速度决定翻不翻页，画面不跟手位移。 fade 一页只放一张：slidesPerPage 大于 1 时报错。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；翻页与播放三颗钮走 Action Control floating 档（32 / 40 / 48px）。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；翻页与播放三颗钮走 Action Control floating 档，视觉盒 24 / 24 / 28px、字形 12 / 16 / 20px。 |
 | `translations` | `Partial<CarouselTranslations>` |  |  |
 | `onPageChange` | `(details: CarouselPageChangeDetails) => void` |  | 页码变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
@@ -341,7 +341,7 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 | `--xh-carousel-control-inset` | `autoplay-trigger`<br>`indicator-group`<br>`next-trigger`<br>`prev-trigger`<br>`root` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start` | `default`<br>`orientation=vertical` | `--xh-space-3` | carousel 的 autoplay-trigger、indicator-group、next-trigger、prev-trigger、root 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。 |
 | `--xh-carousel-duration` | `item`<br>`list` | `transition`<br>`transition-duration` | `default`<br>`effect=fade` | `--xh-motion-duration-slide` | carousel 的 item、list 部件 transition、transition-duration 覆盖槽。 |
 | `--xh-carousel-ease` | `item`<br>`list` | `transition`<br>`transition-timing-function` | `default`<br>`effect=fade` | `--xh-motion-ease-slide` | carousel 的 item、list 部件 transition、transition-timing-function 覆盖槽。 |
-| `--xh-carousel-icon-size` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-carousel-icon-size` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `--xh-icon-size` | `default` | `--xh-_carousel-trigger-glyph` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-carousel-indicator-bg` | `indicator` | `background` | `@media (pointer: coarse)`<br>`default` | `--xh-bg-subtle-hover-opaque` | carousel 的 indicator 部件 background 覆盖槽。 |
 | `--xh-carousel-indicator-bg-active` | `indicator` | `background` | `@media (pointer: coarse)`<br>`current`<br>`is(:active, [data-pressed])`<br>`not([data-current])`<br>`pressed` | `--xh-fg-default` | carousel 的 indicator 部件 background 覆盖槽。 |
 | `--xh-carousel-indicator-bg-hover` | `indicator` | `background` | `current`<br>`hover`<br>`not([data-current])` | `--xh-fg-muted` | carousel 的 indicator 部件 background 覆盖槽。 |
@@ -349,13 +349,13 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 | `--xh-carousel-indicator-bg-selected-active` | `indicator` | `background` | `@media (pointer: coarse)`<br>`current`<br>`is(:active, [data-pressed])`<br>`pressed` | `--xh-bg-brand-active` | carousel 的 indicator 部件 background 覆盖槽。 |
 | `--xh-carousel-indicator-bg-track` | `indicator`<br>`root` | `background` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`paused` | `--xh-bg-brand-subtle` | carousel 的 indicator、root 部件 background 覆盖槽。 |
 | `--xh-carousel-indicator-fg-selected` | `indicator`<br>`root` | `color` | `autoplay`<br>`current`<br>`not([data-autoplay], [data-paused])`<br>`paused` | `--xh-fg-on-brand` | carousel 的 indicator、root 部件 color 覆盖槽。 |
-| `--xh-carousel-indicator-gap` | `indicator-group` | `gap` | `default` | `--xh-space-1` | carousel 的 indicator-group 部件 gap 覆盖槽。 |
+| `--xh-carousel-indicator-gap` | `indicator-group` | `gap` | `default` | `--xh-space-2` | carousel 的 indicator-group 部件 gap 覆盖槽。 |
 | `--xh-carousel-indicator-group-p` | `indicator-group` | `padding` | `material=liquid`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-space-2` | carousel 的 indicator-group 部件 padding 覆盖槽。 |
 | `--xh-carousel-indicator-group-radius` | `indicator-group` | `border-radius` | `material=liquid`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-shape-pill` | carousel 的 indicator-group 部件 border-radius 覆盖槽。 |
 | `--xh-carousel-indicator-inset` | `indicator-group` | `inset-block-end` | `orientation=horizontal` | `--xh-space-3` | carousel 的 indicator-group 部件 inset-block-end 覆盖槽。 |
 | `--xh-carousel-indicator-radius` | `indicator` | `border-radius` | `@media (pointer: coarse)`<br>`default` | `--xh-shape-circle` | carousel 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-carousel-indicator-radius-current` | `indicator`<br>`root` | `border-radius` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`paused` | `--xh-shape-pill` | carousel 的 indicator、root 部件 border-radius 覆盖槽。 |
-| `--xh-carousel-indicator-size` | `indicator`<br>`indicator-group`<br>`root` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-inline` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`default`<br>`orientation=vertical`<br>`paused` | `--xh-space-2` | carousel 的 indicator、indicator-group、root 部件 block-size、inline-size、inset-block、inset-inline 覆盖槽。 |
+| `--xh-carousel-indicator-size` | `indicator`<br>`indicator-group`<br>`root` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-inline` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`default`<br>`orientation=vertical`<br>`paused` | `--xh-space-1_5` | carousel 的 indicator、indicator-group、root 部件 block-size、inline-size、inset-block、inset-inline 覆盖槽。 |
 | `--xh-carousel-indicator-size-current` | `indicator`<br>`indicator-group`<br>`root` | `block-size`<br>`inline-size` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`orientation=vertical`<br>`paused` | `--xh-space-5` | carousel 的 indicator、indicator-group、root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-carousel-indicator-target-size` | `indicator`<br>`root` | `min-block-size`<br>`min-inline-size` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`hover`<br>`is(:active, [data-pressed])`<br>`not([data-autoplay], [data-paused])`<br>`not([data-current])`<br>`paused`<br>`pressed` | `44px` | carousel 的 indicator、root 部件 min-block-size、min-inline-size 覆盖槽。 |
 | `--xh-carousel-indicator-thickness` | `indicator`<br>`indicator-group`<br>`root` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-inline` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`default`<br>`orientation=vertical`<br>`paused` | `--xh-carousel-indicator-size` | carousel 的 indicator、indicator-group、root 部件 block-size、inline-size、inset-block、inset-inline 覆盖槽。 |
@@ -367,7 +367,7 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 | `--xh-carousel-trigger-radius` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `border-radius` | `default` | `--xh-_action-profile-radius` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-carousel-trigger-shadow` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_material-shadow` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-carousel-trigger-shadow-hover` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `box-shadow` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_material-shadow` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 box-shadow 覆盖槽。 |
-| `--xh-carousel-trigger-size` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=floating` | `--xh-_action-profile-visual-size` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-carousel-trigger-size` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=floating` | `--xh-_carousel-trigger-size` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-carousel-viewport-radius` | `viewport` | `border-radius` | `default` | `--xh-shape-surface` | carousel 的 viewport 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

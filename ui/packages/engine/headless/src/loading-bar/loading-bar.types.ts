@@ -28,7 +28,7 @@ export interface LoadingBarSchema extends MachineSchema {
     defaultValue?: number
     /** 加载开关：true 开始，false 结束（走满 100 后淡出归零）。只由宿主写入，无配套回调。 */
     loading?: boolean
-    /** 进度条厚度：数字按像素，字符串按任意 CSS 长度。默认 2px。 */
+    /** 进度条厚度：数字按像素，字符串按任意 CSS 长度。默认 --xh-stroke-strong（3px）。 */
     height?: string | number
     /** 语气：brand / neutral / success / warning / danger / info，决定进度段使用哪族颜色。需要其他颜色时修改皮肤槽 --xh-loading-bar-range。 */
     tone?: Tone

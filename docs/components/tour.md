@@ -65,7 +65,7 @@
 - 支持受控步序、完成和跳过回调。
 - 气泡走 M4 sheet 三件套（1px 描边、不透明底、投影），与对话框同源；边界由描边承担，不只靠影分层。锚定步从贴着目标的那条边涨开入场，退场按 exit 档收拢。
 - 末行三颗按钮与角落的关闭按钮走 Action Control 家族配方：下一步是整条引导的主线动作，显式 solid 品牌实心；上一步为中性描边，跳过为无壳 ghost；关闭按钮为 icon 档 ghost 面。悬停与按下沿画布承载阶梯换底并 0.97 缩放，Space / Enter 与触屏按住期间投影 `data-pressed`。
-- 标题为 heading-3，说明文字为 13px 说明档；说明区是气泡里唯一让步的滚动面，滚到头不带动页面。进度圆点是 8px 正圆，当前那颗拉成 20px 胶囊。
+- 标题为 heading-3，说明文字为 13px 说明档；说明区是气泡里唯一让步的滚动面，滚到头不带动页面。进度圆点是 6px 正圆、点距 8px（与走马灯的分页点同一种语言），当前那颗拉成 20px 胶囊。
 
 ### 组合
 
@@ -360,7 +360,7 @@
 | `--xh-tour-progress-dot-bg-current` | `progress-dot` | `background` | `current` | `--xh-bg-brand` | tour 的 progress-dot 部件 background 覆盖槽。 |
 | `--xh-tour-progress-fg` | `progress-text` | `color` | `default` | `--xh-fg-subtle` | tour 的 progress-text 部件 color 覆盖槽。 |
 | `--xh-tour-progress-font-size` | `progress-text` | `font-size` | `default` | `--xh-text-caption-size` | tour 的 progress-text 部件 font-size 覆盖槽。 |
-| `--xh-tour-progress-indicator-gap` | `progress-indicator` | `gap` | `default` | `--xh-space-1` | tour 的 progress-indicator 部件 gap 覆盖槽。 |
+| `--xh-tour-progress-indicator-gap` | `progress-indicator` | `gap` | `default` | `--xh-space-2` | tour 的 progress-indicator 部件 gap 覆盖槽。 |
 | `--xh-tour-px` | `content` | `padding-inline` | `default` | `--xh-surface-px-md` | tour 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-tour-py` | `content` | `padding-block` | `default` | `--xh-surface-py-sm` | tour 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-tour-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | tour 的 content 部件 border-radius 覆盖槽。 |

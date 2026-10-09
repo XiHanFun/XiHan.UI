@@ -114,6 +114,7 @@
     "data-state": "当前处在哪一档状态。取值域登记在 data-state 段的族体系里，判据④逐值核对。",
     "data-variant": "取哪一档形态（形态轴，取值域逐组件自定）。",
     "data-xh-action-profile": "这颗离散动作控件接 Action Control 家族的哪一档 profile（text / icon / field-inset / floating / row / disclosure-trigger，决定盒型与按压方式）：由 connect 逐部件投影，一个组件里不同部件各取各的档（image-viewer 的翻页钮 floating、叉与工具条钮 icon；approval 的条目 row、动作钮 text）。",
+    "data-xh-action-size": "这颗离散动作控件取 Action Control 家族的哪一档尺寸（xs / sm / md / lg），由连接层按组件尺寸或部件身份投影；皮肤只按它给本组件私有的视觉盒与字形尺。",
     "data-xh-action-variant": "这颗离散动作控件取 Action Control 家族的哪一档形态（solid / subtle / outline / ghost，与形态轴同一套词）：由 connect 逐部件投影，一个组件里主要动作与次要动作可以各取一档（form 的提交 solid、重置 outline；field-array 的行内把手 ghost、新增钮 outline）。"
   },
   "boolean": {
@@ -259,7 +260,7 @@
     "data-xh-collection-item": "这个部件归 Collection Item 家族，皮肤按它接家族配方（面、字色、字重、光标与按压时间线由配方按 data-xh-collection-context 给）。常驻归族的部件写常量空串；只在某一形态归族的部件（tabs 的 line 页签，card / segment 档不归族）按形态经 dataAttr 发。",
     "data-xh-collection-terminal": "Collection Item nav 语境里当前页是不可点的终点（面包屑当前页）：家族给透明面 + --xh-fg-default + medium + cursor default，不响应 hover / pressed，并压过 aria-disabled 的禁用面。显式投影而不从 aria-current / href 推断，正是因为它同时带 aria-disabled='true'。",
     "data-xh-field-auto-size": "Field Chrome 的 textarea 高度由内容量高接管。",
-    "data-xh-ink-surface": "这个部件画的是一块库自有的彩色面（Action Control 与 Tag 的实心档、Tooltip 反白面）：皮肤把当前底色写进 --xh-ink-surface，面的直接子元素按它成为 auto 墨色域；面自身仍按外层取值。实心档随形态经 dataAttr 发，Tooltip content 恒发空串。",
+    "data-xh-ink-surface": "这个部件画的是一块库自有的彩色面（Action Control 与 Tag 的实心档、Tooltip 反白面、ImageViewer 压在白墨域里的页面主题工具条）：皮肤把当前底色写进 --xh-ink-surface，面的直接子元素按它成为 auto 墨色域；面自身仍按外层取值。实心档随形态经 dataAttr 发，Tooltip content 与 ImageViewer toolbar 恒发空串。",
     "data-xh-liquid": "这个部件是浮在内容之上的导航层：data-material=\"liquid\" 下皮肤把它换成液态面，状态机把它挂进 core 的液态面（下层判定、折射、光源）。常驻导航层的部件写常量空串；只在某一形态算导航层的部件（layout 的顶栏，吸顶时才算）经 dataAttr 发。允许的部件由 check-material-scope 登记。",
     "data-xh-virtualized": "这个语义集合已接入 CollectionVirtualizer，DOM 暂时没有条目不等于集合为空；结构皮肤不得据 :has(item) 把集合容器收起。",
     "data-zoomed": "已经放大：直角坐标图的缩放窗口不再盖住整条轴，拖动绘图区可以平移。"

@@ -5,7 +5,7 @@
 
 // 提供 spinner 相关实现。
 
-import type { Size, Tone } from '@xihan-ui/core'
+import type { Orientation, Size, Tone } from '@xihan-ui/core'
 import type { SpinnerProps, SpinnerTranslations, SpinnerVariant } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
@@ -22,6 +22,8 @@ export const XhSpinner = defineComponent({
     size: { type: String as PropType<Size> },
     variant: { type: String as PropType<SpinnerVariant> },
     tone: { type: String as PropType<Tone> },
+    /** 转圈与配文的排布：horizontal 并排（缺省）/ vertical 转圈在上、配文在下。 */
+    orientation: { type: String as PropType<Orientation> },
     /** 挂载后等多少毫秒才露面，默认 0；加载在这之前结束时转圈从头到尾不出现。 */
     delay: { type: Number },
     translations: { type: Object as PropType<Partial<SpinnerTranslations>> },

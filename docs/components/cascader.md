@@ -622,7 +622,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_cascader-font-size` | cascader 的 loading 部件 font-size 覆盖槽。 |
 | `--xh-cascader-loading-min-h` | `loading` | `min-block-size` | `default` | `--xh-viewport-h-sm` | cascader 的 loading 部件 min-block-size 覆盖槽。 |
 | `--xh-cascader-loading-p` | `loading` | `padding` | `default` | `--xh-space-3` | cascader 的 loading 部件 padding 覆盖槽。 |
-| `--xh-cascader-loading-ring-fg` | `loading` | `border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`motion=reduce`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring` | `--xh-fg-brand` | cascader 的 loading 部件 border-block-start-color、border-color 覆盖槽。 |
+| `--xh-cascader-loading-ring-fg` | `loading` | `border`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`motion=reduce`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring`<br>`xh-loading-ring=overlay` | `--xh-fg-brand` | cascader 的 loading 部件 border、border-color 覆盖槽。 |
 | `--xh-cascader-placeholder-fg` | `input`<br>`value-text` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | cascader 的 input、value-text 部件 color 覆盖槽。 |
 | `--xh-cascader-search-divider` | `input` | `border-block-end` | `default` | `--xh-material-solid-border` | cascader 的 input 部件 border-block-end 覆盖槽。 |
 | `--xh-cascader-search-list-gap` | `search-list` | `gap` | `default` | `--xh-list-option-gap` | cascader 的 search-list 部件 gap 覆盖槽。 |

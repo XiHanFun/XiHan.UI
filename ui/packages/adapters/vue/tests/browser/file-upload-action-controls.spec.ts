@@ -87,12 +87,12 @@ describe('file-upload 的三颗钮接 Action Control', () => {
     expect(getComputedStyle(trigger).boxShadow).toBe('none')
   })
 
-  it('逐条删除：悬停取白底承载 100、字换危险色', async () => {
+  it('逐条删除：坐在淡底文件行上，悬停取淡底承载 200、字换危险色', async () => {
     await mount()
     const remove = part('item-delete-trigger')
     await userEvent.hover(remove)
     await expect.poll(() => getComputedStyle(remove).backgroundColor)
-      .toBe(resolved(remove, 'background-color', 'var(--xh-bg-subtle)'))
+      .toBe(resolved(remove, 'background-color', 'var(--xh-bg-subtle-hover)'))
     await expect.poll(() => getComputedStyle(remove).color)
       .toBe(resolved(remove, 'color', 'var(--xh-fg-danger-hover)'))
   })

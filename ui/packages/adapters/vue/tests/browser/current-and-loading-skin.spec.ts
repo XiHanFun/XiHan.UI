@@ -93,16 +93,6 @@ const styleOf = (el: HTMLElement, prop: string): string => getComputedStyle(el).
 const beforeOf = (el: HTMLElement, prop: string): string => getComputedStyle(el, '::before').getPropertyValue(prop)
 const afterOf = (el: HTMLElement, prop: string): string => getComputedStyle(el, '::after').getPropertyValue(prop)
 
-/** 在宿主里把令牌解析成与 getComputedStyle 同格式的颜色值。 */
-function resolveColor(token: string): string {
-  const probe = document.createElement('span')
-  probe.style.color = `var(${token})`
-  host!.append(probe)
-  const value = getComputedStyle(probe).color
-  probe.remove()
-  return value
-}
-
 // —— 当前项：三家的前景与字重都走 -<部件>-fg-current / -<部件>-font-weight-current ——
 
 function currentTrio(): unknown {
@@ -185,7 +175,9 @@ describe('取数与写入在途的转圈', () => {
     expect(beforeOf(root, 'animation-play-state')).toBe('running')
     expect(beforeOf(root, 'transition-delay')).toBe('0.12s')
     expect(Number.parseFloat(beforeOf(root, 'width'))).toBeGreaterThan(0)
-    expect(beforeOf(root, 'border-top-color')).toBe(foreground)
+    // 270° 的弧随钮的字色，起始边是缺口
+    expect(beforeOf(root, 'border-right-color')).toBe(foreground)
+    expect(beforeOf(root, 'border-top-color')).toBe('rgba(0, 0, 0, 0)')
     await expect.poll(() => Number.parseFloat(beforeOf(root, 'opacity'))).toBeGreaterThan(0.9)
     await expect.poll(() => styleOf(root, 'color')).toBe('rgba(0, 0, 0, 0)')
     expect(root.getBoundingClientRect().width).toBeCloseTo(width, 4)
@@ -220,7 +212,9 @@ describe('取数与写入在途的转圈', () => {
     expect(styleOf(trigger, 'cursor')).toBe('progress')
     expect(beforeOf(trigger, 'animation-name')).toBe('xh-spin')
     expect(beforeOf(trigger, 'transition-delay')).toBe('0.12s')
-    expect(beforeOf(trigger, 'border-top-color')).toBe(foreground)
+    // 270° 的弧随钮的字色，起始边是缺口
+    expect(beforeOf(trigger, 'border-right-color')).toBe(foreground)
+    expect(beforeOf(trigger, 'border-top-color')).toBe('rgba(0, 0, 0, 0)')
     await expect.poll(() => Number.parseFloat(beforeOf(trigger, 'opacity'))).toBeGreaterThan(0.9)
     await expect.poll(() => styleOf(trigger, 'color')).toBe('rgba(0, 0, 0, 0)')
     expect(trigger.getBoundingClientRect().width).toBeCloseTo(width, 4)
@@ -253,7 +247,9 @@ describe('取数与写入在途的转圈', () => {
     expect(beforeOf(trigger, 'animation-name')).toBe('xh-spin')
     expect(beforeOf(trigger, 'position')).toBe('absolute')
     expect(beforeOf(trigger, 'transition-delay')).toBe('0.12s')
-    expect(beforeOf(trigger, 'border-top-color')).toBe(foreground)
+    // 270° 的弧随钮的字色，起始边是缺口
+    expect(beforeOf(trigger, 'border-right-color')).toBe(foreground)
+    expect(beforeOf(trigger, 'border-top-color')).toBe('rgba(0, 0, 0, 0)')
     await expect.poll(() => Number.parseFloat(beforeOf(trigger, 'opacity'))).toBeGreaterThan(0.9)
     await expect.poll(() => styleOf(trigger, 'color')).toBe('rgba(0, 0, 0, 0)')
     expect(trigger.getBoundingClientRect().width).toBeCloseTo(width, 4)
@@ -407,7 +403,7 @@ describe('轻提示预设的语气字形', () => {
     expect(new Set(marks).size).toBe(4)
   })
 
-  it('加载中画的是与 Spinner 环档同一副加载环：一整圈轨道色、起始边语气色，转起来；语气位不受它影响', async () => {
+  it('加载中画的是与 Spinner 环档同一副加载环：270° 的语气色弧、起始边留缺口，转起来；语气位不受它影响', async () => {
     await mount(() => TOAST({ loading: true, tone: 'success' }))
     const root = part('notification', 'item')
     expect(root.getAttribute('data-tone')).toBe('success')
@@ -416,10 +412,9 @@ describe('轻提示预设的语气字形', () => {
     expect(beforeOf(root, 'mask-image')).toBe('none')
     expect(beforeOf(root, 'border-top-style')).toBe('solid')
     expect(beforeOf(root, 'border-top-left-radius')).toBe('50%')
-    expect(beforeOf(root, 'border-right-color')).toBe(resolveColor('--xh-border-default'))
-    // 起始边与语气字形同一个颜色
-    expect(beforeOf(root, 'border-top-color')).toBe(afterOf(root, 'background-color'))
-    expect(beforeOf(root, 'border-top-color')).not.toBe(beforeOf(root, 'border-right-color'))
+    // 弧与语气字形同一个颜色，起始边是缺口、不画轨道
+    expect(beforeOf(root, 'border-right-color')).toBe(afterOf(root, 'background-color'))
+    expect(beforeOf(root, 'border-top-color')).toBe('rgba(0, 0, 0, 0)')
     expect(beforeOf(root, 'animation-name')).toBe('xh-spin')
     expect(beforeOf(root, 'animation-iteration-count')).toBe('infinite')
     expect(beforeOf(root, 'animation-play-state')).toBe('running')
@@ -491,6 +486,6 @@ describe('轻提示预设的语气字形', () => {
     await mount(() => TOAST({ tone: 'success' }))
     expect(afterOf(part('notification', 'item'), 'background-color')).toBe(RED)
     await mount(() => TOAST({ tone: 'success', loading: true }))
-    expect(beforeOf(part('notification', 'item'), 'border-top-color')).toBe(RED)
+    expect(beforeOf(part('notification', 'item'), 'border-right-color')).toBe(RED)
   })
 })

@@ -5,7 +5,7 @@
 
 // 提供 spinner 相关实现。
 
-import type { Size, Tone } from '@xihan-ui/core'
+import type { Orientation, Size, Tone } from '@xihan-ui/core'
 import type { SpinnerProps, SpinnerTranslations, SpinnerVariant } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { withXhConfig } from '../../config/config'
@@ -20,6 +20,8 @@ export interface XhSpinnerProps extends ComponentPropsWithRef<'span'> {
   /** 形态：ring / arc / dots。 */
   variant?: SpinnerVariant
   tone?: Tone
+  /** 转圈与配文的排布：horizontal 并排（缺省）/ vertical 转圈在上、配文在下。 */
+  orientation?: Orientation
   /** 挂载后等多少毫秒才露面，默认 0；加载在这之前结束时转圈从头到尾不出现。 */
   delay?: number
   translations?: Partial<SpinnerTranslations>
@@ -31,12 +33,13 @@ export function XhSpinner({
   size,
   variant,
   tone,
+  orientation,
   delay,
   translations,
   children,
   ...rest
 }: XhSpinnerProps): ReactNode {
-  const ctx = useSpinner(withXhConfig('spinner', { label, size, variant, tone, delay, translations }) as SpinnerProps)
+  const ctx = useSpinner(withXhConfig('spinner', { label, size, variant, tone, orientation, delay, translations }) as SpinnerProps)
   return (
     <SpinnerProvider value={ctx}>
       <span {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>

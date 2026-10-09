@@ -131,7 +131,8 @@
   }
 
   /* 两端按钮与播放开关：浮在媒体之上的单图标圆钮，接 Action Control floating 档：
-     盒型（md = box-lg 48px，圆形）、四态面、0.97 按压与 44px 命中区由家族配方给出，组件没有 size 轴、固定 md。
+     圆形、四态面、按压与 44px 命中区由家族配方给出；视觉盒比 floating 档小，不压画面：
+     sm / md / lg 取 24 / 24 / 28px、字形 12 / 16 / 20px（sm 不低于 24px 的最小目标，只把字形收小）。
      连接层不投影 variant：面由这里桥接到磨砂缺省（使用者槽 → 磨砂面），悬停 / 按下的底走画布承载的阶梯
      （100 → 200，取不透明档：钮压在图上，半透明的墨色盖不住画面），边缘与投影不动；这里只留定位、桥接槽与图标尺 */
   [data-scope='carousel'][data-part='prev-trigger'],
@@ -167,12 +168,24 @@
     --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-hover-opaque));
     /* M2 顶光走配方的高光通道 */
     --xh-action-radius: var(--xh-carousel-trigger-radius, var(--xh-_action-profile-radius));
-    --xh-action-visual-size: var(--xh-carousel-trigger-size, var(--xh-_action-profile-visual-size));
-    /* 作者塞进来的图标跟着 floating 档走（md 24px），与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-carousel-icon-size, var(--xh-_action-profile-glyph-size));
+    --xh-_carousel-trigger-size: var(--xh-control-action-size);
+    --xh-_carousel-trigger-glyph: var(--xh-glyph-size-sm);
+    --xh-action-visual-size: var(--xh-carousel-trigger-size, var(--xh-_carousel-trigger-size));
+    --xh-action-min-inline-size: var(--xh-carousel-trigger-size, var(--xh-_carousel-trigger-size));
+    /* 作者塞进来的图标与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-carousel-icon-size, var(--xh-_carousel-trigger-glyph));
 
     position: absolute;
     z-index: 1;
+  }
+
+  [data-scope='carousel']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='autoplay-trigger'])[data-xh-action-size='sm'] {
+    --xh-_carousel-trigger-glyph: var(--xh-control-indicator-sm);
+  }
+
+  [data-scope='carousel']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='autoplay-trigger'])[data-xh-action-size='lg'] {
+    --xh-_carousel-trigger-size: var(--xh-control-h-sm);
+    --xh-_carousel-trigger-glyph: var(--xh-glyph-size-md);
   }
 
   [data-scope='carousel'][data-part='prev-trigger'],
@@ -224,7 +237,7 @@
     flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
-    gap: var(--xh-carousel-indicator-gap, var(--xh-space-1));
+    gap: var(--xh-carousel-indicator-gap, var(--xh-space-2));
   }
 
   [data-scope='carousel'][data-part='indicator-group'][hidden] {
@@ -267,7 +280,7 @@
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 分页点与 Tour 的步骤点同一种语言：8px 圆点，当前页拉长成 20px 胶囊并换品牌色。
+  /* 分页点与 Tour 的步骤点同一种语言：圆点（压在媒体上的这一排 6px、点距 8px），当前页拉长成 20px 胶囊并换品牌色。
      本体就是那颗点：没有文字（页码交给作者，默认不显示），底色即标记。
      悬停 / 按下的回执落在点的颜色上：中性标记按前景阶梯加深一档、再加深一档；当前页按品牌阶梯压一档。
      沿轨道的长度取 indicator-size（当前页 indicator-size-current），垂直于轨道的粗细取 indicator-thickness，
@@ -278,8 +291,8 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
-    block-size: var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-2)));
+    inline-size: var(--xh-carousel-indicator-size, var(--xh-space-1_5));
+    block-size: var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5)));
     padding: 0;
     border: 0;
     border-radius: var(--xh-carousel-indicator-radius, var(--xh-shape-circle));
@@ -299,15 +312,18 @@
     display: none;
   }
 
-  /* 细指针的命中区外扩到 24×24（8px 点四面各扩 8px）；粗指针下这颗伪元素改画点，盒子自己承担命中。
-     点调细了，垂直于轨道那一向多扩一些，命中区不低于 24px 的最小目标 */
+  /* 细指针的命中区外扩到不低于 24×24：两向都取「外扩 8px」与「补足到 24px」中大的一头（6px 点四面各扩 9px）；
+     粗指针下这颗伪元素改画点，盒子自己承担命中。点调细了，垂直于轨道那一向照样补足 */
   [data-scope='carousel'][data-part='indicator']::after {
     content: '';
     position: absolute;
-    inset-inline: calc(-1 * var(--xh-space-2));
+    inset-inline: min(
+      calc(-1 * var(--xh-space-2)),
+      calc((var(--xh-carousel-indicator-size, var(--xh-space-1_5)) - var(--xh-space-6)) / 2)
+    );
     inset-block: min(
       calc(-1 * var(--xh-space-2)),
-      calc((var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-2))) - var(--xh-space-6)) / 2)
+      calc((var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5))) - var(--xh-space-6)) / 2)
     );
   }
 
@@ -315,9 +331,12 @@
     > [data-scope='carousel'][data-part='indicator']::after {
     inset-inline: min(
       calc(-1 * var(--xh-space-2)),
-      calc((var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-2))) - var(--xh-space-6)) / 2)
+      calc((var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5))) - var(--xh-space-6)) / 2)
     );
-    inset-block: calc(-1 * var(--xh-space-2));
+    inset-block: min(
+      calc(-1 * var(--xh-space-2)),
+      calc((var(--xh-carousel-indicator-size, var(--xh-space-1_5)) - var(--xh-space-6)) / 2)
+    );
   }
 
   [data-scope='carousel'][data-part='indicator']:hover:not([data-current]) {
@@ -401,13 +420,13 @@
   /* 纵轨：胶囊沿块轴拉长，进度条从上往下长 */
   [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
     > [data-scope='carousel'][data-part='indicator'] {
-    inline-size: var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-2)));
-    block-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
+    inline-size: var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5)));
+    block-size: var(--xh-carousel-indicator-size, var(--xh-space-1_5));
   }
 
   [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
     > [data-scope='carousel'][data-part='indicator'][data-current] {
-    inline-size: var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-2)));
+    inline-size: var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5)));
     block-size: var(--xh-carousel-indicator-size-current, var(--xh-space-5));
   }
 
@@ -555,7 +574,7 @@
   }
 
   /* 手指落点：三颗钮的 44px 命中区由配方的 ::after 给（floating 档）。
-     分页点的视觉仍是 8 / 20px，按钮盒改成首尾相接的 44px 分区：直接用负 inset 外扩会让相邻页的命中区重叠，
+     分页点的视觉仍是 6 / 20px，按钮盒改成首尾相接的 44px 分区：直接用负 inset 外扩会让相邻页的命中区重叠，
      落点归属取决于绘制顺序；这里让真实按钮盒承担命中，点与进度条改由伪元素画在盒子中央 */
   @media (pointer: coarse) {
     [data-scope='carousel'][data-part='indicator-group'] {
@@ -585,8 +604,8 @@
       inset: auto;
       inset-block-start: 50%;
       inset-inline-start: 50%;
-      inline-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
-      block-size: var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-2)));
+      inline-size: var(--xh-carousel-indicator-size, var(--xh-space-1_5));
+      block-size: var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5)));
       border-radius: var(--xh-carousel-indicator-radius, var(--xh-shape-circle));
       background: var(--xh-carousel-indicator-bg, var(--xh-bg-subtle-hover-opaque));
       translate: -50% -50%;
@@ -636,7 +655,7 @@
       inset-inline-start: 50%;
       z-index: 1;
       inline-size: var(--xh-carousel-indicator-size-current, var(--xh-space-5));
-      block-size: var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-2)));
+      block-size: var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5)));
       border-radius: var(--xh-carousel-indicator-radius-current, var(--xh-shape-pill));
       translate: -50% -50%;
     }
@@ -654,8 +673,8 @@
       inset: auto;
       inset-block-start: 50%;
       inset-inline-start: 50%;
-      inline-size: var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-2)));
-      block-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
+      inline-size: var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5)));
+      block-size: var(--xh-carousel-indicator-size, var(--xh-space-1_5));
     }
 
     [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
@@ -666,7 +685,7 @@
     [data-scope='carousel'][data-part='root'][data-paused]
       [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
       > [data-scope='carousel'][data-part='indicator'][data-current]::before {
-      inline-size: var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-2)));
+      inline-size: var(--xh-carousel-indicator-thickness, var(--xh-carousel-indicator-size, var(--xh-space-1_5)));
       block-size: var(--xh-carousel-indicator-size-current, var(--xh-space-5));
     }
   }

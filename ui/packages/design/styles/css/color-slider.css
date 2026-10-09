@@ -86,7 +86,7 @@
   [data-scope='color-slider'][data-part='track'] {
     position: relative;
     border-radius: var(--xh-color-slider-track-radius, var(--xh-shape-pill));
-    box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-color-slider-track-border, var(--xh-border-subtle));
+    box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-color-slider-track-border, var(--xh-border-default));
   }
 
   [data-scope='color-slider'][data-part='track'][data-orientation='horizontal'] {
@@ -110,10 +110,10 @@
     border-radius: inherit;
     background-color: var(--xh-color-slider-checker-base, var(--xh-bg-surface));
     background-image:
-      linear-gradient(45deg, var(--xh-color-slider-checker, var(--xh-color-neutral-300)) 25%, transparent 25%),
-      linear-gradient(-45deg, var(--xh-color-slider-checker, var(--xh-color-neutral-300)) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, var(--xh-color-slider-checker, var(--xh-color-neutral-300)) 75%),
-      linear-gradient(-45deg, transparent 75%, var(--xh-color-slider-checker, var(--xh-color-neutral-300)) 75%);
+      linear-gradient(45deg, var(--xh-color-slider-checker, var(--xh-bg-subtle)) 25%, transparent 25%),
+      linear-gradient(-45deg, var(--xh-color-slider-checker, var(--xh-bg-subtle)) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, var(--xh-color-slider-checker, var(--xh-bg-subtle)) 75%),
+      linear-gradient(-45deg, transparent 75%, var(--xh-color-slider-checker, var(--xh-bg-subtle)) 75%);
     background-position: 0 0, 0 4px, 4px -4px, -4px 0;
     background-size: 8px 8px;
   }

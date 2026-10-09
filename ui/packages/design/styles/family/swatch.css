@@ -20,10 +20,10 @@
     background-color: var(--xh-swatch-checker-base, var(--xh-bg-surface));
     background-image:
       linear-gradient(var(--xh-_swatch-color), var(--xh-_swatch-color)),
-      linear-gradient(45deg, var(--xh-swatch-checker, var(--xh-color-neutral-300)) 25%, transparent 25%),
-      linear-gradient(-45deg, var(--xh-swatch-checker, var(--xh-color-neutral-300)) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, var(--xh-swatch-checker, var(--xh-color-neutral-300)) 75%),
-      linear-gradient(-45deg, transparent 75%, var(--xh-swatch-checker, var(--xh-color-neutral-300)) 75%);
+      linear-gradient(45deg, var(--xh-swatch-checker, var(--xh-bg-subtle)) 25%, transparent 25%),
+      linear-gradient(-45deg, var(--xh-swatch-checker, var(--xh-bg-subtle)) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, var(--xh-swatch-checker, var(--xh-bg-subtle)) 75%),
+      linear-gradient(-45deg, transparent 75%, var(--xh-swatch-checker, var(--xh-bg-subtle)) 75%);
     background-position:
       0 0,
       0 0,

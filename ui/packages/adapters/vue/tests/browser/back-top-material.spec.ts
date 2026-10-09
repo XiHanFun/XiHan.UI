@@ -136,15 +136,33 @@ describe('back-top 的 M2 磨砂皮肤', () => {
     // 不传 variant 时连接层显式落 outline：描边 + 磨砂面的中性圆钮
     expect(root().getAttribute('data-variant')).toBe('outline')
     expect(element.getAttribute('data-xh-action-variant')).toBe('outline')
-    // floating 档 md：方格 box-md 的圆形，与 float-button 同档
-    expect(element.getBoundingClientRect().width).toBe(tokenLength('--xh-control-box-md'))
-    expect(element.getBoundingClientRect().height).toBe(tokenLength('--xh-control-box-md'))
+    // 浮钮 md 档：control-float-md 的圆形，与 float-button 同档
+    expect(element.getBoundingClientRect().width).toBe(tokenLength('--xh-control-float-md'))
+    expect(element.getBoundingClientRect().height).toBe(tokenLength('--xh-control-float-md'))
     expect(style.backgroundColor).toBe(resolve(element, 'background-color', 'var(--xh-material-frosted-bg)'))
     expect(style.borderTopColor).toBe(resolve(element, 'border-top-color', 'var(--xh-material-frosted-border)'))
     expect(style.color).toBe(resolve(element, 'color', 'var(--xh-material-frosted-fg)'))
     expect(style.boxShadow).toBe(resolve(element, 'box-shadow', 'var(--xh-material-frosted-shadow)'))
     expect(style.backdropFilter).toBe(resolve(element, 'backdrop-filter', 'var(--xh-material-frosted-backdrop)'))
     expect(style.backgroundImage).toBe(resolve(element, 'background-image', 'linear-gradient(to bottom, var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin), transparent var(--xh-stroke-thin))'))
+  })
+
+  it('md 档 40px、紧凑档 36px，兜底字形 16px，贴视口尾下角 24px', async () => {
+    await mount()
+    const element = trigger()
+    const rect = element.getBoundingClientRect()
+    expect([rect.width, rect.height]).toEqual([40, 40])
+    expect(getComputedStyle(element, '::before').width).toBe('16px')
+    expect(document.documentElement.clientWidth - rect.right).toBe(24)
+    expect(document.documentElement.clientHeight - rect.bottom).toBe(24)
+
+    document.documentElement.dataset.density = 'compact'
+    try {
+      expect(element.getBoundingClientRect().width).toBe(36)
+    }
+    finally {
+      delete document.documentElement.dataset.density
+    }
   })
 
   it.each(THEMES)('%s：键盘焦点铺配方的实体焦点面，公共焦点环不改几何', async (theme) => {

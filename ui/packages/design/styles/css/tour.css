@@ -265,22 +265,22 @@
     color: var(--xh-tour-progress-fg, var(--xh-fg-subtle));
   }
 
-  /* 圆点组：一步一颗，横排 */
+  /* 圆点组：一步一颗，横排；点距与走马灯的分页点同为 8px */
   [data-scope='tour'][data-part='progress-indicator'] {
     display: inline-flex;
     align-items: center;
-    gap: var(--xh-tour-progress-indicator-gap, var(--xh-space-1));
+    gap: var(--xh-tour-progress-indicator-gap, var(--xh-space-2));
   }
 
   [data-scope='tour'][data-part='progress-indicator'][hidden] {
     display: none;
   }
 
-  /* 圆点：8px 正圆取 circle（分页点统一款），未走到的一档取中性描边色。
+  /* 圆点：6px 正圆取 circle（与走马灯分页点同一种语言），未走到的一档取中性描边色。
      宽度与底色都随状态换，换步那一下能看出进度在推进 */
   [data-scope='tour'][data-part='progress-dot'] {
-    inline-size: var(--xh-space-2);
-    block-size: var(--xh-space-2);
+    inline-size: var(--xh-space-1_5);
+    block-size: var(--xh-space-1_5);
     border-radius: var(--xh-shape-circle);
     background: var(--xh-tour-progress-dot-bg, var(--xh-border-default));
     transition:

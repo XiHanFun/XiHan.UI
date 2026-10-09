@@ -152,11 +152,11 @@ describe('connectImageViewer 按压通道：Space / Enter 与触屏按住投影 
 
 describe('connectImageViewer 控制钮的尺寸档', () => {
   it.each([
-    [undefined, 'md', 'sm'],
+    [undefined, 'md', 'md'],
     ['sm', 'sm', 'sm'],
-    ['md', 'md', 'sm'],
-    ['lg', 'lg', 'md'],
-  ] as const)('size 为 %s：翻页钮取 %s，关闭钮比它低一档取 %s', (size, nav, close) => {
+    ['md', 'md', 'md'],
+    ['lg', 'lg', 'lg'],
+  ] as const)('size 为 %s：翻页钮取 %s，关闭钮与它同档取 %s', (size, nav, close) => {
     const viewer = makeViewer(size ? { size } : {})
     expect(viewer.prev()['data-xh-action-size']).toBe(nav)
     expect(viewer.next()['data-xh-action-size']).toBe(nav)
