@@ -102,7 +102,7 @@ const RENDER: Record<Scope, (size: Size) => VNode> = {
 /** 各自的搜索框部件名。 */
 const PART: Record<Scope, string> = { 'cascader': 'input', 'command': 'input', 'side-nav': 'input', 'transfer': 'search', 'tree-select': 'input' }
 
-/** 下划线是面内分隔：取所在面材质的分隔令牌。 */
+/** 下划线取所在面材质的令牌：级联与命令面板的搜索框走描边档，其余走分隔档。 */
 const DIVIDER: Record<Scope, string> = {
   'cascader': '--xh-material-solid-border',
   'command': '--xh-material-elevated-border',
@@ -159,7 +159,7 @@ describe.each(['cascader', 'command', 'side-nav', 'transfer', 'tree-select'] as 
     expect(getComputedStyle(input, '::placeholder').color).toBe(resolved(input, 'color', '--xh-fg-subtle'))
   })
 
-  it('只画一道下划线，颜色取所在面的分隔令牌', async () => {
+  it('只画一道下划线，颜色取所在面材质的令牌', async () => {
     const input = await mount(scope, 'md')
     const style = getComputedStyle(input)
     expect(style.borderTopWidth).toBe('0px')
