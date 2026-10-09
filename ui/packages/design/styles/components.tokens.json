@@ -7329,7 +7329,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-sm"
+        "--xh-_carousel-trigger-glyph"
       ],
       "visibility": "public",
       "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 --xh-icon-size 覆盖槽。"
@@ -7931,7 +7931,7 @@
         "xh-action-profile=floating"
       ],
       "defaultToken": [
-        "--xh-control-action-size"
+        "--xh-_carousel-trigger-size"
       ],
       "visibility": "public",
       "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"

@@ -19366,8 +19366,8 @@
   }
 
   /* 两端按钮与播放开关：浮在媒体之上的单图标圆钮，接 Action Control floating 档：
-     圆形、四态面、按压与 44px 命中区由家族配方给出，组件没有 size 轴、固定 md；视觉盒收到 xs 动作钮的尺
-     （24px、字形 16px），不压画面。
+     圆形、四态面、按压与 44px 命中区由家族配方给出；视觉盒比 floating 档小，不压画面：
+     sm / md / lg 取 24 / 24 / 28px、字形 12 / 16 / 20px（sm 不低于 24px 的最小目标，只把字形收小）。
      连接层不投影 variant：面由这里桥接到磨砂缺省（使用者槽 → 磨砂面），悬停 / 按下的底走画布承载的阶梯
      （100 → 200，取不透明档：钮压在图上，半透明的墨色盖不住画面），边缘与投影不动；这里只留定位、桥接槽与图标尺 */
   .xh-scope-carousel[data-part='prev-trigger'],
@@ -19403,13 +19403,24 @@
     --xh-action-bg-pressed: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-hover-opaque));
     /* M2 顶光走配方的高光通道 */
     --xh-action-radius: var(--xh-carousel-trigger-radius, var(--xh-_action-profile-radius));
-    --xh-action-visual-size: var(--xh-carousel-trigger-size, var(--xh-control-action-size));
-    --xh-action-min-inline-size: var(--xh-carousel-trigger-size, var(--xh-control-action-size));
-    /* 作者塞进来的图标与皮肤画的兜底字形同一把尺（16px） */
-    --xh-icon-size: var(--xh-carousel-icon-size, var(--xh-glyph-size-sm));
+    --xh-_carousel-trigger-size: var(--xh-control-action-size);
+    --xh-_carousel-trigger-glyph: var(--xh-glyph-size-sm);
+    --xh-action-visual-size: var(--xh-carousel-trigger-size, var(--xh-_carousel-trigger-size));
+    --xh-action-min-inline-size: var(--xh-carousel-trigger-size, var(--xh-_carousel-trigger-size));
+    /* 作者塞进来的图标与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-carousel-icon-size, var(--xh-_carousel-trigger-glyph));
 
     position: absolute;
     z-index: 1;
+  }
+
+  .xh-scope-carousel:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='autoplay-trigger'])[data-xh-action-size='sm'] {
+    --xh-_carousel-trigger-glyph: var(--xh-control-indicator-sm);
+  }
+
+  .xh-scope-carousel:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='autoplay-trigger'])[data-xh-action-size='lg'] {
+    --xh-_carousel-trigger-size: var(--xh-control-h-sm);
+    --xh-_carousel-trigger-glyph: var(--xh-glyph-size-md);
   }
 
   .xh-scope-carousel[data-part='prev-trigger'],

@@ -118,7 +118,7 @@ export interface CarouselSchema extends MachineSchema {
      * fade 一页只放一张：slidesPerPage 大于 1 时报错。
      */
     effect?: CarouselEffect
-    /** 尺寸：sm / md / lg，默认 md；翻页与播放三颗钮走 Action Control floating 档（32 / 40 / 48px）。 */
+    /** 尺寸：sm / md / lg，默认 md；翻页与播放三颗钮走 Action Control floating 档，视觉盒 24 / 24 / 28px、字形 12 / 16 / 20px。 */
     size?: Size
     translations?: Partial<CarouselTranslations>
     /** 页码变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
