@@ -123,7 +123,7 @@
   [data-scope='slider'][data-part='track'] {
     position: relative;
     border-radius: var(--xh-slider-track-radius, var(--xh-shape-pill));
-    /* 底槽取 fill-3 级中性填充（淡底阶梯的 200 档） */
+    /* 底槽取淡底阶梯的 200 档（--xh-bg-subtle-hover） */
     background: var(--xh-slider-track-bg, var(--xh-bg-subtle-hover));
   }
 

@@ -1,4 +1,4 @@
-// 进度条的轨道与文字：线形轨道厚 sm / md / lg = 3 / 4 / 8px、两端全圆，轨道取 fill-3 级中性填充（环形同），
+// 进度条的轨道与文字：线形轨道厚 sm / md / lg = 3 / 4 / 8px、两端全圆，轨道取淡底 200 档（环形同），
 // 已完成的那段按语气取实色；环心文字 12px 次级色。厚度与计算色只有真实 Chromium 量得出。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -63,7 +63,7 @@ describe('线形轨道', () => {
     expect((one('track') as HTMLElement).getBoundingClientRect().height).toBe(tokenLength(`--xh-track-band-thickness-${tier}`))
   })
 
-  it('轨道取 fill-3 级中性填充，已完成的那段取品牌色', async () => {
+  it('轨道取淡底 200 档，已完成的那段取品牌色', async () => {
     await mount({})
     expect(getComputedStyle(one('track')).backgroundColor).toBe(token('--xh-bg-subtle-hover'))
     expect(getComputedStyle(one('range')).backgroundColor).toBe(token('--xh-bg-brand'))
@@ -78,7 +78,7 @@ describe('线形轨道', () => {
 })
 
 describe('环形', () => {
-  it('轨道描边取 fill-3 级中性填充，环心文字 12px 次级色', async () => {
+  it('轨道描边取淡底 200 档，环心文字 12px 次级色', async () => {
     await mount({ variant: 'circle' }, '40%')
     expect(getComputedStyle(one('track')).stroke).toBe(token('--xh-bg-subtle-hover'))
     const label = getComputedStyle(one('label'))
