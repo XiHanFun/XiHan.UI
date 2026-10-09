@@ -11,6 +11,8 @@ import {
   XhFieldLabel,
   XhFieldRoot,
   XhFieldsetDescription,
+  XhFieldsetErrorText,
+  XhFieldsetFieldGroup,
   XhFieldsetLegend,
   XhFieldsetRoot,
   XhFormFieldGroup,
@@ -101,17 +103,69 @@ describe('字段的辅助行', () => {
     expect(getComputedStyle(description).color).toBe(resolve('var(--xh-fg-subtle)'))
   })
 
-  it('字段集的说明与字段的说明同一副排版，组内项距 --xh-space-5', async () => {
+  it('字段集的说明与字段的说明同一副排版，组内项距 --xh-space-5；组说明排在最后时下方不留项距', async () => {
     await mount(() => h(XhFieldsetRoot, null, () => [
       h(XhFieldsetLegend, null, () => '账号'),
       h('div', { 'data-testid': 'a' }, 'A'),
       h('div', { 'data-testid': 'b' }, 'B'),
       h(XhFieldsetDescription, null, () => '这组信息用于登录'),
+      // 不报错时错误文案收起不占位，但仍是最后一个子节点
+      h(XhFieldsetErrorText, null, () => '这组还有没填的'),
     ]))
     const description = all('fieldset', 'description')[0]!
+    const a = host!.querySelector<HTMLElement>(`[data-testid='a']`)!.getBoundingClientRect()
+    const b = host!.querySelector<HTMLElement>(`[data-testid='b']`)!.getBoundingClientRect()
     expect(getComputedStyle(description).fontSize).toBe(resolve('var(--xh-text-caption-size)', 'font-size'))
     expect(getComputedStyle(description).color).toBe(resolve('var(--xh-fg-subtle)'))
-    expect(getComputedStyle(all('fieldset', 'root')[0]!).rowGap).toBe(`${px('--xh-space-5')}px`)
+    expect(Math.round(b.top - a.bottom)).toBe(px('--xh-space-5'))
+    expect(Math.round(description.getBoundingClientRect().top - b.bottom)).toBe(px('--xh-space-5'))
+    expect(Math.round(all('fieldset', 'root')[0]!.getBoundingClientRect().bottom - description.getBoundingClientRect().bottom)).toBe(0)
+  })
+})
+
+/** 不经表单、直接排进字段集的字段。 */
+function bareField(name: string, parts: { description?: string, error?: boolean, invalid?: boolean } = {}): VNode {
+  return h(XhFieldRoot, { invalid: parts.invalid }, () => [
+    h(XhFieldLabel, null, () => name),
+    h(XhFieldControl, null, () => h('input')),
+    ...(parts.description ? [h(XhFieldDescription, null, () => parts.description)] : []),
+    ...(parts.error ? [h(XhFieldErrorText, null, () => '格式不对')] : []),
+  ])
+}
+
+describe('字段集组内项距', () => {
+  it('与表单同一套：没有辅助行的字段隔 --xh-space-5，带说明或错误文案行的字段那一行就是项距', async () => {
+    await mount(() => h(XhFieldsetRoot, null, () => [
+      h(XhFieldsetLegend, null, () => '账号'),
+      bareField('甲', { description: '一行说明' }),
+      bareField('乙', { description: '一行说明' }),
+      bareField('丙', { error: true }),
+      bareField('丁'),
+      bareField('戊'),
+    ]))
+    for (const index of [0, 1, 2, 3])
+      expect(between(index)).toBe(px('--xh-space-5'))
+  })
+
+  it('校验失败收起了说明、又没渲染错误文案的字段照常留项距', async () => {
+    await mount(() => h(XhFieldsetRoot, null, () => [
+      h(XhFieldsetLegend, null, () => '账号'),
+      bareField('甲', { description: '一行说明', invalid: true }),
+      bareField('乙'),
+    ]))
+    expect(between(0)).toBe(px('--xh-space-5'))
+  })
+
+  it('并排的一段里有字段带辅助行：这一段不再另留项距', async () => {
+    await mount(() => h(XhFieldsetRoot, null, () => [
+      h(XhFieldsetLegend, null, () => '地址'),
+      h(XhFieldsetFieldGroup, null, () => [bareField('省', { description: '一行说明' }), bareField('市')]),
+      bareField('街道'),
+    ]))
+    // 首段里带说明的那一项（下标 0）到下一段首项标签（下标 2）的距离就是那行说明
+    const controls = all('field', 'control')
+    const labels = all('field', 'label')
+    expect(Math.round(labels[2]!.getBoundingClientRect().top - controls[0]!.getBoundingClientRect().bottom)).toBe(px('--xh-space-5'))
   })
 })
 
