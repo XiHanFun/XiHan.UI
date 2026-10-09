@@ -553,6 +553,7 @@ export const tokens = {
   "--xh-bg-subtle-hover": "color-mix(in oklab, var(--xh-ink) 10.2%, transparent)",
   "--xh-bg-subtle-active": "color-mix(in oklab, var(--xh-ink) 16.9%, transparent)",
   "--xh-bg-field": "color-mix(in oklab, var(--xh-bg-subtle) 55%, transparent)",
+  "--xh-bg-field-invalid": "color-mix(in oklab, var(--xh-border-invalid) 4%, transparent)",
   "--xh-bg-muted": "color-mix(in oklab, var(--xh-ink) 4.7%, transparent)",
   "--xh-bg-brand": "var(--xh-color-brand-600)",
   "--xh-bg-brand-hover": "var(--xh-color-brand-700)",

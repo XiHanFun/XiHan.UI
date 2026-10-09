@@ -106,7 +106,7 @@
         "borderColor": "var(--xh-border-control-focus)"
       },
       "invalid": {
-        "backgroundColor": "color-mix(in oklab, var(--xh-border-invalid) 4%, transparent)",
+        "backgroundColor": "var(--xh-bg-field-invalid)",
         "borderColor": "var(--xh-border-invalid)"
       },
       "readOnly": {
@@ -136,7 +136,7 @@
         "borderColor": "var(--xh-border-control-focus)"
       },
       "invalid": {
-        "backgroundColor": "color-mix(in oklab, var(--xh-border-invalid) 4%, transparent)",
+        "backgroundColor": "var(--xh-bg-field-invalid)",
         "borderColor": "var(--xh-border-invalid)"
       },
       "readOnly": {
@@ -166,7 +166,7 @@
         "borderColor": "var(--xh-border-control-focus)"
       },
       "invalid": {
-        "backgroundColor": "color-mix(in oklab, var(--xh-border-invalid) 4%, transparent)",
+        "backgroundColor": "var(--xh-bg-field-invalid)",
         "borderColor": "var(--xh-border-invalid)"
       },
       "readOnly": {

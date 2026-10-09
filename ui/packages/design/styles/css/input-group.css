@@ -93,7 +93,7 @@
 
   /* 组里的字段校验失败：失效描边 + 4% 失效色淡底，与字段外壳的失效档同一副面 */
   [data-scope='input-group'][data-part='root']:has([data-invalid], [aria-invalid='true']) {
-    --xh-_input-group-face: var(--xh-input-group-bg-invalid, color-mix(in oklab, var(--xh-border-invalid) 4%, transparent));
+    --xh-_input-group-face: var(--xh-input-group-bg-invalid, var(--xh-bg-field-invalid));
   }
 
   [data-scope='input-group'][data-part='root']:has([data-invalid], [aria-invalid='true'])::before {

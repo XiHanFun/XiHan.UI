@@ -68,7 +68,7 @@
   /* 校验失败：失效描边 + 4% 失效色淡底，与字段外壳的失效档同一副面 */
   [data-scope='signature-pad'][data-part='control'][data-invalid] {
     border-color: var(--xh-signature-pad-control-border-invalid, var(--xh-border-invalid));
-    background: var(--xh-signature-pad-bg-invalid, color-mix(in oklab, var(--xh-border-invalid) 4%, transparent));
+    background: var(--xh-signature-pad-bg-invalid, var(--xh-bg-field-invalid));
   }
 
   /* 落笔期间与字段聚焦同一副面：换承载面 + 聚焦描边。排在失效之后，落笔时失效档让位 */

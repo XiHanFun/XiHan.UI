@@ -41134,7 +41134,7 @@
         "invalid"
       ],
       "defaultToken": [
-        "--xh-border-invalid"
+        "--xh-bg-field-invalid"
       ],
       "visibility": "public",
       "description": "input-group 的 root 部件 background 覆盖槽。"
@@ -64699,7 +64699,7 @@
         "invalid"
       ],
       "defaultToken": [
-        "--xh-border-invalid"
+        "--xh-bg-field-invalid"
       ],
       "visibility": "public",
       "description": "signature-pad 的 control 部件 background 覆盖槽。"
@@ -73378,6 +73378,24 @@
       ],
       "visibility": "public",
       "description": "tags-input 的 control、root 部件 min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-tags-input-control-ps",
+      "component": "tags-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "padding-inline-start"
+      ],
+      "state": [
+        "has(> [data-scope='tags-input'][data-part='item'])"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "tags-input 的 control 部件 padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-tags-input-control-px",
