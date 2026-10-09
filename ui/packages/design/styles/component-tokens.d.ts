@@ -2716,8 +2716,6 @@ export type ComponentTokenName
     | '--xh-password-input-trigger-font-size'
     | '--xh-password-input-trigger-radius'
     | '--xh-password-input-trigger-size'
-    | '--xh-password-input-visibility-trigger-separator-color'
-    | '--xh-password-input-visibility-trigger-separator-h'
     | '--xh-pie-chart-center-gap'
     | '--xh-pie-chart-center-value-font-size'
     | '--xh-pie-chart-empty-gap'

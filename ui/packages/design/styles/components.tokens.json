@@ -54035,50 +54035,10 @@
         "xh-action-profile=field-inset"
       ],
       "defaultToken": [
-        "--xh-_action-profile-visual-size"
+        "--xh-control-action-size"
       ],
       "visibility": "public",
       "description": "password-input 的 visibility-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-visibility-trigger-separator-color",
-      "component": "password-input",
-      "part": [
-        "control",
-        "input",
-        "visibility-trigger"
-      ],
-      "property": [
-        "background-image"
-      ],
-      "state": [
-        "has(~ [data-scope='password-input'][data-part='input'])"
-      ],
-      "defaultToken": [
-        "--xh-border-subtle"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 control、input、visibility-trigger 部件 background-image 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-visibility-trigger-separator-h",
-      "component": "password-input",
-      "part": [
-        "control",
-        "input",
-        "visibility-trigger"
-      ],
-      "property": [
-        "background-size"
-      ],
-      "state": [
-        "has(~ [data-scope='password-input'][data-part='input'])"
-      ],
-      "defaultToken": [
-        "--xh-_password-input-divider-h"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 control、input、visibility-trigger 部件 background-size 覆盖槽。"
     },
     {
       "name": "--xh-pie-chart-center-gap",

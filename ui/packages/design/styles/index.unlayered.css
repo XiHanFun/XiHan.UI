@@ -11396,8 +11396,6 @@
   /* 提示与切换钮里的字形都比正文小一档，三个尺寸档各自换过，不是一个恒等的中转 */
   --xh-_password-input-caps-lock-font-size: var(--xh-control-caption-md);
   --xh-_password-input-trigger-font-size: var(--xh-control-caption-md);
-  /* 切换钮与输入之间那道线的长度：取钮高的一半，线的上下各留一截空白 */
-  --xh-_password-input-divider-h: 50%;
 
   /* 盒里有两个 Tab 停靠点，切换钮上再画一圈自己的环；环恒用 --xh-ring-focus，校验失败时随盒换红 */
   --xh-_password-input-ring: var(--xh-ring-focus);
@@ -11496,11 +11494,12 @@
 }
 
 /* —— 明暗切换钮 —— */
-/* 正方视觉盒、inset 圆角、悬停 100 / 按下 200 与 0.97 按压、粗指针热区全由 Action Control 的
-   field-inset ghost 档给，组件只映射既有覆盖槽；常态只剩符号，符号取次级前景 */
+/* inset 圆角、按承载面取的悬停 / 按下阶梯、粗指针热区全由 Action Control 的 field-inset ghost 档给，
+   组件只映射既有覆盖槽；常态只剩符号，符号取次级前景。
+   视觉盒三档都取控件内动作档（24px，compact 20px），不随字段档长大：它是框里的辅助动作，盒小一圈才不与输入抢 */
 .xh-scope-password-input[data-part='visibility-trigger'] {
-  --xh-action-visual-size: var(--xh-password-input-trigger-size, var(--xh-_action-profile-visual-size));
-  --xh-action-min-inline-size: var(--xh-password-input-trigger-size, var(--xh-_action-profile-visual-size));
+  --xh-action-visual-size: var(--xh-password-input-trigger-size, var(--xh-control-action-size));
+  --xh-action-min-inline-size: var(--xh-password-input-trigger-size, var(--xh-control-action-size));
   --xh-action-radius: var(--xh-password-input-trigger-radius, var(--xh-shape-inset));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-password-input-trigger-bg, var(--xh-_action-variant-bg-rest));
@@ -11526,44 +11525,7 @@
   display: none;
 }
 
-/* 显隐动作与输入/状态区之间留一道半高分隔。::before 是兜底字形、::after 在粗指针下是家族给的
-   44px 热区，线只能落在 background-image 上：一条 1px × 半高的渐变贴在靠输入的那一侧，
-   不随按钮悬停底或圆角变化。background-position 是物理轴，RTL 另给两条换边。 */
-.xh-scope-password-input[data-part='control']
-  > .xh-scope-password-input[data-part='visibility-trigger']:has(~ .xh-scope-password-input[data-part='input']),
-.xh-scope-password-input[data-part='control']
-  > .xh-scope-password-input[data-part='input'] ~ .xh-scope-password-input[data-part='visibility-trigger'] {
-  background-image: linear-gradient(
-    var(--xh-password-input-visibility-trigger-separator-color, var(--xh-border-subtle)),
-    var(--xh-password-input-visibility-trigger-separator-color, var(--xh-border-subtle))
-  );
-  background-repeat: no-repeat;
-  background-size: var(--xh-stroke-thin) var(--xh-password-input-visibility-trigger-separator-h, var(--xh-_password-input-divider-h));
-}
-
-/* 钮排在输入之前：线贴在钮的逻辑末端 */
-.xh-scope-password-input[data-part='control']
-  > .xh-scope-password-input[data-part='visibility-trigger']:has(~ .xh-scope-password-input[data-part='input']) {
-  background-position: 100% 50%;
-}
-
-[dir='rtl'] .xh-scope-password-input[data-part='control']
-  > .xh-scope-password-input[data-part='visibility-trigger']:has(~ .xh-scope-password-input[data-part='input']) {
-  background-position: 0 50%;
-}
-
-/* 钮排在输入之后：线贴在钮的逻辑起始侧 */
-.xh-scope-password-input[data-part='control']
-  > .xh-scope-password-input[data-part='input'] ~ .xh-scope-password-input[data-part='visibility-trigger'] {
-  background-position: 0 50%;
-}
-
-[dir='rtl'] .xh-scope-password-input[data-part='control']
-  > .xh-scope-password-input[data-part='input'] ~ .xh-scope-password-input[data-part='visibility-trigger'] {
-  background-position: 100% 50%;
-}
-
-/* 盒里有两个 Tab 停靠点，盒子在 :focus-within 上画的那一圈两者完全一样，
+/* 盒里有两个 Tab 停靠点，盒子在 :focus-within 上换的聚焦描边两者完全一样，
    分不出焦点在框里还是在钮上，所以钮上再画一圈自己的环（家族只对不占 Tab 位的内嵌钮关环）。
    环往内收，压在按钮自己的方框里，不与盒子外面那一圈叠在一起。
    指示焦点只能用环不能用底色：可用的几档底色压在盒底上都到不了 3:1，换了色也等于没画 */
@@ -11703,29 +11665,10 @@
   --xh-_password-input-strength-fg: var(--xh-fg-disabled);
 }
 
-/* 高对比档整层丢弃 background-image，分隔线改用系统色重画，并关掉这一颗钮的强制换色 */
 @media (forced-colors: active) {
-  .xh-scope-password-input[data-part='control']
-    > .xh-scope-password-input[data-part='visibility-trigger']:has(~ .xh-scope-password-input[data-part='input']),
-  .xh-scope-password-input[data-part='control']
-    > .xh-scope-password-input[data-part='input'] ~ .xh-scope-password-input[data-part='visibility-trigger'] {
-    background-image: linear-gradient(CanvasText, CanvasText);
-    forced-color-adjust: none;
-  }
-
-  .xh-scope-password-input[data-part='control'][data-disabled]
-    > .xh-scope-password-input[data-part='visibility-trigger']:has(~ .xh-scope-password-input[data-part='input']),
-  .xh-scope-password-input[data-part='control'][data-disabled]
-    > .xh-scope-password-input[data-part='input'] ~ .xh-scope-password-input[data-part='visibility-trigger'] {
-    background-image: linear-gradient(GrayText, GrayText);
-  }
-
-  /* 关掉强制换色后，上面那圈自留的 :focus-visible 环与家族普通态的焦点底/字都会按作者色落地；
-     家族高对比块的特指度压不过它们，这里用同一选择器把环、底、字改回系统色 */
+  /* 钮上那圈自留的 :focus-visible 环取系统高亮色：家族高对比块的特指度压不过上面那条环规则 */
   .xh-scope-password-input[data-part='control'] [data-part='visibility-trigger']:where(.xh-scope-password-input):focus-visible {
     outline-color: Highlight;
-    background-color: ButtonFace;
-    color: ButtonText;
   }
 }
 
