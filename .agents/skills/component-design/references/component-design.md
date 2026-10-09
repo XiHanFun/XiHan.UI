@@ -427,6 +427,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | `--xh-control-box-sm` / `md` / `lg` | 28 / 36 / 44px | 24 / 32 / 40px | 方格：floating 动作钮 |
 | `--xh-control-float-md` | 40px | 36px | 独立浮在页面一角的圆钮（BackTop、FloatButton）md 档的直径 |
 | `--xh-control-action-size` | 24px | 20px | xs 动作钮、sm 字段里的 field-inset 钮 |
+| `--xh-control-target-min` | 24px | | 细指针下可点目标的最小边长（SC 2.5.8）：视觉盒比它小的目标由伪元素把命中区补到它；压在画面上、不能再大的小圆钮（Carousel 翻页与播放钮 sm / md）直接取它当视觉盒 |
 | `--xh-chip-h-sm` / `md` / `lg` | 20 / 24 / 28px | 18 / 20 / 24px | 状态 chip（Tag、ToolCall status、Approval result、QuestionFlow result）的块尺寸：比同档控件矮一截 |
 | `--xh-marker-size-sm` / `md` / `lg` | 24 / 28 / 32px | 20 / 24 / 28px | 盛序号或对号的状态圆（Steps 序号圆点）的直径：比同档控件矮一档 |
 | `--xh-surface-header-h` | 46px | 40px | 卡片头部条的最小块尺寸：一行区块标题加上下留白 |

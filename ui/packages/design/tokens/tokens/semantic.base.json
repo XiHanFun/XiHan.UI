@@ -107,6 +107,11 @@
       "$type": "dimension",
       "$value": "24px"
     },
+    "target-min": {
+      "$description": "细指针下可点目标的最小边长（WCAG 2.2 SC 2.5.8），不随密度收：视觉盒比它小的目标由伪元素把命中区补到它，压在画面上、不能再大的小圆钮直接取它当视觉盒。",
+      "$type": "dimension",
+      "$value": "24px"
+    },
     "indicator-size": {
       "$description": "中档的别名，给不分档的指示符（多数控件的勾选格、指示点只有一档）。",
       "$type": "dimension",
