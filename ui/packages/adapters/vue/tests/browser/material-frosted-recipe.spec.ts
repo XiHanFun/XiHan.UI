@@ -72,13 +72,13 @@ afterEach(async () => {
 })
 
 describe('m2 磨砂令牌在浏览器中的组合', () => {
-  it.each(['light', 'dark'] as const)('%s：九项材质消费有效，88%% 遮蔽与 16px 磨砂成立', (theme) => {
+  it.each(['light', 'dark'] as const)('%s：九项材质消费有效：实体不透明底、不采样背后、无顶光', (theme) => {
     const view = fixture(theme)
     const style = recipe(view)
-    expect(rgba(style.background)[3]).toBeCloseTo(255 * 0.88, 0)
-    expect(style.backdrop).toBe('blur(16px) saturate(1.08)')
+    expect(rgba(style.background)[3]).toBe(255)
+    expect(style.backdrop).toBe('none')
     expect(rgba(style.border)[3]).toBeGreaterThan(0)
-    expect(rgba(style.highlight)[3]).toBeGreaterThan(0)
+    expect(rgba(style.highlight)[3]).toBe(0)
     expect(rgba(style.separator)[3]).toBeGreaterThan(0)
     expect(style.shadow).not.toBe('none')
     expect(style.foreground).not.toBe(style.muted)

@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhTreeSelectRoot } from '../../src'
+import { tokenValue } from './design-token'
 import { shownMask } from './glyph-mask'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -68,7 +69,8 @@ describe('树选择分支与叶子的统一选择反馈', () => {
         await nextTick()
         expect(getComputedStyle(one).backgroundColor).toBe('rgba(0, 0, 0, 0)')
         expect(getComputedStyle(one).color).toBe(getComputedStyle(two).color)
-        expect(getComputedStyle(one).fontWeight).toBe(getComputedStyle(two).fontWeight)
+        expect(getComputedStyle(one).fontWeight).toBe(tokenValue('font-weight', '--xh-font-weight-medium', one))
+        expect(getComputedStyle(two).fontWeight).toBe(tokenValue('font-weight', '--xh-font-weight-regular', two))
         expect(getComputedStyle(mark(one)).opacity).toBe('1')
         expect(getComputedStyle(mark(branch)).opacity).toBe(multiple ? '1' : '0')
         const mixedGlyph = shownMask(mark(branch), '::before')

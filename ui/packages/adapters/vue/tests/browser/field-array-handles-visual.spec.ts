@@ -14,6 +14,7 @@ import {
   XhFieldArrayMoveUpTrigger,
   XhFieldArrayRoot,
 } from '../../src'
+import { pressScale, tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -79,7 +80,7 @@ describe('字段数组的把手', () => {
       const style = getComputedStyle(part(name))
       expect(rect.width, name).toBe(24)
       expect(rect.height, name).toBe(24)
-      expect(style.borderRadius, name).toBe('4px')
+      expect(style.borderRadius, name).toBe(`${tokenLength('--xh-shape-control')}px`)
       expect(style.backgroundColor, name).toBe('rgba(0, 0, 0, 0)')
       expect(style.borderTopWidth, name).toBe('0px')
       expect(style.boxShadow, name).toBe('none')
@@ -100,7 +101,7 @@ describe('字段数组的把手', () => {
     expect(getComputedStyle(part('item-delete-trigger')).color).toBe(tokenColor('--xh-fg-danger-hover'))
   })
 
-  it('按住把手落 200 并缩到 0.97，松手回 1', async () => {
+  it('按住把手落 200 并缩到按压比例，松手回 1', async () => {
     mountArray()
     await settle()
     const trigger = part('move-down-trigger')
@@ -109,7 +110,7 @@ describe('字段数组的把手', () => {
     await press(trigger)
     await settle()
     expect(getComputedStyle(trigger).backgroundColor).toBe(tokenColor('--xh-bg-subtle-hover'))
-    expect(getComputedStyle(trigger).scale).toBe('0.97')
+    expect(getComputedStyle(trigger).scale).toBe(pressScale(trigger))
     await release(trigger)
     // 回程 200ms 缓动，采样时可能还差最后一点
     await settle()
@@ -121,7 +122,7 @@ describe('字段数组的把手', () => {
     mountArray()
     await settle()
     const add = part('add-trigger', 0)
-    expect(add.getBoundingClientRect().height).toBe(36)
+    expect(add.getBoundingClientRect().height).toBe(tokenLength('--xh-control-h-md'))
     const style = getComputedStyle(add)
     expect(style.borderTopStyle).toBe('dashed')
     expect(style.borderTopColor).toBe(tokenColor('--xh-border-control'))

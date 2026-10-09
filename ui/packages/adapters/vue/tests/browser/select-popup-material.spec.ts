@@ -21,6 +21,7 @@ import {
   XhSelectTrigger,
   XhSelectValueText,
 } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -127,22 +128,24 @@ afterEach(async () => {
 })
 
 describe('选择器实体触发与 M2 浮层', () => {
-  it('control 是描边式不填底的字段外壳，content 才使用磨砂、浮层海拔与顶光', async () => {
+  it('control 是描边式淡底的字段外壳，content 才使用 frosted 配方的底、背景滤镜、浮层海拔与顶光', async () => {
     await mountSelect()
     const control = getComputedStyle(part('control'))
     const content = getComputedStyle(part('content'))
 
     expect(backdrop(control)).toBe('none')
-    expect(colorAlpha(control.backgroundColor)).toBe(0)
-    expect(backdrop(content)).toContain('blur(16px)')
-    expect(colorAlpha(content.backgroundColor)).toBeLessThan(255)
+    expect(control.backgroundColor).toBe(tokenValue('background-color', '--xh-bg-field', part('control')))
+    expect(backdrop(content)).toBe(tokenValue('backdrop-filter', '--xh-material-frosted-backdrop', part('content')))
+    expect(content.backgroundColor).toBe(tokenValue('background-color', '--xh-material-frosted-bg', part('content')))
     expect(content.boxShadow).not.toBe('none')
-    expect(colorAlpha(highlightOf(part('content')))).toBeGreaterThan(0)
+    expect(colorAlpha(highlightOf(part('content')))).toBe(colorAlpha(tokenValue('color', '--xh-material-frosted-highlight', part('content'))))
   })
 
   it('顶光画在面本身的背景上：列表滚动时钉在顶上，不是一条会跟着内容滚走的伪元素', async () => {
     await mountSelect()
     const content = part('content')
+    // 缺省档顶光透明：按主题给一道顶光，看它画在哪
+    content.style.setProperty('--xh-material-frosted-highlight', 'oklch(1 0 0 / 0.5)')
     expect(getComputedStyle(content, '::before').content).toBe('none')
     expect(getComputedStyle(content).backgroundAttachment.split(',')[0]!.trim()).toBe('scroll')
     expect(colorAlpha(highlightOf(content))).toBeGreaterThan(0)
@@ -193,7 +196,7 @@ describe('选择器分组与选项反馈', () => {
     expect(getComputedStyle(indicator).opacity).toBe('1')
   })
 
-  it.each([false, true])('multiple=%s：选中只显示对号，移走高亮后不留蓝底或强调文字', async (multiple) => {
+  it.each([false, true])('multiple=%s：选中只显示对号与 medium 字重，移走高亮后不留蓝底或强调字色', async (multiple) => {
     await mountSelect(multiple)
     const selected = byTestId('selected')
     const plain = byTestId('plain')
@@ -207,7 +210,8 @@ describe('选择器分组与选项反馈', () => {
     expect(selected.getAttribute('data-state')).toBe('checked')
     expect(colorAlpha(getComputedStyle(selected).backgroundColor)).toBe(0)
     expect(getComputedStyle(selected).color).toBe(getComputedStyle(plain).color)
-    expect(getComputedStyle(selected).fontWeight).toBe(getComputedStyle(plain).fontWeight)
+    expect(getComputedStyle(selected).fontWeight).toBe(tokenValue('font-weight', '--xh-font-weight-medium', selected))
+    expect(getComputedStyle(plain).fontWeight).toBe(tokenValue('font-weight', '--xh-font-weight-regular', plain))
     expect(getComputedStyle(indicator).opacity).toBe('1')
     expect(getComputedStyle(plainIndicator).opacity).toBe('0')
     const highlighted = getComputedStyle(plain).backgroundColor

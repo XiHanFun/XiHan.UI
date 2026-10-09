@@ -14,6 +14,7 @@ import {
   XhTreeSelectTree,
   XhTreeSelectTrigger,
 } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -78,13 +79,12 @@ describe('树选择 M2 浮层', () => {
     const control = getComputedStyle(part('control'))
     const content = getComputedStyle(part('content'))
     expect(control.backdropFilter).toBe('none')
-    expect(alpha(control.backgroundColor)).toBe(0)
+    expect(control.backgroundColor).toBe(tokenValue('background-color', '--xh-bg-field', part('control')))
     expect(part('positioner').closest<HTMLElement>('[data-theme]')?.dataset.theme).toBe(theme)
-    expect(content.backdropFilter).toContain('blur(16px)')
-    expect(alpha(content.backgroundColor)).toBeLessThan(255)
-    expect(alpha(content.backgroundColor)).toBeGreaterThan(220)
+    expect(content.backdropFilter).toBe(tokenValue('backdrop-filter', '--xh-material-frosted-backdrop', part('content')))
+    expect(content.backgroundColor).toBe(tokenValue('background-color', '--xh-material-frosted-bg', part('content')))
     expect(content.boxShadow).not.toBe('none')
-    expect(alpha(highlightOf(part('content')))).toBeGreaterThan(0)
+    expect(alpha(highlightOf(part('content')))).toBe(alpha(tokenValue('color', '--xh-material-frosted-highlight', part('content'))))
     const tree = getComputedStyle(part('tree'))
     expect(tree.backdropFilter).toBe('none')
     expect(tree.borderTopWidth).toBe('0px')

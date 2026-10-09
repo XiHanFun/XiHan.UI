@@ -10,6 +10,16 @@ import '@xihan-ui/styles'
 
 const harness = createReactHarness()
 
+/** 长度令牌在 scope 处解出的像素值：用探针量，var() 链与随档改写的私有槽都按真实层叠求值。 */
+function px(token: string, scope: Element): number {
+  const probe = document.createElement('div')
+  probe.style.cssText = `position:absolute;inline-size:var(${token})`
+  scope.append(probe)
+  const value = Number.parseFloat(getComputedStyle(probe).width)
+  probe.remove()
+  return value
+}
+
 afterEach(async () => {
   await harness.unmount()
 })
@@ -28,24 +38,27 @@ describe('浏览器态地基', () => {
     // 皮肤在场的标记：switch.css 给整个 scope 灌的那个私有槽
     expect(style.getPropertyValue('--xh-switch-skin').trim()).toBe('1')
 
-    // 内衬 = --xh-space-0_5。皮肤缺席时这里是 UA 给按钮的 1px，两者不同值，量到的不是浏览器默认值
-    expect(style.paddingTop).toBe('2px')
-    expect(style.paddingLeft).toBe('2px')
+    // 内衬 = 留白私有槽（md 档取 --xh-space-1）。皮肤缺席时这里是 UA 给按钮的 1px，两者不同值，量到的不是浏览器默认值
+    const pad = px('--xh-_switch-pad', track)
+    expect(pad).not.toBe(1)
+    expect(style.paddingTop).toBe(`${pad}px`)
+    expect(style.paddingLeft).toBe(`${pad}px`)
 
     // 圆角 = --xh-shape-pill → --xh-radius-full
     expect(style.borderTopLeftRadius).toBe('9999px')
 
     // 可见盒子：轨道高 = --xh-switch-track-h-md，轨道宽 = 两倍轨道高 − 两条内衬
     const rect = track.getBoundingClientRect()
-    expect(rect.height).toBe(22)
-    expect(rect.width).toBe(40)
+    const trackHeight = px('--xh-switch-track-h-md', track)
+    expect(rect.height).toBe(trackHeight)
+    expect(rect.width).toBe(2 * trackHeight - 2 * pad)
 
     // 滑块边长 = 轨道高 − 两条内衬，行程因此正好等于自身边长
     const thumb = root.querySelector<HTMLElement>('[data-scope="switch"][data-part="thumb"]')
     if (!thumb)
       throw new Error('switch 的 thumb 部件没渲出来')
     const thumbRect = thumb.getBoundingClientRect()
-    expect(thumbRect.height).toBe(18)
-    expect(thumbRect.width).toBe(18)
+    expect(thumbRect.height).toBe(trackHeight - 2 * pad)
+    expect(thumbRect.width).toBe(trackHeight - 2 * pad)
   })
 })

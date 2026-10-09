@@ -16,6 +16,7 @@ import {
   XhMenubarSeparator,
   XhMenubarTrigger,
 } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -93,8 +94,8 @@ describe('menubar M2 菜单面与条目几何', () => {
     const content = getComputedStyle(part('content'))
 
     expect(root.backdropFilter || root.getPropertyValue('-webkit-backdrop-filter')).toBe('none')
-    expect(content.backdropFilter || content.getPropertyValue('-webkit-backdrop-filter')).toContain('blur(16px)')
-    expect(content.backgroundColor).toMatch(/0\.88\)|\/ 0\.88\)/)
+    expect(content.backdropFilter || content.getPropertyValue('-webkit-backdrop-filter')).toBe(tokenValue('backdrop-filter', '--xh-material-frosted-backdrop', part('content')))
+    expect(content.backgroundColor).toBe(tokenValue('background-color', '--xh-material-frosted-bg', part('content')))
     expect(content.boxShadow).not.toBe('none')
     expect(getComputedStyle(part('separator')).borderRadius).not.toBe('0px')
   })

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
+import { pressScale, tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -51,13 +52,13 @@ describe('sortable 把手与拖起面', () => {
     expect(rect.height).toBe(24)
     const style = getComputedStyle(handle)
     expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(style.borderTopLeftRadius).toBe('4px')
+    expect(style.borderTopLeftRadius).toBe(`${tokenLength('--xh-shape-control')}px`)
     expect(style.cursor).toBe('grab')
     expect(style.color).toBe(resolvedToken('--xh-fg-muted'))
     expect(getComputedStyle(handle, '::after').borderLeftWidth).toBe('1px')
   })
 
-  it('白底承载的阶梯：hover 100 → pressed 200 并 0.97 缩放，按住时手型 grabbing', async () => {
+  it('白底承载的阶梯：hover 100 → pressed 200 并按压缩放令牌，按住时手型 grabbing', async () => {
     const { handles } = mount()
     const handle = handles[1]!
     await userEvent.hover(handle)
@@ -65,7 +66,7 @@ describe('sortable 把手与拖起面', () => {
     expect(getComputedStyle(handle).color).toBe(resolvedToken('--xh-fg-default'))
     handle.setAttribute('data-pressed', '')
     expect(getComputedStyle(handle).backgroundColor).toBe(resolvedToken('--xh-bg-subtle-hover'))
-    expect(getComputedStyle(handle).scale).toBe('0.97')
+    expect(getComputedStyle(handle).scale).toBe(pressScale(handle))
     expect(getComputedStyle(handle).cursor).toBe('grabbing')
   })
 

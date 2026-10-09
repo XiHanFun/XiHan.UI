@@ -3,14 +3,14 @@
 # 命中的取值块，按 tokens.css 的书写顺序：
 #   [1] :where(:root)
 #   [2] :where(:root), :where([data-density='comfortable'])
-#   [3] :where(:root), :where([data-theme])
+#   [3] :where(:root), :where([data-theme]), :where([data-contrast])
 #   [4] :where([data-density='compact'])
 #   [5] :where([data-density='compact'])
 #   [6] :where(:root)
 #   [7] :where(:root), :where([data-theme='light'])
 #   [8] :where([data-theme='dark'])
 #   [10] :where([data-contrast='more'])
-#   [11] :where([data-transparency='reduce']), :where([data-transparency='reduce'] [data-theme])
+#   [11] :where([data-transparency='reduce']), :where([data-transparency='reduce'] [data-theme]), :where([data-transparency='reduce'] [data-contrast])
 #   [13] :where([data-motion='default'])
 
 --xh-action-brand-solid: oklch(0.546 0.216 258)  ← var(--xh-color-brand-600)

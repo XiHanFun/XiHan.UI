@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhColorSwatch } from '../../src'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -80,7 +81,7 @@ describe('颜色色块的面', () => {
     host?.remove()
     const md = await mountSwatch({ value: '#3b82f6' })
     expect(md.getBoundingClientRect().width).toBe(20)
-    expect(getComputedStyle(md).borderTopLeftRadius).toBe('4px')
+    expect(getComputedStyle(md).borderTopLeftRadius).toBe(`${tokenLength('--xh-shape-inset')}px`)
     app?.unmount()
     host?.remove()
     const lg = await mountSwatch({ value: '#3b82f6', size: 'lg' })

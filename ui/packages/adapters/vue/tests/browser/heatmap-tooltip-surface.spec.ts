@@ -40,7 +40,7 @@ function part(name: string): HTMLElement {
 }
 
 /** 把令牌解析成这台浏览器上的最终取值，用来与详情条的计算值对账。 */
-function tokenValue(property: 'box-shadow' | 'color' | 'border-radius' | 'font-size', token: string): string {
+function tokenValue(property: 'box-shadow' | 'backdrop-filter' | 'color' | 'border-radius' | 'font-size', token: string): string {
   const probe = document.createElement('span')
   probe.style.setProperty(property, `var(${token})`)
   document.body.append(probe)
@@ -74,9 +74,9 @@ describe('热力图的详情条', () => {
     expect(style.borderTopWidth).toBe('1px')
     expect(style.borderTopColor).not.toBe('rgba(0, 0, 0, 0)')
     expect(style.borderTopColor).not.toBe(style.backgroundColor)
-    // 与图表提示框同一副：frosted 影与背景模糊、overlay 圆角、正文字号，字色不反白
+    // 与图表提示框同一副：frosted 影与背景滤镜、overlay 圆角、正文字号，字色不反白
     expect(style.boxShadow).toBe(tokenValue('box-shadow', '--xh-material-frosted-shadow'))
-    expect(style.backdropFilter).not.toBe('none')
+    expect(style.backdropFilter).toBe(tokenValue('backdrop-filter', '--xh-material-frosted-backdrop'))
     expect(style.borderTopLeftRadius).toBe(tokenValue('border-radius', '--xh-shape-overlay'))
     expect(style.fontSize).toBe(tokenValue('font-size', '--xh-text-body-size'))
     expect(style.color).toBe(tokenValue('color', '--xh-material-frosted-fg'))

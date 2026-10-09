@@ -15,6 +15,7 @@ import {
   XhMenuSeparator,
   XhMenuTrigger,
 } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -88,8 +89,8 @@ describe('menu M2 与条目几何', () => {
   it('使用静态磨砂配方，正文与分隔结构保持实体可读', async () => {
     await mountMenu()
     const content = getComputedStyle(part('content'))
-    expect(content.backdropFilter || content.getPropertyValue('-webkit-backdrop-filter')).toContain('blur(16px)')
-    expect(content.backgroundColor).toMatch(/0\.88\)|\/ 0\.88\)/)
+    expect(content.backdropFilter || content.getPropertyValue('-webkit-backdrop-filter')).toBe(tokenValue('backdrop-filter', '--xh-material-frosted-backdrop', part('content')))
+    expect(content.backgroundColor).toBe(tokenValue('background-color', '--xh-material-frosted-bg', part('content')))
     expect(content.boxShadow).not.toBe('none')
     const separator = getComputedStyle(part('separator'))
     expect(Number.parseFloat(separator.borderRadius)).toBeGreaterThan(0)

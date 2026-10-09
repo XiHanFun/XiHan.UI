@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -100,8 +101,7 @@ describe('layout 侧栏面与折叠把手', () => {
   it('把手随所在面走阶梯：顶栏与侧栏都是白底，hover 100；按下缩放走令牌', async () => {
     const layout = mount()
     expect(getComputedStyle(layout.headerTrigger).backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(Number.parseFloat(getComputedStyle(layout.headerTrigger).blockSize))
-      .toBe(Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--xh-control-h-sm')))
+    expect(Number.parseFloat(getComputedStyle(layout.headerTrigger).blockSize)).toBe(tokenLength('--xh-control-h-sm'))
 
     await userEvent.hover(layout.headerTrigger)
     await expect.poll(() => getComputedStyle(layout.headerTrigger).backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
