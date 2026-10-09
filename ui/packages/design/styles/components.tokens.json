@@ -57007,7 +57007,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-popconfirm-gap"
       ],
       "visibility": "public",
       "description": "popconfirm 的 content 部件 column-gap 覆盖槽。"
@@ -57154,16 +57154,18 @@
         "content"
       ],
       "property": [
+        "column-gap",
         "gap"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-1",
+        "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "popconfirm 的 content 部件 gap 覆盖槽。"
+      "description": "popconfirm 的 content 部件 column-gap、gap 覆盖槽。"
     },
     {
       "name": "--xh-popconfirm-icon-size",

@@ -124,9 +124,10 @@
     display: grid;
     grid-template-columns: 1fr auto auto;
     align-items: center;
-    /* 行距与气泡族同一档：标题与说明之间只留 4px；两颗钮之间的列距另由 column-gap 放宽 */
+    /* 行距与气泡族同一档：标题与说明之间只留 4px；两颗钮之间的列距另由 column-gap 放宽。
+       column-gap 写在 gap 之后，先回落到 gap 槽再取缺省：作者只写 --xh-popconfirm-gap 时行列一起跟着它走 */
     gap: var(--xh-popconfirm-gap, var(--xh-space-1));
-    column-gap: var(--xh-popconfirm-column-gap, var(--xh-space-2));
+    column-gap: var(--xh-popconfirm-column-gap, var(--xh-popconfirm-gap, var(--xh-space-2)));
     inline-size: max-content;
     /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的两颗钮就点不到了 */
     max-inline-size: min(var(--xh-popconfirm-max-w, var(--xh-_popconfirm-max-w)), var(--xh-_popconfirm-available-w));
