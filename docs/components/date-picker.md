@@ -567,7 +567,7 @@ selectionMode="multiple" 时选中的日期在输入行里排成标签，点标�
 | `--xh-date-picker-preset-radius` | `preset` | `border-radius` | `default` | `--xh-shape-control` | date-picker 的 preset 部件 border-radius 覆盖槽。 |
 | `--xh-date-picker-tag-list-gap` | `tag-list` | `gap` | `xh-tag-list` | `--xh-space-1` | date-picker 的 tag-list 部件 gap 覆盖槽。 |
 | `--xh-date-picker-time-column-gap` | `time-column`<br>`time-item` | `gap`<br>`inset-block` | `default` | `--xh-space-2` | date-picker 的 time-column、time-item 部件 gap、inset-block 覆盖槽。 |
-| `--xh-date-picker-time-column-h` | `time-column` | `block-size`<br>`padding-block` | `default` | `--xh-overlay-calendar-column-h` | date-picker 的 time-column 部件 block-size、padding-block 覆盖槽。 |
+| `--xh-date-picker-time-column-h` | `time-column` | `block-size`<br>`padding-block` | `@media (pointer: coarse)`<br>`default` | `--xh-overlay-calendar-column-h`<br>`--xh-overlay-calendar-column-h-coarse` | date-picker 的 time-column 部件 block-size、padding-block 覆盖槽。 |
 | `--xh-date-picker-time-column-min-w` | `time-column` | `min-inline-size` | `default` | `--xh-overlay-column-min-w` | date-picker 的 time-column 部件 min-inline-size 覆盖槽。 |
 | `--xh-date-picker-time-column-min-w-mobile` | `time-column` | `min-inline-size` | `@media not all and (min-width: 768px)` | `2.75rem` | date-picker 的 time-column 部件 min-inline-size 覆盖槽。 |
 | `--xh-date-picker-time-column-offset` | `time-column` | `margin-block-start` | `default` | `--xh-control-action-size` | date-picker 的 time-column 部件 margin-block-start 覆盖槽。 |
@@ -600,6 +600,8 @@ selectionMode="multiple" 时选中的日期在输入行里排成标签，点标�
 ### 响应式
 
 皮肤按视口分档：`min-width: 768px`。
+
+皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

@@ -609,6 +609,13 @@
     display: none;
   }
 
+  /* 粗指针下日历格长到 44 见方（行距从 36 加到 44），网格多出六行的那截；列高跟着加，列底仍与网格底边对齐 */
+  @media (pointer: coarse) {
+    [data-scope='date-picker'][data-part='time-column'] {
+      --xh-_date-picker-time-column-h: var(--xh-date-picker-time-column-h, var(--xh-overlay-calendar-column-h-coarse));
+    }
+  }
+
   /* 时间格：24 高的通栏条，列内间距 8 撑出 32 的行距；悬停 / 高亮 100、按下 200 由 Collection Item 家族按
      overlay 语境给，选中透明底 + 中等字重 + 末端对号（对号集合的选中），不上品牌淡底、不变字色。格里只有数字、没有正文部件，保持自己的
      居中排版与等宽标记轨，家族只给状态面。行的字色与字重按值选择族的同一套映射写（--xh-date-picker-time-item-fg
