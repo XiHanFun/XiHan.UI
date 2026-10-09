@@ -10894,6 +10894,9 @@
               "name": "--xh-clipboard-label-font-weight"
             },
             {
+              "name": "--xh-clipboard-label-gap"
+            },
+            {
               "name": "--xh-clipboard-loading-duration"
             }
           ]

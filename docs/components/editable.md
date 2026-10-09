@@ -61,7 +61,7 @@
 - 支持提交、取消、受控值和受控编辑状态。
 - `autoResize` 让输入框随内容调整宽度。
 - 标题在上；预览文字或输入框与右侧动作组共用一个字段盒，不把动作按钮挂在编辑框外。预览态只显示编辑按钮，盒恒为无壳 `ghost`（读起来就是一段文字，悬停才浮出描边）；编辑态只显示确认与取消按钮，盒换回 root 的形态（缺省 `outline`）。
-- 三颗动作的视觉盒三档都取控件内动作档 `--xh-control-action-size`（24px，compact 20px），字形取次要前景；与内容段之间不画分隔线。
+- 三颗动作的视觉盒按字段内钮尺寸表随档（sm 取 `--xh-control-action-size`、md 取 `--xh-control-h-sm`、lg 取 `--xh-control-h-md`），字形取次要前景；确认与取消之间隔 `--xh-space-1`，紧凑 sm 档两钮中心距仍不低于 24px；与内容段之间不画分隔线。
 - 三个动作使用图标呈现：编辑、确认、取消；图标按钮必须提供可访问名称。
 
 ### 组合
@@ -341,7 +341,7 @@
 | `--xh-editable-trigger-fg-hover` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 color 覆盖槽。 |
 | `--xh-editable-trigger-font-size` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 font-size 覆盖槽。 |
 | `--xh-editable-trigger-radius` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `border-radius` | `default` | `--xh-shape-inset` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-editable-trigger-size` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-control-action-size` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
+| `--xh-editable-trigger-size` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

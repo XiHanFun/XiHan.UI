@@ -94,8 +94,14 @@ afterEach(async () => {
 })
 
 describe('password-input Field Chrome 细节', () => {
-  it('三尺寸与 compact 同步缩放高度与间距，切换钮三档都是 --xh-control-action-size 的正方盒，不再画分隔线', async () => {
-    // 钮的视觉盒固定取控件内动作档（comfortable 24px、compact 20px），不随字段档长大；字段高与间距随档
+  it('三尺寸与 compact 同步缩放高度与间距，切换钮按字段内钮尺寸表随档取正方盒，不再画分隔线', async () => {
+    // 钮走字段内钮（field-inset）尺寸表：sm 取控件内动作档、md 取 --xh-control-h-sm、lg 取 --xh-control-h-md；
+    // 字形 sm / md 取 --xh-control-indicator-sm、lg 取 --xh-control-indicator-md；字段高与间距随档
+    const inset = {
+      sm: ['--xh-control-action-size', '--xh-control-indicator-sm'],
+      md: ['--xh-control-h-sm', '--xh-control-indicator-sm'],
+      lg: ['--xh-control-h-md', '--xh-control-indicator-md'],
+    } as const
     const cases = [
       ['comfortable-sm', 'comfortable', 'sm'],
       ['comfortable-md', 'comfortable', 'md'],
@@ -117,7 +123,8 @@ describe('password-input Field Chrome 细节', () => {
     for (const [id, , size] of cases) {
       const height = tokenPx(field(id), `--xh-control-h-${size}`)
       const gap = tokenPx(field(id), `--xh-control-gap-${size}`)
-      const action = tokenPx(field(id), '--xh-control-action-size')
+      const action = tokenPx(field(id), inset[size][0])
+      const glyph = tokenPx(field(id), inset[size][1])
       const control = part(id, 'control')
       const input = part(id, 'input')
       const trigger = part(id, 'visibility-trigger')
@@ -129,6 +136,7 @@ describe('password-input Field Chrome 细节', () => {
       expect(control.getBoundingClientRect().height).toBe(height)
       expect(trigger.getBoundingClientRect().width).toBe(action)
       expect(trigger.getBoundingClientRect().height).toBe(action)
+      expect(getComputedStyle(trigger, '::before').inlineSize).toBe(`${glyph}px`)
       expect(Number.parseFloat(getComputedStyle(control).columnGap)).toBe(gap)
       expect(distance(prefix.getBoundingClientRect(), input.getBoundingClientRect())).toBeCloseTo(gap, 1)
       expect(distance(input.getBoundingClientRect(), suffix.getBoundingClientRect())).toBeCloseTo(gap, 1)

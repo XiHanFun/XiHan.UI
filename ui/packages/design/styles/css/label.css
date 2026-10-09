@@ -62,6 +62,11 @@
    * 接入 = connect 在标签部件投影 data-required + 把 scope 加进这张列表；控件本体不画。
    * 有 --xh-<组件>-label-star 覆盖槽的组件在各自皮肤里只另写一条 color 压过这里（field 的
    * --xh-field-label-star、fieldset 的 --xh-fieldset-legend-star），content、字号与间距不再重写。
+   *
+   * 星号排在文字之前，就进了经 aria-labelledby / for 算出的控件名开头，读屏先念一声「星号」。
+   * 必填已由控件上的 aria-required 表达，星号只给眼睛看：content 带一段空的替代文本，可及树里不念。
+   * 替代文本的写法晚于浏览器地板（Firefox 128 / Safari 17.4 起），而 content 里带 var() 不在解析期校验，
+   * 不认的引擎整条落空、星号跟着没了，同块写两条兜不住：块外留旧写法，新写法收进同一特性的 @supports 里
    */
   [data-scope='field'][data-part='label'][data-required]::before,
   [data-scope='fieldset'][data-part='legend'][data-required]::before {
@@ -69,6 +74,13 @@
     margin-inline-end: var(--xh-space-1);
     color: var(--xh-fg-danger);
     font-size: var(--xh-text-caption-size);
+  }
+
+  @supports (content: '' / '') {
+    [data-scope='field'][data-part='label'][data-required]::before,
+    [data-scope='fieldset'][data-part='legend'][data-required]::before {
+      content: var(--xh-glyph-mark-required) / '';
+    }
   }
 
   /*

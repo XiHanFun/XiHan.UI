@@ -129,6 +129,11 @@
  * 接入 = connect 在标签部件投影 data-required + 把 scope 加进这张列表；控件本体不画。
  * 有 --xh-<组件>-label-star 覆盖槽的组件在各自皮肤里只另写一条 color 压过这里（field 的
  * --xh-field-label-star、fieldset 的 --xh-fieldset-legend-star），content、字号与间距不再重写。
+ *
+ * 星号排在文字之前，就进了经 aria-labelledby / for 算出的控件名开头，读屏先念一声「星号」。
+ * 必填已由控件上的 aria-required 表达，星号只给眼睛看：content 带一段空的替代文本，可及树里不念。
+ * 替代文本的写法晚于浏览器地板（Firefox 128 / Safari 17.4 起），而 content 里带 var() 不在解析期校验，
+ * 不认的引擎整条落空、星号跟着没了，同块写两条兜不住：块外留旧写法，新写法收进同一特性的 @supports 里
  */
 .xh-scope-field[data-part='label'][data-required]::before,
 .xh-scope-fieldset[data-part='legend'][data-required]::before {
@@ -136,6 +141,13 @@
   margin-inline-end: var(--xh-space-1);
   color: var(--xh-fg-danger);
   font-size: var(--xh-text-caption-size);
+}
+
+@supports (content: '' / '') {
+  .xh-scope-field[data-part='label'][data-required]::before,
+  .xh-scope-fieldset[data-part='legend'][data-required]::before {
+    content: var(--xh-glyph-mark-required) / '';
+  }
 }
 
 /*
@@ -4904,15 +4916,34 @@
 
 /* 抹掉 UA 给 <fieldset> 的边框、内外边距与 min-content 下限，间距全部改由令牌给。
    display 落在 fieldset 的匿名内容盒上：首个 <legend> 不在这个盒子里，
-   所以 gap 只作用于组内各块，legend 与内容之间的留白由 legend 自己的下外边距给。 */
+   legend 与内容之间的留白由 legend 自己的下外边距给。
+   组内项距与 Form 同一套，不走 gap：字段带辅助行（说明，或给错误文案留的那一行）时那一行就是项距，
+   没有辅助行的块才在下方补一段项距（见下面两条） */
 .xh-scope-fieldset[data-part='root'] {
+  --xh-_fieldset-item-gap: var(--xh-fieldset-gap, var(--xh-space-5));
+
   display: flex;
   flex-direction: column;
-  gap: var(--xh-fieldset-gap, var(--xh-space-5));
+  row-gap: 0;
   margin: 0;
   border: 0;
   padding: 0;
   min-inline-size: 0;
+}
+
+/* 每一块在下方留一段项距，最后一块不留。:where() 不计特指度：legend 的下外边距、组说明与错误文案
+   归零的外边距（description.css）和作者给自己节点写的外边距都压得过它 */
+:where(.xh-scope-fieldset[data-part='root']) > :where(:not(:last-child)) {
+  margin-block-end: var(--xh-_fieldset-item-gap);
+}
+
+/* 字段或并排的一段里有字段带辅助行：辅助行（最小高 --xh-space-5）紧贴控件、自己就是项距，不再另留；
+   只留错误文案占位的那一行同样算，无效时被收起的说明不算（判据与 Form 的项同一条） */
+.xh-scope-fieldset[data-part='root'] > :is(.xh-scope-field[data-part='root'], .xh-scope-fieldset[data-part='field-group']):has(
+  .xh-scope-field[data-part='error-text'],
+  .xh-scope-field[data-part='description']:not([hidden], .xh-scope-field[data-part='root'][data-invalid] > *)
+) {
+  margin-block-end: 0;
 }
 
 .xh-scope-fieldset[data-part='root'][hidden] {
@@ -8783,11 +8814,13 @@
   --xh-_input-group-shadow: none;
 }
 
-.xh-scope-input-group[data-part='root']:not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])):not(:focus-within):hover {
+/* 悬停浮出描边与底：组里的字段只读、禁用或失效时不浮。只读与禁用和下面的禁用面一样只认带字段外壳的那一段，
+   组里单独禁用一颗按钮不让整组失去悬停 */
+.xh-scope-input-group[data-part='root']:not(:has([data-xh-field-chrome]:is([data-disabled], [data-readonly]), [data-invalid], [aria-invalid='true'])):not(:focus-within):hover {
   --xh-_input-group-face: var(--xh-input-group-bg-hover, var(--xh-_input-group-bg-hover));
 }
 
-.xh-scope-input-group[data-part='root']:not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])):not(:focus-within):hover::before {
+.xh-scope-input-group[data-part='root']:not(:has([data-xh-field-chrome]:is([data-disabled], [data-readonly]), [data-invalid], [aria-invalid='true'])):not(:focus-within):hover::before {
   border-color: var(--xh-input-group-border-hover, var(--xh-_input-group-border-hover));
 }
 
@@ -8977,6 +9010,11 @@
   display: none;
 }
 
+/* 组里的字段禁用：前后缀块的字随字段禁用面换 --xh-fg-disabled，与组壳的禁用面同一个判据 */
+.xh-scope-input-group[data-part='root']:has([data-xh-field-chrome][data-disabled]) > .xh-scope-input-group[data-part='item'] {
+  color: var(--xh-fg-disabled);
+}
+
 @media (forced-colors: active) {
   .xh-scope-input-group[data-part='root'] {
     background: Canvas;
@@ -9007,6 +9045,10 @@
     background-color: Canvas;
     color: CanvasText;
     border-color: ButtonText;
+  }
+
+  .xh-scope-input-group[data-part='root']:has([data-xh-field-chrome][data-disabled]) > .xh-scope-input-group[data-part='item'] {
+    color: GrayText;
   }
 }
 
@@ -11608,10 +11650,11 @@
 /* —— 明暗切换钮 —— */
 /* inset 圆角、按承载面取的悬停 / 按下阶梯、粗指针热区全由 Action Control 的 field-inset ghost 档给，
    组件只映射既有覆盖槽；常态只剩符号，符号取次级前景。
-   视觉盒三档都取控件内动作档（24px，compact 20px），不随字段档长大：它是框里的辅助动作，盒小一圈才不与输入抢 */
+   视觉盒按字段内钮尺寸表随字段档（sm 取控件内动作档、md 取 control-h-sm、lg 取 control-h-md），
+   由 field-inset 档按 data-xh-action-size 给：比字段矮一档，是框里的辅助动作、不与输入抢 */
 .xh-scope-password-input[data-part='visibility-trigger'] {
-  --xh-action-visual-size: var(--xh-password-input-trigger-size, var(--xh-control-action-size));
-  --xh-action-min-inline-size: var(--xh-password-input-trigger-size, var(--xh-control-action-size));
+  --xh-action-visual-size: var(--xh-password-input-trigger-size, var(--xh-_action-profile-visual-size));
+  --xh-action-min-inline-size: var(--xh-password-input-trigger-size, var(--xh-_action-profile-visual-size));
   --xh-action-radius: var(--xh-password-input-trigger-radius, var(--xh-shape-inset));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-password-input-trigger-bg, var(--xh-_action-variant-bg-rest));
@@ -23020,8 +23063,11 @@
   display: none;
 }
 
+/* 带输入框的用法是一件单行字段，标签与其余字段同一副字段标签排版：次要文字色、标签字号字重。
+   竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-clipboard-label-gap 给多少最终就是多少 */
 .xh-scope-clipboard[data-part='label'] {
-  color: var(--xh-clipboard-label-fg, var(--xh-fg-default));
+  margin-block-end: calc(var(--xh-clipboard-label-gap, var(--xh-space-2)) - var(--xh-clipboard-gap, var(--xh-space-1)));
+  color: var(--xh-clipboard-label-fg, var(--xh-fg-muted));
   font-size: var(--xh-clipboard-label-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-clipboard-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
@@ -29911,13 +29957,13 @@
 
 /* 三颗动作是 control 内部的分段：inset 圆角、按承载面取的悬停 / 按下阶梯、粗指针热区、
    :focus-visible 关环与禁用面全由 Action Control 的 field-inset ghost 档给，组件只映射既有覆盖槽。
-   视觉盒三档都取控件内动作档（24px，compact 20px），不随字段档长大；常态只剩符号、取次要前景，
-   悬停与按下才浮出底色 */
+   视觉盒按字段内钮尺寸表随字段档（sm 取控件内动作档、md 取 control-h-sm、lg 取 control-h-md），
+   由 field-inset 档按 data-xh-action-size 给；常态只剩符号、取次要前景，悬停与按下才浮出底色 */
 .xh-scope-editable[data-part='edit-trigger'],
 .xh-scope-editable[data-part='submit-trigger'],
 .xh-scope-editable[data-part='cancel-trigger'] {
-  --xh-action-visual-size: var(--xh-editable-trigger-size, var(--xh-control-action-size));
-  --xh-action-min-inline-size: var(--xh-editable-trigger-size, var(--xh-control-action-size));
+  --xh-action-visual-size: var(--xh-editable-trigger-size, var(--xh-_action-profile-visual-size));
+  --xh-action-min-inline-size: var(--xh-editable-trigger-size, var(--xh-_action-profile-visual-size));
   --xh-action-radius: var(--xh-editable-trigger-radius, var(--xh-shape-inset));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-editable-trigger-bg, var(--xh-_action-variant-bg-rest));
@@ -29942,6 +29988,12 @@
 .xh-scope-editable[data-part='edit-trigger'],
 .xh-scope-editable[data-part='submit-trigger'] {
   margin-inline-start: auto;
+}
+
+/* 确认与取消两颗挨着：紧凑 sm 档钮只有 20px，两钮中心距凑不够 24px 就落不进 SC 2.5.8 的间距例外，
+   两颗之间隔一格 --xh-space-1；其余档钮不低于 24px，这一格只把两块悬停面分开 */
+.xh-scope-editable[data-part='cancel-trigger'] {
+  margin-inline-start: var(--xh-space-1);
 }
 
 /* 三颗动作默认是纯图标按钮；作者放了自己的图标后 :empty 不命中，不会叠两层。 */
@@ -30633,8 +30685,12 @@
 }
 
 /* 字段带辅助行：辅助行（最小高 --xh-space-5）紧贴控件、自己就是项距，这一项不再另留；
-   说明收起、只留错误文案占位的那一行同样算 */
-.xh-scope-form[data-part='field-group']:has(.xh-scope-field[data-part='error-text'], .xh-scope-field[data-part='description']:not([hidden])) {
+   说明收起、只留错误文案占位的那一行同样算。字段无效时它的直接子说明被收起（见 description.css），
+   不占那一行，不算辅助行：没渲染错误文案的无效字段照常留项距 */
+.xh-scope-form[data-part='field-group']:has(
+  .xh-scope-field[data-part='error-text'],
+  .xh-scope-field[data-part='description']:not([hidden], .xh-scope-field[data-part='root'][data-invalid] > *)
+) {
   margin-block-end: 0;
 }
 
@@ -35895,7 +35951,7 @@
   --xh-_number-field-gap: 0;
   --xh-_number-field-font-size: var(--xh-control-font-md);
   --xh-_number-field-trigger-font-size: var(--xh-control-font-md);
-  /* 精细指针下上下叠放的两颗钮离盒边的内收：sm 档盒矮，收半档，钮才留得出字形的高 */
+  /* 精细指针下上下叠放的两颗钮离盒边的内收：sm 档盒矮，收半档，两颗钮与 md 档等高 */
   --xh-_number-field-stepper-inset: var(--xh-space-1);
 
   display: inline-flex;
@@ -36064,7 +36120,8 @@
 }
 
 /* 可悬停的精细指针：两颗钮上下叠在盒的逻辑末端，各占盒高一半（四周内收一截），宽取指示符大档；
-   显出时铺一层淡底，悬停 / 按下沿淡底阶梯升一档、两档，字形换成上下箭头、取指示符小档。
+   显出时铺一层淡底，悬停 / 按下沿淡底阶梯升一档、两档，字形换成上下箭头、取指示符最小档：
+   一颗钮只有盒内高的一半减内收（sm / md 11px，紧凑 9px），小档 12px 的字形会比钮高出一截。
    两颗钮共边相接，按下只换面不缩放。钮浮在盒上、不占流：盒的末端让出钮那一截，
    输入与后缀不会排到钮底下，钮收起时也不跳。粗指针与不能悬停的设备仍是两颗正方钮横排在末端、常显，
    那里一颗叠放的钮只有半个控件高，够不着触控目标尺寸 */
@@ -36083,7 +36140,7 @@
     --xh-action-bg-pressed: var(--xh-number-field-trigger-bg-active, var(--xh-bg-subtle-active));
     --xh-action-bg-disabled: var(--xh-number-field-stepper-bg, var(--xh-bg-subtle));
     --xh-action-scale-pressed: none;
-    --xh-icon-size: var(--xh-control-indicator-sm);
+    --xh-icon-size: var(--xh-control-indicator-xs);
 
     position: absolute;
     inset-inline-end: var(--xh-number-field-stepper-inset, var(--xh-_number-field-stepper-inset));
