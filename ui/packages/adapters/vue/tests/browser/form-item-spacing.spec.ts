@@ -144,6 +144,12 @@ describe('表单项距', () => {
     expect(between(2)).toBe(px('--xh-space-5'))
   })
 
+  it('校验失败收起了说明、又没渲染错误文案的字段没有辅助行，照常留项距', async () => {
+    await mount(() => h(XhFormRoot, null, () => [field('甲', { description: '一行说明', invalid: true }), field('乙')]))
+    expect(getComputedStyle(all('field', 'description')[0]!).display).toBe('none')
+    expect(between(0)).toBe(px('--xh-space-5'))
+  })
+
   it('最后一项下方不留项距', async () => {
     await mount(() => h(XhFormRoot, null, () => [field('甲'), field('乙')]))
     const form = all('form', 'root')[0]!
