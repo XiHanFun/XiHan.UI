@@ -19,16 +19,6 @@
     "theme": "light",
     "tone": null
   },
-  "heatmap [data-palette='gray'][data-part='root'][data-scale='diverging'][data-scope='heatmap'][data-theme='dark'] [data-part='cell'][data-scope='heatmap']": {
-    "ratio": 2.98,
-    "theme": "light",
-    "tone": null
-  },
-  "heatmap [data-palette='gray'][data-part='root'][data-scope='heatmap'][data-theme='dark'] [data-part='cell'][data-scope='heatmap']": {
-    "ratio": 2.97,
-    "theme": "light",
-    "tone": null
-  },
   "scrollbar [data-disabled][data-part='source-panel'][data-scope='transfer'] [data-dragging][data-part='thumb'][data-scope='scrollbar']": {
     "ratio": 2.09,
     "theme": "light",
