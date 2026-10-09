@@ -496,7 +496,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | Switch | 轨道高 `switch-track-h` 随 size；宽 = 2 × 高 − 2 × 内距；滑块 = 高 − 2 × 内距 |
 | Slider | 轨道 2px（`--xh-stroke-thick`，lg 3px）、拇指 12px（sm 10 / lg 16px；悬停与拖动放大 `--xh-motion-scale-drag`）、刻度点 8px；竖向长度 10rem。拇指是白底 + 2px 品牌描边的平面圆，静止不投影、拖动中 lifted，不走 raised |
 | ColorSlider | 轨道 12px、滑块 18px；竖向长度 10rem |
-| Rating | 星 sm / md / lg 取 `glyph-size-md / lg / xl`（20 / 24 / 32px，星是主体，比控件内图标大一档），盒比星大 4px；悬停与键盘聚焦放大到 `--xh-motion-scale-emphasis`（1.2，减弱动效 1），按下保持放大并换 200 档面 |
+| Rating | 星 sm / md / lg 取 `glyph-size-md / lg / xl`（20 / 24 / 32px，星是主体，比控件内图标大一档），盒比星大 4px；悬停（只在能悬停的设备上）与键盘聚焦放大到 `--xh-motion-scale-emphasis`（1.2，减弱动效 1），按下保持放大并换 200 档面（按压反馈的登记例外，见 §9.1） |
 
 #### 浮层
 
@@ -928,6 +928,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - 指针 `:active`、键盘 Press 和 Headless `data-pressed` 必须一致。
 - 不采用点击波纹。
 - 不允许组件自行设置 0.94、0.96、0.98 等缩放。
+- 登记例外：Rating 的星。悬停与键盘聚焦把星放大到 `--xh-motion-scale-emphasis`（1.2）强调落点，按下保持放大、只换到 200 档面，不取 `--xh-motion-scale-press`；悬停放大只写在 `@media (hover: hover)` 里，触屏点过之后残留的 `:hover` 不把星停在放大态；减弱动效下 emphasis 归 1，只留换色。
 - 业务事件不能等待动画结束；按下首帧必须先于异步 loading 状态可见。
 
 ### 9.2 行级与 disclosure trigger

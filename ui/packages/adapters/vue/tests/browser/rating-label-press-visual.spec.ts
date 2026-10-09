@@ -1,14 +1,20 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { userEvent } from 'vitest/browser'
+import { cdp, userEvent } from 'vitest/browser'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 let host: HTMLElement | null = null
 
-afterEach(() => {
+afterEach(async () => {
+  await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: false })
   host?.remove()
   host = null
 })
+
+/** 悬停、聚焦与按下时星的强调倍率：读令牌，减弱动效下令牌自己归 1。 */
+function emphasis(scope: Element = document.documentElement): string {
+  return getComputedStyle(scope).getPropertyValue('--xh-motion-scale-emphasis').trim()
+}
 
 function resolvedToken(name: string): string {
   const probe = document.createElement('span')
@@ -67,18 +73,19 @@ describe('rating 字段标签、星形尺度与按压', () => {
     expect(item.getBoundingClientRect().height).toBe(box)
   })
 
-  it('悬停与键盘聚焦把星放大到 1.2 强调；按下保持放大并换到 200 档底，松手回到透明；点亮色在按下时保持', async () => {
+  it('悬停与键盘聚焦把星放大到强调倍率；按下保持放大并换到 200 档底，松手回到透明；点亮色在按下时保持', async () => {
     const { item } = mount()
+    expect(Number(emphasis())).toBeGreaterThan(1)
     expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(getComputedStyle(item).transitionProperty.split(', ')).toContain('scale')
     const lit = getComputedStyle(item).color
     expect(lit).not.toBe(resolvedToken('--xh-fg-subtle'))
     await userEvent.hover(item)
-    expect(getComputedStyle(item).scale).toBe('1.2')
+    expect(getComputedStyle(item).scale).toBe(emphasis())
     expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     item.setAttribute('data-pressed', '')
     expect(getComputedStyle(item).color).toBe(lit)
-    expect(getComputedStyle(item).scale).toBe('1.2')
+    expect(getComputedStyle(item).scale).toBe(emphasis())
     expect(getComputedStyle(item).backgroundColor).toBe(resolvedToken('--xh-bg-subtle-hover'))
     item.removeAttribute('data-pressed')
     await userEvent.unhover(item)
@@ -89,7 +96,20 @@ describe('rating 字段标签、星形尺度与按压', () => {
     await userEvent.keyboard('{Tab}')
     item.focus()
     expect(item.matches(':focus-visible')).toBe(true)
-    expect(getComputedStyle(item).scale).toBe('1.2')
+    expect(getComputedStyle(item).scale).toBe(emphasis())
+  })
+
+  it('不能悬停的设备：点过之后残留的 :hover 不把星停在放大态，按下仍放大', async () => {
+    await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 })
+    const { item } = mount()
+    expect(matchMedia('(hover: hover)').matches).toBe(false)
+    await userEvent.hover(item)
+    expect(item.matches(':hover')).toBe(true)
+    expect(getComputedStyle(item).scale).toBe('none')
+    item.setAttribute('data-pressed', '')
+    expect(getComputedStyle(item).scale).toBe(emphasis())
+    item.removeAttribute('data-pressed')
+    await userEvent.unhover(item)
   })
 
   it('减弱动效：悬停不放大，只留点亮换色', async () => {
