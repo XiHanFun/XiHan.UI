@@ -174,6 +174,45 @@ describe('input-group 单一输入表面', () => {
     await expect.poll(() => getComputedStyle(root, '::before').borderTopColor).toBe(resolve('Highlight'))
   })
 
+  it('前后缀块铺淡底、取正文色，两侧内距不归零，与字段之间一道满高的缺省描边', async () => {
+    host = document.createElement('div')
+    document.body.append(host)
+    app = createApp({
+      render: () => h(XhInputGroupRoot, { 'data-testid': 'addon' }, () => [
+        h(XhInputGroupItem, null, () => 'https://'),
+        field('域名'),
+        h(XhInputGroupItem, null, () => '.com'),
+      ]),
+    })
+    app.mount(host)
+    await nextTick()
+    const root = group('addon')
+    const [before, after] = [...root.querySelectorAll<HTMLElement>(`[data-scope='input-group'][data-part='item']`)]
+    for (const item of [before!, after!]) {
+      const style = getComputedStyle(item)
+      expect(style.backgroundColor).toBe(token('--xh-bg-subtle', 'background-color'))
+      expect(style.color).toBe(token('--xh-fg-default'))
+      expect(Number.parseFloat(style.paddingInlineStart)).toBeGreaterThan(0)
+      expect(style.paddingInlineEnd).toBe(style.paddingInlineStart)
+      expect(item.getBoundingClientRect().height).toBe(root.getBoundingClientRect().height)
+    }
+    // 分隔线只画在朝字段的那一侧：前缀画在行内末端、后缀画在行内起始端，外侧交给组壳的外轮廓
+    expect(getComputedStyle(before!).borderInlineEndWidth).toBe('1px')
+    expect(getComputedStyle(before!).borderInlineEndColor).toBe(token('--xh-border-default'))
+    expect(getComputedStyle(before!).borderInlineStartWidth).toBe('0px')
+    expect(getComputedStyle(after!).borderInlineStartWidth).toBe('1px')
+    expect(getComputedStyle(after!).borderInlineStartColor).toBe(token('--xh-border-default'))
+    expect(getComputedStyle(after!).borderInlineEndWidth).toBe('0px')
+  })
+
+  it('强制色：前后缀块的分隔线换系统色，仍看得见', async () => {
+    await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [{ name: 'forced-colors', value: 'active' }] })
+    await mount()
+    const item = group('outline').querySelector<HTMLElement>(`[data-scope='input-group'][data-part='item']`)!
+    expect(getComputedStyle(item).borderInlineEndWidth).toBe('1px')
+    expect(getComputedStyle(item).borderInlineEndColor).toBe(resolve('ButtonText'))
+  })
+
   it('不传尺寸时整组与单个字段同宽：前缀按内容宽，字段占满剩余，不再是字段缺省宽再加前缀', async () => {
     host = document.createElement('div')
     document.body.append(host)

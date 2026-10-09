@@ -36221,6 +36221,12 @@
               "name": "--xh-input-group-border-invalid"
             },
             {
+              "name": "--xh-input-group-item-bg"
+            },
+            {
+              "name": "--xh-input-group-item-divider"
+            },
+            {
               "name": "--xh-input-group-item-fg"
             },
             {
