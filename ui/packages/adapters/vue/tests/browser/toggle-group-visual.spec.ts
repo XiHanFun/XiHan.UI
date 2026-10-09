@@ -81,7 +81,7 @@ describe('切换按钮组视觉', () => {
     expect(items[0]!.getBoundingClientRect().right).toBeCloseTo(items[1]!.getBoundingClientRect().left, 4)
     expect(items[1]!.getBoundingClientRect().right).toBeCloseTo(items[2]!.getBoundingClientRect().left, 4)
     for (const separator of separators) {
-      expect(getComputedStyle(separator).backgroundColor).toBe(getComputedStyle(items[1]!).color)
+      expect(getComputedStyle(separator).backgroundColor).toBe(resolveColor('--xh-fg-default', root))
       expect(separator.getBoundingClientRect().height).toBeCloseTo(rootHeight / 2, 1)
       expect(getComputedStyle(separator).marginInlineStart).toBe('-1px')
     }
