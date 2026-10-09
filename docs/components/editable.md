@@ -60,7 +60,8 @@
 - `activationMode` 设置单击、双击或按钮激活。
 - 支持提交、取消、受控值和受控编辑状态。
 - `autoResize` 让输入框随内容调整宽度。
-- 标题在上；预览文字或输入框与右侧动作组共用一个字段边框和背景，不把动作按钮挂在编辑框外。预览态只显示编辑按钮，编辑态只显示确认与取消按钮。
+- 标题在上；预览文字或输入框与右侧动作组共用一个字段盒，不把动作按钮挂在编辑框外。预览态只显示编辑按钮，盒恒为无壳 `ghost`（读起来就是一段文字，悬停才浮出描边）；编辑态只显示确认与取消按钮，盒换回 root 的形态（缺省 `outline`）。
+- 三颗动作的视觉盒三档都取控件内动作档 `--xh-control-action-size`（24px，compact 20px），字形取次要前景；与内容段之间不画分隔线。
 - 三个动作使用图标呈现：编辑、确认、取消；图标按钮必须提供可访问名称。
 
 ### 组合
@@ -250,7 +251,7 @@
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'edit' \| 'preview' |
-| `control` | `data-variant` | props.variant |
+| `control` | `data-variant` | props.variant \| 'ghost' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `preview` | `data-activation-mode` | props.activationMode |
@@ -336,13 +337,11 @@
 | `--xh-editable-trigger-bg-active` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background-color 覆盖槽。 |
 | `--xh-editable-trigger-bg-disabled` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-editable-trigger-bg-hover` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background-color 覆盖槽。 |
-| `--xh-editable-trigger-divider` | `edit-trigger`<br>`submit-trigger` | `background-image` | `default` | `--xh-material-soft-separator` | editable 的 edit-trigger、submit-trigger 部件 background-image 覆盖槽。 |
-| `--xh-editable-trigger-divider-h` | `edit-trigger`<br>`submit-trigger` | `background-size` | `default` | `--xh-_editable-divider-h` | editable 的 edit-trigger、submit-trigger 部件 background-size 覆盖槽。 |
-| `--xh-editable-trigger-fg` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `color` | `default` | `--xh-fg-default` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 color 覆盖槽。 |
+| `--xh-editable-trigger-fg` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `color` | `default` | `--xh-fg-muted` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 color 覆盖槽。 |
 | `--xh-editable-trigger-fg-hover` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 color 覆盖槽。 |
 | `--xh-editable-trigger-font-size` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 font-size 覆盖槽。 |
 | `--xh-editable-trigger-radius` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `border-radius` | `default` | `--xh-shape-inset` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-editable-trigger-size` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
+| `--xh-editable-trigger-size` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-control-action-size` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -353,4 +352,4 @@
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

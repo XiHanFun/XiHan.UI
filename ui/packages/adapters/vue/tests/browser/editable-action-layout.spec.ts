@@ -108,14 +108,19 @@ function expectUnifiedControl(...partNames: string[]): void {
   }
 }
 
-/** 动作组第一颗钮与内容段之间的分隔线画在背景层，::after 留给家族热区。 */
-function expectDivider(name: string, rtl = false): void {
-  const style = getComputedStyle(part(name))
-  const separator = tokenColor('--xh-material-soft-separator')
-  expect(style.backgroundImage).toBe(`linear-gradient(${separator}, ${separator})`)
-  expect(style.backgroundSize).toBe('1px 50%')
-  expect(style.backgroundPosition).toBe(rtl ? '100% 50%' : '0px 50%')
-  expect(style.backgroundRepeat).toBe('no-repeat')
+/** 动作组与内容段之间不再画分隔线：钮的背景层只剩家族那条透明的顶光渐变。 */
+function expectNoDivider(name: string): void {
+  expect(getComputedStyle(part(name)).backgroundSize).not.toBe('1px 50%')
+}
+
+/** 令牌在当前密度下解析成多少像素。 */
+function tokenPx(name: string): number {
+  const probe = document.createElement('span')
+  probe.style.cssText = `position:absolute;inline-size:var(${name})`
+  host!.append(probe)
+  const value = probe.getBoundingClientRect().width
+  probe.remove()
+  return value
 }
 
 async function emulatePointer(value?: 'coarse'): Promise<void> {
@@ -146,11 +151,15 @@ describe('就地编辑的左内容右动作布局', () => {
     expect(part('submit-trigger').hidden).toBe(true)
     expect(part('cancel-trigger').hidden).toBe(true)
     expect(preview.right).toBeLessThanOrEqual(edit.getBoundingClientRect().left)
-    // md 档：field-inset 视觉盒取 --xh-control-h-sm（32px），控件本体 --xh-control-h-md（36px）
-    expectIconButton('edit-trigger', 32)
-    expect(part('control').getBoundingClientRect().height).toBe(36)
+    // 三档钮的视觉盒都取 --xh-control-action-size，控件本体 --xh-control-h-md
+    expectIconButton('edit-trigger', tokenPx('--xh-control-action-size'))
+    expect(part('control').getBoundingClientRect().height).toBe(tokenPx('--xh-control-h-md'))
     expectUnifiedControl('preview', 'edit-trigger')
-    expectDivider('edit-trigger')
+    expectNoDivider('edit-trigger')
+    // 预览态的盒是无壳 ghost：静息不填底、描边透明，读起来就是一段文字
+    expect(part('control').dataset.variant).toBe('ghost')
+    expect(alpha(getComputedStyle(part('control')).backgroundColor)).toBe(0)
+    expect(alpha(getComputedStyle(part('control')).borderTopColor)).toBe(0)
   })
 
   it('编辑态切成左侧输入与右侧确认、取消图标，三个动作不同时出现', async () => {
@@ -170,34 +179,36 @@ describe('就地编辑的左内容右动作布局', () => {
     expect(part('cancel-trigger').hidden).toBe(false)
     expect(input.right).toBeLessThanOrEqual(submit.left)
     expect(submit.right).toBeLessThanOrEqual(cancel.left)
-    expectIconButton('submit-trigger', 32)
-    expectIconButton('cancel-trigger', 32)
+    expectIconButton('submit-trigger', tokenPx('--xh-control-action-size'))
+    expectIconButton('cancel-trigger', tokenPx('--xh-control-action-size'))
     expectUnifiedControl('input', 'submit-trigger', 'cancel-trigger')
-    expectDivider('submit-trigger')
-    // 取消钮没有线：它的背景层只有家族那条透明的顶光渐变；两颗钮静息都不填底
-    // （一支是 transparent 关键字、一支是兑成 0% 的 color-mix，序列化不同、都是全透明）
+    expectNoDivider('submit-trigger')
+    // 编辑态的盒换回 root 的形态（缺省 outline）
+    expect(part('control').dataset.variant).toBe('outline')
+    // 两颗钮静息都不填底（一支是 transparent 关键字、一支是兑成 0% 的 color-mix，序列化不同、都是全透明）
     expect(getComputedStyle(part('cancel-trigger')).backgroundSize).toBe('auto')
     expect(alpha(getComputedStyle(part('submit-trigger')).backgroundColor)).toBe(0)
     expect(alpha(getComputedStyle(part('cancel-trigger')).backgroundColor)).toBe(0)
   })
 
-  it('三颗钮常态透明，悬停浮出白底承载的 100 档，焦点环由 control 画在外框上', async () => {
+  it('三颗钮常态透明、字取次要前景，编辑态盒已聚焦、悬停浮出白底承载的 100 档；聚焦由 control 换聚焦描边标出、不画环', async () => {
     await mountEditable()
     await userEvent.click(part('edit-trigger'))
     await nextTick()
     const submit = part('submit-trigger')
     expect(getComputedStyle(submit).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(submit).color).toBe(tokenColor('--xh-fg-muted'))
     await userEvent.hover(submit)
     // 底色带 120ms 过渡，等过渡走完再对账
     await expect.poll(() => getComputedStyle(submit).backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
-    expect(getComputedStyle(part('control')).outlineStyle).toBe('solid')
+    expect(getComputedStyle(part('control')).outlineStyle).toBe('none')
+    // 指针挪开再读聚焦描边：悬停与聚焦叠在一起时取哪一档归字段外壳配方，这里只看聚焦
+    await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
+    await expect.poll(() => getComputedStyle(part('control')).borderTopColor).toBe(tokenColor('--xh-border-control-focus'))
     expect(getComputedStyle(part('input')).outlineStyle).toBe('none')
   })
 
-  it.each([
-    { density: 'comfortable', control: 36, trigger: 32 },
-    { density: 'compact', control: 32, trigger: 28 },
-  ] as const)('$density 粗指针：视觉盒不放大，右侧图标按钮各自由家族伪元素外扩到 44px 命中区', async ({ density, control: controlH, trigger }) => {
+  it.each(['comfortable', 'compact'] as const)('%s 粗指针：视觉盒不放大，右侧图标按钮各自由家族伪元素外扩到 44px 命中区', async (density) => {
     await emulatePointer('coarse')
     expect(matchMedia('(pointer: coarse)').matches).toBe(true)
     await mountEditable(density)
@@ -207,6 +218,8 @@ describe('就地编辑的左内容右动作布局', () => {
     const input = part('input').getBoundingClientRect()
     const submit = part('submit-trigger').getBoundingClientRect()
     const cancel = part('cancel-trigger').getBoundingClientRect()
+    const trigger = tokenPx('--xh-control-action-size')
+    const controlH = tokenPx('--xh-control-h-md')
     expect(submit.width).toBe(trigger)
     expect(submit.height).toBe(trigger)
     expect(cancel.width).toBe(trigger)
@@ -223,12 +236,11 @@ describe('就地编辑的左内容右动作布局', () => {
     expectUnifiedControl('input', 'submit-trigger', 'cancel-trigger')
   })
 
-  it('从右到左（RTL）：动作组跟随逻辑末端镜像，分隔线换到物理右侧，内容与按钮仍不重叠', async () => {
+  it('从右到左（RTL）：动作组跟随逻辑末端镜像，内容与按钮仍不重叠', async () => {
     document.documentElement.dir = 'rtl'
     await mountEditable()
     expect(part('edit-trigger').getBoundingClientRect().right)
       .toBeLessThanOrEqual(part('preview').getBoundingClientRect().left)
-    expectDivider('edit-trigger', true)
 
     await userEvent.click(part('edit-trigger'))
     await nextTick()
