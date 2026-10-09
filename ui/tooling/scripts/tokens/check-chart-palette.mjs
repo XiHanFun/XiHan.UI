@@ -21,13 +21,13 @@
 import { readFile } from 'node:fs/promises'
 import {
   checkCategorical,
-  checkScheme,
   checkDiverging,
   checkNeutrals,
   checkOnColors,
   checkOrder,
   checkOrdinal,
   checkRiseFall,
+  checkScheme,
   checkSequential,
   contrastRatio,
   formatHex,

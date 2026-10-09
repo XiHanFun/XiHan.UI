@@ -84,14 +84,14 @@ const DISCLOSURE_LABEL = {
 }
 /** 区块与面板标题：scope → 标题部件，取 heading-3（16 / 500）。 */
 const SECTION_TITLE = {
-  'card': 'title',
-  'descriptions': 'title',
-  'alert': 'title',
-  'notification': 'item-title',
-  'steps': 'title',
-  'dialog': 'title',
-  'drawer': 'title',
-  'tour': 'title',
+  card: 'title',
+  descriptions: 'title',
+  alert: 'title',
+  notification: 'item-title',
+  steps: 'title',
+  dialog: 'title',
+  drawer: 'title',
+  tour: 'title',
 }
 /** 页面标题：heading-2（PageHeader）。 */
 const PAGE_TITLE = new Set(['page-header'])
