@@ -528,11 +528,26 @@ describe('开合', () => {
     expect(h.value()).toEqual(['09:00', '18:00'])
   })
 
-  it('tab 收起且不拦按键，焦点不抢回触发器', () => {
-    const h = open({ defaultOpen: true })
-    const event = pressKey(h.content, 'Tab')
-    expect(event.defaultPrevented).toBe(false)
+  it('tab 不拦按键也不收起：焦点走到终点那组照开着，走出浮层才收起且不抢回触发器', async () => {
+    const h = open({ defaultValue: ['09:00', '18:00'] })
+    h.trigger.click()
+    await flushFrames(2)
+    h.option(0, 'minute', '00').focus()
+    const tab = pressKey(h.option(0, 'minute', '00'), 'Tab')
+    expect(tab.defaultPrevented).toBe(false)
+    expect(h.state()).toBe('open')
+
+    // jsdom 按 Tab 不移动焦点：手动补上 Tab 序列的下一站——终点那组的时列
+    h.option(1, 'hour', '18').focus()
+    expect(h.state()).toBe('open')
+
+    // 再往后 Tab 出了浮层：收起，焦点留在用户刚走到的地方
+    const next = document.createElement('button')
+    document.body.appendChild(next)
+    next.focus()
     expect(h.state()).toBe('closed')
+    await flushFrames(2)
+    expect(document.activeElement).toBe(next)
   })
 })
 

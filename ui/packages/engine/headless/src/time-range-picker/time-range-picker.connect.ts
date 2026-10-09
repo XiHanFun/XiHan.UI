@@ -716,11 +716,8 @@ export function connectTimeRangePicker<T extends PropTypes>(
       'onKeyDown': (event: KeyboardEvent) => {
         const content = event.currentTarget as HTMLElement
 
-        // 不 preventDefault：浮层让开，焦点按 Tab 序列自然离开
-        if (event.key === 'Tab') {
-          send({ type: 'CLOSE', src: 'tab' })
-          return
-        }
+        // Tab 不在这里收口：焦点按 Tab 序列在两组列与快捷选项列之间走，
+        // 走出浮层时由消解层的焦点外移判定收起，且不抢回焦点
         // 快捷选项列自己吃方向键与 Enter（它是另一套集合，不是时分秒那几列）。
         // 不早退的话上下键会跑去动时列、Enter 会把焦点格提交成另一个值
         if ((event.target as HTMLElement | null)?.closest(parts['preset-group'].selector))

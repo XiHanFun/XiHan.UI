@@ -44,7 +44,7 @@ function resolved(property: 'color' | 'font-size', value: string): string {
   return out
 }
 
-async function mount(options: { theme?: 'light' | 'dark', dir?: 'ltr' | 'rtl', showTime?: boolean, note?: boolean } = {}): Promise<void> {
+async function mount(options: { theme?: 'light' | 'dark', dir?: 'ltr' | 'rtl', showTime?: boolean, note?: boolean | 'text' } = {}): Promise<void> {
   const { theme = 'light', dir = 'ltr', showTime = true, note = true } = options
   await page.viewport(1200, 800)
   host = document.createElement('div')
@@ -70,7 +70,7 @@ async function mount(options: { theme?: 'light' | 'dark', dir?: 'ltr' | 'rtl', s
         ]),
         h(XhDateRangePickerTimePanel),
         h(XhDateRangePickerFooter, null, () => [
-          ...(note ? [h('span', { 'data-testid': 'note' }, '北京时间')] : []),
+          ...(note === 'text' ? ['北京时间'] : note ? [h('span', { 'data-testid': 'note' }, '北京时间')] : []),
           h(XhDateRangePickerConfirmTrigger, null, () => '确定'),
         ]),
       ])),
@@ -148,6 +148,31 @@ describe('日期范围选择浮层底栏', () => {
     }
     expect(confirm.top + confirm.height / 2).toBeCloseTo(footer.top + 1 + (footer.height - 1) / 2, 0)
     expect(note.top + note.height / 2).toBeCloseTo(footer.top + 1 + (footer.height - 1) / 2, 0)
+  })
+
+  it.each(['ltr', 'rtl'] as const)('%s：附注写成裸文本时，行首仍让出 8', async (dir) => {
+    await mount({ dir, note: 'text' })
+    const footer = part('footer')
+    const text = [...footer.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.textContent === '北京时间')!
+    const range = document.createRange()
+    range.selectNodeContents(text)
+    const box = range.getBoundingClientRect()
+    const edge = footer.getBoundingClientRect()
+    if (dir === 'ltr')
+      expect(box.left).toBeCloseTo(edge.left + 8, 1)
+    else
+      expect(box.right).toBeCloseTo(edge.right - 8, 1)
+  })
+
+  it.each(['ltr', 'rtl'] as const)('%s：没开 showTime 时确认钮收起、附注成了末一项时，它那一头仍让出 8 的行尾内衬', async (dir) => {
+    await mount({ dir, showTime: false })
+    expect(part('confirm-trigger').hidden).toBe(true)
+    const footer = part('footer').getBoundingClientRect()
+    const note = document.querySelector<HTMLElement>(`[data-testid='note']`)!.getBoundingClientRect()
+    if (dir === 'ltr')
+      expect(note.right).toBeCloseTo(footer.right - 8, 1)
+    else
+      expect(note.left).toBeCloseTo(footer.left + 8, 1)
   })
 
   it('没开 showTime 时，只放了确认钮的底栏随确认钮一并收起，不留空栏', async () => {

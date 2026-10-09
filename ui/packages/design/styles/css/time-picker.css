@@ -319,8 +319,9 @@
     align-items: stretch;
     padding-block: var(--xh-time-picker-content-py, var(--xh-space-0));
     padding-inline: var(--xh-time-picker-content-px, var(--xh-space-0));
-    /* 列自己定高，面板整体不该再长过页内滚动面那一档 */
-    max-block-size: var(--xh-time-picker-content-max-h, var(--xh-viewport-h-lg));
+    /* 列与底栏都按 px 定高（列取 --xh-overlay-time-column-h），面板的天然高度就是它们的和，缺省不另设上限：
+       按 rem 的滚动面档会随根字号缩小，根字号很小时底栏被挤到描边外 */
+    max-block-size: var(--xh-time-picker-content-max-h, none);
     border: var(--xh-stroke-thin) solid var(--xh-time-picker-content-border, var(--xh-border-default));
     border-radius: var(--xh-time-picker-content-radius, var(--xh-shape-overlay));
     background: var(--xh-time-picker-content-bg, var(--xh-bg-surface));
@@ -401,8 +402,14 @@
      「添加」总落在行尾；只放了「添加」时它独占那条轨道，靠 justify-self 贴到行尾。
      底栏不参与撑宽：面板换行排布时，Chrome 把每个子项的固有宽相加当作面板的固有宽，
      底栏的字与钮会把面板多撑出一截、最后一列末端空出一块。inline-size 包含让它的内容不计入固有宽，
-     行内内衬也就不能写在它自己身上（内衬照样计入），改由首末两个子节点的外边距让出 */
+     行内内衬也就不能写在它自己身上（内衬照样计入），改由两端各一个定宽占位让出（见下面那条） */
   [data-scope='time-picker'][data-part='footer'] {
+    /* 两端占位的宽：占位与相邻项之间本来就隔着一道 gap，占位自己只补到内衬的差额 */
+    --xh-_time-picker-footer-inset: max(
+      var(--xh-space-0),
+      calc(var(--xh-time-picker-footer-px, var(--xh-space-2)) - var(--xh-time-picker-footer-gap, var(--xh-space-2)))
+    );
+
     display: grid;
     contain: inline-size;
     flex-basis: 100%;
@@ -430,12 +437,18 @@
     justify-self: end;
   }
 
-  [data-scope='time-picker'][data-part='footer'] > :first-child {
-    margin-inline-start: var(--xh-time-picker-footer-px, var(--xh-space-2));
+  /* 行首行尾的内衬由两端的定宽占位让出，不挂在首末子节点上：首个子节点可能是裸文本，
+     末一个可能是按状态收起的「添加」，外边距都接不住。占位与其余子项一样在 inline-size 包含之内，不计入面板的固有宽 */
+  [data-scope='time-picker'][data-part='footer']::before,
+  [data-scope='time-picker'][data-part='footer']::after {
+    content: '';
+    inline-size: var(--xh-_time-picker-footer-inset);
   }
 
-  [data-scope='time-picker'][data-part='footer'] > :last-child {
-    margin-inline-end: var(--xh-time-picker-footer-px, var(--xh-space-2));
+  /* 行首占位落在那条撑满余宽的显式轨道之前（在它前面长出一条隐式列），首个子节点仍落在那条轨道上。
+     占位不进显式轨道：尺寸包含照样计入显式轨道与轨道间的 gap，多一条显式列面板就多撑出一道 gap */
+  [data-scope='time-picker'][data-part='footer']::before {
+    grid-column: span 1 / 1;
   }
 
   /* 快捷选项也是一列，与时分秒那几列并排，排在行内起始一侧；限高与时间列同一档 */

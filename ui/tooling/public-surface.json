@@ -14897,6 +14897,7 @@
     "--xh-overlay-arrow-size",
     "--xh-overlay-backdrop-blur",
     "--xh-overlay-calendar-column-h",
+    "--xh-overlay-calendar-column-h-coarse",
     "--xh-overlay-cascade-min-w",
     "--xh-overlay-color-area-h",
     "--xh-overlay-column-item-h",

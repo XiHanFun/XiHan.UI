@@ -18303,6 +18303,12 @@
    日期钮的命中区（钮的 ::after）同样以它为包含块。上下各 6 的内衬把 24 高的钮撑成 36 的行距。
    格子自成一层：横条压在钮的下面，不盖住钮（钮不当定位盒） */
 .xh-scope-calendar-picker[data-part='cell'] {
+  /* 这副行距的半高：格内横条以格子中线为轴、按它收边，行距被拉高（粗指针）时横条不跟着变粗 */
+  --xh-_calendar-picker-row-half: calc(
+    var(--xh-calendar-picker-cell-size, var(--xh-control-action-size)) / 2
+    + var(--xh-calendar-picker-cell-py, var(--xh-space-1_5))
+  );
+
   position: relative;
   display: flex;
   align-items: center;
@@ -18326,7 +18332,7 @@
   content: '';
   position: absolute;
   z-index: -1;
-  inset-block: var(--xh-calendar-picker-disabled-inset, var(--xh-space-0_5));
+  inset-block: calc(50% - var(--xh-_calendar-picker-row-half) + var(--xh-calendar-picker-disabled-inset, var(--xh-space-0_5)));
   inset-inline: 0;
   background-color: var(--xh-calendar-picker-cell-bg-disabled, var(--xh-bg-subtle));
   pointer-events: none;
@@ -18418,9 +18424,28 @@
   inset: 0;
 }
 
-/* 家族 text 档在粗指针下用 ::after 扩热区到 44px 高；这里的 ::after 已是铺满整格的命中区（36 行距、
-   列宽不窄于中号控件高），再外扩只会压到上下相邻的格：钉回整格那副几何 */
+/* 粗指针：格子首尾相接，家族 text 档那套 ::after 外扩会压到上下相邻的格。改由格子自己长到 44 见方——
+   行距加到 44、列宽下限抬到 44，铺满整格的命中区随之到 44×44、彼此不重叠；钮仍是 24 的圆，
+   横条仍以格子中线为轴、按细指针那副行距收边。::after 钉回整格那副几何 */
 @media (pointer: coarse) {
+  .xh-scope-calendar-picker[data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) {
+    min-inline-size: calc(7 * max(var(--xh-calendar-picker-cell-min-w, var(--xh-control-h-md)), 44px) + 2 * var(--xh-calendar-picker-grid-px, var(--xh-space-4)));
+  }
+
+  .xh-scope-calendar-picker[data-part='week-row'] {
+    grid-template-columns: repeat(7, minmax(max(var(--xh-calendar-picker-cell-min-w, var(--xh-control-h-md)), 44px), 1fr));
+  }
+
+  .xh-scope-calendar-picker[data-part='week-row']:not([hidden]):has(> [data-part='week-number']) {
+    grid-template-columns:
+      var(--xh-calendar-picker-week-number-w, var(--xh-control-h-md))
+      repeat(7, minmax(max(var(--xh-calendar-picker-cell-min-w, var(--xh-control-h-md)), 44px), 1fr));
+  }
+
+  .xh-scope-calendar-picker[data-part='cell'] {
+    min-block-size: 44px;
+  }
+
   .xh-scope-calendar-picker[data-part='cell-trigger']::after {
     inline-size: auto;
     block-size: auto;
@@ -18823,6 +18848,16 @@
    日期钮的命中区（钮的 ::after）同样以它为包含块。上下各 6 的内衬把 24 高的钮撑成 36 的行距。
    格子自成一层：轨道与横条压在钮的下面，不盖住钮（钮不当定位盒） */
 .xh-scope-calendar-range-picker[data-part='cell'] {
+  /* 这副行距的半高：格内横条以格子中线为轴、按它收边，行距被拉高（粗指针）时横条不跟着变粗 */
+  --xh-_calendar-range-picker-row-half: calc(
+    var(--xh-calendar-range-picker-cell-size, var(--xh-control-action-size)) / 2
+    + var(--xh-calendar-range-picker-cell-py, var(--xh-space-1_5))
+  );
+  /* 区间轨道的半高：行距半高减去轨道上下各收的那截。帽以它为半径 */
+  --xh-_calendar-range-picker-range-r: calc(
+    var(--xh-_calendar-range-picker-row-half) - var(--xh-calendar-range-picker-range-inset, var(--xh-space-0_5))
+  );
+
   position: relative;
   display: flex;
   align-items: center;
@@ -18846,20 +18881,20 @@
   content: '';
   position: absolute;
   z-index: -1;
-  inset-block: var(--xh-calendar-range-picker-disabled-inset, var(--xh-space-0_5));
+  inset-block: calc(50% - var(--xh-_calendar-range-picker-row-half) + var(--xh-calendar-range-picker-disabled-inset, var(--xh-space-0_5)));
   inset-inline: 0;
   background-color: var(--xh-calendar-range-picker-cell-bg-disabled, var(--xh-bg-subtle));
   pointer-events: none;
 }
 
-/* 区间轨道：横向铺满格子，相邻两格接成一条；纵向比格子上下各收 2（36 的行距里 32 高），行与行之间留出空当。
+/* 区间轨道：横向铺满格子，相邻两格接成一条；纵向以格子中线为轴、比行距上下各收 2（36 的行距里 32 高），行与行之间留出空当。
    轨道随 data-in-range 生灭，出现与消失都是当场的；过渡只在同一段轨道换底时走——
    挑到一半的预览落定成区间，中性淡底淡变到品牌淡底 */
 .xh-scope-calendar-range-picker[data-part='cell'][data-in-range]:not([data-outside-month])::before {
   content: '';
   position: absolute;
   z-index: -1;
-  inset-block: var(--xh-calendar-range-picker-range-inset, var(--xh-space-0_5));
+  inset-block: calc(50% - var(--xh-_calendar-range-picker-range-r));
   inset-inline: 0;
   background-color: var(--xh-calendar-range-picker-range-bg, var(--xh-bg-brand-subtle));
   pointer-events: none;
@@ -18880,6 +18915,16 @@
 .xh-scope-calendar-range-picker[data-part='cell'][data-in-range][data-range-end]::before {
   border-start-end-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-shape-pill));
   border-end-end-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-shape-pill));
+}
+
+/* 日视图的端点是格子正中的圆：帽从「格中线减半高」起算，圆心落在格子中线上，与端点圆同心。
+   从格边起算只在格宽恰为轨道高时重合，页内日历随容器铺宽、格子变宽后帽会偏到圆的外侧 */
+.xh-scope-calendar-range-picker[data-part='cell'][data-view='day'][data-in-range][data-range-start]::before {
+  inset-inline-start: calc(50% - var(--xh-_calendar-range-picker-range-r));
+}
+
+.xh-scope-calendar-range-picker[data-part='cell'][data-view='day'][data-in-range][data-range-end]::before {
+  inset-inline-end: calc(50% - var(--xh-_calendar-range-picker-range-r));
 }
 
 /* 今天：数字下方一颗 4px 品牌圆点，数字保持正文色（brand-subtle 只留给选中）；
@@ -18968,9 +19013,28 @@
   inset: 0;
 }
 
-/* 家族 text 档在粗指针下用 ::after 扩热区到 44px 高；这里的 ::after 已是铺满整格的命中区（36 行距、
-   列宽不窄于中号控件高），再外扩只会压到上下相邻的格：钉回整格那副几何 */
+/* 粗指针：格子首尾相接，家族 text 档那套 ::after 外扩会压到上下相邻的格。改由格子自己长到 44 见方——
+   行距加到 44、列宽下限抬到 44，铺满整格的命中区随之到 44×44、彼此不重叠；钮仍是 24 的圆，
+   横条与区间轨道仍以格子中线为轴、按细指针那副行距收边，帽仍与端点圆同心。::after 钉回整格那副几何 */
 @media (pointer: coarse) {
+  .xh-scope-calendar-range-picker[data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) {
+    min-inline-size: calc(7 * max(var(--xh-calendar-range-picker-cell-min-w, var(--xh-control-h-md)), 44px) + 2 * var(--xh-calendar-range-picker-grid-px, var(--xh-space-4)));
+  }
+
+  .xh-scope-calendar-range-picker[data-part='week-row'] {
+    grid-template-columns: repeat(7, minmax(max(var(--xh-calendar-range-picker-cell-min-w, var(--xh-control-h-md)), 44px), 1fr));
+  }
+
+  .xh-scope-calendar-range-picker[data-part='week-row']:not([hidden]):has(> [data-part='week-number']) {
+    grid-template-columns:
+      var(--xh-calendar-range-picker-week-number-w, var(--xh-control-h-md))
+      repeat(7, minmax(max(var(--xh-calendar-range-picker-cell-min-w, var(--xh-control-h-md)), 44px), 1fr));
+  }
+
+  .xh-scope-calendar-range-picker[data-part='cell'] {
+    min-block-size: 44px;
+  }
+
   .xh-scope-calendar-range-picker[data-part='cell-trigger']::after {
     inline-size: auto;
     block-size: auto;
@@ -27504,6 +27568,13 @@
   display: none;
 }
 
+/* 粗指针下日历格长到 44 见方（行距从 36 加到 44），网格多出六行的那截；列高跟着加，列底仍与网格底边对齐 */
+@media (pointer: coarse) {
+  .xh-scope-date-picker[data-part='time-column'] {
+    --xh-_date-picker-time-column-h: var(--xh-date-picker-time-column-h, var(--xh-overlay-calendar-column-h-coarse));
+  }
+}
+
 /* 时间格：24 高的通栏条，列内间距 8 撑出 32 的行距；悬停 / 高亮 100、按下 200 由 Collection Item 家族按
    overlay 语境给，选中透明底 + 中等字重 + 末端对号（对号集合的选中），不上品牌淡底、不变字色。格里只有数字、没有正文部件，保持自己的
    居中排版与等宽标记轨，家族只给状态面。行的字色与字重按值选择族的同一套映射写（--xh-date-picker-time-item-fg
@@ -27679,8 +27750,14 @@
    确认钮总落在行尾；只放了确认钮时它独占那条轨道，靠 justify-self 贴到行尾。
    底栏不参与撑宽：面板换行排布时，Chrome 把每个子项的固有宽相加当作面板的固有宽，
    底栏的字与钮会把面板多撑出一截、日历与时间列末端空出一块。inline-size 包含让它的内容不计入固有宽，
-   行内内衬也就不能写在它自己身上（内衬照样计入），改由首末两个子节点的外边距让出 */
+   行内内衬也就不能写在它自己身上（内衬照样计入），改由两端各一个定宽占位让出（见下面那条） */
 .xh-scope-date-picker[data-part='footer'] {
+  /* 两端占位的宽：占位与相邻项之间本来就隔着一道 gap，占位自己只补到内衬的差额 */
+  --xh-_date-picker-footer-inset: max(
+    var(--xh-space-0),
+    calc(var(--xh-date-picker-footer-px, var(--xh-space-2)) - var(--xh-date-picker-footer-gap, var(--xh-space-2)))
+  );
+
   display: grid;
   contain: inline-size;
   flex-basis: 100%;
@@ -27708,12 +27785,18 @@
   justify-self: end;
 }
 
-.xh-scope-date-picker[data-part='footer'] > :first-child {
-  margin-inline-start: var(--xh-date-picker-footer-px, var(--xh-space-2));
+/* 行首行尾的内衬由两端的定宽占位让出，不挂在首末子节点上：首个子节点可能是裸文本，
+   末一个可能是按状态收起的确认钮，外边距都接不住。占位与其余子项一样在 inline-size 包含之内，不计入面板的固有宽 */
+.xh-scope-date-picker[data-part='footer']::before,
+.xh-scope-date-picker[data-part='footer']::after {
+  content: '';
+  inline-size: var(--xh-_date-picker-footer-inset);
 }
 
-.xh-scope-date-picker[data-part='footer'] > :last-child {
-  margin-inline-end: var(--xh-date-picker-footer-px, var(--xh-space-2));
+/* 行首占位落在那条撑满余宽的显式轨道之前（在它前面长出一条隐式列），首个子节点仍落在那条轨道上。
+   占位不进显式轨道：尺寸包含照样计入显式轨道与轨道间的 gap，多一条显式列面板就多撑出一道 gap */
+.xh-scope-date-picker[data-part='footer']::before {
+  grid-column: span 1 / 1;
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -28426,6 +28509,13 @@
   display: none;
 }
 
+/* 粗指针下日历格长到 44 见方（行距从 36 加到 44），网格多出六行的那截；列高跟着加，列底仍与网格底边对齐 */
+@media (pointer: coarse) {
+  .xh-scope-date-range-picker[data-part='time-column'] {
+    --xh-_date-range-picker-time-column-h: var(--xh-date-range-picker-time-column-h, var(--xh-overlay-calendar-column-h-coarse));
+  }
+}
+
 /* 时间格：24 高的通栏条，列内间距 8 撑出 32 的行距；悬停 / 高亮 100、按下 200 由 Collection Item 家族按
    overlay 语境给，选中透明底 + 中等字重 + 末端对号（对号集合的选中），不上品牌淡底、不变字色。
    格里只有数字、没有正文部件，保持自己的居中排版与等宽标记轨，家族只给状态面 */
@@ -28598,8 +28688,14 @@
    确认钮总落在行尾；只放了确认钮时它独占那条轨道，靠 justify-self 贴到行尾。
    底栏不参与撑宽：面板换行排布时，Chrome 把每个子项的固有宽相加当作面板的固有宽，
    底栏的字与钮会把面板多撑出一截、日历与时间组末端空出一块。inline-size 包含让它的内容不计入固有宽，
-   行内内衬也就不能写在它自己身上（内衬照样计入），改由首末两个子节点的外边距让出 */
+   行内内衬也就不能写在它自己身上（内衬照样计入），改由两端各一个定宽占位让出（见下面那条） */
 .xh-scope-date-range-picker[data-part='footer'] {
+  /* 两端占位的宽：占位与相邻项之间本来就隔着一道 gap，占位自己只补到内衬的差额 */
+  --xh-_date-range-picker-footer-inset: max(
+    var(--xh-space-0),
+    calc(var(--xh-date-range-picker-footer-px, var(--xh-space-2)) - var(--xh-date-range-picker-footer-gap, var(--xh-space-2)))
+  );
+
   display: grid;
   contain: inline-size;
   flex-basis: 100%;
@@ -28627,12 +28723,18 @@
   justify-self: end;
 }
 
-.xh-scope-date-range-picker[data-part='footer'] > :first-child {
-  margin-inline-start: var(--xh-date-range-picker-footer-px, var(--xh-space-2));
+/* 行首行尾的内衬由两端的定宽占位让出，不挂在首末子节点上：首个子节点可能是裸文本，
+   末一个可能是按状态收起的确认钮，外边距都接不住。占位与其余子项一样在 inline-size 包含之内，不计入面板的固有宽 */
+.xh-scope-date-range-picker[data-part='footer']::before,
+.xh-scope-date-range-picker[data-part='footer']::after {
+  content: '';
+  inline-size: var(--xh-_date-range-picker-footer-inset);
 }
 
-.xh-scope-date-range-picker[data-part='footer'] > :last-child {
-  margin-inline-end: var(--xh-date-range-picker-footer-px, var(--xh-space-2));
+/* 行首占位落在那条撑满余宽的显式轨道之前（在它前面长出一条隐式列），首个子节点仍落在那条轨道上。
+   占位不进显式轨道：尺寸包含照样计入显式轨道与轨道间的 gap，多一条显式列面板就多撑出一道 gap */
+.xh-scope-date-range-picker[data-part='footer']::before {
+  grid-column: span 1 / 1;
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -46750,8 +46852,9 @@
   align-items: stretch;
   padding-block: var(--xh-time-picker-content-py, var(--xh-space-0));
   padding-inline: var(--xh-time-picker-content-px, var(--xh-space-0));
-  /* 列自己定高，面板整体不该再长过页内滚动面那一档 */
-  max-block-size: var(--xh-time-picker-content-max-h, var(--xh-viewport-h-lg));
+  /* 列与底栏都按 px 定高（列取 --xh-overlay-time-column-h），面板的天然高度就是它们的和，缺省不另设上限：
+     按 rem 的滚动面档会随根字号缩小，根字号很小时底栏被挤到描边外 */
+  max-block-size: var(--xh-time-picker-content-max-h, none);
   border: var(--xh-stroke-thin) solid var(--xh-time-picker-content-border, var(--xh-border-default));
   border-radius: var(--xh-time-picker-content-radius, var(--xh-shape-overlay));
   background: var(--xh-time-picker-content-bg, var(--xh-bg-surface));
@@ -46832,8 +46935,14 @@
    「添加」总落在行尾；只放了「添加」时它独占那条轨道，靠 justify-self 贴到行尾。
    底栏不参与撑宽：面板换行排布时，Chrome 把每个子项的固有宽相加当作面板的固有宽，
    底栏的字与钮会把面板多撑出一截、最后一列末端空出一块。inline-size 包含让它的内容不计入固有宽，
-   行内内衬也就不能写在它自己身上（内衬照样计入），改由首末两个子节点的外边距让出 */
+   行内内衬也就不能写在它自己身上（内衬照样计入），改由两端各一个定宽占位让出（见下面那条） */
 .xh-scope-time-picker[data-part='footer'] {
+  /* 两端占位的宽：占位与相邻项之间本来就隔着一道 gap，占位自己只补到内衬的差额 */
+  --xh-_time-picker-footer-inset: max(
+    var(--xh-space-0),
+    calc(var(--xh-time-picker-footer-px, var(--xh-space-2)) - var(--xh-time-picker-footer-gap, var(--xh-space-2)))
+  );
+
   display: grid;
   contain: inline-size;
   flex-basis: 100%;
@@ -46861,12 +46970,18 @@
   justify-self: end;
 }
 
-.xh-scope-time-picker[data-part='footer'] > :first-child {
-  margin-inline-start: var(--xh-time-picker-footer-px, var(--xh-space-2));
+/* 行首行尾的内衬由两端的定宽占位让出，不挂在首末子节点上：首个子节点可能是裸文本，
+   末一个可能是按状态收起的「添加」，外边距都接不住。占位与其余子项一样在 inline-size 包含之内，不计入面板的固有宽 */
+.xh-scope-time-picker[data-part='footer']::before,
+.xh-scope-time-picker[data-part='footer']::after {
+  content: '';
+  inline-size: var(--xh-_time-picker-footer-inset);
 }
 
-.xh-scope-time-picker[data-part='footer'] > :last-child {
-  margin-inline-end: var(--xh-time-picker-footer-px, var(--xh-space-2));
+/* 行首占位落在那条撑满余宽的显式轨道之前（在它前面长出一条隐式列），首个子节点仍落在那条轨道上。
+   占位不进显式轨道：尺寸包含照样计入显式轨道与轨道间的 gap，多一条显式列面板就多撑出一道 gap */
+.xh-scope-time-picker[data-part='footer']::before {
+  grid-column: span 1 / 1;
 }
 
 /* 快捷选项也是一列，与时分秒那几列并排，排在行内起始一侧；限高与时间列同一档 */
@@ -47533,8 +47648,9 @@
   overflow-x: auto;
   /* 浮层滚动面：滚到头不把页面一起带走 */
   overscroll-behavior: contain;
-  /* 列自己定高，面板整体不该再长过页内滚动面那一档 */
-  max-block-size: var(--xh-time-range-picker-content-max-h, var(--xh-viewport-h-lg));
+  /* 两组时列都按 px 定高（列取 --xh-overlay-time-column-h），面板的天然高度就是它们的和，缺省不另设上限：
+     按 rem 的滚动面档会随根字号缩小，根字号很小时面板出竖滚 */
+  max-block-size: var(--xh-time-range-picker-content-max-h, none);
   border: var(--xh-stroke-thin) solid var(--xh-time-range-picker-content-border, var(--xh-border-default));
   border-radius: var(--xh-time-range-picker-content-radius, var(--xh-shape-overlay));
   background: var(--xh-time-range-picker-content-bg, var(--xh-bg-surface));
