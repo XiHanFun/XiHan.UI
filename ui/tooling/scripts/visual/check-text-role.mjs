@@ -143,7 +143,7 @@ const GLYPH_STEPS = new Set(['--xh-glyph-size-sm', '--xh-glyph-size-md', '--xh-g
  * 照样逐条核，只是换一组期望值。
  */
 const CAPTION_DESCRIPTION = {
-  steps: '步骤说明压在流程轴的标题下面，比标题低两级：12px 弱化色，与正文 14 / 次级色的标题拉开层级',
+  steps: '步骤说明压在流程轴的标题下面，比标题低两级：12px 弱化色；标题取区块标题档 heading-3（16px，sm 档收回正文 14），当前与走过的步取正文色，说明与它拉开层级',
 }
 
 /** 内容说明：description 部件装的是内容本身而不是控件下的提示，取正文字号 14；颜色逐个登记。 */

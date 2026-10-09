@@ -1,9 +1,10 @@
-// 进度条的轨道与文字：线形轨道厚 sm / md / lg = 3 / 4 / 8px、两端全圆，轨道取 fill-3 级中性填充（环形同），
+// 进度条的轨道与文字：线形轨道厚 sm / md / lg = 3 / 4 / 8px、两端全圆，轨道取淡底 200 档（环形同），
 // 已完成的那段按语气取实色；环心文字 12px 次级色。厚度与计算色只有真实 Chromium 量得出。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import { XhProgress } from '../../src'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -51,7 +52,18 @@ describe('线形轨道', () => {
     expect(getComputedStyle(track).borderTopLeftRadius).toBe('9999px')
   })
 
-  it('轨道取 fill-3 级中性填充，已完成的那段取品牌色', async () => {
+  it.each(['sm', 'md', 'lg'] as const)('%s 档厚度取轨道厚度的同档令牌，子弹图取加厚一档的色带轨道令牌', async (tier) => {
+    // md 是缺省档：不写 size
+    const size = tier === 'md' ? undefined : tier
+    await mount({ size })
+    expect((one('track') as HTMLElement).getBoundingClientRect().height).toBe(tokenLength(`--xh-track-thickness-${tier}`))
+    app!.unmount()
+    host!.remove()
+    await mount({ size, semantics: 'meter', thresholds: [{ value: 60, tone: 'success' }, { value: 100, tone: 'danger' }] })
+    expect((one('track') as HTMLElement).getBoundingClientRect().height).toBe(tokenLength(`--xh-track-band-thickness-${tier}`))
+  })
+
+  it('轨道取淡底 200 档，已完成的那段取品牌色', async () => {
     await mount({})
     expect(getComputedStyle(one('track')).backgroundColor).toBe(token('--xh-bg-subtle-hover'))
     expect(getComputedStyle(one('range')).backgroundColor).toBe(token('--xh-bg-brand'))
@@ -66,7 +78,7 @@ describe('线形轨道', () => {
 })
 
 describe('环形', () => {
-  it('轨道描边取 fill-3 级中性填充，环心文字 12px 次级色', async () => {
+  it('轨道描边取淡底 200 档，环心文字 12px 次级色', async () => {
     await mount({ variant: 'circle' }, '40%')
     expect(getComputedStyle(one('track')).stroke).toBe(token('--xh-bg-subtle-hover'))
     const label = getComputedStyle(one('label'))

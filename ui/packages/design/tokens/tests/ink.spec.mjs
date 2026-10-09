@@ -89,6 +89,34 @@ describe('tokens.css 里的墨色域', () => {
     expect(inkLine).toContain('var(--xh-ink-surface, var(--xh-bg-surface))')
   })
 
+  it('分段选中面与禁用选中字按墨色比例改写：黑墨 12 / 18 / 8%、白墨 20 / 28 / 8%，auto 域按底色取一头', () => {
+    // 两档取值不同的选中面不进 auto 域的重求值，不写进墨色表达就只继承到外层求好的品牌淡底：深色彩色面上白字压浅蓝底
+    const domain = (ink) => {
+      const at = css.indexOf(`\n  :where([data-xh-ink='${ink}']) {`)
+      return css.slice(at, css.indexOf('}', at))
+    }
+    const blackInk = domain('dark')
+    expect(blackInk).toContain('--xh-bg-segment-selected: color-mix(in oklab, var(--xh-ink) 12%, transparent);')
+    expect(blackInk).toContain('--xh-bg-segment-selected-hover: color-mix(in oklab, var(--xh-ink) 18%, transparent);')
+    expect(blackInk).toContain('--xh-bg-segment-selected-disabled: color-mix(in oklab, var(--xh-ink) 8%, transparent);')
+    expect(blackInk).toContain('--xh-fg-segment-selected-disabled: color-mix(in oklab, var(--xh-ink) 50%, transparent);')
+    const whiteInk = domain('light')
+    expect(whiteInk).toContain('--xh-bg-segment-selected: color-mix(in oklab, var(--xh-ink) 20%, transparent);')
+    expect(whiteInk).toContain('--xh-bg-segment-selected-hover: color-mix(in oklab, var(--xh-ink) 28%, transparent);')
+    expect(whiteInk).toContain('--xh-bg-segment-selected-disabled: color-mix(in oklab, var(--xh-ink) 8%, transparent);')
+
+    const autoAt = css.indexOf(`:where([data-xh-ink='auto'])`)
+    const autoBlock = css.slice(autoAt, css.indexOf('\n    }', autoAt))
+    const line = name => autoBlock.split('\n').find(text => text.trim().startsWith(`${name}:`))?.trim()
+    // 白墨（W = 1）取深色那一头：0.12 + 0.08 = 0.2、0.18 + 0.1 = 0.28
+    expect(line('--xh-bg-segment-selected')).toMatch(/^--xh-bg-segment-selected: color\(from var\(--xh-ink-surface, var\(--xh-bg-surface\)\) srgb-linear .* \/ calc\(0\.12 \+ 0\.08 \* clamp\(/)
+    expect(line('--xh-bg-segment-selected-hover')).toMatch(/ \/ calc\(0\.18 \+ 0\.1 \* clamp\(/)
+    expect(line('--xh-bg-segment-selected-disabled')).toMatch(/ \/ 0\.08\);$/)
+    expect(line('--xh-fg-segment-selected-disabled')).toMatch(/ \/ 0\.5\);$/)
+    // 选中字两档同值、引用了墨色令牌：照旧在 auto 域重求值，落到墨色本身
+    expect(line('--xh-fg-segment-selected')).toBe('--xh-fg-segment-selected: var(--xh-fg-brand-strong);')
+  })
+
   it('auto 域不是主题边界，引用了墨色令牌的主题声明在墨色取值之前重声明', () => {
     const autoAt = css.indexOf(`:where([data-xh-ink='auto'])`)
     const autoBlock = css.slice(autoAt, css.indexOf('\n    }', autoAt))

@@ -108,7 +108,7 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 - `variant` 是结构形态，三种形态共用同一台状态机、同一张键盘表：
   - 缺省 `list` 是一列「圆圈 + 文案」的行。
   - `card` 把每个条目画成一张可点的描边卡（surface 圆角，白底承载阶梯悬停 100 → 按下 200），圆圈在卡的行首，整张卡是命中区。选中卡换品牌淡底（写了 `tone` 换语气淡底），与表格选中行、穿梭框选中项同一种标记，描边不换。竖排时卡片撑满一列，横排时各卡等分一行、放不下就折行。
-  - `segmented` 把条目画成一条与字段外壳同款的轨道（最浅一档淡底 + 1px 字段描边、2px 圆角、2px 内衬）里首尾相接的段，选中段由 `thumb` 部件标出：一块品牌淡底（浅色 12%、深色 20%）的平面滑块，换段时滑过去；选中段字取品牌色、medium，悬停时滑块升一档（浅色 18%、深色 28%），禁用时退到 8% 淡底与浅品牌字；写了 `tone` 时滑块与字换成语气淡底与语气字。未选中段透明底、次级字色，悬停 100 → 按下 200，只换面不缩放；段横向内距 12px，段与段之间一道 1px × 14px 的分隔线，与选中段、悬停段相邻的那几道收起；这一形态不画圆圈，缺省横排，`block` 让整组撑满行宽、各段等分，一行排不下时折行。
+  - `segmented` 把条目画成一条与字段外壳同款的轨道（最浅一档淡底 + 1px 字段描边、2px 圆角、2px 内衬）里首尾相接的段，选中段由 `thumb` 部件标出：一块品牌淡底（浅色 12%、深色 20%）的平面滑块，换段时滑过去；选中段字取品牌色、medium，悬停时滑块升一档（浅色 18%、深色 28%），禁用时退到 8% 淡底与浅品牌字；写了 `tone` 时滑块与字换成语气淡底与语气字（浅色 12% / 悬停 20%，深色 20% / 28%），禁用的选中段同样退到 8% 语气淡底、字往承载面兑一半。未选中段透明底、次级字色，悬停 100 → 按下 200，只换面不缩放；段横向内距 12px，段与段之间一道 1px × 14px 的分隔线，与选中段、悬停段相邻的那几道收起；这一形态不画圆圈，缺省横排，`block` 让整组撑满行宽、各段等分，一行排不下时折行。
 - 滑块的位置与尺寸由组件测量：只有换段时才滑，首次落位、窗口缩放、换上正式字体之类的重量直接到位，不拖尾；横排竖排、ltr 与 rtl 使用同一条规则。
 - `item-icon` 是文字前的图标位，对读屏隐藏，直径随尺寸档、颜色随条目；节点的 `icon` 字段写入图标文本，需要放置图形时手写部件，把图标组件或 svg 放进 `item-icon`。
 - `item-description` 是文案下方的说明行（13 / `--xh-fg-muted`），与文案一起构成条目的可及名；`collection` 里的 `description` 会自动铺出这一行。
@@ -125,6 +125,7 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 - 选项文字写完整，不依赖共同前缀省略。
 - 卡片里只放一两句说明，不放按钮、链接等第二个可点目标：整张卡是一次选择，内嵌的动作会与选择抢同一次点击。
 - segmented 形态各段文字长度尽量接近：长短悬殊时滑块滑动，整排宽度会跟着跳动。
+- segmented 形态尽量一行排下：折行只是窄处的兜底，折行后下一行首段的起始缘仍会画出一道分隔线（样式层拿不到段落在第几行）。段多或容器窄时改用竖排或[选择器](./select)。
 - segmented 形态的段文字不走 `collection` 而是手写、且会在运行期改动时，改动后调用一次 `measure()`：滑块只跟随选中值、集合与尺寸变化，段内文字撑宽时它无法感知。
 - 动态移除正持有焦点的条目（例如按权限过滤）之后，焦点会回到 `<body>`。组件只保证 Tab 位退回容器、键盘可以再次进入；需要保持位置时由页面把焦点移到相邻的条目。
 
@@ -403,7 +404,7 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 | `--xh-radio-group-track-bg-disabled` | `root` | `background` | `disabled`<br>`variant=segmented` | `--xh-bg-muted` | radio-group 的 root 部件 background 覆盖槽。 |
 | `--xh-radio-group-track-border` | `root` | `border` | `variant=segmented` | `--xh-border-control` | radio-group 的 root 部件 border 覆盖槽。 |
 | `--xh-radio-group-track-border-invalid` | `root` | `border-color` | `invalid`<br>`variant=segmented` | `--xh-border-invalid` | radio-group 的 root 部件 border-color 覆盖槽。 |
-| `--xh-radio-group-track-padding` | `item`<br>`root` | `min-block-size`<br>`padding` | `orientation=horizontal`<br>`variant=segmented` | `--xh-space-0_5` | radio-group 的 item、root 部件 min-block-size、padding 覆盖槽。 |
+| `--xh-radio-group-track-padding` | `item`<br>`root` | `inset-block-start`<br>`min-block-size`<br>`padding` | `@media (pointer: coarse)`<br>`orientation=horizontal`<br>`variant=segmented` | `--xh-space-0_5` | radio-group 的 item、root 部件 inset-block-start、min-block-size、padding 覆盖槽。 |
 | `--xh-radio-group-track-radius` | `root` | `border-radius` | `variant=segmented` | `--xh-shape-control` | radio-group 的 root 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

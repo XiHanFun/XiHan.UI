@@ -109,6 +109,16 @@ function resolveColor(token: string, scope: HTMLElement): string {
   return value
 }
 
+/** 一段颜色表达式（可引私有槽）在该元素上解到的颜色。 */
+function resolveExpression(expression: string, scope: HTMLElement): string {
+  const probe = document.createElement('span')
+  probe.style.backgroundColor = expression
+  scope.append(probe)
+  const value = getComputedStyle(probe).backgroundColor
+  probe.remove()
+  return value
+}
+
 /** 长度令牌在该元素上解到的像素值（按圆角量）。 */
 function resolveLength(token: string, scope: HTMLElement): string {
   const probe = document.createElement('span')
@@ -168,6 +178,23 @@ describe('radio-group segmented 形态的缺省视觉', () => {
     const { root, thumb, checked } = mount({ tone: 'success' })
     expect(getComputedStyle(thumb).backgroundColor).toBe(resolveColor('--xh-_tone-subtle', root))
     expect(getComputedStyle(checked).color).toBe(resolveColor('--xh-_tone-fg', root))
+  })
+
+  it('语气档的禁用选中段：滑块退到语气 8% 淡底、字退到语气字往承载面兑一半，不回落到品牌色', () => {
+    const { root, thumb, checked } = mount({ tone: 'success' })
+    checked.setAttribute('data-disabled', '')
+    expect(getComputedStyle(thumb).backgroundColor).toBe(resolveExpression('color-mix(in oklab, var(--xh-_tone) 8%, var(--xh-bg-surface))', root))
+    expect(getComputedStyle(checked).color).toBe(resolveExpression('color-mix(in oklab, var(--xh-_tone-fg) 50%, var(--xh-bg-surface))', root))
+    expect(getComputedStyle(thumb).backgroundColor).not.toBe(resolveColor('--xh-bg-segment-selected-disabled', root))
+  })
+
+  it('深色下语气档的滑块与品牌档同口径：静息 20%、悬停 28%', async () => {
+    document.documentElement.dataset.theme = 'dark'
+    const { root, thumb, checked } = mount({ tone: 'success' })
+    expect(getComputedStyle(thumb).backgroundColor).toBe(resolveColor('--xh-_tone-subtle-hover', root))
+    await userEvent.hover(checked)
+    expect(getComputedStyle(thumb).backgroundColor).toBe(resolveColor('--xh-_tone-subtle-active', root))
+    await userEvent.unhover(checked)
   })
 
   it('选中段品牌字 + medium，未选中段次级字色 + 常规字重', () => {
