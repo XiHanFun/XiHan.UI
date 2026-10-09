@@ -568,6 +568,16 @@ export const XhDatePickerConfirmTrigger = defineComponent({
   },
 })
 
+export const XhDatePickerFooter = defineComponent({
+  name: 'XhDatePickerFooter',
+  setup(_, { slots }) {
+    const ctx = useDatePickerContext()
+    // 浮层底部的通栏操作区：写在 content 里、排在面板主体之后，确认钮通常放在这里；
+    // 不进任何集合的拥有关系，方向键走不到，里面的按钮照常进 Tab 序列
+    return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhDatePickerHeader = defineComponent({
   name: 'XhDatePickerHeader',
   setup(_, { slots }) {

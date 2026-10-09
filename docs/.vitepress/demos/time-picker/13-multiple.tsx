@@ -6,6 +6,7 @@ import {
   XhTimePickerConfirmTrigger,
   XhTimePickerContent,
   XhTimePickerControl,
+  XhTimePickerFooter,
   XhTimePickerHiddenInput,
   XhTimePickerItem,
   XhTimePickerLabel,
@@ -43,7 +44,9 @@ export default function Demo(): ReactNode {
             <XhTimePickerColumn unit="minute">
               {({ options }) => options.map(o => <XhTimePickerItem key={o} value={o} />)}
             </XhTimePickerColumn>
-            <XhTimePickerConfirmTrigger>添加</XhTimePickerConfirmTrigger>
+            <XhTimePickerFooter>
+              <XhTimePickerConfirmTrigger>添加</XhTimePickerConfirmTrigger>
+            </XhTimePickerFooter>
           </XhTimePickerContent>
         </XhTimePickerPositioner>
       </XhTimePickerRoot>

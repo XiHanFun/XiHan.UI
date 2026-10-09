@@ -1770,6 +1770,17 @@ describe('showTime：日期加时间的区间', () => {
     expect(off.confirm.hasAttribute('hidden')).toBe(true)
   })
 
+  it('底栏只是一块通栏操作区：带本组件的 scope 与 part，不报角色、不占 Tab 位、不随 showTime 收起', () => {
+    for (const showTime of [true, false]) {
+      const footer = mount({ showTime }).api().getFooterProps() as Record<string, unknown>
+      expect(footer['data-scope']).toBe('date-range-picker')
+      expect(footer['data-part']).toBe('footer')
+      expect(footer.role).toBeUndefined()
+      expect(footer.tabindex).toBeUndefined()
+      expect(footer.hidden).toBeUndefined()
+    }
+  })
+
   it('defaultTime：只点日期时起止各补上对应时刻，选完不收起、由确认钮收口', async () => {
     const onValueChange = vi.fn()
     const h = await open({ ...AUG, showTime: true, timeGranularity: 'second', defaultTime: ['00:00:00', '23:59:59'], onValueChange })

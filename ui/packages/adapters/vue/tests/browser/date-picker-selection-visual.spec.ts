@@ -124,7 +124,7 @@ afterEach(async () => {
 })
 
 describe('日期选择器快捷项与时间项的统一选中反馈', () => {
-  it('preset 与 time-item 都只用对号表示持久选值：透明底、正文颜色与字重保持 rest', async () => {
+  it('preset 与 time-item 都以对号表示持久选值：preset 的面与字保持静息，时间格透明底、字重升到中等', async () => {
     await mountDatePicker()
     const selectedPreset = byTestId('selected-preset')
     const plainPreset = byTestId('plain-preset')
@@ -137,16 +137,20 @@ describe('日期选择器快捷项与时间项的统一选中反馈', () => {
     await nextTick()
 
     expect(selectedPreset.getAttribute('data-state')).toBe('checked')
-    expect(alpha(getComputedStyle(selectedPreset).backgroundColor)).toBe(0)
+    // preset 是一颗淡底小钮：选中不换面，面与未选中的同一档
+    expect(alpha(getComputedStyle(selectedPreset).backgroundColor)).toBeGreaterThan(0)
+    expect(getComputedStyle(selectedPreset).backgroundColor).toBe(getComputedStyle(plainPreset).backgroundColor)
+    expect(getComputedStyle(selectedPreset).fontWeight).toBe(getComputedStyle(plainPreset).fontWeight)
     expect(getComputedStyle(selectedPreset).color).toBe(getComputedStyle(plainPreset).color)
     expect(checkStyle(selectedPreset).opacity).toBe('1')
     expect(checkStyle(plainPreset).opacity).toBe('0')
 
     expect(selectedTime.getAttribute('data-state')).toBe('checked')
-    // 浮层瞬态集合的选中：透明底 + 末端对号，不上品牌淡底、不变字色、不加粗
+    // 对号集合的选中：透明底 + 末端对号 + 中等字重，不上品牌淡底、不变字色
     expect(alpha(getComputedStyle(selectedTime).backgroundColor)).toBe(0)
     expect(getComputedStyle(selectedTime).color).toBe(getComputedStyle(plainTime).color)
-    expect(getComputedStyle(selectedTime).fontWeight).toBe(getComputedStyle(plainTime).fontWeight)
+    expect(getComputedStyle(selectedTime).fontWeight).toBe('500')
+    expect(getComputedStyle(plainTime).fontWeight).toBe('400')
     expect(checkStyle(selectedTime).opacity).toBe('1')
     expect(checkStyle(selectedTime).maskImage).not.toBe('none')
   })
@@ -171,13 +175,22 @@ describe('日期选择器快捷项与时间项的统一选中反馈', () => {
     const preset = byTestId('plain-preset')
     preset.focus()
     expect(preset.matches(':focus-visible')).toBe(true)
-    expect(getComputedStyle(preset).backgroundColor).toBe(neutral)
+    // preset 坐在自己的淡底上：高亮走淡底阶梯的 200 档
+    const presetHighlight = getComputedStyle(preset).backgroundColor
+    const probe = document.createElement('span')
+    probe.style.backgroundColor = 'var(--xh-bg-subtle-hover)'
+    preset.append(probe)
+    expect(presetHighlight).toBe(getComputedStyle(probe).backgroundColor)
+    // 高亮时字换正文色：底升到 200 之后，次级前景在暗色下不足 4.5:1
+    probe.style.color = 'var(--xh-fg-default)'
+    expect(getComputedStyle(preset).color).toBe(getComputedStyle(probe).color)
+    probe.remove()
     // 键盘焦点出现时底色与环当帧到位，不压在家族背景过渡的中间帧上
     expect(getComputedStyle(preset).transitionProperty).toBe('none')
 
     const selectedPreset = byTestId('selected-preset')
     selectedPreset.focus()
-    expect(getComputedStyle(selectedPreset).backgroundColor).toBe(neutral)
+    expect(getComputedStyle(selectedPreset).backgroundColor).toBe(presetHighlight)
     expect(getComputedStyle(selectedPreset).transitionProperty).toBe('none')
     expect(checkStyle(selectedPreset).opacity).toBe('1')
 
@@ -185,6 +198,19 @@ describe('日期选择器快捷项与时间项的统一选中反馈', () => {
     focusedTime.focus()
     expect(focusedTime.matches(':focus-visible')).toBe(true)
     expect(getComputedStyle(focusedTime).transitionProperty).toBe('none')
+  })
+
+  it('时间格的命中区补满列内间距：两格之间的缝落在上下两格上', async () => {
+    await mountDatePicker()
+    // 选中的 09 停在列顶：量它与下面那一格之间的缝
+    const upper = timeItem('hour', '09')
+    const lower = timeItem('hour', '10')
+    const gap = lower.getBoundingClientRect().top - upper.getBoundingClientRect().bottom
+    expect(gap).toBeGreaterThan(0)
+    const x = upper.getBoundingClientRect().left + upper.getBoundingClientRect().width / 2
+    const hit = (y: number): Element | null => document.elementFromPoint(x, y)?.closest('[data-part="time-item"]') ?? null
+    expect(hit(upper.getBoundingClientRect().bottom + gap / 2 - 1)).toBe(upper)
+    expect(hit(lower.getBoundingClientRect().top - gap / 2 + 1)).toBe(lower)
   })
 
   it.each(['ltr', 'rtl'] as const)('%s：时间数字保持数学居中，对号只翻到逻辑末端', async (dir) => {
@@ -221,7 +247,7 @@ describe('日期选择器快捷项与时间项的统一选中反馈', () => {
     }
   })
 
-  it('compact 手机档时间对号随小指示符收至 10px，preset 与 Select 等列表的对号同档（compact 14px），数字仍居中', async () => {
+  it('compact 手机档时间对号随小指示符收至 10px，24 高的 preset 小钮取小号指示符（compact 10px），数字仍居中', async () => {
     await mountDatePicker('ltr', false, 'compact')
     const selectedTime = timeItem('hour', '09')
     const timeMarker = checkStyle(selectedTime)
@@ -229,7 +255,7 @@ describe('日期选择器快捷项与时间项的统一选中反馈', () => {
 
     expect(Number.parseFloat(timeMarker.width)).toBe(10)
     expect(Number.parseFloat(timeMarker.height)).toBe(10)
-    expect(Number.parseFloat(presetMarker.width)).toBe(14)
+    expect(Number.parseFloat(presetMarker.width)).toBe(10)
     expect(center(textRect(selectedTime))).toBeCloseTo(center(selectedTime.getBoundingClientRect()), 0)
   })
 

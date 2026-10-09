@@ -265,7 +265,7 @@ describe('范围日历轨道', () => {
     expect(['2026-09-07', '2026-09-14', '2026-09-21'].every(value => cell(value).hasAttribute('data-in-range'))).toBe(true)
   })
 
-  it.each(['month', 'quarter', 'year'] as const)('%s 周期格选中前后保持相同尺寸', async (granularity) => {
+  it.each(['month', 'quarter', 'year'] as const)('%s 周期格选中前后保持相同尺寸：铺满格宽、左右各让 4、24 高', async (granularity) => {
     await mountPeriodCalendar(granularity)
     const elements = [...document.querySelectorAll<HTMLElement>(
       `[data-scope='calendar-range-picker'][data-part='cell-trigger']`,
@@ -282,8 +282,9 @@ describe('范围日历轨道', () => {
     expect(getComputedStyle(idle).aspectRatio).toBe('auto')
     expect(after.width).toBeCloseTo(before.width, 1)
     expect(after.height).toBeCloseTo(before.height, 1)
-    expect(after.width).toBeLessThanOrEqual(56)
-    expect(after.height).toBeLessThanOrEqual(40)
+    const box = idle.closest<HTMLElement>(`[data-part='cell']`)!.getBoundingClientRect()
+    expect(after.width).toBeCloseTo(box.width - 8, 1)
+    expect(after.height).toBe(24)
   })
 })
 

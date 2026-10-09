@@ -1205,6 +1205,17 @@ describe('多选：列上拼草稿，按「添加」收进值，选中的时刻�
     expect((open({}).api().getConfirmTriggerProps() as Record<string, unknown>).hidden).toBe(true)
   })
 
+  it('底栏只是一块通栏操作区：带本组件的 scope 与 part，不报角色、不占 Tab 位、不随选择模式收起', () => {
+    for (const selectionMode of ['single', 'multiple'] as const) {
+      const footer = open({ selectionMode }).api().getFooterProps() as Record<string, unknown>
+      expect(footer['data-scope']).toBe('time-picker')
+      expect(footer['data-part']).toBe('footer')
+      expect(footer.role).toBeUndefined()
+      expect(footer.tabindex).toBeUndefined()
+      expect(footer.hidden).toBeUndefined()
+    }
+  })
+
   it('快捷选项点一下切换选中，浮层不收', () => {
     const h = open({ selectionMode: 'multiple', presets: [{ value: '09:00', label: '上班' }, { value: '18:00', label: '下班' }] })
     h.trigger.click()

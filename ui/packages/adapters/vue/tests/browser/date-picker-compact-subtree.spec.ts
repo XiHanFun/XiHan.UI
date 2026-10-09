@@ -99,7 +99,7 @@ describe('日期选择器挂在局部 compact 子树里', () => {
     expect(document.documentElement.hasAttribute('data-density')).toBe(false)
     // 浮层确实落在 compact 档里：两边都按宽松档排时同样对得齐，这条断言就验不出问题
     const content = part('date-picker', 'content')
-    expect(getComputedStyle(content).getPropertyValue('--xh-control-h-sm').trim()).toBe('28px')
+    expect(getComputedStyle(content).getPropertyValue('--xh-control-h-sm').trim()).toBe('24px')
 
     const grid = part('calendar-picker', 'grid').getBoundingClientRect()
     const column = part('date-picker', 'time-column').getBoundingClientRect()

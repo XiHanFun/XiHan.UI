@@ -378,7 +378,7 @@
 --xh-nav-row-h-sm: 28px  ← var(--xh-control-h-md)
 --xh-overlay-arrow-size: 8px  ← var(--xh-space-2)
 --xh-overlay-backdrop-blur: 12px
---xh-overlay-calendar-column-h: calc(24px * 7 + 28px)  ← calc(var(--xh-control-h-sm) * 7 + var(--xh-space-7))
+--xh-overlay-calendar-column-h: calc(28px + (20px + 6px * 2) * 6 + 12px * 2)  ← calc(var(--xh-control-h-md) + (var(--xh-control-action-size) + var(--xh-space-1_5) * 2) * 6 + var(--xh-space-3) * 2)
 --xh-overlay-cascade-min-w: 7.5rem
 --xh-overlay-color-area-h: 11rem
 --xh-overlay-column-item-h: calc(24px - 4px)  ← calc(var(--xh-control-h-sm) - var(--xh-space-1))
@@ -402,6 +402,8 @@
 --xh-overlay-sheet-w-lg: 48rem
 --xh-overlay-sheet-w-md: 32rem
 --xh-overlay-sheet-w-sm: 24rem
+--xh-overlay-time-column-h: calc((20px + 8px) * 7)  ← calc((var(--xh-control-action-size) + var(--xh-space-2)) * 7)
+--xh-overlay-time-column-w: 4rem
 --xh-overlay-toast-w: 28.75rem
 --xh-ring-focus: oklch(0.702 0.165 258)  ← var(--xh-color-brand-400)
 --xh-ring-invalid: oklch(0.7 0.185 25)  ← var(--xh-color-danger-400)

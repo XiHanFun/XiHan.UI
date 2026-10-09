@@ -306,12 +306,12 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 | 角色 | 圆角 | 给谁 |
 | --- | ---: | --- |
-| inset | 2px | 嵌在 control 内的小块：checkbox 系方框、页内列表的候选行（Listbox / Tree 的行，日期与时间面板的预设项与时间格）、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item、骨架屏文本条；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
+| inset | 2px | 嵌在 control 内的小块：checkbox 系方框、页内列表的候选行（Listbox / Tree 的行）、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item、骨架屏文本条；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
 | control | 2px | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close/clear trigger、kbd、tooltip、rating item、tabs / steps trigger；随文方签 Tag 与状态方签 ToolCall status、Approval result、QuestionFlow result；Alert 提示条；RadioGroup segmented 形态的轨道与段 |
 | surface | 4px | Card、Panel、列表容器、Tabs segment 的轨道、选择卡片（RadioGroup / CheckboxGroup card 档条目） |
 | overlay | 4px | Popover、Menu、Dialog、Notification 卡片预设（Drawer 贴边，不取圆角；Notification 轻提示预设是一行短消息，取 control） |
-| circle | 50% | 宽高相等的圆形对象：avatar、加了底框的 icon、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle、Citation 来源列表的序号；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页与关闭，走 Action Control `floating` profile）；图表的数据点与端点、关系图节点 |
-| pill | 9999px | 仅两类身份：(a) 状态 chip：Badge（Tag、ToolCall status、Approval result、QuestionFlow result 是方签，取 control）；(b) 一维对象：switch 轨道、slider / progress / strength / upload 的 track 与 range、顶部加载条进度段露出的前端（行首贴边方头）、tick、hairline separator、tabs / anchor / navigation-menu 滑动指示条、resize / drag 手柄、scrollbar thumb、sortable 落点线、位置指示点的当前拉长态、图例的折线色标、图表缩放手柄、不贴边的 liquid 一维栏（§8.5）、随文的引用编号（Citation trigger） |
+| circle | 50% | 宽高相等的圆形对象：avatar、加了底框的 icon、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle、Citation 来源列表的序号；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页与关闭，走 Action Control `floating` profile）；图表的数据点与端点、关系图节点；日历日视图的 24px 日期格、日期面板的翻页钮与「今天」圆点（月 / 季 / 年格不是一维对象，仍取 control） |
+| pill | 9999px | 仅两类身份：(a) 状态 chip：Badge（Tag、ToolCall status、Approval result、QuestionFlow result 是方签，取 control）；(b) 一维对象：switch 轨道、slider / progress / strength / upload 的 track 与 range、顶部加载条进度段露出的前端（行首贴边方头）、tick、hairline separator、tabs / anchor / navigation-menu 滑动指示条、resize / drag 手柄、scrollbar thumb、sortable 落点线、位置指示点的当前拉长态、图例的折线色标、图表缩放手柄、不贴边的 liquid 一维栏（§8.5）、随文的引用编号（Citation trigger）、日期区间轨道的两端帽 |
 
 强制规则：
 
@@ -440,7 +440,8 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | `--xh-viewport-h-sm` / `md` / `lg` | 12 / 16 / 24rem | 10 / 14 / 20rem | 页内与面板内滚动面的定高与限高 |
 | `--xh-viewport-max-h` | 24rem | 20rem | 长文本视口限高 |
 | `--xh-overlay-menu-min-w`、`--xh-overlay-min-w` | 10rem、12rem | | 菜单与候选面板的下限；带输入的面板宽 |
-| `--xh-overlay-column-min-w` | 3.5rem | | 时间列下限 |
+| `--xh-overlay-column-min-w` | 3.5rem | | 与日历并排的时间列下限 |
+| `--xh-overlay-time-column-w`、`--xh-overlay-time-column-h` | 4rem、224px | —、196px | 时间选择器一列的宽与定高（七格整行：一格 `control-action-size` 加 `space-2` 列内间距） |
 | `--xh-overlay-max-w-sm`、`--xh-overlay-max-w`、`-lg`、`-xl` | 16、20、24、48rem | | 浮层宽的上限 |
 | `--xh-overlay-max-h` | 16rem | 14rem | 卡片类浮层限高 |
 | `--xh-overlay-menu-max-h` | 13rem | 11rem | 菜单与候选列表限高 |
@@ -509,8 +510,8 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | Select、Combobox、TreeSelect | 与字段盒等宽，下限 10rem，缺省无上限 | 下限一行 `control-h`，上限 `overlay-menu-max-h` |
 | Mention | 下限 12rem，上限 20rem | 下限一行 `control-h`，上限 `overlay-max-h` |
 | Cascader | 每列自然宽、下限 `--xh-overlay-cascade-min-w`（7.5rem），条目上限 20rem；整面上限为可用宽，超出横滚 | 列定高 `viewport-h-sm`，列内滚 |
-| DatePicker、DateRangePicker | 内容宽；时间列下限 3.5rem | 上限为可用高；时间列高 `control-h-sm` × 7 + 28px；预设组上限 `viewport-h-lg` |
-| TimePicker、TimeRangePicker | 内容宽；列下限 3.5rem | 列定高 `viewport-h-sm`；面板上限 `viewport-h-lg`；预设组上限 `viewport-h-sm` |
+| DatePicker、DateRangePicker | 内容宽（面板不留内衬，由日历的七列与内衬撑出）；时间列下限 3.5rem；底栏 `footer` 不参与撑宽 | 上限为可用高；时间列与日历网格同高（`overlay-calendar-column-h`），列顶让出标题栏那一带；时间格 `control-action-size` 高、列内间距 8；快捷项 `control-action-size` 高；预设组上限 `viewport-h-lg`；底栏 `footer` 独占末行、内衬 8，上沿一道 `border-default`，确认钮落在行尾 |
+| TimePicker、TimeRangePicker | 内容宽（面板不留内衬）；列宽 `overlay-time-column-w`；TimePicker 的底栏 `footer` 不参与撑宽 | 列定高 `overlay-time-column-h`，列底留白让末格滚到列顶；面板上限 `viewport-h-lg`；预设组上限 `overlay-time-column-h`；TimePicker 的底栏 `footer` 独占末行、内衬 8，上沿一道 `border-default`，「添加」落在行尾 |
 | ColorPicker | 定宽 `overlay-max-w-sm`（16rem）；取色区高 `--xh-overlay-color-area-h`（11rem），排在最前时贴顶通栏、不取圆角；取色区拇指与内嵌滑块拇指 `control-indicator-md`（16px），滑块拇指是白盘 + 1px 描边 + 8px 当前色点；色板区上方一条通栏分隔（材质描边档），预设色块 16px、间距 8px（16px 格要 24px 间距才过 2.5.8 的间隔例外），粗指针格子回到 `control-h-sm`；通道输入照字段外壳、高 `control-action-size`、说明档字号 | 上限 `viewport-h-lg` |
 | Pagination 下拉 | 上限 20rem | 上限 `overlay-max-h` |
 | Dialog | 铺满可用宽，上限随 size 24 / 32 / 48rem | 上限为视口可用高，正文内滚；分三段时内衬由三段各给（头横 20、正文纵 24 横 20、尾纵 16 横 20），头下尾上各一条贴边的 1px `--xh-border-subtle` 分隔线，面是实体 sheet，不叠渐变与顶光 |
@@ -531,7 +532,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | FileUpload | 列表限高 `viewport-h-md`；拖放区最小高 `--xh-dropzone-min-h`（10rem）；文件行是无描边的淡底行，行内与行间距 12px，失败行底回承载面、只把文件名标红；预览是 `glyph-size-sm` 的品牌色无底图标位（空着画文件字形）；删除叉取 `control-indicator-sm`；文件名最小宽 12rem；进度条宽 2 × `control-h-md` |
 | JsonViewer、DiffView | 限高 `viewport-max-h` |
 | Log | 视口 16 行 |
-| CalendarPicker、CalendarRangePicker | 日期格最小宽与星期行高 `control-h-sm`；年网格限高 `viewport-h-sm` |
+| CalendarPicker、CalendarRangePicker | 标题栏内衬 8 / 16、内容 `control-action-size` 高，下沿 1px 分隔线；网格内衬 12 / 16；日期格 `control-action-size` 见方的圆，格上下内距 6 撑出 36 的行距；列宽下限与星期行高 `control-h-md`；周期格铺满格宽、`control-action-size` 高，周期视图的网格与日视图同宽；区间轨道比行距上下各收 2；年网格限高 `viewport-h-sm` |
 | Image | 宽 100%，高随比例；兜底最小高 `control-h-lg` |
 | Typography | 行宽上限 68ch |
 | EmptyState | 说明行宽上限 32rem |
@@ -614,9 +615,9 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 展开路径 / 打开中（不是选中） | Menu / Menubar / NavigationMenu trigger open、Cascader in-path、SideNav in-path、Date / Time trigger open | 与所在家族 hover 同档的中性面，不用品牌色、不加粗；非颜色通道由 chevron 转向与子面板承担。Menubar / NavigationMenu trigger 投影 `data-in-path`，`nav` 语境 open-path = `--xh-bg-subtle` | — | — |
 | 图例显隐（开是常态） | 图表图例项（`aria-pressed`） | 显示：实心色标 + `--xh-fg-default` 文字；隐藏：空心色标（只留描边）+ `--xh-fg-subtle` 文字 + 删除线；不用品牌淡底，否则整排图例都成了品牌底 | hover 100 → pressed 200（白底承载面阶梯） | 色标 CanvasText；隐藏态保留空心与删除线 |
 
-- `--xh-bg-brand-subtle` 退出 today、open 语义：Calendar today 改 inset 1px `--xh-fg-brand` 环 + 品牌字。Steps 序号圆点三态都无边无影：没走到的 `--xh-bg-subtle` + `--xh-fg-muted`，当前步实心品牌（格状当前）+ 反白字，走过的步是登记的例外，取 `--xh-bg-brand-subtle` + 品牌对号（走过的步与当前步同属一段已点亮的进度，阶梯 12 → 20 → 28）；标了语气又没走到的步取语气实心 + 反白字（出错的那一步是危险色实心）。标题取 heading-3 字号（sm 收回正文字号），当前步取 heading-3 字重、正文色，走过的步正文色，没走到的步次级色；说明 12px `--xh-fg-subtle`；连接线 1px，没走到的那截 `--xh-border-default`、走过的那截品牌色。点状形态没有放对号的地方，三态改由形状区分：没走到的空心圈、走过的实心标记色（`--xh-fg-brand`）、当前步实心品牌（格状当前）并放大一档。
+- `--xh-bg-brand-subtle` 退出 today、open 语义：Calendar today 改为数字下方一颗 4px `--xh-fg-brand` 圆点、数字保持正文色（强制色下退出强制换色取 `CanvasText`，打印改由描边画满）。Steps 序号圆点三态都无边无影：没走到的 `--xh-bg-subtle` + `--xh-fg-muted`，当前步实心品牌（格状当前）+ 反白字，走过的步是登记的例外，取 `--xh-bg-brand-subtle` + 品牌对号（走过的步与当前步同属一段已点亮的进度，阶梯 12 → 20 → 28）；标了语气又没走到的步取语气实心 + 反白字（出错的那一步是危险色实心）。标题取 heading-3 字号（sm 收回正文字号），当前步取 heading-3 字重、正文色，走过的步正文色，没走到的步次级色；说明 12px `--xh-fg-subtle`；连接线 1px，没走到的那截 `--xh-border-default`、走过的那截品牌色。点状形态没有放对号的地方，三态改由形状区分：没走到的空心圈、走过的实心标记色（`--xh-fg-brand`）、当前步实心品牌（格状当前）并放大一档。
 - 集合行不允许零按压反馈；pressed 只换面（§9.2）。
-- 锚定浮层里的列表（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列）与 Command 结果列表的行是通栏：面板只留块向内衬（`--xh-space-1`），侧边内衬 0，行不取圆角，悬停淡底铺满整行；Transfer 列表同样通栏，上下也不留内衬，选中行的品牌淡底铺满整行；Listbox、Tree 仍按 inset 内缩。
+- 锚定浮层里的列表（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列、日期与时间面板的时间列）与 Command 结果列表的行是通栏：面板只留块向内衬（`--xh-space-1`），侧边内衬 0，行不取圆角，悬停淡底铺满整行；Transfer 列表同样通栏，上下也不留内衬，选中行的品牌淡底铺满整行；Listbox、Tree 仍按 inset 内缩。
 - 选中对号一律落在行尾（`indicator` 列），不放行首：行首一格归前导图标、展开箭头、拖拽把手与勾选框；TagGroup 选中标签的对号同样在标签尾部（2026-09-24 起）。
 
 ### 7.4 集合行的语气
@@ -671,7 +672,8 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 | 语境 | 组件 | 行高来源 |
 | --- | --- | --- |
-| 候选与菜单 | Menu 族、Listbox、Select / Combobox / Cascader 选项、Tree、Command、时间列（TimePicker、TimeRangePicker 与 DatePicker / DateRangePicker 的时间格） | `--xh-list-option-py-*` 内距加一行文字撑开，说明行再撑高一行 |
+| 候选与菜单 | Menu 族、Listbox、Select / Combobox / Cascader 选项、Tree、Command | `--xh-list-option-py-*` 内距加一行文字撑开，说明行再撑高一行 |
+| 时间列 | TimePicker、TimeRangePicker 与 DatePicker / DateRangePicker 的时间格 | 24 高的通栏条（`--xh-control-action-size`），列内间距 `--xh-space-2` 撑出 32 的行距，不随尺寸档变高；列底留白让末尾几格也能滚到列顶 |
 | 页面级导航 | SideNav | 最小行高取 `--xh-control-h-*`，与折叠窄栏的方形图标位、同档控件等高 |
 | 随文目录 | Anchor | 块向内距 `--xh-space-1`，贴近正文阅读节奏，不按控件高 |
 
@@ -911,7 +913,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 ### 9.1 离散动作控件
 
-按压缩放只给「定尺的独立动作控件」：inline-size 由 Action Control profile（text / icon / field-inset / floating）决定的按钮、把手、方框、轨道、星、日历格、色块、表格排序钮与展开钮（列头里的排序钮不包列名，是列名之后一颗独立的 icon 档 ghost 钮）。它们必须投影 `data-xh-action-control` 并使用同一配方，同时换底：
+按压缩放只给「定尺的独立动作控件」：inline-size 由 Action Control profile（text / icon / field-inset / floating）决定的按钮、把手、方框、轨道、星、色块、表格排序钮与展开钮（列头里的排序钮不包列名，是列名之后一颗独立的 icon 档 ghost 钮）。日历格的命中区铺满整格、挂在格子上（钮不当定位盒），按下只换面不缩放（`--xh-action-scale-pressed: none`）：缩放会让钮成为包含块，命中区当场缩回钮里。它们必须投影 `data-xh-action-control` 并使用同一配方，同时换底：
 
 | 阶段 | 时长 | 结果 | 缓动 |
 | --- | ---: | --- | --- |

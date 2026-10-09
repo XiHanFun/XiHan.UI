@@ -50,6 +50,9 @@ const CROSS_PART = {
   // 摆了周序号的那一行是「序号列 + 七天」的网格，行首那一列的宽度按被排的那一列取名
   'calendar-picker.week-number': ['week-row'],
   'calendar-range-picker.week-number': ['week-row'],
+  // 七等分轨道的每一列就是日期格所在的那一格：列宽下限按格子取名；周期视图的网格与日视图同宽，按七列格子算
+  'calendar-picker.cell': ['week-row', 'grid'],
+  'calendar-range-picker.cell': ['week-row', 'grid'],
   // 搜索结果列表与空态占的都是一格列的位置，几何跟着 column 走，三种形态才等宽等高
   // 色块面铺满格子，两者的圆角必须是同一个值，否则四角露出格子的底
   'color-swatch-picker.item': ['swatch'],
@@ -117,9 +120,18 @@ const CROSS_PART = {
   'table.row': ['cell'],
   // 表头单元格铺的就是表头那一行的底色，两处不同源就会在吸顶时看出色差
   'table.header': ['column-header'],
-  // 预设列与时间列并排在同一行，分隔线取同一族，两列之间只有一道等宽的线
-  'time-picker.column': ['preset-group'],
-  'time-range-picker.column': ['preset-group'],
+  // 预设列与时间列并排在同一行，分隔线取同一族，两列之间只有一道等宽的线；
+  // 时间格的命中区向上下各补半个列内间距，读列的间距槽
+  'time-picker.column': ['preset-group', 'item'],
+  'time-range-picker.column': ['preset-group', 'item'],
+  // 时间列底的留白要让末格也能滚到列顶：留白 = 列高 − 一格的高 − 列顶内衬，读格子的高度槽
+  'date-picker.time-item': ['time-column'],
+  // 时间格的命中区向上下各补半个列内间距，读列的间距槽，两格之间的缝才严丝合缝地分给上下两格
+  'date-picker.time-column': ['time-item'],
+  'date-range-picker.time-item': ['time-column'],
+  'date-range-picker.time-column': ['time-item'],
+  'time-picker.item': ['column'],
+  'time-range-picker.item': ['column'],
   // 工具名用等宽字族，摘要行里跟着它排；耗时与错误行与状态标签同一档字号
   'tool-call.label': ['summary'],
   'tool-call.status': ['duration', 'error'],

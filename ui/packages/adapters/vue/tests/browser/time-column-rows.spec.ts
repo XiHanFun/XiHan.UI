@@ -1,5 +1,5 @@
-// 时间列里的格子是「候选与菜单」语境的集合行：行高由 --xh-list-option-py-* 内距加一行文字撑开、随尺寸档变，
-// 字号随档。TimePicker 与 DatePicker 的时间列同一种行，与 Select 的候选行同高。
+// 时间列里的格子是浮层里的通栏行：24 高的通栏条（--xh-control-action-size），列内间距撑出行距，
+// 不随尺寸档变高；字号随档，与 Select 的候选行同字号。TimePicker 与 DatePicker 的时间列同一种行。
 // 判据是几何与计算样式，jsdom 不排版。
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -99,12 +99,12 @@ async function measure(render: () => VNode, scope: string, part: string): Promis
 }
 
 describe.each(['sm', 'md', 'lg'] as const)('%s 档的时间行', (size) => {
-  it('timePicker 与 DatePicker 的时间格与 Select 的候选行同高、同字号', async () => {
+  it('timePicker 与 DatePicker 的时间格 24 高，字号与 Select 的候选行同档', async () => {
     const option = await measure(() => select(size), 'select', 'item')
     const timeItem = await measure(() => time(size), 'time-picker', 'item')
     const dateItem = await measure(() => date(size), 'date-picker', 'time-item')
-    expect(timeItem.height).toBeCloseTo(option.height, 0)
-    expect(dateItem.height).toBeCloseTo(option.height, 0)
+    expect(timeItem.height).toBe(24)
+    expect(dateItem.height).toBe(24)
     expect(timeItem.font).toBe(option.font)
     expect(dateItem.font).toBe(option.font)
   })

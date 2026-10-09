@@ -286,13 +286,10 @@ const ROW_OR_DISCLOSURE = new Set([
 const ROW_GEOMETRY = /(?:^|;)\s*(?:inline-size\s*:\s*100%|flex\s*:\s*1|display\s*:\s*block)\s*(?:;|$)/
 /**
  * 点名的定尺动作控件里，基础规则却带 ROW_GEOMETRY 那几条的：它们撑的是等分轨道里的一格，
- * 不是一整行——日历格用 flex: 1 撑满七等分的一列并按 aspect-ratio 取方，宽由轨道给、高随宽走，仍是一颗定尺的格。
+ * 不是一整行——宽由轨道给、高随宽走，仍是一颗定尺的格。
  * 逐部件登记并写明理由，⑤ 不判。
  */
-const TRACK_SQUARE = {
-  'calendar-picker:cell-trigger': '日历格：flex: 1 撑满七等分轨道的一格并按 aspect-ratio 取方（日历格是定尺控件）',
-  'calendar-range-picker:cell-trigger': '同 calendar-picker 的日历格',
-}
+const TRACK_SQUARE = {}
 
 const backlog = await openBacklog('press')
 /** 按压选择器：皮肤自己写的两种写法都认；家族配方只认后一种（⑧）。 */

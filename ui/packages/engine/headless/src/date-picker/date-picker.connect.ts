@@ -860,8 +860,14 @@ export function connectDatePicker<T extends PropTypes>(
       })
     },
 
+    // 浮层底部的操作区：作者往里放确认钮与「此刻」一类动作。它是 content 的子节点、排在面板主体之后，
+    // 不在网格、时间列或快捷选项列的拥有关系里，方向键走不到；里面的按钮照常进 Tab 序列
+    getFooterProps: () => normalize.element({
+      ...parts.footer.attrs,
+    }),
+
     // showTime 的收口：选完日子与时间由它收浮层。面板里唯一的主要动作，走 Action Control 的 text solid 档
-    // （与 Button 缺省同为品牌实心）；面板内部件不随字段尺寸档，钮取 sm
+    // （与 Button 缺省同为品牌实心）；面板内部件不随字段尺寸档，钮取 xs（24 高的小号主钮）
     getConfirmTriggerProps: () => normalize.button({
       ...parts['confirm-trigger'].attrs,
       'data-xh-action-control': '',
@@ -869,7 +875,7 @@ export function connectDatePicker<T extends PropTypes>(
       'data-xh-action-variant': 'solid',
       'data-xh-ink-surface': '',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'sm',
+      'data-xh-action-size': 'xs',
       'type': 'button',
       'hidden': !showTime || undefined,
       // 藏起的确认钮不接受按压；只读仍可收口，照有回执。Enter 在 keydown 即收起浮层，随后由展开态的 exit 松开
