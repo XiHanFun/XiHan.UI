@@ -42,9 +42,9 @@
 ```text
 rest
   └─ pointerdown / Space / Enter
-       └─ 0–120ms：scale 1 → 0.97，背景进入 active
+       └─ 0–120ms：scale 1 → --xh-motion-scale-press（缺省 1，只换面），背景进入 active
             └─ release / keyup
-                 └─ 0–200ms：scale 0.97 → 1；背景、描边、字色 0–120ms 回到 hover/rest
+                 └─ 0–200ms：scale 回到 1；背景、描边、字色 0–120ms 回到 hover/rest
 ```
 
 固定参数：
@@ -54,7 +54,7 @@ rest
 | press duration | `--xh-motion-duration-press`（120ms） | 必须先于业务请求反馈 |
 | release duration | `--xh-motion-duration-release`（200ms） | 只作用于缩放；允许轻微回弹但不得过冲明显 |
 | surface duration | `--xh-motion-duration-micro`（120ms） | 底色、描边、字色的换面，悬停进入与按压释放同一时长 |
-| press scale | `--xh-motion-scale-press`（0.97） | 所有离散 Action Control 一致 |
+| press scale | `--xh-motion-scale-press`（缺省 1，只换面；主题写回 0.97 即恢复缩放） | 所有离散 Action Control 一致；评分星例外：悬停（只在能悬停的设备上）与键盘聚焦放大到 `--xh-motion-scale-emphasis`，按下保持放大 |
 | press easing | `--xh-motion-ease-press` | 按下稳定，不使用弹簧 |
 | release easing | `--xh-motion-ease-release` | 快速恢复，末端柔和 |
 | transform origin | center | 不因布局方向改变 |
@@ -63,11 +63,11 @@ rest
 
 判据是几何身份，不是组件名：
 
-必须使用 0.97 缩放并同时换底（inline-size 由 Action Control profile 决定的定尺部件）：
+必须走按压缩放通道（`--xh-motion-scale-press`）并同时换底（inline-size 由 Action Control profile 决定的定尺部件）：
 
 - Button、Icon Button、Close / Clear Button。
 - Toggle、分页按钮、步骤操作按钮。
-- 散落的工具栏按钮、轮播控制、日期翻页按钮、日历格、星、色块、把手。
+- 散落的工具栏按钮、轮播控制、日期翻页按钮、日历格、色块、把手（评分星例外，见上表）。
 - 视觉上是一枚独立按钮的 trigger（投影 `data-xh-action-control`）。
 
 使用同节奏但只换面（主体规则含 `inline-size: 100%`、`flex: 1`、含文本的 grid / flex，或高度随内容多行）：
@@ -100,7 +100,7 @@ rest
 
 | 组合状态 | 规则 |
 | --- | --- |
-| hover + pressed | pressed 优先，背景使用 active，scale 0.97 |
+| hover + pressed | pressed 优先，背景使用 active，scale 取 `--xh-motion-scale-press` |
 | focus-visible + pressed | 焦点环保留，按压只改变内部表面 |
 | selected + pressed | 保留 selected 身份，在其上派生 active 面 |
 | danger + pressed | 仍使用 danger 语气，不回落到品牌色 |
@@ -233,7 +233,7 @@ liquid 是导航层材质，细则见《统一组件设计方案》§8.5。它�
 
 ### 4.2 触感
 
-- [ ] 定尺离散 Action Control 接入 120ms/0.97/200ms 配方并同时换底。
+- [ ] 定尺离散 Action Control 接入 120ms / `--xh-motion-scale-press` / 200ms 配方并同时换底。
 - [ ] 行级与 disclosure trigger 只换面，无零反馈。
 - [ ] 指针、触摸和键盘 Press 的视觉一致（`data-pressed`）。
 - [ ] 手势松手用弹簧并交接松手速度；standard 档超调 ≤ 3%。
