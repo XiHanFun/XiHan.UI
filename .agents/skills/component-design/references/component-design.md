@@ -153,7 +153,7 @@ Vue、React、Web Components 只负责：
 | Tag、ToolCall status、Approval result、QuestionFlow result | 状态 chip（方签） | 形状 control，块尺寸取 `--xh-chip-h-*`（结果与状态取 sm 档）、竖向内衬 0、语气淡底；见 §6.3 |
 | 图表根 | 无壳 | 不画外边、不填底，透出宿主面；需要框时由作者放进 Card |
 | 图例项 | Action Control `text` profile、ghost、xs 档 | 按压换面；显隐标记见 §7.3「图例显隐」 |
-| 面板内关闭钮（Dialog、Drawer、Tour、Notification 卡片预设、Popover、Citation 预览） | Action Control `icon` profile、ghost、sm 档（Citation 为 xs），control 形状 | 绝对定位在右上角，内缩 `--xh-surface-action-inset`；Dialog、Drawer 的叉取 `--xh-glyph-size-xs`（12px），钮距右 `--xh-space-4`、竖向落在头部带（`--xh-overlay-header-h`）的中线上；Notification 卡片的叉同取 12px，钮距右 `--xh-surface-action-inset`、竖向落在标题首行的中线上（上内衬 + (标题行高 − 钮边长) / 2，舒适档距上 18px、紧凑 16px）；Popover 气泡内衬比面板小一档，内缩取 `--xh-space-2`，否则叉会伸出气泡的盒子被裁掉；FloatingPanel 的叉排在 header 流里；Alert 的叉行内垂直居中 |
+| 面板内关闭钮（Dialog、Drawer、Tour、Notification 卡片预设、Popover、Citation 预览） | Action Control `icon` profile、ghost、sm 档（Citation 为 xs），control 形状 | 绝对定位在右上角，内缩 `--xh-surface-action-inset`；Dialog、Drawer 的叉取 `--xh-glyph-size-xs`（12px），钮距右 `--xh-space-4`（Drawer 贴屏幕边，先让出行向安全区再量）、竖向落在头部带（`--xh-overlay-header-h`）的中线上；Notification 卡片的叉同取 12px，钮距右 `--xh-surface-action-inset`、竖向落在标题首行的中线上（上内衬 + (标题行高 − 钮边长) / 2，舒适档距上 18px、紧凑 16px）；Popover 气泡内衬比面板小一档，内缩取 `--xh-space-2`，否则叉会伸出气泡的盒子被裁掉；FloatingPanel 的叉排在 header 流里；Alert 的叉行内垂直居中 |
 | Notification 轻提示预设的关闭钮 | Action Control `icon` profile、ghost、xs 档 | 轻提示一句话一行，叉排在行尾、取 xs，叉 12px（`--xh-glyph-size-xs`）；可悬停设备上悬停或聚焦才显，触屏常显 |
 | ImageViewer 关闭钮 | Action Control `floating` profile、与组件同档、视觉盒取控件高（md 32px）、circle | 悬浮在媒体上的单图标动作，与翻页钮同一身份、同一把尺 |
 | ImageViewer 工具条 | 页面主题的实体面 + 1px `--xh-border-default`、surface 形状 | 压在看片层的白墨域里：面色在域外取，连接层投影 `data-xh-ink-surface`，条里七颗钮（icon 档 xs 字形 16px、视觉盒 `control-box-md`）按它的底色自成墨色域，悬停 / 按下走白底阶梯；翻页钮、关闭钮与计数留在深纱上（白面压在亮图上分不出来） |
