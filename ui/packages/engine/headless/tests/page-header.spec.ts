@@ -30,10 +30,19 @@ describe('connectPageHeader 根', () => {
 })
 
 describe('connectPageHeader 各段', () => {
-  it('七个子部件只拿身份：标签、type、可及名字与标题层级全归作者', () => {
+  it('六个子部件只拿身份，返回位另接动作钮家族；标签、type、可及名字与标题层级全归作者', () => {
     const a = api()
     expect(a.getBreadcrumbProps()).toEqual(parts.breadcrumb.attrs)
-    expect(a.getBackTriggerProps()).toEqual(parts['back-trigger'].attrs)
+    // 返回位是只有字形的动作钮：身份之外只多家族的 icon ghost 档，不补 role、type 与可及名字
+    expect(a.getBackTriggerProps()).toEqual({
+      ...parts['back-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+    })
+    expect((api({ size: 'lg' }).getBackTriggerProps() as Record<string, unknown>)['data-xh-action-size']).toBe('md')
     expect(a.getMediaProps()).toEqual(parts.media.attrs)
     expect(a.getTitleProps()).toEqual(parts.title.attrs)
     expect(a.getDescriptionProps()).toEqual(parts.description.attrs)
