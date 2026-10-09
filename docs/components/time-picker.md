@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="time-picker"`：**`root`** · `label` · **`control`** · `tag-list` · `segment-group` · `segment` · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · `column` · `item` · `confirm-trigger` · `hidden-input`
+`data-scope="time-picker"`：**`root`** · `label` · **`control`** · `tag-list` · `segment-group` · `segment` · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · `column` · `item` · `footer` · `confirm-trigger` · `hidden-input`
 
 ## 示例
 
@@ -115,6 +115,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 - 浮层内可以放置“当前时刻”与确认按钮。
 - 值恒为 ISO 时间串数组：单选至多一项（还没填全时为空数组），宿主可以写裸串；`onValueChange` 的 `value` 恒为数组。
 - 多选（`selectionMode="multiple"`）时各列拼出的是草稿，按「添加」（`confirm-trigger`）收进值，浮层不收、草稿留着，改一列就能接着添；快捷选项点一下切换选中。草稿没填全、越界、已经选过或到了 `maxSelected` 时「添加」不可按。
+- 「添加」写在底栏（`footer`）里：底栏是浮层底部的通栏操作区，落在快捷选项列与各列下面独占一行，上沿一道分隔线、四周 8 的内衬；作者另放的说明文字排在行首、取弱化的说明档字，「添加」落在行尾。底栏里只有「添加」时，单选下它随「添加」一并收起，不留空栏。
 - 多选的选中值在输入行里排成标签（与[选择器](./select)多选同一套库内[标签](./tag)），按时刻升序：段位收起，展开钮常驻并成为键盘入口，在它上面按退格摘掉最后一个，点标签上的叉摘掉那一个；标签按 `locale` 与小时制排出（13:45、下午1:45），不截短、一行放不下就折行，超过 `maxTagCount`（默认 3）的折进 +N；表单一个选中值一份同名隐藏输入。
 - 触发器打开空值时焦点直接落到第一项；从输入段打开时继续保留键入焦点。
 - 快捷选项与时/分/秒列都从当前值恢复持久选中，并在逻辑末端显示对号。
@@ -135,6 +136,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 - 打开时把浮层滚动到当前值。
 - 标准输入行应同时包含清空按钮与时钟图标触发器；单选时二者按值互斥显示，多选时都留着。参与表单时同时渲染隐藏输入。
 - 自定义格内文案保持简短；选中对号由皮肤统一绘制，不在插槽内重复添加。
+- 多选时把「添加」放进底栏，不在 `content` 里另写带样式的包裹块。
 
 ### 反模式
 
@@ -147,7 +149,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-time-picker>` |
-| Vue 组件 | `XhTimePickerClearTrigger` `XhTimePickerColumn` `XhTimePickerConfirmTrigger` `XhTimePickerContent` `XhTimePickerControl` `XhTimePickerHiddenInput` `XhTimePickerItem` `XhTimePickerItemDeleteTrigger` `XhTimePickerLabel` `XhTimePickerOverflowTag` `XhTimePickerPositioner` `XhTimePickerPreset` `XhTimePickerPresetGroup` `XhTimePickerRoot` `XhTimePickerSegment` `XhTimePickerSegmentGroup` `XhTimePickerTag` `XhTimePickerTagLabel` `XhTimePickerTagList` `XhTimePickerTrigger` |
+| Vue 组件 | `XhTimePickerClearTrigger` `XhTimePickerColumn` `XhTimePickerConfirmTrigger` `XhTimePickerContent` `XhTimePickerControl` `XhTimePickerFooter` `XhTimePickerHiddenInput` `XhTimePickerItem` `XhTimePickerItemDeleteTrigger` `XhTimePickerLabel` `XhTimePickerOverflowTag` `XhTimePickerPositioner` `XhTimePickerPreset` `XhTimePickerPresetGroup` `XhTimePickerRoot` `XhTimePickerSegment` `XhTimePickerSegmentGroup` `XhTimePickerTag` `XhTimePickerTagLabel` `XhTimePickerTagList` `XhTimePickerTrigger` |
 | 组合式函数 | `useTimePicker` |
 | 状态机 | `timePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/time-picker.css` |
@@ -313,6 +315,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `getPresetProps` | `(props: TimePickerPresetProps) => T['element']` | 一条快捷选项（role=option）：点击把整份时间写入值并收起浮层。 |
 | `getColumnProps` | `(props: TimePickerColumnProps) => T['element']` |  |
 | `getItemProps` | `(props: TimePickerItemProps) => T['element']` |  |
+| `getFooterProps` | `() => T['element']` | 浮层底部的操作区：放在 content 中、排在各列之后，「添加」钮通常写在这里；不进入任何集合的拥有关系，方向键也无法到达。 |
 | `getConfirmTriggerProps` | `() => T['button']` | 「添加」：多选时把浮层里拼好的草稿收进值，浮层不收起；单选时 hidden。文字由作者写。 |
 | `getHiddenInputProps` | `(props?: TimePickerHiddenInputProps) => T['input']` | 表单出口：一份 type=hidden 的原生输入，随表单提交 ISO 串。 多选时一个选中值一份同名输入：传 `{ value }` 产出那一份，不传是首个选中值那一份。 |
 
@@ -549,6 +552,12 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `--xh-time-picker-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | time-picker 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-time-picker-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | time-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-time-picker-font-size` | `control` | `font-size` | `default` | `--xh-_time-picker-font-size` | time-picker 的 control 部件 font-size 覆盖槽。 |
+| `--xh-time-picker-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-solid-border` | time-picker 的 footer 部件 border-block-start 覆盖槽。 |
+| `--xh-time-picker-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | time-picker 的 footer 部件 color 覆盖槽。 |
+| `--xh-time-picker-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-caption-size` | time-picker 的 footer 部件 font-size 覆盖槽。 |
+| `--xh-time-picker-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | time-picker 的 footer 部件 gap 覆盖槽。 |
+| `--xh-time-picker-footer-px` | `footer` | `margin-inline-end`<br>`margin-inline-start` | `first-child`<br>`last-child` | `--xh-space-2` | time-picker 的 footer 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-time-picker-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | time-picker 的 footer 部件 padding-block 覆盖槽。 |
 | `--xh-time-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | time-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-time-picker-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | time-picker 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-time-picker-item-bg-hover` | `item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | time-picker 的 item 部件 background-color 覆盖槽。 |

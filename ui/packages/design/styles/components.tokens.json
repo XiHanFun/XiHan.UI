@@ -76833,6 +76833,116 @@
       "description": "time-picker 的 control 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-time-picker-footer-border",
+      "component": "time-picker",
+      "part": [
+        "footer"
+      ],
+      "property": [
+        "border-block-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-solid-border"
+      ],
+      "visibility": "public",
+      "description": "time-picker 的 footer 部件 border-block-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-picker-footer-fg",
+      "component": "time-picker",
+      "part": [
+        "footer"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "time-picker 的 footer 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-picker-footer-font-size",
+      "component": "time-picker",
+      "part": [
+        "footer"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-caption-size"
+      ],
+      "visibility": "public",
+      "description": "time-picker 的 footer 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-picker-footer-gap",
+      "component": "time-picker",
+      "part": [
+        "footer"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "time-picker 的 footer 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-picker-footer-px",
+      "component": "time-picker",
+      "part": [
+        "footer"
+      ],
+      "property": [
+        "margin-inline-end",
+        "margin-inline-start"
+      ],
+      "state": [
+        "first-child",
+        "last-child"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "time-picker 的 footer 部件 margin-inline-end、margin-inline-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-picker-footer-py",
+      "component": "time-picker",
+      "part": [
+        "footer"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "time-picker 的 footer 部件 padding-block 覆盖槽。"
+    },
+    {
       "name": "--xh-time-picker-gap",
       "component": "time-picker",
       "part": [

@@ -1198,6 +1198,7 @@ export {
   XhTimePickerConfirmTrigger,
   XhTimePickerContent,
   XhTimePickerControl,
+  XhTimePickerFooter,
   XhTimePickerHiddenInput,
   XhTimePickerItem,
   XhTimePickerItemDeleteTrigger,

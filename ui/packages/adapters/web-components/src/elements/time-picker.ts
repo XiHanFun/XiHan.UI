@@ -120,6 +120,7 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @csspart preset - 一条快捷选项（role=option），须自带 value 属性（与 presets 数据中的 value 逐字一致）
  * @csspart column - role=listbox 的一列，可自带 unit 属性声明单位，默认按文档序
  * @csspart item - role=option 的一格，须自带 value 属性（两位补零的显示串；上下午列写 '00' / '01'）
+ * @csspart footer - 浮层底部的通栏操作区，写在 content 里、排在各列之后；「添加」钮通常放在这里，不进入任何集合的拥有关系
  * @csspart confirm-trigger - 「添加」：多选时把浮层里拼好的草稿收进值，浮层不收；单选时带 hidden。文字由作者写
  * @csspart hidden-input - type=hidden 的表单出口，值是完整 ISO 串；多选时一个选中值一份，首值用这个节点，其余由元素在它后面补同名输入
  */
@@ -462,6 +463,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
       }
     }
     put('segment-group', api.getSegmentGroupProps() as Record<string, unknown>)
+    put('footer', api.getFooterProps() as Record<string, unknown>)
     put('confirm-trigger', api.getConfirmTriggerProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
