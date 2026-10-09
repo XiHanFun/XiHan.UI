@@ -1100,6 +1100,11 @@
       "$type": "dimension",
       "$value": "calc({control.h-md} + ({control.action-size} + {space.1_5} * 2) * 6 + {space.3} * 2)"
     },
+    "calendar-column-h-coarse": {
+      "$description": "粗指针下与日历并排的时间列高度：日历格在粗指针下长到 44 见方（行距 44，WCAG 2.5.5 的触控目标下限，不随密度换档），网格六周跟着加高，时间列随之同高、底边仍与网格底边对齐。只按 px 结算。",
+      "$type": "dimension",
+      "$value": "calc({control.h-md} + 44px * 6 + {space.3} * 2)"
+    },
     "time-column-w": {
       "$description": "时间选择器浮层里一列（时 / 分 / 秒）的宽：两位数字加两侧对号轨。与日历并排的时间列仍按 column-min-w 收窄。",
       "$type": "dimension",

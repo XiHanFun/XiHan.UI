@@ -554,7 +554,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `--xh-date-range-picker-range-separator-mx` | `range-separator` | `margin-inline` | `default` | `--xh-_date-range-picker-range-separator-mx` | date-range-picker 的 range-separator 部件 margin-inline 覆盖槽。 |
 | `--xh-date-range-picker-range-separator-px` | `range-separator` | `margin-inline`<br>`padding-inline` | `default` | `--xh-space-1` | date-range-picker 的 range-separator 部件 margin-inline、padding-inline 覆盖槽。 |
 | `--xh-date-range-picker-time-column-gap` | `time-column`<br>`time-item` | `gap`<br>`inset-block` | `default` | `--xh-space-2` | date-range-picker 的 time-column、time-item 部件 gap、inset-block 覆盖槽。 |
-| `--xh-date-range-picker-time-column-h` | `time-column` | `block-size`<br>`padding-block` | `default` | `--xh-overlay-calendar-column-h` | date-range-picker 的 time-column 部件 block-size、padding-block 覆盖槽。 |
+| `--xh-date-range-picker-time-column-h` | `time-column` | `block-size`<br>`padding-block` | `@media (pointer: coarse)`<br>`default` | `--xh-overlay-calendar-column-h`<br>`--xh-overlay-calendar-column-h-coarse` | date-range-picker 的 time-column 部件 block-size、padding-block 覆盖槽。 |
 | `--xh-date-range-picker-time-column-min-w` | `time-column` | `min-inline-size` | `default` | `--xh-overlay-column-min-w` | date-range-picker 的 time-column 部件 min-inline-size 覆盖槽。 |
 | `--xh-date-range-picker-time-column-min-w-mobile` | `time-column` | `min-inline-size` | `@media not all and (min-width: 768px)` | `--xh-overlay-column-min-w` | date-range-picker 的 time-column 部件 min-inline-size 覆盖槽。 |
 | `--xh-date-range-picker-time-column-px` | `time-column` | `padding-inline` | `default` | `0` | date-range-picker 的 time-column 部件 padding-inline 覆盖槽。 |
@@ -585,6 +585,8 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 ### 响应式
 
 皮肤按视口分档：`min-width: 768px`。
+
+皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

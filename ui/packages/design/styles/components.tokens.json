@@ -4907,6 +4907,7 @@
         "min-inline-size"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "default",
         "has(> [data-part='week-number'])",
         "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
@@ -4947,16 +4948,18 @@
         "cell"
       ],
       "property": [
+        "inset-block",
         "padding-block"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled"
       ],
       "defaultToken": [
         "--xh-space-1_5"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 cell 部件 padding-block 覆盖槽。"
+      "description": "calendar-picker 的 cell 部件 inset-block、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-cell-radius",
@@ -4986,11 +4989,13 @@
       "property": [
         "block-size",
         "inline-size",
+        "inset-block",
         "inset-block-start",
         "min-inline-size"
       ],
       "state": [
         "default",
+        "disabled",
         "today",
         "xh-action-profile=icon"
       ],
@@ -4999,7 +5004,7 @@
         "--xh-control-action-size"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 cell、cell-trigger 部件 block-size、inline-size、inset-block-start、min-inline-size 覆盖槽。"
+      "description": "calendar-picker 的 cell、cell-trigger 部件 block-size、inline-size、inset-block、inset-block-start、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-disabled-inset",
@@ -5066,6 +5071,7 @@
         "padding-inline"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "default",
         "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
         "view=month",
@@ -5771,6 +5777,7 @@
         "grid-template-columns"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "has(> [data-part='week-number'])",
         "not([hidden])"
       ],
@@ -6108,6 +6115,7 @@
         "min-inline-size"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "default",
         "has(> [data-part='week-number'])",
         "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
@@ -6148,13 +6156,18 @@
         "cell"
       ],
       "property": [
+        "inset-block",
         "inset-inline-end",
         "inset-inline-start",
         "padding-block"
       ],
       "state": [
         "default",
+        "disabled",
         "in-range",
+        "not([data-in-range])",
+        "not([data-outside-month])",
+        "outside-month",
         "range-end",
         "range-start",
         "view=day"
@@ -6163,7 +6176,7 @@
         "--xh-space-1_5"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell 部件 inset-inline-end、inset-inline-start、padding-block 覆盖槽。"
+      "description": "calendar-range-picker 的 cell 部件 inset-block、inset-inline-end、inset-inline-start、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-cell-radius",
@@ -6193,6 +6206,7 @@
       "property": [
         "block-size",
         "inline-size",
+        "inset-block",
         "inset-block-start",
         "inset-inline-end",
         "inset-inline-start",
@@ -6200,7 +6214,11 @@
       ],
       "state": [
         "default",
+        "disabled",
         "in-range",
+        "not([data-in-range])",
+        "not([data-outside-month])",
+        "outside-month",
         "range-end",
         "range-start",
         "today",
@@ -6212,7 +6230,7 @@
         "--xh-control-action-size"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell、cell-trigger 部件 block-size、inline-size、inset-block-start、inset-inline-end、inset-inline-start、min-inline-size 覆盖槽。"
+      "description": "calendar-range-picker 的 cell、cell-trigger 部件 block-size、inline-size、inset-block、inset-block-start、inset-inline-end、inset-inline-start、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-disabled-inset",
@@ -6281,6 +6299,7 @@
         "padding-inline"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "default",
         "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
         "view=month",
@@ -7187,6 +7206,7 @@
         "grid-template-columns"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "has(> [data-part='week-number'])",
         "not([hidden])"
       ],
@@ -25117,10 +25137,12 @@
         "padding-block"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-calendar-column-h"
+        "--xh-overlay-calendar-column-h",
+        "--xh-overlay-calendar-column-h-coarse"
       ],
       "visibility": "public",
       "description": "date-picker 的 time-column 部件 block-size、padding-block 覆盖槽。"
@@ -27249,10 +27271,12 @@
         "padding-block"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-calendar-column-h"
+        "--xh-overlay-calendar-column-h",
+        "--xh-overlay-calendar-column-h-coarse"
       ],
       "visibility": "public",
       "description": "date-range-picker 的 time-column 部件 block-size、padding-block 覆盖槽。"

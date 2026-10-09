@@ -378,6 +378,7 @@
 --xh-overlay-arrow-size: 8px  ← var(--xh-space-2)
 --xh-overlay-backdrop-blur: 12px
 --xh-overlay-calendar-column-h: calc(32px + (24px + 6px * 2) * 6 + 12px * 2)  ← calc(var(--xh-control-h-md) + (var(--xh-control-action-size) + var(--xh-space-1_5) * 2) * 6 + var(--xh-space-3) * 2)
+--xh-overlay-calendar-column-h-coarse: calc(32px + 44px * 6 + 12px * 2)  ← calc(var(--xh-control-h-md) + 44px * 6 + var(--xh-space-3) * 2)
 --xh-overlay-cascade-min-w: 7.5rem
 --xh-overlay-color-area-h: 11rem
 --xh-overlay-column-item-h: calc(28px - 4px)  ← calc(var(--xh-control-h-sm) - var(--xh-space-1))

@@ -345,15 +345,15 @@ max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名
 | `--xh-calendar-picker-cell-font-size` | `cell-trigger` | `font-size` | `default` | `--xh-text-body-size` | calendar-picker 的 cell-trigger 部件 font-size 覆盖槽。 |
 | `--xh-calendar-picker-cell-font-weight` | `cell-trigger` | `font-weight` | `default` | `--xh-font-weight-medium` | calendar-picker 的 cell-trigger 部件 font-weight 覆盖槽。 |
 | `--xh-calendar-picker-cell-font-weight-outside` | `cell-trigger` | `font-weight` | `outside-month` | `--xh-font-weight-regular` | calendar-picker 的 cell-trigger 部件 font-weight 覆盖槽。 |
-| `--xh-calendar-picker-cell-min-w` | `grid`<br>`week-row` | `grid-template-columns`<br>`min-inline-size` | `default`<br>`has(> [data-part='week-number'])`<br>`is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`not([hidden])`<br>`view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-control-h-md` | calendar-picker 的 grid、week-row 部件 grid-template-columns、min-inline-size 覆盖槽。 |
+| `--xh-calendar-picker-cell-min-w` | `grid`<br>`week-row` | `grid-template-columns`<br>`min-inline-size` | `@media (pointer: coarse)`<br>`default`<br>`has(> [data-part='week-number'])`<br>`is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`not([hidden])`<br>`view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-control-h-md` | calendar-picker 的 grid、week-row 部件 grid-template-columns、min-inline-size 覆盖槽。 |
 | `--xh-calendar-picker-cell-px` | `cell` | `padding-inline` | `default` | `--xh-space-0` | calendar-picker 的 cell 部件 padding-inline 覆盖槽。 |
-| `--xh-calendar-picker-cell-py` | `cell` | `padding-block` | `default` | `--xh-space-1_5` | calendar-picker 的 cell 部件 padding-block 覆盖槽。 |
+| `--xh-calendar-picker-cell-py` | `cell` | `inset-block`<br>`padding-block` | `default`<br>`disabled` | `--xh-space-1_5` | calendar-picker 的 cell 部件 inset-block、padding-block 覆盖槽。 |
 | `--xh-calendar-picker-cell-radius` | `cell-trigger` | `border-radius` | `view=day` | `--xh-shape-circle` | calendar-picker 的 cell-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-calendar-picker-cell-size` | `cell`<br>`cell-trigger` | `block-size`<br>`inline-size`<br>`inset-block-start`<br>`min-inline-size` | `default`<br>`today`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size`<br>`--xh-control-action-size` | calendar-picker 的 cell、cell-trigger 部件 block-size、inline-size、inset-block-start、min-inline-size 覆盖槽。 |
+| `--xh-calendar-picker-cell-size` | `cell`<br>`cell-trigger` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-block-start`<br>`min-inline-size` | `default`<br>`disabled`<br>`today`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size`<br>`--xh-control-action-size` | calendar-picker 的 cell、cell-trigger 部件 block-size、inline-size、inset-block、inset-block-start、min-inline-size 覆盖槽。 |
 | `--xh-calendar-picker-disabled-inset` | `cell` | `inset-block` | `disabled` | `--xh-space-0_5` | calendar-picker 的 cell 部件 inset-block 覆盖槽。 |
 | `--xh-calendar-picker-gap` | `root` | `gap` | `default` | `--xh-space-0` | calendar-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-calendar-picker-grid-gap` | `grid` | `gap` | `default` | `--xh-space-0` | calendar-picker 的 grid 部件 gap 覆盖槽。 |
-| `--xh-calendar-picker-grid-px` | `grid` | `min-inline-size`<br>`padding-inline` | `default`<br>`is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-space-4` | calendar-picker 的 grid 部件 min-inline-size、padding-inline 覆盖槽。 |
+| `--xh-calendar-picker-grid-px` | `grid` | `min-inline-size`<br>`padding-inline` | `@media (pointer: coarse)`<br>`default`<br>`is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-space-4` | calendar-picker 的 grid 部件 min-inline-size、padding-inline 覆盖槽。 |
 | `--xh-calendar-picker-grid-py` | `grid` | `padding-block` | `default` | `--xh-space-3` | calendar-picker 的 grid 部件 padding-block 覆盖槽。 |
 | `--xh-calendar-picker-header-border` | `header` | `border-block-end` | `default` | `--xh-material-solid-border` | calendar-picker 的 header 部件 border-block-end 覆盖槽。 |
 | `--xh-calendar-picker-header-gap` | `header` | `gap` | `default` | `--xh-space-1` | calendar-picker 的 header 部件 gap 覆盖槽。 |
@@ -387,7 +387,7 @@ max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名
 | `--xh-calendar-picker-week-day-h` | `week-day` | `block-size` | `default` | `--xh-control-h-md` | calendar-picker 的 week-day 部件 block-size 覆盖槽。 |
 | `--xh-calendar-picker-week-number-fg` | `week-number` | `color` | `default` | `--xh-fg-subtle` | calendar-picker 的 week-number 部件 color 覆盖槽。 |
 | `--xh-calendar-picker-week-number-font-size` | `week-number` | `font-size` | `default` | `--xh-text-caption-size` | calendar-picker 的 week-number 部件 font-size 覆盖槽。 |
-| `--xh-calendar-picker-week-number-w` | `week-row` | `grid-template-columns` | `has(> [data-part='week-number'])`<br>`not([hidden])` | `--xh-control-h-md` | calendar-picker 的 week-row 部件 grid-template-columns 覆盖槽。 |
+| `--xh-calendar-picker-week-number-w` | `week-row` | `grid-template-columns` | `@media (pointer: coarse)`<br>`has(> [data-part='week-number'])`<br>`not([hidden])` | `--xh-control-h-md` | calendar-picker 的 week-row 部件 grid-template-columns 覆盖槽。 |
 | `--xh-calendar-picker-year-grid-max-h` | `grid` | `max-block-size` | `view=year` | `--xh-viewport-h-sm` | calendar-picker 的 grid 部件 max-block-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

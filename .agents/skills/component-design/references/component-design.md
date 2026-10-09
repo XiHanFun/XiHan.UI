@@ -273,7 +273,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - md 是默认尺寸。
 - 同一 `size` 不随断点自动改变高度。
 - 图标按钮视觉盒遵循同一高度。
-- 粗指针命中区至少 44×44px；可以用伪元素扩展，不能改变布局盒。
+- 粗指针命中区至少 44×44px；可以用伪元素扩展，不能改变布局盒。格子首尾相接的日历网格外扩会压到相邻格：粗指针下加大行距、抬高列宽下限到 44，格子本身就是 44×44 的触摸盒，钮的视觉尺寸不变。
 
 字段的宽度同样是一族一个数，不随内容走：
 
@@ -416,7 +416,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 新组件先在下表找同类，按同类取档；没有对应档时先加语义令牌，再在皮肤里引用，不在皮肤写字面尺寸。
 - 有上限就必须有去处：面内滚动（按 §6.6 的两档滚动条）或条目截断。
 - 限高只取 `--xh-viewport-h-sm` / `md` / `lg`、`--xh-viewport-max-h`，浮层另取 `--xh-overlay-max-h` / `--xh-overlay-menu-max-h`。按 px 定高的面板（日期面板）不再叠 rem 上限。
-- 尺寸不随断点换档；粗指针命中区至少 44×44px，经伪元素外扩，不改表里的视觉尺寸。
+- 尺寸不随断点换档；粗指针命中区至少 44×44px，经伪元素外扩，不改表里的视觉尺寸。日历网格格子首尾相接，改由粗指针下加大行距与列宽兑现（见下表 CalendarPicker 一行）。
 - 表中 sm / md / lg 并列时以「/」分隔；compact 列为空表示不随密度换档。
 
 #### 尺寸令牌
@@ -510,7 +510,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | Select、Combobox、TreeSelect | 与字段盒等宽，下限 10rem，缺省无上限 | 下限一行 `control-h`，上限 `overlay-menu-max-h` |
 | Mention | 下限 12rem，上限 20rem | 下限一行 `control-h`，上限 `overlay-max-h` |
 | Cascader | 每列自然宽、下限 `--xh-overlay-cascade-min-w`（7.5rem），条目上限 20rem；整面上限为可用宽，超出横滚 | 列定高 `viewport-h-sm`，列内滚 |
-| DatePicker、DateRangePicker | 内容宽（面板不留内衬，由日历的七列与内衬撑出）；时间列下限 3.5rem；底栏 `footer` 不参与撑宽 | 上限为可用高；时间列与日历网格同高（`overlay-calendar-column-h`），列顶让出标题栏那一带；时间格 `control-action-size` 高、列内间距 8；快捷项 `control-action-size` 高；预设组上限 `viewport-h-lg`；底栏 `footer` 独占末行、内衬 8，上沿一道 `border-default`，确认钮落在行尾 |
+| DatePicker、DateRangePicker | 内容宽（面板不留内衬，由日历的七列与内衬撑出）；时间列下限 3.5rem；底栏 `footer` 不参与撑宽 | 上限为可用高；时间列与日历网格同高（`overlay-calendar-column-h`，粗指针下日历格长到 44 见方，取 `overlay-calendar-column-h-coarse`），列顶让出标题栏那一带；时间格 `control-action-size` 高、列内间距 8；快捷项 `control-action-size` 高；预设组上限 `viewport-h-lg`；底栏 `footer` 独占末行、内衬 8，上沿一道 `border-default`，确认钮落在行尾 |
 | TimePicker、TimeRangePicker | 内容宽（面板不留内衬）；列宽 `overlay-time-column-w`；TimePicker 的底栏 `footer` 不参与撑宽 | 列定高 `overlay-time-column-h`，列底留白让末格滚到列顶；面板上限 `viewport-h-lg`；预设组上限 `overlay-time-column-h`；TimePicker 的底栏 `footer` 独占末行、内衬 8，上沿一道 `border-default`，「添加」落在行尾 |
 | ColorPicker | 定宽 `overlay-max-w-sm`（16rem）；取色区高 `--xh-overlay-color-area-h`（11rem），排在最前时贴顶通栏、不取圆角；取色区拇指与内嵌滑块拇指 `control-indicator-md`（16px），滑块拇指是白盘 + 1px 描边 + 8px 当前色点；色板区上方一条通栏分隔（材质描边档），预设色块 16px、间距 8px（16px 格要 24px 间距才过 2.5.8 的间隔例外），粗指针格子回到 `control-h-sm`；通道输入照字段外壳、高 `control-action-size`、说明档字号 | 上限 `viewport-h-lg` |
 | Pagination 下拉 | 上限 20rem | 上限 `overlay-max-h` |
@@ -532,7 +532,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | FileUpload | 列表限高 `viewport-h-md`；拖放区最小高 `--xh-dropzone-min-h`（10rem）；文件行是无描边的淡底行，行内与行间距 12px，失败行底回承载面、只把文件名标红；预览是 `glyph-size-sm` 的品牌色无底图标位（空着画文件字形）；删除叉取 `control-indicator-sm`；文件名最小宽 12rem；进度条宽 2 × `control-h-md` |
 | JsonViewer、DiffView | 限高 `viewport-max-h` |
 | Log | 视口 16 行 |
-| CalendarPicker、CalendarRangePicker | 标题栏内衬 8 / 16、内容 `control-action-size` 高，下沿 1px 分隔线；网格内衬 12 / 16；日期格 `control-action-size` 见方的圆，格上下内距 6 撑出 36 的行距；列宽下限与星期行高 `control-h-md`；周期格铺满格宽、`control-action-size` 高，周期视图的网格与日视图同宽；区间轨道比行距上下各收 2；年网格限高 `viewport-h-sm` |
+| CalendarPicker、CalendarRangePicker | 标题栏内衬 8 / 16、内容 `control-action-size` 高，下沿 1px 分隔线；网格内衬 12 / 16；日期格 `control-action-size` 见方的圆，格上下内距 6 撑出 36 的行距；列宽下限与星期行高 `control-h-md`；粗指针下行距与列宽下限都加到 44，命中区铺满整格、到 44×44 且互不重叠，钮仍是 `control-action-size` 的圆，嵌进 DatePicker / DateRangePicker 的网格同一套、并排的时间列随之加高；周期格铺满格宽、`control-action-size` 高，周期视图的网格与日视图同宽；禁用横条与区间轨道以格子中线为轴、比细指针行距上下各收 2（粗指针下不跟着变粗），日视图区间两端的帽从格中线减轨道半高起算、与端点圆同心；年网格限高 `viewport-h-sm` |
 | Image | 宽 100%，高随比例；兜底最小高 `control-h-lg` |
 | Typography | 行宽上限 68ch |
 | EmptyState | 说明行宽上限 32rem |

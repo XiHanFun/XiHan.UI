@@ -227,6 +227,12 @@
      日期钮的命中区（钮的 ::after）同样以它为包含块。上下各 6 的内衬把 24 高的钮撑成 36 的行距。
      格子自成一层：横条压在钮的下面，不盖住钮（钮不当定位盒） */
   [data-scope='calendar-picker'][data-part='cell'] {
+    /* 这副行距的半高：格内横条以格子中线为轴、按它收边，行距被拉高（粗指针）时横条不跟着变粗 */
+    --xh-_calendar-picker-row-half: calc(
+      var(--xh-calendar-picker-cell-size, var(--xh-control-action-size)) / 2
+      + var(--xh-calendar-picker-cell-py, var(--xh-space-1_5))
+    );
+
     position: relative;
     display: flex;
     align-items: center;
@@ -250,7 +256,7 @@
     content: '';
     position: absolute;
     z-index: -1;
-    inset-block: var(--xh-calendar-picker-disabled-inset, var(--xh-space-0_5));
+    inset-block: calc(50% - var(--xh-_calendar-picker-row-half) + var(--xh-calendar-picker-disabled-inset, var(--xh-space-0_5)));
     inset-inline: 0;
     background-color: var(--xh-calendar-picker-cell-bg-disabled, var(--xh-bg-subtle));
     pointer-events: none;
@@ -342,9 +348,28 @@
     inset: 0;
   }
 
-  /* 家族 text 档在粗指针下用 ::after 扩热区到 44px 高；这里的 ::after 已是铺满整格的命中区（36 行距、
-     列宽不窄于中号控件高），再外扩只会压到上下相邻的格：钉回整格那副几何 */
+  /* 粗指针：格子首尾相接，家族 text 档那套 ::after 外扩会压到上下相邻的格。改由格子自己长到 44 见方——
+     行距加到 44、列宽下限抬到 44，铺满整格的命中区随之到 44×44、彼此不重叠；钮仍是 24 的圆，
+     横条仍以格子中线为轴、按细指针那副行距收边。::after 钉回整格那副几何 */
   @media (pointer: coarse) {
+    [data-scope='calendar-picker'][data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) {
+      min-inline-size: calc(7 * max(var(--xh-calendar-picker-cell-min-w, var(--xh-control-h-md)), 44px) + 2 * var(--xh-calendar-picker-grid-px, var(--xh-space-4)));
+    }
+
+    [data-scope='calendar-picker'][data-part='week-row'] {
+      grid-template-columns: repeat(7, minmax(max(var(--xh-calendar-picker-cell-min-w, var(--xh-control-h-md)), 44px), 1fr));
+    }
+
+    [data-scope='calendar-picker'][data-part='week-row']:not([hidden]):has(> [data-part='week-number']) {
+      grid-template-columns:
+        var(--xh-calendar-picker-week-number-w, var(--xh-control-h-md))
+        repeat(7, minmax(max(var(--xh-calendar-picker-cell-min-w, var(--xh-control-h-md)), 44px), 1fr));
+    }
+
+    [data-scope='calendar-picker'][data-part='cell'] {
+      min-block-size: 44px;
+    }
+
     [data-scope='calendar-picker'][data-part='cell-trigger']::after {
       inline-size: auto;
       block-size: auto;
