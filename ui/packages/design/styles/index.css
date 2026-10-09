@@ -8860,11 +8860,13 @@
     --xh-_input-group-shadow: none;
   }
 
-  .xh-scope-input-group[data-part='root']:not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])):not(:focus-within):hover {
+  /* 悬停浮出描边与底：组里的字段只读、禁用或失效时不浮。只读与禁用和下面的禁用面一样只认带字段外壳的那一段，
+     组里单独禁用一颗按钮不让整组失去悬停 */
+  .xh-scope-input-group[data-part='root']:not(:has([data-xh-field-chrome]:is([data-disabled], [data-readonly]), [data-invalid], [aria-invalid='true'])):not(:focus-within):hover {
     --xh-_input-group-face: var(--xh-input-group-bg-hover, var(--xh-_input-group-bg-hover));
   }
 
-  .xh-scope-input-group[data-part='root']:not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])):not(:focus-within):hover::before {
+  .xh-scope-input-group[data-part='root']:not(:has([data-xh-field-chrome]:is([data-disabled], [data-readonly]), [data-invalid], [aria-invalid='true'])):not(:focus-within):hover::before {
     border-color: var(--xh-input-group-border-hover, var(--xh-_input-group-border-hover));
   }
 
@@ -9054,6 +9056,11 @@
     display: none;
   }
 
+  /* 组里的字段禁用：前后缀块的字随字段禁用面换 --xh-fg-disabled，与组壳的禁用面同一个判据 */
+  .xh-scope-input-group[data-part='root']:has([data-xh-field-chrome][data-disabled]) > .xh-scope-input-group[data-part='item'] {
+    color: var(--xh-fg-disabled);
+  }
+
   @media (forced-colors: active) {
     .xh-scope-input-group[data-part='root'] {
       background: Canvas;
@@ -9084,6 +9091,10 @@
       background-color: Canvas;
       color: CanvasText;
       border-color: ButtonText;
+    }
+
+    .xh-scope-input-group[data-part='root']:has([data-xh-field-chrome][data-disabled]) > .xh-scope-input-group[data-part='item'] {
+      color: GrayText;
     }
   }
 }

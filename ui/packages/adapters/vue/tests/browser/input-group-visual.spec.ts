@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
+  XhButton,
   XhInputGroupItem,
   XhInputGroupRoot,
   XhTextFieldControl,
@@ -167,6 +168,33 @@ describe('input-group 单一输入表面', () => {
     expect(getComputedStyle(root, '::before').borderTopColor).toBe(token('--xh-border-default'))
   })
 
+  it('组里只有一颗按钮禁用、字段可用：整组照常悬停升描边，禁用面只认字段外壳', async () => {
+    host = document.createElement('div')
+    host.style.setProperty('--xh-motion-duration-micro', '0ms')
+    document.body.append(host)
+    app = createApp({
+      render: () => h(XhInputGroupRoot, { 'data-testid': 'button' }, () => [
+        field('搜索'),
+        h(XhButton, { disabled: true }, () => '搜索'),
+      ]),
+    })
+    app.mount(host)
+    await nextTick()
+    const root = group('button')
+    expect(root.querySelector('[data-scope="button"][data-disabled]')).not.toBeNull()
+    expect(getComputedStyle(root, '::before').borderTopColor).toBe(token('--xh-border-control'))
+    await userEvent.hover(control('button'))
+    expect(getComputedStyle(root, '::before').borderTopColor).toBe(token('--xh-border-strong'))
+  })
+
+  it('组里的字段禁用：前后缀块的字随字段禁用面换 --xh-fg-disabled', async () => {
+    await mount()
+    const item = group('disabled').querySelector<HTMLElement>(`[data-scope='input-group'][data-part='item']`)!
+    expect(getComputedStyle(item).color).toBe(token('--xh-fg-disabled'))
+    const enabled = group('outline').querySelector<HTMLElement>(`[data-scope='input-group'][data-part='item']`)!
+    expect(getComputedStyle(enabled).color).toBe(token('--xh-fg-default'))
+  })
+
   it('强制色：聚焦时组壳补一圈 Highlight 环，描边换 Highlight', async () => {
     await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [{ name: 'forced-colors', value: 'active' }] })
     await mount()
@@ -216,6 +244,9 @@ describe('input-group 单一输入表面', () => {
     const item = group('outline').querySelector<HTMLElement>(`[data-scope='input-group'][data-part='item']`)!
     expect(getComputedStyle(item).borderInlineEndWidth).toBe('1px')
     expect(getComputedStyle(item).borderInlineEndColor).toBe(resolve('ButtonText'))
+    // 组里的字段禁用时前后缀的字换 GrayText，与组壳的禁用描边同一档
+    const disabled = group('disabled').querySelector<HTMLElement>(`[data-scope='input-group'][data-part='item']`)!
+    expect(getComputedStyle(disabled).color).toBe(resolve('GrayText'))
   })
 
   it('不传尺寸时整组与单个字段同宽：前缀按内容宽，字段占满剩余，不再是字段缺省宽再加前缀', async () => {
