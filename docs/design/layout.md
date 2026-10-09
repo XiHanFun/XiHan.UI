@@ -35,7 +35,9 @@
 - 图标按钮的视觉盒遵循同一高度；粗指针命中区至少 44×44px，用伪元素扩展，不改布局盒。
 - 尺寸档同时换行内内衬（`--xh-control-px-sm / md / lg` = 8 / 12 / 16px）、内部间隙（`--xh-control-gap-*` = 4 / 8 / 12px）、字号（`--xh-control-font-*`）与图标（16 / 20 / 24px）。按钮这类文字档动作控件的行内内衬宽一档：sm / md / lg = 12 / 16 / 20px。
 - 密度（`data-density="compact"`）只收紧高度、内距与间隙，不缩字号和字形。
-- 方格（PinInput 的格、悬浮动作钮）走 `--xh-control-box-sm / md / lg` = 28 / 36 / 44px（紧凑 24 / 32 / 40px）；盛内容的圆（Avatar、带框 Icon、Steps 序号圆点）直径取 `--xh-control-h-*`，与同档控件等高。
+- PinInput 的格是字段外壳，边长取 `--xh-control-h-*`，与同一行里的字段等高。
+- 浮在内容之上的圆钮（Carousel 翻页、回到底部等 floating 动作钮）走 `--xh-control-box-sm / md / lg` = 28 / 36 / 44px（紧凑 24 / 32 / 40px）；独立浮在页面一角的 FloatButton 与 BackTop 的 md 档取 `--xh-control-float-md` = 40px（紧凑 36px），sm / lg 仍取 box 档。
+- 盛内容的圆（Avatar、带框 Icon）直径取 `--xh-control-h-*`，与同档控件等高；Steps 序号圆点是状态圆，取 `--xh-marker-size-sm / md / lg` = 24 / 28 / 32px（紧凑 20 / 24 / 28px），比同档控件矮一档。
 - 导航行（SideNav 的分支与链接）比同档控件高一截：`--xh-nav-row-h-sm / md / lg` = 32 / 40 / 44px（紧凑 28 / 36 / 40px），整列扫读更松。
 - 状态 chip（Tag）比同档控件矮一截：`--xh-chip-h-sm / md / lg` = 20 / 24 / 28px（紧凑 18 / 20 / 24px）。
 
