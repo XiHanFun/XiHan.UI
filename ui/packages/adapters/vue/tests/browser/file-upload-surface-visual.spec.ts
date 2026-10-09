@@ -14,7 +14,14 @@ afterEach(() => {
 
 const DELETE = 'data-xh-action-control data-xh-action-profile="icon" data-xh-action-variant="ghost" data-xh-action-display="always" data-xh-action-size="xs"'
 
-function mount(theme?: 'dark'): Record<string, HTMLElement> {
+interface Mounted {
+  dropzone: HTMLElement
+  list: HTMLElement
+  item: HTMLElement
+  error: HTMLElement
+}
+
+function mount(theme?: 'dark'): Mounted {
   host = document.createElement('div')
   host.style.inlineSize = '480px'
   host.style.setProperty('--xh-motion-duration-micro', '0ms')
