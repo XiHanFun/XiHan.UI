@@ -8,7 +8,7 @@
 // 颜色 --xh-fg-default；
 // 集合标题（RadioGroup / CheckboxGroup / Listbox / Tree / TagGroup / Descriptions）= --xh-fg-muted，与集合 --xh-space-2；
 // 说明 = --xh-text-secondary-size 13 / --xh-fg-muted / --xh-leading-normal（CAPTION_DESCRIPTION 里的组件取次级标注
-// 12 / --xh-fg-subtle）；错误文案 = 13 / --xh-fg-danger；
+// 12 / --xh-fg-subtle；BODY_DESCRIPTION 里的是内容本身，取正文字号 14、颜色按登记）；错误文案 = 13 / --xh-fg-danger；
 // Surface / 浮层内标题 = --xh-text-label-size + --xh-font-weight-medium；区块标题（Card / Descriptions / Alert / Notification / Steps）
 // 与面板标题（Dialog / Drawer / Tour）= heading-3（16 / 500）；页面标题（PageHeader）= heading-2（20 / 500）；
 // 禁用标签 --xh-fg-subtle；控件内图标 --xh-icon-size 兜底只能是 --xh-glyph-size-sm / md / lg（按 data-size），
@@ -126,6 +126,9 @@ const GLYPH_EXEMPT = {
   'select:item-indicator': '浮层条目里勾选标记所在的标记盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，兜底的勾与作者塞进去的图标都与盒同尺，不按图标档取',
   'combobox:item-indicator': '浮层条目里勾选标记所在的标记盒是指示符，与 16px 指示符档同走 --xh-control-indicator-size，兜底的勾与作者塞进去的图标都与盒同尺，不按图标档取',
   'steps:indicator': '走过的步里的对号是指示符，按 16px 指示符档走 --xh-control-indicator-size（公开槽 --xh-steps-indicator-mark-size），作者塞进圆点的图标与它同尺，不按图标档取',
+  'dialog:close-trigger': '面板角上关闭钮的叉取 --xh-glyph-size-xs（12px），比控件内图标低一档，不按 sm / md / lg 取',
+  'drawer:close-trigger': '面板角上关闭钮的叉取 --xh-glyph-size-xs（12px），比控件内图标低一档，不按 sm / md / lg 取',
+  'notification:item-close-trigger': '面板角上关闭钮的叉取 --xh-glyph-size-xs（12px），比控件内图标低一档，不按 sm / md / lg 取',
 }
 /** 控件内图标允许的档。 */
 const GLYPH_STEPS = new Set(['--xh-glyph-size-sm', '--xh-glyph-size-md', '--xh-glyph-size-lg'])
@@ -135,6 +138,14 @@ const GLYPH_STEPS = new Set(['--xh-glyph-size-sm', '--xh-glyph-size-md', '--xh-g
  */
 const CAPTION_DESCRIPTION = {
   steps: '步骤说明压在流程轴的标题下面，比标题低两级：12px 弱化色，与正文 14 / 次级色的标题拉开层级',
+}
+
+/** 内容说明：description 部件装的是内容本身而不是控件下的提示，取正文字号 14；颜色逐个登记。 */
+const BODY_DESCRIPTION = {
+  'popover': { color: '--xh-fg-muted', reason: '气泡正文就是这块浮层的内容，与标题同为正文字号、低一档颜色' },
+  'popconfirm': { color: '--xh-fg-muted', reason: '确认气泡的正文，与 Popover 同一副排版' },
+  'hover-card': { color: '--xh-fg-muted', reason: '悬停卡片的正文，与 Popover 同一副排版' },
+  'page-header': { color: '--xh-fg-subtle', reason: '页头副标题跟在标题同一行、隔一条竖线，正文字号、比标题低两档颜色' },
 }
 
 const backlog = await openBacklog('text')
@@ -317,6 +328,11 @@ for (const skin of skins) {
     expect(skin.comp, 'description', description, 'font-size', '--xh-text-caption-size', '次级标注')
     expect(skin.comp, 'description', description, 'color', '--xh-fg-subtle', '次级标注')
     expect(skin.comp, 'description', description, 'line-height', '--xh-leading-normal', '次级标注')
+  }
+  else if (description.size && skin.comp in BODY_DESCRIPTION) {
+    expect(skin.comp, 'description', description, 'font-size', '--xh-text-body-size', '内容说明')
+    expect(skin.comp, 'description', description, 'color', BODY_DESCRIPTION[skin.comp].color, '内容说明')
+    expect(skin.comp, 'description', description, 'line-height', '--xh-leading-normal', '内容说明')
   }
   else if (description.size) {
     expect(skin.comp, 'description', description, 'font-size', '--xh-text-secondary-size', '说明文字')

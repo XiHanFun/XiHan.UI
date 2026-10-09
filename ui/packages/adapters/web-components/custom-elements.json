@@ -22811,6 +22811,12 @@
               "name": "--xh-dialog-bg"
             },
             {
+              "name": "--xh-dialog-body-px"
+            },
+            {
+              "name": "--xh-dialog-body-py"
+            },
+            {
               "name": "--xh-dialog-border"
             },
             {
@@ -22841,12 +22847,6 @@
               "name": "--xh-dialog-content-backdrop-filter"
             },
             {
-              "name": "--xh-dialog-content-lens-bg"
-            },
-            {
-              "name": "--xh-dialog-content-lens-depth"
-            },
-            {
               "name": "--xh-dialog-description-fg"
             },
             {
@@ -22868,22 +22868,25 @@
               "name": "--xh-dialog-footer-pt"
             },
             {
-              "name": "--xh-dialog-gap"
+              "name": "--xh-dialog-footer-px"
             },
             {
-              "name": "--xh-dialog-header-bg"
+              "name": "--xh-dialog-footer-py"
+            },
+            {
+              "name": "--xh-dialog-gap"
             },
             {
               "name": "--xh-dialog-header-gap"
             },
             {
-              "name": "--xh-dialog-header-lens-depth"
-            },
-            {
               "name": "--xh-dialog-header-pb"
             },
             {
-              "name": "--xh-dialog-highlight"
+              "name": "--xh-dialog-header-pt"
+            },
+            {
+              "name": "--xh-dialog-header-px"
             },
             {
               "name": "--xh-dialog-icon-size"
@@ -24370,6 +24373,12 @@
               "name": "--xh-drawer-bg"
             },
             {
+              "name": "--xh-drawer-body-px"
+            },
+            {
+              "name": "--xh-drawer-body-py"
+            },
+            {
               "name": "--xh-drawer-border"
             },
             {
@@ -24412,6 +24421,12 @@
               "name": "--xh-drawer-footer-pt"
             },
             {
+              "name": "--xh-drawer-footer-px"
+            },
+            {
+              "name": "--xh-drawer-footer-py"
+            },
+            {
               "name": "--xh-drawer-gap"
             },
             {
@@ -24419,6 +24434,12 @@
             },
             {
               "name": "--xh-drawer-header-pb"
+            },
+            {
+              "name": "--xh-drawer-header-pt"
+            },
+            {
+              "name": "--xh-drawer-header-px"
             },
             {
               "name": "--xh-drawer-icon-size"
@@ -24455,6 +24476,9 @@
             },
             {
               "name": "--xh-drawer-resize-trigger-size"
+            },
+            {
+              "name": "--xh-drawer-separator"
             },
             {
               "name": "--xh-drawer-shadow"
@@ -49201,6 +49225,9 @@
               "name": "--xh-popconfirm-action-font-weight"
             },
             {
+              "name": "--xh-popconfirm-action-mt"
+            },
+            {
               "name": "--xh-popconfirm-action-px"
             },
             {
@@ -49244,6 +49271,9 @@
             },
             {
               "name": "--xh-popconfirm-cancel-fg-focus"
+            },
+            {
+              "name": "--xh-popconfirm-column-gap"
             },
             {
               "name": "--xh-popconfirm-confirm-bg"

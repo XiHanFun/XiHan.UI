@@ -124,15 +124,18 @@
     --xh-frosted-shadow: var(--xh-hover-card-shadow, var(--xh-_material-shadow));
     --xh-frosted-backdrop: var(--xh-hover-card-backdrop, var(--xh-_material-backdrop));
 
-    /* 尺寸档只换这两个私有槽。size 落在 content 上而非 root：root 是可选部件，
-       面板几何也长在 content 上。语气不接：卡片是内容容器，语气该由里面的内容表达 */
-    --xh-_hover-card-pad: var(--xh-surface-pad-md);
+    /* 尺寸档只换这三个私有槽。size 落在 content 上而非 root：root 是可选部件，
+       面板几何也长在 content 上。横向内衬比纵向高一档（缺省纵 12 横 16），与 popover 同一套。
+       语气不接：卡片是内容容器，语气该由里面的内容表达 */
+    --xh-_hover-card-py: var(--xh-surface-pad-md);
+    --xh-_hover-card-px: var(--xh-surface-pad-lg);
     --xh-_hover-card-max-w: var(--xh-overlay-max-w);
 
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: var(--xh-hover-card-gap, var(--xh-space-2));
+    /* 标题与正文贴着排：两行之间只留 4px */
+    gap: var(--xh-hover-card-gap, var(--xh-space-1));
     inline-size: max-content;
     /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
     max-inline-size: min(var(--xh-hover-card-max-w, var(--xh-_hover-card-max-w)), var(--xh-_hover-card-available-w));
@@ -141,8 +144,8 @@
     overflow-y: auto;
     /* 浮在页面之上的 Overlay 滚动面：滚到头不把页面一起带走 */
     overscroll-behavior: contain;
-    padding-block: var(--xh-hover-card-py, var(--xh-_hover-card-pad));
-    padding-inline: var(--xh-hover-card-px, var(--xh-_hover-card-pad));
+    padding-block: var(--xh-hover-card-py, var(--xh-_hover-card-py));
+    padding-inline: var(--xh-hover-card-px, var(--xh-_hover-card-px));
     border-radius: var(--xh-hover-card-radius, var(--xh-shape-overlay));
     pointer-events: auto;
     /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
@@ -172,28 +175,32 @@
   }
 
   /* —— 尺寸 —— */
-  /* 缺省档写在 content 的基础规则里；四边等宽的面板内衬三档取 surface-pad 那把尺 */
+  /* 缺省档写在 content 的基础规则里；内衬三档取 surface-pad 那把尺，横向始终比纵向高一档 */
   [data-scope='hover-card'][data-part='content'][data-size='sm'] {
-    --xh-_hover-card-pad: var(--xh-surface-pad-sm);
+    --xh-_hover-card-py: var(--xh-surface-pad-sm);
+    --xh-_hover-card-px: var(--xh-surface-pad-md);
     --xh-_hover-card-max-w: var(--xh-overlay-max-w-sm);
   }
 
   [data-scope='hover-card'][data-part='content'][data-size='lg'] {
-    --xh-_hover-card-pad: var(--xh-surface-pad-lg);
+    --xh-_hover-card-py: var(--xh-surface-pad-lg);
+    --xh-_hover-card-px: var(--xh-surface-pad-xl);
     --xh-_hover-card-max-w: var(--xh-overlay-max-w-lg);
   }
 
+  /* 气泡标题：14px / medium / 正文色 */
   [data-scope='hover-card'][data-part='title'] {
     margin: 0;
     font-size: var(--xh-hover-card-title-font-size, var(--xh-text-label-size));
-    font-weight: var(--xh-hover-card-title-font-weight, var(--xh-font-weight-semibold));
+    font-weight: var(--xh-hover-card-title-font-weight, var(--xh-font-weight-medium));
     color: var(--xh-hover-card-title-fg, var(--xh-fg-default));
   }
 
-  /* 说明文字走说明档：13px + fg-muted */
+  /* 说明就是卡片的正文：14px 正文字号 + fg-muted 次级色 */
   [data-scope='hover-card'][data-part='description'] {
     margin: 0;
-    font-size: var(--xh-hover-card-description-font-size, var(--xh-text-secondary-size));
+    font-size: var(--xh-hover-card-description-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-leading-normal);
     color: var(--xh-hover-card-description-fg, var(--xh-fg-muted));
   }
 
