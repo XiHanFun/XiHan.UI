@@ -2,7 +2,6 @@
   "backlog": {},
   "declared": {
     "carousel [data-part='indicator'][data-scope='carousel']:not([data-current]):is(:hover, :active, [data-pressed])": "分页点悬停 / 按下的面是前景色阶梯（fg-muted → fg-default）：浅色档悬停面 neutral-500 与库环 brand-600 同一明度（1.0），深色档按下面就是白点（2.59）；本脚本把 :hover / :active 归进 conditional 不判定。环取前景色的配对面 --xh-bg-canvas",
-    "radio-group [data-part='root'][data-scope='radio-group'][data-variant='segmented']:has(> [data-scope='radio-group'][data-part='thumb']:not([hidden])) [data-part='item'][data-scope='radio-group'][data-state='checked']": "segmented 形态的选中段自己的面是透空的，环内侧是压在它底下、与它同一块矩形的滑块实心底（写了 data-tone 时默认环压上去 1.08-2.89）；本脚本只看部件自己那条 background，看不见被压在下面的兄弟节点",
     "scrollbar [data-part='thumb'][data-scope='scrollbar']:not([data-disabled])": "滑块面为半透明中性色，聚焦环改取不透明的 currentColor，避免环色随滑块透明度一起变淡",
     "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='root'][data-scope='tag'] [data-part='close-trigger'][data-scope='tag']": "叉（tag 的 close-trigger）自己的面是透空的，环内侧是整颗标签（tag 的 root）换成当前项淡底后的语气面；本脚本只看部件自己那条 background，透空的面透出祖先那一层算不出来",
     "tag [data-part='close-trigger'][data-scope='tag']:is(:active, [data-pressed])": "叉自己的面是从 currentColor 兑出的 22% 底，压在标签的淡底 / 选中面上把面往字色那头带一档，库环在浅色档只剩 2.2–2.9；本脚本看不见 color-mix 的 currentColor 也看不见祖先铺的面。环取叉自己的字色，按压面正是从它兑出来的",
@@ -171,20 +170,6 @@
     "cartesian-chart [data-part='zoom-handle'][data-scope='cartesian-chart']": {
       "parts": [
         "zoom-handle"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "slider [data-invalid][data-part='thumb'][data-scope='slider']": {
-      "parts": [
-        "thumb"
-      ],
-      "ratio": 1.05,
-      "ring": "poured"
-    },
-    "slider [data-part='thumb'][data-scope='slider']": {
-      "parts": [
-        "thumb"
       ],
       "ratio": 1,
       "ring": "poured"

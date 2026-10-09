@@ -86,7 +86,7 @@ describe('radio-group segmented 形态的滑块几何', () => {
     const thumb = part('thumb')
     expect(thumb.hasAttribute('data-instant')).toBe(false)
     const style = getComputedStyle(thumb)
-    expect(style.transitionProperty.split(', ')).toEqual(['translate', 'inline-size', 'block-size', 'box-shadow'])
+    expect(style.transitionProperty.split(', ')).toEqual(['translate', 'inline-size', 'block-size', 'background-color'])
     await settle()
     expectCovers('month')
   })

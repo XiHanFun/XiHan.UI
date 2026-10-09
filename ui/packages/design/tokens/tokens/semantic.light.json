@@ -68,6 +68,21 @@
       "$type": "color",
       "$value": "color-mix(in oklab, {bg.brand} 28%, {bg.surface})"
     },
+    "segment-selected": {
+      "$description": "分段控件（RadioGroup segmented）选中段的面：品牌淡底。浅色档与 {bg.brand-subtle} 同为 12%，深色档提到 20%，深底上才读得出是一块选中面。",
+      "$type": "color",
+      "$value": "{bg.brand-subtle}"
+    },
+    "segment-selected-hover": {
+      "$description": "选中段悬停：浅色档 18%、深色档 28%，比静息深一档。",
+      "$type": "color",
+      "$value": "color-mix(in oklab, {bg.brand} 18%, {bg.surface})"
+    },
+    "segment-selected-disabled": {
+      "$description": "禁用的选中段：8% 品牌淡底，比静息浅一档，仍看得出选的是哪一段。",
+      "$type": "color",
+      "$value": "color-mix(in oklab, {bg.brand} 8%, {bg.surface})"
+    },
     "overlay": {
       "$description": "模态遮罩：正文深灰兑 60%，压暗页面而不发黑。",
       "$type": "color",
@@ -111,6 +126,16 @@
     "brand-strong": {
       "$type": "color",
       "$value": "{color.brand.700}"
+    },
+    "segment-selected": {
+      "$description": "分段控件选中段的字：浅色档取深一档的品牌色，压在 12% / 18% 两档选中面上都过 4.5:1；深色档取亮一档的品牌色。",
+      "$type": "color",
+      "$value": "{fg.brand-strong}"
+    },
+    "segment-selected-disabled": {
+      "$description": "禁用选中段的字：品牌色往承载面兑一半，浅色档变浅、深色档变暗，读得出是选中段又一眼看出动不了。",
+      "$type": "color",
+      "$value": "color-mix(in oklab, {fg.brand} 50%, {bg.surface})"
     },
     "success": {
       "$type": "color",
