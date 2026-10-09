@@ -64645,7 +64645,7 @@
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-bg-field"
       ],
       "visibility": "public",
       "description": "signature-pad 的 control 部件 background 覆盖槽。"
@@ -64664,6 +64664,42 @@
       ],
       "defaultToken": [
         "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "signature-pad 的 control 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-signature-pad-bg-drawing",
+      "component": "signature-pad",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "drawing"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "signature-pad 的 control 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-signature-pad-bg-invalid",
+      "component": "signature-pad",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-border-invalid"
       ],
       "visibility": "public",
       "description": "signature-pad 的 control 部件 background 覆盖槽。"
@@ -64737,7 +64773,33 @@
         "drawing"
       ],
       "defaultToken": [
-        "--xh-border-control-hover"
+        "--xh-border-control-focus"
+      ],
+      "visibility": "public",
+      "description": "signature-pad 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-signature-pad-border-hover",
+      "component": "signature-pad",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "drawing",
+        "hover",
+        "invalid",
+        "not([data-disabled])",
+        "not([data-drawing])",
+        "not([data-invalid])",
+        "not([data-readonly])",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-border-strong"
       ],
       "visibility": "public",
       "description": "signature-pad 的 control 部件 border-color 覆盖槽。"
