@@ -1067,6 +1067,10 @@
   grid-template-rows: auto minmax(0, max-content);
   align-items: center;
   min-inline-size: 0;
+  /* 定高行：锚定浮层里的集合（下拉、菜单、级联、命令面板）由皮肤经这支桥接槽接上按档的行高，
+     一行文字的行落在这一档、带说明的行照常撑高；条目在 reset 里已是 border-box，行高就是可见盒高。
+     overlay 语境同时覆盖页内列表、树与时间格，它们不接这支槽，仍由内距加一行文字撑开 */
+  min-block-size: var(--xh-collection-row-h, auto);
   padding-block: var(--xh-collection-block-padding, var(--xh-_collection-block-padding));
   padding-inline: var(--xh-collection-inline-padding, var(--xh-_collection-inline-padding));
   border-radius: var(--xh-collection-radius, var(--xh-shape-control));
@@ -1113,13 +1117,6 @@
   --xh-_collection-gap: var(--xh-control-gap-lg);
   --xh-_collection-font-size: var(--xh-control-font-lg);
   --xh-_collection-glyph-size: var(--xh-glyph-size-lg);
-}
-
-/* 定高行：锚定浮层里的集合（下拉、菜单、级联、命令面板）由皮肤经这支桥接槽接上按档的行高，
-   一行文字的行落在这一档、带说明的行照常撑高；条目在 reset 里已是 border-box，行高就是可见盒高。
-   overlay 语境同时覆盖页内列表、树与时间格，它们不接这支槽，仍由内距加一行文字撑开 */
-[data-scope][data-xh-collection-item] {
-  min-block-size: var(--xh-collection-row-h, auto);
 }
 
 [data-xh-collection-slot='prefix'] {
