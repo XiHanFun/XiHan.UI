@@ -136,7 +136,7 @@ Vue、React、Web Components 只负责：
 | RadioGroup segmented 形态的轨道 | 字段外壳同款的静息面 | 轨道就是 root：`--xh-bg-field` + 1px `--xh-border-control` + control 形状 + `--xh-space-0_5` 内衬（加描边段离外沿 3px）；见 §6.3 |
 | Tabs segment 的滑块 indicator | raised 部件 | 白色抬起面 + border-default；见 §7.3 |
 | RadioGroup segmented 形态的滑块 thumb | 选中面 | 平面的品牌淡底 `--xh-bg-segment-selected`，无边无影；见 §7.3。滑块另立 `thumb` 部件，不占行首单选圆圈的 `indicator` |
-| RadioGroup segmented 形态的段 | 行级（只换面） | 不投影 Action Control 配方（与 Tabs segment 同）：面与字写在段上，轨道底是最浅一档淡底，按白底承载阶梯 100 → 200；选中段由滑块标出、字取 `--xh-fg-segment-selected` + medium、不叠按下面；段间 1px `--xh-border-default` 分隔线（长为段高一半减 2px），与选中段、悬停段相邻的收起；不画行首圆圈，组标题视觉隐藏只作可及名 |
+| RadioGroup segmented 形态的段 | 行级（只换面） | 不投影 Action Control 配方（与 Tabs segment 同）：面与字写在段上，轨道底是最浅一档淡底，按白底承载阶梯 100 → 200；选中段由滑块标出、字取 `--xh-fg-segment-selected` + medium、不叠按下面；段间 1px `--xh-border-default` 分隔线（长为段高一半减 2px），与选中段、悬停段相邻的收起；分隔线画在后一段的起始缘上，折行后下一行首段的起始缘同样会画出一道——样式层拿不到段落在第几行，这一道不收，轨道应尽量一行排下（段数与文字长度受控，排不下改竖排或 Select）；不画行首圆圈，组标题视觉隐藏只作可及名 |
 | Toggle、ToggleGroup item、Toolbar `aria-pressed` 项 | Action Control（无滑块开关） | 选中 = 品牌淡底；见 §7.3 |
 | Toolbar 「更多」钮（overflow-trigger） | Action Control `icon` profile、ghost、与条目同档 | 不写内容时画横排三点；菜单开着时与悬停同档的中性面；见 §6.6 |
 | Tabs 「更多」钮（overflow-trigger） | Action Control `icon` profile、ghost、与两端翻页钮同档 | root 的孩子、排在 list 之后（不进 tablist），自占一个 Tab 位、不是方向键走位的一站；盒取标签同高的正方形（竖排横贯列宽），不写内容时画横排三点；菜单开着时与悬停同档的中性面；见 §6.6 |

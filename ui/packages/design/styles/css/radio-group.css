@@ -442,7 +442,9 @@
 
   /* 段间分隔线：1px 装饰边色，长度取段高的一半再收一格半阶（md 档 32 / 2 − 2 = 14px），竖在后一段的起始缘上。
      只在横排画：竖排的段上下相接，分隔交给轨道的留白。与选中段、悬停段相邻的那几道收起（底色淡成透明）——
-     那两段铺了面，再夹一道线就把面切出了缺口 */
+     那两段铺了面，再夹一道线就把面切出了缺口。
+     已知限制：折行后下一行首段的起始缘也会画出这一道。样式层拿不到段落在第几行（不用容器查询，
+     轨道也不能裁内容，否则段的焦点环与粗指针命中区一并被裁），设计真源与组件文档注明了尽量一行排下 */
   [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-orientation='horizontal']
     > [data-scope='radio-group'][data-part='item'] + [data-scope='radio-group'][data-part='item']::after {
     content: '';
