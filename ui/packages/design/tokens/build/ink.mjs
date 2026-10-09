@@ -57,13 +57,23 @@ const GLOBAL = EQUIVALENT.filter(name => name !== '--xh-fg-disabled')
  */
 export const OPAQUE = [...FILLS, '--xh-border-default'].map(name => [`${name}-opaque`, name])
 
-/** 比例固定、与主题无关的墨色表达。 */
+/**
+ * 比例固定的墨色表达：[名字, 黑墨比例, 白墨比例]，白墨比例缺省时与黑墨同值。
+ * 分段选中面在浅色 / 深色主题里取不同的品牌淡底档（12 / 18% 与 20 / 28%），两档取值不同，
+ * auto 域的重求值不收它们（两档不同值的按极性处理）；不写在这里就只继承到外层主题求好的品牌淡底，
+ * 深色彩色面上选中字已换成白墨、底却还是浅品牌色。黑墨 / 白墨两端照浅色 / 深色主题同口径取。
+ * 禁用选中字在主题里是品牌色往承载面兑一半，域里品牌色已是墨色、承载面却是外层主题的，同样改成墨色按比例透明
+ */
 const FIXED = [
   ['--xh-bg-brand-hover', 0.88],
   ['--xh-bg-brand-active', 0.78],
   ['--xh-bg-brand-subtle', 0.12],
   ['--xh-bg-brand-subtle-hover', 0.2],
   ['--xh-bg-brand-subtle-active', 0.28],
+  ['--xh-bg-segment-selected', 0.12, 0.2],
+  ['--xh-bg-segment-selected-hover', 0.18, 0.28],
+  ['--xh-bg-segment-selected-disabled', 0.08],
+  ['--xh-fg-segment-selected-disabled', 0.5],
 ]
 
 /** 直接取墨色本身的令牌。 */
@@ -207,7 +217,7 @@ export function inkBlocks({ color, moreRoutes, reevaluate }, indent = '  ') {
     const lines = [
       ...SOLID.map(name => `${inner}${name}: var(--xh-ink);`),
       `${inner}--xh-fg-on-brand: var(--xh-ink-surface, ${p.opposite});`,
-      ...FIXED.map(([name, alpha]) => `${inner}${name}: ${inkMix(alpha)};`),
+      ...FIXED.map(([name, light, dark = light]) => `${inner}${name}: ${inkMix(theme === 'light' ? light : dark)};`),
       `${inner}--xh-fg-disabled: ${inkMix(alphas[theme]['--xh-fg-disabled'])};`,
     ]
     blocks.push(`${indent}${p.selector} {\n${lines.join('\n')}\n${indent}}`)
@@ -233,7 +243,7 @@ ${indent}}`)
     `${inner}  --xh-fg-muted: ${mutedAuto};`,
     `${inner}  --xh-fg-subtle: ${mutedAuto};`,
     `${inner}  --xh-fg-on-brand: ${surface};`,
-    ...FIXED.map(([name, alpha]) => `${inner}  ${name}: ${fromSurface(alpha)};`),
+    ...FIXED.map(([name, light, dark = light]) => `${inner}  ${name}: ${fromSurface(between(light, dark))};`),
     ...EQUIVALENT.map(name => `${inner}  ${name}: ${routed(name, fromSurface(between(alphas.light[name], alphas.dark[name])))};`),
   ]
   blocks.push(`${indent}@supports (${RELATIVE_COLOR_PROBE}) {
