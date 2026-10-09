@@ -55,14 +55,24 @@
     "tone": "neutral"
   },
   "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag']:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
+    "ratio": 1.81,
+    "theme": "dark",
+    "tone": "warning"
+  },
+  "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-variant='ghost']:not([data-disabled]):not([data-tone]) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
     "ratio": 2.41,
     "theme": "dark",
     "tone": "warning"
   },
   "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='list'][data-scope='tag-group'] [data-part='root'][data-pressed][data-scope='tag'][data-selectable]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
-    "ratio": 1.81,
+    "ratio": 1.67,
     "theme": "dark",
     "tone": "warning"
+  },
+  "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='list'][data-scope='tag-group'] [data-part='root'][data-pressed][data-scope='tag'][data-selectable]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-scope='tag']": {
+    "ratio": 2.85,
+    "theme": "light",
+    "tone": "neutral"
   },
   "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='root'][data-scope='tag'][data-variant='solid']:not([data-disabled]) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
     "ratio": 2.89,
@@ -74,13 +84,18 @@
     "theme": "light",
     "tone": null
   },
+  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag']:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
+    "ratio": 2.36,
+    "theme": "dark",
+    "tone": null
+  },
   "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-tone]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
     "ratio": 2.57,
     "theme": "light",
     "tone": "neutral"
   },
   "tag [data-part='list'][data-scope='tag-group'] [data-part='root'][data-pressed][data-scope='tag'][data-selectable]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
-    "ratio": 2.36,
+    "ratio": 2.16,
     "theme": "dark",
     "tone": null
   },
