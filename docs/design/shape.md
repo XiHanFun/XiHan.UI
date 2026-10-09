@@ -11,7 +11,7 @@
     '--xh-shape-inset': '2px · 嵌在控件里的内层：勾选方框、页内列表的候选行（Listbox、Tree）、字段内的清空钮、表格行选择框、色块',
     '--xh-shape-control': '2px · 控件本体：Button、Input、Select trigger、Toggle、kbd、tooltip、Tabs / Steps trigger、单选组 segmented 形态的轨道；方签 Tag、状态方签（ToolCall 状态、Approval / QuestionFlow 结果）与 Alert 提示条',
     '--xh-shape-surface': '4px · 成面的静态容器：Card、Panel、列表容器、Tabs segment 的轨道、选择卡片、分页的描边方块',
-    '--xh-shape-overlay': '4px · 脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Notification',
+    '--xh-shape-overlay': '4px · 脱离文档流的浮层：Popover、Menu、Dialog、Notification 卡片预设；Drawer 贴边不取圆角，Notification 轻提示预设取 control',
     '--xh-shape-circle': '50% · 宽高相等的圆：头像、单选圈、开关与滑杆的拇指、步骤圆点、加载环、悬浮单图标动作',
     '--xh-shape-pill': '9999px · 只两类身份：状态 chip（Badge；Tag 与结果标记是方签，取 control）与一维对象（轨道、进度条、指示条、手柄、滚动条滑块）',
   }"
@@ -24,7 +24,7 @@
 - 正方盒（inline-size 与 block-size 同槽）必须取 circle，不得用 pill 冒充圆。
 - 内层圆角不超过外层圆角减去内边距（surface 4px 的轨道留 2px 内距，里面的滑块取 2px）；相连控件（InputGroup、ButtonGroup）消除相接侧圆角。
 - 锚定浮层里的列表行（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列）与 Command、Transfer 的列表行是通栏行，不取圆角，悬停与选中的面铺满整行；Listbox、Tree 的行仍按 inset 内缩。
-- 贴边铺满的通栏（Alert `banner`）不取圆角：它的边就是页面或容器的边。
+- 贴边铺满的通栏（Alert `banner`）与贴边面板（Drawer）不取圆角：它们的边就是页面或容器的边。
 - 亮色、暗色与紧凑密度不改变形状身份。
 - PromptInput 是登记过的例外：对话输入条允许 `--xh-shape-surface`。
 
