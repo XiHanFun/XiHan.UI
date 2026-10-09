@@ -81,6 +81,8 @@ export function connectCalendarPicker<T extends PropTypes>(
     'data-outside-month': dataAttr(state.outsideMonth),
     'data-today': dataAttr(state.isToday),
     'data-focus': dataAttr(state.focused),
+    // 皮肤按视图分档：日视图的格是圆，周期视图的格铺满格宽
+    'data-view': view,
   })
 
   // 按压通道：真源是机器 context 里「正被按住的那一个」，七类可按部件各自合成一份跟踪器；
@@ -162,13 +164,13 @@ export function connectCalendarPicker<T extends PropTypes>(
     getPrevYearTriggerProps: () => normalize.button({
       ...parts['prev-year-trigger'].attrs,
       'type': 'button',
-      // 定尺的图标钮（日期翻页按钮）：接 Action Control icon 档、ghost 形态、sm 档正方盒（--xh-control-h-sm），
-      // 悬停 / 按下 / 禁用面、缩放与换底、粗指针热区由家族给
+      // 定尺的图标钮（日期翻页按钮）：接 Action Control icon 档、ghost 形态、xs 档正方盒（--xh-control-action-size），
+      // 悬停 / 按下 / 禁用面、按压换底、粗指针热区由家族给
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'sm',
+      'data-xh-action-size': 'xs',
       'disabled': !frame.canGoPrevYear || undefined,
       'data-disabled': dataAttr(!frame.canGoPrevYear),
       ...press('prev-year', !frame.canGoPrevYear),
@@ -178,13 +180,13 @@ export function connectCalendarPicker<T extends PropTypes>(
     getPrevTriggerProps: () => normalize.button({
       ...parts['prev-trigger'].attrs,
       'type': 'button',
-      // 定尺的图标钮（日期翻页按钮）：接 Action Control icon 档、ghost 形态、sm 档正方盒（--xh-control-h-sm），
-      // 悬停 / 按下 / 禁用面、缩放与换底、粗指针热区由家族给
+      // 定尺的图标钮（日期翻页按钮）：接 Action Control icon 档、ghost 形态、xs 档正方盒（--xh-control-action-size），
+      // 悬停 / 按下 / 禁用面、按压换底、粗指针热区由家族给
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'sm',
+      'data-xh-action-size': 'xs',
       'disabled': !frame.canGoPrev || undefined,
       'data-disabled': dataAttr(!frame.canGoPrev),
       ...press('prev', !frame.canGoPrev),
@@ -194,13 +196,13 @@ export function connectCalendarPicker<T extends PropTypes>(
     getNextTriggerProps: () => normalize.button({
       ...parts['next-trigger'].attrs,
       'type': 'button',
-      // 定尺的图标钮（日期翻页按钮）：接 Action Control icon 档、ghost 形态、sm 档正方盒（--xh-control-h-sm），
-      // 悬停 / 按下 / 禁用面、缩放与换底、粗指针热区由家族给
+      // 定尺的图标钮（日期翻页按钮）：接 Action Control icon 档、ghost 形态、xs 档正方盒（--xh-control-action-size），
+      // 悬停 / 按下 / 禁用面、按压换底、粗指针热区由家族给
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'sm',
+      'data-xh-action-size': 'xs',
       'disabled': !frame.canGoNext || undefined,
       'data-disabled': dataAttr(!frame.canGoNext),
       ...press('next', !frame.canGoNext),
@@ -210,13 +212,13 @@ export function connectCalendarPicker<T extends PropTypes>(
     getNextYearTriggerProps: () => normalize.button({
       ...parts['next-year-trigger'].attrs,
       'type': 'button',
-      // 定尺的图标钮（日期翻页按钮）：接 Action Control icon 档、ghost 形态、sm 档正方盒（--xh-control-h-sm），
-      // 悬停 / 按下 / 禁用面、缩放与换底、粗指针热区由家族给
+      // 定尺的图标钮（日期翻页按钮）：接 Action Control icon 档、ghost 形态、xs 档正方盒（--xh-control-action-size），
+      // 悬停 / 按下 / 禁用面、按压换底、粗指针热区由家族给
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'sm',
+      'data-xh-action-size': 'xs',
       'disabled': !frame.canGoNextYear || undefined,
       'data-disabled': dataAttr(!frame.canGoNextYear),
       ...press('next-year', !frame.canGoNextYear),
@@ -237,12 +239,12 @@ export function connectCalendarPicker<T extends PropTypes>(
     getHeadingYearTriggerProps: (panel = {}) => normalize.button({
       ...parts['heading-year-trigger'].attrs,
       'type': 'button',
-      // 可点的标题（日期翻页按钮同族）：接 Action Control text 档、ghost 形态、sm 档高；悬停只换字色，按下换底并缩放
+      // 可点的标题（日期翻页按钮同族）：接 Action Control text 档、ghost 形态、xs 档高；悬停与按下只换底，字色保持标题色
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'sm',
+      'data-xh-action-size': 'xs',
       'data-index': frame.panelOf(panel).index,
       'data-view': view,
       'disabled': !frame.canZoomOutYear || undefined,
@@ -257,12 +259,12 @@ export function connectCalendarPicker<T extends PropTypes>(
     getHeadingMonthTriggerProps: (panel = {}) => normalize.button({
       ...parts['heading-month-trigger'].attrs,
       'type': 'button',
-      // 可点的标题（日期翻页按钮同族）：接 Action Control text 档、ghost 形态、sm 档高；悬停只换字色，按下换底并缩放
+      // 可点的标题（日期翻页按钮同族）：接 Action Control text 档、ghost 形态、xs 档高；悬停与按下只换底，字色保持标题色
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',
       'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': 'sm',
+      'data-xh-action-size': 'xs',
       'data-index': frame.panelOf(panel).index,
       'data-view': view,
       // 日与周视图以月为容器；其余层收起而不是卸载，钻回来时要原地复现
@@ -355,13 +357,13 @@ export function connectCalendarPicker<T extends PropTypes>(
         // 导航与选中都以此为格子身份；翻月后靠它在活 DOM 里找回落点
         [ITEM_VALUE_ATTR]: item.value,
         'role': 'button',
-        // 日历格是定尺的动作控件（格状当前）：接 Action Control text 档、ghost 形态，悬停 / 按下 / 禁用面、
-        // 缩放与换底由家族给；几何仍由网格的等分轨道与 aspect-ratio 给（皮肤把家族的固定高归 auto）
+        // 日历格是定尺的动作控件（格状当前）：接 Action Control text 档、ghost 形态、xs 档高，悬停 / 按下 / 禁用面、
+        // 按压换底由家族给；日视图是 24 见方的圆，周期视图铺满格宽（皮肤按 data-view 分档）
         'data-xh-action-control': '',
         'data-xh-action-profile': 'text',
         'data-xh-action-variant': 'ghost',
         'data-xh-action-display': 'always',
-        'data-xh-action-size': 'sm',
+        'data-xh-action-size': 'xs',
         // 禁用标在 trigger 上，焦点落的是它；选中态由外层 gridcell 报
         // 一律 aria-disabled 不用原生 disabled：不可用的日子仍要能当方向键起点
         'aria-disabled': state.disabled ? 'true' : 'false',

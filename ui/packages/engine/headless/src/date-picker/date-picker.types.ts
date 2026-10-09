@@ -489,6 +489,8 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   getTimeColumnProps: (props: DatePickerTimeColumnProps) => T['element']
   /** 时间选项：点击把该单位写入值（没有日期时以聚焦日作为日期段起值）。 */
   getTimeItemProps: (props: DatePickerTimeItemProps) => T['element']
+  /** 浮层底部的操作区：放在 content 中、排在面板主体之后，确认按钮通常写在这里；不进入任何集合的拥有关系，方向键也无法到达。 */
+  getFooterProps: () => T['element']
   /** 确认按钮：showTime 的收口；未开启 showTime 时带 hidden。 */
   getConfirmTriggerProps: () => T['button']
 }

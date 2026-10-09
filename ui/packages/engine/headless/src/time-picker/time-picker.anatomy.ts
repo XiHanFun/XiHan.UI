@@ -14,6 +14,7 @@ import { createAnatomy, itemValue, queryItems } from '@xihan-ui/core'
 // 结构与语义同分段时间输入（每段一个 spinbutton、整组一个 Tab 位），逻辑走 time-field 的纯函数。
 // column 同样是多实例，每列是一个 listbox，option 是列里的选项；列间靠左右键换，列内靠上下键走。
 // preset-group 是浮层里的快捷选项列（「此刻」「上午 9 点」这类），preset 是其中一项。
+// footer 是浮层底部的通栏操作区，confirm-trigger 通常放在它里面；也可以直接排在 content 里。
 export const timePickerAnatomy = createAnatomy('time-picker', [
   'root',
   'label',
@@ -29,6 +30,7 @@ export const timePickerAnatomy = createAnatomy('time-picker', [
   'preset',
   'column',
   'item',
+  'footer',
   'confirm-trigger',
   'hidden-input',
 ])

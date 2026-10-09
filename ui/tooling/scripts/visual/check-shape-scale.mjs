@@ -98,6 +98,22 @@ const IDENTITY = {
   'slider:tick': 'circle',
   // 图表色标：折线的色标是一段短线，一维对象取 pill；柱与面积的方块走 inset 与覆盖槽
   'image-cropper:crop-area': 'circle',
+  // 日历：日视图的日期格是 24 见方的圆（周期视图的月 / 季 / 年格不是一维对象，保持控件圆角）；
+  // 四颗翻页钮是正方的单图标动作；今天的标记是数字下方一颗等宽高的小圆点
+  'calendar-picker:cell-trigger': 'control',
+  'calendar-picker:cell-trigger[data-view=\'day\']': 'circle',
+  'calendar-picker:prev-year-trigger': 'circle',
+  'calendar-picker:prev-trigger': 'circle',
+  'calendar-picker:next-trigger': 'circle',
+  'calendar-picker:next-year-trigger': 'circle',
+  'calendar-picker:cell::after': 'circle',
+  'calendar-range-picker:cell-trigger': 'control',
+  'calendar-range-picker:cell-trigger[data-view=\'day\']': 'circle',
+  'calendar-range-picker:prev-year-trigger': 'circle',
+  'calendar-range-picker:prev-trigger': 'circle',
+  'calendar-range-picker:next-trigger': 'circle',
+  'calendar-range-picker:next-year-trigger': 'circle',
+  'calendar-range-picker:cell::after': 'circle',
   // circle + floating：悬浮于内容之上的单图标动作，走 Action Control floating profile
   'float-button:trigger': { shape: 'circle', floating: true },
   'back-top:trigger': { shape: 'circle', floating: true },

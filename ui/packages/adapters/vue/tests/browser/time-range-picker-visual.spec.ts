@@ -254,19 +254,50 @@ describe('浮层里的两组时列', () => {
   })
 })
 
+/** 语义令牌在该元素里解到的圆角、长度与颜色。 */
+function resolveRadius(token: string, scope: HTMLElement): string {
+  const probe = document.createElement('span')
+  probe.style.borderRadius = `var(${token})`
+  scope.append(probe)
+  const value = getComputedStyle(probe).borderTopLeftRadius
+  probe.remove()
+  return value
+}
+
+function resolveLength(token: string, scope: HTMLElement): number {
+  const probe = document.createElement('span')
+  probe.style.display = 'block'
+  // 绝对定位：探针不当排布里的一项，不被所在的 flex 行压窄
+  probe.style.position = 'absolute'
+  probe.style.inlineSize = `var(${token})`
+  scope.append(probe)
+  const value = Number.parseFloat(getComputedStyle(probe).inlineSize)
+  probe.remove()
+  return value
+}
+
+function resolveColor(token: string, scope: HTMLElement): string {
+  const probe = document.createElement('span')
+  probe.style.backgroundColor = `var(${token})`
+  scope.append(probe)
+  const value = getComputedStyle(probe).backgroundColor
+  probe.remove()
+  return value
+}
+
 describe('时间范围选择器的家族观感', () => {
-  it('输入行是描边式字段外壳：canvas 底 + 描边 + 无影；清空钮与展开钮是盒内 field-inset 正方钮', async () => {
+  it('输入行是描边式字段外壳：字段淡底 + 描边 + 无影；清空钮与展开钮是盒内 field-inset 正方钮', async () => {
     await mountPicker({ defaultValue: ['09:00', '10:00'] })
     const control = part('control')
     const rest = getComputedStyle(control)
     expect(control.getAttribute('data-xh-field-chrome')).toBe('')
-    expect(alpha(rest.backgroundColor)).toBe(0)
+    expect(alpha(rest.backgroundColor)).toBeGreaterThan(0)
     expect(rest.borderTopStyle).toBe('solid')
     // 描边是墨色按比例透明：画了就不是 0，不再是实色
     expect(alpha(rest.borderTopColor)).toBeGreaterThan(0)
     expect(rest.boxShadow).toBe('none')
-    expect(rest.borderRadius).toBe('4px')
-    expect(rest.height).toBe('36px')
+    expect(rest.borderTopLeftRadius).toBe(resolveRadius('--xh-shape-control', control))
+    expect(Number.parseFloat(rest.height)).toBe(resolveLength('--xh-control-h-md', control))
     const clear = part('clear-trigger')
     clear.style.transition = 'none'
     expect(clear.getAttribute('data-xh-action-profile')).toBe('field-inset')
@@ -274,7 +305,7 @@ describe('时间范围选择器的家族观感', () => {
     // 有值时清空钮顶上来，展开钮让位
     expect(getComputedStyle(part('trigger')).display).toBe('none')
     const clearRest = getComputedStyle(clear)
-    expect(clearRest.borderRadius).toBe('4px')
+    expect(clearRest.borderTopLeftRadius).toBe(resolveRadius('--xh-shape-inset', clear))
     expect(clearRest.width).toBe(clearRest.height)
     expect(alpha(clearRest.backgroundColor)).toBe(0)
     const probe = document.createElement('span')
@@ -288,10 +319,10 @@ describe('时间范围选择器的家族观感', () => {
     expect(getComputedStyle(clear).backgroundColor).toBe(hover100)
     clear.dataset.pressed = ''
     expect(getComputedStyle(clear).backgroundColor).toBe(pressed200)
-    expect(getComputedStyle(clear).scale).toBe('0.97')
+    expect(['1', 'none']).toContain(getComputedStyle(clear).scale)
   })
 
-  it('浮层是 floating 实体面且横向自绘条挂在壳上；时间格选中只留对号，悬停 100、按下 200 不缩放', async () => {
+  it('浮层是 floating 实体面且横向自绘条挂在壳上；时间格选中透明底 + 对号 + 中等字重，悬停 100、按下 200 不缩放', async () => {
     await mountPicker({ defaultOpen: true, defaultValue: ['09:30', '10:00'] })
     await nextTick()
     const content = getComputedStyle(part('content'))
@@ -301,7 +332,9 @@ describe('时间范围选择器的家族观感', () => {
     // 描边是墨色按比例透明：画了就不是 0，不再是实色
     expect(alpha(content.borderTopColor)).toBeGreaterThan(0)
     expect(content.boxShadow).not.toBe('none')
-    expect(content.borderRadius).toBe('12px')
+    expect(content.borderTopLeftRadius).toBe(resolveRadius('--xh-shape-overlay', part('content')))
+    // 面板自己不留内衬：各列自带内衬
+    expect(content.padding).toBe('0px')
     expect(content.overscrollBehaviorX).toBe('contain')
     expect(getComputedStyle(part('content'), '::before').content).toBe('none')
     // 面板整体横滚那一条挂在浮层壳上；各列自己的竖条贴在列上
@@ -318,7 +351,8 @@ describe('时间范围选择器的家族观感', () => {
     expect(selected.getAttribute('data-xh-collection-context')).toBe('overlay')
     expect(alpha(getComputedStyle(selected).backgroundColor)).toBe(0)
     expect(getComputedStyle(selected).color).toBe(getComputedStyle(plain).color)
-    expect(getComputedStyle(selected).fontWeight).toBe(getComputedStyle(plain).fontWeight)
+    expect(getComputedStyle(selected).fontWeight).toBe('500')
+    expect(getComputedStyle(plain).fontWeight).toBe('400')
     expect(getComputedStyle(selected, '::after').opacity).toBe('1')
     expect(getComputedStyle(plain, '::after').opacity).toBe('0')
     await userEvent.hover(plain)
@@ -356,5 +390,36 @@ describe('时间范围选择器的家族观感', () => {
     // 列与列之间的分隔线由 column ~ column 给：条子节点夹在两列之间也接得上
     expect(Number.parseFloat(getComputedStyle(columns[1]!).borderInlineStartWidth)).toBeGreaterThan(0)
     expect(Number.parseFloat(getComputedStyle(columns[0]!).borderInlineStartWidth)).toBe(0)
+  })
+
+  it('两组之间只隔一道竖线、不另留空当；组里的列顶画一道线，列 64 宽、七格整行高', async () => {
+    await mountPicker({ defaultOpen: true, defaultValue: ['09:30', '10:00'] })
+    await nextTick()
+    const content = part('content')
+    const [start, end] = parts('column-group')
+    const endStyle = getComputedStyle(end!)
+    expect(endStyle.borderInlineStartWidth).toBe('1px')
+    expect(endStyle.borderInlineStartColor).toBe(resolveColor('--xh-border-default', content))
+    expect(endStyle.marginInlineStart).toBe('0px')
+    expect(endStyle.paddingInlineStart).toBe('0px')
+    expect(end!.getBoundingClientRect().left).toBe(start!.getBoundingClientRect().right)
+    const columns = parts('column').filter(column => !column.hidden)
+    for (const column of columns) {
+      const style = getComputedStyle(column)
+      expect(style.borderTopWidth).toBe('1px')
+      expect(style.borderTopColor).toBe(resolveColor('--xh-border-default', content))
+      expect(column.getBoundingClientRect().width).toBe(resolveLength('--xh-overlay-time-column-w', content))
+      expect(column.getBoundingClientRect().height).toBe(resolveLength('--xh-overlay-time-column-h', content))
+    }
+    // 起止两组的列顶那道线落在同一行
+    expect(columns[0]!.getBoundingClientRect().top).toBe(columns.at(-1)!.getBoundingClientRect().top)
+    // 时间格的命中区补满列内间距：两格之间的缝落在上下两格上（终点组的选中 10 停在列顶）
+    const upper = item(1, 'hour', '10')
+    const lower = item(1, 'hour', '11')
+    const gap = lower.getBoundingClientRect().top - upper.getBoundingClientRect().bottom
+    expect(gap).toBeGreaterThan(0)
+    const x = upper.getBoundingClientRect().left + upper.getBoundingClientRect().width / 2
+    expect(document.elementFromPoint(x, upper.getBoundingClientRect().bottom + gap / 2 - 1)?.closest('[data-part="item"]')).toBe(upper)
+    expect(document.elementFromPoint(x, lower.getBoundingClientRect().top - gap / 2 + 1)?.closest('[data-part="item"]')).toBe(lower)
   })
 })

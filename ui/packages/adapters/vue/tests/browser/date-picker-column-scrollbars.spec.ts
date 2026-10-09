@@ -89,7 +89,7 @@ afterEach(() => {
 })
 
 describe('日期选择器快捷列与时间列的自绘条', () => {
-  it('快捷列后面紧跟竖横两条贴层的条子，贴在它自己的盒子上；它与日历之间的空当仍在', async () => {
+  it('快捷列后面紧跟竖横两条贴层的条子，贴在它自己的盒子上；它与日历之间不另留空当', async () => {
     await mountDatePicker()
     const group = parts('preset-group')[0]!
     const bars = barsAfter(group)
@@ -110,12 +110,12 @@ describe('日期选择器快捷列与时间列的自绘条', () => {
       }
       expect(getComputedStyle(bar.querySelector<HTMLElement>('[data-part="track"]')!).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     }
-    // 选项列与日历之间的空当由 preset-group ~ calendar 给（平板起落在行内轴、手机档落在块轴），
-    // 条子节点夹在两者之间也接得上
+    // 选项列与日历之间不另留空当：选项列自带内衬，日历的标题栏与网格各带行内内衬；条子节点夹在两者之间也不占位
     const calendar = parts('calendar')[0]!
     expect(calendar.previousElementSibling).not.toBe(group)
-    const wide = window.matchMedia('(min-width: 768px)').matches
-    expect(Number.parseFloat(getComputedStyle(calendar)[wide ? 'paddingInlineStart' : 'paddingBlockStart'])).toBeGreaterThan(0)
+    expect(Number.parseFloat(getComputedStyle(calendar).paddingInlineStart)).toBe(0)
+    expect(Number.parseFloat(getComputedStyle(calendar).paddingBlockStart)).toBe(0)
+    expect(Number.parseFloat(getComputedStyle(group).paddingInlineStart)).toBeGreaterThan(0)
   })
 
   it('每一时间列后面紧跟一条贴层的竖条，贴该列的行内末端、与列同高；日历与首列的分隔线仍在', async () => {

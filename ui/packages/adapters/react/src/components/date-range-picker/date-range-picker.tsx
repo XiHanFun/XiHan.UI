@@ -593,6 +593,16 @@ export function XhDateRangePickerConfirmTrigger({ children, ...rest }: XhDateRan
   return <button {...mergeReactProps(ctx.api.getConfirmTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
 }
 
+export interface XhDateRangePickerFooterProps extends ComponentPropsWithRef<'div'> {}
+/**
+ * 浮层底部的通栏操作区：写在 content 里、排在面板主体之后，确认钮通常放在这里；
+ * 不进任何集合的拥有关系，方向键走不到，里面的按钮照常进 Tab 序列。
+ */
+export function XhDateRangePickerFooter({ children, ...rest }: XhDateRangePickerFooterProps): ReactNode {
+  const ctx = useDateRangePickerContext()
+  return <div {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+}
+
 export interface XhDateRangePickerHeaderProps extends ComponentPropsWithRef<'div'> {}
 export function XhDateRangePickerHeader({ children, ...rest }: XhDateRangePickerHeaderProps): ReactNode {
   const ctx = useDateRangePickerContext()

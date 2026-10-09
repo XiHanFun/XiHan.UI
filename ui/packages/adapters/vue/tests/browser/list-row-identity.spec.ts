@@ -1,6 +1,6 @@
 // 形状与分隔按身份取令牌：候选与菜单的集合行是嵌在面里的小块，圆角取 inset（与 control 同为 4px，但身份不同，
-// 主题改 inset 时行跟着变、按钮与字段不动）；floating 面板（日期、时间）里的面内分隔取实体面的分隔令牌，
-// 不取 frosted 的。判据是计算样式：把令牌换成一眼能认出的值，看部件是否跟着变。
+// 主题改 inset 时行跟着变、按钮与字段不动）；floating 面板（日期、时间）里时间列之间的分隔取实体面的描边令牌
+// （border-default 档），不取 frosted 的。判据是计算样式：把令牌换成一眼能认出的值，看部件是否跟着变。
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
@@ -33,7 +33,7 @@ afterEach(() => {
   host?.remove()
   document.getElementById('xh-portal-root')?.remove()
   document.documentElement.style.removeProperty('--xh-shape-inset')
-  document.documentElement.style.removeProperty('--xh-material-solid-separator')
+  document.documentElement.style.removeProperty('--xh-material-solid-border')
   app = null
   host = null
 })
@@ -69,9 +69,9 @@ describe('候选行的形状身份是 inset', () => {
   })
 })
 
-describe('floating 面板的面内分隔取实体面的分隔令牌', () => {
-  it('time-picker 的列间分隔跟着 --xh-material-solid-separator 走', async () => {
-    document.documentElement.style.setProperty('--xh-material-solid-separator', 'rgb(255, 0, 0)')
+describe('floating 面板里时间列之间的分隔取实体面的描边令牌（border-default 档）', () => {
+  it('time-picker 的列间分隔跟着 --xh-material-solid-border 走', async () => {
+    document.documentElement.style.setProperty('--xh-material-solid-border', 'rgb(255, 0, 0)')
     await mount(() => h(XhTimePickerRoot, { open: true, value: '09:30' }, () => [
       h(XhTimePickerControl, null, () => h(XhTimePickerSegmentGroup, null, () => [h(XhTimePickerSegment, { segment: 'hour' })])),
       h(XhTimePickerPositioner, null, () => h(XhTimePickerContent, null, () => [

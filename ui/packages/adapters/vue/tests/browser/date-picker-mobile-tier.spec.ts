@@ -260,22 +260,27 @@ describe('显式双面板的响应式排布', () => {
     expect(content.scrollWidth).toBe(content.clientWidth)
   })
 
-  it(`${PHONE}px 下分隔线画在两张之间的块起始边`, async () => {
+  it(`${PHONE}px 下两张之间不画线、不另留空当，第二张紧接在第一张下面`, async () => {
     const doc = mountAt(PHONE, rangeShape)
     await contentAt(doc)
-    const second = parts(doc, 'calendar')[1]!
-    const style = doc.defaultView!.getComputedStyle(second)
-    expect(Number.parseFloat(style.borderBlockStartWidth)).toBeGreaterThan(0)
-    expect(Number.parseFloat(style.borderInlineStartWidth)).toBe(0)
+    const [first, second] = parts(doc, 'calendar')
+    const style = doc.defaultView!.getComputedStyle(second!)
+    expect(Number.parseFloat(style.borderBlockStartWidth)).toBe(0)
+    expect(Number.parseFloat(style.paddingBlockStart)).toBe(0)
+    expect(second!.offsetTop).toBe(first!.offsetTop + first!.offsetHeight)
   })
 
-  it.each([[TABLET], [DESKTOP]])('%ipx 下分隔线回到行内起始边', async (width) => {
+  it.each([[TABLET], [DESKTOP]])('%ipx 下两张并排不画竖线，两条标题栏的下沿分隔线首尾相接', async (width) => {
     const doc = mountAt(width, rangeShape)
     await contentAt(doc)
-    const second = parts(doc, 'calendar')[1]!
-    const style = doc.defaultView!.getComputedStyle(second)
-    expect(Number.parseFloat(style.borderInlineStartWidth)).toBeGreaterThan(0)
-    expect(Number.parseFloat(style.borderBlockStartWidth)).toBe(0)
+    const [first, second] = parts(doc, 'calendar')
+    const style = doc.defaultView!.getComputedStyle(second!)
+    expect(Number.parseFloat(style.borderInlineStartWidth)).toBe(0)
+    expect(Number.parseFloat(style.paddingInlineStart)).toBe(0)
+    const header = (calendar: HTMLElement): DOMRect =>
+      calendar.querySelector<HTMLElement>(`[data-part='header']`)!.getBoundingClientRect()
+    expect(header(second!).left).toBe(header(first!).right)
+    expect(header(second!).bottom).toBe(header(first!).bottom)
   })
 
   // 堆叠是靠折行做的，网格轨道一格也没被压窄：日期钮的宽度定死，轨道再窄就会与右邻叠上
@@ -325,12 +330,14 @@ describe('带时间的时间列', () => {
     expect(content.scrollHeight).toBe(content.clientHeight)
   })
 
-  it.each([[TABLET], [DESKTOP]])('%ipx 下确认按钮沉到日历底边，不吊在顶上', async (width) => {
+  it.each([[TABLET], [DESKTOP]])('%ipx 下确认按钮沉到日历底边（只让出自己的外边距），不吊在顶上', async (width) => {
     const doc = mountAt(width, showTimeShape)
     await contentAt(doc)
     const calendar = parts(doc, 'calendar')[0]!
     const confirm = part(doc, 'confirm-trigger')
-    expect(confirm.offsetTop + confirm.offsetHeight).toBe(calendar.offsetTop + calendar.offsetHeight)
+    const margin = Number.parseFloat(doc.defaultView!.getComputedStyle(confirm).marginBottom)
+    expect(margin).toBeGreaterThan(0)
+    expect(confirm.offsetTop + confirm.offsetHeight + margin).toBe(calendar.offsetTop + calendar.offsetHeight)
     expect(confirm.offsetTop).toBeGreaterThan(calendar.offsetTop)
   })
 
@@ -372,19 +379,23 @@ describe('快捷选项', () => {
     expect(items[0]!.offsetHeight).toBeLessThan(items[0]!.offsetWidth)
   })
 
-  it(`${PHONE}px 下选项与日历之间的空当留在块轴`, async () => {
+  it(`${PHONE}px 下选项条自带上下内衬，日历不另留空当`, async () => {
     const doc = mountAt(PHONE, presetShape)
     await contentAt(doc)
+    const group = doc.defaultView!.getComputedStyle(part(doc, 'preset-group'))
     const style = doc.defaultView!.getComputedStyle(parts(doc, 'calendar')[0]!)
-    expect(Number.parseFloat(style.paddingBlockStart)).toBeGreaterThan(0)
+    expect(Number.parseFloat(group.paddingBlockStart)).toBeGreaterThan(0)
+    expect(Number.parseFloat(style.paddingBlockStart)).toBe(0)
     expect(Number.parseFloat(style.paddingInlineStart)).toBe(0)
   })
 
-  it.each([[TABLET], [DESKTOP]])('%ipx 下选项与日历之间的空当回到行内轴', async (width) => {
+  it.each([[TABLET], [DESKTOP]])('%ipx 下选项列自带左右内衬，日历不另留空当', async (width) => {
     const doc = mountAt(width, presetShape)
     await contentAt(doc)
+    const group = doc.defaultView!.getComputedStyle(part(doc, 'preset-group'))
     const style = doc.defaultView!.getComputedStyle(parts(doc, 'calendar')[0]!)
-    expect(Number.parseFloat(style.paddingInlineStart)).toBeGreaterThan(0)
+    expect(Number.parseFloat(group.paddingInlineStart)).toBeGreaterThan(0)
+    expect(Number.parseFloat(style.paddingInlineStart)).toBe(0)
     expect(Number.parseFloat(style.paddingBlockStart)).toBe(0)
   })
 

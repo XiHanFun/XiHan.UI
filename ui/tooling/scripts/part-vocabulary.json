@@ -550,6 +550,8 @@
       "card",
       "cascader",
       "command",
+      "date-picker",
+      "date-range-picker",
       "dialog",
       "drawer",
       "layout",
@@ -557,6 +559,7 @@
       "question-flow",
       "select",
       "table",
+      "time-picker",
       "tree-select"
     ],
     "gap": [

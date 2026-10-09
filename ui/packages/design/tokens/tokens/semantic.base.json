@@ -1083,9 +1083,19 @@
       "$value": "calc({control.h-sm} - {space.1})"
     },
     "calendar-column-h": {
-      "$description": "与日历并排的时间列高度：与日历网格（周名一行加六周）同高，时间列的底边与网格底边对齐。网格按控件高与间距排，两者都是 px，这一档也只按 px 结算，不随根字号变。",
+      "$description": "与日历并排的时间列高度：与日历网格（上下各 12 的内衬、星期行加六周 36 的行距）同高，时间列的底边与网格底边对齐。网格按控件高与间距排，两者都是 px，这一档也只按 px 结算，不随根字号变。",
       "$type": "dimension",
-      "$value": "calc({control.h-sm} * 7 + {space.7})"
+      "$value": "calc({control.h-md} + ({control.action-size} + {space.1_5} * 2) * 6 + {space.3} * 2)"
+    },
+    "time-column-w": {
+      "$description": "时间选择器浮层里一列（时 / 分 / 秒）的宽：两位数字加两侧对号轨。与日历并排的时间列仍按 column-min-w 收窄。",
+      "$type": "dimension",
+      "$value": "4rem"
+    },
+    "time-column-h": {
+      "$description": "时间选择器浮层里一列的定高：七格整行（一格 24 高的条加 8 的列内间距）。几列并排定高，选中格停到列顶时各列落在同一行。",
+      "$type": "dimension",
+      "$value": "calc(({control.action-size} + {space.2}) * 7)"
     },
     "menu-max-h": {
       "$type": "dimension",

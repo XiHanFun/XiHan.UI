@@ -415,6 +415,8 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   getPresetProps: (props: TimePickerPresetProps) => T['element']
   getColumnProps: (props: TimePickerColumnProps) => T['element']
   getItemProps: (props: TimePickerItemProps) => T['element']
+  /** 浮层底部的操作区：放在 content 中、排在各列之后，「添加」钮通常写在这里；不进入任何集合的拥有关系，方向键也无法到达。 */
+  getFooterProps: () => T['element']
   /** 「添加」：多选时把浮层里拼好的草稿收进值，浮层不收起；单选时 hidden。文字由作者写。 */
   getConfirmTriggerProps: () => T['button']
   /**

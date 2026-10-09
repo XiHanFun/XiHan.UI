@@ -1,6 +1,7 @@
-<!-- 格子内放置内容 | cell-trigger 的内容全部由作者编写，日号之外还可放置自己的标记 -->
+<!-- 格子内放置内容 | cell-trigger 的内容全部由作者编写，日号之外还可挂一枚徽标 -->
 <script setup lang="ts">
 import {
+  XhBadge,
   XhCalendarPickerCell,
   XhCalendarPickerCellTrigger,
   XhCalendarPickerGrid,
@@ -48,19 +49,9 @@ function hasPlan(iso: string) {
         <XhCalendarPickerWeekRow v-for="week in weeks" :key="week[0].start">
           <XhCalendarPickerCell v-for="day in week" :key="day.start" :value="day.start">
             <XhCalendarPickerCellTrigger>
-              <span style="display: grid; justify-items: center; gap: 2px">
-                <span>{{ day.day }}</span>
-                <!-- 没安排的日子把这颗点隐掉，不是删掉 -->
-                <span
-                  :style="{
-                    fontSize: '10px',
-                    lineHeight: '1',
-                    visibility: hasPlan(day.start) ? 'visible' : 'hidden',
-                  }"
-                >
-                  •
-                </span>
-              </span>
+              <!-- 有安排的日子在日号右上角挂一枚圆点徽标；日号下方那颗点留给「今天」 -->
+              <XhBadge v-if="hasPlan(day.start)" dot label="有安排">{{ day.day }}</XhBadge>
+              <template v-else>{{ day.day }}</template>
             </XhCalendarPickerCellTrigger>
           </XhCalendarPickerCell>
         </XhCalendarPickerWeekRow>

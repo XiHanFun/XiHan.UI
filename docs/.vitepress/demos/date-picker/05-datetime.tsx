@@ -8,6 +8,7 @@ import {
   XhDatePickerConfirmTrigger,
   XhDatePickerContent,
   XhDatePickerControl,
+  XhDatePickerFooter,
   XhDatePickerGrid,
   XhDatePickerGridBody,
   XhDatePickerGridHead,
@@ -91,9 +92,9 @@ export default function Demo(): ReactNode {
                 </XhDatePickerCalendar>
                 <XhDatePickerTimePanel />
               </div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBlockStart: "var(--xh-space-2)", marginInline: "calc(-1 * var(--xh-space-2))", marginBlockEnd: "calc(-1 * var(--xh-space-2))", paddingBlock: "var(--xh-space-1)", paddingInline: "var(--xh-space-2)", borderBlockStart: "var(--xh-stroke-thin) solid var(--xh-border-subtle)" }}>
+              <XhDatePickerFooter>
                 <XhDatePickerConfirmTrigger>确定</XhDatePickerConfirmTrigger>
-              </div>
+              </XhDatePickerFooter>
             </XhDatePickerContent>
           </XhDatePickerPositioner>
         </>

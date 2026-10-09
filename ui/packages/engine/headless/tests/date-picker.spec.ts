@@ -1525,13 +1525,24 @@ describe('connectDatePicker 家族角色', () => {
     expect(mount({ size: 'sm' }).trigger.getAttribute('data-xh-action-size')).toBe('sm')
   })
 
-  it('确认钮走 Action Control 的 text solid 档（面板内唯一主要动作），固定 sm 档', () => {
+  it('确认钮走 Action Control 的 text solid 档（面板内唯一主要动作），固定 xs 档', () => {
     const confirm = mount({ showTime: true }).api().getConfirmTriggerProps() as Record<string, unknown>
     expect(confirm['data-xh-action-control']).toBe('')
     expect(confirm['data-xh-action-profile']).toBe('text')
     expect(confirm['data-xh-action-variant']).toBe('solid')
     expect(confirm['data-xh-action-display']).toBe('always')
-    expect(confirm['data-xh-action-size']).toBe('sm')
+    expect(confirm['data-xh-action-size']).toBe('xs')
+  })
+
+  it('底栏只是一块通栏操作区：带本组件的 scope 与 part，不报角色、不占 Tab 位、不随 showTime 收起', () => {
+    for (const showTime of [true, false]) {
+      const footer = mount({ showTime }).api().getFooterProps() as Record<string, unknown>
+      expect(footer['data-scope']).toBe('date-picker')
+      expect(footer['data-part']).toBe('footer')
+      expect(footer.role).toBeUndefined()
+      expect(footer.tabindex).toBeUndefined()
+      expect(footer.hidden).toBeUndefined()
+    }
   })
 
   it('快捷选项与时间格都投影 Collection Item 的 overlay 语境与尺寸档', () => {

@@ -202,7 +202,7 @@ describe('parseCalendarDate 脏值兜底', () => {
 })
 
 describe('接入 Action Control 的投影', () => {
-  it('四颗方向钮投 icon ghost sm、两颗标题钮投 text ghost sm、日期格投 text ghost sm', () => {
+  it('四颗方向钮投 icon ghost xs、两颗标题钮投 text ghost xs、日期格投 text ghost xs 并带上视图', () => {
     const h = mount({ defaultFocusedValue: '2026-08-17' })
     const api = h.api()
     for (const props of [api.getPrevYearTriggerProps(), api.getPrevTriggerProps(), api.getNextTriggerProps(), api.getNextYearTriggerProps()] as Record<string, unknown>[]) {
@@ -210,14 +210,17 @@ describe('接入 Action Control 的投影', () => {
       expect(props['data-xh-action-profile']).toBe('icon')
       expect(props['data-xh-action-variant']).toBe('ghost')
       expect(props['data-xh-action-display']).toBe('always')
-      expect(props['data-xh-action-size']).toBe('sm')
+      expect(props['data-xh-action-size']).toBe('xs')
     }
     for (const props of [api.getHeadingYearTriggerProps(), api.getHeadingMonthTriggerProps(), api.getCellTriggerProps({ value: '2026-08-17' })] as Record<string, unknown>[]) {
       expect(props['data-xh-action-control']).toBe('')
       expect(props['data-xh-action-profile']).toBe('text')
       expect(props['data-xh-action-variant']).toBe('ghost')
-      expect(props['data-xh-action-size']).toBe('sm')
+      expect(props['data-xh-action-size']).toBe('xs')
     }
+    // 格子与日期钮都带当前视图：皮肤按它给日格取圆、周期格铺满格宽
+    expect((api.getCellProps({ value: '2026-08-17' }) as Record<string, unknown>)['data-view']).toBe('day')
+    expect((api.getCellTriggerProps({ value: '2026-08-17' }) as Record<string, unknown>)['data-view']).toBe('day')
   })
 })
 

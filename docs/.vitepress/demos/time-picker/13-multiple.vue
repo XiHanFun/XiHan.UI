@@ -6,6 +6,7 @@ import {
   XhTimePickerConfirmTrigger,
   XhTimePickerContent,
   XhTimePickerControl,
+  XhTimePickerFooter,
   XhTimePickerHiddenInput,
   XhTimePickerItem,
   XhTimePickerLabel,
@@ -41,7 +42,9 @@ const value = ref<string[]>(["09:00", "14:30"]);
         <XhTimePickerColumn v-slot="{ options }" unit="minute">
           <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
         </XhTimePickerColumn>
-        <XhTimePickerConfirmTrigger>添加</XhTimePickerConfirmTrigger>
+        <XhTimePickerFooter>
+          <XhTimePickerConfirmTrigger>添加</XhTimePickerConfirmTrigger>
+        </XhTimePickerFooter>
       </XhTimePickerContent>
     </XhTimePickerPositioner>
   </XhTimePickerRoot>

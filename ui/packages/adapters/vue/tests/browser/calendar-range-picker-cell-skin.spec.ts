@@ -1,9 +1,10 @@
-// 范围日历格与翻页钮的皮肤（与 calendar-picker 同构，另加区间中段的品牌淡底阶梯）：今天是 1px 品牌环 + 品牌字、底透明（brand-subtle 退出 today 语义）；
-// 格子坐在白底上，悬停 100 档、按下 200 档并缩放；选中格实心品牌，按下压到 active 档；
-// 快速选年的网格是页内结构容器，滚动链保持 auto。
+// 范围日历格与翻页钮的皮肤（与 calendar-picker 同构，另加区间轨道与中段的品牌淡底阶梯）：
+// 日期格是 24 见方的圆，今天是数字下方一颗 4px 品牌圆点；格子坐在白底上，悬停 100 档、按下 200 档只换面；
+// 区间端点实心品牌，按下压到 active 档；区间轨道 32 高（行距 36 上下各收 2），两端收成半圆帽、跨周折行处是直边；
+// 强制色下落定的区间中段在轨道上下沿画实线；快速选年的网格是页内结构容器，滚动链保持 auto。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { userEvent } from 'vitest/browser'
+import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhCalendarRangePickerCell,
@@ -28,6 +29,7 @@ let host: HTMLElement | null = null
 
 afterEach(async () => {
   await releasePointerAway()
+  await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
   app?.unmount()
   app = null
   host?.remove()
@@ -44,6 +46,7 @@ function otherRange(): [string, string] {
 
 async function mountCalendar(): Promise<void> {
   host = document.createElement('div')
+  host.style.inlineSize = '320px'
   document.body.append(host)
   // 断言的是稳定态的颜色与几何，不是过渡中间帧
   host.style.setProperty('--xh-motion-duration-micro', '0ms')
@@ -80,7 +83,7 @@ function part(name: string, extra = ''): HTMLElement {
   return el
 }
 
-/** 语义色令牌在该元素上解到的颜色。 */
+/** 语义令牌在该元素上解到的颜色。 */
 function resolveColor(token: string, scope: HTMLElement): string {
   const probe = document.createElement('span')
   probe.style.backgroundColor = `var(${token})`
@@ -90,42 +93,94 @@ function resolveColor(token: string, scope: HTMLElement): string {
   return value
 }
 
+/** 语义令牌在该元素上解到的长度（px）。 */
+function resolveLength(token: string, scope: HTMLElement): number {
+  const probe = document.createElement('span')
+  probe.style.display = 'block'
+  probe.style.inlineSize = `var(${token})`
+  scope.append(probe)
+  const value = Number.parseFloat(getComputedStyle(probe).inlineSize)
+  probe.remove()
+  return value
+}
+
+/** 按压只换面：缩放档缺省不动（1 或 none）。 */
+function unscaled(el: HTMLElement): boolean {
+  return ['1', 'none'].includes(getComputedStyle(el).scale)
+}
+
 describe('calendarRangePicker 格子与翻页钮的皮肤', () => {
-  it('今天是 1px 品牌环 + 品牌字，底透明；区间端点实心品牌', async () => {
+  it('今天在数字下方画一颗 4px 品牌圆点、数字保持正文色；区间端点是实心品牌圆', async () => {
     await mountCalendar()
     const root = part('root')
+    const action = resolveLength('--xh-control-action-size', root)
     const today = getComputedStyle(part('cell-trigger', '[data-today]:not([data-selected])'))
-    expect(today.borderTopColor).toBe(resolveColor('--xh-fg-brand', root))
-    expect(today.borderTopWidth).toBe('1px')
+    expect(today.borderTopColor).toBe('rgba(0, 0, 0, 0)')
     expect(today.backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(today.color).toBe(resolveColor('--xh-fg-brand', root))
-    const start = getComputedStyle(part('cell-trigger', '[data-range-start]'))
-    expect(start.backgroundColor).toBe(resolveColor('--xh-bg-brand', root))
-    expect(start.color).toBe(resolveColor('--xh-fg-on-brand', root))
+    expect(today.color).toBe(resolveColor('--xh-fg-default', root))
+    const mark = getComputedStyle(part('cell', '[data-today]'), '::after')
+    expect(mark.width).toBe('4px')
+    expect(mark.backgroundColor).toBe(resolveColor('--xh-fg-brand', root))
+    expect(mark.borderTopLeftRadius).toBe('50%')
+
+    const start = part('cell-trigger', '[data-range-start]')
+    expect(getComputedStyle(start).backgroundColor).toBe(resolveColor('--xh-bg-brand', root))
+    expect(getComputedStyle(start).color).toBe(resolveColor('--xh-fg-on-brand', root))
+    expect(start.getBoundingClientRect().width).toBe(action)
+    expect(getComputedStyle(start).borderTopLeftRadius).toBe('50%')
   })
 
-  it('格子悬停 100 档、按下 200 档并缩放；今天走同一条阶梯；端点按下压到 active 档；区间中段走品牌淡底阶梯', async () => {
+  it('区间轨道 32 高、横向铺满格子；两端收成半圆帽，跨周折行处是直边', async () => {
     await mountCalendar()
     const root = part('root')
-    const cell = part('cell-trigger', ':not([data-today]):not([data-selected]):not([data-outside-month])')
+    const startCell = part('cell', '[data-range-start]')
+    const track = getComputedStyle(startCell, '::before')
+    expect(track.backgroundColor).toBe(resolveColor('--xh-bg-brand-subtle', root))
+    expect(track.top).toBe('2px')
+    expect(track.bottom).toBe('2px')
+    expect(track.left).toBe('0px')
+    expect(track.right).toBe('0px')
+    const cellHeight = startCell.getBoundingClientRect().height
+    expect(cellHeight - 4).toBe(resolveLength('--xh-control-action-size', root) + 8)
+    // 起点帽在行首一侧取满半圆，行尾一侧是直边
+    const pill = document.createElement('span')
+    pill.style.borderRadius = 'var(--xh-shape-pill)'
+    root.append(pill)
+    expect(track.borderStartStartRadius).toBe(getComputedStyle(pill).borderTopLeftRadius)
+    pill.remove()
+    expect(track.borderStartEndRadius).toBe('0px')
+
+    const endCell = part('cell', '[data-range-end]')
+    expect(getComputedStyle(endCell, '::before').borderStartStartRadius).toBe('0px')
+    expect(getComputedStyle(endCell, '::before').borderEndEndRadius).not.toBe('0px')
+
+    // 区间中段落在一行行首的格：轨道不收圆
+    const middles = [...host!.querySelectorAll<HTMLElement>(`[data-scope='calendar-range-picker'][data-part='cell'][data-in-range]:not([data-range-start]):not([data-range-end])`)]
+    for (const cell of middles)
+      expect(getComputedStyle(cell, '::before').borderStartStartRadius).toBe('0px')
+  })
+
+  it('格子悬停 100 档、按下 200 档只换面；今天走同一条阶梯；端点按下压到 active 档；区间中段走品牌淡底阶梯', async () => {
+    await mountCalendar()
+    const root = part('root')
+    const cell = part('cell-trigger', ':not([data-today]):not([data-selected]):not([data-outside-month]):not([data-in-range])')
     await userEvent.hover(cell)
     expect(getComputedStyle(cell).backgroundColor).toBe(resolveColor('--xh-bg-subtle', root))
     await pressPointer(cell)
     expect(cell.matches(':active')).toBe(true)
     expect(getComputedStyle(cell).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', root))
-    expect(getComputedStyle(cell).scale).toBe('0.97')
+    expect(unscaled(cell)).toBe(true)
     await releasePointerAway()
 
     const today = part('cell-trigger', '[data-today]:not([data-selected])')
     await userEvent.hover(today)
     expect(getComputedStyle(today).backgroundColor).toBe(resolveColor('--xh-bg-subtle', root))
-    expect(getComputedStyle(today).borderTopColor).toBe(resolveColor('--xh-fg-brand', root))
     await releasePointerAway()
 
     const start = part('cell-trigger', '[data-range-start]')
     await pressPointer(start)
     expect(getComputedStyle(start).backgroundColor).toBe(resolveColor('--xh-bg-brand-active', root))
-    expect(getComputedStyle(start).scale).toBe('0.97')
+    expect(unscaled(start)).toBe(true)
     await releasePointerAway()
 
     // 区间中段的格坐在品牌淡底的轨道上：悬停 20%、按下 28%
@@ -134,40 +189,44 @@ describe('calendarRangePicker 格子与翻页钮的皮肤', () => {
     expect(getComputedStyle(middle).backgroundColor).toBe(resolveColor('--xh-bg-brand-subtle-hover', root))
     await pressPointer(middle)
     expect(getComputedStyle(middle).backgroundColor).toBe(resolveColor('--xh-bg-brand-subtle-active', root))
-    expect(getComputedStyle(middle).scale).toBe('0.97')
   })
 
-  it('翻页钮与标题钮：悬停 100 档、按下 200 档并缩放', async () => {
+  it('翻页钮是 24 见方的圆，悬停 100、按下 200；标题钮悬停换 100 底而字色不变', async () => {
     await mountCalendar()
     const root = part('root')
+    const action = resolveLength('--xh-control-action-size', root)
     const next = part('next-trigger')
-    // 方向钮接 Action Control icon ghost sm 档：32px 正方盒；标题钮 text ghost sm 档，悬停只换字色不换底
-    expect(next.getAttribute('data-xh-action-control')).toBe('')
     expect(next.getAttribute('data-xh-action-profile')).toBe('icon')
-    expect(next.getAttribute('data-xh-action-variant')).toBe('ghost')
-    expect(next.getBoundingClientRect().width).toBe(32)
-    expect(next.getBoundingClientRect().height).toBe(32)
-    const heading = part('heading-month-trigger')
-    expect(heading.getAttribute('data-xh-action-profile')).toBe('text')
-    await userEvent.hover(heading)
-    await expect.poll(() => getComputedStyle(heading).color).toBe(resolveColor('--xh-fg-brand', root))
-    expect(getComputedStyle(heading).backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    // 日期格接 text ghost 档：家族的固定高归 auto，格仍是等分轨道给的正方
-    const cell = part('cell-trigger', ':not([data-outside-month])')
-    expect(cell.getAttribute('data-xh-action-profile')).toBe('text')
-    expect(cell.getBoundingClientRect().width).toBe(cell.getBoundingClientRect().height)
-    expect(getComputedStyle(cell).paddingInlineStart).toBe('0px')
+    expect(next.getAttribute('data-xh-action-size')).toBe('xs')
+    expect(next.getBoundingClientRect().width).toBe(action)
+    expect(next.getBoundingClientRect().height).toBe(action)
+    expect(getComputedStyle(next).borderTopLeftRadius).toBe('50%')
     await userEvent.hover(next)
     expect(getComputedStyle(next).backgroundColor).toBe(resolveColor('--xh-bg-subtle', root))
     await pressPointer(next)
     expect(getComputedStyle(next).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', root))
-    expect(getComputedStyle(next).scale).toBe('0.97')
     await releasePointerAway()
 
     const month = part('heading-month-trigger')
-    await pressPointer(month)
-    expect(getComputedStyle(month).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover', root))
-    expect(getComputedStyle(month).scale).toBe('0.97')
+    await userEvent.hover(month)
+    expect(getComputedStyle(month).backgroundColor).toBe(resolveColor('--xh-bg-subtle', root))
+    expect(getComputedStyle(month).color).toBe(resolveColor('--xh-fg-default', root))
+  })
+
+  it('强制色下落定的区间中段在轨道上下沿画实线，端点换 Highlight 描边', async () => {
+    await cdp().send('Emulation.setEmulatedMedia', { features: [{ name: 'forced-colors', value: 'active' }] })
+    await mountCalendar()
+    const root = part('root')
+    const probe = document.createElement('span')
+    probe.style.cssText = 'forced-color-adjust: none; background-color: Highlight'
+    root.append(probe)
+    const highlight = getComputedStyle(probe).backgroundColor
+    probe.remove()
+    const middle = getComputedStyle(part('cell', '[data-in-range]:not([data-range-start]):not([data-range-end])'), '::before')
+    expect(middle.borderTopStyle).toBe('solid')
+    expect(middle.borderBottomStyle).toBe('solid')
+    expect(middle.borderTopColor).toBe(highlight)
+    expect(getComputedStyle(part('cell-trigger', '[data-range-start]')).borderTopColor).toBe(highlight)
   })
 
   it('快速选年的网格滚动链保持 auto，翻页钮里的字形取 sm 档', async () => {
@@ -179,11 +238,6 @@ describe('calendarRangePicker 格子与翻页钮的皮肤', () => {
     const grid = part('grid', `[data-view='year']`)
     expect(getComputedStyle(grid).overflowY).toBe('auto')
     expect(getComputedStyle(grid).overscrollBehaviorY).toBe('auto')
-    const probe = document.createElement('span')
-    probe.style.inlineSize = 'var(--xh-glyph-size-sm)'
-    root.append(probe)
-    const sm = getComputedStyle(probe).inlineSize
-    probe.remove()
-    expect(getComputedStyle(part('next-trigger'), '::before').width).toBe(sm)
+    expect(getComputedStyle(part('next-trigger'), '::before').width).toBe(`${resolveLength('--xh-glyph-size-sm', root)}px`)
   })
 })

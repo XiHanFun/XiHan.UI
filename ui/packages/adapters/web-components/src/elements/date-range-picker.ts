@@ -185,6 +185,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart column-group-label - 时间组的小标题，纯视觉；内容为空时由元素填 translations.startTime / endTime
  * @csspart time-column - 一端的一列，须自带 unit 属性（hour / minute / second / dayPeriod），端号取所在 column-group
  * @csspart time-item - 时间选项，须自带 value 属性（两位补零串，上下午列写 '00' / '01'）；内容为空时由元素填字
+ * @csspart footer - 浮层底部的通栏操作区，写在 content 里、排在面板主体之后；确认钮通常放在这里，不进入任何集合的拥有关系
  * @csspart confirm-trigger - showTime 的收口按钮；未开启时带 hidden
  * @csspart header - 日历标题栏外壳（data-scope="calendar-range-picker"）
  * @csspart prev-year-trigger - 快速向前翻一大步（日视图一年、粗粒度十页）；可选
@@ -680,6 +681,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     // 快捷选项是多实例 part：条目自报 value
     for (const el of this.getParts('preset'))
       this.spreader.spread(el, api.getPresetProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+    put('footer', api.getFooterProps() as Record<string, unknown>)
     put('confirm-trigger', api.getConfirmTriggerProps() as Record<string, unknown>)
 
     // 时间组自报 index；组内的小标题、列与格跟着它走，列自报 unit、格自报 value
