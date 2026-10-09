@@ -125,6 +125,8 @@ const CROSS_PART = {
   'time-range-picker.column': ['preset-group'],
   // 时间列底的留白要让末格也能滚到列顶：留白 = 列高 − 一格的高 − 列顶内衬，读格子的高度槽
   'date-picker.time-item': ['time-column'],
+  // 时间格的命中区向上下各补半个列内间距，读列的间距槽，两格之间的缝才严丝合缝地分给上下两格
+  'date-picker.time-column': ['time-item'],
   'date-range-picker.time-item': ['time-column'],
   'time-picker.item': ['column'],
   'time-range-picker.item': ['column'],

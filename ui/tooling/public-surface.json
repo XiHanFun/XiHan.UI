@@ -16200,6 +16200,7 @@
     "--xh-date-picker-preset-check-size",
     "--xh-date-picker-preset-fg",
     "--xh-date-picker-preset-fg-disabled",
+    "--xh-date-picker-preset-fg-hover",
     "--xh-date-picker-preset-font-size",
     "--xh-date-picker-preset-group-gap",
     "--xh-date-picker-preset-group-h",
