@@ -135,7 +135,6 @@ const HOOKS = {
   'field-array:data-readonly': '行数改不动的观感落在三个把手的 aria-disabled 上，行里控件的只读由作者自己置，这一层只往下传状态',
   'field-array:data-invalid': '校验失败的观感落在行里各输入件自己身上，这一层只往下传状态',
   'form:data-readonly': '整份表单置只读时由逐个控件自己表出',
-  'form:data-invalid': '出错的观感由字段容器里那个 Field 自己表出（警示色标签与错误文案），容器与表单根上的这一位留给作者定位出错的项，库不另画色带',
   // 忙：锁住的观感由提交钮的身份切换承载
   // 其余逐条
   'calendar-picker:data-focus': '漫游焦点的锚点位。看得见的聚焦环走 :focus-visible',
