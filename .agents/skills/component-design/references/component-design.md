@@ -494,7 +494,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 组类控件 | 尺寸 |
 | --- | --- |
 | Checkbox、Radio、CheckboxGroup、RadioGroup、Transfer、GridList、Tree 的方框与圆 | `control-indicator` 随 size |
-| RadioGroup segmented | 轨道外盒高 `control-h`（段高 = control-h − 2 × 2px 内衬 − 2 × 1px 描边），内衬 `--xh-space-0_5`；段横向内距 `control-px`（md 12px）；段间分隔线长 control-h / 2 − 2px（md 14px） |
+| RadioGroup segmented | 轨道外盒高 `control-h`（段高 = control-h − 2 × 2px 内衬 − 2 × 1px 描边），内衬 `--xh-space-0_5`；段横向内距 `control-px`（md 12px）；段间分隔线长 control-h / 2 − 2px（md 14px）；粗指针命中区由段的伪元素补足到 `--xh-control-hit-coarse`，轨道 `isolation: isolate`、伪元素垫在负一层，折行与竖排时相邻段的盒压过别段外扩的那一截；块首最多越出轨道外沿一格 `--xh-space-2`（不压字段标签），少扩的落到块尾 |
 | ColorSwatchPicker 色块 | `control-h` 随 size |
 | Switch | 轨道高 `switch-track-h` 随 size；宽 = 2 × 高 − 2 × 内距；滑块 = 高 − 2 × 内距 |
 | Slider | 轨道 2px（`--xh-stroke-thick`，lg 3px）、拇指 `--xh-track-thumb-size-*` 12px（sm 10 / lg 16px；悬停与拖动放大 `--xh-motion-scale-drag`）、刻度点 8px；竖向长度 10rem。拇指是白底 + 2px 品牌描边的平面圆，静止不投影、拖动中 lifted，不走 raised。粗指针下控件沿交叉轴外扩，总量为 `--xh-control-hit-coarse` − 拇指直径；横排块首不越过标签间距（`--xh-slider-label-gap`），余下挪到块尾 |

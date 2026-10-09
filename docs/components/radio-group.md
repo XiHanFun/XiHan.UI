@@ -403,7 +403,7 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 | `--xh-radio-group-track-bg-disabled` | `root` | `background` | `disabled`<br>`variant=segmented` | `--xh-bg-muted` | radio-group 的 root 部件 background 覆盖槽。 |
 | `--xh-radio-group-track-border` | `root` | `border` | `variant=segmented` | `--xh-border-control` | radio-group 的 root 部件 border 覆盖槽。 |
 | `--xh-radio-group-track-border-invalid` | `root` | `border-color` | `invalid`<br>`variant=segmented` | `--xh-border-invalid` | radio-group 的 root 部件 border-color 覆盖槽。 |
-| `--xh-radio-group-track-padding` | `item`<br>`root` | `min-block-size`<br>`padding` | `orientation=horizontal`<br>`variant=segmented` | `--xh-space-0_5` | radio-group 的 item、root 部件 min-block-size、padding 覆盖槽。 |
+| `--xh-radio-group-track-padding` | `item`<br>`root` | `inset-block-start`<br>`min-block-size`<br>`padding` | `@media (pointer: coarse)`<br>`orientation=horizontal`<br>`variant=segmented` | `--xh-space-0_5` | radio-group 的 item、root 部件 inset-block-start、min-block-size、padding 覆盖槽。 |
 | `--xh-radio-group-track-radius` | `root` | `border-radius` | `variant=segmented` | `--xh-shape-control` | radio-group 的 root 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

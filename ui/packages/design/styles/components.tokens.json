@@ -62055,10 +62055,12 @@
         "root"
       ],
       "property": [
+        "inset-block-start",
         "min-block-size",
         "padding"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "orientation=horizontal",
         "variant=segmented"
       ],
@@ -62066,7 +62068,7 @@
         "--xh-space-0_5"
       ],
       "visibility": "public",
-      "description": "radio-group 的 item、root 部件 min-block-size、padding 覆盖槽。"
+      "description": "radio-group 的 item、root 部件 inset-block-start、min-block-size、padding 覆盖槽。"
     },
     {
       "name": "--xh-radio-group-track-radius",
