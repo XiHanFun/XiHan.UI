@@ -47168,7 +47168,7 @@
   --xh-_toggle-group-item-bg: var(--xh-bg-subtle);
   --xh-_toggle-group-item-bg-hover: var(--xh-bg-subtle-hover);
   --xh-_toggle-group-item-bg-active: var(--xh-bg-subtle-active);
-  --xh-_toggle-group-item-fg: var(--xh-fg-default);
+  --xh-_toggle-group-item-fg: var(--xh-fg-muted);
   --xh-_toggle-group-item-border: transparent;
   --xh-_toggle-group-item-bg-on: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
   --xh-_toggle-group-item-bg-on-hover: var(
@@ -47219,7 +47219,7 @@
   --xh-_toggle-group-item-bg: var(--xh-bg-subtle);
   --xh-_toggle-group-item-bg-hover: var(--xh-bg-subtle-hover);
   --xh-_toggle-group-item-bg-active: var(--xh-bg-subtle-active);
-  --xh-_toggle-group-item-fg: var(--xh-fg-default);
+  --xh-_toggle-group-item-fg: var(--xh-fg-muted);
   --xh-_toggle-group-item-border: transparent;
   --xh-_toggle-group-item-bg-on: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
   --xh-_toggle-group-item-bg-on-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-brand-subtle-hover));
@@ -47234,7 +47234,7 @@
   --xh-_toggle-group-item-bg: transparent;
   --xh-_toggle-group-item-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_toggle-group-item-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-_toggle-group-item-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_toggle-group-item-fg: var(--xh-_tone-fg, var(--xh-fg-muted));
   --xh-_toggle-group-item-border: transparent;
   --xh-_toggle-group-item-bg-on: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
   --xh-_toggle-group-item-bg-on-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-brand-subtle-hover));
@@ -47262,7 +47262,7 @@
   --xh-_toggle-group-item-bg: transparent;
   --xh-_toggle-group-item-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_toggle-group-item-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-_toggle-group-item-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_toggle-group-item-fg: var(--xh-_tone-fg, var(--xh-fg-muted));
   --xh-_toggle-group-item-border: transparent;
   --xh-_toggle-group-item-bg-on: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
   --xh-_toggle-group-item-bg-on-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-brand-subtle-hover));
