@@ -35,7 +35,7 @@
       "relation": "loop"
     },
     "xh-carousel-indicator-progress": {
-      "content": "from{scale:var(--xh-_carousel-progress-from)}to{scale:var(--xh-_carousel-progress-to)}",
+      "content": "from{clip-path:inset(var(--xh-_carousel-progress-cut) round var(--xh-_carousel-progress-radius))}to{clip-path:inset(0 round var(--xh-_carousel-progress-radius))}",
       "definedIn": [
         "carousel.css"
       ],

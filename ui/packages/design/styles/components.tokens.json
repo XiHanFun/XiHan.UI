@@ -8056,9 +8056,11 @@
         "root"
       ],
       "property": [
-        "border-radius"
+        "border-radius",
+        "clip-path"
       ],
       "state": [
+        "@keyframes xh-carousel-indicator-progress",
         "@media (pointer: coarse)",
         "autoplay",
         "current",
@@ -8068,7 +8070,7 @@
         "--xh-shape-pill"
       ],
       "visibility": "public",
-      "description": "carousel 的 indicator、root 部件 border-radius 覆盖槽。"
+      "description": "carousel 的 indicator、root 部件 border-radius、clip-path 覆盖槽。"
     },
     {
       "name": "--xh-carousel-indicator-size",

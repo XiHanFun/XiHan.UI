@@ -105,7 +105,7 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 - 开启自动播放时渲染 `autoplay-trigger`：它是唯一能停止自动翻页且不会被其他交互重新启动的入口。
 - 自动播放在指针悬停或焦点进入时自动暂停，离开后重新计满一个间隔再翻页。
 - 减弱动效时自动播放不会自行启动，播放开关是用户唯一的启动入口。
-- 分页点应能看出总屏数与当前位置；自动播放时还应反馈本页剩余时间。翻页与播放按钮走 Action Control floating 档，随 `size` 取 sm / md / lg（24 / 24 / 28px、字形 12 / 16 / 20px，默认 md 24px；sm 不低于 24px 的最小目标，只把字形收小）圆形浮层面，按下换底。三颗钮浮在内容之上：翻页钮在两侧居中、播放钮贴右下角，视口不低于 3 × 钮径 + 24px（两倍控件内距）时互不相叠，即 sm / md 96px、lg 108px。
+- 分页点应能看出总屏数与当前位置；自动播放时还应反馈本页剩余时间。翻页与播放按钮走 Action Control floating 档，随 `size` 取 sm / md / lg（24 / 24 / 28px、字形 12 / 16 / 20px，默认 md 24px；sm 不低于 24px 的最小目标，只把字形收小；紧凑档也不低于 24px，钮在细指针下不外扩命中区）圆形浮层面，按下换底。三颗钮浮在内容之上：翻页钮在两侧居中、播放钮贴右下角，视口不低于 3 × 钮径 + 24px（两倍控件内距）时互不相叠，即 sm / md 96px、lg 108px。
 
 ### 反模式
 
@@ -354,7 +354,7 @@ effect="fade" 把各张叠放在同一格：翻页时新一张淡入、旧一张
 | `--xh-carousel-indicator-group-radius` | `indicator-group` | `border-radius` | `material=liquid`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-shape-pill` | carousel 的 indicator-group 部件 border-radius 覆盖槽。 |
 | `--xh-carousel-indicator-inset` | `indicator-group` | `inset-block-end` | `orientation=horizontal` | `--xh-space-3` | carousel 的 indicator-group 部件 inset-block-end 覆盖槽。 |
 | `--xh-carousel-indicator-radius` | `indicator` | `border-radius` | `@media (pointer: coarse)`<br>`default` | `--xh-shape-circle` | carousel 的 indicator 部件 border-radius 覆盖槽。 |
-| `--xh-carousel-indicator-radius-current` | `indicator`<br>`root` | `border-radius` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`paused` | `--xh-shape-pill` | carousel 的 indicator、root 部件 border-radius 覆盖槽。 |
+| `--xh-carousel-indicator-radius-current` | `indicator`<br>`root` | `border-radius`<br>`clip-path` | `@keyframes xh-carousel-indicator-progress`<br>`@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`paused` | `--xh-shape-pill` | carousel 的 indicator、root 部件 border-radius、clip-path 覆盖槽。 |
 | `--xh-carousel-indicator-size` | `indicator`<br>`indicator-group`<br>`root` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-inline` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`default`<br>`orientation=vertical`<br>`paused` | `--xh-space-1_5` | carousel 的 indicator、indicator-group、root 部件 block-size、inline-size、inset-block、inset-inline 覆盖槽。 |
 | `--xh-carousel-indicator-size-current` | `indicator`<br>`indicator-group`<br>`root` | `block-size`<br>`inline-size` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`orientation=vertical`<br>`paused` | `--xh-space-5` | carousel 的 indicator、indicator-group、root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-carousel-indicator-target-size` | `indicator`<br>`root` | `min-block-size`<br>`min-inline-size` | `@media (pointer: coarse)`<br>`autoplay`<br>`current`<br>`hover`<br>`is(:active, [data-pressed])`<br>`not([data-autoplay], [data-paused])`<br>`not([data-current])`<br>`paused`<br>`pressed` | `44px` | carousel 的 indicator、root 部件 min-block-size、min-inline-size 覆盖槽。 |
