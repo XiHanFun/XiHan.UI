@@ -15,10 +15,11 @@
   /* 与文本框、数字框同一套堆叠：标签一行、格子一行。
      格子的描边、底、圆角、五态与悬停由 Field Chrome 家族按格子上的 data-variant 生成，皮肤不再声明形态三档 */
   [data-scope='pin-input'][data-part='root'] {
-    /* 尺寸档只换这三个私有槽，格子与分隔都从 root 继承它们，换档不必给每个部件各写一条选择器 */
-    --xh-_pin-input-box-size: var(--xh-control-box-md);
-    --xh-_pin-input-box-gap: var(--xh-control-gap-md);
-    --xh-_pin-input-box-font-size: var(--xh-text-heading-2-size);
+    /* 尺寸档只换这两个私有槽，格子与分隔都从 root 继承它们，换档不必给每个部件各写一条选择器。
+       格子边长取控件高档，与同一行里的字段等高；字号取控件字号档；格间距三档同为 --xh-space-1 */
+    --xh-_pin-input-box-size: var(--xh-control-h-md);
+    --xh-_pin-input-box-gap: var(--xh-space-1);
+    --xh-_pin-input-box-font-size: var(--xh-control-font-md);
     /* 填满态的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回品牌色 */
     --xh-_pin-input-accent: var(--xh-_tone, var(--xh-bg-brand));
 
@@ -38,16 +39,13 @@
 
   /* —— 尺寸 —— */
   [data-scope='pin-input'][data-part='root'][data-size='sm'] {
-    --xh-_pin-input-box-size: var(--xh-control-box-sm);
-    --xh-_pin-input-box-gap: var(--xh-control-gap-sm);
-    --xh-_pin-input-box-font-size: var(--xh-control-font-lg);
+    --xh-_pin-input-box-size: var(--xh-control-h-sm);
+    --xh-_pin-input-box-font-size: var(--xh-control-font-sm);
   }
 
-  /* 格子是正方形，缺省档已经占到控件高度表的顶档，lg 档由顶档加一格间距合成，不另立数值 */
   [data-scope='pin-input'][data-part='root'][data-size='lg'] {
-    --xh-_pin-input-box-size: var(--xh-control-box-lg);
-    --xh-_pin-input-box-gap: var(--xh-control-gap-lg);
-    --xh-_pin-input-box-font-size: var(--xh-text-heading-1-size);
+    --xh-_pin-input-box-size: var(--xh-control-h-lg);
+    --xh-_pin-input-box-font-size: var(--xh-control-font-lg);
   }
 
   [data-scope='pin-input'][data-part='label'] {
@@ -141,19 +139,13 @@
     color: var(--xh-pin-input-placeholder-fg, var(--xh-fg-subtle));
   }
 
-  /* 一行格子长得一模一样，光标那道竖线太细，看不出正在填哪一格：
-     当前格必须有明显的环。data-focus 由机器给（它知道谁是当前格），
-     家族的 :focus-within 兜住机器状态还没回流的那一帧，两条同时写不冲突。
-     焦点边一律家族的 --xh-border-control-focus，不随 tone */
+  /* 一行格子长得一模一样，光标那道竖线太细，看不出正在填哪一格：当前格与字段外壳的聚焦态同一副面——
+     换承载面 + 聚焦描边，压在别的格子的字段淡底之间一眼分得出，不另画环（强制色档由家族补系统色环）。
+     data-focus 由机器给（它知道谁是当前格），家族的 :focus-within 兜住机器状态还没回流的那一帧，
+     两条同时写不冲突。焦点边一律家族的 --xh-border-control-focus，不随 tone */
   [data-scope='pin-input'][data-part='input'][data-focus] {
     border-color: var(--xh-pin-input-box-border-focus, var(--xh-_field-variant-border-focus));
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
-  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
-  [data-scope='pin-input'][data-part='input'][data-invalid][data-focus] {
-    outline-color: var(--xh-ring-invalid);
+    background-color: var(--xh-_field-variant-bg-focus);
   }
 
   /* 填满只代表"格子都有字"，不代表"验证码对"，所以用品牌色而不是成功色收个尾。
