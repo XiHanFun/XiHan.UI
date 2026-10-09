@@ -23241,8 +23241,11 @@
     display: none;
   }
 
+  /* 带输入框的用法是一件单行字段，标签与其余字段同一副字段标签排版：次要文字色、标签字号字重。
+     竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-clipboard-label-gap 给多少最终就是多少 */
   .xh-scope-clipboard[data-part='label'] {
-    color: var(--xh-clipboard-label-fg, var(--xh-fg-default));
+    margin-block-end: calc(var(--xh-clipboard-label-gap, var(--xh-space-2)) - var(--xh-clipboard-gap, var(--xh-space-1)));
+    color: var(--xh-clipboard-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-clipboard-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-clipboard-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
