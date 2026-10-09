@@ -529,7 +529,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `--xh-time-picker-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` | time-picker 的 content 部件 background 覆盖槽。 |
 | `--xh-time-picker-content-border` | `content` | `border` | `default` | `--xh-border-default` | time-picker 的 content 部件 border 覆盖槽。 |
 | `--xh-time-picker-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | time-picker 的 content 部件 color 覆盖槽。 |
-| `--xh-time-picker-content-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-lg` | time-picker 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-time-picker-content-max-h` | `content` | `max-block-size` | `default` | `none` | time-picker 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-time-picker-content-px` | `content` | `padding-inline` | `default` | `--xh-space-0` | time-picker 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-time-picker-content-py` | `content` | `padding-block` | `default` | `--xh-space-0` | time-picker 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-time-picker-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | time-picker 的 content 部件 border-radius 覆盖槽。 |
