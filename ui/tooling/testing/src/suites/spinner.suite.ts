@@ -74,6 +74,21 @@ export const spinnerSuite: ConformanceSuite = {
       },
     },
     {
+      name: '缺省横排：data-orientation 为 horizontal',
+      spec: { apg: APG },
+      initial: {
+        parts: { root: { 'data-orientation': 'horizontal' } },
+      },
+    },
+    {
+      name: 'orientation：接线到 data-orientation，竖排时转圈在上、配文在下',
+      spec: { apg: APG },
+      props: { orientation: 'vertical' },
+      initial: {
+        parts: { root: { 'data-orientation': 'vertical' } },
+      },
+    },
+    {
       name: '宿主换文案：活区的名字当场跟着改',
       spec: { apg: APG },
       props: { label: '正在上传' },
