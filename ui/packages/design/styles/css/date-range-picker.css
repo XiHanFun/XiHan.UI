@@ -799,16 +799,19 @@
   /* 底栏：面板底部通栏的一条操作区，上沿一道 border-default 线与日历、时间组隔开，四周 8 的内衬；
      面板换行排布（并排两张日历、快捷选项列、起止两组时间列）时独占一整行，落在它们下面。
      首个子节点落在撑满余宽的那条轨道上，其后的各自按内容宽排在行尾：作者另放的文字与链接排在行首，
-     确认钮总落在行尾；只放了确认钮时它独占那条轨道，靠 justify-self 贴到行尾 */
+     确认钮总落在行尾；只放了确认钮时它独占那条轨道，靠 justify-self 贴到行尾。
+     底栏不参与撑宽：面板换行排布时，Chrome 把每个子项的固有宽相加当作面板的固有宽，
+     底栏的字与钮会把面板多撑出一截、日历与时间组末端空出一块。inline-size 包含让它的内容不计入固有宽，
+     行内内衬也就不能写在它自己身上（内衬照样计入），改由首末两个子节点的外边距让出 */
   [data-scope='date-range-picker'][data-part='footer'] {
     display: grid;
+    contain: inline-size;
     flex-basis: 100%;
     grid-auto-flow: column;
     grid-template-columns: minmax(0, 1fr);
     align-items: center;
     gap: var(--xh-date-range-picker-footer-gap, var(--xh-space-2));
     padding-block: var(--xh-date-range-picker-footer-py, var(--xh-space-2));
-    padding-inline: var(--xh-date-range-picker-footer-px, var(--xh-space-2));
     border-block-start: var(--xh-stroke-thin) solid var(--xh-date-range-picker-footer-border, var(--xh-material-solid-border));
     color: var(--xh-date-range-picker-footer-fg, var(--xh-fg-muted));
     font-size: var(--xh-date-range-picker-footer-font-size, var(--xh-text-caption-size));
@@ -826,6 +829,14 @@
 
   [data-scope='date-range-picker'][data-part='footer'] > [data-scope='date-range-picker'][data-part='confirm-trigger'] {
     justify-self: end;
+  }
+
+  [data-scope='date-range-picker'][data-part='footer'] > :first-child {
+    margin-inline-start: var(--xh-date-range-picker-footer-px, var(--xh-space-2));
+  }
+
+  [data-scope='date-range-picker'][data-part='footer'] > :last-child {
+    margin-inline-end: var(--xh-date-range-picker-footer-px, var(--xh-space-2));
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

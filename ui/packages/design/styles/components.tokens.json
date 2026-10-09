@@ -25959,16 +25959,18 @@
         "footer"
       ],
       "property": [
-        "padding-inline"
+        "margin-inline-end",
+        "margin-inline-start"
       ],
       "state": [
-        "default"
+        "first-child",
+        "last-child"
       ],
       "defaultToken": [
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "date-range-picker 的 footer 部件 padding-inline 覆盖槽。"
+      "description": "date-range-picker 的 footer 部件 margin-inline-end、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-date-range-picker-footer-py",
