@@ -143,6 +143,19 @@ describe('气泡族的面与排版', () => {
     expect(confirm.left - cancel.right).toBeCloseTo(8, 0)
   })
 
+  it('popconfirm：只写 --xh-popconfirm-gap 时两颗钮之间的列距也跟着它走，column-gap 槽仍能单独压过它', async () => {
+    await mount('popconfirm')
+    const content = part('popconfirm', 'content')
+    const gap = () => part('popconfirm', 'confirm-trigger').getBoundingClientRect().left - part('popconfirm', 'cancel-trigger').getBoundingClientRect().right
+
+    content.style.setProperty('--xh-popconfirm-gap', '20px')
+    expect(getComputedStyle(content).columnGap).toBe('20px')
+    expect(gap()).toBeCloseTo(20, 0)
+    content.style.setProperty('--xh-popconfirm-column-gap', '12px')
+    expect(getComputedStyle(content).columnGap).toBe('12px')
+    expect(gap()).toBeCloseTo(12, 0)
+  })
+
   it.each([
     ['sm', '8px', '12px'],
     ['lg', '16px', '20px'],
