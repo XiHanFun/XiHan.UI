@@ -11334,10 +11334,12 @@
     --xh-_page-header-px: 0;
     --xh-_page-header-radius: 0;
 
-    /* 返回、媒体、标题、副标题与操作区分列：副标题跟在标题后面同一行，中间一条竖线隔开 */
+    /* 返回、媒体、标题、副标题与操作区分列：副标题跟在标题后面同一行，中间一条竖线隔开。
+       副标题那一列下限取 min-content：标题长过整行时让出竖线与副标题最窄的那一截，
+       不把副标题挤到容器外面；标题自己在行尾断开 */
     display: grid;
     grid-auto-flow: dense;
-    grid-template-columns: auto auto auto minmax(0, 1fr) auto;
+    grid-template-columns: auto auto auto minmax(min-content, 1fr) auto;
     align-items: center;
     row-gap: var(--xh-page-header-row-gap, var(--xh-_page-header-row-gap));
     padding-block: var(--xh-page-header-py, var(--xh-_page-header-py));
