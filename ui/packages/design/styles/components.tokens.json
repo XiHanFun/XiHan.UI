@@ -41296,6 +41296,46 @@
       "description": "input-group 的 root 部件 border-color 覆盖槽。"
     },
     {
+      "name": "--xh-input-group-item-bg",
+      "component": "input-group",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "input-group 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-input-group-item-divider",
+      "component": "input-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "border-inline-end",
+        "border-inline-start"
+      ],
+      "state": [
+        "not(:first-child)",
+        "not(:has(+ [data-scope='input-group'][data-part='item'])",
+        "not(:last-child)"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "input-group 的 item、root 部件 border-inline-end、border-inline-start 覆盖槽。"
+    },
+    {
       "name": "--xh-input-group-item-fg",
       "component": "input-group",
       "part": [
@@ -41308,7 +41348,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "input-group 的 item 部件 color 覆盖槽。"

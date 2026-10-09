@@ -2070,6 +2070,8 @@ export type ComponentTokenName
     | '--xh-input-group-border-focus'
     | '--xh-input-group-border-hover'
     | '--xh-input-group-border-invalid'
+    | '--xh-input-group-item-bg'
+    | '--xh-input-group-item-divider'
     | '--xh-input-group-item-fg'
     | '--xh-input-group-item-font-size'
     | '--xh-input-group-item-h'

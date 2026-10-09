@@ -147,7 +147,9 @@ outline 画描边输入面，subtle 用淡底嵌入已有表面
 | `--xh-input-group-border-focus` | `root` | `border-color` | `focus-within` | `--xh-_input-group-border-focus` | input-group 的 root 部件 border-color 覆盖槽。 |
 | `--xh-input-group-border-hover` | `root` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not(:focus-within)`<br>`not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])`<br>`readonly` | `--xh-_input-group-border-hover` | input-group 的 root 部件 border-color 覆盖槽。 |
 | `--xh-input-group-border-invalid` | `root` | `border-color` | `has([data-invalid], [aria-invalid='true'])`<br>`invalid` | `--xh-border-invalid` | input-group 的 root 部件 border-color 覆盖槽。 |
-| `--xh-input-group-item-fg` | `item` | `color` | `default` | `--xh-fg-muted` | input-group 的 item 部件 color 覆盖槽。 |
+| `--xh-input-group-item-bg` | `item` | `background-color` | `default` | `--xh-bg-subtle` | input-group 的 item 部件 background-color 覆盖槽。 |
+| `--xh-input-group-item-divider` | `item`<br>`root` | `border-inline-end`<br>`border-inline-start` | `not(:first-child)`<br>`not(:has(+ [data-scope='input-group'][data-part='item'])`<br>`not(:last-child)` | `--xh-border-default` | input-group 的 item、root 部件 border-inline-end、border-inline-start 覆盖槽。 |
+| `--xh-input-group-item-fg` | `item` | `color` | `default` | `--xh-fg-default` | input-group 的 item 部件 color 覆盖槽。 |
 | `--xh-input-group-item-font-size` | `item` | `font-size` | `default` | `--xh-_input-group-font-size` | input-group 的 item 部件 font-size 覆盖槽。 |
 | `--xh-input-group-item-h` | `item` | `block-size` | `default` | `--xh-_input-group-h` | input-group 的 item 部件 block-size 覆盖槽。 |
 | `--xh-input-group-item-px` | `item` | `padding-inline` | `default` | `--xh-_input-group-px` | input-group 的 item 部件 padding-inline 覆盖槽。 |
