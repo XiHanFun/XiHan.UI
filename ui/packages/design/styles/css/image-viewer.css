@@ -66,11 +66,11 @@
 
     /* 作者塞进浮层的图标：内容层给一档 md 的尺，十颗钮各自再按 Action Control 档位覆盖 */
     --xh-icon-size: var(--xh-image-viewer-icon-size, var(--xh-glyph-size-md));
-    /* 翻页钮、关闭钮与计数共用的深色 chrome：压在使用者的图片上的半透明深底，是这一层自己的面，
+    /* 翻页钮、关闭钮与计数共用的深色 chrome：压在使用者的图片上的半透明深底，取画面控件面那组令牌，
        不取页面语义面。白面压在亮图上分不出来（白 30% 的面压亮图不到 1.4:1），这几件留在深纱上 */
-    --xh-_image-viewer-chrome-bg: var(--xh-image-viewer-chrome-bg, color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent));
-    --xh-_image-viewer-chrome-bg-hover: var(--xh-image-viewer-action-bg-hover, color-mix(in oklab, var(--xh-color-neutral-950) 70%, transparent));
-    --xh-_image-viewer-chrome-bg-active: var(--xh-image-viewer-action-bg-active, color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent));
+    --xh-_image-viewer-chrome-bg: var(--xh-image-viewer-chrome-bg, var(--xh-bg-media-chrome));
+    --xh-_image-viewer-chrome-bg-hover: var(--xh-image-viewer-action-bg-hover, var(--xh-bg-media-chrome-hover));
+    --xh-_image-viewer-chrome-bg-active: var(--xh-image-viewer-action-bg-active, var(--xh-bg-media-chrome-active));
 
     position: relative;
     inline-size: 100%;
@@ -80,7 +80,7 @@
     justify-content: center;
     outline: none;
     /* 深色底上的工具条与计数固定用浅字，不随主题翻 */
-    color: var(--xh-image-viewer-fg, var(--xh-color-neutral-0));
+    color: var(--xh-image-viewer-fg, var(--xh-fg-on-media-chrome));
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
