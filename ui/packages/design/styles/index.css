@@ -35250,6 +35250,8 @@
      字形在盒里居中，标题字号改了也不会错位 */
   .xh-scope-notification[data-part='item-indicator'] {
     --xh-icon-size: var(--xh-notification-indicator-size, var(--xh-glyph-size-md));
+    /* 加载环随语气色（加载环配方缺省取品牌色），与语气字形同一支 */
+    --xh-_loading-ring-fg: var(--xh-notification-indicator-fg, var(--xh-_tone-fg));
 
     grid-column: 1;
     grid-row: 1;
