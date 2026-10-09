@@ -172,7 +172,8 @@ describe('card 的中性内容面槽', () => {
     await mount(CARD)
     const root = part('card', 'root')
 
-    expect(styleOf(root, 'padding-top')).toBe('29px')
+    // 根自己不留内衬，统一内边距落在各部件上：头部条的横向内衬跟着它走
+    expect(styleOf(part('card', 'header'), 'padding-left')).toBe('29px')
     expect(styleOf(root, 'row-gap')).toBe('31px')
   })
 
