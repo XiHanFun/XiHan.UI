@@ -284,6 +284,7 @@ export const tokens = {
   "--xh-control-caption-md": "var(--xh-font-size-sm)",
   "--xh-control-caption-lg": "var(--xh-font-size-md)",
   "--xh-control-action-size": "24px",
+  "--xh-control-target-min": "24px",
   "--xh-control-indicator-size": "var(--xh-control-indicator-md)",
   "--xh-control-indicator-sm": "12px",
   "--xh-control-indicator-md": "16px",
