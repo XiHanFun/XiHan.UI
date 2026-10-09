@@ -46733,7 +46733,7 @@
         "xh-field-layout=textarea"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "mention 的 input 部件 padding-block 覆盖槽。"
@@ -74813,7 +74813,7 @@
         "xh-field-layout=textarea"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "text-field 的 input 部件 padding-block 覆盖槽。"

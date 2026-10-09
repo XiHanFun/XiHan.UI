@@ -187,7 +187,7 @@
     "placeholderColor": "var(--xh-fg-subtle)",
     "autofillBackground": "var(--xh-bg-canvas)",
     "autofillForeground": "var(--xh-fg-default)",
-    "textareaPaddingBlock": "var(--xh-space-2)",
+    "textareaPaddingBlock": "var(--xh-space-1)",
     "ime": "preserve-native-composition"
   },
   "motion": {

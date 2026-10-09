@@ -168,7 +168,7 @@
   /* 多行形态：正文可以换行，框随 rows 定起始高度、不钉单行控件高（家族的多行布局给）；
      框自己就是 chrome，家族多行布局把上下内衬归零，这里按文本字段多行档同一支令牌补回，只许纵向拉伸 */
   [data-scope='mention'][data-part='input'][data-xh-field-layout='textarea'] {
-    padding-block: var(--xh-mention-textarea-py, var(--xh-space-2));
+    padding-block: var(--xh-mention-textarea-py, var(--xh-space-1));
     resize: vertical;
   }
 

@@ -960,7 +960,7 @@
 [data-xh-field-input][data-xh-field-layout='textarea'] {
   block-size: auto;
   max-inline-size: 100%;
-  padding-block: var(--xh-field-textarea-padding-block, var(--xh-space-2));
+  padding-block: var(--xh-field-textarea-padding-block, var(--xh-space-1));
   overflow: auto;
   resize: vertical;
 }
@@ -10933,7 +10933,7 @@
 /* 多行形态：正文可以换行，框随 rows 定起始高度、不钉单行控件高（家族的多行布局给）；
    框自己就是 chrome，家族多行布局把上下内衬归零，这里按文本字段多行档同一支令牌补回，只许纵向拉伸 */
 .xh-scope-mention[data-part='input'][data-xh-field-layout='textarea'] {
-  padding-block: var(--xh-mention-textarea-py, var(--xh-space-2));
+  padding-block: var(--xh-mention-textarea-py, var(--xh-space-1));
   resize: vertical;
 }
 
@@ -45120,7 +45120,7 @@
   --xh-field-placeholder-fg: var(--xh-text-field-placeholder-fg, var(--xh-fg-subtle));
   --xh-field-autofill-bg: var(--xh-text-field-input-autofill-bg, var(--xh-bg-canvas));
   --xh-field-autofill-fg: var(--xh-text-field-input-autofill-fg, var(--xh-fg-default));
-  --xh-field-textarea-padding-block: var(--xh-text-field-textarea-py, var(--xh-space-2));
+  --xh-field-textarea-padding-block: var(--xh-text-field-textarea-py, var(--xh-space-1));
 }
 
 .xh-scope-text-field[data-part='control'][hidden] {
