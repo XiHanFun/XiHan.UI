@@ -36384,10 +36384,12 @@
     /* 作者塞进面板或分页行里的图标按档取字形尺；四类格子上另按家族档位取同一把尺 */
     --xh-icon-size: var(--xh-pagination-icon-size, var(--xh-glyph-size-md));
 
-    /* 尺寸档只换这三个私有槽，上一页/下一页、页码与省略号都从这两处继承它们，
-       换档不必给每个部件各写一条选择器 */
+    /* 尺寸档只换这几个私有槽，上一页/下一页、页码与省略号都从这两处继承它们，
+       换档不必给每个部件各写一条选择器。格子的横内衬比控件尺窄一档：一位数的页码加两侧内衬
+       要收得进方格的最小宽度，格子才是正方的；跳页输入框是字段，仍取控件尺的横内衬 */
     --xh-_pagination-item-size: var(--xh-control-h-md);
-    --xh-_pagination-item-px: var(--xh-control-px-md);
+    --xh-_pagination-item-px: var(--xh-space-2);
+    --xh-_pagination-jumper-px: var(--xh-control-px-md);
     --xh-_pagination-font-size: var(--xh-control-font-md);
 
     /* 当前页的选中态随语气走。没写 data-tone 时这几个 --xh-_tone-* 都没被声明，
@@ -36417,14 +36419,16 @@
   .xh-scope-pagination:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
     --xh-icon-size: var(--xh-pagination-icon-size, var(--xh-glyph-size-sm));
     --xh-_pagination-item-size: var(--xh-control-h-sm);
-    --xh-_pagination-item-px: var(--xh-control-px-sm);
+    --xh-_pagination-item-px: var(--xh-space-1_5);
+    --xh-_pagination-jumper-px: var(--xh-control-px-sm);
     --xh-_pagination-font-size: var(--xh-control-font-sm);
   }
 
   .xh-scope-pagination:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-icon-size: var(--xh-pagination-icon-size, var(--xh-glyph-size-lg));
     --xh-_pagination-item-size: var(--xh-control-h-lg);
-    --xh-_pagination-item-px: var(--xh-control-px-lg);
+    --xh-_pagination-item-px: var(--xh-space-2_5);
+    --xh-_pagination-jumper-px: var(--xh-control-px-lg);
     --xh-_pagination-font-size: var(--xh-control-font-lg);
   }
 
@@ -36553,7 +36557,7 @@
      高度、内衬与圆角跟页码格子同一把尺，宽度按页码位数留够 */
   .xh-scope-pagination[data-part='jumper'] {
     --xh-field-control-height: var(--xh-pagination-item-h, var(--xh-_pagination-item-size));
-    --xh-field-control-padding-inline: var(--xh-pagination-item-px, var(--xh-_pagination-item-px));
+    --xh-field-control-padding-inline: var(--xh-pagination-item-px, var(--xh-_pagination-jumper-px));
     --xh-field-control-min-inline-size: 0;
     --xh-field-control-radius: var(--xh-pagination-item-radius, var(--xh-shape-control));
     --xh-field-bg-rest: var(--xh-pagination-jumper-bg, var(--xh-_field-variant-bg-rest));
