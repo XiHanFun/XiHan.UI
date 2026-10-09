@@ -875,8 +875,8 @@ function buildTiers(): Tier[] {
       const tones: (string | null)[] = paintOf(recipe, contexts, 'danger') === plain ? [null] : [...TONES]
       // 上下文自己写了 data-theme 的档只在同名的页面主题下量：换了主题的那片区域压在另一种主题的页面上、
       // 脚下又没有自己的底，不是能用的组合（深色淡底是低透明度的白，叠在浅色页面上还是白）
-      const pinned = contexts.flatMap(context => context.chain).flatMap(compound => compound.attrs)
-        .find(([name]) => name === 'data-theme')?.[1]
+      const attrs = contexts.flatMap(context => context.chain).flatMap(compound => compound.attrs)
+      const pinned = attrs.find(([name]) => name === 'data-theme')?.[1]
       for (const tone of tones) {
         for (const theme of THEMES) {
           if (pinned !== undefined && pinned !== theme)
