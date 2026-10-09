@@ -23,34 +23,34 @@
     gap: var(--xh-signature-pad-gap, var(--xh-space-2));
   }
 
-  /* 复合单字段的标签：14 / 500 / fg-default，不随档；贴画布 space-1——
+  /* 复合单字段的标签：14 / 400 / fg-muted，不随档；与画布隔 space-2——
      容器的 gap 归画布之后的部件，标签在它之上补一段差值把距离收成目标值 */
   [data-scope='signature-pad'][data-part='label'] {
     margin-block-end: calc(
-      var(--xh-signature-pad-label-gap, var(--xh-space-1))
+      var(--xh-signature-pad-label-gap, var(--xh-space-2))
       - var(--xh-signature-pad-gap, var(--xh-space-2))
     );
-    color: var(--xh-signature-pad-label-fg, var(--xh-fg-default));
+    color: var(--xh-signature-pad-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-signature-pad-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-signature-pad-label-font-weight, var(--xh-text-label-weight));
   }
 
   [data-scope='signature-pad'][data-part='label'][data-disabled] {
-    color: var(--xh-signature-pad-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-signature-pad-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 画布是块状的写字区：宽度铺满外层，高度由宽高比决定。
      控件行高那把尺量的是一行控件，一块要写字的面积用不上它。
      touch-action 由连接层内联写死，触摸落笔才不会被页面滚动抢走。
      外壳按字段规则自绘（登记的画布型字段例外：字段家族配方钉死控件行高，画布按宽高比撑高吃不下它）：
-     静息透明底 + border-control 描边 + control 圆角 + 无影 */
+     静息字段淡底 + border-control 描边 + control 圆角 + 无影，与字段外壳同一副面 */
   [data-scope='signature-pad'][data-part='control'] {
     display: block;
     inline-size: 100%;
     aspect-ratio: var(--xh-signature-pad-aspect-ratio, 5 / 2);
     border: var(--xh-stroke-thin) solid var(--xh-signature-pad-border, var(--xh-border-control));
     border-radius: var(--xh-signature-pad-radius, var(--xh-shape-control));
-    background: var(--xh-signature-pad-bg, transparent);
+    background: var(--xh-signature-pad-bg, var(--xh-bg-field));
     cursor: crosshair;
     /* 一划就会把画布连同旁边的文字一起刷成选中态 */
     user-select: none;
@@ -60,14 +60,21 @@
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='signature-pad'][data-part='control'][data-invalid] {
-    border-color: var(--xh-signature-pad-control-border-invalid, var(--xh-border-invalid));
+  /* 悬停：底不变、描边升 border-strong，与字段外壳的悬停同一档 */
+  [data-scope='signature-pad'][data-part='control']:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-drawing]):hover {
+    border-color: var(--xh-signature-pad-border-hover, var(--xh-border-strong));
   }
 
-  /* 落笔期间把描边压深一档。border-strong 是装饰梯度里的一档，比 border-control 更淡，
-     用在这儿会让描边在落笔时反而变弱 */
+  /* 校验失败：失效描边 + 4% 失效色淡底，与字段外壳的失效档同一副面 */
+  [data-scope='signature-pad'][data-part='control'][data-invalid] {
+    border-color: var(--xh-signature-pad-control-border-invalid, var(--xh-border-invalid));
+    background: var(--xh-signature-pad-bg-invalid, var(--xh-bg-field-invalid));
+  }
+
+  /* 落笔期间与字段聚焦同一副面：换承载面 + 聚焦描边。排在失效之后，落笔时失效档让位 */
   [data-scope='signature-pad'][data-part='control'][data-drawing] {
-    border-color: var(--xh-signature-pad-border-drawing, var(--xh-border-control-hover));
+    border-color: var(--xh-signature-pad-border-drawing, var(--xh-border-control-focus));
+    background: var(--xh-signature-pad-bg-drawing, var(--xh-bg-surface));
   }
 
   /* 只读仍看得见签名，只是改不动：收掉手型，别暗示"在这儿能写"；
@@ -175,5 +182,12 @@
   [data-scope='signature-pad'][data-part='redo-trigger'][hidden],
   [data-scope='signature-pad'][data-part='clear-trigger'][hidden] {
     display: none;
+  }
+
+  /* 高对比档底色被系统换掉，落笔与失效只剩描边分得开：换系统高亮色 */
+  @media (forced-colors: active) {
+    [data-scope='signature-pad'][data-part='control']:is([data-drawing], [data-invalid]) {
+      border-color: Highlight;
+    }
   }
 }

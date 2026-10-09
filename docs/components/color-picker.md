@@ -473,7 +473,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `--xh-color-picker-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | color-picker 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | color-picker 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-color-picker-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | color-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
-| `--xh-color-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | color-picker 的 root 部件 gap 覆盖槽。 |
+| `--xh-color-picker-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | color-picker 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-color-picker-hue-slider-gap` | `hue-slider` | `gap` | `default` | `--xh-stack-gap-md` | color-picker 的 hue-slider 部件 gap 覆盖槽。 |
 | `--xh-color-picker-input-bg` | `channel-input` | `background` | `default` | `transparent` | color-picker 的 channel-input 部件 background 覆盖槽。 |
 | `--xh-color-picker-input-bg-disabled` | `channel-input` | `background` | `disabled` | `--xh-bg-subtle` | color-picker 的 channel-input 部件 background 覆盖槽。 |
@@ -485,9 +485,10 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `--xh-color-picker-input-h` | `channel-input` | `block-size` | `default` | `--xh-control-h-sm` | color-picker 的 channel-input 部件 block-size 覆盖槽。 |
 | `--xh-color-picker-input-px` | `channel-input` | `padding-inline` | `default` | `--xh-control-px-sm` | color-picker 的 channel-input 部件 padding-inline 覆盖槽。 |
 | `--xh-color-picker-input-radius` | `channel-input` | `border-radius` | `default` | `--xh-shape-control` | color-picker 的 channel-input 部件 border-radius 覆盖槽。 |
-| `--xh-color-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | color-picker 的 label 部件 color 覆盖槽。 |
+| `--xh-color-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | color-picker 的 label 部件 color 覆盖槽。 |
 | `--xh-color-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | color-picker 的 label 部件 font-size 覆盖槽。 |
 | `--xh-color-picker-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | color-picker 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-color-picker-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | color-picker 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-color-picker-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | color-picker 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-color-picker-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-md` | color-picker 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-color-picker-saturation-area-h` | `saturation-area` | `block-size` | `default` | `9rem` | color-picker 的 saturation-area 部件 block-size 覆盖槽。 |

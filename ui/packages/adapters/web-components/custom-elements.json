@@ -8771,6 +8771,9 @@
               "name": "--xh-cascader-label-font-weight"
             },
             {
+              "name": "--xh-cascader-label-gap"
+            },
+            {
               "name": "--xh-cascader-layer"
             },
             {
@@ -12408,6 +12411,9 @@
               "name": "--xh-color-field-label-font-weight"
             },
             {
+              "name": "--xh-color-field-label-gap"
+            },
+            {
               "name": "--xh-color-field-placeholder-fg"
             },
             {
@@ -13788,6 +13794,9 @@
               "name": "--xh-color-picker-label-font-weight"
             },
             {
+              "name": "--xh-color-picker-label-gap"
+            },
+            {
               "name": "--xh-color-picker-layer"
             },
             {
@@ -14317,6 +14326,9 @@
             },
             {
               "name": "--xh-color-slider-label-font-weight"
+            },
+            {
+              "name": "--xh-color-slider-label-gap"
             },
             {
               "name": "--xh-color-slider-thumb-bg"
@@ -16242,6 +16254,9 @@
             },
             {
               "name": "--xh-combobox-label-font-weight"
+            },
+            {
+              "name": "--xh-combobox-label-gap"
             },
             {
               "name": "--xh-combobox-layer"
@@ -18896,6 +18911,9 @@
               "name": "--xh-date-field-label-font-weight"
             },
             {
+              "name": "--xh-date-field-label-gap"
+            },
+            {
               "name": "--xh-date-field-literal-fg"
             },
             {
@@ -20411,6 +20429,9 @@
             },
             {
               "name": "--xh-date-picker-label-font-weight"
+            },
+            {
+              "name": "--xh-date-picker-label-gap"
             },
             {
               "name": "--xh-date-picker-layer"
@@ -21999,6 +22020,9 @@
             },
             {
               "name": "--xh-date-range-picker-label-font-weight"
+            },
+            {
+              "name": "--xh-date-range-picker-label-gap"
             },
             {
               "name": "--xh-date-range-picker-layer"
@@ -25145,6 +25169,9 @@
               "name": "--xh-editable-label-font-weight"
             },
             {
+              "name": "--xh-editable-label-gap"
+            },
+            {
               "name": "--xh-editable-placeholder-fg"
             },
             {
@@ -25170,12 +25197,6 @@
             },
             {
               "name": "--xh-editable-trigger-bg-hover"
-            },
-            {
-              "name": "--xh-editable-trigger-divider"
-            },
-            {
-              "name": "--xh-editable-trigger-divider-h"
             },
             {
               "name": "--xh-editable-trigger-fg"
@@ -27430,6 +27451,9 @@
               "name": "--xh-file-upload-label-font-weight"
             },
             {
+              "name": "--xh-file-upload-label-gap"
+            },
+            {
               "name": "--xh-file-upload-list-max-h"
             },
             {
@@ -29394,16 +29418,13 @@
               "name": "--xh-form-field-gap"
             },
             {
-              "name": "--xh-form-field-invalid-border"
-            },
-            {
-              "name": "--xh-form-field-invalid-px"
-            },
-            {
               "name": "--xh-form-gap"
             },
             {
               "name": "--xh-form-inline-gap"
+            },
+            {
+              "name": "--xh-form-inline-row-gap"
             },
             {
               "name": "--xh-form-label-w"
@@ -36242,10 +36263,25 @@
               "name": "--xh-input-group-bg"
             },
             {
+              "name": "--xh-input-group-bg-disabled"
+            },
+            {
+              "name": "--xh-input-group-bg-focus"
+            },
+            {
               "name": "--xh-input-group-bg-hover"
             },
             {
+              "name": "--xh-input-group-bg-invalid"
+            },
+            {
+              "name": "--xh-input-group-bg-read-only"
+            },
+            {
               "name": "--xh-input-group-border"
+            },
+            {
+              "name": "--xh-input-group-border-disabled"
             },
             {
               "name": "--xh-input-group-border-focus"
@@ -36255,6 +36291,12 @@
             },
             {
               "name": "--xh-input-group-border-invalid"
+            },
+            {
+              "name": "--xh-input-group-item-bg"
+            },
+            {
+              "name": "--xh-input-group-item-divider"
             },
             {
               "name": "--xh-input-group-item-fg"
@@ -36270,12 +36312,6 @@
             },
             {
               "name": "--xh-input-group-radius"
-            },
-            {
-              "name": "--xh-input-group-ring-focus"
-            },
-            {
-              "name": "--xh-input-group-ring-invalid"
             },
             {
               "name": "--xh-input-group-shadow"
@@ -45648,16 +45684,25 @@
               "name": "--xh-number-field-label-font-weight"
             },
             {
+              "name": "--xh-number-field-label-gap"
+            },
+            {
               "name": "--xh-number-field-placeholder-fg"
             },
             {
+              "name": "--xh-number-field-stepper-bg"
+            },
+            {
+              "name": "--xh-number-field-stepper-bg-hover"
+            },
+            {
+              "name": "--xh-number-field-stepper-inset"
+            },
+            {
+              "name": "--xh-number-field-stepper-w"
+            },
+            {
               "name": "--xh-number-field-trigger-bg-active"
-            },
-            {
-              "name": "--xh-number-field-trigger-divider"
-            },
-            {
-              "name": "--xh-number-field-trigger-divider-h"
             },
             {
               "name": "--xh-number-field-trigger-fg"
@@ -47302,6 +47347,9 @@
               "name": "--xh-password-input-label-font-weight"
             },
             {
+              "name": "--xh-password-input-label-gap"
+            },
+            {
               "name": "--xh-password-input-placeholder-fg"
             },
             {
@@ -47339,12 +47387,6 @@
             },
             {
               "name": "--xh-password-input-trigger-size"
-            },
-            {
-              "name": "--xh-password-input-visibility-trigger-separator-color"
-            },
-            {
-              "name": "--xh-password-input-visibility-trigger-separator-h"
             }
           ]
         }
@@ -48731,6 +48773,9 @@
             },
             {
               "name": "--xh-pin-input-label-font-weight"
+            },
+            {
+              "name": "--xh-pin-input-label-gap"
             },
             {
               "name": "--xh-pin-input-placeholder-fg"
@@ -53601,6 +53646,9 @@
               "name": "--xh-rating-label-font-weight"
             },
             {
+              "name": "--xh-rating-label-gap"
+            },
+            {
               "name": "--xh-rating-value-text-fg"
             },
             {
@@ -57247,6 +57295,9 @@
               "name": "--xh-select-label-font-weight"
             },
             {
+              "name": "--xh-select-label-gap"
+            },
+            {
               "name": "--xh-select-layer"
             },
             {
@@ -58794,6 +58845,12 @@
               "name": "--xh-signature-pad-bg-disabled"
             },
             {
+              "name": "--xh-signature-pad-bg-drawing"
+            },
+            {
+              "name": "--xh-signature-pad-bg-invalid"
+            },
+            {
               "name": "--xh-signature-pad-bg-readonly"
             },
             {
@@ -58804,6 +58861,9 @@
             },
             {
               "name": "--xh-signature-pad-border-drawing"
+            },
+            {
+              "name": "--xh-signature-pad-border-hover"
             },
             {
               "name": "--xh-signature-pad-clear-bg"
@@ -59677,6 +59737,9 @@
             },
             {
               "name": "--xh-slider-label-font-weight"
+            },
+            {
+              "name": "--xh-slider-label-gap"
             },
             {
               "name": "--xh-slider-range-bg"
@@ -65718,6 +65781,9 @@
               "name": "--xh-tags-input-control-min-w"
             },
             {
+              "name": "--xh-tags-input-control-ps"
+            },
+            {
               "name": "--xh-tags-input-control-px"
             },
             {
@@ -65775,6 +65841,9 @@
               "name": "--xh-tags-input-item-font-size"
             },
             {
+              "name": "--xh-tags-input-item-h"
+            },
+            {
               "name": "--xh-tags-input-item-input-bg"
             },
             {
@@ -65803,6 +65872,9 @@
             },
             {
               "name": "--xh-tags-input-label-font-weight"
+            },
+            {
+              "name": "--xh-tags-input-label-gap"
             },
             {
               "name": "--xh-tags-input-placeholder-fg"
@@ -66461,6 +66533,9 @@
               "name": "--xh-text-field-label-font-weight"
             },
             {
+              "name": "--xh-text-field-label-gap"
+            },
+            {
               "name": "--xh-text-field-placeholder-fg"
             },
             {
@@ -67022,6 +67097,9 @@
             },
             {
               "name": "--xh-time-field-label-font-weight"
+            },
+            {
+              "name": "--xh-time-field-label-gap"
             },
             {
               "name": "--xh-time-field-literal-fg"
@@ -68177,6 +68255,9 @@
               "name": "--xh-time-picker-label-font-weight"
             },
             {
+              "name": "--xh-time-picker-label-gap"
+            },
+            {
               "name": "--xh-time-picker-layer"
             },
             {
@@ -69220,6 +69301,9 @@
             },
             {
               "name": "--xh-time-range-picker-label-font-weight"
+            },
+            {
+              "name": "--xh-time-range-picker-label-gap"
             },
             {
               "name": "--xh-time-range-picker-layer"
@@ -75617,10 +75701,16 @@
               "name": "--xh-tree-select-label-fg"
             },
             {
+              "name": "--xh-tree-select-label-fg-disabled"
+            },
+            {
               "name": "--xh-tree-select-label-font-size"
             },
             {
               "name": "--xh-tree-select-label-font-weight"
+            },
+            {
+              "name": "--xh-tree-select-label-gap"
             },
             {
               "name": "--xh-tree-select-layer"

@@ -34,6 +34,11 @@
       "$type": "color",
       "$value": "color-mix(in oklab, {bg.subtle} 55%, transparent)"
     },
+    "field-invalid": {
+      "$description": "字段外壳校验失败时的底：失效色兑 4%，与失效描边一起标出这一格，聚焦时让位给承载面。",
+      "$type": "color",
+      "$value": "color-mix(in oklab, {border.invalid} 4%, transparent)"
+    },
     "mark": {
       "$description": "正文里的标记底（mark、搜索命中）：浅黄，字仍取正文色；与品牌淡底分开，品牌淡底专属选中 / 当前。",
       "$type": "color",

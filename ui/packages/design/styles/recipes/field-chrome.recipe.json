@@ -48,7 +48,7 @@
       "alignItems": "center",
       "blockSize": "auto",
       "minBlockSize": "var(--xh-field-control-height, var(--xh-_field-size-control-height))",
-      "paddingBlock": "var(--xh-space-1)",
+      "paddingBlock": "var(--xh-space-0_5)",
       "flexWrap": "wrap"
     }
   },
@@ -106,7 +106,7 @@
         "borderColor": "var(--xh-border-control-focus)"
       },
       "invalid": {
-        "backgroundColor": "color-mix(in oklab, var(--xh-border-invalid) 4%, transparent)",
+        "backgroundColor": "var(--xh-bg-field-invalid)",
         "borderColor": "var(--xh-border-invalid)"
       },
       "readOnly": {
@@ -136,7 +136,7 @@
         "borderColor": "var(--xh-border-control-focus)"
       },
       "invalid": {
-        "backgroundColor": "color-mix(in oklab, var(--xh-border-invalid) 4%, transparent)",
+        "backgroundColor": "var(--xh-bg-field-invalid)",
         "borderColor": "var(--xh-border-invalid)"
       },
       "readOnly": {
@@ -166,7 +166,7 @@
         "borderColor": "var(--xh-border-control-focus)"
       },
       "invalid": {
-        "backgroundColor": "color-mix(in oklab, var(--xh-border-invalid) 4%, transparent)",
+        "backgroundColor": "var(--xh-bg-field-invalid)",
         "borderColor": "var(--xh-border-invalid)"
       },
       "readOnly": {
@@ -187,7 +187,7 @@
     "placeholderColor": "var(--xh-fg-subtle)",
     "autofillBackground": "var(--xh-bg-canvas)",
     "autofillForeground": "var(--xh-fg-default)",
-    "textareaPaddingBlock": "var(--xh-space-2)",
+    "textareaPaddingBlock": "var(--xh-space-1)",
     "ime": "preserve-native-composition"
   },
   "motion": {

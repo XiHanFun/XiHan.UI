@@ -1,4 +1,4 @@
-import type { ConformanceSuite } from '../conformance/types'
+import type { ConformanceSuite, StepWithExpect } from '../conformance/types'
 import { numberFieldAnatomy, numberFieldKeyboard } from '@xihan-ui/headless'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
@@ -15,6 +15,18 @@ function typeInto(doc: Document, text: string): void {
 
 function readValue(doc: Document): string {
   return doc.querySelector<HTMLInputElement>('[data-scope="number-field"][data-part="input"]')?.value ?? ''
+}
+
+/**
+ * 可悬停的精细指针下两颗钮平时收起（visibility: hidden 接不了焦点），盒里有焦点时才显出：
+ * 先把焦点放进输入框，随后把焦点挪到钮上才挪得过去。
+ */
+const focusInsideControl: StepWithExpect = {
+  kind: 'raw',
+  why: '加减钮悬停或盒里有焦点时才显出，先把焦点放进输入框',
+  run: ({ doc }) => {
+    doc.querySelector<HTMLElement>(`[data-scope='number-field'][data-part='input']`)!.focus()
+  },
 }
 
 function expectValue(doc: Document, want: string, why: string): void {
@@ -417,9 +429,11 @@ export const numberFieldSuite: ConformanceSuite = {
       // 两颗钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；changeDelay 拉长，共享步骤里的几拍 flush 不会越过它连发
       props: { defaultValue: '5', min: 0, max: 10, changeDelay: 10000 },
       steps: [
+        focusInsideControl,
         // 鼠标按下与两次触屏按下各走连发那一步：pointercancel / pointerup 收尾，鼠标那下在触屏 pointercancel 时一并收
         heldPress('number-field', 'increment-trigger'),
         { kind: 'settle', until: { attr: { part: 'increment-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'input': { 'aria-valuenow': '7' }, 'decrement-trigger': { 'data-pressed': null } } } },
+        focusInsideControl,
         heldPress('number-field', 'decrement-trigger'),
         { kind: 'settle', until: { attr: { part: 'decrement-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'input': { 'aria-valuenow': '5' }, 'increment-trigger': { 'data-pressed': null } } } },
       ],

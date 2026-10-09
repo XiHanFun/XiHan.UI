@@ -277,6 +277,8 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 
 `@xihan-ui/styles/signature-pad.css` 按 `[data-scope="signature-pad"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-signature-pad` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -329,12 +331,15 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-signature-pad-aspect-ratio` | `control` | `aspect-ratio` | `default` | `5 / 2` | signature-pad 的 control 部件 aspect-ratio 覆盖槽。 |
-| `--xh-signature-pad-bg` | `control` | `background` | `default` | `transparent` | signature-pad 的 control 部件 background 覆盖槽。 |
+| `--xh-signature-pad-bg` | `control` | `background` | `default` | `--xh-bg-field` | signature-pad 的 control 部件 background 覆盖槽。 |
 | `--xh-signature-pad-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | signature-pad 的 control 部件 background 覆盖槽。 |
+| `--xh-signature-pad-bg-drawing` | `control` | `background` | `drawing` | `--xh-bg-surface` | signature-pad 的 control 部件 background 覆盖槽。 |
+| `--xh-signature-pad-bg-invalid` | `control` | `background` | `invalid` | `--xh-bg-field-invalid` | signature-pad 的 control 部件 background 覆盖槽。 |
 | `--xh-signature-pad-bg-readonly` | `control` | `background` | `disabled`<br>`not([data-disabled])`<br>`readonly` | `--xh-bg-subtle` | signature-pad 的 control 部件 background 覆盖槽。 |
 | `--xh-signature-pad-border` | `control` | `border` | `default` | `--xh-border-control` | signature-pad 的 control 部件 border 覆盖槽。 |
 | `--xh-signature-pad-border-disabled` | `control` | `border-color` | `disabled` | `--xh-border-default` | signature-pad 的 control 部件 border-color 覆盖槽。 |
-| `--xh-signature-pad-border-drawing` | `control` | `border-color` | `drawing` | `--xh-border-control-hover` | signature-pad 的 control 部件 border-color 覆盖槽。 |
+| `--xh-signature-pad-border-drawing` | `control` | `border-color` | `drawing` | `--xh-border-control-focus` | signature-pad 的 control 部件 border-color 覆盖槽。 |
+| `--xh-signature-pad-border-hover` | `control` | `border-color` | `disabled`<br>`drawing`<br>`hover`<br>`invalid`<br>`not([data-disabled])`<br>`not([data-drawing])`<br>`not([data-invalid])`<br>`not([data-readonly])`<br>`readonly` | `--xh-border-strong` | signature-pad 的 control 部件 border-color 覆盖槽。 |
 | `--xh-signature-pad-clear-bg` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest` | signature-pad 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-signature-pad-clear-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | signature-pad 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-signature-pad-clear-bg-disabled` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled` | signature-pad 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
@@ -354,11 +359,11 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 | `--xh-signature-pad-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-2` | signature-pad 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-signature-pad-guide-stroke` | `guide` | `stroke` | `default` | `--xh-border-control` | signature-pad 的 guide 部件 stroke 覆盖槽。 |
 | `--xh-signature-pad-ink` | `path` | `fill` | `default` | `--xh-fg-default` | signature-pad 的 path 部件 fill 覆盖槽。 |
-| `--xh-signature-pad-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | signature-pad 的 label 部件 color 覆盖槽。 |
-| `--xh-signature-pad-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | signature-pad 的 label 部件 color 覆盖槽。 |
+| `--xh-signature-pad-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | signature-pad 的 label 部件 color 覆盖槽。 |
+| `--xh-signature-pad-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | signature-pad 的 label 部件 color 覆盖槽。 |
 | `--xh-signature-pad-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | signature-pad 的 label 部件 font-size 覆盖槽。 |
 | `--xh-signature-pad-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | signature-pad 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-signature-pad-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-1` | signature-pad 的 label 部件 margin-block-end 覆盖槽。 |
+| `--xh-signature-pad-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | signature-pad 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-signature-pad-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | signature-pad 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-signature-pad-status-fg` | `status` | `color` | `default` | `--xh-fg-muted` | signature-pad 的 status 部件 color 覆盖槽。 |
 | `--xh-signature-pad-status-font-size` | `status` | `font-size` | `default` | `--xh-text-secondary-size` | signature-pad 的 status 部件 font-size 覆盖槽。 |

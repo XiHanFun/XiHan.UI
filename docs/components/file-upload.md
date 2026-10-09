@@ -400,7 +400,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `--xh-file-upload-dropzone-px` | `dropzone` | `padding-inline` | `default` | `--xh-space-4` | file-upload 的 dropzone 部件 padding-inline 覆盖槽。 |
 | `--xh-file-upload-dropzone-py` | `dropzone` | `padding-block` | `default` | `--xh-space-5` | file-upload 的 dropzone 部件 padding-block 覆盖槽。 |
 | `--xh-file-upload-dropzone-radius` | `dropzone` | `border-radius` | `default` | `--xh-shape-surface` | file-upload 的 dropzone 部件 border-radius 覆盖槽。 |
-| `--xh-file-upload-gap` | `root` | `gap` | `default` | `--xh-space-3` | file-upload 的 root 部件 gap 覆盖槽。 |
+| `--xh-file-upload-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-3` | file-upload 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-file-upload-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | file-upload 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-file-upload-item-bg` | `item` | `background` | `default` | `--xh-bg-surface` | file-upload 的 item 部件 background 覆盖槽。 |
 | `--xh-file-upload-item-border` | `item` | `border` | `default` | `--xh-border-default` | file-upload 的 item 部件 border 覆盖槽。 |
@@ -421,10 +421,11 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `--xh-file-upload-item-px` | `item` | `padding-inline` | `default` | `--xh-space-3` | file-upload 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-file-upload-item-py` | `item` | `padding-block` | `default` | `--xh-space-2` | file-upload 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-file-upload-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 item 部件 border-radius 覆盖槽。 |
-| `--xh-file-upload-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | file-upload 的 label 部件 color 覆盖槽。 |
-| `--xh-file-upload-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | file-upload 的 label 部件 color 覆盖槽。 |
+| `--xh-file-upload-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | file-upload 的 label 部件 color 覆盖槽。 |
+| `--xh-file-upload-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | file-upload 的 label 部件 color 覆盖槽。 |
 | `--xh-file-upload-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | file-upload 的 label 部件 font-size 覆盖槽。 |
 | `--xh-file-upload-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | file-upload 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-file-upload-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | file-upload 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-file-upload-list-max-h` | `list` | `max-block-size` | `default` | `--xh-viewport-h-md` | file-upload 的 list 部件 max-block-size 覆盖槽。 |
 | `--xh-file-upload-preview-bg` | `item-preview` | `background` | `default` | `--xh-bg-subtle` | file-upload 的 item-preview 部件 background 覆盖槽。 |
 | `--xh-file-upload-preview-fg` | `item-preview` | `color` | `default` | `--xh-fg-muted` | file-upload 的 item-preview 部件 color 覆盖槽。 |

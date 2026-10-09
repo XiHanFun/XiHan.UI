@@ -98,7 +98,8 @@ describe('错误文案不改变字段的外框尺寸', () => {
     const withSlot = boxHeight({})
     const withoutSlot = boxHeight({ errorText: false })
     expect(withoutSlot).toBeLessThan(withSlot)
-    expect(withSlot - withoutSlot).toBeCloseTo(23.5, 1)
+    // 辅助行紧贴控件、最小高 --xh-space-5：占位那一行正好 20px
+    expect(withSlot - withoutSlot).toBeCloseTo(20, 1)
   })
 })
 

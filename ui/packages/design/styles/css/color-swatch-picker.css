@@ -51,21 +51,21 @@
     --xh-_color-swatch-picker-indicator: var(--xh-control-indicator-lg);
   }
 
-  /* 标题独占一行，格子从下一行起排。复合单字段的标签：14 / 500 / fg-default，不随档；
-     与格子的距离贴控件 space-1——容器的 gap 归格子之间，标签在它之上补一段差值把距离收成目标值 */
+  /* 标题独占一行，格子从下一行起排。复合单字段的标签：14 / 400 / fg-muted，不随档；
+     与格子隔 space-2——容器的 gap 归格子之间，标签在它之上补一段差值把距离收成目标值 */
   [data-scope='color-swatch-picker'][data-part='label'] {
     flex-basis: 100%;
     margin-block-end: calc(
-      var(--xh-color-swatch-picker-label-gap, var(--xh-space-1))
+      var(--xh-color-swatch-picker-label-gap, var(--xh-space-2))
       - var(--xh-color-swatch-picker-gap, var(--xh-_color-swatch-picker-gap))
     );
-    color: var(--xh-color-swatch-picker-label-fg, var(--xh-fg-default));
+    color: var(--xh-color-swatch-picker-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-color-swatch-picker-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-color-swatch-picker-label-font-weight, var(--xh-text-label-weight));
   }
 
   [data-scope='color-swatch-picker'][data-part='label'][data-disabled] {
-    color: var(--xh-color-swatch-picker-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-color-swatch-picker-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 一格：正方形命中区，里面铺满色块面。

@@ -32,13 +32,15 @@
   }
 
   [data-scope='file-upload'][data-part='label'] {
-    color: var(--xh-file-upload-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-file-upload-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-file-upload-label-gap, var(--xh-space-2)) - var(--xh-file-upload-gap, var(--xh-space-3)));
+    color: var(--xh-file-upload-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-file-upload-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-file-upload-label-font-weight, var(--xh-text-label-weight));
   }
 
   [data-scope='file-upload'][data-part='label'][data-disabled] {
-    color: var(--xh-file-upload-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-file-upload-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 虚线框是"这里能放东西"的通用说法，实线框看起来只是一个普通面板。

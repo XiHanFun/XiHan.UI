@@ -21,7 +21,7 @@
 - `autoComplete` 默认 `current-password`，注册表单应显式改为 `new-password`。
 - `strength` 传入 0–4 五档即显示强度条；评分算法由调用方负责，组件只绘制档位。
 - 形态、语气、尺寸三轴与[文本字段](./text-field)同源，并排放置不会相差一档。
-- 一体式 `control` 投影 Field Chrome 家族，描边式静息、无影，聚焦描边一律 `--xh-border-control-focus`；显隐动作走 Action Control 的 `field-inset` ghost 档（正方视觉盒、inset 圆角、悬停 100 / 按下 200 中性底与 0.97 按压），与输入 / 状态区之间有半高语义分隔，三档尺寸和 compact 密度使用同一比例。
+- 一体式 `control` 投影 Field Chrome 家族，字段淡底 + 描边静息、无影，聚焦换承载面与 `--xh-border-control-focus`；显隐动作走 Action Control 的 `field-inset` ghost 档：视觉盒三档都取控件内动作档 `--xh-control-action-size`（24px，compact 20px），inset 圆角，按所在承载面取悬停 / 按下中性底，字形取次要前景；与输入之间不画分隔线。
 - 自动填充由家族用 canvas 实体底与默认前景重绘，避免浏览器注入的颜色把框切成异色段。
 
 ## 无障碍
@@ -51,7 +51,7 @@
 ### 当前边界
 
 - anatomy 尚无正式的 prefix / suffix 部件；`control` 中的作者节点目前只按统一 gap 排布，不承诺前后缀语义或专门状态。需要时应以独立三端部件提交，不用 CSS 推断任意子节点的职责。
-- `control` 在 meta 中仍是可选部件，但共享 Field Chrome、组合焦点环与动作分隔都以它为边界；无 `control` 的结构只是独立输入框和按钮，不再绘制独立外壳。是否将其提升为必需部件属于后续公共结构合同变更。
+- `control` 在 meta 中仍是可选部件，但共享 Field Chrome 与组合的聚焦换色都以它为边界；无 `control` 的结构只是独立输入框和按钮，不再绘制独立外壳。是否将其提升为必需部件属于后续公共结构合同变更。
 
 ## 反模式
 

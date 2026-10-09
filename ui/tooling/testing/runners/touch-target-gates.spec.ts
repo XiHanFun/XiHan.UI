@@ -219,4 +219,48 @@ describe('触摸目标门禁', () => {
     expect(result.status).toBe(1)
     expect(result.stderr).toContain('粗指针下命中区 24px')
   })
+
+  describe('等价控件例外（equivalent）', () => {
+    /** 细指针下 20px 的钮：到不了 24px，命中区也没外扩。 */
+    function smallTrigger(equivalent: Record<string, string>): string {
+      const root = createFixture(`
+[data-scope='demo'][data-part='trigger'] {
+  inline-size: 20px;
+  block-size: 20px;
+}
+
+@media (pointer: coarse) {
+  [data-scope='demo'][data-part='trigger'] {
+    min-inline-size: var(--xh-control-box-lg);
+    min-block-size: var(--xh-control-box-lg);
+  }
+}
+`)
+      write(root, 'tooling/scripts/coarse-target-registry.json', JSON.stringify({
+        exempt: {},
+        inlineMark: {},
+        equivalent,
+        backlog: {},
+        coarseTargets: { 'demo:trigger': { px: 20, why: '测试夹具里的按钮由手指直接操作' } },
+      }))
+      return root
+    }
+
+    it('登了理由的部件放行，不必进 backlog', () => {
+      const result = run(COARSE_TARGET_GATE, smallTrigger({ 'demo:trigger': '同一件事由旁边达标的输入框做得到' }))
+      expect(result.status, String(result.stderr)).toBe(0)
+    })
+
+    it('没登的仍判红', () => {
+      const result = run(COARSE_TARGET_GATE, smallTrigger({}))
+      expect(result.status).toBe(1)
+      expect(result.stderr).toContain('细指针下命中区不足 24×24')
+    })
+
+    it('登了却没写理由判红', () => {
+      const result = run(COARSE_TARGET_GATE, smallTrigger({ 'demo:trigger': '' }))
+      expect(result.status).toBe(1)
+      expect(result.stderr).toContain('equivalent 里没写理由')
+    })
+  })
 })

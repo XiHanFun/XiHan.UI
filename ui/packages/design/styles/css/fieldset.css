@@ -17,7 +17,7 @@
   [data-scope='fieldset'][data-part='root'] {
     display: flex;
     flex-direction: column;
-    gap: var(--xh-fieldset-gap, var(--xh-space-4));
+    gap: var(--xh-fieldset-gap, var(--xh-space-5));
     margin: 0;
     border: 0;
     padding: 0;
@@ -30,11 +30,12 @@
 
   [data-scope='fieldset'][data-part='legend'] {
     padding: 0;
-    margin-block-end: var(--xh-fieldset-legend-gap, var(--xh-space-2));
-    /* 组标题是「一组字段的标题」，归集合标题角色：fg-muted，与组 --xh-space-2，字号字重同字段标签 */
-    color: var(--xh-fieldset-legend-fg, var(--xh-fg-muted));
-    font-size: var(--xh-fieldset-legend-font-size, var(--xh-text-label-size));
-    font-weight: var(--xh-fieldset-legend-font-weight, var(--xh-text-label-weight));
+    margin-block-end: var(--xh-fieldset-legend-gap, var(--xh-space-4));
+    /* 组标题是表单里一段的标题，与区块标题同一档：heading-3 + 正文色，与组内首项隔 --xh-space-4；
+       组里每个字段自己的标签是 muted，组标题压在它们上面要高一级 */
+    color: var(--xh-fieldset-legend-fg, var(--xh-fg-default));
+    font-size: var(--xh-fieldset-legend-font-size, var(--xh-text-heading-3-size));
+    font-weight: var(--xh-fieldset-legend-font-weight, var(--xh-text-heading-3-weight));
     line-height: var(--xh-leading-tight);
     /* 整组转无效或转禁用时组标题换色，两档之间接一段过渡 */
     transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -52,16 +53,16 @@
     color: var(--xh-fieldset-legend-fg-disabled, var(--xh-fg-subtle));
   }
 
-  /* 必填星号的字形、间距与默认色在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
-  [data-scope='fieldset'][data-part='legend'][data-required]::after {
+  /* 必填星号的字形、字号、间距与默认色在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
+  [data-scope='fieldset'][data-part='legend'][data-required]::before {
     color: var(--xh-fieldset-legend-star, var(--xh-fg-danger));
   }
 
   /* 说明与错误文案的角色（外边距、行距、默认字号与字色）在 description.css 公共层；
      这里只把字色与字号接到本组件的覆盖槽上 */
   [data-scope='fieldset'][data-part='description'] {
-    color: var(--xh-fieldset-description-fg, var(--xh-fg-muted));
-    font-size: var(--xh-fieldset-description-font-size, var(--xh-text-secondary-size));
+    color: var(--xh-fieldset-description-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-fieldset-description-font-size, var(--xh-text-caption-size));
     /* 与组标题同一档过渡：整组转禁用时两处一起变淡 */
     transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -97,6 +98,6 @@
 
   [data-scope='fieldset'][data-part='error-text'] {
     color: var(--xh-fieldset-error-fg, var(--xh-fg-danger));
-    font-size: var(--xh-fieldset-error-font-size, var(--xh-text-secondary-size));
+    font-size: var(--xh-fieldset-error-font-size, var(--xh-text-caption-size));
   }
 }

@@ -1,5 +1,7 @@
 // 套了 tag 的三处宿主（tag-group / tags-input / select）里，标签画出来必须与独立渲染的同轴 tag 逐值相同：
-// 三轴从宿主传下去只换 tag 的档，宿主自己的皮肤不再给标签任何一条会改变静息态的规则；
+// 三轴从宿主传下去只换 tag 的档，宿主自己的皮肤不再给标签任何一条会改变静息态的规则。字段盒里的标签另有
+// tag.css 自己的字段宿主档：盒没聚焦时淡底标签换白底 + 描边、lg 档字号钉说明档，所以字段宿主在聚焦后再比，
+// lg 档的字号单独核；
 // 不写形态 / 尺寸与写缺省值画得一样；tag.css 的 --xh-tag-* 覆盖槽写在宿主根上对标签照样生效。
 // 只有真实浏览器量得出来：算出来的颜色、内衬、圆角、字号与关闭钮的命中区都是级联与布局的结果。
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
@@ -108,6 +110,16 @@ async function loneTag(props: TagProps): Promise<Look> {
   ref.unmount()
   probe.remove()
   return look
+}
+
+/** 说明档字号在这个页面里解析成多少像素。 */
+async function captionSize(): Promise<string> {
+  const probe = document.createElement('span')
+  probe.style.fontSize = 'var(--xh-text-caption-size)'
+  document.body.append(probe)
+  const size = getComputedStyle(probe).fontSize
+  probe.remove()
+  return size
 }
 
 /** 没给的入参不落到 props 上：显式传 undefined 会盖掉组件自己的缺省判定。 */
@@ -253,9 +265,12 @@ describe('tags-input 里的标签就是独立的 tag', () => {
     [{ variant: 'subtle', tone: 'danger' }, { variant: 'outline', tone: 'danger' }],
     [{ size: 'sm', tone: 'info' }, { variant: 'subtle', size: 'sm', tone: 'info' }],
     [{ size: 'lg' }, { variant: 'subtle', size: 'lg' }],
-  ])('控件写 %o：每一枚与独立渲染的 tag %o 逐值一样', async (props, tagProps) => {
+  ])('控件写 %o：聚焦后每一枚与独立渲染的 tag %o 逐值一样（lg 档字号钉说明档）', async (props, tagProps) => {
     await mountTagsInput(props)
+    host!.querySelector<HTMLInputElement>(`[data-scope='tags-input'][data-part='input']`)!.focus()
     const expected = await loneTag(tagProps)
+    if (tagProps.size === 'lg')
+      expected['font-size'] = await captionSize()
     for (const tag of tagsInputTags())
       expect(lookOf(tag), tag.textContent ?? '').toEqual(expected)
   })

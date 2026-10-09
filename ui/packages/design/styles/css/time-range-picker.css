@@ -121,14 +121,16 @@
   }
 
   [data-scope='time-range-picker'][data-part='label'] {
-    color: var(--xh-time-range-picker-label-fg, var(--xh-fg-default));
+    /* 竖排时标签与控件之间的距离：根的 gap 之上补一段差值，--xh-time-range-picker-label-gap 给多少最终就是多少 */
+    margin-block-end: calc(var(--xh-time-range-picker-label-gap, var(--xh-space-2)) - var(--xh-time-range-picker-gap, var(--xh-space-1)));
+    color: var(--xh-time-range-picker-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-time-range-picker-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-time-range-picker-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
   }
 
   [data-scope='time-range-picker'][data-part='label'][data-disabled] {
-    color: var(--xh-time-range-picker-label-fg-disabled, var(--xh-fg-subtle));
+    color: var(--xh-time-range-picker-label-fg-disabled, var(--xh-fg-muted));
   }
 
   /* 画成一个框的是 control：几段文字、展开按钮、清空按钮要看起来是一体的，

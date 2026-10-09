@@ -335,10 +335,11 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 | 角色 | 字号 / 字重 / 颜色 | 与相邻元素的间距 |
 | --- | --- | --- |
-| 字段标签（单字段与复合单字段：Slider、Rating、Signature、Color*） | `--xh-text-label-size` 14 / `--xh-text-label-weight` 400 / `--xh-fg-default` | 贴控件 `--xh-space-1` |
+| 字段标签（单字段与复合单字段：Slider、Rating、Signature、Color*） | `--xh-text-label-size` 14 / `--xh-text-label-weight` 400 / `--xh-fg-muted` | 竖排与控件 `--xh-space-2`；Form 横排时标签列占一行的 5 / 24、与控件 `--xh-space-4` |
 | 集合标题（RadioGroup、CheckboxGroup、Listbox、Tree、TagGroup、Descriptions） | 14 / `--xh-text-label-weight` 400 / `--xh-fg-muted` | 与集合 `--xh-space-2` |
-| 说明 / helper | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal` | 与控件 `--xh-space-1` |
-| 错误文案 | 13 / `--xh-fg-danger` | 与控件 `--xh-space-1` |
+| 字段说明 / helper（Field、Fieldset） | `--xh-text-caption-size` 12 / `--xh-fg-subtle` / `--xh-leading-normal`；禁用不另变色 | 紧贴控件，辅助行最小高 `--xh-space-5` |
+| 其余说明（Card、Alert、Dialog 等面内的 description） | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal`；Steps 的步骤说明压在标题下，取次级标注 12 / `--xh-fg-subtle` | — |
+| 错误文案 | 12 / `--xh-fg-danger` | 与说明共用控件下方那一行辅助行 |
 | 浮层内与小面标题（Popover、HoverCard、Popconfirm、FloatingPanel、Approval、EmptyState、Citation） | 14 / `--xh-font-weight-medium` | — |
 | 区块与面板标题（Card、Descriptions、Alert、Notification、Steps；Dialog、Drawer、Tour） | heading-3：16 / 500 | — |
 | 页面标题（PageHeader） | heading-2：20 / 500 | — |
@@ -348,8 +349,9 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
 | 图表轴标签、数据标签、轴标题 | `--xh-text-caption-size` 12 / `--xh-fg-muted`；轴刻度用等宽数字（`tabular-nums`）；不使用系列色 | 刻度标签与刻度线 `--xh-space-1` |
 
-- 必填星号与错误文案是公共层规则：`--xh-glyph-mark-required` + `--xh-space-1` + `--xh-fg-danger`，自带标签的字段不得各画一套。
-- 禁用标签色统一 `--xh-fg-subtle`；单行标签 `--xh-leading-none`。
+- 必填星号与错误文案是公共层规则：星号 `--xh-glyph-mark-required` 排在标签文字之前（`::before`），取 `--xh-text-caption-size` + `--xh-fg-danger`、与文字隔 `--xh-space-1`，自带标签的字段不得各画一套。
+- 表单项距 `--xh-space-5`，字段的辅助行算在项距里：带说明或给错误文案留了一行的字段，那一行（最小高 `--xh-space-5`）就是项距，不再另留；一行流档列距 `--xh-space-6`、行距 `--xh-space-2`；字段集组内项距 `--xh-space-5`，组标题取 heading-3 + `--xh-fg-default`、与组内首项隔 `--xh-space-4`。出错的字段不另画起始缘色带，错误由警示色标签与错误文案承担。
+- 字段标签与字段说明禁用不另变色（标签仍取 `--xh-fg-muted`、说明仍取 `--xh-fg-subtle`）：再淡一档与静息分不出，`--xh-fg-disabled` 只有 2.66:1，无障碍扫描把关联禁用控件的标签当正文判对比度；禁用由控件自己的禁用面表出。其余标签禁用取 `--xh-fg-subtle`；单行标签 `--xh-leading-none`。
 - 层级通过字号、字重、行高和间距共同表达，不能只调颜色。
 - 不使用极小字号换取信息密度。
 - 单行控件文字必须垂直居中；多行内容使用正文行高。
@@ -361,7 +363,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 控件内图标随 size 档：sm 16 / md 20 / lg 24（`--xh-glyph-size-sm/md/lg`）；Action Control、Field Chrome、Collection Item 三份配方按档下发，皮肤缺省值只能是 `var(--xh-<comp>-icon-size, var(--xh-glyph-size-md))` 并随 `data-size` 换档。
 - `--xh-glyph-size-text`（随文 1em）只允许在纯行内文字组件（Tag、Kbd、Breadcrumb、Typography、Highlight）里使用。
 - Feedback 指示符（Alert、Notification）统一 `--xh-glyph-size-md`；Notification 卡片预设左列那枚类型字形是例外，取 `--xh-glyph-size-lg`（24px），与面板标题的一行同高。
-- 配方内不写 24px / 12px / 14px 等字面尺寸：xs 视觉盒（含 field-inset sm）走 `--xh-control-action-size`；field-inset 字形 xs 走 `--xh-control-indicator-sm`、sm 走 `--xh-control-indicator-md`、md 走 `--xh-glyph-size-sm`，随密度换档。
+- 配方内不写 24px / 12px / 14px 等字面尺寸：xs 视觉盒（含 field-inset sm）走 `--xh-control-action-size`；field-inset 字形 xs / sm / md 走 `--xh-control-indicator-sm`、lg 走 `--xh-control-indicator-md`，随密度换档（字段里的钮是辅助动作，字形比控件内图标小一圈）。
 - 组件自绘的状态字形（排序方向、勾、半选杠、展开方向、抓手等）是指示符，不是控件内图标：按指示符档 `--xh-control-indicator-*` 取尺、与它所在的方盒 / 把手同一支令牌（勾选格里的勾与半选杠按方盒边长 × 0.75，与 Checkbox 同比例；方向字形与盒同边长），随密度一起换档（comfortable 16 / compact 14）。`--xh-<comp>-icon-size` / `--xh-icon-size` 只管作者放进单元格、把手与插槽里的图标，状态字形不得读它——按图标档取的 20px 会比 16px 的方盒与同行文字都大一圈。
 
 ### 6.6 组件内滚动
@@ -421,7 +423,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 令牌 | comfortable | compact | 用途 |
 | --- | --- | --- | --- |
 | `--xh-control-h-sm` / `md` / `lg` | 28 / 32 / 36px | 24 / 28 / 32px | 单行控件、按钮、集合行、标签页与导航 trigger 的高；盛内容的圆的直径 |
-| `--xh-control-box-sm` / `md` / `lg` | 28 / 36 / 44px | 24 / 32 / 40px | 方格：PinInput 格、floating 动作钮 |
+| `--xh-control-box-sm` / `md` / `lg` | 28 / 36 / 44px | 24 / 32 / 40px | 方格：floating 动作钮 |
 | `--xh-control-action-size` | 24px | 20px | xs 动作钮、sm 字段里的 field-inset 钮 |
 | `--xh-chip-h-sm` / `md` / `lg` | 20 / 24 / 28px | 18 / 20 / 24px | 状态 chip（Tag、ToolCall status、Approval result、QuestionFlow result）的块尺寸：比同档控件矮一截 |
 | `--xh-marker-size-sm` / `md` / `lg` | 24 / 28 / 32px | 20 / 24 / 28px | 盛序号或对号的状态圆（Steps 序号圆点）的直径：比同档控件矮一档 |
@@ -462,9 +464,10 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | floating | FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer | `control-action-size` | `control-box-sm` | `control-box-md` | `control-box-lg` |
 
 - text 档宽按内容，下限等于高；icon、field-inset、floating 是正方盒。
-- 字形：text / icon 为 16 / 16 / 20 / 24px；field-inset 为 `control-indicator-sm`、`control-indicator-md`、16px、20px；floating 为 16 / 16 / 20 / 24px。
+- 字形：text / icon 为 16 / 16 / 20 / 24px；field-inset 为 `control-indicator-sm`、`control-indicator-sm`、`control-indicator-sm`、`control-indicator-md`（12 / 12 / 12 / 16px）；floating 为 16 / 16 / 20 / 24px。
 - floating 缺省 md（40px，compact 36px）：浮在内容之上的圆钮在矮视口与小卡片里不叠住内容与彼此。主控制钮（Carousel 与 ImageViewer 的翻页、BackTop、FloatButton）随组件 `size` 同档；从属的钮（ImageViewer 的关闭、Log / MessageFeed 的回到底部）比组件低一档、最低 sm。
 - Dialog、Drawer、Popover、Tour、Notification 的关闭钮取 `control-h-sm`。
+- NumberField 的增减钮：可悬停的精细指针下上下叠在盒的逻辑末端（宽 `--xh-control-indicator-lg`、四周内收 `--xh-space-1`，sm 档 `--xh-space-0_5`，各占盒内高一半、共边相接只换面），平时收起、悬停或聚焦字段时显出（`data-xh-action-display="hover-focus"`），淡底 `--xh-bg-subtle` → 悬停 200 → 按下 300、上下箭头字形取 `--xh-control-indicator-sm`；粗指针与不能悬停的设备上是两颗 field-inset 正方钮横排在末端、常显：叠放的一颗只有半个控件高，够不着触控目标尺寸。叠放钮在精细指针下也到不了 SC 2.5.8 的 24×24、凑不出间距例外，按其「等价控件」例外处理——同一个值由旁边不低于 24px 高的 spinbutton 键入或按 ↑ / ↓ 同样改得了，粗指针下横排钮另有 44px 外扩兜底；登在 check-coarse-target 登记表的 `equivalent` 段，不进 backlog。
 
 #### 字段
 
@@ -477,7 +480,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 多选 Combobox | 标签与输入框同行 | 输入框 4rem | 标签先截断、再折进 +N |
 | PromptInput | 铺满宿主 | 一行 | 8 行，超出内滚 |
 | NumberField 输入框 | 5em | | |
-| PinInput | 格 `control-box` 随 size；根宽 = 格数 × 格宽 + 间距 | | |
+| PinInput | 格边长取 `control-h` 随 size，格间距 `--xh-space-1`，字号取 `--xh-control-font-*`；根宽 = 格数 × 格宽 + 间距；当前格换承载面 + 聚焦描边，不另画环 | | |
 | DateRangePicker | `max-content` | 16rem | 100% |
 | Pagination 每页条数、跳页框 | `max-content`、64px | 放开 | |
 
@@ -821,10 +824,12 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 - `--xh-border-subtle` / `--xh-border-strong` 不得出现在根面 `border` 简写里，只能出现在 `border-block-start / inline-start` 类分隔线与 `::after` 分隔伪元素中；唯一的状态例外是字段外壳的悬停描边（下一条）。
 - 字段静息形态 = 描边：字段淡底 `--xh-bg-field`（淡底兑一半）+ `--xh-border-control` + `--xh-shape-control` + 无影；hover 底不变、描边升 `--xh-border-strong`；focus-within 换承载面 `--xh-bg-surface` + `--xh-border-control-focus`，不画聚焦环——焦点由描边换色与底色差标出，强制色档补一圈 Highlight 环；invalid 用 `--xh-border-invalid` + 4% 失效色淡底，聚焦时让位给聚焦态；readOnly / disabled 填 `--xh-bg-subtle`。字段家族不消费 `--xh-elevation-raised`。
-- 所有带边框的控件盒描边同一条规则：字段外壳（输入框壳、InputGroup 组壳、ColorPicker 控件）静息铺 `--xh-bg-field`，FileUpload 拖放区、SignaturePad 画布静息不填底，描边都取 `--xh-border-control`；Switch 轨道是实体面，静息不画描边，只读 / 失效才换有色的一圈；Checkbox / CheckboxGroup / Transfer / Table 的方框与 RadioGroup / QuestionFlow 的圆圈是 16px 的小盒，透明底、描边重一档取 `--xh-border-strong`，悬停升 `--xh-border-control-hover`。`--xh-border-control` 在缺省档与浮层面板、卡片的 `--xh-border-default` 同色，`prefers-contrast: more` 才换到 3:1 的 neutral 600 / 400。`--xh-bg-canvas` 保留给自动填充遮罩、色块选中环等必须不透明的地方，不再是控件盒的底。
+- 所有带边框的控件盒描边同一条规则：字段外壳（输入框壳、InputGroup 组壳、ColorPicker 控件、SignaturePad 画布）静息铺 `--xh-bg-field`，FileUpload 拖放区静息不填底，描边都取 `--xh-border-control`；Switch 轨道是实体面，静息不画描边，只读 / 失效才换有色的一圈；Checkbox / CheckboxGroup / Transfer / Table 的方框与 RadioGroup / QuestionFlow 的圆圈是 16px 的小盒，透明底、描边重一档取 `--xh-border-strong`，悬停升 `--xh-border-control-hover`。`--xh-border-control` 在缺省档与浮层面板、卡片的 `--xh-border-default` 同色，`prefers-contrast: more` 才换到 3:1 的 neutral 600 / 400。`--xh-bg-canvas` 保留给自动填充遮罩、色块选中环等必须不透明的地方，不再是控件盒的底。
 - 字段的 `subtle` / `ghost` 只限有壳容器内（InputGroup、Command 面板、Toolbar）使用，hover / focus 必须浮出 `--xh-border-control`。
-- 刻意例外（须登记）：面板内嵌搜索（Command、Cascader、TreeSelect、Transfer、SideNav 的搜索框）不画字段外壳，只画一道 `border-block-end` 下划线，五处同一种写法：通栏一行，块尺寸取所在尺寸档的 `--xh-control-h-*`、字号取 `--xh-control-font-*`；下划线是面内分隔，取所在面材质的分隔令牌（实体面与 floating 取 `--xh-material-solid-separator`，sheet 取 `--xh-material-elevated-separator`），不取字段边 `--xh-border-control`；连接层投影 `data-xh-field-input`，重置与占位前景走字段家族，自动填充铺的底取所在面板的面；聚焦不画环、下划线也不换色，插入符就是焦点指示（框没有外壳，全局那圈环只会压在通栏一行上），五份皮肤各在搜索框的 `:focus-visible` 上关环并登进焦点环门禁的 ringless；PromptInput 允许 `--xh-shape-surface` 8px，但静息描边仍为 `--xh-border-control`、不用 soft；SignaturePad 画布是画布型字段，按 `aspect-ratio` 撑高、吃不下字段家族配方钉死的控件行高，允许不投影 `data-xh-field-chrome` 而自绘外壳，但值必须与字段规则一致（静息 `transparent` 底 + `--xh-border-control` + `--xh-shape-control` + 无影，落笔升 `--xh-border-control-hover`，disabled / readOnly 按 §7.2 第 9 条）。
-- Form 内外字段同形；InputGroup 组壳画 outline 描边并铺字段淡底，子字段压平为透明。
+- 字段里的 field-inset 钮（清空、可见性、增减、就地编辑）按盒的承载面取阶梯：盒没聚焦时铺着字段淡底（描边档）或淡底（subtle 档），钮走淡底承载阶梯 `--xh-bg-subtle-hover` → `--xh-bg-subtle-active`；聚焦后盒换成白色承载面、ghost 档静息透明，钮走白底阶梯 100 → 200。由 Field Chrome 配方经 `--xh-action-host-bg-*` 向内下发，组件皮肤不各写一套。
+- 字段里的已选标签（标签行家族的多选控件与 TagsInput）：盒没聚焦时淡底标签换白底 `--xh-bg-surface` + `--xh-border-default`、叉悬停 / 按下走白底阶梯 100 → 200，聚焦后回到标签自己的淡底；写了语气的、禁用盒里的不换。有标签时盒的起始内衬与标签间距都是 `--xh-space-1`，lg 档字段里标签字号钉 `--xh-text-caption-size`。标签面写在 tag.css 的字段宿主档，`--xh-tag-*` 覆盖槽照旧优先。
+- 刻意例外（须登记）：面板内嵌搜索（Command、Cascader、TreeSelect、Transfer、SideNav 的搜索框）不画字段外壳，只画一道 `border-block-end` 下划线，五处同一种写法：通栏一行，块尺寸取所在尺寸档的 `--xh-control-h-*`、字号取 `--xh-control-font-*`；下划线是面内分隔，取所在面材质的分隔令牌（实体面与 floating 取 `--xh-material-solid-separator`，sheet 取 `--xh-material-elevated-separator`），不取字段边 `--xh-border-control`；连接层投影 `data-xh-field-input`，重置与占位前景走字段家族，自动填充铺的底取所在面板的面；聚焦不画环、下划线也不换色，插入符就是焦点指示（框没有外壳，全局那圈环只会压在通栏一行上），五份皮肤各在搜索框的 `:focus-visible` 上关环并登进焦点环门禁的 ringless；PromptInput 允许 `--xh-shape-surface` 8px，但静息描边仍为 `--xh-border-control`、不用 soft；SignaturePad 画布是画布型字段，按 `aspect-ratio` 撑高、吃不下字段家族配方钉死的控件行高，允许不投影 `data-xh-field-chrome` 而自绘外壳，但值必须与字段规则一致（静息 `--xh-bg-field` 底 + `--xh-border-control` + `--xh-shape-control` + 无影，悬停描边升 `--xh-border-strong`，落笔与字段聚焦同一副面：`--xh-bg-surface` + `--xh-border-control-focus`，校验失败铺 `--xh-bg-field-invalid`（失效色兑 4%），disabled / readOnly 按 §7.2 第 9 条；强制色档落笔与失效的描边换 Highlight）。
+- Form 内外字段同形；InputGroup 组壳画 outline 描边并铺字段淡底，子字段压平为透明；前后缀块铺 `--xh-bg-subtle`、取正文色、两侧内距对称，与相邻段之间一道满高的 `--xh-border-default`（只画朝里那一侧，两块前后缀相邻时只由后一块画）。
 - 贴边通栏（Alert `banner`）不画边：面本身就是语气淡底，贴边的三条边是页面或容器自己的边。底色与页内提示相同。
 
 ### 8.4 浮层材质判据

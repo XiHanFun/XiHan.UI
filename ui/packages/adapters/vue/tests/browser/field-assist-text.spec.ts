@@ -100,26 +100,27 @@ describe('field 的辅助文字', () => {
 })
 
 describe('field 的必填星号与错误文案走公共层', () => {
-  it('required：标签末尾的星号由 label.css 按标签自己的 data-required 画，字形取 --xh-glyph-mark-required、颜色取 --xh-fg-danger', () => {
+  it('required：标签文字之前的星号由 label.css 按标签自己的 data-required 画，字形取 --xh-glyph-mark-required、颜色取 --xh-fg-danger', () => {
     mount(() => field(false, true))
     const label = part('field', 'label')
     expect(label.hasAttribute('data-required')).toBe(true)
-    const star = getComputedStyle(label, '::after')
+    const star = getComputedStyle(label, '::before')
     expect(star.content).toBe('"*"')
     expect(star.color).toBe(tokenColor('--xh-fg-danger'))
+    expect(star.fontSize).toBe(tokenFontSize('--xh-text-caption-size'))
   })
 
-  it('选填：标签不带 data-required，末尾没有生成内容', () => {
+  it('选填：标签不带 data-required，文字前没有生成内容', () => {
     mount(() => field(false))
     const label = part('field', 'label')
     expect(label.hasAttribute('data-required')).toBe(false)
-    expect(getComputedStyle(label, '::after').content).toBe('none')
+    expect(getComputedStyle(label, '::before').content).toBe('none')
   })
 
-  it('invalid：错误文案由 description.css 画，字号取 --xh-text-secondary-size、颜色取 --xh-fg-danger；标签同档转警示色', () => {
+  it('invalid：错误文案由 description.css 画，字号取 --xh-text-caption-size、颜色取 --xh-fg-danger；标签同档转警示色', () => {
     mount(() => field(true))
     const error = getComputedStyle(part('field', 'error-text'))
-    expect(error.fontSize).toBe(tokenFontSize('--xh-text-secondary-size'))
+    expect(error.fontSize).toBe(tokenFontSize('--xh-text-caption-size'))
     expect(error.color).toBe(tokenColor('--xh-fg-danger'))
     expect(getComputedStyle(part('field', 'label')).color).toBe(tokenColor('--xh-fg-danger'))
   })
@@ -135,12 +136,12 @@ describe('fieldset 的必填星号与错误文案走公共层', () => {
     const legend = part('fieldset', 'legend')
     expect(legend.hasAttribute('data-required')).toBe(true)
     expect(legend.hasAttribute('data-invalid')).toBe(true)
-    const star = getComputedStyle(legend, '::after')
+    const star = getComputedStyle(legend, '::before')
     expect(star.content).toBe('"*"')
     expect(star.color).toBe(tokenColor('--xh-fg-danger'))
     expect(getComputedStyle(legend).color).toBe(tokenColor('--xh-fg-danger'))
     const error = getComputedStyle(part('fieldset', 'error-text'))
-    expect(error.fontSize).toBe(tokenFontSize('--xh-text-secondary-size'))
+    expect(error.fontSize).toBe(tokenFontSize('--xh-text-caption-size'))
     expect(error.color).toBe(tokenColor('--xh-fg-danger'))
   })
 })

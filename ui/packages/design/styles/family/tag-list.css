@@ -56,4 +56,10 @@
   [data-xh-tag-list] > [data-scope='tag'][data-part='root'][data-count] {
     flex: none;
   }
+
+  /* 盒里有标签时起始内衬收到 --xh-space-1：标签自带内距，行首再留一整段控件内衬就显得空。
+     标签自己的面（没聚焦时白底 + 描边）写在 tag.css 的字段宿主档 */
+  [data-xh-field-chrome]:has([data-xh-tag-list]:not([hidden])) {
+    padding-inline-start: var(--xh-space-1);
+  }
 }
