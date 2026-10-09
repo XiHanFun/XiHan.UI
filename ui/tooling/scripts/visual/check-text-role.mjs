@@ -134,6 +134,7 @@ const GLYPH_EXEMPT = {
   'dialog:close-trigger': '面板角上关闭钮的叉取 --xh-glyph-size-xs（12px），比控件内图标低一档，不按 sm / md / lg 取',
   'drawer:close-trigger': '面板角上关闭钮的叉取 --xh-glyph-size-xs（12px），比控件内图标低一档，不按 sm / md / lg 取',
   'notification:item-close-trigger': '面板角上关闭钮的叉取 --xh-glyph-size-xs（12px），比控件内图标低一档，不按 sm / md / lg 取',
+  'file-upload:item-delete-trigger': '文件行尾删除钮（xs 动作钮）的叉取指示符小档 --xh-control-indicator-sm（12px，紧凑 10px），随密度换档、不抢文件名，不按 sm / md / lg 取',
 }
 /** 控件内图标允许的档。 */
 const GLYPH_STEPS = new Set(['--xh-glyph-size-sm', '--xh-glyph-size-md', '--xh-glyph-size-lg'])
