@@ -364,6 +364,9 @@
     --xh-list-option-py-sm: var(--xh-space-1);
     --xh-list-option-py-md: var(--xh-space-1_5);
     --xh-list-option-py-lg: var(--xh-space-2);
+    --xh-list-option-h-sm: var(--xh-control-h-md);
+    --xh-list-option-h-md: var(--xh-control-h-lg);
+    --xh-list-option-h-lg: calc(var(--xh-control-h-lg) + var(--xh-space-1));
     --xh-list-option-gap: var(--xh-space-0);
     --xh-table-cell-py-sm: var(--xh-space-2);
     --xh-table-cell-py-md: var(--xh-space-3);
@@ -677,6 +680,9 @@
      祖先上作者写的其余覆盖照常继承下来 */
   :where([data-density='compact']) {
     --xh-control-indicator-size: var(--xh-control-indicator-md);
+    --xh-list-option-h-sm: var(--xh-control-h-md);
+    --xh-list-option-h-md: var(--xh-control-h-lg);
+    --xh-list-option-h-lg: calc(var(--xh-control-h-lg) + var(--xh-space-1));
     --xh-section-py: var(--xh-section-py-md);
     --xh-chip-h-sm: var(--xh-control-indicator-lg);
     --xh-chip-h-md: var(--xh-control-action-size);

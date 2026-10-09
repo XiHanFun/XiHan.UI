@@ -603,7 +603,7 @@ outline、subtle 和 ghost
 | `--xh-select-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | select 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-select-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | select 的 item 部件 line-height 覆盖槽。 |
 | `--xh-select-item-px` | `item` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-select-item-py` | `item` | `padding-block` | `default` | `--xh-_select-item-py` | select 的 item 部件 padding-block 覆盖槽。 |
+| `--xh-select-item-py` | `item` | `min-block-size`<br>`padding-block` | `default`<br>`xh-collection-context=overlay` | `--xh-_select-item-py` | select 的 item 部件 min-block-size、padding-block 覆盖槽。 |
 | `--xh-select-item-radius` | `item` | `border-radius` | `default` | `0` | select 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-select-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | select 的 label 部件 color 覆盖槽。 |
 | `--xh-select-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | select 的 label 部件 color 覆盖槽。 |

@@ -534,7 +534,7 @@
 | `--xh-combobox-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | combobox 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-combobox-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | combobox 的 item 部件 line-height 覆盖槽。 |
 | `--xh-combobox-item-px` | `item` | `padding-inline` | `default` | `--xh-_combobox-item-px` | combobox 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-combobox-item-py` | `item` | `padding-block` | `default` | `--xh-_combobox-item-py` | combobox 的 item 部件 padding-block 覆盖槽。 |
+| `--xh-combobox-item-py` | `item` | `min-block-size`<br>`padding-block` | `default`<br>`xh-collection-context=overlay` | `--xh-_combobox-item-py` | combobox 的 item 部件 min-block-size、padding-block 覆盖槽。 |
 | `--xh-combobox-item-radius` | `item` | `border-radius` | `default` | `0` | combobox 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-combobox-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | combobox 的 label 部件 color 覆盖槽。 |
 | `--xh-combobox-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | combobox 的 label 部件 color 覆盖槽。 |

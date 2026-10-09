@@ -413,7 +413,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `--xh-menubar-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | menubar 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-menubar-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | menubar 的 item 部件 line-height 覆盖槽。 |
 | `--xh-menubar-item-px` | `item` | `padding-inline` | `default` | `--xh-_menubar-item-px` | menubar 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-menubar-item-py` | `item` | `padding-block` | `default` | `--xh-_menubar-item-py` | menubar 的 item 部件 padding-block 覆盖槽。 |
+| `--xh-menubar-item-py` | `item` | `min-block-size`<br>`padding-block` | `default`<br>`xh-collection-context=overlay` | `--xh-_menubar-item-py` | menubar 的 item 部件 min-block-size、padding-block 覆盖槽。 |
 | `--xh-menubar-item-radius` | `item` | `border-radius` | `default` | `0` | menubar 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-menubar-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | menubar 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-menubar-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | menubar 的 content 部件 max-block-size 覆盖槽。 |
@@ -435,7 +435,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `--xh-menubar-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_menubar-font-size` | menubar 的 trigger 部件 font-size 覆盖槽。 |
 | `--xh-menubar-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-sm` | menubar 的 trigger 部件 gap 覆盖槽。 |
 | `--xh-menubar-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_menubar-trigger-px` | menubar 的 trigger 部件 padding-inline 覆盖槽。 |
-| `--xh-menubar-trigger-py` | `trigger` | `padding-block` | `default` | `--xh-_menubar-trigger-py` | menubar 的 trigger 部件 padding-block 覆盖槽。 |
+| `--xh-menubar-trigger-py` | `trigger` | `min-block-size`<br>`padding-block` | `default`<br>`xh-collection-context=overlay` | `--xh-_menubar-trigger-py` | menubar 的 trigger 部件 min-block-size、padding-block 覆盖槽。 |
 | `--xh-menubar-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | menubar 的 trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
