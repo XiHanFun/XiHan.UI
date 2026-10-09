@@ -1,9 +1,9 @@
 <template>
   <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-    <rect x="20.5" y="36.5" width="199" height="87" rx="8" stroke="var(--xh-border-control)" />
+    <rect x="20.5" y="36.5" width="199" height="87" rx="4" fill="var(--xh-bg-field)" stroke="var(--xh-border-control)" />
     <path d="M39 56h122" stroke="var(--xh-fg-disabled)" stroke-width="6" />
     <path d="M44 103l-5 5a2 2 0 0 1-3-3l6-6a3 3 0 0 1 4 4l-6 6M64 98q1 5 6 6q-5 1-6 6q-1-5-6-6q5-1 6-6z" stroke="var(--xh-fg-muted)" stroke-width="2" />
-    <rect x="180" y="84" width="28" height="28" rx="4" fill="var(--xh-bg-brand)" />
+    <rect x="180" y="84" width="28" height="28" rx="2" fill="var(--xh-bg-brand)" />
     <path d="M194 104v-12m-5 5l5-5 5 5" stroke="var(--xh-fg-on-brand)" stroke-width="2" />
   </svg>
 </template>

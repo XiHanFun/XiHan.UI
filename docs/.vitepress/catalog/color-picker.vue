@@ -19,13 +19,13 @@
         <stop offset="1" stop-color="var(--xh-color-red-500)" />
       </linearGradient>
     </defs>
-    <rect x="24.5" y="16.5" width="95" height="31" rx="4" stroke="var(--xh-border-control)" />
-    <rect x="32" y="24" width="16" height="16" rx="4" fill="var(--xh-color-blue-500)" />
+    <rect x="24.5" y="16.5" width="95" height="31" rx="2" fill="var(--xh-bg-field)" stroke="var(--xh-border-control)" />
+    <rect x="32" y="24" width="16" height="16" rx="2" fill="var(--xh-color-blue-500)" />
     <path d="M59 32h30" stroke="var(--xh-fg-default)" stroke-width="6" />
     <path d="M100 34l4-4 4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
-    <rect x="24.5" y="52.5" width="191" height="91" rx="12" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
-    <rect x="36" y="64" width="168" height="44" rx="4" fill="url(#color-picker-saturation)" />
-    <rect x="36" y="64" width="168" height="44" rx="4" fill="url(#color-picker-value)" />
+    <rect x="24.5" y="52.5" width="191" height="91" rx="4" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <rect x="36" y="64" width="168" height="44" rx="2" fill="url(#color-picker-saturation)" />
+    <rect x="36" y="64" width="168" height="44" rx="2" fill="url(#color-picker-value)" />
     <circle cx="160" cy="78" r="6" stroke="var(--xh-bg-surface-raised)" stroke-width="2" />
     <rect x="36" y="118" width="168" height="12" rx="6" fill="url(#color-picker-hue)" />
     <circle cx="140" cy="124" r="7.5" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />

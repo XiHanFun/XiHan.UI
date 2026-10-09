@@ -1,8 +1,8 @@
 <template>
   <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-    <rect x="28.5" y="16.5" width="183" height="127" rx="8" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
+    <rect x="28.5" y="16.5" width="183" height="127" rx="4" fill="var(--xh-bg-surface)" stroke="var(--xh-border-default)" />
     <path d="M47 36h106" stroke="var(--xh-fg-default)" stroke-width="6" />
-    <circle cx="52" cy="60" r="7.5" stroke="var(--xh-border-control)" />
+    <circle cx="52" cy="60" r="7.5" stroke="var(--xh-border-strong)" />
     <path d="M71 60h58" stroke="var(--xh-fg-muted)" stroke-width="6" />
     <circle cx="52" cy="84" r="7.5" stroke="var(--xh-fg-brand)" />
     <circle cx="52" cy="84" r="4" fill="var(--xh-bg-brand)" />
@@ -11,7 +11,7 @@
     <path d="M50 120l-4 4 4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
     <path d="M64 124h16" stroke="var(--xh-fg-subtle)" stroke-width="4" />
     <path d="M92 120l4 4-4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
-    <rect x="148" y="112" width="48" height="24" rx="4" fill="var(--xh-bg-brand)" />
+    <rect x="148" y="112" width="48" height="24" rx="2" fill="var(--xh-bg-brand)" />
     <path d="M162 124h20" stroke="var(--xh-fg-on-brand)" stroke-width="4" />
   </svg>
 </template>

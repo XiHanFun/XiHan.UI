@@ -963,8 +963,8 @@ const notificationTranslations = { close: "关闭" };
   border: var(--xh-stroke-thin) solid var(--xh-border-default);
   border-radius: var(--xh-shape-surface);
   color: var(--xh-fg-default);
-  /* 淡底是半透明的墨色比例，叠在预览自己的画布色上 */
-  background: linear-gradient(var(--xh-bg-subtle), var(--xh-bg-subtle)), var(--xh-bg-canvas);
+  /* 预览区是一块页面：白卡放在页面底上，层级交给描边与底色差 */
+  background: var(--xh-bg-page);
 }
 
 .xh-preview__column {

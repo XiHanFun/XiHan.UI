@@ -28,14 +28,16 @@
 
 | 密度 | sm | md | lg |
 | --- | ---: | ---: | ---: |
-| comfortable（缺省） | 32px | 36px | 40px |
-| compact | 28px | 32px | 36px |
+| comfortable（缺省） | 28px | 32px | 36px |
+| compact | 24px | 28px | 32px |
 
 - md 是缺省尺寸；同一 `size` 不随断点自动改变高度。
 - 图标按钮的视觉盒遵循同一高度；粗指针命中区至少 44×44px，用伪元素扩展，不改布局盒。
-- 尺寸档同时换行内内衬（`--xh-control-px-sm / md / lg` = 8 / 12 / 16px）、内部间隙（`--xh-control-gap-*` = 4 / 8 / 12px）、字号（`--xh-control-font-*`）与图标（16 / 20 / 24px）。
+- 尺寸档同时换行内内衬（`--xh-control-px-sm / md / lg` = 8 / 12 / 16px）、内部间隙（`--xh-control-gap-*` = 4 / 8 / 12px）、字号（`--xh-control-font-*`）与图标（16 / 20 / 24px）。按钮这类文字档动作控件的行内内衬宽一档：sm / md / lg = 12 / 16 / 20px。
 - 密度（`data-density="compact"`）只收紧高度、内距与间隙，不缩字号和字形。
-- 正方盒（Avatar、色块、图标包装）走 `--xh-control-box-sm / md / lg` = 32 / 40 / 48px。
+- 方格（PinInput 的格、悬浮动作钮）走 `--xh-control-box-sm / md / lg` = 28 / 36 / 44px（紧凑 24 / 32 / 40px）；盛内容的圆（Avatar、带框 Icon、Steps 序号圆点）直径取 `--xh-control-h-*`，与同档控件等高。
+- 导航行（SideNav 的分支与链接）比同档控件高一截：`--xh-nav-row-h-sm / md / lg` = 32 / 40 / 44px（紧凑 28 / 36 / 40px），整列扫读更松。
+- 状态 chip（Tag）比同档控件矮一截：`--xh-chip-h-sm / md / lg` = 20 / 24 / 28px（紧凑 18 / 20 / 24px）。
 
 ## 字段的宽度
 
@@ -80,7 +82,7 @@
 | [Grid](/components/grid) | 二维栅格，列的最小宽走 `--xh-layout-col-min-*` |
 | [Masonry](/components/masonry) | 瀑布流 |
 | [Splitter](/components/splitter) / [Resizable](/components/resizable) | 可拖动分栏与可拖动尺寸 |
-| [Separator](/components/separator) | 分隔线，取 `--xh-border-subtle` |
+| [Separator](/components/separator) | 分隔线，缺省取 `--xh-border-default` 并自带留白（横线上下各 20px、竖线左右各 12px） |
 | [ScrollArea](/components/scroll-area) | 组件内滚动面，自绘条或原生细条按 [组件内滚动](/guide/theme#组件内滚动) 归档 |
 
 ## 表单排布
@@ -89,7 +91,7 @@
 
 ## 浮层尺寸
 
-锚定浮层的宽高走 `--xh-overlay-*`：面板最小宽 12rem、菜单最小宽 10rem、最大宽 sm / md / lg / xl = 16 / 20 / 24 / 48rem、菜单最大高 20rem；Dialog 的 sheet 宽 sm / md / lg = 24 / 32 / 48rem，Drawer 宽 sm / md / lg = 16 / 20 / 28rem。锚定浮层同时接可用高度与可用宽度：视口放不下时先收自己，再翻面。
+锚定浮层的宽高走 `--xh-overlay-*`：面板最小宽 12rem、菜单最小宽 10rem、最大宽 sm / md / lg / xl = 16 / 20 / 24 / 48rem、菜单与候选列表最大高 13rem（紧凑 11rem）；Dialog 的 sheet 宽 sm / md / lg = 24 / 32 / 48rem，Drawer 宽 sm / md / lg = 16 / 20 / 28rem。锚定浮层同时接可用高度与可用宽度：视口放不下时先收自己，再翻面。
 
 ## 相关
 

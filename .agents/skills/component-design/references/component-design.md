@@ -305,7 +305,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 | 角色 | 圆角 | 给谁 |
 | --- | ---: | --- |
-| inset | 2px | 嵌在 control 内的小块：checkbox 系方框、页内列表的候选行（Listbox / Command / Transfer / Tree 的行，日期与时间面板的预设项与时间格）、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
+| inset | 2px | 嵌在 control 内的小块：checkbox 系方框、页内列表的候选行（Listbox / Tree 的行，日期与时间面板的预设项与时间格）、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
 | control | 2px | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close/clear trigger、kbd、tooltip、rating item、tabs / steps trigger；随文方签 Tag 与状态方签 ToolCall status、Approval result、QuestionFlow result；Alert 提示条；RadioGroup segmented 形态的轨道与段 |
 | surface | 4px | Card、Panel、列表容器、Tabs segment 的轨道、选择卡片（RadioGroup / CheckboxGroup card 档条目） |
 | overlay | 4px | Popover、Menu、Dialog、Notification 卡片预设（Drawer 贴边，不取圆角；Notification 轻提示预设是一行短消息，取 control） |
@@ -609,7 +609,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 - `--xh-bg-brand-subtle` 退出 today、open 语义：Calendar today 改 inset 1px `--xh-fg-brand` 环 + 品牌字。Steps 序号圆点三态都无边无影：没走到的 `--xh-bg-subtle` + `--xh-fg-muted`，当前步实心品牌（格状当前）+ 反白字，走过的步是登记的例外，取 `--xh-bg-brand-subtle` + 品牌对号（走过的步与当前步同属一段已点亮的进度，阶梯 12 → 20 → 28）；标了语气又没走到的步取语气实心 + 反白字（出错的那一步是危险色实心）。标题取 heading-3 字号（sm 收回正文字号），当前步取 heading-3 字重、正文色，走过的步正文色，没走到的步次级色；说明 12px `--xh-fg-subtle`；连接线 1px，没走到的那截 `--xh-border-default`、走过的那截品牌色。点状形态没有放对号的地方，三态改由形状区分：没走到的空心圈、走过的实心标记色（`--xh-fg-brand`）、当前步实心品牌（格状当前）并放大一档。
 - 集合行不允许零按压反馈；pressed 只换面（§9.2）。
-- 锚定浮层里的列表（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列）行是通栏：面板只留块向内衬（`--xh-space-1`），侧边内衬 0，行不取圆角，悬停淡底铺满整行；页内列表（Listbox、Transfer、Tree）仍按 inset 内缩。
+- 锚定浮层里的列表（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列）与 Command 结果列表的行是通栏：面板只留块向内衬（`--xh-space-1`），侧边内衬 0，行不取圆角，悬停淡底铺满整行；Transfer 列表同样通栏，上下也不留内衬，选中行的品牌淡底铺满整行；Listbox、Tree 仍按 inset 内缩。
 - 选中对号一律落在行尾（`indicator` 列），不放行首：行首一格归前导图标、展开箭头、拖拽把手与勾选框；TagGroup 选中标签的对号同样在标签尾部（2026-09-24 起）。
 
 ### 7.4 集合行的语气
@@ -1284,18 +1284,21 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 | 构件 | 尺寸 | 形状 |
 | --- | --- | --- |
-| 控件：按钮、字段、触发器 | 高 32 | 圆角 4 |
-| 面板里的紧凑按钮、列表行 | 高 24；行的悬停面左右各内缩 4 | 圆角 4 |
-| 复选框、色块 | 16 × 16、24 × 24 | 圆角 4 |
+| 控件：按钮、字段、触发器 | 高 32 | 圆角 2 |
+| 通栏列表的行（锚定浮层里的 Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列，Command、Transfer） | 高 24；悬停面与选中面铺满面板内沿，多列面板铺到列分隔线 | 不取圆角 |
+| 页内列表的行（Listbox、Tree、时间格）、面板里的紧凑按钮 | 高 24；行的悬停面左右各内缩 4 | 圆角 2 |
+| 复选框、色块 | 16 × 16、24 × 24 | 圆角 2 |
+| 分页的页码、翻页钮与省略位 | 32 × 32 | 圆角 4（描边方块） |
 | 单选圈、头像、浮动钮、节点 | — | `<circle>` |
 | 开关 | 32 × 16，拇指半径 6 | 胶囊 |
-| 轨道：滑块、进度、滚动条 | 线宽 4 / 6 的圆头线 | 胶囊 |
-| 标签、徽标 | 高 16–20 | 胶囊 |
-| 内容面：Card、列表与表格容器 | — | 圆角 8 |
-| 浮层：Popover、Menu、Dialog、Notification | — | 圆角 12 |
+| 轨道：滑块、进度、滚动条 | 线宽 2 / 4 / 6 的圆头线（Slider 2，Progress 4） | 胶囊 |
+| 标签与状态方签（Tag、ToolCall 状态、Approval / QuestionFlow 结果） | 高 16–20 | 圆角 2 |
+| 徽标（Badge） | 高 16–20 | 胶囊 |
+| 内容面：Card、列表与表格容器 | — | 圆角 4 |
+| 浮层：Popover、Menu、Dialog、Notification | — | 圆角 4 |
 | 字形 | 16 × 16 格 | 线宽 2 |
 
-- `rect` 的 `rx` 只取 4 / 8 / 12，或等于短边一半（胶囊）；圆用 `<circle>`。数据标记按 §6.3 取 inset。
+- `rect` 的 `rx` 只取 2 / 4，或等于短边一半（胶囊）；圆用 `<circle>`。数据标记按 §6.3 取 inset（2，夹到短边一半）。用 `path` 画的圆角（只圆一侧的段、铺满画布的遮罩、贴着面内沿的底）随所贴的面取同一组值。
 - 线宽只有五档：1 描边、分隔、网格与坐标轴；2 字形、焦点边、指示条、折线；4 / 6 / 8 文字条与轨道。虚线只画不存在实体边的范围（拖放区、视口外的虚拟行），取 `stroke-dasharray="4 4"`。
 
 **文字条**
@@ -1327,11 +1330,15 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 卡片底 | 不画，透出卡片的 `--xh-bg-page` |
 | 内容面 | `--xh-bg-surface` 底 + `--xh-border-default` 描边 |
 | 浮层面 | `--xh-bg-surface-raised` 底 + `--xh-border-default` 描边 |
-| 控件盒：字段、复选框、单选圈 | 只描 `--xh-border-control`，不填底；聚焦 `--xh-border-control-focus`，校验失败 `--xh-border-invalid` |
+| 字段外壳：输入框、选择器触发器、日期与时间字段、输入组、PinInput 格 | `--xh-bg-field` 底 + `--xh-border-control` 描边；聚焦换 `--xh-bg-surface` 底 + `--xh-border-control-focus`；校验失败换 `--xh-border-invalid` 描边，底仍取 `--xh-bg-field`（4% 失效色淡底没有语义令牌） |
+| 只读输入框（Clipboard） | `--xh-bg-subtle` 底 + `--xh-border-control` 描边；与复制钮共一个外框时只铺输入框那段，复制钮那段透明 |
+| 复选框、单选圈 | 只描 `--xh-border-strong`（比字段边重一档），不填底 |
+| 拖放区、签名画布 | 只描 `--xh-border-control`，不填底 |
 | 按钮 | 主动作 `--xh-bg-brand` 实心；次要动作 `--xh-border-default` 描边；中性触发器 `--xh-bg-subtle` 淡底 |
 | 选中 / 当前 | 行与开关面 `--xh-bg-brand-subtle`；对号与指示条 `--xh-fg-brand`；格状当前 `--xh-bg-brand` |
+| 分页 | 页码、翻页钮与省略位都描 `--xh-border-default`、不填底；当前页 `--xh-bg-brand-subtle` 底 + `--xh-bg-brand` 描边，页码条取 `--xh-fg-on-brand-subtle` |
 | 悬停行、打开中的触发器 | `--xh-bg-subtle` |
-| 轨道 | `--xh-bg-subtle-active`，已走过的一段 `--xh-bg-brand` |
+| 轨道 | Slider 与 Progress 的底槽 `--xh-bg-subtle-hover`，已走过的一段 `--xh-bg-brand`；Slider 拇指 `--xh-bg-surface` 底 + 2 线宽 `--xh-bg-brand` 描边；开关等其余轨道 `--xh-bg-subtle-active` |
 | 分隔线 | `--xh-border-subtle`；面的外边 `--xh-border-default` |
 | 图片占位 | `--xh-bg-subtle-hover-opaque` 底，山与日 `--xh-bg-subtle-active-opaque` |
 | 遮罩 | `--xh-bg-overlay` |
@@ -1341,7 +1348,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 - 画组件缺省形态的识别特征：md 档、缺省 variant；语气即核心用途的组件（Alert、Badge、Progress、Notification）可以画非中性语气。
 - 浮层类画已打开的静态面板：触发器 + 面板，带箭头的浮层画箭头，模态画遮罩；不只画触发器。
-- 同族组件用同一套构件拼：字段类是控件盒 + 值条 + 尾部字形；下拉类是触发器 + 下方隔 4 的浮层面 + 24 高的行；集合类是 24 高的行、悬停面与行尾对号；图表类画示意性的数据图形（网格、坐标轴、刻度条与数据色），不画真实数据。
+- 同族组件用同一套构件拼：字段类是控件盒 + 值条 + 尾部字形；下拉类是触发器 + 下方隔 4 的浮层面 + 24 高的通栏行；集合类是 24 高的行、悬停面与行尾对号；图表类画示意性的数据图形（网格、坐标轴、刻度条与数据色），不画真实数据。
 - 各张图的信息量相近：主体占画布的一半到七成，不画说明性的注释与引线。
 - 不画动效：转圈、骨架、跑马灯与流式光标都画静止的一帧，没有循环、进场与悬停反馈。
 
