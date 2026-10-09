@@ -419,7 +419,7 @@ describe('时间范围选择器的家族观感', () => {
     const gap = lower.getBoundingClientRect().top - upper.getBoundingClientRect().bottom
     expect(gap).toBeGreaterThan(0)
     const x = upper.getBoundingClientRect().left + upper.getBoundingClientRect().width / 2
-    expect(document.elementFromPoint(x, upper.getBoundingClientRect().bottom + gap / 2 - 1)?.closest("[data-part='item']")).toBe(upper)
-    expect(document.elementFromPoint(x, lower.getBoundingClientRect().top - gap / 2 + 1)?.closest("[data-part='item']")).toBe(lower)
+    expect(document.elementFromPoint(x, upper.getBoundingClientRect().bottom + gap / 2 - 1)?.closest('[data-part="item"]')).toBe(upper)
+    expect(document.elementFromPoint(x, lower.getBoundingClientRect().top - gap / 2 + 1)?.closest('[data-part="item"]')).toBe(lower)
   })
 })

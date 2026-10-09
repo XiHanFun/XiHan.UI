@@ -208,7 +208,7 @@ describe('日期选择器快捷项与时间项的统一选中反馈', () => {
     const gap = lower.getBoundingClientRect().top - upper.getBoundingClientRect().bottom
     expect(gap).toBeGreaterThan(0)
     const x = upper.getBoundingClientRect().left + upper.getBoundingClientRect().width / 2
-    const hit = (y: number): Element | null => document.elementFromPoint(x, y)?.closest("[data-part='time-item']") ?? null
+    const hit = (y: number): Element | null => document.elementFromPoint(x, y)?.closest('[data-part="time-item"]') ?? null
     expect(hit(upper.getBoundingClientRect().bottom + gap / 2 - 1)).toBe(upper)
     expect(hit(lower.getBoundingClientRect().top - gap / 2 + 1)).toBe(lower)
   })

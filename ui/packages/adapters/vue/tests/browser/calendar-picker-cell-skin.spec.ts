@@ -68,9 +68,9 @@ async function mountCalendar(): Promise<void> {
   const view = ref('day')
   app = createApp({
     setup: () => () => h(XhCalendarPickerRoot, {
-      locale: 'zh-CN',
-      defaultValue: [selectedDay()],
-      isDateUnavailable: (date: string) => blocked.includes(date),
+      'locale': 'zh-CN',
+      'defaultValue': [selectedDay()],
+      'isDateUnavailable': (date: string) => blocked.includes(date),
       'onUpdate:activeView': (next: string) => { view.value = next },
     }, {
       default: ({ weeks, weekDays, periods }: {
