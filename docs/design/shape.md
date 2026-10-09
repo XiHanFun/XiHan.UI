@@ -47,7 +47,7 @@
 
 | 形态 | variant | 描边 | 底 | 影 |
 | --- | --- | --- | --- | --- |
-| 描边 | `outline`（缺省） | `--xh-stroke-thin solid --xh-border-default`；字段与控件盒用 `--xh-border-control`（缺省档与 default 同色） | `--xh-bg-surface`；字段外壳铺 `--xh-bg-field`，其余控件盒 `transparent`，露出宿主的面 | none（Card 加 `--xh-elevation-raised`，缺省 none） |
+| 描边 | `outline`（缺省） | `--xh-stroke-thin solid --xh-border-default`；字段与控件盒用 `--xh-border-control`（缺省档与 default 同色） | `--xh-bg-surface`；字段外壳与 SignaturePad 画布铺 `--xh-bg-field`，FileUpload 拖放区铺 `--xh-bg-subtle`，勾选方框与单选圈 `transparent`，露出宿主的面 | none（Card 加 `--xh-elevation-raised`，缺省 none） |
 | 淡底 | `subtle` | `--xh-stroke-thin solid transparent`（占位边，尺寸不跳） | `--xh-bg-subtle`（有语气时 `--xh-tone-subtle`） | none |
 | 无壳 | `ghost` | 不写 | 不写 | 不写；只允许分隔线 |
 
@@ -57,7 +57,7 @@
 
 ## 字段外壳：淡底、聚焦换白底
 
-字段外壳（输入框壳、InputGroup 组壳、ColorPicker 控件）静息是描边形态，但铺一层淡底：
+字段外壳（输入框壳、InputGroup 组壳、ColorPicker 控件、SignaturePad 画布）静息是描边形态，但铺一层淡底：
 
 - 静息 `--xh-bg-field`（淡底兑一半）+ `--xh-border-control` + `--xh-shape-control` + 无影。描边缺省档与浮层面板、卡片的 `--xh-border-default` 同色，页面里只有一种边线重量；`prefers-contrast: more` 才换到 3:1 的档。
 - hover 底不变，描边升 `--xh-border-strong`。
@@ -69,12 +69,12 @@
 
 需要白底的宿主写对应组件的底色槽，如 `--xh-text-field-control-bg: var(--xh-bg-surface)`。
 
-## 其余控件盒：透明底
+## 其余控件盒
 
-字段外壳之外带边框的控件盒静息不填底，露出宿主的面：
+字段外壳之外带边框的控件盒：
 
-- FileUpload 拖放区、SignaturePad 画布描边取 `--xh-border-control`。
-- Checkbox / CheckboxGroup / Transfer / Table 的方框与 RadioGroup / QuestionFlow 的圆圈是 16px 的小盒，描边重一档取 `--xh-border-strong`，一眼认得出；悬停升 `--xh-border-control-hover`。
+- FileUpload 拖放区是一块可放置的面：静息铺 `--xh-bg-subtle` 淡底、画 1px `--xh-border-control` 虚线；悬停描边升 `--xh-border-strong`、淡底升一档，拖入换品牌描边，底仍是中性淡底一档。
+- Checkbox / CheckboxGroup / Transfer / Table 的方框与 RadioGroup / QuestionFlow 的圆圈是 16px 的小盒，透明底、描边重一档取 `--xh-border-strong`，一眼认得出；悬停升 `--xh-border-control-hover`。
 - `--xh-bg-canvas` 保留给自动填充遮罩、色块选中环等必须不透明的地方，不作控件盒的底。
 
 ## 选中与当前态的标记
