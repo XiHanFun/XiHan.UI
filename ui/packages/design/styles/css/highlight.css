@@ -18,13 +18,13 @@
   }
 
   /* 浏览器给 mark 的默认底色是一个固定的亮黄，暗色主题下压在深底上刺眼、
-     配的黑字也不随主题走；这里整份换成随主题走的品牌淡底。
-     槽名带 mark 段与部件对上 */
+     配的黑字也不随主题走；这里换成随主题走的标记底（亮色浅黄、暗色深黄），字仍取正文色。
+     不用品牌淡底：那一支专属选中 / 当前。槽名带 mark 段与部件对上 */
   [data-scope='highlight'][data-part='mark'] {
     padding-inline: var(--xh-highlight-mark-px, var(--xh-space-0_5));
     border-radius: var(--xh-highlight-mark-radius, var(--xh-shape-inset));
-    background: var(--xh-highlight-mark-bg, var(--xh-bg-brand-subtle));
-    color: var(--xh-highlight-mark-fg, var(--xh-fg-brand-strong));
+    background: var(--xh-highlight-mark-bg, var(--xh-bg-mark));
+    color: var(--xh-highlight-mark-fg, var(--xh-fg-default));
     font-weight: var(--xh-highlight-mark-font-weight, var(--xh-font-weight-medium));
     /* 命中片段跨行时两半各自收边，否则圆角与内边距只画在整段的首尾。
        两条都写：WebKit 只认带前缀那条 */

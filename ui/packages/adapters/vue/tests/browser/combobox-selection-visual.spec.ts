@@ -14,6 +14,7 @@ import {
   XhComboboxPositioner,
   XhComboboxRoot,
 } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -115,7 +116,7 @@ afterEach(() => {
 })
 
 describe('combobox 统一选中反馈', () => {
-  it.each([false, true])('multiple=%s：选中只显示末端对号，正文颜色与字重保持正常', async (multiple) => {
+  it.each([false, true])('multiple=%s：选中只显示末端对号，正文颜色保持正常、字重升到 medium', async (multiple) => {
     await mountCombobox(multiple)
     const selected = byTestId('selected')
     const plain = byTestId('plain')
@@ -128,7 +129,8 @@ describe('combobox 统一选中反馈', () => {
     expect(selected.getAttribute('data-state')).toBe('checked')
     expect(alpha(getComputedStyle(selected).backgroundColor)).toBe(0)
     expect(getComputedStyle(selected).color).toBe(getComputedStyle(plain).color)
-    expect(getComputedStyle(selected).fontWeight).toBe(getComputedStyle(plain).fontWeight)
+    expect(getComputedStyle(selected).fontWeight).toBe(tokenValue('font-weight', '--xh-font-weight-medium', selected))
+    expect(getComputedStyle(plain).fontWeight).toBe(tokenValue('font-weight', '--xh-font-weight-regular', plain))
     expect(getComputedStyle(selectedIndicator).opacity).toBe('1')
     expect(getComputedStyle(plainIndicator).opacity).toBe('0')
     expect(getComputedStyle(selectedIndicator, '::before').maskImage).not.toBe('none')

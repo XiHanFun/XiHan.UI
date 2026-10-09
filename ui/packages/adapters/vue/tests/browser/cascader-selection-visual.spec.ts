@@ -178,7 +178,7 @@ afterEach(async () => {
 })
 
 describe('级联选择的统一选中标记', () => {
-  it.each([false, true])('multiple=%s：列项选中只显示对号，正文与展开路径保持中性', async (multiple) => {
+  it.each([false, true])('multiple=%s：列项选中显示对号并加粗一档，正文颜色与展开路径保持中性', async (multiple) => {
     await mountCascader({ multiple })
     const selected = item('shanghai')
     const path = item('east')
@@ -187,7 +187,8 @@ describe('级联选择的统一选中标记', () => {
 
     expect(selected.getAttribute('data-state')).toBe('checked')
     expect(getComputedStyle(selected).color).toBe(getComputedStyle(plain).color)
-    expect(getComputedStyle(selected).fontWeight).toBe(getComputedStyle(plain).fontWeight)
+    expect(getComputedStyle(selected).fontWeight).toBe('500')
+    expect(getComputedStyle(plain).fontWeight).toBe('400')
     expect(getComputedStyle(selected).backgroundColor).toBe(resolvedColor('--xh-bg-subtle'))
     expect(getComputedStyle(path).backgroundColor).toBe(getComputedStyle(selected).backgroundColor)
     expect(getComputedStyle(selectedIndicator).opacity).toBe('1')
@@ -216,7 +217,8 @@ describe('级联选择的统一选中标记', () => {
     expect(selected.hasAttribute('data-highlighted')).toBe(false)
     expect(colorAlpha(getComputedStyle(selected).backgroundColor)).toBe(0)
     expect(getComputedStyle(selected).color).toBe(getComputedStyle(plain).color)
-    expect(getComputedStyle(selected).fontWeight).toBe(getComputedStyle(plain).fontWeight)
+    expect(getComputedStyle(selected).fontWeight).toBe('500')
+    expect(getComputedStyle(plain).fontWeight).toBe('400')
     expect(getComputedStyle(selected, '::after').opacity).toBe('1')
     expect(getComputedStyle(plain, '::after').opacity).toBe('0')
     expect(mask(selected, '::after')).toBe(resolvedMask('--xh-glyph-mark-check'))

@@ -5,6 +5,7 @@ import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import { XhFloatButtonRoot, XhFloatButtonTrigger } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -41,10 +42,10 @@ function rgba(color: string): [number, number, number, number] {
 }
 
 describe('液态材质的静态形态', () => {
-  it('standard 档（缺省）保持磨砂：16px 模糊', async () => {
+  it('standard 档（缺省）取 frosted 配方的背景滤镜', async () => {
     const trigger = await mountTrigger()
     expect(trigger.hasAttribute('data-xh-liquid')).toBe(true)
-    expect(getComputedStyle(trigger).backdropFilter).toBe('blur(16px) saturate(1.08)')
+    expect(getComputedStyle(trigger).backdropFilter).toBe(tokenValue('backdrop-filter', '--xh-material-frosted-backdrop', trigger))
   })
 
   it('liquid 档：浅色主题下是白色 48% 的面、8px 模糊 + 1.4 饱和、墨色细线与两道内阴影亮边', async () => {

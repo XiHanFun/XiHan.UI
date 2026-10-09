@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -86,25 +87,27 @@ describe('layout 侧栏面与折叠把手', () => {
     expect(getComputedStyle(sider).transitionTimingFunction.startsWith(exitEase)).toBe(true)
   })
 
-  it('占位档的侧栏是淡底区块：无描边、无影', () => {
+  it('占位档的侧栏与头同是白底，贴内容的一侧画一条内部分隔、无影', () => {
     const layout = mount()
     const style = getComputedStyle(layout.sider)
 
-    expect(style.backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
+    expect(style.backgroundColor).toBe(tokenColor('--xh-bg-surface'))
     expect(style.boxShadow).toBe('none')
-    expect(Number.parseFloat(style.borderInlineEndWidth)).toBe(0)
+    expect(Number.parseFloat(style.borderInlineEndWidth)).toBe(1)
+    expect(style.borderInlineEndColor).toBe(tokenColor('--xh-border-subtle'))
+    expect(Number.parseFloat(style.borderInlineStartWidth)).toBe(0)
   })
 
-  it('把手随所在面走阶梯：顶栏白底 hover 100，占位档侧栏淡底 hover 200；按下缩放走令牌', async () => {
+  it('把手随所在面走阶梯：顶栏与侧栏都是白底，hover 100；按下缩放走令牌', async () => {
     const layout = mount()
     expect(getComputedStyle(layout.headerTrigger).backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(Number.parseFloat(getComputedStyle(layout.headerTrigger).blockSize)).toBe(32)
+    expect(Number.parseFloat(getComputedStyle(layout.headerTrigger).blockSize)).toBe(tokenLength('--xh-control-h-sm'))
 
     await userEvent.hover(layout.headerTrigger)
     await expect.poll(() => getComputedStyle(layout.headerTrigger).backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
 
     await userEvent.hover(layout.siderTrigger)
-    await expect.poll(() => getComputedStyle(layout.siderTrigger).backgroundColor).toBe(tokenColor('--xh-bg-subtle-hover'))
+    await expect.poll(() => getComputedStyle(layout.siderTrigger).backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
     expect(getComputedStyle(layout.siderTrigger).transitionProperty).toContain('scale')
   })
 

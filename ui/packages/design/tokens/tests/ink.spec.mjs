@@ -31,7 +31,7 @@ describe('tokens.css 里的墨色域', () => {
   it('dark / light 域挂在浅色 / 深色取值块与材质边界上', () => {
     expect(css).toContain(`:where(:root), :where([data-theme='light']), :where([data-xh-ink='dark']) {`)
     expect(css).toContain(`:where([data-theme='dark']), :where([data-xh-ink='light']) {`)
-    expect(css).toContain(`:where(:root), :where([data-theme]), :where([data-xh-ink]), :where([data-xh-ink-surface] > *) {`)
+    expect(css).toContain(`:where(:root), :where([data-theme]), :where([data-contrast]), :where([data-xh-ink]), :where([data-xh-ink-surface] > *) {`)
   })
 
   it('库自有彩色面的内容按 auto 成域，减少透明与强制色一并命中它们', () => {

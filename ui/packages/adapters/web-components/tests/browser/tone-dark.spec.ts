@@ -6,10 +6,15 @@ import { afterEach, describe, expect, it } from 'vitest'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-/** 与 css/tone.css 的四条 --xh-_tone-border-control 规则逐条对上。 */
+/** 与 css/tone.css 的四条 --xh-_tone-border-control 规则逐条对上：浅色 / 深色各取哪一档原语。 */
 const BORDER_CONTROL: Record<string, { light: string, dark: string }> = {
-  warning: { light: 'oklch(0.62 0.15 70)', dark: 'oklch(0.705 0.16 70)' },
-  neutral: { light: 'oklch(0.439 0.006 258)', dark: 'oklch(0.52 0.006 258)' },
+  warning: { light: '--xh-color-warning-700', dark: '--xh-color-warning-600' },
+  neutral: { light: '--xh-color-neutral-600', dark: '--xh-color-neutral-550' },
+}
+
+/** 原语在根上解出的值：原语不随主题与语气变。 */
+function primitive(name: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 }
 
 let host: HTMLElement | null = null
@@ -40,15 +45,15 @@ function borderControl(el: HTMLElement): string {
 describe('语气层的深色覆盖：写在自己身上也算', () => {
   for (const [tone, expected] of Object.entries(BORDER_CONTROL)) {
     it(`${tone}：不写深色标记时走浅色那一档`, () => {
-      expect(borderControl(mount(tone, 'none'))).toBe(expected.light)
+      expect(borderControl(mount(tone, 'none'))).toBe(primitive(expected.light))
     })
 
     it(`${tone}：深色标记在祖先上`, () => {
-      expect(borderControl(mount(tone, 'ancestor'))).toBe(expected.dark)
+      expect(borderControl(mount(tone, 'ancestor'))).toBe(primitive(expected.dark))
     })
 
     it(`${tone}：深色标记在语气容器自己身上`, () => {
-      expect(borderControl(mount(tone, 'self'))).toBe(expected.dark)
+      expect(borderControl(mount(tone, 'self'))).toBe(primitive(expected.dark))
     })
   }
 })

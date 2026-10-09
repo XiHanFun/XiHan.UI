@@ -17,7 +17,6 @@ import {
     <XhPageHeaderBackTrigger
       type="button"
       aria-label="返回订单列表"
-      style="inline-size: 36px; block-size: 36px; border: 0; border-radius: var(--xh-shape-control); background: transparent; color: inherit; font: inherit; cursor: pointer"
     >
       <XhIcon :icon="ArrowLeftIcon" />
     </XhPageHeaderBackTrigger>

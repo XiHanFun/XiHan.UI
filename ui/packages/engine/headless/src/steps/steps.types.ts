@@ -125,7 +125,7 @@ export interface StepsSchema extends MachineSchema {
     /** 尺寸：sm / md / lg。 */
     size?: Size
     /**
-     * 标记形态，默认 number。dot 把序号圆点收成不盛内容的小圆点：走过的实心、当前步实心外加一圈环、
+     * 标记形态，默认 number。dot 把序号圆点收成不盛内容的小圆点：走过的实心、当前步实心并放大一档、
      * 没走到的空心；indicator 留空，不放序号与图标。
      */
     variant?: StepsVariant

@@ -48,13 +48,13 @@ describe('typography 删除线、下划线与标记（Chromium）', () => {
     expect(getComputedStyle(plain!).textDecorationLine).toBe('none')
   })
 
-  it('标记画淡底：缺省与文本高亮同一副底，写了语气换成该族；不写标记只换字色', async () => {
+  it('标记画浅黄标记底：缺省与文本高亮同一副底，写了语气换成该族；不写标记只换字色', async () => {
     const [mark, toned, toneOnly] = await mount(() => [
       h(XhTypographyText, { mark: true }, () => '命中'),
       h(XhTypographyText, { mark: true, tone: 'warning' }, () => '待核'),
       h(XhTypographyText, { tone: 'warning' }, () => '只换字色'),
     ])
-    expect(getComputedStyle(mark!).backgroundColor).toBe(resolvedBackground('--xh-bg-brand-subtle'))
+    expect(getComputedStyle(mark!).backgroundColor).toBe(resolvedBackground('--xh-bg-mark'))
     const tonedBg = getComputedStyle(toned!).backgroundColor
     expect(tonedBg).not.toBe('rgba(0, 0, 0, 0)')
     expect(tonedBg).not.toBe(getComputedStyle(mark!).backgroundColor)
@@ -71,6 +71,6 @@ describe('typography 删除线、下划线与标记（Chromium）', () => {
     expect(del!.tagName).toBe('DEL')
     expect(getComputedStyle(del!).textDecorationLine).toBe('line-through')
     expect(mark!.tagName).toBe('MARK')
-    expect(getComputedStyle(mark!).backgroundColor).toBe(resolvedBackground('--xh-bg-brand-subtle'))
+    expect(getComputedStyle(mark!).backgroundColor).toBe(resolvedBackground('--xh-bg-mark'))
   })
 })

@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhInfiniteScrollLoadMoreTrigger, XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from '../../src'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -64,12 +65,12 @@ describe('取下一页按钮', () => {
     const button = trigger()
     const rect = button.getBoundingClientRect()
     expect(rect.width).toBe(320)
-    expect(rect.height).toBeGreaterThanOrEqual(36)
+    expect(rect.height).toBeGreaterThanOrEqual(tokenLength('--xh-control-h-md'))
     const style = getComputedStyle(button)
     expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(style.borderTopColor).toBe(tokenColor('--xh-border-control'))
     expect(style.borderTopWidth).toBe('1px')
-    expect(style.borderRadius).toBe('4px')
+    expect(style.borderRadius).toBe(`${tokenLength('--xh-shape-control')}px`)
     expect(style.boxShadow).toBe('none')
     expect(style.color).toBe(tokenColor('--xh-fg-default'))
     expect(style.fontSize).toBe('14px')

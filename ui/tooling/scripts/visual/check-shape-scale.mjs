@@ -83,6 +83,9 @@ const IDENTITY = {
   'color-picker:area-thumb': 'circle',
   'steps:indicator': 'circle',
   'timeline:indicator': 'circle',
+  'empty-state:indicator': 'circle',
+  'transfer:to-target-trigger': 'circle',
+  'transfer:to-source-trigger': 'circle',
   'spinner:root::before': 'circle',
   'color-swatch-picker:indicator::before': 'circle',
   'skeleton:item[data-shape=\'circle\']': 'circle',
@@ -119,9 +122,6 @@ const IDENTITY = {
   'message-feed:unread-count': 'pill',
   // liquid 档下看图的计数是一行字的 chip（standard 档仍是控件档）
   'image-viewer:counter[data-xh-liquid]': 'pill',
-  'tool-call:status': 'pill',
-  'approval:result': 'pill',
-  'question-flow:result': 'pill',
   // pill：(b) 一维对象
   'citation:trigger': 'pill',
   // liquid 档下不贴边的一维栏：轮播分页条、看图工具条（standard 档分页条没有面、工具条是 surface）
@@ -180,8 +180,9 @@ const IDENTITY = {
   'rating:item': 'control',
   'tabs:trigger': 'control',
   'steps:trigger': 'control',
-  // surface：轨道与容器（RadioGroup segmented 形态的根就是那条轨道）
-  'radio-group:root': 'surface',
+  // RadioGroup segmented 形态的根就是那条轨道：与字段外壳同款（淡底 + 字段描边），取 control
+  'radio-group:root': 'control',
+  // surface：轨道与容器
   // 看图器底部的工具条外壳：容器不是一维对象，与 toolbar 根面同身份
   'image-viewer:toolbar': 'surface',
   'tabs:list': 'surface',

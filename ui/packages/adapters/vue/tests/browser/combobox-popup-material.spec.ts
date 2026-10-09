@@ -10,6 +10,7 @@ import {
   XhComboboxPositioner,
   XhComboboxRoot,
 } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -73,14 +74,13 @@ describe('组合框 M2 浮层', () => {
     await mount(theme)
     const control = getComputedStyle(part('control'))
     const content = getComputedStyle(part('content'))
-    expect(alpha(control.backgroundColor)).toBe(0)
+    expect(control.backgroundColor).toBe(tokenValue('background-color', '--xh-bg-field', part('control')))
     expect(control.backdropFilter).toBe('none')
     expect(part('positioner').closest<HTMLElement>('[data-theme]')?.dataset.theme).toBe(theme)
-    expect(content.backdropFilter).toContain('blur(16px)')
-    expect(alpha(content.backgroundColor)).toBeLessThan(255)
-    expect(alpha(content.backgroundColor)).toBeGreaterThan(220)
+    expect(content.backdropFilter).toBe(tokenValue('backdrop-filter', '--xh-material-frosted-backdrop', part('content')))
+    expect(content.backgroundColor).toBe(tokenValue('background-color', '--xh-material-frosted-bg', part('content')))
     expect(content.boxShadow).not.toBe('none')
-    expect(alpha(highlightOf(part('content')))).toBeGreaterThan(0)
+    expect(alpha(highlightOf(part('content')))).toBe(alpha(tokenValue('color', '--xh-material-frosted-highlight', part('content'))))
   })
 
   it.each([false, true])('loading=%s：状态文字绘制在磨砂面之上且不产生第二层表面', async (loading) => {

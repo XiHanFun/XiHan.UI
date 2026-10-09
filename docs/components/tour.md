@@ -345,7 +345,7 @@
 | `--xh-tour-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | tour 的 description 部件 color 覆盖槽。 |
 | `--xh-tour-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | tour 的 description 部件 font-size 覆盖槽。 |
 | `--xh-tour-fg` | `content`<br>`root` | `color` | `default` | `--xh-fg-default`<br>`--xh-material-elevated-fg` | tour 的 content、root 部件 color 覆盖槽。 |
-| `--xh-tour-gap` | `content` | `gap` | `default` | `--xh-space-2` | tour 的 content 部件 gap 覆盖槽。 |
+| `--xh-tour-gap` | `content`<br>`description`<br>`title` | `gap`<br>`margin-block-start` | `default` | `--xh-space-2` | tour 的 content、description、title 部件 gap、margin-block-start 覆盖槽。 |
 | `--xh-tour-icon-size` | `close-trigger`<br>`content`<br>`next-trigger`<br>`prev-trigger`<br>`root`<br>`skip-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | tour 的 close-trigger、content、next-trigger、prev-trigger、root、skip-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tour-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | tour 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-tour-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w-lg` | tour 的 content 部件 max-inline-size 覆盖槽。 |
@@ -362,13 +362,13 @@
 | `--xh-tour-progress-font-size` | `progress-text` | `font-size` | `default` | `--xh-text-caption-size` | tour 的 progress-text 部件 font-size 覆盖槽。 |
 | `--xh-tour-progress-indicator-gap` | `progress-indicator` | `gap` | `default` | `--xh-space-1` | tour 的 progress-indicator 部件 gap 覆盖槽。 |
 | `--xh-tour-px` | `content` | `padding-inline` | `default` | `--xh-surface-px-md` | tour 的 content 部件 padding-inline 覆盖槽。 |
-| `--xh-tour-py` | `content` | `padding-block` | `default` | `--xh-surface-py-md` | tour 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-tour-py` | `content` | `padding-block` | `default` | `--xh-surface-py-sm` | tour 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-tour-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | tour 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-tour-shadow` | `content` | `box-shadow` | `default` | `--xh-material-elevated-shadow` | tour 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-tour-skip-trigger-px` | `next-trigger`<br>`prev-trigger`<br>`skip-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | tour 的 next-trigger、prev-trigger、skip-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-tour-spotlight-layer` | `spotlight` | `z-index` | `default` | `--xh-_layer` | tour 的 spotlight 部件 z-index 覆盖槽。 |
 | `--xh-tour-spotlight-radius` | `spotlight` | `border-radius` | `default` | `--xh-_tour-spotlight-radius` | tour 的 spotlight 部件 border-radius 覆盖槽。 |
-| `--xh-tour-spotlight-ring` | `spotlight` | `box-shadow` | `default` | `--xh-ring-focus` | tour 的 spotlight 部件 box-shadow 覆盖槽。 |
+| `--xh-tour-spotlight-ring` | `spotlight` | `box-shadow` | `default` | `--xh-_tour-spotlight-ring` | tour 的 spotlight 部件 box-shadow 覆盖槽。 |
 | `--xh-tour-spotlight-shroud` | `spotlight` | `box-shadow` | `dimmed` | `--xh-bg-overlay` | tour 的 spotlight 部件 box-shadow 覆盖槽。 |
 | `--xh-tour-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | tour 的 title 部件 color 覆盖槽。 |
 | `--xh-tour-title-font-size` | `title` | `font-size` | `default` | `--xh-text-heading-3-size` | tour 的 title 部件 font-size 覆盖槽。 |

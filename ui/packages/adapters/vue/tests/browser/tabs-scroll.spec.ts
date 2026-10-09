@@ -85,7 +85,9 @@ describe('标签页 · 放不下时位移而不折行', () => {
     const { list, trigger, next } = mountTabs()
     const first = trigger('tab-1').getBoundingClientRect()
     const last = trigger('tab-12').getBoundingClientRect()
-    expect(list.getBoundingClientRect().height).toBe(first.height)
+    // 标签带的盒高扣掉底边那道基线，余下的正好一枚标签高
+    const baseline = Number.parseFloat(getComputedStyle(list).borderBottomWidth)
+    expect(list.getBoundingClientRect().height - baseline).toBe(first.height)
     expect(last.top).toBe(first.top)
     expect(last.right).toBeGreaterThan(list.getBoundingClientRect().right)
     expect(getComputedStyle(list).overflowX).toBe('clip')

@@ -3,19 +3,20 @@
 # 命中的取值块，按 tokens.css 的书写顺序：
 #   [1] :where(:root)
 #   [2] :where(:root), :where([data-density='comfortable'])
-#   [3] :where(:root), :where([data-theme])
+#   [3] :where(:root), :where([data-theme]), :where([data-contrast])
 #   [4] :where([data-density='compact'])
 #   [5] :where([data-density='compact'])
 #   [6] :where(:root)
 #   [7] :where(:root), :where([data-theme='light'])
 #   [9] :where([data-contrast='default'])
-#   [11] :where([data-transparency='reduce']), :where([data-transparency='reduce'] [data-theme])
+#   [11] :where([data-transparency='reduce']), :where([data-transparency='reduce'] [data-theme]), :where([data-transparency='reduce'] [data-contrast])
 #   [12] :where([data-motion='reduce'])
 
 --xh-action-brand-solid: oklch(0.546 0.216 258)  ← var(--xh-color-brand-600)
 --xh-action-brand-solid-active: oklch(0.424 0.164 258)  ← var(--xh-color-brand-800)
 --xh-action-brand-solid-hover: oklch(0.488 0.196 258)  ← var(--xh-color-brand-700)
 --xh-action-on-brand-solid: oklch(1 0 0)  ← var(--xh-color-neutral-0)
+--xh-app-header-h: 3.75rem
 --xh-bg-brand: oklch(0.546 0.216 258)  ← var(--xh-color-brand-600)
 --xh-bg-brand-active: oklch(0.424 0.164 258)  ← var(--xh-color-brand-800)
 --xh-bg-brand-hover: oklch(0.488 0.196 258)  ← var(--xh-color-brand-700)
@@ -25,10 +26,14 @@
 --xh-bg-canvas: oklch(1 0 0)  ← var(--xh-color-neutral-0)
 --xh-bg-field: color-mix(in oklab, color-mix(in oklab, oklch(0 0 0) 4.7%, transparent) 55%, transparent)  ← color-mix(in oklab, var(--xh-bg-subtle) 55%, transparent)
 --xh-bg-field-invalid: color-mix(in oklab, oklch(0.577 0.213 25) 4%, transparent)  ← color-mix(in oklab, var(--xh-border-invalid) 4%, transparent)
+--xh-bg-mark: oklch(0.885 0.062 95)  ← var(--xh-color-yellow-200)
 --xh-bg-muted: color-mix(in oklab, oklch(0 0 0) 4.7%, transparent)  ← color-mix(in oklab, var(--xh-ink) 4.7%, transparent)
---xh-bg-overlay: oklch(0 0 0 / 0.45)
+--xh-bg-overlay: color-mix(in oklab, oklch(0.208 0.006 258) 60%, transparent)  ← color-mix(in oklab, var(--xh-color-neutral-900) 60%, transparent)
 --xh-bg-page: oklch(0.964 0.004 265)  ← var(--xh-color-neutral-100)
 --xh-bg-scrollbar-track: oklch(0 0 0 / 0)
+--xh-bg-segment-selected: color-mix(in oklab, oklch(0.546 0.216 258) 12%, oklch(1 0 0))  ← var(--xh-bg-brand-subtle)
+--xh-bg-segment-selected-disabled: color-mix(in oklab, oklch(0.546 0.216 258) 8%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-bg-brand) 8%, var(--xh-bg-surface))
+--xh-bg-segment-selected-hover: color-mix(in oklab, oklch(0.546 0.216 258) 18%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-bg-brand) 18%, var(--xh-bg-surface))
 --xh-bg-subtle: color-mix(in oklab, oklch(0 0 0) 4.7%, transparent)  ← color-mix(in oklab, var(--xh-ink) 4.7%, transparent)
 --xh-bg-subtle-active: color-mix(in oklab, oklch(0 0 0) 16.9%, transparent)  ← color-mix(in oklab, var(--xh-ink) 16.9%, transparent)
 --xh-bg-subtle-hover: color-mix(in oklab, oklch(0 0 0) 10.2%, transparent)  ← color-mix(in oklab, var(--xh-ink) 10.2%, transparent)
@@ -213,6 +218,8 @@
 --xh-fg-scrollbar-thumb: color-mix(in oklab, oklch(0.208 0.006 258) 15%, transparent)  ← color-mix(in oklab, var(--xh-fg-default) 15%, transparent)
 --xh-fg-scrollbar-thumb-active: color-mix(in oklab, oklch(0.208 0.006 258) 35%, transparent)  ← color-mix(in oklab, var(--xh-fg-default) 35%, transparent)
 --xh-fg-scrollbar-thumb-hover: color-mix(in oklab, oklch(0.208 0.006 258) 25%, transparent)  ← color-mix(in oklab, var(--xh-fg-default) 25%, transparent)
+--xh-fg-segment-selected: oklch(0.488 0.196 258)  ← var(--xh-fg-brand-strong)
+--xh-fg-segment-selected-disabled: color-mix(in oklab, oklch(0.546 0.216 258) 50%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-fg-brand) 50%, var(--xh-bg-surface))
 --xh-fg-subtle: oklch(0.52 0.018 256)  ← var(--xh-color-neutral-550)
 --xh-fg-success: oklch(0.51 0.15 149)  ← var(--xh-color-success-700)
 --xh-fg-warning: oklch(0.62 0.15 70)  ← var(--xh-color-warning-700)
@@ -247,6 +254,7 @@
 --xh-glyph-mark-restore: url("data:image/svg+xml,…")  sha256:d140d1076b2d
 --xh-glyph-mark-rotate-left: url("data:image/svg+xml,…")  sha256:683db902d94c
 --xh-glyph-mark-rotate-right: url("data:image/svg+xml,…")  sha256:9c75884db7fb
+--xh-glyph-mark-slash: url("data:image/svg+xml,…")  sha256:aada1ea04d22
 --xh-glyph-mark-sort: url("data:image/svg+xml,…")  sha256:77960074f2de
 --xh-glyph-mark-sort-asc: url("data:image/svg+xml,…")  sha256:9ed79f28ca55
 --xh-glyph-mark-sort-desc: url("data:image/svg+xml,…")  sha256:a07f0e76013b
@@ -282,16 +290,19 @@
 --xh-layout-gap-sm: 6px  ← var(--xh-space-1_5)
 --xh-layout-gap-xl: 20px  ← var(--xh-space-5)
 --xh-layout-gap-xs: 4px  ← var(--xh-space-1)
---xh-list-item-px-lg: 16px  ← var(--xh-space-4)
---xh-list-item-px-md: 12px  ← var(--xh-space-3)
---xh-list-item-px-sm: 8px  ← var(--xh-space-2)
+--xh-list-item-px-lg: 20px  ← var(--xh-space-5)
+--xh-list-item-px-md: 16px  ← var(--xh-space-4)
+--xh-list-item-px-sm: 12px  ← var(--xh-space-3)
 --xh-list-item-py-lg: 12px  ← var(--xh-space-3)
 --xh-list-item-py-md: 8px  ← var(--xh-space-2)
 --xh-list-item-py-sm: 6px  ← var(--xh-space-1_5)
---xh-list-option-gap: 2px  ← var(--xh-space-0_5)
+--xh-list-option-gap: 0px  ← var(--xh-space-0)
 --xh-list-option-py-lg: 6px  ← var(--xh-space-1_5)
 --xh-list-option-py-md: 4px  ← var(--xh-space-1)
 --xh-list-option-py-sm: 2px  ← var(--xh-space-0_5)
+--xh-marker-size-lg: 28px  ← var(--xh-control-h-md)
+--xh-marker-size-md: 24px  ← var(--xh-control-h-sm)
+--xh-marker-size-sm: 20px  ← var(--xh-control-action-size)
 --xh-measure-prose: 32rem
 --xh-motion-distance-lg: 0px
 --xh-motion-distance-md: 0px
@@ -325,7 +336,7 @@
 --xh-motion-loop-breathe: 3600ms
 --xh-motion-loop-caret: 1000ms
 --xh-motion-loop-shimmer: 1600ms
---xh-motion-loop-spin: 640ms
+--xh-motion-loop-spin: 1000ms
 --xh-motion-scale-breathe: 1
 --xh-motion-scale-drag: 1
 --xh-motion-scale-enter: 1
@@ -362,6 +373,7 @@
 --xh-overlay-arrow-size: 8px  ← var(--xh-space-2)
 --xh-overlay-backdrop-blur: 12px
 --xh-overlay-calendar-column-h: calc(24px * 7 + 28px)  ← calc(var(--xh-control-h-sm) * 7 + var(--xh-space-7))
+--xh-overlay-cascade-min-w: 7.5rem
 --xh-overlay-column-item-h: calc(24px - 4px)  ← calc(var(--xh-control-h-sm) - var(--xh-space-1))
 --xh-overlay-column-min-w: 3.5rem
 --xh-overlay-drawer-w-lg: 28rem
@@ -372,7 +384,7 @@
 --xh-overlay-max-w-lg: 24rem
 --xh-overlay-max-w-sm: 16rem
 --xh-overlay-max-w-xl: 48rem
---xh-overlay-menu-max-h: 17rem
+--xh-overlay-menu-max-h: 11rem
 --xh-overlay-menu-min-w: 10rem
 --xh-overlay-min-w: 12rem
 --xh-overlay-sheet-w-lg: 48rem
@@ -398,13 +410,14 @@
 --xh-shape-pill: 9999px  ← var(--xh-radius-full)
 --xh-shape-surface: 4px  ← var(--xh-radius-md)
 --xh-sider-collapsed-w: 4rem
---xh-sider-w: 15rem
+--xh-sider-w: 13.75rem
 --xh-stack-gap-lg: 20px  ← var(--xh-space-5)
 --xh-stack-gap-md: 12px  ← var(--xh-space-3)
 --xh-stack-gap-sm: 6px  ← var(--xh-space-1_5)
 --xh-state-disabled-opacity: 0.5
 --xh-state-dragging-opacity: 0.6
 --xh-surface-action-inset: 12px  ← var(--xh-space-3)
+--xh-surface-header-h: 40px
 --xh-surface-pad-lg: 12px  ← var(--xh-space-3)
 --xh-surface-pad-md: 8px  ← var(--xh-space-2)
 --xh-surface-pad-sm: 6px  ← var(--xh-space-1_5)

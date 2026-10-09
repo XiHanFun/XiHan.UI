@@ -211,13 +211,15 @@
     display: none;
   }
 
-  /* 三档落定的阶段收成状态 chip：几何与 Tag 的 sm 档同一把尺，淡底 + 同族可读字取连接层投影的语气。
-     在跑的两档不带底，让扫光自己说话 */
+  /* 三档落定的阶段收成状态 chip：与 Tag 的 sm 档同一副方签——control 圆角、块尺寸取 chip 档、竖向内衬为 0，
+     淡底 + 同族可读字取连接层投影的语气。在跑的两档不带底，让扫光自己说话 */
   [data-scope='tool-call'][data-part='status'][data-tone] {
-    padding-block: var(--xh-tool-call-status-py, var(--xh-space-0_5));
+    box-sizing: border-box;
+    min-block-size: var(--xh-tool-call-status-h, var(--xh-chip-h-sm));
+    padding-block: var(--xh-tool-call-status-py, 0);
     padding-inline: var(--xh-tool-call-status-px, var(--xh-space-1_5));
     border: var(--xh-stroke-thin) solid transparent;
-    border-radius: var(--xh-tool-call-status-radius, var(--xh-shape-pill));
+    border-radius: var(--xh-tool-call-status-radius, var(--xh-shape-control));
     font-weight: var(--xh-font-weight-medium);
     line-height: var(--xh-control-indicator-md);
   }

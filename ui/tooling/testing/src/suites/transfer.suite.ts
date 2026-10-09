@@ -278,10 +278,10 @@ export const transferSuite: ConformanceSuite = {
             'data-xh-action-size': 'xs',
           },
           'to-target-trigger': {
-            // 只有字形的离散动作钮：Action Control icon 档 outline 形态、正方盒固定 sm 档
+            // 只有字形的离散动作钮：Action Control icon 档 subtle 形态、正方盒固定 sm 档
             'data-xh-action-control': '',
             'data-xh-action-profile': 'icon',
-            'data-xh-action-variant': 'outline',
+            'data-xh-action-variant': 'subtle',
             'data-xh-action-display': 'always',
             'data-xh-action-size': 'sm',
             'type': 'button',

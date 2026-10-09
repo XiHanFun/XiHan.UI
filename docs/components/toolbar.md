@@ -253,7 +253,7 @@
 | `--xh-toolbar-item-fg-pressed` | `item` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-on-brand-subtle` | toolbar 的 item 部件 color 覆盖槽。 |
 | `--xh-toolbar-item-font-size` | `item` | `font-size` | `default` | `--xh-_action-profile-font-size` | toolbar 的 item 部件 font-size 覆盖槽。 |
 | `--xh-toolbar-item-font-weight` | `item` | `font-weight` | `default` | `--xh-text-label-weight` | toolbar 的 item 部件 font-weight 覆盖槽。 |
-| `--xh-toolbar-item-gap` | `item` | `gap` | `default` | `--xh-control-gap-sm` | toolbar 的 item 部件 gap 覆盖槽。 |
+| `--xh-toolbar-item-gap` | `item` | `gap` | `default` | `--xh-_action-profile-gap` | toolbar 的 item 部件 gap 覆盖槽。 |
 | `--xh-toolbar-item-h` | `item` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | toolbar 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-toolbar-item-px` | `item` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | toolbar 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-toolbar-item-radius` | `group`<br>`item` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `default`<br>`first-of-type`<br>`last-of-type`<br>`not(:has(~ [data-scope='toolbar'][data-part='item']:not([hidden])`<br>`not([hidden])`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-_action-profile-radius`<br>`--xh-shape-control` | toolbar 的 group、item 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
@@ -261,11 +261,11 @@
 | `--xh-toolbar-py` | `root` | `padding-block` | `default` | `--xh-_toolbar-root-p` | toolbar 的 root 部件 padding-block 覆盖槽。 |
 | `--xh-toolbar-radius` | `root` | `border-radius` | `default`<br>`variant=outline` | `--xh-shape-surface` | toolbar 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-toolbar-separator-color` | `group`<br>`separator` | `background` | `default` | `--xh-border-default`<br>`--xh-fg-default` | toolbar 的 group、separator 部件 background 覆盖槽。 |
-| `--xh-toolbar-separator-gap` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-0` | toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-toolbar-separator-gap` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-3` | toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
 | `--xh-toolbar-separator-inset` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-0` | toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
 | `--xh-toolbar-separator-opacity` | `group`<br>`separator` | `opacity` | `default` | `--xh-control-separator-opacity` | toolbar 的 group、separator 部件 opacity 覆盖槽。 |
 | `--xh-toolbar-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | toolbar 的 separator 部件 border-radius 覆盖槽。 |
-| `--xh-toolbar-separator-thickness` | `group`<br>`separator` | `block-size`<br>`inline-size`<br>`margin-block-start`<br>`margin-inline-start` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | toolbar 的 group、separator 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。 |
+| `--xh-toolbar-separator-thickness` | `group`<br>`separator` | `block-size`<br>`inline-size`<br>`margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | toolbar 的 group、separator 部件 block-size、inline-size、margin-block、margin-inline 覆盖槽。 |
 | `--xh-toolbar-shadow` | `root` | `box-shadow` | `variant=outline` | `none` | toolbar 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

@@ -22,11 +22,11 @@ afterEach(() => {
   host = null
 })
 
-async function mount(size?: 'sm' | 'md' | 'lg'): Promise<HTMLElement> {
+async function mount(size?: 'sm' | 'md' | 'lg', tone?: 'success' | 'brand'): Promise<HTMLElement> {
   host = document.createElement('div')
   document.body.append(host)
   app = createApp({
-    render: () => h(XhEmptyStateRoot, { size }, () => [
+    render: () => h(XhEmptyStateRoot, { size, tone }, () => [
       h(XhEmptyStateIndicator, null, () => '○'),
       h(XhEmptyStateTitle, null, () => '暂无数据'),
       h(XhEmptyStateDescription, null, () => '还没有任何记录，先新建一条。'),
@@ -61,17 +61,35 @@ function tokenColor(token: string): string {
 }
 
 describe('空状态的排版档', () => {
-  it('md 与 sm 的标题都是 Surface 标题档 14/600，lg 升到页面级 heading-3', async () => {
+  it('md 与 sm 的标题都是小面标题档 14/500，lg 升到区块标题 heading-3', async () => {
     for (const size of ['md', 'sm'] as const) {
       const root = await mount(size)
       const title = getComputedStyle(part(root, 'title'))
       expect(Number.parseFloat(title.fontSize), size).toBe(resolvedLength(root, 'var(--xh-text-label-size)'))
-      expect(title.fontWeight, size).toBe('600')
+      expect(title.fontWeight, size).toBe('500')
       app?.unmount()
       host?.remove()
     }
     const root = await mount('lg')
     expect(Number.parseFloat(getComputedStyle(part(root, 'title')).fontSize)).toBe(resolvedLength(root, 'var(--xh-text-heading-3-size)'))
+  })
+
+  it('标题与说明之间 4px，说明到动作区比整档间距多 4px', async () => {
+    const root = await mount()
+    const gap = Number.parseFloat(getComputedStyle(root).rowGap)
+    const title = part(root, 'title').getBoundingClientRect()
+    const description = part(root, 'description').getBoundingClientRect()
+    const action = part(root, 'action').getBoundingClientRect()
+    expect(description.top - title.bottom).toBeCloseTo(4, 0)
+    expect(action.top - description.bottom).toBeCloseTo(gap + 4, 0)
+  })
+
+  it('写了语气时图标坐进 44px 语气淡底圆', async () => {
+    const root = await mount('md', 'success')
+    const indicator = getComputedStyle(part(root, 'indicator'))
+    expect(Number.parseFloat(indicator.inlineSize)).toBe(resolvedLength(root, 'var(--xh-control-box-lg)'))
+    expect(indicator.borderTopLeftRadius).not.toBe('0px')
+    expect(indicator.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
   })
 
   it('说明是 13/fg-muted，根无壳：不画边、底与影', async () => {

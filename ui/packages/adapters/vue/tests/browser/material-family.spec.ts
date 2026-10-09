@@ -6,6 +6,7 @@ import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import { XhMessageFeedItem, XhMessageFeedList, XhMessageFeedRoot, XhMessageFeedScrollToEndTrigger, XhMessageFeedViewport } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -56,7 +57,7 @@ describe('材质家族配方', () => {
     expect(style.backgroundColor).toBe(tokenColor(surface, '--xh-material-frosted-bg'))
     expect(style.color).toBe(tokenColor(surface, '--xh-material-frosted-fg'))
     expect(style.boxShadow).not.toBe('none')
-    expect(style.backdropFilter).toContain('blur(16px)')
+    expect(style.backdropFilter).toBe(tokenValue('backdrop-filter', '--xh-material-frosted-backdrop', surface))
     expect(highlightOf(surface)).toBe(tokenColor(surface, '--xh-material-frosted-highlight'))
     expect(getComputedStyle(surface, '::before').content).toBe('none')
   })
@@ -73,7 +74,7 @@ describe('材质家族配方', () => {
   it('圆钮：面归 Action Control，配方不画描边与底，只补背景滤镜', () => {
     const button = probe({ 'data-xh-material': 'frosted', 'data-xh-action-control': '', 'data-xh-action-variant': 'ghost', 'data-xh-action-profile': 'floating' })
     const style = getComputedStyle(button)
-    expect(style.backdropFilter).toContain('blur(16px)')
+    expect(style.backdropFilter).toBe(tokenValue('backdrop-filter', '--xh-material-frosted-backdrop', button))
     // 描边与底来自 Action Control 的 ghost 档（透明），不是 frosted 的面
     expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(style.borderTopColor).not.toBe(tokenColor(button, '--xh-material-frosted-border'))
@@ -86,7 +87,7 @@ describe('材质家族配方', () => {
     expect(getComputedStyle(liquid).backdropFilter).toContain('blur(8px)')
     expect(getComputedStyle(liquid).backgroundColor).toBe(tokenColor(liquid, '--xh-material-liquid-bg'))
     expect(highlightOf(liquid)).toBe('rgba(0, 0, 0, 0)')
-    expect(getComputedStyle(frosted).backdropFilter).toContain('blur(16px)')
+    expect(getComputedStyle(frosted).backdropFilter).toBe(tokenValue('backdrop-filter', '--xh-material-frosted-backdrop', frosted))
   })
 })
 

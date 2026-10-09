@@ -103,7 +103,7 @@ describe('navigation-menu 入口与面板链接', () => {
     await releasePointer(closed)
   })
 
-  it('面板链接接 Collection Item：悬停 100、按下 200；当前页取 strong 档品牌字色 + medium，不换底', async () => {
+  it('面板链接接 Collection Item：悬停 100、按下 200；当前页取品牌字色 + medium，不换底', async () => {
     await mountNav()
     const plain = link('#overview')
     const current = link('#pricing')
@@ -113,12 +113,12 @@ describe('navigation-menu 入口与面板链接', () => {
 
     expect(current.hasAttribute('data-current')).toBe(true)
     expect(getComputedStyle(current).backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(getComputedStyle(current).color).toBe(resolve('--xh-fg-brand-strong', 'color'))
+    expect(getComputedStyle(current).color).toBe(resolve('--xh-fg-brand', 'color'))
     expect(getComputedStyle(current).fontWeight).toBe('500')
     // 当前页悬停仍是中性 100，字色不变
     await userEvent.hover(current)
     expect(getComputedStyle(current).backgroundColor).toBe(resolve('--xh-bg-subtle'))
-    expect(getComputedStyle(current).color).toBe(resolve('--xh-fg-brand-strong', 'color'))
+    expect(getComputedStyle(current).color).toBe(resolve('--xh-fg-brand', 'color'))
 
     await userEvent.hover(plain)
     expect(getComputedStyle(plain).backgroundColor).toBe(resolve('--xh-bg-subtle'))

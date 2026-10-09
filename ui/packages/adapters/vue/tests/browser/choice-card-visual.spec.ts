@@ -15,6 +15,7 @@ import {
   XhRadioGroupItemText,
   XhRadioGroupRoot,
 } from '../../src'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -84,7 +85,7 @@ describe.each(KITS)('$scope 的 card 形态（真实浏览器）', (kit) => {
     const style = getComputedStyle(team!)
     expect(style.borderTopWidth).toBe('1px')
     expect(style.borderTopColor).toBe(tokenColor('--xh-border-control'))
-    expect(style.borderTopLeftRadius).toBe('8px')
+    expect(style.borderTopLeftRadius).toBe(`${tokenLength('--xh-shape-surface')}px`)
     expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(style.paddingTop).toBe('12px')
     expect(style.paddingLeft).toBe('16px')

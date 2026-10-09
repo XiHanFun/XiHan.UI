@@ -325,12 +325,17 @@ export function compileFieldChromeRecipe(source) {
     ].join('\n'))
   }
 
-  rule('[data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover', stateDeclarations(source, 'hover'))
+  // 悬停让位给聚焦：这条选择器比聚焦那条更特定，不排除 :focus-within 时，指针停在已聚焦的字段上
+  // 会把聚焦描边与承载面换回悬停面——不画环时焦点就只靠这两样标出
+  rule('[data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):not(:focus-within):hover', stateDeclarations(source, 'hover'))
   rule('[data-xh-field-chrome]:focus-within:not([data-disabled])', [
     stateDeclarations(source, 'focus'),
     ...(ringed
       ? [`    outline: var(--xh-ring-width) solid var(--xh-field-ring-focus, ${source.stateValues.focus.ringColor});`, '    outline-offset: var(--xh-ring-offset);']
-      : []),
+      // 不画环：外壳自己就是原生控件时（Field 的 control、分页跳页框、Mention 输入框）焦点落在外壳上，
+      // 公共层 [data-scope][data-part]:focus-visible 那圈环会画到它身上。这条与它同为 (0,3,0)、排在它之后，
+      // 在这里撤下，七种外壳聚焦时才是同一副样子；强制色档在下面同一选择器上补回系统色环
+      : ['    outline: none;']),
   ].filter(Boolean).join('\n'))
   rule('[data-xh-field-chrome][data-readonly]', stateDeclarations(source, 'readOnly'))
   rule('[data-xh-field-chrome][data-loading]', stateDeclarations(source, 'loading'))
@@ -406,7 +411,7 @@ export function compileFieldChromeRecipe(source) {
     '    ',
   )
   forcedRule('[data-xh-field-chrome]', 'rest')
-  forcedRule('[data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover', 'hover')
+  forcedRule('[data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):not(:focus-within):hover', 'hover')
   // 常规档不画环时，强制色档仍补一圈系统色环：这一档里描边换色未必分得出来
   forcedRule('[data-xh-field-chrome]:focus-within:not([data-disabled])', 'focus', ringed
     ? [`      outline-color: ${source.forcedColors.focus.outlineColor};`]

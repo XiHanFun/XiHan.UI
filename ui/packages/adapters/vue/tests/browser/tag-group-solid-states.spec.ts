@@ -182,8 +182,8 @@ describe('实心标签在组里的三档状态', () => {
 })
 
 describe('非实心标签在组里仍进中性灰轻档', () => {
-  // 坐在白底上的控件 hover 走 100 档 --xh-bg-subtle，200 档留给 pressed
-  it.each<Variant | undefined>(['subtle', 'outline', undefined])('variant=%s 悬停时底换成 --xh-bg-subtle', async (variant) => {
+  // 标签静息就是淡底（100 档），按淡底阶梯 hover 升到 200 档 --xh-bg-subtle-hover，300 档留给 pressed
+  it.each<Variant | undefined>(['subtle', 'outline', undefined])('variant=%s 悬停时底换成 --xh-bg-subtle-hover', async (variant) => {
     document.documentElement.dataset.theme = 'light'
     host = document.createElement('div')
     document.body.append(host)
@@ -196,7 +196,7 @@ describe('非实心标签在组里仍进中性灰轻档', () => {
     const [first] = tags()
     await userEvent.hover(first!)
     settle()
-    expect(getComputedStyle(first!).backgroundColor).toBe(resolve('var(--xh-bg-subtle)'))
+    expect(getComputedStyle(first!).backgroundColor).toBe(resolve('var(--xh-bg-subtle-hover)'))
   })
 })
 

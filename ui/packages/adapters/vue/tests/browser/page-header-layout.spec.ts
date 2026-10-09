@@ -82,10 +82,15 @@ describe('page-header 信息层级', () => {
     frame!.remove()
 
     const wide = mountAt(640)
-    expect(getComputedStyle(partIn(wide, 'extra')).gridColumn).toBe('4')
+    expect(getComputedStyle(partIn(wide, 'extra')).gridColumn).toBe('5')
     expect(getComputedStyle(partIn(wide, 'title')).gridColumn).toBe('3')
-    expect(partIn(wide, 'extra').getBoundingClientRect().top)
-      .toBeLessThan(partIn(wide, 'description').getBoundingClientRect().bottom)
+    expect(getComputedStyle(partIn(wide, 'description')).gridColumn).toBe('4')
+    // 宽档副标题与标题同一行，二者之间一条竖线
+    const title = partIn(wide, 'title').getBoundingClientRect()
+    const description = partIn(wide, 'description').getBoundingClientRect()
+    expect(Math.abs((title.top + title.bottom) / 2 - (description.top + description.bottom) / 2)).toBeLessThan(2)
+    expect(description.left).toBeGreaterThanOrEqual(title.right)
+    expect(getComputedStyle(partIn(wide, 'description'), '::before').content).toBe('""')
   })
 
   it('省略返回位与媒体位时标题不保留空轨道间距', () => {

@@ -313,6 +313,7 @@
     --xh-glyph-mark-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12.5L9.5 18L20 6'/%3E%3C/svg%3E");
     --xh-glyph-mark-edit: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18.5 2.5L21.5 5.5L8 19L3.5 20.5L5 16Z'/%3E%3Cpath d='M16.4 4.6L19.4 7.6'/%3E%3C/svg%3E");
     --xh-glyph-mark-minus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12H19'/%3E%3C/svg%3E");
+    --xh-glyph-mark-slash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 5L6 19'/%3E%3C/svg%3E");
     --xh-glyph-mark-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5V19'/%3E%3Cpath d='M5 12H19'/%3E%3C/svg%3E");
     --xh-glyph-mark-close: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6L18 18'/%3E%3Cpath d='M18 6L6 18'/%3E%3C/svg%3E");
     --xh-glyph-mark-download: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3Cpath d='M7 10L12 15L17 10'/%3E%3Cpath d='M12 3V15'/%3E%3C/svg%3E");
@@ -354,13 +355,13 @@
     --xh-list-item-py-sm: var(--xh-space-2);
     --xh-list-item-py-md: var(--xh-space-3);
     --xh-list-item-py-lg: var(--xh-space-4);
-    --xh-list-item-px-sm: var(--xh-space-3);
-    --xh-list-item-px-md: var(--xh-space-4);
-    --xh-list-item-px-lg: var(--xh-space-5);
+    --xh-list-item-px-sm: var(--xh-space-4);
+    --xh-list-item-px-md: var(--xh-space-5);
+    --xh-list-item-px-lg: var(--xh-space-6);
     --xh-list-option-py-sm: var(--xh-space-1);
     --xh-list-option-py-md: var(--xh-space-1_5);
     --xh-list-option-py-lg: var(--xh-space-2);
-    --xh-list-option-gap: var(--xh-space-0_5);
+    --xh-list-option-gap: var(--xh-space-0);
     --xh-table-cell-py-sm: var(--xh-space-2);
     --xh-table-cell-py-md: var(--xh-space-3);
     --xh-table-cell-py-lg: var(--xh-space-4);
@@ -403,7 +404,7 @@
     --xh-motion-ease-press: var(--xh-ease-standard);
     --xh-motion-ease-release: var(--xh-ease-out-strong);
     --xh-motion-ease-breathe: var(--xh-ease-sine-in-out);
-    --xh-motion-loop-spin: 640ms;
+    --xh-motion-loop-spin: 1000ms;
     --xh-motion-loop-caret: 1000ms;
     --xh-motion-loop-shimmer: 1600ms;
     --xh-motion-loop-breathe: 3600ms;
@@ -467,11 +468,15 @@
     --xh-chip-h-sm: var(--xh-control-indicator-lg);
     --xh-chip-h-md: var(--xh-control-action-size);
     --xh-chip-h-lg: var(--xh-control-h-sm);
+    --xh-marker-size-sm: var(--xh-control-action-size);
+    --xh-marker-size-md: var(--xh-control-h-sm);
+    --xh-marker-size-lg: var(--xh-control-h-md);
     --xh-nav-row-h-sm: var(--xh-control-h-md);
     --xh-nav-row-h-md: calc(var(--xh-control-h-lg) + var(--xh-space-1));
     --xh-nav-row-h-lg: var(--xh-control-box-lg);
     --xh-nav-link-max-w: 12rem;
-    --xh-sider-w: 15rem;
+    --xh-app-header-h: 3.75rem;
+    --xh-sider-w: 13.75rem;
     --xh-sider-collapsed-w: 4rem;
     --xh-viewport-max-h: 24rem;
     --xh-viewport-h-sm: 12rem;
@@ -480,10 +485,11 @@
     --xh-overlay-arrow-size: var(--xh-space-2);
     --xh-overlay-min-w: 12rem;
     --xh-overlay-menu-min-w: 10rem;
+    --xh-overlay-cascade-min-w: 7.5rem;
     --xh-overlay-column-min-w: 3.5rem;
     --xh-overlay-column-item-h: calc(var(--xh-control-h-sm) - var(--xh-space-1));
     --xh-overlay-calendar-column-h: calc(var(--xh-control-h-sm) * 7 + var(--xh-space-7));
-    --xh-overlay-menu-max-h: 20rem;
+    --xh-overlay-menu-max-h: 13rem;
     --xh-overlay-max-w-sm: 16rem;
     --xh-overlay-max-w: 20rem;
     --xh-overlay-max-w-lg: 24rem;
@@ -526,6 +532,7 @@
     --xh-surface-pad-md: var(--xh-space-3);
     --xh-surface-pad-lg: var(--xh-space-4);
     --xh-surface-action-inset: var(--xh-space-3);
+    --xh-surface-header-h: 46px;
     --xh-chart-height: 20rem;
     --xh-chart-bar-max: var(--xh-space-6);
     --xh-chart-gap: var(--xh-stroke-thick);
@@ -543,8 +550,10 @@
   }
 
   /* 材质里跨主题同源的通道：值是指向主题语义的 var() 引用，自定义属性在声明处求值，
-     只写在 :root 上会冻结成根主题的取值；同时挂在每个主题边界与墨色域上，引用才在那里自己的取值里解析 */
-  :where(:root), :where([data-theme]), :where([data-xh-ink]), :where([data-xh-ink-surface] > *) {
+     只写在 :root 上会冻结成根主题的取值；同时挂在每个主题边界与墨色域上，引用才在那里自己的取值里解析。
+     对比度边界同理：引用的描边、分隔这几支随对比度换值，嵌套的 data-contrast 上不重新声明，
+     子树拿到的是外层按缺省档解好的值 */
+  :where(:root), :where([data-theme]), :where([data-contrast]), :where([data-xh-ink]), :where([data-xh-ink-surface] > *) {
     --xh-material-solid-bg: var(--xh-bg-surface);
     --xh-material-solid-backdrop: none;
     --xh-material-solid-border: var(--xh-border-default);
@@ -606,9 +615,9 @@
     --xh-list-item-py-sm: var(--xh-space-1_5);
     --xh-list-item-py-md: var(--xh-space-2);
     --xh-list-item-py-lg: var(--xh-space-3);
-    --xh-list-item-px-sm: var(--xh-space-2);
-    --xh-list-item-px-md: var(--xh-space-3);
-    --xh-list-item-px-lg: var(--xh-space-4);
+    --xh-list-item-px-sm: var(--xh-space-3);
+    --xh-list-item-px-md: var(--xh-space-4);
+    --xh-list-item-px-lg: var(--xh-space-5);
     --xh-list-option-py-sm: var(--xh-space-0_5);
     --xh-list-option-py-md: var(--xh-space-1);
     --xh-list-option-py-lg: var(--xh-space-1_5);
@@ -619,7 +628,7 @@
     --xh-viewport-h-sm: 10rem;
     --xh-viewport-h-md: 14rem;
     --xh-viewport-h-lg: 20rem;
-    --xh-overlay-menu-max-h: 17rem;
+    --xh-overlay-menu-max-h: 11rem;
     --xh-overlay-max-h: 14rem;
     --xh-surface-py-sm: var(--xh-space-2);
     --xh-surface-px-sm: var(--xh-space-3);
@@ -628,6 +637,7 @@
     --xh-surface-pad-sm: var(--xh-space-1_5);
     --xh-surface-pad-md: var(--xh-space-2);
     --xh-surface-pad-lg: var(--xh-space-3);
+    --xh-surface-header-h: 40px;
     --xh-section-py-sm: var(--xh-space-3);
     --xh-section-py-md: var(--xh-space-4);
     --xh-section-py-lg: var(--xh-space-6);
@@ -651,6 +661,9 @@
     --xh-chip-h-sm: var(--xh-control-indicator-lg);
     --xh-chip-h-md: var(--xh-control-action-size);
     --xh-chip-h-lg: var(--xh-control-h-sm);
+    --xh-marker-size-sm: var(--xh-control-action-size);
+    --xh-marker-size-md: var(--xh-control-h-sm);
+    --xh-marker-size-lg: var(--xh-control-h-md);
     --xh-nav-row-h-sm: var(--xh-control-h-md);
     --xh-nav-row-h-md: calc(var(--xh-control-h-lg) + var(--xh-space-1));
     --xh-nav-row-h-lg: var(--xh-control-box-lg);
@@ -691,6 +704,7 @@
     --xh-bg-subtle-active: color-mix(in oklab, var(--xh-ink) 16.9%, transparent);
     --xh-bg-field: color-mix(in oklab, var(--xh-bg-subtle) 55%, transparent);
     --xh-bg-field-invalid: color-mix(in oklab, var(--xh-border-invalid) 4%, transparent);
+    --xh-bg-mark: var(--xh-color-yellow-200);
     --xh-bg-muted: color-mix(in oklab, var(--xh-ink) 4.7%, transparent);
     --xh-bg-brand: var(--xh-color-brand-600);
     --xh-bg-brand-hover: var(--xh-color-brand-700);
@@ -698,7 +712,10 @@
     --xh-bg-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 12%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-hover: color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-active: color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface));
-    --xh-bg-overlay: oklch(0 0 0 / 0.45);
+    --xh-bg-segment-selected: var(--xh-bg-brand-subtle);
+    --xh-bg-segment-selected-hover: color-mix(in oklab, var(--xh-bg-brand) 18%, var(--xh-bg-surface));
+    --xh-bg-segment-selected-disabled: color-mix(in oklab, var(--xh-bg-brand) 8%, var(--xh-bg-surface));
+    --xh-bg-overlay: color-mix(in oklab, var(--xh-color-neutral-900) 60%, transparent);
     --xh-bg-scrollbar-track: oklch(0 0 0 / 0);
     --xh-fg-default: var(--xh-color-neutral-900);
     --xh-fg-muted: var(--xh-color-neutral-600);
@@ -708,6 +725,8 @@
     --xh-fg-on-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 60%, var(--xh-fg-default));
     --xh-fg-brand: var(--xh-color-brand-600);
     --xh-fg-brand-strong: var(--xh-color-brand-700);
+    --xh-fg-segment-selected: var(--xh-fg-brand-strong);
+    --xh-fg-segment-selected-disabled: color-mix(in oklab, var(--xh-fg-brand) 50%, var(--xh-bg-surface));
     --xh-fg-success: var(--xh-color-success-700);
     --xh-fg-warning: var(--xh-color-warning-700);
     --xh-fg-info: var(--xh-color-info-700);
@@ -900,6 +919,7 @@
     --xh-bg-subtle-active: color-mix(in oklab, var(--xh-ink) 20.7%, transparent);
     --xh-bg-field: color-mix(in oklab, var(--xh-bg-subtle) 55%, transparent);
     --xh-bg-field-invalid: color-mix(in oklab, var(--xh-border-invalid) 4%, transparent);
+    --xh-bg-mark: var(--xh-color-yellow-900);
     --xh-bg-muted: color-mix(in oklab, var(--xh-ink) 6.2%, transparent);
     --xh-bg-brand: var(--xh-color-brand-500);
     --xh-bg-brand-hover: var(--xh-color-brand-400);
@@ -907,6 +927,9 @@
     --xh-bg-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 12%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-hover: color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-active: color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface));
+    --xh-bg-segment-selected: var(--xh-bg-brand-subtle-hover);
+    --xh-bg-segment-selected-hover: var(--xh-bg-brand-subtle-active);
+    --xh-bg-segment-selected-disabled: color-mix(in oklab, var(--xh-bg-brand) 8%, var(--xh-bg-surface));
     --xh-bg-overlay: oklch(0 0 0 / 0.6);
     --xh-bg-scrollbar-track: oklch(0 0 0 / 0);
     --xh-fg-default: var(--xh-color-neutral-50);
@@ -917,6 +940,8 @@
     --xh-fg-on-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 60%, var(--xh-fg-default));
     --xh-fg-brand: var(--xh-color-brand-400);
     --xh-fg-brand-strong: var(--xh-color-brand-300);
+    --xh-fg-segment-selected: var(--xh-fg-brand-strong);
+    --xh-fg-segment-selected-disabled: color-mix(in oklab, var(--xh-fg-brand) 50%, var(--xh-bg-surface));
     --xh-fg-success: var(--xh-color-success-500);
     --xh-fg-warning: var(--xh-color-warning-500);
     --xh-fg-info: var(--xh-color-info-500);
@@ -1228,6 +1253,9 @@
       --xh-material-liquid-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
       --xh-material-soft-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-soft-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
       --xh-bg-field: color-mix(in oklab, var(--xh-bg-subtle) 55%, transparent);
+      --xh-bg-segment-selected-disabled: color-mix(in oklab, var(--xh-bg-brand) 8%, var(--xh-bg-surface));
+      --xh-fg-segment-selected: var(--xh-fg-brand-strong);
+      --xh-fg-segment-selected-disabled: color-mix(in oklab, var(--xh-fg-brand) 50%, var(--xh-bg-surface));
       --xh-fg-scrollbar-thumb: color-mix(in oklab, var(--xh-fg-default) 15%, transparent);
       --xh-fg-scrollbar-thumb-hover: color-mix(in oklab, var(--xh-fg-default) 25%, transparent);
       --xh-fg-scrollbar-thumb-active: color-mix(in oklab, var(--xh-fg-default) 35%, transparent);
@@ -1342,7 +1370,7 @@
 
   /* 减少透明：直接打到主题边界、墨色域与组件作用域，避免祖先上已经解析的材质别名盖过实体替代。 */
   @media (prefers-reduced-transparency: reduce) {
-    :where(:root), :where([data-theme]), :where([data-xh-ink]), :where([data-xh-ink-surface] > *), :where([data-scope]) {
+    :where(:root), :where([data-theme]), :where([data-contrast]), :where([data-xh-ink]), :where([data-xh-ink-surface] > *), :where([data-scope]) {
       --xh-material-elevated-bg: var(--xh-bg-surface);
       --xh-material-elevated-backdrop: none;
       --xh-material-elevated-border: var(--xh-border-default);
@@ -1368,8 +1396,8 @@
   }
 
   /* 减少透明的 DOM 钩子：与系统媒体路径同源。打在局部主题上时，Portal 可把这一轴带到实例壳。
-     子树里的主题边界与墨色域会在自己身上重新声明主题取值，钩子要一并命中它们，否则实体替代在那一层被盖回透明 */
-  :where([data-transparency='reduce']), :where([data-transparency='reduce'] [data-theme]), :where([data-transparency='reduce'] [data-xh-ink]), :where([data-transparency='reduce'] [data-xh-ink-surface] > *) {
+     子树里的主题边界、对比度边界与墨色域会在自己身上重新声明材质取值，钩子要一并命中它们，否则实体替代在那一层被盖回透明 */
+  :where([data-transparency='reduce']), :where([data-transparency='reduce'] [data-theme]), :where([data-transparency='reduce'] [data-contrast]), :where([data-transparency='reduce'] [data-xh-ink]), :where([data-transparency='reduce'] [data-xh-ink-surface] > *) {
     --xh-material-elevated-bg: var(--xh-bg-surface);
     --xh-material-elevated-backdrop: none;
     --xh-material-elevated-border: var(--xh-border-default);
@@ -1396,7 +1424,7 @@
   /* 系统强制色拥有最终决定权；组件仍消费同一组材质名，不另开 forced-color 私有分支。
      墨色域会在自己身上重新声明材质取值，这里一并命中 */
   @media (forced-colors: active) {
-    :where(:root), :where([data-theme]), :where([data-xh-ink]), :where([data-xh-ink-surface] > *), :where([data-scope]) {
+    :where(:root), :where([data-theme]), :where([data-contrast]), :where([data-xh-ink]), :where([data-xh-ink-surface] > *), :where([data-scope]) {
       --xh-material-elevated-bg: Canvas;
       --xh-material-elevated-backdrop: none;
       --xh-material-elevated-border: CanvasText;

@@ -166,6 +166,8 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 
 `@xihan-ui/styles/timeline.css` 按 `[data-scope="timeline"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-timeline` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -192,10 +194,10 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 | `--xh-timeline-connector-bg` | `connector` | `background` | `default` | `--xh-border-default` | timeline 的 connector 部件 background 覆盖槽。 |
 | `--xh-timeline-connector-min-length` | `connector`<br>`item` | `min-block-size`<br>`min-inline-size` | `@media (min-width: 768px)`<br>`default`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-space-4` | timeline 的 connector、item 部件 min-block-size、min-inline-size 覆盖槽。 |
 | `--xh-timeline-connector-radius` | `connector` | `border-radius` | `default` | `--xh-shape-pill` | timeline 的 connector 部件 border-radius 覆盖槽。 |
-| `--xh-timeline-connector-thickness` | `connector`<br>`item` | `block-size`<br>`inline-size` | `@media (min-width: 768px)`<br>`default`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-stroke-thick` | timeline 的 connector、item 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-timeline-connector-thickness` | `connector`<br>`item` | `block-size`<br>`inline-size` | `@media (min-width: 768px)`<br>`default`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-stroke-thin` | timeline 的 connector、item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-timeline-content-gap` | `content` | `gap` | `default` | `--xh-space-1` | timeline 的 content 部件 gap 覆盖槽。 |
-| `--xh-timeline-content-pb` | `content`<br>`item` | `padding-block-end` | `@media (min-width: 768px)`<br>`nth-child(even)`<br>`orientation=horizontal`<br>`placement=alternate`<br>`placement=start` | `--xh-space-2` | timeline 的 content、item 部件 padding-block-end 覆盖槽。 |
-| `--xh-timeline-content-pt` | `content`<br>`item` | `padding-block-start` | `@media (min-width: 768px)`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-space-2` | timeline 的 content、item 部件 padding-block-start 覆盖槽。 |
+| `--xh-timeline-content-pb` | `content`<br>`item` | `padding-block-end` | `@media (min-width: 768px)`<br>`nth-child(even)`<br>`orientation=horizontal`<br>`placement=alternate`<br>`placement=start` | `--xh-space-4` | timeline 的 content、item 部件 padding-block-end 覆盖槽。 |
+| `--xh-timeline-content-pt` | `content`<br>`item` | `padding-block-start` | `@media (min-width: 768px)`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-space-4` | timeline 的 content、item 部件 padding-block-start 覆盖槽。 |
 | `--xh-timeline-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | timeline 的 description 部件 color 覆盖槽。 |
 | `--xh-timeline-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | timeline 的 description 部件 font-size 覆盖槽。 |
 | `--xh-timeline-fg` | `root` | `color` | `default` | `--xh-fg-default` | timeline 的 root 部件 color 覆盖槽。 |
@@ -211,7 +213,7 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 | `--xh-timeline-time-fg` | `time` | `color` | `default` | `--xh-fg-subtle` | timeline 的 time 部件 color 覆盖槽。 |
 | `--xh-timeline-time-font-size` | `time` | `font-size` | `default` | `--xh-_timeline-caption-font-size` | timeline 的 time 部件 font-size 覆盖槽。 |
 | `--xh-timeline-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | timeline 的 title 部件 color 覆盖槽。 |
-| `--xh-timeline-title-font-size` | `indicator`<br>`item`<br>`root`<br>`title` | `font-size`<br>`margin-block-start` | `default` | `--xh-_timeline-title-font-size` | timeline 的 indicator、item、root、title 部件 font-size、margin-block-start 覆盖槽。 |
+| `--xh-timeline-title-font-size` | `indicator`<br>`item`<br>`label`<br>`root`<br>`title` | `font-size`<br>`line-height`<br>`margin-block-start` | `default` | `--xh-_timeline-title-font-size` | timeline 的 indicator、item、label、root、title 部件 font-size、line-height、margin-block-start 覆盖槽。 |
 | `--xh-timeline-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-label-weight` | timeline 的 title 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

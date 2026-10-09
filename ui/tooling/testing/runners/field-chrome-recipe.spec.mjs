@@ -68,8 +68,12 @@ describe('field Chrome Family Recipe', () => {
       expect(value.hover.borderColor).not.toBe('transparent')
       expect(value.focus.borderColor).not.toBe('transparent')
     }
-    const hover = block(css, '[data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover')
+    // 悬停让位给聚焦：已聚焦的字段被指针悬停时不换回悬停面
+    const hover = block(css, '[data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):not(:focus-within):hover')
     expect(hover).toContain('var(--xh-_field-variant-border-hover)')
+    // 环色取 none 时聚焦块撤环：外壳自己就是原生控件时，公共层的聚焦环同样不画到它身上
+    if (recipe.stateValues.focus.ringColor === 'none')
+      expect(block(css, '[data-xh-field-chrome]:focus-within:not([data-disabled])')).toContain('outline: none;')
     const disabled = block(css, '[data-xh-field-chrome][data-disabled]')
     expect(disabled).toContain('var(--xh-_field-variant-border-disabled)')
     expect(disabled).not.toContain('box-shadow')

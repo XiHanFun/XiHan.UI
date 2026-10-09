@@ -139,7 +139,7 @@
        自己身上把 --xh-icon-size 改接到盒的尺，子菜单箭头走 --xh-menubar-submenu-indicator-size */
     --xh-icon-size: var(--xh-menubar-icon-size, var(--xh-glyph-size-md));
 
-    --xh-_menubar-trigger-py: var(--xh-space-1);
+    --xh-_menubar-trigger-py: var(--xh-space-2);
     --xh-_menubar-trigger-px: var(--xh-control-px-md);
     --xh-_menubar-item-py: var(--xh-list-option-py-md);
     --xh-_menubar-item-px: var(--xh-control-px-md);
@@ -149,7 +149,7 @@
 
   [data-scope='menubar'][data-size='sm']:is([data-part='root'], [data-part='positioner']) {
     --xh-icon-size: var(--xh-menubar-icon-size, var(--xh-glyph-size-sm));
-    --xh-_menubar-trigger-py: var(--xh-space-0_5);
+    --xh-_menubar-trigger-py: var(--xh-space-1_5);
     --xh-_menubar-trigger-px: var(--xh-control-px-sm);
     --xh-_menubar-item-py: var(--xh-list-option-py-sm);
     --xh-_menubar-item-px: var(--xh-control-px-sm);
@@ -159,7 +159,7 @@
 
   [data-scope='menubar'][data-size='lg']:is([data-part='root'], [data-part='positioner']) {
     --xh-icon-size: var(--xh-menubar-icon-size, var(--xh-glyph-size-lg));
-    --xh-_menubar-trigger-py: var(--xh-space-2);
+    --xh-_menubar-trigger-py: var(--xh-space-2_5);
     --xh-_menubar-trigger-px: var(--xh-control-px-lg);
     --xh-_menubar-item-py: var(--xh-list-option-py-lg);
     --xh-_menubar-item-px: var(--xh-control-px-lg);
@@ -235,15 +235,16 @@
     display: none;
   }
 
-  /* 分组标题不是条目、进不了导航，画成小号次要文字，
+  /* 分组标题不是条目、进不了导航，画成小号常规字重的次要文字，上方让出 8px 与上一组分开；
      内缩与条目对齐（同一个 padding-inline），标题与条目文字才在一条竖线上 */
   [data-scope='menubar'][data-part='group-label'] {
     display: block;
+    margin-block-start: var(--xh-menubar-group-label-mt, var(--xh-space-2));
     padding-block: var(--xh-menubar-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-menubar-group-label-px, var(--xh-_menubar-item-px));
     color: var(--xh-menubar-group-label-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-menubar-group-label-font-size, var(--xh-text-caption-size));
-    font-weight: var(--xh-menubar-group-label-font-weight, var(--xh-font-weight-medium));
+    font-weight: var(--xh-menubar-group-label-font-weight, var(--xh-font-weight-regular));
     line-height: var(--xh-leading-none);
     user-select: none;
   }
@@ -305,7 +306,7 @@
     margin-inline-start: auto;
     inline-size: var(--xh-menubar-submenu-indicator-size, var(--xh-control-indicator-size));
     block-size: var(--xh-menubar-submenu-indicator-size, var(--xh-control-indicator-size));
-    background-color: var(--xh-menubar-submenu-indicator-fg, var(--xh-material-frosted-fg-muted));
+    background-color: var(--xh-menubar-submenu-indicator-fg, currentColor);
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
     mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
   }

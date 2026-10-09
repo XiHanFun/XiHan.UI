@@ -10,7 +10,7 @@
 // 集合标题（RadioGroup / CheckboxGroup / Listbox / Tree / TagGroup / Descriptions）= --xh-fg-muted，与集合 --xh-space-2；
 // 字段辅助行（Field / Fieldset 的说明与错误文案）= --xh-text-caption-size 12 / --xh-fg-subtle（错误 --xh-fg-danger）/
 // --xh-leading-normal，紧贴控件、最小高 --xh-space-5；其余组件的说明 = --xh-text-secondary-size 13 / --xh-fg-muted /
-// --xh-leading-normal；
+// --xh-leading-normal（CAPTION_DESCRIPTION 里的组件取次级标注 12 / --xh-fg-subtle），错误文案 = 13 / --xh-fg-danger；
 // Surface / 浮层内标题 = --xh-text-label-size + --xh-font-weight-medium；区块标题（Card / Descriptions / Alert / Notification / Steps）
 // 与面板标题（Dialog / Drawer / Tour）= heading-3（16 / 500）；页面标题（PageHeader）= heading-2（20 / 500）；
 // 其余标签禁用 --xh-fg-subtle；控件内图标 --xh-icon-size 兜底只能是 --xh-glyph-size-sm / md / lg（按 data-size），
@@ -71,7 +71,6 @@ const COLLECTION_TITLE = {
 const SURFACE_TITLE = {
   'floating-panel': 'title',
   'approval': 'title',
-  'timeline': 'title',
   'popover': 'title',
   'hover-card': 'title',
   'popconfirm': 'title',
@@ -90,14 +89,14 @@ const DISCLOSURE_LABEL = {
 }
 /** 区块与面板标题：scope → 标题部件，取 heading-3（16 / 500）。 */
 const SECTION_TITLE = {
-  'card': 'title',
-  'descriptions': 'title',
-  'alert': 'title',
-  'notification': 'item-title',
-  'steps': 'title',
-  'dialog': 'title',
-  'drawer': 'title',
-  'tour': 'title',
+  card: 'title',
+  descriptions: 'title',
+  alert: 'title',
+  notification: 'item-title',
+  steps: 'title',
+  dialog: 'title',
+  drawer: 'title',
+  tour: 'title',
 }
 /** 页面标题：heading-2（PageHeader）。 */
 const PAGE_TITLE = new Set(['page-header'])
@@ -134,6 +133,13 @@ const GLYPH_EXEMPT = {
 }
 /** 控件内图标允许的档。 */
 const GLYPH_STEPS = new Set(['--xh-glyph-size-sm', '--xh-glyph-size-md', '--xh-glyph-size-lg'])
+/**
+ * description 部件取次级标注角色（--xh-text-caption-size 12 / --xh-fg-subtle / --xh-leading-normal）而不是说明角色的组件。
+ * 照样逐条核，只是换一组期望值。
+ */
+const CAPTION_DESCRIPTION = {
+  steps: '步骤说明压在流程轴的标题下面，比标题低两级：12px 弱化色，与正文 14 / 次级色的标题拉开层级',
+}
 
 const backlog = await openBacklog('text')
 const problems = [...backlog.problems]
@@ -312,7 +318,12 @@ for (const [scope, container] of Object.entries(COLLECTION_TITLE)) {
 for (const skin of skins) {
   const helper = FIELD_HELPER.has(skin.comp)
   const description = declsFor(skin.comp, 'description')
-  if (description.size) {
+  if (description.size && skin.comp in CAPTION_DESCRIPTION) {
+    expect(skin.comp, 'description', description, 'font-size', '--xh-text-caption-size', '次级标注')
+    expect(skin.comp, 'description', description, 'color', '--xh-fg-subtle', '次级标注')
+    expect(skin.comp, 'description', description, 'line-height', '--xh-leading-normal', '次级标注')
+  }
+  else if (description.size) {
     const why = helper ? '字段辅助行的说明' : '说明文字'
     expect(skin.comp, 'description', description, 'font-size', helper ? '--xh-text-caption-size' : '--xh-text-secondary-size', why)
     expect(skin.comp, 'description', description, 'color', helper ? '--xh-fg-subtle' : '--xh-fg-muted', why)

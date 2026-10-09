@@ -42,6 +42,14 @@ const OUT = join(TOKENS_DIR, 'chart.palette.json')
 export const MODES = ['light', 'dark']
 export const SLOTS = 8
 export const STEPS = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950']
+/** 四套配色方案写进令牌的说明。 */
+const SCHEME_DESCRIPTIONS = {
+  categorical: '多彩分类（缺省）：与 chart.categorical 同值，供嵌套区域用 data-xh-chart-palette="categorical" 改回缺省。',
+  monochrome: '主题单色：品牌色阶由深到浅，色槽 1 是主题色；随 data-brand 换色。浅档低于 3:1，靠图例与数据表补偿，单色方案适合四个以内的系列。',
+  brand: '柔和品牌：品牌色相两侧的冷色一族加一抹粉，同一色相至多两档。',
+  muted: '莫兰迪柔彩：基础色板的色与明度相近的中性档在 oklab 里混合，彩度 0.035–0.10。',
+}
+
 /** 色槽 1 的色相：基础色板里与品牌色逐值相同的那一族。 */
 export const FIRST_HUE = 'indigo'
 /** 不进分类色板的色相与理由。 */
@@ -769,13 +777,6 @@ export async function paletteDocument(colors, surfaces, solution, palette) {
   if (failures.length > 0)
     throw new Error(`[chart-palette] 搜索结果没过检查：${failures.join('、')}`)
   return document
-}
-
-const SCHEME_DESCRIPTIONS = {
-  categorical: '多彩分类（缺省）：与 chart.categorical 同值，供嵌套区域用 data-xh-chart-palette="categorical" 改回缺省。',
-  monochrome: '主题单色：品牌色阶由深到浅，色槽 1 是主题色；随 data-brand 换色。浅档低于 3:1，靠图例与数据表补偿，单色方案适合四个以内的系列。',
-  brand: '柔和品牌：品牌色相两侧的冷色一族加一抹粉，同一色相至多两档。',
-  muted: '莫兰迪柔彩：基础色板的色与明度相近的中性档在 oklab 里混合，彩度 0.035–0.10。',
 }
 
 async function main() {

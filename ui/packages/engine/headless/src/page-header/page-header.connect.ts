@@ -31,8 +31,17 @@ export function connectPageHeader<T extends PropTypes>(
     // 面包屑位整行另起排在标题之上，装什么归作者
     getBreadcrumbProps: () => normalize.element({ ...parts.breadcrumb.attrs }),
 
-    // 返回位只给身份与位置：标签、type、可及名字、点了往哪走，全归作者自己的按钮
-    getBackTriggerProps: () => normalize.element({ ...parts['back-trigger'].attrs }),
+    // 返回位给身份与外观：只有字形的离散动作钮，盒、悬停 / 按下、粗指针热区、焦点环由 Action Control 家族按
+    // icon ghost 档给（白底承载 hover 100 → pressed 200），lg 页头取 md 档、其余取 sm 档。
+    // 标签、type、可及名字、点了往哪走仍归作者
+    getBackTriggerProps: () => normalize.element({
+      ...parts['back-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': props.size === 'lg' ? 'md' : 'sm',
+    }),
 
     // 头像 / 图标位只摆位置与尺寸下限，图形本身归作者
     getMediaProps: () => normalize.element({ ...parts.media.attrs }),

@@ -11,6 +11,7 @@ import {
   XhColorSliderThumb,
   XhColorSliderTrack,
 } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -114,18 +115,18 @@ describe('颜色滑块的轨道与拇指', () => {
     expect(getComputedStyle(part('thumb')).boxShadow).toBe(before)
   })
 
-  it('字段标签 14 / 400 / fg-muted 与控件隔 space-2；拇指是 raised 面，描边 border-default', async () => {
+  it('字段标签 14 / 标签字重 / fg-muted 与控件隔 space-2；拇指是 raised 面，描边 border-default', async () => {
     await mountSlider()
     const label = getComputedStyle(part('label'))
     expect(label.fontSize).toBe('14px')
-    expect(label.fontWeight).toBe('400')
+    expect(label.fontWeight).toBe(tokenValue('font-weight', '--xh-text-label-weight', part('label')))
     expect(label.color).toBe(resolvedToken('--xh-fg-muted'))
     expect(getComputedStyle(part('root')).rowGap).toBe('4px')
     expect(label.marginBlockEnd).toBe('4px')
     const thumb = getComputedStyle(part('thumb'))
     expect(thumb.borderTopColor).toBe(resolvedToken('--xh-border-default-opaque'))
     expect(thumb.borderTopWidth).toBe('2px')
-    expect(thumb.boxShadow).not.toBe('none')
+    expect(thumb.boxShadow).toBe(tokenValue('box-shadow', '--xh-elevation-raised', part('thumb')))
   })
 
   it('禁用：不整体压暗，标签不另变色，颜色带与拇指压暗一次、拇指不再抬起且面仍是当前色', async () => {
