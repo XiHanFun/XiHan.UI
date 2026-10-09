@@ -55741,7 +55741,7 @@
         "xh-action-profile=field-inset"
       ],
       "defaultToken": [
-        "--xh-control-action-size"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
       "description": "password-input 的 visibility-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
