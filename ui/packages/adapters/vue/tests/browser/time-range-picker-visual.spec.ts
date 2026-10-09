@@ -413,5 +413,13 @@ describe('时间范围选择器的家族观感', () => {
     }
     // 起止两组的列顶那道线落在同一行
     expect(columns[0]!.getBoundingClientRect().top).toBe(columns.at(-1)!.getBoundingClientRect().top)
+    // 时间格的命中区补满列内间距：两格之间的缝落在上下两格上（终点组的选中 10 停在列顶）
+    const upper = item(1, 'hour', '10')
+    const lower = item(1, 'hour', '11')
+    const gap = lower.getBoundingClientRect().top - upper.getBoundingClientRect().bottom
+    expect(gap).toBeGreaterThan(0)
+    const x = upper.getBoundingClientRect().left + upper.getBoundingClientRect().width / 2
+    expect(document.elementFromPoint(x, upper.getBoundingClientRect().bottom + gap / 2 - 1)?.closest("[data-part='item']")).toBe(upper)
+    expect(document.elementFromPoint(x, lower.getBoundingClientRect().top - gap / 2 + 1)?.closest("[data-part='item']")).toBe(lower)
   })
 })
