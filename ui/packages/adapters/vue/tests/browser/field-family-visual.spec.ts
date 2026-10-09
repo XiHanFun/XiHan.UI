@@ -16,59 +16,59 @@ let host: HTMLElement | null = null
 function markup(): string {
   return `
     <section data-family="field">
-      <input data-scope="field" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline" />
+      <input data-scope="field" class="xh-scope-field" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline" />
     </section>
     <section data-family="text-field">
-      <div data-scope="text-field" data-part="root">
-        <div data-scope="text-field" data-part="control" data-xh-field-chrome data-xh-field-size="md">
-          <input data-scope="text-field" data-part="input" data-xh-field-input data-xh-field-layout="single-line" />
+      <div data-scope="text-field" class="xh-scope-text-field" data-part="root">
+        <div data-scope="text-field" class="xh-scope-text-field" data-part="control" data-xh-field-chrome data-xh-field-size="md">
+          <input data-scope="text-field" class="xh-scope-text-field" data-part="input" data-xh-field-input data-xh-field-layout="single-line" />
         </div>
       </div>
     </section>
     <section data-family="number-field">
-      <div data-scope="number-field" data-part="root">
-        <div data-scope="number-field" data-part="control" data-xh-field-chrome data-xh-field-size="md">
-          <button data-scope="number-field" data-part="decrement-trigger"></button>
-          <input data-scope="number-field" data-part="input" />
-          <button data-scope="number-field" data-part="increment-trigger"></button>
+      <div data-scope="number-field" class="xh-scope-number-field" data-part="root">
+        <div data-scope="number-field" class="xh-scope-number-field" data-part="control" data-xh-field-chrome data-xh-field-size="md">
+          <button data-scope="number-field" class="xh-scope-number-field" data-part="decrement-trigger"></button>
+          <input data-scope="number-field" class="xh-scope-number-field" data-part="input" />
+          <button data-scope="number-field" class="xh-scope-number-field" data-part="increment-trigger"></button>
         </div>
       </div>
     </section>
     <section data-family="date-field">
-      <div data-scope="date-field" data-part="root">
-        <div data-scope="date-field" data-part="control" data-xh-field-chrome data-xh-field-size="md">
-          <div data-scope="date-field" data-part="segment-group">
-            <span data-scope="date-field" data-part="segment" tabindex="0"></span>
+      <div data-scope="date-field" class="xh-scope-date-field" data-part="root">
+        <div data-scope="date-field" class="xh-scope-date-field" data-part="control" data-xh-field-chrome data-xh-field-size="md">
+          <div data-scope="date-field" class="xh-scope-date-field" data-part="segment-group">
+            <span data-scope="date-field" class="xh-scope-date-field" data-part="segment" tabindex="0"></span>
           </div>
         </div>
       </div>
     </section>
     <section data-family="date-picker">
-      <div data-scope="date-picker" data-part="root">
-        <div data-scope="date-picker" data-part="control" data-xh-field-chrome data-xh-field-size="md">
-          <div data-scope="date-picker" data-part="segment-group">
-            <span data-scope="date-field" data-part="segment" tabindex="0"></span>
+      <div data-scope="date-picker" class="xh-scope-date-picker" data-part="root">
+        <div data-scope="date-picker" class="xh-scope-date-picker" data-part="control" data-xh-field-chrome data-xh-field-size="md">
+          <div data-scope="date-picker" class="xh-scope-date-picker" data-part="segment-group">
+            <span data-scope="date-field" class="xh-scope-date-field" data-part="segment" tabindex="0"></span>
           </div>
-          <button data-scope="date-picker" data-part="trigger"></button>
+          <button data-scope="date-picker" class="xh-scope-date-picker" data-part="trigger"></button>
         </div>
       </div>
     </section>
     <section data-family="time-field">
-      <div data-scope="time-field" data-part="root">
-        <div data-scope="time-field" data-part="control" data-xh-field-chrome data-xh-field-size="md">
-          <div data-scope="time-field" data-part="segment-group">
-            <span data-scope="time-field" data-part="segment" tabindex="0"></span>
+      <div data-scope="time-field" class="xh-scope-time-field" data-part="root">
+        <div data-scope="time-field" class="xh-scope-time-field" data-part="control" data-xh-field-chrome data-xh-field-size="md">
+          <div data-scope="time-field" class="xh-scope-time-field" data-part="segment-group">
+            <span data-scope="time-field" class="xh-scope-time-field" data-part="segment" tabindex="0"></span>
           </div>
         </div>
       </div>
     </section>
     <section data-family="time-picker">
-      <div data-scope="time-picker" data-part="root">
-        <div data-scope="time-picker" data-part="control" data-xh-field-chrome data-xh-field-size="md">
-          <div data-scope="time-picker" data-part="segment-group">
-            <span data-scope="time-picker" data-part="segment" tabindex="0"></span>
+      <div data-scope="time-picker" class="xh-scope-time-picker" data-part="root">
+        <div data-scope="time-picker" class="xh-scope-time-picker" data-part="control" data-xh-field-chrome data-xh-field-size="md">
+          <div data-scope="time-picker" class="xh-scope-time-picker" data-part="segment-group">
+            <span data-scope="time-picker" class="xh-scope-time-picker" data-part="segment" tabindex="0"></span>
           </div>
-          <button data-scope="time-picker" data-part="trigger"></button>
+          <button data-scope="time-picker" class="xh-scope-time-picker" data-part="trigger"></button>
         </div>
       </div>
     </section>
