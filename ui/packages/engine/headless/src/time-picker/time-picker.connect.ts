@@ -899,6 +899,12 @@ export function connectTimePicker<T extends PropTypes>(
       })
     },
 
+    // 浮层底部的操作区：作者往里放「添加」钮与「此刻」一类动作。它是 content 的子节点、排在各列之后，
+    // 不在列或快捷选项列的拥有关系里，方向键走不到；里面的按钮照常进 Tab 序列
+    getFooterProps: () => normalize.element({
+      ...parts.footer.attrs,
+    }),
+
     // 「添加」：多选时把浮层里拼好的草稿收进值，浮层不收；单选时整个收起。文字由作者写。
     // 面板内部件不随字段尺寸档：钮取 xs（24 高的小号主钮）
     getConfirmTriggerProps: () => normalize.button({

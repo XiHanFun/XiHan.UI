@@ -46279,6 +46279,12 @@
     animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
+  /* 有底栏时面板折行：各列与快捷选项列排在第一行，底栏独占下一行。
+     不加 :not([hidden])：content 收起态带 hidden 但仍在播退场动画，退回不折行会让底栏挤到各列旁边 */
+  .xh-scope-time-picker[data-part='content']:has(> [data-part='footer']) {
+    flex-wrap: wrap;
+  }
+
   /* 「添加」沉到各列的右下角：它是多选时整块面板的出口，不跟列顶对齐；面板不留内衬，
      钮自己与底边、末边各让一档空当 */
   .xh-scope-time-picker[data-part='content'] > .xh-scope-time-picker[data-part='confirm-trigger'] {
@@ -46312,6 +46318,49 @@
   /* 单选时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
   .xh-scope-time-picker[data-part='confirm-trigger'][hidden] {
     display: none;
+  }
+
+  /* 底栏：面板底部通栏的一条操作区，上沿一道 border-default 线与各列隔开，四周 8 的内衬；
+     独占一整行，落在快捷选项列与各列下面。
+     首个子节点落在撑满余宽的那条轨道上，其后的各自按内容宽排在行尾：作者另放的文字与链接排在行首，
+     「添加」总落在行尾；只放了「添加」时它独占那条轨道，靠 justify-self 贴到行尾。
+     底栏不参与撑宽：面板换行排布时，Chrome 把每个子项的固有宽相加当作面板的固有宽，
+     底栏的字与钮会把面板多撑出一截、最后一列末端空出一块。inline-size 包含让它的内容不计入固有宽，
+     行内内衬也就不能写在它自己身上（内衬照样计入），改由首末两个子节点的外边距让出 */
+  .xh-scope-time-picker[data-part='footer'] {
+    display: grid;
+    contain: inline-size;
+    flex-basis: 100%;
+    grid-auto-flow: column;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: var(--xh-time-picker-footer-gap, var(--xh-space-2));
+    padding-block: var(--xh-time-picker-footer-py, var(--xh-space-2));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-time-picker-footer-border, var(--xh-material-solid-border));
+    color: var(--xh-time-picker-footer-fg, var(--xh-fg-muted));
+    font-size: var(--xh-time-picker-footer-font-size, var(--xh-text-caption-size));
+  }
+
+  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+  .xh-scope-time-picker[data-part='footer'][hidden] {
+    display: none;
+  }
+
+  /* 底栏里只放了「添加」、而「添加」按状态收起（单选）时，底栏一并让位，不留一条空栏 */
+  .xh-scope-time-picker[data-part='footer']:has(> .xh-scope-time-picker[data-part='confirm-trigger'][hidden]:only-child) {
+    display: none;
+  }
+
+  .xh-scope-time-picker[data-part='footer'] > .xh-scope-time-picker[data-part='confirm-trigger'] {
+    justify-self: end;
+  }
+
+  .xh-scope-time-picker[data-part='footer'] > :first-child {
+    margin-inline-start: var(--xh-time-picker-footer-px, var(--xh-space-2));
+  }
+
+  .xh-scope-time-picker[data-part='footer'] > :last-child {
+    margin-inline-end: var(--xh-time-picker-footer-px, var(--xh-space-2));
   }
 
   /* 快捷选项也是一列，与时分秒那几列并排，排在行内起始一侧；限高与时间列同一档 */

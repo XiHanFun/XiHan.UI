@@ -492,6 +492,16 @@ export function XhTimePickerConfirmTrigger({ children, ...rest }: XhTimePickerCo
   return <button {...mergeReactProps(ctx.api.getConfirmTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
 }
 
+export interface XhTimePickerFooterProps extends ComponentPropsWithRef<'div'> {}
+/**
+ * 浮层底部的通栏操作区：写在 content 里、排在各列之后，「添加」钮通常放在这里；
+ * 不进任何集合的拥有关系，方向键走不到，里面的按钮照常进 Tab 序列。
+ */
+export function XhTimePickerFooter({ children, ...rest }: XhTimePickerFooterProps): ReactNode {
+  const ctx = useTimePickerContext()
+  return <div {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+}
+
 export interface XhTimePickerHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
 export function XhTimePickerHiddenInput({ ...rest }: XhTimePickerHiddenInputProps): ReactNode {
   const ctx = useTimePickerContext()

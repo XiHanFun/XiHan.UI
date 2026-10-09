@@ -158,8 +158,8 @@ export const timePickerSuite: ConformanceSuite = {
               column('minute', ['00', '30']),
               column('second', ['00', '30']),
               column('dayPeriod', ['00', '01']),
-              // 多选的「添加」；单选时连接层给 hidden
-              { part: 'confirm-trigger', tag: 'button', text: '添加' },
+              // 多选的「添加」写在底栏里；单选时连接层给它 hidden，只放了它的底栏由皮肤一并收起
+              { part: 'footer', children: [{ part: 'confirm-trigger', tag: 'button', text: '添加' }] },
             ],
           },
         ],
@@ -315,6 +315,7 @@ export const timePickerSuite: ConformanceSuite = {
           DAY_PERIOD_COL,
           PERIOD_AM,
           PERIOD_PM,
+          'footer',
           'confirm-trigger',
         ],
         counts: { segment: 4, column: 4, item: 10 },
@@ -1299,6 +1300,42 @@ export const timePickerSuite: ConformanceSuite = {
         heldPressIgnored('time-picker', 'item', '被 min 裁掉的格 aria-disabled，不接受按压', { value: '08' }),
         heldPressIgnored('time-picker', 'preset', '作者禁用的快捷选项不接受按压', { value: '08:30', keyboardHost: null }),
         heldPressIgnored('time-picker', 'preset', '越界的快捷选项不接受按压', { value: '23:00', keyboardHost: null }),
+      ],
+    },
+    {
+      name: '多选的底栏是 content 里的通栏操作区：不报角色、不占 Tab 位，「添加」写在它里面，按下收进值、浮层不收',
+      spec: { apg: APG },
+      props: { ...BASE, selectionMode: 'multiple' },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'content', name: 'hidden', value: null } },
+          expect: { parts: { footer: { role: null, tabindex: null, hidden: null } } },
+        },
+        {
+          kind: 'raw',
+          why: '底栏与「添加」的父子关系只能看 DOM',
+          run: ({ doc }) => {
+            const footer = doc.querySelector('[data-scope="time-picker"][data-part="footer"]')
+            if (!footer)
+              throw new Error('找不到底栏')
+            if (footer.parentElement?.getAttribute('data-part') !== 'content')
+              throw new Error('底栏应是 content 的直接子节点')
+            if (!footer.querySelector(':scope > [data-scope="time-picker"][data-part="confirm-trigger"]'))
+              throw new Error('「添加」应写在底栏里')
+          },
+        },
+        { kind: 'click', part: HOUR_09 },
+        { kind: 'click', part: MINUTE_30 },
+        {
+          kind: 'click',
+          part: 'confirm-trigger',
+          expect: {
+            parts: { content: { hidden: null } },
+            events: [{ type: 'value-change', detail: { value: ['09:30'] } }],
+          },
+        },
       ],
     },
     {
