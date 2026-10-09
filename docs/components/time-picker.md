@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="time-picker"`：**`root`** · `label` · **`control`** · `tag-list` · `segment-group` · `segment` · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · `column` · `item` · `confirm-trigger` · `hidden-input`
+`data-scope="time-picker"`：**`root`** · `label` · **`control`** · `tag-list` · `segment-group` · `segment` · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · `column` · `item` · `footer` · `confirm-trigger` · `hidden-input`
 
 ## 示例
 
@@ -149,7 +149,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-time-picker>` |
-| Vue 组件 | `XhTimePickerClearTrigger` `XhTimePickerColumn` `XhTimePickerConfirmTrigger` `XhTimePickerContent` `XhTimePickerControl` `XhTimePickerHiddenInput` `XhTimePickerItem` `XhTimePickerItemDeleteTrigger` `XhTimePickerLabel` `XhTimePickerOverflowTag` `XhTimePickerPositioner` `XhTimePickerPreset` `XhTimePickerPresetGroup` `XhTimePickerRoot` `XhTimePickerSegment` `XhTimePickerSegmentGroup` `XhTimePickerTag` `XhTimePickerTagLabel` `XhTimePickerTagList` `XhTimePickerTrigger` |
+| Vue 组件 | `XhTimePickerClearTrigger` `XhTimePickerColumn` `XhTimePickerConfirmTrigger` `XhTimePickerContent` `XhTimePickerControl` `XhTimePickerFooter` `XhTimePickerHiddenInput` `XhTimePickerItem` `XhTimePickerItemDeleteTrigger` `XhTimePickerLabel` `XhTimePickerOverflowTag` `XhTimePickerPositioner` `XhTimePickerPreset` `XhTimePickerPresetGroup` `XhTimePickerRoot` `XhTimePickerSegment` `XhTimePickerSegmentGroup` `XhTimePickerTag` `XhTimePickerTagLabel` `XhTimePickerTagList` `XhTimePickerTrigger` |
 | 组合式函数 | `useTimePicker` |
 | 状态机 | `timePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/time-picker.css` |
