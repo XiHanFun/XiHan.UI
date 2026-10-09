@@ -20461,6 +20461,9 @@
               "name": "--xh-date-picker-preset-fg-disabled"
             },
             {
+              "name": "--xh-date-picker-preset-fg-hover"
+            },
+            {
               "name": "--xh-date-picker-preset-font-size"
             },
             {

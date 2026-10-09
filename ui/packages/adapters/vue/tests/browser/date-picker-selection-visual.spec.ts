@@ -181,6 +181,9 @@ describe('日期选择器快捷项与时间项的统一选中反馈', () => {
     probe.style.backgroundColor = 'var(--xh-bg-subtle-hover)'
     preset.append(probe)
     expect(presetHighlight).toBe(getComputedStyle(probe).backgroundColor)
+    // 高亮时字换正文色：底升到 200 之后，次级前景在暗色下不足 4.5:1
+    probe.style.color = 'var(--xh-fg-default)'
+    expect(getComputedStyle(preset).color).toBe(getComputedStyle(probe).color)
     probe.remove()
     // 键盘焦点出现时底色与环当帧到位，不压在家族背景过渡的中间帧上
     expect(getComputedStyle(preset).transitionProperty).toBe('none')
@@ -195,6 +198,19 @@ describe('日期选择器快捷项与时间项的统一选中反馈', () => {
     focusedTime.focus()
     expect(focusedTime.matches(':focus-visible')).toBe(true)
     expect(getComputedStyle(focusedTime).transitionProperty).toBe('none')
+  })
+
+  it('时间格的命中区补满列内间距：两格之间的缝落在上下两格上', async () => {
+    await mountDatePicker()
+    // 选中的 09 停在列顶：量它与下面那一格之间的缝
+    const upper = timeItem('hour', '09')
+    const lower = timeItem('hour', '10')
+    const gap = lower.getBoundingClientRect().top - upper.getBoundingClientRect().bottom
+    expect(gap).toBeGreaterThan(0)
+    const x = upper.getBoundingClientRect().left + upper.getBoundingClientRect().width / 2
+    const hit = (y: number): Element | null => document.elementFromPoint(x, y)?.closest("[data-part='time-item']") ?? null
+    expect(hit(upper.getBoundingClientRect().bottom + gap / 2 - 1)).toBe(upper)
+    expect(hit(lower.getBoundingClientRect().top - gap / 2 + 1)).toBe(lower)
   })
 
   it.each(['ltr', 'rtl'] as const)('%s：时间数字保持数学居中，对号只翻到逻辑末端', async (dir) => {
