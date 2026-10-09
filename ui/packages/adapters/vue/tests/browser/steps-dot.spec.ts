@@ -1,5 +1,5 @@
-// 步骤条的点状形态：圆点不盛内容，是纯位置标记，直径走空间尺（与 Timeline 圆点同三格），不随密度换档；
-// 没走到的空心、走过的实心标记色、当前步实心品牌外加一圈同色环；四周留出那圈环的位置，换步不挪版面。
+// 步骤条的点状形态：圆点不盛内容，是纯位置标记，直径走空间尺，不随密度换档；
+// 没走到的空心、走过的实心标记色、当前步实心品牌并放大一档；每个点都按当前步的直径占位，换步不挪版面。
 // 竖排时连接线落在圆点的中轴上。几何与计算样式只有真实 Chromium 算得出，jsdom 不算数。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -119,26 +119,28 @@ function contrast(first: string, second: string): number {
   return (values[0] + 0.05) / (values[1] + 0.05)
 }
 
-const DOT = { sm: '--xh-space-2', md: '--xh-space-2_5', lg: '--xh-space-3' } as const
-
-/** 环是一层角向渐变：取出弧与轨道两段的颜色。点状形态的环不带比例，两段同色即整圈实心。 */
-function ringColors(el: Element): string[] {
-  const image = getComputedStyle(el, '::after').backgroundImage
-  return [...image.matchAll(/(?:oklch|oklab|rgba?)\([^)]*\)/g)].map(match => match[0])
-}
+/** 各档的点径：走过与没走到的点、当前步放大一档的点 */
+const DOT = {
+  sm: { rest: '--xh-space-1_5', current: '--xh-space-2' },
+  md: { rest: '--xh-space-2', current: '--xh-space-2_5' },
+  lg: { rest: '--xh-space-2_5', current: '--xh-space-3' },
+} as const
 
 describe.each(['comfortable', 'compact'] as const)('点状形态的尺寸档（%s）', (density) => {
-  it.each(['sm', 'md', 'lg'] as const)('%s 档的圆点走空间尺、不随密度换档，也不取 control-h', async (size) => {
+  it.each(['sm', 'md', 'lg'] as const)('%s 档的圆点走空间尺、不随密度换档，当前步放大一档', async (size) => {
     document.documentElement.dataset.density = density
     const { indicators } = await mount({ size })
-    const expected = tokenPx(DOT[size])
-    for (const indicator of indicators) {
+    const rest = tokenPx(DOT[size].rest)
+    const current = tokenPx(DOT[size].current)
+    for (const [i, indicator] of indicators.entries()) {
       const rect = indicator.getBoundingClientRect()
+      const expected = i === 1 ? current : rest
       expect(rect.width, `圆点 ${rect.width}×${rect.height}`).toBe(expected)
       expect(rect.height, `圆点 ${rect.width}×${rect.height}`).toBe(expected)
       expect(getComputedStyle(indicator).borderRadius).toBe('50%')
     }
-    expect(expected).not.toBe(tokenPx(`--xh-control-h-${size}`))
+    expect(current).toBeGreaterThan(rest)
+    expect(current).not.toBe(tokenPx(`--xh-control-h-${size}`))
   })
 })
 
@@ -157,7 +159,6 @@ describe('点状形态的三态', () => {
 
     expect(current!.backgroundColor).toBe(token('--xh-bg-brand'))
     expect(current!.borderTopColor).toBe(token('--xh-bg-brand'))
-    // 小圆点上画不下实心那档的内高光
     expect(current!.boxShadow).toBe('none')
   })
 
@@ -180,39 +181,30 @@ describe('点状形态的三态', () => {
     document.body.style.backgroundColor = ''
   })
 
-  it('当前步外加一圈同色环：离圆点边一道缝、一道粗描边宽，只亮在当前步上', async () => {
+  it('当前步不画环：放大一档的实心点就是它与走过的点之间的形状通道', async () => {
     const { indicators } = await mount()
-    const gap = tokenPx('--xh-space-0_5')
-    const thick = tokenPx('--xh-stroke-thick')
-    const [completed, current, incomplete] = indicators
-    const ring = getComputedStyle(current!, '::after')
-    const dot = current!.getBoundingClientRect().width
-
-    expect(ring.opacity).toBe('1')
-    expect(ringColors(current!)).toEqual([token('--xh-bg-brand'), token('--xh-bg-brand')])
-    expect(Number.parseFloat(ring.width)).toBe(dot + 2 * (gap + thick))
-    expect(Number.parseFloat(ring.height)).toBe(dot + 2 * (gap + thick))
-    expect(getComputedStyle(completed!, '::after').opacity).toBe('0')
-    expect(getComputedStyle(incomplete!, '::after').opacity).toBe('0')
+    for (const indicator of indicators)
+      expect(getComputedStyle(indicator, '::after').opacity).toBe('0')
+    expect(indicators[1]!.getBoundingClientRect().width).toBeGreaterThan(indicators[0]!.getBoundingClientRect().width)
   })
 
-  it('四周留出环的位置：环落在触发器盒内，换步时每一步的触发器都不挪', async () => {
+  it('每个点都按当前步的直径占位，点心在同一条线上，换步时每一步的触发器都不挪', async () => {
     const { value, indicators, triggers } = await mount()
-    const reach = tokenPx('--xh-space-0_5') + tokenPx('--xh-stroke-thick')
+    const footprint = tokenPx(DOT.md.current)
     const before = triggers.map(el => el.getBoundingClientRect().toJSON())
-    for (const [i, indicator] of indicators.entries()) {
+    const centers = indicators.map((indicator) => {
       const dot = indicator.getBoundingClientRect()
-      const box = triggers[i]!.getBoundingClientRect()
-      expect(dot.left - reach).toBeGreaterThanOrEqual(box.left)
-      expect(dot.top - reach).toBeGreaterThanOrEqual(box.top)
-      expect(dot.bottom + reach).toBeLessThanOrEqual(box.bottom)
-    }
+      const style = getComputedStyle(indicator)
+      expect(dot.width + Number.parseFloat(style.marginLeft) + Number.parseFloat(style.marginRight)).toBe(footprint)
+      return (dot.top + dot.bottom) / 2
+    })
+    expect(new Set(centers).size).toBe(1)
     value.value = 2
     await nextTick()
     expect(triggers.map(el => el.getBoundingClientRect().toJSON())).toEqual(before)
   })
 
-  it('标了 danger 的那一步没走到时圈换语气色、心里只铺语气淡底（与序号形态同一副），走到时实心与环都换语气色', async () => {
+  it('标了 danger 的那一步没走到时仍是空心圈、圈换语气色，心里只铺语气淡底；走到时实心换语气色', async () => {
     const { value, indicators } = await mount({ tones: { 2: 'danger' } })
     const toned = indicators[2]!
     const rest = getComputedStyle(toned)
@@ -222,7 +214,7 @@ describe('点状形态的三态', () => {
     await nextTick()
     const current = getComputedStyle(toned)
     expect(current.backgroundColor).not.toBe(token('--xh-bg-brand'))
-    expect(ringColors(toned)).toEqual([current.backgroundColor, current.backgroundColor])
+    expect(current.borderTopColor).toBe(current.backgroundColor)
   })
 
   it('linear 未解锁的那几步禁用：空心圈退到禁用墨色，仍是空心', async () => {
@@ -254,20 +246,18 @@ describe('点状形态的竖排', () => {
 })
 
 describe('点状形态的强制色', () => {
-  it('实心与空心在系统配色下仍分得开，当前步靠那圈环与走过的步分开；整行悬停涂成高亮时点与环照样看得见', async () => {
+  it('实心与空心在系统配色下仍分得开，当前步靠放大一档与走过的步分开；整行悬停涂成高亮时点照样看得见', async () => {
     await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [{ name: 'forced-colors', value: 'active' }] })
     const { indicators, triggers } = await mount()
     const [completed, current, incomplete] = indicators.map(el => getComputedStyle(el))
     expect(completed!.backgroundColor).not.toBe(incomplete!.backgroundColor)
     expect(current!.backgroundColor).toBe(completed!.backgroundColor)
     expect(incomplete!.borderTopStyle).toBe('solid')
-    expect(getComputedStyle(indicators[1]!, '::after').opacity).toBe('1')
-    expect(getComputedStyle(indicators[0]!, '::after').opacity).toBe('0')
+    expect(indicators[1]!.getBoundingClientRect().width).toBeGreaterThan(indicators[0]!.getBoundingClientRect().width)
 
     await userEvent.hover(triggers[1]!)
     const row = getComputedStyle(triggers[1]!).backgroundColor
     expect(getComputedStyle(indicators[1]!).backgroundColor).not.toBe(row)
-    expect(ringColors(indicators[1]!)).not.toContain(row)
     await userEvent.unhover(triggers[1]!)
   })
 })

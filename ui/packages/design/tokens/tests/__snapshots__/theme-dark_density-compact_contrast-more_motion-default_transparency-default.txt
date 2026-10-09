@@ -30,6 +30,9 @@
 --xh-bg-overlay: oklch(0 0 0 / 0.6)
 --xh-bg-page: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-bg-scrollbar-track: oklch(0 0 0 / 0)
+--xh-bg-segment-selected: color-mix(in oklab, oklch(0.623 0.214 258) 20%, oklch(0.208 0.006 258))  ← var(--xh-bg-brand-subtle-hover)
+--xh-bg-segment-selected-disabled: color-mix(in oklab, oklch(0.623 0.214 258) 8%, oklch(0.208 0.006 258))  ← color-mix(in oklab, var(--xh-bg-brand) 8%, var(--xh-bg-surface))
+--xh-bg-segment-selected-hover: color-mix(in oklab, oklch(0.623 0.214 258) 28%, oklch(0.208 0.006 258))  ← var(--xh-bg-brand-subtle-active)
 --xh-bg-subtle: color-mix(in oklab, oklch(1 0 0) 6.2%, transparent)  ← color-mix(in oklab, var(--xh-ink) 6.2%, transparent)
 --xh-bg-subtle-active: color-mix(in oklab, oklch(1 0 0) 20.7%, transparent)  ← color-mix(in oklab, var(--xh-ink) 20.7%, transparent)
 --xh-bg-subtle-hover: color-mix(in oklab, oklch(1 0 0) 17.4%, transparent)  ← color-mix(in oklab, var(--xh-ink) 17.4%, transparent)
@@ -214,6 +217,8 @@
 --xh-fg-scrollbar-thumb: color-mix(in oklab, oklch(0.979 0.003 265) 15%, transparent)  ← color-mix(in oklab, var(--xh-fg-default) 15%, transparent)
 --xh-fg-scrollbar-thumb-active: color-mix(in oklab, oklch(0.979 0.003 265) 35%, transparent)  ← color-mix(in oklab, var(--xh-fg-default) 35%, transparent)
 --xh-fg-scrollbar-thumb-hover: color-mix(in oklab, oklch(0.979 0.003 265) 25%, transparent)  ← color-mix(in oklab, var(--xh-fg-default) 25%, transparent)
+--xh-fg-segment-selected: oklch(0.809 0.105 258)  ← var(--xh-fg-brand-strong)
+--xh-fg-segment-selected-disabled: color-mix(in oklab, oklch(0.702 0.165 258) 50%, oklch(0.208 0.006 258))  ← color-mix(in oklab, var(--xh-fg-brand) 50%, var(--xh-bg-surface))
 --xh-fg-subtle: oklch(0.649 0.018 253)  ← var(--xh-color-neutral-450)
 --xh-fg-success: oklch(0.723 0.171 149)  ← var(--xh-color-success-500)
 --xh-fg-warning: oklch(0.795 0.161 86)  ← var(--xh-color-warning-500)
@@ -294,6 +299,9 @@
 --xh-list-option-py-lg: 6px  ← var(--xh-space-1_5)
 --xh-list-option-py-md: 4px  ← var(--xh-space-1)
 --xh-list-option-py-sm: 2px  ← var(--xh-space-0_5)
+--xh-marker-size-lg: 28px  ← var(--xh-control-h-md)
+--xh-marker-size-md: 24px  ← var(--xh-control-h-sm)
+--xh-marker-size-sm: 20px  ← var(--xh-control-action-size)
 --xh-measure-prose: 32rem
 --xh-motion-distance-lg: 16px  ← var(--xh-space-4)
 --xh-motion-distance-md: 8px  ← var(--xh-space-2)
@@ -408,6 +416,7 @@
 --xh-state-disabled-opacity: 0.5
 --xh-state-dragging-opacity: 0.6
 --xh-surface-action-inset: 12px  ← var(--xh-space-3)
+--xh-surface-header-h: 40px
 --xh-surface-pad-lg: 12px  ← var(--xh-space-3)
 --xh-surface-pad-md: 8px  ← var(--xh-space-2)
 --xh-surface-pad-sm: 6px  ← var(--xh-space-1_5)

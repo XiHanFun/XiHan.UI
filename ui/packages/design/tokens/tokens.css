@@ -468,6 +468,9 @@
     --xh-chip-h-sm: var(--xh-control-indicator-lg);
     --xh-chip-h-md: var(--xh-control-action-size);
     --xh-chip-h-lg: var(--xh-control-h-sm);
+    --xh-marker-size-sm: var(--xh-control-action-size);
+    --xh-marker-size-md: var(--xh-control-h-sm);
+    --xh-marker-size-lg: var(--xh-control-h-md);
     --xh-nav-row-h-sm: var(--xh-control-h-md);
     --xh-nav-row-h-md: calc(var(--xh-control-h-lg) + var(--xh-space-1));
     --xh-nav-row-h-lg: var(--xh-control-box-lg);
@@ -529,6 +532,7 @@
     --xh-surface-pad-md: var(--xh-space-3);
     --xh-surface-pad-lg: var(--xh-space-4);
     --xh-surface-action-inset: var(--xh-space-3);
+    --xh-surface-header-h: 46px;
     --xh-chart-height: 20rem;
     --xh-chart-bar-max: var(--xh-space-6);
     --xh-chart-gap: var(--xh-stroke-thick);
@@ -633,6 +637,7 @@
     --xh-surface-pad-sm: var(--xh-space-1_5);
     --xh-surface-pad-md: var(--xh-space-2);
     --xh-surface-pad-lg: var(--xh-space-3);
+    --xh-surface-header-h: 40px;
     --xh-section-py-sm: var(--xh-space-3);
     --xh-section-py-md: var(--xh-space-4);
     --xh-section-py-lg: var(--xh-space-6);
@@ -656,6 +661,9 @@
     --xh-chip-h-sm: var(--xh-control-indicator-lg);
     --xh-chip-h-md: var(--xh-control-action-size);
     --xh-chip-h-lg: var(--xh-control-h-sm);
+    --xh-marker-size-sm: var(--xh-control-action-size);
+    --xh-marker-size-md: var(--xh-control-h-sm);
+    --xh-marker-size-lg: var(--xh-control-h-md);
     --xh-nav-row-h-sm: var(--xh-control-h-md);
     --xh-nav-row-h-md: calc(var(--xh-control-h-lg) + var(--xh-space-1));
     --xh-nav-row-h-lg: var(--xh-control-box-lg);
@@ -703,6 +711,9 @@
     --xh-bg-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 12%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-hover: color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-active: color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface));
+    --xh-bg-segment-selected: var(--xh-bg-brand-subtle);
+    --xh-bg-segment-selected-hover: color-mix(in oklab, var(--xh-bg-brand) 18%, var(--xh-bg-surface));
+    --xh-bg-segment-selected-disabled: color-mix(in oklab, var(--xh-bg-brand) 8%, var(--xh-bg-surface));
     --xh-bg-overlay: color-mix(in oklab, var(--xh-color-neutral-900) 60%, transparent);
     --xh-bg-scrollbar-track: oklch(0 0 0 / 0);
     --xh-fg-default: var(--xh-color-neutral-900);
@@ -713,6 +724,8 @@
     --xh-fg-on-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 60%, var(--xh-fg-default));
     --xh-fg-brand: var(--xh-color-brand-600);
     --xh-fg-brand-strong: var(--xh-color-brand-700);
+    --xh-fg-segment-selected: var(--xh-fg-brand-strong);
+    --xh-fg-segment-selected-disabled: color-mix(in oklab, var(--xh-fg-brand) 50%, var(--xh-bg-surface));
     --xh-fg-success: var(--xh-color-success-700);
     --xh-fg-warning: var(--xh-color-warning-700);
     --xh-fg-info: var(--xh-color-info-700);
@@ -912,6 +925,9 @@
     --xh-bg-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 12%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-hover: color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-active: color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface));
+    --xh-bg-segment-selected: var(--xh-bg-brand-subtle-hover);
+    --xh-bg-segment-selected-hover: var(--xh-bg-brand-subtle-active);
+    --xh-bg-segment-selected-disabled: color-mix(in oklab, var(--xh-bg-brand) 8%, var(--xh-bg-surface));
     --xh-bg-overlay: oklch(0 0 0 / 0.6);
     --xh-bg-scrollbar-track: oklch(0 0 0 / 0);
     --xh-fg-default: var(--xh-color-neutral-50);
@@ -922,6 +938,8 @@
     --xh-fg-on-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 60%, var(--xh-fg-default));
     --xh-fg-brand: var(--xh-color-brand-400);
     --xh-fg-brand-strong: var(--xh-color-brand-300);
+    --xh-fg-segment-selected: var(--xh-fg-brand-strong);
+    --xh-fg-segment-selected-disabled: color-mix(in oklab, var(--xh-fg-brand) 50%, var(--xh-bg-surface));
     --xh-fg-success: var(--xh-color-success-500);
     --xh-fg-warning: var(--xh-color-warning-500);
     --xh-fg-info: var(--xh-color-info-500);
@@ -1233,6 +1251,9 @@
       --xh-material-liquid-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
       --xh-material-soft-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-soft-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
       --xh-bg-field: color-mix(in oklab, var(--xh-bg-subtle) 55%, transparent);
+      --xh-bg-segment-selected-disabled: color-mix(in oklab, var(--xh-bg-brand) 8%, var(--xh-bg-surface));
+      --xh-fg-segment-selected: var(--xh-fg-brand-strong);
+      --xh-fg-segment-selected-disabled: color-mix(in oklab, var(--xh-fg-brand) 50%, var(--xh-bg-surface));
       --xh-fg-scrollbar-thumb: color-mix(in oklab, var(--xh-fg-default) 15%, transparent);
       --xh-fg-scrollbar-thumb-hover: color-mix(in oklab, var(--xh-fg-default) 25%, transparent);
       --xh-fg-scrollbar-thumb-active: color-mix(in oklab, var(--xh-fg-default) 35%, transparent);

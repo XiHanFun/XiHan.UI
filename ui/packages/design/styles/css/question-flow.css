@@ -486,16 +486,18 @@
     --xh-action-ring-color-focus-visible: currentColor;
   }
 
-  /* 交卷之后才露出的那一格 */
+  /* 交卷之后才露出的那一格：与 Tag 的 sm 档同一副方签——control 圆角、块尺寸取 chip 档、竖向内衬为 0 */
   [data-scope='question-flow'][data-part='result'] {
     display: inline-flex;
     align-self: flex-start;
     align-items: center;
+    box-sizing: border-box;
     gap: var(--xh-question-flow-result-gap, var(--xh-space-1));
+    min-block-size: var(--xh-question-flow-result-h, var(--xh-chip-h-sm));
     padding-inline: var(--xh-question-flow-result-px, var(--xh-space-1_5));
-    padding-block: var(--xh-question-flow-result-py, var(--xh-space-0_5));
+    padding-block: var(--xh-question-flow-result-py, 0);
     border: var(--xh-stroke-thin) solid transparent;
-    border-radius: var(--xh-question-flow-result-radius, var(--xh-shape-pill));
+    border-radius: var(--xh-question-flow-result-radius, var(--xh-shape-control));
     background: var(--xh-question-flow-result-bg, var(--xh-_tone-subtle));
     color: var(--xh-question-flow-result-fg, var(--xh-_tone-fg));
     font-size: var(--xh-question-flow-result-font-size, var(--xh-text-caption-size));

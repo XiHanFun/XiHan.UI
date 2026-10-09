@@ -452,9 +452,10 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `--xh-question-flow-result-font-size` | `result` | `font-size` | `default` | `--xh-text-caption-size` | question-flow 的 result 部件 font-size 覆盖槽。 |
 | `--xh-question-flow-result-font-weight` | `result` | `font-weight` | `default` | `--xh-font-weight-medium` | question-flow 的 result 部件 font-weight 覆盖槽。 |
 | `--xh-question-flow-result-gap` | `result` | `gap` | `default` | `--xh-space-1` | question-flow 的 result 部件 gap 覆盖槽。 |
+| `--xh-question-flow-result-h` | `result` | `min-block-size` | `default` | `--xh-chip-h-sm` | question-flow 的 result 部件 min-block-size 覆盖槽。 |
 | `--xh-question-flow-result-px` | `result` | `padding-inline` | `default` | `--xh-space-1_5` | question-flow 的 result 部件 padding-inline 覆盖槽。 |
-| `--xh-question-flow-result-py` | `result` | `padding-block` | `default` | `--xh-space-0_5` | question-flow 的 result 部件 padding-block 覆盖槽。 |
-| `--xh-question-flow-result-radius` | `result` | `border-radius` | `default` | `--xh-shape-pill` | question-flow 的 result 部件 border-radius 覆盖槽。 |
+| `--xh-question-flow-result-py` | `result` | `padding-block` | `default` | `0` | question-flow 的 result 部件 padding-block 覆盖槽。 |
+| `--xh-question-flow-result-radius` | `result` | `border-radius` | `default` | `--xh-shape-control` | question-flow 的 result 部件 border-radius 覆盖槽。 |
 | `--xh-question-flow-shadow` | `root` | `box-shadow` | `default` | `none` | question-flow 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-question-flow-skip-bg` | `skip-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | question-flow 的 skip-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-question-flow-skip-bg-hover` | `skip-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | question-flow 的 skip-trigger 部件 background-color 覆盖槽。 |
