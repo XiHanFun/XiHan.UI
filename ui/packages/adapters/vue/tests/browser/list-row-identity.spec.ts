@@ -56,16 +56,16 @@ function part(scope: string, name: string, index = 0): HTMLElement {
   return el
 }
 
-describe('候选行的形状身份是 inset', () => {
-  it('select 的选项圆角跟着 --xh-shape-inset 走，字段盒不动', async () => {
+describe('浮层候选行是通栏', () => {
+  it('select 的选项不取圆角、不随 --xh-shape-inset 变，字段盒仍取 control', async () => {
     document.documentElement.style.setProperty('--xh-shape-inset', '3px')
     await mount(() => h(XhSelectRoot, { collection: [{ value: 'a', label: '甲' }], defaultOpen: true }, () => [
       h(XhSelectControl, null, () => h(XhSelectTrigger)),
       h(XhSelectPositioner, null, () => h(XhSelectContent, null, () => h(XhSelectList, null, () =>
         h(XhSelectItem, { value: 'a' }, () => h(XhSelectItemText, null, () => '甲'))))),
     ]))
-    expect(getComputedStyle(part('select', 'item')).borderTopLeftRadius).toBe('3px')
-    expect(getComputedStyle(part('select', 'control')).borderTopLeftRadius).toBe('4px')
+    expect(getComputedStyle(part('select', 'item')).borderTopLeftRadius).toBe('0px')
+    expect(getComputedStyle(part('select', 'control')).borderTopLeftRadius).toBe('2px')
   })
 })
 
