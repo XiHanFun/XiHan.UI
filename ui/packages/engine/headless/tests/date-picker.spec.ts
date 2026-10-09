@@ -1534,6 +1534,17 @@ describe('connectDatePicker 家族角色', () => {
     expect(confirm['data-xh-action-size']).toBe('xs')
   })
 
+  it('底栏只是一块通栏操作区：带本组件的 scope 与 part，不报角色、不占 Tab 位、不随 showTime 收起', () => {
+    for (const showTime of [true, false]) {
+      const footer = mount({ showTime }).api().getFooterProps() as Record<string, unknown>
+      expect(footer['data-scope']).toBe('date-picker')
+      expect(footer['data-part']).toBe('footer')
+      expect(footer.role).toBeUndefined()
+      expect(footer.tabindex).toBeUndefined()
+      expect(footer.hidden).toBeUndefined()
+    }
+  })
+
   it('快捷选项与时间格都投影 Collection Item 的 overlay 语境与尺寸档', () => {
     const h = mount({ showTime: true, presets: [{ value: '2026-07-10', label: '某日' }] })
     const preset = h.api().getPresetProps({ value: '2026-07-10' }) as Record<string, unknown>

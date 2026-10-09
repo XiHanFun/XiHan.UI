@@ -172,6 +172,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart calendar - 内嵌日历的挂载点，同时充当日历的根节点；并排多页时每页各写一个
  * @csspart time-column - showTime 的时间列，须自带 unit 属性（hour / minute / second / dayPeriod）；未开启时带 hidden
  * @csspart time-item - 时间选项，须自带 value 属性（两位补零串，上下午列写 '00' / '01'）；点击把该单位写入值，内容为空时由元素填字
+ * @csspart footer - 浮层底部的通栏操作区，写在 content 里、排在面板主体之后；确认钮通常放在这里，不进入任何集合的拥有关系
  * @csspart confirm-trigger - showTime 的收口按钮；未开启时带 hidden
  * @csspart header - 日历标题栏外壳（data-scope="calendar-picker"）
  * @csspart prev-year-trigger - 快速向前翻一大步（日视图一年、粗粒度十页）；可选
@@ -696,6 +697,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
     // 快捷选项是多实例 part：条目自报 value
     for (const el of this.getParts('preset'))
       this.spreader.spread(el, api.getPresetProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+    put('footer', api.getFooterProps() as Record<string, unknown>)
     put('confirm-trigger', api.getConfirmTriggerProps() as Record<string, unknown>)
 
     // 时间列是多实例 part：列自报 unit、选项自报 unit+value

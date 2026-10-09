@@ -379,6 +379,7 @@ export {
   XhDatePickerConfirmTrigger,
   XhDatePickerContent,
   XhDatePickerControl,
+  XhDatePickerFooter,
   XhDatePickerGrid,
   XhDatePickerGridBody,
   XhDatePickerGridHead,

@@ -16,6 +16,8 @@ import { createAnatomy } from '@xihan-ui/core'
  *
  * preset-group 是浮层里的快捷选项列（「今天」「近 7 天」这类），preset 是其中一项；
  * 两者都归本 scope，选项的身份由作者写在节点上。
+ *
+ * footer 是浮层底部的通栏操作区，confirm-trigger 通常放在它里面；也可以直接排在 content 里。
  */
 export const datePickerAnatomy = createAnatomy('date-picker', [
   'root',
@@ -32,6 +34,7 @@ export const datePickerAnatomy = createAnatomy('date-picker', [
   'calendar',
   'time-column',
   'time-item',
+  'footer',
   'confirm-trigger',
 ])
 

@@ -491,7 +491,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | Select、Combobox、TreeSelect | 与字段盒等宽，下限 10rem，缺省无上限 | 下限一行 `control-h`，上限 `overlay-menu-max-h` |
 | Mention | 下限 12rem，上限 20rem | 下限一行 `control-h`，上限 `overlay-max-h` |
 | Cascader | 每列自然宽、下限 10rem，条目上限 20rem；整面上限为可用宽，超出横滚 | 列定高 `viewport-h-sm`，列内滚 |
-| DatePicker、DateRangePicker | 内容宽（面板不留内衬，由日历的七列与内衬撑出）；时间列下限 3.5rem | 上限为可用高；时间列与日历网格同高（`overlay-calendar-column-h`），列顶让出标题栏那一带；时间格 `control-action-size` 高、列内间距 8；快捷项 `control-action-size` 高；预设组上限 `viewport-h-lg` |
+| DatePicker、DateRangePicker | 内容宽（面板不留内衬，由日历的七列与内衬撑出）；时间列下限 3.5rem | 上限为可用高；时间列与日历网格同高（`overlay-calendar-column-h`），列顶让出标题栏那一带；时间格 `control-action-size` 高、列内间距 8；快捷项 `control-action-size` 高；预设组上限 `viewport-h-lg`；底栏 `footer` 独占末行、内衬 8，上沿一道 `border-default`，确认钮落在行尾 |
 | TimePicker、TimeRangePicker | 内容宽（面板不留内衬）；列宽 `overlay-time-column-w` | 列定高 `overlay-time-column-h`，列底留白让末格滚到列顶；面板上限 `viewport-h-lg`；预设组上限 `overlay-time-column-h` |
 | ColorPicker | 定宽 12rem；饱和区高 9rem | 上限 `viewport-h-md` |
 | Pagination 下拉 | 上限 20rem | 上限 `overlay-max-h` |

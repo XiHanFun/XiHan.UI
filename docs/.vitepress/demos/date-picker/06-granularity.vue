@@ -10,6 +10,7 @@ import {
   XhDatePickerClearTrigger,
   XhDatePickerContent,
   XhDatePickerControl,
+  XhDatePickerFooter,
   XhDatePickerGrid,
   XhDatePickerGridBody,
   XhDatePickerGridHead,
@@ -133,13 +134,13 @@ function changeGranularity(details: { value: string | string[] | null }) {
           </XhDatePickerGrid>
         </XhDatePickerCalendar>
 
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: var(--xh-space-3); margin-block-start: var(--xh-space-2); padding-block-start: var(--xh-space-2); border-block-start: var(--xh-stroke-thin) solid var(--xh-border-subtle)">
+        <XhDatePickerFooter>
           <span>{{ summary }}</span>
           <div style="display: flex; gap: var(--xh-space-2)">
             <XhButton variant="ghost" size="sm" :disabled="value.length === 0" @click="clear">清空</XhButton>
             <XhButton size="sm" :disabled="value.length === 0" @click="setOpen(false)">确定</XhButton>
           </div>
-        </div>
+        </XhDatePickerFooter>
       </XhDatePickerContent>
     </XhDatePickerPositioner>
   </XhDatePickerRoot>

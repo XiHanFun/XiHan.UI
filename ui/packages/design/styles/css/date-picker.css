@@ -331,8 +331,8 @@
     border-radius: var(--xh-date-picker-content-radius, var(--xh-shape-overlay));
     background: var(--xh-date-picker-content-bg, var(--xh-bg-surface));
     color: var(--xh-date-picker-content-fg, var(--xh-fg-default));
-    /* 日历是定高结构：网格、时间列与确认行都按 px 排，天然高度就是它们的和，缺省不另设上限
-       （按 rem 的滚动面档会随根字号缩小，根字号低于 16px 时确认行就被挤到滚动里）；
+    /* 日历是定高结构：网格、时间列与底栏都按 px 排，天然高度就是它们的和，缺省不另设上限
+       （按 rem 的滚动面档会随根字号缩小，根字号低于 16px 时底栏就被挤到滚动里）；
        可用高度是定位引擎算出的视口余量，视口真放不下时再收一截 */
     max-block-size: min(var(--xh-date-picker-max-h, var(--xh-_date-picker-available-h)), var(--xh-_date-picker-available-h));
     /* 两轴都滚：块轴放不下时面板内自己竖滚，行内轴放不下时面板内自己横滚，
@@ -373,7 +373,7 @@
      [data-scope='calendar-picker'][data-part='root'] 上，而这里没有那个节点，
      所以网格外层该有的排布得在这儿补齐（网格内部的皮仍归 calendar-picker 那一份） */
   /* 真的摆了两张日历才横过来。写成 :has 而不是无条件 flex 行:
-     showTime 那套结构里 content 直属子节点是作者自己的包裹块与确认行,
+     showTime 那套结构里 content 直属子节点是作者自己的包裹块与底栏,
      无条件横排会把它们并到日历旁边去。
      不加 :not([hidden])：content 收起态带 hidden 但仍在播退场动画，
      排除掉会让它在那几帧退回 block、两张日历竖着堆一下。
@@ -774,6 +774,38 @@
   /* 收起时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
   [data-scope='date-picker'][data-part='confirm-trigger'][hidden] {
     display: none;
+  }
+
+  /* 底栏：面板底部通栏的一条操作区，上沿一道 border-default 线与日历、时间列隔开，四周 8 的内衬；
+     面板换行排布（并排两张日历、快捷选项列、直接排在面板里的时间列）时独占一整行，落在它们下面。
+     首个子节点落在撑满余宽的那条轨道上，其后的各自按内容宽排在行尾：作者另放的文字与链接排在行首，
+     确认钮总落在行尾；只放了确认钮时它独占那条轨道，靠 justify-self 贴到行尾 */
+  [data-scope='date-picker'][data-part='footer'] {
+    display: grid;
+    flex-basis: 100%;
+    grid-auto-flow: column;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: var(--xh-date-picker-footer-gap, var(--xh-space-2));
+    padding-block: var(--xh-date-picker-footer-py, var(--xh-space-2));
+    padding-inline: var(--xh-date-picker-footer-px, var(--xh-space-2));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-date-picker-footer-border, var(--xh-material-solid-border));
+    color: var(--xh-date-picker-footer-fg, var(--xh-fg-muted));
+    font-size: var(--xh-date-picker-footer-font-size, var(--xh-text-caption-size));
+  }
+
+  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+  [data-scope='date-picker'][data-part='footer'][hidden] {
+    display: none;
+  }
+
+  /* 底栏里只放了确认钮、而确认钮按状态收起（没开 showTime）时，底栏一并让位，不留一条空栏 */
+  [data-scope='date-picker'][data-part='footer']:has(> [data-scope='date-picker'][data-part='confirm-trigger'][hidden]:only-child) {
+    display: none;
+  }
+
+  [data-scope='date-picker'][data-part='footer'] > [data-scope='date-picker'][data-part='confirm-trigger'] {
+    justify-self: end;
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

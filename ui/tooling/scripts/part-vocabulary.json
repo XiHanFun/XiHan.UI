@@ -550,6 +550,7 @@
       "card",
       "cascader",
       "command",
+      "date-picker",
       "dialog",
       "drawer",
       "layout",

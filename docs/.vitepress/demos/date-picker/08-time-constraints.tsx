@@ -9,6 +9,7 @@ import {
   XhDatePickerConfirmTrigger,
   XhDatePickerContent,
   XhDatePickerControl,
+  XhDatePickerFooter,
   XhDatePickerGrid,
   XhDatePickerGridBody,
   XhDatePickerGridHead,
@@ -109,9 +110,9 @@ export default function Demo(): ReactNode {
                   {/* 界外与判为不可用的格留在列里、按不下去，列长不随所选的日子变 */}
                   <XhDatePickerTimePanel />
                 </div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", padding: "var(--xh-space-2)", borderBlockStart: "var(--xh-stroke-thin) solid var(--xh-border-default)" }}>
+                <XhDatePickerFooter>
                   <XhDatePickerConfirmTrigger>确定</XhDatePickerConfirmTrigger>
-                </div>
+                </XhDatePickerFooter>
               </XhDatePickerContent>
             </XhDatePickerPositioner>
           </>
