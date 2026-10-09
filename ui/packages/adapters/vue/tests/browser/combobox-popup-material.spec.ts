@@ -33,9 +33,18 @@ function alpha(color: string): number {
   return context.getImageData(0, 0, 1, 1).data[3]!
 }
 
+/**
+ * 缺省档的 frosted 是实体面：背景滤镜 none、顶光透明，与「浮层没接这两支令牌」读出来一样。
+ * 宿主上给两支令牌各一个看得见的值（经 Portal 视觉桥带进浮层），断言才分得出浮层接了令牌。
+ */
+const BACKDROP = 'blur(3px)'
+const HIGHLIGHT = 'rgb(0, 255, 0)'
+
 async function mount(theme: 'light' | 'dark', loading = false): Promise<void> {
   host = document.createElement('div')
   host.dataset.theme = theme
+  host.style.setProperty('--xh-material-frosted-backdrop', BACKDROP)
+  host.style.setProperty('--xh-material-frosted-highlight', HIGHLIGHT)
   document.body.append(host)
   app = createApp({ render: () => h(XhComboboxRoot, {
     collection: [],
@@ -77,10 +86,10 @@ describe('组合框 M2 浮层', () => {
     expect(control.backgroundColor).toBe(tokenValue('background-color', '--xh-bg-field', part('control')))
     expect(control.backdropFilter).toBe('none')
     expect(part('positioner').closest<HTMLElement>('[data-theme]')?.dataset.theme).toBe(theme)
-    expect(content.backdropFilter).toBe(tokenValue('backdrop-filter', '--xh-material-frosted-backdrop', part('content')))
+    expect(content.backdropFilter).toBe(BACKDROP)
     expect(content.backgroundColor).toBe(tokenValue('background-color', '--xh-material-frosted-bg', part('content')))
     expect(content.boxShadow).not.toBe('none')
-    expect(alpha(highlightOf(part('content')))).toBe(alpha(tokenValue('color', '--xh-material-frosted-highlight', part('content'))))
+    expect(highlightOf(part('content'))).toBe(HIGHLIGHT)
   })
 
   it.each([false, true])('loading=%s：状态文字绘制在磨砂面之上且不产生第二层表面', async (loading) => {

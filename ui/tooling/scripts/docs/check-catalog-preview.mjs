@@ -18,8 +18,8 @@
 // - 线宽只有 1 / 2 / 4 / 6 / 8 五档，虚线只取 "4 4"；rect 的 rx 只取 2（控件与内层）/ 4（表面与
 //   浮层）或短边一半（胶囊）；
 //   rect / circle 的坐标与尺寸取 0.5 的倍数。
-// - 字段外壳（描控件边、短边不小于 FIELD_SHELL_MIN 的实线盒）按描边铺底：静息与校验失败铺
-//   --xh-bg-field，聚焦铺 --xh-bg-surface；刻意不铺的登记在 UNFILLED_CONTROL_BOX。
+// - 字段外壳（描控件边、短边不小于 FIELD_SHELL_MIN 的实线盒）按描边铺底：静息铺 --xh-bg-field，
+//   校验失败铺 --xh-bg-field-invalid，聚焦铺 --xh-bg-surface；刻意不铺的登记在 UNFILLED_CONTROL_BOX。
 // - 勾选方框与单选圈（不填底的 16px 小盒）描边取 CHECK_MARKER_STROKE。
 // - 通栏列表（FLUSH_ROW_LISTS：锚定浮层里的列表、Command、Transfer）：面板里 24 高的悬停 / 选中行
 //   不取圆角，左右贴面板内沿；多列面板（MULTI_COLUMN_LISTS）的行铺到列分隔线为止，只核左沿。
@@ -59,10 +59,10 @@ const FIXED_DIRECTION = {
   'log': '日志按从左到右排',
 }
 
-/** 字段外壳按描边铺的底：静息与校验失败铺字段淡底（4% 失效色淡底没有语义令牌），聚焦换承载面。 */
+/** 字段外壳按描边铺的底：静息铺字段淡底，校验失败铺 4% 失效色淡底，聚焦换承载面。 */
 const FIELD_SHELL_FILL = {
   'var(--xh-border-control)': 'var(--xh-bg-field)',
-  'var(--xh-border-invalid)': 'var(--xh-bg-field)',
+  'var(--xh-border-invalid)': 'var(--xh-bg-field-invalid)',
   'var(--xh-border-control-focus)': 'var(--xh-bg-surface)',
 }
 /** 字段盒的短边下限：再小就是 16px 的勾选方框。 */
@@ -71,7 +71,6 @@ const FIELD_SHELL_MIN = 23
 /** 描着控件边、刻意不铺字段淡底的组件，连同理由。 */
 const UNFILLED_CONTROL_BOX = {
   'clipboard': '只读输入框与复制钮共一个外框：输入框那段的底由框下的 path 铺 --xh-bg-subtle，复制钮那段透明',
-  'signature-pad': '画布型字段，静息不填底',
 }
 
 /** 勾选方框与单选圈的描边：16px 的小盒比字段边重一档。 */
@@ -333,7 +332,7 @@ for (const file of files) {
         else {
           tally.shells += 1
           if (fill !== FIELD_SHELL_FILL[stroke])
-            report(line, `<rect stroke="${stroke}" fill="${fill ?? '缺省'}"> —— 字段外壳按描边铺底：${FIELD_SHELL_FILL[stroke]}（静息与校验失败铺字段淡底，聚焦铺承载面）`)
+            report(line, `<rect stroke="${stroke}" fill="${fill ?? '缺省'}"> —— 字段外壳按描边铺底：${FIELD_SHELL_FILL[stroke]}（静息铺字段淡底，校验失败铺失效淡底，聚焦铺承载面）`)
         }
       }
     }

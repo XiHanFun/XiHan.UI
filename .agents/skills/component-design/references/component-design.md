@@ -826,7 +826,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 | 形态 | variant | border | background | box-shadow |
 | --- | --- | --- | --- | --- |
-| 描边 | outline（缺省） | `--xh-stroke-thin solid --xh-border-default`；字段用 `--xh-border-control`（缺省档与 `--xh-border-default` 同色，高对比档才加深） | `--xh-bg-surface`；字段与控件盒 `transparent`，露出宿主的面 | none（Card 加 `--xh-elevation-raised`） |
+| 描边 | outline（缺省） | `--xh-stroke-thin solid --xh-border-default`；字段用 `--xh-border-control`（缺省档与 `--xh-border-default` 同色，高对比档才加深） | `--xh-bg-surface`；字段外壳与 SignaturePad 画布铺 `--xh-bg-field`，FileUpload 拖放区铺 `--xh-bg-subtle`，勾选方框与单选圈 `transparent`、露出宿主的面 | none（Card 加 `--xh-elevation-raised`） |
 | 淡底 | subtle | `--xh-stroke-thin solid transparent` | `--xh-bg-subtle`（有 tone 时 `--xh-tone-subtle`） | none |
 | 无壳 | ghost | 不写 | 不写 | 不写；只允许分隔线 |
 
@@ -836,7 +836,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 - 字段的 `subtle` / `ghost` 只限有壳容器内（InputGroup、Command 面板、Toolbar）使用，hover / focus 必须浮出 `--xh-border-control`。
 - 字段里的 field-inset 钮（清空、可见性、增减、就地编辑）按盒的承载面取阶梯：盒没聚焦时铺着字段淡底（描边档）或淡底（subtle 档），钮走淡底承载阶梯 `--xh-bg-subtle-hover` → `--xh-bg-subtle-active`；聚焦后盒换成白色承载面、ghost 档静息透明，钮走白底阶梯 100 → 200。由 Field Chrome 配方经 `--xh-action-host-bg-*` 向内下发，组件皮肤不各写一套。
 - 字段里的已选标签（标签行家族的多选控件与 TagsInput）：盒没聚焦时淡底标签换白底 `--xh-bg-surface` + `--xh-border-default`、叉悬停 / 按下走白底阶梯 100 → 200，聚焦后回到标签自己的淡底；写了语气的、禁用盒里的不换。有标签时盒的起始内衬与标签间距都是 `--xh-space-1`，lg 档字段里标签字号钉 `--xh-text-caption-size`。标签面写在 tag.css 的字段宿主档，`--xh-tag-*` 覆盖槽照旧优先。
-- 刻意例外（须登记）：面板内嵌搜索（Command、Cascader、TreeSelect、Transfer、SideNav 的搜索框）不画字段外壳，只画一道 `border-block-end` 下划线，五处同一种写法：通栏一行，块尺寸取所在尺寸档的 `--xh-control-h-*`、字号取 `--xh-control-font-*`；下划线是面内分隔，取所在面材质的分隔令牌（实体面与 floating 取 `--xh-material-solid-separator`，sheet 取 `--xh-material-elevated-separator`），不取字段边 `--xh-border-control`；连接层投影 `data-xh-field-input`，重置与占位前景走字段家族，自动填充铺的底取所在面板的面；聚焦不画环、下划线也不换色，插入符就是焦点指示（框没有外壳，全局那圈环只会压在通栏一行上），五份皮肤各在搜索框的 `:focus-visible` 上关环并登进焦点环门禁的 ringless；PromptInput 允许 `--xh-shape-surface` 8px，但静息描边仍为 `--xh-border-control`、不用 soft；SignaturePad 画布是画布型字段，按 `aspect-ratio` 撑高、吃不下字段家族配方钉死的控件行高，允许不投影 `data-xh-field-chrome` 而自绘外壳，但值必须与字段规则一致（静息 `--xh-bg-field` 底 + `--xh-border-control` + `--xh-shape-control` + 无影，悬停描边升 `--xh-border-strong`，落笔与字段聚焦同一副面：`--xh-bg-surface` + `--xh-border-control-focus`，校验失败铺 `--xh-bg-field-invalid`（失效色兑 4%），disabled / readOnly 按 §7.2 第 9 条；强制色档落笔与失效的描边换 Highlight）。
+- 刻意例外（须登记）：面板内嵌搜索（Command、Cascader、TreeSelect、Transfer、SideNav 的搜索框）不画字段外壳，只画一道 `border-block-end` 下划线，五处同一种写法：通栏一行，块尺寸取所在尺寸档的 `--xh-control-h-*`、字号取 `--xh-control-font-*`；下划线是面内分隔，取所在面材质的分隔令牌（实体面与 floating 取 `--xh-material-solid-separator`，sheet 取 `--xh-material-elevated-separator`），不取字段边 `--xh-border-control`；连接层投影 `data-xh-field-input`，重置与占位前景走字段家族，自动填充铺的底取所在面板的面；聚焦不画环、下划线也不换色，插入符就是焦点指示（框没有外壳，全局那圈环只会压在通栏一行上），五份皮肤各在搜索框的 `:focus-visible` 上关环并登进焦点环门禁的 ringless；PromptInput 允许 `--xh-shape-surface`，但静息描边仍为 `--xh-border-control`、不用 soft；SignaturePad 画布是画布型字段，按 `aspect-ratio` 撑高、吃不下字段家族配方钉死的控件行高，允许不投影 `data-xh-field-chrome` 而自绘外壳，但值必须与字段规则一致（静息 `--xh-bg-field` 底 + `--xh-border-control` + `--xh-shape-control` + 无影，悬停描边升 `--xh-border-strong`，落笔与字段聚焦同一副面：`--xh-bg-surface` + `--xh-border-control-focus`，校验失败铺 `--xh-bg-field-invalid`（失效色兑 4%），disabled / readOnly 按 §7.2 第 9 条；强制色档落笔与失效的描边换 Highlight）。
 - Form 内外字段同形；InputGroup 组壳画 outline 描边并铺字段淡底，子字段压平为透明；前后缀块铺 `--xh-bg-subtle`、取正文色、两侧内距对称，与相邻段之间一道满高的 `--xh-border-default`（只画朝里那一侧，两块前后缀相邻时只由后一块画）。
 - 贴边通栏（Alert `banner`）不画边：面本身就是语气淡底，贴边的三条边是页面或容器自己的边。底色与页内提示相同。
 
@@ -1344,10 +1344,10 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 卡片底 | 不画，透出卡片的 `--xh-bg-page` |
 | 内容面 | `--xh-bg-surface` 底 + `--xh-border-default` 描边 |
 | 浮层面 | `--xh-bg-surface-raised` 底 + `--xh-border-default` 描边 |
-| 字段外壳：输入框、选择器触发器、日期与时间字段、输入组、PinInput 格 | `--xh-bg-field` 底 + `--xh-border-control` 描边；聚焦换 `--xh-bg-surface` 底 + `--xh-border-control-focus`；校验失败换 `--xh-border-invalid` 描边，底仍取 `--xh-bg-field`（4% 失效色淡底没有语义令牌） |
+| 字段外壳：输入框、选择器触发器、日期与时间字段、输入组、PinInput 格、签名画布 | `--xh-bg-field` 底 + `--xh-border-control` 描边；聚焦换 `--xh-bg-surface` 底 + `--xh-border-control-focus`；校验失败换 `--xh-border-invalid` 描边 + `--xh-bg-field-invalid` 底 |
 | 只读输入框（Clipboard） | `--xh-bg-subtle` 底 + `--xh-border-control` 描边；与复制钮共一个外框时只铺输入框那段，复制钮那段透明 |
 | 复选框、单选圈 | 只描 `--xh-border-strong`（比字段边重一档），不填底 |
-| 拖放区、签名画布 | 只描 `--xh-border-control`，不填底 |
+| 拖放区 | `--xh-bg-subtle` 底 + `--xh-border-control` 虚线描边 |
 | 按钮 | 主动作 `--xh-bg-brand` 实心；次要动作 `--xh-border-default` 描边；中性触发器 `--xh-bg-subtle` 淡底 |
 | 选中 / 当前 | 行与开关面 `--xh-bg-brand-subtle`；对号与指示条 `--xh-fg-brand`；格状当前 `--xh-bg-brand` |
 | 分页 | 页码、翻页钮与省略位都描 `--xh-border-default`、不填底；当前页 `--xh-bg-brand-subtle` 底 + `--xh-bg-brand` 描边，页码条取 `--xh-fg-on-brand-subtle` |

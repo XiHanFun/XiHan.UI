@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhSwitch } from '../../src'
-import { pressScale, tokenLength, tokenValue } from './design-token'
+import { pressScale, tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -45,6 +45,11 @@ function resolveColor(element: Element, value: string): string {
   probe.remove()
   return color
 }
+
+/** 主题给 raised 一层影（缺省是 none，平面）：把这条通道显出来，才分得出谁带影、谁收掉了影 */
+const RAISED = '0 1px 2px rgb(0, 255, 0)'
+/** 同一层影的计算值写法：颜色排在最前 */
+const RAISED_COMPUTED = 'rgb(0, 255, 0) 0px 1px 2px 0px'
 
 function track(id: string): HTMLElement {
   const element = document.querySelector<HTMLElement>(`[data-testid='${id}'][data-part='root']`)
@@ -116,7 +121,7 @@ describe('switch 实体轨道与 raised 滑块', () => {
       h(XhSwitch, { 'data-testid': 'off' }),
       h(XhSwitch, { 'data-testid': 'on', 'defaultChecked': true }),
       h(XhSwitch, { 'data-testid': 'readonly', 'defaultChecked': true, 'readOnly': true }),
-    ])
+    ], { style: `--xh-elevation-raised: ${RAISED}` })
 
     const page = getComputedStyle(document.body).backgroundColor
     const off = getComputedStyle(track('off'))
@@ -134,13 +139,13 @@ describe('switch 实体轨道与 raised 滑块', () => {
     expect(off.boxShadow).toContain('inset')
     expect(off.backdropFilter).toBe('none')
 
-    // 滑块是 raised 抬起面：surface-raised 底 + border-default 描边 + raised 影，无顶光
+    // 滑块是 raised 抬起面：surface-raised 底 + border-default 描边 + raised 影（主题给的那层），无顶光
     const knob = getComputedStyle(thumb('off'))
     expect(knob.backgroundColor).toBe(resolveColor(thumb('off'), 'var(--xh-bg-surface-raised)'))
     expect(knob.borderStyle).toBe('solid')
     expect(knob.borderColor).toBe(resolveColor(thumb('off'), 'var(--xh-border-default)'))
     expect(knob.backgroundImage).toBe('none')
-    expect(knob.boxShadow).toBe(tokenValue('box-shadow', '--xh-elevation-raised', thumb('off')))
+    expect(knob.boxShadow).toBe(RAISED_COMPUTED)
   })
 
   it('按下时轨道缩放并换底：未选中保持轨道面、选中换到 active 档；禁用轨道改中性面不降 opacity', async () => {
@@ -216,7 +221,7 @@ describe('switch 实体轨道与 raised 滑块', () => {
       h(XhSwitch, { 'data-testid': 'readonly', 'defaultChecked': true, 'readOnly': true }, () => '只读'),
       h(XhSwitch, { 'data-testid': 'loading', 'defaultChecked': true, 'loading': true }, () => '提交中'),
       h(XhSwitch, { 'data-testid': 'disabled-loading', 'disabled': true, 'loading': true }, () => '禁用且提交中'),
-    ])
+    ], { style: `--xh-elevation-raised: ${RAISED}` })
     const labels = [...document.querySelectorAll<HTMLElement>(`[data-scope='switch'][data-part='label']`)]
     const roots = labels.map(label => label.querySelector<HTMLElement>(`[data-part='root']`)!)
     const thumbs = roots.map(root => root.querySelector<HTMLElement>(`[data-part='thumb']`)!)
@@ -233,7 +238,7 @@ describe('switch 实体轨道与 raised 滑块', () => {
     expect(getComputedStyle(roots[1]!).opacity).toBe('1')
     expect(getComputedStyle(roots[2]!).opacity).toBe('1')
     const restShadow = getComputedStyle(thumbs[0]!).boxShadow
-    expect(restShadow).toBe(tokenValue('box-shadow', '--xh-elevation-raised', thumbs[0]!))
+    expect(restShadow).toBe(RAISED_COMPUTED)
     expect(getComputedStyle(thumbs[1]!).boxShadow).toBe('none')
     expect(getComputedStyle(thumbs[2]!).boxShadow).toBe('none')
     expect(getComputedStyle(thumbs[3]!, '::before').animationPlayState).toBe('running')
