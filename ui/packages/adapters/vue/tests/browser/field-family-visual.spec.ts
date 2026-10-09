@@ -172,9 +172,9 @@ describe('字段族默认视觉盒', () => {
       animated.push(control(family).getAnimations().some(animation => animation.playState === 'running'))
       await settle()
       const style = getComputedStyle(control(family))
-      // 焦点环即时出现：换面照常淡变，outline-color 不在过渡清单里
+      // 焦点由描边换色与底色差标出：两样都在过渡清单里，换面照常淡变
       expect(style.transitionProperty).toContain('border-color')
-      expect(style.transitionProperty).not.toContain('outline-color')
+      expect(style.transitionProperty).toContain('background-color')
       states.push({
         borderColor: style.borderTopColor,
         outlineColor: style.outlineColor,
