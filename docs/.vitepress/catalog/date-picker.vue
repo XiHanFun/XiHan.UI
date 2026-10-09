@@ -11,8 +11,9 @@
     <path d="M58 60l-4 4 4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
     <path d="M107 64h34" stroke="var(--xh-fg-default)" stroke-width="6" />
     <path d="M190 60l4 4-4 4" stroke="var(--xh-fg-muted)" stroke-width="2" />
-    <rect x="70.5" y="98.5" width="19" height="19" rx="4" stroke="var(--xh-fg-brand)" />
-    <rect x="136" y="98" width="20" height="20" rx="4" fill="var(--xh-bg-brand)" />
+    <path d="M41 76.5h166" stroke="var(--xh-border-subtle)" />
+    <circle cx="80" cy="114" r="2" fill="var(--xh-fg-brand)" />
+    <circle cx="146" cy="108" r="10" fill="var(--xh-bg-brand)" />
     <path d="M56 88h4" stroke="var(--xh-fg-disabled)" stroke-width="4" />
     <path d="M78 88h4M100 88h4M122 88h4M144 88h4M166 88h4M188 88h4M56 108h4M78 108h4M100 108h4M122 108h4M166 108h4M188 108h4M56 128h4M78 128h4M100 128h4M122 128h4M144 128h4M166 128h4M188 128h4" stroke="var(--xh-fg-muted)" stroke-width="4" />
     <path d="M144 108h4" stroke="var(--xh-fg-on-brand)" stroke-width="4" />
