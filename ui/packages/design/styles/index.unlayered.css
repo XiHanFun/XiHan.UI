@@ -30363,12 +30363,15 @@
 /* 上传失败的那一行必须一眼认出来：不标出来的话它跟传完的行渲染完全一致，
    用户不知道该按哪一条的重试。文件名标红之外再补一枚警示字形——只靠颜色的话，
    色觉障碍用户与灰度打印下这一档等于没有。行底换回承载面：危险色字压在淡底（暗色下连字段淡底）上到不了 4.5:1，
-   描边位仍透明。
+   描边位仍透明。行里的删除钮跟着换回白底承载阶梯（100 → 200）：留在淡底阶梯上，悬停就一步跳到 200。
    警示与下面的勾都是固定状态标记（不是 :empty 兜底，作者塞进条目的部件顶不掉）：按指示符档取尺
    （comfortable 16 / compact 14，随密度换档），不读只管作者图标的 --xh-icon-size——随文 1em 落在
    14 上下，comfortable 下比同一行里的指示符档小一圈、compact 下又不换档 */
 .xh-scope-file-upload[data-part='item'][data-state='error'],
 .xh-scope-file-upload[data-part='item'][data-state='closed']:has(> [data-part='item-progress'][data-state='error']) {
+  --xh-action-host-bg-hover: var(--xh-bg-subtle);
+  --xh-action-host-bg-pressed: var(--xh-bg-subtle-hover);
+
   border-color: var(--xh-file-upload-item-border-error, transparent);
   background: var(--xh-file-upload-item-bg-error, var(--xh-bg-surface));
 }
