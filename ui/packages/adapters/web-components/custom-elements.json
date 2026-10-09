@@ -67949,6 +67949,9 @@
               "name": "--xh-time-picker-column-px"
             },
             {
+              "name": "--xh-time-picker-column-py"
+            },
+            {
               "name": "--xh-time-picker-confirm-trigger-bg"
             },
             {
@@ -67961,10 +67964,13 @@
               "name": "--xh-time-picker-confirm-trigger-fg"
             },
             {
-              "name": "--xh-time-picker-confirm-trigger-gap"
+              "name": "--xh-time-picker-confirm-trigger-font-size"
             },
             {
               "name": "--xh-time-picker-confirm-trigger-h"
+            },
+            {
+              "name": "--xh-time-picker-confirm-trigger-margin"
             },
             {
               "name": "--xh-time-picker-confirm-trigger-px"
@@ -68090,9 +68096,6 @@
               "name": "--xh-time-picker-item-px"
             },
             {
-              "name": "--xh-time-picker-item-py"
-            },
-            {
               "name": "--xh-time-picker-item-radius"
             },
             {
@@ -68117,6 +68120,9 @@
               "name": "--xh-time-picker-placeholder-fg"
             },
             {
+              "name": "--xh-time-picker-preset-bg"
+            },
+            {
               "name": "--xh-time-picker-preset-bg-hover"
             },
             {
@@ -68132,10 +68138,10 @@
               "name": "--xh-time-picker-preset-fg"
             },
             {
-              "name": "--xh-time-picker-preset-fg-checked"
+              "name": "--xh-time-picker-preset-fg-disabled"
             },
             {
-              "name": "--xh-time-picker-preset-fg-disabled"
+              "name": "--xh-time-picker-preset-font-size"
             },
             {
               "name": "--xh-time-picker-preset-group-gap"
@@ -68147,10 +68153,13 @@
               "name": "--xh-time-picker-preset-group-px"
             },
             {
-              "name": "--xh-time-picker-preset-px"
+              "name": "--xh-time-picker-preset-group-py"
             },
             {
-              "name": "--xh-time-picker-preset-py"
+              "name": "--xh-time-picker-preset-h"
+            },
+            {
+              "name": "--xh-time-picker-preset-px"
             },
             {
               "name": "--xh-time-picker-preset-radius"
