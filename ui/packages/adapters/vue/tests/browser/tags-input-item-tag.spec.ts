@@ -131,6 +131,16 @@ function tokenPx(name: string): number {
   return px
 }
 
+/** 一个字号值在这个页面里解析成多少像素。 */
+function resolveFontSize(value: string): string {
+  const probe = document.createElement('span')
+  probe.style.fontSize = value
+  document.body.append(probe)
+  const size = getComputedStyle(probe).fontSize
+  probe.remove()
+  return size
+}
+
 /** 一个 CSS 颜色值在这个页面里解析成什么，用它与 getComputedStyle 的输出对拍。 */
 function resolveColor(value: string, within: HTMLElement = document.body): string {
   const probe = document.createElement('span')
@@ -190,7 +200,7 @@ describe('标签输入的框：一行控件高，标签多了按行长', () => {
     }
   })
 
-  it.each(SIZES)('%s 档：标签换行时按行长高，行距取控件档的间距，每行的高由行里最高的那个定', async (size) => {
+  it.each(SIZES)('%s 档：标签换行时按行长高，行距与标签间距同为 --xh-space-1，每行的高由行里最高的那个定', async (size) => {
     // 六枚标签：字段缺省宽 16rem 下 lg 档两枚一行，四行正好在框的最大高（12rem）以内，量的才是长高不是滚动
     await mountTags({ size, tags: Array.from({ length: 6 }, (_, i) => `标签${i + 1}`) })
     const control = part('control')
@@ -201,7 +211,7 @@ describe('标签输入的框：一行控件高，标签多了按行长', () => {
       + Number.parseFloat(style.borderTopWidth) + Number.parseFloat(style.borderBottomWidth)
 
     expect(rows.length).toBeGreaterThan(1)
-    expect(rowGap).toBe(tokenPx(`--xh-control-gap-${size}`))
+    expect(rowGap).toBe(tokenPx('--xh-space-1'))
     expect(height(control)).toBe(rows.reduce((sum, row) => sum + row, 0) + (rows.length - 1) * rowGap + chrome)
   })
 
@@ -221,7 +231,7 @@ describe('标签输入的框：一行控件高，标签多了按行长', () => {
 })
 
 describe('框里的标签就是库里的 tag', () => {
-  it.each(SIZES)('%s 档：标签的高、字号与独立的同档 tag 逐字相同，删除钮同尺寸', async (size) => {
+  it.each(SIZES)('%s 档：标签的高与独立的同档 tag 逐字相同、删除钮同尺寸；字号钉在说明档（独立 tag 的 lg 档是正文字号）', async (size) => {
     await mountTags({ size })
     const hosted = {
       height: height(pills()[0]!),
@@ -238,7 +248,8 @@ describe('框里的标签就是库里的 tag', () => {
       close: host!.querySelector<HTMLElement>(TAG('close-trigger'))!.getBoundingClientRect().height,
     }
 
-    expect(hosted).toEqual(lone)
+    expect({ ...hosted, fontSize: '' }).toEqual({ ...lone, fontSize: '' })
+    expect(hosted.fontSize).toBe(resolveFontSize('var(--xh-text-caption-size)'))
     expect(hosted.close).toBe(tokenPx('--xh-control-indicator-size'))
   })
 
@@ -258,21 +269,20 @@ describe('框里的标签就是库里的 tag', () => {
     expect(heights).toEqual(chips)
   })
 
-  it('形态按控件的面派：缺省与 outline / ghost 控件里是柔和淡底标签，subtle 控件里是描边标签', async () => {
+  it('形态按控件的面派：缺省与 outline / ghost 控件里是淡底标签，subtle 控件里是描边标签；聚焦着的盒里显出各自的面', async () => {
     await mountTags({ tags: ['甲'] })
-    const plain = getComputedStyle(pills()[0]!)
     expect(pills()[0]!.getAttribute('data-variant')).toBe('subtle')
-    // tag 是 soft 材质的登记消费者：无语气的 subtle 档取 --xh-material-soft-* 底与边
-    expect(plain.backgroundColor).toBe(resolveColor('var(--xh-material-soft-bg)'))
-    expect(plain.borderTopColor).toBe(resolveColor('var(--xh-material-soft-border)'))
+    ;(part('input') as HTMLInputElement).focus()
+    const plain = getComputedStyle(pills()[0]!)
+    await expect.poll(() => getComputedStyle(pills()[0]!).backgroundColor).toBe(resolveColor('var(--xh-bg-subtle)'))
+    expect(plain.borderTopColor).toBe('rgba(0, 0, 0, 0)')
     app?.unmount()
     host?.remove()
 
     await mountTags({ tags: ['甲'], variant: 'subtle' })
-    const outlined = getComputedStyle(pills()[0]!)
     expect(pills()[0]!.getAttribute('data-variant')).toBe('outline')
-    expect(outlined.backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(outlined.borderTopColor).toBe(resolveColor('var(--xh-border-default)'))
+    ;(part('input') as HTMLInputElement).focus()
+    await expect.poll(() => getComputedStyle(pills()[0]!).borderTopColor).toBe(resolveColor('var(--xh-border-default)'))
   })
 
   it('删除钮是 tag 的 close-trigger：不占 Tab 位，按它删掉这一枚，焦点留在输入框', async () => {
@@ -304,6 +314,8 @@ describe('框里的标签就是库里的 tag', () => {
 describe('光标走到标签上：当前项的淡底落在 tag 的 root 上', () => {
   it('当前项的底是品牌淡底、字是淡底前景，删除钮的字跟着换；没走到的那枚不变', async () => {
     await mountTags({ tags: ['甲', '乙'] })
+    // 光标走进框里时盒已聚焦，没走到的标签取聚焦着的盒里的面：以这一刻为基准
+    ;(part('input') as HTMLInputElement).focus()
     const before = getComputedStyle(pills()[1]!).backgroundColor
     await highlightLast()
 

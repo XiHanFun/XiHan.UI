@@ -72332,19 +72332,25 @@
       ],
       "state": [
         "default",
+        "disabled",
         "is(:not([data-variant])",
+        "not([data-disabled])",
+        "not([data-tone], [data-disabled])",
         "tone",
         "variant",
         "variant=outline",
         "variant=solid",
         "variant=subtle",
+        "where([data-xh-field-chrome]:not(:focus-within)",
+        "xh-field-chrome",
         "xh-ink-surface"
       ],
       "defaultToken": [
         "--xh-_tone",
         "--xh-_tone-subtle",
         "--xh-bg-brand",
-        "--xh-bg-subtle"
+        "--xh-bg-subtle",
+        "--xh-bg-surface"
       ],
       "visibility": "public",
       "description": "tag 的 root 部件 --xh-ink-surface、background 覆盖槽。"
@@ -72383,9 +72389,16 @@
       ],
       "state": [
         "default",
+        "disabled",
+        "is(:not([data-variant])",
+        "not([data-disabled])",
+        "not([data-tone], [data-disabled])",
         "tone",
+        "variant",
         "variant=outline",
-        "variant=subtle"
+        "variant=subtle",
+        "where([data-xh-field-chrome]:not(:focus-within)",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_tone-border-control",
@@ -72418,40 +72431,64 @@
       "name": "--xh-tag-close-bg-active",
       "component": "tag",
       "part": [
-        "close-trigger"
+        "close-trigger",
+        "root"
       ],
       "property": [
         "background"
       ],
       "state": [
+        "disabled",
         "is(:active, [data-pressed])",
+        "is(:not([data-variant])",
         "not(:disabled)",
-        "pressed"
+        "not([data-disabled])",
+        "not([data-tone], [data-disabled])",
+        "pressed",
+        "tone",
+        "variant",
+        "variant=outline",
+        "variant=subtle",
+        "where([data-xh-field-chrome]:not(:focus-within)",
+        "xh-field-chrome"
       ],
       "defaultToken": [
+        "--xh-bg-subtle-hover",
         "color-mix(in oklab, currentColor 22%, transparent)"
       ],
       "visibility": "public",
-      "description": "tag 的 close-trigger 部件 background 覆盖槽。"
+      "description": "tag 的 close-trigger、root 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-tag-close-bg-hover",
       "component": "tag",
       "part": [
-        "close-trigger"
+        "close-trigger",
+        "root"
       ],
       "property": [
         "background"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "is(:not([data-variant])",
+        "not(:disabled)",
+        "not([data-disabled])",
+        "not([data-tone], [data-disabled])",
+        "tone",
+        "variant",
+        "variant=outline",
+        "variant=subtle",
+        "where([data-xh-field-chrome]:not(:focus-within)",
+        "xh-field-chrome"
       ],
       "defaultToken": [
+        "--xh-bg-subtle",
         "color-mix(in oklab, currentColor 14%, transparent)"
       ],
       "visibility": "public",
-      "description": "tag 的 close-trigger 部件 background 覆盖槽。"
+      "description": "tag 的 close-trigger、root 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-tag-close-fg",
