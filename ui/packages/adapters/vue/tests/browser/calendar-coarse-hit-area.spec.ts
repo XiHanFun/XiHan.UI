@@ -240,6 +240,67 @@ describe('粗指针下日历格的命中区', () => {
     expect(Math.abs(column.bottom - grid.bottom), `grid ${grid.bottom} column ${column.bottom}`).toBeLessThanOrEqual(1)
   })
 
+  it('320 宽的视口里页内日历按视口收窄列宽：两侧各留 16 的页边也不撑出容器，行高仍 44、命中区互不重叠', async () => {
+    await coarsePointer()
+    await page.viewport(320, 640)
+    mountHost('margin-inline: 16px')
+    app = createApp({
+      render: () => h(XhCalendarPickerRoot, { locale: 'zh-CN', defaultFocusedValue: '2026-09-10' }, {
+        default: ({ weeks }: { weeks: { start: string, day: number }[][] }) => h(XhCalendarPickerGrid, null, () =>
+          h(XhCalendarPickerGridBody, null, () => weeks.map(week => h(XhCalendarPickerWeekRow, { key: week[0]!.start }, () =>
+            week.map(day => h(XhCalendarPickerCell, { key: day.start, value: day.start }, () =>
+              h(XhCalendarPickerCellTrigger, null, () => String(day.day)))))))),
+      }),
+    })
+    app.mount(host!)
+    await settle()
+    const box = host!.getBoundingClientRect()
+    const grid = document.querySelector<HTMLElement>(`[data-scope='calendar-picker'][data-part='grid']`)!
+    expect(grid.getBoundingClientRect().right, '网格撑出了容器').toBeLessThanOrEqual(box.right + 0.5)
+    expect(grid.scrollWidth).toBeLessThanOrEqual(grid.clientWidth)
+    const all = triggers('calendar-picker')
+    const boxes = all.map(hitBox)
+    for (const [index, el] of all.entries()) {
+      expect(boxes[index]!.bottom - boxes[index]!.top).toBeGreaterThanOrEqual(44)
+      expect(el.getBoundingClientRect().width).toBe(24)
+    }
+    for (let i = 1; i < boxes.length; i++) {
+      const a = boxes[i - 1]!
+      const b = boxes[i]!
+      if (Math.abs(a.top - b.top) < 0.5)
+        expect(b.left, `${all[i]!.textContent} 压到了前一格`).toBeGreaterThanOrEqual(a.right - 0.5)
+    }
+    await page.viewport(1200, 900)
+  })
+
+  it('320 宽的视口里日期选择器浮层不撑出视口，网格不撑出浮层', async () => {
+    await coarsePointer()
+    await page.viewport(320, 640)
+    mountHost('')
+    app = createApp({
+      render: () => h(XhDatePickerRoot, { locale: 'zh-CN', timeZone: 'UTC', open: true, defaultFocusedValue: '2026-09-10' }, {
+        default: ({ weeks }: DatePickerRootSlotProps) => [
+          h(XhDatePickerControl, null, () => h(XhDatePickerTrigger)),
+          h(XhDatePickerPositioner, null, () => h(XhDatePickerContent, null, () =>
+            h(XhDatePickerCalendar, null, () => [
+              h(XhDatePickerHeader, null, () => h(XhDatePickerHeading)),
+              h(XhDatePickerGrid, null, () => h(XhDatePickerGridBody, null, () => weeks.map(week => h(XhDatePickerWeekRow, { key: week[0]!.start }, () =>
+                week.map(day => h(XhDatePickerCell, { key: day.start, value: day.start }, () =>
+                  h(XhDatePickerCellTrigger, null, () => String(day.day)))))))),
+            ]))),
+        ],
+      }),
+    })
+    app.mount(host!)
+    await settle()
+    const content = document.querySelector<HTMLElement>(`[data-scope='date-picker'][data-part='content']`)!.getBoundingClientRect()
+    const grid = document.querySelector<HTMLElement>(`[data-scope='calendar-picker'][data-part='grid']`)!.getBoundingClientRect()
+    expect(content.left).toBeGreaterThanOrEqual(0)
+    expect(content.right, '浮层撑出了视口').toBeLessThanOrEqual(320)
+    expect(grid.right, '网格撑出了浮层').toBeLessThanOrEqual(content.right + 0.5)
+    await page.viewport(1200, 900)
+  })
+
   it('日期范围选择器浮层里内嵌的网格同一套命中区', async () => {
     await coarsePointer()
     await page.viewport(1200, 900)

@@ -399,24 +399,25 @@
 
   /* 粗指针：格子首尾相接，家族 text 档那套 ::after 外扩会压到上下相邻的格。改由格子自己长到 44 见方——
      行距加到 44、列宽下限抬到 44，铺满整格的命中区随之到 44×44、彼此不重叠；钮仍是 24 的圆，
-     横条与区间轨道仍以格子中线为轴、按细指针那副行距收边，帽仍与端点圆同心。::after 钉回整格那副几何 */
+     横条与区间轨道仍以格子中线为轴、按细指针那副行距收边，帽仍与端点圆同心。::after 钉回整格那副几何。
+     列宽下限再按视口收（同 calendar-picker）：手机窄屏里取扣掉页边与内衬后视口宽的七分之一，不撑出视口 */
   @media (pointer: coarse) {
     [data-scope='calendar-range-picker'][data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) {
-      min-inline-size: calc(7 * max(var(--xh-calendar-range-picker-cell-min-w, var(--xh-control-h-md)), 44px) + 2 * var(--xh-calendar-range-picker-grid-px, var(--xh-space-4)));
+      min-inline-size: calc(7 * max(var(--xh-calendar-range-picker-cell-min-w, var(--xh-control-h-md)), min(var(--xh-control-hit-coarse), calc((100vw - 2 * var(--xh-space-4) - 2 * var(--xh-calendar-range-picker-grid-px, var(--xh-space-4))) / 7))) + 2 * var(--xh-calendar-range-picker-grid-px, var(--xh-space-4)));
     }
 
     [data-scope='calendar-range-picker'][data-part='week-row'] {
-      grid-template-columns: repeat(7, minmax(max(var(--xh-calendar-range-picker-cell-min-w, var(--xh-control-h-md)), 44px), 1fr));
+      grid-template-columns: repeat(7, minmax(max(var(--xh-calendar-range-picker-cell-min-w, var(--xh-control-h-md)), min(var(--xh-control-hit-coarse), calc((100vw - 2 * var(--xh-space-4) - 2 * var(--xh-calendar-range-picker-grid-px, var(--xh-space-4))) / 7))), 1fr));
     }
 
     [data-scope='calendar-range-picker'][data-part='week-row']:not([hidden]):has(> [data-part='week-number']) {
       grid-template-columns:
         var(--xh-calendar-range-picker-week-number-w, var(--xh-control-h-md))
-        repeat(7, minmax(max(var(--xh-calendar-range-picker-cell-min-w, var(--xh-control-h-md)), 44px), 1fr));
+        repeat(7, minmax(max(var(--xh-calendar-range-picker-cell-min-w, var(--xh-control-h-md)), min(var(--xh-control-hit-coarse), calc((100vw - 2 * var(--xh-space-4) - 2 * var(--xh-calendar-range-picker-grid-px, var(--xh-space-4)) - var(--xh-calendar-range-picker-week-number-w, var(--xh-control-h-md))) / 7))), 1fr));
     }
 
     [data-scope='calendar-range-picker'][data-part='cell'] {
-      min-block-size: 44px;
+      min-block-size: var(--xh-control-hit-coarse);
     }
 
     [data-scope='calendar-range-picker'][data-part='cell-trigger']::after {

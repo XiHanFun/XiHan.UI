@@ -539,7 +539,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | FileUpload | 列表限高 `viewport-h-md`；拖放区最小高 `--xh-dropzone-min-h`（10rem）；文件行是无描边的淡底行，行内与行间距 12px，失败行底回承载面、只把文件名标红；预览是 `glyph-size-sm` 的品牌色无底图标位（空着画文件字形）；删除叉取 `control-indicator-sm`；文件名最小宽 12rem；进度条宽 2 × `control-h-md` |
 | JsonViewer、DiffView | 限高 `viewport-max-h` |
 | Log | 视口 16 行 |
-| CalendarPicker、CalendarRangePicker | 标题栏内衬 8 / 16、内容 `control-action-size` 高，下沿 1px 分隔线；网格内衬 12 / 16；日期格 `control-action-size` 见方的圆，格上下内距 6 撑出 36 的行距；列宽下限与星期行高 `control-h-md`；粗指针下行距与列宽下限都加到 44，命中区铺满整格、到 44×44 且互不重叠，钮仍是 `control-action-size` 的圆，嵌进 DatePicker / DateRangePicker 的网格同一套、并排的时间列随之加高；周期格铺满格宽、`control-action-size` 高，周期视图的网格与日视图同宽；禁用横条与区间轨道以格子中线为轴、比细指针行距上下各收 2（粗指针下不跟着变粗），日视图区间两端的帽从格中线减轨道半高起算、与端点圆同心；年网格限高 `viewport-h-sm` |
+| CalendarPicker、CalendarRangePicker | 标题栏内衬 8 / 16、内容 `control-action-size` 高，下沿 1px 分隔线；网格内衬 12 / 16；日期格 `control-action-size` 见方的圆，格上下内距 6 撑出 36 的行距；列宽下限与星期行高 `control-h-md`；粗指针下行距与列宽下限都加到 44，命中区铺满整格、到 44×44 且互不重叠（视口窄到七列放不下 44 时，列宽下限取视口宽扣掉两侧 `space-4` 页边、网格内衬与周数列后的七分之一，日历不撑出视口；按视口不按容器，宽视口里塞进窄于七个 44 的容器仍会溢出），钮仍是 `control-action-size` 的圆，嵌进 DatePicker / DateRangePicker 的网格同一套、并排的时间列随之加高；周期格铺满格宽、`control-action-size` 高，周期视图的网格与日视图同宽；禁用横条与区间轨道以格子中线为轴、比细指针行距上下各收 2（粗指针下不跟着变粗），日视图区间两端的帽从格中线减轨道半高起算、与端点圆同心；年网格限高 `viewport-h-sm` |
 | Image | 宽 100%，高随比例；兜底最小高 `control-h-lg` |
 | Typography | 行宽上限 68ch |
 | EmptyState | 说明行宽上限 32rem |
