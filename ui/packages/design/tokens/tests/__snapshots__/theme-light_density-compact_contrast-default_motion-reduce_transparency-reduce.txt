@@ -364,6 +364,7 @@
 --xh-overlay-arrow-size: 8px  ← var(--xh-space-2)
 --xh-overlay-backdrop-blur: 12px
 --xh-overlay-calendar-column-h: calc(24px * 7 + 28px)  ← calc(var(--xh-control-h-sm) * 7 + var(--xh-space-7))
+--xh-overlay-cascade-min-w: 7.5rem
 --xh-overlay-column-item-h: calc(24px - 4px)  ← calc(var(--xh-control-h-sm) - var(--xh-space-1))
 --xh-overlay-column-min-w: 3.5rem
 --xh-overlay-drawer-w-lg: 28rem
