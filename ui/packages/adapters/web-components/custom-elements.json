@@ -68147,6 +68147,9 @@
               "name": "--xh-time-picker-preset-fg-disabled"
             },
             {
+              "name": "--xh-time-picker-preset-fg-hover"
+            },
+            {
               "name": "--xh-time-picker-preset-font-size"
             },
             {
