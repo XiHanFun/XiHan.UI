@@ -34,6 +34,16 @@ function part(name: string): HTMLElement {
   return hit
 }
 
+/** 在元素所在的继承边界下解析一个颜色令牌：主题跟着元素走。 */
+function tokenColor(element: Element, token: string): string {
+  const probe = document.createElement('span')
+  probe.style.color = `var(${token})`
+  element.append(probe)
+  const color = getComputedStyle(probe).color
+  probe.remove()
+  return color
+}
+
 function colorAlpha(color: string): number {
   const canvas = document.createElement('canvas')
   canvas.width = 1
@@ -100,13 +110,13 @@ afterEach(() => {
 })
 
 describe('级联选择首次加载表面', () => {
-  it.each(['light', 'dark'] as const)('%s：触发框透明描边、面板是不透景的实体浮起面', async (theme) => {
+  it.each(['light', 'dark'] as const)('%s：触发框是铺字段淡底的字段外壳、面板是不透景的实体浮起面', async (theme) => {
     await mountCascader({ theme })
     const control = getComputedStyle(part('control'))
     const content = part('content')
     const style = getComputedStyle(content)
-    // 描边式字段外壳不填底：透明底不是磨砂，没有背景滤镜
-    expect(colorAlpha(control.backgroundColor)).toBe(0)
+    // 字段外壳静息铺字段淡底（淡底兑一半）：是实色的半透明墨色，不是磨砂，没有背景滤镜
+    expect(control.backgroundColor).toBe(tokenColor(part('control').parentElement!, '--xh-bg-field'))
     expect(control.backdropFilter).toBe('none')
     // 多列面板取 floating：实体底、无背景滤镜、有浮起投影
     expect(style.backdropFilter).toBe('none')
