@@ -49191,8 +49191,8 @@
     /* 尺寸档只换这六个私有槽，面板头、搜索框、条目与勾选格都从 root 继承它们，
        换档不必给每个部件各写一条选择器 */
     --xh-_transfer-item-py: var(--xh-list-option-py-md);
-    /* 行至少一个控件高：md 36px，勾选格、文字与悬停面都有落脚的余量 */
-    --xh-_transfer-item-h: var(--xh-control-h-lg);
+    /* 行至少一个同档控件高（md 32px），勾选格、文字与悬停面都有落脚的余量 */
+    --xh-_transfer-item-h: var(--xh-control-h-md);
     --xh-_transfer-h: var(--xh-control-h-md);
     --xh-_transfer-px: var(--xh-control-px-md);
     --xh-_transfer-gap: var(--xh-control-gap-md);
@@ -49217,7 +49217,7 @@
   .xh-scope-transfer[data-part='root'][data-size='sm'] {
     --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-glyph-size-sm));
     --xh-_transfer-item-py: var(--xh-list-option-py-sm);
-    --xh-_transfer-item-h: var(--xh-control-h-md);
+    --xh-_transfer-item-h: var(--xh-control-h-sm);
     --xh-_transfer-h: var(--xh-control-h-sm);
     --xh-_transfer-px: var(--xh-control-px-sm);
     --xh-_transfer-gap: var(--xh-control-gap-sm);
@@ -49228,7 +49228,7 @@
   .xh-scope-transfer[data-part='root'][data-size='lg'] {
     --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-glyph-size-lg));
     --xh-_transfer-item-py: var(--xh-list-option-py-lg);
-    --xh-_transfer-item-h: var(--xh-control-box-lg);
+    --xh-_transfer-item-h: var(--xh-control-h-lg);
     --xh-_transfer-h: var(--xh-control-h-lg);
     --xh-_transfer-px: var(--xh-control-px-lg);
     --xh-_transfer-gap: var(--xh-control-gap-lg);
