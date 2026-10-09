@@ -86,10 +86,6 @@ const PRIMITIVE_OK = {
     reason: '没写 data-tone 时点亮色退回警示色；这一支是语气缺席时的落点，与语气层同族同档',
     tokens: ['warning-500'],
   },
-  'image-viewer.css': {
-    reason: '看图时整块画布是恒定的深底加浅字，照片要在中性底上看，不随主题翻',
-    tokens: ['neutral-0', 'neutral-950'],
-  },
   'bar-code.css': {
     reason: '条必须比底色深且对比要足，读码器按深条浅底取样，反相与深浅相近都扫不出来',
     tokens: ['neutral-0', 'neutral-950'],
