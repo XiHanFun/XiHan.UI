@@ -42636,8 +42636,9 @@
         "hover",
         "invalid",
         "not(:focus-within)",
-        "not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])",
-        "readonly"
+        "not(:has([data-xh-field-chrome]:is([data-disabled], [data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_input-group-bg-hover"
@@ -42754,8 +42755,9 @@
         "hover",
         "invalid",
         "not(:focus-within)",
-        "not(:has([data-disabled], [data-readonly], [data-invalid], [aria-invalid='true'])",
-        "readonly"
+        "not(:has([data-xh-field-chrome]:is([data-disabled], [data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_input-group-border-hover"
