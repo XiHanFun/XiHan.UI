@@ -555,8 +555,8 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `--xh-time-picker-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-solid-border` | time-picker 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-time-picker-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | time-picker 的 footer 部件 color 覆盖槽。 |
 | `--xh-time-picker-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-caption-size` | time-picker 的 footer 部件 font-size 覆盖槽。 |
-| `--xh-time-picker-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | time-picker 的 footer 部件 gap 覆盖槽。 |
-| `--xh-time-picker-footer-px` | `footer` | `margin-inline-end`<br>`margin-inline-start` | `first-child`<br>`last-child` | `--xh-space-2` | time-picker 的 footer 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-time-picker-footer-gap` | `footer` | `gap`<br>`inline-size` | `default` | `--xh-space-2` | time-picker 的 footer 部件 gap、inline-size 覆盖槽。 |
+| `--xh-time-picker-footer-px` | `footer` | `inline-size` | `default` | `--xh-space-2` | time-picker 的 footer 部件 inline-size 覆盖槽。 |
 | `--xh-time-picker-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | time-picker 的 footer 部件 padding-block 覆盖槽。 |
 | `--xh-time-picker-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | time-picker 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-time-picker-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | time-picker 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |
