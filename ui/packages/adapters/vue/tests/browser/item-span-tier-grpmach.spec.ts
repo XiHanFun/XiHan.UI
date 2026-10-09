@@ -125,16 +125,16 @@ describe('descriptions 的 span 在换档之后', () => {
     await mountDesc(800, 4)
 
     // 一行只摆得下两格时认了 span 的那格反而比邻居窄，所以这一档也压成等宽
-    expect(widths()).toEqual([394, 394, 394, 394])
+    expect(widths()).toEqual([390, 390, 390, 390])
   })
 
   it('宽视口档 4 列：作者写的列数生效，span 也跟着生效', async () => {
     await mountDesc(1100, 4)
     const [first, spanned] = widths()
 
-    expect(first).toBe(266)
-    // 一格 266，跨两列再加上中间那道 12px 的缝
-    expect(spanned).toBe(544)
+    expect(first).toBe(260)
+    // 一格 260，跨两列再加上中间那道 20px 的列距
+    expect(spanned).toBe(540)
     expect(styleOf(pick(SPANNED)).gridColumn).toBe('span 2')
   })
 
