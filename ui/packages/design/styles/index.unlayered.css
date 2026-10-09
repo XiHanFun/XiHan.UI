@@ -41382,13 +41382,22 @@
   cursor: not-allowed;
 }
 
-/* 粗指针：拇指只有 12px，控件的命中区沿交叉轴两侧各外扩一格 space-4（中档 12 + 16 × 2 = 44）。
+/* 粗指针：控件只有拇指那么厚，命中区沿交叉轴外扩，补足到粗指针命中下限（--xh-control-hit-coarse）。
+   外扩总量是「下限 − 拇指直径」，按拇指算而不是写死一格，sm 档 10px 的拇指也补得到下限。
+   横排时块首朝着标签：那一侧只扩半个余量、且不越过标签与控件之间的间距，点在标签上仍归标签、不直接跳值；
+   少扩的那一截挪到块尾补齐。竖排时标签不在行内轴上，两侧对称各扩一半。
    落指在轨道上下这一截也能按下即跳、接着拖；伪元素排在刻度之前，刻度文案仍压在它上面接得到点按 */
 @media (pointer: coarse) {
   .xh-scope-slider[data-part='control'][data-orientation='horizontal']::before {
+    --xh-_slider-hit-start: min(
+      var(--xh-slider-label-gap, var(--xh-space-2)),
+      (var(--xh-control-hit-coarse) - var(--xh-_thumb-size)) / 2
+    );
+
     content: '';
     position: absolute;
-    inset-block: calc(-1 * var(--xh-space-4));
+    inset-block-start: calc(-1 * var(--xh-_slider-hit-start));
+    inset-block-end: calc(var(--xh-_slider-hit-start) + var(--xh-_thumb-size) - var(--xh-control-hit-coarse));
     inset-inline: 0;
   }
 
@@ -41396,7 +41405,7 @@
     content: '';
     position: absolute;
     inset-block: 0;
-    inset-inline: calc(-1 * var(--xh-space-4));
+    inset-inline: calc((var(--xh-_thumb-size) - var(--xh-control-hit-coarse)) / 2);
   }
 }
 

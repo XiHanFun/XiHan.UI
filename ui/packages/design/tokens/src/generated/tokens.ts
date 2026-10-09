@@ -265,6 +265,7 @@ export const tokens = {
   "--xh-control-box-sm": "28px",
   "--xh-control-box-md": "36px",
   "--xh-control-box-lg": "44px",
+  "--xh-control-hit-coarse": "44px",
   "--xh-control-float-md": "40px",
   "--xh-control-w": "16rem",
   "--xh-control-min-w": "12rem",
