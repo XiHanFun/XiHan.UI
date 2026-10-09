@@ -15443,9 +15443,8 @@
   --xh-_empty-state-accent: var(--xh-_tone-fg);
 }
 
-/* 结果页（写了成功 / 警示 / 出错 / 提示语气）：图标坐进一枚 44px 语气淡底圆，字形收到 20px。
-   品牌语气不画圆：品牌淡底专属「选中 / 当前」 */
-.xh-scope-empty-state[data-part='root'][data-tone]:not([data-tone='brand']) .xh-scope-empty-state[data-part='indicator'] {
+/* 结果页（写了语气）：图标坐进一枚 44px 语气淡底圆，字形收到 20px；淡底由语气层按 data-tone 给 */
+.xh-scope-empty-state[data-part='root'][data-tone] .xh-scope-empty-state[data-part='indicator'] {
   --xh-icon-size: var(--xh-empty-state-icon-size, var(--xh-glyph-size-md));
 
   inline-size: var(--xh-empty-state-indicator-box, var(--xh-control-box-lg));
