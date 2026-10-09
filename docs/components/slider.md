@@ -117,7 +117,7 @@ draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽�
 ### 特性
 
 - 单值与区间共用一套结构，区间时 `minStepsBetweenThumbs` 防止两头交叉。
-- 轨道 2px、中性淡底，已选区间品牌色；拇指 12px 白底圆配 2px 品牌描边，静止不投影，悬停与拖动时放大一档、拖动中抬起；刻度点 8px 白底圆配 2px 描边（走过的取品牌色）。禁用时轨道、区间与拇指描边都退到中性淡底，拇指留白面。粗指针下控件沿交叉轴外扩到 44px 接住落指。
+- 轨道 2px、中性淡底，已选区间品牌色；拇指 12px 白底圆配 2px 品牌描边，静止不投影，悬停与拖动时放大一档、拖动中抬起；刻度点 8px 白底圆配 2px 描边（走过的取品牌色）。禁用时轨道、区间与拇指描边都退到中性淡底，拇指留白面。粗指针下控件沿交叉轴外扩到 44px 接住落指：外扩量按拇指直径补足，朝标签一侧不越过标签与控件之间的间距，点在标签上不会跳值。
 - `marks` 绘制刻度，`snapToMarks` 让值吸附到刻度。
 - 两个回调：拖动途中连续发出，松手时发出一次；持久化使用后者。
 - `getValueText` 决定读屏读出的内容，不只读数字。
@@ -360,7 +360,7 @@ draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽�
 | `--xh-slider-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | slider 的 label 部件 color 覆盖槽。 |
 | `--xh-slider-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | slider 的 label 部件 font-size 覆盖槽。 |
 | `--xh-slider-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | slider 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-slider-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | slider 的 label 部件 margin-block-end 覆盖槽。 |
+| `--xh-slider-label-gap` | `control`<br>`label` | `inset-block-end`<br>`inset-block-start`<br>`margin-block-end` | `@media (pointer: coarse)`<br>`default`<br>`orientation=horizontal` | `--xh-space-2` | slider 的 control、label 部件 inset-block-end、inset-block-start、margin-block-end 覆盖槽。 |
 | `--xh-slider-range-bg` | `range` | `background` | `default` | `--xh-_tone` | slider 的 range 部件 background 覆盖槽。 |
 | `--xh-slider-range-bg-disabled` | `range` | `background` | `disabled` | `--xh-bg-subtle-hover-opaque` | slider 的 range 部件 background 覆盖槽。 |
 | `--xh-slider-range-bg-invalid` | `range` | `background` | `invalid` | `--xh-border-invalid` | slider 的 range 部件 background 覆盖槽。 |
@@ -375,7 +375,7 @@ draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽�
 | `--xh-slider-thumb-shadow` | `thumb` | `box-shadow` | `default` | `none` | slider 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-slider-thumb-shadow-disabled` | `thumb` | `box-shadow` | `disabled` | `none` | slider 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-slider-thumb-shadow-dragging` | `thumb` | `box-shadow` | `dragging` | `--xh-elevation-lifted` | slider 的 thumb 部件 box-shadow 覆盖槽。 |
-| `--xh-slider-thumb-size` | `control`<br>`root`<br>`thumb` | `block-size`<br>`inline-size`<br>`margin-block-end`<br>`margin-block-start`<br>`margin-inline-start` | `default`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`size=lg`<br>`size=sm` | `--xh-space-2_5`<br>`--xh-space-3`<br>`--xh-space-4` | slider 的 control、root、thumb 部件 block-size、inline-size、margin-block-end、margin-block-start、margin-inline-start 覆盖槽。 |
+| `--xh-slider-thumb-size` | `control`<br>`root`<br>`thumb` | `block-size`<br>`inline-size`<br>`inset-block-end`<br>`inset-block-start`<br>`inset-inline`<br>`margin-block-end`<br>`margin-block-start`<br>`margin-inline-start` | `@media (pointer: coarse)`<br>`default`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`size=lg`<br>`size=sm` | `--xh-track-thumb-size-lg`<br>`--xh-track-thumb-size-md`<br>`--xh-track-thumb-size-sm` | slider 的 control、root、thumb 部件 block-size、inline-size、inset-block-end、inset-block-start、inset-inline、margin-block-end、margin-block-start、margin-inline-start 覆盖槽。 |
 | `--xh-slider-tick-bg` | `tick` | `background` | `default` | `--xh-bg-surface` | slider 的 tick 部件 background 覆盖槽。 |
 | `--xh-slider-tick-border` | `tick` | `border` | `default` | `--xh-bg-subtle-hover` | slider 的 tick 部件 border 覆盖槽。 |
 | `--xh-slider-tick-border-active` | `tick` | `border-color` | `passed` | `--xh-_tone` | slider 的 tick 部件 border-color 覆盖槽。 |

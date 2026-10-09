@@ -37585,9 +37585,9 @@
   }
 
   /* 私有槽位：组件令牌 → 中档两级回退。厚度写在 root 上而不是 track 上，
-     尺寸档才改得动一处就够，track 靠继承拿到值。线形是一条细轨：sm / md / lg = 3 / 4 / 8px */
+     尺寸档才改得动一处就够，track 靠继承拿到值。线形是一条细轨，按轨道厚度三档取 sm / md / lg = 3 / 4 / 8px */
   .xh-scope-progress[data-part='root'] {
-    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-space-1));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-track-thickness-md));
 
     /* 目标刻度与环形的刻度值按根落位 */
     position: relative;
@@ -37604,7 +37604,7 @@
     inline-size: 100%;
     block-size: var(--xh-_progress-thickness);
     border-radius: var(--xh-progress-track-radius, var(--xh-shape-pill));
-    /* 底槽取 fill-3 级中性填充（淡底阶梯的 200 档），环形的底槽同一支 */
+    /* 底槽取淡底阶梯的 200 档（--xh-bg-subtle-hover），环形的底槽同一支 */
     background: var(--xh-progress-track, var(--xh-bg-subtle-hover));
   }
 
@@ -37683,11 +37683,11 @@
   /* —— 尺寸 —— */
   /* 线形只有厚度分档；中间档不写规则，缺省即中档 */
   .xh-scope-progress[data-part='root'][data-size='sm'] {
-    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-stroke-strong));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-track-thickness-sm));
   }
 
   .xh-scope-progress[data-part='root'][data-size='lg'] {
-    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-space-2));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-track-thickness-lg));
   }
 
   /* —— 环形 —— */
@@ -37751,16 +37751,16 @@
   /* 子弹图：有分段时轨道加厚一档，填充收窄成中间一条压在色带上，色带在填充两侧照样读得出。
      三档厚度各比普通线形高一档，阶梯次序不变 */
   .xh-scope-progress[data-part='root'][data-variant='line'][data-banded] {
-    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-space-3));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-track-band-thickness-md));
     --xh-_progress-range-size: 50%;
   }
 
   .xh-scope-progress[data-part='root'][data-variant='line'][data-banded][data-size='sm'] {
-    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-space-2));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-track-band-thickness-sm));
   }
 
   .xh-scope-progress[data-part='root'][data-variant='line'][data-banded][data-size='lg'] {
-    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-space-4));
+    --xh-_progress-thickness: var(--xh-progress-thickness, var(--xh-track-band-thickness-lg));
   }
 
   /* 色带取本段语气的淡色：同一族颜色里填充是实色、色带浅一档，读得出填充落在哪一段 */
@@ -39190,11 +39190,21 @@
   }
 
   /* 语气：选择器带 [data-tone] 限定，不限定的话放在语气容器里的分段会跟着改色。
-     语气档的滑块换语气淡底（静息 / 悬停两档），选中段的字取语气字色 */
+     语气档的滑块换语气淡底（静息 / 悬停 / 禁用三档），选中段的字取语气字色；禁用的选中段与品牌档同口径——
+     滑块退到 8%、字往承载面兑一半，不回落到品牌色 */
   .xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-tone] {
     --xh-_radio-group-thumb-bg: var(--xh-_tone-subtle, var(--xh-bg-segment-selected));
     --xh-_radio-group-thumb-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-segment-selected-hover));
+    --xh-_radio-group-thumb-bg-disabled: color-mix(in oklab, var(--xh-_tone) 8%, var(--xh-bg-surface));
     --xh-_radio-group-segment-fg-checked: var(--xh-_tone-fg, var(--xh-fg-segment-selected));
+    --xh-_radio-group-segment-fg-checked-disabled: color-mix(in oklab, var(--xh-_tone-fg) 50%, var(--xh-bg-surface));
+  }
+
+  /* 深色档与品牌档同口径：选中面提到 20%、悬停 28%，深底上 12% 读不出是一块选中面。
+     语气淡底三档是语气层按固定比例兑的、不随主题换，这里按主题各取一档 */
+  :is([data-theme='dark'] *, [data-theme='dark']).xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-tone] {
+    --xh-_radio-group-thumb-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-segment-selected));
+    --xh-_radio-group-thumb-bg-hover: var(--xh-_tone-subtle-active, var(--xh-bg-segment-selected-hover));
   }
 
   /* 段：轨道里铺开的一格，不投影 Action Control 家族（与 Tabs segment 档同），面与字写在段自己身上。
@@ -39249,7 +39259,9 @@
 
   /* 段间分隔线：1px 装饰边色，长度取段高的一半再收一格半阶（md 档 32 / 2 − 2 = 14px），竖在后一段的起始缘上。
      只在横排画：竖排的段上下相接，分隔交给轨道的留白。与选中段、悬停段相邻的那几道收起（底色淡成透明）——
-     那两段铺了面，再夹一道线就把面切出了缺口 */
+     那两段铺了面，再夹一道线就把面切出了缺口。
+     已知限制：折行后下一行首段的起始缘也会画出这一道。样式层拿不到段落在第几行（不用容器查询，
+     轨道也不能裁内容，否则段的焦点环与粗指针命中区一并被裁），设计真源与组件文档注明了尽量一行排下 */
   .xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-orientation='horizontal']
     > .xh-scope-radio-group[data-part='item'] + .xh-scope-radio-group[data-part='item']::after {
     content: '';
@@ -39387,14 +39399,30 @@
       min-block-size: 0;
     }
 
-    /* segmented 的段不归家族：手指的落点比一段高，命中区由伪元素向块轴两侧外扩，段的盒与轨道内的分格一点不动。
-       只扩块轴——段与段在行内轴上首尾相接，往两侧扩会与相邻段的命中区叠上。
-       外扩一格 space-4 是按最矮的紧凑 sm 档算的（24 − 2 × 2 − 2 = 18，18 + 16 × 2 = 50），其余档更宽裕 */
+    /* segmented 的段不归家族：手指的落点比一段大，命中区由伪元素补足到粗指针下限（--xh-control-hit-coarse），
+       段的盒与轨道内的分格一点不动。竖排与折行时段与段沿块轴首尾相接、行内轴上也挨着，补足的命中区必然叠进
+       相邻段的盒——轨道建一个层叠上下文，伪元素垫在负一层：每一段的盒都压在别段外扩的命中区之上，
+       叠上的那一截归盒子本来所在的那一段，外扩只落在段与段之间没有盒的地方（轨道衬距、轨道外沿）。
+       纯 CSS 拿不到「这一段在第几行」，于是不按行开关外扩，靠层序让段的盒自己说了算。
+       块首外扩不越过轨道外沿再加一格标签间距（space-2）：单行时上沿停在字段标签下缘之外，点在标签上仍归标签；
+       少扩的一截落到块尾，命中区总高仍是下限 */
+    .xh-scope-radio-group[data-part='root'][data-variant='segmented'] {
+      isolation: isolate;
+    }
+
     .xh-scope-radio-group[data-part='root'][data-variant='segmented'] > .xh-scope-radio-group[data-part='item']::before {
       content: '';
       position: absolute;
-      inset-block: calc(-1 * var(--xh-space-4));
-      inset-inline: 0;
+      z-index: -1;
+      inset-block-start: min(
+        0px,
+        max(
+          (100% - var(--xh-control-hit-coarse)) / 2,
+          -1 * (var(--xh-radio-group-track-padding, var(--xh-space-0_5)) + var(--xh-stroke-thin) + var(--xh-space-2))
+        )
+      );
+      inset-inline: min(0px, (100% - var(--xh-control-hit-coarse)) / 2);
+      block-size: max(100%, var(--xh-control-hit-coarse));
     }
   }
 
@@ -41604,9 +41632,9 @@
 
   /* 私有槽位：组件令牌 → 中档两级回退。轨道厚度与拇指直径同时被 control / track / thumb
      三个角色节点用到，收成两个槽位挂在 root 上，尺寸档只改这两处，靠继承发到子部件。
-     中档是一条 2px 的细轨（描边粗档）配 12px 的拇指 */
+     中档是一条 2px 的细轨（描边粗档）配 12px 的拇指（轨道拇指的 md 档） */
   .xh-scope-slider[data-part='root'] {
-    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-3));
+    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-track-thumb-size-md));
     --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-stroke-thick));
 
     display: flex;
@@ -41676,13 +41704,22 @@
     cursor: not-allowed;
   }
 
-  /* 粗指针：拇指只有 12px，控件的命中区沿交叉轴两侧各外扩一格 space-4（中档 12 + 16 × 2 = 44）。
+  /* 粗指针：控件只有拇指那么厚，命中区沿交叉轴外扩，补足到粗指针命中下限（--xh-control-hit-coarse）。
+     外扩总量是「下限 − 拇指直径」，按拇指算而不是写死一格，sm 档 10px 的拇指也补得到下限。
+     横排时块首朝着标签：那一侧只扩半个余量、且不越过标签与控件之间的间距，点在标签上仍归标签、不直接跳值；
+     少扩的那一截挪到块尾补齐。竖排时标签不在行内轴上，两侧对称各扩一半。
      落指在轨道上下这一截也能按下即跳、接着拖；伪元素排在刻度之前，刻度文案仍压在它上面接得到点按 */
   @media (pointer: coarse) {
     .xh-scope-slider[data-part='control'][data-orientation='horizontal']::before {
+      --xh-_slider-hit-start: min(
+        var(--xh-slider-label-gap, var(--xh-space-2)),
+        (var(--xh-control-hit-coarse) - var(--xh-_thumb-size)) / 2
+      );
+
       content: '';
       position: absolute;
-      inset-block: calc(-1 * var(--xh-space-4));
+      inset-block-start: calc(-1 * var(--xh-_slider-hit-start));
+      inset-block-end: calc(var(--xh-_slider-hit-start) + var(--xh-_thumb-size) - var(--xh-control-hit-coarse));
       inset-inline: 0;
     }
 
@@ -41690,7 +41727,7 @@
       content: '';
       position: absolute;
       inset-block: 0;
-      inset-inline: calc(-1 * var(--xh-space-4));
+      inset-inline: calc((var(--xh-_thumb-size) - var(--xh-control-hit-coarse)) / 2);
     }
   }
 
@@ -41699,7 +41736,7 @@
   .xh-scope-slider[data-part='track'] {
     position: relative;
     border-radius: var(--xh-slider-track-radius, var(--xh-shape-pill));
-    /* 底槽取 fill-3 级中性填充（淡底阶梯的 200 档） */
+    /* 底槽取淡底阶梯的 200 档（--xh-bg-subtle-hover） */
     background: var(--xh-slider-track-bg, var(--xh-bg-subtle-hover));
   }
 
@@ -41883,13 +41920,13 @@
 
   /* —— 尺寸 —— */
   /* 尺寸只改 root 上那两个槽位，control / track / thumb 跟着一起走；中间档不写规则，缺省即中档。
-     拇指 10 / 12 / 16px；轨道小档沿用中档的 2px（再细就读不出是条轨道），大档加到 3px */
+     拇指按轨道拇指的三档取 10 / 12 / 16px；轨道小档沿用中档的 2px（再细就读不出是条轨道），大档加到 3px */
   .xh-scope-slider[data-part='root'][data-size='sm'] {
-    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-2_5));
+    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-track-thumb-size-sm));
   }
 
   .xh-scope-slider[data-part='root'][data-size='lg'] {
-    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-4));
+    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-track-thumb-size-lg));
     --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-stroke-strong));
   }
 

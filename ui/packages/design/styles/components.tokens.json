@@ -58224,11 +58224,12 @@
         "variant=line"
       ],
       "defaultToken": [
-        "--xh-space-1",
-        "--xh-space-2",
-        "--xh-space-3",
-        "--xh-space-4",
-        "--xh-stroke-strong"
+        "--xh-track-band-thickness-lg",
+        "--xh-track-band-thickness-md",
+        "--xh-track-band-thickness-sm",
+        "--xh-track-thickness-lg",
+        "--xh-track-thickness-md",
+        "--xh-track-thickness-sm"
       ],
       "visibility": "public",
       "description": "progress 的 root、target、track 部件 block-size 覆盖槽。"
@@ -62054,10 +62055,12 @@
         "root"
       ],
       "property": [
+        "inset-block-start",
         "min-block-size",
         "padding"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "orientation=horizontal",
         "variant=segmented"
       ],
@@ -62065,7 +62068,7 @@
         "--xh-space-0_5"
       ],
       "visibility": "public",
-      "description": "radio-group 的 item、root 部件 min-block-size、padding 覆盖槽。"
+      "description": "radio-group 的 item、root 部件 inset-block-start、min-block-size、padding 覆盖槽。"
     },
     {
       "name": "--xh-radio-group-track-radius",
@@ -67608,19 +67611,24 @@
       "name": "--xh-slider-label-gap",
       "component": "slider",
       "part": [
+        "control",
         "label"
       ],
       "property": [
+        "inset-block-end",
+        "inset-block-start",
         "margin-block-end"
       ],
       "state": [
-        "default"
+        "@media (pointer: coarse)",
+        "default",
+        "orientation=horizontal"
       ],
       "defaultToken": [
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "slider 的 label 部件 margin-block-end 覆盖槽。"
+      "description": "slider 的 control、label 部件 inset-block-end、inset-block-start、margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-slider-range-bg",
@@ -67891,11 +67899,15 @@
       "property": [
         "block-size",
         "inline-size",
+        "inset-block-end",
+        "inset-block-start",
+        "inset-inline",
         "margin-block-end",
         "margin-block-start",
         "margin-inline-start"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "default",
         "orientation=horizontal",
         "orientation=vertical",
@@ -67903,12 +67915,12 @@
         "size=sm"
       ],
       "defaultToken": [
-        "--xh-space-2_5",
-        "--xh-space-3",
-        "--xh-space-4"
+        "--xh-track-thumb-size-lg",
+        "--xh-track-thumb-size-md",
+        "--xh-track-thumb-size-sm"
       ],
       "visibility": "public",
-      "description": "slider 的 control、root、thumb 部件 block-size、inline-size、margin-block-end、margin-block-start、margin-inline-start 覆盖槽。"
+      "description": "slider 的 control、root、thumb 部件 block-size、inline-size、inset-block-end、inset-block-start、inset-inline、margin-block-end、margin-block-start、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-slider-tick-bg",

@@ -373,11 +373,21 @@
   }
 
   /* 语气：选择器带 [data-tone] 限定，不限定的话放在语气容器里的分段会跟着改色。
-     语气档的滑块换语气淡底（静息 / 悬停两档），选中段的字取语气字色 */
+     语气档的滑块换语气淡底（静息 / 悬停 / 禁用三档），选中段的字取语气字色；禁用的选中段与品牌档同口径——
+     滑块退到 8%、字往承载面兑一半，不回落到品牌色 */
   [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-tone] {
     --xh-_radio-group-thumb-bg: var(--xh-_tone-subtle, var(--xh-bg-segment-selected));
     --xh-_radio-group-thumb-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-segment-selected-hover));
+    --xh-_radio-group-thumb-bg-disabled: color-mix(in oklab, var(--xh-_tone) 8%, var(--xh-bg-surface));
     --xh-_radio-group-segment-fg-checked: var(--xh-_tone-fg, var(--xh-fg-segment-selected));
+    --xh-_radio-group-segment-fg-checked-disabled: color-mix(in oklab, var(--xh-_tone-fg) 50%, var(--xh-bg-surface));
+  }
+
+  /* 深色档与品牌档同口径：选中面提到 20%、悬停 28%，深底上 12% 读不出是一块选中面。
+     语气淡底三档是语气层按固定比例兑的、不随主题换，这里按主题各取一档 */
+  :is([data-theme='dark'] *, [data-theme='dark'])[data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-tone] {
+    --xh-_radio-group-thumb-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-segment-selected));
+    --xh-_radio-group-thumb-bg-hover: var(--xh-_tone-subtle-active, var(--xh-bg-segment-selected-hover));
   }
 
   /* 段：轨道里铺开的一格，不投影 Action Control 家族（与 Tabs segment 档同），面与字写在段自己身上。
@@ -432,7 +442,9 @@
 
   /* 段间分隔线：1px 装饰边色，长度取段高的一半再收一格半阶（md 档 32 / 2 − 2 = 14px），竖在后一段的起始缘上。
      只在横排画：竖排的段上下相接，分隔交给轨道的留白。与选中段、悬停段相邻的那几道收起（底色淡成透明）——
-     那两段铺了面，再夹一道线就把面切出了缺口 */
+     那两段铺了面，再夹一道线就把面切出了缺口。
+     已知限制：折行后下一行首段的起始缘也会画出这一道。样式层拿不到段落在第几行（不用容器查询，
+     轨道也不能裁内容，否则段的焦点环与粗指针命中区一并被裁），设计真源与组件文档注明了尽量一行排下 */
   [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-orientation='horizontal']
     > [data-scope='radio-group'][data-part='item'] + [data-scope='radio-group'][data-part='item']::after {
     content: '';
@@ -570,14 +582,30 @@
       min-block-size: 0;
     }
 
-    /* segmented 的段不归家族：手指的落点比一段高，命中区由伪元素向块轴两侧外扩，段的盒与轨道内的分格一点不动。
-       只扩块轴——段与段在行内轴上首尾相接，往两侧扩会与相邻段的命中区叠上。
-       外扩一格 space-4 是按最矮的紧凑 sm 档算的（24 − 2 × 2 − 2 = 18，18 + 16 × 2 = 50），其余档更宽裕 */
+    /* segmented 的段不归家族：手指的落点比一段大，命中区由伪元素补足到粗指针下限（--xh-control-hit-coarse），
+       段的盒与轨道内的分格一点不动。竖排与折行时段与段沿块轴首尾相接、行内轴上也挨着，补足的命中区必然叠进
+       相邻段的盒——轨道建一个层叠上下文，伪元素垫在负一层：每一段的盒都压在别段外扩的命中区之上，
+       叠上的那一截归盒子本来所在的那一段，外扩只落在段与段之间没有盒的地方（轨道衬距、轨道外沿）。
+       纯 CSS 拿不到「这一段在第几行」，于是不按行开关外扩，靠层序让段的盒自己说了算。
+       块首外扩不越过轨道外沿再加一格标签间距（space-2）：单行时上沿停在字段标签下缘之外，点在标签上仍归标签；
+       少扩的一截落到块尾，命中区总高仍是下限 */
+    [data-scope='radio-group'][data-part='root'][data-variant='segmented'] {
+      isolation: isolate;
+    }
+
     [data-scope='radio-group'][data-part='root'][data-variant='segmented'] > [data-scope='radio-group'][data-part='item']::before {
       content: '';
       position: absolute;
-      inset-block: calc(-1 * var(--xh-space-4));
-      inset-inline: 0;
+      z-index: -1;
+      inset-block-start: min(
+        0px,
+        max(
+          (100% - var(--xh-control-hit-coarse)) / 2,
+          -1 * (var(--xh-radio-group-track-padding, var(--xh-space-0_5)) + var(--xh-stroke-thin) + var(--xh-space-2))
+        )
+      );
+      inset-inline: min(0px, (100% - var(--xh-control-hit-coarse)) / 2);
+      block-size: max(100%, var(--xh-control-hit-coarse));
     }
   }
 
