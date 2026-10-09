@@ -39109,14 +39109,30 @@
     min-block-size: 0;
   }
 
-  /* segmented 的段不归家族：手指的落点比一段高，命中区由伪元素向块轴两侧外扩，段的盒与轨道内的分格一点不动。
-     只扩块轴——段与段在行内轴上首尾相接，往两侧扩会与相邻段的命中区叠上。
-     外扩一格 space-4 是按最矮的紧凑 sm 档算的（24 − 2 × 2 − 2 = 18，18 + 16 × 2 = 50），其余档更宽裕 */
+  /* segmented 的段不归家族：手指的落点比一段大，命中区由伪元素补足到粗指针下限（--xh-control-hit-coarse），
+     段的盒与轨道内的分格一点不动。竖排与折行时段与段沿块轴首尾相接、行内轴上也挨着，补足的命中区必然叠进
+     相邻段的盒——轨道建一个层叠上下文，伪元素垫在负一层：每一段的盒都压在别段外扩的命中区之上，
+     叠上的那一截归盒子本来所在的那一段，外扩只落在段与段之间没有盒的地方（轨道衬距、轨道外沿）。
+     纯 CSS 拿不到「这一段在第几行」，于是不按行开关外扩，靠层序让段的盒自己说了算。
+     块首外扩不越过轨道外沿再加一格标签间距（space-2）：单行时上沿停在字段标签下缘之外，点在标签上仍归标签；
+     少扩的一截落到块尾，命中区总高仍是下限 */
+  .xh-scope-radio-group[data-part='root'][data-variant='segmented'] {
+    isolation: isolate;
+  }
+
   .xh-scope-radio-group[data-part='root'][data-variant='segmented'] > .xh-scope-radio-group[data-part='item']::before {
     content: '';
     position: absolute;
-    inset-block: calc(-1 * var(--xh-space-4));
-    inset-inline: 0;
+    z-index: -1;
+    inset-block-start: min(
+      0px,
+      max(
+        (100% - var(--xh-control-hit-coarse)) / 2,
+        -1 * (var(--xh-radio-group-track-padding, var(--xh-space-0_5)) + var(--xh-stroke-thin) + var(--xh-space-2))
+      )
+    );
+    inset-inline: min(0px, (100% - var(--xh-control-hit-coarse)) / 2);
+    block-size: max(100%, var(--xh-control-hit-coarse));
   }
 }
 
