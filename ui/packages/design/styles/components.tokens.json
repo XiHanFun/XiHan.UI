@@ -78423,7 +78423,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-viewport-h-lg"
+        "none"
       ],
       "visibility": "public",
       "description": "time-picker 的 content 部件 max-block-size 覆盖槽。"
@@ -80388,7 +80388,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-viewport-h-lg"
+        "none"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 content 部件 max-block-size 覆盖槽。"

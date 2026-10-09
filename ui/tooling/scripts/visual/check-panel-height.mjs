@@ -56,6 +56,7 @@ const EXEMPT = {
   'marquee root': '跑马灯的高度是内容轨道自己的高度',
   'markdown-stream block': '滚的是行内方向（overflow-x）：块轴的高度就是这一段渲染结果自己的高度',
   'scroll-area viewport': '视口高度是容器高度减去滚动条厚度，容器多高就多高',
+  'time-range-picker content': '同 date-picker content：两组时列按 px 定高（--xh-overlay-time-column-h），面板的天然高度就是列高，缺省不另设上限；滚的是行内方向（overflow-x），两组并排放不下时横滚。按 rem 的滚动面档随根字号缩小，会把面板压出竖滚',
   'tool-call content': '滚的是行内方向（overflow-x）：块轴由展开收起的行高动画给，收起时归零',
 }
 
