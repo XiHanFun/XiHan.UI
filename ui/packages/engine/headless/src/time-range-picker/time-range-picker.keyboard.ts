@@ -27,7 +27,7 @@ export const timeRangePickerKeyboard: KeyboardTable = {
     { id: 'time-range-picker.kbd.preset-move', keys: ['ArrowUp', 'ArrowDown', 'Home', 'End'], when: 'open, focus in 快捷选项列', does: '在快捷选项之间移动焦点，到头回绕；时分秒那几列的处理器在这一列内不参与' },
     { id: 'time-range-picker.kbd.preset-pick', keys: ['Enter', 'Space'], when: 'open, focus in 某条快捷选项, not disabled/readOnly', does: '把这条快捷选项的两端整份写进值并收起浮层' },
     { id: 'time-range-picker.kbd.escape', keys: ['Escape'], when: 'open', does: '收起浮层并把焦点归还触发器，两端不变', restoresFocus: true },
-    { id: 'time-range-picker.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'open', does: '收起浮层且不拦按键，焦点按 Tab 序列自然离开，不抢回触发器', restoresFocus: false },
+    { id: 'time-range-picker.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'open', does: '不拦按键：焦点按 Tab 序列在两组列与快捷选项列之间走，浮层不收；走出浮层后随即收起且不抢回焦点', restoresFocus: false },
     { id: 'time-range-picker.kbd.segment-increment', keys: ['ArrowUp'], when: 'focus in 某一段, not disabled/readOnly', does: '本段加一格，到头回绕；空段落到该段下界' },
     { id: 'time-range-picker.kbd.segment-decrement', keys: ['ArrowDown'], when: 'focus in 某一段, not disabled/readOnly', does: '本段减一格，到头回绕；空段落到该段上界' },
     { id: 'time-range-picker.kbd.segment-next', keys: ['ArrowRight'], when: 'focus in 某一段, not disabled', does: '焦点移到本组下一段；已在本组末段则不动，不跨进另一端那组' },

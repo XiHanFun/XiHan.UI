@@ -1,6 +1,6 @@
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { cdp } from 'vitest/browser'
+import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhTimePickerColumn,
@@ -171,6 +171,22 @@ describe('时间选择浮层底栏', () => {
     expect(Number.parseFloat(style.borderTopWidth)).toBeGreaterThan(0)
     expect(style.borderTopColor).not.toBe(getComputedStyle(part('content')).backgroundColor)
     expect(part('confirm-trigger').getBoundingClientRect().right).toBeCloseTo(footer.getBoundingClientRect().right - 8, 1)
+  })
+
+  it('键盘：在列上按 Tab 焦点落到「添加」、浮层不收；按 Enter 把拼好的草稿收进值', async () => {
+    await mount({ note: false })
+    const item = (unit: string, value: string): HTMLElement => part('content').querySelector<HTMLElement>(
+      `[data-part='column'][data-value='${unit}'] [data-part='item'][data-value='${value}']`,
+    )!
+    item('hour', '10').click()
+    item('minute', '15').click()
+    item('minute', '15').focus()
+    await userEvent.keyboard('{Tab}')
+    expect(document.activeElement).toBe(part('confirm-trigger'))
+    expect(part('content').hidden).toBe(false)
+    await userEvent.keyboard('{Enter}')
+    await expect.poll(() => part('tag-list').textContent).toContain('10:15')
+    expect(part('content').hidden).toBe(false)
   })
 
   it('print：底栏随浮层一起不上纸', async () => {

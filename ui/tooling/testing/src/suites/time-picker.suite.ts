@@ -719,18 +719,69 @@ export const timePickerSuite: ConformanceSuite = {
     },
 
     {
-      name: 'tab 收起且不抢回焦点',
+      name: 'Tab 不拦按键也不收起：在列上按 Tab 焦点落到底栏「添加」、浮层仍开着；走出浮层才收起且不抢回焦点',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['time-picker.kbd.tab'],
-      props: { ...BASE, defaultValue: '09:30' },
+      props: { ...BASE, hourCycle: 24, selectionMode: 'multiple' },
       steps: [
         { kind: 'click', part: 'trigger' },
-        { kind: 'settle', until: { activeElement: HOUR_09 } },
+        { kind: 'settle', until: { activeElement: HOUR_08 } },
+        { kind: 'click', part: HOUR_09 },
+        { kind: 'click', part: MINUTE_30 },
+        // 秒列与上下午列收起，分列之后的下一站就是底栏里的「添加」
         {
           kind: 'key',
           key: 'Tab',
           expect: {
-            parts: { content: { hidden: '' } },
+            activeElement: { part: 'confirm-trigger', exact: true },
+            parts: { content: { hidden: null } },
+            events: [],
+          },
+        },
+        {
+          kind: 'raw',
+          why: 'jsdom 不把按键翻成按钮激活；该守的是列上的 Enter 处理器没截走这一下，平台才翻得成 click',
+          run: async (ctx) => {
+            const confirm = ctx.doc.querySelector<HTMLElement>(`${SCOPE}[data-part="confirm-trigger"]`)!
+            // 显式 cancelable，否则 preventDefault 是空操作
+            const enter = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })
+            confirm.dispatchEvent(enter)
+            await ctx.flush()
+            if (enter.defaultPrevented)
+              throw new Error('「添加」上的 Enter 被拦下了，键盘按不动它')
+          },
+        },
+        nativeActivation('time-picker', 'confirm-trigger'),
+        {
+          kind: 'click',
+          part: 'confirm-trigger',
+          expect: {
+            parts: { content: { hidden: null } },
+            events: [{ type: 'value-change', detail: { value: ['09:30'] } }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '浮层落点之后没有别的可 tab 元素，「走出浮层」这一下只能手动补；且「焦点没被抢回」是否定断言，只能直读 activeElement',
+          run: async (ctx) => {
+            // 模拟 Tab 的下一站，取一个层外的节点
+            const next = ctx.doc.createElement('button')
+            ctx.doc.body.append(next)
+            try {
+              next.focus()
+              await ctx.flush()
+              // 焦点归还排在收起之后的一帧，等过那一拍再断言
+              await new Promise(r => setTimeout(r, 50))
+              if (ctx.doc.activeElement !== next)
+                throw new Error('让位式关闭不该把焦点从用户刚 Tab 过去的控件上抢回来')
+            }
+            finally {
+              // 移除后焦点落回 body，不影响下一个用例
+              next.remove()
+            }
+          },
+          expect: {
+            parts: { content: { hidden: '' }, trigger: { 'aria-expanded': 'false' } },
             events: [{ type: 'open-change', detail: { open: false } }],
           },
         },

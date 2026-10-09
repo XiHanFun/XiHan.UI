@@ -585,10 +585,10 @@ export const timeRangePickerSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'tab 收起且不抢回焦点',
+      name: 'Tab 不拦按键也不收起：焦点按序走过起点那组再进终点那组、浮层仍开着；走出浮层才收起且不抢回焦点',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['time-range-picker.kbd.tab'],
-      props: { ...BASE, defaultValue: ['09:30', '10:30'] },
+      props: { ...BASE, hourCycle: 24, defaultValue: ['09:30', '10:30'] },
       steps: [
         { kind: 'click', part: 'trigger' },
         { kind: 'settle', until: { activeElement: S_HOUR_09 } },
@@ -596,7 +596,43 @@ export const timeRangePickerSuite: ConformanceSuite = {
           kind: 'key',
           key: 'Tab',
           expect: {
-            parts: { content: { hidden: '' } },
+            activeElement: { part: S_MINUTE_30, exact: true },
+            parts: { content: { hidden: null } },
+            events: [],
+          },
+        },
+        // 秒列与上下午列收起，起点那组分列之后的下一站是终点那组时列的锚点
+        {
+          kind: 'key',
+          key: 'Tab',
+          expect: {
+            activeElement: { part: E_HOUR_10, exact: true },
+            parts: { content: { hidden: null } },
+            events: [],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '「走出浮层」这一下要落到一个确定的层外节点上；且「焦点没被抢回」是否定断言，只能直读 activeElement',
+          run: async (ctx) => {
+            // 模拟 Tab 的下一站，取一个层外的节点
+            const next = ctx.doc.createElement('button')
+            ctx.doc.body.append(next)
+            try {
+              next.focus()
+              await ctx.flush()
+              // 焦点归还排在收起之后的一帧，等过那一拍再断言
+              await new Promise(r => setTimeout(r, 50))
+              if (ctx.doc.activeElement !== next)
+                throw new Error('让位式关闭不该把焦点从用户刚 Tab 过去的控件上抢回来')
+            }
+            finally {
+              // 移除后焦点落回 body，不影响下一个用例
+              next.remove()
+            }
+          },
+          expect: {
+            parts: { content: { hidden: '' }, trigger: { 'aria-expanded': 'false' } },
             events: [{ type: 'open-change', detail: { open: false } }],
           },
         },

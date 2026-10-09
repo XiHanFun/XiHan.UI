@@ -517,12 +517,46 @@ describe('开合', () => {
     expect(h.value()).toEqual(['09:30'])
   })
 
-  it('tab 收起且不拦按键，焦点不抢回触发器', () => {
-    const h = open()
+  it('tab 不拦按键也不收起：焦点走到列后的底栏照开着，走出浮层才收起且不抢回触发器', async () => {
+    const h = open({ selectionMode: 'multiple' })
     h.trigger.click()
-    const event = pressKey(h.content, 'Tab')
-    expect(event.defaultPrevented).toBe(false)
+    // 本层参与者延后一枚微任务武装，焦点外移的判定要等它就位
+    await new Promise(resolve => setTimeout(resolve, 0))
+    h.option('hour', '09').click()
+    h.option('minute', '30').click()
+    h.option('minute', '30').focus()
+    const tab = pressKey(h.option('minute', '30'), 'Tab')
+    expect(tab.defaultPrevented).toBe(false)
+    expect(h.state()).toBe('open')
+
+    // jsdom 按 Tab 不移动焦点：手动补上 Tab 序列的下一站——底栏里的「添加」
+    const footer = document.createElement('div')
+    const confirm = document.createElement('button')
+    footer.appendChild(confirm)
+    h.content.appendChild(footer)
+    spread(footer, h.api().getFooterProps() as Record<string, unknown>)
+    spread(confirm, h.api().getConfirmTriggerProps() as Record<string, unknown>)
+    confirm.focus()
+    expect(document.activeElement).toBe(confirm)
+    expect(h.state()).toBe('open')
+    // 列上的 Enter 处理器不能截走底栏按钮的 Enter：拦下了平台就不再把它翻成 click
+    h.option('minute', '00').focus()
+    confirm.focus()
+    const enter = pressKey(confirm, 'Enter')
+    expect(enter.defaultPrevented).toBe(false)
+    expect(h.api().draftValue).toBe('09:30')
+    // 键盘激活原生按钮由平台翻成 click
+    confirm.click()
+    expect(h.value()).toEqual(['09:30'])
+    expect(h.state()).toBe('open')
+
+    // 再往后 Tab 出了浮层：收起，焦点留在用户刚走到的地方
+    const next = document.createElement('button')
+    document.body.appendChild(next)
+    next.focus()
     expect(h.state()).toBe('closed')
+    await flushFrames(2)
+    expect(document.activeElement).toBe(next)
   })
 })
 
