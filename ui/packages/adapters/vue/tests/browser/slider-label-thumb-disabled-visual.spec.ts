@@ -64,7 +64,7 @@ describe('slider 字段标签、轨道、拇指与禁用面', () => {
     expect(style.marginBlockEnd).toBe('4px')
   })
 
-  it('轨道 2px、取 fill-3 级中性填充，两端全圆；已选区间品牌色', () => {
+  it('轨道 2px、取淡底 200 档，两端全圆；已选区间品牌色', () => {
     const { track, range } = mount()
     const style = getComputedStyle(track)
     expect(track.getBoundingClientRect().height).toBe(2)
@@ -113,7 +113,7 @@ describe('slider 字段标签、轨道、拇指与禁用面', () => {
     expect(passed!.borderTopColor).toBe(resolvedToken('--xh-bg-brand'))
   })
 
-  it('禁用：不整体压暗，轨道退 fill-2、区间与拇指描边退 fill-3、拇指白面无影、标签不另变色', () => {
+  it('禁用：不整体压暗，轨道退淡底 100 档、区间与拇指描边退 200 档、拇指白面无影、标签不另变色', () => {
     const { root, label, track, range, thumb, ticks } = mount('data-disabled')
     expect(getComputedStyle(root).opacity).toBe('1')
     expect(getComputedStyle(label).color).toBe(resolvedToken('--xh-fg-muted'))
