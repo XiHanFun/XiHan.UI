@@ -151,6 +151,16 @@ function resolvedColor(token: string): string {
   return value
 }
 
+/** 字重令牌的数值：取 :root 上的令牌，字重不随主题变 */
+function resolvedWeight(token: string): string {
+  const probe = document.createElement('span')
+  probe.style.fontWeight = `var(${token})`
+  document.body.append(probe)
+  const weight = getComputedStyle(probe).fontWeight
+  probe.remove()
+  return weight
+}
+
 function colorAlpha(color: string): number {
   const canvas = document.createElement('canvas')
   canvas.width = 1
@@ -178,7 +188,7 @@ afterEach(async () => {
 })
 
 describe('级联选择的统一选中标记', () => {
-  it.each([false, true])('multiple=%s：列项选中只显示对号，正文与展开路径保持中性', async (multiple) => {
+  it.each([false, true])('multiple=%s：列项选中显示行尾对号、字重升到 medium，正文颜色与展开路径保持中性', async (multiple) => {
     await mountCascader({ multiple })
     const selected = item('shanghai')
     const path = item('east')
@@ -187,7 +197,9 @@ describe('级联选择的统一选中标记', () => {
 
     expect(selected.getAttribute('data-state')).toBe('checked')
     expect(getComputedStyle(selected).color).toBe(getComputedStyle(plain).color)
-    expect(getComputedStyle(selected).fontWeight).toBe(getComputedStyle(plain).fontWeight)
+    // 对号集合的选中：正文颜色保持静息，字重升到 medium
+    expect(getComputedStyle(selected).fontWeight).toBe(resolvedWeight('--xh-font-weight-medium'))
+    expect(getComputedStyle(plain).fontWeight).toBe(resolvedWeight('--xh-font-weight-regular'))
     expect(getComputedStyle(selected).backgroundColor).toBe(resolvedColor('--xh-bg-subtle'))
     expect(getComputedStyle(path).backgroundColor).toBe(getComputedStyle(selected).backgroundColor)
     expect(getComputedStyle(selectedIndicator).opacity).toBe('1')
@@ -203,7 +215,7 @@ describe('级联选择的统一选中标记', () => {
     expect(getComputedStyle(selected).transitionProperty).toBe('none')
   })
 
-  it.each([false, true])('multiple=%s：搜索结果沿用对号，移走高亮后不保留选中底或强调文字', async (multiple) => {
+  it.each([false, true])('multiple=%s：搜索结果沿用对号与 medium 字重，移走高亮后不保留选中底或强调色', async (multiple) => {
     await mountCascader({ multiple })
     await search('华东')
     const selected = searchItem('区域 / 华东 / 上海')
@@ -216,7 +228,8 @@ describe('级联选择的统一选中标记', () => {
     expect(selected.hasAttribute('data-highlighted')).toBe(false)
     expect(colorAlpha(getComputedStyle(selected).backgroundColor)).toBe(0)
     expect(getComputedStyle(selected).color).toBe(getComputedStyle(plain).color)
-    expect(getComputedStyle(selected).fontWeight).toBe(getComputedStyle(plain).fontWeight)
+    expect(getComputedStyle(selected).fontWeight).toBe(resolvedWeight('--xh-font-weight-medium'))
+    expect(getComputedStyle(plain).fontWeight).toBe(resolvedWeight('--xh-font-weight-regular'))
     expect(getComputedStyle(selected, '::after').opacity).toBe('1')
     expect(getComputedStyle(plain, '::after').opacity).toBe('0')
     expect(mask(selected, '::after')).toBe(resolvedMask('--xh-glyph-mark-check'))
