@@ -407,9 +407,10 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `--xh-command-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-fg-default` | command 的 item 部件 color 覆盖槽。 |
 | `--xh-command-item-font-size` | `item` | `font-size` | `default` | `--xh-_command-font-size` | command 的 item 部件 font-size 覆盖槽。 |
 | `--xh-command-item-gap` | `item` | `gap` | `default` | `--xh-_command-gap` | command 的 item 部件 gap 覆盖槽。 |
+| `--xh-command-item-h` | `item` | `min-block-size` | `default` | `--xh-_command-item-h` | command 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-command-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | command 的 item 部件 line-height 覆盖槽。 |
 | `--xh-command-item-px` | `item` | `padding-inline` | `default` | `--xh-_command-px` | command 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-command-item-py` | `item` | `min-block-size`<br>`padding-block` | `default`<br>`xh-collection-context=overlay` | `--xh-_command-item-py` | command 的 item 部件 min-block-size、padding-block 覆盖槽。 |
+| `--xh-command-item-py` | `item` | `padding-block` | `default` | `--xh-_command-item-py` | command 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-command-item-radius` | `item` | `border-radius` | `default` | `0` | command 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-command-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | command 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-command-list-busy-opacity` | `list` | `opacity` | `default` | `--xh-state-disabled-opacity` | command 的 list 部件 opacity 覆盖槽。 |

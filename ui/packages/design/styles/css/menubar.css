@@ -142,6 +142,7 @@
     --xh-_menubar-trigger-py: var(--xh-space-2);
     --xh-_menubar-trigger-px: var(--xh-control-px-md);
     --xh-_menubar-item-py: var(--xh-list-option-py-md);
+    --xh-_menubar-item-h: var(--xh-list-option-h-md);
     --xh-_menubar-item-px: var(--xh-control-px-md);
     --xh-_menubar-item-gap: var(--xh-control-gap-md);
     --xh-_menubar-font-size: var(--xh-control-font-md);
@@ -152,6 +153,7 @@
     --xh-_menubar-trigger-py: var(--xh-space-1_5);
     --xh-_menubar-trigger-px: var(--xh-control-px-sm);
     --xh-_menubar-item-py: var(--xh-list-option-py-sm);
+    --xh-_menubar-item-h: var(--xh-list-option-h-sm);
     --xh-_menubar-item-px: var(--xh-control-px-sm);
     --xh-_menubar-item-gap: var(--xh-control-gap-sm);
     --xh-_menubar-font-size: var(--xh-control-font-sm);
@@ -162,6 +164,7 @@
     --xh-_menubar-trigger-py: var(--xh-space-2_5);
     --xh-_menubar-trigger-px: var(--xh-control-px-lg);
     --xh-_menubar-item-py: var(--xh-list-option-py-lg);
+    --xh-_menubar-item-h: var(--xh-list-option-h-lg);
     --xh-_menubar-item-px: var(--xh-control-px-lg);
     --xh-_menubar-item-gap: var(--xh-control-gap-lg);
     --xh-_menubar-font-size: var(--xh-control-font-lg);
@@ -259,6 +262,7 @@
      子菜单箭头是行尾的伪元素；间距统一由行的 gap 给，家族按槽下发的外边距归零 */
   [data-scope='menubar'][data-part='item'] {
     --xh-collection-block-padding: var(--xh-menubar-item-py, var(--xh-_menubar-item-py));
+    --xh-collection-row-h: var(--xh-menubar-item-h, var(--xh-_menubar-item-h));
     --xh-collection-inline-padding: var(--xh-menubar-item-px, var(--xh-_menubar-item-px));
     --xh-collection-gap: 0;
     --xh-collection-font-size: var(--xh-menubar-item-font-size, var(--xh-_menubar-font-size));

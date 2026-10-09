@@ -382,7 +382,7 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 | `--xh-listbox-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | listbox 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-listbox-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | listbox 的 item 部件 line-height 覆盖槽。 |
 | `--xh-listbox-item-px` | `item` | `padding-inline` | `default` | `--xh-_listbox-item-px` | listbox 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-listbox-item-py` | `item` | `min-block-size`<br>`padding-block` | `default`<br>`xh-collection-context=overlay` | `--xh-_listbox-item-py` | listbox 的 item 部件 min-block-size、padding-block 覆盖槽。 |
+| `--xh-listbox-item-py` | `item` | `padding-block` | `default` | `--xh-_listbox-item-py` | listbox 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-listbox-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | listbox 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-listbox-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | listbox 的 label 部件 color 覆盖槽。 |
 | `--xh-listbox-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | listbox 的 label 部件 font-size 覆盖槽。 |

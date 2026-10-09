@@ -737,7 +737,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `--xh-tree-select-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | tree-select 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-tree-select-item-leading` | `branch-control`<br>`item` | `line-height` | `default` | `--xh-leading-normal` | tree-select 的 branch-control、item 部件 line-height 覆盖槽。 |
 | `--xh-tree-select-item-px` | `branch-control`<br>`item` | `padding-inline` | `default` | `--xh-_tree-select-row-px` | tree-select 的 branch-control、item 部件 padding-inline 覆盖槽。 |
-| `--xh-tree-select-item-py` | `branch-control`<br>`item` | `min-block-size`<br>`padding-block` | `default`<br>`xh-collection-context=overlay` | `--xh-_tree-select-row-py` | tree-select 的 branch-control、item 部件 min-block-size、padding-block 覆盖槽。 |
+| `--xh-tree-select-item-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-_tree-select-row-py` | tree-select 的 branch-control、item 部件 padding-block 覆盖槽。 |
 | `--xh-tree-select-item-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `0` | tree-select 的 branch-control、item 部件 border-radius 覆盖槽。 |
 | `--xh-tree-select-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tree-select 的 label 部件 color 覆盖槽。 |
 | `--xh-tree-select-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | tree-select 的 label 部件 color 覆盖槽。 |

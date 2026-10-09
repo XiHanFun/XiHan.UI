@@ -5,7 +5,7 @@
 // 轨道尺寸算法处理跨行图标时会把图标高度平均分给两行，没有说明的条目也会长出半个图标高的第 2 行，
 // 图标因此整体下沉。这一整套只有真实浏览器的网格算法才量得出来，jsdom 既不排版也不解析网格。
 //
-// 断言不写魔法数：期望高度从条目自己的计算值（padding-block + line-height）推出来。
+// 断言不写魔法数：期望高度从条目自己的计算值推出来——上下内距加一行文字，与皮肤接上的定高行（min-block-size）取大。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
@@ -107,15 +107,16 @@ function secondRow(row: HTMLElement): number {
   return Number.parseFloat(tracks[1]!)
 }
 
-/** 没有说明槽的条目：单行高 = 上下块内距 + 行高 */
+/** 没有说明槽的条目：单行高 = 上下块内距 + 行高；皮肤接了定高行时不低于它 */
 function expectSingleLine(row: HTMLElement, glyphParts: readonly string[]): void {
   const style = getComputedStyle(row)
   expect(style.display).toBe('grid')
   expect(secondRow(row)).toBe(0)
 
-  const expected = Number.parseFloat(style.paddingBlockStart)
+  const content = Number.parseFloat(style.paddingBlockStart)
     + Number.parseFloat(style.paddingBlockEnd)
     + Number.parseFloat(style.lineHeight)
+  const expected = Math.max(content, Number.parseFloat(style.minBlockSize) || 0)
   expect(row.getBoundingClientRect().height).toBeCloseTo(expected, 1)
 
   const text = slot(row, 'text')
@@ -132,8 +133,16 @@ describe('浮层集合条目的行高', () => {
     await mount(() => h(XhSelectRoot, { collection: OPTIONS, defaultOpen: true, defaultValue: 'beta' }))
     const items = rows('select', ['item'])
     expect(items).toHaveLength(OPTIONS.length)
-    for (const item of items)
+    // 锚定浮层里的候选接了定高行：md 档比同档字段高一级
+    const probe = document.createElement('div')
+    probe.style.blockSize = 'var(--xh-control-h-lg)'
+    host!.append(probe)
+    const rowHeight = probe.getBoundingClientRect().height
+    probe.remove()
+    for (const item of items) {
+      expect(item.getBoundingClientRect().height).toBeCloseTo(rowHeight, 1)
       expectSingleLine(item, ['item-indicator'])
+    }
   })
 
   it('tree-select：叶子与分支行同高，展开箭头与对号都与文字同一中线', async () => {

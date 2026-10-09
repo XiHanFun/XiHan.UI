@@ -8786,6 +8786,9 @@
               "name": "--xh-cascader-item-gap"
             },
             {
+              "name": "--xh-cascader-item-h"
+            },
+            {
               "name": "--xh-cascader-item-indicator-fg"
             },
             {
@@ -16286,6 +16289,9 @@
               "name": "--xh-combobox-item-gap"
             },
             {
+              "name": "--xh-combobox-item-h"
+            },
+            {
               "name": "--xh-combobox-item-indicator-fg"
             },
             {
@@ -17220,6 +17226,9 @@
             },
             {
               "name": "--xh-command-item-gap"
+            },
+            {
+              "name": "--xh-command-item-h"
             },
             {
               "name": "--xh-command-item-leading"
@@ -18361,6 +18370,9 @@
             },
             {
               "name": "--xh-context-menu-item-gap"
+            },
+            {
+              "name": "--xh-context-menu-item-h"
             },
             {
               "name": "--xh-context-menu-item-indicator-fg"
@@ -41215,6 +41227,9 @@
               "name": "--xh-mention-item-gap"
             },
             {
+              "name": "--xh-mention-item-h"
+            },
+            {
               "name": "--xh-mention-item-leading"
             },
             {
@@ -42126,6 +42141,9 @@
               "name": "--xh-menu-item-gap"
             },
             {
+              "name": "--xh-menu-item-h"
+            },
+            {
               "name": "--xh-menu-item-indicator-fg"
             },
             {
@@ -43005,6 +43023,9 @@
             },
             {
               "name": "--xh-menubar-item-gap"
+            },
+            {
+              "name": "--xh-menubar-item-h"
             },
             {
               "name": "--xh-menubar-item-indicator-fg"
@@ -57415,6 +57436,9 @@
             },
             {
               "name": "--xh-select-item-gap"
+            },
+            {
+              "name": "--xh-select-item-h"
             },
             {
               "name": "--xh-select-item-indicator-size"

@@ -29,6 +29,7 @@
     --xh-_command-input-h: var(--xh-control-h-md);
     --xh-_command-px: var(--xh-control-px-md);
     --xh-_command-item-py: var(--xh-list-option-py-md);
+    --xh-_command-item-h: var(--xh-list-option-h-md);
     --xh-_command-gap: var(--xh-control-gap-md);
     --xh-_command-font-size: var(--xh-control-font-md);
   }
@@ -47,6 +48,7 @@
     --xh-_command-input-h: var(--xh-control-h-sm);
     --xh-_command-px: var(--xh-control-px-sm);
     --xh-_command-item-py: var(--xh-list-option-py-sm);
+    --xh-_command-item-h: var(--xh-list-option-h-sm);
     --xh-_command-gap: var(--xh-control-gap-sm);
     --xh-_command-font-size: var(--xh-control-font-sm);
   }
@@ -57,6 +59,7 @@
     --xh-_command-input-h: var(--xh-control-h-lg);
     --xh-_command-px: var(--xh-control-px-lg);
     --xh-_command-item-py: var(--xh-list-option-py-lg);
+    --xh-_command-item-h: var(--xh-list-option-h-lg);
     --xh-_command-gap: var(--xh-control-gap-lg);
     --xh-_command-font-size: var(--xh-control-font-lg);
   }
@@ -265,6 +268,7 @@
      布局保持 flex：图标、正文、快捷键按作者顺序排成一行，不用家族网格；间距由行的 gap 给 */
   [data-scope='command'][data-part='item'] {
     --xh-collection-block-padding: var(--xh-command-item-py, var(--xh-_command-item-py));
+    --xh-collection-row-h: var(--xh-command-item-h, var(--xh-_command-item-h));
     --xh-collection-inline-padding: var(--xh-command-item-px, var(--xh-_command-px));
     --xh-collection-gap: 0;
     --xh-collection-font-size: var(--xh-command-item-font-size, var(--xh-_command-font-size));

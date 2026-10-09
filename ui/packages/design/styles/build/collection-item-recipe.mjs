@@ -21,7 +21,7 @@ const CONTEXT_STATES = {
    */
   nav: ['rest', 'hover', 'keyboard-highlight', 'pressed', 'open-path', 'current', 'current+hover', 'current+highlight', 'current+pressed', 'terminal'],
 }
-const SIZE_FIELDS = ['blockPadding', 'overlayRowHeight', 'inlinePadding', 'gap', 'fontSize', 'glyphSize']
+const SIZE_FIELDS = ['blockPadding', 'inlinePadding', 'gap', 'fontSize', 'glyphSize']
 const STATE_FIELDS = ['backgroundColor', 'color', 'descriptionColor', 'indicatorColor', 'outlineColor', 'fontWeight', 'cursor', 'opacity']
 const FORCED_FIELDS = ['backgroundColor', 'color', 'outlineColor', 'markerColor']
 const STATE_SLOT = {
@@ -278,7 +278,6 @@ function sizeVars(source, size) {
   const value = source.sizeValues[size]
   return [
     `    --xh-_collection-block-padding: ${value.blockPadding};`,
-    `    --xh-_collection-overlay-row-h: ${value.overlayRowHeight};`,
     `    --xh-_collection-inline-padding: ${value.inlinePadding};`,
     `    --xh-_collection-gap: ${value.gap};`,
     `    --xh-_collection-font-size: ${value.fontSize};`,
@@ -401,13 +400,11 @@ ${SIZES.map(size => `  [data-xh-collection-item][data-xh-collection-size='${size
 ${sizeVars(source, size)}
   }`).join('\n\n')}
 
-  /* 浮层集合的行有定高：一行文字的行比同档字段高一级，带说明的行照常撑高。条目是内容盒，
-     最小块尺寸扣掉上下内距，内距被皮肤或使用者改了也照样落在同一行高上 */
-  [data-xh-collection-item][data-xh-collection-context='overlay'] {
-    min-block-size: calc(
-      var(--xh-collection-row-h, var(--xh-_collection-overlay-row-h)) -
-      2 * var(--xh-collection-block-padding, var(--xh-_collection-block-padding))
-    );
+  /* 定高行：锚定浮层里的集合（下拉、菜单、级联、命令面板）由皮肤经这支桥接槽接上按档的行高，
+     一行文字的行落在这一档、带说明的行照常撑高；条目在 reset 里已是 border-box，行高就是可见盒高。
+     overlay 语境同时覆盖页内列表、树与时间格，它们不接这支槽，仍由内距加一行文字撑开 */
+  [data-xh-collection-item] {
+    min-block-size: var(--xh-collection-row-h, auto);
   }
 
   [data-xh-collection-slot='prefix'] {

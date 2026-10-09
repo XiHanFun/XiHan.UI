@@ -82,6 +82,7 @@
     --xh-_combobox-h: var(--xh-control-h-md);
     --xh-_combobox-px: var(--xh-control-px-md);
     --xh-_combobox-item-py: var(--xh-list-option-py-md);
+    --xh-_combobox-item-h: var(--xh-list-option-h-md);
     --xh-_combobox-item-px: var(--xh-control-px-md);
     --xh-_combobox-gap: var(--xh-control-gap-md);
     --xh-_combobox-font-size: var(--xh-control-font-md);
@@ -118,6 +119,7 @@
     --xh-_combobox-h: var(--xh-control-h-sm);
     --xh-_combobox-px: var(--xh-control-px-sm);
     --xh-_combobox-item-py: var(--xh-list-option-py-sm);
+    --xh-_combobox-item-h: var(--xh-list-option-h-sm);
     --xh-_combobox-item-px: var(--xh-control-px-sm);
     --xh-_combobox-gap: var(--xh-control-gap-sm);
     --xh-_combobox-font-size: var(--xh-control-font-sm);
@@ -129,6 +131,7 @@
     --xh-_combobox-h: var(--xh-control-h-lg);
     --xh-_combobox-px: var(--xh-control-px-lg);
     --xh-_combobox-item-py: var(--xh-list-option-py-lg);
+    --xh-_combobox-item-h: var(--xh-list-option-h-lg);
     --xh-_combobox-item-px: var(--xh-control-px-lg);
     --xh-_combobox-gap: var(--xh-control-gap-lg);
     --xh-_combobox-font-size: var(--xh-control-font-lg);
@@ -384,6 +387,7 @@
      语境给（选中 = 透明底 + 行尾对号，正文保持 rest 色与常规字重），公开 Combobox 槽只映射到家族合同 */
   [data-scope='combobox'][data-part='item'] {
     --xh-collection-block-padding: var(--xh-combobox-item-py, var(--xh-_combobox-item-py));
+    --xh-collection-row-h: var(--xh-combobox-item-h, var(--xh-_combobox-item-h));
     --xh-collection-inline-padding: var(--xh-combobox-item-px, var(--xh-_combobox-item-px));
     --xh-collection-gap: var(--xh-combobox-item-gap, var(--xh-_combobox-gap));
     --xh-collection-font-size: var(--xh-combobox-item-font-size, var(--xh-_combobox-font-size));
