@@ -1033,6 +1033,11 @@
       "$type": "dimension",
       "$value": "3.5rem"
     },
+    "color-area-h": {
+      "$description": "取色面板顶部二维取色区（饱和度 × 明度）的高度：与面板宽配成接近 3:2 的取色面，拖动时纵向有足够的行程。",
+      "$type": "dimension",
+      "$value": "11rem"
+    },
     "column-item-h": {
       "$description": "浮层时列里一格的高度：比小号控件行矮一档，列里十几格并排时才不显得稀疏。",
       "$type": "dimension",
