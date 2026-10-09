@@ -307,7 +307,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 角色 | 圆角 | 给谁 |
 | --- | ---: | --- |
 | inset | 2px | 嵌在 control 内的小块：checkbox 系方框、页内列表的候选行（Listbox / Tree 的行）、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item、骨架屏文本条；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
-| control | 2px | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close/clear trigger、kbd、tooltip、rating item、tabs / steps trigger；随文方签 Tag 与状态方签 ToolCall status、Approval result、QuestionFlow result；Alert 提示条；RadioGroup segmented 形态的轨道与段 |
+| control | 2px | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close/clear trigger、kbd、tooltip、rating item、tabs / steps trigger；随文方签 Tag 与状态方签 ToolCall status、Approval result、QuestionFlow result；Alert 提示条；RadioGroup segmented 形态的轨道与段；日期与时间面板的快捷项（24 高的淡底小钮） |
 | surface | 4px | Card、Panel、列表容器、Tabs segment 的轨道、选择卡片（RadioGroup / CheckboxGroup card 档条目） |
 | overlay | 4px | Popover、Menu、Dialog、Notification 卡片预设（Drawer 贴边，不取圆角；Notification 轻提示预设是一行短消息，取 control） |
 | circle | 50% | 宽高相等的圆形对象：avatar、加了底框的 icon、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle、Citation 来源列表的序号；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页与关闭，走 Action Control `floating` profile）；图表的数据点与端点、关系图节点；日历日视图的 24px 日期格、日期面板的翻页钮与「今天」圆点（月 / 季 / 年格不是一维对象，仍取 control） |
@@ -606,6 +606,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 语义 | 对象 | 唯一标记 | 叠加态 | forced-colors |
 | --- | --- | --- | --- | --- |
 | 对号集合的选中 | Select、Combobox、TreeSelect、Cascader、时间列、Mention、Tree、Listbox、TagGroup | 透明底 + 行尾对号（`--xh-glyph-mark-check`，`--xh-fg-brand`）；正文颜色保持 rest，字重升到 `--xh-font-weight-medium`。TagGroup 保持标签自身的面，选中只多一枚文字后的对号。树族单选、多选、级联同一种标记：分支行也放对号，半选画横杠（`--xh-glyph-mark-minus`），不用勾选方框（Tree、Listbox、TagGroup 2026-09-24 起与 TreeSelect 统一） | highlighted = 家族 hover 档；selected + highlighted = hover 档 + 对号 | Highlight / HighlightText |
+| 快捷项的选中 | DatePicker、DateRangePicker、TimePicker、TimeRangePicker 的快捷项 | 静息就是淡底小钮（`--xh-bg-subtle`，control 形状），选中只多一枚行尾对号（`--xh-glyph-mark-check`，`--xh-fg-brand`），面、字色与字重都不变：快捷项是一组一键写值的小钮，不是一行候选，字重一升小钮就变宽、并排的几颗跟着挪位；行尾始终留着对号轨 | highlighted / hover = 200、pressed = 300（淡底承载阶梯），叠在选中上同档；底升档时次级前景换 `--xh-fg-default` | Highlight / HighlightText |
 | 页内持久集合的选中 | Table row、Transfer、GridList、SideNav 当前项、选择卡片（RadioGroup / CheckboxGroup card 档条目） | `--xh-bg-brand-subtle` 行面 + `--xh-fg-on-brand-subtle`；Table row / Transfer / GridList 另有行首勾选框（勾由勾选标记配方画），方框是非颜色通道，行面是扫读通道，两者都留；选择卡片行首照常是圆圈 / 方框，描边不换、写了 `data-tone` 时面换语气淡底。配方 `markers.page.glyph` 为 trailing：page 语境若再接对号部件，对号同样落在行尾。SideNav 当前项是行面与字色，另把字重提到 `--xh-font-weight-semibold`、行取 surface 圆角，不画起始侧指示条（配方 `markers.page.current: none`） | selected + hover = 20%、selected + pressed = 28% | Highlight / HighlightText |
 | 导航当前页 | Tabs line、Anchor、NavigationMenu、Breadcrumb | `nav` 语境：透明面 + 2px 指示条 + 字色 `--xh-fg-brand` + `--xh-font-weight-medium`；指示条由组件自己的滑动 indicator 部件承担（Tabs / Anchor / NavigationMenu，机器量几何、皮肤画在 list 上）；list 里没放该部件时，当前项在自己的 `::after` 上自画一条同规格的静态线（厚度 / 颜色 / 圆角读各自 `--xh-<c>-indicator-*` 同一组槽，不做动画，rtl 随逻辑属性镜像，放了部件即收起）：Tabs 横向贴底、纵向贴行向末端（与部件同侧）；Anchor 竖排贴行向起始缘、横排贴底边（链接为省略号收着 overflow，线画在链接盒内、主轴两端各退 `--xh-space-1` 避开圆角，部件则骑在 list 的轨道上）；NavigationMenu 的 `indicator` 部件表达的是「哪张面板开着」而非当前页，指向当前页面的链接始终自画静态线、不随部件收起（横排 list 里的直达链接贴底边，竖排的直达链接与面板里的链接贴行向起始缘，两端同样退 `--xh-space-1`）；Breadcrumb 当前页为不可点位置，投影 `data-xh-collection-terminal`：`--xh-fg-default` + medium、cursor default、无 hover / pressed | current + hover = 100、current + pressed = 200（terminal 不叠加） | ButtonText |
 | 格状当前 | Steps indicator、Calendar 选中格 | 实心 `--xh-bg-brand` + `--xh-fg-on-brand`，不加粗 | pressed = `--xh-bg-brand-active` | Highlight / HighlightText |
@@ -675,6 +676,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 | --- | --- | --- |
 | 浮层集合 | 锚定浮层里的 Menu 族、Select / Combobox / Cascader / Mention 选项、Command | 一行文字的行定高 `--xh-list-option-h-*`（32 / 36 / 40，紧凑 28 / 32 / 36），比同档字段高一级；皮肤经家族桥接槽 `--xh-collection-row-h` 显式接入（overlay 语境本身不带定高，页内列表、树与时间格同属这一语境），内距仍取 `--xh-list-option-py-*`，说明行再撑高一行 |
 | 页内候选 | Listbox、Tree | `--xh-list-option-py-*` 内距加一行文字撑开，说明行再撑高一行 |
+| 面板快捷项 | DatePicker、DateRangePicker、TimePicker、TimeRangePicker 的快捷项 | 24 高的淡底小钮（`--xh-control-action-size`），字取说明档，不随尺寸档变高；日期面板在窄档横排成一条，其余竖排成一列 |
 | 时间列 | TimePicker、TimeRangePicker 与 DatePicker / DateRangePicker 的时间格 | 24 高的通栏条（`--xh-control-action-size`），列内间距 `--xh-space-2` 撑出 32 的行距，不随尺寸档变高；列底留白让末尾几格也能滚到列顶 |
 | 页面级导航 | SideNav | 最小行高取 `--xh-control-h-*`，与折叠窄栏的方形图标位、同档控件等高 |
 | 随文目录 | Anchor | 块向内距 `--xh-space-1`，贴近正文阅读节奏，不按控件高 |
@@ -1505,7 +1507,7 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 - 禁止用阴影或淡底充当边界；禁止 `--xh-border-subtle` / `--xh-border-strong` 作根面外边。
 - 禁止字段静息消费 raised 阴影或透明边。
 - 禁止用 `bordered` / `borderless` / `plain|surface` / `primary|secondary` 等私有轴表达有框无框。
-- 禁止 `--xh-bg-brand-subtle` 用于未选中语义（today、completed、open）。
+- 禁止 `--xh-bg-brand-subtle` 用于未选中语义（today、open，以及 Steps 以外的 completed）；Steps 走过的步是唯一登记的例外，见 §7.3。
 - 禁止 hover 与 pressed 同档，或在白底上 hover 直接落 200。
 - 禁止除 Button 外的触发器缺省品牌实心。
 - 禁止正方盒取 pill、禁止分页点两种语言。
