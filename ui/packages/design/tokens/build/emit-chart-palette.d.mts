@@ -39,10 +39,26 @@ export const RULES: {
   centerContrast: number
 }
 
+export type ChartScheme = 'categorical' | 'monochrome' | 'brand' | 'muted'
+type PaletteRules = Omit<typeof RULES, 'hueCluster'> & { hueCluster: { span: number, max: number } | null, chromaMax?: number }
+/** 主题单色的一档：色阶名，或往承载面里混（色占 amount%）的那一档。 */
+export type MonochromeStep = string | { step: string, amount: number }
+
+export const SCHEMES: ChartScheme[]
+export const BRAND_HUES: string[]
+export const BRAND_PER_HUE: number
+export const BRAND_RULES: PaletteRules
+export const MUTED_MIX: number[]
+export const MUTED_RULES: PaletteRules
+export const MONOCHROME: Record<'light' | 'dark', MonochromeStep[]>
+export const MONOCHROME_RULES: { contrast: number, head: { slots: number, distinct: number } }
+
 export function toOklab(color: Rgb): { l: number, a: number, b: number }
 export function toOklch(color: Rgb): { l: number, c: number, h: number }
 export function fromOklch(color: { l: number, c: number, h: number }): Rgb
+export function parseOklchRaw(value: string): { l: number, c: number, h: number }
 export function parseOklch(value: string): Rgb
+export function mixOklab(a: { l: number, c: number, h: number }, b: { l: number, c: number, h: number }, percent: number): Rgb
 export function formatHex(color: Rgb): string
 export function relativeLuminance(color: Rgb): number
 export function contrastRatio(a: Rgb, b: Rgb): number
@@ -51,7 +67,9 @@ export function simulateCvd(color: Rgb, kind: 'protan' | 'deutan'): Rgb
 export function cvdDelta(a: Rgb, b: Rgb): number
 export function hueCrowding(hues: number[], span?: number): number
 
-export function checkCategorical(colors: Rgb[], options: { mode: 'light' | 'dark', surface: Rgb, danger?: Rgb[] }): PaletteCheck[]
+export function checkCategorical(colors: Rgb[], options: { mode: 'light' | 'dark', surface: Rgb, danger?: Rgb[], rules?: PaletteRules }): PaletteCheck[]
+export function checkMonochrome(colors: Rgb[], options: { surface: Rgb, brand: Rgb, rules?: typeof MONOCHROME_RULES }): PaletteCheck[]
+export function checkScheme(scheme: ChartScheme, colors: Rgb[], options: { mode: 'light' | 'dark', surface: Rgb, danger?: Rgb[], brand: Rgb }): PaletteCheck[]
 export function checkOrder(light: Rgb[], dark: Rgb[], brand: Rgb): PaletteCheck[]
 export function checkOnColors(fills: Rgb[], texts: Rgb[]): PaletteCheck[]
 export function checkOrdinal(colors: Rgb[], options: { surface: Rgb }): PaletteCheck[]
@@ -65,5 +83,9 @@ export function dangerColors(colors: ColorTree): Rgb[]
 export function resolvePrimitive(colors: ColorTree, ref: string): Rgb
 export function loadSurfaces(colors: ColorTree): Promise<Record<'light' | 'dark', Rgb>>
 export function solveCategorical(colors: ColorTree, palette: string[], surfaces: Record<'light' | 'dark', Rgb>): PaletteSolution
+export function solveBrand(colors: ColorTree, palette: string[], surfaces: Record<'light' | 'dark', Rgb>): PaletteSolution
+export function solveMuted(colors: ColorTree, palette: string[], surfaces: Record<'light' | 'dark', Rgb>): PaletteSolution
+export function monochromeSlots(): PaletteSlot[]
+export function resolveExpression(colors: ColorTree, expression: string, surfaceRef?: string): Rgb
 export function pickOnColor(colors: ColorTree, fill: Rgb): { ref: string, ratio: number }
-export function paletteDocument(colors: ColorTree, surfaces: Record<'light' | 'dark', Rgb>, solution: PaletteSolution): Record<string, unknown>
+export function paletteDocument(colors: ColorTree, surfaces: Record<'light' | 'dark', Rgb>, solution: PaletteSolution, palette: string[]): Promise<Record<string, unknown>>

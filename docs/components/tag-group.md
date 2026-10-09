@@ -285,15 +285,15 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-tag-group-gap` | `root` | `gap` | `default` | `--xh-space-2` | tag-group 的 root 部件 gap 覆盖槽。 |
-| `--xh-tag-group-item-bg-hover` | `list`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`tone`<br>`variant=solid` | `--xh-_tone-subtle-hover`<br>`--xh-bg-subtle` | tag-group 的 list、root 部件 background 覆盖槽。 |
-| `--xh-tag-group-item-bg-pressed` | `list`<br>`root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`pressed`<br>`selectable`<br>`tone`<br>`variant=solid` | `--xh-_tone-subtle-active`<br>`--xh-bg-subtle-hover` | tag-group 的 list、root 部件 background 覆盖槽。 |
+| `--xh-tag-group-item-bg-hover` | `list`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])`<br>`not([data-tone])`<br>`not([data-variant='solid'])`<br>`tone`<br>`variant=ghost`<br>`variant=solid` | `--xh-_tone-subtle-hover`<br>`--xh-bg-subtle`<br>`--xh-bg-subtle-hover` | tag-group 的 list、root 部件 background 覆盖槽。 |
+| `--xh-tag-group-item-bg-pressed` | `list`<br>`root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-tone])`<br>`not([data-variant='solid'])`<br>`pressed`<br>`selectable`<br>`tone`<br>`variant=ghost`<br>`variant=solid` | `--xh-_tone-subtle-active`<br>`--xh-bg-subtle-active`<br>`--xh-bg-subtle-hover` | tag-group 的 list、root 部件 background 覆盖槽。 |
 | `--xh-tag-group-item-bg-pressed-solid` | `list`<br>`root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`pressed`<br>`selectable`<br>`tone`<br>`variant=solid` | `--xh-_tone-active`<br>`--xh-bg-brand-active` | tag-group 的 list、root 部件 background 覆盖槽。 |
 | `--xh-tag-group-item-indicator-fg` | `item-indicator`<br>`root` | `color` | `default`<br>`variant=solid` | `--xh-_tone-fg`<br>`currentColor` | tag-group 的 item-indicator、root 部件 color 覆盖槽。 |
 | `--xh-tag-group-item-indicator-size` | `item-indicator` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | tag-group 的 item-indicator 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tag-group-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tag-group 的 label 部件 color 覆盖槽。 |
 | `--xh-tag-group-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | tag-group 的 label 部件 font-size 覆盖槽。 |
 | `--xh-tag-group-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tag-group 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-tag-group-list-gap` | `list` | `gap` | `default` | `--xh-space-1_5` | tag-group 的 list 部件 gap 覆盖槽。 |
+| `--xh-tag-group-list-gap` | `list` | `gap` | `default` | `--xh-space-2` | tag-group 的 list 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
+import { page } from 'vitest/browser'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -62,6 +63,25 @@ describe('descriptions 根面', () => {
     expect(style.backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
     expect(style.boxShadow).toBe('none')
     expect(style.borderTopWidth).toBe(getComputedStyle(mount('outline').root).borderTopWidth)
+  })
+
+  it('outline 的格线与外框同为 border-default；标签在左时标签单成淡底格、与取值之间一条竖线', async () => {
+    // 标签左置从平板宽起生效
+    await page.viewport(1200, 800)
+    const list = mount('outline')
+    const second = list.root.querySelectorAll<HTMLElement>('[data-part="item"]')[1]!
+    expect(getComputedStyle(second).borderTopColor).toBe(tokenColor('--xh-border-default'))
+
+    list.root.dataset.placement = 'left'
+    expect(window.matchMedia('(min-width: 768px)').matches).toBe(true)
+    const item = getComputedStyle(list.item)
+    const label = getComputedStyle(list.label)
+    expect(Number.parseFloat(item.paddingTop)).toBe(0)
+    expect(label.backgroundColor).toBe(tokenColor('--xh-bg-muted'))
+    expect(Number.parseFloat(label.borderInlineEndWidth)).toBe(1)
+    expect(label.borderInlineEndColor).toBe(tokenColor('--xh-border-default'))
+    expect(Number.parseFloat(label.paddingInlineStart)).toBe(20)
+    expect(Number.parseFloat(getComputedStyle(list.value).paddingInlineStart)).toBe(20)
   })
 
   it('ghost 不画壳', () => {

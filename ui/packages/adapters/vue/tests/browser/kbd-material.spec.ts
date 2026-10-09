@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp } from 'vitest/browser'
 import { createApp, h } from 'vue'
 import { XhKbd } from '../../src'
+import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -83,7 +84,7 @@ describe('kbd 键盘按键', () => {
     expect(style.borderTopColor).toBe('rgba(0, 0, 0, 0)')
     expect(style.backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
     expect(style.boxShadow).toBe('none')
-    expect(style.borderTopLeftRadius).toBe('4px')
+    expect(style.borderTopLeftRadius).toBe(`${tokenLength('--xh-shape-control')}px`)
     expect(Number.parseFloat(style.fontSize)).toBe(12)
     expect(kbd.getBoundingClientRect().height).toBe(24)
   })

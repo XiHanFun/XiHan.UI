@@ -84,18 +84,19 @@ describe('tag-group 选中视觉', () => {
     expect(close.left).toBeGreaterThanOrEqual(mark.right)
   })
 
-  it('按下同时缩放与换底：选中与未选中同为中性 200 档', () => {
+  it('按下换底并取按压缩放令牌：选中与未选中同为淡底阶梯的 300 档', () => {
     const { items } = mount()
     const restBg = getComputedStyle(items[1]!).backgroundColor
+    const pressScale = getComputedStyle(document.documentElement).getPropertyValue('--xh-motion-scale-press').trim()
     items[1]!.setAttribute('data-pressed', '')
     items[0]!.setAttribute('data-pressed', '')
     const pressed = getComputedStyle(items[1]!)
     const selectedPressed = getComputedStyle(items[0]!)
 
     expect(pressed.backgroundColor).not.toBe(restBg)
-    expect(pressed.scale).toBe('0.97')
+    expect(pressed.scale).toBe(pressScale)
     expect(selectedPressed.backgroundColor).toBe(pressed.backgroundColor)
-    expect(selectedPressed.scale).toBe('0.97')
+    expect(selectedPressed.scale).toBe(pressScale)
   })
 
   it('forced-colors：选中的标签与未选中的同为静息面，对号用系统高亮色画出', async () => {

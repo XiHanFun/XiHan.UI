@@ -133,23 +133,24 @@ describe('穿梭框的页内选中与按压反馈', () => {
     await releasePointer(trigger)
   })
 
-  it('搬运钮：icon outline 档，中性描边透明底、无抬升影；按住 0.97 并换到 200 档', async () => {
+  it('搬运钮：icon subtle 档的圆钮，淡底无边、无抬升影；悬停 200 → 按住 300，缩放取按压令牌', async () => {
     await mountTransfer()
     const trigger = host!.querySelector<HTMLElement>('[data-scope="transfer"][data-part="to-target-trigger"]')!
     trigger.style.transition = 'none'
     // v0 已勾中：钮可用
     expect(trigger.hasAttribute('disabled')).toBe(false)
     const rest = getComputedStyle(trigger)
-    expect(rest.backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(rest.borderTopColor).toBe(resolve('--xh-border-control', 'color'))
+    expect(rest.backgroundColor).toBe(resolve('--xh-bg-subtle'))
     expect(rest.boxShadow).toBe('none')
     expect(rest.width).toBe(rest.height)
+    expect(rest.borderTopLeftRadius).toBe('50%')
     await userEvent.hover(trigger)
-    expect(getComputedStyle(trigger).backgroundColor).toBe(resolve('--xh-bg-subtle'))
+    expect(getComputedStyle(trigger).backgroundColor).toBe(resolve('--xh-bg-subtle-hover'))
     expect(getComputedStyle(trigger).boxShadow).toBe('none')
     await pressPointer(trigger)
-    expect(getComputedStyle(trigger).backgroundColor).toBe(resolve('--xh-bg-subtle-hover'))
-    expect(getComputedStyle(trigger).scale).toBe('0.97')
+    expect(getComputedStyle(trigger).backgroundColor).toBe(resolve('--xh-bg-subtle-active'))
+    const pressScale = getComputedStyle(document.documentElement).getPropertyValue('--xh-motion-scale-press').trim()
+    expect(getComputedStyle(trigger).scale).toBe(pressScale)
     await releasePointer(trigger)
   })
 

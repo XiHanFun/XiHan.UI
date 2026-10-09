@@ -316,7 +316,7 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 | `--xh-grid-list-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | grid-list 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-grid-list-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | grid-list 的 label 部件 color 覆盖槽。 |
 | `--xh-grid-list-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | grid-list 的 label 部件 font-size 覆盖槽。 |
-| `--xh-grid-list-label-font-weight` | `label` | `font-weight` | `default` | `--xh-font-weight-semibold` | grid-list 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-grid-list-label-font-weight` | `label` | `font-weight` | `default` | `--xh-font-weight-medium` | grid-list 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-grid-list-label-px` | `label` | `padding-inline` | `default` | `--xh-control-px-md` | grid-list 的 label 部件 padding-inline 覆盖槽。 |
 | `--xh-grid-list-label-py` | `label` | `padding-block` | `default` | `--xh-space-1` | grid-list 的 label 部件 padding-block 覆盖槽。 |
 | `--xh-grid-list-p` | `root` | `padding` | `default` | `--xh-space-1` | grid-list 的 root 部件 padding 覆盖槽。 |

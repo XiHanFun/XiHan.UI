@@ -186,10 +186,13 @@ tone 为图标区上语气色，与全库同一根轴；绘制什么图标仍由
 | `--xh-empty-state-description-leading` | `description` | `line-height` | `default` | `--xh-leading-normal` | empty-state 的 description 部件 line-height 覆盖槽。 |
 | `--xh-empty-state-description-max-w` | `description` | `max-inline-size` | `default` | `--xh-measure-prose` | empty-state 的 description 部件 max-inline-size 覆盖槽。 |
 | `--xh-empty-state-fg` | `root` | `color` | `default` | `--xh-fg-default` | empty-state 的 root 部件 color 覆盖槽。 |
-| `--xh-empty-state-gap` | `root` | `gap` | `default` | `--xh-_empty-state-gap` | empty-state 的 root 部件 gap 覆盖槽。 |
-| `--xh-empty-state-icon-size` | `indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-_empty-state-icon-size` | empty-state 的 indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
+| `--xh-empty-state-gap` | `description`<br>`root`<br>`title` | `gap`<br>`margin-block-start` | `default` | `--xh-_empty-state-gap` | empty-state 的 description、root、title 部件 gap、margin-block-start 覆盖槽。 |
+| `--xh-empty-state-icon-size` | `indicator`<br>`root` | `--xh-icon-size`<br>`block-size`<br>`font-size`<br>`inline-size` | `default`<br>`tone` | `--xh-_empty-state-icon-size`<br>`--xh-glyph-size-md` | empty-state 的 indicator、root 部件 --xh-icon-size、block-size、font-size、inline-size 覆盖槽。 |
+| `--xh-empty-state-indicator-bg` | `indicator`<br>`root` | `background` | `tone` | `--xh-_tone-subtle` | empty-state 的 indicator、root 部件 background 覆盖槽。 |
+| `--xh-empty-state-indicator-box` | `indicator`<br>`root` | `block-size`<br>`inline-size` | `tone` | `--xh-control-box-lg` | empty-state 的 indicator、root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-empty-state-indicator-fg` | `indicator` | `color` | `default` | `--xh-_empty-state-accent` | empty-state 的 indicator 部件 color 覆盖槽。 |
 | `--xh-empty-state-indicator-font-size` | `indicator` | `font-size` | `default` | `--xh-_empty-state-icon-size` | empty-state 的 indicator 部件 font-size 覆盖槽。 |
+| `--xh-empty-state-indicator-radius` | `indicator`<br>`root` | `border-radius` | `tone` | `--xh-shape-circle` | empty-state 的 indicator、root 部件 border-radius 覆盖槽。 |
 | `--xh-empty-state-media-fg` | `media` | `color` | `default` | `--xh-_empty-state-accent` | empty-state 的 media 部件 color 覆盖槽。 |
 | `--xh-empty-state-media-size` | `media` | `block-size` | `default` | `--xh-_empty-state-icon-size` | empty-state 的 media 部件 block-size 覆盖槽。 |
 | `--xh-empty-state-px` | `root` | `padding-inline` | `default` | `--xh-space-6` | empty-state 的 root 部件 padding-inline 覆盖槽。 |
@@ -197,7 +200,7 @@ tone 为图标区上语气色，与全库同一根轴；绘制什么图标仍由
 | `--xh-empty-state-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | empty-state 的 title 部件 color 覆盖槽。 |
 | `--xh-empty-state-title-font-size` | `title` | `font-size` | `default` | `--xh-_empty-state-title-size` | empty-state 的 title 部件 font-size 覆盖槽。 |
 | `--xh-empty-state-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-medium` | empty-state 的 title 部件 font-weight 覆盖槽。 |
-| `--xh-empty-state-title-leading` | `title` | `line-height` | `default` | `--xh-leading-tight` | empty-state 的 title 部件 line-height 覆盖槽。 |
+| `--xh-empty-state-title-leading` | `title` | `line-height` | `default` | `--xh-leading-normal` | empty-state 的 title 部件 line-height 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

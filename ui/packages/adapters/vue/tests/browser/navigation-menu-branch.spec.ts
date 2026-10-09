@@ -191,7 +191,7 @@ describe('navigation-menu 面板里的子级', () => {
     expect(part('branch-trigger', 'tools').getAttribute('aria-expanded')).toBe('false')
     const current = linkOf('#react')
     expect(current.getAttribute('aria-current')).toBe('page')
-    expect(getComputedStyle(current).color).toBe(resolve('--xh-fg-brand-strong', 'color'))
+    expect(getComputedStyle(current).color).toBe(resolve('--xh-fg-brand', 'color'))
     const line = getComputedStyle(current, '::after')
     expect(line.backgroundColor).toBe(resolve('--xh-fg-brand'))
     expect(line.insetInlineStart).toBe('0px')

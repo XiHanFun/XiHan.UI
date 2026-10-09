@@ -1,4 +1,4 @@
-// Cascader 的浮层按内容定宽：每一列取条目的自然宽度、以 --xh-overlay-menu-min-w 托底，不随字段盒拉伸；
+// Cascader 的浮层按内容定宽：每一列取条目的自然宽度、以 --xh-overlay-cascade-min-w 托底，不随字段盒拉伸；
 // 长选项把列撑到条目的上限为止，余下的在条目里截断；面板随列数伸展。浮层锚在字段盒上，面板起始缘与盒对齐。
 // 面板含多列，材质取 floating：不透景的实体面 + 描边 + 浮起投影。
 //
@@ -147,7 +147,7 @@ function px(on: HTMLElement, token: string): number {
 describe('级联选择的浮层宽度', () => {
   it('短选项的一级列取下界，不随字段盒拉伸', async () => {
     const content = await mount({ collection: SHORT })
-    expect(column(0).getBoundingClientRect().width).toBeCloseTo(px(content, '--xh-overlay-menu-min-w'), 0)
+    expect(column(0).getBoundingClientRect().width).toBeCloseTo(px(content, '--xh-overlay-cascade-min-w'), 0)
     // 缺省宽的字段盒比下界宽，面板不跟着它拉宽
     expect(content.getBoundingClientRect().width).toBeLessThan(part('control').getBoundingClientRect().width)
   })
@@ -179,7 +179,7 @@ describe('级联选择的浮层宽度', () => {
     const first = column(0).getBoundingClientRect().width
     const second = column(1).getBoundingClientRect().width
     // 「杭州 / 宁波」这一列只取下界，比装着长选项的一级列窄
-    expect(second).toBeCloseTo(px(content, '--xh-overlay-menu-min-w'), 0)
+    expect(second).toBeCloseTo(px(content, '--xh-overlay-cascade-min-w'), 0)
     expect(second).toBeLessThan(first)
     // 面板随列数伸展；宽过可用区时收成可用宽度，溢出的列在面内横滚够得到
     expect(content.scrollWidth).toBeGreaterThan(first + second)
@@ -197,10 +197,10 @@ describe('级联选择的浮层材质', () => {
     expect(style.boxShadow).toBe(resolved(content, 'box-shadow', 'var(--xh-elevation-floating)'))
   })
 
-  it('列与列之间的分隔取实体面的内部分隔令牌', async () => {
+  it('列与列之间的分隔取实体面的描边令牌', async () => {
     await mount({ value: [['zj', 'hz', 'xh']] })
     const second = column(1)
     expect(getComputedStyle(second).borderInlineStartColor)
-      .toBe(resolved(second, 'border-inline-start-color', 'var(--xh-material-solid-separator)'))
+      .toBe(resolved(second, 'border-inline-start-color', 'var(--xh-material-solid-border)'))
   })
 })

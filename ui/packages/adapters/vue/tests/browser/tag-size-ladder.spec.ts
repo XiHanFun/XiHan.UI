@@ -5,6 +5,7 @@ import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from '../../src'
+import { tokenLength } from './design-token'
 // 皮肤与令牌要一起加载：这里查的就是皮肤按槽算出来的值
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -13,10 +14,10 @@ type Tier = 'sm' | 'md' | 'lg'
 
 const TIERS: Tier[] = ['sm', 'md', 'lg']
 
-/** 逐档的登记值：根的高（px）、字号、竖向与横向内边距、关闭钮的边长。 */
+/** 逐档的登记值：根的高（状态 chip 档的令牌）、字号、竖向与横向内边距、关闭钮的边长。 */
 interface TierSpec {
-  /** 根的高，有没有关闭钮都是这个数 */
-  height: number
+  /** 根的高取这支令牌，有没有关闭钮都是这个数 */
+  height: string
   fontSize: string
   py: string
   px: string
@@ -25,9 +26,9 @@ interface TierSpec {
 }
 
 const LADDER: Record<Tier, TierSpec> = {
-  sm: { height: 22, fontSize: '12px', py: '2px', px: '6px', close: 16 },
-  md: { height: 26, fontSize: '13px', py: '4px', px: '8px', close: 16 },
-  lg: { height: 30, fontSize: '14px', py: '4px', px: '12px', close: 16 },
+  sm: { height: '--xh-chip-h-sm', fontSize: '12px', py: '0px', px: '6px', close: 16 },
+  md: { height: '--xh-chip-h-md', fontSize: '12px', py: '0px', px: '8px', close: 16 },
+  lg: { height: '--xh-chip-h-lg', fontSize: '14px', py: '0px', px: '8px', close: 16 },
 }
 
 let app: App | null = null
@@ -98,7 +99,7 @@ describe('标签的尺寸阶梯', () => {
     const spec = LADDER[tier]
     const measured = await measure(tier, false)
 
-    expect(measured.height).toBe(spec.height)
+    expect(measured.height).toBe(tokenLength(spec.height))
     expect(measured.fontSize).toBe(spec.fontSize)
     expect(measured.py).toBe(spec.py)
     expect(measured.px).toBe(spec.px)
@@ -108,7 +109,7 @@ describe('标签的尺寸阶梯', () => {
     const spec = LADDER[tier]
     const measured = await measure(tier, true)
 
-    expect(measured.height).toBe(spec.height)
+    expect(measured.height).toBe(tokenLength(spec.height))
     expect(measured.close).toBe(spec.close)
   })
 
@@ -116,9 +117,9 @@ describe('标签的尺寸阶梯', () => {
     const plain = await measure(undefined, false)
     const closable = await measure(undefined, true)
 
-    expect(plain.height).toBe(LADDER.md.height)
+    expect(plain.height).toBe(tokenLength(LADDER.md.height))
     expect(plain.fontSize).toBe(LADDER.md.fontSize)
-    expect(closable.height).toBe(LADDER.md.height)
+    expect(closable.height).toBe(tokenLength(LADDER.md.height))
     expect(closable.close).toBe(LADDER.md.close)
   })
 
@@ -133,8 +134,9 @@ describe('标签的尺寸阶梯', () => {
     expect(md - sm).toBe(lg - md)
   })
 
-  it('compact 密度下三档随指示符档各收一号，台阶仍一样宽', async () => {
+  it('compact 密度下三档取紧凑档的 chip 高，关闭钮随指示符档收一号', async () => {
     const heights: number[] = []
+    const expected: number[] = []
     for (const tier of TIERS) {
       host = document.createElement('div')
       host.dataset.density = 'compact'
@@ -144,12 +146,15 @@ describe('标签的尺寸阶梯', () => {
       await nextTick()
       await nextTick()
       heights.push(part('root').getBoundingClientRect().height)
+      expected.push(tokenLength(LADDER[tier].height, host))
       expect(part('close-trigger').getBoundingClientRect().height).toBe(14)
       app.unmount()
       host.remove()
     }
 
-    expect(heights).toEqual([20, 24, 28])
+    expect(heights).toEqual(expected)
+    expect(heights[0]).toBeLessThan(heights[1]!)
+    expect(heights[1]).toBeLessThan(heights[2]!)
   })
 
   it('嵌套密度作用域重新解析关闭钮别名，宽松子树不继承紧凑尺寸', async () => {
@@ -190,9 +195,9 @@ describe('标签的尺寸阶梯', () => {
     const control = host!.firstElementChild as HTMLElement
     const tagHeight = part('root').getBoundingClientRect().height
 
-    // comfortable 密度的 md 控件高是 36px
+    // comfortable 密度的 md 控件高
     const controlHeight = control.getBoundingClientRect().height
-    expect(controlHeight).toBe(36)
+    expect(controlHeight).toBe(tokenLength('--xh-control-h-md'))
     expect(tagHeight).toBeLessThanOrEqual(controlHeight)
   })
 })

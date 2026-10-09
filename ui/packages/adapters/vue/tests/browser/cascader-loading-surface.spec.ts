@@ -100,13 +100,14 @@ afterEach(() => {
 })
 
 describe('级联选择首次加载表面', () => {
-  it.each(['light', 'dark'] as const)('%s：触发框透明描边、面板是不透景的实体浮起面', async (theme) => {
+  it.each(['light', 'dark'] as const)('%s：触发框是字段淡底、面板是不透景的实体浮起面', async (theme) => {
     await mountCascader({ theme })
     const control = getComputedStyle(part('control'))
     const content = part('content')
     const style = getComputedStyle(content)
-    // 描边式字段外壳不填底：透明底不是磨砂，没有背景滤镜
-    expect(colorAlpha(control.backgroundColor)).toBe(0)
+    // 字段外壳静息铺字段淡底：半透明的底不是磨砂，没有背景滤镜
+    expect(colorAlpha(control.backgroundColor)).toBeGreaterThan(0)
+    expect(colorAlpha(control.backgroundColor)).toBeLessThan(255)
     expect(control.backdropFilter).toBe('none')
     // 多列面板取 floating：实体底、无背景滤镜、有浮起投影
     expect(style.backdropFilter).toBe('none')
@@ -115,10 +116,10 @@ describe('级联选择首次加载表面', () => {
     expect(style.backgroundImage).toBe('none')
   })
 
-  it('加载与空态共用次要文字，视图切换不额外产生表面', async () => {
+  it('加载与空态共用弱一档的次要文字，视图切换不额外产生表面', async () => {
     const state = await mountCascader({ theme: 'dark' })
     const probe = document.createElement('span')
-    probe.style.color = 'var(--xh-fg-muted)'
+    probe.style.color = 'var(--xh-fg-subtle)'
     part('content').append(probe)
     const muted = getComputedStyle(probe).color
     probe.remove()

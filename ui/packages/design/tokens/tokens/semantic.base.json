@@ -200,6 +200,11 @@
       "$type": "icon",
       "$value": "minus"
     },
+    "mark-slash": {
+      "$description": "路径分隔的斜线（面包屑分隔符）：没有方向，RTL 下不翻转。",
+      "$type": "icon",
+      "$value": "slash"
+    },
     "mark-plus": {
       "$type": "icon",
       "$value": "plus"
@@ -382,15 +387,15 @@
     },
     "item-px-sm": {
       "$type": "dimension",
-      "$value": "{space.3}"
+      "$value": "{space.4}"
     },
     "item-px-md": {
       "$type": "dimension",
-      "$value": "{space.4}"
+      "$value": "{space.5}"
     },
     "item-px-lg": {
       "$type": "dimension",
-      "$value": "{space.5}"
+      "$value": "{space.6}"
     },
     "option-py-sm": {
       "$type": "dimension",
@@ -405,8 +410,9 @@
       "$value": "{space.2}"
     },
     "option-gap": {
+      "$description": "列表行与行之间的缝：缺省不留，行面挨着行面，悬停与选中靠面本身区分。",
       "$type": "dimension",
-      "$value": "{space.0_5}"
+      "$value": "{space.0}"
     }
   },
   "table": {
@@ -623,7 +629,7 @@
     "loop-spin": {
       "$description": "旋转指示器转一圈的周期。减弱动效下由各皮肤停掉动画，周期本身不降级。",
       "$type": "duration",
-      "$value": "640ms"
+      "$value": "1000ms"
     },
     "loop-caret": {
       "$description": "文本光标闪一次的周期。减弱动效下由皮肤停掉动画，光标停在实心。",
@@ -938,6 +944,21 @@
       "$value": "{control.h-sm}"
     }
   },
+  "marker": {
+    "size-sm": {
+      "$description": "盛序号或对号的状态圆（Steps 序号圆点）的直径：比同档控件矮一档，sm / md / lg 与 xs 动作钮、sm 控件、md 控件同高，随密度换档。",
+      "$type": "dimension",
+      "$value": "{control.action-size}"
+    },
+    "size-md": {
+      "$type": "dimension",
+      "$value": "{control.h-sm}"
+    },
+    "size-lg": {
+      "$type": "dimension",
+      "$value": "{control.h-md}"
+    }
+  },
   "nav": {
     "row-h-sm": {
       "$description": "导航行（侧栏菜单的分支与链接）的块尺寸。比同档控件高一截：侧栏是整列扫读的目标，行距松一些更好点也更好读。",
@@ -958,12 +979,20 @@
       "$value": "12rem"
     }
   },
+  "app": {
+    "$description": "应用外壳的固定几何。",
+    "header-h": {
+      "$description": "应用顶栏（Layout 的头）的高度：放得下一行导航与 32px 控件，上下各留 14px。",
+      "$type": "dimension",
+      "$value": "3.75rem"
+    }
+  },
   "sider": {
     "$description": "页面侧栏（Layout 的侧栏、SideNav 导航栏）的两档宽度，两件缺省同取这一处；只改一件时写该组件的覆盖槽。",
     "w": {
       "$description": "展开时的侧栏宽度。",
       "$type": "dimension",
-      "$value": "15rem"
+      "$value": "13.75rem"
     },
     "collapsed-w": {
       "$description": "折叠成图标栏时的宽度：一枚图标居中，两侧留得下行内衬。",
@@ -1006,6 +1035,11 @@
       "$type": "dimension",
       "$value": "10rem"
     },
+    "cascade-min-w": {
+      "$description": "级联面板里一列的最小宽度：一列只放一级的名字，比菜单窄一档，四五级并排也放得下。",
+      "$type": "dimension",
+      "$value": "7.5rem"
+    },
     "column-min-w": {
       "$description": "浮层里成列排布的选项列（时 / 分 / 秒）的最小宽度：两位数字加两侧标记轨。",
       "$type": "dimension",
@@ -1023,7 +1057,7 @@
     },
     "menu-max-h": {
       "$type": "dimension",
-      "$value": "20rem"
+      "$value": "13rem"
     },
     "max-w-sm": {
       "$type": "dimension",
@@ -1213,6 +1247,11 @@
       "$description": "钉在面板角上的钮离两条边的距离。标题给这颗钮让出的那一段也取它，让位量与实际落点恒一致。",
       "$type": "dimension",
       "$value": "{space.3}"
+    },
+    "header-h": {
+      "$description": "卡片头部条的最小块尺寸：一行区块标题加上下留白，底边一道内部分隔线；紧凑档收到 40px。",
+      "$type": "dimension",
+      "$value": "46px"
     }
   },
   "chart": {

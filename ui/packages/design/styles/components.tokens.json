@@ -42,6 +42,24 @@
       "description": "accordion 的 content、root 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-accordion-content-border",
+      "component": "accordion",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "border-block-start"
+      ],
+      "state": [
+        "state=open"
+      ],
+      "defaultToken": [
+        "--xh-accordion-item-border"
+      ],
+      "visibility": "public",
+      "description": "accordion 的 content 部件 border-block-start 覆盖槽。"
+    },
+    {
       "name": "--xh-accordion-content-fg",
       "component": "accordion",
       "part": [
@@ -2594,6 +2612,24 @@
       "description": "approval 的 result 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-approval-result-h",
+      "component": "approval",
+      "part": [
+        "result"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chip-h-sm"
+      ],
+      "visibility": "public",
+      "description": "approval 的 result 部件 min-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-approval-result-px",
       "component": "approval",
       "part": [
@@ -2624,7 +2660,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-0_5"
+        "0"
       ],
       "visibility": "public",
       "description": "approval 的 result 部件 padding-block 覆盖槽。"
@@ -2642,7 +2678,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "approval 的 result 部件 border-radius 覆盖槽。"
@@ -3715,6 +3751,24 @@
       "description": "breadcrumb 的 ellipsis 部件 min-inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-breadcrumb-ellipsis-trigger-h",
+      "component": "breadcrumb",
+      "part": [
+        "ellipsis-trigger"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-breadcrumb-link-h"
+      ],
+      "visibility": "public",
+      "description": "breadcrumb 的 ellipsis-trigger 部件 min-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-breadcrumb-fg",
       "component": "breadcrumb",
       "part": [
@@ -3895,7 +3949,30 @@
         "xh-collection-context=nav"
       ],
       "defaultToken": [
-        "--xh-_breadcrumb-accent-text"
+        "--xh-_tone-fg"
+      ],
+      "visibility": "public",
+      "description": "breadcrumb 的 link 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-breadcrumb-link-fg-pressed",
+      "component": "breadcrumb",
+      "part": [
+        "link"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "is(:active, [data-pressed])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=nav"
+      ],
+      "defaultToken": [
+        "--xh-_tone-fg"
       ],
       "visibility": "public",
       "description": "breadcrumb 的 link 部件 color 覆盖槽。"
@@ -3937,6 +4014,25 @@
       ],
       "visibility": "public",
       "description": "breadcrumb 的 link 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-breadcrumb-link-h",
+      "component": "breadcrumb",
+      "part": [
+        "ellipsis-trigger",
+        "link"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-action-size"
+      ],
+      "visibility": "public",
+      "description": "breadcrumb 的 ellipsis-trigger、link 部件 min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-breadcrumb-link-icon-size",
@@ -4025,7 +4121,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-disabled"
       ],
       "visibility": "public",
       "description": "breadcrumb 的 ellipsis、separator 部件 color 覆盖槽。"
@@ -6920,6 +7016,42 @@
       "description": "card 的 root 部件 border 覆盖槽。"
     },
     {
+      "name": "--xh-card-content-fg",
+      "component": "card",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "card 的 content 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-card-content-font-size",
+      "component": "card",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-body-size"
+      ],
+      "visibility": "public",
+      "description": "card 的 content 部件 font-size 覆盖槽。"
+    },
+    {
       "name": "--xh-card-content-gap",
       "component": "card",
       "part": [
@@ -7058,7 +7190,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-3"
+        "0"
       ],
       "visibility": "public",
       "description": "card 的 root 部件 gap 覆盖槽。"
@@ -7086,6 +7218,63 @@
       "description": "card 的 root 部件 animation 覆盖槽。"
     },
     {
+      "name": "--xh-card-header-border",
+      "component": "card",
+      "part": [
+        "header",
+        "root"
+      ],
+      "property": [
+        "border-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-subtle"
+      ],
+      "visibility": "public",
+      "description": "card 的 header、root 部件 border-block-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-card-header-h",
+      "component": "card",
+      "part": [
+        "header",
+        "root"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-surface-header-h"
+      ],
+      "visibility": "public",
+      "description": "card 的 header、root 部件 min-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-card-header-py",
+      "component": "card",
+      "part": [
+        "header",
+        "root"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "card 的 header、root 部件 padding-block 覆盖槽。"
+    },
+    {
       "name": "--xh-card-leading",
       "component": "card",
       "part": [
@@ -7107,19 +7296,24 @@
       "name": "--xh-card-p",
       "component": "card",
       "part": [
+        "content",
+        "footer",
+        "header",
         "root"
       ],
       "property": [
-        "padding"
+        "padding",
+        "padding-inline"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
+        "--xh-space-4",
         "--xh-surface-pad-lg"
       ],
       "visibility": "public",
-      "description": "card 的 root 部件 padding 覆盖槽。"
+      "description": "card 的 content、footer、header、root 部件 padding、padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-card-radius",
@@ -7213,7 +7407,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-size"
+        "--xh-text-heading-3-size"
       ],
       "visibility": "public",
       "description": "card 的 title 部件 font-size 覆盖槽。"
@@ -7231,7 +7425,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-text-heading-3-weight"
       ],
       "visibility": "public",
       "description": "card 的 title 部件 font-weight 覆盖槽。"
@@ -8829,7 +9023,7 @@
         "branch"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "cascader 的 item 部件 background-color 覆盖槽。"
@@ -8942,7 +9136,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-solid-separator"
+        "--xh-material-solid-border"
       ],
       "visibility": "public",
       "description": "cascader 的 column 部件 border-inline-start 覆盖槽。"
@@ -8997,7 +9191,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-menu-min-w"
+        "--xh-overlay-cascade-min-w"
       ],
       "visibility": "public",
       "description": "cascader 的 column 部件 min-inline-size 覆盖槽。"
@@ -9123,7 +9317,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-menu-min-w"
+        "--xh-overlay-cascade-min-w"
       ],
       "visibility": "public",
       "description": "cascader 的 content 部件 min-inline-size 覆盖槽。"
@@ -9215,6 +9409,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -9300,6 +9495,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -9500,10 +9696,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "cascader 的 empty 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-empty-min-h",
+      "component": "cascader",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-viewport-h-sm"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 empty 部件 min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-cascader-empty-p",
@@ -9536,7 +9750,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-material-solid-border"
       ],
       "visibility": "public",
       "description": "cascader 的 footer 部件 border-block-start 覆盖槽。"
@@ -9572,7 +9786,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-_cascader-font-size"
       ],
       "visibility": "public",
       "description": "cascader 的 footer 部件 font-size 覆盖槽。"
@@ -9608,7 +9822,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-_cascader-row-px"
       ],
       "visibility": "public",
       "description": "cascader 的 footer 部件 padding-inline 覆盖槽。"
@@ -9682,7 +9896,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "cascader 的 group-label 部件 color 覆盖槽。"
@@ -9718,7 +9932,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-font-weight-regular"
       ],
       "visibility": "public",
       "description": "cascader 的 group-label 部件 font-weight 覆盖槽。"
@@ -10449,7 +10663,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "cascader 的 loading 部件 color 覆盖槽。"
@@ -10473,6 +10687,24 @@
       "description": "cascader 的 loading 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-cascader-loading-min-h",
+      "component": "cascader",
+      "part": [
+        "loading"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-viewport-h-sm"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 loading 部件 min-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-cascader-loading-p",
       "component": "cascader",
       "part": [
@@ -10489,6 +10721,29 @@
       ],
       "visibility": "public",
       "description": "cascader 的 loading 部件 padding 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-loading-ring-fg",
+      "component": "cascader",
+      "part": [
+        "loading"
+      ],
+      "property": [
+        "border-block-start-color",
+        "border-color"
+      ],
+      "state": [
+        "@media (prefers-reduced-motion: reduce)",
+        "@media print",
+        "motion=reduce",
+        "where([data-motion='reduce'])",
+        "xh-loading-ring"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 loading 部件 border-block-start-color、border-color 覆盖槽。"
     },
     {
       "name": "--xh-cascader-placeholder-fg",
@@ -10523,7 +10778,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-solid-separator"
+        "--xh-material-solid-border"
       ],
       "visibility": "public",
       "description": "cascader 的 input 部件 border-block-end 覆盖槽。"
@@ -15267,6 +15522,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -15352,6 +15608,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -16416,6 +16673,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -16501,6 +16759,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -18882,6 +19141,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -18967,6 +19227,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -20232,7 +20493,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-elevated-separator"
+        "--xh-material-elevated-border"
       ],
       "visibility": "public",
       "description": "command 的 footer 部件 border-block-start 覆盖槽。"
@@ -20358,7 +20619,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "command 的 group-label 部件 color 覆盖槽。"
@@ -20394,7 +20655,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-font-weight-regular"
       ],
       "visibility": "public",
       "description": "command 的 group-label 部件 font-weight 覆盖槽。"
@@ -20448,7 +20709,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1_5"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "command 的 group 部件 margin-block-start 覆盖槽。"
@@ -20527,7 +20788,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-elevated-separator"
+        "--xh-material-elevated-border"
       ],
       "visibility": "public",
       "description": "command 的 input 部件 border-block-end 覆盖槽。"
@@ -20805,7 +21066,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "0"
       ],
       "visibility": "public",
       "description": "command 的 item 部件 border-radius 覆盖槽。"
@@ -20877,7 +21138,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "command 的 list 部件 padding-inline 覆盖槽。"
@@ -20895,7 +21156,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "command 的 list 部件 padding-block 覆盖槽。"
@@ -21357,10 +21618,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-font-weight-regular"
       ],
       "visibility": "public",
       "description": "context-menu 的 group-label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-context-menu-group-label-mt",
+      "component": "context-menu",
+      "part": [
+        "group-label"
+      ],
+      "property": [
+        "margin-block-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "context-menu 的 group-label 部件 margin-block-start 覆盖槽。"
     },
     {
       "name": "--xh-context-menu-group-label-px",
@@ -21869,7 +22148,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg-muted"
+        "currentColor"
       ],
       "visibility": "public",
       "description": "context-menu 的 item 部件 background-color 覆盖槽。"
@@ -22124,6 +22403,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -22209,6 +22489,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -23308,6 +23589,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -23393,6 +23675,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -25218,6 +25501,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -25303,6 +25587,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -26480,20 +26765,24 @@
       "component": "descriptions",
       "part": [
         "item",
+        "label",
         "root"
       ],
       "property": [
         "border-block-start",
+        "border-inline-end",
         "border-inline-start"
       ],
       "state": [
+        "@media (min-width: 768px)",
+        "placement=left",
         "variant=outline"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
-      "description": "descriptions 的 item、root 部件 border-block-start、border-inline-start 覆盖槽。"
+      "description": "descriptions 的 item、label、root 部件 border-block-start、border-inline-end、border-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-descriptions-extra-gap",
@@ -26562,7 +26851,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_descriptions-gap"
+        "--xh-_descriptions-row-gap"
       ],
       "visibility": "public",
       "description": "descriptions 的 root 部件 gap 覆盖槽。"
@@ -26608,38 +26897,70 @@
       "component": "descriptions",
       "part": [
         "item",
-        "root"
+        "label",
+        "root",
+        "value"
       ],
       "property": [
         "padding-inline"
       ],
       "state": [
+        "@media (min-width: 768px)",
+        "is([data-scope='descriptions'][data-part='label'], [data-scope='descriptions'][data-part='value'])",
+        "placement=left",
         "variant=outline"
       ],
       "defaultToken": [
         "--xh-_descriptions-px"
       ],
       "visibility": "public",
-      "description": "descriptions 的 item、root 部件 padding-inline 覆盖槽。"
+      "description": "descriptions 的 item、label、root、value 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-descriptions-item-py",
       "component": "descriptions",
       "part": [
         "item",
-        "root"
+        "label",
+        "root",
+        "value"
       ],
       "property": [
         "padding-block"
       ],
       "state": [
+        "@media (min-width: 768px)",
+        "is([data-scope='descriptions'][data-part='label'], [data-scope='descriptions'][data-part='value'])",
+        "placement=left",
         "variant=outline"
       ],
       "defaultToken": [
         "--xh-_descriptions-py"
       ],
       "visibility": "public",
-      "description": "descriptions 的 item、root 部件 padding-block 覆盖槽。"
+      "description": "descriptions 的 item、label、root、value 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-descriptions-label-bg",
+      "component": "descriptions",
+      "part": [
+        "item",
+        "label",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "@media (min-width: 768px)",
+        "placement=left",
+        "variant=outline"
+      ],
+      "defaultToken": [
+        "--xh-bg-muted"
+      ],
+      "visibility": "public",
+      "description": "descriptions 的 item、label、root 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-descriptions-label-fg",
@@ -26672,7 +26993,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-weight"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "descriptions 的 label 部件 font-weight 覆盖槽。"
@@ -30126,6 +30447,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -30230,6 +30552,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -31050,10 +31373,13 @@
       "name": "--xh-empty-state-gap",
       "component": "empty-state",
       "part": [
-        "root"
+        "description",
+        "root",
+        "title"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-start"
       ],
       "state": [
         "default"
@@ -31062,27 +31388,70 @@
         "--xh-_empty-state-gap"
       ],
       "visibility": "public",
-      "description": "empty-state 的 root 部件 gap 覆盖槽。"
+      "description": "empty-state 的 description、root、title 部件 gap、margin-block-start 覆盖槽。"
     },
     {
       "name": "--xh-empty-state-icon-size",
       "component": "empty-state",
       "part": [
-        "indicator"
+        "indicator",
+        "root"
       ],
       "property": [
         "--xh-icon-size",
         "block-size",
+        "font-size",
         "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "tone"
       ],
       "defaultToken": [
-        "--xh-_empty-state-icon-size"
+        "--xh-_empty-state-icon-size",
+        "--xh-glyph-size-md"
       ],
       "visibility": "public",
-      "description": "empty-state 的 indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
+      "description": "empty-state 的 indicator、root 部件 --xh-icon-size、block-size、font-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-empty-state-indicator-bg",
+      "component": "empty-state",
+      "part": [
+        "indicator",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "tone"
+      ],
+      "defaultToken": [
+        "--xh-_tone-subtle"
+      ],
+      "visibility": "public",
+      "description": "empty-state 的 indicator、root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-empty-state-indicator-box",
+      "component": "empty-state",
+      "part": [
+        "indicator",
+        "root"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "tone"
+      ],
+      "defaultToken": [
+        "--xh-control-box-lg"
+      ],
+      "visibility": "public",
+      "description": "empty-state 的 indicator、root 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-empty-state-indicator-fg",
@@ -31119,6 +31488,25 @@
       ],
       "visibility": "public",
       "description": "empty-state 的 indicator 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-empty-state-indicator-radius",
+      "component": "empty-state",
+      "part": [
+        "indicator",
+        "root"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "tone"
+      ],
+      "defaultToken": [
+        "--xh-shape-circle"
+      ],
+      "visibility": "public",
+      "description": "empty-state 的 indicator、root 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-empty-state-media-fg",
@@ -31259,7 +31647,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-leading-tight"
+        "--xh-leading-normal"
       ],
       "visibility": "public",
       "description": "empty-state 的 title 部件 line-height 覆盖槽。"
@@ -31333,6 +31721,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -31418,6 +31807,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -37052,7 +37442,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "grid-list 的 label 部件 font-weight 覆盖槽。"
@@ -38971,7 +39361,7 @@
       ],
       "defaultToken": [
         "--xh-_tone-subtle",
-        "--xh-bg-brand-subtle"
+        "--xh-bg-mark"
       ],
       "visibility": "public",
       "description": "highlight 的 mark、root 部件 background 覆盖槽。"
@@ -38992,7 +39382,7 @@
       ],
       "defaultToken": [
         "--xh-_tone-fg",
-        "--xh-fg-brand-strong"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "highlight 的 mark、root 部件 color 覆盖槽。"
@@ -42303,7 +42693,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-font-weight-regular"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 font-weight 覆盖槽。"
@@ -42432,6 +42822,7 @@
         "border-inline-start"
       ],
       "state": [
+        "default",
         "fixed",
         "material=liquid",
         "placement=end",
@@ -42443,6 +42834,7 @@
       ],
       "defaultToken": [
         "--xh-border-default",
+        "--xh-border-subtle",
         "--xh-material-elevated-border",
         "--xh-material-liquid-border"
       ],
@@ -42583,7 +42975,7 @@
         "sider-fixed"
       ],
       "defaultToken": [
-        "3.5rem"
+        "--xh-app-header-h"
       ],
       "visibility": "public",
       "description": "layout 的 header、root、sider 部件 block-size、grid-template-rows、inset-block-start、max-block-size 覆盖槽。"
@@ -42694,7 +43086,7 @@
         "presentation=sheet"
       ],
       "defaultToken": [
-        "--xh-bg-subtle",
+        "--xh-bg-surface",
         "--xh-material-elevated-bg"
       ],
       "visibility": "public",
@@ -43021,7 +43413,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0_5"
       ],
       "visibility": "public",
       "description": "list 的 item-content 部件 gap 覆盖槽。"
@@ -43076,7 +43468,7 @@
         "split"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "list 的 item、root 部件 border-block-start 覆盖槽。"
@@ -43119,6 +43511,24 @@
       ],
       "visibility": "public",
       "description": "list 的 item、root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-list-item-content-py",
+      "component": "list",
+      "part": [
+        "item-content"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "list 的 item-content 部件 padding-block 覆盖槽。"
     },
     {
       "name": "--xh-list-item-gap",
@@ -46058,6 +46468,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -46143,6 +46554,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -46996,10 +47408,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-font-weight-regular"
       ],
       "visibility": "public",
       "description": "menu 的 group-label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-menu-group-label-mt",
+      "component": "menu",
+      "part": [
+        "group-label"
+      ],
+      "property": [
+        "margin-block-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "menu 的 group-label 部件 margin-block-start 覆盖槽。"
     },
     {
       "name": "--xh-menu-group-label-px",
@@ -47507,7 +47937,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg-muted"
+        "currentColor"
       ],
       "visibility": "public",
       "description": "menu 的 item 部件 background-color 覆盖槽。"
@@ -47863,10 +48293,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-font-weight-regular"
       ],
       "visibility": "public",
       "description": "menubar 的 group-label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-menubar-group-label-mt",
+      "component": "menubar",
+      "part": [
+        "group-label"
+      ],
+      "property": [
+        "margin-block-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "menubar 的 group-label 部件 margin-block-start 覆盖槽。"
     },
     {
       "name": "--xh-menubar-group-label-px",
@@ -48433,7 +48881,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg-muted"
+        "currentColor"
       ],
       "visibility": "public",
       "description": "menubar 的 item 部件 background-color 覆盖槽。"
@@ -51100,6 +51548,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -51185,6 +51634,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -51894,6 +52344,48 @@
       "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-page-header-back-fg",
+      "component": "page-header",
+      "part": [
+        "back-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "page-header 的 back-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-page-header-back-fg-hover",
+      "component": "page-header",
+      "part": [
+        "back-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "page-header 的 back-trigger 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-page-header-bg",
       "component": "page-header",
       "part": [
@@ -51929,8 +52421,7 @@
         "variant=outline"
       ],
       "defaultToken": [
-        "--xh-border-default",
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "page-header 的 root 部件 border、border-block-end 覆盖槽。"
@@ -52005,7 +52496,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "page-header 的 description 部件 color 覆盖槽。"
@@ -52023,10 +52514,29 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "page-header 的 description 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-page-header-divider",
+      "component": "page-header",
+      "part": [
+        "description",
+        "title"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "page-header 的 description、title 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-page-header-extra-gap",
@@ -52989,6 +53499,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -53055,6 +53566,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -53266,6 +53778,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -53351,6 +53864,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -54431,6 +54945,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -54538,6 +55053,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -56182,7 +56698,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "progress 的 label 部件 color 覆盖槽。"
@@ -56200,7 +56716,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "progress 的 label 部件 font-size 覆盖槽。"
@@ -56444,7 +56960,7 @@
         "--xh-space-2",
         "--xh-space-3",
         "--xh-space-4",
-        "--xh-track-thickness"
+        "--xh-stroke-strong"
       ],
       "visibility": "public",
       "description": "progress 的 root、target、track 部件 block-size 覆盖槽。"
@@ -56486,7 +57002,7 @@
         "variant=dashboard"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "progress 的 track 部件 background、stroke 覆盖槽。"
@@ -56560,6 +57076,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -56626,6 +57143,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -58307,6 +58825,24 @@
       "description": "question-flow 的 result 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-question-flow-result-h",
+      "component": "question-flow",
+      "part": [
+        "result"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-chip-h-sm"
+      ],
+      "visibility": "public",
+      "description": "question-flow 的 result 部件 min-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-question-flow-result-px",
       "component": "question-flow",
       "part": [
@@ -58337,7 +58873,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-0_5"
+        "0"
       ],
       "visibility": "public",
       "description": "question-flow 的 result 部件 padding-block 覆盖槽。"
@@ -58355,7 +58891,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "question-flow 的 result 部件 border-radius 覆盖槽。"
@@ -59813,7 +60349,7 @@
         "variant=segmented"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "radio-group 的 item、root 部件 background-color 覆盖槽。"
@@ -59840,7 +60376,7 @@
         "variant=segmented"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "radio-group 的 item、root 部件 background-color 覆盖槽。"
@@ -59900,7 +60436,7 @@
         "variant=segmented"
       ],
       "defaultToken": [
-        "--xh-_radio-group-segment-fg-checked"
+        "--xh-_radio-group-segment-fg-checked-disabled"
       ],
       "visibility": "public",
       "description": "radio-group 的 item、root 部件 color 覆盖槽。"
@@ -59946,6 +60482,26 @@
       ],
       "defaultToken": [
         "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、root 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-segment-font-weight-checked",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "state=checked",
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "radio-group 的 item、root 部件 font-weight 覆盖槽。"
@@ -60010,6 +60566,26 @@
       "description": "radio-group 的 item、root 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-radio-group-segment-separator",
+      "component": "radio-group",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "orientation=horizontal",
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 item、root 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-radio-group-thumb-bg",
       "component": "radio-group",
       "part": [
@@ -60028,27 +60604,69 @@
       "description": "radio-group 的 thumb 部件 background 覆盖槽。"
     },
     {
-      "name": "--xh-radio-group-thumb-border",
+      "name": "--xh-radio-group-thumb-bg-disabled",
       "component": "radio-group",
       "part": [
         "root",
         "thumb"
       ],
       "property": [
-        "border",
-        "border-color"
+        "background"
       ],
       "state": [
-        "default",
-        "tone",
+        "disabled",
+        "has(> [data-scope='radio-group'][data-part='item'][data-state='checked'][data-disabled])",
+        "state=checked",
         "variant=segmented"
       ],
       "defaultToken": [
-        "--xh-_tone",
-        "--xh-border-default"
+        "--xh-_radio-group-thumb-bg-disabled"
       ],
       "visibility": "public",
-      "description": "radio-group 的 root、thumb 部件 border、border-color 覆盖槽。"
+      "description": "radio-group 的 root、thumb 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-thumb-bg-hover",
+      "component": "radio-group",
+      "part": [
+        "root",
+        "thumb"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "has(> [data-scope='radio-group'][data-part='item'][data-state='checked']:not([data-disabled])",
+        "hover",
+        "not([data-readonly])",
+        "readonly",
+        "state=checked",
+        "variant=segmented"
+      ],
+      "defaultToken": [
+        "--xh-_radio-group-thumb-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 root、thumb 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-radio-group-thumb-border",
+      "component": "radio-group",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "radio-group 的 thumb 部件 border 覆盖槽。"
     },
     {
       "name": "--xh-radio-group-thumb-radius",
@@ -60081,29 +60699,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
-      ],
-      "visibility": "public",
-      "description": "radio-group 的 thumb 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-radio-group-thumb-shadow-disabled",
-      "component": "radio-group",
-      "part": [
-        "root",
-        "thumb"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
         "none"
       ],
       "visibility": "public",
-      "description": "radio-group 的 root、thumb 部件 box-shadow 覆盖槽。"
+      "description": "radio-group 的 thumb 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-radio-group-track-bg",
@@ -60118,7 +60717,7 @@
         "variant=segmented"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-field"
       ],
       "visibility": "public",
       "description": "radio-group 的 root 部件 background 覆盖槽。"
@@ -60155,7 +60754,7 @@
         "variant=segmented"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-border-control"
       ],
       "visibility": "public",
       "description": "radio-group 的 root 部件 border 覆盖槽。"
@@ -60213,7 +60812,7 @@
         "variant=segmented"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "radio-group 的 root 部件 border-radius 覆盖槽。"
@@ -62310,6 +62909,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -62395,6 +62995,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -63596,8 +64197,8 @@
         "variant=subtle"
       ],
       "defaultToken": [
+        "--xh-border-default",
         "--xh-border-strong",
-        "--xh-material-frosted-separator",
         "--xh-material-soft-separator"
       ],
       "visibility": "public",
@@ -63616,7 +64217,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "separator 的 content 部件 color 覆盖槽。"
@@ -63634,10 +64235,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-body-size"
       ],
       "visibility": "public",
       "description": "separator 的 content 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-separator-content-font-weight",
+      "component": "separator",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
+      ],
+      "visibility": "public",
+      "description": "separator 的 content 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-separator-dash-gap",
@@ -63694,10 +64313,48 @@
         "has([data-part='content'])"
       ],
       "defaultToken": [
-        "--xh-space-3"
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "separator 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-separator-mx",
+      "component": "separator",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "margin-inline"
+      ],
+      "state": [
+        "orientation=vertical"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "separator 的 root 部件 margin-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-separator-my",
+      "component": "separator",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "margin-block"
+      ],
+      "state": [
+        "has([data-part='content'])",
+        "orientation=horizontal"
+      ],
+      "defaultToken": [
+        "--xh-space-2_5",
+        "--xh-space-5"
+      ],
+      "visibility": "public",
+      "description": "separator 的 root 部件 margin-block 覆盖槽。"
     },
     {
       "name": "--xh-separator-radius",
@@ -65710,7 +66367,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-disabled"
+        "--xh-bg-subtle-hover-opaque"
       ],
       "visibility": "public",
       "description": "slider 的 range 部件 background 覆盖槽。"
@@ -65764,7 +66421,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_tone"
+        "--xh-bg-surface"
       ],
       "visibility": "public",
       "description": "slider 的 thumb 部件 background 覆盖槽。"
@@ -65788,24 +66445,6 @@
       "description": "slider 的 thumb 部件 background 覆盖槽。"
     },
     {
-      "name": "--xh-slider-thumb-bg-invalid",
-      "component": "slider",
-      "part": [
-        "thumb"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "invalid"
-      ],
-      "defaultToken": [
-        "--xh-border-invalid"
-      ],
-      "visibility": "public",
-      "description": "slider 的 thumb 部件 background 覆盖槽。"
-    },
-    {
       "name": "--xh-slider-thumb-border",
       "component": "slider",
       "part": [
@@ -65818,10 +66457,46 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-default-opaque"
+        "--xh-_tone"
       ],
       "visibility": "public",
       "description": "slider 的 thumb 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-slider-thumb-border-disabled",
+      "component": "slider",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover-opaque"
+      ],
+      "visibility": "public",
+      "description": "slider 的 thumb 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-slider-thumb-border-invalid",
+      "component": "slider",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "slider 的 thumb 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-slider-thumb-radius",
@@ -65852,7 +66527,12 @@
         "scale"
       ],
       "state": [
-        "dragging"
+        "@media (hover: hover)",
+        "disabled",
+        "dragging",
+        "hover",
+        "not([data-disabled], [data-readonly])",
+        "readonly"
       ],
       "defaultToken": [
         "--xh-motion-scale-drag"
@@ -65873,7 +66553,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "none"
       ],
       "visibility": "public",
       "description": "slider 的 thumb 部件 box-shadow 覆盖槽。"
@@ -65937,9 +66617,9 @@
         "size=sm"
       ],
       "defaultToken": [
+        "--xh-space-2_5",
         "--xh-space-3",
-        "--xh-space-6",
-        "--xh-track-thumb-size"
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "slider 的 control、root、thumb 部件 block-size、inline-size、margin-block-end、margin-block-start、margin-inline-start 覆盖槽。"
@@ -65957,19 +66637,37 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-strong"
+        "--xh-bg-surface"
       ],
       "visibility": "public",
       "description": "slider 的 tick 部件 background 覆盖槽。"
     },
     {
-      "name": "--xh-slider-tick-bg-active",
+      "name": "--xh-slider-tick-border",
       "component": "slider",
       "part": [
         "tick"
       ],
       "property": [
-        "background"
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "slider 的 tick 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-slider-tick-border-active",
+      "component": "slider",
+      "part": [
+        "tick"
+      ],
+      "property": [
+        "border-color"
       ],
       "state": [
         "passed"
@@ -65978,46 +66676,46 @@
         "--xh-_tone"
       ],
       "visibility": "public",
-      "description": "slider 的 tick 部件 background 覆盖槽。"
+      "description": "slider 的 tick 部件 border-color 覆盖槽。"
     },
     {
-      "name": "--xh-slider-tick-bg-active-disabled",
+      "name": "--xh-slider-tick-border-active-disabled",
       "component": "slider",
       "part": [
         "tick",
         "tick-group"
       ],
       "property": [
-        "background"
+        "border-color"
       ],
       "state": [
         "disabled",
         "passed"
       ],
       "defaultToken": [
-        "--xh-fg-disabled"
+        "--xh-bg-subtle-hover-opaque"
       ],
       "visibility": "public",
-      "description": "slider 的 tick、tick-group 部件 background 覆盖槽。"
+      "description": "slider 的 tick、tick-group 部件 border-color 覆盖槽。"
     },
     {
-      "name": "--xh-slider-tick-bg-disabled",
+      "name": "--xh-slider-tick-border-disabled",
       "component": "slider",
       "part": [
         "tick",
         "tick-group"
       ],
       "property": [
-        "background"
+        "border-color"
       ],
       "state": [
         "disabled"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "slider 的 tick、tick-group 部件 background 覆盖槽。"
+      "description": "slider 的 tick、tick-group 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-slider-tick-label-fg",
@@ -66145,7 +66843,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "slider 的 tick 部件 block-size、inline-size 覆盖槽。"
@@ -66163,7 +66861,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "slider 的 track 部件 background 覆盖槽。"
@@ -66218,13 +66916,11 @@
       "state": [
         "orientation=horizontal",
         "orientation=vertical",
-        "size=lg",
-        "size=sm"
+        "size=lg"
       ],
       "defaultToken": [
-        "--xh-space-1",
-        "--xh-space-2",
-        "--xh-track-thickness"
+        "--xh-stroke-strong",
+        "--xh-stroke-thick"
       ],
       "visibility": "public",
       "description": "slider 的 root、track 部件 block-size、inline-size 覆盖槽。"
@@ -67545,7 +68241,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "steps 的 description 部件 color 覆盖槽。"
@@ -67563,7 +68259,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "steps 的 description 部件 font-size 覆盖槽。"
@@ -67647,7 +68343,7 @@
       ],
       "defaultToken": [
         "--xh-_steps-accent-mark",
-        "--xh-bg-subtle"
+        "--xh-_steps-accent-subtle"
       ],
       "visibility": "public",
       "description": "steps 的 indicator、trigger 部件 background、border-color 覆盖槽。"
@@ -67672,7 +68368,33 @@
         "variant=dot"
       ],
       "defaultToken": [
-        "--xh-_steps-host-bg-hover"
+        "--xh-_steps-accent-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "steps 的 indicator、trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-steps-indicator-bg-completed-pressed",
+      "component": "steps",
+      "part": [
+        "indicator",
+        "trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled], [data-readonly])",
+        "not([data-variant='dot'])",
+        "pressed",
+        "readonly",
+        "state=completed",
+        "variant=dot"
+      ],
+      "defaultToken": [
+        "--xh-_steps-accent-subtle-active"
       ],
       "visibility": "public",
       "description": "steps 的 indicator、trigger 部件 background 覆盖槽。"
@@ -67705,6 +68427,7 @@
       "component": "steps",
       "part": [
         "indicator",
+        "item",
         "trigger"
       ],
       "property": [
@@ -67721,13 +68444,14 @@
         "readonly",
         "state=current",
         "state=incomplete",
+        "tone",
         "variant=dot"
       ],
       "defaultToken": [
         "--xh-_tone-active"
       ],
       "visibility": "public",
-      "description": "steps 的 indicator、trigger 部件 background、border-color 覆盖槽。"
+      "description": "steps 的 indicator、item、trigger 部件 background、border-color 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-bg-disabled",
@@ -67790,13 +68514,10 @@
       "state": [
         "disabled",
         "is(:active, [data-pressed])",
-        "is([data-state='incomplete'], [data-state='completed']:not([data-variant='dot'])",
         "not([data-disabled], [data-readonly])",
         "pressed",
         "readonly",
-        "state=completed",
-        "state=incomplete",
-        "variant=dot"
+        "state=incomplete"
       ],
       "defaultToken": [
         "--xh-_steps-host-bg-pressed"
@@ -67809,20 +68530,24 @@
       "component": "steps",
       "part": [
         "indicator",
-        "item"
+        "item",
+        "trigger"
       ],
       "property": [
         "background"
       ],
       "state": [
+        "not([data-variant='dot'])",
         "state=incomplete",
-        "tone"
+        "tone",
+        "variant=dot"
       ],
       "defaultToken": [
+        "--xh-_steps-accent",
         "--xh-_tone-subtle"
       ],
       "visibility": "public",
-      "description": "steps 的 indicator、item 部件 background 覆盖槽。"
+      "description": "steps 的 indicator、item、trigger 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-border",
@@ -67907,20 +68632,23 @@
       "component": "steps",
       "part": [
         "indicator",
-        "item"
+        "item",
+        "trigger"
       ],
       "property": [
         "border-color"
       ],
       "state": [
+        "not([data-variant='dot'])",
         "state=incomplete",
-        "tone"
+        "tone",
+        "variant=dot"
       ],
       "defaultToken": [
         "--xh-_steps-accent"
       ],
       "visibility": "public",
-      "description": "steps 的 indicator、item 部件 border-color 覆盖槽。"
+      "description": "steps 的 indicator、item、trigger 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-fg",
@@ -68023,20 +68751,23 @@
       "component": "steps",
       "part": [
         "indicator",
-        "item"
+        "item",
+        "trigger"
       ],
       "property": [
         "color"
       ],
       "state": [
+        "not([data-variant='dot'])",
         "state=incomplete",
-        "tone"
+        "tone",
+        "variant=dot"
       ],
       "defaultToken": [
-        "--xh-_steps-accent-text"
+        "--xh-_steps-on-accent"
       ],
       "visibility": "public",
-      "description": "steps 的 indicator、item 部件 color 覆盖槽。"
+      "description": "steps 的 indicator、item、trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-font-size",
@@ -68051,7 +68782,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_steps-caption-font-size"
+        "--xh-_steps-indicator-font-size"
       ],
       "visibility": "public",
       "description": "steps 的 indicator 部件 font-size 覆盖槽。"
@@ -68160,7 +68891,7 @@
         "state=current"
       ],
       "defaultToken": [
-        "--xh-_steps-highlight"
+        "none"
       ],
       "visibility": "public",
       "description": "steps 的 indicator 部件 box-shadow 覆盖槽。"
@@ -68334,7 +69065,7 @@
         "orientation=vertical"
       ],
       "defaultToken": [
-        "--xh-stroke-thick"
+        "--xh-stroke-thin"
       ],
       "visibility": "public",
       "description": "steps 的 separator 部件 block-size、inline-size、margin-inline-start、min-inline-size 覆盖槽。"
@@ -68372,7 +69103,7 @@
         "state=current"
       ],
       "defaultToken": [
-        "--xh-_steps-accent-text"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "steps 的 title 部件 color 覆盖槽。"
@@ -68391,7 +69122,7 @@
         "tone"
       ],
       "defaultToken": [
-        "--xh-_steps-accent-text"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "steps 的 item、title 部件 color 覆盖槽。"
@@ -68428,6 +69159,24 @@
       ],
       "defaultToken": [
         "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "steps 的 title 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-steps-title-font-weight-current",
+      "component": "steps",
+      "part": [
+        "title"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "state=current"
+      ],
+      "defaultToken": [
+        "--xh-text-heading-3-weight"
       ],
       "visibility": "public",
       "description": "steps 的 title 部件 font-weight 覆盖槽。"
@@ -72352,6 +73101,7 @@
       "state": [
         "disabled",
         "tone",
+        "variant=solid",
         "xh-ink-surface"
       ],
       "defaultToken": [
@@ -72754,13 +73504,16 @@
         "highlighted",
         "is(:hover, [data-highlighted])",
         "not([data-disabled])",
+        "not([data-tone])",
         "not([data-variant='solid'])",
         "tone",
+        "variant=ghost",
         "variant=solid"
       ],
       "defaultToken": [
         "--xh-_tone-subtle-hover",
-        "--xh-bg-subtle"
+        "--xh-bg-subtle",
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "tag-group 的 list、root 部件 background 覆盖槽。"
@@ -72779,14 +73532,17 @@
         "disabled",
         "is(:active, [data-pressed])",
         "not([data-disabled])",
+        "not([data-tone])",
         "not([data-variant='solid'])",
         "pressed",
         "selectable",
         "tone",
+        "variant=ghost",
         "variant=solid"
       ],
       "defaultToken": [
         "--xh-_tone-subtle-active",
+        "--xh-bg-subtle-active",
         "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
@@ -72924,7 +73680,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1_5"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "tag-group 的 list 部件 gap 覆盖槽。"
@@ -73142,6 +73898,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -73247,6 +74004,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -74265,6 +75023,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -74370,6 +75129,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -75111,6 +75871,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -75196,6 +75957,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -76401,6 +77163,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -76486,6 +77249,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -78191,6 +78955,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -78276,6 +79041,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -79505,7 +80271,7 @@
         "orientation=horizontal"
       ],
       "defaultToken": [
-        "--xh-stroke-thick"
+        "--xh-stroke-thin"
       ],
       "visibility": "public",
       "description": "timeline 的 connector、item 部件 block-size、inline-size 覆盖槽。"
@@ -79546,7 +80312,7 @@
         "placement=start"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "timeline 的 content、item 部件 padding-block-end 覆盖槽。"
@@ -79567,7 +80333,7 @@
         "orientation=horizontal"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "timeline 的 content、item 部件 padding-block-start 覆盖槽。"
@@ -79856,11 +80622,13 @@
       "part": [
         "indicator",
         "item",
+        "label",
         "root",
         "title"
       ],
       "property": [
         "font-size",
+        "line-height",
         "margin-block-start"
       ],
       "state": [
@@ -79870,7 +80638,7 @@
         "--xh-_timeline-title-font-size"
       ],
       "visibility": "public",
-      "description": "timeline 的 indicator、item、root、title 部件 font-size、margin-block-start 覆盖槽。"
+      "description": "timeline 的 indicator、item、label、root、title 部件 font-size、line-height、margin-block-start 覆盖槽。"
     },
     {
       "name": "--xh-timeline-title-font-weight",
@@ -82049,6 +82817,24 @@
       "description": "tool-call 的 duration、error、status 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-tool-call-status-h",
+      "component": "tool-call",
+      "part": [
+        "status"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "tone"
+      ],
+      "defaultToken": [
+        "--xh-chip-h-sm"
+      ],
+      "visibility": "public",
+      "description": "tool-call 的 status 部件 min-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-tool-call-status-px",
       "component": "tool-call",
       "part": [
@@ -82079,7 +82865,7 @@
         "tone"
       ],
       "defaultToken": [
-        "--xh-space-0_5"
+        "0"
       ],
       "visibility": "public",
       "description": "tool-call 的 status 部件 padding-block 覆盖槽。"
@@ -82097,7 +82883,7 @@
         "tone"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "tool-call 的 status 部件 border-radius 覆盖槽。"
@@ -82729,7 +83515,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-gap-sm"
+        "--xh-_action-profile-gap"
       ],
       "visibility": "public",
       "description": "toolbar 的 item 部件 gap 覆盖槽。"
@@ -82892,7 +83678,7 @@
         "orientation=vertical"
       ],
       "defaultToken": [
-        "--xh-space-0"
+        "--xh-space-3"
       ],
       "visibility": "public",
       "description": "toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。"
@@ -82964,8 +83750,8 @@
       "property": [
         "block-size",
         "inline-size",
-        "margin-block-start",
-        "margin-inline-start"
+        "margin-block",
+        "margin-inline"
       ],
       "state": [
         "orientation=horizontal",
@@ -82975,7 +83761,7 @@
         "--xh-stroke-thin"
       ],
       "visibility": "public",
-      "description": "toolbar 的 group、separator 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。"
+      "description": "toolbar 的 group、separator 部件 block-size、inline-size、margin-block、margin-inline 覆盖槽。"
     },
     {
       "name": "--xh-toolbar-shadow",
@@ -83557,10 +84343,13 @@
       "name": "--xh-tour-gap",
       "component": "tour",
       "part": [
-        "content"
+        "content",
+        "description",
+        "title"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-start"
       ],
       "state": [
         "default"
@@ -83569,7 +84358,7 @@
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "tour 的 content 部件 gap 覆盖槽。"
+      "description": "tour 的 content、description、title 部件 gap、margin-block-start 覆盖槽。"
     },
     {
       "name": "--xh-tour-icon-size",
@@ -83897,7 +84686,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-surface-py-md"
+        "--xh-surface-py-sm"
       ],
       "visibility": "public",
       "description": "tour 的 content 部件 padding-block 覆盖槽。"
@@ -84007,7 +84796,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-ring-focus"
+        "--xh-_tour-spotlight-ring"
       ],
       "visibility": "public",
       "description": "tour 的 spotlight 部件 box-shadow 覆盖槽。"
@@ -84383,7 +85172,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-3"
+        "--xh-space-5"
       ],
       "visibility": "public",
       "description": "transfer 的 root 部件 gap 覆盖槽。"
@@ -84700,6 +85489,24 @@
       "description": "transfer 的 item 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-transfer-item-h",
+      "component": "transfer",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_transfer-item-h"
+      ],
+      "visibility": "public",
+      "description": "transfer 的 item 部件 min-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-transfer-item-leading",
       "component": "transfer",
       "part": [
@@ -84766,7 +85573,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "0"
       ],
       "visibility": "public",
       "description": "transfer 的 item 部件 border-radius 覆盖槽。"
@@ -84802,7 +85609,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-viewport-h-md"
+        "--xh-viewport-h-sm"
       ],
       "visibility": "public",
       "description": "transfer 的 list 部件 block-size 覆盖槽。"
@@ -84820,7 +85627,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "transfer 的 list 部件 padding-inline 覆盖槽。"
@@ -84838,7 +85645,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "transfer 的 list 部件 padding-block 覆盖槽。"
@@ -84957,13 +85764,11 @@
       "name": "--xh-transfer-panel-border",
       "component": "transfer",
       "part": [
-        "panel-header",
         "source-panel",
         "target-panel"
       ],
       "property": [
-        "border",
-        "border-block-end"
+        "border"
       ],
       "state": [
         "default"
@@ -84972,7 +85777,7 @@
         "--xh-border-default"
       ],
       "visibility": "public",
-      "description": "transfer 的 panel-header、source-panel、target-panel 部件 border、border-block-end 覆盖槽。"
+      "description": "transfer 的 source-panel、target-panel 部件 border 覆盖槽。"
     },
     {
       "name": "--xh-transfer-panel-border-invalid",
@@ -85032,6 +85837,24 @@
       "description": "transfer 的 panel-count 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-transfer-panel-header-bg",
+      "component": "transfer",
+      "part": [
+        "panel-header"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-muted"
+      ],
+      "visibility": "public",
+      "description": "transfer 的 panel-header 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-transfer-panel-header-gap",
       "component": "transfer",
       "part": [
@@ -85080,7 +85903,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-3"
       ],
       "visibility": "public",
       "description": "transfer 的 panel-header 部件 padding-block 覆盖槽。"
@@ -85153,7 +85976,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "transfer 的 panel-title 部件 font-weight 覆盖槽。"
@@ -85587,7 +86410,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "transfer 的 to-source-trigger、to-target-trigger 部件 border-radius 覆盖槽。"
@@ -87445,6 +88268,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -87530,6 +88354,7 @@
         "hover",
         "invalid",
         "loading",
+        "not(:focus-within)",
         "not([data-disabled])",
         "not([data-invalid])",
         "not([data-loading])",
@@ -88831,6 +89656,26 @@
       "description": "typography 的 prose、text 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-typography-code-fg",
+      "component": "typography",
+      "part": [
+        "prose",
+        "text"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "variant=code",
+        "where(code)"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "typography 的 prose、text 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-typography-code-font",
       "component": "typography",
       "part": [
@@ -88887,7 +89732,7 @@
         "where(code)"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "typography 的 prose、text 部件 padding-inline 覆盖槽。"
@@ -89108,7 +89953,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "typography 的 heading 部件 font-weight 覆盖槽。"
@@ -89262,7 +90107,7 @@
       ],
       "defaultToken": [
         "--xh-_tone-subtle",
-        "--xh-bg-brand-subtle"
+        "--xh-bg-mark"
       ],
       "visibility": "public",
       "description": "typography 的 text 部件 background 覆盖槽。"
@@ -89282,7 +90127,7 @@
       ],
       "defaultToken": [
         "--xh-_tone-fg",
-        "--xh-fg-brand-strong"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "typography 的 text 部件 color 覆盖槽。"
@@ -89588,7 +90433,7 @@
         "where(h1, h2, h3, h4, h5, h6)"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "typography 的 prose 部件 font-weight 覆盖槽。"
@@ -89717,7 +90562,7 @@
         "where(ul, ol)"
       ],
       "defaultToken": [
-        "--xh-space-6"
+        "--xh-space-5"
       ],
       "visibility": "public",
       "description": "typography 的 prose 部件 padding-inline-start 覆盖槽。"
@@ -89789,7 +90634,7 @@
         "where(blockquote)"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-strong"
       ],
       "visibility": "public",
       "description": "typography 的 prose 部件 border-inline-start 覆盖槽。"
@@ -89807,7 +90652,7 @@
         "where(blockquote)"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "inherit"
       ],
       "visibility": "public",
       "description": "typography 的 prose 部件 color 覆盖槽。"
@@ -89825,7 +90670,7 @@
         "where(blockquote)"
       ],
       "defaultToken": [
-        "--xh-space-4"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "typography 的 prose 部件 padding-inline-start 覆盖槽。"
@@ -89861,7 +90706,7 @@
         "where(strong)"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "typography 的 prose 部件 font-weight 覆盖槽。"
@@ -89933,7 +90778,7 @@
         "variant=strong"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "typography 的 text 部件 font-weight 覆盖槽。"

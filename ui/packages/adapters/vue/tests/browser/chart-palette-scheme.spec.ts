@@ -18,7 +18,7 @@ const DATA = [
   { month: '一月', a: 100, b: 80, c: 60 },
   { month: '二月', a: 200, b: 120, c: 90 },
 ]
-const SERIES = ['a', 'b', 'c'].map(y => ({ mark: 'bar', x: 'month', y, name: y }))
+const SERIES = ['a', 'b', 'c'].map(y => ({ mark: 'bar' as const, x: 'month', y, name: y }))
 
 /** 外层容器是配色方案的祖先，inner 是图表的宿主（可以再写一层自己的属性）。 */
 function mount(outerAttrs: Record<string, string> = {}, innerAttrs: Record<string, string> = {}): HTMLElement {

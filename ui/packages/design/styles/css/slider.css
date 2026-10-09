@@ -17,11 +17,12 @@
      切换 orientation 的那一帧还会跟连接层清空另一轴的动作抢位置，把拇指钉在两轴都被约束的地方。
      皮肤只管另一条轴（交叉轴）的尺寸、颜色、圆角与状态表现。 */
 
-  /* 私有槽位：组件令牌 → 中档字面量两级回退。轨道厚度与拇指直径同时被 control / track / thumb
-     三个角色节点用到，收成两个槽位挂在 root 上，尺寸档只改这两处，靠继承发到子部件。 */
+  /* 私有槽位：组件令牌 → 中档两级回退。轨道厚度与拇指直径同时被 control / track / thumb
+     三个角色节点用到，收成两个槽位挂在 root 上，尺寸档只改这两处，靠继承发到子部件。
+     中档是一条 2px 的细轨（描边粗档）配 12px 的拇指 */
   [data-scope='slider'][data-part='root'] {
-    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-track-thumb-size));
-    --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-track-thickness));
+    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-3));
+    --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-stroke-thick));
 
     display: flex;
     flex-direction: column;
@@ -90,12 +91,31 @@
     cursor: not-allowed;
   }
 
+  /* 粗指针：拇指只有 12px，控件的命中区沿交叉轴两侧各外扩一格 space-4（中档 12 + 16 × 2 = 44）。
+     落指在轨道上下这一截也能按下即跳、接着拖；伪元素排在刻度之前，刻度文案仍压在它上面接得到点按 */
+  @media (pointer: coarse) {
+    [data-scope='slider'][data-part='control'][data-orientation='horizontal']::before {
+      content: '';
+      position: absolute;
+      inset-block: calc(-1 * var(--xh-space-4));
+      inset-inline: 0;
+    }
+
+    [data-scope='slider'][data-part='control'][data-orientation='vertical']::before {
+      content: '';
+      position: absolute;
+      inset-block: 0;
+      inset-inline: calc(-1 * var(--xh-space-4));
+    }
+  }
+
   /* 已选区间以它为定位上下文。不写 overflow: hidden：作者把拇指写进轨道里也是合法结构，
      一裁就把拇指切掉半个；区间的圆角由它自己那条 border-radius 兜住，本就不靠轨道来裁。 */
   [data-scope='slider'][data-part='track'] {
     position: relative;
     border-radius: var(--xh-slider-track-radius, var(--xh-shape-pill));
-    background: var(--xh-slider-track-bg, var(--xh-bg-subtle-active));
+    /* 底槽取 fill-3 级中性填充（淡底阶梯的 200 档） */
+    background: var(--xh-slider-track-bg, var(--xh-bg-subtle-hover));
   }
 
   [data-scope='slider'][data-part='track'][data-orientation='horizontal'] {
@@ -108,7 +128,7 @@
     inline-size: var(--xh-_track-thickness);
   }
 
-  /* 禁用：底槽退到 100 档淡底，已选区间换成禁用前景——两者仍分得开，值还读得出，只是没了品牌色 */
+  /* 禁用：底槽退到 100 档淡底，已选区间退到 200 档——两者仍分得开，值还读得出，只是没了品牌色 */
   [data-scope='slider'][data-part='track'][data-disabled] {
     background: var(--xh-slider-track-bg-disabled, var(--xh-bg-subtle));
   }
@@ -148,39 +168,35 @@
     background: var(--xh-slider-range-bg-invalid, var(--xh-border-invalid));
   }
 
+  /* 区间叠在底槽上：取不透明档，半透明的墨色压在半透明的底槽上会再叠深一层 */
   [data-scope='slider'][data-part='range'][data-disabled] {
-    background: var(--xh-slider-range-bg-disabled, var(--xh-fg-disabled));
+    background: var(--xh-slider-range-bg-disabled, var(--xh-bg-subtle-hover-opaque));
   }
 
   /* 圆点浮在轨道之上：轨道是流内的，拇指是绝对定位的，天然后来居上，不必再堆 z-index。
      box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比 --xh-_thumb-size 宽两条边，
      下面按半个直径回拉的负外边距就对不上圆心。
-     拇指是可拖起的 raised 面：描边取装饰边（不透明档），raised 影只是加成、不作边界 */
+     拇指是平面的白底圆：2px 强调色描边就是它的边界，静止不投影；跟着手走时才抬起（见拖动那档） */
   [data-scope='slider'][data-part='thumb'] {
     position: absolute;
     box-sizing: border-box;
     inline-size: var(--xh-_thumb-size);
     block-size: var(--xh-_thumb-size);
-    /* 描边取装饰边的不透明档：墨色描边半透明，压在圆点自己的底上只会是底色的深一档，框不住圆点，
-       拇指就与同色的已选区间糊成一片 */
-    border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-border-default-opaque));
+    border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-_tone, var(--xh-bg-brand)));
     border-radius: var(--xh-slider-thumb-radius, var(--xh-shape-circle));
-    background: var(--xh-slider-thumb-bg, var(--xh-_tone, var(--xh-bg-brand)));
-    /* 圆点上没有字，这一支是给环用的：环灌 currentColor 时取到的是与这块底配对的前景色，
-       不写就取到从页面继承下来的正文色 */
-    color: var(--xh-_tone-on, var(--xh-fg-on-brand));
-    box-shadow: var(--xh-slider-thumb-shadow, var(--xh-elevation-raised));
+    background: var(--xh-slider-thumb-bg, var(--xh-bg-surface));
+    box-shadow: var(--xh-slider-thumb-shadow, none);
     cursor: grab;
     transition:
       scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
-     禁用的拇指退成白面，不在这一档里，吃库环 */
-  [data-scope='slider'][data-part='thumb']:not([data-disabled]):focus-visible {
-    --xh-_ring-color: currentColor;
+  /* 可悬停设备上指针落到拇指即放大一档，与拖动中同一比例：提示它抓得起来 */
+  @media (hover: hover) {
+    [data-scope='slider'][data-part='thumb']:hover:not([data-disabled], [data-readonly]) {
+      scale: var(--xh-slider-thumb-scale-dragging, var(--xh-motion-scale-drag));
+    }
   }
 
   /* 内联样式把 inset-inline-start 定在值所在的比例上，那是拇指的**起始边**不是圆心；
@@ -203,7 +219,7 @@
 
   /* 多拇指时只有手真正推着的那一个带 data-dragging，放大与光标因此不会全组一起变。
      放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动，负外边距的算式也不用跟着改。
-     海拔从静态的 raised 换到 lifted：跟着手走的东西比贴在页面上的抬得高一档，
+     静止时不投影，拖动中才抬起到 lifted：跟着手走的东西离开页面一档，
      又不到锚定浮层那一层——用 floating 会让拇指和下拉面板一样重。 */
   [data-scope='slider'][data-part='thumb'][data-dragging] {
     /* 放大比例落进私有槽：挂在拇指里的值气泡读同一支反向缩回原尺寸 */
@@ -215,16 +231,16 @@
   }
 
   [data-scope='slider'][data-part='thumb'][data-invalid] {
-    background: var(--xh-slider-thumb-bg-invalid, var(--xh-border-invalid));
+    border-color: var(--xh-slider-thumb-border-invalid, var(--xh-border-invalid));
   }
 
   [data-scope='slider'][data-part='thumb'][data-readonly]:not([data-disabled]) {
     cursor: default;
   }
 
-  /* 禁用：面退到实体白面、描边留着、影收掉——拖不起来的东西不该看着像浮在轨道上。
-     不写 color：圆点上没有字，禁用拇指不进 Tab 序列也不会聚焦，环的前景在这里没有消费者 */
+  /* 禁用：白面留着、描边退到 200 档（不透明档：描边压在拇指自己的白底上，半透明的墨色要先兑实）、影收掉 */
   [data-scope='slider'][data-part='thumb'][data-disabled] {
+    border-color: var(--xh-slider-thumb-border-disabled, var(--xh-bg-subtle-hover-opaque));
     background: var(--xh-slider-thumb-bg-disabled, var(--xh-bg-surface));
     box-shadow: var(--xh-slider-thumb-shadow-disabled, none);
     cursor: not-allowed;
@@ -282,15 +298,14 @@
 
   /* —— 尺寸 —— */
   /* 尺寸只改 root 上那两个槽位，control / track / thumb 跟着一起走；中间档不写规则，缺省即中档。
-     两档都保持"拇指是轨道的三倍厚"这个比例，换档时圆点与底槽的关系看着不变。 */
+     拇指 10 / 12 / 16px；轨道小档沿用中档的 2px（再细就读不出是条轨道），大档加到 3px */
   [data-scope='slider'][data-part='root'][data-size='sm'] {
-    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-3));
-    --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-space-1));
+    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-2_5));
   }
 
   [data-scope='slider'][data-part='root'][data-size='lg'] {
-    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-6));
-    --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-space-2));
+    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-4));
+    --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-stroke-strong));
   }
 
   /* —— 刻度：圆点钉在轨道上、文案排在轨道外侧，坐标由连接层按百分比内联给出 —— */
@@ -300,21 +315,24 @@
     pointer-events: none;
   }
 
-  /* 刻度点是正方盒，取 circle（正方盒不得用 pill 冒充圆） */
+  /* 刻度点是 8px 的白底小圆，2px 描边取轨道色；正方盒取 circle（正方盒不得用 pill 冒充圆）。
+     box-sizing 显式写：描边吃进直径里，平移回中才落在比例点上 */
   [data-scope='slider'][data-part='tick'] {
     position: absolute;
     inset-block-start: 50%;
-    inline-size: var(--xh-slider-tick-size, var(--xh-space-1));
-    block-size: var(--xh-slider-tick-size, var(--xh-space-1));
+    box-sizing: border-box;
+    inline-size: var(--xh-slider-tick-size, var(--xh-space-2));
+    block-size: var(--xh-slider-tick-size, var(--xh-space-2));
+    border: var(--xh-stroke-thick) solid var(--xh-slider-tick-border, var(--xh-bg-subtle-hover));
     border-radius: var(--xh-slider-tick-radius, var(--xh-shape-circle));
-    background: var(--xh-slider-tick-bg, var(--xh-border-strong));
+    background: var(--xh-slider-tick-bg, var(--xh-bg-surface));
     /* 连接层把比例点写在 inset-inline-start 上：平移的行内分量乘书写方向的符号，rtl 下掉头，刻度点才以比例点为中心 */
     translate: calc(-50% * var(--xh-direction-sign)) -50%;
   }
 
-  /* 落进已选区间的刻度点跟 range 同色 */
+  /* 落进已选区间的刻度点描边跟 range 同色 */
   [data-scope='slider'][data-part='tick'][data-passed] {
-    background: var(--xh-slider-tick-bg-active, var(--xh-_tone, var(--xh-bg-brand)));
+    border-color: var(--xh-slider-tick-border-active, var(--xh-_tone, var(--xh-bg-brand)));
   }
 
   [data-scope='slider'][data-part='tick-label'] {
@@ -336,13 +354,13 @@
   }
 
   /* 禁用：刻度点与文案由 tick-group 上的 data-disabled 下发（连接层不给每个刻度单发），
-     已过的刻度点与区间同色，文案换禁用前景，点它跳档的手型收掉 */
+     刻度点描边与底槽同退到 100 档、已过的与区间同退到 200 档，文案换禁用前景，点它跳档的手型收掉 */
   [data-scope='slider'][data-part='tick-group'][data-disabled] [data-part='tick']:where([data-scope='slider']) {
-    background: var(--xh-slider-tick-bg-disabled, var(--xh-border-default));
+    border-color: var(--xh-slider-tick-border-disabled, var(--xh-bg-subtle));
   }
 
   [data-scope='slider'][data-part='tick-group'][data-disabled] [data-part='tick'][data-passed]:where([data-scope='slider']) {
-    background: var(--xh-slider-tick-bg-active-disabled, var(--xh-fg-disabled));
+    border-color: var(--xh-slider-tick-border-active-disabled, var(--xh-bg-subtle-hover-opaque));
   }
 
   [data-scope='slider'][data-part='tick-group'][data-disabled] [data-part='tick-label']:where([data-scope='slider']) {

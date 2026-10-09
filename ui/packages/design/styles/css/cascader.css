@@ -303,7 +303,7 @@
     align-items: stretch;
     /* 面板的下界：搜索视图与两个占位没有列托底，靠这一条不缩成一小块；可用区比它还窄时让位。
        可用宽写在定位层上、沿继承流下来 */
-    min-inline-size: min(var(--xh-cascader-content-min-w, var(--xh-overlay-menu-min-w)), var(--xh-_cascader-available-w));
+    min-inline-size: min(var(--xh-cascader-content-min-w, var(--xh-overlay-cascade-min-w)), var(--xh-_cascader-available-w));
     /* 列多起来时外框宽过可用区就收成可用宽度，溢出的列交给下面那条 overflow-x；
        缺省不封顶，作者要封顶写 --xh-cascader-content-max-w */
     max-inline-size: min(var(--xh-cascader-content-max-w, var(--xh-_cascader-available-w)), var(--xh-_cascader-available-w));
@@ -352,7 +352,7 @@
     flex-direction: column;
     gap: var(--xh-cascader-column-gap, var(--xh-list-option-gap));
     /* 每一列按条目的自然宽度，受菜单的下界托底；长选项撑到条目的上限为止，余下的在条目里截断 */
-    min-inline-size: var(--xh-cascader-column-min-w, var(--xh-overlay-menu-min-w));
+    min-inline-size: var(--xh-cascader-column-min-w, var(--xh-overlay-cascade-min-w));
     block-size: var(--xh-cascader-column-h, var(--xh-viewport-h-sm));
     padding-block: var(--xh-cascader-column-py, var(--xh-space-1));
     padding-inline: var(--xh-cascader-column-px, 0);
@@ -378,7 +378,7 @@
      用逻辑属性，rtl 下自动跑到另一侧。每列后面紧跟着它自己的竖条节点，相邻选择器接不到下一列，
      按「前面有过列」取后续的列 */
   [data-scope='cascader'][data-part='column'] ~ [data-scope='cascader'][data-part='column'] {
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-cascader-column-divider, var(--xh-material-solid-separator));
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-cascader-column-divider, var(--xh-material-solid-border));
   }
 
   [data-scope='cascader'][data-part='column']:not([tabindex='0']):focus-visible {
@@ -407,9 +407,9 @@
     display: block;
     padding-block: var(--xh-cascader-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-cascader-group-label-px, var(--xh-_cascader-row-px));
-    color: var(--xh-cascader-group-label-fg, var(--xh-fg-muted));
+    color: var(--xh-cascader-group-label-fg, var(--xh-fg-subtle));
     font-size: var(--xh-cascader-group-label-font-size, var(--xh-text-caption-size));
-    font-weight: var(--xh-cascader-group-label-font-weight, var(--xh-font-weight-medium));
+    font-weight: var(--xh-cascader-group-label-font-weight, var(--xh-font-weight-regular));
     line-height: var(--xh-leading-none);
     user-select: none;
   }
@@ -549,9 +549,10 @@
     inline-size: var(--xh-cascader-branch-arrow-size, var(--xh-control-indicator-size));
     block-size: var(--xh-cascader-branch-arrow-size, var(--xh-control-indicator-size));
     margin-inline-start: var(--xh-cascader-item-gap, var(--xh-_cascader-gap));
-    background-color: var(--xh-cascader-branch-arrow-fg, var(--xh-fg-subtle));
-    -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
-    mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+    /* 盒与标记盒同为 16px，字形只画四分之三（12px），比行里的文字轻一档 */
+    background-color: var(--xh-cascader-branch-arrow-fg, var(--xh-fg-muted));
+    -webkit-mask: var(--xh-glyph-mark-chevron-right) center / 75% no-repeat;
+    mask: var(--xh-glyph-mark-chevron-right) center / 75% no-repeat;
   }
 
   [data-scope='cascader'][data-part='item'][data-branch][data-disabled]::after {
@@ -651,7 +652,7 @@
     padding-block: 0;
     padding-inline: var(--xh-cascader-input-px, var(--xh-_cascader-px));
     border: none;
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-search-divider, var(--xh-material-solid-separator));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-search-divider, var(--xh-material-solid-border));
     border-start-start-radius: inherit;
     border-start-end-radius: inherit;
     background: none;
@@ -818,8 +819,10 @@
     flex: 1 1 100%;
     align-items: center;
     justify-content: center;
+    /* 空态与在途占位撑到一列的高度，居中落在面板里，不缩成一条窄条 */
+    min-block-size: var(--xh-cascader-empty-min-h, var(--xh-viewport-h-sm));
     padding: var(--xh-cascader-empty-p, var(--xh-space-3));
-    color: var(--xh-cascader-empty-fg, var(--xh-fg-muted));
+    color: var(--xh-cascader-empty-fg, var(--xh-fg-subtle));
     font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
   }
 
@@ -829,13 +832,17 @@
 
   /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   [data-scope='cascader'][data-part='loading'] {
+    /* 加载环取品牌色，文案仍是弱一档的前景 */
+    --xh-_loading-ring-fg: var(--xh-cascader-loading-ring-fg, var(--xh-fg-brand));
+
     display: flex;
     flex: 0 0 100%;
     align-items: center;
     justify-content: center;
     gap: var(--xh-_cascader-gap);
+    min-block-size: var(--xh-cascader-loading-min-h, var(--xh-viewport-h-sm));
     padding: var(--xh-cascader-loading-p, var(--xh-space-3));
-    color: var(--xh-cascader-loading-fg, var(--xh-fg-muted));
+    color: var(--xh-cascader-loading-fg, var(--xh-fg-subtle));
     font-size: var(--xh-cascader-loading-font-size, var(--xh-_cascader-font-size));
   }
 
@@ -892,10 +899,10 @@
     align-items: center;
     gap: var(--xh-cascader-footer-gap, var(--xh-space-2));
     padding-block: var(--xh-cascader-footer-py, var(--xh-space-2));
-    padding-inline: var(--xh-cascader-footer-px, var(--xh-space-2));
-    border-block-start: var(--xh-stroke-thin) solid var(--xh-cascader-footer-border, var(--xh-border-subtle));
+    padding-inline: var(--xh-cascader-footer-px, var(--xh-_cascader-row-px));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-cascader-footer-border, var(--xh-material-solid-border));
     color: var(--xh-cascader-footer-fg, var(--xh-fg-muted));
-    font-size: var(--xh-cascader-footer-font-size, var(--xh-text-secondary-size));
+    font-size: var(--xh-cascader-footer-font-size, var(--xh-_cascader-font-size));
   }
 
   /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */

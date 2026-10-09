@@ -20,6 +20,7 @@ import {
   XhTourSpotlight,
   XhTourTitle,
 } from '../../src'
+import { tokenLength, tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -97,8 +98,7 @@ describe('tour 的 M4 sheet 气泡与 Action Control 动作钮', () => {
     // 不透明底：末位 alpha 不是 0，也不是半透明 tint
     expect(content.backgroundColor).not.toBe(TRANSPARENT)
     expect(content.backgroundColor).not.toMatch(/\/ 0\.\d/)
-    expect(content.boxShadow).toContain('2px 4px')
-    expect(content.boxShadow).toContain('32px 64px')
+    expect(content.boxShadow).toBe(tokenValue('box-shadow', '--xh-material-elevated-shadow', part('content')))
 
     const arrow = getComputedStyle(part('arrow'))
     expect(arrow.backgroundColor).toBe(content.backgroundColor)
@@ -114,8 +114,9 @@ describe('tour 的 M4 sheet 气泡与 Action Control 动作钮', () => {
     const nextStyle = getComputedStyle(next)
     expect(nextStyle.backgroundColor).not.toBe(TRANSPARENT)
     expect(nextStyle.borderTopColor).toBe(TRANSPARENT)
-    // 三颗同高：sm 档（standard 密度 --xh-control-h-sm = 32px）
-    expect(nextStyle.height).toBe('32px')
+    // 三颗同高：sm 档（--xh-control-h-sm）
+    const sm = `${tokenLength('--xh-control-h-sm')}px`
+    expect(nextStyle.height).toBe(sm)
 
     const prev = part('prev-trigger')
     expect(prev.getAttribute('data-xh-action-variant')).toBe('outline')
@@ -123,20 +124,20 @@ describe('tour 的 M4 sheet 气泡与 Action Control 动作钮', () => {
     expect(prevStyle.backgroundColor).toBe(TRANSPARENT)
     expect(prevStyle.borderTopWidth).toBe('1px')
     expect(prevStyle.borderTopColor).not.toBe(TRANSPARENT)
-    expect(prevStyle.height).toBe('32px')
+    expect(prevStyle.height).toBe(sm)
 
     const skip = part('skip-trigger')
     expect(skip.getAttribute('data-xh-action-variant')).toBe('ghost')
     const skipStyle = getComputedStyle(skip)
     expect(skipStyle.backgroundColor).toBe(TRANSPARENT)
     expect(skipStyle.borderTopColor).toBe(TRANSPARENT)
-    expect(skipStyle.height).toBe('32px')
+    expect(skipStyle.height).toBe(sm)
 
     const close = part('close-trigger')
     expect(close.getAttribute('data-xh-action-profile')).toBe('icon')
     const closeStyle = getComputedStyle(close)
-    expect(closeStyle.width).toBe('32px')
-    expect(closeStyle.height).toBe('32px')
+    expect(closeStyle.width).toBe(sm)
+    expect(closeStyle.height).toBe(sm)
     expect(closeStyle.backgroundColor).toBe(TRANSPARENT)
   })
 
