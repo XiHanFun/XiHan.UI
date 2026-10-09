@@ -25,14 +25,14 @@ function part(name: string): HTMLElement {
   return element
 }
 
-async function mountEditable(density: 'comfortable' | 'compact' = 'comfortable'): Promise<void> {
+async function mountEditable(density: 'comfortable' | 'compact' = 'comfortable', size: 'sm' | 'md' | 'lg' = 'md'): Promise<void> {
   host = document.createElement('div')
   host.style.inlineSize = '320px'
   if (density === 'compact')
     host.dataset.density = 'compact'
   document.body.append(host)
   app = createApp({
-    render: () => h(XhEditableRoot, { defaultValue: '曦寒' }, () => [
+    render: () => h(XhEditableRoot, { defaultValue: '曦寒', size }, () => [
       h(XhEditableLabel, null, () => '昵称'),
       h(XhEditableControl, null, () => [
         h(XhEditablePreview),
@@ -151,8 +151,8 @@ describe('就地编辑的左内容右动作布局', () => {
     expect(part('submit-trigger').hidden).toBe(true)
     expect(part('cancel-trigger').hidden).toBe(true)
     expect(preview.right).toBeLessThanOrEqual(edit.getBoundingClientRect().left)
-    // 三档钮的视觉盒都取 --xh-control-action-size，控件本体 --xh-control-h-md
-    expectIconButton('edit-trigger', tokenPx('--xh-control-action-size'))
+    // 钮按字段内钮尺寸表随档：md 档视觉盒取 --xh-control-h-sm，控件本体 --xh-control-h-md
+    expectIconButton('edit-trigger', tokenPx('--xh-control-h-sm'))
     expect(part('control').getBoundingClientRect().height).toBe(tokenPx('--xh-control-h-md'))
     expectUnifiedControl('preview', 'edit-trigger')
     expectNoDivider('edit-trigger')
@@ -179,8 +179,8 @@ describe('就地编辑的左内容右动作布局', () => {
     expect(part('cancel-trigger').hidden).toBe(false)
     expect(input.right).toBeLessThanOrEqual(submit.left)
     expect(submit.right).toBeLessThanOrEqual(cancel.left)
-    expectIconButton('submit-trigger', tokenPx('--xh-control-action-size'))
-    expectIconButton('cancel-trigger', tokenPx('--xh-control-action-size'))
+    expectIconButton('submit-trigger', tokenPx('--xh-control-h-sm'))
+    expectIconButton('cancel-trigger', tokenPx('--xh-control-h-sm'))
     expectUnifiedControl('input', 'submit-trigger', 'cancel-trigger')
     expectNoDivider('submit-trigger')
     // 编辑态的盒换回 root 的形态（缺省 outline）
@@ -218,7 +218,7 @@ describe('就地编辑的左内容右动作布局', () => {
     const input = part('input').getBoundingClientRect()
     const submit = part('submit-trigger').getBoundingClientRect()
     const cancel = part('cancel-trigger').getBoundingClientRect()
-    const trigger = tokenPx('--xh-control-action-size')
+    const trigger = tokenPx('--xh-control-h-sm')
     const controlH = tokenPx('--xh-control-h-md')
     expect(submit.width).toBe(trigger)
     expect(submit.height).toBe(trigger)
@@ -234,6 +234,31 @@ describe('就地编辑的左内容右动作布局', () => {
       expect(Number.parseFloat(target.minBlockSize)).toBeGreaterThanOrEqual(44)
     }
     expectUnifiedControl('input', 'submit-trigger', 'cancel-trigger')
+  })
+
+  // 字段内钮（field-inset）尺寸表：sm 取控件内动作档、md 取 --xh-control-h-sm、lg 取 --xh-control-h-md；
+  // 字形 sm / md 取 --xh-control-indicator-sm、lg 取 --xh-control-indicator-md
+  const INSET = {
+    sm: ['--xh-control-action-size', '--xh-control-indicator-sm'],
+    md: ['--xh-control-h-sm', '--xh-control-indicator-sm'],
+    lg: ['--xh-control-h-md', '--xh-control-indicator-md'],
+  } as const
+  const SIZES = (['comfortable', 'compact'] as const).flatMap(density => (['sm', 'md', 'lg'] as const).map(size => [density, size] as const))
+
+  it.each(SIZES)('%s %s：三颗钮按字段内钮尺寸表随档，确认与取消两钮中心距不低于 24px', async (density, size) => {
+    await mountEditable(density, size)
+    const [box, glyph] = INSET[size]
+    expectIconButton('edit-trigger', tokenPx(box))
+    expect(getComputedStyle(part('edit-trigger'), '::before').inlineSize).toBe(`${tokenPx(glyph)}px`)
+
+    await userEvent.click(part('edit-trigger'))
+    await nextTick()
+    expectIconButton('submit-trigger', tokenPx(box))
+    expectIconButton('cancel-trigger', tokenPx(box))
+    // 紧凑 sm 档钮只有 20px：以两钮中心各画 24px 的圆不相交，才落进 SC 2.5.8 的间距例外
+    const submit = part('submit-trigger').getBoundingClientRect()
+    const cancel = part('cancel-trigger').getBoundingClientRect()
+    expect((cancel.left + cancel.width / 2) - (submit.left + submit.width / 2)).toBeGreaterThanOrEqual(24)
   })
 
   it('从右到左（RTL）：动作组跟随逻辑末端镜像，内容与按钮仍不重叠', async () => {
