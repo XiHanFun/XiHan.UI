@@ -14,6 +14,7 @@ import {
   XhMentionPositioner,
   XhMentionRoot,
 } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -132,17 +133,18 @@ function highlightOf(el: Element): string {
 }
 
 describe('mention 单一状态表面', () => {
-  it.each(['light', 'dark'] as const)('%s：输入实体、候选面磨砂，状态文字保持在面板上方', async (theme) => {
+  it.each(['light', 'dark'] as const)('%s：输入铺字段淡底、候选面是实体弹出层，状态文字保持在面板上方', async (theme) => {
     const state = mountMention(true, false, theme)
     await typeMention('@nobody')
     const content = byTestId('content')
     const empty = byTestId('empty')
     finishAnimations(content)
-    expect(alpha(getComputedStyle(byTestId('input')).backgroundColor)).toBe(0)
+    expect(getComputedStyle(byTestId('input')).backgroundColor).toBe(tokenValue('background-color', '--xh-bg-field', byTestId('input').parentElement!))
     expect(getComputedStyle(byTestId('input')).backdropFilter).toBe('none')
-    expect(getComputedStyle(content).backdropFilter).toContain('blur(16px)')
-    expect(alpha(getComputedStyle(content).backgroundColor)).toBeLessThan(255)
-    expect(alpha(highlightOf(content))).toBeGreaterThan(0)
+    // frosted 配方缺省是实体弹出层：不透景、底不透明、顶光缺省不画
+    expect(getComputedStyle(content).backdropFilter).toBe('none')
+    expect(alpha(getComputedStyle(content).backgroundColor)).toBe(255)
+    expect(alpha(highlightOf(content))).toBe(0)
     // 临时允许命中状态层以核验实际绘制顺序，避免只有几何正确、文字却被材质壳覆盖。
     empty.style.pointerEvents = 'auto'
     const rect = empty.getBoundingClientRect()
