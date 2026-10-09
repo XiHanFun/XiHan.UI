@@ -22061,6 +22061,9 @@
               "name": "--xh-date-range-picker-preset-fg-disabled"
             },
             {
+              "name": "--xh-date-range-picker-preset-fg-hover"
+            },
+            {
               "name": "--xh-date-range-picker-preset-font-size"
             },
             {

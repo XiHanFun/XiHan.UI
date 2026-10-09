@@ -1318,6 +1318,7 @@ export type ComponentTokenName
     | '--xh-date-range-picker-preset-check-size'
     | '--xh-date-range-picker-preset-fg'
     | '--xh-date-range-picker-preset-fg-disabled'
+    | '--xh-date-range-picker-preset-fg-hover'
     | '--xh-date-range-picker-preset-font-size'
     | '--xh-date-range-picker-preset-group-gap'
     | '--xh-date-range-picker-preset-group-h'

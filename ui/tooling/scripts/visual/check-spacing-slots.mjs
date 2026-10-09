@@ -128,6 +128,7 @@ const CROSS_PART = {
   // 时间格的命中区向上下各补半个列内间距，读列的间距槽，两格之间的缝才严丝合缝地分给上下两格
   'date-picker.time-column': ['time-item'],
   'date-range-picker.time-item': ['time-column'],
+  'date-range-picker.time-column': ['time-item'],
   'time-picker.item': ['column'],
   'time-range-picker.item': ['column'],
   // 工具名用等宽字族，摘要行里跟着它排；耗时与错误行与状态标签同一档字号
