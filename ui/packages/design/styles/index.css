@@ -46958,13 +46958,14 @@
     --xh-collection-font-size: var(--xh-time-range-picker-preset-font-size, var(--xh-text-caption-size));
     --xh-collection-radius: var(--xh-time-range-picker-preset-radius, var(--xh-shape-control));
     --xh-collection-fg-rest: var(--xh-time-range-picker-preset-fg, var(--xh-fg-muted));
-    --xh-collection-fg-hover: var(--xh-time-range-picker-preset-fg, var(--xh-fg-muted));
-    --xh-collection-fg-keyboard-highlight: var(--xh-time-range-picker-preset-fg, var(--xh-fg-muted));
-    --xh-collection-fg-pressed: var(--xh-time-range-picker-preset-fg, var(--xh-fg-muted));
     --xh-collection-fg-selected: var(--xh-time-range-picker-preset-fg, var(--xh-fg-muted));
-    --xh-collection-fg-selected-highlight: var(--xh-time-range-picker-preset-fg, var(--xh-fg-muted));
-    --xh-collection-fg-selected-hover: var(--xh-time-range-picker-preset-fg, var(--xh-fg-muted));
-    --xh-collection-fg-selected-pressed: var(--xh-time-range-picker-preset-fg, var(--xh-fg-muted));
+    /* 悬停 / 高亮 / 按下时字换正文色：底升到 200 / 300 之后，次级前景在暗色下不足 4.5:1 */
+    --xh-collection-fg-hover: var(--xh-time-range-picker-preset-fg-hover, var(--xh-fg-default));
+    --xh-collection-fg-keyboard-highlight: var(--xh-time-range-picker-preset-fg-hover, var(--xh-fg-default));
+    --xh-collection-fg-pressed: var(--xh-time-range-picker-preset-fg-hover, var(--xh-fg-default));
+    --xh-collection-fg-selected-highlight: var(--xh-time-range-picker-preset-fg-hover, var(--xh-fg-default));
+    --xh-collection-fg-selected-hover: var(--xh-time-range-picker-preset-fg-hover, var(--xh-fg-default));
+    --xh-collection-fg-selected-pressed: var(--xh-time-range-picker-preset-fg-hover, var(--xh-fg-default));
     --xh-collection-fg-disabled: var(--xh-time-range-picker-preset-fg-disabled, var(--xh-fg-disabled));
     --xh-collection-font-weight-selected: var(--xh-font-weight-regular);
     --xh-collection-font-weight-selected-highlight: var(--xh-font-weight-regular);
@@ -47199,6 +47200,14 @@
   }
 
   /* 作者自己藏掉某几格时要让位，有 display 就得补这条 */
+  /* 命中区向上下各补半个列内间距：两格之间那 8px 缝归上下两格各一半，指针落在缝里不落空 */
+  .xh-scope-time-range-picker[data-part='item']::before {
+    content: '';
+    position: absolute;
+    inset-block: calc(-0.5 * var(--xh-time-range-picker-column-gap, var(--xh-space-2)));
+    inset-inline: 0;
+  }
+
   .xh-scope-time-range-picker[data-part='item'][hidden] {
     display: none;
   }

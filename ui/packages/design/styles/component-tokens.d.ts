@@ -3961,6 +3961,7 @@ export type ComponentTokenName
     | '--xh-time-range-picker-preset-check-size'
     | '--xh-time-range-picker-preset-fg'
     | '--xh-time-range-picker-preset-fg-disabled'
+    | '--xh-time-range-picker-preset-fg-hover'
     | '--xh-time-range-picker-preset-font-size'
     | '--xh-time-range-picker-preset-group-gap'
     | '--xh-time-range-picker-preset-group-h'

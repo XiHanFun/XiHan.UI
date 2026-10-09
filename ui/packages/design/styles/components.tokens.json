@@ -77739,10 +77739,12 @@
       "name": "--xh-time-range-picker-column-gap",
       "component": "time-range-picker",
       "part": [
-        "column"
+        "column",
+        "item"
       ],
       "property": [
-        "gap"
+        "gap",
+        "inset-block"
       ],
       "state": [
         "default"
@@ -77751,7 +77753,7 @@
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "time-range-picker 的 column 部件 gap 覆盖槽。"
+      "description": "time-range-picker 的 column、item 部件 gap、inset-block 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-column-group-divider",
@@ -78973,13 +78975,8 @@
         "default",
         "disabled",
         "error",
-        "highlighted",
-        "hover",
-        "is(:active, [data-pressed])",
-        "is(:focus-visible, [data-highlighted])",
         "is([aria-selected='true'], [data-selected])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed",
         "selected",
         "xh-collection-context=overlay"
       ],
@@ -79008,6 +79005,34 @@
       ],
       "visibility": "public",
       "description": "time-range-picker 的 preset 部件 background-color、color 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-range-picker-preset-fg-hover",
+      "component": "time-range-picker",
+      "part": [
+        "preset"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "selected",
+        "xh-collection-context=overlay"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "time-range-picker 的 preset 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-preset-font-size",
