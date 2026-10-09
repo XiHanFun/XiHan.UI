@@ -715,6 +715,7 @@ export type ComponentTokenName
     | '--xh-clipboard-label-fg'
     | '--xh-clipboard-label-font-size'
     | '--xh-clipboard-label-font-weight'
+    | '--xh-clipboard-label-gap'
     | '--xh-clipboard-loading-duration'
     | '--xh-code-view-bg'
     | '--xh-code-view-border'

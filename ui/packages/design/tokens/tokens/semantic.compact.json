@@ -53,6 +53,10 @@
       "$type": "dimension",
       "$value": "20px"
     },
+    "indicator-xs": {
+      "$type": "dimension",
+      "$value": "8px"
+    },
     "indicator-sm": {
       "$type": "dimension",
       "$value": "10px"

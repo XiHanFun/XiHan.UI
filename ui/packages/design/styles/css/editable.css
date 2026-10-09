@@ -178,13 +178,13 @@
 
   /* 三颗动作是 control 内部的分段：inset 圆角、按承载面取的悬停 / 按下阶梯、粗指针热区、
      :focus-visible 关环与禁用面全由 Action Control 的 field-inset ghost 档给，组件只映射既有覆盖槽。
-     视觉盒三档都取控件内动作档（24px，compact 20px），不随字段档长大；常态只剩符号、取次要前景，
-     悬停与按下才浮出底色 */
+     视觉盒按字段内钮尺寸表随字段档（sm 取控件内动作档、md 取 control-h-sm、lg 取 control-h-md），
+     由 field-inset 档按 data-xh-action-size 给；常态只剩符号、取次要前景，悬停与按下才浮出底色 */
   [data-scope='editable'][data-part='edit-trigger'],
   [data-scope='editable'][data-part='submit-trigger'],
   [data-scope='editable'][data-part='cancel-trigger'] {
-    --xh-action-visual-size: var(--xh-editable-trigger-size, var(--xh-control-action-size));
-    --xh-action-min-inline-size: var(--xh-editable-trigger-size, var(--xh-control-action-size));
+    --xh-action-visual-size: var(--xh-editable-trigger-size, var(--xh-_action-profile-visual-size));
+    --xh-action-min-inline-size: var(--xh-editable-trigger-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-editable-trigger-radius, var(--xh-shape-inset));
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-editable-trigger-bg, var(--xh-_action-variant-bg-rest));
@@ -209,6 +209,12 @@
   [data-scope='editable'][data-part='edit-trigger'],
   [data-scope='editable'][data-part='submit-trigger'] {
     margin-inline-start: auto;
+  }
+
+  /* 确认与取消两颗挨着：紧凑 sm 档钮只有 20px，两钮中心距凑不够 24px 就落不进 SC 2.5.8 的间距例外，
+     两颗之间隔一格 --xh-space-1；其余档钮不低于 24px，这一格只把两块悬停面分开 */
+  [data-scope='editable'][data-part='cancel-trigger'] {
+    margin-inline-start: var(--xh-space-1);
   }
 
   /* 三颗动作默认是纯图标按钮；作者放了自己的图标后 :empty 不命中，不会叠两层。 */

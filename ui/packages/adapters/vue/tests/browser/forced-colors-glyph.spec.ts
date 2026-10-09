@@ -201,6 +201,15 @@ const COVERED: readonly string[] = [
   'watermark:root::after',
 ]
 
+/**
+ * 禁用档要真正核到 GrayText 的字形：它们静息时收起（按需显示的动作钮），只在悬停宿主那一遍露面。
+ * 同一枚字形在启用的夹具里扫到就能让 COVERED 过，禁用的那份漏扫了也不会红，这里单独再核一张。
+ */
+const DISABLED_COVERED: readonly string[] = [
+  'number-field:decrement-trigger::before',
+  'number-field:increment-trigger::before',
+]
+
 /** 夹具渲不出来的字形：直接挂真组件。 */
 const EXTRA: ReadonlyArray<{ name: string, render: () => VNode }> = [
   {
@@ -263,6 +272,8 @@ const EXTRA: ReadonlyArray<{ name: string, render: () => VNode }> = [
 
 const harness = createVueHarness()
 const found = new Set<string>()
+/** 扫到时所在动作控件正禁用着的字形。 */
+const foundDisabled = new Set<string>()
 let freeze: HTMLStyleElement | null = null
 
 beforeAll(async () => {
@@ -390,6 +401,25 @@ function problemOf(glyph: Glyph, state: string): string | null {
   return null
 }
 
+/** 记下扫到并核过的字形；所在动作控件禁用着的另记一份。 */
+function record(glyph: Glyph): void {
+  found.add(glyph.key)
+  if (glyph.host.closest('[data-xh-action-control]')?.hasAttribute('data-disabled'))
+    foundDisabled.add(glyph.key)
+}
+
+/**
+ * 按需显示的动作钮（data-xh-action-display="hover-focus"）静息时收起，指针落到它的宿主
+ * （data-xh-action-owner）上才露面；钮禁用了照样露面。不是这种钮返回 null。
+ */
+function revealOwner(glyph: Glyph): HTMLElement | null {
+  const owner = glyph.host.closest('[data-xh-action-display="hover-focus"]')?.closest<HTMLElement>('[data-xh-action-owner]')
+  if (!owner)
+    return null
+  const rect = owner.getBoundingClientRect()
+  return rect.width > 0 && rect.height > 0 ? owner : null
+}
+
 /** 字形跟着哪个可交互的面换色：动作控件或集合条目，禁用的不算。 */
 function interactiveHost(glyph: Glyph): HTMLElement | null {
   const host = glyph.host.closest<HTMLElement>('[data-xh-action-control], [data-xh-collection-item]')
@@ -408,18 +438,39 @@ function finishAnimations(): void {
 }
 
 /**
- * 静息一遍、逐个悬停一遍，收集当前页面上字形的问题。
- * 同一枚字形在一个组件的各份夹具里只悬停一次（hovered 记着），悬停的面与夹具无关。
+ * 静息一遍、悬停宿主一遍、逐个悬停一遍，收集当前页面上字形的问题。
+ * 同一枚字形在一个组件的各份夹具里只悬停一次（hovered 记着），悬停的面与夹具无关；
+ * 悬停宿主那一遍不去重：钮禁用与否随夹具变，每份都要露出来核。
  */
 async function inspect(label: string, hovered: Set<string>): Promise<string[]> {
   finishAnimations()
   const problems: string[] = []
   const list = glyphs()
+  const concealed: Glyph[] = []
   for (const glyph of list) {
-    if (!drawn(glyph))
+    if (!drawn(glyph)) {
+      if (revealOwner(glyph))
+        concealed.push(glyph)
       continue
-    found.add(glyph.key)
+    }
+    record(glyph)
     const problem = problemOf(glyph, `${label} · 静息`)
+    if (problem)
+      problems.push(problem)
+  }
+  // 静息时收起的按需显示钮：指针落在宿主上、不碰钮本身，钮露出静息面再核一遍。
+  // 禁用的钮只在这一遍露面，GrayText 那一支只有这里核得到
+  for (const glyph of concealed) {
+    const owner = revealOwner(glyph)
+    if (!owner || !glyph.host.isConnected)
+      continue
+    await hoverPointer(owner)
+    if (!drawn(glyph)) {
+      problems.push(`${glyph.key}（${label} · 悬停宿主）宿主悬停后仍没露面`)
+      continue
+    }
+    record(glyph)
+    const problem = problemOf(glyph, `${label} · 悬停宿主`)
     if (problem)
       problems.push(problem)
   }
@@ -430,8 +481,6 @@ async function inspect(label: string, hovered: Set<string>): Promise<string[]> {
     await hoverPointer(host)
     if (!drawn(glyph))
       continue
-    // 静息时藏着、悬停或聚焦才露面的字形（字段内按需显示的动作钮）在这一遍才算扫到
-    found.add(glyph.key)
     hovered.add(glyph.key)
     const problem = problemOf(glyph, `${label} · 悬停`)
     if (problem)
@@ -508,5 +557,9 @@ describe('高对比档里皮肤画的字形不消失', () => {
 
   it('扫到的字形覆盖了登记的每一枚', () => {
     expect(COVERED.filter(key => !found.has(key))).toEqual([])
+  })
+
+  it('静息时收起的按需显示钮在禁用档也露出来核过', () => {
+    expect(DISABLED_COVERED.filter(key => !foundDisabled.has(key))).toEqual([])
   })
 })

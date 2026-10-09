@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
+  XhButton,
   XhInputGroupItem,
   XhInputGroupRoot,
   XhTextFieldControl,
@@ -155,11 +156,43 @@ describe('input-group 单一输入表面', () => {
 
   it('组里的字段禁用：组壳换禁用面（淡底 + 缺省描边），悬停不升描边', async () => {
     await mount()
+    // 描边换色带 micro 过渡：时长归零，悬停后当场读到的就是终值，悬停抑制回退了这条负断言才会红
+    host!.style.setProperty('--xh-motion-duration-micro', '0ms')
     const root = group('disabled')
     expect(getComputedStyle(root).backgroundColor).toBe(token('--xh-bg-subtle', 'background-color'))
     expect(getComputedStyle(root, '::before').borderTopColor).toBe(token('--xh-border-default'))
+    // 对照：可悬停的组同样当场读得到升档描边，说明下面那一读不是落在过渡途中
+    await userEvent.hover(group('outline'))
+    expect(getComputedStyle(group('outline'), '::before').borderTopColor).toBe(token('--xh-border-strong'))
     await userEvent.hover(root)
     expect(getComputedStyle(root, '::before').borderTopColor).toBe(token('--xh-border-default'))
+  })
+
+  it('组里只有一颗按钮禁用、字段可用：整组照常悬停升描边，禁用面只认字段外壳', async () => {
+    host = document.createElement('div')
+    host.style.setProperty('--xh-motion-duration-micro', '0ms')
+    document.body.append(host)
+    app = createApp({
+      render: () => h(XhInputGroupRoot, { 'data-testid': 'button' }, () => [
+        field('搜索'),
+        h(XhButton, { disabled: true }, () => '搜索'),
+      ]),
+    })
+    app.mount(host)
+    await nextTick()
+    const root = group('button')
+    expect(root.querySelector('[data-scope="button"][data-disabled]')).not.toBeNull()
+    expect(getComputedStyle(root, '::before').borderTopColor).toBe(token('--xh-border-control'))
+    await userEvent.hover(control('button'))
+    expect(getComputedStyle(root, '::before').borderTopColor).toBe(token('--xh-border-strong'))
+  })
+
+  it('组里的字段禁用：前后缀块的字随字段禁用面换 --xh-fg-disabled', async () => {
+    await mount()
+    const item = group('disabled').querySelector<HTMLElement>(`[data-scope='input-group'][data-part='item']`)!
+    expect(getComputedStyle(item).color).toBe(token('--xh-fg-disabled'))
+    const enabled = group('outline').querySelector<HTMLElement>(`[data-scope='input-group'][data-part='item']`)!
+    expect(getComputedStyle(enabled).color).toBe(token('--xh-fg-default'))
   })
 
   it('强制色：聚焦时组壳补一圈 Highlight 环，描边换 Highlight', async () => {
@@ -211,6 +244,9 @@ describe('input-group 单一输入表面', () => {
     const item = group('outline').querySelector<HTMLElement>(`[data-scope='input-group'][data-part='item']`)!
     expect(getComputedStyle(item).borderInlineEndWidth).toBe('1px')
     expect(getComputedStyle(item).borderInlineEndColor).toBe(resolve('ButtonText'))
+    // 组里的字段禁用时前后缀的字换 GrayText，与组壳的禁用描边同一档
+    const disabled = group('disabled').querySelector<HTMLElement>(`[data-scope='input-group'][data-part='item']`)!
+    expect(getComputedStyle(disabled).color).toBe(resolve('GrayText'))
   })
 
   it('不传尺寸时整组与单个字段同宽：前缀按内容宽，字段占满剩余，不再是字段缺省宽再加前缀', async () => {

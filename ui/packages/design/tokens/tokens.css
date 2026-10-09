@@ -293,6 +293,7 @@
     --xh-control-caption-lg: var(--xh-font-size-md);
     --xh-control-action-size: 24px;
     --xh-control-indicator-size: var(--xh-control-indicator-md);
+    --xh-control-indicator-xs: 10px;
     --xh-control-indicator-sm: 12px;
     --xh-control-indicator-md: 16px;
     --xh-control-indicator-lg: 20px;
@@ -634,6 +635,7 @@
     --xh-control-gap-md: var(--xh-space-1_5);
     --xh-control-gap-lg: var(--xh-space-2);
     --xh-control-action-size: 20px;
+    --xh-control-indicator-xs: 8px;
     --xh-control-indicator-sm: 10px;
     --xh-control-indicator-md: 14px;
     --xh-control-indicator-lg: 18px;

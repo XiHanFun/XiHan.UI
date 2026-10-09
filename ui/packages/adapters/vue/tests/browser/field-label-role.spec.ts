@@ -4,8 +4,14 @@
 // 判据是级联算出来的颜色与排出来的几何，jsdom 不排版。
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
+import { cdp } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
+  XhClipboardControl,
+  XhClipboardCopyTrigger,
+  XhClipboardInput,
+  XhClipboardLabel,
+  XhClipboardRoot,
   XhFieldControl,
   XhFieldLabel,
   XhFieldRoot,
@@ -71,6 +77,36 @@ function part(scope: string, name: string): HTMLElement {
   return el
 }
 
+interface DomNode { nodeId: number, attributes?: string[], children?: DomNode[], contentDocument?: DomNode }
+
+/** 用例跑在测试页的 iframe 里：穿透文档树，找到带探针属性的那个节点。 */
+function findProbe(node: DomNode, marker: string): number | null {
+  const attrs = node.attributes ?? []
+  for (let i = 0; i < attrs.length; i += 2) {
+    if (attrs[i] === 'data-ax-probe' && attrs[i + 1] === marker)
+      return node.nodeId
+  }
+  for (const child of [...(node.children ?? []), ...(node.contentDocument ? [node.contentDocument] : [])]) {
+    const hit = findProbe(child, marker)
+    if (hit != null)
+      return hit
+  }
+  return null
+}
+
+/** 经 CDP 取节点在无障碍树里算出的名字：生成内容算不算进名字，只有浏览器的计算说了算。 */
+async function accessibleName(el: Element): Promise<string | undefined> {
+  const marker = `ax-${Math.random().toString(36).slice(2)}`
+  el.setAttribute('data-ax-probe', marker)
+  const { root } = await cdp().send('DOM.getDocument', { depth: -1, pierce: true }) as { root: DomNode }
+  const nodeId = findProbe(root, marker)
+  el.removeAttribute('data-ax-probe')
+  if (nodeId == null)
+    throw new Error('无障碍探针没找到节点')
+  const { nodes } = await cdp().send('Accessibility.getPartialAXTree', { nodeId, fetchRelatives: false }) as { nodes: Array<{ name?: { value?: string } }> }
+  return nodes[0]?.name?.value
+}
+
 type Case = [scope: string, render: (disabled: boolean) => VNode]
 
 const CASES: Case[] = [
@@ -93,6 +129,19 @@ describe('字段标签角色', () => {
     expect(Math.round(control.getBoundingClientRect().top - label.getBoundingClientRect().bottom)).toBe(px('--xh-space-2'))
   })
 
+  it('clipboard：带输入框的用法是单行字段，标签同一副字段标签排版，与控件隔 --xh-space-2', async () => {
+    await mount(() => h(XhClipboardRoot, { value: 'pnpm add @xihan-ui/vue' }, () => [
+      h(XhClipboardLabel, null, () => '安装命令'),
+      h(XhClipboardControl, null, () => [h(XhClipboardInput), h(XhClipboardCopyTrigger, null, () => '复制')]),
+    ]))
+    const label = part('clipboard', 'label')
+    const style = getComputedStyle(label)
+    expect(style.color).toBe(resolve('var(--xh-fg-muted)'))
+    expect(style.fontSize).toBe(resolve('var(--xh-text-label-size)', 'font-size'))
+    expect(style.fontWeight).toBe(resolve('var(--xh-text-label-weight)', 'font-weight'))
+    expect(Math.round(part('clipboard', 'input').getBoundingClientRect().top - label.getBoundingClientRect().bottom)).toBe(px('--xh-space-2'))
+  })
+
   it.each(CASES)('%s：禁用时标签不另变色，仍是 --xh-fg-muted（对比度照样够）', async (scope, render) => {
     await mount(() => render(true))
     const label = part(scope, 'label')
@@ -106,11 +155,19 @@ describe('必填星号', () => {
     await mount(() => h(XhFieldRoot, { required: true }, () => [h(XhFieldLabel, null, () => '邮箱'), h(XhFieldControl, null, () => h('input'))]))
     const label = part('field', 'label')
     const star = getComputedStyle(label, '::before')
-    expect(star.content).toBe('"*"')
+    // 字形后跟一段空的替代文本：屏上画星号，可及树里不念
+    expect(star.content).toBe('"*" / ""')
     expect(star.color).toBe(resolve('var(--xh-fg-danger)'))
     expect(star.fontSize).toBe(resolve('var(--xh-text-caption-size)', 'font-size'))
     expect(star.marginInlineEnd).toBe(`${px('--xh-space-1')}px`)
     expect(getComputedStyle(label, '::after').content).toBe('none')
+  })
+
+  it('星号不进控件的可及名：必填由 aria-required 表达，读屏不先念「星号」', async () => {
+    await mount(() => h(XhFieldRoot, { required: true }, () => [h(XhFieldLabel, null, () => '邮箱'), h(XhFieldControl, null, () => h('input'))]))
+    const input = host!.querySelector<HTMLInputElement>('input')!
+    expect(input.getAttribute('aria-required')).toBe('true')
+    expect(await accessibleName(input)).toBe('邮箱')
   })
 })
 

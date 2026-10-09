@@ -52,6 +52,7 @@ const FIELD_LABEL = new Set([
   'color-slider',
   'color-swatch-picker',
   'file-upload',
+  'clipboard',
 ])
 /** 字段辅助行：说明与错误文案排在控件下方的那一行，取说明字号。 */
 const FIELD_HELPER = new Set(['field', 'fieldset'])

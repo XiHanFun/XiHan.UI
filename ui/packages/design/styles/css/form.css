@@ -34,8 +34,12 @@
   }
 
   /* 字段带辅助行：辅助行（最小高 --xh-space-5）紧贴控件、自己就是项距，这一项不再另留；
-     说明收起、只留错误文案占位的那一行同样算 */
-  [data-scope='form'][data-part='field-group']:has([data-scope='field'][data-part='error-text'], [data-scope='field'][data-part='description']:not([hidden])) {
+     说明收起、只留错误文案占位的那一行同样算。字段无效时它的直接子说明被收起（见 description.css），
+     不占那一行，不算辅助行：没渲染错误文案的无效字段照常留项距 */
+  [data-scope='form'][data-part='field-group']:has(
+    [data-scope='field'][data-part='error-text'],
+    [data-scope='field'][data-part='description']:not([hidden], [data-scope='field'][data-part='root'][data-invalid] > *)
+  ) {
     margin-block-end: 0;
   }
 
