@@ -72,6 +72,7 @@
     --xh-_select-h: var(--xh-control-h-md);
     --xh-_select-px: var(--xh-control-px-md);
     --xh-_select-item-py: var(--xh-list-option-py-md);
+    --xh-_select-item-h: var(--xh-list-option-h-md);
     --xh-_select-item-px: var(--xh-control-px-md);
     --xh-_select-gap: var(--xh-control-gap-md);
     --xh-_select-font-size: var(--xh-control-font-md);
@@ -105,6 +106,7 @@
     --xh-_select-h: var(--xh-control-h-sm);
     --xh-_select-px: var(--xh-control-px-sm);
     --xh-_select-item-py: var(--xh-list-option-py-sm);
+    --xh-_select-item-h: var(--xh-list-option-h-sm);
     --xh-_select-item-px: var(--xh-control-px-sm);
     --xh-_select-gap: var(--xh-control-gap-sm);
     --xh-_select-font-size: var(--xh-control-font-sm);
@@ -123,6 +125,7 @@
     --xh-_select-h: var(--xh-control-h-lg);
     --xh-_select-px: var(--xh-control-px-lg);
     --xh-_select-item-py: var(--xh-list-option-py-lg);
+    --xh-_select-item-h: var(--xh-list-option-h-lg);
     --xh-_select-item-px: var(--xh-control-px-lg);
     --xh-_select-gap: var(--xh-control-gap-lg);
     --xh-_select-font-size: var(--xh-control-font-lg);
@@ -462,6 +465,7 @@
   [data-scope='select'][data-part='item'] {
     /* 公开 Select 槽只映射到家族合同；网格、尺寸与状态选择器不在组件皮肤复制。pressed 面与 selected 各态由家族按 overlay 上下文给出。 */
     --xh-collection-block-padding: var(--xh-select-item-py, var(--xh-_select-item-py));
+    --xh-collection-row-h: var(--xh-select-item-h, var(--xh-_select-item-h));
     --xh-collection-inline-padding: var(--xh-select-item-px, var(--xh-_select-item-px));
     --xh-collection-gap: var(--xh-select-item-gap, var(--xh-_select-gap));
     --xh-collection-font-size: var(--xh-select-item-font-size, var(--xh-_select-font-size));
