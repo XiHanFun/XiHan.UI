@@ -91,7 +91,7 @@ afterEach(async () => {
 })
 
 describe('日期范围选择浮层底栏', () => {
-  it.each(['light', 'dark'] as const)('%s：底栏独占面板底部一整行，上沿一道实体面描边，四周 8 的内衬', async (theme) => {
+  it.each(['light', 'dark'] as const)('%s：底栏独占面板底部一整行，上沿一道实体面描边，上下 8 的内衬', async (theme) => {
     await mount({ theme })
     const content = part('content')
     const contentRect = content.getBoundingClientRect()
@@ -110,8 +110,9 @@ describe('日期范围选择浮层底栏', () => {
     expect(style.borderTopStyle).toBe('solid')
     expect(style.borderTopWidth).toBe('1px')
     expect(style.borderTopColor).toBe(resolved('color', 'var(--xh-material-solid-border)'))
-    for (const side of ['Top', 'Right', 'Bottom', 'Left'] as const)
-      expect(style[`padding${side}`]).toBe('8px')
+    // 上下 8 的内衬；行首行尾的 8 由首末子节点让出，见下一条
+    expect(style.paddingTop).toBe('8px')
+    expect(style.paddingBottom).toBe('8px')
     // 作者的附注是次要信息：弱化的正文色、说明档字号
     expect(style.color).toBe(resolved('color', 'var(--xh-fg-muted)'))
     expect(style.fontSize).toBe(resolved('font-size', 'var(--xh-text-caption-size)'))
@@ -120,7 +121,19 @@ describe('日期范围选择浮层底栏', () => {
     expect(footer.hasAttribute('tabindex')).toBe(false)
   })
 
-  it.each(['ltr', 'rtl'] as const)('%s：附注排在行首，确认钮总落在行尾，两者在底栏里垂直居中', async (dir) => {
+  it('底栏不参与撑宽：面板的宽仍由日历与起止两组时间列定，底栏跟着铺满', async () => {
+    await mount()
+    const content = part('content')
+    const edge = Number.parseFloat(getComputedStyle(content).borderRightWidth)
+    const body = ['calendar', 'column-group'].flatMap(name =>
+      [...content.querySelectorAll<HTMLElement>(`:scope > [data-scope='date-range-picker'][data-part='${name}']`)])
+    expect(body.length).toBeGreaterThan(1)
+    const end = Math.max(...body.map(el => el.getBoundingClientRect().right))
+    expect(content.getBoundingClientRect().right - edge).toBeCloseTo(end, 0)
+    expect(part('footer').getBoundingClientRect().right).toBeCloseTo(end, 0)
+  })
+
+  it.each(['ltr', 'rtl'] as const)('%s：附注排在行首、确认钮落在行尾，各与底栏边让出 8，两者垂直居中', async (dir) => {
     await mount({ dir })
     const footer = part('footer').getBoundingClientRect()
     const confirm = part('confirm-trigger').getBoundingClientRect()

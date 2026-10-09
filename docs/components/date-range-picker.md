@@ -520,7 +520,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `--xh-date-range-picker-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | date-range-picker 的 footer 部件 color 覆盖槽。 |
 | `--xh-date-range-picker-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-caption-size` | date-range-picker 的 footer 部件 font-size 覆盖槽。 |
 | `--xh-date-range-picker-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | date-range-picker 的 footer 部件 gap 覆盖槽。 |
-| `--xh-date-range-picker-footer-px` | `footer` | `padding-inline` | `default` | `--xh-space-2` | date-range-picker 的 footer 部件 padding-inline 覆盖槽。 |
+| `--xh-date-range-picker-footer-px` | `footer` | `margin-inline-end`<br>`margin-inline-start` | `first-child`<br>`last-child` | `--xh-space-2` | date-range-picker 的 footer 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-date-range-picker-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | date-range-picker 的 footer 部件 padding-block 覆盖槽。 |
 | `--xh-date-range-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-range-picker 的 root 部件 gap 覆盖槽。 |
 | `--xh-date-range-picker-heading-font-weight` | `calendar`<br>`heading`<br>`heading-month-trigger`<br>`heading-year-trigger` | `font-weight` | `default` | `--xh-font-weight-regular` | date-range-picker 的 calendar、heading、heading-month-trigger、heading-year-trigger 部件 font-weight 覆盖槽。 |
