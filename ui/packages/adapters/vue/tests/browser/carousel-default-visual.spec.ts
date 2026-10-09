@@ -62,18 +62,18 @@ describe('carousel 默认视觉', () => {
     expect(root.height).toBe(viewport.height)
     expect(getComputedStyle(carousel.viewport).overflow).toBe('hidden')
     expect(getComputedStyle(carousel.indicators).position).toBe('absolute')
-    // 翻页钮走 Action Control floating 档 md：40px 正圆
-    expect([prev.width, prev.height, next.width, next.height]).toEqual([40, 40, 40, 40])
+    // 翻页钮走 Action Control floating 档 md：36px 正圆
+    expect([prev.width, prev.height, next.width, next.height]).toEqual([36, 36, 36, 36])
     expect(getComputedStyle(carousel.prev).borderRadius).toBe('50%')
   })
 
-  it('翻页与播放钮是 40px 圆钮：矮到 144px 的视口里右侧居中的翻页钮与右下角的播放钮仍不相叠', () => {
+  it('翻页与播放钮是 36px 圆钮：矮到 144px 的视口里右侧居中的翻页钮与右下角的播放钮仍不相叠', () => {
     const carousel = mount()
-    // 居中的钮占下半 20px、角上的钮连 12px 控件内距占 52px：h / 2 + 20 ≤ h − 52 即 h ≥ 144；48px 钮在这个高度下会叠上 12px
+    // 居中的钮占下半 18px、角上的钮连 12px 控件内距占 48px：h / 2 + 18 ≤ h − 48 即 h ≥ 132，144px 留着余量
     carousel.viewport.style.blockSize = '144px'
     for (const trigger of [carousel.prev, carousel.next, carousel.autoplay]) {
       const rect = trigger.getBoundingClientRect()
-      expect([rect.width, rect.height]).toEqual([40, 40])
+      expect([rect.width, rect.height]).toEqual([36, 36])
       expect(getComputedStyle(trigger).borderRadius).toBe('50%')
     }
     expect(carousel.next.getBoundingClientRect().bottom).toBeLessThanOrEqual(carousel.autoplay.getBoundingClientRect().top)
