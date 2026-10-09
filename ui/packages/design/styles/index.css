@@ -11467,6 +11467,7 @@
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
   .xh-scope-page-header[data-part='back-trigger'][hidden],
   .xh-scope-page-header[data-part='media'][hidden],
+  .xh-scope-page-header[data-part='description'][hidden],
   .xh-scope-page-header[data-part='extra'][hidden] {
     display: none;
   }
