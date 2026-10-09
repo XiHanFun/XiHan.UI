@@ -18780,6 +18780,13 @@
    日期钮的命中区（钮的 ::after）同样以它为包含块。上下各 6 的内衬把 24 高的钮撑成 36 的行距。
    格子自成一层：轨道与横条压在钮的下面，不盖住钮（钮不当定位盒） */
 .xh-scope-calendar-range-picker[data-part='cell'] {
+  /* 区间轨道的半高：钮的半径加格子上下内衬，再减去轨道上下各收的那截。帽以它为半径 */
+  --xh-_calendar-range-picker-range-r: calc(
+    var(--xh-calendar-range-picker-cell-size, var(--xh-control-action-size)) / 2
+    + var(--xh-calendar-range-picker-cell-py, var(--xh-space-1_5))
+    - var(--xh-calendar-range-picker-range-inset, var(--xh-space-0_5))
+  );
+
   position: relative;
   display: flex;
   align-items: center;
@@ -18837,6 +18844,16 @@
 .xh-scope-calendar-range-picker[data-part='cell'][data-in-range][data-range-end]::before {
   border-start-end-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-shape-pill));
   border-end-end-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-shape-pill));
+}
+
+/* 日视图的端点是格子正中的圆：帽从「格中线减半高」起算，圆心落在格子中线上，与端点圆同心。
+   从格边起算只在格宽恰为轨道高时重合，页内日历随容器铺宽、格子变宽后帽会偏到圆的外侧 */
+.xh-scope-calendar-range-picker[data-part='cell'][data-view='day'][data-in-range][data-range-start]::before {
+  inset-inline-start: calc(50% - var(--xh-_calendar-range-picker-range-r));
+}
+
+.xh-scope-calendar-range-picker[data-part='cell'][data-view='day'][data-in-range][data-range-end]::before {
+  inset-inline-end: calc(50% - var(--xh-_calendar-range-picker-range-r));
 }
 
 /* 今天：数字下方一颗 4px 品牌圆点，数字保持正文色（brand-subtle 只留给选中）；
