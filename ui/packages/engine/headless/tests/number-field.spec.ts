@@ -121,14 +121,15 @@ describe('numberFieldMachine 缺省与投影', () => {
     sm.stop()
   })
 
-  it('加减钮走 Action Control 的 field-inset ghost 档并常显，尺寸随 size 缺省 md', () => {
+  it('加减钮走 Action Control 的 field-inset ghost 档，悬停或聚焦字段时才显出（control 是显隐的宿主），尺寸随 size 缺省 md', () => {
     const f = makeField()
+    expect(f.api().getControlProps()).toMatchObject({ 'data-xh-action-owner': '' })
     for (const trigger of [f.api().getIncrementTriggerProps(), f.api().getDecrementTriggerProps()]) {
       expect(trigger).toMatchObject({
         'data-xh-action-control': '',
         'data-xh-action-profile': 'field-inset',
         'data-xh-action-variant': 'ghost',
-        'data-xh-action-display': 'always',
+        'data-xh-action-display': 'hover-focus',
         'data-xh-action-size': 'md',
       })
     }

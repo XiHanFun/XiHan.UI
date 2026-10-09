@@ -51429,7 +51429,7 @@
         "default"
       ],
       "defaultToken": [
-        "center"
+        "start"
       ],
       "visibility": "public",
       "description": "number-field 的 control、input 部件 text-align 覆盖槽。"
@@ -51663,6 +51663,101 @@
       "description": "number-field 的 control、input 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-number-field-stepper-bg",
+      "component": "number-field",
+      "part": [
+        "control",
+        "decrement-trigger",
+        "increment-trigger"
+      ],
+      "property": [
+        "--xh-ink-surface",
+        "background-color"
+      ],
+      "state": [
+        "@media (hover: hover) and (pointer: fine)",
+        "disabled",
+        "xh-ink-surface"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-number-field-stepper-bg-hover",
+      "component": "number-field",
+      "part": [
+        "control",
+        "decrement-trigger",
+        "increment-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "@media (hover: hover) and (pointer: fine)",
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-number-field-stepper-inset",
+      "component": "number-field",
+      "part": [
+        "control",
+        "decrement-trigger",
+        "increment-trigger"
+      ],
+      "property": [
+        "block-size",
+        "inset-block-end",
+        "inset-block-start",
+        "inset-inline-end",
+        "padding-inline-end"
+      ],
+      "state": [
+        "@media (hover: hover) and (pointer: fine)",
+        "has([data-part='increment-trigger'], [data-part='decrement-trigger'])"
+      ],
+      "defaultToken": [
+        "--xh-_number-field-stepper-inset"
+      ],
+      "visibility": "public",
+      "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 block-size、inset-block-end、inset-block-start、inset-inline-end、padding-inline-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-number-field-stepper-w",
+      "component": "number-field",
+      "part": [
+        "control",
+        "decrement-trigger",
+        "increment-trigger"
+      ],
+      "property": [
+        "inline-size",
+        "padding-inline-end"
+      ],
+      "state": [
+        "@media (hover: hover) and (pointer: fine)",
+        "has([data-part='increment-trigger'], [data-part='decrement-trigger'])"
+      ],
+      "defaultToken": [
+        "--xh-control-indicator-lg"
+      ],
+      "visibility": "public",
+      "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 inline-size、padding-inline-end 覆盖槽。"
+    },
+    {
       "name": "--xh-number-field-trigger-bg-active",
       "component": "number-field",
       "part": [
@@ -51674,6 +51769,7 @@
         "background-color"
       ],
       "state": [
+        "@media (hover: hover) and (pointer: fine)",
         "disabled",
         "is(:active, [data-pressed])",
         "loading",
@@ -51682,48 +51778,11 @@
         "pressed"
       ],
       "defaultToken": [
-        "--xh-_action-variant-bg-pressed"
+        "--xh-_action-variant-bg-pressed",
+        "--xh-bg-subtle-active"
       ],
       "visibility": "public",
       "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 background-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-number-field-trigger-divider",
-      "component": "number-field",
-      "part": [
-        "control",
-        "decrement-trigger"
-      ],
-      "property": [
-        "background-image"
-      ],
-      "state": [
-        "has([data-part='input'])"
-      ],
-      "defaultToken": [
-        "--xh-material-soft-separator"
-      ],
-      "visibility": "public",
-      "description": "number-field 的 control、decrement-trigger 部件 background-image 覆盖槽。"
-    },
-    {
-      "name": "--xh-number-field-trigger-divider-h",
-      "component": "number-field",
-      "part": [
-        "control",
-        "decrement-trigger"
-      ],
-      "property": [
-        "background-size"
-      ],
-      "state": [
-        "has([data-part='input'])"
-      ],
-      "defaultToken": [
-        "--xh-_number-field-divider-h"
-      ],
-      "visibility": "public",
-      "description": "number-field 的 control、decrement-trigger 部件 background-size 覆盖槽。"
     },
     {
       "name": "--xh-number-field-trigger-fg",
@@ -51740,7 +51799,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。"
