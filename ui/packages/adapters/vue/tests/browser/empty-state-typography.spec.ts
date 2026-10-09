@@ -84,17 +84,12 @@ describe('空状态的排版档', () => {
     expect(action.top - description.bottom).toBeCloseTo(gap + 4, 0)
   })
 
-  it('写了成功 / 警示 / 出错 / 提示语气时图标坐进 44px 语气淡底圆，品牌语气不画圆', async () => {
+  it('写了语气时图标坐进 44px 语气淡底圆', async () => {
     const root = await mount('md', 'success')
     const indicator = getComputedStyle(part(root, 'indicator'))
     expect(Number.parseFloat(indicator.inlineSize)).toBe(resolvedLength(root, 'var(--xh-control-box-lg)'))
     expect(indicator.borderTopLeftRadius).not.toBe('0px')
     expect(indicator.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
-    app?.unmount()
-    host?.remove()
-
-    const brand = await mount('md', 'brand')
-    expect(getComputedStyle(part(brand, 'indicator')).backgroundColor).toBe('rgba(0, 0, 0, 0)')
   })
 
   it('说明是 13/fg-muted，根无壳：不画边、底与影', async () => {

@@ -31131,9 +31131,7 @@
       ],
       "state": [
         "default",
-        "not([data-tone='brand'])",
-        "tone",
-        "tone=brand"
+        "tone"
       ],
       "defaultToken": [
         "--xh-_empty-state-icon-size",
@@ -31153,9 +31151,7 @@
         "background"
       ],
       "state": [
-        "not([data-tone='brand'])",
-        "tone",
-        "tone=brand"
+        "tone"
       ],
       "defaultToken": [
         "--xh-_tone-subtle"
@@ -31175,9 +31171,7 @@
         "inline-size"
       ],
       "state": [
-        "not([data-tone='brand'])",
-        "tone",
-        "tone=brand"
+        "tone"
       ],
       "defaultToken": [
         "--xh-control-box-lg"
@@ -31232,9 +31226,7 @@
         "border-radius"
       ],
       "state": [
-        "not([data-tone='brand'])",
-        "tone",
-        "tone=brand"
+        "tone"
       ],
       "defaultToken": [
         "--xh-shape-circle"
