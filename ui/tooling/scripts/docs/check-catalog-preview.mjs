@@ -70,7 +70,7 @@ const FIELD_SHELL_MIN = 23
 
 /** 描着控件边、刻意不铺字段淡底的组件，连同理由。 */
 const UNFILLED_CONTROL_BOX = {
-  'clipboard': '只读输入框与复制钮共一个外框：输入框那段的底由框下的 path 铺 --xh-bg-subtle，复制钮那段透明',
+  clipboard: '只读输入框与复制钮共一个外框：输入框那段的底由框下的 path 铺 --xh-bg-subtle，复制钮那段透明',
 }
 
 /** 勾选方框与单选圈的描边：16px 的小盒比字段边重一档。 */
