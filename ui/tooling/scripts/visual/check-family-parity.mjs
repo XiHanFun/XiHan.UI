@@ -231,13 +231,15 @@ const FAMILIES = [
     ],
   },
   {
-    // Feedback 两家的指示符：作者塞进面里的图标统一 md 档。
-    // 排版不在此列：通知卡片是一块面板，标题取面板标题档、说明是 14px 正文色的正文；
-    // Alert 是页内一条提示，标题与说明仍按 Surface 标题与说明档，两家不再同值
+    // Feedback 两家的标题与指示符：标题同取区块与面板标题档（heading-3），作者塞进面里的图标统一 md 档。
+    // 说明不在此列：通知卡片的说明是这条通知的正文（14px 正文色），Alert 的说明仍按其余说明档（13px 次级色）
     name: 'Feedback 族',
     backlog: true,
     members: ['alert', 'notification'],
     parts: [
+      // notification 的标题部件叫 item-title，使用者槽却按 title 取名（--xh-notification-title-*，
+      // check-spacing-slots 已登记），槽名的部件段按 slotBy 归一
+      { partBy: { alert: 'title', notification: 'item-title' }, slotBy: { notification: 'title' }, state: '', props: ['font-size', 'font-weight'] },
       { partBy: { alert: 'root', notification: 'item' }, state: '', props: ['--xh-icon-size'] },
     ],
   },
