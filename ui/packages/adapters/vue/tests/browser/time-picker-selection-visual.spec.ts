@@ -118,26 +118,7 @@ afterEach(async () => {
   await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
 })
 
-/** 语义令牌在该元素里解到的圆角、长度与颜色。 */
-function resolveRadius(token: string, scope: HTMLElement): string {
-  const probe = document.createElement('span')
-  probe.style.borderRadius = `var(${token})`
-  scope.append(probe)
-  const value = getComputedStyle(probe).borderTopLeftRadius
-  probe.remove()
-  return value
-}
-
-function resolveLength(token: string, scope: HTMLElement): number {
-  const probe = document.createElement('span')
-  probe.style.display = 'block'
-  probe.style.inlineSize = `var(${token})`
-  scope.append(probe)
-  const value = Number.parseFloat(getComputedStyle(probe).inlineSize)
-  probe.remove()
-  return value
-}
-
+/** 语义令牌在该元素里解到的颜色。 */
 function resolveColor(token: string, scope: HTMLElement): string {
   const probe = document.createElement('span')
   probe.style.backgroundColor = `var(${token})`
@@ -246,7 +227,7 @@ describe('time-picker 统一选中反馈', () => {
     const gap = lower.getBoundingClientRect().top - upper.getBoundingClientRect().bottom
     expect(gap).toBeGreaterThan(0)
     const x = upper.getBoundingClientRect().left + upper.getBoundingClientRect().width / 2
-    const hit = (y: number): Element | null => document.elementFromPoint(x, y)?.closest("[data-part='item']") ?? null
+    const hit = (y: number): Element | null => document.elementFromPoint(x, y)?.closest('[data-part="item"]') ?? null
     expect(hit(upper.getBoundingClientRect().bottom + gap / 2 - 1)).toBe(upper)
     expect(hit(lower.getBoundingClientRect().top - gap / 2 + 1)).toBe(lower)
   })

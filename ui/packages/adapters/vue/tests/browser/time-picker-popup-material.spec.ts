@@ -77,7 +77,7 @@ afterEach(() => {
   host = null
 })
 
-/** 语义令牌在该元素里解到的圆角、长度与颜色。 */
+/** 语义令牌在该元素里解到的圆角与长度。 */
 function resolveRadius(token: string, scope: HTMLElement): string {
   const probe = document.createElement('span')
   probe.style.borderRadius = `var(${token})`
@@ -93,15 +93,6 @@ function resolveLength(token: string, scope: HTMLElement): number {
   probe.style.inlineSize = `var(${token})`
   scope.append(probe)
   const value = Number.parseFloat(getComputedStyle(probe).inlineSize)
-  probe.remove()
-  return value
-}
-
-function resolveColor(token: string, scope: HTMLElement): string {
-  const probe = document.createElement('span')
-  probe.style.backgroundColor = `var(${token})`
-  scope.append(probe)
-  const value = getComputedStyle(probe).backgroundColor
   probe.remove()
   return value
 }
