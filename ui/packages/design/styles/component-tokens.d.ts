@@ -1681,6 +1681,7 @@ export type ComponentTokenName
     | '--xh-file-upload-gap'
     | '--xh-file-upload-icon-size'
     | '--xh-file-upload-item-bg'
+    | '--xh-file-upload-item-bg-error'
     | '--xh-file-upload-item-border'
     | '--xh-file-upload-item-border-error'
     | '--xh-file-upload-item-fg'

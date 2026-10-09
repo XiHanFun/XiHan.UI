@@ -32903,7 +32903,7 @@
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "file-upload 的 dropzone 部件 background 覆盖槽。"
@@ -32939,7 +32939,7 @@
         "dragging"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "file-upload 的 dropzone 部件 background 覆盖槽。"
@@ -32961,7 +32961,7 @@
         "not([data-disabled], [data-invalid], [data-dragging])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "file-upload 的 dropzone 部件 background 覆盖槽。"
@@ -33041,7 +33041,7 @@
         "not([data-disabled], [data-invalid], [data-dragging])"
       ],
       "defaultToken": [
-        "--xh-border-control-hover"
+        "--xh-border-strong"
       ],
       "visibility": "public",
       "description": "file-upload 的 dropzone 部件 border-color 覆盖槽。"
@@ -33077,7 +33077,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "file-upload 的 dropzone 部件 color 覆盖槽。"
@@ -33131,7 +33131,7 @@
         "default"
       ],
       "defaultToken": [
-        "8rem"
+        "--xh-dropzone-min-h"
       ],
       "visibility": "public",
       "description": "file-upload 的 dropzone 部件 min-block-size 覆盖槽。"
@@ -33185,7 +33185,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "file-upload 的 dropzone 部件 border-radius 覆盖槽。"
@@ -33239,6 +33239,26 @@
         "default"
       ],
       "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "file-upload 的 item 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-file-upload-item-bg-error",
+      "component": "file-upload",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "has(> [data-part='item-progress'][data-state='error'])",
+        "state=closed",
+        "state=error"
+      ],
+      "defaultToken": [
         "--xh-bg-surface"
       ],
       "visibility": "public",
@@ -33257,7 +33277,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "transparent"
       ],
       "visibility": "public",
       "description": "file-upload 的 item 部件 border 覆盖槽。"
@@ -33277,7 +33297,7 @@
         "state=error"
       ],
       "defaultToken": [
-        "--xh-border-invalid"
+        "transparent"
       ],
       "visibility": "public",
       "description": "file-upload 的 item 部件 border-color 覆盖槽。"
@@ -33324,9 +33344,11 @@
       "name": "--xh-file-upload-item-fg-error",
       "component": "file-upload",
       "part": [
-        "item"
+        "item",
+        "item-name"
       ],
       "property": [
+        "background-color",
         "color"
       ],
       "state": [
@@ -33338,7 +33360,7 @@
         "--xh-fg-danger"
       ],
       "visibility": "public",
-      "description": "file-upload 的 item 部件 color 覆盖槽。"
+      "description": "file-upload 的 item、item-name 部件 background-color、color 覆盖槽。"
     },
     {
       "name": "--xh-file-upload-item-font-size",
@@ -33371,7 +33393,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-3"
       ],
       "visibility": "public",
       "description": "file-upload 的 list 部件 gap 覆盖槽。"
@@ -33389,7 +33411,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-gap-md"
+        "--xh-space-3"
       ],
       "visibility": "public",
       "description": "file-upload 的 item 部件 gap 覆盖槽。"
@@ -33682,7 +33704,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "transparent"
       ],
       "visibility": "public",
       "description": "file-upload 的 item-preview 部件 background 覆盖槽。"
@@ -33700,7 +33722,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-brand"
       ],
       "visibility": "public",
       "description": "file-upload 的 item-preview 部件 color 覆盖槽。"
@@ -33755,7 +33777,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-h-md"
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
       "description": "file-upload 的 item-preview 部件 block-size、inline-size 覆盖槽。"
@@ -39455,6 +39477,7 @@
         "item-close-trigger",
         "item-delete-trigger",
         "item-indicator",
+        "item-preview",
         "last-trigger",
         "line-content",
         "line-fold-trigger",
@@ -39533,7 +39556,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、comment-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、last-trigger、line-content、line-fold-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、comment-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、item-preview、last-trigger、line-content、line-fold-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",

@@ -196,6 +196,7 @@
 --xh-direction-end: 100%
 --xh-direction-sign: 1
 --xh-direction-start: 0%
+--xh-dropzone-min-h: 10rem
 --xh-elevation-floating: 0 1px 2px -0.5px oklch(0 0 0 / 0.5), 0 4px 8px -2px oklch(0 0 0 / 0.45), 0 10px 20px -6px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.06)
 --xh-elevation-lifted: 0 1px 2px -0.5px oklch(0 0 0 / 0.45), 0 3px 6px -2px oklch(0 0 0 / 0.42), 0 6px 12px -5px oklch(0 0 0 / 0.36), inset 0 1px 0 0 oklch(1 0 0 / 0.06)
 --xh-elevation-raised: 0 1px 1px -0.5px oklch(0 0 0 / 0.4), 0 2px 3px -1.5px oklch(0 0 0 / 0.36), 0 3px 6px -3px oklch(0 0 0 / 0.3), inset 0 1px 0 0 oklch(1 0 0 / 0.05)
@@ -235,6 +236,7 @@
 --xh-glyph-mark-ellipsis: url("data:image/svg+xml,…")  sha256:e7bb8cccc041
 --xh-glyph-mark-eye: url("data:image/svg+xml,…")  sha256:0038fceca8f4
 --xh-glyph-mark-eye-off: url("data:image/svg+xml,…")  sha256:9adea7064151
+--xh-glyph-mark-file: url("data:image/svg+xml,…")  sha256:6e09bba9bc10
 --xh-glyph-mark-flip-horizontal: url("data:image/svg+xml,…")  sha256:e520b8e3e17b
 --xh-glyph-mark-flip-vertical: url("data:image/svg+xml,…")  sha256:f6c503e8eff7
 --xh-glyph-mark-info: url("data:image/svg+xml,…")  sha256:a5b7023be26e
