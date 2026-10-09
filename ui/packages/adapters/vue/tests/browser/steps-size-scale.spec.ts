@@ -1,12 +1,10 @@
-// 步骤条的尺寸档与同类对象同一把尺：序号圆点和 Avatar 一样取 control-h 的 sm / md / lg，随密度换档；
+// 步骤条的尺寸档：序号圆点取状态圆那把尺 marker-size 的 sm / md / lg（比同档控件矮一档），随密度换档；
 // 作者放进标题里的图标是控件内图标，按档取 glyph-size-sm / md / lg（16 / 20 / 24），不再三档都钉在 16。
-// 两档密度、三个尺寸档一起量：圆点与同档 Avatar 的直径逐一相等，标题图标等于同档字形令牌。
+// 两档密度、三个尺寸档一起量：圆点直径等于同档 marker-size，标题图标等于同档字形令牌。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
-  XhAvatarFallback,
-  XhAvatarRoot,
   XhIcon,
   XhStepsIndicator,
   XhStepsItem,
@@ -49,7 +47,6 @@ async function mount(density: 'comfortable' | 'compact', size: Size): Promise<vo
           ]),
         ]))),
       ]),
-      h(XhAvatarRoot, { size }, () => h(XhAvatarFallback, null, () => '甲')),
     ],
   })
   app.mount(host)
@@ -73,14 +70,13 @@ function tokenPx(name: string): number {
 }
 
 describe.each(['comfortable', 'compact'] as const)('步骤条的尺寸档（%s）', (density) => {
-  it.each(['sm', 'md', 'lg'] as const)('%s 档的序号圆点与同档 Avatar 同径，都取 control-h', async (size) => {
+  it.each(['sm', 'md', 'lg'] as const)('%s 档的序号圆点取 marker-size，比同档控件矮一档', async (size) => {
     await mount(density, size)
     const dot = part('steps', 'indicator').getBoundingClientRect()
-    const avatar = part('avatar', 'root').getBoundingClientRect()
-    const expected = tokenPx(`--xh-control-h-${size}`)
+    const expected = tokenPx(`--xh-marker-size-${size}`)
     expect(dot.width, `圆点 ${dot.width}×${dot.height}`).toBe(expected)
     expect(dot.height, `圆点 ${dot.width}×${dot.height}`).toBe(expected)
-    expect(dot.width, `Avatar ${avatar.width}`).toBe(avatar.width)
+    expect(dot.width).toBeLessThan(tokenPx(`--xh-control-h-${size}`))
   })
 
   it.each(['sm', 'md', 'lg'] as const)('%s 档标题里的作者图标按档取字形尺', async (size) => {

@@ -131,7 +131,7 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
   :names="['--xh-border-default', '--xh-border-default-opaque', '--xh-border-subtle', '--xh-border-strong', '--xh-border-control', '--xh-border-control-hover', '--xh-border-control-focus', '--xh-border-invalid', '--xh-ring-focus', '--xh-ring-invalid']"
   :notes="{
     '--xh-border-default': '一切根面外边与 raised 面描边',
-    '--xh-border-default-opaque': '装饰边的不透明档：压在任意内容上、必须自带浅框的部件（滑杆拇指）',
+    '--xh-border-default-opaque': '装饰边的不透明档：压在任意内容上、必须自带浅框的部件（取色滑杆的拇指）',
     '--xh-border-subtle': '只作内部分隔线',
     '--xh-border-strong': '只作高对比档与刻意登记的强调边',
     '--xh-border-control': '控件边界，缺省档与 border-default 同色；高对比档才加深到 3:1',
