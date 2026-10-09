@@ -87,7 +87,7 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 - `autoComplete` 默认 `current-password`，注册表单应显式改为 `new-password`。
 - `strength` 传入 0–4 五档即显示强度条；评分算法由调用方负责，组件只绘制档位。
 - 形态、语气、尺寸三轴与[文本字段](./text-field)同源，并排放置不会相差一档。
-- 一体式 `control` 投影 Field Chrome 家族，字段淡底 + 描边静息、无影，聚焦换承载面与 `--xh-border-control-focus`；显隐动作走 Action Control 的 `field-inset` ghost 档：视觉盒三档都取控件内动作档 `--xh-control-action-size`（24px，compact 20px），inset 圆角，按所在承载面取悬停 / 按下中性底，字形取次要前景；与输入之间不画分隔线。
+- 一体式 `control` 投影 Field Chrome 家族，字段淡底 + 描边静息、无影，聚焦换承载面与 `--xh-border-control-focus`；显隐动作走 Action Control 的 `field-inset` ghost 档：视觉盒按字段内钮尺寸表随档（sm 取 `--xh-control-action-size`、md 取 `--xh-control-h-sm`、lg 取 `--xh-control-h-md`），inset 圆角，按所在承载面取悬停 / 按下中性底，字形取次要前景；与输入之间不画分隔线。
 - 自动填充由家族用 canvas 实体底与默认前景重绘，避免浏览器注入的颜色把框切成异色段。
 
 ### 组合
@@ -352,7 +352,7 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 | `--xh-password-input-trigger-fg-hover` | `visibility-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | password-input 的 visibility-trigger 部件 color 覆盖槽。 |
 | `--xh-password-input-trigger-font-size` | `visibility-trigger` | `font-size` | `default` | `--xh-_password-input-trigger-font-size` | password-input 的 visibility-trigger 部件 font-size 覆盖槽。 |
 | `--xh-password-input-trigger-radius` | `visibility-trigger` | `border-radius` | `default` | `--xh-shape-inset` | password-input 的 visibility-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-password-input-trigger-size` | `visibility-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-control-action-size` | password-input 的 visibility-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
+| `--xh-password-input-trigger-size` | `visibility-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | password-input 的 visibility-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

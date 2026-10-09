@@ -21,7 +21,7 @@
 - `autoComplete` 默认 `current-password`，注册表单应显式改为 `new-password`。
 - `strength` 传入 0–4 五档即显示强度条；评分算法由调用方负责，组件只绘制档位。
 - 形态、语气、尺寸三轴与[文本字段](./text-field)同源，并排放置不会相差一档。
-- 一体式 `control` 投影 Field Chrome 家族，字段淡底 + 描边静息、无影，聚焦换承载面与 `--xh-border-control-focus`；显隐动作走 Action Control 的 `field-inset` ghost 档：视觉盒三档都取控件内动作档 `--xh-control-action-size`（24px，compact 20px），inset 圆角，按所在承载面取悬停 / 按下中性底，字形取次要前景；与输入之间不画分隔线。
+- 一体式 `control` 投影 Field Chrome 家族，字段淡底 + 描边静息、无影，聚焦换承载面与 `--xh-border-control-focus`；显隐动作走 Action Control 的 `field-inset` ghost 档：视觉盒按字段内钮尺寸表随档（sm 取 `--xh-control-action-size`、md 取 `--xh-control-h-sm`、lg 取 `--xh-control-h-md`），inset 圆角，按所在承载面取悬停 / 按下中性底，字形取次要前景；与输入之间不画分隔线。
 - 自动填充由家族用 canvas 实体底与默认前景重绘，避免浏览器注入的颜色把框切成异色段。
 
 ## 无障碍
