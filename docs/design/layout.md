@@ -82,7 +82,7 @@
 | [Grid](/components/grid) | 二维栅格，列的最小宽走 `--xh-layout-col-min-*` |
 | [Masonry](/components/masonry) | 瀑布流 |
 | [Splitter](/components/splitter) / [Resizable](/components/resizable) | 可拖动分栏与可拖动尺寸 |
-| [Separator](/components/separator) | 分隔线，取 `--xh-border-subtle` |
+| [Separator](/components/separator) | 分隔线，缺省取 `--xh-border-default` 并自带留白（横线上下各 20px、竖线左右各 12px） |
 | [ScrollArea](/components/scroll-area) | 组件内滚动面，自绘条或原生细条按 [组件内滚动](/guide/theme#组件内滚动) 归档 |
 
 ## 表单排布
@@ -91,7 +91,7 @@
 
 ## 浮层尺寸
 
-锚定浮层的宽高走 `--xh-overlay-*`：面板最小宽 12rem、菜单最小宽 10rem、最大宽 sm / md / lg / xl = 16 / 20 / 24 / 48rem、菜单最大高 20rem；Dialog 的 sheet 宽 sm / md / lg = 24 / 32 / 48rem，Drawer 宽 sm / md / lg = 16 / 20 / 28rem。锚定浮层同时接可用高度与可用宽度：视口放不下时先收自己，再翻面。
+锚定浮层的宽高走 `--xh-overlay-*`：面板最小宽 12rem、菜单最小宽 10rem、最大宽 sm / md / lg / xl = 16 / 20 / 24 / 48rem、菜单与候选列表最大高 13rem（紧凑 11rem）；Dialog 的 sheet 宽 sm / md / lg = 24 / 32 / 48rem，Drawer 宽 sm / md / lg = 16 / 20 / 28rem。锚定浮层同时接可用高度与可用宽度：视口放不下时先收自己，再翻面。
 
 ## 相关
 
