@@ -39,6 +39,7 @@
         "build/**",
         "package.json",
         "$TURBO_ROOT$/scripts/component-docs.manifest.json",
+        "$TURBO_ROOT$/tooling/file-header.mjs",
         "$TURBO_ROOT$/tooling/scripts/lib/component-token-manifest.mjs",
         "$TURBO_ROOT$/packages/design/tokens/tokens.json"
       ],
