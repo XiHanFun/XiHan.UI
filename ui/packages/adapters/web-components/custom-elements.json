@@ -47297,12 +47297,6 @@
             },
             {
               "name": "--xh-password-input-trigger-size"
-            },
-            {
-              "name": "--xh-password-input-visibility-trigger-separator-color"
-            },
-            {
-              "name": "--xh-password-input-visibility-trigger-separator-h"
             }
           ]
         }

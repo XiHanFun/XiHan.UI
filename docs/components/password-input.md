@@ -87,7 +87,7 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 - `autoComplete` 默认 `current-password`，注册表单应显式改为 `new-password`。
 - `strength` 传入 0–4 五档即显示强度条；评分算法由调用方负责，组件只绘制档位。
 - 形态、语气、尺寸三轴与[文本字段](./text-field)同源，并排放置不会相差一档。
-- 一体式 `control` 投影 Field Chrome 家族，描边式静息、无影，聚焦描边一律 `--xh-border-control-focus`；显隐动作走 Action Control 的 `field-inset` ghost 档（正方视觉盒、inset 圆角、悬停 100 / 按下 200 中性底与 0.97 按压），与输入 / 状态区之间有半高语义分隔，三档尺寸和 compact 密度使用同一比例。
+- 一体式 `control` 投影 Field Chrome 家族，字段淡底 + 描边静息、无影，聚焦换承载面与 `--xh-border-control-focus`；显隐动作走 Action Control 的 `field-inset` ghost 档：视觉盒三档都取控件内动作档 `--xh-control-action-size`（24px，compact 20px），inset 圆角，按所在承载面取悬停 / 按下中性底，字形取次要前景；与输入之间不画分隔线。
 - 自动填充由家族用 canvas 实体底与默认前景重绘，避免浏览器注入的颜色把框切成异色段。
 
 ### 组合
@@ -108,7 +108,7 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 ### 当前边界
 
 - anatomy 尚无正式的 prefix / suffix 部件；`control` 中的作者节点目前只按统一 gap 排布，不承诺前后缀语义或专门状态。需要时应以独立三端部件提交，不用 CSS 推断任意子节点的职责。
-- `control` 在 meta 中仍是可选部件，但共享 Field Chrome、组合焦点环与动作分隔都以它为边界；无 `control` 的结构只是独立输入框和按钮，不再绘制独立外壳。是否将其提升为必需部件属于后续公共结构合同变更。
+- `control` 在 meta 中仍是可选部件，但共享 Field Chrome 与组合的聚焦换色都以它为边界；无 `control` 的结构只是独立输入框和按钮，不再绘制独立外壳。是否将其提升为必需部件属于后续公共结构合同变更。
 
 ### 反模式
 
@@ -352,9 +352,7 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 | `--xh-password-input-trigger-fg-hover` | `visibility-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | password-input 的 visibility-trigger 部件 color 覆盖槽。 |
 | `--xh-password-input-trigger-font-size` | `visibility-trigger` | `font-size` | `default` | `--xh-_password-input-trigger-font-size` | password-input 的 visibility-trigger 部件 font-size 覆盖槽。 |
 | `--xh-password-input-trigger-radius` | `visibility-trigger` | `border-radius` | `default` | `--xh-shape-inset` | password-input 的 visibility-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-password-input-trigger-size` | `visibility-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | password-input 的 visibility-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
-| `--xh-password-input-visibility-trigger-separator-color` | `control`<br>`input`<br>`visibility-trigger` | `background-image` | `has(~ [data-scope='password-input'][data-part='input'])` | `--xh-border-subtle` | password-input 的 control、input、visibility-trigger 部件 background-image 覆盖槽。 |
-| `--xh-password-input-visibility-trigger-separator-h` | `control`<br>`input`<br>`visibility-trigger` | `background-size` | `has(~ [data-scope='password-input'][data-part='input'])` | `--xh-_password-input-divider-h` | password-input 的 control、input、visibility-trigger 部件 background-size 覆盖槽。 |
+| `--xh-password-input-trigger-size` | `visibility-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-control-action-size` | password-input 的 visibility-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -367,4 +365,4 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走；另有按 `dir` 分支的规则。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走。
