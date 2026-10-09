@@ -130,13 +130,15 @@ describe('descriptions 逐档收列', () => {
   it('宽档不插手作者写的列数', () => {
     const el = mount(1280, descriptions(4))
     expect(perRow(el)).toBe(4)
-    // 取值列吃掉标签列之外的全部剩余宽：每格（首格无边线）减去内衬 24、标签列与标签间距 8。
+    // 取值列吃掉标签列之外的全部剩余宽：描边档左置时格自己不留内衬、两段之间也不留间距，
+    // 两段各带各的内衬，所以每格（首格无边线）只减去连内衬在内的标签列。
     // 标签列是 max-content，同一段中文的宽度随字体走（iframe 里比宿主宽 1.22px，CI 的 Linux 字体
     // 又比 Windows 宽 1.2px），只能现量、不能写成一个数
     const item = part(el, 'item').getBoundingClientRect()
     const label = part(el, 'label').getBoundingClientRect()
-    expect(part(el, 'value').getBoundingClientRect().width).toBeCloseTo(item.width - 24 - label.width - 8, 0)
-    expect(item.height).toBeCloseTo(37, 0)
+    expect(part(el, 'value').getBoundingClientRect().width).toBeCloseTo(item.width - label.width, 0)
+    // 描边档单元格上下各 6px 内衬加一行正文：单行格高 33px
+    expect(item.height).toBeCloseTo(33, 0)
   })
 
   it('换的是视口的档，不是外层容器的档', () => {
