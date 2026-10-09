@@ -296,7 +296,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 - 列表型浮层的锚点是字段盒（control），不是盒里的触发按钮：锚在触发按钮上时面板左缘会缩进一截内距。
 - 作者要给列表封顶写 `--xh-<c>-content-max-w`，要抬下界写 `--xh-<c>-content-min-w`；缺省没有上界。
-- Cascader 是多列的面板：锚在字段盒上、与盒起始缘对齐；每一列（含一级列）按条目的自然宽度、受 `--xh-overlay-menu-min-w` 托底，长选项撑到条目上限 `--xh-overlay-max-w` 为止、余下的在条目里截断；搜索框不参与定宽，铺满列撑出的宽度；面板随列数伸展、宽过可用区时收成可用宽度并在面内横滚；每列定高、列内自滚，不走列表档限高。
+- Cascader 是多列的面板：锚在字段盒上、与盒起始缘对齐；每一列（含一级列）按条目的自然宽度、受 `--xh-overlay-cascade-min-w`（7.5rem，比菜单窄一档）托底，长选项撑到条目上限 `--xh-overlay-max-w` 为止、余下的在条目里截断；搜索框不参与定宽，铺满列撑出的宽度；面板随列数伸展、宽过可用区时收成可用宽度并在面内横滚；每列定高、列内自滚，不走列表档限高。
 
 ### 6.3 形状身份
 
@@ -490,7 +490,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | NavigationMenu | 下限 10rem，上限 48rem | 内容高 |
 | Select、Combobox、TreeSelect | 与字段盒等宽，下限 10rem，缺省无上限 | 下限一行 `control-h`，上限 `overlay-menu-max-h` |
 | Mention | 下限 12rem，上限 20rem | 下限一行 `control-h`，上限 `overlay-max-h` |
-| Cascader | 每列自然宽、下限 10rem，条目上限 20rem；整面上限为可用宽，超出横滚 | 列定高 `viewport-h-sm`，列内滚 |
+| Cascader | 每列自然宽、下限 `--xh-overlay-cascade-min-w`（7.5rem），条目上限 20rem；整面上限为可用宽，超出横滚 | 列定高 `viewport-h-sm`，列内滚 |
 | DatePicker、DateRangePicker | 内容宽；时间列下限 3.5rem | 上限为可用高；时间列高 `control-h-sm` × 7 + 28px；预设组上限 `viewport-h-lg` |
 | TimePicker、TimeRangePicker | 内容宽；列下限 3.5rem | 列定高 `viewport-h-sm`；面板上限 `viewport-h-lg`；预设组上限 `viewport-h-sm` |
 | ColorPicker | 定宽 12rem；饱和区高 9rem | 上限 `viewport-h-md` |
