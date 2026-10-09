@@ -8,7 +8,7 @@
   kind="radius"
   :names="['--xh-shape-inset', '--xh-shape-control', '--xh-shape-surface', '--xh-shape-overlay', '--xh-shape-circle', '--xh-shape-pill']"
   :notes="{
-    '--xh-shape-inset': '2px · 嵌在控件里的内层：勾选方框、页内列表的候选行（Listbox、Command、Transfer、Tree）、字段内的清空钮、表格行选择框、色块',
+    '--xh-shape-inset': '2px · 嵌在控件里的内层：勾选方框、页内列表的候选行（Listbox、Tree）、字段内的清空钮、表格行选择框、色块',
     '--xh-shape-control': '2px · 控件本体：Button、Input、Select trigger、Toggle、kbd、tooltip、Tabs / Steps trigger、单选组 segmented 形态的轨道；方签 Tag、状态方签（ToolCall 状态、Approval / QuestionFlow 结果）与 Alert 提示条',
     '--xh-shape-surface': '4px · 成面的静态容器：Card、Panel、列表容器、Tabs segment 的轨道、选择卡片、分页的描边方块',
     '--xh-shape-overlay': '4px · 脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Notification',
@@ -23,7 +23,7 @@
 - pill 只给明确的胶囊身份；普通按钮、字段、卡片与浮层不用 pill。Tag 与结果标记是方签，取 control。
 - 正方盒（inline-size 与 block-size 同槽）必须取 circle，不得用 pill 冒充圆。
 - 内层圆角不超过外层圆角减去内边距（surface 4px 的轨道留 2px 内距，里面的滑块取 2px）；相连控件（InputGroup、ButtonGroup）消除相接侧圆角。
-- 锚定浮层里的列表行（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列）是通栏行，不取圆角，悬停淡底铺满整行；页内列表的行仍按 inset 内缩。
+- 锚定浮层里的列表行（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列）与 Command、Transfer 的列表行是通栏行，不取圆角，悬停与选中的面铺满整行；Listbox、Tree 的行仍按 inset 内缩。
 - 贴边铺满的通栏（Alert `banner`）不取圆角：它的边就是页面或容器的边。
 - 亮色、暗色与紧凑密度不改变形状身份。
 - PromptInput 是登记过的例外：对话输入条允许 `--xh-shape-surface`。
