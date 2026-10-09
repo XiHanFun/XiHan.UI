@@ -8,6 +8,7 @@ import {
   XhDateRangePickerConfirmTrigger,
   XhDateRangePickerContent,
   XhDateRangePickerControl,
+  XhDateRangePickerFooter,
   XhDateRangePickerGrid,
   XhDateRangePickerGridBody,
   XhDateRangePickerGridHead,
@@ -97,7 +98,9 @@ function literalBefore(type: string, index: number): string {
         </XhDateRangePickerCalendar>
         <!-- 起止各一组时间列，组顶的小标题取 translations.startTime / endTime；每组按不下去的格留在列里 -->
         <XhDateRangePickerTimePanel />
-        <XhDateRangePickerConfirmTrigger>确定</XhDateRangePickerConfirmTrigger>
+        <XhDateRangePickerFooter>
+          <XhDateRangePickerConfirmTrigger>确定</XhDateRangePickerConfirmTrigger>
+        </XhDateRangePickerFooter>
       </XhDateRangePickerContent>
     </XhDateRangePickerPositioner>
   </XhDateRangePickerRoot>

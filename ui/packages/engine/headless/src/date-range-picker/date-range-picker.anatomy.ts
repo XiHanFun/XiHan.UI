@@ -20,6 +20,8 @@ import { createAnatomy } from '@xihan-ui/core'
  *
  * showTime 下起止各一组时间列：column-group 是一端的外壳（带 index），column-group-label 是它的小标题，
  * time-column / time-item 与日期选择器的时间部件同名，confirm-trigger 收口。
+ *
+ * footer 是浮层底部的通栏操作区，confirm-trigger 通常放在它里面；也可以直接排在 content 里。
  */
 export const dateRangePickerAnatomy = createAnatomy('date-range-picker', [
   'root',
@@ -38,5 +40,6 @@ export const dateRangePickerAnatomy = createAnatomy('date-range-picker', [
   'column-group-label',
   'time-column',
   'time-item',
+  'footer',
   'confirm-trigger',
 ])

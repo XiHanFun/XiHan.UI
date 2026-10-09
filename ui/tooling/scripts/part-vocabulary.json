@@ -551,6 +551,7 @@
       "cascader",
       "command",
       "date-picker",
+      "date-range-picker",
       "dialog",
       "drawer",
       "layout",
