@@ -518,6 +518,7 @@
     --xh-overlay-sheet-body-py: var(--xh-space-6);
     --xh-overlay-sheet-footer-py: var(--xh-space-4);
     --xh-overlay-notification-w: 18.75rem;
+    --xh-overlay-notification-p: var(--xh-space-5);
     --xh-overlay-toast-w: 28.75rem;
     --xh-overlay-backdrop-blur: 12px;
     --xh-text-label-size: var(--xh-font-size-md);
@@ -651,6 +652,7 @@
     --xh-overlay-menu-max-h: 11rem;
     --xh-overlay-max-h: 14rem;
     --xh-overlay-sheet-px: var(--xh-space-4);
+    --xh-overlay-notification-p: var(--xh-space-4);
     --xh-overlay-sheet-body-py: var(--xh-space-5);
     --xh-overlay-sheet-footer-py: var(--xh-space-3);
     --xh-surface-py-sm: var(--xh-space-2);

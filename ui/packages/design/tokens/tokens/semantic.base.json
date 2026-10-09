@@ -1172,7 +1172,7 @@
       "$value": "calc({control.h-md} + {space.4})"
     },
     "sheet-px": {
-      "$description": "sheet 面的内衬：对话框头、正文、尾三段的横向，通知卡片的四边。",
+      "$description": "sheet 面的横向内衬：对话框头、正文、尾三段的行内两侧。",
       "$type": "dimension",
       "$value": "{space.5}"
     },
@@ -1190,6 +1190,11 @@
       "$description": "通知卡片的缺省宽：左列一枚类型字形、右列标题与正文，两列排得下一句短通知。",
       "$type": "dimension",
       "$value": "18.75rem"
+    },
+    "notification-p": {
+      "$description": "通知卡片的四边内衬：上下与左右同值，卡片是一块小面板，叉与左列字形都按它对齐。",
+      "$type": "dimension",
+      "$value": "{space.5}"
     },
     "toast-w": {
       "$description": "轻提示的卡宽：指示符、正文、行内动作与关闭钮排成一行，比通知卡片（notification-w）宽一截。",
