@@ -174,6 +174,14 @@ describe('日期范围选择器 showTime', () => {
     expect(getComputedStyle(start).borderInlineStartWidth).toBe('1px')
     expect(getComputedStyle(end).borderInlineStartWidth).toBe('1px')
     expect(end.getBoundingClientRect().left).toBe(start.getBoundingClientRect().right)
+    // 时间格的命中区补满列内间距：两格之间的缝落在上下两格上
+    const upper = item(1, 'hour', '18')
+    const lower = item(1, 'hour', '19')
+    const gap = lower.getBoundingClientRect().top - upper.getBoundingClientRect().bottom
+    expect(gap).toBeGreaterThan(0)
+    const x = upper.getBoundingClientRect().left + upper.getBoundingClientRect().width / 2
+    expect(document.elementFromPoint(x, upper.getBoundingClientRect().bottom + gap / 2 - 1)?.closest("[data-part='time-item']")).toBe(upper)
+    expect(document.elementFromPoint(x, lower.getBoundingClientRect().top - gap / 2 + 1)?.closest("[data-part='time-item']")).toBe(lower)
     // 小标题占满列顶那一带：与标题栏的内容区等高
     expect(part('column-group-label', 0).getBoundingClientRect().bottom).toBeCloseTo(header.bottom - 1, 1)
   })

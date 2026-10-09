@@ -250,6 +250,12 @@ describe('日期范围选择器的家族观感', () => {
     const hover = getComputedStyle(plain!).backgroundColor
     // 钮坐在自己的淡底上：悬停 200、按下 300（淡底承载阶梯）
     expect(hover).toBe(resolveColor('--xh-bg-subtle-hover', plain!))
+    // 悬停时字换正文色：底升到 200 之后，次级前景在暗色下不足 4.5:1
+    const fg = document.createElement('span')
+    fg.style.color = 'var(--xh-fg-default)'
+    plain!.append(fg)
+    expect(getComputedStyle(plain!).color).toBe(getComputedStyle(fg).color)
+    fg.remove()
     plain!.dataset.pressed = ''
     const pressed = getComputedStyle(plain!).backgroundColor
     expect(pressed).toBe(resolveColor('--xh-bg-subtle-active', plain!))

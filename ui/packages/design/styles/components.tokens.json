@@ -26106,13 +26106,8 @@
         "default",
         "disabled",
         "error",
-        "highlighted",
-        "hover",
-        "is(:active, [data-pressed])",
-        "is(:focus-visible, [data-highlighted])",
         "is([aria-selected='true'], [data-selected])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed",
         "selected",
         "xh-collection-context=overlay"
       ],
@@ -26141,6 +26136,34 @@
       ],
       "visibility": "public",
       "description": "date-range-picker 的 preset 部件 background-color、color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-preset-fg-hover",
+      "component": "date-range-picker",
+      "part": [
+        "preset"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "selected",
+        "xh-collection-context=overlay"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 preset 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-date-range-picker-preset-font-size",
@@ -26348,10 +26371,12 @@
       "name": "--xh-date-range-picker-time-column-gap",
       "component": "date-range-picker",
       "part": [
-        "time-column"
+        "time-column",
+        "time-item"
       ],
       "property": [
-        "gap"
+        "gap",
+        "inset-block"
       ],
       "state": [
         "default"
@@ -26360,7 +26385,7 @@
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "date-range-picker 的 time-column 部件 gap 覆盖槽。"
+      "description": "date-range-picker 的 time-column、time-item 部件 gap、inset-block 覆盖槽。"
     },
     {
       "name": "--xh-date-range-picker-time-column-h",
