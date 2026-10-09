@@ -110,8 +110,8 @@ padding-top: 0px
 padding-right: 0px
 padding-bottom: 0px
 padding-left: 0px
-row-gap: 20px
-column-gap: 20px
+row-gap: 0px
+column-gap: normal
 border-top-left-radius: 0px
 border-top-right-radius: 0px
 border-bottom-right-radius: 0px
