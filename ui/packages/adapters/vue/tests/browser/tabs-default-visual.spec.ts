@@ -67,6 +67,14 @@ function shapePx(element: HTMLElement, token: string): number {
   return value
 }
 
+/**
+ * 抬起影缺省是平面（none）：选中面接没接 --xh-elevation-raised 读出来都是 none。
+ * 宿主上给它一层看得见的影，才分得出选中面消费了令牌还是没画影。
+ */
+function raise(): void {
+  host!.style.setProperty('--xh-elevation-raised', '0 1px 2px rgb(0, 255, 0)')
+}
+
 /** 投影令牌在该元素上解到的 box-shadow（令牌取 none 时就是 none）。 */
 function resolveShadow(token: string, scope: HTMLElement): string {
   const probe = document.createElement('span')
@@ -109,6 +117,7 @@ describe('tabs 默认视觉', () => {
 
   it('segment 使用浅色标签带承载浮起的选中面：放了 indicator 部件时面长在部件上跟着滑，选中标签自己透空', () => {
     const segment = mount('segment')
+    raise()
     const segmentPaint = {
       listBackground: paint(segment.list, 'background-color'),
       listPadding: paint(segment.list, 'padding-inline-start'),
@@ -119,6 +128,7 @@ describe('tabs 默认视觉', () => {
     expect(Number.parseFloat(segmentPaint.listPadding)).toBeGreaterThan(0)
     expect(paint(segment.indicator, 'display')).not.toBe('none')
     expect(segmentPaint.indicatorBackground).not.toBe('rgba(0, 0, 0, 0)')
+    expect(segmentPaint.indicatorShadow).not.toBe('none')
     expect(segmentPaint.indicatorShadow).toBe(resolveShadow('--xh-elevation-raised', segment.list))
     // 部件按机器写的四支私有槽落位；面搬走后选中标签透空、不再叠一层
     expect(getComputedStyle(segment.indicator).position).toBe('absolute')
@@ -182,10 +192,12 @@ describe('tabs 默认视觉', () => {
 
   it('segment 的白色抬起面三件：surface-raised 底 + border-default 描边 + raised 影，放了部件长在部件上、没放长在选中标签上；标签带带透明占位边', () => {
     const segment = mount('segment')
+    raise()
     const slider = getComputedStyle(segment.indicator)
     expect(slider.backgroundColor).toBe(resolveColor('--xh-bg-surface-raised', segment.list))
     expect(slider.borderTopColor).toBe(resolveColor('--xh-border-default', segment.list))
     expect(Number.parseFloat(slider.borderTopWidth)).toBe(1)
+    expect(slider.boxShadow).not.toBe('none')
     expect(slider.boxShadow).toBe(resolveShadow('--xh-elevation-raised', segment.list))
     // 作者没放 indicator 部件：面回到选中标签自己身上（面的过渡归零，读到的才是终值）
     freezeMotion()

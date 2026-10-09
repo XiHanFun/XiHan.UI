@@ -34,9 +34,9 @@ function resolvedToken(name: string): string {
   return value
 }
 
-async function mountSlider(props: Record<string, unknown> = {}): Promise<void> {
+async function mountSlider(props: Record<string, unknown> = {}, hostStyle = ''): Promise<void> {
   host = document.createElement('div')
-  host.style.cssText = 'inline-size: 300px; padding: 24px'
+  host.style.cssText = `inline-size: 300px; padding: 24px; ${hostStyle}`
   document.body.append(host)
   app = createApp({
     render: () => h(XhColorSliderRoot, { defaultValue: '#3b82f6', ...props }, () => [
@@ -116,7 +116,8 @@ describe('颜色滑块的轨道与拇指', () => {
   })
 
   it('字段标签 14 / 标签字重 / fg-muted 与控件隔 space-2；拇指是 raised 面，描边 border-default', async () => {
-    await mountSlider()
+    // 抬起影缺省是平面（none），拇指接没接令牌读出来一样：宿主给它一层看得见的影再比
+    await mountSlider({}, '--xh-elevation-raised: 0 1px 2px rgb(0, 255, 0)')
     const label = getComputedStyle(part('label'))
     expect(label.fontSize).toBe('14px')
     expect(label.fontWeight).toBe(tokenValue('font-weight', '--xh-text-label-weight', part('label')))
@@ -126,11 +127,12 @@ describe('颜色滑块的轨道与拇指', () => {
     const thumb = getComputedStyle(part('thumb'))
     expect(thumb.borderTopColor).toBe(resolvedToken('--xh-border-default-opaque'))
     expect(thumb.borderTopWidth).toBe('2px')
-    expect(thumb.boxShadow).toBe(tokenValue('box-shadow', '--xh-elevation-raised', part('thumb')))
+    expect(thumb.boxShadow).toBe('rgb(0, 255, 0) 0px 1px 2px 0px')
   })
 
   it('禁用：不整体压暗，标签不另变色，颜色带与拇指压暗一次、拇指不再抬起且面仍是当前色', async () => {
-    await mountSlider({ disabled: true })
+    // 给抬起影一层看得见的值：禁用档读到 none 才说明它真把影收掉了
+    await mountSlider({ disabled: true }, '--xh-elevation-raised: 0 1px 2px rgb(0, 255, 0)')
     expect(getComputedStyle(part('root')).opacity).toBe('1')
     expect(getComputedStyle(part('label')).color).toBe(resolvedToken('--xh-fg-muted'))
     expect(getComputedStyle(part('control')).opacity).toBe('0.5')
