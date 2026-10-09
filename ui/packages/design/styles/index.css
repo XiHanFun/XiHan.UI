@@ -16135,17 +16135,22 @@
   /*
    * 高对比档：这一档把整层背景图丢掉，而渐隐弧与三点都画在背景上——屏幕上会一片空白。
    * 三档一并退回环档的画法：高亮色的弧加一段画布色的缺口，转的还是同一条动画。
-   * 伪元素退出强制换色、直接写系统色，缺口不被换成别的颜色
+   * 伪元素退出强制换色、直接写系统色，缺口不被换成别的颜色。
+   * 带语气的那几条（[data-tone]、[data-variant][data-tone]）特指度更高，这里逐条写上同样的限定：
+   * 退出了强制换色的伪元素不会再被系统改色，少一条语气色的弧或渐变就原样画出来
    */
   @media (forced-colors: active) {
-    .xh-scope-spinner[data-part='root']::before {
+    .xh-scope-spinner[data-part='root']::before,
+    .xh-scope-spinner[data-part='root'][data-tone]::before {
       forced-color-adjust: none;
       border-color: Highlight;
       border-block-start-color: Canvas;
     }
 
     .xh-scope-spinner[data-part='root'][data-variant='arc']::before,
-    .xh-scope-spinner[data-part='root'][data-variant='dots']::before {
+    .xh-scope-spinner[data-part='root'][data-variant='arc'][data-tone]::before,
+    .xh-scope-spinner[data-part='root'][data-variant='dots']::before,
+    .xh-scope-spinner[data-part='root'][data-variant='dots'][data-tone]::before {
       border: var(--xh-spinner-thickness, var(--xh-stroke-thick)) solid Highlight;
       border-block-start-color: Canvas;
       border-radius: var(--xh-spinner-radius, var(--xh-shape-circle));

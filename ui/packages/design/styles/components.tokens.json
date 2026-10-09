@@ -69030,6 +69030,7 @@
       "state": [
         "@media (forced-colors: active)",
         "default",
+        "tone",
         "variant=arc",
         "variant=dots"
       ],
@@ -69072,6 +69073,7 @@
       "state": [
         "@media (forced-colors: active)",
         "default",
+        "tone",
         "variant=arc",
         "variant=dots"
       ],

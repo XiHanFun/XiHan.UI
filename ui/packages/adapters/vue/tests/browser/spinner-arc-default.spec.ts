@@ -2,6 +2,7 @@
 import type { Size } from '@xihan-ui/core'
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
+import { cdp } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhSpinner } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
@@ -102,5 +103,52 @@ describe('三点档错相', () => {
     finally {
       delete document.documentElement.dataset.motion
     }
+  })
+})
+
+describe('高对比档', () => {
+  afterEach(async () => {
+    await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
+  })
+
+  /** 同一档里并排挂一枚不带语气、一枚带语气的转圈。 */
+  async function mountPair(variant: 'ring' | 'arc' | 'dots'): Promise<[HTMLElement, HTMLElement]> {
+    host = document.createElement('div')
+    document.body.append(host)
+    app = createApp({
+      render: () => [
+        h(XhSpinner, { label: '加载中', variant }),
+        h(XhSpinner, { label: '加载中', variant, tone: 'danger' }),
+      ],
+    })
+    app.mount(host)
+    await nextTick()
+    const [plain, toned] = host.querySelectorAll<HTMLElement>('[data-scope="spinner"][data-part="root"]')
+    return [plain!, toned!]
+  }
+
+  /** 系统色关键字在这一档里解出的颜色：探针退出强制换色，读回的就是关键字本身的值。 */
+  function systemColor(keyword: string): string {
+    const probe = document.createElement('span')
+    probe.style.cssText = `forced-color-adjust: none; color: ${keyword}`
+    host!.append(probe)
+    const color = getComputedStyle(probe).color
+    probe.remove()
+    return color
+  }
+
+  it.each(['ring', 'arc', 'dots'] as const)('%s 带语气时仍退回 Highlight 弧与 Canvas 缺口，语气色与背景图一并让位', async (variant) => {
+    await cdp().send('Emulation.setEmulatedMedia', { features: [{ name: 'forced-colors', value: 'active' }] })
+    expect(matchMedia('(forced-colors: active)').matches).toBe(true)
+    const [plain, toned] = await mountPair(variant)
+    const base = getComputedStyle(plain, '::before')
+    const tone = getComputedStyle(toned, '::before')
+
+    expect(base.borderRightColor).toBe(systemColor('Highlight'))
+    expect(base.borderTopColor).toBe(systemColor('Canvas'))
+    expect(tone.borderRightColor).toBe(base.borderRightColor)
+    expect(tone.borderTopColor).toBe(base.borderTopColor)
+    expect(tone.borderRightStyle).toBe('solid')
+    expect(tone.backgroundImage).toBe('none')
   })
 })
