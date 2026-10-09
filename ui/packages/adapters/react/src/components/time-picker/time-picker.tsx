@@ -495,7 +495,7 @@ export function XhTimePickerConfirmTrigger({ children, ...rest }: XhTimePickerCo
 export interface XhTimePickerFooterProps extends ComponentPropsWithRef<'div'> {}
 /**
  * 浮层底部的通栏操作区：写在 content 里、排在各列之后，「添加」钮通常放在这里；
- * 不进任何集合的拥有关系，方向键走不到，里面的按钮照常进 Tab 序列。
+ * 不进任何集合的拥有关系，方向键走不到，里面的按钮照常进 Tab 序列，从列上按 Tab 就能走到，浮层不收。
  */
 export function XhTimePickerFooter({ children, ...rest }: XhTimePickerFooterProps): ReactNode {
   const ctx = useTimePickerContext()

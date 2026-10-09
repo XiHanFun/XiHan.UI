@@ -335,8 +335,9 @@
     overflow-x: auto;
     /* 浮层滚动面：滚到头不把页面一起带走 */
     overscroll-behavior: contain;
-    /* 列自己定高，面板整体不该再长过页内滚动面那一档 */
-    max-block-size: var(--xh-time-range-picker-content-max-h, var(--xh-viewport-h-lg));
+    /* 两组时列都按 px 定高（列取 --xh-overlay-time-column-h），面板的天然高度就是它们的和，缺省不另设上限：
+       按 rem 的滚动面档会随根字号缩小，根字号很小时面板出竖滚 */
+    max-block-size: var(--xh-time-range-picker-content-max-h, none);
     border: var(--xh-stroke-thin) solid var(--xh-time-range-picker-content-border, var(--xh-border-default));
     border-radius: var(--xh-time-range-picker-content-radius, var(--xh-shape-overlay));
     background: var(--xh-time-range-picker-content-bg, var(--xh-bg-surface));

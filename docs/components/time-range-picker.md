@@ -281,7 +281,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `ArrowUp` / `ArrowDown` / `Home` / `End` | open, focus in 快捷选项列 | 在快捷选项之间移动焦点，到头回绕；时分秒那几列的处理器在这一列内不参与 |
 | `Enter` / `Space` | open, focus in 某条快捷选项, not disabled/readOnly | 把这条快捷选项的两端整份写进值并收起浮层 |
 | `Escape` | open | 收起浮层并把焦点归还触发器，两端不变 |
-| `Tab` / `Shift+Tab` | open | 收起浮层且不拦按键，焦点按 Tab 序列自然离开，不抢回触发器 |
+| `Tab` / `Shift+Tab` | open | 不拦按键：焦点按 Tab 序列在两组列与快捷选项列之间走，浮层不收；走出浮层后随即收起且不抢回焦点 |
 | `ArrowUp` | focus in 某一段, not disabled/readOnly | 本段加一格，到头回绕；空段落到该段下界 |
 | `ArrowDown` | focus in 某一段, not disabled/readOnly | 本段减一格，到头回绕；空段落到该段上界 |
 | `ArrowRight` | focus in 某一段, not disabled | 焦点移到本组下一段；已在本组末段则不动，不跨进另一端那组 |
@@ -471,7 +471,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `--xh-time-range-picker-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` | time-range-picker 的 content 部件 background 覆盖槽。 |
 | `--xh-time-range-picker-content-border` | `content` | `border` | `default` | `--xh-border-default` | time-range-picker 的 content 部件 border 覆盖槽。 |
 | `--xh-time-range-picker-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | time-range-picker 的 content 部件 color 覆盖槽。 |
-| `--xh-time-range-picker-content-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-lg` | time-range-picker 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-time-range-picker-content-max-h` | `content` | `max-block-size` | `default` | `none` | time-range-picker 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-time-range-picker-content-px` | `content` | `padding-inline` | `default` | `--xh-space-0` | time-range-picker 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-time-range-picker-content-py` | `content` | `padding-block` | `default` | `--xh-space-0` | time-range-picker 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-time-range-picker-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | time-range-picker 的 content 部件 border-radius 覆盖槽。 |

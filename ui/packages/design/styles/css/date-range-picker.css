@@ -632,6 +632,13 @@
     display: none;
   }
 
+  /* 粗指针下日历格长到 44 见方（行距从 36 加到 44），网格多出六行的那截；列高跟着加，列底仍与网格底边对齐 */
+  @media (pointer: coarse) {
+    [data-scope='date-range-picker'][data-part='time-column'] {
+      --xh-_date-range-picker-time-column-h: var(--xh-date-range-picker-time-column-h, var(--xh-overlay-calendar-column-h-coarse));
+    }
+  }
+
   /* 时间格：24 高的通栏条，列内间距 8 撑出 32 的行距；悬停 / 高亮 100、按下 200 由 Collection Item 家族按
      overlay 语境给，选中透明底 + 中等字重 + 末端对号（对号集合的选中），不上品牌淡底、不变字色。
      格里只有数字、没有正文部件，保持自己的居中排版与等宽标记轨，家族只给状态面 */
@@ -804,8 +811,14 @@
      确认钮总落在行尾；只放了确认钮时它独占那条轨道，靠 justify-self 贴到行尾。
      底栏不参与撑宽：面板换行排布时，Chrome 把每个子项的固有宽相加当作面板的固有宽，
      底栏的字与钮会把面板多撑出一截、日历与时间组末端空出一块。inline-size 包含让它的内容不计入固有宽，
-     行内内衬也就不能写在它自己身上（内衬照样计入），改由首末两个子节点的外边距让出 */
+     行内内衬也就不能写在它自己身上（内衬照样计入），改由两端各一个定宽占位让出（见下面那条） */
   [data-scope='date-range-picker'][data-part='footer'] {
+    /* 两端占位的宽：占位与相邻项之间本来就隔着一道 gap，占位自己只补到内衬的差额 */
+    --xh-_date-range-picker-footer-inset: max(
+      var(--xh-space-0),
+      calc(var(--xh-date-range-picker-footer-px, var(--xh-space-2)) - var(--xh-date-range-picker-footer-gap, var(--xh-space-2)))
+    );
+
     display: grid;
     contain: inline-size;
     flex-basis: 100%;
@@ -833,12 +846,18 @@
     justify-self: end;
   }
 
-  [data-scope='date-range-picker'][data-part='footer'] > :first-child {
-    margin-inline-start: var(--xh-date-range-picker-footer-px, var(--xh-space-2));
+  /* 行首行尾的内衬由两端的定宽占位让出，不挂在首末子节点上：首个子节点可能是裸文本，
+     末一个可能是按状态收起的确认钮，外边距都接不住。占位与其余子项一样在 inline-size 包含之内，不计入面板的固有宽 */
+  [data-scope='date-range-picker'][data-part='footer']::before,
+  [data-scope='date-range-picker'][data-part='footer']::after {
+    content: '';
+    inline-size: var(--xh-_date-range-picker-footer-inset);
   }
 
-  [data-scope='date-range-picker'][data-part='footer'] > :last-child {
-    margin-inline-end: var(--xh-date-range-picker-footer-px, var(--xh-space-2));
+  /* 行首占位落在那条撑满余宽的显式轨道之前（在它前面长出一条隐式列），首个子节点仍落在那条轨道上。
+     占位不进显式轨道：尺寸包含照样计入显式轨道与轨道间的 gap，多一条显式列面板就多撑出一道 gap */
+  [data-scope='date-range-picker'][data-part='footer']::before {
+    grid-column: span 1 / 1;
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

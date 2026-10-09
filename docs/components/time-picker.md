@@ -340,7 +340,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `ArrowUp` / `ArrowDown` / `Home` / `End` | open, focus in 快捷选项列 | 在快捷选项之间移动焦点，到头回绕；时分秒那几列的处理器在这一列内不参与 |
 | `Enter` / `Space` | open, focus in 某条快捷选项, not disabled/readOnly | 把这条快捷选项整份写进值并收起浮层 |
 | `Escape` | open | 收起浮层并把焦点归还触发器，值不变 |
-| `Tab` / `Shift+Tab` | open | 收起浮层且不拦按键，焦点按 Tab 序列自然离开，不抢回触发器 |
+| `Tab` / `Shift+Tab` | open | 不拦按键：焦点按 Tab 序列在各列、快捷选项列与底栏之间走，浮层不收；走出浮层后随即收起且不抢回焦点 |
 | `ArrowUp` | focus in 某一段, not disabled/readOnly | 本段加一格，到头回绕；空段落到该段下界 |
 | `ArrowDown` | focus in 某一段, not disabled/readOnly | 本段减一格，到头回绕；空段落到该段上界 |
 | `ArrowRight` | focus in 某一段, not disabled | 焦点移到下一段；已在末段则不动，不回绕 |
@@ -529,7 +529,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `--xh-time-picker-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` | time-picker 的 content 部件 background 覆盖槽。 |
 | `--xh-time-picker-content-border` | `content` | `border` | `default` | `--xh-border-default` | time-picker 的 content 部件 border 覆盖槽。 |
 | `--xh-time-picker-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | time-picker 的 content 部件 color 覆盖槽。 |
-| `--xh-time-picker-content-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-lg` | time-picker 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-time-picker-content-max-h` | `content` | `max-block-size` | `default` | `none` | time-picker 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-time-picker-content-px` | `content` | `padding-inline` | `default` | `--xh-space-0` | time-picker 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-time-picker-content-py` | `content` | `padding-block` | `default` | `--xh-space-0` | time-picker 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-time-picker-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | time-picker 的 content 部件 border-radius 覆盖槽。 |
@@ -555,8 +555,8 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `--xh-time-picker-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-solid-border` | time-picker 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-time-picker-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | time-picker 的 footer 部件 color 覆盖槽。 |
 | `--xh-time-picker-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-caption-size` | time-picker 的 footer 部件 font-size 覆盖槽。 |
-| `--xh-time-picker-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | time-picker 的 footer 部件 gap 覆盖槽。 |
-| `--xh-time-picker-footer-px` | `footer` | `margin-inline-end`<br>`margin-inline-start` | `first-child`<br>`last-child` | `--xh-space-2` | time-picker 的 footer 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-time-picker-footer-gap` | `footer` | `gap`<br>`inline-size` | `default` | `--xh-space-2` | time-picker 的 footer 部件 gap、inline-size 覆盖槽。 |
+| `--xh-time-picker-footer-px` | `footer` | `inline-size` | `default` | `--xh-space-2` | time-picker 的 footer 部件 inline-size 覆盖槽。 |
 | `--xh-time-picker-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | time-picker 的 footer 部件 padding-block 覆盖槽。 |
 | `--xh-time-picker-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | time-picker 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-time-picker-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | time-picker 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |

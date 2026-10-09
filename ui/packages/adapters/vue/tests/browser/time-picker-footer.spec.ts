@@ -1,6 +1,6 @@
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { cdp } from 'vitest/browser'
+import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhTimePickerColumn,
@@ -46,7 +46,7 @@ function body(): HTMLElement[] {
   )]
 }
 
-async function mount(options: { theme?: 'light' | 'dark', dir?: 'ltr' | 'rtl', multiple?: boolean, note?: boolean } = {}): Promise<void> {
+async function mount(options: { theme?: 'light' | 'dark', dir?: 'ltr' | 'rtl', multiple?: boolean, note?: boolean | 'text' } = {}): Promise<void> {
   const { theme = 'light', dir = 'ltr', multiple = true, note = true } = options
   host = document.createElement('div')
   host.dataset.theme = theme
@@ -70,7 +70,7 @@ async function mount(options: { theme?: 'light' | 'dark', dir?: 'ltr' | 'rtl', m
           value: String(index).padStart(2, '0'),
         }, () => String(index).padStart(2, '0'))))),
       h(XhTimePickerFooter, null, () => [
-        ...(note ? [h('span', { 'data-testid': 'note' }, '北京时间')] : []),
+        ...(note === 'text' ? ['北京时间'] : note ? [h('span', { 'data-testid': 'note' }, '北京时间')] : []),
         h(XhTimePickerConfirmTrigger, null, () => '添加'),
       ]),
     ])),
@@ -144,6 +144,31 @@ describe('时间选择浮层底栏', () => {
     expect(note.top + note.height / 2).toBeCloseTo(footer.top + 1 + (footer.height - 1) / 2, 0)
   })
 
+  it.each(['ltr', 'rtl'] as const)('%s：附注写成裸文本时，行首仍让出 8', async (dir) => {
+    await mount({ dir, note: 'text' })
+    const footer = part('footer')
+    const text = [...footer.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.textContent === '北京时间')!
+    const range = document.createRange()
+    range.selectNodeContents(text)
+    const box = range.getBoundingClientRect()
+    const edge = footer.getBoundingClientRect()
+    if (dir === 'ltr')
+      expect(box.left).toBeCloseTo(edge.left + 8, 1)
+    else
+      expect(box.right).toBeCloseTo(edge.right - 8, 1)
+  })
+
+  it.each(['ltr', 'rtl'] as const)('%s：单选时「添加」收起、附注成了末一项时，它那一头仍让出 8 的行尾内衬', async (dir) => {
+    await mount({ dir, multiple: false })
+    expect(part('confirm-trigger').hidden).toBe(true)
+    const footer = part('footer').getBoundingClientRect()
+    const note = document.querySelector<HTMLElement>(`[data-testid='note']`)!.getBoundingClientRect()
+    if (dir === 'ltr')
+      expect(note.right).toBeCloseTo(footer.right - 8, 1)
+    else
+      expect(note.left).toBeCloseTo(footer.left + 8, 1)
+  })
+
   it('单选时，只放了「添加」的底栏随它一并收起，不留空栏，各列照旧贴到面板底边', async () => {
     await mount({ multiple: false, note: false })
     expect(part('confirm-trigger').hidden).toBe(true)
@@ -171,6 +196,22 @@ describe('时间选择浮层底栏', () => {
     expect(Number.parseFloat(style.borderTopWidth)).toBeGreaterThan(0)
     expect(style.borderTopColor).not.toBe(getComputedStyle(part('content')).backgroundColor)
     expect(part('confirm-trigger').getBoundingClientRect().right).toBeCloseTo(footer.getBoundingClientRect().right - 8, 1)
+  })
+
+  it('键盘：在列上按 Tab 焦点落到「添加」、浮层不收；按 Enter 把拼好的草稿收进值', async () => {
+    await mount({ note: false })
+    const item = (unit: string, value: string): HTMLElement => part('content').querySelector<HTMLElement>(
+      `[data-part='column'][data-value='${unit}'] [data-part='item'][data-value='${value}']`,
+    )!
+    item('hour', '10').click()
+    item('minute', '15').click()
+    item('minute', '15').focus()
+    await userEvent.keyboard('{Tab}')
+    expect(document.activeElement).toBe(part('confirm-trigger'))
+    expect(part('content').hidden).toBe(false)
+    await userEvent.keyboard('{Enter}')
+    await expect.poll(() => part('tag-list').textContent).toContain('10:15')
+    expect(part('content').hidden).toBe(false)
   })
 
   it('print：底栏随浮层一起不上纸', async () => {

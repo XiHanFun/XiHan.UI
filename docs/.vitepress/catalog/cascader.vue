@@ -13,7 +13,7 @@
     <path d="M110 92l4 4-4 4" stroke="var(--xh-fg-subtle)" stroke-width="2" />
     <path d="M55 120h34" stroke="var(--xh-fg-muted)" stroke-width="6" />
     <path d="M110 116l4 4-4 4" stroke="var(--xh-fg-subtle)" stroke-width="2" />
-    <path d="M128.5 57v78" stroke="var(--xh-border-subtle)" />
+    <path d="M128.5 57v78" stroke="var(--xh-border-default)" />
     <path d="M143 72h26M143 96h30" stroke="var(--xh-fg-muted)" stroke-width="6" />
     <path d="M193 96l3 3 7-7" stroke="var(--xh-fg-brand)" stroke-width="2" />
     <path d="M143 120h22" stroke="var(--xh-fg-muted)" stroke-width="6" />

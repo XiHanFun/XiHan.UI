@@ -751,15 +751,14 @@ export function connectTimePicker<T extends PropTypes>(
       'hidden': !open || undefined,
       'onKeyDown': (event: KeyboardEvent) => {
         const content = event.currentTarget as HTMLElement
+        const target = event.target as HTMLElement | null
 
-        // 不 preventDefault：浮层让开，焦点按 Tab 序列自然离开
-        if (event.key === 'Tab') {
-          send({ type: 'CLOSE', src: 'tab' })
-          return
-        }
-        // 快捷选项列自己吃方向键与 Enter（它是另一套集合，不是时分秒那几列）。
-        // 不早退的话上下键会跑去动时列、Enter 会把焦点格提交成另一个值
-        if ((event.target as HTMLElement | null)?.closest(parts['preset-group'].selector))
+        // Tab 不在这里收口：焦点按 Tab 序列在各列、快捷选项列与底栏之间走，
+        // 走出浮层时由消解层的焦点外移判定收起，且不抢回焦点。
+        // 只认落在时分秒那几列上（或 content 自己）的按键：快捷选项列自己吃方向键与 Enter，
+        // 底栏里是原生按钮，Enter/Space 交给平台激活。不早退的话上下键会跑去动时列、
+        // Enter 被拦下后「添加」按不动，还会把焦点格提交成另一个值
+        if (target !== content && !target?.closest(parts.column.selector))
           return
         // 上下键与 Home/End 在列内走
         const within = navIntentFromKey(event, { axis: 'vertical' })
@@ -900,7 +899,7 @@ export function connectTimePicker<T extends PropTypes>(
     },
 
     // 浮层底部的操作区：作者往里放「添加」钮与「此刻」一类动作。它是 content 的子节点、排在各列之后，
-    // 不在列或快捷选项列的拥有关系里，方向键走不到；里面的按钮照常进 Tab 序列
+    // 不在列或快捷选项列的拥有关系里，方向键走不到；里面的按钮照常进 Tab 序列，从列上按 Tab 就能走到，浮层不收
     getFooterProps: () => normalize.element({
       ...parts.footer.attrs,
     }),
