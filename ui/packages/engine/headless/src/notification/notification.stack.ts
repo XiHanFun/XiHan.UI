@@ -21,6 +21,8 @@ interface StackController {
 
 const STACKED_GROUP = '[data-scope="notification"][data-part="group"][data-stacked]'
 const ITEM = '[data-scope="notification"][data-part="item"]'
+/** 已经在离场的两种：卡片自己的退场（dismissing）与列表动效放的离场替身（closed）。 */
+const LEAVING = new Set(['dismissing', 'closed'])
 
 /**
  * 一摞的测量与展开：最新一条在最前，后层按固定偏移收拢。
@@ -36,9 +38,11 @@ function createStackController(
   let expanded = false
   let pointerWithin = false
 
-  // 卡片可能包在作者的节点里（Web Components 的卡片元素），只认本摞里、且不属于更深一摞的那些
+  // 卡片可能包在作者的节点里（Web Components 的卡片元素），只认本摞里、且不属于更深一摞的那些。
+  // 正在退场的与离场替身不进排位：一条开始退场，其余几条当场补上它让出的层，与它的退场同时走，
+  // 不等它播完收起才整摞一跳；它自己停在原来那一层、保留原来的层级，压在补上来的那条上面淡出
   const items = (): HTMLElement[] => [...group.querySelectorAll<HTMLElement>(ITEM)]
-    .filter(item => !item.hidden && item.closest(STACKED_GROUP) === group)
+    .filter(item => !item.hidden && !LEAVING.has(item.dataset.state ?? '') && item.closest(STACKED_GROUP) === group)
 
   const measure = (item: HTMLElement): number => {
     const style = item.ownerDocument.defaultView?.getComputedStyle(item)
@@ -125,7 +129,8 @@ function createStackController(
   const win = group.ownerDocument.defaultView
   const Mutation = win?.MutationObserver
   const mutation = typeof Mutation === 'function' ? new Mutation(update) : null
-  mutation?.observe(group, { childList: true, characterData: true, subtree: true })
+  // data-state 变成 dismissing 的那一刻就要重排；只盯这两个属性，重排自己写的属性不会再触发一轮
+  mutation?.observe(group, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ['data-state', 'hidden'] })
   const Resize = win?.ResizeObserver
   const resize = typeof Resize === 'function' ? new Resize(update) : null
   resize?.observe(group)

@@ -1,4 +1,4 @@
-// 手动关闭 | create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不播退场动画
+// 手动关闭 | create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不等卡片自己的退场，画面上由替身在原处淡出
 import type { NotificationOptions, NotificationStatusChangeDetails } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
