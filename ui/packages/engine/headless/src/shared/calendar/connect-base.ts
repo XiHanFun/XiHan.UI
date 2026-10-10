@@ -258,7 +258,7 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
     reference: grid.startValue,
     locale,
     firstDayOfWeek,
-    weekdayFormat: prop('weekdayFormat') ?? 'short',
+    weekdayFormat: prop('weekdayFormat') ?? 'narrow',
   })
   const cellLabelFormatter = createDateFormatter(locale, {
     weekday: 'long',

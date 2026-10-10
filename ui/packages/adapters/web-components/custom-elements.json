@@ -4470,7 +4470,7 @@
               "type": {
                 "text": "CalendarWeekdayFormat | undefined"
               },
-              "description": "表头缩写粒度，默认 short",
+              "description": "表头缩写粒度，默认 narrow（中文「一 二 三」）；short 是「周一」",
               "name": "weekday-format",
               "fieldName": "weekdayFormat"
             },
@@ -5239,7 +5239,7 @@
               "type": {
                 "text": "CalendarWeekdayFormat | undefined"
               },
-              "description": "表头缩写粒度，默认 short",
+              "description": "表头缩写粒度，默认 narrow（中文「一 二 三」）；short 是「周一」",
               "name": "weekday-format",
               "fieldName": "weekdayFormat"
             },

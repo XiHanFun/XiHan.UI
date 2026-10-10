@@ -122,7 +122,10 @@ export interface CalendarBaseProps {
   disabled?: boolean
   /** 只读：翻月与移动焦点照常，只是选不动值。 */
   readOnly?: boolean
-  /** 表头缩写粒度，默认 short。 */
+  /**
+   * 表头缩写粒度，默认 narrow：中文是「一 二 三」、英文是「M T W」，七列在日期格的宽度里不挤；
+   * short（「周一」「Mon」）几乎占满格宽，七列挨在一起读不开。全称始终给读屏用。
+   */
   weekdayFormat?: CalendarWeekdayFormat
   /** 恒渲染六行，默认按当月实际周数。开着能让翻月时网格高度不跳。 */
   fixedWeeks?: boolean

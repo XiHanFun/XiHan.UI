@@ -47,7 +47,6 @@ export default function Demo(): ReactNode {
         max={max}
         isDateUnavailable={isWeekend}
         locale="zh-CN"
-        weekdayFormat="narrow"
         fixedWeeks
         style={{ maxInlineSize: "280px" }}
       >

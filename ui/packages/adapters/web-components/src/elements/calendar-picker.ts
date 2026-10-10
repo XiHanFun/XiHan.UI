@@ -60,7 +60,7 @@ function declaredIndex(el: Element | null | undefined, fallback = 0): number {
  * @attr {boolean} read-only - 只读：翻月与移动焦点照常，只是不可选择值
  * @attr {boolean} invalid - 校验失败：根带 data-invalid
  * @prop {Partial<CalendarPickerTranslations>} translations - 读屏文案（今天），只能通过 property 设置
- * @attr {'narrow'|'short'} weekday-format - 表头缩写粒度，默认 short
+ * @attr {'narrow'|'short'} weekday-format - 表头缩写粒度，默认 narrow（中文「一 二 三」）；short 是「周一」
  * @attr {boolean} fixed-weeks - 恒渲染六行
  * @attr {'day'|'week'|'month'|'quarter'|'year'} granularity - 选择粒度，默认 day；与 selection-mode 正交
  * @attr {'day'|'week'|'month'|'quarter'|'year'} active-view - 受控：面板当前所在的层级；未提供时跟随 granularity

@@ -59,7 +59,7 @@ function declaredIndex(el: Element | null | undefined, fallback = 0): number {
  * @attr {boolean} invalid - 校验失败：根带 data-invalid，区间中的格子报告 aria-invalid；已选区间某一端越界或不可用时也会自行判定
  * @attr {boolean} allows-non-contiguous-ranges - 区间允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止
  * @prop {Partial<CalendarRangePickerTranslations>} translations - 读屏文案（选择区间的提示、区间两端的名字、今天），只能通过 property 设置
- * @attr {'narrow'|'short'} weekday-format - 表头缩写粒度，默认 short
+ * @attr {'narrow'|'short'} weekday-format - 表头缩写粒度，默认 narrow（中文「一 二 三」）；short 是「周一」
  * @attr {boolean} fixed-weeks - 恒渲染六行
  * @attr {'day'|'week'|'month'|'quarter'|'year'} granularity - 选择粒度，默认 day
  * @attr {'day'|'week'|'month'|'quarter'|'year'} active-view - 受控：面板当前所在的层级；未提供时跟随 granularity
