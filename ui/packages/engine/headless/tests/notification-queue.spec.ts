@@ -50,6 +50,31 @@ describe('挤条按优先级', () => {
     expect(visibleNotifications(list, 2, 'top').map(item => item.id)).toEqual(['boom', 'i2'])
   })
 
+  it('每个位置最新的那一条不进挤的名单：满员的高优先级不会把刚到的低优先级挤掉', () => {
+    const list = [
+      { id: 'w1', tone: 'warning' as const },
+      { id: 'w2', tone: 'warning' as const },
+      { id: 'w3', tone: 'warning' as const },
+      { id: 'ok', tone: 'success' as const },
+    ]
+    expect(visibleNotifications(list, 3, 'top').map(item => item.id)).toEqual(['w2', 'w3', 'ok'])
+  })
+
+  it('只留一格时最新一条照样留下，旧的报错让位', () => {
+    const list = [{ id: 'boom', tone: 'danger' as const }, { id: 'ok', tone: 'success' as const }]
+    expect(visibleNotifications(list, 1, 'top').map(item => item.id)).toEqual(['ok'])
+  })
+
+  it('轻提示满员时再来一条成功：刚建的那条留在队列里，挤掉的是最旧的警告', () => {
+    const q = makeQueue({ preset: 'toast' })
+    for (let i = 1; i <= 3; i++)
+      q.api().create({ tone: 'warning', title: `警告 ${i}` })
+    const ok = q.api().create({ tone: 'success', title: '已发布' })
+    expect(q.items().map(item => item.title)).toEqual(['警告 2', '警告 3', '已发布'])
+    expect(q.api().visibleNotifications.at(-1)?.id).toBe(ok)
+    q.stop()
+  })
+
   it('上限按位置各算各的', () => {
     const list = [
       { id: 'a', placement: 'top' as const },

@@ -129,7 +129,7 @@ export interface NotificationSchema extends MachineSchema {
     preset?: NotificationPreset
     /** 默认落位：card 为 bottom-end，toast 为 bottom。 */
     placement?: NotificationPlacement
-    /** 每个位置最多同时保留几条，超出时先移除低优先级、同级中移除最旧的。card 为 5、toast 为 3；提供 Infinity 即不限。 */
+    /** 每个位置最多同时保留几条。最新的那一条一定留下，超出时在其余条目里先移除低优先级、同级中移除最旧的。card 为 5、toast 为 3；提供 Infinity 即不限。 */
     max?: number
     /** 重复的处理方式，默认 'id'。 */
     dedupe?: NotificationDedupe
