@@ -273,6 +273,25 @@ describe('离场', () => {
     }
   })
 
+  it('wrapped: true 时外壳里的部件晚一轮才写上身份，写上的那一轮按新到算；缺省不认', async () => {
+    for (const wrapped of [true, false]) {
+      const container = list(1)
+      stops.push(trackListMotion(container, { item: '[data-part="item"]', wrapped }))
+      const shell = document.createElement('section')
+      const late = document.createElement('div')
+      shell.append(late)
+      container.append(shell)
+      await flush()
+      // 升级后才写上部件身份
+      late.dataset.part = 'item'
+      await flush()
+      expect(late.style.getPropertyValue(STAGGER_INDEX_PROPERTY)).toBe(wrapped ? '0' : '')
+      stops.forEach(stop => stop())
+      stops = []
+      container.remove()
+    }
+  })
+
   it('容器自己被卸下时不放回', async () => {
     const container = list(2)
     track(container)
