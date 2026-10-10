@@ -200,6 +200,11 @@ export interface TrackListMotionOptions extends TrackArrivalsOptions {
    */
   wrapped?: boolean
   /**
+   * 条目被删时是不是已经在播自己的退场、或已经播完（通知卡片的 dismissing / unmounted）：是就不放替身。
+   * 自己带退场的条目播完常与宿主删节点落在同一次渲染里——还没来得及藏起就被删了，不认这一位会再放一个替身重播一遍。
+   */
+  exiting?: (el: HTMLElement) => boolean
+  /**
    * 换位走哪一路（缺省 translate）：translate 交给皮肤里条目的 translate 过渡；transform 由 glideBy 播一段
    * Web 动画，给 translate 另有用途、过渡清单又归别处的条目用（Tabs 的标签：标签带整体位移占着 translate）。
    */
@@ -360,7 +365,7 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
     if (placeholders && container.isConnected) {
       for (const { el, parent, next } of removed) {
         const slot = slots.get(el)
-        if (slot && !el.isConnected && parent.isConnected && container.contains(parent))
+        if (slot && !el.isConnected && parent.isConnected && container.contains(parent) && !options.exiting?.(el))
           depart(el, parent, next, slot)
       }
     }
