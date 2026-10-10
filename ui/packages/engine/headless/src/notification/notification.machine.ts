@@ -147,7 +147,9 @@ export const notificationMachine = createMachine({
             // 自己播完退场、与宿主删节点落在同一次渲染里的卡片还没来得及藏起：认它的生命周期，不再放替身重播一遍
             const exiting = (el: HTMLElement): boolean => el.dataset.state === 'dismissing' || el.dataset.state === 'unmounted'
             stops = [
-              trackListMotion(root, { item: ARRIVING_ITEM, initial: 'arrive', wrapped: true, exiting }),
+              // 换位走 transform：卡片进场关键帧写的是 translate，快速连发时上一张还在推入就碰上上限挤出的换位，
+              // 走 translate 会被关键帧盖掉、原地一跳；transform 上的换位与关键帧叠加，推入途中照样跟着挪
+              trackListMotion(root, { item: ARRIVING_ITEM, initial: 'arrive', wrapped: true, exiting, channel: 'transform' }),
               trackListMotion(root, { item: STACKED_ITEM, initial: 'arrive', wrapped: true, reflow: false, exiting }),
             ]
           })

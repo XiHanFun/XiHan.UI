@@ -160,6 +160,26 @@ describe('逐条排开的卡片', () => {
     expect(y).toBe(0)
   })
 
+  it('快速连发撞上上限挤出：还在推入的那张跟着换位一起挪，不原地一跳、不叠到上一张上', async () => {
+    const { service, titled } = setup({ preset: 'card', placement: 'top-start' })
+    for (let i = 1; i <= 5; i++)
+      service.info(`第 ${i} 条`, { duration: 0 })
+    await tick()
+    await wait(400)
+    service.info('第 6 条', { duration: 0 })
+    await tick()
+    await wait(40)
+    const sixth = titled('第 6 条')
+    const before = sixth.getBoundingClientRect().top
+    // 第 7 条挤掉最上面那张：其余几张整体上移一格，第 6 张这时还在推入
+    service.info('第 7 条', { duration: 0 })
+    await nextTick()
+    await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)))
+    const after = sixth.getBoundingClientRect().top
+    const step = titled('第 3 条').getBoundingClientRect().height
+    expect(Math.abs(after - before)).toBeLessThan(step / 4)
+  })
+
   it('居中贴顶的卡片从顶边整高推入', async () => {
     const { service, titled } = setup({ preset: 'card', placement: 'top' })
     service.info('已同步', { duration: 0 })
