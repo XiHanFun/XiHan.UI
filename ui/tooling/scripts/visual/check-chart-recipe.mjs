@@ -10,6 +10,7 @@ const STYLES_DIR = 'packages/design/styles/css'
 const HEADLESS = 'packages/engine/headless/src'
 const RECIPE = 'packages/design/styles/recipes/chart.recipe.json'
 const PATTERNS = 'packages/engine/headless/src/shared/chart/patterns.ts'
+const METRICS = 'packages/engine/headless/src/shared/chart/metrics.ts'
 const IMPORT = `@import '../family/chart.css';`
 
 try {
@@ -55,6 +56,34 @@ try {
   const wanted = recipe.patterns.map(p => `${p.angle}/${p.spacing}/${p.cross}`)
   if (shapes.join(',') !== wanted.join(','))
     problems.push(`配方的 patterns 与 ${PATTERNS} 的纹理形状对不上：配方 ${wanted.join(' ')}；headless ${shapes.join(' ') || '(没读到)'}`)
+
+  // 内核按长度读的度量槽都要登记成长度，calc() / max() 写法才在交给内核前算成像素；
+  // leading 是无单位倍数，按数读，不登记
+  const metrics = await readFile(METRICS, 'utf8')
+  const slots = [...metrics.matchAll(/^\s+(\w+):\s*'(--xh-_chart-metric-[a-z-]+)',$/gm)]
+    .filter(m => m[1] !== 'leading')
+    .map(m => m[2])
+  const registered = new Set(recipe.metrics.lengths)
+  if (slots.length === 0)
+    problems.push(`没从 ${METRICS} 读到 CHART_METRIC_SLOTS`)
+  for (const slot of slots) {
+    if (!registered.has(slot))
+      problems.push(`${METRICS} 按长度读 ${slot}，配方的 metrics.lengths 没有登记它`)
+  }
+  for (const slot of registered) {
+    if (!slots.includes(slot))
+      problems.push(`配方的 metrics.lengths 登记了 ${slot}，${METRICS} 里没有这一项`)
+  }
+  // 登记过的槽不写就读到初始值 0（不是缺省）：凡是写了度量槽的皮肤，每一支都得写
+  for (const file of (await readdir(STYLES_DIR)).filter(name => name.endsWith('.css')).sort()) {
+    const css = await readFile(join(STYLES_DIR, file), 'utf8')
+    if (!/--xh-_chart-metric-[a-z-]+\s*:/.test(css))
+      continue
+    for (const slot of registered) {
+      if (!new RegExp(`${slot}\\s*:`).test(css))
+        problems.push(`css/${file} 写了图表度量槽却漏了 ${slot}：登记成长度后它读到的是初始值 0`)
+    }
+  }
   if (problems.length) {
     console.error('[check-chart-recipe] ✗ 图表皮肤与家族配方的合同对不上：')
     problems.forEach(problem => console.error(`  ${problem}`))

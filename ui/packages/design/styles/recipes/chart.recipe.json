@@ -1,5 +1,5 @@
 {
-  "$description": "Chart 图表家族配方：标题、视口与绘图区、在途、图例、提示框、色标、焦点环、引导线、空态与加载态，以及它们的强制色与打印分支只有这一份生成真源。各图表在这些部件上投影 data-xh-chart-part，并在对应部件上把自己的组件覆盖槽接进 contract 里的私有槽；色槽、数据标记与标注写在各自的皮肤里。patterns 是与色槽一一对应的 8 种纹理：angle 与 spacing（数据点直径的倍数）、cross 与 headless 的 <pattern> 几何一致，dash 是折线在纹理模式下的线型（线宽的倍数）。sequential 是按值着色的顺序色阶：三个锚点缺省取令牌；根上写了 data-palette 时换到基础色板里同名色相，两端按承载面与正文色兑出，亮暗主题自动翻转。",
+  "$description": "Chart 图表家族配方：标题、视口与绘图区、在途、图例、提示框、色标、焦点环、引导线、空态与加载态，以及它们的强制色与打印分支只有这一份生成真源。各图表在这些部件上投影 data-xh-chart-part，并在对应部件上把自己的组件覆盖槽接进 contract 里的私有槽；色槽、数据标记与标注写在各自的皮肤里。patterns 是与色槽一一对应的 8 种纹理：angle 与 spacing（数据点直径的倍数）、cross 与 headless 的 <pattern> 几何一致，dash 是折线在纹理模式下的线型（线宽的倍数）。metrics 是各图表皮肤在根上投影、内核从计算样式读走的长度度量槽，登记成长度后 calc() / max() 写法在交给内核前就算成像素。sequential 是按值着色的顺序色阶：三个锚点缺省取令牌；根上写了 data-palette 时换到基础色板里同名色相，两端按承载面与正文色兑出，亮暗主题自动翻转。",
   "version": 1,
   "contract": {
     "gap": "--xh-_chart-gap",
@@ -16,6 +16,19 @@
     "tooltipSwatchRadius": "--xh-_chart-tooltip-swatch-radius",
     "tooltipSwatchLineRadius": "--xh-_chart-tooltip-swatch-line-radius",
     "emptyGap": "--xh-_chart-empty-gap"
+  },
+  "metrics": {
+    "lengths": [
+      "--xh-_chart-metric-bar-max",
+      "--xh-_chart-metric-gap",
+      "--xh-_chart-metric-line-width",
+      "--xh-_chart-metric-point-size",
+      "--xh-_chart-metric-hit-min",
+      "--xh-_chart-metric-tick-length",
+      "--xh-_chart-metric-label-gap",
+      "--xh-_chart-metric-radius",
+      "--xh-_chart-metric-font-size"
+    ]
   },
   "layout": {
     "fontSize": "var(--xh-text-body-size)"

@@ -2122,6 +2122,63 @@
 
 /* 转圈与淡入关键帧由 motion.css 提供：引入本配方的图表皮肤同时 @import 它；家族文件之间不互相引入，
    全量入口里每份家族只内联一次。 */
+
+/* 几何度量登记成长度：计算值是算好的像素，内核读到的圆角、间隙与柱厚上限跟着 calc() / max() 写法走。
+   要继承：部件从根上取同一份度量 */
+@property --xh-_chart-metric-bar-max {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --xh-_chart-metric-gap {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --xh-_chart-metric-line-width {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --xh-_chart-metric-point-size {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --xh-_chart-metric-hit-min {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --xh-_chart-metric-tick-length {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --xh-_chart-metric-label-gap {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --xh-_chart-metric-radius {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --xh-_chart-metric-font-size {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
 @layer xihan.components {
   /* 根不画外边、不填底，透出宿主面；需要框时由作者放进 Card。提示框按根的内边距盒绝对定位，参照系就是它；
      它抬的那一层只在根里排序。图随容器铺满：在 flex / grid 里也不按内容收缩成默认的 300px */
@@ -42505,6 +42562,12 @@
     --xh-_chart-metric-gap: var(--xh-chart-gap);
     --xh-_chart-metric-bar-max: var(--xh-sparkline-bar-max, var(--xh-chart-bar-max));
     --xh-_chart-metric-radius: var(--xh-sparkline-bar-radius, var(--xh-shape-inset));
+    /* 迷你图不画轴、标签与命中区，这几项照样写全：度量槽登记成了长度，不写的那项读到的是初始值 0，不是缺省 */
+    --xh-_chart-metric-hit-min: var(--xh-chart-hit-min);
+    --xh-_chart-metric-tick-length: var(--xh-chart-tick-length);
+    --xh-_chart-metric-label-gap: var(--xh-chart-label-gap);
+    --xh-_chart-metric-font-size: var(--xh-text-caption-size);
+    --xh-_chart-metric-leading: var(--xh-leading-tight);
 
     /* 缺省中性：线与柱退到弱化色，只让标记点取品牌色相的色槽 1，读者先看到「现在在哪」 */
     --xh-_sparkline-color: var(--xh-sparkline-color, var(--xh-chart-deemphasis));

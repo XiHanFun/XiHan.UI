@@ -23,6 +23,12 @@
     --xh-_chart-metric-gap: var(--xh-chart-gap);
     --xh-_chart-metric-bar-max: var(--xh-sparkline-bar-max, var(--xh-chart-bar-max));
     --xh-_chart-metric-radius: var(--xh-sparkline-bar-radius, var(--xh-shape-inset));
+    /* 迷你图不画轴、标签与命中区，这几项照样写全：度量槽登记成了长度，不写的那项读到的是初始值 0，不是缺省 */
+    --xh-_chart-metric-hit-min: var(--xh-chart-hit-min);
+    --xh-_chart-metric-tick-length: var(--xh-chart-tick-length);
+    --xh-_chart-metric-label-gap: var(--xh-chart-label-gap);
+    --xh-_chart-metric-font-size: var(--xh-text-caption-size);
+    --xh-_chart-metric-leading: var(--xh-leading-tight);
 
     /* 缺省中性：线与柱退到弱化色，只让标记点取品牌色相的色槽 1，读者先看到「现在在哪」 */
     --xh-_sparkline-color: var(--xh-sparkline-color, var(--xh-chart-deemphasis));
