@@ -1,12 +1,12 @@
+// 不能悬停的设备那一条在 rating-coarse-press.spec.ts：这里断言悬停放大，不能和开关触屏仿真的用例同页
 import { afterEach, describe, expect, it } from 'vitest'
-import { cdp, userEvent } from 'vitest/browser'
+import { userEvent } from 'vitest/browser'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 let host: HTMLElement | null = null
 
-afterEach(async () => {
-  await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: false })
+afterEach(() => {
   host?.remove()
   host = null
 })
@@ -97,19 +97,6 @@ describe('rating 字段标签、星形尺度与按压', () => {
     item.focus()
     expect(item.matches(':focus-visible')).toBe(true)
     expect(getComputedStyle(item).scale).toBe(emphasis())
-  })
-
-  it('不能悬停的设备：点过之后残留的 :hover 不把星停在放大态，按下仍放大', async () => {
-    await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 })
-    const { item } = mount()
-    expect(matchMedia('(hover: hover)').matches).toBe(false)
-    await userEvent.hover(item)
-    expect(item.matches(':hover')).toBe(true)
-    expect(getComputedStyle(item).scale).toBe('none')
-    item.setAttribute('data-pressed', '')
-    expect(getComputedStyle(item).scale).toBe(emphasis())
-    item.removeAttribute('data-pressed')
-    await userEvent.unhover(item)
   })
 
   it('减弱动效：悬停不放大，只留点亮换色', async () => {
