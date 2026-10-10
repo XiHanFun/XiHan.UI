@@ -25001,7 +25001,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2_5"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "date-picker 的 preset-group 部件 gap 覆盖槽。"
@@ -27098,7 +27098,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2_5"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "date-range-picker 的 preset-group 部件 gap 覆盖槽。"
@@ -79683,7 +79683,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2_5"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "time-picker 的 preset-group 部件 gap 覆盖槽。"
@@ -81523,7 +81523,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2_5"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 preset-group 部件 gap 覆盖槽。"

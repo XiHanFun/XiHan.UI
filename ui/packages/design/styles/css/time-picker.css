@@ -456,7 +456,7 @@
     display: flex;
     flex: none;
     flex-direction: column;
-    gap: var(--xh-time-picker-preset-group-gap, var(--xh-space-2_5));
+    gap: var(--xh-time-picker-preset-group-gap, var(--xh-space-1));
     max-block-size: var(--xh-time-picker-preset-group-h, var(--xh-overlay-time-column-h));
     padding-block: var(--xh-time-picker-preset-group-py, var(--xh-space-2_5));
     padding-inline: var(--xh-time-picker-preset-group-px, var(--xh-space-2));
