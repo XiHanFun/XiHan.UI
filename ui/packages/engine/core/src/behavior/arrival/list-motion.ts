@@ -197,8 +197,9 @@ export interface TrackListMotionOptions extends TrackArrivalsOptions {
   reflow?: boolean
   /**
    * 条目外面包着作者节点、宿主删的是外壳时传 true（Web Components 的卡片元素：作者摘掉的是
-   * `<xh-notification-item>`，条目是它里面的部件）：被删节点里面的条目同样放离场替身，替身放在外壳原来的位置。
-   * 缺省不认，整列整块撤掉的集合（级联的一列）不会因此冒出一列替身。
+   * `<xh-notification-item>`，条目是它里面的部件）：被删节点里面的条目同样放离场替身，替身放在外壳原来的位置；
+   * 外壳里的部件升级后才写上 data-scope / data-part，身份写上、这时才匹配上的条目同样算新到。
+   * 缺省不认，整列整块撤掉的集合（级联的一列）不会因此冒出一列替身，首屏内容也不会被当成新到。
    */
   wrapped?: boolean
   /**
@@ -345,8 +346,14 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
           }
         })
       }
-      else if (record.oldValue !== null && !(record.target as Element).hasAttribute('hidden')) {
-        collect(record.target, revealed)
+      else if (record.attributeName === 'hidden') {
+        if (record.oldValue !== null && !(record.target as Element).hasAttribute('hidden'))
+          collect(record.target, revealed)
+      }
+      // 部件身份晚到（只在 wrapped 时盯）：Web Components 的作者节点插进来时还没有 data-scope / data-part，
+      // 升级后才写上，插入那一轮选择器认不出它；身份写上、这时才匹配上的条目算新到
+      else if (wrapped) {
+        collect(record.target, added)
       }
     }
 
@@ -365,15 +372,16 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
     }
     const reflowed = moved.size > 0
 
-    // 同一批里新到的条目跟着离它最近、换了位的那一个一起走（transform 通道）：新条目一插进来就在终点，
+    // 新到的条目跟着离它最近、正在换位途中的那一个一起走（transform 通道）：新条目一插进来就在终点，
     // 它前面那个还在从旧位置往终点滑，不跟着走就会叠在一起——贴底的一列每来一条、贴顶的一列满员挤掉最旧那条时都这样。
+    // 认的是「途中」而不只是这一批换了位的：Web Components 的条目身份晚一轮才写上，认出它时邻居的换位已经起步。
     // 起点取那个条目此刻的整段补偿，两者一路保持原来的间距；translate 通道下新到的条目正播进场关键帧，照旧不补偿
-    if (channel === 'transform' && moved.size > 0) {
+    if (channel === 'transform' && arrived.length > 0) {
       const order = items()
       for (const el of arrived) {
         const at = order.indexOf(el)
         const near = [...order.slice(0, at).reverse(), ...order.slice(at + 1)]
-        const lead = near.find(other => moved.has(other) && other.offsetParent === el.offsetParent)
+        const lead = near.find(other => glides.has(other) && other.offsetParent === el.offsetParent)
         if (!lead)
           continue
         const [x, y] = currentShift(lead, win)
@@ -394,7 +402,9 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
     if (reflowed)
       options.onReflow?.()
   })
-  observer.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden'], attributeOldValue: true })
+  // 包着作者节点的集合另盯部件身份：首屏的条目同样晚一轮写上身份，不包外壳的集合不盯，免得把首屏内容当成新到播进场
+  const watched = wrapped ? ['hidden', 'data-scope', 'data-part'] : ['hidden']
+  observer.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: watched, attributeOldValue: true })
 
   return () => {
     observer.disconnect()
