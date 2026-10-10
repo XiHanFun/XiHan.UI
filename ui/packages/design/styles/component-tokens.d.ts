@@ -1298,8 +1298,6 @@ export type ComponentTokenName
     | '--xh-date-range-picker-column-divider'
     | '--xh-date-range-picker-column-group-gap'
     | '--xh-date-range-picker-column-group-label-fg'
-    | '--xh-date-range-picker-column-group-label-fg-active'
-    | '--xh-date-range-picker-column-group-label-font-weight-active'
     | '--xh-date-range-picker-column-group-label-px'
     | '--xh-date-range-picker-column-group-offset'
     | '--xh-date-range-picker-confirm-trigger-bg'

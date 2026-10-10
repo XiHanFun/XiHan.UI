@@ -93,7 +93,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 - 确认钮写在底栏（`footer`）里：底栏是浮层底部的通栏操作区，落在日历与两组时间列下面独占一行，上沿一道分隔线、四周 8 的内衬；作者另放的说明文字排在行首、取弱化的说明档字，确认钮落在行尾。底栏里只有确认钮时，未开 `showTime` 它随确认钮一并收起，不留空栏。
 - `defaultTime`（如 `['00:00:00', '23:59:59']`）在只点日期时给起止各补上对应时刻；已经挑过时刻的一端换日期时时刻原样留着。快捷选项同样是「日期拼上这一端此刻的时刻」，没有就按 `defaultTime`。
 - 时间列与时间选择器共用一份约束：`hourCycle`、按单位的 `timeStep`、带上下文的 `isTimeUnavailable`（`context.index` 是哪一端、`context.date` 是这一端的日期）；`min` / `max` 可以带时间段，同一天界外的时刻标为不可选。起止落在同一天时，终点列早于起点时刻的格自动不可选；两端按日期时间比先后，终点早于起点即整份标为不合法。
-- `activeIndex` 表示当前编辑哪一端，可受控：从终点那组段位展开（点它或在它上面按 Alt+ArrowDown）为 1，其余为 0；聚焦某一组段位、点某一端的时间格时随之改写，正在编辑的那一组时间列小标题加强调。为 1 且已有起点时日历只改终点——点在起点那一天或之后即落终点、起点不动，点在起点之前的日子从那一天重新开始挑；从触发钮展开照旧是先点起点再点终点。这与 antd 的「从终点输入框继续改」一致，React Aria 的区间日历每次点选都重新开始、没有这一档。
+- `activeIndex` 表示当前编辑哪一端，可受控：从终点那组段位展开（点它或在它上面按 Alt+ArrowDown）为 1，其余为 0；聚焦某一组段位、点某一端的时间格时随之改写；正在编辑的那一组时间列与小标题投影 `data-editing`，缺省皮肤不据此给两组标题分档，起止两组标题同一副样式。为 1 且已有起点时日历只改终点——点在起点那一天或之后即落终点、起点不动，点在起点之前的日子从那一天重新开始挑；从触发钮展开照旧是先点起点再点终点。这与 antd 的「从终点输入框继续改」一致，React Aria 的区间日历每次点选都重新开始、没有这一档。
 
 ### 组合
 
@@ -479,8 +479,6 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `--xh-date-range-picker-column-divider` | `column-group`<br>`preset-group`<br>`time-column` | `border-block-end`<br>`border-block-start`<br>`border-inline-end`<br>`border-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-material-solid-border` | date-range-picker 的 column-group、preset-group、time-column 部件 border-block-end、border-block-start、border-inline-end、border-inline-start 覆盖槽。 |
 | `--xh-date-range-picker-column-group-gap` | `column-group` | `margin-inline-start` | `default` | `--xh-space-0` | date-range-picker 的 column-group 部件 margin-inline-start 覆盖槽。 |
 | `--xh-date-range-picker-column-group-label-fg` | `column-group-label` | `color` | `default` | `--xh-fg-subtle` | date-range-picker 的 column-group-label 部件 color 覆盖槽。 |
-| `--xh-date-range-picker-column-group-label-fg-active` | `column-group-label` | `color` | `editing` | `--xh-fg-default` | date-range-picker 的 column-group-label 部件 color 覆盖槽。 |
-| `--xh-date-range-picker-column-group-label-font-weight-active` | `column-group-label` | `font-weight` | `editing` | `--xh-font-weight-medium` | date-range-picker 的 column-group-label 部件 font-weight 覆盖槽。 |
 | `--xh-date-range-picker-column-group-label-px` | `column-group-label` | `padding-inline` | `default` | `--xh-space-1` | date-range-picker 的 column-group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-date-range-picker-column-group-offset` | `column-group`<br>`column-group-label` | `block-size`<br>`padding-block-start` | `default` | `--xh-control-action-size` | date-range-picker 的 column-group、column-group-label 部件 block-size、padding-block-start 覆盖槽。 |
 | `--xh-date-range-picker-confirm-trigger-bg` | `confirm-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | date-range-picker 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |

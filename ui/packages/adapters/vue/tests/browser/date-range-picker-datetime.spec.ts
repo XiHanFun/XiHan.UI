@@ -199,7 +199,7 @@ describe('日期范围选择器 showTime', () => {
     expect(h.open()).toBe(false)
   })
 
-  it('起止同一天：终点列早于起点时刻的格换成禁用前景，点了不写值；点终点的格即强调终点那组的小标题', async () => {
+  it('起止同一天：终点列早于起点时刻的格换成禁用前景，点了不写值；点终点的格后两组小标题仍是同一副样式', async () => {
     const h = await mount({ defaultValue: ['2026-09-10T09:30', '2026-09-10T18:00'] })
     const blocked = item(1, 'hour', '08')
     const open = item(1, 'hour', '10')
@@ -214,9 +214,13 @@ describe('日期范围选择器 showTime', () => {
     expect(h.value()).toEqual(['2026-09-10T09:30', '2026-09-10T10:00'])
     const endLabel = part('column-group-label', 1)
     const startLabel = part('column-group-label', 0)
+    // 正在编辑哪一端仍投影成状态事实，但皮肤不拿它给两组标题分档：两个并排的标题一深一浅读起来像一个可用、一个不可用，
+    // 与时间范围选择器的两组标题同一副样式
     expect(endLabel.hasAttribute('data-editing')).toBe(true)
-    expect(getComputedStyle(endLabel).color).toBe(tokenColor('--xh-fg-default'))
+    expect(startLabel.hasAttribute('data-editing')).toBe(false)
     expect(getComputedStyle(startLabel).color).toBe(tokenColor('--xh-fg-subtle'))
+    expect(getComputedStyle(endLabel).color).toBe(tokenColor('--xh-fg-subtle'))
+    expect(getComputedStyle(endLabel).fontWeight).toBe(getComputedStyle(startLabel).fontWeight)
   })
 
   it('12 小时制：两组时间列都多出上下午列，排在末位、字按 locale 现译', async () => {

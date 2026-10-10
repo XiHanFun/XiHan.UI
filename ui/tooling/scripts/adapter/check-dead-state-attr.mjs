@@ -90,6 +90,7 @@ const HOOKS = {
   'color-picker:data-channel': '两个滑块挂载点各有自己的部件名（hue-slider / alpha-slider），皮肤按部件名选；data-channel 与滑块 root 上的那份同名，留给作者按通道写样式的钩子',
   'tag-group:data-selected': '选中不换面，只由文字后的对号表达，对号按 hidden 收放；标签根、格子与对号上的 data-selected 留给作者写选中样式的钩子',
   'color-field:data-editing': '正在编辑的视觉就是框里那串还没收下的字本身，收不下才由 data-invalid 描红；这一位留给作者做提示文案一类的钩子',
+  'date-range-picker:data-editing': '起止两组时间列的小标题刻意同一副样式（与时间范围选择器一致），哪一端在改由段位焦点与日历的点选结果表达；这一位留给作者按正在编辑的那一端写强调的钩子',
   'kbd:data-key': '逐键规范化后的 KeyboardEvent.key，供作者与测试定位，不改变统一表面',
   'json-viewer:data-match': '命中的视觉由行里的 mark 片段承担，行面不换；这一位留给作者与测试定位命中行',
   'log:data-bright': '高亮色（90–97）在缺省皮肤里与基础色同一档，由 data-fg 着色；data-bright 留给作者把两组分开着色的钩子',
