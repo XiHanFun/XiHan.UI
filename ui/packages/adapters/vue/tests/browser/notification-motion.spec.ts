@@ -113,6 +113,22 @@ describe('叠成一摞的轻提示', () => {
     expect(animationNames(behind)).not.toContain('xh-notification-stack-out')
   })
 
+  it('自己播完退场的那条被移出队列时不再放替身：只退场一次，不闪回来重播', async () => {
+    const { service, ghosts, titled } = setup({ preset: 'toast' })
+    service.warning('配额即将用尽', { duration: 0 })
+    service.success('已发布', { duration: 0 })
+    await tick()
+    await wait(300)
+    titled('已发布').querySelector<HTMLElement>('[data-part="item-close-trigger"]')!.click()
+    const seen: number[] = []
+    const until = performance.now() + 500
+    while (performance.now() < until) {
+      seen.push(ghosts().length)
+      await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)))
+    }
+    expect(Math.max(...seen)).toBe(0)
+  })
+
   it('满三条再来一条：被挤掉的那条在原处留替身淡出，播完就撤，最新那条照样上到最前', async () => {
     const { service, live, ghosts, titled } = setup({ preset: 'toast' })
     for (let i = 1; i <= 3; i++)
@@ -155,7 +171,7 @@ describe('逐条排开的卡片', () => {
   })
 
   it('退场只淡出，不往回推：空位由换位收拢', async () => {
-    const { service, titled } = setup({ preset: 'card', placement: 'bottom-end' })
+    const { service, ghosts, titled } = setup({ preset: 'card', placement: 'bottom-end' })
     service.info('已同步', { duration: 0 })
     await tick()
     await wait(300)
@@ -164,5 +180,13 @@ describe('逐条排开的卡片', () => {
     await tick()
     expect(card.dataset.state).toBe('dismissing')
     expect(animationNames(card)).toEqual(['xh-fade-out'])
+    // 播完被移出队列时不再放替身重播一遍
+    const seen: number[] = []
+    const until = performance.now() + 500
+    while (performance.now() < until) {
+      seen.push(ghosts().length)
+      await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)))
+    }
+    expect(Math.max(...seen)).toBe(0)
   })
 })
