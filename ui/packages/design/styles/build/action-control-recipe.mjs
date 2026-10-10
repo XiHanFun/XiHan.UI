@@ -330,6 +330,13 @@ export function compileActionControlRecipe(source) {
     `      scale ${source.motion.releaseDuration} ${source.motion.releaseEasing};`,
   ].join('\n'))
 
+  /* 内容放不下时（窄格子里的长文字钮）从起始边排起、只在末端被裁：居中会让溢出往两边同时冒，
+     开头那截被裁掉，读不出是什么。放得下时 safe center 与 center 一样居中。
+     safe 对齐高于浏览器地板（Chrome 115 / Safari 17.6），够不着的引擎整块落空、照旧居中 */
+  const safeAlign = []
+  rule('[data-xh-action-control]', '      justify-content: safe center;', 'supports-safe-align', safeAlign, '    ')
+  chunks.push(`  @supports (justify-content: safe center) {\n${safeAlign.join('\n')}\n  }`)
+
   /* 形态由元素自身的 data-xh-action-variant 选择；四条都发，默认形态也有可读的落点。 */
   for (const variant of VARIANTS)
     rule(`[data-xh-action-control][data-xh-action-variant='${variant}']`, variantDeclarations(source, variant))
