@@ -275,6 +275,12 @@
     animation-delay: calc(var(--xh-motion-duration-reveal) * var(--xh-_chart-reveal-at));
   }
 
+  /* 首次出现在等读者看得见（网格还没进入视口、页面在后台）：填色的关键帧停在起点，填充模式保住空格底色；
+     根上的 data-deferred 一撤，扫描从头开始。比上面那条多几级特指度：它的 animation 简写会把播放状态写回 running */
+  [data-scope='heatmap'][data-part='root'][data-deferred] [data-scope='heatmap'][data-part='cell'][data-drawing] {
+    animation-play-state: paused;
+  }
+
   /* 数据变化后的换色：各格从旧档的颜色过渡到新档。只在连接层标出的这一段过渡，
      主题与语气的换色照常一步到位，不被数据的时长拖慢 */
   [data-scope='heatmap'][data-part='root'][data-animating] [data-scope='heatmap'][data-part='cell'] {

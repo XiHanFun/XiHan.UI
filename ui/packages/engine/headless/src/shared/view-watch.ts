@@ -42,6 +42,14 @@ export function watchPageVisibility(doc: Document, listener: (visible: boolean) 
   }
 }
 
+/**
+ * 动效此刻该不该播：读者看不看得见那个元素。作者关掉了「进入视口才播」（defer 为 false）时一律算看得见；
+ * 否则要视口观察报过它在视口里，页面也不在后台。还没报过（null）算看不见，入场先停着等它报。
+ */
+export function visibleToReader(defer: boolean | undefined, inView: boolean | null, doc: Document | null | undefined): boolean {
+  return defer === false || (inView === true && doc?.visibilityState !== 'hidden')
+}
+
 interface ViewWatch {
   observer: IntersectionObserver
   targets: Map<Element, Set<(inView: boolean) => void>>

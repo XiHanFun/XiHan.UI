@@ -109,3 +109,42 @@ describe('数据晚于尺寸到达仍按首次出现入场', () => {
     expect(Number(getComputedStyle(center).opacity)).toBe(1)
   })
 })
+
+describe('进入视口才播', () => {
+  it('首屏以下的饼图：数据晚到也停在 12 点、中心的淡入停在起点；滚进视口才扫开', async () => {
+    const chart = mount<XhPieChartElement>(`
+      <xh-pie-chart name-field="channel" value-field="visits" labels="none" style="${SLOW}">
+        <figure data-xh-part="root">
+          <figcaption data-xh-part="caption">访问来源</figcaption>
+          <div data-xh-part="viewport">
+            <svg data-xh-part="plot"></svg>
+            <div data-xh-part="center"></div>
+            <div data-xh-part="empty"></div>
+          </div>
+        </figure>
+      </xh-pie-chart>`)
+    // 前面垫一段两倍视口高的空白，图落在首屏以下
+    const spacer = document.createElement('div')
+    spacer.style.blockSize = `${window.innerHeight * 2}px`
+    host!.prepend(spacer)
+    await frames()
+    chart.data = [
+      { channel: '搜索', visits: 40 },
+      { channel: '直接', visits: 30 },
+    ]
+    await frames(8)
+    const root = chart.querySelector<HTMLElement>('[data-part="root"]')!
+    expect(root.hasAttribute('data-deferred')).toBe(true)
+    expect(all(chart, 'slice')).toHaveLength(2)
+    expect(all(chart, 'slice').every(el => el.getBoundingClientRect().width === 0)).toBe(true)
+    const center = all(chart, 'center')[0]!
+    const fade = center.getAnimations().find((a): a is CSSAnimation => a instanceof CSSAnimation)!
+    expect(fade.playState).toBe('paused')
+
+    root.scrollIntoView({ block: 'center' })
+    await expect.poll(() => root.hasAttribute('data-deferred')).toBe(false)
+    expect(fade.playState).toBe('running')
+    await expect.poll(() => Math.max(...all(chart, 'slice').map(el => el.getBoundingClientRect().width))).toBeGreaterThan(0)
+    window.scrollTo(0, 0)
+  })
+})

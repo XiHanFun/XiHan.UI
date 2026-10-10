@@ -57,6 +57,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'red'|'orange'|'amber'|'yellow'|'lime'|'green'|'teal'|'cyan'|'blue'|'indigo'|'purple'|'pink'|'gray'} palette - 顺序色阶的色板：阶段由深入浅取这个色相
  * @attr {boolean} pending - 数据重取中：保留上一帧、整体降低不透明度
  * @attr {boolean} animated - 播放过渡动画，默认开；`animated="false"` 时直接画终态
+ * @attr {boolean} animate-in-view - 进入视口才播入场，默认开：还没露出来时入场停在第一帧，露出第一像素才起跑；`animate-in-view="false"` 时挂载即播
  * @attr {string} locale - 数字与内建文案的语言；未提供时按宿主语言
  * @attr {string} active-key - 激活的阶段（受控）：与别的图联动时是阶段名
  * @fires hidden-series-change - 阶段的显隐变了；detail 为 `{ hiddenSeries: string[] }`
@@ -96,6 +97,7 @@ export class XhFunnelChartElement extends XhElement {
     activeKey: { converter: STRING_CONVERTER, attribute: 'active-key' },
     pending: { converter: BOOLEAN_CONVERTER },
     animated: { converter: BOOLEAN_CONVERTER },
+    animateInView: { converter: BOOLEAN_CONVERTER, attribute: 'animate-in-view' },
     locale: { converter: STRING_CONVERTER },
   }
 
@@ -115,6 +117,7 @@ export class XhFunnelChartElement extends XhElement {
   declare activeKey?: ChartKey | null
   declare pending?: boolean
   declare animated?: boolean
+  declare animateInView?: boolean
   declare locale?: string
 
   private readonly notifyHidden = (details: ChartHiddenSeriesChangeDetails): void => {
@@ -157,6 +160,7 @@ export class XhFunnelChartElement extends XhElement {
       activeKey: this.activeKey,
       pending: this.pending,
       animated: this.animated,
+      animateInView: this.animateInView,
       locale: this.locale,
       translations: this.translations,
       onHiddenSeriesChange: this.notifyHidden,

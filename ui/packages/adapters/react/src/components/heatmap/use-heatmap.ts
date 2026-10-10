@@ -29,10 +29,11 @@ export function useHeatmap(props: HeatmapSchema['props']): HeatmapContext {
     service.refs.set('getRootEl', () => rootRef.current)
     // React 的 concurrent root 可能先把首次 DOM 提交给浏览器，再消费挂载效应里由外部 store
     // 触发的入场状态。先只预置「可能入场」这一事实，让首帧格子直接落在填色起点；
-    // 挂载效应拿到真实 root 后仍由 Headless 按数据、动效偏好与令牌决定是否保留及何时结束。
+    // 挂载效应拿到真实 root 后仍由 Headless 按数据、动效偏好、在不在视口里与令牌决定是否保留及何时起跑、结束。
+    // 进入视口才播（缺省）时预置的是停在起点的那一段：视口观察报回来之前格子不先填起色来。
     // 没有可画数据时 level 全是 0，不会产生 data-drawing；animated=false 则完全不预置。
     if (service.prop('animated') !== false)
-      service.context.set('transition', 'entry')
+      service.context.set('transition', service.prop('animateInView') === false ? 'entry' : 'pending')
   }, [])
   const service = useMachine(heatmapMachine, () => props, { onCreate })
   return { api: connectHeatmap(service, reactNormalize), service, rootRef }

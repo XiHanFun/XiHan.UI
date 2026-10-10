@@ -16,6 +16,7 @@ import {
   syncChartTransition,
   trackChartViewport,
 } from '../shared/chart'
+import { visibleToReader } from '../shared/view-watch'
 import { sparklineModelOf } from './sparkline.logic'
 import { createSparklinePipeline, sparklineEntryScene, sparklineRevealAt } from './sparkline.model'
 
@@ -35,8 +36,10 @@ const TRANSITION: ChartTransitionOptions = {
 /** 把机器的几片状态交给过渡：时长与减弱动效从根上读，根就是 `<svg>`。 */
 function transitionState(params: Params<SparklineSchema>): ChartTransitionState {
   const { context, refs, prop, scope, computed, send } = params
+  const root = refs.get('getRootEl')()
   return {
     animated: prop('animated') !== false,
+    visible: visibleToReader(prop('animateInView'), refs.get('inView'), root?.ownerDocument ?? scope.getDoc()),
     target: computed('scene'),
     numbers: {},
     size: context.get('size'),
@@ -46,7 +49,7 @@ function transitionState(params: Params<SparklineSchema>): ChartTransitionState 
     // 迷你图没有缩放窗口一类的框架
     extent: null,
     extentStep: false,
-    plot: refs.get('getRootEl')(),
+    plot: root,
     win: scope.getWin(),
     shown: refs.get('shown'),
     run: refs.get('transition'),
@@ -71,6 +74,7 @@ export const sparklineMachine = createMachine({
     getRootEl: () => null,
     getViewportEl: () => null,
     alive: false,
+    inView: null,
     transition: null,
     shown: null,
     pipeline: createSparklinePipeline(),
@@ -91,13 +95,15 @@ export const sparklineMachine = createMachine({
       () => prop('variant'),
       () => prop('markers'),
     ], () => action(['reportIssues']))
-    // 目标场景换了（数据、形态、尺寸、度量）就安排过渡；animated 改了也要重新核一遍
-    track([() => computed('scene'), () => prop('animated')], () => action(['syncTransition']))
+    // 目标场景换了（数据、形态、尺寸、度量）就安排过渡；animated 与 animateInView 改了也要重新核一遍
+    track([() => computed('scene'), () => prop('animated'), () => prop('animateInView')], () => action(['syncTransition']))
   },
   on: {
     'RESIZE': { actions: ['setSize'] },
     'METRICS': { actions: ['setMetrics'] },
     'SCENE.FRAME': { actions: ['advanceTransition'] },
+    'VISIBILITY': { actions: ['syncTransition'] },
+    'SCENE.SETTLE': { actions: ['settleTransition'] },
   },
   states: {
     idle: {},
@@ -115,6 +121,8 @@ export const sparklineMachine = createMachine({
           context.set('metrics', e.metrics)
       },
       syncTransition: params => syncChartTransition(transitionState(params), TRANSITION),
+      // 打印前：停着的入场与在跑的过渡都直接落到终态
+      settleTransition: params => syncChartTransition({ ...transitionState(params), animated: false }, TRANSITION),
       advanceTransition: params => advanceChartTransition(transitionState(params)),
       reportIssues: (params) => {
         for (const issue of sparklineModelOf(params).issues)

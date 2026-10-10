@@ -4,7 +4,7 @@ import type { TimestampProps } from '../src/timestamp'
 import { createService } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { watchInView, watchPageVisibility } from '../src/shared/view-watch'
+import { visibleToReader, watchInView, watchPageVisibility } from '../src/shared/view-watch'
 import { timestampMachine } from '../src/timestamp'
 
 class FakeObserver {
@@ -129,5 +129,17 @@ describe('timestampMachine 共用可见性监听', () => {
     vi.advanceTimersByTime(3 * 60_000)
     expect(listeners()).toBe(1)
     for (const runtime of runtimes) runtime.stop()
+  })
+})
+
+describe('visibleToReader', () => {
+  it('作者关掉「进入视口才播」时一律算看得见；否则要视口观察报过在视口里、页面也不在后台', () => {
+    const hidden = { visibilityState: 'hidden' } as Document
+    expect(visibleToReader(false, null, hidden)).toBe(true)
+    // 还没报过算看不见：入场先停着等它报
+    expect(visibleToReader(undefined, null, document)).toBe(false)
+    expect(visibleToReader(true, false, document)).toBe(false)
+    expect(visibleToReader(undefined, true, document)).toBe(true)
+    expect(visibleToReader(undefined, true, hidden)).toBe(false)
   })
 })

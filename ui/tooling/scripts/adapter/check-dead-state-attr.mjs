@@ -103,6 +103,11 @@ const HOOKS = {
   'cascader:data-load-state': '懒分支的标准视觉由 data-loading、data-error 与它那一列里的状态部件承载；完整状态值保留为作者样式钩子',
   'tree-select:data-load-state': '分支的标准视觉分别由 data-loading、data-error、data-empty 与对应状态部件承载；完整状态值保留为作者样式钩子',
   'truncate:data-expandable': '展开入口是文字盒子旁那颗按钮，它的显隐由按钮自己的 hidden 承载；文字盒子上这一位留给作者按可展开写样式的钩子',
+  'funnel-chart:data-deferred': '这种图的入场只有几何补间，没有由样式播的关键帧（描线、逐个出现的标记）可停，等读者看得见时由内核停住时钟即可；data-deferred 保留为作者按「入场还在等」写样式的钩子',
+  'graph-chart:data-deferred': '这种图的入场只有几何补间，没有由样式播的关键帧（描线、逐个出现的标记）可停，等读者看得见时由内核停住时钟即可；data-deferred 保留为作者按「入场还在等」写样式的钩子',
+  'hierarchy-chart:data-deferred': '这种图的入场只有几何补间，没有由样式播的关键帧（描线、逐个出现的标记）可停，等读者看得见时由内核停住时钟即可；data-deferred 保留为作者按「入场还在等」写样式的钩子',
+  'radar-chart:data-deferred': '这种图的入场只有几何补间，没有由样式播的关键帧（描线、逐个出现的标记）可停，等读者看得见时由内核停住时钟即可；data-deferred 保留为作者按「入场还在等」写样式的钩子',
+  'sankey-chart:data-deferred': '这种图的入场只有几何补间，没有由样式播的关键帧（描线、逐个出现的标记）可停，等读者看得见时由内核停住时钟即可；data-deferred 保留为作者按「入场还在等」写样式的钩子',
   'truncate:data-overflowing': '被裁了的视觉由按钮的 hidden 与原生提示的 title 承载；这一位是给作者接自定义提示的钩子',
   'truncate:data-position': '中间省略的视觉由 data-middle-text 在场与否承载（只在真被裁时才写）；档位这一位留给作者按省略方式写样式',
   // 显隐一律由 hidden 承载：收起时留着节点只加 hidden，data-state 是同一件事的同名镜像

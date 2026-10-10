@@ -64,6 +64,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'name-share'|'name-value'|'name'|'share'|'value'} label-content - 扇区标签写什么；自己拼时给 labelContent property 赋函数
  * @attr {boolean} pending - 数据重取中：保留上一帧、整体降低不透明度
  * @attr {boolean} animated - 播放过渡动画，默认开；`animated="false"` 时直接画终态
+ * @attr {boolean} animate-in-view - 进入视口才播入场，默认开：还没露出来时入场停在第一帧，露出第一像素才起跑；`animate-in-view="false"` 时挂载即播
  * @attr {string} locale - 数字与内建文案的语言；未提供时按宿主语言
  * @attr {string} active-key - 激活的类目（受控）：与别的图联动时是扇区名
  * @fires hidden-series-change - 图例切换显隐；detail 为 `{ hiddenSeries: string[] }`
@@ -106,6 +107,7 @@ export class XhPieChartElement extends XhElement {
     activeKey: { converter: STRING_CONVERTER, attribute: 'active-key' },
     pending: { converter: BOOLEAN_CONVERTER },
     animated: { converter: BOOLEAN_CONVERTER },
+    animateInView: { converter: BOOLEAN_CONVERTER, attribute: 'animate-in-view' },
     locale: { converter: STRING_CONVERTER },
   }
 
@@ -126,6 +128,7 @@ export class XhPieChartElement extends XhElement {
   declare activeKey?: ChartKey | null
   declare pending?: boolean
   declare animated?: boolean
+  declare animateInView?: boolean
   declare locale?: string
 
   private readonly notifyHidden = (details: ChartHiddenSeriesChangeDetails): void => {
@@ -169,6 +172,7 @@ export class XhPieChartElement extends XhElement {
       activeKey: this.activeKey,
       pending: this.pending,
       animated: this.animated,
+      animateInView: this.animateInView,
       locale: this.locale,
       translations: this.translations,
       onHiddenSeriesChange: this.notifyHidden,

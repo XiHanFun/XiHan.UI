@@ -60,6 +60,7 @@ const REFERENCE_CONVERTER = {
  * @attr {string} reference - 参考线：一个数（目标、阈值），或 mean / median 按数据算出
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，默认 neutral
  * @attr {boolean} animated - 播放过渡动画，默认开；`animated="false"` 时直接画终态
+ * @attr {boolean} animate-in-view - 进入视口才播入场，默认开：还没露出来时入场停在第一帧，露出第一像素才起跑；`animate-in-view="false"` 时挂载即播
  * @attr {string} locale - 摘要里数字与文案的语言；未提供时按宿主语言
  * @csspart root - `<svg role="img">`，承载形态、语气与状态；图形由元素生成
  */
@@ -85,6 +86,7 @@ export class XhSparklineElement extends XhElement {
     markers: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     animated: { converter: BOOLEAN_CONVERTER },
+    animateInView: { converter: BOOLEAN_CONVERTER, attribute: 'animate-in-view' },
     locale: { converter: STRING_CONVERTER },
   }
 
@@ -100,6 +102,7 @@ export class XhSparklineElement extends XhElement {
   declare markers?: SparklineMarkers
   declare tone?: Tone
   declare animated?: boolean
+  declare animateInView?: boolean
   declare locale?: string
 
   private readonly ctrl = new MachineController<SparklineSchema>(
@@ -122,6 +125,7 @@ export class XhSparklineElement extends XhElement {
       tone: this.tone,
       format: this.format,
       animated: this.animated,
+      animateInView: this.animateInView,
       locale: this.locale,
       translations: this.translations,
     }

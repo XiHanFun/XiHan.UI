@@ -3,10 +3,12 @@
 import type { DiagnosticRecord, Service } from '@xihan-ui/core'
 import type { ArcMark, Mark, TextMark } from '@xihan-ui/viz'
 import type { PieChartApi, PieChartSchema } from '../src/pie-chart'
+import type { InViewRig } from './in-view-rig'
 import { createService, DIAGNOSTIC_CODES, normalizeProps, onDiagnostic } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { connectPieChart, pieChartMachine } from '../src/pie-chart'
+import { installInViewRig } from './in-view-rig'
 
 type Dict = Record<string, any>
 type Props = Partial<PieChartSchema['props']>
@@ -423,5 +425,130 @@ describe('过渡', () => {
     expect(props.role).toBeUndefined()
     vi.advanceTimersByTime(1000)
     expect(ids(rig.api())).not.toContain('华东')
+  })
+})
+
+describe('进入视口才播', () => {
+  const FRAMES: Parameters<typeof vi.useFakeTimers>[0] = { toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'] }
+  let view: InViewRig
+
+  beforeEach(() => {
+    view = installInViewRig()
+  })
+
+  afterEach(() => {
+    view.restore()
+    vi.useRealTimers()
+  })
+
+  const deferred = (api: PieChartApi): unknown => (api.getRootProps() as Dict)['data-deferred']
+
+  it('视口观察还没报、或报了不在视口里：扇区停在 12 点、标记都在场可聚焦，时钟不走；露出来才从第一帧扫开', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig({ ...BASE, animated: true })
+    const target = rig.api().model.scene!.scene
+    expect(view.observedCount()).toBe(1)
+    const held = (): void => {
+      const api = rig.api()
+      expect(deferred(api)).toBe('')
+      expect(slices(api).every(a => a.startAngle === 0 && a.endAngle === 0)).toBe(true)
+      // 标记在场：键盘照样能 Tab 进来
+      expect(slices(api).some(a => (api.getMarkProps(a) as Dict).tabindex === 0)).toBe(true)
+      // 中心与标签照常标上入场，由根上的 data-deferred 把关键帧停在起点
+      expect((api.getCenterProps() as Dict)['data-drawing']).toBe('')
+      expect(api.center.value).toBe('0')
+    }
+    held()
+    view.reportAll(false)
+    vi.advanceTimersByTime(2000)
+    held()
+
+    view.reportAll(true)
+    expect(deferred(rig.api())).toBeUndefined()
+    vi.advanceTimersByTime(80)
+    const last = slices(rig.api()).at(-1)!
+    expect(last.endAngle).toBeGreaterThan(0)
+    expect(last.endAngle).toBeLessThan(Math.PI * 2)
+    vi.advanceTimersByTime(1000)
+    expect(rig.api().scene).toBe(target)
+    expect(rig.api().center.value).toBe('100')
+  })
+
+  it('只播一次：播完滚出视口再回来不重播', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig({ ...BASE, animated: true })
+    view.reportAll(true)
+    vi.advanceTimersByTime(2000)
+    const target = rig.api().model.scene!.scene
+    view.reportAll(false)
+    view.reportAll(true)
+    expect(rig.api().scene).toBe(target)
+    expect(deferred(rig.api())).toBeUndefined()
+  })
+
+  it('看不见时的数据变化直接落到终态，不播更新', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig({ ...BASE, animated: true })
+    view.reportAll(true)
+    vi.advanceTimersByTime(2000)
+    view.reportAll(false)
+    rig.api().toggleSeries('华东')
+    await settle()
+    expect(rig.api().scene).toBe(rig.api().model.scene!.scene)
+    expect(rig.api().center.value).toBe('60')
+  })
+
+  it('等着的时候数据又变了：仍按首次出现，露出来时从第一帧扫开新数据', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig({ ...BASE, animated: true })
+    view.reportAll(false)
+    rig.setProps({ data: DATA.slice(0, 2) })
+    await settle()
+    expect(deferred(rig.api())).toBe('')
+    expect(slices(rig.api())).toHaveLength(2)
+    expect(slices(rig.api()).every(a => a.endAngle === 0)).toBe(true)
+    view.reportAll(true)
+    vi.advanceTimersByTime(80)
+    expect(slices(rig.api()).at(-1)!.endAngle).toBeGreaterThan(0)
+  })
+
+  it('animateInView 为 false：不等视口观察，挂载即播', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig({ ...BASE, animated: true, animateInView: false })
+    expect(deferred(rig.api())).toBeUndefined()
+    vi.advanceTimersByTime(80)
+    expect(slices(rig.api()).at(-1)!.endAngle).toBeGreaterThan(0)
+  })
+
+  it('等着的时候关掉 animateInView：当场起跑', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig({ ...BASE, animated: true })
+    rig.setProps({ animateInView: false })
+    await settle()
+    expect(deferred(rig.api())).toBeUndefined()
+    vi.advanceTimersByTime(80)
+    expect(slices(rig.api()).at(-1)!.endAngle).toBeGreaterThan(0)
+  })
+
+  it('页面在后台：进了视口也先停着，回到前台才起跑', async () => {
+    vi.useFakeTimers(FRAMES)
+    const state = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
+    const rig = await makeRig({ ...BASE, animated: true })
+    view.reportAll(true)
+    vi.advanceTimersByTime(500)
+    expect(deferred(rig.api())).toBe('')
+    state.mockReturnValue('visible')
+    document.dispatchEvent(new Event('visibilitychange'))
+    expect(deferred(rig.api())).toBeUndefined()
+    state.mockRestore()
+  })
+
+  it('打印前：停着的入场直接落到终态，纸上不留空图', async () => {
+    vi.useFakeTimers(FRAMES)
+    const rig = await makeRig({ ...BASE, animated: true })
+    window.dispatchEvent(new Event('beforeprint'))
+    expect(rig.api().scene).toBe(rig.api().model.scene!.scene)
+    expect(deferred(rig.api())).toBeUndefined()
+    expect(rig.api().center.value).toBe('100')
   })
 })
