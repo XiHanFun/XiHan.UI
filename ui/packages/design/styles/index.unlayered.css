@@ -35500,8 +35500,8 @@
   /* 摞的定位面整面铺开且不吃指针，卡片必须自己吃回来：
      悬停按住计时、按钮可点、焦点进出，全指着这一条 */
   pointer-events: auto;
-  /* 换位：一张卡收起或新卡插进来时，列表动效先按旧位置反向补偿，再由这条过渡带回新位置 */
-  transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  /* 换位（一张卡收起、被挤掉或新卡插进来）由列表动效在 transform 上播一段：时长读 move、曲线读 continuous，
+     与进退场关键帧的 translate 叠加，这里不写过渡。叠成一摞时另有自己的过渡清单（见下） */
 }
 
 /* 轻提示：一行排开，行首那一格贴着内容盒的起始角，文本列与两颗钮在行里垂直居中。
