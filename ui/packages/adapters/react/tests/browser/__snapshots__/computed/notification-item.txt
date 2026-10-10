@@ -25,9 +25,9 @@ line-height: 21px
 font-weight: 400
 color: oklch(0.208 0.006 258)
 background-color: oklch(1 0 0)
-transition-property: translate
-transition-duration: 0.2s
-transition-timing-function: cubic-bezier(0.2, 0, 0, 1)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
 animation-name: xh-sheet-in
 animation-duration: 0.2s
 animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1)
