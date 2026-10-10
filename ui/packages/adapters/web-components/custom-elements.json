@@ -22009,12 +22009,6 @@
               "name": "--xh-date-range-picker-column-group-label-fg"
             },
             {
-              "name": "--xh-date-range-picker-column-group-label-fg-active"
-            },
-            {
-              "name": "--xh-date-range-picker-column-group-label-font-weight-active"
-            },
-            {
               "name": "--xh-date-range-picker-column-group-label-px"
             },
             {

@@ -25788,42 +25788,6 @@
       "description": "date-range-picker 的 column-group-label 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-date-range-picker-column-group-label-fg-active",
-      "component": "date-range-picker",
-      "part": [
-        "column-group-label"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "editing"
-      ],
-      "defaultToken": [
-        "--xh-fg-default"
-      ],
-      "visibility": "public",
-      "description": "date-range-picker 的 column-group-label 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-date-range-picker-column-group-label-font-weight-active",
-      "component": "date-range-picker",
-      "part": [
-        "column-group-label"
-      ],
-      "property": [
-        "font-weight"
-      ],
-      "state": [
-        "editing"
-      ],
-      "defaultToken": [
-        "--xh-font-weight-medium"
-      ],
-      "visibility": "public",
-      "description": "date-range-picker 的 column-group-label 部件 font-weight 覆盖槽。"
-    },
-    {
       "name": "--xh-date-range-picker-column-group-label-px",
       "component": "date-range-picker",
       "part": [

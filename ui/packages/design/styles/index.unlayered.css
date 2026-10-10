@@ -28470,7 +28470,8 @@
   margin-inline-start: var(--xh-date-range-picker-column-group-gap, var(--xh-space-0));
 }
 
-/* 组的小标题：辅助文本档、次要前景；正在编辑的那一端换成正文前景与中等字重，看得出日历下一次点选改哪一端 */
+/* 组的小标题：辅助文本档、次要前景，起止两组同一副样式（与时间范围选择器一致）。正在编辑的那一端虽然投影了
+   data-editing，这里不拿它分档：并排的两个标题一深一浅，读起来像一个可用、一个不可用 */
 .xh-scope-date-range-picker[data-part='column-group-label'] {
   position: absolute;
   inset-block-start: 0;
@@ -28486,11 +28487,6 @@
   line-height: var(--xh-leading-normal);
   text-align: center;
   user-select: none;
-}
-
-.xh-scope-date-range-picker[data-part='column-group-label'][data-editing] {
-  color: var(--xh-date-range-picker-column-group-label-fg-active, var(--xh-fg-default));
-  font-weight: var(--xh-date-range-picker-column-group-label-font-weight-active, var(--xh-font-weight-medium));
 }
 
 .xh-scope-date-range-picker[data-part='column-group-label'][hidden] {
@@ -28808,11 +28804,6 @@
   .xh-scope-date-range-picker[data-part='time-item'][data-disabled],
   .xh-scope-date-range-picker[data-part='time-column'][aria-disabled='true'] [data-part='time-item']:where(.xh-scope-date-range-picker) {
     color: GrayText;
-  }
-
-  /* 正在编辑的那一端靠字重与系统前景区分，不靠颜色 */
-  .xh-scope-date-range-picker[data-part='column-group-label'][data-editing] {
-    color: CanvasText;
   }
 }
 
