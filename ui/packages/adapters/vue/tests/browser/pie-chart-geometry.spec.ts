@@ -144,12 +144,18 @@ describe('过渡', () => {
     // 把时长拉长到几秒：量第一帧时过渡一定还在半路，不受机器快慢影响。写在根上随挂载生效，不与起跑抢先后
     const state = mount({ labels: 'none', animated: true, style: '--xh-motion-duration-reveal: 4s' })
     await settle()
-    const early = union(all('slice').map(el => el.getBoundingClientRect()))
+    // 两次读数都换算成相对视口的坐标：满载时两次之间标题与图例可能重排，视口整块挪了位，比的仍是扇区在视口里的落点
+    const relative = (): { left: number, top: number, right: number, bottom: number } => {
+      const box = union(all('slice').map(el => el.getBoundingClientRect()))
+      const viewport = one('viewport').getBoundingClientRect()
+      return { left: box.left - viewport.left, top: box.top - viewport.top, right: box.right - viewport.left, bottom: box.bottom - viewport.top }
+    }
+    const early = relative()
     // 环形中心等整圈扫完再出现：扫开途中是透明的
     expect(Number(getComputedStyle(one('center')).opacity)).toBe(0)
     state.animated = false
     await settle()
-    const final = union(all('slice').map(el => el.getBoundingClientRect()))
+    const final = relative()
     // 扫开的前一小段落在 12 点右侧：宽度远不到整圆，顶边已经贴着整圆的顶
     expect(early.right - early.left).toBeLessThan((final.right - final.left) * 0.6)
     expect(early.left).toBeGreaterThanOrEqual((final.left + final.right) / 2 - 1)
