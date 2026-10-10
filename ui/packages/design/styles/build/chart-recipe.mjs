@@ -113,7 +113,16 @@ function assertPatterns(patterns) {
 }
 
 export function assertChartRecipe(source) {
-  assertExactKeys(source, ['$description', 'version', 'contract', 'layout', 'legend', 'tooltip', 'loading', 'sequential', 'patterns', 'patternMode', 'print', 'forcedColors'], 'root')
+  assertExactKeys(source, ['$description', 'version', 'contract', 'metrics', 'layout', 'legend', 'tooltip', 'loading', 'sequential', 'patterns', 'patternMode', 'print', 'forcedColors'], 'root')
+  assertExactKeys(source.metrics, ['lengths'], 'root.metrics')
+  if (!Array.isArray(source.metrics.lengths) || source.metrics.lengths.length === 0)
+    fail('metrics.lengths 必须是非空数组')
+  for (const name of source.metrics.lengths) {
+    if (!/^--xh-_chart-metric-[a-z-]+$/.test(name))
+      fail(`metrics.lengths 的 ${name} 必须是 --xh-_chart-metric- 开头的私有槽`)
+  }
+  if (new Set(source.metrics.lengths).size !== source.metrics.lengths.length)
+    fail('metrics.lengths 里有重复的槽')
   assertExactKeys(source.sequential, [...SEQUENTIAL_FIELDS, 'palettes'], 'root.sequential')
   for (const field of SEQUENTIAL_FIELDS)
     assertString(source.sequential[field], `root.sequential.${field}`)
@@ -478,7 +487,15 @@ export function compileChartRecipe(source) {
     '   全量入口里每份家族只内联一次。 */',
     '',
   ].join('\n')
-  return applyFileHeader(OUTPUT, `${head}@layer xihan.components {\n${chunks.join('\n\n')}\n}\n`)
+  // 内核从根的计算样式读几何度量：未登记的自定义属性计算值是代入 var() 后的原文，calc() / max() 原样留着，
+  // 内核读不懂就退回缺省（应用把圆角接成 max(2px, calc(var(--radius) / 2)) 时整张图只剩 2px）。
+  // 登记成长度后计算值就是算好的像素；不认 @property 的引擎照旧读原文，与登记前一样
+  const properties = [
+    '/* 几何度量登记成长度：计算值是算好的像素，内核读到的圆角、间隙与柱厚上限跟着 calc() / max() 写法走。',
+    '   要继承：部件从根上取同一份度量 */',
+    source.metrics.lengths.map(name => `@property ${name} {\n  syntax: '<length>';\n  inherits: true;\n  initial-value: 0px;\n}`).join('\n\n'),
+  ].join('\n')
+  return applyFileHeader(OUTPUT, `${head}\n${properties}\n\n@layer xihan.components {\n${chunks.join('\n\n')}\n}\n`)
 }
 
 export async function emitChartRecipe(options = {}) {

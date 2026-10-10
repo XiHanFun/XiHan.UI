@@ -45,6 +45,7 @@ const LENGTH_KEYS: readonly LengthKey[] = ['barMax', 'gap', 'lineWidth', 'pointS
 /**
  * 自定义属性的计算值是代入 var() 之后的原文，单位保持作者写的样子：
  * px 直接取，rem 按根字号、em 按元素字号换算；读不懂的写法（calc、百分比）返回 null，由调用方退回缺省。
+ * 图表家族配方把按长度读的度量槽用 @property 登记成长度，认它的引擎给出的计算值已是算好的 px，calc() / max() 不会落到这一步。
  */
 function toPx(raw: string, rootSize: number, ownSize: number): number | null {
   const hit = /^(-?(?:\d+(?:\.\d+)?|\.\d+))(px|rem|em)?$/.exec(raw.trim())
