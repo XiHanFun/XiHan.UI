@@ -305,12 +305,14 @@ async function copy() {
   gap: var(--xh-space-3);
   min-height: 236px;
   padding: var(--xh-space-8) var(--xh-space-6);
-  background: var(--demo-stage-bg, var(--xh-bg-page));
-}
-/* 主题轴钉住深浅时舞台的底与字改由令牌给，与所选那一档同源 */
-.xh-demo__stage--themed {
+  /* 舞台底只在这一处定：钉住的那一列、盖住标签的翻页钮这类自带实色底的部件经 demo-isolation.css 接这个变量。
+     舞台身上带着所选那一档的 data-theme，令牌在这里按那一档解析，跟随站点与钉住深浅都是同一个值 */
   --demo-stage-bg: var(--xh-bg-page);
 
+  background: var(--demo-stage-bg);
+}
+/* 主题轴钉住深浅时舞台的字改由令牌给，与所选那一档同源 */
+.xh-demo__stage--themed {
   color: var(--xh-fg-default);
 }
 /* 自定义元素的示例整体挂在这一层，摆位与 Vue 那份一致 */
