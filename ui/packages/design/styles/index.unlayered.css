@@ -43947,9 +43947,11 @@
   background: var(--xh-table-bg, var(--xh-bg-subtle));
 }
 
-/* 竖分隔线：列与列之间一道细线，末列不画 */
+/* 竖分隔线：列与列之间一道细线，末列不画。线占的那一截从末端内衬里让出来，格子里放字的宽度与不开竖线时一样：
+   否则 60px 的序号列开了竖线只剩 27.33px，「序号」两个字差不到一个像素就出省略号，关掉竖线又放得下 */
 .xh-scope-table[data-part='root'][data-split] .xh-scope-table[data-part='column-header']:not(:last-child),
 .xh-scope-table[data-part='root'][data-split] .xh-scope-table[data-part='cell']:not(:last-child) {
+  padding-inline-end: calc(var(--xh-table-cell-px, var(--xh-space-4)) - var(--xh-stroke-thin));
   border-inline-end: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));
 }
 

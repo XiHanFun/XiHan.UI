@@ -71583,19 +71583,23 @@
       "component": "table",
       "part": [
         "cell",
-        "column-header"
+        "column-header",
+        "root"
       ],
       "property": [
-        "padding-inline"
+        "padding-inline",
+        "padding-inline-end"
       ],
       "state": [
-        "default"
+        "default",
+        "not(:last-child)",
+        "split"
       ],
       "defaultToken": [
         "--xh-space-4"
       ],
       "visibility": "public",
-      "description": "table 的 cell、column-header 部件 padding-inline 覆盖槽。"
+      "description": "table 的 cell、column-header、root 部件 padding-inline、padding-inline-end 覆盖槽。"
     },
     {
       "name": "--xh-table-cell-py",
