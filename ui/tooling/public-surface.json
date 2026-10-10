@@ -11720,7 +11720,6 @@
     ],
     "cartesian-chart": [
       "activeKey",
-      "animateInView",
       "animated",
       "annotations",
       "brush",
@@ -12408,7 +12407,6 @@
     "funnel-chart": [
       "activeKey",
       "align",
-      "animateInView",
       "animated",
       "conversion",
       "data",
@@ -12431,7 +12429,6 @@
     ],
     "graph-chart": [
       "activeKey",
-      "animateInView",
       "animated",
       "defaultHiddenSeries",
       "defaultView",
@@ -12484,7 +12481,6 @@
       "variant"
     ],
     "heatmap": [
-      "animateInView",
       "animated",
       "columns",
       "continuous",
@@ -12510,7 +12506,6 @@
     ],
     "hierarchy-chart": [
       "activeKey",
-      "animateInView",
       "animated",
       "childrenField",
       "colorBy",
@@ -12954,7 +12949,6 @@
     ],
     "pie-chart": [
       "activeKey",
-      "animateInView",
       "animated",
       "data",
       "defaultHiddenSeries",
@@ -13092,7 +13086,6 @@
     ],
     "radar-chart": [
       "activeKey",
-      "animateInView",
       "animated",
       "area",
       "curve",
@@ -13179,7 +13172,6 @@
     ],
     "sankey-chart": [
       "activeKey",
-      "animateInView",
       "animated",
       "defaultHiddenSeries",
       "format",
@@ -13347,7 +13339,6 @@
       "translations"
     ],
     "sparkline": [
-      "animateInView",
       "animated",
       "band",
       "curve",
@@ -13965,7 +13956,6 @@
     "data-covered",
     "data-current",
     "data-dashed",
-    "data-deferred",
     "data-deletable",
     "data-digits",
     "data-dim",
@@ -19989,7 +19979,6 @@
     "xh-cartesian-chart": {
       "attributes": [
         "active-key",
-        "animate-in-view",
         "animated",
         "brush",
         "default-follow",
@@ -20733,7 +20722,6 @@
       "attributes": [
         "active-key",
         "align",
-        "animate-in-view",
         "animated",
         "conversion",
         "direction",
@@ -20755,7 +20743,6 @@
     "xh-graph-chart": {
       "attributes": [
         "active-key",
-        "animate-in-view",
         "animated",
         "directed",
         "draggable-nodes",
@@ -20809,7 +20796,6 @@
     },
     "xh-heatmap": {
       "attributes": [
-        "animate-in-view",
         "animated",
         "continuous",
         "dir",
@@ -20834,7 +20820,6 @@
     "xh-hierarchy-chart": {
       "attributes": [
         "active-key",
-        "animate-in-view",
         "animated",
         "children-field",
         "color-by",
@@ -21366,7 +21351,6 @@
     "xh-pie-chart": {
       "attributes": [
         "active-key",
-        "animate-in-view",
         "animated",
         "label-content",
         "labels",
@@ -21515,7 +21499,6 @@
     "xh-radar-chart": {
       "attributes": [
         "active-key",
-        "animate-in-view",
         "animated",
         "area",
         "curve",
@@ -21616,7 +21599,6 @@
     "xh-sankey-chart": {
       "attributes": [
         "active-key",
-        "animate-in-view",
         "animated",
         "link-color",
         "locale",
@@ -21799,7 +21781,6 @@
     },
     "xh-sparkline": {
       "attributes": [
-        "animate-in-view",
         "animated",
         "curve",
         "locale",

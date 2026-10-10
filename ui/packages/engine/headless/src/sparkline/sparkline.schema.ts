@@ -41,12 +41,6 @@ export interface SparklineSchema extends MachineSchema {
      * false 时直接画终态。系统开了减弱动效或容器写了 data-motion="reduce" 时几何直接落到终态，只保留淡入淡出。
      */
     animated?: boolean
-    /**
-     * 进入视口才播入场，缺省 true：迷你图还没露出来（或页面在后台）时入场停在第一帧，
-     * 露出第一像素时才起跑，只播一次；看不见时的数据变化直接落到终态。打印前没播的入场直接落到终态。
-     * false 时挂载即播，不管在不在视口里。
-     */
-    animateInView?: boolean
     /** 数字格式与内建文案的语言；未提供时按宿主语言。 */
     locale?: string
     translations?: Partial<SparklineTranslations>
@@ -68,8 +62,6 @@ export interface SparklineSchema extends MachineSchema {
     /** 与根相同：视口量测按「视口」取节点。 */
     getViewportEl: () => Element | null
     alive: boolean
-    /** 根在不在视口里；null 表示交叉观察器还没报过。 */
-    inView: boolean | null
     transition: ChartTransitionRun | null
     shown: ChartShown | null
     /** 管线：按输入引用分段记忆，输入不变整条走缓存。 */
@@ -81,13 +73,9 @@ export interface SparklineSchema extends MachineSchema {
     | { type: 'METRICS', metrics: ChartMetrics }
     /** 过渡的逐帧推进。 */
     | { type: 'SCENE.FRAME' }
-    /** 读者看不看得见变了：进出视口、页面切到后台或回到前台。 */
-    | { type: 'VISIBILITY' }
-    /** 打印前：过渡直接落到终态。 */
-    | { type: 'SCENE.SETTLE' }
   tag: never
   guard: never
-  action: 'setSize' | 'setMetrics' | 'syncTransition' | 'settleTransition' | 'advanceTransition' | 'reportIssues'
+  action: 'setSize' | 'setMetrics' | 'syncTransition' | 'advanceTransition' | 'reportIssues'
   effect: 'trackViewport'
 }
 

@@ -151,8 +151,8 @@ export const cartesianChartMachine = createMachine({
     track([() => prop('data')], () => action(['syncSource', 'followData', 'repick']))
     // 作者把跟随写成 true：窗口一步跳到末端
     track([() => prop('follow')], () => action(['syncFollow']))
-    // 目标场景换了（数据、图例显隐、尺寸、度量）就安排过渡；animated 与 animateInView 改了也要重新核一遍
-    track([() => computed('scene'), () => prop('animated'), () => prop('animateInView'), () => prop('renderer')], () => action(['syncTransition']))
+    // 目标场景换了（数据、图例显隐、尺寸、度量）就安排过渡；animated 改了也要重新核一遍
+    track([() => computed('scene'), () => prop('animated'), () => prop('renderer')], () => action(['syncTransition']))
     // 画布上的数据层：场景、渲染器、刷选与淡出（悬停图例、item 模式的强调）一变就排一次重绘，在宿主提交之后画
     track([
       () => computed('scene'),

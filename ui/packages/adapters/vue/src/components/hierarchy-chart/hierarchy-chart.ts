@@ -194,7 +194,6 @@ export const XhHierarchyChartRoot = defineComponent({
     activeKey: { type: [String, Number, Date, null] as PropType<ChartKey | null> },
     pending: { type: Boolean, default: undefined },
     animated: { type: Boolean, default: undefined },
-    animateInView: { type: Boolean, default: undefined },
     locale: { type: String },
     translations: { type: Object as PropType<Partial<HierarchyChartTranslations>> },
   },

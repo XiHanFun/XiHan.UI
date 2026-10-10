@@ -111,13 +111,6 @@
     animation-delay: calc(var(--xh-motion-duration-reveal) * var(--xh-_chart-reveal-at));
   }
 
-  /* 首次出现在等读者看得见（还没进入视口、页面在后台）：几何停在入场第一帧，描线与标记点一并停在起点，
-     填充模式保住起点的样子；根上的 data-deferred 一撤，两半同时起跑。
-     比上面两条多一级特指度：它们的 animation 简写会把播放状态写回 running */
-  [data-scope='sparkline'][data-part='root'][data-deferred] [data-scope='sparkline'][data-drawing] {
-    animation-play-state: paused;
-  }
-
   /* 减弱动效下折线直接在场，只随过渡淡入。两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
     [data-scope='sparkline'][data-part='line'][data-drawing] {

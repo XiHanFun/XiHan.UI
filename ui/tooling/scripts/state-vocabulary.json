@@ -158,7 +158,6 @@
     "data-countdown": "timer 是倒计时方向（往零走），不写即正计时。",
     "data-current": "导航族的当前项（锚点、面包屑、导航菜单、侧栏链接、轮播指示点、页码、tabs line 页签）。配对 aria-current；tabs 页签发的是 aria-selected，同时投 data-current 供 Collection Item nav 语境画当前页。",
     "data-dashed": "separator 画成虚线，实线段与空白段交替铺。",
-    "data-deferred": "图表的首次出现在等读者看得见（绘图区还没进入视口、页面在后台）：入场停在第一帧、时钟没起，由 data-drawing 起播的关键帧停在起点；进入视口即撤。",
     "data-deletable": "tag-group 的这枚标签摘得掉：摘除钮露面，Delete / Backspace 认它。",
     "data-dim": "log 的这一段 ANSI 文字是暗淡（SGR 2），没指定颜色时换成次要前景。",
     "data-dimmed": "tour 的 Spotlight 正在用全屏阴影压暗目标以外的页面。",

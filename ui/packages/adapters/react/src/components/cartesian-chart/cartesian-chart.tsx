@@ -167,8 +167,6 @@ export interface XhCartesianChartRootProps extends Omit<ComponentPropsWithRef<'f
   pending?: boolean
   /** 播放过渡动画，缺省 true；false 时直接画终态。 */
   animated?: boolean
-  /** 进入视口才播入场，缺省 true：还没露出来时入场停在第一帧，露出第一像素才起跑；false 时挂载即播。 */
-  animateInView?: boolean
   locale?: string
   translations?: Partial<CartesianChartTranslations>
   onHiddenSeriesChange?: CartesianChartProps['onHiddenSeriesChange']
@@ -213,7 +211,6 @@ export function XhCartesianChartRoot({
   activeKey,
   pending,
   animated,
-  animateInView,
   locale,
   translations,
   onHiddenSeriesChange,
@@ -254,7 +251,6 @@ export function XhCartesianChartRoot({
     activeKey,
     pending,
     animated,
-    animateInView,
     locale,
     translations,
     onHiddenSeriesChange,

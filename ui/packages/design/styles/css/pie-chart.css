@@ -149,13 +149,6 @@
     animation-delay: var(--xh-motion-duration-reveal);
   }
 
-  /* 首次出现在等读者看得见（绘图区还没进入视口、页面在后台）：扇区停在 12 点没扫开，外侧标签、引导线与
-     环形中心的淡入一并停在起点，填充模式保住起点的样子；根上的 data-deferred 一撤，两半同时起跑。
-     比上面各条多一级特指度：它们的 animation 简写会把播放状态写回 running */
-  [data-scope='pie-chart'][data-part='root'][data-deferred] [data-scope='pie-chart'][data-drawing] {
-    animation-play-state: paused;
-  }
-
   [data-scope='pie-chart'][data-part='center'] {
     position: absolute;
     inset-block-start: var(--xh-_chart-center-y, 50%);
