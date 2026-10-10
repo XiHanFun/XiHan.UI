@@ -209,6 +209,42 @@ describe('离场', () => {
     expect(writes).toEqual([])
   })
 
+  it('wrapped: true 时删掉包着条目的外壳，里面的条目在外壳原处留替身；缺省不认', async () => {
+    for (const wrapped of [true, false]) {
+      const container = document.createElement('div')
+      document.body.append(container)
+      const shells = [0, 1].map((i) => {
+        const shell = document.createElement('section')
+        const el = item(`wrapped-${i}`)
+        shell.append(el)
+        container.append(shell)
+        place(el, container, i * 40)
+        return shell
+      })
+      stops.push(trackListMotion(container, { item: '[data-part="item"]', wrapped }))
+      const end = stubExitAnimation()
+      shells[0]!.remove()
+      await flush()
+      const ghost = container.querySelector<HTMLElement>('[data-state="closed"]')
+      if (wrapped) {
+        expect(ghost).not.toBeNull()
+        expect(ghost!.nextElementSibling).toBe(shells[1])
+        expect(ghost!.style.top).toBe('0px')
+      }
+      else {
+        expect(ghost).toBeNull()
+      }
+      end()
+      for (let i = 0; i < 5; i++)
+        await flush()
+      stops.forEach(stop => stop())
+      stops = []
+      vi.restoreAllMocks()
+      delete (HTMLElement.prototype as { getAnimations?: unknown }).getAnimations
+      container.remove()
+    }
+  })
+
   it('容器自己被卸下时不放回', async () => {
     const container = list(2)
     track(container)
