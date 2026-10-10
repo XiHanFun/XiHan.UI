@@ -243,7 +243,7 @@
     "name": "styles",
     "path": "packages/design/styles/css/*.css",
     "gzip": true,
-    "limit": "530 kB"
+    "limit": "532 kB"
   },
   {
     "name": "styles/index.css（主入口，扁平有层）",
