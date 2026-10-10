@@ -1,5 +1,5 @@
 // 通知卡片的退场由卡片上真实的退场动画决定：进入 dismissing 后等它播完才收起。
-// 逐条排开的一摞走 xh-sheet-out，叠放的一摞（轻提示预设的缺省）走带层深的 xh-notification-stack-out。
+// 逐条排开的卡片退场只淡出（xh-fade-out），叠放的一摞（轻提示预设的缺省）走带层深的 xh-notification-stack-out。
 import { setMotionOverride } from '@xihan-ui/motion'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createNotificationService } from '../../src'
