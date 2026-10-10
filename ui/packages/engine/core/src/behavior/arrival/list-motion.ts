@@ -189,6 +189,11 @@ export interface TrackListMotionOptions extends TrackArrivalsOptions {
    */
   depart?: boolean
   /**
+   * 留下来的条目换位时补不补偿（缺省补）。条目的位置另有一套测量自己排、自己过渡的集合（通知叠成的一摞：
+   * 层深位移与收拢比例由叠摞测量写进私有槽）传 false：此时只做到达与离场替身，两套位移不会叠在一起打架。
+   */
+  reflow?: boolean
+  /**
    * 换位走哪一路（缺省 translate）：translate 交给皮肤里条目的 translate 过渡；transform 由 glideBy 播一段
    * Web 动画，给 translate 另有用途、过渡清单又归别处的条目用（Tabs 的标签：标签带整体位移占着 translate）。
    */
@@ -200,6 +205,7 @@ export interface TrackListMotionOptions extends TrackArrivalsOptions {
 export function trackListMotion(container: Element, options: TrackListMotionOptions): () => void {
   const { item } = options
   const placeholders = options.depart ?? true
+  const compensate = options.reflow ?? true
   const channel = options.channel ?? 'translate'
   const win = container.ownerDocument.defaultView
   const departing = new WeakSet<Element>()
@@ -322,9 +328,9 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
       .filter(el => el.isConnected && container.contains(el) && !el.closest('[hidden]'))
       .sort(byDocumentOrder))
 
-    // 换位：留下来的已知条目
+    // 换位：留下来的已知条目（位置另有测量负责的集合不补偿）
     let reflowed = false
-    for (const [el, from] of slots) {
+    for (const [el, from] of compensate ? slots : []) {
       if (el.isConnected && !departing.has(el) && container.contains(el))
         reflowed = reflow(el, from) || reflowed
     }

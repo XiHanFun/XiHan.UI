@@ -189,6 +189,26 @@ describe('离场', () => {
     expect(writes).toContain('0px 40px')
   })
 
+  it('reflow: false 时离场替身照放，留下来的条目不做换位补偿', async () => {
+    const container = list(2)
+    stops.push(trackListMotion(container, { item: '[data-part="item"]', reflow: false }))
+    stubExitAnimation()
+    const gone = container.children[0] as HTMLElement
+    const stay = container.children[1] as HTMLElement & { moveTo: (next: number) => void }
+    gone.remove()
+    stay.moveTo(0)
+    const writes: string[] = []
+    const setProperty = stay.style.setProperty.bind(stay.style)
+    vi.spyOn(stay.style, 'setProperty').mockImplementation((name, value, priority) => {
+      if (name === 'translate')
+        writes.push(String(value))
+      setProperty(name, value, priority)
+    })
+    await flush()
+    expect(container.querySelector('[data-state="closed"]')).not.toBeNull()
+    expect(writes).toEqual([])
+  })
+
   it('容器自己被卸下时不放回', async () => {
     const container = list(2)
     track(container)
