@@ -2,7 +2,7 @@
 // 悬停时其余扇区淡出、被指着的扇区不位移，焦点环画在扇区外，半环的中心在弦的上方；入场时整圈从 12 点顺着扫开。
 // jsdom 量不出这些，只在 Chromium 验证。
 import type { App } from 'vue'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick, reactive } from 'vue'
 import { XhPieChartRoot } from '../../src'
@@ -140,15 +140,26 @@ describe('强调与焦点', () => {
 })
 
 describe('过渡', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('入场：整圈从 12 点顺着扫开，外接框还没合成整圆；关掉 animated 直接落到整圈', async () => {
-    // 把时长拉长到几秒：量第一帧时过渡一定还在半路，不受机器快慢影响。写在根上随挂载生效，不与起跑抢先后
+    // 入场按 performance.now() 计时，起跑在视口量测报回来的那一帧末尾，下一帧往往只隔一两毫秒；
+    // 那时每个扇区都还窄过间隙，各自收成中半径上的一个点，几个点按中线角错开，外接框有了宽度、顶边却在圆顶内侧。
+    // 所以不按墙钟取读数：钉住 performance.now，起跑之后写多少帧都停在第 0 帧，再把时钟拨到入场里确定的一刻
+    vi.useFakeTimers({ toFake: ['performance'] })
+    // 时长写在根上随挂载生效：拨过的 100ms 是 4s 入场的 2.5%，扫开四十度上下
     const state = mount({ labels: 'none', animated: true, style: '--xh-motion-duration-reveal: 4s' })
     await settle()
-    // 等扫开真的起步再读：起跑那一帧扇区一点没扫开，路径退化成圆顶内侧的一个点，外接框不在圆上。
-    // 量测或起跑晚一两帧（满载、等视口观察报回来）时 settle 之后正好停在这一帧
-    const box = (): { left: number, top: number, right: number, bottom: number } => union(all('slice').map(el => el.getBoundingClientRect()))
-    for (let i = 0; i < 60 && box().right - box().left <= 0; i++)
+    // 中心带上 data-drawing 就是入场已经起跑、起点时刻已经记下；满载时量测晚到，起跑会晚几帧
+    for (let i = 0; i < 60 && !one('center').hasAttribute('data-drawing'); i++)
       await new Promise(resolve => requestAnimationFrame(resolve))
+    expect(one('center').hasAttribute('data-drawing')).toBe(true)
+    vi.advanceTimersByTime(100)
+    // 等两帧：过渡的逐帧回调至少按拨过的时钟写过一帧；时钟不再走，之后再写几帧也是同一个画面
+    await settle()
+    const box = (): { left: number, top: number, right: number, bottom: number } => union(all('slice').map(el => el.getBoundingClientRect()))
     const early = box()
     // 环形中心等整圈扫完再出现：扫开途中是透明的
     expect(Number(getComputedStyle(one('center')).opacity)).toBe(0)
