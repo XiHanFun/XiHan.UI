@@ -194,6 +194,12 @@ export interface TrackListMotionOptions extends TrackArrivalsOptions {
    */
   reflow?: boolean
   /**
+   * 条目外面包着作者节点、宿主删的是外壳时传 true（Web Components 的卡片元素：作者摘掉的是
+   * `<xh-notification-item>`，条目是它里面的部件）：被删节点里面的条目同样放离场替身，替身放在外壳原来的位置。
+   * 缺省不认，整列整块撤掉的集合（级联的一列）不会因此冒出一列替身。
+   */
+  wrapped?: boolean
+  /**
    * 换位走哪一路（缺省 translate）：translate 交给皮肤里条目的 translate 过渡；transform 由 glideBy 播一段
    * Web 动画，给 translate 另有用途、过渡清单又归别处的条目用（Tabs 的标签：标签带整体位移占着 translate）。
    */
@@ -206,6 +212,7 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
   const { item } = options
   const placeholders = options.depart ?? true
   const compensate = options.reflow ?? true
+  const wrapped = options.wrapped ?? false
   const channel = options.channel ?? 'translate'
   const win = container.ownerDocument.defaultView
   const departing = new WeakSet<Element>()
@@ -313,8 +320,18 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
       if (record.type === 'childList') {
         record.addedNodes.forEach(node => collect(node, added))
         record.removedNodes.forEach((node) => {
-          if (node.nodeType === 1 && !departing.has(node as Element) && (node as Element).matches(item))
-            removed.push({ el: node as HTMLElement, parent: record.target, next: record.nextSibling })
+          if (node.nodeType !== 1 || departing.has(node as Element))
+            return
+          const el = node as HTMLElement
+          if (el.matches(item)) {
+            removed.push({ el, parent: record.target, next: record.nextSibling })
+            return
+          }
+          // 删的是包着条目的外壳：里面的条目替它离场
+          if (wrapped) {
+            for (const inner of el.querySelectorAll<HTMLElement>(item))
+              removed.push({ el: inner, parent: record.target, next: record.nextSibling })
+          }
         })
       }
       else if (record.oldValue !== null && !(record.target as Element).hasAttribute('hidden')) {
