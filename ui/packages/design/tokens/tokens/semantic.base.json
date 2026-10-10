@@ -490,9 +490,9 @@
       "$value": "{radius.md}"
     },
     "overlay": {
-      "$description": "脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Notification。",
+      "$description": "脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Notification。与 surface 同一把尺：使用者只改承载面圆角时浮层跟着走，卡片、对话框、抽屉与弹出层不会各圆各的。",
       "$type": "dimension",
-      "$value": "{radius.md}"
+      "$value": "{shape.surface}"
     },
     "circle": {
       "$description": "正圆：头像、圆形图标按钮、单选指示器。",

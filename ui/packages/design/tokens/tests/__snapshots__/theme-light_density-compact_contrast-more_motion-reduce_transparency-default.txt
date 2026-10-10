@@ -430,7 +430,7 @@
 --xh-shape-circle: 50%
 --xh-shape-control: 2px  ← var(--xh-radius-sm)
 --xh-shape-inset: 2px  ← var(--xh-radius-sm)
---xh-shape-overlay: 4px  ← var(--xh-radius-md)
+--xh-shape-overlay: 4px  ← var(--xh-shape-surface)
 --xh-shape-pill: 9999px  ← var(--xh-radius-full)
 --xh-shape-surface: 4px  ← var(--xh-radius-md)
 --xh-sider-collapsed-w: 4rem

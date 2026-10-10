@@ -60,7 +60,7 @@ function mountSections(): void {
 }
 
 /** 在定位层里放一个探针，按面板所在的主题解出某个令牌。 */
-function resolved(prop: 'color' | 'font-size' | 'font-weight' | 'box-shadow', token: string): string {
+function resolved(prop: 'color' | 'font-size' | 'font-weight' | 'box-shadow' | 'border-top-left-radius', token: string): string {
   const probe = document.createElement('span')
   probe.style.setProperty(prop, `var(${token})`)
   part('positioner').append(probe)
@@ -123,15 +123,35 @@ describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
     expect(getComputedStyle(part('backdrop')).backdropFilter).toContain('blur(12px)')
   })
 
-  it.each(['right', 'left', 'top', 'bottom'] as const)('%s：贴边面四角都不取圆角', async (side) => {
+  type Corner = 'borderTopLeftRadius' | 'borderTopRightRadius' | 'borderBottomLeftRadius' | 'borderBottomRightRadius'
+  it.each([
+    ['right', ['borderTopLeftRadius', 'borderBottomLeftRadius'], ['borderTopRightRadius', 'borderBottomRightRadius']],
+    ['left', ['borderTopRightRadius', 'borderBottomRightRadius'], ['borderTopLeftRadius', 'borderBottomLeftRadius']],
+    ['top', ['borderBottomLeftRadius', 'borderBottomRightRadius'], ['borderTopLeftRadius', 'borderTopRightRadius']],
+    ['bottom', ['borderTopLeftRadius', 'borderTopRightRadius'], ['borderBottomLeftRadius', 'borderBottomRightRadius']],
+  ] as const satisfies ReadonlyArray<readonly [string, readonly Corner[], readonly Corner[]]>)('%s：朝向页面的两个角取浮层圆角，贴住视口的两个角不圆', async (side, inner, edge) => {
     mount(side)
     await settle()
 
     const content = getComputedStyle(part('content'))
-    expect(content.borderTopLeftRadius).toBe('0px')
-    expect(content.borderTopRightRadius).toBe('0px')
-    expect(content.borderBottomLeftRadius).toBe('0px')
-    expect(content.borderBottomRightRadius).toBe('0px')
+    const overlay = resolved('border-top-left-radius', '--xh-shape-overlay')
+    expect(Number.parseFloat(overlay)).toBeGreaterThan(0)
+    for (const corner of inner)
+      expect(content[corner]).toBe(overlay)
+    for (const corner of edge)
+      expect(content[corner]).toBe('0px')
+  })
+
+  it('使用者只改承载面圆角：浮层圆角跟着走，抽屉朝向页面的角一起变', async () => {
+    document.documentElement.style.setProperty('--xh-shape-surface', '12px')
+    try {
+      mount('right')
+      await settle()
+      expect(getComputedStyle(part('content')).borderTopLeftRadius).toBe('12px')
+    }
+    finally {
+      document.documentElement.style.removeProperty('--xh-shape-surface')
+    }
   })
 
   it('三段：头 48px、头尾各一条贴边的 1px 内部分隔线，内衬横 16、正文纵 12、尾纵 16', async () => {

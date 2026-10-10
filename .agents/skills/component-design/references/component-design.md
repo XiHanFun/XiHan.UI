@@ -310,7 +310,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | inset | 2px | 嵌在 control 内的小块：checkbox 系方框、页内列表的候选行（Listbox / Tree 的行）、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item、骨架屏文本条；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
 | control | 2px | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close/clear trigger、kbd、tooltip、rating item、tabs / steps trigger；随文方签 Tag 与状态方签 ToolCall status、Approval result、QuestionFlow result；Alert 提示条；RadioGroup segmented 形态的轨道与段；日期与时间面板的快捷项（24 高的淡底小钮） |
 | surface | 4px | Card、Panel、列表容器、Tabs segment 的轨道、选择卡片（RadioGroup / CheckboxGroup card 档条目） |
-| overlay | 4px | Popover、Menu、Dialog、Notification 卡片预设（Drawer 贴边，不取圆角；Notification 轻提示预设是一行短消息，取 control） |
+| overlay | 4px | Popover、Menu、Dialog、Notification 卡片预设、Drawer 朝向页面的两个角（贴边的两个角不取圆角；Notification 轻提示预设是一行短消息，取 control）。令牌层引用 surface：使用者只改承载面圆角时浮层跟着走，面与浮层不各圆各的 |
 | circle | 50% | 宽高相等的圆形对象：avatar、加了底框的 icon、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle、Citation 来源列表的序号；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页与关闭，走 Action Control `floating` profile）；图表的数据点与端点、关系图节点；日历日视图的 24px 日期格、日期面板的翻页钮与「今天」圆点（月 / 季 / 年格不是一维对象，仍取 control） |
 | pill | 9999px | 仅两类身份：(a) 状态 chip：Badge（Tag、ToolCall status、Approval result、QuestionFlow result 是方签，取 control）；(b) 一维对象：switch 轨道、slider / progress / strength / upload 的 track 与 range、顶部加载条进度段露出的前端（行首贴边方头）、tick、hairline separator、tabs / anchor / navigation-menu 滑动指示条、resize / drag 手柄、scrollbar thumb、sortable 落点线、位置指示点的当前拉长态、图例的折线色标、图表缩放手柄、不贴边的 liquid 一维栏（§8.5）、随文的引用编号（Citation trigger）、日期区间轨道的两端帽 |
 
@@ -325,7 +325,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 内层圆角不得大于外层圆角减去内边距（surface 4px 轨道内 2px 内距，滑块 2px 满足）。
 - 相连控件消除相接侧圆角，不使用负 margin 伪造连接。
 - 贴边铺满的通栏（Alert `banner`）不取圆角：它的边就是页面或容器的边，圆了会在两个角露出底下的页面。
-- 贴边面板（Drawer）同样不取圆角；作者写了 `--xh-drawer-radius` 也只圆朝向页面的那两个角。
+- 贴边面板（Drawer）贴住视口的那两个角不取圆角，朝向页面的那两个角取 overlay 圆角，与别的浮层同一把尺；要另定经 `--xh-drawer-radius`，同样只作用于朝向页面的那两个角。
 - 亮色、暗色和 compact 不改变形状身份。
 - 取 circle / pill 的新部件必须在 check-shape-scale 的身份表登记。
 - 数据标记之间用 2px 表面间隙分隔，不画描边；数据标记的圆角只取 inset 或 circle。
@@ -1324,7 +1324,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 徽标（Badge） | 高 16–20 | 胶囊 |
 | 内容面：Card、列表与表格容器 | — | 圆角 4 |
 | 浮层：Popover、Menu、Dialog、Notification | — | 圆角 4 |
-| 贴边面板：Drawer | 贴着画布一侧铺满 | 朝内一侧不取圆角，贴边一侧随画布外框 |
+| 贴边面板：Drawer | 贴着画布一侧铺满 | 朝内一侧圆角 4，贴边一侧随画布外框 |
 | 字形 | 16 × 16 格 | 线宽 2 |
 
 - `rect` 的 `rx` 只取 2 / 4，或等于短边一半（胶囊）；圆用 `<circle>`。数据标记按 §6.3 取 inset（2，夹到短边一半）。用 `path` 画的圆角（只圆一侧的段、铺满画布的遮罩、贴着面内沿的底）随所贴的面取同一组值。
