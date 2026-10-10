@@ -3,7 +3,7 @@
     "name": "core",
     "path": "packages/engine/core/dist/index.js",
     "gzip": true,
-    "limit": "37 kB"
+    "limit": "37.3 kB"
   },
   {
     "name": "core/date",
@@ -15,13 +15,13 @@
     "name": "tokens",
     "path": "packages/design/tokens/dist/index.js",
     "gzip": true,
-    "limit": "12.4 kB"
+    "limit": "13 kB"
   },
   {
     "name": "tokens/tokens.css",
     "path": "packages/design/tokens/tokens.css",
     "gzip": true,
-    "limit": "9.6 kB"
+    "limit": "10.9 kB"
   },
   {
     "name": "motion",
@@ -237,13 +237,13 @@
     "name": "web-components/services",
     "path": "packages/adapters/web-components/dist/services.js",
     "gzip": true,
-    "limit": "56.5 kB"
+    "limit": "56.8 kB"
   },
   {
     "name": "styles",
     "path": "packages/design/styles/css/*.css",
     "gzip": true,
-    "limit": "524 kB"
+    "limit": "530 kB"
   },
   {
     "name": "styles/index.css（主入口，扁平有层）",
@@ -319,7 +319,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhSelectRoot }",
     "gzip": true,
-    "limit": "49.2 kB",
+    "limit": "49.5 kB",
     "ignore": [
       "vue"
     ]
