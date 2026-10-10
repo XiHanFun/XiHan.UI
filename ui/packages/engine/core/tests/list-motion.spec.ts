@@ -495,6 +495,29 @@ describe('沿 transform 换位', () => {
     expect(calls[0]!.keyframes[0]).toEqual({ transform: 'translate(0px, 40px)' })
   })
 
+  it('channel: transform 时同一批新到的条目跟着前面那个换了位的条目一起走，不叠在它的旧位置上', async () => {
+    const container = list(3)
+    stops.push(trackListMotion(container, { item: '[data-part="item"]', channel: 'transform' }))
+    const last = container.children[2] as HTMLElement & { moveTo: (next: number) => void }
+    stubAnimate(last)
+    // 换位那一下 transform 上叠出的平移由 jsdom 读不出，按 glideBy 的起点钉一个
+    const original = window.getComputedStyle.bind(window)
+    vi.spyOn(window, 'getComputedStyle').mockImplementation((el: Element, pseudo?: string | null) => {
+      const style = original(el, pseudo)
+      if (el !== last)
+        return style
+      return new Proxy(style, { get: (target, key) => (key === 'transform' ? 'matrix(1, 0, 0, 1, 0, 40)' : Reflect.get(target, key)) })
+    })
+    const tail = item('tail')
+    const calls = stubAnimate(tail)
+    ;(container.children[0] as HTMLElement).remove()
+    last.moveTo(40)
+    container.append(tail)
+    place(tail, container, 80)
+    await flush()
+    expect(calls[0]!.keyframes[0]).toEqual({ transform: 'translate(0px, 40px)' })
+  })
+
   it('一批里有条目换了位才回调 onReflow', async () => {
     const container = list(3)
     const onReflow = vi.fn()
