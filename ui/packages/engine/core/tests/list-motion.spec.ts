@@ -169,6 +169,22 @@ describe('离场', () => {
     end()
   })
 
+  it('exiting 认定已经在播自己退场的条目被删时不放替身，其余照放', async () => {
+    const container = list(3)
+    stops.push(trackListMotion(container, { item: '[data-part="item"]', exiting: el => el.dataset.state === 'dismissing' }))
+    const end = stubExitAnimation()
+    const leaving = container.children[0] as HTMLElement
+    const evicted = container.children[1] as HTMLElement
+    leaving.dataset.state = 'dismissing'
+    leaving.remove()
+    evicted.remove()
+    await flush()
+    const ghosts = [...container.querySelectorAll<HTMLElement>('[data-state="closed"]')]
+    expect(ghosts).toHaveLength(1)
+    expect(ghosts[0]!.nextElementSibling?.id).toBe('old-2')
+    end()
+  })
+
   it('没有退场动画时当场移除', async () => {
     const container = list(2)
     track(container)
