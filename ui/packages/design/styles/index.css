@@ -333,6 +333,12 @@
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
+  @supports (justify-content: safe center) {
+    [data-xh-action-control] {
+      justify-content: safe center;
+    }
+  }
+
   [data-xh-action-control][data-xh-action-variant='solid'] {
     --xh-_action-variant-bg-rest: var(--xh-_tone, var(--xh-bg-brand));
     --xh-_action-variant-fg-rest: var(--xh-_tone-on, var(--xh-fg-on-brand));

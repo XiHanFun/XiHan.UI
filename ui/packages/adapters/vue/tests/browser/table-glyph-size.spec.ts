@@ -122,12 +122,15 @@ function describeGlyph(host: HTMLElement, pseudo: '::before' | '::after'): strin
   return `${host.dataset.part}${pseudo} ${style.width}×${style.height} position=${style.position} 盒 ${rect.width}×${rect.height}`
 }
 
-/** 方盒是两轴居中的 flex 容器（家族给的 inline-flex，作为单元格 flex 项被块化成 flex）：唯一的行内字形落在盒中心 */
+/**
+ * 方盒是两轴居中的 flex 容器（家族给的 inline-flex，作为单元格 flex 项被块化成 flex）：唯一的行内字形落在盒中心。
+ * 操作控件一族主轴取 safe center：放得下时与 center 一致，只在内容溢出时改从起始边排
+ */
 function expectCenteredBox(box: HTMLElement): void {
   const style = getComputedStyle(box)
   expect(['flex', 'inline-flex']).toContain(style.display)
   expect(style.alignItems).toBe('center')
-  expect(style.justifyContent).toBe('center')
+  expect(['center', 'safe center']).toContain(style.justifyContent)
 }
 
 describe.each(['comfortable', 'compact'] as const)('表格自绘状态字形按指示符档取尺（%s）', (density) => {
