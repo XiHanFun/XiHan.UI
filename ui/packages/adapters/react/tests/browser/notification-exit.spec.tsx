@@ -1,5 +1,5 @@
 // 通知卡片的退场由卡片上真实的退场动画决定：进入 dismissing 后等它播完才收起。
-// 逐条排开的一摞走 xh-sheet-out，叠放的一摞（轻提示预设的缺省）走带层深的 xh-notification-stack-out。
+// 逐条排开的卡片退场只淡出（xh-fade-out），叠放的一摞（轻提示预设的缺省）走带层深的 xh-notification-stack-out。
 import { setMotionOverride } from '@xihan-ui/motion'
 import { act } from 'react'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -45,11 +45,11 @@ describe('通知卡片的退场', () => {
     await holdsUntilExitFinishes('xh-notification-stack-out')
   })
 
-  it('卡片预设逐条排开：到点后停在 dismissing，直到面板退场动画播完', async () => {
+  it('卡片预设逐条排开：到点后停在 dismissing，直到淡出退场播完', async () => {
     const notify = createNotificationService()
     dispose = () => notify.dispose()
     act(() => void notify.success('已保存', { duration: 80 }))
-    await holdsUntilExitFinishes('xh-sheet-out')
+    await holdsUntilExitFinishes('xh-fade-out')
   })
 
   it('减弱动效下退场只剩 120ms 淡出，照样等它播完', async () => {
