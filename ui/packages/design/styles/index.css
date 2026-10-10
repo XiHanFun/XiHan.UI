@@ -27636,7 +27636,7 @@
     /* 这一条的另一轴由并排的那块给：不写就按内容收，分隔线只画到最后一条选项 */
     align-self: stretch;
     flex-direction: row;
-    gap: var(--xh-date-picker-preset-group-gap, var(--xh-space-2_5));
+    gap: var(--xh-date-picker-preset-group-gap, var(--xh-space-1));
     /* 选项多起来时这一条自己滚，不把整张面板撑大 */
     max-block-size: var(--xh-date-picker-preset-group-h, var(--xh-viewport-h-lg));
     padding-block: var(--xh-date-picker-preset-group-py, var(--xh-space-2_5));
@@ -28523,7 +28523,7 @@
     /* 这一条的另一轴由并排的那块给：不写就按内容收，分隔线只画到最后一条选项 */
     align-self: stretch;
     flex-direction: row;
-    gap: var(--xh-date-range-picker-preset-group-gap, var(--xh-space-2_5));
+    gap: var(--xh-date-range-picker-preset-group-gap, var(--xh-space-1));
     /* 选项多起来时这一条自己滚，不把整张面板撑大 */
     max-block-size: var(--xh-date-range-picker-preset-group-h, var(--xh-viewport-h-lg));
     padding-block: var(--xh-date-range-picker-preset-group-py, var(--xh-space-2_5));
@@ -47407,7 +47407,7 @@
     display: flex;
     flex: none;
     flex-direction: column;
-    gap: var(--xh-time-picker-preset-group-gap, var(--xh-space-2_5));
+    gap: var(--xh-time-picker-preset-group-gap, var(--xh-space-1));
     max-block-size: var(--xh-time-picker-preset-group-h, var(--xh-overlay-time-column-h));
     padding-block: var(--xh-time-picker-preset-group-py, var(--xh-space-2_5));
     padding-inline: var(--xh-time-picker-preset-group-px, var(--xh-space-2));
@@ -48111,7 +48111,7 @@
     display: flex;
     flex: none;
     flex-direction: column;
-    gap: var(--xh-time-range-picker-preset-group-gap, var(--xh-space-2_5));
+    gap: var(--xh-time-range-picker-preset-group-gap, var(--xh-space-1));
     max-block-size: var(--xh-time-range-picker-preset-group-h, var(--xh-overlay-time-column-h));
     padding-block: var(--xh-time-range-picker-preset-group-py, var(--xh-space-2_5));
     padding-inline: var(--xh-time-range-picker-preset-group-px, var(--xh-space-2));

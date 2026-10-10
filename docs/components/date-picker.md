@@ -558,7 +558,7 @@ selectionMode="multiple" 时选中的日期在输入行里排成标签，点标�
 | `--xh-date-picker-preset-fg-disabled` | `preset` | `background-color`<br>`color` | `default`<br>`disabled` | `--xh-fg-disabled` | date-picker 的 preset 部件 background-color、color 覆盖槽。 |
 | `--xh-date-picker-preset-fg-hover` | `preset` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-fg-default` | date-picker 的 preset 部件 color 覆盖槽。 |
 | `--xh-date-picker-preset-font-size` | `preset` | `font-size` | `default` | `--xh-text-caption-size` | date-picker 的 preset 部件 font-size 覆盖槽。 |
-| `--xh-date-picker-preset-group-gap` | `preset-group` | `gap` | `default` | `--xh-space-2_5` | date-picker 的 preset-group 部件 gap 覆盖槽。 |
+| `--xh-date-picker-preset-group-gap` | `preset-group` | `gap` | `default` | `--xh-space-1` | date-picker 的 preset-group 部件 gap 覆盖槽。 |
 | `--xh-date-picker-preset-group-h` | `preset-group` | `max-block-size` | `default` | `--xh-viewport-h-lg` | date-picker 的 preset-group 部件 max-block-size 覆盖槽。 |
 | `--xh-date-picker-preset-group-px` | `preset-group` | `padding-inline` | `default` | `--xh-space-2` | date-picker 的 preset-group 部件 padding-inline 覆盖槽。 |
 | `--xh-date-picker-preset-group-py` | `preset-group` | `padding-block` | `default` | `--xh-space-2_5` | date-picker 的 preset-group 部件 padding-block 覆盖槽。 |

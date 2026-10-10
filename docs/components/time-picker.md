@@ -588,7 +588,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `--xh-time-picker-preset-fg-disabled` | `preset` | `background-color`<br>`color` | `default`<br>`disabled` | `--xh-fg-disabled` | time-picker 的 preset 部件 background-color、color 覆盖槽。 |
 | `--xh-time-picker-preset-fg-hover` | `preset` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-fg-default` | time-picker 的 preset 部件 color 覆盖槽。 |
 | `--xh-time-picker-preset-font-size` | `preset` | `font-size` | `default` | `--xh-text-caption-size` | time-picker 的 preset 部件 font-size 覆盖槽。 |
-| `--xh-time-picker-preset-group-gap` | `preset-group` | `gap` | `default` | `--xh-space-2_5` | time-picker 的 preset-group 部件 gap 覆盖槽。 |
+| `--xh-time-picker-preset-group-gap` | `preset-group` | `gap` | `default` | `--xh-space-1` | time-picker 的 preset-group 部件 gap 覆盖槽。 |
 | `--xh-time-picker-preset-group-h` | `preset-group` | `max-block-size` | `default` | `--xh-overlay-time-column-h` | time-picker 的 preset-group 部件 max-block-size 覆盖槽。 |
 | `--xh-time-picker-preset-group-px` | `preset-group` | `padding-inline` | `default` | `--xh-space-2` | time-picker 的 preset-group 部件 padding-inline 覆盖槽。 |
 | `--xh-time-picker-preset-group-py` | `preset-group` | `padding-block` | `default` | `--xh-space-2_5` | time-picker 的 preset-group 部件 padding-block 覆盖槽。 |
