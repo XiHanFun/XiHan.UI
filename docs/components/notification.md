@@ -38,13 +38,13 @@ placement 决定该堆叠贴视口的哪个角，更换的只是 group 上的 da
 
 ### 上限与清空
 
-max 限制每个位置同时显示几条，超出时移除最旧的；dismissAll 直接清空队列，不播退场动画
+max 限制每个位置同时显示几条，最新的那一条一定留下，超出时移除其余里最旧的；dismissAll 直接清空队列，被移出的卡片由替身在原处淡出
 
 <XhDemo src="notification/04-max" />
 
 ### 手动关闭
 
-create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不播退场动画
+create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不等卡片自己的退场，画面上由替身在原处淡出
 
 <XhDemo src="notification/05-manual-dismiss" />
 
@@ -381,11 +381,11 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 
 ### 动效
 
-动效角色：按压 · 状态 · 指示与换位 · 出现（面板） · 导航 · 数值（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现（面板） · 导航（整幅滑入） · 数值（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-notification-progress-duration`。
 
-关键帧 `xh-notification-stack-in` · `xh-notification-stack-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-countdown` · `xh-sheet-in` · `xh-sheet-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`block-size` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-notification-stack-in` · `xh-notification-stack-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-countdown` · `xh-fade-out` · `xh-sheet-in` · `xh-sheet-out` · `xh-slide-fade-in` · `xh-slide-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`block-size` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

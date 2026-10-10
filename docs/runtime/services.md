@@ -118,7 +118,7 @@ notify.danger("同步失败", { description: "网络中断，稍后自动重试"
 | --- | --- | --- |
 | `create(options)` | `string`（id） | 入队；同 id 已存在则就地改写 |
 | `update(id, options)` | — | 改写正在显示的条目 |
-| `dismiss(id)` / `dismissAll()` | — | 立即移出队列，不播退场动画 |
+| `dismiss(id)` / `dismissAll()` | — | 立即移出队列，不等卡片自己的退场；画面上由替身在原处淡出 |
 | `info` / `success` / `warning` / `danger` | `string`（id） | 语气快捷方法，第一个参数是标题，正文写在 `options.description` |
 | `loading(title, options)` | `string`（id） | 以 `loading` 态弹出一条并返回 id，之后用 `update` 收尾 |
 | `promise(input, options)` | `Promise<T>` | 先弹出 loading，落定后就地改写为成功 / 失败 |

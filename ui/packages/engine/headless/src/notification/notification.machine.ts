@@ -96,8 +96,9 @@ export function visibleNotifications(
   return list.filter(item => !overflow.has(item))
 }
 
-// 逐条排开的那几摞才做到达与换位：叠放的一摞由叠摞测量自己排位，两套位移叠在一起会打架
+// 逐条排开的那几摞做到达、换位与离场替身；叠放的一摞只放离场替身，排位由叠摞测量自己管，两套位移叠在一起会打架
 const ARRIVING_ITEM = '[data-scope="notification"][data-part="group"]:not([data-stacked]) [data-scope="notification"][data-part="item"]'
+const STACKED_ITEM = '[data-scope="notification"][data-part="group"][data-stacked] [data-scope="notification"][data-part="item"]'
 
 export const notificationMachine = createMachine({
   name: 'notification',
@@ -134,20 +135,24 @@ export const notificationMachine = createMachine({
        */
       trackArrivals: ({ refs, flush }) => {
         let disposed = false
-        let stop: (() => void) | undefined
+        let stops: Array<() => void> = []
         flush(() => {
           queueMicrotask(() => {
             const root = refs.get('getRootEl')()
             if (disposed || !root)
               return
-            // 卡片自己带退场、播完才收起：不放离场替身，只做到达与换位——一张卡收起或新卡插进来时，
-            // 其余卡片从旧位置过渡到新位置，不整张跳位
-            stop = trackListMotion(root, { item: ARRIVING_ITEM, initial: 'arrive', depart: false })
+            // 卡片自己带退场、播完收起后才被宿主移出队列：那时它已隐藏、不在排布里，不放替身，其余卡片从旧位置
+            // 过渡到新位置。还在台上就被移出的（超出上限被挤掉、dismiss / dismissAll 直接删）没有自己的退场，
+            // 由离场替身在原处播完退场再撤，整摞不跳。Web Components 删的是包着卡片的元素，外壳里的卡片同样认
+            stops = [
+              trackListMotion(root, { item: ARRIVING_ITEM, initial: 'arrive', wrapped: true }),
+              trackListMotion(root, { item: STACKED_ITEM, initial: 'arrive', wrapped: true, reflow: false }),
+            ]
           })
         })
         return () => {
           disposed = true
-          stop?.()
+          stops.forEach(stop => stop())
         }
       },
       /**
