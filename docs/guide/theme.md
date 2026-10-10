@@ -50,11 +50,11 @@ primitive  ──►  semantic  ──►  组件私有槽
 | `--xh-shape-inset` | 2px | 嵌在控件里的内层：勾选方框、页内列表的候选行、字段内的清空钮、色块 |
 | `--xh-shape-control` | 2px | 控件本体：Button、Input、Select Trigger、Toggle、kbd、tooltip、单选组 segmented 形态的轨道；方签 Tag、状态方签与 Alert 提示条 |
 | `--xh-shape-surface` | 4px | 成面的静态容器：Card、Panel、列表容器、Tabs segment 的轨道、分页的描边方块 |
-| `--xh-shape-overlay` | 4px | 脱离文档流的浮层：Popover、Menu、Dialog、Notification 卡片预设（Drawer 贴边不取圆角，轻提示预设取 control） |
+| `--xh-shape-overlay` | 4px | 脱离文档流的浮层：Popover、Menu、Dialog、Notification 卡片预设、Drawer 朝向页面的两个角（贴边的两个角不取圆角，轻提示预设取 control）；引用 surface，只改承载面圆角时浮层跟着走 |
 | `--xh-shape-circle` | 50% | 正圆：头像、圆形图标按钮、单选指示器 |
 | `--xh-shape-pill` | 9999px | 胶囊：Badge 等状态 chip（Tag 与结果标记是方签，取 control），以及轨道、指示条、手柄、滚动条滑块等一维对象 |
 
-形状令牌引用原始阶梯 `--xh-radius-sm / md / lg`（2 / 4 / 8px）：inset 与 control 取 sm，surface 与 overlay 取 md。普通按钮、字段、卡片与浮层不使用 pill，Tag 与结果标记是方签；锚定浮层里的列表行与 Command、Transfer 的列表行是通栏行，不取圆角；内层圆角不超过外层圆角减去内边距；相连控件消除相接侧圆角。亮色、暗色与紧凑密度不改变形状身份。正方盒取 circle，不用 pill 冒充圆。
+形状令牌引用原始阶梯 `--xh-radius-sm / md / lg`（2 / 4 / 8px）：inset 与 control 取 sm，surface 取 md，overlay 引用 surface。普通按钮、字段、卡片与浮层不使用 pill，Tag 与结果标记是方签；锚定浮层里的列表行与 Command、Transfer 的列表行是通栏行，不取圆角；内层圆角不超过外层圆角减去内边距；相连控件消除相接侧圆角。亮色、暗色与紧凑密度不改变形状身份。正方盒取 circle，不用 pill 冒充圆。
 
 ## 点击触感
 

@@ -2,7 +2,7 @@
   <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
     <path d="M22 24h68M22 36h52" stroke="var(--xh-fg-muted)" stroke-width="4" />
     <path d="M4 0h232a4 4 0 0 1 4 4v152a4 4 0 0 1-4 4h-232a4 4 0 0 1-4-4v-152a4 4 0 0 1 4-4z" fill="var(--xh-bg-overlay)" />
-    <path d="M120 .5h116a3.5 3.5 0 0 1 3.5 3.5v152a3.5 3.5 0 0 1-3.5 3.5h-116z" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <path d="M124 .5h112a3.5 3.5 0 0 1 3.5 3.5v152a3.5 3.5 0 0 1-3.5 3.5h-112a3.5 3.5 0 0 1-3.5-3.5v-152a3.5 3.5 0 0 1 3.5-3.5z" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
     <path d="M139 24h50" stroke="var(--xh-fg-default)" stroke-width="6" />
     <path d="M216 20l8 8m0-8l-8 8" stroke="var(--xh-fg-muted)" stroke-width="2" />
     <path d="M120 44.5h120M120 112.5h120" stroke="var(--xh-border-subtle)" />

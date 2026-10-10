@@ -248,18 +248,18 @@
     max-inline-size: 100%;
   }
 
-  /* 贴边面不取圆角：它的边就是视口（或容器）的边。作者写了 --xh-drawer-radius 时也只圆朝向页面那两个角：
-     贴住视口的那条边圆角是看不见的，圆了反而露出底下的页面 */
+  /* 贴住视口（或容器）的那条边不取圆角：圆了反而露出底下的页面。朝向页面那两个角与别的浮层同一把尺，
+     取 overlay 圆角：使用者把圆角调大时抽屉不会单独方着；要另定经 --xh-drawer-radius */
   [data-scope='drawer'][data-part='content'][data-side='left'] {
     inset-inline-start: 0;
-    border-start-end-radius: var(--xh-drawer-radius, 0);
-    border-end-end-radius: var(--xh-drawer-radius, 0);
+    border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
+    border-end-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
   }
 
   [data-scope='drawer'][data-part='content'][data-side='right'] {
     inset-inline-end: 0;
-    border-start-start-radius: var(--xh-drawer-radius, 0);
-    border-end-start-radius: var(--xh-drawer-radius, 0);
+    border-start-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
+    border-end-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
   }
 
   /* 上下：满宽、定高 */
@@ -272,14 +272,14 @@
 
   [data-scope='drawer'][data-part='content'][data-side='top'] {
     inset-block-start: 0;
-    border-end-start-radius: var(--xh-drawer-radius, 0);
-    border-end-end-radius: var(--xh-drawer-radius, 0);
+    border-end-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
+    border-end-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
   }
 
   [data-scope='drawer'][data-part='content'][data-side='bottom'] {
     inset-block-end: 0;
-    border-start-start-radius: var(--xh-drawer-radius, 0);
-    border-start-end-radius: var(--xh-drawer-radius, 0);
+    border-start-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
+    border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
   }
 
   /* 滑入/滑出共用整幅滑入关键帧，四条边只在两个方向槽里写起点。位移取整幅位移令牌，

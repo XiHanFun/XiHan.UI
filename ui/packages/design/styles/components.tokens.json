@@ -30921,7 +30921,7 @@
         "side=top"
       ],
       "defaultToken": [
-        "0"
+        "--xh-shape-overlay"
       ],
       "visibility": "public",
       "description": "drawer 的 content 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
