@@ -352,15 +352,33 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
 
     // 到达：新插进来的（换位的已知条目除外）与重新露出来的
     const fresh = [...added].filter(el => !slots.has(el))
-    arrive([...new Set([...fresh, ...revealed])]
+    const arrived = [...new Set([...fresh, ...revealed])]
       .filter(el => el.isConnected && container.contains(el) && !el.closest('[hidden]'))
-      .sort(byDocumentOrder))
+      .sort(byDocumentOrder)
+    arrive(arrived)
 
     // 换位：留下来的已知条目（位置另有测量负责的集合不补偿）
-    let reflowed = false
+    const moved = new Set<HTMLElement>()
     for (const [el, from] of compensate ? slots : []) {
-      if (el.isConnected && !departing.has(el) && container.contains(el))
-        reflowed = reflow(el, from) || reflowed
+      if (el.isConnected && !departing.has(el) && container.contains(el) && reflow(el, from))
+        moved.add(el)
+    }
+    const reflowed = moved.size > 0
+
+    // 同一批里新到的条目跟着离它最近、换了位的那一个一起走（transform 通道）：新条目一插进来就在终点，
+    // 它前面那个还在从旧位置往终点滑，不跟着走就会叠在一起——贴底的一列每来一条、贴顶的一列满员挤掉最旧那条时都这样。
+    // 起点取那个条目此刻的整段补偿，两者一路保持原来的间距；translate 通道下新到的条目正播进场关键帧，照旧不补偿
+    if (channel === 'transform' && moved.size > 0) {
+      const order = items()
+      for (const el of arrived) {
+        const at = order.indexOf(el)
+        const near = [...order.slice(0, at).reverse(), ...order.slice(at + 1)]
+        const lead = near.find(other => moved.has(other) && other.offsetParent === el.offsetParent)
+        if (!lead)
+          continue
+        const [x, y] = currentShift(lead, win)
+        glideBy(el, x, y)
+      }
     }
 
     // 离场：回调时已不在文档里的已知条目；同一批里被挪了位置的还在文档里，算换位
