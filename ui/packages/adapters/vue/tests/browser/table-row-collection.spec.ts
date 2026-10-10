@@ -143,3 +143,40 @@ describe('表体行的 Collection Item 语境', () => {
     expect(getComputedStyle(a).backgroundColor).toBe(resolve('--xh-bg-brand-subtle-hover'))
   })
 })
+
+/** 把任意写法的颜色换成 sRGB 三分量与透明度：在一块 1×1 画布上画一次再读回。 */
+function rgba(color: string): [number, number, number, number] {
+  const ctx = Object.assign(document.createElement('canvas'), { width: 1, height: 1 }).getContext('2d')!
+  ctx.clearRect(0, 0, 1, 1)
+  ctx.fillStyle = color
+  ctx.fillRect(0, 0, 1, 1)
+  const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data
+  return [r!, g!, b!, a!]
+}
+
+/** 按相对亮度的系数加权，只用来比深浅，不是严格的 WCAG 亮度。 */
+function lightness(color: string): number {
+  const [r, g, b] = rgba(color)
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+describe('表头', () => {
+  it.each(['light', 'dark'] as const)('%s：表头底是实色，比行悬停的淡底浅一档、仍与承载面分得开', async (theme) => {
+    document.documentElement.dataset.theme = theme
+    try {
+      await mountTable()
+      const header = host!.querySelector<HTMLElement>('[data-scope="table"][data-part="header"]')!
+      const bg = getComputedStyle(header).backgroundColor
+      expect(rgba(bg)[3]).toBe(255)
+      const surface = lightness(resolve('--xh-bg-surface'))
+      const subtle = lightness(resolve('--xh-bg-subtle-opaque'))
+      const own = lightness(bg)
+      // 浅色主题里越浅越亮，深色主题里越浅越暗：都落在承载面与淡底之间
+      expect(Math.abs(own - surface)).toBeGreaterThan(0)
+      expect(Math.abs(own - surface)).toBeLessThan(Math.abs(subtle - surface))
+    }
+    finally {
+      delete document.documentElement.dataset.theme
+    }
+  })
+})

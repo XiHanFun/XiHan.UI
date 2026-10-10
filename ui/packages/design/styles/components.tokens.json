@@ -72160,7 +72160,7 @@
         "frozen"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-opaque"
+        "--xh-_table-header-bg"
       ],
       "visibility": "public",
       "description": "table 的 column-header、header 部件 background 覆盖槽。"
