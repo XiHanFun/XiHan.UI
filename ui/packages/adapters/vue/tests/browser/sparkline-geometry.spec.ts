@@ -172,6 +172,10 @@ describe('过渡', () => {
   it('入场：柱从基线长出，底边不动', async () => {
     mount({ variant: 'bar', animated: true, style: SLOW })
     await settle()
+    // 等柱真的长起来再读：起跑那一帧柱高为 0，外接框不在基线上。
+    // 量测或起跑晚一两帧（满载、等视口观察报回来）时 settle 之后正好停在这一帧
+    for (let i = 0; i < 60 && all('bar').some(el => el.getBoundingClientRect().height <= 0); i++)
+      await new Promise(resolve => requestAnimationFrame(resolve))
     const early = all('bar').map(el => el.getBoundingClientRect())
     app!.unmount()
     host!.remove()
