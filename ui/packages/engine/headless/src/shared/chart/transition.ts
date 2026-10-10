@@ -14,10 +14,6 @@
 // （如环形中心的合计）随过渡从旧值滚到新值。尺寸、度量与字体换了不算变化：在跑的过渡换个终点、
 // 时钟照走，不在跑就直接落到新场景。减弱动效下几何直接到位、数值直接到终值，只留淡入淡出；标记
 // 太多时同样只淡入。时长与曲线从绘图区元素读取，作者对令牌的覆盖与容器上的 data-motion 同时生效。
-//
-// 读者看不见时不播：绘图区还没进入视口（或页面藏在后台）时，首次出现停在入场的第一帧、不起表——
-// 标记都在场（键盘照样能 Tab 进来），由样式播的那一半（描线、逐个出现的标记、中心淡入）由根上的
-// data-deferred 暂停在起点；进入视口的那一刻两半一起起跑。看不见时的数据变化直接落到终态，不空转。
 
 import type { EasingFunction, MotionEaseName } from '@xihan-ui/motion'
 import type { Mark, Scene, TransitionOptions, TransitionPlan } from '@xihan-ui/viz'
@@ -48,11 +44,6 @@ export interface ChartFrame {
   readonly revealAt: ReadonlyMap<string, number>
   /** 各图表交给内核的数此刻的值：首次出现从 0 数上去，之后从旧值滚到新值。 */
   readonly numbers: ChartNumbers
-  /**
-   * 首次出现还在等读者看得见：画面停在入场的第一帧、时钟没起，根上投影 data-deferred，
-   * 样式里由 data-drawing 起播的关键帧一并停在起点。
-   */
-  readonly pending: boolean
 }
 
 /** 各图表交给内核的过渡设定。 */
@@ -89,10 +80,8 @@ export interface ChartTransitionRun {
   hold: number
   /** 把新目标场景里逐个出现的标记换算成时间比例；减弱动效或不逐个出现时为 null。 */
   readonly reveal: ((target: Scene) => ReadonlyMap<string, number>) | null
-  /** 首次出现在等读者看得见：停在第一帧，时钟与帧循环都还没起。 */
-  held: boolean
-  startedAt: number
-  stop: VoidFunction
+  readonly startedAt: number
+  readonly stop: VoidFunction
 }
 
 /** 最近一次交给过渡的目标场景，以及它是在哪一份尺寸、度量、文字度量器与框架下算出来的。 */
@@ -108,11 +97,6 @@ export interface ChartShown {
 /** 过渡要读写的那几片状态。 */
 export interface ChartTransitionState {
   readonly animated: boolean
-  /**
-   * 读者此刻看不看得见绘图区：进了视口且页面没藏在后台，或作者关掉了 animateInView。
-   * 看不见时首次出现停在第一帧等着，数据变化直接落到终态。
-   */
-  readonly visible: boolean
   readonly target: Scene | null
   readonly size: ChartSize | null
   readonly metrics: ChartMetrics
@@ -254,12 +238,8 @@ export function syncChartTransition(state: ChartTransitionState, options: ChartT
     halt(state)
     return
   }
-  if (shown != null && shown.scene === target) {
-    // 目标没换、只是读者看得见了（滚进视口、页面回到前台、关掉了 animateInView）：停着的入场从第一帧起跑
-    if (run?.held && state.visible)
-      release(state, run)
+  if (shown != null && shown.scene === target)
     return
-  }
   state.setShown(next)
   const { plot, win } = state
   if (!plot || typeof win.requestAnimationFrame !== 'function') {
@@ -287,17 +267,11 @@ export function syncChartTransition(state: ChartTransitionState, options: ChartT
     return
   }
 
-  // 正在显示的画面里没有画得出来的数据就是首次出现：数据先到还是后到，入场都是同一段。
-  // 停着的入场还没真的显示过数据，按它起跑前的那一帧认：等着的时候数据又变了，仍是首次出现
-  const displayed = run?.held ? run.base : (state.frame?.scene ?? base)
+  // 正在显示的画面里没有画得出来的数据就是首次出现：数据先到还是后到，入场都是同一段
+  const displayed = state.frame?.scene ?? base
   const entry = displayed == null || !drawsData(displayed)
   // 还没有可画的数据：没有什么可入场的，空态直接显示
   if (entry && !drawsData(target)) {
-    halt(state)
-    return
-  }
-  // 读者看不见时的数据变化直接落到终态：没人看的过渡只是白白占着帧
-  if (!entry && !state.visible) {
     halt(state)
     return
   }
@@ -355,8 +329,6 @@ export function syncChartTransition(state: ChartTransitionState, options: ChartT
   const numbersFrom = reduced
     ? state.numbers
     : entry ? zeros(state.numbers) : (state.frame?.numbers ?? shown?.numbers ?? state.numbers)
-  // 读者看不见的首次出现停在第一帧：不起表、不挂帧循环，等看得见时由 release 起跑
-  const held = !state.visible
   const started: ChartTransitionRun = {
     plan,
     entering,
@@ -368,21 +340,12 @@ export function syncChartTransition(state: ChartTransitionState, options: ChartT
     numbersTo: state.numbers,
     hold,
     reveal,
-    held,
-    startedAt: held ? 0 : frameNow(win),
-    stop: held ? () => {} : frameLoop(win, state.requestFrame),
+    startedAt: frameNow(win),
+    stop: frameLoop(win, state.requestFrame),
   }
   state.setRun(started)
   // 起跑这一帧当场给出：不等下一帧，免得新场景的终态先闪一下
   step(state, started)
-}
-
-/** 停着的入场起跑：时钟从此刻算起，帧循环这时才挂上。 */
-function release(state: ChartTransitionState, run: ChartTransitionRun): void {
-  run.held = false
-  run.startedAt = frameNow(state.win)
-  run.stop = frameLoop(state.win, state.requestFrame)
-  step(state, run)
 }
 
 /** 推进一帧；几何走完后留到样式播完，再停下、显示新场景本身。 */
@@ -392,7 +355,7 @@ export function advanceChartTransition(state: ChartTransitionState): void {
 }
 
 function step(state: ChartTransitionState, run: ChartTransitionRun): void {
-  const elapsed = run.held ? 0 : frameNow(state.win) - run.startedAt
+  const elapsed = frameNow(state.win) - run.startedAt
   if (elapsed >= run.hold) {
     halt(state)
     return
@@ -408,6 +371,5 @@ function step(state: ChartTransitionState, run: ChartTransitionRun): void {
     entry: run.entry,
     revealAt: run.revealAt,
     numbers: settled ? run.numbersTo : interpolateNumbers(run.numbersFrom, run.numbersTo, run.options.easing(t)),
-    pending: run.held,
   })
 }

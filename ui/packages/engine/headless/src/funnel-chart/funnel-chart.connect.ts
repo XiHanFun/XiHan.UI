@@ -144,8 +144,6 @@ export function connectFunnelChart<T extends PropTypes>(
       // 规格不合法时不画：诊断通道报出原因，根上留一个可观察的状态
       'data-state': invalid ? 'error' : undefined,
       'data-loading': dataAttr(prop('pending') === true),
-      // 首次出现在等读者看得见：入场停在第一帧，样式里由 data-drawing 起播的关键帧一并停在起点
-      'data-deferred': dataAttr(frame?.pending === true),
       'aria-busy': prop('pending') === true ? 'true' : undefined,
       // 阶段由深入浅取这个色相；不写时取顺序色阶令牌
       'data-palette': prop('palette'),

@@ -193,12 +193,6 @@ export interface HeatmapSchema extends MachineSchema {
      * 之后的数据变化从旧档的颜色过渡到新档。关闭后直接画终态。
      */
     animated?: boolean
-    /**
-     * 进入视口才播入场，缺省 true：网格还没露出来（或页面在后台）时格子停在空格底色，
-     * 露出第一像素时才按先后填色，只播一次；看不见时的数据变化直接落到终态。打印前没播的入场直接落到终态。
-     * false 时挂载即播，不管在不在视口里。
-     */
-    animateInView?: boolean
     translations?: Partial<HeatmapTranslations>
     /**
      * DOM 焦点落到某一格时通知一次；同一格重复聚焦不重复通知。
@@ -234,11 +228,8 @@ export interface HeatmapSchema extends MachineSchema {
     focusTip: HeatmapTipRect | null
     /** 上一次通知过的详情身份与数值；只用于去重，不对外。 */
     activeKey: string | null
-    /**
-     * 在播的过渡：entry 是首次出现的填色，update 是数据变化后的换色；pending 是首次出现在等读者看得见，
-     * 格子停在填色的起点；没有在播时为 null。
-     */
-    transition: 'entry' | 'update' | 'pending' | null
+    /** 在播的过渡：entry 是首次出现的填色，update 是数据变化后的换色；没有在播时为 null。 */
+    transition: 'entry' | 'update' | null
   }
   computed: Record<string, never>
   refs: {
@@ -248,8 +239,6 @@ export interface HeatmapSchema extends MachineSchema {
     drawn: boolean
     /** 撤掉在播过渡的计时器。 */
     stopTransition: VoidFunction | null
-    /** 根在不在视口里；null 表示交叉观察器还没报过。 */
-    inView: boolean | null
   }
   /** 焦点锚点与悬停都不编码进状态，状态机因此只有一个状态，逻辑全在 context 与 actions。 */
   state: 'idle'
@@ -261,10 +250,6 @@ export interface HeatmapSchema extends MachineSchema {
     | { type: 'DETAIL.DISMISS' }
     | { type: 'FOCUS.SET', cell: HeatmapCellRef | null }
     | { type: 'TRANSITION.END' }
-    /** 读者看不看得见变了：根进出视口、页面切到后台或回到前台。 */
-    | { type: 'VISIBILITY' }
-    /** 打印前：过渡直接落到终态。 */
-    | { type: 'TRANSITION.SETTLE' }
   tag: never
   guard: never
   action:
@@ -275,8 +260,6 @@ export interface HeatmapSchema extends MachineSchema {
     | 'dismissDetail'
     | 'notifyActive'
     | 'syncTransition'
-    | 'revealTransition'
-    | 'settleTransition'
     | 'endTransition'
   effect: 'trackTransition'
 }

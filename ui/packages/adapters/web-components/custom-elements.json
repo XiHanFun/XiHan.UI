@@ -6436,15 +6436,6 @@
             },
             {
               "kind": "field",
-              "name": "animateInView",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "animate-in-view"
-            },
-            {
-              "kind": "field",
               "name": "locale",
               "privacy": "public",
               "type": {
@@ -7190,14 +7181,6 @@
               "description": "播放过渡动画，默认开；`animated=\"false\"` 时直接画终态",
               "name": "animated",
               "fieldName": "animated"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "进入视口才播入场，默认开：还没露出来时入场停在第一帧，露出第一像素才起跑；`animate-in-view=\"false\"` 时挂载即播",
-              "name": "animate-in-view",
-              "fieldName": "animateInView"
             },
             {
               "type": {
@@ -29905,15 +29888,6 @@
             },
             {
               "kind": "field",
-              "name": "animateInView",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "animate-in-view"
-            },
-            {
-              "kind": "field",
               "name": "locale",
               "privacy": "public",
               "type": {
@@ -30392,14 +30366,6 @@
             },
             {
               "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "进入视口才播入场，默认开：还没露出来时入场停在第一帧，露出第一像素才起跑；`animate-in-view=\"false\"` 时挂载即播",
-              "name": "animate-in-view",
-              "fieldName": "animateInView"
-            },
-            {
-              "type": {
                 "text": "string | undefined"
               },
               "description": "数字与内建文案的语言；未提供时按宿主语言",
@@ -30652,15 +30618,6 @@
                 "text": "boolean | undefined"
               },
               "attribute": "animated"
-            },
-            {
-              "kind": "field",
-              "name": "animateInView",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "animate-in-view"
             },
             {
               "kind": "field",
@@ -31175,14 +31132,6 @@
               "description": "播放过渡动画，默认开；`animated=\"false\"` 时直接画终态",
               "name": "animated",
               "fieldName": "animated"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "进入视口才播入场，默认开：还没露出来时入场停在第一帧，露出第一像素才起跑；`animate-in-view=\"false\"` 时挂载即播",
-              "name": "animate-in-view",
-              "fieldName": "animateInView"
             },
             {
               "type": {
@@ -32310,15 +32259,6 @@
             },
             {
               "kind": "field",
-              "name": "animateInView",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "animate-in-view"
-            },
-            {
-              "kind": "field",
               "name": "notifyFocus",
               "privacy": "private",
               "readonly": true
@@ -32577,14 +32517,6 @@
               "description": "播放过渡，默认开；`animated=\"false\"` 时直接画终态",
               "name": "animated",
               "fieldName": "animated"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "进入视口才播入场，默认开：还没露出来时入场停在第一帧，露出第一像素才起跑；`animate-in-view=\"false\"` 时挂载即播",
-              "name": "animate-in-view",
-              "fieldName": "animateInView"
             }
           ],
           "superclass": {
@@ -32938,15 +32870,6 @@
                 "text": "boolean | undefined"
               },
               "attribute": "animated"
-            },
-            {
-              "kind": "field",
-              "name": "animateInView",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "animate-in-view"
             },
             {
               "kind": "field",
@@ -33503,14 +33426,6 @@
               "description": "播放过渡动画，默认开；`animated=\"false\"` 时直接画终态",
               "name": "animated",
               "fieldName": "animated"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "进入视口才播入场，默认开：还没露出来时入场停在第一帧，露出第一像素才起跑；`animate-in-view=\"false\"` 时挂载即播",
-              "name": "animate-in-view",
-              "fieldName": "animateInView"
             },
             {
               "type": {
@@ -47862,15 +47777,6 @@
             },
             {
               "kind": "field",
-              "name": "animateInView",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "animate-in-view"
-            },
-            {
-              "kind": "field",
               "name": "locale",
               "privacy": "public",
               "type": {
@@ -48453,14 +48359,6 @@
               "description": "播放过渡动画，默认开；`animated=\"false\"` 时直接画终态",
               "name": "animated",
               "fieldName": "animated"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "进入视口才播入场，默认开：还没露出来时入场停在第一帧，露出第一像素才起跑；`animate-in-view=\"false\"` 时挂载即播",
-              "name": "animate-in-view",
-              "fieldName": "animateInView"
             },
             {
               "type": {
@@ -52151,15 +52049,6 @@
             },
             {
               "kind": "field",
-              "name": "animateInView",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "animate-in-view"
-            },
-            {
-              "kind": "field",
               "name": "locale",
               "privacy": "public",
               "type": {
@@ -52692,14 +52581,6 @@
               "description": "播放过渡动画，默认开；`animated=\"false\"` 时直接画终态",
               "name": "animated",
               "fieldName": "animated"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "进入视口才播入场，默认开：还没露出来时入场停在第一帧，露出第一像素才起跑；`animate-in-view=\"false\"` 时挂载即播",
-              "name": "animate-in-view",
-              "fieldName": "animateInView"
             },
             {
               "type": {
@@ -54993,15 +54874,6 @@
             },
             {
               "kind": "field",
-              "name": "animateInView",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "animate-in-view"
-            },
-            {
-              "kind": "field",
               "name": "locale",
               "privacy": "public",
               "type": {
@@ -55510,14 +55382,6 @@
               "description": "播放过渡动画，默认开；`animated=\"false\"` 时直接画终态",
               "name": "animated",
               "fieldName": "animated"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "进入视口才播入场，默认开：还没露出来时入场停在第一帧，露出第一像素才起跑；`animate-in-view=\"false\"` 时挂载即播",
-              "name": "animate-in-view",
-              "fieldName": "animateInView"
             },
             {
               "type": {
@@ -60741,15 +60605,6 @@
             },
             {
               "kind": "field",
-              "name": "animateInView",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "animate-in-view"
-            },
-            {
-              "kind": "field",
               "name": "locale",
               "privacy": "public",
               "type": {
@@ -60945,14 +60800,6 @@
               "description": "播放过渡动画，默认开；`animated=\"false\"` 时直接画终态",
               "name": "animated",
               "fieldName": "animated"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "进入视口才播入场，默认开：还没露出来时入场停在第一帧，露出第一像素才起跑；`animate-in-view=\"false\"` 时挂载即播",
-              "name": "animate-in-view",
-              "fieldName": "animateInView"
             },
             {
               "type": {

@@ -7,7 +7,6 @@ import { createService, DIAGNOSTIC_CODES, normalizeProps, onDiagnostic } from '@
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { connectSparkline, defaultSparklineSummary, sparklineMachine } from '../src/sparkline'
-import { installInViewRig } from './in-view-rig'
 
 type Dict = Record<string, any>
 type Props = Partial<SparklineSchema['props']>
@@ -302,25 +301,6 @@ describe('过渡', () => {
     expect((rig.api().getMarkProps(mid) as Dict)['data-drawing']).toBeUndefined()
     vi.advanceTimersByTime(2000)
     expect(lineOf(rig.api()).points[0]!.y).toBeCloseTo(1)
-  })
-
-  it('进入视口才播：还没露出来时柱停在基线、根上 data-deferred，时钟不走；露出来才长出', async () => {
-    const view = installInViewRig()
-    try {
-      vi.useFakeTimers(FRAMES)
-      const rig = await makeRig({ data: [2, 4], variant: 'bar', animated: true })
-      view.reportAll(false)
-      vi.advanceTimersByTime(2000)
-      expect((rig.api().getRootProps() as Dict)['data-deferred']).toBe('')
-      expect((marks(rig.api(), 'bar') as RectMark[]).every(b => b.height === 0)).toBe(true)
-      view.reportAll(true)
-      expect((rig.api().getRootProps() as Dict)['data-deferred']).toBeUndefined()
-      vi.advanceTimersByTime(2000)
-      expect((marks(rig.api(), 'bar') as RectMark[]).map(b => b.height)).toEqual([12, 24])
-    }
-    finally {
-      view.restore()
-    }
   })
 })
 

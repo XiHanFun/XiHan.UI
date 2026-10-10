@@ -103,7 +103,6 @@ layout="preset" 按节点上写的 x / y 摆放，整体等比缩放进绘图区
 - 多张图接到同一个受控的 `activeKey` 上时，关系图按节点的身份与其他图对齐。
 - `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有数据时，空态写 `translations.loadingText` 并转一个圈，取完仍没有节点才写 `emptyText`。
 - 首次出现时节点从圆心长出，连线与名字淡入，数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场；之后的数据变化与图例切换从当前位置插值到新布局。拖动与平移缩放是直接操纵，画面跟手，不播过渡。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡，松开拖动的节点时一次冷却到收敛；系统开了减弱动效或容器写了 `data-motion="reduce"` 时同样不逐帧播放模拟。
-- 入场等读者看得见才播（`animateInView`，缺省开）：绘图区还没进入视口或页面在后台时，入场停在第一帧，露出第一像素时才开始，只播一次，滚出再回来不重播；看不见时的数据变化直接落到终态，打印前没播的入场直接落到终态。`animateInView={false}`（Web Components 写 `animate-in-view="false"`）时挂载即播。
 - 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 不写默认内容时铺开缺省结构（标题、图例、视口与绘图区、空态、提示框），提示框内容可由作用域插槽 / 函数式 children 替换；Web Components 侧作者写外壳（root、caption、legend、viewport 与其中空的 `<svg>` plot，可选 empty 与 tooltip），连线、箭头、节点、图例项与提示框的缺省内容由元素生成进去。
 - Web Components 侧的节点、连线、数值格式与视图（`view` / `defaultView`）只走 JS property，非受控时此刻的视图从 `currentView` 读；布局、根、有向、拖动（`draggable-nodes`）、缩放与 `active-key` 另有同名属性。宿主元素缺省是行内元素，放进 flex / grid 时要给它一个宽度。
 
@@ -179,7 +178,6 @@ layout="preset" 按节点上写的 x / y 摆放，整体等比缩放进绘图区
 | `XhGraphChartRoot` | `activeKey` | `ChartKey \| null` |  | 激活的键（受控）：与别的图联动时是节点的身份。 |
 | `XhGraphChartRoot` | `pending` | `boolean` |  | 数据重取中：保留上一帧、整体降低不透明度。 |
 | `XhGraphChartRoot` | `animated` | `boolean` |  | 播放过渡动画，缺省 true；false 时直接画终态。 |
-| `XhGraphChartRoot` | `animateInView` | `boolean` |  | 进入视口才播入场，缺省 true：还没露出来时入场停在第一帧，露出第一像素才起跑；false 时挂载即播。 |
 | `XhGraphChartRoot` | `locale` | `string` |  |  |
 | `XhGraphChartRoot` | `translations` | `Partial<GraphChartTranslations>` |  |  |
 | `XhGraphChartRoot` | `onHiddenSeriesChange` | `GraphChartProps['onHiddenSeriesChange']` |  |  |
@@ -314,7 +312,6 @@ layout="preset" 按节点上写的 x / y 摆放，整体等比缩放进绘图区
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-deferred` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'error' \| undefined |
 | `root` | `data-xh-chart-part` | 'root' |

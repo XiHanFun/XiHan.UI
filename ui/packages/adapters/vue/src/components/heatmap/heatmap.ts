@@ -93,7 +93,6 @@ export const XhHeatmapRoot = defineComponent({
     palette: { type: String as PropType<HeatmapPalette> },
     size: { type: String as PropType<Size> },
     animated: { type: Boolean, default: undefined },
-    animateInView: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<HeatmapTranslations>> },
   },
   // 只读事件，没有双向绑定：热力图不产生值，只报焦点、详情与按下落在哪一格

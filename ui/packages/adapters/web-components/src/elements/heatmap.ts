@@ -94,7 +94,6 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * @attr {'red'|'orange'|'amber'|'yellow'|'lime'|'green'|'teal'|'cyan'|'blue'|'indigo'|'purple'|'pink'|'gray'} palette - 色板，取基础色板同名色相作色阶满档的颜色；同时提供 tone 时以色板为准
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} animated - 播放过渡，默认开；`animated="false"` 时直接画终态
- * @attr {boolean} animate-in-view - 进入视口才播入场，默认开：还没露出来时入场停在第一帧，露出第一像素才起跑；`animate-in-view="false"` 时挂载即播
  * @fires cell-focus - 焦点落到某一格；detail 为 `{ date, row, column, count, level, polarity, percent }`
  * @fires cell-active - 详情应显示哪一格（悬停或聚焦）；收起时 detail 为 null
  * @fires cell-press - 点按一格，或焦点在格上按 Enter；detail 与 cell-focus 同形
@@ -138,7 +137,6 @@ export class XhHeatmapElement extends XhElement {
     palette: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     animated: { converter: BOOLEAN_CONVERTER },
-    animateInView: { converter: BOOLEAN_CONVERTER, attribute: 'animate-in-view' },
   }
 
   declare value?: HeatmapValue[]
@@ -160,7 +158,6 @@ export class XhHeatmapElement extends XhElement {
   declare palette?: HeatmapPalette
   declare size?: Size
   declare animated?: boolean
-  declare animateInView?: boolean
 
   private readonly notifyFocus = (details: HeatmapCellFocusDetails): void => {
     this.dispatchEvent(new CustomEvent('cell-focus', { detail: details, bubbles: true, composed: true }))
@@ -202,7 +199,6 @@ export class XhHeatmapElement extends XhElement {
       palette: this.palette,
       size: this.size,
       animated: this.animated,
-      animateInView: this.animateInView,
       translations: this.translations,
       onCellFocus: this.notifyFocus,
       onCellActive: this.notifyActive,

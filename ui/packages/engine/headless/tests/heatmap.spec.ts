@@ -7,10 +7,9 @@
 
 import type { Service } from '@xihan-ui/core'
 import type { HeatmapCellFocusDetails, HeatmapSchema } from '../src/heatmap'
-import type { InViewRig } from './in-view-rig'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
 import {
   buildHeatmapGrid,
@@ -39,7 +38,6 @@ import {
   resolveHeatmapTip,
   sameHeatmapTip,
 } from '../src/heatmap'
-import { installInViewRig } from './in-view-rig'
 
 type Props = HeatmapSchema['props']
 
@@ -1504,71 +1502,6 @@ describe('过渡', () => {
     expect(at('甲', '下午')).toBe(0.5)
     expect(at('乙', '夜里')).toBe(1)
     stop()
-  })
-
-  describe('进入视口才播', () => {
-    let view: InViewRig
-    beforeEach(() => {
-      view = installInViewRig()
-    })
-    afterEach(() => view.restore())
-
-    const deferred = (service: Service<HeatmapSchema>): unknown => (apiOf(service).getRootProps() as Record<string, any>)['data-deferred']
-
-    it('还没进视口：格子照常标上填色、按先后排好延迟，根上 data-deferred 把关键帧停在起点；计时器不走，露出来才起跑', async () => {
-      vi.useFakeTimers(TIMERS)
-      const { service, stop } = await rig({ ...RANGE, value: VALUE })
-      expect(view.observedCount()).toBe(1)
-      expect(service.context.get('transition')).toBe('pending')
-      expect(deferred(service)).toBe('')
-      expect(cell(service, '2024-01-02')['data-drawing']).toBe('')
-      expect(revealAt(cell(service, '2024-01-02'))).toBeGreaterThan(0)
-      view.reportAll(false)
-      vi.advanceTimersByTime(5000)
-      expect(service.context.get('transition')).toBe('pending')
-
-      view.reportAll(true)
-      expect(service.context.get('transition')).toBe('entry')
-      expect(deferred(service)).toBeUndefined()
-      expect(cell(service, '2024-01-02')['data-drawing']).toBe('')
-      vi.advanceTimersByTime(5000)
-      expect(service.context.get('transition')).toBeNull()
-      stop()
-    })
-
-    it('在播的填色不受进出视口打扰；之后看不见时的数据变化直接落到终态', async () => {
-      vi.useFakeTimers(TIMERS)
-      const { service, set, stop } = await rig({ ...RANGE, value: VALUE })
-      view.reportAll(true)
-      view.reportAll(false)
-      expect(service.context.get('transition')).toBe('entry')
-      vi.advanceTimersByTime(5000)
-      set({ value: [{ date: '2024-01-03', count: 6 }] })
-      await settle()
-      expect(service.context.get('transition')).toBeNull()
-      expect((apiOf(service).getRootProps() as Record<string, any>)['data-animating']).toBeUndefined()
-      stop()
-    })
-
-    it('animateInView 为 false：不等视口观察，挂载即填色', async () => {
-      vi.useFakeTimers(TIMERS)
-      const { service, stop } = await rig({ ...RANGE, value: VALUE, animateInView: false })
-      expect(service.context.get('transition')).toBe('entry')
-      expect(deferred(service)).toBeUndefined()
-      stop()
-    })
-
-    it('打印前：停着的入场直接落到终态', async () => {
-      vi.useFakeTimers(TIMERS)
-      const { service, stop } = await rig({ ...RANGE, value: VALUE })
-      window.dispatchEvent(new Event('beforeprint'))
-      expect(service.context.get('transition')).toBeNull()
-      expect(cell(service, '2024-01-02')['data-drawing']).toBeUndefined()
-      // 已经算显示过：之后进视口不再补播入场
-      view.reportAll(true)
-      expect(service.context.get('transition')).toBeNull()
-      stop()
-    })
   })
 })
 

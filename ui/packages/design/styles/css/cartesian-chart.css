@@ -500,13 +500,6 @@
     animation-delay: calc(var(--xh-motion-duration-reveal) * var(--xh-_chart-reveal-at));
   }
 
-  /* 首次出现在等读者看得见（绘图区还没进入视口、页面在后台）：几何停在入场第一帧，描线、逐个出现的点与标签、
-     引导线一并停在起点，填充模式保住起点的样子；根上的 data-deferred 一撤，两半同时起跑。
-     比上面各条多一级特指度：它们的 animation 简写会把播放状态写回 running */
-  [data-scope='cartesian-chart'][data-part='root'][data-deferred] [data-scope='cartesian-chart'][data-drawing] {
-    animation-play-state: paused;
-  }
-
   /* 减弱动效下折线直接在场，只随过渡淡入：作者在图上放慢了时长也不描线，与柱的几何直接到位同一条规则。
      两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {

@@ -52,8 +52,8 @@ export const radarChartMachine = createMachine({
       () => prop('nameField'),
       () => prop('indicators'),
     ], () => action(['reportIssues']))
-    // 目标场景换了（数据、图例显隐、尺寸、度量）就安排过渡；animated 与 animateInView 改了也要重新核一遍
-    track([() => computed('scene'), () => prop('animated'), () => prop('animateInView')], () => action(['syncTransition']))
+    // 目标场景换了（数据、图例显隐、尺寸、度量）就安排过渡；animated 改了也要重新核一遍
+    track([() => computed('scene'), () => prop('animated')], () => action(['syncTransition']))
   },
   on: chartBaseTransitions<RadarChartSchema>(),
   states: {
