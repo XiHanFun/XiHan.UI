@@ -188,7 +188,7 @@ export function buildMonthGrid(anchor: string, options: CalendarMonthGridOptions
 
 /** 生成七列表头。取参照日所在那一周逐日格式化，列序与 buildMonthGrid 一致。 */
 export function buildWeekDays(options: CalendarWeekDaysOptions): CalendarWeekDay[] {
-  const { reference, locale = CALENDAR_LOCALE, firstDayOfWeek, weekdayFormat = 'short' } = options
+  const { reference, locale = CALENDAR_LOCALE, firstDayOfWeek, weekdayFormat = 'narrow' } = options
   const start = startOfWeek(PlainDate.from(reference), calendarWeekStart(firstDayOfWeek, locale))
   const shortFormatter = createDateFormatter(locale, { weekday: weekdayFormat })
   const longFormatter = createDateFormatter(locale, { weekday: 'long' })

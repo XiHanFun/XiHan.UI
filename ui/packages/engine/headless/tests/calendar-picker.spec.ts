@@ -658,13 +658,16 @@ describe('connectCalendar 属性输出', () => {
     expect(h.cell('2024-02-15').getAttribute('aria-label')).toBe('Thursday, February 15, 2024')
   })
 
-  it('表头是列头，缩写可见、全称给读屏', () => {
+  it('表头是列头，缩写可见、全称给读屏；缺省取单字缩写，七列在格宽里不挤', () => {
     const h = mount({ defaultFocusedValue: '2024-02-15', locale: 'en-US', timeZone: 'UTC' })
     const [first] = h.weekDayEls()
     expect(first!.getAttribute('role')).toBe('columnheader')
     expect(first!.getAttribute('aria-label')).toBe('Sunday')
     expect(first!.getAttribute('data-value')).toBe('0')
-    expect(first!.textContent).toBe('Sun')
+    expect(first!.textContent).toBe('S')
+    const zh = mount({ defaultFocusedValue: '2024-02-15', locale: 'zh-CN', timeZone: 'UTC' })
+    expect(zh.weekDayEls().map(el => el.textContent)).toEqual(['一', '二', '三', '四', '五', '六', '日'])
+    expect(mount({ defaultFocusedValue: '2024-02-15', locale: 'zh-CN', timeZone: 'UTC', weekdayFormat: 'short' }).weekDayEls()[0]!.textContent).toBe('周一')
   })
 
   it('标题跟着展示月走，翻月即改写', () => {

@@ -46,7 +46,6 @@ function isWeekend(iso: string) {
     :max="max"
     :is-date-unavailable="isWeekend"
     locale="zh-CN"
-    weekday-format="narrow"
     fixed-weeks
     style="max-inline-size: 280px"
   >

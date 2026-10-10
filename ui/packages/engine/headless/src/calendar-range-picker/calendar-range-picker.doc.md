@@ -23,7 +23,7 @@
 - `granularity` 决定周期格的生成方式；周、月、季度和年区间共用同一套 Period 边界判断。
 - `visibleCount` 并排展示连续的月份，翻页时整个视窗一起移动；起止常跨月时建议为 2。多个面板始终联动、一起翻页，不提供解绑（Element Plus 的 `unlink-panels` 那一档）：两张月历各翻各的之后，方向键跨出一张月历时焦点该落到哪一张、另一张跟不跟着走都没有一致的答案，读屏用户也失去「这几张是连续的月」这条线索。起止相隔很远时点标题里的年 / 月直接跳，或在输入行键入；React Aria 的 `visibleDuration` 同样只有联动一种。
 - `calendarPeriodValue` 将两端转换为 `{ granularity, start, end, keys }`，可直接用于查询参数。
-- 周首日、月份名与星期名跟随 `locale`，与日历选择器使用同一套解析链；`firstDayOfWeek`（0 = 星期日 … 6 = 星期六）单独改周首日，月份名与星期名仍按 `locale`。
+- 周首日、月份名与星期名跟随 `locale`，与日历选择器使用同一套解析链；`firstDayOfWeek`（0 = 星期日 … 6 = 星期六）单独改周首日，月份名与星期名仍按 `locale`。星期表头缺省只写一个字（`weekdayFormat` 为 `narrow`），需要缩写时设为 `short`，读屏名称始终是星期全称。
 - `week` 粒度按 ISO 周（星期一到星期日）成段，周序号也按 ISO 周计，与 `locale` 和 `firstDayOfWeek` 都无关。以星期日开头的 locale（如 `en-US`）下，日视图的一行比 ISO 周早一天开始，行首的周序号取这一行中间那天所在的 ISO 周；要让日视图的每一行正好是一个 ISO 周，把 `firstDayOfWeek` 设为 1。
 
 ## 组合
