@@ -980,14 +980,17 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 锚定列表 / 菜单 | `xh-overlay-slide-in / out` | Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、Date / Time picker、ColorPicker、SideNav 弹出分支、Pagination 省略页码面板、Tooltip（入场 `--xh-motion-duration-enter`） |
 | 锚定面板 | `xh-overlay-pop-in` / `xh-pop-out` | Popover、HoverCard、Popconfirm、Tour、Command |
 | 无锚定弹出 | `xh-pop-in / out` | NavigationMenu、FloatingPanel、FloatButton 列表、BackTop、Log / MessageFeed 回底按钮 |
-| 面板（sheet） | `xh-sheet-in / out`（位移 md + scale-enter） | Dialog、Notification |
+| 面板（sheet） | `xh-sheet-in / out`（位移 md + scale-enter） | Dialog、逐条排开的轻提示 |
 | 整幅滑入（slide） | `xh-slide-in / out`（位移 `--xh-motion-travel`） | Drawer、Layout 抽屉式侧栏：入场 `--xh-motion-duration-slide` + `--xh-motion-ease-slide`，退场 `--xh-motion-duration-exit` + `--xh-motion-ease-exit` |
 
 遮罩与全屏面 `xh-fade-in / out`。皮肤内不得重定义共享关键帧。
 
 锚定关系按面板贴不贴着一个锚点、里面是不是一列可选的去处来判：SideNav 折叠态的弹出分支贴着分支行、是一列导航去处，Pagination 摊开的页码面板贴着省略位、是一组可选的页码，两者都归锚定列表，从锚点一侧短移淡入、不缩放；Pagination 的页大小选择是 Select，归 Select。
 
-- Notification 从视口边缘推入属出现，不属整幅滑入：位移以卡片自身高度计、只在堆叠边缘出入，卡片小、距离短，取 `enter` / `exit`；`slide` 只给以视口尺度移动的面（抽屉、覆盖式侧栏、走马灯翻页）。逐条排开的一摞走 `xh-sheet-in / out`；叠摞（轻提示预设的缺省）的进出场另带层深位移与收拢比例，关键帧由 Notification 皮肤自己定义。
+- Notification 从视口边缘推入属出现，不属整幅滑入：卡片小、距离短，时长取 `enter` / `exit`；`slide` 时长只给以视口尺度移动的面（抽屉、覆盖式侧栏、走马灯翻页）。
+  - 逐条排开的卡片预设从所贴的那条边整张推进来、边推边淡入（`xh-slide-in` + `xh-slide-fade-in`，位移取卡片自身的整宽或整高 `--xh-motion-travel`）：贴行尾 / 行首的从行尾 / 行首进，居中的顶、底两个位从顶边、底边进，中线那一行只上浮 `--xh-motion-distance-lg`。退场只淡出（`xh-fade-out`）、不往回推，空位由列表换位以 `move` 收拢。逐条排开的轻提示走 `xh-sheet-in / out`。
+  - 叠摞（轻提示预设的缺省）的进出场位移取 `--xh-motion-distance-lg`、不取整卡高（一句话整张推进来又快又远，读起来是一下猛冲），另带层深位移与收拢比例，关键帧由 Notification 皮肤自己定义。一条开始退场，其余几条当场补上它让出的层、与它的退场同时走；退场的那条保留原来的层级压在上面。最前那条沿叠放方向退一小段，后层的条目原地淡出，不从前面那张底下穿过去。
+  - 还在台上就被移出队列的条目（超出上限被挤掉、`dismiss` / `dismissAll` 直接删）没有自己的退场，由列表动效的离场替身在原处播完再撤；队列照旧立即移出。每个位置最新的那一条不参与上限挤出。
 - 日历翻月、年月视图切换瞬时，不做方向动画：日期格是查阅对象，横移途中读格会读错；方向由标题里的年月文字交代。
 
 - 首帧：挂载时已经打开的浮层（`defaultOpen`，或受控 `open` / `value` 的初值即打开）属于首帧内容，content 与带进场的遮罩、定位层、聚光框、展开组投影 `data-instant` 直接呈现；机器在进入收起态（按展开项开合的族：展开项第一次变化）时撤掉标记，之后每一次打开照常进场，第一次收起照常播退场。Mention、Pagination 弹层与 SideNav 弹出分支只由用户操作打开，没有挂载即开的那一次。
