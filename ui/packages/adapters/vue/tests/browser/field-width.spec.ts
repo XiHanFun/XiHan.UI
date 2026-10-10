@@ -166,14 +166,20 @@ describe('不传尺寸时一族同宽', () => {
     expect(measure(300, markup).width).toBe(DEFAULT)
   })
 
-  it('date-range-picker 起止两组按日的段位放不进缺省宽，按内容撑开', () => {
+  it('date-range-picker 同为 16rem：起止两组按日的段位放不进时各在组内收住，分隔符与日历钮留在框里', () => {
     // 段位字号经使用者槽抬到 20px：14px 下两组按日的段位放不放得进 16rem 取决于平台字体
-    // （Windows 放不进、CI 的 Linux 字体恰好放得进），抬高后在哪都放不进，量的才是「撑开」这条路径
+    // （Windows 放不进、CI 的 Linux 字体恰好放得进），抬高后在哪都放不进，量的才是「收住」这条路径
     const large = '--xh-date-range-picker-font-size: 20px'
-    const wide = measure(600, rangeSegments('date-range-picker', 'yyyy'), large).width
-    expect(wide).toBeGreaterThan(DEFAULT)
-    // 撑开的是内容而不是容器：两个都放得下的容器里量到同一个数
-    expect(measure(480, rangeSegments('date-range-picker', 'yyyy'), large).width).toBe(wide)
+    expect(measure(600, rangeSegments('date-range-picker', 'yyyy'), large).width).toBe(DEFAULT)
+    const doc = frame!.contentDocument!
+    const control = doc.querySelector('[data-part="control"]')!.getBoundingClientRect()
+    // 两组一起收：终点那组不被挤成零宽，各自在组内裁掉放不下的段位
+    for (const group of doc.querySelectorAll('[data-part="segment-group"]')) {
+      expect(group.getBoundingClientRect().width).toBeGreaterThan(0)
+      expect(group.scrollWidth).toBeGreaterThan(group.clientWidth)
+    }
+    expect(doc.querySelector('[data-part="range-separator"]')!.getBoundingClientRect().width).toBeGreaterThan(0)
+    expect(doc.querySelector('[data-part="trigger"]')!.getBoundingClientRect().right).toBeLessThanOrEqual(control.right)
   })
 
   it('date-range-picker 按年的内容比缺省宽窄时顶住缺省宽，不比别的字段窄', () => {

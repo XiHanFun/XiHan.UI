@@ -143,6 +143,8 @@ function resolveRadius(token: string, scope: HTMLElement): string {
 function resolveLength(token: string, scope: HTMLElement): string {
   const probe = document.createElement('span')
   probe.style.display = 'block'
+  // 探针落在定宽的弹性行里，不脱离文档流的话会被当作弹性项压窄，量到的就不是令牌本身的长度
+  probe.style.position = 'absolute'
   probe.style.inlineSize = `var(${token})`
   scope.append(probe)
   const value = getComputedStyle(probe).inlineSize

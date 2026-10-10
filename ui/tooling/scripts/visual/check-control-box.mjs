@@ -207,7 +207,6 @@ const EXEMPT = {
   'pin-input box-px': '方格内距归零，留了内距单字符居中后可用宽度不足',
   'pin-input box-min-w': '格宽即方格边长，再给最小宽会把方框拉成长方形',
   'pin-input root-w': '根的宽由格数与格宽决定，不吃字段缺省宽',
-  'date-range-picker root-w': '起止两组段位、分隔符与日历钮排在一行，内容本身比缺省宽宽，缺省按内容撑开：inline-size 回退 max-content 而不是 --xh-control-w',
 }
 
 /** 检查项的说明，用在报告里。 */

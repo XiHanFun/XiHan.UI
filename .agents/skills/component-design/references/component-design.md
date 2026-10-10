@@ -285,7 +285,8 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 根另带 `max-inline-size: 100%`；盒（control）只写家族的 `min(…, 100%)` 地板，由根撑开。
 - 放进 Field 即铺满表单列：Field 根把 `--xh-control-w` 改成 `100%`，单个组件的 `--xh-<c>-control-w` 仍压过它；Form `layout="inline"` 一行流里字段宽由控件撑出，Form 把字段还原成缺省宽，避免两者互相依赖塌成内容宽。Field 之外要铺满由使用者改 `--xh-control-w` 或在根上写 `inline-size: 100%`。
 - 盒里与已选标签并排的输入框（TagsInput、多选 Combobox）最小宽取 `--xh-control-input-min-w`（4rem）：标签再多也给打字留出这一截——TagsInput 的输入框换到下一行，多选 Combobox 的标签先截断、再折进 +N。
-- 刻意例外（须登记进 check-control-box 的 EXEMPT）：DateRangePicker 起止两组按日的段位、分隔符与日历钮排在一行，内容比缺省宽宽，缺省 `inline-size: max-content`、地板取 `--xh-control-w`（按年、按月时不比别的字段窄）；PinInput 由格数与格宽定宽；PromptInput 铺满宿主；Clipboard 只放复制钮的用法是独立按钮，缺省宽只给带输入框的用法（`:has(control)`）。
+- DateRangePicker 与别的字段同取缺省宽 `--xh-control-w`：起止两组按日带时刻的段位放不进时，两组按各自内容宽的比例一起收、各在组内裁掉放不下的段位（键盘走到时组跟着滚过去），分隔符与日历钮始终留在框里；要整段露出经 `--xh-date-range-picker-control-w` 钉宽。
+- 刻意例外（须登记进 check-control-box 的 EXEMPT）：PinInput 由格数与格宽定宽；PromptInput 铺满宿主；Clipboard 只放复制钮的用法是独立按钮，缺省宽只给带输入框的用法（`:has(control)`）。
 - 嵌入位改写字段缺省宽同样是例外（须登记进 check-control-box 的 EMBEDDED_WIDTH，并经嵌入方自己的使用者槽）：Pagination 的每页条数控制器是一个库内 Select，选项是「10 条 / 页」一类短串，在分页行里按内容定宽（`--xh-pagination-page-size-select-w`，缺省 `max-content`，地板一并放开）。
 - InputGroup 整组是一个字段：缺省宽走 `--xh-input-group-w` → `--xh-control-w`，组里带字段外壳的控件占满前后缀与动作之外的剩余宽度，前后缀与按钮按内容宽。
 - 示例不写内联宽度，让文档展示缺省宽；只有演示宽度本身的示例才改槽。
@@ -491,7 +492,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | PromptInput | 铺满宿主 | 一行 | 8 行，超出内滚 |
 | NumberField 输入框 | 5em | | |
 | PinInput | 格边长取 `control-h` 随 size，格间距 `--xh-space-1`，字号取 `--xh-control-font-*`；根宽 = 格数 × 格宽 + 间距；当前格换承载面 + 聚焦描边，不另画环 | | |
-| DateRangePicker | `max-content` | 16rem | 100% |
+| DateRangePicker | 16rem，放不下的段位在组内收住 | 12rem | 100% |
 | Pagination 每页条数、跳页框 | `max-content`、64px | 放开 | |
 
 | 组类控件 | 尺寸 |

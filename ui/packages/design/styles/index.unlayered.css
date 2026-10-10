@@ -27983,12 +27983,11 @@
   flex-direction: column;
   gap: var(--xh-date-range-picker-gap, var(--xh-space-1));
 
-  /* 起止两组段位、分隔符与日历钮排在一行，按日的内容本身就比字段缺省宽（--xh-control-w）宽，
-     钉成缺省宽会裁掉终点的段位：这一件缺省按内容撑开，使用者要钉宽仍走这条槽。
-     地板抬到一族的缺省宽：按年、按月的内容比缺省宽窄，不能比别的字段还窄，底线槽只在高过缺省宽时起作用。
-     父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
-  inline-size: var(--xh-date-range-picker-control-w, max-content);
-  min-inline-size: min(max(var(--xh-control-w), var(--xh-date-range-picker-control-min-w, var(--xh-control-min-w))), 100%);
+  /* 与别的字段同一个缺省宽：放在一排筛选条件里不比相邻的字段宽出一截。
+     起止两组按日带时刻的段位放不进时由两组各自收住（见 segment-group），分隔符与日历钮始终留在框里；
+     要整段都露出来，经这条槽钉宽。父容器给不出这么宽时整件跟着收，地板同步让步，不越出父容器 */
+  inline-size: var(--xh-date-range-picker-control-w, var(--xh-control-w));
+  min-inline-size: min(var(--xh-date-range-picker-control-w, var(--xh-control-w)), var(--xh-date-range-picker-control-min-w, var(--xh-control-min-w)), 100%);
   max-inline-size: 100%;
 }
 
@@ -28063,12 +28062,15 @@
 }
 
 /* 段位与作者写在段间的分隔符都在这一层里：段位自己那身皮由 date-field 那份样式负责
-   （它们戴的是那一份解剖的标记），这里只管把一排段位横过来、占满输入行剩下的宽度 */
+   （它们戴的是那一份解剖的标记），这里只管把一排段位横过来、占满输入行剩下的宽度。
+   框比两组段位窄时（缺省宽里放按日带时刻的区间），两组按各自内容宽的比例一起收、各在组内裁掉放不下的段位：
+   不裁的话终点那组会被挤成零宽、段位与日历钮一起冒出框外。裁掉的段位仍可聚焦，键盘走到它时组跟着滚过去 */
 .xh-scope-date-range-picker[data-part='segment-group'] {
   display: inline-flex;
   flex: 1 1 auto;
   align-items: center;
   min-inline-size: 0;
+  overflow: hidden;
   block-size: 100%;
   color: inherit;
   /* 表单控件不继承页面字体，只给字号会让段位用 UA 默认字族，与周围文本对不上 */
@@ -28081,9 +28083,10 @@
   display: none;
 }
 
-/* 起点那组只占自己的宽度，分隔符紧跟在起点后面；剩下的宽度全给终点那组 */
+/* 起点那组只占自己的宽度，分隔符紧跟在起点后面；剩下的宽度全给终点那组。
+   放不下时它同样收缩，与终点那组一起让，不把终点那组挤成零宽 */
 .xh-scope-date-range-picker[data-part='segment-group'][data-index='0']:has(+ [data-part='range-separator']) {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
 }
 
 .xh-scope-date-range-picker[data-part='range-separator'] {

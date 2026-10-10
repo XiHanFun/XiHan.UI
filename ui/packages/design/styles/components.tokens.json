@@ -26513,16 +26513,17 @@
         "root"
       ],
       "property": [
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "max-content"
+        "--xh-control-w"
       ],
       "visibility": "public",
-      "description": "date-range-picker 的 root 部件 inline-size 覆盖槽。"
+      "description": "date-range-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-date-range-picker-font-size",
