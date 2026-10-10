@@ -144,9 +144,11 @@ export const notificationMachine = createMachine({
             // 卡片自己带退场、播完收起后才被宿主移出队列：那时它已隐藏、不在排布里，不放替身，其余卡片从旧位置
             // 过渡到新位置。还在台上就被移出的（超出上限被挤掉、dismiss / dismissAll 直接删）没有自己的退场，
             // 由离场替身在原处播完退场再撤，整摞不跳。Web Components 删的是包着卡片的元素，外壳里的卡片同样认
+            // 自己播完退场、与宿主删节点落在同一次渲染里的卡片还没来得及藏起：认它的生命周期，不再放替身重播一遍
+            const exiting = (el: HTMLElement): boolean => el.dataset.state === 'dismissing' || el.dataset.state === 'unmounted'
             stops = [
-              trackListMotion(root, { item: ARRIVING_ITEM, initial: 'arrive', wrapped: true }),
-              trackListMotion(root, { item: STACKED_ITEM, initial: 'arrive', wrapped: true, reflow: false }),
+              trackListMotion(root, { item: ARRIVING_ITEM, initial: 'arrive', wrapped: true, exiting }),
+              trackListMotion(root, { item: STACKED_ITEM, initial: 'arrive', wrapped: true, reflow: false, exiting }),
             ]
           })
         })
