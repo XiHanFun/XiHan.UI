@@ -49,19 +49,21 @@ function currentTranslate(el: HTMLElement, win: Window): [number, number] {
 
 /**
  * 反向补偿一段位移再交给过渡：先把条目按 (dx, dy) 推回旧位置并关掉过渡，提交这一帧样式后撤掉，
- * 皮肤里条目的 translate 过渡把它带回新位置；上一段没走完时从当前位置接着走。正在播关键帧的条目不补偿。
- * transform 通道改由 glideBy 沿 transform 走一段。返回这一次有没有真的推出去（没位移、正在播关键帧的不算）。
+ * 皮肤里条目的 translate 过渡把它带回新位置；上一段没走完时从当前位置接着走。translate 通道下正在播关键帧的
+ * 条目不补偿：关键帧写的也是 translate，内联的补偿会被它盖掉。transform 通道改由 glideBy 沿 transform 走一段，
+ * 与进退场关键帧的 translate / scale 叠加、互不覆盖，进场还没播完的条目照样跟着挪，不会原地一跳。
+ * 返回这一次有没有真的推出去（没位移、translate 通道下正在播关键帧的不算）。
  */
 function shift(el: HTMLElement, dx: number, dy: number, win: Window, channel: 'translate' | 'transform' = 'translate'): boolean {
   if (dx === 0 && dy === 0)
-    return false
-  const running = el.getAnimations?.().some(animation => 'animationName' in animation && animation.playState === 'running')
-  if (running)
     return false
   if (channel === 'transform') {
     glideBy(el, dx, dy)
     return true
   }
+  const running = el.getAnimations?.().some(animation => 'animationName' in animation && animation.playState === 'running')
+  if (running)
+    return false
   const [cx, cy] = currentTranslate(el, win)
   const translate = el.style.getPropertyValue('translate')
   const transition = el.style.getPropertyValue('transition')
