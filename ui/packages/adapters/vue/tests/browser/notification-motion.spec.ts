@@ -180,6 +180,28 @@ describe('逐条排开的卡片', () => {
     expect(Math.abs(after - before)).toBeLessThan(step / 4)
   })
 
+  it.each([
+    ['bottom-end', 1],
+    ['top-start', 5],
+  ] as const)('%s：新卡跟着整列一起换位，任何一帧都不叠到前一张上', async (placement, filled) => {
+    const { service, live } = setup({ preset: 'card', placement })
+    for (let i = 1; i <= filled; i++)
+      service.info(`第 ${i} 条`, { duration: 0 })
+    await tick()
+    await wait(400)
+    // 贴底：新卡把整列往上推；贴顶：满员时挤掉最上面那张、整列往上收
+    service.info('新来的', { duration: 0 })
+    let overlap = 0
+    const until = performance.now() + 300
+    while (performance.now() < until) {
+      const rects = live().map(el => el.getBoundingClientRect()).sort((a, b) => a.top - b.top)
+      for (let i = 1; i < rects.length; i++)
+        overlap = Math.max(overlap, rects[i - 1]!.bottom - rects[i]!.top)
+      await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)))
+    }
+    expect(overlap).toBeLessThanOrEqual(1)
+  })
+
   it('居中贴顶的卡片从顶边整高推入', async () => {
     const { service, titled } = setup({ preset: 'card', placement: 'top' })
     service.info('已同步', { duration: 0 })
