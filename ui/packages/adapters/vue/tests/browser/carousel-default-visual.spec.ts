@@ -1,13 +1,12 @@
+// 粗指针下的分页命中区在 carousel-coarse-target.spec.ts：要开触屏仿真，不能和这里的细指针断言同页
 import { afterEach, describe, expect, it } from 'vitest'
-import { cdp } from 'vitest/browser'
 import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 let host: HTMLElement | null = null
 
-afterEach(async () => {
-  await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: false })
+afterEach(() => {
   host?.remove()
   host = null
 })
@@ -179,34 +178,6 @@ describe('carousel 默认视觉', () => {
     expect(getComputedStyle(vertical.current, '::before').clipPath).toMatch(/^inset\(0px 0px 100%(?: 0px)? round /)
   })
 
-  it.each(['horizontal', 'vertical'] as const)('%s 粗指针分页划成不重叠的 44px 分区，圆点与胶囊的视觉尺寸不变', async (orientation) => {
-    await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 })
-    const carousel = mount(orientation)
-    const indicators = [...carousel.indicators.querySelectorAll<HTMLElement>('[data-part="indicator"]')]
-
-    expect(matchMedia('(pointer: coarse)').matches).toBe(true)
-    for (const indicator of indicators) {
-      const rect = indicator.getBoundingClientRect()
-      expect(rect.width).toBeGreaterThanOrEqual(44)
-      expect(rect.height).toBeGreaterThanOrEqual(44)
-    }
-
-    const [first, second] = indicators.map(indicator => indicator.getBoundingClientRect())
-    if (orientation === 'horizontal')
-      expect(first!.right).toBeLessThanOrEqual(second!.left)
-    else
-      expect(first!.bottom).toBeLessThanOrEqual(second!.top)
-
-    // 盒子只管命中，点改由 ::after 画：当前项 20×6 的胶囊、其余 6×6 的圆点
-    const currentMark = getComputedStyle(carousel.current, '::after')
-    expect([currentMark.width, currentMark.height]).toEqual(
-      orientation === 'horizontal' ? ['20px', '6px'] : ['6px', '20px'],
-    )
-    expect(getComputedStyle(carousel.current).backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    const otherMark = getComputedStyle(indicators[1]!, '::after')
-    expect([otherMark.width, otherMark.height]).toEqual(['6px', '6px'])
-  })
-
   it.each([
     ['horizontal', false],
     ['vertical', false],
@@ -254,42 +225,5 @@ describe('carousel 默认视觉', () => {
     const hit = getComputedStyle(other!, '::after')
     const [, across] = alongAndAcross(orientation, hit.width, hit.height)
     expect(Number.parseFloat(String(across))).toBeGreaterThanOrEqual(24)
-  })
-
-  it.each(['horizontal', 'vertical'] as const)('%s 粗指针下伪元素画的点与进度条同样按粗细槽，命中区仍是 44px', async (orientation) => {
-    await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 })
-    const carousel = mount(orientation, true)
-    useBars(carousel.root)
-    const [current, other] = [...carousel.indicators.querySelectorAll<HTMLElement>('[data-part="indicator"]')]
-
-    expect(matchMedia('(pointer: coarse)').matches).toBe(true)
-    for (const indicator of [current!, other!]) {
-      const rect = indicator.getBoundingClientRect()
-      expect(rect.width).toBeGreaterThanOrEqual(44)
-      expect(rect.height).toBeGreaterThanOrEqual(44)
-    }
-    const otherMark = getComputedStyle(other!, '::after')
-    const currentMark = getComputedStyle(current!, '::after')
-    const progress = getComputedStyle(current!, '::before')
-    expect(alongAndAcross(orientation, otherMark.width, otherMark.height)).toEqual(['16px', '4px'])
-    expect(alongAndAcross(orientation, currentMark.width, currentMark.height)).toEqual(['28px', '4px'])
-    expect(alongAndAcross(orientation, progress.width, progress.height)).toEqual(['28px', '4px'])
-    // 点落在 44px 命中盒的正中：细指针按轨道方向外扩命中区的规则不能把粗指针下点的定位顶掉
-    const box = other!.getBoundingClientRect()
-    expect(Number.parseFloat(otherMark.top)).toBeCloseTo(box.height / 2, 0)
-    expect(Number.parseFloat(otherMark.left)).toBeCloseTo(box.width / 2, 0)
-  })
-
-  it('粗指针下点的伸长与细指针同一档：尺寸变化走 move，不走 nudge', async () => {
-    await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 })
-    const carousel = mount()
-    const fine = getComputedStyle(document.documentElement).getPropertyValue('--xh-motion-duration-move').trim()
-    const mark = getComputedStyle(carousel.current, '::after')
-    const props = mark.transitionProperty.split(', ')
-    const durations = mark.transitionDuration.split(', ')
-    for (const name of ['width', 'height']) {
-      const at = props.findIndex(prop => prop === name || prop === (name === 'width' ? 'inline-size' : 'block-size'))
-      expect(durations[at], name).toBe(`${Number.parseFloat(fine) / 1000}s`)
-    }
   })
 })

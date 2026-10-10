@@ -1,8 +1,9 @@
-// NumberField 的 Field Chrome、内嵌增减钮、前后缀与触摸命中区依赖真实布局、媒体条件和伪类，只在 Chromium 验证。
-// 可悬停的精细指针：两颗钮上下叠在盒的逻辑末端，平时收起、悬停或聚焦字段时显出；粗指针：两颗正方钮横排在末端、常显。
+// NumberField 的 Field Chrome、内嵌增减钮与前后缀依赖真实布局、媒体条件和伪类，只在 Chromium 验证。
+// 可悬停的精细指针：两颗钮上下叠在盒的逻辑末端，平时收起、悬停或聚焦字段时显出。
+// 粗指针的横排常显钮在 number-field-coarse-target.spec.ts：要开触屏仿真，不能和这里的悬停断言同页。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { cdp, userEvent } from 'vitest/browser'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhNumberFieldControl,
@@ -62,13 +63,6 @@ function centerY(element: HTMLElement): number {
   return rect.top + rect.height / 2
 }
 
-async function emulatePointer(value?: 'coarse'): Promise<void> {
-  await cdp().send('Emulation.setTouchEmulationEnabled', {
-    enabled: value === 'coarse',
-    maxTouchPoints: value === 'coarse' ? 5 : 1,
-  })
-}
-
 /** 把一个值放进探针的某个属性，读回这台浏览器上的计算值，用来与各态对账。 */
 function resolve(value: string, property = 'color', within: HTMLElement = host ?? document.body): string {
   const probe = document.createElement('span')
@@ -93,7 +87,6 @@ function teardown(): void {
 afterEach(async () => {
   teardown()
   document.documentElement.removeAttribute('dir')
-  await emulatePointer()
   await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
 })
 
@@ -245,38 +238,5 @@ describe('数字输入的前后缀、边界与焦点', () => {
     expect(getComputedStyle(input).outlineStyle).toBe('none')
     expect(part('decrement-trigger').tabIndex).toBe(-1)
     expect(part('increment-trigger').tabIndex).toBe(-1)
-  })
-})
-
-describe('数字输入的粗指针目标', () => {
-  it.each(['comfortable', 'compact'] as const)('%s：两颗 field-inset 正方钮横排在末端、常显，视觉盒不放大，各自由家族伪元素外扩到 44px 命中区', async (density) => {
-    await emulatePointer('coarse')
-    expect(matchMedia('(pointer: coarse)').matches).toBe(true)
-    mountField({}, { density, width: 160 })
-    await settle()
-    const controlEl = part('control')
-    const control = controlEl.getBoundingClientRect()
-    const decrement = part('decrement-trigger').getBoundingClientRect()
-    const input = part('input').getBoundingClientRect()
-    const increment = part('increment-trigger').getBoundingClientRect()
-    const trigger = px('--xh-control-h-sm', controlEl)
-
-    expect(control.height).toBe(px('--xh-control-h-md', controlEl))
-    expect(decrement.width).toBe(trigger)
-    expect(increment.width).toBe(trigger)
-    expect(decrement.height).toBe(trigger)
-    expect(getComputedStyle(part('increment-trigger')).visibility).toBe('visible')
-    expect(centerY(part('increment-trigger'))).toBeCloseTo(centerY(controlEl), 1)
-    expect(input.width).toBeGreaterThan(0)
-    expect(input.right).toBeLessThanOrEqual(decrement.left)
-    expect(decrement.right).toBeLessThanOrEqual(increment.left)
-    for (const name of ['decrement-trigger', 'increment-trigger']) {
-      const target = getComputedStyle(part(name), '::after')
-      expect(target.content).toBe('""')
-      expect(Number.parseFloat(target.minInlineSize)).toBeGreaterThanOrEqual(44)
-      expect(Number.parseFloat(target.minBlockSize)).toBeGreaterThanOrEqual(44)
-    }
-    // 热区伪元素不能被视觉盒裁掉，否则外扩只是纸面上的
-    expect(getComputedStyle(controlEl).overflow).toBe('visible')
   })
 })
