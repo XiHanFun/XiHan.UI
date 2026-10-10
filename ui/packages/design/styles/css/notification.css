@@ -12,11 +12,12 @@
 @import '../family/loading-ring.css';
 
 @layer xihan.motion {
-  /* 叠放的一摞：新卡片从视口边缘外进入，同时落到自己的折叠层级。整幅位移取令牌，减弱动效下归零，只剩淡入 */
+  /* 叠放的一摞：新卡片从叠放外沿推进来一小段（--xh-motion-distance-lg），同时淡入、落到自己的折叠层级。
+     位移不取整卡高：一句话的轻提示整张推进来又快又远，读起来是一下猛冲；减弱动效下位移归零，只剩淡入 */
   @keyframes xh-notification-stack-in {
     from {
       opacity: var(--xh-_enter-from-opacity, 0);
-      translate: 0 calc(var(--xh-_notification-stack-dir, 1) * (var(--xh-_notification-offset, 0px) - var(--xh-motion-travel)));
+      translate: 0 calc(var(--xh-_notification-stack-dir, 1) * (var(--xh-_notification-offset, 0px) - var(--xh-_notification-travel, var(--xh-motion-distance-lg))));
       scale: var(--xh-notification-stack-scale, var(--xh-_notification-stack-scale));
     }
 
@@ -36,7 +37,7 @@
 
     to {
       opacity: 0;
-      translate: 0 calc(var(--xh-_notification-stack-dir, 1) * (var(--xh-_notification-y, 0px) - var(--xh-motion-travel)));
+      translate: 0 calc(var(--xh-_notification-stack-dir, 1) * (var(--xh-_notification-y, 0px) - var(--xh-_notification-travel, var(--xh-motion-distance-lg))));
       scale: var(--xh-_notification-scale, 1);
     }
   }
@@ -304,6 +305,53 @@
     animation: xh-sheet-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
+  /* 还在台上就被移出队列的卡片（超出上限被挤掉、dismiss / dismissAll 直接删）没有自己的退场，
+     列表动效在原处放一个替身（data-state="closed"），同一条退场播完即撤 */
+  [data-scope='notification'][data-part='item'][data-state='closed'] {
+    animation: xh-sheet-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
+  /*
+   * 逐条排开的卡片预设：从所贴的那条边整张推进来，边推边淡入——贴行尾的从行尾进、贴行首的从行首进，
+   * 居中的三个位从各自贴的那条边（顶 / 底）进，中线那一行只上浮一小段。位移是卡片自身的整宽或整高
+   * （--xh-motion-travel），减弱动效下归零，只剩淡入。退场只淡出，不往回推：空位由换位把后面的卡平滑收拢。
+   * 方向从所在那一摞的 data-placement 选过来，九个位是固定的枚举
+   */
+  [data-scope='notification'][data-part='group']:not([data-stacked]) [data-scope='notification'][data-part='item'][data-preset='card'] {
+    --xh-_enter-from-opacity: 0;
+    --xh-_slide-from-x: 0;
+    --xh-_slide-from-y: var(--xh-motion-distance-lg);
+  }
+
+  [data-scope='notification'][data-part='group']:not([data-stacked])[data-placement$='-end'] [data-scope='notification'][data-part='item'][data-preset='card'] {
+    --xh-_slide-from-x: calc(var(--xh-motion-travel) * var(--xh-direction-sign));
+    --xh-_slide-from-y: 0;
+  }
+
+  [data-scope='notification'][data-part='group']:not([data-stacked])[data-placement$='-start'] [data-scope='notification'][data-part='item'][data-preset='card'] {
+    --xh-_slide-from-x: calc(var(--xh-motion-travel) * var(--xh-direction-sign) * -1);
+    --xh-_slide-from-y: 0;
+  }
+
+  [data-scope='notification'][data-part='group']:not([data-stacked])[data-placement='top'] [data-scope='notification'][data-part='item'][data-preset='card'] {
+    --xh-_slide-from-y: calc(var(--xh-motion-travel) * -1);
+  }
+
+  [data-scope='notification'][data-part='group']:not([data-stacked])[data-placement='bottom'] [data-scope='notification'][data-part='item'][data-preset='card'] {
+    --xh-_slide-from-y: var(--xh-motion-travel);
+  }
+
+  [data-scope='notification'][data-part='group']:not([data-stacked]) [data-scope='notification'][data-part='item'][data-preset='card'][data-state='visible'] {
+    animation:
+      xh-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards,
+      xh-slide-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) backwards;
+    animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
+  }
+
+  [data-scope='notification'][data-part='group']:not([data-stacked]) [data-scope='notification'][data-part='item'][data-preset='card']:is([data-state='dismissing'], [data-state='closed']) {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
   /*
    * 叠放的一摞：最新一条在最前，后层按层深逐层收拢——层深由叠摞测量写进来，每往后一层乘一次
    * --xh-motion-scale-stack；减弱动效下那支令牌为 1，层与层只靠位移分开。
@@ -313,6 +361,7 @@
     --xh-_notification-stack-scale: max(0, 1 - var(--xh-_notification-depth, 0) * (1 - var(--xh-motion-scale-stack)));
     --xh-_notification-y: var(--xh-_notification-offset, 0px);
     --xh-_notification-scale: var(--xh-notification-stack-scale, var(--xh-_notification-stack-scale));
+    --xh-_notification-travel: var(--xh-motion-distance-lg);
 
     position: absolute;
     inset-inline: 0;
@@ -348,6 +397,12 @@
 
   [data-scope='notification'][data-part='group'][data-stacked] [data-scope='notification'][data-part='item'][data-state='dismissing'] {
     animation: xh-notification-stack-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
+  /* 后层的卡片（到时先走的旧条目）与被挤掉的那条的替身原地淡出：它们压在最前那张后面，
+     再沿叠放方向退就会从前面那张底下穿过去。叠摞测量在它开始退场时已把它移出排位，其余几条同时补上来 */
+  [data-scope='notification'][data-part='group'][data-stacked] [data-scope='notification'][data-part='item']:is([data-state='dismissing']:not([data-frontmost]), [data-state='closed']) {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 收拢的后层只露出一截边：高度压成最前那一条，内容淡出，免得几层字叠在一起 */
