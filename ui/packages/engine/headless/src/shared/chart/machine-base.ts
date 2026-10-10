@@ -20,6 +20,7 @@ import type {
   ChartTranslations,
 } from './types'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
+import { visibleToReader, watchInView, watchPageVisibility } from '../view-watch'
 import { CHART_ESTIMATING_MEASURER, createCanvasMeasurer } from './measure'
 import { CHART_METRICS, readChartMetrics, sameChartMetrics } from './metrics'
 import { advanceChartTransition, syncChartTransition } from './transition'
@@ -75,6 +76,8 @@ export interface ChartBaseRefs {
   measurer: TextMeasurer
   /** 机器是否还活着：搬焦点的延迟回调撤不回，卸载后仍会跑，据此认账。 */
   alive: boolean
+  /** 绘图区在不在视口里；null 表示交叉观察器还没报过（挂载后的第一帧）。 */
+  inView: boolean | null
   /** 在跑的过渡。 */
   transition: ChartTransitionRun | null
   /** 最近一次交给过渡的目标场景。 */
@@ -108,6 +111,10 @@ export type ChartBaseEvent
     | { type: 'LEGEND.PRESS', id: string | null }
     /** 过渡的逐帧推进。 */
     | { type: 'SCENE.FRAME' }
+    /** 读者看不看得见变了：绘图区进出视口、页面切到后台或回到前台。 */
+    | { type: 'VISIBILITY' }
+    /** 打印前：过渡直接落到终态。 */
+    | { type: 'SCENE.SETTLE' }
 
 export type ChartBaseAction
   = | 'setSize'
@@ -127,6 +134,7 @@ export type ChartBaseAction
     | 'focusDatum'
     | 'focusLegendItem'
     | 'syncTransition'
+    | 'settleTransition'
     | 'advanceTransition'
 
 /**
@@ -150,6 +158,7 @@ export interface ChartViewportSchema extends MachineSchema {
     getViewportEl: () => Element | null
     measurer?: TextMeasurer
     alive: boolean
+    inView: boolean | null
     transition: ChartTransitionRun | null
   }
 }
@@ -250,6 +259,7 @@ export function chartBaseRefs(): ChartBaseRefs {
     getViewportEl: () => null,
     measurer: CHART_ESTIMATING_MEASURER,
     alive: false,
+    inView: null,
     transition: null,
     shown: null,
   }
@@ -278,6 +288,7 @@ function transitionState<S extends ChartBaseSchema>(params: Params<S>, transitio
   const root = refs.get('getRootEl')()
   return {
     animated: prop('animated') !== false && (transition.geometry?.(params) ?? true),
+    visible: visibleToReader(prop('animateInView'), refs.get('inView'), root?.ownerDocument ?? scope.getDoc()),
     target: computed('scene'),
     numbers: transition.numbers?.(params) ?? {},
     size: context.get('size'),
@@ -452,6 +463,9 @@ export function chartBaseActions<S extends ChartBaseSchema>(options: {
 
     syncTransition: params => syncChartTransition(transitionState(params, options.transition), options.transition),
 
+    // 打印前：停着的入场与在跑的过渡都直接落到终态，按关掉 animated 处理这一次
+    settleTransition: params => syncChartTransition({ ...transitionState(params, options.transition), animated: false }, options.transition),
+
     advanceTransition: params => advanceChartTransition(transitionState(params, options.transition)),
   }
 }
@@ -551,11 +565,37 @@ export function trackChartViewport<S extends ChartViewportSchema>(options: { rea
       fonts?.addEventListener('loadingdone', onFonts)
       void fonts?.ready.then(onFonts)
 
+      // 读者看不看得见：绘图区进出视口、页面切到后台再回来，过渡都重核一遍，停着的入场据此起跑。
+      // 观察器全窗口共用一个，看板上几十张图不各挂一份；环境没有交叉观察器时按一直在视口里处理。
+      // 要赶在第一次量测之前定下来：量测送出尺寸、场景成形，过渡就在那一刻决定播还是等
+      const onView = (inView: boolean): void => {
+        if (disposed || refs.get('inView') === inView)
+          return
+        refs.set('inView', inView)
+        send({ type: 'VISIBILITY' })
+      }
+      const stopView = watchInView(win, viewport, onView)
+      if (!stopView)
+        refs.set('inView', true)
+      const stopPage = watchPageVisibility(root.ownerDocument, () => {
+        if (!disposed)
+          send({ type: 'VISIBILITY' })
+      })
+      // 打印不经过视口：还停着的入场与在跑的过渡都直接落到终态，纸上不留半截
+      const onPrint = (): void => {
+        if (!disposed)
+          send({ type: 'SCENE.SETTLE' })
+      }
+      win.addEventListener('beforeprint', onPrint)
+
       measure()
 
       stop = () => {
         resize?.disconnect()
         density?.disconnect()
+        stopView?.()
+        stopPage()
+        win.removeEventListener('beforeprint', onPrint)
         fonts?.removeEventListener('loadingdone', onFonts)
         if (frame !== 0 && typeof win.cancelAnimationFrame === 'function')
           win.cancelAnimationFrame(frame)
@@ -591,5 +631,7 @@ export function chartBaseTransitions<S extends ChartBaseSchema>(): TransitionMap
     'LEGEND.FOCUS': { actions: ['setLegendFocus', 'focusLegendItem'] },
     'LEGEND.PRESS': { actions: ['setLegendPressed'] },
     'SCENE.FRAME': { actions: ['advanceTransition'] },
+    'VISIBILITY': { actions: ['syncTransition'] },
+    'SCENE.SETTLE': { actions: ['settleTransition'] },
   } as TransitionMap<S, undefined>
 }

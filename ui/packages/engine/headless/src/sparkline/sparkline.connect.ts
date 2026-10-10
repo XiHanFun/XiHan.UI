@@ -9,6 +9,7 @@ import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { Mark, Scene, ShapeMark } from '@xihan-ui/viz'
 import type { SparklineApi, SparklineSchema } from './sparkline.schema'
 import type { SparklineMarkerKind } from './sparkline.types'
+import { dataAttr } from '@xihan-ui/core'
 import { createScene, markPath } from '@xihan-ui/viz'
 import { sparklineAnatomy } from './sparkline.anatomy'
 import { sparklineModelOf } from './sparkline.logic'
@@ -52,6 +53,8 @@ export function connectSparkline<T extends PropTypes>(
       'data-tone': prop('tone') ?? 'neutral',
       // 规格不合法时不画：诊断通道报出原因，根上留一个可观察的状态；没有一个有值的点时是空
       'data-state': invalid ? 'error' : empty ? 'empty' : undefined,
+      // 首次出现在等读者看得见：入场停在第一帧，描线与标记点的关键帧一并停在起点
+      'data-deferred': dataAttr(frame?.pending === true),
       'viewBox': size ? `0 0 ${size.width} ${size.height}` : undefined,
     }),
 

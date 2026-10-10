@@ -10,6 +10,7 @@ import type { HeatmapCellRef, HeatmapGridOptions, HeatmapTipRect } from './heatm
 import type { HeatmapSchema } from './heatmap.types'
 import { resolveLocale, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { readMotion } from '@xihan-ui/motion'
+import { visibleToReader, watchInView, watchPageVisibility } from '../shared/view-watch'
 import {
   buildHeatmapGrid,
   buildHeatmapMatrixGrid,
@@ -104,6 +105,7 @@ function heatmapDrawsData(options: HeatmapGridOptions): boolean {
  * 显示过的画面里一格颜色都没有就是首次出现，有数据的格子按先后填色——数据晚于挂载到达（Web Components
  * 连上之后才赋 value、异步取数）也一样；否则是更新，各格从旧档的颜色换到新档。填色与换色都由样式播，
  * 这里只按令牌算出要播多久、到点撤掉标记。关掉 animated、没有渲染宿主或还没有画得出来的格子时不播。
+ * 读者看不见网格时（还没进入视口、页面在后台）首次出现停在填色的起点等着，数据变化直接落到终态。
  */
 function syncHeatmapTransition({ prop, context, refs, scope, send }: Params<HeatmapSchema>): void {
   refs.get('stopTransition')?.()
@@ -116,11 +118,23 @@ function syncHeatmapTransition({ prop, context, refs, scope, send }: Params<Heat
   }
   const drawn = heatmapDrawsData(heatmapGridOptions(prop, scope))
   const entry = !refs.get('drawn')
-  refs.set('drawn', drawn)
   if (prop('animated') === false || (entry && !drawn)) {
+    refs.set('drawn', drawn)
     context.set('transition', null)
     return
   }
+  if (!visibleToReader(prop('animateInView'), refs.get('inView'), root.ownerDocument)) {
+    // 首次出现停在起点：还没真的显示过数据，drawn 留着 false，等看得见时仍按首次出现填色
+    if (entry) {
+      context.set('transition', 'pending')
+      return
+    }
+    // 看不见时的数据变化直接落到终态
+    refs.set('drawn', drawn)
+    context.set('transition', null)
+    return
+  }
+  refs.set('drawn', drawn)
   // 时长从根上读：作者对令牌的覆盖、容器上的 data-motion 与系统的减弱动效同时生效。
   // 首次出现要等扫描走完、最后一格也填完；更新等换色走完
   const motion = readMotion(root)
@@ -137,7 +151,7 @@ function syncHeatmapTransition({ prop, context, refs, scope, send }: Params<Heat
 // 详情此刻该显示哪一格，以及数据变化时播哪一段过渡。都不受控、也不进状态，机器因此只有一个状态。
 export const heatmapMachine = createMachine({
   name: 'heatmap',
-  refs: () => ({ getRootEl: () => null, drawn: false, stopTransition: null }),
+  refs: () => ({ getRootEl: () => null, drawn: false, stopTransition: null, inView: null }),
   context: ({ cell }) => ({
     // 身份是对象，不给 isEqual 的话每次上报都算变更，版本号会一直空转自增
     focusedCell: cell<HeatmapCellRef | null>(() => ({ defaultValue: null, isEqual: sameHeatmapCell })),
@@ -149,7 +163,7 @@ export const heatmapMachine = createMachine({
     focusTip: cell<HeatmapTipRect | null>(() => ({ defaultValue: null, isEqual: sameHeatmapTip })),
     // 上一次通知过的详情身份与数值，用来判「还是不是同一格、数还是不是那个数」
     activeKey: cell<string | null>(() => ({ defaultValue: null })),
-    transition: cell<'entry' | 'update' | null>(() => ({ defaultValue: null })),
+    transition: cell<'entry' | 'update' | 'pending' | null>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
   effects: ['trackTransition'],
@@ -171,7 +185,7 @@ export const heatmapMachine = createMachine({
       () => prop('rows'),
       () => prop('columns'),
     ], () => action(['notifyActive']))
-    // 决定格子颜色的输入换了就安排过渡；animated 改了也要重新核一遍
+    // 决定格子颜色的输入换了就安排过渡；animated 与 animateInView 改了也要重新核一遍
     track([
       () => prop('variant'),
       () => prop('value'),
@@ -182,6 +196,7 @@ export const heatmapMachine = createMachine({
       () => prop('rows'),
       () => prop('columns'),
       () => prop('animated'),
+      () => prop('animateInView'),
     ], () => action(['syncTransition']))
   },
   states: {
@@ -194,6 +209,8 @@ export const heatmapMachine = createMachine({
         'CELL.LEAVE': { actions: ['clearHoveredCell'] },
         'DETAIL.DISMISS': { actions: ['dismissDetail'] },
         'TRANSITION.END': { actions: ['endTransition'] },
+        'VISIBILITY': { actions: ['revealTransition'] },
+        'TRANSITION.SETTLE': { actions: ['settleTransition'] },
       },
     },
   },
@@ -268,18 +285,69 @@ export const heatmapMachine = createMachine({
 
       syncTransition: params => syncHeatmapTransition(params),
 
+      // 读者看得见了：只有停着的入场要起跑。在播的填色与换色不受进出视口打扰
+      revealTransition: (params) => {
+        if (params.context.get('transition') === 'pending')
+          syncHeatmapTransition(params)
+      },
+
+      // 打印前：停着的入场与在播的过渡都直接落到终态，纸上不留半截
+      settleTransition: ({ prop, context, refs, scope }) => {
+        refs.get('stopTransition')?.()
+        refs.set('stopTransition', null)
+        refs.set('drawn', heatmapDrawsData(heatmapGridOptions(prop, scope)))
+        context.set('transition', null)
+      },
+
       endTransition: ({ context, refs }) => {
         refs.set('stopTransition', null)
         context.set('transition', null)
       },
     },
     effects: {
-      // 挂载这一刻根节点未必就位：推迟到宿主提交之后再核一遍，挂载时就带着数据的也播入场
+      // 挂载这一刻根节点未必就位：推迟到宿主提交之后再核一遍，挂载时就带着数据的也播入场。
+      // 同时盯住读者看不看得见：根进出视口、页面切到后台再回来，停着的入场据此起跑；打印前一律落到终态
       trackTransition: (params) => {
-        params.flush(() => params.action(['syncTransition']))
+        const { refs, scope, send, flush, action } = params
+        let disposed = false
+        let stop: VoidFunction | undefined
+        flush(() => {
+          if (disposed)
+            return
+          const root = refs.get('getRootEl')()
+          if (root) {
+            const win = scope.getWin()
+            // 观察器全窗口共用一个；环境没有交叉观察器时按一直在视口里处理。要赶在第一次核对之前定下来
+            const stopView = watchInView(win, root, (inView) => {
+              if (disposed || refs.get('inView') === inView)
+                return
+              refs.set('inView', inView)
+              send({ type: 'VISIBILITY' })
+            })
+            if (!stopView)
+              refs.set('inView', true)
+            const stopPage = watchPageVisibility(root.ownerDocument, () => {
+              if (!disposed)
+                send({ type: 'VISIBILITY' })
+            })
+            const onPrint = (): void => {
+              if (!disposed)
+                send({ type: 'TRANSITION.SETTLE' })
+            }
+            win.addEventListener('beforeprint', onPrint)
+            stop = () => {
+              stopView?.()
+              stopPage()
+              win.removeEventListener('beforeprint', onPrint)
+            }
+          }
+          action(['syncTransition'])
+        })
         return () => {
-          params.refs.get('stopTransition')?.()
-          params.refs.set('stopTransition', null)
+          disposed = true
+          stop?.()
+          refs.get('stopTransition')?.()
+          refs.set('stopTransition', null)
         }
       },
     },

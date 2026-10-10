@@ -45,6 +45,8 @@ export interface XhSparklineProps extends Omit<ComponentPropsWithRef<'svg'>, 'ch
   format?: NumberFormatSpec | ((value: number) => string)
   /** 播放过渡动画，默认开。 */
   animated?: boolean
+  /** 进入视口才播入场，缺省 true：还没露出来时入场停在第一帧，露出第一像素才起跑；false 时挂载即播。 */
+  animateInView?: boolean
   locale?: string
   translations?: Partial<SparklineTranslations>
 }
@@ -65,6 +67,7 @@ export function XhSparkline({
   tone,
   format,
   animated,
+  animateInView,
   locale,
   translations,
   ...rest
@@ -81,6 +84,7 @@ export function XhSparkline({
     tone,
     format,
     animated,
+    animateInView,
     locale,
     translations,
   }) as SparklineProps)

@@ -42,6 +42,7 @@ export const XhSparkline = defineComponent({
     tone: { type: String as PropType<Tone> },
     format: { type: [Object, Function] as PropType<NumberFormatSpec | ((value: number) => string)> },
     animated: { type: Boolean, default: undefined },
+    animateInView: { type: Boolean, default: undefined },
     locale: { type: String },
     translations: { type: Object as PropType<Partial<SparklineTranslations>> },
   },

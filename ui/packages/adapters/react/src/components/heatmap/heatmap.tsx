@@ -102,6 +102,8 @@ export interface XhHeatmapRootProps extends Omit<ComponentPropsWithRef<'div'>, '
   size?: Size
   /** 播放过渡，默认开；关闭后直接画终态。 */
   animated?: boolean
+  /** 进入视口才播入场，缺省 true：还没露出来时入场停在第一帧，露出第一像素才起跑；false 时挂载即播。 */
+  animateInView?: boolean
   translations?: Partial<HeatmapTranslations>
   /** 焦点落到某一格。 */
   onCellFocus?: HeatmapProps['onCellFocus']
@@ -135,6 +137,7 @@ export function XhHeatmapRoot({
   palette,
   size,
   animated,
+  animateInView,
   translations,
   onCellFocus,
   onCellActive,
@@ -163,6 +166,7 @@ export function XhHeatmapRoot({
     palette,
     size,
     animated,
+    animateInView,
     translations,
     onCellFocus,
     onCellActive,

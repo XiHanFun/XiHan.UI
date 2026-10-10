@@ -220,9 +220,12 @@ export function connectHeatmap<T extends PropTypes>(
     return cell => (first == null || !(span > 0) ? 0 : ((parseHeatmapDate(cell.date) ?? first) - first) / span)
   })()
 
-  /** 格子的颜色：档位、落在中点哪一侧，以及首次出现时有颜色的格子要等扫描扫到才填色。 */
+  /**
+   * 格子的颜色：档位、落在中点哪一侧，以及首次出现时有颜色的格子要等扫描扫到才填色。
+   * 等读者看得见的那一段同样写上填色的标记，由根上的 data-deferred 把关键帧停在起点（空格底色）。
+   */
   const cellPaint = (place: { level: number, polarity: string | null, percent: number }, at: () => number): Record<string, unknown> => {
-    const drawing = transition === 'entry' && place.level > 0
+    const drawing = (transition === 'entry' || transition === 'pending') && place.level > 0
     return {
       'data-level': String(place.level),
       'data-polarity': place.polarity ?? undefined,
@@ -311,6 +314,8 @@ export function connectHeatmap<T extends PropTypes>(
       'data-scale': diverging ? 'diverging' : undefined,
       // 数据变化后的换色进行中：格子的颜色按数据角色的时长过渡，主题与语气换色不受它拖慢
       'data-animating': dataAttr(transition === 'update'),
+      // 首次出现在等读者看得见：填色的关键帧停在起点，格子都还是空格底色
+      'data-deferred': dataAttr(transition === 'pending'),
     }),
 
     getGridProps: () => normalize.element({

@@ -105,6 +105,7 @@ reference 画一条横贯的虚线：写目标值看每天达没达标，写 mea
 - 缺省语气 `neutral`：线与柱取弱化色 `--xh-chart-deemphasis`，标记点与强调的柱取品牌色相的分类色 1。写了其他 `tone` 时整条取语气色：颜色本身带好坏含义（错误率、合格率）时用它，并在旁边用文字说明好坏。
 - 尺寸由组件槽决定：宽 `--xh-sparkline-width`（缺省 6rem），高 `--xh-sparkline-height`（缺省一行字高，`1lh`）。放进指标卡时把宽改成 `100%`、高改成一格间距令牌即可铺满；几何在尺寸变化后重新计算，线宽与标记点大小不随之缩放。
 - 首次出现时折线从头描到尾，标记点等描线的笔尖到了才出现，柱从基线长出，数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场；之后数据变化时从当前位置插值到新位置，数据整体平移一格（滚动窗口）时折线跟着滑动而不是变形。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡；系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入。
+- 入场等读者看得见才播（`animateInView`，缺省开）：迷你图还没进入视口或页面在后台时，入场停在第一帧，露出第一像素时才开始，只播一次，滚出再回来不重播；看不见时的数据变化直接落到终态，打印前没播的入场直接落到终态。`animateInView={false}`（Web Components 写 `animate-in-view="false"`）时挂载即播。
 - 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 渲染一个 `<svg>`；Web Components 侧作者写一个空的 `<svg data-xh-part="root">`，摘要与图形由元素生成进去。数据、参考带与数值格式只走 JS property；参考线另有同名属性（`reference="180"` 或 `reference="mean"`）。
 
 ### 最佳实践
@@ -147,6 +148,7 @@ reference 画一条横贯的虚线：写目标值看每天达没达标，写 mea
 | `tone` | `Tone` |  | 语气，缺省 neutral：线与柱取弱化色、标记取品牌色；其余语气整条取语气色。 |
 | `format` | `NumberFormatSpec \| ((value: number) => string)` |  | 数值格式：摘要里的数值用它写。 |
 | `animated` | `boolean` |  | 播放过渡动画，缺省 true：首次出现时折线从头描到尾、柱从基线长出，数据变化时从当前位置插值到新位置。 false 时直接画终态。系统开了减弱动效或容器写了 data-motion="reduce" 时几何直接落到终态，只保留淡入淡出。 |
+| `animateInView` | `boolean` |  | 进入视口才播入场，缺省 true：迷你图还没露出来（或页面在后台）时入场停在第一帧， 露出第一像素时才起跑，只播一次；看不见时的数据变化直接落到终态。打印前没播的入场直接落到终态。 false 时挂载即播，不管在不在视口里。 |
 | `locale` | `string` |  | 数字格式与内建文案的语言；未提供时按宿主语言。 |
 | `translations` | `Partial<SparklineTranslations>` |  |  |
 
@@ -162,7 +164,7 @@ reference 画一条横贯的虚线：写目标值看每天达没达标，写 mea
 
 **状态**：`idle`
 
-**事件**：`RESIZE` · `METRICS` · `SCENE.FRAME`
+**事件**：`RESIZE` · `METRICS` · `SCENE.FRAME` · `VISIBILITY` · `SCENE.SETTLE`
 
 ### connect API
 
@@ -215,6 +217,7 @@ reference 画一条横贯的虚线：写目标值看每天达没达标，写 mea
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-deferred` | '' \| undefined |
 | `root` | `data-state` | 'error' \| 'empty' \| undefined |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |

@@ -113,6 +113,7 @@ labelContent 决定标签写什么：取 name-value 等内建写法，或给函�
 - 多张图接到同一个受控的 `activeKey` 上时，饼图按扇区名与其他图的类目对齐：在柱状图上悬停「华东」，饼图的「华东」扇区一起指示。
 - `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有扇区时，空态写 `translations.loadingText`（缺省 Loading…）并转一个圈，取完仍没有数据才写 `emptyText`。
 - 首次出现时整圈从起始角顺着扫开，标签与引导线等扫开的边缘到了才出现，环形中心等整圈扫完再淡入，合计从 0 数上去，数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场；之后的数据变化与图例切换从当前角度插值到新角度，合计从旧值滚到新值，隐藏的扇区收拢并淡出后才移除。按数据次序排列（`sort="none"`）时扇区不换位，只在原处伸缩。
+- 入场等读者看得见才播（`animateInView`，缺省开）：绘图区还没进入视口或页面在后台时，入场停在第一帧，露出第一像素时才开始，只播一次，滚出再回来不重播；看不见时的数据变化直接落到终态，打印前没播的入场直接落到终态。`animateInView={false}`（Web Components 写 `animate-in-view="false"`）时挂载即播。
 - `animated={false}`（Web Components 写 `animated="false"`）关闭过渡，数据一变直接画终态。系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。视口尺寸变化后的重排不播过渡。
 - 过渡的快慢由动效令牌决定，组件从绘图区的计算样式读取：入场取 `--xh-motion-duration-reveal`（缺省 640ms），数据更新与图例切换取 `--xh-motion-duration-morph`（缺省 400ms）。在图或它的容器上改写它们，例如 `style="--xh-motion-duration-reveal: 1s"`，只影响这张图；入场的曲线取 `--xh-motion-ease-enter-strong`，更新取 `--xh-motion-ease-continuous`。
 - 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 不写默认内容时铺开缺省结构（标题、图例、视口与绘图区、环形中心、空态、提示框）；Web Components 侧作者写外壳（root、caption、legend、viewport 与其中空的 `<svg>` plot，可选 center、empty 与 tooltip），扇区、标签与图例项由元素生成进去。
@@ -193,6 +194,7 @@ labelContent 决定标签写什么：取 name-value 等内建写法，或给函�
 | `XhPieChartRoot` | `activeKey` | `ChartKey \| null` |  | 激活的键（受控）：与别的图联动时是类目名。 |
 | `XhPieChartRoot` | `pending` | `boolean` |  | 数据重取中：保留上一帧、整体降低不透明度。 |
 | `XhPieChartRoot` | `animated` | `boolean` |  | 播放过渡动画，缺省 true；false 时直接画终态。 |
+| `XhPieChartRoot` | `animateInView` | `boolean` |  | 进入视口才播入场，缺省 true：还没露出来时入场停在第一帧，露出第一像素才起跑；false 时挂载即播。 |
 | `XhPieChartRoot` | `locale` | `string` |  |  |
 | `XhPieChartRoot` | `translations` | `Partial<PieChartTranslations>` |  |  |
 | `XhPieChartRoot` | `onHiddenSeriesChange` | `PieChartProps['onHiddenSeriesChange']` |  |  |
@@ -330,6 +332,7 @@ labelContent 决定标签写什么：取 name-value 等内建写法，或给函�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-deferred` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'error' \| undefined |
 | `root` | `data-xh-chart-part` | 'root' |

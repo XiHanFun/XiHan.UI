@@ -315,6 +315,7 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 - 尺寸由视口决定：宽度随容器，高度取 `--xh-cartesian-chart-height`（缺省 `--xh-chart-height`）。视口尺寸变化时重新布局，服务端与首帧只输出空的绘图区、不占位跳动。
 - `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`，不闪骨架，也不跳布局。首次取数、手里还没有数据时，空态写 `translations.loadingText`（缺省 Loading…）并转一个圈，取完仍没有数据才写 `emptyText`。
 - 首次出现时播放入场：柱沿数值轴从基线长出，折线从头描到尾，数据点等笔尖扫到才出现，面积、坐标轴与标签淡入，多个系列按图例次序错开（至多 5 步）。数据层的标记多于 1000 个时不做几何插值，只淡入淡出。数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场，空态里已画出的坐标轴从原处移到新刻度，不重新淡入。之后的数据变化与图例切换从当前位置插值到新位置：留下的柱原地伸缩，新增的柱从基线长出，隐藏的系列收回基线并淡出后才移除；坐标轴刻度随之移动，数据标签、合计与线尾标签上的数从旧值滚到新值。标记按自变量的值对齐而不是按位置：类目换了次序时柱滑到新位置，时间序列往后推一格时整条线平移、新点从边上进来。`pending` 结束后到来的新数据按更新处理，不再重播入场。
+- 入场等读者看得见才播（`animateInView`，缺省开）：绘图区还没进入视口或页面在后台时，入场停在第一帧，露出第一像素时才开始，只播一次，滚出再回来不重播；看不见时的数据变化直接落到终态，打印前没播的入场直接落到终态。`animateInView={false}`（Web Components 写 `animate-in-view="false"`）时挂载即播。
 - `animated={false}`（Web Components 写 `animated="false"`）关闭过渡，数据一变直接画终态。系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。视口尺寸变化与字体加载完成后的重排不播过渡。
 - 过渡的快慢由动效令牌决定，组件从绘图区的计算样式读取：入场取 `--xh-motion-duration-reveal`（缺省 640ms），数据更新与图例切换取 `--xh-motion-duration-morph`（缺省 400ms）。在图或它的容器上改写它们，例如 `style="--xh-motion-duration-reveal: 1s"`，只影响这张图；入场的曲线取 `--xh-motion-ease-enter-strong`，更新取 `--xh-motion-ease-continuous`。折线的描出与入场同一个时长。
 - 没有数据或全部系列被隐藏时显示空态，文字取 `translations.emptyText`；坐标轴在全部隐藏时保留，图例仍可把系列点回来。
@@ -418,6 +419,7 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 | `XhCartesianChartRoot` | `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。 |
 | `XhCartesianChartRoot` | `pending` | `boolean` |  | 数据重取中：保留上一帧、整体降低不透明度。 |
 | `XhCartesianChartRoot` | `animated` | `boolean` |  | 播放过渡动画，缺省 true；false 时直接画终态。 |
+| `XhCartesianChartRoot` | `animateInView` | `boolean` |  | 进入视口才播入场，缺省 true：还没露出来时入场停在第一帧，露出第一像素才起跑；false 时挂载即播。 |
 | `XhCartesianChartRoot` | `locale` | `string` |  |  |
 | `XhCartesianChartRoot` | `translations` | `Partial<CartesianChartTranslations>` |  |  |
 | `XhCartesianChartRoot` | `onHiddenSeriesChange` | `CartesianChartProps['onHiddenSeriesChange']` |  |  |
@@ -605,6 +607,7 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-deferred` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | model.spec.orientation |
 | `root` | `data-palette` | props.palette |
