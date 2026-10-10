@@ -480,6 +480,21 @@ describe('沿 transform 换位', () => {
     expect(calls[0]!.keyframes[0]).toEqual({ transform: 'translate(0px, 40px)' })
   })
 
+  it('channel: transform 时进场关键帧还没播完的条目照样跟着挪，不原地一跳', async () => {
+    const container = list(3)
+    stops.push(trackListMotion(container, { item: '[data-part="item"]', channel: 'transform' }))
+    const last = container.children[2] as HTMLElement & { moveTo: (next: number) => void }
+    const calls = stubAnimate(last)
+    Object.defineProperty(last, 'getAnimations', {
+      configurable: true,
+      value: () => [{ animationName: 'xh-slide-in', playState: 'running' }],
+    })
+    ;(container.children[0] as HTMLElement).remove()
+    last.moveTo(40)
+    await flush()
+    expect(calls[0]!.keyframes[0]).toEqual({ transform: 'translate(0px, 40px)' })
+  })
+
   it('一批里有条目换了位才回调 onReflow', async () => {
     const container = list(3)
     const onReflow = vi.fn()
