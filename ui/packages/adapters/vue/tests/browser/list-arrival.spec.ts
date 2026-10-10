@@ -179,7 +179,8 @@ describe('notification 条目到达', () => {
     app.mount(host)
     await settle()
     const cards = (): HTMLElement[] => [...document.querySelectorAll<HTMLElement>('[data-scope="notification"][data-part="item"]')]
-    expect(cards().map(el => running(el)[0])).toEqual(Array.from({ length: 6 }).fill('xh-sheet-in'))
+    // 逐条排开的卡片从所贴的那条边推入（缺省落位贴行尾）
+    expect(cards().map(el => running(el)[0])).toEqual(Array.from({ length: 6 }).fill('xh-slide-in'))
     expect(cards().slice(0, 5).map(staggerSteps)).toEqual([0, 1, 2, 3, 4])
 
     create!({ title: '新来的一条', duration: Number.POSITIVE_INFINITY })
@@ -222,12 +223,13 @@ describe('notification 条目到达', () => {
     const first = card('m2')
     await Promise.all(first.getAnimations().map(a => a.finished.catch(() => undefined)))
     await settle()
-    // 排布位变了的那张：换位中途带着反向补偿的 translate，而不是已经在新位置上
+    // 排布位变了的那张：换位中途带着反向补偿的 transform（卡片的换位走 transform，与推入的 translate 叠加），
+    // 而不是已经在新位置上
     const moved = survivors.find((el, i) => el.offsetTop !== tops[i])!
     expect(moved).toBeDefined()
-    expect(getComputedStyle(moved).translate).not.toBe('none')
+    expect(getComputedStyle(moved).transform).not.toBe('none')
     await Promise.all(moved.getAnimations().map(a => a.finished.catch(() => undefined)))
-    expect(['none', '0px'].includes(getComputedStyle(moved).translate)).toBe(true)
+    expect(getComputedStyle(moved).transform).toBe('none')
   })
 })
 
