@@ -319,18 +319,22 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
     for (const record of records) {
       if (record.type === 'childList') {
         record.addedNodes.forEach(node => collect(node, added))
+        // 回调时被删的节点已经离开文档：带祖先限定的条目选择器（某一摞里的卡片）在它身上匹配不上，
+        // 先按上一轮量过排布位的已知条目认，没量过的再看选择器
         record.removedNodes.forEach((node) => {
           if (node.nodeType !== 1 || departing.has(node as Element))
             return
           const el = node as HTMLElement
-          if (el.matches(item)) {
+          if (slots.has(el) || el.matches(item)) {
             removed.push({ el, parent: record.target, next: record.nextSibling })
             return
           }
-          // 删的是包着条目的外壳：里面的条目替它离场
+          // 删的是包着条目的外壳：里面的已知条目替它离场
           if (wrapped) {
-            for (const inner of el.querySelectorAll<HTMLElement>(item))
-              removed.push({ el: inner, parent: record.target, next: record.nextSibling })
+            for (const known of slots.keys()) {
+              if (el.contains(known))
+                removed.push({ el: known, parent: record.target, next: record.nextSibling })
+            }
           }
         })
       }

@@ -157,6 +157,18 @@ describe('离场', () => {
     expect(container.querySelectorAll('[data-state="closed"]')).toHaveLength(0)
   })
 
+  it('条目选择器带祖先限定时（某一摞里的卡片），删掉的条目同样留替身：按已知条目认，不靠离开文档后的匹配', async () => {
+    const container = list(2)
+    container.classList.add('stack')
+    stops.push(trackListMotion(container, { item: '.stack [data-part="item"]' }))
+    const end = stubExitAnimation()
+    const gone = container.children[0] as HTMLElement
+    gone.remove()
+    await flush()
+    expect(container.querySelector('[data-state="closed"]')).not.toBeNull()
+    end()
+  })
+
   it('没有退场动画时当场移除', async () => {
     const container = list(2)
     track(container)
