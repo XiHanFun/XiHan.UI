@@ -52,14 +52,15 @@
 }
 
 /*
- * 热力图钉住的那一列自带实色底，缺省取 --xh-bg-surface；示例舞台的底色由 --demo-stage-bg 给
- * （工具条不钉主题时是 VitePress 的 --vp-c-bg），深色态下两者不是同一个色，那一列会显出一块补丁。
- * 把令牌接到舞台自己的底色上，整年的那几份示例一处管住。
+ * 热力图钉住的那一列自带实色底，缺省取 --xh-bg-surface；示例舞台的底是页面底（--demo-stage-bg，
+ * 由 XhDemo.vue 定），两者不是同一个色，那一列会显出一块补丁。
+ * 把令牌接到舞台自己的底色上，整年的那几份示例一处管住。不写回退值：舞台底只认 XhDemo.vue 那一处，
+ * 这里另写一个就会在那边改底色时落下（跟随站点那一档曾因此露出一列白底）。
  * 标签页放不下时两端翻页钮的盖底同理：它盖住挪到底下的标签，缺省取 --xh-bg-surface，舞台上要接成舞台的底。
  */
 .xh-demo__stage {
-  --xh-heatmap-bg: var(--demo-stage-bg, var(--vp-c-bg));
-  --xh-tabs-scroll-trigger-bg: var(--demo-stage-bg, var(--vp-c-bg));
+  --xh-heatmap-bg: var(--demo-stage-bg);
+  --xh-tabs-scroll-trigger-bg: var(--demo-stage-bg);
 }
 
 /* 多个紧凑控件或“控件 + 状态回读”作为一个整体参与舞台居中；
