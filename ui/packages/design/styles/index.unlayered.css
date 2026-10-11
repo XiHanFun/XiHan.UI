@@ -43913,6 +43913,11 @@
   display: none;
 }
 
+/* 格子里放的字段族控件（就地编辑的单元格）铺满这一格，与放进 Field 时一样；并排几个就平分，各自的压缩底线照旧 */
+.xh-scope-table[data-part='cell'] {
+  --xh-control-w: 100%;
+}
+
 .xh-scope-table[data-part='column-header'] {
   /* 列头与正文同色、加一档字重：表头靠淡底与字重和表体分开，不再靠淡字 */
   color: var(--xh-table-column-fg, var(--xh-fg-default));

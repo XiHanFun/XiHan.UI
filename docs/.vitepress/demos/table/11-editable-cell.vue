@@ -57,9 +57,8 @@ function onEditKeydown(event: KeyboardEvent): void {
       <XhTableBody>
         <XhTableRow v-for="line in lines" :key="line.id" :value="line.id">
           <XhTableCell value="item">{{ line.item }}</XhTableCell>
-          <!-- 格子比字段的缺省宽度窄：--xh-control-w 改成 100%，字段铺满所在的格子 -->
           <XhTableCell value="count">
-            <XhNumberFieldRoot v-model:value="line.count" :min="0" size="sm" style="--xh-control-w: 100%">
+            <XhNumberFieldRoot v-model:value="line.count" :min="0" size="sm">
               <XhNumberFieldControl>
                 <!-- keydown 掐断冒泡：不然上下键与 Home/End 会被表体收走去搬焦点行 -->
                 <XhNumberFieldInput :aria-label="`${line.item} 数量`" @keydown.stop="onEditKeydown" />
@@ -67,7 +66,7 @@ function onEditKeydown(event: KeyboardEvent): void {
             </XhNumberFieldRoot>
           </XhTableCell>
           <XhTableCell value="note">
-            <XhTextFieldRoot v-model:value="line.note" placeholder="可以打空格" size="sm" style="--xh-control-w: 100%">
+            <XhTextFieldRoot v-model:value="line.note" placeholder="可以打空格" size="sm">
               <XhTextFieldControl>
                 <XhTextFieldInput :aria-label="`${line.item} 备注`" @keydown.stop="onEditKeydown" />
               </XhTextFieldControl>

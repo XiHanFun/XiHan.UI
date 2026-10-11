@@ -7,8 +7,8 @@
 
 import type { Scope } from '@xihan-ui/core'
 import type { FieldsetProps, FieldsetTranslations } from '@xihan-ui/headless'
-import type { PropertyValues } from '../reactive'
 import type { XhConfig } from '../config'
+import type { PropertyValues } from '../reactive'
 import { createCounterIdGenerator, createScope, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { connectFieldset, fieldsetAnatomy, fieldsetMeta } from '@xihan-ui/headless'
 import { notifyXhConfigChange } from '../config'
@@ -64,7 +64,8 @@ export class XhFieldsetElement extends XhElement {
   /**
    * 作用域禁用：整组禁用经它压进子树，组内组件库的控件各自拿到 disabled，行为与禁用面一起到位。
    * 原生 fieldset[disabled] 只管得住原生表单控件，滑块、取色区这类非原生交互节点与各家族的禁用面它够不着
-   * @internal 配置解析沿祖先链读它，不是给作者用的接口
+   * 配置解析沿祖先链读它，不是给作者用的接口。
+   * @internal
    */
   get xhConfig(): XhConfig {
     return { disabled: this.disabled === true ? true : undefined }
@@ -72,7 +73,8 @@ export class XhFieldsetElement extends XhElement {
 
   /**
    * legend 里的节点不吃本组的禁用（原生语义：首个 legend 内的控件不受所在 fieldset 禁用），外层的照旧。
-   * @internal 配置解析沿祖先链读它，不是给作者用的接口
+   * 配置解析沿祖先链读它，不是给作者用的接口。
+   * @internal
    */
   xhConfigFor(node: Element): XhConfig {
     return this.getPart('legend')?.contains(node) ? {} : this.xhConfig

@@ -50,6 +50,11 @@ function rewritesDeclaration(record: MutationRecord): boolean {
 export abstract class XhElement extends XhReactiveElement {
   /** 子类声明所属组件的解剖与元数据，接线后据它校验作者写的角色节点。 */
   static partContract?: PartContract
+  /**
+   * 宿主缺省的 display。字段族组件写 contents：宿主不再是外层 flex / grid 里多出来的那一层，
+   * 作者写的 root 直接参与排布、按控件宽铺满（与 Vue / React 直接渲染 root 一致）；作者自己写了 display 就不动。
+   */
+  static hostDisplay?: string
 
   private readonly ownSpreader: Spreader = createSpreader()
   /**
@@ -221,6 +226,9 @@ export abstract class XhElement extends XhReactiveElement {
 
   override connectedCallback(): void {
     super.connectedCallback()
+    const hostDisplay = (this.constructor as typeof XhElement).hostDisplay
+    if (hostDisplay && !this.style.display)
+      this.style.display = hostDisplay
     this.observeParts()
     // 配置一变就重铺：文案、locale、尺寸档都可能从全局或某个 <xh-config> 进来
     this.stopConfigWatch ??= onXhConfigChange(() => this.requestUpdate(), this)
