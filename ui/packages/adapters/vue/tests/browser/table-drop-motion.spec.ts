@@ -43,6 +43,9 @@ function translateY(el: HTMLElement): number {
 async function mount(): Promise<void> {
   host = document.createElement('div')
   host.style.inlineSize = '320px'
+  // 按键经 CDP 往返，CI 并行负载下回来时 move 档的换位已经滑完，「从旧位置滑过来」随机判不过。
+  // 行的 translate 过渡直接取这支令牌，在宿主上拉长；断完播完再看落定
+  host.style.setProperty('--xh-motion-duration-move', '10s')
   document.body.append(host)
   const Demo = defineComponent(() => {
     const ids = ref(['a', 'b', 'c'])
@@ -73,7 +76,9 @@ describe('table 行换位落下', () => {
     expect([...host!.querySelectorAll(`[data-part='body'] [data-part='row']`)].map(el => el.getAttribute('data-value'))).toEqual(['b', 'a', 'c'])
     expect(translateY(row('a'))).toBeLessThan(0)
     expect(translateY(row('b'))).toBeGreaterThan(0)
-    await expect.poll(() => getComputedStyle(row('a')).translate).toBe('none')
-    await expect.poll(() => getComputedStyle(row('b')).translate).toBe('none')
+    for (const animation of host!.getAnimations({ subtree: true }))
+      animation.finish()
+    expect(getComputedStyle(row('a')).translate).toBe('none')
+    expect(getComputedStyle(row('b')).translate).toBe('none')
   })
 })
