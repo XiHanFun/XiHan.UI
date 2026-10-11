@@ -50,16 +50,16 @@ border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
 border-left-width: 1px
-border-top-color: rgba(0, 0, 0, 0)
-border-right-color: rgba(0, 0, 0, 0)
-border-bottom-color: rgba(0, 0, 0, 0)
-border-left-color: rgba(0, 0, 0, 0)
+border-top-color: oklab(0 0 0 / 0.102)
+border-right-color: oklab(0 0 0 / 0.102)
+border-bottom-color: oklab(0 0 0 / 0.102)
+border-left-color: oklab(0 0 0 / 0.102)
 min-height: 32px
 font-size: 16px
 line-height: normal
 font-weight: 400
 color: oklch(0.208 0.006 258)
-background-color: rgba(0, 0, 0, 0)
+background-color: oklab(0 0 0 / 0.02585)
 transition-property: background-color, border-color, box-shadow
 transition-duration: 0.12s, 0.12s, 0.12s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1)

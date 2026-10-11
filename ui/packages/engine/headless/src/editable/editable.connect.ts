@@ -291,12 +291,12 @@ export function connectEditable<T extends PropTypes>(
 
     // control 是唯一的视觉盒：描边、底色、聚焦换色由 Field Chrome 家族画在它身上，
     // 三个状态属性供家族按禁用 / 只读 / 校验切换盒观感；size 缺省 md。
-    // 预览态恒为无壳 ghost：那时它读起来就是一段文字，悬停才浮出描边提示可编辑；进编辑态才换成 root 的形态
+    // 预览态与编辑态都取 root 的形态（缺省 outline），与别的字段同一副盒；要读起来像一段文字的显式写 ghost
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
       'data-xh-field-chrome': '',
       'data-xh-field-size': prop('size') ?? 'md',
-      'data-variant': editing ? variant : 'ghost',
+      'data-variant': variant,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),

@@ -156,10 +156,10 @@ describe('就地编辑的左内容右动作布局', () => {
     expect(part('control').getBoundingClientRect().height).toBe(tokenPx('--xh-control-h-md'))
     expectUnifiedControl('preview', 'edit-trigger')
     expectNoDivider('edit-trigger')
-    // 预览态的盒是无壳 ghost：静息不填底、描边透明，读起来就是一段文字
-    expect(part('control').dataset.variant).toBe('ghost')
-    expect(alpha(getComputedStyle(part('control')).backgroundColor)).toBe(0)
-    expect(alpha(getComputedStyle(part('control')).borderTopColor)).toBe(0)
+    // 预览态的盒与别的字段同一副：缺省描边式，静息字段淡底 + 控件描边，一眼看得出这是个能改的字段
+    expect(part('control').dataset.variant).toBe('outline')
+    expect(alpha(getComputedStyle(part('control')).backgroundColor)).toBeGreaterThan(0)
+    expect(alpha(getComputedStyle(part('control')).borderTopColor)).toBeGreaterThan(0)
   })
 
   it('编辑态切成左侧输入与右侧确认、取消图标，三个动作不同时出现', async () => {
