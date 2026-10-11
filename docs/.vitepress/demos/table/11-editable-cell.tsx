@@ -1,5 +1,5 @@
 // 单元格就地编辑 | 表体的方向键与 Home/End 是挂在 body 上的冒泡监听，可编辑控件上阻止冒泡后这些键就回归输入框自身
-import type { CSSProperties, KeyboardEvent, ReactNode } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 import {
   XhNumberFieldControl,
   XhNumberFieldInput,
@@ -33,9 +33,6 @@ const initial = [
 
 // 行序不随编辑变化，rows 取一次即可
 const rows = initial.map(line => ({ id: line.id }));
-
-// 格子比字段的缺省宽度窄：--xh-control-w 改成 100%，字段铺满所在的格子
-const cellField = { "--xh-control-w": "100%" } as CSSProperties;
 
 // keydown 掐断冒泡：不然上下键与 Home/End 会被表体收走去搬焦点行。
 // Escape 把焦点交还所在行，表体的方向键随即恢复
@@ -76,7 +73,6 @@ export default function Demo(): ReactNode {
                   onValueChange={details => patch(line.id, { count: details.value })}
                   min={0}
                   size="sm"
-                  style={cellField}
                 >
                   <XhNumberFieldControl>
                     <XhNumberFieldInput aria-label={`${line.item} 数量`} onKeyDown={onEditKeydown} />
@@ -89,7 +85,6 @@ export default function Demo(): ReactNode {
                   onValueChange={details => patch(line.id, { note: details.value })}
                   placeholder="可以打空格"
                   size="sm"
-                  style={cellField}
                 >
                   <XhTextFieldControl>
                     <XhTextFieldInput aria-label={`${line.item} 备注`} onKeyDown={onEditKeydown} />

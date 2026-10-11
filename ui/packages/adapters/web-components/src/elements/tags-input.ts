@@ -86,6 +86,13 @@ const ARRAY_CONVERTER = {
  * @csspart hidden-input - type=hidden 的表单出口，值是按 delimiter 拼接后的整串
  */
 export class XhTagsInputElement extends XhElement {
+  /**
+   * 字段族：宿主不占一层盒子，root 直接参与外层排布、按控件宽铺满。
+   * 适配器内部的排布开关，不是给作者用的接口。
+   * @internal
+   */
+  static override hostDisplay = 'contents'
+
   // item-preview / item-text / item-delete-trigger 接的是 tag 的 root / label / close-trigger：三个作者名都归 tag 那套 scope 管，不在本元素的解剖里
   static override partContract = {
     anatomy: tagsInputAnatomy,

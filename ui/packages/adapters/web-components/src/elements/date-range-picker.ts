@@ -206,6 +206,13 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串；起止各一份
  */
 export class XhDateRangePickerElement extends XhPortalHostElement {
+  /**
+   * 字段族：宿主不占一层盒子，root 直接参与外层排布、按控件宽铺满。
+   * 适配器内部的排布开关，不是给作者用的接口。
+   * @internal
+   */
+  static override hostDisplay = 'contents'
+
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
   declare portalContainer?: () => Element | null
 
