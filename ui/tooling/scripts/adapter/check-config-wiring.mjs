@@ -254,14 +254,22 @@ function configAliases(source) {
   return new Set([...source.matchAll(bind)].map(m => m[1]))
 }
 
-/** locale / size / translations 经 withXhConfig 统一垫进 props，不必逐字段点名。 */
-const MERGED_BY_WITH = new Set(['locale', 'size', 'translations'])
+/**
+ * locale / size / translations 经 withXhConfig 统一垫进 props，不必逐字段点名；
+ * disabled 是字段集压进子树的作用域禁用，在 fillXhConfigDefaults 里按「压过」合并，同样统一落到 props。
+ */
+const MERGED_BY_WITH = new Set(['locale', 'size', 'translations', 'disabled'])
 const globalKeys = new Set(
   [...(mergeSource.match(/GLOBAL_KEYS = \[([^\]]*)\]/)?.[1] ?? '').matchAll(/'(\w+)'/g)].map(m => m[1]),
 )
 const withBody = mergeSource.slice(
   mergeSource.indexOf('export function withXhConfigBase'),
   mergeSource.indexOf('\n}', mergeSource.indexOf('export function withXhConfigBase')),
+)
+/** 垫底那一段：GLOBAL_KEYS 之外按别的规则合并的键（disabled）在这里点名读取。 */
+const fillBody = mergeSource.slice(
+  mergeSource.indexOf('export function fillXhConfigDefaults'),
+  mergeSource.indexOf('\n}', mergeSource.indexOf('export function fillXhConfigDefaults')),
 )
 
 const files = { vue: await filesUnder(SRC.vue), react: await filesUnder(SRC.react), wc: await filesUnder(SRC.wc) }
@@ -317,7 +325,7 @@ for (const field of allFields) {
 for (const field of MERGED_BY_WITH) {
   if (!allFields.has(field))
     errors.push(`MERGED_BY_WITH 里的 '${field}' 已经不是 XhConfig 的字段——名单过期了，删掉这一条`)
-  else if (!globalKeys.has(field) && !withBody.includes(field))
+  else if (!globalKeys.has(field) && !withBody.includes(field) && !fillBody.includes(`config.${field}`))
     errors.push(`MERGED_BY_WITH 里的 '${field}' 已经不由 withXhConfig 统一垫底（${MERGE} 的 GLOBAL_KEYS 与 withXhConfigBase 里都找不到它）——名单过期了，删掉这一条，让它照常查有没有人读`)
 }
 

@@ -10,6 +10,9 @@ import { createContext, useContext } from 'react'
 
 const Ctx = createContext<FieldsetContext | undefined>(undefined)
 
+/** 字段集外面那一层的作用域禁用：legend 里的控件不吃本组的禁用，恢复成它。 */
+export const FieldsetOuterDisabled = createContext(false)
+
 export const FieldsetProvider = Ctx
 
 export function useFieldsetContext(): FieldsetContext {

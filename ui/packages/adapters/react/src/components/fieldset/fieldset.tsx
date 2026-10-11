@@ -7,9 +7,10 @@
 
 import type { FieldsetProps, FieldsetTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { withXhConfig } from '../../config/config'
+import { useContext, useMemo } from 'react'
+import { useXhConfig, withXhConfig, XhConfigProvider } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
-import { FieldsetProvider, useFieldsetContext } from './context'
+import { FieldsetOuterDisabled, FieldsetProvider, useFieldsetContext } from './context'
 import { useFieldset } from './use-fieldset'
 
 export interface XhFieldsetRootProps extends ComponentPropsWithRef<'fieldset'> {
@@ -36,11 +37,19 @@ export function XhFieldsetRoot({
     required,
     translations,
   }) as FieldsetProps)
+  const outerDisabled = useXhConfig().disabled === true
+  // 整组禁用经作用域配置压进子树：组内组件库的控件各自拿到 disabled，行为与禁用面一起到位。
+  // 原生 fieldset[disabled] 只管得住原生表单控件，滑块、取色区这类非原生交互节点与各家族的禁用面它够不着
+  const scope = useMemo(() => ({ disabled: ctx.api.disabled || undefined }), [ctx.api.disabled])
   return (
     <FieldsetProvider value={ctx}>
-      <fieldset {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-        {children}
-      </fieldset>
+      <FieldsetOuterDisabled value={outerDisabled}>
+        <XhConfigProvider config={scope}>
+          <fieldset {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+            {children}
+          </fieldset>
+        </XhConfigProvider>
+      </FieldsetOuterDisabled>
     </FieldsetProvider>
   )
 }
@@ -49,7 +58,14 @@ export interface XhFieldsetLegendProps extends ComponentPropsWithRef<'legend'> {
 /** 原生 legend 只有作为 fieldset 的首个子节点时才充当该组的名字。 */
 export function XhFieldsetLegend({ children, ...rest }: XhFieldsetLegendProps): ReactNode {
   const ctx = useFieldsetContext()
-  return <legend {...mergeReactProps(ctx.api.getLegendProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</legend>
+  // legend 里的控件不吃本组的禁用（原生语义：首个 legend 内的控件不受所在 fieldset 禁用），恢复成外层的
+  const outerDisabled = useContext(FieldsetOuterDisabled)
+  const scope = useMemo(() => ({ disabled: outerDisabled }), [outerDisabled])
+  return (
+    <legend {...mergeReactProps(ctx.api.getLegendProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <XhConfigProvider config={scope}>{children}</XhConfigProvider>
+    </legend>
+  )
 }
 
 export interface XhFieldsetDescriptionProps extends ComponentPropsWithRef<'p'> {}

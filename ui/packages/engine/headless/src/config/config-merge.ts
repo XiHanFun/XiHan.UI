@@ -26,6 +26,12 @@ export interface XhConfigBase {
    * 宿主把滚动搬进内容容器（body 本身不滚）时必须给，否则模态浮层背后照样能滚。
    */
   scrollRoot?: () => HTMLElement | null
+  /**
+   * 作用域禁用：字段集禁用时压进子树，子树里声明了 disabled 的组件一律禁用，行为与禁用面一起到位。
+   * 与原生 fieldset[disabled] 同一条语义——外层禁了，组件自己写 false 也拦不住；内层显式写 false 才撤得掉
+   * （字段集的 legend 就这么恢复外层）。
+   */
+  disabled?: boolean
 }
 
 /**
@@ -115,6 +121,11 @@ export function fillXhConfigDefaults<T extends object>(
       continue
     out ??= { ...props }
     ;(out as Record<string, unknown>)[key] = value
+  }
+  // 作用域禁用不是「没给才填」，是压过：外层禁了，组件自己写 false 也照样禁用
+  if (config.disabled === true && 'disabled' in props && (props as Record<string, unknown>).disabled !== true) {
+    out ??= { ...props }
+    ;(out as Record<string, unknown>).disabled = true
   }
   return out ?? props
 }

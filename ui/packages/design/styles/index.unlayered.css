@@ -5034,7 +5034,7 @@
   color: var(--xh-fieldset-legend-fg-invalid, var(--xh-fg-danger));
 }
 
-/* 整组禁用时组标题跟着变淡；组内控件由原生 fieldset[disabled] 各自呈现禁用态。
+/* 整组禁用时组标题跟着变淡；组内组件库的控件经作用域配置拿到 disabled，按各自的禁用面画。
    选择器权重高于上一条且排在后面，禁用与无效同时为真时以禁用为准。 */
 .xh-scope-fieldset[data-part='root'] > .xh-scope-fieldset[data-part='legend'][data-disabled] {
   color: var(--xh-fieldset-legend-fg-disabled, var(--xh-fg-subtle));

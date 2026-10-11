@@ -92,6 +92,10 @@ export function mergeXhConfig(base: XhConfig | undefined, over: XhConfig | undef
 /** `<xh-config>` 认领这个接口，配置解析沿 DOM 祖先链找它，不必反向依赖元素类。 */
 export interface XhConfigScope extends Element {
   readonly xhConfig: XhConfig
+  /**
+   * 同一个作用域对子树里不同节点给不同配置时实现它（字段集的 legend 不吃本组的禁用）；没实现就读 xhConfig。
+   */
+  xhConfigFor?: (node: Element) => XhConfig
   readonly visualEnvironmentController?: VisualEnvironmentController
 }
 
@@ -116,7 +120,7 @@ export function resolveXhConfig(node: Element | null | undefined): XhConfig {
   // 祖先链是自内向外收的，合并要自外向内
   let out = current
   for (let i = chain.length - 1; i >= 0; i--)
-    out = mergeXhConfig(out, chain[i]!.xhConfig)
+    out = mergeXhConfig(out, chain[i]!.xhConfigFor?.(node) ?? chain[i]!.xhConfig)
   return out
 }
 
