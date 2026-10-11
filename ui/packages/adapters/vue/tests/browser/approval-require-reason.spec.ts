@@ -36,7 +36,7 @@ function resolve(token: string): string {
 }
 
 describe('approval 要求写理由', () => {
-  it('空着按拒绝：焦点到备注框、描边换无效色；写上理由后回到控件色', async () => {
+  it('空着按拒绝：焦点到备注框、描边换无效色；写上理由后聚焦是品牌描边、离开回到控件色', async () => {
     host = document.createElement('div')
     document.body.append(host)
     app = createApp({
@@ -57,12 +57,17 @@ describe('approval 要求写理由', () => {
     expect(document.activeElement).toBe(note)
     await settled(note)
     expect(getComputedStyle(note).borderTopColor).toBe(resolve('--xh-border-invalid'))
-    // 焦点环压在描边外面：聚焦时无效也要看得出，环换成无效色
-    expect(getComputedStyle(note).outlineColor).toBe(resolve('--xh-ring-invalid'))
+    // 照字段外壳不画焦点环：聚焦时无效靠描边与淡底看得出
+    expect(getComputedStyle(note).outlineStyle).toBe('none')
+    expect(getComputedStyle(note).backgroundColor).toBe(resolve('--xh-bg-field-invalid'))
 
     note.value = '分支上还有没合的提交'
     note.dispatchEvent(new Event('input', { bubbles: true }))
     await nextTick()
+    await settled(note)
+    // 写上理由即不再无效：焦点还在框里时是品牌描边，离开后回到控件色
+    expect(getComputedStyle(note).borderTopColor).toBe(resolve('--xh-border-control-focus'))
+    note.blur()
     await settled(note)
     expect(getComputedStyle(note).borderTopColor).toBe(resolve('--xh-border-control'))
   })

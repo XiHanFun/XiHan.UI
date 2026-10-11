@@ -335,7 +335,7 @@
     display: none;
   }
 
-  /* 自由文本：与选项同等算数的一条答案，占满整行 */
+  /* 自由文本：与选项同等算数的一条答案，占满整行。框照字段外壳：字段淡底 + 控件描边，悬停描边升一档 */
   [data-scope='question-flow'][data-part='note'] {
     display: block;
     inline-size: 100%;
@@ -343,11 +343,13 @@
     padding-block: var(--xh-question-flow-note-py, var(--xh-space-1_5));
     border: var(--xh-stroke-thin) solid var(--xh-question-flow-note-border, var(--xh-border-control));
     border-radius: var(--xh-question-flow-note-radius, var(--xh-shape-control));
-    background: var(--xh-question-flow-note-bg, var(--xh-bg-surface));
+    background: var(--xh-question-flow-note-bg, var(--xh-bg-field));
     color: var(--xh-question-flow-note-fg, var(--xh-fg-default));
     font-family: inherit;
     font-size: var(--xh-question-flow-note-font-size, var(--xh-_question-flow-font-size));
-    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='question-flow'][data-part='note'][hidden] {
@@ -358,7 +360,23 @@
     color: var(--xh-question-flow-placeholder-fg, var(--xh-fg-subtle));
   }
 
+  [data-scope='question-flow'][data-part='note']:hover:not(:disabled, :focus, [data-invalid]) {
+    border-color: var(--xh-question-flow-note-border-hover, var(--xh-border-strong));
+  }
+
+  /* 聚焦换承载面底 + 品牌描边，不画环：焦点由描边换色与底色差标出，强制色档补一圈 Highlight 环 */
+  [data-scope='question-flow'][data-part='note']:focus-within {
+    border-color: var(--xh-question-flow-note-border-focus, var(--xh-border-control-focus));
+    background: var(--xh-question-flow-note-bg-focus, var(--xh-bg-surface));
+  }
+
+  [data-scope='question-flow'][data-part='note']:focus-visible {
+    outline: none;
+  }
+
   [data-scope='question-flow'][data-part='note']:disabled {
+    border-color: var(--xh-question-flow-note-border-disabled, var(--xh-border-default));
+    background: var(--xh-question-flow-note-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
   }
 
@@ -536,6 +554,12 @@
     [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single']:empty::before {
       forced-color-adjust: none;
       background-color: CanvasText;
+    }
+
+    /* 备注框聚焦不画环、描边又被换成系统色，补一圈 Highlight 环 */
+    [data-scope='question-flow'][data-part='note']:focus {
+      outline: var(--xh-ring-width) solid Highlight;
+      outline-offset: var(--xh-ring-offset);
     }
 
     [data-scope='question-flow']:is([data-part='prev-trigger'], [data-part='next-trigger']):empty::before {

@@ -124,9 +124,14 @@
     border-end-end-radius: 0;
   }
 
-  /* 焦点边一律 --xh-border-control-focus，不随 tone */
-  [data-scope='clipboard'][data-part='input']:focus-visible {
+  /* 照只读字段外壳标出焦点：换承载面底 + 品牌描边（不随 tone），不画环；点进去选字也算聚焦 */
+  [data-scope='clipboard'][data-part='input']:focus-within {
     border-color: var(--xh-clipboard-input-border-focus, var(--xh-border-control-focus));
+    background: var(--xh-clipboard-input-bg-focus, var(--xh-bg-surface));
+  }
+
+  [data-scope='clipboard'][data-part='input']:focus-visible {
+    outline: none;
   }
 
   /* 自动填充：引擎给填过的框强加一套系统色（多数是黄底黑字），盖得过 background 与 color，
@@ -206,7 +211,7 @@
     );
   }
 
-  [data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='input']:focus-visible,
+  [data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='input']:focus-within,
   [data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='copy-trigger']:focus-visible,
   [data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='copy-trigger']:hover {
     position: relative;
@@ -314,5 +319,13 @@
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
+  }
+
+  /* 只读框聚焦不画环、描边又被换成系统色，补一圈 Highlight 环 */
+  @media (forced-colors: active) {
+    [data-scope='clipboard'][data-part='input']:focus {
+      outline: var(--xh-ring-width) solid Highlight;
+      outline-offset: var(--xh-ring-offset);
+    }
   }
 }

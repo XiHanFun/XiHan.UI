@@ -220,7 +220,7 @@
     padding-inline: var(--xh-tags-input-item-px, var(--xh-_tags-input-item-px));
     border: var(--xh-stroke-thin) solid var(--xh-tags-input-item-input-border, var(--xh-border-control));
     border-radius: var(--xh-tags-input-item-radius, var(--xh-shape-control));
-    background: var(--xh-tags-input-item-input-bg, var(--xh-bg-canvas));
+    background: var(--xh-tags-input-item-input-bg, var(--xh-bg-field));
     color: var(--xh-tags-input-item-input-fg, var(--xh-fg-default));
     font-family: inherit;
     font-size: var(--xh-tags-input-item-font-size, var(--xh-_tags-input-item-font-size));
@@ -228,16 +228,20 @@
     line-height: max(calc(var(--xh-leading-none) * 1em), var(--xh-_tags-input-item-line-h));
   }
 
-  /* 它是真正持有焦点的那个节点，环画在自己身上；
-     外层 control 的 :focus-within 环同时亮着也合理——焦点确实在框内 */
-  [data-scope='tags-input'][data-part='item-input']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
+  /* 它是真正持有焦点的那个节点，照字段外壳标出焦点：换承载面底 + 品牌描边，不画环；
+     外层 control 同时按 :focus-within 换成聚焦面，两层一起说明焦点在框内 */
+  [data-scope='tags-input'][data-part='item-input']:focus-within {
+    border-color: var(--xh-tags-input-item-input-border-focus, var(--xh-border-control-focus));
+    background: var(--xh-tags-input-item-input-bg-focus, var(--xh-bg-surface));
   }
 
-  /* 校验失败时环也跟着变红：与外框上家族画的那圈同色，两圈相邻不至于一红一蓝 */
-  [data-scope='tags-input'][data-part='control'][data-invalid] [data-scope='tags-input'][data-part='item-input']:focus-visible {
-    outline-color: var(--xh-ring-invalid);
+  [data-scope='tags-input'][data-part='item-input']:focus-visible {
+    outline: none;
+  }
+
+  /* 校验失败时描边跟着外框换无效色，两层相邻不至于一红一蓝 */
+  [data-scope='tags-input'][data-part='control'][data-invalid] [data-scope='tags-input'][data-part='item-input'] {
+    border-color: var(--xh-tags-input-item-input-border-invalid, var(--xh-border-invalid));
   }
 
   [data-scope='tags-input'][data-part='item-input']:disabled {
@@ -326,6 +330,12 @@
 
     [data-scope='tags-input'][data-part='clear-trigger'][data-disabled]:empty::before {
       background-color: GrayText;
+    }
+
+    /* 就地编辑框聚焦不画环、描边又被换成系统色，补一圈 Highlight 环 */
+    [data-scope='tags-input'][data-part='item-input']:focus {
+      outline: var(--xh-ring-width) solid Highlight;
+      outline-offset: var(--xh-ring-offset);
     }
   }
 }

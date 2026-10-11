@@ -2238,7 +2238,61 @@
         "default"
       ],
       "defaultToken": [
+        "--xh-bg-field"
+      ],
+      "visibility": "public",
+      "description": "approval 的 note 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-approval-note-bg-disabled",
+      "component": "approval",
+      "part": [
+        "note"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "approval 的 note 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-approval-note-bg-focus",
+      "component": "approval",
+      "part": [
+        "note"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "focus-within"
+      ],
+      "defaultToken": [
         "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "approval 的 note 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-approval-note-bg-invalid",
+      "component": "approval",
+      "part": [
+        "note"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-bg-field-invalid"
       ],
       "visibility": "public",
       "description": "approval 的 note 部件 background 覆盖槽。"
@@ -2260,6 +2314,62 @@
       ],
       "visibility": "public",
       "description": "approval 的 note 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-approval-note-border-disabled",
+      "component": "approval",
+      "part": [
+        "note"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "approval 的 note 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-approval-note-border-focus",
+      "component": "approval",
+      "part": [
+        "note"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "focus-within"
+      ],
+      "defaultToken": [
+        "--xh-border-control-focus"
+      ],
+      "visibility": "public",
+      "description": "approval 的 note 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-approval-note-border-hover",
+      "component": "approval",
+      "part": [
+        "note"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "hover",
+        "invalid",
+        "not(:disabled, :focus, [data-invalid])"
+      ],
+      "defaultToken": [
+        "--xh-border-strong"
+      ],
+      "visibility": "public",
+      "description": "approval 的 note 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-approval-note-border-invalid",
@@ -2368,24 +2478,6 @@
       ],
       "visibility": "public",
       "description": "approval 的 note 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-approval-note-ring-invalid",
-      "component": "approval",
-      "part": [
-        "note"
-      ],
-      "property": [
-        "--xh-_ring-color"
-      ],
-      "state": [
-        "invalid"
-      ],
-      "defaultToken": [
-        "--xh-ring-invalid"
-      ],
-      "visibility": "public",
-      "description": "approval 的 note 部件 --xh-_ring-color 覆盖槽。"
     },
     {
       "name": "--xh-approval-p",
@@ -13675,6 +13767,7 @@
       ],
       "state": [
         "focus-visible",
+        "focus-within",
         "hover"
       ],
       "defaultToken": [
@@ -14227,6 +14320,24 @@
       "description": "clipboard 的 input 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-clipboard-input-bg-focus",
+      "component": "clipboard",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "focus-within"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "clipboard 的 input 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-clipboard-input-border",
       "component": "clipboard",
       "part": [
@@ -14254,7 +14365,7 @@
         "border-color"
       ],
       "state": [
-        "focus-visible"
+        "focus-within"
       ],
       "defaultToken": [
         "--xh-border-control-focus"
@@ -59813,6 +59924,42 @@
         "default"
       ],
       "defaultToken": [
+        "--xh-bg-field"
+      ],
+      "visibility": "public",
+      "description": "question-flow 的 note 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-question-flow-note-bg-disabled",
+      "component": "question-flow",
+      "part": [
+        "note"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "question-flow 的 note 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-question-flow-note-bg-focus",
+      "component": "question-flow",
+      "part": [
+        "note"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "focus-within"
+      ],
+      "defaultToken": [
         "--xh-bg-surface"
       ],
       "visibility": "public",
@@ -59835,6 +59982,62 @@
       ],
       "visibility": "public",
       "description": "question-flow 的 note 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-question-flow-note-border-disabled",
+      "component": "question-flow",
+      "part": [
+        "note"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "question-flow 的 note 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-question-flow-note-border-focus",
+      "component": "question-flow",
+      "part": [
+        "note"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "focus-within"
+      ],
+      "defaultToken": [
+        "--xh-border-control-focus"
+      ],
+      "visibility": "public",
+      "description": "question-flow 的 note 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-question-flow-note-border-hover",
+      "component": "question-flow",
+      "part": [
+        "note"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "hover",
+        "invalid",
+        "not(:disabled, :focus, [data-invalid])"
+      ],
+      "defaultToken": [
+        "--xh-border-strong"
+      ],
+      "visibility": "public",
+      "description": "question-flow 的 note 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-note-fg",
@@ -75923,7 +76126,25 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-canvas"
+        "--xh-bg-field"
+      ],
+      "visibility": "public",
+      "description": "tags-input 的 item-input 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-tags-input-item-input-bg-focus",
+      "component": "tags-input",
+      "part": [
+        "item-input"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "focus-within"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
       ],
       "visibility": "public",
       "description": "tags-input 的 item-input 部件 background 覆盖槽。"
@@ -75945,6 +76166,43 @@
       ],
       "visibility": "public",
       "description": "tags-input 的 item-input 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-tags-input-item-input-border-focus",
+      "component": "tags-input",
+      "part": [
+        "item-input"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "focus-within"
+      ],
+      "defaultToken": [
+        "--xh-border-control-focus"
+      ],
+      "visibility": "public",
+      "description": "tags-input 的 item-input 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tags-input-item-input-border-invalid",
+      "component": "tags-input",
+      "part": [
+        "control",
+        "item-input"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "tags-input 的 control、item-input 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-tags-input-item-input-fg",
