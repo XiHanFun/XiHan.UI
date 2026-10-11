@@ -9,6 +9,9 @@ import {
   XhFieldArrayMoveDownTrigger,
   XhFieldArrayMoveUpTrigger,
   XhFieldArrayRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -35,24 +38,28 @@ function patch(index: number, key: keyof Header, next: string) {
     v-model:value="headers"
     movable
     :create-item="() => ({ name: '', value: '' })"
-    style="max-inline-size: 480px"
+    style="inline-size: 100%; max-inline-size: 480px"
   >
     <XhFieldArrayItem v-for="row in items" :key="row.key" :index="row.index">
       <XhFieldArrayItemContent>
-        <input
-          class="xh-demo-control"
-          style="inline-size: 40%"
+        <XhTextFieldRoot
           placeholder="字段名"
           :value="row.value.name"
-          @input="patch(row.index, 'name', ($event.target as HTMLInputElement).value)"
+          @update:value="(next: string) => patch(row.index, 'name', next)"
         >
-        <input
-          class="xh-demo-control"
-          style="inline-size: 60%"
+          <XhTextFieldControl>
+            <XhTextFieldInput />
+          </XhTextFieldControl>
+        </XhTextFieldRoot>
+        <XhTextFieldRoot
           placeholder="字段值"
           :value="row.value.value"
-          @input="patch(row.index, 'value', ($event.target as HTMLInputElement).value)"
+          @update:value="(next: string) => patch(row.index, 'value', next)"
         >
+          <XhTextFieldControl>
+            <XhTextFieldInput />
+          </XhTextFieldControl>
+        </XhTextFieldRoot>
       </XhFieldArrayItemContent>
       <XhFieldArrayItemAction>
         <XhFieldArrayMoveUpTrigger />

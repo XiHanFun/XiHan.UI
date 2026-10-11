@@ -9,6 +9,9 @@ import {
   XhFieldArrayMoveDownTrigger,
   XhFieldArrayMoveUpTrigger,
   XhFieldArrayRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
 } from "@xihan-ui/react";
 import { useState } from "react";
 
@@ -25,7 +28,7 @@ export default function Demo(): ReactNode {
       onValueChange={details => setSteps(details.value as string[])}
       movable
       createItem={() => ""}
-      style={{ maxInlineSize: "420px" }}
+      style={{ inlineSize: "100%", maxInlineSize: "420px" }}
     >
       {({ items }) => (
         <>
@@ -33,13 +36,15 @@ export default function Demo(): ReactNode {
             <XhFieldArrayItem key={row.key} index={row.index}>
               <XhFieldArrayItemContent>
                 <span style={{ inlineSize: "1.5rem" }}>{`${row.index + 1}.`}</span>
-                <input
-                  className="xh-demo-control"
-                  style={{ inlineSize: "100%" }}
+                <XhTextFieldRoot
                   placeholder="这一步做什么"
                   value={row.value as string}
-                  onChange={event => setAt(row.index, event.target.value)}
-                />
+                  onValueChange={details => setAt(row.index, details.value)}
+                >
+                  <XhTextFieldControl>
+                    <XhTextFieldInput />
+                  </XhTextFieldControl>
+                </XhTextFieldRoot>
               </XhFieldArrayItemContent>
               <XhFieldArrayItemAction>
                 <XhFieldArrayMoveUpTrigger />

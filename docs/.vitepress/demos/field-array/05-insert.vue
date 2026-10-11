@@ -8,6 +8,9 @@ import {
   XhFieldArrayItemContent,
   XhFieldArrayItemDeleteTrigger,
   XhFieldArrayRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -24,18 +27,20 @@ function setAt(index: number, next: string) {
     v-model:value="steps"
     movable
     :create-item="() => ''"
-    style="max-inline-size: 480px"
+    style="inline-size: 100%; max-inline-size: 480px"
   >
     <XhFieldArrayItem v-for="row in items" :key="row.key" :index="row.index">
       <XhFieldArrayItemContent>
         <span style="inline-size: 1.5rem">{{ row.index + 1 }}.</span>
-        <input
-          class="xh-demo-control"
-          style="inline-size: 100%"
+        <XhTextFieldRoot
           placeholder="这一步做什么"
           :value="row.value"
-          @input="setAt(row.index, ($event.target as HTMLInputElement).value)"
+          @update:value="(next: string) => setAt(row.index, next)"
         >
+          <XhTextFieldControl>
+            <XhTextFieldInput />
+          </XhTextFieldControl>
+        </XhTextFieldRoot>
       </XhFieldArrayItemContent>
       <XhFieldArrayItemAction>
         <XhButton size="sm" variant="ghost" @click="insert(row.index + 1)">下方插入</XhButton>
