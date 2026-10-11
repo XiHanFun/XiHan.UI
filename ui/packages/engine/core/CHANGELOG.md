@@ -1,5 +1,28 @@
 # @xihan-ui/core
 
+## 4.0.0
+
+### Minor Changes
+
+- 2724f92: `trackListMotion` 新增 `exiting` 选项：条目被删时已经在播自己的退场、或已经播完（例如通知卡片的 dismissing / unmounted），返回 `true` 就不放离场替身。自己带退场的条目播完常与宿主删节点落在同一次渲染里，还没来得及藏起就被删了，不认这一位会再放一个替身重播一遍。
+- 3473495: `trackListMotion` 新增两个选项：
+
+  - `reflow`（缺省 `true`）：传 `false` 时只做到达与离场替身，留下来的条目不做换位补偿，给位置另有一套测量自己排、自己过渡的集合用（通知叠成的一摞）。
+  - `wrapped`（缺省 `false`）：条目外面包着作者节点、宿主删的是外壳时传 `true`（Web Components 的卡片元素），被删外壳里面的条目同样放离场替身。
+
+### Patch Changes
+
+- 0116647: `trackListMotion`：`channel: 'transform'` 时，同一批里新到的条目跟着离它最近、换了位的那个条目一起换位。此前新条目一插进来就停在终点，它前面那个还在从旧位置往终点滑，两者会叠在一起（贴底的一列每来一条、贴顶的一列满员挤掉最旧那条时都这样）。translate 通道不变。
+- 018b5b1: `trackListMotion`：条目选择器带祖先限定时（例如「某一摞里的卡片」），删掉的条目此前一律不放离场替身——回调时节点已离开文档，带祖先的选择器在它身上匹配不上。现在先按上一轮量过排布位的已知条目认。
+- c2dc637: `trackListMotion`：
+
+  - `wrapped: true` 时另盯 `data-scope` / `data-part`：Web Components 外壳里的部件升级后才写上身份，插入那一轮选择器认不出它，身份写上、这时才匹配上的条目同样算新到。不包外壳的集合不盯，首屏内容不会被当成新到。
+  - `channel: 'transform'` 时新到的条目跟着离它最近、正在换位途中的那一个一起走（此前只认同一批里换了位的），身份晚一轮才认出的条目也跟得上。
+
+- 6cf0550: `trackListMotion`：`channel: 'transform'` 时，进场关键帧还没播完的条目照样做换位补偿。此前不论通道一律跳过正在播关键帧的条目，可 transform 上的换位与写在 translate 上的关键帧本来就互不覆盖；跳过会让推入途中的条目在列表变化时原地一跳。translate 通道照旧跳过。
+- Updated dependencies [b3153a4]
+  - @xihan-ui/motion@4.0.0
+
 ## 3.2.0
 
 ### Minor Changes

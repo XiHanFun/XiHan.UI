@@ -1,5 +1,17 @@
 # @xihan-ui/chat-stream
 
+## 4.0.0
+
+### Patch Changes
+
+- Updated dependencies [0116647]
+- Updated dependencies [2724f92]
+- Updated dependencies [018b5b1]
+- Updated dependencies [c2dc637]
+- Updated dependencies [3473495]
+- Updated dependencies [6cf0550]
+  - @xihan-ui/core@4.0.0
+
 ## 3.2.0
 
 ### Patch Changes
