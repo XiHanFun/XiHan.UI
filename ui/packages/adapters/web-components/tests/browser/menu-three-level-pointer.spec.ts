@@ -195,6 +195,9 @@ describe('web Components Menu 三级真实指针', () => {
 
   it('键盘仍逐层进入和返回，Escape 只关闭当前顶层', async () => {
     await mountMenu(vi.fn())
+    // 按键经 CDP 往返，CI 并行负载下回来时 exit 档的退场已经播完，「退场中的子层还在壳里」随机判不过。
+    // 退场关键帧直接取这支令牌，在舞台上拉长（根令牌经 Portal 视觉桥带进各层壳）；由 finishExit 播完
+    stage!.style.setProperty('--xh-motion-duration-exit', '10s')
     await click(rootTrigger())
     byValue('share').focus()
     expect(document.activeElement).toBe(byValue('share'))
