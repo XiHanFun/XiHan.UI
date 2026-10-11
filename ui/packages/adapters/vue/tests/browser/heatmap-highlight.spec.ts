@@ -29,6 +29,9 @@ describe('heatmap 悬停', () => {
   it('悬停一格：详情条淡入（不是 display 一下子冒出来），这一格描一圈、其余格不描', async () => {
     host = document.createElement('div')
     host.style.marginBlockStart = '120px'
+    // 悬停经 CDP 往返，CI 并行负载下回来时 micro 档的淡入已经播完，「详情条在淡入」随机判不过。
+    // 详情条与格子的过渡直接取这支令牌，在宿主上拉长；断完由 finish() 播完
+    host.style.setProperty('--xh-motion-duration-micro', '10s')
     document.body.append(host)
     app = createApp({
       render: () => h(XhHeatmapRoot, {
@@ -55,7 +58,8 @@ describe('heatmap 悬停', () => {
     expect(transitions(tooltip)).toContain('opacity')
     expect(cell.hasAttribute('data-highlighted')).toBe(true)
     expect(host.querySelectorAll('[data-scope="heatmap"][data-part="cell"][data-highlighted]')).toHaveLength(1)
-    await Promise.all(cell.getAnimations().map(animation => animation.finished.catch(() => undefined)))
+    for (const animation of cell.getAnimations())
+      animation.finish()
     expect(getComputedStyle(cell).boxShadow).not.toBe(plainShadow)
   })
 })
