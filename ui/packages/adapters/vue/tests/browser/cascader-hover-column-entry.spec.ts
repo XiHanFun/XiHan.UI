@@ -42,6 +42,9 @@ async function frame(): Promise<void> {
 
 async function mount(): Promise<void> {
   host = document.createElement('div')
+  // 悬停经 CDP 往返，CI 并行负载下回来时 enter 档的列进场已经播完，「正在播进场」随机判不过。
+  // 列进场直接取这支令牌，在宿主上拉长（根令牌经 Portal 视觉桥带进浮层）；每段断完由 finish() 播完
+  host.style.setProperty('--xh-motion-duration-enter', '10s')
   document.body.append(host)
   app = createApp({
     render: () => h(XhCascaderRoot, { collection: COLLECTION, open: true, expandTrigger: 'hover' }, {
