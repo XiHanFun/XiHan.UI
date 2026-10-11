@@ -27,6 +27,10 @@ async function frames(count = 1): Promise<void> {
 async function mount(): Promise<void> {
   host = document.createElement('div')
   host.style.cssText = 'inline-size: 240px'
+  // 按键经 CDP 往返，CI 并行负载下回来时百毫秒级的滑动已经播完，「正在滑」随机判不过。
+  // 逐格挪的过渡取 nudge、取消时的滑回从元素上读 move，两支都在宿主上拉长
+  host.style.setProperty('--xh-motion-duration-nudge', '10s')
+  host.style.setProperty('--xh-motion-duration-move', '10s')
   document.body.append(host)
   const ids = ref(['a', 'b', 'c', 'd'])
   app = createApp({
@@ -72,7 +76,8 @@ describe('sortable 键盘重排', () => {
     await frames(1)
     await userEvent.keyboard('{ArrowDown}')
     await frames(1)
-    await Promise.all([item('a'), item('b')].flatMap(el => el.getAnimations()).map(a => a.finished.catch(() => undefined)))
+    for (const animation of [item('a'), item('b')].flatMap(el => el.getAnimations()))
+      animation.finish()
     await userEvent.keyboard('{Escape}')
     await frames(1)
     expect(moving(item('a')).length, '被拖那一项滑回').toBeGreaterThan(0)
