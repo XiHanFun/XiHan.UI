@@ -36,7 +36,7 @@ const itemTranslations = { close: "关闭" };
     >
       弹一条 danger
     </XhButton>
-    <span>队列：{{ count }} 条</span>
+    <span data-demo-output>队列：{{ count }} 条</span>
 
     <XhNotificationGroup>
       <template #default="{ item }">

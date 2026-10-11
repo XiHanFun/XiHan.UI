@@ -71,6 +71,6 @@ const translations = {
       <!-- 列表为空时清空按钮照常在位可聚焦，只打 data-empty 由皮肤压淡 -->
       <XhFileUploadClearTrigger>清空</XhFileUploadClearTrigger>
     </XhFileUploadRoot>
-    <span v-if="rejected">被拒：{{ rejected }}</span>
+    <span data-demo-output :title="rejected || undefined">被拒：{{ rejected || "（暂无）" }}</span>
   </div>
 </template>

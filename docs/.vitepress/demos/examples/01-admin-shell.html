@@ -48,24 +48,10 @@
     overflow: auto;
   }
 
-  #admin-shell [data-shell="tool"] {
-    padding: var(--xh-space-1) var(--xh-space-2_5);
-    border: var(--xh-stroke-thin) solid var(--xh-border-default);
-    border-radius: var(--xh-radius-md);
-    background: var(--xh-bg-surface);
-    font-size: var(--xh-font-size-sm);
-  }
-
   #admin-shell [data-shell="cards"] {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: var(--xh-space-4);
-  }
-
-  #admin-shell [data-shell="note"] {
-    margin: 0;
-    color: var(--xh-fg-muted);
-    font-size: var(--xh-font-size-sm);
   }
 </style>
 
@@ -206,10 +192,10 @@
 
       <xh-toolbar id="admin-shell-toolbar">
         <div data-xh-part="root">
-          <button type="button" data-xh-part="item" value="today" data-shell="tool">今日</button>
-          <button type="button" data-xh-part="item" value="week" data-shell="tool">本周</button>
+          <button type="button" data-xh-part="item" value="today">今日</button>
+          <button type="button" data-xh-part="item" value="week">本周</button>
           <div data-xh-part="separator"></div>
-          <button type="button" data-xh-part="item" value="refresh" data-shell="tool">刷新</button>
+          <button type="button" data-xh-part="item" value="refresh">刷新</button>
         </div>
       </xh-toolbar>
 
@@ -246,12 +232,6 @@
           </div>
         </xh-card>
       </div>
-
-      <p data-shell="note">
-        当前导航：<span id="admin-shell-nav-value">order-list</span> · 最近操作：<span
-          id="admin-shell-command"
-        >（无）</span>
-      </p>
     </div>
 
     <div data-xh-part="footer" data-shell="footer">
@@ -264,6 +244,10 @@
     </div>
   </div>
 </xh-layout>
+
+<p data-demo-output>
+  当前导航：<span id="admin-shell-nav-value">order-list</span> · 最近操作：<span id="admin-shell-command">（无）</span>
+</p>
 
 <script type="module">
   const nav = document.getElementById("admin-shell-nav");

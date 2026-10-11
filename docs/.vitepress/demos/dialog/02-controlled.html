@@ -1,10 +1,8 @@
 <!-- 受控 | 传入 open 后由宿主决定，组件自身不再修改状态；Esc、点击遮罩、按关闭按钮都只回写 open -->
-<div style="display: flex; align-items: center; gap: 12px">
-  <xh-button variant="solid">
-    <button data-xh-part="root" id="dialog-controlled-open">打开</button>
-  </xh-button>
-  <span>当前：<span id="dialog-controlled-state">收起</span></span>
-</div>
+<xh-button variant="solid">
+  <button data-xh-part="root" id="dialog-controlled-open">打开</button>
+</xh-button>
+<span data-demo-output>当前：<span id="dialog-controlled-state">收起</span></span>
 
 <xh-dialog id="dialog-controlled" open="false">
   <div data-xh-part="backdrop"></div>

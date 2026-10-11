@@ -23,7 +23,7 @@ export default function Demo(): ReactNode {
 
       <XhButton variant="solid" onClick={() => setLoading(true)}>开始加载</XhButton>
       <XhButton variant="outline" onClick={() => setLoading(false)}>结束加载</XhButton>
-      <span>{`假进度：${Math.round(value)}%`}</span>
+      <span data-demo-output>{`假进度：${Math.round(value)}%`}</span>
     </>
   );
 }

@@ -22,7 +22,7 @@ function onSubmit(event: Event) {
     <div>
       <XhButton type="submit" size="sm">提交</XhButton>
     </div>
-
-    <span v-if="submitted">表单收到：{{ submitted }}</span>
   </form>
+
+  <span data-demo-output>表单收到：{{ submitted || "（尚未提交）" }}</span>
 </template>

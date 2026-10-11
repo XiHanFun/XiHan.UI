@@ -20,21 +20,28 @@
       </div>
     </div>
   </xh-grid-list>
-  <span id="grid-list-basic-readout" data-label>已选：docs；尚未执行行内操作</span>
+  <span id="grid-list-basic-readout" data-demo-output>已选：docs；尚未执行行内操作</span>
 </div>
 
 <script type="module">
   const host = document.getElementById("grid-list-basic");
   const readout = document.getElementById("grid-list-basic-readout");
-  host.value = ["docs"];
+  let selected = ["docs"];
+  let message = "尚未执行行内操作";
+  const render = () => {
+    readout.textContent = `已选：${selected.join("、")}；${message}`;
+  };
+  host.value = selected;
   host.addEventListener("value-change", (event) => {
-    host.value = event.detail.value;
-    readout.textContent = "已选：" + event.detail.value.join("、");
+    selected = event.detail.value;
+    host.value = selected;
+    render();
   });
   for (const button of host.querySelectorAll('[data-xh-part="row-action"]')) {
     button.addEventListener("click", () => {
       const row = button.closest('[data-xh-part="row"]');
-      readout.textContent = "编辑 " + row.querySelector('[data-xh-part="row-text"]').textContent;
+      message = `编辑 ${row.querySelector('[data-xh-part="row-text"]').textContent}`;
+      render();
     });
   }
 </script>

@@ -1,6 +1,7 @@
 // 浮层中的操作区 | footer 写在 content 中、tree 的兄弟：它不进入 role=tree 的拥有关系，方向键也无法到达；在浮层内点击按钮不算点击外部，浮层不会因此收起
 import type { ReactNode } from "react";
 import {
+  XhButton,
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
   XhTreeSelectBranchControl,
@@ -77,9 +78,9 @@ export default function Demo(): ReactNode {
               </XhTreeSelectTree>
 
               <XhTreeSelectFooter>
-                <button type="button" onClick={() => setExpandedValue(["docs", "assets"])}>全部展开</button>
-                <button type="button" onClick={() => setExpandedValue([])}>全部收起</button>
-                <button type="button" disabled={!canClear} onClick={() => clear()}>清空</button>
+                <XhButton variant="ghost" size="sm" onClick={() => setExpandedValue(["docs", "assets"])}>全部展开</XhButton>
+                <XhButton variant="ghost" size="sm" onClick={() => setExpandedValue([])}>全部收起</XhButton>
+                <XhButton variant="ghost" size="sm" disabled={!canClear} onClick={() => clear()}>清空</XhButton>
               </XhTreeSelectFooter>
             </XhTreeSelectContent>
           </XhTreeSelectPositioner>

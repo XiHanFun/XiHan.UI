@@ -1,6 +1,7 @@
 // 受控 | 传入 page 后由宿主决定，组件只发 page-change 不自行修改页码，宿主写回后才变化
 import type { ReactNode } from "react";
 import {
+  XhButton,
   XhCarouselItem,
   XhCarouselList,
   XhCarouselNextTrigger,
@@ -40,12 +41,12 @@ export default function Demo(): ReactNode {
       {/* 页码握在宿主手里，外部按钮直接改它 */}
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         {slides.map((text, i) => (
-          <button key={text} type="button" onClick={() => setPage(i)}>
+          <XhButton key={text} variant="outline" size="sm" onClick={() => setPage(i)}>
             {`跳到「${text}」`}
-          </button>
+          </XhButton>
         ))}
-        <span>{`当前第 ${page + 1} 张`}</span>
       </div>
+      <span data-demo-output>{`当前第 ${page + 1} 张`}</span>
     </div>
   );
 }

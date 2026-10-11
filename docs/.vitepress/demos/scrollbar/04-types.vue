@@ -19,7 +19,7 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
           style="
             block-size: 140px;
             overflow: auto;
-            border: 1px solid var(--xh-border-default);
+            border: var(--xh-stroke-thin) solid var(--xh-border-default);
             border-radius: var(--xh-shape-surface);
             padding: 8px;
           "

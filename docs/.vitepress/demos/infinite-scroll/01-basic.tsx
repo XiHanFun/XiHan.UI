@@ -29,8 +29,8 @@ export default function Demo(): ReactNode {
       style={{
         blockSize: "240px",
         overflow: "auto",
-        border: "1px solid var(--xh-border-default)",
-        borderRadius: "8px",
+        border: "var(--xh-stroke-thin) solid var(--xh-border-default)",
+        borderRadius: "var(--xh-shape-surface)",
       }}
     >
       {/* target 指向真正在滚的那层；不给就以窗口视口为准 */}

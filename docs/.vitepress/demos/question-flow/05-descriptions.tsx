@@ -54,11 +54,12 @@ export default function Demo(): ReactNode {
   const [sent, setSent] = useState("");
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px", maxWidth: "360px" }}>
+    <>
       <XhQuestionFlowRoot
         questions={questions}
         translations={translations}
         autoAdvance={false}
+        style={{ maxWidth: "360px" }}
         onSubmit={details => setSent(
           Object.entries(details.answers)
             .map(([id, values]) => `${id}=${values.join("、")}`)
@@ -100,7 +101,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhQuestionFlowRoot>
-      {sent && <p style={{ margin: 0 }}>{`收到：${sent}`}</p>}
-    </div>
+      <p data-demo-output>{`收到：${sent || "（还没发送）"}`}</p>
+    </>
   );
 }

@@ -1,7 +1,6 @@
 <!-- 批量处理 | 闸门是单发的，批量是宿主的编排：每条请求一个闸门、判定受控，上面一行放全部批准与全部拒绝；全部批准只收必选项已勾满的那几条（canApproveScopes），没勾满的留着逐条处理 -->
 <div id="approval-batch" style="display: grid; gap: 12px; inline-size: 100%">
   <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
-    <span id="approval-batch-count">3 项待决</span>
     <xh-button size="sm"><button data-xh-part="root" id="approval-batch-approve">全部批准（2）</button></xh-button>
     <xh-button size="sm" variant="outline"><button data-xh-part="root" id="approval-batch-deny">全部拒绝</button></xh-button>
   </div>
@@ -45,6 +44,7 @@
     </div>
   </xh-approval>
 </div>
+<span id="approval-batch-count" data-demo-output>3 项待决</span>
 
 <script type="module">
   const board = document.getElementById("approval-batch");

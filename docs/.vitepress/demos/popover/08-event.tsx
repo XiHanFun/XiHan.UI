@@ -14,7 +14,7 @@ export default function Demo(): ReactNode {
   const [log, setLog] = useState<string[]>([]);
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+    <>
       <XhPopoverRoot
         placement="bottom-start"
         // 只留最近五条
@@ -30,7 +30,7 @@ export default function Demo(): ReactNode {
           </XhPopoverContent>
         </XhPopoverPositioner>
       </XhPopoverRoot>
-      <span>{`最近：${log.join(" ← ") || "（还没动过）"}`}</span>
-    </div>
+      <span data-demo-output>{`最近：${log.join(" ← ") || "（还没动过）"}`}</span>
+    </>
   );
 }

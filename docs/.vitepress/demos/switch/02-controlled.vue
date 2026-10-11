@@ -8,5 +8,5 @@ const checked = ref(true);
 
 <template>
   <XhSwitch v-model:checked="checked" />
-  <span>当前：{{ checked ? "开" : "关" }}</span>
+  <span data-demo-output>当前：{{ checked ? "开" : "关" }}</span>
 </template>

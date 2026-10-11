@@ -17,7 +17,7 @@ const speeds = [30, 60, 140] as const;
       <XhMarqueeRoot
         :speed="s"
         auto-fill
-        style="max-inline-size: 420px; border: 1px solid var(--xh-border-default); border-radius: 6px"
+        style="max-inline-size: 420px; border: var(--xh-stroke-thin) solid var(--xh-border-default); border-radius: var(--xh-shape-surface)"
       >
         <XhMarqueeContent>
           <a href="#" style="padding: 6px 14px; white-space: nowrap">

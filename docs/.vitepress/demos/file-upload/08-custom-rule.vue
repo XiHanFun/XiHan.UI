@@ -58,6 +58,6 @@ function onFileReject(details: { files: { file: File; reasons: string[] }[] }) {
       </XhFileUploadList>
     </XhFileUploadRoot>
 
-    <span v-if="dropped">同名挡下：{{ dropped }}</span>
+    <span data-demo-output :title="dropped || undefined">同名挡下：{{ dropped || "（暂无）" }}</span>
   </div>
 </template>

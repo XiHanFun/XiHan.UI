@@ -26,7 +26,7 @@ export default function Demo(): ReactNode {
           <XhColorPickerChannelInput channel="hex" />
         </XhColorPickerContent>
       </XhColorPickerRoot>
-      <p>
+      <p data-demo-output>
         当前：
         <code>{color[0]}</code>
       </p>

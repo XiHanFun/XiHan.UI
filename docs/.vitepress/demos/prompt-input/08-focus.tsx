@@ -32,7 +32,7 @@ export default function Demo(): ReactNode {
         <XhButton variant="outline" size="sm" onClick={() => input.current?.select()}>全选</XhButton>
         <XhButton variant="ghost" size="sm" onClick={() => input.current?.blur()}>失焦</XhButton>
       </div>
-      <span>{log}</span>
+      <span data-demo-output>{log}</span>
     </div>
   );
 }

@@ -1,7 +1,4 @@
 <!-- 受控 | open 与 position 都由外部持有：面板只报告意图，值写回后才变化 -->
-<p style="margin: 0 0 8px">
-  面板落点：<span id="floating-panel-readout">280 , 260</span>
-</p>
 <xh-floating-panel id="floating-panel-controlled" style="display: contents">
   <div data-xh-part="root">
     <button data-xh-part="trigger">打开面板</button>
@@ -14,7 +11,7 @@
         </div>
         <div data-xh-part="body">
           <p style="margin: 0">
-            拖动时上面那行数字跟着走：值是宿主这一侧说了算。
+            拖动时落点读数跟着走：值是宿主这一侧说了算。
           </p>
         </div>
         <div data-xh-part="resize-trigger" edge="se"></div>
@@ -22,6 +19,8 @@
     </div>
   </div>
 </xh-floating-panel>
+
+<p data-demo-output>面板落点：<span id="floating-panel-readout">280 , 260</span></p>
 
 <script type="module">
   // 值由宿主握着：变更经事件回来，写回去才生效

@@ -21,5 +21,5 @@ const topics = [
     variant="outline"
     tone="brand"
   />
-  <p>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
+  <p data-demo-output>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
 </template>

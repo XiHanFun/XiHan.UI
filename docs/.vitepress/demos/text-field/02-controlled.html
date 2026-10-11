@@ -7,8 +7,10 @@
     </div>
   </div>
 </xh-text-field>
-<span>当前：<span id="text-field-controlled-value">曦寒</span></span>
-<button type="button" id="text-field-controlled-reset">重置</button>
+<xh-button id="text-field-controlled-reset" variant="outline" size="sm">
+  <button data-xh-part="root">重置</button>
+</xh-button>
+<span data-demo-output>当前：<span id="text-field-controlled-value">曦寒</span></span>
 
 <script type="module">
   // 值由外面这份状态持有，组件报上来才写回去

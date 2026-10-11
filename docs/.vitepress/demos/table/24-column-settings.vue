@@ -99,6 +99,6 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
         </XhTableBody>
       </template>
     </XhTableRoot>
-    <span>存下来的列偏好：{{ saved }}</span>
+    <span data-demo-output>存下来的列偏好：{{ saved }}</span>
   </div>
 </template>

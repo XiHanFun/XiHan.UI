@@ -9,7 +9,7 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 const boxStyle = {
   blockSize: "140px",
   overflow: "auto",
-  border: "1px solid var(--xh-border-default)",
+  border: "var(--xh-stroke-thin) solid var(--xh-border-default)",
   borderRadius: "var(--xh-shape-surface)",
   padding: "8px",
 } as const;

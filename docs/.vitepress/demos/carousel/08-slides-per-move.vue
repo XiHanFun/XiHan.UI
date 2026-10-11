@@ -10,18 +10,21 @@ import {
   XhCarouselRoot,
   XhCarouselViewport,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const slides = ["A", "B", "C", "D", "E", "F"];
+const page = ref(0);
 </script>
 
 <template>
   <XhCarouselRoot
-    v-slot="{ page, totalPages, slideRange }"
+    v-slot="{ totalPages }"
     :slide-count="slides.length"
     :slides-per-page="3"
     :slides-per-move="1"
     spacing="10px"
     style="inline-size: 100%"
+    @page-change="page = $event.page"
   >
     <XhCarouselPrevTrigger />
     <XhCarouselViewport style="block-size: 110px">
@@ -37,9 +40,7 @@ const slides = ["A", "B", "C", "D", "E", "F"];
     <XhCarouselIndicatorGroup>
       <XhCarouselIndicator v-for="p in totalPages" :key="p" :index="p - 1" />
     </XhCarouselIndicatorGroup>
-    <span style="flex-basis: 100%">
-      第 {{ page + 1 }} / {{ totalPages }} 页 · 眼下露的是第
-      {{ slideRange.start + 1 }} 到 {{ slideRange.end + 1 }} 张
-    </span>
   </XhCarouselRoot>
+  <!-- 六张里一屏露三张、一次挪一张，落点共四个：第 N 页从第 N 张露起 -->
+  <span data-demo-output>第 {{ page + 1 }} / 4 页 · 眼下露的是第 {{ page + 1 }} 到 {{ page + 3 }} 张</span>
 </template>

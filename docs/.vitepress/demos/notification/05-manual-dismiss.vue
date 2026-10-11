@@ -58,7 +58,7 @@ function settle(
     <XhButton variant="outline" :disabled="!pending" @click="finish(dismiss)">
       手动收走
     </XhButton>
-    <span>队列：{{ count }} 条 · 记下的 id：{{ pending || "（无）" }}</span>
+    <span data-demo-output>队列：{{ count }} 条 · 记下的 id：{{ pending || "（无）" }}</span>
 
     <XhNotificationGroup>
       <template #default="{ item }">

@@ -20,9 +20,6 @@ const position = ref<FloatingPanelPosition>({ x: 280, y: 260 });
 </script>
 
 <template>
-  <p style="margin: 0 0 8px">
-    面板落点：{{ Math.round(position.x) }} , {{ Math.round(position.y) }}
-  </p>
   <XhFloatingPanelRoot v-model:open="open" v-model:position="position">
     <XhFloatingPanelTrigger>打开面板</XhFloatingPanelTrigger>
     <XhFloatingPanelPositioner>
@@ -34,11 +31,13 @@ const position = ref<FloatingPanelPosition>({ x: 280, y: 260 });
         </XhFloatingPanelHeader>
         <XhFloatingPanelBody>
           <p style="margin: 0">
-            拖动时上面那行数字跟着走：值是外面这份 ref 说了算。
+            拖动时落点读数跟着走：值是外面这份 ref 说了算。
           </p>
         </XhFloatingPanelBody>
         <XhFloatingPanelResizeTrigger edge="se" />
       </XhFloatingPanelContent>
     </XhFloatingPanelPositioner>
   </XhFloatingPanelRoot>
+
+  <p data-demo-output>面板落点：{{ Math.round(position.x) }} , {{ Math.round(position.y) }}</p>
 </template>

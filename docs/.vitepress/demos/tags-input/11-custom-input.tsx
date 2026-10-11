@@ -72,29 +72,12 @@ export default function Demo(): ReactNode {
 
           {/* 候选面板是作者自己的节点：按下不放焦点，点完把框里的半截文本清掉 */}
           {typing && options(inputValue).length > 0 && (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                marginBlockStart: "4px",
-                border: "1px solid var(--xh-border-subtle)",
-                borderRadius: "var(--xh-radius-md)",
-                overflow: "hidden",
-              }}
-            >
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
               {options(inputValue).map(opt => (
-                <button
+                <XhButton
                   key={opt}
-                  type="button"
-                  style={{
-                    padding: "6px 10px",
-                    border: 0,
-                    background: "none",
-                    color: "var(--xh-fg-default)",
-                    font: "inherit",
-                    textAlign: "start",
-                    cursor: "pointer",
-                  }}
+                  size="sm"
+                  variant="outline"
                   onMouseDown={event => event.preventDefault()}
                   onClick={() => {
                     addValue(opt);
@@ -102,7 +85,7 @@ export default function Demo(): ReactNode {
                   }}
                 >
                   {opt}
-                </button>
+                </XhButton>
               ))}
             </div>
           )}

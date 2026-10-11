@@ -4,20 +4,19 @@ import {
   XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
+  XhTextFieldPrefix,
   XhTextFieldRoot,
+  XhTextFieldSuffix,
 } from "@xihan-ui/vue";
-
-// 不参与分宽，也不吃指针事件：点在前后缀上仍然落到输入框里
-const affix = "flex: none; color: var(--xh-fg-muted); pointer-events: none";
 </script>
 
 <template>
   <XhTextFieldRoot placeholder="0.00">
     <XhTextFieldLabel>金额</XhTextFieldLabel>
     <XhTextFieldControl>
-      <span :style="affix">¥</span>
+      <XhTextFieldPrefix>¥</XhTextFieldPrefix>
       <XhTextFieldInput inputmode="decimal" />
-      <span :style="affix">元</span>
+      <XhTextFieldSuffix>元</XhTextFieldSuffix>
     </XhTextFieldControl>
   </XhTextFieldRoot>
 
@@ -25,7 +24,7 @@ const affix = "flex: none; color: var(--xh-fg-muted); pointer-events: none";
     <XhTextFieldLabel>身高</XhTextFieldLabel>
     <XhTextFieldControl>
       <XhTextFieldInput inputmode="numeric" />
-      <span :style="affix">cm</span>
+      <XhTextFieldSuffix>cm</XhTextFieldSuffix>
     </XhTextFieldControl>
   </XhTextFieldRoot>
 </template>

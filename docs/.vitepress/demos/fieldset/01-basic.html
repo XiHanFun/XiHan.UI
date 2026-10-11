@@ -2,18 +2,30 @@
 <xh-fieldset>
   <fieldset data-xh-part="root" style="inline-size: 320px">
     <legend data-xh-part="legend">通知方式</legend>
-    <label style="display: flex; gap: 8px; align-items: center">
-      <input type="checkbox" checked />
-      站内消息
-    </label>
-    <label style="display: flex; gap: 8px; align-items: center">
-      <input type="checkbox" />
-      邮件
-    </label>
-    <label style="display: flex; gap: 8px; align-items: center">
-      <input type="checkbox" />
-      短信
-    </label>
+    <xh-checkbox default-checked>
+      <label data-xh-part="label">
+        <button data-xh-part="root">
+          <span data-xh-part="indicator"></span>
+        </button>
+        <span data-xh-part="text">站内消息</span>
+      </label>
+    </xh-checkbox>
+    <xh-checkbox>
+      <label data-xh-part="label">
+        <button data-xh-part="root">
+          <span data-xh-part="indicator"></span>
+        </button>
+        <span data-xh-part="text">邮件</span>
+      </label>
+    </xh-checkbox>
+    <xh-checkbox>
+      <label data-xh-part="label">
+        <button data-xh-part="root">
+          <span data-xh-part="indicator"></span>
+        </button>
+        <span data-xh-part="text">短信</span>
+      </label>
+    </xh-checkbox>
     <p data-xh-part="description">至少保留一种，重要变更会照此通知你</p>
   </fieldset>
 </xh-fieldset>

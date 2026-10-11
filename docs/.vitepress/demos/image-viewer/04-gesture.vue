@@ -21,7 +21,7 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
       <img
         :src="items[0]!.src"
         :alt="items[0]!.alt"
-        style="inline-size: 160px; border-radius: 8px; cursor: zoom-in; display: block"
+        style="inline-size: 160px; border-radius: var(--xh-shape-surface); cursor: zoom-in; display: block"
       >
     </XhImageViewerTrigger>
     <XhImageViewerContent>

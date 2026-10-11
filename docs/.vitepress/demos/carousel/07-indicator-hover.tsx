@@ -8,36 +8,43 @@ import {
   XhCarouselRoot,
   XhCarouselViewport,
 } from "@xihan-ui/react";
+import { useState } from "react";
 
 const slides = ["城市夜景", "海岸线", "雪山", "沙漠"];
 
 export default function Demo(): ReactNode {
+  const [current, setCurrent] = useState(0);
+
   return (
-    <XhCarouselRoot slideCount={slides.length} style={{ inlineSize: "100%" }}>
-      {({ page, totalPages, setPage }) => (
-        <>
-          <XhCarouselViewport style={{ blockSize: "130px" }}>
-            <XhCarouselList>
-              {slides.map((text, i) => (
-                <XhCarouselItem key={text} index={i}>
-                  <div style={{ display: "grid", placeItems: "center", blockSize: "100%" }}>
-                    {text}
-                  </div>
-                </XhCarouselItem>
+    <>
+      <XhCarouselRoot
+        slideCount={slides.length}
+        onPageChange={details => setCurrent(details.page)}
+        style={{ inlineSize: "100%" }}
+      >
+        {({ totalPages, setPage }) => (
+          <>
+            <XhCarouselViewport style={{ blockSize: "130px" }}>
+              <XhCarouselList>
+                {slides.map((text, i) => (
+                  <XhCarouselItem key={text} index={i}>
+                    <div style={{ display: "grid", placeItems: "center", blockSize: "100%" }}>
+                      {text}
+                    </div>
+                  </XhCarouselItem>
+                ))}
+              </XhCarouselList>
+            </XhCarouselViewport>
+            <XhCarouselIndicatorGroup>
+              {/* mouseenter 是落到指示点按钮上的原生事件，组件自带的点击不受影响 */}
+              {Array.from({ length: totalPages }, (_, p) => (
+                <XhCarouselIndicator key={p} index={p} onMouseEnter={() => setPage(p)} />
               ))}
-            </XhCarouselList>
-          </XhCarouselViewport>
-          <XhCarouselIndicatorGroup>
-            {/* mouseenter 是落到指示点按钮上的原生事件，组件自带的点击不受影响 */}
-            {Array.from({ length: totalPages }, (_, p) => (
-              <XhCarouselIndicator key={p} index={p} onMouseEnter={() => setPage(p)} />
-            ))}
-          </XhCarouselIndicatorGroup>
-          <span style={{ flexBasis: "100%" }}>
-            {`鼠标扫过下面的圆点即可换页，当前第 ${page + 1} / ${totalPages} 页`}
-          </span>
-        </>
-      )}
-    </XhCarouselRoot>
+            </XhCarouselIndicatorGroup>
+          </>
+        )}
+      </XhCarouselRoot>
+      <span data-demo-output>{`鼠标扫过圆点即可换页 · 当前第 ${current + 1} / ${slides.length} 页`}</span>
+    </>
   );
 }

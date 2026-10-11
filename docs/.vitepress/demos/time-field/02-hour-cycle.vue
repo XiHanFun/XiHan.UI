@@ -27,5 +27,5 @@ const value = ref("13:45");
     </XhTimeFieldControl>
   </XhTimeFieldRoot>
 
-  <span style="font-size: 13px">当前值：{{ value || "（未填齐）" }}</span>
+  <span data-demo-output>当前值：{{ value || "（未填齐）" }}</span>
 </template>

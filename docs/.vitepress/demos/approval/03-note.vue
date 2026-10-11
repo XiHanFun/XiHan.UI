@@ -17,19 +17,17 @@ const translations = { notePlaceholder: "补充一句（可不填）", note: "�
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <XhApprovalRoot
-      :translations="translations"
-      @decision="decided = `${$event.decision}（备注 ${$event.note ?? '无'}）`"
-    >
-      <XhApprovalTitle>要把这批改动推上去</XhApprovalTitle>
-      <XhApprovalDescription>推之前可以留一句话，随判定一起交给宿主。</XhApprovalDescription>
-      <XhApprovalNote />
-      <XhApprovalFooter>
-        <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
-        <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
-      </XhApprovalFooter>
-    </XhApprovalRoot>
-    <p v-if="decided" style="margin: 0;">判定：{{ decided }}</p>
-  </div>
+  <XhApprovalRoot
+    :translations="translations"
+    @decision="decided = `${$event.decision}（备注 ${$event.note ?? '无'}）`"
+  >
+    <XhApprovalTitle>要把这批改动推上去</XhApprovalTitle>
+    <XhApprovalDescription>推之前可以留一句话，随判定一起交给宿主。</XhApprovalDescription>
+    <XhApprovalNote />
+    <XhApprovalFooter>
+      <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
+      <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
+    </XhApprovalFooter>
+  </XhApprovalRoot>
+  <p data-demo-output>判定：{{ decided || "（未判定）" }}</p>
 </template>

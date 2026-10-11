@@ -13,14 +13,12 @@
   </div>
 </xh-file-upload>
 
-<div style="display: flex; align-items: center; gap: 12px">
-  <xh-button size="sm" disabled>
-    <button data-xh-part="root" id="file-upload-controlled-clear">
-      从外面清空
-    </button>
-  </xh-button>
-  <span id="file-upload-controlled-count">宿主持有 0 个文件</span>
-</div>
+<xh-button size="sm" disabled>
+  <button data-xh-part="root" id="file-upload-controlled-clear">
+    从外面清空
+  </button>
+</xh-button>
+<span id="file-upload-controlled-count" data-demo-output>宿主持有 0 个文件</span>
 
 <script type="module">
   const upload = document.getElementById("file-upload-controlled");

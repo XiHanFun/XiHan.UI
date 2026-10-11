@@ -27,20 +27,20 @@ export default function Demo(): ReactNode {
   const [strokes, setStrokes] = useState(saved.strokes.length);
 
   return (
-    <XhSignaturePadRoot
-      defaultValue={saved}
-      style={{ maxInlineSize: "22rem" }}
-      // 定稿的数据原样存下即可，下次回显时交回 defaultValue
-      onValueChange={details => setStrokes(details.value.strokes.length)}
-    >
-      <XhSignaturePadControl>
-        <XhSignaturePadGuide />
-        <XhSignaturePadPath />
-      </XhSignaturePadControl>
-      <div style={{ display: "flex", gap: "var(--xh-space-2)", alignItems: "center" }}>
+    <>
+      <XhSignaturePadRoot
+        defaultValue={saved}
+        style={{ maxInlineSize: "22rem" }}
+        // 定稿的数据原样存下即可，下次回显时交回 defaultValue
+        onValueChange={details => setStrokes(details.value.strokes.length)}
+      >
+        <XhSignaturePadControl>
+          <XhSignaturePadGuide />
+          <XhSignaturePadPath />
+        </XhSignaturePadControl>
         <XhSignaturePadUndoTrigger>撤销</XhSignaturePadUndoTrigger>
-        <span>{`共 ${strokes} 笔`}</span>
-      </div>
-    </XhSignaturePadRoot>
+      </XhSignaturePadRoot>
+      <span data-demo-output>{`共 ${strokes} 笔`}</span>
+    </>
   );
 }

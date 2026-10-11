@@ -12,7 +12,7 @@ export default function Demo(): ReactNode {
         checked={checked}
         onCheckedChange={details => setChecked(details.checked)}
       />
-      <span>
+      <span data-demo-output>
         当前：
         {checked ? "开" : "关"}
       </span>

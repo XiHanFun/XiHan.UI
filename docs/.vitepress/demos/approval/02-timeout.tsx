@@ -34,7 +34,7 @@ export default function Demo(): ReactNode {
   }, [left]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+    <>
       <XhApprovalRoot
         timeoutMs={10000}
         tone="danger"
@@ -54,7 +54,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhApprovalRoot>
-      {decided ? <p style={{ margin: 0 }}>{`判定：${decided}`}</p> : null}
-    </div>
+      <p data-demo-output>{`判定：${decided || "（未判定）"}`}</p>
+    </>
   );
 }

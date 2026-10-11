@@ -26,7 +26,7 @@ export default function Demo(): ReactNode {
       <XhButton variant="outline" onClick={() => setRunning(!running)}>
         {running ? "暂停" : "继续"}
       </XhButton>
-      {settled !== null ? <span>{`上一次停在：${settled}`}</span> : null}
+      <span data-demo-output>{`上一次停在：${settled ?? "（还没停过）"}`}</span>
     </>
   );
 }

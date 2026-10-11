@@ -4,6 +4,8 @@ import { DownloadIcon } from "@xihan-ui/icons";
 import {
   XhDownloadTrigger,
   XhIcon,
+  XhImageImage,
+  XhImageRoot,
   XhImageViewerCloseTrigger,
   XhImageViewerContent,
   XhImageViewerCounter,
@@ -32,19 +34,28 @@ function blobOf(index: number): () => Promise<Blob> {
 
 <template>
   <XhImageViewerRoot v-slot="{ index, setIndex, setOpen }" :collection="items">
+    <!-- 缩略图与浮层里那排缩略图都是图片补上按钮角色，Enter 与 Space 也能按；从外面打开时先展开再换下标，收起时换图不生效 -->
     <div style="display: flex; gap: var(--xh-space-2)">
-      <button
+      <XhImageRoot
         v-for="(item, i) in items"
         :key="item.src"
-        type="button"
-        style="border: none; padding: 0; cursor: zoom-in; background: none"
+        :src="item.src"
+        :alt="item.alt"
+        role="button"
+        tabindex="0"
+        :aria-label="`查看 ${item.alt}`"
+        style="--xh-image-w: 120px; --xh-image-ratio: 4 / 3; cursor: zoom-in"
         @click="
-          setIndex(i);
           setOpen(true);
+          setIndex(i);
+        "
+        @keydown.enter.space.prevent="
+          setOpen(true);
+          setIndex(i);
         "
       >
-        <img :src="item.src" :alt="item.alt" style="inline-size: 120px; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--xh-shape-surface); display: block">
-      </button>
+        <XhImageImage />
+      </XhImageRoot>
     </div>
     <XhImageViewerContent>
       <XhImageViewerViewport>
@@ -60,18 +71,22 @@ function blobOf(index: number): () => Promise<Blob> {
         </XhDownloadTrigger>
       </div>
       <div style="position: absolute; inset-block-end: calc(var(--xh-space-6) * 3); inset-inline: 0; z-index: 1; display: flex; justify-content: center; gap: var(--xh-space-2)">
-        <button
+        <XhImageRoot
           v-for="(item, i) in items"
           :key="item.src"
-          type="button"
+          :src="item.src"
+          alt=""
+          role="button"
+          tabindex="0"
           :aria-label="`第 ${i + 1} 张：${item.alt}`"
           :aria-current="i === index ? 'true' : undefined"
-          :style="{ outline: i === index ? 'var(--xh-ring-width) solid currentColor' : 'none', opacity: i === index ? 1 : 0.6 }"
-          style="border: none; padding: 0; background: none; cursor: pointer; border-radius: var(--xh-shape-inset); outline-offset: var(--xh-ring-offset)"
+          :style="{ outline: i === index ? 'var(--xh-ring-width) solid currentColor' : undefined, opacity: i === index ? 1 : 0.6 }"
+          style="--xh-image-w: 64px; --xh-image-ratio: 4 / 3; outline-offset: var(--xh-ring-offset); cursor: pointer"
           @click="setIndex(i)"
+          @keydown.enter.space.prevent="setIndex(i)"
         >
-          <img :src="item.src" alt="" style="inline-size: 64px; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--xh-shape-inset); display: block">
-        </button>
+          <XhImageImage />
+        </XhImageRoot>
       </div>
       <XhImageViewerToolbar>
         <XhImageViewerZoomOutTrigger />

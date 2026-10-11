@@ -27,17 +27,15 @@ function run(details: CommandSelectDetails) {
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <XhCommandRoot
-      :collection="commands"
-      :groups="groups"
-      placeholder="搜命令…"
-      empty="没有匹配的命令"
-      @select="run"
-    >
-      <template #trigger>打开命令面板</template>
-      <template #footer>方向键选择 · Enter 执行 · Esc 关闭</template>
-    </XhCommandRoot>
-    <span>{{ last }}</span>
-  </div>
+  <XhCommandRoot
+    :collection="commands"
+    :groups="groups"
+    placeholder="搜命令…"
+    empty="没有匹配的命令"
+    @select="run"
+  >
+    <template #trigger>打开命令面板</template>
+    <template #footer>方向键选择 · Enter 执行 · Esc 关闭</template>
+  </XhCommandRoot>
+  <span data-demo-output>{{ last }}</span>
 </template>

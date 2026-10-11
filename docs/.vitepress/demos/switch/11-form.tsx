@@ -14,26 +14,28 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <form style={{ display: "grid", gap: "12px" }} onSubmit={onSubmit}>
-      <label>
-        <XhSwitch name="notify" defaultChecked />
-        {" 接收通知（开着，提交 notify=on）"}
-      </label>
-      <label>
-        <XhSwitch name="beta" />
-        {" 加入内测（没开就整条不进 FormData）"}
-      </label>
-      {/* value 换掉默认的 on */}
-      <label>
-        <XhSwitch name="theme" value="dark" defaultChecked />
-        {" 深色主题（提交 theme=dark）"}
-      </label>
+    <>
+      <form style={{ display: "grid", gap: "12px" }} onSubmit={onSubmit}>
+        <label>
+          <XhSwitch name="notify" defaultChecked />
+          {" 接收通知（开着，提交 notify=on）"}
+        </label>
+        <label>
+          <XhSwitch name="beta" />
+          {" 加入内测（没开就整条不进 FormData）"}
+        </label>
+        {/* value 换掉默认的 on */}
+        <label>
+          <XhSwitch name="theme" value="dark" defaultChecked />
+          {" 深色主题（提交 theme=dark）"}
+        </label>
 
-      <div>
-        <XhButton type="submit" size="sm">提交</XhButton>
-      </div>
+        <div>
+          <XhButton type="submit" size="sm">提交</XhButton>
+        </div>
+      </form>
 
-      {submitted ? <span>{`表单收到：${submitted}`}</span> : null}
-    </form>
+      <span data-demo-output>{`表单收到：${submitted || "（尚未提交）"}`}</span>
+    </>
   );
 }

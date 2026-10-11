@@ -11,7 +11,7 @@ export default function Demo(): ReactNode {
           <XhNumberFieldControl>
             <XhNumberFieldInput style={{ inlineSize: "96px", textAlign: "center" }} />
           </XhNumberFieldControl>
-          <span>{`点进框里按上下键：${value === "" ? "（空）" : value}`}</span>
+          <span data-demo-output>{`点进框里按上下键：${value === "" ? "（空）" : value}`}</span>
         </>
       )}
     </XhNumberFieldRoot>

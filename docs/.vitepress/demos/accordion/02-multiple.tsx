@@ -21,14 +21,16 @@ export default function Demo(): ReactNode {
   const [panels, setPanels] = useState<string[]>(["basic", "size"]);
 
   return (
-    <div style={{ width: "100%", maxWidth: "420px", display: "grid", gap: "12px" }}>
-      <XhAccordionRoot
-        value={panels}
-        onValueChange={details => setPanels(details.value)}
-        collection={items}
-        multiple
-      />
-      <span>{`展开：${panels.length ? panels.join("、") : "（无）"}`}</span>
-    </div>
+    <>
+      <div style={{ width: "100%", maxWidth: "420px" }}>
+        <XhAccordionRoot
+          value={panels}
+          onValueChange={details => setPanels(details.value)}
+          collection={items}
+          multiple
+        />
+      </div>
+      <span data-demo-output>{`展开：${panels.length ? panels.join("、") : "（无）"}`}</span>
+    </>
   );
 }

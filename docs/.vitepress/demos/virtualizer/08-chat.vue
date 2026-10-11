@@ -52,7 +52,7 @@ function send(): void {
             v-for="item in virtualItems"
             :key="item.key"
             :value="item.index"
-            style="display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)"
+            style="display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)"
           >
             {{ messages[item.index]!.text }}
           </XhVirtualizerItem>

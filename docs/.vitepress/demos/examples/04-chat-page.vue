@@ -210,9 +210,9 @@ function onSubmit({ value }: { value: string }): void {
       <XhPromptInputInput rows="1" placeholder="接着问点什么…" />
       <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
     </XhPromptInputRoot>
-
-    <p v-if="decision" class="chat-page__note">批准闸门：{{ decision }}</p>
   </div>
+
+  <p data-demo-output>批准闸门：{{ decision || "（未决定）" }}</p>
 </template>
 
 <style scoped>
@@ -244,11 +244,5 @@ function onSubmit({ value }: { value: string }): void {
   display: flex;
   flex-direction: column;
   gap: var(--xh-space-3);
-}
-
-.chat-page__note {
-  margin: 0;
-  color: var(--xh-fg-muted);
-  font-size: var(--xh-font-size-sm);
 }
 </style>

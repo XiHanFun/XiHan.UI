@@ -10,43 +10,48 @@ import {
   XhCarouselRoot,
   XhCarouselViewport,
 } from "@xihan-ui/react";
+import { useState } from "react";
 
 const slides = ["A", "B", "C", "D", "E", "F"];
 
 export default function Demo(): ReactNode {
+  const [page, setPage] = useState(0);
+
   return (
-    <XhCarouselRoot
-      slideCount={slides.length}
-      slidesPerPage={3}
-      slidesPerMove={1}
-      spacing="10px"
-      style={{ inlineSize: "100%" }}
-    >
-      {({ page, totalPages, slideRange }) => (
-        <>
-          <XhCarouselPrevTrigger />
-          <XhCarouselViewport style={{ blockSize: "110px" }}>
-            <XhCarouselList>
-              {slides.map((text, i) => (
-                <XhCarouselItem key={text} index={i}>
-                  <div style={{ display: "grid", placeItems: "center", blockSize: "100%" }}>
-                    {text}
-                  </div>
-                </XhCarouselItem>
+    <>
+      <XhCarouselRoot
+        slideCount={slides.length}
+        slidesPerPage={3}
+        slidesPerMove={1}
+        spacing="10px"
+        onPageChange={details => setPage(details.page)}
+        style={{ inlineSize: "100%" }}
+      >
+        {({ totalPages }) => (
+          <>
+            <XhCarouselPrevTrigger />
+            <XhCarouselViewport style={{ blockSize: "110px" }}>
+              <XhCarouselList>
+                {slides.map((text, i) => (
+                  <XhCarouselItem key={text} index={i}>
+                    <div style={{ display: "grid", placeItems: "center", blockSize: "100%" }}>
+                      {text}
+                    </div>
+                  </XhCarouselItem>
+                ))}
+              </XhCarouselList>
+            </XhCarouselViewport>
+            <XhCarouselNextTrigger />
+            <XhCarouselIndicatorGroup>
+              {Array.from({ length: totalPages }, (_, p) => (
+                <XhCarouselIndicator key={p} index={p} />
               ))}
-            </XhCarouselList>
-          </XhCarouselViewport>
-          <XhCarouselNextTrigger />
-          <XhCarouselIndicatorGroup>
-            {Array.from({ length: totalPages }, (_, p) => (
-              <XhCarouselIndicator key={p} index={p} />
-            ))}
-          </XhCarouselIndicatorGroup>
-          <span style={{ flexBasis: "100%" }}>
-            {`第 ${page + 1} / ${totalPages} 页 · 眼下露的是第 ${slideRange.start + 1} 到 ${slideRange.end + 1} 张`}
-          </span>
-        </>
-      )}
-    </XhCarouselRoot>
+            </XhCarouselIndicatorGroup>
+          </>
+        )}
+      </XhCarouselRoot>
+      {/* 六张里一屏露三张、一次挪一张，落点共四个：第 N 页从第 N 张露起 */}
+      <span data-demo-output>{`第 ${page + 1} / 4 页 · 眼下露的是第 ${page + 1} 到 ${page + 3} 张`}</span>
+    </>
   );
 }

@@ -84,7 +84,7 @@ export default function Demo(): ReactNode {
           ))}
         </XhTableBody>
       </XhTableRoot>
-      <span>
+      <span data-demo-output>
         {`排序链：${sort.length ? sort.map(s => `${s.id} ${s.direction}`).join(" → ") : "（无）"}`}
       </span>
     </div>

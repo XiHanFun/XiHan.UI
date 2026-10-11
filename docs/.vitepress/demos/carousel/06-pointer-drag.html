@@ -38,31 +38,16 @@
       <button data-xh-part="indicator" index="2"></button>
       <button data-xh-part="indicator" index="3"></button>
     </div>
-    <span id="carousel-drag-readout" style="flex-basis: 100%"></span>
   </div>
 </xh-carousel>
+<span id="carousel-drag-readout" data-demo-output>第 1 / 4 页</span>
 
 <script type="module">
-  // 拖拽态写在 root 上，页码跟着 page-change 走
+  // 松手落到哪一页，跟着 page-change 回显
   const carousel = document.getElementById("carousel-drag");
-  const root = carousel.querySelector('[data-xh-part="root"]');
   const readout = document.getElementById("carousel-drag-readout");
-  let page = 0;
-
-  function render() {
-    const state = root.hasAttribute("data-dragging") ? "正在拖" : "松手状态";
-    readout.textContent = `第 ${page + 1} / 4 页 · ${state}`;
-  }
 
   carousel.addEventListener("page-change", (event) => {
-    page = event.detail.page;
-    render();
+    readout.textContent = `第 ${event.detail.page + 1} / 4 页`;
   });
-
-  new MutationObserver(render).observe(root, {
-    attributes: true,
-    attributeFilter: ["data-dragging"],
-  });
-
-  render();
 </script>

@@ -8,15 +8,18 @@ import {
   XhCarouselRoot,
   XhCarouselViewport,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const slides = ["城市夜景", "海岸线", "雪山", "沙漠"];
+const current = ref(0);
 </script>
 
 <template>
   <XhCarouselRoot
-    v-slot="{ page, totalPages, setPage }"
+    v-slot="{ totalPages, setPage }"
     :slide-count="slides.length"
     style="inline-size: 100%"
+    @page-change="current = $event.page"
   >
     <XhCarouselViewport style="block-size: 130px">
       <XhCarouselList>
@@ -36,8 +39,6 @@ const slides = ["城市夜景", "海岸线", "雪山", "沙漠"];
         @mouseenter="setPage(p - 1)"
       />
     </XhCarouselIndicatorGroup>
-    <span style="flex-basis: 100%">
-      鼠标扫过下面的圆点即可换页，当前第 {{ page + 1 }} / {{ totalPages }} 页
-    </span>
   </XhCarouselRoot>
+  <span data-demo-output>鼠标扫过圆点即可换页 · 当前第 {{ current + 1 }} / {{ slides.length }} 页</span>
 </template>

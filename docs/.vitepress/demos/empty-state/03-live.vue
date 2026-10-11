@@ -1,10 +1,15 @@
 <!-- 播报方式 | 默认 polite 使 root 成为活区，筛选完成后就地播报；off 使它只是一个普通容器 -->
 <script setup lang="ts">
 import {
+  XhButton,
   XhEmptyStateDescription,
   XhEmptyStateIndicator,
   XhEmptyStateRoot,
   XhEmptyStateTitle,
+  XhInputGroupRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -19,10 +24,14 @@ function search(): void {
 
 <template>
   <div style="inline-size: 100%; display: grid; gap: 12px">
-    <div style="display: flex; gap: 8px">
-      <input v-model="keyword" type="search" aria-label="关键词">
-      <button type="button" @click="search">搜索</button>
-    </div>
+    <XhInputGroupRoot>
+      <XhTextFieldRoot v-model:value="keyword" type="search">
+        <XhTextFieldControl>
+          <XhTextFieldInput aria-label="关键词" />
+        </XhTextFieldControl>
+      </XhTextFieldRoot>
+      <XhButton variant="outline" @click="search">搜索</XhButton>
+    </XhInputGroupRoot>
 
     <!-- 结果换成空的那一刻，读屏会在不打断当前朗读的前提下把标题念出来 -->
     <XhEmptyStateRoot v-if="!hits.length" live="polite">

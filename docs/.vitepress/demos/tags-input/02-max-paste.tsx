@@ -40,7 +40,7 @@ export default function Demo(): ReactNode {
             <XhTagsInputInput />
             <XhTagsInputClearTrigger />
           </XhTagsInputControl>
-          <span>{`${count} / 4${atMax ? " · 已到上限" : ""}`}</span>
+          <span data-demo-output>{`${count} / 4${atMax ? " · 已到上限" : ""}`}</span>
         </>
       )}
     </XhTagsInputRoot>

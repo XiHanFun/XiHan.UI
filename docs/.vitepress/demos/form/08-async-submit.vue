@@ -41,6 +41,6 @@ function save({ values }: FormSubmitDetails): Promise<void> {
     </XhFormFieldGroup>
 
     <XhFormSubmitTrigger>{{ submitting ? "保存中…" : "保存" }}</XhFormSubmitTrigger>
-    <p>{{ saved ? `已保存：${saved}` : "尚未保存" }}</p>
   </XhFormRoot>
+  <p data-demo-output>{{ saved ? `已保存：${saved}` : "尚未保存" }}</p>
 </template>

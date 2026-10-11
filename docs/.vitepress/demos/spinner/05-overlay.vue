@@ -1,6 +1,6 @@
 <!-- 覆盖等待中的内容 | 旋转指示浮在内容上方，容器同时报告 aria-busy，可见的与可朗读的是同一件事 -->
 <script setup lang="ts">
-import { XhSpinner } from "@xihan-ui/vue";
+import { XhButton, XhSpinner } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const busy = ref(true);
@@ -11,16 +11,16 @@ const overlayStyle = [
   "inset: 0",
   "display: grid",
   "place-items: center",
-  "border-radius: 8px",
+  "border-radius: var(--xh-shape-surface)",
   "background: color-mix(in oklab, var(--xh-bg-surface) 72%, transparent)",
 ].join("; ");
 </script>
 
 <template>
   <div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-    <button type="button" @click="busy = !busy">
+    <XhButton variant="outline" size="sm" @click="busy = !busy">
       {{ busy ? "数据回来了" : "重新加载" }}
-    </button>
+    </XhButton>
 
     <!-- 内容留在原位，转圈叠在上面，加载前后布局不跳 -->
     <div
@@ -29,8 +29,8 @@ const overlayStyle = [
         position: relative;
         inline-size: 260px;
         padding: 16px;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 8px;
+        border: var(--xh-stroke-thin) solid var(--xh-border-default);
+        border-radius: var(--xh-shape-surface);
       "
     >
       <p style="margin: 0">本季新增客户 128 家，环比增长 12%。</p>

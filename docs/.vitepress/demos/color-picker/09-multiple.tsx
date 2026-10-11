@@ -54,7 +54,7 @@ export default function Demo(): ReactNode {
         </XhColorPickerPositioner>
       </XhColorPickerRoot>
 
-      <span aria-live="polite" style={{ fontSize: "13px" }}>
+      <span data-demo-output aria-live="polite">
         {`当前值：${value.join("、") || "（空）"}`}
       </span>
     </>

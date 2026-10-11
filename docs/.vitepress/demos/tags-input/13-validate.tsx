@@ -57,7 +57,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhTagsInputRoot>
-      {hint ? <p style={{ color: "var(--xh-fg-danger)" }}>{hint}</p> : null}
+      <p data-demo-output>{`拒收：${hint || "（暂无）"}`}</p>
     </>
   );
 }

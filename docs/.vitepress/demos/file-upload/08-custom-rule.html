@@ -13,7 +13,7 @@
   </div>
 </xh-file-upload>
 
-<span id="file-upload-rule-dropped"></span>
+<span id="file-upload-rule-dropped" data-demo-output>同名挡下：（暂无）</span>
 
 <script type="module">
   const upload = document.getElementById("file-upload-rule");
@@ -34,7 +34,9 @@
     const names = event.detail.files
       .filter((rejection) => rejection.reasons.includes("duplicate"))
       .map((rejection) => rejection.file.name);
-    dropped.textContent = names.length ? `同名挡下：${names.join("、")}` : "";
+    dropped.textContent = `同名挡下：${names.join("、") || "（暂无）"}`;
+    // 输出栏只放一行，放不下的悬停看全文
+    dropped.title = names.join("、");
   });
 
   // 条目节点由作者按当前列表铺，文件名与大小由元素代填

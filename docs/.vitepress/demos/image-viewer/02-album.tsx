@@ -1,6 +1,8 @@
 // 相册与翻页 | 多张图片共用一个查看浮层：两侧按钮或方向键翻页、计数报告第几张，缩放旋转在换图时归零
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import {
+  XhImageImage,
+  XhImageRoot,
   XhImageViewerCloseTrigger,
   XhImageViewerContent,
   XhImageViewerCounter,
@@ -21,28 +23,42 @@ const items = [
   { src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23065f46%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%236ee7b7%22/%3E%3C/svg%3E", alt: "森林" },
 ];
 
+const thumbStyle = {
+  "--xh-image-w": "120px",
+  "--xh-image-ratio": "4 / 3",
+  "cursor": "zoom-in",
+} as CSSProperties;
+
 export default function Demo(): ReactNode {
   return (
     <XhImageViewerRoot collection={items}>
       {({ setIndex, setOpen }) => (
         <>
+          {/* 缩略图各自指定从第几张看起：先展开再换下标，收起时换图不生效；图片补上按钮角色，Enter 与 Space 也能打开 */}
           <div style={{ display: "flex", gap: "8px" }}>
             {items.map((item, i) => (
-              <button
+              <XhImageRoot
                 key={item.src}
-                type="button"
-                style={{ border: "none", padding: 0, cursor: "zoom-in", background: "none" }}
+                src={item.src}
+                alt={item.alt}
+                role="button"
+                tabIndex={0}
+                aria-label={`查看 ${item.alt}`}
+                style={thumbStyle}
                 onClick={() => {
-                  setIndex(i);
                   setOpen(true);
+                  setIndex(i);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key !== "Enter" && event.key !== " ")
+                    return;
+                  event.preventDefault();
+                  setOpen(true);
+                  setIndex(i);
                 }}
               >
-                <img
-                  src={item.src}
-                  alt={item.alt}
-                  style={{ inlineSize: "120px", aspectRatio: "4/3", objectFit: "cover", borderRadius: "8px", display: "block" }}
-                />
-              </button>
+                <XhImageImage />
+              </XhImageRoot>
             ))}
           </div>
           <XhImageViewerContent>

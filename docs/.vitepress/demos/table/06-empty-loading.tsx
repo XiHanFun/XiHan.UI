@@ -1,6 +1,7 @@
 // 空态与加载态 | 两个占位节点常驻只依靠 hidden 显隐：表体为空且在取数时显示加载环，取完没有行才显示空态；已有行时重新取数不换占位，表体保留上一帧淡下
 import type { ReactNode } from "react";
 import {
+  XhButton,
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
@@ -70,9 +71,9 @@ export default function Demo(): ReactNode {
   return (
     <div style={{ width: "100%", maxWidth: "480px", display: "grid", gap: "12px" }}>
       <div style={{ display: "flex", gap: "8px" }}>
-        <button type="button" onClick={load}>取数</button>
-        <button type="button" onClick={refresh}>刷新</button>
-        <button type="button" onClick={reset}>清空</button>
+        <XhButton size="sm" variant="outline" onClick={load}>取数</XhButton>
+        <XhButton size="sm" variant="outline" onClick={refresh}>刷新</XhButton>
+        <XhButton size="sm" variant="outline" onClick={reset}>清空</XhButton>
       </div>
 
       <XhTableRoot columns={columns} rows={rows} loading={loading}>

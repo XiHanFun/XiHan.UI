@@ -46,12 +46,13 @@ export default function Demo(): ReactNode {
   const [log, setLog] = useState("");
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px", maxWidth: "340px" }}>
+    <>
       <XhQuestionFlowRoot
         questions={questions}
         autoAdvance={false}
         tone="neutral"
         variant="subtle"
+        style={{ maxWidth: "340px" }}
         translations={{ note: "自己写一句", notePlaceholder: "都不是，我想要…" }}
         onSkip={details => setLog(`跳过了第 ${details.index + 1} 题`)}
         onSubmit={details => setLog(
@@ -96,7 +97,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhQuestionFlowRoot>
-      {log && <p style={{ margin: 0 }}>{log}</p>}
-    </div>
+      <p data-demo-output>{log || "（还没操作）"}</p>
+    </>
   );
 }

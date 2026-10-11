@@ -55,6 +55,6 @@ const selection = ref<string[]>(["p2"]);
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>已选：{{ selection.length ? selection.join("、") : "（无）" }}</span>
+    <span data-demo-output>已选：{{ selection.length ? selection.join("、") : "（无）" }}</span>
   </div>
 </template>

@@ -1,11 +1,10 @@
 <!-- 基础用法 | 从按钮打开一组操作 -->
 <xh-menu>
-  <button
-    data-xh-part="trigger"
-    style="display: inline-flex; align-items: center; gap: 6px; block-size: var(--xh-control-h-md); padding-inline: var(--xh-control-px-md); border: 0; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font: inherit; cursor: pointer"
-  >
+  <button data-xh-part="trigger">
     操作
-    <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    <xh-icon>
+      <svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9L12 15L18 9" /></svg>
+    </xh-icon>
   </button>
   <div data-xh-part="positioner">
     <div data-xh-part="content">

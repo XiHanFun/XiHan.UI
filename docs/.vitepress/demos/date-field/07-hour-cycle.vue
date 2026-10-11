@@ -32,5 +32,5 @@ const value = ref<string | null>("2026-07-28T21:05");
     </XhDateFieldControl>
   </XhDateFieldRoot>
 
-  <span style="font-size: 13px">当前值：{{ value ?? "（空）" }}</span>
+  <span data-demo-output>当前值：{{ value ?? "（空）" }}</span>
 </template>

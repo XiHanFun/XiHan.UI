@@ -43,5 +43,5 @@ function onQuery(details: { query: string | null; prefix: string | null }): void
     :translations="{ input: '正文', content: '候选' }"
     @query-change="onQuery"
   />
-  <p>当前前缀：{{ prefix ?? "（无触发）" }}</p>
+  <p data-demo-output>当前前缀：{{ prefix ?? "（无触发）" }}</p>
 </template>

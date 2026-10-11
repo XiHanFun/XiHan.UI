@@ -9,7 +9,7 @@
       <button data-xh-part="trigger">选择目录</button>
     </div>
     <input data-xh-part="hidden-input" />
-    <span id="file-upload-directory-count"></span>
+    <span id="file-upload-directory-count" data-demo-output>共 0 个文件</span>
     <div
       data-xh-part="list"
       style="max-block-size: 220px; overflow: auto"
@@ -25,7 +25,7 @@
   // 条目节点由作者渲染，元素随后按文档序接上去
   upload.addEventListener("files-change", (event) => {
     const files = event.detail.files;
-    count.textContent = files.length ? `共 ${files.length} 个文件` : "";
+    count.textContent = `共 ${files.length} 个文件`;
     group.replaceChildren(
       ...files.map(() => {
         const item = document.createElement("div");

@@ -27,7 +27,7 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+    <>
       <XhCommandRoot
         collection={commands}
         groups={groups}
@@ -37,7 +37,7 @@ export default function Demo(): ReactNode {
         trigger="打开命令面板"
         footer="方向键选择 · Enter 执行 · Esc 关闭"
       />
-      <span>{last}</span>
-    </div>
+      <span data-demo-output>{last}</span>
+    </>
   );
 }

@@ -8,31 +8,22 @@
   </div>
 </xh-text-field>
 
-<ol id="text-field-events-log" style="margin: 0; padding-inline-start: 20px"></ol>
-<span id="text-field-events-empty">还没有事件</span>
+<span id="text-field-events-log" data-demo-output>还没有事件</span>
 
 <script type="module">
   const field = document.getElementById("text-field-events");
   const input = field.querySelector('[data-xh-part="input"]');
-  const list = document.getElementById("text-field-events-log");
-  const empty = document.getElementById("text-field-events-empty");
+  const readout = document.getElementById("text-field-events-log");
   let log = [];
 
   // 新的排在最前，只留最近三条
   function push(text) {
     log = [text, ...log].slice(0, 3);
-    list.replaceChildren(
-      ...log.map((item) => {
-        const li = document.createElement("li");
-        li.textContent = item;
-        return li;
-      }),
-    );
-    empty.hidden = true;
+    readout.textContent = log.join(" · ");
   }
 
   field.addEventListener("value-change", (event) => {
-    push("value-change：" + (event.detail.value || "（空）"));
+    push(`value-change：${event.detail.value || "（空）"}`);
   });
   input.addEventListener("focus", () => push("focus"));
   input.addEventListener("blur", () => push("blur"));

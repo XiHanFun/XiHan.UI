@@ -21,7 +21,7 @@ const records = Array.from({ length: 24 }, (_, i) => ({
 const row: CSSProperties = {
   margin: 0,
   padding: "8px 0",
-  borderBlockEnd: "1px solid var(--xh-border-subtle)",
+  borderBlockEnd: "var(--xh-stroke-thin) solid var(--xh-border-subtle)",
 };
 
 export default function Demo(): ReactNode {

@@ -15,7 +15,7 @@ export default function Demo(): ReactNode {
   const [value, setValue] = useState("#3b82f6");
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+    <>
       <XhColorFieldRoot value={value} onValueChange={details => setValue(details.value)} name="accent" placeholder="#rrggbb" clearable>
         <XhColorFieldLabel>主题色</XhColorFieldLabel>
         <XhColorFieldControl>
@@ -25,10 +25,10 @@ export default function Demo(): ReactNode {
         </XhColorFieldControl>
         <XhColorFieldHiddenInput />
       </XhColorFieldRoot>
-      <span style={{ fontSize: "13px" }}>
+      <span data-demo-output>
         收下的值：
         <code>{value || "（空）"}</code>
       </span>
-    </div>
+    </>
   );
 }

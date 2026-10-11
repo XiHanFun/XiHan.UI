@@ -17,8 +17,6 @@ function onCheckedChange(details: { checked: boolean }) {
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 10px">
-    <XhSwitch :checked="enabled" :loading="pending" @checked-change="onCheckedChange" />
-    <span>{{ pending ? "提交中…" : enabled ? "已开启" : "已关闭" }}</span>
-  </div>
+  <XhSwitch :checked="enabled" :loading="pending" @checked-change="onCheckedChange" />
+  <span data-demo-output>{{ pending ? "提交中…" : enabled ? "已开启" : "已关闭" }}</span>
 </template>

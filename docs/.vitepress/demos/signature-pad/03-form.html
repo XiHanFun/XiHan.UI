@@ -15,8 +15,12 @@
     </div>
   </xh-signature-pad>
   <div style="display: flex; gap: 8px">
-    <button type="submit">提交</button>
-    <button type="reset">重置</button>
+    <xh-button type="submit" variant="solid">
+      <button data-xh-part="root">提交</button>
+    </xh-button>
+    <xh-button type="reset" variant="outline">
+      <button data-xh-part="root">重置</button>
+    </xh-button>
   </div>
 </form>
 

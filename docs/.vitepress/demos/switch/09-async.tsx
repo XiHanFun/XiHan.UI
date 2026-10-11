@@ -17,9 +17,9 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+    <>
       <XhSwitch checked={enabled} loading={pending} onCheckedChange={onCheckedChange} />
-      <span>{pending ? "提交中…" : enabled ? "已开启" : "已关闭"}</span>
-    </div>
+      <span data-demo-output>{pending ? "提交中…" : enabled ? "已开启" : "已关闭"}</span>
+    </>
   );
 }

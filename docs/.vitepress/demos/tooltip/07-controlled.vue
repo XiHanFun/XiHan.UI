@@ -20,25 +20,23 @@ function onOpenChange(details: { open: boolean }) {
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 16px">
-    <XhTooltipRoot
-      v-model:open="open"
-      placement="bottom"
-      :open-delay="0"
-      @open-change="onOpenChange"
-    >
-      <XhTooltipTrigger>把指针停上来</XhTooltipTrigger>
-      <XhTooltipPositioner>
-        <XhTooltipContent>
-          显隐完全跟着 open 走
-          <XhTooltipArrow />
-        </XhTooltipContent>
-      </XhTooltipPositioner>
-    </XhTooltipRoot>
+  <XhTooltipRoot
+    v-model:open="open"
+    placement="bottom"
+    :open-delay="0"
+    @open-change="onOpenChange"
+  >
+    <XhTooltipTrigger>把指针停上来</XhTooltipTrigger>
+    <XhTooltipPositioner>
+      <XhTooltipContent>
+        显隐完全跟着 open 走
+        <XhTooltipArrow />
+      </XhTooltipContent>
+    </XhTooltipPositioner>
+  </XhTooltipRoot>
 
-    <XhButton variant="outline" @click="open = !open">
-      {{ open ? "收起" : "展开" }}
-    </XhButton>
-    <span>最近意图：{{ log.join(" ← ") || "（还没动过）" }}</span>
-  </div>
+  <XhButton variant="outline" @click="open = !open">
+    {{ open ? "收起" : "展开" }}
+  </XhButton>
+  <span data-demo-output>最近意图：{{ log.join(" ← ") || "（还没动过）" }}</span>
 </template>

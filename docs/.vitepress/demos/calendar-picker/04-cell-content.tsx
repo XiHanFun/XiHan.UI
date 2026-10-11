@@ -71,7 +71,7 @@ export default function Demo(): ReactNode {
         )}
       </XhCalendarPickerRoot>
 
-      <span style={{ fontSize: "13px" }}>{`选中：${value[0] ?? "（未选）"}`}</span>
+      <span data-demo-output>{`选中：${value[0] ?? "（未选）"}`}</span>
     </>
   );
 }

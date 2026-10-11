@@ -70,7 +70,7 @@ export default function Demo(): ReactNode {
         </XhTransferTargetPanel>
       </XhTransferRoot>
 
-      <p style={{ marginBlockStart: "12px", fontSize: "13px" }}>
+      <p data-demo-output>
         {`已选：${value.length ? value.join("、") : "（无）"}`}
       </p>
     </div>

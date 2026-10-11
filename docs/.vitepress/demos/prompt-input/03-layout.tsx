@@ -1,18 +1,33 @@
 // 竖排布局与兜底字形 | 写一层输入行，root 即切换为竖排：输入行在上、动作行在下；按钮留空时皮肤按身份绘制箭头或停止方块
+import type { PromptInputSubmitKey } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
-import { XhPromptInputControl, XhPromptInputInput, XhPromptInputRoot, XhPromptInputSubmitTrigger } from "@xihan-ui/react";
+import {
+  XhCheckbox,
+  XhPromptInputControl,
+  XhPromptInputInput,
+  XhPromptInputRoot,
+  XhPromptInputSubmitTrigger,
+  XhSelectRoot,
+} from "@xihan-ui/react";
 import { useState } from "react";
 
+const submitKeys = [
+  { value: "enter", label: "Enter 提交" },
+  { value: "mod-enter", label: "Ctrl/Cmd+Enter 提交" },
+  { value: "none", label: "只用按钮提交" },
+];
+
 export default function Demo(): ReactNode {
-  const [submitKey, setSubmitKey] = useState<"enter" | "mod-enter" | "none">("enter");
+  // 选择器的值恒为数组，单选即长度 1
+  const [submitKey, setSubmitKey] = useState<string[]>(["enter"]);
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState<string[]>([]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+    <>
       <XhPromptInputRoot
         loading={loading}
-        submitKey={submitKey}
+        submitKey={submitKey[0] as PromptInputSubmitKey}
         translations={{ input: "给助手写点什么" }}
         onSubmit={details => setSent(prev => [...prev, details.value])}
         onStop={() => setLoading(false)}
@@ -24,29 +39,21 @@ export default function Demo(): ReactNode {
               <XhPromptInputSubmitTrigger />
             </XhPromptInputControl>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "12px" }}>
-              <label style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                <input
-                  type="checkbox"
-                  checked={loading}
-                  onChange={event => setLoading(event.target.checked)}
-                />
+              <XhCheckbox checked={loading} onCheckedChange={details => setLoading(details.checked)} size="sm">
                 生成中
-              </label>
-              <select
+              </XhCheckbox>
+              <XhSelectRoot
                 value={submitKey}
-                aria-label="按哪一档提交"
-                onChange={event => setSubmitKey(event.target.value as "enter" | "mod-enter" | "none")}
-              >
-                <option value="enter">Enter 提交</option>
-                <option value="mod-enter">Ctrl/Cmd+Enter 提交</option>
-                <option value="none">只用按钮提交</option>
-              </select>
+                onValueChange={details => setSubmitKey(details.value)}
+                collection={submitKeys}
+                size="sm"
+              />
               <span style={{ marginInlineStart: "auto" }}>{`${value.length} 字`}</span>
             </div>
           </>
         )}
       </XhPromptInputRoot>
-      {sent.length ? <p style={{ margin: 0 }}>{`已发出：${sent.join(" / ")}`}</p> : null}
-    </div>
+      <p data-demo-output>{`已发出：${sent.join(" / ") || "（无）"}`}</p>
+    </>
   );
 }

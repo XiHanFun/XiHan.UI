@@ -143,7 +143,7 @@ export default function Demo(): ReactNode {
         </XhTransferTargetPanel>
       </XhTransferRoot>
 
-      <p style={{ marginBlockStart: "12px", fontSize: "13px" }}>
+      <p data-demo-output>
         {`已上架 ${value.length} 件`}
       </p>
     </div>

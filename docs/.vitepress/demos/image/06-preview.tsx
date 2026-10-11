@@ -28,13 +28,6 @@ const largeStyle = {
   "--xh-image-fit": "contain",
 } as CSSProperties;
 
-const itemStyle: CSSProperties = {
-  padding: "4px 10px",
-  borderRadius: "6px",
-  border: "1px solid var(--xh-border-default)",
-  background: "var(--xh-bg-surface)",
-};
-
 export default function Demo(): ReactNode {
   const [open, setOpen] = useState(false);
   const [scale, setScale] = useState(1);
@@ -99,18 +92,17 @@ export default function Demo(): ReactNode {
 
           {/* 缩放与旋转是两个数值加一条 transform，工具条只负责把这几颗按钮串成一个 Tab 位 */}
           <XhToolbarRoot>
-            <XhToolbarItem value="zoom-in" style={itemStyle} onClick={() => zoom(0.25)}>
+            <XhToolbarItem value="zoom-in" onClick={() => zoom(0.25)}>
               放大
             </XhToolbarItem>
-            <XhToolbarItem value="zoom-out" style={itemStyle} onClick={() => zoom(-0.25)}>
+            <XhToolbarItem value="zoom-out" onClick={() => zoom(-0.25)}>
               缩小
             </XhToolbarItem>
-            <XhToolbarItem value="rotate" style={itemStyle} onClick={() => setRotate(prev => prev + 90)}>
+            <XhToolbarItem value="rotate" onClick={() => setRotate(prev => prev + 90)}>
               旋转
             </XhToolbarItem>
             <XhToolbarItem
               value="reset"
-              style={itemStyle}
               onClick={() => {
                 setScale(1);
                 setRotate(0);

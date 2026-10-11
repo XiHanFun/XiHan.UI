@@ -158,5 +158,5 @@ function onOpenChange(details: { open: boolean }): void {
       </XhTreeSelectContent>
     </XhTreeSelectPositioner>
   </XhTreeSelectRoot>
-  <p>已选：{{ value.length ? value.join("、") : "（无）" }}</p>
+  <p data-demo-output>已选：{{ value.length ? value.join("、") : "（无）" }}</p>
 </template>

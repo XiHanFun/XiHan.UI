@@ -167,7 +167,7 @@ export default function Demo(): ReactNode {
         {/* 播报区视觉隐藏，必须在拖动开始之前就在 DOM 上 */}
         <XhTreeLiveRegion />
       </XhTreeRoot>
-      <span>{log}</span>
+      <span data-demo-output>{log}</span>
     </div>
   );
 }

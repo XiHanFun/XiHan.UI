@@ -38,7 +38,7 @@ export default function Demo(): ReactNode {
       <XhButton variant="outline" onClick={() => setOpen(!open)}>
         {open ? "收起" : "展开"}
       </XhButton>
-      <span>{`当前：${open ? "展开" : "收起"}`}</span>
+      <span data-demo-output>{`当前：${open ? "展开" : "收起"}`}</span>
     </div>
   );
 }

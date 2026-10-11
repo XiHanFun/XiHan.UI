@@ -31,7 +31,7 @@
       el.dataset.xhPart = "item";
       el.setAttribute("value", String(item.index));
       el.style.cssText =
-        "display: flex; align-items: center; justify-content: center; inline-size: 120px; block-size: 68px; border: 1px solid var(--xh-border-subtle); border-radius: 8px";
+        "display: flex; align-items: center; justify-content: center; inline-size: 120px; block-size: 68px; border: var(--xh-stroke-thin) solid var(--xh-border-subtle); border-radius: var(--xh-shape-surface)";
       el.textContent = `第 ${item.index + 1} 张`;
       nodes.set(item.index, el);
       content.append(el);

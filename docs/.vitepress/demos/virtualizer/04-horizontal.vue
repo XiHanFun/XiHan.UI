@@ -29,8 +29,8 @@ import {
             justify-content: center;
             inline-size: 120px;
             block-size: 68px;
-            border: 1px solid var(--xh-border-subtle);
-            border-radius: 8px;
+            border: var(--xh-stroke-thin) solid var(--xh-border-subtle);
+            border-radius: var(--xh-shape-surface);
           "
         >
           第 {{ item.index + 1 }} 张

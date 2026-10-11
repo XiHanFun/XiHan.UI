@@ -87,6 +87,6 @@ const selection = ref<string[]>([]);
       <XhPaginationNextTrigger />
     </XhPaginationRoot>
 
-    <span style="font-size: 13px">已选 {{ selection.length }} 项 · 序号跨页连续</span>
+    <span data-demo-output>已选 {{ selection.length }} 项 · 序号跨页连续</span>
   </div>
 </template>

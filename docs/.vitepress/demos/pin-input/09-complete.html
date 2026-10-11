@@ -10,13 +10,17 @@
         <input data-xh-part="input" />
       </div>
       <div style="display: flex; gap: 8px">
-        <button type="button" id="pin-input-complete-submit" disabled>提交</button>
+        <xh-button id="pin-input-complete-submit" size="sm" disabled>
+          <button data-xh-part="root">提交</button>
+        </xh-button>
         <!-- 重填走原生表单重置，组件认它并把整组清回落点 -->
-        <button type="reset">重填</button>
+        <xh-button type="reset" variant="outline" size="sm">
+          <button data-xh-part="root">重填</button>
+        </xh-button>
       </div>
-      <span id="pin-input-complete-readout">四格都填满才能提交</span>
     </div>
   </xh-pin-input>
+  <span id="pin-input-complete-readout" data-demo-output>四格都填满才能提交</span>
 </form>
 
 <script type="module">
@@ -39,6 +43,6 @@
   sync();
 
   pin.addEventListener("value-change", (event) => (code = event.detail.valueAsString));
-  submit.addEventListener("click", () => (readout.textContent = "已提交：" + code));
+  submit.addEventListener("click", () => (readout.textContent = `已提交：${code}`));
   form.addEventListener("reset", () => (readout.textContent = "四格都填满才能提交"));
 </script>

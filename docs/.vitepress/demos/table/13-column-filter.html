@@ -13,23 +13,33 @@
                 <div data-xh-part="content">
                   <h2 data-xh-part="title">按部门过滤</h2>
                   <div style="display: grid; gap: 6px; min-inline-size: 8rem">
-                    <label style="display: flex; align-items: center; gap: 6px">
-                      <input type="checkbox" data-filter="dept" value="平台研发" />
-                      平台研发
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 6px">
-                      <input type="checkbox" data-filter="dept" value="前端体验" />
-                      前端体验
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 6px">
-                      <input type="checkbox" data-filter="dept" value="基础架构" />
-                      基础架构
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 6px">
-                      <input type="checkbox" data-filter="dept" value="质量保障" />
-                      质量保障
-                    </label>
-                    <button type="button" data-clear="dept">不限</button>
+                    <xh-checkbox-group id="table-filter-dept" size="sm">
+                      <div data-xh-part="root" aria-label="部门">
+                        <div data-xh-part="item" value="平台研发">
+                          <input data-xh-part="hidden-input" />
+                          <span data-xh-part="indicator"></span>
+                          <span data-xh-part="item-text">平台研发</span>
+                        </div>
+                        <div data-xh-part="item" value="前端体验">
+                          <input data-xh-part="hidden-input" />
+                          <span data-xh-part="indicator"></span>
+                          <span data-xh-part="item-text">前端体验</span>
+                        </div>
+                        <div data-xh-part="item" value="基础架构">
+                          <input data-xh-part="hidden-input" />
+                          <span data-xh-part="indicator"></span>
+                          <span data-xh-part="item-text">基础架构</span>
+                        </div>
+                        <div data-xh-part="item" value="质量保障">
+                          <input data-xh-part="hidden-input" />
+                          <span data-xh-part="indicator"></span>
+                          <span data-xh-part="item-text">质量保障</span>
+                        </div>
+                      </div>
+                    </xh-checkbox-group>
+                    <xh-button id="table-filter-dept-clear" size="sm" variant="outline">
+                      <button data-xh-part="root">不限</button>
+                    </xh-button>
                   </div>
                 </div>
               </div>
@@ -43,23 +53,33 @@
                 <div data-xh-part="content">
                   <h2 data-xh-part="title">按城市过滤</h2>
                   <div style="display: grid; gap: 6px; min-inline-size: 8rem">
-                    <label style="display: flex; align-items: center; gap: 6px">
-                      <input type="checkbox" data-filter="city" value="杭州" />
-                      杭州
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 6px">
-                      <input type="checkbox" data-filter="city" value="上海" />
-                      上海
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 6px">
-                      <input type="checkbox" data-filter="city" value="北京" />
-                      北京
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 6px">
-                      <input type="checkbox" data-filter="city" value="成都" />
-                      成都
-                    </label>
-                    <button type="button" data-clear="city">不限</button>
+                    <xh-checkbox-group id="table-filter-city" size="sm">
+                      <div data-xh-part="root" aria-label="城市">
+                        <div data-xh-part="item" value="杭州">
+                          <input data-xh-part="hidden-input" />
+                          <span data-xh-part="indicator"></span>
+                          <span data-xh-part="item-text">杭州</span>
+                        </div>
+                        <div data-xh-part="item" value="上海">
+                          <input data-xh-part="hidden-input" />
+                          <span data-xh-part="indicator"></span>
+                          <span data-xh-part="item-text">上海</span>
+                        </div>
+                        <div data-xh-part="item" value="北京">
+                          <input data-xh-part="hidden-input" />
+                          <span data-xh-part="indicator"></span>
+                          <span data-xh-part="item-text">北京</span>
+                        </div>
+                        <div data-xh-part="item" value="成都">
+                          <input data-xh-part="hidden-input" />
+                          <span data-xh-part="indicator"></span>
+                          <span data-xh-part="item-text">成都</span>
+                        </div>
+                      </div>
+                    </xh-checkbox-group>
+                    <xh-button id="table-filter-city-clear" size="sm" variant="outline">
+                      <button data-xh-part="root">不限</button>
+                    </xh-button>
                   </div>
                 </div>
               </div>
@@ -71,7 +91,7 @@
       <div data-xh-part="empty">这组条件下没有人。</div>
     </div>
   </xh-table>
-  <span id="table-filter-value"></span>
+  <span id="table-filter-value" data-demo-output></span>
 </div>
 
 <script type="module">
@@ -112,16 +132,11 @@
     }),
   );
 
-  const boxes = [...stage.querySelectorAll("input[data-filter]")];
-
   // 过滤态由宿主持有，一个都没勾就是不过滤
-  function picked(field) {
-    return boxes.filter((b) => b.dataset.filter === field && b.checked).map((b) => b.value);
-  }
+  const picked = { dept: [], city: [] };
 
   function render() {
-    const dept = picked("dept");
-    const city = picked("city");
+    const { dept, city } = picked;
     const visible = members.filter(
       (m) =>
         (dept.length === 0 || dept.includes(m.dept)) &&
@@ -135,7 +150,7 @@
     for (const mark of stage.querySelectorAll("[data-mark]")) {
       const field = mark.closest('[data-xh-part="column-header"]').getAttribute("value");
       mark.innerHTML = `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z"/></svg>`;
-      mark.style.color = picked(field).length ? "var(--xh-fg-brand)" : "";
+      mark.style.color = picked[field].length ? "var(--xh-fg-brand)" : "";
     }
 
     readout.textContent = `命中 ${visible.length} / ${members.length} 人 · 部门：${
@@ -143,15 +158,17 @@
     } · 城市：${city.length ? city.join("、") : "不限"}`;
   }
 
-  for (const box of boxes) box.addEventListener("change", render);
-
-  for (const clear of stage.querySelectorAll("[data-clear]")) {
-    clear.addEventListener("click", () => {
-      for (const box of boxes) {
-        if (box.dataset.filter === clear.dataset.clear) box.checked = false;
-      }
+  // 两组勾选受控：勾选与「不限」都经这里写回
+  for (const field of Object.keys(picked)) {
+    const group = document.getElementById(`table-filter-${field}`);
+    const apply = (next) => {
+      picked[field] = next;
+      group.value = next;
       render();
-    });
+    };
+    group.value = picked[field];
+    group.addEventListener("value-change", (event) => apply(event.detail.value));
+    document.getElementById(`table-filter-${field}-clear`).addEventListener("click", () => apply([]));
   }
 
   render();

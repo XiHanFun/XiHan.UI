@@ -8,8 +8,8 @@ export default function Demo(): ReactNode {
   const [sticky, setSticky] = useState(3);
 
   return (
-    <div style={{ display: "grid", gap: "12px" }}>
-      <div>
+    <>
+      <div style={{ display: "grid", gap: "12px" }}>
         <XhRatingRoot value={score} onValueChange={details => setScore(details.value)}>
           {({ items }) => (
             <>
@@ -22,9 +22,6 @@ export default function Demo(): ReactNode {
             </>
           )}
         </XhRatingRoot>
-        <p style={{ margin: "4px 0 0", fontSize: "13px" }}>{`当前：${score === 0 ? "还没评" : score}`}</p>
-      </div>
-      <div>
         <XhRatingRoot
           value={sticky}
           onValueChange={details => setSticky(details.value)}
@@ -41,8 +38,9 @@ export default function Demo(): ReactNode {
             </>
           )}
         </XhRatingRoot>
-        <p style={{ margin: "4px 0 0", fontSize: "13px" }}>{`当前：${sticky}`}</p>
       </div>
-    </div>
+
+      <p data-demo-output>{`可清空：${score === 0 ? "还没评" : score} · 关掉清空：${sticky}`}</p>
+    </>
   );
 }

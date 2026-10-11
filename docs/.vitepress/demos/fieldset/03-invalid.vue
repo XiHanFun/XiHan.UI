@@ -1,6 +1,9 @@
 <!-- 无效态 | invalid 切换后，错误文案接入描述链并显示；它带 role=alert，切换时读屏立即播报 -->
 <script setup lang="ts">
 import {
+  XhFieldControl,
+  XhFieldLabel,
+  XhFieldRoot,
   XhFieldsetDescription,
   XhFieldsetErrorText,
   XhFieldsetLegend,
@@ -17,8 +20,18 @@ const invalid = computed(() => email.value === "" && phone.value === "");
 <template>
   <XhFieldsetRoot :invalid="invalid" style="inline-size: 320px;">
     <XhFieldsetLegend>联系方式</XhFieldsetLegend>
-    <input v-model="email" type="email" placeholder="邮箱" style="inline-size: 100%;">
-    <input v-model="phone" type="tel" placeholder="手机号" style="inline-size: 100%;">
+    <XhFieldRoot>
+      <XhFieldLabel>邮箱</XhFieldLabel>
+      <XhFieldControl>
+        <input v-model="email" type="email">
+      </XhFieldControl>
+    </XhFieldRoot>
+    <XhFieldRoot>
+      <XhFieldLabel>手机号</XhFieldLabel>
+      <XhFieldControl>
+        <input v-model="phone" type="tel">
+      </XhFieldControl>
+    </XhFieldRoot>
     <XhFieldsetDescription>两者填一个即可</XhFieldsetDescription>
     <XhFieldsetErrorText>请至少填写一种联系方式</XhFieldsetErrorText>
   </XhFieldsetRoot>

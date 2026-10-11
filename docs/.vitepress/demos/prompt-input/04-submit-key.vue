@@ -37,6 +37,6 @@ const log = ref("（还没发过）");
       <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
     </XhPromptInputRoot>
 
-    <span>{{ log }}</span>
+    <span data-demo-output>{{ log }}</span>
   </div>
 </template>

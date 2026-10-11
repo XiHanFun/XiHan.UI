@@ -23,24 +23,24 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "100%" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--xh-space-4)", width: "100%" }}>
       <div
         style={{
           display: "grid",
           placeItems: "center",
           minHeight: "140px",
-          border: "1px dashed var(--vp-c-divider)",
-          borderRadius: "12px",
+          border: "var(--xh-stroke-thin) dashed var(--xh-border-default)",
+          borderRadius: "var(--xh-shape-surface)",
         }}
       >
         <div
           ref={card}
           style={{
-            padding: "16px 24px",
-            borderRadius: "10px",
-            background: "var(--vp-c-brand-1)",
-            color: "#fff",
-            fontWeight: 600,
+            padding: "var(--xh-space-4) var(--xh-space-6)",
+            borderRadius: "var(--xh-shape-surface)",
+            background: "var(--xh-bg-brand)",
+            color: "var(--xh-fg-on-brand)",
+            fontWeight: "var(--xh-font-weight-semibold)",
           }}
         >
           {last || "点下面的名字"}
@@ -48,8 +48,8 @@ export default function Demo(): ReactNode {
       </div>
 
       <div>
-        <p style={{ margin: "0 0 8px", fontSize: "13px", opacity: 0.7 }}>进场</p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+        <p style={{ margin: "0 0 var(--xh-space-2)", fontSize: "var(--xh-text-caption-size)", color: "var(--xh-fg-muted)" }}>进场</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--xh-space-2)" }}>
           {enter.map(name => (
             <XhButton
               key={name}
@@ -64,8 +64,8 @@ export default function Demo(): ReactNode {
       </div>
 
       <div>
-        <p style={{ margin: "0 0 8px", fontSize: "13px", opacity: 0.7 }}>注意</p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+        <p style={{ margin: "0 0 var(--xh-space-2)", fontSize: "var(--xh-text-caption-size)", color: "var(--xh-fg-muted)" }}>注意</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--xh-space-2)" }}>
           {attention.map(name => (
             <XhButton
               key={name}

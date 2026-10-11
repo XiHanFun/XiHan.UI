@@ -28,7 +28,7 @@ const value = ref("09:30");
     <XhTimeFieldHiddenInput />
   </XhTimeFieldRoot>
 
-  <span aria-live="polite" style="font-size: 13px">
+  <span aria-live="polite" data-demo-output>
     当前值：{{ value || "（未填齐）" }}
   </span>
 </template>

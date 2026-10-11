@@ -29,7 +29,7 @@ export default function Demo(): ReactNode {
                 style={{
                   margin: 0,
                   padding: "6px 0",
-                  borderBlockEnd: "1px solid var(--xh-border-subtle)",
+                  borderBlockEnd: "var(--xh-stroke-thin) solid var(--xh-border-subtle)",
                 }}
               >
                 {v.text}

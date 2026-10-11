@@ -1,6 +1,6 @@
 <!-- 配文字说明 | 进度条自身只绘制轨道与进度，百分比文字由使用者放置 -->
 <script setup lang="ts">
-import { XhProgress } from "@xihan-ui/vue";
+import { XhButton, XhProgress } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const value = ref(64);
@@ -14,8 +14,8 @@ const value = ref(64);
     </div>
     <XhProgress :value="value" />
     <div style="display: flex; gap: 8px">
-      <button type="button" @click="value = Math.max(0, value - 10)">-10</button>
-      <button type="button" @click="value = Math.min(100, value + 10)">+10</button>
+      <XhButton size="sm" variant="outline" @click="value = Math.max(0, value - 10)">-10</XhButton>
+      <XhButton size="sm" variant="outline" @click="value = Math.min(100, value + 10)">+10</XhButton>
     </div>
   </div>
 </template>

@@ -1,6 +1,7 @@
 // 参与表单 | 提供 name 后带上表单影子，提交的是一份独立 SVG；表单重置会把画布清空
 import type { ReactNode } from "react";
 import {
+  XhButton,
   XhSignaturePadClearTrigger,
   XhSignaturePadControl,
   XhSignaturePadGuide,
@@ -34,8 +35,8 @@ export default function Demo(): ReactNode {
         <XhSignaturePadHiddenInput />
       </XhSignaturePadRoot>
       <div style={{ display: "flex", gap: "8px" }}>
-        <button type="submit">提交</button>
-        <button type="reset">重置</button>
+        <XhButton type="submit" variant="solid">提交</XhButton>
+        <XhButton type="reset" variant="outline">重置</XhButton>
       </div>
     </form>
   );

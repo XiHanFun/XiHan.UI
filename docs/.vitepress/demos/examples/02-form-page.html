@@ -45,13 +45,6 @@
     color: var(--xh-fg-danger);
     font-size: var(--xh-font-size-sm);
   }
-
-  #form-page [data-form="result"] {
-    margin: 0;
-    color: var(--xh-fg-muted);
-    font-size: var(--xh-font-size-sm);
-    word-break: break-all;
-  }
 </style>
 
 <div id="form-page">
@@ -230,11 +223,11 @@
         <button data-xh-part="submit-trigger">提交工单</button>
         <button data-xh-part="reset-trigger">重置</button>
       </div>
-
-      <p id="form-page-submitted" data-form="result" hidden></p>
     </form>
   </xh-form>
 </div>
+
+<p id="form-page-submitted" data-demo-output>已提交：（尚未提交）</p>
 
 <script type="module">
   const host = document.getElementById("form-page-form");
@@ -362,8 +355,9 @@
   });
   host.addEventListener("errors-change", (event) => paintErrors(event.detail.errors));
   host.addEventListener("submit", (event) => {
-    submitted.hidden = false;
-    submitted.textContent = `已提交：${JSON.stringify(event.detail.values)}`;
+    // 整张值表一行放不下，输出栏截断，悬停看全文
+    submitted.title = JSON.stringify(event.detail.values);
+    submitted.textContent = `已提交：${submitted.title}`;
   });
 
   syncControls();

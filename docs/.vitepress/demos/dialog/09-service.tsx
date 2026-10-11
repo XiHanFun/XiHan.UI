@@ -26,15 +26,17 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px" }}>
-      <XhButton variant="solid" tone="danger" onClick={() => remove()}>删除工作区</XhButton>
-      <XhButton
-        variant="outline"
-        onClick={() => use().error({ title: "同步失败", content: "稍后重试。" })}
-      >
-        error 告知框
-      </XhButton>
-      <span>{`上次答复：${lastAnswer}`}</span>
-    </div>
+    <>
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px" }}>
+        <XhButton variant="solid" tone="danger" onClick={() => remove()}>删除工作区</XhButton>
+        <XhButton
+          variant="outline"
+          onClick={() => use().error({ title: "同步失败", content: "稍后重试。" })}
+        >
+          error 告知框
+        </XhButton>
+      </div>
+      <span data-demo-output>{`上次答复：${lastAnswer}`}</span>
+    </>
   );
 }

@@ -1,6 +1,7 @@
 // 首次全量加载与空集合 | 第一次展开才取整棵树；正式 Loading/Empty 与候选树互斥，状态文字不进入选值或键盘导航，底部按钮可重放有数据与零集合响应
 import type { ReactNode } from "react";
 import {
+  XhButton,
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
   XhTreeSelectBranchControl,
@@ -127,13 +128,13 @@ export default function Demo(): ReactNode {
             <XhTreeSelectLoading>正在加载城市…</XhTreeSelectLoading>
             <XhTreeSelectEmpty>暂无可选城市</XhTreeSelectEmpty>
             <XhTreeSelectFooter>
-              <button type="button" disabled={loading} onClick={() => load("cities")}>加载城市</button>
-              <button type="button" disabled={loading} onClick={() => load("empty")}>加载空集合</button>
+              <XhButton variant="ghost" size="sm" disabled={loading} onClick={() => load("cities")}>加载城市</XhButton>
+              <XhButton variant="ghost" size="sm" disabled={loading} onClick={() => load("empty")}>加载空集合</XhButton>
             </XhTreeSelectFooter>
           </XhTreeSelectContent>
         </XhTreeSelectPositioner>
       </XhTreeSelectRoot>
-      <p>
+      <p data-demo-output>
         已选：
         {picked.length ? picked.join("、") : "（无）"}
       </p>

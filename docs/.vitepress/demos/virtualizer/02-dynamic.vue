@@ -31,7 +31,7 @@ const rows = Array.from({ length: 500 }, (_, i) => ({
           measure
           style="
             padding: 8px 12px;
-            border-block-end: 1px solid var(--xh-border-subtle);
+            border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle);
             line-height: 20px;
           "
         >

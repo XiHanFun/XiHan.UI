@@ -106,5 +106,5 @@ function literalBefore(type: string, index: number): string {
     </XhDatePickerPositioner>
   </XhDatePickerRoot>
 
-  <span style="font-size: 13px">当前值：{{ value[0] ?? "（空）" }}</span>
+  <span data-demo-output>当前值：{{ value[0] ?? "（空）" }}</span>
 </template>

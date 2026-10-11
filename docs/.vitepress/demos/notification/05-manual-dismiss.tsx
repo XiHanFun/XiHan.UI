@@ -59,7 +59,7 @@ export default function Demo(): ReactNode {
           <XhButton variant="outline" disabled={!pending} onClick={() => finish(dismiss)}>
             手动收走
           </XhButton>
-          <span>{`队列：${count} 条 · 记下的 id：${pending || "（无）"}`}</span>
+          <span data-demo-output>{`队列：${count} 条 · 记下的 id：${pending || "（无）"}`}</span>
 
           <XhNotificationGroup>
             {({ item }) => (

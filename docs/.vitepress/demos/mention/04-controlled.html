@@ -7,8 +7,10 @@
     </div>
   </div>
 </xh-mention>
-<p>已提及：<span id="mention-controlled-list">（无）</span></p>
-<button type="button" id="mention-controlled-reset">清空</button>
+<xh-button id="mention-controlled-reset" variant="outline" size="sm">
+  <button data-xh-part="root">清空</button>
+</xh-button>
+<p data-demo-output>已提及：<span id="mention-controlled-list">（无）</span></p>
 
 <script type="module">
   const people = [

@@ -1,16 +1,8 @@
 <!-- 受控与文案 | open 与 index 双受控；translations 更换工具条的可及名与计数文案 -->
 <xh-image-viewer id="image-viewer-controlled" open="false" index="1">
-  <div style="display: flex; align-items: center; gap: 8px">
-    <xh-button variant="solid">
-      <button data-xh-part="root" id="image-viewer-controlled-open">从第 2 张看起</button>
-    </xh-button>
-    <span>
-      open：<span id="image-viewer-controlled-open-state">false</span>，index：<span
-        id="image-viewer-controlled-index-state"
-        >1</span
-      >
-    </span>
-  </div>
+  <xh-button variant="solid">
+    <button data-xh-part="root" id="image-viewer-controlled-open">从第 2 张看起</button>
+  </xh-button>
   <div data-xh-part="backdrop"></div>
   <div data-xh-part="positioner">
     <div data-xh-part="content">
@@ -24,6 +16,7 @@
     </div>
   </div>
 </xh-image-viewer>
+<span data-demo-output>open：<span id="image-viewer-controlled-open-state">false</span> · index：<span id="image-viewer-controlled-index-state">1</span></span>
 
 <script type="module">
   // 内联的示例图，省得示例依赖外部资源；文案是对象，与图片清单一样只走属性

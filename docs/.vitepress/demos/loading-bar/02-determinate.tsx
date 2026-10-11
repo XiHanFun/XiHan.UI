@@ -32,7 +32,7 @@ export default function Demo(): ReactNode {
       <XhButton variant="solid" onClick={start}>开始</XhButton>
       <XhButton variant="outline" onClick={advance}>推进 25%</XhButton>
       <XhButton variant="ghost" onClick={() => setLoading(false)}>结束</XhButton>
-      <span>{`进度：${value}%`}</span>
+      <span data-demo-output>{`进度：${value}%`}</span>
     </>
   );
 }

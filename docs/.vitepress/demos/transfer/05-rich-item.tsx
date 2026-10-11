@@ -32,7 +32,7 @@ const avatarStyle: CSSProperties = {
   blockSize: "24px",
   alignItems: "center",
   justifyContent: "center",
-  borderRadius: "999px",
+  borderRadius: "var(--xh-shape-circle)",
   background: "var(--xh-bg-subtle)",
   fontSize: "12px",
 };

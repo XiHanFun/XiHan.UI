@@ -14,7 +14,7 @@ export default function Demo(): ReactNode {
   const [log, setLog] = useState("（还没发过）");
 
   return (
-    <div style={{ display: "grid", gap: "12px" }}>
+    <>
       <XhPromptInputRoot
         defaultValue="框里放了自己的计数与清空钮"
         translations={{ input: "给助手写点什么" }}
@@ -33,7 +33,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhPromptInputRoot>
-      <span>{log}</span>
-    </div>
+      <span data-demo-output>{log}</span>
+    </>
   );
 }

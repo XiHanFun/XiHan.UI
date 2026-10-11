@@ -2,6 +2,8 @@
 <script setup lang="ts">
 import { FilterIcon } from "@xihan-ui/icons";
 import {
+  XhButton,
+  XhCheckboxGroupRoot,
   XhIcon,
   XhPopoverContent,
   XhPopoverPositioner,
@@ -34,8 +36,8 @@ const members = [
   { id: "u6", name: "吴六", dept: "平台研发", city: "上海" },
 ];
 
-const deptOptions = [...new Set(members.map(m => m.dept))];
-const cityOptions = [...new Set(members.map(m => m.city))];
+const deptOptions = [...new Set(members.map(m => m.dept))].map(d => ({ value: d, label: d }));
+const cityOptions = [...new Set(members.map(m => m.city))].map(c => ({ value: c, label: c }));
 
 // 过滤态由宿主持有，一个都没勾就是不过滤
 const deptFilter = ref<string[]>([]);
@@ -53,7 +55,6 @@ const visible = computed(() =>
 const rows = computed(() => visible.value.map(m => ({ id: m.id })));
 
 const menuStyle = { display: "grid", gap: "6px", minInlineSize: "8rem" };
-const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
 </script>
 
 <template>
@@ -75,11 +76,8 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
                 <XhPopoverContent>
                   <XhPopoverTitle>按部门过滤</XhPopoverTitle>
                   <div :style="menuStyle">
-                    <label v-for="d in deptOptions" :key="d" :style="optionStyle">
-                      <input v-model="deptFilter" type="checkbox" :value="d">
-                      {{ d }}
-                    </label>
-                    <button type="button" @click="deptFilter = []">不限</button>
+                    <XhCheckboxGroupRoot v-model:value="deptFilter" :collection="deptOptions" aria-label="部门" size="sm" />
+                    <XhButton size="sm" variant="outline" @click="deptFilter = []">不限</XhButton>
                   </div>
                 </XhPopoverContent>
               </XhPopoverPositioner>
@@ -98,11 +96,8 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
                 <XhPopoverContent>
                   <XhPopoverTitle>按城市过滤</XhPopoverTitle>
                   <div :style="menuStyle">
-                    <label v-for="c in cityOptions" :key="c" :style="optionStyle">
-                      <input v-model="cityFilter" type="checkbox" :value="c">
-                      {{ c }}
-                    </label>
-                    <button type="button" @click="cityFilter = []">不限</button>
+                    <XhCheckboxGroupRoot v-model:value="cityFilter" :collection="cityOptions" aria-label="城市" size="sm" />
+                    <XhButton size="sm" variant="outline" @click="cityFilter = []">不限</XhButton>
                   </div>
                 </XhPopoverContent>
               </XhPopoverPositioner>
@@ -119,7 +114,7 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
       </XhTableBody>
       <XhTableEmpty>这组条件下没有人。</XhTableEmpty>
     </XhTableRoot>
-    <span>
+    <span data-demo-output>
       命中 {{ visible.length }} / {{ members.length }} 人 · 部门：{{
         deptFilter.length ? deptFilter.join("、") : "不限"
       }}

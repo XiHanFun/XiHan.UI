@@ -38,6 +38,6 @@ const message = ref("尚未执行行内操作");
         </XhGridListRowActions>
       </XhGridListRow>
     </XhGridListRoot>
-    <span data-label>已选：{{ selected.join("、") }}；{{ message }}</span>
+    <span data-demo-output>已选：{{ selected.join("、") }}；{{ message }}</span>
   </div>
 </template>

@@ -19,7 +19,7 @@ export default function Demo(): ReactNode {
   const [readout, setReadout] = useState("（把焦点移到某一格）");
 
   return (
-    <div style={{ display: "grid", gap: "12px" }}>
+    <>
       {/* 每格自己就念得出日期与计数；这里再把它显示出来，眼睛也看得见 */}
       <XhHeatmapRoot
         value={activity}
@@ -27,7 +27,7 @@ export default function Demo(): ReactNode {
         endDate="2024-01-28"
         onCellFocus={details => setReadout(`${details.date}：${details.count} 次（第 ${details.level} 档）`)}
       />
-      <span>{readout}</span>
-    </div>
+      <span data-demo-output>{readout}</span>
+    </>
   );
 }

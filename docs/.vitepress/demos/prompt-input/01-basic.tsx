@@ -7,7 +7,7 @@ export default function Demo(): ReactNode {
   const [sent, setSent] = useState<string[]>([]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+    <>
       <XhPromptInputRoot
         translations={{ input: "给助手写点什么" }}
         onSubmit={details => setSent(prev => [...prev, details.value])}
@@ -15,7 +15,7 @@ export default function Demo(): ReactNode {
         <XhPromptInputInput rows={1} placeholder="给助手写点什么…" />
         <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
       </XhPromptInputRoot>
-      {sent.length ? <p style={{ margin: 0 }}>{`已发出：${sent.join(" / ")}`}</p> : null}
-    </div>
+      <p data-demo-output>{`已发出：${sent.join(" / ") || "（无）"}`}</p>
+    </>
   );
 }

@@ -15,8 +15,12 @@
     </div>
   </xh-progress>
   <div style="display: flex; gap: 8px">
-    <button type="button" id="progress-steps-prev">上一步</button>
-    <button type="button" id="progress-steps-next">下一步</button>
+    <xh-button size="sm" variant="outline">
+      <button data-xh-part="root" id="progress-steps-prev">上一步</button>
+    </xh-button>
+    <xh-button size="sm" variant="outline">
+      <button data-xh-part="root" id="progress-steps-next">下一步</button>
+    </xh-button>
   </div>
 </div>
 

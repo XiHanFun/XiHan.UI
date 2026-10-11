@@ -1,11 +1,16 @@
 <!-- 关键词过滤 | collection 换一份树即换一棵：标记跟随数据重新铺设，过滤后剩余的分支一并全部展开 -->
 <script setup lang="ts">
 import {
+  XhTextFieldClearTrigger,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
   XhTreeBranch,
   XhTreeBranchContent,
   XhTreeBranchControl,
   XhTreeBranchText,
   XhTreeBranchTrigger,
+  XhTreeEmpty,
   XhTreeItem,
   XhTreeItemIndicator,
   XhTreeItemText,
@@ -80,7 +85,12 @@ watch(keyword, () => {
 
 <template>
   <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
-    <input v-model="keyword" type="search" aria-label="城市关键词" placeholder="输入城市名">
+    <XhTextFieldRoot v-model:value="keyword" type="search" placeholder="输入城市名" clearable>
+      <XhTextFieldControl>
+        <XhTextFieldInput aria-label="城市关键词" />
+        <XhTextFieldClearTrigger />
+      </XhTextFieldControl>
+    </XhTextFieldRoot>
 
     <XhTreeRoot v-model:expanded-value="expanded" :collection="collection">
       <XhTreeLabel>投放城市</XhTreeLabel>
@@ -99,8 +109,8 @@ watch(keyword, () => {
           </XhTreeBranchContent>
         </XhTreeBranch>
       </XhTreeTree>
+      <!-- 空态占位：给了 collection 时由组件按剩下几枝收放 -->
+      <XhTreeEmpty>没有匹配「{{ keyword }}」的城市</XhTreeEmpty>
     </XhTreeRoot>
-
-    <span v-if="!collection.length">没有匹配「{{ keyword }}」的城市</span>
   </div>
 </template>

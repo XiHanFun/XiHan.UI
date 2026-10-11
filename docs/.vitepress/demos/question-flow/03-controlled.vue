@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import type { QuestionFlowAnswers, QuestionFlowQuestion } from "@xihan-ui/headless";
 import {
+  XhButton,
   XhQuestionFlowCounter,
   XhQuestionFlowFooter,
   XhQuestionFlowGroup,
@@ -48,9 +49,9 @@ const answers = ref<QuestionFlowAnswers>({});
 <template>
   <div style="display: flex; flex-direction: column; gap: 12px; max-width: 340px;">
     <div style="display: flex; gap: 6px;">
-      <button v-for="(question, i) in questions" :key="question.id" type="button" @click="index = i">
+      <XhButton v-for="(question, i) in questions" :key="question.id" size="sm" variant="outline" @click="index = i">
         跳到第 {{ i + 1 }} 题
-      </button>
+      </XhButton>
     </div>
     <XhQuestionFlowRoot
       v-slot="{ isLast }"
@@ -89,6 +90,6 @@ const answers = ref<QuestionFlowAnswers>({});
       </XhQuestionFlowFooter>
       <XhQuestionFlowLiveRegion />
     </XhQuestionFlowRoot>
-    <p style="margin: 0;">宿主手上的进度：第 {{ index + 1 }} 题；已答 {{ Object.keys(answers).length }} 题</p>
+    <p data-demo-output>宿主手上的进度：第 {{ index + 1 }} 题；已答 {{ Object.keys(answers).length }} 题</p>
   </div>
 </template>

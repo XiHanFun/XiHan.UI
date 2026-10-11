@@ -33,7 +33,7 @@ const stickyIndices = rows.flatMap((row, index) => (row.header ? [index] : []));
           :style="
             rows[item.index]!.header
               ? 'display: flex; align-items: center; height: 36px; padding-inline: 12px; font-weight: 600; color: var(--xh-fg-muted)'
-              : 'display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)'
+              : 'display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)'
           "
         >
           {{ rows[item.index]!.text }}

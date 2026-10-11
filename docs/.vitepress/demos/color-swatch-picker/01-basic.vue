@@ -15,8 +15,6 @@ const swatches = [
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 8px">
-    <XhColorSwatchPickerRoot v-model:value="value" :swatches="swatches" label="主题色" name="theme" />
-    <span style="font-size: 13px">当前：<code>{{ value ?? "（未选）" }}</code></span>
-  </div>
+  <XhColorSwatchPickerRoot v-model:value="value" :swatches="swatches" label="主题色" name="theme" />
+  <span data-demo-output>当前：<code>{{ value ?? "（未选）" }}</code></span>
 </template>

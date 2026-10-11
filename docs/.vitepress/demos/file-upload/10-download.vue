@@ -1,6 +1,7 @@
 <!-- 列表项上的下载 | 条目中放置什么由作者决定：一条普通的 a[download] 就是下载入口；需要自行接管时换为按钮，在处理器中自行获取 -->
 <script setup lang="ts">
 import {
+  XhButton,
   XhFileUploadDropzone,
   XhFileUploadHiddenInput,
   XhFileUploadItem,
@@ -39,13 +40,6 @@ onBeforeUnmount(() => {
   urls.forEach(url => URL.revokeObjectURL(url));
   urls.clear();
 });
-
-const action = {
-  flex: "none",
-  fontSize: "12px",
-  color: "var(--xh-fg-brand)",
-  cursor: "pointer",
-};
 </script>
 
 <template>
@@ -63,10 +57,8 @@ const action = {
         <XhFileUploadItem v-for="file in acceptedFiles" :key="file" :file="file">
           <XhFileUploadItemName />
           <XhFileUploadItemSizeText />
-          <a :style="action" :href="urlOf(file)" :download="file.name">下载</a>
-          <button :style="action" type="button" @click="saveCopy(file)">
-            存为副本
-          </button>
+          <XhButton as="a" variant="ghost" size="sm" :href="urlOf(file)" :download="file.name">下载</XhButton>
+          <XhButton variant="ghost" size="sm" @click="saveCopy(file)">存为副本</XhButton>
           <XhFileUploadItemDeleteTrigger />
         </XhFileUploadItem>
       </XhFileUploadList>

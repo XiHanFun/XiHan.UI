@@ -68,6 +68,6 @@ function onRowMove(details: {
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>当前顺序：{{ steps.map((s) => s.name).join(" → ") }}</span>
+    <span data-demo-output>当前顺序：{{ steps.map((s) => s.name).join(" → ") }}</span>
   </div>
 </template>

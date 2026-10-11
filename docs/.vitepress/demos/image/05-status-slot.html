@@ -6,7 +6,9 @@
     <div data-xh-part="fallback">
       <span id="image-status-failed" style="display: none; align-items: center; gap: 8px">
         取不到这张图
-        <button type="button" id="image-status-retry">重试</button>
+        <xh-button id="image-status-retry" size="sm" variant="outline">
+          <button data-xh-part="root">重试</button>
+        </xh-button>
       </span>
       <span id="image-status-loading">正在加载…</span>
     </div>

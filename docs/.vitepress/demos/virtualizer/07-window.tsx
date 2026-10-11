@@ -12,7 +12,7 @@ const rowStyle: CSSProperties = {
   alignItems: "center",
   height: "36px",
   paddingInline: "12px",
-  borderBlockEnd: "1px solid var(--xh-border-subtle)",
+  borderBlockEnd: "var(--xh-stroke-thin) solid var(--xh-border-subtle)",
 };
 
 export default function Demo(): ReactNode {

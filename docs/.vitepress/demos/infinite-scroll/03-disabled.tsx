@@ -26,15 +26,16 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <div style={{ display: "grid", gap: "12px", inlineSize: "100%" }}>
+    <>
       <div
         ref={setScrollEl}
         data-xh-scroll=""
         style={{
+          inlineSize: "100%",
           blockSize: "220px",
           overflow: "auto",
-          border: "1px solid var(--xh-border-default)",
-          borderRadius: "8px",
+          border: "var(--xh-stroke-thin) solid var(--xh-border-default)",
+          borderRadius: "var(--xh-shape-surface)",
         }}
       >
         <XhInfiniteScrollRoot
@@ -63,7 +64,7 @@ export default function Demo(): ReactNode {
         </XhInfiniteScrollRoot>
       </div>
 
-      <span>{`第 ${page} / ${maxPage} 页 · 共 ${items.length} 条`}</span>
-    </div>
+      <span data-demo-output>{`第 ${page} / ${maxPage} 页 · 共 ${items.length} 条`}</span>
+    </>
   );
 }

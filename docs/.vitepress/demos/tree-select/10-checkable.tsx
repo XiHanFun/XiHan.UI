@@ -91,7 +91,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhTreeSelectRoot>
-      <p>{`对外值（parent 收敛）：${value.length ? value.join("、") : "（无）"}`}</p>
+      <p data-demo-output>{`对外值（parent 收敛）：${value.length ? value.join("、") : "（无）"}`}</p>
     </>
   );
 }

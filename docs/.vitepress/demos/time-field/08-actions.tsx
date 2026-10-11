@@ -49,7 +49,7 @@ export default function Demo(): ReactNode {
             </XhButton>
           </div>
 
-          <span style={{ fontSize: "13px" }}>
+          <span data-demo-output>
             {empty ? "未填齐" : outOfRange ? "不在营业时段（09:00 – 18:00）" : "可上门"}
           </span>
         </>

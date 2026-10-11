@@ -14,21 +14,19 @@ const open = ref(false);
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 16px">
-    <XhHoverCardRoot v-model:open="open" placement="bottom-start">
-      <XhHoverCardTrigger>@xihan</XhHoverCardTrigger>
-      <XhHoverCardPositioner>
-        <XhHoverCardContent>
-          <XhHoverCardArrow />
-          <strong>XiHan.UI</strong>
-          <span>卡片从不抢焦点，也不锁页面滚动。</span>
-        </XhHoverCardContent>
-      </XhHoverCardPositioner>
-    </XhHoverCardRoot>
+  <XhHoverCardRoot v-model:open="open" placement="bottom-start">
+    <XhHoverCardTrigger>@xihan</XhHoverCardTrigger>
+    <XhHoverCardPositioner>
+      <XhHoverCardContent>
+        <XhHoverCardArrow />
+        <strong>XiHan.UI</strong>
+        <span>卡片从不抢焦点，也不锁页面滚动。</span>
+      </XhHoverCardContent>
+    </XhHoverCardPositioner>
+  </XhHoverCardRoot>
 
-    <XhButton variant="outline" @click="open = !open">
-      {{ open ? "收起" : "展开" }}
-    </XhButton>
-    <span>当前：{{ open ? "展开" : "收起" }}</span>
-  </div>
+  <XhButton variant="outline" @click="open = !open">
+    {{ open ? "收起" : "展开" }}
+  </XhButton>
+  <span data-demo-output>当前：{{ open ? "展开" : "收起" }}</span>
 </template>

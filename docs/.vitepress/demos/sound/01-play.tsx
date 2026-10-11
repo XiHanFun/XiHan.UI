@@ -1,7 +1,17 @@
 // 试听 | 十四个语义名，切换主题可听到同一件事的三种表达；音量与开关直接落在播放器上
 import type { SoundTheme } from "@xihan-ui/sound";
 import type { ReactNode } from "react";
-import { XhButton, XhRadioGroupRoot, XhSwitch } from "@xihan-ui/react";
+import {
+  XhButton,
+  XhRadioGroupRoot,
+  XhSliderControl,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+  XhSwitch,
+} from "@xihan-ui/react";
 import {
   BUILTIN_SOUND_NAMES,
   createSoundPlayer,
@@ -27,14 +37,15 @@ export default function Demo(): ReactNode {
   // 建播放器不碰音频上下文，等第一次真的发声才建，放首帧里是安全的
   const [player] = useState(createSoundPlayer);
   const [theme, setTheme] = useState("default");
-  const [volume, setVolume] = useState(0.5);
+  // 滑块的值恒为数组，单滑块只有一项
+  const [volume, setVolume] = useState<[number]>([0.5]);
   const [enabled, setEnabled] = useState(true);
 
   useEffect(() => {
     player.setTheme(themes[theme] ?? defaultSoundTheme);
   }, [player, theme]);
   useEffect(() => {
-    player.setVolume(volume);
+    player.setVolume(volume[0]);
   }, [player, volume]);
   useEffect(() => {
     player.setEnabled(enabled);
@@ -52,17 +63,22 @@ export default function Demo(): ReactNode {
           label="主题"
           name="sound-theme"
         />
-        <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          音量
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.05"
-            value={volume}
-            onChange={event => setVolume(Number(event.target.value))}
-          />
-        </label>
+        <XhSliderRoot
+          value={volume}
+          onValueChange={details => setVolume(details.value as [number])}
+          min={0}
+          max={1}
+          step={0.05}
+          style={{ inlineSize: "var(--xh-control-w)" }}
+        >
+          <XhSliderLabel>音量</XhSliderLabel>
+          <XhSliderControl>
+            <XhSliderTrack>
+              <XhSliderRange />
+            </XhSliderTrack>
+            <XhSliderThumb />
+          </XhSliderControl>
+        </XhSliderRoot>
         <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           出声
           <XhSwitch checked={enabled} onCheckedChange={details => setEnabled(details.checked)} />

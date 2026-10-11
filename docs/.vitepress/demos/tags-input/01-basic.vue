@@ -32,5 +32,5 @@ const tags = ref<string[]>(["Vue", "TypeScript"]);
       <XhTagsInputInput />
     </XhTagsInputControl>
   </XhTagsInputRoot>
-  <p>当前：{{ tags.length ? tags.join("、") : "（无）" }}</p>
+  <p data-demo-output>当前：{{ tags.length ? tags.join("、") : "（无）" }}</p>
 </template>

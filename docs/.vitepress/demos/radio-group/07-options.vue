@@ -23,5 +23,5 @@ const collection = computed(() =>
     name="level"
     orientation="horizontal"
   />
-  <span>当前：{{ level ?? "（未选）" }}</span>
+  <span data-demo-output>当前：{{ level ?? "（未选）" }}</span>
 </template>

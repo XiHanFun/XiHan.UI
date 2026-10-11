@@ -1,10 +1,10 @@
 <!-- 受控 | 传入 expandedValue / selection 后由宿主决定，组件只发事件不落内部值，宿主写回后才变化 -->
 <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
   <div style="display: flex; gap: 8px">
-    <xh-button id="tree-controlled-expand" size="sm">
+    <xh-button id="tree-controlled-expand" variant="outline" size="sm">
       <button data-xh-part="root">全部展开</button>
     </xh-button>
-    <xh-button id="tree-controlled-collapse" size="sm">
+    <xh-button id="tree-controlled-collapse" variant="outline" size="sm">
       <button data-xh-part="root">全部收起</button>
     </xh-button>
   </div>
@@ -48,7 +48,7 @@
     </div>
   </xh-tree>
 
-  <span>展开：<span id="tree-controlled-expanded">api</span> · 选中：<span id="tree-controlled-selected">（无）</span></span>
+  <span data-demo-output>展开：<span id="tree-controlled-expanded">api</span> · 选中：<span id="tree-controlled-selected">（无）</span></span>
 </div>
 
 <script type="module">

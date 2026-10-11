@@ -34,7 +34,7 @@ const records = Array.from({ length: 24 }, (_, i) => ({
           style="
             margin: 0;
             padding: 8px 0;
-            border-block-end: 1px solid var(--xh-border-subtle);
+            border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle);
           "
         >
           {{ r.text }}

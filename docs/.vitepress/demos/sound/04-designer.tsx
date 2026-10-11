@@ -1,7 +1,16 @@
 // 调音台 | 配方是纯数据：调参、试听、把代码复制进项目，中间没有任何音频文件
 import type { OscillatorLayer, SoundSpec } from "@xihan-ui/sound";
 import type { ReactNode } from "react";
-import { XhButton, XhRadioGroupRoot } from "@xihan-ui/react";
+import {
+  XhButton,
+  XhRadioGroupRoot,
+  XhSliderControl,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+} from "@xihan-ui/react";
 import { createSoundPlayer, glide, strike } from "@xihan-ui/sound";
 import { useEffect, useState } from "react";
 
@@ -12,14 +21,35 @@ const waves = [
   { value: "sawtooth", label: "sawtooth" },
 ];
 
+type Param = "from" | "to" | "attack" | "decay" | "peak" | "space";
+
+// 六个参数各一条滑块：标签、单位与取值范围
+const knobs: { key: Param; label: string; unit: string; min: number; max: number; step: number }[] = [
+  { key: "from", label: "起始", unit: "Hz", min: 80, max: 2400, step: 10 },
+  { key: "to", label: "终止", unit: "Hz", min: 80, max: 2400, step: 10 },
+  { key: "attack", label: "起音", unit: "ms", min: 1, max: 80, step: 1 },
+  { key: "decay", label: "衰减", unit: "ms", min: 20, max: 900, step: 10 },
+  { key: "peak", label: "峰值", unit: "", min: 0.05, max: 0.6, step: 0.05 },
+  { key: "space", label: "空间", unit: "", min: 0, max: 0.6, step: 0.05 },
+];
+
 export default function Demo(): ReactNode {
   const [wave, setWave] = useState<OscillatorLayer["wave"]>("triangle");
-  const [from, setFrom] = useState(880);
-  const [to, setTo] = useState(1320);
-  const [attack, setAttack] = useState(5);
-  const [decay, setDecay] = useState(180);
-  const [peak, setPeak] = useState(0.3);
-  const [space, setSpace] = useState(0.15);
+  // 滑块的值恒为数组，单滑块只有一项
+  const [params, setParams] = useState<Record<Param, [number]>>({
+    from: [880],
+    to: [1320],
+    attack: [5],
+    decay: [180],
+    peak: [0.3],
+    space: [0.15],
+  });
+  const [from] = params.from;
+  const [to] = params.to;
+  const [attack] = params.attack;
+  const [decay] = params.decay;
+  const [peak] = params.peak;
+  const [space] = params.space;
 
   const seconds = Math.max(0.01, decay / 1000);
 
@@ -67,72 +97,24 @@ export default function Demo(): ReactNode {
           gap: "10px 20px",
         }}
       >
-        <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span style={{ width: "76px" }}>{`起始 ${from}Hz`}</span>
-          <input
-            type="range"
-            min="80"
-            max="2400"
-            step="10"
-            value={from}
-            onChange={event => setFrom(Number(event.target.value))}
-          />
-        </label>
-        <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span style={{ width: "76px" }}>{`终止 ${to}Hz`}</span>
-          <input
-            type="range"
-            min="80"
-            max="2400"
-            step="10"
-            value={to}
-            onChange={event => setTo(Number(event.target.value))}
-          />
-        </label>
-        <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span style={{ width: "76px" }}>{`起音 ${attack}ms`}</span>
-          <input
-            type="range"
-            min="1"
-            max="80"
-            step="1"
-            value={attack}
-            onChange={event => setAttack(Number(event.target.value))}
-          />
-        </label>
-        <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span style={{ width: "76px" }}>{`衰减 ${decay}ms`}</span>
-          <input
-            type="range"
-            min="20"
-            max="900"
-            step="10"
-            value={decay}
-            onChange={event => setDecay(Number(event.target.value))}
-          />
-        </label>
-        <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span style={{ width: "76px" }}>{`峰值 ${peak}`}</span>
-          <input
-            type="range"
-            min="0.05"
-            max="0.6"
-            step="0.05"
-            value={peak}
-            onChange={event => setPeak(Number(event.target.value))}
-          />
-        </label>
-        <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span style={{ width: "76px" }}>{`空间 ${space}`}</span>
-          <input
-            type="range"
-            min="0"
-            max="0.6"
-            step="0.05"
-            value={space}
-            onChange={event => setSpace(Number(event.target.value))}
-          />
-        </label>
+        {knobs.map(knob => (
+          <XhSliderRoot
+            key={knob.key}
+            value={params[knob.key]}
+            onValueChange={details => setParams(prev => ({ ...prev, [knob.key]: details.value as [number] }))}
+            min={knob.min}
+            max={knob.max}
+            step={knob.step}
+          >
+            <XhSliderLabel>{`${knob.label} ${params[knob.key][0]}${knob.unit}`}</XhSliderLabel>
+            <XhSliderControl>
+              <XhSliderTrack>
+                <XhSliderRange />
+              </XhSliderTrack>
+              <XhSliderThumb />
+            </XhSliderControl>
+          </XhSliderRoot>
+        ))}
       </div>
 
       <div>
@@ -144,8 +126,8 @@ export default function Demo(): ReactNode {
         style={{
           margin: 0,
           padding: "12px 14px",
-          borderRadius: "8px",
-          background: "var(--vp-c-bg-soft)",
+          borderRadius: "var(--xh-shape-surface)",
+          background: "var(--xh-bg-subtle)",
           fontSize: "12px",
           lineHeight: 1.6,
           overflowX: "auto",

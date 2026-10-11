@@ -31,29 +31,29 @@ export default function Demo(): ReactNode {
   const [index, setIndex] = useState(1);
 
   return (
-    <XhImageViewerRoot
-      open={open}
-      onOpenChange={details => setOpen(details.open)}
-      index={index}
-      onIndexChange={details => setIndex(details.index)}
-      collection={items}
-      translations={translations}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+    <>
+      <XhImageViewerRoot
+        open={open}
+        onOpenChange={details => setOpen(details.open)}
+        index={index}
+        onIndexChange={details => setIndex(details.index)}
+        collection={items}
+        translations={translations}
+      >
         <XhButton variant="solid" onClick={() => setOpen(true)}>
           {`从第 ${index + 1} 张看起`}
         </XhButton>
-        <span>{`open：${open}，index：${index}`}</span>
-      </div>
-      <XhImageViewerContent>
-        <XhImageViewerViewport>
-          <XhImageViewerImage />
-        </XhImageViewerViewport>
-        <XhImageViewerCounter />
-        <XhImageViewerPrevTrigger />
-        <XhImageViewerNextTrigger />
-        <XhImageViewerCloseTrigger />
-      </XhImageViewerContent>
-    </XhImageViewerRoot>
+        <XhImageViewerContent>
+          <XhImageViewerViewport>
+            <XhImageViewerImage />
+          </XhImageViewerViewport>
+          <XhImageViewerCounter />
+          <XhImageViewerPrevTrigger />
+          <XhImageViewerNextTrigger />
+          <XhImageViewerCloseTrigger />
+        </XhImageViewerContent>
+      </XhImageViewerRoot>
+      <span data-demo-output>{`open：${open} · index：${index}`}</span>
+    </>
   );
 }

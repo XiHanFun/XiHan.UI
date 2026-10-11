@@ -22,18 +22,16 @@ const picked = ref<HeatmapCellDetails | null>(null);
 </script>
 
 <template>
-  <div style="display: grid; gap: var(--xh-space-3); justify-items: start">
-    <!-- 载荷与详情同源：行、列、原始值与档位都在里面，不必回头查数据 -->
-    <XhHeatmapRoot
-      variant="matrix"
-      :rows="days"
-      :columns="slots"
-      :value="orders"
-      style="--xh-heatmap-column-w: 44px; --xh-heatmap-row-h: 28px"
-      @cell-press="picked = $event"
-    />
-    <p aria-live="polite" style="margin: 0">
-      {{ picked ? `${picked.row} ${picked.column}：${picked.count} 单` : "点一格查看明细" }}
-    </p>
-  </div>
+  <!-- 载荷与详情同源：行、列、原始值与档位都在里面，不必回头查数据 -->
+  <XhHeatmapRoot
+    variant="matrix"
+    :rows="days"
+    :columns="slots"
+    :value="orders"
+    style="--xh-heatmap-column-w: 44px; --xh-heatmap-row-h: 28px"
+    @cell-press="picked = $event"
+  />
+  <p data-demo-output aria-live="polite">
+    {{ picked ? `${picked.row} ${picked.column}：${picked.count} 单` : "点一格查看明细" }}
+  </p>
 </template>

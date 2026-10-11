@@ -1,6 +1,7 @@
 <!-- 聚焦与选区 | input 部件就是一个原生 input，取得它的节点即可聚焦、全选、把光标移到末尾 -->
 <script setup lang="ts">
 import {
+  XhButton,
   XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
@@ -36,10 +37,10 @@ function caretToEnd(): void {
       <XhTextFieldInput :ref="bindInput" />
     </XhTextFieldControl>
     <div style="display: flex; gap: 8px">
-      <button type="button" @click="input?.focus()">聚焦</button>
-      <button type="button" @click="selectAll">全选</button>
-      <button type="button" @click="caretToEnd">光标移到末尾</button>
-      <button type="button" @click="input?.blur()">失焦</button>
+      <XhButton variant="outline" size="sm" @click="input?.focus()">聚焦</XhButton>
+      <XhButton variant="outline" size="sm" @click="selectAll">全选</XhButton>
+      <XhButton variant="outline" size="sm" @click="caretToEnd">光标移到末尾</XhButton>
+      <XhButton variant="outline" size="sm" @click="input?.blur()">失焦</XhButton>
     </div>
   </XhTextFieldRoot>
 </template>

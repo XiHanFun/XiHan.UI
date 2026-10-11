@@ -21,10 +21,17 @@
         </div>
       </div>
     </xh-radio-group>
-    <label style="display: flex; align-items: center; gap: 8px">
-      音量
-      <input id="sound-play-volume" type="range" min="0" max="1" step="0.05" value="0.5" />
-    </label>
+    <xh-slider id="sound-play-volume" default-value="0.5" min="0" max="1" step="0.05">
+      <div data-xh-part="root" style="inline-size: var(--xh-control-w)">
+        <label data-xh-part="label">音量</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
     <label style="display: flex; align-items: center; gap: 8px">
       出声
       <xh-switch id="sound-play-enabled" default-checked>
@@ -60,7 +67,8 @@
   document.getElementById("sound-play-theme").addEventListener("value-change", (event) => {
     player.setTheme(themes[event.detail.value] ?? defaultSoundTheme);
   });
-  volume.addEventListener("input", () => player.setVolume(Number(volume.value)));
+  // 滑块的值恒为数组，单滑块只有一项
+  volume.addEventListener("value-change", (event) => player.setVolume(event.detail.value[0]));
   document.getElementById("sound-play-enabled").addEventListener("checked-change", (event) => {
     player.setEnabled(event.detail.checked);
   });

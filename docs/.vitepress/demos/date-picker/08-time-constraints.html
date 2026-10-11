@@ -1,6 +1,6 @@
 <!-- 可约时段 | timeStep 让分列每 15 分钟一格；min / max 带时间段时首尾两天界外的时刻不可选，isTimeUnavailable 再按已选的日子收掉周末的下午 -->
 <div id="date-picker-time-constraints-mount"></div>
-<span style="font-size: 13px">当前值：<span id="date-picker-time-constraints-value">2026-10-09T10:00</span></span>
+<span data-demo-output>当前值：<span id="date-picker-time-constraints-value">2026-10-09T10:00</span></span>
 
 <template id="date-picker-time-constraints-template">
   <xh-date-picker locale="zh-CN" show-time min="2026-10-09T09:00" max="2026-10-31T18:00" time-step='{"minute":15}' default-value="2026-10-09T10:00">

@@ -55,5 +55,5 @@ const formatWeight = (value: number) => `${value} kg`;
   </XhNumberFieldRoot>
 
   <!-- 输入途中一律不补格式，否则光标会被打断；手打 1500 要等失焦才变成 1,500 -->
-  <span style="font-size: 13px">金额：{{ amount }} · 体重：{{ weight }}</span>
+  <span data-demo-output>金额：{{ amount }} · 体重：{{ weight }}</span>
 </template>

@@ -59,5 +59,5 @@ function hasPlan(iso: string) {
     </XhCalendarPickerGrid>
   </XhCalendarPickerRoot>
 
-  <span style="font-size: 13px">选中：{{ value[0] ?? "（未选）" }}</span>
+  <span data-demo-output>选中：{{ value[0] ?? "（未选）" }}</span>
 </template>

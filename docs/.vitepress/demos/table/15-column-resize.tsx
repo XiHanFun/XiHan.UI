@@ -64,7 +64,7 @@ export default function Demo(): ReactNode {
           ))}
         </XhTableBody>
       </XhTableRoot>
-      <span>{`列宽偏好：${JSON.stringify(preference.widths ?? {})}`}</span>
+      <span data-demo-output>{`列宽偏好：${JSON.stringify(preference.widths ?? {})}`}</span>
     </div>
   );
 }

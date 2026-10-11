@@ -1,6 +1,6 @@
 <!-- 跟随输入高亮 | 关键词逐字符比对、不拼入正则，输入 . * ( 等字符也只作为普通字符查找 -->
 <script setup lang="ts">
-import { XhHighlight } from "@xihan-ui/vue";
+import { XhHighlight, XhTextFieldControl, XhTextFieldInput, XhTextFieldRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const keyword = ref("1.0");
@@ -14,7 +14,11 @@ const rows = [
 
 <template>
   <div style="display: flex; flex-direction: column; gap: 12px">
-    <input v-model="keyword" placeholder="输入关键词" style="max-inline-size: 240px">
+    <XhTextFieldRoot v-model:value="keyword" placeholder="输入关键词">
+      <XhTextFieldControl>
+        <XhTextFieldInput aria-label="关键词" />
+      </XhTextFieldControl>
+    </XhTextFieldRoot>
     <XhHighlight v-for="row in rows" :key="row" :text="row" :keyword="keyword" />
   </div>
 </template>

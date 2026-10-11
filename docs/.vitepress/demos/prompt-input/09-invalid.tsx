@@ -47,7 +47,7 @@ export default function Demo(): ReactNode {
       >
         网络不通，这条没能发出去，再发一次
       </p>
-      <span>{log}</span>
+      <span data-demo-output>{log}</span>
     </div>
   );
 }

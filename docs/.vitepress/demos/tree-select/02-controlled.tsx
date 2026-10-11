@@ -105,7 +105,7 @@ export default function Demo(): ReactNode {
           </XhTreeSelectContent>
         </XhTreeSelectPositioner>
       </XhTreeSelectRoot>
-      <p>{`已选：${value.join("、") || "（无）"} · 展开：${expanded.join("、") || "（无）"}`}</p>
+      <p data-demo-output>{`已选：${value.join("、") || "（无）"} · 展开：${expanded.join("、") || "（无）"}`}</p>
     </>
   );
 }

@@ -22,5 +22,5 @@ const value = ref(0);
 
   <XhButton variant="solid" @click="loading = true">开始加载</XhButton>
   <XhButton variant="outline" @click="loading = false">结束加载</XhButton>
-  <span>假进度：{{ Math.round(value) }}%</span>
+  <span data-demo-output>假进度：{{ Math.round(value) }}%</span>
 </template>

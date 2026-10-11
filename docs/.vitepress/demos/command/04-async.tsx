@@ -49,7 +49,7 @@ export default function Demo(): ReactNode {
   }, [query]);
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+    <>
       <XhCommandRoot
         open={open}
         onOpenChange={details => setOpen(details.open)}
@@ -77,7 +77,7 @@ export default function Demo(): ReactNode {
           <XhCommandFooter>不输字时给的是最近协作过的三位</XhCommandFooter>
         </XhCommandContent>
       </XhCommandRoot>
-      <span>{picked}</span>
-    </div>
+      <span data-demo-output>{picked}</span>
+    </>
   );
 }

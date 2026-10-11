@@ -9,10 +9,11 @@ import {
   XhFormFieldGroup,
   XhFormRoot,
   XhFormSubmitTrigger,
+  XhRadioGroupRoot,
 } from "@xihan-ui/react";
 import { useState } from "react";
 
-const layouts: FormLayout[] = ["vertical", "horizontal", "inline", "grid"];
+const layouts = (["vertical", "horizontal", "inline", "grid"] as const).map(l => ({ value: l, label: l }));
 
 const fields = [
   { name: "username", label: "用户名", placeholder: "字母开头" },
@@ -30,14 +31,14 @@ export default function Demo(): ReactNode {
 
   return (
     <div style={{ display: "grid", gap: "16px", justifyItems: "start" }}>
-      <label style={{ display: "flex", gap: "8px", alignItems: "center", fontSize: "13px" }}>
-        排布
-        <select value={layout} onChange={event => setLayout(event.target.value as FormLayout)}>
-          {layouts.map(l => (
-            <option key={l} value={l}>{l}</option>
-          ))}
-        </select>
-      </label>
+      {/* 分段轨道里不排可见标题：label 只作可及名 */}
+      <XhRadioGroupRoot
+        variant="segmented"
+        collection={layouts}
+        value={layout}
+        label="排布"
+        onValueChange={details => setLayout(details.value as FormLayout)}
+      />
 
       <XhFormRoot
         layout={layout}

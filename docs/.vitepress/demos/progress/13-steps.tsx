@@ -1,6 +1,6 @@
 // 分段 | steps 把轨道切成等宽的格，填充按整格亮起；读屏报的仍是实际值
 import type { ReactNode } from "react";
-import { XhProgress } from "@xihan-ui/react";
+import { XhButton, XhProgress } from "@xihan-ui/react";
 import { useState } from "react";
 
 export default function Demo(): ReactNode {
@@ -16,8 +16,8 @@ export default function Demo(): ReactNode {
         aria-label="注册进度"
       />
       <div style={{ display: "flex", gap: "8px" }}>
-        <button type="button" onClick={() => setStep(v => Math.max(0, v - 1))}>上一步</button>
-        <button type="button" onClick={() => setStep(v => Math.min(5, v + 1))}>下一步</button>
+        <XhButton size="sm" variant="outline" onClick={() => setStep(v => Math.max(0, v - 1))}>上一步</XhButton>
+        <XhButton size="sm" variant="outline" onClick={() => setStep(v => Math.min(5, v + 1))}>下一步</XhButton>
       </div>
     </div>
   );

@@ -30,13 +30,6 @@ function openPreview(): void {
 function zoom(step: number): void {
   scale.value = Math.min(3, Math.max(0.5, scale.value + step));
 }
-
-const itemStyle = {
-  padding: "4px 10px",
-  borderRadius: "6px",
-  border: "1px solid var(--xh-border-default)",
-  background: "var(--xh-bg-surface)",
-};
 </script>
 
 <template>
@@ -79,20 +72,16 @@ const itemStyle = {
 
       <!-- 缩放与旋转是两个数值加一条 transform，工具条只负责把这几颗按钮串成一个 Tab 位 -->
       <XhToolbarRoot>
-        <XhToolbarItem value="zoom-in" :style="itemStyle" @click="zoom(0.25)">
+        <XhToolbarItem value="zoom-in" @click="zoom(0.25)">
           放大
         </XhToolbarItem>
-        <XhToolbarItem value="zoom-out" :style="itemStyle" @click="zoom(-0.25)">
+        <XhToolbarItem value="zoom-out" @click="zoom(-0.25)">
           缩小
         </XhToolbarItem>
-        <XhToolbarItem value="rotate" :style="itemStyle" @click="rotate += 90">
+        <XhToolbarItem value="rotate" @click="rotate += 90">
           旋转
         </XhToolbarItem>
-        <XhToolbarItem
-          value="reset"
-          :style="itemStyle"
-          @click="scale = 1; rotate = 0"
-        >
+        <XhToolbarItem value="reset" @click="scale = 1; rotate = 0">
           还原
         </XhToolbarItem>
       </XhToolbarRoot>

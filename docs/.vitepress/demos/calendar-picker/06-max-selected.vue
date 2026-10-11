@@ -51,5 +51,5 @@ const value = ref<string[]>(["2026-09-08", "2026-09-15"]);
     </XhCalendarPickerGrid>
   </XhCalendarPickerRoot>
 
-  <span aria-live="polite" style="font-size: 13px">已选 {{ value.length }} / 3 天：{{ value.join("、") || "（无）" }}</span>
+  <span aria-live="polite" data-demo-output>已选 {{ value.length }} / 3 天：{{ value.join("、") || "（无）" }}</span>
 </template>

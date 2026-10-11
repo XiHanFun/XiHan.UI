@@ -1,6 +1,7 @@
 <!-- 注册表单 | 提供 name 后才参与提交，auto-complete 写为 new-password 密码管理器才会保存新密码而不是填入旧密码 -->
 <script setup lang="ts">
 import {
+  XhButton,
   XhPasswordInputControl,
   XhPasswordInputInput,
   XhPasswordInputLabel,
@@ -19,6 +20,6 @@ import {
         <XhPasswordInputVisibilityTrigger />
       </XhPasswordInputControl>
     </XhPasswordInputRoot>
-    <button type="reset">重置</button>
+    <XhButton type="reset" variant="outline">重置</XhButton>
   </form>
 </template>

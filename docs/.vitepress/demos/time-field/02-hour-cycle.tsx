@@ -32,7 +32,7 @@ export default function Demo(): ReactNode {
         </XhTimeFieldControl>
       </XhTimeFieldRoot>
 
-      <span style={{ fontSize: "13px" }}>{`当前值：${value || "（未填齐）"}`}</span>
+      <span data-demo-output>{`当前值：${value || "（未填齐）"}`}</span>
     </>
   );
 }

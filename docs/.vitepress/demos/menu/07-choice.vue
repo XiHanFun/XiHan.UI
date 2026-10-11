@@ -1,6 +1,7 @@
 <!-- 选择型条目 | CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开 -->
 <script setup lang="ts">
 import {
+  XhButton,
   XhMenuCheckboxItem,
   XhMenuContent,
   XhMenuItemIndicator,
@@ -24,7 +25,9 @@ const radioValue = ref({ density: "comfortable" });
     @checkbox-value-change="checkboxValue = $event.value"
     @radio-value-change="radioValue = $event.value"
   >
-    <XhMenuTrigger>视图设置</XhMenuTrigger>
+    <XhMenuTrigger as-child>
+      <XhButton variant="subtle">视图设置</XhButton>
+    </XhMenuTrigger>
     <XhMenuPositioner>
       <XhMenuContent>
         <XhMenuCheckboxItem value="wrap">

@@ -1,6 +1,6 @@
 <!-- 受控正文与选中回调 | 正文由宿主持有，select 事件报告插入的是哪一条，用于收集收件人名单 -->
 <script setup lang="ts">
-import { XhMentionRoot } from "@xihan-ui/vue";
+import { XhButton, XhMentionRoot } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
 
 const people = [
@@ -42,6 +42,6 @@ function reset(): void {
     @query-change="query = $event.query"
     @select="onSelect"
   />
-  <p>已提及：{{ mentioned.join("、") || "（无）" }}</p>
-  <button type="button" @click="reset">清空</button>
+  <XhButton variant="outline" size="sm" @click="reset">清空</XhButton>
+  <p data-demo-output>已提及：{{ mentioned.join("、") || "（无）" }}</p>
 </template>

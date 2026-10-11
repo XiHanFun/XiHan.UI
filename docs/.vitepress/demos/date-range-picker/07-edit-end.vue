@@ -86,5 +86,5 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
     </XhDateRangePickerPositioner>
   </XhDateRangePickerRoot>
 
-  <span aria-live="polite" style="font-size: 13px">正在编辑：{{ editing }}；区间：{{ value[0] }} → {{ value[1] }}</span>
+  <span aria-live="polite" data-demo-output>正在编辑：{{ editing }}；区间：{{ value[0] }} → {{ value[1] }}</span>
 </template>

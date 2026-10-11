@@ -47,7 +47,7 @@ function now() {
       </XhButton>
     </div>
 
-    <span style="font-size: 13px">
+    <span data-demo-output>
       {{ empty ? "未填齐" : outOfRange ? "不在营业时段（09:00 – 18:00）" : "可上门" }}
     </span>
   </XhTimeFieldRoot>

@@ -25,6 +25,6 @@ const selected = ref<string[]>(["read"]);
         <XhGridListRowContent><XhGridListRowText>{{ item.label }}</XhGridListRowText></XhGridListRowContent>
       </XhGridListRow>
     </XhGridListRoot>
-    <span data-label>权限：{{ selected.join("、") || "无" }}</span>
+    <span data-demo-output>权限：{{ selected.join("、") || "无" }}</span>
   </div>
 </template>

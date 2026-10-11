@@ -107,7 +107,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhDateRangePickerRoot>
-      <p style={{ marginBlock: "var(--xh-space-2) 0", fontSize: "var(--xh-text-secondary-size)" }}>
+      <p data-demo-output>
         区间：
         {text}
       </p>

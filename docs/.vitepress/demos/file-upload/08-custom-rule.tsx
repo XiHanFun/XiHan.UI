@@ -68,7 +68,7 @@ export default function Demo(): ReactNode {
         )}
       </XhFileUploadRoot>
 
-      {dropped ? <span>{`同名挡下：${dropped}`}</span> : null}
+      <span data-demo-output title={dropped || undefined}>{`同名挡下：${dropped || "（暂无）"}`}</span>
     </div>
   );
 }

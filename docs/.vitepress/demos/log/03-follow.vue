@@ -10,6 +10,7 @@ const lines = ref(
 let seq = lines.value.length;
 let timer: number | undefined;
 const streaming = ref(false);
+const sticking = ref(true);
 
 function append(): void {
   seq += 1;
@@ -30,7 +31,7 @@ onUnmounted(() => window.clearInterval(timer));
 
 <template>
   <div style="width: 100%; display: grid; gap: 12px">
-    <XhLogRoot v-slot="{ atBottom, sticking, scrollToBottom }" :rows="8">
+    <XhLogRoot v-slot="{ atBottom, scrollToBottom }" :rows="8" @stick-change="sticking = $event.sticking">
       <XhLogViewport>
         <XhLogContent>
           <XhLogLine v-for="(line, i) in lines" :key="i">{{ line }}</XhLogLine>
@@ -42,7 +43,7 @@ onUnmounted(() => window.clearInterval(timer));
         v-if="!atBottom"
         style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 12px"
       >
-        <span style="font-size: 13px">已暂停跟随 · 跟随意图：{{ sticking ? "开" : "关" }}</span>
+        <span style="font-size: 13px">已暂停跟随</span>
         <XhButton variant="outline" size="sm" @click="scrollToBottom()">回到最新</XhButton>
       </div>
     </XhLogRoot>
@@ -51,5 +52,6 @@ onUnmounted(() => window.clearInterval(timer));
       <XhButton variant="solid" @click="toggle">{{ streaming ? "停止输出" : "开始输出" }}</XhButton>
       <XhButton variant="outline" @click="append">追加一行</XhButton>
     </div>
+    <span data-demo-output>跟随意图：{{ sticking ? "开" : "关" }}</span>
   </div>
 </template>

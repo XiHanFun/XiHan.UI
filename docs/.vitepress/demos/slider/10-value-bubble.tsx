@@ -49,7 +49,7 @@ export default function Demo(): ReactNode {
           </XhSliderThumb>
         </XhSliderControl>
       </XhSliderRoot>
-      <p>{`已选：${money(amount)}`}</p>
+      <p data-demo-output>{`已选：${money(amount)}`}</p>
     </>
   );
 }

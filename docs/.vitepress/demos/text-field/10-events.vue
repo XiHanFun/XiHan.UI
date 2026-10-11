@@ -28,8 +28,5 @@ function onValueChange(details: { value: string }) {
     </XhTextFieldControl>
   </XhTextFieldRoot>
 
-  <ol v-if="log.length" style="margin: 0; padding-inline-start: 20px">
-    <li v-for="(item, i) in log" :key="i">{{ item }}</li>
-  </ol>
-  <span v-else>还没有事件</span>
+  <span data-demo-output>{{ log.join(" · ") || "还没有事件" }}</span>
 </template>

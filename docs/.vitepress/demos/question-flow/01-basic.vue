@@ -57,47 +57,46 @@ const sent = ref("");
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px; max-width: 340px;">
-    <XhQuestionFlowRoot
-      v-slot="{ isLast }"
-      :questions="questions"
-      @submit="sent = Object.entries($event.answers).map(([id, values]) => `${id}=${values.join('、') || '未答'}`).join('；')"
-    >
-      <XhQuestionFlowViewport>
-        <XhQuestionFlowTrack>
-          <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
-            <XhQuestionFlowPrompt :question-id="question.id">{{ question.prompt }}</XhQuestionFlowPrompt>
-            <XhQuestionFlowGroup :question-id="question.id">
-              <XhQuestionFlowItem
-                v-for="option in question.options"
-                :key="option.value"
-                :question-id="question.id"
-                :option-value="option.value"
-              >
-                <!-- 记号由皮肤画：指示符留空即可，不必手打 -->
-                <XhQuestionFlowItemIndicator :question-id="question.id" :option-value="option.value" />
-                <XhQuestionFlowItemText :question-id="question.id" :option-value="option.value">
-                  {{ option.label }}
-                </XhQuestionFlowItemText>
-              </XhQuestionFlowItem>
-            </XhQuestionFlowGroup>
-          </XhQuestionFlowQuestion>
-        </XhQuestionFlowTrack>
-      </XhQuestionFlowViewport>
-      <XhQuestionFlowResult>答案已送出</XhQuestionFlowResult>
-      <XhQuestionFlowFooter>
-        <div style="display: flex; align-items: center; gap: 4px;">
-          <XhQuestionFlowPrevTrigger />
-          <XhQuestionFlowCounter />
-          <XhQuestionFlowNextTrigger />
-        </div>
-        <div style="display: flex; align-items: center; gap: 6px;">
-          <XhQuestionFlowSkipTrigger>跳过</XhQuestionFlowSkipTrigger>
-          <XhQuestionFlowSubmitTrigger>{{ isLast ? "发送" : "继续" }}</XhQuestionFlowSubmitTrigger>
-        </div>
-      </XhQuestionFlowFooter>
-      <XhQuestionFlowLiveRegion />
-    </XhQuestionFlowRoot>
-    <p v-if="sent" style="margin: 0;">收到：{{ sent }}</p>
-  </div>
+  <XhQuestionFlowRoot
+    v-slot="{ isLast }"
+    :questions="questions"
+    style="max-width: 340px;"
+    @submit="sent = Object.entries($event.answers).map(([id, values]) => `${id}=${values.join('、') || '未答'}`).join('；')"
+  >
+    <XhQuestionFlowViewport>
+      <XhQuestionFlowTrack>
+        <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
+          <XhQuestionFlowPrompt :question-id="question.id">{{ question.prompt }}</XhQuestionFlowPrompt>
+          <XhQuestionFlowGroup :question-id="question.id">
+            <XhQuestionFlowItem
+              v-for="option in question.options"
+              :key="option.value"
+              :question-id="question.id"
+              :option-value="option.value"
+            >
+              <!-- 记号由皮肤画：指示符留空即可，不必手打 -->
+              <XhQuestionFlowItemIndicator :question-id="question.id" :option-value="option.value" />
+              <XhQuestionFlowItemText :question-id="question.id" :option-value="option.value">
+                {{ option.label }}
+              </XhQuestionFlowItemText>
+            </XhQuestionFlowItem>
+          </XhQuestionFlowGroup>
+        </XhQuestionFlowQuestion>
+      </XhQuestionFlowTrack>
+    </XhQuestionFlowViewport>
+    <XhQuestionFlowResult>答案已送出</XhQuestionFlowResult>
+    <XhQuestionFlowFooter>
+      <div style="display: flex; align-items: center; gap: 4px;">
+        <XhQuestionFlowPrevTrigger />
+        <XhQuestionFlowCounter />
+        <XhQuestionFlowNextTrigger />
+      </div>
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <XhQuestionFlowSkipTrigger>跳过</XhQuestionFlowSkipTrigger>
+        <XhQuestionFlowSubmitTrigger>{{ isLast ? "发送" : "继续" }}</XhQuestionFlowSubmitTrigger>
+      </div>
+    </XhQuestionFlowFooter>
+    <XhQuestionFlowLiveRegion />
+  </XhQuestionFlowRoot>
+  <p data-demo-output>收到：{{ sent || "（还没发送）" }}</p>
 </template>

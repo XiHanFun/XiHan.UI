@@ -91,5 +91,5 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
       </XhDateRangePickerContent>
     </XhDateRangePickerPositioner>
   </XhDateRangePickerRoot>
-  <p style="margin-block: var(--xh-space-2) 0; font-size: var(--xh-text-secondary-size)">区间：{{ text }}</p>
+  <p data-demo-output>区间：{{ text }}</p>
 </template>

@@ -14,7 +14,7 @@ const rows = Array.from({ length: 30 }, (_, r) => Array.from({ length: 12 }, (_,
       style="
         block-size: 200px;
         overflow: auto;
-        border: 1px solid var(--xh-border-default);
+        border: var(--xh-stroke-thin) solid var(--xh-border-default);
         border-radius: var(--xh-shape-surface);
         padding: 8px;
       "

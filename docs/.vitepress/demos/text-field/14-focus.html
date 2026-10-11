@@ -6,10 +6,18 @@
       <input data-xh-part="input" />
     </div>
     <div style="display: flex; gap: 8px">
-      <button type="button" id="text-field-focus-focus">聚焦</button>
-      <button type="button" id="text-field-focus-select">全选</button>
-      <button type="button" id="text-field-focus-caret">光标移到末尾</button>
-      <button type="button" id="text-field-focus-blur">失焦</button>
+      <xh-button id="text-field-focus-focus" variant="outline" size="sm">
+        <button data-xh-part="root">聚焦</button>
+      </xh-button>
+      <xh-button id="text-field-focus-select" variant="outline" size="sm">
+        <button data-xh-part="root">全选</button>
+      </xh-button>
+      <xh-button id="text-field-focus-caret" variant="outline" size="sm">
+        <button data-xh-part="root">光标移到末尾</button>
+      </xh-button>
+      <xh-button id="text-field-focus-blur" variant="outline" size="sm">
+        <button data-xh-part="root">失焦</button>
+      </xh-button>
     </div>
   </div>
 </xh-text-field>

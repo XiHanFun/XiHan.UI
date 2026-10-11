@@ -7,14 +7,12 @@ const sent = ref<string[]>([]);
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <XhPromptInputRoot
-      :translations="{ input: '给助手写点什么' }"
-      @submit="sent.push($event.value)"
-    >
-      <XhPromptInputInput rows="1" placeholder="给助手写点什么…" />
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
-    </XhPromptInputRoot>
-    <p v-if="sent.length" style="margin: 0;">已发出：{{ sent.join(" / ") }}</p>
-  </div>
+  <XhPromptInputRoot
+    :translations="{ input: '给助手写点什么' }"
+    @submit="sent.push($event.value)"
+  >
+    <XhPromptInputInput rows="1" placeholder="给助手写点什么…" />
+    <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+  </XhPromptInputRoot>
+  <p data-demo-output>已发出：{{ sent.join(" / ") || "（无）" }}</p>
 </template>

@@ -1,6 +1,6 @@
 // 加载结束 | loading 期间容器报告 aria-busy；切换为 false 后骨架让出位置，原地盖在真实内容之上淡出，播完才收起
 import type { ReactNode } from "react";
-import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/react";
+import { XhButton, XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/react";
 import { useState } from "react";
 
 export default function Demo(): ReactNode {
@@ -8,9 +8,9 @@ export default function Demo(): ReactNode {
 
   return (
     <div style={{ inlineSize: "100%", display: "grid", gap: "12px", justifyItems: "start" }}>
-      <button type="button" onClick={() => setLoading(!loading)}>
+      <XhButton variant="outline" size="sm" onClick={() => setLoading(!loading)}>
         {loading ? "数据回来了" : "重新加载"}
-      </button>
+      </XhButton>
 
       <XhSkeletonRoot loading={loading} style={{ inlineSize: "260px" }}>
         <XhSkeletonItem />

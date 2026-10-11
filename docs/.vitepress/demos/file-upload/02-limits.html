@@ -21,7 +21,7 @@
   </div>
 </xh-file-upload>
 
-<span id="file-upload-limits-rejected"></span>
+<span id="file-upload-limits-rejected" data-demo-output>被拒：（暂无）</span>
 
 <script type="module">
   const upload = document.getElementById("file-upload-limits");
@@ -51,6 +51,8 @@
             .join("、")}）`
       )
       .join("；")}`;
+    // 输出栏只放一行，放不下的悬停看全文
+    rejected.title = rejected.textContent;
   });
 
   // 条目节点由作者渲染，元素随后按文档序接上去

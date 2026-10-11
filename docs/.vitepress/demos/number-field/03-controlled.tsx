@@ -32,7 +32,7 @@ export default function Demo(): ReactNode {
           <XhNumberFieldIncrementTrigger />
         </XhNumberFieldControl>
       </XhNumberFieldRoot>
-      <span>{`输入串：${qty === "" ? "（空）" : qty} · 数值：${asNumber}`}</span>
+      <span data-demo-output>{`输入串：${qty === "" ? "（空）" : qty} · 数值：${asNumber}`}</span>
     </>
   );
 }

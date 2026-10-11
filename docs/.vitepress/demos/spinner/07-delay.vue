@@ -4,12 +4,11 @@ import { XhButton, XhSpinner, XhSpinnerLabel } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const loading = ref(false);
-const result = ref("");
+const result = ref("（还没查询）");
 
 // 模拟一次耗时不同的请求：转圈只在请求在途时挂着
 function query(ms: number): void {
   loading.value = true;
-  result.value = "";
   window.setTimeout(() => {
     loading.value = false;
     result.value = `用时 ${ms} ms，查询完成`;
@@ -26,6 +25,6 @@ function query(ms: number): void {
     <XhSpinner v-if="loading" :delay="400" label="正在查询">
       <XhSpinnerLabel />
     </XhSpinner>
-    <span v-else>{{ result }}</span>
+    <span data-demo-output>{{ result }}</span>
   </div>
 </template>

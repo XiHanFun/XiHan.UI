@@ -75,7 +75,7 @@ export default function Demo(): ReactNode {
           </XhSelectContent>
         </XhSelectPositioner>
       </XhSelectRoot>
-      <p>
+      <p data-demo-output>
         当前值：
         {value[0] ?? "（未选）"}
       </p>

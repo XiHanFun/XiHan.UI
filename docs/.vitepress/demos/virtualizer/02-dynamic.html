@@ -35,7 +35,7 @@
         el.setAttribute("measure", "");
         // 不给主轴尺寸：给了就把测量钉死在估算值上，measure 再也收敛不了
         el.style.cssText =
-          "padding: 8px 12px; border-block-end: 1px solid var(--xh-border-subtle); line-height: 20px";
+          "padding: 8px 12px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle); line-height: 20px";
         el.append(rows[item.index], " ", document.createElement("small"));
         nodes.set(item.index, el);
         content.append(el);

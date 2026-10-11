@@ -105,5 +105,5 @@ function literalBefore(type: string, index: number): string {
     </XhDateRangePickerPositioner>
   </XhDateRangePickerRoot>
 
-  <span aria-live="polite" style="font-size: 13px">当前值：{{ text }}</span>
+  <span aria-live="polite" data-demo-output>当前值：{{ text }}</span>
 </template>

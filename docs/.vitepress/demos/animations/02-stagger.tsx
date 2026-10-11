@@ -2,7 +2,17 @@
 import type { StaggerFrom } from "@xihan-ui/animations";
 import type { ReactNode } from "react";
 import { createMotionPlayer, splitText } from "@xihan-ui/animations";
-import { XhButton, XhRadioGroupRoot } from "@xihan-ui/react";
+import {
+  XhButton,
+  XhRadioGroupRoot,
+  XhSliderControl,
+  XhSliderHiddenInput,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+} from "@xihan-ui/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const fromOptions = [
@@ -18,7 +28,8 @@ export default function Demo(): ReactNode {
   const list = useRef<HTMLDivElement>(null);
   const title = useRef<HTMLHeadingElement>(null);
   const [from, setFrom] = useState<StaggerFrom>("first");
-  const [gap, setGap] = useState(60);
+  // 滑块的值恒为数组，单滑块即长度 1
+  const [gap, setGap] = useState([60]);
 
   useEffect(() => () => motion.cancel(), [motion]);
 
@@ -27,7 +38,7 @@ export default function Demo(): ReactNode {
     if (!el)
       return;
     void motion.playAll([...el.children] as HTMLElement[], "rise", {
-      stagger: gap,
+      stagger: gap[0],
       from,
     });
   }
@@ -42,8 +53,8 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "100%" }}>
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "20px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--xh-space-4)", width: "100%" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", gap: "var(--xh-space-5)" }}>
         <XhRadioGroupRoot
           value={from}
           onValueChange={details => setFrom((details.value ?? "first") as StaggerFrom)}
@@ -51,38 +62,45 @@ export default function Demo(): ReactNode {
           label="起点"
           name="stagger-from"
         />
-        <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          {`间隔 ${gap}ms`}
-          <input
-            value={gap}
-            type="range"
-            min="0"
-            max="200"
-            step="10"
-            onChange={event => setGap(Number(event.target.value))}
-          />
-        </label>
+        <XhSliderRoot
+          value={gap}
+          onValueChange={details => setGap(details.value)}
+          min={0}
+          max={200}
+          step={10}
+          style={{ inlineSize: "var(--xh-control-w)" }}
+        >
+          <XhSliderLabel>{`间隔 ${gap[0]}ms`}</XhSliderLabel>
+          <XhSliderControl>
+            <XhSliderTrack>
+              <XhSliderRange />
+            </XhSliderTrack>
+            <XhSliderThumb>
+              <XhSliderHiddenInput />
+            </XhSliderThumb>
+          </XhSliderControl>
+        </XhSliderRoot>
       </div>
 
-      <div style={{ display: "flex", gap: "8px" }}>
+      <div style={{ display: "flex", gap: "var(--xh-space-2)" }}>
         <XhButton size="sm" onClick={playList}>播列表</XhButton>
         <XhButton size="sm" variant="outline" onClick={() => void playTitle()}>播标题</XhButton>
       </div>
 
-      <h3 ref={title} style={{ margin: 0, fontSize: "24px" }}>曦寒 UI 动画层</h3>
+      <h3 ref={title} style={{ margin: 0, fontSize: "var(--xh-font-size-2xl)" }}>曦寒 UI 动画层</h3>
 
-      <div ref={list} style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+      <div ref={list} style={{ display: "flex", flexWrap: "wrap", gap: "var(--xh-space-2)" }}>
         {blocks.map(n => (
           <div
             key={n}
             style={{
               display: "grid",
               placeItems: "center",
-              width: "48px",
-              height: "48px",
-              borderRadius: "10px",
-              background: "var(--vp-c-brand-soft)",
-              fontWeight: 600,
+              width: "calc(2 * var(--xh-space-6))",
+              height: "calc(2 * var(--xh-space-6))",
+              borderRadius: "var(--xh-shape-surface)",
+              background: "var(--xh-bg-subtle)",
+              fontWeight: "var(--xh-font-weight-semibold)",
             }}
           >
             {n}

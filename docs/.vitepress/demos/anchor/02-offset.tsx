@@ -40,7 +40,7 @@ const stickyBar: CSSProperties = {
   alignItems: "center",
   paddingInline: "12px",
   background: "var(--xh-bg-surface)",
-  borderBlockEnd: "1px solid var(--xh-border-default)",
+  borderBlockEnd: "var(--xh-stroke-thin) solid var(--xh-border-default)",
 };
 
 export default function Demo(): ReactNode {

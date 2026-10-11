@@ -128,6 +128,6 @@ const twistySpacer
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>{{ log }}</span>
+    <span data-demo-output>{{ log }}</span>
   </div>
 </template>

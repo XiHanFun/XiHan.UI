@@ -28,5 +28,5 @@ function next(): void {
   <XhButton variant="outline" @click="running = !running">
     {{ running ? "暂停" : "继续" }}
   </XhButton>
-  <span v-if="settled !== null">上一次停在：{{ settled }}</span>
+  <span data-demo-output>上一次停在：{{ settled ?? "（还没停过）" }}</span>
 </template>

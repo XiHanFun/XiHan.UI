@@ -26,6 +26,8 @@ export default function Demo(): ReactNode {
   const seq = useRef(0);
 
   const current = specs.find(spec => spec.id === currentId) ?? null;
+  // 表里每个描述符一段，合成一行
+  const summary = `描述符表：${specs.map(spec => `${spec.title}（${spec.loading ? "提交中" : "空闲"}）`).join(" · ") || "（空）"}`;
 
   // 一行调用：造描述符、入表、置为当前并展开，最后把它交回调用方
   function ask(title: string, text: string): Spec {
@@ -55,7 +57,7 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <div style={{ inlineSize: "100%", display: "grid", gap: "12px", justifyItems: "start" }}>
+    <>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
         <XhButton variant="solid" onClick={() => ask("删除工作区", "删除后 30 天内还能恢复。")}>
           删除工作区
@@ -68,12 +70,7 @@ export default function Demo(): ReactNode {
         </XhButton>
       </div>
 
-      <ol style={{ display: "grid", gap: "4px", margin: 0, paddingInlineStart: "20px" }}>
-        {specs.map(spec => (
-          <li key={spec.id}>{`${spec.title} — ${spec.loading ? "提交中" : "空闲"}`}</li>
-        ))}
-        {specs.length === 0 ? <li>（还没有描述符）</li> : null}
-      </ol>
+      <span data-demo-output title={summary}>{summary}</span>
 
       <XhDialogRoot
         open={open}
@@ -99,6 +96,6 @@ export default function Demo(): ReactNode {
             )
           : null}
       </XhDialogRoot>
-    </div>
+    </>
   );
 }

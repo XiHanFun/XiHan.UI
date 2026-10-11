@@ -13,5 +13,5 @@ const level = ref(7);
       <XhRatingItem v-for="i in items" :key="i" :value="i" />
     </XhRatingControl>
   </XhRatingRoot>
-  <p>当前：{{ level }} / 10</p>
+  <p data-demo-output>当前：{{ level }} / 10</p>
 </template>

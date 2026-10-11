@@ -1,6 +1,7 @@
 <!-- 密码与明暗切换 | 写在 input 部件上的 type 覆盖默认的 text，明暗由宿主的一个布尔切换 -->
 <script setup lang="ts">
 import {
+  XhButton,
   XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
@@ -21,9 +22,9 @@ const visible = ref(false);
           autocomplete="current-password"
         />
       </XhTextFieldControl>
-      <button type="button" :aria-pressed="visible" @click="visible = !visible">
+      <XhButton variant="outline" :aria-pressed="visible" @click="visible = !visible">
         {{ visible ? "隐藏" : "显示" }}
-      </button>
+      </XhButton>
     </div>
   </XhTextFieldRoot>
 </template>

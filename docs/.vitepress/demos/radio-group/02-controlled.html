@@ -14,8 +14,10 @@
     </div>
   </div>
 </xh-radio-group>
-<span id="radio-controlled-readout">当前：free</span>
-<button id="radio-controlled-clear" type="button">清空</button>
+<xh-button id="radio-controlled-clear" variant="outline" size="sm">
+  <button data-xh-part="root">清空</button>
+</xh-button>
+<span id="radio-controlled-readout" data-demo-output>当前：free</span>
 
 <script type="module">
   // 选中值由宿主写回元素，清空按钮把它置为 null

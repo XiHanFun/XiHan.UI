@@ -28,7 +28,7 @@
           padding: 6px 12px;
         "
       >
-        <span id="log-follow-hint" style="font-size: 13px"></span>
+        <span style="font-size: 13px">已暂停跟随</span>
         <xh-button variant="outline" size="sm">
           <button data-xh-part="root" id="log-follow-back">回到最新</button>
         </xh-button>
@@ -44,6 +44,7 @@
       <button data-xh-part="root" id="log-follow-append">追加一行</button>
     </xh-button>
   </div>
+  <span id="log-follow-hint" data-demo-output>跟随意图：开</span>
 </div>
 
 <script type="module">
@@ -84,10 +85,10 @@
     .querySelector("#log-follow-back")
     .addEventListener("click", () => view.scrollToBottom());
 
-  // 离开底部才露出那一条，跟随意图一并写出来
+  // 离开底部才露出那一条，跟随意图回显在输出栏里
   view.addEventListener("stick-change", (event) => {
     const { atBottom, sticking } = event.detail;
     bar.style.display = atBottom ? "none" : "flex";
-    hint.textContent = `已暂停跟随 · 跟随意图：${sticking ? "开" : "关"}`;
+    hint.textContent = `跟随意图：${sticking ? "开" : "关"}`;
   });
 </script>

@@ -75,7 +75,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhTableRoot>
-      <span>{`列序：${preference.order?.join(" → ") ?? "（还没改过）"}`}</span>
+      <span data-demo-output>{`列序：${preference.order?.join(" → ") ?? "（还没改过）"}`}</span>
     </div>
   );
 }

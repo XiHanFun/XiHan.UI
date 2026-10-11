@@ -27,7 +27,7 @@ export default function Demo(): ReactNode {
   const [decided, setDecided] = useState("");
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+    <>
       {/* 必选项没勾满就批不了；拒绝这条路不受它影响 */}
       <XhApprovalRoot
         scopes={scopes}
@@ -65,7 +65,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhApprovalRoot>
-      {decided ? <p style={{ margin: 0 }}>{`判定：${decided}`}</p> : null}
-    </div>
+      <p data-demo-output>{`判定：${decided || "（未判定）"}`}</p>
+    </>
   );
 }

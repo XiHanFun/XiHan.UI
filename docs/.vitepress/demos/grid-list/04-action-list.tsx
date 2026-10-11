@@ -30,7 +30,7 @@ export default function Demo(): ReactNode {
           </XhGridListRow>
         ))}
       </XhGridListRoot>
-      <span data-label>{result}</span>
+      <span data-demo-output>{result}</span>
     </div>
   );
 }

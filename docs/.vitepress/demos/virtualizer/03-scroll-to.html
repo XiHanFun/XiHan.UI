@@ -3,10 +3,15 @@
   <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 420px">
     <!-- 操作入口在外面，滚动的活儿交给内核 -->
     <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-block-end: 8px">
-      <button type="button" id="virtualizer-goto-first">回到第 1 条</button>
-      <button type="button" id="virtualizer-goto-middle">第 501 条居中</button>
-      <button type="button" id="virtualizer-goto-last">末条贴底</button>
-      <span>可视区首条：<span id="virtualizer-goto-start">—</span></span>
+      <xh-button id="virtualizer-goto-first" size="sm" variant="outline">
+        <button data-xh-part="root">回到第 1 条</button>
+      </xh-button>
+      <xh-button id="virtualizer-goto-middle" size="sm" variant="outline">
+        <button data-xh-part="root">第 501 条居中</button>
+      </xh-button>
+      <xh-button id="virtualizer-goto-last" size="sm" variant="outline">
+        <button data-xh-part="root">末条贴底</button>
+      </xh-button>
     </div>
 
     <!-- 视口自带确定高度，root 就不必再定高 -->
@@ -15,6 +20,7 @@
     </div>
   </div>
 </xh-virtualizer>
+<span data-demo-output>可视区首条：<span id="virtualizer-goto-start">—</span></span>
 
 <script type="module">
   const host = document.getElementById("virtualizer-goto");
@@ -31,7 +37,7 @@
       el.dataset.xhPart = "item";
       el.setAttribute("value", String(item.index));
       el.style.cssText =
-        "display: flex; align-items: center; height: 32px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)";
+        "display: flex; align-items: center; height: 32px; padding-inline: 12px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
       el.textContent = `第 ${item.index + 1} 条`;
       nodes.set(item.index, el);
       content.append(el);

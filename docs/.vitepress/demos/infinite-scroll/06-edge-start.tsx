@@ -35,7 +35,7 @@ export default function Demo(): ReactNode {
       style={{
         blockSize: 240,
         overflow: "auto",
-        border: "1px solid var(--xh-border-default)",
+        border: "var(--xh-stroke-thin) solid var(--xh-border-default)",
         borderRadius: 8,
       }}
     >

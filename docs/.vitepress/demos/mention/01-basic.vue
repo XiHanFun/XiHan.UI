@@ -30,5 +30,5 @@ const filtered = computed(() => {
     :translations="{ input: '正文', content: '提及谁' }"
     @query-change="query = $event.query"
   />
-  <p>正文：{{ text || "（空）" }}</p>
+  <p data-demo-output>正文：{{ text || "（空）" }}</p>
 </template>

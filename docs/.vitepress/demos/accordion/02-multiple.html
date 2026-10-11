@@ -1,5 +1,5 @@
 <!-- 多项展开 | multiple 允许多项并存，展开集合恒为 string[]，受控绑定即可获取它 -->
-<div style="width: 100%; max-width: 420px; display: grid; gap: 12px">
+<div style="width: 100%; max-width: 420px">
   <xh-accordion id="accordion-multiple" multiple>
     <div data-xh-part="root">
       <div data-xh-part="item" value="basic">
@@ -33,8 +33,8 @@
       </div>
     </div>
   </xh-accordion>
-  <span>展开：<span id="accordion-multiple-value">basic、size</span></span>
 </div>
+<span data-demo-output>展开：<span id="accordion-multiple-value">basic、size</span></span>
 
 <script type="module">
   // 展开集合是数组，只走 property：设初值、每次变更写回、再回显

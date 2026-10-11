@@ -36,7 +36,7 @@ function nextTitle(): string {
       连着弹
     </XhButton>
     <XhButton variant="ghost" @click="dismissAll()">全部清空</XhButton>
-    <span>队列：{{ count }} 条（上限 3）</span>
+    <span data-demo-output>队列：{{ count }} 条（上限 3）</span>
 
     <XhNotificationGroup>
       <template #default="{ item }">

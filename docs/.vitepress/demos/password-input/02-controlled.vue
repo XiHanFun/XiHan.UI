@@ -1,6 +1,7 @@
 <!-- 受控 | 值与明暗都可受控：传入后由宿主决定，组件只报告意图，是否写回由宿主决定 -->
 <script setup lang="ts">
 import {
+  XhButton,
   XhPasswordInputControl,
   XhPasswordInputInput,
   XhPasswordInputLabel,
@@ -21,6 +22,6 @@ const revealed = ref(false);
       <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
-  <span>当前：{{ revealed ? password : "•".repeat(password.length) }}</span>
-  <button type="button" @click="revealed = false">收起明文</button>
+  <XhButton variant="outline" size="sm" @click="revealed = false">收起明文</XhButton>
+  <span data-demo-output>当前：{{ revealed ? password : "•".repeat(password.length) }}</span>
 </template>

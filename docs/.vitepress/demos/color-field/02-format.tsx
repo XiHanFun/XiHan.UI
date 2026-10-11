@@ -13,7 +13,7 @@ export default function Demo(): ReactNode {
   const [value, setValue] = useState("rgba(59, 130, 246, 0.5)");
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+    <>
       {/* 试着打 #3b82f680 或 hsl(217 91% 60% / 50%)，收下后都变成 rgba() */}
       <XhColorFieldRoot value={value} onValueChange={details => setValue(details.value)} format="rgba" alpha placeholder="rgba(r, g, b, a)">
         <XhColorFieldLabel>遮罩色</XhColorFieldLabel>
@@ -22,10 +22,10 @@ export default function Demo(): ReactNode {
           <XhColorFieldInput />
         </XhColorFieldControl>
       </XhColorFieldRoot>
-      <span style={{ fontSize: "13px" }}>
+      <span data-demo-output>
         收下的值：
         <code>{value || "（空）"}</code>
       </span>
-    </div>
+    </>
   );
 }

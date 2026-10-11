@@ -1,6 +1,6 @@
 <!-- 填满才可提交 | 每格都有字符才算填满，作者据此启用提交按钮；重填一次清空整组 -->
 <script setup lang="ts">
-import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue";
+import { XhButton, XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const submitted = ref("");
@@ -18,11 +18,9 @@ function reset(clear: () => void) {
       <XhPinInputInput v-for="i in 4" :key="i" :index="i - 1" />
     </div>
     <div style="display: flex; gap: 8px">
-      <button type="button" :disabled="!complete" @click="submitted = valueAsString">
-        提交
-      </button>
-      <button type="button" @click="reset(clear)">重填</button>
+      <XhButton size="sm" :disabled="!complete" @click="submitted = valueAsString">提交</XhButton>
+      <XhButton variant="outline" size="sm" @click="reset(clear)">重填</XhButton>
     </div>
-    <span>{{ submitted ? `已提交：${submitted}` : "四格都填满才能提交" }}</span>
   </XhPinInputRoot>
+  <span data-demo-output>{{ submitted ? `已提交：${submitted}` : "四格都填满才能提交" }}</span>
 </template>

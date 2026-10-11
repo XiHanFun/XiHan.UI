@@ -46,7 +46,7 @@ export default function Demo(): ReactNode {
         </XhTimePickerPositioner>
       </XhTimePickerRoot>
 
-      <span style={{ fontSize: "13px" }}>{`当前值：${value[0] ?? "（空）"}`}</span>
+      <span data-demo-output>{`当前值：${value[0] ?? "（空）"}`}</span>
     </>
   );
 }

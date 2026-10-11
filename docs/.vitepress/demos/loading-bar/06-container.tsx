@@ -13,8 +13,8 @@ const frame: CSSProperties = {
   overflow: "hidden",
   inlineSize: "100%",
   maxInlineSize: "420px",
-  border: "1px solid var(--xh-border-subtle)",
-  borderRadius: "8px",
+  border: "var(--xh-stroke-thin) solid var(--xh-border-subtle)",
+  borderRadius: "var(--xh-shape-surface)",
 };
 
 export default function Demo(): ReactNode {

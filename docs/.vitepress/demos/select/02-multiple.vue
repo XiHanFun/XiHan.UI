@@ -20,5 +20,5 @@ const fruits = [
     label="水果（多选）"
     placeholder="请选择"
   />
-  <p>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
+  <p data-demo-output>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
 </template>

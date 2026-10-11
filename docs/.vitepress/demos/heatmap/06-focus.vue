@@ -19,14 +19,12 @@ const readout = ref("（把焦点移到某一格）");
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px">
-    <!-- 每格自己就念得出日期与计数；这里再把它显示出来，眼睛也看得见 -->
-    <XhHeatmapRoot
-      :value="activity"
-      start-date="2024-01-01"
-      end-date="2024-01-28"
-      @cell-focus="readout = `${$event.date}：${$event.count} 次（第 ${$event.level} 档）`"
-    />
-    <span>{{ readout }}</span>
-  </div>
+  <!-- 每格自己就念得出日期与计数；这里再把它显示出来，眼睛也看得见 -->
+  <XhHeatmapRoot
+    :value="activity"
+    start-date="2024-01-01"
+    end-date="2024-01-28"
+    @cell-focus="readout = `${$event.date}：${$event.count} 次（第 ${$event.level} 档）`"
+  />
+  <span data-demo-output>{{ readout }}</span>
 </template>

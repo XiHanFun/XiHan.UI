@@ -27,19 +27,18 @@ const folded = ref([11]);
 </script>
 
 <template>
-  <div style="display: grid; gap: 8px; inline-size: 100%">
-    <XhCodeViewRoot
-      v-model:folded="folded"
-      :code="sample"
-      lang="typescript"
-      complete
-      line-numbers
-      block-folding
-    >
-      <XhCodeViewPre>
-        <XhCodeViewCode />
-      </XhCodeViewPre>
-    </XhCodeViewRoot>
-    <span>折叠着的块头：{{ folded.length > 0 ? folded.join("、") : "无" }}</span>
-  </div>
+  <XhCodeViewRoot
+    v-model:folded="folded"
+    :code="sample"
+    lang="typescript"
+    complete
+    line-numbers
+    block-folding
+    style="inline-size: 100%"
+  >
+    <XhCodeViewPre>
+      <XhCodeViewCode />
+    </XhCodeViewPre>
+  </XhCodeViewRoot>
+  <span data-demo-output>折叠着的块头：{{ folded.length > 0 ? folded.join("、") : "无" }}</span>
 </template>

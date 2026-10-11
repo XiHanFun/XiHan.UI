@@ -31,11 +31,9 @@
       <button data-xh-part="indicator" index="2"></button>
       <button data-xh-part="indicator" index="3"></button>
     </div>
-    <span id="carousel-hover-readout" style="flex-basis: 100%">
-      鼠标扫过下面的圆点即可换页，当前第 1 / 4 页
-    </span>
   </div>
 </xh-carousel>
+<span id="carousel-hover-readout" data-demo-output>鼠标扫过圆点即可换页 · 当前第 1 / 4 页</span>
 
 <script type="module">
   // mouseenter 是落到指示点按钮上的原生事件，转手按一下它自带的点击就换页
@@ -47,6 +45,6 @@
   }
 
   carousel.addEventListener("page-change", (event) => {
-    readout.textContent = `鼠标扫过下面的圆点即可换页，当前第 ${event.detail.page + 1} / 4 页`;
+    readout.textContent = `鼠标扫过圆点即可换页 · 当前第 ${event.detail.page + 1} / 4 页`;
   });
 </script>

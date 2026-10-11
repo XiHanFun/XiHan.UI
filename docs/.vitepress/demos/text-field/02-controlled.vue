@@ -1,6 +1,7 @@
 <!-- 受控 | 传入 value 后由宿主决定，组件自身不再修改状态；变化经 value-change 报告，是否写回由宿主决定 -->
 <script setup lang="ts">
 import {
+  XhButton,
   XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
@@ -18,6 +19,6 @@ const nickname = ref("曦寒");
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>
-  <span>当前：{{ nickname || "（空）" }}</span>
-  <button type="button" @click="nickname = '曦寒'">重置</button>
+  <XhButton variant="outline" size="sm" @click="nickname = '曦寒'">重置</XhButton>
+  <span data-demo-output>当前：{{ nickname || "（空）" }}</span>
 </template>

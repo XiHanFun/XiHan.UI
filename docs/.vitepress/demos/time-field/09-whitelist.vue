@@ -38,7 +38,7 @@ function snap(next: string) {
     </XhTimeFieldControl>
   </XhTimeFieldRoot>
 
-  <span style="font-size: 13px">
+  <span data-demo-output>
     只收 {{ allowed.join(" / ") }}，当前值：{{ value || "（空）" }}
   </span>
 </template>

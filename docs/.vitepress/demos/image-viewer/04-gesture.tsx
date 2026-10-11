@@ -21,7 +21,7 @@ export default function Demo(): ReactNode {
         <img
           src={items[0]!.src}
           alt={items[0]!.alt}
-          style={{ inlineSize: "160px", borderRadius: "8px", cursor: "zoom-in", display: "block" }}
+          style={{ inlineSize: "160px", borderRadius: "var(--xh-shape-surface)", cursor: "zoom-in", display: "block" }}
         />
       </XhImageViewerTrigger>
       <XhImageViewerContent>

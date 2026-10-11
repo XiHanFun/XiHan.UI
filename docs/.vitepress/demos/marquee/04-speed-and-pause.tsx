@@ -18,7 +18,7 @@ export default function Demo(): ReactNode {
           <XhMarqueeRoot
             speed={s}
             autoFill
-            style={{ maxInlineSize: "420px", border: "1px solid var(--xh-border-default)", borderRadius: "6px" }}
+            style={{ maxInlineSize: "420px", border: "var(--xh-stroke-thin) solid var(--xh-border-default)", borderRadius: "var(--xh-shape-surface)" }}
           >
             <XhMarqueeContent>
               <a href="#" style={{ padding: "6px 14px", whiteSpace: "nowrap" }}>

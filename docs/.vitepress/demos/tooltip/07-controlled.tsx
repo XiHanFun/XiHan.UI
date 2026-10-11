@@ -21,7 +21,7 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+    <>
       <XhTooltipRoot
         open={open}
         placement="bottom"
@@ -40,7 +40,7 @@ export default function Demo(): ReactNode {
       <XhButton variant="outline" onClick={() => setOpen(!open)}>
         {open ? "收起" : "展开"}
       </XhButton>
-      <span>{`最近意图：${log.join(" ← ") || "（还没动过）"}`}</span>
-    </div>
+      <span data-demo-output>{`最近意图：${log.join(" ← ") || "（还没动过）"}`}</span>
+    </>
   );
 }

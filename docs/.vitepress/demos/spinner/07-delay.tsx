@@ -5,12 +5,11 @@ import { useState } from "react";
 
 export default function Demo(): ReactNode {
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState("");
+  const [result, setResult] = useState("（还没查询）");
 
   // 模拟一次耗时不同的请求：转圈只在请求在途时挂着
   function query(ms: number): void {
     setLoading(true);
-    setResult("");
     window.setTimeout(() => {
       setLoading(false);
       setResult(`用时 ${ms} ms，查询完成`);
@@ -23,13 +22,12 @@ export default function Demo(): ReactNode {
         <XhButton variant="outline" disabled={loading} onClick={() => query(200)}>快请求（200 ms）</XhButton>
         <XhButton variant="outline" disabled={loading} onClick={() => query(1500)}>慢请求（1.5 s）</XhButton>
       </div>
-      {loading
-        ? (
-            <XhSpinner delay={400} label="正在查询">
-              <XhSpinnerLabel />
-            </XhSpinner>
-          )
-        : <span>{result}</span>}
+      {loading && (
+        <XhSpinner delay={400} label="正在查询">
+          <XhSpinnerLabel />
+        </XhSpinner>
+      )}
+      <span data-demo-output>{result}</span>
     </div>
   );
 }

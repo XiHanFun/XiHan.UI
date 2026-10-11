@@ -40,7 +40,7 @@ export default function Demo(): ReactNode {
         </XhTimeFieldControl>
       </XhTimeFieldRoot>
 
-      <span style={{ fontSize: "13px" }}>
+      <span data-demo-output>
         {`只收 ${allowed.join(" / ")}，当前值：${value || "（空）"}`}
       </span>
     </>

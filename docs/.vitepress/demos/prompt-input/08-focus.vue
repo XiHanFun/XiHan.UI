@@ -35,6 +35,6 @@ function onSubmit(details: { value: string }): void {
       <XhButton variant="outline" size="sm" @click="input?.select()">全选</XhButton>
       <XhButton variant="ghost" size="sm" @click="input?.blur()">失焦</XhButton>
     </div>
-    <span>{{ log }}</span>
+    <span data-demo-output>{{ log }}</span>
   </div>
 </template>

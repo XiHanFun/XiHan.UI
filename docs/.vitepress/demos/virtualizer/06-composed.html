@@ -57,7 +57,7 @@
       el.dataset.xhPart = "item";
       el.setAttribute("value", String(item.index));
       el.style.cssText
-        = "display: flex; align-items: center; height: 36px; padding-inline: var(--xh-space-3); border-block-end: 1px solid var(--xh-border-subtle)";
+        = "display: flex; align-items: center; height: 36px; padding-inline: var(--xh-space-3); border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
       el.textContent = `第 ${item.index + 1} 条`;
       nodes.set(item.index, el);
       content.append(el);

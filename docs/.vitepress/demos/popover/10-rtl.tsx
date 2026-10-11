@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import {
   XhButton,
   XhPopoverContent,
+  XhPopoverDescription,
   XhPopoverPositioner,
   XhPopoverRoot,
   XhPopoverTitle,
@@ -21,25 +22,21 @@ export default function Demo(): ReactNode {
 
       <div dir={dir} style={{ display: "flex", gap: "24px" }}>
         <XhPopoverRoot dir={dir} placement="bottom-start">
-          <XhPopoverTrigger>
-            <XhButton size="sm">bottom-start</XhButton>
-          </XhPopoverTrigger>
+          <XhPopoverTrigger>bottom-start</XhPopoverTrigger>
           <XhPopoverPositioner>
             <XhPopoverContent>
               <XhPopoverTitle>start</XhPopoverTitle>
-              <p style={{ margin: 0 }}>LTR 贴左缘，RTL 贴右缘</p>
+              <XhPopoverDescription>LTR 贴左缘，RTL 贴右缘</XhPopoverDescription>
             </XhPopoverContent>
           </XhPopoverPositioner>
         </XhPopoverRoot>
 
         <XhPopoverRoot dir={dir} placement="bottom-end">
-          <XhPopoverTrigger>
-            <XhButton size="sm">bottom-end</XhButton>
-          </XhPopoverTrigger>
+          <XhPopoverTrigger>bottom-end</XhPopoverTrigger>
           <XhPopoverPositioner>
             <XhPopoverContent>
               <XhPopoverTitle>end</XhPopoverTitle>
-              <p style={{ margin: 0 }}>与 start 恰好相反</p>
+              <XhPopoverDescription>与 start 恰好相反</XhPopoverDescription>
             </XhPopoverContent>
           </XhPopoverPositioner>
         </XhPopoverRoot>

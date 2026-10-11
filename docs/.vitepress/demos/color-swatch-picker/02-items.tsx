@@ -7,7 +7,7 @@ export default function Demo(): ReactNode {
   const [value, setValue] = useState<string | null>("rgb(225, 29, 72)");
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+    <>
       <XhColorSwatchPickerRoot value={value} onValueChange={details => setValue(details.value)}>
         <XhColorSwatchPickerLabel>高亮色</XhColorSwatchPickerLabel>
         <XhColorSwatchPickerItem value="#e11d48" label="玫红" />
@@ -15,10 +15,10 @@ export default function Demo(): ReactNode {
         <XhColorSwatchPickerItem value="#f59e0b" label="琥珀" disabled />
         <XhColorSwatchPickerItem value="hsl(217 91% 60%)" label="天蓝" />
       </XhColorSwatchPickerRoot>
-      <span style={{ fontSize: "13px" }}>
+      <span data-demo-output>
         当前：
         <code>{value ?? "（未选）"}</code>
       </span>
-    </div>
+    </>
   );
 }

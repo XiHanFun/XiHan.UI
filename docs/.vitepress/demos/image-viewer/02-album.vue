@@ -1,6 +1,8 @@
 <!-- 相册与翻页 | 多张图片共用一个查看浮层：两侧按钮或方向键翻页、计数报告第几张，缩放旋转在换图时归零 -->
 <script setup lang="ts">
 import {
+  XhImageImage,
+  XhImageRoot,
   XhImageViewerCloseTrigger,
   XhImageViewerContent,
   XhImageViewerCounter,
@@ -24,23 +26,28 @@ const items = [
 
 <template>
   <XhImageViewerRoot v-slot="{ setIndex, setOpen }" :collection="items">
+    <!-- 缩略图各自指定从第几张看起：先展开再换下标，收起时换图不生效；图片补上按钮角色，Enter 与 Space 也能打开 -->
     <div style="display: flex; gap: 8px">
-      <button
+      <XhImageRoot
         v-for="(item, i) in items"
         :key="item.src"
-        type="button"
-        style="border: none; padding: 0; cursor: zoom-in; background: none"
+        :src="item.src"
+        :alt="item.alt"
+        role="button"
+        tabindex="0"
+        :aria-label="`查看 ${item.alt}`"
+        style="--xh-image-w: 120px; --xh-image-ratio: 4 / 3; cursor: zoom-in"
         @click="
-          setIndex(i);
           setOpen(true);
+          setIndex(i);
+        "
+        @keydown.enter.space.prevent="
+          setOpen(true);
+          setIndex(i);
         "
       >
-        <img
-          :src="item.src"
-          :alt="item.alt"
-          style="inline-size: 120px; aspect-ratio: 4/3; object-fit: cover; border-radius: 8px; display: block"
-        >
-      </button>
+        <XhImageImage />
+      </XhImageRoot>
     </div>
     <XhImageViewerContent>
       <XhImageViewerViewport>

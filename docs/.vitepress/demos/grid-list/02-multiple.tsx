@@ -27,7 +27,7 @@ export default function Demo(): ReactNode {
           </XhGridListRow>
         ))}
       </XhGridListRoot>
-      <span data-label>
+      <span data-demo-output>
         权限：
         {selected.join("、") || "无"}
       </span>

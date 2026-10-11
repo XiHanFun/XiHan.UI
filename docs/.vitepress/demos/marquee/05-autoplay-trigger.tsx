@@ -8,7 +8,7 @@ export default function Demo(): ReactNode {
   return (
     <XhMarqueeRoot
       autoFill
-      style={{ maxInlineSize: "420px", border: "1px solid var(--xh-border-default)", borderRadius: "6px" }}
+      style={{ maxInlineSize: "420px", border: "var(--xh-stroke-thin) solid var(--xh-border-default)", borderRadius: "var(--xh-shape-surface)" }}
     >
       <XhMarqueeContent>
         {notices.map(n => (

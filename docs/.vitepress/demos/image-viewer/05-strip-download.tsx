@@ -1,9 +1,11 @@
 // 缩略图条与下载 | 浮层里自己放一排缩略图跳到任一张、一个下载按钮存下当前这张：两者都只读写 index，与翻页同一份状态
-import type { ReactNode } from "react";
+import type { CSSProperties, KeyboardEvent, ReactNode } from "react";
 import { DownloadIcon } from "@xihan-ui/icons";
 import {
   XhDownloadTrigger,
   XhIcon,
+  XhImageImage,
+  XhImageRoot,
   XhImageViewerCloseTrigger,
   XhImageViewerContent,
   XhImageViewerCounter,
@@ -29,25 +31,57 @@ function blobOf(index: number): () => Promise<Blob> {
   return () => fetch(items[index]!.src).then(response => response.blob());
 }
 
+const thumbStyle = {
+  "--xh-image-w": "120px",
+  "--xh-image-ratio": "4 / 3",
+  "cursor": "zoom-in",
+} as CSSProperties;
+
+const railStyle = {
+  "--xh-image-w": "64px",
+  "--xh-image-ratio": "4 / 3",
+  "outlineOffset": "var(--xh-ring-offset)",
+  "cursor": "pointer",
+} as CSSProperties;
+
+// 缩略图是图片补上按钮角色，Enter 与 Space 也要能按
+function onPress(action: () => void): (event: KeyboardEvent<HTMLDivElement>) => void {
+  return (event) => {
+    if (event.key !== "Enter" && event.key !== " ")
+      return;
+    event.preventDefault();
+    action();
+  };
+}
+
 export default function Demo(): ReactNode {
   return (
     <XhImageViewerRoot collection={items}>
       {({ index, setIndex, setOpen }) => (
         <>
           <div style={{ display: "flex", gap: "var(--xh-space-2)" }}>
-            {items.map((item, i) => (
-              <button
-                key={item.src}
-                type="button"
-                style={{ border: "none", padding: 0, cursor: "zoom-in", background: "none" }}
-                onClick={() => {
-                  setIndex(i);
-                  setOpen(true);
-                }}
-              >
-                <img src={item.src} alt={item.alt} style={{ inlineSize: "120px", aspectRatio: "4/3", objectFit: "cover", borderRadius: "var(--xh-shape-surface)", display: "block" }} />
-              </button>
-            ))}
+            {items.map((item, i) => {
+              // 先展开再换下标：收起时换图不生效
+              const view = (): void => {
+                setOpen(true);
+                setIndex(i);
+              };
+              return (
+                <XhImageRoot
+                  key={item.src}
+                  src={item.src}
+                  alt={item.alt}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`查看 ${item.alt}`}
+                  style={thumbStyle}
+                  onClick={view}
+                  onKeyDown={onPress(view)}
+                >
+                  <XhImageImage />
+                </XhImageRoot>
+              );
+            })}
           </div>
           <XhImageViewerContent>
             <XhImageViewerViewport>
@@ -66,16 +100,20 @@ export default function Demo(): ReactNode {
             </div>
             <div style={{ position: "absolute", insetBlockEnd: "calc(var(--xh-space-6) * 3)", insetInline: 0, zIndex: 1, display: "flex", justifyContent: "center", gap: "var(--xh-space-2)" }}>
               {items.map((item, i) => (
-                <button
+                <XhImageRoot
                   key={item.src}
-                  type="button"
+                  src={item.src}
+                  alt=""
+                  role="button"
+                  tabIndex={0}
                   aria-label={`第 ${i + 1} 张：${item.alt}`}
                   aria-current={i === index ? "true" : undefined}
-                  style={{ border: "none", padding: 0, background: "none", cursor: "pointer", borderRadius: "var(--xh-shape-inset)", outlineOffset: "var(--xh-ring-offset)", outline: i === index ? "var(--xh-ring-width) solid currentColor" : "none", opacity: i === index ? 1 : 0.6 }}
+                  style={{ ...railStyle, outline: i === index ? "var(--xh-ring-width) solid currentColor" : undefined, opacity: i === index ? 1 : 0.6 }}
                   onClick={() => setIndex(i)}
+                  onKeyDown={onPress(() => setIndex(i))}
                 >
-                  <img src={item.src} alt="" style={{ inlineSize: "64px", aspectRatio: "4/3", objectFit: "cover", borderRadius: "var(--xh-shape-inset)", display: "block" }} />
-                </button>
+                  <XhImageImage />
+                </XhImageRoot>
               ))}
             </div>
             <XhImageViewerToolbar>

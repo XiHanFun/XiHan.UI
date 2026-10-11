@@ -8,7 +8,17 @@ import {
   minimalSoundTheme,
   softSoundTheme,
 } from "@xihan-ui/sound";
-import { XhButton, XhRadioGroupRoot, XhSwitch } from "@xihan-ui/vue";
+import {
+  XhButton,
+  XhRadioGroupRoot,
+  XhSliderControl,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+  XhSwitch,
+} from "@xihan-ui/vue";
 import { onBeforeUnmount, ref, watch } from "vue";
 
 const themes: Record<string, SoundTheme> = {
@@ -26,11 +36,12 @@ const options = [
 // 建播放器不碰音频上下文，等第一次真的发声才建，放 setup 里是安全的
 const player = createSoundPlayer();
 const theme = ref("default");
-const volume = ref(0.5);
+// 滑块的值恒为数组，单滑块只有一项
+const volume = ref<[number]>([0.5]);
 const enabled = ref(true);
 
 watch(theme, name => player.setTheme(themes[name] ?? defaultSoundTheme));
-watch(volume, value => player.setVolume(value));
+watch(volume, ([value]) => player.setVolume(value));
 watch(enabled, on => player.setEnabled(on));
 
 onBeforeUnmount(() => player.dispose());
@@ -45,10 +56,22 @@ onBeforeUnmount(() => player.dispose());
         label="主题"
         name="sound-theme"
       />
-      <label style="display: flex; align-items: center; gap: 8px">
-        音量
-        <input v-model.number="volume" type="range" min="0" max="1" step="0.05">
-      </label>
+      <XhSliderRoot
+        :value="volume"
+        :min="0"
+        :max="1"
+        :step="0.05"
+        style="inline-size: var(--xh-control-w)"
+        @update:value="volume = $event as [number]"
+      >
+        <XhSliderLabel>音量</XhSliderLabel>
+        <XhSliderControl>
+          <XhSliderTrack>
+            <XhSliderRange />
+          </XhSliderTrack>
+          <XhSliderThumb />
+        </XhSliderControl>
+      </XhSliderRoot>
       <label style="display: flex; align-items: center; gap: 8px">
         出声
         <XhSwitch v-model:checked="enabled" />

@@ -36,5 +36,5 @@ const tags = ref<string[]>(["前端", "组件库", "无障碍"]);
       <XhTagsInputInput />
     </XhTagsInputControl>
   </XhTagsInputRoot>
-  <p>当前：{{ tags.length ? tags.join("、") : "（无）" }}</p>
+  <p data-demo-output>当前：{{ tags.length ? tags.join("、") : "（无）" }}</p>
 </template>

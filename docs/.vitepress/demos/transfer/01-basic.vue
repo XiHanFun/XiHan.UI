@@ -70,7 +70,7 @@ const value = ref<string[]>(["read"]);
       </XhTransferTargetPanel>
     </XhTransferRoot>
 
-    <p style="margin-block-start: 12px; font-size: 13px">
+    <p data-demo-output>
       已选：{{ value.length ? value.join("、") : "（无）" }}
     </p>
   </div>
