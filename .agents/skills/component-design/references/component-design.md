@@ -911,7 +911,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 手势 | 拖拽跟手、松手归位、快甩、越界回弹 | `translate`、`scale`（`scale-drag`） | 跟手无过渡；松手用弹簧并交接松手速度（§9.11）：归位与快甩 `smooth`、越界回弹 `stiff` | 瞬时归位 |
 | 循环 | 转圈、微光、脉冲、光标、不定进度、呼吸（§9.12） | `rotate`、`background-position`、`opacity`、`translate`；呼吸只动 `opacity`、`scale` | 循环时长 / `loop`；呼吸 `loop-breathe` / `breathe` | 停止并显示静态替代 |
 | 注意 | 抖动、脉冲强调 | — | 只在 `@xihan-ui/animations` 中使用：`attention`，摆幅以 `--xh-motion-distance-md` 为准 | 不播放 |
-| 数据 | 图表入场、更新、退出（§9.10） | 几何参数、`scale`、`stroke-dashoffset`、`opacity` | 入场 `reveal` / `enter-strong`，描线 `reveal` / `continuous`；更新与删除 `morph` / `continuous`；淡入 `enter` | 几何瞬时，淡变保留 |
+| 数据 | 图表入场、更新、退出（§9.10） | 几何参数、`scale`、`stroke-dashoffset`、`opacity` | 入场 `reveal` / `enter`，描线 `reveal` / `continuous`；更新与删除 `morph` / `continuous`；淡入 `enter` | 几何瞬时，淡变保留 |
 | 氛围 | 动态背景、跑马灯 | 着色器时间轴、`translate` | 由速度决定 | 冻结或停止 |
 
 表中时长省略前缀 `--xh-motion-duration-`，缓动省略前缀 `--xh-motion-ease-`；弹簧名是 `@xihan-ui/motion` 的预设，由令牌生成。
@@ -1043,15 +1043,16 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 | 场景 | 做法 | 时长 / 缓动 |
 | --- | --- | --- |
-| 柱入场 | `scale` 沿值轴从 0 到 1，原点在基线 | `reveal` / `enter-strong` |
+| 柱入场 | `scale` 沿值轴从 0 到 1，原点在基线 | `reveal` / `enter` |
 | 折线描出 | 共享关键帧 `xh-draw`（`pathLength="1"` + `stroke-dashoffset`） | `reveal` / `continuous` |
-| 扇区扫开 | 饼图与旭日图同一手势：扇区收在整圈的起始角上，起止角一起按比例放开 | `reveal` / `enter-strong` |
+| 扇区扫开 | 饼图与旭日图同一手势：扇区收在整圈的起始角上，起止角一起按比例放开 | `reveal` / `enter` |
 | 数据更新、图例切换 | JS 参数插值（按几何参数插值，不按路径字符串插值），坐标轴刻度同步插值 | `morph` / `continuous` |
 | 点、标签淡入 | 淡入 | `enter` / `enter` |
 | 条目删除 | 收回基线并淡出后移除，与邻居的重排同一段 | `morph` / `continuous` |
 | 缩放换窗 | 一步到位的换窗（键盘缩放、滚轮一格、点缩放条、命令式）从当前帧补间到新窗口；拖动平移、捏合与触控板连续滑动跟手 | `move` / `continuous` |
 | 悬停、聚焦 | 不改几何，只换状态属性 | `micro` / `enter` |
 
+- 入场是一段长时长（`reveal` 960ms）配平缓的 `enter` 减速曲线：位移摊在整段里，读者看得清标记是长出来的；`enter-strong` 把位移压在头一两百毫秒，一张图一闪就画完。
 - 错开按系列（直角坐标图与雷达图的多系列同一规则），最多 5 步；同一系列内的点不错开。
 - 首次挂载播放入场；重取数据后的变化按「更新」处理，不再次播放入场。
 - 十字准线与提示框跟随指针时不做位置过渡。

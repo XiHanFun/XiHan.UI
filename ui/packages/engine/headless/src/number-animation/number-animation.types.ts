@@ -40,7 +40,7 @@ export interface NumberAnimationSchema extends MachineSchema {
     duration?: number
     /**
      * 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串；认不出的写法在起跑时报错。
-     * 不写按数值角色取令牌：首次滚动取 enter-strong，换目标取 continuous。
+     * 不写按数值角色取令牌：首次滚动取 enter，换目标取 continuous。
      */
     easing?: NumberAnimationEasing
     /** 小数位，默认 0。夹进 [0, 20]；每一帧都按这个位数铺字。 */

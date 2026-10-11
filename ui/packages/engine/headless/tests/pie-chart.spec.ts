@@ -367,7 +367,8 @@ describe('过渡', () => {
     // 整圈按同一个比例放开：前一块的终点就是后一块的起点
     mid.slice(1).forEach((arc, i) => expect(arc.startAngle).toBeCloseTo(mid[i]!.endAngle, 9))
 
-    vi.advanceTimersByTime(1000)
+    // 入场 960ms 扫完整圈，中心再淡入，2s 后一定走完
+    vi.advanceTimersByTime(2000)
     expect(rig.api().scene).toBe(target)
     expect(rig.api().center.value).toBe('100')
     expect((rig.api().getCenterProps() as Dict)['data-drawing']).toBeUndefined()

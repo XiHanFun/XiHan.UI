@@ -83,7 +83,7 @@ export const hierarchyChartMachine = createMachine({
         transition: {
           entry: hierarchyEntryScene,
           stagger: false,
-          revealEasing: 'enter-strong',
+          revealEasing: 'enter',
         },
       }),
       // 换根后指针下的那个节点多半已经不在原处：清掉悬停，等指针再动一下重新命中

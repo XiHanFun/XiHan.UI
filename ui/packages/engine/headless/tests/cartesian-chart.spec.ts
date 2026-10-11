@@ -689,7 +689,8 @@ describe('过渡', () => {
       expect(h).toBeLessThan(finals[i]!)
     })
 
-    vi.advanceTimersByTime(1000)
+    // 入场 960ms 再加系列错开，2s 后一定走完
+    vi.advanceTimersByTime(2000)
     expect(rig.api().scene).toBe(target)
     expect((rig.api().getMarkProps(line) as Dict)['data-drawing']).toBeUndefined()
   })

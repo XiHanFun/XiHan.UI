@@ -68,7 +68,7 @@ export const radarChartMachine = createMachine({
         transition: {
           entry: radarEntryScene,
           stagger: true,
-          revealEasing: 'enter-strong',
+          revealEasing: 'enter',
         },
       }),
       notifyActive: (params) => {

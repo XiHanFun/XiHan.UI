@@ -19,7 +19,7 @@ function rootOf(scope: Scope): HTMLElement | null {
 
 /**
  * 这一轮的时长与曲线。给了 duration / easing 就用给的（duration 夹到非负，0 即一步到位）；没给按数值角色取令牌，
- * 与图表里的数字同一口径：首次滚动（挂载、换起点之后的那一轮）是入场，取 reveal 与 enter-strong；
+ * 与图表里的数字同一口径：首次滚动（挂载、换起点之后的那一轮）是入场，取 reveal 与 enter；
  * 换目标是更新，取 morph 与 continuous。令牌从根节点所在的作用域读，没有渲染宿主时取令牌表的缺省值。
  */
 function runTiming(
@@ -31,7 +31,7 @@ function runTiming(
   const root = rootOf(scope)
   const motion = root ? readMotion(root) : null
   const durationName = entry ? 'reveal' : 'morph'
-  const easingName = entry ? 'enter-strong' : 'continuous'
+  const easingName = entry ? 'enter' : 'continuous'
   return {
     duration: duration != null && Number.isFinite(duration)
       ? Math.max(0, duration)
