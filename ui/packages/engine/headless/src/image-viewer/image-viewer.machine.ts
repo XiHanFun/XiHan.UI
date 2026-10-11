@@ -291,6 +291,8 @@ export const imageViewerMachine = createMachine({
           { target: 'open', actions: ['invokeOnOpen'] },
         ],
         'CONTROLLED.OPEN': { target: 'open' },
+        // 收起时也收换下标：缩略图墙上点哪一张，先把下标换过去再展开，看片层一打开就是那一张
+        'INDEX.SET': { actions: ['setIndex'] },
       },
     },
     open: {

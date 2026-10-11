@@ -34,7 +34,7 @@ function blobOf(index: number): () => Promise<Blob> {
 
 <template>
   <XhImageViewerRoot v-slot="{ index, setIndex, setOpen }" :collection="items">
-    <!-- 缩略图与浮层里那排缩略图都是图片补上按钮角色，Enter 与 Space 也能按；从外面打开时先展开再换下标，收起时换图不生效 -->
+    <!-- 缩略图与浮层里那排缩略图都是图片补上按钮角色，Enter 与 Space 也能按；从外面打开时先换下标再展开，一打开就是那一张 -->
     <div style="display: flex; gap: var(--xh-space-2)">
       <XhImageRoot
         v-for="(item, i) in items"
@@ -46,12 +46,12 @@ function blobOf(index: number): () => Promise<Blob> {
         :aria-label="`查看 ${item.alt}`"
         style="--xh-image-w: 120px; --xh-image-ratio: 4 / 3; cursor: zoom-in"
         @click="
-          setOpen(true);
           setIndex(i);
+          setOpen(true);
         "
         @keydown.enter.space.prevent="
-          setOpen(true);
           setIndex(i);
+          setOpen(true);
         "
       >
         <XhImageImage />
