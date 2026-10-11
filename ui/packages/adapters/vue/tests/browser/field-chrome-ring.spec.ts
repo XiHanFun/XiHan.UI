@@ -55,6 +55,9 @@ describe('字段外壳聚焦', () => {
     const rest = resolveColor('var(--xh-border-control)', control)
     const focus = resolveColor('var(--xh-border-control-focus)', control)
     expect(focus).not.toBe(rest)
+    // Tab 经 CDP 往返，CI 并行负载下回来时 micro 档的换色已经播完，「描边在淡变」随机判不过。
+    // 外壳的过渡直接取这支令牌，在宿主上拉长；断完由 finish() 播完
+    host!.style.setProperty('--xh-motion-duration-micro', '10s')
 
     await userEvent.tab()
     const transitions = control.getAnimations()
@@ -65,7 +68,8 @@ describe('字段外壳聚焦', () => {
     // 起点是静息的控件边；终点读终值（关键帧按插值色空间序列化，与计算色写法不同）
     expect((border!.effect as KeyframeEffect).getKeyframes().at(0)?.borderTopColor).toBe(rest)
 
-    await Promise.all(transitions.map(animation => animation.finished))
+    for (const animation of transitions)
+      animation.finish()
     const style = getComputedStyle(control)
     expect(style.borderTopColor).toBe(focus)
     expect(style.backgroundColor).toBe(resolveColor('var(--xh-bg-surface)', control))
