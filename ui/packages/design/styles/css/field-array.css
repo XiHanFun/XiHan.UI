@@ -72,8 +72,11 @@
   }
 
   /* 行里放什么控件归作者，这里只给它一条能撑开也能收窄的轨道。
-     min-inline-size 归零：不写的话里面的输入框按 UA 默认宽度顶住，长内容会把整行撑破 */
+     min-inline-size 归零：不写的话里面的输入框按 UA 默认宽度顶住，长内容会把整行撑破。
+     字段族控件放进来铺满这条轨道，与放进 Field 时一样；并排几个就平分，各自的压缩底线照旧 */
   [data-scope='field-array'][data-part='item-content'] {
+    --xh-control-w: 100%;
+
     display: flex;
     flex: 1 1 auto;
     align-items: center;

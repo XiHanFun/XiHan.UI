@@ -7,6 +7,9 @@ import {
   XhFieldArrayItemContent,
   XhFieldArrayItemDeleteTrigger,
   XhFieldArrayRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -24,17 +27,19 @@ function setAt(index: number, next: string) {
     :min="2"
     :max="4"
     :create-item="() => ''"
-    style="max-inline-size: 420px"
+    style="inline-size: 100%; max-inline-size: 420px"
   >
     <XhFieldArrayItem v-for="row in items" :key="row.key" :index="row.index">
       <XhFieldArrayItemContent>
-        <input
-          class="xh-demo-control"
-          style="inline-size: 100%"
+        <XhTextFieldRoot
           placeholder="填一个选项"
           :value="row.value"
-          @input="setAt(row.index, ($event.target as HTMLInputElement).value)"
+          @update:value="(next: string) => setAt(row.index, next)"
         >
+          <XhTextFieldControl>
+            <XhTextFieldInput />
+          </XhTextFieldControl>
+        </XhTextFieldRoot>
       </XhFieldArrayItemContent>
       <XhFieldArrayItemAction>
         <XhFieldArrayItemDeleteTrigger />

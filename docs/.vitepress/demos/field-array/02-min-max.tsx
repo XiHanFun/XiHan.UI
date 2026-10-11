@@ -7,6 +7,9 @@ import {
   XhFieldArrayItemContent,
   XhFieldArrayItemDeleteTrigger,
   XhFieldArrayRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
 } from "@xihan-ui/react";
 import { useState } from "react";
 
@@ -24,20 +27,22 @@ export default function Demo(): ReactNode {
       min={2}
       max={4}
       createItem={() => ""}
-      style={{ maxInlineSize: "420px" }}
+      style={{ inlineSize: "100%", maxInlineSize: "420px" }}
     >
       {({ items }) => (
         <>
           {items.map(row => (
             <XhFieldArrayItem key={row.key} index={row.index}>
               <XhFieldArrayItemContent>
-                <input
-                  className="xh-demo-control"
-                  style={{ inlineSize: "100%" }}
+                <XhTextFieldRoot
                   placeholder="填一个选项"
                   value={row.value as string}
-                  onChange={event => setAt(row.index, event.target.value)}
-                />
+                  onValueChange={details => setAt(row.index, details.value)}
+                >
+                  <XhTextFieldControl>
+                    <XhTextFieldInput />
+                  </XhTextFieldControl>
+                </XhTextFieldRoot>
               </XhFieldArrayItemContent>
               <XhFieldArrayItemAction>
                 <XhFieldArrayItemDeleteTrigger />

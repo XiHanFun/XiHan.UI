@@ -9,6 +9,9 @@ import {
   XhFieldArrayMoveDownTrigger,
   XhFieldArrayMoveUpTrigger,
   XhFieldArrayRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
 } from "@xihan-ui/react";
 import { useState } from "react";
 
@@ -33,7 +36,7 @@ export default function Demo(): ReactNode {
       onValueChange={details => setHeaders(details.value as Header[])}
       movable
       createItem={() => ({ name: "", value: "" })}
-      style={{ maxInlineSize: "480px" }}
+      style={{ inlineSize: "100%", maxInlineSize: "480px" }}
     >
       {({ items }) => (
         <>
@@ -42,20 +45,24 @@ export default function Demo(): ReactNode {
             return (
               <XhFieldArrayItem key={row.key} index={row.index}>
                 <XhFieldArrayItemContent>
-                  <input
-                    className="xh-demo-control"
-                    style={{ inlineSize: "40%" }}
+                  <XhTextFieldRoot
                     placeholder="字段名"
                     value={header.name}
-                    onChange={event => patch(row.index, "name", event.target.value)}
-                  />
-                  <input
-                    className="xh-demo-control"
-                    style={{ inlineSize: "60%" }}
+                    onValueChange={details => patch(row.index, "name", details.value)}
+                  >
+                    <XhTextFieldControl>
+                      <XhTextFieldInput />
+                    </XhTextFieldControl>
+                  </XhTextFieldRoot>
+                  <XhTextFieldRoot
                     placeholder="字段值"
                     value={header.value}
-                    onChange={event => patch(row.index, "value", event.target.value)}
-                  />
+                    onValueChange={details => patch(row.index, "value", details.value)}
+                  >
+                    <XhTextFieldControl>
+                      <XhTextFieldInput />
+                    </XhTextFieldControl>
+                  </XhTextFieldRoot>
                 </XhFieldArrayItemContent>
                 <XhFieldArrayItemAction>
                   <XhFieldArrayMoveUpTrigger />
