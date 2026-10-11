@@ -71,9 +71,18 @@ function applyMove(nodes: TreeNode[], move: { value: string, parent: string | nu
   return insert(rest, null)
 }
 
+/** 把宿主里在播的过渡一次播完。 */
+function finish(): void {
+  for (const animation of host!.getAnimations({ subtree: true }))
+    animation.finish()
+}
+
 async function mountTree(): Promise<void> {
   host = document.createElement('div')
   host.style.inlineSize = '320px'
+  // 按键经 CDP 往返，CI 并行负载下回来时 move 档的换位已经滑完，「刚落下仍在途中」随机判不过。
+  // 行的 translate 过渡直接取这支令牌，在宿主上拉长；断完由 finish() 播完
+  host.style.setProperty('--xh-motion-duration-move', '10s')
   document.body.append(host)
   const Demo = defineComponent(() => {
     const collection = ref<TreeNode[]>([
@@ -116,7 +125,8 @@ describe('tree 拖放落下', () => {
     expect(y).toBeLessThan(0)
     const b = Number.parseFloat(getComputedStyle(row('b')).translate.split(' ')[1] ?? '0')
     expect(b).toBeGreaterThan(0)
-    await expect.poll(() => getComputedStyle(row('a')).translate).toBe('none')
+    finish()
+    expect(getComputedStyle(row('a')).translate).toBe('none')
   })
 
   it('换了父的节点被宿主重建，也按节点值认回、从旧位置滑过去', async () => {
@@ -129,7 +139,8 @@ describe('tree 拖放落下', () => {
     const moved = row('d')
     const [x] = getComputedStyle(moved).translate.split(' ')
     expect(Number.parseFloat(x ?? '0')).toBeGreaterThan(0)
-    await expect.poll(() => getComputedStyle(row('d')).translate).toBe('none')
+    finish()
+    expect(getComputedStyle(row('d')).translate).toBe('none')
   })
 
   it('落点线与 Table 同一种颜色令牌（暗色下焦点色与品牌实心分成两档，两种令牌在这里才分得开）', async () => {
