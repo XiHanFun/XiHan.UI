@@ -1,5 +1,446 @@
 # @xihan-ui/styles
 
+## 4.0.0
+
+### Major Changes
+
+- cda1da2: Accordion 缺省形态由 ghost 改为 outline（一块描边面）；不想要外框时显式写 `variant="ghost"`。标题栏收紧为上下 10px 加一行正文行高（md 41px）、横向 12px，展开项字重 500，指示器 16px、弱一档前景；正文改为淡底、正文色、14px，上下各 8px，展开时与标题栏之间一条分隔线；条与条之间的分隔线改为 border-default 通栏。新增覆盖槽 `--xh-accordion-content-bg`、`--xh-accordion-content-pt`、`--xh-accordion-trigger-font-weight-open`。
+- bf3a362: Alert 改为语气淡底面：透明边位 + 语气 12% 淡底、圆角取 control（2px）、纵向内距 8px；标题改取正文色，彩色只留在底与图标上；关闭钮的悬停 / 按下面沿语气淡底升一档、两档。通栏同样不画边。
+- b209ccc: Avatar / AvatarGroup 回退面改：
+
+  - 回退字号取直径的一半（md 32px → 16px），三档随直径缩放；头像组同理，「+N」随之
+  - 底改为 `--xh-bg-subtle-active-opaque`、字改为 `--xh-fg-default`（亮暗两档对比都过 4.5:1）；「+N」同一副面
+  - 头像组三档叠放量统一为 8px
+
+- 71b79c1: BackTop 改尺：
+
+  - 新增语义令牌 `--xh-control-float-md`（40px，紧凑 36px）：独立浮在页面一角的圆钮 md 档的直径
+  - 回到顶部钮 md 档取它（sm / lg 仍取 `--xh-control-box-sm` / `-lg`），字形 sm / md 16px、lg 20px；贴视口尾下角由 32px 改为 24px
+  - 缺省面不变（中性描边浮层面）
+
+- a49fe15: Breadcrumb 兜底分隔符由向前的尖角改为一条斜线（新增字形令牌 `--xh-glyph-mark-slash`，RTL 下不翻转），取最弱一档前景；链接悬停字改为品牌色、按下改深一档品牌色（新增覆盖槽 `--xh-breadcrumb-link-fg-pressed`），链接与折叠触发器盒至少 24px 高（新增 `--xh-breadcrumb-link-h`）；列表间距收为 2 / 4 / 8px，md 文字到分隔符一共 8px。
+- dc25a8b: 气泡族（Popover、Popconfirm、HoverCard）改排版：
+
+  - 内衬由四边等宽改为纵 12 横 16（`sm` 纵 8 横 12、`lg` 纵 16 横 20），横向比纵向高一档；新增语义令牌 `--xh-surface-pad-xl`（20px，紧凑 16px）
+  - 标题字重由 semibold 改为 medium（14px / 500 / 正文色）；说明改为气泡正文，取正文字号 14px、次级色
+  - 面内行距由 8px 收到 4px；Popconfirm 两颗钮之间仍隔 8px，并与上面的文字隔开 16px（新增使用者槽 `--xh-popconfirm-column-gap`、`--xh-popconfirm-action-mt`；列距没单独写时先回落到 `--xh-popconfirm-gap`，只写 gap 槽仍是行列一起改）
+
+- 8cd4faa: CalendarPicker 与 CalendarRangePicker 的格子与标题栏改版：标题栏改为上下 8px、左右 16px 内衬，下沿一道 1px 通栏分隔线（新增覆盖槽 `--xh-<组件>-header-py / -header-px / -header-border`），标题字重 600 → 500；年 / 月钮 24px 高、悬停换浅底而字色不变（退役 `--xh-<组件>-heading-trigger-fg-hover`，新增 `-heading-trigger-bg-hover`）；四颗翻页钮改为 24px 见方的圆（Action Control xs 档）。网格改为上下 12px、左右 16px 内衬（`-grid-py / -grid-px`），标题栏与网格、星期行与首行之间不再留空当；星期行 32px 高、正文字号常规字重；每列不窄于中号控件高（`-cell-min-w`），周期视图与日视图同宽。
+
+  日期格改为 24px 见方的圆，格子上下各 6px 内衬撑出 36px 行距（`-cell-py / -cell-px` 取代 `-cell-gap`），命中区铺满整格，按下只换面不缩放；邻月日字重回到常规（`-cell-font-weight-outside`）。今天改为数字下方一颗 4px 品牌圆点、数字保持正文色（`-today-mark-size / -today-mark-bg` 取代 `-today-bg / -today-border / -today-fg`），强制色下取系统前景、打印改由描边画满。不可用的日子铺整格淡底横条，相邻几天连成一条带（`-cell-bg-disabled / -disabled-inset`），不可用又选中的格退到再深一档的中性面。月 / 季 / 年格铺满格宽（左右各让 4px，`-period-px`）、24px 高、控件圆角，格间不留缝（退役 `-period-py`、`-year-grid-pe`）。
+
+  范围日历的区间轨道改为 32px 高（`--xh-calendar-range-picker-range-inset`，行距上下各收 2px），两端收成半圆帽，跨周折行处是直边（退役 `-range-row-radius`）；月份区间在一行里连成一条；强制色下落定的区间中段在轨道上下沿画实线。
+
+  Headless 的日历格与日期钮带上 `data-view`（当前视图），翻页钮、标题钮与日期格的 `data-xh-action-size` 由 `sm` 改为 `xs`。
+
+- 1cec0bd: Card 改为头部条 + 正文的版式：
+
+  - 根不再留内衬与段间距（`--xh-card-gap` 缺省改为 0，`--xh-card-p` 改为各部件四边同值的内衬），直接放进根的媒体贴边铺满
+  - 根下的 header 是一条头部条：一行标题时最小高 46px（紧凑密度 40px），横向内距 16px，底边一道 1px `--xh-border-subtle` 内部分隔线；标题取区块标题档 `--xh-text-heading-3-size` / `-weight`、正文色
+  - content 四边内距 16px（紧凑密度纵向 12px）、14px 次级色；根下的 footer 与正文同起点、底边留同档内距
+  - 新增语义令牌 `--xh-surface-header-h`（46px，紧凑 40px），新增覆盖槽 `--xh-card-header-h`、`--xh-card-header-py`、`--xh-card-header-border`、`--xh-card-content-fg`、`--xh-card-content-font-size`
+  - 皮肤体积因头部条与各部件内衬增长约 12%，已重落 card.css 的体积基线
+
+- 19d00aa: Carousel 控制件收小：翻页与播放钮视觉盒由 floating md 改取细指针最小目标 `--xh-control-target-min`（24px，不随密度收），字形 16px，面仍是浮层材质；分页点直径 8px → 6px、点距 4px → 8px，当前页仍拉长成 20px 品牌胶囊。细指针下分页点的命中区两向都补足到 24px。
+- 6955685: Cascader 列与面板的最小宽改为新增令牌 `--xh-overlay-cascade-min-w`（7.5rem，比菜单窄一档）；列与列、搜索框、底栏的分隔线改为实体面的描边档；分组标题改弱一档前景、400 字重；分支箭头在 16px 盒里只画 12px、改次级前景；空态与在途占位撑到一列高（新增覆盖槽 `--xh-cascader-empty-min-h`、`--xh-cascader-loading-min-h`），文字改弱一档前景，加载环改品牌色（`--xh-cascader-loading-ring-fg`）；底栏横向内距与字号随条目档。
+- 7993a65: Collapsible 触发器收紧为上下 10px 加一行正文行高（md 41px）、横向 12px，展开时字重 500，指示器 16px、弱一档前景；正文改为正文色、14px，上下各 8px。新增覆盖槽 `--xh-collapsible-content-pt`、`--xh-collapsible-trigger-font-weight-open`。
+- 0871013: ColorPicker 面板改宽、取色区贴顶通栏：
+
+  - 面板宽 12rem → `--xh-overlay-max-w-sm`（16rem），限高 `--xh-viewport-h-md` → `--xh-viewport-h-lg`
+  - 取色区高改读新增语义令牌 `--xh-overlay-color-area-h`（11rem，原 9rem）；排在面板最前时贴着顶边通栏、不取圆角
+  - 取色区拇指 14px → `--xh-control-indicator-md`（16px）；面板里两条滑块的拇指 18px → 16px，改为白盘 + 1px 描边 + 正中 8px 当前色点（只在取色器里，不动普通滑杆与 ColorSlider 独立件的拇指）
+  - 色板区上方一条通栏分隔（`--xh-material-solid-border`）；预设色块 28px → 16px、间距 4px → 8px（16px 的格子要 24px 间距才过目标尺寸的间隔例外），粗指针下格子回到 `--xh-control-h-sm`
+  - 通道输入照字段外壳：`--xh-bg-field` 底、高 `--xh-control-action-size`、12px 字；悬停描边升 `--xh-border-strong`；聚焦换承载面底与聚焦描边、不画环（强制色补 Highlight 环）
+  - 「添加」钮高改取 `--xh-control-action-size`
+  - ColorSlider 色条描边 `--xh-border-subtle` → `--xh-border-default`；透明度棋盘格与 Swatch 家族配方的棋盘格由 `neutral-300` 原语改为 `--xh-bg-subtle`
+
+- b0170b8: Command 结果列表改通栏行：列表左右不留内衬、上下 4px，命令行不切圆角；分组之间 8px，分组标题改弱一档前景、400 字重；检索框下沿与底栏上沿的分隔线改为材质描边档。
+- 01c77ac: DatePicker 浮层改版：面板自己不留内衬（`--xh-date-picker-content-py / -content-px` 缺省 0），标题栏与网格的内衬由日历给；浮层里的日历标题取常规字重（新增 `--xh-date-picker-heading-font-weight`）。两张日历并排不再画竖线、不另留空当，两条标题栏的分隔线首尾相接（退役 `--xh-date-picker-panel-gap / -panel-divider`）；日历与时间区、快捷选项列之间的分隔线改取 border-default 档。
+
+  快捷选项改为 24px 高的淡底小钮：静息淡底、悬停 / 高亮 200、按下 300，字取 12px 次级前景，悬停 / 高亮 / 按下时换正文色（新增 `-preset-fg-hover`，暗色下 200 / 300 档底上次级前景不足 4.5:1）；选中仍画末端对号（12px），面与字重不变。快捷选项列内衬 10 / 8px、项距 10px（`-preset-group-py / -preset-group-px` 取代 `-preset-group-padding`；新增 `-preset-bg / -preset-fg / -preset-h / -preset-font-size`，退役 `-preset-py / -preset-fg-selected`）。
+
+  时间列：时间格改为 24px 高的通栏条、不取圆角，列内间距 8px 撑出 32px 行距，不再随尺寸档变高，命中区向上下各补半个间距、格与格之间的缝不落空；列顶的上沿描边接着标题栏分隔线画过去，列与列之间不画线；列底留白让末尾几格也能滚到列顶（`-time-column-py` 取代 `-time-column-padding`，退役 `-time-item-py`）。`--xh-overlay-calendar-column-h` 改为与新日历网格同高（宽松 272px、紧凑 244px）。
+
+  确认钮改为 24px 高的小号主钮（headless 的 `data-xh-action-size` 由 `sm` 改为 `xs`），字取 12px（新增 `-confirm-trigger-font-size`）；直接排在面板里时自带 8px 外边距（`-confirm-trigger-margin`）。
+
+- 43f63a1: 日期范围选择器的缺省宽改为与别的字段一致（`--xh-control-w`），不再按内容撑开：放在一排筛选条件里不比相邻的字段宽出一截。
+
+  起止两组按日带时刻的段位放不进时，两组按各自内容宽一起收、各在组内裁掉放不下的段位，键盘走到被裁的段位时组跟着滚过去；分隔符与日历钮始终留在框里，不再出现终点那组被挤成零宽、日历钮冒出框外。要整段露出，经 `--xh-date-range-picker-control-w` 钉宽。
+
+- 4ba24e3: DateRangePicker 浮层与 DatePicker 同一套改版：面板自己不留内衬（`--xh-date-range-picker-content-py / -content-px` 缺省 0），浮层里的日历标题取常规字重（新增 `-heading-font-weight`）；两张日历并排不画竖线、不另留空当，两条标题栏分隔线首尾相接（退役 `-panel-gap / -panel-divider`）；快捷选项改为 24px 高的淡底小钮（静息淡底、悬停 200、按下 300，12px 次级前景、交互时换正文色（新增 `-preset-fg-hover`），选中仍画 12px 末端对号），列内衬 10 / 8px、项距 10px（`-preset-group-py / -preset-group-px` 取代 `-preset-group-padding`；新增 `-preset-bg / -preset-fg / -preset-h / -preset-font-size`，退役 `-preset-py / -preset-fg-selected`）。
+
+  showTime 的起止两组时间列：小标题占满与日历标题栏等高的顶带，时间列顶边的描边接着标题栏分隔线画过去；竖线改画在每一组的行内起始边（日历与起点组、起点组与终点组之间各一道），组内列与列之间不画线，两组之间不另留空当（`-column-group-gap` 缺省 0）；时间格改为 24px 高的通栏条、不取圆角，列内间距 8px（命中区向上下各补半个间距，缝里不落空），列底留白让末尾几格也能滚到列顶（`-time-column-py` 取代 `-time-column-padding`，退役 `-time-item-py`）。
+
+  确认钮改为 24px 高的小号主钮（headless 的 `data-xh-action-size` 由 `sm` 改为 `xs`），字取 12px（新增 `-confirm-trigger-font-size`），直接排在面板里时自带 8px 外边距（`-confirm-trigger-margin`）。
+
+- 28a8455: 日期范围选择器带时刻时，「开始时间」「结束时间」两组小标题改为同一副样式，与时间范围选择器一致：此前正在编辑的那一端换正文色加中等字重，并排的两个标题一深一浅，读起来像一个可用、一个不可用。随之撤掉不再有人读的两个覆盖槽 `--xh-date-range-picker-column-group-label-fg-active` 与 `--xh-date-range-picker-column-group-label-font-weight-active`；正在编辑的那一端仍投影 `data-editing`，需要强调的可以按它自己写样式。
+- e6534d5: Descriptions 格与格之间改为行距 8px、列距 20px（sm 4 / 16，lg 16 / 24）；标签在左时与取值隔 20px；标签字重改 500；三档字号统一为正文字号。描边档单元格内距改为上下 6px、左右 20px，格线改为 border-default；标签在左时标签单成一列淡底格、与取值之间一条竖线（新增覆盖槽 `--xh-descriptions-label-bg`）。
+- abcd109: Dialog 改为实体 sheet 面与贴边分隔的三段：
+
+  - 去掉头部渐变与顶光，面就是 1px 描边 + 不透明底 + 单层投影；删除使用者槽 `--xh-dialog-highlight`、`--xh-dialog-header-bg`、`--xh-dialog-content-lens-bg`、`--xh-dialog-content-lens-depth`、`--xh-dialog-header-lens-depth`
+  - 分三段时内衬由三段各给：头部是一条 48px 的带（紧凑 44px）、横向 20px，正文纵 24 横 20，尾段纵 16 横 20；头下、尾上的 1px 分隔线贴着面板两侧的边。新增使用者槽 `--xh-dialog-header-pt/-px`、`--xh-dialog-body-py/-px`、`--xh-dialog-footer-py/-px`
+  - 不分三段时标题行落在顶上 48px 带的中线上，横向内衬 20px
+  - 关闭钮的叉改为 12px，钮距右 16px、竖向落在头部带中线上
+  - 新增语义令牌 `--xh-overlay-header-h`、`--xh-overlay-sheet-px`、`--xh-overlay-sheet-body-py`、`--xh-overlay-sheet-footer-py` 与 `--xh-glyph-size-xs`（12px）
+
+- 8e7f397: Drawer 改为贴边实体面与贴边分隔的三段：
+
+  - 贴边面不取圆角（`--xh-drawer-radius` 缺省改为 0，写了仍只圆朝向页面那两个角）
+  - 分三段时面板一层只让出安全区，设计内衬由三段各给：头部是一条 48px 的带（紧凑 44px），三段横向 16px，正文纵 12、尾段纵 16；头下、尾上各一条贴边的 1px 分隔线（新增使用者槽 `--xh-drawer-separator`、`--xh-drawer-header-pt/-px`、`--xh-drawer-body-py/-px`、`--xh-drawer-footer-py/-px`）
+  - 不分三段时标题行落在顶上 48px 带的中线上，内衬横向 16px、底部 16px
+  - 关闭钮的叉改为 12px，钮距右 16px、竖向落在头部带中线上；标题行高钉在 normal
+
+  `drawer.css` 去注释后由 15345 字节涨到 17294 字节（约 13%），涨在三段各自的内衬与分隔线规则、安全区与头部带的私有槽；体积基线同步重落了本轮改过的六份浮层皮肤。
+
+- c4ffcb6: Editable 预览态的盒改为无壳：
+
+  - control 的 `data-variant` 在预览态恒为 `ghost`（读起来就是一段文字，悬停才浮出描边），进编辑态才换成 root 的形态（缺省 `outline`）；root 的 `data-variant` 不变
+  - 编辑、确认、取消三颗钮的字形取次要前景 `--xh-fg-muted`；视觉盒仍按字段内钮尺寸表随档（sm / md / lg 取 24 / 28 / 32px，compact 20 / 24 / 28px），确认与取消之间新隔 4px（`--xh-space-1`），紧凑 sm 档两钮中心距不低于 24px
+  - 删除动作组与内容段之间的分隔线及覆盖槽 `--xh-editable-trigger-divider`、`--xh-editable-trigger-divider-h`
+
+- 3c3067a: EmptyState 标题与说明之间收到 4px、说明到动作区多让出 4px，标题改正文行高；写了成功 / 警示 / 出错 / 提示语气时图标坐进一枚 44px 语气淡底圆、字形收到 20px（品牌语气不画圆）。新增覆盖槽 `--xh-empty-state-indicator-box`、`--xh-empty-state-indicator-radius`、`--xh-empty-state-indicator-bg`。
+- f6287ee: 字段外壳改为淡底填充、聚焦不画环：
+
+  - 新增语义令牌 `--xh-bg-field`（淡底兑一半），描边档字段静息铺这层底；悬停底不变、描边升 `--xh-border-strong`
+  - 聚焦时换成承载面 `--xh-bg-surface` + 聚焦描边，不再画聚焦环；强制色档仍补一圈 Highlight 环
+  - 校验失败铺一层 4% 失效色淡底，聚焦时让位给聚焦态
+  - 删除字段家族的 `--xh-field-ring-focus` / `--xh-field-ring-invalid` 桥接槽（配方不再读取）
+
+- 744c3f5: 字段里的已选标签（Select / Combobox / Cascader / TreeSelect / ColorPicker / DatePicker / TimePicker 的多选标签行，以及 TagsInput）：
+
+  - 盒没聚焦时淡底标签换白底 `--xh-bg-surface` + `--xh-border-default` 描边，叉悬停 / 按下走白底阶梯 100 → 200；聚焦后回到标签自己的淡底。写了语气的、禁用盒里的标签不换；`--xh-tag-*` 覆盖槽照旧优先
+  - 盒里有标签时起始内衬由控件内衬（12px）收到 4px；TagsInput 标签之间、标签与输入框之间的间距（也是折行后的行距）三档统一 4px
+  - lg 档字段里的标签字号钉在说明档 12px
+  - Tag 皮肤体积随字段宿主档上调
+
+- d8a040b: 字段内动作钮（Action Control 的 field-inset 档：清空、密码可见性、增减、就地编辑的三颗钮等）字形缩小一圈：sm / md 档由 16px 改为 12px（`--xh-control-indicator-sm`），lg 档由 20px 改为 16px（`--xh-control-indicator-md`），随密度换档；视觉盒与命中区不变。
+- f891944: 字段里的 field-inset 钮（清空、密码可见性、增减、就地编辑）按盒的承载面取悬停 / 按下阶梯：盒没聚焦时（描边档铺字段淡底、淡底档铺淡底）走淡底阶梯 `--xh-bg-subtle-hover` → `--xh-bg-subtle-active`，在淡底上看得出；聚焦后盒换成白色承载面、以及 ghost 档，仍走白底阶梯 100 → 200。
+- 5818e93: 字段标签角色改写（Field 与 TextField、Select、NumberField、Slider、Rating、FileUpload 等 26 个自带标签的字段）：
+
+  - 标签色由 `--xh-fg-default` 改为 `--xh-fg-muted`；禁用不再另变色（再淡一档与静息分不出，`--xh-fg-disabled` 对比不足），禁用由控件自己的禁用面表出
+  - 竖排时标签与控件的距离由 4px 改为 8px（`--xh-space-2`），新增各组件的 `--xh-<组件>-label-gap` 覆盖槽单独管这一段；FileUpload 的标签距离一并回到 8px
+  - 必填星号挪到标签文字之前（`::before`），取说明字号 12px；`--xh-field-label-star` / `--xh-fieldset-legend-star` 照旧管颜色
+  - Form 横排（标签左置）时标签列缺省宽由 30% 改为一行的 5 / 24，标签与控件的列距由 12px 改为 16px
+  - TreeSelect 新增 `--xh-tree-select-label-fg-disabled` 覆盖槽，与同族一致
+
+- f28e9b7: 四处自己画输入框的部件照字段外壳走，与别的字段并排时是同一家：静息字段淡底 + 控件描边，悬停描边升一档，聚焦换承载面底 + 品牌描边、不画焦点环（强制色档补一圈 Highlight 环），无效换无效淡底 + 无效描边，禁用换淡底 + 默认描边。
+
+  - 审批的备注框、问答流的备注框：静息底由承载面改为字段淡底，聚焦不再叠公共焦点环。审批备注不再画红色焦点环，随之撤掉 `--xh-approval-note-ring-invalid`；新增悬停、聚焦、无效、禁用几档的覆盖槽。
+  - 标签输入的就地编辑框：底由画布改为字段淡底，聚焦不再自画焦点环、改换品牌描边；外框无效时描边跟着换无效色。
+  - 剪贴板的只读框：聚焦（含点进去选字）换承载面底，公共焦点环不再画。
+
+- 6c63c5a: 字段外壳的多行档（TextField 的 textarea、多行 Mention）上下内衬由 8px 改为 4px（`--xh-space-1`）：一行时盒贴近本档控件高，不再比单行字段高出一截。覆盖槽 `--xh-text-field-textarea-py`、`--xh-mention-textarea-py` 与家族桥接槽 `--xh-field-textarea-padding-block` 的缺省值随之改变。
+- 57bb115: Fieldset 组标题改为区块标题一档：16px / 500（`--xh-text-heading-3-*`）+ `--xh-fg-default`，与组内首项的距离由 8px 改为 16px。组里各字段的标签是次要文字色，组标题压在它们之上高一级。
+- 3338037: FileUpload 改为淡底面：
+
+  - 拖放区：2px 虚线 → 1px 虚线，圆角取 control（2px），静息铺 `--xh-bg-subtle`、字取正文色；悬停描边升 `--xh-border-strong`、底升一档；拖入换品牌描边，底仍是中性淡底一档（不用品牌淡底）；最小高改读新增语义令牌 `--xh-dropzone-min-h`（10rem）
+  - 文件行：去掉描边（透明边位留着），底 `--xh-bg-subtle`，行内与行间距 8px → 12px；删除钮按淡底承载阶梯换面，兜底叉改取 `--xh-control-indicator-sm`
+  - 缩略图位：32px 淡底方框 → 16px 品牌色无底图标位，空着时画一枚文件字形（新增语义令牌 `--xh-glyph-mark-file`）；放进来的图标同取 16px
+  - 失败行：描边透明、底回承载面，只有文件名与警示字形取危险色，行里的删除钮跟着换回白底承载阶梯（100 → 200）；新增组件槽 `--xh-file-upload-item-bg-error`
+
+- 505e08f: FloatButton 改尺与 subtle 面：
+
+  - md 档改取 `--xh-control-float-md`（40px，紧凑 36px），sm / lg 仍取 `--xh-control-box-sm` / `-lg`；字形 sm / md 16px、lg 20px。触发器与展开组里的原生动作项同一张尺寸表
+  - subtle 档触发器三态改取不透明淡底（与原生动作项同一块面），不再透出底下的内容；原生动作项的前景改为次要字色，与触发器一致
+
+- 53a66fb: 字段辅助行与表单项距改写：
+
+  - Field / Fieldset 的说明改为 12px（`--xh-text-caption-size`）+ `--xh-fg-subtle`，禁用不另变色；错误文案改为 12px，颜色不变
+  - 说明与错误文案紧贴控件（`--xh-field-gap` 缺省改为 0），这一行辅助行最小高 20px；为错误文案预留的那一行随之是 20px
+  - Form 项距改为 20px（`--xh-space-5`），且辅助行算在项距里：带说明或预留了错误文案行的字段，那一行就是项距，不再另留；项距改由每一项的下外边距给，表单根的行间 gap 归零，最后一项不留
+  - `inline` 一行流列距改为 24px（`--xh-form-inline-gap`），新增 `--xh-form-inline-row-gap`（缺省 8px）管行距；网格档列距随 `--xh-form-gap` 改为 20px
+  - 字段集组内项距改为 20px
+  - 出错的字段不再在起始缘画色带：删除覆盖槽 `--xh-form-field-invalid-px` 与 `--xh-form-field-invalid-border`
+
+- 6c2ae2d: Highlight 命中片段改用 `--xh-bg-mark`（亮色浅黄、暗色深黄）配正文色，不再借品牌淡底与品牌字；写了语气仍换成该族。
+- dff51b7: Image 回退内容改为竖排居中：自带不透明淡底 `--xh-bg-subtle-opaque`，说明取次要字色 `--xh-fg-subtle`、12px、宽松行高，内距 8 / 16px；占位层底色改为不透明淡底 `--xh-bg-subtle-opaque`。新增组件槽 `--xh-image-fallback-bg`、`--xh-image-fallback-py`、`--xh-image-fallback-px`。
+- 5fcee67: ImageViewer 控制层改为扁平取值：
+
+  - 遮罩改取全局遮罩令牌 `--xh-bg-overlay`
+  - 底部工具条改为页面主题的实体面（亮色白面、暗色深面）+ 1px 描边，内距 6 / 16px；连接层在工具条上投影 `data-xh-ink-surface`，条里的钮按工具条底色自成墨色域，视觉盒 36px、字形 16px，悬停 / 按下走白底阶梯。新增组件槽 `--xh-image-viewer-toolbar-bg`
+  - 关闭钮的 `data-xh-action-size` 由「比组件低一档」改为与组件同档；翻页钮与关闭钮的视觉盒改取控件高（md 32px）、字形 16px（lg 20px），翻页钮距边 20px、关闭钮距右上角 32px。新增组件槽 `--xh-image-viewer-nav-size`
+  - 翻页钮、关闭钮与计数仍压在深色半透明 chrome 上
+
+- 4ecfb34: InputGroup 前后缀块改为淡底附加块：铺 `--xh-bg-subtle`（新增覆盖槽 `--xh-input-group-item-bg`），字色由 `--xh-fg-muted` 改为 `--xh-fg-default`，两侧内距对称（靠字段一侧不再归零），与相邻段之间一道满高的 `--xh-border-default` 分隔（新增覆盖槽 `--xh-input-group-item-divider`，两块前后缀相邻时只画一道）；强制色档分隔线换 ButtonText。
+- 73d7fe4: InputGroup 组壳改为与字段外壳同形：
+
+  - 静息铺字段淡底 `--xh-bg-field` + `--xh-border-control`；悬停底不变、描边升 `--xh-border-strong`
+  - 聚焦换承载面 `--xh-bg-surface` + `--xh-border-control-focus`，不再画聚焦环；强制色档补一圈 Highlight 环；悬停与聚焦同时成立时聚焦面优先
+  - 组里的字段校验失败时铺 4% 失效色淡底；只读换淡底；禁用换淡底 + `--xh-border-default`
+  - 删除覆盖槽 `--xh-input-group-ring-focus` / `--xh-input-group-ring-invalid`；新增 `--xh-input-group-bg-focus`、`-bg-invalid`、`-bg-read-only`、`-bg-disabled`、`-border-disabled`
+  - 皮肤体积基线随新增的状态规则上调
+
+- 3c0ed89: Layout 侧栏由淡底改为白底，与头同是白面坐在灰的页面底上；头的下沿与侧栏挨着内容的一侧缺省各画一条 `--xh-border-subtle` 内部分隔（开 split 时仍换成 border-default 并隔开内容与尾），侧栏里的把手改走白底阶梯。侧栏宽令牌 `--xh-sider-w` 由 15rem 改为 13.75rem（SideNav 同取）；新增 `--xh-app-header-h`（3.75rem）作为头高缺省，取代皮肤里的 3.5rem 字面量。
+- 5f78b6d: List 条目横向内距改为 16 / 20 / 24px（令牌 `list.item-px-*`，紧凑档 12 / 16 / 20）；根上声明正文字号与行高；说明字号与标题同为控件字号（md 14px），标题改正文行高，标题与说明之间 2px，两行内容上下各让出 4px；媒体位到文字 12 / 16 / 20px；条目之间的分隔线改为 border-default。
+- 8398bee: Notification 改排版：
+
+  - 卡片预设：缺省宽由 24rem 改为 300px（新增语义令牌 `--xh-overlay-notification-w`，摞的定位面同宽）、四边内衬由 16px 改为 20px；左列类型字形由 20px 改为 24px；标题取面板标题档（heading-3）、正文色，行高 1.5 与字形同高；说明改为 14px 正文色的正文
+  - 轻提示预设：圆角由浮层档改为 control（2px），纵向内衬由 12px 改为 10px，行首字形保持 20px；标题 14px / medium，说明保持 13px 次级色
+  - 两种预设的关闭钮叉由 16px 改为 12px（`--xh-glyph-size-xs`）；卡片的叉仍距右 12px，竖向改为与标题首行同一条中线（上内衬 + (标题行高 − 钮边长) / 2，舒适档距上 18px、紧凑 16px）
+
+- 7eb3d48: NumberField 增减钮改为悬停 / 聚焦时显出，精细指针下上下叠放：
+
+  - 两颗钮的 `data-xh-action-display` 由 `always` 改为 `hover-focus`，control 投影 `data-xh-action-owner`：可悬停的精细指针下平时收起，指针落到盒上或盒里有焦点时显出；粗指针与不能悬停的设备上照旧常显。钮不占 Tab 位，键盘 ↑ / ↓ 步进不受影响
+  - 精细指针下两颗钮上下叠在盒的逻辑末端（宽 `--xh-control-indicator-lg`、四周内收 4px、sm 档 2px、各占盒内高一半），显出时铺淡底、悬停 / 按下沿淡底阶梯升一档、两档，字形改为上下箭头、取 `--xh-control-indicator-sm`；盒的末端让出钮那一截，数值与后缀不排到钮底下。新增覆盖槽 `--xh-number-field-stepper-w`、`--xh-number-field-stepper-inset`、`--xh-number-field-stepper-bg`、`--xh-number-field-stepper-bg-hover`
+  - 钮字改取次要前景 `--xh-fg-muted`；数值改为从起始缘排起（`--xh-number-field-input-align` 缺省 `start`）
+  - 删除输入与动作组之间的分隔线及覆盖槽 `--xh-number-field-trigger-divider`、`--xh-number-field-trigger-divider-h`
+  - 皮肤体积随叠放档上调
+
+- f9db996: 浮层圆角 `--xh-shape-overlay` 改为引用承载面圆角 `--xh-shape-surface`（缺省仍是 4px）：只改承载面圆角时，下拉、弹出面、对话框、通知卡片与抽屉跟着一起变，不再出现卡片已经调圆、浮层还钉在 4px 的情况。仍要两者分开的，单独覆写 `--xh-shape-overlay`。
+
+  抽屉朝向页面的两个角缺省取浮层圆角，与别的浮层同一把尺；贴住视口的两个角仍不取圆角。要恢复直角的，写 `--xh-drawer-radius: 0`。
+
+- 318e66d: PageHeader 副标题改与标题同一行（窄于 640px 时仍回到下一行），二者之间一条 1 × 16px 竖线、两侧各 12px（新增覆盖槽 `--xh-page-header-divider`），副标题改 14px、弱一档前景；返回位接动作钮家族的 icon ghost 档（lg 页头取 md 档、其余 sm 档），字取次级前景（新增 `--xh-page-header-back-fg`、`--xh-page-header-back-fg-hover`），不必再给按钮写内联样式。面包屑到标题收到 4px，带面包屑的缺省档上下内衬收到 12px，页脚与标题行再隔 12px；ghost + split 的贴底线改为 border-default。
+- b1d2250: Pagination 页码改为描边方块：页码、翻页钮与省略位静息带 1px 装饰边、圆角取 surface（4px），悬停边加深一档、字转正文色；当前页由品牌实心改为品牌描边 + 品牌淡底 + 淡底前景，不再画顶部高光。
+- bca6d43: PasswordInput 删除明暗切换钮与输入之间的半高分隔线及覆盖槽 `--xh-password-input-visibility-trigger-separator-color`、`--xh-password-input-visibility-trigger-separator-h`。强制色档不再关掉这颗钮的强制换色，自留的键盘焦点环仍取 Highlight。
+- d66188d: 日期、日期范围、时间、时间范围四种面板的快捷项排得更紧：相邻两颗由 10px 改为只隔 `--xh-space-1`，一列选项不再比旁边的日历网格松。要沿用原来的间距，写 `--xh-<组件>-preset-group-gap: var(--xh-space-2_5)`。
+- 2a604d1: PinInput 格子改按控件档取尺寸：边长由方格档（28 / 36 / 44px）改为控件高档（sm / md / lg 28 / 32 / 36px，compact 24 / 28 / 32px），与同一行的字段等高；格间距三档统一 4px；字号由标题档（20 / 24px，sm 16px）改为控件字号档（13 / 14 / 16px）。当前格改为与字段外壳聚焦态同一副面（承载面 + 聚焦描边），不再另画聚焦环，校验失败时也不再把那圈环染红。
+- 74238d5: Progress 改为细轨：线形轨道厚 sm / md / lg = 3 / 4 / 8px、两端全圆，底槽（线形与环形同）由中性淡底 300 档改为 200 档；环心文字改为 12px 次级色。
+- 6811631: RadioGroup segmented 形态改为字段同款轨道与品牌淡底选中段：
+
+  - 轨道取最浅一档淡底 + 1px 字段描边、圆角由 surface 收为 control（2px），内衬 2px（加描边段离外沿 3px）
+  - 选中段由白色抬起滑块改为平面的品牌淡底滑块，无边无影；选中段字取品牌色、medium，悬停升一档、禁用退到 8% 淡底与浅品牌字；写了 `tone` 换语气淡底与语气字
+  - 新增语义令牌 `--xh-bg-segment-selected` / `-hover` / `-disabled`（浅色 12% / 18% / 8%，深色 20% / 28% / 8%）与 `--xh-fg-segment-selected` / `-disabled`（浅色取 brand 700，压两档选中面都过 4.5:1；深色取 brand 300）
+  - 未选中段悬停 / 按下改按白底承载阶梯 100 → 200
+  - 段间新增 1px × 14px 分隔线（长为段高一半减 2px），与选中段、悬停段相邻的收起
+  - 覆盖槽调整：新增 `--xh-radio-group-segment-separator`、`--xh-radio-group-segment-font-weight-checked`、`--xh-radio-group-thumb-bg-hover`、`--xh-radio-group-thumb-bg-disabled`；删除 `--xh-radio-group-thumb-shadow-disabled`（滑块不再投影，禁用档的影随之退役，禁用改由 `--xh-radio-group-thumb-bg-disabled` 换底表达）
+
+- ff316ee: Rating 的星放大一档并加悬停强调：
+
+  - 星 sm / md / lg 由 16 / 20 / 24px 改为 20 / 24 / 32px（星是评分的主体），星盒比星大 4px（24 / 28 / 36px）
+  - 新增动效令牌 `--xh-motion-scale-emphasis`（1.2，减弱动效下为 1）：悬停（只在能悬停的设备上，触屏点过后不停在放大态）与键盘聚焦把星放大强调，按下保持放大并换到 200 档面；只读时悬停不放大
+  - 未选中的星仍取 `--xh-fg-subtle`（过 3:1 的非文字对比）
+
+- 4b0fef8: Separator 缺省线色改为 border-default（subtle / strong 两档不变）；自带留白：横线上下各 20px、竖线左右各 12px（新增覆盖槽 `--xh-separator-my`、`--xh-separator-mx`），竖线最少与文字等高；带分节文字时上下留白收到 10px，文字改 14px / 500 / 正文色（新增 `--xh-separator-content-font-weight`），与两条线各隔 16px。补强制色规则：线改写 CanvasText，实线与虚线都不再消失。
+- f414f2d: SignaturePad 画布与字段外壳同一副面：静息铺字段淡底 `--xh-bg-field`（原为透明）；悬停描边升 `--xh-border-strong`（新增覆盖槽 `--xh-signature-pad-border-hover`）；落笔换承载面 `--xh-bg-surface` + `--xh-border-control-focus`（`--xh-signature-pad-border-drawing` 缺省由 `--xh-border-control-hover` 改为聚焦描边，新增 `--xh-signature-pad-bg-drawing`）；校验失败铺 4% 失效色淡底（新增 `--xh-signature-pad-bg-invalid`）。强制色档落笔与失效的描边换 Highlight。
+- 2441aec: Skeleton 文本条改为一行正文的方条：
+
+  - 新增语义令牌 `--xh-text-body-line-h`（正文字号 × 正文行高，21px）：一行正文的行框高；Sparkline 的缺省高改读它（取值不变）
+  - 文本条高由说明字号 12px 改为 `--xh-text-body-line-h`，圆角由胶囊改为 `--xh-shape-inset`（2px），条间距 12px → 16px
+  - 扫光 `--xh-skeleton-sheen` 缺省改为 `--xh-bg-subtle`：浅色下是一道比条底深的暗带，深色下仍是亮带
+
+- 4172ccc: Slider 改为细轨平面拇指：
+
+  - 轨道 2px（lg 3px）、底槽取中性淡底 200 档，已选区间品牌色
+  - 拇指 12px（sm 10px、lg 16px）白底圆配 2px 品牌描边，静止不投影；可悬停设备上悬停即放大一档，拖动中放大并抬起
+  - 刻度点 8px 白底圆配 2px 描边，没过的取轨道色、走过的取品牌色
+  - 禁用：轨道退到中性淡底 100 档，区间、拇指描边与已过刻度退到 200 档，拇指留白面
+  - 粗指针下控件沿交叉轴外扩到 44px 命中区
+  - 覆盖槽调整：`--xh-slider-thumb-bg-invalid` 改为 `--xh-slider-thumb-border-invalid`，新增 `--xh-slider-thumb-border-disabled`；刻度的 `--xh-slider-tick-bg-active` / `-bg-disabled` / `-bg-active-disabled` 改为 `--xh-slider-tick-border` / `-border-active` / `-border-disabled` / `-border-active-disabled`，`--xh-slider-tick-bg` 改管刻度点的白底
+
+- a00a675: Spinner 与加载环改为品牌色的 270° 弧：
+
+  - Spinner 三档形态的弧色缺省由 `currentColor` 改为 `--xh-fg-brand`；环档不再画轨道，改为一段 270° 的弧、起始边留缺口（`--xh-spinner-track` 现在给缺口那一段上色，缺省透明）
+  - 加载环家族配方同一口径：占位、图表等处的环取品牌色；压在动作钮上的环（Button、Clipboard、DownloadTrigger、Popconfirm、Form 提交）仍随钮的字色
+  - 配文改为品牌色、正文字号、中等字重；新增组件槽 `--xh-spinner-label-weight`
+  - Spinner 新增 `orientation`（`horizontal` | `vertical`，缺省 `horizontal`，投影 `data-orientation`）：竖排时转圈在上、配文在下，间距 6px
+  - 强制色下弧取 Highlight、缺口取 Canvas
+
+- f9e3734: Statistic 标签改为控件字号（md 14px），与数值之间 8px（sm 4 / lg 12）；数值字重改 500、行高改正文行高；前后缀改为与数值同色同字重（没写语气时取正文色），不再是弱前景旁注。
+- 6ce295d: ToolCall 的状态、Approval 与 QuestionFlow 的结果改为与 Tag 一致的方签：圆角由胶囊改为 control（2px），块尺寸取 `--xh-chip-h-sm`（20px，紧凑 18px）、竖向内衬为 0，语气淡底与语气字不变。新增覆盖槽 `--xh-tool-call-status-h`、`--xh-approval-result-h`、`--xh-question-flow-result-h`。
+- 1e72c89: Steps 改为平面状态圆：
+
+  - 新增语义令牌 `--xh-marker-size-sm/md/lg`（宽松 24 / 28 / 32px，紧凑 20 / 24 / 28px），序号圆点按它取直径，圆里的序号 16px（sm 14px）
+  - 三态都无边无影：没走到的中性淡底配次级字色，当前步品牌实心配反白字（去掉顶部高光），走过的步品牌淡底配品牌对号（悬停 20%、按下 28%）；标了语气又没走到的步改为语气实心配反白字
+  - 标题取区块标题档 `--xh-text-heading-3-size`（sm 取正文字号），当前步取 `--xh-text-heading-3-weight`、正文色，走过的步标题正文色，标了语气的步标题不再染色；说明改为 12px 弱化色
+  - 连接线由 2px 收为 1px
+  - 点状形态的点 8px、当前步放大一档到 10px（sm 6 / 8px、lg 10 / 12px），不再画当前步那圈环；每个点按当前步的直径占位，换步不挪版面
+  - 新增覆盖槽 `--xh-steps-indicator-bg-completed-pressed`、`--xh-steps-title-font-weight-current`
+
+- 88829d7: 表格表头底浅一档：不再与行悬停、斑马纹共用淡底，改取淡底兑进承载面的一档实色（淡底的 55%），表头不再压得比数据还重；吸顶与冻结列头仍是不透明底，滚过去的行不会从底下透出来。要沿用原来的深浅，写 `--xh-table-header-bg: var(--xh-bg-subtle-opaque)`。
+- 6e5abc7: TagGroup 修正中性标签没有悬停反馈：标签静息就是淡底，悬停 / 键盘锚点改升到 `--xh-bg-subtle-hover`、按下 `--xh-bg-subtle-active`（淡底阶梯）；无壳档静息透明，仍走白底阶梯。标签之间的间距由 6px 改为 8px。
+- 1ee1c0f: Tag 改为方签：
+
+  - 圆角由胶囊改为 control（2px）；缺省与 subtle 档为淡底、无边、无影、正文色，写了语气换语气淡底与语气字；描边档在淡底上加边，语气描边档铺语气淡底
+  - 新增语义令牌 `--xh-chip-h-sm/md/lg`（20 / 24 / 28px，紧凑 18 / 20 / 24px），标签按它取块尺寸、竖向内衬为 0；字号 sm / md 取说明字号、lg 取正文字号
+  - 实心档不再画顶部高光
+
+- 355774f: TimePicker 浮层改版：面板自己不留内衬（`--xh-time-picker-content-py / -content-px` 缺省 0）；每列宽 64px、七格整行高 224px（紧凑 196px），列顶留 4px、列底留出一截空白，末尾几格（23 时、55–59 分）也能滚到列顶，几列的选中落在同一行（新增 `-column-py`）；列与列之间的分隔线与快捷选项列的分隔线改取 border-default 档。时间格改为 24px 高的通栏条、不取圆角，列内间距 8px 撑出 32px 行距，不再随尺寸档变高，命中区向上下各补半个间距、缝里不落空；选中仍是透明底 + 中等字重 + 末端对号。
+
+  快捷选项改为 24px 高的淡底小钮（静息淡底、悬停 200、按下 300，12px 次级前景、交互时换正文色（新增 `-preset-fg-hover`），选中仍画 12px 末端对号），列内衬 10 / 8px、项距 10px，限高与时间列同档（新增 `-preset-group-py / -preset-bg / -preset-h / -preset-font-size`，退役 `-preset-py / -preset-fg-checked`）。
+
+  多选的「添加」钮改为 24px 高的小号主钮（headless 的 `data-xh-action-size` 由 `sm` 改为 `xs`），字取 12px（新增 `-confirm-trigger-font-size`），自带 8px 外边距（`-confirm-trigger-margin` 取代 `-confirm-trigger-gap`）。
+
+  新增语义令牌 `--xh-overlay-time-column-w`（4rem）与 `--xh-overlay-time-column-h`（七格整行）。
+
+- c7e0e82: TimeRangePicker 浮层与 TimePicker 同一套改版：面板自己不留内衬（`--xh-time-range-picker-content-py / -content-px` 缺省 0）；每列宽 64px、七格整行高，列底留白让末尾几格也能滚到列顶（新增 `-column-py`）；时间格改为 24px 高的通栏条、不取圆角，列内间距 8px（命中区向上下各补半个间距，缝里不落空）；快捷选项改为 24px 高的淡底小钮（交互时换正文色，新增 `-preset-fg-hover`；新增 `-preset-group-py / -preset-bg / -preset-h / -preset-font-size`，退役 `-preset-py / -preset-fg-checked`）。起止两组之间不再另留空当（`-column-group-gap` 缺省 0），只隔一道 border-default 竖线；组里的列顶画一道 border-default 线，把组顶小标题那一带与列分开，两组的线连成一条。
+- 7f98c6c: Timeline 圆点改为 sm / md / lg 4 / 6 / 8px、缺省品牌色（写了语气仍取语气色）；连线由 2px 改 1px；圆点到内容 12 / 16 / 20px、条目之间 24 / 32 / 40px；标题与坐标行高改为正文行高，坐标落在标题首行中线上；横排时内容离线 16px。补强制色规则：圆点与连线改写 CanvasText，不再在强制色下消失。
+- 7b81ee3: Tooltip 改为反白实底小面：正文 14px（原为 13px 说明字号）、圆角取 control（2px）；内距缺省纵 8 横 12，`sm` 只收纵向到 4px，`lg` 纵 12 横 16，三档不再换字号。底仍取正文色、字取承载面色，深色主题下整块翻成浅底深字。
+- 3012e65: Tour 进度点与 Carousel 分页点统一为同一种语言：圆点直径 8px → 6px，点距 4px → 8px，当前步仍拉长成 20px 品牌胶囊。
+- 6c85079: Transfer 搬运钮由 icon outline 方钮改为 icon subtle 圆钮（淡底、无边）；栏头改为一条淡底（新增覆盖槽 `--xh-transfer-panel-header-bg`），不再画下分隔线，上下 12px、标题字重 500；列表去掉内衬改通栏行、行不切圆角，行至少一个同档控件高（md 32px，新增 `--xh-transfer-item-h`），列表定高改为 `--xh-viewport-h-sm`；面板与搬运钮之间 20px。
+- 0ca08e5: Tree 缺省形态由 outline 改为 ghost（直接落在页面或宿主面上），要外框时显式写 `variant="outline"`。行内内衬收为一条窄边（sm / md / lg 2 / 4 / 6px），缩进改为「箭头盒 + 箭头到文字的间距」（md 24px，子节点箭头对齐父节点文字起点），行与行之间不再留缝；展开箭头在 16px 盒里只画 12px、改取次级前景；连接线改为 border-default；分支在取子节点时转圈改为品牌色（新增覆盖槽 `--xh-tree-branch-loading-fg`）。
+- b1a864f: 排版阶梯调整：原语字号 xl 改为 20px、2xl 改为 24px，新增 4xl（32px）与 5xl（36px）；heading-3 / heading-2 / heading-1 依次改为 16 / 20 / 24px，字重统一 500；新增 `--xh-text-display-size`（28px）给大号数值。标题角色随之重排：区块与面板标题（Card、Descriptions、Alert、Notification、Steps、Dialog、Drawer、Tour）取 heading-3，PageHeader 取 heading-2，浮层内与小面标题取 14px / 500；Statistic、Timer、NumberAnimation 三档取 heading-2 / heading-1 / display，PinInput 两档顺移一级。
+- 3a215b2: Typography 六级标题改为沿字号阶梯 36 / 32 / 28 / 24 / 20 / 16px（sm 整体降一档），标题与加粗字重统一 500；行内代码横向内距 8px、字取次级前景（新增覆盖槽 `--xh-typography-code-fg`）；标记改用新增的 `--xh-bg-mark`（亮色浅黄、暗色深黄）配正文色，不再借品牌淡底；引用块起始内距 8px、竖线改 border-strong、字随正文；列表缩进 20px。
+- 9f1bc72: 视觉尺度整体调整：
+
+  - 圆角：control 与 inset 由 4px 改为 2px，surface 由 8px 改为 4px，overlay 由 12px 改为 4px（`--xh-radius-sm/md/lg` 改为 2 / 4 / 8px，`--xh-shape-overlay` 改指 `--xh-radius-md`）
+  - 控件高：comfortable 由 32 / 36 / 40px 改为 28 / 32 / 36px，compact 由 28 / 32 / 36px 改为 24 / 28 / 32px；方格与 Switch 轨道同步换档（Switch md 24px）
+  - 中性色换成冷灰阶，亮色正文改取 neutral 900，页面底 `--xh-bg-page` 改取 neutral 100；淡底阶梯随之落在 4.7% / 10.2% / 16.9%
+  - 标签与按钮字重 `--xh-text-label-weight` 由 500 改为 400
+  - 按压只换面：`--xh-motion-scale-press` 由 0.97 改为 1，主题写回 0.97 即恢复按下回弹
+  - 锚定浮层（frosted 配方）改为实体底 + 1px 描边 + 一层 `0 4px 10px` 投影，不再透景模糊；模态与通知面（elevated 配方）投影改为一层 `0 4px 12px`
+  - `--xh-elevation-raised` 缺省 none（平面卡片），`--xh-elevation-floating` / `-lifted` / `-sheet` 改为单层柔和投影
+  - 表格单元格纵向内距加一档（md 12px）
+
+  依赖控件高度、圆角或浮层透景的页面布局需要复查；要找回旧尺度，在根上覆盖对应令牌即可。
+
+### Minor Changes
+
+- 836ba2a: Accordion 展开时正文上沿那条分隔线改读自己的覆盖槽 `--xh-accordion-content-border`（缺省仍跟条目分隔线 `--xh-accordion-item-border` 同色）。
+- af78ae8: 按钮与文字档动作控件：
+
+  - 文字档内距加宽一档（sm / md / lg 为 12 / 16 / 20px）
+  - 次要形态（subtle）的中性文字改取 `--xh-fg-muted`
+  - 带语气的描边形态（outline + tone）静息就铺语气淡底，悬停、按下各升一档；中性描边仍是透明面
+  - 实心按钮不再画顶部高光与贴地软影，悬停抬升随 `--xh-elevation-raised`（缺省 none）
+
+- cb92464: Badge 缺省语气由 neutral 改为 danger（未读红点）；在线 / 离线这类状态点请显式写 `tone="success"` / `tone="neutral"`。圆点直径三档改为 4 / 6 / 8px。
+- f3f493e: 新增语义令牌 `--xh-bg-field-invalid`（失效色兑 4%）：字段外壳家族、InputGroup 组壳与 SignaturePad 画布校验失败时的底统一指向它，不再各写一份 `color-mix`。TagsInput 有标签时的起始内衬新增覆盖槽 `--xh-tags-input-control-ps`。
+- a2c608c: Breadcrumb 折叠触发器的最小高改读自己的覆盖槽 `--xh-breadcrumb-ellipsis-trigger-h`（缺省仍跟链接同为 24px）。
+- 185f6b4: 勾选方框与单选圆圈（Checkbox、CheckboxGroup、RadioGroup、Table 行勾选、Transfer、QuestionFlow）的静息描边由 `--xh-border-control` 加重到 `--xh-border-strong`，16px 的小盒在页面里一眼认得出；悬停仍升到 `--xh-border-control-hover`。
+- 65296e8: Clipboard 带输入框的用法是单行字段，标签改按字段标签规则：字色由 `--xh-fg-default` 改为 `--xh-fg-muted`，与控件的距离由 4px 改为 8px；新增覆盖槽 `--xh-clipboard-label-gap` 单独管这一段（根的 `--xh-clipboard-gap` 照旧管其余间距）。
+- 57d0826: ContextMenu 分组标题字重改为 400、上方让出 8px（新增覆盖槽 `--xh-context-menu-group-label-mt`）；子菜单箭头改跟随行字色。
+- 144c5f1: DatePicker 新增底栏 `footer` 部件：浮层底部的通栏操作区，写在 `content` 里、排在面板主体之后，确认钮通常放在它里面。headless 新增 `getFooterProps`（只带 scope / part，不报角色、不占 Tab 位、不进任何集合的拥有关系）；Vue / React 新增 `XhDatePickerFooter`，Web Components 认 `data-xh-part="footer"`。
+
+  皮肤：底栏独占一行，上沿一道 border-default 分隔线、四周 8px 内衬，字取 12px 次级前景；首个子节点占满余宽排在行首，确认钮落在行尾。底栏里只有确认钮、而确认钮因未开 `showTime` 收起时，底栏一并收起。新增 `--xh-date-picker-footer-gap / -footer-py / -footer-px / -footer-border / -footer-fg / -footer-font-size`。确认钮直接排在 `content` 里的写法照旧可用。
+
+- 16ad922: DateRangePicker 新增底栏 `footer` 部件：浮层底部的通栏操作区，写在 `content` 里、排在面板主体之后，确认钮通常放在它里面。headless 新增 `getFooterProps`（只带 scope / part，不报角色、不占 Tab 位、不进任何集合的拥有关系）；Vue / React 新增 `XhDateRangePickerFooter`，Web Components 认 `data-xh-part="footer"`。
+
+  皮肤：底栏落在日历与起止两组时间列下面独占一行，上沿一道 border-default 分隔线、四周 8px 内衬，字取 12px 次级前景；首个子节点占满余宽排在行首，确认钮落在行尾。底栏里只有确认钮、而确认钮因未开 `showTime` 收起时，底栏一并收起。新增 `--xh-date-range-picker-footer-gap / -footer-py / -footer-px / -footer-border / -footer-fg / -footer-font-size`。确认钮直接排在 `content` 里的写法照旧可用。
+
+- b926f34: EmptyState 结果页的语气淡底圆改为写了任何语气都画（含品牌语气），淡底统一由语气层按 data-tone 给，组件不再按语气值分支。
+- 495d362: 字段数组每一行的内容区里，字段族控件（文本框、选择器、数字框等）铺满这一行的轨道，与放进 Field 时一样；并排几个就平分，各自的压缩底线照旧。此前它们照旧按单独摆放的 16rem 缺省宽，行宽了也不跟着变。
+- e23f5a5: 字段族控件放进表格格子（就地编辑的单元格）铺满这一格：格子声明 `--xh-control-w: 100%`，与放进 Field、字段数组的行时一样，并排几个就平分。Web Components 里 20 个字段族组件（文本框、数字框、选择器、日期与时间选择器等）的宿主缺省 `display: contents`：宿主不再是外层 flex / grid 里多出来的一层按内容定宽的盒子，作者写的 root 直接参与排布，与 Vue / React 直接渲染 root 一致；作者自己给宿主写了 `display` 就不动。此前放进表格格子的字段在 WC 里只剩几十像素宽，示例只好在宿主上手写 `inline-size` 与 `--xh-control-w`。
+- 63573cd: GridList 标签字重由 600 改为 500，与其他集合与面内标题一致。
+- 9b0248d: Kbd 键帽字重由 500 改为 400，次级标注不再加粗。
+- edc3fb6: List 条目内容区上下内衬补上覆盖槽 `--xh-list-item-content-py`。
+- b06d0b7: LoadingBar 缺省厚度由 2px 改为强调线宽令牌 `--xh-stroke-strong`（3px）：`LOADING_BAR_HEIGHT` 的值改为 `'var(--xh-stroke-strong)'`，`height` 不传时写进内联样式的就是它。进度段露出的前端改为胶囊圆头（行首贴边一端仍是方头），新增组件槽 `--xh-loading-bar-range-radius`。
+- 133794b: Menu 分组标题字重改为 400、上方让出 8px（新增覆盖槽 `--xh-menu-group-label-mt`）；子菜单箭头改跟随行字色，禁用行里随行一起变灰。
+- 3326d38: Menubar 顶层入口上下内距改为 6 / 8 / 10px（md 30px 高，补到目标尺寸下限之上）；弹出菜单分组标题字重改为 400、上方让出 8px（新增覆盖槽 `--xh-menubar-group-label-mt`）；子菜单箭头改跟随行字色。
+- 899c4ae: 导航当前页（Tabs line、Anchor、NavigationMenu 等 nav 语境）的字色由 `--xh-fg-brand-strong` 改为 `--xh-fg-brand`，与指示条同一档主色。
+- 1f28184: Notification 进退场：
+
+  - 叠成一摞的轻提示：进出场位移从整张卡高收成 `--xh-motion-distance-lg`（16px）；后层先到时的条目与离场替身原地淡出，不再沿叠放方向从前面那张底下穿过去。
+  - 逐条排开的卡片预设：从所贴的那条边整张推进来、边推边淡入（贴行尾 / 行首的横向进，居中的顶、底两个位从顶边、底边进，中线那一行上浮一小段）；退场只淡出，空位由换位收拢。
+  - 减弱动效下位移一律归零，只剩淡变。
+
+- 4cc24ce: 锚定浮层里的列表（Menu、ContextMenu、Menubar、Select、Combobox、TreeSelect、Mention、Cascader 列）改为通栏行：面板只留块向内衬、侧边内衬 0，行不取圆角，悬停淡底铺满整行。对号集合（含 Listbox 与日期、时间面板的时间格）的选中项字重升到 medium，行尾对号照旧。内衬与圆角仍可经各组件的 `--xh-<组件>-content-px` / `--xh-<组件>-item-radius` 覆盖。
+- 1bce59c: 新增 `--xh-list-option-h-sm` / `-md` / `-lg`（32 / 36 / 40px，紧凑 28 / 32 / 36px）。锚定浮层里的集合行（Select、Combobox、Cascader、Menu、ContextMenu、Menubar 菜单、Mention、Command）一行文字时定高到这一档，比同档字段高一级；带说明的行照常撑高。页内列表、树、TreeSelect 与日期时间面板的时间格不变。行高可经各组件的 `--xh-<组件>-item-h` 覆盖；集合家族新增桥接槽 `--xh-collection-row-h`，皮肤接上它即得定高行。
+- 34fc56b: SideNav 行加高、当前项加粗：
+
+  - 新增语义令牌 `--xh-nav-row-h-sm/md/lg`（宽松 32 / 40 / 44px，紧凑 28 / 36 / 40px），侧栏分支与链接按它取行高；面板里的搜索框仍按控件高取档
+  - 当前项字重缺省改为 semibold，行圆角改取 surface（4px）
+
+- c53de43: Switch：轨道留白按档取（sm 2px、md / lg 4px），md 由此是 40 × 24 的轨道配 16px 滑块；轨道静息的内描边缺省改为透明，只有只读与校验失败才描一圈。
+- 17686ad: Table：列头改与正文同色（`--xh-fg-default`）并取 medium 字重，表头靠淡底与字重和表体分开；单元格横向内距由 8px 改为 16px。
+- cd71c28: Tabs：line 档标签带底边加一道 1px 装饰边作基线（竖排在行向末端），滑动指示条压在基线上。
+- c8c8914: Tabs：line 档（缺省形态）的标签带改取导航行高 `--xh-nav-row-h-*`（sm / md / lg 为 32 / 40 / 44px，紧凑 28 / 36 / 40px），横内衬改为 12 / 16 / 20px：相邻两段标签文字隔 32px、首个标签的文字离起始边 16px。card 与 segment 档仍取控件高与控件横内衬。
+- 2a31459: 多标签字段（TagsInput 与 ColorPicker / DatePicker / TimePicker 的多选）装一枚标签时框高回到本档控件高：字段外壳 multi-tag 布局的块向内衬由 4px 收到 2px，加第一枚标签时盒高不再跳。TagsInput 就地编辑框改按状态 chip 档取块尺寸、竖向内衬为 0，与它换掉的标签同高；新增覆盖槽 `--xh-tags-input-item-h`。
+- 92acdb6: TimePicker 新增底栏 `footer` 部件：浮层底部的通栏操作区，写在 `content` 里、排在各列之后，多选的「添加」（`confirm-trigger`）通常放在它里面。headless 新增 `getFooterProps`（只带 scope / part，不报角色、不占 Tab 位、不进任何集合的拥有关系）；Vue / React 新增 `XhTimePickerFooter`，Web Components 认 `data-xh-part="footer"`。
+
+  皮肤：有底栏时面板折行，底栏落在快捷选项列与各列下面独占一行，上沿一道 border-default 分隔线、四周 8px 内衬，字取 12px 次级前景；首个子节点占满余宽排在行首，「添加」落在行尾；底栏不参与撑宽，面板的宽仍由各列定。底栏里只有「添加」、而「添加」在单选下收起时，底栏一并收起。新增 `--xh-time-picker-footer-gap / -footer-py / -footer-px / -footer-border / -footer-fg / -footer-font-size`。「添加」直接排在 `content` 里的写法照旧可用。
+
+- c8a0f99: ToggleGroup 未选中段的字色由正文色降为次级前景，选中段（品牌淡底 + 品牌字）因此更突出；段间分隔线不变。
+- c6b2cee: Toolbar 条目里图标与文字的间距改按尺寸档取（与按钮同一把尺）；散落的分隔线两侧各让出 12px，把前后两组分开；组内分隔线仍压在接缝上、不占宽度。
+- 70d31b7: Tour 气泡纵向内衬收一档（`--xh-surface-py-sm`）；标题与说明之间收到 4px；压暗时暗幕已把目标框出来，高亮框不再描一圈环（不压暗时仍保留那圈环作指示）。
+
+### Patch Changes
+
+- f843fb3: 按钮一族（按钮、切换钮、图标钮、分页钮、工具栏按钮等）放不下文字时改从起始边排起、只在末端被裁：此前居中会让溢出往两边同时冒，表格窄格里的长串标识开头那截被裁掉。放得下时照旧居中；不支持 `safe` 对齐关键字的浏览器保持原样。
+- 7453001: CalendarPicker / CalendarRangePicker（含 DatePicker、DateRangePicker 里内嵌的网格）：粗指针下的 44 改取 `--xh-control-hit-coarse`；视口窄到七列放不下 44 时，列宽下限取视口宽扣掉两侧页边、网格内衬与周数列后的七分之一，320px 宽的手机上页内日历与浮层都不再横向撑出视口。
+- 20dd3c6: 粗指针下日历格的命中区到 44×44：CalendarPicker、CalendarRangePicker 以及 DatePicker、DateRangePicker 里内嵌的日历网格，粗指针下行距从 36 加到 44、列宽下限抬到 44，铺满整格的命中区彼此不重叠；日期钮仍是 24 的圆，禁用横条与区间轨道以格子中线为轴、仍 32 高。新增令牌 `--xh-overlay-calendar-column-h-coarse`，带时刻的日期面板在粗指针下按它给时间列定高，列底仍与网格底边对齐。
+- 12dcfd3: CalendarRangePicker 日视图区间两端的半圆帽改从「格中线减轨道半高」起算：页内日历随容器铺宽、格子宽于轨道高时，帽仍与端点的实心圆同心，不再偏到圆的外侧。
+- 879137b: Carousel 分页点不再 `overflow: hidden` 裁切自己：细指针下 `::after` 外扩的 24px 命中区此前被一并裁掉，只点得到 6px 的点。自动播放的进度条改为自己带圆角、以 `clip-path: inset(… round …)` 从行尾裁着长满（rtl 从右往左、纵轨从上往下），不再靠缩放与点的盒子来裁。
+- 10810c1: Carousel 翻页与播放钮恢复随 `size` 换档：视觉盒 sm / md / lg = 24 / 24 / 28px、字形 12 / 16 / 20px（sm 不低于 24px 的最小目标，只把字形收小）；新增私有档位，`--xh-carousel-trigger-size` / `--xh-carousel-icon-size` 仍可整体覆盖。
+- 839af10: 图表的几何度量（圆角、间隙、柱厚上限、数据点直径等）写成 `calc()` / `max()` 也照样生效：Chart 家族配方把这些度量槽用 `@property` 登记成长度，交给内核的已是算好的像素。此前内核只认得 px / rem / em 的字面写法，应用把圆角接成 `max(2px, calc(var(--radius) / 2))` 这类表达式时读不懂、退回缺省 2px，卡片已经调成大圆角，柱子、扇区与桑基节点还是 2px。迷你图的皮肤补齐了其余度量槽。不认 `@property` 的引擎保持原样。
+- bf0a231: 修复引入无层样式 `index.unlayered.css` 时，Citation 来源列表的行没有按「序号 | 标题 / 来源」两列排版：现在序号列按内容取宽，标题与来源所在的文字列铺到行尾。有层的 `index.css` 不受影响。
+- 0cfc719: 新增语义令牌 `--xh-control-indicator-xs`（10px，compact 8px）：给只有半个控件高的盒里的字形。NumberField 精细指针下上下叠放的步进钮改取它画上下箭头——一颗钮 sm / md 档只有 11px（compact 9px），原先取的 `--xh-control-indicator-sm`（12px，compact 10px）比钮还高。
+- c3fc522: Drawer 的关闭钮行向先让出安全区再距边 16px：面板已按 `env(safe-area-inset-*)` 让出横屏刘海那一段，叉却仍从面板内边距盒的边量 16px，落进了安全区。局部容器里（`contained`）的抽屉安全区归零，仍是 16px；Dialog 补同一组私有槽（恒为 0），落点不变。
+- ebf8f38: 字段外壳：已聚焦的字段被指针悬停时保留聚焦描边与承载面，不再换回悬停面；外壳本身就是原生控件时（Field 的原生控件、Pagination 跳页框、Mention 输入框）聚焦同样不画公共聚焦环，与其余字段一致，强制色档仍补系统色环。
+- 09915e7: Fieldset 组内项距与 Form 同一套：项距改由每一块的下外边距给（`--xh-fieldset-gap`，缺省 20px），根的行间 gap 归零、最后一块不留；组里的字段（或并排的一段里有字段）带说明或给错误文案留了一行时，那一行就是项距，两个带说明的字段之间不再隔出 40px。皮肤体积基线随这两条项距规则上调。
+- a3ca806: Form 项距的辅助行判据排除校验失败时被收起的说明：字段无效、带说明却没渲染错误文案时，那段说明不再占行，这一项照常在下方留 `--xh-space-5` 项距，不再与下一项贴在一起。
+- 0721057: 修复引入无层样式 `index.unlayered.css` 时，InfiniteScroll 取下一页按钮的文案贴在起始边：现在单行时整段居中，折行时逐行居中。有层的 `index.css` 不受影响。
+- 610fd22: InputGroup 的悬停抑制只认组里带字段外壳的那一段：组里单独禁用一颗按钮时整组照常悬停升描边，与禁用面的判据一致。组里的字段禁用时前后缀块的字随禁用面取 `--xh-fg-disabled`，强制色档取 GrayText。
+- 33b9b0f: 修复引入无层样式 `index.unlayered.css` 时，Listbox 取下一页按钮的文案贴在起始边：现在单行时整段居中，折行时逐行居中。有层的 `index.css` 不受影响。
+- 6625339: 新增 `--xh-bg-media-chrome` / `-hover` / `-active`（近黑兑 55% / 70% / 80%）与 `--xh-fg-on-media-chrome`（纯白）：压在图片与视频上的控件面，亮暗两档同值。ImageViewer 的翻页钮、关闭钮与计数改取这组令牌，取值不变。
+- aef22f1: 新增语义令牌 `--xh-overlay-notification-p`（20px，紧凑 16px）：通知卡片的四边内衬改取它，不再借用只管横向的 `--xh-overlay-sheet-px`；`--xh-overlay-sheet-px` 的说明收回到对话框三段的行内两侧。取值不变。
+- daa126c: PageHeader 标题长过整行时不再把页头撑出容器：标题列按内容宽、但能收到 0，不可断的长标题在列内断行；副标题那一列至少留下竖线与最窄的一截，不被挤到页头外面。
+- dc6da69: Pagination：页码、翻页钮与省略位的横内衬收到 6 / 8 / 10px（sm / md / lg），一位数的页码落在方格最小宽度里，格子回到正方；跳页输入框仍取字段的横内衬。
+- af6a8ff: DatePicker、DateRangePicker 与 TimePicker 底栏的行首行尾内衬改由两端各一个定宽占位让出，不再挂在首末子节点的外边距上：作者把附注写成裸文本时行首仍留 8，确认钮（「添加」）按状态收起、附注成了末一项时它那一头也留 8。底栏仍不参与撑宽。
+- 2ee11e0: RadioGroup segmented 形态的粗指针命中区不再抢相邻段与字段标签的落点：
+
+  - 段的命中区由沿块轴固定外扩一格改为补足到 `--xh-control-hit-coarse`（44px），紧凑 sm 档也到 44px；轨道建层叠上下文、命中区垫在负一层，竖排与折行时相邻段的盒压过别段外扩的那一截，点前一段的下半截不再选中后一段
+  - 块首最多越出轨道外沿一格 `--xh-space-2`，单行时不再压住上方的字段标签，少扩的一截落到块尾
+
+- a08128a: RadioGroup segmented 形态写了 `tone` 时，禁用的选中段不再退回品牌色：滑块退到语气 8% 淡底、字取语气字往承载面兑一半；深色主题下语气档的滑块与品牌档同口径，静息 20%、悬停 28%（此前仍是 12% / 20%）。
+- d43ec64: Field 标签与 Fieldset 组标题前的必填星号不再进控件的可及名：`content` 带一段空的替代文本，读屏不再先念「星号」，必填照旧由 `aria-required` 表达。不支持替代文本写法的引擎（Firefox 128、Safari 17.4 以前）经 `@supports` 退回原写法，星号照常显示。皮肤体积基线随之上调。
+- 42af2c0: 修复引入无层样式 `index.unlayered.css` 时，RadioGroup、CheckboxGroup 与 Steps 的条目被拉满整行：
+
+  - RadioGroup、CheckboxGroup 横排（`orientation="horizontal"`）时条目一行一个竖着排，现在按内容收宽、排在同一行；CheckboxGroup 竖排时条目与全选格的命中区不再延伸到整行空白处。
+  - Steps 的触发器恢复「序号 + 标题 / 说明」两列排版并按内容收宽，横排的连接线不再被压到最小长度。
+
+  有层的 `index.css` 不受影响。
+
+- 7d25dd3: 扁平后台改版后重落逐皮肤体积基线：Accordion / Collapsible（正文淡底、两端内缩与展开字重）、Descriptions（描边档的淡底标签列）、EmptyState（结果页语气淡底圆）、PageHeader（副标题同行竖线、返回钮接动作钮家族与强制色规则）、Separator（缺省留白、分节文字与强制色规则）、CalendarPicker（今天圆点、日期格圆形与底栏）各涨 12–25%，都是新规则本身的字节，没有重复声明。
+- 1fbc2d5: Slider 粗指针命中区按拇指直径补足到 44px，朝标签一侧不越过标签间距：
+
+  - 新增语义令牌 `--xh-control-hit-coarse`（44px）：粗指针下命中区的最小边长，伪元素外扩补足到它
+  - 控件沿交叉轴的外扩总量为「`--xh-control-hit-coarse` − 拇指直径」，按拇指算而不是固定一格，sm 档 10px 的拇指也到 44px
+  - 横排时朝标签一侧最多扩到标签与控件之间的间距（`--xh-slider-label-gap`），点在标签上不会直接跳值，少扩的一截挪到块尾补齐；竖排两侧对称外扩
+
+- 34b46b9: Spinner 高对比档（`forced-colors: active`）带 `tone` 时仍退回 Highlight 弧与 Canvas 缺口：此前语气规则的特指度更高，环档画出语气原色、渐隐弧与三点档的语气渐变压过了 `background-image: none`。
+- 9580454: 修复引入无层样式 `index.unlayered.css` 时，Table 取下一页按钮的文案贴在起始边：现在单行时整段居中，折行时逐行居中。有层的 `index.css` 不受影响。
+- 6955987: 表格开了列间竖线（`ruled`）时，竖线占的那一截从格子末端的内衬里让出来，格子里放字的宽度与不开竖线时一样：此前 60px 的序号列开了竖线只剩 27.33px，「序号」两个字差不到一个像素就出了省略号，关掉竖线又放得下。
+- cd3c68e: Tabs：line 档标签带加了底部基线后，「更多」钮让出同样厚度的块尾外距，居中重新落在标签的中线上；segment 档轨道内衬收到 2px，滑块的 control 圆角不再大于轨道 surface 圆角减内衬。
+- 90da5a4: TimePicker 与 TimeRangePicker 的面板缺省不再叠按 rem 的上限：时间列与底栏都按 px 定高，面板的天然高度就是它们的和。根字号很小（≤ 11px）时，时间选择器的底栏不再画到面板描边外，时间范围选择器也不再出竖向滚动；`--xh-time-picker-content-max-h` / `--xh-time-range-picker-content-max-h` 仍可显式设上限。
+- aa9f295: 轨道几何补上分档的语义尺寸令牌，Slider 与 Progress 的缺省尺寸改经它们取值，取值不变：
+
+  - 新增 `--xh-track-thumb-size-sm` / `-md` / `-lg`（10 / 12 / 16px）：Slider 拇指直径
+  - 新增 `--xh-track-thickness-sm` / `-md` / `-lg`（3 / 4 / 8px）：Progress 线形轨道厚度
+  - 新增 `--xh-track-band-thickness-sm` / `-md` / `-lg`（8 / 12 / 16px）：Progress 带分段色带（子弹图）的轨道厚度
+  - 不分档的 `--xh-track-thickness`（6px）与 `--xh-track-thumb-size`（18px）取值不变，用途收窄为 PasswordInput 强度条厚度与 ColorSlider 拇指直径
+
+- Updated dependencies [71b79c1]
+- Updated dependencies [f3f493e]
+- Updated dependencies [a49fe15]
+- Updated dependencies [dc25a8b]
+- Updated dependencies [20dd3c6]
+- Updated dependencies [1cec0bd]
+- Updated dependencies [6955685]
+- Updated dependencies [b3153a4]
+- Updated dependencies [2093b56]
+- Updated dependencies [0871013]
+- Updated dependencies [0cfc719]
+- Updated dependencies [bca8285]
+- Updated dependencies [01c77ac]
+- Updated dependencies [abcd109]
+- Updated dependencies [f6287ee]
+- Updated dependencies [3338037]
+- Updated dependencies [3c0ed89]
+- Updated dependencies [9fde004]
+- Updated dependencies [5f78b6d]
+- Updated dependencies [d977ea5]
+- Updated dependencies [6625339]
+- Updated dependencies [aef22f1]
+- Updated dependencies [8398bee]
+- Updated dependencies [1bce59c]
+- Updated dependencies [f9db996]
+- Updated dependencies [ce70c3e]
+- Updated dependencies [6811631]
+- Updated dependencies [ff316ee]
+- Updated dependencies [b7c5549]
+- Updated dependencies [34fc56b]
+- Updated dependencies [2441aec]
+- Updated dependencies [1fbc2d5]
+- Updated dependencies [1e72c89]
+- Updated dependencies [1ee1c0f]
+- Updated dependencies [355774f]
+- Updated dependencies [aa9f295]
+- Updated dependencies [b1a864f]
+- Updated dependencies [3a215b2]
+- Updated dependencies [9f1bc72]
+  - @xihan-ui/tokens@4.0.0
+
 ## 3.2.0
 
 ### Minor Changes

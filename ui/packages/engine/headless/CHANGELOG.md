@@ -1,5 +1,139 @@
 # @xihan-ui/headless
 
+## 4.0.0
+
+### Major Changes
+
+- cda1da2: Accordion 缺省形态由 ghost 改为 outline（一块描边面）；不想要外框时显式写 `variant="ghost"`。标题栏收紧为上下 10px 加一行正文行高（md 41px）、横向 12px，展开项字重 500，指示器 16px、弱一档前景；正文改为淡底、正文色、14px，上下各 8px，展开时与标题栏之间一条分隔线；条与条之间的分隔线改为 border-default 通栏。新增覆盖槽 `--xh-accordion-content-bg`、`--xh-accordion-content-pt`、`--xh-accordion-trigger-font-weight-open`。
+- cb92464: Badge 缺省语气由 neutral 改为 danger（未读红点）；在线 / 离线这类状态点请显式写 `tone="success"` / `tone="neutral"`。圆点直径三档改为 4 / 6 / 8px。
+- 8cd4faa: CalendarPicker 与 CalendarRangePicker 的格子与标题栏改版：标题栏改为上下 8px、左右 16px 内衬，下沿一道 1px 通栏分隔线（新增覆盖槽 `--xh-<组件>-header-py / -header-px / -header-border`），标题字重 600 → 500；年 / 月钮 24px 高、悬停换浅底而字色不变（退役 `--xh-<组件>-heading-trigger-fg-hover`，新增 `-heading-trigger-bg-hover`）；四颗翻页钮改为 24px 见方的圆（Action Control xs 档）。网格改为上下 12px、左右 16px 内衬（`-grid-py / -grid-px`），标题栏与网格、星期行与首行之间不再留空当；星期行 32px 高、正文字号常规字重；每列不窄于中号控件高（`-cell-min-w`），周期视图与日视图同宽。
+
+  日期格改为 24px 见方的圆，格子上下各 6px 内衬撑出 36px 行距（`-cell-py / -cell-px` 取代 `-cell-gap`），命中区铺满整格，按下只换面不缩放；邻月日字重回到常规（`-cell-font-weight-outside`）。今天改为数字下方一颗 4px 品牌圆点、数字保持正文色（`-today-mark-size / -today-mark-bg` 取代 `-today-bg / -today-border / -today-fg`），强制色下取系统前景、打印改由描边画满。不可用的日子铺整格淡底横条，相邻几天连成一条带（`-cell-bg-disabled / -disabled-inset`），不可用又选中的格退到再深一档的中性面。月 / 季 / 年格铺满格宽（左右各让 4px，`-period-px`）、24px 高、控件圆角，格间不留缝（退役 `-period-py`、`-year-grid-pe`）。
+
+  范围日历的区间轨道改为 32px 高（`--xh-calendar-range-picker-range-inset`，行距上下各收 2px），两端收成半圆帽，跨周折行处是直边（退役 `-range-row-radius`）；月份区间在一行里连成一条；强制色下落定的区间中段在轨道上下沿画实线。
+
+  Headless 的日历格与日期钮带上 `data-view`（当前视图），翻页钮、标题钮与日期格的 `data-xh-action-size` 由 `sm` 改为 `xs`。
+
+- b79a2d7: 日历选择器与日历范围选择器的星期表头缺省改为单字（`weekdayFormat` 缺省 `narrow`，中文「一 二 三」、英文「M T W」）：「周一」这类缩写几乎占满格宽，表头挤在一起和日期数字争视线。要沿用缩写的写 `weekdayFormat: 'short'`；表头的读屏名称仍是星期全称。日期选择器、日期范围选择器的日历面板随之一起变。
+- 01c77ac: DatePicker 浮层改版：面板自己不留内衬（`--xh-date-picker-content-py / -content-px` 缺省 0），标题栏与网格的内衬由日历给；浮层里的日历标题取常规字重（新增 `--xh-date-picker-heading-font-weight`）。两张日历并排不再画竖线、不另留空当，两条标题栏的分隔线首尾相接（退役 `--xh-date-picker-panel-gap / -panel-divider`）；日历与时间区、快捷选项列之间的分隔线改取 border-default 档。
+
+  快捷选项改为 24px 高的淡底小钮：静息淡底、悬停 / 高亮 200、按下 300，字取 12px 次级前景，悬停 / 高亮 / 按下时换正文色（新增 `-preset-fg-hover`，暗色下 200 / 300 档底上次级前景不足 4.5:1）；选中仍画末端对号（12px），面与字重不变。快捷选项列内衬 10 / 8px、项距 10px（`-preset-group-py / -preset-group-px` 取代 `-preset-group-padding`；新增 `-preset-bg / -preset-fg / -preset-h / -preset-font-size`，退役 `-preset-py / -preset-fg-selected`）。
+
+  时间列：时间格改为 24px 高的通栏条、不取圆角，列内间距 8px 撑出 32px 行距，不再随尺寸档变高，命中区向上下各补半个间距、格与格之间的缝不落空；列顶的上沿描边接着标题栏分隔线画过去，列与列之间不画线；列底留白让末尾几格也能滚到列顶（`-time-column-py` 取代 `-time-column-padding`，退役 `-time-item-py`）。`--xh-overlay-calendar-column-h` 改为与新日历网格同高（宽松 272px、紧凑 244px）。
+
+  确认钮改为 24px 高的小号主钮（headless 的 `data-xh-action-size` 由 `sm` 改为 `xs`），字取 12px（新增 `-confirm-trigger-font-size`）；直接排在面板里时自带 8px 外边距（`-confirm-trigger-margin`）。
+
+- 4ba24e3: DateRangePicker 浮层与 DatePicker 同一套改版：面板自己不留内衬（`--xh-date-range-picker-content-py / -content-px` 缺省 0），浮层里的日历标题取常规字重（新增 `-heading-font-weight`）；两张日历并排不画竖线、不另留空当，两条标题栏分隔线首尾相接（退役 `-panel-gap / -panel-divider`）；快捷选项改为 24px 高的淡底小钮（静息淡底、悬停 200、按下 300，12px 次级前景、交互时换正文色（新增 `-preset-fg-hover`），选中仍画 12px 末端对号），列内衬 10 / 8px、项距 10px（`-preset-group-py / -preset-group-px` 取代 `-preset-group-padding`；新增 `-preset-bg / -preset-fg / -preset-h / -preset-font-size`，退役 `-preset-py / -preset-fg-selected`）。
+
+  showTime 的起止两组时间列：小标题占满与日历标题栏等高的顶带，时间列顶边的描边接着标题栏分隔线画过去；竖线改画在每一组的行内起始边（日历与起点组、起点组与终点组之间各一道），组内列与列之间不画线，两组之间不另留空当（`-column-group-gap` 缺省 0）；时间格改为 24px 高的通栏条、不取圆角，列内间距 8px（命中区向上下各补半个间距，缝里不落空），列底留白让末尾几格也能滚到列顶（`-time-column-py` 取代 `-time-column-padding`，退役 `-time-item-py`）。
+
+  确认钮改为 24px 高的小号主钮（headless 的 `data-xh-action-size` 由 `sm` 改为 `xs`），字取 12px（新增 `-confirm-trigger-font-size`），直接排在面板里时自带 8px 外边距（`-confirm-trigger-margin`）。
+
+- c4ffcb6: Editable 预览态的盒改为无壳：
+
+  - control 的 `data-variant` 在预览态恒为 `ghost`（读起来就是一段文字，悬停才浮出描边），进编辑态才换成 root 的形态（缺省 `outline`）；root 的 `data-variant` 不变
+  - 编辑、确认、取消三颗钮的字形取次要前景 `--xh-fg-muted`；视觉盒仍按字段内钮尺寸表随档（sm / md / lg 取 24 / 28 / 32px，compact 20 / 24 / 28px），确认与取消之间新隔 4px（`--xh-space-1`），紧凑 sm 档两钮中心距不低于 24px
+  - 删除动作组与内容段之间的分隔线及覆盖槽 `--xh-editable-trigger-divider`、`--xh-editable-trigger-divider-h`
+
+- d545868: 就地编辑的预览态不再恒为无壳：control 在预览态与编辑态都取 root 的形态（缺省 `outline`），与别的字段同一副外壳，一眼看得出这是个能改的字段。要沿用「读起来像一段文字、悬停才浮出描边」的观感，显式写 `variant="ghost"`。
+- 5fcee67: ImageViewer 控制层改为扁平取值：
+
+  - 遮罩改取全局遮罩令牌 `--xh-bg-overlay`
+  - 底部工具条改为页面主题的实体面（亮色白面、暗色深面）+ 1px 描边，内距 6 / 16px；连接层在工具条上投影 `data-xh-ink-surface`，条里的钮按工具条底色自成墨色域，视觉盒 36px、字形 16px，悬停 / 按下走白底阶梯。新增组件槽 `--xh-image-viewer-toolbar-bg`
+  - 关闭钮的 `data-xh-action-size` 由「比组件低一档」改为与组件同档；翻页钮与关闭钮的视觉盒改取控件高（md 32px）、字形 16px（lg 20px），翻页钮距边 20px、关闭钮距右上角 32px。新增组件槽 `--xh-image-viewer-nav-size`
+  - 翻页钮、关闭钮与计数仍压在深色半透明 chrome 上
+
+- b06d0b7: LoadingBar 缺省厚度由 2px 改为强调线宽令牌 `--xh-stroke-strong`（3px）：`LOADING_BAR_HEIGHT` 的值改为 `'var(--xh-stroke-strong)'`，`height` 不传时写进内联样式的就是它。进度段露出的前端改为胶囊圆头（行首贴边一端仍是方头），新增组件槽 `--xh-loading-bar-range-radius`。
+- 7eb3d48: NumberField 增减钮改为悬停 / 聚焦时显出，精细指针下上下叠放：
+
+  - 两颗钮的 `data-xh-action-display` 由 `always` 改为 `hover-focus`，control 投影 `data-xh-action-owner`：可悬停的精细指针下平时收起，指针落到盒上或盒里有焦点时显出；粗指针与不能悬停的设备上照旧常显。钮不占 Tab 位，键盘 ↑ / ↓ 步进不受影响
+  - 精细指针下两颗钮上下叠在盒的逻辑末端（宽 `--xh-control-indicator-lg`、四周内收 4px、sm 档 2px、各占盒内高一半），显出时铺淡底、悬停 / 按下沿淡底阶梯升一档、两档，字形改为上下箭头、取 `--xh-control-indicator-sm`；盒的末端让出钮那一截，数值与后缀不排到钮底下。新增覆盖槽 `--xh-number-field-stepper-w`、`--xh-number-field-stepper-inset`、`--xh-number-field-stepper-bg`、`--xh-number-field-stepper-bg-hover`
+  - 钮字改取次要前景 `--xh-fg-muted`；数值改为从起始缘排起（`--xh-number-field-input-align` 缺省 `start`）
+  - 删除输入与动作组之间的分隔线及覆盖槽 `--xh-number-field-trigger-divider`、`--xh-number-field-trigger-divider-h`
+  - 皮肤体积随叠放档上调
+
+- 355774f: TimePicker 浮层改版：面板自己不留内衬（`--xh-time-picker-content-py / -content-px` 缺省 0）；每列宽 64px、七格整行高 224px（紧凑 196px），列顶留 4px、列底留出一截空白，末尾几格（23 时、55–59 分）也能滚到列顶，几列的选中落在同一行（新增 `-column-py`）；列与列之间的分隔线与快捷选项列的分隔线改取 border-default 档。时间格改为 24px 高的通栏条、不取圆角，列内间距 8px 撑出 32px 行距，不再随尺寸档变高，命中区向上下各补半个间距、缝里不落空；选中仍是透明底 + 中等字重 + 末端对号。
+
+  快捷选项改为 24px 高的淡底小钮（静息淡底、悬停 200、按下 300，12px 次级前景、交互时换正文色（新增 `-preset-fg-hover`），选中仍画 12px 末端对号），列内衬 10 / 8px、项距 10px，限高与时间列同档（新增 `-preset-group-py / -preset-bg / -preset-h / -preset-font-size`，退役 `-preset-py / -preset-fg-checked`）。
+
+  多选的「添加」钮改为 24px 高的小号主钮（headless 的 `data-xh-action-size` 由 `sm` 改为 `xs`），字取 12px（新增 `-confirm-trigger-font-size`），自带 8px 外边距（`-confirm-trigger-margin` 取代 `-confirm-trigger-gap`）。
+
+  新增语义令牌 `--xh-overlay-time-column-w`（4rem）与 `--xh-overlay-time-column-h`（七格整行）。
+
+- 6c85079: Transfer 搬运钮由 icon outline 方钮改为 icon subtle 圆钮（淡底、无边）；栏头改为一条淡底（新增覆盖槽 `--xh-transfer-panel-header-bg`），不再画下分隔线，上下 12px、标题字重 500；列表去掉内衬改通栏行、行不切圆角，行至少一个同档控件高（md 32px，新增 `--xh-transfer-item-h`），列表定高改为 `--xh-viewport-h-sm`；面板与搬运钮之间 20px。
+- 0ca08e5: Tree 缺省形态由 outline 改为 ghost（直接落在页面或宿主面上），要外框时显式写 `variant="outline"`。行内内衬收为一条窄边（sm / md / lg 2 / 4 / 6px），缩进改为「箭头盒 + 箭头到文字的间距」（md 24px，子节点箭头对齐父节点文字起点），行与行之间不再留缝；展开箭头在 16px 盒里只画 12px、改取次级前景；连接线改为 border-default；分支在取子节点时转圈改为品牌色（新增覆盖槽 `--xh-tree-branch-loading-fg`）。
+
+### Minor Changes
+
+- 144c5f1: DatePicker 新增底栏 `footer` 部件：浮层底部的通栏操作区，写在 `content` 里、排在面板主体之后，确认钮通常放在它里面。headless 新增 `getFooterProps`（只带 scope / part，不报角色、不占 Tab 位、不进任何集合的拥有关系）；Vue / React 新增 `XhDatePickerFooter`，Web Components 认 `data-xh-part="footer"`。
+
+  皮肤：底栏独占一行，上沿一道 border-default 分隔线、四周 8px 内衬，字取 12px 次级前景；首个子节点占满余宽排在行首，确认钮落在行尾。底栏里只有确认钮、而确认钮因未开 `showTime` 收起时，底栏一并收起。新增 `--xh-date-picker-footer-gap / -footer-py / -footer-px / -footer-border / -footer-fg / -footer-font-size`。确认钮直接排在 `content` 里的写法照旧可用。
+
+- 16ad922: DateRangePicker 新增底栏 `footer` 部件：浮层底部的通栏操作区，写在 `content` 里、排在面板主体之后，确认钮通常放在它里面。headless 新增 `getFooterProps`（只带 scope / part，不报角色、不占 Tab 位、不进任何集合的拥有关系）；Vue / React 新增 `XhDateRangePickerFooter`，Web Components 认 `data-xh-part="footer"`。
+
+  皮肤：底栏落在日历与起止两组时间列下面独占一行，上沿一道 border-default 分隔线、四周 8px 内衬，字取 12px 次级前景；首个子节点占满余宽排在行首，确认钮落在行尾。底栏里只有确认钮、而确认钮因未开 `showTime` 收起时，底栏一并收起。新增 `--xh-date-range-picker-footer-gap / -footer-py / -footer-px / -footer-border / -footer-fg / -footer-font-size`。确认钮直接排在 `content` 里的写法照旧可用。
+
+- 0b7fd0a: 字段集整组禁用压进子树：组内组件库的控件各自拿到 `disabled`，行为与禁用面一起到位。此前只靠原生 `fieldset[disabled]`：原生表单控件行为上被禁了，外观却不变灰（各家族认的是 `data-disabled`），滑块拇指这类 `div` 交互节点更是照样能用。现在 Fieldset 把禁用作为作用域配置下发（Vue `provideXhConfig`、React `XhConfigProvider`、`<xh-fieldset>` 本身就是作用域），与原生语义一致：外层禁了，组件自己写 `false` 也拦不住；首个 legend 里的控件不受本组禁用，常用来放「启用这一组」的开关。配置新增 `disabled` 键，`<xh-config>` / `provideXhConfig` / `XhConfigProvider` 也可以用它禁用一整棵子树。
+- 40c502e: 看片层收起时也能换下标：缩略图墙上点哪一张，先 `setIndex` 再 `setOpen(true)`，一打开就是那一张。此前收起态丢掉换下标，点哪张都从第一张打开；先展开再换下标又会闪一下上次看的那张。
+- 318e66d: PageHeader 副标题改与标题同一行（窄于 640px 时仍回到下一行），二者之间一条 1 × 16px 竖线、两侧各 12px（新增覆盖槽 `--xh-page-header-divider`），副标题改 14px、弱一档前景；返回位接动作钮家族的 icon ghost 档（lg 页头取 md 档、其余 sm 档），字取次级前景（新增 `--xh-page-header-back-fg`、`--xh-page-header-back-fg-hover`），不必再给按钮写内联样式。面包屑到标题收到 4px，带面包屑的缺省档上下内衬收到 12px，页脚与标题行再隔 12px；ghost + split 的贴底线改为 border-default。
+- a00a675: Spinner 与加载环改为品牌色的 270° 弧：
+
+  - Spinner 三档形态的弧色缺省由 `currentColor` 改为 `--xh-fg-brand`；环档不再画轨道，改为一段 270° 的弧、起始边留缺口（`--xh-spinner-track` 现在给缺口那一段上色，缺省透明）
+  - 加载环家族配方同一口径：占位、图表等处的环取品牌色；压在动作钮上的环（Button、Clipboard、DownloadTrigger、Popconfirm、Form 提交）仍随钮的字色
+  - 配文改为品牌色、正文字号、中等字重；新增组件槽 `--xh-spinner-label-weight`
+  - Spinner 新增 `orientation`（`horizontal` | `vertical`，缺省 `horizontal`，投影 `data-orientation`）：竖排时转圈在上、配文在下，间距 6px
+  - 强制色下弧取 Highlight、缺口取 Canvas
+
+- 92acdb6: TimePicker 新增底栏 `footer` 部件：浮层底部的通栏操作区，写在 `content` 里、排在各列之后，多选的「添加」（`confirm-trigger`）通常放在它里面。headless 新增 `getFooterProps`（只带 scope / part，不报角色、不占 Tab 位、不进任何集合的拥有关系）；Vue / React 新增 `XhTimePickerFooter`，Web Components 认 `data-xh-part="footer"`。
+
+  皮肤：有底栏时面板折行，底栏落在快捷选项列与各列下面独占一行，上沿一道 border-default 分隔线、四周 8px 内衬，字取 12px 次级前景；首个子节点占满余宽排在行首，「添加」落在行尾；底栏不参与撑宽，面板的宽仍由各列定。底栏里只有「添加」、而「添加」在单选下收起时，底栏一并收起。新增 `--xh-time-picker-footer-gap / -footer-py / -footer-px / -footer-border / -footer-fg / -footer-font-size`。「添加」直接排在 `content` 里的写法照旧可用。
+
+### Patch Changes
+
+- b3153a4: 图表入场放慢：`--xh-motion-duration-reveal` 由 640ms 调到 960ms，柱长出、扇区扫开与漏斗、雷达、桑基、关系、层级图的入场曲线由 `enter-strong` 换成平缓的 `enter`。原来的强减速把位移压在头一两百毫秒，一张图一闪就画完；现在位移摊在整段里，看得清标记是长出来的。折线描出仍取 `continuous`，数据更新（`morph`，400ms）不变。数值动画不写 `easing` 时首次滚动与图表里的数字同一口径，一起换成 `enter`。
+- ddd866c: 图表内核的缺省度量 `radius` 由 4 改为 2，与它对账的 `--xh-shape-inset` 同值（读不到皮肤度量时的兜底不再比皮肤圆一档）。
+- 2093b56: 图表新增三套配色方案：在任意祖先上写 `data-xh-chart-palette` 即把分类色槽与色块内文字整套换掉，写在 `<html>` 上全站生效，嵌套区域写 `categorical` 改回缺省的多彩分类。
+
+  - `monochrome` 主题单色：品牌色阶由深到浅，色槽 1 是主题色，随 `data-brand` 换色
+  - `brand` 柔和品牌：品牌色相两侧的冷色一族加一抹粉
+  - `muted` 莫兰迪柔彩：基础色与中性档混合的低彩度色板
+
+  每套方案都有亮暗两份取值（`--xh-chart-palette-<方案>-N` 与 `--xh-chart-palette-<方案>-on-N`），由门禁按各自的规则复验。画布渲染的图表在方案切换时跟着重画。
+
+  另：有序与顺序色阶改取品牌色阶（基线取值不变，`data-brand` 换色时一起换）；面积淡洗的不透明度 `--xh-chart-area-alpha` 由 0.1 调到 0.2。
+
+- 4a3adf4: Notification：每个位置最新的那一条不再参与上限挤出。此前满员时按「先低优先级」挤，三条警告占满后再来一条成功，成功那条刚创建就被挤掉、看起来像点了没反应；现在挤出只在其余条目里按「先低优先级、同级里先最旧」进行。只留一格（`max: 1`）时最新一条照样留下，旧的报错让位。
+- e2552fc: Notification：
+
+  - 叠成一摞时，一条开始退场，其余几条当场补上它让出的层、与它的退场同时走，不再等它播完收起才整摞一跳；退场的那条保留原来的层级压在上面。
+  - 还在台上就被移出队列的卡片（超出上限被挤掉、`dismiss` / `dismissAll` 直接删）由列表动效的离场替身在原处播完退场再撤，逐条排开与叠成一摞两种都放；Web Components 删的是包着卡片的元素，外壳里的卡片同样认。队列照旧立即移出。
+
+- adb26bd: TimePicker 与 TimeRangePicker 浮层里按 Tab 不再立即收起：焦点按 Tab 序列在各列、快捷选项列与底栏之间走，走出浮层才收起且不抢回焦点。多选时键盘用户可以 Tab 到「添加」并按 Enter 收进值，列上的 Enter 处理器不再截走底栏按钮的按键。
+- 9f1bc72: 视觉尺度整体调整：
+
+  - 圆角：control 与 inset 由 4px 改为 2px，surface 由 8px 改为 4px，overlay 由 12px 改为 4px（`--xh-radius-sm/md/lg` 改为 2 / 4 / 8px，`--xh-shape-overlay` 改指 `--xh-radius-md`）
+  - 控件高：comfortable 由 32 / 36 / 40px 改为 28 / 32 / 36px，compact 由 28 / 32 / 36px 改为 24 / 28 / 32px；方格与 Switch 轨道同步换档（Switch md 24px）
+  - 中性色换成冷灰阶，亮色正文改取 neutral 900，页面底 `--xh-bg-page` 改取 neutral 100；淡底阶梯随之落在 4.7% / 10.2% / 16.9%
+  - 标签与按钮字重 `--xh-text-label-weight` 由 500 改为 400
+  - 按压只换面：`--xh-motion-scale-press` 由 0.97 改为 1，主题写回 0.97 即恢复按下回弹
+  - 锚定浮层（frosted 配方）改为实体底 + 1px 描边 + 一层 `0 4px 10px` 投影，不再透景模糊；模态与通知面（elevated 配方）投影改为一层 `0 4px 12px`
+  - `--xh-elevation-raised` 缺省 none（平面卡片），`--xh-elevation-floating` / `-lifted` / `-sheet` 改为单层柔和投影
+  - 表格单元格纵向内距加一档（md 12px）
+
+  依赖控件高度、圆角或浮层透景的页面布局需要复查；要找回旧尺度，在根上覆盖对应令牌即可。
+
+- Updated dependencies [b3153a4]
+- Updated dependencies [0116647]
+- Updated dependencies [2724f92]
+- Updated dependencies [018b5b1]
+- Updated dependencies [c2dc637]
+- Updated dependencies [3473495]
+- Updated dependencies [6cf0550]
+  - @xihan-ui/motion@4.0.0
+  - @xihan-ui/core@4.0.0
+  - @xihan-ui/pointer@4.0.0
+  - @xihan-ui/viz@4.0.0
+
 ## 3.2.0
 
 ### Minor Changes

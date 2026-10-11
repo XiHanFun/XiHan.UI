@@ -1,5 +1,79 @@
 # @xihan-ui/web-components
 
+## 4.0.0
+
+### Minor Changes
+
+- 144c5f1: DatePicker 新增底栏 `footer` 部件：浮层底部的通栏操作区，写在 `content` 里、排在面板主体之后，确认钮通常放在它里面。headless 新增 `getFooterProps`（只带 scope / part，不报角色、不占 Tab 位、不进任何集合的拥有关系）；Vue / React 新增 `XhDatePickerFooter`，Web Components 认 `data-xh-part="footer"`。
+
+  皮肤：底栏独占一行，上沿一道 border-default 分隔线、四周 8px 内衬，字取 12px 次级前景；首个子节点占满余宽排在行首，确认钮落在行尾。底栏里只有确认钮、而确认钮因未开 `showTime` 收起时，底栏一并收起。新增 `--xh-date-picker-footer-gap / -footer-py / -footer-px / -footer-border / -footer-fg / -footer-font-size`。确认钮直接排在 `content` 里的写法照旧可用。
+
+- 16ad922: DateRangePicker 新增底栏 `footer` 部件：浮层底部的通栏操作区，写在 `content` 里、排在面板主体之后，确认钮通常放在它里面。headless 新增 `getFooterProps`（只带 scope / part，不报角色、不占 Tab 位、不进任何集合的拥有关系）；Vue / React 新增 `XhDateRangePickerFooter`，Web Components 认 `data-xh-part="footer"`。
+
+  皮肤：底栏落在日历与起止两组时间列下面独占一行，上沿一道 border-default 分隔线、四周 8px 内衬，字取 12px 次级前景；首个子节点占满余宽排在行首，确认钮落在行尾。底栏里只有确认钮、而确认钮因未开 `showTime` 收起时，底栏一并收起。新增 `--xh-date-range-picker-footer-gap / -footer-py / -footer-px / -footer-border / -footer-fg / -footer-font-size`。确认钮直接排在 `content` 里的写法照旧可用。
+
+- e23f5a5: 字段族控件放进表格格子（就地编辑的单元格）铺满这一格：格子声明 `--xh-control-w: 100%`，与放进 Field、字段数组的行时一样，并排几个就平分。Web Components 里 20 个字段族组件（文本框、数字框、选择器、日期与时间选择器等）的宿主缺省 `display: contents`：宿主不再是外层 flex / grid 里多出来的一层按内容定宽的盒子，作者写的 root 直接参与排布，与 Vue / React 直接渲染 root 一致；作者自己给宿主写了 `display` 就不动。此前放进表格格子的字段在 WC 里只剩几十像素宽，示例只好在宿主上手写 `inline-size` 与 `--xh-control-w`。
+- 0b7fd0a: 字段集整组禁用压进子树：组内组件库的控件各自拿到 `disabled`，行为与禁用面一起到位。此前只靠原生 `fieldset[disabled]`：原生表单控件行为上被禁了，外观却不变灰（各家族认的是 `data-disabled`），滑块拇指这类 `div` 交互节点更是照样能用。现在 Fieldset 把禁用作为作用域配置下发（Vue `provideXhConfig`、React `XhConfigProvider`、`<xh-fieldset>` 本身就是作用域），与原生语义一致：外层禁了，组件自己写 `false` 也拦不住；首个 legend 里的控件不受本组禁用，常用来放「启用这一组」的开关。配置新增 `disabled` 键，`<xh-config>` / `provideXhConfig` / `XhConfigProvider` 也可以用它禁用一整棵子树。
+- a00a675: Spinner 与加载环改为品牌色的 270° 弧：
+
+  - Spinner 三档形态的弧色缺省由 `currentColor` 改为 `--xh-fg-brand`；环档不再画轨道，改为一段 270° 的弧、起始边留缺口（`--xh-spinner-track` 现在给缺口那一段上色，缺省透明）
+  - 加载环家族配方同一口径：占位、图表等处的环取品牌色；压在动作钮上的环（Button、Clipboard、DownloadTrigger、Popconfirm、Form 提交）仍随钮的字色
+  - 配文改为品牌色、正文字号、中等字重；新增组件槽 `--xh-spinner-label-weight`
+  - Spinner 新增 `orientation`（`horizontal` | `vertical`，缺省 `horizontal`，投影 `data-orientation`）：竖排时转圈在上、配文在下，间距 6px
+  - 强制色下弧取 Highlight、缺口取 Canvas
+
+- 92acdb6: TimePicker 新增底栏 `footer` 部件：浮层底部的通栏操作区，写在 `content` 里、排在各列之后，多选的「添加」（`confirm-trigger`）通常放在它里面。headless 新增 `getFooterProps`（只带 scope / part，不报角色、不占 Tab 位、不进任何集合的拥有关系）；Vue / React 新增 `XhTimePickerFooter`，Web Components 认 `data-xh-part="footer"`。
+
+  皮肤：有底栏时面板折行，底栏落在快捷选项列与各列下面独占一行，上沿一道 border-default 分隔线、四周 8px 内衬，字取 12px 次级前景；首个子节点占满余宽排在行首，「添加」落在行尾；底栏不参与撑宽，面板的宽仍由各列定。底栏里只有「添加」、而「添加」在单选下收起时，底栏一并收起。新增 `--xh-time-picker-footer-gap / -footer-py / -footer-px / -footer-border / -footer-fg / -footer-font-size`。「添加」直接排在 `content` 里的写法照旧可用。
+
+- e882f1a: Web Components 补上与 Vue / React `asChild` 等价的写法：嵌套的组件宿主自己带 `data-xh-part` 即担任外层的那个部件。最常见的是拿组件库的按钮当菜单或浮层的触发器——`<xh-menu><xh-button data-xh-part="trigger" variant="subtle"><button data-xh-part="root">操作</button></xh-button>…</xh-menu>`。外层的接线（ARIA、开合、键盘）按 asChild 的规则合进按钮自己的根节点：按钮保留自己的解剖与形态，定位锚点与焦点归还落在这个原生 button 上。此前嵌套的 `xh-*` 一律跳过，WC 的触发器只能写原生 button，套不上组件库按钮的外观。目前 `xh-button` 支持这样担任别的组件的部件。
+
+### Patch Changes
+
+- b79a2d7: 日历选择器与日历范围选择器的星期表头缺省改为单字（`weekdayFormat` 缺省 `narrow`，中文「一 二 三」、英文「M T W」）：「周一」这类缩写几乎占满格宽，表头挤在一起和日期数字争视线。要沿用缩写的写 `weekdayFormat: 'short'`；表头的读屏名称仍是星期全称。日期选择器、日期范围选择器的日历面板随之一起变。
+- Updated dependencies [cda1da2]
+- Updated dependencies [cb92464]
+- Updated dependencies [8cd4faa]
+- Updated dependencies [b79a2d7]
+- Updated dependencies [b3153a4]
+- Updated dependencies [ddd866c]
+- Updated dependencies [2093b56]
+- Updated dependencies [01c77ac]
+- Updated dependencies [144c5f1]
+- Updated dependencies [4ba24e3]
+- Updated dependencies [16ad922]
+- Updated dependencies [c4ffcb6]
+- Updated dependencies [d545868]
+- Updated dependencies [0b7fd0a]
+- Updated dependencies [5fcee67]
+- Updated dependencies [40c502e]
+- Updated dependencies [0116647]
+- Updated dependencies [2724f92]
+- Updated dependencies [018b5b1]
+- Updated dependencies [c2dc637]
+- Updated dependencies [3473495]
+- Updated dependencies [6cf0550]
+- Updated dependencies [b06d0b7]
+- Updated dependencies [4a3adf4]
+- Updated dependencies [e2552fc]
+- Updated dependencies [7eb3d48]
+- Updated dependencies [318e66d]
+- Updated dependencies [a00a675]
+- Updated dependencies [355774f]
+- Updated dependencies [92acdb6]
+- Updated dependencies [adb26bd]
+- Updated dependencies [6c85079]
+- Updated dependencies [0ca08e5]
+- Updated dependencies [9f1bc72]
+  - @xihan-ui/headless@4.0.0
+  - @xihan-ui/motion@4.0.0
+  - @xihan-ui/core@4.0.0
+  - @xihan-ui/code-highlight@4.0.0
+  - @xihan-ui/position@4.0.0
+  - @xihan-ui/pointer@4.0.0
+  - @xihan-ui/viz@4.0.0
+  - @xihan-ui/backgrounds@4.0.0
+
 ## 3.2.0
 
 ### Minor Changes
