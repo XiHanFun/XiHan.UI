@@ -18,7 +18,17 @@ import {
   minimalSoundTheme,
   softSoundTheme,
 } from "@xihan-ui/sound";
-import { XhButton, XhRadioGroupRoot, XhSwitch } from "@xihan-ui/vue";
+import {
+  XhButton,
+  XhRadioGroupRoot,
+  XhSliderControl,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+  XhSwitch,
+} from "@xihan-ui/vue";
 import { onBeforeUnmount, ref, watch } from "vue";
 
 const themes: Record<string, SoundTheme> = {
@@ -36,11 +46,12 @@ const options = [
 // 建播放器不碰音频上下文，等第一次真的发声才建，放 setup 里是安全的
 const player = createSoundPlayer();
 const theme = ref("default");
-const volume = ref(0.5);
+// 滑块的值恒为数组，单滑块只有一项
+const volume = ref<[number]>([0.5]);
 const enabled = ref(true);
 
 watch(theme, name => player.setTheme(themes[name] ?? defaultSoundTheme));
-watch(volume, value => player.setVolume(value));
+watch(volume, ([value]) => player.setVolume(value));
 watch(enabled, on => player.setEnabled(on));
 
 onBeforeUnmount(() => player.dispose());
@@ -55,10 +66,22 @@ onBeforeUnmount(() => player.dispose());
         label="主题"
         name="sound-theme"
       />
-      <label style="display: flex; align-items: center; gap: 8px">
-        音量
-        <input v-model.number="volume" type="range" min="0" max="1" step="0.05">
-      </label>
+      <XhSliderRoot
+        :value="volume"
+        :min="0"
+        :max="1"
+        :step="0.05"
+        style="inline-size: var(--xh-control-w)"
+        @update:value="volume = $event as [number]"
+      >
+        <XhSliderLabel>音量</XhSliderLabel>
+        <XhSliderControl>
+          <XhSliderTrack>
+            <XhSliderRange />
+          </XhSliderTrack>
+          <XhSliderThumb />
+        </XhSliderControl>
+      </XhSliderRoot>
       <label style="display: flex; align-items: center; gap: 8px">
         出声
         <XhSwitch v-model:checked="enabled" />
@@ -103,10 +126,17 @@ onBeforeUnmount(() => player.dispose());
         </div>
       </div>
     </xh-radio-group>
-    <label style="display: flex; align-items: center; gap: 8px">
-      音量
-      <input id="sound-play-volume" type="range" min="0" max="1" step="0.05" value="0.5" />
-    </label>
+    <xh-slider id="sound-play-volume" default-value="0.5" min="0" max="1" step="0.05">
+      <div data-xh-part="root" style="inline-size: var(--xh-control-w)">
+        <label data-xh-part="label">音量</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
     <label style="display: flex; align-items: center; gap: 8px">
       出声
       <xh-switch id="sound-play-enabled" default-checked>
@@ -142,7 +172,8 @@ onBeforeUnmount(() => player.dispose());
   document.getElementById("sound-play-theme").addEventListener("value-change", (event) => {
     player.setTheme(themes[event.detail.value] ?? defaultSoundTheme);
   });
-  volume.addEventListener("input", () => player.setVolume(Number(volume.value)));
+  // 滑块的值恒为数组，单滑块只有一项
+  volume.addEventListener("value-change", (event) => player.setVolume(event.detail.value[0]));
   document.getElementById("sound-play-enabled").addEventListener("checked-change", (event) => {
     player.setEnabled(event.detail.checked);
   });
@@ -191,8 +222,17 @@ const ding: SoundSpec = {
 <script setup lang="ts">
 import type { OscillatorLayer, SoundSpec } from "@xihan-ui/sound";
 import { createSoundPlayer, glide, strike } from "@xihan-ui/sound";
-import { XhButton, XhRadioGroupRoot } from "@xihan-ui/vue";
-import { computed, onBeforeUnmount, ref } from "vue";
+import {
+  XhButton,
+  XhRadioGroupRoot,
+  XhSliderControl,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+} from "@xihan-ui/vue";
+import { computed, onBeforeUnmount, reactive, ref } from "vue";
 
 const waves = [
   { value: "sine", label: "sine" },
@@ -201,26 +241,41 @@ const waves = [
   { value: "sawtooth", label: "sawtooth" },
 ];
 
-const wave = ref<OscillatorLayer["wave"]>("triangle");
-const from = ref(880);
-const to = ref(1320);
-const attack = ref(5);
-const decay = ref(180);
-const peak = ref(0.3);
-const space = ref(0.15);
+type Param = "from" | "to" | "attack" | "decay" | "peak" | "space";
 
-const seconds = computed(() => Math.max(0.01, decay.value / 1000));
+// 六个参数各一条滑块：标签、单位与取值范围
+const knobs: { key: Param; label: string; unit: string; min: number; max: number; step: number }[] = [
+  { key: "from", label: "起始", unit: "Hz", min: 80, max: 2400, step: 10 },
+  { key: "to", label: "终止", unit: "Hz", min: 80, max: 2400, step: 10 },
+  { key: "attack", label: "起音", unit: "ms", min: 1, max: 80, step: 1 },
+  { key: "decay", label: "衰减", unit: "ms", min: 20, max: 900, step: 10 },
+  { key: "peak", label: "峰值", unit: "", min: 0.05, max: 0.6, step: 0.05 },
+  { key: "space", label: "空间", unit: "", min: 0, max: 0.6, step: 0.05 },
+];
+
+const wave = ref<OscillatorLayer["wave"]>("triangle");
+// 滑块的值恒为数组，单滑块只有一项
+const params = reactive<Record<Param, [number]>>({
+  from: [880],
+  to: [1320],
+  attack: [5],
+  decay: [180],
+  peak: [0.3],
+  space: [0.15],
+});
+
+const seconds = computed(() => Math.max(0.01, params.decay[0] / 1000));
 
 const spec = computed<SoundSpec>(() => ({
   layers: [
     {
       kind: "oscillator",
       wave: wave.value,
-      frequency: glide(from.value, to.value, seconds.value),
-      gain: strike(peak.value, attack.value / 1000, seconds.value),
+      frequency: glide(params.from[0], params.to[0], seconds.value),
+      gain: strike(params.peak[0], params.attack[0] / 1000, seconds.value),
     },
   ],
-  space: space.value,
+  space: params.space[0],
 }));
 
 const code = computed(
@@ -229,11 +284,11 @@ const code = computed(
     {
       kind: 'oscillator',
       wave: '${wave.value}',
-      frequency: glide(${from.value}, ${to.value}, ${seconds.value.toFixed(3)}),
-      gain: strike(${peak.value}, ${(attack.value / 1000).toFixed(3)}, ${seconds.value.toFixed(3)}),
+      frequency: glide(${params.from[0]}, ${params.to[0]}, ${seconds.value.toFixed(3)}),
+      gain: strike(${params.peak[0]}, ${(params.attack[0] / 1000).toFixed(3)}, ${seconds.value.toFixed(3)}),
     },
   ],
-  space: ${space.value},
+  space: ${params.space[0]},
 })`,
 );
 
@@ -252,30 +307,23 @@ onBeforeUnmount(() => player.dispose());
         gap: 10px 20px;
       "
     >
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">起始 {{ from }}Hz</span>
-        <input v-model.number="from" type="range" min="80" max="2400" step="10">
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">终止 {{ to }}Hz</span>
-        <input v-model.number="to" type="range" min="80" max="2400" step="10">
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">起音 {{ attack }}ms</span>
-        <input v-model.number="attack" type="range" min="1" max="80" step="1">
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">衰减 {{ decay }}ms</span>
-        <input v-model.number="decay" type="range" min="20" max="900" step="10">
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">峰值 {{ peak }}</span>
-        <input v-model.number="peak" type="range" min="0.05" max="0.6" step="0.05">
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">空间 {{ space }}</span>
-        <input v-model.number="space" type="range" min="0" max="0.6" step="0.05">
-      </label>
+      <XhSliderRoot
+        v-for="knob in knobs"
+        :key="knob.key"
+        :value="params[knob.key]"
+        :min="knob.min"
+        :max="knob.max"
+        :step="knob.step"
+        @update:value="params[knob.key] = $event as [number]"
+      >
+        <XhSliderLabel>{{ knob.label }} {{ params[knob.key][0] }}{{ knob.unit }}</XhSliderLabel>
+        <XhSliderControl>
+          <XhSliderTrack>
+            <XhSliderRange />
+          </XhSliderTrack>
+          <XhSliderThumb />
+        </XhSliderControl>
+      </XhSliderRoot>
     </div>
 
     <div>
@@ -287,8 +335,8 @@ onBeforeUnmount(() => player.dispose());
       style="
         margin: 0;
         padding: 12px 14px;
-        border-radius: 8px;
-        background: var(--vp-c-bg-soft);
+        border-radius: var(--xh-shape-surface);
+        background: var(--xh-bg-subtle);
         font-size: 12px;
         line-height: 1.6;
         overflow-x: auto;
@@ -333,30 +381,60 @@ onBeforeUnmount(() => player.dispose());
       gap: 10px 20px;
     "
   >
-    <label style="display: flex; align-items: center; gap: 8px">
-      <span style="width: 76px">起始 <output for="sound-designer-from">880</output>Hz</span>
-      <input id="sound-designer-from" name="from" type="range" min="80" max="2400" step="10" value="880" />
-    </label>
-    <label style="display: flex; align-items: center; gap: 8px">
-      <span style="width: 76px">终止 <output for="sound-designer-to">1320</output>Hz</span>
-      <input id="sound-designer-to" name="to" type="range" min="80" max="2400" step="10" value="1320" />
-    </label>
-    <label style="display: flex; align-items: center; gap: 8px">
-      <span style="width: 76px">起音 <output for="sound-designer-attack">5</output>ms</span>
-      <input id="sound-designer-attack" name="attack" type="range" min="1" max="80" step="1" value="5" />
-    </label>
-    <label style="display: flex; align-items: center; gap: 8px">
-      <span style="width: 76px">衰减 <output for="sound-designer-decay">180</output>ms</span>
-      <input id="sound-designer-decay" name="decay" type="range" min="20" max="900" step="10" value="180" />
-    </label>
-    <label style="display: flex; align-items: center; gap: 8px">
-      <span style="width: 76px">峰值 <output for="sound-designer-peak">0.3</output></span>
-      <input id="sound-designer-peak" name="peak" type="range" min="0.05" max="0.6" step="0.05" value="0.3" />
-    </label>
-    <label style="display: flex; align-items: center; gap: 8px">
-      <span style="width: 76px">空间 <output for="sound-designer-space">0.15</output></span>
-      <input id="sound-designer-space" name="space" type="range" min="0" max="0.6" step="0.05" value="0.15" />
-    </label>
+    <xh-slider data-param="from" default-value="880" min="80" max="2400" step="10">
+      <div data-xh-part="root">
+        <label data-xh-part="label">起始 <span data-value>880</span>Hz</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track"><div data-xh-part="range"></div></div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
+    <xh-slider data-param="to" default-value="1320" min="80" max="2400" step="10">
+      <div data-xh-part="root">
+        <label data-xh-part="label">终止 <span data-value>1320</span>Hz</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track"><div data-xh-part="range"></div></div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
+    <xh-slider data-param="attack" default-value="5" min="1" max="80" step="1">
+      <div data-xh-part="root">
+        <label data-xh-part="label">起音 <span data-value>5</span>ms</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track"><div data-xh-part="range"></div></div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
+    <xh-slider data-param="decay" default-value="180" min="20" max="900" step="10">
+      <div data-xh-part="root">
+        <label data-xh-part="label">衰减 <span data-value>180</span>ms</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track"><div data-xh-part="range"></div></div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
+    <xh-slider data-param="peak" default-value="0.3" min="0.05" max="0.6" step="0.05">
+      <div data-xh-part="root">
+        <label data-xh-part="label">峰值 <span data-value>0.3</span></label>
+        <div data-xh-part="control">
+          <div data-xh-part="track"><div data-xh-part="range"></div></div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
+    <xh-slider data-param="space" default-value="0.15" min="0" max="0.6" step="0.05">
+      <div data-xh-part="root">
+        <label data-xh-part="label">空间 <span data-value>0.15</span></label>
+        <div data-xh-part="control">
+          <div data-xh-part="track"><div data-xh-part="range"></div></div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
   </div>
 
   <div>
@@ -371,8 +449,8 @@ onBeforeUnmount(() => player.dispose());
     style="
       margin: 0;
       padding: 12px 14px;
-      border-radius: 8px;
-      background: var(--vp-c-bg-soft);
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
       font-size: 12px;
       line-height: 1.6;
       overflow-x: auto;
@@ -386,13 +464,15 @@ onBeforeUnmount(() => player.dispose());
   const root = document.getElementById("sound-designer");
   const player = createSoundPlayer();
 
-  // 每个滑块按自己的 name 写回同名参数，读数跟着滑块走
+  // 每个滑块按自己的 data-param 写回同名参数，标签里的读数跟着滑块走；滑块的值恒为数组，单滑块只有一项
   const params = { wave: "triangle" };
-  for (const slider of root.querySelectorAll("input[type=range]")) {
-    params[slider.name] = Number(slider.value);
-    slider.addEventListener("input", () => {
-      params[slider.name] = Number(slider.value);
-      root.querySelector(`output[for="${slider.id}"]`).textContent = slider.value;
+  for (const slider of root.querySelectorAll("xh-slider")) {
+    const key = slider.dataset.param;
+    const text = slider.querySelector("[data-value]");
+    params[key] = Number(slider.getAttribute("default-value"));
+    slider.addEventListener("value-change", (event) => {
+      params[key] = event.detail.value[0];
+      text.textContent = params[key];
       render();
     });
   }

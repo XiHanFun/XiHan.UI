@@ -176,6 +176,9 @@ const files = ["设计稿.fig", "接口文档.md", "会议纪要.docx"];
 ```vue
 <script setup lang="ts">
 import {
+  XhAvatarFallback,
+  XhAvatarRoot,
+  XhButton,
   XhListItem,
   XhListItemAction,
   XhListItemContent,
@@ -195,22 +198,17 @@ const members = [
   <XhListRoot variant="outline" hoverable split style="max-inline-size: 420px">
     <XhListItem v-for="m in members" :key="m.name">
       <!-- 媒体位画什么由使用者决定，这里放一个首字头像 -->
-      <XhListItemMedia
-        style="
-          inline-size: 32px;
-          block-size: 32px;
-          border-radius: 999px;
-          background: var(--xh-bg-subtle);
-        "
-      >
-        {{ m.initial }}
+      <XhListItemMedia>
+        <XhAvatarRoot>
+          <XhAvatarFallback>{{ m.initial }}</XhAvatarFallback>
+        </XhAvatarRoot>
       </XhListItemMedia>
       <XhListItemContent>
         <XhListItemTitle>{{ m.name }}</XhListItemTitle>
         <XhListItemDescription>{{ m.desc }}</XhListItemDescription>
       </XhListItemContent>
       <XhListItemAction>
-        <button type="button">移除</button>
+        <XhButton variant="outline" size="sm">移除</XhButton>
       </XhListItemAction>
     </XhListItem>
   </XhListRoot>
@@ -218,37 +216,44 @@ const members = [
 ```
 
 ```html
-<style>
-  #list-media-action [data-xh-part="item-media"] {
-    inline-size: 32px;
-    block-size: 32px;
-    border-radius: 999px;
-    background: var(--xh-bg-subtle);
-  }
-</style>
-
 <!-- 宿主设 display: contents，列表落在 root 上 -->
-<xh-list id="list-media-action" variant="outline" hoverable split style="display: contents">
+<xh-list variant="outline" hoverable split style="display: contents">
   <ul data-xh-part="root" style="max-inline-size: 420px">
     <li data-xh-part="item">
       <!-- 媒体位画什么由使用者决定，这里放一个首字头像 -->
-      <div data-xh-part="item-media">张</div>
+      <div data-xh-part="item-media">
+        <xh-avatar>
+          <span data-xh-part="root">
+            <span data-xh-part="fallback">张</span>
+          </span>
+        </xh-avatar>
+      </div>
       <div data-xh-part="item-content">
         <div data-xh-part="item-title">张三</div>
         <div data-xh-part="item-description">zhangsan@example.com</div>
       </div>
       <div data-xh-part="item-action">
-        <button type="button">移除</button>
+        <xh-button variant="outline" size="sm">
+          <button data-xh-part="root">移除</button>
+        </xh-button>
       </div>
     </li>
     <li data-xh-part="item">
-      <div data-xh-part="item-media">李</div>
+      <div data-xh-part="item-media">
+        <xh-avatar>
+          <span data-xh-part="root">
+            <span data-xh-part="fallback">李</span>
+          </span>
+        </xh-avatar>
+      </div>
       <div data-xh-part="item-content">
         <div data-xh-part="item-title">李四</div>
         <div data-xh-part="item-description">lisi@example.com</div>
       </div>
       <div data-xh-part="item-action">
-        <button type="button">移除</button>
+        <xh-button variant="outline" size="sm">
+          <button data-xh-part="root">移除</button>
+        </xh-button>
       </div>
     </li>
   </ul>
@@ -712,12 +717,13 @@ async function loadMore() {
 | `--xh-list-action-gap` | `item-action` | `gap` | `default` | `--xh-space-2` | list 的 item-action 部件 gap 覆盖槽。 |
 | `--xh-list-bg` | `root` | `background` | `variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | list 的 root 部件 background 覆盖槽。 |
 | `--xh-list-border` | `root` | `border` | `variant=outline` | `--xh-border-default` | list 的 root 部件 border 覆盖槽。 |
-| `--xh-list-content-gap` | `item-content` | `gap` | `default` | `--xh-space-1` | list 的 item-content 部件 gap 覆盖槽。 |
+| `--xh-list-content-gap` | `item-content` | `gap` | `default` | `--xh-space-0_5` | list 的 item-content 部件 gap 覆盖槽。 |
 | `--xh-list-description-fg` | `item-description` | `color` | `default` | `--xh-fg-muted` | list 的 item-description 部件 color 覆盖槽。 |
 | `--xh-list-description-font-size` | `item-description` | `font-size` | `default` | `--xh-_list-description-size` | list 的 item-description 部件 font-size 覆盖槽。 |
-| `--xh-list-divider` | `item`<br>`root` | `border-block-start` | `split` | `--xh-border-subtle` | list 的 item、root 部件 border-block-start 覆盖槽。 |
+| `--xh-list-divider` | `item`<br>`root` | `border-block-start` | `split` | `--xh-border-default` | list 的 item、root 部件 border-block-start 覆盖槽。 |
 | `--xh-list-fg` | `root` | `color` | `default` | `--xh-fg-default` | list 的 root 部件 color 覆盖槽。 |
 | `--xh-list-item-bg-hover` | `item`<br>`root` | `background` | `@media (hover: hover)`<br>`hover`<br>`hoverable` | `--xh-_list-item-bg-hover` | list 的 item、root 部件 background 覆盖槽。 |
+| `--xh-list-item-content-py` | `item-content` | `padding-block` | `default` | `--xh-space-1` | list 的 item-content 部件 padding-block 覆盖槽。 |
 | `--xh-list-item-gap` | `item` | `gap` | `default` | `--xh-_list-item-gap` | list 的 item 部件 gap 覆盖槽。 |
 | `--xh-list-item-px` | `item` | `padding-inline` | `default` | `--xh-_list-item-px` | list 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-list-item-py` | `item` | `padding-block` | `default` | `--xh-_list-item-py` | list 的 item 部件 padding-block 覆盖槽。 |

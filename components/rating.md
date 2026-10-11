@@ -78,7 +78,7 @@ function onHoverChange(details: { value: number | null }) {
       <XhRatingItem v-for="i in items" :key="i" :value="i" />
     </XhRatingControl>
   </XhRatingRoot>
-  <p>评分：{{ score }} · 悬停预览：{{ preview ?? "（无）" }}</p>
+  <p data-demo-output>评分：{{ score }} · 悬停预览：{{ preview ?? "（无）" }}</p>
 </template>
 ```
 
@@ -95,7 +95,7 @@ function onHoverChange(details: { value: number | null }) {
     </div>
   </div>
 </xh-rating>
-<p>评分：<span id="rating-half-score">2.5</span> · 悬停预览：<span id="rating-half-preview">（无）</span></p>
+<p data-demo-output>评分：<span id="rating-half-score">2.5</span> · 悬停预览：<span id="rating-half-preview">（无）</span></p>
 
 <script type="module">
   // 值由外面这份状态持有，组件报上来才写回去
@@ -132,7 +132,7 @@ const level = ref(7);
       <XhRatingItem v-for="i in items" :key="i" :value="i" />
     </XhRatingControl>
   </XhRatingRoot>
-  <p>当前：{{ level }} / 10</p>
+  <p data-demo-output>当前：{{ level }} / 10</p>
 </template>
 ```
 
@@ -154,7 +154,7 @@ const level = ref(7);
     </div>
   </div>
 </xh-rating>
-<p>当前：<span id="rating-count-value">7</span> / 10</p>
+<p data-demo-output>当前：<span id="rating-count-value">7</span> / 10</p>
 
 <script type="module">
   const rating = document.getElementById("rating-count");
@@ -553,61 +553,55 @@ const sticky = ref(3);
 
 <template>
   <div style="display: grid; gap: 12px">
-    <div>
-      <XhRatingRoot v-slot="{ items }" v-model:value="score">
-        <XhRatingLabel>整体满意度（可清空）</XhRatingLabel>
-        <XhRatingControl>
-          <XhRatingItem v-for="i in items" :key="i" :value="i" />
-        </XhRatingControl>
-      </XhRatingRoot>
-      <p style="margin: 4px 0 0; font-size: 13px">当前：{{ score === 0 ? "还没评" : score }}</p>
-    </div>
-    <div>
-      <XhRatingRoot v-slot="{ items }" v-model:value="sticky" :allow-clear="false">
-        <XhRatingLabel>关掉清空（再点不清）</XhRatingLabel>
-        <XhRatingControl>
-          <XhRatingItem v-for="i in items" :key="i" :value="i" />
-        </XhRatingControl>
-      </XhRatingRoot>
-      <p style="margin: 4px 0 0; font-size: 13px">当前：{{ sticky }}</p>
-    </div>
+    <XhRatingRoot v-slot="{ items }" v-model:value="score">
+      <XhRatingLabel>整体满意度（可清空）</XhRatingLabel>
+      <XhRatingControl>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
+      </XhRatingControl>
+    </XhRatingRoot>
+    <XhRatingRoot v-slot="{ items }" v-model:value="sticky" :allow-clear="false">
+      <XhRatingLabel>关掉清空（再点不清）</XhRatingLabel>
+      <XhRatingControl>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
+      </XhRatingControl>
+    </XhRatingRoot>
   </div>
+
+  <p data-demo-output>可清空：{{ score === 0 ? "还没评" : score }} · 关掉清空：{{ sticky }}</p>
 </template>
 ```
 
 ```html
 <div style="display: grid; gap: 12px">
-  <div>
-    <xh-rating id="rating-clearable" value="3">
-      <div data-xh-part="root">
-        <span data-xh-part="label">整体满意度（可清空）</span>
-        <div data-xh-part="control">
-          <span data-xh-part="item" value="1"></span>
-          <span data-xh-part="item" value="2"></span>
-          <span data-xh-part="item" value="3"></span>
-          <span data-xh-part="item" value="4"></span>
-          <span data-xh-part="item" value="5"></span>
-        </div>
+  <xh-rating id="rating-clearable" value="3">
+    <div data-xh-part="root">
+      <span data-xh-part="label">整体满意度（可清空）</span>
+      <div data-xh-part="control">
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
-    </xh-rating>
-    <p style="margin: 4px 0 0; font-size: 13px">当前：<span id="rating-clearable-value">3</span></p>
-  </div>
-  <div>
-    <xh-rating id="rating-sticky" value="3" allow-clear="false">
-      <div data-xh-part="root">
-        <span data-xh-part="label">关掉清空（再点不清）</span>
-        <div data-xh-part="control">
-          <span data-xh-part="item" value="1"></span>
-          <span data-xh-part="item" value="2"></span>
-          <span data-xh-part="item" value="3"></span>
-          <span data-xh-part="item" value="4"></span>
-          <span data-xh-part="item" value="5"></span>
-        </div>
+    </div>
+  </xh-rating>
+  <xh-rating id="rating-sticky" value="3" allow-clear="false">
+    <div data-xh-part="root">
+      <span data-xh-part="label">关掉清空（再点不清）</span>
+      <div data-xh-part="control">
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
-    </xh-rating>
-    <p style="margin: 4px 0 0; font-size: 13px">当前：<span id="rating-sticky-value">3</span></p>
-  </div>
+    </div>
+  </xh-rating>
 </div>
+
+<p data-demo-output>
+  可清空：<span id="rating-clearable-value">3</span> · 关掉清空：<span id="rating-sticky-value">3</span>
+</p>
 
 <script type="module">
   // 值由外面这份状态持有，组件报上来才写回去
@@ -838,17 +832,18 @@ const sticky = ref(3);
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-rating-gap` | `root` | `gap` | `default` | `--xh-space-1` | rating 的 root 部件 gap 覆盖槽。 |
+| `--xh-rating-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | rating 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-rating-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | rating 的 item 部件 background-color 覆盖槽。 |
 | `--xh-rating-item-fg` | `item` | `background-color`<br>`background-image`<br>`color` | `default`<br>`disabled`<br>`empty`<br>`focus-visible`<br>`half`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not(:empty)`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-subtle` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
 | `--xh-rating-item-fg-highlighted` | `item` | `background-color`<br>`background-image`<br>`color` | `@media print`<br>`disabled`<br>`empty`<br>`focus-visible`<br>`half`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not(:empty)`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_rating-accent` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
 | `--xh-rating-item-font-size` | `item`<br>`root` | `--xh-icon-size`<br>`font-size` | `default` | `--xh-_rating-item-size` | rating 的 item、root 部件 --xh-icon-size、font-size 覆盖槽。 |
 | `--xh-rating-item-gap` | `control` | `gap` | `default` | `--xh-_rating-item-gap` | rating 的 control 部件 gap 覆盖槽。 |
 | `--xh-rating-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | rating 的 item 部件 border-radius 覆盖槽。 |
-| `--xh-rating-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | rating 的 label 部件 color 覆盖槽。 |
-| `--xh-rating-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | rating 的 label 部件 color 覆盖槽。 |
+| `--xh-rating-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | rating 的 label 部件 color 覆盖槽。 |
+| `--xh-rating-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | rating 的 label 部件 color 覆盖槽。 |
 | `--xh-rating-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | rating 的 label 部件 font-size 覆盖槽。 |
 | `--xh-rating-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | rating 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-rating-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | rating 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-rating-value-text-fg` | `value-text` | `color` | `default` | `--xh-fg-muted` | rating 的 value-text 部件 color 覆盖槽。 |
 | `--xh-rating-value-text-fg-disabled` | `value-text` | `color` | `disabled` | `--xh-fg-subtle` | rating 的 value-text 部件 color 覆盖槽。 |
 | `--xh-rating-value-text-font-size` | `value-text` | `font-size` | `default` | `--xh-_rating-font-size` | rating 的 value-text 部件 font-size 覆盖槽。 |
@@ -864,7 +859,7 @@ const sticky = ref(3);
 
 ### 响应式
 
-皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+皮肤另按输入能力分档：`hover: hover` · `pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

@@ -92,6 +92,7 @@ import {
 ```vue
 <script setup lang="ts">
 import {
+  XhButton,
   XhPasswordInputControl,
   XhPasswordInputInput,
   XhPasswordInputLabel,
@@ -112,8 +113,8 @@ const revealed = ref(false);
       <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
-  <span>当前：{{ revealed ? password : "•".repeat(password.length) }}</span>
-  <button type="button" @click="revealed = false">收起明文</button>
+  <XhButton variant="outline" size="sm" @click="revealed = false">收起明文</XhButton>
+  <span data-demo-output>当前：{{ revealed ? password : "•".repeat(password.length) }}</span>
 </template>
 ```
 
@@ -127,8 +128,10 @@ const revealed = ref(false);
     </div>
   </div>
 </xh-password-input>
-<span>当前：<span id="password-input-controlled-value">•••••••</span></span>
-<button type="button" id="password-input-controlled-hide">收起明文</button>
+<xh-button id="password-input-controlled-hide" variant="outline" size="sm">
+  <button data-xh-part="root">收起明文</button>
+</xh-button>
+<span data-demo-output>当前：<span id="password-input-controlled-value">•••••••</span></span>
 
 <script type="module">
   // 值与明暗都由外面这份状态持有，组件报上来才写回去
@@ -515,6 +518,7 @@ import {
 ```vue
 <script setup lang="ts">
 import {
+  XhButton,
   XhPasswordInputControl,
   XhPasswordInputInput,
   XhPasswordInputLabel,
@@ -533,7 +537,7 @@ import {
         <XhPasswordInputVisibilityTrigger />
       </XhPasswordInputControl>
     </XhPasswordInputRoot>
-    <button type="reset">重置</button>
+    <XhButton type="reset" variant="outline">重置</XhButton>
   </form>
 </template>
 ```
@@ -550,7 +554,9 @@ import {
       </div>
     </div>
   </xh-password-input>
-  <button type="reset">重置</button>
+  <xh-button type="reset" variant="outline">
+    <button data-xh-part="root">重置</button>
+  </xh-button>
 </form>
 ```
 
@@ -575,7 +581,7 @@ import {
 - `autoComplete` 默认 `current-password`，注册表单应显式改为 `new-password`。
 - `strength` 传入 0–4 五档即显示强度条；评分算法由调用方负责，组件只绘制档位。
 - 形态、语气、尺寸三轴与[文本字段](./text-field)同源，并排放置不会相差一档。
-- 一体式 `control` 投影 Field Chrome 家族，描边式静息、无影，聚焦描边一律 `--xh-border-control-focus`；显隐动作走 Action Control 的 `field-inset` ghost 档（正方视觉盒、inset 圆角、悬停 100 / 按下 200 中性底与 0.97 按压），与输入 / 状态区之间有半高语义分隔，三档尺寸和 compact 密度使用同一比例。
+- 一体式 `control` 投影 Field Chrome 家族，字段淡底 + 描边静息、无影，聚焦换承载面与 `--xh-border-control-focus`；显隐动作走 Action Control 的 `field-inset` ghost 档：视觉盒按字段内钮尺寸表随档（sm 取 `--xh-control-action-size`、md 取 `--xh-control-h-sm`、lg 取 `--xh-control-h-md`），inset 圆角，按所在承载面取悬停 / 按下中性底，字形取次要前景；与输入之间不画分隔线。
 - 自动填充由家族用 canvas 实体底与默认前景重绘，避免浏览器注入的颜色把框切成异色段。
 
 ### 组合
@@ -596,7 +602,7 @@ import {
 ### 当前边界
 
 - anatomy 尚无正式的 prefix / suffix 部件；`control` 中的作者节点目前只按统一 gap 排布，不承诺前后缀语义或专门状态。需要时应以独立三端部件提交，不用 CSS 推断任意子节点的职责。
-- `control` 在 meta 中仍是可选部件，但共享 Field Chrome、组合焦点环与动作分隔都以它为边界；无 `control` 的结构只是独立输入框和按钮，不再绘制独立外壳。是否将其提升为必需部件属于后续公共结构合同变更。
+- `control` 在 meta 中仍是可选部件，但共享 Field Chrome 与组合的聚焦换色都以它为边界；无 `control` 的结构只是独立输入框和按钮，不再绘制独立外壳。是否将其提升为必需部件属于后续公共结构合同变更。
 
 ### 反模式
 
@@ -803,11 +809,11 @@ import {
 | `--xh-password-input-caps-lock-font-size` | `caps-lock-indicator` | `font-size` | `default` | `--xh-_password-input-caps-lock-font-size` | password-input 的 caps-lock-indicator 部件 font-size 覆盖槽。 |
 | `--xh-password-input-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | password-input 的 control 部件 background-color 覆盖槽。 |
 | `--xh-password-input-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | password-input 的 control 部件 background-color 覆盖槽。 |
-| `--xh-password-input-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | password-input 的 control 部件 background-color 覆盖槽。 |
+| `--xh-password-input-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | password-input 的 control 部件 background-color 覆盖槽。 |
 | `--xh-password-input-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | password-input 的 control 部件 background-color 覆盖槽。 |
 | `--xh-password-input-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | password-input 的 control 部件 border 覆盖槽。 |
 | `--xh-password-input-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | password-input 的 control 部件 border-color 覆盖槽。 |
-| `--xh-password-input-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | password-input 的 control 部件 border-color 覆盖槽。 |
+| `--xh-password-input-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | password-input 的 control 部件 border-color 覆盖槽。 |
 | `--xh-password-input-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | password-input 的 control 部件 border-color 覆盖槽。 |
 | `--xh-password-input-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | password-input 的 control 部件 color 覆盖槽。 |
 | `--xh-password-input-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_password-input-gap` | password-input 的 control 部件 gap 覆盖槽。 |
@@ -817,16 +823,17 @@ import {
 | `--xh-password-input-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | password-input 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-password-input-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | password-input 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-password-input-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | password-input 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
-| `--xh-password-input-gap` | `root` | `gap` | `default` | `--xh-space-1` | password-input 的 root 部件 gap 覆盖槽。 |
+| `--xh-password-input-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | password-input 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-password-input-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | password-input 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-password-input-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | password-input 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-password-input-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-fg-default` | password-input 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-password-input-input-fg` | `input` | `color` | `xh-field-input` | `--xh-fg-default` | password-input 的 input 部件 color 覆盖槽。 |
 | `--xh-password-input-input-font-size` | `input` | `font-size` | `xh-field-input` | `--xh-_password-input-font-size` | password-input 的 input 部件 font-size 覆盖槽。 |
-| `--xh-password-input-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | password-input 的 label 部件 color 覆盖槽。 |
-| `--xh-password-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | password-input 的 label 部件 color 覆盖槽。 |
+| `--xh-password-input-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | password-input 的 label 部件 color 覆盖槽。 |
+| `--xh-password-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | password-input 的 label 部件 color 覆盖槽。 |
 | `--xh-password-input-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | password-input 的 label 部件 font-size 覆盖槽。 |
 | `--xh-password-input-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | password-input 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-password-input-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | password-input 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-password-input-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | password-input 的 input 部件 color 覆盖槽。 |
 | `--xh-password-input-strength-fg` | `strength-meter` | `background` | `empty` | `--xh-_password-input-strength-fg` | password-input 的 strength-meter 部件 background 覆盖槽。 |
 | `--xh-password-input-strength-radius` | `strength-meter` | `border-radius` | `default` | `--xh-shape-pill` | password-input 的 strength-meter 部件 border-radius 覆盖槽。 |
@@ -840,8 +847,6 @@ import {
 | `--xh-password-input-trigger-font-size` | `visibility-trigger` | `font-size` | `default` | `--xh-_password-input-trigger-font-size` | password-input 的 visibility-trigger 部件 font-size 覆盖槽。 |
 | `--xh-password-input-trigger-radius` | `visibility-trigger` | `border-radius` | `default` | `--xh-shape-inset` | password-input 的 visibility-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-password-input-trigger-size` | `visibility-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | password-input 的 visibility-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
-| `--xh-password-input-visibility-trigger-separator-color` | `control`<br>`input`<br>`visibility-trigger` | `background-image` | `has(~ [data-scope='password-input'][data-part='input'])` | `--xh-border-subtle` | password-input 的 control、input、visibility-trigger 部件 background-image 覆盖槽。 |
-| `--xh-password-input-visibility-trigger-separator-h` | `control`<br>`input`<br>`visibility-trigger` | `background-size` | `has(~ [data-scope='password-input'][data-part='input'])` | `--xh-_password-input-divider-h` | password-input 的 control、input、visibility-trigger 部件 background-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -854,4 +859,4 @@ import {
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走；另有按 `dir` 分支的规则。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；只认物理方向的量乘 `--xh-direction-sign` 换向，按就近的 `dir` 走。

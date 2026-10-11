@@ -1,1 +1,0 @@
-async function e(){let e=document.getElementById(`slider-budget`),t=document.getElementById(`slider-budget-label`),n=e=>`¥${e.toLocaleString(`zh-CN`)}`;e.getValueText=({value:e})=>n(e),e.addEventListener(`value-change`,e=>{t.textContent=n(e.detail.value[0])})}export{e as default};

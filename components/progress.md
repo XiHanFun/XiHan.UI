@@ -72,7 +72,7 @@ import { XhProgress } from "@xihan-ui/vue";
 
 ```vue
 <script setup lang="ts">
-import { XhProgress } from "@xihan-ui/vue";
+import { XhButton, XhProgress } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const value = ref(64);
@@ -86,8 +86,8 @@ const value = ref(64);
     </div>
     <XhProgress :value="value" />
     <div style="display: flex; gap: 8px">
-      <button type="button" @click="value = Math.max(0, value - 10)">-10</button>
-      <button type="button" @click="value = Math.min(100, value + 10)">+10</button>
+      <XhButton size="sm" variant="outline" @click="value = Math.max(0, value - 10)">-10</XhButton>
+      <XhButton size="sm" variant="outline" @click="value = Math.min(100, value + 10)">+10</XhButton>
     </div>
   </div>
 </template>
@@ -107,8 +107,12 @@ const value = ref(64);
     </div>
   </xh-progress>
   <div style="display: flex; gap: 8px">
-    <button type="button" id="progress-labelled-dec">-10</button>
-    <button type="button" id="progress-labelled-inc">+10</button>
+    <xh-button size="sm" variant="outline">
+      <button data-xh-part="root" id="progress-labelled-dec">-10</button>
+    </xh-button>
+    <xh-button size="sm" variant="outline">
+      <button data-xh-part="root" id="progress-labelled-inc">+10</button>
+    </xh-button>
   </div>
 </div>
 
@@ -792,7 +796,7 @@ steps 把轨道切成等宽的格，填充按整格亮起；读屏报的仍是�
 
 ```vue
 <script setup lang="ts">
-import { XhProgress } from "@xihan-ui/vue";
+import { XhButton, XhProgress } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const step = ref(3);
@@ -808,8 +812,8 @@ const step = ref(3);
       aria-label="注册进度"
     />
     <div style="display: flex; gap: 8px">
-      <button type="button" @click="step = Math.max(0, step - 1)">上一步</button>
-      <button type="button" @click="step = Math.min(5, step + 1)">下一步</button>
+      <XhButton size="sm" variant="outline" @click="step = Math.max(0, step - 1)">上一步</XhButton>
+      <XhButton size="sm" variant="outline" @click="step = Math.min(5, step + 1)">下一步</XhButton>
     </div>
   </div>
 </template>
@@ -832,8 +836,12 @@ const step = ref(3);
     </div>
   </xh-progress>
   <div style="display: flex; gap: 8px">
-    <button type="button" id="progress-steps-prev">上一步</button>
-    <button type="button" id="progress-steps-next">下一步</button>
+    <xh-button size="sm" variant="outline">
+      <button data-xh-part="root" id="progress-steps-prev">上一步</button>
+    </xh-button>
+    <xh-button size="sm" variant="outline">
+      <button data-xh-part="root" id="progress-steps-next">下一步</button>
+    </xh-button>
   </div>
 </div>
 
@@ -933,7 +941,8 @@ import { XhProgress } from "@xihan-ui/vue";
 - `variant` 三档：线形、环形、仪表盘；仪表盘的缺口角度与位置可调。
 - `indeterminate` 表达进行中但剩余量未知。
 - `valueText` 决定读屏读出的内容：“3 个文件中的第 2 个”比“66%”更有用。
-- 环心可以放置文字。
+- 环心可以放置文字，文字 12px、次级色。
+- 线形轨道厚 sm / md / lg = 3 / 4 / 8px、两端全圆，底槽（线形与环形同）取中性淡底；已完成的那段取语气实色，成功 / 警告 / 危险写 `tone`。
 - 线形另有三样外观，写在环形上会报 `progress.option-ignored` 并按没给处理：
   - `steps` 把轨道切成等宽的格，格间留一道间隙；填充按整格亮起，不足一格的部分不画，读屏报的仍是实际值。取不小于 2 的整数，取值不合法同样报错。
   - `striped` 在填充上铺一层斜纹：进行中沿行向流动，完成后静止；减弱动效下始终静止，强制色下退掉斜纹、只留高亮色填充。
@@ -1126,8 +1135,8 @@ import { XhProgress } from "@xihan-ui/vue";
 | `--xh-progress-buffer` | `buffer` | `background` | `default` | `--xh-_tone-subtle-active` | progress 的 buffer 部件 background 覆盖槽。 |
 | `--xh-progress-buffer-radius` | `buffer` | `border-radius` | `default` | `--xh-progress-range-radius` | progress 的 buffer 部件 border-radius 覆盖槽。 |
 | `--xh-progress-indeterminate-duration` | `range` | `animation` | `state=indeterminate` | `--xh-motion-loop-shimmer` | progress 的 range 部件 animation 覆盖槽。 |
-| `--xh-progress-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | progress 的 label 部件 color 覆盖槽。 |
-| `--xh-progress-label-font-size` | `label` | `font-size` | `default` | `--xh-text-body-size` | progress 的 label 部件 font-size 覆盖槽。 |
+| `--xh-progress-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | progress 的 label 部件 color 覆盖槽。 |
+| `--xh-progress-label-font-size` | `label` | `font-size` | `default` | `--xh-text-caption-size` | progress 的 label 部件 font-size 覆盖槽。 |
 | `--xh-progress-linecap` | `range` | `stroke-linecap` | `variant=circle`<br>`variant=dashboard` | `round` | progress 的 range 部件 stroke-linecap 覆盖槽。 |
 | `--xh-progress-needle-color` | `needle` | `fill` | `default` | `--xh-fg-default` | progress 的 needle 部件 fill 覆盖槽。 |
 | `--xh-progress-range` | `range` | `background`<br>`stroke` | `default`<br>`variant=circle`<br>`variant=dashboard` | `--xh-_tone` | progress 的 range 部件 background、stroke 覆盖槽。 |
@@ -1139,9 +1148,9 @@ import { XhProgress } from "@xihan-ui/vue";
 | `--xh-progress-stripe-size` | `range` | `background-position`<br>`background-size` | `@keyframes xh-progress-stripes`<br>`striped` | `--xh-space-4` | progress 的 range 部件 background-position、background-size 覆盖槽。 |
 | `--xh-progress-target-color` | `target` | `background`<br>`stroke` | `variant=circle`<br>`variant=dashboard`<br>`variant=line` | `--xh-fg-default` | progress 的 target 部件 background、stroke 覆盖槽。 |
 | `--xh-progress-target-radius` | `target` | `border-radius` | `variant=line` | `--xh-shape-pill` | progress 的 target 部件 border-radius 覆盖槽。 |
-| `--xh-progress-thickness` | `root`<br>`target`<br>`track` | `block-size` | `banded`<br>`default`<br>`size=lg`<br>`size=sm`<br>`variant=line` | `--xh-space-1`<br>`--xh-space-2`<br>`--xh-space-3`<br>`--xh-space-4`<br>`--xh-track-thickness` | progress 的 root、target、track 部件 block-size 覆盖槽。 |
+| `--xh-progress-thickness` | `root`<br>`target`<br>`track` | `block-size` | `banded`<br>`default`<br>`size=lg`<br>`size=sm`<br>`variant=line` | `--xh-track-band-thickness-lg`<br>`--xh-track-band-thickness-md`<br>`--xh-track-band-thickness-sm`<br>`--xh-track-thickness-lg`<br>`--xh-track-thickness-md`<br>`--xh-track-thickness-sm` | progress 的 root、target、track 部件 block-size 覆盖槽。 |
 | `--xh-progress-threshold-color` | `threshold` | `background`<br>`stroke` | `variant=circle`<br>`variant=dashboard`<br>`variant=line` | `--xh-_tone-subtle-active` | progress 的 threshold 部件 background、stroke 覆盖槽。 |
-| `--xh-progress-track` | `track` | `background`<br>`stroke` | `default`<br>`variant=circle`<br>`variant=dashboard` | `--xh-bg-subtle-active` | progress 的 track 部件 background、stroke 覆盖槽。 |
+| `--xh-progress-track` | `track` | `background`<br>`stroke` | `default`<br>`variant=circle`<br>`variant=dashboard` | `--xh-bg-subtle-hover` | progress 的 track 部件 background、stroke 覆盖槽。 |
 | `--xh-progress-track-radius` | `track` | `border-radius` | `default` | `--xh-shape-pill` | progress 的 track 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

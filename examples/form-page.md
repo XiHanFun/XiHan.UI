@@ -272,10 +272,10 @@ function onSubmit(details: { values: Record<string, unknown> }) {
         <XhFormSubmitTrigger>提交工单</XhFormSubmitTrigger>
         <XhFormResetTrigger>重置</XhFormResetTrigger>
       </div>
-
-      <p v-if="submitted" class="form-page__result">已提交：{{ submitted }}</p>
     </XhFormRoot>
   </div>
+
+  <p data-demo-output :title="submitted">已提交：{{ submitted || "（尚未提交）" }}</p>
 </template>
 
 <style scoped>
@@ -317,13 +317,6 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 .form-page__actions {
   display: flex;
   gap: var(--xh-space-2);
-}
-
-.form-page__result {
-  margin: 0;
-  color: var(--xh-fg-muted);
-  font-size: var(--xh-font-size-sm);
-  word-break: break-all;
 }
 </style>
 ```
@@ -374,13 +367,6 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     margin: 0;
     color: var(--xh-fg-danger);
     font-size: var(--xh-font-size-sm);
-  }
-
-  #form-page [data-form="result"] {
-    margin: 0;
-    color: var(--xh-fg-muted);
-    font-size: var(--xh-font-size-sm);
-    word-break: break-all;
   }
 </style>
 
@@ -560,11 +546,11 @@ function onSubmit(details: { values: Record<string, unknown> }) {
         <button data-xh-part="submit-trigger">提交工单</button>
         <button data-xh-part="reset-trigger">重置</button>
       </div>
-
-      <p id="form-page-submitted" data-form="result" hidden></p>
     </form>
   </xh-form>
 </div>
+
+<p id="form-page-submitted" data-demo-output>已提交：（尚未提交）</p>
 
 <script type="module">
   const host = document.getElementById("form-page-form");
@@ -692,8 +678,9 @@ function onSubmit(details: { values: Record<string, unknown> }) {
   });
   host.addEventListener("errors-change", (event) => paintErrors(event.detail.errors));
   host.addEventListener("submit", (event) => {
-    submitted.hidden = false;
-    submitted.textContent = `已提交：${JSON.stringify(event.detail.values)}`;
+    // 整张值表一行放不下，输出栏截断，悬停看全文
+    submitted.title = JSON.stringify(event.detail.values);
+    submitted.textContent = `已提交：${submitted.title}`;
   });
 
   syncControls();
@@ -705,7 +692,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 - **值只有一份。** 每个控件外面套一层 `XhFormFieldGroup`，拿到的是这张表里属于自己的那一格与写回它的动作；控件自己不再另存一份值，也就不存在两边不同步。
 - **校验在表这一层，不在控件里。** `validate` 拿到整张值表跑一遍，返回「字段名 → 错误文案」；跨字段的规则天然写得下，控件一个字都不必改。
 - **错误摘要是一处，不是九处。** 提交没过时摘要显形并把焦点送到第一个出错的字段，条目一次全写上，谁露面由当下的错误表决定——[无障碍](../guide/a11y)那一册讲的就是这条通路。
-- **控件形态不一，控件外壳一致。** 文本框、下拉、数字输入、标签输入四种控件的高度、内边距、描边与聚焦环取的是同一组控件令牌，摆在一起才对得齐。
+- **控件形态不一，控件外壳一致。** 文本框、下拉、数字输入、标签输入四种控件的高度、内边距、字段淡底、描边与聚焦描边取的是同一组控件令牌，摆在一起才对得齐。
 - **两栏在窄屏落回一栏。** 栅格写的是 `minmax` 而不是固定断点，[响应式](../guide/styling)由内容宽度决定，不由设备决定。
 
 ## 换成你的项目

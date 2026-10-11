@@ -31,24 +31,24 @@ onBeforeUnmount(() => motion.cancel());
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+  <div style="display: flex; flex-direction: column; gap: var(--xh-space-4); width: 100%">
     <div
       style="
         display: grid;
         place-items: center;
         min-height: 140px;
-        border: 1px dashed var(--vp-c-divider);
-        border-radius: 12px;
+        border: var(--xh-stroke-thin) dashed var(--xh-border-default);
+        border-radius: var(--xh-shape-surface);
       "
     >
       <div
         ref="card"
         style="
-          padding: 16px 24px;
-          border-radius: 10px;
-          background: var(--vp-c-brand-1);
-          color: #fff;
-          font-weight: 600;
+          padding: var(--xh-space-4) var(--xh-space-6);
+          border-radius: var(--xh-shape-surface);
+          background: var(--xh-bg-brand);
+          color: var(--xh-fg-on-brand);
+          font-weight: var(--xh-font-weight-semibold);
         "
       >
         {{ last || "点下面的名字" }}
@@ -56,8 +56,8 @@ onBeforeUnmount(() => motion.cancel());
     </div>
 
     <div>
-      <p style="margin: 0 0 8px; font-size: 13px; opacity: 0.7">进场</p>
-      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <p style="margin: 0 0 var(--xh-space-2); font-size: var(--xh-text-caption-size); color: var(--xh-fg-muted)">进场</p>
+      <div style="display: flex; flex-wrap: wrap; gap: var(--xh-space-2)">
         <XhButton
           v-for="name in enter"
           :key="name"
@@ -71,8 +71,8 @@ onBeforeUnmount(() => motion.cancel());
     </div>
 
     <div>
-      <p style="margin: 0 0 8px; font-size: 13px; opacity: 0.7">注意</p>
-      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <p style="margin: 0 0 var(--xh-space-2); font-size: var(--xh-text-caption-size); color: var(--xh-fg-muted)">注意</p>
+      <div style="display: flex; flex-wrap: wrap; gap: var(--xh-space-2)">
         <XhButton
           v-for="name in attention"
           :key="name"
@@ -89,24 +89,24 @@ onBeforeUnmount(() => motion.cancel());
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+<div style="display: flex; flex-direction: column; gap: var(--xh-space-4); width: 100%">
   <div
     style="
       display: grid;
       place-items: center;
       min-height: 140px;
-      border: 1px dashed var(--vp-c-divider);
-      border-radius: 12px;
+      border: var(--xh-stroke-thin) dashed var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
     "
   >
     <div
       id="animations-presets-card"
       style="
-        padding: 16px 24px;
-        border-radius: 10px;
-        background: var(--vp-c-brand-1);
-        color: #fff;
-        font-weight: 600;
+        padding: var(--xh-space-4) var(--xh-space-6);
+        border-radius: var(--xh-shape-surface);
+        background: var(--xh-bg-brand);
+        color: var(--xh-fg-on-brand);
+        font-weight: var(--xh-font-weight-semibold);
       "
     >
       点下面的名字
@@ -114,13 +114,13 @@ onBeforeUnmount(() => motion.cancel());
   </div>
 
   <div>
-    <p style="margin: 0 0 8px; font-size: 13px; opacity: 0.7">进场</p>
-    <div id="animations-presets-enter" style="display: flex; flex-wrap: wrap; gap: 8px"></div>
+    <p style="margin: 0 0 var(--xh-space-2); font-size: var(--xh-text-caption-size); color: var(--xh-fg-muted)">进场</p>
+    <div id="animations-presets-enter" style="display: flex; flex-wrap: wrap; gap: var(--xh-space-2)"></div>
   </div>
 
   <div>
-    <p style="margin: 0 0 8px; font-size: 13px; opacity: 0.7">注意</p>
-    <div id="animations-presets-attention" style="display: flex; flex-wrap: wrap; gap: 8px"></div>
+    <p style="margin: 0 0 var(--xh-space-2); font-size: var(--xh-text-caption-size); color: var(--xh-fg-muted)">注意</p>
+    <div id="animations-presets-attention" style="display: flex; flex-wrap: wrap; gap: var(--xh-space-2)"></div>
   </div>
 </div>
 
@@ -241,7 +241,17 @@ motion.cancel(); // 全部撤销
 <script setup lang="ts">
 import type { StaggerFrom } from "@xihan-ui/animations";
 import { createMotionPlayer, splitText } from "@xihan-ui/animations";
-import { XhButton, XhRadioGroupRoot } from "@xihan-ui/vue";
+import {
+  XhButton,
+  XhRadioGroupRoot,
+  XhSliderControl,
+  XhSliderHiddenInput,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+} from "@xihan-ui/vue";
 import { onBeforeUnmount, ref, useTemplateRef } from "vue";
 
 const fromOptions = [
@@ -254,14 +264,15 @@ const motion = createMotionPlayer();
 const list = useTemplateRef<HTMLElement>("list");
 const title = useTemplateRef<HTMLElement>("title");
 const from = ref<StaggerFrom>("first");
-const gap = ref(60);
+// 滑块的值恒为数组，单滑块即长度 1
+const gap = ref([60]);
 
 function playList() {
   const el = list.value;
   if (!el)
     return;
   void motion.playAll([...el.children] as HTMLElement[], "rise", {
-    stagger: gap.value,
+    stagger: gap.value[0],
     from: from.value,
   });
 }
@@ -279,39 +290,46 @@ onBeforeUnmount(() => motion.cancel());
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
-    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
+  <div style="display: flex; flex-direction: column; gap: var(--xh-space-4); width: 100%">
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--xh-space-5)">
       <XhRadioGroupRoot
         v-model:value="from"
         :collection="fromOptions"
         label="起点"
         name="stagger-from"
       />
-      <label style="display: flex; align-items: center; gap: 8px">
-        间隔 {{ gap }}ms
-        <input v-model.number="gap" type="range" min="0" max="200" step="10">
-      </label>
+      <XhSliderRoot v-model:value="gap" :min="0" :max="200" :step="10" style="inline-size: var(--xh-control-w)">
+        <XhSliderLabel>间隔 {{ gap[0] }}ms</XhSliderLabel>
+        <XhSliderControl>
+          <XhSliderTrack>
+            <XhSliderRange />
+          </XhSliderTrack>
+          <XhSliderThumb>
+            <XhSliderHiddenInput />
+          </XhSliderThumb>
+        </XhSliderControl>
+      </XhSliderRoot>
     </div>
 
-    <div style="display: flex; gap: 8px">
+    <div style="display: flex; gap: var(--xh-space-2)">
       <XhButton size="sm" @click="playList">播列表</XhButton>
       <XhButton size="sm" variant="outline" @click="playTitle">播标题</XhButton>
     </div>
 
-    <h3 ref="title" style="margin: 0; font-size: 24px">曦寒 UI 动画层</h3>
+    <h3 ref="title" style="margin: 0; font-size: var(--xh-font-size-2xl)">曦寒 UI 动画层</h3>
 
-    <div ref="list" style="display: flex; flex-wrap: wrap; gap: 8px">
+    <div ref="list" style="display: flex; flex-wrap: wrap; gap: var(--xh-space-2)">
       <div
         v-for="n in 8"
         :key="n"
         style="
           display: grid;
           place-items: center;
-          width: 48px;
-          height: 48px;
-          border-radius: 10px;
-          background: var(--vp-c-brand-soft);
-          font-weight: 600;
+          width: calc(2 * var(--xh-space-6));
+          height: calc(2 * var(--xh-space-6));
+          border-radius: var(--xh-shape-surface);
+          background: var(--xh-bg-subtle);
+          font-weight: var(--xh-font-weight-semibold);
         "
       >
         {{ n }}
@@ -322,8 +340,8 @@ onBeforeUnmount(() => motion.cancel());
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
-  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: var(--xh-space-4); width: 100%">
+  <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--xh-space-5)">
     <xh-radio-group id="animations-stagger-from" default-value="first" name="stagger-from">
       <div data-xh-part="root">
         <span data-xh-part="label">起点</span>
@@ -344,13 +362,24 @@ onBeforeUnmount(() => motion.cancel());
         </div>
       </div>
     </xh-radio-group>
-    <label style="display: flex; align-items: center; gap: 8px">
-      <span id="animations-stagger-gap-text">间隔 60ms</span>
-      <input id="animations-stagger-gap" type="range" min="0" max="200" step="10" value="60" />
-    </label>
+    <xh-slider id="animations-stagger-gap" default-value="60" min="0" max="200" step="10">
+      <div data-xh-part="root" style="inline-size: var(--xh-control-w)">
+        <label data-xh-part="label">
+          间隔 <span id="animations-stagger-gap-text">60</span>ms
+        </label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
   </div>
 
-  <div style="display: flex; gap: 8px">
+  <div style="display: flex; gap: var(--xh-space-2)">
     <xh-button id="animations-stagger-play-list" size="sm">
       <button data-xh-part="root">播列表</button>
     </xh-button>
@@ -359,17 +388,17 @@ onBeforeUnmount(() => motion.cancel());
     </xh-button>
   </div>
 
-  <h3 id="animations-stagger-title" style="margin: 0; font-size: 24px">曦寒 UI 动画层</h3>
+  <h3 id="animations-stagger-title" style="margin: 0; font-size: var(--xh-font-size-2xl)">曦寒 UI 动画层</h3>
 
-  <div id="animations-stagger-list" style="display: flex; flex-wrap: wrap; gap: 8px">
-    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">1</div>
-    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">2</div>
-    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">3</div>
-    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">4</div>
-    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">5</div>
-    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">6</div>
-    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">7</div>
-    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">8</div>
+  <div id="animations-stagger-list" style="display: flex; flex-wrap: wrap; gap: var(--xh-space-2)">
+    <div style="display: grid; place-items: center; width: calc(2 * var(--xh-space-6)); height: calc(2 * var(--xh-space-6)); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-weight: var(--xh-font-weight-semibold)">1</div>
+    <div style="display: grid; place-items: center; width: calc(2 * var(--xh-space-6)); height: calc(2 * var(--xh-space-6)); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-weight: var(--xh-font-weight-semibold)">2</div>
+    <div style="display: grid; place-items: center; width: calc(2 * var(--xh-space-6)); height: calc(2 * var(--xh-space-6)); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-weight: var(--xh-font-weight-semibold)">3</div>
+    <div style="display: grid; place-items: center; width: calc(2 * var(--xh-space-6)); height: calc(2 * var(--xh-space-6)); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-weight: var(--xh-font-weight-semibold)">4</div>
+    <div style="display: grid; place-items: center; width: calc(2 * var(--xh-space-6)); height: calc(2 * var(--xh-space-6)); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-weight: var(--xh-font-weight-semibold)">5</div>
+    <div style="display: grid; place-items: center; width: calc(2 * var(--xh-space-6)); height: calc(2 * var(--xh-space-6)); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-weight: var(--xh-font-weight-semibold)">6</div>
+    <div style="display: grid; place-items: center; width: calc(2 * var(--xh-space-6)); height: calc(2 * var(--xh-space-6)); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-weight: var(--xh-font-weight-semibold)">7</div>
+    <div style="display: grid; place-items: center; width: calc(2 * var(--xh-space-6)); height: calc(2 * var(--xh-space-6)); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-weight: var(--xh-font-weight-semibold)">8</div>
   </div>
 </div>
 
@@ -377,7 +406,6 @@ onBeforeUnmount(() => motion.cancel());
   import { createMotionPlayer, splitText } from "@xihan-ui/animations";
 
   const motion = createMotionPlayer();
-  const gap = document.getElementById("animations-stagger-gap");
   const list = document.getElementById("animations-stagger-list");
   const title = document.getElementById("animations-stagger-title");
 
@@ -386,13 +414,16 @@ onBeforeUnmount(() => motion.cancel());
   document.getElementById("animations-stagger-from").addEventListener("value-change", (event) => {
     from = event.detail.value;
   });
-  gap.addEventListener("input", () => {
-    document.getElementById("animations-stagger-gap-text").textContent = `间隔 ${gap.value}ms`;
+  // 间隔跟着滑块走：值恒为数组，单滑块取第一项
+  let gap = 60;
+  document.getElementById("animations-stagger-gap").addEventListener("value-change", (event) => {
+    gap = event.detail.value[0];
+    document.getElementById("animations-stagger-gap-text").textContent = gap;
   });
 
   document.getElementById("animations-stagger-play-list").addEventListener("click", () => {
     void motion.playAll([...list.children], "rise", {
-      stagger: Number(gap.value),
+      stagger: gap,
       from,
     });
   });

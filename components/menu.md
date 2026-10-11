@@ -43,13 +43,14 @@ const actions = [
 
 ```html
 <xh-menu>
-  <button
-    data-xh-part="trigger"
-    style="display: inline-flex; align-items: center; gap: 6px; block-size: var(--xh-control-h-md); padding-inline: var(--xh-control-px-md); border: 0; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font: inherit; cursor: pointer"
-  >
-    操作
-    <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-  </button>
+  <xh-button data-xh-part="trigger" variant="subtle">
+    <button data-xh-part="root">
+      操作
+      <xh-icon>
+        <svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9L12 15L18 9" /></svg>
+      </xh-icon>
+    </button>
+  </xh-button>
   <div data-xh-part="positioner">
     <div data-xh-part="content">
       <div data-xh-part="item" value="new">新建文件</div>
@@ -123,7 +124,9 @@ import {
 
 ```html
 <xh-menu>
-  <button data-xh-part="trigger" style="block-size: var(--xh-control-h-md); padding-inline: var(--xh-control-px-md); border: 0; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font: inherit; cursor: pointer">编辑</button>
+  <xh-button data-xh-part="trigger" variant="subtle">
+    <button data-xh-part="root">编辑</button>
+  </xh-button>
   <div data-xh-part="positioner">
     <div data-xh-part="content">
       <div data-xh-part="item" value="copy">
@@ -172,7 +175,9 @@ const actions = [
 
 ```html
 <xh-menu>
-  <button data-xh-part="trigger" style="block-size: var(--xh-control-h-md); padding-inline: var(--xh-control-px-md); border: 0; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font: inherit; cursor: pointer">视图</button>
+  <xh-button data-xh-part="trigger" variant="subtle">
+    <button data-xh-part="root">视图</button>
+  </xh-button>
   <div data-xh-part="positioner">
     <div data-xh-part="content">
       <div data-xh-part="group" value="density">
@@ -237,7 +242,9 @@ import {
 
 ```html
 <xh-menu>
-  <button data-xh-part="trigger" style="block-size: var(--xh-control-h-md); padding-inline: var(--xh-control-px-md); border: 0; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font: inherit; cursor: pointer">文件操作</button>
+  <xh-button data-xh-part="trigger" variant="subtle">
+    <button data-xh-part="root">文件操作</button>
+  </xh-button>
   <div data-xh-part="positioner">
     <div data-xh-part="content">
       <div data-xh-part="item" value="open">打开</div>
@@ -291,7 +298,9 @@ const iconOf = (node: MenuNodeMeta) => icons[node.value as keyof typeof icons];
 
 ```html
 <xh-menu>
-  <button data-xh-part="trigger" style="block-size: var(--xh-control-h-md); padding-inline: var(--xh-control-px-md); border: 0; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font: inherit; cursor: pointer">文件</button>
+  <xh-button data-xh-part="trigger" variant="subtle">
+    <button data-xh-part="root">文件</button>
+  </xh-button>
   <div data-xh-part="positioner">
     <div data-xh-part="content">
       <div data-xh-part="item" value="copy">
@@ -340,7 +349,9 @@ const actions: MenuNode[] = [
 
 ```html
 <xh-menu>
-  <button data-xh-part="trigger" style="block-size: var(--xh-control-h-md); padding-inline: var(--xh-control-px-md); border: 0; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font: inherit; cursor: pointer">更多</button>
+  <xh-button data-xh-part="trigger" variant="subtle">
+    <button data-xh-part="root">更多</button>
+  </xh-button>
   <div data-xh-part="positioner">
     <div data-xh-part="content">
       <div data-xh-part="item" value="duplicate">
@@ -371,6 +382,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 ```vue
 <script setup lang="ts">
 import {
+  XhButton,
   XhMenuCheckboxItem,
   XhMenuContent,
   XhMenuItemIndicator,
@@ -394,7 +406,9 @@ const radioValue = ref({ density: "comfortable" });
     @checkbox-value-change="checkboxValue = $event.value"
     @radio-value-change="radioValue = $event.value"
   >
-    <XhMenuTrigger>视图设置</XhMenuTrigger>
+    <XhMenuTrigger as-child>
+      <XhButton variant="subtle">视图设置</XhButton>
+    </XhMenuTrigger>
     <XhMenuPositioner>
       <XhMenuContent>
         <XhMenuCheckboxItem value="wrap">
@@ -419,7 +433,9 @@ const radioValue = ref({ density: "comfortable" });
 
 ```html
 <xh-menu id="menu-choice">
-  <button data-xh-part="trigger">视图设置</button>
+  <xh-button data-xh-part="trigger" variant="subtle">
+    <button data-xh-part="root">视图设置</button>
+  </xh-button>
   <div data-xh-part="positioner">
     <div data-xh-part="content">
       <div data-xh-part="item" kind="checkbox" value="wrap">
@@ -779,14 +795,15 @@ const radioValue = ref({ density: "comfortable" });
 | `--xh-menu-content-bg` | `arrow`<br>`content` | `background` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg`<br>`--xh-material-frosted-bg` | menu 的 arrow、content 部件 background 覆盖槽。 |
 | `--xh-menu-content-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | menu 的 content 部件 color 覆盖槽。 |
 | `--xh-menu-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` | menu 的 content 部件 gap 覆盖槽。 |
-| `--xh-menu-content-px` | `content` | `padding-inline` | `default` | `--xh-surface-pad-xs` | menu 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-menu-content-px` | `content` | `padding-inline` | `default` | `0` | menu 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-menu-content-py` | `content` | `padding-block` | `default` | `--xh-surface-pad-xs` | menu 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-menu-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | menu 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-menu-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | menu 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-menu-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | menu 的 group 部件 gap 覆盖槽。 |
 | `--xh-menu-group-label-fg` | `group-label` | `color` | `default` | `--xh-material-frosted-fg-muted` | menu 的 group-label 部件 color 覆盖槽。 |
 | `--xh-menu-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | menu 的 group-label 部件 font-size 覆盖槽。 |
-| `--xh-menu-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | menu 的 group-label 部件 font-weight 覆盖槽。 |
+| `--xh-menu-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-regular` | menu 的 group-label 部件 font-weight 覆盖槽。 |
+| `--xh-menu-group-label-mt` | `group-label` | `margin-block-start` | `default` | `--xh-space-2` | menu 的 group-label 部件 margin-block-start 覆盖槽。 |
 | `--xh-menu-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_menu-item-px` | menu 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-menu-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | menu 的 group-label 部件 padding-block 覆盖槽。 |
 | `--xh-menu-highlight` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-highlight` | menu 的 content 部件 background 覆盖槽。 |
@@ -799,12 +816,13 @@ const radioValue = ref({ density: "comfortable" });
 | `--xh-menu-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`in-path`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-material-frosted-fg` | menu 的 item 部件 color 覆盖槽。 |
 | `--xh-menu-item-font-size` | `item` | `font-size` | `default` | `--xh-_menu-font-size` | menu 的 item 部件 font-size 覆盖槽。 |
 | `--xh-menu-item-gap` | `item` | `gap` | `default` | `--xh-_menu-item-gap` | menu 的 item 部件 gap 覆盖槽。 |
+| `--xh-menu-item-h` | `item` | `min-block-size` | `default` | `--xh-_menu-item-h` | menu 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-menu-item-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone` | menu 的 item-indicator 部件 color 覆盖槽。 |
 | `--xh-menu-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | menu 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-menu-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | menu 的 item 部件 line-height 覆盖槽。 |
 | `--xh-menu-item-px` | `item` | `padding-inline` | `default` | `--xh-_menu-item-px` | menu 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-menu-item-py` | `item` | `padding-block` | `default` | `--xh-_menu-item-py` | menu 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-menu-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | menu 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-menu-item-radius` | `item` | `border-radius` | `default` | `0` | menu 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-menu-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | menu 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-menu-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | menu 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-menu-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | menu 的 content 部件 max-inline-size 覆盖槽。 |
@@ -813,7 +831,7 @@ const radioValue = ref({ density: "comfortable" });
 | `--xh-menu-separator-my` | `separator` | `margin-block` | `default` | `--xh-space-0_5` | menu 的 separator 部件 margin-block 覆盖槽。 |
 | `--xh-menu-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | menu 的 separator 部件 border-radius 覆盖槽。 |
 | `--xh-menu-separator-thickness` | `separator` | `block-size` | `default` | `--xh-stroke-thin` | menu 的 separator 部件 block-size 覆盖槽。 |
-| `--xh-menu-submenu-indicator-fg` | `item` | `background-color` | `default` | `--xh-material-frosted-fg-muted` | menu 的 item 部件 background-color 覆盖槽。 |
+| `--xh-menu-submenu-indicator-fg` | `item` | `background-color` | `default` | `currentColor` | menu 的 item 部件 background-color 覆盖槽。 |
 | `--xh-menu-submenu-indicator-size` | `item` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | menu 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-menu-trigger-bg-active` | `trigger` | `background` | `disabled`<br>`not([data-disabled])`<br>`state=open` | `--xh-bg-subtle` | menu 的 trigger 部件 background 覆盖槽。 |
 <!-- xh-component-tokens:end -->

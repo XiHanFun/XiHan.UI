@@ -50,7 +50,7 @@ const tags = ref<string[]>(["Vue", "TypeScript"]);
       <XhTagsInputInput />
     </XhTagsInputControl>
   </XhTagsInputRoot>
-  <p>当前：{{ tags.length ? tags.join("、") : "（无）" }}</p>
+  <p data-demo-output>当前：{{ tags.length ? tags.join("、") : "（无）" }}</p>
 </template>
 ```
 
@@ -79,7 +79,7 @@ const tags = ref<string[]>(["Vue", "TypeScript"]);
     </div>
   </div>
 </xh-tags-input>
-<p>当前：<span id="tags-input-basic-value">Vue、TypeScript</span></p>
+<p data-demo-output>当前：<span id="tags-input-basic-value">Vue、TypeScript</span></p>
 
 <script type="module">
   const root = document.getElementById("tags-input-basic");
@@ -176,7 +176,7 @@ const tags = ref<string[]>(["Vue"]);
       <XhTagsInputInput />
       <XhTagsInputClearTrigger />
     </XhTagsInputControl>
-    <span>{{ count }} / 4{{ atMax ? " · 已到上限" : "" }}</span>
+    <span data-demo-output>{{ count }} / 4{{ atMax ? " · 已到上限" : "" }}</span>
   </XhTagsInputRoot>
 </template>
 ```
@@ -202,7 +202,7 @@ const tags = ref<string[]>(["Vue"]);
       <input data-xh-part="input" />
       <button data-xh-part="clear-trigger"></button>
     </div>
-    <span id="tags-input-max-count">1 / 4</span>
+    <span id="tags-input-max-count" data-demo-output>1 / 4</span>
   </div>
 </xh-tags-input>
 
@@ -294,7 +294,7 @@ const tags = ref<string[]>(["前端", "组件库", "无障碍"]);
       <XhTagsInputInput />
     </XhTagsInputControl>
   </XhTagsInputRoot>
-  <p>当前：{{ tags.length ? tags.join("、") : "（无）" }}</p>
+  <p data-demo-output>当前：{{ tags.length ? tags.join("、") : "（无）" }}</p>
 </template>
 ```
 
@@ -334,7 +334,7 @@ const tags = ref<string[]>(["前端", "组件库", "无障碍"]);
     </div>
   </div>
 </xh-tags-input>
-<p>当前：<span id="tags-input-editable-value">前端、组件库、无障碍</span></p>
+<p data-demo-output>当前：<span id="tags-input-editable-value">前端、组件库、无障碍</span></p>
 
 <script type="module">
   const root = document.getElementById("tags-input-editable");
@@ -954,7 +954,7 @@ function onSubmit(event: Event) {
       <XhTagsInputHiddenInput />
     </XhTagsInputRoot>
     <XhButton type="submit" variant="outline" style="align-self: start">提交</XhButton>
-    <span>表单收到：{{ submitted || "（还没提交）" }}</span>
+    <span data-demo-output>表单收到：{{ submitted || "（还没提交）" }}</span>
   </form>
 </template>
 ```
@@ -994,7 +994,7 @@ function onSubmit(event: Event) {
   <xh-button type="submit" variant="outline" style="align-self: start">
     <button data-xh-part="root">提交</button>
   </xh-button>
-  <span>表单收到：<span id="tags-input-form-result">（还没提交）</span></span>
+  <span data-demo-output>表单收到：<span id="tags-input-form-result">（还没提交）</span></span>
 </form>
 
 <script type="module">
@@ -1099,7 +1099,7 @@ function onValueChange(details: { value: string[] }) {
       <XhTagsInputInput />
     </XhTagsInputControl>
   </XhTagsInputRoot>
-  <p>当前：{{ tags.length ? tags.join("、") : "（无）" }}</p>
+  <p data-demo-output>当前：{{ tags.length ? tags.join("、") : "（无）" }}</p>
 </template>
 ```
 
@@ -1122,7 +1122,7 @@ function onValueChange(details: { value: string[] }) {
     </div>
   </div>
 </xh-tags-input>
-<p>当前：<span id="tags-input-normalize-value">#vue</span></p>
+<p data-demo-output>当前：<span id="tags-input-normalize-value">#vue</span></p>
 
 <script type="module">
   const root = document.getElementById("tags-input-normalize");
@@ -1414,30 +1414,12 @@ function options(text: string): string[] {
     </XhTagsInputControl>
 
     <!-- 候选面板是作者自己的节点：按下不放焦点，点完把框里的半截文本清掉 -->
-    <div
-      v-if="typing && options(inputValue).length"
-      style="
-        display: flex;
-        flex-direction: column;
-        margin-block-start: 4px;
-        border: 1px solid var(--xh-border-subtle);
-        border-radius: var(--xh-radius-md);
-        overflow: hidden;
-      "
-    >
-      <button
+    <div v-if="typing && options(inputValue).length" style="display: flex; flex-wrap: wrap; gap: 8px">
+      <XhButton
         v-for="opt in options(inputValue)"
         :key="opt"
-        type="button"
-        style="
-          padding: 6px 10px;
-          border: 0;
-          background: none;
-          color: var(--xh-fg-default);
-          font: inherit;
-          text-align: start;
-          cursor: pointer;
-        "
+        size="sm"
+        variant="outline"
         @mousedown.prevent
         @click="
           addValue(opt);
@@ -1445,7 +1427,7 @@ function options(text: string): string[] {
         "
       >
         {{ opt }}
-      </button>
+      </XhButton>
     </div>
   </XhTagsInputRoot>
 </template>
@@ -1476,17 +1458,7 @@ function options(text: string): string[] {
     </div>
 
     <!-- 候选面板是作者自己的节点：按下不放焦点，点完把框里的半截文本清掉 -->
-    <div
-      id="tags-input-custom-options"
-      style="
-        display: none;
-        flex-direction: column;
-        margin-block-start: 4px;
-        border: 1px solid var(--xh-border-subtle);
-        border-radius: var(--xh-radius-md);
-        overflow: hidden;
-      "
-    ></div>
+    <div id="tags-input-custom-options" style="display: none; flex-wrap: wrap; gap: 8px"></div>
   </div>
 </xh-tags-input>
 
@@ -1563,15 +1535,17 @@ function options(text: string): string[] {
     panel.style.display = list.length > 0 ? "flex" : "none";
     panel.replaceChildren(
       ...list.map((option) => {
+        const chip = document.createElement("xh-button");
+        chip.setAttribute("size", "sm");
+        chip.setAttribute("variant", "outline");
         const button = document.createElement("button");
-        button.type = "button";
+        button.dataset.xhPart = "root";
         button.textContent = option;
-        button.style.cssText =
-          "padding: 6px 10px; border: 0; background: none; color: var(--xh-fg-default); font: inherit; text-align: start; cursor: pointer;";
         // 按下不夺走焦点，输入框才不会在点中候选之前先失焦
         button.addEventListener("mousedown", (event) => event.preventDefault());
         button.addEventListener("click", () => pick(option));
-        return button;
+        chip.append(button);
+        return chip;
       }),
     );
   }
@@ -1689,8 +1663,7 @@ function onValueChange(details: { value: string[] }) {
     </XhTagsInputControl>
     <XhTagsInputHiddenInput />
   </XhTagsInputRoot>
-  <p>提交出去的是标识：{{ value.join(",") || "（无）" }}</p>
-  <p>框里看到的是名字：{{ value.map(labelOf).join("、") || "（无）" }}</p>
+  <p data-demo-output>提交出去的是标识：{{ value.join(",") || "（无）" }} · 框里看到的是名字：{{ value.map(labelOf).join("、") || "（无）" }}</p>
 </template>
 ```
 
@@ -1715,8 +1688,7 @@ function onValueChange(details: { value: string[] }) {
     <input data-xh-part="hidden-input" />
   </div>
 </xh-tags-input>
-<p>提交出去的是标识：<span id="tags-input-option-ids">u-1</span></p>
-<p>框里看到的是名字：<span id="tags-input-option-labels">张三</span></p>
+<p data-demo-output>提交出去的是标识：<span id="tags-input-option-ids">u-1</span> · 框里看到的是名字：<span id="tags-input-option-labels">张三</span></p>
 
 <script type="module">
   const root = document.getElementById("tags-input-option");
@@ -1849,7 +1821,7 @@ function onTagReject(details: { tags: { tag: string; reasons: string[] }[] }) {
       <XhTagsInputInput />
     </XhTagsInputControl>
   </XhTagsInputRoot>
-  <p v-if="hint" style="color: var(--xh-fg-danger)">{{ hint }}</p>
+  <p data-demo-output>拒收：{{ hint || "（暂无）" }}</p>
 </template>
 ```
 
@@ -1868,7 +1840,7 @@ function onTagReject(details: { tags: { tag: string; reasons: string[] }[] }) {
     </div>
   </div>
 </xh-tags-input>
-<p id="tags-input-validate-hint" style="color: var(--xh-fg-danger)"></p>
+<p data-demo-output>拒收：<span id="tags-input-validate-hint">（暂无）</span></p>
 
 <script type="module">
   const root = document.getElementById("tags-input-validate");
@@ -1913,7 +1885,7 @@ function onTagReject(details: { tags: { tag: string; reasons: string[] }[] }) {
   // 按当前值增删标签节点，已经在的那份原地留着
   root.addEventListener("value-change", (event) => {
     const values = event.detail.value;
-    hint.textContent = "";
+    hint.textContent = "（暂无）";
     const alive = new Map();
     for (const el of control.querySelectorAll('[data-xh-part="item"]')) {
       alive.set(el.getAttribute("value"), el);
@@ -2299,18 +2271,19 @@ const delimiters = [",", "，", ";", "\n"];
 | `--xh-tags-input-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | tags-input 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-tags-input-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | tags-input 的 control 部件 background-color 覆盖槽。 |
 | `--xh-tags-input-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | tags-input 的 control 部件 background-color 覆盖槽。 |
-| `--xh-tags-input-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | tags-input 的 control 部件 background-color 覆盖槽。 |
+| `--xh-tags-input-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | tags-input 的 control 部件 background-color 覆盖槽。 |
 | `--xh-tags-input-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | tags-input 的 control 部件 background-color 覆盖槽。 |
 | `--xh-tags-input-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | tags-input 的 control 部件 border 覆盖槽。 |
 | `--xh-tags-input-control-border-at-max` | `control` | `border-color` | `at-max`<br>`invalid`<br>`not([data-invalid])` | `--xh-border-at-limit` | tags-input 的 control 部件 border-color 覆盖槽。 |
 | `--xh-tags-input-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | tags-input 的 control 部件 border-color 覆盖槽。 |
-| `--xh-tags-input-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | tags-input 的 control 部件 border-color 覆盖槽。 |
+| `--xh-tags-input-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | tags-input 的 control 部件 border-color 覆盖槽。 |
 | `--xh-tags-input-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | tags-input 的 control 部件 border-color 覆盖槽。 |
 | `--xh-tags-input-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | tags-input 的 control 部件 color 覆盖槽。 |
 | `--xh-tags-input-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_tags-input-control-gap` | tags-input 的 control 部件 gap 覆盖槽。 |
 | `--xh-tags-input-control-h` | `control` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_tags-input-control-h` | tags-input 的 control 部件 block-size、min-block-size 覆盖槽。 |
 | `--xh-tags-input-control-max-h` | `control` | `max-block-size` | `default` | `--xh-viewport-h-sm` | tags-input 的 control 部件 max-block-size 覆盖槽。 |
 | `--xh-tags-input-control-min-w` | `control`<br>`root` | `min-inline-size` | `default`<br>`xh-field-chrome` | `--xh-control-min-w` | tags-input 的 control、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-tags-input-control-ps` | `control` | `padding-inline-start` | `has(> [data-scope='tags-input'][data-part='item'])` | `--xh-space-1` | tags-input 的 control 部件 padding-inline-start 覆盖槽。 |
 | `--xh-tags-input-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_tags-input-control-px` | tags-input 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-tags-input-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | tags-input 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-tags-input-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | tags-input 的 control 部件 box-shadow 覆盖槽。 |
@@ -2319,7 +2292,7 @@ const delimiters = [",", "，", ";", "\n"];
 | `--xh-tags-input-count-fg-at-max` | `count` | `color` | `at-max` | `--xh-fg-warning` | tags-input 的 count 部件 color 覆盖槽。 |
 | `--xh-tags-input-count-fg-disabled` | `count` | `color` | `disabled` | `--xh-fg-disabled` | tags-input 的 count 部件 color 覆盖槽。 |
 | `--xh-tags-input-count-font-size` | `count` | `font-size` | `default` | `--xh-text-caption-size` | tags-input 的 count 部件 font-size 覆盖槽。 |
-| `--xh-tags-input-gap` | `root` | `gap` | `default` | `--xh-space-1` | tags-input 的 root 部件 gap 覆盖槽。 |
+| `--xh-tags-input-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | tags-input 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-tags-input-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | tags-input 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tags-input-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | tags-input 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-tags-input-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-fg-default` | tags-input 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
@@ -2330,16 +2303,21 @@ const delimiters = [",", "，", ";", "\n"];
 | `--xh-tags-input-item-bg-highlight` | `item`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`not([data-disabled])` | `--xh-_tags-input-accent` | tags-input 的 item、root 部件 background 覆盖槽。 |
 | `--xh-tags-input-item-fg-highlight` | `item`<br>`root` | `color` | `disabled`<br>`highlighted`<br>`not([data-disabled])` | `--xh-_tags-input-accent-fg` | tags-input 的 item、root 部件 color 覆盖槽。 |
 | `--xh-tags-input-item-font-size` | `item-input` | `font-size` | `default` | `--xh-_tags-input-item-font-size` | tags-input 的 item-input 部件 font-size 覆盖槽。 |
-| `--xh-tags-input-item-input-bg` | `item-input` | `background` | `default` | `--xh-bg-canvas` | tags-input 的 item-input 部件 background 覆盖槽。 |
+| `--xh-tags-input-item-h` | `item-input` | `min-block-size` | `default` | `--xh-_tags-input-item-h` | tags-input 的 item-input 部件 min-block-size 覆盖槽。 |
+| `--xh-tags-input-item-input-bg` | `item-input` | `background` | `default` | `--xh-bg-field` | tags-input 的 item-input 部件 background 覆盖槽。 |
+| `--xh-tags-input-item-input-bg-focus` | `item-input` | `background` | `focus-within` | `--xh-bg-surface` | tags-input 的 item-input 部件 background 覆盖槽。 |
 | `--xh-tags-input-item-input-border` | `item-input` | `border` | `default` | `--xh-border-control` | tags-input 的 item-input 部件 border 覆盖槽。 |
+| `--xh-tags-input-item-input-border-focus` | `item-input` | `border-color` | `focus-within` | `--xh-border-control-focus` | tags-input 的 item-input 部件 border-color 覆盖槽。 |
+| `--xh-tags-input-item-input-border-invalid` | `control`<br>`item-input` | `border-color` | `invalid` | `--xh-border-invalid` | tags-input 的 control、item-input 部件 border-color 覆盖槽。 |
 | `--xh-tags-input-item-input-fg` | `item-input` | `color` | `default` | `--xh-fg-default` | tags-input 的 item-input 部件 color 覆盖槽。 |
 | `--xh-tags-input-item-px` | `item-input` | `padding-inline` | `default` | `--xh-_tags-input-item-px` | tags-input 的 item-input 部件 padding-inline 覆盖槽。 |
 | `--xh-tags-input-item-py` | `item-input` | `padding-block` | `default` | `--xh-_tags-input-item-py` | tags-input 的 item-input 部件 padding-block 覆盖槽。 |
 | `--xh-tags-input-item-radius` | `item-input` | `border-radius` | `default` | `--xh-shape-control` | tags-input 的 item-input 部件 border-radius 覆盖槽。 |
-| `--xh-tags-input-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | tags-input 的 label 部件 color 覆盖槽。 |
-| `--xh-tags-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | tags-input 的 label 部件 color 覆盖槽。 |
+| `--xh-tags-input-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tags-input 的 label 部件 color 覆盖槽。 |
+| `--xh-tags-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | tags-input 的 label 部件 color 覆盖槽。 |
 | `--xh-tags-input-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | tags-input 的 label 部件 font-size 覆盖槽。 |
 | `--xh-tags-input-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tags-input 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-tags-input-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | tags-input 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-tags-input-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | tags-input 的 input 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

@@ -223,7 +223,7 @@ const text = "https://ui.xihanfun.com";
 
 ```vue
 <script setup lang="ts">
-import { XhMatrixCode } from "@xihan-ui/vue";
+import { XhMatrixCode, XhTextFieldControl, XhTextFieldInput, XhTextFieldRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const text = ref("https://ui.xihanfun.com");
@@ -231,12 +231,11 @@ const text = ref("https://ui.xihanfun.com");
 
 <template>
   <div style="display: grid; gap: 12px; justify-items: start">
-    <input
-      v-model="text"
-      type="text"
-      aria-label="要编码的内容"
-      style="inline-size: 320px; max-inline-size: 100%"
-    >
+    <XhTextFieldRoot v-model:value="text">
+      <XhTextFieldControl>
+        <XhTextFieldInput aria-label="要编码的内容" />
+      </XhTextFieldControl>
+    </XhTextFieldRoot>
     <!-- 内容清空时不画码，读屏也读不到这块 -->
     <XhMatrixCode :value="text" :pixel-size="140" label="曦寒 UI 文档站二维码" />
   </div>
@@ -245,13 +244,13 @@ const text = ref("https://ui.xihanfun.com");
 
 ```html
 <div style="display: grid; gap: 12px; justify-items: start">
-  <input
-    id="matrix-code-label-input"
-    type="text"
-    value="https://ui.xihanfun.com"
-    aria-label="要编码的内容"
-    style="inline-size: 320px; max-inline-size: 100%"
-  />
+  <xh-text-field id="matrix-code-label-input" default-value="https://ui.xihanfun.com">
+    <div data-xh-part="root">
+      <div data-xh-part="control">
+        <input data-xh-part="input" aria-label="要编码的内容" />
+      </div>
+    </div>
+  </xh-text-field>
   <!-- 内容清空时不画码，读屏也读不到这块 -->
   <xh-matrix-code
     id="matrix-code-label"
@@ -264,11 +263,11 @@ const text = ref("https://ui.xihanfun.com");
 </div>
 
 <script type="module">
-  // 输入框里敲什么就编码什么
-  const input = document.getElementById("matrix-code-label-input");
+  // 文本框里敲什么就编码什么
+  const field = document.getElementById("matrix-code-label-input");
   const code = document.getElementById("matrix-code-label");
-  input.addEventListener("input", () => {
-    code.value = input.value;
+  field.addEventListener("value-change", (event) => {
+    code.value = event.detail.value;
   });
 </script>
 ```

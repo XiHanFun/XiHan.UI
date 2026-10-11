@@ -109,18 +109,14 @@ const count = ref(0);
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <XhKbd :keys="['Mod', 'K']" register @hot-key="count += 1" />
-    <output>{{ count ? `已触发 ${count} 次` : "按下组合键" }}</output>
-  </div>
+  <XhKbd :keys="['Mod', 'K']" register @hot-key="count += 1" />
+  <output data-demo-output>{{ count ? `已触发 ${count} 次` : "按下组合键" }}</output>
 </template>
 ```
 
 ```html
-<div style="display: flex; align-items: center; gap: 12px">
-  <xh-kbd id="registered-kbd" keys="Mod,K" register><kbd data-xh-part="root"></kbd></xh-kbd>
-  <output id="kbd-count">按下组合键</output>
-</div>
+<xh-kbd id="registered-kbd" keys="Mod,K" register><kbd data-xh-part="root"></kbd></xh-kbd>
+<output id="kbd-count" data-demo-output>按下组合键</output>
 <script type="module">
   let count = 0;
   document.querySelector("#registered-kbd")?.addEventListener("hot-key", () => {
@@ -274,7 +270,7 @@ const count = ref(0);
 | `--xh-kbd-fg-disabled` | `root` | `color` | `disabled` | `--xh-fg-disabled` | kbd 的 root 部件 color 覆盖槽。 |
 | `--xh-kbd-font` | `root` | `font-family` | `default` | `inherit` | kbd 的 root 部件 font-family 覆盖槽。 |
 | `--xh-kbd-font-size` | `root` | `font-size` | `default` | `--xh-text-caption-size` | kbd 的 root 部件 font-size 覆盖槽。 |
-| `--xh-kbd-font-weight` | `root` | `font-weight` | `default` | `--xh-font-weight-medium` | kbd 的 root 部件 font-weight 覆盖槽。 |
+| `--xh-kbd-font-weight` | `root` | `font-weight` | `default` | `--xh-font-weight-regular` | kbd 的 root 部件 font-weight 覆盖槽。 |
 | `--xh-kbd-gap` | `root` | `gap` | `default` | `--xh-space-1` | kbd 的 root 部件 gap 覆盖槽。 |
 | `--xh-kbd-h` | `root` | `block-size` | `default` | `--xh-space-6` | kbd 的 root 部件 block-size 覆盖槽。 |
 | `--xh-kbd-min-w` | `root` | `min-inline-size` | `default` | `--xh-space-6` | kbd 的 root 部件 min-inline-size 覆盖槽。 |

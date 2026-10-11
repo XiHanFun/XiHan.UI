@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.BoF8qpgu.js";import{t}from"./button.DNkd8ScC.js";import{t as n}from"./button-group.BQtubz-h.js";var r=e(),i=[`sm`,`md`,`lg`],a=[`日`,`周`,`月`];function o(){return(0,r.jsx)(`div`,{style:{display:`flex`,alignItems:`center`,gap:`16px`},children:i.map(e=>(0,r.jsx)(n,{size:e,children:a.map(e=>(0,r.jsx)(t,{children:e},e))},e))})}export{o as default};

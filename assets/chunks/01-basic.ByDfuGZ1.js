@@ -1,0 +1,23 @@
+var e=`<!-- 基础用法 | 输入框中的文字是草稿，回车或失焦提交后按 format 重写；色块绘制的是已提交的值，未完成的输入不会被提交 -->
+<xh-color-field id="color-field-basic" default-value="#3b82f6" name="accent" placeholder="#rrggbb" clearable>
+  <div data-xh-part="root">
+    <label data-xh-part="label">主题色</label>
+    <div data-xh-part="control">
+      <span data-xh-part="swatch"></span>
+      <input data-xh-part="input" />
+      <button data-xh-part="clear-trigger"></button>
+    </div>
+    <input data-xh-part="hidden-input" />
+  </div>
+</xh-color-field>
+<span data-demo-output>收下的值：<code id="color-field-basic-value">#3b82f6</code></span>
+
+<script type="module">
+  // 打字途中不发事件，只有收下的值才到这里
+  const field = document.getElementById("color-field-basic");
+  const readout = document.getElementById("color-field-basic-value");
+  field.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value || "（空）";
+  });
+<\/script>
+`;export{e as default};

@@ -25,6 +25,9 @@ import {
   XhFieldArrayItemContent,
   XhFieldArrayItemDeleteTrigger,
   XhFieldArrayRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -41,18 +44,20 @@ function setAt(index: number, next: string) {
     v-slot="{ items }"
     v-model:value="links"
     :create-item="() => ''"
-    style="max-inline-size: 420px"
+    style="inline-size: 100%; max-inline-size: 420px"
   >
     <!-- key 用 items 给的 row.key：它跟着这一行走，不是下标 -->
     <XhFieldArrayItem v-for="row in items" :key="row.key" :index="row.index">
       <XhFieldArrayItemContent>
-        <input
-          class="xh-demo-control"
-          style="inline-size: 100%"
+        <XhTextFieldRoot
           placeholder="填一个链接"
           :value="row.value"
-          @input="setAt(row.index, ($event.target as HTMLInputElement).value)"
+          @update:value="(next: string) => setAt(row.index, next)"
         >
+          <XhTextFieldControl>
+            <XhTextFieldInput />
+          </XhTextFieldControl>
+        </XhTextFieldRoot>
       </XhFieldArrayItemContent>
       <XhFieldArrayItemAction>
         <XhFieldArrayItemDeleteTrigger />
@@ -65,7 +70,7 @@ function setAt(index: number, next: string) {
 
 ```html
 <xh-field-array id="field-array-basic">
-  <div data-xh-part="root" style="max-inline-size: 420px">
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 420px">
     <button data-xh-part="add-trigger">+ 添加链接</button>
   </div>
 </xh-field-array>
@@ -73,7 +78,13 @@ function setAt(index: number, next: string) {
 <template id="field-array-basic-row">
   <div data-xh-part="item">
     <div data-xh-part="item-content">
-      <input class="xh-demo-control" style="inline-size: 100%" placeholder="填一个链接" />
+      <xh-text-field placeholder="填一个链接">
+        <div data-xh-part="root">
+          <div data-xh-part="control">
+            <input data-xh-part="input" />
+          </div>
+        </div>
+      </xh-text-field>
     </div>
     <div data-xh-part="item-action">
       <button data-xh-part="item-delete-trigger"></button>
@@ -93,14 +104,17 @@ function setAt(index: number, next: string) {
     for (const row of root.querySelectorAll('[data-xh-part="item"]')) row.remove();
     links.forEach((value, index) => {
       const row = template.content.firstElementChild.cloneNode(true);
-      const input = row.querySelector("input");
-      input.value = value;
-      // 行里的控件是作者自己的，值也由作者自己写回
-      input.addEventListener("input", () => {
-        links = links.map((item, i) => (i === index ? input.value : item));
+      root.insertBefore(row, addTrigger);
+      // 文本框插进页面、升级之后再给值；给了值即受控，报上来的新值由这里写回。
+      // 它的 value-change 会冒泡到字段数组上，这里截住，字段数组只听增删
+      const field = row.querySelector("xh-text-field");
+      field.value = value;
+      field.addEventListener("value-change", (event) => {
+        event.stopPropagation();
+        field.value = event.detail.value;
+        links = links.map((item, i) => (i === index ? event.detail.value : item));
         host.value = links;
       });
-      root.insertBefore(row, addTrigger);
     });
   }
 
@@ -138,6 +152,9 @@ import {
   XhFieldArrayItemContent,
   XhFieldArrayItemDeleteTrigger,
   XhFieldArrayRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -155,17 +172,19 @@ function setAt(index: number, next: string) {
     :min="2"
     :max="4"
     :create-item="() => ''"
-    style="max-inline-size: 420px"
+    style="inline-size: 100%; max-inline-size: 420px"
   >
     <XhFieldArrayItem v-for="row in items" :key="row.key" :index="row.index">
       <XhFieldArrayItemContent>
-        <input
-          class="xh-demo-control"
-          style="inline-size: 100%"
+        <XhTextFieldRoot
           placeholder="填一个选项"
           :value="row.value"
-          @input="setAt(row.index, ($event.target as HTMLInputElement).value)"
+          @update:value="(next: string) => setAt(row.index, next)"
         >
+          <XhTextFieldControl>
+            <XhTextFieldInput />
+          </XhTextFieldControl>
+        </XhTextFieldRoot>
       </XhFieldArrayItemContent>
       <XhFieldArrayItemAction>
         <XhFieldArrayItemDeleteTrigger />
@@ -178,7 +197,7 @@ function setAt(index: number, next: string) {
 
 ```html
 <xh-field-array id="field-array-bounds" min="2" max="4">
-  <div data-xh-part="root" style="max-inline-size: 420px">
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 420px">
     <button data-xh-part="add-trigger">+ 添加选项</button>
   </div>
 </xh-field-array>
@@ -186,7 +205,13 @@ function setAt(index: number, next: string) {
 <template id="field-array-bounds-row">
   <div data-xh-part="item">
     <div data-xh-part="item-content">
-      <input class="xh-demo-control" style="inline-size: 100%" placeholder="填一个选项" />
+      <xh-text-field placeholder="填一个选项">
+        <div data-xh-part="root">
+          <div data-xh-part="control">
+            <input data-xh-part="input" />
+          </div>
+        </div>
+      </xh-text-field>
     </div>
     <div data-xh-part="item-action">
       <button data-xh-part="item-delete-trigger"></button>
@@ -205,13 +230,17 @@ function setAt(index: number, next: string) {
     for (const row of root.querySelectorAll('[data-xh-part="item"]')) row.remove();
     options.forEach((value, index) => {
       const row = template.content.firstElementChild.cloneNode(true);
-      const input = row.querySelector("input");
-      input.value = value;
-      input.addEventListener("input", () => {
-        options = options.map((item, i) => (i === index ? input.value : item));
+      root.insertBefore(row, addTrigger);
+      // 文本框插进页面、升级之后再给值；给了值即受控，报上来的新值由这里写回。
+      // 它的 value-change 会冒泡到字段数组上，这里截住，字段数组只听增删
+      const field = row.querySelector("xh-text-field");
+      field.value = value;
+      field.addEventListener("value-change", (event) => {
+        event.stopPropagation();
+        field.value = event.detail.value;
+        options = options.map((item, i) => (i === index ? event.detail.value : item));
         host.value = options;
       });
-      root.insertBefore(row, addTrigger);
     });
   }
 
@@ -242,6 +271,9 @@ import {
   XhFieldArrayMoveDownTrigger,
   XhFieldArrayMoveUpTrigger,
   XhFieldArrayRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -258,18 +290,20 @@ function setAt(index: number, next: string) {
     v-model:value="steps"
     movable
     :create-item="() => ''"
-    style="max-inline-size: 420px"
+    style="inline-size: 100%; max-inline-size: 420px"
   >
     <XhFieldArrayItem v-for="row in items" :key="row.key" :index="row.index">
       <XhFieldArrayItemContent>
         <span style="inline-size: 1.5rem">{{ row.index + 1 }}.</span>
-        <input
-          class="xh-demo-control"
-          style="inline-size: 100%"
+        <XhTextFieldRoot
           placeholder="这一步做什么"
           :value="row.value"
-          @input="setAt(row.index, ($event.target as HTMLInputElement).value)"
+          @update:value="(next: string) => setAt(row.index, next)"
         >
+          <XhTextFieldControl>
+            <XhTextFieldInput />
+          </XhTextFieldControl>
+        </XhTextFieldRoot>
       </XhFieldArrayItemContent>
       <XhFieldArrayItemAction>
         <XhFieldArrayMoveUpTrigger />
@@ -284,7 +318,7 @@ function setAt(index: number, next: string) {
 
 ```html
 <xh-field-array id="field-array-movable" movable>
-  <div data-xh-part="root" style="max-inline-size: 420px">
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 420px">
     <button data-xh-part="add-trigger">+ 添加一步</button>
   </div>
 </xh-field-array>
@@ -293,7 +327,13 @@ function setAt(index: number, next: string) {
   <div data-xh-part="item">
     <div data-xh-part="item-content">
       <span style="inline-size: 1.5rem"></span>
-      <input class="xh-demo-control" style="inline-size: 100%" placeholder="这一步做什么" />
+      <xh-text-field placeholder="这一步做什么">
+        <div data-xh-part="root">
+          <div data-xh-part="control">
+            <input data-xh-part="input" />
+          </div>
+        </div>
+      </xh-text-field>
     </div>
     <div data-xh-part="item-action">
       <button data-xh-part="move-up-trigger"></button>
@@ -316,13 +356,17 @@ function setAt(index: number, next: string) {
     steps.forEach((value, index) => {
       const row = template.content.firstElementChild.cloneNode(true);
       row.querySelector("span").textContent = `${index + 1}.`;
-      const input = row.querySelector("input");
-      input.value = value;
-      input.addEventListener("input", () => {
-        steps = steps.map((item, i) => (i === index ? input.value : item));
+      root.insertBefore(row, addTrigger);
+      // 文本框插进页面、升级之后再给值；给了值即受控，报上来的新值由这里写回。
+      // 它的 value-change 会冒泡到字段数组上，这里截住，字段数组只听增删
+      const field = row.querySelector("xh-text-field");
+      field.value = value;
+      field.addEventListener("value-change", (event) => {
+        event.stopPropagation();
+        field.value = event.detail.value;
+        steps = steps.map((item, i) => (i === index ? event.detail.value : item));
         host.value = steps;
       });
-      root.insertBefore(row, addTrigger);
     });
   }
 
@@ -353,6 +397,9 @@ import {
   XhFieldArrayMoveDownTrigger,
   XhFieldArrayMoveUpTrigger,
   XhFieldArrayRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -379,24 +426,28 @@ function patch(index: number, key: keyof Header, next: string) {
     v-model:value="headers"
     movable
     :create-item="() => ({ name: '', value: '' })"
-    style="max-inline-size: 480px"
+    style="inline-size: 100%; max-inline-size: 480px"
   >
     <XhFieldArrayItem v-for="row in items" :key="row.key" :index="row.index">
       <XhFieldArrayItemContent>
-        <input
-          class="xh-demo-control"
-          style="inline-size: 40%"
+        <XhTextFieldRoot
           placeholder="字段名"
           :value="row.value.name"
-          @input="patch(row.index, 'name', ($event.target as HTMLInputElement).value)"
+          @update:value="(next: string) => patch(row.index, 'name', next)"
         >
-        <input
-          class="xh-demo-control"
-          style="inline-size: 60%"
+          <XhTextFieldControl>
+            <XhTextFieldInput />
+          </XhTextFieldControl>
+        </XhTextFieldRoot>
+        <XhTextFieldRoot
           placeholder="字段值"
           :value="row.value.value"
-          @input="patch(row.index, 'value', ($event.target as HTMLInputElement).value)"
+          @update:value="(next: string) => patch(row.index, 'value', next)"
         >
+          <XhTextFieldControl>
+            <XhTextFieldInput />
+          </XhTextFieldControl>
+        </XhTextFieldRoot>
       </XhFieldArrayItemContent>
       <XhFieldArrayItemAction>
         <XhFieldArrayMoveUpTrigger />
@@ -411,7 +462,7 @@ function patch(index: number, key: keyof Header, next: string) {
 
 ```html
 <xh-field-array id="field-array-object" movable>
-  <div data-xh-part="root" style="max-inline-size: 480px">
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 480px">
     <button data-xh-part="add-trigger">+ 添加请求头</button>
   </div>
 </xh-field-array>
@@ -419,8 +470,20 @@ function patch(index: number, key: keyof Header, next: string) {
 <template id="field-array-object-row">
   <div data-xh-part="item">
     <div data-xh-part="item-content">
-      <input data-key="name" class="xh-demo-control" style="inline-size: 40%" placeholder="字段名" />
-      <input data-key="value" class="xh-demo-control" style="inline-size: 60%" placeholder="字段值" />
+      <xh-text-field data-key="name" placeholder="字段名">
+        <div data-xh-part="root">
+          <div data-xh-part="control">
+            <input data-xh-part="input" />
+          </div>
+        </div>
+      </xh-text-field>
+      <xh-text-field data-key="value" placeholder="字段值">
+        <div data-xh-part="root">
+          <div data-xh-part="control">
+            <input data-xh-part="input" />
+          </div>
+        </div>
+      </xh-text-field>
     </div>
     <div data-xh-part="item-action">
       <button data-xh-part="move-up-trigger"></button>
@@ -451,11 +514,17 @@ function patch(index: number, key: keyof Header, next: string) {
     for (const row of root.querySelectorAll('[data-xh-part="item"]')) row.remove();
     headers.forEach((value, index) => {
       const row = template.content.firstElementChild.cloneNode(true);
-      for (const input of row.querySelectorAll("input")) {
-        input.value = value[input.dataset.key];
-        input.addEventListener("input", () => patch(index, input.dataset.key, input.value));
-      }
       root.insertBefore(row, addTrigger);
+      // 文本框插进页面、升级之后再给值；给了值即受控，报上来的新值由这里写回。
+      // 它的 value-change 会冒泡到字段数组上，这里截住，字段数组只听增删
+      for (const field of row.querySelectorAll("xh-text-field")) {
+        field.value = value[field.dataset.key];
+        field.addEventListener("value-change", (event) => {
+          event.stopPropagation();
+          field.value = event.detail.value;
+          patch(index, field.dataset.key, event.detail.value);
+        });
+      }
     });
   }
 
@@ -485,6 +554,9 @@ import {
   XhFieldArrayItemContent,
   XhFieldArrayItemDeleteTrigger,
   XhFieldArrayRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -501,18 +573,20 @@ function setAt(index: number, next: string) {
     v-model:value="steps"
     movable
     :create-item="() => ''"
-    style="max-inline-size: 480px"
+    style="inline-size: 100%; max-inline-size: 480px"
   >
     <XhFieldArrayItem v-for="row in items" :key="row.key" :index="row.index">
       <XhFieldArrayItemContent>
         <span style="inline-size: 1.5rem">{{ row.index + 1 }}.</span>
-        <input
-          class="xh-demo-control"
-          style="inline-size: 100%"
+        <XhTextFieldRoot
           placeholder="这一步做什么"
           :value="row.value"
-          @input="setAt(row.index, ($event.target as HTMLInputElement).value)"
+          @update:value="(next: string) => setAt(row.index, next)"
         >
+          <XhTextFieldControl>
+            <XhTextFieldInput />
+          </XhTextFieldControl>
+        </XhTextFieldRoot>
       </XhFieldArrayItemContent>
       <XhFieldArrayItemAction>
         <XhButton size="sm" variant="ghost" @click="insert(row.index + 1)">下方插入</XhButton>
@@ -527,7 +601,7 @@ function setAt(index: number, next: string) {
 
 ```html
 <xh-field-array id="field-array-insert" movable>
-  <div data-xh-part="root" style="max-inline-size: 480px">
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 480px">
     <button data-xh-part="add-trigger">+ 添加一步</button>
   </div>
 </xh-field-array>
@@ -536,7 +610,13 @@ function setAt(index: number, next: string) {
   <div data-xh-part="item">
     <div data-xh-part="item-content">
       <span style="inline-size: 1.5rem"></span>
-      <input class="xh-demo-control" style="inline-size: 100%" placeholder="这一步做什么" />
+      <xh-text-field placeholder="这一步做什么">
+        <div data-xh-part="root">
+          <div data-xh-part="control">
+            <input data-xh-part="input" />
+          </div>
+        </div>
+      </xh-text-field>
     </div>
     <div data-xh-part="item-action">
       <xh-button size="sm" variant="ghost" data-action="insert"><button data-xh-part="root">下方插入</button></xh-button>
@@ -559,18 +639,22 @@ function setAt(index: number, next: string) {
     steps.forEach((value, index) => {
       const row = template.content.firstElementChild.cloneNode(true);
       row.querySelector("span").textContent = `${index + 1}.`;
-      const input = row.querySelector("input");
-      input.value = value;
-      input.addEventListener("input", () => {
-        steps = steps.map((item, i) => (i === index ? input.value : item));
-        host.value = steps;
-      });
       // 插入与换位走元素的命令式方法，结果经 value-change 回来
       row.querySelector('[data-action="insert"]').addEventListener("click", () => host.insert(index + 1));
       const top = row.querySelector('[data-action="top"]');
       if (index === 0) top.setAttribute("disabled", "");
       top.addEventListener("click", () => host.move(index, 0));
       root.insertBefore(row, addTrigger);
+      // 文本框插进页面、升级之后再给值；给了值即受控，报上来的新值由这里写回。
+      // 它的 value-change 会冒泡到字段数组上，这里截住，字段数组只听增删
+      const field = row.querySelector("xh-text-field");
+      field.value = value;
+      field.addEventListener("value-change", (event) => {
+        event.stopPropagation();
+        field.value = event.detail.value;
+        steps = steps.map((item, i) => (i === index ? event.detail.value : item));
+        host.value = steps;
+      });
     });
   }
 

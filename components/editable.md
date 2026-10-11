@@ -347,7 +347,8 @@ import {
 - `activationMode` 设置单击、双击或按钮激活。
 - 支持提交、取消、受控值和受控编辑状态。
 - `autoResize` 让输入框随内容调整宽度。
-- 标题在上；预览文字或输入框与右侧动作组共用一个字段边框和背景，不把动作按钮挂在编辑框外。预览态只显示编辑按钮，编辑态只显示确认与取消按钮。
+- 标题在上；预览文字或输入框与右侧动作组共用一个字段盒，不把动作按钮挂在编辑框外。预览态只显示编辑按钮，编辑态只显示确认与取消按钮；两态的盒都取 root 的形态（缺省 `outline`），与别的字段同一副外壳，一眼看得出这是个能改的字段。要读起来像一段文字（悬停才浮出描边），显式写 `variant="ghost"`。
+- 三颗动作的视觉盒按字段内钮尺寸表随档（sm 取 `--xh-control-action-size`、md 取 `--xh-control-h-sm`、lg 取 `--xh-control-h-md`），字形取次要前景；确认与取消之间隔 `--xh-space-1`，紧凑 sm 档两钮中心距仍不低于 24px；与内容段之间不画分隔线。
 - 三个动作使用图标呈现：编辑、确认、取消；图标按钮必须提供可访问名称。
 
 ### 组合
@@ -587,12 +588,12 @@ import {
 | --- | --- | --- | --- | --- | --- |
 | `--xh-editable-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | editable 的 control 部件 background-color 覆盖槽。 |
 | `--xh-editable-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | editable 的 control 部件 background-color 覆盖槽。 |
-| `--xh-editable-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | editable 的 control 部件 background-color 覆盖槽。 |
+| `--xh-editable-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | editable 的 control 部件 background-color 覆盖槽。 |
 | `--xh-editable-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | editable 的 control 部件 background-color 覆盖槽。 |
 | `--xh-editable-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | editable 的 control 部件 border 覆盖槽。 |
 | `--xh-editable-control-border-disabled` | `control` | `border-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-border-disabled` | editable 的 control 部件 border-color 覆盖槽。 |
 | `--xh-editable-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | editable 的 control 部件 border-color 覆盖槽。 |
-| `--xh-editable-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | editable 的 control 部件 border-color 覆盖槽。 |
+| `--xh-editable-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | editable 的 control 部件 border-color 覆盖槽。 |
 | `--xh-editable-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | editable 的 control 部件 border-color 覆盖槽。 |
 | `--xh-editable-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | editable 的 control 部件 color 覆盖槽。 |
 | `--xh-editable-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_editable-control-gap` | editable 的 control 部件 gap 覆盖槽。 |
@@ -602,17 +603,18 @@ import {
 | `--xh-editable-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | editable 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-editable-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | editable 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-editable-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | editable 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
-| `--xh-editable-gap` | `root` | `gap` | `default` | `--xh-space-1` | editable 的 root 部件 gap 覆盖槽。 |
+| `--xh-editable-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | editable 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-editable-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | editable 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-editable-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | editable 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-editable-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-fg-default` | editable 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-editable-input-fg` | `input` | `color` | `xh-field-input` | `--xh-fg-default` | editable 的 input 部件 color 覆盖槽。 |
 | `--xh-editable-input-font-size` | `input` | `font-size` | `xh-field-input` | `--xh-_editable-font-size` | editable 的 input 部件 font-size 覆盖槽。 |
 | `--xh-editable-input-px` | `input` | `padding-inline` | `default` | `--xh-_editable-px` | editable 的 input 部件 padding-inline 覆盖槽。 |
-| `--xh-editable-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | editable 的 label 部件 color 覆盖槽。 |
-| `--xh-editable-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | editable 的 label 部件 color 覆盖槽。 |
+| `--xh-editable-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | editable 的 label 部件 color 覆盖槽。 |
+| `--xh-editable-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | editable 的 label 部件 color 覆盖槽。 |
 | `--xh-editable-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | editable 的 label 部件 font-size 覆盖槽。 |
 | `--xh-editable-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | editable 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-editable-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | editable 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-editable-placeholder-fg` | `input`<br>`preview` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | editable 的 input、preview 部件 color 覆盖槽。 |
 | `--xh-editable-preview-fg` | `preview` | `color` | `default` | `--xh-fg-default` | editable 的 preview 部件 color 覆盖槽。 |
 | `--xh-editable-preview-font-size` | `preview` | `font-size` | `default` | `--xh-_editable-font-size` | editable 的 preview 部件 font-size 覆盖槽。 |
@@ -622,9 +624,7 @@ import {
 | `--xh-editable-trigger-bg-active` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background-color 覆盖槽。 |
 | `--xh-editable-trigger-bg-disabled` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-editable-trigger-bg-hover` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background-color 覆盖槽。 |
-| `--xh-editable-trigger-divider` | `edit-trigger`<br>`submit-trigger` | `background-image` | `default` | `--xh-material-soft-separator` | editable 的 edit-trigger、submit-trigger 部件 background-image 覆盖槽。 |
-| `--xh-editable-trigger-divider-h` | `edit-trigger`<br>`submit-trigger` | `background-size` | `default` | `--xh-_editable-divider-h` | editable 的 edit-trigger、submit-trigger 部件 background-size 覆盖槽。 |
-| `--xh-editable-trigger-fg` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `color` | `default` | `--xh-fg-default` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 color 覆盖槽。 |
+| `--xh-editable-trigger-fg` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `color` | `default` | `--xh-fg-muted` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 color 覆盖槽。 |
 | `--xh-editable-trigger-fg-hover` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 color 覆盖槽。 |
 | `--xh-editable-trigger-font-size` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 font-size 覆盖槽。 |
 | `--xh-editable-trigger-radius` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `border-radius` | `default` | `--xh-shape-inset` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 border-radius 覆盖槽。 |
@@ -639,4 +639,4 @@ import {
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

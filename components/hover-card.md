@@ -186,46 +186,42 @@ const open = ref(false);
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 16px">
-    <XhHoverCardRoot v-model:open="open" placement="bottom-start">
-      <XhHoverCardTrigger>@xihan</XhHoverCardTrigger>
-      <XhHoverCardPositioner>
-        <XhHoverCardContent>
-          <XhHoverCardArrow />
-          <strong>XiHan.UI</strong>
-          <span>卡片从不抢焦点，也不锁页面滚动。</span>
-        </XhHoverCardContent>
-      </XhHoverCardPositioner>
-    </XhHoverCardRoot>
+  <XhHoverCardRoot v-model:open="open" placement="bottom-start">
+    <XhHoverCardTrigger>@xihan</XhHoverCardTrigger>
+    <XhHoverCardPositioner>
+      <XhHoverCardContent>
+        <XhHoverCardArrow />
+        <strong>XiHan.UI</strong>
+        <span>卡片从不抢焦点，也不锁页面滚动。</span>
+      </XhHoverCardContent>
+    </XhHoverCardPositioner>
+  </XhHoverCardRoot>
 
-    <XhButton variant="outline" @click="open = !open">
-      {{ open ? "收起" : "展开" }}
-    </XhButton>
-    <span>当前：{{ open ? "展开" : "收起" }}</span>
-  </div>
+  <XhButton variant="outline" @click="open = !open">
+    {{ open ? "收起" : "展开" }}
+  </XhButton>
+  <span data-demo-output>当前：{{ open ? "展开" : "收起" }}</span>
 </template>
 ```
 
 ```html
-<div style="display: flex; align-items: center; gap: 16px">
-  <xh-hover-card id="hover-card-controlled" open="false" placement="bottom-start">
-    <div data-xh-part="root">
-      <button data-xh-part="trigger">@xihan</button>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="arrow"></div>
-          <strong>XiHan.UI</strong>
-          <span>卡片从不抢焦点，也不锁页面滚动。</span>
-        </div>
+<xh-hover-card id="hover-card-controlled" open="false" placement="bottom-start">
+  <div data-xh-part="root">
+    <button data-xh-part="trigger">@xihan</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="arrow"></div>
+        <strong>XiHan.UI</strong>
+        <span>卡片从不抢焦点，也不锁页面滚动。</span>
       </div>
     </div>
-  </xh-hover-card>
+  </div>
+</xh-hover-card>
 
-  <xh-button id="hover-card-controlled-toggle" variant="outline">
-    <button data-xh-part="root">展开</button>
-  </xh-button>
-  <span>当前：<span id="hover-card-controlled-state">收起</span></span>
-</div>
+<xh-button id="hover-card-controlled-toggle" variant="outline">
+  <button data-xh-part="root">展开</button>
+</xh-button>
+<span data-demo-output>当前：<span id="hover-card-controlled-state">收起</span></span>
 
 <script type="module">
   // 展开态由这段脚本持有：组件只发意图，写回 open 才真的展开
@@ -436,39 +432,35 @@ const clicks = ref(0);
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 16px">
-    <XhHoverCardRoot disabled placement="bottom-start" :open-delay="0">
-      <XhHoverCardTrigger @click="clicks++">@xihan（卡片已关）</XhHoverCardTrigger>
-      <XhHoverCardPositioner>
-        <XhHoverCardContent>
-          <XhHoverCardArrow />
-          <span>这张卡片不会出现。</span>
-        </XhHoverCardContent>
-      </XhHoverCardPositioner>
-    </XhHoverCardRoot>
-    <span>已点 {{ clicks }} 次</span>
-  </div>
+  <XhHoverCardRoot disabled placement="bottom-start" :open-delay="0">
+    <XhHoverCardTrigger @click="clicks++">@xihan（卡片已关）</XhHoverCardTrigger>
+    <XhHoverCardPositioner>
+      <XhHoverCardContent>
+        <XhHoverCardArrow />
+        <span>这张卡片不会出现。</span>
+      </XhHoverCardContent>
+    </XhHoverCardPositioner>
+  </XhHoverCardRoot>
+  <span data-demo-output>已点 {{ clicks }} 次</span>
 </template>
 ```
 
 ```html
-<div style="display: flex; align-items: center; gap: 16px">
-  <xh-hover-card id="hover-card-disabled" disabled placement="bottom-start" open-delay="0">
-    <div data-xh-part="root">
-      <button data-xh-part="trigger">@xihan（卡片已关）</button>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="arrow"></div>
-          <span>这张卡片不会出现。</span>
-        </div>
+<xh-hover-card id="hover-card-disabled" disabled placement="bottom-start" open-delay="0">
+  <div data-xh-part="root">
+    <button data-xh-part="trigger">@xihan（卡片已关）</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="arrow"></div>
+        <span>这张卡片不会出现。</span>
       </div>
     </div>
-  </xh-hover-card>
-  <span>已点 <span id="hover-card-disabled-count">0</span> 次</span>
-</div>
+  </div>
+</xh-hover-card>
+<span data-demo-output>已点 <span id="hover-card-disabled-count">0</span> 次</span>
 
 <script type="module">
-  // 触发器照样可点，计数落在后面那行文字上
+  // 触发器照样可点，计数落在底边的输出栏里
   const card = document.getElementById("hover-card-disabled");
   const trigger = card.querySelector('[data-xh-part="trigger"]');
   const readout = document.getElementById("hover-card-disabled-count");
@@ -497,7 +489,7 @@ const clicks = ref(0);
 
 - `openDelay` 与 `closeDelay` 成对：进入需要停留、离开有宽限，指针斜向移到卡片上不会误收。
 - 开合状态可受控。
-- 内容与 Popover 共用 M2 磨砂面：单层背景模糊、柔和顶光和浮层阴影，正文保持不透明。箭头只复用底色与边界，不叠加模糊；减少透明、高对比与强制色偏好由材质令牌统一响应。`--xh-hover-card-backdrop` 可覆盖模糊配方；打印时整块预览收起。
+- 内容与 Popover 共用 frosted 面：实体底、1px 描边与一层浮层投影，内衬、标题与说明的排版同 Popover。箭头只复用底色与边界；减少透明、高对比与强制色偏好由材质令牌统一响应。`--xh-hover-card-backdrop` 可给面加背景滤镜；打印时整块预览收起。
 
 ### 组合
 
@@ -668,19 +660,19 @@ const clicks = ref(0);
 | `--xh-hover-card-bg` | `arrow`<br>`content` | `background` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg`<br>`--xh-material-frosted-bg` | hover-card 的 arrow、content 部件 background 覆盖槽。 |
 | `--xh-hover-card-border` | `arrow`<br>`content` | `border` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-border`<br>`--xh-material-frosted-border` | hover-card 的 arrow、content 部件 border 覆盖槽。 |
 | `--xh-hover-card-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | hover-card 的 description 部件 color 覆盖槽。 |
-| `--xh-hover-card-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | hover-card 的 description 部件 font-size 覆盖槽。 |
+| `--xh-hover-card-description-font-size` | `description` | `font-size` | `default` | `--xh-text-body-size` | hover-card 的 description 部件 font-size 覆盖槽。 |
 | `--xh-hover-card-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | hover-card 的 content 部件 color 覆盖槽。 |
-| `--xh-hover-card-gap` | `content` | `gap` | `default` | `--xh-space-2` | hover-card 的 content 部件 gap 覆盖槽。 |
+| `--xh-hover-card-gap` | `content` | `gap` | `default` | `--xh-space-1` | hover-card 的 content 部件 gap 覆盖槽。 |
 | `--xh-hover-card-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | hover-card 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-hover-card-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | hover-card 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-hover-card-max-w` | `content` | `max-inline-size` | `default` | `--xh-_hover-card-max-w` | hover-card 的 content 部件 max-inline-size 覆盖槽。 |
-| `--xh-hover-card-px` | `content` | `padding-inline` | `default` | `--xh-_hover-card-pad` | hover-card 的 content 部件 padding-inline 覆盖槽。 |
-| `--xh-hover-card-py` | `content` | `padding-block` | `default` | `--xh-_hover-card-pad` | hover-card 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-hover-card-px` | `content` | `padding-inline` | `default` | `--xh-_hover-card-px` | hover-card 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-hover-card-py` | `content` | `padding-block` | `default` | `--xh-_hover-card-py` | hover-card 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-hover-card-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | hover-card 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-hover-card-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | hover-card 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-hover-card-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | hover-card 的 title 部件 color 覆盖槽。 |
 | `--xh-hover-card-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | hover-card 的 title 部件 font-size 覆盖槽。 |
-| `--xh-hover-card-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | hover-card 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-hover-card-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-medium` | hover-card 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-hover-card-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-sm` | hover-card 的 trigger 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

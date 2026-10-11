@@ -223,7 +223,7 @@ const scrollEl = ref<HTMLElement | null>(null);
           align-items: center;
           padding-inline: 12px;
           background: var(--xh-bg-surface);
-          border-block-end: 1px solid var(--xh-border-default);
+          border-block-end: var(--xh-stroke-thin) solid var(--xh-border-default);
         "
       >
         章节导航
@@ -293,7 +293,7 @@ const scrollEl = ref<HTMLElement | null>(null);
         align-items: center;
         padding-inline: 12px;
         background: var(--xh-bg-surface);
-        border-block-end: 1px solid var(--xh-border-default);
+        border-block-end: var(--xh-stroke-thin) solid var(--xh-border-default);
       "
     >
       章节导航

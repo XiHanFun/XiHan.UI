@@ -46,7 +46,7 @@ const value = ref("09:30");
     <XhTimeFieldHiddenInput />
   </XhTimeFieldRoot>
 
-  <span aria-live="polite" style="font-size: 13px">
+  <span aria-live="polite" data-demo-output>
     当前值：{{ value || "（未填齐）" }}
   </span>
 </template>
@@ -68,7 +68,7 @@ const value = ref("09:30");
   </div>
 </xh-time-field>
 
-<span aria-live="polite" style="font-size: 13px">
+<span aria-live="polite" data-demo-output>
   当前值：<span id="time-field-basic-value">09:30</span>
 </span>
 
@@ -125,33 +125,31 @@ const value = ref("13:45");
     </XhTimeFieldControl>
   </XhTimeFieldRoot>
 
-  <span style="font-size: 13px">当前值：{{ value || "（未填齐）" }}</span>
+  <span data-demo-output>当前值：{{ value || "（未填齐）" }}</span>
 </template>
 ```
 
 ```html
-<div style="display: grid; gap: 8px; justify-items: start">
-  <xh-time-field id="time-field-hour-cycle" hour-cycle="12" default-value="13:45">
-    <div data-xh-part="root">
-      <label data-xh-part="label">会议时间</label>
-      <div data-xh-part="control">
-        <div data-xh-part="segment-group">
-          <span data-xh-part="segment" segment="hour"></span>
-          <span>:</span>
-          <span data-xh-part="segment" segment="minute"></span>
-          <span>&nbsp;</span>
-          <!-- 在这一段上按 a / p 直接指定上下午，翻面只改值不改数字 -->
-          <span data-xh-part="segment" segment="dayPeriod"></span>
-        </div>
+<xh-time-field id="time-field-hour-cycle" hour-cycle="12" default-value="13:45">
+  <div data-xh-part="root">
+    <label data-xh-part="label">会议时间</label>
+    <div data-xh-part="control">
+      <div data-xh-part="segment-group">
+        <span data-xh-part="segment" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="segment" segment="minute"></span>
+        <span>&nbsp;</span>
+        <!-- 在这一段上按 a / p 直接指定上下午，翻面只改值不改数字 -->
+        <span data-xh-part="segment" segment="dayPeriod"></span>
       </div>
     </div>
-  </xh-time-field>
+  </div>
+</xh-time-field>
 
-  <span style="font-size: 13px">当前值：<span id="time-field-hour-cycle-readout">13:45</span></span>
-</div>
+<span data-demo-output>当前值：<span id="time-field-hour-cycle-readout">13:45</span></span>
 
 <script type="module">
-  // 值变化回显在下面那行文字里
+  // 值变化回显在输出栏里
   const field = document.getElementById("time-field-hour-cycle");
   const readout = document.getElementById("time-field-hour-cycle-readout");
   field.addEventListener("value-change", (event) => {
@@ -192,32 +190,30 @@ const value = ref("");
     </XhTimeFieldControl>
   </XhTimeFieldRoot>
 
-  <span style="font-size: 13px">当前值：{{ value || "（未填齐）" }}</span>
+  <span data-demo-output>当前值：{{ value || "（未填齐）" }}</span>
 </template>
 ```
 
 ```html
-<div style="display: grid; gap: 8px; justify-items: start">
-  <xh-time-field id="time-field-granularity" granularity="second">
-    <div data-xh-part="root">
-      <label data-xh-part="label">定时</label>
-      <div data-xh-part="control">
-        <div data-xh-part="segment-group">
-          <span data-xh-part="segment" segment="hour"></span>
-          <span>:</span>
-          <span data-xh-part="segment" segment="minute"></span>
-          <span>:</span>
-          <span data-xh-part="segment" segment="second"></span>
-        </div>
+<xh-time-field id="time-field-granularity" granularity="second">
+  <div data-xh-part="root">
+    <label data-xh-part="label">定时</label>
+    <div data-xh-part="control">
+      <div data-xh-part="segment-group">
+        <span data-xh-part="segment" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="segment" segment="minute"></span>
+        <span>:</span>
+        <span data-xh-part="segment" segment="second"></span>
       </div>
     </div>
-  </xh-time-field>
+  </div>
+</xh-time-field>
 
-  <span style="font-size: 13px">当前值：<span id="time-field-granularity-readout">（未填齐）</span></span>
-</div>
+<span data-demo-output>当前值：<span id="time-field-granularity-readout">（未填齐）</span></span>
 
 <script type="module">
-  // 值变化回显在下面那行文字里
+  // 值变化回显在输出栏里
   const field = document.getElementById("time-field-granularity");
   const readout = document.getElementById("time-field-granularity-readout");
   field.addEventListener("value-change", (event) => {
@@ -622,7 +618,7 @@ function now() {
       </XhButton>
     </div>
 
-    <span style="font-size: 13px">
+    <span data-demo-output>
       {{ empty ? "未填齐" : outOfRange ? "不在营业时段（09:00 – 18:00）" : "可上门" }}
     </span>
   </XhTimeFieldRoot>
@@ -652,7 +648,7 @@ function now() {
       </xh-button>
     </div>
 
-    <span id="time-field-actions-status" style="font-size: 13px">未填齐</span>
+    <span id="time-field-actions-status" data-demo-output>未填齐</span>
   </div>
 </xh-time-field>
 
@@ -734,32 +730,30 @@ function snap(next: string) {
     </XhTimeFieldControl>
   </XhTimeFieldRoot>
 
-  <span style="font-size: 13px">
+  <span data-demo-output>
     只收 {{ allowed.join(" / ") }}，当前值：{{ value || "（空）" }}
   </span>
 </template>
 ```
 
 ```html
-<div style="display: grid; gap: 8px; justify-items: start">
-  <!-- 受控写法：值不交给组件自己存，写入意图先过一遍 snap -->
-  <xh-time-field id="time-field-whitelist" value="08:00">
-    <div data-xh-part="root">
-      <label data-xh-part="label">发车时刻</label>
-      <div data-xh-part="control">
-        <div data-xh-part="segment-group">
-          <span data-xh-part="segment" segment="hour"></span>
-          <span>:</span>
-          <span data-xh-part="segment" segment="minute"></span>
-        </div>
+<!-- 受控写法：值不交给组件自己存，写入意图先过一遍 snap -->
+<xh-time-field id="time-field-whitelist" value="08:00">
+  <div data-xh-part="root">
+    <label data-xh-part="label">发车时刻</label>
+    <div data-xh-part="control">
+      <div data-xh-part="segment-group">
+        <span data-xh-part="segment" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="segment" segment="minute"></span>
       </div>
     </div>
-  </xh-time-field>
+  </div>
+</xh-time-field>
 
-  <span style="font-size: 13px">
-    只收 08:00 / 12:00 / 18:00，当前值：<span id="time-field-whitelist-readout">08:00</span>
-  </span>
-</div>
+<span data-demo-output>
+  只收 08:00 / 12:00 / 18:00，当前值：<span id="time-field-whitelist-readout">08:00</span>
+</span>
 
 <script type="module">
   const field = document.getElementById("time-field-whitelist");
@@ -1024,11 +1018,11 @@ function snap(next: string) {
 | `--xh-time-field-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | time-field 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-time-field-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | time-field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-time-field-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | time-field 的 control 部件 background-color 覆盖槽。 |
-| `--xh-time-field-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | time-field 的 control 部件 background-color 覆盖槽。 |
+| `--xh-time-field-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | time-field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-time-field-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | time-field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-time-field-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | time-field 的 control 部件 border 覆盖槽。 |
 | `--xh-time-field-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | time-field 的 control 部件 border-color 覆盖槽。 |
-| `--xh-time-field-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | time-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-time-field-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | time-field 的 control 部件 border-color 覆盖槽。 |
 | `--xh-time-field-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | time-field 的 control 部件 border-color 覆盖槽。 |
 | `--xh-time-field-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | time-field 的 control 部件 color 覆盖槽。 |
 | `--xh-time-field-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_time-field-gap` | time-field 的 control 部件 gap 覆盖槽。 |
@@ -1039,12 +1033,13 @@ function snap(next: string) {
 | `--xh-time-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | time-field 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-time-field-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | time-field 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-time-field-font-size` | `control` | `font-size` | `default` | `--xh-_time-field-font-size` | time-field 的 control 部件 font-size 覆盖槽。 |
-| `--xh-time-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | time-field 的 root 部件 gap 覆盖槽。 |
+| `--xh-time-field-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | time-field 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-time-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | time-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-time-field-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | time-field 的 label 部件 color 覆盖槽。 |
-| `--xh-time-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | time-field 的 label 部件 color 覆盖槽。 |
+| `--xh-time-field-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | time-field 的 label 部件 color 覆盖槽。 |
+| `--xh-time-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | time-field 的 label 部件 color 覆盖槽。 |
 | `--xh-time-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | time-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-time-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | time-field 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-time-field-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | time-field 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-time-field-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | time-field 的 segment-group 部件 color 覆盖槽。 |
 | `--xh-time-field-placeholder-fg` | `segment` | `color` | `placeholder` | `--xh-fg-subtle` | time-field 的 segment 部件 color 覆盖槽。 |
 | `--xh-time-field-segment-bg-focus` | `segment` | `background` | `disabled`<br>`focus`<br>`focus-visible`<br>`not([data-disabled])` | `--xh-_time-field-segment-bg` | time-field 的 segment 部件 background 覆盖槽。 |

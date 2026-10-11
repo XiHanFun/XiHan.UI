@@ -115,7 +115,7 @@ const doc = ref<string[]>([]);
       </XhTreeSelectContent>
     </XhTreeSelectPositioner>
   </XhTreeSelectRoot>
-  <p>已选：{{ doc.length ? doc.join("、") : "（无）" }}</p>
+  <p data-demo-output>已选：{{ doc.length ? doc.join("、") : "（无）" }}</p>
 </template>
 ```
 
@@ -171,7 +171,7 @@ const doc = ref<string[]>([]);
     </div>
   </div>
 </xh-tree-select>
-<p>已选：<span id="tree-select-basic-value">（无）</span></p>
+<p data-demo-output>已选：<span id="tree-select-basic-value">（无）</span></p>
 
 <script type="module">
   // 层级、显示文本与节点禁用都查这份树数据，标记只管长相
@@ -323,7 +323,7 @@ const expanded = ref<string[]>(["docs"]);
       </XhTreeSelectContent>
     </XhTreeSelectPositioner>
   </XhTreeSelectRoot>
-  <p>已选：{{ value.join("、") || "（无）" }} · 展开：{{ expanded.join("、") || "（无）" }}</p>
+  <p data-demo-output>已选：{{ value.join("、") || "（无）" }} · 展开：{{ expanded.join("、") || "（无）" }}</p>
 </template>
 ```
 
@@ -380,7 +380,7 @@ const expanded = ref<string[]>(["docs"]);
     </div>
   </div>
 </xh-tree-select>
-<p>已选：<span id="tree-select-controlled-value">guide</span> · 展开：<span id="tree-select-controlled-expanded">docs</span></p>
+<p data-demo-output>已选：<span id="tree-select-controlled-value">guide</span> · 展开：<span id="tree-select-controlled-expanded">docs</span></p>
 
 <script type="module">
   // draft.md 是禁用叶子：方向键与连打检索跳过它，确认键也不认它
@@ -515,7 +515,7 @@ const picked = ref<string[]>(["index"]);
     </XhTreeSelectPositioner>
     <XhTreeSelectHiddenInput />
   </XhTreeSelectRoot>
-  <p>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
+  <p data-demo-output>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
 </template>
 ```
 
@@ -569,7 +569,7 @@ const picked = ref<string[]>(["index"]);
     <input data-xh-part="hidden-input" />
   </div>
 </xh-tree-select>
-<p>已选：<span id="tree-select-multiple-value">index</span></p>
+<p data-demo-output>已选：<span id="tree-select-multiple-value">index</span></p>
 
 <script type="module">
   const treeSelect = document.getElementById("tree-select-multiple");
@@ -1690,6 +1690,7 @@ const states = [
 ```vue
 <script setup lang="ts">
 import {
+  XhButton,
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
   XhTreeSelectBranchControl,
@@ -1818,13 +1819,13 @@ onBeforeUnmount(() => {
         <XhTreeSelectLoading>正在加载城市…</XhTreeSelectLoading>
         <XhTreeSelectEmpty>暂无可选城市</XhTreeSelectEmpty>
         <XhTreeSelectFooter>
-          <button type="button" :disabled="loading" @click="load('cities')">加载城市</button>
-          <button type="button" :disabled="loading" @click="load('empty')">加载空集合</button>
+          <XhButton variant="ghost" size="sm" :disabled="loading" @click="load('cities')">加载城市</XhButton>
+          <XhButton variant="ghost" size="sm" :disabled="loading" @click="load('empty')">加载空集合</XhButton>
         </XhTreeSelectFooter>
       </XhTreeSelectContent>
     </XhTreeSelectPositioner>
   </XhTreeSelectRoot>
-  <p>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
+  <p data-demo-output>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
 </template>
 ```
 
@@ -1844,14 +1845,18 @@ onBeforeUnmount(() => {
         <div data-xh-part="loading">正在加载城市…</div>
         <div data-xh-part="empty">暂无可选城市</div>
         <div data-xh-part="footer">
-          <button type="button" data-load-mode="cities">加载城市</button>
-          <button type="button" data-load-mode="empty">加载空集合</button>
+          <xh-button variant="ghost" size="sm" data-load-mode="cities">
+            <button data-xh-part="root">加载城市</button>
+          </xh-button>
+          <xh-button variant="ghost" size="sm" data-load-mode="empty">
+            <button data-xh-part="root">加载空集合</button>
+          </xh-button>
         </div>
       </div>
     </div>
   </div>
 </xh-tree-select>
-<p>已选：<span id="tree-select-async-value">（无）</span></p>
+<p data-demo-output>已选：<span id="tree-select-async-value">（无）</span></p>
 
 <script type="module">
   const treeSelect = document.getElementById("tree-select-async");
@@ -1970,6 +1975,7 @@ footer 写在 content 中、tree 的兄弟：它不进入 role=tree 的拥有关
 ```vue
 <script setup lang="ts">
 import {
+  XhButton,
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
   XhTreeSelectBranchControl,
@@ -2045,9 +2051,9 @@ const files = [
         </XhTreeSelectTree>
 
         <XhTreeSelectFooter>
-          <button type="button" @click="setExpandedValue(['docs', 'assets'])">全部展开</button>
-          <button type="button" @click="setExpandedValue([])">全部收起</button>
-          <button type="button" :disabled="!canClear" @click="clear()">清空</button>
+          <XhButton variant="ghost" size="sm" @click="setExpandedValue(['docs', 'assets'])">全部展开</XhButton>
+          <XhButton variant="ghost" size="sm" @click="setExpandedValue([])">全部收起</XhButton>
+          <XhButton variant="ghost" size="sm" :disabled="!canClear" @click="clear()">清空</XhButton>
         </XhTreeSelectFooter>
       </XhTreeSelectContent>
     </XhTreeSelectPositioner>
@@ -2102,9 +2108,15 @@ const files = [
 
         <!-- 浮层内的按钮直接改选中集合与展开集合 -->
         <div data-xh-part="footer">
-          <button type="button" id="tree-select-action-expand">全部展开</button>
-          <button type="button" id="tree-select-action-collapse">全部收起</button>
-          <button type="button" id="tree-select-action-clear" disabled>清空</button>
+          <xh-button variant="ghost" size="sm" id="tree-select-action-expand">
+            <button data-xh-part="root">全部展开</button>
+          </xh-button>
+          <xh-button variant="ghost" size="sm" id="tree-select-action-collapse">
+            <button data-xh-part="root">全部收起</button>
+          </xh-button>
+          <xh-button variant="ghost" size="sm" id="tree-select-action-clear" disabled>
+            <button data-xh-part="root">清空</button>
+          </xh-button>
         </div>
       </div>
     </div>
@@ -2249,7 +2261,7 @@ const value = ref<string[]>(["user:view"]);
       </XhTreeSelectContent>
     </XhTreeSelectPositioner>
   </XhTreeSelectRoot>
-  <p>对外值（parent 收敛）：{{ value.length ? value.join("、") : "（无）" }}</p>
+  <p data-demo-output>对外值（parent 收敛）：{{ value.length ? value.join("、") : "（无）" }}</p>
 </template>
 ```
 
@@ -2316,7 +2328,7 @@ const value = ref<string[]>(["user:view"]);
     </div>
   </div>
 </xh-tree-select>
-<p>对外值（parent 收敛）：<span id="tree-select-checkable-value">user:view</span></p>
+<p data-demo-output>对外值（parent 收敛）：<span id="tree-select-checkable-value">user:view</span></p>
 
 <script type="module">
   const treeSelect = document.getElementById("tree-select-checkable");
@@ -2727,7 +2739,7 @@ function onOpenChange(details: { open: boolean }): void {
       </XhTreeSelectContent>
     </XhTreeSelectPositioner>
   </XhTreeSelectRoot>
-  <p>已选：{{ value.length ? value.join("、") : "（无）" }}</p>
+  <p data-demo-output>已选：{{ value.length ? value.join("、") : "（无）" }}</p>
 </template>
 ```
 
@@ -2798,7 +2810,7 @@ function onOpenChange(details: { open: boolean }): void {
     </div>
   </div>
 </xh-tree-select>
-<p>已选：<span id="tree-select-file-picker-value">（无）</span></p>
+<p data-demo-output>已选：<span id="tree-select-file-picker-value">（无）</span></p>
 
 <script type="module">
   const treeSelect = document.getElementById("tree-select-file-picker");
@@ -2907,7 +2919,7 @@ const doc = ref<string[]>(["guide"]);
     placeholder="选一个文件"
     clearable
   />
-  <p>已选：{{ doc.length ? doc.join("、") : "（无）" }}</p>
+  <p data-demo-output>已选：{{ doc.length ? doc.join("、") : "（无）" }}</p>
 </template>
 ```
 
@@ -2968,7 +2980,7 @@ const doc = ref<string[]>(["guide"]);
     </div>
   </div>
 </xh-tree-select>
-<p>已选：<span id="tree-select-collection-value">guide</span></p>
+<p data-demo-output>已选：<span id="tree-select-collection-value">guide</span></p>
 
 <script type="module">
   // 层级、显示文本与节点禁用都查这份树数据，标记只管长相
@@ -3807,17 +3819,17 @@ function indent(level: number): Record<string, string> {
 | `--xh-tree-select-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | tree-select 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-tree-select-content-max-w` | `content` | `max-inline-size` | `default` | `none` | tree-select 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-tree-select-content-min-w` | `content` | `inline-size` | `default` | `--xh-overlay-menu-min-w` | tree-select 的 content 部件 inline-size 覆盖槽。 |
-| `--xh-tree-select-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | tree-select 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-tree-select-content-px` | `content` | `padding-inline` | `default` | `0` | tree-select 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-tree-select-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | tree-select 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-tree-select-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | tree-select 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-tree-select-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | tree-select 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-tree-select-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | tree-select 的 control 部件 background-color 覆盖槽。 |
 | `--xh-tree-select-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | tree-select 的 control 部件 background-color 覆盖槽。 |
-| `--xh-tree-select-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | tree-select 的 control 部件 background-color 覆盖槽。 |
+| `--xh-tree-select-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | tree-select 的 control 部件 background-color 覆盖槽。 |
 | `--xh-tree-select-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | tree-select 的 control 部件 background-color 覆盖槽。 |
 | `--xh-tree-select-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | tree-select 的 control 部件 border 覆盖槽。 |
 | `--xh-tree-select-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | tree-select 的 control 部件 border-color 覆盖槽。 |
-| `--xh-tree-select-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | tree-select 的 control 部件 border-color 覆盖槽。 |
+| `--xh-tree-select-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | tree-select 的 control 部件 border-color 覆盖槽。 |
 | `--xh-tree-select-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | tree-select 的 control 部件 border-color 覆盖槽。 |
 | `--xh-tree-select-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | tree-select 的 control 部件 color 覆盖槽。 |
 | `--xh-tree-select-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_tree-select-gap` | tree-select 的 control 部件 gap 覆盖槽。 |
@@ -3837,7 +3849,7 @@ function indent(level: number): Record<string, string> {
 | `--xh-tree-select-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | tree-select 的 footer 部件 gap 覆盖槽。 |
 | `--xh-tree-select-footer-px` | `footer` | `padding-inline` | `default` | `--xh-space-2` | tree-select 的 footer 部件 padding-inline 覆盖槽。 |
 | `--xh-tree-select-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | tree-select 的 footer 部件 padding-block 覆盖槽。 |
-| `--xh-tree-select-gap` | `root` | `gap` | `default` | `--xh-space-1` | tree-select 的 root 部件 gap 覆盖槽。 |
+| `--xh-tree-select-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | tree-select 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-tree-select-icon-size` | `branch-control`<br>`control`<br>`item`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_collection-glyph-size`<br>`--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | tree-select 的 branch-control、control、item、positioner、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tree-select-indent` | `branch-content`<br>`branch-empty`<br>`branch-error`<br>`branch-loading`<br>`branch-retry-trigger` | `margin-inline-start`<br>`padding-inline`<br>`padding-inline-start` | `default`<br>`is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])` | `--xh-space-4` | tree-select 的 branch-content、branch-empty、branch-error、branch-loading、branch-retry-trigger 部件 margin-inline-start、padding-inline、padding-inline-start 覆盖槽。 |
 | `--xh-tree-select-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | tree-select 的 indicator 部件 color 覆盖槽。 |
@@ -3853,17 +3865,19 @@ function indent(level: number): Record<string, string> {
 | `--xh-tree-select-item-fg` | `branch-control`<br>`item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-material-frosted-fg` | tree-select 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-select-item-fg-selected` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-tree-select-item-fg` | tree-select 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-select-item-font-size` | `branch-control`<br>`item` | `font-size` | `default` | `--xh-_tree-select-font-size` | tree-select 的 branch-control、item 部件 font-size 覆盖槽。 |
-| `--xh-tree-select-item-font-weight-selected` | `branch-control`<br>`item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | tree-select 的 branch-control、item 部件 font-weight 覆盖槽。 |
+| `--xh-tree-select-item-font-weight-selected` | `branch-control`<br>`item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-medium` | tree-select 的 branch-control、item 部件 font-weight 覆盖槽。 |
 | `--xh-tree-select-item-gap` | `branch-control`<br>`item` | `margin-inline-end`<br>`margin-inline-start` | `default`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_tree-select-gap` | tree-select 的 branch-control、item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-tree-select-item-indicator-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-_tree-select-accent` | tree-select 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-select-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | tree-select 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-tree-select-item-leading` | `branch-control`<br>`item` | `line-height` | `default` | `--xh-leading-normal` | tree-select 的 branch-control、item 部件 line-height 覆盖槽。 |
 | `--xh-tree-select-item-px` | `branch-control`<br>`item` | `padding-inline` | `default` | `--xh-_tree-select-row-px` | tree-select 的 branch-control、item 部件 padding-inline 覆盖槽。 |
 | `--xh-tree-select-item-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-_tree-select-row-py` | tree-select 的 branch-control、item 部件 padding-block 覆盖槽。 |
-| `--xh-tree-select-item-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `--xh-shape-inset` | tree-select 的 branch-control、item 部件 border-radius 覆盖槽。 |
-| `--xh-tree-select-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | tree-select 的 label 部件 color 覆盖槽。 |
+| `--xh-tree-select-item-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `0` | tree-select 的 branch-control、item 部件 border-radius 覆盖槽。 |
+| `--xh-tree-select-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tree-select 的 label 部件 color 覆盖槽。 |
+| `--xh-tree-select-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | tree-select 的 label 部件 color 覆盖槽。 |
 | `--xh-tree-select-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | tree-select 的 label 部件 font-size 覆盖槽。 |
 | `--xh-tree-select-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tree-select 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-tree-select-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | tree-select 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-tree-select-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | tree-select 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-tree-select-loading-fg` | `loading` | `color` | `default` | `--xh-material-frosted-fg-muted` | tree-select 的 loading 部件 color 覆盖槽。 |
 | `--xh-tree-select-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_tree-select-font-size` | tree-select 的 loading 部件 font-size 覆盖槽。 |

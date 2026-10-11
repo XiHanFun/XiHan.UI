@@ -330,7 +330,7 @@ const selected = ref<string[]>(["hz"]);
         </XhTreeBranch>
       </XhTreeTree>
     </XhTreeRoot>
-    <span>选中：{{ selected.length ? selected.join("、") : "（无）" }}</span>
+    <span data-demo-output>选中：{{ selected.length ? selected.join("、") : "（无）" }}</span>
   </div>
 </template>
 ```
@@ -383,7 +383,7 @@ const selected = ref<string[]>(["hz"]);
       </div>
     </div>
   </xh-tree>
-  <span>选中：<span id="tree-multiple-value">hz</span></span>
+  <span data-demo-output>选中：<span id="tree-multiple-value">hz</span></span>
 </div>
 
 <script type="module">
@@ -478,8 +478,8 @@ function onSelectionChange(details: { value: string[] }) {
 <template>
   <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
     <div style="display: flex; gap: 8px">
-      <XhButton size="sm" @click="expanded = ['api', 'guide']">全部展开</XhButton>
-      <XhButton size="sm" @click="expanded = []">全部收起</XhButton>
+      <XhButton variant="outline" size="sm" @click="expanded = ['api', 'guide']">全部展开</XhButton>
+      <XhButton variant="outline" size="sm" @click="expanded = []">全部收起</XhButton>
     </div>
 
     <XhTreeRoot
@@ -525,7 +525,7 @@ function onSelectionChange(details: { value: string[] }) {
       </XhTreeTree>
     </XhTreeRoot>
 
-    <span>
+    <span data-demo-output>
       展开：{{ expanded.length ? expanded.join("、") : "（无）" }} · 选中：{{
         selected.length ? selected.join("、") : "（无）"
       }}
@@ -537,10 +537,10 @@ function onSelectionChange(details: { value: string[] }) {
 ```html
 <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
   <div style="display: flex; gap: 8px">
-    <xh-button id="tree-controlled-expand" size="sm">
+    <xh-button id="tree-controlled-expand" variant="outline" size="sm">
       <button data-xh-part="root">全部展开</button>
     </xh-button>
-    <xh-button id="tree-controlled-collapse" size="sm">
+    <xh-button id="tree-controlled-collapse" variant="outline" size="sm">
       <button data-xh-part="root">全部收起</button>
     </xh-button>
   </div>
@@ -584,7 +584,7 @@ function onSelectionChange(details: { value: string[] }) {
     </div>
   </xh-tree>
 
-  <span>展开：<span id="tree-controlled-expanded">api</span> · 选中：<span id="tree-controlled-selected">（无）</span></span>
+  <span data-demo-output>展开：<span id="tree-controlled-expanded">api</span> · 选中：<span id="tree-controlled-selected">（无）</span></span>
 </div>
 
 <script type="module">
@@ -786,11 +786,16 @@ collection 换一份树即换一棵：标记跟随数据重新铺设，过滤后
 ```vue
 <script setup lang="ts">
 import {
+  XhTextFieldClearTrigger,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
   XhTreeBranch,
   XhTreeBranchContent,
   XhTreeBranchControl,
   XhTreeBranchText,
   XhTreeBranchTrigger,
+  XhTreeEmpty,
   XhTreeItem,
   XhTreeItemIndicator,
   XhTreeItemText,
@@ -865,7 +870,12 @@ watch(keyword, () => {
 
 <template>
   <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
-    <input v-model="keyword" type="search" aria-label="城市关键词" placeholder="输入城市名">
+    <XhTextFieldRoot v-model:value="keyword" type="search" placeholder="输入城市名" clearable>
+      <XhTextFieldControl>
+        <XhTextFieldInput aria-label="城市关键词" />
+        <XhTextFieldClearTrigger />
+      </XhTextFieldControl>
+    </XhTextFieldRoot>
 
     <XhTreeRoot v-model:expanded-value="expanded" :collection="collection">
       <XhTreeLabel>投放城市</XhTreeLabel>
@@ -884,21 +894,23 @@ watch(keyword, () => {
           </XhTreeBranchContent>
         </XhTreeBranch>
       </XhTreeTree>
+      <!-- 空态占位：给了 collection 时由组件按剩下几枝收放 -->
+      <XhTreeEmpty>没有匹配「{{ keyword }}」的城市</XhTreeEmpty>
     </XhTreeRoot>
-
-    <span v-if="!collection.length">没有匹配「{{ keyword }}」的城市</span>
   </div>
 </template>
 ```
 
 ```html
 <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
-  <input
-    id="tree-filter-keyword"
-    type="search"
-    aria-label="城市关键词"
-    placeholder="输入城市名"
-  />
+  <xh-text-field id="tree-filter-keyword" type="search" placeholder="输入城市名" clearable>
+    <div data-xh-part="root">
+      <div data-xh-part="control">
+        <input data-xh-part="input" aria-label="城市关键词" />
+        <button data-xh-part="clear-trigger"></button>
+      </div>
+    </div>
+  </xh-text-field>
 
   <xh-tree id="tree-filter">
     <div data-xh-part="root">
@@ -960,16 +972,16 @@ watch(keyword, () => {
           </div>
         </div>
       </div>
+      <!-- 空态占位：给了 collection 时由元素按剩下几枝收放 -->
+      <div data-xh-part="empty"></div>
     </div>
   </xh-tree>
-
-  <span id="tree-filter-empty" style="display: none"></span>
 </div>
 
 <script type="module">
   const host = document.getElementById("tree-filter");
   const keyword = document.getElementById("tree-filter-keyword");
-  const empty = document.getElementById("tree-filter-empty");
+  const empty = host.querySelector('[data-xh-part="empty"]');
   const tree = host.querySelector('[data-xh-part="tree"]');
 
   const source = [
@@ -1050,14 +1062,13 @@ watch(keyword, () => {
       .filter((region) => region.children.length > 0);
   }
 
-  keyword.addEventListener("input", () => {
-    const key = keyword.value.trim();
+  keyword.addEventListener("value-change", (event) => {
+    const key = event.detail.value.trim();
     const regions = filter(key);
     host.collection = regions;
     renderTree(regions);
     host.expandedValue = regions.map((region) => region.value);
     empty.textContent = `没有匹配「${key}」的城市`;
-    empty.style.display = regions.length ? "none" : "block";
   });
 </script>
 ```
@@ -1275,6 +1286,7 @@ function onExpandedValueChange(details: { value: string[] }): void {
 <script setup lang="ts">
 import { FileIcon, FolderIcon } from "@xihan-ui/icons";
 import {
+  XhButton,
   XhIcon,
   XhTreeBranch,
   XhTreeBranchContent,
@@ -1330,14 +1342,14 @@ function rename(label: string): void {
               <XhIcon :icon="FileIcon" />
               <XhTreeItemText>{{ file.label }}</XhTreeItemText>
               <!-- 掐断冒泡，否则点按钮连带把这一行也选上 -->
-              <button type="button" @click.stop="rename(file.label)">重命名</button>
+              <XhButton variant="ghost" size="sm" @click.stop="rename(file.label)">重命名</XhButton>
               <XhTreeItemIndicator />
             </XhTreeItem>
           </XhTreeBranchContent>
         </XhTreeBranch>
       </XhTreeTree>
     </XhTreeRoot>
-    <span>{{ log }}</span>
+    <span data-demo-output>{{ log }}</span>
   </div>
 </template>
 ```
@@ -1360,13 +1372,13 @@ function rename(label: string): void {
             <div data-xh-part="item" value="index">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
               <span data-xh-part="item-text">index.ts</span>
-              <button type="button" data-rename="index.ts">重命名</button>
+              <xh-button variant="ghost" size="sm" data-rename="index.ts"><button data-xh-part="root">重命名</button></xh-button>
               <span data-xh-part="item-indicator"></span>
             </div>
             <div data-xh-part="item" value="app">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
               <span data-xh-part="item-text">app.vue</span>
-              <button type="button" data-rename="app.vue">重命名</button>
+              <xh-button variant="ghost" size="sm" data-rename="app.vue"><button data-xh-part="root">重命名</button></xh-button>
               <span data-xh-part="item-indicator"></span>
             </div>
           </div>
@@ -1383,7 +1395,7 @@ function rename(label: string): void {
             <div data-xh-part="item" value="guide">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
               <span data-xh-part="item-text">guide.md</span>
-              <button type="button" data-rename="guide.md">重命名</button>
+              <xh-button variant="ghost" size="sm" data-rename="guide.md"><button data-xh-part="root">重命名</button></xh-button>
               <span data-xh-part="item-indicator"></span>
             </div>
           </div>
@@ -1391,7 +1403,7 @@ function rename(label: string): void {
       </div>
     </div>
   </xh-tree>
-  <span id="tree-prefix-suffix-log">（还没动过）</span>
+  <span id="tree-prefix-suffix-log" data-demo-output>（还没动过）</span>
 </div>
 
 <script type="module">
@@ -1504,7 +1516,7 @@ function onSelectionChange(details: { value: string[] }): void {
         </XhTreeBranch>
       </XhTreeTree>
     </XhTreeRoot>
-    <span>已选：{{ selected.length ? selected.join("、") : "（无）" }}</span>
+    <span data-demo-output>已选：{{ selected.length ? selected.join("、") : "（无）" }}</span>
   </div>
 </template>
 ```
@@ -1551,7 +1563,7 @@ function onSelectionChange(details: { value: string[] }): void {
       </div>
     </div>
   </xh-tree>
-  <span>已选：<span id="tree-leaf-only-value">（无）</span></span>
+  <span data-demo-output>已选：<span id="tree-leaf-only-value">（无）</span></span>
 </div>
 
 <script type="module">
@@ -1668,7 +1680,7 @@ const selected = ref<string[]>(["hz"]);
         </XhTreeBranch>
       </XhTreeTree>
     </XhTreeRoot>
-    <p>选中值（默认只收叶）：{{ selected.length ? selected.join("、") : "（无）" }}</p>
+    <p data-demo-output>选中值（默认只收叶）：{{ selected.length ? selected.join("、") : "（无）" }}</p>
   </div>
 </template>
 ```
@@ -1721,7 +1733,7 @@ const selected = ref<string[]>(["hz"]);
       </div>
     </div>
   </xh-tree>
-  <p>选中值（默认只收叶）：<span id="tree-checkable-value">hz</span></p>
+  <p data-demo-output>选中值（默认只收叶）：<span id="tree-checkable-value">hz</span></p>
 </div>
 
 <script type="module">
@@ -1908,7 +1920,7 @@ function onNodeMove(move: Move): void {
       <!-- 播报区视觉隐藏，必须在拖动开始之前就在 DOM 上 -->
       <XhTreeLiveRegion />
     </XhTreeRoot>
-    <span>{{ log }}</span>
+    <span data-demo-output>{{ log }}</span>
   </div>
 </template>
 ```
@@ -1969,7 +1981,7 @@ function onNodeMove(move: Move): void {
     <!-- 播报区视觉隐藏，必须在拖动开始之前就在 DOM 上 -->
     <div data-xh-part="live-region"></div>
   </xh-tree>
-  <span id="tree-drag-log">按住任意一行拖走，或 Tab 进树里按 Alt + 方向键搬</span>
+  <span id="tree-drag-log" data-demo-output>按住任意一行拖走，或 Tab 进树里按 Alt + 方向键搬</span>
 </div>
 
 <script type="module">
@@ -2033,6 +2045,7 @@ leaf-orientation 按结构判据横排子节点全为叶子的层；要指定哪
 ```vue
 <script setup lang="ts">
 import {
+  XhSwitch,
   XhTreeBranch,
   XhTreeBranchContent,
   XhTreeBranchControl,
@@ -2095,7 +2108,7 @@ const selection = ref<string[]>(["user:add"]);
 <template>
   <div style="width: 100%; display: grid; gap: 12px; justify-items: start">
     <label style="display: inline-flex; gap: 6px; align-items: center">
-      <input v-model="wide" type="checkbox">
+      <XhSwitch v-model:checked="wide" />
       按钮那层横排
     </label>
 
@@ -2140,7 +2153,11 @@ const selection = ref<string[]>(["user:add"]);
 ```html
 <div style="width: 100%; display: grid; gap: 12px; justify-items: start">
   <label style="display: inline-flex; gap: 6px; align-items: center">
-    <input id="tree-orientation-wide" type="checkbox" checked />
+    <xh-switch id="tree-orientation-wide" default-checked>
+      <button data-xh-part="root">
+        <span data-xh-part="thumb"></span>
+      </button>
+    </xh-switch>
     按钮那层横排
   </label>
 
@@ -2284,8 +2301,8 @@ const selection = ref<string[]>(["user:add"]);
     (event) => (tree.selection = event.detail.value),
   );
 
-  wide.addEventListener("change", () => {
-    tree.setAttribute("leaf-orientation", wide.checked ? "horizontal" : "vertical");
+  wide.addEventListener("checked-change", (event) => {
+    tree.setAttribute("leaf-orientation", event.detail.checked ? "horizontal" : "vertical");
   });
 </script>
 ```
@@ -2389,7 +2406,7 @@ const selected = ref<string[]>([]);
         </XhTreeBranch>
       </XhTreeTree>
     </XhTreeRoot>
-    <span>选中：{{ selected.length ? selected.join("、") : "（无）" }}</span>
+    <span data-demo-output>选中：{{ selected.length ? selected.join("、") : "（无）" }}</span>
   </div>
 </template>
 ```
@@ -2446,7 +2463,7 @@ const selected = ref<string[]>([]);
       </div>
     </div>
   </xh-tree>
-  <span>选中：<span id="tree-range-value">（无）</span></span>
+  <span data-demo-output>选中：<span id="tree-range-value">（无）</span></span>
 </div>
 
 <script type="module">
@@ -3159,7 +3176,7 @@ const sizes = [
 ### 特性
 
 - 展开集合与选中集合两套值各自可受控。
-- `variant` 决定外框形态，默认 `outline`；`subtle` 换成淡底无描边，`ghost` 让树直接落在页面上。
+- `variant` 决定外框形态，默认 `ghost`，树直接落在页面或宿主面上；`outline` 加一圈描边与底色，`subtle` 换成淡底无描边。
 - `size` 取 `sm` / `md` / `lg`，默认 `md`，走集合家族的尺寸档：行高、行内内衬、字号、展开箭头与对号盒、拖拽把手与层级缩进一起随档。
 - 选中与[树形选择器](./tree-select)同一种读法：行不换面，单选、多选与级联都只在行尾画对号；分支行也摆 `item-indicator`，级联下的半选画横杠。
 - `cascade` 与 `checkedStrategy` 决定勾选父节点是否带子节点，以及回显给哪一层。
@@ -3208,7 +3225,7 @@ const sizes = [
 | --- | --- | --- | --- |
 | `collection` | `TreeNode[]` |  | 树数据，层级元信息的唯一事实源。默认为空树。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 完整 collection 与 Virtualizer 的焦点桥；count 必须等于当前 visibleNodes.length。 |
-| `variant` | `ControlVariant` |  | 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留行。 |
+| `variant` | `ControlVariant` |  | 外框形态：ghost 去掉描边与底色只保留行（默认），outline 带描边与底色，subtle 淡底无描边。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，默认 md。行高、行内内衬、字号、指示符盒（展开箭头、对号、拖拽把手）与层级缩进随档。 |
 | `leafOrientation` | `Orientation` |  | 末端层的排布方式，默认 vertical（每行一个）。horizontal 使它们并排铺开。 只作用于子节点全是叶子的层：菜单授权中即按钮层： 一个菜单下十几个按钮，横向排成一行，省去纵向翻找。中间层与整棵树恒为纵向， 它们承载的是层级本身，横向排布会失去层级信息。 这是结构判据，逐层自动识别。需要精确指定哪一层横向排布时，在节点上标注 `childrenOrientation`，它优先于本项。 只影响排布，不改变键盘：方向键在树上是层级操作（左右收展、上下移动可见行）， 这是 treeview 的规范语义，不随排布方向改写。 |
 | `expandedValue` | `string[]` |  | 展开集合。提供即受控：cell 直读 prop，写入只发 onExpandedValueChange 不落内部值。 |
@@ -3514,9 +3531,10 @@ const sizes = [
 | --- | --- | --- | --- | --- | --- |
 | `--xh-tree-bg` | `root`<br>`tree` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | tree 的 root、tree 部件 background 覆盖槽。 |
 | `--xh-tree-border` | `tree` | `border` | `default` | `--xh-border-default` | tree 的 tree 部件 border 覆盖槽。 |
-| `--xh-tree-branch-content-gap` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`gap`<br>`inset-block`<br>`row-gap` | `default`<br>`lines`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-list-option-gap` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、gap、inset-block、row-gap 覆盖槽。 |
-| `--xh-tree-branch-gap` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`gap`<br>`inset-block` | `default`<br>`first-child`<br>`lines`<br>`orientation=vertical`<br>`state=open` | `--xh-list-option-gap` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、gap、inset-block 覆盖槽。 |
-| `--xh-tree-branch-indicator-fg` | `branch-indicator`<br>`branch-trigger` | `color` | `default` | `--xh-fg-subtle` | tree 的 branch-indicator、branch-trigger 部件 color 覆盖槽。 |
+| `--xh-tree-branch-content-gap` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`gap`<br>`inset-block`<br>`row-gap` | `default`<br>`lines`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-space-0` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、gap、inset-block、row-gap 覆盖槽。 |
+| `--xh-tree-branch-gap` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`gap`<br>`inset-block` | `default`<br>`first-child`<br>`lines`<br>`orientation=vertical`<br>`state=open` | `--xh-space-0` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、gap、inset-block 覆盖槽。 |
+| `--xh-tree-branch-indicator-fg` | `branch-indicator`<br>`branch-trigger` | `color` | `default` | `--xh-fg-muted` | tree 的 branch-indicator、branch-trigger 部件 color 覆盖槽。 |
+| `--xh-tree-branch-loading-fg` | `branch`<br>`branch-control`<br>`branch-indicator`<br>`branch-trigger` | `color` | `loading` | `--xh-fg-brand` | tree 的 branch、branch-control、branch-indicator、branch-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-drag-fg` | `node-drag-trigger` | `color` | `default` | `--xh-fg-subtle` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-drag-fg-active` | `node-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-drag-fg-disabled` | `node-drag-trigger` | `color` | `disabled` | `--xh-fg-disabled` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
@@ -3543,7 +3561,7 @@ const sizes = [
 | `--xh-tree-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | tree 的 label 部件 font-size 覆盖槽。 |
 | `--xh-tree-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tree 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-tree-leaf-row-gap` | `branch-content` | `column-gap` | `orientation=horizontal` | `--xh-space-3` | tree 的 branch-content 部件 column-gap 覆盖槽。 |
-| `--xh-tree-line-color` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`border-block-end`<br>`border-inline-start` | `last-child`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-border-subtle` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、border-block-end、border-inline-start 覆盖槽。 |
+| `--xh-tree-line-color` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`border-block-end`<br>`border-inline-start` | `last-child`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-border-default` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、border-block-end、border-inline-start 覆盖槽。 |
 | `--xh-tree-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | tree 的 loading 部件 color 覆盖槽。 |
 | `--xh-tree-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_tree-font-size` | tree 的 loading 部件 font-size 覆盖槽。 |
 | `--xh-tree-loading-gap` | `loading` | `gap` | `default` | `--xh-_tree-row-gap` | tree 的 loading 部件 gap 覆盖槽。 |
@@ -3565,7 +3583,7 @@ const sizes = [
 | `--xh-tree-row-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-_tree-row-py` | tree 的 branch-control、item 部件 padding-block 覆盖槽。 |
 | `--xh-tree-row-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `--xh-shape-inset` | tree 的 branch-control、item 部件 border-radius 覆盖槽。 |
 | `--xh-tree-row-selected-font-weight` | `branch-control`<br>`item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | tree 的 branch-control、item 部件 font-weight 覆盖槽。 |
-| `--xh-tree-tree-gap` | `tree` | `gap` | `default` | `--xh-list-option-gap` | tree 的 tree 部件 gap 覆盖槽。 |
+| `--xh-tree-tree-gap` | `tree` | `gap` | `default` | `--xh-space-0` | tree 的 tree 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

@@ -45,7 +45,7 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
       <img
         :src="items[0]!.src"
         :alt="items[0]!.alt"
-        style="inline-size: 160px; border-radius: 8px; cursor: zoom-in; display: block"
+        style="inline-size: 160px; border-radius: var(--xh-shape-surface); cursor: zoom-in; display: block"
       >
     </XhImageViewerTrigger>
     <XhImageViewerContent>
@@ -73,7 +73,7 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
     <img
       src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E"
       alt="雪山与云海"
-      style="inline-size: 160px; border-radius: 8px; cursor: zoom-in; display: block"
+      style="inline-size: 160px; border-radius: var(--xh-shape-surface); cursor: zoom-in; display: block"
     />
   </button>
   <div data-xh-part="backdrop"></div>
@@ -122,6 +122,8 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
 ```vue
 <script setup lang="ts">
 import {
+  XhImageImage,
+  XhImageRoot,
   XhImageViewerCloseTrigger,
   XhImageViewerContent,
   XhImageViewerCounter,
@@ -145,23 +147,28 @@ const items = [
 
 <template>
   <XhImageViewerRoot v-slot="{ setIndex, setOpen }" :collection="items">
+    <!-- 缩略图各自指定从第几张看起：先换下标再展开，一打开就是那一张；图片补上按钮角色，Enter 与 Space 也能打开 -->
     <div style="display: flex; gap: 8px">
-      <button
+      <XhImageRoot
         v-for="(item, i) in items"
         :key="item.src"
-        type="button"
-        style="border: none; padding: 0; cursor: zoom-in; background: none"
+        :src="item.src"
+        :alt="item.alt"
+        role="button"
+        tabindex="0"
+        :aria-label="`查看 ${item.alt}`"
+        style="--xh-image-w: 120px; --xh-image-ratio: 4 / 3; cursor: zoom-in"
         @click="
           setIndex(i);
           setOpen(true);
         "
+        @keydown.enter.space.prevent="
+          setIndex(i);
+          setOpen(true);
+        "
       >
-        <img
-          :src="item.src"
-          :alt="item.alt"
-          style="inline-size: 120px; aspect-ratio: 4/3; object-fit: cover; border-radius: 8px; display: block"
-        >
-      </button>
+        <XhImageImage />
+      </XhImageRoot>
     </div>
     <XhImageViewerContent>
       <XhImageViewerViewport>
@@ -183,27 +190,21 @@ const items = [
 ```html
 <xh-image-viewer id="image-viewer-album">
   <div id="image-viewer-album-thumbs" style="display: flex; gap: 8px">
-    <button type="button" data-index="0" style="border: none; padding: 0; cursor: zoom-in; background: none">
-      <img
-        src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E"
-        alt="雪山"
-        style="inline-size: 120px; aspect-ratio: 4/3; object-fit: cover; border-radius: 8px; display: block"
-      />
-    </button>
-    <button type="button" data-index="1" style="border: none; padding: 0; cursor: zoom-in; background: none">
-      <img
-        src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%237c3aed%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%23c4b5fd%22/%3E%3C/svg%3E"
-        alt="暮色"
-        style="inline-size: 120px; aspect-ratio: 4/3; object-fit: cover; border-radius: 8px; display: block"
-      />
-    </button>
-    <button type="button" data-index="2" style="border: none; padding: 0; cursor: zoom-in; background: none">
-      <img
-        src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23065f46%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%236ee7b7%22/%3E%3C/svg%3E"
-        alt="森林"
-        style="inline-size: 120px; aspect-ratio: 4/3; object-fit: cover; border-radius: 8px; display: block"
-      />
-    </button>
+    <xh-image data-index="0" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E" alt="雪山">
+      <div data-xh-part="root" role="button" tabindex="0" aria-label="查看 雪山" style="--xh-image-w: 120px; --xh-image-ratio: 4 / 3; cursor: zoom-in">
+        <img data-xh-part="image" />
+      </div>
+    </xh-image>
+    <xh-image data-index="1" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%237c3aed%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%23c4b5fd%22/%3E%3C/svg%3E" alt="暮色">
+      <div data-xh-part="root" role="button" tabindex="0" aria-label="查看 暮色" style="--xh-image-w: 120px; --xh-image-ratio: 4 / 3; cursor: zoom-in">
+        <img data-xh-part="image" />
+      </div>
+    </xh-image>
+    <xh-image data-index="2" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23065f46%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%236ee7b7%22/%3E%3C/svg%3E" alt="森林">
+      <div data-xh-part="root" role="button" tabindex="0" aria-label="查看 森林" style="--xh-image-w: 120px; --xh-image-ratio: 4 / 3; cursor: zoom-in">
+        <img data-xh-part="image" />
+      </div>
+    </xh-image>
   </div>
   <div data-xh-part="backdrop"></div>
   <div data-xh-part="positioner">
@@ -241,13 +242,20 @@ const items = [
     },
   ];
 
-  // 缩略图各自指定从第几张看起，开合与下标都由这段脚本持有
+  // 缩略图各自指定从第几张看起，开合与下标都由这段脚本持有；图片补上了按钮角色，Enter 与 Space 也要能打开
   viewer.addEventListener("open-change", (event) => (viewer.open = event.detail.open));
   viewer.addEventListener("index-change", (event) => (viewer.index = event.detail.index));
   for (const thumb of document.getElementById("image-viewer-album-thumbs").children) {
-    thumb.addEventListener("click", () => {
+    const view = () => {
       viewer.index = Number(thumb.dataset.index);
       viewer.open = true;
+    };
+    thumb.addEventListener("click", view);
+    thumb.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        view();
+      }
     });
   }
 </script>
@@ -296,10 +304,7 @@ const translations = {
     :collection="items"
     :translations="translations"
   >
-    <div style="display: flex; align-items: center; gap: 8px">
-      <XhButton variant="solid" @click="open = true">从第 {{ index + 1 }} 张看起</XhButton>
-      <span>open：{{ open }}，index：{{ index }}</span>
-    </div>
+    <XhButton variant="solid" @click="open = true">从第 {{ index + 1 }} 张看起</XhButton>
     <XhImageViewerContent>
       <XhImageViewerViewport>
         <XhImageViewerImage />
@@ -310,22 +315,15 @@ const translations = {
       <XhImageViewerCloseTrigger />
     </XhImageViewerContent>
   </XhImageViewerRoot>
+  <span data-demo-output>open：{{ open }} · index：{{ index }}</span>
 </template>
 ```
 
 ```html
 <xh-image-viewer id="image-viewer-controlled" open="false" index="1">
-  <div style="display: flex; align-items: center; gap: 8px">
-    <xh-button variant="solid">
-      <button data-xh-part="root" id="image-viewer-controlled-open">从第 2 张看起</button>
-    </xh-button>
-    <span>
-      open：<span id="image-viewer-controlled-open-state">false</span>，index：<span
-        id="image-viewer-controlled-index-state"
-        >1</span
-      >
-    </span>
-  </div>
+  <xh-button variant="solid">
+    <button data-xh-part="root" id="image-viewer-controlled-open">从第 2 张看起</button>
+  </xh-button>
   <div data-xh-part="backdrop"></div>
   <div data-xh-part="positioner">
     <div data-xh-part="content">
@@ -339,6 +337,7 @@ const translations = {
     </div>
   </div>
 </xh-image-viewer>
+<span data-demo-output>open：<span id="image-viewer-controlled-open-state">false</span> · index：<span id="image-viewer-controlled-index-state">1</span></span>
 
 <script type="module">
   // 内联的示例图，省得示例依赖外部资源；文案是对象，与图片清单一样只走属性
@@ -407,7 +406,7 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
       <img
         :src="items[0]!.src"
         :alt="items[0]!.alt"
-        style="inline-size: 160px; border-radius: 8px; cursor: zoom-in; display: block"
+        style="inline-size: 160px; border-radius: var(--xh-shape-surface); cursor: zoom-in; display: block"
       >
     </XhImageViewerTrigger>
     <XhImageViewerContent>
@@ -429,7 +428,7 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
     <img
       src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23334155%22/%3E%3Ccircle%20cx=%224%22%20cy=%223%22%20r=%221.4%22%20fill=%22%23fbbf24%22/%3E%3Cpath%20d=%22M0%209%205%204%2010%209z%22%20fill=%22%2364748b%22/%3E%3Cpath%20d=%22M7%209%2012%202%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E"
       alt="山谷日落"
-      style="inline-size: 160px; border-radius: 8px; cursor: zoom-in; display: block"
+      style="inline-size: 160px; border-radius: var(--xh-shape-surface); cursor: zoom-in; display: block"
     />
   </button>
   <div data-xh-part="backdrop"></div>
@@ -467,6 +466,8 @@ import { DownloadIcon } from "@xihan-ui/icons";
 import {
   XhDownloadTrigger,
   XhIcon,
+  XhImageImage,
+  XhImageRoot,
   XhImageViewerCloseTrigger,
   XhImageViewerContent,
   XhImageViewerCounter,
@@ -495,19 +496,28 @@ function blobOf(index: number): () => Promise<Blob> {
 
 <template>
   <XhImageViewerRoot v-slot="{ index, setIndex, setOpen }" :collection="items">
+    <!-- 缩略图与浮层里那排缩略图都是图片补上按钮角色，Enter 与 Space 也能按；从外面打开时先换下标再展开，一打开就是那一张 -->
     <div style="display: flex; gap: var(--xh-space-2)">
-      <button
+      <XhImageRoot
         v-for="(item, i) in items"
         :key="item.src"
-        type="button"
-        style="border: none; padding: 0; cursor: zoom-in; background: none"
+        :src="item.src"
+        :alt="item.alt"
+        role="button"
+        tabindex="0"
+        :aria-label="`查看 ${item.alt}`"
+        style="--xh-image-w: 120px; --xh-image-ratio: 4 / 3; cursor: zoom-in"
         @click="
           setIndex(i);
           setOpen(true);
         "
+        @keydown.enter.space.prevent="
+          setIndex(i);
+          setOpen(true);
+        "
       >
-        <img :src="item.src" :alt="item.alt" style="inline-size: 120px; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--xh-shape-surface); display: block">
-      </button>
+        <XhImageImage />
+      </XhImageRoot>
     </div>
     <XhImageViewerContent>
       <XhImageViewerViewport>
@@ -523,18 +533,22 @@ function blobOf(index: number): () => Promise<Blob> {
         </XhDownloadTrigger>
       </div>
       <div style="position: absolute; inset-block-end: calc(var(--xh-space-6) * 3); inset-inline: 0; z-index: 1; display: flex; justify-content: center; gap: var(--xh-space-2)">
-        <button
+        <XhImageRoot
           v-for="(item, i) in items"
           :key="item.src"
-          type="button"
+          :src="item.src"
+          alt=""
+          role="button"
+          tabindex="0"
           :aria-label="`第 ${i + 1} 张：${item.alt}`"
           :aria-current="i === index ? 'true' : undefined"
-          :style="{ outline: i === index ? 'var(--xh-ring-width) solid currentColor' : 'none', opacity: i === index ? 1 : 0.6 }"
-          style="border: none; padding: 0; background: none; cursor: pointer; border-radius: var(--xh-shape-inset); outline-offset: var(--xh-ring-offset)"
+          :style="{ outline: i === index ? 'var(--xh-ring-width) solid currentColor' : undefined, opacity: i === index ? 1 : 0.6 }"
+          style="--xh-image-w: 64px; --xh-image-ratio: 4 / 3; outline-offset: var(--xh-ring-offset); cursor: pointer"
           @click="setIndex(i)"
+          @keydown.enter.space.prevent="setIndex(i)"
         >
-          <img :src="item.src" alt="" style="inline-size: 64px; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--xh-shape-inset); display: block">
-        </button>
+          <XhImageImage />
+        </XhImageRoot>
       </div>
       <XhImageViewerToolbar>
         <XhImageViewerZoomOutTrigger />
@@ -549,27 +563,21 @@ function blobOf(index: number): () => Promise<Blob> {
 ```html
 <xh-image-viewer id="image-viewer-strip">
   <div id="image-viewer-strip-thumbs" style="display: flex; gap: var(--xh-space-2)">
-    <button type="button" data-index="0" style="border: none; padding: 0; cursor: zoom-in; background: none">
-      <img
-        src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E"
-        alt="雪山"
-        style="inline-size: 120px; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--xh-shape-surface); display: block"
-      />
-    </button>
-    <button type="button" data-index="1" style="border: none; padding: 0; cursor: zoom-in; background: none">
-      <img
-        src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%237c3aed%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%23c4b5fd%22/%3E%3C/svg%3E"
-        alt="暮色"
-        style="inline-size: 120px; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--xh-shape-surface); display: block"
-      />
-    </button>
-    <button type="button" data-index="2" style="border: none; padding: 0; cursor: zoom-in; background: none">
-      <img
-        src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23065f46%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%236ee7b7%22/%3E%3C/svg%3E"
-        alt="森林"
-        style="inline-size: 120px; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--xh-shape-surface); display: block"
-      />
-    </button>
+    <xh-image data-index="0" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E" alt="雪山">
+      <div data-xh-part="root" role="button" tabindex="0" aria-label="查看 雪山" style="--xh-image-w: 120px; --xh-image-ratio: 4 / 3; cursor: zoom-in">
+        <img data-xh-part="image" />
+      </div>
+    </xh-image>
+    <xh-image data-index="1" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%237c3aed%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%23c4b5fd%22/%3E%3C/svg%3E" alt="暮色">
+      <div data-xh-part="root" role="button" tabindex="0" aria-label="查看 暮色" style="--xh-image-w: 120px; --xh-image-ratio: 4 / 3; cursor: zoom-in">
+        <img data-xh-part="image" />
+      </div>
+    </xh-image>
+    <xh-image data-index="2" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23065f46%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%236ee7b7%22/%3E%3C/svg%3E" alt="森林">
+      <div data-xh-part="root" role="button" tabindex="0" aria-label="查看 森林" style="--xh-image-w: 120px; --xh-image-ratio: 4 / 3; cursor: zoom-in">
+        <img data-xh-part="image" />
+      </div>
+    </xh-image>
   </div>
   <div data-xh-part="backdrop"></div>
   <div data-xh-part="positioner">
@@ -590,15 +598,21 @@ function blobOf(index: number): () => Promise<Blob> {
         </xh-download-trigger>
       </div>
       <div id="image-viewer-strip-rail" style="position: absolute; inset-block-end: calc(var(--xh-space-6) * 3); inset-inline: 0; z-index: 1; display: flex; justify-content: center; gap: var(--xh-space-2)">
-          <button type="button" data-index="0" aria-label="第 1 张：雪山" style="border: none; padding: 0; background: none; cursor: pointer; border-radius: var(--xh-shape-inset); outline-offset: var(--xh-ring-offset)">
-            <img src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E" alt="" style="inline-size: 64px; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--xh-shape-inset); display: block" />
-          </button>
-          <button type="button" data-index="1" aria-label="第 2 张：暮色" style="border: none; padding: 0; background: none; cursor: pointer; border-radius: var(--xh-shape-inset); outline-offset: var(--xh-ring-offset)">
-            <img src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%237c3aed%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%23c4b5fd%22/%3E%3C/svg%3E" alt="" style="inline-size: 64px; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--xh-shape-inset); display: block" />
-          </button>
-          <button type="button" data-index="2" aria-label="第 3 张：森林" style="border: none; padding: 0; background: none; cursor: pointer; border-radius: var(--xh-shape-inset); outline-offset: var(--xh-ring-offset)">
-            <img src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23065f46%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%236ee7b7%22/%3E%3C/svg%3E" alt="" style="inline-size: 64px; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--xh-shape-inset); display: block" />
-          </button>
+        <xh-image data-index="0" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E" alt="">
+          <div data-xh-part="root" role="button" tabindex="0" aria-label="第 1 张：雪山" style="--xh-image-w: 64px; --xh-image-ratio: 4 / 3; outline-offset: var(--xh-ring-offset); cursor: pointer">
+            <img data-xh-part="image" />
+          </div>
+        </xh-image>
+        <xh-image data-index="1" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%237c3aed%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%23c4b5fd%22/%3E%3C/svg%3E" alt="">
+          <div data-xh-part="root" role="button" tabindex="0" aria-label="第 2 张：暮色" style="--xh-image-w: 64px; --xh-image-ratio: 4 / 3; outline-offset: var(--xh-ring-offset); cursor: pointer">
+            <img data-xh-part="image" />
+          </div>
+        </xh-image>
+        <xh-image data-index="2" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23065f46%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%236ee7b7%22/%3E%3C/svg%3E" alt="">
+          <div data-xh-part="root" role="button" tabindex="0" aria-label="第 3 张：森林" style="--xh-image-w: 64px; --xh-image-ratio: 4 / 3; outline-offset: var(--xh-ring-offset); cursor: pointer">
+            <img data-xh-part="image" />
+          </div>
+        </xh-image>
       </div>
       <div data-xh-part="toolbar">
         <button data-xh-part="zoom-out-trigger"></button>
@@ -626,27 +640,38 @@ function blobOf(index: number): () => Promise<Blob> {
     const item = viewer.collection[index];
     download.fileName = `${item.alt}.svg`;
     download.data = () => fetch(item.src).then(response => response.blob());
-    rail.forEach((thumb, i) => {
+    rail.forEach((host, i) => {
+      const thumb = host.querySelector('[data-xh-part="root"]');
       const current = i === index;
       if (current)
         thumb.setAttribute("aria-current", "true");
       else
         thumb.removeAttribute("aria-current");
-      thumb.style.outline = current ? "var(--xh-ring-width) solid currentColor" : "none";
+      thumb.style.outline = current ? "var(--xh-ring-width) solid currentColor" : "";
       thumb.style.opacity = current ? "1" : "0.6";
     });
   }
 
   viewer.addEventListener("open-change", event => (viewer.open = event.detail.open));
   viewer.addEventListener("index-change", event => sync(event.detail.index));
-  for (const thumb of document.getElementById("image-viewer-strip-thumbs").children) {
-    thumb.addEventListener("click", () => {
-      sync(Number(thumb.dataset.index));
+  // 图片补上了按钮角色，Enter 与 Space 也要能按下去
+  function press(host, action) {
+    host.addEventListener("click", action);
+    host.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        action();
+      }
+    });
+  }
+  for (const host of document.getElementById("image-viewer-strip-thumbs").children) {
+    press(host, () => {
+      sync(Number(host.dataset.index));
       viewer.open = true;
     });
   }
-  for (const thumb of rail)
-    thumb.addEventListener("click", () => sync(Number(thumb.dataset.index)));
+  for (const host of rail)
+    press(host, () => sync(Number(host.dataset.index)));
   sync(0);
 </script>
 ```
@@ -665,7 +690,7 @@ function blobOf(index: number): () => Promise<Blob> {
 
 ### 特性
 
-- `collection` 提供整组图片，`index` 决定当前一张，`loop` 决定是否循环。
+- `collection` 提供整组图片，`index` 决定当前一张，`loop` 决定是否循环。收起时也能换下标：缩略图墙上点哪一张，先 `setIndex` 再 `setOpen(true)`，看片层一打开就是那一张。
 - 缩放步长与上下限可调。
 - 触屏上两指撑开放大、捏合缩小，单指平移；缩放以两指中点为锚。
 - 平移限定在图片放大后超出视口的范围内：拖出去越拉越沉，松手弹回；快甩松手后图片顺着速度继续滑行、逐渐停下，滑到边界时轻碰一下就停。图片比视口小时只能居中。
@@ -673,7 +698,7 @@ function blobOf(index: number): () => Promise<Blob> {
 - 取图时画面正中转一枚加载环；取图失败时画面正中画一枚警示字形，不露浏览器的破图，替代文字仍在可及树里。到头的翻页钮与贴住端点的缩放钮禁用时前景换成禁用色，不压低整颗钮的不透明度。
 - 逻辑关闭立即退出交互与可访问树；内容和遮罩完成退场后才释放模态资源，重开会撤销旧退场。
 - 底部控件带是一组有名称的控件，每个按钮各占一个 Tab 位；左右方向键与 Home/End 用于翻页，控件带内外一致。
-- 翻页按钮走 Action Control floating 档，随 `size` 取 sm / md / lg（32 / 40 / 48px 圆形，默认 md）；关闭按钮同走 floating 档、比翻页钮低一档（最低 sm），控件带按钮走 icon 档；十个按钮共用取景器自己的深色半透明 chrome，不取页面语义面。
+- 翻页按钮与关闭按钮走 Action Control floating 档，随 `size` 取控件高 sm / md / lg（28 / 32 / 36px 圆形，默认 md），压在取景器自己的深色半透明 chrome 上；底部控件带是页面主题的实体面（亮色白面、暗色深面，1px 描边），七个按钮 36px，悬停与按下随控件带的底色换面。
 - 应用设为 `data-material="liquid"` 时，工具条、计数、翻页与关闭钮换成液态面：按下层换色调，前景随之在黑白之间切换；工具条与计数取胶囊形，三颗钮取圆形，按住时液面随手指形变。
 
 ### 组合
@@ -719,7 +744,7 @@ function blobOf(index: number): () => Promise<Blob> {
 | `closeOnInteractOutside` | `boolean` |  | 点击遮罩（内容之外）关闭，默认 true。 |
 | `restoreFocus` | `boolean` |  |  |
 | `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；翻页钮走 Action Control floating 档（32 / 40 / 48px），关闭钮比它低一档、最低 sm。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；翻页钮与关闭钮随它取控件高（28 / 32 / 36px 圆形）。 |
 | `translations` | `Partial<ImageViewerTranslations>` |  |  |
 | `onOpenChange` | `(details: ImageViewerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onIndexChange` | `(details: ImageViewerIndexChangeDetails) => void` |  | 下标变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
@@ -903,6 +928,7 @@ function blobOf(index: number): () => Promise<Blob> {
 | `image` | `data-loading` | ''（条件成立时才出现） |
 | `image` | `data-state` | 'open' \| 'closed' |
 | `toolbar` | `data-state` | 'open' \| 'closed' |
+| `toolbar` | `data-xh-ink-surface` | '' |
 | `toolbar` | `data-xh-liquid` | '' |
 | `zoom-in-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `zoom-in-trigger` | `data-xh-action-control` | '' |
@@ -959,7 +985,7 @@ function blobOf(index: number): () => Promise<Blob> {
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
 | `close-trigger` | `data-xh-action-profile` | 'floating' |
-| `close-trigger` | `data-xh-action-size` | floatingSizeBelow(size) |
+| `close-trigger` | `data-xh-action-size` | props.size |
 | `close-trigger` | `data-xh-liquid` | '' |
 
 <!-- xh-component-tokens:start -->
@@ -969,25 +995,27 @@ function blobOf(index: number): () => Promise<Blob> {
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-image-viewer-action-bg-active` | `close-trigger`<br>`content`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_liquid-bg-pressed`<br>`--xh-bg-subtle-hover`<br>`--xh-color-neutral-950` | image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 background-color 覆盖槽。 |
-| `--xh-image-viewer-action-bg-hover` | `close-trigger`<br>`content`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_liquid-bg-hover`<br>`--xh-bg-subtle`<br>`--xh-color-neutral-950` | image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 background-color 覆盖槽。 |
-| `--xh-image-viewer-backdrop-bg` | `backdrop` | `background` | `default` | `--xh-color-neutral-950` | image-viewer 的 backdrop 部件 background 覆盖槽。 |
+| `--xh-image-viewer-action-bg-active` | `close-trigger`<br>`content`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_liquid-bg-pressed`<br>`--xh-bg-media-chrome-active`<br>`--xh-bg-subtle-hover` | image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 background-color 覆盖槽。 |
+| `--xh-image-viewer-action-bg-hover` | `close-trigger`<br>`content`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_liquid-bg-hover`<br>`--xh-bg-media-chrome-hover`<br>`--xh-bg-subtle` | image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 background-color 覆盖槽。 |
+| `--xh-image-viewer-backdrop-bg` | `backdrop` | `background` | `default` | `--xh-bg-overlay` | image-viewer 的 backdrop 部件 background 覆盖槽。 |
 | `--xh-image-viewer-backdrop-blur` | `backdrop` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `variant=blur` | `--xh-overlay-backdrop-blur` | image-viewer 的 backdrop 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-image-viewer-backdrop-layer` | `backdrop` | `z-index` | `default` | `--xh-_layer` | image-viewer 的 backdrop 部件 z-index 覆盖槽。 |
-| `--xh-image-viewer-chrome-bg` | `close-trigger`<br>`content`<br>`counter`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `--xh-ink-surface`<br>`background`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`material=liquid`<br>`where([data-material='liquid'])`<br>`xh-ink-surface`<br>`xh-liquid` | `--xh-_liquid-bg`<br>`--xh-color-neutral-950`<br>`--xh-material-liquid-focus-surface` | image-viewer 的 close-trigger、content、counter、next-trigger、prev-trigger、toolbar 部件 --xh-ink-surface、background、background-color 覆盖槽。 |
+| `--xh-image-viewer-chrome-bg` | `close-trigger`<br>`content`<br>`counter`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `--xh-ink-surface`<br>`background`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`material=liquid`<br>`where([data-material='liquid'])`<br>`xh-ink-surface`<br>`xh-liquid` | `--xh-_liquid-bg`<br>`--xh-bg-media-chrome`<br>`--xh-material-liquid-focus-surface` | image-viewer 的 close-trigger、content、counter、next-trigger、prev-trigger、toolbar 部件 --xh-ink-surface、background、background-color 覆盖槽。 |
 | `--xh-image-viewer-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_image-viewer-chrome-bg-active`<br>`--xh-_liquid-bg-pressed` | image-viewer 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-image-viewer-close-bg-hover` | `close-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_image-viewer-chrome-bg-hover`<br>`--xh-_liquid-bg-hover` | image-viewer 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-image-viewer-close-fg` | `close-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-material-liquid-fg`<br>`currentColor` | image-viewer 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-image-viewer-close-radius` | `close-trigger` | `border-radius` | `default`<br>`material=liquid`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-shape-circle` | image-viewer 的 close-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-image-viewer-close-size` | `close-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=floating`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | image-viewer 的 close-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-image-viewer-close-size` | `close-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=floating`<br>`xh-action-profile=icon` | `--xh-_image-viewer-nav-size` | image-viewer 的 close-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-image-viewer-counter-padding` | `counter` | `padding` | `default` | `--xh-space-1` | image-viewer 的 counter 部件 padding 覆盖槽。 |
 | `--xh-image-viewer-counter-radius` | `counter` | `border-radius` | `default`<br>`material=liquid`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-image-viewer-overlay-radius` | image-viewer 的 counter 部件 border-radius 覆盖槽。 |
 | `--xh-image-viewer-error-fg` | `viewport` | `background-color` | `error` | `--xh-fg-danger` | image-viewer 的 viewport 部件 background-color 覆盖槽。 |
-| `--xh-image-viewer-fg` | `content` | `color` | `default` | `--xh-color-neutral-0` | image-viewer 的 content 部件 color 覆盖槽。 |
-| `--xh-image-viewer-icon-size` | `close-trigger`<br>`content`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-image-viewer-fg` | `content` | `color` | `default` | `--xh-fg-on-media-chrome` | image-viewer 的 content 部件 color 覆盖槽。 |
+| `--xh-image-viewer-icon-size` | `close-trigger`<br>`content`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-_image-viewer-nav-glyph`<br>`--xh-glyph-size-md` | image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-image-viewer-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | image-viewer 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-image-viewer-nav-size` | `next-trigger`<br>`prev-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=floating`<br>`xh-action-profile=icon` | `--xh-_image-viewer-nav-size` | image-viewer 的 next-trigger、prev-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-image-viewer-overlay-radius` | `counter`<br>`next-trigger`<br>`prev-trigger`<br>`toolbar` | `border-radius` | `default`<br>`material=liquid`<br>`where([data-material='liquid'])`<br>`xh-liquid` | `--xh-_action-profile-radius`<br>`--xh-shape-control`<br>`--xh-shape-pill`<br>`--xh-shape-surface` | image-viewer 的 counter、next-trigger、prev-trigger、toolbar 部件 border-radius 覆盖槽。 |
 | `--xh-image-viewer-status-size` | `viewport` | `--xh-icon-size` | `default` | `--xh-glyph-size-lg` | image-viewer 的 viewport 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-image-viewer-toolbar-bg` | `toolbar` | `--xh-ink-surface`<br>`background` | `default` | `--xh-_image-viewer-page-surface` | image-viewer 的 toolbar 部件 --xh-ink-surface、background 覆盖槽。 |
 | `--xh-image-viewer-toolbar-gap` | `toolbar` | `gap` | `default` | `--xh-space-1` | image-viewer 的 toolbar 部件 gap 覆盖槽。 |
 | `--xh-image-viewer-toolbar-padding` | `toolbar` | `padding` | `default` | `--xh-space-1_5` | image-viewer 的 toolbar 部件 padding 覆盖槽。 |
 | `--xh-image-viewer-toolbar-radius` | `toolbar` | `border-radius` | `default` | `--xh-_action-profile-radius` | image-viewer 的 toolbar 部件 border-radius 覆盖槽。 |

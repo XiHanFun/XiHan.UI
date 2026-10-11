@@ -658,7 +658,7 @@ const collection: MenubarNode[] = [{
 | `--xh-menubar-content-bg` | `arrow`<br>`content` | `background` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg`<br>`--xh-material-frosted-bg` | menubar 的 arrow、content 部件 background 覆盖槽。 |
 | `--xh-menubar-content-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | menubar 的 content 部件 color 覆盖槽。 |
 | `--xh-menubar-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` | menubar 的 content 部件 gap 覆盖槽。 |
-| `--xh-menubar-content-px` | `content` | `padding-inline` | `default` | `--xh-surface-pad-xs` | menubar 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-menubar-content-px` | `content` | `padding-inline` | `default` | `0` | menubar 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-menubar-content-py` | `content` | `padding-block` | `default` | `--xh-surface-pad-xs` | menubar 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-menubar-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | menubar 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-menubar-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | menubar 的 content 部件 box-shadow 覆盖槽。 |
@@ -667,7 +667,8 @@ const collection: MenubarNode[] = [{
 | `--xh-menubar-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | menubar 的 group 部件 gap 覆盖槽。 |
 | `--xh-menubar-group-label-fg` | `group-label` | `color` | `default` | `--xh-material-frosted-fg-muted` | menubar 的 group-label 部件 color 覆盖槽。 |
 | `--xh-menubar-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | menubar 的 group-label 部件 font-size 覆盖槽。 |
-| `--xh-menubar-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | menubar 的 group-label 部件 font-weight 覆盖槽。 |
+| `--xh-menubar-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-regular` | menubar 的 group-label 部件 font-weight 覆盖槽。 |
+| `--xh-menubar-group-label-mt` | `group-label` | `margin-block-start` | `default` | `--xh-space-2` | menubar 的 group-label 部件 margin-block-start 覆盖槽。 |
 | `--xh-menubar-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_menubar-item-px` | menubar 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-menubar-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | menubar 的 group-label 部件 padding-block 覆盖槽。 |
 | `--xh-menubar-highlight` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-highlight` | menubar 的 content 部件 background 覆盖槽。 |
@@ -680,12 +681,13 @@ const collection: MenubarNode[] = [{
 | `--xh-menubar-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`in-path`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=nav` | `--xh-material-frosted-fg` | menubar 的 item 部件 color 覆盖槽。 |
 | `--xh-menubar-item-font-size` | `item` | `font-size` | `default` | `--xh-_menubar-font-size` | menubar 的 item 部件 font-size 覆盖槽。 |
 | `--xh-menubar-item-gap` | `item` | `gap` | `default` | `--xh-_menubar-item-gap` | menubar 的 item 部件 gap 覆盖槽。 |
+| `--xh-menubar-item-h` | `item` | `min-block-size` | `default` | `--xh-_menubar-item-h` | menubar 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-menubar-item-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone` | menubar 的 item-indicator 部件 color 覆盖槽。 |
 | `--xh-menubar-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | menubar 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-menubar-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | menubar 的 item 部件 line-height 覆盖槽。 |
 | `--xh-menubar-item-px` | `item` | `padding-inline` | `default` | `--xh-_menubar-item-px` | menubar 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-menubar-item-py` | `item` | `padding-block` | `default` | `--xh-_menubar-item-py` | menubar 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-menubar-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | menubar 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-menubar-item-radius` | `item` | `border-radius` | `default` | `0` | menubar 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-menubar-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | menubar 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-menubar-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | menubar 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-menubar-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | menubar 的 content 部件 max-inline-size 覆盖槽。 |
@@ -697,7 +699,7 @@ const collection: MenubarNode[] = [{
 | `--xh-menubar-separator-my` | `separator` | `margin-block` | `default` | `--xh-space-0_5` | menubar 的 separator 部件 margin-block 覆盖槽。 |
 | `--xh-menubar-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | menubar 的 separator 部件 border-radius 覆盖槽。 |
 | `--xh-menubar-separator-thickness` | `separator` | `block-size` | `default` | `--xh-stroke-thin` | menubar 的 separator 部件 block-size 覆盖槽。 |
-| `--xh-menubar-submenu-indicator-fg` | `item` | `background-color` | `default` | `--xh-material-frosted-fg-muted` | menubar 的 item 部件 background-color 覆盖槽。 |
+| `--xh-menubar-submenu-indicator-fg` | `item` | `background-color` | `default` | `currentColor` | menubar 的 item 部件 background-color 覆盖槽。 |
 | `--xh-menubar-submenu-indicator-size` | `item` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | menubar 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-menubar-trigger-bg-active` | `trigger` | `background-color` | `in-path`<br>`xh-collection-context=nav` | `--xh-bg-subtle` | menubar 的 trigger 部件 background-color 覆盖槽。 |
 | `--xh-menubar-trigger-bg-hover` | `trigger` | `background-color` | `disabled`<br>`error`<br>`hover`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`xh-collection-context=nav` | `--xh-bg-subtle` | menubar 的 trigger 部件 background-color 覆盖槽。 |

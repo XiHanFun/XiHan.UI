@@ -33,36 +33,32 @@ const value = ref("#3b82f6");
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 8px">
-    <XhColorFieldRoot v-model:value="value" name="accent" placeholder="#rrggbb" clearable>
-      <XhColorFieldLabel>主题色</XhColorFieldLabel>
-      <XhColorFieldControl>
-        <XhColorFieldSwatch />
-        <XhColorFieldInput />
-        <XhColorFieldClearTrigger />
-      </XhColorFieldControl>
-      <XhColorFieldHiddenInput />
-    </XhColorFieldRoot>
-    <span style="font-size: 13px">收下的值：<code>{{ value || "（空）" }}</code></span>
-  </div>
+  <XhColorFieldRoot v-model:value="value" name="accent" placeholder="#rrggbb" clearable>
+    <XhColorFieldLabel>主题色</XhColorFieldLabel>
+    <XhColorFieldControl>
+      <XhColorFieldSwatch />
+      <XhColorFieldInput />
+      <XhColorFieldClearTrigger />
+    </XhColorFieldControl>
+    <XhColorFieldHiddenInput />
+  </XhColorFieldRoot>
+  <span data-demo-output>收下的值：<code>{{ value || "（空）" }}</code></span>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 8px">
-  <xh-color-field id="color-field-basic" default-value="#3b82f6" name="accent" placeholder="#rrggbb" clearable>
-    <div data-xh-part="root">
-      <label data-xh-part="label">主题色</label>
-      <div data-xh-part="control">
-        <span data-xh-part="swatch"></span>
-        <input data-xh-part="input" />
-        <button data-xh-part="clear-trigger"></button>
-      </div>
-      <input data-xh-part="hidden-input" />
+<xh-color-field id="color-field-basic" default-value="#3b82f6" name="accent" placeholder="#rrggbb" clearable>
+  <div data-xh-part="root">
+    <label data-xh-part="label">主题色</label>
+    <div data-xh-part="control">
+      <span data-xh-part="swatch"></span>
+      <input data-xh-part="input" />
+      <button data-xh-part="clear-trigger"></button>
     </div>
-  </xh-color-field>
-  <span style="font-size: 13px">收下的值：<code id="color-field-basic-value">#3b82f6</code></span>
-</div>
+    <input data-xh-part="hidden-input" />
+  </div>
+</xh-color-field>
+<span data-demo-output>收下的值：<code id="color-field-basic-value">#3b82f6</code></span>
 
 <script type="module">
   // 打字途中不发事件，只有收下的值才到这里
@@ -101,34 +97,30 @@ const value = ref("rgba(59, 130, 246, 0.5)");
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 8px">
-    <!-- 试着打 #3b82f680 或 hsl(217 91% 60% / 50%)，收下后都变成 rgba() -->
-    <XhColorFieldRoot v-model:value="value" format="rgba" alpha placeholder="rgba(r, g, b, a)">
-      <XhColorFieldLabel>遮罩色</XhColorFieldLabel>
-      <XhColorFieldControl>
-        <XhColorFieldSwatch />
-        <XhColorFieldInput />
-      </XhColorFieldControl>
-    </XhColorFieldRoot>
-    <span style="font-size: 13px">收下的值：<code>{{ value || "（空）" }}</code></span>
-  </div>
+  <!-- 试着打 #3b82f680 或 hsl(217 91% 60% / 50%)，收下后都变成 rgba() -->
+  <XhColorFieldRoot v-model:value="value" format="rgba" alpha placeholder="rgba(r, g, b, a)">
+    <XhColorFieldLabel>遮罩色</XhColorFieldLabel>
+    <XhColorFieldControl>
+      <XhColorFieldSwatch />
+      <XhColorFieldInput />
+    </XhColorFieldControl>
+  </XhColorFieldRoot>
+  <span data-demo-output>收下的值：<code>{{ value || "（空）" }}</code></span>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 8px">
-  <!-- 试着打 #3b82f680 或 hsl(217 91% 60% / 50%)，收下后都变成 rgba() -->
-  <xh-color-field id="color-field-format" default-value="rgba(59, 130, 246, 0.5)" format="rgba" alpha placeholder="rgba(r, g, b, a)">
-    <div data-xh-part="root">
-      <label data-xh-part="label">遮罩色</label>
-      <div data-xh-part="control">
-        <span data-xh-part="swatch"></span>
-        <input data-xh-part="input" />
-      </div>
+<!-- 试着打 #3b82f680 或 hsl(217 91% 60% / 50%)，收下后都变成 rgba() -->
+<xh-color-field id="color-field-format" default-value="rgba(59, 130, 246, 0.5)" format="rgba" alpha placeholder="rgba(r, g, b, a)">
+  <div data-xh-part="root">
+    <label data-xh-part="label">遮罩色</label>
+    <div data-xh-part="control">
+      <span data-xh-part="swatch"></span>
+      <input data-xh-part="input" />
     </div>
-  </xh-color-field>
-  <span style="font-size: 13px">收下的值：<code id="color-field-format-value">rgba(59, 130, 246, 0.5)</code></span>
-</div>
+  </div>
+</xh-color-field>
+<span data-demo-output>收下的值：<code id="color-field-format-value">rgba(59, 130, 246, 0.5)</code></span>
 
 <script type="module">
   const field = document.getElementById("color-field-format");
@@ -162,7 +154,7 @@ import {
       <XhColorFieldSwatch />
       <XhColorFieldInput />
     </XhColorFieldControl>
-    <span style="font-size: 13px">
+    <span data-demo-output>
       {{ invalid ? "这串字不是颜色：改一改，或按 Escape 放弃" : editing ? "回车或失焦收下" : "已收下" }}
     </span>
   </XhColorFieldRoot>
@@ -178,7 +170,7 @@ import {
       <span data-xh-part="swatch"></span>
       <input data-xh-part="input" />
     </div>
-    <span id="color-field-invalid-hint" style="font-size: 13px">已收下</span>
+    <span id="color-field-invalid-hint" data-demo-output>已收下</span>
   </div>
 </xh-color-field>
 
@@ -543,11 +535,11 @@ import {
 | `--xh-color-field-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | color-field 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-color-field-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | color-field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-color-field-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | color-field 的 control 部件 background-color 覆盖槽。 |
-| `--xh-color-field-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | color-field 的 control 部件 background-color 覆盖槽。 |
+| `--xh-color-field-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | color-field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-color-field-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | color-field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-color-field-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | color-field 的 control 部件 border 覆盖槽。 |
 | `--xh-color-field-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | color-field 的 control 部件 border-color 覆盖槽。 |
-| `--xh-color-field-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | color-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-color-field-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | color-field 的 control 部件 border-color 覆盖槽。 |
 | `--xh-color-field-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | color-field 的 control 部件 border-color 覆盖槽。 |
 | `--xh-color-field-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | color-field 的 control 部件 color 覆盖槽。 |
 | `--xh-color-field-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_color-field-gap` | color-field 的 control 部件 gap 覆盖槽。 |
@@ -557,16 +549,17 @@ import {
 | `--xh-color-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | color-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-color-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | color-field 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-color-field-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | color-field 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
-| `--xh-color-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | color-field 的 root 部件 gap 覆盖槽。 |
+| `--xh-color-field-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | color-field 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-color-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | color-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-color-field-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | color-field 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-color-field-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-fg-default` | color-field 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-color-field-input-fg` | `input` | `color` | `xh-field-input` | `--xh-fg-default` | color-field 的 input 部件 color 覆盖槽。 |
 | `--xh-color-field-input-font-size` | `input` | `font-size` | `xh-field-input` | `--xh-_color-field-font-size` | color-field 的 input 部件 font-size 覆盖槽。 |
-| `--xh-color-field-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | color-field 的 label 部件 color 覆盖槽。 |
-| `--xh-color-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | color-field 的 label 部件 color 覆盖槽。 |
+| `--xh-color-field-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | color-field 的 label 部件 color 覆盖槽。 |
+| `--xh-color-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | color-field 的 label 部件 color 覆盖槽。 |
 | `--xh-color-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | color-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-color-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | color-field 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-color-field-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | color-field 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-color-field-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | color-field 的 input 部件 color 覆盖槽。 |
 | `--xh-color-field-swatch-border` | `swatch` | `--xh-swatch-border` | `default` | `--xh-border-default` | color-field 的 swatch 部件 --xh-swatch-border 覆盖槽。 |
 | `--xh-color-field-swatch-radius` | `swatch` | `--xh-swatch-radius` | `default` | `--xh-shape-inset` | color-field 的 swatch 部件 --xh-swatch-radius 覆盖槽。 |

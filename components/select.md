@@ -108,7 +108,7 @@ const fruits = [
     label="水果（多选）"
     placeholder="请选择"
   />
-  <p>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
+  <p data-demo-output>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
 </template>
 ```
 
@@ -155,7 +155,7 @@ const fruits = [
     </div>
   </div>
 </xh-select>
-<p>已选：<span id="select-multiple-value">apple</span></p>
+<p data-demo-output>已选：<span id="select-multiple-value">apple</span></p>
 
 <script type="module">
   const select = document.getElementById("select-multiple");
@@ -251,7 +251,7 @@ function onValueChange(details: { value: string[] }) {
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>
-  <p>宿主持有的值：{{ value.join("、") }}{{ rejected ? " · 上一次选择被拒绝" : "" }}</p>
+  <p data-demo-output>宿主持有的值：{{ value.join("、") }}{{ rejected ? " · 上一次选择被拒绝" : "" }}</p>
 </template>
 ```
 
@@ -285,7 +285,7 @@ function onValueChange(details: { value: string[] }) {
     </div>
   </div>
 </xh-select>
-<p>宿主持有的值：<span id="select-controlled-value">banana</span></p>
+<p data-demo-output>宿主持有的值：<span id="select-controlled-value">banana</span></p>
 
 <script type="module">
   // 只有通过校验的值才写回，未写回则界面停在原值
@@ -900,7 +900,7 @@ function onOpenChange(details: { open: boolean }): void {
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>
-  <p>当前值：{{ value[0] ?? "（未选）" }}</p>
+  <p data-demo-output>当前值：{{ value[0] ?? "（未选）" }}</p>
 </template>
 ```
 
@@ -922,7 +922,7 @@ function onOpenChange(details: { open: boolean }): void {
     </div>
   </div>
 </xh-select>
-<p>当前值：<span id="select-async-value">（未选）</span></p>
+<p data-demo-output>当前值：<span id="select-async-value">（未选）</span></p>
 
 <script type="module">
   const select = document.getElementById("select-async");
@@ -1634,7 +1634,7 @@ const picked = ref<string[]>([]);
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>
-  <p>当前值：{{ picked[0] ?? "（未选）" }}</p>
+  <p data-demo-output>当前值：{{ picked[0] ?? "（未选）" }}</p>
 </template>
 ```
 
@@ -1679,7 +1679,7 @@ const picked = ref<string[]>([]);
     </div>
   </div>
 </xh-select>
-<p>当前值：<span id="select-group-value">（未选）</span></p>
+<p data-demo-output>当前值：<span id="select-group-value">（未选）</span></p>
 
 <script type="module">
   // 选中值回显在下面那行文字里
@@ -2060,7 +2060,7 @@ function onScroll(event: Event): void {
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>
-  <p>已加载 {{ tickets.length }} / {{ TOTAL }} 条</p>
+  <p data-demo-output>已加载 {{ tickets.length }} / {{ TOTAL }} 条</p>
 </template>
 ```
 
@@ -2163,7 +2163,7 @@ function onScroll(event: Event): void {
     </div>
   </div>
 </xh-select>
-<p>已加载 <span id="select-scroll-count">20</span> / 80 条</p>
+<p data-demo-output>已加载 <span id="select-scroll-count">20</span> / 80 条</p>
 
 <script type="module">
   const select = document.getElementById("select-scroll");
@@ -2465,7 +2465,7 @@ function addOne() {
     </XhSelectPositioner>
   </XhSelectRoot>
 
-  <p>当前值：{{ picked[0] ?? "（未选）" }}</p>
+  <p data-demo-output>当前值：{{ picked[0] ?? "（未选）" }}</p>
 </template>
 ```
 
@@ -2507,7 +2507,7 @@ function addOne() {
   </div>
 </xh-select>
 
-<p>当前值：<span id="select-footer-value">（未选）</span></p>
+<p data-demo-output>当前值：<span id="select-footer-value">（未选）</span></p>
 
 <script type="module">
   const select = document.getElementById("select-footer");
@@ -3249,17 +3249,17 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `--xh-select-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | select 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-select-content-max-w` | `content` | `max-inline-size` | `default` | `none` | select 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-select-content-min-w` | `content` | `inline-size` | `default` | `--xh-overlay-menu-min-w` | select 的 content 部件 inline-size 覆盖槽。 |
-| `--xh-select-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | select 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-select-content-px` | `content` | `padding-inline` | `default` | `0` | select 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-select-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | select 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-select-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | select 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-select-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | select 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-select-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | select 的 control 部件 background-color 覆盖槽。 |
 | `--xh-select-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | select 的 control 部件 background-color 覆盖槽。 |
-| `--xh-select-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | select 的 control 部件 background-color 覆盖槽。 |
+| `--xh-select-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | select 的 control 部件 background-color 覆盖槽。 |
 | `--xh-select-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | select 的 control 部件 background-color 覆盖槽。 |
 | `--xh-select-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | select 的 control 部件 border 覆盖槽。 |
 | `--xh-select-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | select 的 control 部件 border-color 覆盖槽。 |
-| `--xh-select-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | select 的 control 部件 border-color 覆盖槽。 |
+| `--xh-select-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | select 的 control 部件 border-color 覆盖槽。 |
 | `--xh-select-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | select 的 control 部件 border-color 覆盖槽。 |
 | `--xh-select-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | select 的 control 部件 color 覆盖槽。 |
 | `--xh-select-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_select-gap` | select 的 control 部件 gap 覆盖槽。 |
@@ -3279,7 +3279,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `--xh-select-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | select 的 footer 部件 gap 覆盖槽。 |
 | `--xh-select-footer-px` | `footer` | `padding-inline` | `default` | `--xh-space-2` | select 的 footer 部件 padding-inline 覆盖槽。 |
 | `--xh-select-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | select 的 footer 部件 padding-block 覆盖槽。 |
-| `--xh-select-gap` | `root` | `gap` | `default` | `--xh-space-1` | select 的 root 部件 gap 覆盖槽。 |
+| `--xh-select-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | select 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-select-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | select 的 group 部件 gap 覆盖槽。 |
 | `--xh-select-group-label-fg` | `group-label` | `color` | `default` | `--xh-material-frosted-fg-muted` | select 的 group-label 部件 color 覆盖槽。 |
 | `--xh-select-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | select 的 group-label 部件 font-size 覆盖槽。 |
@@ -3296,17 +3296,19 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `--xh-select-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-material-frosted-fg` | select 的 item 部件 color 覆盖槽。 |
 | `--xh-select-item-fg-selected` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-select-item-fg` | select 的 item 部件 color 覆盖槽。 |
 | `--xh-select-item-font-size` | `item` | `font-size` | `default` | `--xh-_select-font-size` | select 的 item 部件 font-size 覆盖槽。 |
-| `--xh-select-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | select 的 item 部件 font-weight 覆盖槽。 |
+| `--xh-select-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-medium` | select 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-select-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_select-gap` | select 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-select-item-h` | `item` | `min-block-size` | `default` | `--xh-_select-item-h` | select 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-select-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | select 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-select-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | select 的 item 部件 line-height 覆盖槽。 |
 | `--xh-select-item-px` | `item` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-select-item-py` | `item` | `padding-block` | `default` | `--xh-_select-item-py` | select 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-select-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | select 的 item 部件 border-radius 覆盖槽。 |
-| `--xh-select-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | select 的 label 部件 color 覆盖槽。 |
-| `--xh-select-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | select 的 label 部件 color 覆盖槽。 |
+| `--xh-select-item-radius` | `item` | `border-radius` | `default` | `0` | select 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-select-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | select 的 label 部件 color 覆盖槽。 |
+| `--xh-select-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | select 的 label 部件 color 覆盖槽。 |
 | `--xh-select-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | select 的 label 部件 font-size 覆盖槽。 |
 | `--xh-select-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | select 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-select-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | select 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-select-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | select 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-select-list-gap` | `list` | `gap` | `default` | `--xh-list-option-gap` | select 的 list 部件 gap 覆盖槽。 |
 | `--xh-select-loading-fg` | `loading` | `color` | `default` | `--xh-material-frosted-fg-muted` | select 的 loading 部件 color 覆盖槽。 |

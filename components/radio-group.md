@@ -75,6 +75,7 @@ const plans = [
 ```vue
 <script setup lang="ts">
 import {
+  XhButton,
   XhRadioGroupItem,
   XhRadioGroupItemText,
   XhRadioGroupLabel,
@@ -95,8 +96,8 @@ const plan = ref<string | null>("free");
       <XhRadioGroupItemText>标准版</XhRadioGroupItemText>
     </XhRadioGroupItem>
   </XhRadioGroupRoot>
-  <span>当前：{{ plan ?? "（未选）" }}</span>
-  <button type="button" @click="plan = null">清空</button>
+  <XhButton variant="outline" size="sm" @click="plan = null">清空</XhButton>
+  <span data-demo-output>当前：{{ plan ?? "（未选）" }}</span>
 </template>
 ```
 
@@ -116,8 +117,10 @@ const plan = ref<string | null>("free");
     </div>
   </div>
 </xh-radio-group>
-<span id="radio-controlled-readout">当前：free</span>
-<button id="radio-controlled-clear" type="button">清空</button>
+<xh-button id="radio-controlled-clear" variant="outline" size="sm">
+  <button data-xh-part="root">清空</button>
+</xh-button>
+<span id="radio-controlled-readout" data-demo-output>当前：free</span>
 
 <script type="module">
   // 选中值由宿主写回元素，清空按钮把它置为 null
@@ -492,7 +495,7 @@ const collection = computed(() =>
     name="level"
     orientation="horizontal"
   />
-  <span>当前：{{ level ?? "（未选）" }}</span>
+  <span data-demo-output>当前：{{ level ?? "（未选）" }}</span>
 </template>
 ```
 
@@ -523,7 +526,7 @@ const collection = computed(() =>
     </div>
   </div>
 </xh-radio-group>
-<span id="radio-options-readout">当前：p1</span>
+<span id="radio-options-readout" data-demo-output>当前：p1</span>
 
 <script type="module">
   // 选中值由宿主写回元素，下面那行文字跟着走
@@ -775,7 +778,7 @@ import {
 - `variant` 是结构形态，三种形态共用同一台状态机、同一张键盘表：
   - 缺省 `list` 是一列「圆圈 + 文案」的行。
   - `card` 把每个条目画成一张可点的描边卡（surface 圆角，白底承载阶梯悬停 100 → 按下 200），圆圈在卡的行首，整张卡是命中区。选中卡换品牌淡底（写了 `tone` 换语气淡底），与表格选中行、穿梭框选中项同一种标记，描边不换。竖排时卡片撑满一列，横排时各卡等分一行、放不下就折行。
-  - `segmented` 把条目画成一条淡底轨道（surface 圆角）里首尾相接的段，选中段由 `thumb` 部件标出：一块带描边的白色抬起滑块，换段时滑过去；写了 `tone` 时滑块换成实心语气面。段坐在淡底轨道上，悬停 200 → 按下 300，只换面不缩放；这一形态不画圆圈，缺省横排，`block` 让整组撑满行宽、各段等分，一行排不下时折行。
+  - `segmented` 把条目画成一条与字段外壳同款的轨道（最浅一档淡底 + 1px 字段描边、2px 圆角、2px 内衬）里首尾相接的段，选中段由 `thumb` 部件标出：一块品牌淡底（浅色 12%、深色 20%）的平面滑块，换段时滑过去；选中段字取品牌色、medium，悬停时滑块升一档（浅色 18%、深色 28%），禁用时退到 8% 淡底与浅品牌字；写了 `tone` 时滑块与字换成语气淡底与语气字（浅色 12% / 悬停 20%，深色 20% / 28%），禁用的选中段同样退到 8% 语气淡底、字往承载面兑一半。未选中段透明底、次级字色，悬停 100 → 按下 200，只换面不缩放；段横向内距 12px，段与段之间一道 1px × 14px 的分隔线，与选中段、悬停段相邻的那几道收起；这一形态不画圆圈，缺省横排，`block` 让整组撑满行宽、各段等分，一行排不下时折行。
 - 滑块的位置与尺寸由组件测量：只有换段时才滑，首次落位、窗口缩放、换上正式字体之类的重量直接到位，不拖尾；横排竖排、ltr 与 rtl 使用同一条规则。
 - `item-icon` 是文字前的图标位，对读屏隐藏，直径随尺寸档、颜色随条目；节点的 `icon` 字段写入图标文本，需要放置图形时手写部件，把图标组件或 svg 放进 `item-icon`。
 - `item-description` 是文案下方的说明行（13 / `--xh-fg-muted`），与文案一起构成条目的可及名；`collection` 里的 `description` 会自动铺出这一行。
@@ -792,6 +795,7 @@ import {
 - 选项文字写完整，不依赖共同前缀省略。
 - 卡片里只放一两句说明，不放按钮、链接等第二个可点目标：整张卡是一次选择，内嵌的动作会与选择抢同一次点击。
 - segmented 形态各段文字长度尽量接近：长短悬殊时滑块滑动，整排宽度会跟着跳动。
+- segmented 形态尽量一行排下：折行只是窄处的兜底，折行后下一行首段的起始缘仍会画出一道分隔线（样式层拿不到段落在第几行）。段多或容器窄时改用竖排或[选择器](./select)。
 - segmented 形态的段文字不走 `collection` 而是手写、且会在运行期改动时，改动后调用一次 `measure()`：滑块只跟随选中值、集合与尺寸变化，段内文字撑宽时它无法感知。
 - 动态移除正持有焦点的条目（例如按权限过滤）之后，焦点会回到 `<body>`。组件只保证 Tab 位退回容器、键盘可以再次进入；需要保持位置时由页面把焦点移到相邻的条目。
 
@@ -1023,7 +1027,7 @@ import {
 | `--xh-radio-group-indicator-bg` | `indicator` | `background` | `default` | `transparent` | radio-group 的 indicator 部件 background 覆盖槽。 |
 | `--xh-radio-group-indicator-bg-disabled` | `indicator`<br>`item` | `background` | `disabled` | `--xh-bg-subtle` | radio-group 的 indicator、item 部件 background 覆盖槽。 |
 | `--xh-radio-group-indicator-bg-pressed` | `indicator`<br>`item` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`pressed`<br>`readonly` | `--xh-_radio-group-host-bg-pressed` | radio-group 的 indicator、item 部件 background 覆盖槽。 |
-| `--xh-radio-group-indicator-border` | `indicator` | `border` | `default` | `--xh-border-control` | radio-group 的 indicator 部件 border 覆盖槽。 |
+| `--xh-radio-group-indicator-border` | `indicator` | `border` | `default` | `--xh-border-strong` | radio-group 的 indicator 部件 border 覆盖槽。 |
 | `--xh-radio-group-indicator-border-checked` | `indicator` | `border-color` | `state=checked` | `--xh-_radio-group-accent` | radio-group 的 indicator 部件 border-color 覆盖槽。 |
 | `--xh-radio-group-indicator-border-disabled` | `indicator`<br>`item` | `border-color` | `disabled` | `--xh-border-default` | radio-group 的 indicator、item 部件 border-color 覆盖槽。 |
 | `--xh-radio-group-indicator-border-hover` | `indicator`<br>`item` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-readonly])`<br>`not([data-state='checked'])`<br>`readonly`<br>`state=checked` | `--xh-border-control-hover` | radio-group 的 indicator、item 部件 border-color 覆盖槽。 |
@@ -1048,34 +1052,37 @@ import {
 | `--xh-radio-group-label-fg-disabled` | `label`<br>`root` | `color` | `disabled` | `--xh-fg-subtle` | radio-group 的 label、root 部件 color 覆盖槽。 |
 | `--xh-radio-group-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | radio-group 的 label 部件 font-size 覆盖槽。 |
 | `--xh-radio-group-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | radio-group 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-radio-group-segment-bg-hover` | `item`<br>`root` | `background-color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`not([data-state='checked'])`<br>`readonly`<br>`state=checked`<br>`variant=segmented` | `--xh-bg-subtle-hover` | radio-group 的 item、root 部件 background-color 覆盖槽。 |
-| `--xh-radio-group-segment-bg-pressed` | `item`<br>`root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`not([data-state='checked'])`<br>`pressed`<br>`readonly`<br>`state=checked`<br>`variant=segmented` | `--xh-bg-subtle-active` | radio-group 的 item、root 部件 background-color 覆盖槽。 |
+| `--xh-radio-group-segment-bg-hover` | `item`<br>`root` | `background-color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`not([data-state='checked'])`<br>`readonly`<br>`state=checked`<br>`variant=segmented` | `--xh-bg-subtle` | radio-group 的 item、root 部件 background-color 覆盖槽。 |
+| `--xh-radio-group-segment-bg-pressed` | `item`<br>`root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`not([data-state='checked'])`<br>`pressed`<br>`readonly`<br>`state=checked`<br>`variant=segmented` | `--xh-bg-subtle-hover` | radio-group 的 item、root 部件 background-color 覆盖槽。 |
 | `--xh-radio-group-segment-fg` | `item`<br>`root` | `color` | `variant=segmented` | `--xh-fg-muted` | radio-group 的 item、root 部件 color 覆盖槽。 |
 | `--xh-radio-group-segment-fg-checked` | `item`<br>`root` | `color` | `state=checked`<br>`variant=segmented` | `--xh-_radio-group-segment-fg-checked` | radio-group 的 item、root 部件 color 覆盖槽。 |
-| `--xh-radio-group-segment-fg-checked-disabled` | `item`<br>`root` | `color` | `disabled`<br>`state=checked`<br>`variant=segmented` | `--xh-_radio-group-segment-fg-checked` | radio-group 的 item、root 部件 color 覆盖槽。 |
+| `--xh-radio-group-segment-fg-checked-disabled` | `item`<br>`root` | `color` | `disabled`<br>`state=checked`<br>`variant=segmented` | `--xh-_radio-group-segment-fg-checked-disabled` | radio-group 的 item、root 部件 color 覆盖槽。 |
 | `--xh-radio-group-segment-fg-hover` | `item`<br>`root` | `color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`not([data-state='checked'])`<br>`readonly`<br>`state=checked`<br>`variant=segmented` | `--xh-fg-default` | radio-group 的 item、root 部件 color 覆盖槽。 |
 | `--xh-radio-group-segment-font-weight` | `item`<br>`root` | `font-weight` | `variant=segmented` | `--xh-text-label-weight` | radio-group 的 item、root 部件 font-weight 覆盖槽。 |
+| `--xh-radio-group-segment-font-weight-checked` | `item`<br>`root` | `font-weight` | `state=checked`<br>`variant=segmented` | `--xh-font-weight-medium` | radio-group 的 item、root 部件 font-weight 覆盖槽。 |
 | `--xh-radio-group-segment-h` | `item`<br>`root` | `block-size`<br>`min-block-size` | `orientation=horizontal`<br>`variant=segmented` | `--xh-_radio-group-segment-h` | radio-group 的 item、root 部件 block-size、min-block-size 覆盖槽。 |
 | `--xh-radio-group-segment-px` | `item`<br>`root` | `padding-inline` | `variant=segmented` | `--xh-_radio-group-segment-px` | radio-group 的 item、root 部件 padding-inline 覆盖槽。 |
 | `--xh-radio-group-segment-radius` | `item`<br>`root` | `border-radius` | `variant=segmented` | `--xh-shape-control` | radio-group 的 item、root 部件 border-radius 覆盖槽。 |
+| `--xh-radio-group-segment-separator` | `item`<br>`root` | `background-color` | `orientation=horizontal`<br>`variant=segmented` | `--xh-border-default` | radio-group 的 item、root 部件 background-color 覆盖槽。 |
 | `--xh-radio-group-thumb-bg` | `thumb` | `background` | `default` | `--xh-_radio-group-thumb-bg` | radio-group 的 thumb 部件 background 覆盖槽。 |
-| `--xh-radio-group-thumb-border` | `root`<br>`thumb` | `border`<br>`border-color` | `default`<br>`tone`<br>`variant=segmented` | `--xh-_tone`<br>`--xh-border-default` | radio-group 的 root、thumb 部件 border、border-color 覆盖槽。 |
+| `--xh-radio-group-thumb-bg-disabled` | `root`<br>`thumb` | `background` | `disabled`<br>`has(> [data-scope='radio-group'][data-part='item'][data-state='checked'][data-disabled])`<br>`state=checked`<br>`variant=segmented` | `--xh-_radio-group-thumb-bg-disabled` | radio-group 的 root、thumb 部件 background 覆盖槽。 |
+| `--xh-radio-group-thumb-bg-hover` | `root`<br>`thumb` | `background` | `disabled`<br>`has(> [data-scope='radio-group'][data-part='item'][data-state='checked']:not([data-disabled])`<br>`hover`<br>`not([data-readonly])`<br>`readonly`<br>`state=checked`<br>`variant=segmented` | `--xh-_radio-group-thumb-bg-hover` | radio-group 的 root、thumb 部件 background 覆盖槽。 |
+| `--xh-radio-group-thumb-border` | `thumb` | `border` | `default` | `transparent` | radio-group 的 thumb 部件 border 覆盖槽。 |
 | `--xh-radio-group-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-inset` | radio-group 的 thumb 部件 border-radius 覆盖槽。 |
-| `--xh-radio-group-thumb-shadow` | `thumb` | `box-shadow` | `default` | `--xh-elevation-raised` | radio-group 的 thumb 部件 box-shadow 覆盖槽。 |
-| `--xh-radio-group-thumb-shadow-disabled` | `root`<br>`thumb` | `box-shadow` | `disabled` | `none` | radio-group 的 root、thumb 部件 box-shadow 覆盖槽。 |
-| `--xh-radio-group-track-bg` | `root` | `background` | `variant=segmented` | `--xh-bg-subtle` | radio-group 的 root 部件 background 覆盖槽。 |
+| `--xh-radio-group-thumb-shadow` | `thumb` | `box-shadow` | `default` | `none` | radio-group 的 thumb 部件 box-shadow 覆盖槽。 |
+| `--xh-radio-group-track-bg` | `root` | `background` | `variant=segmented` | `--xh-bg-field` | radio-group 的 root 部件 background 覆盖槽。 |
 | `--xh-radio-group-track-bg-disabled` | `root` | `background` | `disabled`<br>`variant=segmented` | `--xh-bg-muted` | radio-group 的 root 部件 background 覆盖槽。 |
-| `--xh-radio-group-track-border` | `root` | `border` | `variant=segmented` | `transparent` | radio-group 的 root 部件 border 覆盖槽。 |
+| `--xh-radio-group-track-border` | `root` | `border` | `variant=segmented` | `--xh-border-control` | radio-group 的 root 部件 border 覆盖槽。 |
 | `--xh-radio-group-track-border-invalid` | `root` | `border-color` | `invalid`<br>`variant=segmented` | `--xh-border-invalid` | radio-group 的 root 部件 border-color 覆盖槽。 |
-| `--xh-radio-group-track-padding` | `item`<br>`root` | `min-block-size`<br>`padding` | `orientation=horizontal`<br>`variant=segmented` | `--xh-space-0_5` | radio-group 的 item、root 部件 min-block-size、padding 覆盖槽。 |
-| `--xh-radio-group-track-radius` | `root` | `border-radius` | `variant=segmented` | `--xh-shape-surface` | radio-group 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-radio-group-track-padding` | `item`<br>`root` | `inset-block-start`<br>`min-block-size`<br>`padding` | `@media (pointer: coarse)`<br>`orientation=horizontal`<br>`variant=segmented` | `--xh-space-0_5` | radio-group 的 item、root 部件 inset-block-start、min-block-size、padding 覆盖槽。 |
+| `--xh-radio-group-track-radius` | `root` | `border-radius` | `variant=segmented` | `--xh-shape-control` | radio-group 的 root 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
 动效角色：按压 · 状态 · 切换 · 指示与换位（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `block-size` · `border-color` · `box-shadow` · `color` · `inline-size` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `block-size` · `border-color` · `color` · `inline-size` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

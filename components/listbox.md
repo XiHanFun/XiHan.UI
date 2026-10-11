@@ -41,7 +41,7 @@ const members = [
       <XhListboxItem v-for="member in members" :key="member.value" :value="member.value">
         <span
           aria-hidden="true"
-          style="display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: 999px; background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600"
+          style="display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: var(--xh-shape-circle); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600"
         >
           {{ member.initial }}
         </span>
@@ -64,7 +64,7 @@ const members = [
     <span data-xh-part="label">团队成员</span>
     <div data-xh-part="content">
       <div data-xh-part="item" value="lin">
-        <span aria-hidden="true" style="display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: 999px; background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600">林</span>
+        <span aria-hidden="true" style="display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: var(--xh-shape-circle); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600">林</span>
         <span data-xh-part="item-text">
           <span style="display: grid; gap: 2px">
             <span>林知夏</span>
@@ -74,7 +74,7 @@ const members = [
         <span data-xh-part="item-indicator"></span>
       </div>
       <div data-xh-part="item" value="chen">
-        <span aria-hidden="true" style="display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: 999px; background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600">陈</span>
+        <span aria-hidden="true" style="display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: var(--xh-shape-circle); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600">陈</span>
         <span data-xh-part="item-text">
           <span style="display: grid; gap: 2px">
             <span>陈望舒</span>
@@ -84,7 +84,7 @@ const members = [
         <span data-xh-part="item-indicator"></span>
       </div>
       <div data-xh-part="item" value="zhou">
-        <span aria-hidden="true" style="display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: 999px; background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600">周</span>
+        <span aria-hidden="true" style="display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: var(--xh-shape-circle); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600">周</span>
         <span data-xh-part="item-text">
           <span style="display: grid; gap: 2px">
             <span>周予安</span>
@@ -765,7 +765,7 @@ const items = Array.from({ length: 1000 }, (_, index) => ({
 | `--xh-listbox-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-fg-default` | listbox 的 item 部件 color 覆盖槽。 |
 | `--xh-listbox-item-fg-selected` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-listbox-item-fg` | listbox 的 item 部件 color 覆盖槽。 |
 | `--xh-listbox-item-font-size` | `item` | `font-size` | `default` | `--xh-_listbox-font-size` | listbox 的 item 部件 font-size 覆盖槽。 |
-| `--xh-listbox-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | listbox 的 item 部件 font-weight 覆盖槽。 |
+| `--xh-listbox-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-medium` | listbox 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-listbox-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_listbox-gap` | listbox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-listbox-item-indicator-fg` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-_listbox-accent` | listbox 的 item 部件 color 覆盖槽。 |
 | `--xh-listbox-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | listbox 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |

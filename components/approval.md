@@ -45,74 +45,70 @@ const decided = ref("");
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <!-- 必选项没勾满就批不了；拒绝这条路不受它影响 -->
-    <XhApprovalRoot
-      v-slot="{ status }"
-      :scopes="scopes"
-      tone="warning"
-      @decision="decided = `${$event.decision}（来源 ${$event.source}，范围 ${$event.scopes.join('、') || '无'}）`"
-    >
-      <!-- 待决时右上角的呼吸点，判过即收 -->
-      <XhApprovalPendingIndicator />
-      <XhApprovalTitle>要动你的工作区</XhApprovalTitle>
-      <XhApprovalDescription>它想读一遍 src/ 并写回改动。</XhApprovalDescription>
-      <XhApprovalGroup>
-        <XhApprovalItem
-          v-for="scope in scopes"
-          :key="scope.value"
-          :scope-value="scope.value"
-          :scope-label="scope.label"
-          :scope-required="scope.required"
-        >
-          <!-- 勾由皮肤画：指示符留空即可，不必手打记号 -->
-          <XhApprovalItemIndicator :scope-value="scope.value" />
-          <XhApprovalItemText :scope-value="scope.value">{{ scope.label }}</XhApprovalItemText>
-        </XhApprovalItem>
-      </XhApprovalGroup>
-      <XhApprovalResult>{{ status === "approved" ? "已批准" : "已拒绝" }}</XhApprovalResult>
-      <XhApprovalFooter>
-        <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
-        <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
-      </XhApprovalFooter>
-      <XhApprovalLiveRegion />
-    </XhApprovalRoot>
-    <p v-if="decided" style="margin: 0;">判定：{{ decided }}</p>
-  </div>
+  <!-- 必选项没勾满就批不了；拒绝这条路不受它影响 -->
+  <XhApprovalRoot
+    v-slot="{ status }"
+    :scopes="scopes"
+    tone="warning"
+    @decision="decided = `${$event.decision}（来源 ${$event.source}，范围 ${$event.scopes.join('、') || '无'}）`"
+  >
+    <!-- 待决时右上角的呼吸点，判过即收 -->
+    <XhApprovalPendingIndicator />
+    <XhApprovalTitle>要动你的工作区</XhApprovalTitle>
+    <XhApprovalDescription>它想读一遍 src/ 并写回改动。</XhApprovalDescription>
+    <XhApprovalGroup>
+      <XhApprovalItem
+        v-for="scope in scopes"
+        :key="scope.value"
+        :scope-value="scope.value"
+        :scope-label="scope.label"
+        :scope-required="scope.required"
+      >
+        <!-- 勾由皮肤画：指示符留空即可，不必手打记号 -->
+        <XhApprovalItemIndicator :scope-value="scope.value" />
+        <XhApprovalItemText :scope-value="scope.value">{{ scope.label }}</XhApprovalItemText>
+      </XhApprovalItem>
+    </XhApprovalGroup>
+    <XhApprovalResult>{{ status === "approved" ? "已批准" : "已拒绝" }}</XhApprovalResult>
+    <XhApprovalFooter>
+      <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
+      <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
+    </XhApprovalFooter>
+    <XhApprovalLiveRegion />
+  </XhApprovalRoot>
+  <p data-demo-output>判定：{{ decided || "（未判定）" }}</p>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 12px">
-  <!-- 必选项没勾满就批不了；拒绝这条路不受它影响 -->
-  <xh-approval id="approval-basic" tone="warning">
-    <div data-xh-part="root">
-      <!-- 待决时右上角的呼吸点，判过即收 -->
-      <span data-xh-part="pending-indicator"></span>
-      <h3 data-xh-part="title">要动你的工作区</h3>
-      <p data-xh-part="description">它想读一遍 src/ 并写回改动。</p>
-      <div data-xh-part="group">
-        <div data-xh-part="item" scope-value="read" scope-label="读取 src/ 下的文件" scope-required>
-          <!-- 勾由皮肤画：指示符留空即可，不必手打记号 -->
-          <span data-xh-part="item-indicator" scope-value="read"></span>
-          <span data-xh-part="item-text" scope-value="read">读取 src/ 下的文件</span>
-        </div>
-        <div data-xh-part="item" scope-value="write" scope-label="写回改动">
-          <span data-xh-part="item-indicator" scope-value="write"></span>
-          <span data-xh-part="item-text" scope-value="write">写回改动</span>
-        </div>
+<!-- 必选项没勾满就批不了；拒绝这条路不受它影响 -->
+<xh-approval id="approval-basic" tone="warning">
+  <div data-xh-part="root">
+    <!-- 待决时右上角的呼吸点，判过即收 -->
+    <span data-xh-part="pending-indicator"></span>
+    <h3 data-xh-part="title">要动你的工作区</h3>
+    <p data-xh-part="description">它想读一遍 src/ 并写回改动。</p>
+    <div data-xh-part="group">
+      <div data-xh-part="item" scope-value="read" scope-label="读取 src/ 下的文件" scope-required>
+        <!-- 勾由皮肤画：指示符留空即可，不必手打记号 -->
+        <span data-xh-part="item-indicator" scope-value="read"></span>
+        <span data-xh-part="item-text" scope-value="read">读取 src/ 下的文件</span>
       </div>
-      <!-- 升级前先自己收起：属性由连接层接管，判定落定后自动撤掉 -->
-      <div data-xh-part="result" hidden></div>
-      <div data-xh-part="footer">
-        <button data-xh-part="approve-trigger">批准</button>
-        <button data-xh-part="deny-trigger">拒绝</button>
+      <div data-xh-part="item" scope-value="write" scope-label="写回改动">
+        <span data-xh-part="item-indicator" scope-value="write"></span>
+        <span data-xh-part="item-text" scope-value="write">写回改动</span>
       </div>
-      <div data-xh-part="live-region"></div>
     </div>
-  </xh-approval>
-  <p id="approval-basic-decision" style="margin: 0"></p>
-</div>
+    <!-- 升级前先自己收起：属性由连接层接管，判定落定后自动撤掉 -->
+    <div data-xh-part="result" hidden></div>
+    <div data-xh-part="footer">
+      <button data-xh-part="approve-trigger">批准</button>
+      <button data-xh-part="deny-trigger">拒绝</button>
+    </div>
+    <div data-xh-part="live-region"></div>
+  </div>
+</xh-approval>
+<p id="approval-basic-decision" data-demo-output>判定：（未判定）</p>
 
 <script type="module">
   // 授权项是数组，只走 property
@@ -182,46 +178,42 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <XhApprovalRoot
-      v-slot="{ status }"
-      :timeout-ms="10000"
-      tone="danger"
-      @decision="decided = `${$event.decision}（来源 ${$event.source}）`"
-    >
-      <XhApprovalTitle>要执行一条删除命令</XhApprovalTitle>
-      <XhApprovalDescription>没人答的话，到点按拒绝处理。</XhApprovalDescription>
-      <!-- 剩余时间对读屏隐藏：逐秒跳字进活区会不停打断 -->
-      <XhApprovalTimer>还剩 {{ left }} 秒</XhApprovalTimer>
-      <XhApprovalResult>{{ resultText(status) }}</XhApprovalResult>
-      <XhApprovalFooter>
-        <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
-        <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
-      </XhApprovalFooter>
-    </XhApprovalRoot>
-    <p v-if="decided" style="margin: 0;">判定：{{ decided }}</p>
-  </div>
+  <XhApprovalRoot
+    v-slot="{ status }"
+    :timeout-ms="10000"
+    tone="danger"
+    @decision="decided = `${$event.decision}（来源 ${$event.source}）`"
+  >
+    <XhApprovalTitle>要执行一条删除命令</XhApprovalTitle>
+    <XhApprovalDescription>没人答的话，到点按拒绝处理。</XhApprovalDescription>
+    <!-- 剩余时间对读屏隐藏：逐秒跳字进活区会不停打断 -->
+    <XhApprovalTimer>还剩 {{ left }} 秒</XhApprovalTimer>
+    <XhApprovalResult>{{ resultText(status) }}</XhApprovalResult>
+    <XhApprovalFooter>
+      <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
+      <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
+    </XhApprovalFooter>
+  </XhApprovalRoot>
+  <p data-demo-output>判定：{{ decided || "（未判定）" }}</p>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 12px">
-  <xh-approval id="approval-timeout" timeout-ms="10000" tone="danger">
-    <div data-xh-part="root">
-      <h3 data-xh-part="title">要执行一条删除命令</h3>
-      <p data-xh-part="description">没人答的话，到点按拒绝处理。</p>
-      <!-- 剩余时间对读屏隐藏：逐秒跳字进活区会不停打断 -->
-      <div data-xh-part="timer">还剩 10 秒</div>
-      <!-- 升级前先自己收起：属性由连接层接管，判定落定后自动撤掉 -->
-      <div data-xh-part="result" hidden></div>
-      <div data-xh-part="footer">
-        <button data-xh-part="approve-trigger">批准</button>
-        <button data-xh-part="deny-trigger">拒绝</button>
-      </div>
+<xh-approval id="approval-timeout" timeout-ms="10000" tone="danger">
+  <div data-xh-part="root">
+    <h3 data-xh-part="title">要执行一条删除命令</h3>
+    <p data-xh-part="description">没人答的话，到点按拒绝处理。</p>
+    <!-- 剩余时间对读屏隐藏：逐秒跳字进活区会不停打断 -->
+    <div data-xh-part="timer">还剩 10 秒</div>
+    <!-- 升级前先自己收起：属性由连接层接管，判定落定后自动撤掉 -->
+    <div data-xh-part="result" hidden></div>
+    <div data-xh-part="footer">
+      <button data-xh-part="approve-trigger">批准</button>
+      <button data-xh-part="deny-trigger">拒绝</button>
     </div>
-  </xh-approval>
-  <p id="approval-timeout-decision" style="margin: 0"></p>
-</div>
+  </div>
+</xh-approval>
+<p id="approval-timeout-decision" data-demo-output>判定：（未判定）</p>
 
 <script type="module">
   const gate = document.getElementById("approval-timeout");
@@ -270,39 +262,35 @@ const translations = { notePlaceholder: "补充一句（可不填）", note: "�
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <XhApprovalRoot
-      :translations="translations"
-      @decision="decided = `${$event.decision}（备注 ${$event.note ?? '无'}）`"
-    >
-      <XhApprovalTitle>要把这批改动推上去</XhApprovalTitle>
-      <XhApprovalDescription>推之前可以留一句话，随判定一起交给宿主。</XhApprovalDescription>
-      <XhApprovalNote />
-      <XhApprovalFooter>
-        <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
-        <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
-      </XhApprovalFooter>
-    </XhApprovalRoot>
-    <p v-if="decided" style="margin: 0;">判定：{{ decided }}</p>
-  </div>
+  <XhApprovalRoot
+    :translations="translations"
+    @decision="decided = `${$event.decision}（备注 ${$event.note ?? '无'}）`"
+  >
+    <XhApprovalTitle>要把这批改动推上去</XhApprovalTitle>
+    <XhApprovalDescription>推之前可以留一句话，随判定一起交给宿主。</XhApprovalDescription>
+    <XhApprovalNote />
+    <XhApprovalFooter>
+      <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
+      <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
+    </XhApprovalFooter>
+  </XhApprovalRoot>
+  <p data-demo-output>判定：{{ decided || "（未判定）" }}</p>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 12px">
-  <xh-approval id="approval-note">
-    <div data-xh-part="root">
-      <h3 data-xh-part="title">要把这批改动推上去</h3>
-      <p data-xh-part="description">推之前可以留一句话，随判定一起交给宿主。</p>
-      <input data-xh-part="note" />
-      <div data-xh-part="footer">
-        <button data-xh-part="approve-trigger">批准</button>
-        <button data-xh-part="deny-trigger">拒绝</button>
-      </div>
+<xh-approval id="approval-note">
+  <div data-xh-part="root">
+    <h3 data-xh-part="title">要把这批改动推上去</h3>
+    <p data-xh-part="description">推之前可以留一句话，随判定一起交给宿主。</p>
+    <input data-xh-part="note" />
+    <div data-xh-part="footer">
+      <button data-xh-part="approve-trigger">批准</button>
+      <button data-xh-part="deny-trigger">拒绝</button>
     </div>
-  </xh-approval>
-  <p id="approval-note-decision" style="margin: 0"></p>
-</div>
+  </div>
+</xh-approval>
+<p id="approval-note-decision" data-demo-output>判定：（未判定）</p>
 
 <script type="module">
   // 文案是对象，只走 property
@@ -484,40 +472,36 @@ const translations = { reason: "拒绝理由（必填）", notePlaceholder: "说
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <XhApprovalRoot
-      require-reason
-      :translations="translations"
-      @decision="decided = `${$event.decision}（理由 ${$event.note ?? '无'}）`"
-    >
-      <XhApprovalTitle>要删除远端分支 release/2.1</XhApprovalTitle>
-      <XhApprovalDescription>拒绝时写一句理由，Agent 会据此换个做法。</XhApprovalDescription>
-      <XhApprovalNote />
-      <XhApprovalFooter>
-        <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
-        <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
-      </XhApprovalFooter>
-    </XhApprovalRoot>
-    <p v-if="decided" style="margin: 0;">判定：{{ decided }}</p>
-  </div>
+  <XhApprovalRoot
+    require-reason
+    :translations="translations"
+    @decision="decided = `${$event.decision}（理由 ${$event.note ?? '无'}）`"
+  >
+    <XhApprovalTitle>要删除远端分支 release/2.1</XhApprovalTitle>
+    <XhApprovalDescription>拒绝时写一句理由，Agent 会据此换个做法。</XhApprovalDescription>
+    <XhApprovalNote />
+    <XhApprovalFooter>
+      <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
+      <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
+    </XhApprovalFooter>
+  </XhApprovalRoot>
+  <p data-demo-output>判定：{{ decided || "（未判定）" }}</p>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 12px">
-  <xh-approval id="approval-reason" require-reason>
-    <div data-xh-part="root">
-      <h3 data-xh-part="title">要删除远端分支 release/2.1</h3>
-      <p data-xh-part="description">拒绝时写一句理由，Agent 会据此换个做法。</p>
-      <input data-xh-part="note" />
-      <div data-xh-part="footer">
-        <button data-xh-part="approve-trigger">批准</button>
-        <button data-xh-part="deny-trigger">拒绝</button>
-      </div>
+<xh-approval id="approval-reason" require-reason>
+  <div data-xh-part="root">
+    <h3 data-xh-part="title">要删除远端分支 release/2.1</h3>
+    <p data-xh-part="description">拒绝时写一句理由，Agent 会据此换个做法。</p>
+    <input data-xh-part="note" />
+    <div data-xh-part="footer">
+      <button data-xh-part="approve-trigger">批准</button>
+      <button data-xh-part="deny-trigger">拒绝</button>
     </div>
-  </xh-approval>
-  <p id="approval-reason-decision" style="margin: 0"></p>
-</div>
+  </div>
+</xh-approval>
+<p id="approval-reason-decision" data-demo-output>判定：（未判定）</p>
 
 <script type="module">
   // 文案是对象，只走 property
@@ -600,7 +584,6 @@ function denyAll(): void {
 <template>
   <div style="display: grid; gap: 12px; inline-size: 100%">
     <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
-      <span>{{ pending.length }} 项待决</span>
       <XhButton size="sm" :disabled="approvable.length === 0" @click="approveAll">全部批准（{{ approvable.length }}）</XhButton>
       <XhButton size="sm" variant="outline" :disabled="pending.length === 0" @click="denyAll">全部拒绝</XhButton>
     </div>
@@ -634,13 +617,13 @@ function denyAll(): void {
       </XhApprovalFooter>
     </XhApprovalRoot>
   </div>
+  <span data-demo-output>{{ pending.length }} 项待决</span>
 </template>
 ```
 
 ```html
 <div id="approval-batch" style="display: grid; gap: 12px; inline-size: 100%">
   <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
-    <span id="approval-batch-count">3 项待决</span>
     <xh-button size="sm"><button data-xh-part="root" id="approval-batch-approve">全部批准（2）</button></xh-button>
     <xh-button size="sm" variant="outline"><button data-xh-part="root" id="approval-batch-deny">全部拒绝</button></xh-button>
   </div>
@@ -684,6 +667,7 @@ function denyAll(): void {
     </div>
   </xh-approval>
 </div>
+<span id="approval-batch-count" data-demo-output>3 项待决</span>
 
 <script type="module">
   const board = document.getElementById("approval-batch");
@@ -1085,15 +1069,20 @@ function denyAll(): void {
 | `--xh-approval-item-text-fg` | `item-text` | `color` | `default` | `--xh-fg-muted` | approval 的 item-text 部件 color 覆盖槽。 |
 | `--xh-approval-item-text-fg-checked` | `item`<br>`item-text` | `color` | `state=checked` | `--xh-fg-default` | approval 的 item、item-text 部件 color 覆盖槽。 |
 | `--xh-approval-loading-duration` | `footer` | `animation` | `xh-loading-ring` | `--xh-motion-loop-spin` | approval 的 footer 部件 animation 覆盖槽。 |
-| `--xh-approval-note-bg` | `note` | `background` | `default` | `--xh-bg-surface` | approval 的 note 部件 background 覆盖槽。 |
+| `--xh-approval-note-bg` | `note` | `background` | `default` | `--xh-bg-field` | approval 的 note 部件 background 覆盖槽。 |
+| `--xh-approval-note-bg-disabled` | `note` | `background` | `disabled` | `--xh-bg-subtle` | approval 的 note 部件 background 覆盖槽。 |
+| `--xh-approval-note-bg-focus` | `note` | `background` | `focus-within` | `--xh-bg-surface` | approval 的 note 部件 background 覆盖槽。 |
+| `--xh-approval-note-bg-invalid` | `note` | `background` | `invalid` | `--xh-bg-field-invalid` | approval 的 note 部件 background 覆盖槽。 |
 | `--xh-approval-note-border` | `note` | `border` | `default` | `--xh-border-control` | approval 的 note 部件 border 覆盖槽。 |
+| `--xh-approval-note-border-disabled` | `note` | `border-color` | `disabled` | `--xh-border-default` | approval 的 note 部件 border-color 覆盖槽。 |
+| `--xh-approval-note-border-focus` | `note` | `border-color` | `focus-within` | `--xh-border-control-focus` | approval 的 note 部件 border-color 覆盖槽。 |
+| `--xh-approval-note-border-hover` | `note` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, :focus, [data-invalid])` | `--xh-border-strong` | approval 的 note 部件 border-color 覆盖槽。 |
 | `--xh-approval-note-border-invalid` | `note` | `border-color` | `invalid` | `--xh-border-invalid` | approval 的 note 部件 border-color 覆盖槽。 |
 | `--xh-approval-note-fg` | `note` | `color` | `default` | `--xh-fg-default` | approval 的 note 部件 color 覆盖槽。 |
 | `--xh-approval-note-font-size` | `note` | `font-size` | `default` | `--xh-_approval-note-font-size` | approval 的 note 部件 font-size 覆盖槽。 |
 | `--xh-approval-note-px` | `note` | `padding-inline` | `default` | `--xh-space-2` | approval 的 note 部件 padding-inline 覆盖槽。 |
 | `--xh-approval-note-py` | `note` | `padding-block` | `default` | `--xh-space-1_5` | approval 的 note 部件 padding-block 覆盖槽。 |
 | `--xh-approval-note-radius` | `note` | `border-radius` | `default` | `--xh-shape-control` | approval 的 note 部件 border-radius 覆盖槽。 |
-| `--xh-approval-note-ring-invalid` | `note` | `--xh-_ring-color` | `invalid` | `--xh-ring-invalid` | approval 的 note 部件 --xh-_ring-color 覆盖槽。 |
 | `--xh-approval-p` | `pending-indicator`<br>`root` | `inset-block-start`<br>`inset-inline-end`<br>`padding` | `default` | `--xh-_approval-p` | approval 的 pending-indicator、root 部件 inset-block-start、inset-inline-end、padding 覆盖槽。 |
 | `--xh-approval-pending-indicator-color` | `pending-indicator` | `background` | `default` | `--xh-_tone` | approval 的 pending-indicator 部件 background 覆盖槽。 |
 | `--xh-approval-pending-indicator-radius` | `pending-indicator` | `border-radius` | `default` | `--xh-shape-circle` | approval 的 pending-indicator 部件 border-radius 覆盖槽。 |
@@ -1106,15 +1095,16 @@ function denyAll(): void {
 | `--xh-approval-result-font-size` | `result` | `font-size` | `default` | `--xh-text-caption-size` | approval 的 result 部件 font-size 覆盖槽。 |
 | `--xh-approval-result-font-weight` | `result` | `font-weight` | `default` | `--xh-font-weight-medium` | approval 的 result 部件 font-weight 覆盖槽。 |
 | `--xh-approval-result-gap` | `result` | `gap` | `default` | `--xh-space-1` | approval 的 result 部件 gap 覆盖槽。 |
+| `--xh-approval-result-h` | `result` | `min-block-size` | `default` | `--xh-chip-h-sm` | approval 的 result 部件 min-block-size 覆盖槽。 |
 | `--xh-approval-result-px` | `result` | `padding-inline` | `default` | `--xh-space-1_5` | approval 的 result 部件 padding-inline 覆盖槽。 |
-| `--xh-approval-result-py` | `result` | `padding-block` | `default` | `--xh-space-0_5` | approval 的 result 部件 padding-block 覆盖槽。 |
-| `--xh-approval-result-radius` | `result` | `border-radius` | `default` | `--xh-shape-pill` | approval 的 result 部件 border-radius 覆盖槽。 |
+| `--xh-approval-result-py` | `result` | `padding-block` | `default` | `0` | approval 的 result 部件 padding-block 覆盖槽。 |
+| `--xh-approval-result-radius` | `result` | `border-radius` | `default` | `--xh-shape-control` | approval 的 result 部件 border-radius 覆盖槽。 |
 | `--xh-approval-shadow` | `root` | `box-shadow` | `default` | `none` | approval 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-approval-timer-fg` | `timer` | `color` | `default` | `--xh-fg-muted` | approval 的 timer 部件 color 覆盖槽。 |
 | `--xh-approval-timer-font-size` | `timer` | `font-size` | `default` | `--xh-text-caption-size` | approval 的 timer 部件 font-size 覆盖槽。 |
 | `--xh-approval-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | approval 的 title 部件 color 覆盖槽。 |
 | `--xh-approval-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | approval 的 title 部件 font-size 覆盖槽。 |
-| `--xh-approval-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | approval 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-approval-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-medium` | approval 的 title 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

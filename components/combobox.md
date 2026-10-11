@@ -1393,17 +1393,17 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 | `--xh-combobox-content-max-w` | `content` | `max-inline-size` | `default` | `none` | combobox 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-combobox-content-min-h` | `content` | `min-block-size` | `default` | `--xh-_combobox-h` | combobox 的 content 部件 min-block-size 覆盖槽。 |
 | `--xh-combobox-content-min-w` | `content` | `inline-size` | `default` | `--xh-overlay-menu-min-w` | combobox 的 content 部件 inline-size 覆盖槽。 |
-| `--xh-combobox-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | combobox 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-combobox-content-px` | `content` | `padding-inline` | `default` | `0` | combobox 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | combobox 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-combobox-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | combobox 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-combobox-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | combobox 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-combobox-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | combobox 的 control 部件 background-color 覆盖槽。 |
 | `--xh-combobox-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | combobox 的 control 部件 background-color 覆盖槽。 |
-| `--xh-combobox-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | combobox 的 control 部件 background-color 覆盖槽。 |
+| `--xh-combobox-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | combobox 的 control 部件 background-color 覆盖槽。 |
 | `--xh-combobox-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | combobox 的 control 部件 background-color 覆盖槽。 |
 | `--xh-combobox-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | combobox 的 control 部件 border 覆盖槽。 |
 | `--xh-combobox-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | combobox 的 control 部件 border-color 覆盖槽。 |
-| `--xh-combobox-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | combobox 的 control 部件 border-color 覆盖槽。 |
+| `--xh-combobox-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | combobox 的 control 部件 border-color 覆盖槽。 |
 | `--xh-combobox-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | combobox 的 control 部件 border-color 覆盖槽。 |
 | `--xh-combobox-control-fg` | `control`<br>`input` | `color` | `xh-field-chrome`<br>`xh-field-input` | `--xh-fg-default` | combobox 的 control、input 部件 color 覆盖槽。 |
 | `--xh-combobox-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_combobox-gap` | combobox 的 control 部件 gap 覆盖槽。 |
@@ -1417,7 +1417,7 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 | `--xh-combobox-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-combobox-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_combobox-item-px` | combobox 的 empty 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | combobox 的 empty 部件 padding-block 覆盖槽。 |
-| `--xh-combobox-gap` | `root` | `gap` | `default` | `--xh-space-1` | combobox 的 root 部件 gap 覆盖槽。 |
+| `--xh-combobox-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | combobox 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-combobox-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | combobox 的 group 部件 gap 覆盖槽。 |
 | `--xh-combobox-group-label-fg` | `group-label` | `color` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 group-label 部件 color 覆盖槽。 |
 | `--xh-combobox-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | combobox 的 group-label 部件 font-size 覆盖槽。 |
@@ -1437,18 +1437,20 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 | `--xh-combobox-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-material-frosted-fg` | combobox 的 item 部件 color 覆盖槽。 |
 | `--xh-combobox-item-fg-selected` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-combobox-item-fg` | combobox 的 item 部件 color 覆盖槽。 |
 | `--xh-combobox-item-font-size` | `item` | `font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 item 部件 font-size 覆盖槽。 |
-| `--xh-combobox-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | combobox 的 item 部件 font-weight 覆盖槽。 |
+| `--xh-combobox-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-medium` | combobox 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-combobox-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_combobox-gap` | combobox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-combobox-item-h` | `item` | `min-block-size` | `default` | `--xh-_combobox-item-h` | combobox 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-combobox-item-indicator-fg` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-_combobox-accent` | combobox 的 item 部件 color 覆盖槽。 |
 | `--xh-combobox-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | combobox 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-combobox-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | combobox 的 item 部件 line-height 覆盖槽。 |
 | `--xh-combobox-item-px` | `item` | `padding-inline` | `default` | `--xh-_combobox-item-px` | combobox 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-item-py` | `item` | `padding-block` | `default` | `--xh-_combobox-item-py` | combobox 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-combobox-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | combobox 的 item 部件 border-radius 覆盖槽。 |
-| `--xh-combobox-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | combobox 的 label 部件 color 覆盖槽。 |
-| `--xh-combobox-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | combobox 的 label 部件 color 覆盖槽。 |
+| `--xh-combobox-item-radius` | `item` | `border-radius` | `default` | `0` | combobox 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-combobox-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | combobox 的 label 部件 color 覆盖槽。 |
+| `--xh-combobox-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | combobox 的 label 部件 color 覆盖槽。 |
 | `--xh-combobox-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | combobox 的 label 部件 font-size 覆盖槽。 |
 | `--xh-combobox-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | combobox 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-combobox-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | combobox 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-combobox-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | combobox 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-combobox-loading-fg` | `loading` | `color` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 loading 部件 color 覆盖槽。 |
 | `--xh-combobox-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 loading 部件 font-size 覆盖槽。 |

@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`spinner-vertical`);await e.updateComplete,e.querySelector(`[data-xh-part="label"]`).textContent=e.querySelector(`[data-xh-part="root"]`).getAttribute(`aria-label`)}export{e as default};

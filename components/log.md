@@ -182,6 +182,7 @@ const lines = ref(
 let seq = lines.value.length;
 let timer: number | undefined;
 const streaming = ref(false);
+const sticking = ref(true);
 
 function append(): void {
   seq += 1;
@@ -202,7 +203,7 @@ onUnmounted(() => window.clearInterval(timer));
 
 <template>
   <div style="width: 100%; display: grid; gap: 12px">
-    <XhLogRoot v-slot="{ atBottom, sticking, scrollToBottom }" :rows="8">
+    <XhLogRoot v-slot="{ atBottom, scrollToBottom }" :rows="8" @stick-change="sticking = $event.sticking">
       <XhLogViewport>
         <XhLogContent>
           <XhLogLine v-for="(line, i) in lines" :key="i">{{ line }}</XhLogLine>
@@ -214,7 +215,7 @@ onUnmounted(() => window.clearInterval(timer));
         v-if="!atBottom"
         style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 12px"
       >
-        <span style="font-size: 13px">已暂停跟随 · 跟随意图：{{ sticking ? "开" : "关" }}</span>
+        <span style="font-size: 13px">已暂停跟随</span>
         <XhButton variant="outline" size="sm" @click="scrollToBottom()">回到最新</XhButton>
       </div>
     </XhLogRoot>
@@ -223,6 +224,7 @@ onUnmounted(() => window.clearInterval(timer));
       <XhButton variant="solid" @click="toggle">{{ streaming ? "停止输出" : "开始输出" }}</XhButton>
       <XhButton variant="outline" @click="append">追加一行</XhButton>
     </div>
+    <span data-demo-output>跟随意图：{{ sticking ? "开" : "关" }}</span>
   </div>
 </template>
 ```
@@ -257,7 +259,7 @@ onUnmounted(() => window.clearInterval(timer));
           padding: 6px 12px;
         "
       >
-        <span id="log-follow-hint" style="font-size: 13px"></span>
+        <span style="font-size: 13px">已暂停跟随</span>
         <xh-button variant="outline" size="sm">
           <button data-xh-part="root" id="log-follow-back">回到最新</button>
         </xh-button>
@@ -273,6 +275,7 @@ onUnmounted(() => window.clearInterval(timer));
       <button data-xh-part="root" id="log-follow-append">追加一行</button>
     </xh-button>
   </div>
+  <span id="log-follow-hint" data-demo-output>跟随意图：开</span>
 </div>
 
 <script type="module">
@@ -313,11 +316,11 @@ onUnmounted(() => window.clearInterval(timer));
     .querySelector("#log-follow-back")
     .addEventListener("click", () => view.scrollToBottom());
 
-  // 离开底部才露出那一条，跟随意图一并写出来
+  // 离开底部才露出那一条，跟随意图回显在输出栏里
   view.addEventListener("stick-change", (event) => {
     const { atBottom, sticking } = event.detail;
     bar.style.display = atBottom ? "none" : "flex";
-    hint.textContent = `已暂停跟随 · 跟随意图：${sticking ? "开" : "关"}`;
+    hint.textContent = `跟随意图：${sticking ? "开" : "关"}`;
   });
 </script>
 ```

@@ -286,9 +286,6 @@ const position = ref<FloatingPanelPosition>({ x: 280, y: 260 });
 </script>
 
 <template>
-  <p style="margin: 0 0 8px">
-    面板落点：{{ Math.round(position.x) }} , {{ Math.round(position.y) }}
-  </p>
   <XhFloatingPanelRoot v-model:open="open" v-model:position="position">
     <XhFloatingPanelTrigger>打开面板</XhFloatingPanelTrigger>
     <XhFloatingPanelPositioner>
@@ -300,20 +297,19 @@ const position = ref<FloatingPanelPosition>({ x: 280, y: 260 });
         </XhFloatingPanelHeader>
         <XhFloatingPanelBody>
           <p style="margin: 0">
-            拖动时上面那行数字跟着走：值是外面这份 ref 说了算。
+            拖动时落点读数跟着走：值是外面这份 ref 说了算。
           </p>
         </XhFloatingPanelBody>
         <XhFloatingPanelResizeTrigger edge="se" />
       </XhFloatingPanelContent>
     </XhFloatingPanelPositioner>
   </XhFloatingPanelRoot>
+
+  <p data-demo-output>面板落点：{{ Math.round(position.x) }} , {{ Math.round(position.y) }}</p>
 </template>
 ```
 
 ```html
-<p style="margin: 0 0 8px">
-  面板落点：<span id="floating-panel-readout">280 , 260</span>
-</p>
 <xh-floating-panel id="floating-panel-controlled" style="display: contents">
   <div data-xh-part="root">
     <button data-xh-part="trigger">打开面板</button>
@@ -326,7 +322,7 @@ const position = ref<FloatingPanelPosition>({ x: 280, y: 260 });
         </div>
         <div data-xh-part="body">
           <p style="margin: 0">
-            拖动时上面那行数字跟着走：值是宿主这一侧说了算。
+            拖动时落点读数跟着走：值是宿主这一侧说了算。
           </p>
         </div>
         <div data-xh-part="resize-trigger" edge="se"></div>
@@ -334,6 +330,8 @@ const position = ref<FloatingPanelPosition>({ x: 280, y: 260 });
     </div>
   </div>
 </xh-floating-panel>
+
+<p data-demo-output>面板落点：<span id="floating-panel-readout">280 , 260</span></p>
 
 <script type="module">
   // 值由宿主握着：变更经事件回来，写回去才生效
@@ -872,7 +870,7 @@ const translations: FloatingPanelSchema["props"]["translations"] = {
 | `--xh-floating-panel-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | floating-panel 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-floating-panel-title-fg` | `title` | `color` | `default` | `--xh-material-frosted-fg` | floating-panel 的 title 部件 color 覆盖槽。 |
 | `--xh-floating-panel-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | floating-panel 的 title 部件 font-size 覆盖槽。 |
-| `--xh-floating-panel-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | floating-panel 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-floating-panel-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-medium` | floating-panel 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-floating-panel-trigger-bg` | `trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-_action-variant-bg-focus-visible`<br>`--xh-_action-variant-bg-rest` | floating-panel 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-floating-panel-trigger-border` | `trigger` | `border`<br>`border-color` | `default`<br>`focus-visible` | `--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-rest` | floating-panel 的 trigger 部件 border、border-color 覆盖槽。 |
 | `--xh-floating-panel-trigger-fg` | `trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | floating-panel 的 trigger 部件 color 覆盖槽。 |

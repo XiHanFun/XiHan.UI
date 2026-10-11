@@ -181,14 +181,14 @@ const lastCommand = ref("（无）");
       </XhPageHeaderRoot>
 
       <XhToolbarRoot>
-        <XhToolbarItem value="today" class="shell__tool" @click="lastCommand = '今日'">
+        <XhToolbarItem value="today" @click="lastCommand = '今日'">
           今日
         </XhToolbarItem>
-        <XhToolbarItem value="week" class="shell__tool" @click="lastCommand = '本周'">
+        <XhToolbarItem value="week" @click="lastCommand = '本周'">
           本周
         </XhToolbarItem>
         <XhToolbarSeparator />
-        <XhToolbarItem value="refresh" class="shell__tool" @click="lastCommand = '刷新'">
+        <XhToolbarItem value="refresh" @click="lastCommand = '刷新'">
           刷新
         </XhToolbarItem>
       </XhToolbarRoot>
@@ -218,8 +218,6 @@ const lastCommand = ref("（无）");
           </XhCardContent>
         </XhCardRoot>
       </div>
-
-      <p class="shell__note">当前导航：{{ current ?? "（无）" }} · 最近操作：{{ lastCommand }}</p>
     </XhLayoutContent>
 
     <XhLayoutFooter class="shell__footer">
@@ -229,6 +227,8 @@ const lastCommand = ref("（无）");
       </XhTagRoot>
     </XhLayoutFooter>
   </XhLayoutRoot>
+
+  <p data-demo-output>当前导航：{{ current ?? "（无）" }} · 最近操作：{{ lastCommand }}</p>
 </template>
 
 <style scoped>
@@ -272,24 +272,10 @@ const lastCommand = ref("（无）");
   overflow: auto;
 }
 
-.shell__tool {
-  padding: var(--xh-space-1) var(--xh-space-2_5);
-  border: var(--xh-stroke-thin) solid var(--xh-border-default);
-  border-radius: var(--xh-radius-md);
-  background: var(--xh-bg-surface);
-  font-size: var(--xh-font-size-sm);
-}
-
 .shell__cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: var(--xh-space-4);
-}
-
-.shell__note {
-  margin: 0;
-  color: var(--xh-fg-muted);
-  font-size: var(--xh-font-size-sm);
 }
 </style>
 ```
@@ -344,24 +330,10 @@ const lastCommand = ref("（无）");
     overflow: auto;
   }
 
-  #admin-shell [data-shell="tool"] {
-    padding: var(--xh-space-1) var(--xh-space-2_5);
-    border: var(--xh-stroke-thin) solid var(--xh-border-default);
-    border-radius: var(--xh-radius-md);
-    background: var(--xh-bg-surface);
-    font-size: var(--xh-font-size-sm);
-  }
-
   #admin-shell [data-shell="cards"] {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: var(--xh-space-4);
-  }
-
-  #admin-shell [data-shell="note"] {
-    margin: 0;
-    color: var(--xh-fg-muted);
-    font-size: var(--xh-font-size-sm);
   }
 </style>
 
@@ -502,10 +474,10 @@ const lastCommand = ref("（无）");
 
       <xh-toolbar id="admin-shell-toolbar">
         <div data-xh-part="root">
-          <button type="button" data-xh-part="item" value="today" data-shell="tool">今日</button>
-          <button type="button" data-xh-part="item" value="week" data-shell="tool">本周</button>
+          <button type="button" data-xh-part="item" value="today">今日</button>
+          <button type="button" data-xh-part="item" value="week">本周</button>
           <div data-xh-part="separator"></div>
-          <button type="button" data-xh-part="item" value="refresh" data-shell="tool">刷新</button>
+          <button type="button" data-xh-part="item" value="refresh">刷新</button>
         </div>
       </xh-toolbar>
 
@@ -542,12 +514,6 @@ const lastCommand = ref("（无）");
           </div>
         </xh-card>
       </div>
-
-      <p data-shell="note">
-        当前导航：<span id="admin-shell-nav-value">order-list</span> · 最近操作：<span
-          id="admin-shell-command"
-        >（无）</span>
-      </p>
     </div>
 
     <div data-xh-part="footer" data-shell="footer">
@@ -560,6 +526,10 @@ const lastCommand = ref("（无）");
     </div>
   </div>
 </xh-layout>
+
+<p data-demo-output>
+  当前导航：<span id="admin-shell-nav-value">order-list</span> · 最近操作：<span id="admin-shell-command">（无）</span>
+</p>
 
 <script type="module">
   const nav = document.getElementById("admin-shell-nav");

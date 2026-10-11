@@ -414,6 +414,7 @@ import { XhButton } from "@xihan-ui/vue";
 | `XhButton` | `href` | `ComponentPropsWithRef<'a'>['href']` |  |  |
 | `XhButton` | `target` | `ComponentPropsWithRef<'a'>['target']` |  |  |
 | `XhButton` | `rel` | `ComponentPropsWithRef<'a'>['rel']` |  |  |
+| `XhButton` | `download` | `ComponentPropsWithRef<'a'>['download']` |  | 写为 a 时让浏览器把链接当下载处理；给字符串即建议的文件名。 |
 
 ### 状态
 

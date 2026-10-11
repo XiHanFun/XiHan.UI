@@ -99,6 +99,10 @@ WCAG 2.2 的非文本对比（SC 1.4.11）要求焦点指示器对相邻颜色�
 
 浮层的面板多数只是焦点陷阱的兜底落点（`tabindex=-1`），环位于内部的控件上，皮肤关闭面板自身的环，并在 `ringless` 分区中登记环由谁绘制。tour 的气泡是例外：Enter / Space 落在它上面会推进下一步，它是可操作目标（WCAG 2.4.7），必须有可见焦点；程序化聚焦后使用默认内收环，面是 `--xh-bg-surface`，默认环达标。浏览器判据 `focus-ring-inset-grpring` 保证这一条。
 
+### 字段外壳不画环
+
+输入框壳、InputGroup 组壳这类字段外壳聚焦时不画焦点环：外壳描边换成 `--xh-border-control-focus`（与 `--xh-ring-focus` 同色，对画布、面与淡底都 ≥ 3:1），底色同时从字段淡底 `--xh-bg-field` 换成承载面 `--xh-bg-surface`，焦点由描边换色与底色差两条通道标出；强制色档另补一圈 `Highlight` 环。面板内嵌搜索（Command、Cascader、TreeSelect、Transfer、SideNav 的搜索框）没有外壳，聚焦时插入符就是焦点指示。这几处在焦点环门禁的 `ringless` 分区登记。
+
 ### 相关判据
 
 | 判据 | 检查内容 |
@@ -450,6 +454,19 @@ Web Components 适配器相反：结构由作者编写，用 `data-xh-part` 声�
 
 部件发现逐层向下遍历，遇到嵌套的 `xh-*` 子树即跳过：嵌套的另一个组件的部件由它自己管理。
 
+嵌套组件自己带 `data-xh-part` 时，它整个担任外层的那个部件，与 Vue / React 的 `asChild` 等价。常见用法是拿组件库的按钮当菜单或浮层的触发器：
+
+```html
+<xh-menu>
+  <xh-button data-xh-part="trigger" variant="subtle">
+    <button data-xh-part="root">操作</button>
+  </xh-button>
+  …
+</xh-menu>
+```
+
+外层的接线（`aria-haspopup`、开合、键盘）合进按钮自己的根节点，合并规则与 `asChild` 相同：按钮保留自己的 `data-scope`、`data-part` 与形态轴，其余属性以外层为准，同名事件处理器按钮的先跑。定位锚点、焦点归还都落在这个原生 `button` 上。目前按钮（`xh-button`）支持这样担任别的组件的部件。
+
 ## 皮肤只识别属性不识别类名
 
 类名属于框架，属性不属于框架。
@@ -527,24 +544,24 @@ onBeforeUnmount(() => motion.cancel());
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+  <div style="display: flex; flex-direction: column; gap: var(--xh-space-4); width: 100%">
     <div
       style="
         display: grid;
         place-items: center;
         min-height: 140px;
-        border: 1px dashed var(--vp-c-divider);
-        border-radius: 12px;
+        border: var(--xh-stroke-thin) dashed var(--xh-border-default);
+        border-radius: var(--xh-shape-surface);
       "
     >
       <div
         ref="card"
         style="
-          padding: 16px 24px;
-          border-radius: 10px;
-          background: var(--vp-c-brand-1);
-          color: #fff;
-          font-weight: 600;
+          padding: var(--xh-space-4) var(--xh-space-6);
+          border-radius: var(--xh-shape-surface);
+          background: var(--xh-bg-brand);
+          color: var(--xh-fg-on-brand);
+          font-weight: var(--xh-font-weight-semibold);
         "
       >
         {{ last || "点下面的名字" }}
@@ -552,8 +569,8 @@ onBeforeUnmount(() => motion.cancel());
     </div>
 
     <div>
-      <p style="margin: 0 0 8px; font-size: 13px; opacity: 0.7">进场</p>
-      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <p style="margin: 0 0 var(--xh-space-2); font-size: var(--xh-text-caption-size); color: var(--xh-fg-muted)">进场</p>
+      <div style="display: flex; flex-wrap: wrap; gap: var(--xh-space-2)">
         <XhButton
           v-for="name in enter"
           :key="name"
@@ -567,8 +584,8 @@ onBeforeUnmount(() => motion.cancel());
     </div>
 
     <div>
-      <p style="margin: 0 0 8px; font-size: 13px; opacity: 0.7">注意</p>
-      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <p style="margin: 0 0 var(--xh-space-2); font-size: var(--xh-text-caption-size); color: var(--xh-fg-muted)">注意</p>
+      <div style="display: flex; flex-wrap: wrap; gap: var(--xh-space-2)">
         <XhButton
           v-for="name in attention"
           :key="name"
@@ -585,24 +602,24 @@ onBeforeUnmount(() => motion.cancel());
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+<div style="display: flex; flex-direction: column; gap: var(--xh-space-4); width: 100%">
   <div
     style="
       display: grid;
       place-items: center;
       min-height: 140px;
-      border: 1px dashed var(--vp-c-divider);
-      border-radius: 12px;
+      border: var(--xh-stroke-thin) dashed var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
     "
   >
     <div
       id="animations-presets-card"
       style="
-        padding: 16px 24px;
-        border-radius: 10px;
-        background: var(--vp-c-brand-1);
-        color: #fff;
-        font-weight: 600;
+        padding: var(--xh-space-4) var(--xh-space-6);
+        border-radius: var(--xh-shape-surface);
+        background: var(--xh-bg-brand);
+        color: var(--xh-fg-on-brand);
+        font-weight: var(--xh-font-weight-semibold);
       "
     >
       点下面的名字
@@ -610,13 +627,13 @@ onBeforeUnmount(() => motion.cancel());
   </div>
 
   <div>
-    <p style="margin: 0 0 8px; font-size: 13px; opacity: 0.7">进场</p>
-    <div id="animations-presets-enter" style="display: flex; flex-wrap: wrap; gap: 8px"></div>
+    <p style="margin: 0 0 var(--xh-space-2); font-size: var(--xh-text-caption-size); color: var(--xh-fg-muted)">进场</p>
+    <div id="animations-presets-enter" style="display: flex; flex-wrap: wrap; gap: var(--xh-space-2)"></div>
   </div>
 
   <div>
-    <p style="margin: 0 0 8px; font-size: 13px; opacity: 0.7">注意</p>
-    <div id="animations-presets-attention" style="display: flex; flex-wrap: wrap; gap: 8px"></div>
+    <p style="margin: 0 0 var(--xh-space-2); font-size: var(--xh-text-caption-size); color: var(--xh-fg-muted)">注意</p>
+    <div id="animations-presets-attention" style="display: flex; flex-wrap: wrap; gap: var(--xh-space-2)"></div>
   </div>
 </div>
 
@@ -737,7 +754,17 @@ motion.cancel(); // 全部撤销
 <script setup lang="ts">
 import type { StaggerFrom } from "@xihan-ui/animations";
 import { createMotionPlayer, splitText } from "@xihan-ui/animations";
-import { XhButton, XhRadioGroupRoot } from "@xihan-ui/vue";
+import {
+  XhButton,
+  XhRadioGroupRoot,
+  XhSliderControl,
+  XhSliderHiddenInput,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+} from "@xihan-ui/vue";
 import { onBeforeUnmount, ref, useTemplateRef } from "vue";
 
 const fromOptions = [
@@ -750,14 +777,15 @@ const motion = createMotionPlayer();
 const list = useTemplateRef<HTMLElement>("list");
 const title = useTemplateRef<HTMLElement>("title");
 const from = ref<StaggerFrom>("first");
-const gap = ref(60);
+// 滑块的值恒为数组，单滑块即长度 1
+const gap = ref([60]);
 
 function playList() {
   const el = list.value;
   if (!el)
     return;
   void motion.playAll([...el.children] as HTMLElement[], "rise", {
-    stagger: gap.value,
+    stagger: gap.value[0],
     from: from.value,
   });
 }
@@ -775,39 +803,46 @@ onBeforeUnmount(() => motion.cancel());
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
-    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
+  <div style="display: flex; flex-direction: column; gap: var(--xh-space-4); width: 100%">
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--xh-space-5)">
       <XhRadioGroupRoot
         v-model:value="from"
         :collection="fromOptions"
         label="起点"
         name="stagger-from"
       />
-      <label style="display: flex; align-items: center; gap: 8px">
-        间隔 {{ gap }}ms
-        <input v-model.number="gap" type="range" min="0" max="200" step="10">
-      </label>
+      <XhSliderRoot v-model:value="gap" :min="0" :max="200" :step="10" style="inline-size: var(--xh-control-w)">
+        <XhSliderLabel>间隔 {{ gap[0] }}ms</XhSliderLabel>
+        <XhSliderControl>
+          <XhSliderTrack>
+            <XhSliderRange />
+          </XhSliderTrack>
+          <XhSliderThumb>
+            <XhSliderHiddenInput />
+          </XhSliderThumb>
+        </XhSliderControl>
+      </XhSliderRoot>
     </div>
 
-    <div style="display: flex; gap: 8px">
+    <div style="display: flex; gap: var(--xh-space-2)">
       <XhButton size="sm" @click="playList">播列表</XhButton>
       <XhButton size="sm" variant="outline" @click="playTitle">播标题</XhButton>
     </div>
 
-    <h3 ref="title" style="margin: 0; font-size: 24px">曦寒 UI 动画层</h3>
+    <h3 ref="title" style="margin: 0; font-size: var(--xh-font-size-2xl)">曦寒 UI 动画层</h3>
 
-    <div ref="list" style="display: flex; flex-wrap: wrap; gap: 8px">
+    <div ref="list" style="display: flex; flex-wrap: wrap; gap: var(--xh-space-2)">
       <div
         v-for="n in 8"
         :key="n"
         style="
           display: grid;
           place-items: center;
-          width: 48px;
-          height: 48px;
-          border-radius: 10px;
-          background: var(--vp-c-brand-soft);
-          font-weight: 600;
+          width: calc(2 * var(--xh-space-6));
+          height: calc(2 * var(--xh-space-6));
+          border-radius: var(--xh-shape-surface);
+          background: var(--xh-bg-subtle);
+          font-weight: var(--xh-font-weight-semibold);
         "
       >
         {{ n }}
@@ -818,8 +853,8 @@ onBeforeUnmount(() => motion.cancel());
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
-  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: var(--xh-space-4); width: 100%">
+  <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--xh-space-5)">
     <xh-radio-group id="animations-stagger-from" default-value="first" name="stagger-from">
       <div data-xh-part="root">
         <span data-xh-part="label">起点</span>
@@ -840,13 +875,24 @@ onBeforeUnmount(() => motion.cancel());
         </div>
       </div>
     </xh-radio-group>
-    <label style="display: flex; align-items: center; gap: 8px">
-      <span id="animations-stagger-gap-text">间隔 60ms</span>
-      <input id="animations-stagger-gap" type="range" min="0" max="200" step="10" value="60" />
-    </label>
+    <xh-slider id="animations-stagger-gap" default-value="60" min="0" max="200" step="10">
+      <div data-xh-part="root" style="inline-size: var(--xh-control-w)">
+        <label data-xh-part="label">
+          间隔 <span id="animations-stagger-gap-text">60</span>ms
+        </label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
   </div>
 
-  <div style="display: flex; gap: 8px">
+  <div style="display: flex; gap: var(--xh-space-2)">
     <xh-button id="animations-stagger-play-list" size="sm">
       <button data-xh-part="root">播列表</button>
     </xh-button>
@@ -855,17 +901,17 @@ onBeforeUnmount(() => motion.cancel());
     </xh-button>
   </div>
 
-  <h3 id="animations-stagger-title" style="margin: 0; font-size: 24px">曦寒 UI 动画层</h3>
+  <h3 id="animations-stagger-title" style="margin: 0; font-size: var(--xh-font-size-2xl)">曦寒 UI 动画层</h3>
 
-  <div id="animations-stagger-list" style="display: flex; flex-wrap: wrap; gap: 8px">
-    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">1</div>
-    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">2</div>
-    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">3</div>
-    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">4</div>
-    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">5</div>
-    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">6</div>
-    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">7</div>
-    <div style="display: grid; place-items: center; width: 48px; height: 48px; border-radius: 10px; background: var(--vp-c-brand-soft); font-weight: 600">8</div>
+  <div id="animations-stagger-list" style="display: flex; flex-wrap: wrap; gap: var(--xh-space-2)">
+    <div style="display: grid; place-items: center; width: calc(2 * var(--xh-space-6)); height: calc(2 * var(--xh-space-6)); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-weight: var(--xh-font-weight-semibold)">1</div>
+    <div style="display: grid; place-items: center; width: calc(2 * var(--xh-space-6)); height: calc(2 * var(--xh-space-6)); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-weight: var(--xh-font-weight-semibold)">2</div>
+    <div style="display: grid; place-items: center; width: calc(2 * var(--xh-space-6)); height: calc(2 * var(--xh-space-6)); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-weight: var(--xh-font-weight-semibold)">3</div>
+    <div style="display: grid; place-items: center; width: calc(2 * var(--xh-space-6)); height: calc(2 * var(--xh-space-6)); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-weight: var(--xh-font-weight-semibold)">4</div>
+    <div style="display: grid; place-items: center; width: calc(2 * var(--xh-space-6)); height: calc(2 * var(--xh-space-6)); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-weight: var(--xh-font-weight-semibold)">5</div>
+    <div style="display: grid; place-items: center; width: calc(2 * var(--xh-space-6)); height: calc(2 * var(--xh-space-6)); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-weight: var(--xh-font-weight-semibold)">6</div>
+    <div style="display: grid; place-items: center; width: calc(2 * var(--xh-space-6)); height: calc(2 * var(--xh-space-6)); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-weight: var(--xh-font-weight-semibold)">7</div>
+    <div style="display: grid; place-items: center; width: calc(2 * var(--xh-space-6)); height: calc(2 * var(--xh-space-6)); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); font-weight: var(--xh-font-weight-semibold)">8</div>
   </div>
 </div>
 
@@ -873,7 +919,6 @@ onBeforeUnmount(() => motion.cancel());
   import { createMotionPlayer, splitText } from "@xihan-ui/animations";
 
   const motion = createMotionPlayer();
-  const gap = document.getElementById("animations-stagger-gap");
   const list = document.getElementById("animations-stagger-list");
   const title = document.getElementById("animations-stagger-title");
 
@@ -882,13 +927,16 @@ onBeforeUnmount(() => motion.cancel());
   document.getElementById("animations-stagger-from").addEventListener("value-change", (event) => {
     from = event.detail.value;
   });
-  gap.addEventListener("input", () => {
-    document.getElementById("animations-stagger-gap-text").textContent = `间隔 ${gap.value}ms`;
+  // 间隔跟着滑块走：值恒为数组，单滑块取第一项
+  let gap = 60;
+  document.getElementById("animations-stagger-gap").addEventListener("value-change", (event) => {
+    gap = event.detail.value[0];
+    document.getElementById("animations-stagger-gap-text").textContent = gap;
   });
 
   document.getElementById("animations-stagger-play-list").addEventListener("click", () => {
     void motion.playAll([...list.children], "rise", {
-      stagger: Number(gap.value),
+      stagger: gap,
       from,
     });
   });
@@ -2846,12 +2894,22 @@ toLinearEasing(t => t ** 2, 5); // 'linear(0, 0.0625, 0.25, 0.5625, 1)'
 ```vue
 <script setup lang="ts">
 import { animate, createSpring, springToLinearEasing } from "@xihan-ui/motion";
+import {
+  XhButton,
+  XhSliderControl,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+} from "@xihan-ui/vue";
 import { computed, onBeforeUnmount, ref, useTemplateRef } from "vue";
 
-const duration = ref(0.5);
-const bounce = ref(0.3);
+// 滑块的值恒为数组，单滑块只有一项
+const duration = ref<[number]>([0.5]);
+const bounce = ref<[number]>([0.3]);
 
-const solver = computed(() => createSpring({ duration: duration.value, bounce: bounce.value }));
+const solver = computed(() => createSpring({ duration: duration.value[0], bounce: bounce.value[0] }));
 
 // 曲线画在 0..1 的归一化坐标里，y 轴翻过来让 1 在上方
 const path = computed(() => {
@@ -2875,9 +2933,11 @@ function play() {
     return;
   handle?.cancel();
   const spring = solver.value;
+  // 走到轨道另一头：轨道宽减去方块宽与两侧内距
+  const distance = el.parentElement!.clientWidth - el.offsetWidth - 2 * el.offsetLeft;
   handle = animate(
     el,
-    [{ translate: "0 0" }, { translate: "180px 0" }],
+    [{ translate: "0 0" }, { translate: `${distance}px 0` }],
     { duration: spring.durationMs, easing: springToLinearEasing(spring, 48), fill: "forwards" },
   );
 }
@@ -2886,147 +2946,162 @@ onBeforeUnmount(() => handle?.cancel());
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
-    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
-      <label style="display: flex; align-items: center; gap: 8px">
-        时长 {{ duration.toFixed(2) }}s
-        <input v-model.number="duration" type="range" min="0.15" max="1.2" step="0.05">
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        弹性 {{ bounce.toFixed(2) }}
-        <input v-model.number="bounce" type="range" min="-0.8" max="0.8" step="0.05">
-      </label>
+  <div style="display: flex; flex-direction: column; gap: var(--xh-space-4); width: 100%">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--xh-space-5)">
+      <XhSliderRoot
+        :value="duration"
+        :min="0.15"
+        :max="1.2"
+        :step="0.05"
+        style="inline-size: var(--xh-control-w)"
+        @update:value="duration = $event as [number]"
+      >
+        <XhSliderLabel>时长 {{ duration[0].toFixed(2) }}s</XhSliderLabel>
+        <XhSliderControl>
+          <XhSliderTrack>
+            <XhSliderRange />
+          </XhSliderTrack>
+          <XhSliderThumb />
+        </XhSliderControl>
+      </XhSliderRoot>
+      <XhSliderRoot
+        :value="bounce"
+        :min="-0.8"
+        :max="0.8"
+        :step="0.05"
+        style="inline-size: var(--xh-control-w)"
+        @update:value="bounce = $event as [number]"
+      >
+        <XhSliderLabel>弹性 {{ bounce[0].toFixed(2) }}</XhSliderLabel>
+        <XhSliderControl>
+          <XhSliderTrack>
+            <XhSliderRange />
+          </XhSliderTrack>
+          <XhSliderThumb />
+        </XhSliderControl>
+      </XhSliderRoot>
     </div>
 
-    <p style="margin: 0; font-size: 13px; opacity: 0.7">
-      阻尼比 {{ solver.dampingRatio.toFixed(3) }} · 沉降 {{ Math.round(solver.durationMs) }}ms · 过冲
-      {{ (solver.overshoot * 100).toFixed(1) }}%
-    </p>
-
     <svg viewBox="0 0 280 120" style="width: 100%; height: 120px">
-      <line x1="0" y1="30" x2="280" y2="30" stroke="var(--vp-c-divider)" stroke-dasharray="4 4" />
-      <line x1="0" y1="110" x2="280" y2="110" stroke="var(--vp-c-divider)" />
-      <path :d="path" fill="none" stroke="var(--vp-c-brand-1)" stroke-width="2" />
+      <line x1="0" y1="30" x2="280" y2="30" stroke="var(--xh-border-subtle)" stroke-dasharray="4 4" />
+      <line x1="0" y1="110" x2="280" y2="110" stroke="var(--xh-border-subtle)" />
+      <path :d="path" fill="none" stroke="var(--xh-fg-brand)" stroke-width="2" />
     </svg>
 
-    <div style="display: flex; align-items: center; gap: 12px">
-      <button
-        type="button"
-        style="
-          padding: 6px 14px;
-          border: 1px solid var(--vp-c-divider);
-          border-radius: 8px;
-          background: transparent;
-          color: inherit;
-          cursor: pointer;
-        "
-        @click="play"
-      >
-        播一次
-      </button>
+    <div style="display: flex; align-items: center; gap: var(--xh-space-3)">
+      <XhButton variant="outline" @click="play">播一次</XhButton>
       <div
         style="
           position: relative;
           flex: 1;
-          height: 40px;
-          border: 1px dashed var(--vp-c-divider);
-          border-radius: 8px;
+          height: calc(var(--xh-space-8) + 2 * var(--xh-space-1));
+          border: var(--xh-stroke-thin) dashed var(--xh-border-default);
+          border-radius: var(--xh-shape-surface);
         "
       >
         <div
           ref="box"
           style="
             position: absolute;
-            top: 4px;
-            left: 4px;
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: var(--vp-c-brand-1);
+            top: var(--xh-space-1);
+            left: var(--xh-space-1);
+            width: var(--xh-space-8);
+            height: var(--xh-space-8);
+            border-radius: var(--xh-shape-control);
+            background: var(--xh-bg-brand);
           "
         />
       </div>
     </div>
   </div>
+
+  <p data-demo-output>
+    阻尼比 {{ solver.dampingRatio.toFixed(3) }} · 沉降 {{ Math.round(solver.durationMs) }}ms · 过冲
+    {{ (solver.overshoot * 100).toFixed(1) }}%
+  </p>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
-  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
-    <label style="display: flex; align-items: center; gap: 8px">
-      <span id="motion-spring-duration-text">时长 0.50s</span>
-      <input id="motion-spring-duration" type="range" min="0.15" max="1.2" step="0.05" value="0.5" />
-    </label>
-    <label style="display: flex; align-items: center; gap: 8px">
-      <span id="motion-spring-bounce-text">弹性 0.30</span>
-      <input id="motion-spring-bounce" type="range" min="-0.8" max="0.8" step="0.05" value="0.3" />
-    </label>
+<div style="display: flex; flex-direction: column; gap: var(--xh-space-4); width: 100%">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--xh-space-5)">
+    <xh-slider id="motion-spring-duration" default-value="0.5" min="0.15" max="1.2" step="0.05">
+      <div data-xh-part="root" style="inline-size: var(--xh-control-w)">
+        <label data-xh-part="label">时长 <span id="motion-spring-duration-text">0.50</span>s</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
+    <xh-slider id="motion-spring-bounce" default-value="0.3" min="-0.8" max="0.8" step="0.05">
+      <div data-xh-part="root" style="inline-size: var(--xh-control-w)">
+        <label data-xh-part="label">弹性 <span id="motion-spring-bounce-text">0.30</span></label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
   </div>
 
-  <p id="motion-spring-stats" style="margin: 0; font-size: 13px; opacity: 0.7"></p>
-
   <svg viewBox="0 0 280 120" style="width: 100%; height: 120px">
-    <line x1="0" y1="30" x2="280" y2="30" stroke="var(--vp-c-divider)" stroke-dasharray="4 4" />
-    <line x1="0" y1="110" x2="280" y2="110" stroke="var(--vp-c-divider)" />
-    <path id="motion-spring-curve" fill="none" stroke="var(--vp-c-brand-1)" stroke-width="2" />
+    <line x1="0" y1="30" x2="280" y2="30" stroke="var(--xh-border-subtle)" stroke-dasharray="4 4" />
+    <line x1="0" y1="110" x2="280" y2="110" stroke="var(--xh-border-subtle)" />
+    <path id="motion-spring-curve" fill="none" stroke="var(--xh-fg-brand)" stroke-width="2" />
   </svg>
 
-  <div style="display: flex; align-items: center; gap: 12px">
-    <button
-      id="motion-spring-play"
-      type="button"
-      style="
-        padding: 6px 14px;
-        border: 1px solid var(--vp-c-divider);
-        border-radius: 8px;
-        background: transparent;
-        color: inherit;
-        cursor: pointer;
-      "
-    >
-      播一次
-    </button>
+  <div style="display: flex; align-items: center; gap: var(--xh-space-3)">
+    <xh-button id="motion-spring-play" variant="outline">
+      <button data-xh-part="root">播一次</button>
+    </xh-button>
     <div
       style="
         position: relative;
         flex: 1;
-        height: 40px;
-        border: 1px dashed var(--vp-c-divider);
-        border-radius: 8px;
+        height: calc(var(--xh-space-8) + 2 * var(--xh-space-1));
+        border: var(--xh-stroke-thin) dashed var(--xh-border-default);
+        border-radius: var(--xh-shape-surface);
       "
     >
       <div
         id="motion-spring-box"
         style="
           position: absolute;
-          top: 4px;
-          left: 4px;
-          width: 32px;
-          height: 32px;
-          border-radius: 8px;
-          background: var(--vp-c-brand-1);
+          top: var(--xh-space-1);
+          left: var(--xh-space-1);
+          width: var(--xh-space-8);
+          height: var(--xh-space-8);
+          border-radius: var(--xh-shape-control);
+          background: var(--xh-bg-brand);
         "
       ></div>
     </div>
   </div>
 </div>
 
+<p id="motion-spring-stats" data-demo-output></p>
+
 <script type="module">
   import { animate, createSpring, springToLinearEasing } from "@xihan-ui/motion";
 
-  const duration = document.getElementById("motion-spring-duration");
-  const bounce = document.getElementById("motion-spring-bounce");
   const box = document.getElementById("motion-spring-box");
 
+  // 滑块的值恒为数组，单滑块只有一项；非受控，报上来的新值记在这里
+  let duration = 0.5;
+  let bounce = 0.3;
   let solver;
   let handle = null;
 
   // 滑块一动就按新参数重解：读数、曲线与下一次播放用的是同一个解
   function solve() {
-    solver = createSpring({ duration: Number(duration.value), bounce: Number(bounce.value) });
-    document.getElementById("motion-spring-duration-text").textContent = `时长 ${Number(duration.value).toFixed(2)}s`;
-    document.getElementById("motion-spring-bounce-text").textContent = `弹性 ${Number(bounce.value).toFixed(2)}`;
+    solver = createSpring({ duration, bounce });
+    document.getElementById("motion-spring-duration-text").textContent = duration.toFixed(2);
+    document.getElementById("motion-spring-bounce-text").textContent = bounce.toFixed(2);
     document.getElementById("motion-spring-stats").textContent
       = `阻尼比 ${solver.dampingRatio.toFixed(3)} · 沉降 ${Math.round(solver.durationMs)}ms · 过冲 ${(solver.overshoot * 100).toFixed(1)}%`;
 
@@ -3041,15 +3116,23 @@ onBeforeUnmount(() => handle?.cancel());
     document.getElementById("motion-spring-curve").setAttribute("d", `M ${points.join(" L ")}`);
   }
 
-  duration.addEventListener("input", solve);
-  bounce.addEventListener("input", solve);
+  document.getElementById("motion-spring-duration").addEventListener("value-change", (event) => {
+    duration = event.detail.value[0];
+    solve();
+  });
+  document.getElementById("motion-spring-bounce").addEventListener("value-change", (event) => {
+    bounce = event.detail.value[0];
+    solve();
+  });
   solve();
 
   document.getElementById("motion-spring-play").addEventListener("click", () => {
     handle?.cancel();
+    // 走到轨道另一头：轨道宽减去方块宽与两侧内距
+    const distance = box.parentElement.clientWidth - box.offsetWidth - 2 * box.offsetLeft;
     handle = animate(
       box,
-      [{ translate: "0 0" }, { translate: "180px 0" }],
+      [{ translate: "0 0" }, { translate: `${distance}px 0` }],
       { duration: solver.durationMs, easing: springToLinearEasing(solver, 48), fill: "forwards" },
     );
   });
@@ -3529,7 +3612,17 @@ import {
   minimalSoundTheme,
   softSoundTheme,
 } from "@xihan-ui/sound";
-import { XhButton, XhRadioGroupRoot, XhSwitch } from "@xihan-ui/vue";
+import {
+  XhButton,
+  XhRadioGroupRoot,
+  XhSliderControl,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+  XhSwitch,
+} from "@xihan-ui/vue";
 import { onBeforeUnmount, ref, watch } from "vue";
 
 const themes: Record<string, SoundTheme> = {
@@ -3547,11 +3640,12 @@ const options = [
 // 建播放器不碰音频上下文，等第一次真的发声才建，放 setup 里是安全的
 const player = createSoundPlayer();
 const theme = ref("default");
-const volume = ref(0.5);
+// 滑块的值恒为数组，单滑块只有一项
+const volume = ref<[number]>([0.5]);
 const enabled = ref(true);
 
 watch(theme, name => player.setTheme(themes[name] ?? defaultSoundTheme));
-watch(volume, value => player.setVolume(value));
+watch(volume, ([value]) => player.setVolume(value));
 watch(enabled, on => player.setEnabled(on));
 
 onBeforeUnmount(() => player.dispose());
@@ -3566,10 +3660,22 @@ onBeforeUnmount(() => player.dispose());
         label="主题"
         name="sound-theme"
       />
-      <label style="display: flex; align-items: center; gap: 8px">
-        音量
-        <input v-model.number="volume" type="range" min="0" max="1" step="0.05">
-      </label>
+      <XhSliderRoot
+        :value="volume"
+        :min="0"
+        :max="1"
+        :step="0.05"
+        style="inline-size: var(--xh-control-w)"
+        @update:value="volume = $event as [number]"
+      >
+        <XhSliderLabel>音量</XhSliderLabel>
+        <XhSliderControl>
+          <XhSliderTrack>
+            <XhSliderRange />
+          </XhSliderTrack>
+          <XhSliderThumb />
+        </XhSliderControl>
+      </XhSliderRoot>
       <label style="display: flex; align-items: center; gap: 8px">
         出声
         <XhSwitch v-model:checked="enabled" />
@@ -3614,10 +3720,17 @@ onBeforeUnmount(() => player.dispose());
         </div>
       </div>
     </xh-radio-group>
-    <label style="display: flex; align-items: center; gap: 8px">
-      音量
-      <input id="sound-play-volume" type="range" min="0" max="1" step="0.05" value="0.5" />
-    </label>
+    <xh-slider id="sound-play-volume" default-value="0.5" min="0" max="1" step="0.05">
+      <div data-xh-part="root" style="inline-size: var(--xh-control-w)">
+        <label data-xh-part="label">音量</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
     <label style="display: flex; align-items: center; gap: 8px">
       出声
       <xh-switch id="sound-play-enabled" default-checked>
@@ -3653,7 +3766,8 @@ onBeforeUnmount(() => player.dispose());
   document.getElementById("sound-play-theme").addEventListener("value-change", (event) => {
     player.setTheme(themes[event.detail.value] ?? defaultSoundTheme);
   });
-  volume.addEventListener("input", () => player.setVolume(Number(volume.value)));
+  // 滑块的值恒为数组，单滑块只有一项
+  volume.addEventListener("value-change", (event) => player.setVolume(event.detail.value[0]));
   document.getElementById("sound-play-enabled").addEventListener("checked-change", (event) => {
     player.setEnabled(event.detail.checked);
   });
@@ -3702,8 +3816,17 @@ const ding: SoundSpec = {
 <script setup lang="ts">
 import type { OscillatorLayer, SoundSpec } from "@xihan-ui/sound";
 import { createSoundPlayer, glide, strike } from "@xihan-ui/sound";
-import { XhButton, XhRadioGroupRoot } from "@xihan-ui/vue";
-import { computed, onBeforeUnmount, ref } from "vue";
+import {
+  XhButton,
+  XhRadioGroupRoot,
+  XhSliderControl,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+} from "@xihan-ui/vue";
+import { computed, onBeforeUnmount, reactive, ref } from "vue";
 
 const waves = [
   { value: "sine", label: "sine" },
@@ -3712,26 +3835,41 @@ const waves = [
   { value: "sawtooth", label: "sawtooth" },
 ];
 
-const wave = ref<OscillatorLayer["wave"]>("triangle");
-const from = ref(880);
-const to = ref(1320);
-const attack = ref(5);
-const decay = ref(180);
-const peak = ref(0.3);
-const space = ref(0.15);
+type Param = "from" | "to" | "attack" | "decay" | "peak" | "space";
 
-const seconds = computed(() => Math.max(0.01, decay.value / 1000));
+// 六个参数各一条滑块：标签、单位与取值范围
+const knobs: { key: Param; label: string; unit: string; min: number; max: number; step: number }[] = [
+  { key: "from", label: "起始", unit: "Hz", min: 80, max: 2400, step: 10 },
+  { key: "to", label: "终止", unit: "Hz", min: 80, max: 2400, step: 10 },
+  { key: "attack", label: "起音", unit: "ms", min: 1, max: 80, step: 1 },
+  { key: "decay", label: "衰减", unit: "ms", min: 20, max: 900, step: 10 },
+  { key: "peak", label: "峰值", unit: "", min: 0.05, max: 0.6, step: 0.05 },
+  { key: "space", label: "空间", unit: "", min: 0, max: 0.6, step: 0.05 },
+];
+
+const wave = ref<OscillatorLayer["wave"]>("triangle");
+// 滑块的值恒为数组，单滑块只有一项
+const params = reactive<Record<Param, [number]>>({
+  from: [880],
+  to: [1320],
+  attack: [5],
+  decay: [180],
+  peak: [0.3],
+  space: [0.15],
+});
+
+const seconds = computed(() => Math.max(0.01, params.decay[0] / 1000));
 
 const spec = computed<SoundSpec>(() => ({
   layers: [
     {
       kind: "oscillator",
       wave: wave.value,
-      frequency: glide(from.value, to.value, seconds.value),
-      gain: strike(peak.value, attack.value / 1000, seconds.value),
+      frequency: glide(params.from[0], params.to[0], seconds.value),
+      gain: strike(params.peak[0], params.attack[0] / 1000, seconds.value),
     },
   ],
-  space: space.value,
+  space: params.space[0],
 }));
 
 const code = computed(
@@ -3740,11 +3878,11 @@ const code = computed(
     {
       kind: 'oscillator',
       wave: '${wave.value}',
-      frequency: glide(${from.value}, ${to.value}, ${seconds.value.toFixed(3)}),
-      gain: strike(${peak.value}, ${(attack.value / 1000).toFixed(3)}, ${seconds.value.toFixed(3)}),
+      frequency: glide(${params.from[0]}, ${params.to[0]}, ${seconds.value.toFixed(3)}),
+      gain: strike(${params.peak[0]}, ${(params.attack[0] / 1000).toFixed(3)}, ${seconds.value.toFixed(3)}),
     },
   ],
-  space: ${space.value},
+  space: ${params.space[0]},
 })`,
 );
 
@@ -3763,30 +3901,23 @@ onBeforeUnmount(() => player.dispose());
         gap: 10px 20px;
       "
     >
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">起始 {{ from }}Hz</span>
-        <input v-model.number="from" type="range" min="80" max="2400" step="10">
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">终止 {{ to }}Hz</span>
-        <input v-model.number="to" type="range" min="80" max="2400" step="10">
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">起音 {{ attack }}ms</span>
-        <input v-model.number="attack" type="range" min="1" max="80" step="1">
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">衰减 {{ decay }}ms</span>
-        <input v-model.number="decay" type="range" min="20" max="900" step="10">
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">峰值 {{ peak }}</span>
-        <input v-model.number="peak" type="range" min="0.05" max="0.6" step="0.05">
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">空间 {{ space }}</span>
-        <input v-model.number="space" type="range" min="0" max="0.6" step="0.05">
-      </label>
+      <XhSliderRoot
+        v-for="knob in knobs"
+        :key="knob.key"
+        :value="params[knob.key]"
+        :min="knob.min"
+        :max="knob.max"
+        :step="knob.step"
+        @update:value="params[knob.key] = $event as [number]"
+      >
+        <XhSliderLabel>{{ knob.label }} {{ params[knob.key][0] }}{{ knob.unit }}</XhSliderLabel>
+        <XhSliderControl>
+          <XhSliderTrack>
+            <XhSliderRange />
+          </XhSliderTrack>
+          <XhSliderThumb />
+        </XhSliderControl>
+      </XhSliderRoot>
     </div>
 
     <div>
@@ -3798,8 +3929,8 @@ onBeforeUnmount(() => player.dispose());
       style="
         margin: 0;
         padding: 12px 14px;
-        border-radius: 8px;
-        background: var(--vp-c-bg-soft);
+        border-radius: var(--xh-shape-surface);
+        background: var(--xh-bg-subtle);
         font-size: 12px;
         line-height: 1.6;
         overflow-x: auto;
@@ -3844,30 +3975,60 @@ onBeforeUnmount(() => player.dispose());
       gap: 10px 20px;
     "
   >
-    <label style="display: flex; align-items: center; gap: 8px">
-      <span style="width: 76px">起始 <output for="sound-designer-from">880</output>Hz</span>
-      <input id="sound-designer-from" name="from" type="range" min="80" max="2400" step="10" value="880" />
-    </label>
-    <label style="display: flex; align-items: center; gap: 8px">
-      <span style="width: 76px">终止 <output for="sound-designer-to">1320</output>Hz</span>
-      <input id="sound-designer-to" name="to" type="range" min="80" max="2400" step="10" value="1320" />
-    </label>
-    <label style="display: flex; align-items: center; gap: 8px">
-      <span style="width: 76px">起音 <output for="sound-designer-attack">5</output>ms</span>
-      <input id="sound-designer-attack" name="attack" type="range" min="1" max="80" step="1" value="5" />
-    </label>
-    <label style="display: flex; align-items: center; gap: 8px">
-      <span style="width: 76px">衰减 <output for="sound-designer-decay">180</output>ms</span>
-      <input id="sound-designer-decay" name="decay" type="range" min="20" max="900" step="10" value="180" />
-    </label>
-    <label style="display: flex; align-items: center; gap: 8px">
-      <span style="width: 76px">峰值 <output for="sound-designer-peak">0.3</output></span>
-      <input id="sound-designer-peak" name="peak" type="range" min="0.05" max="0.6" step="0.05" value="0.3" />
-    </label>
-    <label style="display: flex; align-items: center; gap: 8px">
-      <span style="width: 76px">空间 <output for="sound-designer-space">0.15</output></span>
-      <input id="sound-designer-space" name="space" type="range" min="0" max="0.6" step="0.05" value="0.15" />
-    </label>
+    <xh-slider data-param="from" default-value="880" min="80" max="2400" step="10">
+      <div data-xh-part="root">
+        <label data-xh-part="label">起始 <span data-value>880</span>Hz</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track"><div data-xh-part="range"></div></div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
+    <xh-slider data-param="to" default-value="1320" min="80" max="2400" step="10">
+      <div data-xh-part="root">
+        <label data-xh-part="label">终止 <span data-value>1320</span>Hz</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track"><div data-xh-part="range"></div></div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
+    <xh-slider data-param="attack" default-value="5" min="1" max="80" step="1">
+      <div data-xh-part="root">
+        <label data-xh-part="label">起音 <span data-value>5</span>ms</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track"><div data-xh-part="range"></div></div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
+    <xh-slider data-param="decay" default-value="180" min="20" max="900" step="10">
+      <div data-xh-part="root">
+        <label data-xh-part="label">衰减 <span data-value>180</span>ms</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track"><div data-xh-part="range"></div></div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
+    <xh-slider data-param="peak" default-value="0.3" min="0.05" max="0.6" step="0.05">
+      <div data-xh-part="root">
+        <label data-xh-part="label">峰值 <span data-value>0.3</span></label>
+        <div data-xh-part="control">
+          <div data-xh-part="track"><div data-xh-part="range"></div></div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
+    <xh-slider data-param="space" default-value="0.15" min="0" max="0.6" step="0.05">
+      <div data-xh-part="root">
+        <label data-xh-part="label">空间 <span data-value>0.15</span></label>
+        <div data-xh-part="control">
+          <div data-xh-part="track"><div data-xh-part="range"></div></div>
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-slider>
   </div>
 
   <div>
@@ -3882,8 +4043,8 @@ onBeforeUnmount(() => player.dispose());
     style="
       margin: 0;
       padding: 12px 14px;
-      border-radius: 8px;
-      background: var(--vp-c-bg-soft);
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
       font-size: 12px;
       line-height: 1.6;
       overflow-x: auto;
@@ -3897,13 +4058,15 @@ onBeforeUnmount(() => player.dispose());
   const root = document.getElementById("sound-designer");
   const player = createSoundPlayer();
 
-  // 每个滑块按自己的 name 写回同名参数，读数跟着滑块走
+  // 每个滑块按自己的 data-param 写回同名参数，标签里的读数跟着滑块走；滑块的值恒为数组，单滑块只有一项
   const params = { wave: "triangle" };
-  for (const slider of root.querySelectorAll("input[type=range]")) {
-    params[slider.name] = Number(slider.value);
-    slider.addEventListener("input", () => {
-      params[slider.name] = Number(slider.value);
-      root.querySelector(`output[for="${slider.id}"]`).textContent = slider.value;
+  for (const slider of root.querySelectorAll("xh-slider")) {
+    const key = slider.dataset.param;
+    const text = slider.querySelector("[data-value]");
+    params[key] = Number(slider.getAttribute("default-value"));
+    slider.addEventListener("value-change", (event) => {
+      params[key] = event.detail.value[0];
+      text.textContent = params[key];
       render();
     });
   }
@@ -4806,7 +4969,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 
 改了哪一块先跑对应模块，提交前再跑一次全量。
 
-`pnpm gate` 运行 133 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
+`pnpm gate` 运行 134 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
 
 | 门禁 | 拦截内容 |
 | --- | --- |
@@ -4899,7 +5062,7 @@ primitive  ──►  semantic  ──►  组件私有槽
 --xh-color-brand-500: oklch(0.623 0.214 258);
 --xh-color-neutral-950: oklch(0.145 0.005 258);
 --xh-space-4: 16px;
---xh-radius-md: 8px;
+--xh-radius-md: 4px;
 ```
 
 颜色使用 `oklch` 而不是 `hex` / `hsl`：同一明度的不同色相在感知上亮度一致，深色反转与对比度调整不需要逐色手工修正。
@@ -4910,12 +5073,12 @@ primitive  ──►  semantic  ──►  组件私有槽
 --xh-bg-canvas: var(--xh-color-neutral-0);
 --xh-bg-surface: var(--xh-color-neutral-0);
 --xh-bg-brand: var(--xh-color-brand-600);
---xh-fg-default: var(--xh-color-neutral-950);
+--xh-fg-default: var(--xh-color-neutral-900);
 --xh-fg-muted: var(--xh-color-neutral-600);
---xh-border-subtle: var(--xh-color-neutral-100);
---xh-control-h-md: 36px;
+--xh-border-subtle: color-mix(in oklab, var(--xh-ink) 4.7%, transparent);
+--xh-control-h-md: 32px;
 --xh-shape-control: var(--xh-radius-sm);
---xh-elevation-floating: var(--xh-shadow-md);
+--xh-elevation-floating: 0 4px 10px oklch(0 0 0 / 0.1);
 --xh-motion-duration-enter: var(--xh-duration-normal);
 --xh-layer-modal: var(--xh-z-modal);
 --xh-overlay-max-w: 20rem;
@@ -4931,14 +5094,14 @@ primitive  ──►  semantic  ──►  组件私有槽
 
 | 令牌 | 值 | 用途 |
 | --- | ---: | --- |
-| `--xh-shape-inset` | 4px | 嵌在控件里的内层：菜单项、标签内部、微型状态块 |
-| `--xh-shape-control` | 4px | 控件本体：Button、Input、Select Trigger、Toggle、分页按钮 |
-| `--xh-shape-surface` | 8px | 成面的静态容器：Card、Alert、Panel、列表容器、单选组 segmented 形态与 Tabs segment 的轨道 |
-| `--xh-shape-overlay` | 12px | 脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Notification |
+| `--xh-shape-inset` | 2px | 嵌在控件里的内层：勾选方框、页内列表的候选行、字段内的清空钮、色块 |
+| `--xh-shape-control` | 2px | 控件本体：Button、Input、Select Trigger、Toggle、kbd、tooltip、单选组 segmented 形态的轨道；方签 Tag、状态方签与 Alert 提示条 |
+| `--xh-shape-surface` | 4px | 成面的静态容器：Card、Panel、列表容器、Tabs segment 的轨道、分页的描边方块 |
+| `--xh-shape-overlay` | 4px | 脱离文档流的浮层：Popover、Menu、Dialog、Notification 卡片预设、Drawer 朝向页面的两个角（贴边的两个角不取圆角，轻提示预设取 control）；引用 surface，只改承载面圆角时浮层跟着走 |
 | `--xh-shape-circle` | 50% | 正圆：头像、圆形图标按钮、单选指示器 |
-| `--xh-shape-pill` | 9999px | 胶囊：Badge、Tag 等状态 chip，以及轨道、指示条、手柄、滚动条滑块等一维对象 |
+| `--xh-shape-pill` | 9999px | 胶囊：Badge 等状态 chip（Tag 与结果标记是方签，取 control），以及轨道、指示条、手柄、滚动条滑块等一维对象 |
 
-普通按钮、字段、卡片与浮层不使用 pill；内层圆角不超过外层圆角减去内边距；相连控件消除相接侧圆角。亮色、暗色与紧凑密度不改变形状身份。正方盒取 circle，不用 pill 冒充圆。
+形状令牌引用原始阶梯 `--xh-radius-sm / md / lg`（2 / 4 / 8px）：inset 与 control 取 sm，surface 取 md，overlay 引用 surface。普通按钮、字段、卡片与浮层不使用 pill，Tag 与结果标记是方签；锚定浮层里的列表行与 Command、Transfer 的列表行是通栏行，不取圆角；内层圆角不超过外层圆角减去内边距；相连控件消除相接侧圆角。亮色、暗色与紧凑密度不改变形状身份。正方盒取 circle，不用 pill 冒充圆。
 
 ## 点击触感
 
@@ -4946,8 +5109,10 @@ primitive  ──►  semantic  ──►  组件私有槽
 
 | 阶段 | 时长 | 缓动 | 结果 |
 | --- | ---: | --- | --- |
-| 按下 | `--xh-motion-duration-press`（120ms） | `--xh-motion-ease-press` | scale 1 → `--xh-motion-scale-press`（0.97），背景进入 active |
+| 按下 | `--xh-motion-duration-press`（120ms） | `--xh-motion-ease-press` | 背景进入 active；scale 1 → `--xh-motion-scale-press`（缺省 1，只换面） |
 | 释放 | `--xh-motion-duration-release`（200ms） | `--xh-motion-ease-release` | scale 回到 1；背景、描边、字色按 `--xh-motion-duration-micro` 回到 hover / rest |
+
+缺省只换面不缩放；要按下回弹，在根上把 `--xh-motion-scale-press` 写回 0.97，时间线不用改。
 
 Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Collapsible 等 disclosure trigger 使用同一节奏（按下 120ms 换到 active 面，松开按 micro 回到 hover / rest），但只切换表面，不缩放整条，也不允许零反馈。减少动效时 `--xh-motion-scale-press` 归 1、两段时长归 1ms，颜色反馈保留。
 
@@ -4970,15 +5135,18 @@ Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Col
 
 | 角色 | 字号 / 字重 / 颜色 | 与相邻元素的间距 |
 | --- | --- | --- |
-| 字段标签（单字段与 Slider、Rating、Signature、Color* 等复合单字段） | `--xh-text-label-size` 14 / `--xh-text-label-weight` 500 / `--xh-fg-default` | 贴控件 `--xh-space-1` |
-| 集合标题（RadioGroup、CheckboxGroup、Listbox、Tree、TagGroup、Descriptions） | 14 / 500 / `--xh-fg-muted` | 与集合 `--xh-space-2` |
-| 说明 / helper | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal` | 与控件 `--xh-space-1` |
-| 错误文案 | 13 / `--xh-fg-danger` | 与控件 `--xh-space-1` |
-| Surface / Feedback / 浮层内标题 | 14 / `--xh-font-weight-semibold` | — |
-| 页面级面板标题（Dialog、Drawer、Tour） | heading-3（`--xh-text-heading-3-*`） | — |
+| 字段标签（单字段与 Slider、Rating、Signature、Color* 等复合单字段） | `--xh-text-label-size` 14 / `--xh-text-label-weight` 400 / `--xh-fg-muted` | 竖排与控件 `--xh-space-2`；Form 横排时标签列占一行的 5 / 24、与控件 `--xh-space-4` |
+| 集合标题（RadioGroup、CheckboxGroup、Listbox、Tree、TagGroup、Descriptions） | 14 / `--xh-text-label-weight` 400 / `--xh-fg-muted` | 与集合 `--xh-space-2` |
+| 字段说明 / helper（Field、Fieldset） | `--xh-text-caption-size` 12 / `--xh-fg-subtle` / `--xh-leading-normal`；禁用不另变色 | 紧贴控件，辅助行最小高 `--xh-space-5` |
+| 其余说明（Card、Alert、Dialog 等面内的 description） | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal`；Steps 的步骤说明取次级标注 12 / `--xh-fg-subtle` | — |
+| 错误文案 | 12 / `--xh-fg-danger` | 与说明共用控件下方那一行辅助行 |
+| 浮层内与小面标题（Popover、HoverCard、Popconfirm、FloatingPanel、Approval、EmptyState、Citation） | 14 / `--xh-font-weight-medium` | — |
+| 区块与面板标题（Card、Descriptions、Alert、Notification、Steps；Dialog、Drawer、Tour） | heading-3（`--xh-text-heading-3-*`）：16 / 500 | — |
+| 页面标题（PageHeader） | heading-2（`--xh-text-heading-2-*`）：20 / 500 | — |
+| 大号数值（Statistic、Timer、NumberAnimation） | sm / md / lg 依次取 heading-2 / heading-1 / display（`--xh-text-display-size`）：20 / 24 / 28 | — |
 | 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
 
-必填星号与错误文案是公共层规则：`--xh-glyph-mark-required` + `--xh-space-1` + `--xh-fg-danger`，自带标签的字段不各画一套；禁用标签色统一 `--xh-fg-subtle`，单行标签 `--xh-leading-none`。控件内图标随 size 档取 `--xh-glyph-size-sm / md / lg`（16 / 20 / 24）；`--xh-glyph-size-text`（随文 1em）只给 Tag、Kbd、Breadcrumb、Typography、Highlight 这类纯行内文字组件。
+必填星号与错误文案是公共层规则：星号 `--xh-glyph-mark-required` 排在标签文字之前，取 `--xh-text-caption-size` + `--xh-fg-danger`、与文字隔 `--xh-space-1`，自带标签的字段不各画一套；字段标签与字段说明禁用不另变色，其余标签禁用取 `--xh-fg-subtle`，单行标签 `--xh-leading-none`。控件内图标随 size 档取 `--xh-glyph-size-sm / md / lg`（16 / 20 / 24）；`--xh-glyph-size-text`（随文 1em）只给 Tag、Kbd、Breadcrumb、Typography、Highlight 这类纯行内文字组件。
 
 ## 八轴视觉环境运行时
 
@@ -5045,7 +5213,7 @@ brand、density、dir、material 没有平台媒体查询，因此不接受伪�
 | `dir` | 由逻辑属性驱动 LTR / RTL 布局；只认物理方向的量（translate、渐变角度、clip-path 左右两侧）乘 `--xh-direction-sign` 换向——它按就近的 `dir` 继承（ltr 为 1、rtl 为 -1），局部写回 `ltr` 的子树跟着翻回；`transform-origin` 这类物理坐标取 `--xh-direction-start` / `--xh-direction-end`（行内起始缘 / 末尾缘的水平位置，ltr 为 0% / 100%，rtl 反过来） |
 | `data-contrast` | `more` 加强边界；`default` 显式回到常规档 |
 | `data-motion` | `reduce` 触发局部 CSS 动效降级 |
-| `data-transparency` | `reduce` 把磨砂材质切成实体配方 |
+| `data-transparency` | `reduce` 把主题开出的透景材质切回实体配方 |
 | `data-material` | `liquid` 让浮在内容之上的导航层部件（浮动钮、媒体控制、吸顶顶栏）换成液态面；`standard` 保持原材质，最近的祖先生效 |
 
 ## 父作用域、Portal 与回收
@@ -5074,17 +5242,17 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 
 ## 材质配方
 
-令牌配方五档，每档都提供同名九项令牌：`bg`、`backdrop`、`border`、`highlight`、`shadow`、`separator`、`fg`、`fg-muted`、`focus-surface`；M5 liquid 另有五项专用令牌。透明的磨砂面只允许用于瞬态浮层；不提供玻璃材质，也不提供任何兼容别名。另有 raised / floating 两个由海拔令牌组成的叠加档：它们没有 `--xh-material-*` 令牌，只能写成 solid 描边 + solid 底 + 对应海拔的组合。
+令牌配方五档，每档都提供同名九项令牌：`bg`、`backdrop`、`border`、`highlight`、`shadow`、`separator`、`fg`、`fg-muted`、`focus-surface`；M5 liquid 另有五项专用令牌。缺省各档都是实体面；透景（半透明底 + 背景滤镜）只允许主题给瞬态浮层开；不提供玻璃材质，也不提供任何兼容别名。另有 raised / floating 两个由海拔令牌组成的叠加档：它们没有 `--xh-material-*` 令牌，只能写成 solid 描边 + solid 底 + 对应海拔的组合。
 
 | 编号 | 令牌 | 用途 | 光学 |
 | --- | --- | --- | --- |
-| M0 solid | `--xh-material-solid-*` | 静态内容面缺省：border-default 描边 + surface 底 + 无影；字段静息同为描边式 | 实体底色，无高光、无投影 |
-| M1 soft | `--xh-material-soft-*` | Button soft、Tag、Popconfirm 动作等次级操作；不用于 Card 与字段 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
-| M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等需要透景的锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 0.88 不透明度，16px 模糊，108% 饱和度，1px 可见边界 |
-| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 完全不透明，无背景模糊，三层高层投影 |
+| M0 solid | `--xh-material-solid-*` | 静态内容面缺省：border-default 描边 + surface 底 + 无影；字段静息同为描边式，另铺 `--xh-bg-field` 淡底 | 实体底色，无高光、无投影 |
+| M1 soft | `--xh-material-soft-*` | 柔和淡底的次级面；不用于 Card 与字段。Button 与 Tag 是平面面，不取它的顶光与投影 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
+| M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 实体 surface 底，无背景模糊，1px border-default 描边，一层 `0 4px 10px` 柔和投影，无顶光 |
+| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 实体 surface 底，无背景模糊，一层 `0 4px 12px` 投影 |
 | M5 liquid | `--xh-material-liquid-*` | 只在 `data-material="liquid"` 下出现：浮在内容之上的导航层——浮动钮（FloatButton、BackTop、MessageFeed / Log 的回到底部）、媒体控制（Carousel 控制钮与分页条、ImageViewer 控制层）、吸顶的 Layout 顶栏 | 可读下限浅 0.48 / 深 0.61 不透明度，8px 模糊，140% 饱和度，墨色细线 + 1px 边缘光，Chromium 下边缘折射 |
-| raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（单选组 segmented 形态与 Tabs segment 的滑块，静止的滑杆拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色，一层低海拔投影 |
-| floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，中海拔投影 |
+| raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（Tabs segment 的滑块、开关拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色；`--xh-elevation-raised` 缺省 none（平面），主题要抬起感时再给一层影 |
+| floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，一层 `0 4px 10px` 柔和投影 |
 
 | 后缀 | 用途 |
 | --- | --- |
@@ -5094,31 +5262,31 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 | `fg` / `fg-muted` | 正文与次要文字，始终不透明 |
 | `focus-surface` | 键盘聚焦时铺在焦点环内侧的实体隔离底 |
 
-M2 frosted 在库里只有一份实现：材质家族配方 `@xihan-ui/styles/material.css`。组件在部件上投影 `data-xh-material="frosted"`，锚定浮层的内容面由配方画描边、底、1px 顶光、前景、投影与背景滤镜；浮动钮的面归 Action Control，由配方给交互阶梯（悬停 / 按下换不透明淡底一档、二档，键盘聚焦铺 `focus-surface`）。自定义的浮层面写同一个属性即可接入，用 `--xh-frosted-bg`、`--xh-frosted-border`、`--xh-frosted-fg`、`--xh-frosted-shadow`、`--xh-frosted-backdrop`、`--xh-frosted-highlight` 覆盖。
+M2 frosted 在库里只有一份实现：材质家族配方 `@xihan-ui/styles/material.css`。组件在部件上投影 `data-xh-material="frosted"`，锚定浮层的内容面由配方画描边、底、前景与投影，背景滤镜与 1px 顶光两条通道缺省为空、留给要透景的主题；浮动钮的面归 Action Control，由配方给交互阶梯（悬停 / 按下换不透明淡底一档、二档，键盘聚焦铺 `focus-surface`）。自定义的浮层面写同一个属性即可接入，用 `--xh-frosted-bg`、`--xh-frosted-border`、`--xh-frosted-fg`、`--xh-frosted-shadow`、`--xh-frosted-backdrop`、`--xh-frosted-highlight` 覆盖。
 
-Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--xh-elevation-raised`）、`subtle`（`--xh-bg-subtle` + 透明占位边 + 无影）、`ghost`（不写边、底与影，只允许分隔线）。边界只由描边承担，阴影与淡底都不作为边界。
+Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--xh-elevation-raised`，缺省 none）、`subtle`（`--xh-bg-subtle` + 透明占位边 + 无影）、`ghost`（不写边、底与影，只允许分隔线）。边界只由描边承担，阴影与淡底都不作为边界。
 
-环境轴在同一令牌名上原位降级：高对比档提高不透明度并加强边界；减少透明度与打印改为实体底并关闭背景滤镜；强制色改由 `Canvas` / `CanvasText` 表达。四档在浅色、深色两套主题下都按黑、白、中灰、页面与品牌背景验证正文至少 4.5:1、焦点环对隔离底至少 3:1。
+环境轴在同一令牌名上原位降级：高对比档加强边界；减少透明度与打印强制实体底、关闭背景滤镜（主题开了透景也一样）；强制色改由 `Canvas` / `CanvasText` 表达。四档在浅色、深色两套主题下都按黑、白、中灰、页面与品牌背景验证正文至少 4.5:1、焦点环对隔离底至少 3:1。
 
 主题与对比度可以分别声明在不同层级：每一层采用最近的 `data-theme` 和 `data-contrast`。子主题不撤销祖先的高对比度，`data-contrast="default"` 可以局部恢复常规档；兄弟区域互不影响。
 
-### 磨砂面的使用范围
+### frosted 浮层面的使用范围
 
-- 只用于需要保留背景空间感的瞬态浮层，正文、表单主体、Card、Table、Notification 与 Dialog 主阅读面不使用。
-- 不把 `backdrop-filter` 放在页面根、大滚动区或重叠的多层表面，不对模糊半径做动画。
-- 焦点环必须搭配 `focus-surface` 对应的实体隔离面。
+- 名字沿用 frosted，缺省取值是实体弹出层：不采样背后内容，没有顶部边界光，1px 描边承担可见边界，不能只靠投影分层。
+- 只用于锚定瞬态浮层，正文、表单主体、Card、Table、Notification 与 Dialog 主阅读面不使用。
+- 主题要磨砂透景时，给 `--xh-material-frosted-bg` 半透明底、给 backdrop 一档 blur（不高于 16px，saturate 不高于 1.08）、给 highlight 不超过 1px 的内侧顶光；开了透景就不把 `backdrop-filter` 放在页面根、大滚动区或重叠的多层表面，不对模糊半径做动画，焦点环搭配 `focus-surface` 对应的实体隔离面。
 
-### 紧凑磨砂
+### 紧凑配方（Tooltip）
 
-Tooltip 等小型反白表面使用三支 compact 配方组合 M2 的边界、前景与高光：
+Tooltip 保留反白身份，用三支 compact 配方组合 M2 的前景；边不取 frosted 描边（装饰边压在反白深底上看不见），改取 on 色 20% 拼色承担 1px 可见边界：
 
 | 配方 | 常规值 |
 | --- | --- |
-| `--xh-material-frosted-compact-alpha` | 0.94，按内置反白与六种 tone 在黑、白、灰、页面和品牌底上验证正文对比度 |
-| `--xh-material-frosted-compact-backdrop` | 8px 模糊、104% 饱和度 |
-| `--xh-material-frosted-compact-shadow` | 明暗独立的两层小投影 |
+| `--xh-material-frosted-compact-alpha` | 不透明（`--xh-alpha-opaque`） |
+| `--xh-material-frosted-compact-backdrop` | none，无模糊 |
+| `--xh-material-frosted-compact-shadow` | 一层 `0 4px 10px` 投影（浅色 10% 黑、深色 36% 黑） |
 
-高对比、强制颜色和打印分别改为不透明、无模糊、无投影；减少透明时保留小投影表达浮层位置。组件只经这三支配方消费光学参数，不直接选择 alpha 或 blur 原语。
+高对比、强制颜色和打印去掉投影；减少透明时保留小投影表达浮层位置。组件只经这三支配方消费光学参数，不直接选择 alpha 或 blur 原语。
 
 ### 液态材质
 
@@ -5226,7 +5394,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | --- | --- | --- |
 | 包名 | 18 | 把代码从一个包移到另一个包 = major |
 | `exports` 子路径 | 45 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
-| Vue 组件导出 `Xh*` | 1180（140 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
+| Vue 组件导出 `Xh*` | 1183（140 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
 | Vue 组合式函数 `use<家族>` | 110 | `useSelect`、`useCombobox`。不使用库内部件、自行编写标记时的唯一入口 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
 | 无头内核 `connect*` | 140 | `connectAccordion` 及其参数顺序、返回的 getter 名 |
@@ -5272,14 +5440,14 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
 | `data-scope` 取值（组件身份） | 140 | **受约束**（新增第 141 个组件是 minor） |
-| `data-part` 取值（部件名） | 368 个不同名字 / 1342 条「组件 × 部件」配对 | **受约束** |
+| `data-part` 取值（部件名） | 368 个不同名字 / 1345 条「组件 × 部件」配对 | **受约束** |
 | `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 368 个 | **受约束** |
 | `meta.requiredParts`（必备部件） | 313 条 | **受约束**（加条目 = major），方向见下 |
 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改动一处即四处同时破坏。
 
-::: warning `data-xh-part`、`data-xh-scroll`、墨色域、液态下层与图表纹理的声明是 `data-xh-` 前缀里仅有的例外
-其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt`、`data-xh-modal-underlay` 等 66 个）是库自用标记，排除在承诺之外。例外都由作者书写：`data-xh-part` 是 Web Components 适配器唯一的作者输入 API；`data-xh-scroll` 只承诺「作者容器取得 reset 层的原生细条」（见[皮肤与样式分层](./styling#组件内滚动)），不进任何组件契约，删除或改名同样按公开面破坏处理；`data-xh-ink` 与 `data-xh-ink-margin` 写在作者自己的彩色区块上，声明底色极性与余量（见[色彩 · 彩色面与墨色域](/design/colors#彩色面与墨色域)），取值与语义按公开面承诺；`data-xh-backdrop` 与 `data-xh-backdrop-busy` 写在作者自己的图片、视频、画布区域上，声明液态面下层的明暗与杂乱（见[设计令牌与主题 · 液态材质](./theme#液态材质)），同样按公开面承诺；`data-xh-chart-patterns` 写在作者自己的祖先上，让其中的图表改用纹理区分系列（见[直角坐标图](../components/cartesian-chart)），同样按公开面承诺。作者书写 `data-xh-part="trigger"` 是声明，元素接线后在同一节点写入 `data-scope` + `data-part` 是事实。皮肤匹配后者，后者不应手写。
+::: warning `data-xh-part`、`data-xh-scroll`、墨色域、液态下层与图表纹理、配色方案的声明是 `data-xh-` 前缀里仅有的例外
+其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt`、`data-xh-modal-underlay` 等 66 个）是库自用标记，排除在承诺之外。例外都由作者书写：`data-xh-part` 是 Web Components 适配器唯一的作者输入 API；`data-xh-scroll` 只承诺「作者容器取得 reset 层的原生细条」（见[皮肤与样式分层](./styling#组件内滚动)），不进任何组件契约，删除或改名同样按公开面破坏处理；`data-xh-ink` 与 `data-xh-ink-margin` 写在作者自己的彩色区块上，声明底色极性与余量（见[色彩 · 彩色面与墨色域](/design/colors#彩色面与墨色域)），取值与语义按公开面承诺；`data-xh-backdrop` 与 `data-xh-backdrop-busy` 写在作者自己的图片、视频、画布区域上，声明液态面下层的明暗与杂乱（见[设计令牌与主题 · 液态材质](./theme#液态材质)），同样按公开面承诺；`data-xh-chart-patterns` 与 `data-xh-chart-palette` 写在作者自己的祖先上，分别让其中的图表改用纹理区分系列、换一套配色方案（见[直角坐标图](../components/cartesian-chart)与[色彩 · 配色方案](/design/colors#配色方案)），取值与语义同样按公开面承诺。作者书写 `data-xh-part="trigger"` 是声明，元素接线后在同一节点写入 `data-scope` + `data-part` 是事实。皮肤匹配后者，后者不应手写。
 :::
 
 ### requiredParts 的方向是反的
@@ -5293,7 +5461,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 312 个不同的 `data-*` 属性名、2007 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 312 个不同的 `data-*` 属性名、2015 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -5305,7 +5473,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-样式钩子。自带皮肤消费了 260 个属性名 / 1139 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤参照的就是这一组：
+样式钩子。自带皮肤消费了 260 个属性名 / 1145 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤依据的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -5357,7 +5525,7 @@ brand  neutral  success  warning  danger  info
 | `@layer` 名与声明顺序 | 5 | `xihan.reset` → `xihan.tokens` → `xihan.motion` → `xihan.components` → `xihan.overrides`。改名、调序、增删中间层均为 major。`xihan.overrides` 刻意留空，专供使用方覆盖，不会作为未使用的层被清理 |
 | 全局令牌 · 原语层 | 115 | `--xh-color-brand-500`、`--xh-space-4`、`--xh-radius-md`。皮肤中不应直接使用它们，但接入品牌轴必须写 `--xh-color-brand-*`，因此它们是公开的 |
 | 全局令牌 · 语义层 | 302 | `--xh-bg-brand`、`--xh-fg-on-brand`、`--xh-control-h-md`、`--xh-shape-control`。主题定制的正门，见 [设计令牌与主题](./theme) |
-| 组件覆盖槽 | 4469（覆盖 140 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，在 `:root` 中设置即可修改该组件 |
+| 组件覆盖槽 | 4638（覆盖 140 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，在 `:root` 中设置即可修改该组件 |
 | 语气轴槽 | 12 | `--xh-_tone`、`--xh-_tone-on`、`--xh-_tone-hover`、`--xh-_tone-subtle`、`--xh-_tone-border` 等。这是自定义语气的唯一机制：写入 `[data-tone='premium'] { --xh-_tone: gold; --xh-_tone-on: #000 }`，读取这批槽的 64 份皮肤随之生效。虽然带下划线前缀，但按受约束处理 |
 | 关键帧名 | 42 | `xh-pop-in`、`xh-fade-out`、`xh-spin`。共享关键帧住在 `family/motion.css`（子入口 `@xihan-ui/styles/motion.css`），皮肤 `@import` 它；组件专属关键帧仍在各皮肤。在 `xihan.overrides` 层中重定义同名关键帧即可替换该段动画（关键帧名因此是公开面），所以改名与删名同样是 major |
 | 跨包内联属性 | 139 | 浮层定位共用的 `--xh-_<组件>-available-w` / `-available-h` / `-anchor-w` / `-arrow-x` / `-arrow-y`，指示条与滑块的几何 `--xh-_tabs-indicator-x`、`--xh-_radio-group-thumb-w`，值类比例 `--xh-_progress-value`、`--xh-_loading-bar-value`，浮动按钮的贴边与停点 `--xh-_float-button-offset`、`--xh-_float-button-ratio`、`--xh-_float-button-x`，图表提示框坐标 `--xh-_chart-tip-x`、`--xh-_chart-tip-y`，以及 `--xh-_truncate-lines`、`--xh-_color-picker-tag-color`、`--xh-_carousel-autoplay-duration` 等。由 headless 写入内联 `style`，皮肤必须读取。整套更换皮肤时若不读取这些值，浮层限高与箭头、选中指示、进度、文本截断、浮动按钮贴边或图表提示框会失效，且不报任何错误。core 写入的层级、动效与液态材质取值不在此列，见下方「排除」 |
@@ -5368,13 +5536,13 @@ brand  neutral  success  warning  danger  info
 
 | 类别 | 数量 | 排除原因 |
 | --- | --- | --- |
-| 其余 `--xh-_` 私有槽 | 804 | 皮肤内部的回退中转（`--xh-_bg`、`--xh-_bg-hover`、`--xh-_mention-py` 等），变体只改槽位、不重写规则依赖它。不应在外部设置它们。core 写入内联 `style` 的层级、动效与液态材质取值（`--xh-_layer`、`--xh-_stagger-index`、`--xh-_enter-from-opacity` 等）同属此档：层级的公开入口是 `--xh-<组件>-layer` 覆盖槽，私有值只作回落；后两类缺失时只少一段过渡或材质效果，组件功能不受影响 |
+| 其余 `--xh-_` 私有槽 | 875 | 皮肤内部的回退中转（`--xh-_bg`、`--xh-_bg-hover`、`--xh-_mention-py` 等），变体只改槽位、不重写规则依赖它。不应在外部设置它们。core 写入内联 `style` 的层级、动效与液态材质取值（`--xh-_layer`、`--xh-_stagger-index`、`--xh-_enter-from-opacity` 等）同属此档：层级的公开入口是 `--xh-<组件>-layer` 覆盖槽，私有值只作回落；后两类缺失时只少一段过渡或材质效果，组件功能不受影响 |
 | 令牌的取值 | — | `--xh-color-brand-500` 这个名字受约束，其对应的 `oklch()` 值不受约束。调色板随视觉迭代变化，这正是令牌存在的意义 |
 | `index.css` 的内部结构 | — | 它是生成的扁平文件：家族配方只内联一次、排在皮肤之前，皮肤段的顺序即源序。段标记注释（`/* styles/xxx.css */`）只作阅读定位，不是承诺 |
 | `index.unlayered.css` 的内部结构 | — | 它是同一源序的扁平镜像，不带 `@layer`。使用该入口时没有 `xihan.overrides` 覆盖槽位，层名承诺不适用 |
 
 ::: warning 命名前缀不能反推归属
-`--xh-field-py` 形似 `field` 组件的覆盖槽，实际是全局语义令牌，`field.css` 本身并不使用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 667 个全局令牌里，不按前缀推断。
+`--xh-field-py` 形似 `field` 组件的覆盖槽，实际是全局语义令牌，`field.css` 本身并不使用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 791 个全局令牌里，不按前缀推断。
 :::
 
 ---
@@ -5385,7 +5553,7 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 145（`defineXhElements()` 注册 144 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1555 条声明 / 479 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| observed attribute | 1556 条声明 / 479 个不同名字 | **受约束**（具体元素上的具体属性名） |
 | attribute 名词汇表本身 | 479 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
 | `CustomEvent` 名 | 121 个名字 / 277 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（262 处中 260 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
@@ -5560,12 +5728,12 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 
 | 包 | 说明 |
 | --- | --- |
-| `@xihan-ui/vue` | 1180 个组件、110 个组合式函数 |
+| `@xihan-ui/vue` | 1183 个组件、110 个组合式函数 |
 | `@xihan-ui/react` | 组件与 hooks（铺开中，公开面随批次增长） |
 | `@xihan-ui/web-components` | 145 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
 | `@xihan-ui/styles` | 140 份组件皮肤、5 个层名 |
-| `@xihan-ui/tokens` | 667 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
+| `@xihan-ui/tokens` | 791 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
 | `@xihan-ui/icons` | 图标集 |
 | `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约；另有 `./date` 子入口的全部导出（`PlainDate` / `PlainTime` / `PlainDateTime` / `ZonedDateTime`、时区换算、周规则、边界函数与格式化器） |
 | `@xihan-ui/position` | `createPositionEngine` 与它的选项；其余 9 个导出是内部算子 |
@@ -5593,12 +5761,12 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，18476 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，18783 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 214 条子入口、9574 个导出名、140 个 `data-scope` 与 1342 条部件配对、
-140 个组件的 2110 个 prop 名、314 种 `data-*`、33 个 `data-state` 取值、667 个令牌、
-5 个 `@layer` 名、4469 个组件覆盖槽、144 个自定义元素及其 attribute 与事件。
+覆盖：包名与 214 条子入口、9583 个导出名、140 个 `data-scope` 与 1345 条部件配对、
+140 个组件的 2112 个 prop 名、314 种 `data-*`、33 个 `data-state` 取值、791 个令牌、
+5 个 `@layer` 名、4638 个组件覆盖槽、144 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改
 `collection`、`splitter` 的 `size` 改 `sizes`）其余门禁全程沉默。它的事实源是无头内核的
@@ -6243,7 +6411,7 @@ document.querySelector("xh-dialog")
 
 ## 多级菜单的 Portal 所有权
 
-`<xh-menu submenu>` 仍由作者在父 Menu、ContextMenu 或 Menubar 的 Light DOM 中声明。展开时只有它的 `positioner` 会搬到所属 Document 的 `#xh-portal-root`：父菜单的磨砂 `backdrop-filter` 因此不会把 fixed 子层困在局部包含块。每层有自己的无盒 Portal 壳，壳会桥接触发条目祖先上的主题、品牌、密度、对比度、动效与文字方向。
+`<xh-menu submenu>` 仍由作者在父 Menu、ContextMenu 或 Menubar 的 Light DOM 中声明。展开时只有它的 `positioner` 会搬到所属 Document 的 `#xh-portal-root`：主题给父菜单开了透景时，它的 `backdrop-filter` 因此不会把 fixed 子层困在局部包含块。每层有自己的无盒 Portal 壳，壳会桥接触发条目祖先上的主题、品牌、密度、对比度、动效与文字方向。
 
 搬运不会转移行为所有权。子菜单宿主继续观察并接线 positioner 里的动态部件，父宿主通过内部逻辑 owner 给 trigger 补齐父层 item 身份；末级选择按叶到根关闭，并只由根派发一次 `select`。关闭、断连或 trigger 换代时，positioner 会恢复到原占位。展开期间应持有部件引用或从 `ownerDocument` 查询，不能假设 `submenu.querySelector(...)` 仍能找到已搬走的 positioner。
 
@@ -6447,7 +6615,7 @@ provideXhConfig({ translations: { dialog: { close: "Close" } } });
 
 Vue 与 React 的浮层搬到 Portal 时，每个实例会把逻辑来源最近声明的 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency` 和 `dir` 投影到自己的无盒壳，并复制来源解析出的 CSS 自定义属性；共享 Portal 根不带这些属性。同一落点里的两个局部主题因此互不覆盖。来源没有声明的轴与变量继续继承显式 `portalContainer`，普通计算样式不会被复制。
 
-Web Components 的普通声明式浮层仍在 Light DOM 原位。多级 Menu 是明确例外：展开的 submenu positioner 会进入所属 Document 的运行时 Portal，以免父菜单的磨砂采样建立 fixed 包含块；它同样使用独占无盒壳桥接上述视觉轴，关闭或断连后恢复作者原位置。
+Web Components 的普通声明式浮层仍在 Light DOM 原位。多级 Menu 是明确例外：展开的 submenu positioner 会进入所属 Document 的运行时 Portal，以免主题给父菜单开透景时，它的背景滤镜建立 fixed 包含块；它同样使用独占无盒壳桥接上述视觉轴，关闭或断连后恢复作者原位置。
 
 `shape` 是组件自身形态，不是主题环境轴。系统 `prefers-reduced-transparency` 媒体路径在同一浏览器中天然同时作用于来源与 Portal；`data-transparency="reduce"` 是同源的显式视觉轴，令牌层会在该局部范围将材质实体化并由实例壳继承，业务皮肤也可消费它扩展自己的非材质降级。
 
@@ -6697,7 +6865,7 @@ notify.danger("同步失败", { description: "网络中断，稍后自动重试"
 | --- | --- | --- |
 | `create(options)` | `string`（id） | 入队；同 id 已存在则就地改写 |
 | `update(id, options)` | — | 改写正在显示的条目 |
-| `dismiss(id)` / `dismissAll()` | — | 立即移出队列，不播退场动画 |
+| `dismiss(id)` / `dismissAll()` | — | 立即移出队列，不等卡片自己的退场；画面上由替身在原处淡出 |
 | `info` / `success` / `warning` / `danger` | `string`（id） | 语气快捷方法，第一个参数是标题，正文写在 `options.description` |
 | `loading(title, options)` | `string`（id） | 以 `loading` 态弹出一条并返回 id，之后用 `update` 收尾 |
 | `promise(input, options)` | `Promise<T>` | 先弹出 loading，落定后就地改写为成功 / 失败 |

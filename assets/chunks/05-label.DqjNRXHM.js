@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`matrix-code-label-input`),t=document.getElementById(`matrix-code-label`);e.addEventListener(`value-change`,e=>{t.value=e.detail.value})}export{e as default};

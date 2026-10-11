@@ -43,7 +43,7 @@ function remove({ value }: { value: string }) {
     deletable
     @item-delete="remove"
   />
-  <p>还剩：{{ tags.length ? tags.map((tag) => tag.label).join("、") : "（空）" }}</p>
+  <p data-demo-output>还剩：{{ tags.length ? tags.map((tag) => tag.label).join("、") : "（空）" }}</p>
 </template>
 ```
 
@@ -79,7 +79,7 @@ function remove({ value }: { value: string }) {
     </div>
   </div>
 </xh-tag-group>
-<p>还剩：<span id="tag-group-basic-rest">Vue、React、Svelte、Angular</span></p>
+<p data-demo-output>还剩：<span id="tag-group-basic-rest">Vue、React、Svelte、Angular</span></p>
 
 <script type="module">
   // 条目的去留归宿主：组件只报「用户要摘这一枚」，节点由这里摘掉
@@ -128,7 +128,7 @@ const topics = [
     variant="outline"
     tone="brand"
   />
-  <p>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
+  <p data-demo-output>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
 </template>
 ```
 
@@ -170,7 +170,7 @@ const topics = [
     </div>
   </div>
 </xh-tag-group>
-<p>已选：<span id="tag-group-selection-value">design</span></p>
+<p data-demo-output>已选：<span id="tag-group-selection-value">design</span></p>
 
 <script type="module">
   // 受控：选中集合写回后再回显
@@ -295,7 +295,7 @@ function remove({ value }: { value: string }) {
 
 const avatar
   = "display: inline-flex; align-items: center; justify-content: center;"
-    + " inline-size: 16px; block-size: 16px; border-radius: 50%;"
+    + " inline-size: 16px; block-size: 16px; border-radius: var(--xh-shape-circle);"
     + " background: var(--xh-bg-subtle); font-size: var(--xh-font-size-xs)";
 </script>
 
@@ -324,7 +324,7 @@ const avatar
       </XhTagGroupItem>
     </XhTagGroupList>
   </XhTagGroupRoot>
-  <p>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
+  <p data-demo-output>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
 </template>
 ```
 
@@ -349,7 +349,7 @@ const avatar
               justify-content: center;
               inline-size: 16px;
               block-size: 16px;
-              border-radius: 50%;
+              border-radius: var(--xh-shape-circle);
               background: var(--xh-bg-subtle);
               font-size: var(--xh-font-size-xs);
             "
@@ -371,7 +371,7 @@ const avatar
               justify-content: center;
               inline-size: 16px;
               block-size: 16px;
-              border-radius: 50%;
+              border-radius: var(--xh-shape-circle);
               background: var(--xh-bg-subtle);
               font-size: var(--xh-font-size-xs);
             "
@@ -393,7 +393,7 @@ const avatar
               justify-content: center;
               inline-size: 16px;
               block-size: 16px;
-              border-radius: 50%;
+              border-radius: var(--xh-shape-circle);
               background: var(--xh-bg-subtle);
               font-size: var(--xh-font-size-xs);
             "
@@ -408,7 +408,7 @@ const avatar
     </div>
   </div>
 </xh-tag-group>
-<p>已选：<span id="tag-group-parts-value">li</span></p>
+<p data-demo-output>已选：<span id="tag-group-parts-value">li</span></p>
 
 <script type="module">
   const group = document.getElementById("tag-group-parts");
@@ -669,15 +669,15 @@ const avatar
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-tag-group-gap` | `root` | `gap` | `default` | `--xh-space-2` | tag-group 的 root 部件 gap 覆盖槽。 |
-| `--xh-tag-group-item-bg-hover` | `list`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`tone`<br>`variant=solid` | `--xh-_tone-subtle-hover`<br>`--xh-bg-subtle` | tag-group 的 list、root 部件 background 覆盖槽。 |
-| `--xh-tag-group-item-bg-pressed` | `list`<br>`root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`pressed`<br>`selectable`<br>`tone`<br>`variant=solid` | `--xh-_tone-subtle-active`<br>`--xh-bg-subtle-hover` | tag-group 的 list、root 部件 background 覆盖槽。 |
+| `--xh-tag-group-item-bg-hover` | `list`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])`<br>`not([data-tone])`<br>`not([data-variant='solid'])`<br>`tone`<br>`variant=ghost`<br>`variant=solid` | `--xh-_tone-subtle-hover`<br>`--xh-bg-subtle`<br>`--xh-bg-subtle-hover` | tag-group 的 list、root 部件 background 覆盖槽。 |
+| `--xh-tag-group-item-bg-pressed` | `list`<br>`root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-tone])`<br>`not([data-variant='solid'])`<br>`pressed`<br>`selectable`<br>`tone`<br>`variant=ghost`<br>`variant=solid` | `--xh-_tone-subtle-active`<br>`--xh-bg-subtle-active`<br>`--xh-bg-subtle-hover` | tag-group 的 list、root 部件 background 覆盖槽。 |
 | `--xh-tag-group-item-bg-pressed-solid` | `list`<br>`root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`pressed`<br>`selectable`<br>`tone`<br>`variant=solid` | `--xh-_tone-active`<br>`--xh-bg-brand-active` | tag-group 的 list、root 部件 background 覆盖槽。 |
 | `--xh-tag-group-item-indicator-fg` | `item-indicator`<br>`root` | `color` | `default`<br>`variant=solid` | `--xh-_tone-fg`<br>`currentColor` | tag-group 的 item-indicator、root 部件 color 覆盖槽。 |
 | `--xh-tag-group-item-indicator-size` | `item-indicator` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | tag-group 的 item-indicator 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tag-group-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tag-group 的 label 部件 color 覆盖槽。 |
 | `--xh-tag-group-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | tag-group 的 label 部件 font-size 覆盖槽。 |
 | `--xh-tag-group-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tag-group 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-tag-group-list-gap` | `list` | `gap` | `default` | `--xh-space-1_5` | tag-group 的 list 部件 gap 覆盖槽。 |
+| `--xh-tag-group-list-gap` | `list` | `gap` | `default` | `--xh-space-2` | tag-group 的 list 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

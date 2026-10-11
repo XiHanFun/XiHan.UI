@@ -45,19 +45,17 @@ function run(details: CommandSelectDetails) {
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <XhCommandRoot
-      :collection="commands"
-      :groups="groups"
-      placeholder="搜命令…"
-      empty="没有匹配的命令"
-      @select="run"
-    >
-      <template #trigger>打开命令面板</template>
-      <template #footer>方向键选择 · Enter 执行 · Esc 关闭</template>
-    </XhCommandRoot>
-    <span>{{ last }}</span>
-  </div>
+  <XhCommandRoot
+    :collection="commands"
+    :groups="groups"
+    placeholder="搜命令…"
+    empty="没有匹配的命令"
+    @select="run"
+  >
+    <template #trigger>打开命令面板</template>
+    <template #footer>方向键选择 · Enter 执行 · Esc 关闭</template>
+  </XhCommandRoot>
+  <span data-demo-output>{{ last }}</span>
 </template>
 ```
 
@@ -103,7 +101,7 @@ function run(details: CommandSelectDetails) {
     </div>
   </div>
 </xh-command>
-<p id="command-basic-readout">还没执行过命令</p>
+<p id="command-basic-readout" data-demo-output>还没执行过命令</p>
 
 <script type="module">
   // 命令清单只走 property：过滤、归组与禁用都以它为准，
@@ -477,55 +475,51 @@ function onSelect(details: { label: string }) {
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <XhCommandRoot
-      v-model:open="open"
-      v-model:input-value="query"
-      :collection="results"
-      :filter="false"
-      :loading="loading"
-      placeholder="搜同事…"
-      @select="onSelect"
-    >
-      <template #default>
-        <XhCommandTrigger>找一个人</XhCommandTrigger>
-        <XhCommandContent>
-          <XhCommandInput />
-          <!-- 交进来的就是该显示的那几条，这里照单铺开 -->
-          <XhCommandList>
-            <XhCommandItem v-for="one in results" :key="one.value" :value="one.value">
-              <XhCommandItemText>{{ one.label }}</XhCommandItemText>
-            </XhCommandItem>
-          </XhCommandList>
-          <XhCommandEmpty>名册里没有这个人</XhCommandEmpty>
-          <XhCommandLoading>正在从服务端取…</XhCommandLoading>
-          <XhCommandFooter>不输字时给的是最近协作过的三位</XhCommandFooter>
-        </XhCommandContent>
-      </template>
-    </XhCommandRoot>
-    <span>{{ picked }}</span>
-  </div>
+  <XhCommandRoot
+    v-model:open="open"
+    v-model:input-value="query"
+    :collection="results"
+    :filter="false"
+    :loading="loading"
+    placeholder="搜同事…"
+    @select="onSelect"
+  >
+    <template #default>
+      <XhCommandTrigger>找一个人</XhCommandTrigger>
+      <XhCommandContent>
+        <XhCommandInput />
+        <!-- 交进来的就是该显示的那几条，这里照单铺开 -->
+        <XhCommandList>
+          <XhCommandItem v-for="one in results" :key="one.value" :value="one.value">
+            <XhCommandItemText>{{ one.label }}</XhCommandItemText>
+          </XhCommandItem>
+        </XhCommandList>
+        <XhCommandEmpty>名册里没有这个人</XhCommandEmpty>
+        <XhCommandLoading>正在从服务端取…</XhCommandLoading>
+        <XhCommandFooter>不输字时给的是最近协作过的三位</XhCommandFooter>
+      </XhCommandContent>
+    </template>
+  </XhCommandRoot>
+  <span data-demo-output>{{ picked }}</span>
 </template>
 ```
 
 ```html
-<div style="display: flex; align-items: center; gap: 12px">
-  <xh-command id="command-async" placeholder="搜同事…" filter="false">
-    <button data-xh-part="trigger">找一个人</button>
-    <div data-xh-part="backdrop"></div>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <input data-xh-part="input" />
-        <!-- 交进来的就是该显示的那几条，条目由脚本照单铺开 -->
-        <div data-xh-part="list"></div>
-        <div data-xh-part="empty">名册里没有这个人</div>
-        <div data-xh-part="loading">正在从服务端取…</div>
-        <footer data-xh-part="footer">不输字时给的是最近协作过的三位</footer>
-      </div>
+<xh-command id="command-async" placeholder="搜同事…" filter="false">
+  <button data-xh-part="trigger">找一个人</button>
+  <div data-xh-part="backdrop"></div>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <input data-xh-part="input" />
+      <!-- 交进来的就是该显示的那几条，条目由脚本照单铺开 -->
+      <div data-xh-part="list"></div>
+      <div data-xh-part="empty">名册里没有这个人</div>
+      <div data-xh-part="loading">正在从服务端取…</div>
+      <footer data-xh-part="footer">不输字时给的是最近协作过的三位</footer>
     </div>
-  </xh-command>
-  <span id="command-async-picked">还没选过人</span>
-</div>
+  </div>
+</xh-command>
+<span id="command-async-picked" data-demo-output>还没选过人</span>
 
 <script type="module">
   const host = document.getElementById("command-async");
@@ -919,23 +913,23 @@ function onSelect(details: { label: string }) {
 | `--xh-command-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_command-px` | command 的 empty 部件 padding-inline 覆盖槽。 |
 | `--xh-command-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | command 的 empty 部件 padding-block 覆盖槽。 |
 | `--xh-command-fg` | `content` | `color` | `default` | `--xh-material-elevated-fg` | command 的 content 部件 color 覆盖槽。 |
-| `--xh-command-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-elevated-separator` | command 的 footer 部件 border-block-start 覆盖槽。 |
+| `--xh-command-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-elevated-border` | command 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-command-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | command 的 footer 部件 color 覆盖槽。 |
 | `--xh-command-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-caption-size` | command 的 footer 部件 font-size 覆盖槽。 |
 | `--xh-command-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | command 的 footer 部件 gap 覆盖槽。 |
 | `--xh-command-footer-px` | `footer` | `padding-inline` | `default` | `--xh-_command-px` | command 的 footer 部件 padding-inline 覆盖槽。 |
 | `--xh-command-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | command 的 footer 部件 padding-block 覆盖槽。 |
 | `--xh-command-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | command 的 group 部件 gap 覆盖槽。 |
-| `--xh-command-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-muted` | command 的 group-label 部件 color 覆盖槽。 |
+| `--xh-command-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-subtle` | command 的 group-label 部件 color 覆盖槽。 |
 | `--xh-command-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | command 的 group-label 部件 font-size 覆盖槽。 |
-| `--xh-command-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | command 的 group-label 部件 font-weight 覆盖槽。 |
+| `--xh-command-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-regular` | command 的 group-label 部件 font-weight 覆盖槽。 |
 | `--xh-command-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_command-px` | command 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-command-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | command 的 group-label 部件 padding-block 覆盖槽。 |
-| `--xh-command-group-spacing` | `group` | `margin-block-start` | `default` | `--xh-space-1_5` | command 的 group 部件 margin-block-start 覆盖槽。 |
+| `--xh-command-group-spacing` | `group` | `margin-block-start` | `default` | `--xh-space-2` | command 的 group 部件 margin-block-start 覆盖槽。 |
 | `--xh-command-icon-size` | `content`<br>`positioner` | `--xh-icon-size` | `is([data-part='positioner'], [data-part='content'])`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | command 的 content、positioner 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-command-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-surface` | command 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-command-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | command 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
-| `--xh-command-input-border` | `input` | `border-block-end` | `default` | `--xh-material-elevated-separator` | command 的 input 部件 border-block-end 覆盖槽。 |
+| `--xh-command-input-border` | `input` | `border-block-end` | `default` | `--xh-material-elevated-border` | command 的 input 部件 border-block-end 覆盖槽。 |
 | `--xh-command-input-fg` | `input` | `color` | `default` | `--xh-fg-default` | command 的 input 部件 color 覆盖槽。 |
 | `--xh-command-input-font-size` | `input` | `font-size` | `default` | `--xh-_command-font-size` | command 的 input 部件 font-size 覆盖槽。 |
 | `--xh-command-input-h` | `input` | `block-size` | `default` | `--xh-_command-input-h` | command 的 input 部件 block-size 覆盖槽。 |
@@ -946,15 +940,16 @@ function onSelect(details: { label: string }) {
 | `--xh-command-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-fg-default` | command 的 item 部件 color 覆盖槽。 |
 | `--xh-command-item-font-size` | `item` | `font-size` | `default` | `--xh-_command-font-size` | command 的 item 部件 font-size 覆盖槽。 |
 | `--xh-command-item-gap` | `item` | `gap` | `default` | `--xh-_command-gap` | command 的 item 部件 gap 覆盖槽。 |
+| `--xh-command-item-h` | `item` | `min-block-size` | `default` | `--xh-_command-item-h` | command 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-command-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | command 的 item 部件 line-height 覆盖槽。 |
 | `--xh-command-item-px` | `item` | `padding-inline` | `default` | `--xh-_command-px` | command 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-command-item-py` | `item` | `padding-block` | `default` | `--xh-_command-item-py` | command 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-command-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | command 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-command-item-radius` | `item` | `border-radius` | `default` | `0` | command 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-command-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | command 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-command-list-busy-opacity` | `list` | `opacity` | `default` | `--xh-state-disabled-opacity` | command 的 list 部件 opacity 覆盖槽。 |
 | `--xh-command-list-gap` | `list` | `gap` | `default` | `--xh-list-option-gap` | command 的 list 部件 gap 覆盖槽。 |
-| `--xh-command-list-px` | `list` | `padding-inline` | `default` | `--xh-space-2` | command 的 list 部件 padding-inline 覆盖槽。 |
-| `--xh-command-list-py` | `list` | `padding-block` | `default` | `--xh-space-2` | command 的 list 部件 padding-block 覆盖槽。 |
+| `--xh-command-list-px` | `list` | `padding-inline` | `default` | `--xh-space-0` | command 的 list 部件 padding-inline 覆盖槽。 |
+| `--xh-command-list-py` | `list` | `padding-block` | `default` | `--xh-space-1` | command 的 list 部件 padding-block 覆盖槽。 |
 | `--xh-command-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | command 的 loading 部件 color 覆盖槽。 |
 | `--xh-command-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_command-font-size` | command 的 loading 部件 font-size 覆盖槽。 |
 | `--xh-command-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_command-px` | command 的 loading 部件 padding-inline 覆盖槽。 |

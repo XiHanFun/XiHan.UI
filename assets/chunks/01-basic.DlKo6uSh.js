@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`badge-basic-inbox`),t=5;function n(n){t=n,e.count=t,e.label=`${t} 条未读`}document.getElementById(`badge-basic-inc`).addEventListener(`click`,()=>n(t+1)),document.getElementById(`badge-basic-dec`).addEventListener(`click`,()=>n(Math.max(0,t-1)))}export{e as default};

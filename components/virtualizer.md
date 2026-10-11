@@ -18,20 +18,30 @@
 
 ```vue
 <script setup lang="ts">
+import type { VirtualizerRangeChangeDetails } from "@xihan-ui/headless";
 import {
   XhVirtualizerContent,
   XhVirtualizerItem,
   XhVirtualizerRoot,
   XhVirtualizerViewport,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+// 渲染区间经 range-change 报上来，只在区间真的变了时才报
+const range = ref("—");
+
+function onRangeChange({ startIndex, endIndex }: VirtualizerRangeChangeDetails): void {
+  range.value = startIndex == null ? "—" : `${startIndex} – ${endIndex}`;
+}
 </script>
 
 <template>
   <XhVirtualizerRoot
-    v-slot="{ virtualItems, startIndex, endIndex }"
+    v-slot="{ virtualItems }"
     :count="10000"
     :estimate-size="36"
     style="block-size: 260px; inline-size: 100%; max-inline-size: 420px"
+    @range-change="onRangeChange"
   >
     <XhVirtualizerViewport>
       <XhVirtualizerContent>
@@ -44,14 +54,15 @@ import {
             align-items: center;
             height: 36px;
             padding-inline: 12px;
-            border-block-end: 1px solid var(--xh-border-subtle);
+            border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle);
           "
         >
-          第 {{ item.index + 1 }} 条 · 可视区 {{ startIndex }} – {{ endIndex }}
+          第 {{ item.index + 1 }} 条
         </XhVirtualizerItem>
       </XhVirtualizerContent>
     </XhVirtualizerViewport>
   </XhVirtualizerRoot>
+  <span data-demo-output>可视区：{{ range }}</span>
 </template>
 ```
 
@@ -64,7 +75,7 @@ import {
       </div>
     </div>
   </xh-virtualizer>
-  <span>可视区：<span id="virtualizer-basic-range">—</span></span>
+  <span data-demo-output>可视区：<span id="virtualizer-basic-range">—</span></span>
 </div>
 
 <script type="module">
@@ -83,7 +94,7 @@ import {
       el.dataset.xhPart = "item";
       el.setAttribute("value", String(item.index));
       el.style.cssText =
-        "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)";
+        "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
       el.textContent = `第 ${item.index + 1} 条`;
       nodes.set(item.index, el);
       content.append(el);
@@ -149,7 +160,7 @@ const rows = Array.from({ length: 500 }, (_, i) => ({
           measure
           style="
             padding: 8px 12px;
-            border-block-end: 1px solid var(--xh-border-subtle);
+            border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle);
             line-height: 20px;
           "
         >
@@ -199,7 +210,7 @@ const rows = Array.from({ length: 500 }, (_, i) => ({
         el.setAttribute("measure", "");
         // 不给主轴尺寸：给了就把测量钉死在估算值上，measure 再也收敛不了
         el.style.cssText =
-          "padding: 8px 12px; border-block-end: 1px solid var(--xh-border-subtle); line-height: 20px";
+          "padding: 8px 12px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle); line-height: 20px";
         el.append(rows[item.index], " ", document.createElement("small"));
         nodes.set(item.index, el);
         content.append(el);
@@ -227,29 +238,39 @@ scrollToIndex 按 align 落位：start 贴上沿、center 居中、end 贴下沿
 
 ```vue
 <script setup lang="ts">
+import type { VirtualizerRangeChangeDetails } from "@xihan-ui/headless";
 import {
+  XhButton,
   XhVirtualizerContent,
   XhVirtualizerItem,
   XhVirtualizerRoot,
   XhVirtualizerViewport,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+// 可视区首条经 range-change 报上来
+const start = ref<number | null>(null);
+
+function onRangeChange(details: VirtualizerRangeChangeDetails): void {
+  start.value = details.startIndex;
+}
 </script>
 
 <template>
   <!-- 操作入口从根部件的插槽里取，滚动的活儿交给内核 -->
   <XhVirtualizerRoot
-    v-slot="{ virtualItems, startIndex, scrollToIndex }"
+    v-slot="{ virtualItems, scrollToIndex }"
     :count="2000"
     :estimate-size="32"
     style="inline-size: 100%; max-inline-size: 420px"
+    @range-change="onRangeChange"
   >
     <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-block-end: 8px">
-      <button type="button" @click="scrollToIndex(0)">回到第 1 条</button>
-      <button type="button" @click="scrollToIndex(500, { align: 'center' })">
+      <XhButton size="sm" variant="outline" @click="scrollToIndex(0)">回到第 1 条</XhButton>
+      <XhButton size="sm" variant="outline" @click="scrollToIndex(500, { align: 'center' })">
         第 501 条居中
-      </button>
-      <button type="button" @click="scrollToIndex(9999, { align: 'end' })">末条贴底</button>
-      <span>可视区首条：{{ startIndex ?? "—" }}</span>
+      </XhButton>
+      <XhButton size="sm" variant="outline" @click="scrollToIndex(9999, { align: 'end' })">末条贴底</XhButton>
     </div>
 
     <!-- 视口自带确定高度，root 就不必再定高 -->
@@ -264,7 +285,7 @@ import {
             align-items: center;
             height: 32px;
             padding-inline: 12px;
-            border-block-end: 1px solid var(--xh-border-subtle);
+            border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle);
           "
         >
           第 {{ item.index + 1 }} 条
@@ -272,6 +293,7 @@ import {
       </XhVirtualizerContent>
     </XhVirtualizerViewport>
   </XhVirtualizerRoot>
+  <span data-demo-output>可视区首条：{{ start ?? "—" }}</span>
 </template>
 ```
 
@@ -280,10 +302,15 @@ import {
   <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 420px">
     <!-- 操作入口在外面，滚动的活儿交给内核 -->
     <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-block-end: 8px">
-      <button type="button" id="virtualizer-goto-first">回到第 1 条</button>
-      <button type="button" id="virtualizer-goto-middle">第 501 条居中</button>
-      <button type="button" id="virtualizer-goto-last">末条贴底</button>
-      <span>可视区首条：<span id="virtualizer-goto-start">—</span></span>
+      <xh-button id="virtualizer-goto-first" size="sm" variant="outline">
+        <button data-xh-part="root">回到第 1 条</button>
+      </xh-button>
+      <xh-button id="virtualizer-goto-middle" size="sm" variant="outline">
+        <button data-xh-part="root">第 501 条居中</button>
+      </xh-button>
+      <xh-button id="virtualizer-goto-last" size="sm" variant="outline">
+        <button data-xh-part="root">末条贴底</button>
+      </xh-button>
     </div>
 
     <!-- 视口自带确定高度，root 就不必再定高 -->
@@ -292,6 +319,7 @@ import {
     </div>
   </div>
 </xh-virtualizer>
+<span data-demo-output>可视区首条：<span id="virtualizer-goto-start">—</span></span>
 
 <script type="module">
   const host = document.getElementById("virtualizer-goto");
@@ -308,7 +336,7 @@ import {
       el.dataset.xhPart = "item";
       el.setAttribute("value", String(item.index));
       el.style.cssText =
-        "display: flex; align-items: center; height: 32px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)";
+        "display: flex; align-items: center; height: 32px; padding-inline: 12px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
       el.textContent = `第 ${item.index + 1} 条`;
       nodes.set(item.index, el);
       content.append(el);
@@ -373,8 +401,8 @@ import {
             justify-content: center;
             inline-size: 120px;
             block-size: 68px;
-            border: 1px solid var(--xh-border-subtle);
-            border-radius: 8px;
+            border: var(--xh-stroke-thin) solid var(--xh-border-subtle);
+            border-radius: var(--xh-shape-surface);
           "
         >
           第 {{ item.index + 1 }} 张
@@ -418,7 +446,7 @@ import {
       el.dataset.xhPart = "item";
       el.setAttribute("value", String(item.index));
       el.style.cssText =
-        "display: flex; align-items: center; justify-content: center; inline-size: 120px; block-size: 68px; border: 1px solid var(--xh-border-subtle); border-radius: 8px";
+        "display: flex; align-items: center; justify-content: center; inline-size: 120px; block-size: 68px; border: var(--xh-stroke-thin) solid var(--xh-border-subtle); border-radius: var(--xh-shape-surface)";
       el.textContent = `第 ${item.index + 1} 张`;
       nodes.set(item.index, el);
       content.append(el);
@@ -472,7 +500,7 @@ import {
             align-items: center;
             height: 36px;
             padding-inline: 12px;
-            border-block-end: 1px solid var(--xh-border-subtle);
+            border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle);
           "
         >
           第 {{ item.index + 1 }} 条
@@ -520,7 +548,7 @@ import {
       el.dataset.xhPart = "item";
       el.setAttribute("value", String(item.index));
       el.style.cssText =
-        "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)";
+        "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
       el.textContent = `第 ${item.index + 1} 条`;
       nodes.set(item.index, el);
       content.append(el);
@@ -705,7 +733,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
       el.dataset.xhPart = "item";
       el.setAttribute("value", String(item.index));
       el.style.cssText
-        = "display: flex; align-items: center; height: 36px; padding-inline: var(--xh-space-3); border-block-end: 1px solid var(--xh-border-subtle)";
+        = "display: flex; align-items: center; height: 36px; padding-inline: var(--xh-space-3); border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
       el.textContent = `第 ${item.index + 1} 条`;
       nodes.set(item.index, el);
       content.append(el);
@@ -773,7 +801,7 @@ import {
           v-for="item in virtualItems"
           :key="item.key"
           :value="item.index"
-          style="display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)"
+          style="display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)"
         >
           第 {{ item.index + 1 }} 条
         </XhVirtualizerItem>
@@ -806,7 +834,7 @@ import {
       const el = document.createElement("div");
       el.dataset.xhPart = "item";
       el.setAttribute("value", String(item.index));
-      el.style.cssText = "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)";
+      el.style.cssText = "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
       el.textContent = `第 ${item.index + 1} 条`;
       nodes.set(item.index, el);
       content.append(el);
@@ -881,7 +909,7 @@ function send(): void {
             v-for="item in virtualItems"
             :key="item.key"
             :value="item.index"
-            style="display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)"
+            style="display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)"
           >
             {{ messages[item.index]!.text }}
           </XhVirtualizerItem>
@@ -929,7 +957,7 @@ function send(): void {
       if (!el) {
         el = document.createElement("div");
         el.dataset.xhPart = "item";
-        el.style.cssText = "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)";
+        el.style.cssText = "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
         el.textContent = message.text;
         nodes.set(message.id, el);
         content.append(el);
@@ -1004,7 +1032,7 @@ const stickyIndices = rows.flatMap((row, index) => (row.header ? [index] : []));
           :style="
             rows[item.index]!.header
               ? 'display: flex; align-items: center; height: 36px; padding-inline: 12px; font-weight: 600; color: var(--xh-fg-muted)'
-              : 'display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)'
+              : 'display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)'
           "
         >
           {{ rows[item.index]!.text }}
@@ -1048,7 +1076,7 @@ const stickyIndices = rows.flatMap((row, index) => (row.header ? [index] : []));
       el.setAttribute("value", String(item.index));
       el.style.cssText = row.header
         ? "display: flex; align-items: center; height: 36px; padding-inline: 12px; font-weight: 600; color: var(--xh-fg-muted)"
-        : "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)";
+        : "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
       el.textContent = row.text;
       nodes.set(item.index, el);
       content.append(el);

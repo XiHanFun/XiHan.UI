@@ -193,7 +193,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 
 ```vue
 <script setup lang="ts">
-import { XhSpinner } from "@xihan-ui/vue";
+import { XhButton, XhSpinner } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const busy = ref(true);
@@ -204,16 +204,16 @@ const overlayStyle = [
   "inset: 0",
   "display: grid",
   "place-items: center",
-  "border-radius: 8px",
+  "border-radius: var(--xh-shape-surface)",
   "background: color-mix(in oklab, var(--xh-bg-surface) 72%, transparent)",
 ].join("; ");
 </script>
 
 <template>
   <div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-    <button type="button" @click="busy = !busy">
+    <XhButton variant="outline" size="sm" @click="busy = !busy">
       {{ busy ? "数据回来了" : "重新加载" }}
-    </button>
+    </XhButton>
 
     <!-- 内容留在原位，转圈叠在上面，加载前后布局不跳 -->
     <div
@@ -222,8 +222,8 @@ const overlayStyle = [
         position: relative;
         inline-size: 260px;
         padding: 16px;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 8px;
+        border: var(--xh-stroke-thin) solid var(--xh-border-default);
+        border-radius: var(--xh-shape-surface);
       "
     >
       <p style="margin: 0">本季新增客户 128 家，环比增长 12%。</p>
@@ -237,7 +237,9 @@ const overlayStyle = [
 
 ```html
 <div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-  <button id="spinner-overlay-toggle" type="button">数据回来了</button>
+  <xh-button variant="outline" size="sm">
+    <button data-xh-part="root" id="spinner-overlay-toggle">数据回来了</button>
+  </xh-button>
 
   <!-- 内容留在原位，转圈叠在上面，加载前后布局不跳 -->
   <div
@@ -247,8 +249,8 @@ const overlayStyle = [
       position: relative;
       inline-size: 260px;
       padding: 16px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
+      border: var(--xh-stroke-thin) solid var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
     "
   >
     <p style="margin: 0">本季新增客户 128 家，环比增长 12%。</p>
@@ -260,7 +262,7 @@ const overlayStyle = [
         inset: 0;
         display: grid;
         place-items: center;
-        border-radius: 8px;
+        border-radius: var(--xh-shape-surface);
         background: color-mix(in oklab, var(--xh-bg-surface) 72%, transparent);
       "
     >
@@ -326,12 +328,11 @@ import { XhButton, XhSpinner, XhSpinnerLabel } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const loading = ref(false);
-const result = ref("");
+const result = ref("（还没查询）");
 
 // 模拟一次耗时不同的请求：转圈只在请求在途时挂着
 function query(ms: number): void {
   loading.value = true;
-  result.value = "";
   window.setTimeout(() => {
     loading.value = false;
     result.value = `用时 ${ms} ms，查询完成`;
@@ -348,7 +349,7 @@ function query(ms: number): void {
     <XhSpinner v-if="loading" :delay="400" label="正在查询">
       <XhSpinnerLabel />
     </XhSpinner>
-    <span v-else>{{ result }}</span>
+    <span data-demo-output>{{ result }}</span>
   </div>
 </template>
 ```
@@ -363,8 +364,8 @@ function query(ms: number): void {
       <button data-xh-part="root">慢请求（1.5 s）</button>
     </xh-button>
   </div>
-  <span data-slot="result"></span>
 </div>
+<span id="spinner-delay-result" data-demo-output>（还没查询）</span>
 
 <!-- delay 从元素连上文档那一刻算起：每次请求现挂一个，回来就撤掉 -->
 <template id="spinner-delay-template">
@@ -378,7 +379,7 @@ function query(ms: number): void {
 <script type="module">
   const demo = document.getElementById("spinner-delay");
   const template = document.getElementById("spinner-delay-template");
-  const result = demo.querySelector('[data-slot="result"]');
+  const result = document.getElementById("spinner-delay-result");
   const buttons = [...demo.querySelectorAll("xh-button")];
 
   for (const button of buttons) {
@@ -386,8 +387,7 @@ function query(ms: number): void {
       const ms = Number(button.dataset.ms);
       const spinner = document.importNode(template.content.firstElementChild, true);
       for (const each of buttons) each.disabled = true;
-      result.textContent = "";
-      result.before(spinner);
+      demo.append(spinner);
       window.setTimeout(() => {
         spinner.remove();
         for (const each of buttons) each.disabled = false;
@@ -395,6 +395,38 @@ function query(ms: number): void {
       }, ms);
     });
   }
+</script>
+```
+
+### 竖排配文
+
+orientation="vertical" 时转圈在上、配文在下居中，适合整块区域的等待
+
+```vue
+<script setup lang="ts">
+import { XhSpinner, XhSpinnerLabel } from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhSpinner orientation="vertical" label="正在加载数据">
+    <XhSpinnerLabel />
+  </XhSpinner>
+</template>
+```
+
+```html
+<xh-spinner id="spinner-vertical" orientation="vertical" label="正在加载数据">
+  <span data-xh-part="root">
+    <span data-xh-part="label"></span>
+  </span>
+</xh-spinner>
+
+<script type="module">
+  // 可见文字取元素解析后写在活区上的那个名字，两处于是恒等
+  const host = document.getElementById("spinner-vertical");
+  await host.updateComplete;
+  host.querySelector('[data-xh-part="label"]').textContent =
+    host.querySelector('[data-xh-part="root"]').getAttribute("aria-label");
 </script>
 ```
 
@@ -415,7 +447,8 @@ function query(ms: number): void {
 
 - 可以配可见文案，也可以只通过 `translations` 提供给读屏。
 - 可以与宿主遮罩组合，盖住等待中的内容。
-- 默认使用渐隐弧；也可显式选择整圈轨道或三点。
+- 默认使用渐隐弧；也可显式选择整圈轨道或三点。转圈取品牌色，环档是一段 270° 的弧、不画轨道。
+- 配文取品牌色正文字号、中等字重；`orientation="vertical"` 时转圈在上、配文在下居中，适合整块区域的等待。
 - `delay` 让转圈挂载后等一段时间才露面：请求在这之前回来、转圈被卸掉时它从头到尾不出现，快请求不再闪一下。等待期间整块藏起但保留位置，读屏也读不到。
 
 ### 组合
@@ -449,6 +482,7 @@ function query(ms: number): void {
 | --- | --- | --- | --- |
 | `delay` | `number` |  | 挂载后等多少毫秒才露面，默认 0 即刻露面。等待期间 root 投影 data-state="hidden"， 皮肤按它把整块藏起、仍占着位置，读屏也读不到；加载在这之前结束、转圈被卸掉时它从头到尾不出现。 露面之后不再回到等待。 |
 | `label` | `string` |  | 该处的可及名，写在 root 上。 label 部件显示的应当是同一段文案：aria-label 会覆盖节点中的文字，两者不一致时 读屏朗读的与屏幕上看到的不匹配。 |
+| `orientation` | `Orientation` |  | 转圈与配文的排布，默认 horizontal：horizontal 并排、适合随文与行内； vertical 转圈在上、配文在下居中，适合整块区域的等待。 |
 | `size` | `Size` |  | 直径档位，默认 md；默认档不输出 data-size。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色 |
 | `translations` | `Partial<SpinnerTranslations>` |  |  |
@@ -509,6 +543,7 @@ function query(ms: number): void {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-orientation` | props.orientation |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'visible' \| 'hidden' |
 | `root` | `data-tone` | props.tone |
@@ -522,14 +557,15 @@ function query(ms: number): void {
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-spinner-duration` | `root` | `animation` | `default`<br>`variant=dots` | `--xh-motion-loop-spin` | spinner 的 root 部件 animation 覆盖槽。 |
-| `--xh-spinner-fg` | `root` | `background`<br>`border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`tone`<br>`variant=arc`<br>`variant=dots`<br>`where([data-motion='reduce'])` | `--xh-_tone`<br>`currentColor` | spinner 的 root 部件 background、border-block-start-color、border-color 覆盖槽。 |
-| `--xh-spinner-gap` | `root` | `gap` | `default` | `--xh-control-gap-md` | spinner 的 root 部件 gap 覆盖槽。 |
-| `--xh-spinner-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | spinner 的 label 部件 color 覆盖槽。 |
-| `--xh-spinner-label-size` | `label` | `font-size` | `default` | `--xh-text-secondary-size` | spinner 的 label 部件 font-size 覆盖槽。 |
-| `--xh-spinner-radius` | `root` | `border-radius` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-shape-circle` | spinner 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-spinner-fg` | `root` | `background`<br>`border`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`tone`<br>`variant=arc`<br>`variant=dots`<br>`where([data-motion='reduce'])` | `--xh-_tone`<br>`--xh-fg-brand` | spinner 的 root 部件 background、border、border-color 覆盖槽。 |
+| `--xh-spinner-gap` | `root` | `gap` | `default`<br>`orientation=vertical` | `--xh-control-gap-md`<br>`--xh-space-1_5` | spinner 的 root 部件 gap 覆盖槽。 |
+| `--xh-spinner-label-fg` | `label` | `color` | `default` | `--xh-fg-brand` | spinner 的 label 部件 color 覆盖槽。 |
+| `--xh-spinner-label-size` | `label` | `font-size` | `default` | `--xh-text-body-size` | spinner 的 label 部件 font-size 覆盖槽。 |
+| `--xh-spinner-label-weight` | `label` | `font-weight` | `default` | `--xh-font-weight-medium` | spinner 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-spinner-radius` | `root` | `border-radius` | `@media (forced-colors: active)`<br>`default`<br>`tone`<br>`variant=arc`<br>`variant=dots` | `--xh-shape-circle` | spinner 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-spinner-size` | `root` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-md` | spinner 的 root 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-spinner-thickness` | `root` | `-webkit-mask`<br>`border`<br>`mask` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-stroke-thick` | spinner 的 root 部件 -webkit-mask、border、mask 覆盖槽。 |
-| `--xh-spinner-track` | `root` | `border` | `default` | `--xh-border-default` | spinner 的 root 部件 border 覆盖槽。 |
+| `--xh-spinner-thickness` | `root` | `-webkit-mask`<br>`border`<br>`mask` | `@media (forced-colors: active)`<br>`default`<br>`tone`<br>`variant=arc`<br>`variant=dots` | `--xh-stroke-thick` | spinner 的 root 部件 -webkit-mask、border、mask 覆盖槽。 |
+| `--xh-spinner-track` | `root` | `border-block-start-color` | `default`<br>`tone` | `transparent` | spinner 的 root 部件 border-block-start-color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

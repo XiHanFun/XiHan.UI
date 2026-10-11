@@ -40,7 +40,7 @@ const value = ref(0);
 
   <XhButton variant="solid" @click="loading = true">开始加载</XhButton>
   <XhButton variant="outline" @click="loading = false">结束加载</XhButton>
-  <span>假进度：{{ Math.round(value) }}%</span>
+  <span data-demo-output>假进度：{{ Math.round(value) }}%</span>
 </template>
 ```
 
@@ -63,8 +63,9 @@ const value = ref(0);
   <xh-button variant="outline" data-loading="off">
     <button data-xh-part="root">结束加载</button>
   </xh-button>
-  <span>假进度：<span id="loading-bar-basic-value">0</span>%</span>
 </div>
+
+<span data-demo-output>假进度：<span id="loading-bar-basic-value">0</span>%</span>
 
 <script type="module">
   const bar = document.getElementById("loading-bar-basic");
@@ -129,7 +130,7 @@ function advance(): void {
   <XhButton variant="solid" @click="start">开始</XhButton>
   <XhButton variant="outline" @click="advance">推进 25%</XhButton>
   <XhButton variant="ghost" @click="loading = false">结束</XhButton>
-  <span>进度：{{ value }}%</span>
+  <span data-demo-output>进度：{{ value }}%</span>
 </template>
 ```
 
@@ -155,8 +156,9 @@ function advance(): void {
   <xh-button variant="ghost" data-act="finish">
     <button data-xh-part="root">结束</button>
   </xh-button>
-  <span>进度：<span id="loading-bar-determinate-value">0</span>%</span>
 </div>
+
+<span data-demo-output>进度：<span id="loading-bar-determinate-value">0</span>%</span>
 
 <script type="module">
   const bar = document.getElementById("loading-bar-determinate");
@@ -344,7 +346,7 @@ const frameStyle: CSSProperties = {
   overflow: "hidden",
   inlineSize: "100%",
   blockSize: "6px",
-  borderRadius: "999px",
+  borderRadius: "var(--xh-shape-pill)",
   background: "var(--xh-bg-muted)",
 };
 </script>
@@ -380,7 +382,7 @@ const frameStyle: CSSProperties = {
   <div style="display: flex; flex-direction: column; gap: 6px">
     <span>brand 品牌</span>
     <!-- 框住条子：条子改走 absolute，inset 就落在这个框上 -->
-    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: 999px; background: var(--xh-bg-muted)">
+    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-muted)">
       <xh-loading-bar loading value="60" height="6" tone="brand">
         <div data-xh-part="root" style="position: absolute">
           <div data-xh-part="track">
@@ -393,7 +395,7 @@ const frameStyle: CSSProperties = {
   <div style="display: flex; flex-direction: column; gap: 6px">
     <span>neutral 中性</span>
     <!-- 框住条子：条子改走 absolute，inset 就落在这个框上 -->
-    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: 999px; background: var(--xh-bg-muted)">
+    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-muted)">
       <xh-loading-bar loading value="60" height="6" tone="neutral">
         <div data-xh-part="root" style="position: absolute">
           <div data-xh-part="track">
@@ -406,7 +408,7 @@ const frameStyle: CSSProperties = {
   <div style="display: flex; flex-direction: column; gap: 6px">
     <span>success 成功</span>
     <!-- 框住条子：条子改走 absolute，inset 就落在这个框上 -->
-    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: 999px; background: var(--xh-bg-muted)">
+    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-muted)">
       <xh-loading-bar loading value="60" height="6" tone="success">
         <div data-xh-part="root" style="position: absolute">
           <div data-xh-part="track">
@@ -419,7 +421,7 @@ const frameStyle: CSSProperties = {
   <div style="display: flex; flex-direction: column; gap: 6px">
     <span>warning 警示</span>
     <!-- 框住条子：条子改走 absolute，inset 就落在这个框上 -->
-    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: 999px; background: var(--xh-bg-muted)">
+    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-muted)">
       <xh-loading-bar loading value="60" height="6" tone="warning">
         <div data-xh-part="root" style="position: absolute">
           <div data-xh-part="track">
@@ -432,7 +434,7 @@ const frameStyle: CSSProperties = {
   <div style="display: flex; flex-direction: column; gap: 6px">
     <span>danger 危险</span>
     <!-- 框住条子：条子改走 absolute，inset 就落在这个框上 -->
-    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: 999px; background: var(--xh-bg-muted)">
+    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-muted)">
       <xh-loading-bar loading value="60" height="6" tone="danger">
         <div data-xh-part="root" style="position: absolute">
           <div data-xh-part="track">
@@ -445,7 +447,7 @@ const frameStyle: CSSProperties = {
   <div style="display: flex; flex-direction: column; gap: 6px">
     <span>info 提示</span>
     <!-- 框住条子：条子改走 absolute，inset 就落在这个框上 -->
-    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: 999px; background: var(--xh-bg-muted)">
+    <div style="position: relative; overflow: hidden; inline-size: 100%; block-size: 6px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-muted)">
       <xh-loading-bar loading value="60" height="6" tone="info">
         <div data-xh-part="root" style="position: absolute">
           <div data-xh-part="track">
@@ -487,8 +489,8 @@ function reload(): void {
       overflow: hidden;
       inline-size: 100%;
       max-inline-size: 420px;
-      border: 1px solid var(--xh-border-subtle);
-      border-radius: 8px;
+      border: var(--xh-stroke-thin) solid var(--xh-border-subtle);
+      border-radius: var(--xh-shape-surface);
     "
   >
     <XhLoadingBarRoot
@@ -516,8 +518,8 @@ function reload(): void {
     overflow: hidden;
     inline-size: 100%;
     max-inline-size: 420px;
-    border: 1px solid var(--xh-border-subtle);
-    border-radius: 8px;
+    border: var(--xh-stroke-thin) solid var(--xh-border-subtle);
+    border-radius: var(--xh-shape-surface);
   "
 >
   <xh-loading-bar id="loading-bar-container" height="3">
@@ -600,7 +602,7 @@ function reload(): void {
 | `value` | `number` |  | 受控进度值（0-100）。提供后即为确定进度：宽度按它显示，内部爬升停止。 |
 | `defaultValue` | `number` |  | 非受控初值，默认 0。 |
 | `loading` | `boolean` |  | 加载开关：true 开始，false 结束（走满 100 后淡出归零）。只由宿主写入，无配套回调。 |
-| `height` | `string \| number` |  | 进度条厚度：数字按像素，字符串按任意 CSS 长度。默认 2px。 |
+| `height` | `string \| number` |  | 进度条厚度：数字按像素，字符串按任意 CSS 长度。默认 --xh-stroke-strong（3px）。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定进度段使用哪族颜色。需要其他颜色时修改皮肤槽 --xh-loading-bar-range。 |
 | `trickle` | `boolean` |  | 不确定进度时自行向前爬升，默认开启。关闭则停在起步值等待宿主收尾。 |
 | `trickleSpeed` | `number` |  | 爬升节拍毫秒，默认 200；&lt;=0 或非有限数等同于关闭爬升。 |
@@ -717,6 +719,7 @@ function reload(): void {
 | `--xh-loading-bar-peg-fg` | `peg` | `background` | `default` | `--xh-loading-bar-range` | loading-bar 的 peg 部件 background 覆盖槽。 |
 | `--xh-loading-bar-peg-w` | `peg` | `inline-size` | `default` | `--xh-space-8` | loading-bar 的 peg 部件 inline-size 覆盖槽。 |
 | `--xh-loading-bar-range` | `peg`<br>`range` | `background` | `default` | `--xh-_tone-soft` | loading-bar 的 peg、range 部件 background 覆盖槽。 |
+| `--xh-loading-bar-range-radius` | `range` | `border-end-end-radius`<br>`border-start-end-radius` | `default` | `--xh-shape-pill` | loading-bar 的 range 部件 border-end-end-radius、border-start-end-radius 覆盖槽。 |
 | `--xh-loading-bar-speed` | `range` | `transition` | `default` | `--xh-motion-duration-move` | loading-bar 的 range 部件 transition 覆盖槽。 |
 | `--xh-loading-bar-track` | `track` | `background` | `default` | `transparent` | loading-bar 的 track 部件 background 覆盖槽。 |
 <!-- xh-component-tokens:end -->

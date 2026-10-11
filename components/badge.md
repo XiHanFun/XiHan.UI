@@ -49,7 +49,7 @@ const count = ref(5);
 
 ```html
 <div style="display: flex; align-items: center; gap: 24px">
-  <xh-badge count="5" tone="danger" label="5 条未读">
+  <xh-badge id="badge-basic-inbox" count="5" tone="danger" label="5 条未读">
     <span data-xh-part="root">
       <xh-button variant="outline"><button data-xh-part="root">收件箱</button></xh-button>
       <span data-xh-part="indicator"></span>
@@ -70,7 +70,27 @@ const count = ref(5);
       <span data-xh-part="indicator"></span>
     </span>
   </xh-badge>
+
+  <div style="display: flex; gap: 8px">
+    <xh-button id="badge-basic-inc" size="sm"><button data-xh-part="root">+1</button></xh-button>
+    <xh-button id="badge-basic-dec" size="sm"><button data-xh-part="root">-1</button></xh-button>
+  </div>
 </div>
+
+<script type="module">
+  // 计数由这段脚本持有：改了就把计数与读屏文案一起写回角标
+  const badge = document.getElementById("badge-basic-inbox");
+  let count = 5;
+
+  function apply(next) {
+    count = next;
+    badge.count = count;
+    badge.label = `${count} 条未读`;
+  }
+
+  document.getElementById("badge-basic-inc").addEventListener("click", () => apply(count + 1));
+  document.getElementById("badge-basic-dec").addEventListener("click", () => apply(Math.max(0, count - 1)));
+</script>
 ```
 
 ## 组件结构
@@ -497,14 +517,14 @@ const inward = { "--xh-badge-offset-inline": "-4px", "--xh-badge-offset-block": 
 ### 特性
 
 - 语气与尺寸两轴与其他组件同源；角标只有一种形态，没有形态轴。
-- 默认使用 neutral；未读、错误等强提醒显式使用 danger。
+- 默认使用 danger：角标多数是未读、待办这类强提醒；在线 / 离线这类状态点显式写 success / neutral。
 - `placement` 决定挂在哪个角，四角可选，跟随文字方向。
 - 离角多远由两个组件槽微调，不设 prop：`--xh-badge-offset-inline` 与 `--xh-badge-offset-block`，正值朝行内末端、块末端挪（RTL 下行内末端在左），四个角同一个值朝同一个方向；圆形头像这类角上留白多的宿主往里收一点即可。
 - `count` 输出数字，超过 `max`（默认 99）时显示为“99+”。
 - 计数为 0 时整个收起，需要显示 0 时开启 `showZero`。
 - 计数从无到有时原地弹出，清零时缩小淡出、播完才收起，退场途中仍显示清零前的数字；首帧就在的角标直接呈现。
 - `dot` 收成一个圆点，只表示存在，不表示数量。
-- 计数盒三档最小尺寸为 14 / 20 / 24px，字号为 12 / 13 / 14px，角标只探出宿主四分之一，保持与宿主的视觉连接；sm 是贴在图标按钮角上的小号。
+- 计数盒三档最小尺寸为 14 / 20 / 24px，字号为 12 / 13 / 14px，圆点直径为 4 / 6 / 8px，角标只探出宿主四分之一，保持与宿主的视觉连接；sm 是贴在图标按钮角上的小号。
 - `label` 为读屏提供完整语句，避免只读出一个数字。
 
 ### 组合
@@ -546,7 +566,7 @@ const inward = { "--xh-badge-offset-inline": "-4px", "--xh-badge-offset-block": 
 | `pulse` | `boolean` |  | 圆点呼吸：表达正在进行、给不出进度的状态（直播、录制、通话中）。只在 dot 模式下生效， 数字角标不呼吸——明暗起伏会压低数字的对比度。减弱动效下停在满不透明度。 |
 | `showZero` | `boolean` |  | 计数为 0 时是否仍然显示，默认不显示：没有未读时不应出现角标。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。影响圆点直径、两位数时的最小宽度与字号。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色，默认 neutral。 角标实际使用中主要为 danger（未读红点）与 success / neutral（在线 / 离线点）。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色，默认 danger（未读红点）。 在线 / 离线这类状态点显式写 success / neutral。 |
 
 ### 插槽
 

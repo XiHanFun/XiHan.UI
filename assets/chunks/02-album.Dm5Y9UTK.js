@@ -1,0 +1,73 @@
+var e=`<!-- 相册与翻页 | 多张图片共用一个查看浮层：两侧按钮或方向键翻页、计数报告第几张，缩放旋转在换图时归零 -->
+<xh-image-viewer id="image-viewer-album">
+  <div id="image-viewer-album-thumbs" style="display: flex; gap: 8px">
+    <xh-image data-index="0" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E" alt="雪山">
+      <div data-xh-part="root" role="button" tabindex="0" aria-label="查看 雪山" style="--xh-image-w: 120px; --xh-image-ratio: 4 / 3; cursor: zoom-in">
+        <img data-xh-part="image" />
+      </div>
+    </xh-image>
+    <xh-image data-index="1" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%237c3aed%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%23c4b5fd%22/%3E%3C/svg%3E" alt="暮色">
+      <div data-xh-part="root" role="button" tabindex="0" aria-label="查看 暮色" style="--xh-image-w: 120px; --xh-image-ratio: 4 / 3; cursor: zoom-in">
+        <img data-xh-part="image" />
+      </div>
+    </xh-image>
+    <xh-image data-index="2" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23065f46%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%236ee7b7%22/%3E%3C/svg%3E" alt="森林">
+      <div data-xh-part="root" role="button" tabindex="0" aria-label="查看 森林" style="--xh-image-w: 120px; --xh-image-ratio: 4 / 3; cursor: zoom-in">
+        <img data-xh-part="image" />
+      </div>
+    </xh-image>
+  </div>
+  <div data-xh-part="backdrop"></div>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <div data-xh-part="viewport">
+        <img data-xh-part="image" />
+      </div>
+      <div data-xh-part="counter"></div>
+      <button data-xh-part="prev-trigger"></button>
+      <button data-xh-part="next-trigger"></button>
+      <div data-xh-part="toolbar">
+        <button data-xh-part="zoom-out-trigger"></button>
+        <button data-xh-part="zoom-in-trigger"></button>
+      </div>
+      <button data-xh-part="close-trigger"></button>
+    </div>
+  </div>
+</xh-image-viewer>
+
+<script type="module">
+  // 内联的示例图，省得示例依赖外部资源
+  const viewer = document.getElementById("image-viewer-album");
+  viewer.collection = [
+    {
+      src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E",
+      alt: "雪山",
+    },
+    {
+      src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%237c3aed%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%23c4b5fd%22/%3E%3C/svg%3E",
+      alt: "暮色",
+    },
+    {
+      src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23065f46%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%236ee7b7%22/%3E%3C/svg%3E",
+      alt: "森林",
+    },
+  ];
+
+  // 缩略图各自指定从第几张看起，开合与下标都由这段脚本持有；图片补上了按钮角色，Enter 与 Space 也要能打开
+  viewer.addEventListener("open-change", (event) => (viewer.open = event.detail.open));
+  viewer.addEventListener("index-change", (event) => (viewer.index = event.detail.index));
+  for (const thumb of document.getElementById("image-viewer-album-thumbs").children) {
+    const view = () => {
+      viewer.index = Number(thumb.dataset.index);
+      viewer.open = true;
+    };
+    thumb.addEventListener("click", view);
+    thumb.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        view();
+      }
+    });
+  }
+<\/script>
+`;export{e as default};

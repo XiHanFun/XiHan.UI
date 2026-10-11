@@ -63,7 +63,7 @@ const checked = ref(true);
 
 <template>
   <XhSwitch v-model:checked="checked" />
-  <span>当前：{{ checked ? "开" : "关" }}</span>
+  <span data-demo-output>当前：{{ checked ? "开" : "关" }}</span>
 </template>
 ```
 
@@ -73,7 +73,7 @@ const checked = ref(true);
     <span data-xh-part="thumb"></span>
   </button>
 </xh-switch>
-<span id="switch-controlled-text">当前：开</span>
+<span id="switch-controlled-text" data-demo-output>当前：开</span>
 
 <script type="module">
   // 意图写回 checked，开关才动
@@ -265,7 +265,7 @@ function onCheckedChange(details: { checked: boolean }) {
 
 <template>
   <XhSwitch @checked-change="onCheckedChange" />
-  <span>翻转 {{ times }} 次 · 最近落到 {{ last }}</span>
+  <span data-demo-output>翻转 {{ times }} 次 · 最近落到 {{ last }}</span>
 </template>
 ```
 
@@ -275,7 +275,7 @@ function onCheckedChange(details: { checked: boolean }) {
     <span data-xh-part="thumb"></span>
   </button>
 </xh-switch>
-<span id="switch-event-text">翻转 0 次 · 最近落到 （还没动过）</span>
+<span id="switch-event-text" data-demo-output>翻转 0 次 · 最近落到 （还没动过）</span>
 
 <script type="module">
   // 每次翻转累计一次并记下落点
@@ -468,22 +468,18 @@ function onCheckedChange(details: { checked: boolean }) {
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 10px">
-    <XhSwitch :checked="enabled" :loading="pending" @checked-change="onCheckedChange" />
-    <span>{{ pending ? "提交中…" : enabled ? "已开启" : "已关闭" }}</span>
-  </div>
+  <XhSwitch :checked="enabled" :loading="pending" @checked-change="onCheckedChange" />
+  <span data-demo-output>{{ pending ? "提交中…" : enabled ? "已开启" : "已关闭" }}</span>
 </template>
 ```
 
 ```html
-<div style="display: flex; align-items: center; gap: 10px">
-  <xh-switch id="switch-async" checked="false">
-    <button data-xh-part="root">
-      <span data-xh-part="thumb"></span>
-    </button>
-  </xh-switch>
-  <span id="switch-async-text">已关闭</span>
-</div>
+<xh-switch id="switch-async" checked="false">
+  <button data-xh-part="root">
+    <span data-xh-part="thumb"></span>
+  </button>
+</xh-switch>
+<span id="switch-async-text" data-demo-output>已关闭</span>
 
 <script type="module">
   // 回执到达才写回 checked，中途开关停在旧值上
@@ -585,9 +581,9 @@ function onSubmit(event: Event) {
     <div>
       <XhButton type="submit" size="sm">提交</XhButton>
     </div>
-
-    <span v-if="submitted">表单收到：{{ submitted }}</span>
   </form>
+
+  <span data-demo-output>表单收到：{{ submitted || "（尚未提交）" }}</span>
 </template>
 ```
 
@@ -627,9 +623,9 @@ function onSubmit(event: Event) {
       <button data-xh-part="root">提交</button>
     </xh-button>
   </div>
-
-  <span id="switch-form-result"></span>
 </form>
+
+<span id="switch-form-result" data-demo-output>表单收到：（尚未提交）</span>
 
 <script type="module">
   // 提交时把 FormData 里收到的字段列出来
@@ -841,7 +837,7 @@ function onSubmit(event: Event) {
 | `--xh-switch-bg-checked-readonly` | `root` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`state=checked`<br>`xh-ink-surface` | `--xh-bg-subtle-active` | switch 的 root 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-switch-bg-disabled` | `root` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`xh-ink-surface` | `--xh-bg-subtle` | switch 的 root 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-switch-bg-pressed` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_switch-track-bg` | switch 的 root 部件 background-color 覆盖槽。 |
-| `--xh-switch-border` | `root` | `box-shadow` | `contrast=more`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=unchecked`<br>`where([data-contrast='more'])` | `--xh-border-control`<br>`--xh-border-strong` | switch 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-switch-border` | `root` | `box-shadow` | `contrast=more`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=unchecked`<br>`where([data-contrast='more'])` | `--xh-border-strong`<br>`transparent` | switch 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-switch-border-checked` | `root` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=checked` | `--xh-_switch-accent` | switch 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-switch-border-checked-readonly` | `root` | `box-shadow` | `contrast=more`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`state=checked`<br>`where([data-contrast='more'])` | `--xh-border-control`<br>`--xh-border-strong` | switch 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-switch-border-disabled` | `root` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-default` | switch 的 root 部件 box-shadow 覆盖槽。 |
@@ -856,7 +852,7 @@ function onSubmit(event: Event) {
 | `--xh-switch-label-gap` | `label` | `gap` | `default` | `--xh-control-gap-md` | switch 的 label 部件 gap 覆盖槽。 |
 | `--xh-switch-label-leading` | `label` | `line-height` | `default` | `--xh-leading-normal` | switch 的 label 部件 line-height 覆盖槽。 |
 | `--xh-switch-loading-duration` | `thumb` | `animation` | `xh-loading-ring` | `--xh-motion-loop-spin` | switch 的 thumb 部件 animation 覆盖槽。 |
-| `--xh-switch-loading-fg` | `thumb` | `border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`motion=reduce`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring` | `--xh-_switch-accent` | switch 的 thumb 部件 border-block-start-color、border-color 覆盖槽。 |
+| `--xh-switch-loading-fg` | `thumb` | `border`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`motion=reduce`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring`<br>`xh-loading-ring=overlay` | `--xh-_switch-accent` | switch 的 thumb 部件 border、border-color 覆盖槽。 |
 | `--xh-switch-radius` | `root` | `border-radius` | `default` | `--xh-shape-pill` | switch 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-switch-thumb` | `thumb` | `background` | `default` | `--xh-bg-surface-raised` | switch 的 thumb 部件 background 覆盖槽。 |
 | `--xh-switch-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default` | switch 的 thumb 部件 border 覆盖槽。 |

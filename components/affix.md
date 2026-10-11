@@ -354,7 +354,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 
       <XhAffixRoot v-slot="{ affixed: pinned }" :target="scrollEl">
         <XhAffixContent
-          style="padding: 8px 12px; border-radius: 6px; background: var(--xh-bg-subtle)"
+          style="padding: 8px 12px; border-radius: var(--xh-shape-control); background: var(--xh-bg-surface-raised)"
         >
           {{ pinned ? "已固定" : "工具栏" }}
         </XhAffixContent>

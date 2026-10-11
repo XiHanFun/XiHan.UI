@@ -101,7 +101,7 @@ loading 期间容器报告 aria-busy；切换为 false 后骨架让出位置，�
 
 ```vue
 <script setup lang="ts">
-import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
+import { XhButton, XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const loading = ref(true);
@@ -109,9 +109,9 @@ const loading = ref(true);
 
 <template>
   <div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-    <button type="button" @click="loading = !loading">
+    <XhButton variant="outline" size="sm" @click="loading = !loading">
       {{ loading ? "数据回来了" : "重新加载" }}
-    </button>
+    </XhButton>
 
     <XhSkeletonRoot :loading="loading" style="inline-size: 260px">
       <XhSkeletonItem />
@@ -125,7 +125,9 @@ const loading = ref(true);
 
 ```html
 <div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-  <button id="skeleton-loading-toggle" type="button">数据回来了</button>
+  <xh-button id="skeleton-loading-toggle" variant="outline" size="sm">
+    <button data-xh-part="root">数据回来了</button>
+  </xh-button>
 
   <xh-skeleton id="skeleton-loading">
     <div data-xh-part="root" style="inline-size: 260px">
@@ -143,11 +145,12 @@ const loading = ref(true);
   // 按钮翻转加载态，真内容跟着显隐
   const skeleton = document.getElementById("skeleton-loading");
   const toggle = document.getElementById("skeleton-loading-toggle");
+  const label = toggle.querySelector('[data-xh-part="root"]');
   const text = document.getElementById("skeleton-loading-text");
   toggle.addEventListener("click", () => {
     const next = skeleton.loading === false;
     skeleton.loading = next;
-    toggle.textContent = next ? "数据回来了" : "重新加载";
+    label.textContent = next ? "数据回来了" : "重新加载";
     text.hidden = next;
   });
 </script>
@@ -334,14 +337,14 @@ const animations: SkeletonAnimation[] = ["shimmer", "pulse", "none"];
 | `--xh-skeleton-circle-radius` | `item` | `border-radius` | `shape=circle` | `--xh-shape-circle` | skeleton 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-skeleton-circle-size` | `item` | `inline-size` | `shape=circle` | `--xh-control-h-lg` | skeleton 的 item 部件 inline-size 覆盖槽。 |
 | `--xh-skeleton-duration` | `item` | `animation` | `default` | `--xh-motion-loop-shimmer` | skeleton 的 item 部件 animation 覆盖槽。 |
-| `--xh-skeleton-gap` | `root` | `gap` | `default` | `--xh-space-3` | skeleton 的 root 部件 gap 覆盖槽。 |
+| `--xh-skeleton-gap` | `root` | `gap` | `default` | `--xh-space-4` | skeleton 的 root 部件 gap 覆盖槽。 |
 | `--xh-skeleton-pulse-duration` | `item`<br>`root` | `animation` | `animation=pulse` | `--xh-motion-loop-shimmer` | skeleton 的 item、root 部件 animation 覆盖槽。 |
 | `--xh-skeleton-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | skeleton 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-skeleton-rect-block-size` | `item` | `min-block-size` | `shape=rect` | `--xh-control-h-lg` | skeleton 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-skeleton-rect-radius` | `item` | `border-radius` | `shape=rect` | `--xh-shape-surface` | skeleton 的 item 部件 border-radius 覆盖槽。 |
-| `--xh-skeleton-sheen` | `item` | `background-image` | `default` | `--xh-bg-surface-raised` | skeleton 的 item 部件 background-image 覆盖槽。 |
-| `--xh-skeleton-text-block-size` | `item` | `block-size` | `shape=text` | `--xh-text-caption-size` | skeleton 的 item 部件 block-size 覆盖槽。 |
-| `--xh-skeleton-text-radius` | `item` | `border-radius` | `shape=text` | `--xh-shape-pill` | skeleton 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-skeleton-sheen` | `item` | `background-image` | `default` | `--xh-bg-subtle` | skeleton 的 item 部件 background-image 覆盖槽。 |
+| `--xh-skeleton-text-block-size` | `item` | `block-size` | `shape=text` | `--xh-text-body-line-h` | skeleton 的 item 部件 block-size 覆盖槽。 |
+| `--xh-skeleton-text-radius` | `item` | `border-radius` | `shape=text` | `--xh-shape-inset` | skeleton 的 item 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

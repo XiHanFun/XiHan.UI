@@ -75,122 +75,119 @@ const sent = ref("");
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px; max-width: 340px;">
-    <XhQuestionFlowRoot
-      v-slot="{ isLast }"
-      :questions="questions"
-      @submit="sent = Object.entries($event.answers).map(([id, values]) => `${id}=${values.join('、') || '未答'}`).join('；')"
-    >
-      <XhQuestionFlowViewport>
-        <XhQuestionFlowTrack>
-          <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
-            <XhQuestionFlowPrompt :question-id="question.id">{{ question.prompt }}</XhQuestionFlowPrompt>
-            <XhQuestionFlowGroup :question-id="question.id">
-              <XhQuestionFlowItem
-                v-for="option in question.options"
-                :key="option.value"
-                :question-id="question.id"
-                :option-value="option.value"
-              >
-                <!-- 记号由皮肤画：指示符留空即可，不必手打 -->
-                <XhQuestionFlowItemIndicator :question-id="question.id" :option-value="option.value" />
-                <XhQuestionFlowItemText :question-id="question.id" :option-value="option.value">
-                  {{ option.label }}
-                </XhQuestionFlowItemText>
-              </XhQuestionFlowItem>
-            </XhQuestionFlowGroup>
-          </XhQuestionFlowQuestion>
-        </XhQuestionFlowTrack>
-      </XhQuestionFlowViewport>
-      <XhQuestionFlowResult>答案已送出</XhQuestionFlowResult>
-      <XhQuestionFlowFooter>
-        <div style="display: flex; align-items: center; gap: 4px;">
-          <XhQuestionFlowPrevTrigger />
-          <XhQuestionFlowCounter />
-          <XhQuestionFlowNextTrigger />
-        </div>
-        <div style="display: flex; align-items: center; gap: 6px;">
-          <XhQuestionFlowSkipTrigger>跳过</XhQuestionFlowSkipTrigger>
-          <XhQuestionFlowSubmitTrigger>{{ isLast ? "发送" : "继续" }}</XhQuestionFlowSubmitTrigger>
-        </div>
-      </XhQuestionFlowFooter>
-      <XhQuestionFlowLiveRegion />
-    </XhQuestionFlowRoot>
-    <p v-if="sent" style="margin: 0;">收到：{{ sent }}</p>
-  </div>
+  <XhQuestionFlowRoot
+    v-slot="{ isLast }"
+    :questions="questions"
+    style="max-width: 340px;"
+    @submit="sent = Object.entries($event.answers).map(([id, values]) => `${id}=${values.join('、') || '未答'}`).join('；')"
+  >
+    <XhQuestionFlowViewport>
+      <XhQuestionFlowTrack>
+        <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
+          <XhQuestionFlowPrompt :question-id="question.id">{{ question.prompt }}</XhQuestionFlowPrompt>
+          <XhQuestionFlowGroup :question-id="question.id">
+            <XhQuestionFlowItem
+              v-for="option in question.options"
+              :key="option.value"
+              :question-id="question.id"
+              :option-value="option.value"
+            >
+              <!-- 记号由皮肤画：指示符留空即可，不必手打 -->
+              <XhQuestionFlowItemIndicator :question-id="question.id" :option-value="option.value" />
+              <XhQuestionFlowItemText :question-id="question.id" :option-value="option.value">
+                {{ option.label }}
+              </XhQuestionFlowItemText>
+            </XhQuestionFlowItem>
+          </XhQuestionFlowGroup>
+        </XhQuestionFlowQuestion>
+      </XhQuestionFlowTrack>
+    </XhQuestionFlowViewport>
+    <XhQuestionFlowResult>答案已送出</XhQuestionFlowResult>
+    <XhQuestionFlowFooter>
+      <div style="display: flex; align-items: center; gap: 4px;">
+        <XhQuestionFlowPrevTrigger />
+        <XhQuestionFlowCounter />
+        <XhQuestionFlowNextTrigger />
+      </div>
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <XhQuestionFlowSkipTrigger>跳过</XhQuestionFlowSkipTrigger>
+        <XhQuestionFlowSubmitTrigger>{{ isLast ? "发送" : "继续" }}</XhQuestionFlowSubmitTrigger>
+      </div>
+    </XhQuestionFlowFooter>
+    <XhQuestionFlowLiveRegion />
+  </XhQuestionFlowRoot>
+  <p data-demo-output>收到：{{ sent || "（还没发送）" }}</p>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 12px; max-width: 340px">
-  <xh-question-flow id="question-flow-basic">
-    <div data-xh-part="root">
-      <div data-xh-part="viewport">
-        <div data-xh-part="track">
-          <div data-xh-part="question" question-id="scope">
-            <p data-xh-part="prompt" question-id="scope">这次改动动到哪一层？</p>
-            <div data-xh-part="group" question-id="scope">
-              <button data-xh-part="item" question-id="scope" option-value="ui">
-                <!-- 记号由皮肤画：指示符留空即可，不必手打 -->
-                <span data-xh-part="item-indicator" question-id="scope" option-value="ui"></span>
-                <span data-xh-part="item-text" question-id="scope" option-value="ui">只改界面</span>
-              </button>
-              <button data-xh-part="item" question-id="scope" option-value="api">
-                <span data-xh-part="item-indicator" question-id="scope" option-value="api"></span>
-                <span data-xh-part="item-text" question-id="scope" option-value="api">改到接口</span>
-              </button>
-              <button data-xh-part="item" question-id="scope" option-value="db">
-                <span data-xh-part="item-indicator" question-id="scope" option-value="db"></span>
-                <span data-xh-part="item-text" question-id="scope" option-value="db">连数据结构一起改</span>
-              </button>
-            </div>
+<xh-question-flow id="question-flow-basic">
+  <div data-xh-part="root" style="max-width: 340px">
+    <div data-xh-part="viewport">
+      <div data-xh-part="track">
+        <div data-xh-part="question" question-id="scope">
+          <p data-xh-part="prompt" question-id="scope">这次改动动到哪一层？</p>
+          <div data-xh-part="group" question-id="scope">
+            <button data-xh-part="item" question-id="scope" option-value="ui">
+              <!-- 记号由皮肤画：指示符留空即可，不必手打 -->
+              <span data-xh-part="item-indicator" question-id="scope" option-value="ui"></span>
+              <span data-xh-part="item-text" question-id="scope" option-value="ui">只改界面</span>
+            </button>
+            <button data-xh-part="item" question-id="scope" option-value="api">
+              <span data-xh-part="item-indicator" question-id="scope" option-value="api"></span>
+              <span data-xh-part="item-text" question-id="scope" option-value="api">改到接口</span>
+            </button>
+            <button data-xh-part="item" question-id="scope" option-value="db">
+              <span data-xh-part="item-indicator" question-id="scope" option-value="db"></span>
+              <span data-xh-part="item-text" question-id="scope" option-value="db">连数据结构一起改</span>
+            </button>
           </div>
-          <div data-xh-part="question" question-id="checks">
-            <p data-xh-part="prompt" question-id="checks">要顺带补哪些检查？</p>
-            <div data-xh-part="group" question-id="checks">
-              <button data-xh-part="item" question-id="checks" option-value="unit">
-                <span data-xh-part="item-indicator" question-id="checks" option-value="unit"></span>
-                <span data-xh-part="item-text" question-id="checks" option-value="unit">单元测试</span>
-              </button>
-              <button data-xh-part="item" question-id="checks" option-value="e2e">
-                <span data-xh-part="item-indicator" question-id="checks" option-value="e2e"></span>
-                <span data-xh-part="item-text" question-id="checks" option-value="e2e">端到端</span>
-              </button>
-            </div>
+        </div>
+        <div data-xh-part="question" question-id="checks">
+          <p data-xh-part="prompt" question-id="checks">要顺带补哪些检查？</p>
+          <div data-xh-part="group" question-id="checks">
+            <button data-xh-part="item" question-id="checks" option-value="unit">
+              <span data-xh-part="item-indicator" question-id="checks" option-value="unit"></span>
+              <span data-xh-part="item-text" question-id="checks" option-value="unit">单元测试</span>
+            </button>
+            <button data-xh-part="item" question-id="checks" option-value="e2e">
+              <span data-xh-part="item-indicator" question-id="checks" option-value="e2e"></span>
+              <span data-xh-part="item-text" question-id="checks" option-value="e2e">端到端</span>
+            </button>
           </div>
-          <div data-xh-part="question" question-id="branch">
-            <p data-xh-part="prompt" question-id="branch">落到哪条分支？</p>
-            <div data-xh-part="group" question-id="branch">
-              <button data-xh-part="item" question-id="branch" option-value="main">
-                <span data-xh-part="item-indicator" question-id="branch" option-value="main"></span>
-                <span data-xh-part="item-text" question-id="branch" option-value="main">直接进主干</span>
-              </button>
-              <button data-xh-part="item" question-id="branch" option-value="feature">
-                <span data-xh-part="item-indicator" question-id="branch" option-value="feature"></span>
-                <span data-xh-part="item-text" question-id="branch" option-value="feature">先开一条特性分支</span>
-              </button>
-            </div>
+        </div>
+        <div data-xh-part="question" question-id="branch">
+          <p data-xh-part="prompt" question-id="branch">落到哪条分支？</p>
+          <div data-xh-part="group" question-id="branch">
+            <button data-xh-part="item" question-id="branch" option-value="main">
+              <span data-xh-part="item-indicator" question-id="branch" option-value="main"></span>
+              <span data-xh-part="item-text" question-id="branch" option-value="main">直接进主干</span>
+            </button>
+            <button data-xh-part="item" question-id="branch" option-value="feature">
+              <span data-xh-part="item-indicator" question-id="branch" option-value="feature"></span>
+              <span data-xh-part="item-text" question-id="branch" option-value="feature">先开一条特性分支</span>
+            </button>
           </div>
         </div>
       </div>
-      <!-- 升级前先自己收起：属性由连接层接管，交卷后自动撤掉 -->
-      <div data-xh-part="result" hidden>答案已送出</div>
-      <div data-xh-part="footer">
-        <div style="display: flex; align-items: center; gap: 4px">
-          <button data-xh-part="prev-trigger"></button>
-          <span data-xh-part="counter"></span>
-          <button data-xh-part="next-trigger"></button>
-        </div>
-        <div style="display: flex; align-items: center; gap: 6px">
-          <button data-xh-part="skip-trigger">跳过</button>
-          <button data-xh-part="submit-trigger">继续</button>
-        </div>
-      </div>
-      <div data-xh-part="live-region"></div>
     </div>
-  </xh-question-flow>
-  <p id="question-flow-basic-sent" style="margin: 0"></p>
-</div>
+    <!-- 升级前先自己收起：属性由连接层接管，交卷后自动撤掉 -->
+    <div data-xh-part="result" hidden>答案已送出</div>
+    <div data-xh-part="footer">
+      <div style="display: flex; align-items: center; gap: 4px">
+        <button data-xh-part="prev-trigger"></button>
+        <span data-xh-part="counter"></span>
+        <button data-xh-part="next-trigger"></button>
+      </div>
+      <div style="display: flex; align-items: center; gap: 6px">
+        <button data-xh-part="skip-trigger">跳过</button>
+        <button data-xh-part="submit-trigger">继续</button>
+      </div>
+    </div>
+    <div data-xh-part="live-region"></div>
+  </div>
+</xh-question-flow>
+<p id="question-flow-basic-sent" data-demo-output>收到：（还没发送）</p>
 
 <script type="module">
   // 题目是数组，只走 property
@@ -304,102 +301,99 @@ const log = ref("");
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px; max-width: 340px;">
-    <XhQuestionFlowRoot
-      v-slot="{ isLast }"
-      :questions="questions"
-      :auto-advance="false"
-      tone="neutral"
-      variant="subtle"
-      :translations="{ note: '自己写一句', notePlaceholder: '都不是，我想要…' }"
-      @skip="log = `跳过了第 ${$event.index + 1} 题`"
-      @submit="log = `自己写的：${Object.values($event.notes).filter(Boolean).join(' / ') || '（没写）'}`"
-    >
-      <XhQuestionFlowViewport>
-        <XhQuestionFlowTrack>
-          <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
-            <XhQuestionFlowPrompt :question-id="question.id">{{ question.prompt }}</XhQuestionFlowPrompt>
-            <XhQuestionFlowGroup :question-id="question.id">
-              <XhQuestionFlowItem
-                v-for="option in question.options"
-                :key="option.value"
-                :question-id="question.id"
-                :option-value="option.value"
-              >
-                <XhQuestionFlowItemIndicator :question-id="question.id" :option-value="option.value" />
-                <XhQuestionFlowItemText :question-id="question.id" :option-value="option.value">
-                  {{ option.label }}
-                </XhQuestionFlowItemText>
-              </XhQuestionFlowItem>
-            </XhQuestionFlowGroup>
-            <!-- 写了一句就算答过这一题，继续键随之亮起 -->
-            <XhQuestionFlowNote :question-id="question.id" />
-          </XhQuestionFlowQuestion>
-        </XhQuestionFlowTrack>
-      </XhQuestionFlowViewport>
-      <XhQuestionFlowFooter>
-        <XhQuestionFlowCounter />
-        <div style="display: flex; align-items: center; gap: 6px;">
-          <XhQuestionFlowSkipTrigger>跳过</XhQuestionFlowSkipTrigger>
-          <XhQuestionFlowSubmitTrigger>{{ isLast ? "发送" : "继续" }}</XhQuestionFlowSubmitTrigger>
-        </div>
-      </XhQuestionFlowFooter>
-      <XhQuestionFlowLiveRegion />
-    </XhQuestionFlowRoot>
-    <p v-if="log" style="margin: 0;">{{ log }}</p>
-  </div>
+  <XhQuestionFlowRoot
+    v-slot="{ isLast }"
+    :questions="questions"
+    style="max-width: 340px;"
+    :auto-advance="false"
+    tone="neutral"
+    variant="subtle"
+    :translations="{ note: '自己写一句', notePlaceholder: '都不是，我想要…' }"
+    @skip="log = `跳过了第 ${$event.index + 1} 题`"
+    @submit="log = `自己写的：${Object.values($event.notes).filter(Boolean).join(' / ') || '（没写）'}`"
+  >
+    <XhQuestionFlowViewport>
+      <XhQuestionFlowTrack>
+        <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
+          <XhQuestionFlowPrompt :question-id="question.id">{{ question.prompt }}</XhQuestionFlowPrompt>
+          <XhQuestionFlowGroup :question-id="question.id">
+            <XhQuestionFlowItem
+              v-for="option in question.options"
+              :key="option.value"
+              :question-id="question.id"
+              :option-value="option.value"
+            >
+              <XhQuestionFlowItemIndicator :question-id="question.id" :option-value="option.value" />
+              <XhQuestionFlowItemText :question-id="question.id" :option-value="option.value">
+                {{ option.label }}
+              </XhQuestionFlowItemText>
+            </XhQuestionFlowItem>
+          </XhQuestionFlowGroup>
+          <!-- 写了一句就算答过这一题，继续键随之亮起 -->
+          <XhQuestionFlowNote :question-id="question.id" />
+        </XhQuestionFlowQuestion>
+      </XhQuestionFlowTrack>
+    </XhQuestionFlowViewport>
+    <XhQuestionFlowFooter>
+      <XhQuestionFlowCounter />
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <XhQuestionFlowSkipTrigger>跳过</XhQuestionFlowSkipTrigger>
+        <XhQuestionFlowSubmitTrigger>{{ isLast ? "发送" : "继续" }}</XhQuestionFlowSubmitTrigger>
+      </div>
+    </XhQuestionFlowFooter>
+    <XhQuestionFlowLiveRegion />
+  </XhQuestionFlowRoot>
+  <p data-demo-output>{{ log || "（还没操作）" }}</p>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 12px; max-width: 340px">
-  <xh-question-flow id="question-flow-note" auto-advance="false" tone="neutral" variant="subtle">
-    <div data-xh-part="root">
-      <div data-xh-part="viewport">
-        <div data-xh-part="track">
-          <div data-xh-part="question" question-id="tone">
-            <p data-xh-part="prompt" question-id="tone">文案用什么口吻？</p>
-            <div data-xh-part="group" question-id="tone">
-              <button data-xh-part="item" question-id="tone" option-value="plain">
-                <span data-xh-part="item-indicator" question-id="tone" option-value="plain"></span>
-                <span data-xh-part="item-text" question-id="tone" option-value="plain">平铺直叙</span>
-              </button>
-              <button data-xh-part="item" question-id="tone" option-value="warm">
-                <span data-xh-part="item-indicator" question-id="tone" option-value="warm"></span>
-                <span data-xh-part="item-text" question-id="tone" option-value="warm">亲切一点</span>
-              </button>
-            </div>
-            <!-- 写了一句就算答过这一题，继续键随之亮起 -->
-            <input data-xh-part="note" question-id="tone" />
+<xh-question-flow id="question-flow-note" auto-advance="false" tone="neutral" variant="subtle">
+  <div data-xh-part="root" style="max-width: 340px">
+    <div data-xh-part="viewport">
+      <div data-xh-part="track">
+        <div data-xh-part="question" question-id="tone">
+          <p data-xh-part="prompt" question-id="tone">文案用什么口吻？</p>
+          <div data-xh-part="group" question-id="tone">
+            <button data-xh-part="item" question-id="tone" option-value="plain">
+              <span data-xh-part="item-indicator" question-id="tone" option-value="plain"></span>
+              <span data-xh-part="item-text" question-id="tone" option-value="plain">平铺直叙</span>
+            </button>
+            <button data-xh-part="item" question-id="tone" option-value="warm">
+              <span data-xh-part="item-indicator" question-id="tone" option-value="warm"></span>
+              <span data-xh-part="item-text" question-id="tone" option-value="warm">亲切一点</span>
+            </button>
           </div>
-          <div data-xh-part="question" question-id="length">
-            <p data-xh-part="prompt" question-id="length">篇幅控制在多长？</p>
-            <div data-xh-part="group" question-id="length">
-              <button data-xh-part="item" question-id="length" option-value="short">
-                <span data-xh-part="item-indicator" question-id="length" option-value="short"></span>
-                <span data-xh-part="item-text" question-id="length" option-value="short">一句话</span>
-              </button>
-              <button data-xh-part="item" question-id="length" option-value="long">
-                <span data-xh-part="item-indicator" question-id="length" option-value="long"></span>
-                <span data-xh-part="item-text" question-id="length" option-value="long">一段话</span>
-              </button>
-            </div>
-            <input data-xh-part="note" question-id="length" />
+          <!-- 写了一句就算答过这一题，继续键随之亮起 -->
+          <input data-xh-part="note" question-id="tone" />
+        </div>
+        <div data-xh-part="question" question-id="length">
+          <p data-xh-part="prompt" question-id="length">篇幅控制在多长？</p>
+          <div data-xh-part="group" question-id="length">
+            <button data-xh-part="item" question-id="length" option-value="short">
+              <span data-xh-part="item-indicator" question-id="length" option-value="short"></span>
+              <span data-xh-part="item-text" question-id="length" option-value="short">一句话</span>
+            </button>
+            <button data-xh-part="item" question-id="length" option-value="long">
+              <span data-xh-part="item-indicator" question-id="length" option-value="long"></span>
+              <span data-xh-part="item-text" question-id="length" option-value="long">一段话</span>
+            </button>
           </div>
+          <input data-xh-part="note" question-id="length" />
         </div>
       </div>
-      <div data-xh-part="footer">
-        <span data-xh-part="counter"></span>
-        <div style="display: flex; align-items: center; gap: 6px">
-          <button data-xh-part="skip-trigger">跳过</button>
-          <button data-xh-part="submit-trigger">继续</button>
-        </div>
-      </div>
-      <div data-xh-part="live-region"></div>
     </div>
-  </xh-question-flow>
-  <p id="question-flow-note-log" style="margin: 0"></p>
-</div>
+    <div data-xh-part="footer">
+      <span data-xh-part="counter"></span>
+      <div style="display: flex; align-items: center; gap: 6px">
+        <button data-xh-part="skip-trigger">跳过</button>
+        <button data-xh-part="submit-trigger">继续</button>
+      </div>
+    </div>
+    <div data-xh-part="live-region"></div>
+  </div>
+</xh-question-flow>
+<p id="question-flow-note-log" data-demo-output>（还没操作）</p>
 
 <script type="module">
   // 题目与文案都是对象，只走 property
@@ -453,6 +447,7 @@ const log = ref("");
 <script setup lang="ts">
 import type { QuestionFlowAnswers, QuestionFlowQuestion } from "@xihan-ui/headless";
 import {
+  XhButton,
   XhQuestionFlowCounter,
   XhQuestionFlowFooter,
   XhQuestionFlowGroup,
@@ -499,9 +494,9 @@ const answers = ref<QuestionFlowAnswers>({});
 <template>
   <div style="display: flex; flex-direction: column; gap: 12px; max-width: 340px;">
     <div style="display: flex; gap: 6px;">
-      <button v-for="(question, i) in questions" :key="question.id" type="button" @click="index = i">
+      <XhButton v-for="(question, i) in questions" :key="question.id" size="sm" variant="outline" @click="index = i">
         跳到第 {{ i + 1 }} 题
-      </button>
+      </XhButton>
     </div>
     <XhQuestionFlowRoot
       v-slot="{ isLast }"
@@ -540,7 +535,7 @@ const answers = ref<QuestionFlowAnswers>({});
       </XhQuestionFlowFooter>
       <XhQuestionFlowLiveRegion />
     </XhQuestionFlowRoot>
-    <p style="margin: 0;">宿主手上的进度：第 {{ index + 1 }} 题；已答 {{ Object.keys(answers).length }} 题</p>
+    <p data-demo-output>宿主手上的进度：第 {{ index + 1 }} 题；已答 {{ Object.keys(answers).length }} 题</p>
   </div>
 </template>
 ```
@@ -548,8 +543,12 @@ const answers = ref<QuestionFlowAnswers>({});
 ```html
 <div style="display: flex; flex-direction: column; gap: 12px; max-width: 340px">
   <div style="display: flex; gap: 6px">
-    <button type="button" id="question-flow-controlled-to-1">跳到第 1 题</button>
-    <button type="button" id="question-flow-controlled-to-2">跳到第 2 题</button>
+    <xh-button id="question-flow-controlled-to-1" size="sm" variant="outline">
+      <button data-xh-part="root">跳到第 1 题</button>
+    </xh-button>
+    <xh-button id="question-flow-controlled-to-2" size="sm" variant="outline">
+      <button data-xh-part="root">跳到第 2 题</button>
+    </xh-button>
   </div>
   <xh-question-flow id="question-flow-controlled" index="0" allow-skip="false">
     <div data-xh-part="root">
@@ -594,7 +593,7 @@ const answers = ref<QuestionFlowAnswers>({});
       <div data-xh-part="live-region"></div>
     </div>
   </xh-question-flow>
-  <p id="question-flow-controlled-log" style="margin: 0"></p>
+  <p id="question-flow-controlled-log" data-demo-output></p>
 </div>
 
 <script type="module">
@@ -875,106 +874,103 @@ const sent = ref("");
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px; max-width: 360px;">
-    <XhQuestionFlowRoot
-      v-slot="{ isLast }"
-      :questions="questions"
-      :translations="translations"
-      :auto-advance="false"
-      @submit="sent = Object.entries($event.answers).map(([id, values]) => `${id}=${values.join('、')}`).join('；')"
-    >
-      <XhQuestionFlowViewport>
-        <XhQuestionFlowTrack>
-          <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
-            <XhQuestionFlowPrompt :question-id="question.id">{{ question.prompt }}</XhQuestionFlowPrompt>
-            <!-- 留空：写上题目自带的说明，或多选的数量要求 -->
-            <XhQuestionFlowDescription :question-id="question.id" />
-            <XhQuestionFlowGroup :question-id="question.id">
-              <XhQuestionFlowItem
-                v-for="option in question.options"
-                :key="option.value"
-                :question-id="question.id"
-                :option-value="option.value"
-              >
-                <XhQuestionFlowItemIndicator :question-id="question.id" :option-value="option.value" />
-                <XhQuestionFlowItemText :question-id="question.id" :option-value="option.value">
-                  {{ option.label }}
-                </XhQuestionFlowItemText>
-                <XhQuestionFlowItemDescription v-if="option.description" :question-id="question.id" :option-value="option.value">
-                  {{ option.description }}
-                </XhQuestionFlowItemDescription>
-              </XhQuestionFlowItem>
-            </XhQuestionFlowGroup>
-          </XhQuestionFlowQuestion>
-        </XhQuestionFlowTrack>
-      </XhQuestionFlowViewport>
-      <XhQuestionFlowFooter>
-        <XhQuestionFlowSubmitTrigger>{{ isLast ? "发送" : "继续" }}</XhQuestionFlowSubmitTrigger>
-      </XhQuestionFlowFooter>
-      <XhQuestionFlowLiveRegion />
-    </XhQuestionFlowRoot>
-    <p v-if="sent" style="margin: 0;">收到：{{ sent }}</p>
-  </div>
+  <XhQuestionFlowRoot
+    v-slot="{ isLast }"
+    :questions="questions"
+    style="max-width: 360px;"
+    :translations="translations"
+    :auto-advance="false"
+    @submit="sent = Object.entries($event.answers).map(([id, values]) => `${id}=${values.join('、')}`).join('；')"
+  >
+    <XhQuestionFlowViewport>
+      <XhQuestionFlowTrack>
+        <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
+          <XhQuestionFlowPrompt :question-id="question.id">{{ question.prompt }}</XhQuestionFlowPrompt>
+          <!-- 留空：写上题目自带的说明，或多选的数量要求 -->
+          <XhQuestionFlowDescription :question-id="question.id" />
+          <XhQuestionFlowGroup :question-id="question.id">
+            <XhQuestionFlowItem
+              v-for="option in question.options"
+              :key="option.value"
+              :question-id="question.id"
+              :option-value="option.value"
+            >
+              <XhQuestionFlowItemIndicator :question-id="question.id" :option-value="option.value" />
+              <XhQuestionFlowItemText :question-id="question.id" :option-value="option.value">
+                {{ option.label }}
+              </XhQuestionFlowItemText>
+              <XhQuestionFlowItemDescription v-if="option.description" :question-id="question.id" :option-value="option.value">
+                {{ option.description }}
+              </XhQuestionFlowItemDescription>
+            </XhQuestionFlowItem>
+          </XhQuestionFlowGroup>
+        </XhQuestionFlowQuestion>
+      </XhQuestionFlowTrack>
+    </XhQuestionFlowViewport>
+    <XhQuestionFlowFooter>
+      <XhQuestionFlowSubmitTrigger>{{ isLast ? "发送" : "继续" }}</XhQuestionFlowSubmitTrigger>
+    </XhQuestionFlowFooter>
+    <XhQuestionFlowLiveRegion />
+  </XhQuestionFlowRoot>
+  <p data-demo-output>收到：{{ sent || "（还没发送）" }}</p>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 12px; max-width: 360px">
-  <xh-question-flow id="question-flow-descriptions" auto-advance="false">
-    <div data-xh-part="root">
-      <div data-xh-part="viewport">
-        <div data-xh-part="track">
-          <div data-xh-part="question" question-id="cadence">
-            <p data-xh-part="prompt" question-id="cadence">按什么节奏发布？</p>
-            <!-- 留空：元素写上题目自带的说明，或多选的数量要求 -->
-            <p data-xh-part="description" question-id="cadence"></p>
-            <div data-xh-part="group" question-id="cadence">
-              <button data-xh-part="item" question-id="cadence" option-value="weekly">
-                <span data-xh-part="item-indicator" question-id="cadence" option-value="weekly"></span>
-                <span data-xh-part="item-text" question-id="cadence" option-value="weekly">每周</span>
-                <span data-xh-part="item-description" question-id="cadence" option-value="weekly">小步快跑，回滚成本低</span>
-              </button>
-              <button data-xh-part="item" question-id="cadence" option-value="monthly">
-                <span data-xh-part="item-indicator" question-id="cadence" option-value="monthly"></span>
-                <span data-xh-part="item-text" question-id="cadence" option-value="monthly">每月</span>
-                <span data-xh-part="item-description" question-id="cadence" option-value="monthly">攒一批再发，说明写得更完整</span>
-              </button>
-            </div>
+<xh-question-flow id="question-flow-descriptions" auto-advance="false">
+  <div data-xh-part="root" style="max-width: 360px">
+    <div data-xh-part="viewport">
+      <div data-xh-part="track">
+        <div data-xh-part="question" question-id="cadence">
+          <p data-xh-part="prompt" question-id="cadence">按什么节奏发布？</p>
+          <!-- 留空：元素写上题目自带的说明，或多选的数量要求 -->
+          <p data-xh-part="description" question-id="cadence"></p>
+          <div data-xh-part="group" question-id="cadence">
+            <button data-xh-part="item" question-id="cadence" option-value="weekly">
+              <span data-xh-part="item-indicator" question-id="cadence" option-value="weekly"></span>
+              <span data-xh-part="item-text" question-id="cadence" option-value="weekly">每周</span>
+              <span data-xh-part="item-description" question-id="cadence" option-value="weekly">小步快跑，回滚成本低</span>
+            </button>
+            <button data-xh-part="item" question-id="cadence" option-value="monthly">
+              <span data-xh-part="item-indicator" question-id="cadence" option-value="monthly"></span>
+              <span data-xh-part="item-text" question-id="cadence" option-value="monthly">每月</span>
+              <span data-xh-part="item-description" question-id="cadence" option-value="monthly">攒一批再发，说明写得更完整</span>
+            </button>
           </div>
-          <div data-xh-part="question" question-id="checks">
-            <p data-xh-part="prompt" question-id="checks">上线前跑哪些检查？</p>
-            <p data-xh-part="description" question-id="checks"></p>
-            <div data-xh-part="group" question-id="checks">
-              <button data-xh-part="item" question-id="checks" option-value="unit">
-                <span data-xh-part="item-indicator" question-id="checks" option-value="unit"></span>
-                <span data-xh-part="item-text" question-id="checks" option-value="unit">单元测试</span>
-              </button>
-              <button data-xh-part="item" question-id="checks" option-value="e2e">
-                <span data-xh-part="item-indicator" question-id="checks" option-value="e2e"></span>
-                <span data-xh-part="item-text" question-id="checks" option-value="e2e">端到端</span>
-                <span data-xh-part="item-description" question-id="checks" option-value="e2e">约 20 分钟</span>
-              </button>
-              <button data-xh-part="item" question-id="checks" option-value="bench">
-                <span data-xh-part="item-indicator" question-id="checks" option-value="bench"></span>
-                <span data-xh-part="item-text" question-id="checks" option-value="bench">性能基准</span>
-                <span data-xh-part="item-description" question-id="checks" option-value="bench">只在夜里跑</span>
-              </button>
-              <button data-xh-part="item" question-id="checks" option-value="audit">
-                <span data-xh-part="item-indicator" question-id="checks" option-value="audit"></span>
-                <span data-xh-part="item-text" question-id="checks" option-value="audit">依赖安全扫描</span>
-              </button>
-            </div>
+        </div>
+        <div data-xh-part="question" question-id="checks">
+          <p data-xh-part="prompt" question-id="checks">上线前跑哪些检查？</p>
+          <p data-xh-part="description" question-id="checks"></p>
+          <div data-xh-part="group" question-id="checks">
+            <button data-xh-part="item" question-id="checks" option-value="unit">
+              <span data-xh-part="item-indicator" question-id="checks" option-value="unit"></span>
+              <span data-xh-part="item-text" question-id="checks" option-value="unit">单元测试</span>
+            </button>
+            <button data-xh-part="item" question-id="checks" option-value="e2e">
+              <span data-xh-part="item-indicator" question-id="checks" option-value="e2e"></span>
+              <span data-xh-part="item-text" question-id="checks" option-value="e2e">端到端</span>
+              <span data-xh-part="item-description" question-id="checks" option-value="e2e">约 20 分钟</span>
+            </button>
+            <button data-xh-part="item" question-id="checks" option-value="bench">
+              <span data-xh-part="item-indicator" question-id="checks" option-value="bench"></span>
+              <span data-xh-part="item-text" question-id="checks" option-value="bench">性能基准</span>
+              <span data-xh-part="item-description" question-id="checks" option-value="bench">只在夜里跑</span>
+            </button>
+            <button data-xh-part="item" question-id="checks" option-value="audit">
+              <span data-xh-part="item-indicator" question-id="checks" option-value="audit"></span>
+              <span data-xh-part="item-text" question-id="checks" option-value="audit">依赖安全扫描</span>
+            </button>
           </div>
         </div>
       </div>
-      <div data-xh-part="footer">
-        <button data-xh-part="submit-trigger">继续</button>
-      </div>
-      <div data-xh-part="live-region"></div>
     </div>
-  </xh-question-flow>
-  <p id="question-flow-descriptions-sent" style="margin: 0"></p>
-</div>
+    <div data-xh-part="footer">
+      <button data-xh-part="submit-trigger">继续</button>
+    </div>
+    <div data-xh-part="live-region"></div>
+  </div>
+</xh-question-flow>
+<p id="question-flow-descriptions-sent" data-demo-output>收到：（还没发送）</p>
 
 <script type="module">
   // 题目与文案是对象，只走 property
@@ -1387,7 +1383,7 @@ const sent = ref("");
 | `--xh-question-flow-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=md`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | question-flow 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-question-flow-indicator-bg` | `item-indicator` | `background` | `default` | `transparent` | question-flow 的 item-indicator 部件 background 覆盖槽。 |
 | `--xh-question-flow-indicator-bg-checked` | `item-indicator` | `background` | `state=checked` | `--xh-_tone` | question-flow 的 item-indicator 部件 background 覆盖槽。 |
-| `--xh-question-flow-indicator-border` | `item-indicator` | `border` | `default` | `--xh-border-control` | question-flow 的 item-indicator 部件 border 覆盖槽。 |
+| `--xh-question-flow-indicator-border` | `item-indicator` | `border` | `default` | `--xh-border-strong` | question-flow 的 item-indicator 部件 border 覆盖槽。 |
 | `--xh-question-flow-indicator-border-checked` | `item-indicator` | `border-color` | `state=checked` | `--xh-_tone` | question-flow 的 item-indicator 部件 border-color 覆盖槽。 |
 | `--xh-question-flow-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone-on` | question-flow 的 item-indicator 部件 color 覆盖槽。 |
 | `--xh-question-flow-indicator-icon-size` | `item-indicator` | `--xh-icon-size` | `default` | `--xh-_question-flow-indicator-glyph` | question-flow 的 item-indicator 部件 --xh-icon-size 覆盖槽。 |
@@ -1405,8 +1401,13 @@ const sent = ref("");
 | `--xh-question-flow-item-px` | `item` | `padding-inline` | `default` | `--xh-space-2` | question-flow 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-question-flow-item-py` | `item` | `padding-block` | `xh-action-profile=row` | `--xh-space-1` | question-flow 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-question-flow-item-radius` | `item` | `border-radius` | `default` | `--xh-_action-profile-radius` | question-flow 的 item 部件 border-radius 覆盖槽。 |
-| `--xh-question-flow-note-bg` | `note` | `background` | `default` | `--xh-bg-surface` | question-flow 的 note 部件 background 覆盖槽。 |
+| `--xh-question-flow-note-bg` | `note` | `background` | `default` | `--xh-bg-field` | question-flow 的 note 部件 background 覆盖槽。 |
+| `--xh-question-flow-note-bg-disabled` | `note` | `background` | `disabled` | `--xh-bg-subtle` | question-flow 的 note 部件 background 覆盖槽。 |
+| `--xh-question-flow-note-bg-focus` | `note` | `background` | `focus-within` | `--xh-bg-surface` | question-flow 的 note 部件 background 覆盖槽。 |
 | `--xh-question-flow-note-border` | `note` | `border` | `default` | `--xh-border-control` | question-flow 的 note 部件 border 覆盖槽。 |
+| `--xh-question-flow-note-border-disabled` | `note` | `border-color` | `disabled` | `--xh-border-default` | question-flow 的 note 部件 border-color 覆盖槽。 |
+| `--xh-question-flow-note-border-focus` | `note` | `border-color` | `focus-within` | `--xh-border-control-focus` | question-flow 的 note 部件 border-color 覆盖槽。 |
+| `--xh-question-flow-note-border-hover` | `note` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, :focus, [data-invalid])` | `--xh-border-strong` | question-flow 的 note 部件 border-color 覆盖槽。 |
 | `--xh-question-flow-note-fg` | `note` | `color` | `default` | `--xh-fg-default` | question-flow 的 note 部件 color 覆盖槽。 |
 | `--xh-question-flow-note-font-size` | `note` | `font-size` | `default` | `--xh-_question-flow-font-size` | question-flow 的 note 部件 font-size 覆盖槽。 |
 | `--xh-question-flow-note-px` | `note` | `padding-inline` | `default` | `--xh-space-2` | question-flow 的 note 部件 padding-inline 覆盖槽。 |
@@ -1424,9 +1425,10 @@ const sent = ref("");
 | `--xh-question-flow-result-font-size` | `result` | `font-size` | `default` | `--xh-text-caption-size` | question-flow 的 result 部件 font-size 覆盖槽。 |
 | `--xh-question-flow-result-font-weight` | `result` | `font-weight` | `default` | `--xh-font-weight-medium` | question-flow 的 result 部件 font-weight 覆盖槽。 |
 | `--xh-question-flow-result-gap` | `result` | `gap` | `default` | `--xh-space-1` | question-flow 的 result 部件 gap 覆盖槽。 |
+| `--xh-question-flow-result-h` | `result` | `min-block-size` | `default` | `--xh-chip-h-sm` | question-flow 的 result 部件 min-block-size 覆盖槽。 |
 | `--xh-question-flow-result-px` | `result` | `padding-inline` | `default` | `--xh-space-1_5` | question-flow 的 result 部件 padding-inline 覆盖槽。 |
-| `--xh-question-flow-result-py` | `result` | `padding-block` | `default` | `--xh-space-0_5` | question-flow 的 result 部件 padding-block 覆盖槽。 |
-| `--xh-question-flow-result-radius` | `result` | `border-radius` | `default` | `--xh-shape-pill` | question-flow 的 result 部件 border-radius 覆盖槽。 |
+| `--xh-question-flow-result-py` | `result` | `padding-block` | `default` | `0` | question-flow 的 result 部件 padding-block 覆盖槽。 |
+| `--xh-question-flow-result-radius` | `result` | `border-radius` | `default` | `--xh-shape-control` | question-flow 的 result 部件 border-radius 覆盖槽。 |
 | `--xh-question-flow-shadow` | `root` | `box-shadow` | `default` | `none` | question-flow 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-question-flow-skip-bg` | `skip-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | question-flow 的 skip-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-question-flow-skip-bg-hover` | `skip-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | question-flow 的 skip-trigger 部件 background-color 覆盖槽。 |

@@ -20,7 +20,7 @@
 | 手势 | 拖拽跟手、松手归位、快甩、越界回弹 | `translate`、`scale` | 跟手无过渡；松手用弹簧并交接松手速度 | 瞬时归位 |
 | 循环 | 转圈、微光、光标、不定进度、呼吸 | `rotate`、`background-position`、`opacity`、`translate` | 循环周期 / `loop` | 停止并显示静态替代 |
 | 注意 | 抖动、脉冲强调 | — | 只在 [`@xihan-ui/animations`](/guide/animations) 中使用：`attention` | 不播放 |
-| 数据 | 图表入场、更新、退出 | 几何参数、`stroke-dashoffset`、`opacity` | 入场 `reveal` / `enter-strong`，描线 `reveal` / `continuous`；更新与删除 `morph` / `continuous`；缩放换窗 `move` / `continuous`；淡入 `enter` | 几何瞬时，淡变保留 |
+| 数据 | 图表入场、更新、退出 | 几何参数、`stroke-dashoffset`、`opacity` | 入场 `reveal` / `enter`，描线 `reveal` / `continuous`；更新与删除 `morph` / `continuous`；缩放换窗 `move` / `continuous`；淡入 `enter` | 几何瞬时，淡变保留 |
 | 氛围 | 动态背景、跑马灯 | 着色器时间轴、`translate` | 由速度决定 | 冻结或停止 |
 
 表中时长省略前缀 `--xh-motion-duration-`，缓动省略前缀 `--xh-motion-ease-`。
@@ -47,7 +47,7 @@
 | `--xh-motion-duration-nudge` | 120ms | 1ms | 切换、跟手让位 |
 | `--xh-motion-duration-press` / `-release` | 120 / 200ms | 1ms | 按压 |
 | `--xh-motion-duration-attention` | 640ms | 1ms（预设不播） | 注意 |
-| `--xh-motion-duration-reveal` | 640ms | 1ms | 数据首次出现 |
+| `--xh-motion-duration-reveal` | 960ms | 1ms | 数据首次出现 |
 | `--xh-motion-duration-morph` | 400ms | 1ms | 数据更新 |
 | `--xh-motion-stagger-step` | 40ms | 0ms | 错开步长 |
 
@@ -96,7 +96,7 @@
 | `--xh-motion-travel` | 100% | 0 | 整幅位移：抽屉、叠放的通知 |
 | `--xh-motion-travel-opacity` | 1 | 0 | 整幅位移两端的不透明度：减弱动效下位移归零，改由淡变表达 |
 | `--xh-motion-scale-enter` / `-exit` | 0.96 / 0.98 | 1 | 出现 |
-| `--xh-motion-scale-press` | 0.97 | 1 | 按压 |
+| `--xh-motion-scale-press` | 1 | 1 | 按压：缺省只换面不缩放；主题把它写回 0.97 即恢复按下回弹 |
 | `--xh-motion-scale-drag` | 1.12 | 1 | 拖起 |
 | `--xh-motion-scale-stack` | 0.95 | 1 | 通知叠放（轻提示预设的缺省）每往后一层的收拢比例 |
 | `--xh-motion-scale-squash` | 0.86 | 1 | liquid 档指示器拉长时另一向的压扁下限 |
@@ -117,12 +117,12 @@
 
 ## 按压触感
 
-定尺的独立动作控件（按钮、把手、方框、星、日历格、色块、排序钮）投影 Action Control 配方，按下与释放走同一条时间线：
+定尺的独立动作控件（按钮、把手、方框、星、日历格、色块、排序钮）投影 Action Control 配方，按下与释放走同一条时间线。缺省只换面：缩放倍率 `--xh-motion-scale-press` 取 1，按下时底色进入 active、尺寸不变；主题把它写回 0.97 就恢复按下回弹，时间线不用改：
 
 | 阶段 | 时长 | 结果 | 缓动 |
 | --- | ---: | --- | --- |
-| 按下 | 120ms（`--xh-motion-duration-press`） | scale 1 → 0.97，底进入 active | `--xh-motion-ease-press` |
-| 释放 | 200ms（`--xh-motion-duration-release`） | scale 0.97 → 1；底、描边、字色按 120ms（`--xh-motion-duration-micro`）回到 hover / rest | `--xh-motion-ease-release` |
+| 按下 | 120ms（`--xh-motion-duration-press`） | 底进入 active；scale 1 → `--xh-motion-scale-press`（缺省 1） | `--xh-motion-ease-press` |
+| 释放 | 200ms（`--xh-motion-duration-release`） | 底、描边、字色按 120ms（`--xh-motion-duration-micro`）回到 hover / rest；scale 回到 1 | `--xh-motion-ease-release` |
 
 - transform origin 固定居中；指针 `:active`、键盘 Space / Enter 与 Headless 投影的 `data-pressed` 三者一致。
 - 行级条目与 disclosure trigger（菜单项、树节点、表格行、手风琴标题）只换面，不缩放整个条目；不允许零反馈。

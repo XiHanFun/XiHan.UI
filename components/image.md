@@ -108,7 +108,7 @@ const status = reactive<Record<string, string>>({
     <XhImageFallback>没有来源</XhImageFallback>
   </XhImageRoot>
 
-  <span style="font-size: 13px;">
+  <span data-demo-output>
     状态：正常 {{ status.ok }} · 坏地址 {{ status.broken }} · 无 src {{ status.none }}
   </span>
 </template>
@@ -142,7 +142,7 @@ const status = reactive<Record<string, string>>({
   </xh-image>
 </div>
 
-<span id="image-fallback-readout" style="font-size: 13px">
+<span id="image-fallback-readout" data-demo-output>
   状态：正常 idle · 坏地址 idle · 无 src idle
 </span>
 
@@ -346,7 +346,7 @@ const untilFailed = Number.POSITIVE_INFINITY;
 
 ```vue
 <script setup lang="ts">
-import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";
+import { XhButton, XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const good
@@ -368,7 +368,7 @@ const src = ref("https://example.invalid/photo.svg");
         <!-- 失败与加载中是两回事，文案与可操作性都该不一样 -->
         <span v-if="status === 'error'" style="display: inline-flex; gap: 8px; align-items: center;">
           取不到这张图
-          <button type="button" @click="src = good">重试</button>
+          <XhButton size="sm" variant="outline" @click="src = good">重试</XhButton>
         </span>
         <span v-else>正在加载…</span>
       </XhImageFallback>
@@ -385,7 +385,9 @@ const src = ref("https://example.invalid/photo.svg");
     <div data-xh-part="fallback">
       <span id="image-status-failed" style="display: none; align-items: center; gap: 8px">
         取不到这张图
-        <button type="button" id="image-status-retry">重试</button>
+        <xh-button id="image-status-retry" size="sm" variant="outline">
+          <button data-xh-part="root">重试</button>
+        </xh-button>
       </span>
       <span id="image-status-loading">正在加载…</span>
     </div>
@@ -450,13 +452,6 @@ function openPreview(): void {
 function zoom(step: number): void {
   scale.value = Math.min(3, Math.max(0.5, scale.value + step));
 }
-
-const itemStyle = {
-  padding: "4px 10px",
-  borderRadius: "6px",
-  border: "1px solid var(--xh-border-default)",
-  background: "var(--xh-bg-surface)",
-};
 </script>
 
 <template>
@@ -499,20 +494,16 @@ const itemStyle = {
 
       <!-- 缩放与旋转是两个数值加一条 transform，工具条只负责把这几颗按钮串成一个 Tab 位 -->
       <XhToolbarRoot>
-        <XhToolbarItem value="zoom-in" :style="itemStyle" @click="zoom(0.25)">
+        <XhToolbarItem value="zoom-in" @click="zoom(0.25)">
           放大
         </XhToolbarItem>
-        <XhToolbarItem value="zoom-out" :style="itemStyle" @click="zoom(-0.25)">
+        <XhToolbarItem value="zoom-out" @click="zoom(-0.25)">
           缩小
         </XhToolbarItem>
-        <XhToolbarItem value="rotate" :style="itemStyle" @click="rotate += 90">
+        <XhToolbarItem value="rotate" @click="rotate += 90">
           旋转
         </XhToolbarItem>
-        <XhToolbarItem
-          value="reset"
-          :style="itemStyle"
-          @click="scale = 1; rotate = 0"
-        >
+        <XhToolbarItem value="reset" @click="scale = 1; rotate = 0">
           还原
         </XhToolbarItem>
       </XhToolbarRoot>
@@ -573,58 +564,10 @@ const itemStyle = {
       <!-- 缩放与旋转是两个数值加一条 transform，工具条只负责把这几颗按钮串成一个 Tab 位 -->
       <xh-toolbar id="image-preview-toolbar">
         <div data-xh-part="root">
-          <button
-            type="button"
-            data-xh-part="item"
-            value="zoom-in"
-            style="
-              padding: 4px 10px;
-              border-radius: 6px;
-              border: 1px solid var(--xh-border-default);
-              background: var(--xh-bg-surface);
-            "
-          >
-            放大
-          </button>
-          <button
-            type="button"
-            data-xh-part="item"
-            value="zoom-out"
-            style="
-              padding: 4px 10px;
-              border-radius: 6px;
-              border: 1px solid var(--xh-border-default);
-              background: var(--xh-bg-surface);
-            "
-          >
-            缩小
-          </button>
-          <button
-            type="button"
-            data-xh-part="item"
-            value="rotate"
-            style="
-              padding: 4px 10px;
-              border-radius: 6px;
-              border: 1px solid var(--xh-border-default);
-              background: var(--xh-bg-surface);
-            "
-          >
-            旋转
-          </button>
-          <button
-            type="button"
-            data-xh-part="item"
-            value="reset"
-            style="
-              padding: 4px 10px;
-              border-radius: 6px;
-              border: 1px solid var(--xh-border-default);
-              background: var(--xh-bg-surface);
-            "
-          >
-            还原
-          </button>
+          <button type="button" data-xh-part="item" value="zoom-in">放大</button>
+          <button type="button" data-xh-part="item" value="zoom-out">缩小</button>
+          <button type="button" data-xh-part="item" value="rotate">旋转</button>
+          <button type="button" data-xh-part="item" value="reset">还原</button>
         </div>
       </xh-toolbar>
 
@@ -960,8 +903,8 @@ onBeforeUnmount(() => observer?.disconnect());
       block-size: 180px;
       overflow-y: auto;
       padding: 12px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
+      border: var(--xh-stroke-thin) solid var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
     "
   >
     <p style="margin: 0 0 12px">往下滚，图片进视口才开始取。</p>
@@ -991,8 +934,8 @@ onBeforeUnmount(() => observer?.disconnect());
     block-size: 180px;
     overflow-y: auto;
     padding: 12px;
-    border: 1px solid var(--xh-border-default);
-    border-radius: 8px;
+    border: var(--xh-stroke-thin) solid var(--xh-border-default);
+    border-radius: var(--xh-shape-surface);
   "
 >
   <p style="margin: 0 0 12px">往下滚，图片进视口才开始取。</p>
@@ -1185,12 +1128,15 @@ onBeforeUnmount(() => observer?.disconnect());
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-image-bg` | `root` | `background` | `default` | `--xh-bg-subtle` | image 的 root 部件 background 覆盖槽。 |
-| `--xh-image-fallback-fg` | `fallback` | `color` | `default` | `--xh-fg-muted` | image 的 fallback 部件 color 覆盖槽。 |
-| `--xh-image-fallback-font-size` | `fallback` | `font-size` | `default` | `--xh-text-secondary-size` | image 的 fallback 部件 font-size 覆盖槽。 |
+| `--xh-image-fallback-bg` | `fallback` | `background` | `default` | `--xh-bg-subtle-opaque` | image 的 fallback 部件 background 覆盖槽。 |
+| `--xh-image-fallback-fg` | `fallback` | `color` | `default` | `--xh-fg-subtle` | image 的 fallback 部件 color 覆盖槽。 |
+| `--xh-image-fallback-font-size` | `fallback` | `font-size` | `default` | `--xh-text-caption-size` | image 的 fallback 部件 font-size 覆盖槽。 |
 | `--xh-image-fallback-min-h` | `fallback` | `min-block-size` | `default` | `--xh-control-h-lg` | image 的 fallback 部件 min-block-size 覆盖槽。 |
+| `--xh-image-fallback-px` | `fallback` | `padding-inline` | `default` | `--xh-space-4` | image 的 fallback 部件 padding-inline 覆盖槽。 |
+| `--xh-image-fallback-py` | `fallback` | `padding-block` | `default` | `--xh-space-2` | image 的 fallback 部件 padding-block 覆盖槽。 |
 | `--xh-image-fit` | `image` | `object-fit` | `default` | `cover` | image 的 image 部件 object-fit 覆盖槽。 |
 | `--xh-image-h` | `root` | `block-size` | `default` | `auto` | image 的 root 部件 block-size 覆盖槽。 |
-| `--xh-image-placeholder-bg` | `placeholder` | `background` | `default` | `--xh-bg-subtle-hover-opaque` | image 的 placeholder 部件 background 覆盖槽。 |
+| `--xh-image-placeholder-bg` | `placeholder` | `background` | `default` | `--xh-bg-subtle-opaque` | image 的 placeholder 部件 background 覆盖槽。 |
 | `--xh-image-placeholder-fg` | `placeholder` | `color` | `default` | `--xh-fg-subtle` | image 的 placeholder 部件 color 覆盖槽。 |
 | `--xh-image-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | image 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-image-ratio` | `root` | `aspect-ratio` | `default` | `auto` | image 的 root 部件 aspect-ratio 覆盖槽。 |
@@ -1204,3 +1150,7 @@ onBeforeUnmount(() => observer?.disconnect());
 共享关键帧 `xh-fade-in` · `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+### RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

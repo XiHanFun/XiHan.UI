@@ -54,7 +54,7 @@ const itemTranslations = { close: "关闭" };
     >
       弹一条 danger
     </XhButton>
-    <span>队列：{{ count }} 条</span>
+    <span data-demo-output>队列：{{ count }} 条</span>
 
     <XhNotificationGroup>
       <template #default="{ item }">
@@ -93,7 +93,7 @@ const itemTranslations = { close: "关闭" };
     <xh-button variant="outline" data-create="danger">
       <button data-xh-part="root">弹一条 danger</button>
     </xh-button>
-    <span>队列：<span id="notification-basic-count">0</span> 条</span>
+    <span data-demo-output>队列：<span id="notification-basic-count">0</span> 条</span>
 
     <div data-xh-part="group"></div>
   </div>
@@ -511,7 +511,7 @@ function startUpload(create: Create, update: Update): void {
 
 ### 上限与清空
 
-max 限制每个位置同时显示几条，超出时移除最旧的；dismissAll 直接清空队列，不播退场动画
+max 限制每个位置同时显示几条，最新的那一条一定留下，超出时移除其余里最旧的；dismissAll 直接清空队列，被移出的卡片由替身在原处淡出
 
 ```vue
 <script setup lang="ts">
@@ -551,7 +551,7 @@ function nextTitle(): string {
       连着弹
     </XhButton>
     <XhButton variant="ghost" @click="dismissAll()">全部清空</XhButton>
-    <span>队列：{{ count }} 条（上限 3）</span>
+    <span data-demo-output>队列：{{ count }} 条（上限 3）</span>
 
     <XhNotificationGroup>
       <template #default="{ item }">
@@ -590,7 +590,7 @@ function nextTitle(): string {
     <xh-button variant="ghost" data-clear>
       <button data-xh-part="root">全部清空</button>
     </xh-button>
-    <span>队列：<span id="notification-max-count">0</span> 条（上限 3）</span>
+    <span data-demo-output>队列：<span id="notification-max-count">0</span> 条（上限 3）</span>
 
     <div data-xh-part="group"></div>
   </div>
@@ -662,7 +662,7 @@ function nextTitle(): string {
 
 ### 手动关闭
 
-create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不播退场动画
+create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不等卡片自己的退场，画面上由替身在原处淡出
 
 ```vue
 <script setup lang="ts">
@@ -724,7 +724,7 @@ function settle(
     <XhButton variant="outline" :disabled="!pending" @click="finish(dismiss)">
       手动收走
     </XhButton>
-    <span>队列：{{ count }} 条 · 记下的 id：{{ pending || "（无）" }}</span>
+    <span data-demo-output>队列：{{ count }} 条 · 记下的 id：{{ pending || "（无）" }}</span>
 
     <XhNotificationGroup>
       <template #default="{ item }">
@@ -761,7 +761,7 @@ function settle(
     <xh-button variant="outline" data-finish disabled>
       <button data-xh-part="root">手动收走</button>
     </xh-button>
-    <span>
+    <span data-demo-output>
       队列：<span id="notification-manual-count">0</span> 条 · 记下的 id：<span
         id="notification-manual-id"
         >（无）</span
@@ -896,7 +896,7 @@ function pop(create: Create, placement: string, label: string): void {
     >
       弹到{{ spot.label }}
     </XhButton>
-    <span>眼下有条目的位置：{{ placements.join("、") || "（无）" }}</span>
+    <span data-demo-output>眼下有条目的位置：{{ placements.join("、") || "（无）" }}</span>
 
     <!-- 一个位置一摞，没有条目的位置不必渲染 -->
     <XhNotificationGroup v-for="p in placements" :key="p" :placement="p">
@@ -939,7 +939,7 @@ function pop(create: Create, placement: string, label: string): void {
     <xh-button size="sm" variant="outline" data-spot="bottom" data-label="正下">
       <button data-xh-part="root">弹到正下</button>
     </xh-button>
-    <span>眼下有条目的位置：<span id="notification-spots-list">（无）</span></span>
+    <span data-demo-output>眼下有条目的位置：<span id="notification-spots-list">（无）</span></span>
 
     <!-- 一个位置一摞，group 自带 placement 声明自己是哪一个 -->
     <div data-xh-part="group" placement="top-start"></div>
@@ -1249,16 +1249,42 @@ import {
   XhNotificationItemIndicator,
   XhNotificationItemTitle,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 const seq = ref(0);
+const board = ref<HTMLElement | null>(null);
+const readout = ref("");
+let watcher: MutationObserver | undefined;
+
+// 生命周期与暂停态都写在卡片上（data-state / data-paused），照它回显
+function paint(): void {
+  const item = board.value?.querySelector<HTMLElement>("[data-scope='notification'][data-part='item']");
+  readout.value = item
+    ? `状态：${item.dataset.state ?? ""} · ${item.hasAttribute("data-paused") ? "计时已按住" : "计时在走"}`
+    : "";
+}
+
+onMounted(() => {
+  if (!board.value)
+    return;
+  // 重新计时会换一张卡片，子树与属性一起盯
+  watcher = new MutationObserver(paint);
+  watcher.observe(board.value, {
+    subtree: true,
+    childList: true,
+    attributes: true,
+    attributeFilter: ["data-state", "data-paused"],
+  });
+  paint();
+});
+
+onBeforeUnmount(() => watcher?.disconnect());
 </script>
 
 <template>
-  <div style="display: grid; width: 100%; gap: 12px; justify-items: center">
+  <div ref="board" style="display: grid; width: 100%; gap: 12px; justify-items: center">
     <XhNotificationItem
       :key="seq"
-      v-slot="{ item }"
       preset="toast"
       title="6 秒后自动收走"
       :duration="6000"
@@ -1267,14 +1293,12 @@ const seq = ref(0);
       <XhNotificationItemIndicator />
       <XhNotificationItemContent>
         <XhNotificationItemTitle />
-        <span style="font-size: 12px; opacity: 0.75">
-          状态：{{ item.status }} · {{ item.paused ? "计时已按住" : "计时在走" }}
-        </span>
       </XhNotificationItemContent>
       <XhNotificationItemCloseTrigger />
     </XhNotificationItem>
     <XhButton size="sm" variant="outline" @click="seq++">重新计时</XhButton>
   </div>
+  <span data-demo-output>{{ readout }}</span>
 </template>
 ```
 
@@ -1285,6 +1309,7 @@ const seq = ref(0);
     <button data-xh-part="root">重新计时</button>
   </xh-button>
 </div>
+<span id="notification-pause-readout" data-demo-output></span>
 
 <template id="notification-pause-template">
   <xh-notification-item preset="toast" title="6 秒后自动收走" duration="6000">
@@ -1292,7 +1317,6 @@ const seq = ref(0);
       <span data-xh-part="item-indicator"></span>
       <div data-xh-part="item-content">
         <div data-xh-part="item-title"></div>
-        <span data-readout style="font-size: 12px; opacity: 0.75"></span>
       </div>
       <button data-xh-part="item-close-trigger"></button>
     </div>
@@ -1302,6 +1326,7 @@ const seq = ref(0);
 <script type="module">
   const slot = document.getElementById("notification-pause-slot");
   const template = document.getElementById("notification-pause-template");
+  const readout = document.getElementById("notification-pause-readout");
   let watcher;
 
   // 生命周期与暂停态都写在卡片上，照它回显
@@ -1311,7 +1336,6 @@ const seq = ref(0);
     slot.replaceChildren(node);
 
     const item = node.querySelector('[data-xh-part="item"]');
-    const readout = node.querySelector("[data-readout]");
     const paint = () => {
       const paused = item.hasAttribute("data-paused");
       readout.textContent = `状态：${item.dataset.state ?? ""} · ${
@@ -1374,10 +1398,8 @@ function onAction(details: { id: string }): void {
       <XhNotificationItemActionTrigger>撤销</XhNotificationItemActionTrigger>
       <XhNotificationItemCloseTrigger />
     </XhNotificationItem>
-    <div style="display: flex; align-items: center; gap: 12px">
-      <XhButton size="sm" variant="outline" @click="seq++">再挂一条</XhButton>
-      <span>{{ log }}</span>
-    </div>
+    <XhButton size="sm" variant="outline" @click="seq++">再挂一条</XhButton>
+    <span data-demo-output>{{ log }}</span>
   </div>
 </template>
 ```
@@ -1385,12 +1407,10 @@ function onAction(details: { id: string }): void {
 ```html
 <div style="display: grid; width: 100%; gap: 12px; justify-items: center">
   <div id="notification-action-slot"></div>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <xh-button id="notification-action-again" size="sm" variant="outline">
-      <button data-xh-part="root">再挂一条</button>
-    </xh-button>
-    <span id="notification-action-log">（还没点）</span>
-  </div>
+  <xh-button id="notification-action-again" size="sm" variant="outline">
+    <button data-xh-part="root">再挂一条</button>
+  </xh-button>
+  <span id="notification-action-log" data-demo-output>（还没点）</span>
 </div>
 
 <template id="notification-action-template">
@@ -1449,11 +1469,12 @@ function onAction(details: { id: string }): void {
 - `preset` 决定一组缺省值：卡片落右下、每个位置最多 5 条、逐条排开、停留 5000ms；轻提示落底部居中、最多 3 条、叠成一摞、停留 4000ms，页面转入后台时暂停计时。每一项都可以用同名 prop 单独改写。
 - 九宫格落位，`placement` 决定整摞的位置，也可以逐条指定。
 - 正文（`item-description`）有上限：缺省是中档滚动面高（`--xh-viewport-h-md`，16rem），长文在正文里竖滚、滚到头不带动页面，标题与操作钮留在卡片上；`--xh-notification-description-max-h` 可以改这条上限。整摞是不吃指针、不裁切的视口定位面，撑出视口的部分既看不到也滚不到，所以卡片不随正文无限长高。
-- `max` 限制每个位置同时显示的条数，超出时先挤出低优先级，同级中挤出最旧的；设为 `Infinity` 即不限制。
+- `max` 限制每个位置同时显示的条数。每个位置最新的那一条一定留下（刚才那个操作的反馈不会一进来就被挤掉），超出时在其余条目里先挤出低优先级，同级中挤出最旧的；设为 `Infinity` 即不限制。
 - 同一个 id 再次发出即就地改写，位置不变，用于“处理中 → 已完成”；`loading` 期间换为加载环且不自动消失。
 - 每条自带计时与暂停：指针停在卡片上或焦点进入时暂停计时。`duration` 为 0 时常驻不消失。
 - `stacked` 把同一位置的几条叠成一摞：最新一条在最前，后层按层深收拢；鼠标或焦点进入后按真实高度展开，整摞计时一并按住，`Escape` 收起。
-- 轻提示预设的关闭按钮排在行尾，可悬停设备上悬停或焦点进入卡片时才显示；卡片预设的关闭按钮钉在右上角。
+- 轻提示预设的关闭按钮排在行尾，可悬停设备上悬停或焦点进入卡片时才显示；卡片预设的关闭按钮钉在右上角，距上、右各 12px。两种预设的叉都是 12px。
+- 卡片走 sheet 面（1px 描边、不透明底、单层投影），圆角 4px、缺省宽 300px（`--xh-overlay-notification-w`）、四边内衬 20px；左列类型字形 24px，标题取面板标题档、正文色，说明是 14px 正文色的正文。轻提示圆角 2px、内衬纵 10 横 16，行首字形 20px，标题 14px / medium、带语气色，说明 13px 次级色。
 
 ### 组合
 
@@ -1494,7 +1515,7 @@ function onAction(details: { id: string }): void {
 | `defaultItems` | `NotificationRecord[]` |  |  |
 | `preset` | `NotificationPreset` |  | 形态预设，默认 card。决定下面几项未写时的缺省值，以及卡片排版与关闭钮档位。 |
 | `placement` | `NotificationPlacement` |  | 默认落位：card 为 bottom-end，toast 为 bottom。 |
-| `max` | `number` |  | 每个位置最多同时保留几条，超出时先移除低优先级、同级中移除最旧的。card 为 5、toast 为 3；提供 Infinity 即不限。 |
+| `max` | `number` |  | 每个位置最多同时保留几条。最新的那一条一定留下，超出时在其余条目里先移除低优先级、同级中移除最旧的。card 为 5、toast 为 3；提供 Infinity 即不限。 |
 | `dedupe` | `NotificationDedupe` |  | 重复的处理方式，默认 'id'。 |
 | `gap` | `number` |  | 同一组内的间距（px）：card 为 16、toast 为 12。 |
 | `duration` | `number` |  | 单条未写 duration 时的默认停留毫秒：card 为 5000、toast 为 4000。 |
@@ -1694,17 +1715,17 @@ function onAction(details: { id: string }): void {
 | `--xh-notification-close-border` | `item-close-trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | notification 的 item-close-trigger 部件 border 覆盖槽。 |
 | `--xh-notification-close-fg` | `item-close-trigger` | `color` | `default` | `--xh-fg-muted` | notification 的 item-close-trigger 部件 color 覆盖槽。 |
 | `--xh-notification-close-fg-hover` | `item-close-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | notification 的 item-close-trigger 部件 color 覆盖槽。 |
-| `--xh-notification-close-inset` | `item`<br>`item-close-trigger`<br>`item-title` | `inset-block-start`<br>`inset-inline-end`<br>`padding-inline-end` | `has([data-part='item-close-trigger'])`<br>`preset=card` | `--xh-surface-action-inset` | notification 的 item、item-close-trigger、item-title 部件 inset-block-start、inset-inline-end、padding-inline-end 覆盖槽。 |
+| `--xh-notification-close-inset` | `item`<br>`item-close-trigger`<br>`item-title` | `inset-block-start`<br>`inset-inline-end`<br>`padding-inline-end` | `has([data-part='item-close-trigger'])`<br>`preset=card` | `--xh-notification-item-py`<br>`--xh-surface-action-inset` | notification 的 item、item-close-trigger、item-title 部件 inset-block-start、inset-inline-end、padding-inline-end 覆盖槽。 |
 | `--xh-notification-close-radius` | `item-close-trigger` | `border-radius` | `default` | `--xh-shape-control` | notification 的 item-close-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-notification-close-size` | `item`<br>`item-close-trigger`<br>`item-title` | `block-size`<br>`inline-size`<br>`min-inline-size`<br>`padding-inline-end` | `default`<br>`has([data-part='item-close-trigger'])`<br>`preset=card`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size`<br>`--xh-control-h-sm` | notification 的 item、item-close-trigger、item-title 部件 block-size、inline-size、min-inline-size、padding-inline-end 覆盖槽。 |
-| `--xh-notification-description-fg` | `item-description` | `color` | `default` | `--xh-fg-muted` | notification 的 item-description 部件 color 覆盖槽。 |
-| `--xh-notification-description-font-size` | `item-description` | `font-size` | `default` | `--xh-text-secondary-size` | notification 的 item-description 部件 font-size 覆盖槽。 |
+| `--xh-notification-close-size` | `item`<br>`item-close-trigger`<br>`item-title` | `block-size`<br>`inline-size`<br>`inset-block-start`<br>`min-inline-size`<br>`padding-inline-end` | `default`<br>`has([data-part='item-close-trigger'])`<br>`preset=card`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size`<br>`--xh-control-h-sm` | notification 的 item、item-close-trigger、item-title 部件 block-size、inline-size、inset-block-start、min-inline-size、padding-inline-end 覆盖槽。 |
+| `--xh-notification-description-fg` | `item`<br>`item-description` | `color` | `default`<br>`preset=toast` | `--xh-fg-default`<br>`--xh-fg-muted` | notification 的 item、item-description 部件 color 覆盖槽。 |
+| `--xh-notification-description-font-size` | `item`<br>`item-description` | `font-size` | `default`<br>`preset=toast` | `--xh-text-body-size`<br>`--xh-text-secondary-size` | notification 的 item、item-description 部件 font-size 覆盖槽。 |
 | `--xh-notification-description-leading` | `item`<br>`item-description` | `line-height` | `preset=toast` | `--xh-leading-normal` | notification 的 item、item-description 部件 line-height 覆盖槽。 |
 | `--xh-notification-description-max-h` | `item-description` | `max-block-size` | `default` | `--xh-viewport-h-md` | notification 的 item-description 部件 max-block-size 覆盖槽。 |
-| `--xh-notification-icon-size` | `item`<br>`item-action-trigger`<br>`item-close-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | notification 的 item、item-action-trigger、item-close-trigger 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-notification-indicator-fg` | `item`<br>`item-indicator` | `background-color`<br>`border-block-start-color`<br>`border-color`<br>`color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`preset=toast`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring` | `--xh-_tone-fg` | notification 的 item、item-indicator 部件 background-color、border-block-start-color、border-color、color 覆盖槽。 |
+| `--xh-notification-icon-size` | `item`<br>`item-action-trigger`<br>`item-close-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-xs` | notification 的 item、item-action-trigger、item-close-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-notification-indicator-fg` | `item`<br>`item-indicator` | `background-color`<br>`border`<br>`border-color`<br>`color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`preset=toast`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring`<br>`xh-loading-ring=overlay` | `--xh-_tone-fg` | notification 的 item、item-indicator 部件 background-color、border、border-color、color 覆盖槽。 |
 | `--xh-notification-indicator-p` | `item`<br>`item-indicator` | `padding` | `preset=toast` | `--xh-space-1` | notification 的 item、item-indicator 部件 padding 覆盖槽。 |
-| `--xh-notification-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`inline-size` | `default` | `--xh-glyph-size-md` | notification 的 item-indicator 部件 --xh-icon-size、inline-size 覆盖槽。 |
+| `--xh-notification-indicator-size` | `item`<br>`item-indicator` | `--xh-icon-size`<br>`inline-size` | `default`<br>`preset=toast` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md` | notification 的 item、item-indicator 部件 --xh-icon-size、inline-size 覆盖槽。 |
 | `--xh-notification-inset` | `group` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start`<br>`padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default`<br>`not([data-stacked])`<br>`placement=-end`<br>`placement=-start`<br>`placement=bottom`<br>`placement=top`<br>`preset=toast`<br>`stacked` | `--xh-space-4`<br>`--xh-space-6` | notification 的 group 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start、padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
 | `--xh-notification-item-bg` | `item` | `background` | `default` | `--xh-material-elevated-bg` | notification 的 item 部件 background 覆盖槽。 |
 | `--xh-notification-item-border` | `item` | `border` | `default` | `--xh-material-elevated-border` | notification 的 item 部件 border 覆盖槽。 |
@@ -1712,12 +1733,12 @@ function onAction(details: { id: string }): void {
 | `--xh-notification-item-font-size` | `item` | `font-size` | `default`<br>`preset=toast` | `--xh-text-body-size`<br>`--xh-text-label-size` | notification 的 item 部件 font-size 覆盖槽。 |
 | `--xh-notification-item-gap` | `item` | `column-gap` | `default`<br>`preset=toast` | `--xh-space-2`<br>`--xh-space-3` | notification 的 item 部件 column-gap 覆盖槽。 |
 | `--xh-notification-item-leading` | `item` | `line-height` | `default` | `--xh-text-body-leading` | notification 的 item 部件 line-height 覆盖槽。 |
-| `--xh-notification-item-px` | `item` | `inset-inline-start`<br>`padding-inline` | `default`<br>`preset=toast` | `--xh-space-4`<br>`--xh-surface-pad-lg` | notification 的 item 部件 inset-inline-start、padding-inline 覆盖槽。 |
-| `--xh-notification-item-py` | `item` | `inset-block-start`<br>`padding-block` | `default`<br>`preset=toast` | `--xh-space-3`<br>`--xh-surface-pad-lg` | notification 的 item 部件 inset-block-start、padding-block 覆盖槽。 |
-| `--xh-notification-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-overlay` | notification 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-notification-item-px` | `item` | `inset-inline-start`<br>`padding-inline` | `default`<br>`preset=toast` | `--xh-overlay-notification-p`<br>`--xh-space-4` | notification 的 item 部件 inset-inline-start、padding-inline 覆盖槽。 |
+| `--xh-notification-item-py` | `item`<br>`item-close-trigger` | `inset-block-start`<br>`padding-block` | `default`<br>`preset=card`<br>`preset=toast` | `--xh-overlay-notification-p`<br>`--xh-space-2_5` | notification 的 item、item-close-trigger 部件 inset-block-start、padding-block 覆盖槽。 |
+| `--xh-notification-item-radius` | `item` | `border-radius` | `default`<br>`preset=toast` | `--xh-shape-control`<br>`--xh-shape-overlay` | notification 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-notification-item-row-gap` | `item`<br>`item-content` | `row-gap` | `default` | `--xh-space-2` | notification 的 item、item-content 部件 row-gap 覆盖槽。 |
 | `--xh-notification-item-shadow` | `item` | `box-shadow` | `default` | `--xh-material-elevated-shadow` | notification 的 item 部件 box-shadow 覆盖槽。 |
-| `--xh-notification-item-w` | `group`<br>`item` | `inline-size` | `default`<br>`preset=toast`<br>`stacked` | `--xh-overlay-max-w-lg`<br>`--xh-overlay-toast-w` | notification 的 group、item 部件 inline-size 覆盖槽。 |
+| `--xh-notification-item-w` | `group`<br>`item` | `inline-size` | `default`<br>`preset=toast`<br>`stacked` | `--xh-overlay-notification-w`<br>`--xh-overlay-toast-w` | notification 的 group、item 部件 inline-size 覆盖槽。 |
 | `--xh-notification-layer` | `group` | `z-index` | `default` | `--xh-layer-toast` | notification 的 group 部件 z-index 覆盖槽。 |
 | `--xh-notification-progress-bg` | `item-progress` | `background` | `default` | `--xh-_tone-soft` | notification 的 item-progress 部件 background 覆盖槽。 |
 | `--xh-notification-progress-duration` | `item-progress` | `animation` | `default` | `--xh-motion-duration-slide` | notification 的 item-progress 部件 animation 覆盖槽。 |
@@ -1725,18 +1746,18 @@ function onAction(details: { id: string }): void {
 | `--xh-notification-progress-thickness` | `item-progress` | `block-size` | `default` | `--xh-space-0_5` | notification 的 item-progress 部件 block-size 覆盖槽。 |
 | `--xh-notification-stack-scale` | `*`<br>`group`<br>`item` | `scale` | `@keyframes xh-notification-stack-in`<br>`@keyframes xh-notification-stack-out`<br>`preset=toast`<br>`stacked` | `--xh-_notification-stack-scale` | notification 的 *、group、item 部件 scale 覆盖槽。 |
 | `--xh-notification-title-fg` | `item`<br>`item-title` | `color` | `default`<br>`preset=toast` | `--xh-_tone-fg`<br>`--xh-fg-default` | notification 的 item、item-title 部件 color 覆盖槽。 |
-| `--xh-notification-title-font-size` | `item-indicator`<br>`item-title` | `block-size`<br>`font-size` | `default` | `--xh-text-label-size` | notification 的 item-indicator、item-title 部件 block-size、font-size 覆盖槽。 |
-| `--xh-notification-title-font-weight` | `item-title` | `font-weight` | `default` | `--xh-font-weight-semibold` | notification 的 item-title 部件 font-weight 覆盖槽。 |
-| `--xh-notification-title-leading` | `item-title` | `line-height` | `default` | `--xh-leading-tight` | notification 的 item-title 部件 line-height 覆盖槽。 |
+| `--xh-notification-title-font-size` | `item`<br>`item-close-trigger`<br>`item-indicator`<br>`item-title` | `block-size`<br>`font-size`<br>`inset-block-start` | `default`<br>`preset=card`<br>`preset=toast` | `--xh-text-body-size`<br>`--xh-text-heading-3-size` | notification 的 item、item-close-trigger、item-indicator、item-title 部件 block-size、font-size、inset-block-start 覆盖槽。 |
+| `--xh-notification-title-font-weight` | `item`<br>`item-title` | `font-weight` | `default`<br>`preset=toast` | `--xh-font-weight-medium`<br>`--xh-text-heading-3-weight` | notification 的 item、item-title 部件 font-weight 覆盖槽。 |
+| `--xh-notification-title-leading` | `item`<br>`item-close-trigger`<br>`item-title` | `inset-block-start`<br>`line-height` | `default`<br>`preset=card`<br>`preset=toast` | `--xh-leading-normal`<br>`--xh-leading-tight` | notification 的 item、item-close-trigger、item-title 部件 inset-block-start、line-height 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-动效角色：按压 · 状态 · 指示与换位 · 出现（面板） · 导航 · 数值（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现（面板） · 导航（整幅滑入） · 数值（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-notification-progress-duration`。
 
-关键帧 `xh-notification-stack-in` · `xh-notification-stack-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-countdown` · `xh-sheet-in` · `xh-sheet-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`block-size` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-notification-stack-in` · `xh-notification-stack-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-countdown` · `xh-fade-out` · `xh-sheet-in` · `xh-sheet-out` · `xh-slide-fade-in` · `xh-slide-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`block-size` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

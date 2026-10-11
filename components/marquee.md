@@ -84,8 +84,8 @@ const directions = ["left", "right", "up", "down"] as const;
         :direction="d"
         style="
           --xh-marquee-block-size: 5rem;
-          border: 1px solid var(--xh-border-default);
-          border-radius: 6px;
+          border: var(--xh-stroke-thin) solid var(--xh-border-default);
+          border-radius: var(--xh-shape-surface);
         "
       >
         <XhMarqueeContent>
@@ -108,8 +108,8 @@ const directions = ["left", "right", "up", "down"] as const;
         data-xh-part="root"
         style="
           --xh-marquee-block-size: 5rem;
-          border: 1px solid var(--xh-border-default);
-          border-radius: 6px;
+          border: var(--xh-stroke-thin) solid var(--xh-border-default);
+          border-radius: var(--xh-shape-surface);
         "
       >
         <div data-xh-part="content">
@@ -133,8 +133,8 @@ const directions = ["left", "right", "up", "down"] as const;
         data-xh-part="root"
         style="
           --xh-marquee-block-size: 5rem;
-          border: 1px solid var(--xh-border-default);
-          border-radius: 6px;
+          border: var(--xh-stroke-thin) solid var(--xh-border-default);
+          border-radius: var(--xh-shape-surface);
         "
       >
         <div data-xh-part="content">
@@ -158,8 +158,8 @@ const directions = ["left", "right", "up", "down"] as const;
         data-xh-part="root"
         style="
           --xh-marquee-block-size: 5rem;
-          border: 1px solid var(--xh-border-default);
-          border-radius: 6px;
+          border: var(--xh-stroke-thin) solid var(--xh-border-default);
+          border-radius: var(--xh-shape-surface);
         "
       >
         <div data-xh-part="content">
@@ -183,8 +183,8 @@ const directions = ["left", "right", "up", "down"] as const;
         data-xh-part="root"
         style="
           --xh-marquee-block-size: 5rem;
-          border: 1px solid var(--xh-border-default);
-          border-radius: 6px;
+          border: var(--xh-stroke-thin) solid var(--xh-border-default);
+          border-radius: var(--xh-shape-surface);
         "
       >
         <div data-xh-part="content">
@@ -223,7 +223,7 @@ const tags = ["多租户", "字段级脱敏", "动态 API", "工作流", "代码
       <XhMarqueeRoot
         :auto-fill="fill"
         :speed="60"
-        style="max-inline-size: 420px; border: 1px solid var(--xh-border-default); border-radius: 6px"
+        style="max-inline-size: 420px; border: var(--xh-stroke-thin) solid var(--xh-border-default); border-radius: var(--xh-shape-surface)"
       >
         <XhMarqueeContent>
           <span v-for="t in tags" :key="t" style="padding: 6px 14px; white-space: nowrap">{{ t }}</span>
@@ -244,8 +244,8 @@ const tags = ["多租户", "字段级脱敏", "动态 API", "工作流", "代码
       style="
         display: block;
         max-inline-size: 420px;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 6px;
+        border: var(--xh-stroke-thin) solid var(--xh-border-default);
+        border-radius: var(--xh-shape-surface);
       "
     >
       <div data-xh-part="root">
@@ -270,8 +270,8 @@ const tags = ["多租户", "字段级脱敏", "动态 API", "工作流", "代码
       style="
         display: block;
         max-inline-size: 420px;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 6px;
+        border: var(--xh-stroke-thin) solid var(--xh-border-default);
+        border-radius: var(--xh-shape-surface);
       "
     >
       <div data-xh-part="root">
@@ -321,7 +321,7 @@ const speeds = [30, 60, 140] as const;
       <XhMarqueeRoot
         :speed="s"
         auto-fill
-        style="max-inline-size: 420px; border: 1px solid var(--xh-border-default); border-radius: 6px"
+        style="max-inline-size: 420px; border: var(--xh-stroke-thin) solid var(--xh-border-default); border-radius: var(--xh-shape-surface)"
       >
         <XhMarqueeContent>
           <a href="#" style="padding: 6px 14px; white-space: nowrap">
@@ -345,8 +345,8 @@ const speeds = [30, 60, 140] as const;
       style="
         display: block;
         max-inline-size: 420px;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 6px;
+        border: var(--xh-stroke-thin) solid var(--xh-border-default);
+        border-radius: var(--xh-shape-surface);
       "
     >
       <div data-xh-part="root">
@@ -374,8 +374,8 @@ const speeds = [30, 60, 140] as const;
       style="
         display: block;
         max-inline-size: 420px;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 6px;
+        border: var(--xh-stroke-thin) solid var(--xh-border-default);
+        border-radius: var(--xh-shape-surface);
       "
     >
       <div data-xh-part="root">
@@ -403,8 +403,8 @@ const speeds = [30, 60, 140] as const;
       style="
         display: block;
         max-inline-size: 420px;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 6px;
+        border: var(--xh-stroke-thin) solid var(--xh-border-default);
+        border-radius: var(--xh-shape-surface);
       "
     >
       <div data-xh-part="root">
@@ -440,7 +440,7 @@ const notices = ["系统将于本周六 02:00 起停机维护两小时", "新版
 <template>
   <XhMarqueeRoot
     auto-fill
-    style="max-inline-size: 420px; border: 1px solid var(--xh-border-default); border-radius: 6px"
+    style="max-inline-size: 420px; border: var(--xh-stroke-thin) solid var(--xh-border-default); border-radius: var(--xh-shape-surface)"
   >
     <XhMarqueeContent>
       <span v-for="n in notices" :key="n" style="padding: 10px 14px; white-space: nowrap">{{ n }}</span>
@@ -457,8 +457,8 @@ const notices = ["系统将于本周六 02:00 起停机维护两小时", "新版
   style="
     display: block;
     max-inline-size: 420px;
-    border: 1px solid var(--xh-border-default);
-    border-radius: 6px;
+    border: var(--xh-stroke-thin) solid var(--xh-border-default);
+    border-radius: var(--xh-shape-surface);
   "
 >
   <div data-xh-part="root">

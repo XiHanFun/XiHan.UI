@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`json-text`);document.getElementById(`json-text-toggle`).addEventListener(`checked-change`,t=>{e.view=t.detail.checked?`text`:`tree`}),e.value={orderNo:`SO-2026-0825-0417`,amount:12.5,items:[{sku:`A-1001`,qty:2},{sku:`B-2003`,qty:1}],remark:`跨境订单，需人工复核收件地址与税号`}}export{e as default};

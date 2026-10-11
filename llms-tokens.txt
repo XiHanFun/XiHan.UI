@@ -1,6 +1,6 @@
 # 曦寒视图组件 · 设计令牌
 
-共 667 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
+共 791 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
 「改写档」列出还有哪几份令牌源重新给过它——深色、紧凑、更高对比度、减弱动效、打印各是一档。
 
 覆盖时在 `:root` 上直接设同名令牌即可，这一层是公开面。带下划线前缀的 `--xh-_*` 是私有槽，不要在外面设。
@@ -21,15 +21,15 @@
 | `--xh-color-brand-900` | color | `oklch(0.379 0.132 258)` | — |
 | `--xh-color-brand-950` | color | `oklch(0.282 0.089 258)` | — |
 | `--xh-color-neutral-0` | color | `oklch(1 0 0)` | — |
-| `--xh-color-neutral-50` | color | `oklch(0.985 0 0)` | — |
-| `--xh-color-neutral-100` | color | `oklch(0.967 0.001 258)` | — |
-| `--xh-color-neutral-200` | color | `oklch(0.922 0.002 258)` | — |
-| `--xh-color-neutral-300` | color | `oklch(0.87 0.003 258)` | — |
-| `--xh-color-neutral-400` | color | `oklch(0.708 0.005 258)` | — |
-| `--xh-color-neutral-450` | color | `oklch(0.65 0.006 258)` | — |
-| `--xh-color-neutral-500` | color | `oklch(0.556 0.006 258)` | — |
-| `--xh-color-neutral-550` | color | `oklch(0.52 0.006 258)` | — |
-| `--xh-color-neutral-600` | color | `oklch(0.439 0.006 258)` | — |
+| `--xh-color-neutral-50` | color | `oklch(0.979 0.003 265)` | — |
+| `--xh-color-neutral-100` | color | `oklch(0.964 0.004 265)` | — |
+| `--xh-color-neutral-200` | color | `oklch(0.922 0.007 270)` | — |
+| `--xh-color-neutral-300` | color | `oklch(0.87 0.011 262)` | — |
+| `--xh-color-neutral-400` | color | `oklch(0.7 0.016 258)` | — |
+| `--xh-color-neutral-450` | color | `oklch(0.649 0.018 253)` | — |
+| `--xh-color-neutral-500` | color | `oklch(0.556 0.018 255)` | — |
+| `--xh-color-neutral-550` | color | `oklch(0.52 0.018 256)` | — |
+| `--xh-color-neutral-600` | color | `oklch(0.461 0.018 258)` | — |
 | `--xh-color-neutral-650` | color | `oklch(0.4 0.006 258)` | — |
 | `--xh-color-neutral-700` | color | `oklch(0.371 0.006 258)` | — |
 | `--xh-color-neutral-750` | color | `oklch(0.28 0.006 258)` | — |
@@ -206,9 +206,9 @@
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
 | `--xh-radius-none` | dimension | `0px` | — |
-| `--xh-radius-sm` | dimension | `4px` | — |
-| `--xh-radius-md` | dimension | `8px` | — |
-| `--xh-radius-lg` | dimension | `12px` | — |
+| `--xh-radius-sm` | dimension | `2px` | — |
+| `--xh-radius-md` | dimension | `4px` | — |
+| `--xh-radius-lg` | dimension | `8px` | — |
 | `--xh-radius-xl` | dimension | `16px` | — |
 | `--xh-radius-full` | dimension | `9999px` | — |
 
@@ -221,9 +221,11 @@
 | `--xh-font-size-sm` | dimension | `0.8125rem` | — |
 | `--xh-font-size-md` | dimension | `0.875rem` | — |
 | `--xh-font-size-lg` | dimension | `1rem` | — |
-| `--xh-font-size-xl` | dimension | `1.125rem` | — |
-| `--xh-font-size-2xl` | dimension | `1.375rem` | — |
+| `--xh-font-size-xl` | dimension | `1.25rem` | — |
+| `--xh-font-size-2xl` | dimension | `1.5rem` | — |
 | `--xh-font-size-3xl` | dimension | `1.75rem` | — |
+| `--xh-font-size-4xl` | dimension | `2rem` | — |
+| `--xh-font-size-5xl` | dimension | `2.25rem` | — |
 | `--xh-font-weight-regular` | number | `400` | — |
 | `--xh-font-weight-medium` | number | `500` | — |
 | `--xh-font-weight-semibold` | number | `600` | — |
@@ -323,12 +325,14 @@
 
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
-| `--xh-control-h-sm` | dimension | `32px` | compact |
-| `--xh-control-h-md` | dimension | `36px` | compact |
-| `--xh-control-h-lg` | dimension | `40px` | compact |
-| `--xh-control-box-sm` | dimension | `32px` | compact |
-| `--xh-control-box-md` | dimension | `40px` | compact |
-| `--xh-control-box-lg` | dimension | `48px` | compact |
+| `--xh-control-h-sm` | dimension | `28px` | compact |
+| `--xh-control-h-md` | dimension | `32px` | compact |
+| `--xh-control-h-lg` | dimension | `36px` | compact |
+| `--xh-control-box-sm` | dimension | `28px` | compact |
+| `--xh-control-box-md` | dimension | `36px` | compact |
+| `--xh-control-box-lg` | dimension | `44px` | compact |
+| `--xh-control-hit-coarse` | dimension | `44px` | — |
+| `--xh-control-float-md` | dimension | `40px` | compact |
 | `--xh-control-w` | dimension | `16rem` | — |
 | `--xh-control-min-w` | dimension | `12rem` | — |
 | `--xh-control-input-min-w` | dimension | `4rem` | — |
@@ -347,7 +351,9 @@
 | `--xh-control-caption-md` | dimension | `var(--xh-font-size-sm)` | — |
 | `--xh-control-caption-lg` | dimension | `var(--xh-font-size-md)` | — |
 | `--xh-control-action-size` | dimension | `24px` | compact |
+| `--xh-control-target-min` | dimension | `24px` | — |
 | `--xh-control-indicator-size` | dimension | `var(--xh-control-indicator-md)` | — |
+| `--xh-control-indicator-xs` | dimension | `10px` | compact |
 | `--xh-control-indicator-sm` | dimension | `12px` | compact |
 | `--xh-control-indicator-md` | dimension | `16px` | compact |
 | `--xh-control-indicator-lg` | dimension | `20px` | compact |
@@ -366,6 +372,7 @@
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
 | `--xh-glyph-size-text` | dimension | `1em` | — |
+| `--xh-glyph-size-xs` | dimension | `12px` | — |
 | `--xh-glyph-size-sm` | dimension | `16px` | — |
 | `--xh-glyph-size-md` | dimension | `20px` | — |
 | `--xh-glyph-size-lg` | dimension | `24px` | — |
@@ -380,9 +387,11 @@
 | `--xh-glyph-mark-check` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12.5L9.5 18L20 6'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-edit` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18.5 2.5L21.5 5.5L8 19L3.5 20.5L5 16Z'/%3E%3Cpath d='M16.4 4.6L19.4 7.6'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-minus` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12H19'/%3E%3C/svg%3E")` | — |
+| `--xh-glyph-mark-slash` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 5L6 19'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-plus` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5V19'/%3E%3Cpath d='M5 12H19'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-close` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6L18 18'/%3E%3Cpath d='M18 6L6 18'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-download` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3Cpath d='M7 10L12 15L17 10'/%3E%3Cpath d='M12 3V15'/%3E%3C/svg%3E")` | — |
+| `--xh-glyph-mark-file` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z'/%3E%3Cpath d='M14 2.5V6a2 2 0 0 0 2 2h3.5'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-chevron-down` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9L12 15L18 9'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-chevron-up` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 15L12 9L18 15'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-chevron-left` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 6L9 12L15 18'/%3E%3C/svg%3E")` | — |
@@ -436,21 +445,24 @@
 | `--xh-list-item-py-sm` | dimension | `var(--xh-space-2)` | compact |
 | `--xh-list-item-py-md` | dimension | `var(--xh-space-3)` | compact |
 | `--xh-list-item-py-lg` | dimension | `var(--xh-space-4)` | compact |
-| `--xh-list-item-px-sm` | dimension | `var(--xh-space-3)` | compact |
-| `--xh-list-item-px-md` | dimension | `var(--xh-space-4)` | compact |
-| `--xh-list-item-px-lg` | dimension | `var(--xh-space-5)` | compact |
+| `--xh-list-item-px-sm` | dimension | `var(--xh-space-4)` | compact |
+| `--xh-list-item-px-md` | dimension | `var(--xh-space-5)` | compact |
+| `--xh-list-item-px-lg` | dimension | `var(--xh-space-6)` | compact |
 | `--xh-list-option-py-sm` | dimension | `var(--xh-space-1)` | compact |
 | `--xh-list-option-py-md` | dimension | `var(--xh-space-1_5)` | compact |
 | `--xh-list-option-py-lg` | dimension | `var(--xh-space-2)` | compact |
-| `--xh-list-option-gap` | dimension | `var(--xh-space-0_5)` | — |
+| `--xh-list-option-h-sm` | dimension | `var(--xh-control-h-md)` | — |
+| `--xh-list-option-h-md` | dimension | `var(--xh-control-h-lg)` | — |
+| `--xh-list-option-h-lg` | dimension | `calc(var(--xh-control-h-lg) + var(--xh-space-1))` | — |
+| `--xh-list-option-gap` | dimension | `var(--xh-space-0)` | — |
 
 ## table
 
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
-| `--xh-table-cell-py-sm` | dimension | `var(--xh-space-1)` | compact |
-| `--xh-table-cell-py-md` | dimension | `var(--xh-space-2)` | compact |
-| `--xh-table-cell-py-lg` | dimension | `var(--xh-space-3)` | compact |
+| `--xh-table-cell-py-sm` | dimension | `var(--xh-space-2)` | compact |
+| `--xh-table-cell-py-md` | dimension | `var(--xh-space-3)` | compact |
+| `--xh-table-cell-py-lg` | dimension | `var(--xh-space-4)` | compact |
 
 ## shape
 
@@ -459,7 +471,7 @@
 | `--xh-shape-inset` | dimension | `var(--xh-radius-sm)` | — |
 | `--xh-shape-control` | dimension | `var(--xh-radius-sm)` | — |
 | `--xh-shape-surface` | dimension | `var(--xh-radius-md)` | — |
-| `--xh-shape-overlay` | dimension | `var(--xh-radius-lg)` | — |
+| `--xh-shape-overlay` | dimension | `var(--xh-shape-surface)` | — |
 | `--xh-shape-circle` | dimension | `50%` | — |
 | `--xh-shape-pill` | dimension | `var(--xh-radius-full)` | — |
 
@@ -483,10 +495,10 @@
 
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
-| `--xh-elevation-raised` | shadow | `var(--xh-shadow-sm)` | dark / print |
-| `--xh-elevation-lifted` | shadow | `0 1px 2px -0.5px oklch(0.145 0.005 258 / 0.06), 0 3px 6px -2px oklch(0.145 0.005 258 / 0.06), 0 6px 12px -5px oklch(0.145 0.005 258 / 0.05)` | dark / print |
-| `--xh-elevation-floating` | shadow | `var(--xh-shadow-md)` | dark / print |
-| `--xh-elevation-sheet` | shadow | `var(--xh-shadow-lg)` | dark / print |
+| `--xh-elevation-raised` | shadow | `none` | dark / print |
+| `--xh-elevation-lifted` | shadow | `0 4px 10px oklch(0 0 0 / 0.1)` | dark / print |
+| `--xh-elevation-floating` | shadow | `0 4px 10px oklch(0 0 0 / 0.1)` | dark / print |
+| `--xh-elevation-sheet` | shadow | `0 4px 12px oklch(0 0 0 / 0.15)` | dark / print |
 
 ## motion
 
@@ -504,7 +516,7 @@
 | `--xh-motion-duration-release` | duration | `var(--xh-duration-normal)` | reduce |
 | `--xh-motion-duration-attention` | duration | `calc(var(--xh-duration-slow) * 2)` | reduce |
 | `--xh-motion-duration-glint` | duration | `calc(var(--xh-duration-slow) * 2)` | reduce |
-| `--xh-motion-duration-reveal` | duration | `calc(var(--xh-duration-slow) * 2)` | reduce |
+| `--xh-motion-duration-reveal` | duration | `calc(var(--xh-duration-slow) * 3)` | reduce |
 | `--xh-motion-duration-morph` | duration | `calc(var(--xh-duration-normal) * 2)` | reduce |
 | `--xh-motion-stagger-step` | duration | `calc(var(--xh-duration-normal) / 5)` | reduce |
 | `--xh-motion-ease-continuous` | cubicBezier | `var(--xh-ease-standard)` | — |
@@ -517,7 +529,7 @@
 | `--xh-motion-ease-press` | cubicBezier | `var(--xh-ease-standard)` | — |
 | `--xh-motion-ease-release` | cubicBezier | `var(--xh-ease-out-strong)` | — |
 | `--xh-motion-ease-breathe` | cubicBezier | `var(--xh-ease-sine-in-out)` | — |
-| `--xh-motion-loop-spin` | duration | `640ms` | — |
+| `--xh-motion-loop-spin` | duration | `1000ms` | — |
 | `--xh-motion-loop-caret` | duration | `1000ms` | — |
 | `--xh-motion-loop-shimmer` | duration | `1600ms` | — |
 | `--xh-motion-loop-breathe` | duration | `3600ms` | — |
@@ -533,8 +545,9 @@
 | `--xh-motion-scale-enter` | number | `0.96` | reduce |
 | `--xh-motion-scale-exit` | number | `0.98` | reduce |
 | `--xh-motion-scale-stack` | number | `0.95` | reduce |
-| `--xh-motion-scale-press` | number | `0.97` | reduce |
+| `--xh-motion-scale-press` | number | `1` | — |
 | `--xh-motion-scale-drag` | number | `1.12` | reduce |
+| `--xh-motion-scale-emphasis` | number | `1.2` | reduce |
 | `--xh-motion-scale-squash` | number | `0.86` | reduce |
 | `--xh-motion-spring-snappy-stiffness` | number | `380` | — |
 | `--xh-motion-spring-snappy-damping` | number | `30` | — |
@@ -603,19 +616,59 @@
 | --- | --- | --- | --- |
 | `--xh-track-thickness` | dimension | `6px` | — |
 | `--xh-track-thumb-size` | dimension | `18px` | — |
+| `--xh-track-thickness-sm` | dimension | `var(--xh-stroke-strong)` | — |
+| `--xh-track-thickness-md` | dimension | `var(--xh-space-1)` | — |
+| `--xh-track-thickness-lg` | dimension | `var(--xh-space-2)` | — |
+| `--xh-track-band-thickness-sm` | dimension | `var(--xh-space-2)` | — |
+| `--xh-track-band-thickness-md` | dimension | `var(--xh-space-3)` | — |
+| `--xh-track-band-thickness-lg` | dimension | `var(--xh-space-4)` | — |
+| `--xh-track-thumb-size-sm` | dimension | `var(--xh-space-2_5)` | — |
+| `--xh-track-thumb-size-md` | dimension | `var(--xh-space-3)` | — |
+| `--xh-track-thumb-size-lg` | dimension | `var(--xh-space-4)` | — |
+
+## chip
+
+| 令牌 | 类型 | 缺省值 | 改写档 |
+| --- | --- | --- | --- |
+| `--xh-chip-h-sm` | dimension | `var(--xh-control-indicator-lg)` | — |
+| `--xh-chip-h-md` | dimension | `var(--xh-control-action-size)` | — |
+| `--xh-chip-h-lg` | dimension | `var(--xh-control-h-sm)` | — |
+
+## marker
+
+| 令牌 | 类型 | 缺省值 | 改写档 |
+| --- | --- | --- | --- |
+| `--xh-marker-size-sm` | dimension | `var(--xh-control-action-size)` | — |
+| `--xh-marker-size-md` | dimension | `var(--xh-control-h-sm)` | — |
+| `--xh-marker-size-lg` | dimension | `var(--xh-control-h-md)` | — |
 
 ## nav
 
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
+| `--xh-nav-row-h-sm` | dimension | `var(--xh-control-h-md)` | — |
+| `--xh-nav-row-h-md` | dimension | `calc(var(--xh-control-h-lg) + var(--xh-space-1))` | — |
+| `--xh-nav-row-h-lg` | dimension | `var(--xh-control-box-lg)` | — |
 | `--xh-nav-link-max-w` | dimension | `12rem` | — |
+
+## app
+
+| 令牌 | 类型 | 缺省值 | 改写档 |
+| --- | --- | --- | --- |
+| `--xh-app-header-h` | dimension | `3.75rem` | — |
 
 ## sider
 
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
-| `--xh-sider-w` | dimension | `15rem` | — |
+| `--xh-sider-w` | dimension | `13.75rem` | — |
 | `--xh-sider-collapsed-w` | dimension | `4rem` | — |
+
+## dropzone
+
+| 令牌 | 类型 | 缺省值 | 改写档 |
+| --- | --- | --- | --- |
+| `--xh-dropzone-min-h` | dimension | `10rem` | — |
 
 ## viewport
 
@@ -633,10 +686,15 @@
 | `--xh-overlay-arrow-size` | dimension | `var(--xh-space-2)` | — |
 | `--xh-overlay-min-w` | dimension | `12rem` | — |
 | `--xh-overlay-menu-min-w` | dimension | `10rem` | — |
+| `--xh-overlay-cascade-min-w` | dimension | `7.5rem` | — |
 | `--xh-overlay-column-min-w` | dimension | `3.5rem` | — |
+| `--xh-overlay-color-area-h` | dimension | `11rem` | — |
 | `--xh-overlay-column-item-h` | dimension | `calc(var(--xh-control-h-sm) - var(--xh-space-1))` | — |
-| `--xh-overlay-calendar-column-h` | dimension | `calc(var(--xh-control-h-sm) * 7 + var(--xh-space-7))` | — |
-| `--xh-overlay-menu-max-h` | dimension | `20rem` | compact |
+| `--xh-overlay-calendar-column-h` | dimension | `calc(var(--xh-control-h-md) + (var(--xh-control-action-size) + var(--xh-space-1_5) * 2) * 6 + var(--xh-space-3) * 2)` | — |
+| `--xh-overlay-calendar-column-h-coarse` | dimension | `calc(var(--xh-control-h-md) + 44px * 6 + var(--xh-space-3) * 2)` | — |
+| `--xh-overlay-time-column-w` | dimension | `4rem` | — |
+| `--xh-overlay-time-column-h` | dimension | `calc((var(--xh-control-action-size) + var(--xh-space-2)) * 7)` | — |
+| `--xh-overlay-menu-max-h` | dimension | `13rem` | compact |
 | `--xh-overlay-max-w-sm` | dimension | `16rem` | — |
 | `--xh-overlay-max-w` | dimension | `20rem` | — |
 | `--xh-overlay-max-w-lg` | dimension | `24rem` | — |
@@ -648,6 +706,12 @@
 | `--xh-overlay-drawer-w-sm` | dimension | `16rem` | — |
 | `--xh-overlay-drawer-w-md` | dimension | `20rem` | — |
 | `--xh-overlay-drawer-w-lg` | dimension | `28rem` | — |
+| `--xh-overlay-header-h` | dimension | `calc(var(--xh-control-h-md) + var(--xh-space-4))` | — |
+| `--xh-overlay-sheet-px` | dimension | `var(--xh-space-5)` | compact |
+| `--xh-overlay-sheet-body-py` | dimension | `var(--xh-space-6)` | compact |
+| `--xh-overlay-sheet-footer-py` | dimension | `var(--xh-space-4)` | compact |
+| `--xh-overlay-notification-w` | dimension | `18.75rem` | — |
+| `--xh-overlay-notification-p` | dimension | `var(--xh-space-5)` | compact |
 | `--xh-overlay-toast-w` | dimension | `28.75rem` | — |
 | `--xh-overlay-backdrop-blur` | dimension | `12px` | — |
 
@@ -656,27 +720,29 @@
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
 | `--xh-text-label-size` | dimension | `var(--xh-font-size-md)` | — |
-| `--xh-text-label-weight` | number | `var(--xh-font-weight-medium)` | — |
+| `--xh-text-label-weight` | number | `var(--xh-font-weight-regular)` | — |
 | `--xh-text-body-size` | dimension | `var(--xh-font-size-md)` | — |
 | `--xh-text-body-leading` | number | `var(--xh-leading-normal)` | — |
+| `--xh-text-body-line-h` | dimension | `calc(var(--xh-text-body-size) * var(--xh-text-body-leading))` | — |
 | `--xh-text-prose-leading` | number | `var(--xh-leading-relaxed)` | — |
 | `--xh-text-body-weight` | number | `var(--xh-font-weight-regular)` | — |
 | `--xh-text-code-leading` | dimension | `1.5rem` | — |
 | `--xh-text-secondary-size` | dimension | `var(--xh-font-size-sm)` | — |
-| `--xh-text-heading-3-size` | dimension | `var(--xh-font-size-xl)` | — |
-| `--xh-text-heading-3-weight` | number | `var(--xh-font-weight-semibold)` | — |
-| `--xh-text-heading-1-size` | dimension | `var(--xh-font-size-3xl)` | — |
-| `--xh-text-heading-1-weight` | number | `var(--xh-font-weight-semibold)` | — |
-| `--xh-text-heading-2-size` | dimension | `var(--xh-font-size-2xl)` | — |
-| `--xh-text-heading-2-weight` | number | `var(--xh-font-weight-semibold)` | — |
+| `--xh-text-heading-3-size` | dimension | `var(--xh-font-size-lg)` | — |
+| `--xh-text-heading-3-weight` | number | `var(--xh-font-weight-medium)` | — |
+| `--xh-text-heading-1-size` | dimension | `var(--xh-font-size-2xl)` | — |
+| `--xh-text-heading-1-weight` | number | `var(--xh-font-weight-medium)` | — |
+| `--xh-text-heading-2-size` | dimension | `var(--xh-font-size-xl)` | — |
+| `--xh-text-heading-2-weight` | number | `var(--xh-font-weight-medium)` | — |
+| `--xh-text-display-size` | dimension | `var(--xh-font-size-3xl)` | — |
 | `--xh-text-caption-size` | dimension | `var(--xh-font-size-xs)` | — |
 
 ## switch
 
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
-| `--xh-switch-track-h-sm` | dimension | `18px` | compact |
-| `--xh-switch-track-h-md` | dimension | `22px` | compact |
+| `--xh-switch-track-h-sm` | dimension | `16px` | compact |
+| `--xh-switch-track-h-md` | dimension | `24px` | compact |
 | `--xh-switch-track-h-lg` | dimension | `28px` | compact |
 
 ## measure
@@ -697,7 +763,9 @@
 | `--xh-surface-pad-sm` | dimension | `var(--xh-space-2)` | compact |
 | `--xh-surface-pad-md` | dimension | `var(--xh-space-3)` | compact |
 | `--xh-surface-pad-lg` | dimension | `var(--xh-space-4)` | compact |
+| `--xh-surface-pad-xl` | dimension | `var(--xh-space-5)` | compact |
 | `--xh-surface-action-inset` | dimension | `var(--xh-space-3)` | — |
+| `--xh-surface-header-h` | dimension | `46px` | compact |
 
 ## chart
 
@@ -713,21 +781,21 @@
 | `--xh-chart-tick-length` | dimension | `var(--xh-space-1)` | — |
 | `--xh-chart-label-gap` | dimension | `var(--xh-space-1)` | compact |
 | `--xh-chart-legend-scale-width` | dimension | `calc(var(--xh-space-8) * 3)` | — |
-| `--xh-chart-area-alpha` | number | `0.1` | — |
+| `--xh-chart-area-alpha` | number | `0.2` | — |
 | `--xh-chart-link-alpha` | number | `0.35` | — |
 | `--xh-chart-dim-alpha` | number | `0.3` | — |
 | `--xh-chart-pending-alpha` | number | `0.6` | — |
 | `--xh-chart-categorical-other` | color | `var(--xh-color-neutral-500)` | dark |
 | `--xh-chart-deemphasis` | color | `var(--xh-color-neutral-300)` | dark |
-| `--xh-chart-sequential-start` | color | `var(--xh-color-indigo-100)` | dark |
-| `--xh-chart-sequential-mid` | color | `var(--xh-color-indigo-400)` | dark |
-| `--xh-chart-sequential-end` | color | `var(--xh-color-indigo-800)` | dark |
-| `--xh-chart-ordinal-1` | color | `var(--xh-color-indigo-900)` | dark |
-| `--xh-chart-ordinal-2` | color | `var(--xh-color-indigo-800)` | dark |
-| `--xh-chart-ordinal-3` | color | `var(--xh-color-indigo-700)` | dark |
-| `--xh-chart-ordinal-4` | color | `var(--xh-color-indigo-600)` | dark |
-| `--xh-chart-ordinal-5` | color | `var(--xh-color-indigo-500)` | dark |
-| `--xh-chart-ordinal-6` | color | `var(--xh-color-indigo-400)` | dark |
+| `--xh-chart-sequential-start` | color | `var(--xh-color-brand-100)` | dark |
+| `--xh-chart-sequential-mid` | color | `var(--xh-color-brand-400)` | dark |
+| `--xh-chart-sequential-end` | color | `var(--xh-color-brand-800)` | dark |
+| `--xh-chart-ordinal-1` | color | `var(--xh-color-brand-900)` | dark |
+| `--xh-chart-ordinal-2` | color | `var(--xh-color-brand-800)` | dark |
+| `--xh-chart-ordinal-3` | color | `var(--xh-color-brand-700)` | dark |
+| `--xh-chart-ordinal-4` | color | `var(--xh-color-brand-600)` | dark |
+| `--xh-chart-ordinal-5` | color | `var(--xh-color-brand-500)` | dark |
+| `--xh-chart-ordinal-6` | color | `var(--xh-color-brand-400)` | dark |
 | `--xh-chart-diverging-negative` | color | `var(--xh-color-amber-600)` | dark |
 | `--xh-chart-diverging-center` | color | `var(--xh-color-neutral-100)` | dark |
 | `--xh-chart-diverging-positive` | color | `var(--xh-color-blue-600)` | dark |
@@ -755,6 +823,70 @@
 | `--xh-chart-on-categorical-6` |  | `var(--xh-color-neutral-0)` | — |
 | `--xh-chart-on-categorical-7` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-on-categorical-8` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-categorical-1` |  | `var(--xh-color-indigo-500)` | — |
+| `--xh-chart-palette-categorical-2` |  | `var(--xh-color-lime-500)` | — |
+| `--xh-chart-palette-categorical-3` |  | `var(--xh-color-pink-600)` | — |
+| `--xh-chart-palette-categorical-4` |  | `var(--xh-color-amber-500)` | — |
+| `--xh-chart-palette-categorical-5` |  | `var(--xh-color-blue-700)` | — |
+| `--xh-chart-palette-categorical-6` |  | `var(--xh-color-green-700)` | — |
+| `--xh-chart-palette-categorical-7` |  | `var(--xh-color-purple-500)` | — |
+| `--xh-chart-palette-categorical-8` |  | `var(--xh-color-teal-500)` | — |
+| `--xh-chart-palette-categorical-on-1` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-categorical-on-2` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-categorical-on-3` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-categorical-on-4` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-categorical-on-5` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-categorical-on-6` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-categorical-on-7` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-categorical-on-8` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-monochrome-1` |  | `var(--xh-color-brand-600)` | — |
+| `--xh-chart-palette-monochrome-2` |  | `var(--xh-color-brand-500)` | — |
+| `--xh-chart-palette-monochrome-3` |  | `var(--xh-color-brand-400)` | — |
+| `--xh-chart-palette-monochrome-4` |  | `var(--xh-color-brand-300)` | — |
+| `--xh-chart-palette-monochrome-5` |  | `var(--xh-color-brand-200)` | — |
+| `--xh-chart-palette-monochrome-6` |  | `var(--xh-color-brand-100)` | — |
+| `--xh-chart-palette-monochrome-7` |  | `var(--xh-color-brand-50)` | — |
+| `--xh-chart-palette-monochrome-8` |  | `color-mix(in oklab, var(--xh-color-brand-50) 50%, var(--xh-bg-surface))` | — |
+| `--xh-chart-palette-monochrome-on-1` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-monochrome-on-2` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-monochrome-on-3` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-monochrome-on-4` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-monochrome-on-5` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-monochrome-on-6` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-monochrome-on-7` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-monochrome-on-8` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-brand-1` |  | `var(--xh-color-indigo-600)` | — |
+| `--xh-chart-palette-brand-2` |  | `var(--xh-color-teal-500)` | — |
+| `--xh-chart-palette-brand-3` |  | `var(--xh-color-pink-600)` | — |
+| `--xh-chart-palette-brand-4` |  | `var(--xh-color-blue-500)` | — |
+| `--xh-chart-palette-brand-5` |  | `var(--xh-color-purple-600)` | — |
+| `--xh-chart-palette-brand-6` |  | `var(--xh-color-cyan-600)` | — |
+| `--xh-chart-palette-brand-7` |  | `var(--xh-color-purple-500)` | — |
+| `--xh-chart-palette-brand-8` |  | `var(--xh-color-blue-700)` | — |
+| `--xh-chart-palette-brand-on-1` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-brand-on-2` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-brand-on-3` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-brand-on-4` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-brand-on-5` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-brand-on-6` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-brand-on-7` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-brand-on-8` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-muted-1` |  | `color-mix(in oklab, var(--xh-color-indigo-500) 40%, var(--xh-color-neutral-450))` | — |
+| `--xh-chart-palette-muted-2` |  | `color-mix(in oklab, var(--xh-color-amber-600) 55%, var(--xh-color-neutral-500))` | — |
+| `--xh-chart-palette-muted-3` |  | `color-mix(in oklab, var(--xh-color-green-500) 40%, var(--xh-color-neutral-450))` | — |
+| `--xh-chart-palette-muted-4` |  | `color-mix(in oklab, var(--xh-color-blue-600) 55%, var(--xh-color-neutral-500))` | — |
+| `--xh-chart-palette-muted-5` |  | `color-mix(in oklab, var(--xh-color-orange-500) 40%, var(--xh-color-neutral-450))` | — |
+| `--xh-chart-palette-muted-6` |  | `color-mix(in oklab, var(--xh-color-purple-600) 40%, var(--xh-color-neutral-500))` | — |
+| `--xh-chart-palette-muted-7` |  | `color-mix(in oklab, var(--xh-color-lime-600) 40%, var(--xh-color-neutral-500))` | — |
+| `--xh-chart-palette-muted-8` |  | `color-mix(in oklab, var(--xh-color-pink-500) 40%, var(--xh-color-neutral-450))` | — |
+| `--xh-chart-palette-muted-on-1` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-muted-on-2` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-muted-on-3` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-muted-on-4` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-muted-on-5` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-muted-on-6` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-muted-on-7` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-muted-on-8` |  | `var(--xh-color-neutral-950)` | — |
 
 ## direction
 
@@ -777,12 +909,12 @@
 | `--xh-material-solid-fg` |  | `var(--xh-fg-default)` | — |
 | `--xh-material-solid-fg-muted` |  | `var(--xh-fg-muted)` | — |
 | `--xh-material-solid-focus-surface` |  | `var(--xh-bg-surface)` | — |
-| `--xh-material-elevated-bg` |  | `oklch(0.99 0.003 258)` | — |
+| `--xh-material-elevated-bg` |  | `var(--xh-bg-surface)` | — |
 | `--xh-material-elevated-backdrop` |  | `none` | — |
-| `--xh-material-elevated-border` |  | `oklch(0.145 0.005 258 / 0.28)` | — |
+| `--xh-material-elevated-border` |  | `var(--xh-border-default)` | — |
 | `--xh-material-elevated-highlight` |  | `oklch(0 0 0 / 0)` | — |
-| `--xh-material-elevated-shadow` |  | `0 2px 4px -2px oklch(0.145 0.005 258 / 0.12), 0 12px 28px -12px oklch(0.145 0.005 258 / 0.16), 0 32px 64px -20px oklch(0.145 0.005 258 / 0.18)` | — |
-| `--xh-material-elevated-separator` |  | `oklch(0.145 0.005 258 / 0.2)` | — |
+| `--xh-material-elevated-shadow` |  | `0 4px 12px oklch(0 0 0 / 0.15)` | — |
+| `--xh-material-elevated-separator` |  | `var(--xh-border-subtle)` | — |
 | `--xh-material-elevated-fg` |  | `var(--xh-fg-default)` | — |
 | `--xh-material-elevated-fg-muted` |  | `var(--xh-color-neutral-700)` | — |
 | `--xh-material-elevated-focus-surface` |  | `var(--xh-bg-surface)` | — |
@@ -795,15 +927,15 @@
 | `--xh-material-soft-fg` |  | `var(--xh-fg-default)` | — |
 | `--xh-material-soft-fg-muted` |  | `var(--xh-fg-muted)` | — |
 | `--xh-material-soft-focus-surface` |  | `var(--xh-material-soft-bg)` | — |
-| `--xh-material-frosted-compact-alpha` |  | `var(--xh-alpha-ultra-high)` | — |
-| `--xh-material-frosted-compact-backdrop` |  | `blur(var(--xh-blur-sm)) saturate(104%)` | — |
-| `--xh-material-frosted-compact-shadow` |  | `0 1px 2px -1px oklch(0.145 0.005 258 / 0.08), 0 6px 16px -8px oklch(0.145 0.005 258 / 0.12)` | — |
-| `--xh-material-frosted-bg` |  | `oklch(0.99 0.003 258 / var(--xh-alpha-high))` | — |
-| `--xh-material-frosted-backdrop` |  | `blur(var(--xh-blur-md)) saturate(108%)` | — |
-| `--xh-material-frosted-border` |  | `oklch(0.145 0.005 258 / 0.14)` | — |
-| `--xh-material-frosted-highlight` |  | `oklch(1 0 0 / 0.52)` | — |
-| `--xh-material-frosted-shadow` |  | `0 2px 4px -2px oklch(0.145 0.005 258 / 0.1), 0 12px 28px -12px oklch(0.145 0.005 258 / 0.16)` | — |
-| `--xh-material-frosted-separator` |  | `oklch(0.145 0.005 258 / 0.12)` | — |
+| `--xh-material-frosted-compact-alpha` |  | `var(--xh-alpha-opaque)` | — |
+| `--xh-material-frosted-compact-backdrop` |  | `none` | — |
+| `--xh-material-frosted-compact-shadow` |  | `0 4px 10px oklch(0 0 0 / 0.1)` | — |
+| `--xh-material-frosted-bg` |  | `var(--xh-bg-surface)` | — |
+| `--xh-material-frosted-backdrop` |  | `none` | — |
+| `--xh-material-frosted-border` |  | `var(--xh-border-default)` | — |
+| `--xh-material-frosted-highlight` |  | `oklch(0 0 0 / 0)` | — |
+| `--xh-material-frosted-shadow` |  | `0 4px 10px oklch(0 0 0 / 0.1)` | — |
+| `--xh-material-frosted-separator` |  | `var(--xh-border-subtle)` | — |
 | `--xh-material-frosted-fg` |  | `var(--xh-fg-default)` | — |
 | `--xh-material-frosted-fg-muted` |  | `var(--xh-fg-muted)` | — |
 | `--xh-material-frosted-focus-surface` |  | `var(--xh-bg-surface)` | — |
@@ -826,39 +958,51 @@
 
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
-| `--xh-bg-page` | color | `var(--xh-color-neutral-50)` | dark |
+| `--xh-bg-page` | color | `var(--xh-color-neutral-100)` | dark |
 | `--xh-bg-canvas` | color | `var(--xh-color-neutral-0)` | dark |
 | `--xh-bg-surface` | color | `var(--xh-color-neutral-0)` | dark |
 | `--xh-bg-surface-raised` | color | `var(--xh-color-neutral-0)` | dark |
-| `--xh-bg-subtle` | color | `color-mix(in oklab, var(--xh-ink) 4.3%, transparent)` | dark |
+| `--xh-bg-subtle` | color | `color-mix(in oklab, var(--xh-ink) 4.7%, transparent)` | dark |
 | `--xh-bg-subtle-hover` | color | `color-mix(in oklab, var(--xh-ink) 10.2%, transparent)` | dark |
 | `--xh-bg-subtle-active` | color | `color-mix(in oklab, var(--xh-ink) 16.9%, transparent)` | dark |
-| `--xh-bg-muted` | color | `color-mix(in oklab, var(--xh-ink) 4.3%, transparent)` | dark |
+| `--xh-bg-field` | color | `color-mix(in oklab, var(--xh-bg-subtle) 55%, transparent)` | dark |
+| `--xh-bg-field-invalid` | color | `color-mix(in oklab, var(--xh-border-invalid) 4%, transparent)` | dark |
+| `--xh-bg-mark` | color | `var(--xh-color-yellow-200)` | dark |
+| `--xh-bg-muted` | color | `color-mix(in oklab, var(--xh-ink) 4.7%, transparent)` | dark |
 | `--xh-bg-brand` | color | `var(--xh-color-brand-600)` | dark |
 | `--xh-bg-brand-hover` | color | `var(--xh-color-brand-700)` | dark |
 | `--xh-bg-brand-active` | color | `var(--xh-color-brand-800)` | dark |
 | `--xh-bg-brand-subtle` | color | `color-mix(in oklab, var(--xh-bg-brand) 12%, var(--xh-bg-surface))` | dark |
 | `--xh-bg-brand-subtle-hover` | color | `color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface))` | dark |
 | `--xh-bg-brand-subtle-active` | color | `color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface))` | dark |
-| `--xh-bg-overlay` | color | `oklch(0 0 0 / 0.45)` | dark |
+| `--xh-bg-segment-selected` | color | `var(--xh-bg-brand-subtle)` | dark |
+| `--xh-bg-segment-selected-hover` | color | `color-mix(in oklab, var(--xh-bg-brand) 18%, var(--xh-bg-surface))` | dark |
+| `--xh-bg-segment-selected-disabled` | color | `color-mix(in oklab, var(--xh-bg-brand) 8%, var(--xh-bg-surface))` | dark |
+| `--xh-bg-overlay` | color | `color-mix(in oklab, var(--xh-color-neutral-900) 60%, transparent)` | dark |
+| `--xh-bg-media-chrome` | color | `color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent)` | dark |
+| `--xh-bg-media-chrome-hover` | color | `color-mix(in oklab, var(--xh-color-neutral-950) 70%, transparent)` | dark |
+| `--xh-bg-media-chrome-active` | color | `color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent)` | dark |
 | `--xh-bg-scrollbar-track` | color | `oklch(0 0 0 / 0)` | dark |
-| `--xh-bg-subtle-opaque` |  | `color-mix(in srgb, var(--xh-ink) 4.3%, var(--xh-bg-surface))` | — |
+| `--xh-bg-subtle-opaque` |  | `color-mix(in srgb, var(--xh-ink) 4.7%, var(--xh-bg-surface))` | — |
 | `--xh-bg-subtle-hover-opaque` |  | `color-mix(in srgb, var(--xh-ink) 10.2%, var(--xh-bg-surface))` | — |
 | `--xh-bg-subtle-active-opaque` |  | `color-mix(in srgb, var(--xh-ink) 16.9%, var(--xh-bg-surface))` | — |
-| `--xh-bg-muted-opaque` |  | `color-mix(in srgb, var(--xh-ink) 4.3%, var(--xh-bg-surface))` | — |
+| `--xh-bg-muted-opaque` |  | `color-mix(in srgb, var(--xh-ink) 4.7%, var(--xh-bg-surface))` | — |
 
 ## fg
 
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
-| `--xh-fg-default` | color | `var(--xh-color-neutral-950)` | dark |
+| `--xh-fg-default` | color | `var(--xh-color-neutral-900)` | dark |
 | `--xh-fg-muted` | color | `var(--xh-color-neutral-600)` | dark |
 | `--xh-fg-subtle` | color | `var(--xh-color-neutral-550)` | dark |
 | `--xh-fg-disabled` | color | `var(--xh-color-neutral-400)` | dark |
 | `--xh-fg-on-brand` | color | `var(--xh-color-neutral-0)` | dark |
 | `--xh-fg-on-brand-subtle` | color | `color-mix(in oklab, var(--xh-bg-brand) 60%, var(--xh-fg-default))` | dark |
+| `--xh-fg-on-media-chrome` | color | `var(--xh-color-neutral-0)` | dark |
 | `--xh-fg-brand` | color | `var(--xh-color-brand-600)` | dark |
 | `--xh-fg-brand-strong` | color | `var(--xh-color-brand-700)` | dark |
+| `--xh-fg-segment-selected` | color | `var(--xh-fg-brand-strong)` | dark |
+| `--xh-fg-segment-selected-disabled` | color | `color-mix(in oklab, var(--xh-fg-brand) 50%, var(--xh-bg-surface))` | dark |
 | `--xh-fg-success` | color | `var(--xh-color-success-700)` | dark |
 | `--xh-fg-warning` | color | `var(--xh-color-warning-700)` | dark |
 | `--xh-fg-info` | color | `var(--xh-color-info-700)` | dark |
@@ -873,10 +1017,10 @@
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
 | `--xh-border-default` | color | `color-mix(in oklab, var(--xh-ink) 10.2%, transparent)` | dark / dark.more / light.more |
-| `--xh-border-subtle` | color | `color-mix(in oklab, var(--xh-ink) 4.3%, transparent)` | dark / dark.more / light.more |
+| `--xh-border-subtle` | color | `color-mix(in oklab, var(--xh-ink) 4.7%, transparent)` | dark / dark.more / light.more |
 | `--xh-border-strong` | color | `color-mix(in oklab, var(--xh-ink) 16.9%, transparent)` | dark / dark.more / light.more |
 | `--xh-border-control` | color | `var(--xh-border-default)` | dark / dark.more / light.more |
-| `--xh-border-control-hover` | color | `color-mix(in oklab, var(--xh-ink) 37%, transparent)` | dark / dark.more / light.more |
+| `--xh-border-control-hover` | color | `color-mix(in oklab, var(--xh-ink) 37.9%, transparent)` | dark / dark.more / light.more |
 | `--xh-border-control-focus` | color | `var(--xh-ring-focus)` | dark |
 | `--xh-border-invalid` | color | `var(--xh-color-danger-600)` | dark / dark.more / light.more |
 | `--xh-border-at-limit` | color | `var(--xh-color-warning-600)` | dark / dark.more / light.more |

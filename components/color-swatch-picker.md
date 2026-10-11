@@ -33,53 +33,49 @@ const swatches = [
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 8px">
-    <XhColorSwatchPickerRoot v-model:value="value" :swatches="swatches" label="主题色" name="theme" />
-    <span style="font-size: 13px">当前：<code>{{ value ?? "（未选）" }}</code></span>
-  </div>
+  <XhColorSwatchPickerRoot v-model:value="value" :swatches="swatches" label="主题色" name="theme" />
+  <span data-demo-output>当前：<code>{{ value ?? "（未选）" }}</code></span>
 </template>
 ```
 
 ```html
 <!-- 自定义元素不替作者建节点：格子由作者手写，value 属性声明颜色串；名字交给 swatches 数据 -->
-<div style="display: flex; flex-direction: column; gap: 8px">
-  <xh-color-swatch-picker id="swatch-picker-basic" default-value="#3b82f6" name="theme">
-    <div data-xh-part="root">
-      <span data-xh-part="label">主题色</span>
-      <div data-xh-part="item" value="#e11d48">
-        <input data-xh-part="hidden-input" />
-        <span data-xh-part="swatch"></span>
-        <span data-xh-part="indicator"></span>
-      </div>
-      <div data-xh-part="item" value="#f59e0b">
-        <input data-xh-part="hidden-input" />
-        <span data-xh-part="swatch"></span>
-        <span data-xh-part="indicator"></span>
-      </div>
-      <div data-xh-part="item" value="#10b981">
-        <input data-xh-part="hidden-input" />
-        <span data-xh-part="swatch"></span>
-        <span data-xh-part="indicator"></span>
-      </div>
-      <div data-xh-part="item" value="#3b82f6">
-        <input data-xh-part="hidden-input" />
-        <span data-xh-part="swatch"></span>
-        <span data-xh-part="indicator"></span>
-      </div>
-      <div data-xh-part="item" value="#8b5cf6">
-        <input data-xh-part="hidden-input" />
-        <span data-xh-part="swatch"></span>
-        <span data-xh-part="indicator"></span>
-      </div>
-      <div data-xh-part="item" value="#64748b">
-        <input data-xh-part="hidden-input" />
-        <span data-xh-part="swatch"></span>
-        <span data-xh-part="indicator"></span>
-      </div>
+<xh-color-swatch-picker id="swatch-picker-basic" default-value="#3b82f6" name="theme">
+  <div data-xh-part="root">
+    <span data-xh-part="label">主题色</span>
+    <div data-xh-part="item" value="#e11d48">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="swatch"></span>
+      <span data-xh-part="indicator"></span>
     </div>
-  </xh-color-swatch-picker>
-  <span style="font-size: 13px">当前：<code id="swatch-picker-basic-value">#3b82f6</code></span>
-</div>
+    <div data-xh-part="item" value="#f59e0b">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="swatch"></span>
+      <span data-xh-part="indicator"></span>
+    </div>
+    <div data-xh-part="item" value="#10b981">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="swatch"></span>
+      <span data-xh-part="indicator"></span>
+    </div>
+    <div data-xh-part="item" value="#3b82f6">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="swatch"></span>
+      <span data-xh-part="indicator"></span>
+    </div>
+    <div data-xh-part="item" value="#8b5cf6">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="swatch"></span>
+      <span data-xh-part="indicator"></span>
+    </div>
+    <div data-xh-part="item" value="#64748b">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="swatch"></span>
+      <span data-xh-part="indicator"></span>
+    </div>
+  </div>
+</xh-color-swatch-picker>
+<span data-demo-output>当前：<code id="swatch-picker-basic-value">#3b82f6</code></span>
 
 <script type="module">
   // 读屏念的名字从数据里查，数据只走 property
@@ -120,49 +116,45 @@ const value = ref<string | null>("rgb(225, 29, 72)");
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 8px">
-    <XhColorSwatchPickerRoot v-model:value="value">
-      <XhColorSwatchPickerLabel>高亮色</XhColorSwatchPickerLabel>
-      <XhColorSwatchPickerItem value="#e11d48" label="玫红" />
-      <XhColorSwatchPickerItem value="#e11d4880" label="半透明玫红" />
-      <XhColorSwatchPickerItem value="#f59e0b" label="琥珀" disabled />
-      <XhColorSwatchPickerItem value="hsl(217 91% 60%)" label="天蓝" />
-    </XhColorSwatchPickerRoot>
-    <span style="font-size: 13px">当前：<code>{{ value ?? "（未选）" }}</code></span>
-  </div>
+  <XhColorSwatchPickerRoot v-model:value="value">
+    <XhColorSwatchPickerLabel>高亮色</XhColorSwatchPickerLabel>
+    <XhColorSwatchPickerItem value="#e11d48" label="玫红" />
+    <XhColorSwatchPickerItem value="#e11d4880" label="半透明玫红" />
+    <XhColorSwatchPickerItem value="#f59e0b" label="琥珀" disabled />
+    <XhColorSwatchPickerItem value="hsl(217 91% 60%)" label="天蓝" />
+  </XhColorSwatchPickerRoot>
+  <span data-demo-output>当前：<code>{{ value ?? "（未选）" }}</code></span>
 </template>
 ```
 
 ```html
 <!-- 受控值是 rgb 写法，与 #e11d48 那一格按颜色对上；禁用用 aria-disabled 声明 -->
-<div style="display: flex; flex-direction: column; gap: 8px">
-  <xh-color-swatch-picker id="swatch-picker-items" value="rgb(225, 29, 72)">
-    <div data-xh-part="root">
-      <span data-xh-part="label">高亮色</span>
-      <div data-xh-part="item" value="#e11d48" label="玫红">
-        <input data-xh-part="hidden-input" />
-        <span data-xh-part="swatch"></span>
-        <span data-xh-part="indicator"></span>
-      </div>
-      <div data-xh-part="item" value="#e11d4880" label="半透明玫红">
-        <input data-xh-part="hidden-input" />
-        <span data-xh-part="swatch"></span>
-        <span data-xh-part="indicator"></span>
-      </div>
-      <div data-xh-part="item" value="#f59e0b" label="琥珀" aria-disabled="true">
-        <input data-xh-part="hidden-input" />
-        <span data-xh-part="swatch"></span>
-        <span data-xh-part="indicator"></span>
-      </div>
-      <div data-xh-part="item" value="hsl(217 91% 60%)" label="天蓝">
-        <input data-xh-part="hidden-input" />
-        <span data-xh-part="swatch"></span>
-        <span data-xh-part="indicator"></span>
-      </div>
+<xh-color-swatch-picker id="swatch-picker-items" value="rgb(225, 29, 72)">
+  <div data-xh-part="root">
+    <span data-xh-part="label">高亮色</span>
+    <div data-xh-part="item" value="#e11d48" label="玫红">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="swatch"></span>
+      <span data-xh-part="indicator"></span>
     </div>
-  </xh-color-swatch-picker>
-  <span style="font-size: 13px">当前：<code id="swatch-picker-items-value">rgb(225, 29, 72)</code></span>
-</div>
+    <div data-xh-part="item" value="#e11d4880" label="半透明玫红">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="swatch"></span>
+      <span data-xh-part="indicator"></span>
+    </div>
+    <div data-xh-part="item" value="#f59e0b" label="琥珀" aria-disabled="true">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="swatch"></span>
+      <span data-xh-part="indicator"></span>
+    </div>
+    <div data-xh-part="item" value="hsl(217 91% 60%)" label="天蓝">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="swatch"></span>
+      <span data-xh-part="indicator"></span>
+    </div>
+  </div>
+</xh-color-swatch-picker>
+<span data-demo-output>当前：<code id="swatch-picker-items-value">rgb(225, 29, 72)</code></span>
 
 <script type="module">
   // 受控：选中值由宿主写回元素
@@ -628,11 +620,11 @@ const swatches = [
 | `--xh-color-swatch-picker-indicator-size` | `indicator` | `block-size`<br>`inline-size` | `default` | `--xh-_color-swatch-picker-indicator` | color-swatch-picker 的 indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-color-swatch-picker-item-radius` | `item`<br>`swatch` | `--xh-swatch-radius`<br>`border-radius` | `default` | `--xh-shape-inset` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-radius、border-radius 覆盖槽。 |
 | `--xh-color-swatch-picker-item-size` | `item` | `block-size`<br>`inline-size` | `default` | `--xh-_color-swatch-picker-cell` | color-swatch-picker 的 item 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-color-swatch-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | color-swatch-picker 的 label 部件 color 覆盖槽。 |
-| `--xh-color-swatch-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | color-swatch-picker 的 label 部件 color 覆盖槽。 |
+| `--xh-color-swatch-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | color-swatch-picker 的 label 部件 color 覆盖槽。 |
+| `--xh-color-swatch-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | color-swatch-picker 的 label 部件 color 覆盖槽。 |
 | `--xh-color-swatch-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | color-swatch-picker 的 label 部件 font-size 覆盖槽。 |
 | `--xh-color-swatch-picker-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | color-swatch-picker 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-color-swatch-picker-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-1` | color-swatch-picker 的 label 部件 margin-block-end 覆盖槽。 |
+| `--xh-color-swatch-picker-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | color-swatch-picker 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-color-swatch-picker-ring` | `item`<br>`swatch` | `--xh-swatch-border` | `state=checked` | `--xh-_tone` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-border 覆盖槽。 |
 | `--xh-color-swatch-picker-swatch-border` | `item`<br>`swatch` | `--xh-swatch-border` | `default` | `--xh-border-default` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-border 覆盖槽。 |
 | `--xh-color-swatch-picker-swatch-border-hover` | `item`<br>`swatch` | `--xh-swatch-border` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly], [data-state='checked'])`<br>`readonly`<br>`state=checked` | `--xh-border-control-hover` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-border 覆盖槽。 |

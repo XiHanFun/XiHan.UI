@@ -99,6 +99,19 @@ Web Components 适配器相反：结构由作者编写，用 `data-xh-part` 声�
 
 部件发现逐层向下遍历，遇到嵌套的 `xh-*` 子树即跳过：嵌套的另一个组件的部件由它自己管理。
 
+嵌套组件自己带 `data-xh-part` 时，它整个担任外层的那个部件，与 Vue / React 的 `asChild` 等价。常见用法是拿组件库的按钮当菜单或浮层的触发器：
+
+```html
+<xh-menu>
+  <xh-button data-xh-part="trigger" variant="subtle">
+    <button data-xh-part="root">操作</button>
+  </xh-button>
+  …
+</xh-menu>
+```
+
+外层的接线（`aria-haspopup`、开合、键盘）合进按钮自己的根节点，合并规则与 `asChild` 相同：按钮保留自己的 `data-scope`、`data-part` 与形态轴，其余属性以外层为准，同名事件处理器按钮的先跑。定位锚点、焦点归还都落在这个原生 `button` 上。目前按钮（`xh-button`）支持这样担任别的组件的部件。
+
 ## 皮肤只识别属性不识别类名
 
 类名属于框架，属性不属于框架。

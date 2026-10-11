@@ -197,7 +197,7 @@ const open = ref(false);
     <XhButton variant="outline" @click="open = !open">
       {{ open ? "收起" : "展开" }}
     </XhButton>
-    <span>当前：{{ open ? "展开" : "收起" }}</span>
+    <span data-demo-output>当前：{{ open ? "展开" : "收起" }}</span>
   </div>
 </template>
 ```
@@ -223,7 +223,7 @@ const open = ref(false);
   <xh-button id="popover-controlled-toggle" variant="outline">
     <button data-xh-part="root">展开</button>
   </xh-button>
-  <span>当前：<span id="popover-controlled-state">收起</span></span>
+  <span data-demo-output>当前：<span id="popover-controlled-state">收起</span></span>
 </div>
 
 <script type="module">
@@ -457,7 +457,7 @@ const versions = Array.from({ length: 18 }, (_, i) => ({
             style="
               margin: 0;
               padding: 6px 0;
-              border-block-end: 1px solid var(--xh-border-subtle);
+              border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle);
             "
           >
             {{ v.text }}
@@ -478,24 +478,24 @@ const versions = Array.from({ length: 18 }, (_, i) => ({
     <div data-xh-part="content">
       <h3 data-xh-part="title">历史版本</h3>
       <div data-xh-scroll style="max-block-size: 160px; overflow: auto">
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.18 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.17 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.16 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.15 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.14 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.13 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.12 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.11 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.10 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.9 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.8 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.7 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.6 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.5 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.4 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.3 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.2 更新了若干细节</p>
-        <p style="margin: 0; padding: 6px 0; border-block-end: 1px solid var(--xh-border-subtle)">v1.1 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.18 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.17 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.16 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.15 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.14 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.13 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.12 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.11 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.10 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.9 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.8 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.7 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.6 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.5 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.4 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.3 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.2 更新了若干细节</p>
+        <p style="margin: 0; padding: 6px 0; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)">v1.1 更新了若干细节</p>
       </div>
       <button data-xh-part="close-trigger"></button>
       <div data-xh-part="arrow"></div>
@@ -558,7 +558,7 @@ const picked = ref("收件箱");
     </XhPopoverRoot>
 
     <XhButton variant="ghost">页面上的另一颗按钮</XhButton>
-    <span>当前分组：{{ picked }}</span>
+    <span data-demo-output>当前分组：{{ picked }}</span>
   </div>
 </template>
 ```
@@ -591,7 +591,7 @@ const picked = ref("收件箱");
   <xh-button variant="ghost">
     <button data-xh-part="root">页面上的另一颗按钮</button>
   </xh-button>
-  <span>当前分组：<span id="popover-modal-picked">收件箱</span></span>
+  <span data-demo-output>当前分组：<span id="popover-modal-picked">收件箱</span></span>
 </div>
 
 <script type="module">
@@ -634,38 +634,34 @@ function onOpenChange(details: { open: boolean }) {
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 16px">
-    <XhPopoverRoot placement="bottom-start" @open-change="onOpenChange">
-      <XhPopoverTrigger>点开再关掉</XhPopoverTrigger>
-      <XhPopoverPositioner>
-        <XhPopoverContent>
-          <XhPopoverDescription>
-            按钮、Escape、点浮层外部，三条路都会发一次意图。
-          </XhPopoverDescription>
-          <XhPopoverArrow />
-        </XhPopoverContent>
-      </XhPopoverPositioner>
-    </XhPopoverRoot>
-    <span>最近：{{ log.join(" ← ") || "（还没动过）" }}</span>
-  </div>
+  <XhPopoverRoot placement="bottom-start" @open-change="onOpenChange">
+    <XhPopoverTrigger>点开再关掉</XhPopoverTrigger>
+    <XhPopoverPositioner>
+      <XhPopoverContent>
+        <XhPopoverDescription>
+          按钮、Escape、点浮层外部，三条路都会发一次意图。
+        </XhPopoverDescription>
+        <XhPopoverArrow />
+      </XhPopoverContent>
+    </XhPopoverPositioner>
+  </XhPopoverRoot>
+  <span data-demo-output>最近：{{ log.join(" ← ") || "（还没动过）" }}</span>
 </template>
 ```
 
 ```html
-<div style="display: flex; align-items: center; gap: 16px">
-  <xh-popover id="popover-event" placement="bottom-start">
-    <button data-xh-part="trigger">点开再关掉</button>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <p data-xh-part="description">
-          按钮、Escape、点浮层外部，三条路都会发一次意图。
-        </p>
-        <div data-xh-part="arrow"></div>
-      </div>
+<xh-popover id="popover-event" placement="bottom-start">
+  <button data-xh-part="trigger">点开再关掉</button>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <p data-xh-part="description">
+        按钮、Escape、点浮层外部，三条路都会发一次意图。
+      </p>
+      <div data-xh-part="arrow"></div>
     </div>
-  </xh-popover>
-  <span>最近：<span id="popover-event-log">（还没动过）</span></span>
-</div>
+  </div>
+</xh-popover>
+<span data-demo-output>最近：<span id="popover-event-log">（还没动过）</span></span>
 
 <script type="module">
   // 只留最近五条
@@ -803,6 +799,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 import {
   XhButton,
   XhPopoverContent,
+  XhPopoverDescription,
   XhPopoverPositioner,
   XhPopoverRoot,
   XhPopoverTitle,
@@ -821,25 +818,21 @@ const dir = ref<"ltr" | "rtl">("rtl");
 
     <div :dir="dir" style="display: flex; gap: 24px">
       <XhPopoverRoot :dir="dir" placement="bottom-start">
-        <XhPopoverTrigger>
-          <XhButton size="sm">bottom-start</XhButton>
-        </XhPopoverTrigger>
+        <XhPopoverTrigger>bottom-start</XhPopoverTrigger>
         <XhPopoverPositioner>
           <XhPopoverContent>
             <XhPopoverTitle>start</XhPopoverTitle>
-            <p style="margin: 0">LTR 贴左缘，RTL 贴右缘</p>
+            <XhPopoverDescription>LTR 贴左缘，RTL 贴右缘</XhPopoverDescription>
           </XhPopoverContent>
         </XhPopoverPositioner>
       </XhPopoverRoot>
 
       <XhPopoverRoot :dir="dir" placement="bottom-end">
-        <XhPopoverTrigger>
-          <XhButton size="sm">bottom-end</XhButton>
-        </XhPopoverTrigger>
+        <XhPopoverTrigger>bottom-end</XhPopoverTrigger>
         <XhPopoverPositioner>
           <XhPopoverContent>
             <XhPopoverTitle>end</XhPopoverTitle>
-            <p style="margin: 0">与 start 恰好相反</p>
+            <XhPopoverDescription>与 start 恰好相反</XhPopoverDescription>
           </XhPopoverContent>
         </XhPopoverPositioner>
       </XhPopoverRoot>
@@ -862,7 +855,7 @@ const dir = ref<"ltr" | "rtl">("rtl");
       <div data-xh-part="positioner">
         <div data-xh-part="content">
           <h3 data-xh-part="title">start</h3>
-          <p data-xh-part="description" style="margin: 0">LTR 贴左缘，RTL 贴右缘</p>
+          <p data-xh-part="description">LTR 贴左缘，RTL 贴右缘</p>
         </div>
       </div>
     </xh-popover>
@@ -872,7 +865,7 @@ const dir = ref<"ltr" | "rtl">("rtl");
       <div data-xh-part="positioner">
         <div data-xh-part="content">
           <h3 data-xh-part="title">end</h3>
-          <p data-xh-part="description" style="margin: 0">与 start 恰好相反</p>
+          <p data-xh-part="description">与 start 恰好相反</p>
         </div>
       </div>
     </xh-popover>
@@ -941,8 +934,8 @@ function pin(event: MouseEvent): void {
         display: grid;
         place-items: center;
         block-size: 200px;
-        border: 1px dashed var(--xh-border-default);
-        border-radius: 8px;
+        border: var(--xh-stroke-thin) dashed var(--xh-border-default);
+        border-radius: var(--xh-shape-surface);
         color: var(--xh-fg-muted);
         cursor: crosshair;
       "
@@ -982,8 +975,8 @@ function pin(event: MouseEvent): void {
       display: grid;
       place-items: center;
       block-size: 200px;
-      border: 1px dashed var(--xh-border-default);
-      border-radius: 8px;
+      border: var(--xh-stroke-thin) dashed var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
       color: var(--xh-fg-muted);
       cursor: crosshair;
     "
@@ -1073,7 +1066,7 @@ function pin(event: MouseEvent): void {
 - `end` 等对齐是逻辑方向，跟随书写方向，不是物理左右。
 - `disabled` 让浮层不可打开：触发器转原生 disabled（退出 Tab 序列、画禁用面），点按与 `setOpen(true)` 都不展开，展开途中转为禁用即收起；与文字提示、悬浮卡片的 `disabled` 同名同义。
 
-默认内容面使用 M2 磨砂配方，背景模糊只发生在浮层本体，箭头复用底色和边界，不重复模糊。正文保持不透明。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`，与指针按下同一副按压面。说明文字为 13px 说明档。系统减少透明度、高对比与强制色时，原位切换为实体表面；打印时收起交互浮层。
+默认内容面走 frosted 配方：实体底、1px 描边与一层浮层投影，圆角 4px；箭头复用底色和边界。内衬纵 12 横 16（`sm` 纵 8 横 12、`lg` 纵 16 横 20），标题 14px / medium / 正文色，说明即气泡正文，14px 次级色，与标题相距 4px。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`，与指针按下同一副按压面。系统减少透明度、高对比与强制色时，原位切换为实体表面；打印时收起交互浮层。
 
 ### 组合
 
@@ -1268,20 +1261,20 @@ function pin(event: MouseEvent): void {
 | `--xh-popover-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | popover 的 close-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-popover-close-size` | `close-trigger`<br>`content`<br>`title` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default`<br>`has([data-scope='popover'][data-part='close-trigger'])`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size`<br>`--xh-control-h-sm` | popover 的 close-trigger、content、title 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
 | `--xh-popover-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | popover 的 description 部件 color 覆盖槽。 |
-| `--xh-popover-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | popover 的 description 部件 font-size 覆盖槽。 |
+| `--xh-popover-description-font-size` | `description` | `font-size` | `default` | `--xh-text-body-size` | popover 的 description 部件 font-size 覆盖槽。 |
 | `--xh-popover-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | popover 的 content 部件 color 覆盖槽。 |
-| `--xh-popover-gap` | `content` | `gap` | `default` | `--xh-space-2` | popover 的 content 部件 gap 覆盖槽。 |
+| `--xh-popover-gap` | `content` | `gap` | `default` | `--xh-space-1` | popover 的 content 部件 gap 覆盖槽。 |
 | `--xh-popover-icon-size` | `close-trigger`<br>`content`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | popover 的 close-trigger、content、trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-popover-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | popover 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-popover-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | popover 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-popover-max-w` | `content` | `max-inline-size` | `default` | `--xh-_popover-max-w` | popover 的 content 部件 max-inline-size 覆盖槽。 |
-| `--xh-popover-px` | `content` | `padding-inline` | `default` | `--xh-_popover-pad` | popover 的 content 部件 padding-inline 覆盖槽。 |
-| `--xh-popover-py` | `content` | `padding-block` | `default` | `--xh-_popover-pad` | popover 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-popover-px` | `content` | `padding-inline` | `default` | `--xh-_popover-px` | popover 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-popover-py` | `content` | `padding-block` | `default` | `--xh-_popover-py` | popover 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-popover-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | popover 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-popover-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | popover 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-popover-title-fg` | `title` | `color` | `default` | `--xh-material-frosted-fg` | popover 的 title 部件 color 覆盖槽。 |
 | `--xh-popover-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | popover 的 title 部件 font-size 覆盖槽。 |
-| `--xh-popover-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | popover 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-popover-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-medium` | popover 的 title 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

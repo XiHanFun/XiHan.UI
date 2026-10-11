@@ -209,7 +209,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>
+    <span data-demo-output>
       排序链：{{
         sort.length ? sort.map((s) => `${s.id} ${s.direction}`).join(" → ") : "（无）"
       }}
@@ -259,7 +259,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
       </div>
     </div>
   </xh-table>
-  <span id="table-sort-value"></span>
+  <span id="table-sort-value" data-demo-output></span>
 </div>
 
 <script type="module">
@@ -385,7 +385,7 @@ const selection = ref<string[] | "all">(["u2"]);
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>
+    <span data-demo-output>
       选中：{{
         selection === "all"
           ? "全部"
@@ -444,7 +444,7 @@ const selection = ref<string[] | "all">(["u2"]);
       </div>
     </div>
   </xh-table>
-  <span id="table-selection-value"></span>
+  <span id="table-selection-value" data-demo-output></span>
 </div>
 
 <script type="module">
@@ -542,7 +542,7 @@ const expanded = ref<string[]>(["o1"]);
         </template>
       </XhTableBody>
     </XhTableRoot>
-    <span>展开：{{ expanded.length ? expanded.join("、") : "（无）" }}</span>
+    <span data-demo-output>展开：{{ expanded.length ? expanded.join("、") : "（无）" }}</span>
   </div>
 </template>
 ```
@@ -599,7 +599,7 @@ const expanded = ref<string[]>(["o1"]);
       </div>
     </div>
   </xh-table>
-  <span id="table-expand-value"></span>
+  <span id="table-expand-value" data-demo-output></span>
 </div>
 
 <script type="module">
@@ -843,6 +843,7 @@ const densities = [
 ```vue
 <script setup lang="ts">
 import {
+  XhButton,
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
@@ -912,9 +913,9 @@ const rows = computed(() => tasks.value.map(t => ({ id: t.id })));
 <template>
   <div style="width: 100%; max-width: 480px; display: grid; gap: 12px">
     <div style="display: flex; gap: 8px">
-      <button type="button" @click="load">取数</button>
-      <button type="button" @click="refresh">刷新</button>
-      <button type="button" @click="reset">清空</button>
+      <XhButton size="sm" variant="outline" @click="load">取数</XhButton>
+      <XhButton size="sm" variant="outline" @click="refresh">刷新</XhButton>
+      <XhButton size="sm" variant="outline" @click="reset">清空</XhButton>
     </div>
 
     <XhTableRoot :columns="columns" :rows="rows" :loading="loading">
@@ -941,9 +942,15 @@ const rows = computed(() => tasks.value.map(t => ({ id: t.id })));
 ```html
 <div id="table-states" style="width: 100%; max-width: 480px; display: grid; gap: 12px">
   <div style="display: flex; gap: 8px">
-    <button type="button" id="table-states-load">取数</button>
-    <button type="button" id="table-states-refresh">刷新</button>
-    <button type="button" id="table-states-reset">清空</button>
+    <xh-button id="table-states-load" size="sm" variant="outline">
+      <button data-xh-part="root">取数</button>
+    </xh-button>
+    <xh-button id="table-states-refresh" size="sm" variant="outline">
+      <button data-xh-part="root">刷新</button>
+    </xh-button>
+    <xh-button id="table-states-reset" size="sm" variant="outline">
+      <button data-xh-part="root">清空</button>
+    </xh-button>
   </div>
 
   <xh-table id="table-states-table">
@@ -1004,7 +1011,7 @@ const rows = computed(() => tasks.value.map(t => ({ id: t.id })));
   let timer = 0;
   let current = [];
 
-  stage.querySelector("#table-states-load").addEventListener("click", () => {
+  function load() {
     window.clearTimeout(timer);
     setTasks([]);
     table.loading = true;
@@ -1012,11 +1019,13 @@ const rows = computed(() => tasks.value.map(t => ({ id: t.id })));
       setTasks(source);
       table.loading = false;
     }, 1200);
-  });
+  }
+
+  stage.querySelector("#table-states-load").addEventListener("click", load);
 
   stage.querySelector("#table-states-refresh").addEventListener("click", () => {
     if (current.length === 0) {
-      stage.querySelector("#table-states-load").click();
+      load();
       return;
     }
     window.clearTimeout(timer);
@@ -1345,7 +1354,7 @@ const selection = ref<string[]>(["p2"]);
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>已选：{{ selection.length ? selection.join("、") : "（无）" }}</span>
+    <span data-demo-output>已选：{{ selection.length ? selection.join("、") : "（无）" }}</span>
   </div>
 </template>
 ```
@@ -1387,7 +1396,7 @@ const selection = ref<string[]>(["p2"]);
       </div>
     </div>
   </xh-table>
-  <span id="table-single-value"></span>
+  <span id="table-single-value" data-demo-output></span>
 </div>
 
 <script type="module">
@@ -1524,6 +1533,9 @@ const rows = [...teams.map(t => ({ id: t.id })), { id: "sum" }];
 ```vue
 <script setup lang="ts">
 import {
+  XhNumberFieldControl,
+  XhNumberFieldInput,
+  XhNumberFieldRoot,
   XhTableBody,
   XhTableCaption,
   XhTableCell,
@@ -1532,6 +1544,9 @@ import {
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -1541,10 +1556,11 @@ const columns = [
   { id: "note", label: "备注" },
 ];
 
+// 数量是数字框的原始串，合计时再读成数
 const lines = ref([
-  { id: "l1", item: "键盘", count: 2, note: "机械轴" },
-  { id: "l2", item: "鼠标", count: 3, note: "无线" },
-  { id: "l3", item: "显示器支架", count: 1, note: "" },
+  { id: "l1", item: "键盘", count: "2", note: "机械轴" },
+  { id: "l2", item: "鼠标", count: "3", note: "无线" },
+  { id: "l3", item: "显示器支架", count: "1", note: "" },
 ]);
 
 // 行序不随编辑变化，rows 取一次即可
@@ -1574,31 +1590,25 @@ function onEditKeydown(event: KeyboardEvent): void {
         <XhTableRow v-for="line in lines" :key="line.id" :value="line.id">
           <XhTableCell value="item">{{ line.item }}</XhTableCell>
           <XhTableCell value="count">
-            <!-- keydown 掐断冒泡：不然上下键与 Home/End 会被表体收走去搬焦点行 -->
-            <input
-              v-model.number="line.count"
-              type="number"
-              min="0"
-              :aria-label="`${line.item} 数量`"
-              style="inline-size: 100%; min-inline-size: 0"
-              @keydown.stop="onEditKeydown"
-            >
+            <XhNumberFieldRoot v-model:value="line.count" :min="0" size="sm">
+              <XhNumberFieldControl>
+                <!-- keydown 掐断冒泡：不然上下键与 Home/End 会被表体收走去搬焦点行 -->
+                <XhNumberFieldInput :aria-label="`${line.item} 数量`" @keydown.stop="onEditKeydown" />
+              </XhNumberFieldControl>
+            </XhNumberFieldRoot>
           </XhTableCell>
           <XhTableCell value="note">
-            <input
-              v-model="line.note"
-              type="text"
-              placeholder="可以打空格"
-              :aria-label="`${line.item} 备注`"
-              style="inline-size: 100%; min-inline-size: 0"
-              @keydown.stop="onEditKeydown"
-            >
+            <XhTextFieldRoot v-model:value="line.note" placeholder="可以打空格" size="sm">
+              <XhTextFieldControl>
+                <XhTextFieldInput :aria-label="`${line.item} 备注`" @keydown.stop="onEditKeydown" />
+              </XhTextFieldControl>
+            </XhTextFieldRoot>
           </XhTableCell>
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>
-      合计 {{ lines.reduce((sum, line) => sum + (line.count || 0), 0) }} 件
+    <span data-demo-output>
+      合计 {{ lines.reduce((sum, line) => sum + (Number(line.count) || 0), 0) }} 件
     </span>
   </div>
 </template>
@@ -1620,73 +1630,70 @@ function onEditKeydown(event: KeyboardEvent): void {
         <div data-xh-part="row" value="l1">
           <div data-xh-part="cell" value="item">键盘</div>
           <div data-xh-part="cell" value="count">
-            <input
-              type="number"
-              min="0"
-              value="2"
-              aria-label="键盘 数量"
-              data-count
-              style="inline-size: 100%; min-inline-size: 0"
-            />
+            <xh-number-field default-value="2" min="0" size="sm">
+              <div data-xh-part="root">
+                <div data-xh-part="control">
+                  <input data-xh-part="input" aria-label="键盘 数量" />
+                </div>
+              </div>
+            </xh-number-field>
           </div>
           <div data-xh-part="cell" value="note">
-            <input
-              type="text"
-              value="机械轴"
-              placeholder="可以打空格"
-              aria-label="键盘 备注"
-              style="inline-size: 100%; min-inline-size: 0"
-            />
+            <xh-text-field default-value="机械轴" placeholder="可以打空格" size="sm">
+              <div data-xh-part="root">
+                <div data-xh-part="control">
+                  <input data-xh-part="input" aria-label="键盘 备注" />
+                </div>
+              </div>
+            </xh-text-field>
           </div>
         </div>
         <div data-xh-part="row" value="l2">
           <div data-xh-part="cell" value="item">鼠标</div>
           <div data-xh-part="cell" value="count">
-            <input
-              type="number"
-              min="0"
-              value="3"
-              aria-label="鼠标 数量"
-              data-count
-              style="inline-size: 100%; min-inline-size: 0"
-            />
+            <xh-number-field default-value="3" min="0" size="sm">
+              <div data-xh-part="root">
+                <div data-xh-part="control">
+                  <input data-xh-part="input" aria-label="鼠标 数量" />
+                </div>
+              </div>
+            </xh-number-field>
           </div>
           <div data-xh-part="cell" value="note">
-            <input
-              type="text"
-              value="无线"
-              placeholder="可以打空格"
-              aria-label="鼠标 备注"
-              style="inline-size: 100%; min-inline-size: 0"
-            />
+            <xh-text-field default-value="无线" placeholder="可以打空格" size="sm">
+              <div data-xh-part="root">
+                <div data-xh-part="control">
+                  <input data-xh-part="input" aria-label="鼠标 备注" />
+                </div>
+              </div>
+            </xh-text-field>
           </div>
         </div>
         <div data-xh-part="row" value="l3">
           <div data-xh-part="cell" value="item">显示器支架</div>
           <div data-xh-part="cell" value="count">
-            <input
-              type="number"
-              min="0"
-              value="1"
-              aria-label="显示器支架 数量"
-              data-count
-              style="inline-size: 100%; min-inline-size: 0"
-            />
+            <xh-number-field default-value="1" min="0" size="sm">
+              <div data-xh-part="root">
+                <div data-xh-part="control">
+                  <input data-xh-part="input" aria-label="显示器支架 数量" />
+                </div>
+              </div>
+            </xh-number-field>
           </div>
           <div data-xh-part="cell" value="note">
-            <input
-              type="text"
-              value=""
-              placeholder="可以打空格"
-              aria-label="显示器支架 备注"
-              style="inline-size: 100%; min-inline-size: 0"
-            />
+            <xh-text-field placeholder="可以打空格" size="sm">
+              <div data-xh-part="root">
+                <div data-xh-part="control">
+                  <input data-xh-part="input" aria-label="显示器支架 备注" />
+                </div>
+              </div>
+            </xh-text-field>
           </div>
         </div>
       </div>
     </div>
   </xh-table>
-  <span id="table-edit-total"></span>
+  <span id="table-edit-total" data-demo-output></span>
 </div>
 
 <script type="module">
@@ -1702,21 +1709,31 @@ function onEditKeydown(event: KeyboardEvent): void {
   // 行序不随编辑变化，rows 给一次即可
   table.rows = [{ id: "l1" }, { id: "l2" }, { id: "l3" }];
 
-  const counts = [...table.querySelectorAll("input[data-count]")];
+  // 每个数字框的当前数量各记一份，合计从这里读
+  const counts = new Map();
 
   function sum() {
-    total.textContent = `合计 ${counts.reduce((n, input) => n + (Number(input.value) || 0), 0)} 件`;
+    let n = 0;
+    for (const count of counts.values()) n += count || 0;
+    total.textContent = `合计 ${n} 件`;
   }
 
-  for (const input of table.querySelectorAll("input")) {
+  for (const field of table.querySelectorAll("xh-number-field")) {
+    counts.set(field, Number(field.getAttribute("default-value")));
+    field.addEventListener("value-change", (event) => {
+      counts.set(field, event.detail.valueAsNumber);
+      sum();
+    });
+  }
+
+  for (const field of table.querySelectorAll("xh-number-field, xh-text-field")) {
     // 掐断冒泡：不然上下键与 Home/End 会被表体收走去搬焦点行
-    input.addEventListener("keydown", (event) => {
+    field.addEventListener("keydown", (event) => {
       event.stopPropagation();
       // Escape 把焦点交还所在行，表体的方向键随即恢复
       if (event.key === "Escape")
-        event.currentTarget.closest('[data-xh-part="row"]').focus();
+        field.closest('[data-xh-part="row"]').focus();
     });
-    input.addEventListener("input", sum);
   }
 
   sum();
@@ -1874,6 +1891,8 @@ const leaves = ["team", "q1", "q2", "q3", "q4"] as const;
 <script setup lang="ts">
 import { FilterIcon } from "@xihan-ui/icons";
 import {
+  XhButton,
+  XhCheckboxGroupRoot,
   XhIcon,
   XhPopoverContent,
   XhPopoverPositioner,
@@ -1906,8 +1925,8 @@ const members = [
   { id: "u6", name: "吴六", dept: "平台研发", city: "上海" },
 ];
 
-const deptOptions = [...new Set(members.map(m => m.dept))];
-const cityOptions = [...new Set(members.map(m => m.city))];
+const deptOptions = [...new Set(members.map(m => m.dept))].map(d => ({ value: d, label: d }));
+const cityOptions = [...new Set(members.map(m => m.city))].map(c => ({ value: c, label: c }));
 
 // 过滤态由宿主持有，一个都没勾就是不过滤
 const deptFilter = ref<string[]>([]);
@@ -1925,7 +1944,6 @@ const visible = computed(() =>
 const rows = computed(() => visible.value.map(m => ({ id: m.id })));
 
 const menuStyle = { display: "grid", gap: "6px", minInlineSize: "8rem" };
-const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
 </script>
 
 <template>
@@ -1947,11 +1965,8 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
                 <XhPopoverContent>
                   <XhPopoverTitle>按部门过滤</XhPopoverTitle>
                   <div :style="menuStyle">
-                    <label v-for="d in deptOptions" :key="d" :style="optionStyle">
-                      <input v-model="deptFilter" type="checkbox" :value="d">
-                      {{ d }}
-                    </label>
-                    <button type="button" @click="deptFilter = []">不限</button>
+                    <XhCheckboxGroupRoot v-model:value="deptFilter" :collection="deptOptions" aria-label="部门" size="sm" />
+                    <XhButton size="sm" variant="outline" @click="deptFilter = []">不限</XhButton>
                   </div>
                 </XhPopoverContent>
               </XhPopoverPositioner>
@@ -1970,11 +1985,8 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
                 <XhPopoverContent>
                   <XhPopoverTitle>按城市过滤</XhPopoverTitle>
                   <div :style="menuStyle">
-                    <label v-for="c in cityOptions" :key="c" :style="optionStyle">
-                      <input v-model="cityFilter" type="checkbox" :value="c">
-                      {{ c }}
-                    </label>
-                    <button type="button" @click="cityFilter = []">不限</button>
+                    <XhCheckboxGroupRoot v-model:value="cityFilter" :collection="cityOptions" aria-label="城市" size="sm" />
+                    <XhButton size="sm" variant="outline" @click="cityFilter = []">不限</XhButton>
                   </div>
                 </XhPopoverContent>
               </XhPopoverPositioner>
@@ -1991,7 +2003,7 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
       </XhTableBody>
       <XhTableEmpty>这组条件下没有人。</XhTableEmpty>
     </XhTableRoot>
-    <span>
+    <span data-demo-output>
       命中 {{ visible.length }} / {{ members.length }} 人 · 部门：{{
         deptFilter.length ? deptFilter.join("、") : "不限"
       }}
@@ -2016,23 +2028,33 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
                 <div data-xh-part="content">
                   <h2 data-xh-part="title">按部门过滤</h2>
                   <div style="display: grid; gap: 6px; min-inline-size: 8rem">
-                    <label style="display: flex; align-items: center; gap: 6px">
-                      <input type="checkbox" data-filter="dept" value="平台研发" />
-                      平台研发
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 6px">
-                      <input type="checkbox" data-filter="dept" value="前端体验" />
-                      前端体验
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 6px">
-                      <input type="checkbox" data-filter="dept" value="基础架构" />
-                      基础架构
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 6px">
-                      <input type="checkbox" data-filter="dept" value="质量保障" />
-                      质量保障
-                    </label>
-                    <button type="button" data-clear="dept">不限</button>
+                    <xh-checkbox-group id="table-filter-dept" size="sm">
+                      <div data-xh-part="root" aria-label="部门">
+                        <div data-xh-part="item" value="平台研发">
+                          <input data-xh-part="hidden-input" />
+                          <span data-xh-part="indicator"></span>
+                          <span data-xh-part="item-text">平台研发</span>
+                        </div>
+                        <div data-xh-part="item" value="前端体验">
+                          <input data-xh-part="hidden-input" />
+                          <span data-xh-part="indicator"></span>
+                          <span data-xh-part="item-text">前端体验</span>
+                        </div>
+                        <div data-xh-part="item" value="基础架构">
+                          <input data-xh-part="hidden-input" />
+                          <span data-xh-part="indicator"></span>
+                          <span data-xh-part="item-text">基础架构</span>
+                        </div>
+                        <div data-xh-part="item" value="质量保障">
+                          <input data-xh-part="hidden-input" />
+                          <span data-xh-part="indicator"></span>
+                          <span data-xh-part="item-text">质量保障</span>
+                        </div>
+                      </div>
+                    </xh-checkbox-group>
+                    <xh-button id="table-filter-dept-clear" size="sm" variant="outline">
+                      <button data-xh-part="root">不限</button>
+                    </xh-button>
                   </div>
                 </div>
               </div>
@@ -2046,23 +2068,33 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
                 <div data-xh-part="content">
                   <h2 data-xh-part="title">按城市过滤</h2>
                   <div style="display: grid; gap: 6px; min-inline-size: 8rem">
-                    <label style="display: flex; align-items: center; gap: 6px">
-                      <input type="checkbox" data-filter="city" value="杭州" />
-                      杭州
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 6px">
-                      <input type="checkbox" data-filter="city" value="上海" />
-                      上海
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 6px">
-                      <input type="checkbox" data-filter="city" value="北京" />
-                      北京
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 6px">
-                      <input type="checkbox" data-filter="city" value="成都" />
-                      成都
-                    </label>
-                    <button type="button" data-clear="city">不限</button>
+                    <xh-checkbox-group id="table-filter-city" size="sm">
+                      <div data-xh-part="root" aria-label="城市">
+                        <div data-xh-part="item" value="杭州">
+                          <input data-xh-part="hidden-input" />
+                          <span data-xh-part="indicator"></span>
+                          <span data-xh-part="item-text">杭州</span>
+                        </div>
+                        <div data-xh-part="item" value="上海">
+                          <input data-xh-part="hidden-input" />
+                          <span data-xh-part="indicator"></span>
+                          <span data-xh-part="item-text">上海</span>
+                        </div>
+                        <div data-xh-part="item" value="北京">
+                          <input data-xh-part="hidden-input" />
+                          <span data-xh-part="indicator"></span>
+                          <span data-xh-part="item-text">北京</span>
+                        </div>
+                        <div data-xh-part="item" value="成都">
+                          <input data-xh-part="hidden-input" />
+                          <span data-xh-part="indicator"></span>
+                          <span data-xh-part="item-text">成都</span>
+                        </div>
+                      </div>
+                    </xh-checkbox-group>
+                    <xh-button id="table-filter-city-clear" size="sm" variant="outline">
+                      <button data-xh-part="root">不限</button>
+                    </xh-button>
                   </div>
                 </div>
               </div>
@@ -2074,7 +2106,7 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
       <div data-xh-part="empty">这组条件下没有人。</div>
     </div>
   </xh-table>
-  <span id="table-filter-value"></span>
+  <span id="table-filter-value" data-demo-output></span>
 </div>
 
 <script type="module">
@@ -2115,16 +2147,11 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
     }),
   );
 
-  const boxes = [...stage.querySelectorAll("input[data-filter]")];
-
   // 过滤态由宿主持有，一个都没勾就是不过滤
-  function picked(field) {
-    return boxes.filter((b) => b.dataset.filter === field && b.checked).map((b) => b.value);
-  }
+  const picked = { dept: [], city: [] };
 
   function render() {
-    const dept = picked("dept");
-    const city = picked("city");
+    const { dept, city } = picked;
     const visible = members.filter(
       (m) =>
         (dept.length === 0 || dept.includes(m.dept)) &&
@@ -2138,7 +2165,7 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
     for (const mark of stage.querySelectorAll("[data-mark]")) {
       const field = mark.closest('[data-xh-part="column-header"]').getAttribute("value");
       mark.innerHTML = `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z"/></svg>`;
-      mark.style.color = picked(field).length ? "var(--xh-fg-brand)" : "";
+      mark.style.color = picked[field].length ? "var(--xh-fg-brand)" : "";
     }
 
     readout.textContent = `命中 ${visible.length} / ${members.length} 人 · 部门：${
@@ -2146,15 +2173,17 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
     } · 城市：${city.length ? city.join("、") : "不限"}`;
   }
 
-  for (const box of boxes) box.addEventListener("change", render);
-
-  for (const clear of stage.querySelectorAll("[data-clear]")) {
-    clear.addEventListener("click", () => {
-      for (const box of boxes) {
-        if (box.dataset.filter === clear.dataset.clear) box.checked = false;
-      }
+  // 两组勾选受控：勾选与「不限」都经这里写回
+  for (const field of Object.keys(picked)) {
+    const group = document.getElementById(`table-filter-${field}`);
+    const apply = (next) => {
+      picked[field] = next;
+      group.value = next;
       render();
-    });
+    };
+    group.value = picked[field];
+    group.addEventListener("value-change", (event) => apply(event.detail.value));
+    document.getElementById(`table-filter-${field}-clear`).addEventListener("click", () => apply([]));
   }
 
   render();
@@ -2335,7 +2364,7 @@ const twistyStyle = {
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>展开：{{ expanded.length ? expanded.join("、") : "（无）" }}</span>
+    <span data-demo-output>展开：{{ expanded.length ? expanded.join("、") : "（无）" }}</span>
   </div>
 </template>
 ```
@@ -2353,7 +2382,7 @@ const twistyStyle = {
       <div data-xh-part="body" data-body></div>
     </div>
   </xh-table>
-  <span data-readout></span>
+  <span data-readout data-demo-output></span>
 </div>
 
 <script type="module">
@@ -2552,7 +2581,7 @@ const preference = ref<Record<string, unknown>>({});
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>列宽偏好：{{ JSON.stringify(preference.widths ?? {}) }}</span>
+    <span data-demo-output>列宽偏好：{{ JSON.stringify(preference.widths ?? {}) }}</span>
   </div>
 </template>
 ```
@@ -2603,7 +2632,7 @@ const preference = ref<Record<string, unknown>>({});
       </div>
     </div>
   </xh-table>
-  <span id="table-resize-value"></span>
+  <span id="table-resize-value" data-demo-output></span>
 </div>
 
 <script type="module">
@@ -2668,7 +2697,7 @@ const people = Array.from({ length: 10000 }, (_, i) => ({
 const rows = people.map(p => ({ id: p.id }));
 
 // 行之间的分隔线：每行装在各自的虚拟条目里，彼此不是兄弟节点，分隔线写在行上
-const rowStyle = "block-size: 36px; border-block-end: 1px solid var(--xh-border-subtle)";
+const rowStyle = "block-size: 36px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
 </script>
 
 <template>
@@ -2767,7 +2796,7 @@ const rowStyle = "block-size: 36px; border-block-end: 1px solid var(--xh-border-
     el.dataset.xhPartOwner = "table";
     el.setAttribute("value", p.id);
     // 行之间的分隔线：每行装在各自的虚拟条目里，彼此不是兄弟节点，分隔线写在行上
-    el.style.cssText = "block-size: 36px; border-block-end: 1px solid var(--xh-border-subtle)";
+    el.style.cssText = "block-size: 36px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
     el.append(...columns.map((col) => {
       const cell = document.createElement("div");
       cell.dataset.xhPart = "cell";
@@ -3054,7 +3083,7 @@ const selection = ref<string[]>([]);
       <XhPaginationNextTrigger />
     </XhPaginationRoot>
 
-    <span style="font-size: 13px">已选 {{ selection.length }} 项 · 序号跨页连续</span>
+    <span data-demo-output>已选 {{ selection.length }} 项 · 序号跨页连续</span>
   </div>
 </template>
 ```
@@ -3094,7 +3123,7 @@ const selection = ref<string[]>([]);
     </nav>
   </xh-pagination>
 
-  <span data-readout style="font-size: 13px"></span>
+  <span data-readout data-demo-output></span>
 </div>
 
 <script type="module">
@@ -3254,7 +3283,7 @@ const selection = ref<string[] | "all">([]);
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>
+    <span data-demo-output>
       选中：{{
         selection === "all"
           ? "全部"
@@ -3331,7 +3360,7 @@ const selection = ref<string[] | "all">([]);
       </div>
     </div>
   </xh-table>
-  <span id="table-range-value"></span>
+  <span id="table-range-value" data-demo-output></span>
 </div>
 
 <script type="module">
@@ -3439,7 +3468,7 @@ function cell(m: (typeof members)[number], id: string): string {
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>列序：{{ (preference.order as string[] | undefined)?.join(" → ") ?? "（还没改过）" }}</span>
+    <span data-demo-output>列序：{{ (preference.order as string[] | undefined)?.join(" → ") ?? "（还没改过）" }}</span>
   </div>
 </template>
 ```
@@ -3494,7 +3523,7 @@ function cell(m: (typeof members)[number], id: string): string {
       </div>
     </div>
   </xh-table>
-  <span data-readout></span>
+  <span data-readout data-demo-output></span>
 </div>
 
 <script type="module">
@@ -3610,7 +3639,7 @@ function onRowMove(details: {
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>当前顺序：{{ steps.map((s) => s.name).join(" → ") }}</span>
+    <span data-demo-output>当前顺序：{{ steps.map((s) => s.name).join(" → ") }}</span>
   </div>
 </template>
 ```
@@ -3658,7 +3687,7 @@ function onRowMove(details: {
       </div>
     </div>
   </xh-table>
-  <span data-readout></span>
+  <span data-readout data-demo-output></span>
 </div>
 
 <script type="module">
@@ -3784,7 +3813,7 @@ const spacerStyle = "flex: none; inline-size: var(--xh-table-row-drag-size, var(
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>当前顺序：{{ steps.map((s) => s.name).join(" → ") }}</span>
+    <span data-demo-output>当前顺序：{{ steps.map((s) => s.name).join(" → ") }}</span>
   </div>
 </template>
 ```
@@ -3849,7 +3878,7 @@ const spacerStyle = "flex: none; inline-size: var(--xh-table-row-drag-size, var(
       </div>
     </div>
   </xh-table>
-  <span data-readout></span>
+  <span data-readout data-demo-output></span>
 </div>
 
 <script type="module">
@@ -4033,7 +4062,7 @@ const twistySpacer
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>{{ log }}</span>
+    <span data-demo-output>{{ log }}</span>
   </div>
 </template>
 ```
@@ -4055,7 +4084,7 @@ const twistySpacer
       <div data-xh-part="body" data-body></div>
     </div>
   </xh-table>
-  <span data-log>按住任意一行拖走，或 Tab 进表体按 Alt + 方向键搬</span>
+  <span data-log data-demo-output>按住任意一行拖走，或 Tab 进表体按 Alt + 方向键搬</span>
 </div>
 
 <script type="module">
@@ -4287,7 +4316,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
         </XhTableBody>
       </template>
     </XhTableRoot>
-    <span>存下来的列偏好：{{ saved }}</span>
+    <span data-demo-output>存下来的列偏好：{{ saved }}</span>
   </div>
 </template>
 ```
@@ -4313,7 +4342,7 @@ const toolbarTitle = computed(() => `成员 ${members.length} 人`);
       <div data-xh-part="body" id="table-settings-body"></div>
     </div>
   </xh-table>
-  <span id="table-settings-readout">存下来的列偏好：尚未改过</span>
+  <span id="table-settings-readout" data-demo-output>存下来的列偏好：尚未改过</span>
 </div>
 
 <script type="module">
@@ -4462,7 +4491,7 @@ const selection = ref<TableSelection>([]);
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>选中：{{ selection === "all" ? "全部" : selection.length ? selection.join("、") : "（无）" }}</span>
+    <span data-demo-output>选中：{{ selection === "all" ? "全部" : selection.length ? selection.join("、") : "（无）" }}</span>
   </div>
 </template>
 ```
@@ -4481,7 +4510,7 @@ const selection = ref<TableSelection>([]);
       <div data-xh-part="body" data-body></div>
     </div>
   </xh-table>
-  <span data-log>选中：（无）</span>
+  <span data-log data-demo-output>选中：（无）</span>
 </div>
 
 <script type="module">
@@ -5457,10 +5486,10 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `--xh-table-caption-py` | `caption` | `padding-block` | `default` | `--xh-space-2` | table 的 caption 部件 padding-block 覆盖槽。 |
 | `--xh-table-cell-gap` | `cell`<br>`column-header` | `gap` | `default` | `--xh-control-gap-md` | table 的 cell、column-header 部件 gap 覆盖槽。 |
 | `--xh-table-cell-min-w` | `cell`<br>`column-header` | `min-inline-size` | `default` | `3rem` | table 的 cell、column-header 部件 min-inline-size 覆盖槽。 |
-| `--xh-table-cell-px` | `cell`<br>`column-header` | `padding-inline` | `default` | `--xh-control-px-sm` | table 的 cell、column-header 部件 padding-inline 覆盖槽。 |
+| `--xh-table-cell-px` | `cell`<br>`column-header`<br>`root` | `padding-inline`<br>`padding-inline-end` | `default`<br>`not(:last-child)`<br>`split` | `--xh-space-4` | table 的 cell、column-header、root 部件 padding-inline、padding-inline-end 覆盖槽。 |
 | `--xh-table-cell-py` | `cell`<br>`column-header` | `padding-block` | `default` | `--xh-_table-cell-py` | table 的 cell、column-header 部件 padding-block 覆盖槽。 |
-| `--xh-table-column-fg` | `column-header` | `color` | `default` | `--xh-fg-muted` | table 的 column-header 部件 color 覆盖槽。 |
-| `--xh-table-column-font-weight` | `column-header` | `font-weight` | `default` | `--xh-text-label-weight` | table 的 column-header 部件 font-weight 覆盖槽。 |
+| `--xh-table-column-fg` | `column-header` | `color` | `default` | `--xh-fg-default` | table 的 column-header 部件 color 覆盖槽。 |
+| `--xh-table-column-font-weight` | `column-header` | `font-weight` | `default` | `--xh-font-weight-medium` | table 的 column-header 部件 font-weight 覆盖槽。 |
 | `--xh-table-column-list-fg` | `column-list` | `color` | `default` | `--xh-fg-default` | table 的 column-list 部件 color 覆盖槽。 |
 | `--xh-table-column-list-font-size` | `column-list` | `font-size` | `default` | `--xh-text-secondary-size` | table 的 column-list 部件 font-size 覆盖槽。 |
 | `--xh-table-column-list-gap` | `column-list` | `gap` | `default` | `--xh-_table-column-list-gap` | table 的 column-list 部件 gap 覆盖槽。 |
@@ -5484,7 +5513,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `--xh-table-footer-border` | `footer` | `border-block-start` | `default` | `--xh-border-subtle` | table 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-table-footer-font-weight` | `footer` | `font-weight` | `default` | `--xh-font-weight-medium` | table 的 footer 部件 font-weight 覆盖槽。 |
 | `--xh-table-frozen-edge` | `cell`<br>`column-header` | `background` | `frozen-edge`<br>`is([data-part='column-header'], [data-part='cell'])` | `--xh-border-default` | table 的 cell、column-header 部件 background 覆盖槽。 |
-| `--xh-table-header-bg` | `column-header`<br>`header` | `background` | `default`<br>`frozen` | `--xh-bg-subtle-opaque` | table 的 column-header、header 部件 background 覆盖槽。 |
+| `--xh-table-header-bg` | `column-header`<br>`header` | `background` | `default`<br>`frozen` | `--xh-_table-header-bg` | table 的 column-header、header 部件 background 覆盖槽。 |
 | `--xh-table-header-border` | `header` | `border-block-end` | `default` | `--xh-border-subtle` | table 的 header 部件 border-block-end 覆盖槽。 |
 | `--xh-table-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | table 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-table-load-more-trigger-bg-hover` | `load-more-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | table 的 load-more-trigger 部件 background-color 覆盖槽。 |
@@ -5537,7 +5566,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `--xh-table-trigger-bg-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `--xh-ink-surface`<br>`background-color`<br>`border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`indeterminate`<br>`is(:active, [data-pressed])`<br>`is([data-selected], [data-indeterminate])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate`<br>`xh-ink-surface` | `--xh-bg-brand` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 --xh-ink-surface、background-color、border、border-color 覆盖槽。 |
 | `--xh-table-trigger-bg-checked-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `background-color` | `disabled`<br>`indeterminate`<br>`is(:active, [data-pressed])`<br>`is([data-selected], [data-indeterminate])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-bg-brand-active` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 background-color 覆盖槽。 |
 | `--xh-table-trigger-bg-pressed` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 background-color 覆盖槽。 |
-| `--xh-table-trigger-border` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-control` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-table-trigger-border` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-strong` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border、border-color 覆盖槽。 |
 | `--xh-table-trigger-border-checked` | `column-visibility-trigger`<br>`expand-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`indeterminate`<br>`is(:active, [data-pressed])`<br>`is([data-selected], [data-indeterminate])`<br>`is([data-state='checked'], [data-state='indeterminate'])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`state=indeterminate` | `--xh-table-trigger-bg-checked` | table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border、border-color 覆盖槽。 |
 | `--xh-table-trigger-fg` | `column-visibility-trigger`<br>`row-select-trigger`<br>`select-all-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-on-brand` | table 的 column-visibility-trigger、row-select-trigger、select-all-trigger 部件 color 覆盖槽。 |
 | `--xh-table-trigger-radius` | `column-drag-trigger`<br>`column-visibility-trigger`<br>`expand-trigger`<br>`row-drag-trigger`<br>`row-select-trigger`<br>`select-all-trigger`<br>`sort-trigger` | `border-radius` | `default` | `--xh-shape-control`<br>`--xh-shape-inset` | table 的 column-drag-trigger、column-visibility-trigger、expand-trigger、row-drag-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border-radius 覆盖槽。 |

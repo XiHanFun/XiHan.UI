@@ -48,7 +48,7 @@ const filtered = computed(() => {
     :translations="{ input: '正文', content: '提及谁' }"
     @query-change="query = $event.query"
   />
-  <p>正文：{{ text || "（空）" }}</p>
+  <p data-demo-output>正文：{{ text || "（空）" }}</p>
 </template>
 ```
 
@@ -61,7 +61,7 @@ const filtered = computed(() => {
     </div>
   </div>
 </xh-mention>
-<p>正文：<span id="mention-basic-value">（空）</span></p>
+<p data-demo-output>正文：<span id="mention-basic-value">（空）</span></p>
 
 <script type="module">
   const people = [
@@ -165,7 +165,7 @@ function onQuery(details: { query: string | null; prefix: string | null }): void
     :translations="{ input: '正文', content: '候选' }"
     @query-change="onQuery"
   />
-  <p>当前前缀：{{ prefix ?? "（无触发）" }}</p>
+  <p data-demo-output>当前前缀：{{ prefix ?? "（无触发）" }}</p>
 </template>
 ```
 
@@ -178,7 +178,7 @@ function onQuery(details: { query: string | null; prefix: string | null }): void
     </div>
   </div>
 </xh-mention>
-<p>当前前缀：<span id="mention-multi-prefix-active">（无触发）</span></p>
+<p data-demo-output>当前前缀：<span id="mention-multi-prefix-active">（无触发）</span></p>
 
 <script type="module">
   const people = [
@@ -287,7 +287,7 @@ const filtered = computed(() => {
       </XhMentionContent>
     </XhMentionPositioner>
   </XhMentionRoot>
-  <p>正文：{{ text || "（空）" }}</p>
+  <p data-demo-output>正文：{{ text || "（空）" }}</p>
 </template>
 ```
 
@@ -300,7 +300,7 @@ const filtered = computed(() => {
     </div>
   </div>
 </xh-mention>
-<p>正文：<span id="mention-custom-item-value">（空）</span></p>
+<p data-demo-output>正文：<span id="mention-custom-item-value">（空）</span></p>
 
 <script type="module">
   const people = [
@@ -357,7 +357,7 @@ const filtered = computed(() => {
 
 ```vue
 <script setup lang="ts">
-import { XhMentionRoot } from "@xihan-ui/vue";
+import { XhButton, XhMentionRoot } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
 
 const people = [
@@ -399,8 +399,8 @@ function reset(): void {
     @query-change="query = $event.query"
     @select="onSelect"
   />
-  <p>已提及：{{ mentioned.join("、") || "（无）" }}</p>
-  <button type="button" @click="reset">清空</button>
+  <XhButton variant="outline" size="sm" @click="reset">清空</XhButton>
+  <p data-demo-output>已提及：{{ mentioned.join("、") || "（无）" }}</p>
 </template>
 ```
 
@@ -413,8 +413,10 @@ function reset(): void {
     </div>
   </div>
 </xh-mention>
-<p>已提及：<span id="mention-controlled-list">（无）</span></p>
-<button type="button" id="mention-controlled-reset">清空</button>
+<xh-button id="mention-controlled-reset" variant="outline" size="sm">
+  <button data-xh-part="root">清空</button>
+</xh-button>
+<p data-demo-output>已提及：<span id="mention-controlled-list">（无）</span></p>
 
 <script type="module">
   const people = [
@@ -549,7 +551,7 @@ function onQuery(details: { query: string | null }): void {
       <XhMentionLoading>查询中…</XhMentionLoading>
     </XhMentionPositioner>
   </XhMentionRoot>
-  <p>{{ loading ? "查询中…" : `候选 ${options.length} 条` }}</p>
+  <p data-demo-output>{{ loading ? "查询中…" : `候选 ${options.length} 条` }}</p>
 </template>
 ```
 
@@ -564,7 +566,7 @@ function onQuery(details: { query: string | null }): void {
     </div>
   </div>
 </xh-mention>
-<p id="mention-async-status">候选 0 条</p>
+<p id="mention-async-status" data-demo-output>候选 0 条</p>
 
 <script type="module">
   const pool = [
@@ -1144,7 +1146,7 @@ const filtered = computed(() => {
 | `--xh-mention-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | mention 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-mention-content-min-h` | `content` | `min-block-size` | `default` | `--xh-_mention-h` | mention 的 content 部件 min-block-size 覆盖槽。 |
 | `--xh-mention-content-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-min-w` | mention 的 content 部件 min-inline-size 覆盖槽。 |
-| `--xh-mention-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | mention 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-mention-content-px` | `content` | `padding-inline` | `default` | `0` | mention 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-mention-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | mention 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-mention-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | mention 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-mention-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | mention 的 content 部件 box-shadow 覆盖槽。 |
@@ -1156,11 +1158,11 @@ const filtered = computed(() => {
 | `--xh-mention-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | mention 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-mention-input-bg` | `input` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | mention 的 input 部件 background-color 覆盖槽。 |
 | `--xh-mention-input-bg-disabled` | `input` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | mention 的 input 部件 background-color 覆盖槽。 |
-| `--xh-mention-input-bg-hover` | `input` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | mention 的 input 部件 background-color 覆盖槽。 |
+| `--xh-mention-input-bg-hover` | `input` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | mention 的 input 部件 background-color 覆盖槽。 |
 | `--xh-mention-input-bg-readonly` | `input` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | mention 的 input 部件 background-color 覆盖槽。 |
 | `--xh-mention-input-border` | `input` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | mention 的 input 部件 border 覆盖槽。 |
 | `--xh-mention-input-border-focus` | `input` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | mention 的 input 部件 border-color 覆盖槽。 |
-| `--xh-mention-input-border-hover` | `input` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | mention 的 input 部件 border-color 覆盖槽。 |
+| `--xh-mention-input-border-hover` | `input` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | mention 的 input 部件 border-color 覆盖槽。 |
 | `--xh-mention-input-border-invalid` | `input` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | mention 的 input 部件 border-color 覆盖槽。 |
 | `--xh-mention-input-fg` | `input` | `color` | `xh-field-chrome` | `--xh-fg-default` | mention 的 input 部件 color 覆盖槽。 |
 | `--xh-mention-input-font-size` | `input` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 input 部件 font-size 覆盖槽。 |
@@ -1175,22 +1177,23 @@ const filtered = computed(() => {
 | `--xh-mention-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-material-frosted-fg` | mention 的 item 部件 color 覆盖槽。 |
 | `--xh-mention-item-font-size` | `item` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 item 部件 font-size 覆盖槽。 |
 | `--xh-mention-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_mention-gap` | mention 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-mention-item-h` | `item` | `min-block-size` | `default` | `--xh-_mention-item-h` | mention 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-mention-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | mention 的 item 部件 line-height 覆盖槽。 |
 | `--xh-mention-item-px` | `item` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-mention-item-py` | `item` | `padding-block` | `default` | `--xh-_mention-item-py` | mention 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-mention-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | mention 的 item 部件 border-radius 覆盖槽。 |
-| `--xh-mention-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | mention 的 label 部件 color 覆盖槽。 |
-| `--xh-mention-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | mention 的 label 部件 color 覆盖槽。 |
+| `--xh-mention-item-radius` | `item` | `border-radius` | `default` | `0` | mention 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-mention-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | mention 的 label 部件 color 覆盖槽。 |
+| `--xh-mention-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | mention 的 label 部件 color 覆盖槽。 |
 | `--xh-mention-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | mention 的 label 部件 font-size 覆盖槽。 |
 | `--xh-mention-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | mention 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-mention-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-1` | mention 的 label 部件 margin-block-end 覆盖槽。 |
+| `--xh-mention-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | mention 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-mention-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | mention 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-mention-loading-fg` | `loading` | `color` | `default` | `--xh-material-frosted-fg-muted` | mention 的 loading 部件 color 覆盖槽。 |
 | `--xh-mention-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 loading 部件 font-size 覆盖槽。 |
 | `--xh-mention-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 loading 部件 padding-inline 覆盖槽。 |
 | `--xh-mention-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | mention 的 loading 部件 padding-block 覆盖槽。 |
 | `--xh-mention-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | mention 的 input 部件 color 覆盖槽。 |
-| `--xh-mention-textarea-py` | `input` | `padding-block` | `xh-field-layout=textarea` | `--xh-space-2` | mention 的 input 部件 padding-block 覆盖槽。 |
+| `--xh-mention-textarea-py` | `input` | `padding-block` | `xh-field-layout=textarea` | `--xh-space-1` | mention 的 input 部件 padding-block 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

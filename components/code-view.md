@@ -951,34 +951,39 @@ const folded = ref([11]);
 </script>
 
 <template>
-  <div style="display: grid; gap: 8px; inline-size: 100%">
-    <XhCodeViewRoot
-      v-model:folded="folded"
-      :code="sample"
-      lang="typescript"
-      complete
-      line-numbers
-      block-folding
-    >
-      <XhCodeViewPre>
-        <XhCodeViewCode />
-      </XhCodeViewPre>
-    </XhCodeViewRoot>
-    <span>折叠着的块头：{{ folded.length > 0 ? folded.join("、") : "无" }}</span>
-  </div>
+  <XhCodeViewRoot
+    v-model:folded="folded"
+    :code="sample"
+    lang="typescript"
+    complete
+    line-numbers
+    block-folding
+    style="inline-size: 100%"
+  >
+    <XhCodeViewPre>
+      <XhCodeViewCode />
+    </XhCodeViewPre>
+  </XhCodeViewRoot>
+  <span data-demo-output>折叠着的块头：{{ folded.length > 0 ? folded.join("、") : "无" }}</span>
 </template>
 ```
 
 ```html
-<div style="display: grid; gap: 8px; inline-size: 100%">
-  <xh-code-view id="code-view-block-folding" code-lang="typescript" complete line-numbers block-folding default-folded="11">
-    <div data-xh-part="root">
-      <!-- 行与折叠钮都由元素铺 -->
-      <pre data-xh-part="pre"><code data-xh-part="code"></code></pre>
-    </div>
-  </xh-code-view>
-  <span id="code-view-block-folding-state">折叠着的块头：11</span>
-</div>
+<xh-code-view
+  id="code-view-block-folding"
+  code-lang="typescript"
+  complete
+  line-numbers
+  block-folding
+  default-folded="11"
+  style="inline-size: 100%"
+>
+  <div data-xh-part="root">
+    <!-- 行与折叠钮都由元素铺 -->
+    <pre data-xh-part="pre"><code data-xh-part="code"></code></pre>
+  </div>
+</xh-code-view>
+<span id="code-view-block-folding-state" data-demo-output>折叠着的块头：11</span>
 
 <script type="module">
   const view = document.getElementById("code-view-block-folding");

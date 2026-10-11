@@ -272,6 +272,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 ```vue
 <script setup lang="ts">
 import {
+  XhButton,
   XhStatisticLabel,
   XhStatisticRoot,
   XhStatisticSuffix,
@@ -296,7 +297,7 @@ function reroll() {
       <XhStatisticSuffix>元</XhStatisticSuffix>
     </XhStatisticRoot>
 
-    <button type="button" @click="reroll">换一组数字</button>
+    <XhButton variant="outline" size="sm" @click="reroll">换一组数字</XhButton>
   </div>
 </template>
 ```
@@ -311,7 +312,9 @@ function reroll() {
     </div>
   </xh-statistic>
 
-  <button type="button" id="statistic-tabular-reroll">换一组数字</button>
+  <xh-button id="statistic-tabular-reroll" variant="outline" size="sm">
+    <button data-xh-part="root">换一组数字</button>
+  </xh-button>
 </div>
 
 <script type="module">

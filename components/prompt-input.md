@@ -25,29 +25,25 @@ const sent = ref<string[]>([]);
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <XhPromptInputRoot
-      :translations="{ input: '给助手写点什么' }"
-      @submit="sent.push($event.value)"
-    >
-      <XhPromptInputInput rows="1" placeholder="给助手写点什么…" />
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
-    </XhPromptInputRoot>
-    <p v-if="sent.length" style="margin: 0;">已发出：{{ sent.join(" / ") }}</p>
-  </div>
+  <XhPromptInputRoot
+    :translations="{ input: '给助手写点什么' }"
+    @submit="sent.push($event.value)"
+  >
+    <XhPromptInputInput rows="1" placeholder="给助手写点什么…" />
+    <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+  </XhPromptInputRoot>
+  <p data-demo-output>已发出：{{ sent.join(" / ") || "（无）" }}</p>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 12px">
-  <xh-prompt-input id="prompt-input-basic">
-    <div data-xh-part="root">
-      <textarea data-xh-part="input" rows="1" placeholder="给助手写点什么…"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
-    </div>
-  </xh-prompt-input>
-  <p id="prompt-input-basic-sent" style="margin: 0"></p>
-</div>
+<xh-prompt-input id="prompt-input-basic">
+  <div data-xh-part="root">
+    <textarea data-xh-part="input" rows="1" placeholder="给助手写点什么…"></textarea>
+    <button data-xh-part="submit-trigger">发送</button>
+  </div>
+</xh-prompt-input>
+<p id="prompt-input-basic-sent" data-demo-output>已发出：（无）</p>
 
 <script type="module">
   // submit 与原生表单提交同名，故不冒泡，直接在元素上监听
@@ -265,70 +261,101 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 
 ```vue
 <script setup lang="ts">
-import { XhPromptInputControl, XhPromptInputInput, XhPromptInputRoot, XhPromptInputSubmitTrigger } from "@xihan-ui/vue";
+import type { PromptInputSubmitKey } from "@xihan-ui/headless";
+import {
+  XhCheckbox,
+  XhPromptInputControl,
+  XhPromptInputInput,
+  XhPromptInputRoot,
+  XhPromptInputSubmitTrigger,
+  XhSelectRoot,
+} from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const submitKey = ref<"enter" | "mod-enter" | "none">("enter");
+const submitKeys = [
+  { value: "enter", label: "Enter 提交" },
+  { value: "mod-enter", label: "Ctrl/Cmd+Enter 提交" },
+  { value: "none", label: "只用按钮提交" },
+];
+
+// 选择器的值恒为数组，单选即长度 1
+const submitKey = ref<string[]>(["enter"]);
 const loading = ref(false);
 const sent = ref<string[]>([]);
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <XhPromptInputRoot
-      v-slot="{ value }"
-      :loading="loading"
-      :submit-key="submitKey"
-      :translations="{ input: '给助手写点什么' }"
-      @submit="sent.push($event.value)"
-      @stop="loading = false"
-    >
-      <XhPromptInputControl>
-        <XhPromptInputInput rows="1" placeholder="给助手写点什么…" />
-        <XhPromptInputSubmitTrigger />
-      </XhPromptInputControl>
-      <div style="display: flex; align-items: center; gap: 12px; font-size: 12px;">
-        <label style="display: inline-flex; align-items: center; gap: 4px;">
-          <input v-model="loading" type="checkbox">
-          生成中
-        </label>
-        <select v-model="submitKey" aria-label="按哪一档提交">
-          <option value="enter">Enter 提交</option>
-          <option value="mod-enter">Ctrl/Cmd+Enter 提交</option>
-          <option value="none">只用按钮提交</option>
-        </select>
-        <span style="margin-inline-start: auto;">{{ value.length }} 字</span>
-      </div>
-    </XhPromptInputRoot>
-    <p v-if="sent.length" style="margin: 0;">已发出：{{ sent.join(" / ") }}</p>
-  </div>
+  <XhPromptInputRoot
+    v-slot="{ value }"
+    :loading="loading"
+    :submit-key="submitKey[0] as PromptInputSubmitKey"
+    :translations="{ input: '给助手写点什么' }"
+    @submit="sent.push($event.value)"
+    @stop="loading = false"
+  >
+    <XhPromptInputControl>
+      <XhPromptInputInput rows="1" placeholder="给助手写点什么…" />
+      <XhPromptInputSubmitTrigger />
+    </XhPromptInputControl>
+    <div style="display: flex; align-items: center; gap: 12px; font-size: 12px;">
+      <XhCheckbox v-model:checked="loading" size="sm">生成中</XhCheckbox>
+      <XhSelectRoot v-model:value="submitKey" :collection="submitKeys" size="sm" />
+      <span style="margin-inline-start: auto;">{{ value.length }} 字</span>
+    </div>
+  </XhPromptInputRoot>
+  <p data-demo-output>已发出：{{ sent.join(" / ") || "（无）" }}</p>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 12px">
-  <xh-prompt-input id="prompt-input-layout">
-    <div data-xh-part="root">
-      <div data-xh-part="control">
-        <textarea data-xh-part="input" rows="1" placeholder="给助手写点什么…"></textarea>
-        <button data-xh-part="submit-trigger"></button>
-      </div>
-      <div style="display: flex; align-items: center; gap: 12px; font-size: 12px">
-        <label style="display: inline-flex; align-items: center; gap: 4px">
-          <input id="prompt-input-layout-loading" type="checkbox" />
-          生成中
-        </label>
-        <select id="prompt-input-layout-key" aria-label="按哪一档提交">
-          <option value="enter">Enter 提交</option>
-          <option value="mod-enter">Ctrl/Cmd+Enter 提交</option>
-          <option value="none">只用按钮提交</option>
-        </select>
-        <span id="prompt-input-layout-count" style="margin-inline-start: auto">0 字</span>
-      </div>
+<xh-prompt-input id="prompt-input-layout">
+  <div data-xh-part="root">
+    <div data-xh-part="control">
+      <textarea data-xh-part="input" rows="1" placeholder="给助手写点什么…"></textarea>
+      <button data-xh-part="submit-trigger"></button>
     </div>
-  </xh-prompt-input>
-  <p id="prompt-input-layout-sent" style="margin: 0"></p>
-</div>
+    <div style="display: flex; align-items: center; gap: 12px; font-size: 12px">
+      <xh-checkbox id="prompt-input-layout-loading" size="sm">
+        <label data-xh-part="label">
+          <button data-xh-part="root">
+            <span data-xh-part="indicator"></span>
+          </button>
+          <span data-xh-part="text">生成中</span>
+        </label>
+      </xh-checkbox>
+      <xh-select id="prompt-input-layout-key" default-value="enter" size="sm">
+        <div data-xh-part="root">
+          <div data-xh-part="control">
+            <button data-xh-part="trigger">
+              <span data-xh-part="value-text"></span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </div>
+          <div data-xh-part="positioner">
+            <div data-xh-part="content">
+              <div data-xh-part="list">
+                <div data-xh-part="item" value="enter">
+                  <span data-xh-part="item-text">Enter 提交</span>
+                  <span data-xh-part="item-indicator"></span>
+                </div>
+                <div data-xh-part="item" value="mod-enter">
+                  <span data-xh-part="item-text">Ctrl/Cmd+Enter 提交</span>
+                  <span data-xh-part="item-indicator"></span>
+                </div>
+                <div data-xh-part="item" value="none">
+                  <span data-xh-part="item-text">只用按钮提交</span>
+                  <span data-xh-part="item-indicator"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </xh-select>
+      <span id="prompt-input-layout-count" style="margin-inline-start: auto">0 字</span>
+    </div>
+  </div>
+</xh-prompt-input>
+<p id="prompt-input-layout-sent" data-demo-output>已发出：（无）</p>
 
 <script type="module">
   const input = document.getElementById("prompt-input-layout");
@@ -349,13 +376,21 @@ const sent = ref<string[]>([]);
     line.textContent = `已发出：${sent.join(" / ")}`;
   });
 
-  input.addEventListener("stop", () => {
-    loading.checked = false;
-    input.removeAttribute("loading");
-  });
+  // 生成中受控：勾选与停止都经这里写回
+  function setLoading(next) {
+    loading.checked = next;
+    input.toggleAttribute("loading", next);
+  }
 
-  loading.addEventListener("change", () => input.toggleAttribute("loading", loading.checked));
-  key.addEventListener("change", () => input.setAttribute("submit-key", key.value));
+  setLoading(false);
+  input.addEventListener("stop", () => setLoading(false));
+  loading.addEventListener("checked-change", (event) => setLoading(event.detail.checked));
+
+  // 选择器的 value-change 会冒泡到输入框上，与输入框自己的值变化同名，这里截住
+  key.addEventListener("value-change", (event) => {
+    event.stopPropagation();
+    input.setAttribute("submit-key", event.detail.value[0]);
+  });
 </script>
 ```
 
@@ -402,7 +437,7 @@ const log = ref("（还没发过）");
       <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
     </XhPromptInputRoot>
 
-    <span>{{ log }}</span>
+    <span data-demo-output>{{ log }}</span>
   </div>
 </template>
 ```
@@ -433,7 +468,7 @@ const log = ref("（还没发过）");
     </div>
   </xh-prompt-input>
 
-  <span id="prompt-input-key-log">（还没发过）</span>
+  <span id="prompt-input-key-log" data-demo-output>（还没发过）</span>
 </div>
 
 <script type="module">
@@ -548,50 +583,46 @@ const log = ref("（还没发过）");
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px">
-    <XhPromptInputRoot
-      v-slot="{ value, setValue }"
-      default-value="框里放了自己的计数与清空钮"
-      :translations="{ input: '给助手写点什么' }"
-      @submit="log = `提交：${$event.value}`"
-    >
-      <!-- maxlength 是原生属性，直接落到 textarea 上 -->
-      <XhPromptInputInput :maxlength="max" rows="1" placeholder="最多 40 个字" />
-      <span style="font-size: 13px; white-space: nowrap">{{ value.length }} / {{ max }}</span>
-      <!-- 有内容才给清空，清空后按钮自己转灰 -->
-      <XhButton variant="ghost" size="sm" :disabled="value === ''" @click="setValue('')">
-        清空
-      </XhButton>
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
-    </XhPromptInputRoot>
-    <span>{{ log }}</span>
-  </div>
+  <XhPromptInputRoot
+    v-slot="{ value, setValue }"
+    default-value="框里放了自己的计数与清空钮"
+    :translations="{ input: '给助手写点什么' }"
+    @submit="log = `提交：${$event.value}`"
+  >
+    <!-- maxlength 是原生属性，直接落到 textarea 上 -->
+    <XhPromptInputInput :maxlength="max" rows="1" placeholder="最多 40 个字" />
+    <span style="font-size: 13px; white-space: nowrap">{{ value.length }} / {{ max }}</span>
+    <!-- 有内容才给清空，清空后按钮自己转灰 -->
+    <XhButton variant="ghost" size="sm" :disabled="value === ''" @click="setValue('')">
+      清空
+    </XhButton>
+    <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+  </XhPromptInputRoot>
+  <span data-demo-output>{{ log }}</span>
 </template>
 ```
 
 ```html
-<div style="display: grid; gap: 12px">
-  <xh-prompt-input id="prompt-input-extras">
-    <div data-xh-part="root">
-      <!-- maxlength 是原生属性，直接写在 textarea 上 -->
-      <textarea
-        data-xh-part="input"
-        maxlength="40"
-        rows="1"
-        placeholder="最多 40 个字"
-      ></textarea>
-      <span style="font-size: 13px; white-space: nowrap">
-        <span id="prompt-input-extras-count">0</span> / 40
-      </span>
-      <!-- 有内容才给清空，清空后按钮自己转灰 -->
-      <xh-button id="prompt-input-extras-clear" variant="ghost" size="sm">
-        <button data-xh-part="root">清空</button>
-      </xh-button>
-      <button data-xh-part="submit-trigger">发送</button>
-    </div>
-  </xh-prompt-input>
-  <span id="prompt-input-extras-log">（还没发过）</span>
-</div>
+<xh-prompt-input id="prompt-input-extras">
+  <div data-xh-part="root">
+    <!-- maxlength 是原生属性，直接写在 textarea 上 -->
+    <textarea
+      data-xh-part="input"
+      maxlength="40"
+      rows="1"
+      placeholder="最多 40 个字"
+    ></textarea>
+    <span style="font-size: 13px; white-space: nowrap">
+      <span id="prompt-input-extras-count">0</span> / 40
+    </span>
+    <!-- 有内容才给清空，清空后按钮自己转灰 -->
+    <xh-button id="prompt-input-extras-clear" variant="ghost" size="sm">
+      <button data-xh-part="root">清空</button>
+    </xh-button>
+    <button data-xh-part="submit-trigger">发送</button>
+  </div>
+</xh-prompt-input>
+<span id="prompt-input-extras-log" data-demo-output>（还没发过）</span>
 
 <script type="module">
   // 值受控：每次变化写回宿主，清空按钮只是写一个空串
@@ -717,7 +748,7 @@ function onSubmit(details: { value: string }): void {
       <XhButton variant="outline" size="sm" @click="input?.select()">全选</XhButton>
       <XhButton variant="ghost" size="sm" @click="input?.blur()">失焦</XhButton>
     </div>
-    <span>{{ log }}</span>
+    <span data-demo-output>{{ log }}</span>
   </div>
 </template>
 ```
@@ -742,7 +773,7 @@ function onSubmit(details: { value: string }): void {
       <button data-xh-part="root">失焦</button>
     </xh-button>
   </div>
-  <span id="prompt-input-focus-log">（还没发过）</span>
+  <span id="prompt-input-focus-log" data-demo-output>（还没发过）</span>
 </div>
 
 <script type="module">
@@ -817,7 +848,7 @@ function onSubmit(details: { value: string }): void {
     >
       网络不通，这条没能发出去，再发一次
     </p>
-    <span>{{ log }}</span>
+    <span data-demo-output>{{ log }}</span>
   </div>
 </template>
 ```
@@ -845,7 +876,7 @@ function onSubmit(details: { value: string }): void {
   >
     网络不通，这条没能发出去，再发一次
   </p>
-  <span id="prompt-input-invalid-log">（还没发过）</span>
+  <span id="prompt-input-invalid-log" data-demo-output>（还没发过）</span>
 </div>
 
 <script type="module">
@@ -991,57 +1022,53 @@ function send(value: string) {
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px">
-    <XhPromptInputRoot :translations="{ input: '给助手写点什么' }" @submit="send($event.value)">
-      <XhPromptInputControl>
-        <XhPromptInputInput rows="1" placeholder="写点什么，可以附上文件…" />
-        <XhPromptInputSubmitTrigger />
-      </XhPromptInputControl>
-      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
-        <input ref="picker" type="file" multiple hidden @change="pick">
-        <XhButton variant="ghost" size="sm" @click="picker?.click()">
-          添加附件
-        </XhButton>
-        <XhTagRoot
-          v-for="item in attachments"
-          :key="item.id"
-          variant="subtle"
-          closable
-          :open="true"
-          :translations="{ close: `移除 ${item.name}` }"
-          @open-change="attachments = attachments.filter(other => other.id !== item.id)"
-        >
-          <XhTagLabel>{{ item.name }}</XhTagLabel>
-          <XhTagCloseTrigger />
-        </XhTagRoot>
-      </div>
-    </XhPromptInputRoot>
-    <span>{{ log }}</span>
-  </div>
+  <XhPromptInputRoot :translations="{ input: '给助手写点什么' }" @submit="send($event.value)">
+    <XhPromptInputControl>
+      <XhPromptInputInput rows="1" placeholder="写点什么，可以附上文件…" />
+      <XhPromptInputSubmitTrigger />
+    </XhPromptInputControl>
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+      <input ref="picker" type="file" multiple hidden @change="pick">
+      <XhButton variant="ghost" size="sm" @click="picker?.click()">
+        添加附件
+      </XhButton>
+      <XhTagRoot
+        v-for="item in attachments"
+        :key="item.id"
+        variant="subtle"
+        closable
+        :open="true"
+        :translations="{ close: `移除 ${item.name}` }"
+        @open-change="attachments = attachments.filter(other => other.id !== item.id)"
+      >
+        <XhTagLabel>{{ item.name }}</XhTagLabel>
+        <XhTagCloseTrigger />
+      </XhTagRoot>
+    </div>
+  </XhPromptInputRoot>
+  <span data-demo-output>{{ log }}</span>
 </template>
 ```
 
 ```html
-<div style="display: grid; gap: 12px">
-  <xh-prompt-input id="prompt-input-attachments">
-    <div data-xh-part="root">
-      <div data-xh-part="control">
-        <textarea data-xh-part="input" rows="1" placeholder="写点什么，可以附上文件…"></textarea>
-        <button data-xh-part="submit-trigger"></button>
-      </div>
-      <div
-        id="prompt-input-attachments-list"
-        style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px"
-      >
-        <input id="prompt-input-attachments-picker" type="file" multiple hidden />
-        <xh-button id="prompt-input-attachments-add" variant="ghost" size="sm">
-          <button data-xh-part="root">添加附件</button>
-        </xh-button>
-      </div>
+<xh-prompt-input id="prompt-input-attachments">
+  <div data-xh-part="root">
+    <div data-xh-part="control">
+      <textarea data-xh-part="input" rows="1" placeholder="写点什么，可以附上文件…"></textarea>
+      <button data-xh-part="submit-trigger"></button>
     </div>
-  </xh-prompt-input>
-  <span id="prompt-input-attachments-log">（还没发过）</span>
-</div>
+    <div
+      id="prompt-input-attachments-list"
+      style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px"
+    >
+      <input id="prompt-input-attachments-picker" type="file" multiple hidden />
+      <xh-button id="prompt-input-attachments-add" variant="ghost" size="sm">
+        <button data-xh-part="root">添加附件</button>
+      </xh-button>
+    </div>
+  </div>
+</xh-prompt-input>
+<span id="prompt-input-attachments-log" data-demo-output>（还没发过）</span>
 
 <script type="module">
   const input = document.getElementById("prompt-input-attachments");
@@ -1298,10 +1325,10 @@ function send(value: string) {
 | --- | --- | --- | --- | --- | --- |
 | `--xh-prompt-input-bg` | `root` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | prompt-input 的 root 部件 background-color 覆盖槽。 |
 | `--xh-prompt-input-bg-disabled` | `root` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | prompt-input 的 root 部件 background-color 覆盖槽。 |
-| `--xh-prompt-input-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | prompt-input 的 root 部件 background-color 覆盖槽。 |
+| `--xh-prompt-input-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | prompt-input 的 root 部件 background-color 覆盖槽。 |
 | `--xh-prompt-input-border` | `root` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | prompt-input 的 root 部件 border 覆盖槽。 |
 | `--xh-prompt-input-border-focus` | `root` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | prompt-input 的 root 部件 border-color 覆盖槽。 |
-| `--xh-prompt-input-border-hover` | `root` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | prompt-input 的 root 部件 border-color 覆盖槽。 |
+| `--xh-prompt-input-border-hover` | `root` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | prompt-input 的 root 部件 border-color 覆盖槽。 |
 | `--xh-prompt-input-gap` | `root` | `gap` | `xh-field-chrome` | `--xh-_prompt-input-gap` | prompt-input 的 root 部件 gap 覆盖槽。 |
 | `--xh-prompt-input-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=md`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | prompt-input 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-prompt-input-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | prompt-input 的 input 部件 box-shadow 覆盖槽。 |

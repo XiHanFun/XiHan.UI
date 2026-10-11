@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`text-field-multiline`);e.autoSize={minRows:2,maxRows:6}}export{e as default};

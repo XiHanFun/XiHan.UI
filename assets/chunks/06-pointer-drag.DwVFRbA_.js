@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`carousel-drag`),t=document.getElementById(`carousel-drag-readout`);e.addEventListener(`page-change`,e=>{t.textContent=`第 ${e.detail.page+1} / 4 页`})}export{e as default};

@@ -135,10 +135,10 @@ function onExpandedValueChange(details: { value: string[] }) {
 <template>
   <div style="display: grid; gap: 12px; inline-size: 100%; max-inline-size: 420px">
     <div style="display: flex; gap: 8px">
-      <XhButton size="sm" @click="expanded = jsonExpandedPathsToDepth(payload, 9)">
+      <XhButton variant="outline" size="sm" @click="expanded = jsonExpandedPathsToDepth(payload, 9)">
         全部展开
       </XhButton>
-      <XhButton size="sm" @click="expanded = []">全部收起</XhButton>
+      <XhButton variant="outline" size="sm" @click="expanded = []">全部收起</XhButton>
     </div>
 
     <XhJsonViewerRoot
@@ -146,19 +146,19 @@ function onExpandedValueChange(details: { value: string[] }) {
       :expanded-value="expanded"
       @expanded-value-change="onExpandedValueChange"
     />
-
-    <span>展开了 {{ expanded.length }} 处</span>
   </div>
+
+  <span data-demo-output>展开了 {{ expanded.length }} 处</span>
 </template>
 ```
 
 ```html
 <div style="display: grid; gap: 12px; inline-size: 100%; max-inline-size: 420px">
   <div style="display: flex; gap: 8px">
-    <xh-button id="json-controlled-expand" size="sm">
+    <xh-button id="json-controlled-expand" variant="outline" size="sm">
       <button data-xh-part="root">全部展开</button>
     </xh-button>
-    <xh-button id="json-controlled-collapse" size="sm">
+    <xh-button id="json-controlled-collapse" variant="outline" size="sm">
       <button data-xh-part="root">全部收起</button>
     </xh-button>
   </div>
@@ -166,9 +166,9 @@ function onExpandedValueChange(details: { value: string[] }) {
   <xh-json-viewer id="json-controlled">
     <div data-xh-part="root"></div>
   </xh-json-viewer>
-
-  <span>展开了 <span id="json-controlled-count">1</span> 处</span>
 </div>
+
+<span data-demo-output>展开了 <span id="json-controlled-count">1</span> 处</span>
 
 <script type="module">
   const viewer = document.getElementById("json-controlled");
@@ -384,7 +384,7 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 
 ```vue
 <script setup lang="ts">
-import { XhJsonViewerRoot } from "@xihan-ui/vue";
+import { XhJsonViewerRoot, XhSwitch } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const payload = {
@@ -402,22 +402,37 @@ const view = ref<"tree" | "text">("text");
 
 <template>
   <div style="display: flex; flex-direction: column; gap: 8px; inline-size: 100%; max-inline-size: 420px">
-    <label style="display: flex; align-items: center; gap: 6px">
-      <input v-model="view" type="checkbox" true-value="text" false-value="tree">
+    <XhSwitch :checked="view === 'text'" @update:checked="view = $event ? 'text' : 'tree'">
       原文视图
-    </label>
+    </XhSwitch>
     <XhJsonViewerRoot :value="payload" :view="view" :default-expanded-depth="2" />
   </div>
 </template>
 ```
 
 ```html
-<xh-json-viewer id="json-text" view="text" default-expanded-depth="2">
-  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 420px"></div>
-</xh-json-viewer>
+<div style="display: flex; flex-direction: column; gap: 8px; inline-size: 100%; max-inline-size: 420px">
+  <xh-switch id="json-text-toggle" default-checked>
+    <label data-xh-part="label">
+      <button data-xh-part="root">
+        <span data-xh-part="thumb"></span>
+      </button>
+      <span data-xh-part="text">原文视图</span>
+    </label>
+  </xh-switch>
+  <xh-json-viewer id="json-text" view="text" default-expanded-depth="2">
+    <div data-xh-part="root"></div>
+  </xh-json-viewer>
+</div>
 
 <script type="module">
-  document.getElementById("json-text").value = {
+  const viewer = document.getElementById("json-text");
+  // 开着看原文，关掉回到树
+  document.getElementById("json-text-toggle").addEventListener("checked-change", (event) => {
+    viewer.view = event.detail.checked ? "text" : "tree";
+  });
+
+  viewer.value = {
     orderNo: "SO-2026-0825-0417",
     amount: 12.5,
     items: [

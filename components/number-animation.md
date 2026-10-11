@@ -211,7 +211,7 @@ function next(): void {
   <XhButton variant="outline" @click="running = !running">
     {{ running ? "暂停" : "继续" }}
   </XhButton>
-  <span v-if="settled !== null">上一次停在：{{ settled }}</span>
+  <span data-demo-output>上一次停在：{{ settled ?? "（还没停过）" }}</span>
 </template>
 ```
 
@@ -236,7 +236,7 @@ function next(): void {
   <xh-button variant="outline">
     <button data-xh-part="root" id="number-animation-follow-run">暂停</button>
   </xh-button>
-  <span id="number-animation-follow-settled"></span>
+  <span id="number-animation-follow-settled" data-demo-output>上一次停在：（还没停过）</span>
 </div>
 
 <script type="module">
@@ -341,7 +341,7 @@ const compact = { notation: "compact" } as const;
 
 - `precision` 小数位、`separator` 分组符，每一帧都按同一个位数铺字，数字不会在滚动中忽长忽短。
 - 文字由 `Intl.NumberFormat` 铺出：`locale` 决定小数点、分组习惯与数字系统（未提供时跟随宿主语言），`formatOptions` 给出货币、百分比、单位与紧凑记数；`formatOptions.useGrouping` 打开即按该语言的习惯分组。
-- `easing` 与 `duration` 决定滚动的节奏；不写时与图表里的数字同一口径：首次滚动按入场档（reveal、enter-strong），换目标按更新档（morph、continuous）。
+- `easing` 与 `duration` 决定滚动的节奏；不写时与图表里的数字同一口径：首次滚动按入场档（reveal、enter），换目标按更新档（morph、continuous）。
 - 屏幕外不空转：首次滚动时不在视口里就停在起点，进了视口再从头滚；换目标时不在视口里直接落到终值。
 - `live` 决定读屏播报方式，通常只播报终值。
 
@@ -377,7 +377,7 @@ const compact = { notation: "compact" } as const;
 | `from` | `number` |  | 起点，默认 0。改写它会把显示值立即落到新起点，并从那里重新运行本轮。 |
 | `to` | `number` |  | 终点，默认 0。改写它从当前显示值继续走向新终点，不跳回起点。 |
 | `duration` | `number` |  | 时长毫秒；&lt;=0 即一步到位。不写按数值角色取令牌：首次滚动与图表数字入场同档（reveal）， 换目标与图表数字更新同档（morph）。 |
-| `easing` | `NumberAnimationEasing` |  | 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串；认不出的写法在起跑时报错。 不写按数值角色取令牌：首次滚动取 enter-strong，换目标取 continuous。 |
+| `easing` | `NumberAnimationEasing` |  | 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 CSS 缓动函数串；认不出的写法在起跑时报错。 不写按数值角色取令牌：首次滚动取 enter，换目标取 continuous。 |
 | `precision` | `number` |  | 小数位，默认 0。夹进 [0, 20]；每一帧都按这个位数铺字。 |
 | `separator` | `string` |  | 分组符。给了就分组并把该语言的分组符换成它；默认不分组。 |
 | `locale` | `string` |  | BCP 47 语言标记，决定小数点、分组习惯、数字系统与货币写法。 未提供时按宿主语言，宿主也没有时按 en-US。 |

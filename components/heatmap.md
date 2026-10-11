@@ -683,92 +683,88 @@ const readout = ref("（把焦点移到某一格）");
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px">
-    <!-- 每格自己就念得出日期与计数；这里再把它显示出来，眼睛也看得见 -->
-    <XhHeatmapRoot
-      :value="activity"
-      start-date="2024-01-01"
-      end-date="2024-01-28"
-      @cell-focus="readout = `${$event.date}：${$event.count} 次（第 ${$event.level} 档）`"
-    />
-    <span>{{ readout }}</span>
-  </div>
+  <!-- 每格自己就念得出日期与计数；这里再把它显示出来，眼睛也看得见 -->
+  <XhHeatmapRoot
+    :value="activity"
+    start-date="2024-01-01"
+    end-date="2024-01-28"
+    @cell-focus="readout = `${$event.date}：${$event.count} 次（第 ${$event.level} 档）`"
+  />
+  <span data-demo-output>{{ readout }}</span>
 </template>
 ```
 
 ```html
-<div style="display: grid; gap: 12px">
-  <!-- 每格自己就念得出日期与计数；这里再把它显示出来，眼睛也看得见 -->
-  <xh-heatmap id="heatmap-focus" start-date="2024-01-01" end-date="2024-01-28">
-    <div data-xh-part="root">
-      <div data-xh-part="row">
-        <span data-xh-part="week-day"></span>
-        <span data-xh-part="month-label" value="2024-01">1月</span>
+<!-- 每格自己就念得出日期与计数；这里再把它显示出来，眼睛也看得见 -->
+<xh-heatmap id="heatmap-focus" start-date="2024-01-01" end-date="2024-01-28">
+  <div data-xh-part="root">
+    <div data-xh-part="row">
+      <span data-xh-part="week-day"></span>
+      <span data-xh-part="month-label" value="2024-01">1月</span>
+    </div>
+    <div data-xh-part="grid">
+      <div data-xh-part="row" value="0">
+        <span data-xh-part="week-day" value="0">一</span>
+        <div data-xh-part="cell" value="2024-01-01"></div>
+        <div data-xh-part="cell" value="2024-01-08"></div>
+        <div data-xh-part="cell" value="2024-01-15"></div>
+        <div data-xh-part="cell" value="2024-01-22"></div>
       </div>
-      <div data-xh-part="grid">
-        <div data-xh-part="row" value="0">
-          <span data-xh-part="week-day" value="0">一</span>
-          <div data-xh-part="cell" value="2024-01-01"></div>
-          <div data-xh-part="cell" value="2024-01-08"></div>
-          <div data-xh-part="cell" value="2024-01-15"></div>
-          <div data-xh-part="cell" value="2024-01-22"></div>
-        </div>
-        <div data-xh-part="row" value="1">
-          <span data-xh-part="week-day" value="1">二</span>
-          <div data-xh-part="cell" value="2024-01-02"></div>
-          <div data-xh-part="cell" value="2024-01-09"></div>
-          <div data-xh-part="cell" value="2024-01-16"></div>
-          <div data-xh-part="cell" value="2024-01-23"></div>
-        </div>
-        <div data-xh-part="row" value="2">
-          <span data-xh-part="week-day" value="2">三</span>
-          <div data-xh-part="cell" value="2024-01-03"></div>
-          <div data-xh-part="cell" value="2024-01-10"></div>
-          <div data-xh-part="cell" value="2024-01-17"></div>
-          <div data-xh-part="cell" value="2024-01-24"></div>
-        </div>
-        <div data-xh-part="row" value="3">
-          <span data-xh-part="week-day" value="3">四</span>
-          <div data-xh-part="cell" value="2024-01-04"></div>
-          <div data-xh-part="cell" value="2024-01-11"></div>
-          <div data-xh-part="cell" value="2024-01-18"></div>
-          <div data-xh-part="cell" value="2024-01-25"></div>
-        </div>
-        <div data-xh-part="row" value="4">
-          <span data-xh-part="week-day" value="4">五</span>
-          <div data-xh-part="cell" value="2024-01-05"></div>
-          <div data-xh-part="cell" value="2024-01-12"></div>
-          <div data-xh-part="cell" value="2024-01-19"></div>
-          <div data-xh-part="cell" value="2024-01-26"></div>
-        </div>
-        <div data-xh-part="row" value="5">
-          <span data-xh-part="week-day" value="5">六</span>
-          <div data-xh-part="cell" value="2024-01-06"></div>
-          <div data-xh-part="cell" value="2024-01-13"></div>
-          <div data-xh-part="cell" value="2024-01-20"></div>
-          <div data-xh-part="cell" value="2024-01-27"></div>
-        </div>
-        <div data-xh-part="row" value="6">
-          <span data-xh-part="week-day" value="6">日</span>
-          <div data-xh-part="cell" value="2024-01-07"></div>
-          <div data-xh-part="cell" value="2024-01-14"></div>
-          <div data-xh-part="cell" value="2024-01-21"></div>
-          <div data-xh-part="cell" value="2024-01-28"></div>
-        </div>
+      <div data-xh-part="row" value="1">
+        <span data-xh-part="week-day" value="1">二</span>
+        <div data-xh-part="cell" value="2024-01-02"></div>
+        <div data-xh-part="cell" value="2024-01-09"></div>
+        <div data-xh-part="cell" value="2024-01-16"></div>
+        <div data-xh-part="cell" value="2024-01-23"></div>
       </div>
-      <div data-xh-part="legend">
-        <span data-xh-part="legend-label" value="low">少</span>
-        <span data-xh-part="legend-item" value="0"></span>
-        <span data-xh-part="legend-item" value="1"></span>
-        <span data-xh-part="legend-item" value="2"></span>
-        <span data-xh-part="legend-item" value="3"></span>
-        <span data-xh-part="legend-item" value="4"></span>
-        <span data-xh-part="legend-label" value="high">多</span>
+      <div data-xh-part="row" value="2">
+        <span data-xh-part="week-day" value="2">三</span>
+        <div data-xh-part="cell" value="2024-01-03"></div>
+        <div data-xh-part="cell" value="2024-01-10"></div>
+        <div data-xh-part="cell" value="2024-01-17"></div>
+        <div data-xh-part="cell" value="2024-01-24"></div>
+      </div>
+      <div data-xh-part="row" value="3">
+        <span data-xh-part="week-day" value="3">四</span>
+        <div data-xh-part="cell" value="2024-01-04"></div>
+        <div data-xh-part="cell" value="2024-01-11"></div>
+        <div data-xh-part="cell" value="2024-01-18"></div>
+        <div data-xh-part="cell" value="2024-01-25"></div>
+      </div>
+      <div data-xh-part="row" value="4">
+        <span data-xh-part="week-day" value="4">五</span>
+        <div data-xh-part="cell" value="2024-01-05"></div>
+        <div data-xh-part="cell" value="2024-01-12"></div>
+        <div data-xh-part="cell" value="2024-01-19"></div>
+        <div data-xh-part="cell" value="2024-01-26"></div>
+      </div>
+      <div data-xh-part="row" value="5">
+        <span data-xh-part="week-day" value="5">六</span>
+        <div data-xh-part="cell" value="2024-01-06"></div>
+        <div data-xh-part="cell" value="2024-01-13"></div>
+        <div data-xh-part="cell" value="2024-01-20"></div>
+        <div data-xh-part="cell" value="2024-01-27"></div>
+      </div>
+      <div data-xh-part="row" value="6">
+        <span data-xh-part="week-day" value="6">日</span>
+        <div data-xh-part="cell" value="2024-01-07"></div>
+        <div data-xh-part="cell" value="2024-01-14"></div>
+        <div data-xh-part="cell" value="2024-01-21"></div>
+        <div data-xh-part="cell" value="2024-01-28"></div>
       </div>
     </div>
-  </xh-heatmap>
-  <span id="heatmap-focus-readout">（把焦点移到某一格）</span>
-</div>
+    <div data-xh-part="legend">
+      <span data-xh-part="legend-label" value="low">少</span>
+      <span data-xh-part="legend-item" value="0"></span>
+      <span data-xh-part="legend-item" value="1"></span>
+      <span data-xh-part="legend-item" value="2"></span>
+      <span data-xh-part="legend-item" value="3"></span>
+      <span data-xh-part="legend-item" value="4"></span>
+      <span data-xh-part="legend-label" value="high">多</span>
+    </div>
+  </div>
+</xh-heatmap>
+<span id="heatmap-focus-readout" data-demo-output>（把焦点移到某一格）</span>
 
 <script type="module">
   // 数据是数组，只走 property；明细经 cell-focus 事件回来
@@ -1835,66 +1831,62 @@ const picked = ref<HeatmapCellDetails | null>(null);
 </script>
 
 <template>
-  <div style="display: grid; gap: var(--xh-space-3); justify-items: start">
-    <!-- 载荷与详情同源：行、列、原始值与档位都在里面，不必回头查数据 -->
-    <XhHeatmapRoot
-      variant="matrix"
-      :rows="days"
-      :columns="slots"
-      :value="orders"
-      style="--xh-heatmap-column-w: 44px; --xh-heatmap-row-h: 28px"
-      @cell-press="picked = $event"
-    />
-    <p aria-live="polite" style="margin: 0">
-      {{ picked ? `${picked.row} ${picked.column}：${picked.count} 单` : "点一格查看明细" }}
-    </p>
-  </div>
+  <!-- 载荷与详情同源：行、列、原始值与档位都在里面，不必回头查数据 -->
+  <XhHeatmapRoot
+    variant="matrix"
+    :rows="days"
+    :columns="slots"
+    :value="orders"
+    style="--xh-heatmap-column-w: 44px; --xh-heatmap-row-h: 28px"
+    @cell-press="picked = $event"
+  />
+  <p data-demo-output aria-live="polite">
+    {{ picked ? `${picked.row} ${picked.column}：${picked.count} 单` : "点一格查看明细" }}
+  </p>
 </template>
 ```
 
 ```html
-<div style="display: grid; gap: var(--xh-space-3); justify-items: start">
-  <xh-heatmap id="heatmap-press" variant="matrix">
-    <div data-xh-part="root" style="--xh-heatmap-column-w: 44px; --xh-heatmap-row-h: 28px">
-      <div data-xh-part="grid">
-        <div data-xh-part="row">
-          <span data-xh-part="row-label"></span>
-          <span data-xh-part="column-label" value="上午">上午</span>
-          <span data-xh-part="column-label" value="下午">下午</span>
-          <span data-xh-part="column-label" value="夜里">夜里</span>
-        </div>
-        <div data-xh-part="row" value="周一">
-          <span data-xh-part="row-label" value="周一">周一</span>
-          <div data-xh-part="cell" value="上午"></div>
-          <div data-xh-part="cell" value="下午"></div>
-          <div data-xh-part="cell" value="夜里"></div>
-        </div>
-        <div data-xh-part="row" value="周二">
-          <span data-xh-part="row-label" value="周二">周二</span>
-          <div data-xh-part="cell" value="上午"></div>
-          <div data-xh-part="cell" value="下午"></div>
-          <div data-xh-part="cell" value="夜里"></div>
-        </div>
-        <div data-xh-part="row" value="周三">
-          <span data-xh-part="row-label" value="周三">周三</span>
-          <div data-xh-part="cell" value="上午"></div>
-          <div data-xh-part="cell" value="下午"></div>
-          <div data-xh-part="cell" value="夜里"></div>
-        </div>
+<xh-heatmap id="heatmap-press" variant="matrix">
+  <div data-xh-part="root" style="--xh-heatmap-column-w: 44px; --xh-heatmap-row-h: 28px">
+    <div data-xh-part="grid">
+      <div data-xh-part="row">
+        <span data-xh-part="row-label"></span>
+        <span data-xh-part="column-label" value="上午">上午</span>
+        <span data-xh-part="column-label" value="下午">下午</span>
+        <span data-xh-part="column-label" value="夜里">夜里</span>
       </div>
-      <div data-xh-part="legend">
-        <span data-xh-part="legend-label" value="low">少</span>
-        <span data-xh-part="legend-item" value="0"></span>
-        <span data-xh-part="legend-item" value="1"></span>
-        <span data-xh-part="legend-item" value="2"></span>
-        <span data-xh-part="legend-item" value="3"></span>
-        <span data-xh-part="legend-item" value="4"></span>
-        <span data-xh-part="legend-label" value="high">多</span>
+      <div data-xh-part="row" value="周一">
+        <span data-xh-part="row-label" value="周一">周一</span>
+        <div data-xh-part="cell" value="上午"></div>
+        <div data-xh-part="cell" value="下午"></div>
+        <div data-xh-part="cell" value="夜里"></div>
+      </div>
+      <div data-xh-part="row" value="周二">
+        <span data-xh-part="row-label" value="周二">周二</span>
+        <div data-xh-part="cell" value="上午"></div>
+        <div data-xh-part="cell" value="下午"></div>
+        <div data-xh-part="cell" value="夜里"></div>
+      </div>
+      <div data-xh-part="row" value="周三">
+        <span data-xh-part="row-label" value="周三">周三</span>
+        <div data-xh-part="cell" value="上午"></div>
+        <div data-xh-part="cell" value="下午"></div>
+        <div data-xh-part="cell" value="夜里"></div>
       </div>
     </div>
-  </xh-heatmap>
-  <p id="heatmap-press-output" aria-live="polite" style="margin: 0">点一格查看明细</p>
-</div>
+    <div data-xh-part="legend">
+      <span data-xh-part="legend-label" value="low">少</span>
+      <span data-xh-part="legend-item" value="0"></span>
+      <span data-xh-part="legend-item" value="1"></span>
+      <span data-xh-part="legend-item" value="2"></span>
+      <span data-xh-part="legend-item" value="3"></span>
+      <span data-xh-part="legend-item" value="4"></span>
+      <span data-xh-part="legend-label" value="high">多</span>
+    </div>
+  </div>
+</xh-heatmap>
+<p id="heatmap-press-output" data-demo-output aria-live="polite">点一格查看明细</p>
 
 <script type="module">
   const heatmap = document.getElementById("heatmap-press");

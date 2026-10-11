@@ -182,7 +182,7 @@ const translations = {
       <!-- 列表为空时清空按钮照常在位可聚焦，只打 data-empty 由皮肤压淡 -->
       <XhFileUploadClearTrigger>清空</XhFileUploadClearTrigger>
     </XhFileUploadRoot>
-    <span v-if="rejected">被拒：{{ rejected }}</span>
+    <span data-demo-output :title="rejected || undefined">被拒：{{ rejected || "（暂无）" }}</span>
   </div>
 </template>
 ```
@@ -210,7 +210,7 @@ const translations = {
   </div>
 </xh-file-upload>
 
-<span id="file-upload-limits-rejected"></span>
+<span id="file-upload-limits-rejected" data-demo-output>被拒：（暂无）</span>
 
 <script type="module">
   const upload = document.getElementById("file-upload-limits");
@@ -240,6 +240,8 @@ const translations = {
             .join("、")}）`
       )
       .join("；")}`;
+    // 输出栏只放一行，放不下的悬停看全文
+    rejected.title = rejected.textContent;
   });
 
   // 条目节点由作者渲染，元素随后按文档序接上去
@@ -314,12 +316,12 @@ function onFilesChange(details: { files: File[] }) {
       </XhFileUploadList>
     </XhFileUploadRoot>
 
-    <div style="display: flex; align-items: center; gap: 12px">
+    <div>
       <XhButton size="sm" :disabled="!files.length" @click="files = []">
         从外面清空
       </XhButton>
-      <span>宿主持有 {{ files.length }} 个文件</span>
     </div>
+    <span data-demo-output>宿主持有 {{ files.length }} 个文件</span>
   </div>
 </template>
 ```
@@ -339,14 +341,12 @@ function onFilesChange(details: { files: File[] }) {
   </div>
 </xh-file-upload>
 
-<div style="display: flex; align-items: center; gap: 12px">
-  <xh-button size="sm" disabled>
-    <button data-xh-part="root" id="file-upload-controlled-clear">
-      从外面清空
-    </button>
-  </xh-button>
-  <span id="file-upload-controlled-count">宿主持有 0 个文件</span>
-</div>
+<xh-button size="sm" disabled>
+  <button data-xh-part="root" id="file-upload-controlled-clear">
+    从外面清空
+  </button>
+</xh-button>
+<span id="file-upload-controlled-count" data-demo-output>宿主持有 0 个文件</span>
 
 <script type="module">
   const upload = document.getElementById("file-upload-controlled");
@@ -571,7 +571,7 @@ const noLimit = Number.POSITIVE_INFINITY;
 
 <template>
   <div style="width: 100%; max-width: 480px">
-    <XhFileUploadRoot v-slot="{ acceptedFiles, empty }" directory :max-files="noLimit">
+    <XhFileUploadRoot v-slot="{ acceptedFiles }" directory :max-files="noLimit">
       <XhFileUploadLabel>整个目录</XhFileUploadLabel>
       <XhFileUploadDropzone>
         <span>挑一个目录，里面的文件全收</span>
@@ -580,7 +580,7 @@ const noLimit = Number.POSITIVE_INFINITY;
         <XhFileUploadTrigger>选择目录</XhFileUploadTrigger>
       </div>
       <XhFileUploadHiddenInput />
-      <span v-if="!empty">共 {{ acceptedFiles.length }} 个文件</span>
+      <span data-demo-output>共 {{ acceptedFiles.length }} 个文件</span>
       <XhFileUploadList style="max-block-size: 220px; overflow: auto">
         <XhFileUploadItem v-for="file in acceptedFiles" :key="file" :file="file">
           <XhFileUploadItemName />
@@ -604,7 +604,7 @@ const noLimit = Number.POSITIVE_INFINITY;
       <button data-xh-part="trigger">选择目录</button>
     </div>
     <input data-xh-part="hidden-input" />
-    <span id="file-upload-directory-count"></span>
+    <span id="file-upload-directory-count" data-demo-output>共 0 个文件</span>
     <div
       data-xh-part="list"
       style="max-block-size: 220px; overflow: auto"
@@ -620,7 +620,7 @@ const noLimit = Number.POSITIVE_INFINITY;
   // 条目节点由作者渲染，元素随后按文档序接上去
   upload.addEventListener("files-change", (event) => {
     const files = event.detail.files;
-    count.textContent = files.length ? `共 ${files.length} 个文件` : "";
+    count.textContent = `共 ${files.length} 个文件`;
     group.replaceChildren(
       ...files.map(() => {
         const item = document.createElement("div");
@@ -821,7 +821,7 @@ function onFileReject(details: { files: { file: File; reasons: string[] }[] }) {
       </XhFileUploadList>
     </XhFileUploadRoot>
 
-    <span v-if="dropped">同名挡下：{{ dropped }}</span>
+    <span data-demo-output :title="dropped || undefined">同名挡下：{{ dropped || "（暂无）" }}</span>
   </div>
 </template>
 ```
@@ -841,7 +841,7 @@ function onFileReject(details: { files: { file: File; reasons: string[] }[] }) {
   </div>
 </xh-file-upload>
 
-<span id="file-upload-rule-dropped"></span>
+<span id="file-upload-rule-dropped" data-demo-output>同名挡下：（暂无）</span>
 
 <script type="module">
   const upload = document.getElementById("file-upload-rule");
@@ -862,7 +862,9 @@ function onFileReject(details: { files: { file: File; reasons: string[] }[] }) {
     const names = event.detail.files
       .filter((rejection) => rejection.reasons.includes("duplicate"))
       .map((rejection) => rejection.file.name);
-    dropped.textContent = names.length ? `同名挡下：${names.join("、")}` : "";
+    dropped.textContent = `同名挡下：${names.join("、") || "（暂无）"}`;
+    // 输出栏只放一行，放不下的悬停看全文
+    dropped.title = names.join("、");
   });
 
   // 条目节点由作者按当前列表铺，文件名与大小由元素代填
@@ -1117,6 +1119,7 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 ```vue
 <script setup lang="ts">
 import {
+  XhButton,
   XhFileUploadDropzone,
   XhFileUploadHiddenInput,
   XhFileUploadItem,
@@ -1155,13 +1158,6 @@ onBeforeUnmount(() => {
   urls.forEach(url => URL.revokeObjectURL(url));
   urls.clear();
 });
-
-const action = {
-  flex: "none",
-  fontSize: "12px",
-  color: "var(--xh-fg-brand)",
-  cursor: "pointer",
-};
 </script>
 
 <template>
@@ -1179,10 +1175,8 @@ const action = {
         <XhFileUploadItem v-for="file in acceptedFiles" :key="file" :file="file">
           <XhFileUploadItemName />
           <XhFileUploadItemSizeText />
-          <a :style="action" :href="urlOf(file)" :download="file.name">下载</a>
-          <button :style="action" type="button" @click="saveCopy(file)">
-            存为副本
-          </button>
+          <XhButton as="a" variant="ghost" size="sm" :href="urlOf(file)" :download="file.name">下载</XhButton>
+          <XhButton variant="ghost" size="sm" @click="saveCopy(file)">存为副本</XhButton>
           <XhFileUploadItemDeleteTrigger />
         </XhFileUploadItem>
       </XhFileUploadList>
@@ -1209,8 +1203,6 @@ const action = {
 <script type="module">
   const upload = document.getElementById("file-upload-download");
   const group = upload.querySelector('[data-xh-part="list"]');
-  const action =
-    "flex: none; font-size: 12px; color: var(--xh-fg-brand); cursor: pointer";
 
   // 一批地址用完就交还，重铺时统一换成新的
   let urls = [];
@@ -1234,10 +1226,10 @@ const action = {
         item.innerHTML =
           '<span data-xh-part="item-name"></span>' +
           '<span data-xh-part="item-size-text"></span>' +
-          `<a style="${action}" href="${url}" download="${file.name}">下载</a>` +
-          `<button style="${action}" type="button">存为副本</button>` +
+          `<xh-button as="a" variant="ghost" size="sm"><a data-xh-part="root" href="${url}" download="${file.name}">下载</a></xh-button>` +
+          '<xh-button variant="ghost" size="sm"><button data-xh-part="root">存为副本</button></xh-button>' +
           '<button data-xh-part="item-delete-trigger"></button>';
-        item.querySelector("button").addEventListener("click", () => {
+        item.querySelector("xh-button button").addEventListener("click", () => {
           saveCopy(file, url);
         });
         return item;
@@ -1916,33 +1908,34 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | `--xh-file-upload-delete-fg-hover` | `item-delete-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-danger-hover` | file-upload 的 item-delete-trigger 部件 color 覆盖槽。 |
 | `--xh-file-upload-delete-radius` | `item-delete-trigger` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 item-delete-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-file-upload-delete-size` | `item-delete-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | file-upload 的 item-delete-trigger 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-file-upload-dropzone-bg` | `dropzone` | `background` | `default` | `transparent` | file-upload 的 dropzone 部件 background 覆盖槽。 |
+| `--xh-file-upload-dropzone-bg` | `dropzone` | `background` | `default` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
 | `--xh-file-upload-dropzone-bg-disabled` | `dropzone` | `background` | `disabled` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
-| `--xh-file-upload-dropzone-bg-dragging` | `dropzone` | `background` | `dragging` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
-| `--xh-file-upload-dropzone-bg-hover` | `dropzone` | `background` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
+| `--xh-file-upload-dropzone-bg-dragging` | `dropzone` | `background` | `dragging` | `--xh-bg-subtle-hover` | file-upload 的 dropzone 部件 background 覆盖槽。 |
+| `--xh-file-upload-dropzone-bg-hover` | `dropzone` | `background` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-bg-subtle-hover` | file-upload 的 dropzone 部件 background 覆盖槽。 |
 | `--xh-file-upload-dropzone-border` | `dropzone` | `border` | `default` | `--xh-border-control` | file-upload 的 dropzone 部件 border 覆盖槽。 |
 | `--xh-file-upload-dropzone-border-dragging` | `dropzone` | `border-color` | `dragging` | `--xh-bg-brand` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
 | `--xh-file-upload-dropzone-border-focus` | `dropzone` | `border-color` | `disabled`<br>`dragging`<br>`focus-visible`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-_tone` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
-| `--xh-file-upload-dropzone-border-hover` | `dropzone` | `border-color` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-border-control-hover` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
+| `--xh-file-upload-dropzone-border-hover` | `dropzone` | `border-color` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-border-strong` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
 | `--xh-file-upload-dropzone-border-invalid` | `dropzone` | `border-color` | `invalid` | `--xh-border-invalid` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
-| `--xh-file-upload-dropzone-fg` | `dropzone` | `color` | `default` | `--xh-fg-muted` | file-upload 的 dropzone 部件 color 覆盖槽。 |
+| `--xh-file-upload-dropzone-fg` | `dropzone` | `color` | `default` | `--xh-fg-default` | file-upload 的 dropzone 部件 color 覆盖槽。 |
 | `--xh-file-upload-dropzone-font-size` | `dropzone` | `font-size` | `default` | `--xh-text-body-size` | file-upload 的 dropzone 部件 font-size 覆盖槽。 |
 | `--xh-file-upload-dropzone-gap` | `dropzone` | `gap` | `default` | `--xh-space-2` | file-upload 的 dropzone 部件 gap 覆盖槽。 |
-| `--xh-file-upload-dropzone-min-h` | `dropzone` | `min-block-size` | `default` | `8rem` | file-upload 的 dropzone 部件 min-block-size 覆盖槽。 |
+| `--xh-file-upload-dropzone-min-h` | `dropzone` | `min-block-size` | `default` | `--xh-dropzone-min-h` | file-upload 的 dropzone 部件 min-block-size 覆盖槽。 |
 | `--xh-file-upload-dropzone-px` | `dropzone` | `padding-inline` | `default` | `--xh-space-4` | file-upload 的 dropzone 部件 padding-inline 覆盖槽。 |
 | `--xh-file-upload-dropzone-py` | `dropzone` | `padding-block` | `default` | `--xh-space-5` | file-upload 的 dropzone 部件 padding-block 覆盖槽。 |
-| `--xh-file-upload-dropzone-radius` | `dropzone` | `border-radius` | `default` | `--xh-shape-surface` | file-upload 的 dropzone 部件 border-radius 覆盖槽。 |
-| `--xh-file-upload-gap` | `root` | `gap` | `default` | `--xh-space-3` | file-upload 的 root 部件 gap 覆盖槽。 |
+| `--xh-file-upload-dropzone-radius` | `dropzone` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 dropzone 部件 border-radius 覆盖槽。 |
+| `--xh-file-upload-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-3` | file-upload 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-file-upload-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | file-upload 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-file-upload-item-bg` | `item` | `background` | `default` | `--xh-bg-surface` | file-upload 的 item 部件 background 覆盖槽。 |
-| `--xh-file-upload-item-border` | `item` | `border` | `default` | `--xh-border-default` | file-upload 的 item 部件 border 覆盖槽。 |
-| `--xh-file-upload-item-border-error` | `item` | `border-color` | `has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=error` | `--xh-border-invalid` | file-upload 的 item 部件 border-color 覆盖槽。 |
+| `--xh-file-upload-item-bg` | `item` | `background` | `default` | `--xh-bg-subtle` | file-upload 的 item 部件 background 覆盖槽。 |
+| `--xh-file-upload-item-bg-error` | `item` | `background` | `has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=error` | `--xh-bg-surface` | file-upload 的 item 部件 background 覆盖槽。 |
+| `--xh-file-upload-item-border` | `item` | `border` | `default` | `transparent` | file-upload 的 item 部件 border 覆盖槽。 |
+| `--xh-file-upload-item-border-error` | `item` | `border-color` | `has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=error` | `transparent` | file-upload 的 item 部件 border-color 覆盖槽。 |
 | `--xh-file-upload-item-fg` | `item` | `color` | `default` | `--xh-fg-default` | file-upload 的 item 部件 color 覆盖槽。 |
 | `--xh-file-upload-item-fg-done` | `item` | `background-color` | `has(> [data-part='item-progress'][data-state='done'])`<br>`state=closed`<br>`state=done` | `--xh-fg-success` | file-upload 的 item 部件 background-color 覆盖槽。 |
-| `--xh-file-upload-item-fg-error` | `item` | `color` | `has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=error` | `--xh-fg-danger` | file-upload 的 item 部件 color 覆盖槽。 |
+| `--xh-file-upload-item-fg-error` | `item`<br>`item-name` | `background-color`<br>`color` | `has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=error` | `--xh-fg-danger` | file-upload 的 item、item-name 部件 background-color、color 覆盖槽。 |
 | `--xh-file-upload-item-font-size` | `item` | `font-size` | `default` | `--xh-text-body-size` | file-upload 的 item 部件 font-size 覆盖槽。 |
-| `--xh-file-upload-item-gap` | `list` | `gap` | `default` | `--xh-space-2` | file-upload 的 list 部件 gap 覆盖槽。 |
-| `--xh-file-upload-item-inner-gap` | `item` | `gap` | `default` | `--xh-control-gap-md` | file-upload 的 item 部件 gap 覆盖槽。 |
+| `--xh-file-upload-item-gap` | `list` | `gap` | `default` | `--xh-space-3` | file-upload 的 list 部件 gap 覆盖槽。 |
+| `--xh-file-upload-item-inner-gap` | `item` | `gap` | `default` | `--xh-space-3` | file-upload 的 item 部件 gap 覆盖槽。 |
 | `--xh-file-upload-item-mark-size` | `item` | `block-size`<br>`inline-size` | `has(> [data-part='item-progress'][data-state='done'])`<br>`has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=done`<br>`state=error` | `--xh-control-indicator-size` | file-upload 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-file-upload-item-name-min-w` | `item-name` | `min-inline-size` | `default` | `--xh-control-min-w` | file-upload 的 item-name 部件 min-inline-size 覆盖槽。 |
 | `--xh-file-upload-item-progress-fill` | `item-progress` | `background` | `default` | `--xh-bg-brand` | file-upload 的 item-progress 部件 background 覆盖槽。 |
@@ -1953,16 +1946,17 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | `--xh-file-upload-item-px` | `item` | `padding-inline` | `default` | `--xh-space-3` | file-upload 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-file-upload-item-py` | `item` | `padding-block` | `default` | `--xh-space-2` | file-upload 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-file-upload-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 item 部件 border-radius 覆盖槽。 |
-| `--xh-file-upload-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | file-upload 的 label 部件 color 覆盖槽。 |
-| `--xh-file-upload-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | file-upload 的 label 部件 color 覆盖槽。 |
+| `--xh-file-upload-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | file-upload 的 label 部件 color 覆盖槽。 |
+| `--xh-file-upload-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | file-upload 的 label 部件 color 覆盖槽。 |
 | `--xh-file-upload-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | file-upload 的 label 部件 font-size 覆盖槽。 |
 | `--xh-file-upload-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | file-upload 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-file-upload-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | file-upload 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-file-upload-list-max-h` | `list` | `max-block-size` | `default` | `--xh-viewport-h-md` | file-upload 的 list 部件 max-block-size 覆盖槽。 |
-| `--xh-file-upload-preview-bg` | `item-preview` | `background` | `default` | `--xh-bg-subtle` | file-upload 的 item-preview 部件 background 覆盖槽。 |
-| `--xh-file-upload-preview-fg` | `item-preview` | `color` | `default` | `--xh-fg-muted` | file-upload 的 item-preview 部件 color 覆盖槽。 |
+| `--xh-file-upload-preview-bg` | `item-preview` | `background` | `default` | `transparent` | file-upload 的 item-preview 部件 background 覆盖槽。 |
+| `--xh-file-upload-preview-fg` | `item-preview` | `color` | `default` | `--xh-fg-brand` | file-upload 的 item-preview 部件 color 覆盖槽。 |
 | `--xh-file-upload-preview-fg-image` | `item-preview` | `color` | `file-type=image/` | `--xh-fg-brand` | file-upload 的 item-preview 部件 color 覆盖槽。 |
 | `--xh-file-upload-preview-radius` | `item-preview` | `border-radius` | `default` | `--xh-shape-control` | file-upload 的 item-preview 部件 border-radius 覆盖槽。 |
-| `--xh-file-upload-preview-size` | `item-preview` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-md` | file-upload 的 item-preview 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-file-upload-preview-size` | `item-preview` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-sm` | file-upload 的 item-preview 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-file-upload-size-fg` | `item-size-text` | `color` | `default` | `--xh-fg-subtle` | file-upload 的 item-size-text 部件 color 覆盖槽。 |
 | `--xh-file-upload-size-font-size` | `item-size-text` | `font-size` | `default` | `--xh-text-caption-size` | file-upload 的 item-size-text 部件 font-size 覆盖槽。 |
 | `--xh-file-upload-trigger-bg` | `trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | file-upload 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |

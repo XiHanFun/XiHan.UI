@@ -391,9 +391,17 @@ const rest = members.slice(max);
       </span>
     </xh-avatar>
 
-    <!-- 计数那一枚换成浮层的触发器：宿主摆成圆形的一枚，叠放与描圈照常落在它身上 -->
+    <!-- 计数那一枚换成按钮当浮层的触发器：直径、圆形与字号跟着组走（与 Vue / React 版同一组槽）；
+         叠放与描圈落在宿主这一枚上，宿主的圆角跟着按钮取圆 -->
     <xh-popover placement="bottom-start" style="display: inline-flex; border-radius: var(--xh-shape-circle)">
-      <button data-xh-part="trigger" aria-label="还有 4 位成员" style="inline-size: var(--xh-avatar-size); block-size: var(--xh-avatar-size); padding: 0; border: 0; border-radius: var(--xh-shape-circle); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font: inherit; font-size: var(--xh-avatar-font-size); cursor: pointer">+4</button>
+      <xh-button
+        data-xh-part="trigger"
+        variant="subtle"
+        icon-only
+        style="--xh-button-h: var(--xh-avatar-size); --xh-button-radius: var(--xh-shape-circle); --xh-button-font-size: var(--xh-avatar-font-size)"
+      >
+        <button data-xh-part="root" aria-label="还有 4 位成员">+4</button>
+      </xh-button>
       <div data-xh-part="positioner">
         <div data-xh-part="content">
           <h3 data-xh-part="title">还有 4 位成员</h3>
@@ -538,14 +546,14 @@ const rest = members.slice(max);
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-avatar-group-font-size` | `overflow-item`<br>`root` | `--xh-avatar-font-size`<br>`font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-caption-lg`<br>`--xh-control-caption-md`<br>`--xh-control-caption-sm` | avatar-group 的 overflow-item、root 部件 --xh-avatar-font-size、font-size 覆盖槽。 |
+| `--xh-avatar-group-font-size` | `overflow-item`<br>`root` | `--xh-avatar-font-size`<br>`font-size` | `default` | `--xh-_avatar-group-half-size` | avatar-group 的 overflow-item、root 部件 --xh-avatar-font-size、font-size 覆盖槽。 |
 | `--xh-avatar-group-font-weight` | `overflow-item` | `font-weight` | `default` | `--xh-font-weight-medium` | avatar-group 的 overflow-item 部件 font-weight 覆盖槽。 |
-| `--xh-avatar-group-overflow-item-bg` | `overflow-item` | `background` | `default` | `--xh-bg-muted-opaque` | avatar-group 的 overflow-item 部件 background 覆盖槽。 |
-| `--xh-avatar-group-overflow-item-fg` | `overflow-item` | `color` | `default` | `--xh-fg-muted` | avatar-group 的 overflow-item 部件 color 覆盖槽。 |
-| `--xh-avatar-group-overlap` | `root` | `margin-inline-start` | `default`<br>`size=lg`<br>`size=sm` | `--xh-space-2`<br>`--xh-space-2_5`<br>`--xh-space-3` | avatar-group 的 root 部件 margin-inline-start 覆盖槽。 |
+| `--xh-avatar-group-overflow-item-bg` | `overflow-item` | `background` | `default` | `--xh-bg-subtle-active-opaque` | avatar-group 的 overflow-item 部件 background 覆盖槽。 |
+| `--xh-avatar-group-overflow-item-fg` | `overflow-item` | `color` | `default` | `--xh-fg-default` | avatar-group 的 overflow-item 部件 color 覆盖槽。 |
+| `--xh-avatar-group-overlap` | `root` | `margin-inline-start` | `default` | `--xh-space-2` | avatar-group 的 root 部件 margin-inline-start 覆盖槽。 |
 | `--xh-avatar-group-radius` | `overflow-item` | `border-radius` | `default` | `--xh-shape-circle` | avatar-group 的 overflow-item 部件 border-radius 覆盖槽。 |
 | `--xh-avatar-group-ring` | `root` | `box-shadow` | `default` | `--xh-bg-surface` | avatar-group 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-avatar-group-size` | `overflow-item`<br>`root` | `--xh-avatar-size`<br>`block-size`<br>`inline-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-h-lg`<br>`--xh-control-h-md`<br>`--xh-control-h-sm` | avatar-group 的 overflow-item、root 部件 --xh-avatar-size、block-size、inline-size 覆盖槽。 |
+| `--xh-avatar-group-size` | `overflow-item`<br>`root` | `--xh-avatar-font-size`<br>`--xh-avatar-size`<br>`block-size`<br>`font-size`<br>`inline-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-h-lg`<br>`--xh-control-h-md`<br>`--xh-control-h-sm` | avatar-group 的 overflow-item、root 部件 --xh-avatar-font-size、--xh-avatar-size、block-size、font-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

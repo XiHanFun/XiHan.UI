@@ -43,8 +43,8 @@ function onLoad(): void {
     style="
       block-size: 240px;
       overflow: auto;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
+      border: var(--xh-stroke-thin) solid var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
     "
   >
     <!-- target 指向真正在滚的那层；不给就以窗口视口为准 -->
@@ -78,8 +78,8 @@ function onLoad(): void {
   style="
     block-size: 240px;
     overflow: auto;
-    border: 1px solid var(--xh-border-default);
-    border-radius: 8px;
+    border: var(--xh-stroke-thin) solid var(--xh-border-default);
+    border-radius: var(--xh-shape-surface);
   "
 >
   <!-- 宿主设 display: contents，列表外壳落在 root 上 -->
@@ -152,11 +152,21 @@ distance 把可视区沿块轴向外扩展，哨兵尚未出现就先取下一�
 
 ```vue
 <script setup lang="ts">
-import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/vue";
+import {
+  XhInfiniteScrollRoot,
+  XhInfiniteScrollSentinel,
+  XhSliderControl,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+} from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const scrollEl = ref<HTMLElement | null>(null);
-const distance = ref(200);
+// 滑块的值恒为数组，单滑块取第一项
+const distance = ref([200]);
 const items = ref(Array.from({ length: 12 }, (_, i) => `第 ${i + 1} 条`));
 const loading = ref(false);
 const rounds = ref(0);
@@ -174,11 +184,15 @@ function onLoad(): void {
 
 <template>
   <div style="display: grid; gap: 12px; inline-size: 100%">
-    <label style="display: flex; align-items: center; gap: 8px">
-      提前
-      <input v-model.number="distance" type="range" min="0" max="400" step="50">
-      {{ distance }}px 触发 · 已取 {{ rounds }} 页
-    </label>
+    <XhSliderRoot v-model:value="distance" :min="0" :max="400" :step="50">
+      <XhSliderLabel>提前量</XhSliderLabel>
+      <XhSliderControl>
+        <XhSliderTrack>
+          <XhSliderRange />
+        </XhSliderTrack>
+        <XhSliderThumb />
+      </XhSliderControl>
+    </XhSliderRoot>
 
     <div
       ref="scrollEl"
@@ -186,14 +200,14 @@ function onLoad(): void {
       style="
         block-size: 220px;
         overflow: auto;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 8px;
+        border: var(--xh-stroke-thin) solid var(--xh-border-default);
+        border-radius: var(--xh-shape-surface);
       "
     >
       <!-- 提前量扩的是 target 那块可视区，容器滚动必须把容器交出来 -->
       <XhInfiniteScrollRoot
         :target="scrollEl"
-        :distance="distance"
+        :distance="distance[0]"
         :loading="loading"
         @load="onLoad"
       >
@@ -202,6 +216,8 @@ function onLoad(): void {
       </XhInfiniteScrollRoot>
     </div>
   </div>
+
+  <span data-demo-output>{{ distance[0] }}px 触发 · 已取 {{ rounds }} 页</span>
 </template>
 ```
 
@@ -213,11 +229,17 @@ function onLoad(): void {
 </style>
 
 <div id="infinite-scroll-distance" style="display: grid; gap: 12px; inline-size: 100%">
-  <label style="display: flex; align-items: center; gap: 8px">
-    提前
-    <input data-range type="range" min="0" max="400" step="50" value="200" />
-    <span data-readout>200px 触发 · 已取 0 页</span>
-  </label>
+  <xh-slider data-range default-value="200" min="0" max="400" step="50">
+    <div data-xh-part="root">
+      <label data-xh-part="label">提前量</label>
+      <div data-xh-part="control">
+        <div data-xh-part="track">
+          <div data-xh-part="range"></div>
+        </div>
+        <div data-xh-part="thumb"></div>
+      </div>
+    </div>
+  </xh-slider>
 
   <div
     data-shell
@@ -225,8 +247,8 @@ function onLoad(): void {
     style="
       block-size: 220px;
       overflow: auto;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
+      border: var(--xh-stroke-thin) solid var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
     "
   >
     <!-- 宿主设 display: contents，列表外壳落在 root 上 -->
@@ -253,13 +275,15 @@ function onLoad(): void {
   </div>
 </div>
 
+<span id="infinite-scroll-distance-readout" data-demo-output>200px 触发 · 已取 0 页</span>
+
 <script type="module">
   const scope = document.getElementById("infinite-scroll-distance");
   const host = scope.querySelector("[data-host]");
   const shell = scope.querySelector("[data-shell]");
   const list = scope.querySelector("[data-list]");
   const range = scope.querySelector("[data-range]");
-  const readout = scope.querySelector("[data-readout]");
+  const readout = document.getElementById("infinite-scroll-distance-readout");
 
   let rounds = 0;
 
@@ -271,8 +295,9 @@ function onLoad(): void {
     readout.textContent = `${host.distance}px 触发 · 已取 ${rounds} 页`;
   }
 
-  range.addEventListener("input", () => {
-    host.distance = Number(range.value);
+  // 滑块的值恒为数组，单滑块取第一项
+  range.addEventListener("value-change", (event) => {
+    host.distance = event.detail.value[0];
     render();
   });
 
@@ -321,36 +346,35 @@ function onLoad(): void {
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px; inline-size: 100%">
-    <div
-      ref="scrollEl"
-      data-xh-scroll
-      style="
-        block-size: 220px;
-        overflow: auto;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 8px;
-      "
+  <div
+    ref="scrollEl"
+    data-xh-scroll
+    style="
+      inline-size: 100%;
+      block-size: 220px;
+      overflow: auto;
+      border: var(--xh-stroke-thin) solid var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
+    "
+  >
+    <XhInfiniteScrollRoot
+      :target="scrollEl"
+      :loading="loading"
+      :disabled="page >= maxPage"
+      @load="onLoad"
     >
-      <XhInfiniteScrollRoot
-        :target="scrollEl"
-        :loading="loading"
-        :disabled="page >= maxPage"
-        @load="onLoad"
-      >
-        <div v-for="item in items" :key="item" style="padding: 8px 12px">{{ item }}</div>
-        <p v-if="loading" style="margin: 0; padding: 8px 12px; color: var(--xh-fg-muted)">
-          正在取下一页…
-        </p>
-        <p v-else-if="page >= maxPage" style="margin: 0; padding: 8px 12px; color: var(--xh-fg-muted)">
-          没有更多了
-        </p>
-        <XhInfiniteScrollSentinel />
-      </XhInfiniteScrollRoot>
-    </div>
-
-    <span>第 {{ page }} / {{ maxPage }} 页 · 共 {{ items.length }} 条</span>
+      <div v-for="item in items" :key="item" style="padding: 8px 12px">{{ item }}</div>
+      <p v-if="loading" style="margin: 0; padding: 8px 12px; color: var(--xh-fg-muted)">
+        正在取下一页…
+      </p>
+      <p v-else-if="page >= maxPage" style="margin: 0; padding: 8px 12px; color: var(--xh-fg-muted)">
+        没有更多了
+      </p>
+      <XhInfiniteScrollSentinel />
+    </XhInfiniteScrollRoot>
   </div>
+
+  <span data-demo-output>第 {{ page }} / {{ maxPage }} 页 · 共 {{ items.length }} 条</span>
 </template>
 ```
 
@@ -366,50 +390,48 @@ function onLoad(): void {
   }
 </style>
 
-<div id="infinite-scroll-disabled" style="display: grid; gap: 12px; inline-size: 100%">
-  <div
-    data-shell
-    data-xh-scroll
-    style="
-      block-size: 220px;
-      overflow: auto;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
-    "
-  >
-    <!-- 宿主设 display: contents，列表外壳落在 root 上 -->
-    <xh-infinite-scroll data-host style="display: contents">
-      <div data-xh-part="root">
-        <div data-list>
-          <div data-row>第 1 条</div>
-          <div data-row>第 2 条</div>
-          <div data-row>第 3 条</div>
-          <div data-row>第 4 条</div>
-          <div data-row>第 5 条</div>
-          <div data-row>第 6 条</div>
-          <div data-row>第 7 条</div>
-          <div data-row>第 8 条</div>
-          <div data-row>第 9 条</div>
-          <div data-row>第 10 条</div>
-        </div>
-        <p data-loading-hint hidden>正在取下一页…</p>
-        <p data-done-hint hidden>没有更多了</p>
-        <div data-xh-part="sentinel"></div>
+<div
+  id="infinite-scroll-disabled"
+  data-xh-scroll
+  style="
+    inline-size: 100%;
+    block-size: 220px;
+    overflow: auto;
+    border: var(--xh-stroke-thin) solid var(--xh-border-default);
+    border-radius: var(--xh-shape-surface);
+  "
+>
+  <!-- 宿主设 display: contents，列表外壳落在 root 上 -->
+  <xh-infinite-scroll data-host style="display: contents">
+    <div data-xh-part="root">
+      <div data-list>
+        <div data-row>第 1 条</div>
+        <div data-row>第 2 条</div>
+        <div data-row>第 3 条</div>
+        <div data-row>第 4 条</div>
+        <div data-row>第 5 条</div>
+        <div data-row>第 6 条</div>
+        <div data-row>第 7 条</div>
+        <div data-row>第 8 条</div>
+        <div data-row>第 9 条</div>
+        <div data-row>第 10 条</div>
       </div>
-    </xh-infinite-scroll>
-  </div>
-
-  <span data-readout>第 1 / 3 页 · 共 10 条</span>
+      <p data-loading-hint hidden>正在取下一页…</p>
+      <p data-done-hint hidden>没有更多了</p>
+      <div data-xh-part="sentinel"></div>
+    </div>
+  </xh-infinite-scroll>
 </div>
 
+<span id="infinite-scroll-disabled-readout" data-demo-output>第 1 / 3 页 · 共 10 条</span>
+
 <script type="module">
-  const scope = document.getElementById("infinite-scroll-disabled");
-  const host = scope.querySelector("[data-host]");
-  const shell = scope.querySelector("[data-shell]");
-  const list = scope.querySelector("[data-list]");
-  const loadingHint = scope.querySelector("[data-loading-hint]");
-  const doneHint = scope.querySelector("[data-done-hint]");
-  const readout = scope.querySelector("[data-readout]");
+  const shell = document.getElementById("infinite-scroll-disabled");
+  const host = shell.querySelector("[data-host]");
+  const list = shell.querySelector("[data-list]");
+  const loadingHint = shell.querySelector("[data-loading-hint]");
+  const doneHint = shell.querySelector("[data-done-hint]");
+  const readout = document.getElementById("infinite-scroll-disabled-readout");
 
   const maxPage = 3;
   let page = 1;
@@ -480,8 +502,8 @@ function onLoad(): void {
     style="
       block-size: 240px;
       overflow: auto;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
+      border: var(--xh-stroke-thin) solid var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
     "
   >
     <XhInfiniteScrollRoot
@@ -523,8 +545,8 @@ function onLoad(): void {
   style="
     block-size: 240px;
     overflow: auto;
-    border: 1px solid var(--xh-border-default);
-    border-radius: 8px;
+    border: var(--xh-stroke-thin) solid var(--xh-border-default);
+    border-radius: var(--xh-shape-surface);
   "
 >
   <!-- 宿主设 display: contents，列表外壳落在 root 上 -->
@@ -627,8 +649,8 @@ function onLoad(): void {
     style="
       block-size: 240px;
       overflow: auto;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
+      border: var(--xh-stroke-thin) solid var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
     "
   >
     <XhInfiniteScrollRoot :target="scrollEl" :loading="loading" @load="onLoad">
@@ -661,8 +683,8 @@ function onLoad(): void {
   style="
     block-size: 240px;
     overflow: auto;
-    border: 1px solid var(--xh-border-default);
-    border-radius: 8px;
+    border: var(--xh-stroke-thin) solid var(--xh-border-default);
+    border-radius: var(--xh-shape-surface);
   "
 >
   <!-- 宿主设 display: contents，列表外壳落在 root 上 -->
@@ -762,8 +784,8 @@ function onLoad(): void {
     style="
       block-size: 240px;
       overflow: auto;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
+      border: var(--xh-stroke-thin) solid var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
     "
   >
     <XhInfiniteScrollRoot
@@ -802,8 +824,8 @@ function onLoad(): void {
   style="
     block-size: 240px;
     overflow: auto;
-    border: 1px solid var(--xh-border-default);
-    border-radius: 8px;
+    border: var(--xh-stroke-thin) solid var(--xh-border-default);
+    border-radius: var(--xh-shape-surface);
   "
 >
   <xh-infinite-scroll id="infinite-scroll-edge" edge="start" style="display: contents">

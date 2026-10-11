@@ -102,7 +102,7 @@ const cells = Array.from({ length: 24 }, (_, i) => `第 ${i + 1} 列`);
       ref="box"
       style="
         overflow: auto;
-        border: 1px solid var(--xh-border-default);
+        border: var(--xh-stroke-thin) solid var(--xh-border-default);
         border-radius: var(--xh-shape-surface);
         padding: 8px;
       "
@@ -146,7 +146,7 @@ const cells = Array.from({ length: 24 }, (_, i) => `第 ${i + 1} 列`);
     id="scrollbar-focusable-box"
     style="
       overflow: auto;
-      border: 1px solid var(--xh-border-default);
+      border: var(--xh-stroke-thin) solid var(--xh-border-default);
       border-radius: var(--xh-shape-surface);
       padding: 8px;
     "
@@ -206,7 +206,7 @@ const rows = Array.from({ length: 30 }, (_, r) => Array.from({ length: 12 }, (_,
       style="
         block-size: 200px;
         overflow: auto;
-        border: 1px solid var(--xh-border-default);
+        border: var(--xh-stroke-thin) solid var(--xh-border-default);
         border-radius: var(--xh-shape-surface);
         padding: 8px;
       "
@@ -248,7 +248,7 @@ const rows = Array.from({ length: 30 }, (_, r) => Array.from({ length: 12 }, (_,
     style="
       block-size: 200px;
       overflow: auto;
-      border: 1px solid var(--xh-border-default);
+      border: var(--xh-stroke-thin) solid var(--xh-border-default);
       border-radius: var(--xh-shape-surface);
       padding: 8px;
     "
@@ -320,7 +320,7 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
           style="
             block-size: 140px;
             overflow: auto;
-            border: 1px solid var(--xh-border-default);
+            border: var(--xh-stroke-thin) solid var(--xh-border-default);
             border-radius: var(--xh-shape-surface);
             padding: 8px;
           "
@@ -361,7 +361,7 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
     const box = document.createElement("div");
     box.id = `scrollbar-types-${type}`;
     box.style.cssText =
-      "block-size: 140px; overflow: auto; border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 8px";
+      "block-size: 140px; overflow: auto; border: var(--xh-stroke-thin) solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 8px";
     box.replaceChildren(
       ...Array.from({ length: 30 }, (_, i) => {
         const line = document.createElement("div");

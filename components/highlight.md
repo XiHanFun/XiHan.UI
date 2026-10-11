@@ -138,7 +138,7 @@ const text = "XiHan UI 与 xihan ui 是同一个名字的两种写法。";
 
 ```vue
 <script setup lang="ts">
-import { XhHighlight } from "@xihan-ui/vue";
+import { XhHighlight, XhTextFieldControl, XhTextFieldInput, XhTextFieldRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const keyword = ref("1.0");
@@ -152,7 +152,11 @@ const rows = [
 
 <template>
   <div style="display: flex; flex-direction: column; gap: 12px">
-    <input v-model="keyword" placeholder="输入关键词" style="max-inline-size: 240px">
+    <XhTextFieldRoot v-model:value="keyword" placeholder="输入关键词">
+      <XhTextFieldControl>
+        <XhTextFieldInput aria-label="关键词" />
+      </XhTextFieldControl>
+    </XhTextFieldRoot>
     <XhHighlight v-for="row in rows" :key="row" :text="row" :keyword="keyword" />
   </div>
 </template>
@@ -160,12 +164,13 @@ const rows = [
 
 ```html
 <div id="highlight-search" style="display: flex; flex-direction: column; gap: 12px">
-  <input
-    id="highlight-search-input"
-    value="1.0"
-    placeholder="输入关键词"
-    style="max-inline-size: 240px"
-  />
+  <xh-text-field id="highlight-search-input" default-value="1.0" placeholder="输入关键词">
+    <div data-xh-part="root">
+      <div data-xh-part="control">
+        <input data-xh-part="input" aria-label="关键词" />
+      </div>
+    </div>
+  </xh-text-field>
 
   <xh-highlight text="曦寒 UI 1.0 发布说明" keyword="1.0">
     <span data-xh-part="root"></span>
@@ -181,11 +186,11 @@ const rows = [
 <script type="module">
   // 输入框里的原串直接交给三行，敲进去什么就找什么
   const box = document.getElementById("highlight-search");
-  const input = document.getElementById("highlight-search-input");
+  const field = document.getElementById("highlight-search-input");
   const rows = box.querySelectorAll("xh-highlight");
 
-  input.addEventListener("input", () => {
-    for (const row of rows) row.keyword = input.value;
+  field.addEventListener("value-change", (event) => {
+    for (const row of rows) row.keyword = event.detail.value;
   });
 </script>
 ```
@@ -358,8 +363,8 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-highlight-mark-bg` | `mark`<br>`root` | `background` | `default`<br>`tone` | `--xh-_tone-subtle`<br>`--xh-bg-brand-subtle` | highlight 的 mark、root 部件 background 覆盖槽。 |
-| `--xh-highlight-mark-fg` | `mark`<br>`root` | `color` | `default`<br>`tone` | `--xh-_tone-fg`<br>`--xh-fg-brand-strong` | highlight 的 mark、root 部件 color 覆盖槽。 |
+| `--xh-highlight-mark-bg` | `mark`<br>`root` | `background` | `default`<br>`tone` | `--xh-_tone-subtle`<br>`--xh-bg-mark` | highlight 的 mark、root 部件 background 覆盖槽。 |
+| `--xh-highlight-mark-fg` | `mark`<br>`root` | `color` | `default`<br>`tone` | `--xh-_tone-fg`<br>`--xh-fg-default` | highlight 的 mark、root 部件 color 覆盖槽。 |
 | `--xh-highlight-mark-font-weight` | `mark` | `font-weight` | `default` | `--xh-font-weight-medium` | highlight 的 mark 部件 font-weight 覆盖槽。 |
 | `--xh-highlight-mark-px` | `mark` | `padding-inline` | `default` | `--xh-space-0_5` | highlight 的 mark 部件 padding-inline 覆盖槽。 |
 | `--xh-highlight-mark-radius` | `mark` | `border-radius` | `default` | `--xh-shape-inset` | highlight 的 mark 部件 border-radius 覆盖槽。 |

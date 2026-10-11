@@ -216,9 +216,9 @@ function onSubmit({ value }: { value: string }): void {
       <XhPromptInputInput rows="1" placeholder="接着问点什么…" />
       <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
     </XhPromptInputRoot>
-
-    <p v-if="decision" class="chat-page__note">批准闸门：{{ decision }}</p>
   </div>
+
+  <p data-demo-output>批准闸门：{{ decision || "（未决定）" }}</p>
 </template>
 
 <style scoped>
@@ -250,12 +250,6 @@ function onSubmit({ value }: { value: string }): void {
   display: flex;
   flex-direction: column;
   gap: var(--xh-space-3);
-}
-
-.chat-page__note {
-  margin: 0;
-  color: var(--xh-fg-muted);
-  font-size: var(--xh-font-size-sm);
 }
 </style>
 ```
@@ -406,13 +400,9 @@ function onSubmit({ value }: { value: string }): void {
       <button data-xh-part="submit-trigger">发送</button>
     </div>
   </xh-prompt-input>
-
-  <p
-    id="chat-page-note"
-    hidden
-    style="margin: 0; color: var(--xh-fg-muted); font-size: var(--xh-font-size-sm)"
-  ></p>
 </div>
+
+<p id="chat-page-note" data-demo-output>批准闸门：（未决定）</p>
 
 <script type="module">
   const stage = document.getElementById("chat-page");
@@ -425,7 +415,7 @@ function onSubmit({ value }: { value: string }): void {
   const approval = stage.querySelector("#chat-page-approval");
   const result = approval.querySelector('[data-xh-part="result"]');
   const input = stage.querySelector("#chat-page-input");
-  const note = stage.querySelector("#chat-page-note");
+  const note = document.getElementById("chat-page-note");
 
   // 文案是对象，只走 property；{seconds} 由元素代入
   reasoning.translations = { label: "思考过程", thoughtFor: "想了 {seconds} 秒" };
@@ -464,7 +454,6 @@ function onSubmit({ value }: { value: string }): void {
     const decided = event.detail.decision === "approved" ? "已批准" : "已拒绝";
     result.textContent = decided;
     note.textContent = `批准闸门：${decided}`;
-    note.hidden = false;
   });
 
   input.translations = { input: "接着问点什么" };

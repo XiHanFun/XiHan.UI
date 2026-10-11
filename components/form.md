@@ -777,11 +777,12 @@ import {
   XhFormFieldGroup,
   XhFormRoot,
   XhFormSubmitTrigger,
+  XhRadioGroupRoot,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const layout = ref<FormLayout>("horizontal");
-const layouts: FormLayout[] = ["vertical", "horizontal", "inline", "grid"];
+const layouts = (["vertical", "horizontal", "inline", "grid"] as const).map(l => ({ value: l, label: l }));
 
 const fields = [
   { name: "username", label: "用户名", placeholder: "字母开头" },
@@ -797,12 +798,14 @@ const rules = {
 
 <template>
   <div style="display: grid; gap: 16px; justify-items: start">
-    <label style="display: flex; gap: 8px; align-items: center; font-size: 13px">
-      排布
-      <select v-model="layout">
-        <option v-for="l in layouts" :key="l" :value="l">{{ l }}</option>
-      </select>
-    </label>
+    <!-- 分段轨道里不排可见标题：label 只作可及名 -->
+    <XhRadioGroupRoot
+      variant="segmented"
+      :collection="layouts"
+      :value="layout"
+      label="排布"
+      @update:value="(next: string | null) => layout = next as FormLayout"
+    />
 
     <XhFormRoot
       :layout="layout"
@@ -839,15 +842,25 @@ const rules = {
 
 ```html
 <div style="display: grid; gap: 16px; justify-items: start">
-  <label style="display: flex; gap: 8px; align-items: center; font-size: 13px">
-    排布
-    <select id="form-layout-picker">
-      <option value="vertical">vertical</option>
-      <option value="horizontal" selected>horizontal</option>
-      <option value="inline">inline</option>
-      <option value="grid">grid</option>
-    </select>
-  </label>
+  <!-- 分段轨道里不排可见标题：label 只作可及名；滑块写在段之前 -->
+  <xh-radio-group id="form-layout-picker" variant="segmented" default-value="horizontal">
+    <div data-xh-part="root">
+      <span data-xh-part="label">排布</span>
+      <span data-xh-part="thumb"></span>
+      <div data-xh-part="item" value="vertical">
+        <span data-xh-part="item-text">vertical</span>
+      </div>
+      <div data-xh-part="item" value="horizontal">
+        <span data-xh-part="item-text">horizontal</span>
+      </div>
+      <div data-xh-part="item" value="inline">
+        <span data-xh-part="item-text">inline</span>
+      </div>
+      <div data-xh-part="item" value="grid">
+        <span data-xh-part="item-text">grid</span>
+      </div>
+    </div>
+  </xh-radio-group>
 
   <xh-form
     id="form-layout"
@@ -930,8 +943,8 @@ const rules = {
   });
 
   // 换一档排布就是换一个属性，字段标记一个字都不用动
-  picker.addEventListener("change", () => {
-    host.layout = picker.value;
+  picker.addEventListener("value-change", (event) => {
+    host.layout = event.detail.value;
   });
 </script>
 ```
@@ -1102,8 +1115,8 @@ function save({ values }: FormSubmitDetails): Promise<void> {
     </XhFormFieldGroup>
 
     <XhFormSubmitTrigger>{{ submitting ? "保存中…" : "保存" }}</XhFormSubmitTrigger>
-    <p>{{ saved ? `已保存：${saved}` : "尚未保存" }}</p>
   </XhFormRoot>
+  <p data-demo-output>{{ saved ? `已保存：${saved}` : "尚未保存" }}</p>
 </template>
 ```
 
@@ -1120,9 +1133,9 @@ function save({ values }: FormSubmitDetails): Promise<void> {
     </div>
 
     <button data-xh-part="submit-trigger">保存</button>
-    <p id="form-async-submit-status">尚未保存</p>
   </form>
 </xh-form>
+<p id="form-async-submit-status" data-demo-output>尚未保存</p>
 
 <script type="module">
   const host = document.getElementById("form-async-submit");
@@ -1411,11 +1424,10 @@ function save({ values }: FormSubmitDetails): Promise<void> {
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-form-field-gap` | `field-group` | `gap` | `default` | `--xh-space-1` | form 的 field-group 部件 gap 覆盖槽。 |
-| `--xh-form-field-invalid-border` | `field-group` | `border-inline-start` | `invalid` | `--xh-border-invalid` | form 的 field-group 部件 border-inline-start 覆盖槽。 |
-| `--xh-form-field-invalid-px` | `field-group` | `padding-inline-start` | `invalid` | `--xh-space-2` | form 的 field-group 部件 padding-inline-start 覆盖槽。 |
-| `--xh-form-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | form 的 root 部件 gap 覆盖槽。 |
-| `--xh-form-inline-gap` | `root` | `column-gap` | `layout=inline` | `--xh-space-4` | form 的 root 部件 column-gap 覆盖槽。 |
-| `--xh-form-label-w` | `root` | `grid-template-columns` | `layout=horizontal` | `30%` | form 的 root 部件 grid-template-columns 覆盖槽。 |
+| `--xh-form-gap` | `root` | `column-gap`<br>`margin-block-end` | `layout=grid`<br>`where(:not(:last-child)`<br>`where([data-scope='form'][data-part='root'])` | `--xh-space-5` | form 的 root 部件 column-gap、margin-block-end 覆盖槽。 |
+| `--xh-form-inline-gap` | `root` | `column-gap` | `layout=inline` | `--xh-space-6` | form 的 root 部件 column-gap 覆盖槽。 |
+| `--xh-form-inline-row-gap` | `root` | `margin-block-end` | `layout=inline`<br>`where(:not(:last-child)`<br>`where([data-scope='form'][data-part='root'])` | `--xh-space-2` | form 的 root 部件 margin-block-end 覆盖槽。 |
+| `--xh-form-label-w` | `root` | `grid-template-columns` | `layout=horizontal` | `calc(100% * 5 / 24)` | form 的 root 部件 grid-template-columns 覆盖槽。 |
 | `--xh-form-loading-duration` | `submit-trigger` | `animation` | `xh-loading-ring` | `--xh-motion-loop-spin` | form 的 submit-trigger 部件 animation 覆盖槽。 |
 | `--xh-form-submit-bg` | `submit-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | form 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-form-submit-bg-active` | `submit-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | form 的 submit-trigger 部件 background-color 覆盖槽。 |
@@ -1423,7 +1435,7 @@ function save({ values }: FormSubmitDetails): Promise<void> {
 | `--xh-form-submit-border` | `submit-trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | form 的 submit-trigger 部件 border 覆盖槽。 |
 | `--xh-form-submit-border-active` | `submit-trigger` | `border-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-border-pressed` | form 的 submit-trigger 部件 border-color 覆盖槽。 |
 | `--xh-form-submit-border-hover` | `submit-trigger` | `border-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-border-hover` | form 的 submit-trigger 部件 border-color 覆盖槽。 |
-| `--xh-form-submit-fg` | `submit-trigger` | `border-block-start-color`<br>`border-color`<br>`color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`motion=reduce`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-loading`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | form 的 submit-trigger 部件 border-block-start-color、border-color、color 覆盖槽。 |
+| `--xh-form-submit-fg` | `submit-trigger` | `border`<br>`border-color`<br>`color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`motion=reduce`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring`<br>`xh-loading-ring=overlay` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-loading`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | form 的 submit-trigger 部件 border、border-color、color 覆盖槽。 |
 | `--xh-form-submit-shadow` | `submit-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_highlight-brand` | form 的 submit-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-form-summary-bg` | `error-summary` | `background` | `default` | `--xh-bg-surface` | form 的 error-summary 部件 background 覆盖槽。 |
 | `--xh-form-summary-border` | `error-summary` | `border` | `default` | `--xh-border-invalid` | form 的 error-summary 部件 border 覆盖槽。 |

@@ -35,7 +35,6 @@ import {
     <XhPageHeaderBackTrigger
       type="button"
       aria-label="返回订单列表"
-      style="inline-size: 36px; block-size: 36px; border: 0; border-radius: var(--xh-shape-control); background: transparent; color: inherit; font: inherit; cursor: pointer"
     >
       <XhIcon :icon="ArrowLeftIcon" />
     </XhPageHeaderBackTrigger>
@@ -52,7 +51,7 @@ import {
 ```html
 <xh-page-header variant="outline">
   <div data-xh-part="root" style="inline-size: min(720px, 100%)">
-    <button data-xh-part="back-trigger" type="button" aria-label="返回订单列表" style="inline-size: 36px; block-size: 36px; border: 0; border-radius: var(--xh-shape-control); background: transparent; color: inherit; font: inherit; cursor: pointer"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4"/><path d="M10 6L4 12L10 18"/></svg></button>
+    <button data-xh-part="back-trigger" type="button" aria-label="返回订单列表"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4"/><path d="M10 6L4 12L10 18"/></svg></button>
     <div data-xh-part="title">订单 SO-20260731-004</div>
     <div data-xh-part="description">由赵一创建 · 今天 14:32 更新</div>
     <div data-xh-part="extra">
@@ -156,6 +155,8 @@ const variants = [
 ```vue
 <script setup lang="ts">
 import {
+  XhAvatarFallback,
+  XhAvatarRoot,
   XhPageHeaderBreadcrumb,
   XhPageHeaderDescription,
   XhPageHeaderMedia,
@@ -168,7 +169,9 @@ import {
   <XhPageHeaderRoot variant="outline" style="inline-size: min(720px, 100%)">
     <XhPageHeaderBreadcrumb>工作台 / 客户 / Acme Inc.</XhPageHeaderBreadcrumb>
     <XhPageHeaderMedia>
-      <span style="display: grid; place-items: center; inline-size: 40px; block-size: 40px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); font-weight: 600">A</span>
+      <XhAvatarRoot size="lg" tone="brand">
+        <XhAvatarFallback>A</XhAvatarFallback>
+      </XhAvatarRoot>
     </XhPageHeaderMedia>
     <XhPageHeaderTitle>Acme Inc.</XhPageHeaderTitle>
     <XhPageHeaderDescription>企业客户 · 最近联系于昨天</XhPageHeaderDescription>
@@ -180,7 +183,13 @@ import {
 <xh-page-header variant="outline">
   <div data-xh-part="root" style="inline-size: min(720px, 100%)">
     <div data-xh-part="breadcrumb">工作台 / 客户 / Acme Inc.</div>
-    <div data-xh-part="media"><span style="display: grid; place-items: center; inline-size: 40px; block-size: 40px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); font-weight: 600">A</span></div>
+    <div data-xh-part="media">
+      <xh-avatar size="lg" tone="brand">
+        <span data-xh-part="root">
+          <span data-xh-part="fallback">A</span>
+        </span>
+      </xh-avatar>
+    </div>
     <div data-xh-part="title">Acme Inc.</div>
     <div data-xh-part="description">企业客户 · 最近联系于昨天</div>
   </div>
@@ -276,6 +285,8 @@ import {
 
 `@xihan-ui/styles/page-header.css` 按 `[data-scope="page-header"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-page-header` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -285,6 +296,11 @@ import {
 | `root` | `data-size` | props.size |
 | `root` | `data-split` | ''（条件成立时才出现） |
 | `root` | `data-variant` | props.variant |
+| `back-trigger` | `data-xh-action-control` | '' |
+| `back-trigger` | `data-xh-action-display` | 'always' |
+| `back-trigger` | `data-xh-action-profile` | 'icon' |
+| `back-trigger` | `data-xh-action-size` | 'md' \| 'sm' |
+| `back-trigger` | `data-xh-action-variant` | 'ghost' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -293,13 +309,16 @@ import {
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
+| `--xh-page-header-back-fg` | `back-trigger` | `color` | `default` | `--xh-fg-muted` | page-header 的 back-trigger 部件 color 覆盖槽。 |
+| `--xh-page-header-back-fg-hover` | `back-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | page-header 的 back-trigger 部件 color 覆盖槽。 |
 | `--xh-page-header-bg` | `root` | `background` | `variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | page-header 的 root 部件 background 覆盖槽。 |
-| `--xh-page-header-border` | `root` | `border`<br>`border-block-end` | `split`<br>`variant=ghost`<br>`variant=outline` | `--xh-border-default`<br>`--xh-border-subtle` | page-header 的 root 部件 border、border-block-end 覆盖槽。 |
+| `--xh-page-header-border` | `root` | `border`<br>`border-block-end` | `split`<br>`variant=ghost`<br>`variant=outline` | `--xh-border-default` | page-header 的 root 部件 border、border-block-end 覆盖槽。 |
 | `--xh-page-header-breadcrumb-fg` | `breadcrumb` | `color` | `default` | `--xh-fg-muted` | page-header 的 breadcrumb 部件 color 覆盖槽。 |
 | `--xh-page-header-breadcrumb-font-size` | `breadcrumb` | `font-size` | `default` | `--xh-text-secondary-size` | page-header 的 breadcrumb 部件 font-size 覆盖槽。 |
 | `--xh-page-header-column-gap` | `back-trigger`<br>`extra`<br>`media` | `margin-inline-end`<br>`margin-inline-start` | `default` | `--xh-space-3` | page-header 的 back-trigger、extra、media 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
-| `--xh-page-header-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | page-header 的 description 部件 color 覆盖槽。 |
-| `--xh-page-header-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | page-header 的 description 部件 font-size 覆盖槽。 |
+| `--xh-page-header-description-fg` | `description` | `color` | `default` | `--xh-fg-subtle` | page-header 的 description 部件 color 覆盖槽。 |
+| `--xh-page-header-description-font-size` | `description` | `font-size` | `default` | `--xh-text-body-size` | page-header 的 description 部件 font-size 覆盖槽。 |
+| `--xh-page-header-divider` | `description`<br>`title` | `background` | `default` | `--xh-border-default` | page-header 的 description、title 部件 background 覆盖槽。 |
 | `--xh-page-header-extra-gap` | `extra` | `gap` | `default` | `--xh-space-2` | page-header 的 extra 部件 gap 覆盖槽。 |
 | `--xh-page-header-fg` | `root` | `color` | `default` | `--xh-fg-default` | page-header 的 root 部件 color 覆盖槽。 |
 | `--xh-page-header-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | page-header 的 footer 部件 color 覆盖槽。 |
@@ -310,10 +329,12 @@ import {
 | `--xh-page-header-row-gap` | `root` | `row-gap` | `default` | `--xh-_page-header-row-gap` | page-header 的 root 部件 row-gap 覆盖槽。 |
 | `--xh-page-header-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | page-header 的 title 部件 color 覆盖槽。 |
 | `--xh-page-header-title-font-size` | `title` | `font-size` | `default` | `--xh-_page-header-title-size` | page-header 的 title 部件 font-size 覆盖槽。 |
-| `--xh-page-header-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-heading-3-weight` | page-header 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-page-header-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-heading-2-weight` | page-header 的 title 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
+
+动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 

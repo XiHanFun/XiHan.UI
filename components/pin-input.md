@@ -88,7 +88,7 @@ const submitted = ref("");
     </div>
     <XhPinInputHiddenInput />
   </XhPinInputRoot>
-  <span>填满时拿到：{{ submitted || "（未填满）" }}</span>
+  <span data-demo-output>填满时拿到：{{ submitted || "（未填满）" }}</span>
 </template>
 ```
 
@@ -107,7 +107,7 @@ const submitted = ref("");
     <input data-xh-part="hidden-input" />
   </div>
 </xh-pin-input>
-<span>填满时拿到：<span id="pin-input-otp-value">（未填满）</span></span>
+<span data-demo-output>填满时拿到：<span id="pin-input-otp-value">（未填满）</span></span>
 
 <script type="module">
   const pin = document.getElementById("pin-input-otp");
@@ -508,7 +508,7 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 
 ```vue
 <script setup lang="ts">
-import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue";
+import { XhButton, XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const submitted = ref("");
@@ -526,13 +526,11 @@ function reset(clear: () => void) {
       <XhPinInputInput v-for="i in 4" :key="i" :index="i - 1" />
     </div>
     <div style="display: flex; gap: 8px">
-      <button type="button" :disabled="!complete" @click="submitted = valueAsString">
-        提交
-      </button>
-      <button type="button" @click="reset(clear)">重填</button>
+      <XhButton size="sm" :disabled="!complete" @click="submitted = valueAsString">提交</XhButton>
+      <XhButton variant="outline" size="sm" @click="reset(clear)">重填</XhButton>
     </div>
-    <span>{{ submitted ? `已提交：${submitted}` : "四格都填满才能提交" }}</span>
   </XhPinInputRoot>
+  <span data-demo-output>{{ submitted ? `已提交：${submitted}` : "四格都填满才能提交" }}</span>
 </template>
 ```
 
@@ -548,13 +546,17 @@ function reset(clear: () => void) {
         <input data-xh-part="input" />
       </div>
       <div style="display: flex; gap: 8px">
-        <button type="button" id="pin-input-complete-submit" disabled>提交</button>
+        <xh-button id="pin-input-complete-submit" size="sm" disabled>
+          <button data-xh-part="root">提交</button>
+        </xh-button>
         <!-- 重填走原生表单重置，组件认它并把整组清回落点 -->
-        <button type="reset">重填</button>
+        <xh-button type="reset" variant="outline" size="sm">
+          <button data-xh-part="root">重填</button>
+        </xh-button>
       </div>
-      <span id="pin-input-complete-readout">四格都填满才能提交</span>
     </div>
   </xh-pin-input>
+  <span id="pin-input-complete-readout" data-demo-output>四格都填满才能提交</span>
 </form>
 
 <script type="module">
@@ -577,7 +579,7 @@ function reset(clear: () => void) {
   sync();
 
   pin.addEventListener("value-change", (event) => (code = event.detail.valueAsString));
-  submit.addEventListener("click", () => (readout.textContent = "已提交：" + code));
+  submit.addEventListener("click", () => (readout.textContent = `已提交：${code}`));
   form.addEventListener("reset", () => (readout.textContent = "四格都填满才能提交"));
 </script>
 ```
@@ -592,22 +594,13 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 
 // 传了 value 就由宿主说了算，不回写值就恒定不变
 const code = ["8", "1", "9", "2"];
-
-// 皮肤没有只读档，底色由作者压下去表示改不动
-const box = "background: var(--xh-bg-subtle)";
 </script>
 
 <template>
-  <XhPinInputRoot :length="4" :value="code">
+  <XhPinInputRoot :length="4" :value="code" read-only>
     <XhPinInputLabel>上一次的验证码</XhPinInputLabel>
     <div style="display: flex">
-      <XhPinInputInput
-        v-for="i in 4"
-        :key="i"
-        :index="i - 1"
-        :style="box"
-        readonly
-      />
+      <XhPinInputInput v-for="i in 4" :key="i" :index="i - 1" />
     </div>
   </XhPinInputRoot>
   <span>点进任意一格可以选中复制，敲键盘与粘贴都改不动它。</span>
@@ -616,15 +609,14 @@ const box = "background: var(--xh-bg-subtle)";
 
 ```html
 <!-- 传了 value 就由宿主说了算，不回写值就恒定不变 -->
-<xh-pin-input length="4" value="8192">
+<xh-pin-input length="4" value="8192" read-only>
   <div data-xh-part="root">
     <label data-xh-part="label">上一次的验证码</label>
-    <!-- 皮肤没有只读档，底色由作者压下去表示改不动 -->
     <div style="display: flex">
-      <input data-xh-part="input" readonly style="background: var(--xh-bg-subtle)" />
-      <input data-xh-part="input" readonly style="background: var(--xh-bg-subtle)" />
-      <input data-xh-part="input" readonly style="background: var(--xh-bg-subtle)" />
-      <input data-xh-part="input" readonly style="background: var(--xh-bg-subtle)" />
+      <input data-xh-part="input" />
+      <input data-xh-part="input" />
+      <input data-xh-part="input" />
+      <input data-xh-part="input" />
     </div>
   </div>
 </xh-pin-input>
@@ -893,12 +885,12 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 | `--xh-pin-input-box-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | pin-input 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-pin-input-box-bg` | `input` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | pin-input 的 input 部件 background-color 覆盖槽。 |
 | `--xh-pin-input-box-bg-disabled` | `input` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | pin-input 的 input 部件 background-color 覆盖槽。 |
-| `--xh-pin-input-box-bg-hover` | `input` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | pin-input 的 input 部件 background-color 覆盖槽。 |
+| `--xh-pin-input-box-bg-hover` | `input` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | pin-input 的 input 部件 background-color 覆盖槽。 |
 | `--xh-pin-input-box-bg-readonly` | `input` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | pin-input 的 input 部件 background-color 覆盖槽。 |
 | `--xh-pin-input-box-border` | `input` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | pin-input 的 input 部件 border 覆盖槽。 |
 | `--xh-pin-input-box-border-complete` | `input`<br>`root` | `border-color` | `complete`<br>`invalid`<br>`not([data-invalid], :disabled)` | `--xh-_pin-input-accent` | pin-input 的 input、root 部件 border-color 覆盖槽。 |
 | `--xh-pin-input-box-border-focus` | `input` | `border-color` | `disabled`<br>`focus`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | pin-input 的 input 部件 border-color 覆盖槽。 |
-| `--xh-pin-input-box-border-hover` | `input` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | pin-input 的 input 部件 border-color 覆盖槽。 |
+| `--xh-pin-input-box-border-hover` | `input` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | pin-input 的 input 部件 border-color 覆盖槽。 |
 | `--xh-pin-input-box-border-invalid` | `input` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | pin-input 的 input 部件 border-color 覆盖槽。 |
 | `--xh-pin-input-box-fg` | `input` | `color` | `xh-field-chrome` | `--xh-fg-default` | pin-input 的 input 部件 color 覆盖槽。 |
 | `--xh-pin-input-box-font-size` | `input` | `font-size` | `default` | `--xh-_pin-input-box-font-size` | pin-input 的 input 部件 font-size 覆盖槽。 |
@@ -906,11 +898,12 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 | `--xh-pin-input-box-radius` | `input` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | pin-input 的 input 部件 border-radius 覆盖槽。 |
 | `--xh-pin-input-box-shadow` | `input` | `box-shadow` | `xh-field-chrome` | `none` | pin-input 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-pin-input-box-size` | `input` | `block-size`<br>`inline-size`<br>`min-block-size` | `default`<br>`has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_pin-input-box-size` | pin-input 的 input 部件 block-size、inline-size、min-block-size 覆盖槽。 |
-| `--xh-pin-input-gap` | `root` | `gap` | `default` | `--xh-space-1` | pin-input 的 root 部件 gap 覆盖槽。 |
-| `--xh-pin-input-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | pin-input 的 label 部件 color 覆盖槽。 |
-| `--xh-pin-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | pin-input 的 label 部件 color 覆盖槽。 |
+| `--xh-pin-input-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | pin-input 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
+| `--xh-pin-input-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | pin-input 的 label 部件 color 覆盖槽。 |
+| `--xh-pin-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | pin-input 的 label 部件 color 覆盖槽。 |
 | `--xh-pin-input-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | pin-input 的 label 部件 font-size 覆盖槽。 |
 | `--xh-pin-input-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | pin-input 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-pin-input-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | pin-input 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-pin-input-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | pin-input 的 input 部件 color 覆盖槽。 |
 | `--xh-pin-input-separator-fg` | `separator` | `color` | `default` | `--xh-fg-muted` | pin-input 的 separator 部件 color 覆盖槽。 |
 | `--xh-pin-input-separator-fg-disabled` | `separator` | `color` | `disabled` | `--xh-fg-disabled` | pin-input 的 separator 部件 color 覆盖槽。 |

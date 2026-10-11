@@ -20,24 +20,15 @@
 
 ```vue
 <script setup lang="ts">
-import { XhFieldsetDescription, XhFieldsetLegend, XhFieldsetRoot } from "@xihan-ui/vue";
+import { XhCheckbox, XhFieldsetDescription, XhFieldsetLegend, XhFieldsetRoot } from "@xihan-ui/vue";
 </script>
 
 <template>
   <XhFieldsetRoot style="inline-size: 320px;">
     <XhFieldsetLegend>通知方式</XhFieldsetLegend>
-    <label style="display: flex; gap: 8px; align-items: center;">
-      <input type="checkbox" checked>
-      站内消息
-    </label>
-    <label style="display: flex; gap: 8px; align-items: center;">
-      <input type="checkbox">
-      邮件
-    </label>
-    <label style="display: flex; gap: 8px; align-items: center;">
-      <input type="checkbox">
-      短信
-    </label>
+    <XhCheckbox default-checked>站内消息</XhCheckbox>
+    <XhCheckbox>邮件</XhCheckbox>
+    <XhCheckbox>短信</XhCheckbox>
     <XhFieldsetDescription>至少保留一种，重要变更会照此通知你</XhFieldsetDescription>
   </XhFieldsetRoot>
 </template>
@@ -47,18 +38,30 @@ import { XhFieldsetDescription, XhFieldsetLegend, XhFieldsetRoot } from "@xihan-
 <xh-fieldset>
   <fieldset data-xh-part="root" style="inline-size: 320px">
     <legend data-xh-part="legend">通知方式</legend>
-    <label style="display: flex; gap: 8px; align-items: center">
-      <input type="checkbox" checked />
-      站内消息
-    </label>
-    <label style="display: flex; gap: 8px; align-items: center">
-      <input type="checkbox" />
-      邮件
-    </label>
-    <label style="display: flex; gap: 8px; align-items: center">
-      <input type="checkbox" />
-      短信
-    </label>
+    <xh-checkbox default-checked>
+      <label data-xh-part="label">
+        <button data-xh-part="root">
+          <span data-xh-part="indicator"></span>
+        </button>
+        <span data-xh-part="text">站内消息</span>
+      </label>
+    </xh-checkbox>
+    <xh-checkbox>
+      <label data-xh-part="label">
+        <button data-xh-part="root">
+          <span data-xh-part="indicator"></span>
+        </button>
+        <span data-xh-part="text">邮件</span>
+      </label>
+    </xh-checkbox>
+    <xh-checkbox>
+      <label data-xh-part="label">
+        <button data-xh-part="root">
+          <span data-xh-part="indicator"></span>
+        </button>
+        <span data-xh-part="text">短信</span>
+      </label>
+    </xh-checkbox>
     <p data-xh-part="description">至少保留一种，重要变更会照此通知你</p>
   </fieldset>
 </xh-fieldset>
@@ -78,7 +81,15 @@ disabled 写为原生 fieldset[disabled]，组内每个控件一并禁用，不�
 
 ```vue
 <script setup lang="ts">
-import { XhFieldsetDescription, XhFieldsetLegend, XhFieldsetRoot } from "@xihan-ui/vue";
+import {
+  XhCheckbox,
+  XhFieldControl,
+  XhFieldLabel,
+  XhFieldRoot,
+  XhFieldsetDescription,
+  XhFieldsetLegend,
+  XhFieldsetRoot,
+} from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const locked = ref(true);
@@ -86,14 +97,21 @@ const locked = ref(true);
 
 <template>
   <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 320px;">
-    <label style="display: flex; gap: 8px; align-items: center;">
-      <input v-model="locked" type="checkbox">
-      锁定这段设置
-    </label>
+    <XhCheckbox :checked="locked" @update:checked="locked = $event === true">锁定这段设置</XhCheckbox>
     <XhFieldsetRoot :disabled="locked">
       <XhFieldsetLegend>发票抬头</XhFieldsetLegend>
-      <input type="text" placeholder="公司名称" style="inline-size: 100%;">
-      <input type="text" placeholder="纳税人识别号" style="inline-size: 100%;">
+      <XhFieldRoot>
+        <XhFieldLabel>公司名称</XhFieldLabel>
+        <XhFieldControl>
+          <input type="text">
+        </XhFieldControl>
+      </XhFieldRoot>
+      <XhFieldRoot>
+        <XhFieldLabel>纳税人识别号</XhFieldLabel>
+        <XhFieldControl>
+          <input type="text">
+        </XhFieldControl>
+      </XhFieldRoot>
       <XhFieldsetDescription>锁定期间这两个输入框既不能聚焦，也不参与提交</XhFieldsetDescription>
     </XhFieldsetRoot>
   </div>
@@ -102,15 +120,29 @@ const locked = ref(true);
 
 ```html
 <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 320px">
-  <label style="display: flex; gap: 8px; align-items: center">
-    <input id="fieldset-lock" type="checkbox" checked />
-    锁定这段设置
-  </label>
+  <xh-checkbox id="fieldset-lock" default-checked>
+    <label data-xh-part="label">
+      <button data-xh-part="root">
+        <span data-xh-part="indicator"></span>
+      </button>
+      <span data-xh-part="text">锁定这段设置</span>
+    </label>
+  </xh-checkbox>
   <xh-fieldset id="fieldset-billing" disabled>
     <fieldset data-xh-part="root">
       <legend data-xh-part="legend">发票抬头</legend>
-      <input type="text" placeholder="公司名称" style="inline-size: 100%" />
-      <input type="text" placeholder="纳税人识别号" style="inline-size: 100%" />
+      <xh-field>
+        <div data-xh-part="root">
+          <label data-xh-part="label">公司名称</label>
+          <input data-xh-part="control" type="text" />
+        </div>
+      </xh-field>
+      <xh-field>
+        <div data-xh-part="root">
+          <label data-xh-part="label">纳税人识别号</label>
+          <input data-xh-part="control" type="text" />
+        </div>
+      </xh-field>
       <p data-xh-part="description">锁定期间这两个输入框既不能聚焦，也不参与提交</p>
     </fieldset>
   </xh-fieldset>
@@ -119,8 +151,8 @@ const locked = ref(true);
 <script type="module">
   const lock = document.getElementById("fieldset-lock");
   const billing = document.getElementById("fieldset-billing");
-  lock.addEventListener("change", () => {
-    billing.disabled = lock.checked;
+  lock.addEventListener("checked-change", (event) => {
+    billing.disabled = event.detail.checked === true;
   });
 </script>
 ```
@@ -132,6 +164,9 @@ invalid 切换后，错误文案接入描述链并显示；它带 role=alert，�
 ```vue
 <script setup lang="ts">
 import {
+  XhFieldControl,
+  XhFieldLabel,
+  XhFieldRoot,
   XhFieldsetDescription,
   XhFieldsetErrorText,
   XhFieldsetLegend,
@@ -148,8 +183,18 @@ const invalid = computed(() => email.value === "" && phone.value === "");
 <template>
   <XhFieldsetRoot :invalid="invalid" style="inline-size: 320px;">
     <XhFieldsetLegend>联系方式</XhFieldsetLegend>
-    <input v-model="email" type="email" placeholder="邮箱" style="inline-size: 100%;">
-    <input v-model="phone" type="tel" placeholder="手机号" style="inline-size: 100%;">
+    <XhFieldRoot>
+      <XhFieldLabel>邮箱</XhFieldLabel>
+      <XhFieldControl>
+        <input v-model="email" type="email">
+      </XhFieldControl>
+    </XhFieldRoot>
+    <XhFieldRoot>
+      <XhFieldLabel>手机号</XhFieldLabel>
+      <XhFieldControl>
+        <input v-model="phone" type="tel">
+      </XhFieldControl>
+    </XhFieldRoot>
     <XhFieldsetDescription>两者填一个即可</XhFieldsetDescription>
     <XhFieldsetErrorText>请至少填写一种联系方式</XhFieldsetErrorText>
   </XhFieldsetRoot>
@@ -160,8 +205,18 @@ const invalid = computed(() => email.value === "" && phone.value === "");
 <xh-fieldset id="fieldset-contact" invalid>
   <fieldset data-xh-part="root" style="inline-size: 320px">
     <legend data-xh-part="legend">联系方式</legend>
-    <input type="email" placeholder="邮箱" style="inline-size: 100%" />
-    <input type="tel" placeholder="手机号" style="inline-size: 100%" />
+    <xh-field>
+      <div data-xh-part="root">
+        <label data-xh-part="label">邮箱</label>
+        <input data-xh-part="control" type="email" />
+      </div>
+    </xh-field>
+    <xh-field>
+      <div data-xh-part="root">
+        <label data-xh-part="label">手机号</label>
+        <input data-xh-part="control" type="tel" />
+      </div>
+    </xh-field>
     <p data-xh-part="description">两者填一个即可</p>
     <p data-xh-part="error-text">请至少填写一种联系方式</p>
   </fieldset>
@@ -185,20 +240,19 @@ required 写为 data-required，皮肤据此为组标题加星号；星号只是
 
 ```vue
 <script setup lang="ts">
-import { XhFieldsetDescription, XhFieldsetLegend, XhFieldsetRoot } from "@xihan-ui/vue";
+import { XhFieldsetDescription, XhFieldsetLegend, XhFieldsetRoot, XhRadioGroupRoot } from "@xihan-ui/vue";
+
+const slots = [
+  { value: "am", label: "上午（9:00–12:00）" },
+  { value: "pm", label: "下午（13:00–18:00）" },
+];
 </script>
 
 <template>
   <XhFieldsetRoot required style="inline-size: 320px;">
     <XhFieldsetLegend>配送时段</XhFieldsetLegend>
-    <label style="display: flex; gap: 8px; align-items: center;">
-      <input type="radio" name="fieldset-slot" value="am">
-      上午（9:00–12:00）
-    </label>
-    <label style="display: flex; gap: 8px; align-items: center;">
-      <input type="radio" name="fieldset-slot" value="pm">
-      下午（13:00–18:00）
-    </label>
+    <!-- 组标题只命名外层这一段，内层的单选组要自己的名字 -->
+    <XhRadioGroupRoot :collection="slots" name="fieldset-slot" aria-label="配送时段" />
     <XhFieldsetDescription>必选一项，下单后不可更改</XhFieldsetDescription>
   </XhFieldsetRoot>
 </template>
@@ -208,14 +262,21 @@ import { XhFieldsetDescription, XhFieldsetLegend, XhFieldsetRoot } from "@xihan-
 <xh-fieldset required>
   <fieldset data-xh-part="root" style="inline-size: 320px">
     <legend data-xh-part="legend">配送时段</legend>
-    <label style="display: flex; gap: 8px; align-items: center">
-      <input type="radio" name="fieldset-slot" value="am" />
-      上午（9:00–12:00）
-    </label>
-    <label style="display: flex; gap: 8px; align-items: center">
-      <input type="radio" name="fieldset-slot" value="pm" />
-      下午（13:00–18:00）
-    </label>
+    <!-- 组标题只命名外层这一段，内层的单选组要自己的名字 -->
+    <xh-radio-group name="fieldset-slot">
+      <div data-xh-part="root" aria-label="配送时段">
+        <div data-xh-part="item" value="am">
+          <input data-xh-part="hidden-input" />
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="item-text">上午（9:00–12:00）</span>
+        </div>
+        <div data-xh-part="item" value="pm">
+          <input data-xh-part="hidden-input" />
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="item-text">下午（13:00–18:00）</span>
+        </div>
+      </div>
+    </xh-radio-group>
     <p data-xh-part="description">必选一项，下单后不可更改</p>
   </fieldset>
 </xh-fieldset>
@@ -227,31 +288,29 @@ import { XhFieldsetDescription, XhFieldsetLegend, XhFieldsetRoot } from "@xihan-
 
 ```vue
 <script setup lang="ts">
-import { XhFieldsetDescription, XhFieldsetLegend, XhFieldsetRoot } from "@xihan-ui/vue";
+import {
+  XhCheckbox,
+  XhFieldsetDescription,
+  XhFieldsetLegend,
+  XhFieldsetRoot,
+  XhSelectRoot,
+} from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const enabled = ref(false);
+const frequencies = [
+  { value: "daily", label: "每天" },
+  { value: "weekly", label: "每周" },
+];
 </script>
 
 <template>
   <XhFieldsetRoot :disabled="!enabled" style="inline-size: 320px;">
     <XhFieldsetLegend>
-      <label style="display: flex; gap: 8px; align-items: center;">
-        <input v-model="enabled" type="checkbox">
-        启用自动备份
-      </label>
+      <XhCheckbox :checked="enabled" @update:checked="enabled = $event === true">启用自动备份</XhCheckbox>
     </XhFieldsetLegend>
-    <label style="display: flex; gap: 8px; align-items: center;">
-      备份频率
-      <select>
-        <option>每天</option>
-        <option>每周</option>
-      </select>
-    </label>
-    <label style="display: flex; gap: 8px; align-items: center;">
-      <input type="checkbox">
-      失败时发通知
-    </label>
+    <XhSelectRoot :collection="frequencies" :default-value="['daily']" label="备份频率" />
+    <XhCheckbox>失败时发通知</XhCheckbox>
     <XhFieldsetDescription>关掉总开关，下面两项跟着停用，唯独总开关自己还能点</XhFieldsetDescription>
   </XhFieldsetRoot>
 </template>
@@ -261,22 +320,48 @@ const enabled = ref(false);
 <xh-fieldset id="fieldset-backup" disabled>
   <fieldset data-xh-part="root" style="inline-size: 320px">
     <legend data-xh-part="legend">
-      <label style="display: flex; gap: 8px; align-items: center">
-        <input id="fieldset-backup-toggle" type="checkbox" />
-        启用自动备份
-      </label>
+      <xh-checkbox id="fieldset-backup-toggle">
+        <label data-xh-part="label">
+          <button data-xh-part="root">
+            <span data-xh-part="indicator"></span>
+          </button>
+          <span data-xh-part="text">启用自动备份</span>
+        </label>
+      </xh-checkbox>
     </legend>
-    <label style="display: flex; gap: 8px; align-items: center">
-      备份频率
-      <select>
-        <option>每天</option>
-        <option>每周</option>
-      </select>
-    </label>
-    <label style="display: flex; gap: 8px; align-items: center">
-      <input type="checkbox" />
-      失败时发通知
-    </label>
+    <xh-select default-value="daily">
+      <div data-xh-part="root">
+        <span data-xh-part="label">备份频率</span>
+        <div data-xh-part="control">
+          <button data-xh-part="trigger">
+            <span data-xh-part="value-text"></span>
+            <span data-xh-part="indicator"></span>
+          </button>
+        </div>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content">
+            <div data-xh-part="list">
+              <div data-xh-part="item" value="daily">
+                <span data-xh-part="item-text">每天</span>
+                <span data-xh-part="item-indicator"></span>
+              </div>
+              <div data-xh-part="item" value="weekly">
+                <span data-xh-part="item-text">每周</span>
+                <span data-xh-part="item-indicator"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </xh-select>
+    <xh-checkbox>
+      <label data-xh-part="label">
+        <button data-xh-part="root">
+          <span data-xh-part="indicator"></span>
+        </button>
+        <span data-xh-part="text">失败时发通知</span>
+      </label>
+    </xh-checkbox>
     <p data-xh-part="description">关掉总开关，下面两项跟着停用，唯独总开关自己还能点</p>
   </fieldset>
 </xh-fieldset>
@@ -284,8 +369,8 @@ const enabled = ref(false);
 <script type="module">
   const backup = document.getElementById("fieldset-backup");
   const toggle = document.getElementById("fieldset-backup-toggle");
-  toggle.addEventListener("change", () => {
-    backup.disabled = !toggle.checked;
+  toggle.addEventListener("checked-change", (event) => {
+    backup.disabled = event.detail.checked !== true;
   });
 </script>
 ```
@@ -306,13 +391,13 @@ const enabled = ref(false);
 
 ### 特性
 
-- `disabled` 落为原生 `fieldset[disabled]`，组内控件不可聚焦、不可编辑、不参与提交，不需要逐个控件接线。
+- `disabled` 落为原生 `fieldset[disabled]`，同时作为作用域配置压进子树：组内组件库的控件各自拿到 `disabled`，不可聚焦、不可编辑、不参与提交，禁用面也一起到位，不需要逐个控件接线。
 - 说明文字与错误文案自动派生 `id` 并接入根节点的 `aria-describedby`，作者不需要写 `id`。
 - 错误文案带 `role="status"` + `aria-live="polite"`，节点常驻、通过 `hidden` 显隐，`invalid` 翻转时读屏排队播报，不打断当前朗读。整表提交失败时的打断式播报只由 Form 的错误摘要发出。
 - `invalid` 落为根与组标题上的 `data-invalid`，组标题据此转为警示色，同时把错误文案接入描述链并显示。
 - `required` 落为根与组标题上的 `data-required`，组标题的星号由 label 公共层按组标题自己的这一位画。
 - `field-group` 把并排的几个字段圈成一段（宽度足够时自动分栏），`actions` 承载组末尾的按钮行。
-- `disabled` 只作用于原生表单控件：组内 `div` 型控件（滑块、评分等）需要各自接 `disabled`。
+- 作用域禁用只落在组件库的控件上；作者自己写的 `div` 型交互节点不在原生 `fieldset[disabled]` 的管辖内，需要各自接 `disabled`。
 
 ### 组合
 
@@ -435,20 +520,20 @@ const enabled = ref(false);
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-fieldset-actions-gap` | `actions` | `gap` | `default` | `--xh-space-2` | fieldset 的 actions 部件 gap 覆盖槽。 |
-| `--xh-fieldset-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | fieldset 的 description 部件 color 覆盖槽。 |
+| `--xh-fieldset-description-fg` | `description` | `color` | `default` | `--xh-fg-subtle` | fieldset 的 description 部件 color 覆盖槽。 |
 | `--xh-fieldset-description-fg-disabled` | `description` | `color` | `disabled` | `--xh-fg-subtle` | fieldset 的 description 部件 color 覆盖槽。 |
-| `--xh-fieldset-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | fieldset 的 description 部件 font-size 覆盖槽。 |
+| `--xh-fieldset-description-font-size` | `description` | `font-size` | `default` | `--xh-text-caption-size` | fieldset 的 description 部件 font-size 覆盖槽。 |
 | `--xh-fieldset-error-fg` | `error-text` | `color` | `default` | `--xh-fg-danger` | fieldset 的 error-text 部件 color 覆盖槽。 |
-| `--xh-fieldset-error-font-size` | `error-text` | `font-size` | `default` | `--xh-text-secondary-size` | fieldset 的 error-text 部件 font-size 覆盖槽。 |
+| `--xh-fieldset-error-font-size` | `error-text` | `font-size` | `default` | `--xh-text-caption-size` | fieldset 的 error-text 部件 font-size 覆盖槽。 |
 | `--xh-fieldset-field-group-col-w` | `field-group` | `grid-template-columns` | `default` | `--xh-layout-col-min-sm` | fieldset 的 field-group 部件 grid-template-columns 覆盖槽。 |
 | `--xh-fieldset-field-group-gap` | `field-group` | `gap` | `default` | `--xh-space-3` | fieldset 的 field-group 部件 gap 覆盖槽。 |
-| `--xh-fieldset-gap` | `root` | `gap` | `default` | `--xh-space-4` | fieldset 的 root 部件 gap 覆盖槽。 |
-| `--xh-fieldset-legend-fg` | `legend` | `color` | `default` | `--xh-fg-muted` | fieldset 的 legend 部件 color 覆盖槽。 |
+| `--xh-fieldset-gap` | `root` | `margin-block-end` | `where(:not(:last-child)`<br>`where([data-scope='fieldset'][data-part='root'])` | `--xh-space-5` | fieldset 的 root 部件 margin-block-end 覆盖槽。 |
+| `--xh-fieldset-legend-fg` | `legend` | `color` | `default` | `--xh-fg-default` | fieldset 的 legend 部件 color 覆盖槽。 |
 | `--xh-fieldset-legend-fg-disabled` | `legend`<br>`root` | `color` | `disabled` | `--xh-fg-subtle` | fieldset 的 legend、root 部件 color 覆盖槽。 |
 | `--xh-fieldset-legend-fg-invalid` | `legend` | `color` | `invalid` | `--xh-fg-danger` | fieldset 的 legend 部件 color 覆盖槽。 |
-| `--xh-fieldset-legend-font-size` | `legend` | `font-size` | `default` | `--xh-text-label-size` | fieldset 的 legend 部件 font-size 覆盖槽。 |
-| `--xh-fieldset-legend-font-weight` | `legend` | `font-weight` | `default` | `--xh-text-label-weight` | fieldset 的 legend 部件 font-weight 覆盖槽。 |
-| `--xh-fieldset-legend-gap` | `legend` | `margin-block-end` | `default` | `--xh-space-2` | fieldset 的 legend 部件 margin-block-end 覆盖槽。 |
+| `--xh-fieldset-legend-font-size` | `legend` | `font-size` | `default` | `--xh-text-heading-3-size` | fieldset 的 legend 部件 font-size 覆盖槽。 |
+| `--xh-fieldset-legend-font-weight` | `legend` | `font-weight` | `default` | `--xh-text-heading-3-weight` | fieldset 的 legend 部件 font-weight 覆盖槽。 |
+| `--xh-fieldset-legend-gap` | `legend` | `margin-block-end` | `default` | `--xh-space-4` | fieldset 的 legend 部件 margin-block-end 覆盖槽。 |
 | `--xh-fieldset-legend-star` | `legend` | `color` | `required` | `--xh-fg-danger` | fieldset 的 legend 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

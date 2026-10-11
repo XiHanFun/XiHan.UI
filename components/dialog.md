@@ -108,10 +108,8 @@ const open = ref(false);
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <XhButton variant="solid" @click="open = true">打开</XhButton>
-    <span>当前：{{ open ? "展开" : "收起" }}</span>
-  </div>
+  <XhButton variant="solid" @click="open = true">打开</XhButton>
+  <span data-demo-output>当前：{{ open ? "展开" : "收起" }}</span>
 
   <XhDialogRoot v-model:open="open" :translations="{ close: '关闭' }">
     <XhDialogContent>
@@ -126,12 +124,10 @@ const open = ref(false);
 ```
 
 ```html
-<div style="display: flex; align-items: center; gap: 12px">
-  <xh-button variant="solid">
-    <button data-xh-part="root" id="dialog-controlled-open">打开</button>
-  </xh-button>
-  <span>当前：<span id="dialog-controlled-state">收起</span></span>
-</div>
+<xh-button variant="solid">
+  <button data-xh-part="root" id="dialog-controlled-open">打开</button>
+</xh-button>
+<span data-demo-output>当前：<span id="dialog-controlled-state">收起</span></span>
 
 <xh-dialog id="dialog-controlled" open="false">
   <div data-xh-part="backdrop"></div>
@@ -482,59 +478,55 @@ function submit() {
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <XhDialogRoot
-      v-model:open="open"
-      :close-on-escape="!submitting"
-      :close-on-interact-outside="!submitting"
-    >
-      <XhDialogTrigger>归档这个项目</XhDialogTrigger>
-      <XhDialogContent>
-        <XhDialogTitle>归档项目</XhDialogTitle>
-        <XhDialogDescription>
-          {{ submitting ? "正在归档，先别走开。" : "归档后项目转为只读，随时可以恢复。" }}
-        </XhDialogDescription>
-        <div style="display: flex; justify-content: flex-end; gap: 8px">
-          <XhButton variant="ghost" :disabled="submitting" @click="open = false">
-            取消
-          </XhButton>
-          <XhButton variant="solid" :loading="submitting" @click="submit">
-            <XhButtonIndicator />
-            <XhButtonLabel>{{ submitting ? "归档中" : "确认归档" }}</XhButtonLabel>
-          </XhButton>
-        </div>
-      </XhDialogContent>
-    </XhDialogRoot>
-    <span>{{ archived ? "已归档" : "未归档" }}</span>
-  </div>
+  <XhDialogRoot
+    v-model:open="open"
+    :close-on-escape="!submitting"
+    :close-on-interact-outside="!submitting"
+  >
+    <XhDialogTrigger>归档这个项目</XhDialogTrigger>
+    <XhDialogContent>
+      <XhDialogTitle>归档项目</XhDialogTitle>
+      <XhDialogDescription>
+        {{ submitting ? "正在归档，先别走开。" : "归档后项目转为只读，随时可以恢复。" }}
+      </XhDialogDescription>
+      <div style="display: flex; justify-content: flex-end; gap: 8px">
+        <XhButton variant="ghost" :disabled="submitting" @click="open = false">
+          取消
+        </XhButton>
+        <XhButton variant="solid" :loading="submitting" @click="submit">
+          <XhButtonIndicator />
+          <XhButtonLabel>{{ submitting ? "归档中" : "确认归档" }}</XhButtonLabel>
+        </XhButton>
+      </div>
+    </XhDialogContent>
+  </XhDialogRoot>
+  <span data-demo-output>项目状态：{{ archived ? "已归档" : "未归档" }}</span>
 </template>
 ```
 
 ```html
-<div style="display: flex; align-items: center; gap: 12px">
-  <xh-dialog id="dialog-async" open="false">
-    <button data-xh-part="trigger">归档这个项目</button>
-    <div data-xh-part="backdrop"></div>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <h2 data-xh-part="title">归档项目</h2>
-        <p data-xh-part="description">归档后项目转为只读，随时可以恢复。</p>
-        <div style="display: flex; justify-content: flex-end; gap: 8px">
-          <xh-button variant="ghost" id="dialog-async-cancel">
-            <button data-xh-part="root">取消</button>
-          </xh-button>
-          <xh-button variant="solid" id="dialog-async-submit">
-            <button data-xh-part="root">
-              <span data-xh-part="indicator"></span>
-              <span data-xh-part="label">确认归档</span>
-            </button>
-          </xh-button>
-        </div>
+<xh-dialog id="dialog-async" open="false">
+  <button data-xh-part="trigger">归档这个项目</button>
+  <div data-xh-part="backdrop"></div>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <h2 data-xh-part="title">归档项目</h2>
+      <p data-xh-part="description">归档后项目转为只读，随时可以恢复。</p>
+      <div style="display: flex; justify-content: flex-end; gap: 8px">
+        <xh-button variant="ghost" id="dialog-async-cancel">
+          <button data-xh-part="root">取消</button>
+        </xh-button>
+        <xh-button variant="solid" id="dialog-async-submit">
+          <button data-xh-part="root">
+            <span data-xh-part="indicator"></span>
+            <span data-xh-part="label">确认归档</span>
+          </button>
+        </xh-button>
       </div>
     </div>
-  </xh-dialog>
-  <span id="dialog-async-state">未归档</span>
-</div>
+  </div>
+</xh-dialog>
+<span data-demo-output>项目状态：<span id="dialog-async-state">未归档</span></span>
 
 <script type="module">
   const dialog = document.getElementById("dialog-async");
@@ -597,7 +589,7 @@ import {
   XhDialogRoot,
   XhDialogTitle,
 } from "@xihan-ui/vue";
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 
 interface Spec {
   id: number;
@@ -611,6 +603,9 @@ const specs = reactive<Spec[]>([]);
 const current = ref<Spec | null>(null);
 const open = ref(false);
 let seq = 0;
+
+// 表里每个描述符一段，合成一行
+const summary = computed(() => `描述符表：${specs.map(spec => `${spec.title}（${spec.loading ? "提交中" : "空闲"}）`).join(" · ") || "（空）"}`);
 
 // 一行调用：造描述符、入表、置为当前并展开，最后把它交回调用方
 function ask(title: string, text: string): Spec {
@@ -640,88 +635,74 @@ function submit(): void {
 </script>
 
 <template>
-  <div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-    <div style="display: flex; flex-wrap: wrap; gap: 8px">
-      <XhButton variant="solid" @click="ask('删除工作区', '删除后 30 天内还能恢复。')">
-        删除工作区
-      </XhButton>
-      <XhButton
-        variant="outline"
-        @click="ask('导出数据', '导出任务在后台跑，完成后发一条通知。')"
-      >
-        导出数据
-      </XhButton>
-    </div>
-
-    <ol style="display: grid; gap: 4px; margin: 0; padding-inline-start: 20px">
-      <li v-for="spec in specs" :key="spec.id">
-        {{ spec.title }} — {{ spec.loading ? "提交中" : "空闲" }}
-      </li>
-      <li v-if="specs.length === 0">（还没有描述符）</li>
-    </ol>
-
-    <XhDialogRoot
-      v-model:open="open"
-      :close-on-escape="!current?.loading"
-      :close-on-interact-outside="!current?.loading"
+  <div style="display: flex; flex-wrap: wrap; gap: 8px">
+    <XhButton variant="solid" @click="ask('删除工作区', '删除后 30 天内还能恢复。')">
+      删除工作区
+    </XhButton>
+    <XhButton
+      variant="outline"
+      @click="ask('导出数据', '导出任务在后台跑，完成后发一条通知。')"
     >
-      <XhDialogContent v-if="current">
-        <XhDialogTitle>{{ current.title }}</XhDialogTitle>
-        <XhDialogDescription>{{ current.text }}</XhDialogDescription>
-        <div style="display: flex; justify-content: flex-end; gap: 8px">
-          <XhButton variant="ghost" :disabled="current.loading" @click="open = false">
-            取消
-          </XhButton>
-          <XhButton variant="solid" :loading="current.loading" @click="submit">
-            <XhButtonIndicator />
-            <XhButtonLabel>{{ current.confirmLabel }}</XhButtonLabel>
-          </XhButton>
-        </div>
-      </XhDialogContent>
-    </XhDialogRoot>
+      导出数据
+    </XhButton>
   </div>
+
+  <span data-demo-output :title="summary">{{ summary }}</span>
+
+  <XhDialogRoot
+    v-model:open="open"
+    :close-on-escape="!current?.loading"
+    :close-on-interact-outside="!current?.loading"
+  >
+    <XhDialogContent v-if="current">
+      <XhDialogTitle>{{ current.title }}</XhDialogTitle>
+      <XhDialogDescription>{{ current.text }}</XhDialogDescription>
+      <div style="display: flex; justify-content: flex-end; gap: 8px">
+        <XhButton variant="ghost" :disabled="current.loading" @click="open = false">
+          取消
+        </XhButton>
+        <XhButton variant="solid" :loading="current.loading" @click="submit">
+          <XhButtonIndicator />
+          <XhButtonLabel>{{ current.confirmLabel }}</XhButtonLabel>
+        </XhButton>
+      </div>
+    </XhDialogContent>
+  </XhDialogRoot>
 </template>
 ```
 
 ```html
-<div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-  <div style="display: flex; flex-wrap: wrap; gap: 8px">
-    <xh-button variant="solid" id="dialog-imperative-remove">
-      <button data-xh-part="root">删除工作区</button>
-    </xh-button>
-    <xh-button variant="outline" id="dialog-imperative-export">
-      <button data-xh-part="root">导出数据</button>
-    </xh-button>
-  </div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+  <xh-button variant="solid" id="dialog-imperative-remove">
+    <button data-xh-part="root">删除工作区</button>
+  </xh-button>
+  <xh-button variant="outline" id="dialog-imperative-export">
+    <button data-xh-part="root">导出数据</button>
+  </xh-button>
+</div>
 
-  <ol
-    id="dialog-imperative-specs"
-    style="display: grid; gap: 4px; margin: 0; padding-inline-start: 20px"
-  >
-    <li>（还没有描述符）</li>
-  </ol>
+<span id="dialog-imperative-specs" data-demo-output>描述符表：（空）</span>
 
-  <xh-dialog id="dialog-imperative" open="false">
-    <div data-xh-part="backdrop"></div>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <h2 data-xh-part="title"></h2>
-        <p data-xh-part="description"></p>
-        <div style="display: flex; justify-content: flex-end; gap: 8px">
-          <xh-button variant="ghost" id="dialog-imperative-cancel">
-            <button data-xh-part="root">取消</button>
-          </xh-button>
-          <xh-button variant="solid" id="dialog-imperative-ok">
-            <button data-xh-part="root">
-              <span data-xh-part="indicator"></span>
-              <span data-xh-part="label">确认</span>
-            </button>
-          </xh-button>
-        </div>
+<xh-dialog id="dialog-imperative" open="false">
+  <div data-xh-part="backdrop"></div>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <h2 data-xh-part="title"></h2>
+      <p data-xh-part="description"></p>
+      <div style="display: flex; justify-content: flex-end; gap: 8px">
+        <xh-button variant="ghost" id="dialog-imperative-cancel">
+          <button data-xh-part="root">取消</button>
+        </xh-button>
+        <xh-button variant="solid" id="dialog-imperative-ok">
+          <button data-xh-part="root">
+            <span data-xh-part="indicator"></span>
+            <span data-xh-part="label">确认</span>
+          </button>
+        </xh-button>
       </div>
     </div>
-  </xh-dialog>
-</div>
+  </div>
+</xh-dialog>
 
 <script type="module">
   const dialog = document.getElementById("dialog-imperative");
@@ -730,7 +711,7 @@ function submit(): void {
   const cancel = document.getElementById("dialog-imperative-cancel");
   const ok = document.getElementById("dialog-imperative-ok");
   const label = ok.querySelector('[data-xh-part="label"]');
-  const list = document.getElementById("dialog-imperative-specs");
+  const table = document.getElementById("dialog-imperative-specs");
 
   const specs = [];
   let current = null;
@@ -753,7 +734,7 @@ function submit(): void {
     return spec;
   }
 
-  // 对话框与下面那张表都照当前描述符重画
+  // 对话框与描述符表都照当前描述符重画；表里每个描述符一段，合成一行
   function render() {
     if (current) {
       title.textContent = current.title;
@@ -763,15 +744,10 @@ function submit(): void {
       cancel.disabled = current.loading;
     }
     const rows = specs.map(
-      (spec) => `${spec.title} — ${spec.loading ? "提交中" : "空闲"}`,
+      (spec) => `${spec.title}（${spec.loading ? "提交中" : "空闲"}）`,
     );
-    list.replaceChildren(
-      ...(rows.length === 0 ? ["（还没有描述符）"] : rows).map((line) => {
-        const li = document.createElement("li");
-        li.textContent = line;
-        return li;
-      }),
-    );
+    table.textContent = `描述符表：${rows.join(" · ") || "（空）"}`;
+    table.title = table.textContent;
   }
 
   // 改的是描述符本身，对话框跟着变
@@ -924,8 +900,8 @@ async function remove(): Promise<void> {
     >
       error 告知框
     </XhButton>
-    <span>上次答复：{{ lastAnswer }}</span>
   </div>
+  <span data-demo-output>上次答复：{{ lastAnswer }}</span>
 </template>
 ```
 
@@ -937,8 +913,8 @@ async function remove(): Promise<void> {
   <xh-button id="dialog-service-error" variant="outline">
     <button data-xh-part="root">error 告知框</button>
   </xh-button>
-  <span id="dialog-service-answer">上次答复：（还没问过）</span>
 </div>
+<span id="dialog-service-answer" data-demo-output>上次答复：（还没问过）</span>
 
 <script type="module">
   import { createDialogService } from "@xihan-ui/web-components/services";
@@ -983,7 +959,7 @@ async function remove(): Promise<void> {
 - `closeOnEscape` 与 `closeOnInteractOutside` 可分别关闭，避免填写中的表单因误点外部而丢失。
 - 内容区可以内部滚动。Body 是模态滚动面：滚到头不带动页面，内容高度变化时保留稳定的滚动条空道。
 - `draggable` 让面板可以挪走：指针按住标题栏（header，没写 header 时是 title）即跟手，落在标题栏里的按钮、链接与表单控件照常点；面板四边始终夹在视口内，每次打开都从居中落点起。键盘经 `drag-trigger` 挪：它是一块透明的把手，放在 header 里时铺满标题栏，焦点落在它上面时方向键挪一步（10px）、Shift 挪一大步（50px）、Enter / Space 回到居中；初始焦点越过它，落到第一个真正的控件上。位移写成 content 上的两个私有槽、按 transform 平移，与进出场的 translate / scale 叠加，拖过的面板从拖到的位置退场。Web Components 侧的属性是 `panel-draggable`：`draggable` 是 HTML 全局属性，写在宿主上会把它变成原生拖放源。
-- 面板走 M4 sheet 三件套（描边、不透明底、投影）。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`。标题为 heading-3，说明文字为 13px 说明档。
+- 面板走 sheet 三件套（1px 描边、不透明底、单层投影），圆角 4px，不叠渐变与顶光。分三段时头部是一条 48px 的带（紧凑档 44px），横向内衬 20px；正文纵 24 横 20，尾段纵 16 横 20；头下、尾上各一条贴边的 1px 内部分隔线。不分三段时标题行同样落在顶上那条 48px 带的中线上。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`。关闭钮的叉 12px，距右 16px、落在头部带的中线上。标题取页面级面板标题档（heading-3）、正文色，说明文字为 13px 说明档。
 - 关闭时内容立即失活并退出可访问树，内容与遮罩的有限退场动画全部完成后再释放模态资源，并发出 `onExitComplete` / `exit-complete`。重开撤销旧退出，卸载立即清理。
 - 内容第一次打开才挂载，缺省在退场动画播完后卸载、下次打开重新挂载。反复开合而内容又重时（设置面板、长表单）把 `unmountOnExit` 设为 false：打开过之后收起只隐藏——定位层以内联 `display: none` 收起、遮罩不留、Portal 视觉桥断开——面板里的组件状态、输入与滚动位置都留着，再打开不必重挂。Web Components 的作者节点一向常驻；写进 content 里一个 `<template>` 的内容按同一规则挂卸：第一次打开克隆，缺省退场播完撤走，`unmount-on-exit="false"` 时克隆一次之后常驻。
 - 另有命令式服务，业务代码一次调用即可弹出。
@@ -1197,7 +1173,9 @@ async function remove(): Promise<void> {
 | `--xh-dialog-backdrop-blur` | `backdrop` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `variant=blur` | `--xh-overlay-backdrop-blur` | dialog 的 backdrop 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-dialog-backdrop-filter` | `backdrop`<br>`content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default`<br>`variant=blur` | `--xh-dialog-backdrop-blur`<br>`--xh-material-elevated-backdrop` | dialog 的 backdrop、content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-dialog-backdrop-layer` | `backdrop` | `z-index` | `default` | `--xh-_layer` | dialog 的 backdrop 部件 z-index 覆盖槽。 |
-| `--xh-dialog-bg` | `content` | `background` | `@media (forced-colors: active)`<br>`default` | `--xh-material-elevated-bg` | dialog 的 content 部件 background 覆盖槽。 |
+| `--xh-dialog-bg` | `content` | `background` | `default` | `--xh-material-elevated-bg` | dialog 的 content 部件 background 覆盖槽。 |
+| `--xh-dialog-body-px` | `body` | `padding-inline` | `default` | `--xh-overlay-sheet-px` | dialog 的 body 部件 padding-inline 覆盖槽。 |
+| `--xh-dialog-body-py` | `body` | `padding-block` | `default` | `--xh-overlay-sheet-body-py` | dialog 的 body 部件 padding-block 覆盖槽。 |
 | `--xh-dialog-border` | `content` | `border` | `default` | `--xh-material-elevated-border` | dialog 的 content 部件 border 覆盖槽。 |
 | `--xh-dialog-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | dialog 的 close-trigger 部件 background-color 覆盖槽。 |
 | `--xh-dialog-close-bg-focus` | `close-trigger` | `background-color` | `focus-visible` | `--xh-_action-variant-bg-focus-visible` | dialog 的 close-trigger 部件 background-color 覆盖槽。 |
@@ -1206,10 +1184,8 @@ async function remove(): Promise<void> {
 | `--xh-dialog-close-fg-focus` | `close-trigger` | `color` | `focus-visible` | `--xh-dialog-close-fg-hover` | dialog 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-dialog-close-fg-hover` | `close-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed` | dialog 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-dialog-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | dialog 的 close-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-dialog-close-size` | `close-trigger`<br>`content`<br>`title` | `block-size`<br>`inline-size`<br>`padding-inline-end` | `default`<br>`has([data-scope='dialog'][data-part='close-trigger'])`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size`<br>`--xh-control-h-sm` | dialog 的 close-trigger、content、title 部件 block-size、inline-size、padding-inline-end 覆盖槽。 |
+| `--xh-dialog-close-size` | `close-trigger`<br>`content`<br>`title` | `block-size`<br>`inline-size`<br>`inset-block-start`<br>`padding-inline-end` | `default`<br>`has([data-scope='dialog'][data-part='close-trigger'])`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size`<br>`--xh-control-h-sm` | dialog 的 close-trigger、content、title 部件 block-size、inline-size、inset-block-start、padding-inline-end 覆盖槽。 |
 | `--xh-dialog-content-backdrop-filter` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-dialog-backdrop-filter` | dialog 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
-| `--xh-dialog-content-lens-bg` | `content` | `background` | `default` | `--xh-dialog-header-bg` | dialog 的 content 部件 background 覆盖槽。 |
-| `--xh-dialog-content-lens-depth` | `content` | `background` | `default` | `--xh-dialog-header-lens-depth` | dialog 的 content 部件 background 覆盖槽。 |
 | `--xh-dialog-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | dialog 的 description 部件 color 覆盖槽。 |
 | `--xh-dialog-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | dialog 的 description 部件 font-size 覆盖槽。 |
 | `--xh-dialog-drag-trigger-min-h` | `drag-trigger` | `min-block-size` | `default` | `--xh-space-6` | dialog 的 drag-trigger 部件 min-block-size 覆盖槽。 |
@@ -1217,13 +1193,14 @@ async function remove(): Promise<void> {
 | `--xh-dialog-fg` | `content` | `color` | `default` | `--xh-material-elevated-fg` | dialog 的 content 部件 color 覆盖槽。 |
 | `--xh-dialog-footer-gap` | `footer` | `gap` | `default` | `--xh-control-gap-md` | dialog 的 footer 部件 gap 覆盖槽。 |
 | `--xh-dialog-footer-pt` | `footer` | `padding-block-start` | `default` | `--xh-space-2` | dialog 的 footer 部件 padding-block-start 覆盖槽。 |
+| `--xh-dialog-footer-px` | `content`<br>`footer` | `padding-inline` | `has([data-scope='dialog'][data-part='body'])` | `--xh-overlay-sheet-px` | dialog 的 content、footer 部件 padding-inline 覆盖槽。 |
+| `--xh-dialog-footer-py` | `content`<br>`footer` | `padding-block` | `has([data-scope='dialog'][data-part='body'])` | `--xh-overlay-sheet-footer-py` | dialog 的 content、footer 部件 padding-block 覆盖槽。 |
 | `--xh-dialog-gap` | `content` | `gap` | `default` | `--xh-stack-gap-md` | dialog 的 content 部件 gap 覆盖槽。 |
-| `--xh-dialog-header-bg` | `content` | `background` | `default` | `--xh-material-elevated-bg` | dialog 的 content 部件 background 覆盖槽。 |
 | `--xh-dialog-header-gap` | `header` | `gap` | `default` | `--xh-stack-gap-sm` | dialog 的 header 部件 gap 覆盖槽。 |
-| `--xh-dialog-header-lens-depth` | `content` | `background` | `default` | `--xh-dialog-py` | dialog 的 content 部件 background 覆盖槽。 |
-| `--xh-dialog-header-pb` | `header` | `padding-block-end` | `default` | `--xh-space-2` | dialog 的 header 部件 padding-block-end 覆盖槽。 |
-| `--xh-dialog-highlight` | `content` | `background` | `default` | `--xh-material-elevated-highlight` | dialog 的 content 部件 background 覆盖槽。 |
-| `--xh-dialog-icon-size` | `close-trigger`<br>`content`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | dialog 的 close-trigger、content、trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-dialog-header-pb` | `content`<br>`header` | `padding-block-end` | `default`<br>`has([data-scope='dialog'][data-part='body'])` | `--xh-_dialog-header-pb`<br>`--xh-space-2` | dialog 的 content、header 部件 padding-block-end 覆盖槽。 |
+| `--xh-dialog-header-pt` | `content`<br>`header` | `padding-block-start` | `has([data-scope='dialog'][data-part='body'])` | `--xh-_dialog-header-pt` | dialog 的 content、header 部件 padding-block-start 覆盖槽。 |
+| `--xh-dialog-header-px` | `content`<br>`header` | `padding-inline` | `has([data-scope='dialog'][data-part='body'])` | `--xh-overlay-sheet-px` | dialog 的 content、header 部件 padding-inline 覆盖槽。 |
+| `--xh-dialog-icon-size` | `close-trigger`<br>`content`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-xs` | dialog 的 close-trigger、content、trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-dialog-indicator-bg` | `indicator` | `background` | `default` | `--xh-_tone-subtle` | dialog 的 indicator 部件 background 覆盖槽。 |
 | `--xh-dialog-indicator-fg` | `indicator` | `color` | `default` | `--xh-_tone-fg` | dialog 的 indicator 部件 color 覆盖槽。 |
 | `--xh-dialog-indicator-mark-size` | `indicator` | `--xh-icon-size` | `default` | `--xh-dialog-indicator-size` | dialog 的 indicator 部件 --xh-icon-size 覆盖槽。 |
@@ -1232,8 +1209,8 @@ async function remove(): Promise<void> {
 | `--xh-dialog-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | dialog 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-dialog-max-w` | `content` | `max-inline-size` | `default` | `--xh-_dialog-max-w` | dialog 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-dialog-positioner-padding` | `positioner` | `padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default` | `--xh-space-4` | dialog 的 positioner 部件 padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
-| `--xh-dialog-px` | `content` | `padding-inline` | `default` | `--xh-surface-px-md` | dialog 的 content 部件 padding-inline 覆盖槽。 |
-| `--xh-dialog-py` | `content` | `background`<br>`padding-block` | `default` | `--xh-surface-py-md` | dialog 的 content 部件 background、padding-block 覆盖槽。 |
+| `--xh-dialog-px` | `content` | `padding-inline` | `default` | `--xh-overlay-sheet-px` | dialog 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-dialog-py` | `content` | `padding-block-end`<br>`padding-block-start` | `default` | `--xh-_dialog-header-pt`<br>`--xh-overlay-sheet-body-py` | dialog 的 content 部件 padding-block-end、padding-block-start 覆盖槽。 |
 | `--xh-dialog-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | dialog 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-dialog-separator` | `content`<br>`footer`<br>`header` | `border-block-end`<br>`border-block-start` | `has([data-scope='dialog'][data-part='body'])`<br>`has([data-scope='dialog'][data-part='footer'])` | `--xh-material-elevated-separator` | dialog 的 content、footer、header 部件 border-block-end、border-block-start 覆盖槽。 |
 | `--xh-dialog-shadow` | `content` | `box-shadow` | `default` | `--xh-material-elevated-shadow` | dialog 的 content 部件 box-shadow 覆盖槽。 |

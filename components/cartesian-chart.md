@@ -2809,6 +2809,110 @@ const valueAxis = { fit: "window", minSize: 64 } as const;
 </script>
 ```
 
+### 配色方案
+
+祖先写上 data-xh-chart-palette 整套换掉分类色槽：主题单色随品牌色由深到浅，柔和品牌、莫兰迪柔彩各是一套；写在 html 上即全站生效
+
+```vue
+<script setup lang="ts">
+import { XhCartesianChartRoot, XhRadioGroupRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const quarters = [
+  { quarter: "一季度", north: 42, east: 51, south: 38, west: 26 },
+  { quarter: "二季度", north: 48, east: 56, south: 41, west: 30 },
+  { quarter: "三季度", north: 45, east: 62, south: 47, west: 33 },
+  { quarter: "四季度", north: 57, east: 68, south: 52, west: 37 },
+];
+
+const schemes = [
+  { value: "categorical", label: "多彩分类" },
+  { value: "monochrome", label: "主题单色" },
+  { value: "brand", label: "柔和品牌" },
+  { value: "muted", label: "莫兰迪柔彩" },
+];
+
+const scheme = ref<string | null>("monochrome");
+</script>
+
+<template>
+  <div style="display: grid; gap: var(--xh-space-3); justify-items: start; width: 100%">
+    <XhRadioGroupRoot v-model:value="scheme" variant="segmented" :collection="schemes" aria-label="配色方案" />
+    <div :data-xh-chart-palette="scheme ?? undefined" style="width: 100%">
+      <XhCartesianChartRoot
+        :data="quarters"
+        :series="[
+          { mark: 'bar', x: 'quarter', y: 'north', name: '华北' },
+          { mark: 'bar', x: 'quarter', y: 'east', name: '华东' },
+          { mark: 'bar', x: 'quarter', y: 'south', name: '华南' },
+          { mark: 'bar', x: 'quarter', y: 'west', name: '西部' },
+        ]"
+      >
+        <template #caption>
+          各区域季度销售额（万元）
+        </template>
+      </XhCartesianChartRoot>
+    </div>
+  </div>
+</template>
+```
+
+```html
+<div style="display: grid; gap: var(--xh-space-3); justify-items: start; width: 100%">
+  <xh-radio-group id="cartesian-chart-palette-choice" variant="segmented" default-value="monochrome">
+    <div data-xh-part="root" aria-label="配色方案">
+      <span data-xh-part="thumb"></span>
+      <div data-xh-part="item" value="categorical">
+        <span data-xh-part="item-text">多彩分类</span>
+      </div>
+      <div data-xh-part="item" value="monochrome">
+        <span data-xh-part="item-text">主题单色</span>
+      </div>
+      <div data-xh-part="item" value="brand">
+        <span data-xh-part="item-text">柔和品牌</span>
+      </div>
+      <div data-xh-part="item" value="muted">
+        <span data-xh-part="item-text">莫兰迪柔彩</span>
+      </div>
+    </div>
+  </xh-radio-group>
+  <div id="cartesian-chart-palette-host" data-xh-chart-palette="monochrome" style="width: 100%">
+    <xh-cartesian-chart id="cartesian-chart-palette">
+      <figure data-xh-part="root">
+        <figcaption data-xh-part="caption">各区域季度销售额（万元）</figcaption>
+        <div data-xh-part="legend"></div>
+        <div data-xh-part="viewport">
+          <svg data-xh-part="plot"></svg>
+          <div data-xh-part="empty"></div>
+        </div>
+        <div data-xh-part="tooltip"></div>
+      </figure>
+    </xh-cartesian-chart>
+  </div>
+</div>
+
+<script type="module">
+  const chart = document.getElementById("cartesian-chart-palette");
+  const host = document.getElementById("cartesian-chart-palette-host");
+  chart.data = [
+    { quarter: "一季度", north: 42, east: 51, south: 38, west: 26 },
+    { quarter: "二季度", north: 48, east: 56, south: 41, west: 30 },
+    { quarter: "三季度", north: 45, east: 62, south: 47, west: 33 },
+    { quarter: "四季度", north: 57, east: 68, south: 52, west: 37 },
+  ];
+  chart.series = [
+    { mark: "bar", x: "quarter", y: "north", name: "华北" },
+    { mark: "bar", x: "quarter", y: "east", name: "华东" },
+    { mark: "bar", x: "quarter", y: "south", name: "华南" },
+    { mark: "bar", x: "quarter", y: "west", name: "西部" },
+  ];
+  // 配色方案是环境属性：写在任意祖先上，其中的图表一起换色
+  document.getElementById("cartesian-chart-palette-choice").addEventListener("value-change", (event) => {
+    host.setAttribute("data-xh-chart-palette", event.detail.value);
+  });
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -2885,7 +2989,7 @@ const valueAxis = { fit: "window", minSize: 64 } as const;
 - `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`，不闪骨架，也不跳布局。首次取数、手里还没有数据时，空态写 `translations.loadingText`（缺省 Loading…）并转一个圈，取完仍没有数据才写 `emptyText`。
 - 首次出现时播放入场：柱沿数值轴从基线长出，折线从头描到尾，数据点等笔尖扫到才出现，面积、坐标轴与标签淡入，多个系列按图例次序错开（至多 5 步）。数据层的标记多于 1000 个时不做几何插值，只淡入淡出。数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场，空态里已画出的坐标轴从原处移到新刻度，不重新淡入。之后的数据变化与图例切换从当前位置插值到新位置：留下的柱原地伸缩，新增的柱从基线长出，隐藏的系列收回基线并淡出后才移除；坐标轴刻度随之移动，数据标签、合计与线尾标签上的数从旧值滚到新值。标记按自变量的值对齐而不是按位置：类目换了次序时柱滑到新位置，时间序列往后推一格时整条线平移、新点从边上进来。`pending` 结束后到来的新数据按更新处理，不再重播入场。
 - `animated={false}`（Web Components 写 `animated="false"`）关闭过渡，数据一变直接画终态。系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。视口尺寸变化与字体加载完成后的重排不播过渡。
-- 过渡的快慢由动效令牌决定，组件从绘图区的计算样式读取：入场取 `--xh-motion-duration-reveal`（缺省 640ms），数据更新与图例切换取 `--xh-motion-duration-morph`（缺省 400ms）。在图或它的容器上改写它们，例如 `style="--xh-motion-duration-reveal: 1s"`，只影响这张图；入场的曲线取 `--xh-motion-ease-enter-strong`，更新取 `--xh-motion-ease-continuous`。折线的描出与入场同一个时长。
+- 过渡的快慢由动效令牌决定，组件从绘图区的计算样式读取：入场取 `--xh-motion-duration-reveal`（缺省 960ms），数据更新与图例切换取 `--xh-motion-duration-morph`（缺省 400ms）。在图或它的容器上改写它们，例如 `style="--xh-motion-duration-reveal: 1s"`，只影响这张图；入场的曲线取 `--xh-motion-ease-enter`，更新取 `--xh-motion-ease-continuous`。折线的描出与入场同一个时长。
 - 没有数据或全部系列被隐藏时显示空态，文字取 `translations.emptyText`；坐标轴在全部隐藏时保留，图例仍可把系列点回来。
 - 多张图接到同一个受控的 `activeKey` 上时，十字准线与提示框在同一个键上一起指示。从外部写入的键不触发 `onDatumActive`，只有本图上的指针与键盘才触发，联动不会来回回调。
 - `onDatumPress` 只报告被点击或按下 Enter / Space 的数据，图表不内建选中态。

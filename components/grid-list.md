@@ -56,7 +56,7 @@ const message = ref("尚未执行行内操作");
         </XhGridListRowActions>
       </XhGridListRow>
     </XhGridListRoot>
-    <span data-label>已选：{{ selected.join("、") }}；{{ message }}</span>
+    <span data-demo-output>已选：{{ selected.join("、") }}；{{ message }}</span>
   </div>
 </template>
 ```
@@ -83,21 +83,28 @@ const message = ref("尚未执行行内操作");
       </div>
     </div>
   </xh-grid-list>
-  <span id="grid-list-basic-readout" data-label>已选：docs；尚未执行行内操作</span>
+  <span id="grid-list-basic-readout" data-demo-output>已选：docs；尚未执行行内操作</span>
 </div>
 
 <script type="module">
   const host = document.getElementById("grid-list-basic");
   const readout = document.getElementById("grid-list-basic-readout");
-  host.value = ["docs"];
+  let selected = ["docs"];
+  let message = "尚未执行行内操作";
+  const render = () => {
+    readout.textContent = `已选：${selected.join("、")}；${message}`;
+  };
+  host.value = selected;
   host.addEventListener("value-change", (event) => {
-    host.value = event.detail.value;
-    readout.textContent = "已选：" + event.detail.value.join("、");
+    selected = event.detail.value;
+    host.value = selected;
+    render();
   });
   for (const button of host.querySelectorAll('[data-xh-part="row-action"]')) {
     button.addEventListener("click", () => {
       const row = button.closest('[data-xh-part="row"]');
-      readout.textContent = "编辑 " + row.querySelector('[data-xh-part="row-text"]').textContent;
+      message = `编辑 ${row.querySelector('[data-xh-part="row-text"]').textContent}`;
+      render();
     });
   }
 </script>
@@ -142,7 +149,7 @@ const selected = ref<string[]>(["read"]);
         <XhGridListRowContent><XhGridListRowText>{{ item.label }}</XhGridListRowText></XhGridListRowContent>
       </XhGridListRow>
     </XhGridListRoot>
-    <span data-label>权限：{{ selected.join("、") || "无" }}</span>
+    <span data-demo-output>权限：{{ selected.join("、") || "无" }}</span>
   </div>
 </template>
 ```
@@ -156,7 +163,7 @@ const selected = ref<string[]>(["read"]);
       <div data-xh-part="row" value="deploy" disabled><span data-xh-part="row-selection-indicator"></span><div data-xh-part="row-content"><span data-xh-part="row-text">发布</span></div></div>
     </div>
   </xh-grid-list>
-  <span id="grid-list-multiple-readout" data-label>权限：read</span>
+  <span id="grid-list-multiple-readout" data-demo-output>权限：read</span>
 </div>
 <script type="module">
   const host = document.getElementById("grid-list-multiple");
@@ -283,7 +290,7 @@ const result = ref("等待操作");
         </XhGridListRowActions>
       </XhGridListRow>
     </XhGridListRoot>
-    <span data-label>{{ result }}</span>
+    <span data-demo-output>{{ result }}</span>
   </div>
 </template>
 ```
@@ -297,7 +304,7 @@ const result = ref("等待操作");
       <div data-xh-part="row" value="archive"><div data-xh-part="row-content"><span data-xh-part="row-text">归档项目</span></div><div data-xh-part="row-actions"><button data-xh-part="row-action">说明</button></div></div>
     </div>
   </xh-grid-list>
-  <span id="grid-list-actions-readout" data-label>等待操作</span>
+  <span id="grid-list-actions-readout" data-demo-output>等待操作</span>
 </div>
 <script type="module">
   const host = document.getElementById("grid-list-actions");
@@ -585,7 +592,7 @@ const result = ref("等待操作");
 | `--xh-grid-list-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | grid-list 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-grid-list-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | grid-list 的 label 部件 color 覆盖槽。 |
 | `--xh-grid-list-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | grid-list 的 label 部件 font-size 覆盖槽。 |
-| `--xh-grid-list-label-font-weight` | `label` | `font-weight` | `default` | `--xh-font-weight-semibold` | grid-list 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-grid-list-label-font-weight` | `label` | `font-weight` | `default` | `--xh-font-weight-medium` | grid-list 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-grid-list-label-px` | `label` | `padding-inline` | `default` | `--xh-control-px-md` | grid-list 的 label 部件 padding-inline 覆盖槽。 |
 | `--xh-grid-list-label-py` | `label` | `padding-block` | `default` | `--xh-space-1` | grid-list 的 label 部件 padding-block 覆盖槽。 |
 | `--xh-grid-list-p` | `root` | `padding` | `default` | `--xh-space-1` | grid-list 的 root 部件 padding 覆盖槽。 |
