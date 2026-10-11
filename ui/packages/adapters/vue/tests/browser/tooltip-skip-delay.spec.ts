@@ -6,8 +6,11 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhTooltipContent, XhTooltipPositioner, XhTooltipRoot, XhTooltipTrigger } from '../../src'
+import { CLOCK_SLACK, watchHoverOpen } from './hover-open-delay'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
+
+const OPEN_DELAY = 400
 
 let app: App | null = null
 let host: HTMLElement | null = null
@@ -25,7 +28,7 @@ async function mount(props: Record<string, unknown> = {}): Promise<void> {
   host.style.cssText = 'display:flex;gap:8px;padding:80px'
   document.body.append(host)
   app = createApp({
-    render: () => ['保存', '撤销', '重做'].map(label => h(XhTooltipRoot, { openDelay: 400, ...props }, () => [
+    render: () => ['保存', '撤销', '重做'].map(label => h(XhTooltipRoot, { openDelay: OPEN_DELAY, ...props }, () => [
       h(XhTooltipTrigger, null, () => label),
       h(XhTooltipPositioner, null, () => h(XhTooltipContent, null, () => `${label}的说明`)),
     ])),
@@ -44,6 +47,11 @@ function content(label: string): HTMLElement {
 
 function trigger(label: string): HTMLElement {
   return all('trigger').find(el => el.textContent === label)!
+}
+
+/** 指针进到这个提示的 trigger、到它翻开隔了多久（见 hover-open-delay）。 */
+function watchOpen(label: string): () => number | null {
+  return watchHoverOpen(trigger(label), () => content(label).dataset.state === 'open')
 }
 
 describe('tooltip 跳过延迟', () => {
@@ -78,12 +86,12 @@ describe('tooltip 跳过延迟', () => {
     await userEvent.hover(document.body)
     await expect.poll(() => content('撤销').dataset.state).toBe('closed')
 
-    // 窗口过后：又得等 openDelay，也照常播进场
+    // 窗口过后：又得等满 openDelay（从指针到达那一刻量起），也照常播进场
     await new Promise(resolve => setTimeout(resolve, 1650))
+    const waited = watchOpen('重做')
     await userEvent.hover(trigger('重做'))
-    await new Promise(resolve => setTimeout(resolve, 150))
-    expect(content('重做').dataset.state).toBe('closed')
     await expect.poll(() => content('重做').dataset.state, { timeout: 2000 }).toBe('open')
+    expect(waited()).toBeGreaterThanOrEqual(OPEN_DELAY - CLOCK_SLACK)
     expect(content('重做').hasAttribute('data-instant')).toBe(false)
   })
 
@@ -91,8 +99,10 @@ describe('tooltip 跳过延迟', () => {
     await mount({ closeDelay: 0, skipDelayDuration: 0 })
     await userEvent.hover(trigger('保存'))
     await expect.poll(() => content('保存').dataset.state, { timeout: 2000 }).toBe('open')
+    // 上一个还开着也不接替：从指针到达那一刻量起，等满 openDelay 才开
+    const waited = watchOpen('撤销')
     await userEvent.hover(trigger('撤销'))
-    await new Promise(resolve => setTimeout(resolve, 150))
-    expect(content('撤销').dataset.state).toBe('closed')
+    await expect.poll(() => content('撤销').dataset.state, { timeout: 2000 }).toBe('open')
+    expect(waited()).toBeGreaterThanOrEqual(OPEN_DELAY - CLOCK_SLACK)
   })
 })
