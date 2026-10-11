@@ -120,6 +120,9 @@ export function withXhConfig<T extends object>(component: keyof XhTranslationOve
       return value ?? config.config.locale
     if (key === 'size' && !SIZE_IS_NOT_AXIS.has(component))
       return value ?? config.config.size
+    // 作用域禁用（字段集）压过实例自己的值；只落在本来就带 disabled 这个键的 props 上
+    if (key === 'disabled' && config.config.disabled === true && Reflect.has(target, key))
+      return true
     return value
   }
 

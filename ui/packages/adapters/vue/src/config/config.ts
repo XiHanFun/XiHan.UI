@@ -118,6 +118,9 @@ export function withXhConfig<T extends object>(component: keyof XhTranslationOve
         return value ?? toValue(injected)?.locale
       if (key === 'size' && !SIZE_IS_NOT_AXIS.has(component))
         return value ?? toValue(injected)?.size
+      // 作用域禁用（字段集）压过实例自己的值
+      if (key === 'disabled' && toValue(injected)?.disabled === true)
+        return true
       return value
     },
   }) as T
