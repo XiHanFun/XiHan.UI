@@ -103,6 +103,11 @@
   white-space: nowrap;
 }
 
+/* 上面给了 display，UA 的 [hidden]{display:none} 被盖掉，这里补回来 */
+.vp-doc .xh-demo__stage [data-demo-output][hidden] {
+  display: none;
+}
+
 /* 纯结构示例不再用“区块 A / 文件 / 编辑器”一类文字撑尺寸。
    data-tone 选择不同淡色，尺寸由示例通过公开的 --xh-demo-block-* 槽声明。 */
 [data-demo-block] {

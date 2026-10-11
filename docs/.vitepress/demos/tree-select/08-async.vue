@@ -1,6 +1,7 @@
 <!-- 首次全量加载与空集合 | 第一次展开才取整棵树；正式 Loading/Empty 与候选树互斥，状态文字不进入选值或键盘导航，底部按钮可重放有数据与零集合响应 -->
 <script setup lang="ts">
 import {
+  XhButton,
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
   XhTreeSelectBranchControl,
@@ -129,11 +130,11 @@ onBeforeUnmount(() => {
         <XhTreeSelectLoading>正在加载城市…</XhTreeSelectLoading>
         <XhTreeSelectEmpty>暂无可选城市</XhTreeSelectEmpty>
         <XhTreeSelectFooter>
-          <button type="button" :disabled="loading" @click="load('cities')">加载城市</button>
-          <button type="button" :disabled="loading" @click="load('empty')">加载空集合</button>
+          <XhButton variant="ghost" size="sm" :disabled="loading" @click="load('cities')">加载城市</XhButton>
+          <XhButton variant="ghost" size="sm" :disabled="loading" @click="load('empty')">加载空集合</XhButton>
         </XhTreeSelectFooter>
       </XhTreeSelectContent>
     </XhTreeSelectPositioner>
   </XhTreeSelectRoot>
-  <p>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
+  <p data-demo-output>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
 </template>

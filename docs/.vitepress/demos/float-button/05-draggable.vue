@@ -9,7 +9,7 @@ const position = ref<FloatButtonPosition>({ edge: "inline-end", ratio: 0.75 });
 </script>
 
 <template>
-  <p>当前位置：{{ JSON.stringify(position) }}</p>
+  <p data-demo-output>当前位置：{{ JSON.stringify(position) }}</p>
   <XhFloatButtonRoot v-model:position="position" draggable>
     <XhFloatButtonTrigger />
     <XhFloatButtonList>

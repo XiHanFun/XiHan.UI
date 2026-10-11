@@ -7,7 +7,7 @@ const directions = ["left", "right", "up", "down"] as const;
 // 竖着滚的窗口靠自定义属性定高，自定义属性写在样式对象里
 const box = {
   "--xh-marquee-block-size": "5rem",
-  "border": "1px solid var(--xh-border-default)",
+  "border": "var(--xh-stroke-thin) solid var(--xh-border-default)",
   "borderRadius": "6px",
 } as CSSProperties;
 

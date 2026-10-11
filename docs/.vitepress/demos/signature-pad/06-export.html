@@ -8,11 +8,13 @@
     <div style="display: flex; gap: 8px; align-items: center">
       <button data-xh-part="clear-trigger">清空</button>
       <!-- 空签名与"签了但很潦草"是两回事，前者应该在客户端就挡住 -->
-      <button type="button" id="xh-signature-submit" disabled>提交</button>
-      <span id="xh-signature-size" style="font-size: 12px">SVG 0 字节</span>
+      <xh-button id="xh-signature-submit" variant="solid" size="sm" disabled>
+        <button data-xh-part="root">提交</button>
+      </xh-button>
     </div>
   </div>
 </xh-signature-pad>
+<span id="xh-signature-size" data-demo-output>SVG 0 字节</span>
 
 <script type="module">
   const host = document.getElementById("xh-signature-export");

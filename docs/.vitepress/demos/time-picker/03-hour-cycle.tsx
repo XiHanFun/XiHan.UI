@@ -51,7 +51,7 @@ export default function Demo(): ReactNode {
         </XhTimePickerPositioner>
       </XhTimePickerRoot>
 
-      <span style={{ fontSize: "13px" }}>{`值仍是 24 小时的串：${value[0] ?? "（空）"}`}</span>
+      <span data-demo-output>{`值仍是 24 小时的串：${value[0] ?? "（空）"}`}</span>
     </>
   );
 }

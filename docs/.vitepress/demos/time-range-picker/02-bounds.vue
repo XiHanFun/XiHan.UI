@@ -62,7 +62,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
     </XhTimeRangePickerPositioner>
   </XhTimeRangePickerRoot>
 
-  <span aria-live="polite" style="font-size: 13px">
+  <span aria-live="polite" data-demo-output>
     当前值：{{ text }}
   </span>
 </template>

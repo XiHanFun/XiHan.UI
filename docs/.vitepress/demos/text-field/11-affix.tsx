@@ -1,14 +1,13 @@
 // 框内前后缀 | 前后缀与输入框同在 control 这一个框里排成一行，共用它的描边与底色
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
   XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
+  XhTextFieldPrefix,
   XhTextFieldRoot,
+  XhTextFieldSuffix,
 } from "@xihan-ui/react";
-
-// 不参与分宽，也不吃指针事件：点在前后缀上仍然落到输入框里
-const affix: CSSProperties = { flex: "none", color: "var(--xh-fg-muted)", pointerEvents: "none" };
 
 export default function Demo(): ReactNode {
   return (
@@ -16,9 +15,9 @@ export default function Demo(): ReactNode {
       <XhTextFieldRoot placeholder="0.00">
         <XhTextFieldLabel>金额</XhTextFieldLabel>
         <XhTextFieldControl>
-          <span style={affix}>¥</span>
+          <XhTextFieldPrefix>¥</XhTextFieldPrefix>
           <XhTextFieldInput inputMode="decimal" />
-          <span style={affix}>元</span>
+          <XhTextFieldSuffix>元</XhTextFieldSuffix>
         </XhTextFieldControl>
       </XhTextFieldRoot>
 
@@ -26,7 +25,7 @@ export default function Demo(): ReactNode {
         <XhTextFieldLabel>身高</XhTextFieldLabel>
         <XhTextFieldControl>
           <XhTextFieldInput inputMode="numeric" />
-          <span style={affix}>cm</span>
+          <XhTextFieldSuffix>cm</XhTextFieldSuffix>
         </XhTextFieldControl>
       </XhTextFieldRoot>
     </>

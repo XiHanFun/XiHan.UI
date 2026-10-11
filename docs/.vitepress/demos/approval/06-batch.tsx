@@ -54,46 +54,48 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <div style={{ display: "grid", gap: "12px", inlineSize: "100%" }}>
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px" }}>
-        <span>{`${pending.length} 项待决`}</span>
-        <XhButton size="sm" disabled={approvable.length === 0} onClick={() => settleAll(approvable.map(request => request.id), "approved")}>
-          {`全部批准（${approvable.length}）`}
-        </XhButton>
-        <XhButton size="sm" variant="outline" disabled={pending.length === 0} onClick={() => settleAll(pending.map(request => request.id), "denied")}>
-          全部拒绝
-        </XhButton>
+    <>
+      <div style={{ display: "grid", gap: "12px", inlineSize: "100%" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px" }}>
+          <XhButton size="sm" disabled={approvable.length === 0} onClick={() => settleAll(approvable.map(request => request.id), "approved")}>
+            {`全部批准（${approvable.length}）`}
+          </XhButton>
+          <XhButton size="sm" variant="outline" disabled={pending.length === 0} onClick={() => settleAll(pending.map(request => request.id), "denied")}>
+            全部拒绝
+          </XhButton>
+        </div>
+        {requests.map(request => (
+          // 判定受控：闸门报出意图，宿主写回才落定
+          <XhApprovalRoot
+            key={request.id}
+            requestId={request.id}
+            status={request.status}
+            scopes={request.scopes}
+            grantedScopes={request.granted}
+            onGrantedScopesChange={details => update(request.id, { granted: details.value })}
+            onDecision={details => update(request.id, { status: details.decision })}
+          >
+            <XhApprovalTitle>{request.title}</XhApprovalTitle>
+            <XhApprovalDescription>{request.detail}</XhApprovalDescription>
+            {request.scopes.length > 0 && (
+              <XhApprovalGroup>
+                {request.scopes.map(scope => (
+                  <XhApprovalItem key={scope.value} scopeValue={scope.value} scopeLabel={scope.label} scopeRequired={scope.required}>
+                    <XhApprovalItemIndicator scopeValue={scope.value} />
+                    <XhApprovalItemText scopeValue={scope.value}>{scope.label}</XhApprovalItemText>
+                  </XhApprovalItem>
+                ))}
+              </XhApprovalGroup>
+            )}
+            <XhApprovalResult>{request.status === "approved" ? "已批准" : "已拒绝"}</XhApprovalResult>
+            <XhApprovalFooter>
+              <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
+              <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
+            </XhApprovalFooter>
+          </XhApprovalRoot>
+        ))}
       </div>
-      {requests.map(request => (
-        // 判定受控：闸门报出意图，宿主写回才落定
-        <XhApprovalRoot
-          key={request.id}
-          requestId={request.id}
-          status={request.status}
-          scopes={request.scopes}
-          grantedScopes={request.granted}
-          onGrantedScopesChange={details => update(request.id, { granted: details.value })}
-          onDecision={details => update(request.id, { status: details.decision })}
-        >
-          <XhApprovalTitle>{request.title}</XhApprovalTitle>
-          <XhApprovalDescription>{request.detail}</XhApprovalDescription>
-          {request.scopes.length > 0 && (
-            <XhApprovalGroup>
-              {request.scopes.map(scope => (
-                <XhApprovalItem key={scope.value} scopeValue={scope.value} scopeLabel={scope.label} scopeRequired={scope.required}>
-                  <XhApprovalItemIndicator scopeValue={scope.value} />
-                  <XhApprovalItemText scopeValue={scope.value}>{scope.label}</XhApprovalItemText>
-                </XhApprovalItem>
-              ))}
-            </XhApprovalGroup>
-          )}
-          <XhApprovalResult>{request.status === "approved" ? "已批准" : "已拒绝"}</XhApprovalResult>
-          <XhApprovalFooter>
-            <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
-            <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
-          </XhApprovalFooter>
-        </XhApprovalRoot>
-      ))}
-    </div>
+      <span data-demo-output>{`${pending.length} 项待决`}</span>
+    </>
   );
 }

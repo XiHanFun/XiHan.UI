@@ -18,7 +18,7 @@ const noLimit = Number.POSITIVE_INFINITY;
 
 <template>
   <div style="width: 100%; max-width: 480px">
-    <XhFileUploadRoot v-slot="{ acceptedFiles, empty }" directory :max-files="noLimit">
+    <XhFileUploadRoot v-slot="{ acceptedFiles }" directory :max-files="noLimit">
       <XhFileUploadLabel>整个目录</XhFileUploadLabel>
       <XhFileUploadDropzone>
         <span>挑一个目录，里面的文件全收</span>
@@ -27,7 +27,7 @@ const noLimit = Number.POSITIVE_INFINITY;
         <XhFileUploadTrigger>选择目录</XhFileUploadTrigger>
       </div>
       <XhFileUploadHiddenInput />
-      <span v-if="!empty">共 {{ acceptedFiles.length }} 个文件</span>
+      <span data-demo-output>共 {{ acceptedFiles.length }} 个文件</span>
       <XhFileUploadList style="max-block-size: 220px; overflow: auto">
         <XhFileUploadItem v-for="file in acceptedFiles" :key="file" :file="file">
           <XhFileUploadItemName />

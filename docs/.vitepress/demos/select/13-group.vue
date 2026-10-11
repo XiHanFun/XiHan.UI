@@ -64,5 +64,5 @@ const picked = ref<string[]>([]);
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>
-  <p>当前值：{{ picked[0] ?? "（未选）" }}</p>
+  <p data-demo-output>当前值：{{ picked[0] ?? "（未选）" }}</p>
 </template>

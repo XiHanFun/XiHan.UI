@@ -24,7 +24,7 @@ export default function Demo(): ReactNode {
         deletable
         onItemDelete={remove}
       />
-      <p>{`还剩：${tags.length ? tags.map(tag => tag.label).join("、") : "（空）"}`}</p>
+      <p data-demo-output>{`还剩：${tags.length ? tags.map(tag => tag.label).join("、") : "（空）"}`}</p>
     </>
   );
 }

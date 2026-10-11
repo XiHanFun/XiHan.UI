@@ -19,18 +19,16 @@ function onOpenChange(details: { open: boolean }) {
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 16px">
-    <XhPopoverRoot placement="bottom-start" @open-change="onOpenChange">
-      <XhPopoverTrigger>点开再关掉</XhPopoverTrigger>
-      <XhPopoverPositioner>
-        <XhPopoverContent>
-          <XhPopoverDescription>
-            按钮、Escape、点浮层外部，三条路都会发一次意图。
-          </XhPopoverDescription>
-          <XhPopoverArrow />
-        </XhPopoverContent>
-      </XhPopoverPositioner>
-    </XhPopoverRoot>
-    <span>最近：{{ log.join(" ← ") || "（还没动过）" }}</span>
-  </div>
+  <XhPopoverRoot placement="bottom-start" @open-change="onOpenChange">
+    <XhPopoverTrigger>点开再关掉</XhPopoverTrigger>
+    <XhPopoverPositioner>
+      <XhPopoverContent>
+        <XhPopoverDescription>
+          按钮、Escape、点浮层外部，三条路都会发一次意图。
+        </XhPopoverDescription>
+        <XhPopoverArrow />
+      </XhPopoverContent>
+    </XhPopoverPositioner>
+  </XhPopoverRoot>
+  <span data-demo-output>最近：{{ log.join(" ← ") || "（还没动过）" }}</span>
 </template>

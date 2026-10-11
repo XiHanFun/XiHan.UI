@@ -9,7 +9,7 @@ export default function Demo(): ReactNode {
   const [position, setPosition] = useState<FloatButtonPosition>({ edge: "inline-end", ratio: 0.75 });
   return (
     <>
-      <p>
+      <p data-demo-output>
         当前位置：
         {JSON.stringify(position)}
       </p>

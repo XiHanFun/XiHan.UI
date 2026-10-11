@@ -1,9 +1,19 @@
 <!-- 播报方式 | 默认 polite 使 root 成为活区，筛选完成后就地播报；off 使它只是一个普通容器 -->
 <div id="empty-state-live" style="inline-size: 100%; display: grid; gap: 12px">
-  <div style="display: flex; gap: 8px">
-    <input id="empty-state-live-keyword" type="search" aria-label="关键词" value="曦寒" />
-    <button id="empty-state-live-search" type="button">搜索</button>
-  </div>
+  <xh-input-group>
+    <div data-xh-part="root">
+      <xh-text-field id="empty-state-live-keyword" type="search" default-value="曦寒">
+        <div data-xh-part="root">
+          <div data-xh-part="control">
+            <input data-xh-part="input" aria-label="关键词" />
+          </div>
+        </div>
+      </xh-text-field>
+      <xh-button id="empty-state-live-search" variant="outline">
+        <button data-xh-part="root">搜索</button>
+      </xh-button>
+    </div>
+  </xh-input-group>
 
   <!-- 结果换成空的那一刻，读屏会在不打断当前朗读的前提下把标题念出来 -->
   <xh-empty-state live="polite">
@@ -18,13 +28,17 @@
 
 <script type="module">
   // 演示用：偶数长度的关键词当作有结果
-  const keyword = document.getElementById("empty-state-live-keyword");
   const title = document.getElementById("empty-state-live-title");
   const root = document.getElementById("empty-state-live-root");
   const hit = document.getElementById("empty-state-live-hit");
+  // 文本框非受控，报上来的新值记在这里，按下搜索时再用
+  let keyword = "曦寒";
+  document.getElementById("empty-state-live-keyword").addEventListener("value-change", (event) => {
+    keyword = event.detail.value;
+  });
   document.getElementById("empty-state-live-search").addEventListener("click", () => {
-    const found = keyword.value.length % 2 === 0;
-    title.textContent = `没有匹配「${keyword.value}」的结果`;
+    const found = keyword.length % 2 === 0;
+    title.textContent = `没有匹配「${keyword}」的结果`;
     // 活区节点常挂着，两块用 hidden 互相收起
     root.hidden = found;
     hit.hidden = !found;

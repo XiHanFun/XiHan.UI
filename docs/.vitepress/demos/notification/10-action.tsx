@@ -35,10 +35,8 @@ export default function Demo(): ReactNode {
         <XhNotificationItemActionTrigger>撤销</XhNotificationItemActionTrigger>
         <XhNotificationItemCloseTrigger />
       </XhNotificationItem>
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <XhButton size="sm" variant="outline" onClick={() => setSeq(seq + 1)}>再挂一条</XhButton>
-        <span>{log}</span>
-      </div>
+      <XhButton size="sm" variant="outline" onClick={() => setSeq(seq + 1)}>再挂一条</XhButton>
+      <span data-demo-output>{log}</span>
     </div>
   );
 }

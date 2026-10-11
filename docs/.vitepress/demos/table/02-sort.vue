@@ -74,7 +74,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>
+    <span data-demo-output>
       排序链：{{
         sort.length ? sort.map((s) => `${s.id} ${s.direction}`).join(" → ") : "（无）"
       }}

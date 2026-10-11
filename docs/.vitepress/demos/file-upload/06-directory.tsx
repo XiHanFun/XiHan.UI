@@ -24,7 +24,7 @@ export default function Demo(): ReactNode {
   return (
     <div style={{ width: "100%", maxWidth: "480px" }}>
       <XhFileUploadRoot directory maxFiles={noLimit}>
-        {({ acceptedFiles, empty }) => (
+        {({ acceptedFiles }) => (
           <>
             <XhFileUploadLabel>整个目录</XhFileUploadLabel>
             <XhFileUploadDropzone>
@@ -34,7 +34,7 @@ export default function Demo(): ReactNode {
               <XhFileUploadTrigger>选择目录</XhFileUploadTrigger>
             </div>
             <XhFileUploadHiddenInput />
-            {!empty ? <span>{`共 ${acceptedFiles.length} 个文件`}</span> : null}
+            <span data-demo-output>{`共 ${acceptedFiles.length} 个文件`}</span>
             <XhFileUploadList style={{ maxBlockSize: "220px", overflow: "auto" }}>
               {acceptedFiles.map(file => (
                 <XhFileUploadItem key={keyOf(file)} file={file}>

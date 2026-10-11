@@ -70,7 +70,7 @@ function isWeekend(iso: string) {
     </XhCalendarPickerGrid>
   </XhCalendarPickerRoot>
 
-  <span style="font-size: 13px">
+  <span data-demo-output>
     可选窗口 {{ min }} ~ {{ max }}，周末除外 · 选中：{{ value[0] ?? "（未选）" }}
   </span>
 </template>

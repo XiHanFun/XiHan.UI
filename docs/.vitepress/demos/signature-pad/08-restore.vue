@@ -37,9 +37,7 @@ function onValueChange(details: { value: SignaturePadValue }) {
       <XhSignaturePadGuide />
       <XhSignaturePadPath />
     </XhSignaturePadControl>
-    <div style="display: flex; gap: var(--xh-space-2); align-items: center">
-      <XhSignaturePadUndoTrigger>撤销</XhSignaturePadUndoTrigger>
-      <span>共 {{ strokes }} 笔</span>
-    </div>
+    <XhSignaturePadUndoTrigger>撤销</XhSignaturePadUndoTrigger>
   </XhSignaturePadRoot>
+  <span data-demo-output>共 {{ strokes }} 笔</span>
 </template>

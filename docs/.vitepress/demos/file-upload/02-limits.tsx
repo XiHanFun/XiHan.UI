@@ -82,7 +82,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhFileUploadRoot>
-      {rejected ? <span>{`被拒：${rejected}`}</span> : null}
+      <span data-demo-output title={rejected || undefined}>{`被拒：${rejected || "（暂无）"}`}</span>
     </div>
   );
 }

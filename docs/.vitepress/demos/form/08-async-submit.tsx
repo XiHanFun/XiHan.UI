@@ -25,31 +25,33 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <XhFormRoot
-      defaultValues={{ nickname: "小明" }}
-      onSubmit={save}
-      style={{ inlineSize: "320px", display: "grid", gap: "12px" }}
-    >
-      {({ submitting }) => (
-        <>
-          <XhFormFieldGroup name="nickname">
-            {({ value, setValue }) => (
-              <XhFieldRoot>
-                <XhFieldLabel>昵称</XhFieldLabel>
-                <XhFieldControl>
-                  <input
-                    value={value as string}
-                    onInput={event => setValue((event.target as HTMLInputElement).value)}
-                  />
-                </XhFieldControl>
-              </XhFieldRoot>
-            )}
-          </XhFormFieldGroup>
+    <>
+      <XhFormRoot
+        defaultValues={{ nickname: "小明" }}
+        onSubmit={save}
+        style={{ inlineSize: "320px", display: "grid", gap: "12px" }}
+      >
+        {({ submitting }) => (
+          <>
+            <XhFormFieldGroup name="nickname">
+              {({ value, setValue }) => (
+                <XhFieldRoot>
+                  <XhFieldLabel>昵称</XhFieldLabel>
+                  <XhFieldControl>
+                    <input
+                      value={value as string}
+                      onInput={event => setValue((event.target as HTMLInputElement).value)}
+                    />
+                  </XhFieldControl>
+                </XhFieldRoot>
+              )}
+            </XhFormFieldGroup>
 
-          <XhFormSubmitTrigger>{submitting ? "保存中…" : "保存"}</XhFormSubmitTrigger>
-          <p>{saved ? `已保存：${saved}` : "尚未保存"}</p>
-        </>
-      )}
-    </XhFormRoot>
+            <XhFormSubmitTrigger>{submitting ? "保存中…" : "保存"}</XhFormSubmitTrigger>
+          </>
+        )}
+      </XhFormRoot>
+      <p data-demo-output>{saved ? `已保存：${saved}` : "尚未保存"}</p>
+    </>
   );
 }

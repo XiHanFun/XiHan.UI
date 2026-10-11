@@ -18,7 +18,7 @@ const avatar: CSSProperties = {
   justifyContent: "center",
   inlineSize: "16px",
   blockSize: "16px",
-  borderRadius: "50%",
+  borderRadius: "var(--xh-shape-circle)",
   background: "var(--xh-bg-subtle)",
   fontSize: "var(--xh-font-size-xs)",
 };
@@ -66,7 +66,7 @@ export default function Demo(): ReactNode {
           ))}
         </XhTagGroupList>
       </XhTagGroupRoot>
-      <p>{`已选：${picked.length ? picked.join("、") : "（无）"}`}</p>
+      <p data-demo-output>{`已选：${picked.length ? picked.join("、") : "（无）"}`}</p>
     </>
   );
 }

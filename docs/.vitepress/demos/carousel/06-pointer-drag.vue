@@ -10,17 +10,20 @@ import {
   XhCarouselRoot,
   XhCarouselViewport,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
 
 const slides = ["拖我", "再拖", "还能拖", "最后一张"];
+const page = ref(0);
 </script>
 
 <template>
   <XhCarouselRoot
-    v-slot="{ page, totalPages, dragging }"
+    v-slot="{ totalPages }"
     :slide-count="slides.length"
     allow-pointer-drag
     loop
     style="inline-size: 100%"
+    @page-change="page = $event.page"
   >
     <XhCarouselPrevTrigger />
     <XhCarouselViewport style="block-size: 130px">
@@ -36,9 +39,6 @@ const slides = ["拖我", "再拖", "还能拖", "最后一张"];
     <XhCarouselIndicatorGroup>
       <XhCarouselIndicator v-for="p in totalPages" :key="p" :index="p - 1" />
     </XhCarouselIndicatorGroup>
-    <span style="flex-basis: 100%">
-      第 {{ page + 1 }} / {{ totalPages }} 页 ·
-      {{ dragging ? "正在拖" : "松手状态" }}
-    </span>
   </XhCarouselRoot>
+  <span data-demo-output>第 {{ page + 1 }} / {{ slides.length }} 页</span>
 </template>

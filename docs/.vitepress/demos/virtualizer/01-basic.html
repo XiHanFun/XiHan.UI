@@ -7,7 +7,7 @@
       </div>
     </div>
   </xh-virtualizer>
-  <span>可视区：<span id="virtualizer-basic-range">—</span></span>
+  <span data-demo-output>可视区：<span id="virtualizer-basic-range">—</span></span>
 </div>
 
 <script type="module">
@@ -26,7 +26,7 @@
       el.dataset.xhPart = "item";
       el.setAttribute("value", String(item.index));
       el.style.cssText =
-        "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)";
+        "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
       el.textContent = `第 ${item.index + 1} 条`;
       nodes.set(item.index, el);
       content.append(el);

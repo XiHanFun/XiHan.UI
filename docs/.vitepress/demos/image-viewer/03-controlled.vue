@@ -37,10 +37,7 @@ const translations = {
     :collection="items"
     :translations="translations"
   >
-    <div style="display: flex; align-items: center; gap: 8px">
-      <XhButton variant="solid" @click="open = true">从第 {{ index + 1 }} 张看起</XhButton>
-      <span>open：{{ open }}，index：{{ index }}</span>
-    </div>
+    <XhButton variant="solid" @click="open = true">从第 {{ index + 1 }} 张看起</XhButton>
     <XhImageViewerContent>
       <XhImageViewerViewport>
         <XhImageViewerImage />
@@ -51,4 +48,5 @@ const translations = {
       <XhImageViewerCloseTrigger />
     </XhImageViewerContent>
   </XhImageViewerRoot>
+  <span data-demo-output>open：{{ open }} · index：{{ index }}</span>
 </template>

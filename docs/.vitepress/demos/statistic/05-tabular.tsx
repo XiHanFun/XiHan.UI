@@ -1,6 +1,7 @@
 // 等宽数字 | 数值使用等宽数字排版，反复更换数值时字宽不变，后面的单位不会左右移动
 import type { ReactNode } from "react";
 import {
+  XhButton,
   XhStatisticLabel,
   XhStatisticRoot,
   XhStatisticSuffix,
@@ -25,7 +26,7 @@ export default function Demo(): ReactNode {
         <XhStatisticSuffix>元</XhStatisticSuffix>
       </XhStatisticRoot>
 
-      <button type="button" onClick={reroll}>换一组数字</button>
+      <XhButton variant="outline" size="sm" onClick={reroll}>换一组数字</XhButton>
     </div>
   );
 }

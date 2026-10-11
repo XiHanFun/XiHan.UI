@@ -39,7 +39,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhTagsInputRoot>
-      <p>{`当前：${tags.length ? tags.join("、") : "（无）"}`}</p>
+      <p data-demo-output>{`当前：${tags.length ? tags.join("、") : "（无）"}`}</p>
     </>
   );
 }

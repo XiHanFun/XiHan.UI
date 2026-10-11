@@ -266,10 +266,10 @@ function onSubmit(details: { values: Record<string, unknown> }) {
         <XhFormSubmitTrigger>提交工单</XhFormSubmitTrigger>
         <XhFormResetTrigger>重置</XhFormResetTrigger>
       </div>
-
-      <p v-if="submitted" class="form-page__result">已提交：{{ submitted }}</p>
     </XhFormRoot>
   </div>
+
+  <p data-demo-output :title="submitted">已提交：{{ submitted || "（尚未提交）" }}</p>
 </template>
 
 <style scoped>
@@ -311,12 +311,5 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 .form-page__actions {
   display: flex;
   gap: var(--xh-space-2);
-}
-
-.form-page__result {
-  margin: 0;
-  color: var(--xh-fg-muted);
-  font-size: var(--xh-font-size-sm);
-  word-break: break-all;
 }
 </style>

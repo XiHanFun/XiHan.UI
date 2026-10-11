@@ -43,7 +43,7 @@ export default function Demo(): ReactNode {
         translations={{ input: "正文", content: "候选" }}
         onQueryChange={onQuery}
       />
-      <p>{`当前前缀：${prefix ?? "（无触发）"}`}</p>
+      <p data-demo-output>{`当前前缀：${prefix ?? "（无触发）"}`}</p>
     </>
   );
 }

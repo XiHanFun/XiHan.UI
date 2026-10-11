@@ -1,11 +1,21 @@
 // 提前量 | distance 把可视区沿块轴向外扩展，哨兵尚未出现就先取下一页
 import type { ReactNode } from "react";
-import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/react";
+import {
+  XhInfiniteScrollRoot,
+  XhInfiniteScrollSentinel,
+  XhSliderControl,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+} from "@xihan-ui/react";
 import { useState } from "react";
 
 export default function Demo(): ReactNode {
   const [scrollEl, setScrollEl] = useState<HTMLElement | null>(null);
-  const [distance, setDistance] = useState(200);
+  // 滑块的值恒为数组，单滑块取第一项
+  const [distance, setDistance] = useState([200]);
   const [items, setItems] = useState(() =>
     Array.from({ length: 12 }, (_, i) => `第 ${i + 1} 条`),
   );
@@ -25,43 +35,50 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <div style={{ display: "grid", gap: "12px", inlineSize: "100%" }}>
-      <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        提前
-        <input
-          type="range"
+    <>
+      <div style={{ display: "grid", gap: "12px", inlineSize: "100%" }}>
+        <XhSliderRoot
+          value={distance}
+          onValueChange={details => setDistance(details.value)}
           min={0}
           max={400}
           step={50}
-          value={distance}
-          onChange={e => setDistance(Number(e.target.value))}
-        />
-        {`${distance}px 触发 · 已取 ${rounds} 页`}
-      </label>
-
-      <div
-        ref={setScrollEl}
-        data-xh-scroll=""
-        style={{
-          blockSize: "220px",
-          overflow: "auto",
-          border: "1px solid var(--xh-border-default)",
-          borderRadius: "8px",
-        }}
-      >
-        {/* 提前量扩的是 target 那块可视区，容器滚动必须把容器交出来 */}
-        <XhInfiniteScrollRoot
-          target={scrollEl}
-          distance={distance}
-          loading={loading}
-          onLoad={onLoad}
         >
-          {items.map(item => (
-            <div key={item} style={{ padding: "8px 12px" }}>{item}</div>
-          ))}
-          <XhInfiniteScrollSentinel />
-        </XhInfiniteScrollRoot>
+          <XhSliderLabel>提前量</XhSliderLabel>
+          <XhSliderControl>
+            <XhSliderTrack>
+              <XhSliderRange />
+            </XhSliderTrack>
+            <XhSliderThumb />
+          </XhSliderControl>
+        </XhSliderRoot>
+
+        <div
+          ref={setScrollEl}
+          data-xh-scroll=""
+          style={{
+            blockSize: "220px",
+            overflow: "auto",
+            border: "var(--xh-stroke-thin) solid var(--xh-border-default)",
+            borderRadius: "var(--xh-shape-surface)",
+          }}
+        >
+          {/* 提前量扩的是 target 那块可视区，容器滚动必须把容器交出来 */}
+          <XhInfiniteScrollRoot
+            target={scrollEl}
+            distance={distance[0]}
+            loading={loading}
+            onLoad={onLoad}
+          >
+            {items.map(item => (
+              <div key={item} style={{ padding: "8px 12px" }}>{item}</div>
+            ))}
+            <XhInfiniteScrollSentinel />
+          </XhInfiniteScrollRoot>
+        </div>
       </div>
-    </div>
+
+      <span data-demo-output>{`${distance[0]}px 触发 · 已取 ${rounds} 页`}</span>
+    </>
   );
 }

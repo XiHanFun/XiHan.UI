@@ -134,7 +134,7 @@ const value = ref<string[]>(["sku-3"]);
       </XhTransferTargetPanel>
     </XhTransferRoot>
 
-    <p style="margin-block-start: 12px; font-size: 13px">
+    <p data-demo-output>
       已上架 {{ value.length }} 件
     </p>
   </div>

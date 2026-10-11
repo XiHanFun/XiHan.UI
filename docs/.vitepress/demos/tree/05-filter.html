@@ -1,11 +1,13 @@
 <!-- 关键词过滤 | collection 换一份树即换一棵：标记跟随数据重新铺设，过滤后剩余的分支一并全部展开 -->
 <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
-  <input
-    id="tree-filter-keyword"
-    type="search"
-    aria-label="城市关键词"
-    placeholder="输入城市名"
-  />
+  <xh-text-field id="tree-filter-keyword" type="search" placeholder="输入城市名" clearable>
+    <div data-xh-part="root">
+      <div data-xh-part="control">
+        <input data-xh-part="input" aria-label="城市关键词" />
+        <button data-xh-part="clear-trigger"></button>
+      </div>
+    </div>
+  </xh-text-field>
 
   <xh-tree id="tree-filter">
     <div data-xh-part="root">
@@ -67,16 +69,16 @@
           </div>
         </div>
       </div>
+      <!-- 空态占位：给了 collection 时由元素按剩下几枝收放 -->
+      <div data-xh-part="empty"></div>
     </div>
   </xh-tree>
-
-  <span id="tree-filter-empty" style="display: none"></span>
 </div>
 
 <script type="module">
   const host = document.getElementById("tree-filter");
   const keyword = document.getElementById("tree-filter-keyword");
-  const empty = document.getElementById("tree-filter-empty");
+  const empty = host.querySelector('[data-xh-part="empty"]');
   const tree = host.querySelector('[data-xh-part="tree"]');
 
   const source = [
@@ -157,13 +159,12 @@
       .filter((region) => region.children.length > 0);
   }
 
-  keyword.addEventListener("input", () => {
-    const key = keyword.value.trim();
+  keyword.addEventListener("value-change", (event) => {
+    const key = event.detail.value.trim();
     const regions = filter(key);
     host.collection = regions;
     renderTree(regions);
     host.expandedValue = regions.map((region) => region.value);
     empty.textContent = `没有匹配「${key}」的城市`;
-    empty.style.display = regions.length ? "none" : "block";
   });
 </script>

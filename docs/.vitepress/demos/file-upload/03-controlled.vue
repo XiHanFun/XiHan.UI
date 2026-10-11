@@ -48,11 +48,11 @@ function onFilesChange(details: { files: File[] }) {
       </XhFileUploadList>
     </XhFileUploadRoot>
 
-    <div style="display: flex; align-items: center; gap: 12px">
+    <div>
       <XhButton size="sm" :disabled="!files.length" @click="files = []">
         从外面清空
       </XhButton>
-      <span>宿主持有 {{ files.length }} 个文件</span>
     </div>
+    <span data-demo-output>宿主持有 {{ files.length }} 个文件</span>
   </div>
 </template>

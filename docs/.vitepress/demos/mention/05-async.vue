@@ -67,5 +67,5 @@ function onQuery(details: { query: string | null }): void {
       <XhMentionLoading>查询中…</XhMentionLoading>
     </XhMentionPositioner>
   </XhMentionRoot>
-  <p>{{ loading ? "查询中…" : `候选 ${options.length} 条` }}</p>
+  <p data-demo-output>{{ loading ? "查询中…" : `候选 ${options.length} 条` }}</p>
 </template>

@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import {
   XhTextFieldClearTrigger,
   XhTextFieldControl,
+  XhTextFieldCount,
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
@@ -15,17 +16,15 @@ export default function Demo(): ReactNode {
       placeholder="最多 10 个字符"
       maxLength={10}
       clearable
+      showCount
     >
-      {({ value, atLimit }) => (
-        <>
-          <XhTextFieldLabel>昵称</XhTextFieldLabel>
-          <XhTextFieldControl>
-            <XhTextFieldInput />
-            <XhTextFieldClearTrigger />
-          </XhTextFieldControl>
-          <span>{`${value.length} / 10${atLimit ? "（已到上限）" : ""}`}</span>
-        </>
-      )}
+      <XhTextFieldLabel>昵称</XhTextFieldLabel>
+      <XhTextFieldControl>
+        <XhTextFieldInput />
+        <XhTextFieldClearTrigger />
+      </XhTextFieldControl>
+      {/* 字数按字素计，顶到上限换色 */}
+      <XhTextFieldCount />
     </XhTextFieldRoot>
   );
 }

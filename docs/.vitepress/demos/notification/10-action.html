@@ -1,12 +1,10 @@
 <!-- 操作按钮 | item-action-trigger 按下时先发 action 事件，再使该条进入退场；破坏性操作配“撤销”优于事前确认 -->
 <div style="display: grid; width: 100%; gap: 12px; justify-items: center">
   <div id="notification-action-slot"></div>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <xh-button id="notification-action-again" size="sm" variant="outline">
-      <button data-xh-part="root">再挂一条</button>
-    </xh-button>
-    <span id="notification-action-log">（还没点）</span>
-  </div>
+  <xh-button id="notification-action-again" size="sm" variant="outline">
+    <button data-xh-part="root">再挂一条</button>
+  </xh-button>
+  <span id="notification-action-log" data-demo-output>（还没点）</span>
 </div>
 
 <template id="notification-action-template">

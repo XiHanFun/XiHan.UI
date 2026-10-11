@@ -31,7 +31,7 @@ export default function Demo(): ReactNode {
         </div>
         <XhPinInputHiddenInput />
       </XhPinInputRoot>
-      <span>{`填满时拿到：${submitted || "（未填满）"}`}</span>
+      <span data-demo-output>{`填满时拿到：${submitted || "（未填满）"}`}</span>
     </>
   );
 }

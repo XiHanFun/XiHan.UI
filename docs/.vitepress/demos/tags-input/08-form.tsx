@@ -55,7 +55,7 @@ export default function Demo(): ReactNode {
         )}
       </XhTagsInputRoot>
       <XhButton type="submit" variant="outline" style={{ alignSelf: "start" }}>提交</XhButton>
-      <span>{`表单收到：${submitted || "（还没提交）"}`}</span>
+      <span data-demo-output>{`表单收到：${submitted || "（还没提交）"}`}</span>
     </form>
   );
 }

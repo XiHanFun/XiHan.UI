@@ -8,7 +8,7 @@ const notices = ["系统将于本周六 02:00 起停机维护两小时", "新版
 <template>
   <XhMarqueeRoot
     auto-fill
-    style="max-inline-size: 420px; border: 1px solid var(--xh-border-default); border-radius: 6px"
+    style="max-inline-size: 420px; border: var(--xh-stroke-thin) solid var(--xh-border-default); border-radius: var(--xh-shape-surface)"
   >
     <XhMarqueeContent>
       <span v-for="n in notices" :key="n" style="padding: 10px 14px; white-space: nowrap">{{ n }}</span>

@@ -58,6 +58,6 @@ const preference = ref<Record<string, unknown>>({});
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>列宽偏好：{{ JSON.stringify(preference.widths ?? {}) }}</span>
+    <span data-demo-output>列宽偏好：{{ JSON.stringify(preference.widths ?? {}) }}</span>
   </div>
 </template>

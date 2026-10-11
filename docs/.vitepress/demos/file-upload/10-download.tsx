@@ -1,6 +1,7 @@
 // 列表项上的下载 | 条目中放置什么由作者决定：一条普通的 a[download] 就是下载入口；需要自行接管时换为按钮，在处理器中自行获取
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
+  XhButton,
   XhFileUploadDropzone,
   XhFileUploadHiddenInput,
   XhFileUploadItem,
@@ -13,13 +14,6 @@ import {
   XhFileUploadTrigger,
 } from "@xihan-ui/react";
 import { useEffect, useRef } from "react";
-
-const action: CSSProperties = {
-  flex: "none",
-  fontSize: "12px",
-  color: "var(--xh-fg-brand)",
-  cursor: "pointer",
-};
 
 // key 只收字符串：同名同大小是两份不同的文件，把改动时间也拼进去才分得开
 function keyOf(file: File): string {
@@ -70,17 +64,19 @@ export default function Demo(): ReactNode {
             </div>
             <XhFileUploadHiddenInput />
             <XhFileUploadList>
-              {acceptedFiles.map(file => (
-                <XhFileUploadItem key={keyOf(file)} file={file}>
-                  <XhFileUploadItemName />
-                  <XhFileUploadItemSizeText />
-                  <a style={action} href={urlOf(file)} download={file.name}>下载</a>
-                  <button style={action} type="button" onClick={() => saveCopy(file)}>
-                    存为副本
-                  </button>
-                  <XhFileUploadItemDeleteTrigger />
-                </XhFileUploadItem>
-              ))}
+              {acceptedFiles.map((file) => {
+                // XhButtonProps 只列出 href / target / rel，download 随这份属性一起展开到根上的 a
+                const link = { href: urlOf(file), download: file.name };
+                return (
+                  <XhFileUploadItem key={keyOf(file)} file={file}>
+                    <XhFileUploadItemName />
+                    <XhFileUploadItemSizeText />
+                    <XhButton as="a" variant="ghost" size="sm" {...link}>下载</XhButton>
+                    <XhButton variant="ghost" size="sm" onClick={() => saveCopy(file)}>存为副本</XhButton>
+                    <XhFileUploadItemDeleteTrigger />
+                  </XhFileUploadItem>
+                );
+              })}
             </XhFileUploadList>
           </>
         )}

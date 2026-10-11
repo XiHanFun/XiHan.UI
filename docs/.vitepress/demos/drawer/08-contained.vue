@@ -22,7 +22,7 @@ const panel = ref<HTMLElement | null>(null);
       overflow: hidden;
       block-size: 200px;
       padding: 16px;
-      border: 1px solid var(--xh-border-default);
+      border: var(--xh-stroke-thin) solid var(--xh-border-default);
       border-radius: var(--xh-shape-surface);
     "
   >

@@ -23,8 +23,8 @@ function reload(): void {
       overflow: hidden;
       inline-size: 100%;
       max-inline-size: 420px;
-      border: 1px solid var(--xh-border-subtle);
-      border-radius: 8px;
+      border: var(--xh-stroke-thin) solid var(--xh-border-subtle);
+      border-radius: var(--xh-shape-surface);
     "
   >
     <XhLoadingBarRoot

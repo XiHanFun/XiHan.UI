@@ -37,7 +37,7 @@ export default function Demo(): ReactNode {
         <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
       </XhPromptInputRoot>
 
-      <span>{log}</span>
+      <span data-demo-output>{log}</span>
     </div>
   );
 }

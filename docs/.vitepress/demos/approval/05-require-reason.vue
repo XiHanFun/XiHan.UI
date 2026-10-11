@@ -17,20 +17,18 @@ const translations = { reason: "拒绝理由（必填）", notePlaceholder: "说
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <XhApprovalRoot
-      require-reason
-      :translations="translations"
-      @decision="decided = `${$event.decision}（理由 ${$event.note ?? '无'}）`"
-    >
-      <XhApprovalTitle>要删除远端分支 release/2.1</XhApprovalTitle>
-      <XhApprovalDescription>拒绝时写一句理由，Agent 会据此换个做法。</XhApprovalDescription>
-      <XhApprovalNote />
-      <XhApprovalFooter>
-        <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
-        <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
-      </XhApprovalFooter>
-    </XhApprovalRoot>
-    <p v-if="decided" style="margin: 0;">判定：{{ decided }}</p>
-  </div>
+  <XhApprovalRoot
+    require-reason
+    :translations="translations"
+    @decision="decided = `${$event.decision}（理由 ${$event.note ?? '无'}）`"
+  >
+    <XhApprovalTitle>要删除远端分支 release/2.1</XhApprovalTitle>
+    <XhApprovalDescription>拒绝时写一句理由，Agent 会据此换个做法。</XhApprovalDescription>
+    <XhApprovalNote />
+    <XhApprovalFooter>
+      <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
+      <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
+    </XhApprovalFooter>
+  </XhApprovalRoot>
+  <p data-demo-output>判定：{{ decided || "（未判定）" }}</p>
 </template>

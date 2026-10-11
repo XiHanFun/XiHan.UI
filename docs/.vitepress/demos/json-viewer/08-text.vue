@@ -1,6 +1,6 @@
 <!-- 原文视图 | view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减 -->
 <script setup lang="ts">
-import { XhJsonViewerRoot } from "@xihan-ui/vue";
+import { XhJsonViewerRoot, XhSwitch } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const payload = {
@@ -18,10 +18,9 @@ const view = ref<"tree" | "text">("text");
 
 <template>
   <div style="display: flex; flex-direction: column; gap: 8px; inline-size: 100%; max-inline-size: 420px">
-    <label style="display: flex; align-items: center; gap: 6px">
-      <input v-model="view" type="checkbox" true-value="text" false-value="tree">
+    <XhSwitch :checked="view === 'text'" @update:checked="view = $event ? 'text' : 'tree'">
       原文视图
-    </label>
+    </XhSwitch>
     <XhJsonViewerRoot :value="payload" :view="view" :default-expanded-depth="2" />
   </div>
 </template>

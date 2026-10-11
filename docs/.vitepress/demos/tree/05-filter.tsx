@@ -1,11 +1,16 @@
 // 关键词过滤 | collection 换一份树即换一棵：标记跟随数据重新铺设，过滤后剩余的分支一并全部展开
 import type { ReactNode } from "react";
 import {
+  XhTextFieldClearTrigger,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
   XhTreeBranch,
   XhTreeBranchContent,
   XhTreeBranchControl,
   XhTreeBranchText,
   XhTreeBranchTrigger,
+  XhTreeEmpty,
   XhTreeItem,
   XhTreeItemIndicator,
   XhTreeItemText,
@@ -82,13 +87,18 @@ export default function Demo(): ReactNode {
 
   return (
     <div style={{ width: "100%", maxWidth: "320px", display: "grid", gap: "12px" }}>
-      <input
+      <XhTextFieldRoot
         type="search"
-        aria-label="城市关键词"
         placeholder="输入城市名"
+        clearable
         value={keyword}
-        onChange={e => onKeyword(e.target.value)}
-      />
+        onValueChange={details => onKeyword(details.value)}
+      >
+        <XhTextFieldControl>
+          <XhTextFieldInput aria-label="城市关键词" />
+          <XhTextFieldClearTrigger />
+        </XhTextFieldControl>
+      </XhTextFieldRoot>
 
       <XhTreeRoot
         expandedValue={expanded}
@@ -115,9 +125,9 @@ export default function Demo(): ReactNode {
             </XhTreeBranch>
           ))}
         </XhTreeTree>
+        {/* 空态占位：给了 collection 时由组件按剩下几枝收放 */}
+        <XhTreeEmpty>{`没有匹配「${keyword}」的城市`}</XhTreeEmpty>
       </XhTreeRoot>
-
-      {!collection.length && <span>{`没有匹配「${keyword}」的城市`}</span>}
     </div>
   );
 }

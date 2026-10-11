@@ -130,7 +130,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhTableRoot>
-      <span>{log}</span>
+      <span data-demo-output>{log}</span>
     </div>
   );
 }

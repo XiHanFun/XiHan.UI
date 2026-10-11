@@ -14,14 +14,18 @@
         <div data-xh-part="loading">正在加载城市…</div>
         <div data-xh-part="empty">暂无可选城市</div>
         <div data-xh-part="footer">
-          <button type="button" data-load-mode="cities">加载城市</button>
-          <button type="button" data-load-mode="empty">加载空集合</button>
+          <xh-button variant="ghost" size="sm" data-load-mode="cities">
+            <button data-xh-part="root">加载城市</button>
+          </xh-button>
+          <xh-button variant="ghost" size="sm" data-load-mode="empty">
+            <button data-xh-part="root">加载空集合</button>
+          </xh-button>
         </div>
       </div>
     </div>
   </div>
 </xh-tree-select>
-<p>已选：<span id="tree-select-async-value">（无）</span></p>
+<p data-demo-output>已选：<span id="tree-select-async-value">（无）</span></p>
 
 <script type="module">
   const treeSelect = document.getElementById("tree-select-async");

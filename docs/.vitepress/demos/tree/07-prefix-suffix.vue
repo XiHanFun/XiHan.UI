@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { FileIcon, FolderIcon } from "@xihan-ui/icons";
 import {
+  XhButton,
   XhIcon,
   XhTreeBranch,
   XhTreeBranchContent,
@@ -57,13 +58,13 @@ function rename(label: string): void {
               <XhIcon :icon="FileIcon" />
               <XhTreeItemText>{{ file.label }}</XhTreeItemText>
               <!-- 掐断冒泡，否则点按钮连带把这一行也选上 -->
-              <button type="button" @click.stop="rename(file.label)">重命名</button>
+              <XhButton variant="ghost" size="sm" @click.stop="rename(file.label)">重命名</XhButton>
               <XhTreeItemIndicator />
             </XhTreeItem>
           </XhTreeBranchContent>
         </XhTreeBranch>
       </XhTreeTree>
     </XhTreeRoot>
-    <span>{{ log }}</span>
+    <span data-demo-output>{{ log }}</span>
   </div>
 </template>

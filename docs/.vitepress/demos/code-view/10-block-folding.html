@@ -1,13 +1,19 @@
 <!-- 按块折叠 | block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠集合写块头的行号，可受控（folded）也可非受控（default-folded）；一组钮只占一个 Tab 位、上下方向键在组内走 -->
-<div style="display: grid; gap: 8px; inline-size: 100%">
-  <xh-code-view id="code-view-block-folding" code-lang="typescript" complete line-numbers block-folding default-folded="11">
-    <div data-xh-part="root">
-      <!-- 行与折叠钮都由元素铺 -->
-      <pre data-xh-part="pre"><code data-xh-part="code"></code></pre>
-    </div>
-  </xh-code-view>
-  <span id="code-view-block-folding-state">折叠着的块头：11</span>
-</div>
+<xh-code-view
+  id="code-view-block-folding"
+  code-lang="typescript"
+  complete
+  line-numbers
+  block-folding
+  default-folded="11"
+  style="inline-size: 100%"
+>
+  <div data-xh-part="root">
+    <!-- 行与折叠钮都由元素铺 -->
+    <pre data-xh-part="pre"><code data-xh-part="code"></code></pre>
+  </div>
+</xh-code-view>
+<span id="code-view-block-folding-state" data-demo-output>折叠着的块头：11</span>
 
 <script type="module">
   const view = document.getElementById("code-view-block-folding");

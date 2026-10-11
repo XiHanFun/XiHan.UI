@@ -42,7 +42,7 @@ function pop(create: Create, placement: string, label: string): void {
     >
       弹到{{ spot.label }}
     </XhButton>
-    <span>眼下有条目的位置：{{ placements.join("、") || "（无）" }}</span>
+    <span data-demo-output>眼下有条目的位置：{{ placements.join("、") || "（无）" }}</span>
 
     <!-- 一个位置一摞，没有条目的位置不必渲染 -->
     <XhNotificationGroup v-for="p in placements" :key="p" :placement="p">

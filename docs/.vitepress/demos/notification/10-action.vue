@@ -35,9 +35,7 @@ function onAction(details: { id: string }): void {
       <XhNotificationItemActionTrigger>撤销</XhNotificationItemActionTrigger>
       <XhNotificationItemCloseTrigger />
     </XhNotificationItem>
-    <div style="display: flex; align-items: center; gap: 12px">
-      <XhButton size="sm" variant="outline" @click="seq++">再挂一条</XhButton>
-      <span>{{ log }}</span>
-    </div>
+    <XhButton size="sm" variant="outline" @click="seq++">再挂一条</XhButton>
+    <span data-demo-output>{{ log }}</span>
   </div>
 </template>

@@ -74,6 +74,5 @@ function onValueChange(details: { value: string[] }) {
     </XhTagsInputControl>
     <XhTagsInputHiddenInput />
   </XhTagsInputRoot>
-  <p>提交出去的是标识：{{ value.join(",") || "（无）" }}</p>
-  <p>框里看到的是名字：{{ value.map(labelOf).join("、") || "（无）" }}</p>
+  <p data-demo-output>提交出去的是标识：{{ value.join(",") || "（无）" }} · 框里看到的是名字：{{ value.map(labelOf).join("、") || "（无）" }}</p>
 </template>

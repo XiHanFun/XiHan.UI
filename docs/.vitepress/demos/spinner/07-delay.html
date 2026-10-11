@@ -8,8 +8,8 @@
       <button data-xh-part="root">慢请求（1.5 s）</button>
     </xh-button>
   </div>
-  <span data-slot="result"></span>
 </div>
+<span id="spinner-delay-result" data-demo-output>（还没查询）</span>
 
 <!-- delay 从元素连上文档那一刻算起：每次请求现挂一个，回来就撤掉 -->
 <template id="spinner-delay-template">
@@ -23,7 +23,7 @@
 <script type="module">
   const demo = document.getElementById("spinner-delay");
   const template = document.getElementById("spinner-delay-template");
-  const result = demo.querySelector('[data-slot="result"]');
+  const result = document.getElementById("spinner-delay-result");
   const buttons = [...demo.querySelectorAll("xh-button")];
 
   for (const button of buttons) {
@@ -31,8 +31,7 @@
       const ms = Number(button.dataset.ms);
       const spinner = document.importNode(template.content.firstElementChild, true);
       for (const each of buttons) each.disabled = true;
-      result.textContent = "";
-      result.before(spinner);
+      demo.append(spinner);
       window.setTimeout(() => {
         spinner.remove();
         for (const each of buttons) each.disabled = false;

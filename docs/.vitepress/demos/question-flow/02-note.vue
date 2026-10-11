@@ -46,48 +46,47 @@ const log = ref("");
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px; max-width: 340px;">
-    <XhQuestionFlowRoot
-      v-slot="{ isLast }"
-      :questions="questions"
-      :auto-advance="false"
-      tone="neutral"
-      variant="subtle"
-      :translations="{ note: '自己写一句', notePlaceholder: '都不是，我想要…' }"
-      @skip="log = `跳过了第 ${$event.index + 1} 题`"
-      @submit="log = `自己写的：${Object.values($event.notes).filter(Boolean).join(' / ') || '（没写）'}`"
-    >
-      <XhQuestionFlowViewport>
-        <XhQuestionFlowTrack>
-          <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
-            <XhQuestionFlowPrompt :question-id="question.id">{{ question.prompt }}</XhQuestionFlowPrompt>
-            <XhQuestionFlowGroup :question-id="question.id">
-              <XhQuestionFlowItem
-                v-for="option in question.options"
-                :key="option.value"
-                :question-id="question.id"
-                :option-value="option.value"
-              >
-                <XhQuestionFlowItemIndicator :question-id="question.id" :option-value="option.value" />
-                <XhQuestionFlowItemText :question-id="question.id" :option-value="option.value">
-                  {{ option.label }}
-                </XhQuestionFlowItemText>
-              </XhQuestionFlowItem>
-            </XhQuestionFlowGroup>
-            <!-- 写了一句就算答过这一题，继续键随之亮起 -->
-            <XhQuestionFlowNote :question-id="question.id" />
-          </XhQuestionFlowQuestion>
-        </XhQuestionFlowTrack>
-      </XhQuestionFlowViewport>
-      <XhQuestionFlowFooter>
-        <XhQuestionFlowCounter />
-        <div style="display: flex; align-items: center; gap: 6px;">
-          <XhQuestionFlowSkipTrigger>跳过</XhQuestionFlowSkipTrigger>
-          <XhQuestionFlowSubmitTrigger>{{ isLast ? "发送" : "继续" }}</XhQuestionFlowSubmitTrigger>
-        </div>
-      </XhQuestionFlowFooter>
-      <XhQuestionFlowLiveRegion />
-    </XhQuestionFlowRoot>
-    <p v-if="log" style="margin: 0;">{{ log }}</p>
-  </div>
+  <XhQuestionFlowRoot
+    v-slot="{ isLast }"
+    :questions="questions"
+    style="max-width: 340px;"
+    :auto-advance="false"
+    tone="neutral"
+    variant="subtle"
+    :translations="{ note: '自己写一句', notePlaceholder: '都不是，我想要…' }"
+    @skip="log = `跳过了第 ${$event.index + 1} 题`"
+    @submit="log = `自己写的：${Object.values($event.notes).filter(Boolean).join(' / ') || '（没写）'}`"
+  >
+    <XhQuestionFlowViewport>
+      <XhQuestionFlowTrack>
+        <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
+          <XhQuestionFlowPrompt :question-id="question.id">{{ question.prompt }}</XhQuestionFlowPrompt>
+          <XhQuestionFlowGroup :question-id="question.id">
+            <XhQuestionFlowItem
+              v-for="option in question.options"
+              :key="option.value"
+              :question-id="question.id"
+              :option-value="option.value"
+            >
+              <XhQuestionFlowItemIndicator :question-id="question.id" :option-value="option.value" />
+              <XhQuestionFlowItemText :question-id="question.id" :option-value="option.value">
+                {{ option.label }}
+              </XhQuestionFlowItemText>
+            </XhQuestionFlowItem>
+          </XhQuestionFlowGroup>
+          <!-- 写了一句就算答过这一题，继续键随之亮起 -->
+          <XhQuestionFlowNote :question-id="question.id" />
+        </XhQuestionFlowQuestion>
+      </XhQuestionFlowTrack>
+    </XhQuestionFlowViewport>
+    <XhQuestionFlowFooter>
+      <XhQuestionFlowCounter />
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <XhQuestionFlowSkipTrigger>跳过</XhQuestionFlowSkipTrigger>
+        <XhQuestionFlowSubmitTrigger>{{ isLast ? "发送" : "继续" }}</XhQuestionFlowSubmitTrigger>
+      </div>
+    </XhQuestionFlowFooter>
+    <XhQuestionFlowLiveRegion />
+  </XhQuestionFlowRoot>
+  <p data-demo-output>{{ log || "（还没操作）" }}</p>
 </template>

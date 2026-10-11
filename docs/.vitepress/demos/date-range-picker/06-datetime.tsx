@@ -121,7 +121,7 @@ export default function Demo(): ReactNode {
         )}
       </XhDateRangePickerRoot>
 
-      <span aria-live="polite" style={{ fontSize: "13px" }}>{`当前值：${text}`}</span>
+      <span aria-live="polite" data-demo-output>{`当前值：${text}`}</span>
     </>
   );
 }

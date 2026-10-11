@@ -13,16 +13,14 @@ const clicks = ref(0);
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 16px">
-    <XhHoverCardRoot disabled placement="bottom-start" :open-delay="0">
-      <XhHoverCardTrigger @click="clicks++">@xihan（卡片已关）</XhHoverCardTrigger>
-      <XhHoverCardPositioner>
-        <XhHoverCardContent>
-          <XhHoverCardArrow />
-          <span>这张卡片不会出现。</span>
-        </XhHoverCardContent>
-      </XhHoverCardPositioner>
-    </XhHoverCardRoot>
-    <span>已点 {{ clicks }} 次</span>
-  </div>
+  <XhHoverCardRoot disabled placement="bottom-start" :open-delay="0">
+    <XhHoverCardTrigger @click="clicks++">@xihan（卡片已关）</XhHoverCardTrigger>
+    <XhHoverCardPositioner>
+      <XhHoverCardContent>
+        <XhHoverCardArrow />
+        <span>这张卡片不会出现。</span>
+      </XhHoverCardContent>
+    </XhHoverCardPositioner>
+  </XhHoverCardRoot>
+  <span data-demo-output>已点 {{ clicks }} 次</span>
 </template>

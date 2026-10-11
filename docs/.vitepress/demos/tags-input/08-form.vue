@@ -48,6 +48,6 @@ function onSubmit(event: Event) {
       <XhTagsInputHiddenInput />
     </XhTagsInputRoot>
     <XhButton type="submit" variant="outline" style="align-self: start">提交</XhButton>
-    <span>表单收到：{{ submitted || "（还没提交）" }}</span>
+    <span data-demo-output>表单收到：{{ submitted || "（还没提交）" }}</span>
   </form>
 </template>

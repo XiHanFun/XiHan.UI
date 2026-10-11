@@ -1,6 +1,7 @@
 <!-- 取出签名 | 签名定稿时 draw-end 带上一份可直接入库的 SVG；提交前用 empty 拦截一次，空签名不应离开客户端 -->
 <script setup lang="ts">
 import {
+  XhButton,
   XhSignaturePadClearTrigger,
   XhSignaturePadControl,
   XhSignaturePadGuide,
@@ -26,8 +27,8 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
     <div style="display: flex; gap: 8px; align-items: center">
       <XhSignaturePadClearTrigger>清空</XhSignaturePadClearTrigger>
       <!-- 空签名与"签了但很潦草"是两回事，前者应该在客户端就挡住 -->
-      <button type="button" :disabled="empty">提交</button>
-      <span style="font-size: 12px">SVG {{ size }} 字节</span>
+      <XhButton variant="solid" size="sm" :disabled="empty">提交</XhButton>
     </div>
   </XhSignaturePadRoot>
+  <span data-demo-output>SVG {{ size }} 字节</span>
 </template>

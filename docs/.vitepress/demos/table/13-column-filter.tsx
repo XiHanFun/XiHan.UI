@@ -2,6 +2,8 @@
 import type { CSSProperties, ReactNode } from "react";
 import { FilterIcon } from "@xihan-ui/icons";
 import {
+  XhButton,
+  XhCheckboxGroupRoot,
   XhIcon,
   XhPopoverContent,
   XhPopoverPositioner,
@@ -34,15 +36,10 @@ const members = [
   { id: "u6", name: "吴六", dept: "平台研发", city: "上海" },
 ];
 
-const deptOptions = [...new Set(members.map(m => m.dept))];
-const cityOptions = [...new Set(members.map(m => m.city))];
+const deptOptions = [...new Set(members.map(m => m.dept))].map(d => ({ value: d, label: d }));
+const cityOptions = [...new Set(members.map(m => m.city))].map(c => ({ value: c, label: c }));
 
 const menuStyle: CSSProperties = { display: "grid", gap: "6px", minInlineSize: "8rem" };
-const optionStyle: CSSProperties = { display: "flex", alignItems: "center", gap: "6px" };
-
-function toggle(list: string[], value: string): string[] {
-  return list.includes(value) ? list.filter(v => v !== value) : [...list, value];
-}
 
 export default function Demo(): ReactNode {
   // 过滤态由宿主持有，一个都没勾就是不过滤
@@ -81,18 +78,14 @@ export default function Demo(): ReactNode {
                   <XhPopoverContent>
                     <XhPopoverTitle>按部门过滤</XhPopoverTitle>
                     <div style={menuStyle}>
-                      {deptOptions.map(d => (
-                        <label key={d} style={optionStyle}>
-                          <input
-                            type="checkbox"
-                            value={d}
-                            checked={deptFilter.includes(d)}
-                            onChange={() => setDeptFilter(prev => toggle(prev, d))}
-                          />
-                          {d}
-                        </label>
-                      ))}
-                      <button type="button" onClick={() => setDeptFilter([])}>不限</button>
+                      <XhCheckboxGroupRoot
+                        value={deptFilter}
+                        onValueChange={details => setDeptFilter(details.value)}
+                        collection={deptOptions}
+                        aria-label="部门"
+                        size="sm"
+                      />
+                      <XhButton size="sm" variant="outline" onClick={() => setDeptFilter([])}>不限</XhButton>
                     </div>
                   </XhPopoverContent>
                 </XhPopoverPositioner>
@@ -111,18 +104,14 @@ export default function Demo(): ReactNode {
                   <XhPopoverContent>
                     <XhPopoverTitle>按城市过滤</XhPopoverTitle>
                     <div style={menuStyle}>
-                      {cityOptions.map(c => (
-                        <label key={c} style={optionStyle}>
-                          <input
-                            type="checkbox"
-                            value={c}
-                            checked={cityFilter.includes(c)}
-                            onChange={() => setCityFilter(prev => toggle(prev, c))}
-                          />
-                          {c}
-                        </label>
-                      ))}
-                      <button type="button" onClick={() => setCityFilter([])}>不限</button>
+                      <XhCheckboxGroupRoot
+                        value={cityFilter}
+                        onValueChange={details => setCityFilter(details.value)}
+                        collection={cityOptions}
+                        aria-label="城市"
+                        size="sm"
+                      />
+                      <XhButton size="sm" variant="outline" onClick={() => setCityFilter([])}>不限</XhButton>
                     </div>
                   </XhPopoverContent>
                 </XhPopoverPositioner>
@@ -141,7 +130,7 @@ export default function Demo(): ReactNode {
         </XhTableBody>
         <XhTableEmpty>这组条件下没有人。</XhTableEmpty>
       </XhTableRoot>
-      <span>
+      <span data-demo-output>
         {`命中 ${visible.length} / ${members.length} 人 · 部门：${deptFilter.length ? deptFilter.join("、") : "不限"} · 城市：${cityFilter.length ? cityFilter.join("、") : "不限"}`}
       </span>
     </div>

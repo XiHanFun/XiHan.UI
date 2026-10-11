@@ -48,7 +48,7 @@ const value = ref<string[]>(["he"]);
                 block-size: 24px;
                 align-items: center;
                 justify-content: center;
-                border-radius: 999px;
+                border-radius: var(--xh-shape-circle);
                 background: var(--xh-bg-subtle);
                 font-size: 12px;
               "
@@ -83,7 +83,7 @@ const value = ref<string[]>(["he"]);
                 block-size: 24px;
                 align-items: center;
                 justify-content: center;
-                border-radius: 999px;
+                border-radius: var(--xh-shape-circle);
                 background: var(--xh-bg-subtle);
                 font-size: 12px;
               "

@@ -1,42 +1,35 @@
 <!-- 命令式确认框 | 一次函数调用把描述符推入表中并展开对话框；返回的对象随后可修改标题、正文与按钮状态，表中即当前所有实例 -->
-<div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-  <div style="display: flex; flex-wrap: wrap; gap: 8px">
-    <xh-button variant="solid" id="dialog-imperative-remove">
-      <button data-xh-part="root">删除工作区</button>
-    </xh-button>
-    <xh-button variant="outline" id="dialog-imperative-export">
-      <button data-xh-part="root">导出数据</button>
-    </xh-button>
-  </div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+  <xh-button variant="solid" id="dialog-imperative-remove">
+    <button data-xh-part="root">删除工作区</button>
+  </xh-button>
+  <xh-button variant="outline" id="dialog-imperative-export">
+    <button data-xh-part="root">导出数据</button>
+  </xh-button>
+</div>
 
-  <ol
-    id="dialog-imperative-specs"
-    style="display: grid; gap: 4px; margin: 0; padding-inline-start: 20px"
-  >
-    <li>（还没有描述符）</li>
-  </ol>
+<span id="dialog-imperative-specs" data-demo-output>描述符表：（空）</span>
 
-  <xh-dialog id="dialog-imperative" open="false">
-    <div data-xh-part="backdrop"></div>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <h2 data-xh-part="title"></h2>
-        <p data-xh-part="description"></p>
-        <div style="display: flex; justify-content: flex-end; gap: 8px">
-          <xh-button variant="ghost" id="dialog-imperative-cancel">
-            <button data-xh-part="root">取消</button>
-          </xh-button>
-          <xh-button variant="solid" id="dialog-imperative-ok">
-            <button data-xh-part="root">
-              <span data-xh-part="indicator"></span>
-              <span data-xh-part="label">确认</span>
-            </button>
-          </xh-button>
-        </div>
+<xh-dialog id="dialog-imperative" open="false">
+  <div data-xh-part="backdrop"></div>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <h2 data-xh-part="title"></h2>
+      <p data-xh-part="description"></p>
+      <div style="display: flex; justify-content: flex-end; gap: 8px">
+        <xh-button variant="ghost" id="dialog-imperative-cancel">
+          <button data-xh-part="root">取消</button>
+        </xh-button>
+        <xh-button variant="solid" id="dialog-imperative-ok">
+          <button data-xh-part="root">
+            <span data-xh-part="indicator"></span>
+            <span data-xh-part="label">确认</span>
+          </button>
+        </xh-button>
       </div>
     </div>
-  </xh-dialog>
-</div>
+  </div>
+</xh-dialog>
 
 <script type="module">
   const dialog = document.getElementById("dialog-imperative");
@@ -45,7 +38,7 @@
   const cancel = document.getElementById("dialog-imperative-cancel");
   const ok = document.getElementById("dialog-imperative-ok");
   const label = ok.querySelector('[data-xh-part="label"]');
-  const list = document.getElementById("dialog-imperative-specs");
+  const table = document.getElementById("dialog-imperative-specs");
 
   const specs = [];
   let current = null;
@@ -68,7 +61,7 @@
     return spec;
   }
 
-  // 对话框与下面那张表都照当前描述符重画
+  // 对话框与描述符表都照当前描述符重画；表里每个描述符一段，合成一行
   function render() {
     if (current) {
       title.textContent = current.title;
@@ -78,15 +71,10 @@
       cancel.disabled = current.loading;
     }
     const rows = specs.map(
-      (spec) => `${spec.title} — ${spec.loading ? "提交中" : "空闲"}`,
+      (spec) => `${spec.title}（${spec.loading ? "提交中" : "空闲"}）`,
     );
-    list.replaceChildren(
-      ...(rows.length === 0 ? ["（还没有描述符）"] : rows).map((line) => {
-        const li = document.createElement("li");
-        li.textContent = line;
-        return li;
-      }),
-    );
+    table.textContent = `描述符表：${rows.join(" · ") || "（空）"}`;
+    table.title = table.textContent;
   }
 
   // 改的是描述符本身，对话框跟着变

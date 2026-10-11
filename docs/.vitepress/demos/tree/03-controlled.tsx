@@ -47,8 +47,8 @@ export default function Demo(): ReactNode {
   return (
     <div style={{ width: "100%", maxWidth: "320px", display: "grid", gap: "12px" }}>
       <div style={{ display: "flex", gap: "8px" }}>
-        <XhButton size="sm" onClick={() => setExpanded(["api", "guide"])}>全部展开</XhButton>
-        <XhButton size="sm" onClick={() => setExpanded([])}>全部收起</XhButton>
+        <XhButton variant="outline" size="sm" onClick={() => setExpanded(["api", "guide"])}>全部展开</XhButton>
+        <XhButton variant="outline" size="sm" onClick={() => setExpanded([])}>全部收起</XhButton>
       </div>
 
       <XhTreeRoot
@@ -94,7 +94,7 @@ export default function Demo(): ReactNode {
         </XhTreeTree>
       </XhTreeRoot>
 
-      <span>
+      <span data-demo-output>
         {`展开：${expanded.length ? expanded.join("、") : "（无）"} · 选中：${
           selected.length ? selected.join("、") : "（无）"
         }`}

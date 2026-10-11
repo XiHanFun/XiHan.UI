@@ -1,10 +1,20 @@
 <!-- 提前量 | distance 把可视区沿块轴向外扩展，哨兵尚未出现就先取下一页 -->
 <script setup lang="ts">
-import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/vue";
+import {
+  XhInfiniteScrollRoot,
+  XhInfiniteScrollSentinel,
+  XhSliderControl,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+} from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const scrollEl = ref<HTMLElement | null>(null);
-const distance = ref(200);
+// 滑块的值恒为数组，单滑块取第一项
+const distance = ref([200]);
 const items = ref(Array.from({ length: 12 }, (_, i) => `第 ${i + 1} 条`));
 const loading = ref(false);
 const rounds = ref(0);
@@ -22,11 +32,15 @@ function onLoad(): void {
 
 <template>
   <div style="display: grid; gap: 12px; inline-size: 100%">
-    <label style="display: flex; align-items: center; gap: 8px">
-      提前
-      <input v-model.number="distance" type="range" min="0" max="400" step="50">
-      {{ distance }}px 触发 · 已取 {{ rounds }} 页
-    </label>
+    <XhSliderRoot v-model:value="distance" :min="0" :max="400" :step="50">
+      <XhSliderLabel>提前量</XhSliderLabel>
+      <XhSliderControl>
+        <XhSliderTrack>
+          <XhSliderRange />
+        </XhSliderTrack>
+        <XhSliderThumb />
+      </XhSliderControl>
+    </XhSliderRoot>
 
     <div
       ref="scrollEl"
@@ -34,14 +48,14 @@ function onLoad(): void {
       style="
         block-size: 220px;
         overflow: auto;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 8px;
+        border: var(--xh-stroke-thin) solid var(--xh-border-default);
+        border-radius: var(--xh-shape-surface);
       "
     >
       <!-- 提前量扩的是 target 那块可视区，容器滚动必须把容器交出来 -->
       <XhInfiniteScrollRoot
         :target="scrollEl"
-        :distance="distance"
+        :distance="distance[0]"
         :loading="loading"
         @load="onLoad"
       >
@@ -50,4 +64,6 @@ function onLoad(): void {
       </XhInfiniteScrollRoot>
     </div>
   </div>
+
+  <span data-demo-output>{{ distance[0] }}px 触发 · 已取 {{ rounds }} 页</span>
 </template>

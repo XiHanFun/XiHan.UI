@@ -35,7 +35,7 @@
       if (!el) {
         el = document.createElement("div");
         el.dataset.xhPart = "item";
-        el.style.cssText = "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)";
+        el.style.cssText = "display: flex; align-items: center; height: 36px; padding-inline: 12px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
         el.textContent = message.text;
         nodes.set(message.id, el);
         content.append(el);

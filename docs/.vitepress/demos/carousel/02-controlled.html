@@ -28,11 +28,11 @@
 
   <!-- 页码握在宿主手里，外部按钮直接改它 -->
   <div style="display: flex; align-items: center; gap: 8px">
-    <button type="button" data-page="0">跳到「登录」</button>
-    <button type="button" data-page="1">跳到「选套餐」</button>
-    <button type="button" data-page="2">跳到「付款」</button>
-    <span id="carousel-controlled-readout">当前第 2 张</span>
+    <xh-button variant="outline" size="sm"><button data-xh-part="root" data-page="0">跳到「登录」</button></xh-button>
+    <xh-button variant="outline" size="sm"><button data-xh-part="root" data-page="1">跳到「选套餐」</button></xh-button>
+    <xh-button variant="outline" size="sm"><button data-xh-part="root" data-page="2">跳到「付款」</button></xh-button>
   </div>
+  <span id="carousel-controlled-readout" data-demo-output>当前第 2 张</span>
 </div>
 
 <script type="module">

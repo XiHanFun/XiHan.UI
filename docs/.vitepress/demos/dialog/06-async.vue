@@ -27,29 +27,27 @@ function submit() {
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <XhDialogRoot
-      v-model:open="open"
-      :close-on-escape="!submitting"
-      :close-on-interact-outside="!submitting"
-    >
-      <XhDialogTrigger>归档这个项目</XhDialogTrigger>
-      <XhDialogContent>
-        <XhDialogTitle>归档项目</XhDialogTitle>
-        <XhDialogDescription>
-          {{ submitting ? "正在归档，先别走开。" : "归档后项目转为只读，随时可以恢复。" }}
-        </XhDialogDescription>
-        <div style="display: flex; justify-content: flex-end; gap: 8px">
-          <XhButton variant="ghost" :disabled="submitting" @click="open = false">
-            取消
-          </XhButton>
-          <XhButton variant="solid" :loading="submitting" @click="submit">
-            <XhButtonIndicator />
-            <XhButtonLabel>{{ submitting ? "归档中" : "确认归档" }}</XhButtonLabel>
-          </XhButton>
-        </div>
-      </XhDialogContent>
-    </XhDialogRoot>
-    <span>{{ archived ? "已归档" : "未归档" }}</span>
-  </div>
+  <XhDialogRoot
+    v-model:open="open"
+    :close-on-escape="!submitting"
+    :close-on-interact-outside="!submitting"
+  >
+    <XhDialogTrigger>归档这个项目</XhDialogTrigger>
+    <XhDialogContent>
+      <XhDialogTitle>归档项目</XhDialogTitle>
+      <XhDialogDescription>
+        {{ submitting ? "正在归档，先别走开。" : "归档后项目转为只读，随时可以恢复。" }}
+      </XhDialogDescription>
+      <div style="display: flex; justify-content: flex-end; gap: 8px">
+        <XhButton variant="ghost" :disabled="submitting" @click="open = false">
+          取消
+        </XhButton>
+        <XhButton variant="solid" :loading="submitting" @click="submit">
+          <XhButtonIndicator />
+          <XhButtonLabel>{{ submitting ? "归档中" : "确认归档" }}</XhButtonLabel>
+        </XhButton>
+      </div>
+    </XhDialogContent>
+  </XhDialogRoot>
+  <span data-demo-output>项目状态：{{ archived ? "已归档" : "未归档" }}</span>
 </template>

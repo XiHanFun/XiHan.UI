@@ -72,5 +72,5 @@ function onScroll(event: Event): void {
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>
-  <p>已加载 {{ tickets.length }} / {{ TOTAL }} 条</p>
+  <p data-demo-output>已加载 {{ tickets.length }} / {{ TOTAL }} 条</p>
 </template>

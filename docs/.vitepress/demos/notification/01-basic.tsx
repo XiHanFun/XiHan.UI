@@ -36,7 +36,7 @@ export default function Demo(): ReactNode {
           >
             弹一条 danger
           </XhButton>
-          <span>{`队列：${count} 条`}</span>
+          <span data-demo-output>{`队列：${count} 条`}</span>
 
           <XhNotificationGroup>
             {({ item }) => (

@@ -25,5 +25,5 @@ const color = ref<string[]>(["#3b82f6"]);
       <XhColorPickerChannelInput channel="hex" />
     </XhColorPickerContent>
   </XhColorPickerRoot>
-  <p>当前：<code>{{ color[0] }}</code></p>
+  <p data-demo-output>当前：<code>{{ color[0] }}</code></p>
 </template>

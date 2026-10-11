@@ -34,6 +34,6 @@ async function remove(): Promise<void> {
     >
       error 告知框
     </XhButton>
-    <span>上次答复：{{ lastAnswer }}</span>
   </div>
+  <span data-demo-output>上次答复：{{ lastAnswer }}</span>
 </template>

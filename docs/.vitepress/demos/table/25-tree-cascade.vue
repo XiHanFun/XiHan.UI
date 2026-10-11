@@ -68,6 +68,6 @@ const selection = ref<TableSelection>([]);
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>选中：{{ selection === "all" ? "全部" : selection.length ? selection.join("、") : "（无）" }}</span>
+    <span data-demo-output>选中：{{ selection === "all" ? "全部" : selection.length ? selection.join("、") : "（无）" }}</span>
   </div>
 </template>

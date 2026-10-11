@@ -1,8 +1,12 @@
 <!-- 受控当前题 | 进度由宿主管理：外部按钮直接跳题，答案也一并受控，组件只发意图 -->
 <div style="display: flex; flex-direction: column; gap: 12px; max-width: 340px">
   <div style="display: flex; gap: 6px">
-    <button type="button" id="question-flow-controlled-to-1">跳到第 1 题</button>
-    <button type="button" id="question-flow-controlled-to-2">跳到第 2 题</button>
+    <xh-button id="question-flow-controlled-to-1" size="sm" variant="outline">
+      <button data-xh-part="root">跳到第 1 题</button>
+    </xh-button>
+    <xh-button id="question-flow-controlled-to-2" size="sm" variant="outline">
+      <button data-xh-part="root">跳到第 2 题</button>
+    </xh-button>
   </div>
   <xh-question-flow id="question-flow-controlled" index="0" allow-skip="false">
     <div data-xh-part="root">
@@ -47,7 +51,7 @@
       <div data-xh-part="live-region"></div>
     </div>
   </xh-question-flow>
-  <p id="question-flow-controlled-log" style="margin: 0"></p>
+  <p id="question-flow-controlled-log" data-demo-output></p>
 </div>
 
 <script type="module">

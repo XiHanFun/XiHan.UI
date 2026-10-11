@@ -49,7 +49,7 @@ const value = ref<string[]>(["09:00", "14:30"]);
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
 
-  <span aria-live="polite" style="font-size: 13px">
+  <span aria-live="polite" data-demo-output>
     当前值：{{ value.join("、") || "（空）" }}
   </span>
 </template>

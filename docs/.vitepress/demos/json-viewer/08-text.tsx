@@ -1,6 +1,6 @@
 // 原文视图 | view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减
 import type { ReactNode } from "react";
-import { XhJsonViewerRoot } from "@xihan-ui/react";
+import { XhJsonViewerRoot, XhSwitch } from "@xihan-ui/react";
 import { useState } from "react";
 
 const payload = {
@@ -18,14 +18,12 @@ export default function Demo(): ReactNode {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "8px", inlineSize: "100%", maxInlineSize: "420px" }}>
-      <label style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-        <input
-          type="checkbox"
-          checked={view === "text"}
-          onChange={event => setView(event.target.checked ? "text" : "tree")}
-        />
+      <XhSwitch
+        checked={view === "text"}
+        onCheckedChange={details => setView(details.checked ? "text" : "tree")}
+      >
         原文视图
-      </label>
+      </XhSwitch>
       <XhJsonViewerRoot value={payload} view={view} defaultExpandedDepth={2} />
     </div>
   );

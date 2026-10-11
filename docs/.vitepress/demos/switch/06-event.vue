@@ -14,5 +14,5 @@ function onCheckedChange(details: { checked: boolean }) {
 
 <template>
   <XhSwitch @checked-change="onCheckedChange" />
-  <span>翻转 {{ times }} 次 · 最近落到 {{ last }}</span>
+  <span data-demo-output>翻转 {{ times }} 次 · 最近落到 {{ last }}</span>
 </template>

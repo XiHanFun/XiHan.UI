@@ -49,7 +49,7 @@ export default function Demo(): ReactNode {
         <XhImageFallback>没有来源</XhImageFallback>
       </XhImageRoot>
 
-      <span style={{ fontSize: "13px" }}>
+      <span data-demo-output>
         {`状态：正常 ${status.ok} · 坏地址 ${status.broken} · 无 src ${status.none}`}
       </span>
     </>

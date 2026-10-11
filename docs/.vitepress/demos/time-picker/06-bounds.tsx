@@ -46,7 +46,7 @@ export default function Demo(): ReactNode {
         </XhTimePickerPositioner>
       </XhTimePickerRoot>
 
-      <span style={{ fontSize: "13px" }}>
+      <span data-demo-output>
         {`手打进段位的时间不受裁剪限制，越界只被标注：${value[0] ?? "（空）"}`}
       </span>
     </>

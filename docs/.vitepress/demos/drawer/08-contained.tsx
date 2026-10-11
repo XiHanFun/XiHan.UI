@@ -15,7 +15,7 @@ const box: CSSProperties = {
   overflow: "hidden",
   blockSize: "200px",
   padding: "16px",
-  border: "1px solid var(--xh-border-default)",
+  border: "var(--xh-stroke-thin) solid var(--xh-border-default)",
   borderRadius: "var(--xh-shape-surface)",
 };
 

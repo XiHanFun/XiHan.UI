@@ -10,77 +10,75 @@
           <div data-xh-part="column-header" value="note"><span data-xh-part="column-label">备注</span></div>
         </div>
       </div>
+      <!-- 格子比字段的缺省宽度窄：宿主撑满格子、--xh-control-w 改成 100%，字段铺满所在的格子 -->
       <div data-xh-part="body">
         <div data-xh-part="row" value="l1">
           <div data-xh-part="cell" value="item">键盘</div>
           <div data-xh-part="cell" value="count">
-            <input
-              type="number"
-              min="0"
-              value="2"
-              aria-label="键盘 数量"
-              data-count
-              style="inline-size: 100%; min-inline-size: 0"
-            />
+            <xh-number-field default-value="2" min="0" size="sm" style="inline-size: 100%; --xh-control-w: 100%">
+              <div data-xh-part="root">
+                <div data-xh-part="control">
+                  <input data-xh-part="input" aria-label="键盘 数量" />
+                </div>
+              </div>
+            </xh-number-field>
           </div>
           <div data-xh-part="cell" value="note">
-            <input
-              type="text"
-              value="机械轴"
-              placeholder="可以打空格"
-              aria-label="键盘 备注"
-              style="inline-size: 100%; min-inline-size: 0"
-            />
+            <xh-text-field default-value="机械轴" placeholder="可以打空格" size="sm" style="inline-size: 100%; --xh-control-w: 100%">
+              <div data-xh-part="root">
+                <div data-xh-part="control">
+                  <input data-xh-part="input" aria-label="键盘 备注" />
+                </div>
+              </div>
+            </xh-text-field>
           </div>
         </div>
         <div data-xh-part="row" value="l2">
           <div data-xh-part="cell" value="item">鼠标</div>
           <div data-xh-part="cell" value="count">
-            <input
-              type="number"
-              min="0"
-              value="3"
-              aria-label="鼠标 数量"
-              data-count
-              style="inline-size: 100%; min-inline-size: 0"
-            />
+            <xh-number-field default-value="3" min="0" size="sm" style="inline-size: 100%; --xh-control-w: 100%">
+              <div data-xh-part="root">
+                <div data-xh-part="control">
+                  <input data-xh-part="input" aria-label="鼠标 数量" />
+                </div>
+              </div>
+            </xh-number-field>
           </div>
           <div data-xh-part="cell" value="note">
-            <input
-              type="text"
-              value="无线"
-              placeholder="可以打空格"
-              aria-label="鼠标 备注"
-              style="inline-size: 100%; min-inline-size: 0"
-            />
+            <xh-text-field default-value="无线" placeholder="可以打空格" size="sm" style="inline-size: 100%; --xh-control-w: 100%">
+              <div data-xh-part="root">
+                <div data-xh-part="control">
+                  <input data-xh-part="input" aria-label="鼠标 备注" />
+                </div>
+              </div>
+            </xh-text-field>
           </div>
         </div>
         <div data-xh-part="row" value="l3">
           <div data-xh-part="cell" value="item">显示器支架</div>
           <div data-xh-part="cell" value="count">
-            <input
-              type="number"
-              min="0"
-              value="1"
-              aria-label="显示器支架 数量"
-              data-count
-              style="inline-size: 100%; min-inline-size: 0"
-            />
+            <xh-number-field default-value="1" min="0" size="sm" style="inline-size: 100%; --xh-control-w: 100%">
+              <div data-xh-part="root">
+                <div data-xh-part="control">
+                  <input data-xh-part="input" aria-label="显示器支架 数量" />
+                </div>
+              </div>
+            </xh-number-field>
           </div>
           <div data-xh-part="cell" value="note">
-            <input
-              type="text"
-              value=""
-              placeholder="可以打空格"
-              aria-label="显示器支架 备注"
-              style="inline-size: 100%; min-inline-size: 0"
-            />
+            <xh-text-field placeholder="可以打空格" size="sm" style="inline-size: 100%; --xh-control-w: 100%">
+              <div data-xh-part="root">
+                <div data-xh-part="control">
+                  <input data-xh-part="input" aria-label="显示器支架 备注" />
+                </div>
+              </div>
+            </xh-text-field>
           </div>
         </div>
       </div>
     </div>
   </xh-table>
-  <span id="table-edit-total"></span>
+  <span id="table-edit-total" data-demo-output></span>
 </div>
 
 <script type="module">
@@ -96,21 +94,31 @@
   // 行序不随编辑变化，rows 给一次即可
   table.rows = [{ id: "l1" }, { id: "l2" }, { id: "l3" }];
 
-  const counts = [...table.querySelectorAll("input[data-count]")];
+  // 每个数字框的当前数量各记一份，合计从这里读
+  const counts = new Map();
 
   function sum() {
-    total.textContent = `合计 ${counts.reduce((n, input) => n + (Number(input.value) || 0), 0)} 件`;
+    let n = 0;
+    for (const count of counts.values()) n += count || 0;
+    total.textContent = `合计 ${n} 件`;
   }
 
-  for (const input of table.querySelectorAll("input")) {
+  for (const field of table.querySelectorAll("xh-number-field")) {
+    counts.set(field, Number(field.getAttribute("default-value")));
+    field.addEventListener("value-change", (event) => {
+      counts.set(field, event.detail.valueAsNumber);
+      sum();
+    });
+  }
+
+  for (const field of table.querySelectorAll("xh-number-field, xh-text-field")) {
     // 掐断冒泡：不然上下键与 Home/End 会被表体收走去搬焦点行
-    input.addEventListener("keydown", (event) => {
+    field.addEventListener("keydown", (event) => {
       event.stopPropagation();
       // Escape 把焦点交还所在行，表体的方向键随即恢复
       if (event.key === "Escape")
-        event.currentTarget.closest('[data-xh-part="row"]').focus();
+        field.closest('[data-xh-part="row"]').focus();
     });
-    input.addEventListener("input", sum);
   }
 
   sum();

@@ -47,8 +47,8 @@ function onSelectionChange(details: { value: string[] }) {
 <template>
   <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
     <div style="display: flex; gap: 8px">
-      <XhButton size="sm" @click="expanded = ['api', 'guide']">全部展开</XhButton>
-      <XhButton size="sm" @click="expanded = []">全部收起</XhButton>
+      <XhButton variant="outline" size="sm" @click="expanded = ['api', 'guide']">全部展开</XhButton>
+      <XhButton variant="outline" size="sm" @click="expanded = []">全部收起</XhButton>
     </div>
 
     <XhTreeRoot
@@ -94,7 +94,7 @@ function onSelectionChange(details: { value: string[] }) {
       </XhTreeTree>
     </XhTreeRoot>
 
-    <span>
+    <span data-demo-output>
       展开：{{ expanded.length ? expanded.join("、") : "（无）" }} · 选中：{{
         selected.length ? selected.join("、") : "（无）"
       }}

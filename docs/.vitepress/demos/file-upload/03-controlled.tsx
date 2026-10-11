@@ -54,12 +54,12 @@ export default function Demo(): ReactNode {
         )}
       </XhFileUploadRoot>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+      <div>
         <XhButton size="sm" disabled={!files.length} onClick={() => setFiles([])}>
           从外面清空
         </XhButton>
-        <span>{`宿主持有 ${files.length} 个文件`}</span>
       </div>
+      <span data-demo-output>{`宿主持有 ${files.length} 个文件`}</span>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 // 聚焦与选区 | input 部件就是一个原生 input，取得它的节点即可聚焦、全选、把光标移到末尾
 import type { ReactNode } from "react";
 import {
+  XhButton,
   XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
@@ -32,10 +33,10 @@ export default function Demo(): ReactNode {
         <XhTextFieldInput ref={input} />
       </XhTextFieldControl>
       <div style={{ display: "flex", gap: "8px" }}>
-        <button type="button" onClick={() => input.current?.focus()}>聚焦</button>
-        <button type="button" onClick={selectAll}>全选</button>
-        <button type="button" onClick={caretToEnd}>光标移到末尾</button>
-        <button type="button" onClick={() => input.current?.blur()}>失焦</button>
+        <XhButton variant="outline" size="sm" onClick={() => input.current?.focus()}>聚焦</XhButton>
+        <XhButton variant="outline" size="sm" onClick={selectAll}>全选</XhButton>
+        <XhButton variant="outline" size="sm" onClick={caretToEnd}>光标移到末尾</XhButton>
+        <XhButton variant="outline" size="sm" onClick={() => input.current?.blur()}>失焦</XhButton>
       </div>
     </XhTextFieldRoot>
   );

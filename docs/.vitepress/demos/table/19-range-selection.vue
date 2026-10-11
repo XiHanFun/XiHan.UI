@@ -66,7 +66,7 @@ const selection = ref<string[] | "all">([]);
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>
+    <span data-demo-output>
       选中：{{
         selection === "all"
           ? "全部"

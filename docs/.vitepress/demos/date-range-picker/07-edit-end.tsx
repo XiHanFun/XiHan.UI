@@ -97,7 +97,7 @@ export default function Demo(): ReactNode {
         )}
       </XhDateRangePickerRoot>
 
-      <span aria-live="polite" style={{ fontSize: "13px" }}>{`正在编辑：${activeIndex === 1 ? "终点" : "起点"}；区间：${value[0] ?? ""} → ${value[1] ?? ""}`}</span>
+      <span aria-live="polite" data-demo-output>{`正在编辑：${activeIndex === 1 ? "终点" : "起点"}；区间：${value[0] ?? ""} → ${value[1] ?? ""}`}</span>
     </>
   );
 }

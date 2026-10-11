@@ -175,7 +175,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhTableRoot>
-      <span>{`展开：${expanded.length ? expanded.join("、") : "（无）"}`}</span>
+      <span data-demo-output>{`展开：${expanded.length ? expanded.join("、") : "（无）"}`}</span>
     </div>
   );
 }

@@ -13,15 +13,13 @@ const value = ref("rgba(59, 130, 246, 0.5)");
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 8px">
-    <!-- 试着打 #3b82f680 或 hsl(217 91% 60% / 50%)，收下后都变成 rgba() -->
-    <XhColorFieldRoot v-model:value="value" format="rgba" alpha placeholder="rgba(r, g, b, a)">
-      <XhColorFieldLabel>遮罩色</XhColorFieldLabel>
-      <XhColorFieldControl>
-        <XhColorFieldSwatch />
-        <XhColorFieldInput />
-      </XhColorFieldControl>
-    </XhColorFieldRoot>
-    <span style="font-size: 13px">收下的值：<code>{{ value || "（空）" }}</code></span>
-  </div>
+  <!-- 试着打 #3b82f680 或 hsl(217 91% 60% / 50%)，收下后都变成 rgba() -->
+  <XhColorFieldRoot v-model:value="value" format="rgba" alpha placeholder="rgba(r, g, b, a)">
+    <XhColorFieldLabel>遮罩色</XhColorFieldLabel>
+    <XhColorFieldControl>
+      <XhColorFieldSwatch />
+      <XhColorFieldInput />
+    </XhColorFieldControl>
+  </XhColorFieldRoot>
+  <span data-demo-output>收下的值：<code>{{ value || "（空）" }}</code></span>
 </template>

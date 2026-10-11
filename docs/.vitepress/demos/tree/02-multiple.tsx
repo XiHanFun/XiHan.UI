@@ -90,7 +90,7 @@ export default function Demo(): ReactNode {
           </XhTreeBranch>
         </XhTreeTree>
       </XhTreeRoot>
-      <span>{`选中：${selected.length ? selected.join("、") : "（无）"}`}</span>
+      <span data-demo-output>{`选中：${selected.length ? selected.join("、") : "（无）"}`}</span>
     </div>
   );
 }

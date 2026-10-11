@@ -2,6 +2,7 @@
 import type { ReactNode } from "react";
 import { FileIcon, FolderIcon } from "@xihan-ui/icons";
 import {
+  XhButton,
   XhIcon,
   XhTreeBranch,
   XhTreeBranchContent,
@@ -59,15 +60,16 @@ export default function Demo(): ReactNode {
                     <XhIcon icon={FileIcon} />
                     <XhTreeItemText>{file.label}</XhTreeItemText>
                     {/* 掐断冒泡，否则点按钮连带把这一行也选上 */}
-                    <button
-                      type="button"
+                    <XhButton
+                      variant="ghost"
+                      size="sm"
                       onClick={(event) => {
                         event.stopPropagation();
                         rename(file.label);
                       }}
                     >
                       重命名
-                    </button>
+                    </XhButton>
                     <XhTreeItemIndicator />
                   </XhTreeItem>
                 ))}
@@ -76,7 +78,7 @@ export default function Demo(): ReactNode {
           ))}
         </XhTreeTree>
       </XhTreeRoot>
-      <span>{log}</span>
+      <span data-demo-output>{log}</span>
     </div>
   );
 }

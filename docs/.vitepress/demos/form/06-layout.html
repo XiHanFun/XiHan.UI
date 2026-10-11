@@ -1,14 +1,24 @@
 <!-- 布局 | 设置纵向、横向、行内或网格布局 -->
 <div style="display: grid; gap: 16px; justify-items: start">
-  <label style="display: flex; gap: 8px; align-items: center; font-size: 13px">
-    排布
-    <select id="form-layout-picker">
-      <option value="vertical">vertical</option>
-      <option value="horizontal" selected>horizontal</option>
-      <option value="inline">inline</option>
-      <option value="grid">grid</option>
-    </select>
-  </label>
+  <!-- 分段轨道里不排可见标题：label 只作可及名；滑块写在段之前 -->
+  <xh-radio-group id="form-layout-picker" variant="segmented" default-value="horizontal">
+    <div data-xh-part="root">
+      <span data-xh-part="label">排布</span>
+      <span data-xh-part="thumb"></span>
+      <div data-xh-part="item" value="vertical">
+        <span data-xh-part="item-text">vertical</span>
+      </div>
+      <div data-xh-part="item" value="horizontal">
+        <span data-xh-part="item-text">horizontal</span>
+      </div>
+      <div data-xh-part="item" value="inline">
+        <span data-xh-part="item-text">inline</span>
+      </div>
+      <div data-xh-part="item" value="grid">
+        <span data-xh-part="item-text">grid</span>
+      </div>
+    </div>
+  </xh-radio-group>
 
   <xh-form
     id="form-layout"
@@ -91,7 +101,7 @@
   });
 
   // 换一档排布就是换一个属性，字段标记一个字都不用动
-  picker.addEventListener("change", () => {
-    host.layout = picker.value;
+  picker.addEventListener("value-change", (event) => {
+    host.layout = event.detail.value;
   });
 </script>

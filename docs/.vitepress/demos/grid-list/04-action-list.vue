@@ -28,6 +28,6 @@ const result = ref("等待操作");
         </XhGridListRowActions>
       </XhGridListRow>
     </XhGridListRoot>
-    <span data-label>{{ result }}</span>
+    <span data-demo-output>{{ result }}</span>
   </div>
 </template>

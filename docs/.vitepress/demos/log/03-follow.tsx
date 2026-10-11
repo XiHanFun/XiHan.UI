@@ -9,6 +9,7 @@ export default function Demo(): ReactNode {
   );
   const seq = useRef(lines.length);
   const [streaming, setStreaming] = useState(false);
+  const [sticking, setSticking] = useState(true);
 
   function append(): void {
     seq.current += 1;
@@ -27,8 +28,8 @@ export default function Demo(): ReactNode {
 
   return (
     <div style={{ width: "100%", display: "grid", gap: "12px" }}>
-      <XhLogRoot rows={8}>
-        {({ atBottom, sticking, scrollToBottom }) => (
+      <XhLogRoot rows={8} onStickChange={details => setSticking(details.sticking)}>
+        {({ atBottom, scrollToBottom }) => (
           <>
             <XhLogViewport>
               <XhLogContent>
@@ -43,7 +44,7 @@ export default function Demo(): ReactNode {
                   <div
                     style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", padding: "6px 12px" }}
                   >
-                    <span style={{ fontSize: "13px" }}>{`已暂停跟随 · 跟随意图：${sticking ? "开" : "关"}`}</span>
+                    <span style={{ fontSize: "13px" }}>已暂停跟随</span>
                     <XhButton variant="outline" size="sm" onClick={() => scrollToBottom()}>回到最新</XhButton>
                   </div>
                 )}
@@ -55,6 +56,7 @@ export default function Demo(): ReactNode {
         <XhButton variant="solid" onClick={() => setStreaming(!streaming)}>{streaming ? "停止输出" : "开始输出"}</XhButton>
         <XhButton variant="outline" onClick={append}>追加一行</XhButton>
       </div>
+      <span data-demo-output>{`跟随意图：${sticking ? "开" : "关"}`}</span>
     </div>
   );
 }

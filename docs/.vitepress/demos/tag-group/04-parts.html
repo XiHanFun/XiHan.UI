@@ -19,7 +19,7 @@
               justify-content: center;
               inline-size: 16px;
               block-size: 16px;
-              border-radius: 50%;
+              border-radius: var(--xh-shape-circle);
               background: var(--xh-bg-subtle);
               font-size: var(--xh-font-size-xs);
             "
@@ -41,7 +41,7 @@
               justify-content: center;
               inline-size: 16px;
               block-size: 16px;
-              border-radius: 50%;
+              border-radius: var(--xh-shape-circle);
               background: var(--xh-bg-subtle);
               font-size: var(--xh-font-size-xs);
             "
@@ -63,7 +63,7 @@
               justify-content: center;
               inline-size: 16px;
               block-size: 16px;
-              border-radius: 50%;
+              border-radius: var(--xh-shape-circle);
               background: var(--xh-bg-subtle);
               font-size: var(--xh-font-size-xs);
             "
@@ -78,7 +78,7 @@
     </div>
   </div>
 </xh-tag-group>
-<p>已选：<span id="tag-group-parts-value">li</span></p>
+<p data-demo-output>已选：<span id="tag-group-parts-value">li</span></p>
 
 <script type="module">
   const group = document.getElementById("tag-group-parts");

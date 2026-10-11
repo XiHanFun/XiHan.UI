@@ -127,13 +127,6 @@ const actionsStyle: CSSProperties = {
   gap: "var(--xh-space-2)",
 };
 
-const resultStyle: CSSProperties = {
-  margin: 0,
-  color: "var(--xh-fg-muted)",
-  fontSize: "var(--xh-font-size-sm)",
-  wordBreak: "break-all",
-};
-
 export default function Demo(): ReactNode {
   const [submitted, setSubmitted] = useState("");
 
@@ -142,214 +135,216 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <div style={pageStyle}>
-      <XhPageHeaderRoot>
-        <XhPageHeaderTitle>新建工单</XhPageHeaderTitle>
-        <XhPageHeaderDescription>提交后进入值班队列，重复问题会被合并</XhPageHeaderDescription>
-      </XhPageHeaderRoot>
+    <>
+      <div style={pageStyle}>
+        <XhPageHeaderRoot>
+          <XhPageHeaderTitle>新建工单</XhPageHeaderTitle>
+          <XhPageHeaderDescription>提交后进入值班队列，重复问题会被合并</XhPageHeaderDescription>
+        </XhPageHeaderRoot>
 
-      <XhAlertRoot tone="info">
-        <XhAlertContent>
-          <XhAlertTitle>先看一眼已知问题</XhAlertTitle>
-          <XhAlertDescription>近三天同类工单 12 条，其中 9 条已定位到同一处配置。</XhAlertDescription>
-        </XhAlertContent>
-      </XhAlertRoot>
+        <XhAlertRoot tone="info">
+          <XhAlertContent>
+            <XhAlertTitle>先看一眼已知问题</XhAlertTitle>
+            <XhAlertDescription>近三天同类工单 12 条，其中 9 条已定位到同一处配置。</XhAlertDescription>
+          </XhAlertContent>
+        </XhAlertRoot>
 
-      <XhFormRoot
-        style={formStyle}
-        defaultValues={defaults}
-        validate={validate}
-        onSubmit={onSubmit}
-      >
-        {/* 摘要只在提交失败后显形，条目一次全写上 */}
-        <XhFormErrorSummary>
-          {({ errorCount }) => (
-            <>
-              <span>{`共 ${errorCount} 处需要修改`}</span>
-              <XhFormErrorSummaryItem name="title">{({ error }) => error}</XhFormErrorSummaryItem>
-              <XhFormErrorSummaryItem name="detail">{({ error }) => error}</XhFormErrorSummaryItem>
-              <XhFormErrorSummaryItem name="agree">{({ error }) => error}</XhFormErrorSummaryItem>
-            </>
-          )}
-        </XhFormErrorSummary>
-
-        <XhFieldsetRoot style={groupStyle}>
-          <XhFieldsetLegend>问题本身</XhFieldsetLegend>
-
-          <XhFormFieldGroup name="title">
-            {({ value, error, invalid, setValue }) => (
-              <XhFieldRoot invalid={invalid} required>
-                <XhFieldLabel>标题</XhFieldLabel>
-                <XhFieldControl>
-                  <input
-                    value={String(value ?? "")}
-                    placeholder="一句话说清现象"
-                    onChange={event => setValue(event.target.value)}
-                  />
-                </XhFieldControl>
-                <XhFieldErrorText>{error}</XhFieldErrorText>
-              </XhFieldRoot>
+        <XhFormRoot
+          style={formStyle}
+          defaultValues={defaults}
+          validate={validate}
+          onSubmit={onSubmit}
+        >
+          {/* 摘要只在提交失败后显形，条目一次全写上 */}
+          <XhFormErrorSummary>
+            {({ errorCount }) => (
+              <>
+                <span>{`共 ${errorCount} 处需要修改`}</span>
+                <XhFormErrorSummaryItem name="title">{({ error }) => error}</XhFormErrorSummaryItem>
+                <XhFormErrorSummaryItem name="detail">{({ error }) => error}</XhFormErrorSummaryItem>
+                <XhFormErrorSummaryItem name="agree">{({ error }) => error}</XhFormErrorSummaryItem>
+              </>
             )}
-          </XhFormFieldGroup>
+          </XhFormErrorSummary>
 
-          <XhFormFieldGroup name="detail">
-            {({ value, error, invalid, setValue }) => (
-              <XhFieldRoot invalid={invalid} required>
-                <XhFieldLabel>详细描述</XhFieldLabel>
-                <XhFieldControl>
-                  <XhTextFieldRoot
+          <XhFieldsetRoot style={groupStyle}>
+            <XhFieldsetLegend>问题本身</XhFieldsetLegend>
+
+            <XhFormFieldGroup name="title">
+              {({ value, error, invalid, setValue }) => (
+                <XhFieldRoot invalid={invalid} required>
+                  <XhFieldLabel>标题</XhFieldLabel>
+                  <XhFieldControl>
+                    <input
+                      value={String(value ?? "")}
+                      placeholder="一句话说清现象"
+                      onChange={event => setValue(event.target.value)}
+                    />
+                  </XhFieldControl>
+                  <XhFieldErrorText>{error}</XhFieldErrorText>
+                </XhFieldRoot>
+              )}
+            </XhFormFieldGroup>
+
+            <XhFormFieldGroup name="detail">
+              {({ value, error, invalid, setValue }) => (
+                <XhFieldRoot invalid={invalid} required>
+                  <XhFieldLabel>详细描述</XhFieldLabel>
+                  <XhFieldControl>
+                    <XhTextFieldRoot
+                      value={String(value ?? "")}
+                      invalid={invalid}
+                      placeholder="复现步骤、期望结果、实际结果"
+                      onValueChange={details => setValue(details.value)}
+                    >
+                      <XhTextFieldControl>
+                        {/* rows 只有 textarea 认，输入部件的属性表按 input 写，展开着传进去 */}
+                        <XhTextFieldInput as="textarea" {...{ rows: 3 }} />
+                      </XhTextFieldControl>
+                    </XhTextFieldRoot>
+                  </XhFieldControl>
+                  <XhFieldDescription>写清复现步骤，值班的人不必再来回问</XhFieldDescription>
+                  <XhFieldErrorText>{error}</XhFieldErrorText>
+                </XhFieldRoot>
+              )}
+            </XhFormFieldGroup>
+
+            <div style={rowStyle}>
+              <XhFormFieldGroup name="priority">
+                {({ value, setValue }) => (
+                  <XhSelectRoot
+                    collection={priorities}
+                    value={value as string[]}
+                    label="优先级"
+                    placeholder="请选择"
+                    onValueChange={details => setValue(details.value)}
+                  />
+                )}
+              </XhFormFieldGroup>
+
+              <XhFormFieldGroup name="amount">
+                {({ value, setValue }) => (
+                  <XhNumberFieldRoot
                     value={String(value ?? "")}
-                    invalid={invalid}
-                    placeholder="复现步骤、期望结果、实际结果"
+                    min={1}
+                    max={99}
                     onValueChange={details => setValue(details.value)}
                   >
-                    <XhTextFieldControl>
-                      {/* rows 只有 textarea 认，输入部件的属性表按 input 写，展开着传进去 */}
-                      <XhTextFieldInput as="textarea" {...{ rows: 3 }} />
-                    </XhTextFieldControl>
-                  </XhTextFieldRoot>
-                </XhFieldControl>
-                <XhFieldDescription>写清复现步骤，值班的人不必再来回问</XhFieldDescription>
-                <XhFieldErrorText>{error}</XhFieldErrorText>
-              </XhFieldRoot>
-            )}
-          </XhFormFieldGroup>
+                    <XhNumberFieldLabel>受影响实例</XhNumberFieldLabel>
+                    <XhNumberFieldControl>
+                      <XhNumberFieldDecrementTrigger />
+                      <XhNumberFieldInput />
+                      <XhNumberFieldIncrementTrigger />
+                    </XhNumberFieldControl>
+                  </XhNumberFieldRoot>
+                )}
+              </XhFormFieldGroup>
+            </div>
 
-          <div style={rowStyle}>
-            <XhFormFieldGroup name="priority">
+            <XhFormFieldGroup name="kind">
               {({ value, setValue }) => (
-                <XhSelectRoot
-                  collection={priorities}
-                  value={value as string[]}
-                  label="优先级"
-                  placeholder="请选择"
+                <XhRadioGroupRoot
+                  collection={kinds}
+                  value={value as string}
+                  label="工单类型"
                   onValueChange={details => setValue(details.value)}
                 />
               )}
             </XhFormFieldGroup>
 
-            <XhFormFieldGroup name="amount">
+            <XhFormFieldGroup name="labels">
               {({ value, setValue }) => (
-                <XhNumberFieldRoot
-                  value={String(value ?? "")}
-                  min={1}
-                  max={99}
+                <XhTagsInputRoot
+                  value={value as string[]}
+                  placeholder="回车落一个"
                   onValueChange={details => setValue(details.value)}
                 >
-                  <XhNumberFieldLabel>受影响实例</XhNumberFieldLabel>
-                  <XhNumberFieldControl>
-                    <XhNumberFieldDecrementTrigger />
-                    <XhNumberFieldInput />
-                    <XhNumberFieldIncrementTrigger />
-                  </XhNumberFieldControl>
-                </XhNumberFieldRoot>
+                  {({ value: tags }) => (
+                    <>
+                      <XhTagsInputLabel>关联模块</XhTagsInputLabel>
+                      <XhTagsInputControl>
+                        {tags.map(tag => (
+                          <XhTagsInputItem key={tag} value={tag}>
+                            <XhTagsInputItemPreview>
+                              <XhTagsInputItemText>{tag}</XhTagsInputItemText>
+                              <XhTagsInputItemDeleteTrigger />
+                            </XhTagsInputItemPreview>
+                          </XhTagsInputItem>
+                        ))}
+                        <XhTagsInputInput />
+                      </XhTagsInputControl>
+                    </>
+                  )}
+                </XhTagsInputRoot>
               )}
             </XhFormFieldGroup>
-          </div>
 
-          <XhFormFieldGroup name="kind">
-            {({ value, setValue }) => (
-              <XhRadioGroupRoot
-                collection={kinds}
-                value={value as string}
-                label="工单类型"
-                onValueChange={details => setValue(details.value)}
-              />
-            )}
-          </XhFormFieldGroup>
+            <XhFormFieldGroup name="impact">
+              {({ value, setValue }) => (
+                <XhSliderRoot
+                  value={value as number[]}
+                  min={0}
+                  max={100}
+                  step={5}
+                  largeStep={20}
+                  onValueChange={details => setValue(details.value)}
+                >
+                  {({ value: impact }) => (
+                    <>
+                      <XhSliderLabel>{`影响面估计：${impact[0]}%`}</XhSliderLabel>
+                      <XhSliderControl>
+                        <XhSliderTrack>
+                          <XhSliderRange />
+                        </XhSliderTrack>
+                        <XhSliderThumb />
+                      </XhSliderControl>
+                    </>
+                  )}
+                </XhSliderRoot>
+              )}
+            </XhFormFieldGroup>
+          </XhFieldsetRoot>
 
-          <XhFormFieldGroup name="labels">
-            {({ value, setValue }) => (
-              <XhTagsInputRoot
-                value={value as string[]}
-                placeholder="回车落一个"
-                onValueChange={details => setValue(details.value)}
-              >
-                {({ value: tags }) => (
-                  <>
-                    <XhTagsInputLabel>关联模块</XhTagsInputLabel>
-                    <XhTagsInputControl>
-                      {tags.map(tag => (
-                        <XhTagsInputItem key={tag} value={tag}>
-                          <XhTagsInputItemPreview>
-                            <XhTagsInputItemText>{tag}</XhTagsInputItemText>
-                            <XhTagsInputItemDeleteTrigger />
-                          </XhTagsInputItemPreview>
-                        </XhTagsInputItem>
-                      ))}
-                      <XhTagsInputInput />
-                    </XhTagsInputControl>
-                  </>
-                )}
-              </XhTagsInputRoot>
-            )}
-          </XhFormFieldGroup>
+          <XhFieldsetRoot style={groupStyle}>
+            <XhFieldsetLegend>提交之前</XhFieldsetLegend>
 
-          <XhFormFieldGroup name="impact">
-            {({ value, setValue }) => (
-              <XhSliderRoot
-                value={value as number[]}
-                min={0}
-                max={100}
-                step={5}
-                largeStep={20}
-                onValueChange={details => setValue(details.value)}
-              >
-                {({ value: impact }) => (
-                  <>
-                    <XhSliderLabel>{`影响面估计：${impact[0]}%`}</XhSliderLabel>
-                    <XhSliderControl>
-                      <XhSliderTrack>
-                        <XhSliderRange />
-                      </XhSliderTrack>
-                      <XhSliderThumb />
-                    </XhSliderControl>
-                  </>
-                )}
-              </XhSliderRoot>
-            )}
-          </XhFormFieldGroup>
-        </XhFieldsetRoot>
-
-        <XhFieldsetRoot style={groupStyle}>
-          <XhFieldsetLegend>提交之前</XhFieldsetLegend>
-
-          <XhFormFieldGroup name="notify">
-            {({ value, setValue }) => (
-              <label style={checkStyle}>
-                <XhSwitch
-                  checked={value === true}
-                  onCheckedChange={details => setValue(details.checked)}
-                />
-                有进展就通知我
-              </label>
-            )}
-          </XhFormFieldGroup>
-
-          <XhFormFieldGroup name="agree">
-            {({ value, error, invalid, setValue }) => (
-              <XhFieldRoot invalid={invalid} required>
+            <XhFormFieldGroup name="notify">
+              {({ value, setValue }) => (
                 <label style={checkStyle}>
-                  <XhCheckbox
+                  <XhSwitch
                     checked={value === true}
-                    invalid={invalid}
                     onCheckedChange={details => setValue(details.checked)}
                   />
-                  这条工单可以对内公开
+                  有进展就通知我
                 </label>
-                <XhFieldErrorText>{error}</XhFieldErrorText>
-              </XhFieldRoot>
-            )}
-          </XhFormFieldGroup>
-        </XhFieldsetRoot>
+              )}
+            </XhFormFieldGroup>
 
-        <div style={actionsStyle}>
-          <XhFormSubmitTrigger>提交工单</XhFormSubmitTrigger>
-          <XhFormResetTrigger>重置</XhFormResetTrigger>
-        </div>
+            <XhFormFieldGroup name="agree">
+              {({ value, error, invalid, setValue }) => (
+                <XhFieldRoot invalid={invalid} required>
+                  <label style={checkStyle}>
+                    <XhCheckbox
+                      checked={value === true}
+                      invalid={invalid}
+                      onCheckedChange={details => setValue(details.checked)}
+                    />
+                    这条工单可以对内公开
+                  </label>
+                  <XhFieldErrorText>{error}</XhFieldErrorText>
+                </XhFieldRoot>
+              )}
+            </XhFormFieldGroup>
+          </XhFieldsetRoot>
 
-        {submitted && <p style={resultStyle}>{`已提交：${submitted}`}</p>}
-      </XhFormRoot>
-    </div>
+          <div style={actionsStyle}>
+            <XhFormSubmitTrigger>提交工单</XhFormSubmitTrigger>
+            <XhFormResetTrigger>重置</XhFormResetTrigger>
+          </div>
+        </XhFormRoot>
+      </div>
+
+      <p data-demo-output title={submitted}>{`已提交：${submitted || "（尚未提交）"}`}</p>
+    </>
   );
 }

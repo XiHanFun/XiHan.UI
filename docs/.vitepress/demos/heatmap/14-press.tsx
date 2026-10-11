@@ -21,7 +21,7 @@ const orders = [
 export default function Demo(): ReactNode {
   const [picked, setPicked] = useState<HeatmapCellDetails | null>(null);
   return (
-    <div style={{ display: "grid", gap: "var(--xh-space-3)", justifyItems: "start" }}>
+    <>
       {/* 载荷与详情同源：行、列、原始值与档位都在里面，不必回头查数据 */}
       <XhHeatmapRoot
         variant="matrix"
@@ -31,9 +31,9 @@ export default function Demo(): ReactNode {
         style={{ "--xh-heatmap-column-w": "44px", "--xh-heatmap-row-h": "28px" } as CSSProperties}
         onCellPress={setPicked}
       />
-      <p aria-live="polite" style={{ margin: 0 }}>
+      <p data-demo-output aria-live="polite">
         {picked ? `${picked.row} ${picked.column}：${picked.count} 单` : "点一格查看明细"}
       </p>
-    </div>
+    </>
   );
 }

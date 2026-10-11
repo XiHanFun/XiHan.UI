@@ -13,7 +13,7 @@
     </div>
   </div>
 </xh-tags-input>
-<p id="tags-input-validate-hint" style="color: var(--xh-fg-danger)"></p>
+<p data-demo-output>拒收：<span id="tags-input-validate-hint">（暂无）</span></p>
 
 <script type="module">
   const root = document.getElementById("tags-input-validate");
@@ -58,7 +58,7 @@
   // 按当前值增删标签节点，已经在的那份原地留着
   root.addEventListener("value-change", (event) => {
     const values = event.detail.value;
-    hint.textContent = "";
+    hint.textContent = "（暂无）";
     const alive = new Map();
     for (const el of control.querySelectorAll('[data-xh-part="item"]')) {
       alive.set(el.getAttribute("value"), el);

@@ -38,31 +38,29 @@ function send(value: string) {
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px">
-    <XhPromptInputRoot :translations="{ input: '给助手写点什么' }" @submit="send($event.value)">
-      <XhPromptInputControl>
-        <XhPromptInputInput rows="1" placeholder="写点什么，可以附上文件…" />
-        <XhPromptInputSubmitTrigger />
-      </XhPromptInputControl>
-      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
-        <input ref="picker" type="file" multiple hidden @change="pick">
-        <XhButton variant="ghost" size="sm" @click="picker?.click()">
-          添加附件
-        </XhButton>
-        <XhTagRoot
-          v-for="item in attachments"
-          :key="item.id"
-          variant="subtle"
-          closable
-          :open="true"
-          :translations="{ close: `移除 ${item.name}` }"
-          @open-change="attachments = attachments.filter(other => other.id !== item.id)"
-        >
-          <XhTagLabel>{{ item.name }}</XhTagLabel>
-          <XhTagCloseTrigger />
-        </XhTagRoot>
-      </div>
-    </XhPromptInputRoot>
-    <span>{{ log }}</span>
-  </div>
+  <XhPromptInputRoot :translations="{ input: '给助手写点什么' }" @submit="send($event.value)">
+    <XhPromptInputControl>
+      <XhPromptInputInput rows="1" placeholder="写点什么，可以附上文件…" />
+      <XhPromptInputSubmitTrigger />
+    </XhPromptInputControl>
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+      <input ref="picker" type="file" multiple hidden @change="pick">
+      <XhButton variant="ghost" size="sm" @click="picker?.click()">
+        添加附件
+      </XhButton>
+      <XhTagRoot
+        v-for="item in attachments"
+        :key="item.id"
+        variant="subtle"
+        closable
+        :open="true"
+        :translations="{ close: `移除 ${item.name}` }"
+        @open-change="attachments = attachments.filter(other => other.id !== item.id)"
+      >
+        <XhTagLabel>{{ item.name }}</XhTagLabel>
+        <XhTagCloseTrigger />
+      </XhTagRoot>
+    </div>
+  </XhPromptInputRoot>
+  <span data-demo-output>{{ log }}</span>
 </template>

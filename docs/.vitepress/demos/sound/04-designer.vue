@@ -2,8 +2,17 @@
 <script setup lang="ts">
 import type { OscillatorLayer, SoundSpec } from "@xihan-ui/sound";
 import { createSoundPlayer, glide, strike } from "@xihan-ui/sound";
-import { XhButton, XhRadioGroupRoot } from "@xihan-ui/vue";
-import { computed, onBeforeUnmount, ref } from "vue";
+import {
+  XhButton,
+  XhRadioGroupRoot,
+  XhSliderControl,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+} from "@xihan-ui/vue";
+import { computed, onBeforeUnmount, reactive, ref } from "vue";
 
 const waves = [
   { value: "sine", label: "sine" },
@@ -12,26 +21,41 @@ const waves = [
   { value: "sawtooth", label: "sawtooth" },
 ];
 
-const wave = ref<OscillatorLayer["wave"]>("triangle");
-const from = ref(880);
-const to = ref(1320);
-const attack = ref(5);
-const decay = ref(180);
-const peak = ref(0.3);
-const space = ref(0.15);
+type Param = "from" | "to" | "attack" | "decay" | "peak" | "space";
 
-const seconds = computed(() => Math.max(0.01, decay.value / 1000));
+// 六个参数各一条滑块：标签、单位与取值范围
+const knobs: { key: Param; label: string; unit: string; min: number; max: number; step: number }[] = [
+  { key: "from", label: "起始", unit: "Hz", min: 80, max: 2400, step: 10 },
+  { key: "to", label: "终止", unit: "Hz", min: 80, max: 2400, step: 10 },
+  { key: "attack", label: "起音", unit: "ms", min: 1, max: 80, step: 1 },
+  { key: "decay", label: "衰减", unit: "ms", min: 20, max: 900, step: 10 },
+  { key: "peak", label: "峰值", unit: "", min: 0.05, max: 0.6, step: 0.05 },
+  { key: "space", label: "空间", unit: "", min: 0, max: 0.6, step: 0.05 },
+];
+
+const wave = ref<OscillatorLayer["wave"]>("triangle");
+// 滑块的值恒为数组，单滑块只有一项
+const params = reactive<Record<Param, [number]>>({
+  from: [880],
+  to: [1320],
+  attack: [5],
+  decay: [180],
+  peak: [0.3],
+  space: [0.15],
+});
+
+const seconds = computed(() => Math.max(0.01, params.decay[0] / 1000));
 
 const spec = computed<SoundSpec>(() => ({
   layers: [
     {
       kind: "oscillator",
       wave: wave.value,
-      frequency: glide(from.value, to.value, seconds.value),
-      gain: strike(peak.value, attack.value / 1000, seconds.value),
+      frequency: glide(params.from[0], params.to[0], seconds.value),
+      gain: strike(params.peak[0], params.attack[0] / 1000, seconds.value),
     },
   ],
-  space: space.value,
+  space: params.space[0],
 }));
 
 const code = computed(
@@ -40,11 +64,11 @@ const code = computed(
     {
       kind: 'oscillator',
       wave: '${wave.value}',
-      frequency: glide(${from.value}, ${to.value}, ${seconds.value.toFixed(3)}),
-      gain: strike(${peak.value}, ${(attack.value / 1000).toFixed(3)}, ${seconds.value.toFixed(3)}),
+      frequency: glide(${params.from[0]}, ${params.to[0]}, ${seconds.value.toFixed(3)}),
+      gain: strike(${params.peak[0]}, ${(params.attack[0] / 1000).toFixed(3)}, ${seconds.value.toFixed(3)}),
     },
   ],
-  space: ${space.value},
+  space: ${params.space[0]},
 })`,
 );
 
@@ -63,30 +87,23 @@ onBeforeUnmount(() => player.dispose());
         gap: 10px 20px;
       "
     >
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">起始 {{ from }}Hz</span>
-        <input v-model.number="from" type="range" min="80" max="2400" step="10">
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">终止 {{ to }}Hz</span>
-        <input v-model.number="to" type="range" min="80" max="2400" step="10">
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">起音 {{ attack }}ms</span>
-        <input v-model.number="attack" type="range" min="1" max="80" step="1">
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">衰减 {{ decay }}ms</span>
-        <input v-model.number="decay" type="range" min="20" max="900" step="10">
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">峰值 {{ peak }}</span>
-        <input v-model.number="peak" type="range" min="0.05" max="0.6" step="0.05">
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        <span style="width: 76px">空间 {{ space }}</span>
-        <input v-model.number="space" type="range" min="0" max="0.6" step="0.05">
-      </label>
+      <XhSliderRoot
+        v-for="knob in knobs"
+        :key="knob.key"
+        :value="params[knob.key]"
+        :min="knob.min"
+        :max="knob.max"
+        :step="knob.step"
+        @update:value="params[knob.key] = $event as [number]"
+      >
+        <XhSliderLabel>{{ knob.label }} {{ params[knob.key][0] }}{{ knob.unit }}</XhSliderLabel>
+        <XhSliderControl>
+          <XhSliderTrack>
+            <XhSliderRange />
+          </XhSliderTrack>
+          <XhSliderThumb />
+        </XhSliderControl>
+      </XhSliderRoot>
     </div>
 
     <div>
@@ -98,8 +115,8 @@ onBeforeUnmount(() => player.dispose());
       style="
         margin: 0;
         padding: 12px 14px;
-        border-radius: 8px;
-        background: var(--vp-c-bg-soft);
+        border-radius: var(--xh-shape-surface);
+        background: var(--xh-bg-subtle);
         font-size: 12px;
         line-height: 1.6;
         overflow-x: auto;

@@ -57,7 +57,7 @@ export default function Demo(): ReactNode {
           </XhSelectContent>
         </XhSelectPositioner>
       </XhSelectRoot>
-      <p>{`宿主持有的值：${value.join("、")}${rejected ? " · 上一次选择被拒绝" : ""}`}</p>
+      <p data-demo-output>{`宿主持有的值：${value.join("、")}${rejected ? " · 上一次选择被拒绝" : ""}`}</p>
     </>
   );
 }

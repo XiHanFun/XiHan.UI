@@ -24,7 +24,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhRatingRoot>
-      <p>{`当前：${level} / 10`}</p>
+      <p data-demo-output>{`当前：${level} / 10`}</p>
     </>
   );
 }

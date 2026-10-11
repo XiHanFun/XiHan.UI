@@ -22,7 +22,7 @@ const frameStyle: CSSProperties = {
   overflow: "hidden",
   inlineSize: "100%",
   blockSize: "6px",
-  borderRadius: "999px",
+  borderRadius: "var(--xh-shape-pill)",
   background: "var(--xh-bg-muted)",
 };
 </script>

@@ -1,6 +1,7 @@
 <!-- 末端横排 | leaf-orientation 按结构判据横排子节点全为叶子的层；要指定哪一层横排就在节点上标注 childrenOrientation，它比树级值优先，标注 vertical 也可覆盖 -->
 <script setup lang="ts">
 import {
+  XhSwitch,
   XhTreeBranch,
   XhTreeBranchContent,
   XhTreeBranchControl,
@@ -63,7 +64,7 @@ const selection = ref<string[]>(["user:add"]);
 <template>
   <div style="width: 100%; display: grid; gap: 12px; justify-items: start">
     <label style="display: inline-flex; gap: 6px; align-items: center">
-      <input v-model="wide" type="checkbox">
+      <XhSwitch v-model:checked="wide" />
       按钮那层横排
     </label>
 

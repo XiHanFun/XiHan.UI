@@ -96,12 +96,6 @@ const answerStyle: CSSProperties = {
   gap: "var(--xh-space-3)",
 };
 
-const noteStyle: CSSProperties = {
-  margin: 0,
-  color: "var(--xh-fg-muted)",
-  fontSize: "var(--xh-font-size-sm)",
-};
-
 export default function Demo(): ReactNode {
   const [decision, setDecision] = useState("");
   const [asked, setAsked] = useState<string[]>([]);
@@ -112,118 +106,12 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <div style={pageStyle}>
-      <XhMessageFeedRoot count={2 + asked.length} style={feedStyle}>
-        <XhMessageFeedViewport>
-          <XhMessageFeedList>
-            <XhMessageFeedItem itemId="q1" itemIndex={0} itemRole="user">
-              <XhMessageFeedItemLabel>
-                <span style={whoStyle}>
-                  <XhAvatarRoot size="sm">
-                    <XhAvatarFallback>我</XhAvatarFallback>
-                  </XhAvatarRoot>
-                  我
-                </span>
-              </XhMessageFeedItemLabel>
-              <p style={textStyle}>关掉浮层时焦点要还给触发器，这条改动动了哪些地方？</p>
-            </XhMessageFeedItem>
-
-            <XhMessageFeedItem itemId="a1" itemIndex={1} itemRole="assistant">
-              <XhMessageFeedItemLabel>
-                <span style={whoStyle}>
-                  <XhAvatarRoot size="sm">
-                    <XhAvatarFallback>曦</XhAvatarFallback>
-                  </XhAvatarRoot>
-                  助手
-                  <XhTagRoot size="sm" variant="subtle">
-                    <XhTagLabel>已完成</XhTagLabel>
-                  </XhTagRoot>
-                </span>
-              </XhMessageFeedItemLabel>
-
-              <div style={answerStyle}>
-                {/* 想完了：给了起止时刻，名字位自己写成「想了几秒」 */}
-                <XhReasoningRoot
-                  startTime={0}
-                  endTime={2400}
-                  translations={{ label: "思考过程", thoughtFor: "想了 {seconds} 秒" }}
-                >
-                  <XhReasoningTrigger>
-                    <XhReasoningIndicator />
-                    <XhReasoningLabel />
-                  </XhReasoningTrigger>
-                  <XhReasoningContent>
-                    先确认约束：只读一次文件、不改公开面。再看还焦点这条走的是哪个通路。
-                  </XhReasoningContent>
-                </XhReasoningRoot>
-
-                <XhToolCallRoot phase="output-available">
-                  <XhToolCallTrigger>
-                    <XhToolCallIndicator>&rsaquo;</XhToolCallIndicator>
-                    <XhToolCallLabel>grep</XhToolCallLabel>
-                    <XhToolCallStatus />
-                  </XhToolCallTrigger>
-                  <XhToolCallContent>
-                    <XhToolCallOutput>命中 3 处：dialog、drawer、popover 各一处还焦点。</XhToolCallOutput>
-                  </XhToolCallContent>
-                </XhToolCallRoot>
-
-                <XhMarkdownStreamRoot blocks={blocks}>
-                  <XhMarkdownStreamContent />
-                </XhMarkdownStreamRoot>
-
-                <XhCodeViewRoot code={patch} lang="typescript" filename="on-close.ts" complete>
-                  <XhCodeViewHeader>
-                    <XhCodeViewFilename />
-                    <XhCodeViewLangLabel />
-                  </XhCodeViewHeader>
-                  <XhCodeViewPre>
-                    <XhCodeViewCode />
-                  </XhCodeViewPre>
-                </XhCodeViewRoot>
-
-                {/* 闸门常驻在回复末尾：必选项没勾满就批不了 */}
-                <XhApprovalRoot
-                  scopes={scopes}
-                  tone="warning"
-                  onDecision={details => setDecision(details.decision === "approved" ? "已批准" : "已拒绝")}
-                >
-                  {({ status }) => (
-                    <>
-                      <XhApprovalTitle>要动你的工作区</XhApprovalTitle>
-                      <XhApprovalDescription>写回前先确认这两条范围。</XhApprovalDescription>
-                      <XhApprovalGroup>
-                        {scopes.map(scope => (
-                          <XhApprovalItem
-                            key={scope.value}
-                            scopeValue={scope.value}
-                            scopeLabel={scope.label}
-                            scopeRequired={scope.required}
-                          >
-                            <XhApprovalItemIndicator scopeValue={scope.value} />
-                            <XhApprovalItemText scopeValue={scope.value}>{scope.label}</XhApprovalItemText>
-                          </XhApprovalItem>
-                        ))}
-                      </XhApprovalGroup>
-                      <XhApprovalResult>{status === "approved" ? "已批准" : "已拒绝"}</XhApprovalResult>
-                      <XhApprovalFooter>
-                        <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
-                        <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
-                      </XhApprovalFooter>
-                      <XhApprovalLiveRegion />
-                    </>
-                  )}
-                </XhApprovalRoot>
-              </div>
-            </XhMessageFeedItem>
-
-            {asked.map((question, index) => (
-              <XhMessageFeedItem
-                key={question}
-                itemId={`q${index + 2}`}
-                itemIndex={index + 2}
-                itemRole="user"
-              >
+    <>
+      <div style={pageStyle}>
+        <XhMessageFeedRoot count={2 + asked.length} style={feedStyle}>
+          <XhMessageFeedViewport>
+            <XhMessageFeedList>
+              <XhMessageFeedItem itemId="q1" itemIndex={0} itemRole="user">
                 <XhMessageFeedItemLabel>
                   <span style={whoStyle}>
                     <XhAvatarRoot size="sm">
@@ -232,20 +120,128 @@ export default function Demo(): ReactNode {
                     我
                   </span>
                 </XhMessageFeedItemLabel>
-                <p style={textStyle}>{question}</p>
+                <p style={textStyle}>关掉浮层时焦点要还给触发器，这条改动动了哪些地方？</p>
               </XhMessageFeedItem>
-            ))}
-          </XhMessageFeedList>
-        </XhMessageFeedViewport>
-        <XhMessageFeedScrollToEndTrigger />
-      </XhMessageFeedRoot>
 
-      <XhPromptInputRoot translations={{ input: "接着问点什么" }} onSubmit={onSubmit}>
-        <XhPromptInputInput rows={1} placeholder="接着问点什么…" />
-        <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
-      </XhPromptInputRoot>
+              <XhMessageFeedItem itemId="a1" itemIndex={1} itemRole="assistant">
+                <XhMessageFeedItemLabel>
+                  <span style={whoStyle}>
+                    <XhAvatarRoot size="sm">
+                      <XhAvatarFallback>曦</XhAvatarFallback>
+                    </XhAvatarRoot>
+                    助手
+                    <XhTagRoot size="sm" variant="subtle">
+                      <XhTagLabel>已完成</XhTagLabel>
+                    </XhTagRoot>
+                  </span>
+                </XhMessageFeedItemLabel>
 
-      {decision && <p style={noteStyle}>{`批准闸门：${decision}`}</p>}
-    </div>
+                <div style={answerStyle}>
+                  {/* 想完了：给了起止时刻，名字位自己写成「想了几秒」 */}
+                  <XhReasoningRoot
+                    startTime={0}
+                    endTime={2400}
+                    translations={{ label: "思考过程", thoughtFor: "想了 {seconds} 秒" }}
+                  >
+                    <XhReasoningTrigger>
+                      <XhReasoningIndicator />
+                      <XhReasoningLabel />
+                    </XhReasoningTrigger>
+                    <XhReasoningContent>
+                      先确认约束：只读一次文件、不改公开面。再看还焦点这条走的是哪个通路。
+                    </XhReasoningContent>
+                  </XhReasoningRoot>
+
+                  <XhToolCallRoot phase="output-available">
+                    <XhToolCallTrigger>
+                      <XhToolCallIndicator>&rsaquo;</XhToolCallIndicator>
+                      <XhToolCallLabel>grep</XhToolCallLabel>
+                      <XhToolCallStatus />
+                    </XhToolCallTrigger>
+                    <XhToolCallContent>
+                      <XhToolCallOutput>命中 3 处：dialog、drawer、popover 各一处还焦点。</XhToolCallOutput>
+                    </XhToolCallContent>
+                  </XhToolCallRoot>
+
+                  <XhMarkdownStreamRoot blocks={blocks}>
+                    <XhMarkdownStreamContent />
+                  </XhMarkdownStreamRoot>
+
+                  <XhCodeViewRoot code={patch} lang="typescript" filename="on-close.ts" complete>
+                    <XhCodeViewHeader>
+                      <XhCodeViewFilename />
+                      <XhCodeViewLangLabel />
+                    </XhCodeViewHeader>
+                    <XhCodeViewPre>
+                      <XhCodeViewCode />
+                    </XhCodeViewPre>
+                  </XhCodeViewRoot>
+
+                  {/* 闸门常驻在回复末尾：必选项没勾满就批不了 */}
+                  <XhApprovalRoot
+                    scopes={scopes}
+                    tone="warning"
+                    onDecision={details => setDecision(details.decision === "approved" ? "已批准" : "已拒绝")}
+                  >
+                    {({ status }) => (
+                      <>
+                        <XhApprovalTitle>要动你的工作区</XhApprovalTitle>
+                        <XhApprovalDescription>写回前先确认这两条范围。</XhApprovalDescription>
+                        <XhApprovalGroup>
+                          {scopes.map(scope => (
+                            <XhApprovalItem
+                              key={scope.value}
+                              scopeValue={scope.value}
+                              scopeLabel={scope.label}
+                              scopeRequired={scope.required}
+                            >
+                              <XhApprovalItemIndicator scopeValue={scope.value} />
+                              <XhApprovalItemText scopeValue={scope.value}>{scope.label}</XhApprovalItemText>
+                            </XhApprovalItem>
+                          ))}
+                        </XhApprovalGroup>
+                        <XhApprovalResult>{status === "approved" ? "已批准" : "已拒绝"}</XhApprovalResult>
+                        <XhApprovalFooter>
+                          <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
+                          <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
+                        </XhApprovalFooter>
+                        <XhApprovalLiveRegion />
+                      </>
+                    )}
+                  </XhApprovalRoot>
+                </div>
+              </XhMessageFeedItem>
+
+              {asked.map((question, index) => (
+                <XhMessageFeedItem
+                  key={question}
+                  itemId={`q${index + 2}`}
+                  itemIndex={index + 2}
+                  itemRole="user"
+                >
+                  <XhMessageFeedItemLabel>
+                    <span style={whoStyle}>
+                      <XhAvatarRoot size="sm">
+                        <XhAvatarFallback>我</XhAvatarFallback>
+                      </XhAvatarRoot>
+                      我
+                    </span>
+                  </XhMessageFeedItemLabel>
+                  <p style={textStyle}>{question}</p>
+                </XhMessageFeedItem>
+              ))}
+            </XhMessageFeedList>
+          </XhMessageFeedViewport>
+          <XhMessageFeedScrollToEndTrigger />
+        </XhMessageFeedRoot>
+
+        <XhPromptInputRoot translations={{ input: "接着问点什么" }} onSubmit={onSubmit}>
+          <XhPromptInputInput rows={1} placeholder="接着问点什么…" />
+          <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+        </XhPromptInputRoot>
+      </div>
+
+      <p data-demo-output>{`批准闸门：${decision || "（未决定）"}`}</p>
+    </>
   );
 }

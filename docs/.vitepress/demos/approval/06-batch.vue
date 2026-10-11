@@ -63,7 +63,6 @@ function denyAll(): void {
 <template>
   <div style="display: grid; gap: 12px; inline-size: 100%">
     <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
-      <span>{{ pending.length }} 项待决</span>
       <XhButton size="sm" :disabled="approvable.length === 0" @click="approveAll">全部批准（{{ approvable.length }}）</XhButton>
       <XhButton size="sm" variant="outline" :disabled="pending.length === 0" @click="denyAll">全部拒绝</XhButton>
     </div>
@@ -97,4 +96,5 @@ function denyAll(): void {
       </XhApprovalFooter>
     </XhApprovalRoot>
   </div>
+  <span data-demo-output>{{ pending.length }} 项待决</span>
 </template>

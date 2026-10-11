@@ -13,8 +13,8 @@ const directions = ["left", "right", "up", "down"] as const;
         :direction="d"
         style="
           --xh-marquee-block-size: 5rem;
-          border: 1px solid var(--xh-border-default);
-          border-radius: 6px;
+          border: var(--xh-stroke-thin) solid var(--xh-border-default);
+          border-radius: var(--xh-shape-surface);
         "
       >
         <XhMarqueeContent>

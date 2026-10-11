@@ -45,5 +45,5 @@ function valueText({ value }: { value: number }) {
       </XhSliderThumb>
     </XhSliderControl>
   </XhSliderRoot>
-  <p>已选：{{ money(budget[0]) }}</p>
+  <p data-demo-output>已选：{{ money(budget[0]) }}</p>
 </template>

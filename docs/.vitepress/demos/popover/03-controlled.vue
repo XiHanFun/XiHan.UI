@@ -37,6 +37,6 @@ const open = ref(false);
     <XhButton variant="outline" @click="open = !open">
       {{ open ? "收起" : "展开" }}
     </XhButton>
-    <span>当前：{{ open ? "展开" : "收起" }}</span>
+    <span data-demo-output>当前：{{ open ? "展开" : "收起" }}</span>
   </div>
 </template>

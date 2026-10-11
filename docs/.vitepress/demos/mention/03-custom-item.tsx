@@ -53,7 +53,7 @@ export default function Demo(): ReactNode {
           </XhMentionContent>
         </XhMentionPositioner>
       </XhMentionRoot>
-      <p>{`正文：${text || "（空）"}`}</p>
+      <p data-demo-output>{`正文：${text || "（空）"}`}</p>
     </>
   );
 }

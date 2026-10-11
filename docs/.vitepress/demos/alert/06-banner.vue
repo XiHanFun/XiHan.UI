@@ -14,7 +14,7 @@ import {
     style="
       width: 100%;
       overflow: hidden;
-      border: 1px solid var(--xh-border-default);
+      border: var(--xh-stroke-thin) solid var(--xh-border-default);
       border-radius: var(--xh-shape-surface);
     "
   >

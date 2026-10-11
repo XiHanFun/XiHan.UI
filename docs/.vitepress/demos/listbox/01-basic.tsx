@@ -24,7 +24,7 @@ export default function Demo(): ReactNode {
           <XhListboxItem key={member.value} value={member.value}>
             <span
               aria-hidden="true"
-              style={{ display: "grid", flex: "none", placeItems: "center", inlineSize: "32px", blockSize: "32px", borderRadius: "999px", background: "var(--xh-bg-brand-subtle)", color: "var(--xh-fg-brand-strong)", fontWeight: 600 }}
+              style={{ display: "grid", flex: "none", placeItems: "center", inlineSize: "32px", blockSize: "32px", borderRadius: "var(--xh-shape-circle)", background: "var(--xh-bg-brand-subtle)", color: "var(--xh-fg-brand-strong)", fontWeight: 600 }}
             >
               {member.initial}
             </span>

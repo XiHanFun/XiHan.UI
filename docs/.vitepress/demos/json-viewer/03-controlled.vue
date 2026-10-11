@@ -19,10 +19,10 @@ function onExpandedValueChange(details: { value: string[] }) {
 <template>
   <div style="display: grid; gap: 12px; inline-size: 100%; max-inline-size: 420px">
     <div style="display: flex; gap: 8px">
-      <XhButton size="sm" @click="expanded = jsonExpandedPathsToDepth(payload, 9)">
+      <XhButton variant="outline" size="sm" @click="expanded = jsonExpandedPathsToDepth(payload, 9)">
         全部展开
       </XhButton>
-      <XhButton size="sm" @click="expanded = []">全部收起</XhButton>
+      <XhButton variant="outline" size="sm" @click="expanded = []">全部收起</XhButton>
     </div>
 
     <XhJsonViewerRoot
@@ -30,7 +30,7 @@ function onExpandedValueChange(details: { value: string[] }) {
       :expanded-value="expanded"
       @expanded-value-change="onExpandedValueChange"
     />
-
-    <span>展开了 {{ expanded.length }} 处</span>
   </div>
+
+  <span data-demo-output>展开了 {{ expanded.length }} 处</span>
 </template>

@@ -9,7 +9,7 @@ import {
   XhDialogRoot,
   XhDialogTitle,
 } from "@xihan-ui/vue";
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 
 interface Spec {
   id: number;
@@ -23,6 +23,9 @@ const specs = reactive<Spec[]>([]);
 const current = ref<Spec | null>(null);
 const open = ref(false);
 let seq = 0;
+
+// 表里每个描述符一段，合成一行
+const summary = computed(() => `描述符表：${specs.map(spec => `${spec.title}（${spec.loading ? "提交中" : "空闲"}）`).join(" · ") || "（空）"}`);
 
 // 一行调用：造描述符、入表、置为当前并展开，最后把它交回调用方
 function ask(title: string, text: string): Spec {
@@ -52,44 +55,37 @@ function submit(): void {
 </script>
 
 <template>
-  <div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-    <div style="display: flex; flex-wrap: wrap; gap: 8px">
-      <XhButton variant="solid" @click="ask('删除工作区', '删除后 30 天内还能恢复。')">
-        删除工作区
-      </XhButton>
-      <XhButton
-        variant="outline"
-        @click="ask('导出数据', '导出任务在后台跑，完成后发一条通知。')"
-      >
-        导出数据
-      </XhButton>
-    </div>
-
-    <ol style="display: grid; gap: 4px; margin: 0; padding-inline-start: 20px">
-      <li v-for="spec in specs" :key="spec.id">
-        {{ spec.title }} — {{ spec.loading ? "提交中" : "空闲" }}
-      </li>
-      <li v-if="specs.length === 0">（还没有描述符）</li>
-    </ol>
-
-    <XhDialogRoot
-      v-model:open="open"
-      :close-on-escape="!current?.loading"
-      :close-on-interact-outside="!current?.loading"
+  <div style="display: flex; flex-wrap: wrap; gap: 8px">
+    <XhButton variant="solid" @click="ask('删除工作区', '删除后 30 天内还能恢复。')">
+      删除工作区
+    </XhButton>
+    <XhButton
+      variant="outline"
+      @click="ask('导出数据', '导出任务在后台跑，完成后发一条通知。')"
     >
-      <XhDialogContent v-if="current">
-        <XhDialogTitle>{{ current.title }}</XhDialogTitle>
-        <XhDialogDescription>{{ current.text }}</XhDialogDescription>
-        <div style="display: flex; justify-content: flex-end; gap: 8px">
-          <XhButton variant="ghost" :disabled="current.loading" @click="open = false">
-            取消
-          </XhButton>
-          <XhButton variant="solid" :loading="current.loading" @click="submit">
-            <XhButtonIndicator />
-            <XhButtonLabel>{{ current.confirmLabel }}</XhButtonLabel>
-          </XhButton>
-        </div>
-      </XhDialogContent>
-    </XhDialogRoot>
+      导出数据
+    </XhButton>
   </div>
+
+  <span data-demo-output :title="summary">{{ summary }}</span>
+
+  <XhDialogRoot
+    v-model:open="open"
+    :close-on-escape="!current?.loading"
+    :close-on-interact-outside="!current?.loading"
+  >
+    <XhDialogContent v-if="current">
+      <XhDialogTitle>{{ current.title }}</XhDialogTitle>
+      <XhDialogDescription>{{ current.text }}</XhDialogDescription>
+      <div style="display: flex; justify-content: flex-end; gap: 8px">
+        <XhButton variant="ghost" :disabled="current.loading" @click="open = false">
+          取消
+        </XhButton>
+        <XhButton variant="solid" :loading="current.loading" @click="submit">
+          <XhButtonIndicator />
+          <XhButtonLabel>{{ current.confirmLabel }}</XhButtonLabel>
+        </XhButton>
+      </div>
+    </XhDialogContent>
+  </XhDialogRoot>
 </template>

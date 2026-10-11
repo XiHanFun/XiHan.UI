@@ -1,12 +1,9 @@
 <!-- 受控 | 传入 open 后由宿主决定；Escape、点击面板外、按关闭按钮都只回写 open，不自行修改状态 -->
 <xh-drawer id="drawer-controlled" open="false" side="left">
   <div data-xh-part="root">
-    <div style="display: flex; align-items: center; gap: 12px">
-      <xh-button id="drawer-controlled-open" variant="solid">
-        <button data-xh-part="root">打开左侧抽屉</button>
-      </xh-button>
-      <span id="drawer-controlled-state">当前：收起</span>
-    </div>
+    <xh-button id="drawer-controlled-open" variant="solid">
+      <button data-xh-part="root">打开左侧抽屉</button>
+    </xh-button>
 
     <div data-xh-part="backdrop"></div>
     <div data-xh-part="positioner">
@@ -20,6 +17,7 @@
     </div>
   </div>
 </xh-drawer>
+<span id="drawer-controlled-state" data-demo-output>当前：收起</span>
 
 <script type="module">
   const drawer = document.getElementById("drawer-controlled");

@@ -30,7 +30,7 @@ export default function Demo(): ReactNode {
         translations={{ input: "正文", content: "提及谁" }}
         onQueryChange={details => setQuery(details.query)}
       />
-      <p>{`正文：${text || "（空）"}`}</p>
+      <p data-demo-output>{`正文：${text || "（空）"}`}</p>
     </>
   );
 }

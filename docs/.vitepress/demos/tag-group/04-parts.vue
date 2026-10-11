@@ -27,7 +27,7 @@ function remove({ value }: { value: string }) {
 
 const avatar
   = "display: inline-flex; align-items: center; justify-content: center;"
-    + " inline-size: 16px; block-size: 16px; border-radius: 50%;"
+    + " inline-size: 16px; block-size: 16px; border-radius: var(--xh-shape-circle);"
     + " background: var(--xh-bg-subtle); font-size: var(--xh-font-size-xs)";
 </script>
 
@@ -56,5 +56,5 @@ const avatar
       </XhTagGroupItem>
     </XhTagGroupList>
   </XhTagGroupRoot>
-  <p>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
+  <p data-demo-output>已选：{{ picked.length ? picked.join("、") : "（无）" }}</p>
 </template>

@@ -15,10 +15,8 @@ export default function Demo(): ReactNode {
 
   return (
     <>
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <XhButton variant="solid" onClick={() => setOpen(true)}>打开</XhButton>
-        <span>{`当前：${open ? "展开" : "收起"}`}</span>
-      </div>
+      <XhButton variant="solid" onClick={() => setOpen(true)}>打开</XhButton>
+      <span data-demo-output>{`当前：${open ? "展开" : "收起"}`}</span>
 
       <XhDialogRoot
         open={open}

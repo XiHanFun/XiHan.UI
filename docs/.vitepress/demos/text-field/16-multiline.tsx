@@ -2,6 +2,7 @@
 import type { ReactNode } from "react";
 import {
   XhTextFieldControl,
+  XhTextFieldCount,
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
@@ -18,19 +19,14 @@ export default function Demo(): ReactNode {
         onValueChange={details => setNote(details.value)}
         autoSize={{ minRows: 2, maxRows: 6 }}
         maxLength={120}
+        showCount
         placeholder="说点什么"
       >
-        {({ value, atLimit }) => (
-          <>
-            <XhTextFieldLabel>备注（2-6 行自动长高）</XhTextFieldLabel>
-            <XhTextFieldControl>
-              <XhTextFieldInput as="textarea" />
-            </XhTextFieldControl>
-            <p style={{ margin: "4px 0 0", fontSize: "12px", color: atLimit ? "var(--xh-fg-danger)" : "var(--xh-fg-subtle)" }}>
-              {`${value.length} / 120`}
-            </p>
-          </>
-        )}
+        <XhTextFieldLabel>备注（2-6 行自动长高）</XhTextFieldLabel>
+        <XhTextFieldControl>
+          <XhTextFieldInput as="textarea" />
+        </XhTextFieldControl>
+        <XhTextFieldCount />
       </XhTextFieldRoot>
 
       <XhTextFieldRoot autoSize placeholder="不设行数界限，完全跟内容走">

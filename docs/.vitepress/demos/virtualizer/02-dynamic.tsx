@@ -15,7 +15,7 @@ const rows = Array.from({ length: 500 }, (_, i) => ({
 
 const rowStyle: CSSProperties = {
   padding: "8px 12px",
-  borderBlockEnd: "1px solid var(--xh-border-subtle)",
+  borderBlockEnd: "var(--xh-stroke-thin) solid var(--xh-border-subtle)",
   lineHeight: "20px",
 };
 

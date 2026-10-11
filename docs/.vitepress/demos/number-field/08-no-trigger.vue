@@ -16,6 +16,6 @@ import { XhNumberFieldControl, XhNumberFieldInput, XhNumberFieldLabel, XhNumberF
     <XhNumberFieldControl>
       <XhNumberFieldInput style="inline-size: 96px; text-align: center" />
     </XhNumberFieldControl>
-    <span>点进框里按上下键：{{ value === "" ? "（空）" : value }}</span>
+    <span data-demo-output>点进框里按上下键：{{ value === "" ? "（空）" : value }}</span>
   </XhNumberFieldRoot>
 </template>

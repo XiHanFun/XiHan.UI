@@ -14,10 +14,8 @@ const open = ref(false);
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <XhButton variant="solid" @click="open = true">打开</XhButton>
-    <span>当前：{{ open ? "展开" : "收起" }}</span>
-  </div>
+  <XhButton variant="solid" @click="open = true">打开</XhButton>
+  <span data-demo-output>当前：{{ open ? "展开" : "收起" }}</span>
 
   <XhDialogRoot v-model:open="open" :translations="{ close: '关闭' }">
     <XhDialogContent>

@@ -33,7 +33,7 @@ const people = Array.from({ length: 10000 }, (_, i) => ({
 const rows = people.map(p => ({ id: p.id }));
 
 // 行之间的分隔线：每行装在各自的虚拟条目里，彼此不是兄弟节点，分隔线写在行上
-const rowStyle = "block-size: 36px; border-block-end: 1px solid var(--xh-border-subtle)";
+const rowStyle = "block-size: 36px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
 </script>
 
 <template>

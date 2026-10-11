@@ -29,13 +29,7 @@ export default function Demo(): ReactNode {
         </XhTextFieldControl>
       </XhTextFieldRoot>
 
-      {log.length
-        ? (
-            <ol style={{ margin: 0, paddingInlineStart: "20px" }}>
-              {log.map((item, i) => <li key={i}>{item}</li>)}
-            </ol>
-          )
-        : <span>还没有事件</span>}
+      <span data-demo-output>{log.join(" · ") || "还没有事件"}</span>
     </>
   );
 }

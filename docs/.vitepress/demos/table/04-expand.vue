@@ -56,6 +56,6 @@ const expanded = ref<string[]>(["o1"]);
         </template>
       </XhTableBody>
     </XhTableRoot>
-    <span>展开：{{ expanded.length ? expanded.join("、") : "（无）" }}</span>
+    <span data-demo-output>展开：{{ expanded.length ? expanded.join("、") : "（无）" }}</span>
   </div>
 </template>

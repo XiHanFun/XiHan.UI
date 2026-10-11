@@ -23,7 +23,7 @@ export default function Demo(): ReactNode {
         label="水果（多选）"
         placeholder="请选择"
       />
-      <p>
+      <p data-demo-output>
         已选：
         {picked.length ? picked.join("、") : "（无）"}
       </p>

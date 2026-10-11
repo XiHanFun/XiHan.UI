@@ -23,17 +23,7 @@
     </div>
 
     <!-- 候选面板是作者自己的节点：按下不放焦点，点完把框里的半截文本清掉 -->
-    <div
-      id="tags-input-custom-options"
-      style="
-        display: none;
-        flex-direction: column;
-        margin-block-start: 4px;
-        border: 1px solid var(--xh-border-subtle);
-        border-radius: var(--xh-radius-md);
-        overflow: hidden;
-      "
-    ></div>
+    <div id="tags-input-custom-options" style="display: none; flex-wrap: wrap; gap: 8px"></div>
   </div>
 </xh-tags-input>
 
@@ -110,15 +100,17 @@
     panel.style.display = list.length > 0 ? "flex" : "none";
     panel.replaceChildren(
       ...list.map((option) => {
+        const chip = document.createElement("xh-button");
+        chip.setAttribute("size", "sm");
+        chip.setAttribute("variant", "outline");
         const button = document.createElement("button");
-        button.type = "button";
+        button.dataset.xhPart = "root";
         button.textContent = option;
-        button.style.cssText =
-          "padding: 6px 10px; border: 0; background: none; color: var(--xh-fg-default); font: inherit; text-align: start; cursor: pointer;";
         // 按下不夺走焦点，输入框才不会在点中候选之前先失焦
         button.addEventListener("mousedown", (event) => event.preventDefault());
         button.addEventListener("click", () => pick(option));
-        return button;
+        chip.append(button);
+        return chip;
       }),
     );
   }

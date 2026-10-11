@@ -1,6 +1,7 @@
 // 选择型条目 | CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 import type { ReactNode } from "react";
 import {
+  XhButton,
   XhMenuCheckboxItem,
   XhMenuContent,
   XhMenuItemIndicator,
@@ -23,7 +24,9 @@ export default function Demo(): ReactNode {
       onCheckboxValueChange={({ value }) => setCheckboxValue(value)}
       onRadioValueChange={({ value }) => setRadioValue(value)}
     >
-      <XhMenuTrigger>视图设置</XhMenuTrigger>
+      <XhMenuTrigger asChild>
+        <XhButton variant="subtle">视图设置</XhButton>
+      </XhMenuTrigger>
       <XhMenuPositioner>
         <XhMenuContent>
           <XhMenuCheckboxItem value="wrap">

@@ -110,7 +110,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhTableRoot>
-      <span>{`存下来的列偏好：${saved}`}</span>
+      <span data-demo-output>{`存下来的列偏好：${saved}`}</span>
     </div>
   );
 }

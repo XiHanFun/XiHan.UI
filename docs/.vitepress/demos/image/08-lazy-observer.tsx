@@ -42,8 +42,8 @@ export default function Demo(): ReactNode {
         blockSize: "180px",
         overflowY: "auto",
         padding: "12px",
-        border: "1px solid var(--xh-border-default)",
-        borderRadius: "8px",
+        border: "var(--xh-stroke-thin) solid var(--xh-border-default)",
+        borderRadius: "var(--xh-shape-surface)",
       }}
     >
       <p style={{ margin: "0 0 12px" }}>往下滚，图片进视口才开始取。</p>

@@ -69,7 +69,7 @@ export default function Demo(): ReactNode {
           ))}
         </XhTreeTree>
       </XhTreeRoot>
-      <p>{`选中值（默认只收叶）：${selected.length ? selected.join("、") : "（无）"}`}</p>
+      <p data-demo-output>{`选中值（默认只收叶）：${selected.length ? selected.join("、") : "（无）"}`}</p>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 // 密码与明暗切换 | 写在 input 部件上的 type 覆盖默认的 text，明暗由宿主的一个布尔切换
 import type { ReactNode } from "react";
 import {
+  XhButton,
   XhTextFieldControl,
   XhTextFieldInput,
   XhTextFieldLabel,
@@ -23,9 +24,9 @@ export default function Demo(): ReactNode {
         <XhTextFieldControl>
           <XhTextFieldInput autoComplete="current-password" />
         </XhTextFieldControl>
-        <button type="button" aria-pressed={visible} onClick={() => setVisible(!visible)}>
+        <XhButton variant="outline" aria-pressed={visible} onClick={() => setVisible(!visible)}>
           {visible ? "隐藏" : "显示"}
-        </button>
+        </XhButton>
       </div>
     </XhTextFieldRoot>
   );

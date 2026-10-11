@@ -1,6 +1,6 @@
 // 按状态分流的回退内容 | 状态一落位即报告：加载中提供占位、失败提供提示与重试入口，两套内容共用同一个回退部件
 import type { CSSProperties, ReactNode } from "react";
-import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/react";
+import { XhButton, XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/react";
 import { useState } from "react";
 
 const good
@@ -26,7 +26,7 @@ export default function Demo(): ReactNode {
               ? (
                   <span style={{ display: "inline-flex", gap: "8px", alignItems: "center" }}>
                     取不到这张图
-                    <button type="button" onClick={() => setSrc(good)}>重试</button>
+                    <XhButton size="sm" variant="outline" onClick={() => setSrc(good)}>重试</XhButton>
                   </span>
                 )
               : <span>正在加载…</span>}

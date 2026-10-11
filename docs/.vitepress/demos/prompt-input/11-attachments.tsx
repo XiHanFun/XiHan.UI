@@ -37,7 +37,7 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <div style={{ display: "grid", gap: "12px" }}>
+    <>
       <XhPromptInputRoot translations={{ input: "给助手写点什么" }} onSubmit={details => send(details.value)}>
         <XhPromptInputControl>
           <XhPromptInputInput rows={1} placeholder="写点什么，可以附上文件…" />
@@ -63,7 +63,7 @@ export default function Demo(): ReactNode {
           ))}
         </div>
       </XhPromptInputRoot>
-      <span>{log}</span>
-    </div>
+      <span data-demo-output>{log}</span>
+    </>
   );
 }

@@ -76,7 +76,7 @@ export default function Demo(): ReactNode {
           ))}
         </XhTableBody>
       </XhTableRoot>
-      <span>
+      <span data-demo-output>
         {`选中：${selection === "all" ? "全部" : selection.length ? selection.join("、") : "（无）"}`}
       </span>
     </div>

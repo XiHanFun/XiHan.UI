@@ -64,6 +64,6 @@ function cell(m: (typeof members)[number], id: string): string {
         </XhTableRow>
       </XhTableBody>
     </XhTableRoot>
-    <span>列序：{{ (preference.order as string[] | undefined)?.join(" → ") ?? "（还没改过）" }}</span>
+    <span data-demo-output>列序：{{ (preference.order as string[] | undefined)?.join(" → ") ?? "（还没改过）" }}</span>
   </div>
 </template>

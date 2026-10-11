@@ -12,8 +12,12 @@
     </div>
   </xh-progress>
   <div style="display: flex; gap: 8px">
-    <button type="button" id="progress-labelled-dec">-10</button>
-    <button type="button" id="progress-labelled-inc">+10</button>
+    <xh-button size="sm" variant="outline">
+      <button data-xh-part="root" id="progress-labelled-dec">-10</button>
+    </xh-button>
+    <xh-button size="sm" variant="outline">
+      <button data-xh-part="root" id="progress-labelled-inc">+10</button>
+    </xh-button>
   </div>
 </div>
 

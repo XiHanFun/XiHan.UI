@@ -54,44 +54,43 @@ const sent = ref("");
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px; max-width: 360px;">
-    <XhQuestionFlowRoot
-      v-slot="{ isLast }"
-      :questions="questions"
-      :translations="translations"
-      :auto-advance="false"
-      @submit="sent = Object.entries($event.answers).map(([id, values]) => `${id}=${values.join('、')}`).join('；')"
-    >
-      <XhQuestionFlowViewport>
-        <XhQuestionFlowTrack>
-          <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
-            <XhQuestionFlowPrompt :question-id="question.id">{{ question.prompt }}</XhQuestionFlowPrompt>
-            <!-- 留空：写上题目自带的说明，或多选的数量要求 -->
-            <XhQuestionFlowDescription :question-id="question.id" />
-            <XhQuestionFlowGroup :question-id="question.id">
-              <XhQuestionFlowItem
-                v-for="option in question.options"
-                :key="option.value"
-                :question-id="question.id"
-                :option-value="option.value"
-              >
-                <XhQuestionFlowItemIndicator :question-id="question.id" :option-value="option.value" />
-                <XhQuestionFlowItemText :question-id="question.id" :option-value="option.value">
-                  {{ option.label }}
-                </XhQuestionFlowItemText>
-                <XhQuestionFlowItemDescription v-if="option.description" :question-id="question.id" :option-value="option.value">
-                  {{ option.description }}
-                </XhQuestionFlowItemDescription>
-              </XhQuestionFlowItem>
-            </XhQuestionFlowGroup>
-          </XhQuestionFlowQuestion>
-        </XhQuestionFlowTrack>
-      </XhQuestionFlowViewport>
-      <XhQuestionFlowFooter>
-        <XhQuestionFlowSubmitTrigger>{{ isLast ? "发送" : "继续" }}</XhQuestionFlowSubmitTrigger>
-      </XhQuestionFlowFooter>
-      <XhQuestionFlowLiveRegion />
-    </XhQuestionFlowRoot>
-    <p v-if="sent" style="margin: 0;">收到：{{ sent }}</p>
-  </div>
+  <XhQuestionFlowRoot
+    v-slot="{ isLast }"
+    :questions="questions"
+    style="max-width: 360px;"
+    :translations="translations"
+    :auto-advance="false"
+    @submit="sent = Object.entries($event.answers).map(([id, values]) => `${id}=${values.join('、')}`).join('；')"
+  >
+    <XhQuestionFlowViewport>
+      <XhQuestionFlowTrack>
+        <XhQuestionFlowQuestion v-for="question in questions" :key="question.id" :question-id="question.id">
+          <XhQuestionFlowPrompt :question-id="question.id">{{ question.prompt }}</XhQuestionFlowPrompt>
+          <!-- 留空：写上题目自带的说明，或多选的数量要求 -->
+          <XhQuestionFlowDescription :question-id="question.id" />
+          <XhQuestionFlowGroup :question-id="question.id">
+            <XhQuestionFlowItem
+              v-for="option in question.options"
+              :key="option.value"
+              :question-id="question.id"
+              :option-value="option.value"
+            >
+              <XhQuestionFlowItemIndicator :question-id="question.id" :option-value="option.value" />
+              <XhQuestionFlowItemText :question-id="question.id" :option-value="option.value">
+                {{ option.label }}
+              </XhQuestionFlowItemText>
+              <XhQuestionFlowItemDescription v-if="option.description" :question-id="question.id" :option-value="option.value">
+                {{ option.description }}
+              </XhQuestionFlowItemDescription>
+            </XhQuestionFlowItem>
+          </XhQuestionFlowGroup>
+        </XhQuestionFlowQuestion>
+      </XhQuestionFlowTrack>
+    </XhQuestionFlowViewport>
+    <XhQuestionFlowFooter>
+      <XhQuestionFlowSubmitTrigger>{{ isLast ? "发送" : "继续" }}</XhQuestionFlowSubmitTrigger>
+    </XhQuestionFlowFooter>
+    <XhQuestionFlowLiveRegion />
+  </XhQuestionFlowRoot>
+  <p data-demo-output>收到：{{ sent || "（还没发送）" }}</p>
 </template>

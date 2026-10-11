@@ -31,5 +31,5 @@ function advance(): void {
   <XhButton variant="solid" @click="start">开始</XhButton>
   <XhButton variant="outline" @click="advance">推进 25%</XhButton>
   <XhButton variant="ghost" @click="loading = false">结束</XhButton>
-  <span>进度：{{ value }}%</span>
+  <span data-demo-output>进度：{{ value }}%</span>
 </template>

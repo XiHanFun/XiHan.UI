@@ -13,8 +13,8 @@ const cardStyle: CSSProperties = {
   justifyContent: "center",
   inlineSize: "120px",
   blockSize: "68px",
-  border: "1px solid var(--xh-border-subtle)",
-  borderRadius: "8px",
+  border: "var(--xh-stroke-thin) solid var(--xh-border-subtle)",
+  borderRadius: "var(--xh-shape-surface)",
 };
 
 export default function Demo(): ReactNode {

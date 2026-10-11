@@ -23,7 +23,7 @@ const members = [
       <XhListboxItem v-for="member in members" :key="member.value" :value="member.value">
         <span
           aria-hidden="true"
-          style="display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: 999px; background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600"
+          style="display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: var(--xh-shape-circle); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600"
         >
           {{ member.initial }}
         </span>

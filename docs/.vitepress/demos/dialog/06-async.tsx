@@ -27,7 +27,7 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+    <>
       <XhDialogRoot
         open={open}
         onOpenChange={details => setOpen(details.open)}
@@ -51,7 +51,7 @@ export default function Demo(): ReactNode {
           </div>
         </XhDialogContent>
       </XhDialogRoot>
-      <span>{archived ? "已归档" : "未归档"}</span>
-    </div>
+      <span data-demo-output>{`项目状态：${archived ? "已归档" : "未归档"}`}</span>
+    </>
   );
 }

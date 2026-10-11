@@ -51,7 +51,7 @@ const value = ref<string[]>(["#00a98e", "#3b82f6"]);
     </XhColorPickerPositioner>
   </XhColorPickerRoot>
 
-  <span aria-live="polite" style="font-size: 13px">
+  <span data-demo-output aria-live="polite">
     当前值：{{ value.join("、") || "（空）" }}
   </span>
 </template>

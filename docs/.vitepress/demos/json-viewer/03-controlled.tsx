@@ -13,21 +13,23 @@ export default function Demo(): ReactNode {
   const [expanded, setExpanded] = useState<string[]>([JSON_VIEWER_ROOT_PATH]);
 
   return (
-    <div style={{ display: "grid", gap: "12px", inlineSize: "100%", maxInlineSize: "420px" }}>
-      <div style={{ display: "flex", gap: "8px" }}>
-        <XhButton size="sm" onClick={() => setExpanded(jsonExpandedPathsToDepth(payload, 9))}>
-          全部展开
-        </XhButton>
-        <XhButton size="sm" onClick={() => setExpanded([])}>全部收起</XhButton>
+    <>
+      <div style={{ display: "grid", gap: "12px", inlineSize: "100%", maxInlineSize: "420px" }}>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <XhButton variant="outline" size="sm" onClick={() => setExpanded(jsonExpandedPathsToDepth(payload, 9))}>
+            全部展开
+          </XhButton>
+          <XhButton variant="outline" size="sm" onClick={() => setExpanded([])}>全部收起</XhButton>
+        </div>
+
+        <XhJsonViewerRoot
+          value={payload}
+          expandedValue={expanded}
+          onExpandedValueChange={details => setExpanded(details.value)}
+        />
       </div>
 
-      <XhJsonViewerRoot
-        value={payload}
-        expandedValue={expanded}
-        onExpandedValueChange={details => setExpanded(details.value)}
-      />
-
-      <span>{`展开了 ${expanded.length} 处`}</span>
-    </div>
+      <span data-demo-output>{`展开了 ${expanded.length} 处`}</span>
+    </>
   );
 }

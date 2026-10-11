@@ -1,6 +1,6 @@
 <!-- 按状态分流的回退内容 | 状态一落位即报告：加载中提供占位、失败提供提示与重试入口，两套内容共用同一个回退部件 -->
 <script setup lang="ts">
-import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";
+import { XhButton, XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const good
@@ -22,7 +22,7 @@ const src = ref("https://example.invalid/photo.svg");
         <!-- 失败与加载中是两回事，文案与可操作性都该不一样 -->
         <span v-if="status === 'error'" style="display: inline-flex; gap: 8px; align-items: center;">
           取不到这张图
-          <button type="button" @click="src = good">重试</button>
+          <XhButton size="sm" variant="outline" @click="src = good">重试</XhButton>
         </span>
         <span v-else>正在加载…</span>
       </XhImageFallback>

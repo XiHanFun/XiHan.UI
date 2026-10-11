@@ -15,7 +15,7 @@ export default function Demo(): ReactNode {
           <XhMarqueeRoot
             autoFill={fill}
             speed={60}
-            style={{ maxInlineSize: "420px", border: "1px solid var(--xh-border-default)", borderRadius: "6px" }}
+            style={{ maxInlineSize: "420px", border: "var(--xh-stroke-thin) solid var(--xh-border-default)", borderRadius: "var(--xh-shape-surface)" }}
           >
             <XhMarqueeContent>
               {tags.map(t => (

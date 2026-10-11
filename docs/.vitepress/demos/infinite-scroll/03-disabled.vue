@@ -21,34 +21,33 @@ function onLoad(): void {
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px; inline-size: 100%">
-    <div
-      ref="scrollEl"
-      data-xh-scroll
-      style="
-        block-size: 220px;
-        overflow: auto;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 8px;
-      "
+  <div
+    ref="scrollEl"
+    data-xh-scroll
+    style="
+      inline-size: 100%;
+      block-size: 220px;
+      overflow: auto;
+      border: var(--xh-stroke-thin) solid var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
+    "
+  >
+    <XhInfiniteScrollRoot
+      :target="scrollEl"
+      :loading="loading"
+      :disabled="page >= maxPage"
+      @load="onLoad"
     >
-      <XhInfiniteScrollRoot
-        :target="scrollEl"
-        :loading="loading"
-        :disabled="page >= maxPage"
-        @load="onLoad"
-      >
-        <div v-for="item in items" :key="item" style="padding: 8px 12px">{{ item }}</div>
-        <p v-if="loading" style="margin: 0; padding: 8px 12px; color: var(--xh-fg-muted)">
-          正在取下一页…
-        </p>
-        <p v-else-if="page >= maxPage" style="margin: 0; padding: 8px 12px; color: var(--xh-fg-muted)">
-          没有更多了
-        </p>
-        <XhInfiniteScrollSentinel />
-      </XhInfiniteScrollRoot>
-    </div>
-
-    <span>第 {{ page }} / {{ maxPage }} 页 · 共 {{ items.length }} 条</span>
+      <div v-for="item in items" :key="item" style="padding: 8px 12px">{{ item }}</div>
+      <p v-if="loading" style="margin: 0; padding: 8px 12px; color: var(--xh-fg-muted)">
+        正在取下一页…
+      </p>
+      <p v-else-if="page >= maxPage" style="margin: 0; padding: 8px 12px; color: var(--xh-fg-muted)">
+        没有更多了
+      </p>
+      <XhInfiniteScrollSentinel />
+    </XhInfiniteScrollRoot>
   </div>
+
+  <span data-demo-output>第 {{ page }} / {{ maxPage }} 页 · 共 {{ items.length }} 条</span>
 </template>

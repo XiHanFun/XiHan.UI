@@ -13,7 +13,7 @@ export default function Demo(): ReactNode {
   const [clicks, setClicks] = useState(0);
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+    <>
       <XhHoverCardRoot disabled placement="bottom-start" openDelay={0}>
         <XhHoverCardTrigger onClick={() => setClicks(clicks + 1)}>@xihan（卡片已关）</XhHoverCardTrigger>
         <XhHoverCardPositioner>
@@ -23,7 +23,7 @@ export default function Demo(): ReactNode {
           </XhHoverCardContent>
         </XhHoverCardPositioner>
       </XhHoverCardRoot>
-      <span>{`已点 ${clicks} 次`}</span>
-    </div>
+      <span data-demo-output>{`已点 ${clicks} 次`}</span>
+    </>
   );
 }

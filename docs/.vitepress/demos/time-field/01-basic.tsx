@@ -33,7 +33,7 @@ export default function Demo(): ReactNode {
         <XhTimeFieldHiddenInput />
       </XhTimeFieldRoot>
 
-      <span aria-live="polite" style={{ fontSize: "13px" }}>
+      <span aria-live="polite" data-demo-output>
         {`当前值：${value || "（未填齐）"}`}
       </span>
     </>

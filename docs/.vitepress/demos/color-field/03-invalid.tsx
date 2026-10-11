@@ -19,7 +19,7 @@ export default function Demo(): ReactNode {
             <XhColorFieldSwatch />
             <XhColorFieldInput />
           </XhColorFieldControl>
-          <span style={{ fontSize: "13px" }}>
+          <span data-demo-output>
             {invalid ? "这串字不是颜色：改一改，或按 Escape 放弃" : editing ? "回车或失焦收下" : "已收下"}
           </span>
         </>

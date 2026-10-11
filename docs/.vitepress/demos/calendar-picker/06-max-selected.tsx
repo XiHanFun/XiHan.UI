@@ -62,12 +62,8 @@ export default function Demo(): ReactNode {
         )}
       </XhCalendarPickerRoot>
 
-      <span aria-live="polite" style={{ fontSize: "13px" }}>
-        已选
-        {value.length}
-        {" "}
-        / 3 天：
-        {value.join("、") || "（无）"}
+      <span aria-live="polite" data-demo-output>
+        {`已选 ${value.length} / 3 天：${value.join("、") || "（无）"}`}
       </span>
     </>
   );

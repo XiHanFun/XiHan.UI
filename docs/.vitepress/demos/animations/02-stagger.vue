@@ -2,7 +2,17 @@
 <script setup lang="ts">
 import type { StaggerFrom } from "@xihan-ui/animations";
 import { createMotionPlayer, splitText } from "@xihan-ui/animations";
-import { XhButton, XhRadioGroupRoot } from "@xihan-ui/vue";
+import {
+  XhButton,
+  XhRadioGroupRoot,
+  XhSliderControl,
+  XhSliderHiddenInput,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+} from "@xihan-ui/vue";
 import { onBeforeUnmount, ref, useTemplateRef } from "vue";
 
 const fromOptions = [
@@ -15,14 +25,15 @@ const motion = createMotionPlayer();
 const list = useTemplateRef<HTMLElement>("list");
 const title = useTemplateRef<HTMLElement>("title");
 const from = ref<StaggerFrom>("first");
-const gap = ref(60);
+// 滑块的值恒为数组，单滑块即长度 1
+const gap = ref([60]);
 
 function playList() {
   const el = list.value;
   if (!el)
     return;
   void motion.playAll([...el.children] as HTMLElement[], "rise", {
-    stagger: gap.value,
+    stagger: gap.value[0],
     from: from.value,
   });
 }
@@ -40,39 +51,46 @@ onBeforeUnmount(() => motion.cancel());
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
-    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
+  <div style="display: flex; flex-direction: column; gap: var(--xh-space-4); width: 100%">
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--xh-space-5)">
       <XhRadioGroupRoot
         v-model:value="from"
         :collection="fromOptions"
         label="起点"
         name="stagger-from"
       />
-      <label style="display: flex; align-items: center; gap: 8px">
-        间隔 {{ gap }}ms
-        <input v-model.number="gap" type="range" min="0" max="200" step="10">
-      </label>
+      <XhSliderRoot v-model:value="gap" :min="0" :max="200" :step="10" style="inline-size: var(--xh-control-w)">
+        <XhSliderLabel>间隔 {{ gap[0] }}ms</XhSliderLabel>
+        <XhSliderControl>
+          <XhSliderTrack>
+            <XhSliderRange />
+          </XhSliderTrack>
+          <XhSliderThumb>
+            <XhSliderHiddenInput />
+          </XhSliderThumb>
+        </XhSliderControl>
+      </XhSliderRoot>
     </div>
 
-    <div style="display: flex; gap: 8px">
+    <div style="display: flex; gap: var(--xh-space-2)">
       <XhButton size="sm" @click="playList">播列表</XhButton>
       <XhButton size="sm" variant="outline" @click="playTitle">播标题</XhButton>
     </div>
 
-    <h3 ref="title" style="margin: 0; font-size: 24px">曦寒 UI 动画层</h3>
+    <h3 ref="title" style="margin: 0; font-size: var(--xh-font-size-2xl)">曦寒 UI 动画层</h3>
 
-    <div ref="list" style="display: flex; flex-wrap: wrap; gap: 8px">
+    <div ref="list" style="display: flex; flex-wrap: wrap; gap: var(--xh-space-2)">
       <div
         v-for="n in 8"
         :key="n"
         style="
           display: grid;
           place-items: center;
-          width: 48px;
-          height: 48px;
-          border-radius: 10px;
-          background: var(--vp-c-brand-soft);
-          font-weight: 600;
+          width: calc(2 * var(--xh-space-6));
+          height: calc(2 * var(--xh-space-6));
+          border-radius: var(--xh-shape-surface);
+          background: var(--xh-bg-subtle);
+          font-weight: var(--xh-font-weight-semibold);
         "
       >
         {{ n }}

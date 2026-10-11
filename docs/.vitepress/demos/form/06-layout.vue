@@ -9,11 +9,12 @@ import {
   XhFormFieldGroup,
   XhFormRoot,
   XhFormSubmitTrigger,
+  XhRadioGroupRoot,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const layout = ref<FormLayout>("horizontal");
-const layouts: FormLayout[] = ["vertical", "horizontal", "inline", "grid"];
+const layouts = (["vertical", "horizontal", "inline", "grid"] as const).map(l => ({ value: l, label: l }));
 
 const fields = [
   { name: "username", label: "用户名", placeholder: "字母开头" },
@@ -29,12 +30,14 @@ const rules = {
 
 <template>
   <div style="display: grid; gap: 16px; justify-items: start">
-    <label style="display: flex; gap: 8px; align-items: center; font-size: 13px">
-      排布
-      <select v-model="layout">
-        <option v-for="l in layouts" :key="l" :value="l">{{ l }}</option>
-      </select>
-    </label>
+    <!-- 分段轨道里不排可见标题：label 只作可及名 -->
+    <XhRadioGroupRoot
+      variant="segmented"
+      :collection="layouts"
+      :value="layout"
+      label="排布"
+      @update:value="(next: string | null) => layout = next as FormLayout"
+    />
 
     <XhFormRoot
       :layout="layout"

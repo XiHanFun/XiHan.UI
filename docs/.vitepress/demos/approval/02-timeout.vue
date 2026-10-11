@@ -37,23 +37,21 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <XhApprovalRoot
-      v-slot="{ status }"
-      :timeout-ms="10000"
-      tone="danger"
-      @decision="decided = `${$event.decision}（来源 ${$event.source}）`"
-    >
-      <XhApprovalTitle>要执行一条删除命令</XhApprovalTitle>
-      <XhApprovalDescription>没人答的话，到点按拒绝处理。</XhApprovalDescription>
-      <!-- 剩余时间对读屏隐藏：逐秒跳字进活区会不停打断 -->
-      <XhApprovalTimer>还剩 {{ left }} 秒</XhApprovalTimer>
-      <XhApprovalResult>{{ resultText(status) }}</XhApprovalResult>
-      <XhApprovalFooter>
-        <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
-        <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
-      </XhApprovalFooter>
-    </XhApprovalRoot>
-    <p v-if="decided" style="margin: 0;">判定：{{ decided }}</p>
-  </div>
+  <XhApprovalRoot
+    v-slot="{ status }"
+    :timeout-ms="10000"
+    tone="danger"
+    @decision="decided = `${$event.decision}（来源 ${$event.source}）`"
+  >
+    <XhApprovalTitle>要执行一条删除命令</XhApprovalTitle>
+    <XhApprovalDescription>没人答的话，到点按拒绝处理。</XhApprovalDescription>
+    <!-- 剩余时间对读屏隐藏：逐秒跳字进活区会不停打断 -->
+    <XhApprovalTimer>还剩 {{ left }} 秒</XhApprovalTimer>
+    <XhApprovalResult>{{ resultText(status) }}</XhApprovalResult>
+    <XhApprovalFooter>
+      <XhApprovalApproveTrigger>批准</XhApprovalApproveTrigger>
+      <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
+    </XhApprovalFooter>
+  </XhApprovalRoot>
+  <p data-demo-output>判定：{{ decided || "（未判定）" }}</p>
 </template>

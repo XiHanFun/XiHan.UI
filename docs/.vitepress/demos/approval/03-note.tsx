@@ -17,7 +17,7 @@ export default function Demo(): ReactNode {
   const [decided, setDecided] = useState("");
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+    <>
       <XhApprovalRoot
         translations={translations}
         onDecision={details => setDecided(`${details.decision}（备注 ${details.note ?? "无"}）`)}
@@ -30,7 +30,7 @@ export default function Demo(): ReactNode {
           <XhApprovalDenyTrigger>拒绝</XhApprovalDenyTrigger>
         </XhApprovalFooter>
       </XhApprovalRoot>
-      {decided ? <p style={{ margin: 0 }}>{`判定：${decided}`}</p> : null}
-    </div>
+      <p data-demo-output>{`判定：${decided || "（未判定）"}`}</p>
+    </>
   );
 }

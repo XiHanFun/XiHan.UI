@@ -51,7 +51,7 @@ export default function Demo(): ReactNode {
         </XhTimePickerPositioner>
       </XhTimePickerRoot>
 
-      <span aria-live="polite" style={{ fontSize: "13px" }}>
+      <span aria-live="polite" data-demo-output>
         {`当前值：${value.join("、") || "（空）"}`}
       </span>
     </>

@@ -41,8 +41,8 @@ export default function Demo(): ReactNode {
           display: "grid",
           placeItems: "center",
           blockSize: "200px",
-          border: "1px dashed var(--xh-border-default)",
-          borderRadius: "8px",
+          border: "var(--xh-stroke-thin) dashed var(--xh-border-default)",
+          borderRadius: "var(--xh-shape-surface)",
           color: "var(--xh-fg-muted)",
           cursor: "crosshair",
         }}

@@ -40,7 +40,7 @@ export default function Demo(): ReactNode {
       </XhPopoverRoot>
 
       <XhButton variant="ghost">页面上的另一颗按钮</XhButton>
-      <span>{`当前分组：${picked}`}</span>
+      <span data-demo-output>{`当前分组：${picked}`}</span>
     </div>
   );
 }

@@ -29,7 +29,7 @@ const versions = Array.from({ length: 18 }, (_, i) => ({
             style="
               margin: 0;
               padding: 6px 0;
-              border-block-end: 1px solid var(--xh-border-subtle);
+              border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle);
             "
           >
             {{ v.text }}

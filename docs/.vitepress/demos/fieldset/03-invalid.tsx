@@ -1,6 +1,9 @@
 // 无效态 | invalid 切换后，错误文案接入描述链并显示；它带 role=alert，切换时读屏立即播报
 import type { ReactNode } from "react";
 import {
+  XhFieldControl,
+  XhFieldLabel,
+  XhFieldRoot,
   XhFieldsetDescription,
   XhFieldsetErrorText,
   XhFieldsetLegend,
@@ -17,20 +20,18 @@ export default function Demo(): ReactNode {
   return (
     <XhFieldsetRoot invalid={invalid} style={{ inlineSize: "320px" }}>
       <XhFieldsetLegend>联系方式</XhFieldsetLegend>
-      <input
-        type="email"
-        placeholder="邮箱"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        style={{ inlineSize: "100%" }}
-      />
-      <input
-        type="tel"
-        placeholder="手机号"
-        value={phone}
-        onChange={e => setPhone(e.target.value)}
-        style={{ inlineSize: "100%" }}
-      />
+      <XhFieldRoot>
+        <XhFieldLabel>邮箱</XhFieldLabel>
+        <XhFieldControl>
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)} />
+        </XhFieldControl>
+      </XhFieldRoot>
+      <XhFieldRoot>
+        <XhFieldLabel>手机号</XhFieldLabel>
+        <XhFieldControl>
+          <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} />
+        </XhFieldControl>
+      </XhFieldRoot>
       <XhFieldsetDescription>两者填一个即可</XhFieldsetDescription>
       <XhFieldsetErrorText>请至少填写一种联系方式</XhFieldsetErrorText>
     </XhFieldsetRoot>

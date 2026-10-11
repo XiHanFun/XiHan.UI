@@ -21,8 +21,8 @@ const panels = ref<string[]>(["basic", "size"]);
 </script>
 
 <template>
-  <div style="width: 100%; max-width: 420px; display: grid; gap: 12px">
+  <div style="width: 100%; max-width: 420px">
     <XhAccordionRoot v-model:value="panels" :collection="items" multiple />
-    <span>展开：{{ panels.length ? panels.join("、") : "（无）" }}</span>
   </div>
+  <span data-demo-output>展开：{{ panels.length ? panels.join("、") : "（无）" }}</span>
 </template>

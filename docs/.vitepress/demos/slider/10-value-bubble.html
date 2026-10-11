@@ -22,10 +22,12 @@
     </div>
   </div>
 </xh-slider>
+<p data-demo-output>已选：<span id="slider-budget-value">¥1,800</span></p>
 
 <script type="module">
   const slider = document.getElementById("slider-budget");
   const label = document.getElementById("slider-budget-label");
+  const readout = document.getElementById("slider-budget-value");
 
   const money = (value) => `¥${value.toLocaleString("zh-CN")}`;
 
@@ -34,5 +36,6 @@
 
   slider.addEventListener("value-change", (event) => {
     label.textContent = money(event.detail.value[0]);
+    readout.textContent = label.textContent;
   });
 </script>

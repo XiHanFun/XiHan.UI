@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import {
   XhTextFieldControl,
+  XhTextFieldCount,
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
@@ -13,14 +14,12 @@ const note = ref("");
 
 <template>
   <div style="display: grid; gap: 16px; inline-size: 320px">
-    <XhTextFieldRoot v-slot="{ value, atLimit }" v-model:value="note" :auto-size="{ minRows: 2, maxRows: 6 }" :max-length="120" placeholder="说点什么">
+    <XhTextFieldRoot v-model:value="note" :auto-size="{ minRows: 2, maxRows: 6 }" :max-length="120" show-count placeholder="说点什么">
       <XhTextFieldLabel>备注（2-6 行自动长高）</XhTextFieldLabel>
       <XhTextFieldControl>
         <XhTextFieldInput as="textarea" />
       </XhTextFieldControl>
-      <p style="margin: 4px 0 0; font-size: 12px" :style="{ color: atLimit ? 'var(--xh-fg-danger)' : 'var(--xh-fg-subtle)' }">
-        {{ value.length }} / 120
-      </p>
+      <XhTextFieldCount />
     </XhTextFieldRoot>
 
     <XhTextFieldRoot auto-size placeholder="不设行数界限，完全跟内容走">

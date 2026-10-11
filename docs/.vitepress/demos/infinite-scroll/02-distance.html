@@ -6,11 +6,17 @@
 </style>
 
 <div id="infinite-scroll-distance" style="display: grid; gap: 12px; inline-size: 100%">
-  <label style="display: flex; align-items: center; gap: 8px">
-    提前
-    <input data-range type="range" min="0" max="400" step="50" value="200" />
-    <span data-readout>200px 触发 · 已取 0 页</span>
-  </label>
+  <xh-slider data-range default-value="200" min="0" max="400" step="50">
+    <div data-xh-part="root">
+      <label data-xh-part="label">提前量</label>
+      <div data-xh-part="control">
+        <div data-xh-part="track">
+          <div data-xh-part="range"></div>
+        </div>
+        <div data-xh-part="thumb"></div>
+      </div>
+    </div>
+  </xh-slider>
 
   <div
     data-shell
@@ -18,8 +24,8 @@
     style="
       block-size: 220px;
       overflow: auto;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
+      border: var(--xh-stroke-thin) solid var(--xh-border-default);
+      border-radius: var(--xh-shape-surface);
     "
   >
     <!-- 宿主设 display: contents，列表外壳落在 root 上 -->
@@ -46,13 +52,15 @@
   </div>
 </div>
 
+<span id="infinite-scroll-distance-readout" data-demo-output>200px 触发 · 已取 0 页</span>
+
 <script type="module">
   const scope = document.getElementById("infinite-scroll-distance");
   const host = scope.querySelector("[data-host]");
   const shell = scope.querySelector("[data-shell]");
   const list = scope.querySelector("[data-list]");
   const range = scope.querySelector("[data-range]");
-  const readout = scope.querySelector("[data-readout]");
+  const readout = document.getElementById("infinite-scroll-distance-readout");
 
   let rounds = 0;
 
@@ -64,8 +72,9 @@
     readout.textContent = `${host.distance}px 触发 · 已取 ${rounds} 页`;
   }
 
-  range.addEventListener("input", () => {
-    host.distance = Number(range.value);
+  // 滑块的值恒为数组，单滑块取第一项
+  range.addEventListener("value-change", (event) => {
+    host.distance = event.detail.value[0];
     render();
   });
 

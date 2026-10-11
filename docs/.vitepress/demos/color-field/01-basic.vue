@@ -15,16 +15,14 @@ const value = ref("#3b82f6");
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 8px">
-    <XhColorFieldRoot v-model:value="value" name="accent" placeholder="#rrggbb" clearable>
-      <XhColorFieldLabel>主题色</XhColorFieldLabel>
-      <XhColorFieldControl>
-        <XhColorFieldSwatch />
-        <XhColorFieldInput />
-        <XhColorFieldClearTrigger />
-      </XhColorFieldControl>
-      <XhColorFieldHiddenInput />
-    </XhColorFieldRoot>
-    <span style="font-size: 13px">收下的值：<code>{{ value || "（空）" }}</code></span>
-  </div>
+  <XhColorFieldRoot v-model:value="value" name="accent" placeholder="#rrggbb" clearable>
+    <XhColorFieldLabel>主题色</XhColorFieldLabel>
+    <XhColorFieldControl>
+      <XhColorFieldSwatch />
+      <XhColorFieldInput />
+      <XhColorFieldClearTrigger />
+    </XhColorFieldControl>
+    <XhColorFieldHiddenInput />
+  </XhColorFieldRoot>
+  <span data-demo-output>收下的值：<code>{{ value || "（空）" }}</code></span>
 </template>

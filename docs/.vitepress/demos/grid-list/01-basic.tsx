@@ -40,7 +40,7 @@ export default function Demo(): ReactNode {
           </XhGridListRow>
         ))}
       </XhGridListRoot>
-      <span data-label>
+      <span data-demo-output>
         已选：
         {selected.join("、")}
         ；

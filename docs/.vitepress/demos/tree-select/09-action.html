@@ -45,9 +45,15 @@
 
         <!-- 浮层内的按钮直接改选中集合与展开集合 -->
         <div data-xh-part="footer">
-          <button type="button" id="tree-select-action-expand">全部展开</button>
-          <button type="button" id="tree-select-action-collapse">全部收起</button>
-          <button type="button" id="tree-select-action-clear" disabled>清空</button>
+          <xh-button variant="ghost" size="sm" id="tree-select-action-expand">
+            <button data-xh-part="root">全部展开</button>
+          </xh-button>
+          <xh-button variant="ghost" size="sm" id="tree-select-action-collapse">
+            <button data-xh-part="root">全部收起</button>
+          </xh-button>
+          <xh-button variant="ghost" size="sm" id="tree-select-action-clear" disabled>
+            <button data-xh-part="root">清空</button>
+          </xh-button>
         </div>
       </div>
     </div>

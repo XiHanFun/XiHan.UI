@@ -97,5 +97,5 @@ const doc = ref<string[]>([]);
       </XhTreeSelectContent>
     </XhTreeSelectPositioner>
   </XhTreeSelectRoot>
-  <p>已选：{{ doc.length ? doc.join("、") : "（无）" }}</p>
+  <p data-demo-output>已选：{{ doc.length ? doc.join("、") : "（无）" }}</p>
 </template>

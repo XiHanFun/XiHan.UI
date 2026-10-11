@@ -20,7 +20,7 @@ export default function Demo(): ReactNode {
             <XhNumberFieldInput />
             <XhNumberFieldIncrementTrigger />
           </XhNumberFieldControl>
-          <span>
+          <span data-demo-output>
             {`数值：${Number.isNaN(valueAsNumber) ? "（空）" : valueAsNumber} · `}
             {`可加：${canIncrement ? "是" : "否"} · 可减：${canDecrement ? "是" : "否"}`}
           </span>

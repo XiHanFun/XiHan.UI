@@ -56,32 +56,30 @@ function onSelect(details: { label: string }) {
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <XhCommandRoot
-      v-model:open="open"
-      v-model:input-value="query"
-      :collection="results"
-      :filter="false"
-      :loading="loading"
-      placeholder="搜同事…"
-      @select="onSelect"
-    >
-      <template #default>
-        <XhCommandTrigger>找一个人</XhCommandTrigger>
-        <XhCommandContent>
-          <XhCommandInput />
-          <!-- 交进来的就是该显示的那几条，这里照单铺开 -->
-          <XhCommandList>
-            <XhCommandItem v-for="one in results" :key="one.value" :value="one.value">
-              <XhCommandItemText>{{ one.label }}</XhCommandItemText>
-            </XhCommandItem>
-          </XhCommandList>
-          <XhCommandEmpty>名册里没有这个人</XhCommandEmpty>
-          <XhCommandLoading>正在从服务端取…</XhCommandLoading>
-          <XhCommandFooter>不输字时给的是最近协作过的三位</XhCommandFooter>
-        </XhCommandContent>
-      </template>
-    </XhCommandRoot>
-    <span>{{ picked }}</span>
-  </div>
+  <XhCommandRoot
+    v-model:open="open"
+    v-model:input-value="query"
+    :collection="results"
+    :filter="false"
+    :loading="loading"
+    placeholder="搜同事…"
+    @select="onSelect"
+  >
+    <template #default>
+      <XhCommandTrigger>找一个人</XhCommandTrigger>
+      <XhCommandContent>
+        <XhCommandInput />
+        <!-- 交进来的就是该显示的那几条，这里照单铺开 -->
+        <XhCommandList>
+          <XhCommandItem v-for="one in results" :key="one.value" :value="one.value">
+            <XhCommandItemText>{{ one.label }}</XhCommandItemText>
+          </XhCommandItem>
+        </XhCommandList>
+        <XhCommandEmpty>名册里没有这个人</XhCommandEmpty>
+        <XhCommandLoading>正在从服务端取…</XhCommandLoading>
+        <XhCommandFooter>不输字时给的是最近协作过的三位</XhCommandFooter>
+      </XhCommandContent>
+    </template>
+  </XhCommandRoot>
+  <span data-demo-output>{{ picked }}</span>
 </template>

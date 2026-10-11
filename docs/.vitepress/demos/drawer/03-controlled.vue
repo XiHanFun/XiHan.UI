@@ -15,10 +15,7 @@ const open = ref(false);
 
 <template>
   <XhDrawerRoot v-model:open="open" side="left" :translations="{ close: '关闭' }">
-    <div style="display: flex; align-items: center; gap: 12px">
-      <XhButton variant="solid" @click="open = true">打开左侧抽屉</XhButton>
-      <span>当前：{{ open ? "展开" : "收起" }}</span>
-    </div>
+    <XhButton variant="solid" @click="open = true">打开左侧抽屉</XhButton>
     <XhDrawerContent>
       <XhDrawerTitle>受控抽屉</XhDrawerTitle>
       <XhDrawerDescription>
@@ -27,4 +24,5 @@ const open = ref(false);
       <XhDrawerCloseTrigger />
     </XhDrawerContent>
   </XhDrawerRoot>
+  <span data-demo-output>当前：{{ open ? "展开" : "收起" }}</span>
 </template>

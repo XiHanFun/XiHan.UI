@@ -2,6 +2,7 @@
 import type { QuestionFlowAnswers, QuestionFlowQuestion } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
+  XhButton,
   XhQuestionFlowCounter,
   XhQuestionFlowFooter,
   XhQuestionFlowGroup,
@@ -49,9 +50,9 @@ export default function Demo(): ReactNode {
     <div style={{ display: "flex", flexDirection: "column", gap: "12px", maxWidth: "340px" }}>
       <div style={{ display: "flex", gap: "6px" }}>
         {questions.map((question, i) => (
-          <button key={question.id} type="button" onClick={() => setIndex(i)}>
+          <XhButton key={question.id} size="sm" variant="outline" onClick={() => setIndex(i)}>
             {`跳到第 ${i + 1} 题`}
-          </button>
+          </XhButton>
         ))}
       </div>
       <XhQuestionFlowRoot
@@ -99,7 +100,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhQuestionFlowRoot>
-      <p style={{ margin: 0 }}>
+      <p data-demo-output>
         {`宿主手上的进度：第 ${index + 1} 题；已答 ${Object.keys(answers).length} 题`}
       </p>
     </div>

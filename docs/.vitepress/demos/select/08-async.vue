@@ -66,5 +66,5 @@ function onOpenChange(details: { open: boolean }): void {
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>
-  <p>当前值：{{ value[0] ?? "（未选）" }}</p>
+  <p data-demo-output>当前值：{{ value[0] ?? "（未选）" }}</p>
 </template>

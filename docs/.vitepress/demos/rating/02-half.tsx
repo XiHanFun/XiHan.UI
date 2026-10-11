@@ -30,7 +30,7 @@ export default function Demo(): ReactNode {
           </>
         )}
       </XhRatingRoot>
-      <p>{`评分：${score} · 悬停预览：${preview ?? "（无）"}`}</p>
+      <p data-demo-output>{`评分：${score} · 悬停预览：${preview ?? "（无）"}`}</p>
     </>
   );
 }

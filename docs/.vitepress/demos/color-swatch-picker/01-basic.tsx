@@ -16,7 +16,7 @@ export default function Demo(): ReactNode {
   const [value, setValue] = useState<string | null>("#3b82f6");
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+    <>
       <XhColorSwatchPickerRoot
         value={value}
         onValueChange={details => setValue(details.value)}
@@ -24,10 +24,10 @@ export default function Demo(): ReactNode {
         label="主题色"
         name="theme"
       />
-      <span style={{ fontSize: "13px" }}>
+      <span data-demo-output>
         当前：
         <code>{value ?? "（未选）"}</code>
       </span>
-    </div>
+    </>
   );
 }

@@ -1,28 +1,26 @@
 <!-- 异步确认 | 提交期间按钮显示加载，Esc 与点击遮罩两条出口一并封闭，落定之后才把 open 写回 false -->
-<div style="display: flex; align-items: center; gap: 12px">
-  <xh-dialog id="dialog-async" open="false">
-    <button data-xh-part="trigger">归档这个项目</button>
-    <div data-xh-part="backdrop"></div>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <h2 data-xh-part="title">归档项目</h2>
-        <p data-xh-part="description">归档后项目转为只读，随时可以恢复。</p>
-        <div style="display: flex; justify-content: flex-end; gap: 8px">
-          <xh-button variant="ghost" id="dialog-async-cancel">
-            <button data-xh-part="root">取消</button>
-          </xh-button>
-          <xh-button variant="solid" id="dialog-async-submit">
-            <button data-xh-part="root">
-              <span data-xh-part="indicator"></span>
-              <span data-xh-part="label">确认归档</span>
-            </button>
-          </xh-button>
-        </div>
+<xh-dialog id="dialog-async" open="false">
+  <button data-xh-part="trigger">归档这个项目</button>
+  <div data-xh-part="backdrop"></div>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <h2 data-xh-part="title">归档项目</h2>
+      <p data-xh-part="description">归档后项目转为只读，随时可以恢复。</p>
+      <div style="display: flex; justify-content: flex-end; gap: 8px">
+        <xh-button variant="ghost" id="dialog-async-cancel">
+          <button data-xh-part="root">取消</button>
+        </xh-button>
+        <xh-button variant="solid" id="dialog-async-submit">
+          <button data-xh-part="root">
+            <span data-xh-part="indicator"></span>
+            <span data-xh-part="label">确认归档</span>
+          </button>
+        </xh-button>
       </div>
     </div>
-  </xh-dialog>
-  <span id="dialog-async-state">未归档</span>
-</div>
+  </div>
+</xh-dialog>
+<span data-demo-output>项目状态：<span id="dialog-async-state">未归档</span></span>
 
 <script type="module">
   const dialog = document.getElementById("dialog-async");

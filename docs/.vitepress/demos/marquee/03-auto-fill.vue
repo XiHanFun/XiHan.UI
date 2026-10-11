@@ -14,7 +14,7 @@ const tags = ["多租户", "字段级脱敏", "动态 API", "工作流", "代码
       <XhMarqueeRoot
         :auto-fill="fill"
         :speed="60"
-        style="max-inline-size: 420px; border: 1px solid var(--xh-border-default); border-radius: 6px"
+        style="max-inline-size: 420px; border: var(--xh-stroke-thin) solid var(--xh-border-default); border-radius: var(--xh-shape-surface)"
       >
         <XhMarqueeContent>
           <span v-for="t in tags" :key="t" style="padding: 6px 14px; white-space: nowrap">{{ t }}</span>

@@ -51,5 +51,5 @@ function onTagReject(details: { tags: { tag: string; reasons: string[] }[] }) {
       <XhTagsInputInput />
     </XhTagsInputControl>
   </XhTagsInputRoot>
-  <p v-if="hint" style="color: var(--xh-fg-danger)">{{ hint }}</p>
+  <p data-demo-output>拒收：{{ hint || "（暂无）" }}</p>
 </template>

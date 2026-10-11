@@ -3,6 +3,7 @@
 import {
   XhTextFieldClearTrigger,
   XhTextFieldControl,
+  XhTextFieldCount,
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
@@ -11,17 +12,18 @@ import {
 
 <template>
   <XhTextFieldRoot
-    v-slot="{ value, atLimit }"
     default-value="曦寒"
     placeholder="最多 10 个字符"
     :max-length="10"
     clearable
+    show-count
   >
     <XhTextFieldLabel>昵称</XhTextFieldLabel>
     <XhTextFieldControl>
       <XhTextFieldInput />
       <XhTextFieldClearTrigger />
     </XhTextFieldControl>
-    <span>{{ value.length }} / 10{{ atLimit ? "（已到上限）" : "" }}</span>
+    <!-- 字数按字素计，顶到上限换色 -->
+    <XhTextFieldCount />
   </XhTextFieldRoot>
 </template>

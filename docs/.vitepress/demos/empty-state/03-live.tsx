@@ -1,10 +1,15 @@
 // 播报方式 | 默认 polite 使 root 成为活区，筛选完成后就地播报；off 使它只是一个普通容器
 import type { ReactNode } from "react";
 import {
+  XhButton,
   XhEmptyStateDescription,
   XhEmptyStateIndicator,
   XhEmptyStateRoot,
   XhEmptyStateTitle,
+  XhInputGroupRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
 } from "@xihan-ui/react";
 import { useState } from "react";
 
@@ -19,15 +24,18 @@ export default function Demo(): ReactNode {
 
   return (
     <div style={{ inlineSize: "100%", display: "grid", gap: "12px" }}>
-      <div style={{ display: "flex", gap: "8px" }}>
-        <input
+      <XhInputGroupRoot>
+        <XhTextFieldRoot
           value={keyword}
-          onChange={event => setKeyword(event.target.value)}
+          onValueChange={details => setKeyword(details.value)}
           type="search"
-          aria-label="关键词"
-        />
-        <button type="button" onClick={search}>搜索</button>
-      </div>
+        >
+          <XhTextFieldControl>
+            <XhTextFieldInput aria-label="关键词" />
+          </XhTextFieldControl>
+        </XhTextFieldRoot>
+        <XhButton variant="outline" onClick={search}>搜索</XhButton>
+      </XhInputGroupRoot>
 
       {/* 结果换成空的那一刻，读屏会在不打断当前朗读的前提下把标题念出来 */}
       {hits.length

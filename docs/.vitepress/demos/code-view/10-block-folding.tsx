@@ -26,7 +26,7 @@ export default function Demo(): ReactNode {
   // 受控写法：folded 与 onFoldedChange 拿到折叠着的块头行号
   const [folded, setFolded] = useState<number[]>([11]);
   return (
-    <div style={{ display: "grid", gap: "8px", inlineSize: "100%" }}>
+    <>
       <XhCodeViewRoot
         code={sample}
         lang="typescript"
@@ -35,12 +35,13 @@ export default function Demo(): ReactNode {
         blockFolding
         folded={folded}
         onFoldedChange={details => setFolded(details.folded)}
+        style={{ inlineSize: "100%" }}
       >
         <XhCodeViewPre>
           <XhCodeViewCode />
         </XhCodeViewPre>
       </XhCodeViewRoot>
-      <span>{`折叠着的块头：${folded.length > 0 ? folded.join("、") : "无"}`}</span>
-    </div>
+      <span data-demo-output>{`折叠着的块头：${folded.length > 0 ? folded.join("、") : "无"}`}</span>
+    </>
   );
 }

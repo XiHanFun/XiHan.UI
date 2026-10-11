@@ -61,13 +61,7 @@ export default function Demo(): ReactNode {
         )}
       </XhCalendarPickerRoot>
 
-      <span style={{ fontSize: "13px" }}>
-        已选
-        {value.length}
-        {" "}
-        天：
-        {value.join("、") || "（无）"}
-      </span>
+      <span data-demo-output>{`已选 ${value.length} 天：${value.join("、") || "（无）"}`}</span>
     </>
   );
 }

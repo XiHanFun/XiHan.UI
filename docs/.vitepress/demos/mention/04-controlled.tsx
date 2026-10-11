@@ -1,6 +1,6 @@
 // 受控正文与选中回调 | 正文由宿主持有，select 事件报告插入的是哪一条，用于收集收件人名单
 import type { ReactNode } from "react";
-import { XhMentionRoot } from "@xihan-ui/react";
+import { XhButton, XhMentionRoot } from "@xihan-ui/react";
 import { useState } from "react";
 
 const people = [
@@ -41,8 +41,8 @@ export default function Demo(): ReactNode {
         onQueryChange={details => setQuery(details.query)}
         onSelect={onSelect}
       />
-      <p>{`已提及：${mentioned.join("、") || "（无）"}`}</p>
-      <button type="button" onClick={reset}>清空</button>
+      <XhButton variant="outline" size="sm" onClick={reset}>清空</XhButton>
+      <p data-demo-output>{`已提及：${mentioned.join("、") || "（无）"}`}</p>
     </>
   );
 }

@@ -5,6 +5,7 @@
     <button data-xh-part="root">重新计时</button>
   </xh-button>
 </div>
+<span id="notification-pause-readout" data-demo-output></span>
 
 <template id="notification-pause-template">
   <xh-notification-item preset="toast" title="6 秒后自动收走" duration="6000">
@@ -12,7 +13,6 @@
       <span data-xh-part="item-indicator"></span>
       <div data-xh-part="item-content">
         <div data-xh-part="item-title"></div>
-        <span data-readout style="font-size: 12px; opacity: 0.75"></span>
       </div>
       <button data-xh-part="item-close-trigger"></button>
     </div>
@@ -22,6 +22,7 @@
 <script type="module">
   const slot = document.getElementById("notification-pause-slot");
   const template = document.getElementById("notification-pause-template");
+  const readout = document.getElementById("notification-pause-readout");
   let watcher;
 
   // 生命周期与暂停态都写在卡片上，照它回显
@@ -31,7 +32,6 @@
     slot.replaceChildren(node);
 
     const item = node.querySelector('[data-xh-part="item"]');
-    const readout = node.querySelector("[data-readout]");
     const paint = () => {
       const paused = item.hasAttribute("data-paused");
       readout.textContent = `状态：${item.dataset.state ?? ""} · ${

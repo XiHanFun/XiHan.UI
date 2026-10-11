@@ -1,6 +1,6 @@
 // 跟随输入高亮 | 关键词逐字符比对、不拼入正则，输入 . * ( 等字符也只作为普通字符查找
 import type { ReactNode } from "react";
-import { XhHighlight } from "@xihan-ui/react";
+import { XhHighlight, XhTextFieldControl, XhTextFieldInput, XhTextFieldRoot } from "@xihan-ui/react";
 import { useState } from "react";
 
 const rows = [
@@ -14,12 +14,15 @@ export default function Demo(): ReactNode {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-      <input
+      <XhTextFieldRoot
         value={keyword}
+        onValueChange={details => setKeyword(details.value)}
         placeholder="输入关键词"
-        style={{ maxInlineSize: "240px" }}
-        onChange={event => setKeyword(event.target.value)}
-      />
+      >
+        <XhTextFieldControl>
+          <XhTextFieldInput aria-label="关键词" />
+        </XhTextFieldControl>
+      </XhTextFieldRoot>
       {rows.map(row => (
         <XhHighlight key={row} text={row} keyword={keyword} />
       ))}

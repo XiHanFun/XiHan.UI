@@ -1,6 +1,6 @@
 <!-- 加载结束 | loading 期间容器报告 aria-busy；切换为 false 后骨架让出位置，原地盖在真实内容之上淡出，播完才收起 -->
 <script setup lang="ts">
-import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
+import { XhButton, XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const loading = ref(true);
@@ -8,9 +8,9 @@ const loading = ref(true);
 
 <template>
   <div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-    <button type="button" @click="loading = !loading">
+    <XhButton variant="outline" size="sm" @click="loading = !loading">
       {{ loading ? "数据回来了" : "重新加载" }}
-    </button>
+    </XhButton>
 
     <XhSkeletonRoot :loading="loading" style="inline-size: 260px">
       <XhSkeletonItem />

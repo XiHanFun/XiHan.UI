@@ -23,6 +23,6 @@ const items = [
       <XhCheckboxGroupIndicator />
       <XhCheckboxGroupItemText>{{ item.label }}</XhCheckboxGroupItemText>
     </XhCheckboxGroupItem>
-    <span>已选 {{ value.length }} 项{{ atMax ? "，已达上限" : "" }}</span>
+    <span data-demo-output>已选 {{ value.length }} 项{{ atMax ? "，已达上限" : "" }}</span>
   </XhCheckboxGroupRoot>
 </template>
