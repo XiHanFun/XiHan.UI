@@ -77,6 +77,7 @@ export function Example() {
 - 作者用 `data-xh-part` 声明节点角色。
 - 元素升级后写入 `data-scope`、`data-part`、ARIA 和事件。
 - `data-xh-part` 是输入声明，`data-part` 是接线结果，不能混用。
+- 嵌套的 `xh-*` 宿主自己带 `data-xh-part` 即担任外层的那个部件（等价 asChild）：外层基类把接线转交给它，由它按 `mergeAsChildProps` 合进自己的根节点（`asChildTarget()`）；外层 `getPart` 取到的是那个根节点。能担任部件的组件覆盖 `asChildTarget()` 并在铺根节点时包一层 `withAsChild()`，目前是 `xh-button`。
 - 浮层 required parts 在升级前由 `undefined.css` 收起，避免裸内容闪现。
 
 ```html

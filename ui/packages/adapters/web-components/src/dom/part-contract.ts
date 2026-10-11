@@ -125,7 +125,8 @@ export function validatePartContract(
   for (const [part, allowed] of Object.entries(contract.tags ?? {})) {
     for (const el of parts.get(part) ?? []) {
       const tag = el.tagName.toLowerCase()
-      if (allowed.includes(tag))
+      // 嵌套组件当部件（asChild）：接线合进它自己的根节点，标签由它自己的契约去核
+      if (allowed.includes(tag) || tag.startsWith('xh-'))
         continue
       reportDiagnostic({
         code: DIAGNOSTIC_CODES.wcWrongPartTag,

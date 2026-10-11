@@ -14,6 +14,7 @@ import { MachineController } from '../runtime/machine-controller'
 
 /**
  * `<xh-button>`：按钮行为宿主，宿主属性即 button props；机器只承载按压通道（data-pressed）。
+ * 宿主自己写 `data-xh-part="trigger"` 等即担任外层组件的部件（等价 asChild）：外层接线合进根节点。
  *
  * @customElement xh-button
  * @attr {'button'|'submit'|'reset'} type - 原生按钮类型，默认 button
@@ -72,12 +73,17 @@ export class XhButtonElement extends XhElement {
     }
   }
 
+  /** 被外层当部件（如 <xh-button data-xh-part="trigger"> 当菜单触发器）时，外层接线合进根节点。 */
+  protected override asChildTarget(): HTMLElement | null {
+    return this.getPart('root')
+  }
+
   protected wire(): void {
     const root = this.getPart('root')
     if (!root)
       return
     const api = connectButton(this.ctrl.service, wcNormalize)
-    this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+    this.spreader.spread(root, this.withAsChild(api.getRootProps() as Record<string, unknown>))
 
     // label / prefix / suffix / indicator 都是可选角色节点，作者写了才接
     const put = (name: string, props: Record<string, unknown>): void => {
