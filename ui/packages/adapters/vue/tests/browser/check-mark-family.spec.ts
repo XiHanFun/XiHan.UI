@@ -62,6 +62,10 @@ afterEach(() => {
 async function mount(render: () => VNode | VNode[]): Promise<void> {
   host = document.createElement('div')
   host.style.inlineSize = '480px'
+  // 点击经 CDP 往返，CI 并行负载下回来时百毫秒级的淡变已经播完，「正在淡变」「淡出途中仍是横杠」随机判不过。
+  // 两个时长令牌在宿主上拉长：expectMark 在宿主里解析令牌，取值照样逐条对上；断完由 finish() 播完
+  host.style.setProperty('--xh-motion-duration-micro', '10s')
+  host.style.setProperty('--xh-motion-duration-nudge', '10s')
   document.body.append(host)
   app = createApp({ setup: () => render })
   app.mount(host)
