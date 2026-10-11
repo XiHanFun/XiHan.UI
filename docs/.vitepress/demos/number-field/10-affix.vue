@@ -6,7 +6,9 @@ import {
   XhNumberFieldIncrementTrigger,
   XhNumberFieldInput,
   XhNumberFieldLabel,
+  XhNumberFieldPrefix,
   XhNumberFieldRoot,
+  XhNumberFieldSuffix,
 } from "@xihan-ui/vue";
 </script>
 
@@ -15,9 +17,9 @@ import {
     <XhNumberFieldLabel>单价</XhNumberFieldLabel>
     <XhNumberFieldControl>
       <XhNumberFieldDecrementTrigger />
-      <span style="color: var(--xh-fg-muted)">¥</span>
+      <XhNumberFieldPrefix>¥</XhNumberFieldPrefix>
       <XhNumberFieldInput />
-      <span style="color: var(--xh-fg-muted)">元</span>
+      <XhNumberFieldSuffix>元</XhNumberFieldSuffix>
       <XhNumberFieldIncrementTrigger />
     </XhNumberFieldControl>
   </XhNumberFieldRoot>
@@ -27,7 +29,7 @@ import {
     <XhNumberFieldControl>
       <XhNumberFieldDecrementTrigger />
       <XhNumberFieldInput />
-      <span style="color: var(--xh-fg-muted)">g</span>
+      <XhNumberFieldSuffix>g</XhNumberFieldSuffix>
       <XhNumberFieldIncrementTrigger />
     </XhNumberFieldControl>
   </XhNumberFieldRoot>
