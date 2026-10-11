@@ -77,6 +77,32 @@
   margin: 0;
 }
 
+/* 回读状态的文字（当前值、已选几项、事件记录）钉在舞台底边的输出栏里，脱离排版流：
+   文字长短一变，组件不跟着挪，舞台也不变宽变高。一份示例只放一处，放不下的截断、悬停看全文由示例给 title */
+.vp-doc .xh-demo__stage:has([data-demo-output]) {
+  position: relative;
+  padding-block-end: calc(var(--xh-space-8) + var(--xh-control-h-md));
+}
+
+.vp-doc .xh-demo__stage [data-demo-output] {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  box-sizing: border-box;
+  display: block;
+  block-size: var(--xh-control-h-md);
+  margin: 0;
+  padding-inline: var(--xh-space-6);
+  overflow: hidden;
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-border-subtle);
+  color: var(--xh-fg-muted);
+  font-size: var(--xh-text-caption-size);
+  line-height: var(--xh-control-h-md);
+  text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* 纯结构示例不再用“区块 A / 文件 / 编辑器”一类文字撑尺寸。
    data-tone 选择不同淡色，尺寸由示例通过公开的 --xh-demo-block-* 槽声明。 */
 [data-demo-block] {
