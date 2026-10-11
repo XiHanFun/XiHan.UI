@@ -1817,7 +1817,25 @@
               "name": "--xh-approval-note-bg"
             },
             {
+              "name": "--xh-approval-note-bg-disabled"
+            },
+            {
+              "name": "--xh-approval-note-bg-focus"
+            },
+            {
+              "name": "--xh-approval-note-bg-invalid"
+            },
+            {
               "name": "--xh-approval-note-border"
+            },
+            {
+              "name": "--xh-approval-note-border-disabled"
+            },
+            {
+              "name": "--xh-approval-note-border-focus"
+            },
+            {
+              "name": "--xh-approval-note-border-hover"
             },
             {
               "name": "--xh-approval-note-border-invalid"
@@ -1836,9 +1854,6 @@
             },
             {
               "name": "--xh-approval-note-radius"
-            },
-            {
-              "name": "--xh-approval-note-ring-invalid"
             },
             {
               "name": "--xh-approval-p"
@@ -10862,6 +10877,9 @@
             },
             {
               "name": "--xh-clipboard-input-bg"
+            },
+            {
+              "name": "--xh-clipboard-input-bg-focus"
             },
             {
               "name": "--xh-clipboard-input-border"
@@ -51713,7 +51731,22 @@
               "name": "--xh-question-flow-note-bg"
             },
             {
+              "name": "--xh-question-flow-note-bg-disabled"
+            },
+            {
+              "name": "--xh-question-flow-note-bg-focus"
+            },
+            {
               "name": "--xh-question-flow-note-border"
+            },
+            {
+              "name": "--xh-question-flow-note-border-disabled"
+            },
+            {
+              "name": "--xh-question-flow-note-border-focus"
+            },
+            {
+              "name": "--xh-question-flow-note-border-hover"
             },
             {
               "name": "--xh-question-flow-note-fg"
@@ -66037,7 +66070,16 @@
               "name": "--xh-tags-input-item-input-bg"
             },
             {
+              "name": "--xh-tags-input-item-input-bg-focus"
+            },
+            {
               "name": "--xh-tags-input-item-input-border"
+            },
+            {
+              "name": "--xh-tags-input-item-input-border-focus"
+            },
+            {
+              "name": "--xh-tags-input-item-input-border-invalid"
             },
             {
               "name": "--xh-tags-input-item-input-fg"

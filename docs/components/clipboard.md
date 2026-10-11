@@ -204,6 +204,8 @@
 
 `@xihan-ui/styles/clipboard.css` 按 `[data-scope="clipboard"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-clipboard` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -242,7 +244,7 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-clipboard-control-active-layer` | `control`<br>`copy-trigger`<br>`input` | `z-index` | `focus-visible`<br>`hover` | `1` | clipboard 的 control、copy-trigger、input 部件 z-index 覆盖槽。 |
+| `--xh-clipboard-control-active-layer` | `control`<br>`copy-trigger`<br>`input` | `z-index` | `focus-visible`<br>`focus-within`<br>`hover` | `1` | clipboard 的 control、copy-trigger、input 部件 z-index 覆盖槽。 |
 | `--xh-clipboard-control-gap` | `control` | `gap` | `default` | `0` | clipboard 的 control 部件 gap 覆盖槽。 |
 | `--xh-clipboard-control-min-w` | `root` | `min-inline-size` | `has([data-scope='clipboard'][data-part='control'])` | `--xh-control-min-w` | clipboard 的 root 部件 min-inline-size 覆盖槽。 |
 | `--xh-clipboard-control-w` | `root` | `inline-size`<br>`min-inline-size` | `has([data-scope='clipboard'][data-part='control'])` | `--xh-control-w` | clipboard 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
@@ -269,8 +271,9 @@
 | `--xh-clipboard-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-subtle-opaque` | clipboard 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-clipboard-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | clipboard 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-clipboard-input-bg` | `input` | `background` | `default` | `--xh-bg-subtle` | clipboard 的 input 部件 background 覆盖槽。 |
+| `--xh-clipboard-input-bg-focus` | `input` | `background` | `focus-within` | `--xh-bg-surface` | clipboard 的 input 部件 background 覆盖槽。 |
 | `--xh-clipboard-input-border` | `input` | `border` | `default` | `--xh-border-control` | clipboard 的 input 部件 border 覆盖槽。 |
-| `--xh-clipboard-input-border-focus` | `input` | `border-color` | `focus-visible` | `--xh-border-control-focus` | clipboard 的 input 部件 border-color 覆盖槽。 |
+| `--xh-clipboard-input-border-focus` | `input` | `border-color` | `focus-within` | `--xh-border-control-focus` | clipboard 的 input 部件 border-color 覆盖槽。 |
 | `--xh-clipboard-input-fg` | `input` | `color` | `default` | `--xh-fg-default` | clipboard 的 input 部件 color 覆盖槽。 |
 | `--xh-clipboard-input-font-size` | `input` | `font-size` | `default` | `--xh-text-body-size` | clipboard 的 input 部件 font-size 覆盖槽。 |
 | `--xh-clipboard-input-h` | `input` | `block-size` | `default` | `--xh-_clipboard-h` | clipboard 的 input 部件 block-size 覆盖槽。 |

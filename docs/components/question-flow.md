@@ -433,8 +433,13 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `--xh-question-flow-item-px` | `item` | `padding-inline` | `default` | `--xh-space-2` | question-flow 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-question-flow-item-py` | `item` | `padding-block` | `xh-action-profile=row` | `--xh-space-1` | question-flow 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-question-flow-item-radius` | `item` | `border-radius` | `default` | `--xh-_action-profile-radius` | question-flow 的 item 部件 border-radius 覆盖槽。 |
-| `--xh-question-flow-note-bg` | `note` | `background` | `default` | `--xh-bg-surface` | question-flow 的 note 部件 background 覆盖槽。 |
+| `--xh-question-flow-note-bg` | `note` | `background` | `default` | `--xh-bg-field` | question-flow 的 note 部件 background 覆盖槽。 |
+| `--xh-question-flow-note-bg-disabled` | `note` | `background` | `disabled` | `--xh-bg-subtle` | question-flow 的 note 部件 background 覆盖槽。 |
+| `--xh-question-flow-note-bg-focus` | `note` | `background` | `focus-within` | `--xh-bg-surface` | question-flow 的 note 部件 background 覆盖槽。 |
 | `--xh-question-flow-note-border` | `note` | `border` | `default` | `--xh-border-control` | question-flow 的 note 部件 border 覆盖槽。 |
+| `--xh-question-flow-note-border-disabled` | `note` | `border-color` | `disabled` | `--xh-border-default` | question-flow 的 note 部件 border-color 覆盖槽。 |
+| `--xh-question-flow-note-border-focus` | `note` | `border-color` | `focus-within` | `--xh-border-control-focus` | question-flow 的 note 部件 border-color 覆盖槽。 |
+| `--xh-question-flow-note-border-hover` | `note` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, :focus, [data-invalid])` | `--xh-border-strong` | question-flow 的 note 部件 border-color 覆盖槽。 |
 | `--xh-question-flow-note-fg` | `note` | `color` | `default` | `--xh-fg-default` | question-flow 的 note 部件 color 覆盖槽。 |
 | `--xh-question-flow-note-font-size` | `note` | `font-size` | `default` | `--xh-_question-flow-font-size` | question-flow 的 note 部件 font-size 覆盖槽。 |
 | `--xh-question-flow-note-px` | `note` | `padding-inline` | `default` | `--xh-space-2` | question-flow 的 note 部件 padding-inline 覆盖槽。 |

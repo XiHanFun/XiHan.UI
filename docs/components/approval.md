@@ -400,15 +400,20 @@ requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或
 | `--xh-approval-item-text-fg` | `item-text` | `color` | `default` | `--xh-fg-muted` | approval 的 item-text 部件 color 覆盖槽。 |
 | `--xh-approval-item-text-fg-checked` | `item`<br>`item-text` | `color` | `state=checked` | `--xh-fg-default` | approval 的 item、item-text 部件 color 覆盖槽。 |
 | `--xh-approval-loading-duration` | `footer` | `animation` | `xh-loading-ring` | `--xh-motion-loop-spin` | approval 的 footer 部件 animation 覆盖槽。 |
-| `--xh-approval-note-bg` | `note` | `background` | `default` | `--xh-bg-surface` | approval 的 note 部件 background 覆盖槽。 |
+| `--xh-approval-note-bg` | `note` | `background` | `default` | `--xh-bg-field` | approval 的 note 部件 background 覆盖槽。 |
+| `--xh-approval-note-bg-disabled` | `note` | `background` | `disabled` | `--xh-bg-subtle` | approval 的 note 部件 background 覆盖槽。 |
+| `--xh-approval-note-bg-focus` | `note` | `background` | `focus-within` | `--xh-bg-surface` | approval 的 note 部件 background 覆盖槽。 |
+| `--xh-approval-note-bg-invalid` | `note` | `background` | `invalid` | `--xh-bg-field-invalid` | approval 的 note 部件 background 覆盖槽。 |
 | `--xh-approval-note-border` | `note` | `border` | `default` | `--xh-border-control` | approval 的 note 部件 border 覆盖槽。 |
+| `--xh-approval-note-border-disabled` | `note` | `border-color` | `disabled` | `--xh-border-default` | approval 的 note 部件 border-color 覆盖槽。 |
+| `--xh-approval-note-border-focus` | `note` | `border-color` | `focus-within` | `--xh-border-control-focus` | approval 的 note 部件 border-color 覆盖槽。 |
+| `--xh-approval-note-border-hover` | `note` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, :focus, [data-invalid])` | `--xh-border-strong` | approval 的 note 部件 border-color 覆盖槽。 |
 | `--xh-approval-note-border-invalid` | `note` | `border-color` | `invalid` | `--xh-border-invalid` | approval 的 note 部件 border-color 覆盖槽。 |
 | `--xh-approval-note-fg` | `note` | `color` | `default` | `--xh-fg-default` | approval 的 note 部件 color 覆盖槽。 |
 | `--xh-approval-note-font-size` | `note` | `font-size` | `default` | `--xh-_approval-note-font-size` | approval 的 note 部件 font-size 覆盖槽。 |
 | `--xh-approval-note-px` | `note` | `padding-inline` | `default` | `--xh-space-2` | approval 的 note 部件 padding-inline 覆盖槽。 |
 | `--xh-approval-note-py` | `note` | `padding-block` | `default` | `--xh-space-1_5` | approval 的 note 部件 padding-block 覆盖槽。 |
 | `--xh-approval-note-radius` | `note` | `border-radius` | `default` | `--xh-shape-control` | approval 的 note 部件 border-radius 覆盖槽。 |
-| `--xh-approval-note-ring-invalid` | `note` | `--xh-_ring-color` | `invalid` | `--xh-ring-invalid` | approval 的 note 部件 --xh-_ring-color 覆盖槽。 |
 | `--xh-approval-p` | `pending-indicator`<br>`root` | `inset-block-start`<br>`inset-inline-end`<br>`padding` | `default` | `--xh-_approval-p` | approval 的 pending-indicator、root 部件 inset-block-start、inset-inline-end、padding 覆盖槽。 |
 | `--xh-approval-pending-indicator-color` | `pending-indicator` | `background` | `default` | `--xh-_tone` | approval 的 pending-indicator 部件 background 覆盖槽。 |
 | `--xh-approval-pending-indicator-radius` | `pending-indicator` | `border-radius` | `default` | `--xh-shape-circle` | approval 的 pending-indicator 部件 border-radius 覆盖槽。 |

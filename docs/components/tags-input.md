@@ -412,8 +412,11 @@ delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号�
 | `--xh-tags-input-item-fg-highlight` | `item`<br>`root` | `color` | `disabled`<br>`highlighted`<br>`not([data-disabled])` | `--xh-_tags-input-accent-fg` | tags-input 的 item、root 部件 color 覆盖槽。 |
 | `--xh-tags-input-item-font-size` | `item-input` | `font-size` | `default` | `--xh-_tags-input-item-font-size` | tags-input 的 item-input 部件 font-size 覆盖槽。 |
 | `--xh-tags-input-item-h` | `item-input` | `min-block-size` | `default` | `--xh-_tags-input-item-h` | tags-input 的 item-input 部件 min-block-size 覆盖槽。 |
-| `--xh-tags-input-item-input-bg` | `item-input` | `background` | `default` | `--xh-bg-canvas` | tags-input 的 item-input 部件 background 覆盖槽。 |
+| `--xh-tags-input-item-input-bg` | `item-input` | `background` | `default` | `--xh-bg-field` | tags-input 的 item-input 部件 background 覆盖槽。 |
+| `--xh-tags-input-item-input-bg-focus` | `item-input` | `background` | `focus-within` | `--xh-bg-surface` | tags-input 的 item-input 部件 background 覆盖槽。 |
 | `--xh-tags-input-item-input-border` | `item-input` | `border` | `default` | `--xh-border-control` | tags-input 的 item-input 部件 border 覆盖槽。 |
+| `--xh-tags-input-item-input-border-focus` | `item-input` | `border-color` | `focus-within` | `--xh-border-control-focus` | tags-input 的 item-input 部件 border-color 覆盖槽。 |
+| `--xh-tags-input-item-input-border-invalid` | `control`<br>`item-input` | `border-color` | `invalid` | `--xh-border-invalid` | tags-input 的 control、item-input 部件 border-color 覆盖槽。 |
 | `--xh-tags-input-item-input-fg` | `item-input` | `color` | `default` | `--xh-fg-default` | tags-input 的 item-input 部件 color 覆盖槽。 |
 | `--xh-tags-input-item-px` | `item-input` | `padding-inline` | `default` | `--xh-_tags-input-item-px` | tags-input 的 item-input 部件 padding-inline 覆盖槽。 |
 | `--xh-tags-input-item-py` | `item-input` | `padding-block` | `default` | `--xh-_tags-input-item-py` | tags-input 的 item-input 部件 padding-block 覆盖槽。 |

@@ -12337,12 +12337,12 @@
     --xh-prompt-input-skin: 1;
   }
 
-  /* root 就是视觉盒：描边、底色、圆角、聚焦环、悬停与禁用面由 Field Chrome 家族画在它身上（静息描边式：
-     canvas 底 + --xh-border-control 描边 + 无影，不用 soft，登记的例外只在 8px surface 圆角），内部 textarea
+  /* root 就是视觉盒：描边、底色、圆角、聚焦面、悬停与禁用面由 Field Chrome 家族画在它身上（静息描边式：
+     字段淡底 + --xh-border-control 描边 + 无影，聚焦换承载面底 + 品牌描边、不画环；登记的例外只在 surface 圆角），内部 textarea
      无边框；align-items: flex-end 让按钮随输入框长高贴着底边。
      三个视觉轴都落在 root 上：形态三档由家族按 data-variant 生成，语气管用哪族颜色，尺寸管高度与字号 */
   .xh-scope-prompt-input[data-part='root'] {
-    /* 圆角可由使用者槽切换，家族只过渡底、描边、影与环 */
+    /* 圆角可由使用者槽切换，家族只过渡底、描边与影 */
     transition: border-radius var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
     /* 尺寸缺省档：不写 data-size 时按中档走 */
     --xh-_prompt-input-h: var(--xh-control-h-md);
@@ -17075,7 +17075,7 @@
     display: none;
   }
 
-  /* 备注：附在判定上的一句自由文本，占满整行 */
+  /* 备注：附在判定上的一句自由文本，占满整行。框照字段外壳：字段淡底 + 控件描边，悬停描边升一档 */
   .xh-scope-approval[data-part='note'] {
     display: block;
     inline-size: 100%;
@@ -17083,26 +17083,43 @@
     padding-block: var(--xh-approval-note-py, var(--xh-space-1_5));
     border: var(--xh-stroke-thin) solid var(--xh-approval-note-border, var(--xh-border-control));
     border-radius: var(--xh-approval-note-radius, var(--xh-shape-control));
-    background: var(--xh-approval-note-bg, var(--xh-bg-surface));
+    background: var(--xh-approval-note-bg, var(--xh-bg-field));
     color: var(--xh-approval-note-fg, var(--xh-fg-default));
     font-family: inherit;
     font-size: var(--xh-approval-note-font-size, var(--xh-_approval-note-font-size));
-    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-approval[data-part='note'][hidden] {
     display: none;
   }
 
-  .xh-scope-approval[data-part='note']:disabled {
-    color: var(--xh-fg-disabled);
+  .xh-scope-approval[data-part='note']:hover:not(:disabled, :focus, [data-invalid]) {
+    border-color: var(--xh-approval-note-border-hover, var(--xh-border-strong));
   }
 
-  /* 要求写理由而空着就按了拒绝：描边换成无效色；焦点也已带到这里，焦点环压在描边外面，一并换色 */
-  .xh-scope-approval[data-part='note'][data-invalid] {
-    --xh-_ring-color: var(--xh-approval-note-ring-invalid, var(--xh-ring-invalid));
+  /* 聚焦换承载面底 + 品牌描边，不画环：焦点由描边换色与底色差标出，强制色档补一圈 Highlight 环 */
+  .xh-scope-approval[data-part='note']:focus-within {
+    border-color: var(--xh-approval-note-border-focus, var(--xh-border-control-focus));
+    background: var(--xh-approval-note-bg-focus, var(--xh-bg-surface));
+  }
 
+  .xh-scope-approval[data-part='note']:focus-visible {
+    outline: none;
+  }
+
+  /* 要求写理由而空着就按了拒绝：换无效淡底 + 无效描边；焦点也已带到这里，聚焦时同样不画环 */
+  .xh-scope-approval[data-part='note'][data-invalid] {
     border-color: var(--xh-approval-note-border-invalid, var(--xh-border-invalid));
+    background: var(--xh-approval-note-bg-invalid, var(--xh-bg-field-invalid));
+  }
+
+  .xh-scope-approval[data-part='note']:disabled {
+    border-color: var(--xh-approval-note-border-disabled, var(--xh-border-default));
+    background: var(--xh-approval-note-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
   }
 
   /* 剩余时间：等宽数字，逐秒跳字时不左右晃 */
@@ -17282,10 +17299,15 @@
     --xh-_approval-note-font-size: var(--xh-control-font-lg);
   }
 
-  /* 强制色：底色会被系统背景吃掉，呼吸点改用系统前景色 */
+  /* 强制色：底色会被系统背景吃掉，呼吸点改用系统前景色；备注框聚焦不画环、描边又被换成系统色，补一圈 Highlight 环 */
   @media (forced-colors: active) {
     .xh-scope-approval[data-part='pending-indicator'] {
       background: CanvasText;
+    }
+
+    .xh-scope-approval[data-part='note']:focus {
+      outline: var(--xh-ring-width) solid Highlight;
+      outline-offset: var(--xh-ring-offset);
     }
   }
 
@@ -23429,9 +23451,14 @@
     border-end-end-radius: 0;
   }
 
-  /* 焦点边一律 --xh-border-control-focus，不随 tone */
-  .xh-scope-clipboard[data-part='input']:focus-visible {
+  /* 照只读字段外壳标出焦点：换承载面底 + 品牌描边（不随 tone），不画环；点进去选字也算聚焦 */
+  .xh-scope-clipboard[data-part='input']:focus-within {
     border-color: var(--xh-clipboard-input-border-focus, var(--xh-border-control-focus));
+    background: var(--xh-clipboard-input-bg-focus, var(--xh-bg-surface));
+  }
+
+  .xh-scope-clipboard[data-part='input']:focus-visible {
+    outline: none;
   }
 
   /* 自动填充：引擎给填过的框强加一套系统色（多数是黄底黑字），盖得过 background 与 color，
@@ -23511,7 +23538,7 @@
     );
   }
 
-  .xh-scope-clipboard[data-part='control'] > .xh-scope-clipboard[data-part='input']:focus-visible,
+  .xh-scope-clipboard[data-part='control'] > .xh-scope-clipboard[data-part='input']:focus-within,
   .xh-scope-clipboard[data-part='control'] > .xh-scope-clipboard[data-part='copy-trigger']:focus-visible,
   .xh-scope-clipboard[data-part='control'] > .xh-scope-clipboard[data-part='copy-trigger']:hover {
     position: relative;
@@ -23619,6 +23646,14 @@
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
+  }
+
+  /* 只读框聚焦不画环、描边又被换成系统色，补一圈 Highlight 环 */
+  @media (forced-colors: active) {
+    .xh-scope-clipboard[data-part='input']:focus {
+      outline: var(--xh-ring-width) solid Highlight;
+      outline-offset: var(--xh-ring-offset);
+    }
   }
 }
 
@@ -38675,7 +38710,7 @@
     display: none;
   }
 
-  /* 自由文本：与选项同等算数的一条答案，占满整行 */
+  /* 自由文本：与选项同等算数的一条答案，占满整行。框照字段外壳：字段淡底 + 控件描边，悬停描边升一档 */
   .xh-scope-question-flow[data-part='note'] {
     display: block;
     inline-size: 100%;
@@ -38683,11 +38718,13 @@
     padding-block: var(--xh-question-flow-note-py, var(--xh-space-1_5));
     border: var(--xh-stroke-thin) solid var(--xh-question-flow-note-border, var(--xh-border-control));
     border-radius: var(--xh-question-flow-note-radius, var(--xh-shape-control));
-    background: var(--xh-question-flow-note-bg, var(--xh-bg-surface));
+    background: var(--xh-question-flow-note-bg, var(--xh-bg-field));
     color: var(--xh-question-flow-note-fg, var(--xh-fg-default));
     font-family: inherit;
     font-size: var(--xh-question-flow-note-font-size, var(--xh-_question-flow-font-size));
-    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-question-flow[data-part='note'][hidden] {
@@ -38698,7 +38735,23 @@
     color: var(--xh-question-flow-placeholder-fg, var(--xh-fg-subtle));
   }
 
+  .xh-scope-question-flow[data-part='note']:hover:not(:disabled, :focus, [data-invalid]) {
+    border-color: var(--xh-question-flow-note-border-hover, var(--xh-border-strong));
+  }
+
+  /* 聚焦换承载面底 + 品牌描边，不画环：焦点由描边换色与底色差标出，强制色档补一圈 Highlight 环 */
+  .xh-scope-question-flow[data-part='note']:focus-within {
+    border-color: var(--xh-question-flow-note-border-focus, var(--xh-border-control-focus));
+    background: var(--xh-question-flow-note-bg-focus, var(--xh-bg-surface));
+  }
+
+  .xh-scope-question-flow[data-part='note']:focus-visible {
+    outline: none;
+  }
+
   .xh-scope-question-flow[data-part='note']:disabled {
+    border-color: var(--xh-question-flow-note-border-disabled, var(--xh-border-default));
+    background: var(--xh-question-flow-note-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
   }
 
@@ -38876,6 +38929,12 @@
     .xh-scope-question-flow[data-part='item-indicator'][data-select-mode='single']:empty::before {
       forced-color-adjust: none;
       background-color: CanvasText;
+    }
+
+    /* 备注框聚焦不画环、描边又被换成系统色，补一圈 Highlight 环 */
+    .xh-scope-question-flow[data-part='note']:focus {
+      outline: var(--xh-ring-width) solid Highlight;
+      outline-offset: var(--xh-ring-offset);
     }
 
     .xh-scope-question-flow:is([data-part='prev-trigger'], [data-part='next-trigger']):empty::before {
@@ -46445,7 +46504,7 @@
     padding-inline: var(--xh-tags-input-item-px, var(--xh-_tags-input-item-px));
     border: var(--xh-stroke-thin) solid var(--xh-tags-input-item-input-border, var(--xh-border-control));
     border-radius: var(--xh-tags-input-item-radius, var(--xh-shape-control));
-    background: var(--xh-tags-input-item-input-bg, var(--xh-bg-canvas));
+    background: var(--xh-tags-input-item-input-bg, var(--xh-bg-field));
     color: var(--xh-tags-input-item-input-fg, var(--xh-fg-default));
     font-family: inherit;
     font-size: var(--xh-tags-input-item-font-size, var(--xh-_tags-input-item-font-size));
@@ -46453,16 +46512,20 @@
     line-height: max(calc(var(--xh-leading-none) * 1em), var(--xh-_tags-input-item-line-h));
   }
 
-  /* 它是真正持有焦点的那个节点，环画在自己身上；
-     外层 control 的 :focus-within 环同时亮着也合理——焦点确实在框内 */
-  .xh-scope-tags-input[data-part='item-input']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
+  /* 它是真正持有焦点的那个节点，照字段外壳标出焦点：换承载面底 + 品牌描边，不画环；
+     外层 control 同时按 :focus-within 换成聚焦面，两层一起说明焦点在框内 */
+  .xh-scope-tags-input[data-part='item-input']:focus-within {
+    border-color: var(--xh-tags-input-item-input-border-focus, var(--xh-border-control-focus));
+    background: var(--xh-tags-input-item-input-bg-focus, var(--xh-bg-surface));
   }
 
-  /* 校验失败时环也跟着变红：与外框上家族画的那圈同色，两圈相邻不至于一红一蓝 */
-  .xh-scope-tags-input[data-part='control'][data-invalid] .xh-scope-tags-input[data-part='item-input']:focus-visible {
-    outline-color: var(--xh-ring-invalid);
+  .xh-scope-tags-input[data-part='item-input']:focus-visible {
+    outline: none;
+  }
+
+  /* 校验失败时描边跟着外框换无效色，两层相邻不至于一红一蓝 */
+  .xh-scope-tags-input[data-part='control'][data-invalid] .xh-scope-tags-input[data-part='item-input'] {
+    border-color: var(--xh-tags-input-item-input-border-invalid, var(--xh-border-invalid));
   }
 
   .xh-scope-tags-input[data-part='item-input']:disabled {
@@ -46551,6 +46614,12 @@
 
     .xh-scope-tags-input[data-part='clear-trigger'][data-disabled]:empty::before {
       background-color: GrayText;
+    }
+
+    /* 就地编辑框聚焦不画环、描边又被换成系统色，补一圈 Highlight 环 */
+    .xh-scope-tags-input[data-part='item-input']:focus {
+      outline: var(--xh-ring-width) solid Highlight;
+      outline-offset: var(--xh-ring-offset);
     }
   }
 }
