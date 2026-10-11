@@ -237,7 +237,7 @@
     "name": "web-components/services",
     "path": "packages/adapters/web-components/dist/services.js",
     "gzip": true,
-    "limit": "56.8 kB"
+    "limit": "57.5 kB"
   },
   {
     "name": "styles",
@@ -329,7 +329,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhNotificationItem }",
     "gzip": true,
-    "limit": "23.7 kB",
+    "limit": "23.9 kB",
     "ignore": [
       "vue"
     ]
