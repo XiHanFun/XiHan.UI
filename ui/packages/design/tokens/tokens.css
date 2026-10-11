@@ -400,7 +400,7 @@
     --xh-motion-duration-release: var(--xh-duration-normal);
     --xh-motion-duration-attention: calc(var(--xh-duration-slow) * 2);
     --xh-motion-duration-glint: calc(var(--xh-duration-slow) * 2);
-    --xh-motion-duration-reveal: calc(var(--xh-duration-slow) * 2);
+    --xh-motion-duration-reveal: calc(var(--xh-duration-slow) * 3);
     --xh-motion-duration-morph: calc(var(--xh-duration-normal) * 2);
     --xh-motion-stagger-step: calc(var(--xh-duration-normal) / 5);
     --xh-motion-ease-continuous: var(--xh-ease-standard);
@@ -1617,7 +1617,7 @@
     --xh-motion-duration-release: var(--xh-duration-normal);
     --xh-motion-duration-attention: calc(var(--xh-duration-slow) * 2);
     --xh-motion-duration-glint: calc(var(--xh-duration-slow) * 2);
-    --xh-motion-duration-reveal: calc(var(--xh-duration-slow) * 2);
+    --xh-motion-duration-reveal: calc(var(--xh-duration-slow) * 3);
     --xh-motion-duration-morph: calc(var(--xh-duration-normal) * 2);
     --xh-motion-stagger-step: calc(var(--xh-duration-normal) / 5);
     --xh-motion-scale-breathe: 0.82;

@@ -68,7 +68,7 @@ export const funnelChartMachine = createMachine({
         transition: {
           entry: funnelEntryScene,
           stagger: false,
-          revealEasing: 'enter-strong',
+          revealEasing: 'enter',
         },
       }),
       notifyActive: (params) => {

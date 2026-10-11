@@ -62,7 +62,7 @@ export const sankeyChartMachine = createMachine({
         transition: {
           entry: sankeyEntryScene,
           stagger: false,
-          revealEasing: 'enter-strong',
+          revealEasing: 'enter',
         },
       }),
       notifyActive: (params) => {

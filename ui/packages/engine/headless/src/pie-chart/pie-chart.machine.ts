@@ -69,7 +69,7 @@ export const pieChartMachine = createMachine({
           entry: pieEntryScene,
           stagger: false,
           revealAt: pieRevealAt,
-          revealEasing: 'enter-strong',
+          revealEasing: 'enter',
           numbers: params => ({ total: pieModelOf(params).derived.total }),
         },
       }),

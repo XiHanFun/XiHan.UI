@@ -141,7 +141,7 @@ export const graphChartMachine = createMachine({
         transition: {
           entry: graphEntryScene,
           stagger: false,
-          revealEasing: 'enter-strong',
+          revealEasing: 'enter',
           // 拖动与平移缩放是直接操纵：画面跟手，不播过渡
           extent: ({ refs, context, prop }) => refs.get('extent')(context.get('positions'), graphViewOf(prop, context)),
         },

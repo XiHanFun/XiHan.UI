@@ -25,7 +25,7 @@ export const motionDurations = {
   release: durations.normal,
   attention: durations.slow * 2,
   glint: durations.slow * 2,
-  reveal: durations.slow * 2,
+  reveal: durations.slow * 3,
   morph: durations.normal * 2,
 } as const
 

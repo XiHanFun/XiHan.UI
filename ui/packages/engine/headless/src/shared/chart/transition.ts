@@ -60,7 +60,7 @@ export interface ChartTransitionOptions {
    * 内核按 revealEasing 把位置换算成时间比例，标记在笔尖或扫开的边缘到达时才出现。
    */
   readonly revealAt?: (target: Scene) => ReadonlyMap<string, number>
-  /** 描线或扫开走的曲线：折线描线是 continuous，扇区扫开与入场同为 enter-strong。缺省 continuous。 */
+  /** 描线或扫开走的曲线：折线描线是 continuous，扇区扫开与入场同为 enter。缺省 continuous。 */
   readonly revealEasing?: MotionEaseName
 }
 
@@ -290,7 +290,7 @@ export function syncChartTransition(state: ChartTransitionState, options: ChartT
   const timing: TransitionOptions = reduced
     ? { duration: motion.duration('enter'), easing: motion.easing('enter'), reducedMotion: true }
     : entry
-      ? { duration: motion.duration('reveal'), easing: motion.easing('enter-strong'), stagger }
+      ? { duration: motion.duration('reveal'), easing: motion.easing('enter'), stagger }
       : stepped
         ? { duration: motion.duration('move'), easing: motion.easing('continuous') }
         : { duration: motion.duration('morph'), easing: motion.easing('continuous'), stagger }

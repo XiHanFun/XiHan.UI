@@ -18,7 +18,7 @@
 | 手势 | 拖拽跟手、松手归位、快甩、越界回弹 | `translate`、`scale` | 跟手无过渡；松手用弹簧并交接松手速度 | 瞬时归位 |
 | 循环 | 转圈、微光、光标、不定进度、呼吸 | `rotate`、`background-position`、`opacity`、`translate` | 循环周期 / `loop` | 停止并显示静态替代 |
 | 注意 | 抖动、脉冲强调 | — | 只在 [`@xihan-ui/animations`](/guide/animations) 中使用：`attention` | 不播放 |
-| 数据 | 图表入场、更新、退出 | 几何参数、`stroke-dashoffset`、`opacity` | 入场 `reveal` / `enter-strong`，描线 `reveal` / `continuous`；更新与删除 `morph` / `continuous`；缩放换窗 `move` / `continuous`；淡入 `enter` | 几何瞬时，淡变保留 |
+| 数据 | 图表入场、更新、退出 | 几何参数、`stroke-dashoffset`、`opacity` | 入场 `reveal` / `enter`，描线 `reveal` / `continuous`；更新与删除 `morph` / `continuous`；缩放换窗 `move` / `continuous`；淡入 `enter` | 几何瞬时，淡变保留 |
 | 氛围 | 动态背景、跑马灯 | 着色器时间轴、`translate` | 由速度决定 | 冻结或停止 |
 
 表中时长省略前缀 `--xh-motion-duration-`，缓动省略前缀 `--xh-motion-ease-`。
@@ -45,7 +45,7 @@
 | `--xh-motion-duration-nudge` | 120ms | 1ms | 切换、跟手让位 |
 | `--xh-motion-duration-press` / `-release` | 120 / 200ms | 1ms | 按压 |
 | `--xh-motion-duration-attention` | 640ms | 1ms（预设不播） | 注意 |
-| `--xh-motion-duration-reveal` | 640ms | 1ms | 数据首次出现 |
+| `--xh-motion-duration-reveal` | 960ms | 1ms | 数据首次出现 |
 | `--xh-motion-duration-morph` | 400ms | 1ms | 数据更新 |
 | `--xh-motion-stagger-step` | 40ms | 0ms | 错开步长 |
 
