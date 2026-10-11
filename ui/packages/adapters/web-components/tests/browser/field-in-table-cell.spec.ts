@@ -56,7 +56,10 @@ describe('表格格子里的字段', () => {
       const root = host.querySelector<HTMLElement>(`[data-scope='${scope}'][data-part='root']`)!
       const cell = root.closest<HTMLElement>(`[data-scope='table'][data-part='cell']`)!
       const style = getComputedStyle(cell)
-      const content = cell.clientWidth - Number.parseFloat(style.paddingInlineStart) - Number.parseFloat(style.paddingInlineEnd)
+      // 按小数宽量：clientWidth 取整，格子内容宽落在半像素上时会差 0.5
+      const inset = [style.borderInlineStartWidth, style.borderInlineEndWidth, style.paddingInlineStart, style.paddingInlineEnd]
+        .reduce((sum, value) => sum + Number.parseFloat(value), 0)
+      const content = cell.getBoundingClientRect().width - inset
       expect(root.getBoundingClientRect().width, scope).toBeCloseTo(content, 0)
     }
   })
