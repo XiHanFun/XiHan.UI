@@ -181,6 +181,7 @@ export const MODULES = [
       'node tooling/scripts/docs/check-demo-count.mjs',
       'node tooling/scripts/docs/check-catalog-preview.mjs',
       'node tooling/scripts/docs/check-demo-scroll.mjs',
+      'node tooling/scripts/docs/check-demo-native-controls.mjs',
       'node tooling/scripts/docs/check-doc-imports.mjs',
       'node tooling/scripts/docs/check-doc-numbers.mjs',
     ],
