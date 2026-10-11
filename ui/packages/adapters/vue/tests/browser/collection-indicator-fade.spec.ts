@@ -64,6 +64,9 @@ describe('集合行尾对号常驻淡变', () => {
   it('listbox：未选中的对号 opacity 0，改选时新旧两枚各走一段 opacity 过渡', async () => {
     host = document.createElement('div')
     host.style.inlineSize = '240px'
+    // 点击经 CDP 往返，CI 并行负载下回来时 micro 档的淡变已经播完，「各走一段过渡」随机判不过。
+    // 时长令牌在宿主上拉长：expectFadeChannel 在宿主里解析令牌，时长照样逐条对上；断完由 finish() 播完
+    host.style.setProperty('--xh-motion-duration-micro', '10s')
     document.body.append(host)
     app = createApp({ render: () => h(XhListboxRoot, { collection: COLLECTION, defaultValue: ['apple'] }) })
     app.mount(host)
