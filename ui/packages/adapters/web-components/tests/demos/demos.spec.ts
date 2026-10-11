@@ -112,15 +112,29 @@ function describeNode(el: Element): string {
   return `<${el.tagName.toLowerCase()}${part ? ` data-xh-part="${part}"` : ''}>`
 }
 
-/** 最近的 xh-* 宿主声明的契约；没有宿主或宿主没声明时为 null。 */
-function hostContractOf(el: Element): PartContract | null {
+/** 最近的 xh-* 祖先宿主；没有时为 null。 */
+function outerHostOf(el: Element): HTMLElement | null {
   for (let host = el.parentElement; host; host = host.parentElement) {
-    const tag = host.tagName.toLowerCase()
-    if (!tag.startsWith('xh-'))
-      continue
-    return (customElements.get(tag) as typeof XhElement | undefined)?.partContract ?? null
+    if (host.tagName.toLowerCase().startsWith('xh-'))
+      return host
   }
   return null
+}
+
+/** 最近的 xh-* 宿主声明的契约；没有宿主或宿主没声明时为 null。 */
+function hostContractOf(el: Element): PartContract | null {
+  const host = outerHostOf(el)
+  return host ? (customElements.get(host.localName) as typeof XhElement | undefined)?.partContract ?? null : null
+}
+
+/**
+ * 嵌套组件当外层部件（asChild）时要核的非公开入口：外层按部件名取节点、内层交出合并接线的根节点、
+ * 内层收到的外层接线。部件名拼错时外层照样记进部件表、也取得到，只有「收到接线」能说明外层真的接了它。
+ */
+interface AsChildProbe {
+  getPart: (name: string) => HTMLElement | null
+  asChildTarget: () => HTMLElement | null
+  asChildOwners: ReadonlyMap<HTMLElement, unknown>
 }
 
 const consoleErrors: string[] = []
@@ -230,9 +244,25 @@ describe('自定义元素版示例', () => {
 
       // 判据二：作者写的每个角色节点都被发现并接线。包在 xh-* 子元素里的触发器、拼错的部件名都栽在这。
       // 宿主以 delegates 委派出去的作者名归内嵌部件管：不论接出来的名字变没变，data-scope 都得是那个部件的；
-      // 委派表与运行期的契约校验取同一份
+      // 委派表与运行期的契约校验取同一份。
+      // 嵌套组件当外层的部件（<xh-button data-xh-part="trigger">）时宿主本身不写 data-part：
+      // 外层取这个部件要拿到它交出的根节点，根节点保留它自己的解剖
       for (const el of Array.from(stage.querySelectorAll('[data-xh-part]'))) {
         const authored = el.getAttribute('data-xh-part')!
+        if (el.localName.startsWith('xh-')) {
+          const inner = el as unknown as AsChildProbe
+          const target = inner.asChildTarget()
+          const outer = outerHostOf(el)
+          if (!target)
+            problems.push(`${describeNode(el)} 不能当外层的部件：<${el.localName}> 不接受 asChild`)
+          else if (!outer || !inner.asChildOwners.has(outer))
+            problems.push(`${describeNode(el)} 没被外层接线：收不到外层交来的属性，检查部件名是否拼错`)
+          else if ((outer as unknown as AsChildProbe).getPart(authored) !== target)
+            problems.push(`${describeNode(el)} 外层取 "${authored}" 拿到的不是它的根节点`)
+          else if (target.getAttribute('data-scope') !== el.localName.slice('xh-'.length))
+            problems.push(`${describeNode(el)} 的根节点丢了自己的解剖：data-scope 是 "${target.getAttribute('data-scope')}"`)
+          continue
+        }
         const wired = el.getAttribute('data-part')
         const scope = el.getAttribute('data-scope')
         const contract = hostContractOf(el)
