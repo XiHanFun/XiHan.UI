@@ -333,7 +333,7 @@
 --xh-motion-duration-nudge: 120ms  ← var(--xh-duration-fast)
 --xh-motion-duration-press: 120ms  ← var(--xh-duration-fast)
 --xh-motion-duration-release: 200ms  ← var(--xh-duration-normal)
---xh-motion-duration-reveal: calc(320ms * 2)  ← calc(var(--xh-duration-slow) * 2)
+--xh-motion-duration-reveal: calc(320ms * 3)  ← calc(var(--xh-duration-slow) * 3)
 --xh-motion-duration-slide: 320ms  ← var(--xh-duration-slow)
 --xh-motion-ease-breathe: cubic-bezier(0.37, 0, 0.63, 1)  ← var(--xh-ease-sine-in-out)
 --xh-motion-ease-continuous: cubic-bezier(0.2, 0, 0, 1)  ← var(--xh-ease-standard)
