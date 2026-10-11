@@ -202,6 +202,9 @@ describe('combobox 单一状态表面', () => {
     finishAnimations(content)
     const minimum = Number.parseFloat(getComputedStyle(content).minBlockSize)
     const input = byTestId('input') as HTMLInputElement
+    // Enter 经 CDP 往返，CI 并行负载下回来时 exit 档的退场已经播完，「退场途中仍占着表面」随机判不过。
+    // 退场关键帧直接取这支令牌，在 content 上拉长
+    content.style.setProperty('--xh-motion-duration-exit', '10s')
 
     input.focus()
     await userEvent.keyboard('{Enter}')
