@@ -11,6 +11,25 @@
 
 本文件记录 XiHan.UI 各版本的变更。每条标注 **新增 / 修复 / 优化 / 调整 / 移除** 类别。只收录使用者可感知的变更，仓库自身的配置、CI、测试与门禁不列入。组件以 npm 包形式发布，升级前请留意「调整」类中的破坏性变更。
 
+## v4.0.0 (2026-10-12)
+
+本版是一次全库视觉改版：控件高降一档、圆角收窄、字段改为淡底且聚焦不画环、浮层改为实体底，并新增图表配色方案、日期与时间选择器底栏和作用域禁用。多数变化只影响外观，少数缺省值、令牌与覆盖槽有改动，升级前请看升级须知。
+
+::: warning 升级须知
+- **缺省值**：Accordion `variant` 改为 `outline`、Tree `variant` 改为 `ghost`、Badge `tone` 改为 `danger`，日历的 `weekdayFormat` 改为 `narrow`，`LOADING_BAR_HEIGHT` 改为 3px；要保持原样请显式传值
+- **行为**：Fieldset 的禁用会压到整棵子树；NumberField 增减钮在精细指针下悬停或聚焦才显出；Web Components 的 20 个字段族宿主缺省 `display: contents`，写在宿主上的宽度与外边距请改写到 root 或用 `--xh-control-w`
+- **令牌**：控件高 sm / md / lg 为 28 / 32 / 36px（compact 24 / 28 / 32px），圆角 2 / 4 / 8px，浮层圆角 4px，标题 24 / 20 / 16px，`--xh-motion-scale-press` 为 1（主题写回 0.97 可恢复按下回弹）
+- **覆盖槽**：删除或改名 60 个，集中在字段聚焦环、Dialog、Slider 与日期时间面板；写过这些 `--xh-<组件>-*` 的项目请对照各包 CHANGELOG 迁移
+- **快照**：部分按钮的 `data-xh-action-size` 与动效时长有变化，视觉快照和按时长等待的测试需要更新
+:::
+
+- **新增** 图表配色方案：在祖先上写 `data-xh-chart-palette`，取 `monochrome` / `brand` / `muted`
+- **新增** DatePicker、DateRangePicker、TimePicker 的底栏部件 `footer`
+- **新增** 全局配置的 `disabled` 键，经 `provideXhConfig` / `XhConfigProvider` / `<xh-config>` 禁用整棵子树
+- **新增** Spinner 的 `orientation`；Web Components 嵌套宿主可用 `data-xh-part` 担任外层部件（目前支持 `xh-button`）；React `XhButton` 补上 `download`
+- **修复** 无层样式的排版、窄屏溢出、粗指针命中区与强制色下的显示，共二十余处
+- **优化** Notification 叠摞与退场、列表换位的动效；图表入场放慢到 960ms
+
 ## v3.2.0 (2026-10-06)
 
 本版新增十种常用语言的内建语言包（`locale` 子入口），组件不再自带英文，界面文字一律取语言包；Dialog 与 Drawer 新增 `unmountOnExit`，Select 新增 `lazyMount`，Carousel 与 ImageViewer 新增 `size`，浮动圆钮整体下移一档。另有一批面向大页面的性能优化：模态背景失活改为只打 `aria-hidden`，Portal 视觉桥只在浮层呈现期间存在，皮肤产物改以挂载类 `xh-scope-<组件名>` 领头。挂载类、浮动圆钮尺寸与模态背景的变化会影响自写标记、视觉快照与页内查找，升级前请看下方升级须知。

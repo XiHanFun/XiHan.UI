@@ -1,1 +1,0 @@
-import{ex as e,tx as t}from"./theme.CQtSGCXG.js";import{n}from"./jsx-runtime.BoF8qpgu.js";import{i as r}from"./use-machine.PmpDLbAH.js";function i(i){let a=r(e,()=>i);return{api:t(a,n),service:a}}export{i as t};

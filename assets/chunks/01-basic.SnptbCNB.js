@@ -1,1 +1,0 @@
-import{f as e}from"./theme.CQtSGCXG.js";import{t}from"./jsx-runtime.BoF8qpgu.js";import{t as n}from"./icon.C0wBVPfT.js";var r=t();function i(){return(0,r.jsx)(n,{icon:e})}export{i as default};

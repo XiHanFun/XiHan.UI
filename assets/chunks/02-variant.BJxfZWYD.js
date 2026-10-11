@@ -1,1 +1,0 @@
-import{Zt as e,ft as t,st as n,ut as r,wt as i}from"./framework.WoOPT6Vw.js";import{Bu as a}from"./theme.CQtSGCXG.js";var o={style:{display:`flex`,gap:`12px`}},s=t({__name:`02-variant`,setup(t){return(t,s)=>(i(),n(`div`,o,[r(e(a),{keys:[`Enter`]}),r(e(a),{keys:[`Enter`],variant:`light`})]))}});export{s as default};

@@ -1,0 +1,3 @@
+import{v as e}from"./theme.CjA_5cDe.js";import{t}from"./jsx-runtime.Ceb339jF.js";import{t as n}from"./download-trigger.DZlb7jVn.js";import{t as r}from"./icon.1Xf7QQv9.js";var i=t();async function a(){return await new Promise(e=>setTimeout(e,600)),`订单号,金额
+A-1001,128.00
+A-1002,96.50`}function o(){return(0,i.jsxs)(n,{data:a,fileName:`orders.csv`,mimeType:`text/csv`,children:[(0,i.jsx)(r,{icon:e}),` `,`导出订单`]})}export{o as default};

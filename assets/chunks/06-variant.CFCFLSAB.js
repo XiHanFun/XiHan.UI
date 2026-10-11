@@ -1,0 +1,1 @@
+import{$ as e,Zt as t,ft as n,st as r,ut as i,wt as a}from"./framework.WoOPT6Vw.js";import{La as o}from"./theme.CjA_5cDe.js";var s=n({__name:`06-variant`,setup(n){return(n,s)=>(a(),r(e,null,[i(t(o),{label:`加载中`}),i(t(o),{variant:`ring`,label:`加载中`}),i(t(o),{variant:`dots`,label:`加载中`})],64))}});export{s as default};
