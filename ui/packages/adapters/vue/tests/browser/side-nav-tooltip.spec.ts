@@ -14,8 +14,12 @@ import {
   XhSideNavRoot,
   XhSideNavTooltip,
 } from '../../src'
+import { CLOCK_SLACK, watchHoverOpen } from './hover-open-delay'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
+
+/** Tooltip 的缺省开延时（openDelay 的文档默认值）：名称提示不另给，悬停就等这么久。 */
+const TOOLTIP_OPEN_DELAY = 700
 
 let app: App | null = null
 let host: HTMLElement | null = null
@@ -98,10 +102,10 @@ function resolved(on: HTMLElement, property: string, token: string): string {
 describe('side-nav 图标栏名称提示', () => {
   it('悬停只剩图标的叶子：等开延时后在行尾一侧露面，与行竖向居中对齐，文字是行的标签', async () => {
     await mount()
+    const waited = watchHoverOpen(link(1), shown)
     await userEvent.hover(link(1))
-    await frames()
-    expect(shown(), '悬停当下还在等开延时').toBe(false)
     await expect.poll(shown, { timeout: 2000 }).toBe(true)
+    expect(waited(), '从指针到达那一刻量起，等满开延时才露面').toBeGreaterThanOrEqual(TOOLTIP_OPEN_DELAY - CLOCK_SLACK)
     await settled()
     const row = link(1).getBoundingClientRect()
     const tip = content().getBoundingClientRect()

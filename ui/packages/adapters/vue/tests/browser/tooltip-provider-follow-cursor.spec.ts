@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import { XhTooltipContent, XhTooltipPositioner, XhTooltipProvider, XhTooltipRoot, XhTooltipTrigger } from '../../src'
+import { CLOCK_SLACK, watchHoverOpen } from './hover-open-delay'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -48,15 +49,14 @@ async function mount(render: () => unknown): Promise<void> {
   await nextTick()
 }
 
-const wait = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms))
-
 describe('tooltip 提示组', () => {
   it('组内提示没写 openDelay 时按组给的缺省等待；组内另一个开着时下一个直接接替', async () => {
     await mount(() => h(XhTooltipProvider, { openDelay: 150, skipDelayDuration: 300 }, () => [tooltip('保存'), tooltip('撤销')]))
+    // 从指针到达那一刻量起，等满组给的 150ms 才开
+    const waited = watchHoverOpen(trigger('保存'), () => content('保存').dataset.state === 'open')
     await userEvent.hover(trigger('保存'))
-    await wait(60)
-    expect(content('保存').dataset.state).toBe('closed')
     await expect.poll(() => content('保存').dataset.state, { timeout: 1000 }).toBe('open')
+    expect(waited()).toBeGreaterThanOrEqual(150 - CLOCK_SLACK)
 
     await userEvent.hover(trigger('撤销'))
     await expect.poll(() => content('撤销').dataset.state, { timeout: 120 }).toBe('open')
