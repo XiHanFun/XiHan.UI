@@ -56,6 +56,11 @@ export function discoverParts(
   function walk(node: Element): void {
     for (const child of Array.from(node.children)) {
       if (child.tagName.toLowerCase().startsWith('xh-')) {
+        // 嵌套宿主自己带 data-xh-part：作者把这台组件整个当作本宿主的部件（与 Vue / React 的 asChild 等价），
+        // 宿主本身记进部件表，接线由基类转交给它合进自己的根节点；它的子树仍归它自己管
+        const declaredOwner = child.getAttribute(PART_OWNER_ATTR)
+        if (child.hasAttribute(PART_ATTR) && (!declaredOwner || declaredOwner === hostOwner))
+          collect(child as HTMLElement)
         claimNested(child)
         continue
       }

@@ -8,6 +8,7 @@
 import type { PartContract } from './dom/part-contract'
 import type { Spreader } from './dom/spread'
 import { onXhConfigChange, withXhConfig } from './config'
+import { mergeAsChildProps } from './dom/as-child'
 import { validatePartContract } from './dom/part-contract'
 import { containsPart, discoverParts, PART_OWNER_ATTR } from './dom/parts'
 import { createSpreader } from './dom/spread'
@@ -50,7 +51,38 @@ export abstract class XhElement extends XhReactiveElement {
   /** 子类声明所属组件的解剖与元数据，接线后据它校验作者写的角色节点。 */
   static partContract?: PartContract
 
-  protected readonly spreader: Spreader = createSpreader()
+  private readonly ownSpreader: Spreader = createSpreader()
+  /**
+   * 子类经它往角色节点上铺属性。节点若是嵌套组件当的部件（asChild）合进去的那个根节点，
+   * 这份接线转交给那台组件，由它与自己的根属性合并后一次铺上——两台 spreader 不同时写一个节点。
+   */
+  protected readonly spreader: Spreader = {
+    spread: (node, props) => {
+      const host = this.asChildHosts.get(node)
+      if (host)
+        host.acceptAsChild(this, props)
+      else
+        this.ownSpreader.spread(node, props)
+    },
+    release: (node) => {
+      if (node instanceof XhElement && node !== this) {
+        for (const [target, host] of this.asChildHosts) {
+          if (host === node)
+            this.asChildHosts.delete(target)
+        }
+        node.acceptAsChild(this, null)
+        return
+      }
+      const host = this.asChildHosts.get(node)
+      if (host) {
+        this.asChildHosts.delete(node)
+        host.acceptAsChild(this, null)
+        return
+      }
+      this.ownSpreader.release(node)
+    },
+  }
+
   protected partMap: Map<string, HTMLElement[]> = new Map()
   private partObserver: MutationObserver | undefined
   private readonly instanceId = `${++instanceSeq}`
@@ -61,11 +93,69 @@ export abstract class XhElement extends XhReactiveElement {
 
   // 取角色节点，命名避开 HTMLElement.part。
   protected getPart(name: string, index = 0): HTMLElement | null {
-    return this.partMap.get(name)?.[index] ?? null
+    const el = this.partMap.get(name)?.[index]
+    return el ? this.resolvePart(el) : null
   }
 
   protected getParts(name: string): HTMLElement[] {
-    return this.partMap.get(name) ?? []
+    const out: HTMLElement[] = []
+    for (const el of this.partMap.get(name) ?? []) {
+      const resolved = this.resolvePart(el)
+      if (resolved)
+        out.push(resolved)
+    }
+    return out
+  }
+
+  // —— asChild：作者把一台嵌套组件（如 <xh-button data-xh-part="trigger">）当作本宿主的部件 —— //
+
+  /** 本元素被外层当部件时，外层接线合进哪个节点；缺省不接受，能当部件的组件（按钮）覆盖它。 */
+  protected asChildTarget(): HTMLElement | null {
+    return null
+  }
+
+  /** 外层交来的部件接线：外层 → 那份属性，铺 asChildTarget 时与自己的属性合并。 */
+  private readonly asChildOwners = new Map<XhElement, Record<string, unknown>>()
+  /** 外层来取时本元素还没发现根节点：等接线完再叫它们重新接一轮。 */
+  private readonly asChildWaiting = new Set<XhElement>()
+  /** 本宿主当部件用的嵌套组件：真正被写的那个节点 → 那台组件。 */
+  private readonly asChildHosts = new Map<HTMLElement, XhElement>()
+
+  /**
+   * 部件表里记的是作者声明的节点；嵌套组件当的部件要换成它合并接线的那个根节点：
+   * 定位锚点、焦点归还、点外部判定都落在真正可交互的节点上。还没升级或还没就绪时先当它不在，就绪后重新接线。
+   */
+  private resolvePart(el: HTMLElement): HTMLElement | null {
+    if (!el.localName.startsWith('xh-') || el === this)
+      return el
+    if (!(el instanceof XhElement)) {
+      void customElements.whenDefined(el.localName).then(() => this.requestUpdate())
+      return null
+    }
+    const target = el.asChildTarget()
+    if (!target) {
+      el.asChildWaiting.add(this)
+      return null
+    }
+    this.asChildHosts.set(target, el)
+    return target
+  }
+
+  /** 外层交来（或撤回）一份部件接线，重新铺一轮把它合进去。 */
+  private acceptAsChild(owner: XhElement, props: Record<string, unknown> | null): void {
+    if (props)
+      this.asChildOwners.set(owner, props)
+    else if (!this.asChildOwners.delete(owner))
+      return
+    this.requestUpdate()
+  }
+
+  /** 子类铺 asChildTarget 时用它包一层：外层交来的接线按 asChild 规则合进自己的那份。 */
+  protected withAsChild(own: Record<string, unknown>): Record<string, unknown> {
+    let merged = own
+    for (const props of this.asChildOwners.values())
+      merged = mergeAsChildProps(props, merged)
+    return merged
   }
 
   /**
@@ -117,6 +207,8 @@ export abstract class XhElement extends XhReactiveElement {
     // 离开本宿主的角色节点必须交还：否则它带着本机器的属性与监听器走，被挪进另一台同类元素后
     // 会同时挂上两台机器的处理器（一次点击驱动两台）；单纯被移除的节点也仍能派事件、改本组状态
     for (const el of gone) this.spreader.release(el)
+    // 嵌套组件当的部件可能换了根节点：映射在接线时经 getPart 重新建立
+    this.asChildHosts.clear()
     this.partMap = next
     this.syncPartObservers()
   }
@@ -313,6 +405,12 @@ export abstract class XhElement extends XhReactiveElement {
     }
     // 排在 wire() 之后：data-state 得先落进 DOM，才认得出浮层这一帧是不是展开的
     this.checkStackingTrap(contract?.anatomy.name)
+    // 本元素当部件、外层先来取过时：根节点就绪了，叫外层重新接线
+    if (this.asChildWaiting.size && this.asChildTarget()) {
+      const owners = [...this.asChildWaiting]
+      this.asChildWaiting.clear()
+      for (const owner of owners) owner.requestUpdate()
+    }
   }
 
   /** 子类实现：把 connect 产出接到角色节点上。 */

@@ -3677,7 +3677,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-button>`：按钮行为宿主，宿主属性即 button props；机器只承载按压通道（data-pressed）。",
+          "description": "`<xh-button>`：按钮行为宿主，宿主属性即 button props；机器只承载按压通道（data-pressed）。\n宿主自己写 `data-xh-part=\"trigger\"` 等即担任外层组件的部件（等价 asChild）：外层接线合进根节点。",
           "name": "XhButtonElement",
           "cssParts": [
             {
@@ -3792,6 +3792,17 @@
                   "text": "Partial<ButtonSchema['props']>"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "asChildTarget",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "description": "被外层当部件（如 <xh-button data-xh-part=\"trigger\"> 当菜单触发器）时，外层接线合进根节点。"
             },
             {
               "kind": "method",

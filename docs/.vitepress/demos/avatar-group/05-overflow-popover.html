@@ -22,10 +22,17 @@
       </span>
     </xh-avatar>
 
-    <!-- 计数那一枚换成浮层的触发器：触发器本身就是库里的按钮，外观与悬停、按下、焦点态都由皮肤给；
-         叠放与描圈落在宿主这一枚上，宿主的圆角跟着触发器走 -->
-    <xh-popover placement="bottom-start" style="display: inline-flex; border-radius: var(--xh-shape-control)">
-      <button data-xh-part="trigger" aria-label="还有 4 位成员">+4</button>
+    <!-- 计数那一枚换成按钮当浮层的触发器：直径、圆形与字号跟着组走（与 Vue / React 版同一组槽）；
+         叠放与描圈落在宿主这一枚上，宿主的圆角跟着按钮取圆 -->
+    <xh-popover placement="bottom-start" style="display: inline-flex; border-radius: var(--xh-shape-circle)">
+      <xh-button
+        data-xh-part="trigger"
+        variant="subtle"
+        icon-only
+        style="--xh-button-h: var(--xh-avatar-size); --xh-button-radius: var(--xh-shape-circle); --xh-button-font-size: var(--xh-avatar-font-size)"
+      >
+        <button data-xh-part="root" aria-label="还有 4 位成员">+4</button>
+      </xh-button>
       <div data-xh-part="positioner">
         <div data-xh-part="content">
           <h3 data-xh-part="title">还有 4 位成员</h3>
