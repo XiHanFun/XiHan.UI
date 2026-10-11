@@ -42,6 +42,8 @@ export interface XhButtonProps extends Omit<ComponentPropsWithRef<'button'>, 'ty
   href?: ComponentPropsWithRef<'a'>['href']
   target?: ComponentPropsWithRef<'a'>['target']
   rel?: ComponentPropsWithRef<'a'>['rel']
+  /** 写为 a 时让浏览器把链接当下载处理；给字符串即建议的文件名。 */
+  download?: ComponentPropsWithRef<'a'>['download']
 }
 
 export function XhButton({

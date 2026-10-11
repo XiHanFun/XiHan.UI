@@ -34,7 +34,7 @@ export default function Demo(): ReactNode {
     <XhImageViewerRoot collection={items}>
       {({ setIndex, setOpen }) => (
         <>
-          {/* 缩略图各自指定从第几张看起：先展开再换下标，收起时换图不生效；图片补上按钮角色，Enter 与 Space 也能打开 */}
+          {/* 缩略图各自指定从第几张看起：先换下标再展开，一打开就是那一张；图片补上按钮角色，Enter 与 Space 也能打开 */}
           <div style={{ display: "flex", gap: "8px" }}>
             {items.map((item, i) => (
               <XhImageRoot
@@ -46,15 +46,15 @@ export default function Demo(): ReactNode {
                 aria-label={`查看 ${item.alt}`}
                 style={thumbStyle}
                 onClick={() => {
-                  setOpen(true);
                   setIndex(i);
+                  setOpen(true);
                 }}
                 onKeyDown={(event) => {
                   if (event.key !== "Enter" && event.key !== " ")
                     return;
                   event.preventDefault();
-                  setOpen(true);
                   setIndex(i);
+                  setOpen(true);
                 }}
               >
                 <XhImageImage />

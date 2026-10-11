@@ -61,10 +61,10 @@ export default function Demo(): ReactNode {
         <>
           <div style={{ display: "flex", gap: "var(--xh-space-2)" }}>
             {items.map((item, i) => {
-              // 先展开再换下标：收起时换图不生效
+              // 先换下标再展开：一打开就是那一张
               const view = (): void => {
-                setOpen(true);
                 setIndex(i);
+                setOpen(true);
               };
               return (
                 <XhImageRoot

@@ -64,19 +64,15 @@ export default function Demo(): ReactNode {
             </div>
             <XhFileUploadHiddenInput />
             <XhFileUploadList>
-              {acceptedFiles.map((file) => {
-                // XhButtonProps 只列出 href / target / rel，download 随这份属性一起展开到根上的 a
-                const link = { href: urlOf(file), download: file.name };
-                return (
-                  <XhFileUploadItem key={keyOf(file)} file={file}>
-                    <XhFileUploadItemName />
-                    <XhFileUploadItemSizeText />
-                    <XhButton as="a" variant="ghost" size="sm" {...link}>下载</XhButton>
-                    <XhButton variant="ghost" size="sm" onClick={() => saveCopy(file)}>存为副本</XhButton>
-                    <XhFileUploadItemDeleteTrigger />
-                  </XhFileUploadItem>
-                );
-              })}
+              {acceptedFiles.map(file => (
+                <XhFileUploadItem key={keyOf(file)} file={file}>
+                  <XhFileUploadItemName />
+                  <XhFileUploadItemSizeText />
+                  <XhButton as="a" variant="ghost" size="sm" href={urlOf(file)} download={file.name}>下载</XhButton>
+                  <XhButton variant="ghost" size="sm" onClick={() => saveCopy(file)}>存为副本</XhButton>
+                  <XhFileUploadItemDeleteTrigger />
+                </XhFileUploadItem>
+              ))}
             </XhFileUploadList>
           </>
         )}
