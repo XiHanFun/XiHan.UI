@@ -93,7 +93,7 @@
 
 ## 浮层尺寸
 
-锚定浮层的宽高走 `--xh-overlay-*`：面板最小宽 12rem、菜单最小宽 10rem、最大宽 sm / md / lg / xl = 16 / 20 / 24 / 48rem、菜单与候选列表最大高 13rem（紧凑 11rem）；Dialog 的 sheet 宽 sm / md / lg = 24 / 32 / 48rem，Drawer 宽 sm / md / lg = 16 / 20 / 28rem。锚定浮层同时接可用高度与可用宽度：视口放不下时先收自己，再翻面。
+锚定浮层的宽高走 `--xh-overlay-*`：面板最小宽 12rem、菜单最小宽 10rem、最大宽 sm / md / lg / xl = 16 / 20 / 24 / 48rem、菜单与候选列表最大高 20rem（紧凑 17rem）；Dialog 的 sheet 宽 sm / md / lg = 24 / 32 / 48rem，Drawer 宽 sm / md / lg = 16 / 20 / 28rem。锚定浮层同时接可用高度与可用宽度：视口放不下时先收自己，再翻面。
 
 ## 相关
 

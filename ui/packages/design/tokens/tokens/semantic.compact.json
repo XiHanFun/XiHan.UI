@@ -163,7 +163,7 @@
   "overlay": {
     "menu-max-h": {
       "$type": "dimension",
-      "$value": "11rem"
+      "$value": "17rem"
     },
     "max-h": {
       "$type": "dimension",

@@ -452,7 +452,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | `--xh-overlay-time-column-w`、`--xh-overlay-time-column-h` | 4rem、224px | —、196px | 时间选择器一列的宽与定高（七格整行：一格 `control-action-size` 加 `space-2` 列内间距） |
 | `--xh-overlay-max-w-sm`、`--xh-overlay-max-w`、`-lg`、`-xl` | 16、20、24、48rem | | 浮层宽的上限 |
 | `--xh-overlay-max-h` | 16rem | 14rem | 卡片类浮层限高 |
-| `--xh-overlay-menu-max-h` | 13rem | 11rem | 菜单与候选列表限高 |
+| `--xh-overlay-menu-max-h` | 20rem | 17rem | 菜单与候选列表限高 |
 | `--xh-overlay-sheet-w-sm` / `md` / `lg` | 24 / 32 / 48rem | | Dialog、Command 宽的上限 |
 | `--xh-overlay-drawer-w-sm` / `md` / `lg` | 16 / 20 / 28rem | | Drawer 厚度 |
 | `--xh-overlay-header-h` | 48px | 44px | Dialog、Drawer 头部带：一颗中号控件加上下各 `space-2`，标题首行与关闭钮落在它的中线上 |
