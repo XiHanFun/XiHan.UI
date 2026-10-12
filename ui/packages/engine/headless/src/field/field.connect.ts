@@ -55,10 +55,19 @@ export function connectField<T extends PropTypes>(
       // for 只对可标注元素生效，而作者把 control 标在 div 上是常态（包一层再放真控件）。
       // 那种情形下点标题聚不了焦，且不报错——替它把焦点送给里面第一个可 tab 的节点。
       // 控件根本身就是真控件时这里查的是它的子节点，查不到东西，浏览器的 for 照旧管用。
-      'onClick': () => {
+      'onClick': (event: MouseEvent) => {
         const control = scope.getById(controlId)
-        if (control)
-          getTabbables(control)[0]?.focus()
+        if (!control)
+          return
+        // for 指向弹出式触发钮（select、日期选择器等）时只聚焦、不开合，与原生 select 一致：
+        // 浮层展开时按下标题先被判在外面收起，原生激活又会把触发钮点开，标题就永远收不起浮层
+        const popup = control.getAttribute('aria-haspopup')
+        if (popup !== null && popup !== 'false') {
+          event.preventDefault()
+          control.focus()
+          return
+        }
+        getTabbables(control)[0]?.focus()
       },
     }),
     getControlProps: () => normalize.element({
