@@ -36250,6 +36250,9 @@
     flex-direction: column;
     row-gap: var(--xh-notification-item-row-gap, var(--xh-space-2));
     min-inline-size: 0;
+    /* 凭证号、令牌、文件路径这类没有断点的长串就地折行，标题与说明一并继承：不折行时标题顶出卡片，
+       说明因限高带着 overflow-y: auto、另一轴随之成 auto，撑出一条横向滚动条 */
+    overflow-wrap: anywhere;
   }
 
   .xh-scope-notification[data-part='item'][data-preset='toast'] [data-part='item-content']:where(.xh-scope-notification) {

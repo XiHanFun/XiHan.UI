@@ -236,4 +236,32 @@ describe('通知卡片的长正文', () => {
     expect(item.top).toBeGreaterThanOrEqual(0)
     expect(item.bottom).toBeLessThanOrEqual(window.innerHeight)
   })
+
+  // 凭证号、令牌、文件路径这类长串没有断点：不折行时标题顶出卡片，正文因限高带着 overflow-y: auto、
+  // 另一轴随之成 auto，在正文里撑出一条横向滚动条
+  const TOKEN = `ak_${'pvhs92VOdRfbufLEbPy9H6nZ'.repeat(3)}`
+
+  it('卡片：标题与正文里不能断开的长串在卡片内折行，不撑出横向滚动，卡片宽不变', async () => {
+    notify = createNotificationService()
+    notify.warning(`凭证 ${TOKEN} 已创建`, { description: `凭证「222」（${TOKEN}）已创建。如非本人操作，请立即删除该凭证并修改密码。`, duration: 0 })
+    await tick()
+    const item = part('item')
+    const title = part('item-title')
+    const description = part('item-description')
+    expect(description.scrollWidth).toBeLessThanOrEqual(description.clientWidth)
+    expect(title.scrollWidth).toBeLessThanOrEqual(title.clientWidth)
+    expect(item.getBoundingClientRect().width).toBe(resolvedLength(item, 'var(--xh-overlay-notification-w)'))
+  })
+
+  it('轻提示：长串同样在行内折行，不顶出提示条', async () => {
+    notify = createNotificationService({ preset: 'toast' })
+    notify.success(`已复制 ${TOKEN}`, { description: TOKEN, duration: 0 })
+    await tick()
+    const item = part('item').getBoundingClientRect()
+    for (const name of ['item-title', 'item-description']) {
+      const element = part(name)
+      expect(element.scrollWidth, name).toBeLessThanOrEqual(element.clientWidth)
+      expect(element.getBoundingClientRect().right, name).toBeLessThanOrEqual(item.right)
+    }
+  })
 })
