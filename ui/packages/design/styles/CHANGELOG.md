@@ -1,5 +1,14 @@
 # @xihan-ui/styles
 
+## 4.0.1
+
+### Patch Changes
+
+- bb1721f: Web Components 字段族宿主的 `display: contents` 改由皮肤声明（零特指度），元素不再在连接时往宿主写内联 `display`。作者给宿主写的 `display` 无论在内联还是样式表里都照层叠胜出，写在宿主上的宽度与外边距随之生效；此前样式表里的规则会被内联的 `contents` 压过。带 `hidden` 的宿主也不再被内联 `contents` 掀开。不加载皮肤时宿主回到行内盒。
+- 775b17b: 字段不包 `XhFormFieldGroup`、直接放进 Form 时，辅助行同样算项距：带说明或预留了错误文案行的字段不再另留 20px 项距，与字段集的组内项距一致。此前只有包在 field-group 里的字段归零，直接放进表单的字段辅助行 20px 与项距 20px 叠成两段。
+- Updated dependencies [14da7fe]
+  - @xihan-ui/tokens@4.0.1
+
 ## 4.0.0
 
 ### Major Changes

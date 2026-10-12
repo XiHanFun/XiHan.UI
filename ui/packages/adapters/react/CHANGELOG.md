@@ -1,5 +1,17 @@
 # @xihan-ui/react
 
+## 4.0.1
+
+### Patch Changes
+
+- Updated dependencies [11134bb]
+  - @xihan-ui/headless@4.0.1
+  - @xihan-ui/core@4.0.1
+  - @xihan-ui/motion@4.0.1
+  - @xihan-ui/position@4.0.1
+  - @xihan-ui/pointer@4.0.1
+  - @xihan-ui/viz@4.0.1
+
 ## 4.0.0
 
 ### Minor Changes

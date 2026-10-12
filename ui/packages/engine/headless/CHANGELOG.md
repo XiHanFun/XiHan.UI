@@ -1,5 +1,15 @@
 # @xihan-ui/headless
 
+## 4.0.1
+
+### Patch Changes
+
+- 11134bb: Field 的标题指向弹出式触发钮（把字段 id 转交给 Select、DatePicker 等的触发钮）时，点标题只聚焦、不开合，与原生 select 一致。此前浮层展开时点标题收不起来：按下被判在浮层外先收起，标题的原生激活随即又把触发钮点开。纵排字段里标题撑满整列宽，标题文字右侧的空白同样受影响。
+  - @xihan-ui/core@4.0.1
+  - @xihan-ui/motion@4.0.1
+  - @xihan-ui/pointer@4.0.1
+  - @xihan-ui/viz@4.0.1
+
 ## 4.0.0
 
 ### Major Changes

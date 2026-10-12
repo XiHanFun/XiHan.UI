@@ -1,5 +1,11 @@
 # @xihan-ui/core
 
+## 4.0.1
+
+### Patch Changes
+
+- @xihan-ui/motion@4.0.1
+
 ## 4.0.0
 
 ### Minor Changes
