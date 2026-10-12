@@ -15,6 +15,12 @@
     --xh-tags-input-skin: 1;
   }
 
+  /* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+     直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+  :where(xh-tags-input:not([hidden])) {
+    display: contents;
+  }
+
   /* root 只负责纵向堆叠：标题一行、控件一行。可见的那个"框"长在 control 上，
      因为标签、输入框、清空按钮都在它里面，边框必须把三者一起圈住。
      组件层只把既有公开槽映射到家族合同；形态三档由家族按 control 上的 data-variant 生成，皮肤不再声明 */

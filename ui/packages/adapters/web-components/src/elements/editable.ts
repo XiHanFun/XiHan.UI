@@ -73,13 +73,6 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart cancel-trigger - 撤销按钮；预览态收起
  */
 export class XhEditableElement extends XhElement {
-  /**
-   * 字段族：宿主不占一层盒子，root 直接参与外层排布、按控件宽铺满。
-   * 适配器内部的排布开关，不是给作者用的接口。
-   * @internal
-   */
-  static override hostDisplay = 'contents'
-
   static override partContract = { anatomy: editableAnatomy, meta: editableMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。

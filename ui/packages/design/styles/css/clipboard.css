@@ -16,6 +16,12 @@
     --xh-clipboard-skin: 1;
   }
 
+  /* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+     直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+  :where(xh-clipboard:not([hidden])) {
+    display: contents;
+  }
+
   /* 与文本框同一套堆叠：标签一行、输入行一行 */
   [data-scope='clipboard'][data-part='root'] {
     /* 输入框与按钮同取一档高度，换尺寸只改这一个私有槽 */
