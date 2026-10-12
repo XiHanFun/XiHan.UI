@@ -1173,7 +1173,7 @@
     },
     "menu-max-h": {
       "$type": "dimension",
-      "$value": "13rem"
+      "$value": "20rem"
     },
     "max-w-sm": {
       "$type": "dimension",

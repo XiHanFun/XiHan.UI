@@ -506,7 +506,7 @@ export const tokens = {
   "--xh-overlay-calendar-column-h-coarse": "calc(var(--xh-control-h-md) + 44px * 6 + var(--xh-space-3) * 2)",
   "--xh-overlay-time-column-w": "4rem",
   "--xh-overlay-time-column-h": "calc((var(--xh-control-action-size) + var(--xh-space-2)) * 7)",
-  "--xh-overlay-menu-max-h": "13rem",
+  "--xh-overlay-menu-max-h": "20rem",
   "--xh-overlay-max-w-sm": "16rem",
   "--xh-overlay-max-w": "20rem",
   "--xh-overlay-max-w-lg": "24rem",
