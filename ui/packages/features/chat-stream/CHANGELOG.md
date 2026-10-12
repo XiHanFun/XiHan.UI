@@ -1,5 +1,11 @@
 # @xihan-ui/chat-stream
 
+## 4.1.0
+
+### Patch Changes
+
+- @xihan-ui/core@4.1.0
+
 ## 4.0.1
 
 ### Patch Changes
