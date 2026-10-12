@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.7-0S9MOb.js";import{t}from"./checkbox.DIqk04Bv.js";var n=e();function r(){return(0,n.jsx)(t,{name:`updates`,defaultChecked:!0,children:`接收产品更新`})}export{r as default};

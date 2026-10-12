@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.7-0S9MOb.js";import{n as t}from"./toggle-group.B4iS_q6m.js";var n=e(),r=[{value:`bold`,label:`B`},{value:`italic`,label:`I`},{value:`underline`,label:`U`}];function i(){return(0,n.jsx)(t,{collection:r,defaultValue:[`bold`],multiple:!0})}export{i as default};

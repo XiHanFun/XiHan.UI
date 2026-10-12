@@ -1,0 +1,1 @@
+import{Lt as e,Zt as t,at as n,ft as r,ut as i,wt as a}from"./framework.WoOPT6Vw.js";import{lo as o,ro as s,so as c}from"./theme.DwlQyCE9.js";var l=r({__name:`01-basic`,setup(r){return(r,l)=>(a(),n(t(o),{style:{"max-inline-size":`22rem`}},{default:e(()=>[i(t(s),null,{default:e(()=>[i(t(c))]),_:1})]),_:1}))}});export{l as default};

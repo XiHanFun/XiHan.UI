@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.7-0S9MOb.js";import{t}from"./button.B7mquJQS.js";var n=e();function r(){return(0,n.jsx)(t,{as:`a`,href:`/introduction`,children:`了解更多`})}export{r as default};

@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.7-0S9MOb.js";import{o as t,r as n,s as r,t as i}from"./list.DItuFkNF.js";var a=e(),o=[`提交了一次构建`,`合并了一个分支`,`关闭了一个议题`];function s(){return(0,a.jsx)(r,{split:!0,style:{maxInlineSize:`360px`},children:o.map(e=>(0,a.jsx)(i,{children:(0,a.jsx)(n,{children:(0,a.jsx)(t,{children:e})})},e))})}export{s as default};

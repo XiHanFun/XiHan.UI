@@ -1,1 +1,0 @@
-import{$ as e,Zt as t,ft as n,st as r,ut as i,wt as a}from"./framework.WoOPT6Vw.js";import{_a as o}from"./theme.y5fa1jod.js";var s=n({__name:`01-basic`,setup(n){return(n,s)=>(a(),r(e,null,[i(t(o)),i(t(o),{"default-checked":``})],64))}});export{s as default};

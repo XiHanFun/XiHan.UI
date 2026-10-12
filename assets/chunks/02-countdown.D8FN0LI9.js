@@ -1,1 +1,0 @@
-import{Zt as e,at as t,ft as n,wt as r}from"./framework.WoOPT6Vw.js";import{pr as i}from"./theme.y5fa1jod.js";var a=12e4,o=n({__name:`02-countdown`,setup(n){return(n,o)=>(r(),t(e(i),{countdown:``,"start-ms":a,"auto-start":``}))}});export{o as default};
