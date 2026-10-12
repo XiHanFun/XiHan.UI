@@ -336,6 +336,11 @@
       "$type": "icon",
       "$value": "flip-vertical"
     },
+    "mark-undo": {
+      "$description": "撤回到先前的样子：看片的复原（缩放、旋转、翻转一并归位）。U 形回转箭头，与旋转的整圈箭头区分开。",
+      "$type": "icon",
+      "$value": "undo"
+    },
     "mark-maximize": {
       "$description": "把面板铺满可视区。四角箭头朝外，与朝内的 mark-restore 成对。",
       "$type": "icon",

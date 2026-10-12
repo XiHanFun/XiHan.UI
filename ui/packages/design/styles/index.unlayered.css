@@ -33199,6 +33199,18 @@
   mask: var(--xh-glyph-mark-flip-vertical) center / contain no-repeat;
 }
 
+/* 复原：回转箭头，与旋转的整圈箭头区分开；与其余工具钮一样不写内容时由皮肤画 */
+.xh-scope-image-viewer[data-part='reset-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-undo) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-undo) center / contain no-repeat;
+}
+
 .xh-scope-image-viewer[data-part='prev-trigger']:empty::before {
   content: '';
   display: inline-block;
@@ -33262,16 +33274,16 @@
     background-color: CanvasText;
   }
 
-  .xh-scope-image-viewer:is([data-part='zoom-in-trigger'], [data-part='zoom-out-trigger'], [data-part='rotate-left-trigger'], [data-part='rotate-right-trigger'], [data-part='flip-horizontal-trigger'], [data-part='flip-vertical-trigger'], [data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger']):empty::before {
+  .xh-scope-image-viewer:is([data-part='zoom-in-trigger'], [data-part='zoom-out-trigger'], [data-part='rotate-left-trigger'], [data-part='rotate-right-trigger'], [data-part='flip-horizontal-trigger'], [data-part='flip-vertical-trigger'], [data-part='reset-trigger'], [data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger']):empty::before {
     forced-color-adjust: none;
     background-color: ButtonText;
   }
 
-  .xh-scope-image-viewer:is([data-part='zoom-in-trigger'], [data-part='zoom-out-trigger'], [data-part='rotate-left-trigger'], [data-part='rotate-right-trigger'], [data-part='flip-horizontal-trigger'], [data-part='flip-vertical-trigger'], [data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
+  .xh-scope-image-viewer:is([data-part='zoom-in-trigger'], [data-part='zoom-out-trigger'], [data-part='rotate-left-trigger'], [data-part='rotate-right-trigger'], [data-part='flip-horizontal-trigger'], [data-part='flip-vertical-trigger'], [data-part='reset-trigger'], [data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger']):not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
     background-color: HighlightText;
   }
 
-  .xh-scope-image-viewer:is([data-part='zoom-in-trigger'], [data-part='zoom-out-trigger'], [data-part='rotate-left-trigger'], [data-part='rotate-right-trigger'], [data-part='flip-horizontal-trigger'], [data-part='flip-vertical-trigger'], [data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger'])[data-disabled]:empty::before {
+  .xh-scope-image-viewer:is([data-part='zoom-in-trigger'], [data-part='zoom-out-trigger'], [data-part='rotate-left-trigger'], [data-part='rotate-right-trigger'], [data-part='flip-horizontal-trigger'], [data-part='flip-vertical-trigger'], [data-part='reset-trigger'], [data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger'])[data-disabled]:empty::before {
     background-color: GrayText;
   }
 }

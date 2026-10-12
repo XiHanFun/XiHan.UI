@@ -178,6 +178,7 @@ const EXPECTED = [
   'truck',
   'type',
   'underline',
+  'undo',
   'unlink',
   'unlock',
   'upload',
