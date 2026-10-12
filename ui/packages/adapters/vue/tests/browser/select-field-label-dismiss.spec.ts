@@ -46,7 +46,7 @@ const Wrapper = defineComponent({
   },
 })
 
-async function mount(): Promise<{ trigger: HTMLElement, label: HTMLElement }> {
+async function mount(): Promise<{ trigger: HTMLElement, label: HTMLLabelElement }> {
   host = document.createElement('div')
   host.style.padding = '40px'
   document.body.append(host)
@@ -59,7 +59,7 @@ async function mount(): Promise<{ trigger: HTMLElement, label: HTMLElement }> {
   app.mount(host)
   await nextTick()
   const trigger = host.querySelector<HTMLElement>(`[data-scope='select'][data-part='trigger']`)!
-  const label = host.querySelector<HTMLElement>(`[data-scope='field'][data-part='label']`)!
+  const label = host.querySelector<HTMLLabelElement>(`[data-scope='field'][data-part='label']`)!
   expect(label.htmlFor).toBe(trigger.id)
   return { trigger, label }
 }
