@@ -2,8 +2,8 @@
 // 与原生 select 一致。此前下拉展开时点标题收不起来：按下被判在浮层外、先收起，松手的 click 经标题的原生激活
 // 又点了一次触发钮，随即重新展开。标题在纵排的字段里撑满整列宽，它右侧的空白同样是标题。
 import type { App } from 'vue'
-import { userEvent } from 'vitest/browser'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, defineComponent, h, nextTick } from 'vue'
 import {
   XhFieldControl,
