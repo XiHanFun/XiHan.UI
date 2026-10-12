@@ -1,5 +1,12 @@
 # @xihan-ui/backgrounds
 
+## 4.1.0
+
+### Patch Changes
+
+- @xihan-ui/core@4.1.0
+- @xihan-ui/motion@4.1.0
+
 ## 4.0.1
 
 ### Patch Changes

@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/icons",
   "type": "module",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "description": "XiHan.UI first-party icon set — structured IconRecord data, no third-party dependency.",
   "author": {
     "name": "XiHanFun",

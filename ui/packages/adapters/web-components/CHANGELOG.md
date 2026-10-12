@@ -1,5 +1,16 @@
 # @xihan-ui/web-components
 
+## 4.1.0
+
+### Patch Changes
+
+- @xihan-ui/core@4.1.0
+- @xihan-ui/motion@4.1.0
+- @xihan-ui/headless@4.1.0
+- @xihan-ui/position@4.1.0
+- @xihan-ui/pointer@4.1.0
+- @xihan-ui/viz@4.1.0
+
 ## 4.0.1
 
 ### Patch Changes
