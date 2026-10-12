@@ -195,13 +195,13 @@ export const XhImageViewerToolbar = defineComponent({
   },
 })
 
-/** 工具条按钮共用的组件工厂：未写插槽内容时留空，皮肤据 :empty 绘制兜底图标；提供文字的（1:1）填入文字。 */
-function toolTrigger(name: string, getProps: (api: ReturnType<typeof useImageViewerContext>['api']['value']) => Record<string, unknown>, fallback?: string): ReturnType<typeof defineComponent> {
+/** 工具条按钮共用的组件工厂：未写插槽内容时留空，皮肤据 :empty 绘制兜底图标。 */
+function toolTrigger(name: string, getProps: (api: ReturnType<typeof useImageViewerContext>['api']['value']) => Record<string, unknown>): ReturnType<typeof defineComponent> {
   return defineComponent({
     name,
     setup(_, { slots }) {
       const ctx = useImageViewerContext()
-      return () => h('button', getProps(ctx.api.value) as Record<string, unknown>, slots.default ? slots.default() : fallback)
+      return () => h('button', getProps(ctx.api.value) as Record<string, unknown>, slots.default?.())
     },
   })
 }
@@ -212,7 +212,7 @@ export const XhImageViewerRotateLeftTrigger = toolTrigger('XhImageViewerRotateLe
 export const XhImageViewerRotateRightTrigger = toolTrigger('XhImageViewerRotateRightTrigger', api => api.getRotateRightTriggerProps() as Record<string, unknown>)
 export const XhImageViewerFlipHorizontalTrigger = toolTrigger('XhImageViewerFlipHorizontalTrigger', api => api.getFlipHorizontalTriggerProps() as Record<string, unknown>)
 export const XhImageViewerFlipVerticalTrigger = toolTrigger('XhImageViewerFlipVerticalTrigger', api => api.getFlipVerticalTriggerProps() as Record<string, unknown>)
-export const XhImageViewerResetTrigger = toolTrigger('XhImageViewerResetTrigger', api => api.getResetTriggerProps() as Record<string, unknown>, '1:1')
+export const XhImageViewerResetTrigger = toolTrigger('XhImageViewerResetTrigger', api => api.getResetTriggerProps() as Record<string, unknown>)
 export const XhImageViewerPrevTrigger = toolTrigger('XhImageViewerPrevTrigger', api => api.getPrevTriggerProps() as Record<string, unknown>)
 export const XhImageViewerNextTrigger = toolTrigger('XhImageViewerNextTrigger', api => api.getNextTriggerProps() as Record<string, unknown>)
 export const XhImageViewerCloseTrigger = toolTrigger('XhImageViewerCloseTrigger', api => api.getCloseTriggerProps() as Record<string, unknown>)

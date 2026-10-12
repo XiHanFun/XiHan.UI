@@ -345,3 +345,39 @@ describe('看片浮层的 chrome 钮：Action Control 档位落到真实盒子�
     }
   })
 })
+
+/** 在浮层里把字形令牌解析成遮罩图，与按钮伪元素上实际用的对账 */
+function glyphMask(token: string, scope: HTMLElement): string {
+  const probe = document.createElement('span')
+  probe.style.setProperty('mask-image', `var(${token})`)
+  scope.append(probe)
+  const value = getComputedStyle(probe).maskImage
+  probe.remove()
+  return value
+}
+
+describe('工具钮的缺省字形', () => {
+  it('七颗变换钮不写内容时都是空按钮，由皮肤按各自的字形令牌画图标；复原钮不再塞「1:1」文字', async () => {
+    mount()
+    await settle()
+    const glyphs: Record<(typeof TOOL_PARTS)[number], string> = {
+      'zoom-in-trigger': 'zoom-in',
+      'zoom-out-trigger': 'zoom-out',
+      'rotate-left-trigger': 'rotate-left',
+      'rotate-right-trigger': 'rotate-right',
+      'flip-horizontal-trigger': 'flip-horizontal',
+      'flip-vertical-trigger': 'flip-vertical',
+      'reset-trigger': 'undo',
+    }
+    const content = part('content')
+    for (const name of TOOL_PARTS) {
+      const button = part(name)
+      expect(button.textContent, name).toBe('')
+      // 图标钮没有文字，名字靠可及名
+      expect(button.getAttribute('aria-label'), name).toBeTruthy()
+      const mask = getComputedStyle(button, '::before').maskImage
+      expect(mask, name).not.toBe('none')
+      expect(mask, name).toBe(glyphMask(`--xh-glyph-mark-${glyphs[name]}`, content))
+    }
+  })
+})
