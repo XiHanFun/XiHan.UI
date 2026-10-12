@@ -218,6 +218,7 @@
   "[data-scope=\"image-viewer\"][data-part=\"flip-vertical-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"image-viewer\"][data-part=\"next-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"image-viewer\"][data-part=\"prev-trigger\"]:empty::before": "写法挂不出来：:empty",
+  "[data-scope=\"image-viewer\"][data-part=\"reset-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"image-viewer\"][data-part=\"rotate-left-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"image-viewer\"][data-part=\"rotate-right-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"image-viewer\"][data-part=\"toolbar\"]": "部件不接焦点：image-viewer/toolbar",
