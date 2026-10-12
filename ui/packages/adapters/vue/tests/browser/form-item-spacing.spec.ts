@@ -198,6 +198,18 @@ describe('表单项距', () => {
     expect(between(2)).toBe(px('--xh-space-5'))
   })
 
+  it('字段直接放进表单（不包 field-group）同一套：辅助行就是项距，没有辅助行的照常留', async () => {
+    await mount(() => h(XhFormRoot, null, () => [
+      bareField('甲', { error: true }),
+      bareField('乙', { description: '一行说明' }),
+      bareField('丙', { description: '一行说明', invalid: true }),
+      bareField('丁'),
+      bareField('戊'),
+    ]))
+    for (const index of [0, 1, 2, 3])
+      expect(between(index)).toBe(px('--xh-space-5'))
+  })
+
   it('校验失败收起了说明、又没渲染错误文案的字段没有辅助行，照常留项距', async () => {
     await mount(() => h(XhFormRoot, null, () => [field('甲', { description: '一行说明', invalid: true }), field('乙')]))
     expect(getComputedStyle(all('field', 'description')[0]!).display).toBe('none')
