@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.B7HGfqf6.js";import{t}from"./button.Bln-p7ml.js";import{t as n}from"./button-group.Dug7qLEB.js";var r=e();function i(){return(0,r.jsx)(`div`,{style:{inlineSize:`min(100%, 420px)`},children:(0,r.jsxs)(n,{fullWidth:!0,children:[(0,r.jsx)(t,{children:`上一页`}),(0,r.jsx)(t,{children:`下一页`})]})})}export{i as default};

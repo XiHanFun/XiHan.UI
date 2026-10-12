@@ -1,1 +1,0 @@
-import{Zt as e,at as t,ft as n,wt as r}from"./framework.WoOPT6Vw.js";import{Sd as i,it as a}from"./theme.CjA_5cDe.js";var o=n({__name:`03-label`,setup(n){return(n,o)=>(r(),t(e(i),{icon:e(a),label:`关闭`},null,8,[`icon`]))}});export{o as default};

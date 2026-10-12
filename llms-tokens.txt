@@ -694,7 +694,7 @@
 | `--xh-overlay-calendar-column-h-coarse` | dimension | `calc(var(--xh-control-h-md) + 44px * 6 + var(--xh-space-3) * 2)` | — |
 | `--xh-overlay-time-column-w` | dimension | `4rem` | — |
 | `--xh-overlay-time-column-h` | dimension | `calc((var(--xh-control-action-size) + var(--xh-space-2)) * 7)` | — |
-| `--xh-overlay-menu-max-h` | dimension | `13rem` | compact |
+| `--xh-overlay-menu-max-h` | dimension | `20rem` | compact |
 | `--xh-overlay-max-w-sm` | dimension | `16rem` | — |
 | `--xh-overlay-max-w` | dimension | `20rem` | — |
 | `--xh-overlay-max-w-lg` | dimension | `24rem` | — |
