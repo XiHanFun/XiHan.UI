@@ -123,13 +123,6 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @csspart footer - 浮层底部的操作区，写在 content 中与列并列，横跨全部列；不进入任何一列的拥有关系，方向键也无法到达
  */
 export class XhCascaderElement extends XhPortalHostElement {
-  /**
-   * 字段族：宿主不占一层盒子，root 直接参与外层排布、按控件宽铺满。
-   * 适配器内部的排布开关，不是给作者用的接口。
-   * @internal
-   */
-  static override hostDisplay = 'contents'
-
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
   declare portalContainer?: () => Element | null
 

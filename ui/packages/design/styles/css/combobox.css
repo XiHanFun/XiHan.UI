@@ -20,6 +20,12 @@
     --xh-combobox-skin: 1;
   }
 
+  /* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+     直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+  :where(xh-combobox:not([hidden])) {
+    display: contents;
+  }
+
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='combobox'][data-part='positioner'] {
     /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；

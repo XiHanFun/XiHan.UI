@@ -11,6 +11,12 @@
     --xh-input-group-skin: 1;
   }
 
+  /* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+     直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+  :where(xh-input-group:not([hidden])) {
+    display: contents;
+  }
+
   /* 输入框、前后缀和动作共用一个输入表面。组只统一材质与外轮廓，语义仍归各子控件。 */
   [data-scope='input-group'][data-part='root'] {
     /* 段之间那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，

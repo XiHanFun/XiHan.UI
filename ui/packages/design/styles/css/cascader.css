@@ -20,6 +20,12 @@
     --xh-cascader-skin: 1;
   }
 
+  /* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+     直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+  :where(xh-cascader:not([hidden])) {
+    display: contents;
+  }
+
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='cascader'][data-part='positioner'] {
     /* 落定那一侧的可用宽度，由定位引擎经内联自定义属性写进来，列区据此夹住行内轴；

@@ -13,6 +13,12 @@
     --xh-color-field-skin: 1;
   }
 
+  /* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+     直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+  :where(xh-color-field:not([hidden])) {
+    display: contents;
+  }
+
   /* 组件层只把既有公开槽映射到家族合同；形态三档由家族按 control 上的 data-variant 生成，皮肤不再声明；
      色块吃 Swatch 家族，只在这里补一条与输入框的间距。 */
   [data-scope='color-field'][data-part='root'] {

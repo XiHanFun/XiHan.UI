@@ -8807,6 +8807,12 @@
   --xh-input-group-skin: 1;
 }
 
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-input-group:not([hidden])) {
+  display: contents;
+}
+
 /* 输入框、前后缀和动作共用一个输入表面。组只统一材质与外轮廓，语义仍归各子控件。 */
 .xh-scope-input-group[data-part='root'] {
   /* 段之间那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
@@ -10962,6 +10968,12 @@
   --xh-mention-skin: 1;
 }
 
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-mention:not([hidden])) {
+  display: contents;
+}
+
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 .xh-scope-mention[data-part='positioner'] {
   /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
@@ -11595,6 +11607,12 @@
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 .xh-scope-password-input {
   --xh-password-input-skin: 1;
+}
+
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-password-input:not([hidden])) {
+  display: contents;
 }
 
 /* root 只负责纵向堆叠：标签一行、输入行一行。
@@ -21138,6 +21156,12 @@
   --xh-cascader-skin: 1;
 }
 
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-cascader:not([hidden])) {
+  display: contents;
+}
+
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 .xh-scope-cascader[data-part='positioner'] {
   /* 落定那一侧的可用宽度，由定位引擎经内联自定义属性写进来，列区据此夹住行内轴；
@@ -23164,6 +23188,12 @@
   --xh-clipboard-skin: 1;
 }
 
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-clipboard:not([hidden])) {
+  display: contents;
+}
+
 /* 与文本框同一套堆叠：标签一行、输入行一行 */
 .xh-scope-clipboard[data-part='root'] {
   /* 输入框与按钮同取一档高度，换尺寸只改这一个私有槽 */
@@ -24043,6 +24073,12 @@
   --xh-color-field-skin: 1;
 }
 
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-color-field:not([hidden])) {
+  display: contents;
+}
+
 /* 组件层只把既有公开槽映射到家族合同；形态三档由家族按 control 上的 data-variant 生成，皮肤不再声明；
    色块吃 Swatch 家族，只在这里补一条与输入框的间距。 */
 .xh-scope-color-field[data-part='root'] {
@@ -24210,6 +24246,12 @@
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 .xh-scope-color-picker {
   --xh-color-picker-skin: 1;
+}
+
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-color-picker:not([hidden])) {
+  display: contents;
 }
 
 /* 定位分工：取色区拇指的两条轴（inset-inline-start / inset-block-start）、浮层坐标、取色区底色，
@@ -25398,6 +25440,12 @@
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 .xh-scope-combobox {
   --xh-combobox-skin: 1;
+}
+
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-combobox:not([hidden])) {
+  display: contents;
 }
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
@@ -26773,6 +26821,12 @@
   --xh-date-field-skin: 1;
 }
 
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-date-field:not([hidden])) {
+  display: contents;
+}
+
 /* 与文本框、数字框同一套堆叠：标签一行、分段框一行。
    组件层只把既有公开槽映射到家族合同；形态三档由家族按 control 上的 data-variant 生成，皮肤不再声明。 */
 .xh-scope-date-field[data-part='root'] {
@@ -27083,6 +27137,12 @@
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 .xh-scope-date-picker {
   --xh-date-picker-skin: 1;
+}
+
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-date-picker:not([hidden])) {
+  display: contents;
 }
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
@@ -28000,6 +28060,12 @@
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 .xh-scope-date-range-picker {
   --xh-date-range-picker-skin: 1;
+}
+
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-date-range-picker:not([hidden])) {
+  display: contents;
 }
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
@@ -29996,6 +30062,12 @@
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 .xh-scope-editable {
   --xh-editable-skin: 1;
+}
+
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-editable:not([hidden])) {
+  display: contents;
 }
 
 /* 与 NumberField 同构：标题独占一行，control 是下面唯一的视觉盒；
@@ -36212,6 +36284,12 @@
   --xh-number-field-skin: 1;
 }
 
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-number-field:not([hidden])) {
+  display: contents;
+}
+
 /* 与文本框同一套堆叠：标签一行、输入行一行。
    control 是必需的唯一视觉盒，输入框、加减钮与前后缀都放在里面；
    输入与前后缀在左，减、加两颗动作依次收在逻辑末端。
@@ -40270,6 +40348,12 @@
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 .xh-scope-select {
   --xh-select-skin: 1;
+}
+
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-select:not([hidden])) {
+  display: contents;
 }
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
@@ -45991,6 +46075,12 @@
   --xh-tags-input-skin: 1;
 }
 
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-tags-input:not([hidden])) {
+  display: contents;
+}
+
 /* root 只负责纵向堆叠：标题一行、控件一行。可见的那个"框"长在 control 上，
    因为标签、输入框、清空按钮都在它里面，边框必须把三者一起圈住。
    组件层只把既有公开槽映射到家族合同；形态三档由家族按 control 上的 data-variant 生成，皮肤不再声明 */
@@ -46322,6 +46412,12 @@
   --xh-text-field-skin: 1;
 }
 
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-text-field:not([hidden])) {
+  display: contents;
+}
+
 /* 组件层只把既有公开槽映射到家族合同，并保留 label/count 等 TextField 专属结构；
    形态三档由家族按 control 上的 data-variant 生成，皮肤不再声明。 */
 .xh-scope-text-field[data-part='root'] {
@@ -46511,6 +46607,12 @@
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 .xh-scope-time-field {
   --xh-time-field-skin: 1;
+}
+
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-time-field:not([hidden])) {
+  display: contents;
 }
 
 /* 与文本框、数字框同一套堆叠：标签一行、控件一行。
@@ -46783,6 +46885,12 @@
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 .xh-scope-time-picker {
   --xh-time-picker-skin: 1;
+}
+
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-time-picker:not([hidden])) {
+  display: contents;
 }
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
@@ -47562,6 +47670,12 @@
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 .xh-scope-time-range-picker {
   --xh-time-range-picker-skin: 1;
+}
+
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-time-range-picker:not([hidden])) {
+  display: contents;
 }
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
@@ -51510,6 +51624,12 @@
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 .xh-scope-tree-select {
   --xh-tree-select-skin: 1;
+}
+
+/* Web Components 的宿主不占一层盒子：作者写的 root 直接参与外层排布、按控件宽铺满，与 Vue / React
+   直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-tree-select:not([hidden])) {
+  display: contents;
 }
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */

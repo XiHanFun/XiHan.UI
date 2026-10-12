@@ -24,13 +24,6 @@ import { XhElement } from '../element-base'
  * @csspart item - 前后缀块，内容由作者编写
  */
 export class XhInputGroupElement extends XhElement {
-  /**
-   * 字段族：宿主不占一层盒子，root 直接参与外层排布、按控件宽铺满。
-   * 适配器内部的排布开关，不是给作者用的接口。
-   * @internal
-   */
-  static override hostDisplay = 'contents'
-
   static override partContract = { anatomy: inputGroupAnatomy, meta: inputGroupMeta }
 
   // 属性缺席翻成 undefined，缺省值由 connect 决定

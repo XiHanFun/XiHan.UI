@@ -109,13 +109,6 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
  */
 export class XhComboboxElement extends XhPortalHostElement {
-  /**
-   * 字段族：宿主不占一层盒子，root 直接参与外层排布、按控件宽铺满。
-   * 适配器内部的排布开关，不是给作者用的接口。
-   * @internal
-   */
-  static override hostDisplay = 'contents'
-
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
   declare portalContainer?: () => Element | null
 
