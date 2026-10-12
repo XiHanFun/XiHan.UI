@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.B7HGfqf6.js";import{t}from"./kbd.DOQUf1db.js";var n=e();function r(){return(0,n.jsxs)(`div`,{style:{display:`flex`,alignItems:`center`,gap:`12px`},children:[(0,n.jsx)(t,{keys:[`Escape`]}),(0,n.jsx)(t,{keys:[`Mod`,`K`]})]})}export{r as default};

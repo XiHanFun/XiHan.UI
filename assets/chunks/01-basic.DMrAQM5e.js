@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.B3uNWKiF.js";import{a as t}from"./checkbox-group.Qa_5zKAd.js";var n=e(),r=[{value:`email`,label:`邮件`},{value:`sms`,label:`短信`},{value:`push`,label:`推送通知`}];function i(){return(0,n.jsx)(t,{collection:r,defaultValue:[`email`],label:`通知方式`,name:`notification`})}export{i as default};

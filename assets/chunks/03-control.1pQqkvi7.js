@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.B7HGfqf6.js";import{a as t,i as n,n as r,r as i,t as a}from"./timer.iejdWpr7.js";var o=e();function s(){return(0,o.jsxs)(n,{children:[(0,o.jsxs)(r,{children:[(0,o.jsx)(i,{unit:`minutes`}),(0,o.jsx)(t,{children:`:`}),(0,o.jsx)(i,{unit:`seconds`})]}),(0,o.jsx)(a,{children:`起停`})]})}export{s as default};

@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.B7HGfqf6.js";import{t}from"./spinner.C5ap3D17.js";var n=e();function r(){return(0,n.jsx)(t,{label:`加载中`})}export{r as default};

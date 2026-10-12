@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.B3uNWKiF.js";import{t}from"./button.DcjnwcC-.js";var n=e();function r(){return(0,n.jsx)(t,{children:`按钮`})}export{r as default};

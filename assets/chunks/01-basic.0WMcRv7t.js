@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.B7HGfqf6.js";import{t}from"./button.Bln-p7ml.js";var n=e();function r(){return(0,n.jsx)(t,{children:`按钮`})}export{r as default};
