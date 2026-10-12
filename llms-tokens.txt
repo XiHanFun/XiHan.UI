@@ -1,6 +1,6 @@
 # 曦寒视图组件 · 设计令牌
 
-共 791 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
+共 792 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
 「改写档」列出还有哪几份令牌源重新给过它——深色、紧凑、更高对比度、减弱动效、打印各是一档。
 
 覆盖时在 `:root` 上直接设同名令牌即可，这一层是公开面。带下划线前缀的 `--xh-_*` 是私有槽，不要在外面设。
@@ -414,6 +414,7 @@
 | `--xh-glyph-mark-rotate-right` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20.5 12a8.5 8.5 0 1 1-2.5-6'/%3E%3Cpath d='M20.5 4v5.5H15'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-flip-horizontal` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3'/%3E%3Cpath d='M15 5h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3'/%3E%3Cpath d='M12 3v18'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-flip-vertical` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3'/%3E%3Cpath d='M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3'/%3E%3Cpath d='M3 12h18'/%3E%3C/svg%3E")` | — |
+| `--xh-glyph-mark-undo` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8.5 13.5 4 9l4.5-4.5'/%3E%3Cpath d='M4 9h10.5a5.25 5.25 0 0 1 0 10.5H11'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-maximize` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 4H4v5'/%3E%3Cpath d='M15 4h5v5'/%3E%3Cpath d='M20 15v5h-5'/%3E%3Cpath d='M4 15v5h5'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-restore` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9h5V4'/%3E%3Cpath d='M20 9h-5V4'/%3E%3Cpath d='M20 15h-5v5'/%3E%3Cpath d='M4 15h5v5'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-play` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 4.5L19.5 12L8 19.5Z'/%3E%3C/svg%3E")` | — |

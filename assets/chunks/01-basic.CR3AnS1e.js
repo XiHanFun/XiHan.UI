@@ -1,0 +1,1 @@
+import{Zt as e,at as t,ft as n,wt as r}from"./framework.WoOPT6Vw.js";import{Sd as i,f as a}from"./theme.y5fa1jod.js";var o=n({__name:`01-basic`,setup(n){return(n,o)=>(r(),t(e(i),{icon:e(a)},null,8,[`icon`]))}});export{o as default};

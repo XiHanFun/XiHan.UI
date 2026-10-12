@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.B3uNWKiF.js";import{t}from"./progress.CipSbcVf.js";var n=e();function r(){return(0,n.jsxs)(`div`,{style:{width:`100%`,display:`grid`,gap:`12px`},children:[(0,n.jsx)(t,{value:30}),(0,n.jsx)(t,{value:72}),(0,n.jsx)(t,{value:3,max:4})]})}export{r as default};

@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.COQbgGSh.js";import{t}from"./matrix-code.DhGLqvYg.js";var n=e();function r(){return(0,n.jsx)(t,{value:`https://ui.xihanfun.com`})}export{r as default};

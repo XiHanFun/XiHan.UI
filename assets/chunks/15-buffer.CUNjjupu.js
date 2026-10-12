@@ -1,1 +1,0 @@
-import{Zt as e,at as t,ft as n,wt as r}from"./framework.WoOPT6Vw.js";import{Ys as i}from"./theme.CEfvzqkv.js";var a=n({__name:`15-buffer`,setup(n){return(n,a)=>(r(),t(e(i),{value:30,buffer:65,"value-text":`已播放 30%`,"aria-label":`播放进度`,style:{width:`100%`}}))}});export{a as default};

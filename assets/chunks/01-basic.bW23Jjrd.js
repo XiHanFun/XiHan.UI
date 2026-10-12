@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.COQbgGSh.js";import{t}from"./button.BBN_dcV1.js";var n=e();function r(){return(0,n.jsx)(t,{children:`按钮`})}export{r as default};

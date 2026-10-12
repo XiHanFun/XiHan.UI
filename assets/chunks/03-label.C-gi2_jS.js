@@ -1,0 +1,1 @@
+import{it as e}from"./theme.y5fa1jod.js";import{t}from"./jsx-runtime.COQbgGSh.js";import{t as n}from"./icon.DRklCD7f.js";var r=t();function i(){return(0,r.jsx)(n,{icon:e,label:`关闭`})}export{i as default};

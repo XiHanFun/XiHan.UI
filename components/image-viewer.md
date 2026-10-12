@@ -89,7 +89,7 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
         <button data-xh-part="rotate-right-trigger"></button>
         <button data-xh-part="flip-horizontal-trigger"></button>
         <button data-xh-part="flip-vertical-trigger"></button>
-        <button data-xh-part="reset-trigger">1:1</button>
+        <button data-xh-part="reset-trigger"></button>
       </div>
       <button data-xh-part="close-trigger"></button>
     </div>
@@ -438,7 +438,7 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
         <img data-xh-part="image" />
       </div>
       <div data-xh-part="toolbar">
-        <button data-xh-part="reset-trigger">1:1</button>
+        <button data-xh-part="reset-trigger"></button>
       </div>
       <button data-xh-part="close-trigger"></button>
     </div>
