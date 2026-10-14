@@ -41,7 +41,7 @@ const TIMING_CONSTANTS = {
   'headless/src/pagination/pagination.machine.ts:PAGINATION_CLOSE_DELAY': '停留：离开页码浮层后的保留，属性 closeDelay 的缺省值',
   'headless/src/context-menu/context-menu.machine.ts:CONTEXT_MENU_LONG_PRESS_DELAY': '停留：触屏长按到打开菜单的判定，属性 longPressDelay 的缺省值',
   'headless/src/carousel/carousel.machine.ts:CAROUSEL_AUTOPLAY_INTERVAL': '停留：自动轮播的间隔，属性 autoplay 写 true 时的缺省值；减弱动效下不自动起播',
-  'headless/src/clipboard/clipboard.machine.ts:CLIPBOARD_TIMEOUT': '停留：复制成功态保留多久，属性 timeout 的缺省值',
+  'headless/src/shared/clipboard-write.ts:CLIPBOARD_TIMEOUT': '停留：复制成功态保留多久，剪贴板属性 timeout 的缺省值，JSON 视图复制钮同值',
   'headless/src/tour/tour.machine.ts:TOUR_TARGET_TIMEOUT': '停留：步骤目标缺席时等它出现多久，属性 targetTimeout 的缺省值',
   'headless/src/question-flow/question-flow.machine.ts:AUTO_ADVANCE_DELAY': '停留：单选选定后到下一题的等待，属性 autoAdvanceDelay 的缺省值',
   'headless/src/scrollbar/scrollbar.machine.ts:SCROLLBAR_HIDE_DELAY': '停留：停手与离开后多久隐藏，属性 hideDelay 的缺省值',

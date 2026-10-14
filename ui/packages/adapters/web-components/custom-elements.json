@@ -36581,6 +36581,34 @@
             {
               "description": "键名与值里命中搜索词的那一段",
               "name": "mark"
+            },
+            {
+              "description": "内建工具条，role=group，root 的第一个孩子；只在 tools 打开时存在",
+              "name": "toolbar"
+            },
+            {
+              "description": "「展开全部」钮，只在树档出现",
+              "name": "expand-all-trigger"
+            },
+            {
+              "description": "「收起全部」钮，只在树档出现",
+              "name": "collapse-all-trigger"
+            },
+            {
+              "description": "自动换行开关（aria-pressed），只在原文档出现",
+              "name": "wrap-trigger"
+            },
+            {
+              "description": "复制原文的钮，成功后带 data-copied",
+              "name": "copy-trigger"
+            },
+            {
+              "description": "原文开关（aria-pressed），按下即原文档",
+              "name": "view-trigger"
+            },
+            {
+              "description": "复制成功的播报区，视觉隐藏",
+              "name": "status"
             }
           ],
           "members": [
@@ -36674,6 +36702,51 @@
             },
             {
               "kind": "field",
+              "name": "defaultView",
+              "privacy": "public",
+              "type": {
+                "text": "'tree' | 'text' | undefined"
+              },
+              "attribute": "default-view"
+            },
+            {
+              "kind": "field",
+              "name": "source",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "source"
+            },
+            {
+              "kind": "field",
+              "name": "wrap",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "wrap"
+            },
+            {
+              "kind": "field",
+              "name": "defaultWrap",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-wrap"
+            },
+            {
+              "kind": "field",
+              "name": "tools",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | JsonViewerTool[] | undefined"
+              },
+              "attribute": "tools"
+            },
+            {
+              "kind": "field",
               "name": "variant",
               "privacy": "public",
               "type": {
@@ -36724,6 +36797,24 @@
             },
             {
               "kind": "field",
+              "name": "notifyView",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyWrap",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyCopyError",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -36764,6 +36855,22 @@
               },
               "privacy": "private",
               "description": "空态那一格，两档共用一个；有行可摊时由 connect 给它打 hidden。"
+            },
+            {
+              "kind": "field",
+              "name": "toolbarEl",
+              "type": {
+                "text": "HTMLElement | undefined"
+              },
+              "privacy": "private",
+              "description": "内建工具条与其中各颗钮、播报区，按部件名留着复用。"
+            },
+            {
+              "kind": "field",
+              "name": "toolEls",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Map<JsonViewerToolTrigger | 'status', HTMLElement>()"
             },
             {
               "kind": "field",
@@ -36943,6 +37050,31 @@
             },
             {
               "kind": "method",
+              "name": "paintToolbar",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "JsonViewerApi"
+                  }
+                }
+              ],
+              "description": "内建工具条：root 的第一个孩子，钮按 tools 铺、按条上的排列摆。钮里不写内容，字形由皮肤按部件画；\n播报区跟着复制钮常驻，成功那一刻才有文字。关掉 tools 时整条摘掉。"
+            },
+            {
+              "kind": "method",
               "name": "adopt",
               "privacy": "private",
               "return": {
@@ -36970,7 +37102,7 @@
                   }
                 }
               ],
-              "description": "root 中只保留该档的容器：移除另一档，作者写在其中的内容也一并清除。\n已经就位的节点一律不动：移动一个节点等于把它移除再插回，焦点在树内会回落到 body。"
+              "description": "root 中只保留该档的容器（排在工具条之后）：移除另一档，作者写在其中的内容也一并清除。\n已经就位的节点一律不动：移动一个节点等于把它移除再插回，焦点在树内会回落到 body。"
             }
           ],
           "events": [
@@ -36979,6 +37111,27 @@
               "name": "expanded-value-change",
               "type": {
                 "text": "JsonViewerExpandedValueChangeDetails"
+              }
+            },
+            {
+              "description": "原文开关切换了展示形态；detail 为 `{ view: 'tree' | 'text' }`",
+              "name": "view-change",
+              "type": {
+                "text": "JsonViewerViewChangeDetails"
+              }
+            },
+            {
+              "description": "换行开关切换了原文档的换行；detail 为 `{ wrap: boolean }`",
+              "name": "wrap-change",
+              "type": {
+                "text": "JsonViewerWrapChangeDetails"
+              }
+            },
+            {
+              "description": "复制钮写入剪贴板失败；detail 为 `{ error: unknown, value: string }`",
+              "name": "copy-error",
+              "type": {
+                "text": "JsonViewerCopyErrorDetails"
               }
             }
           ],
@@ -37064,11 +37217,52 @@
               "fieldName": "variant"
             },
             {
-              "name": "view",
               "type": {
                 "text": "'tree' | 'text' | undefined"
               },
+              "description": "展示形态；提供即受控，原文开关只派发 view-change",
+              "name": "view",
               "fieldName": "view"
+            },
+            {
+              "type": {
+                "text": "'tree' | 'text' | undefined"
+              },
+              "description": "非受控的初始形态，默认 tree",
+              "name": "default-view",
+              "fieldName": "defaultView"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "值的原文：提供时原文档与复制钮取它，只重排缩进、字面量一字不改",
+              "name": "source",
+              "fieldName": "source"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "原文档是否自动换行；提供即受控，换行开关只派发 wrap-change",
+              "name": "wrap",
+              "fieldName": "wrap"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控的初始换行，默认不换行",
+              "name": "default-wrap",
+              "fieldName": "defaultWrap"
+            },
+            {
+              "type": {
+                "text": "boolean | JsonViewerTool[] | undefined"
+              },
+              "description": "内建工具条：在场即全部工具；写成以空白或逗号分隔的 expand / wrap / copy / view 只铺列出的几项；写 false 关闭",
+              "name": "tools",
+              "fieldName": "tools"
             }
           ],
           "superclass": {
@@ -37194,6 +37388,21 @@
             },
             {
               "name": "--xh-json-viewer-text-fg"
+            },
+            {
+              "name": "--xh-json-viewer-tool-fg"
+            },
+            {
+              "name": "--xh-json-viewer-tool-fg-copied"
+            },
+            {
+              "name": "--xh-json-viewer-tool-icon-size"
+            },
+            {
+              "name": "--xh-json-viewer-toolbar-gap"
+            },
+            {
+              "name": "--xh-json-viewer-toolbar-mb"
             }
           ]
         }

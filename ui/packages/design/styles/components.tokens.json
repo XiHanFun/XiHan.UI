@@ -41202,9 +41202,11 @@
         "scroll-to-end-trigger",
         "separator",
         "sort-trigger",
+        "status",
         "submit-trigger",
         "to-source-trigger",
         "to-target-trigger",
+        "toolbar",
         "trend",
         "trigger",
         "trigger-indicator",
@@ -41231,6 +41233,7 @@
         "is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])",
         "mode=send",
         "mode=stop",
+        "not([data-part='status'])",
         "not([data-variant='dot'])",
         "preset=toast",
         "size=2xl",
@@ -41261,7 +41264,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、comment-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、item-preview、last-trigger、line-content、line-fold-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、reset-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、comment-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、item-preview、last-trigger、line-content、line-fold-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、reset-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、status、submit-trigger、to-source-trigger、to-target-trigger、toolbar、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",
@@ -43859,6 +43862,106 @@
       ],
       "visibility": "public",
       "description": "json-viewer 的 text 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-json-viewer-tool-fg",
+      "component": "json-viewer",
+      "part": [
+        "status",
+        "toolbar"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "where(:not([data-part='status'])"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "json-viewer 的 status、toolbar 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-json-viewer-tool-fg-copied",
+      "component": "json-viewer",
+      "part": [
+        "copy-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "copied",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-fg-success"
+      ],
+      "visibility": "public",
+      "description": "json-viewer 的 copy-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-json-viewer-tool-icon-size",
+      "component": "json-viewer",
+      "part": [
+        "status",
+        "toolbar"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "where(:not([data-part='status'])"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-glyph-size"
+      ],
+      "visibility": "public",
+      "description": "json-viewer 的 status、toolbar 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-json-viewer-toolbar-gap",
+      "component": "json-viewer",
+      "part": [
+        "toolbar"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "json-viewer 的 toolbar 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-json-viewer-toolbar-mb",
+      "component": "json-viewer",
+      "part": [
+        "toolbar"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "json-viewer 的 toolbar 部件 margin-block-end 覆盖槽。"
     },
     {
       "name": "--xh-kbd-bg",

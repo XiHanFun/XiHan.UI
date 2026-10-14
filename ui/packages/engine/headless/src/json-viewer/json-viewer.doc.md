@@ -25,6 +25,10 @@
 - 每一行带 `data-value-type`，六种值形态各自着色。
 - 尺寸轴与其他组件同源；`variant` 决定外框形态，默认 `outline`；`subtle` 换成淡底无描边，`ghost` 去掉外框与底色只保留内容。
 - 没有任何行可展开时由 `empty` 部件说明，文案使用 `translations.empty`，作者也可以自行写入内容。
+- 内建工具条按需打开：`tools` 不提供即没有工具条；`true` 铺出全部工具；数组只铺列出的几项（`expand`、`wrap`、`copy`、`view`），数组里出现未知的工具名会抛错。条是根的第一个孩子，钮的排列由组件决定：「展开全部 / 收起全部」只在树档出现，「自动换行」只在原文档出现，复制与原文开关固定在末端，切换形态时这两颗不移动。
+- 原文开关切换 `view`：`view` 提供即受控，开关只触发 `onViewChange`；`defaultView` 是非受控初值。自动换行同理（`wrap` / `defaultWrap` / `onWrapChange`），开启后原文的长行折到下一行而不是横向滚动。
+- 复制钮写入的是原文档那一份文本（不受 `maxStringLength` / `maxItems` 折减），无论当前处于哪一档；成功后钮换成对钩约 3 秒，写入失败时回到常态并触发 `onCopyError`。剪贴板接口要求安全上下文。
+- 手里有值的原文（如后端下发的 JSON 文本）时传给 `source`：原文档与复制钮改用它，能解析成 JSON 就只按两格缩进重排，数字、字符串等字面量保持不变，解析不了就原样显示。`value` 是解析过的值，超出安全整数的数字（如 64 位 ID）已经失真，只有原文与来源一致；树档仍展示 `value`。headless 另导出同一个重排函数 `formatJsonSource`。
 - 只支持 JSON 能表达的形状，传入活对象时呈现有损：`Date` / `Map` / `Set` 一律按自有可枚举键展开，因此显示为 `{}`；`undefined` 归入 `null` 一档、显示为 `undefined`；`bigint` 归入 `number`；函数与 symbol 归入 `string`，按各自的字符串形式呈现。需要如实展示这些值时先转换为 JSON 能表达的形状。
 - 自定义元素侧：`value` 属性接受一段 JSON 文本（无法解析时按字符串值展示），对象与数组直接赋 property（`el.value = { … }`）；`expandedValue` / `defaultExpandedValue` / `translations` 没有对应属性，只能通过 property 设置，写成 `expanded-value='["$"]'` 不会生效。
 
@@ -35,6 +39,8 @@
 - 展开箭头对读屏隐藏，它重复的是分支自身已报出的 `aria-expanded` 与左右方向键。
 - 分支的名称显式提供（`aria-label`）：它包裹整棵子层，从内容计算名称会把所有子孙的文字一并读出。
 - 收起摘要（`{…} 3`）是排版记号，对读屏隐藏；其中的成员数并入分支的可访问名称（默认读为 `tags, 3 items`，整句可用 `translations.collapsedBranchLabel` 替换）。
+- 工具条是 `role=group` 并带可访问名称（`translations.toolbar`），每颗钮各占一个 Tab 位；不报告 `role=toolbar`，条内不靠方向键移动。钮里只有字形，名称取自 `translations`；原文开关与自动换行是开关钮，开关状态由 `aria-pressed` 报告，名称不随之变化。
+- 复制成功的回执由视觉隐藏的 `status` 部件（`aria-live="polite"`）读出，钮上的对钩只是视觉标记。
 
 ## RTL
 
@@ -45,7 +51,8 @@
 - 搜索：`search` 标出键名与值里含有搜索词的行（不区分大小写），命中行的祖先分支自动展开（写进展开集合，之后照常能收起），命中的那一段铺成 `mark` 部件。搜索框与上一条 / 下一条由作者摆在树之前：Vue 写进 `toolbar` 插槽，React 经 `toolbar` 传入，载荷是 `searchMatches`、`activeMatch`、`nextMatch`、`prevMatch`；Web Components 在元素上取 `searchMatches` / `activeMatch` 并调用 `nextMatch()` / `prevMatch()`。停住的那一条投影 `data-current`、命中片段换成实心，并被滚进视野。
 
 - 放入[标签页](./tabs)或[抽屉](./drawer)作为调试面板；行数多时套一层[滚动区域](./scroll-area)。
-- 配合[剪贴板](./clipboard)提供原始 JSON 的复制。
+- 只需要复制原文时打开 `tools` 的 `copy` 一项；复制钮要放在别处或换成带文字的样式时，改用[剪贴板](./clipboard)并把 `jsonText(value, sortKeys)` 的结果交给它。
+- 搜索框（`toolbar` 插槽）与内建工具条可以同时使用：插槽内容排在根之前，内建工具条排在根内的最前面。
 
 ## 最佳实践
 

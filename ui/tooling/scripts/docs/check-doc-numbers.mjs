@@ -1217,7 +1217,7 @@ const DWELL = {
   'ContextMenu 长按判定': ['packages/engine/headless/src/context-menu/context-menu.machine.ts', 'CONTEXT_MENU_LONG_PRESS_DELAY'],
   'Notification 停留': ['packages/engine/headless/src/notification/notification.presets.ts', 'NOTIFICATION_CARD_DURATION'],
   'Notification 轻提示预设停留': ['packages/engine/headless/src/notification/notification.presets.ts', 'NOTIFICATION_TOAST_DURATION'],
-  'Clipboard 成功态保留': ['packages/engine/headless/src/clipboard/clipboard.machine.ts', 'CLIPBOARD_TIMEOUT'],
+  'Clipboard 成功态保留': ['packages/engine/headless/src/shared/clipboard-write.ts', 'CLIPBOARD_TIMEOUT'],
   'Carousel 自动播放间隔': ['packages/engine/headless/src/carousel/carousel.machine.ts', 'CAROUSEL_AUTOPLAY_INTERVAL'],
   'QuestionFlow 自动下一题': ['packages/engine/headless/src/question-flow/question-flow.machine.ts', 'AUTO_ADVANCE_DELAY'],
   'Timer 刷新周期': ['packages/engine/headless/src/timer/timer.format.ts', 'TIMER_INTERVAL'],

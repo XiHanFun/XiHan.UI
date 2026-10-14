@@ -7,13 +7,13 @@
 
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { HighlightSegment } from '../highlight/highlight.split'
-import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema } from './json-viewer.types'
+import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerToolTrigger } from './json-viewer.types'
 import { contains, createPressTracker, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { splitHighlight } from '../highlight/highlight.split'
 import { JSON_VIEWER_EN_US } from '../locale/en-US'
 import { resolveTranslations } from '../shared/translations'
 import { jsonViewerAnatomy, jsonViewerBranchQuery, jsonViewerItemQuery } from './json-viewer.anatomy'
-import { flattenJson, jsonSearch, jsonSearchQuery, jsonSeedExpanded, jsonText } from './json-viewer.machine'
+import { flattenJson, jsonExpandedPathsToDepth, jsonSearch, jsonSearchQuery, jsonSeedExpanded, jsonViewerText, resolveJsonViewerTools } from './json-viewer.machine'
 
 const parts = jsonViewerAnatomy.build()
 
@@ -21,7 +21,7 @@ export function connectJsonViewer<T extends PropTypes>(
   service: Service<JsonViewerSchema>,
   normalize: NormalizeProps<T>,
 ): JsonViewerApi<T> {
-  const { context, prop, send, scope } = service
+  const { context, prop, send, scope, state } = service
   // null = 还没人碰过展开集合，按当下的数据现算：value 可能晚于机器启动才到
   const expandedValue = context.get('expandedValue') ?? jsonSeedExpanded(prop)
   const loop = prop('loop') ?? false
@@ -45,13 +45,69 @@ export function connectJsonViewer<T extends PropTypes>(
   const isFocusWithin = context.get('focusWithin')
   const highlighted = isFocusWithin ? anchor : null
 
-  const view = prop('view') ?? 'tree'
+  const view = context.get('view')
+  // 原文档：树的展开 / 收起两颗钮收起，换行开关出现，原文开关报按下
+  const textView = view === 'text'
+  const wrap = context.get('wrap')
   // 形态恒有值：缺省 outline，读一眼 DOM 就知道这块有没有外框
   const variant = prop('variant') ?? 'outline'
   // 顶层没给值就一行也摊不出来，这时候容器里空空如也，交给空态部件说话
   const isEmpty = rows.length === 0
-  // 键序与环路记号跟树同源，两档切过去内容对得上
-  const text = jsonText(prop('value'), !!prop('sortKeys'))
+  // 给了原文就重排原文（字面量一字不改）；否则由 value 序列化，键序与环路记号跟树同源
+  const text = jsonViewerText(prop)
+
+  // 工具条：tools 归一成条上要铺的几项，非法的工具名在这里抛出
+  const tools = resolveJsonViewerTools(prop('tools'))
+  const copyStatus = state.get()
+  const copied = copyStatus === 'copied'
+  // 播报区只在成功那一档有话说；平时是空串，读屏不会念一段旧文案
+  const announcement = copied ? label.copied : ''
+  const walk = { maxItems: prop('maxItems'), sortKeys: prop('sortKeys') }
+  // 全部展开：每一层的分支都进展开集合（折掉的成员与循环引用本来就不是分支）
+  const expandAll = (): void => send({ type: 'EXPANDED.SET', value: jsonExpandedPathsToDepth(prop('value'), Number.POSITIVE_INFINITY, walk) })
+  // 收起到顶层：根行留着展开，否则整份数据只剩一行摘要，什么也看不到
+  const collapseAll = (): void => send({ type: 'EXPANDED.SET', value: jsonExpandedPathsToDepth(prop('value'), 1, walk) })
+  const copy = (): void => send({ type: 'COPY.TRIGGER' })
+  // 工具钮的尺寸比视图低一档、最低 sm：它们是从属的钮，不该与正文的行争高
+  const toolSize = prop('size') === 'lg' ? 'md' : 'sm'
+  const pressedTool = context.get('pressedTool')
+
+  /**
+   * 工具钮的按压通道：Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一副面。
+   * 禁用的钮是原生 disabled，收不到按键与指针；按住途中变成禁用时按压面跟着撤下。
+   */
+  const toolPress = (part: JsonViewerToolTrigger, disabled: boolean): Record<string, unknown> => {
+    const handlers = createPressTracker({
+      isPressed: () => context.get('pressedTool') === part,
+      onChange: down => send(down ? { type: 'TOOL.PRESS.START', part } : { type: 'TOOL.PRESS.END', part }),
+    })
+    return {
+      'data-pressed': dataAttr(!disabled && pressedTool === part),
+      'onKeyDown': handlers.onKeyDown,
+      'onKeyUp': handlers.onKeyUp,
+      'onBlur': handlers.onBlur,
+      'onPointerDown': handlers.onPointerDown,
+      'onPointerUp': handlers.onPointerUp,
+      'onPointerCancel': handlers.onPointerCancel,
+    }
+  }
+
+  /**
+   * 工具钮共用的骨架：type、可及名、禁用与出没一次给齐。没有数据时整条钮都禁用：没有可复制、可展开的东西。
+   * Action Control 的档位（data-xh-action-*）由各 getter 自己写：门禁按 getter 切片认家族归属与投影。
+   */
+  const toolButton = (part: JsonViewerToolTrigger, aria: string, onClick: () => void, hidden: boolean, extra: Record<string, unknown>): T['button'] =>
+    normalize.button({
+      ...parts[part].attrs,
+      'type': 'button',
+      'aria-label': aria,
+      'hidden': hidden || undefined,
+      'disabled': isEmpty || undefined,
+      'data-disabled': dataAttr(isEmpty),
+      ...toolPress(part, isEmpty),
+      ...extra,
+      onClick,
+    })
 
   const isExpanded = (value: string): boolean => expandedValue.includes(value)
   const nodeOf = (value: string): JsonViewerNode | undefined => byPath.get(value)
@@ -178,6 +234,16 @@ export function connectJsonViewer<T extends PropTypes>(
   return {
     visibleNodes: rows,
     view,
+    wrap,
+    tools,
+    copyStatus,
+    copied,
+    announcement,
+    setView: next => send({ type: 'VIEW.SET', view: next }),
+    setWrap: next => send({ type: 'WRAP.SET', wrap: next }),
+    expandAll,
+    collapseAll,
+    copy,
     isEmpty,
     emptyText: label.empty,
     text,
@@ -213,6 +279,8 @@ export function connectJsonViewer<T extends PropTypes>(
       'role': 'region',
       'aria-label': label.text,
       'tabindex': 0,
+      // 自动换行：长行折到下一行而不是横向滚动；缺省不折，缩进与层级对得齐
+      'data-wrap': dataAttr(wrap),
     }),
 
     // 键盘全在 tree 上收口：行只管声明自己，一次冒泡一个处理器
@@ -439,5 +507,76 @@ export function connectJsonViewer<T extends PropTypes>(
 
     // 命中片段：只是同一段文字里的一截，读屏照常连着念，不另报身份
     getMarkProps: () => normalize.element(parts.mark.attrs),
+
+    // 工具条报 group 不报 toolbar：toolbar 角色承诺条内靠方向键移动，这里每颗钮各占一个 Tab 位
+    getToolbarProps: () => normalize.element({
+      ...parts.toolbar.attrs,
+      'role': 'group',
+      'aria-label': label.toolbar,
+      'data-view': view,
+    }),
+
+    // 展开 / 收起全部只对树有意义：原文档里收起来，免得留两颗按了看不出变化的钮
+    getExpandAllTriggerProps: () => toolButton('expand-all-trigger', label.expandAll, expandAll, textView, {
+      // 工具条里的图标钮：接 Action Control icon 档、ghost 面，按压与命中区由配方给；比视图低一档、最低 sm
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': toolSize,
+      'data-xh-action-variant': 'ghost',
+    }),
+    getCollapseAllTriggerProps: () => toolButton('collapse-all-trigger', label.collapseAll, collapseAll, textView, {
+      // 工具条里的图标钮：接 Action Control icon 档、ghost 面，按压与命中区由配方给；比视图低一档、最低 sm
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': toolSize,
+      'data-xh-action-variant': 'ghost',
+    }),
+
+    // 换行只对原文有意义，树档里收起来。开没开由 aria-pressed 报，名字不跟着变
+    getWrapTriggerProps: () => toolButton('wrap-trigger', label.wrap, () => send({ type: 'WRAP.SET', wrap: !wrap }), !textView, {
+      'aria-pressed': wrap ? 'true' : 'false',
+      'data-state': wrap ? 'on' : 'off',
+      // 无滑块开关：开着的选中面（品牌淡底）由皮肤在 data-state='on' 上桥接
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': toolSize,
+      'data-xh-action-variant': 'ghost',
+    }),
+
+    // 复制的是原文档那一份，不论此刻在哪一档。成功回执换成对钩并由播报区念出；
+    // 写入在途不接第二次（机器不收），钮不禁用：禁用会把焦点踢出去
+    getCopyTriggerProps: () => toolButton('copy-trigger', label.copy, copy, false, {
+      'data-state': copyStatus,
+      'data-copied': dataAttr(copied),
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': toolSize,
+      'data-xh-action-variant': 'ghost',
+    }),
+
+    // 原文开关：按下即原文档。钉在条的末端，两档切过去它不挪位置
+    getViewTriggerProps: () => toolButton('view-trigger', label.viewText, () => send({ type: 'VIEW.SET', view: textView ? 'tree' : 'text' }), false, {
+      'aria-pressed': textView ? 'true' : 'false',
+      'data-state': textView ? 'on' : 'off',
+      // 无滑块开关：开着的选中面（品牌淡底）由皮肤在 data-state='on' 上桥接
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': toolSize,
+      'data-xh-action-variant': 'ghost',
+    }),
+
+    // 复制成功的文字回执：换成对钩读屏拿不到，这一处是唯一的通道
+    getStatusProps: () => normalize.element({
+      ...parts.status.attrs,
+      'role': 'status',
+      'aria-live': 'polite',
+      'aria-atomic': 'true',
+      'data-state': copyStatus,
+    }),
   }
 }

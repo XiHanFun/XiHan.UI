@@ -414,6 +414,13 @@ const translations = {
     collapsedBranchLabel: (name, count) => `${name}，${count} 项`,
     moreItems: count => `… 另有 ${count} 项`,
     empty: '暂无数据',
+    toolbar: 'JSON 工具',
+    expandAll: '展开全部',
+    collapseAll: '收起全部',
+    wrap: '自动换行',
+    copy: '复制 JSON',
+    copied: '已复制',
+    viewText: '原文',
   },
   'kbd': {
     keyName: (key, platform) => keyText(KEY_NAME, key, platform),

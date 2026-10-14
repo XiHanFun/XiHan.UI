@@ -414,6 +414,13 @@ const translations = {
     collapsedBranchLabel: (name, count) => `${name}, 항목 ${count}개`,
     moreItems: count => `… 외 ${count}개`,
     empty: '데이터 없음',
+    toolbar: 'JSON 도구',
+    expandAll: '모두 펼치기',
+    collapseAll: '모두 접기',
+    wrap: '자동 줄바꿈',
+    copy: 'JSON 복사',
+    copied: '복사했습니다',
+    viewText: '원문',
   },
   'kbd': {
     keyName: (key, platform) => keyText(KEY_NAME, key, platform),

@@ -527,6 +527,13 @@ export const JSON_VIEWER_EN_US: XhLocaleBucket<'json-viewer'> = {
   collapsedBranchLabel: (name, count) => `${name}, ${plural(count, 'item')}`,
   moreItems: count => `… ${count} more`,
   empty: 'No data',
+  toolbar: 'JSON tools',
+  expandAll: 'Expand all',
+  collapseAll: 'Collapse all',
+  wrap: 'Wrap lines',
+  copy: 'Copy JSON',
+  copied: 'Copied',
+  viewText: 'Raw JSON',
 }
 
 export const KBD_EN_US: XhLocaleBucket<'kbd'> = {

@@ -432,6 +432,13 @@ const translations = {
     collapsedBranchLabel: (name, count) => `${name}, ${count} ${plural(count, 'элемент', 'элемента', 'элементов')}`,
     moreItems: count => `… ещё ${count}`,
     empty: 'Нет данных',
+    toolbar: 'Инструменты JSON',
+    expandAll: 'Развернуть всё',
+    collapseAll: 'Свернуть всё',
+    wrap: 'Перенос строк',
+    copy: 'Копировать JSON',
+    copied: 'Скопировано',
+    viewText: 'Исходный JSON',
   },
   'kbd': {
     keyName: (key, platform) => keyText(KEY_NAME, key, platform),

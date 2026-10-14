@@ -5,12 +5,13 @@
  */
 
 import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema } from '../src/json-viewer'
-import { createService, normalizeProps } from '@xihan-ui/core'
+import { createCounterIdGenerator, createScope, createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   connectJsonViewer,
   flattenJson,
+  formatJsonSource,
   groupJsonViewerNodesByParent,
   jsonChildPath,
   jsonExpandedPathsToDepth,
@@ -19,6 +20,8 @@ import {
   jsonValueType,
   jsonViewerMachine,
   JSON_VIEWER_ROOT_PATH as ROOT,
+  JSON_VIEWER_TOOLS,
+  resolveJsonViewerTools,
 } from '../src/json-viewer'
 
 type Props = JsonViewerSchema['props']
@@ -999,5 +1002,333 @@ describe('json 搜索', () => {
     expect(v.api().valueSegments(placeholder).every(segment => !segment.matched)).toBe(true)
     expect(v.api().searchMatches).toEqual([])
     v.stop()
+  })
+})
+
+// ══ 内建工具条 ══
+
+describe('json 工具条', () => {
+  type Dict = Record<string, unknown>
+
+  /** 带 scope 的实例：复制钮经 scope 取 window 上的剪贴板。 */
+  function toolbar(initial: Partial<Props> = {}) {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Partial<Props>>({ value: VALUE, tools: true, ...initial })
+    const service = createService(jsonViewerMachine, {
+      props: () => props.get(),
+      runtime,
+      scope: createScope(document.body, createCounterIdGenerator()),
+    })
+    runtime.start()
+    return {
+      service,
+      api: () => connectJsonViewer(service, normalizeProps),
+      setProps: (next: Partial<Props>) => props.set({ ...props.get(), ...next }),
+      stop: () => runtime.stop(),
+    }
+  }
+
+  const activate = (props: unknown): void => {
+    ((props as Dict).onClick as () => void)()
+  }
+
+  /** 装一个假的 navigator.clipboard；jsdom 默认没有它。返回值负责拆掉。 */
+  function installClipboard(writeText: (text: string) => Promise<void>): () => void {
+    Object.defineProperty(window.navigator, 'clipboard', { value: { writeText }, configurable: true })
+    return () => {
+      Reflect.deleteProperty(window.navigator, 'clipboard')
+    }
+  }
+
+  /** 等 writeText 的 promise 兑现并让机器把事件消化掉。 */
+  async function settleWrite(): Promise<void> {
+    await Promise.resolve()
+    await Promise.resolve()
+    await Promise.resolve()
+  }
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('tools 归一：不给或 false 没有工具条，true 是全部，数组按条上的排列取列出的几项', () => {
+    expect(resolveJsonViewerTools(undefined)).toEqual([])
+    expect(resolveJsonViewerTools(false)).toEqual([])
+    expect(resolveJsonViewerTools(true)).toEqual([...JSON_VIEWER_TOOLS])
+    expect(resolveJsonViewerTools(['view', 'copy'])).toEqual(['copy', 'view'])
+    expect(resolveJsonViewerTools([])).toEqual([])
+  })
+
+  it('数组里有未知的工具名立即抛错，不悄悄少一颗钮', () => {
+    expect(() => resolveJsonViewerTools(['copy', 'download' as never])).toThrow(/download/)
+    const t = toolbar({ tools: ['raw' as never] })
+    expect(() => t.api()).toThrow(/tools/)
+    t.stop()
+  })
+
+  it('工具条报 group 并带可及名；每颗钮是 type=button、带可及名、接 Action Control 配方的 ghost 图标档', () => {
+    const t = toolbar()
+    const api = t.api()
+    expect(api.tools).toEqual(['expand', 'wrap', 'copy', 'view'])
+    expect(api.getToolbarProps()).toMatchObject({ 'data-part': 'toolbar', 'role': 'group', 'aria-label': 'JSON tools' })
+    const buttons = [
+      api.getExpandAllTriggerProps(),
+      api.getCollapseAllTriggerProps(),
+      api.getWrapTriggerProps(),
+      api.getCopyTriggerProps(),
+      api.getViewTriggerProps(),
+    ] as Dict[]
+    expect(buttons.map(b => b['aria-label'])).toEqual(['Expand all', 'Collapse all', 'Wrap lines', 'Copy JSON', 'Raw JSON'])
+    for (const b of buttons) {
+      expect(b).toMatchObject({
+        'type': 'button',
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'icon',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-size': 'sm',
+      })
+    }
+    t.stop()
+  })
+
+  it('不开 tools 时没有任何工具', () => {
+    const t = toolbar({ tools: undefined })
+    expect(t.api().tools).toEqual([])
+    t.stop()
+  })
+
+  it('钮比视图低一档、最低 sm', () => {
+    for (const [size, expected] of [['sm', 'sm'], ['md', 'sm'], ['lg', 'md']] as const) {
+      const t = toolbar({ size })
+      expect((t.api().getCopyTriggerProps() as Dict)['data-xh-action-size']).toBe(expected)
+      t.stop()
+    }
+  })
+
+  it('原文开关：非受控在两档之间来回切，aria-pressed 与 data-state 跟着走，通知带新形态', () => {
+    const onViewChange = vi.fn()
+    const t = toolbar({ onViewChange })
+    expect(t.api().view).toBe('tree')
+    expect(t.api().getViewTriggerProps()).toMatchObject({ 'aria-pressed': 'false', 'data-state': 'off' })
+
+    activate(t.api().getViewTriggerProps())
+    expect(t.api().view).toBe('text')
+    expect(t.api().getViewTriggerProps()).toMatchObject({ 'aria-pressed': 'true', 'data-state': 'on' })
+    expect(t.api().getRootProps()).toMatchObject({ 'data-view': 'text' })
+    expect(onViewChange).toHaveBeenLastCalledWith({ view: 'text' })
+
+    activate(t.api().getViewTriggerProps())
+    expect(t.api().view).toBe('tree')
+    expect(onViewChange).toHaveBeenLastCalledWith({ view: 'tree' })
+    t.stop()
+  })
+
+  it('defaultView 给初值；view 提供即受控：点开关只发通知，不改当前形态', () => {
+    const initial = toolbar({ defaultView: 'text' })
+    expect(initial.api().view).toBe('text')
+    initial.stop()
+
+    const onViewChange = vi.fn()
+    const t = toolbar({ view: 'tree', onViewChange })
+    activate(t.api().getViewTriggerProps())
+    expect(onViewChange).toHaveBeenCalledWith({ view: 'text' })
+    expect(t.api().view).toBe('tree')
+    t.setProps({ view: 'text' })
+    expect(t.api().view).toBe('text')
+    t.stop()
+  })
+
+  it('换行开关只在原文档出现，开着时原文部件投影 data-wrap；wrap 受控同样只发通知', () => {
+    const onWrapChange = vi.fn()
+    const t = toolbar({ onWrapChange })
+    expect((t.api().getWrapTriggerProps() as Dict).hidden).toBe(true)
+
+    t.api().setView('text')
+    expect((t.api().getWrapTriggerProps() as Dict).hidden).toBeUndefined()
+    expect((t.api().getTextProps() as Dict)['data-wrap']).toBeUndefined()
+
+    activate(t.api().getWrapTriggerProps())
+    expect(t.api().wrap).toBe(true)
+    expect(t.api().getWrapTriggerProps()).toMatchObject({ 'aria-pressed': 'true', 'data-state': 'on' })
+    expect((t.api().getTextProps() as Dict)['data-wrap']).toBe('')
+    expect(onWrapChange).toHaveBeenLastCalledWith({ wrap: true })
+    t.stop()
+
+    const controlled = toolbar({ wrap: false, defaultView: 'text', onWrapChange })
+    activate(controlled.api().getWrapTriggerProps())
+    expect(onWrapChange).toHaveBeenLastCalledWith({ wrap: true })
+    expect(controlled.api().wrap).toBe(false)
+    controlled.stop()
+  })
+
+  it('展开全部把每一层的分支都展开；收起全部只留根行展开。两颗钮只在树档出现', () => {
+    const t = toolbar()
+    activate(t.api().getExpandAllTriggerProps())
+    expect([...t.api().expandedValue].sort()).toEqual(
+      [ROOT, path('tags'), path('nested'), path('nested', 'deep')].sort(),
+    )
+    expect(t.api().visibleNodes.some(node => node.value === path('nested', 'deep', 'leaf'))).toBe(true)
+
+    activate(t.api().getCollapseAllTriggerProps())
+    expect(t.api().expandedValue).toEqual([ROOT])
+    expect(t.api().visibleNodes.every(node => node.level <= 2)).toBe(true)
+
+    t.api().setView('text')
+    expect((t.api().getExpandAllTriggerProps() as Dict).hidden).toBe(true)
+    expect((t.api().getCollapseAllTriggerProps() as Dict).hidden).toBe(true)
+    t.stop()
+  })
+
+  it('展开全部不越过 maxItems 折掉的成员，也不展开循环引用', () => {
+    const loop: Record<string, unknown> = { list: [{ a: 1 }, { b: 2 }, { c: 3 }] }
+    loop.self = loop
+    const t = toolbar({ value: loop, maxItems: 2 })
+    t.api().expandAll()
+    expect(t.api().expandedValue).toContain(path('list', '1'))
+    expect(t.api().expandedValue).not.toContain(path('list', '2'))
+    expect(t.api().expandedValue).not.toContain(path('self'))
+    t.stop()
+  })
+
+  it('复制写入的是原文（与原文档一字不差），成功后停留一阵、播报区念出回执，再回到常态', async () => {
+    vi.useFakeTimers()
+    const writeText = vi.fn(async (_text: string) => {})
+    const teardown = installClipboard(writeText)
+    const t = toolbar()
+
+    activate(t.api().getCopyTriggerProps())
+    expect(t.api().copyStatus).toBe('copying')
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(writeText).toHaveBeenCalledWith(t.api().text)
+    expect(t.api().copied).toBe(true)
+    expect(t.api().announcement).toBe('Copied')
+    expect(t.api().getCopyTriggerProps()).toMatchObject({ 'data-state': 'copied', 'data-copied': '' })
+    expect(t.api().getStatusProps()).toMatchObject({ 'role': 'status', 'aria-live': 'polite', 'data-state': 'copied' })
+
+    vi.advanceTimersByTime(3000)
+    expect(t.api().copyStatus).toBe('idle')
+    expect(t.api().announcement).toBe('')
+    t.stop()
+    teardown()
+  })
+
+  it('写入失败回到常态并通知，不留下「已复制」的假象', async () => {
+    const onCopyError = vi.fn()
+    const error = new Error('denied')
+    const teardown = installClipboard(async () => {
+      throw error
+    })
+    const t = toolbar({ onCopyError })
+    t.api().copy()
+    await settleWrite()
+
+    expect(t.api().copyStatus).toBe('idle')
+    expect(t.api().copied).toBe(false)
+    expect(onCopyError).toHaveBeenCalledWith({ error, value: t.api().text })
+    t.stop()
+    teardown()
+  })
+
+  it('没有剪贴板接口（非安全上下文）同样走失败通知', async () => {
+    const onCopyError = vi.fn()
+    const t = toolbar({ onCopyError })
+    t.api().copy()
+    await settleWrite()
+    expect(onCopyError).toHaveBeenCalledTimes(1)
+    expect(onCopyError.mock.calls[0]![0].error).toBeInstanceOf(Error)
+    t.stop()
+  })
+
+  it('写入在途时再点不发第二次写请求', async () => {
+    let resolve: () => void = () => {}
+    const writeText = vi.fn(() => new Promise<void>((done) => {
+      resolve = done
+    }))
+    const teardown = installClipboard(writeText)
+    const t = toolbar()
+    t.api().copy()
+    t.api().copy()
+    expect(writeText).toHaveBeenCalledTimes(1)
+    resolve()
+    await settleWrite()
+    expect(t.api().copied).toBe(true)
+    t.stop()
+    teardown()
+  })
+
+  it('没有数据时整条钮都禁用', () => {
+    const t = toolbar({ value: undefined })
+    for (const props of [t.api().getExpandAllTriggerProps(), t.api().getCopyTriggerProps(), t.api().getViewTriggerProps()] as Dict[])
+      expect(props).toMatchObject({ 'disabled': true, 'data-disabled': '' })
+    t.stop()
+  })
+
+  it('formatJsonSource 只重排缩进：字面量一字不改，超出安全整数的数字照原样，排版与 JSON.stringify 同款', () => {
+    const raw = '{"id":207795978470952990,"name":"a, b: {c}","esc":"q\\"x","list":[1, 2.50, -3e2],"empty":{},"none":[ ],"nested":{"ok":true,"n":null}}'
+    expect(formatJsonSource(raw)).toBe([
+      '{',
+      '  "id": 207795978470952990,',
+      '  "name": "a, b: {c}",',
+      '  "esc": "q\\"x",',
+      '  "list": [',
+      '    1,',
+      '    2.50,',
+      '    -3e2',
+      '  ],',
+      '  "empty": {},',
+      '  "none": [],',
+      '  "nested": {',
+      '    "ok": true,',
+      '    "n": null',
+      '  }',
+      '}',
+    ].join('\n'))
+    const safe = '{"a":[{"b":1}],"c":"d"}'
+    expect(formatJsonSource(safe)).toBe(JSON.stringify(JSON.parse(safe), null, 2))
+    // 不是合法 JSON 就原样
+    expect(formatJsonSource('not json {')).toBe('not json {')
+    expect(formatJsonSource('"plain"')).toBe('"plain"')
+  })
+
+  it('给了 source：原文档与复制钮都取它重排后的样子，大数字不失真；树档照旧展示 value', async () => {
+    const source = '{"id":207795978470952990}'
+    const writeText = vi.fn(async (_text: string) => {})
+    const teardown = installClipboard(writeText)
+    const t = toolbar({ value: JSON.parse(source), source })
+    expect(t.api().text).toBe('{\n  "id": 207795978470952990\n}')
+    // 树档展示的是解析过的值：超出安全整数的那一位已经失真
+    const shown = t.api().visibleNodes.find(node => node.key === 'id')?.text
+    expect(shown).toBe(String(JSON.parse(source).id))
+    expect(shown).not.toBe('207795978470952990')
+    t.api().copy()
+    await settleWrite()
+    expect(writeText).toHaveBeenCalledWith('{\n  "id": 207795978470952990\n}')
+    t.stop()
+    teardown()
+  })
+
+  it('工具钮的按压通道：Space 按住投影 data-pressed、抬起撤下，只亮按住的那一颗，与分支行那一路互不相干', () => {
+    const t = toolbar()
+    const button = document.createElement('button')
+    const other = document.createElement('button')
+    document.body.append(button, other)
+    spread(button, t.api().getViewTriggerProps() as Dict)
+    spread(other, t.api().getCopyTriggerProps() as Dict)
+
+    button.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+    expect((t.api().getViewTriggerProps() as Dict)['data-pressed']).toBe('')
+    expect((t.api().getCopyTriggerProps() as Dict)['data-pressed']).toBeUndefined()
+    expect((t.api().getBranchControlProps({ value: ROOT }) as Dict)['data-pressed']).toBeUndefined()
+
+    // 别的钮抬起不松开这一颗
+    spread(other, t.api().getCopyTriggerProps() as Dict)
+    other.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true, cancelable: true }))
+    expect((t.api().getViewTriggerProps() as Dict)['data-pressed']).toBe('')
+
+    spread(button, t.api().getViewTriggerProps() as Dict)
+    button.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true, cancelable: true }))
+    expect((t.api().getViewTriggerProps() as Dict)['data-pressed']).toBeUndefined()
+    t.stop()
   })
 })

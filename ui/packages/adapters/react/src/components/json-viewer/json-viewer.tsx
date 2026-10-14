@@ -6,7 +6,7 @@
 // 提供 json viewer 相关实现。
 
 import type { ControlVariant, Direction, Size } from '@xihan-ui/core'
-import type { HighlightSegment, JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerView } from '@xihan-ui/headless'
+import type { HighlightSegment, JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTool, JsonViewerTranslations, JsonViewerView } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { groupJsonViewerNodesByParent } from '@xihan-ui/headless'
@@ -85,6 +85,37 @@ function JsonBranch({ api, groups, node }: BranchProps): ReactNode {
   )
 }
 
+/**
+ * 内建工具条：根的第一个孩子。钮里不写内容，字形由皮肤按部件画；
+ * 播报区跟着复制钮常驻，成功那一刻才有文字，读屏才念得出回执。
+ */
+function JsonViewerToolbar({ api }: { api: JsonViewerApi }): ReactNode {
+  if (!api.tools.length)
+    return null
+  return (
+    <div {...api.getToolbarProps() as Record<string, unknown>}>
+      {api.tools.includes('expand')
+        ? (
+            <>
+              <button {...api.getExpandAllTriggerProps() as Record<string, unknown>} />
+              <button {...api.getCollapseAllTriggerProps() as Record<string, unknown>} />
+            </>
+          )
+        : null}
+      {api.tools.includes('wrap') ? <button {...api.getWrapTriggerProps() as Record<string, unknown>} /> : null}
+      {api.tools.includes('copy')
+        ? (
+            <>
+              <button {...api.getCopyTriggerProps() as Record<string, unknown>} />
+              <span {...api.getStatusProps() as Record<string, unknown>}>{api.announcement}</span>
+            </>
+          )
+        : null}
+      {api.tools.includes('view') ? <button {...api.getViewTriggerProps() as Record<string, unknown>} /> : null}
+    </div>
+  )
+}
+
 /** 树档的滚动层：整棵树铺在其中，键盘也在它上面收口。 */
 function JsonViewerTree({ api }: { api: JsonViewerApi }): ReactNode {
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
@@ -111,8 +142,18 @@ type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'>
 export interface XhJsonViewerRootProps extends RootElementProps {
   /** 要展示的值，任意形状。 */
   value?: unknown
-  /** 展示形态：tree 展开为可折叠的行，text 直接输出 JSON 原文。 */
+  /** 展示形态：tree 展开为可折叠的行，text 直接输出 JSON 原文。提供即受控。 */
   view?: JsonViewerView
+  /** 非受控的初始形态，默认 tree。 */
+  defaultView?: JsonViewerView
+  /** 值的原文：提供时原文档与复制钮取它，只重排缩进、字面量一字不改。 */
+  source?: string
+  /** 原文档是否自动换行；提供即受控。 */
+  wrap?: boolean
+  /** 非受控的初始换行，默认 false。 */
+  defaultWrap?: boolean
+  /** 内建工具条：不提供即没有；true 铺出全部工具；数组只铺列出的几项（expand / wrap / copy / view）。 */
+  tools?: boolean | readonly JsonViewerTool[]
   /** 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留内容。 */
   variant?: ControlVariant
   expandedValue?: string[]
@@ -128,6 +169,10 @@ export interface XhJsonViewerRootProps extends RootElementProps {
   search?: string
   translations?: Partial<JsonViewerTranslations>
   onExpandedValueChange?: JsonViewerProps['onExpandedValueChange']
+  onViewChange?: JsonViewerProps['onViewChange']
+  onWrapChange?: JsonViewerProps['onWrapChange']
+  /** 复制钮写入剪贴板失败；此时复制钮已回到常态。 */
+  onCopyError?: JsonViewerProps['onCopyError']
   /** 空态格子的内容；未写时铺设 translations 中的兜底文案。 */
   empty?: ReactNode
   /** 树之前的一条：放搜索框与上一条 / 下一条，渲染为根的前一个兄弟。 */
@@ -138,6 +183,11 @@ export interface XhJsonViewerRootProps extends RootElementProps {
 export function XhJsonViewerRoot({
   value,
   view,
+  defaultView,
+  source,
+  wrap,
+  defaultWrap,
+  tools,
   variant,
   expandedValue,
   defaultExpandedValue,
@@ -151,6 +201,9 @@ export function XhJsonViewerRoot({
   size,
   translations,
   onExpandedValueChange,
+  onViewChange,
+  onWrapChange,
+  onCopyError,
   empty,
   toolbar,
   ...rest
@@ -158,6 +211,11 @@ export function XhJsonViewerRoot({
   const machineProps = {
     value,
     view,
+    defaultView,
+    source,
+    wrap,
+    defaultWrap,
+    tools,
     variant,
     expandedValue,
     defaultExpandedValue,
@@ -171,6 +229,9 @@ export function XhJsonViewerRoot({
     size,
     translations,
     onExpandedValueChange,
+    onViewChange,
+    onWrapChange,
+    onCopyError,
   }
   const ctx = useJsonViewer(withXhConfig('json-viewer', machineProps) as JsonViewerProps)
   const { api } = ctx
@@ -190,6 +251,7 @@ export function XhJsonViewerRoot({
         prevMatch: api.prevMatch,
       })}
       <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+        <JsonViewerToolbar api={api} />
         {/* 原文档不铺行：整块文本交给 pre，框选与复制才拿得到与后端一字不差的那份 */}
         {api.view === 'text'
           ? <pre {...api.getTextProps() as Record<string, unknown>}>{api.text}</pre>
@@ -200,4 +262,4 @@ export function XhJsonViewerRoot({
   )
 }
 
-XhJsonViewerRoot.xhEvents = ['expanded-value-change'] as const
+XhJsonViewerRoot.xhEvents = ['expanded-value-change', 'view-change', 'wrap-change', 'copy-error'] as const

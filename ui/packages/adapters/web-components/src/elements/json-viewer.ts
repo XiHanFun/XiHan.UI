@@ -6,7 +6,7 @@
 // 提供 json viewer 相关实现。
 
 import type { ControlVariant, Direction, Size } from '@xihan-ui/core'
-import type { HighlightSegment, JsonViewerApi, JsonViewerExpandedValueChangeDetails, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations } from '@xihan-ui/headless'
+import type { HighlightSegment, JsonViewerApi, JsonViewerCopyErrorDetails, JsonViewerExpandedValueChangeDetails, JsonViewerNode, JsonViewerSchema, JsonViewerTool, JsonViewerToolTrigger, JsonViewerTranslations, JsonViewerViewChangeDetails, JsonViewerWrapChangeDetails } from '@xihan-ui/headless'
 import { connectJsonViewer, groupJsonViewerNodesByParent, jsonViewerAnatomy, jsonViewerMachine, jsonViewerMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -28,6 +28,23 @@ const JSON_CONVERTER = {
     catch {
       return v
     }
+  },
+}
+
+/**
+ * tools 属性：在场即全部工具（空串或 true），写 false 即关闭，
+ * 其余按空白或逗号切成工具名列表（未知的名字由连接层抛错）。
+ */
+const TOOLS_CONVERTER = {
+  fromAttribute: (v: string | null): boolean | JsonViewerTool[] | undefined => {
+    if (v == null)
+      return undefined
+    const raw = v.trim()
+    if (raw === '' || raw === 'true')
+      return true
+    if (raw === 'false')
+      return false
+    return raw.split(/[\s,]+/).filter(Boolean) as JsonViewerTool[]
   },
 }
 
@@ -127,7 +144,16 @@ function setSegments(
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开 / 收起语义；未提供时从 DOM 读取
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {'outline'|'subtle'|'ghost'} variant - 外框形态：outline 带描边与底色，subtle 淡底无描边，ghost 只保留内容；默认 outline
+ * @attr {'tree'|'text'} view - 展示形态；提供即受控，原文开关只派发 view-change
+ * @attr {'tree'|'text'} default-view - 非受控的初始形态，默认 tree
+ * @attr {string} source - 值的原文：提供时原文档与复制钮取它，只重排缩进、字面量一字不改
+ * @attr {boolean} wrap - 原文档是否自动换行；提供即受控，换行开关只派发 wrap-change
+ * @attr {boolean} default-wrap - 非受控的初始换行，默认不换行
+ * @attr {string} tools - 内建工具条：在场即全部工具；写成以空白或逗号分隔的 expand / wrap / copy / view 只铺列出的几项；写 false 关闭
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
+ * @fires view-change - 原文开关切换了展示形态；detail 为 `{ view: 'tree' | 'text' }`
+ * @fires wrap-change - 换行开关切换了原文档的换行；detail 为 `{ wrap: boolean }`
+ * @fires copy-error - 复制钮写入剪贴板失败；detail 为 `{ error: unknown, value: string }`
  * @csspart root - 组件根容器，由作者编写；承载 data-size 与 data-variant
  * @csspart tree - role=tree 的树容器（键盘在此收口，焦点在树外时它兜底占 Tab 位）
  * @csspart item - 标量行，role=treeitem，带 data-value-type
@@ -142,6 +168,13 @@ function setSegments(
  * @csspart branch-content - role=group 的子层容器，只在展开时存在
  * @csspart empty - 无法展开任何一行时的占位，铺设 translations.empty 的文案；有行可展开时带 hidden
  * @csspart mark - 键名与值里命中搜索词的那一段
+ * @csspart toolbar - 内建工具条，role=group，root 的第一个孩子；只在 tools 打开时存在
+ * @csspart expand-all-trigger - 「展开全部」钮，只在树档出现
+ * @csspart collapse-all-trigger - 「收起全部」钮，只在树档出现
+ * @csspart wrap-trigger - 自动换行开关（aria-pressed），只在原文档出现
+ * @csspart copy-trigger - 复制原文的钮，成功后带 data-copied
+ * @csspart view-trigger - 原文开关（aria-pressed），按下即原文档
+ * @csspart status - 复制成功的播报区，视觉隐藏
  */
 export class XhJsonViewerElement extends XhElement {
   static override partContract = { anatomy: jsonViewerAnatomy, meta: jsonViewerMeta }
@@ -159,6 +192,11 @@ export class XhJsonViewerElement extends XhElement {
     sortKeys: { converter: BOOLEAN_CONVERTER, attribute: 'sort-keys' },
     search: { converter: STRING_CONVERTER },
     view: { attribute: 'view' },
+    defaultView: { converter: STRING_CONVERTER, attribute: 'default-view' },
+    source: { converter: STRING_CONVERTER },
+    wrap: { converter: BOOLEAN_CONVERTER },
+    defaultWrap: { converter: BOOLEAN_CONVERTER, attribute: 'default-wrap' },
+    tools: { converter: TOOLS_CONVERTER },
     variant: { converter: STRING_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
@@ -175,6 +213,11 @@ export class XhJsonViewerElement extends XhElement {
   declare sortKeys?: boolean
   declare search?: string
   declare view?: 'tree' | 'text'
+  declare defaultView?: 'tree' | 'text'
+  declare source?: string
+  declare wrap?: boolean
+  declare defaultWrap?: boolean
+  declare tools?: boolean | JsonViewerTool[]
   declare variant?: ControlVariant
   declare loop?: boolean
   declare direction?: Direction
@@ -185,7 +228,19 @@ export class XhJsonViewerElement extends XhElement {
     this.dispatchEvent(new CustomEvent('expanded-value-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  // json-viewer 机器无副作用：不需要 config/layer/refs，controller 只带 props。
+  private readonly notifyView = (details: JsonViewerViewChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('view-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyWrap = (details: JsonViewerWrapChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('wrap-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyCopyError = (details: JsonViewerCopyErrorDetails): void => {
+    this.dispatchEvent(new CustomEvent('copy-error', { detail: details, bubbles: true, composed: true }))
+  }
+
+  // json-viewer 机器不需要 config/layer/refs，controller 只带 props。
   private readonly ctrl = new MachineController<JsonViewerSchema>(this, jsonViewerMachine, () => this.machineProps())
 
   private machineProps(): Partial<JsonViewerSchema['props']> {
@@ -200,12 +255,20 @@ export class XhJsonViewerElement extends XhElement {
       sortKeys: this.sortKeys,
       search: this.search,
       view: this.view,
+      defaultView: this.defaultView,
+      source: this.source,
+      wrap: this.wrap,
+      defaultWrap: this.defaultWrap,
+      tools: this.tools,
       variant: this.variant,
       loop: this.loop,
       dir: this.direction,
       size: this.size,
       translations: this.translations,
       onExpandedValueChange: this.notify,
+      onViewChange: this.notifyView,
+      onWrapChange: this.notifyWrap,
+      onCopyError: this.notifyCopyError,
     }
   }
 
@@ -214,6 +277,9 @@ export class XhJsonViewerElement extends XhElement {
   private textEl: HTMLElement | undefined
   /** 空态那一格，两档共用一个；有行可摊时由 connect 给它打 hidden。 */
   private emptyEl: HTMLElement | undefined
+  /** 内建工具条与其中各颗钮、播报区，按部件名留着复用。 */
+  private toolbarEl: HTMLElement | undefined
+  private readonly toolEls = new Map<JsonViewerToolTrigger | 'status', HTMLElement>()
   private readonly rows = new Map<string, JsonRow>()
 
   /**
@@ -352,6 +418,7 @@ export class XhJsonViewerElement extends XhElement {
     this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
 
     this.paintEmpty(root, api)
+    this.paintToolbar(root, api)
 
     // 原文档不铺行：root 里换成一个 pre，整块可框选可复制
     if (api.view === 'text') {
@@ -391,17 +458,59 @@ export class XhJsonViewerElement extends XhElement {
   }
 
   /**
-   * root 中只保留该档的容器：移除另一档，作者写在其中的内容也一并清除。
+   * 内建工具条：root 的第一个孩子，钮按 tools 铺、按条上的排列摆。钮里不写内容，字形由皮肤按部件画；
+   * 播报区跟着复制钮常驻，成功那一刻才有文字。关掉 tools 时整条摘掉。
+   */
+  private paintToolbar(root: HTMLElement, api: JsonViewerApi): void {
+    if (!api.tools.length) {
+      this.toolbarEl?.remove()
+      return
+    }
+    const doc = this.ownerDocument
+    const bar = this.toolbarEl ?? (this.toolbarEl = doc.createElement('div'))
+    this.spreader.spread(bar, api.getToolbarProps() as Record<string, unknown>)
+    const wanted: HTMLElement[] = []
+    const place = (part: JsonViewerToolTrigger | 'status', tag: 'button' | 'span', props: unknown): HTMLElement => {
+      let el = this.toolEls.get(part)
+      if (!el) {
+        el = doc.createElement(tag)
+        this.toolEls.set(part, el)
+      }
+      this.spreader.spread(el, props as Record<string, unknown>)
+      wanted.push(el)
+      return el
+    }
+    if (api.tools.includes('expand')) {
+      place('expand-all-trigger', 'button', api.getExpandAllTriggerProps())
+      place('collapse-all-trigger', 'button', api.getCollapseAllTriggerProps())
+    }
+    if (api.tools.includes('wrap'))
+      place('wrap-trigger', 'button', api.getWrapTriggerProps())
+    if (api.tools.includes('copy')) {
+      place('copy-trigger', 'button', api.getCopyTriggerProps())
+      setText(place('status', 'span', api.getStatusProps()), api.announcement)
+    }
+    if (api.tools.includes('view'))
+      place('view-trigger', 'button', api.getViewTriggerProps())
+    reconcile(bar, wanted)
+    if (root.firstChild !== bar)
+      root.insertBefore(bar, root.firstChild)
+  }
+
+  /**
+   * root 中只保留该档的容器（排在工具条之后）：移除另一档，作者写在其中的内容也一并清除。
    * 已经就位的节点一律不动：移动一个节点等于把它移除再插回，焦点在树内会回落到 body。
    */
   private adopt(root: HTMLElement, keep: HTMLElement, drop: HTMLElement | undefined): void {
     drop?.remove()
     // children 是活集合，边删边走会跳项；:scope > * 取的是静态列表
     for (const child of root.querySelectorAll(':scope > *')) {
-      if (child !== keep && child !== this.emptyEl)
+      if (child !== keep && child !== this.emptyEl && child !== this.toolbarEl)
         child.remove()
     }
-    if (root.firstChild !== keep)
-      root.insertBefore(keep, root.firstChild)
+    const toolbar = this.toolbarEl?.parentNode === root ? this.toolbarEl : null
+    const slot = toolbar ? toolbar.nextSibling : root.firstChild
+    if (slot !== keep)
+      root.insertBefore(keep, slot)
   }
 }

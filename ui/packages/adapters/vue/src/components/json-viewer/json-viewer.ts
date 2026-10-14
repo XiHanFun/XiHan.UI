@@ -6,7 +6,7 @@
 // 提供 json viewer 相关实现。
 
 import type { ControlVariant, Direction, Size } from '@xihan-ui/core'
-import type { HighlightSegment, JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerView } from '@xihan-ui/headless'
+import type { HighlightSegment, JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTool, JsonViewerTranslations, JsonViewerView } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { groupJsonViewerNodesByParent } from '@xihan-ui/headless'
@@ -27,6 +27,29 @@ function renderSegments(api: JsonViewerApi, segments: readonly HighlightSegment[
   return segments.map(segment => (segment.matched
     ? h('mark', api.getMarkProps() as Record<string, unknown>, segment.text)
     : segment.text))
+}
+
+/**
+ * 内建工具条：根的第一个孩子。钮里不写内容，字形由皮肤按部件画；
+ * 播报区跟着复制钮常驻，成功那一刻才有文字，读屏才念得出回执。
+ */
+function renderToolbar(api: JsonViewerApi): VNode | null {
+  if (!api.tools.length)
+    return null
+  const buttons: VNode[] = []
+  if (api.tools.includes('expand')) {
+    buttons.push(h('button', api.getExpandAllTriggerProps() as Record<string, unknown>))
+    buttons.push(h('button', api.getCollapseAllTriggerProps() as Record<string, unknown>))
+  }
+  if (api.tools.includes('wrap'))
+    buttons.push(h('button', api.getWrapTriggerProps() as Record<string, unknown>))
+  if (api.tools.includes('copy')) {
+    buttons.push(h('button', api.getCopyTriggerProps() as Record<string, unknown>))
+    buttons.push(h('span', api.getStatusProps() as Record<string, unknown>, api.announcement))
+  }
+  if (api.tools.includes('view'))
+    buttons.push(h('button', api.getViewTriggerProps() as Record<string, unknown>))
+  return h('div', api.getToolbarProps() as Record<string, unknown>, buttons)
 }
 
 function renderRows(
@@ -84,6 +107,16 @@ export const XhJsonViewerRoot = defineComponent({
     // 任意形状都收，类型检查交给使用方
     value: { type: null as unknown as PropType<unknown>, default: undefined as unknown },
     view: { type: String as PropType<JsonViewerView> },
+    /** 非受控的初始形态，默认 tree。 */
+    defaultView: { type: String as PropType<JsonViewerView> },
+    /** 值的原文：提供时原文档与复制钮取它，只重排缩进、字面量一字不改。 */
+    source: { type: String },
+    /** 原文档是否自动换行；提供即受控。 */
+    wrap: { type: Boolean, default: undefined },
+    /** 非受控的初始换行，默认 false。 */
+    defaultWrap: { type: Boolean, default: undefined },
+    /** 内建工具条：不提供即没有；true 铺出全部工具；数组只铺列出的几项（expand / wrap / copy / view）。 */
+    tools: { type: [Boolean, Array] as PropType<boolean | JsonViewerTool[]>, default: undefined },
     /** 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留内容。 */
     variant: { type: String as PropType<ControlVariant> },
     expandedValue: { type: Array as PropType<string[]> },
@@ -107,17 +140,32 @@ export const XhJsonViewerRoot = defineComponent({
   }>,
   // 写了工具条时根是片段，接不住自动透传：作者写在 XhJsonViewerRoot 上的 class / aria-* 自己合到根上
   inheritAttrs: false,
-  // expanded-change 携带 { value }，update:expandedValue 携带裸集合
+  // *-change 携带 details 对象，update:* 携带裸值（v-model）
   emits: {
     'expanded-value-change': (_details: PayloadOf<JsonViewerProps, 'onExpandedValueChange'>) => true,
     'update:expandedValue': (_value: PayloadOf<JsonViewerProps, 'onExpandedValueChange'>['value']) => true,
+    'view-change': (_details: PayloadOf<JsonViewerProps, 'onViewChange'>) => true,
+    'update:view': (_view: PayloadOf<JsonViewerProps, 'onViewChange'>['view']) => true,
+    'wrap-change': (_details: PayloadOf<JsonViewerProps, 'onWrapChange'>) => true,
+    'update:wrap': (_wrap: PayloadOf<JsonViewerProps, 'onWrapChange'>['wrap']) => true,
+    'copy-error': (_details: PayloadOf<JsonViewerProps, 'onCopyError'>) => true,
   },
   setup(props, { emit, slots, attrs }) {
     const notify: JsonViewerProps['onExpandedValueChange'] = (details) => {
       emit('expanded-value-change', details)
       emit('update:expandedValue', details.value)
     }
-    const ctx = useJsonViewer(withXhConfig('json-viewer', props) as JsonViewerProps, notify)
+    const ctx = useJsonViewer(withXhConfig('json-viewer', props) as JsonViewerProps, notify, {
+      onViewChange: (details) => {
+        emit('view-change', details)
+        emit('update:view', details.view)
+      },
+      onWrapChange: (details) => {
+        emit('wrap-change', details)
+        emit('update:wrap', details.wrap)
+      },
+      onCopyError: details => emit('copy-error', details),
+    })
     // 两档容器是页内结构容器（与 Tree 同类）：滚动条走 reset 层的原生细条，不接自绘条
     // 行是按数据摊出来的，作者写不出也不必写：整棵树由组件自己铺
     // 空态与滚动层同级：一行也摊不出来时由它说话，有行可摊时 connect 给它打 hidden
@@ -131,6 +179,7 @@ export const XhJsonViewerRoot = defineComponent({
       // 原文档不铺行：整块文本交给 pre，框选与复制才拿得到与后端一字不差的那份
       if (api.view === 'text') {
         return h('div', rootProps, [
+          renderToolbar(api),
           h('pre', api.getTextProps() as Record<string, unknown>, api.text),
           renderEmpty(api),
         ])
@@ -138,6 +187,7 @@ export const XhJsonViewerRoot = defineComponent({
 
       const children = groupJsonViewerNodesByParent(api.visibleNodes)
       return h('div', rootProps, [
+        renderToolbar(api),
         h('div', api.getTreeProps() as Record<string, unknown>, renderRows(api, children, null)),
         renderEmpty(api),
       ])
