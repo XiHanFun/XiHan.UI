@@ -8,8 +8,11 @@ import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 let dispose: (() => void) | null = null
+let observer: MutationObserver | null = null
 
 afterEach(() => {
+  observer?.disconnect()
+  observer = null
   act(() => dispose?.())
   dispose = null
   setMotionOverride(null)
@@ -21,15 +24,34 @@ function card(): HTMLElement | null {
   return document.querySelector<HTMLElement>(`[data-scope='notification'][data-part='item']`)
 }
 
-/** 停在 dismissing 的那张卡片上的退场动画暂停，期间不收起；手动放完才离场。 */
-async function holdsUntilExitFinishes(name: string, duration?: number): Promise<void> {
+/** 卡片 data-state 翻成 dismissing 时就地暂停名为 name 的退场动画；返回的函数停止观察并交出暂停住的那条。 */
+function holdExitAnimation(name: string): () => Animation | undefined {
+  let held: Animation | undefined
+  const current = new MutationObserver(() => {
+    const el = card()
+    if (held || el?.dataset.state !== 'dismissing')
+      return
+    held = el.getAnimations().find(animation => (animation as CSSAnimation).animationName === name)
+    held?.pause()
+  })
+  current.observe(document.body, { subtree: true, attributeFilter: ['data-state'] })
+  observer = current
+  return () => {
+    current.disconnect()
+    return held
+  }
+}
+
+/** 弹出卡片，到点后停在 dismissing：退场动画在翻转那一刻暂停，期间不收起；手动放完才离场。 */
+async function holdsUntilExitFinishes(name: string, show: () => void, duration?: number): Promise<void> {
+  const held = holdExitAnimation(name)
+  act(show)
   await expect.poll(() => card()?.dataset.state).toBe('dismissing')
   const el = card()!
-  const [exit] = el.getAnimations().filter(animation => (animation as CSSAnimation).animationName === name)
+  const exit = held()
   expect(exit, name).toBeDefined()
   if (duration !== undefined)
     expect(exit!.effect?.getComputedTiming().endTime).toBe(duration)
-  exit!.pause()
   await new Promise(resolve => setTimeout(resolve, 500))
   expect(el.dataset.state).toBe('dismissing')
 
@@ -41,15 +63,13 @@ describe('通知卡片的退场', () => {
   it('轻提示预设叠成一摞：到点后停在 dismissing，直到带层深的退场动画播完', async () => {
     const toast = createNotificationService({ preset: 'toast' })
     dispose = () => toast.dispose()
-    act(() => void toast.success('已保存', { duration: 80 }))
-    await holdsUntilExitFinishes('xh-notification-stack-out')
+    await holdsUntilExitFinishes('xh-notification-stack-out', () => void toast.success('已保存', { duration: 80 }))
   })
 
   it('卡片预设逐条排开：到点后停在 dismissing，直到淡出退场播完', async () => {
     const notify = createNotificationService()
     dispose = () => notify.dispose()
-    act(() => void notify.success('已保存', { duration: 80 }))
-    await holdsUntilExitFinishes('xh-fade-out')
+    await holdsUntilExitFinishes('xh-fade-out', () => void notify.success('已保存', { duration: 80 }))
   })
 
   it('减弱动效下退场只剩 120ms 淡出，照样等它播完', async () => {
@@ -58,7 +78,6 @@ describe('通知卡片的退场', () => {
     document.documentElement.dataset.motion = 'reduce'
     const toast = createNotificationService({ preset: 'toast' })
     dispose = () => toast.dispose()
-    act(() => void toast.success('已保存', { duration: 80 }))
-    await holdsUntilExitFinishes('xh-notification-stack-out', 120)
+    await holdsUntilExitFinishes('xh-notification-stack-out', () => void toast.success('已保存', { duration: 80 }), 120)
   })
 })
