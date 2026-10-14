@@ -53,7 +53,7 @@
 
 ### 自动写入
 
-在项目根目录运行 `setup`，它会读出项目里装的 XiHan.UI 版本，把钉住版本的配置写进对应文件，只改 `xihan-ui` 这一项，不动已有的其他服务：
+在项目里运行 `setup`，它会读出项目里装的 XiHan.UI 版本，把钉住版本的配置写进对应文件，只改 `xihan-ui` 这一项，不动已有的其他服务。配置写在所在 git 仓库的根目录（不在仓库里时写在 `package.json` 所在目录）；前端放在 `frontend/` 这类一级子目录时，在仓库根运行也能读出版本：
 
 ```bash
 npx -y @xihan-ui/cli setup --client claude                 # .mcp.json，并写入技能

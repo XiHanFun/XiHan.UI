@@ -11,15 +11,17 @@ let project: string
 
 beforeEach(() => {
   project = mkdtempSync(join(tmpdir(), 'xihan-ui-cli-'))
+  mkdirSync(join(project, '.git'))
 })
 
 afterEach(() => {
   rmSync(project, { recursive: true, force: true })
 })
 
-function installAdapter(name: string, version: string): void {
-  writeFileSync(join(project, 'package.json'), JSON.stringify({ dependencies: { [name]: `^${version}` } }))
-  const dir = join(project, 'node_modules', ...name.split('/'))
+function installAdapter(name: string, version: string, at: string = project): void {
+  mkdirSync(at, { recursive: true })
+  writeFileSync(join(at, 'package.json'), JSON.stringify({ dependencies: { [name]: `^${version}` } }))
+  const dir = join(at, 'node_modules', ...name.split('/'))
   mkdirSync(dir, { recursive: true })
   writeFileSync(join(dir, 'package.json'), JSON.stringify({ name, version }))
 }
@@ -80,12 +82,19 @@ describe('runCli', () => {
 describe('detectProject', () => {
   it('项目没装 XiHan.UI 时只识别到根目录', () => {
     writeFileSync(join(project, 'package.json'), JSON.stringify({ dependencies: { vue: '^3.5.0' } }))
-    expect(detectProject(project)).toEqual({ root: project, framework: undefined, installedVersion: undefined })
+    expect(detectProject(project)).toEqual({ root: project, packageDir: project, framework: undefined, installedVersion: undefined })
   })
 
   it('识别适配器与安装版本', () => {
     installAdapter('@xihan-ui/web-components', '4.1.0')
-    expect(detectProject(project)).toEqual({ root: project, framework: 'web-components', installedVersion: '4.1.0' })
+    expect(detectProject(project)).toEqual({ root: project, packageDir: project, framework: 'web-components', installedVersion: '4.1.0' })
     expect(versionNotice(detectProject(project), '4.1.0')).toBeUndefined()
+  })
+
+  it('仓库根没有前端清单时读一级子目录，配置仍写在仓库根', () => {
+    const frontend = join(project, 'frontend')
+    installAdapter('@xihan-ui/vue', '4.0.0', frontend)
+    expect(detectProject(project)).toEqual({ root: project, packageDir: frontend, framework: 'vue', installedVersion: '4.0.0' })
+    expect(detectProject(join(frontend, 'node_modules'))).toMatchObject({ root: project, packageDir: frontend })
   })
 })
