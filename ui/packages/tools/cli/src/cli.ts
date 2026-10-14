@@ -139,7 +139,7 @@ function runSetup(values: Record<string, string | boolean | undefined>, knowledg
     throw new UsageError(`--mode 只能是 ${SETUP_MODES.join(' / ')}`)
   const project = detectProject(out.cwd)
   if (!project.root)
-    throw new UsageError('当前目录及其上级都没有 package.json，在项目根目录里运行 setup')
+    throw new UsageError('当前目录不在 git 仓库里，向上也找不到 package.json，在项目根目录里运行 setup')
   const version = typeof values.pin === 'string' ? values.pin : project.installedVersion ?? knowledge.meta.version
   const actions = planSetup({ client: client as Client, mode, root: project.root, version, platform: process.platform })
 
