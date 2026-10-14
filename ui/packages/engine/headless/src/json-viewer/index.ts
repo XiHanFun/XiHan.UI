@@ -22,6 +22,7 @@ export {
   jsonValueType,
   jsonViewerMachine,
   resolveJsonViewerTools,
+  tokenizeJsonText,
 } from './json-viewer.machine'
 export type { JsonSearchResult } from './json-viewer.machine'
 export { jsonViewerMeta } from './json-viewer.meta'
@@ -36,6 +37,9 @@ export type {
   JsonViewerNode,
   JsonViewerNodeProps,
   JsonViewerSchema,
+  JsonViewerTextSegment,
+  JsonViewerTokenKind,
+  JsonViewerTokenProps,
   JsonViewerTool,
   JsonViewerToolTrigger,
   JsonViewerTranslations,

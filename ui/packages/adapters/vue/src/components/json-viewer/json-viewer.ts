@@ -29,6 +29,13 @@ function renderSegments(api: JsonViewerApi, segments: readonly HighlightSegment[
     : segment.text))
 }
 
+/** 原文按段铺：有类别的段包进 token 部件着色，空白与解析不了的原文是纯文本。 */
+function renderTextSegments(api: JsonViewerApi): Array<VNode | string> {
+  return api.textSegments.map(segment => (segment.kind
+    ? h('span', api.getTokenProps({ kind: segment.kind }) as Record<string, unknown>, segment.text)
+    : segment.text))
+}
+
 /**
  * 内建工具条：根的第一个孩子。钮里不写内容，字形由皮肤按部件画；
  * 播报区跟着复制钮常驻，成功那一刻才有文字，读屏才念得出回执。
@@ -180,7 +187,7 @@ export const XhJsonViewerRoot = defineComponent({
       if (api.view === 'text') {
         return h('div', rootProps, [
           renderToolbar(api),
-          h('pre', api.getTextProps() as Record<string, unknown>, api.text),
+          h('pre', api.getTextProps() as Record<string, unknown>, renderTextSegments(api)),
           renderEmpty(api),
         ])
       }

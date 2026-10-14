@@ -22,7 +22,7 @@
 - 展开集合可受控（`expandedValue` / `defaultExpandedValue`），非受控时按 `defaultExpandedDepth` 计算：数据晚于组件挂载到达（自定义元素常先升级、再由脚本写 `.value`）也能计算，第一次展开或收起之后固定，不再跟随数据。
 - `maxStringLength` 截断长字符串，`maxItems` 折叠超长数组，`sortKeys` 让对象键按字典序排列。
 - 循环引用展开到即停，标记为 `[Circular]`，不会无限递归。
-- 每一行带 `data-value-type`，六种值形态各自着色。
+- 每一行带 `data-value-type`，六种值形态各自着色。原文档同样着色：原文按类别切成 `token` 部件（`data-kind` 为 `key`、`string`、`number`、`boolean`、`null`、`punctuation`），与树档使用同一组覆盖槽与语法令牌；原文无法识别为 JSON 时整段不着色。
 - 尺寸轴与其他组件同源；`variant` 决定外框形态，默认 `outline`；`subtle` 换成淡底无描边，`ghost` 去掉外框与底色只保留内容。
 - 没有任何行可展开时由 `empty` 部件说明，文案使用 `translations.empty`，作者也可以自行写入内容。
 - 内建工具条按需打开：`tools` 不提供即没有工具条；`true` 铺出全部工具；数组只铺列出的几项（`expand`、`wrap`、`copy`、`view`），数组里出现未知的工具名会抛错。条是根的第一个孩子，钮的排列由组件决定：「展开全部 / 收起全部」只在树档出现，「自动换行」只在原文档出现，复制与原文开关固定在末端，切换形态时这两颗不移动。

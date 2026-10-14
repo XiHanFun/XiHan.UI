@@ -36535,6 +36535,14 @@
               "name": "tree"
             },
             {
+              "description": "原文档：一整块可框选的 pre，view=\"text\" 时代替树容器",
+              "name": "text"
+            },
+            {
+              "description": "原文档里有类别的一段（键名、标量、标点），带 data-kind",
+              "name": "token"
+            },
+            {
               "description": "标量行，role=treeitem，带 data-value-type",
               "name": "item"
             },
@@ -37047,6 +37055,31 @@
                 }
               ],
               "description": "空态那一格：铺 translations 里的兜底文案，挂在 root 的末尾、与两档滚动层同级。\n有行可摊时 connect 给它打 hidden，它不占位置。"
+            },
+            {
+              "kind": "method",
+              "name": "paintText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "pre",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "JsonViewerApi"
+                  }
+                }
+              ],
+              "description": "原文按段铺：有类别的段包进 token 部件着色，空白与解析不了的原文是纯文本。\n原文没变就一个节点都不碰：框选着的文字不会因为一次无关的重绘（按住工具钮、复制回执）被冲掉。"
             },
             {
               "kind": "method",

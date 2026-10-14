@@ -156,6 +156,8 @@ function setSegments(
  * @fires copy-error - 复制钮写入剪贴板失败；detail 为 `{ error: unknown, value: string }`
  * @csspart root - 组件根容器，由作者编写；承载 data-size 与 data-variant
  * @csspart tree - role=tree 的树容器（键盘在此收口，焦点在树外时它兜底占 Tab 位）
+ * @csspart text - 原文档：一整块可框选的 pre，view="text" 时代替树容器
+ * @csspart token - 原文档里有类别的一段（键名、标量、标点），带 data-kind
  * @csspart item - 标量行，role=treeitem，带 data-value-type
  * @csspart item-key - 标量行的键名
  * @csspart item-value - 标量行的值
@@ -425,7 +427,7 @@ export class XhJsonViewerElement extends XhElement {
       const pre = this.textEl ?? (this.textEl = this.ownerDocument.createElement('pre'))
       this.adopt(root, pre, this.treeEl)
       this.spreader.spread(pre, api.getTextProps() as Record<string, unknown>)
-      setText(pre, api.text)
+      this.paintText(pre, api)
       // 换回树档时缓存的行要重铺，这里先清空
       this.rows.clear()
       return
@@ -455,6 +457,27 @@ export class XhJsonViewerElement extends XhElement {
       root.appendChild(empty)
     this.spreader.spread(empty, api.getEmptyProps() as Record<string, unknown>)
     setText(empty, api.emptyText)
+  }
+
+  /**
+   * 原文按段铺：有类别的段包进 token 部件着色，空白与解析不了的原文是纯文本。
+   * 原文没变就一个节点都不碰：框选着的文字不会因为一次无关的重绘（按住工具钮、复制回执）被冲掉。
+   */
+  private paintText(pre: HTMLElement, api: JsonViewerApi): void {
+    if (painted.get(pre) === api.text)
+      return
+    pre.textContent = ''
+    for (const segment of api.textSegments) {
+      if (!segment.kind) {
+        pre.append(segment.text)
+        continue
+      }
+      const token = this.ownerDocument.createElement('span')
+      token.textContent = segment.text
+      this.spreader.spread(token, api.getTokenProps({ kind: segment.kind }) as Record<string, unknown>)
+      pre.append(token)
+    }
+    painted.set(pre, api.text)
   }
 
   /**

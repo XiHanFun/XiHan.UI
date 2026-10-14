@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text` · `empty` · `mark` · `toolbar` · `expand-all-trigger` · `collapse-all-trigger` · `wrap-trigger` · `copy-trigger` · `view-trigger` · `status`
+`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text` · `token` · `empty` · `mark` · `toolbar` · `expand-all-trigger` · `collapse-all-trigger` · `wrap-trigger` · `copy-trigger` · `view-trigger` · `status`
 
 ## 示例
 
@@ -106,7 +106,7 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 - 展开集合可受控（`expandedValue` / `defaultExpandedValue`），非受控时按 `defaultExpandedDepth` 计算：数据晚于组件挂载到达（自定义元素常先升级、再由脚本写 `.value`）也能计算，第一次展开或收起之后固定，不再跟随数据。
 - `maxStringLength` 截断长字符串，`maxItems` 折叠超长数组，`sortKeys` 让对象键按字典序排列。
 - 循环引用展开到即停，标记为 `[Circular]`，不会无限递归。
-- 每一行带 `data-value-type`，六种值形态各自着色。
+- 每一行带 `data-value-type`，六种值形态各自着色。原文档同样着色：原文按类别切成 `token` 部件（`data-kind` 为 `key`、`string`、`number`、`boolean`、`null`、`punctuation`），与树档使用同一组覆盖槽与语法令牌；原文无法识别为 JSON 时整段不着色。
 - 尺寸轴与其他组件同源；`variant` 决定外框形态，默认 `outline`；`subtle` 换成淡底无描边，`ghost` 去掉外框与底色只保留内容。
 - 没有任何行可展开时由 `empty` 部件说明，文案使用 `translations.empty`，作者也可以自行写入内容。
 - 内建工具条按需打开：`tools` 不提供即没有工具条；`true` 铺出全部工具；数组只铺列出的几项（`expand`、`wrap`、`copy`、`view`），数组里出现未知的工具名会抛错。条是根的第一个孩子，钮的排列由组件决定：「展开全部 / 收起全部」只在树档出现，「自动换行」只在原文档出现，复制与原文开关固定在末端，切换形态时这两颗不移动。
@@ -260,6 +260,7 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 | `isEmpty` | `boolean` | 无法展开任何一行：value 未提供或为 undefined。空态部件随它显隐。 |
 | `emptyText` | `string` | 空态的兜底文案，作者未向空态部件写入内容时铺设它。 |
 | `text` | `string` | 原文档展示、复制钮写入的那份文本：提供了 source 时是它重排缩进后的样子，否则由 value 序列化（键序与环路记号与树档一致）。 |
+| `textSegments` | `readonly JsonViewerTextSegment[]` | 原文按类别切成的段，依次拼接恒等于 text：键名、标量与标点各成一段，铺成 token 部件着色，空白按纯文本铺。 原文解析不了时整段一个不着色的段。只在原文档切分，树档为空：树档用不上，不白算一遍。 |
 | `searchMatches` | `readonly string[]` | 命中搜索词的行路径，按树序排列；没有搜索时为空。 |
 | `activeMatch` | `string \| null` | 在命中之间逐个走时停在哪一行；没有时为 null。 |
 | `nextMatch` | `() => void` | 停到下一条命中（走到末尾回到第一条），并把它滚进视野。 |
@@ -270,6 +271,7 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 | `getRootProps` | `() => T['element']` |  |
 | `getTreeProps` | `() => T['element']` |  |
 | `getTextProps` | `() => T['element']` |  |
+| `getTokenProps` | `(props: JsonViewerTokenProps) => T['element']` | 原文档里有类别的一段（键名、标量、标点），带 data-kind 供皮肤按树档同一套颜色着色。 |
 | `getItemProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getItemKeyProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getItemValueProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
@@ -436,6 +438,7 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 | `preview` | `data-truncated` | ''（条件成立时才出现） |
 | `preview` | `data-value-type` | node?.type |
 | `text` | `data-wrap` | ''（条件成立时才出现） |
+| `token` | `data-kind` | props.kind |
 | `toolbar` | `data-view` | context.get('view') |
 | `expand-all-trigger` | `data-xh-action-control` | '' |
 | `expand-all-trigger` | `data-xh-action-display` | 'always' |
@@ -476,7 +479,7 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-json-viewer-bg` | `empty`<br>`root`<br>`text`<br>`tree` | `background` | `default`<br>`is([data-scope='json-viewer'][data-part='tree'], [data-scope='json-viewer'][data-part='text'], [data-scope='json-viewer'][data-part='empty'])`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | json-viewer 的 empty、root、text、tree 部件 background 覆盖槽。 |
-| `--xh-json-viewer-boolean-fg` | `item-value` | `color` | `value-type=boolean` | `--xh-syntax-keyword` | json-viewer 的 item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-boolean-fg` | `item-value`<br>`token` | `color` | `kind=boolean`<br>`value-type=boolean` | `--xh-syntax-keyword` | json-viewer 的 item-value、token 部件 color 覆盖槽。 |
 | `--xh-json-viewer-border` | `empty`<br>`text`<br>`tree` | `border` | `default` | `--xh-border-default` | json-viewer 的 empty、text、tree 部件 border 覆盖槽。 |
 | `--xh-json-viewer-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | json-viewer 的 empty 部件 color 覆盖槽。 |
 | `--xh-json-viewer-empty-gap` | `empty` | `gap` | `default` | `--xh-space-2` | json-viewer 的 empty 部件 gap 覆盖槽。 |
@@ -489,19 +492,19 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 | `--xh-json-viewer-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-_json-viewer-indent` | json-viewer 的 branch-content 部件 padding-inline-start 覆盖槽。 |
 | `--xh-json-viewer-indicator-fg` | `branch-trigger` | `color` | `default` | `--xh-fg-subtle` | json-viewer 的 branch-trigger 部件 color 覆盖槽。 |
 | `--xh-json-viewer-indicator-size` | `branch-trigger` | `--xh-icon-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | json-viewer 的 branch-trigger 部件 --xh-icon-size、inline-size 覆盖槽。 |
-| `--xh-json-viewer-key-fg` | `branch-text`<br>`item-key` | `color` | `default` | `--xh-fg-brand-strong` | json-viewer 的 branch-text、item-key 部件 color 覆盖槽。 |
-| `--xh-json-viewer-key-font-weight` | `branch-text`<br>`item-key` | `font-weight` | `default` | `--xh-font-weight-medium` | json-viewer 的 branch-text、item-key 部件 font-weight 覆盖槽。 |
+| `--xh-json-viewer-key-fg` | `branch-text`<br>`item-key`<br>`token` | `color` | `default`<br>`kind=key` | `--xh-fg-brand-strong` | json-viewer 的 branch-text、item-key、token 部件 color 覆盖槽。 |
+| `--xh-json-viewer-key-font-weight` | `branch-text`<br>`item-key`<br>`token` | `font-weight` | `default`<br>`kind=key` | `--xh-font-weight-medium` | json-viewer 的 branch-text、item-key、token 部件 font-weight 覆盖槽。 |
 | `--xh-json-viewer-mark-bg` | `mark` | `background` | `default` | `--xh-bg-brand-subtle` | json-viewer 的 mark 部件 background 覆盖槽。 |
 | `--xh-json-viewer-mark-bg-current` | `branch`<br>`branch-control`<br>`branch-text`<br>`item`<br>`item-key`<br>`item-value`<br>`mark` | `background` | `current` | `--xh-bg-brand` | json-viewer 的 branch、branch-control、branch-text、item、item-key、item-value、mark 部件 background 覆盖槽。 |
 | `--xh-json-viewer-mark-fg` | `mark` | `color` | `default` | `--xh-fg-brand-strong` | json-viewer 的 mark 部件 color 覆盖槽。 |
 | `--xh-json-viewer-mark-fg-current` | `branch`<br>`branch-control`<br>`branch-text`<br>`item`<br>`item-key`<br>`item-value`<br>`mark` | `color` | `current` | `--xh-fg-on-brand` | json-viewer 的 branch、branch-control、branch-text、item、item-key、item-value、mark 部件 color 覆盖槽。 |
 | `--xh-json-viewer-mark-radius` | `mark` | `border-radius` | `default` | `--xh-shape-inset` | json-viewer 的 mark 部件 border-radius 覆盖槽。 |
 | `--xh-json-viewer-max-h` | `text`<br>`tree` | `max-block-size` | `default` | `--xh-viewport-max-h` | json-viewer 的 text、tree 部件 max-block-size 覆盖槽。 |
-| `--xh-json-viewer-null-fg` | `item-value` | `color` | `value-type=null` | `--xh-fg-subtle` | json-viewer 的 item-value 部件 color 覆盖槽。 |
-| `--xh-json-viewer-number-fg` | `item-value` | `color` | `value-type=number` | `--xh-syntax-number` | json-viewer 的 item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-null-fg` | `item-value`<br>`token` | `color` | `kind=null`<br>`value-type=null` | `--xh-fg-subtle` | json-viewer 的 item-value、token 部件 color 覆盖槽。 |
+| `--xh-json-viewer-number-fg` | `item-value`<br>`token` | `color` | `kind=number`<br>`value-type=number` | `--xh-syntax-number` | json-viewer 的 item-value、token 部件 color 覆盖槽。 |
 | `--xh-json-viewer-preview-fg` | `preview` | `color` | `default` | `--xh-fg-muted` | json-viewer 的 preview 部件 color 覆盖槽。 |
 | `--xh-json-viewer-preview-font-size` | `preview` | `font-size` | `default` | `--xh-text-caption-size` | json-viewer 的 preview 部件 font-size 覆盖槽。 |
-| `--xh-json-viewer-punctuation-fg` | `branch-text`<br>`item-key`<br>`item-value` | `color` | `default`<br>`value-type=array`<br>`value-type=object` | `--xh-fg-subtle` | json-viewer 的 branch-text、item-key、item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-punctuation-fg` | `branch-text`<br>`item-key`<br>`item-value`<br>`token` | `color` | `default`<br>`kind=punctuation`<br>`value-type=array`<br>`value-type=object` | `--xh-fg-subtle` | json-viewer 的 branch-text、item-key、item-value、token 部件 color 覆盖槽。 |
 | `--xh-json-viewer-px` | `text`<br>`tree` | `padding-inline` | `default` | `--xh-space-2` | json-viewer 的 text、tree 部件 padding-inline 覆盖槽。 |
 | `--xh-json-viewer-py` | `text`<br>`tree` | `padding-block` | `default` | `--xh-space-2` | json-viewer 的 text、tree 部件 padding-block 覆盖槽。 |
 | `--xh-json-viewer-radius` | `empty`<br>`text`<br>`tree` | `border-radius` | `default` | `--xh-shape-surface` | json-viewer 的 empty、text、tree 部件 border-radius 覆盖槽。 |
@@ -512,7 +515,7 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 | `--xh-json-viewer-row-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-_json-viewer-row-py` | json-viewer 的 branch-control、item 部件 padding-block 覆盖槽。 |
 | `--xh-json-viewer-row-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `--xh-shape-inset` | json-viewer 的 branch-control、item 部件 border-radius 覆盖槽。 |
 | `--xh-json-viewer-shadow` | `empty`<br>`text`<br>`tree` | `box-shadow` | `default` | `none` | json-viewer 的 empty、text、tree 部件 box-shadow 覆盖槽。 |
-| `--xh-json-viewer-string-fg` | `item-value` | `color` | `value-type=string` | `--xh-syntax-string` | json-viewer 的 item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-string-fg` | `item-value`<br>`token` | `color` | `kind=string`<br>`value-type=string` | `--xh-syntax-string` | json-viewer 的 item-value、token 部件 color 覆盖槽。 |
 | `--xh-json-viewer-text-fg` | `text` | `color` | `default` | `--xh-fg-default` | json-viewer 的 text 部件 color 覆盖槽。 |
 | `--xh-json-viewer-tool-fg` | `status`<br>`toolbar` | `color` | `where(:not([data-part='status'])` | `--xh-fg-muted` | json-viewer 的 status、toolbar 部件 color 覆盖槽。 |
 | `--xh-json-viewer-tool-fg-copied` | `copy-trigger` | `color` | `copied`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-success` | json-viewer 的 copy-trigger 部件 color 覆盖槽。 |

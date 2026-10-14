@@ -10,6 +10,8 @@ import type {
   JsonViewerFlattenOptions,
   JsonViewerNode,
   JsonViewerSchema,
+  JsonViewerTextSegment,
+  JsonViewerTokenKind,
   JsonViewerTool,
   JsonViewerValueType,
   JsonViewerWalkOptions,
@@ -236,6 +238,75 @@ export function formatJsonSource(source: string, indent = 2): string {
       default:
         out += ch
     }
+  }
+  return out
+}
+
+const JSON_WHITESPACE = ' \t\n\r'
+const JSON_PUNCTUATION = '{}[],:'
+const JSON_NUMBER_CHARS = '0123456789+-.eE'
+
+/**
+ * 把一段 JSON 原文按类别切段，供原文档与树档同一套颜色着色；依次拼接恒等于原文。
+ * 字符串后面紧跟冒号（中间只隔空白）就是键名；相邻的标点并成一段、连续空白并成一段，少铺几个节点。
+ * 只认 JSON 的写法：遇到认不出的字符（原文不是 JSON，比如一段 User-Agent）就整段退回不着色，
+ * 不按半截猜出来的类别乱上色。
+ */
+export function tokenizeJsonText(text: string): JsonViewerTextSegment[] {
+  const out: JsonViewerTextSegment[] = []
+  const push = (piece: string, kind: JsonViewerTokenKind | null): void => {
+    const last = out[out.length - 1]
+    // 同类的标点与空白接着上一段写；键名与标量各自成段
+    if (last && last.kind === kind && (kind === null || kind === 'punctuation'))
+      last.text += piece
+    else
+      out.push({ text: piece, kind })
+  }
+  const plain = (): JsonViewerTextSegment[] => (text ? [{ text, kind: null }] : [])
+
+  let i = 0
+  while (i < text.length) {
+    const ch = text[i]!
+    if (JSON_WHITESPACE.includes(ch)) {
+      push(ch, null)
+      i++
+      continue
+    }
+    if (JSON_PUNCTUATION.includes(ch)) {
+      push(ch, 'punctuation')
+      i++
+      continue
+    }
+    if (ch === '"') {
+      let end = i + 1
+      while (end < text.length && text[end] !== '"')
+        end += text[end] === '\\' ? 2 : 1
+      // 没有收口的引号：不是一段完整的 JSON
+      if (end >= text.length)
+        return plain()
+      end++
+      let next = end
+      while (next < text.length && JSON_WHITESPACE.includes(text[next]!))
+        next++
+      push(text.slice(i, end), text[next] === ':' ? 'key' : 'string')
+      i = end
+      continue
+    }
+    if (ch === '-' || (ch >= '0' && ch <= '9')) {
+      let end = i + 1
+      while (end < text.length && JSON_NUMBER_CHARS.includes(text[end]!))
+        end++
+      push(text.slice(i, end), 'number')
+      i = end
+      continue
+    }
+    const literal = ['true', 'false', 'null'].find(word => text.startsWith(word, i))
+    if (literal) {
+      push(literal, literal === 'null' ? 'null' : 'boolean')
+      i += literal.length
+      continue
+    }
+    return plain()
   }
   return out
 }

@@ -85,6 +85,19 @@ function JsonBranch({ api, groups, node }: BranchProps): ReactNode {
   )
 }
 
+/** 原文按段铺：有类别的段包进 token 部件着色，空白与解析不了的原文是纯文本。 */
+function TextSegments({ api }: { api: JsonViewerApi }): ReactNode {
+  // 段在原文里的起始位置就是它的身份：切出来的段两两不重叠
+  let start = 0
+  return api.textSegments.map((segment) => {
+    const key = start
+    start += segment.text.length
+    return segment.kind
+      ? <span key={key} {...api.getTokenProps({ kind: segment.kind }) as Record<string, unknown>}>{segment.text}</span>
+      : segment.text
+  })
+}
+
 /**
  * 内建工具条：根的第一个孩子。钮里不写内容，字形由皮肤按部件画；
  * 播报区跟着复制钮常驻，成功那一刻才有文字，读屏才念得出回执。
@@ -254,7 +267,7 @@ export function XhJsonViewerRoot({
         <JsonViewerToolbar api={api} />
         {/* 原文档不铺行：整块文本交给 pre，框选与复制才拿得到与后端一字不差的那份 */}
         {api.view === 'text'
-          ? <pre {...api.getTextProps() as Record<string, unknown>}>{api.text}</pre>
+          ? <pre {...api.getTextProps() as Record<string, unknown>}><TextSegments api={api} /></pre>
           : <JsonViewerTree api={api} />}
         {emptySlot}
       </div>
