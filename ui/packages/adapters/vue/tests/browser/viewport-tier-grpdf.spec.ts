@@ -63,23 +63,36 @@ function stacked(el: HTMLElement): boolean {
 }
 
 /**
- * 边线与实际摆位对不对得上：按每格量出来的位置分行，
- * 行首的格不该有左边线、首行的格不该有上边线，其余两处都该有。
+ * 格线与实际摆位对不对得上。每格只画行尾一侧与下方各一道线，线落在它外面那道一线宽的间隙里：
+ * 同一行相邻两格，前一格的边框盒右缘正好碰到后一格的左缘；行尾那格的右缘、末行的下缘
+ * 探到外框底下（与根的边框盒外缘齐），由外框裁掉。最后一格不画行尾那道。
+ * 按每格量出来的位置分行，与哪格跨几列、一行摆了几格无关。
  */
-function borderMismatches(el: HTMLElement): string[] {
+function lineMismatches(el: HTMLElement): string[] {
+  const outer = part(el, 'root').getBoundingClientRect()
   const boxes = items(el).map(i => ({ el: i, rect: i.getBoundingClientRect() }))
   const tops = [...new Set(boxes.map(b => Math.round(b.rect.top)))].sort((a, b) => a - b)
   const bad: string[] = []
   boxes.forEach((box, index) => {
-    const row = tops.indexOf(Math.round(box.rect.top))
-    const isRowStart = boxes.every(o => Math.round(o.rect.top) !== Math.round(box.rect.top) || o.rect.left >= box.rect.left)
     const style = styleOf(box.el)
-    const left = Number.parseFloat(style.borderLeftWidth)
-    const top = Number.parseFloat(style.borderTopWidth)
-    if (isRowStart ? left !== 0 : left === 0)
-      bad.push(`第 ${index + 1} 格${isRowStart ? '在行首却带' : '不在行首却没'}左边线`)
-    if (row === 0 ? top !== 0 : top === 0)
-      bad.push(`第 ${index + 1} 格${row === 0 ? '在首行却带' : '不在首行却没'}上边线`)
+    const last = index === boxes.length - 1
+    if (Number.parseFloat(style.borderBottomWidth) !== 1)
+      bad.push(`第 ${index + 1} 格没画下边线`)
+    if (Number.parseFloat(style.borderRightWidth) !== (last ? 0 : 1))
+      bad.push(`第 ${index + 1} 格${last ? '是最后一格却画了' : '没画'}行尾那道线`)
+
+    const row = tops.indexOf(Math.round(box.rect.top))
+    const next = boxes
+      .filter(o => Math.round(o.rect.top) === Math.round(box.rect.top) && o.rect.left > box.rect.left)
+      .sort((a, b) => a.rect.left - b.rect.left)[0]
+    if (next && Math.abs(box.rect.right - next.rect.left) > 0.5)
+      bad.push(`第 ${index + 1} 格的行尾线没落在它与右邻之间（差 ${(next.rect.left - box.rect.right).toFixed(2)}px）`)
+    if (!next && !last && Math.abs(box.rect.right - outer.right) > 0.5)
+      bad.push(`第 ${index + 1} 格在行尾，那道线没探到外框底下`)
+
+    const below = tops[row + 1]
+    if (Math.abs(box.rect.bottom - (below ?? outer.bottom)) > 0.5)
+      bad.push(`第 ${index + 1} 格的下边线没落在${below === undefined ? '外框底下' : '它与下一行之间'}`)
   })
   return bad
 }
@@ -130,14 +143,17 @@ describe('descriptions 逐档收列', () => {
   it('宽档不插手作者写的列数', () => {
     const el = mount(1280, descriptions(4))
     expect(perRow(el)).toBe(4)
-    // 描边档标签在左：内衬挂在标签格与取值格各自身上、两格之间没有间距，取值格吃掉标签格之外的全部宽。
+    // 描边档标签在左：内衬挂在标签格与取值格各自身上，两格之间只隔一道竖线（画在标签格的边框里），
+    // 取值格吃掉标签格之外的全部宽。格的宽高量内边距盒：它朝行尾、朝下各画的那道线在格外的间隙里。
     // 标签列是 max-content，同一段中文的宽度随字体走（iframe 里比宿主宽 1.22px，CI 的 Linux 字体
     // 又比 Windows 宽 1.2px），只能现量、不能写成一个数
-    const item = part(el, 'item').getBoundingClientRect()
+    const cell = part(el, 'item')
     const label = part(el, 'label').getBoundingClientRect()
-    expect(part(el, 'value').getBoundingClientRect().width).toBeCloseTo(item.width - label.width, 0)
+    const value = part(el, 'value').getBoundingClientRect()
+    expect(label.right).toBeCloseTo(value.left, 1)
+    expect(value.width).toBeCloseTo(cell.clientWidth - label.width, 0)
     // 单行格高：上下内衬 6 + 一行正文 21
-    expect(item.height).toBeCloseTo(33, 0)
+    expect(cell.clientHeight).toBe(33)
   })
 
   it('换的是视口的档，不是外层容器的档', () => {
@@ -174,7 +190,7 @@ describe('descriptions 窄档标签在上', () => {
 describe('descriptions 边线跟着实际摆位走', () => {
   it.each([2, 3, 4, 5, 6])('cols=%i 三档的边线都对得上摆位', (columns) => {
     for (const width of [300, NARROW, TABLET, DESKTOP, 1280])
-      expect(borderMismatches(mount(width, descriptions(columns)))).toEqual([])
+      expect(lineMismatches(mount(width, descriptions(columns))), `${width}px`).toEqual([])
   })
 })
 

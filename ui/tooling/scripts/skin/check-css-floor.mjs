@@ -105,6 +105,14 @@ const GUARDED = [
     reason: 'Chrome 119 / Firefox 128 / Safari 16.4 起,高于底线',
     hint: '包进 @supports (color: color(from red srgb-linear r g b)),块外留一份写死的旧值',
   },
+  {
+    // Chrome 111–116 不认 subgrid,这条声明整条丢掉:根上按子网格排好的成对轨道,格子接不住,排版直接错位;
+    // 根的轨道与格的 subgrid 要一起放进守卫块,块外留一份格子自己排列的写法
+    name: '子网格 subgrid',
+    re: /\bsubgrid\b/g,
+    reason: 'Chrome 117 起,高于底线',
+    hint: '包进 @supports (grid-template-columns: subgrid),块外留一份不靠子网格的排法',
+  },
 ]
 
 /** 条件里测了同一个特性的 @supports 块覆盖的字符区间。 */

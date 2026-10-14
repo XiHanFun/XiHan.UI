@@ -54,11 +54,17 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 
 <XhDemo src="descriptions/06-span" />
 
+### 标签对齐
+
+标签在左时同一列的标签收到这一列最长的那个，竖线上下对齐；跨列的格与没摆满的最后一行照常画线
+
+<XhDemo src="descriptions/07-label-align" />
+
 ### 标题与附加内容
 
 列表之前的头部放标题与作用于整份描述的操作；它排在 dl 之外，标题标签按页面层级由作者选
 
-<XhDemo src="descriptions/07-header" />
+<XhDemo src="descriptions/08-header" />
 
 ## 设计指引
 
@@ -76,7 +82,9 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 - 语义是 `dt` / `dd`，组件只提供身份与排版。
 - `columns` 决定每行几组，不传时每行一组。
 - 标签位置可以在值的上方或左侧；`variant="outline"` 提供外框与网格线。
+- 标签在左时，同一列的标签宽度取这一列最长的那个，标签与值之间的竖线上下对齐；各列各取各的。依赖 CSS 子网格（Chrome 117 起），更早的引擎里每格按自己的标签定宽。
 - 每一格可以通过 `span` 横跨多列，上限是当前列数；窄档一行只放一组时忽略该值。
+- 网格线与跨列、行里摆了几格无关；最后一行没摆满时，最后一格与空着的列连成一格。
 
 ### 组合
 
@@ -87,7 +95,7 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 ### 最佳实践
 
 - 值为空时写“—”，不留空白，避免用户无法区分没有值与未加载。
-- 标签左置时给它们统一宽度，值才能对齐。
+- 标签左置时同一列自动对齐；要让各列的标签也一样宽，用 `--xh-descriptions-label-w` 定一个宽度。
 - 长文本字段用 `span` 占满整行，不为它另开一份描述列表。
 
 ### 反模式
@@ -183,7 +191,7 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 | --- | --- | --- | --- | --- | --- |
 | `--xh-descriptions-bg` | `root` | `background` | `variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | descriptions 的 root 部件 background 覆盖槽。 |
 | `--xh-descriptions-border` | `root` | `border` | `variant=outline` | `--xh-border-default` | descriptions 的 root 部件 border 覆盖槽。 |
-| `--xh-descriptions-divider` | `item`<br>`label`<br>`root` | `border-block-start`<br>`border-inline-end`<br>`border-inline-start` | `@media (min-width: 768px)`<br>`placement=left`<br>`variant=outline` | `--xh-border-default` | descriptions 的 item、label、root 部件 border-block-start、border-inline-end、border-inline-start 覆盖槽。 |
+| `--xh-descriptions-divider` | `item`<br>`label`<br>`root` | `border-block-end`<br>`border-inline-end` | `@media (min-width: 768px)`<br>`placement=left`<br>`variant=outline` | `--xh-border-default` | descriptions 的 item、label、root 部件 border-block-end、border-inline-end 覆盖槽。 |
 | `--xh-descriptions-extra-gap` | `extra` | `gap` | `default` | `--xh-space-2` | descriptions 的 extra 部件 gap 覆盖槽。 |
 | `--xh-descriptions-fg` | `root` | `color` | `default` | `--xh-fg-default` | descriptions 的 root 部件 color 覆盖槽。 |
 | `--xh-descriptions-font-size` | `root` | `font-size` | `default` | `--xh-_descriptions-font-size` | descriptions 的 root 部件 font-size 覆盖槽。 |
@@ -196,7 +204,7 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 | `--xh-descriptions-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | descriptions 的 label 部件 color 覆盖槽。 |
 | `--xh-descriptions-label-font-weight` | `label` | `font-weight` | `default` | `--xh-font-weight-medium` | descriptions 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-descriptions-label-gap` | `item`<br>`root` | `column-gap` | `@media (min-width: 768px)`<br>`placement=left` | `--xh-_descriptions-label-gap` | descriptions 的 item、root 部件 column-gap 覆盖槽。 |
-| `--xh-descriptions-label-w` | `item`<br>`root` | `grid-template-columns` | `@media (min-width: 768px)`<br>`placement=left` | `--xh-_descriptions-label-w` | descriptions 的 item、root 部件 grid-template-columns 覆盖槽。 |
+| `--xh-descriptions-label-w` | `item`<br>`root` | `grid-template-columns` | `@media (min-width: 768px)`<br>`@supports (grid-template-columns: subgrid)`<br>`columns=2`<br>`columns=3`<br>`columns=4`<br>`columns=5`<br>`columns=6`<br>`placement=left` | `--xh-_descriptions-label-w` | descriptions 的 item、root 部件 grid-template-columns 覆盖槽。 |
 | `--xh-descriptions-pair-gap` | `item` | `gap` | `default` | `--xh-_descriptions-pair-gap` | descriptions 的 item 部件 gap 覆盖槽。 |
 | `--xh-descriptions-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | descriptions 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-descriptions-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | descriptions 的 title 部件 color 覆盖槽。 |
