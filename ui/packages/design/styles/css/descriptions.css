@@ -25,7 +25,7 @@
     --xh-_descriptions-px: var(--xh-space-5);
     /* 字号三档同为正文字号：尺寸档只换间距与格内距，不换字 */
     --xh-_descriptions-font-size: var(--xh-control-font-md);
-    /* 标签在左时那一列的宽度：收到最长的那个标签 */
+    /* 标签在左时标签轨道的宽度：收到这一列最长的那个标签（子网格把同一列的标签收进同一条轨道） */
     --xh-_descriptions-label-w: max-content;
 
     display: grid;
@@ -153,28 +153,39 @@
 
   /* —— 形态：ghost 即基础规则，不画壳；outline 画外框与网格线 —— */
   [data-scope='descriptions'][data-part='root'][data-variant='outline'] {
-    /* 网格线由每格自己的边线拼出来，格与格之间不能再留缝 */
-    gap: 0;
+    /* 网格线画在格与格之间那道间隙里：间隙、格线与它们让位用的负外边距读同一个线宽，三者差一点线就画偏 */
+    --xh-_descriptions-line: var(--xh-stroke-thin);
+
+    gap: var(--xh-_descriptions-line);
     border: var(--xh-stroke-thin) solid var(--xh-descriptions-border, var(--xh-border-default));
     border-radius: var(--xh-descriptions-radius, var(--xh-shape-surface));
     background: var(--xh-descriptions-bg, var(--xh-bg-surface));
-    /* 四角的格子要被圆角裁住 */
-    overflow: hidden;
+    /* 四角的格子要被圆角裁住；最右一列与最后一行朝外画的那道线落在外框底下，也在这里裁掉。
+       用 clip 不用 hidden：hidden 让根成为滚动容器，探到框外的那道线能被 scrollIntoView 滚进来 */
+    overflow: clip;
   }
 
-  /* 每格自带上边线与左边线，行首与首行那几格再各自抹掉，相邻两格之间就只剩一条 */
+  /* 每格只画行尾一侧与下方各一道线，画在它外面的那道间隙里（负外边距把边框让进间隙）：
+     相邻两格之间、上下两行之间都只有一道，与哪格跨几列、一行摆了几格无关。
+     线色是半透明的墨色比例，同一个像素画两遍会叠深一档，所以一道线只归一格画 */
   [data-scope='descriptions'][data-part='root'][data-variant='outline']
     > [data-scope='descriptions'][data-part='item'] {
+    margin-block-end: calc(-1 * var(--xh-_descriptions-line));
+    margin-inline-end: calc(-1 * var(--xh-_descriptions-line));
     padding-block: var(--xh-descriptions-item-py, var(--xh-_descriptions-py));
     padding-inline: var(--xh-descriptions-item-px, var(--xh-_descriptions-px));
-    border-block-start: var(--xh-stroke-thin) solid var(--xh-descriptions-divider, var(--xh-border-default));
-    /* 每行一组时左边没有邻居，宽度按列数补回来 */
-    border-inline-start: 0 solid var(--xh-descriptions-divider, var(--xh-border-default));
+    border-block-end: var(--xh-_descriptions-line) solid var(--xh-descriptions-divider, var(--xh-border-default));
+    border-inline-end: var(--xh-_descriptions-line) solid var(--xh-descriptions-divider, var(--xh-border-default));
   }
 
+  /* 最后一格不画行尾那道：最后一行不满时它与空着的几列连成一格，像补满了剩余的列；
+     行满时那道线本来就落在外框外。
+     中途放不下的跨列格另起一行时，上一行行尾留下的空格只有前一格的竖线与上一行的横线，
+     下缘与下一行连着——那是作者写的跨列与列数没对上 */
   [data-scope='descriptions'][data-part='root'][data-variant='outline']
-    > [data-scope='descriptions'][data-part='item']:first-child {
-    border-block-start-width: 0;
+    > [data-scope='descriptions'][data-part='item']:last-child {
+    margin-inline-end: 0;
+    border-inline-end-width: 0;
   }
 
   /* 淡底档：不补网格线，surface 圆角 + subtle 底；描边留一圈透明边位，与 outline 同一几何 */
@@ -185,15 +196,13 @@
     overflow: hidden;
   }
 
-  /* —— 逐档的列数与边线 ——
-     窄档一行只摆一组：每格的上边线就是行与行之间那条线，左边线用不上——
-     上面那两条默认规则就是这一档的写法。
-     宽起来以后逐档恢复：每一档写两件事，一是这一档一行摆几格（跨列数），
-     二是这一档的边线：不在行首的格补上左边线，首行那几格抹掉上边线。
-     两组集合逐档只增不减，宽档不必回收窄档写下的边线。 */
+  /* —— 逐档的列数与标签位置 ——
+     窄档一行只摆一组，标签一律在上。宽起来以后逐档恢复作者写的列数与跨列；
+     格线不随档位改写，上面那两条对每一档都成立 */
   @media (min-width: 768px) {
     /* 标签左置从这一档起生效：窄档一律标签在上，取值拿满整格的宽。
-       只认自己的直接子格，套在取值里的另一份描述由它自己的根管 */
+       只认自己的直接子格，套在取值里的另一份描述由它自己的根管。
+       这里是不认子网格的引擎的写法：一格自己排两列，标签列宽只收到这一格自己的标签 */
     [data-scope='descriptions'][data-part='root'][data-placement='left']
       > [data-scope='descriptions'][data-part='item'] {
       grid-template-columns: var(--xh-descriptions-label-w, var(--xh-_descriptions-label-w)) minmax(0, 1fr);
@@ -201,11 +210,19 @@
       column-gap: var(--xh-descriptions-label-gap, var(--xh-_descriptions-label-gap));
     }
 
-    /* 描边档标签在左：标签单成一列淡底格，与取值之间一条竖线；内距从格上下放到标签与取值各自身上 */
+    /* 取值占标签之后的全部轨道：跨列的格在子网格里分到 2 × 跨列数条轨道，取值要一直铺到格尾 */
+    [data-scope='descriptions'][data-part='root'][data-placement='left']
+      > [data-scope='descriptions'][data-part='item']
+      > [data-scope='descriptions'][data-part='value'] {
+      grid-column: 2 / -1;
+    }
+
+    /* 描边档标签在左：标签单成一列淡底格，与取值之间一道竖线；内距从格上下放到标签与取值各自身上 */
     [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-placement='left']
       > [data-scope='descriptions'][data-part='item'] {
       align-items: stretch;
-      column-gap: 0;
+      /* 标签与取值之间同样是一道线宽的间隙，竖线画在里面 */
+      column-gap: var(--xh-_descriptions-line);
       padding: 0;
     }
 
@@ -216,11 +233,15 @@
       padding-inline: var(--xh-descriptions-item-px, var(--xh-_descriptions-px));
     }
 
+    /* 竖线与格线同一种画法：边框让进标签与取值之间的间隙；淡底只铺到边框里侧，
+       线下面才是承载面本身，颜色与外框、格线一致 */
     [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-placement='left']
       > [data-scope='descriptions'][data-part='item']
       > [data-scope='descriptions'][data-part='label'] {
-      border-inline-end: var(--xh-stroke-thin) solid var(--xh-descriptions-divider, var(--xh-border-default));
+      margin-inline-end: calc(-1 * var(--xh-_descriptions-line));
+      border-inline-end: var(--xh-_descriptions-line) solid var(--xh-descriptions-divider, var(--xh-border-default));
       background: var(--xh-descriptions-label-bg, var(--xh-bg-muted));
+      background-clip: padding-box;
     }
 
     /* 二列与三列在这一档按作者写的列数摆，作者写在格上的 span 从这一档起认 */
@@ -244,34 +265,56 @@
       grid-column: span 3;
     }
 
-    /* 一行两格：二、四、六列在这一档共用这套边线 */
-    [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='2']
-      > [data-scope='descriptions'][data-part='item']:not(:nth-child(2n + 1)),
-    [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='4']
-      > [data-scope='descriptions'][data-part='item']:not(:nth-child(2n + 1)),
-    [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='6']
-      > [data-scope='descriptions'][data-part='item']:not(:nth-child(2n + 1)) {
-      border-inline-start-width: var(--xh-stroke-thin);
-    }
+    /* 认子网格的引擎：标签在左时根按列数排成「标签轨道 + 取值轨道」成对的网格，每格用子网格继承轨道，
+       同一列的标签落在同一条标签轨道里，轨道宽取这一列最长的那个标签，竖线上下对齐；各列各收各的。
+       --xh-descriptions-label-w 照旧能把每条标签轨道定成同一个宽。
+       跨列的格跨 2 × 跨列数条轨道，各档认不认跨列照上面的规则 */
+    @supports (grid-template-columns: subgrid) {
+      [data-scope='descriptions'][data-part='root'][data-placement='left'] {
+        grid-template-columns: var(--xh-descriptions-label-w, var(--xh-_descriptions-label-w)) minmax(0, 1fr);
+      }
 
-    [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='2']
-      > [data-scope='descriptions'][data-part='item']:nth-child(-n + 2),
-    [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='4']
-      > [data-scope='descriptions'][data-part='item']:nth-child(-n + 2),
-    [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='6']
-      > [data-scope='descriptions'][data-part='item']:nth-child(-n + 2) {
-      border-block-start-width: 0;
-    }
+      [data-scope='descriptions'][data-part='root'][data-placement='left'][data-columns='2'] {
+        grid-template-columns: repeat(2, var(--xh-descriptions-label-w, var(--xh-_descriptions-label-w)) minmax(0, 1fr));
+      }
 
-    /* 一行三格 */
-    [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='3']
-      > [data-scope='descriptions'][data-part='item']:not(:nth-child(3n + 1)) {
-      border-inline-start-width: var(--xh-stroke-thin);
-    }
+      [data-scope='descriptions'][data-part='root'][data-placement='left'][data-columns='3'] {
+        grid-template-columns: repeat(3, var(--xh-descriptions-label-w, var(--xh-_descriptions-label-w)) minmax(0, 1fr));
+      }
 
-    [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='3']
-      > [data-scope='descriptions'][data-part='item']:nth-child(-n + 3) {
-      border-block-start-width: 0;
+      [data-scope='descriptions'][data-part='root'][data-placement='left'][data-columns='4'] {
+        grid-template-columns: repeat(4, var(--xh-descriptions-label-w, var(--xh-_descriptions-label-w)) minmax(0, 1fr));
+      }
+
+      [data-scope='descriptions'][data-part='root'][data-placement='left'][data-columns='5'] {
+        grid-template-columns: repeat(5, var(--xh-descriptions-label-w, var(--xh-_descriptions-label-w)) minmax(0, 1fr));
+      }
+
+      [data-scope='descriptions'][data-part='root'][data-placement='left'][data-columns='6'] {
+        grid-template-columns: repeat(6, var(--xh-descriptions-label-w, var(--xh-_descriptions-label-w)) minmax(0, 1fr));
+      }
+
+      [data-scope='descriptions'][data-part='root'][data-placement='left']
+        > [data-scope='descriptions'][data-part='item'] {
+        grid-template-columns: subgrid;
+      }
+
+      [data-scope='descriptions'][data-part='root'][data-placement='left'][data-columns='2']
+        > [data-scope='descriptions'][data-part='item'],
+      [data-scope='descriptions'][data-part='root'][data-placement='left'][data-columns='3']
+        > [data-scope='descriptions'][data-part='item'] {
+        grid-column: span calc(2 * var(--xh-_descriptions-item-span));
+      }
+
+      [data-scope='descriptions'][data-part='root'][data-placement='left'][data-columns='4']
+        > [data-scope='descriptions'][data-part='item'] {
+        grid-column: span 4;
+      }
+
+      [data-scope='descriptions'][data-part='root'][data-placement='left'][data-columns='6']
+        > [data-scope='descriptions'][data-part='item'] {
+        grid-column: span 6;
+      }
     }
   }
 
@@ -286,34 +329,15 @@
       grid-column: span var(--xh-_descriptions-item-span);
     }
 
-    [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='4']
-      > [data-scope='descriptions'][data-part='item']:not(:nth-child(4n + 1)) {
-      border-inline-start-width: var(--xh-stroke-thin);
-    }
-
-    [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='4']
-      > [data-scope='descriptions'][data-part='item']:nth-child(-n + 4) {
-      border-block-start-width: 0;
-    }
-
-    [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='5']
-      > [data-scope='descriptions'][data-part='item']:not(:nth-child(5n + 1)) {
-      border-inline-start-width: var(--xh-stroke-thin);
-    }
-
-    [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='5']
-      > [data-scope='descriptions'][data-part='item']:nth-child(-n + 5) {
-      border-block-start-width: 0;
-    }
-
-    [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='6']
-      > [data-scope='descriptions'][data-part='item']:not(:nth-child(6n + 1)) {
-      border-inline-start-width: var(--xh-stroke-thin);
-    }
-
-    [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='6']
-      > [data-scope='descriptions'][data-part='item']:nth-child(-n + 6) {
-      border-block-start-width: 0;
+    @supports (grid-template-columns: subgrid) {
+      [data-scope='descriptions'][data-part='root'][data-placement='left'][data-columns='4']
+        > [data-scope='descriptions'][data-part='item'],
+      [data-scope='descriptions'][data-part='root'][data-placement='left'][data-columns='5']
+        > [data-scope='descriptions'][data-part='item'],
+      [data-scope='descriptions'][data-part='root'][data-placement='left'][data-columns='6']
+        > [data-scope='descriptions'][data-part='item'] {
+        grid-column: span calc(2 * var(--xh-_descriptions-item-span));
+      }
     }
   }
 

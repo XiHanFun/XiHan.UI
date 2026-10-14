@@ -196,7 +196,7 @@ brand  neutral  success  warning  danger  info
 
 | 类别 | 数量 | 排除原因 |
 | --- | --- | --- |
-| 其余 `--xh-_` 私有槽 | 875 | 皮肤内部的回退中转（`--xh-_bg`、`--xh-_bg-hover`、`--xh-_mention-py` 等），变体只改槽位、不重写规则依赖它。不应在外部设置它们。core 写入内联 `style` 的层级、动效与液态材质取值（`--xh-_layer`、`--xh-_stagger-index`、`--xh-_enter-from-opacity` 等）同属此档：层级的公开入口是 `--xh-<组件>-layer` 覆盖槽，私有值只作回落；后两类缺失时只少一段过渡或材质效果，组件功能不受影响 |
+| 其余 `--xh-_` 私有槽 | 876 | 皮肤内部的回退中转（`--xh-_bg`、`--xh-_bg-hover`、`--xh-_mention-py` 等），变体只改槽位、不重写规则依赖它。不应在外部设置它们。core 写入内联 `style` 的层级、动效与液态材质取值（`--xh-_layer`、`--xh-_stagger-index`、`--xh-_enter-from-opacity` 等）同属此档：层级的公开入口是 `--xh-<组件>-layer` 覆盖槽，私有值只作回落；后两类缺失时只少一段过渡或材质效果，组件功能不受影响 |
 | 令牌的取值 | — | `--xh-color-brand-500` 这个名字受约束，其对应的 `oklch()` 值不受约束。调色板随视觉迭代变化，这正是令牌存在的意义 |
 | `index.css` 的内部结构 | — | 它是生成的扁平文件：家族配方只内联一次、排在皮肤之前，皮肤段的顺序即源序。段标记注释（`/* styles/xxx.css */`）只作阅读定位，不是承诺 |
 | `index.unlayered.css` 的内部结构 | — | 它是同一源序的扁平镜像，不带 `@layer`。使用该入口时没有 `xihan.overrides` 覆盖槽位，层名承诺不适用 |
@@ -358,6 +358,7 @@ brand  neutral  success  warning  danger  info
 | `scrollbar-gutter` | 94 | 97 | 18.2 | 滚动条出现时轻微位移 |
 | `dvh` / `svh` / `lvh` | 108 | 101 | 15.4 | 回落到 `vh` |
 | `text-wrap: balance` | 114 | 121 | 17.5 | 标题按默认换行 |
+| `grid-template-columns: subgrid` | 117 | 71 | 16.0 | Descriptions 标签在左时每格按自己的标签定宽，同一列上下行的标签不再对齐 |
 | `light-dark()` | 123 | 120 | 17.5 | 代码块语法色退化成单色 |
 | `field-sizing` | 123 | 152 | 26.2 | `prompt-input` 输入框退化成固定行数 |
 | `Intl.Segmenter` | 87 | 125 | 14.1 | `text-field` 的字数与上限退化成按码点计：代理对仍算一个字，组合 emoji 与国旗按码点算成几个 |

@@ -69,8 +69,8 @@ describe('descriptions 根面', () => {
     // 标签左置从平板宽起生效
     await page.viewport(1200, 800)
     const list = mount('outline')
-    const second = list.root.querySelectorAll<HTMLElement>('[data-part="item"]')[1]!
-    expect(getComputedStyle(second).borderTopColor).toBe(tokenColor('--xh-border-default'))
+    // 两格之间那道横线归上面那格画（它的下边线），与外框同色
+    expect(getComputedStyle(list.item).borderBottomColor).toBe(tokenColor('--xh-border-default'))
 
     list.root.dataset.placement = 'left'
     expect(window.matchMedia('(min-width: 768px)').matches).toBe(true)

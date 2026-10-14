@@ -27755,9 +27755,8 @@
         "root"
       ],
       "property": [
-        "border-block-start",
-        "border-inline-end",
-        "border-inline-start"
+        "border-block-end",
+        "border-inline-end"
       ],
       "state": [
         "@media (min-width: 768px)",
@@ -27768,7 +27767,7 @@
         "--xh-border-default"
       ],
       "visibility": "public",
-      "description": "descriptions 的 item、label、root 部件 border-block-start、border-inline-end、border-inline-start 覆盖槽。"
+      "description": "descriptions 的 item、label、root 部件 border-block-end、border-inline-end 覆盖槽。"
     },
     {
       "name": "--xh-descriptions-extra-gap",
@@ -28016,6 +28015,12 @@
       ],
       "state": [
         "@media (min-width: 768px)",
+        "@supports (grid-template-columns: subgrid)",
+        "columns=2",
+        "columns=3",
+        "columns=4",
+        "columns=5",
+        "columns=6",
         "placement=left"
       ],
       "defaultToken": [
