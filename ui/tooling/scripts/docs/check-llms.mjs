@@ -2,7 +2,7 @@
 // 门禁：文档站构建期产出的机读资产与库对得上。
 //
 // 四条判据：
-//   一、索引一份、汇编四份，加上每页的 .md，都在；
+//   一、索引一份、汇编四份、design.md 与使用技能，加上每页的 .md，都在；
 //   二、llms-components.txt 收的组件页数 = 组件清单八个类目求和（不写死数字，清单增删跟着走）；
 //   三、任何一份产物里都不许残留 <XhDemo> 标签——模型读到的必须是可运行的代码，
 //       不是一个它不认识的站点组件；
@@ -18,7 +18,7 @@ const UI = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
 const DOCS = join(UI, '..', 'docs')
 const DIST = join(DOCS, '.vitepress', 'dist')
 
-const ASSETS = ['llms.txt', 'llms-full.txt', 'llms-components.txt', 'llms-guide.txt', 'llms-tokens.txt']
+const ASSETS = ['llms.txt', 'llms-full.txt', 'llms-components.txt', 'llms-guide.txt', 'llms-tokens.txt', 'design.md', 'ai/SKILL.md']
 
 function bail(message) {
   console.error(`[check-llms] ✗ ${message}`)

@@ -154,6 +154,17 @@ const startSidebar: DefaultTheme.SidebarItem[] = [
     ],
   },
   {
+    text: "AI 辅助开发",
+    collapsed: false,
+    items: [
+      { text: "For Agents", link: "/ai/agents" },
+      { text: "MCP Server", link: "/ai/mcp" },
+      { text: "CLI", link: "/ai/cli" },
+      { text: "LLMs.txt", link: "/ai/llms" },
+      { text: "design.md", link: "/ai/design-md" },
+    ],
+  },
+  {
     text: "参考",
     collapsed: false,
     items: [
@@ -263,6 +274,7 @@ const sidebar: DefaultTheme.Sidebar = {
   "/components/": componentsSidebar,
   "/examples/": examplesSidebar,
   "/runtime/": guideSidebar,
+  "/ai/": startSidebar,
   "/": startSidebar,
 };
 
@@ -270,7 +282,7 @@ const nav: DefaultTheme.NavItem[] = [
   {
     text: "指南",
     activeMatch:
-      "^/(introduction|overview|installation|quickstart|npm-package-dependency|faq|(guide|adapters|runtime|examples)/.*)$",
+      "^/(introduction|overview|installation|quickstart|npm-package-dependency|faq|(guide|adapters|runtime|examples|ai)/.*)$",
     items: [
       {
         text: "快速开始",
@@ -287,6 +299,14 @@ const nav: DefaultTheme.NavItem[] = [
           { text: "适配器", link: "/adapters/vue" },
           { text: "服务与运行时", link: "/runtime/" },
           { text: "场景示例", link: "/examples/" },
+        ],
+      },
+      {
+        text: "AI 辅助开发",
+        items: [
+          { text: "For Agents", link: "/ai/agents" },
+          { text: "MCP Server", link: "/ai/mcp" },
+          { text: "CLI", link: "/ai/cli" },
         ],
       },
     ],
@@ -331,6 +351,7 @@ export default defineXiHanConfig({
     summary: "框架无关的设计系统运行时：无头内核提供行为与无障碍，Vue、React 与 Web Components 三个适配器只负责把属性铺到宿主元素上，纯 CSS 皮肤认 `data-scope` / `data-part` 而不是类名。",
     sections: [
       { dir: ".", label: "开始" },
+      { dir: "ai", label: "AI 辅助开发" },
       { dir: "design", label: "设计" },
       { dir: "guide", label: "核心概念" },
       { dir: "adapters", label: "适配器" },
