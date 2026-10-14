@@ -21,6 +21,7 @@ function computedStyle(overrides: Record<string, string> = {}): CSSStyleDeclarat
     'font-family': 'sans-serif',
     'font-size': '10px',
     'line-height': '10px',
+    'max-block-size': 'none',
     'padding-bottom': '3px',
     'padding-left': '4px',
     'padding-right': '4px',
@@ -85,18 +86,21 @@ describe('autoSizeTextarea 所有权与配置', () => {
       { contentPaddingBox: 100, rowPaddingBox: 15 },
     ])
     el.style.setProperty('block-size', '37px', 'important')
+    el.style.setProperty('max-block-size', '33px', 'important')
     el.style.setProperty('overflow-y', 'scroll', 'important')
     const nativePriority = el.style.getPropertyPriority.bind(el.style)
     vi.spyOn(el.style, 'getPropertyPriority').mockImplementation(name =>
-      name === 'block-size' || name === 'overflow-y' ? 'important' : nativePriority(name))
+      name === 'block-size' || name === 'max-block-size' || name === 'overflow-y' ? 'important' : nativePriority(name))
     const setProperty = vi.spyOn(el.style, 'setProperty')
     vi.spyOn(window, 'getComputedStyle').mockReturnValue(computedStyle())
 
     autoSizeTextarea(el, { minRows: 2, maxRows: 4 })
     expect(el.style.getPropertyValue('block-size')).toBe('46px')
+    expect(el.style.getPropertyValue('max-block-size')).toBe('none')
     expect(el.style.getPropertyValue('overflow-y')).toBe('auto')
     expect(setProperty).toHaveBeenCalledWith('block-size', 'auto', 'important')
     expect(setProperty).toHaveBeenCalledWith('block-size', '46px', 'important')
+    expect(setProperty).toHaveBeenCalledWith('max-block-size', 'none', 'important')
     expect(setProperty).toHaveBeenCalledWith('overflow-y', 'auto', 'important')
 
     autoSizeTextarea(el, { minRows: 2, maxRows: 8 })
@@ -104,8 +108,10 @@ describe('autoSizeTextarea 所有权与配置', () => {
 
     autoSizeTextarea(el, false)
     expect(el.style.getPropertyValue('block-size')).toBe('37px')
+    expect(el.style.getPropertyValue('max-block-size')).toBe('33px')
     expect(el.style.getPropertyValue('overflow-y')).toBe('scroll')
     expect(setProperty).toHaveBeenCalledWith('block-size', '37px', 'important')
+    expect(setProperty).toHaveBeenCalledWith('max-block-size', '33px', 'important')
     expect(setProperty).toHaveBeenCalledWith('overflow-y', 'scroll', 'important')
     expect(mirrors).toHaveLength(2)
     expect(mirrors.every(mirror => !mirror.isConnected)).toBe(true)
@@ -113,17 +119,19 @@ describe('autoSizeTextarea 所有权与配置', () => {
     expect(mirrors[0]!.style.width).toBe('180px')
   })
 
-  it('作者原本没写内联尺寸时，关闭只移除 helper 自己取得的两项', () => {
+  it('作者原本没写内联尺寸时，关闭只移除 helper 自己取得的三项', () => {
     const el = textarea()
     mockMirrorMeasurements(document, [{ contentPaddingBox: 30, rowPaddingBox: 15 }])
     vi.spyOn(window, 'getComputedStyle').mockReturnValue(computedStyle())
 
     autoSizeTextarea(el, true)
     expect(el.style.blockSize).toBe('31px')
+    expect(el.style.maxBlockSize).toBe('none')
     expect(el.style.overflowY).toBe('hidden')
 
     autoSizeTextarea(el, undefined)
     expect(el.style.getPropertyValue('block-size')).toBe('')
+    expect(el.style.getPropertyValue('max-block-size')).toBe('')
     expect(el.style.getPropertyValue('overflow-y')).toBe('')
   })
 
@@ -259,5 +267,99 @@ describe('autoSizeTextarea 所有权与配置', () => {
     expect(el.style.blockSize).toBe('41px')
     expect(el.style.overflowY).toBe('hidden')
     expect(mirrors[1]!.isConnected).toBe(false)
+  })
+})
+
+// 默认盒：border-box，上下内距 2 + 3、上边框 1；内容 padding-box 100 即声明盒 101，镜像单行 15 即一行 10。
+describe('autoSizeTextarea 上限只有一处、滚动只在 textarea', () => {
+  it('没给 maxRows 时按 textarea 自己的 max-block-size 封顶，超出后内部滚动', () => {
+    const el = textarea()
+    mockMirrorMeasurements(document, [{ contentPaddingBox: 100, rowPaddingBox: 15 }])
+    vi.spyOn(window, 'getComputedStyle').mockReturnValue(computedStyle({ 'max-block-size': '50px' }))
+
+    autoSizeTextarea(el, true)
+
+    expect(el.style.blockSize).toBe('50px')
+    expect(el.style.overflowY).toBe('auto')
+  })
+
+  it('给了 maxRows 时行数说了算：样式表的上限更低也不截，取值也不再读', () => {
+    const el = textarea()
+    mockMirrorMeasurements(document, [
+      { contentPaddingBox: 100, rowPaddingBox: 15 },
+      { contentPaddingBox: 100, rowPaddingBox: 15 },
+    ])
+    const getComputedStyle = vi.spyOn(window, 'getComputedStyle').mockReturnValue(computedStyle({ 'max-block-size': '20px' }))
+
+    autoSizeTextarea(el, { maxRows: 4 })
+    // 4 行 = 4 × 10 + 内距 5 + 边框 1；样式表的 20px 由接管的 none 盖掉
+    expect(el.style.blockSize).toBe('46px')
+    expect(el.style.maxBlockSize).toBe('none')
+    expect(el.style.overflowY).toBe('auto')
+
+    getComputedStyle.mockReturnValue(computedStyle({ 'max-block-size': '50%' }))
+    autoSizeTextarea(el, { maxRows: 4 })
+    expect(el.style.blockSize).toBe('46px')
+  })
+
+  it('minRows 换算得比样式表上限高时以 minRows 为准', () => {
+    const el = textarea()
+    mockMirrorMeasurements(document, [
+      { contentPaddingBox: 100, rowPaddingBox: 15 },
+      { contentPaddingBox: 20, rowPaddingBox: 15 },
+    ])
+    vi.spyOn(window, 'getComputedStyle').mockReturnValue(computedStyle({ 'max-block-size': '30px' }))
+
+    autoSizeTextarea(el, { minRows: 6 })
+    expect(el.style.blockSize).toBe('66px')
+    expect(el.style.maxBlockSize).toBe('none')
+    expect(el.style.overflowY).toBe('auto')
+
+    autoSizeTextarea(el, { minRows: 6 })
+    expect(el.style.blockSize).toBe('66px')
+    expect(el.style.overflowY).toBe('hidden')
+  })
+
+  it('每次量高先归还作者的内联上限再读计算值，读不到上一次接管写下的 none', () => {
+    const el = textarea()
+    mockMirrorMeasurements(document, [
+      { contentPaddingBox: 100, rowPaddingBox: 15 },
+      { contentPaddingBox: 100, rowPaddingBox: 15 },
+      { contentPaddingBox: 100, rowPaddingBox: 15 },
+    ])
+    const cascade = computedStyle()
+    // 计算值按层叠走：内联声明在就取内联，否则取样式表给的 50px
+    vi.spyOn(window, 'getComputedStyle').mockReturnValue({
+      getPropertyValue: (property: string) => property === 'max-block-size'
+        ? el.style.getPropertyValue('max-block-size') || '50px'
+        : cascade.getPropertyValue(property),
+    } as CSSStyleDeclaration)
+
+    autoSizeTextarea(el, true)
+    autoSizeTextarea(el, true)
+    expect(el.style.blockSize).toBe('50px')
+
+    autoSizeTextarea(el, false)
+    el.style.setProperty('max-block-size', '40px')
+    autoSizeTextarea(el, true)
+    expect(el.style.blockSize).toBe('40px')
+    expect(el.style.maxBlockSize).toBe('none')
+
+    autoSizeTextarea(el, false)
+    expect(el.style.maxBlockSize).toBe('40px')
+  })
+
+  it('max-block-size 不是 none 或 px 时明确失败，不猜布局后的高度，并归还作者声明', () => {
+    const el = textarea()
+    el.style.setProperty('block-size', '25px')
+    el.style.setProperty('overflow-y', 'scroll')
+    const createElement = vi.spyOn(document, 'createElement')
+    vi.spyOn(window, 'getComputedStyle').mockReturnValue(computedStyle({ 'max-block-size': '50%' }))
+
+    expect(() => autoSizeTextarea(el, true)).toThrow(/只接受 none 或 px 的 max-block-size 计算值，当前为 50%/)
+    expect(createElement).not.toHaveBeenCalled()
+    expect(el.style.blockSize).toBe('25px')
+    expect(el.style.getPropertyValue('max-block-size')).toBe('')
+    expect(el.style.overflowY).toBe('scroll')
   })
 })

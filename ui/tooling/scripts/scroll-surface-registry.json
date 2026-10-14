@@ -303,12 +303,6 @@
       "gutter": false,
       "why": "标签输入的控件盒，标签多到超过上限行数时在盒内滚"
     },
-    "text-field:control": {
-      "mode": "native",
-      "overscroll": false,
-      "gutter": false,
-      "why": "自动增高的多行文本到上限后在控件盒内滚"
-    },
     "file-upload:list": {
       "mode": "native",
       "overscroll": false,

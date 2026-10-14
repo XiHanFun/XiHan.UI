@@ -22,7 +22,7 @@ const note = ref("");
       <XhTextFieldCount />
     </XhTextFieldRoot>
 
-    <XhTextFieldRoot auto-size placeholder="不设行数界限，完全跟内容走">
+    <XhTextFieldRoot auto-size placeholder="不设行数界限：随内容长高，到上限后框内滚动">
       <XhTextFieldLabel>随写随长</XhTextFieldLabel>
       <XhTextFieldControl>
         <XhTextFieldInput as="textarea" />

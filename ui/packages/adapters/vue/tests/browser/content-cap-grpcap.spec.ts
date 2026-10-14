@@ -1,9 +1,11 @@
 // 内容不断加进来时，控件自己的盒子不许没有上限地长，超出的那一截还要够得到。
 //
-// 三件都是「一个表单字段」：标签输入的框、自增高的多行输入框、文件列表。
-// 条目数与文本长度都由使用者给，没有上限时它们会一路长下去，把同一张表单里后面的字段全推走。
+// 两件都是「一个表单字段」：标签输入的框、文件列表。
+// 条目数由使用者给，没有上限时它们会一路长下去，把同一张表单里后面的字段全推走。
 // 判据分两半，缺一不可：到了上限就不再长（盒的高度不随内容再涨），
 // 且多出来的那一截推得回来看（面内纵向滚得到底）。
+// 自增高的多行输入框同属这一类，但上限与滚动都落在 textarea 上、要真实量高才演得出来，
+// 判据在 text-field-auto-size-scroll.spec.ts。
 import { afterEach, describe, expect, it } from 'vitest'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -108,47 +110,6 @@ describe('标签输入：标签越加越多，框不会一直长高', () => {
 
     expect(height(control)).toBe(80)
     expect(reachDown(control)).toBe(control.scrollHeight - control.clientHeight)
-  })
-})
-
-describe('多行输入：自增高的框不会一直长高', () => {
-  // autoSize 量完内容把高度写进内联 style，同时把输入框自己那条纵滚关掉；
-  // 没给 maxRows 时这个数没有上限，这里照它写下的形状复现。
-  function mountArea(px: number, autoResize = true): HTMLElement {
-    mount(`
-      <div data-scope="text-field" class="xh-scope-text-field" data-part="root">
-        <div data-scope="text-field" class="xh-scope-text-field" data-part="control" id="control">
-          <textarea
-            data-scope="text-field" class="xh-scope-text-field" data-part="input" data-xh-field-input data-xh-field-layout="textarea"
-            ${autoResize ? 'data-xh-field-auto-size' : ''}
-            style="block-size: ${px}px; overflow-y: hidden"></textarea>
-        </div>
-      </div>`)
-    return pick('#control')
-  }
-
-  it('行数少时按内容收，行数多时停在上限上', () => {
-    const cap = tokenPx('--xh-viewport-h-sm')
-    const short = height(mountArea(100))
-
-    expect(short).toBeGreaterThan(0)
-    expect(short).toBeLessThan(cap)
-    expect(height(mountArea(900))).toBe(cap)
-    expect(height(mountArea(3000))).toBe(cap)
-  })
-
-  it('上限之后的行是滚出来的，不是被裁掉取不回', () => {
-    const control = mountArea(900)
-
-    expect(control.scrollHeight).toBeGreaterThan(control.clientHeight)
-    expect(reachDown(control)).toBe(control.scrollHeight - control.clientHeight)
-  })
-
-  it('没开自增高的多行框不受这条上限管：高度由使用者拖出来', () => {
-    const control = mountArea(900, false)
-
-    expect(getComputedStyle(control).maxBlockSize).toBe('none')
-    expect(height(control)).toBeGreaterThan(tokenPx('--xh-viewport-h-sm'))
   })
 })
 

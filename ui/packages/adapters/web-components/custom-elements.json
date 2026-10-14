@@ -66764,6 +66764,9 @@
               "name": "--xh-text-field-input-font-size"
             },
             {
+              "name": "--xh-text-field-input-max-h"
+            },
+            {
               "name": "--xh-text-field-label-fg"
             },
             {

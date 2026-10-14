@@ -4,6 +4,8 @@
  */
 
 // 多行输入的自动高度：按内容量高，行数上下限换算成像素后夹取。纯 DOM 运算，不看状态机。
+// 滚动只发生在 textarea 一层：上限给了 maxRows 取 maxRows，没给取 textarea 自己的 max-block-size，
+// 都不低于 minRows；夹取结果写进 block-size，max-block-size 由这里接管，外层不必再封顶。
 import type { TextFieldAutoSize } from './text-field.types'
 
 interface InlineDeclaration {
@@ -13,6 +15,7 @@ interface InlineDeclaration {
 
 interface AutoSizeOwnership {
   readonly blockSize: InlineDeclaration
+  readonly maxBlockSize: InlineDeclaration
   readonly overflowY: InlineDeclaration
 }
 
@@ -90,17 +93,17 @@ function restoreTextarea(el: HTMLTextAreaElement): void {
     return
   ownership.delete(el)
   const errors: unknown[] = []
-  try {
-    writeDeclaration(el.style, 'block-size', state.blockSize)
-  }
-  catch (error) {
-    errors.push(error)
-  }
-  try {
-    writeDeclaration(el.style, 'overflow-y', state.overflowY)
-  }
-  catch (error) {
-    errors.push(error)
+  for (const [name, declaration] of [
+    ['block-size', state.blockSize],
+    ['max-block-size', state.maxBlockSize],
+    ['overflow-y', state.overflowY],
+  ] as const) {
+    try {
+      writeDeclaration(el.style, name, declaration)
+    }
+    catch (error) {
+      errors.push(error)
+    }
   }
   if (errors.length === 1)
     throw errors[0]
@@ -128,6 +131,22 @@ function readPixel(style: CSSStyleDeclaration, property: string): number {
   if (!Number.isFinite(value) || value < 0)
     throw new Error(`[xh] TextField autoSize 无法读取有效的 ${property} 计算值：${source || '(empty)'}`)
   return value
+}
+
+/**
+ * 样式表给 textarea 的块向上限（与声明盒同一口径）：none 即不封顶。
+ * 百分比、内在尺寸关键字等要等布局才知道多高的取值不猜，明确失败。
+ */
+function readStyleCeiling(style: CSSStyleDeclaration): number | null {
+  const source = style.getPropertyValue('max-block-size')
+  if (source === 'none')
+    return null
+  if (!/^\d+(?:\.\d+)?px$/.test(source)) {
+    throw new Error(
+      `[xh] TextField autoSize 只接受 none 或 px 的 max-block-size 计算值，当前为 ${source || '(empty)'}`,
+    )
+  }
+  return Number.parseFloat(source)
 }
 
 function readBoxMetrics(style: CSSStyleDeclaration): TextareaBoxMetrics {
@@ -267,7 +286,7 @@ export function validateTextFieldAutoSize(
 
 /**
  * 量一次并写回 block-size：内容与单行高度都取所属 Document 的真实 textarea 排版结果。
- * autoSize 为 false 时归还首次启用前的两项内联声明；顶到 maxRows 后内部滚动。
+ * autoSize 为 false 时归还首次启用前的三项内联声明；顶到上限后内部滚动。
  */
 export function autoSizeTextarea(el: HTMLTextAreaElement, autoSize: boolean | TextFieldAutoSize | undefined): void {
   let opts: TextFieldAutoSize
@@ -291,30 +310,36 @@ export function autoSizeTextarea(el: HTMLTextAreaElement, autoSize: boolean | Te
   if (!state) {
     state = {
       blockSize: readDeclaration(el.style, 'block-size'),
+      maxBlockSize: readDeclaration(el.style, 'max-block-size'),
       overflowY: readDeclaration(el.style, 'overflow-y'),
     }
     ownership.set(el, state)
   }
   try {
+    // 先归还作者的内联上限再读计算值：读到的是样式表与作者给的上限，不是上一次接管时写下的 none
+    writeDeclaration(el.style, 'max-block-size', state.maxBlockSize)
     const style = view.getComputedStyle(el)
     const metrics = readBoxMetrics(style)
+    const styleCeiling = opts.maxRows == null ? readStyleCeiling(style) : null
     const measured = measureTextarea(el, style, metrics.paddingBlock)
 
     el.style.setProperty('block-size', 'auto', state.blockSize.priority)
     const content = toDeclaredBlockSize(measured.contentPaddingBox, metrics)
-    const min = opts.minRows != null
+    const floor = opts.minRows != null
       ? rowsToDeclaredBlockSize(opts.minRows, measured.rowBlock, metrics)
       : null
-    const max = opts.maxRows != null
+    const ceiling = opts.maxRows != null
       ? rowsToDeclaredBlockSize(opts.maxRows, measured.rowBlock, metrics)
-      : null
+      : styleCeiling
     let next = content
-    if (min != null)
-      next = Math.max(next, min)
-    if (max != null)
-      next = Math.min(next, max)
+    if (ceiling != null)
+      next = Math.min(next, ceiling)
+    if (floor != null)
+      next = Math.max(next, floor)
     el.style.setProperty('block-size', `${next}px`, state.blockSize.priority)
-    el.style.setProperty('overflow-y', max != null && content > max ? 'auto' : 'hidden', state.overflowY.priority)
+    // 上限已折进 block-size：样式表的上限不再截它，maxRows 或 minRows 换算得比它高时照样生效
+    el.style.setProperty('max-block-size', 'none', state.maxBlockSize.priority)
+    el.style.setProperty('overflow-y', content > next ? 'auto' : 'hidden', state.overflowY.priority)
   }
   catch (error) {
     restoreAfterFailure(el, error)
