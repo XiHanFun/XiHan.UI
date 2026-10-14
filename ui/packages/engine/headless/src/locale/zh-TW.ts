@@ -420,7 +420,8 @@ const translations = {
     wrap: '自動換行',
     copy: '複製 JSON',
     copied: '已複製',
-    viewText: '原文',
+    showText: '檢視原文',
+    showTree: '檢視樹狀',
   },
   'kbd': {
     keyName: (key, platform) => keyText(KEY_NAME, key, platform),

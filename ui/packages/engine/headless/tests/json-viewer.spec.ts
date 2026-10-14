@@ -1073,13 +1073,12 @@ describe('json 工具条', () => {
     expect(api.tools).toEqual(['expand', 'wrap', 'copy', 'view'])
     expect(api.getToolbarProps()).toMatchObject({ 'data-part': 'toolbar', 'role': 'group', 'aria-label': 'JSON tools' })
     const buttons = [
-      api.getExpandAllTriggerProps(),
-      api.getCollapseAllTriggerProps(),
+      api.getExpandTriggerProps(),
       api.getWrapTriggerProps(),
       api.getCopyTriggerProps(),
       api.getViewTriggerProps(),
     ] as Dict[]
-    expect(buttons.map(b => b['aria-label'])).toEqual(['Expand all', 'Collapse all', 'Wrap lines', 'Copy JSON', 'Raw JSON'])
+    expect(buttons.map(b => b['aria-label'])).toEqual(['Expand all', 'Wrap lines', 'Copy JSON', 'Show raw JSON'])
     for (const b of buttons) {
       expect(b).toMatchObject({
         'type': 'button',
@@ -1106,15 +1105,17 @@ describe('json 工具条', () => {
     }
   })
 
-  it('原文开关：非受控在两档之间来回切，aria-pressed 与 data-state 跟着走，通知带新形态', () => {
+  it('形态钮：非受控在两档之间来回切，名字与 data-view 取要切去的那一档，不报 aria-pressed，通知带新形态', () => {
     const onViewChange = vi.fn()
     const t = toolbar({ onViewChange })
     expect(t.api().view).toBe('tree')
-    expect(t.api().getViewTriggerProps()).toMatchObject({ 'aria-pressed': 'false', 'data-state': 'off' })
+    expect(t.api().getViewTriggerProps()).toMatchObject({ 'aria-label': 'Show raw JSON', 'data-view': 'tree' })
+    expect((t.api().getViewTriggerProps() as Dict)['aria-pressed']).toBeUndefined()
 
     activate(t.api().getViewTriggerProps())
     expect(t.api().view).toBe('text')
-    expect(t.api().getViewTriggerProps()).toMatchObject({ 'aria-pressed': 'true', 'data-state': 'on' })
+    expect(t.api().getViewTriggerProps()).toMatchObject({ 'aria-label': 'Show tree', 'data-view': 'text' })
+    expect((t.api().getViewTriggerProps() as Dict)['aria-pressed']).toBeUndefined()
     expect(t.api().getRootProps()).toMatchObject({ 'data-view': 'text' })
     expect(onViewChange).toHaveBeenLastCalledWith({ view: 'text' })
 
@@ -1162,21 +1163,46 @@ describe('json 工具条', () => {
     controlled.stop()
   })
 
-  it('展开全部把每一层的分支都展开；收起全部只留根行展开。两颗钮只在树档出现', () => {
+  it('展开 / 收起是一颗切换钮：还有收着的就展开全部，全部展开了就收回顶层；名字与 data-state 随之变，只在树档出现', () => {
     const t = toolbar()
-    activate(t.api().getExpandAllTriggerProps())
+    expect(t.api().allExpanded).toBe(false)
+    expect(t.api().getExpandTriggerProps()).toMatchObject({ 'aria-label': 'Expand all', 'data-state': 'closed' })
+    expect((t.api().getExpandTriggerProps() as Dict)['aria-pressed']).toBeUndefined()
+
+    activate(t.api().getExpandTriggerProps())
     expect([...t.api().expandedValue].sort()).toEqual(
       [ROOT, path('tags'), path('nested'), path('nested', 'deep')].sort(),
     )
     expect(t.api().visibleNodes.some(node => node.value === path('nested', 'deep', 'leaf'))).toBe(true)
+    expect(t.api().allExpanded).toBe(true)
+    expect(t.api().getExpandTriggerProps()).toMatchObject({ 'aria-label': 'Collapse all', 'data-state': 'open' })
 
-    activate(t.api().getCollapseAllTriggerProps())
+    activate(t.api().getExpandTriggerProps())
     expect(t.api().expandedValue).toEqual([ROOT])
     expect(t.api().visibleNodes.every(node => node.level <= 2)).toBe(true)
+    expect(t.api().getExpandTriggerProps()).toMatchObject({ 'aria-label': 'Expand all', 'data-state': 'closed' })
 
     t.api().setView('text')
-    expect((t.api().getExpandAllTriggerProps() as Dict).hidden).toBe(true)
-    expect((t.api().getCollapseAllTriggerProps() as Dict).hidden).toBe(true)
+    expect((t.api().getExpandTriggerProps() as Dict).hidden).toBe(true)
+    expect(t.api().allExpanded).toBe(false)
+    t.stop()
+  })
+
+  it('手动收起任一分支后，切换钮回到「展开全部」', () => {
+    const t = toolbar()
+    t.api().expandAll()
+    expect(t.api().allExpanded).toBe(true)
+    t.api().collapse(path('nested', 'deep'))
+    expect(t.api().allExpanded).toBe(false)
+    expect((t.api().getExpandTriggerProps() as Dict)['aria-label']).toBe('Expand all')
+    t.stop()
+  })
+
+  it('只有根一层分支、没有可展开的子层时切换钮禁用', () => {
+    const t = toolbar({ value: { a: 1, b: 'x' } })
+    expect(t.api().getExpandTriggerProps()).toMatchObject({ 'disabled': true, 'data-disabled': '' })
+    expect(t.api().allExpanded).toBe(false)
+    expect((t.api().getCopyTriggerProps() as Dict).disabled).toBeUndefined()
     t.stop()
   })
 
@@ -1260,7 +1286,7 @@ describe('json 工具条', () => {
 
   it('没有数据时整条钮都禁用', () => {
     const t = toolbar({ value: undefined })
-    for (const props of [t.api().getExpandAllTriggerProps(), t.api().getCopyTriggerProps(), t.api().getViewTriggerProps()] as Dict[])
+    for (const props of [t.api().getExpandTriggerProps(), t.api().getCopyTriggerProps(), t.api().getViewTriggerProps()] as Dict[])
       expect(props).toMatchObject({ 'disabled': true, 'data-disabled': '' })
     t.stop()
   })

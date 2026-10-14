@@ -171,11 +171,10 @@ function setSegments(
  * @csspart empty - 无法展开任何一行时的占位，铺设 translations.empty 的文案；有行可展开时带 hidden
  * @csspart mark - 键名与值里命中搜索词的那一段
  * @csspart toolbar - 内建工具条，role=group，root 的第一个孩子；只在 tools 打开时存在
- * @csspart expand-all-trigger - 「展开全部」钮，只在树档出现
- * @csspart collapse-all-trigger - 「收起全部」钮，只在树档出现
+ * @csspart expand-trigger - 展开 / 收起全部的切换钮，只在树档出现；data-state 为 open 时已全部展开（再按收起）
  * @csspart wrap-trigger - 自动换行开关（aria-pressed），只在原文档出现
  * @csspart copy-trigger - 复制原文的钮，成功后带 data-copied
- * @csspart view-trigger - 原文开关（aria-pressed），按下即原文档
+ * @csspart view-trigger - 树 / 原文切换钮，名字与字形取要切去的那一档，带 data-view
  * @csspart status - 复制成功的播报区，视觉隐藏
  */
 export class XhJsonViewerElement extends XhElement {
@@ -503,10 +502,8 @@ export class XhJsonViewerElement extends XhElement {
       wanted.push(el)
       return el
     }
-    if (api.tools.includes('expand')) {
-      place('expand-all-trigger', 'button', api.getExpandAllTriggerProps())
-      place('collapse-all-trigger', 'button', api.getCollapseAllTriggerProps())
-    }
+    if (api.tools.includes('expand'))
+      place('expand-trigger', 'button', api.getExpandTriggerProps())
     if (api.tools.includes('wrap'))
       place('wrap-trigger', 'button', api.getWrapTriggerProps())
     if (api.tools.includes('copy')) {

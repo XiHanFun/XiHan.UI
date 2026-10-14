@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text` · `token` · `empty` · `mark` · `toolbar` · `expand-all-trigger` · `collapse-all-trigger` · `wrap-trigger` · `copy-trigger` · `view-trigger` · `status`
+`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text` · `token` · `empty` · `mark` · `toolbar` · `expand-trigger` · `wrap-trigger` · `copy-trigger` · `view-trigger` · `status`
 
 ## 示例
 
@@ -109,8 +109,8 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 - 每一行带 `data-value-type`，六种值形态各自着色。原文档同样着色：原文按类别切成 `token` 部件（`data-kind` 为 `key`、`string`、`number`、`boolean`、`null`、`punctuation`），与树档使用同一组覆盖槽与语法令牌；原文无法识别为 JSON 时整段不着色。
 - 尺寸轴与其他组件同源；`variant` 决定外框形态，默认 `outline`；`subtle` 换成淡底无描边，`ghost` 去掉外框与底色只保留内容。
 - 没有任何行可展开时由 `empty` 部件说明，文案使用 `translations.empty`，作者也可以自行写入内容。
-- 内建工具条按需打开：`tools` 不提供即没有工具条；`true` 铺出全部工具；数组只铺列出的几项（`expand`、`wrap`、`copy`、`view`），数组里出现未知的工具名会抛错。条是根的第一个孩子，钮的排列由组件决定：「展开全部 / 收起全部」只在树档出现，「自动换行」只在原文档出现，复制与原文开关固定在末端，切换形态时这两颗不移动。
-- 原文开关切换 `view`：`view` 提供即受控，开关只触发 `onViewChange`；`defaultView` 是非受控初值。自动换行同理（`wrap` / `defaultWrap` / `onWrapChange`），开启后原文的长行折到下一行而不是横向滚动。
+- 内建工具条按需打开：`tools` 不提供即没有工具条；`true` 铺出全部工具；数组只铺列出的几项（`expand`、`wrap`、`copy`、`view`），数组里出现未知的工具名会抛错。条是根的第一个孩子，钮的排列由组件决定：展开 / 收起全部是一颗切换钮，只在树档出现：还有收着的分支时按下展开全部，已经全部展开时按下收回顶层，名称与字形随之变化；「自动换行」只在原文档出现；复制与树 / 原文切换钮固定在末端，切换形态时这两颗不移动，切换钮的名称与字形取要切去的那一档。
+- 树 / 原文切换钮改写 `view`：`view` 提供即受控，开关只触发 `onViewChange`；`defaultView` 是非受控初值。自动换行同理（`wrap` / `defaultWrap` / `onWrapChange`），开启后原文的长行折到下一行而不是横向滚动。
 - 复制钮写入的是原文档那一份文本（不受 `maxStringLength` / `maxItems` 折减），无论当前处于哪一档；成功后钮换成对钩约 3 秒，写入失败时回到常态并触发 `onCopyError`。剪贴板接口要求安全上下文。
 - 手里有值的原文（如后端下发的 JSON 文本）时传给 `source`：原文档与复制钮改用它，能解析成 JSON 就只按两格缩进重排，数字、字符串等字面量保持不变，解析不了就原样显示。`value` 是解析过的值，超出安全整数的数字（如 64 位 ID）已经失真，只有原文与来源一致；树档仍展示 `value`。headless 另导出同一个重排函数 `formatJsonSource`。
 - 只支持 JSON 能表达的形状，传入活对象时呈现有损：`Date` / `Map` / `Set` 一律按自有可枚举键展开，因此显示为 `{}`；`undefined` 归入 `null` 一档、显示为 `undefined`；`bigint` 归入 `number`；函数与 symbol 归入 `string`，按各自的字符串形式呈现。需要如实展示这些值时先转换为 JSON 能表达的形状。
@@ -218,9 +218,9 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 | `branch-text` | 'open' \| 'closed' |
 | `branch-content` | 'open' \| 'closed' |
 | `preview` | 'open' \| 'closed' |
+| `expand-trigger` | 'open' \| 'closed' |
 | `wrap-trigger` | 'on' \| 'off' |
 | `copy-trigger` | 'idle' \| 'copying' \| 'copied' |
-| `view-trigger` | 'on' \| 'off' |
 | `status` | 'idle' \| 'copying' \| 'copied' |
 
 以下名称仅用于内部状态机。
@@ -256,6 +256,7 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 | `setWrap` | `(wrap: boolean) => void` |  |
 | `expandAll` | `() => void` | 展开全部分支（maxItems 折掉的成员与循环引用照旧不展开）。 |
 | `collapseAll` | `() => void` | 收起到只剩顶层：根行留着展开，其下的分支全部收起。 |
+| `allExpanded` | `boolean` | 每一层的分支都已展开（maxItems 折掉的成员与循环引用不算分支）。展开 / 收起钮据此决定这一下是展开还是收起； 只有根一层分支、没有可展开的子层时为 false。原文档不算，恒为 false。 |
 | `copy` | `() => void` | 把 JSON 原文写进剪贴板，与点复制钮走同一路径。 |
 | `isEmpty` | `boolean` | 无法展开任何一行：value 未提供或为 undefined。空态部件随它显隐。 |
 | `emptyText` | `string` | 空态的兜底文案，作者未向空态部件写入内容时铺设它。 |
@@ -285,8 +286,7 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 | `getEmptyProps` | `() => T['element']` |  |
 | `getMarkProps` | `() => T['element']` | 键名与值文本里命中搜索词的那一段。 |
 | `getToolbarProps` | `() => T['element']` | 内建工具条：根的第一个孩子，各颗钮按 tools 铺在其中。 报告 `role=group`：一组有名字的控件，每颗钮各占一个 Tab 位； 不报告 `role=toolbar`，那个角色承诺条内靠方向键移动。 |
-| `getExpandAllTriggerProps` | `() => T['button']` |  |
-| `getCollapseAllTriggerProps` | `() => T['button']` |  |
+| `getExpandTriggerProps` | `() => T['button']` | 展开 / 收起全部的切换钮：data-state 为 open 时已全部展开（再按收起），closed 时还有收着的（再按展开）。 |
 | `getWrapTriggerProps` | `() => T['button']` |  |
 | `getCopyTriggerProps` | `() => T['button']` |  |
 | `getViewTriggerProps` | `() => T['button']` |  |
@@ -339,7 +339,6 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 | `toolbar` | `aria-label` | label.toolbar |
 | `toolbar` | `role` | 'group' |
 | `wrap-trigger` | `aria-pressed` | 'true' \| 'false' |
-| `view-trigger` | `aria-pressed` | 'true' \| 'false' |
 | `status` | `aria-atomic` | 'true' |
 | `status` | `aria-live` | 'polite' |
 | `status` | `role` | 'status' |
@@ -349,7 +348,7 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 - 展开箭头对读屏隐藏，它重复的是分支自身已报出的 `aria-expanded` 与左右方向键。
 - 分支的名称显式提供（`aria-label`）：它包裹整棵子层，从内容计算名称会把所有子孙的文字一并读出。
 - 收起摘要（`{…} 3`）是排版记号，对读屏隐藏；其中的成员数并入分支的可访问名称（默认读为 `tags, 3 items`，整句可用 `translations.collapsedBranchLabel` 替换）。
-- 工具条是 `role=group` 并带可访问名称（`translations.toolbar`），每颗钮各占一个 Tab 位；不报告 `role=toolbar`，条内不靠方向键移动。钮里只有字形，名称取自 `translations`；原文开关与自动换行是开关钮，开关状态由 `aria-pressed` 报告，名称不随之变化。
+- 工具条是 `role=group` 并带可访问名称（`translations.toolbar`），每颗钮各占一个 Tab 位；不报告 `role=toolbar`，条内不靠方向键移动。钮里只有字形，名称取自 `translations`；自动换行是开关钮，开关状态由 `aria-pressed` 报告、名称不变；展开 / 收起与树 / 原文两颗切换钮的名称随动作变化（如「展开全部」「收起全部」），不再另报 `aria-pressed`，免得名称与按下态各说各的。
 - 复制成功的回执由视觉隐藏的 `status` 部件（`aria-live="polite"`）读出，钮上的对钩只是视觉标记。
 
 ## 样式参考
@@ -440,16 +439,12 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 | `text` | `data-wrap` | ''（条件成立时才出现） |
 | `token` | `data-kind` | props.kind |
 | `toolbar` | `data-view` | context.get('view') |
-| `expand-all-trigger` | `data-xh-action-control` | '' |
-| `expand-all-trigger` | `data-xh-action-display` | 'always' |
-| `expand-all-trigger` | `data-xh-action-profile` | 'icon' |
-| `expand-all-trigger` | `data-xh-action-size` | 'md' \| 'sm' |
-| `expand-all-trigger` | `data-xh-action-variant` | 'ghost' |
-| `collapse-all-trigger` | `data-xh-action-control` | '' |
-| `collapse-all-trigger` | `data-xh-action-display` | 'always' |
-| `collapse-all-trigger` | `data-xh-action-profile` | 'icon' |
-| `collapse-all-trigger` | `data-xh-action-size` | 'md' \| 'sm' |
-| `collapse-all-trigger` | `data-xh-action-variant` | 'ghost' |
+| `expand-trigger` | `data-state` | 'open' \| 'closed' |
+| `expand-trigger` | `data-xh-action-control` | '' |
+| `expand-trigger` | `data-xh-action-display` | 'always' |
+| `expand-trigger` | `data-xh-action-profile` | 'icon' |
+| `expand-trigger` | `data-xh-action-size` | 'md' \| 'sm' |
+| `expand-trigger` | `data-xh-action-variant` | 'ghost' |
 | `wrap-trigger` | `data-state` | 'on' \| 'off' |
 | `wrap-trigger` | `data-xh-action-control` | '' |
 | `wrap-trigger` | `data-xh-action-display` | 'always' |
@@ -463,7 +458,7 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 | `copy-trigger` | `data-xh-action-profile` | 'icon' |
 | `copy-trigger` | `data-xh-action-size` | 'md' \| 'sm' |
 | `copy-trigger` | `data-xh-action-variant` | 'ghost' |
-| `view-trigger` | `data-state` | 'on' \| 'off' |
+| `view-trigger` | `data-view` | context.get('view') |
 | `view-trigger` | `data-xh-action-control` | '' |
 | `view-trigger` | `data-xh-action-display` | 'always' |
 | `view-trigger` | `data-xh-action-profile` | 'icon' |

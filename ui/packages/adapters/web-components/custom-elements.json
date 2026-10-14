@@ -36595,12 +36595,8 @@
               "name": "toolbar"
             },
             {
-              "description": "「展开全部」钮，只在树档出现",
-              "name": "expand-all-trigger"
-            },
-            {
-              "description": "「收起全部」钮，只在树档出现",
-              "name": "collapse-all-trigger"
+              "description": "展开 / 收起全部的切换钮，只在树档出现；data-state 为 open 时已全部展开（再按收起）",
+              "name": "expand-trigger"
             },
             {
               "description": "自动换行开关（aria-pressed），只在原文档出现",
@@ -36611,7 +36607,7 @@
               "name": "copy-trigger"
             },
             {
-              "description": "原文开关（aria-pressed），按下即原文档",
+              "description": "树 / 原文切换钮，名字与字形取要切去的那一档，带 data-view",
               "name": "view-trigger"
             },
             {

@@ -64,9 +64,16 @@ export function connectJsonViewer<T extends PropTypes>(
   const announcement = copied ? label.copied : ''
   const walk = { maxItems: prop('maxItems'), sortKeys: prop('sortKeys') }
   // 全部展开：每一层的分支都进展开集合（折掉的成员与循环引用本来就不是分支）
-  const expandAll = (): void => send({ type: 'EXPANDED.SET', value: jsonExpandedPathsToDepth(prop('value'), Number.POSITIVE_INFINITY, walk) })
+  const allBranches = (): string[] => jsonExpandedPathsToDepth(prop('value'), Number.POSITIVE_INFINITY, walk)
+  const expandAll = (): void => send({ type: 'EXPANDED.SET', value: allBranches() })
   // 收起到顶层：根行留着展开，否则整份数据只剩一行摘要，什么也看不到
   const collapseAll = (): void => send({ type: 'EXPANDED.SET', value: jsonExpandedPathsToDepth(prop('value'), 1, walk) })
+  // 展开 / 收起钮看的是此刻的事实：每一层分支都开着才算全部展开。只在树档走一遍整份数据，原文档用不上。
+  // 只有根一层分支时没有可展开的子层，钮无事可做
+  const branches = textView ? [] : allBranches()
+  const expandedSet = new Set(expandedValue)
+  const allExpanded = branches.length > 1 && branches.every(path => expandedSet.has(path))
+  const canToggleExpand = branches.length > 1
   const copy = (): void => send({ type: 'COPY.TRIGGER' })
   // 工具钮的尺寸比视图低一档、最低 sm：它们是从属的钮，不该与正文的行争高
   const toolSize = prop('size') === 'lg' ? 'md' : 'sm'
@@ -93,18 +100,19 @@ export function connectJsonViewer<T extends PropTypes>(
   }
 
   /**
-   * 工具钮共用的骨架：type、可及名、禁用与出没一次给齐。没有数据时整条钮都禁用：没有可复制、可展开的东西。
+   * 工具钮共用的骨架：type、可及名、禁用与出没一次给齐。没有数据时整条钮都禁用：没有可复制、可展开的东西；
+   * 某颗钮另有无事可做的时候（只有根一层分支时的展开 / 收起）由 inert 再禁一层。
    * Action Control 的档位（data-xh-action-*）由各 getter 自己写：门禁按 getter 切片认家族归属与投影。
    */
-  const toolButton = (part: JsonViewerToolTrigger, aria: string, onClick: () => void, hidden: boolean, extra: Record<string, unknown>): T['button'] =>
+  const toolButton = (part: JsonViewerToolTrigger, aria: string, onClick: () => void, hidden: boolean, extra: Record<string, unknown>, inert = isEmpty): T['button'] =>
     normalize.button({
       ...parts[part].attrs,
       'type': 'button',
       'aria-label': aria,
       'hidden': hidden || undefined,
-      'disabled': isEmpty || undefined,
-      'data-disabled': dataAttr(isEmpty),
-      ...toolPress(part, isEmpty),
+      'disabled': inert || undefined,
+      'data-disabled': dataAttr(inert),
+      ...toolPress(part, inert),
       ...extra,
       onClick,
     })
@@ -243,6 +251,7 @@ export function connectJsonViewer<T extends PropTypes>(
     setWrap: next => send({ type: 'WRAP.SET', wrap: next }),
     expandAll,
     collapseAll,
+    allExpanded,
     copy,
     isEmpty,
     emptyText: label.empty,
@@ -524,23 +533,17 @@ export function connectJsonViewer<T extends PropTypes>(
       'data-view': view,
     }),
 
-    // 展开 / 收起全部只对树有意义：原文档里收起来，免得留两颗按了看不出变化的钮
-    getExpandAllTriggerProps: () => toolButton('expand-all-trigger', label.expandAll, expandAll, textView, {
+    // 展开 / 收起全部是一颗切换钮：名字与字形随这一下要做的事变（名字随动作走，不再报 aria-pressed）。
+    // 只对树有意义，原文档里收起来；没有可展开的子层时禁用
+    getExpandTriggerProps: () => toolButton('expand-trigger', allExpanded ? label.collapseAll : label.expandAll, allExpanded ? collapseAll : expandAll, textView, {
+      'data-state': allExpanded ? 'open' : 'closed',
       // 工具条里的图标钮：接 Action Control icon 档、ghost 面，按压与命中区由配方给；比视图低一档、最低 sm
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',
       'data-xh-action-size': toolSize,
       'data-xh-action-variant': 'ghost',
-    }),
-    getCollapseAllTriggerProps: () => toolButton('collapse-all-trigger', label.collapseAll, collapseAll, textView, {
-      // 工具条里的图标钮：接 Action Control icon 档、ghost 面，按压与命中区由配方给；比视图低一档、最低 sm
-      'data-xh-action-control': '',
-      'data-xh-action-profile': 'icon',
-      'data-xh-action-display': 'always',
-      'data-xh-action-size': toolSize,
-      'data-xh-action-variant': 'ghost',
-    }),
+    }, isEmpty || !canToggleExpand),
 
     // 换行只对原文有意义，树档里收起来。开没开由 aria-pressed 报，名字不跟着变
     getWrapTriggerProps: () => toolButton('wrap-trigger', label.wrap, () => send({ type: 'WRAP.SET', wrap: !wrap }), !textView, {
@@ -566,11 +569,10 @@ export function connectJsonViewer<T extends PropTypes>(
       'data-xh-action-variant': 'ghost',
     }),
 
-    // 原文开关：按下即原文档。钉在条的末端，两档切过去它不挪位置
-    getViewTriggerProps: () => toolButton('view-trigger', label.viewText, () => send({ type: 'VIEW.SET', view: textView ? 'tree' : 'text' }), false, {
-      'aria-pressed': textView ? 'true' : 'false',
-      'data-state': textView ? 'on' : 'off',
-      // 无滑块开关：开着的选中面（品牌淡底）由皮肤在 data-state='on' 上桥接
+    // 形态钮：在树与原文之间来回切，名字与字形取这一下要切去的那一档（名字随动作走，不报 aria-pressed）。
+    // 钉在条的末端，两档切过去它不挪位置
+    getViewTriggerProps: () => toolButton('view-trigger', textView ? label.showTree : label.showText, () => send({ type: 'VIEW.SET', view: textView ? 'tree' : 'text' }), false, {
+      'data-view': view,
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
       'data-xh-action-display': 'always',

@@ -420,7 +420,8 @@ const translations = {
     wrap: '折り返し',
     copy: 'JSON をコピー',
     copied: 'コピーしました',
-    viewText: 'ソース',
+    showText: 'ソースを表示',
+    showTree: 'ツリーを表示',
   },
   'kbd': {
     keyName: (key, platform) => keyText(KEY_NAME, key, platform),

@@ -103,6 +103,7 @@ const EXPECTED = [
   'list',
   'list-checks',
   'list-ordered',
+  'list-tree',
   'loader',
   'lock',
   'log-in',

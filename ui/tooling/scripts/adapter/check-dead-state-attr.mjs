@@ -151,7 +151,6 @@ const HOOKS = {
   'field-array:data-movable': '这份列表能不能排序。手柄本身收不收由 hidden 承载',
   'file-upload:data-remote': '这条是不是已在服务端的旧文件，作者拿它决定要不要重传',
   'highlight:data-case-sensitive': '匹配时区不区分大小写，是查找入参不是外观',
-  'json-viewer:data-view': '树视图还是原文视图，两种视图渲染的是不同的部件',
   'loading-bar:data-indeterminate': '不知进度时涓流本身就是表达，不另给一档外观',
   'log:data-at-bottom': '视口贴没贴底，作者拿它决定要不要提示"有新内容"',
   'log:data-sticking': '还粘不粘着底，与上面那一位成对',

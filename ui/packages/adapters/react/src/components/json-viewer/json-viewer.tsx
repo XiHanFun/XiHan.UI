@@ -107,14 +107,7 @@ function JsonViewerToolbar({ api }: { api: JsonViewerApi }): ReactNode {
     return null
   return (
     <div {...api.getToolbarProps() as Record<string, unknown>}>
-      {api.tools.includes('expand')
-        ? (
-            <>
-              <button {...api.getExpandAllTriggerProps() as Record<string, unknown>} />
-              <button {...api.getCollapseAllTriggerProps() as Record<string, unknown>} />
-            </>
-          )
-        : null}
+      {api.tools.includes('expand') ? <button {...api.getExpandTriggerProps() as Record<string, unknown>} /> : null}
       {api.tools.includes('wrap') ? <button {...api.getWrapTriggerProps() as Record<string, unknown>} /> : null}
       {api.tools.includes('copy')
         ? (
