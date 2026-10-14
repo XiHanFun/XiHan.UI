@@ -72,9 +72,9 @@ outline-color: oklch(0.461 0.018 258)
 
 [cell]
 padding-top: 12px
-padding-right: 16px
+padding-right: 12px
 padding-bottom: 12px
-padding-left: 16px
+padding-left: 12px
 row-gap: 8px
 column-gap: 8px
 border-top-left-radius: 0px
@@ -107,9 +107,9 @@ outline-color: oklch(0.208 0.006 258)
 
 [column-header]
 padding-top: 12px
-padding-right: 16px
+padding-right: 12px
 padding-bottom: 12px
-padding-left: 16px
+padding-left: 12px
 row-gap: 8px
 column-gap: 8px
 border-top-left-radius: 0px

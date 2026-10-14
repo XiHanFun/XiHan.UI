@@ -71922,7 +71922,7 @@
         "split"
       ],
       "defaultToken": [
-        "--xh-space-4"
+        "--xh-_table-cell-px"
       ],
       "visibility": "public",
       "description": "table 的 cell、column-header、root 部件 padding-inline、padding-inline-end 覆盖槽。"
@@ -72068,7 +72068,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-4"
+        "--xh-_table-cell-px"
       ],
       "visibility": "public",
       "description": "table 的 cell、expanded-row 部件 padding-inline 覆盖槽。"

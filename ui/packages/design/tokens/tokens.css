@@ -380,6 +380,9 @@
     --xh-table-cell-py-sm: var(--xh-space-2);
     --xh-table-cell-py-md: var(--xh-space-3);
     --xh-table-cell-py-lg: var(--xh-space-4);
+    --xh-table-cell-px-sm: var(--xh-space-2);
+    --xh-table-cell-px-md: var(--xh-space-3);
+    --xh-table-cell-px-lg: var(--xh-space-4);
     --xh-shape-inset: var(--xh-radius-sm);
     --xh-shape-control: var(--xh-radius-sm);
     --xh-shape-surface: var(--xh-radius-md);

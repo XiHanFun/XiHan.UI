@@ -711,7 +711,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `--xh-table-caption-py` | `caption` | `padding-block` | `default` | `--xh-space-2` | table 的 caption 部件 padding-block 覆盖槽。 |
 | `--xh-table-cell-gap` | `cell`<br>`column-header` | `gap` | `default` | `--xh-control-gap-md` | table 的 cell、column-header 部件 gap 覆盖槽。 |
 | `--xh-table-cell-min-w` | `cell`<br>`column-header` | `min-inline-size` | `default` | `3rem` | table 的 cell、column-header 部件 min-inline-size 覆盖槽。 |
-| `--xh-table-cell-px` | `cell`<br>`column-header`<br>`root` | `padding-inline`<br>`padding-inline-end` | `default`<br>`not(:last-child)`<br>`split` | `--xh-space-4` | table 的 cell、column-header、root 部件 padding-inline、padding-inline-end 覆盖槽。 |
+| `--xh-table-cell-px` | `cell`<br>`column-header`<br>`root` | `padding-inline`<br>`padding-inline-end` | `default`<br>`not(:last-child)`<br>`split` | `--xh-_table-cell-px` | table 的 cell、column-header、root 部件 padding-inline、padding-inline-end 覆盖槽。 |
 | `--xh-table-cell-py` | `cell`<br>`column-header` | `padding-block` | `default` | `--xh-_table-cell-py` | table 的 cell、column-header 部件 padding-block 覆盖槽。 |
 | `--xh-table-column-fg` | `column-header` | `color` | `default` | `--xh-fg-default` | table 的 column-header 部件 color 覆盖槽。 |
 | `--xh-table-column-font-weight` | `column-header` | `font-weight` | `default` | `--xh-font-weight-medium` | table 的 column-header 部件 font-weight 覆盖槽。 |
@@ -719,7 +719,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `--xh-table-column-list-font-size` | `column-list` | `font-size` | `default` | `--xh-text-secondary-size` | table 的 column-list 部件 font-size 覆盖槽。 |
 | `--xh-table-column-list-gap` | `column-list` | `gap` | `default` | `--xh-_table-column-list-gap` | table 的 column-list 部件 gap 覆盖槽。 |
 | `--xh-table-detail-bg` | `expanded-row` | `background` | `default` | `--xh-bg-subtle` | table 的 expanded-row 部件 background 覆盖槽。 |
-| `--xh-table-detail-px` | `cell`<br>`expanded-row` | `padding-inline` | `default` | `--xh-space-4` | table 的 cell、expanded-row 部件 padding-inline 覆盖槽。 |
+| `--xh-table-detail-px` | `cell`<br>`expanded-row` | `padding-inline` | `default` | `--xh-_table-cell-px` | table 的 cell、expanded-row 部件 padding-inline 覆盖槽。 |
 | `--xh-table-detail-py` | `cell`<br>`expanded-row` | `padding-block` | `default` | `--xh-space-3` | table 的 cell、expanded-row 部件 padding-block 覆盖槽。 |
 | `--xh-table-drag-fg` | `column-drag-trigger` | `color` | `default` | `--xh-fg-subtle` | table 的 column-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-table-drag-fg-active` | `column-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | table 的 column-drag-trigger 部件 color 覆盖槽。 |
