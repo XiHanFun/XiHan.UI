@@ -75,6 +75,41 @@ export interface JsonViewerNodeProps {
 /** 展示形态：tree 展平为可折叠的行，text 直接输出缩进后的 JSON 原文。 */
 export type JsonViewerView = 'tree' | 'text'
 
+export interface JsonViewerViewChangeDetails {
+  view: JsonViewerView
+}
+
+export interface JsonViewerWrapChangeDetails {
+  wrap: boolean
+}
+
+export interface JsonViewerCopyErrorDetails {
+  /** 写入失败的原因：权限被拒或非安全上下文时是浏览器返回的拒绝值，接口缺席时是本组件合成的 Error。 */
+  error: unknown
+  /** 本次尝试写入剪贴板的文本。 */
+  value: string
+}
+
+/**
+ * 内建工具条里的一项工具。
+ * - `expand`：「展开全部」与「收起全部」两颗钮，只在树档出现；
+ * - `wrap`：原文自动换行的开关，只在原文档出现；
+ * - `copy`：把 JSON 原文写进剪贴板；
+ * - `view`：在树与原文之间切换的开关。
+ */
+export type JsonViewerTool = 'expand' | 'wrap' | 'copy' | 'view'
+
+/** 工具条里各颗钮的部件名，按压通道据此记「正被按住的那一颗」。 */
+export type JsonViewerToolTrigger
+  = | 'expand-all-trigger'
+    | 'collapse-all-trigger'
+    | 'wrap-trigger'
+    | 'copy-trigger'
+    | 'view-trigger'
+
+/** 写入剪贴板的相位：在途为 copying，成功后在停留窗口内为 copied。 */
+export type JsonViewerCopyStatus = 'idle' | 'copying' | 'copied'
+
 /** 读屏与界面上的文案，默认英文。 */
 export interface JsonViewerTranslations {
   /** 原文视图区域的可及名：它是一整块可滚动的文本，不提供名字时读屏无法朗读其含义。 */
@@ -96,6 +131,20 @@ export interface JsonViewerTranslations {
   moreItems: (count: number) => string
   /** 无法展开任何一行时的兜底文案，作者向空态部件写入内容后即不使用它。 */
   empty: string
+  /** 内建工具条的可及名：它与树、原文是两块不同的区域，没有名字时读屏只念「组」。 */
+  toolbar: string
+  /** 「展开全部」钮的可及名：钮里只有一个字形。 */
+  expandAll: string
+  /** 「收起全部」钮的可及名，语义同上。 */
+  collapseAll: string
+  /** 原文自动换行开关的可及名；开没开由 aria-pressed 报，名字不随之变化。 */
+  wrap: string
+  /** 复制钮的可及名。 */
+  copy: string
+  /** 复制成功后播报区朗读的语句。 */
+  copied: string
+  /** 原文开关的可及名；按下即原文档，开没开由 aria-pressed 报。 */
+  viewText: string
 }
 
 export interface JsonViewerSchema extends MachineSchema {
@@ -103,11 +152,29 @@ export interface JsonViewerSchema extends MachineSchema {
     /** 要展示的值，任意形状。未提供时为空视图（不展开任何行）。 */
     value?: unknown
     /**
-     * 展示形态，默认 tree。
+     * 展示形态。提供即受控：cell 直读 prop，原文开关只发 onViewChange 不落内部值。
      * text 档直接输出 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减：
      * 目的是与后端下发的内容完全一致。展开集合与键盘导航在该档上不生效。
      */
     view?: JsonViewerView
+    /** 非受控初值，默认 tree。 */
+    defaultView?: JsonViewerView
+    /**
+     * 值的原文（如后端下发的那段 JSON 文本）。提供时原文档与复制钮一律取它：能解析成 JSON 就只按两格缩进重排，
+     * 数字、字符串等字面量一字不改；解析不了就原样。value 是解析过的值，超出安全整数的数字已经失真，
+     * 原文才是与后端一致的那一份。不提供时由 value 序列化。树档照旧展示 value。
+     */
+    source?: string
+    /** 原文档是否自动换行。提供即受控，写入只发 onWrapChange。缺省不换行：长行横向滚动，缩进不被折乱。 */
+    wrap?: boolean
+    /** 非受控初值，默认 false。 */
+    defaultWrap?: boolean
+    /**
+     * 内建工具条：不提供即没有工具条；true 铺出全部工具；数组只铺列出的几项。
+     * 钮的排列由组件定（展开 / 收起、换行、复制、原文开关依次排在条的末端），与数组顺序无关；
+     * 数组里出现未知的工具名即抛错。
+     */
+    tools?: boolean | readonly JsonViewerTool[]
     /** 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留内容。 */
     variant?: ControlVariant
     /** 展开集合（元素是行路径）。提供即受控：cell 直读 prop，写入只发 onExpandedValueChange 不落内部值。 */
@@ -136,6 +203,12 @@ export interface JsonViewerSchema extends MachineSchema {
     search?: string
     translations?: Partial<JsonViewerTranslations>
     onExpandedValueChange?: (details: JsonViewerExpandedValueChangeDetails) => void
+    /** 原文开关切换了展示形态；受控时由宿主据此回写 view。 */
+    onViewChange?: (details: JsonViewerViewChangeDetails) => void
+    /** 换行开关切换了原文档的换行；受控时由宿主据此回写 wrap。 */
+    onWrapChange?: (details: JsonViewerWrapChangeDetails) => void
+    /** 复制钮写入剪贴板失败时通知；此时复制钮已回到常态，不留下「已复制」的假象。 */
+    onCopyError?: (details: JsonViewerCopyErrorDetails) => void
   }
   context: {
     /**
@@ -154,11 +227,20 @@ export interface JsonViewerSchema extends MachineSchema {
     pressedValue: string | null
     /** 在命中之间逐个走时停在哪一行；搜索词一变就回到未选。它投影 data-current，并被滚进视野。 */
     activeMatch: string | null
+    /** 展示形态。受控（view 提供）时 cell 直读 prop。 */
+    view: JsonViewerView
+    /** 原文档是否自动换行。受控（wrap 提供）时 cell 直读 prop。 */
+    wrap: boolean
+    /** 工具条的按压通道：正被 Space / Enter 或触屏手指按住的那一颗钮，没有按住时为 null。与分支行的 pressedValue 互相独立。 */
+    pressedTool: JsonViewerToolTrigger | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
-  /** 展开态不编码进状态，状态机因此只有一个状态，逻辑全在 context 与 actions。 */
-  state: 'idle'
+  /**
+   * 展开态不编码进状态，树的逻辑全在 context 与 actions；
+   * 状态只记复制钮的写入相位：写入在途（copying）与成功后的停留窗口（copied）。
+   */
+  state: JsonViewerCopyStatus
   event:
     /** 整体改写展开集合（'*' 展开同级、外部 setExpandedValue 都经过它）。 */
     | { type: 'EXPANDED.SET', value: string[] }
@@ -176,6 +258,22 @@ export interface JsonViewerSchema extends MachineSchema {
     | { type: 'MATCH.SET', value: string | null }
     /** 搜索词或数据变了：展开命中行的祖先，并回到未选。 */
     | { type: 'SEARCH.SYNC' }
+    /** 原文开关或外部 setView 改写展示形态。 */
+    | { type: 'VIEW.SET', view: JsonViewerView }
+    /** 换行开关或外部 setWrap 改写原文档的换行。 */
+    | { type: 'WRAP.SET', wrap: boolean }
+    /** 点了复制钮，或作者调用 api.copy()。写入在途时（copying）不接受，避免同一次点击写入两遍。 */
+    | { type: 'COPY.TRIGGER' }
+    /** 写入 promise 兑现，由 copying 的副作用回送。 */
+    | { type: 'COPY.SUCCESS' }
+    /** 写入 promise 拒绝，由 copying 的副作用回送；value 是发起时定死的文本。 */
+    | { type: 'COPY.ERROR', error: unknown, value: string }
+    /** 「已复制」的停留计时到期，复制钮回到常态。 */
+    | { type: 'after.timeout' }
+    /** 工具条的按压通道：某颗钮被 Space / Enter 或触屏按住。 */
+    | { type: 'TOOL.PRESS.START', part: JsonViewerToolTrigger }
+    /** 该颗钮抬起、失焦或指针取消。 */
+    | { type: 'TOOL.PRESS.END', part: JsonViewerToolTrigger }
   tag: never
   guard: never
   action:
@@ -191,7 +289,12 @@ export interface JsonViewerSchema extends MachineSchema {
     | 'revealMatches'
     | 'setActiveMatch'
     | 'scrollToActiveMatch'
-  effect: never
+    | 'setView'
+    | 'setWrap'
+    | 'invokeCopyError'
+    | 'startToolPress'
+    | 'endToolPress'
+  effect: 'writeText' | 'trackCopiedTimeout'
 }
 
 export interface JsonViewerApi<T extends PropTypes = PropTypes> {
@@ -219,11 +322,29 @@ export interface JsonViewerApi<T extends PropTypes = PropTypes> {
   toggle: (value: string) => void
   /** 当前生效的展示形态。 */
   view: JsonViewerView
+  /** 原文档当前是否自动换行。 */
+  wrap: boolean
+  /** 工具条上铺的工具，按条上的排列顺序；没有工具条时为空。 */
+  tools: readonly JsonViewerTool[]
+  /** 复制钮的写入相位。 */
+  copyStatus: JsonViewerCopyStatus
+  /** 已复制成功且仍在停留窗口内：复制钮换成对钩、播报区念出成功回执的唯一判据。 */
+  copied: boolean
+  /** 播报区该念的语句；未到已复制档时为空串。 */
+  announcement: string
+  setView: (view: JsonViewerView) => void
+  setWrap: (wrap: boolean) => void
+  /** 展开全部分支（maxItems 折掉的成员与循环引用照旧不展开）。 */
+  expandAll: () => void
+  /** 收起到只剩顶层：根行留着展开，其下的分支全部收起。 */
+  collapseAll: () => void
+  /** 把 JSON 原文写进剪贴板，与点复制钮走同一路径。 */
+  copy: () => void
   /** 无法展开任何一行：value 未提供或为 undefined。空态部件随它显隐。 */
   isEmpty: boolean
   /** 空态的兜底文案，作者未向空态部件写入内容时铺设它。 */
   emptyText: string
-  /** 缩进后的 JSON 原文；键序与环路记号与树档一致。text 档之外也可获取，便于作者实现复制原文。 */
+  /** 原文档展示、复制钮写入的那份文本：提供了 source 时是它重排缩进后的样子，否则由 value 序列化（键序与环路记号与树档一致）。 */
   text: string
   /** 命中搜索词的行路径，按树序排列；没有搜索时为空。 */
   searchMatches: readonly string[]
@@ -257,4 +378,17 @@ export interface JsonViewerApi<T extends PropTypes = PropTypes> {
   getEmptyProps: () => T['element']
   /** 键名与值文本里命中搜索词的那一段。 */
   getMarkProps: () => T['element']
+  /**
+   * 内建工具条：根的第一个孩子，各颗钮按 tools 铺在其中。
+   * 报告 `role=group`：一组有名字的控件，每颗钮各占一个 Tab 位；
+   * 不报告 `role=toolbar`，那个角色承诺条内靠方向键移动。
+   */
+  getToolbarProps: () => T['element']
+  getExpandAllTriggerProps: () => T['button']
+  getCollapseAllTriggerProps: () => T['button']
+  getWrapTriggerProps: () => T['button']
+  getCopyTriggerProps: () => T['button']
+  getViewTriggerProps: () => T['button']
+  /** 复制成功的播报区：视觉隐藏的 polite 实时区，只要有复制钮就常驻，内容取 announcement。 */
+  getStatusProps: () => T['element']
 }

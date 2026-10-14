@@ -527,5 +527,133 @@ export const jsonViewerSuite: ConformanceSuite = {
         },
       ],
     },
+    {
+      name: 'tools：工具条是根的第一个孩子，role=group 带名字；钮按条上的排列铺，随形态出没的那几颗由 hidden 收起',
+      spec: { adr: 'json-viewer-toolbar' },
+      props: props({ tools: true }),
+      initial: {
+        counts: {
+          'toolbar': 1,
+          'expand-all-trigger': 1,
+          'collapse-all-trigger': 1,
+          'wrap-trigger': 1,
+          'copy-trigger': 1,
+          'status': 1,
+          'view-trigger': 1,
+        },
+        parts: {
+          'toolbar': { 'role': 'group', 'aria-label': 'JSON tools', 'data-view': 'tree' },
+          'expand-all-trigger': { 'type': 'button', 'aria-label': 'Expand all', 'hidden': null },
+          'collapse-all-trigger': { 'type': 'button', 'aria-label': 'Collapse all', 'hidden': null },
+          // 换行只对原文有意义，树档里收起来
+          'wrap-trigger': { 'aria-label': 'Wrap lines', 'aria-pressed': 'false', 'hidden': '' },
+          'copy-trigger': { 'aria-label': 'Copy JSON', 'data-state': 'idle' },
+          'status': { 'role': 'status', 'aria-live': 'polite' },
+          'view-trigger': { 'aria-label': 'Raw JSON', 'aria-pressed': 'false', 'data-state': 'off' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '「工具条排在根的最前面、钮的先后」是跨节点的位置关系，逐个部件的属性期望表达不了',
+          run: ({ doc }) => {
+            const root = doc.querySelector<HTMLElement>('[data-scope="json-viewer"][data-part="root"]')!
+            const first = root.firstElementChild
+            if (first?.getAttribute('data-part') !== 'toolbar')
+              throw new Error(`根的第一个孩子应是 toolbar，实际是 ${first?.getAttribute('data-part') ?? '空'}`)
+            const parts = [...first.children].map(el => el.getAttribute('data-part'))
+            const expected = ['expand-all-trigger', 'collapse-all-trigger', 'wrap-trigger', 'copy-trigger', 'status', 'view-trigger']
+            if (parts.join() !== expected.join())
+              throw new Error(`工具条里的部件次序应为 ${expected.join(' → ')}，实际是 ${parts.join(' → ')}`)
+          },
+        },
+        {
+          kind: 'click',
+          part: 'view-trigger',
+          expect: {
+            counts: { text: 1, tree: 0 },
+            parts: {
+              'root': { 'data-view': 'text' },
+              'view-trigger': { 'aria-pressed': 'true', 'data-state': 'on' },
+              'wrap-trigger': { hidden: null },
+              'expand-all-trigger': { hidden: '' },
+              'collapse-all-trigger': { hidden: '' },
+              'text': { 'data-wrap': null },
+            },
+          },
+        },
+        {
+          kind: 'click',
+          part: 'wrap-trigger',
+          expect: {
+            parts: {
+              'wrap-trigger': { 'aria-pressed': 'true', 'data-state': 'on' },
+              'text': { 'data-wrap': '' },
+            },
+          },
+        },
+        {
+          kind: 'click',
+          part: 'view-trigger',
+          expect: { counts: { text: 0, tree: 1 }, parts: { root: { 'data-view': 'tree' } } },
+        },
+      ],
+    },
+    {
+      name: 'tools：展开全部把每一层的分支都展开，收起全部只留根行展开',
+      spec: { adr: 'json-viewer-toolbar' },
+      props: props({ tools: ['expand'] }),
+      initial: {
+        counts: { 'toolbar': 1, 'expand-all-trigger': 1, 'collapse-all-trigger': 1, 'copy-trigger': 0, 'view-trigger': 0, 'wrap-trigger': 0, 'status': 0 },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'expand-all-trigger',
+          expect: {
+            counts: { 'branch-content': 3 },
+            parts: { 'branch[1]': { 'aria-expanded': 'true' }, 'branch[2]': { 'aria-expanded': 'true' } },
+          },
+        },
+        {
+          kind: 'click',
+          part: 'collapse-all-trigger',
+          expect: {
+            counts: { 'branch-content': 1 },
+            parts: { 'branch[0]': { 'aria-expanded': 'true' }, 'branch[1]': { 'aria-expanded': 'false' } },
+          },
+        },
+      ],
+    },
+    {
+      name: 'tools 不给：没有工具条',
+      spec: { adr: 'json-viewer-toolbar' },
+      props: props(),
+      initial: {
+        counts: { 'toolbar': 0, 'copy-trigger': 0, 'view-trigger': 0, 'status': 0 },
+      },
+    },
+    {
+      name: '受控 view：原文开关只发通知，宿主不写回则纹丝不动',
+      spec: { adr: 'json-viewer-toolbar' },
+      props: props({ tools: ['view'], view: 'tree' }),
+      steps: [
+        {
+          kind: 'click',
+          part: 'view-trigger',
+          expect: { counts: { tree: 1, text: 0 }, parts: { 'view-trigger': { 'aria-pressed': 'false' } } },
+        },
+        { kind: 'setProps', props: { view: 'text' }, expect: { counts: { tree: 0, text: 1 } } },
+      ],
+    },
+    {
+      name: '工具钮的按压通道：Space / Enter 按住与触屏按下投影 data-pressed，抬起或失焦撤下',
+      spec: { adr: 'press-channel' },
+      props: props({ tools: true }),
+      covers: ['json-viewer.kbd.tool'],
+      steps: [
+        heldPress('json-viewer', 'expand-all-trigger'),
+      ],
+    },
   ],
 }

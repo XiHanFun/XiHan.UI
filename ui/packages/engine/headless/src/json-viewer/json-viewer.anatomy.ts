@@ -9,6 +9,7 @@ import type { ItemQuery } from '@xihan-ui/core'
 import { createAnatomy } from '@xihan-ui/core'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
+// toolbar 起的七个是内建工具条：条本身、五颗钮与复制成功的播报区，只在 tools 打开时铺出。
 export const jsonViewerAnatomy = createAnatomy('json-viewer', [
   'root',
   'tree',
@@ -25,6 +26,13 @@ export const jsonViewerAnatomy = createAnatomy('json-viewer', [
   'text',
   'empty',
   'mark',
+  'toolbar',
+  'expand-all-trigger',
+  'collapse-all-trigger',
+  'wrap-trigger',
+  'copy-trigger',
+  'view-trigger',
+  'status',
 ])
 
 /**

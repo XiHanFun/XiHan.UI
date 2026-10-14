@@ -10,16 +10,39 @@ import type {
   JsonViewerFlattenOptions,
   JsonViewerNode,
   JsonViewerSchema,
+  JsonViewerTool,
   JsonViewerValueType,
   JsonViewerWalkOptions,
 } from './json-viewer.types'
-import { setup } from '@xihan-ui/core'
+import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { uniqueArray as unique } from '../shared/array'
+import { resolveClipboardTimeout, writeToClipboard } from '../shared/clipboard-write'
 
 const { createMachine } = setup<JsonViewerSchema>()
 
 /** 根行的路径。子行路径由它逐层拼出来。 */
 export const JSON_VIEWER_ROOT_PATH = '$'
+
+/**
+ * 内建工具在条上的排列：随形态出没的几颗（展开 / 收起、换行）排在前，
+ * 复制与原文开关钉在末端，两档切过去这两颗不挪位置。
+ */
+export const JSON_VIEWER_TOOLS: readonly JsonViewerTool[] = ['expand', 'wrap', 'copy', 'view']
+
+/**
+ * tools 归一成条上要铺的工具：不提供或 false 即没有工具条，true 即全部，数组按条上的排列取其中列出的几项。
+ * 数组里有未知的工具名直接抛错：拼错一个名字，那颗钮会悄无声息地不见。
+ */
+export function resolveJsonViewerTools(tools: boolean | readonly JsonViewerTool[] | undefined): JsonViewerTool[] {
+  if (!tools)
+    return []
+  if (tools === true)
+    return [...JSON_VIEWER_TOOLS]
+  const unknown = tools.filter(tool => !JSON_VIEWER_TOOLS.includes(tool))
+  if (unknown.length)
+    throw new Error(`[xh] JsonViewer 的 tools 只认 ${JSON_VIEWER_TOOLS.join(' / ')}，收到 ${unknown.map(String).join('、')}`)
+  return JSON_VIEWER_TOOLS.filter(tool => tools.includes(tool))
+}
 
 /**
  * 子行路径。键一律用 JSON 串包起来：直接拼 `.` 会让 `{ a: { b: 1 }, 'a.b': 2 }`
@@ -142,6 +165,88 @@ export function jsonText(value: unknown, sortKeys: boolean, indent = 2): string 
   }
 
   return write(value, 0, new Set())
+}
+
+/**
+ * 把一段 JSON 原文按缩进重排：只动字面量之外的空白，数字、字符串的写法一字不改。
+ * 解析过的值会把超出安全整数的数字改成近似值，原文档要的是与来源一致的那一份，所以不经 JSON.parse 的结果重写。
+ * 解析不了（不是合法 JSON）就原样返回。空对象与空数组写成一对括号，排版与 JSON.stringify(_, null, indent) 一致。
+ */
+export function formatJsonSource(source: string, indent = 2): string {
+  try {
+    JSON.parse(source)
+  }
+  catch {
+    return source
+  }
+  const pad = (level: number): string => `\n${' '.repeat(indent * level)}`
+  let out = ''
+  let level = 0
+  let inString = false
+  let escaped = false
+  for (let i = 0; i < source.length; i++) {
+    const ch = source[i]!
+    if (inString) {
+      out += ch
+      if (escaped)
+        escaped = false
+      else if (ch === '\\')
+        escaped = true
+      else if (ch === '"')
+        inString = false
+      continue
+    }
+    switch (ch) {
+      case '"':
+        inString = true
+        out += ch
+        break
+      case '{':
+      case '[': {
+        const close = ch === '{' ? '}' : ']'
+        let next = i + 1
+        while (next < source.length && ' \t\n\r'.includes(source[next]!))
+          next++
+        if (source[next] === close) {
+          out += ch + close
+          i = next
+          break
+        }
+        level++
+        out += ch + pad(level)
+        break
+      }
+      case '}':
+      case ']':
+        level--
+        out += pad(level) + ch
+        break
+      case ',':
+        out += `,${pad(level)}`
+        break
+      case ':':
+        out += ': '
+        break
+      // JSON 的空白只有这四种，字面量之外的一律丢掉、由上面重新排
+      case ' ':
+      case '\t':
+      case '\n':
+      case '\r':
+        break
+      default:
+        out += ch
+    }
+  }
+  return out
+}
+
+/**
+ * 原文档展示、复制钮写入的那份文本：给了 source 就重排它，否则由 value 序列化。
+ * 连接层与复制副作用共用这一处，两边拿到的永远是同一份。
+ */
+export function jsonViewerText(prop: PropFn<JsonViewerSchema>): string {
+  const source = prop('source')
+  return source != null ? formatJsonSource(source) : jsonText(prop('value'), !!prop('sortKeys'))
 }
 
 /**
@@ -335,6 +440,19 @@ export const jsonViewerMachine = createMachine({
     // 按压通道：正被按住的分支行，与展开集合互相独立（Enter 在 keydown 即翻面，按压面不能随之丢）
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
     activeMatch: cell<string | null>(() => ({ defaultValue: null })),
+    // 两个开关与展开集合同一套受控收口：提供 prop 即 cell 直读，写入只发通知
+    view: cell<JsonViewerSchema['context']['view']>(() => ({
+      value: prop('view'),
+      defaultValue: prop('defaultView') ?? 'tree',
+      onChange: view => prop('onViewChange')?.({ view }),
+    })),
+    wrap: cell<boolean>(() => ({
+      value: prop('wrap'),
+      defaultValue: prop('defaultWrap') ?? false,
+      onChange: wrap => prop('onWrapChange')?.({ wrap }),
+    })),
+    // 工具条的按压通道，与分支行那一路各记各的：一颗钮与一行不会同时被同一个手指按住
+    pressedTool: cell<JsonViewerSchema['context']['pressedTool']>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
   // 首帧就带着搜索词时同样要把命中行展开出来
@@ -342,21 +460,47 @@ export const jsonViewerMachine = createMachine({
   watch: ({ track, prop, action }) => {
     track([() => prop('search'), () => prop('value')], () => action(['syncSearch']))
   },
+  // 树与两个开关的事件不分复制相位：写入在途、停留窗口里照常能展开、切形态
+  // 省略 target：只跑 actions，不换状态
+  on: {
+    'EXPANDED.SET': { actions: ['setExpanded'] },
+    'BRANCH.EXPAND': { actions: ['expandBranch'] },
+    'BRANCH.COLLAPSE': { actions: ['collapseBranch'] },
+    'BRANCH.TOGGLE': { actions: ['toggleBranch'] },
+    'NODE.FOCUS': { actions: ['setFocusedValue'] },
+    'VIEWER.BLUR': { actions: ['clearFocusWithin'] },
+    // 按压通道：视图没有禁用态，没有守卫；分支行只是内容的一行，按住只记事实
+    'PRESS.START': { actions: ['startPress'] },
+    'PRESS.END': { actions: ['endPress'] },
+    'MATCH.SET': { actions: ['setActiveMatch', 'scrollToActiveMatch'] },
+    'SEARCH.SYNC': { actions: ['revealMatches'] },
+    'VIEW.SET': { actions: ['setView'] },
+    'WRAP.SET': { actions: ['setWrap'] },
+    'TOOL.PRESS.START': { actions: ['startToolPress'] },
+    'TOOL.PRESS.END': { actions: ['endToolPress'] },
+  },
+  // 状态只记复制钮的写入相位，与剪贴板组件同一条路：在途不接第二次，成功后停留一阵再回落
   states: {
     idle: {
-      // 省略 target：只跑 actions，不换状态
       on: {
-        'EXPANDED.SET': { actions: ['setExpanded'] },
-        'BRANCH.EXPAND': { actions: ['expandBranch'] },
-        'BRANCH.COLLAPSE': { actions: ['collapseBranch'] },
-        'BRANCH.TOGGLE': { actions: ['toggleBranch'] },
-        'NODE.FOCUS': { actions: ['setFocusedValue'] },
-        'VIEWER.BLUR': { actions: ['clearFocusWithin'] },
-        // 按压通道：视图没有禁用态，没有守卫；分支行只是内容的一行，按住只记事实
-        'PRESS.START': { actions: ['startPress'] },
-        'PRESS.END': { actions: ['endPress'] },
-        'MATCH.SET': { actions: ['setActiveMatch', 'scrollToActiveMatch'] },
-        'SEARCH.SYNC': { actions: ['revealMatches'] },
+        'COPY.TRIGGER': { target: 'copying' },
+      },
+    },
+    copying: {
+      effects: ['writeText'],
+      on: {
+        'COPY.SUCCESS': { target: 'copied' },
+        // 失败一律回 idle，不留下「已复制」的假象
+        'COPY.ERROR': { target: 'idle', actions: ['invokeCopyError'] },
+        // 不接 COPY.TRIGGER：写入在途，连点不重复发写请求
+      },
+    },
+    copied: {
+      effects: ['trackCopiedTimeout'],
+      on: {
+        'after.timeout': { target: 'idle' },
+        // 停留窗口里再点一次重新写
+        'COPY.TRIGGER': { target: 'copying' },
       },
     },
   },
@@ -446,6 +590,58 @@ export const jsonViewerMachine = createMachine({
         const escape = scope.getWin().CSS?.escape ?? ((raw: string) => raw.replace(/["\\]/g, '\\$&'))
         tree.querySelector<HTMLElement>(`[data-value="${escape(value)}"]`)?.scrollIntoView?.({ block: 'nearest' })
       },
+      setView: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'VIEW.SET')
+          context.set('view', e.view)
+      },
+      setWrap: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'WRAP.SET')
+          context.set('wrap', e.wrap)
+      },
+      invokeCopyError: ({ prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'COPY.ERROR')
+          return
+        // 取事件带来的那份，不重读数据：写入途中宿主换了 value，报出去的就不是实际写入的那一份
+        prop('onCopyError')?.({ error: e.error, value: e.value })
+      },
+      startToolPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'TOOL.PRESS.START')
+          context.set('pressedTool', e.part)
+      },
+      // 只收自己那一颗：别的钮的 keyup 不该把正按着的这一颗松开
+      endToolPress: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'TOOL.PRESS.END' && context.get('pressedTool') === e.part)
+          context.set('pressedTool', null)
+      },
+    },
+    effects: {
+      /** 异步写入。原文在发起那一刻定死，不在兑现时重算：途中换了数据，写进去的仍是点下去那一刻看到的。 */
+      writeText: ({ prop, scope, send }) => {
+        let disposed = false
+        const value = jsonViewerText(prop)
+
+        writeToClipboard(scope, value).then(
+          () => {
+            if (!disposed)
+              send({ type: 'COPY.SUCCESS' })
+          },
+          (error: unknown) => {
+            if (!disposed)
+              send({ type: 'COPY.ERROR', error, value })
+          },
+        )
+
+        return () => {
+          disposed = true
+        }
+      },
+      // 停留时长与剪贴板组件的缺省同值：同一页里两种复制钮的对钩停一样久
+      trackCopiedTimeout: ({ send }) => setTimeoutEffect(() => send({ type: 'after.timeout' }), resolveClipboardTimeout(undefined)),
     },
   },
 })

@@ -416,6 +416,13 @@ const translations = {
     collapsedBranchLabel: (name, count) => `${name}, ${count === 1 ? '1 Eintrag' : `${count} Einträge`}`,
     moreItems: count => `… ${count} weitere`,
     empty: 'Keine Daten',
+    toolbar: 'JSON-Werkzeuge',
+    expandAll: 'Alle aufklappen',
+    collapseAll: 'Alle zuklappen',
+    wrap: 'Zeilen umbrechen',
+    copy: 'JSON kopieren',
+    copied: 'Kopiert',
+    viewText: 'Roh-JSON',
   },
   'kbd': {
     keyName: (key, platform) => keyText(KEY_NAME, key, platform),

@@ -9244,6 +9244,12 @@
   user-select: text;
 }
 
+/* 自动换行：长行折到下一行而不是横向滚动。缩进的空格照留，折下去的那一截从行首起 */
+.xh-scope-json-viewer[data-part='text'][data-wrap] {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .xh-scope-json-viewer[data-part='text'][hidden] {
   display: none;
 }
@@ -9472,6 +9478,111 @@
   color: var(--xh-json-viewer-mark-fg-current, var(--xh-fg-on-brand));
 }
 
+/* —— 内建工具条 —— */
+/* 根的第一个孩子，钮排在条的末端。条本身不画面：面画在树、原文与空态那一格上，
+   条压在面的外头，三档 variant 切过去它都不变；与下面那块面隔一档间距 */
+.xh-scope-json-viewer[data-part='toolbar'] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--xh-json-viewer-toolbar-gap, var(--xh-space-0_5));
+  margin-block-end: var(--xh-json-viewer-toolbar-mb, var(--xh-space-1));
+}
+
+/*
+ * 工具钮：Action Control icon 档 ghost 面（盒、四态面、按压与粗指针命中区由家族配方按连接层投影的
+ * data-xh-action-* 给出），比视图低一档、最低 sm。字形尺随钮档。
+ * 两颗开关（自动换行、原文）开着是无滑块开关的选中面：品牌淡底 12 → 悬停 20 → 按压 28，前景 fg-on-brand-subtle。
+ * 条里除播报区外都是钮；基础规则包进 :where，开着、已复制两档同一权重就压得过它
+ */
+.xh-scope-json-viewer[data-part='toolbar'] > :where(:not([data-part='status'])) {
+  --xh-icon-size: var(--xh-json-viewer-tool-icon-size, var(--xh-_action-profile-glyph-size));
+  --xh-action-fg-rest: var(--xh-json-viewer-tool-fg, var(--xh-fg-muted));
+}
+
+.xh-scope-json-viewer[data-part='toolbar'] > [data-state='on'] {
+  --xh-action-bg-rest: var(--xh-bg-brand-subtle);
+  --xh-action-bg-hover: var(--xh-bg-brand-subtle-hover);
+  --xh-action-bg-pressed: var(--xh-bg-brand-subtle-active);
+  --xh-action-bg-focus-visible: var(--xh-bg-brand-subtle);
+  --xh-action-bg-disabled: color-mix(in oklab, var(--xh-bg-brand-subtle) 50%, var(--xh-bg-subtle-opaque));
+  --xh-action-fg-rest: var(--xh-fg-on-brand-subtle);
+  --xh-action-fg-hover: var(--xh-fg-on-brand-subtle);
+  --xh-action-fg-pressed: var(--xh-fg-on-brand-subtle);
+  --xh-action-fg-focus-visible: var(--xh-fg-on-brand-subtle);
+}
+
+/* 复制成功的那几秒：字形换成对钩、前景取成功色，与剪贴板组件的复制钮同一副回执 */
+.xh-scope-json-viewer[data-part='copy-trigger'][data-copied] {
+  --xh-action-fg-rest: var(--xh-json-viewer-tool-fg-copied, var(--xh-fg-success));
+  --xh-action-fg-hover: var(--xh-json-viewer-tool-fg-copied, var(--xh-fg-success));
+  --xh-action-fg-pressed: var(--xh-json-viewer-tool-fg-copied, var(--xh-fg-success));
+  --xh-action-fg-focus-visible: var(--xh-json-viewer-tool-fg-copied, var(--xh-fg-success));
+}
+
+/* 钮里不写内容时由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+.xh-scope-json-viewer[data-part='toolbar'] > :not([data-part='status']):empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
+  background-color: currentColor;
+  -webkit-mask: var(--xh-_json-viewer-tool-glyph) center / contain no-repeat;
+  mask: var(--xh-_json-viewer-tool-glyph) center / contain no-repeat;
+}
+
+.xh-scope-json-viewer[data-part='expand-all-trigger'] {
+  --xh-_json-viewer-tool-glyph: var(--xh-glyph-mark-expand-all);
+}
+
+.xh-scope-json-viewer[data-part='collapse-all-trigger'] {
+  --xh-_json-viewer-tool-glyph: var(--xh-glyph-mark-collapse-all);
+}
+
+.xh-scope-json-viewer[data-part='wrap-trigger'] {
+  --xh-_json-viewer-tool-glyph: var(--xh-glyph-mark-wrap);
+}
+
+.xh-scope-json-viewer[data-part='copy-trigger'] {
+  --xh-_json-viewer-tool-glyph: var(--xh-glyph-mark-copy);
+}
+
+.xh-scope-json-viewer[data-part='copy-trigger'][data-copied] {
+  --xh-_json-viewer-tool-glyph: var(--xh-glyph-mark-check);
+}
+
+.xh-scope-json-viewer[data-part='view-trigger'] {
+  --xh-_json-viewer-tool-glyph: var(--xh-glyph-mark-source);
+}
+
+/* 随形态出没的钮（展开 / 收起只在树档、换行只在原文档）由连接层打 hidden；家族配方写了 display，这里补回 */
+.xh-scope-json-viewer[data-part='toolbar'][hidden],
+.xh-scope-json-viewer[data-part='toolbar'] > [hidden] {
+  display: none;
+}
+
+/* 打印：工具条是交互期才有用的东西，落到纸上只剩几颗按不动的钮 */
+@media print {
+  .xh-scope-json-viewer[data-part='toolbar'] {
+    display: none;
+  }
+}
+
+/* 复制成功的播报区：视觉隐藏的配方与 .xh-visually-hidden 逐条同值。
+   刻意不写 display：display:none 的节点读屏根本不念 */
+.xh-scope-json-viewer[data-part='status'] {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /*
  * 高对比档：分支行的按压面常态靠底色深一档表出，这一档里底色被统一换成 Canvas，
  * 按住那一下与静息塌成同一个样子；用系统高亮反色画回来，行里的键名、摘要与箭头跟着换成反色前景
@@ -9517,6 +9628,20 @@
   }
 
   .xh-scope-json-viewer[data-part='branch-control'][data-disabled] .xh-scope-json-viewer[data-part='branch-indicator']:empty::before {
+    background-color: GrayText;
+  }
+
+  /* 工具钮的字形同理：按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；禁用取 GrayText */
+  .xh-scope-json-viewer[data-part='toolbar'] > :not([data-part='status']):empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
+  .xh-scope-json-viewer[data-part='toolbar'] > :not([data-part='status'], [data-disabled]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  .xh-scope-json-viewer[data-part='toolbar'] > [data-disabled]:empty::before {
     background-color: GrayText;
   }
 }

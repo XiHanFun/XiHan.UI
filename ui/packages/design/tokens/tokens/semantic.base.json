@@ -376,6 +376,31 @@
       "$type": "icon",
       "$value": "ellipsis"
     },
+    "mark-copy": {
+      "$description": "把一段内容写进剪贴板。两张错叠的纸，成功后换成 mark-check。",
+      "$type": "icon",
+      "$value": "copy"
+    },
+    "mark-expand-all": {
+      "$description": "把一棵层级里的分支全部展开。两道朝下的折线，与朝上的 mark-collapse-all 成对。",
+      "$type": "icon",
+      "$value": "chevrons-down"
+    },
+    "mark-collapse-all": {
+      "$description": "把一棵层级里的分支全部收起。两道朝上的折线，与朝下的 mark-expand-all 成对。",
+      "$type": "icon",
+      "$value": "chevrons-up"
+    },
+    "mark-wrap": {
+      "$description": "长行自动折到下一行。回车折角箭头：行尾拐回行首。",
+      "$type": "icon",
+      "$value": "corner-down-left"
+    },
+    "mark-source": {
+      "$description": "看原文：把结构化的呈现换回一字不差的源文本。写着几行字的纸。",
+      "$type": "icon",
+      "$value": "file-text"
+    },
     "mark-required": {
       "$type": "string",
       "$value": "'*'"
