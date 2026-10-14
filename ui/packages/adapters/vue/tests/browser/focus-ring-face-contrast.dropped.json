@@ -249,6 +249,7 @@
   "[data-scope=\"json-viewer\"][data-part=\"root\"][data-variant=\"subtle\"] [data-scope=\"json-viewer\"][data-part=\"empty\"]": "部件不接焦点：json-viewer/empty",
   "[data-scope=\"json-viewer\"][data-part=\"root\"][data-variant=\"subtle\"] [data-scope=\"json-viewer\"][data-part=\"text\"]": "部件不接焦点：json-viewer/text",
   "[data-scope=\"json-viewer\"][data-part=\"text\"]": "部件不接焦点：json-viewer/text",
+  "[data-scope=\"json-viewer\"][data-part=\"toolbar\"] > :not([data-part=\"status\"]):empty::before": "写法挂不出来：:empty",
   "[data-scope=\"kbd\"][data-part=\"key\"]": "部件不接焦点：kbd/key",
   "[data-scope=\"kbd\"][data-part=\"root\"]": "部件不接焦点：kbd/root",
   "[data-scope=\"kbd\"][data-part=\"root\"][data-variant=\"light\"]": "部件不接焦点：kbd/root",
