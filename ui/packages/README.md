@@ -1,4 +1,4 @@
-# packages/ 的四个角色组
+# packages/ 的五个角色组
 
 目录名回答的不是「这段代码属于哪一层」，而是**「这个包跟使用者是什么关系」**。
 
@@ -8,6 +8,7 @@ packages/
   design/     tokens  styles  icons                                 ← 你的外观
   features/   markdown  chat-stream  backgrounds  sound  animations  code-highlight ← 按需自选
   engine/     core  motion  pointer  position  viz  headless          ← 你不用管
+  tools/      cli                                                   ← 开发时用
 ```
 
 ## 入组判据
@@ -21,6 +22,7 @@ packages/
 | `engine/` | **每个适配器的硬依赖** | 装了适配器就自动拿到，做不了取舍 |
 | `features/` | **没有任何适配器硬依赖它**（可选 peer 或谁都不依赖） | 你不点头它就不来 |
 | `design/` | 纯视觉资产，谁都不硬依赖 | 显式安装的外观层 |
+| `tools/` | 开发期工具：没有任何包依赖它，它也不依赖任何库包的运行时 | 写代码时用，不进应用产物 |
 
 `engine` 与 `features` 的界线就是这一条：**强制来的 vs 你选的**。
 
@@ -32,7 +34,7 @@ packages/
 ## 新增一个包时
 
 1. 先问「使用者是被动拿到它，还是主动装它」——这决定 `engine` 还是 `features`
-2. 落进四组之一。`pnpm-workspace.yaml` 的 glob 是 `packages/*/*`，散在 `packages/` 根下的包不会被工作区收录
+2. 落进五组之一。`pnpm-workspace.yaml` 的 glob 是 `packages/*/*`，散在 `packages/` 根下的包不会被工作区收录
 3. 补 `tooling/eslint-config/src/layers.json`。这张表与 `packages/` 必须逐个对上，
    多一个少一个都会被 `pnpm boundaries` 抛错（不是报绿，见该文件里的说明）
 4. 跑 `pnpm gate`，`check-package-roles` 会验它的到达方式与所在组是否自洽

@@ -45,6 +45,11 @@
       ],
       "outputs": ["component-tokens.d.ts", "component-tokens.js", "components.tokens.json", "index.css", "index.unlayered.css", "dist/**"]
     },
+    "@xihan-ui/cli#build": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "outputs": ["dist/**", "data/**"]
+    },
     "@xihan-ui/tokens#test": {
       "dependsOn": ["^build"],
       "passThroughEnv": ["VITEST_MAX_WORKERS"],

@@ -21,7 +21,8 @@
       "@xihan-ui/backgrounds",
       "@xihan-ui/sound",
       "@xihan-ui/icons",
-      "@xihan-ui/animations"
+      "@xihan-ui/animations",
+      "@xihan-ui/cli"
     ]
   ],
   "linked": [],

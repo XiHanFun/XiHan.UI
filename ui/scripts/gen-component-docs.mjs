@@ -10,7 +10,7 @@
 // 示例不在生成范围内：写在 docs/.vitepress/demos/<组件>/ 下，本脚本只负责发现并挂上去。
 // 同一个示例的各框架版本同名不同扩展名（01-basic.vue / 01-basic.html），按基名归并成一条，
 // 落进页面的 src 不带扩展名，由文档站按当前选中的框架取对应文件。
-// 用法：node scripts/gen-component-docs.mjs [--check]
+// 用法：node scripts/gen-component-docs.mjs [--check | --data <文件>]
 
 import fs from 'node:fs'
 import path from 'node:path'
@@ -1111,6 +1111,75 @@ const code = s => `\`${String(s).replace(/`/g, '')}\``
 // 反引号随之失配，剩下的泛型尖括号就成了没有闭合的 HTML 标签
 const cell = s => code(s).replace(/\|/g, '\\|')
 
+/** 带载荷的 Vue 插槽，按组件展开成行。 */
+function slotRowsOf(ad) {
+  return ad.components.flatMap(
+    comp => (slotsByComponent.get(comp) ?? []).map(x => ({ comp, ...x })),
+  )
+}
+
+/** React 适配器自己声明的 props；根组件上与机器 props 同名的不重复列。 */
+function reactRowsOf(id, ad, tm) {
+  const machineNames = new Set(tm.props.map(x => x.name))
+  return ad.components.flatMap((comp) => {
+    const own = reactPropsByComponent.get(comp) ?? []
+    const isRoot = comp === `Xh${pascal(id)}` || comp === `Xh${pascal(id)}Root`
+    return own
+      .filter(x => !(isRoot && machineNames.has(x.name)))
+      .map(x => ({ comp, ...x }))
+  })
+}
+
+/** 一个组件的结构化元数据：与组件页同源，供 @xihan-ui/cli 打包。 */
+function componentData(entry, category) {
+  const { id, name } = entry
+  const rt = runtimeMeta(id)
+  const ad = adapterArtifacts(id)
+  const tm = typeMeta(id)
+  const es = elementSurface(id)
+  const at = attrSurface(id, rt.parts, tm.states)
+  const doc = prose(id)
+  const unescape = s => s.replace(/&lt;/g, '<')
+  return {
+    id,
+    name,
+    title: pascal(id),
+    category: category.id,
+    categoryLabel: category.label,
+    status: componentStatus(entry) ?? null,
+    overview: doc?.overview ?? null,
+    guidance: doc?.sections ?? {},
+    artifacts: {
+      components: ad.components,
+      composable: ad.composable,
+      tag: ad.tag,
+      machine: tm.states ? `${camel(id)}Machine` : null,
+      skin: ad.skin,
+    },
+    parts: rt.parts,
+    requiredParts: rt.requiredParts,
+    props: tm.props,
+    nodes: tm.nodes,
+    events: es.events.map(e => ({ name: e.name, type: e.type?.text ?? '', description: e.description ?? '' })),
+    slots: slotRowsOf(ad).map(x => ({ component: x.comp, name: x.name, optional: x.optional, payload: x.payload, doc: x.doc })),
+    reactProps: reactRowsOf(id, ad, tm).map(x => ({ component: x.comp, name: x.name, type: x.type, optional: x.optional, doc: x.doc })),
+    machine: { states: tm.states, events: tm.events, guards: tm.guards },
+    api: tm.api,
+    keyboard: rt.keyboard,
+    aria: at.aria,
+    dataAttributes: at.data,
+    componentTokens: es.componentTokens.map(t => ({
+      name: t.name,
+      part: t.part,
+      property: t.property,
+      state: t.state,
+      defaultToken: t.defaultToken,
+      description: t.description,
+    })),
+    demos: demos(id).map(d => ({ src: d.src, title: unescape(d.title), description: unescape(d.description) })),
+  }
+}
+
 function renderComponent(entry, category) {
   const { id, name } = entry
   const rt = runtimeMeta(id)
@@ -1239,9 +1308,7 @@ function renderComponent(entry, category) {
   }
 
   // 插槽：按 Vue 组件分组，只列带载荷的那些
-  const slotRows = ad.components.flatMap(
-    comp => (slotsByComponent.get(comp) ?? []).map(x => ({ comp, ...x })),
-  )
+  const slotRows = slotRowsOf(ad)
   if (slotRows.length) {
     push('### 插槽', '')
     push(
@@ -1254,16 +1321,8 @@ function renderComponent(entry, category) {
     push('')
   }
 
-  // React 适配器 props：上面那张 Props 表是机器契约，这一节是 React 这一侧自己加的那几个。
-  // 根组件上与机器同名的不重复列（React 把机器 props 原样抄了一遍），子组件的照列不误
-  const machineNames = new Set(tm.props.map(x => x.name))
-  const reactRows = ad.components.flatMap((comp) => {
-    const own = reactPropsByComponent.get(comp) ?? []
-    const isRoot = comp === `Xh${pascal(id)}` || comp === `Xh${pascal(id)}Root`
-    return own
-      .filter(x => !(isRoot && machineNames.has(x.name)))
-      .map(x => ({ comp, ...x }))
-  })
+  // React 适配器 props：上面那张 Props 表是机器契约，这一节是 React 这一侧自己加的那几个
+  const reactRows = reactRowsOf(id, ad, tm)
   if (reactRows.length) {
     push('### React 适配器 props', '')
     push(
@@ -1522,6 +1581,22 @@ if (missing.length || extra.length) {
 
 // 人工文案的缺口：不拦生成，但每次都报出来，免得悄悄躺着
 const proseless = [...registered].filter(id => !prose(id))
+
+// --data <文件>：只写出全部组件的结构化元数据，不动组件页
+const dataFlag = process.argv.indexOf('--data')
+if (dataFlag !== -1) {
+  const target = process.argv[dataFlag + 1]
+  if (!target) {
+    console.error('--data 后面要跟输出文件路径')
+    process.exit(1)
+  }
+  const categories = manifest.categories.map(c => ({ id: c.id, label: c.label, description: c.description ?? '' }))
+  const components = manifest.categories.flatMap(c => c.components.map(entry => componentData(entry, c)))
+  fs.mkdirSync(path.dirname(path.resolve(target)), { recursive: true })
+  fs.writeFileSync(target, `${JSON.stringify({ categories, components })}\n`)
+  console.log(`已写出 ${components.length} 个组件的元数据`)
+  process.exit(0)
+}
 
 const files = new Map()
 for (const c of manifest.categories) {

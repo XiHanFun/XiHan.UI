@@ -250,6 +250,9 @@
     ],
     "@xihan-ui/sound": [
       "."
+    ],
+    "@xihan-ui/cli": [
+      "."
     ]
   },
   "exports": {
@@ -9872,6 +9875,25 @@
       "strike",
       "withDialogSoundService",
       "withNotificationSoundService"
+    ],
+    "@xihan-ui/cli": [
+      "CliEnvironment",
+      "ComponentEntry",
+      "Framework",
+      "Knowledge",
+      "McpServerOptions",
+      "PROMPTS",
+      "PROTOCOL_VERSIONS",
+      "PageEntry",
+      "PromptDefinition",
+      "TOOLS",
+      "TokenEntry",
+      "ToolContext",
+      "ToolDefinition",
+      "handleMessage",
+      "loadKnowledge",
+      "runCli",
+      "serveStdio"
     ]
   },
   "anatomy": {

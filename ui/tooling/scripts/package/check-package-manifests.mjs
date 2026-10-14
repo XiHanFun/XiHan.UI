@@ -135,7 +135,7 @@ const MANIFESTS = [
     async names() {
       const source = await readUi('packages/README.md')
       const out = []
-      for (const [, list] of source.matchAll(/^ {2}(?:adapters|design|features|engine)\/([^←\n]+)←/gm))
+      for (const [, list] of source.matchAll(/^ {2}(?:adapters|design|features|engine|tools)\/([^←\n]+)←/gm))
         out.push(...list.trim().split(/\s+/))
       if (out.length === 0)
         throw new Error('找不到角色分组图')

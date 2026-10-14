@@ -127,6 +127,10 @@
         "engine/motion",
         "engine/pointer"
       ]
+    },
+    "tools/cli": {
+      "level": 5,
+      "canDependOn": []
     }
   }
 }

@@ -53,7 +53,8 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
    │  │  ├─ tokens/                       # DTCG 与生成令牌
    │  │  ├─ styles/                       # 共享 CSS 皮肤与组件槽
    │  │  └─ icons/
-   │  └─ features/                        # 可选能力包
+   │  ├─ features/                        # 可选能力包
+   │  └─ tools/                           # 开发期工具（命令行与 MCP 服务端）
    ├─ tooling/                            # 测试运行时、门禁、共享配置
    └─ scripts/                            # 组件脚手架与文档生成器
 ```

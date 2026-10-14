@@ -13,7 +13,7 @@ const names = Object.keys(layers)
 // 则那个包既不受约束、也不出现在任何 forbidden 列表里——两种漂移都让 depcruise 报绿。
 // 真发生过：i18n 与 pro 两个键在 packages/ 下根本不存在，长期无人发现。
 //
-// 包在 packages/ 下按角色分两级（adapters / design / features / engine），键就是那两级路径。
+// 包在 packages/ 下按角色分两级（adapters / design / features / engine / tools），键就是那两级路径。
 // 新开一个角色组也归这条管：组里的包没登记照样抛错。
 {
   const groups = readdirSync('packages', { withFileTypes: true })

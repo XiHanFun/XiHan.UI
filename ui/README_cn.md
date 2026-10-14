@@ -32,6 +32,7 @@
 | `@xihan-ui/sound` | 声音层：纯 Web Audio 程序化 UI 音效，零音频文件，框架无关 |
 | `@xihan-ui/animations` | 动画层：可序列化的动效配方、内置进场与注意动效、错开起播、文字拆分 |
 | `@xihan-ui/icons` | 首方图标集：`IconRecord` 结构化记录，渲染端逐节点建元素，运行期不解析 SVG 字符串 |
+| `@xihan-ui/cli` | 命令行与 MCP 服务端：组件 API、文档、示例、设计令牌与 design.md 的离线知识库，供 AI 编程工具查询 |
 
 `tooling/*` 放构建、lint、tsconfig、测试与脚本等内部包，不对外发布。
 

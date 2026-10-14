@@ -353,5 +353,14 @@
     "ignore": [
       "vue"
     ]
+  },
+  {
+    "name": "cli",
+    "path": "packages/tools/cli/dist/index.js",
+    "gzip": true,
+    "limit": "14.2 kB",
+    "ignore": [
+      "node:*"
+    ]
   }
 ]
