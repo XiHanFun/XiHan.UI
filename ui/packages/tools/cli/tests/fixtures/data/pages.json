@@ -1,0 +1,26 @@
+[
+  {
+    "path": "components/button",
+    "title": "Button 按钮",
+    "summary": "触发一个动作。",
+    "markdown": "# Button 按钮\n\n触发一个动作。\n\n<XhDemo src=\"button/01-basic\" />\n\n### 颜色\n\n<XhDemo src=\"button/02-tone\" />"
+  },
+  {
+    "path": "components/date-picker",
+    "title": "DatePicker 日期选择器",
+    "summary": "选择日期。",
+    "markdown": "# DatePicker 日期选择器\n\n选择日期。"
+  },
+  {
+    "path": "guide/theme",
+    "title": "设计令牌与主题",
+    "summary": "令牌与主题。",
+    "markdown": "# 设计令牌与主题\n\n令牌与主题。"
+  },
+  {
+    "path": "installation",
+    "title": "安装与接入",
+    "summary": "安装。",
+    "markdown": "# 安装与接入\n\n安装。"
+  }
+]

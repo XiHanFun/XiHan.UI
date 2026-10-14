@@ -27,6 +27,7 @@ export default {
         'vue',
         'react',
         'web-components',
+        'cli',
         // —— 工程 ——
         'tooling',
         'build',

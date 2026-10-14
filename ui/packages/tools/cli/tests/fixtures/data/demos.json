@@ -1,0 +1,13 @@
+{
+  "button/01-basic": {
+    "vue": "<template><XhButton>保存</XhButton></template>",
+    "react": "export default () => <XhButton>保存</XhButton>",
+    "web-components": "<xh-button><button data-xh-part=\"root\">保存</button></xh-button>"
+  },
+  "button/02-tone": {
+    "vue": "<template><XhButton tone=\"danger\">删除</XhButton></template>"
+  },
+  "date-picker/01-basic": {
+    "vue": "<template><XhDatePickerRoot /></template>"
+  }
+}

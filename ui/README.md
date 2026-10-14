@@ -32,6 +32,7 @@ Every component ships a headless core, Vue and React components, a custom elemen
 | `@xihan-ui/sound` | Procedural UI sounds synthesized with the Web Audio API — zero audio files, framework agnostic |
 | `@xihan-ui/animations` | Animation layer: serializable motion recipes, built-in enter and attention effects, stagger, text splitting |
 | `@xihan-ui/icons` | First-party icon set: structured `IconRecord` data, rendered node by node, no runtime SVG string parsing |
+| `@xihan-ui/cli` | CLI and MCP server: offline component API, docs, demos, design tokens and design.md for AI coding agents |
 
 `tooling/*` holds internal build, lint, tsconfig, testing and script packages; they are never published.
 

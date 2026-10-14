@@ -84,7 +84,8 @@
       ".vitest-attachments",
       "__screenshots__",
       "dist",
-      "node_modules"
+      "node_modules",
+      "ui/packages/tools/cli/data"
     ],
     "ignoreFiles": [
       "ui/pnpm-lock.yaml",

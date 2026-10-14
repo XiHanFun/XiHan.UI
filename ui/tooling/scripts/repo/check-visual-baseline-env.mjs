@@ -60,7 +60,8 @@ async function scanFiles() {
     for (const entry of await readdir(abs, { withFileTypes: true })) {
       const child = join(abs, entry.name)
       if (entry.isDirectory()) {
-        if (!ignoreDirs.has(entry.name))
+        // 目录名或仓库根相对路径命中即跳过
+        if (!ignoreDirs.has(entry.name) && !ignoreDirs.has(toPosix(relative(repoRoot, child))))
           await walk(child)
         continue
       }

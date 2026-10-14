@@ -6,6 +6,7 @@
 //   features = 没有任何适配器硬依赖它，使用者不点头它就不来
 //   design   = 纯视觉资产，谁都不硬依赖
 //   adapters = 渲染目标
+//   tools    = 开发期工具，谁都不依赖它，它也不依赖任何库包的运行时
 //
 // 没有这条门禁，组名就只是文件夹名字：新包随手一放，engine 迟早变成「底层的东西」的
 // 垃圾桶，features 变成「不知道放哪」的垃圾桶，而两个组名都还挂在那儿骗人。
@@ -81,6 +82,15 @@ for (const [group, list] of members) {
 
     if (group === 'design' && partial)
       offenders.push(`${path}（${pkg.name}）在 design 里，却被适配器硬依赖——视觉资产该由使用者显式安装`)
+
+    if (group === 'tools') {
+      const runtime = Object.keys({ ...pkg.dependencies, ...pkg.peerDependencies }).filter(dep => dep.startsWith('@xihan-ui/'))
+      if (runtime.length)
+        offenders.push(`${path}（${pkg.name}）在 tools 里，却在运行时依赖 ${runtime.join('、')}——开发期工具只能把库包写进 devDependencies`)
+      const dependents = [...members.values()].flat().filter(({ pkg: other }) => other.dependencies?.[pkg.name] !== undefined || other.peerDependencies?.[pkg.name] !== undefined)
+      if (dependents.length)
+        offenders.push(`${path}（${pkg.name}）在 tools 里，却被 ${dependents.map(d => d.pkg.name).join('、')} 依赖——开发期工具不进应用产物`)
+    }
   }
 }
 

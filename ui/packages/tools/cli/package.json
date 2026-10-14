@@ -1,0 +1,70 @@
+{
+  "name": "@xihan-ui/cli",
+  "type": "module",
+  "version": "4.1.0",
+  "description": "XiHan.UI CLI and MCP server — offline component API, docs, demos, design tokens and design.md for AI coding agents.",
+  "author": {
+    "name": "XiHanFun",
+    "url": "https://github.com/XiHanFun"
+  },
+  "license": "MIT",
+  "homepage": "https://ui.docs.xihanfun.com/ai/cli",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XiHanFun/XiHan.UI.git",
+    "directory": "ui/packages/tools/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/XiHanFun/XiHan.UI/issues"
+  },
+  "keywords": [
+    "xihan-ui",
+    "cli",
+    "mcp",
+    "model-context-protocol",
+    "ai",
+    "llms"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "xihan-ui": "./bin/xihan-ui.mjs"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "bin",
+    "data",
+    "dist",
+    "skills"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "build": "node build/build-data.mjs && tsdown",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@xihan-ui/build": "workspace:*",
+    "@xihan-ui/headless": "workspace:*",
+    "@xihan-ui/styles": "workspace:*",
+    "@xihan-ui/tokens": "workspace:*",
+    "@xihan-ui/tsconfig": "workspace:*",
+    "@xihan-ui/vue": "workspace:*",
+    "vitest": "catalog:"
+  }
+}

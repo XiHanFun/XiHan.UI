@@ -1,0 +1,154 @@
+{
+  "categories": [
+    {
+      "id": "general",
+      "label": "通用",
+      "description": "原子件。"
+    },
+    {
+      "id": "form",
+      "label": "数据录入",
+      "description": "承载表单值的组件。"
+    }
+  ],
+  "components": [
+    {
+      "status": null,
+      "guidance": {},
+      "nodes": [],
+      "events": [],
+      "slots": [],
+      "reactProps": [],
+      "machine": {
+        "states": null,
+        "events": null,
+        "guards": null
+      },
+      "api": [],
+      "keyboard": {
+        "source": "https://www.w3.org/WAI/ARIA/apg/",
+        "rows": []
+      },
+      "aria": [],
+      "dataAttributes": [],
+      "componentTokens": [
+        {
+          "name": "--xh-button-bg",
+          "part": [
+            "root"
+          ],
+          "property": [
+            "background"
+          ],
+          "state": [
+            "default"
+          ],
+          "defaultToken": [
+            "--xh-bg-brand"
+          ],
+          "description": "底色。"
+        }
+      ],
+      "id": "button",
+      "name": "按钮",
+      "title": "Button",
+      "category": "general",
+      "categoryLabel": "通用",
+      "overview": "触发一个动作。",
+      "artifacts": {
+        "components": [
+          "XhButton",
+          "XhButtonLabel"
+        ],
+        "composable": "useButton",
+        "tag": "xh-button",
+        "machine": null,
+        "skin": "@xihan-ui/styles/button.css"
+      },
+      "parts": [
+        "root",
+        "label"
+      ],
+      "requiredParts": [
+        "root"
+      ],
+      "props": [
+        {
+          "name": "variant",
+          "type": "'solid' | 'outline'",
+          "optional": true,
+          "doc": "形态。"
+        }
+      ],
+      "demos": [
+        {
+          "src": "button/01-basic",
+          "title": "基础用法",
+          "description": "一个按钮"
+        },
+        {
+          "src": "button/02-tone",
+          "title": "颜色",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "status": "new",
+      "guidance": {},
+      "nodes": [],
+      "events": [],
+      "slots": [],
+      "reactProps": [],
+      "machine": {
+        "states": null,
+        "events": null,
+        "guards": null
+      },
+      "api": [],
+      "keyboard": {
+        "source": "https://www.w3.org/WAI/ARIA/apg/",
+        "rows": []
+      },
+      "aria": [],
+      "dataAttributes": [
+        {
+          "part": "root",
+          "attr": "data-state",
+          "value": "'open' | 'closed'"
+        }
+      ],
+      "componentTokens": [],
+      "id": "date-picker",
+      "name": "日期选择器",
+      "title": "DatePicker",
+      "category": "form",
+      "categoryLabel": "数据录入",
+      "overview": "选择日期。",
+      "artifacts": {
+        "components": [
+          "XhDatePickerRoot",
+          "XhDatePickerTrigger"
+        ],
+        "composable": null,
+        "tag": "xh-date-picker",
+        "machine": "datePickerMachine",
+        "skin": null
+      },
+      "parts": [
+        "root",
+        "trigger"
+      ],
+      "requiredParts": [
+        "trigger"
+      ],
+      "demos": [
+        {
+          "src": "date-picker/01-basic",
+          "title": "基础用法",
+          "description": ""
+        }
+      ]
+    }
+  ]
+}

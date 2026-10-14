@@ -35,3 +35,6 @@ pnpm-debug.log*
 package-lock.json
 
 .history
+
+# @xihan-ui/cli 的离线数据，构建时生成
+packages/tools/cli/data
