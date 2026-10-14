@@ -422,7 +422,8 @@ const translations = {
     wrap: 'Zeilen umbrechen',
     copy: 'JSON kopieren',
     copied: 'Kopiert',
-    viewText: 'Roh-JSON',
+    showText: 'Roh-JSON anzeigen',
+    showTree: 'Baum anzeigen',
   },
   'kbd': {
     keyName: (key, platform) => keyText(KEY_NAME, key, platform),

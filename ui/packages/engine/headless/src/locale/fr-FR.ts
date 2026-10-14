@@ -422,7 +422,8 @@ const translations = {
     wrap: 'Retour à la ligne',
     copy: 'Copier le JSON',
     copied: 'Copié',
-    viewText: 'JSON brut',
+    showText: 'Afficher le JSON brut',
+    showTree: 'Afficher l’arbre',
   },
   'kbd': {
     keyName: (key, platform) => keyText(KEY_NAME, key, platform),

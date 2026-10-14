@@ -420,7 +420,8 @@ const translations = {
     wrap: '자동 줄바꿈',
     copy: 'JSON 복사',
     copied: '복사했습니다',
-    viewText: '원문',
+    showText: '원문 보기',
+    showTree: '트리 보기',
   },
   'kbd': {
     keyName: (key, platform) => keyText(KEY_NAME, key, platform),

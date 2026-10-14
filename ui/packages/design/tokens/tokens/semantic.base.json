@@ -396,8 +396,13 @@
       "$type": "icon",
       "$value": "corner-down-left"
     },
+    "mark-tree": {
+      "$description": "看树：把原文换回逐层可折叠的结构。一条根线、两条缩进的子线，与看原文的 mark-source 成对。",
+      "$type": "icon",
+      "$value": "list-tree"
+    },
     "mark-source": {
-      "$description": "看原文：把结构化的呈现换回一字不差的源文本。写着几行字的纸。",
+      "$description": "看原文：把结构化的呈现换回一字不差的源文本。写着几行字的纸，与看树的 mark-tree 成对。",
       "$type": "icon",
       "$value": "file-text"
     },

@@ -92,17 +92,16 @@ export interface JsonViewerCopyErrorDetails {
 
 /**
  * 内建工具条里的一项工具。
- * - `expand`：「展开全部」与「收起全部」两颗钮，只在树档出现；
+ * - `expand`：展开 / 收起全部的切换钮，只在树档出现：还有收着的分支就展开全部，已经全部展开就收回顶层；
  * - `wrap`：原文自动换行的开关，只在原文档出现；
  * - `copy`：把 JSON 原文写进剪贴板；
- * - `view`：在树与原文之间切换的开关。
+ * - `view`：在树与原文之间切换的钮，名字与字形随此刻要切去的那一档变。
  */
 export type JsonViewerTool = 'expand' | 'wrap' | 'copy' | 'view'
 
 /** 工具条里各颗钮的部件名，按压通道据此记「正被按住的那一颗」。 */
 export type JsonViewerToolTrigger
-  = | 'expand-all-trigger'
-    | 'collapse-all-trigger'
+  = | 'expand-trigger'
     | 'wrap-trigger'
     | 'copy-trigger'
     | 'view-trigger'
@@ -149,7 +148,7 @@ export interface JsonViewerTranslations {
   empty: string
   /** 内建工具条的可及名：它与树、原文是两块不同的区域，没有名字时读屏只念「组」。 */
   toolbar: string
-  /** 「展开全部」钮的可及名：钮里只有一个字形。 */
+  /** 展开 / 收起钮此刻要展开全部时的可及名：钮里只有一个字形，名字随动作变。 */
   expandAll: string
   /** 「收起全部」钮的可及名，语义同上。 */
   collapseAll: string
@@ -159,8 +158,10 @@ export interface JsonViewerTranslations {
   copy: string
   /** 复制成功后播报区朗读的语句。 */
   copied: string
-  /** 原文开关的可及名；按下即原文档，开没开由 aria-pressed 报。 */
-  viewText: string
+  /** 形态钮在树档时的可及名（按下切到原文档）：名字随动作变，不报 aria-pressed。 */
+  showText: string
+  /** 形态钮在原文档时的可及名（按下切回树档）。 */
+  showTree: string
 }
 
 export interface JsonViewerSchema extends MachineSchema {
@@ -354,6 +355,11 @@ export interface JsonViewerApi<T extends PropTypes = PropTypes> {
   expandAll: () => void
   /** 收起到只剩顶层：根行留着展开，其下的分支全部收起。 */
   collapseAll: () => void
+  /**
+   * 每一层的分支都已展开（maxItems 折掉的成员与循环引用不算分支）。展开 / 收起钮据此决定这一下是展开还是收起；
+   * 只有根一层分支、没有可展开的子层时为 false。原文档不算，恒为 false。
+   */
+  allExpanded: boolean
   /** 把 JSON 原文写进剪贴板，与点复制钮走同一路径。 */
   copy: () => void
   /** 无法展开任何一行：value 未提供或为 undefined。空态部件随它显隐。 */
@@ -407,8 +413,8 @@ export interface JsonViewerApi<T extends PropTypes = PropTypes> {
    * 不报告 `role=toolbar`，那个角色承诺条内靠方向键移动。
    */
   getToolbarProps: () => T['element']
-  getExpandAllTriggerProps: () => T['button']
-  getCollapseAllTriggerProps: () => T['button']
+  /** 展开 / 收起全部的切换钮：data-state 为 open 时已全部展开（再按收起），closed 时还有收着的（再按展开）。 */
+  getExpandTriggerProps: () => T['button']
   getWrapTriggerProps: () => T['button']
   getCopyTriggerProps: () => T['button']
   getViewTriggerProps: () => T['button']

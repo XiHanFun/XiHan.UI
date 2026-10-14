@@ -533,7 +533,8 @@ export const JSON_VIEWER_EN_US: XhLocaleBucket<'json-viewer'> = {
   wrap: 'Wrap lines',
   copy: 'Copy JSON',
   copied: 'Copied',
-  viewText: 'Raw JSON',
+  showText: 'Show raw JSON',
+  showTree: 'Show tree',
 }
 
 export const KBD_EN_US: XhLocaleBucket<'kbd'> = {

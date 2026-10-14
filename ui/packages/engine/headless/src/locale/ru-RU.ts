@@ -438,7 +438,8 @@ const translations = {
     wrap: 'Перенос строк',
     copy: 'Копировать JSON',
     copied: 'Скопировано',
-    viewText: 'Исходный JSON',
+    showText: 'Показать исходный JSON',
+    showTree: 'Показать дерево',
   },
   'kbd': {
     keyName: (key, platform) => keyText(KEY_NAME, key, platform),

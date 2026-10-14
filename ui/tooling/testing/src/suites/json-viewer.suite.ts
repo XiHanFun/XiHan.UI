@@ -534,8 +534,7 @@ export const jsonViewerSuite: ConformanceSuite = {
       initial: {
         counts: {
           'toolbar': 1,
-          'expand-all-trigger': 1,
-          'collapse-all-trigger': 1,
+          'expand-trigger': 1,
           'wrap-trigger': 1,
           'copy-trigger': 1,
           'status': 1,
@@ -543,13 +542,13 @@ export const jsonViewerSuite: ConformanceSuite = {
         },
         parts: {
           'toolbar': { 'role': 'group', 'aria-label': 'JSON tools', 'data-view': 'tree' },
-          'expand-all-trigger': { 'type': 'button', 'aria-label': 'Expand all', 'hidden': null },
-          'collapse-all-trigger': { 'type': 'button', 'aria-label': 'Collapse all', 'hidden': null },
+          // 切换钮：名字与 data-state 取这一下要做的事，不报 aria-pressed
+          'expand-trigger': { 'type': 'button', 'aria-label': 'Expand all', 'data-state': 'closed', 'aria-pressed': null, 'hidden': null },
           // 换行只对原文有意义，树档里收起来
           'wrap-trigger': { 'aria-label': 'Wrap lines', 'aria-pressed': 'false', 'hidden': '' },
           'copy-trigger': { 'aria-label': 'Copy JSON', 'data-state': 'idle' },
           'status': { 'role': 'status', 'aria-live': 'polite' },
-          'view-trigger': { 'aria-label': 'Raw JSON', 'aria-pressed': 'false', 'data-state': 'off' },
+          'view-trigger': { 'aria-label': 'Show raw JSON', 'aria-pressed': null, 'data-view': 'tree' },
         },
       },
       steps: [
@@ -562,7 +561,7 @@ export const jsonViewerSuite: ConformanceSuite = {
             if (first?.getAttribute('data-part') !== 'toolbar')
               throw new Error(`根的第一个孩子应是 toolbar，实际是 ${first?.getAttribute('data-part') ?? '空'}`)
             const parts = [...first.children].map(el => el.getAttribute('data-part'))
-            const expected = ['expand-all-trigger', 'collapse-all-trigger', 'wrap-trigger', 'copy-trigger', 'status', 'view-trigger']
+            const expected = ['expand-trigger', 'wrap-trigger', 'copy-trigger', 'status', 'view-trigger']
             if (parts.join() !== expected.join())
               throw new Error(`工具条里的部件次序应为 ${expected.join(' → ')}，实际是 ${parts.join(' → ')}`)
           },
@@ -581,10 +580,9 @@ export const jsonViewerSuite: ConformanceSuite = {
               'token[13]': { 'data-kind': 'punctuation' },
               'token[19]': { 'data-kind': 'boolean' },
               'root': { 'data-view': 'text' },
-              'view-trigger': { 'aria-pressed': 'true', 'data-state': 'on' },
+              'view-trigger': { 'aria-label': 'Show tree', 'data-view': 'text' },
               'wrap-trigger': { hidden: null },
-              'expand-all-trigger': { hidden: '' },
-              'collapse-all-trigger': { hidden: '' },
+              'expand-trigger': { hidden: '' },
               'text': { 'data-wrap': null },
             },
           },
@@ -607,27 +605,35 @@ export const jsonViewerSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'tools：展开全部把每一层的分支都展开，收起全部只留根行展开',
+      name: 'tools：展开 / 收起是一颗切换钮，先展开每一层的分支，再按收回顶层，名字与 data-state 跟着换',
       spec: { adr: 'json-viewer-toolbar' },
       props: props({ tools: ['expand'] }),
       initial: {
-        counts: { 'toolbar': 1, 'expand-all-trigger': 1, 'collapse-all-trigger': 1, 'copy-trigger': 0, 'view-trigger': 0, 'wrap-trigger': 0, 'status': 0 },
+        counts: { 'toolbar': 1, 'expand-trigger': 1, 'copy-trigger': 0, 'view-trigger': 0, 'wrap-trigger': 0, 'status': 0 },
       },
       steps: [
         {
           kind: 'click',
-          part: 'expand-all-trigger',
+          part: 'expand-trigger',
           expect: {
             counts: { 'branch-content': 3 },
-            parts: { 'branch[1]': { 'aria-expanded': 'true' }, 'branch[2]': { 'aria-expanded': 'true' } },
+            parts: {
+              'branch[1]': { 'aria-expanded': 'true' },
+              'branch[2]': { 'aria-expanded': 'true' },
+              'expand-trigger': { 'aria-label': 'Collapse all', 'data-state': 'open' },
+            },
           },
         },
         {
           kind: 'click',
-          part: 'collapse-all-trigger',
+          part: 'expand-trigger',
           expect: {
             counts: { 'branch-content': 1 },
-            parts: { 'branch[0]': { 'aria-expanded': 'true' }, 'branch[1]': { 'aria-expanded': 'false' } },
+            parts: {
+              'branch[0]': { 'aria-expanded': 'true' },
+              'branch[1]': { 'aria-expanded': 'false' },
+              'expand-trigger': { 'aria-label': 'Expand all', 'data-state': 'closed' },
+            },
           },
         },
       ],
@@ -641,14 +647,14 @@ export const jsonViewerSuite: ConformanceSuite = {
       },
     },
     {
-      name: '受控 view：原文开关只发通知，宿主不写回则纹丝不动',
+      name: '受控 view：树 / 原文切换钮只发通知，宿主不写回则纹丝不动',
       spec: { adr: 'json-viewer-toolbar' },
       props: props({ tools: ['view'], view: 'tree' }),
       steps: [
         {
           kind: 'click',
           part: 'view-trigger',
-          expect: { counts: { tree: 1, text: 0 }, parts: { 'view-trigger': { 'aria-pressed': 'false' } } },
+          expect: { counts: { tree: 1, text: 0 }, parts: { 'view-trigger': { 'data-view': 'tree' } } },
         },
         { kind: 'setProps', props: { view: 'text' }, expect: { counts: { tree: 0, text: 1 } } },
       ],
@@ -659,7 +665,7 @@ export const jsonViewerSuite: ConformanceSuite = {
       props: props({ tools: true }),
       covers: ['json-viewer.kbd.tool'],
       steps: [
-        heldPress('json-viewer', 'expand-all-trigger'),
+        heldPress('json-viewer', 'expand-trigger'),
       ],
     },
   ],

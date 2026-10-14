@@ -44,10 +44,8 @@ function renderToolbar(api: JsonViewerApi): VNode | null {
   if (!api.tools.length)
     return null
   const buttons: VNode[] = []
-  if (api.tools.includes('expand')) {
-    buttons.push(h('button', api.getExpandAllTriggerProps() as Record<string, unknown>))
-    buttons.push(h('button', api.getCollapseAllTriggerProps() as Record<string, unknown>))
-  }
+  if (api.tools.includes('expand'))
+    buttons.push(h('button', api.getExpandTriggerProps() as Record<string, unknown>))
   if (api.tools.includes('wrap'))
     buttons.push(h('button', api.getWrapTriggerProps() as Record<string, unknown>))
   if (api.tools.includes('copy')) {

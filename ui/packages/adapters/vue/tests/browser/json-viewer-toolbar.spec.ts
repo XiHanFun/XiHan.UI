@@ -57,7 +57,7 @@ function token(name: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 }
 
-const TRIGGERS = ['expand-all-trigger', 'collapse-all-trigger', 'wrap-trigger', 'copy-trigger', 'view-trigger'] as const
+const TRIGGERS = ['expand-trigger', 'wrap-trigger', 'copy-trigger', 'view-trigger'] as const
 
 describe.each(['comfortable', 'compact'] as const)('json 查看器内建工具条（%s）', (density) => {
   it('工具条是根的第一个孩子，钮靠条的末端排；条压在面的外头，与下面那块面之间留一档间距', async () => {
@@ -97,18 +97,35 @@ describe.each(['comfortable', 'compact'] as const)('json 查看器内建工具�
     }
   })
 
-  it('原文开关切到原文档：展开 / 收起两颗收起，换行开关出现；开着的开关取品牌淡底选中面', async () => {
+  it('树 / 原文切换钮切到原文档：展开 / 收起钮收起，换行开关出现；切换钮换成「看树」的字形与名字，不画选中面', async () => {
     await mount(density)
     const view = part('view-trigger')
     const restBg = getComputedStyle(view).backgroundColor
+    const sourceGlyph = getComputedStyle(view, '::before').maskImage
     await click(view)
     expect(part('root').dataset.view).toBe('text')
-    expect(part('expand-all-trigger').getBoundingClientRect().width).toBe(0)
-    expect(part('collapse-all-trigger').getBoundingClientRect().width).toBe(0)
+    expect(part('expand-trigger').getBoundingClientRect().width).toBe(0)
     expect(part('wrap-trigger').getBoundingClientRect().width).toBeGreaterThan(0)
-    expect(view.getAttribute('aria-pressed')).toBe('true')
-    // 选中面与静息面分得开：ghost 静息是透明底，按下是品牌淡底
-    expect(getComputedStyle(view).backgroundColor).not.toBe(restBg)
+    expect(view.getAttribute('aria-label')).toBe('Show tree')
+    expect(view.hasAttribute('aria-pressed')).toBe(false)
+    expect(getComputedStyle(view, '::before').maskImage).not.toBe(sourceGlyph)
+    expect(getComputedStyle(view).backgroundColor).toBe(restBg)
+  })
+
+  it('展开 / 收起切换钮：字形与名字取这一下要做的事，按一下收回顶层、再按一下全部展开', async () => {
+    // 演示数据只有两层，按两层展开已经全部摊开：钮一上来就是「收起全部」
+    await mount(density)
+    const expand = part('expand-trigger')
+    expect(expand.dataset.state).toBe('open')
+    expect(expand.getAttribute('aria-label')).toBe('Collapse all')
+    const collapseGlyph = getComputedStyle(expand, '::before').maskImage
+    await click(expand)
+    expect(expand.dataset.state).toBe('closed')
+    expect(expand.getAttribute('aria-label')).toBe('Expand all')
+    expect(getComputedStyle(expand, '::before').maskImage).not.toBe(collapseGlyph)
+    await click(expand)
+    expect(expand.dataset.state).toBe('open')
+    expect(getComputedStyle(expand, '::before').maskImage).toBe(collapseGlyph)
   })
 
   it('换行开关打开后原文的长行折到下一行，不再横向溢出', async () => {

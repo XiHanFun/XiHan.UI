@@ -241,9 +241,6 @@
     "code": [
       "code-view"
     ],
-    "collapse-all-trigger": [
-      "json-viewer"
-    ],
     "column": [
       "cascader",
       "masonry",
@@ -501,10 +498,8 @@
       "field",
       "fieldset"
     ],
-    "expand-all-trigger": [
-      "json-viewer"
-    ],
     "expand-trigger": [
+      "json-viewer",
       "table"
     ],
     "expanded-row": [
