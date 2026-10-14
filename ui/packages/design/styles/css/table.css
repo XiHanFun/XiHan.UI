@@ -32,9 +32,10 @@
        取淡底的 55% 兑进承载面，与字段静息底同一档深浅；两端都是实色，吸顶时滚过去的行不会从它底下透出来 */
     --xh-_table-header-bg: color-mix(in srgb, var(--xh-bg-subtle-opaque) 55%, var(--xh-bg-surface));
 
-    /* 密度档只换这两个私有槽：单元格与列标题从 root 继承前者，字号靠 font-size 本身继承下去，
+    /* 密度档只换这几个私有槽：单元格与列标题从 root 继承上下与左右内衬，字号靠 font-size 本身继承下去，
        换档不必给每个部件各写一条选择器，列宽那套算法也一点不碰 */
     --xh-_table-cell-py: var(--xh-table-cell-py-md);
+    --xh-_table-cell-px: var(--xh-table-cell-px-md);
     --xh-_table-font-size: var(--xh-control-font-md);
 
     display: flex;
@@ -77,12 +78,14 @@
   [data-scope='table'][data-part='root'][data-size='sm'] {
     --xh-icon-size: var(--xh-table-icon-size, var(--xh-glyph-size-sm));
     --xh-_table-cell-py: var(--xh-table-cell-py-sm);
+    --xh-_table-cell-px: var(--xh-table-cell-px-sm);
     --xh-_table-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='table'][data-part='root'][data-size='lg'] {
     --xh-icon-size: var(--xh-table-icon-size, var(--xh-glyph-size-lg));
     --xh-_table-cell-py: var(--xh-table-cell-py-lg);
+    --xh-_table-cell-px: var(--xh-table-cell-px-lg);
     --xh-_table-font-size: var(--xh-control-font-lg);
   }
 
@@ -293,7 +296,7 @@
     gap: var(--xh-table-cell-gap, var(--xh-control-gap-md));
     min-inline-size: var(--xh-table-cell-min-w, 3rem);
     padding-block: var(--xh-table-cell-py, var(--xh-_table-cell-py));
-    padding-inline: var(--xh-table-cell-px, var(--xh-space-4));
+    padding-inline: var(--xh-table-cell-px, var(--xh-_table-cell-px));
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -471,7 +474,7 @@
      否则 60px 的序号列开了竖线只剩 27.33px，「序号」两个字差不到一个像素就出省略号，关掉竖线又放得下 */
   [data-scope='table'][data-part='root'][data-split] [data-scope='table'][data-part='column-header']:not(:last-child),
   [data-scope='table'][data-part='root'][data-split] [data-scope='table'][data-part='cell']:not(:last-child) {
-    padding-inline-end: calc(var(--xh-table-cell-px, var(--xh-space-4)) - var(--xh-stroke-thin));
+    padding-inline-end: calc(var(--xh-table-cell-px, var(--xh-_table-cell-px)) - var(--xh-stroke-thin));
     border-inline-end: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));
   }
 
@@ -1030,7 +1033,7 @@
   /* 详情行里的格子铺满整行，且不按数据格那样截断成一行 */
   [data-scope='table'][data-part='expanded-row'] > [data-scope='table'][data-part='cell'] {
     padding-block: var(--xh-table-detail-py, var(--xh-space-3));
-    padding-inline: var(--xh-table-detail-px, var(--xh-space-4));
+    padding-inline: var(--xh-table-detail-px, var(--xh-_table-cell-px));
     overflow: visible;
     white-space: normal;
   }

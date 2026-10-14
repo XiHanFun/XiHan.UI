@@ -500,6 +500,19 @@
     "cell-py-lg": {
       "$type": "dimension",
       "$value": "{space.4}"
+    },
+    "cell-px-sm": {
+      "$description": "单元格与列头的行内内衬，随尺寸档与行高同步换档：紧凑表格里左右对齐的字不离分隔线太远。",
+      "$type": "dimension",
+      "$value": "{space.2}"
+    },
+    "cell-px-md": {
+      "$type": "dimension",
+      "$value": "{space.3}"
+    },
+    "cell-px-lg": {
+      "$type": "dimension",
+      "$value": "{space.4}"
     }
   },
   "shape": {
