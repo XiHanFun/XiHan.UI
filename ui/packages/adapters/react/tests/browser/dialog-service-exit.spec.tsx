@@ -7,6 +7,7 @@ import '@xihan-ui/styles'
 
 let service: ReturnType<typeof createDialogService> | null = null
 let style: HTMLStyleElement | null = null
+let observer: MutationObserver | null = null
 
 async function flush(): Promise<void> {
   for (let count = 0; count < 4; count++) {
@@ -42,8 +43,27 @@ function closingAnimations(): Animation[] {
     .filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
 }
 
+/** data-state 翻成 closed 时就地暂停退场动画；返回的函数停止观察并交出暂停住的动画。 */
+function holdExitAnimations(): () => Animation[] {
+  const held = new Set<Animation>()
+  const current = new MutationObserver(() => {
+    for (const animation of closingAnimations()) {
+      animation.pause()
+      held.add(animation)
+    }
+  })
+  current.observe(document.body, { subtree: true, attributeFilter: ['data-state'] })
+  observer = current
+  return () => {
+    current.disconnect()
+    return [...held]
+  }
+}
+
 beforeEach(() => vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true))
 afterEach(() => {
+  observer?.disconnect()
+  observer = null
   act(() => service?.dispose())
   service = null
   style?.remove()
@@ -66,6 +86,7 @@ describe('命令对话框真实退出队列', () => {
     })
     await expect.poll(title).toBe('第一问')
 
+    const held = holdExitAnimations()
     await act(async () => {
       const cancel = cancelButton()
       cancel.dispatchEvent(new MouseEvent('click', { bubbles: true }))
@@ -74,10 +95,9 @@ describe('命令对话框真实退出队列', () => {
     await expect(first).resolves.toBe(false)
     await flush()
 
-    const animations = closingAnimations()
+    const animations = held()
     expect(animations).toHaveLength(2)
     expect(animations.map(animation => animation.effect?.getComputedTiming().endTime)).toEqual([600, 600])
-    animations.forEach(animation => animation.pause())
     await new Promise(resolve => setTimeout(resolve, 320))
     expect(title()).toBe('第一问')
 
@@ -102,16 +122,16 @@ describe('命令对话框真实退出队列', () => {
     })
     await expect.poll(title).toBe('第一问')
 
+    const held = holdExitAnimations()
     await act(async () => {
       cancelButton().dispatchEvent(new MouseEvent('click', { bubbles: true }))
     })
     await expect(first).resolves.toBe(false)
     await flush()
 
-    const animations = closingAnimations()
+    const animations = held()
     expect(animations).toHaveLength(2)
     expect(animations.map(animation => animation.effect?.getComputedTiming().endTime)).toEqual([120, 120])
-    animations.forEach(animation => animation.pause())
     await new Promise(resolve => setTimeout(resolve, 200))
     expect(title()).toBe('第一问')
 
