@@ -113,10 +113,12 @@
     display: none;
   }
 
-  /* autoSize 的量高值写在 textarea 上；外壳只负责滚动上限，不能复制量高算法。 */
-  [data-scope='text-field'][data-part='control']:has([data-xh-field-input][data-xh-field-auto-size]) {
-    max-block-size: var(--xh-text-field-control-max-h, var(--xh-viewport-h-sm));
-    overflow-y: auto;
+  /* 没给 maxRows 时 autoSize 的高度上限。只落在 textarea 上：Headless 量高时读它封顶，超出的行在
+     textarea 里滚；给了 maxRows 或 minRows 换算得更高时以行数为准。外壳只包住 textarea，不设上限也不滚，
+     否则两层滚动叠在一起，行数界限也会被外壳截掉。
+     槽按本部件取名（input-max-h），上限落在外壳上时的旧槽 control-max-h 留在兜底位 */
+  [data-scope='text-field'][data-part='input'][data-xh-field-auto-size] {
+    max-block-size: var(--xh-text-field-input-max-h, var(--xh-text-field-control-max-h, var(--xh-viewport-h-sm)));
   }
 
   /* 字数上限是 TextField 独有状态；invalid 同时出现时由 Field Chrome 的错误态优先。 */

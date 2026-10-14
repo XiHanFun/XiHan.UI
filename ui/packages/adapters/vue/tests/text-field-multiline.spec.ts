@@ -22,6 +22,7 @@ beforeEach(() => {
       'box-sizing': 'border-box',
       'font-size': '10px',
       'line-height': 'normal',
+      'max-block-size': 'none',
       'padding-bottom': '0px',
       'padding-top': '0px',
       'width': '180px',

@@ -3860,6 +3860,7 @@ export type ComponentTokenName
     | '--xh-text-field-input-autofill-fg'
     | '--xh-text-field-input-fg'
     | '--xh-text-field-input-font-size'
+    | '--xh-text-field-input-max-h'
     | '--xh-text-field-label-fg'
     | '--xh-text-field-label-fg-disabled'
     | '--xh-text-field-label-font-size'

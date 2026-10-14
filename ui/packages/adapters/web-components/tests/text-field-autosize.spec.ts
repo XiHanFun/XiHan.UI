@@ -31,6 +31,7 @@ describe('web components TextField textarea autoSize', () => {
         'box-sizing': 'border-box',
         'font-size': '10px',
         'line-height': '10px',
+        'max-block-size': 'none',
         'padding-bottom': '0px',
         'padding-top': '0px',
         'width': '180px',

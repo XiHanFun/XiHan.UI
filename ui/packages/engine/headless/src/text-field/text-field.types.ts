@@ -21,11 +21,11 @@ export type TextFieldInputHost = 'input' | 'textarea'
  */
 export type TextFieldType = 'text' | 'password' | 'email' | 'tel' | 'url' | 'search'
 
-/** 自动高度的行数界限；未提供时完全跟随内容。 */
+/** 自动高度的行数界限；没给 maxRows 时上限取 textarea 的 max-block-size 计算值。 */
 export interface TextFieldAutoSize {
-  /** 最少行数；提供时必须是大于等于 1 的有限整数。 */
+  /** 最少行数，换算得比 max-block-size 高时以它为准；提供时必须是大于等于 1 的有限整数。 */
   minRows?: number
-  /** 最多行数；提供时必须是大于等于 1 的有限整数，且不得小于 minRows。 */
+  /** 最多行数，顶到后 textarea 内部滚动、不受 max-block-size 截断；提供时必须是大于等于 1 的有限整数，且不得小于 minRows。 */
   maxRows?: number
 }
 
@@ -60,7 +60,7 @@ export interface TextFieldSchema extends MachineSchema {
     clearable?: boolean
     /** 显示字数部件：关闭时 count 部件带 hidden 收起。 */
     showCount?: boolean
-    /** 多行宿主的自动高度：按横向书写的真实行盒随内容增高；对象形态固定行数上下限。 */
+    /** 多行宿主的自动高度：按横向书写的真实行盒随内容增高，顶到上限后在 textarea 内部滚动；对象形态固定行数上下限。 */
     autoSize?: boolean | TextFieldAutoSize
     /** 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 */
     variant?: ControlVariant

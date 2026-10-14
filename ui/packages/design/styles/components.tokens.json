@@ -76862,21 +76862,19 @@
       "name": "--xh-text-field-control-max-h",
       "component": "text-field",
       "part": [
-        "control"
+        "input"
       ],
       "property": [
         "max-block-size"
       ],
       "state": [
-        "has([data-xh-field-input][data-xh-field-auto-size])",
-        "xh-field-auto-size",
-        "xh-field-input"
+        "xh-field-auto-size"
       ],
       "defaultToken": [
         "--xh-viewport-h-sm"
       ],
       "visibility": "public",
-      "description": "text-field 的 control 部件 max-block-size 覆盖槽。"
+      "description": "text-field 的 input 部件 max-block-size 覆盖槽。"
     },
     {
       "name": "--xh-text-field-control-min-w",
@@ -77163,6 +77161,24 @@
       ],
       "visibility": "public",
       "description": "text-field 的 input 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-text-field-input-max-h",
+      "component": "text-field",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "max-block-size"
+      ],
+      "state": [
+        "xh-field-auto-size"
+      ],
+      "defaultToken": [
+        "--xh-text-field-control-max-h"
+      ],
+      "visibility": "public",
+      "description": "text-field 的 input 部件 max-block-size 覆盖槽。"
     },
     {
       "name": "--xh-text-field-label-fg",
