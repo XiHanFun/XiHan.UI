@@ -24,6 +24,8 @@ export const jsonViewerAnatomy = createAnatomy('json-viewer', [
   'branch-content',
   'preview',
   'text',
+  // 原文档里有类别的一段（键名、标量、标点）
+  'token',
   'empty',
   'mark',
   'toolbar',

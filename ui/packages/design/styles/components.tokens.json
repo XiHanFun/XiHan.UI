@@ -43141,19 +43141,21 @@
       "name": "--xh-json-viewer-boolean-fg",
       "component": "json-viewer",
       "part": [
-        "item-value"
+        "item-value",
+        "token"
       ],
       "property": [
         "color"
       ],
       "state": [
+        "kind=boolean",
         "value-type=boolean"
       ],
       "defaultToken": [
         "--xh-syntax-keyword"
       ],
       "visibility": "public",
-      "description": "json-viewer 的 item-value 部件 color 覆盖槽。"
+      "description": "json-viewer 的 item-value、token 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-json-viewer-border",
@@ -43384,38 +43386,42 @@
       "component": "json-viewer",
       "part": [
         "branch-text",
-        "item-key"
+        "item-key",
+        "token"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "kind=key"
       ],
       "defaultToken": [
         "--xh-fg-brand-strong"
       ],
       "visibility": "public",
-      "description": "json-viewer 的 branch-text、item-key 部件 color 覆盖槽。"
+      "description": "json-viewer 的 branch-text、item-key、token 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-json-viewer-key-font-weight",
       "component": "json-viewer",
       "part": [
         "branch-text",
-        "item-key"
+        "item-key",
+        "token"
       ],
       "property": [
         "font-weight"
       ],
       "state": [
-        "default"
+        "default",
+        "kind=key"
       ],
       "defaultToken": [
         "--xh-font-weight-medium"
       ],
       "visibility": "public",
-      "description": "json-viewer 的 branch-text、item-key 部件 font-weight 覆盖槽。"
+      "description": "json-viewer 的 branch-text、item-key、token 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-json-viewer-mark-bg",
@@ -43542,37 +43548,41 @@
       "name": "--xh-json-viewer-null-fg",
       "component": "json-viewer",
       "part": [
-        "item-value"
+        "item-value",
+        "token"
       ],
       "property": [
         "color"
       ],
       "state": [
+        "kind=null",
         "value-type=null"
       ],
       "defaultToken": [
         "--xh-fg-subtle"
       ],
       "visibility": "public",
-      "description": "json-viewer 的 item-value 部件 color 覆盖槽。"
+      "description": "json-viewer 的 item-value、token 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-json-viewer-number-fg",
       "component": "json-viewer",
       "part": [
-        "item-value"
+        "item-value",
+        "token"
       ],
       "property": [
         "color"
       ],
       "state": [
+        "kind=number",
         "value-type=number"
       ],
       "defaultToken": [
         "--xh-syntax-number"
       ],
       "visibility": "public",
-      "description": "json-viewer 的 item-value 部件 color 覆盖槽。"
+      "description": "json-viewer 的 item-value、token 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-json-viewer-preview-fg",
@@ -43616,13 +43626,15 @@
       "part": [
         "branch-text",
         "item-key",
-        "item-value"
+        "item-value",
+        "token"
       ],
       "property": [
         "color"
       ],
       "state": [
         "default",
+        "kind=punctuation",
         "value-type=array",
         "value-type=object"
       ],
@@ -43630,7 +43642,7 @@
         "--xh-fg-subtle"
       ],
       "visibility": "public",
-      "description": "json-viewer 的 branch-text、item-key、item-value 部件 color 覆盖槽。"
+      "description": "json-viewer 的 branch-text、item-key、item-value、token 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-json-viewer-px",
@@ -43831,19 +43843,21 @@
       "name": "--xh-json-viewer-string-fg",
       "component": "json-viewer",
       "part": [
-        "item-value"
+        "item-value",
+        "token"
       ],
       "property": [
         "color"
       ],
       "state": [
+        "kind=string",
         "value-type=string"
       ],
       "defaultToken": [
         "--xh-syntax-string"
       ],
       "visibility": "public",
-      "description": "json-viewer 的 item-value 部件 color 覆盖槽。"
+      "description": "json-viewer 的 item-value、token 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-json-viewer-text-fg",

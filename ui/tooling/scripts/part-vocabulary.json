@@ -1878,7 +1878,8 @@
     ],
     "token": [
       "code-view",
-      "diff-view"
+      "diff-view",
+      "json-viewer"
     ],
     "toolbar": [
       "image-viewer",

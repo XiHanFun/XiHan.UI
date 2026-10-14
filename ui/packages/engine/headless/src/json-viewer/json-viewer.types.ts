@@ -110,6 +110,22 @@ export type JsonViewerToolTrigger
 /** 写入剪贴板的相位：在途为 copying，成功后在停留窗口内为 copied。 */
 export type JsonViewerCopyStatus = 'idle' | 'copying' | 'copied'
 
+/**
+ * 原文档里一段文字的类别，与树档的着色一一对应：键名、四种标量与标点。
+ * 写进 token 部件的 data-kind，皮肤按它上色。
+ */
+export type JsonViewerTokenKind = 'key' | 'string' | 'number' | 'boolean' | 'null' | 'punctuation'
+
+/** 原文档切出来的一段。kind 为 null 的是空白，或解析不了的原文整段，按纯文本铺、不着色。 */
+export interface JsonViewerTextSegment {
+  text: string
+  kind: JsonViewerTokenKind | null
+}
+
+export interface JsonViewerTokenProps {
+  kind: JsonViewerTokenKind
+}
+
 /** 读屏与界面上的文案，默认英文。 */
 export interface JsonViewerTranslations {
   /** 原文视图区域的可及名：它是一整块可滚动的文本，不提供名字时读屏无法朗读其含义。 */
@@ -346,6 +362,11 @@ export interface JsonViewerApi<T extends PropTypes = PropTypes> {
   emptyText: string
   /** 原文档展示、复制钮写入的那份文本：提供了 source 时是它重排缩进后的样子，否则由 value 序列化（键序与环路记号与树档一致）。 */
   text: string
+  /**
+   * 原文按类别切成的段，依次拼接恒等于 text：键名、标量与标点各成一段，铺成 token 部件着色，空白按纯文本铺。
+   * 原文解析不了时整段一个不着色的段。只在原文档切分，树档为空：树档用不上，不白算一遍。
+   */
+  textSegments: readonly JsonViewerTextSegment[]
   /** 命中搜索词的行路径，按树序排列；没有搜索时为空。 */
   searchMatches: readonly string[]
   /** 在命中之间逐个走时停在哪一行；没有时为 null。 */
@@ -365,6 +386,8 @@ export interface JsonViewerApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getTreeProps: () => T['element']
   getTextProps: () => T['element']
+  /** 原文档里有类别的一段（键名、标量、标点），带 data-kind 供皮肤按树档同一套颜色着色。 */
+  getTokenProps: (props: JsonViewerTokenProps) => T['element']
   getItemProps: (props: JsonViewerNodeProps) => T['element']
   getItemKeyProps: (props: JsonViewerNodeProps) => T['element']
   getItemValueProps: (props: JsonViewerNodeProps) => T['element']

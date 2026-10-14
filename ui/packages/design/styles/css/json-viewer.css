@@ -212,6 +212,32 @@
     color: var(--xh-json-viewer-punctuation-fg, var(--xh-fg-subtle));
   }
 
+  /* 原文档按类别着色：与树档同一组槽、同一套语法令牌，两档切过去同一个值是同一种颜色 */
+  [data-scope='json-viewer'][data-part='token'][data-kind='key'] {
+    color: var(--xh-json-viewer-key-fg, var(--xh-fg-brand-strong));
+    font-weight: var(--xh-json-viewer-key-font-weight, var(--xh-font-weight-medium));
+  }
+
+  [data-scope='json-viewer'][data-part='token'][data-kind='string'] {
+    color: var(--xh-json-viewer-string-fg, var(--xh-syntax-string));
+  }
+
+  [data-scope='json-viewer'][data-part='token'][data-kind='number'] {
+    color: var(--xh-json-viewer-number-fg, var(--xh-syntax-number));
+  }
+
+  [data-scope='json-viewer'][data-part='token'][data-kind='boolean'] {
+    color: var(--xh-json-viewer-boolean-fg, var(--xh-syntax-keyword));
+  }
+
+  [data-scope='json-viewer'][data-part='token'][data-kind='null'] {
+    color: var(--xh-json-viewer-null-fg, var(--xh-fg-subtle));
+  }
+
+  [data-scope='json-viewer'][data-part='token'][data-kind='punctuation'] {
+    color: var(--xh-json-viewer-punctuation-fg, var(--xh-fg-subtle));
+  }
+
   /* 循环引用与截断占位不是真数据，排在语气之外用弱化字重表达 */
   [data-scope='json-viewer'][data-part='item-value'][data-circular],
   [data-scope='json-viewer'][data-part='item-value'][data-truncated] {

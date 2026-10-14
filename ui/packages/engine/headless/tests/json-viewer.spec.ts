@@ -22,6 +22,7 @@ import {
   JSON_VIEWER_ROOT_PATH as ROOT,
   JSON_VIEWER_TOOLS,
   resolveJsonViewerTools,
+  tokenizeJsonText,
 } from '../src/json-viewer'
 
 type Props = JsonViewerSchema['props']
@@ -1261,6 +1262,62 @@ describe('json 工具条', () => {
     const t = toolbar({ value: undefined })
     for (const props of [t.api().getExpandAllTriggerProps(), t.api().getCopyTriggerProps(), t.api().getViewTriggerProps()] as Dict[])
       expect(props).toMatchObject({ 'disabled': true, 'data-disabled': '' })
+    t.stop()
+  })
+
+  it('tokenizeJsonText 按类别切段：冒号前的字符串是键名，标点与空白各自并段，拼回去恒等于原文', () => {
+    const text = '{\n  "id": 207795978470952990,\n  "name": "a\\"b: c",\n  "ok": [true, false, null, -1.5e3]\n}'
+    const segments = tokenizeJsonText(text)
+    expect(segments.map(segment => segment.text).join('')).toBe(text)
+    expect(segments.filter(segment => segment.kind !== null).map(segment => [segment.kind, segment.text])).toEqual([
+      ['punctuation', '{'],
+      ['key', '"id"'],
+      ['punctuation', ':'],
+      ['number', '207795978470952990'],
+      ['punctuation', ','],
+      ['key', '"name"'],
+      ['punctuation', ':'],
+      ['string', '"a\\"b: c"'],
+      ['punctuation', ','],
+      ['key', '"ok"'],
+      ['punctuation', ':'],
+      ['punctuation', '['],
+      ['boolean', 'true'],
+      ['punctuation', ','],
+      ['boolean', 'false'],
+      ['punctuation', ','],
+      ['null', 'null'],
+      ['punctuation', ','],
+      ['number', '-1.5e3'],
+      ['punctuation', ']'],
+      ['punctuation', '}'],
+    ])
+  })
+
+  it('tokenizeJsonText 相邻的标点并成一段，键名与冒号之间隔着空白也认得出', () => {
+    expect(tokenizeJsonText('[[1]],')).toEqual([
+      { text: '[[', kind: 'punctuation' },
+      { text: '1', kind: 'number' },
+      { text: ']],', kind: 'punctuation' },
+    ])
+    expect(tokenizeJsonText('{"a" : 1}').find(segment => segment.text === '"a"')?.kind).toBe('key')
+  })
+
+  it('tokenizeJsonText 认不出的原文整段退回不着色，不按半截猜出来的类别上色', () => {
+    const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+    expect(tokenizeJsonText(ua)).toEqual([{ text: ua, kind: null }])
+    expect(tokenizeJsonText('"open')).toEqual([{ text: '"open', kind: null }])
+    expect(tokenizeJsonText('123 abc')).toEqual([{ text: '123 abc', kind: null }])
+    expect(tokenizeJsonText('')).toEqual([])
+  })
+
+  it('只在原文档切段，token 部件带 data-kind', () => {
+    const t = toolbar({ value: { a: 1 } })
+    expect(t.api().textSegments).toEqual([])
+    t.api().setView('text')
+    expect(t.api().textSegments.map(segment => segment.text).join('')).toBe(t.api().text)
+    expect(t.api().textSegments.some(segment => segment.kind === 'key')).toBe(true)
+    expect(t.api().getTokenProps({ kind: 'key' })).toMatchObject({ 'data-scope': 'json-viewer', 'data-part': 'token', 'data-kind': 'key' })
     t.stop()
   })
 

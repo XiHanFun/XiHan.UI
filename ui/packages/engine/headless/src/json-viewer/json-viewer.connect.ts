@@ -13,7 +13,7 @@ import { splitHighlight } from '../highlight/highlight.split'
 import { JSON_VIEWER_EN_US } from '../locale/en-US'
 import { resolveTranslations } from '../shared/translations'
 import { jsonViewerAnatomy, jsonViewerBranchQuery, jsonViewerItemQuery } from './json-viewer.anatomy'
-import { flattenJson, jsonExpandedPathsToDepth, jsonSearch, jsonSearchQuery, jsonSeedExpanded, jsonViewerText, resolveJsonViewerTools } from './json-viewer.machine'
+import { flattenJson, jsonExpandedPathsToDepth, jsonSearch, jsonSearchQuery, jsonSeedExpanded, jsonViewerText, resolveJsonViewerTools, tokenizeJsonText } from './json-viewer.machine'
 
 const parts = jsonViewerAnatomy.build()
 
@@ -247,6 +247,8 @@ export function connectJsonViewer<T extends PropTypes>(
     isEmpty,
     emptyText: label.empty,
     text,
+    // 只在原文档切段：树档用不上，不白走一遍原文
+    textSegments: textView ? tokenizeJsonText(text) : [],
     expandedValue,
     focusedValue: anchor,
     isFocusWithin,
@@ -281,6 +283,12 @@ export function connectJsonViewer<T extends PropTypes>(
       'tabindex': 0,
       // 自动换行：长行折到下一行而不是横向滚动；缺省不折，缩进与层级对得齐
       'data-wrap': dataAttr(wrap),
+    }),
+
+    // 原文里有类别的一段：只报类别，皮肤按它取树档同一套颜色；读屏照常连着念，不另报身份
+    getTokenProps: props => normalize.element({
+      ...parts.token.attrs,
+      'data-kind': props.kind,
     }),
 
     // 键盘全在 tree 上收口：行只管声明自己，一次冒泡一个处理器

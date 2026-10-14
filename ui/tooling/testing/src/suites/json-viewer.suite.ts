@@ -571,8 +571,15 @@ export const jsonViewerSuite: ConformanceSuite = {
           kind: 'click',
           part: 'view-trigger',
           expect: {
-            counts: { text: 1, tree: 0 },
+            // 原文按类别切段：键名、标量与标点各成一个 token，相邻标点（如 `],`）并成一段
+            counts: { text: 1, tree: 0, token: 22 },
             parts: {
+              'token[0]': { 'data-kind': 'punctuation' },
+              'token[1]': { 'data-kind': 'key' },
+              'token[3]': { 'data-kind': 'string' },
+              'token[7]': { 'data-kind': 'number' },
+              'token[13]': { 'data-kind': 'punctuation' },
+              'token[19]': { 'data-kind': 'boolean' },
               'root': { 'data-view': 'text' },
               'view-trigger': { 'aria-pressed': 'true', 'data-state': 'on' },
               'wrap-trigger': { hidden: null },
