@@ -80,7 +80,8 @@ export const dateFieldSuite: ConformanceSuite = {
             children: Array.from({ length: SEGMENT_NODES }, (_, i) => segment(i)),
           },
           // 清空钮排在段位外壳之后：没值时收起，不卸载作者节点
-          { part: 'clear-trigger', tag: 'button', text: '清空' },
+          // 单图标钮照文档留空：字形由皮肤画，名字由 translations 给；塞进与缺省英文名字对不上的字就是 2.5.3 违规
+          { part: 'clear-trigger', tag: 'button' },
         ],
       },
       { part: 'hidden-input', tag: 'input' },

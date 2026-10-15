@@ -181,8 +181,9 @@ export const timeRangePickerSuite: ConformanceSuite = {
           { part: 'range-separator', tag: 'span', text: '-' },
           segmentGroup(1),
           // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
-          { part: 'trigger', tag: 'button', text: '选择' },
-          { part: 'clear-trigger', tag: 'button', text: '清空' },
+          // 两颗都是单图标钮，照文档留空：字形由皮肤画，名字由 translations 给
+          { part: 'trigger', tag: 'button' },
+          { part: 'clear-trigger', tag: 'button' },
         ],
       },
       // 表单出口排在浮层之前：浮层可被搬到落点，宿主里剩下的部分要与就地渲染同序

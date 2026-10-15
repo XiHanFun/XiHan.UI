@@ -84,8 +84,9 @@ export const imageCropperSuite: ConformanceSuite = {
       },
       { part: 'zoom-slider', tag: 'input' },
       { part: 'rotate-slider', tag: 'input' },
-      { part: 'flip-trigger', tag: 'button', attrs: { axis: 'horizontal' }, text: '左右翻转' },
-      { part: 'flip-trigger', tag: 'button', attrs: { axis: 'vertical' }, text: '上下翻转' },
+      // 翻转钮的名字由 translations 给：作者放图标（aria-hidden，不进名字）；写可见文字就得与名字一致（WCAG 2.5.3）
+      { part: 'flip-trigger', tag: 'button', attrs: { axis: 'horizontal' }, children: [{ tag: 'span', attrs: { 'aria-hidden': 'true' } }] },
+      { part: 'flip-trigger', tag: 'button', attrs: { axis: 'vertical' }, children: [{ tag: 'span', attrs: { 'aria-hidden': 'true' } }] },
       { part: 'hidden-input', tag: 'input' },
     ],
   },

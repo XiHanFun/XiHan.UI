@@ -41,7 +41,8 @@ export const promptInputSuite: ConformanceSuite = {
     children: [
       // 输入框须是原生 <textarea>
       { part: 'input', tag: 'textarea' },
-      { part: 'submit-trigger', tag: 'button', text: '发送' },
+      // 单图标钮照文档留空：字形由皮肤画，名字由 translations 给；塞进与缺省英文名字对不上的字就是 2.5.3 违规
+      { part: 'submit-trigger', tag: 'button' },
     ],
   },
   cases: [

@@ -140,8 +140,10 @@ const FIXTURE: FixtureNode = {
             attrs: { index: String(i) },
           })),
         },
-        { part: 'clear-trigger', tag: 'button', text: '清空' },
-        { part: 'trigger', tag: 'button', text: '选择日期' },
+        // 两颗都是单图标钮：照文档的写法留空，字形由皮肤画，名字由 translations 给；
+        // 塞进与缺省英文名字对不上的可见文字就是 label-content-name-mismatch（WCAG 2.5.3）
+        { part: 'clear-trigger', tag: 'button' },
+        { part: 'trigger', tag: 'button' },
       ],
     },
     { part: 'hidden-input', tag: 'input' },

@@ -52,7 +52,8 @@ export const notificationItemSuite: ConformanceSuite = {
       },
       { part: 'item-action-trigger', component: C, tag: 'button', text: '撤销' },
       { part: 'item-progress', component: C },
-      { part: 'item-close-trigger', component: C, tag: 'button', text: '关闭' },
+      // 单图标钮照文档留空：字形由皮肤画，名字由 translations 给；塞进与缺省英文名字对不上的字就是 2.5.3 违规
+      { part: 'item-close-trigger', component: C, tag: 'button' },
     ],
   },
   cases: [

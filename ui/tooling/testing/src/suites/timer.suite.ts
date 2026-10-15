@@ -28,7 +28,9 @@ const timerTree: FixtureNode = {
         { part: 'item', tag: 'span', attrs: { unit: 'seconds' } },
       ],
     },
-    { part: 'control', tag: 'button', text: '起停' },
+    // 起停钮的名字随动作换（开始 / 暂停 / 继续），由 translations 给；作者放图标（aria-hidden，不进名字），
+    // 写死一句「起停」这样的可见文字就与名字对不上（WCAG 2.5.3）
+    { part: 'control', tag: 'button', children: [{ tag: 'span', attrs: { 'aria-hidden': 'true' } }] },
   ],
 }
 

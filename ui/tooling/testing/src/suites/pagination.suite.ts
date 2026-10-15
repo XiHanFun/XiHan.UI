@@ -26,15 +26,16 @@ export const paginationSuite: ConformanceSuite = {
     part: 'root',
     tag: 'nav',
     children: [
-      { part: 'first-trigger', tag: 'button', text: '首页' },
-      { part: 'prev-trigger', tag: 'button', text: '上一页' },
+      // 四颗翻页钮都是单图标钮，照文档留空：字形由皮肤画，名字由 translations 给
+      { part: 'first-trigger', tag: 'button' },
+      { part: 'prev-trigger', tag: 'button' },
       { part: 'item', tag: 'button', attrs: { value: '1' }, text: '1' },
       { part: 'item', tag: 'button', attrs: { value: '2' }, text: '2' },
       { part: 'item', tag: 'button', attrs: { value: '3' }, text: '3' },
       { part: 'ellipsis-trigger', tag: 'button', attrs: { side: 'end' }, text: '…' },
       { part: 'item', tag: 'button', attrs: { value: '10' }, text: '10' },
-      { part: 'next-trigger', tag: 'button', text: '下一页' },
-      { part: 'last-trigger', tag: 'button', text: '末页' },
+      { part: 'next-trigger', tag: 'button' },
+      { part: 'last-trigger', tag: 'button' },
       {
         part: 'positioner',
         tag: 'div',

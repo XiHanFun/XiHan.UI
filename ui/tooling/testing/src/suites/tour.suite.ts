@@ -81,7 +81,8 @@ export const tourSuite: ConformanceSuite = {
               { part: 'prev-trigger', tag: 'button', text: '上一步' },
               { part: 'next-trigger', tag: 'button', text: '下一步' },
               { part: 'skip-trigger', tag: 'button', text: '跳过' },
-              { part: 'close-trigger', tag: 'button', text: '关闭' },
+              // 单图标钮照文档留空：字形由皮肤画，名字由 translations 给；塞进与缺省英文名字对不上的字就是 2.5.3 违规
+              { part: 'close-trigger', tag: 'button' },
             ],
           },
         ],

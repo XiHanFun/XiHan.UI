@@ -19,12 +19,16 @@ function q(doc: Document, part: string, index = 0): HTMLElement | null {
  *
  * editableSlide 给了就把那一张的正文换成一个输入框：幻灯片里摆搜索框、报名表是常见用法，
  * 方向键落在那儿是移动光标，不是翻页。
+ *
+ * 三颗钮照文档的写法留空：它们是单图标钮，字形由皮肤画，名字由 translations 给。
+ * 往里塞可见文字，名字仍是 translations 那一句，可见文字得包含在名字里（WCAG 2.5.3），
+ * 塞一句跟缺省英文文案对不上的中文就是 label-content-name-mismatch。
  */
 function carouselTree(slides = 4, indicators = 4, editableSlide?: number): FixtureNode {
   return {
     part: 'root',
     children: [
-      { part: 'prev-trigger', tag: 'button', text: '上一张' },
+      { part: 'prev-trigger', tag: 'button' },
       {
         part: 'viewport',
         children: [
@@ -46,8 +50,8 @@ function carouselTree(slides = 4, indicators = 4, editableSlide?: number): Fixtu
           },
         ],
       },
-      { part: 'next-trigger', tag: 'button', text: '下一张' },
-      { part: 'autoplay-trigger', tag: 'button', text: '播放 / 暂停' },
+      { part: 'next-trigger', tag: 'button' },
+      { part: 'autoplay-trigger', tag: 'button' },
       {
         part: 'indicator-group',
         children: Array.from({ length: indicators }, (_, i): FixtureNode => ({
