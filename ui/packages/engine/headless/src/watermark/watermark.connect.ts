@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { WatermarkApi, WatermarkProps, WatermarkSchema, WatermarkState, WatermarkTile } from './watermark.types'
 import { dataAttr, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
+import { toSafeImageSource } from '@xihan-ui/core/url'
 import { watermarkAnatomy } from './watermark.anatomy'
 
 const parts = watermarkAnatomy.build()
@@ -44,9 +45,6 @@ const IMAGE_TEXT_GAP_RATIO = 0.4
 
 /** 直接收进图样的图片来源前缀：内联的图片 data URI。 */
 const IMAGE_PREFIX = 'data:image/'
-
-/** 地址形式的图片可以取回的协议；不带协议的相对路径同样可取。 */
-const IMAGE_ADDRESS_PROTOCOLS = ['http:', 'https:', 'blob:']
 
 /** 窄字按这个比例折算成字宽，宽字按一个字宽算。 */
 const NARROW_ADVANCE = 0.55
@@ -109,32 +107,24 @@ function toFontFamily(value: string | undefined): string {
   return typeof value === 'string' && value.trim() !== '' ? value.trim() : DEFAULT_FONT_FAMILY
 }
 
-/** 能直接收进图样的内联图片：`data:image/` 开头的串。 */
+/** 经 toSafeImageSource 收下的串是不是内联图片。 */
+function isInlineImage(src: string): boolean {
+  return src.slice(0, IMAGE_PREFIX.length).toLowerCase() === IMAGE_PREFIX
+}
+
+/** 能直接收进图样的内联图片：经 toSafeImageSource 收下、以 `data:image/` 开头的串。 */
 function toInlineImage(value: string | undefined): string | undefined {
-  if (typeof value !== 'string')
-    return undefined
-  const src = value.trim()
-  if (src.slice(0, IMAGE_PREFIX.length).toLowerCase() !== IMAGE_PREFIX)
-    return undefined
-  return src
+  const src = toSafeImageSource(value)
+  return src !== undefined && isInlineImage(src) ? src : undefined
 }
 
 /**
- * 地址形式、要先取回再印的图片：http(s)、`blob:` 与不带协议的相对路径。
- *
- * 别的协议一律挡在入口：`javascript:` 这类值放进 `url()` 与图片地址里是一条不该开的路；
- * 内联的 `data:` 由 toInlineImage 收，非图片的 `data:` 不收。
+ * 地址形式、要先取回再印的图片：经 toSafeImageSource 收下的 http(s)、`blob:` 与不带协议的相对路径。
+ * 别的协议与非图片的 `data:` 一律挡在入口。
  */
 export function toWatermarkImageAddress(value: string | undefined): string | undefined {
-  if (typeof value !== 'string')
-    return undefined
-  const src = value.trim()
-  if (src === '')
-    return undefined
-  const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(src)?.[1]
-  if (scheme == null)
-    return src
-  return IMAGE_ADDRESS_PROTOCOLS.includes(`${scheme.toLowerCase()}:`) ? src : undefined
+  const src = toSafeImageSource(value)
+  return src !== undefined && !isInlineImage(src) ? src : undefined
 }
 
 /** 一份 props 算出的图样与根节点上归本组件管的那几样：属性与两支内联变量。 */

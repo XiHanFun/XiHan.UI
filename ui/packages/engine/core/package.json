@@ -53,6 +53,10 @@
       "types": "./dist/skin-check.d.ts",
       "import": "./dist/skin-check.js"
     },
+    "./url": {
+      "types": "./dist/url.d.ts",
+      "import": "./dist/url.js"
+    },
     "./vanilla": {
       "types": "./dist/vanilla.d.ts",
       "import": "./dist/vanilla.js"

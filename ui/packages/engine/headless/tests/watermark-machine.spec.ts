@@ -181,7 +181,7 @@ describe('水印 · 地址形式的图片', () => {
     w.stop()
   })
 
-  it('javascript: 之类的协议一概不收，也不去取', () => {
+  it.each(['javascript:alert(1)', 'java\nscript:alert(1)', ' JavaScript:alert(1)'])('%j 这类协议一概不收，也不去取', (image) => {
     const load = vi.fn()
     vi.stubGlobal('Image', class {
       current = ''
@@ -194,7 +194,7 @@ describe('水印 · 地址形式的图片', () => {
         load(value)
       }
     })
-    const w = mount({ text: '曦寒', image: 'javascript:alert(1)' })
+    const w = mount({ text: '曦寒', image })
     expect(load).not.toHaveBeenCalled()
     expect(diagnostics.some(d => d.scope === 'watermark')).toBe(true)
     w.stop()
