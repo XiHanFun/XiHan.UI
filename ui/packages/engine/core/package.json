@@ -37,6 +37,10 @@
       "types": "./dist/date.d.ts",
       "import": "./dist/date.js"
     },
+    "./json": {
+      "types": "./dist/json.d.ts",
+      "import": "./dist/json.js"
+    },
     "./metadata": {
       "types": "./dist/metadata.d.ts",
       "import": "./dist/metadata.js"
