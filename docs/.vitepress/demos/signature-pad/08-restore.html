@@ -13,6 +13,8 @@
 <script type="module">
   const host = document.getElementById("xh-signature-restore");
   const count = document.getElementById("xh-signature-restore-count");
+  // 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文；对象只走 property
+  host.translations = { undoTrigger: "撤销上一笔" };
   function line(points) {
     return { points: points.map(([x, y]) => ({ x, y, pressure: 0.5 })) };
   }

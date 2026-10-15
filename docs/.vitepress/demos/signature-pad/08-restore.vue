@@ -32,7 +32,13 @@ function onValueChange(details: { value: SignaturePadValue }) {
 </script>
 
 <template>
-  <XhSignaturePadRoot :default-value="saved" style="max-inline-size: 22rem" @value-change="onValueChange">
+  <!-- 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文 -->
+  <XhSignaturePadRoot
+    :default-value="saved"
+    :translations="{ undoTrigger: '撤销上一笔' }"
+    style="max-inline-size: 22rem"
+    @value-change="onValueChange"
+  >
     <XhSignaturePadControl>
       <XhSignaturePadGuide />
       <XhSignaturePadPath />

@@ -18,7 +18,7 @@ import {
     <XhSignaturePadRoot
       name="signature"
       required
-      :translations="{ statusEmpty: '尚未签名', statusSigned: '已签名' }"
+      :translations="{ clearTrigger: '清空签名', statusEmpty: '尚未签名', statusSigned: '已签名' }"
     >
       <XhSignaturePadLabel>验收签名（必填）</XhSignaturePadLabel>
       <XhSignaturePadControl>

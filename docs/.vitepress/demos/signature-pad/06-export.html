@@ -20,6 +20,8 @@
   const host = document.getElementById("xh-signature-export");
   const submit = document.getElementById("xh-signature-submit");
   const size = document.getElementById("xh-signature-size");
+  // 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文；对象只走 property
+  host.translations = { clearTrigger: "清空签名" };
   // 清空与表单重置同样发 draw-end，一个监听器就够，不必去嗅探清空按钮
   host.addEventListener("draw-end", (event) => {
     size.textContent = `SVG ${event.detail.svg.length} 字节`;

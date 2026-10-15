@@ -9,10 +9,13 @@ import {
   XhSignaturePadRoot,
   XhSignaturePadUndoTrigger,
 } from "@xihan-ui/vue";
+
+// 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文
+const translations = { undoTrigger: "撤销上一笔", redoTrigger: "重做一笔", clearTrigger: "清空签名" };
 </script>
 
 <template>
-  <XhSignaturePadRoot style="max-inline-size: 22rem">
+  <XhSignaturePadRoot :translations="translations" style="max-inline-size: 22rem">
     <XhSignaturePadControl>
       <XhSignaturePadGuide />
       <XhSignaturePadPath />

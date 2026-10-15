@@ -8,11 +8,14 @@ import {
   XhSignaturePadPath,
   XhSignaturePadRoot,
 } from "@xihan-ui/vue";
+
+// 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文
+const translations = { clearTrigger: "清空签名" };
 </script>
 
 <template>
   <div style="display: flex; flex-direction: column; gap: 16px; max-inline-size: 22rem">
-    <XhSignaturePadRoot read-only>
+    <XhSignaturePadRoot read-only :translations="translations">
       <XhSignaturePadLabel>只读</XhSignaturePadLabel>
       <XhSignaturePadControl>
         <XhSignaturePadGuide />
@@ -20,7 +23,7 @@ import {
       </XhSignaturePadControl>
       <XhSignaturePadClearTrigger>清空</XhSignaturePadClearTrigger>
     </XhSignaturePadRoot>
-    <XhSignaturePadRoot disabled>
+    <XhSignaturePadRoot disabled :translations="translations">
       <XhSignaturePadLabel>禁用</XhSignaturePadLabel>
       <XhSignaturePadControl>
         <XhSignaturePadGuide />
