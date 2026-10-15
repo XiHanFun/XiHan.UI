@@ -7,5 +7,6 @@ export default defineXihanPackage({
     backgrounds: 'src/backgrounds.ts',
     locale: 'src/locale.ts',
     services: 'src/services.ts',
+    authoring: 'src/authoring.ts',
   },
 })

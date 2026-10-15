@@ -146,6 +146,85 @@ document.querySelector("xh-dialog")
 
 自定义元素在 JS 到达之前不会升级，这段时间 `data-scope` / `data-part` 尚未写入，浮层内容会以裸文本出现在页面流中。`@xihan-ui/styles` 的 `undefined.css` 用 `:not(:defined)` 配合作者编写的 `data-xh-part` 先收起浮层子树，见[皮肤与样式分层](../guide/styling#升级前的形态)。
 
+## 编写自己的元素
+
+`@xihan-ui/web-components/authoring` 公开库内元素所用的那套基础件，供设计器等第三方编写同样形态的 Light DOM 元素：自研的响应式基类、按 key 复用生成节点、事件派发、元素注册，以及读取全局配置与文案的控制器。这个子入口不含库内的元素类，Node 下可以安全 import。
+
+```ts
+import {
+  XhReactiveElement,
+  XhConfigController,
+  emitEvent,
+  reconcile,
+  createGeneratedElement,
+  registerElement,
+  type KeyedChildren,
+  type PropertyValues,
+} from "@xihan-ui/web-components/authoring";
+
+interface Step {
+  id: string;
+  label: string;
+}
+
+class XhStepList extends XhReactiveElement {
+  static override properties = {
+    steps: { attribute: false },
+    compact: { type: Boolean },
+  };
+
+  declare steps: Step[] | undefined;
+  declare compact: boolean | undefined;
+
+  private readonly config = new XhConfigController(this);
+  private readonly keys: KeyedChildren = new WeakMap();
+
+  protected override update(changed: PropertyValues): void {
+    super.update(changed);
+    const t = this.config.translations("xh-step-list", { empty: "No steps" });
+    this.dataset.empty = t.empty;
+    reconcile(this, this.steps ?? [], this.keys, (step) => step.id, (step, reuse) => {
+      const node = reuse ?? createGeneratedElement(this.ownerDocument, "button");
+      node.textContent = step.label;
+      node.onclick = () => emitEvent(this, "step-select", { id: step.id });
+      return node;
+    });
+  }
+}
+
+registerElement("xh-step-list", XhStepList);
+```
+
+| 导出 | 说明 |
+| --- | --- |
+| `XhReactiveElement` | 响应式基类。渲染根就是元素自身（Light DOM）；`static properties` 声明字段，声明键只认 `attribute`（`false` 不观察，字符串指定属性名，缺省为字段名转小写）、`type`（`Boolean` / `Number` / `Object` / `Array`，其余按字符串）与 `converter`；属性单向转成字段，不回写；同一拍里的多次写入合并成一轮更新；生命周期为 `update(changed)`（覆盖时必须调 `super.update(changed)`）、`firstUpdated`、`updated`，另有 `requestUpdate()`、`updateComplete` 与控制器 |
+| `reconcile(parent, items, keys, keyOf, make)` | 按 key 把一组节点排进父节点：已有的复用、缺的新建、多的移除，次序与输入一致；作者写在父节点里的节点不动，生成的节点排在它们之后 |
+| `createGeneratedElement(doc, tag)` / `generatedChildren(parent)` | 建一个带生成标记（`GEN_ATTR`，即 `data-xh-gen`）的 HTML 节点 / 取父节点里生成的直接子节点；SVG 节点用 `createElementNS(SVG_NS, tag)` 建好后自己加 `GEN_ATTR` |
+| `emitEvent(target, type, detail, { cancelable? })` | 与库内元素同一约定派发 `CustomEvent`（`bubbles: true, composed: true`），返回 `false` 表示被 `preventDefault` |
+| `registerElement(tag, ctor)` | 注册元素：同一构造器重复注册不报错，标签被别的构造器占用时抛错，没有 `customElements` 的环境跳过；不写任何全局登记表 |
+| `XhConfigController` | 元素连上文档后订阅所在子树的配置，`setXhConfig` 或祖先 `<xh-config>` 变化时自动请求更新；`config`、`locale` 现解析，`translations(component, defaults, own?)` 按 defaults < 配置里那一桶 < 元素自己的顺序叠加，值为 `undefined` 的键视为没给 |
+
+第三方元素的文案与内建组件走同一条路：元素自带语言包，形状与内建语言包相同，应用合并后交给全局配置，或用 `<xh-config>` 只作用于一棵子树。
+
+```ts
+import { mergeXhConfig, setXhConfig } from "@xihan-ui/web-components";
+import { zhCN } from "@xihan-ui/web-components/locale";
+
+const stepListZhCN = { translations: { "xh-step-list": { empty: "暂无步骤" } } };
+
+setXhConfig(mergeXhConfig(zhCN, stepListZhCN));
+```
+
+文案桶的类型用声明合并补进 `XhTranslationOverrides`：
+
+```ts
+declare module "@xihan-ui/web-components" {
+  interface XhTranslationOverrides {
+    "xh-step-list"?: { empty?: string };
+  }
+}
+```
+
 ## 自定义元素清单
 
 包内附带 `custom-elements.json`（CEM 格式），包含 144 个元素的标签名、属性、事件、CSS part。编辑器与框架的自定义元素支持可以直接读取它获得补全与类型提示。

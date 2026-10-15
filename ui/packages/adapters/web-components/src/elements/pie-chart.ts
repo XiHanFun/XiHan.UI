@@ -28,7 +28,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectPieChart, pieChartAnatomy, pieChartMachine, pieChartMeta } from '@xihan-ui/headless'
-import { GEN_ATTR, generated, hasAuthorContent, makeGen, reconcile, SVG_NS } from '../dom/generated-nodes'
+import { createGeneratedElement, GEN_ATTR, generatedChildren, hasAuthorContent, reconcile, SVG_NS } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -276,8 +276,8 @@ export class XhPieChartElement extends XhElement {
 
     const empty = put('empty', api.getEmptyProps() as Record<string, unknown>)
     if (empty && !hasAuthorContent(empty)) {
-      const [own] = generated(empty)
-      const span = own ?? empty.appendChild(makeGen(empty.ownerDocument, 'span'))
+      const [own] = generatedChildren(empty)
+      const span = own ?? empty.appendChild(createGeneratedElement(empty.ownerDocument, 'span'))
       if (span.textContent !== api.emptyText)
         span.textContent = api.emptyText
     }
@@ -318,7 +318,7 @@ export class XhPieChartElement extends XhElement {
       const node = old ?? doc.createElementNS(SVG_NS, 'pattern')
       node.setAttribute(GEN_ATTR, '')
       this.spreader.spread(node as HTMLElement, api.getPatternProps(pattern) as Record<string, unknown>)
-      let line = generated(node)[0]
+      let line = generatedChildren(node)[0]
       if (!line) {
         line = doc.createElementNS(SVG_NS, 'path')
         line.setAttribute(GEN_ATTR, '')
@@ -334,7 +334,7 @@ export class XhPieChartElement extends XhElement {
   #paintLegend(legend: Element, api: PieChartApi): void {
     const doc = legend.ownerDocument
     reconcile(legend, api.legendItems, this.#keys, item => item.id, (item, reuse) => {
-      const button = reuse instanceof HTMLButtonElement ? reuse : makeGen(doc, 'button')
+      const button = reuse instanceof HTMLButtonElement ? reuse : createGeneratedElement(doc, 'button')
       if (!reuse)
         button.append(doc.createElement('span'), doc.createElement('span'))
       const [swatch, label] = Array.from(button.children) as HTMLElement[]
@@ -351,11 +351,11 @@ export class XhPieChartElement extends XhElement {
   #paintCenter(center: HTMLElement, api: PieChartApi): void {
     if (hasAuthorContent(center))
       return
-    let [value, label] = generated(center) as HTMLElement[]
+    let [value, label] = generatedChildren(center) as HTMLElement[]
     if (!value || !label) {
-      for (const node of generated(center)) node.remove()
-      value = center.appendChild(makeGen(center.ownerDocument, 'span'))
-      label = center.appendChild(makeGen(center.ownerDocument, 'span'))
+      for (const node of generatedChildren(center)) node.remove()
+      value = center.appendChild(createGeneratedElement(center.ownerDocument, 'span'))
+      label = center.appendChild(createGeneratedElement(center.ownerDocument, 'span'))
     }
     this.spreader.spread(value, api.getCenterValueProps() as Record<string, unknown>)
     this.spreader.spread(label, api.getCenterLabelProps() as Record<string, unknown>)
@@ -371,18 +371,18 @@ export class XhPieChartElement extends XhElement {
       return
     const model = api.tooltip
     const key = model ? JSON.stringify([model.header, model.rows.map(row => [row.key, row.value, row.name, row.slot, row.other])]) : ''
-    if (key === this.#tooltipKey && (generated(tooltip).length > 0) === (model != null))
+    if (key === this.#tooltipKey && (generatedChildren(tooltip).length > 0) === (model != null))
       return
     this.#tooltipKey = key
-    for (const node of generated(tooltip)) node.remove()
+    for (const node of generatedChildren(tooltip)) node.remove()
     if (!model)
       return
     const doc = tooltip.ownerDocument
-    const header = makeGen(doc, 'div')
+    const header = createGeneratedElement(doc, 'div')
     this.spreader.spread(header, api.getTooltipHeaderProps() as Record<string, unknown>)
     header.textContent = model.header
     const rows = model.rows.map((row) => {
-      const line = makeGen(doc, 'div')
+      const line = createGeneratedElement(doc, 'div')
       this.spreader.spread(line, api.getTooltipRowProps(row) as Record<string, unknown>)
       const swatch = doc.createElement('span')
       this.spreader.spread(swatch, api.getTooltipSwatchProps(row) as Record<string, unknown>)
@@ -402,11 +402,11 @@ export class XhPieChartElement extends XhElement {
   #paintA11y(root: HTMLElement, api: PieChartApi): void {
     const doc = root.ownerDocument
     // 摘要之后是数据表的隐藏区域，表格放在区域里：视觉隐藏写在表格上收不住它的高度
-    let [summary, region] = generated(root) as HTMLElement[]
+    let [summary, region] = generatedChildren(root) as HTMLElement[]
     if (!summary || !region || region.firstElementChild?.localName !== 'table') {
-      for (const node of generated(root)) node.remove()
-      summary = root.appendChild(makeGen(doc, 'p'))
-      region = root.appendChild(makeGen(doc, 'div'))
+      for (const node of generatedChildren(root)) node.remove()
+      summary = root.appendChild(createGeneratedElement(doc, 'p'))
+      region = root.appendChild(createGeneratedElement(doc, 'div'))
       region.appendChild(doc.createElement('table'))
       this.#table = null
     }

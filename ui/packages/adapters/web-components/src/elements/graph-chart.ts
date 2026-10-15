@@ -26,7 +26,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectGraphChart, graphChartAnatomy, graphChartMachine, graphChartMeta } from '@xihan-ui/headless'
-import { GEN_ATTR, generated, hasAuthorContent, makeGen, reconcile, SVG_NS } from '../dom/generated-nodes'
+import { createGeneratedElement, GEN_ATTR, generatedChildren, hasAuthorContent, reconcile, SVG_NS } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -275,8 +275,8 @@ export class XhGraphChartElement extends XhElement {
 
     const empty = put('empty', api.getEmptyProps() as Record<string, unknown>)
     if (empty && !hasAuthorContent(empty)) {
-      const [own] = generated(empty)
-      const span = own ?? empty.appendChild(makeGen(empty.ownerDocument, 'span'))
+      const [own] = generatedChildren(empty)
+      const span = own ?? empty.appendChild(createGeneratedElement(empty.ownerDocument, 'span'))
       if (span.textContent !== api.emptyText)
         span.textContent = api.emptyText
     }
@@ -306,7 +306,7 @@ export class XhGraphChartElement extends XhElement {
   #paintLegend(legend: Element, api: GraphChartApi): void {
     const doc = legend.ownerDocument
     reconcile(legend, api.legendItems, this.#keys, item => item.id, (item, reuse) => {
-      const button = reuse instanceof HTMLButtonElement ? reuse : makeGen(doc, 'button')
+      const button = reuse instanceof HTMLButtonElement ? reuse : createGeneratedElement(doc, 'button')
       if (!reuse)
         button.append(doc.createElement('span'), doc.createElement('span'))
       const [swatch, label] = Array.from(button.children) as HTMLElement[]
@@ -325,18 +325,18 @@ export class XhGraphChartElement extends XhElement {
       return
     const model = api.tooltip
     const key = model ? JSON.stringify([model.header, api.active?.key ?? null, model.rows.map(row => [row.key, row.value, row.name])]) : ''
-    if (key === this.#tooltipKey && (generated(tooltip).length > 0) === (model != null))
+    if (key === this.#tooltipKey && (generatedChildren(tooltip).length > 0) === (model != null))
       return
     this.#tooltipKey = key
-    for (const node of generated(tooltip)) node.remove()
+    for (const node of generatedChildren(tooltip)) node.remove()
     if (!model)
       return
     const doc = tooltip.ownerDocument
-    const header = makeGen(doc, 'div')
+    const header = createGeneratedElement(doc, 'div')
     this.spreader.spread(header, api.getTooltipHeaderProps() as Record<string, unknown>)
     header.textContent = model.header
     const rows = model.rows.map((row) => {
-      const line = makeGen(doc, 'div')
+      const line = createGeneratedElement(doc, 'div')
       this.spreader.spread(line, api.getTooltipRowProps(row) as Record<string, unknown>)
       const value = doc.createElement('span')
       this.spreader.spread(value, api.getTooltipValueProps(row) as Record<string, unknown>)
@@ -354,11 +354,11 @@ export class XhGraphChartElement extends XhElement {
   #paintA11y(root: HTMLElement, api: GraphChartApi): void {
     const doc = root.ownerDocument
     // 摘要之后是数据表的隐藏区域，表格放在区域里：视觉隐藏写在表格上收不住它的高度
-    let [summary, region] = generated(root) as HTMLElement[]
+    let [summary, region] = generatedChildren(root) as HTMLElement[]
     if (!summary || !region || region.firstElementChild?.localName !== 'table') {
-      for (const node of generated(root)) node.remove()
-      summary = root.appendChild(makeGen(doc, 'p'))
-      region = root.appendChild(makeGen(doc, 'div'))
+      for (const node of generatedChildren(root)) node.remove()
+      summary = root.appendChild(createGeneratedElement(doc, 'p'))
+      region = root.appendChild(createGeneratedElement(doc, 'div'))
       region.appendChild(doc.createElement('table'))
       this.#table = null
     }

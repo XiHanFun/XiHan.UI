@@ -29,6 +29,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./authoring": {
+      "types": "./dist/authoring.d.ts",
+      "import": "./dist/authoring.js"
+    },
     "./backgrounds": {
       "types": "./dist/backgrounds.d.ts",
       "import": "./dist/backgrounds.js"

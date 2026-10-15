@@ -37,7 +37,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { cartesianChartAnatomy, cartesianChartMachine, cartesianChartMeta, connectCartesianChart } from '@xihan-ui/headless'
-import { GEN_ATTR, generated, hasAuthorContent, makeGen, reconcile, SVG_NS } from '../dom/generated-nodes'
+import { createGeneratedElement, GEN_ATTR, generatedChildren, hasAuthorContent, reconcile, SVG_NS } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -379,7 +379,7 @@ export class XhCartesianChartElement extends XhElement {
     if (!parent)
       return
     const doc = plot.ownerDocument
-    const own = generated(parent).filter(node => node.getAttribute(GEN_ATTR) === UNDERLAY || node.getAttribute(GEN_ATTR) === CANVAS)
+    const own = generatedChildren(parent).filter(node => node.getAttribute(GEN_ATTR) === UNDERLAY || node.getAttribute(GEN_ATTR) === CANVAS)
     if (api.renderer !== 'canvas') {
       for (const node of own)
         node.remove()
@@ -442,7 +442,7 @@ export class XhCartesianChartElement extends XhElement {
       const node = old ?? doc.createElementNS(SVG_NS, 'pattern')
       node.setAttribute(GEN_ATTR, '')
       this.spreader.spread(node as HTMLElement, api.getPatternProps(pattern) as Record<string, unknown>)
-      let line = generated(node)[0]
+      let line = generatedChildren(node)[0]
       if (!line) {
         line = doc.createElementNS(SVG_NS, 'path')
         line.setAttribute(GEN_ATTR, '')
@@ -459,7 +459,7 @@ export class XhCartesianChartElement extends XhElement {
     const node = reuse?.localName === 'clipPath' ? reuse : doc.createElementNS(SVG_NS, 'clipPath')
     node.setAttribute(GEN_ATTR, '')
     this.spreader.spread(node as HTMLElement, api.getClipPathProps() as Record<string, unknown>)
-    let rect = generated(node)[0]
+    let rect = generatedChildren(node)[0]
     if (!rect) {
       rect = doc.createElementNS(SVG_NS, 'rect')
       rect.setAttribute(GEN_ATTR, '')
@@ -472,11 +472,11 @@ export class XhCartesianChartElement extends XhElement {
   /** 缩放条：轨道里一个窗口，窗口两端各一个手柄；作者只写外壳。 */
   #paintZoomSlider(slider: Element, api: CartesianChartApi): void {
     const doc = slider.ownerDocument
-    let track = generated(slider)[0] as HTMLElement | undefined
+    let track = generatedChildren(slider)[0] as HTMLElement | undefined
     if (!track) {
-      track = makeGen(doc, 'div')
-      const win = makeGen(doc, 'div')
-      win.append(makeGen(doc, 'span'), makeGen(doc, 'span'))
+      track = createGeneratedElement(doc, 'div')
+      const win = createGeneratedElement(doc, 'div')
+      win.append(createGeneratedElement(doc, 'span'), createGeneratedElement(doc, 'span'))
       // 缩略线跟在窗口后面：画在窗口的淡底之上、手柄之下；SVG 图元要在 SVG 命名空间里建
       const preview = doc.createElementNS(SVG_NS, 'svg')
       const line = doc.createElementNS(SVG_NS, 'path')
@@ -486,14 +486,14 @@ export class XhCartesianChartElement extends XhElement {
       track.append(win, preview)
       slider.append(track)
     }
-    const [win, preview] = generated(track) as HTMLElement[]
-    const [start, end] = generated(win!) as HTMLElement[]
+    const [win, preview] = generatedChildren(track) as HTMLElement[]
+    const [start, end] = generatedChildren(win!) as HTMLElement[]
     this.spreader.spread(track, api.getZoomTrackProps() as Record<string, unknown>)
     this.spreader.spread(win!, api.getZoomWindowProps() as Record<string, unknown>)
     this.spreader.spread(start!, api.getZoomHandleProps('start') as Record<string, unknown>)
     this.spreader.spread(end!, api.getZoomHandleProps('end') as Record<string, unknown>)
     this.spreader.spread(preview!, api.getZoomPreviewProps() as Record<string, unknown>)
-    this.spreader.spread(generated(preview!)[0] as HTMLElement, api.getZoomPreviewLineProps() as Record<string, unknown>)
+    this.spreader.spread(generatedChildren(preview!)[0] as HTMLElement, api.getZoomPreviewLineProps() as Record<string, unknown>)
   }
 
   /** 图例项：一个系列一个按钮，色标与名字各一个 span；末尾是色阶，没有按值着色时收起，节点常在。 */
@@ -502,8 +502,8 @@ export class XhCartesianChartElement extends XhElement {
     const entries: (CartesianLegendItem | null)[] = [...api.legendItems, null]
     reconcile(legend, entries, this.#keys, item => (item ? `item:${item.id}` : 'scale'), (item, reuse) => {
       if (!item)
-        return this.#paintLegendScale(reuse ?? makeGen(doc, 'div'), api)
-      const button = reuse instanceof HTMLButtonElement ? reuse : makeGen(doc, 'button')
+        return this.#paintLegendScale(reuse ?? createGeneratedElement(doc, 'div'), api)
+      const button = reuse instanceof HTMLButtonElement ? reuse : createGeneratedElement(doc, 'button')
       if (!reuse) {
         button.append(doc.createElement('span'), doc.createElement('span'))
       }
@@ -548,18 +548,18 @@ export class XhCartesianChartElement extends XhElement {
     const model = api.tooltip
     // 行上带着激活系列的标记，激活的系列换了也要重建
     const key = model ? JSON.stringify([model.header, api.active?.seriesId, model.rows.map(row => [row.seriesId, row.value, row.name, row.slot, row.tone])]) : ''
-    if (key === this.#tooltipKey && (generated(tooltip).length > 0) === (model != null))
+    if (key === this.#tooltipKey && (generatedChildren(tooltip).length > 0) === (model != null))
       return
     this.#tooltipKey = key
-    for (const node of generated(tooltip)) node.remove()
+    for (const node of generatedChildren(tooltip)) node.remove()
     if (!model)
       return
     const doc = tooltip.ownerDocument
-    const header = makeGen(doc, 'div')
+    const header = createGeneratedElement(doc, 'div')
     this.spreader.spread(header, api.getTooltipHeaderProps() as Record<string, unknown>)
     header.textContent = model.header
     const rows = model.rows.map((row) => {
-      const line = makeGen(doc, 'div')
+      const line = createGeneratedElement(doc, 'div')
       this.spreader.spread(line, api.getTooltipRowProps(row) as Record<string, unknown>)
       const marker = doc.createElement('span')
       this.spreader.spread(marker, api.getTooltipSwatchProps(row) as Record<string, unknown>)
@@ -579,8 +579,8 @@ export class XhCartesianChartElement extends XhElement {
   #paintOwnText(host: HTMLElement, text: string): void {
     if (hasAuthorContent(host))
       return
-    const [own] = generated(host)
-    const span = own ?? host.appendChild(makeGen(host.ownerDocument, 'span'))
+    const [own] = generatedChildren(host)
+    const span = own ?? host.appendChild(createGeneratedElement(host.ownerDocument, 'span'))
     if (span.textContent !== text)
       span.textContent = text
   }
@@ -589,11 +589,11 @@ export class XhCartesianChartElement extends XhElement {
   #paintA11y(root: HTMLElement, api: CartesianChartApi): void {
     const doc = root.ownerDocument
     // 摘要之后是数据表的隐藏区域，表格放在区域里：视觉隐藏写在表格上收不住它的高度
-    let [summary, region] = generated(root) as HTMLElement[]
+    let [summary, region] = generatedChildren(root) as HTMLElement[]
     if (!summary || !region || region.firstElementChild?.localName !== 'table') {
-      for (const node of generated(root)) node.remove()
-      summary = root.appendChild(makeGen(doc, 'p'))
-      region = root.appendChild(makeGen(doc, 'div'))
+      for (const node of generatedChildren(root)) node.remove()
+      summary = root.appendChild(createGeneratedElement(doc, 'p'))
+      region = root.appendChild(createGeneratedElement(doc, 'div'))
       region.appendChild(doc.createElement('table'))
       this.#table = null
     }
