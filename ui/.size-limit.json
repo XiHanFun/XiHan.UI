@@ -70,13 +70,13 @@
     "name": "viz/sankey",
     "path": "packages/engine/viz/dist/sankey.js",
     "gzip": true,
-    "limit": "2.5 kB"
+    "limit": "2.6 kB"
   },
   {
     "name": "viz/graph",
     "path": "packages/engine/viz/dist/graph.js",
     "gzip": true,
-    "limit": "8.7 kB"
+    "limit": "9.1 kB"
   },
   {
     "name": "viz/columns",

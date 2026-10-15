@@ -7,7 +7,9 @@
 // 中位数上下扫描减少交叉（保留交叉最少的一轮）、四种对齐方向的块压缩取中位平衡给出交叉轴坐标。
 
 import type { Point } from '../../geometry'
+import type { GraphLink } from './algorithms'
 import { invalidArgument } from '../../errors'
+import { findBackLinks, topologicalOrder } from './algorithms'
 
 /** 布局方向：TB 自上而下、BT 自下而上、LR 自左而右、RL 自右而左。 */
 export type LayeredDirection = 'TB' | 'BT' | 'LR' | 'RL'
@@ -130,11 +132,11 @@ interface Graph {
 
 function buildGraph(sizes: readonly LayeredSize[], links: readonly LayeredLink[], vertical: boolean): Graph {
   const n = sizes.length
-  const reversed = breakCycles(n, links)
+  const reversed = findBackLinks(n, links)
   const from = links.map((link, i) => (reversed[i] ? link.target : link.source))
   const to = links.map((link, i) => (reversed[i] ? link.source : link.target))
   const usable = links.map(link => link.source !== link.target)
-  const layer = assignLayers(n, links, from, to, usable)
+  const layer = assignLayers(n, from, to, usable)
 
   const layerOf = layer.slice()
   const crossSize = sizes.map(size => (vertical ? size.width : size.height))
@@ -170,71 +172,22 @@ function buildGraph(sizes: readonly LayeredSize[], links: readonly LayeredLink[]
   return { n, layerOf, crossSize, mainSize, upper, lower, layerCount, chains, reversed }
 }
 
-/** 深度优先找回边并标记为反向：先从没有入线的节点出发，再补其余节点。 */
-function breakCycles(n: number, links: readonly LayeredLink[]): boolean[] {
-  const out: number[][] = Array.from({ length: n }, () => [])
-  const indegree = Array.from<number>({ length: n }).fill(0)
-  links.forEach((link, i) => {
-    if (link.source !== link.target) {
-      out[link.source]!.push(i)
-      indegree[link.target]!++
-    }
-  })
-  const reversed = links.map(() => false)
-  const state = Array.from<number>({ length: n }).fill(0)
-  const roots = [
-    ...indegree.flatMap((d, v) => (d === 0 ? [v] : [])),
-    ...indegree.flatMap((d, v) => (d === 0 ? [] : [v])),
-  ]
-  for (const root of roots) {
-    if (state[root] !== 0)
-      continue
-    state[root] = 1
-    const stack: [number, number][] = [[root, 0]]
-    while (stack.length > 0) {
-      const top = stack[stack.length - 1]!
-      const [v, next] = top
-      if (next < out[v]!.length) {
-        top[1]++
-        const linkIndex = out[v]![next]!
-        const w = links[linkIndex]!.target
-        if (state[w] === 1) {
-          reversed[linkIndex] = true
-        }
-        else if (state[w] === 0) {
-          state[w] = 1
-          stack.push([w, 0])
-        }
-      }
-      else {
-        state[v] = 2
-        stack.pop()
-      }
-    }
-  }
-  return reversed
-}
-
 /** 最长路径分层，再把有出线的源点拉到其后继最上一层的上一层。 */
-function assignLayers(n: number, links: readonly LayeredLink[], from: number[], to: number[], usable: boolean[]): number[] {
+function assignLayers(n: number, from: number[], to: number[], usable: boolean[]): number[] {
   const successors: number[][] = Array.from({ length: n }, () => [])
   const indegree = Array.from<number>({ length: n }).fill(0)
-  links.forEach((_, i) => {
+  const forward: GraphLink[] = []
+  from.forEach((source, i) => {
     if (usable[i]) {
-      successors[from[i]!]!.push(to[i]!)
+      successors[source]!.push(to[i]!)
       indegree[to[i]!]!++
+      forward.push({ source, target: to[i]! })
     }
   })
   const layer = Array.from<number>({ length: n }).fill(0)
-  const remaining = indegree.slice()
-  const queue = remaining.flatMap((d, v) => (d === 0 ? [v] : []))
-  for (let head = 0; head < queue.length; head++) {
-    const v = queue[head]!
-    for (const w of successors[v]!) {
+  for (const v of topologicalOrder(n, forward)!) {
+    for (const w of successors[v]!)
       layer[w] = Math.max(layer[w]!, layer[v]! + 1)
-      if (--remaining[w]! === 0)
-        queue.push(w)
-    }
   }
   for (let v = 0; v < n; v++) {
     if (indegree[v] === 0 && successors[v]!.length > 0)
