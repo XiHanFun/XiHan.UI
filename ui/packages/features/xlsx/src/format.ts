@@ -16,12 +16,13 @@ interface NumericSpec {
   readonly rounding?: XlsxFormatRounding
 }
 
-/** 格式说明，与 formatValue 的规格同形：数字、百分比、日期模式、人民币大写。 */
+/** 格式说明，与 formatValue 的规格同形：数字、百分比、日期模式、人民币大写、数字字形。 */
 export type XlsxFormatSpec
   = | ({ readonly kind: 'number' } & NumericSpec)
     | ({ readonly kind: 'percent' } & NumericSpec)
     | { readonly kind: 'date', readonly pattern: string }
     | { readonly kind: 'rmb-upper', readonly rounding?: XlsxFormatRounding }
+    | { readonly kind: 'numeral', readonly style: 'roman-upper' | 'roman-lower' | 'cn-lower' | 'cn-upper' }
 
 type DateRole = 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second' | 'millisecond'
 
@@ -165,7 +166,7 @@ function dateCode(pattern: string): string | null {
  * - Excel 显示时一律四舍五入取整；rounding 不是 half-up 时，调用方先用十进制运算把值舍入好，再写成数字单元格。
  * - 日期：占位符换成 Excel 写法（MM → mm、HH → hh、SSS → 000），其余文字写成字面文本。Excel 的 mm 只有紧挨 h / hh
  *   之后或紧挨 ss 之前才是分钟，其余位置都是月份；分钟或月份落在会被 Excel 读错的位置，或毫秒不紧跟在 ss. 之后时返回 null。
- * - 人民币大写：返回 null。
+ * - 人民币大写与数字字形（罗马数字、中文数字）：返回 null。
  */
 export function formatCode(spec: XlsxFormatSpec): string | null {
   switch (spec.kind) {
@@ -176,6 +177,7 @@ export function formatCode(spec: XlsxFormatSpec): string | null {
     case 'date':
       return dateCode(spec.pattern)
     case 'rmb-upper':
+    case 'numeral':
       return null
   }
 }
