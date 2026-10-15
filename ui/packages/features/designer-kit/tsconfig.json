@@ -1,0 +1,7 @@
+{
+  "extends": "@xihan-ui/tsconfig/lib.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts"]
+}

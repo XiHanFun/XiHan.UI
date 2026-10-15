@@ -208,6 +208,7 @@ const runtimeSidebar: DefaultTheme.SidebarItem[] = [
       { text: "流式 Markdown", link: "/runtime/markdown" },
       { text: "代码着色", link: "/runtime/code-highlight" },
       { text: "受限表达式", link: "/runtime/expression" },
+      { text: "设计器内核", link: "/runtime/designer-kit" },
     ],
   },
 ];

@@ -79,6 +79,7 @@ body:
         - 背景层（backgrounds）
         - 动效预设（animations）
         - 受限表达式（expression）
+        - 设计器内核（designer-kit）
         - 音效（sound）
         - 无头组件内核（headless）
         - 默认皮肤（styles）

@@ -114,6 +114,10 @@
       "level": 1,
       "canDependOn": []
     },
+    "features/designer-kit": {
+      "level": 1,
+      "canDependOn": []
+    },
     "design/icons": {
       "level": 1,
       "canDependOn": []
