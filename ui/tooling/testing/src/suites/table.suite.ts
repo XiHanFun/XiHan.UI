@@ -964,6 +964,24 @@ export const tableSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '树形表：父行不标 expandable 也靠子行展得开，把手收起之后再点还能展开',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: props({ rows: TREE_ROWS, defaultExpandedValue: ['a'] }),
+      initial: { parts: { 'row[1]': { 'aria-expanded': 'true', 'data-state': 'open' } } },
+      steps: [
+        {
+          kind: 'click',
+          part: 'expand-trigger[0]',
+          expect: { parts: { 'row[1]': { 'aria-expanded': 'false', 'data-state': 'closed' } } },
+        },
+        {
+          kind: 'click',
+          part: 'expand-trigger[0]',
+          expect: { parts: { 'row[1]': { 'aria-expanded': 'true', 'data-state': 'open' } } },
+        },
+      ],
+    },
+    {
       name: '行换位：排序中的表格拖不动行，Alt + 上下键一并不认',
       spec: { apg: `${APG}#keyboardinteraction` },
       props: props({ rows: REORDERABLE_ROWS, rowReorderable: true, defaultSort: [{ id: 'name', direction: 'asc' }] }),

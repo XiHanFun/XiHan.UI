@@ -31,7 +31,7 @@ import { TABLE_BODY_ROW_SELECTOR, TABLE_BODY_SELECTOR } from './table.anatomy'
 import { orderColumnIds, resolveTableColumns, tableLeafColumns } from './table.columns'
 import { canOwnChildren, draggableColumnIds, reorderTableRows, tableRowMoveOf, toColumnPreferenceIndex } from './table.drag'
 import { measureTableLayout, sameTableLayout, TABLE_EMPTY_LAYOUT, tableLayoutNeeds, tableScrollEdges } from './table.layout'
-import { flattenTableRows, tableCascadeRoots, tableCascadeSelectableLeaves, tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
+import { flattenTableRows, tableCascadeRoots, tableCascadeSelectableLeaves, tableRowCanExpand, tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 import { tableNormalizeSort, tableToggleSort } from './table.sort'
 
 /** 拖动改列宽时的缺省下限（px）。列定义可用 minWidth 覆盖。 */
@@ -76,12 +76,6 @@ function sameSelection(a: TableSelection, b: TableSelection | undefined): boolea
 function sameSort(a: TableSortDescriptor[], b: TableSortDescriptor[] | undefined): boolean {
   return !!b && a.length === b.length
     && a.every((item, i) => item.id === b[i]!.id && item.direction === b[i]!.direction)
-}
-
-/** 这一行能不能被用户展开：禁用行、不可展开的行、不在 rows 里的行都不行。 */
-function canExpand(rows: readonly TableRowDef[], id: string): boolean {
-  const row = rows.find(item => item.id === id)
-  return !!row?.expandable && !row.disabled
 }
 
 // 排序、选中与展开都住在 context 的 cell 里，受控/非受控在 cell 收口，
@@ -720,7 +714,7 @@ export const tableMachine = createMachine({
         const e = event.current()
         if (e.type !== 'ROW.EXPAND')
           return
-        if (!canExpand(prop('rows') ?? [], e.value))
+        if (!tableRowCanExpand(prop('rows') ?? [], e.value))
           return
         const current = context.get('expandedValue')
         if (current.includes(e.value))
@@ -743,7 +737,7 @@ export const tableMachine = createMachine({
           context.set('expandedValue', current.filter(v => v !== e.value))
           return
         }
-        if (!canExpand(prop('rows') ?? [], e.value))
+        if (!tableRowCanExpand(prop('rows') ?? [], e.value))
           return
         context.set('expandedValue', [...current, e.value])
       },

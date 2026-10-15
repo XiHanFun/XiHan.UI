@@ -540,6 +540,41 @@ describe('tableMachine 排序 / 选择 / 展开', () => {
     expect(h.expanded()).toEqual(['a', 'd'])
   })
 
+  it('树形表：有子行的行不标 expandable 也展得开，收起之后把手、方向键与 API 都还能再展开', () => {
+    const h = mount({
+      rows: [
+        { id: 'p' },
+        { id: 'p-1', parentId: 'p' },
+        { id: 'q', disabled: true },
+        { id: 'q-1', parentId: 'q' },
+      ],
+      defaultExpandedValue: ['p'],
+    })
+    click(h.row('p').expandTrigger)
+    expect(h.expanded()).toEqual([])
+    click(h.row('p').expandTrigger)
+    expect(h.expanded()).toEqual(['p'])
+
+    h.row('p').row.focus()
+    press(active(), 'ArrowLeft')
+    expect(h.expanded()).toEqual([])
+    expect(press(active(), 'ArrowRight').defaultPrevented).toBe(true)
+    expect(h.expanded()).toEqual(['p'])
+
+    h.api().collapseRow('p')
+    h.api().expandRow('p')
+    expect(h.expanded()).toEqual(['p'])
+    h.api().toggleExpandRow('p')
+    h.api().toggleExpandRow('p')
+    expect(h.expanded()).toEqual(['p'])
+
+    // 禁用的父行照旧改不动，叶行没有可展开的东西
+    h.api().expandRow('q')
+    h.api().toggleExpandRow('q')
+    h.api().expandRow('p-1')
+    expect(h.expanded()).toEqual(['p'])
+  })
+
   it('受控：内部值纹丝不动，回调照发；宿主写回后才生效', () => {
     const onSortChange = vi.fn()
     const onSelectionChange = vi.fn()

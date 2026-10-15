@@ -308,7 +308,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | --- | --- | --- | --- |
 | `id` | `string` | 是 | 全表唯一：DOM 身份（data-value）、选中 / 展开集合的元素、连接层查询行的键。 |
 | `disabled` | `boolean` |  | 行禁用：不可选中也不可展开，但仍可聚焦、仍是方向键的起点，也不计入全选基数。 |
-| `expandable` | `boolean` |  | 可展开：提供后才报告 aria-expanded，左右方向键与展开把手也才识别该行。 只要有一行提供，root 就从 role=grid 改为 role=treegrid。 |
+| `expandable` | `boolean` |  | 可展开：提供后才报告 aria-expanded，左右方向键与展开把手也才识别该行。 只要有一行提供，root 就从 role=grid 改为 role=treegrid。 有子行的行不提供也可展开，展开的是它的子行。 |
 | `parentId` | `string` |  | 父行 id。提供后该行即为该父行的子行，收起父行时它随之隐藏。 有子行的行不再产出详情行：一行不可能同时既展开出子行、又展开出一块详情。 指向不存在的父行时按根行处理，不丢弃该行。 |
 
 ### TableSortDescriptor
