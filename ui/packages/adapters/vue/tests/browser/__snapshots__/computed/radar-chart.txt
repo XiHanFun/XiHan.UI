@@ -330,16 +330,16 @@ border-top-width: 2px
 border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
-border-top-color: oklch(0.623 0.214 258)
-border-right-color: oklch(0.623 0.214 258)
-border-bottom-color: oklch(0.623 0.214 258)
-border-left-color: oklch(0.623 0.214 258)
+border-top-color: oklab(0.7276 -0.0269453 -0.126768)
+border-right-color: oklab(0.7276 -0.0269453 -0.126768)
+border-bottom-color: oklab(0.7276 -0.0269453 -0.126768)
+border-left-color: oklab(0.7276 -0.0269453 -0.126768)
 min-height: auto
 font-size: 13px
 line-height: 13px
 font-weight: 400
 color: oklch(0.208 0.006 258)
-background-color: oklch(0.623 0.214 258)
+background-color: oklab(0.7276 -0.0269453 -0.126768)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
