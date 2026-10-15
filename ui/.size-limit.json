@@ -133,6 +133,18 @@
     "limit": "9.8 kB"
   },
   {
+    "name": "designer-kit/properties",
+    "path": "packages/features/designer-kit/dist/properties.js",
+    "gzip": true,
+    "limit": "2.2 kB"
+  },
+  {
+    "name": "designer-kit/schema",
+    "path": "packages/features/designer-kit/dist/schema.js",
+    "gzip": true,
+    "limit": "1.15 kB"
+  },
+  {
     "name": "xlsx",
     "path": "packages/features/xlsx/dist/index.js",
     "gzip": true,

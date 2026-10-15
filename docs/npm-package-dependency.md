@@ -124,6 +124,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | 包 | 子路径 |
 | --- | --- |
 | `@xihan-ui/core` | `./metadata` `./skin-check` `./vite` `./vanilla` `./presence` `./json`（JSON 值的类型与纯函数，零依赖） `./url`（图片地址的安全判定，零依赖） `./template`（文本模板，占位只写数据路径） |
+| `@xihan-ui/designer-kit` | `./properties`（属性描述、显示条件、取值检查与自定义编辑器接口） `./schema`（结构校验的问题形状与读取器） |
 | `@xihan-ui/tokens` | `./runtime` `./tokens.css` `./tokens.json` |
 | `@xihan-ui/icons` | `./codegen` |
 | `@xihan-ui/viz` | `./hierarchy`（层级布局：层级节点、组树、矩形树图、分区与圆堆积） `./sankey`（桑基布局） |
@@ -133,7 +134,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/web-components` | `./define` `./backgrounds` `./locale` `./services` `./authoring`（第三方编写元素用的基类与辅助件） `./custom-elements.json` |
 | `@xihan-ui/styles` | 每份皮肤一条 CSS，共 152 条（140 份组件皮肤 + 12 份共享层），另有 `./index.css`（主入口，生成的扁平有层文件，家族只内联一次）与 `./index.unlayered.css` 两个整包入口 |
 
-其余十三个包（`motion` / `pointer` / `position` / `code-highlight` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound` / `cli` / `expression` / `designer-kit` / `xlsx`）只有主入口。
+其余十二个包（`motion` / `pointer` / `position` / `code-highlight` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound` / `cli` / `expression` / `xlsx`）只有主入口。
 
 组件没有单独的子路径导出：按需引入依靠 tree-shaking，不依靠手写路径。
 

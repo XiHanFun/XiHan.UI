@@ -49,14 +49,14 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 一、JS / TS 导出面
 
-22 个包中 22 个出 JS 或类型入口，共 53 个带类型的入口。
+22 个包中 22 个出 JS 或类型入口，共 55 个带类型的入口。
 
 ### 受约束
 
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
 | 包名 | 22 | 把代码从一个包移到另一个包 = major |
-| `exports` 子路径 | 53 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
+| `exports` 子路径 | 55 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
 | Vue 组件导出 `Xh*` | 1183（140 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
 | Vue 组合式函数 `use<家族>` | 110 | `useSelect`、`useCombobox`。不使用库内部件、自行编写标记时的唯一入口 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
@@ -419,7 +419,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 | `@xihan-ui/sound` | 同上：`SoundSpec` 的层与包络字段、三套主题、`BUILTIN_SOUND_NAMES` 中的预设名仍在调整 |
 | `@xihan-ui/cli` | 开发期工具，不进应用产物。命令、MCP 工具与提示词的名字、参数和输出格式随使用反馈调整；离线数据的结构不是公开 API |
 | `@xihan-ui/expression` | 四款设计器接入期间，内置函数表与宿主函数的上下文仍会补充；文法与求值语义的修改同步更新一致性用例并在更新日志中逐条列出 |
-| `@xihan-ui/designer-kit` | 四款设计器接入期间，历史栈的事务与通知、视口与吸附的选项、路径编辑操作与属性编辑器接口仍会按接入反馈调整 |
+| `@xihan-ui/designer-kit` | 四款设计器接入期间，历史栈的事务与通知、视口与吸附的选项、路径编辑操作、属性描述与结构校验的形状仍会按接入反馈调整 |
 | `@xihan-ui/xlsx` | 报表设计器接入期间，单元格样式（边框、底色、换行等）可能按需补充 |
 
 ---
@@ -429,10 +429,10 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，19226 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，19265 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 222 条子入口、9993 个导出名、140 个 `data-scope` 与 1353 条部件配对、
+覆盖：包名与 224 条子入口、10032 个导出名、140 个 `data-scope` 与 1353 条部件配对、
 140 个组件的 2120 个 prop 名、314 种 `data-*`、33 个 `data-state` 取值、803 个令牌、
 5 个 `@layer` 名、4643 个组件覆盖槽、144 个自定义元素及其 attribute 与事件。
 

@@ -30,7 +30,7 @@ const { dx, dy, guides } = snapRect(draggingRect, { targets, threshold: 6 / view
 pnpm add @xihan-ui/designer-kit
 ```
 
-运行时只依赖 `@xihan-ui/core` 的 `./json` 子入口与 `@xihan-ui/pointer` 的滚轮换算，import 无副作用，浏览器与服务端都能运行。
+运行时只依赖 `@xihan-ui/core` 的 `./json` 子入口与 `@xihan-ui/pointer` 的滚轮换算，import 无副作用，浏览器与服务端都能运行。属性描述与结构校验分别在子入口 `./properties` 与 `./schema`，只做画布的页面（如流程查看器）不为它们付字节。
 
 ## 撤销重做
 
@@ -263,14 +263,60 @@ const fontMm = convertLength(12, "pt", "mm"); // 4.233…
 
 `PAPER_PRESETS` 收 ISO 216 的 A3–A6 与 B4、B5，以及北美的 Letter、Legal，都是纵向尺寸，横向时宽高互换。`PAPER_PRESET_NAMES` 与 `LENGTH_UNITS` 按声明顺序列出全部取值，供页面设置与属性面板列选项；`isPaperPresetName` 区分大小写。
 
-## 属性编辑器接口
+## 属性描述
+
+属性面板与属性检查用同一份描述，从子入口 `@xihan-ui/designer-kit/properties` 引入（只做画布的页面不为它付字节）：
+
+```ts
+import type { PropertyDescriptor } from "@xihan-ui/designer-kit/properties";
+import { checkProperties, groupProperties } from "@xihan-ui/designer-kit/properties";
+
+const descriptors: PropertyDescriptor[] = [
+  { path: ["label"], control: { kind: "text" }, group: "basic", required: true },
+  { path: ["data", "mode"], control: { kind: "select", options: [{ value: "Any" }, { value: "All" }] }, group: "rule", default: "Any" },
+  { path: ["data", "count"], control: { kind: "number", integer: true, min: 1 }, group: "rule", visibleWhen: { path: ["data", "mode"], equals: "All" } },
+];
+
+const groups = groupProperties(descriptors, node, ["basic", "rule"]); // 属性面板按组渲染显示中的属性
+const issues = checkProperties(descriptors, node, { path: ["nodes", 3], target: { kind: "node", id: node.id } });
+```
+
+| 字段 | 说明 |
+| --- | --- |
+| `path` | 值相对被编辑对象（节点、元素、字段本身）的 `JsonPath`，语义同 `@xihan-ui/core/json` |
+| `control` | 编辑方式与取值约束，见下表；产品可用泛型参数扩展自己的种类，如 `PropertyDescriptor<PropertyControl \| { kind: "stroke" }>` |
+| `group` | 分组 id，分组的先后与文案由产品决定 |
+| `label` | 标签；不写时由产品按 `formatJsonPath(path)` 去语言包里查 |
+| `required` | 显示时必须填写，按 `isFilled` 判空（`undefined`、`null`、空串、空数组、空对象算未填） |
+| `default` | 新建时写入的缺省值，`applyDefaults` 只写还没有值的路径 |
+| `visibleWhen` | 显示条件：`{ path, equals }`、`{ path, oneOf }`、`{ path, filled }`，可用 `all` / `any` / `not` 组合；path 同样相对被编辑对象 |
+| `meta` | 产品自用，内核不解释 |
+
+| 内建编辑方式 | 取值约束 |
+| --- | --- |
+| `{ kind: "text", multiline?, placeholder? }` | 字符串 |
+| `{ kind: "number", integer?, min?, max?, exclusiveMin?, step?, unit? }` | 有限数字；min / max 含端点，exclusiveMin 不含；step 与 unit 只给编辑器用 |
+| `{ kind: "boolean" }` | 布尔 |
+| `{ kind: "select", options, multiple? }` | 某个选项的 `value`；`multiple` 时是这些值组成的数组 |
+| `{ kind: "tags" }` | 字符串数组 |
+| `{ kind: "color" }` | `transparent`，或 `#` 开头的 3、4、6、8 位十六进制色 |
+| `{ kind: "json" }` | 任意 JSON 值 |
+
+| 函数 | 说明 |
+| --- | --- |
+| `evaluateCondition(condition, target)` / `isPropertyVisible(descriptor, target)` | 求值显示条件，equals 与 oneOf 按 JSON 值比较 |
+| `groupProperties(descriptors, target, order?)` | 只收显示中的属性；`order` 里的组在前，其余按出现先后，无组的排最后，空组不出现 |
+| `checkPropertyValue(control, value)` | 内建编辑方式的取值检查，返回 `invalid-type`、`out-of-range`、`not-integer`、`invalid-option`、`invalid-color` 或 `undefined` |
+| `checkProperties(descriptors, target, { path?, target?, checkCustom? })` | 只看显示中的属性：必填未填报 `required`，内建取值不合法报对应码，产品的编辑方式交给 `checkCustom`；返回结构问题，路径以 `path` 为前缀 |
+| `applyDefaults(target, descriptors)` | 写入缺省值，中间缺少的对象键补成空对象；没有可写的返回同一个对象 |
+| `resolvePropertyEditor(table, targetKind, descriptor)` | 按「对象种类 + 路径」→「路径」→「编辑方式」查编辑器；表里放 `PropertyEditor` 或编辑器 id 都可以，路径键用 `formatJsonPath` 的写法 |
 
 属性面板里的某些属性需要宿主自己的编辑器（如选人、选部门）。设计器按 `PropertyEditor` 调用它：
 
 ```ts
 type PropertyEditor<D, T> = (context: {
   value: JsonValue | undefined; // 当前值
-  descriptor: D; // 属性描述，形状由设计器决定
+  descriptor: D; // 属性描述
   target: T; // 被编辑的对象，如节点、元素、字段
   readonly: boolean;
   setValue: (value: JsonValue | undefined) => void; // 写入，连续输入并为一步撤销
@@ -284,6 +330,46 @@ type PropertyEditor<D, T> = (context: {
 
 设计器把 `element` 放进属性面板，值或只读状态变化时调用 `update`，移除前调用 `destroy`。接口本身只是类型，内核不创建任何 DOM。
 
+## 结构校验
+
+四款设计器校验自己的 JSON 模板时共用一种问题形状与一组读取器，从子入口 `@xihan-ui/designer-kit/schema` 引入。问题只带问题码与定位，不带文案，问题面板与文案表因此可以共用：
+
+```ts
+interface SchemaIssue<C extends string = string> {
+  code: C; // 通用码或带前缀的产品码，如 node.unreachable
+  path: JsonPath; // 从文档根算起，只用对象键与数组下标
+  target?: { kind: string; id: string }; // 问题落在的对象，下标会随编辑变，按对象定位看它
+  severity?: "error" | "warning"; // 缺省按 error
+  params?: Record<string, JsonPrimitive | JsonPrimitive[]>;
+}
+```
+
+通用问题码：`required`、`invalid-type`、`invalid-value`、`out-of-range`、`not-integer`、`invalid-option`、`invalid-color`、`empty`、`unknown-key`、`duplicate-key`、`duplicate-id`。
+
+```ts
+import { createIssueSink, readNumber, readObject, readString, withSeverity } from "@xihan-ui/designer-kit/schema";
+
+const sink = createIssueSink();
+const fields = readObject(sink, value, ["nodes", 0], { required: ["id", "x"], allowed: ["id", "x", "label"] });
+readString(sink, fields?.id, ["nodes", 0, "id"], { nonEmpty: true });
+readNumber(sink, fields?.x, ["nodes", 0, "x"]);
+const issues = withSeverity(sink.issues, { "node.isolated": "warning" }, userOverrides);
+```
+
+| 函数 | 说明 |
+| --- | --- |
+| `createIssueSink({ target? })` | 收集问题：`report(code, path, { params?, target?, severity? })`，路径另存一份；缺省 target 写进没有自带 target 的问题 |
+| `readObject(sink, value, path, { required?, allowed? })` | 不是普通对象报 `invalid-type`；缺少必填键报 `required`，给了 `allowed` 时其余键报 `unknown-key`；返回对象本身 |
+| `readArray` / `readString(…, { nonEmpty? })` / `readBoolean` | 类型不符报 `invalid-type`（参数 `expected`），`nonEmpty` 时空串报 `empty` |
+| `readNumber(sink, value, path, { integer?, min?, max?, exclusiveMin? })` | 不是有限数字报 `invalid-type`，不是整数报 `not-integer`，越界报 `out-of-range`（参数带上界限） |
+| `readOneOf(sink, value, path, choices)` | 不在 `choices` 里报 `invalid-option` |
+| `readJson(sink, value, path)` | 不是 JSON 报 `invalid-value`，参数 `pointer` 指出第一处非 JSON 的位置 |
+| `checkUniqueKeys(sink, items, path, keyOf, code?)` | 同一个键第二次及以后出现的项报问题（缺省 `duplicate-key`） |
+| `withSeverity(issues, table, overrides?)` | 定下严重程度：`overrides` 优先，其次问题自己写的，再次 `table`，最后 error；定为 `off` 的去掉 |
+| `issueSeverity(issue)` / `hasErrors(issues)` | 取严重程度；是否有 error 级问题 |
+
+各 `read` 函数把 `undefined` 视为缺省，返回 `undefined` 且不报问题，必填由 `readObject` 的 `required` 管；读到的值不拷贝。读取器只要求收集器有 `report`（`IssueReporter`），问题码比通用码更宽的产品收集器也能直接传入。按 id 或名字定位数组项属于产品语义：先按下标报出，再由产品换成自己的定位。
+
 ## 状态
 
-实验级：四款设计器接入期间，历史栈的事务与通知、视口、吸附与控制柄的选项仍可能调整，破坏性变更可以出现在 minor 中，并在更新日志中逐条列出。
+实验级：四款设计器接入期间，历史栈的事务与通知、视口、吸附与控制柄的选项、属性描述与结构校验的形状仍可能调整，破坏性变更可以出现在 minor 中，并在更新日志中逐条列出。
