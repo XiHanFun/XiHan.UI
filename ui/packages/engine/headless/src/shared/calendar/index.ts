@@ -23,6 +23,7 @@ export {
   calendarPeriodIndex,
   calendarPeriodMonths,
   calendarPeriodOf,
+  calendarPeriodRows,
   calendarPeriodValue,
   calendarWeekRange,
   calendarZoomIn,

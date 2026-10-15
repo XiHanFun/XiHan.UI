@@ -1,7 +1,7 @@
 // 提供 calendar-picker.suite 相关实现。
 
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
-import { buildMonthGrid, buildWeekDays, calendarPickerAnatomy, calendarPickerKeyboard } from '@xihan-ui/headless'
+import { buildMonthGrid, buildPeriodGrid, buildWeekDays, calendarPickerAnatomy, calendarPickerKeyboard } from '@xihan-ui/headless'
 import { nativeActivation, singleTabStop } from './shared/native-activation'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
@@ -139,6 +139,39 @@ function buildFixture(options: { fixedWeeks?: boolean, firstDayOfWeek?: number }
 }
 
 const FIXTURE = buildFixture()
+
+/**
+ * 月 / 年视图下"作者照 rows 写出来的那棵树"：一行一个 week-row（role=row），格子放进行里，
+ * 格里写周期标签（1月 / 2024），与连接层给 cell-trigger 的名字同一份数据。
+ * 换层时作者照新的 rows 重画网格；夹具是静态的，只能定格一层，钻取用例取它落定的那一层。
+ */
+function buildPeriodFixture(view: 'month' | 'year'): FixtureNode {
+  const grid = buildPeriodGrid(ANCHOR, view, { locale: LOCALE })
+  return {
+    part: 'root',
+    children: [
+      {
+        part: 'header',
+        children: [
+          { part: 'prev-trigger', tag: 'button', text: '上一页' },
+          { part: 'heading', text: grid.headingLabel },
+          { part: 'next-trigger', tag: 'button', text: '下一页' },
+        ],
+      },
+      {
+        part: 'grid',
+        children: grid.rows.map(row => ({
+          part: 'week-row',
+          children: row.map(period => ({
+            part: 'cell',
+            attrs: { value: period.start },
+            children: [{ part: 'cell-trigger', text: period.label }],
+          })),
+        })),
+      },
+    ],
+  }
+}
 
 /**
  * 逐格写全某几天的选中态：只写关心的那一格会漏掉"另一天也被选中了"。
@@ -688,7 +721,8 @@ export const calendarPickerSuite: ConformanceSuite = {
       name: '标题拆成年、月两个钮：点年那一截钻到十年格',
       spec: { apg: APG },
       props: BASE_PROPS,
-      fixture: withHeadingTriggers,
+      // 落定在十年格：网格取作者照年视图画出的那一份
+      fixture: () => withHeadingTriggers(buildPeriodFixture('year')),
       initial: {
         counts: { 'heading-year-trigger': 1, 'heading-month-trigger': 1 },
         parts: {
@@ -729,7 +763,7 @@ export const calendarPickerSuite: ConformanceSuite = {
       name: '一开始就在十年格：年那一截到顶按不动，月那一截压根没有',
       spec: { apg: APG },
       props: { ...BASE_PROPS, defaultActiveView: 'year' },
-      fixture: withHeadingTriggers,
+      fixture: () => withHeadingTriggers(buildPeriodFixture('year')),
       initial: {
         parts: {
           'heading-year-trigger': { 'disabled': '', 'data-view': 'year' },
@@ -742,12 +776,17 @@ export const calendarPickerSuite: ConformanceSuite = {
       name: '按月挑：月那一截没有可点的位，年那一截照旧钻得上去',
       spec: { apg: APG },
       props: { ...BASE_PROPS, granularity: 'month' },
-      fixture: withHeadingTriggers,
+      fixture: () => withHeadingTriggers(buildPeriodFixture('month')),
       initial: {
+        // 一年十二个月切成四行、一行三格，行是 role=row，格子落在行里
+        counts: { 'week-row': 4, 'cell': 12, 'cell-trigger': 12 },
         parts: {
           'heading-year-trigger': { 'disabled': null, 'data-view': 'month' },
           'heading-month-trigger': { hidden: '' },
           'grid': { 'data-view': 'month' },
+          'week-row[0]': { 'role': 'row', 'data-view': 'month' },
+          'cell[0]': { 'role': 'gridcell', 'data-value': '2024-01-01' },
+          'cell-trigger[0]': { 'aria-label': '1月', 'data-view': 'month' },
         },
       },
       steps: [

@@ -387,6 +387,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
     panels: frame.panels,
     visibleMonth: { year: frame.grid.year, month: frame.grid.month, startValue: frame.grid.startValue },
     weeks: frame.grid.weeks,
+    rows: frame.grid.rows,
     periods: frame.grid.periods,
     weekDays: frame.weekDays,
     headingLabel: frame.grid.headingLabel,
@@ -553,7 +554,7 @@ export function connectCalendarRangePicker<T extends PropTypes>(
       'role': 'grid',
       'aria-labelledby': frame.headingId(panel.index),
       'data-index': frame.panelOf(panel).index,
-      // 皮肤按它换排布：日视图铺周行，其余周期直接铺进网格
+      // 皮肤按它换排布：日视图铺七列周行，其余周期按 CALENDAR_PERIOD_COLUMNS 一行几格
       'data-view': view,
       // 三条状态都显式给，不省略。区间两端之间的格子都算选中，网格因此恒报可多选
       'aria-multiselectable': 'true',
@@ -594,9 +595,11 @@ export function connectCalendarRangePicker<T extends PropTypes>(
       role: 'rowgroup',
     }),
 
+    // 日视图里是表头行与周行，周期视图里是一行周期格；皮肤按 data-view 换列数
     getWeekRowProps: () => normalize.element({
       ...parts['week-row'].attrs,
-      role: 'row',
+      'role': 'row',
+      'data-view': view,
     }),
 
     // 周序号格：在 role=grid 里，一行的标号语义上就是这一行的表头

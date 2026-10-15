@@ -78,6 +78,7 @@ export type DatePickerRootSlotProps
     | 'visibleMonth'
     | 'panels'
     | 'periods'
+    | 'rows'
     | 'weeks'
     | 'weekDays'
     | 'headingLabel'
@@ -194,7 +195,7 @@ export const XhDatePickerRoot = defineComponent({
       onActiveViewChange: notifyActiveView,
     }, rootRef)
     provideDatePicker(ctx)
-    // 网格与段位由作者照插槽里的 weeks / segments 自行渲染
+    // 网格与段位由作者照插槽里的 weeks（日视图）/ rows（周期视图）/ segments 自行渲染
     return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: rootRef }, slots.default?.({
       open: ctx.api.value.open,
       value: ctx.api.value.value,
@@ -204,6 +205,7 @@ export const XhDatePickerRoot = defineComponent({
       visibleMonth: ctx.api.value.calendar.visibleMonth,
       panels: ctx.api.value.calendar.panels,
       periods: ctx.api.value.calendar.periods,
+      rows: ctx.api.value.calendar.rows,
       weeks: ctx.api.value.calendar.weeks,
       weekDays: ctx.api.value.calendar.weekDays,
       headingLabel: ctx.api.value.calendar.headingLabel,

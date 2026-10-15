@@ -7784,6 +7784,7 @@
       "calendarPeriodIndex",
       "calendarPeriodMonths",
       "calendarPeriodOf",
+      "calendarPeriodRows",
       "calendarPeriodValue",
       "calendarPickerAnatomy",
       "calendarPickerCellTriggerQuery",

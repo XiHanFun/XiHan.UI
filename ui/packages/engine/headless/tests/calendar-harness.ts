@@ -220,10 +220,10 @@ export function createCalendarHarness<S extends CalendarBaseSchema, A extends Ca
 
     const render = (): void => {
       const api = connect(service, normalizeProps)
-      // 日视图铺周行，粗粒度视图把格子直接铺进网格
+      // 只认格子的值与次序：日视图取周行，粗粒度视图取切好的周期行，摊平后一格一个节点
       const items = api.activeView === 'day'
         ? api.panels[0]!.weeks.flat().map(d => d.start)
-        : api.panels[0]!.cells.map(c => c.start)
+        : api.panels[0]!.rows.flat().map(c => c.start)
       const key = `${api.activeView}|${items.join()}`
       if (key !== painted) {
         painted = key

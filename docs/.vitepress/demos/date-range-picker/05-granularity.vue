@@ -85,9 +85,11 @@ const kinds: { key: string; label: string; granularity: CalendarGranularity }[] 
                   </XhDateRangePickerWeekRow>
                 </XhDateRangePickerGridBody>
               </template>
-              <XhDateRangePickerCell v-for="cell in panel.cells" v-else :key="cell.start" :value="cell.start">
-                <XhDateRangePickerCellTrigger>{{ cell.label }}</XhDateRangePickerCellTrigger>
-              </XhDateRangePickerCell>
+              <XhDateRangePickerWeekRow v-for="row in panel.rows" v-else :key="row[0].start">
+                <XhDateRangePickerCell v-for="cell in row" :key="cell.start" :value="cell.start">
+                  <XhDateRangePickerCellTrigger>{{ cell.label }}</XhDateRangePickerCellTrigger>
+                </XhDateRangePickerCell>
+              </XhDateRangePickerWeekRow>
             </XhDateRangePickerGrid>
           </XhDateRangePickerCalendar>
         </XhDateRangePickerContent>

@@ -102,10 +102,12 @@ async function mountPeriodCalendar(granularity: 'week' | 'month' | 'quarter' | '
       locale: 'zh-CN',
       timeZone: 'UTC',
     }, {
+      // 照切好的 rows 一行写一个 week-row，格子放进行里
       default: ({ panels }: any) => h(XhCalendarRangePickerGrid, null, () =>
-        panels[0].cells.map((period: any) =>
-          h(XhCalendarRangePickerCell, { key: period.key, value: period.start }, () =>
-            h(XhCalendarRangePickerCellTrigger, null, () => period.label)))),
+        panels[0].rows.map((row: any) =>
+          h(XhCalendarRangePickerWeekRow, { key: row[0].key }, () => row.map((period: any) =>
+            h(XhCalendarRangePickerCell, { key: period.key, value: period.start }, () =>
+              h(XhCalendarRangePickerCellTrigger, null, () => period.label)))))),
     }),
   })
   app.mount(host)
@@ -253,10 +255,11 @@ describe('范围日历轨道', () => {
 
   it('周粒度是一列整周周期格，区间预览不下沉到七个日格', async () => {
     await mountPeriodCalendar('week')
-    const grid = document.querySelector<HTMLElement>(`[data-scope='calendar-range-picker'][data-part='grid']`)!
     const periods = [...document.querySelectorAll<HTMLElement>(`[data-scope='calendar-range-picker'][data-part='cell']`)]
     expect(periods).toHaveLength(5)
-    expect(getComputedStyle(grid).gridTemplateColumns.split(' ')).toHaveLength(1)
+    // 一行一个整周：五行，每行只有一列
+    const rows = [...document.querySelectorAll<HTMLElement>(`[data-scope='calendar-range-picker'][data-part='week-row']`)]
+    expect(rows.map(row => getComputedStyle(row).gridTemplateColumns.split(' ').length)).toEqual([1, 1, 1, 1, 1])
     expect(getComputedStyle(trigger('2026-09-07')).aspectRatio).toBe('auto')
 
     await userEvent.click(trigger('2026-09-07'))
@@ -265,12 +268,24 @@ describe('范围日历轨道', () => {
     expect(['2026-09-07', '2026-09-14', '2026-09-21'].every(value => cell(value).hasAttribute('data-in-range'))).toBe(true)
   })
 
+  it.each([['month', 3], ['quarter', 4], ['year', 3]] as const)('%s 周期格一行 %i 格，各行同一列上下对齐', async (granularity, columns) => {
+    await mountPeriodCalendar(granularity)
+    const rows = [...document.querySelectorAll<HTMLElement>(`[data-scope='calendar-range-picker'][data-part='week-row']`)]
+    expect(rows.length).toBeGreaterThan(0)
+    for (const row of rows) {
+      expect(row.getAttribute('role')).toBe('row')
+      expect(getComputedStyle(row).gridTemplateColumns.split(' ')).toHaveLength(columns)
+    }
+    expect(new Set(rows.map(row => row.children[0]!.getBoundingClientRect().left)).size).toBe(1)
+  })
+
   it.each(['month', 'quarter', 'year'] as const)('%s 周期格选中前后保持相同尺寸：铺满格宽、左右各让 4、24 高', async (granularity) => {
     await mountPeriodCalendar(granularity)
     const elements = [...document.querySelectorAll<HTMLElement>(
       `[data-scope='calendar-range-picker'][data-part='cell-trigger']`,
     )]
-    const idle = elements[0]
+    // 取本页里的第一格：年视图首格是前一个十年的末年，点它会翻页、整行换掉，量的就不是同一个节点
+    const idle = elements.find(el => !el.hasAttribute('data-outside-month'))
     if (!idle)
       throw new Error(`找不到 ${granularity} 周期格`)
 

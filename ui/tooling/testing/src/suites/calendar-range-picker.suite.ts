@@ -1,7 +1,7 @@
 // 提供 calendar-range-picker.suite 相关实现。
 
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
-import { buildMonthGrid, buildWeekDays, calendarRangePickerAnatomy, calendarRangePickerKeyboard } from '@xihan-ui/headless'
+import { buildMonthGrid, buildPeriodGrid, buildWeekDays, calendarRangePickerAnatomy, calendarRangePickerKeyboard } from '@xihan-ui/headless'
 import { singleTabStop } from './shared/native-activation'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
@@ -130,6 +130,38 @@ function withYearTriggers(base: FixtureNode): FixtureNode {
             { part: 'next-year-trigger', tag: 'button', text: '下一年' },
           ],
         })),
+  }
+}
+
+/**
+ * 月视图下"作者照 rows 写出来的那棵树"：一行一个 week-row（role=row），格子放进行里，格里写月份标签。
+ * 周期格不能直接铺进 grid——role=grid 底下得是 row，gridcell 得落在 row 里。
+ */
+function buildMonthPeriodFixture(): FixtureNode {
+  const grid = buildPeriodGrid(ANCHOR, 'month', { locale: LOCALE })
+  return {
+    part: 'root',
+    children: [
+      {
+        part: 'header',
+        children: [
+          { part: 'prev-trigger', tag: 'button', text: '上一年' },
+          { part: 'heading', text: grid.headingLabel },
+          { part: 'next-trigger', tag: 'button', text: '下一年' },
+        ],
+      },
+      {
+        part: 'grid',
+        children: grid.rows.map(row => ({
+          part: 'week-row',
+          children: row.map(period => ({
+            part: 'cell',
+            attrs: { value: period.start },
+            children: [{ part: 'cell-trigger', text: period.label }],
+          })),
+        })),
+      },
+    ],
   }
 }
 
@@ -480,6 +512,48 @@ export const calendarRangePickerSuite: ConformanceSuite = {
         { kind: 'setProps', props: { readOnly: false, disabled: true } },
         heldPressIgnored('calendar-range-picker', 'cell-trigger', '整张禁用时格子不接受按压', { value: ANCHOR }),
         heldPressIgnored('calendar-range-picker', 'next-trigger', '整张禁用时翻月钮不接受按压'),
+      ],
+    },
+    {
+      name: '按月挑区间：一行三个月收进 week-row，先落起点再落终点，两端之间的月都在区间里',
+      spec: { apg: APG },
+      props: { ...BASE_PROPS, granularity: 'month' },
+      fixture: buildMonthPeriodFixture,
+      initial: {
+        counts: { 'week-row': 4, 'cell': 12, 'cell-trigger': 12 },
+        parts: {
+          'grid': { 'role': 'grid', 'data-view': 'month' },
+          'week-row[0]': { 'role': 'row', 'data-view': 'month' },
+          'cell[2]': { 'role': 'gridcell', 'data-value': '2024-03-01' },
+          'cell-trigger[2]': { 'aria-label': '3月', 'data-view': 'month' },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'cell-trigger[2]',
+          expect: {
+            parts: {
+              'cell-trigger[2]': { 'data-range-start': '', 'data-range-end': '', 'data-in-range': '' },
+              'cell-trigger[3]': { 'data-in-range': null },
+            },
+            events: [],
+          },
+        },
+        {
+          kind: 'click',
+          part: 'cell-trigger[4]',
+          expect: {
+            parts: {
+              'cell-trigger[2]': { 'data-range-start': '', 'data-range-end': null, 'data-in-range': '' },
+              'cell-trigger[3]': { 'data-in-range': '', 'data-selected': '' },
+              'cell[3]': { 'aria-selected': 'true' },
+              'cell-trigger[4]': { 'data-range-end': '', 'data-in-range': '' },
+              'cell-trigger[5]': { 'data-in-range': null },
+            },
+            events: [{ type: 'value-change', detail: { value: ['2024-03-01', '2024-05-01'] } }],
+          },
+        },
       ],
     },
     {

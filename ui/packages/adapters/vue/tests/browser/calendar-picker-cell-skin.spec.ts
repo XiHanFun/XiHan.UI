@@ -73,10 +73,10 @@ async function mountCalendar(): Promise<void> {
       'isDateUnavailable': (date: string) => blocked.includes(date),
       'onUpdate:activeView': (next: string) => { view.value = next },
     }, {
-      default: ({ weeks, weekDays, periods }: {
+      default: ({ weeks, weekDays, rows }: {
         weeks: { start: string, day: number }[][]
         weekDays: { value: number }[]
-        periods: { start: string, label: string }[]
+        rows: { start: string, label: string }[][]
       }) => [
         h(XhCalendarPickerHeader, null, () => [
           h(XhCalendarPickerPrevTrigger, { 'aria-label': '上个月' }),
@@ -86,10 +86,11 @@ async function mountCalendar(): Promise<void> {
           ]),
           h(XhCalendarPickerNextTrigger, { 'aria-label': '下个月' }),
         ]),
-        // 钻上一层后网格里直接铺周期格；日视图铺星期行与周行
+        // 钻上一层后照切好的 rows 一行一个 week-row；日视图铺星期行与周行
         h(XhCalendarPickerGrid, null, () => view.value !== 'day'
-          ? periods.map(period => h(XhCalendarPickerCell, { key: period.start, value: period.start }, () =>
-              h(XhCalendarPickerCellTrigger, null, () => period.label)))
+          ? rows.map(row => h(XhCalendarPickerWeekRow, { key: row[0]!.start }, () => row.map(period =>
+              h(XhCalendarPickerCell, { key: period.start, value: period.start }, () =>
+                h(XhCalendarPickerCellTrigger, null, () => period.label)))))
           : [
               h(XhCalendarPickerGridHead, null, () => h(XhCalendarPickerWeekRow, null, () =>
                 weekDays.map(day => h(XhCalendarPickerWeekDay, { key: day.value, value: day.value })))),
@@ -291,6 +292,11 @@ describe('calendarPicker 格子与翻页钮的皮肤', () => {
     const grid = part('grid', `[data-view='month']`)
     expect(grid.getBoundingClientRect().width).toBe(dayWidth)
     expect(getComputedStyle(grid).rowGap).toBe('0px')
+    // 十二个月切成四行、一行三格：行是 role=row，同一列的格子上下对齐
+    const rows = [...grid.querySelectorAll<HTMLElement>(`[data-part='week-row']`)]
+    expect(rows.map(row => row.getAttribute('role'))).toEqual(['row', 'row', 'row', 'row'])
+    expect(rows.map(row => getComputedStyle(row).gridTemplateColumns.split(' ').length)).toEqual([3, 3, 3, 3])
+    expect(new Set(rows.map(row => row.children[1]!.getBoundingClientRect().left)).size).toBe(1)
     const cell = part('cell', `[data-view='month']`)
     const trigger = cell.querySelector<HTMLElement>(`[data-part='cell-trigger']`)!
     expect(trigger.getBoundingClientRect().height).toBe(resolveLength('--xh-control-action-size', root))

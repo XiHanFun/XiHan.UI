@@ -14,6 +14,7 @@ import {
   calendarPeriodIndex,
   calendarPeriodMonths,
   calendarPeriodOf,
+  calendarPeriodRows,
   calendarWeekRange,
   calendarZoomIn,
   parseCalendarDate,
@@ -423,18 +424,20 @@ describe('大步翻与周选预览', () => {
 })
 
 describe('面板粒度：月 / 季度 / 年 / 周', () => {
-  it('月面板一年 12 格，值是每个月的头一天', () => {
+  it('月面板一年 12 格切成 4 行 × 3 格，值是每个月的头一天', () => {
     const g = buildPeriodGrid('2026-08-17', 'month', { locale: 'zh-CN' })
-    expect(g.cells).toHaveLength(12)
-    expect(g.cells[0]!.start).toBe('2026-01-01')
-    expect(g.cells[7]!.start).toBe('2026-08-01')
+    expect(g.rows.map(row => row.length)).toEqual([3, 3, 3, 3])
+    const cells = g.rows.flat()
+    expect(cells[0]!.start).toBe('2026-01-01')
+    expect(cells[7]!.start).toBe('2026-08-01')
     expect(g.startValue).toBe('2026-01-01')
     expect(g.headingLabel).toContain('2026')
   })
 
-  it('季度面板 4 格，值是每季的头一天', () => {
+  it('季度面板 4 格排成一行，值是每季的头一天', () => {
     const g = buildPeriodGrid('2026-08-17', 'quarter', { locale: 'zh-CN' })
-    expect(g.cells.map(c => [c.label, c.start, c.end])).toEqual([
+    expect(g.rows).toHaveLength(1)
+    expect(g.rows[0]!.map(c => [c.label, c.start, c.end])).toEqual([
       ['Q1', '2026-01-01', '2026-03-31'],
       ['Q2', '2026-04-01', '2026-06-30'],
       ['Q3', '2026-07-01', '2026-09-30'],
@@ -444,13 +447,18 @@ describe('面板粒度：月 / 季度 / 年 / 周', () => {
 
   it('年面板一页十年，两端各带一格邻十年（与日视图带邻月同一套做法）', () => {
     const g = buildPeriodGrid('2026-08-17', 'year', { locale: 'zh-CN' })
-    expect(g.cells).toHaveLength(12)
-    expect(g.cells[0]!.label).toBe('2019')
-    expect(g.cells[0]!.outside).toBe(true)
-    expect(g.cells[1]!.label).toBe('2020')
-    expect(g.cells[1]!.outside).toBe(false)
-    expect(g.cells[10]!.label).toBe('2029')
-    expect(g.cells[11]!.outside).toBe(true)
+    // 十二格切成 4 行 × 3 格，首行从前一个十年的末年排起
+    expect(g.rows.map(row => row.map(c => c.label))).toEqual([
+      ['2019', '2020', '2021'],
+      ['2022', '2023', '2024'],
+      ['2025', '2026', '2027'],
+      ['2028', '2029', '2030'],
+    ])
+    const cells = g.rows.flat()
+    expect(cells[0]!.outside).toBe(true)
+    expect(cells[1]!.outside).toBe(false)
+    expect(cells[10]!.outside).toBe(false)
+    expect(cells[11]!.outside).toBe(true)
     // zh-CN 的年份带「年」字，标题因此是 2020年-2029年
     expect(g.headingLabel).toBe('2020年-2029年')
   })
@@ -472,19 +480,42 @@ describe('面板粒度：月 / 季度 / 年 / 周', () => {
   it('周周期固定使用 ISO 周一到周日，不随文案 locale 改变', () => {
     expect(calendarWeekRange('2026-08-13')).toEqual(['2026-08-10', '2026-08-16'])
     const g = buildPeriodGrid('2026-08-13', 'week', { locale: 'zh-CN' })
-    expect(g.cells.map(cell => cell.key)).toEqual(['2026-W31', '2026-W32', '2026-W33', '2026-W34', '2026-W35', '2026-W36'])
-    expect(g.cells.every(cell => cell.start <= cell.end)).toBe(true)
+    // 周视图一行一整周
+    expect(g.rows.every(row => row.length === 1)).toBe(true)
+    const cells = g.rows.flat()
+    expect(cells.map(cell => cell.key)).toEqual(['2026-W31', '2026-W32', '2026-W33', '2026-W34', '2026-W35', '2026-W36'])
+    expect(cells.every(cell => cell.start <= cell.end)).toBe(true)
   })
 
-  it('连接层按 granularity 铺面板：月视图给 cells 不给 weeks，翻页整年走', () => {
+  it('连接层按 granularity 铺面板：月视图给切好的 rows 不给 weeks，翻页整年走', () => {
     const h = mount({ defaultFocusedValue: '2026-08-17', granularity: 'month', visibleCount: 2 })
     const api = h.api()
     expect(api.panels).toHaveLength(2)
     expect(api.panels[0]!.weeks).toEqual([])
-    expect(api.panels[0]!.cells).toHaveLength(12)
+    expect(api.panels[0]!.rows.map(row => row.length)).toEqual([3, 3, 3, 3])
+    // 平铺的 periods 与 rows 同一份格子；顶层 rows 指首个面板
+    expect(api.panels[0]!.periods).toEqual(api.panels[0]!.rows.flat())
+    expect(api.rows).toEqual(api.panels[0]!.rows)
     expect(api.panels.map(p => p.year)).toEqual([2026, 2027])
     h.api().goToNextMonth()
     expect(h.api().panels.map(p => p.year)).toEqual([2027, 2028])
+  })
+
+  it('自备的周期列表按视图列数切行：两百年切出 67 行，末行只剩两格', () => {
+    const years = Array.from({ length: 200 }, (_, i) => calendarPeriodOf(`${1900 + i}-01-01`, 'year', { locale: 'zh-CN' })!)
+    const rows = calendarPeriodRows(years, 'year')
+    expect(rows).toHaveLength(67)
+    expect(rows[0]!.map(c => c.start)).toEqual(['1900-01-01', '1901-01-01', '1902-01-01'])
+    expect(rows.at(-1)!.map(c => c.start)).toEqual(['2098-01-01', '2099-01-01'])
+    expect(rows.every(row => row.length <= CALENDAR_PERIOD_COLUMNS.year)).toBe(true)
+  })
+
+  it('行带上 data-view：日视图七列，周期视图按列数换排布；日视图没有周期行', () => {
+    const day = mount({ defaultFocusedValue: '2026-08-17' }).api()
+    expect(day.rows).toEqual([])
+    expect(day.getWeekRowProps()).toMatchObject({ 'role': 'row', 'data-view': 'day' })
+    const quarter = mount({ defaultFocusedValue: '2026-08-17', granularity: 'quarter' }).api()
+    expect(quarter.getWeekRowProps()).toMatchObject({ 'role': 'row', 'data-view': 'quarter' })
   })
 
   it('年视图翻一页走十年', () => {

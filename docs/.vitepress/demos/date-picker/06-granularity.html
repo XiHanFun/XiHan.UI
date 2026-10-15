@@ -57,6 +57,7 @@
   const control = picker.querySelector(":scope > [data-xh-part='root'] > [data-xh-part='control']");
   const clearTrigger = picker.querySelector(":scope > [data-xh-part='root'] > [data-xh-part='control'] > [data-xh-part='clear-trigger']");
   const trigger = picker.querySelector(":scope > [data-xh-part='root'] > [data-xh-part='control'] > [data-xh-part='trigger']");
+  // 按年挑时一页铺开两百年；自备的格子同样按年视图一行三格切成行
   const yearCells = Array.from({ length: 200 }, (_, index) => {
     const year = 1900 + index;
     return {
@@ -67,6 +68,8 @@
       outside: false,
     };
   });
+  const yearRows = [];
+  for (let i = 0; i < yearCells.length; i += 3) yearRows.push(yearCells.slice(i, i + 3));
   let currentValue = [];
 
   function node(tag, part, text) {
@@ -135,8 +138,12 @@
       }
       grid.append(head, body);
     } else {
-      const periods = quickYear ? yearCells : panel.cells;
-      grid.append(...periods.filter(Boolean).map(periodCell));
+      // 周期格按行收进 week-row：grid 底下得是行，格子落在行里
+      for (const periods of quickYear ? yearRows : panel.rows) {
+        const row = node("div", "week-row");
+        row.append(...periods.map(periodCell));
+        grid.append(row);
+      }
     }
     calendar.append(header, grid);
     return calendar;
