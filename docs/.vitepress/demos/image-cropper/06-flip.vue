@@ -10,6 +10,8 @@ import {
 } from "@xihan-ui/vue";
 
 const handles = ["nw", "ne", "se", "sw"] as const;
+// 两颗钮写的字就是它们的读屏名：名字取 translations，与钮上的字给成同一句
+const translations = { flipHorizontal: "左右翻转", flipVertical: "上下翻转" };
 </script>
 
 <template>
@@ -18,6 +20,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
     alt="山谷与湖泊风景图"
     :default-value="{ x: 96, y: 64, width: 448, height: 280 }"
     :min-width="40"
+    :translations="translations"
     style="inline-size: min(100%, 420px)"
   >
     <XhImageCropperViewport>
