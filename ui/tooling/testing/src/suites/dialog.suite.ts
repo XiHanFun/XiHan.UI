@@ -71,7 +71,8 @@ export const dialogSuite: ConformanceSuite = {
           { part: 'title', text: '标题' },
           { part: 'description', text: '描述' },
           { tag: 'button', text: '确认', attrs: { 'data-testid': 'confirm' } },
-          { part: 'close-trigger', tag: 'button', text: '关闭' },
+          // 单图标钮照文档留空：字形由皮肤画，名字由 translations 给；塞进与缺省英文名字对不上的字就是 2.5.3 违规
+          { part: 'close-trigger', tag: 'button' },
         ],
       },
     ],

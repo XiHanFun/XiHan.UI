@@ -166,9 +166,10 @@ export const signaturePadSuite: ConformanceSuite = {
           { part: 'path', tag: 'path' },
         ],
       },
-      { part: 'undo-trigger', tag: 'button', text: '撤销' },
-      { part: 'redo-trigger', tag: 'button', text: '重做' },
-      { part: 'clear-trigger', tag: 'button', text: '清空' },
+      // 三颗钮的名字由 translations 给：作者放图标（aria-hidden，不进名字）；写可见文字就得与名字一致（WCAG 2.5.3）
+      { part: 'undo-trigger', tag: 'button', children: [{ tag: 'span', attrs: { 'aria-hidden': 'true' } }] },
+      { part: 'redo-trigger', tag: 'button', children: [{ tag: 'span', attrs: { 'aria-hidden': 'true' } }] },
+      { part: 'clear-trigger', tag: 'button', children: [{ tag: 'span', attrs: { 'aria-hidden': 'true' } }] },
       { part: 'status', tag: 'span' },
       { part: 'hidden-input', tag: 'input' },
     ],

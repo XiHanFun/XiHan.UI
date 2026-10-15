@@ -219,7 +219,8 @@ export const colorPickerSuite: ConformanceSuite = {
               sliderMount('alpha-slider'),
               { part: 'channel-input', tag: 'input', attrs: { channel: 'hex' } },
               { part: 'channel-input', tag: 'input', attrs: { channel: 'r' } },
-              { part: 'eye-dropper-trigger', tag: 'button', text: '取色' },
+              // 吸管钮是作者放图标的方钮，名字由 translations 给（图标 aria-hidden，不进名字）
+              { part: 'eye-dropper-trigger', tag: 'button', children: [{ tag: 'span', attrs: { 'aria-hidden': 'true' } }] },
               {
                 part: 'swatch-picker',
                 children: [swatchNode('#ff0000'), swatchNode('#00ff00')],

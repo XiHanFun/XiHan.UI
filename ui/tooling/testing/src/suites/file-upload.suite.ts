@@ -102,7 +102,8 @@ const BASE: FixtureNode = {
     { part: 'trigger', tag: 'button', text: '选择文件' },
     { part: 'hidden-input', tag: 'input' },
     { part: 'list' },
-    { part: 'clear-trigger', tag: 'button', text: '清空' },
+    // 清空钮是单图标钮，照文档留空：字形由皮肤画，名字由 translations 给
+    { part: 'clear-trigger', tag: 'button' },
   ],
 }
 
@@ -120,7 +121,8 @@ function itemNode(index: number): FixtureNode {
       { part: 'item-progress' },
       { part: 'item-name', tag: 'span' },
       { part: 'item-size-text', tag: 'span' },
-      { part: 'item-delete-trigger', tag: 'button', text: '删除' },
+      // 单图标钮照文档留空：字形由皮肤画，名字由 translations 给；塞进与缺省英文名字对不上的字就是 2.5.3 违规
+      { part: 'item-delete-trigger', tag: 'button' },
     ],
   }
 }
