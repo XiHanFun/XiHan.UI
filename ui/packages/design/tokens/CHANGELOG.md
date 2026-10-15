@@ -1,5 +1,41 @@
 # @xihan-ui/tokens
 
+## 4.2.0
+
+### Minor Changes
+
+- 5fcfdbe: 图表缺省的多彩分类色板改为浅色调：8 个色槽都取基础色板的一档往纯白里在 oklab 里混合（90% / 75% / 60% / 45%），柱、扇区、面积这类大块填充读起来更轻。
+
+  - 明度带抬到亮色 0.72–0.84、暗色 0.68–0.80，彩度取 0.07–0.14；对承载面放宽到 ≥ 1.6:1，系列身份由图例、色块内文字与数据表补偿
+  - 相邻色槽仍是正常视觉 ΔE ≥ 15、色觉障碍 ≥ 8，任意两色放宽到 ΔE ≥ 8；色块内文字全部换成深色
+  - 柔和品牌、莫兰迪柔彩与主题单色三套配色方案取值不变，柔和品牌改为显式沿用标准明度带
+  - `validateCategoricalPalette` 新增 `tone: 'light'`，按浅色调的明度带与彩度带复验色板；缺省仍是标准明度带
+
+- 2a0c591: 图表的配色方案、有序色阶、涨跌色与亮色下的顺序、发散色阶都改为浅色调，与浅色调的多彩分类成一套；漏斗的阶段色随顺序色阶一起变浅。
+
+  - 主题单色：亮色从品牌 500 起逐档变浅、末两档往承载面里混，暗色从 300 起往深走；色槽 1 对承载面放宽到 ≥ 1.6:1
+  - 柔和品牌：与多彩分类同样往纯白里混、同一明度带；相邻色槽放宽到正常视觉 ΔE ≥ 12、色觉障碍 ≥ 6
+  - 莫兰迪柔彩：基础色往浅灰（中性 300）里按 35% / 50% / 65% 混合，明度带亮色 0.70–0.82、暗色 0.64–0.76，原有的分离规则不变
+  - 有序色阶（漏斗阶段、档位）：亮色品牌 500 起、暗色 300 起，相邻两档之间补半档，最弱一档放宽到 ≥ 1.5:1
+  - 涨跌：成功色与危险色往纯白里混出的浅色调，对承载面 ≥ 1.6:1，色觉障碍模拟下仍靠明度拉开
+  - 顺序色阶亮色锚点改取品牌 50 / 300 / 500，发散色阶亮色两臂改取 500，终点与两端仍 ≥ 3:1
+  - 新增 `--xh-chart-on-sequential-low` / `-high`：压在顺序色阶两段上的文字色，亮色两段都写正文色、暗色高段写承载面色；层级图按值着色时的名字改读它们
+  - `validateOrdinalRamp` 新增 `tone: 'light'`，按浅色调把最弱一档的下限放到 1.5:1
+
+- 603001b: JsonViewer 新增内建工具条，按需打开：`tools` 不给即没有工具条（行为与此前一致）；`true` 铺出全部工具；数组只铺列出的几项（`expand` / `wrap` / `copy` / `view`），数组里有未知的工具名直接抛错。工具条是根的第一个孩子（新部件 `toolbar`，`role=group` 带名字），钮按组件定的次序排在条的末端：展开 / 收起全部是一颗切换钮（`expand-trigger`），只在树档出现，还有收着的分支时按下展开全部、已经全部展开时按下收回顶层，名字与字形随这一下要做的事变（`data-state` 为 `open` 即已全部展开），只有根一层分支时禁用；自动换行开关（`wrap-trigger`，`aria-pressed`）只在原文档出现；复制钮（`copy-trigger`）与树 / 原文切换钮（`view-trigger`，名字与字形取要切去的那一档、带 `data-view`）钉在末端、切形态时不挪位置；两颗切换钮名字随动作走，不报 `aria-pressed`。钮是 Action Control icon 档 ghost 面，比视图低一档、最低 sm，换行开关开着时取品牌淡底选中面。复制写入的是原文档那一份，成功后钮换成对钩、前景取成功色并停 3 秒，播报区（新部件 `status`，视觉隐藏的 polite 实时区）念出回执；写入失败回到常态并通知 `onCopyError`。打印时工具条收起。
+
+  新增 `source`（值的原文，如后端下发的 JSON 文本）：提供时原文档与复制钮改用它，能解析成 JSON 就只按两格缩进重排、数字与字符串等字面量一字不改，超出安全整数的 ID 不再因解析失真；headless 另导出重排函数 `formatJsonSource`。
+
+  `view` 改为受控 / 非受控一对：新增 `defaultView` 与 `onViewChange`（Vue `view-change` 与 `v-model:view`，Web Components `view-change` 事件与 `default-view` 属性），只给 `view` 的写法照旧生效。新增原文档自动换行 `wrap` / `defaultWrap` / `onWrapChange`（开启后原文部件投影 `data-wrap`，长行折到下一行）。headless API 新增 `tools`、`wrap`、`copyStatus`、`copied`、`announcement`、`allExpanded`、`setView()`、`setWrap()`、`expandAll()`、`collapseAll()`、`copy()` 与六个部件的 getter，并导出 `JSON_VIEWER_TOOLS` / `resolveJsonViewerTools`；剪贴板写入与停留时长的工具函数挪到共享模块，`writeToClipboard` / `resolveClipboardTimeout` / `CLIPBOARD_TIMEOUT` 的导出名不变。语言包的 json-viewer 桶新增 `toolbar`、`expandAll`、`collapseAll`、`wrap`、`copy`、`copied`、`showText`、`showTree` 八条文案。Vue 的 `useJsonViewer` 新增可选的第三个参数接工具条的三路通知。
+
+  图标集新增 `list-tree`（`ListTreeIcon`，一条根线带两条缩进的子线）。新增字形令牌 `--xh-glyph-mark-copy`、`--xh-glyph-mark-expand-all`、`--xh-glyph-mark-collapse-all`、`--xh-glyph-mark-wrap`、`--xh-glyph-mark-source`、`--xh-glyph-mark-tree`；新增公开槽 `--xh-json-viewer-toolbar-gap` / `-toolbar-mb`、`--xh-json-viewer-tool-icon-size`、`--xh-json-viewer-tool-fg`、`--xh-json-viewer-tool-fg-copied`。
+
+- cee7071: Table 单元格与列头的行内内衬随尺寸档换档：sm 8px / md 12px / lg 16px，与行高同一把档位。此前三档都是 16px，缺省与紧凑表格里左对齐、右对齐的字离分隔线空出一大截。新增语义令牌 `--xh-table-cell-px-sm` / `-md` / `-lg`（与既有的 `--xh-table-cell-py-*` 成对）；开着竖分隔线时末端照旧让出线宽；展开详情行的内衬（`--xh-table-detail-px` 缺省值）跟着同一档，详情里的字与上面数据格的字对齐。公开槽 `--xh-table-cell-px` 仍可统一定值。
+
+### Patch Changes
+
+- @xihan-ui/core@4.2.0
+
 ## 4.1.0
 
 ### Minor Changes

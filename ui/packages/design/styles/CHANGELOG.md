@@ -1,5 +1,30 @@
 # @xihan-ui/styles
 
+## 4.2.0
+
+### Minor Changes
+
+- 240a143: JsonViewer 原文档按类别着色，与树档同一套颜色：原文切成新部件 `token`（`data-kind` 为 `key` / `string` / `number` / `boolean` / `null` / `punctuation`），键名、四种标量与标点取树档同一组覆盖槽（`--xh-json-viewer-key-fg`、`-string-fg`、`-number-fg`、`-boolean-fg`、`-null-fg`、`-punctuation-fg`）与语法令牌，键名同字重；相邻标点并成一段，空白按纯文本铺。原文解析不了（不是 JSON，如一段 User-Agent）时整段不着色，不按半截猜出来的类别上色。headless API 新增 `textSegments`（只在原文档切分，树档为空）与 `getTokenProps()`，并导出切段函数 `tokenizeJsonText`；Web Components 元素原文没变时不重铺，框选着的文字不会被无关的重绘冲掉。皮肤涨在六条着色规则上。
+- 603001b: JsonViewer 新增内建工具条，按需打开：`tools` 不给即没有工具条（行为与此前一致）；`true` 铺出全部工具；数组只铺列出的几项（`expand` / `wrap` / `copy` / `view`），数组里有未知的工具名直接抛错。工具条是根的第一个孩子（新部件 `toolbar`，`role=group` 带名字），钮按组件定的次序排在条的末端：展开 / 收起全部是一颗切换钮（`expand-trigger`），只在树档出现，还有收着的分支时按下展开全部、已经全部展开时按下收回顶层，名字与字形随这一下要做的事变（`data-state` 为 `open` 即已全部展开），只有根一层分支时禁用；自动换行开关（`wrap-trigger`，`aria-pressed`）只在原文档出现；复制钮（`copy-trigger`）与树 / 原文切换钮（`view-trigger`，名字与字形取要切去的那一档、带 `data-view`）钉在末端、切形态时不挪位置；两颗切换钮名字随动作走，不报 `aria-pressed`。钮是 Action Control icon 档 ghost 面，比视图低一档、最低 sm，换行开关开着时取品牌淡底选中面。复制写入的是原文档那一份，成功后钮换成对钩、前景取成功色并停 3 秒，播报区（新部件 `status`，视觉隐藏的 polite 实时区）念出回执；写入失败回到常态并通知 `onCopyError`。打印时工具条收起。
+
+  新增 `source`（值的原文，如后端下发的 JSON 文本）：提供时原文档与复制钮改用它，能解析成 JSON 就只按两格缩进重排、数字与字符串等字面量一字不改，超出安全整数的 ID 不再因解析失真；headless 另导出重排函数 `formatJsonSource`。
+
+  `view` 改为受控 / 非受控一对：新增 `defaultView` 与 `onViewChange`（Vue `view-change` 与 `v-model:view`，Web Components `view-change` 事件与 `default-view` 属性），只给 `view` 的写法照旧生效。新增原文档自动换行 `wrap` / `defaultWrap` / `onWrapChange`（开启后原文部件投影 `data-wrap`，长行折到下一行）。headless API 新增 `tools`、`wrap`、`copyStatus`、`copied`、`announcement`、`allExpanded`、`setView()`、`setWrap()`、`expandAll()`、`collapseAll()`、`copy()` 与六个部件的 getter，并导出 `JSON_VIEWER_TOOLS` / `resolveJsonViewerTools`；剪贴板写入与停留时长的工具函数挪到共享模块，`writeToClipboard` / `resolveClipboardTimeout` / `CLIPBOARD_TIMEOUT` 的导出名不变。语言包的 json-viewer 桶新增 `toolbar`、`expandAll`、`collapseAll`、`wrap`、`copy`、`copied`、`showText`、`showTree` 八条文案。Vue 的 `useJsonViewer` 新增可选的第三个参数接工具条的三路通知。
+
+  图标集新增 `list-tree`（`ListTreeIcon`，一条根线带两条缩进的子线）。新增字形令牌 `--xh-glyph-mark-copy`、`--xh-glyph-mark-expand-all`、`--xh-glyph-mark-collapse-all`、`--xh-glyph-mark-wrap`、`--xh-glyph-mark-source`、`--xh-glyph-mark-tree`；新增公开槽 `--xh-json-viewer-toolbar-gap` / `-toolbar-mb`、`--xh-json-viewer-tool-icon-size`、`--xh-json-viewer-tool-fg`、`--xh-json-viewer-tool-fg-copied`。
+
+### Patch Changes
+
+- c71a9af: Descriptions 描边档的网格修正两处。一是标签在左（平板宽起）时同一列的标签对齐：此前每格自成一个网格、标签列宽各取各的，上下行标签长短不一时标签与取值之间的竖线错开；现在根按列数排成「标签轨道 + 取值轨道」成对的网格，每格用子网格继承轨道（跨列的格跨 2 × 跨列数条轨道），同一列的标签宽度取这一列最长的那个，各列各取各的，`--xh-descriptions-label-w` 照旧能把标签轨道定成同一个宽。子网格要 Chrome 117 起，更早的引擎里每格仍按自己的标签定宽。二是格线不再按奇偶序号拼：此前有格写了 `span` 或最后一行不满时，后面的格左边线与上边线错位，行首的格与外框叠成两道，最后一行空着那半边的上方没有分隔线；现在格与格之间留一道线宽的间隙，每格只在行尾一侧与下方各画一道线，最右一列与最后一行朝外的那道由外框裁掉，最后一格不画行尾那道、与没摆满的空列连成一格。标签与取值之间的竖线也画进两条轨道之间的间隙，标签淡底不再垫在线下，线色与外框一致。外框的裁切由 `overflow: hidden` 换成 `overflow: clip`，根不再是滚动容器。
+- 5f0e4cc: Separator 竖线在横排里铺满行高：此前竖线的高度写成 `100%`，放进工具条这类由内容撑高的横排（父容器没有写死高度）时解析不出来，`align-self: stretch` 随之失效，线只剩 1em 高、贴在行顶，与两侧居中的按钮对不齐。现在高度交给 stretch（`block-size: auto`），铺满这一行；父容器写死高度时同样铺满，下限仍是一行文字高。
+- cee7071: Table 单元格与列头的行内内衬随尺寸档换档：sm 8px / md 12px / lg 16px，与行高同一把档位。此前三档都是 16px，缺省与紧凑表格里左对齐、右对齐的字离分隔线空出一大截。新增语义令牌 `--xh-table-cell-px-sm` / `-md` / `-lg`（与既有的 `--xh-table-cell-py-*` 成对）；开着竖分隔线时末端照旧让出线宽；展开详情行的内衬（`--xh-table-detail-px` 缺省值）跟着同一档，详情里的字与上面数据格的字对齐。公开槽 `--xh-table-cell-px` 仍可统一定值。
+- 111b99c: 文本字段多行 `autoSize` 只剩一层滚动：顶到上限后由 textarea 自己滚，控件外壳只包住它，不再另设 12rem 上限、也不再自己滚。此前 `minRows` / `maxRows` 换算超过 12rem 时（如 15–22 行、24–24 行），外壳被钉在 12rem 并滚动，textarea 也在滚，两条滚动条叠在一起，行数界限也被截掉。现在给了 `maxRows` 时上限就是 `maxRows`；没给时上限取 textarea 的 `max-block-size`，两种情况都不低于 `minRows`。默认皮肤的上限槽随之落到 input 部件上并按它改名为 `--xh-text-field-input-max-h`，旧槽 `--xh-text-field-control-max-h` 留在兜底位，已有的覆盖照常生效。自动高度据此接管 textarea 的 `max-block-size` 内联声明，关闭时与 `block-size`、`overflow-y` 一并归还；没给 `maxRows` 时 `max-block-size` 的计算值须为 `none` 或 px，否则明确失败。
+- Updated dependencies [5fcfdbe]
+- Updated dependencies [2a0c591]
+- Updated dependencies [603001b]
+- Updated dependencies [cee7071]
+  - @xihan-ui/tokens@4.2.0
+
 ## 4.1.0
 
 ### Patch Changes

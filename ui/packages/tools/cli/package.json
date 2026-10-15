@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/cli",
   "type": "module",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "description": "XiHan.UI CLI and MCP server — offline component API, docs, demos, design tokens and design.md for AI coding agents.",
   "author": {
     "name": "XiHanFun",
