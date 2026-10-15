@@ -5,10 +5,10 @@
 
 // 导出 clipboard 模块的公共接口。
 
+export { CLIPBOARD_TIMEOUT, resolveClipboardTimeout, writeToClipboard } from '../shared/clipboard-write'
 export { clipboardAnatomy } from './clipboard.anatomy'
 export { connectClipboard } from './clipboard.connect'
 export { clipboardKeyboard } from './clipboard.keyboard'
-export { CLIPBOARD_TIMEOUT, resolveClipboardTimeout, writeToClipboard } from '../shared/clipboard-write'
 export { clipboardMachine } from './clipboard.machine'
 export { clipboardMeta } from './clipboard.meta'
 export type { ClipboardApi, ClipboardCopyErrorDetails, ClipboardIndicatorProps, ClipboardSchema, ClipboardStatus, ClipboardStatusChangeDetails, ClipboardTranslations } from './clipboard.types'
