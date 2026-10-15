@@ -674,6 +674,9 @@ importers:
       '@xihan-ui/build':
         specifier: workspace:*
         version: link:../../../tooling/build
+      '@xihan-ui/expression':
+        specifier: workspace:*
+        version: link:../expression
       '@xihan-ui/tsconfig':
         specifier: workspace:*
         version: link:../../../tooling/tsconfig

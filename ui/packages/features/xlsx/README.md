@@ -33,6 +33,7 @@ const blob = xlsxBlob(bytes) // 交给 <a download> 或上传
 - 文本用内联字符串，不写共享字符串表；字面的 `_xHHHH_` 与 XML 不允许的字符（控制字符、孤立代理项）按 OOXML 的 `_xHHHH_` 转义。
 - `compression` 缺省 `deflate`；运行环境没有 `CompressionStream` 时抛错，不静默改成不压缩。zip 里的时间戳固定为 1980-01-01，`store` 方式下同一输入得到的字节完全相同。
 - 表名、合并区或单元格不合法时抛 `XlsxError`，只带错误码与位置，不带文案；`sheetName()` 把任意文本整理成合法表名。
+- `formatCode(spec)` 把与 `@xihan-ui/expression` 的 `formatValue` 同形的格式说明换成 Excel 格式代码；Excel 表达不了时返回 `null`，此时用 `formatValue` 的结果写成文本单元格。Excel 显示时一律四舍五入，`rounding` 不是 `half-up` 时先用十进制运算把值舍入好再写成数字单元格。
 - `writeZip` 同样公开，可单独打包任意条目。
 
 ## 装

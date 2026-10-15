@@ -66,6 +66,24 @@ pnpm add @xihan-ui/xlsx
 
 四种单元格都可以写 `bold` 与 `align`（`left` / `center` / `right`），表头、合计行用它们区分。日期按 Excel 的 1900 日期系统换成序列值，1900-03-01 之前的日期与 Excel 的计数一致。
 
+## 格式说明换成格式代码
+
+报表与设计器里的格式说明用 `@xihan-ui/expression` 的 `formatValue` 规格保存。`formatCode(spec)` 把同形的格式说明换成 Excel 格式代码，交给数字与日期单元格的 `format`；Excel 表达不了时返回 `null`，此时用 `formatValue` 的结果写成文本单元格。
+
+| 格式说明 | 格式代码 |
+| --- | --- |
+| `{ kind: "number", decimals: 2, grouping: true }` | `#,##0.00` |
+| `{ kind: "number", minDecimals: 1, maxDecimals: 3 }` | `0.0##`：必显位加可省位，末尾的 0 省去，整数也不会多出小数点 |
+| `{ kind: "number", maxDecimals: 2 }` | `0.00`：`minDecimals` 为 0 或没给时按 `maxDecimals` 写成固定位数，因为 Excel 省掉全部可省位会留下小数点 |
+| `{ kind: "number" }` | `General`；不舍入又要千分位时返回 `null` |
+| `{ kind: "percent", decimals: 1 }` | `0.0%`；不舍入的百分比返回 `null` |
+| `{ kind: "date", pattern: "yyyy年M月d日 HH:mm" }` | `yyyy"年"m"月"d"日" hh:mm` |
+| `{ kind: "rmb-upper" }` | `null` |
+
+- **舍入**：Excel 显示时一律四舍五入取整，不认 `rounding`。`rounding` 不是 `half-up` 时，先用十进制运算把值舍入到要显示的位数（例如用 `formatValue` 按同一份格式说明算出文本再换回数值），再写成数字单元格加格式代码，不要直接写原始值。
+- **日期**：占位符 `MM → mm`、`HH → hh`、`SSS → 000`，其余文字写成字面文本。Excel 的 `mm` 只有紧挨 `h` / `hh` 之后或紧挨 `ss` 之前才是分钟，其余位置都当成月份；分钟或月份落在会被读错的位置（如 `yyyy-mm`、`HH:MM`），或毫秒不是紧跟在 `ss.` 之后时返回 `null`。
+- 格式说明的类型 `XlsxFormatSpec` 与 `formatValue` 的 `FormatSpec` 同形，测试里做了双向赋值检查，两边改动必须同步。
+
 ## 写出
 
 `writeXlsx(workbook, { compression? })` 返回 `Promise<Uint8Array>`，`xlsxBlob(bytes)` 包成带 MIME 类型的 `Blob`，交给 `<a download>` 或上传接口即可。`compression` 缺省 `deflate`，使用运行环境自带的 `CompressionStream('deflate-raw')`；运行环境不支持时抛 `compression-unavailable`，不静默改为不压缩，此时可显式传 `store`。
