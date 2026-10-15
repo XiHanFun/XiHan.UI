@@ -3,9 +3,11 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 视口的平移缩放数学：屏幕坐标 = 世界坐标 × zoom + (x, y)。所有函数返回新视口，不修改输入。
+// 视口的平移缩放数学：屏幕坐标 = 世界坐标 × zoom + (x, y)。所有函数返回新视口，不修改输入；
+// 带旋转角的矩形在适配、显露与限制平移时按旋转后的包围盒计算。
 
 import type { Point, Rect, Size } from './geometry'
+import { rotatedBounds } from './geometry'
 
 /** 视口：平移量（屏幕像素）与缩放倍数。 */
 export interface Viewport {
@@ -50,16 +52,16 @@ export function worldToScreen(viewport: Viewport, point: Point): Point {
   return { x: point.x * viewport.zoom + viewport.x, y: point.y * viewport.zoom + viewport.y }
 }
 
-/** 屏幕矩形 → 世界矩形。 */
+/** 屏幕矩形 → 世界矩形，旋转角不变。 */
 export function screenRectToWorld(viewport: Viewport, rect: Rect): Rect {
   const origin = screenToWorld(viewport, rect)
-  return { x: origin.x, y: origin.y, width: rect.width / viewport.zoom, height: rect.height / viewport.zoom }
+  return { ...rect, x: origin.x, y: origin.y, width: rect.width / viewport.zoom, height: rect.height / viewport.zoom }
 }
 
-/** 世界矩形 → 屏幕矩形。 */
+/** 世界矩形 → 屏幕矩形，旋转角不变。 */
 export function worldRectToScreen(viewport: Viewport, rect: Rect): Rect {
   const origin = worldToScreen(viewport, rect)
-  return { x: origin.x, y: origin.y, width: rect.width * viewport.zoom, height: rect.height * viewport.zoom }
+  return { ...rect, x: origin.x, y: origin.y, width: rect.width * viewport.zoom, height: rect.height * viewport.zoom }
 }
 
 /** 视口里看得到的世界矩形。 */
@@ -101,7 +103,8 @@ export interface FitOptions {
 }
 
 /** 缩放并平移到让 bounds 整个落在视口中央。 */
-export function fitRect(bounds: Rect, size: Size, options: FitOptions = {}): Viewport {
+export function fitRect(content: Rect, size: Size, options: FitOptions = {}): Viewport {
+  const bounds = rotatedBounds(content)
   const padding = options.padding ?? 24
   const limits = options.limits ?? DEFAULT_ZOOM_LIMITS
   const maxZoom = options.maxZoom ?? 1
@@ -122,7 +125,8 @@ export function centerOn(viewport: Viewport, point: Point, size: Size): Viewport
 }
 
 /** 世界矩形已整个落在视口内（四周留 padding 屏幕像素）时原样返回视口，否则把它居中。 */
-export function revealRect(viewport: Viewport, rect: Rect, size: Size, padding = 0): Viewport {
+export function revealRect(viewport: Viewport, target: Rect, size: Size, padding = 0): Viewport {
+  const rect = rotatedBounds(target)
   const screen = worldRectToScreen(viewport, rect)
   const inside = screen.x >= padding && screen.y >= padding
     && screen.x + screen.width <= size.width - padding
@@ -135,7 +139,7 @@ export function revealRect(viewport: Viewport, rect: Rect, size: Size, padding =
  * 防止把内容整个拖出视野。
  */
 export function constrainViewport(viewport: Viewport, content: Rect, size: Size, keep = 48): Viewport {
-  const screen = worldRectToScreen(viewport, content)
+  const screen = worldRectToScreen(viewport, rotatedBounds(content))
   const clampAxis = (offset: number, start: number, length: number, extent: number): number => {
     const visible = Math.min(keep, length, extent)
     const low = visible - (start + length)

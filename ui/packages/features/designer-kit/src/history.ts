@@ -4,9 +4,10 @@
  */
 
 // 撤销重做历史栈：只依赖「应用一个操作，返回新文档与逆操作」这一形态，与文档和操作的具体类型无关。
-// 每一步只存待执行方向的操作：撤销时应用逆操作，得到的逆操作即重做所需；支持合并连续输入、事务分组与步数上限。
+// 每一步只存待执行方向的操作：撤销时应用逆操作，得到的逆操作即重做所需；
+// 支持合并连续输入、事务分组、步数上限与保存点，文档引用不变的执行不入栈。
 
-/** 应用一个操作的结果：新文档，以及按顺序应用即可撤销的逆操作。 */
+/** 应用一个操作的结果：新文档，以及按顺序应用即可撤销的逆操作；没有变化时文档是传入的同一引用。 */
 export interface OperationResult<D, O> {
   readonly document: D
   readonly inverse: readonly O[]
@@ -16,7 +17,7 @@ export interface OperationResult<D, O> {
 export type ApplyOperation<D, O> = (document: D, operation: O) => OperationResult<D, O>
 
 export interface HistoryOptions<D, O> {
-  /** 初始文档。 */
+  /** 初始文档，视为已保存。 */
   readonly document: D
   readonly apply: ApplyOperation<D, O>
   /** 撤销栈最多保留的步数，超出时丢弃最早的一步，缺省 100。 */
@@ -35,9 +36,9 @@ export interface ExecuteOptions {
 }
 
 /** 历史变化的种类。 */
-export type HistoryChangeKind = 'execute' | 'undo' | 'redo' | 'commit' | 'rollback' | 'reset' | 'clear'
+export type HistoryChangeKind = 'execute' | 'undo' | 'redo' | 'commit' | 'rollback' | 'reset' | 'clear' | 'save'
 
-/** 一次历史变化：变化后的文档与这次实际应用的操作（commit / reset / clear 为空）。 */
+/** 一次历史变化：变化后的文档与这次实际应用的操作（commit / reset / clear / save 为空）。 */
 export interface HistoryChange<D, O> {
   readonly kind: HistoryChangeKind
   readonly document: D
@@ -57,7 +58,12 @@ export interface History<D, O> {
   readonly redoLabel: string | undefined
   /** 是否处在事务中。 */
   readonly inTransaction: boolean
-  /** 依次应用一组操作并记为一步（事务中并入事务）；返回新文档。空数组什么都不做。 */
+  /** 当前位置与保存点不同，或事务中已有改动：有未保存的修改。保存点被新执行清出重做栈、或早于步数上限能退回的位置时，再也回不到保存点。 */
+  readonly dirty: boolean
+  /**
+   * 依次应用一组操作并记为一步（事务中并入事务）；返回新文档。
+   * 空数组或文档引用没有变化时什么都不做，不入栈也不通知。
+   */
   readonly execute: (operations: readonly O[], options?: ExecuteOptions) => D
   /** 撤销一步；没有可撤销的步时返回 false。事务中调用抛错。 */
   readonly undo: () => boolean
@@ -73,15 +79,19 @@ export interface History<D, O> {
   readonly transact: <T>(run: () => T, label?: string) => T
   /** 封口：此后的执行不再并入当前最上面一步。 */
   readonly seal: () => void
-  /** 换成新文档并清空撤销与重做栈。事务中调用抛错。 */
+  /** 把当前位置记为保存点并封口。事务中调用抛错。 */
+  readonly markSaved: () => void
+  /** 换成新文档、清空撤销与重做栈，新文档视为已保存。事务中调用抛错。 */
   readonly reset: (document: D) => void
-  /** 清空撤销与重做栈，文档不变。事务中调用抛错。 */
+  /** 清空撤销与重做栈，文档与是否已保存不变。事务中调用抛错。 */
   readonly clear: () => void
   /** 订阅变化，返回取消订阅的函数。 */
   readonly subscribe: (listener: (change: HistoryChange<D, O>) => void) => () => void
 }
 
 interface Entry<O> {
+  /** 这一步执行完之后的位置标识；撤销重做时随步搬动，保存点按它比对。 */
+  readonly position: number
   operations: readonly O[]
   readonly label: string | undefined
   readonly merge: string | undefined
@@ -110,7 +120,13 @@ export function createHistory<D, O>(options: HistoryOptions<D, O>): History<D, O
   let sealed = true
   let transaction: Transaction<O> | undefined
   let depth = 0
+  let positions = 0
+  /** 撤销栈清空时所处位置的标识：初始为 0，丢弃或清空步时随之前移。 */
+  let floor = 0
+  let saved = 0
   const listeners = new Set<(change: HistoryChange<D, O>) => void>()
+
+  const position = (): number => undoStack.at(-1)?.position ?? floor
 
   const emit = (kind: HistoryChangeKind, operations: readonly O[]): void => {
     const change: HistoryChange<D, O> = { kind, document, operations }
@@ -131,8 +147,11 @@ export function createHistory<D, O>(options: HistoryOptions<D, O>): History<D, O
 
   const pushUndo = (entry: Entry<O>): void => {
     undoStack.push(entry)
-    if (undoStack.length > limit)
+    if (undoStack.length > limit) {
+      const dropped = undoStack.slice(0, undoStack.length - limit)
+      floor = dropped.at(-1)!.position
       undoStack = undoStack.slice(undoStack.length - limit)
+    }
   }
 
   const assertIdle = (action: string): void => {
@@ -165,11 +184,16 @@ export function createHistory<D, O>(options: HistoryOptions<D, O>): History<D, O
     get inTransaction() {
       return depth > 0
     },
+    get dirty() {
+      return transaction !== undefined && transaction.undo.length > 0 ? true : position() !== saved
+    },
 
     execute(operations, executeOptions = {}) {
       if (operations.length === 0)
         return document
       const result = run(operations)
+      if (result.document === document)
+        return document
       document = result.document
       if (transaction) {
         transaction.undo = [...result.inverse, ...transaction.undo]
@@ -183,7 +207,7 @@ export function createHistory<D, O>(options: HistoryOptions<D, O>): History<D, O
           top.time = time
         }
         else {
-          pushUndo({ operations: result.inverse, label: executeOptions.label, merge, time })
+          pushUndo({ position: ++positions, operations: result.inverse, label: executeOptions.label, merge, time })
         }
         sealed = false
         redoStack = []
@@ -200,7 +224,7 @@ export function createHistory<D, O>(options: HistoryOptions<D, O>): History<D, O
       const result = run(entry.operations)
       undoStack.pop()
       document = result.document
-      redoStack.push({ operations: result.inverse, label: entry.label, merge: undefined, time: now() })
+      redoStack.push({ position: entry.position, operations: result.inverse, label: entry.label, merge: undefined, time: now() })
       sealed = true
       emit('undo', entry.operations)
       return true
@@ -214,7 +238,7 @@ export function createHistory<D, O>(options: HistoryOptions<D, O>): History<D, O
       const result = run(entry.operations)
       redoStack.pop()
       document = result.document
-      pushUndo({ operations: result.inverse, label: entry.label, merge: undefined, time: now() })
+      pushUndo({ position: entry.position, operations: result.inverse, label: entry.label, merge: undefined, time: now() })
       sealed = true
       emit('redo', entry.operations)
       return true
@@ -236,7 +260,7 @@ export function createHistory<D, O>(options: HistoryOptions<D, O>): History<D, O
       const finished = transaction!
       transaction = undefined
       if (finished.undo.length > 0) {
-        pushUndo({ operations: finished.undo, label: finished.label, merge: undefined, time: now() })
+        pushUndo({ position: ++positions, operations: finished.undo, label: finished.label, merge: undefined, time: now() })
         redoStack = []
       }
       sealed = true
@@ -274,17 +298,27 @@ export function createHistory<D, O>(options: HistoryOptions<D, O>): History<D, O
       sealed = true
     },
 
+    markSaved() {
+      assertIdle('mark saved')
+      saved = position()
+      sealed = true
+      emit('save', [])
+    },
+
     reset(next) {
       assertIdle('reset')
       document = next
       undoStack = []
       redoStack = []
+      floor = ++positions
+      saved = floor
       sealed = true
       emit('reset', [])
     },
 
     clear() {
       assertIdle('clear')
+      floor = position()
       undoStack = []
       redoStack = []
       sealed = true

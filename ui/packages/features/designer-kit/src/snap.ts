@@ -5,8 +5,10 @@
 
 // 对齐吸附与参考线：把移动中的矩形的左 / 中 / 右（上 / 中 / 下）三条线与目标矩形的同类线比对，
 // 在阈值内取最近的一条吸过去，再给出吸附后重合的参考线；没有可吸的目标时可退到网格。
+// 带旋转角的矩形（移动的与目标都是）按旋转后的包围盒比对。
 
 import type { Point, Rect } from './geometry'
+import { rotatedBounds } from './geometry'
 
 /** 参考线：axis 为 x 时是 x = position 的竖线，从 y = from 画到 y = to；为 y 时是横线。 */
 export interface SnapGuide {
@@ -25,7 +27,7 @@ export interface SnapOptions {
   readonly x?: boolean
   /** 是否在纵向吸附，缺省 true。 */
   readonly y?: boolean
-  /** 网格间距：某一向没有吸到目标时，把矩形左上角落到最近的网格线上；缺省不用网格。 */
+  /** 网格间距：某一向没有吸到目标时，把矩形（旋转后的包围盒）左上角落到最近的网格线上；缺省不用网格。 */
   readonly grid?: number
 }
 
@@ -44,8 +46,10 @@ function lines(start: number, length: number): readonly number[] {
 }
 
 /** 求移动中的矩形该吸附的位移与参考线。 */
-export function snapRect(rect: Rect, options: SnapOptions): SnapResult {
-  const { targets, threshold, grid } = options
+export function snapRect(moving: Rect, options: SnapOptions): SnapResult {
+  const { threshold, grid } = options
+  const rect = rotatedBounds(moving)
+  const targets = options.targets.map(rotatedBounds)
   if (!(threshold >= 0) || !Number.isFinite(threshold))
     throw new RangeError(`[designer-kit] snap threshold must be a non-negative finite number, got ${threshold}`)
   if (grid !== undefined && !(grid > 0 && Number.isFinite(grid)))
