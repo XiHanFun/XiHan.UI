@@ -61,6 +61,44 @@ export interface WatermarkProps {
   fullscreen?: boolean
 }
 
+/**
+ * planWatermark 的输入：图样的文字、图片、颜色与几何，长度单位为像素。
+ * 字号、间距、透明度与图片尺寸超出范围时收到边界，非有限数退回缺省。
+ */
+export interface WatermarkPatternOptions {
+  /** 水印文字；提供数组即多行，字符串中的换行同样断行，空白行去除。 */
+  text?: string | string[]
+  /** 倾斜角度，单位度，正值顺时针，默认 -22。 */
+  rotate?: number
+  /** 相邻两块图样的水平空白，默认 24。 */
+  gapX?: number
+  /** 相邻两块图样的垂直空白，默认 24。 */
+  gapY?: number
+  /** 字号，默认 14。 */
+  fontSize?: number
+  /** 透明度，0 到 1，默认 0.15。 */
+  opacity?: number
+  /** 字体，默认 `sans-serif`。 */
+  fontFamily?: string
+  /** 填色，默认纯黑：组件把图样当遮罩用，颜色由皮肤提供。直接当背景图用时传入印记颜色。 */
+  color?: string
+  /** 印在文字上方的内联图片（`data:image/` 开头）；地址形式的图片须先取回转成内联图片。 */
+  image?: string
+  /** 图片尺寸，默认 64 × 64。 */
+  imageSize?: WatermarkImageSize
+}
+
+/** planWatermark 算出的图样。 */
+export interface WatermarkPattern {
+  /** 归一化后的文字行。 */
+  readonly lines: readonly string[]
+  /** 图样尺寸，即平铺步距；没有可印的内容时宽高都是 0。 */
+  readonly tile: WatermarkTile
+  /** 图样的 SVG data URI；没有可印的内容时为空串。 */
+  readonly image: string
+  readonly state: WatermarkState
+}
+
 export interface WatermarkSchema extends MachineSchema {
   props: WatermarkProps
   context: {

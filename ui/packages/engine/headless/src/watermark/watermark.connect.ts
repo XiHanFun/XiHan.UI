@@ -6,7 +6,7 @@
 // 提供 watermark 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { WatermarkApi, WatermarkProps, WatermarkSchema, WatermarkState, WatermarkTile } from './watermark.types'
+import type { WatermarkApi, WatermarkPattern, WatermarkPatternOptions, WatermarkProps, WatermarkSchema, WatermarkState, WatermarkTile } from './watermark.types'
 import { dataAttr, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { toSafeImageSource } from '@xihan-ui/core/url'
 import { watermarkAnatomy } from './watermark.anatomy'
@@ -30,6 +30,9 @@ const LINE_HEIGHT_RATIO = 1.4
 
 /** 基线相对行中线的下移量，按字号折算。 */
 const BASELINE_SHIFT = 0.35
+
+/** 没指定颜色时的填色：纯黑，组件把图样当遮罩用。 */
+const DEFAULT_COLOR = '#000'
 
 /** 没指定字体时用的通用无衬线字体。 */
 const DEFAULT_FONT_FAMILY = 'sans-serif'
@@ -127,35 +130,25 @@ export function toWatermarkImageAddress(value: string | undefined): string | und
   return src !== undefined && !isInlineImage(src) ? src : undefined
 }
 
-/** 一份 props 算出的图样与根节点上归本组件管的那几样：属性与两支内联变量。 */
-export interface WatermarkPlan {
-  lines: string[]
-  tile: WatermarkTile
-  image: string
-  state: WatermarkState
-  fullscreen: boolean
-  /** 根节点上的状态属性：值为 undefined 即不该在场。 */
-  attrs: Record<'data-state' | 'data-fullscreen', string | undefined>
-  /** 根节点上的内联变量；没有图样时为空。 */
-  vars: Record<string, string>
-}
-
 /**
- * 按 props 算出图样：一张 SVG 拼成的 data URI。用 SVG 而不是 canvas：canvas 要一个能绘图的运行时才产得出位图，
- * 服务端渲染与判据都拿不到，而 SVG 是一段可以直接比对的文本，同一份 props 每次算出逐字相同的一张图。
- * 地址形式的图片由机器取回转成内联图片后经 imageData 交进来，取回之前这张图不进图样。
+ * 算出一块平铺图样：一张 SVG 拼成的 data URI 与它的尺寸，不依赖状态机与 DOM，长度单位为像素。
+ * 用 SVG 而不是 canvas：canvas 要一个能绘图的运行时才产得出位图，服务端渲染与判据都拿不到，
+ * 而 SVG 是一段可以直接比对的文本，同一份输入每次算出逐字相同的一张图。
+ * 组件把它当遮罩、颜色走皮肤；当背景图直接用时传入 color。
+ *
+ * @example
+ * planWatermark({ text: '机密', color: '#999999', opacity: 0.2, gapX: 80, gapY: 60 })
  */
-export function planWatermark(props: WatermarkProps, imageData: string | null = null): WatermarkPlan {
-  const lines = toLines(props.text)
-  const fontSize = clamp(props.fontSize, MIN_FONT_SIZE, MAX_FONT_SIZE, DEFAULT_FONT_SIZE)
-  const gap = clamp(props.gap, 0, MAX_GAP, DEFAULT_GAP)
-  const opacity = clamp(props.opacity, 0, 1, DEFAULT_OPACITY)
-  const fontFamily = toFontFamily(props.fontFamily)
-  const fullscreen = !!props.fullscreen
-  const address = toWatermarkImageAddress(props.image)
-  const imageSource = toInlineImage(props.image) ?? (address === undefined ? undefined : (imageData ?? undefined))
+export function planWatermark(options: WatermarkPatternOptions): WatermarkPattern {
+  const lines = toLines(options.text)
+  const fontSize = clamp(options.fontSize, MIN_FONT_SIZE, MAX_FONT_SIZE, DEFAULT_FONT_SIZE)
+  const gapX = clamp(options.gapX, 0, MAX_GAP, DEFAULT_GAP)
+  const gapY = clamp(options.gapY, 0, MAX_GAP, DEFAULT_GAP)
+  const opacity = clamp(options.opacity, 0, 1, DEFAULT_OPACITY)
+  const fontFamily = toFontFamily(options.fontFamily)
+  const imageSource = toInlineImage(options.image)
   // 收进一圈之内：转 400 度与转 40 度画出来是同一张图，而超大的角度值会写成科学计数法，SVG 认不了
-  const rotate = round(finite(props.rotate, DEFAULT_ROTATE) % 360)
+  const rotate = round(finite(options.rotate, DEFAULT_ROTATE) % 360)
 
   const state: WatermarkState = lines.length > 0 || imageSource !== undefined ? 'ready' : 'empty'
 
@@ -164,8 +157,8 @@ export function planWatermark(props: WatermarkProps, imageData: string | null = 
   const lineHeight = fontSize * LINE_HEIGHT_RATIO
   const textWidth = lines.reduce((max, line) => Math.max(max, advance(line)), 0) * fontSize
   const textHeight = lines.length * lineHeight
-  const imageWidth = imageSource === undefined ? 0 : clamp(props.imageSize?.width, 1, MAX_IMAGE_SIZE, DEFAULT_IMAGE_SIZE)
-  const imageHeight = imageSource === undefined ? 0 : clamp(props.imageSize?.height, 1, MAX_IMAGE_SIZE, DEFAULT_IMAGE_SIZE)
+  const imageWidth = imageSource === undefined ? 0 : clamp(options.imageSize?.width, 1, MAX_IMAGE_SIZE, DEFAULT_IMAGE_SIZE)
+  const imageHeight = imageSource === undefined ? 0 : clamp(options.imageSize?.height, 1, MAX_IMAGE_SIZE, DEFAULT_IMAGE_SIZE)
   // 图与字同时在场才留中间那道空白
   const imageGap = imageSource !== undefined && lines.length > 0 ? round(fontSize * IMAGE_TEXT_GAP_RATIO) : 0
   // 图摞在字上面：整块的宽取两者较宽的那个，高是两者相加再加中间的空白
@@ -176,8 +169,8 @@ export function planWatermark(props: WatermarkProps, imageData: string | null = 
   const sin = Math.abs(Math.sin(radians))
   const tile: WatermarkTile = state === 'ready'
     ? {
-        width: Math.ceil(blockWidth * cos + blockHeight * sin + gap),
-        height: Math.ceil(blockWidth * sin + blockHeight * cos + gap),
+        width: Math.ceil(blockWidth * cos + blockHeight * sin + gapX),
+        height: Math.ceil(blockWidth * sin + blockHeight * cos + gapY),
       }
     : { width: 0, height: 0 }
 
@@ -193,20 +186,51 @@ export function planWatermark(props: WatermarkProps, imageData: string | null = 
         imageHeight,
         imageGap,
         blockHeight,
+        color: options.color ?? DEFAULT_COLOR,
       })
     : ''
 
-  const vars: Record<string, string> = state === 'ready'
-    ? { '--xh-watermark-image': `url("${image}")`, '--xh-watermark-tile': `${tile.width}px ${tile.height}px` }
-    : {}
+  return { lines, tile, image, state }
+}
 
+/** 一份 props 算出的图样与根节点上归本组件管的那几样：属性与两支内联变量。 */
+export interface WatermarkPlan extends WatermarkPattern {
+  fullscreen: boolean
+  /** 根节点上的状态属性：值为 undefined 即不该在场。 */
+  attrs: Record<'data-state' | 'data-fullscreen', string | undefined>
+  /** 根节点上的内联变量；没有图样时为空。 */
+  vars: Record<string, string>
+}
+
+/**
+ * 按组件 props 算出图样与根节点状态：间距两轴都取 gap，图样当遮罩用。
+ * 地址形式的图片由机器取回转成内联图片后经 imageData 交进来，取回之前这张图不进图样。
+ */
+export function planWatermarkRoot(props: WatermarkProps, imageData: string | null = null): WatermarkPlan {
+  const fullscreen = !!props.fullscreen
+  const address = toWatermarkImageAddress(props.image)
+  const image = toInlineImage(props.image) ?? (address === undefined ? undefined : (imageData ?? undefined))
+  const options: WatermarkPatternOptions = {
+    text: props.text,
+    rotate: props.rotate,
+    gapX: props.gap,
+    gapY: props.gap,
+    fontSize: props.fontSize,
+    opacity: props.opacity,
+    fontFamily: props.fontFamily,
+  }
+  if (image !== undefined)
+    options.image = image
+  if (props.imageSize !== undefined)
+    options.imageSize = props.imageSize
+  const pattern = planWatermark(options)
+  const vars: Record<string, string> = pattern.state === 'ready'
+    ? { '--xh-watermark-image': `url("${pattern.image}")`, '--xh-watermark-tile': `${pattern.tile.width}px ${pattern.tile.height}px` }
+    : {}
   return {
-    lines,
-    tile,
-    image,
-    state,
+    ...pattern,
     fullscreen,
-    attrs: { 'data-state': state, 'data-fullscreen': dataAttr(fullscreen) },
+    attrs: { 'data-state': pattern.state, 'data-fullscreen': dataAttr(fullscreen) },
     vars,
   }
 }
@@ -244,7 +268,7 @@ export function connectWatermark<T extends PropTypes>(
     fullscreen: prop('fullscreen'),
   }
   warnUnusableImage(props.image)
-  const plan = planWatermark(props, context.get('imageData') ?? null)
+  const plan = planWatermarkRoot(props, context.get('imageData') ?? null)
 
   // 图样与步距走根上的内联 CSS 变量：自定义属性是唯一能同时落到三个适配器上的通道。
   // 逐条给出而不是一整串：Web Components 照条写、照条撤，作者写在 root 上的内联样式不被整串盖掉；
@@ -279,6 +303,7 @@ interface ImageGeometry {
   imageGap: number
   /** 图与字合起来那一整块的高，用来把整块摆到图样正中。 */
   blockHeight: number
+  color: string
 }
 
 /**
@@ -305,8 +330,8 @@ function buildImage(lines: readonly string[], tile: WatermarkTile, geom: ImageGe
       + `preserveAspectRatio="xMidYMid meet"/>`
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${tile.width}" height="${tile.height}" `
     + `viewBox="0 0 ${tile.width} ${tile.height}">`
-    // 整块绕图样中心转；填的是纯黑，颜色由皮肤那层底色决定，这里只提供透明度
-    + `<g transform="rotate(${geom.rotate} ${cx} ${cy})" fill="#000" fill-opacity="${geom.opacity}" `
+    // 整块绕图样中心转；缺省填纯黑，当遮罩用时颜色由皮肤那层底色决定，这里只提供透明度
+    + `<g transform="rotate(${geom.rotate} ${cx} ${cy})" fill="${escapeXml(geom.color)}" fill-opacity="${geom.opacity}" `
     + `font-family="${escapeXml(geom.fontFamily)}" font-size="${geom.fontSize}" text-anchor="middle">${
       picture
     }${
