@@ -35,6 +35,8 @@ export function formValidateMessages(
   return out
 }
 
+const BLANK_RE = /^\s*$/
+
 /** 这组规则里有没有 required：字段的必填标记（aria-required 与星号）从这里推。 */
 export function hasRequiredRule(rules: FormRule | FormRule[] | undefined): boolean {
   if (!rules)
@@ -42,11 +44,17 @@ export function hasRequiredRule(rules: FormRule | FormRule[] | undefined): boole
   return (Array.isArray(rules) ? rules : [rules]).some(rule => !!rule.required)
 }
 
-/** 空值判定：required 拦的就是这些。 */
+/**
+ * 空值判定：required 拦的就是这些。
+ * undefined、null、只含空白的字符串（空白按 Unicode 判定，含不换行空格与全角空格）、
+ * 空数组，以及元素逐个按同一规则判定全为空的数组；false 与 0 不算空。
+ */
 export function isEmptyFormValue(value: unknown): boolean {
-  if (value === undefined || value === null || value === '')
+  if (value === undefined || value === null)
     return true
-  return Array.isArray(value) && value.length === 0
+  if (typeof value === 'string')
+    return BLANK_RE.test(value)
+  return Array.isArray(value) && value.every(isEmptyFormValue)
 }
 
 function interpolate(template: string, slots: Record<string, string | number | undefined>): string {
