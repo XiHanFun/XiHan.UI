@@ -151,7 +151,8 @@ export class ExprRecord {
   }
 }
 
-function isPlainObject(value: object): boolean {
+/** 原型是 `Object.prototype` 或 `null` 的对象；数组与类实例都不是。 */
+export function isPlainObject(value: object): boolean {
   const prototype: unknown = Object.getPrototypeOf(value)
   return prototype === Object.prototype || prototype === null
 }

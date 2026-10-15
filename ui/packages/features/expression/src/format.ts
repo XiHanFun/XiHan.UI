@@ -70,14 +70,25 @@ export interface FormatOptions {
   readonly timeZone?: string
 }
 
-const ROUNDINGS: ReadonlySet<string> = new Set(['half-up', 'half-even', 'floor', 'ceil', 'down'])
-const DECIMALS_LIMIT = 34
+/** 全部格式种类。 */
+export const FORMAT_KINDS: readonly FormatSpec['kind'][] = /* @__PURE__ */ Object.freeze(['number', 'percent', 'date', 'rmb-upper', 'numeral'] as const)
+
+/** 全部舍入方式，第一个是缺省。 */
+export const FORMAT_ROUNDINGS: readonly FormatRounding[] = /* @__PURE__ */ Object.freeze(['half-up', 'half-even', 'floor', 'ceil', 'down'] as const)
+
+/** 小数位数（`decimals`、`minDecimals`、`maxDecimals`）的上限，下限是 0。 */
+export const FORMAT_DECIMALS_LIMIT = 34
+
+/** 全部数字字形样式。 */
+export const NUMERAL_STYLES: readonly NumeralStyle[] = /* @__PURE__ */ Object.freeze(['roman-upper', 'roman-lower', 'cn-lower', 'cn-upper'] as const)
+
+const ROUNDINGS: ReadonlySet<string> = /* @__PURE__ */ new Set(FORMAT_ROUNDINGS)
 const UPPER_DIGITS = '零壹贰叁肆伍陆柒捌玖'
 const UPPER_UNITS = ['', '拾', '佰', '仟']
 const LOWER_DIGITS = '零一二三四五六七八九'
 const LOWER_UNITS = ['', '十', '百', '千']
 const UPPER_SECTIONS = ['', '万', '亿', '万亿']
-const NUMERAL_STYLES: ReadonlySet<string> = new Set(['roman-upper', 'roman-lower', 'cn-lower', 'cn-upper'])
+const NUMERALS: ReadonlySet<string> = /* @__PURE__ */ new Set(NUMERAL_STYLES)
 const ROMAN: readonly (readonly [number, string])[] = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']]
 const ROMAN_LIMIT = 3999
 const UPPER_LIMIT = /* @__PURE__ */ ExprNumber.parse('1e16')!
@@ -96,7 +107,7 @@ function invalidValue(): never {
 function decimalsOption(value: unknown): number | undefined {
   if (value === undefined)
     return undefined
-  return Number.isSafeInteger(value) && (value as number) >= 0 && (value as number) <= DECIMALS_LIMIT ? value as number : invalidSpec()
+  return Number.isSafeInteger(value) && (value as number) >= 0 && (value as number) <= FORMAT_DECIMALS_LIMIT ? value as number : invalidSpec()
 }
 
 function roundingOption(value: unknown): RoundingMode {
@@ -243,7 +254,7 @@ function chineseNumeral(value: ExprNumber, upper: boolean): string {
 }
 
 function numeral(value: ExprNumber, spec: NumeralFormatSpec): string {
-  if (typeof spec.style !== 'string' || !NUMERAL_STYLES.has(spec.style))
+  if (typeof spec.style !== 'string' || !NUMERALS.has(spec.style))
     invalidSpec()
   switch (spec.style) {
     case 'roman-upper':
