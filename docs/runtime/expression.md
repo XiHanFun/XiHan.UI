@@ -8,10 +8,12 @@ import { compile, evaluate, toPlain } from "@xihan-ui/expression";
 const compiled = compile("ROUND(SUM(items.price) * (1 - discount), 2)", {
   identifiers: ["items", "discount"],
 });
-if (!compiled.ok) throw new Error(compiled.issues[0].code);
+if (!compiled.ok)
+  throw new Error(compiled.issues[0].code);
 
 const result = evaluate(compiled.ast, { items: [{ price: 19.9 }, { price: 0.1 }], discount: 0.15 });
-if (result.ok) toPlain(result.value); // 17
+if (result.ok)
+  toPlain(result.value); // 17
 ```
 
 ## 设计约束
@@ -51,10 +53,14 @@ pnpm add @xihan-ui/expression
 
 ```ts
 interface ExpressionEngine {
-  compile(source: string, options?: { identifiers?: Iterable<string> | ((name: string) => boolean) }):
-    | { ok: true, references: readonly string[], evaluate(scope: Readonly<Record<string, unknown>>): { ok: true, value: unknown } | { ok: false, issue: ExpressionIssue } }
-    | { ok: false, issues: readonly ExpressionIssue[] }
+  compile: (source: string, options?: { identifiers?: Iterable<string> | ((name: string) => boolean) }) => EngineCompileResult;
 }
+
+type EngineCompileResult
+  = | { ok: true; references: readonly string[]; evaluate: (scope: Readonly<Record<string, unknown>>) => EngineEvaluation }
+    | { ok: false; issues: readonly ExpressionIssue[] };
+
+type EngineEvaluation = { ok: true; value: unknown } | { ok: false; issue: ExpressionIssue };
 ```
 
 `createExpressionEngine(options?)` 直接给出这个形状，宿主不必再写转接代码：
@@ -63,15 +69,15 @@ interface ExpressionEngine {
 import { createExpressionEngine, ExprDate } from "@xihan-ui/expression";
 
 const engine = createExpressionEngine({
-  builtins: "all",          // 或 "none"，或 ["SUM", "ROUND"] 这样的名单
-  functions: [],            // 宿主函数，见「宿主函数」一节
+  builtins: "all", // 或 "none"，或 ["SUM", "ROUND"] 这样的名单
+  functions: [], // 宿主函数，见「宿主函数」一节
   now: () => ExprDate.fromParts(2026, 10, 16), // 固定日期，或每次求值时调用的函数
   limits: { maxSteps: 50000 },
 });
 
 const compiled = engine.compile("price * qty", { identifiers: ["price", "qty"] });
 if (compiled.ok) {
-  compiled.references;                    // ["price", "qty"]
+  compiled.references; // ["price", "qty"]
   compiled.evaluate({ price: 1.5, qty: 2 }); // { ok: true, value: 3 }
 }
 ```
@@ -85,9 +91,9 @@ if (compiled.ok) {
 ```ts
 import { conditionOf, evaluateSource } from "@xihan-ui/expression";
 
-const cache = new Map();                       // 一轮批量求值建一个，同一源码只编译一次
+const cache = new Map(); // 一轮批量求值建一个，同一源码只编译一次
 const outcome = evaluateSource(engine, "qty > 0", { qty: 3 }, cache);
-conditionOf(outcome);                          // true
+conditionOf(outcome); // true
 ```
 
 - `evaluateSource(engine, source, scope, cache?)`：编译后求值；编译失败时以第一条问题作为求值失败返回，形状与 `evaluate` 的结果相同。不传 `cache` 时每次都编译。
@@ -307,8 +313,10 @@ const functions = createFunctionTable({
       minArgs: 1,
       maxArgs: 1,
       call: ([phone], context) => {
-        if (phone === null) return null;
-        if (typeof phone !== "string") return context.typeMismatch(0);
+        if (phone === null)
+          return null;
+        if (typeof phone !== "string")
+          return context.typeMismatch(0);
         return phone.length === 11 ? `${phone.slice(0, 3)}****${phone.slice(7)}` : phone;
       },
     },
