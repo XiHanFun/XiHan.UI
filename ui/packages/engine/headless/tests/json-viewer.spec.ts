@@ -13,15 +13,15 @@ import {
   flattenJson,
   formatJsonSource,
   groupJsonViewerNodesByParent,
+  JSON_VIEWER_TOOLS,
   jsonChildPath,
   jsonExpandedPathsToDepth,
   jsonSearch,
   jsonValueText,
   jsonValueType,
   jsonViewerMachine,
-  JSON_VIEWER_ROOT_PATH as ROOT,
-  JSON_VIEWER_TOOLS,
   resolveJsonViewerTools,
+  JSON_VIEWER_ROOT_PATH as ROOT,
   tokenizeJsonText,
 } from '../src/json-viewer'
 
