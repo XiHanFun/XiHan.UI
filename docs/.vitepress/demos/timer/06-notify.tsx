@@ -9,6 +9,9 @@ import {
 } from "@xihan-ui/react";
 import { useState } from "react";
 
+// 起停钮不写内容，组件照当前动作填 translations 里的那句，字与读屏名同一句
+const translations = { start: "开始", pause: "暂停", resume: "继续", reset: "重置" };
+
 export default function Demo(): ReactNode {
   const [ticks, setTicks] = useState(0);
   const [done, setDone] = useState(false);
@@ -24,6 +27,7 @@ export default function Demo(): ReactNode {
       <XhTimerRoot
         countdown
         startMs={5000}
+        translations={translations}
         onTick={() => setTicks(n => n + 1)}
         onComplete={() => setDone(true)}
       >
@@ -32,7 +36,7 @@ export default function Demo(): ReactNode {
           <XhTimerSeparator>:</XhTimerSeparator>
           <XhTimerItem unit="seconds" />
         </XhTimerDisplay>
-        <XhTimerControl onClick={restart}>起停</XhTimerControl>
+        <XhTimerControl onClick={restart} />
       </XhTimerRoot>
 
       <p>{`已经跳了 ${ticks} 拍${done ? "，到点了" : ""}`}</p>
