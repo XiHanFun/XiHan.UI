@@ -1,0 +1,287 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// @xihan-ui/designer-kit/properties —— 属性面板的描述模型：按 JSON 路径寻址的属性描述、内建编辑方式与取值检查、
+// 显示条件、分组、缺省值，以及自定义编辑器接口与编辑器查找。
+
+import type { JsonObject, JsonPath, JsonPrimitive, JsonValue } from '@xihan-ui/core/json'
+import type { SchemaIssue, SchemaIssueTarget } from './schema'
+import { formatJsonPath, getJsonAt, isPlainObject, jsonEquals, setJsonAt } from '@xihan-ui/core/json'
+
+/** 选择类编辑方式的一项。 */
+export interface PropertyOption {
+  readonly value: JsonPrimitive
+  readonly label?: string
+}
+
+/**
+ * 内建编辑方式与取值约束：
+ * - text：字符串；multiline 为多行。
+ * - number：有限数字；integer 只收整数，min / max 含端点，exclusiveMin 不含，step 与 unit 只给编辑器用。
+ * - boolean：布尔。
+ * - select：options 里某一项的 value；multiple 为这些 value 组成的数组。
+ * - tags：字符串数组。
+ * - color：transparent，或 # 开头的 3、4、6、8 位十六进制色。
+ * - json：任意 JSON 值。
+ */
+export type PropertyControl
+  = | { readonly kind: 'text', readonly multiline?: boolean, readonly placeholder?: string }
+    | {
+      readonly kind: 'number'
+      readonly integer?: boolean
+      readonly min?: number
+      readonly max?: number
+      readonly exclusiveMin?: number
+      readonly step?: number
+      readonly unit?: string
+    }
+    | { readonly kind: 'boolean' }
+    | { readonly kind: 'select', readonly options: readonly PropertyOption[], readonly multiple?: boolean }
+    | { readonly kind: 'tags' }
+    | { readonly kind: 'color' }
+    | { readonly kind: 'json' }
+
+/** 内建编辑方式的种类。 */
+export type PropertyControlKind = PropertyControl['kind']
+
+/** 显示条件：path 与属性描述的 path 一样相对被编辑的对象，可用 all / any / not 组合。 */
+export type PropertyCondition
+  = | { readonly path: JsonPath, readonly equals: JsonValue }
+    | { readonly path: JsonPath, readonly oneOf: readonly JsonValue[] }
+    | { readonly path: JsonPath, readonly filled: boolean }
+    | { readonly all: readonly PropertyCondition[] }
+    | { readonly any: readonly PropertyCondition[] }
+    | { readonly not: PropertyCondition }
+
+/**
+ * 一个可编辑属性。C 是编辑方式，产品可在内建之外扩展自己的种类：
+ * `PropertyDescriptor<PropertyControl | { kind: 'stroke' }>`。
+ */
+export interface PropertyDescriptor<C extends { readonly kind: string } = PropertyControl> {
+  /** 值相对被编辑对象（节点、元素、字段本身）的路径。 */
+  readonly path: JsonPath
+  readonly control: C
+  /** 分组 id；分组的先后与文案由产品决定。 */
+  readonly group?: string
+  /** 标签；不给时由产品按 formatJsonPath(path) 去语言包里查。 */
+  readonly label?: string
+  /** 显示时必须填写，按 isFilled 判空。 */
+  readonly required?: boolean
+  /** 新建时写入的缺省值；不给就不写。 */
+  readonly default?: JsonValue
+  /** 显示条件；缺省总是显示。 */
+  readonly visibleWhen?: PropertyCondition
+  /** 产品自用，内核不解释。 */
+  readonly meta?: JsonObject
+}
+
+/** 一组属性。 */
+export interface PropertyGroup<D> {
+  readonly group: string | undefined
+  readonly properties: readonly D[]
+}
+
+/** 内建编辑方式的取值问题。 */
+export type PropertyValueIssueCode = 'invalid-type' | 'out-of-range' | 'not-integer' | 'invalid-option' | 'invalid-color'
+
+/** 判断值是否已填写：undefined、null、空串、空数组与空对象视为未填写。 */
+export function isFilled(value: JsonValue | undefined): boolean {
+  if (value === undefined || value === null || value === '')
+    return false
+  if (Array.isArray(value))
+    return value.length > 0
+  if (isPlainObject(value))
+    return Object.keys(value).length > 0
+  return true
+}
+
+/** 按被编辑的对象求值显示条件；equals 与 oneOf 按 JSON 值比较。 */
+export function evaluateCondition(condition: PropertyCondition, target: JsonValue | undefined): boolean {
+  if ('all' in condition)
+    return condition.all.every(item => evaluateCondition(item, target))
+  if ('any' in condition)
+    return condition.any.some(item => evaluateCondition(item, target))
+  if ('not' in condition)
+    return !evaluateCondition(condition.not, target)
+  const value = getJsonAt(target, condition.path)
+  if ('equals' in condition)
+    return jsonEquals(value, condition.equals)
+  if ('oneOf' in condition)
+    return condition.oneOf.some(candidate => jsonEquals(value, candidate))
+  return isFilled(value) === condition.filled
+}
+
+/** 判断属性在当前对象上是否显示。 */
+export function isPropertyVisible(descriptor: PropertyDescriptor<{ readonly kind: string }>, target: JsonValue | undefined): boolean {
+  return descriptor.visibleWhen === undefined || evaluateCondition(descriptor.visibleWhen, target)
+}
+
+/**
+ * 把当前显示的属性按分组排列：order 中列出的分组在前并按其顺序，其余分组按首次出现顺序，
+ * 无分组的属性排最后；组内保持描述顺序，空组不出现。
+ */
+export function groupProperties<D extends PropertyDescriptor<{ readonly kind: string }>>(
+  descriptors: readonly D[],
+  target: JsonValue | undefined,
+  order: readonly string[] = [],
+): PropertyGroup<D>[] {
+  const buckets = new Map<string | undefined, D[]>()
+  for (const descriptor of descriptors) {
+    if (!isPropertyVisible(descriptor, target))
+      continue
+    const bucket = buckets.get(descriptor.group)
+    if (bucket)
+      bucket.push(descriptor)
+    else
+      buckets.set(descriptor.group, [descriptor])
+  }
+  const named = [...buckets.keys()].filter((group): group is string => group !== undefined)
+  const ordered = [...order.filter(group => buckets.has(group)), ...named.filter(group => !order.includes(group))]
+  const result: PropertyGroup<D>[] = ordered.map(group => ({ group, properties: buckets.get(group)! }))
+  const ungrouped = buckets.get(undefined)
+  if (ungrouped)
+    result.push({ group: undefined, properties: ungrouped })
+  return result
+}
+
+const HEX_COLOR = /^#(?:[\da-f]{3,4}|[\da-f]{6}|[\da-f]{8})$/i
+
+/** 检查值是否符合内建编辑方式的约束；符合时为 undefined，否则给出问题码。 */
+export function checkPropertyValue(control: PropertyControl, value: JsonValue): PropertyValueIssueCode | undefined {
+  switch (control.kind) {
+    case 'text':
+      return typeof value === 'string' ? undefined : 'invalid-type'
+    case 'number':
+      if (typeof value !== 'number' || !Number.isFinite(value))
+        return 'invalid-type'
+      if (control.integer && !Number.isInteger(value))
+        return 'not-integer'
+      if ((control.min !== undefined && value < control.min)
+        || (control.max !== undefined && value > control.max)
+        || (control.exclusiveMin !== undefined && value <= control.exclusiveMin)) {
+        return 'out-of-range'
+      }
+      return undefined
+    case 'boolean':
+      return typeof value === 'boolean' ? undefined : 'invalid-type'
+    case 'select': {
+      const allowed = (item: JsonValue): boolean => control.options.some(option => option.value === item)
+      if (control.multiple) {
+        if (!Array.isArray(value))
+          return 'invalid-type'
+        return value.every(allowed) ? undefined : 'invalid-option'
+      }
+      return allowed(value) ? undefined : 'invalid-option'
+    }
+    case 'tags':
+      return Array.isArray(value) && value.every(item => typeof item === 'string') ? undefined : 'invalid-type'
+    case 'color':
+      if (typeof value !== 'string')
+        return 'invalid-type'
+      return value === 'transparent' || HEX_COLOR.test(value) ? undefined : 'invalid-color'
+    case 'json':
+      return undefined
+  }
+}
+
+const BUILTIN_KINDS: readonly string[] = ['text', 'number', 'boolean', 'select', 'tags', 'color', 'json']
+
+/** checkProperties 的选项。 */
+export interface CheckPropertiesOptions<C extends { readonly kind: string }> {
+  /** 被编辑对象在文档里的路径，问题路径以它为前缀；缺省为空路径。 */
+  readonly path?: JsonPath
+  /** 问题落在的对象，原样写进每条问题。 */
+  readonly target?: SchemaIssueTarget
+  /** 检查产品自己的编辑方式；返回问题码，没问题时为 undefined。不给时不检查这些属性的取值。 */
+  readonly checkCustom?: (descriptor: PropertyDescriptor<C>, value: JsonValue) => string | undefined
+}
+
+/**
+ * 按描述检查被编辑的对象，只看当前显示的属性：必填却未填报 required，
+ * 已填的值不符合内建编辑方式报对应问题码，产品的编辑方式交给 checkCustom。
+ */
+export function checkProperties<C extends { readonly kind: string } = PropertyControl>(
+  descriptors: readonly PropertyDescriptor<C>[],
+  target: JsonValue | undefined,
+  options: CheckPropertiesOptions<C> = {},
+): SchemaIssue[] {
+  const base = options.path ?? []
+  const issues: SchemaIssue[] = []
+  const push = (code: string, descriptor: PropertyDescriptor<C>): void => {
+    issues.push({ code, path: [...base, ...descriptor.path], ...(options.target ? { target: options.target } : {}) })
+  }
+  for (const descriptor of descriptors) {
+    if (!isPropertyVisible(descriptor, target))
+      continue
+    const value = getJsonAt(target, descriptor.path)
+    if (!isFilled(value)) {
+      if (descriptor.required)
+        push('required', descriptor)
+      if (value === undefined)
+        continue
+    }
+    const code = BUILTIN_KINDS.includes(descriptor.control.kind)
+      ? checkPropertyValue(descriptor.control as unknown as PropertyControl, value!)
+      : options.checkCustom?.(descriptor, value!)
+    if (code !== undefined)
+      push(code, descriptor)
+  }
+  return issues
+}
+
+/** 把描述里的缺省值写进对象：路径处没有值的才写，中间缺少的对象键补成空对象；没有可写的返回同一个对象。 */
+export function applyDefaults<T extends JsonValue>(target: T, descriptors: readonly PropertyDescriptor<{ readonly kind: string }>[]): T {
+  let result = target
+  for (const descriptor of descriptors) {
+    if (descriptor.default !== undefined && getJsonAt(result, descriptor.path) === undefined)
+      result = setJsonAt(result, descriptor.path, descriptor.default, { createMissing: true }).root
+  }
+  return result
+}
+
+/** 交给自定义编辑器的上下文；D 是属性描述，T 是被编辑的对象（如节点、元素、字段）。 */
+export interface PropertyEditorContext<D = unknown, T = unknown> {
+  /** 属性的当前值，未设置时为 undefined。 */
+  readonly value: JsonValue | undefined
+  readonly descriptor: D
+  readonly target: T
+  readonly readonly: boolean
+  /** 写入新值，undefined 表示清除；连续输入由设计器并为一步撤销。 */
+  readonly setValue: (value: JsonValue | undefined) => void
+  /** 一次编辑结束（如失焦）：此后的写入另起一步撤销。 */
+  readonly commit: () => void
+}
+
+/** 编辑器实例：设计器把 element 放进属性面板，值或只读状态变化时调用 update，移除前调用 destroy。 */
+export interface PropertyEditorInstance<D = unknown, T = unknown> {
+  readonly element: HTMLElement
+  readonly update?: (context: PropertyEditorContext<D, T>) => void
+  readonly destroy?: () => void
+}
+
+/** 自定义属性编辑器：按上下文创建一个编辑器实例。 */
+export type PropertyEditor<D = unknown, T = unknown> = (context: PropertyEditorContext<D, T>) => PropertyEditorInstance<D, T>
+
+/** 编辑器查找表；E 可以是 PropertyEditor，也可以是编辑器 id。路径键用 formatJsonPath 的写法。 */
+export interface PropertyEditorTable<E> {
+  /** 按编辑方式的种类。 */
+  readonly byControl: Readonly<Record<string, E>>
+  /** 按属性路径，对所有对象种类生效。 */
+  readonly byPath?: Readonly<Record<string, E>>
+  /** 按对象种类与属性路径，只对该种类生效。 */
+  readonly byTarget?: Readonly<Record<string, Readonly<Record<string, E>>>>
+}
+
+/** 查出某种对象的某个属性用哪个编辑器：对象种类 + 路径 → 路径 → 编辑方式；都没有时为 undefined。 */
+export function resolvePropertyEditor<E>(
+  table: PropertyEditorTable<E>,
+  targetKind: string,
+  descriptor: PropertyDescriptor<{ readonly kind: string }>,
+): E | undefined {
+  const key = formatJsonPath(descriptor.path)
+  const own = <V>(record: Readonly<Record<string, V>> | undefined, name: string): V | undefined =>
+    record !== undefined && Object.hasOwn(record, name) ? record[name] : undefined
+  return own(own(table.byTarget, targetKind), key) ?? own(table.byPath, key) ?? own(table.byControl, descriptor.control.kind)
+}
