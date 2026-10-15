@@ -251,7 +251,8 @@
       "."
     ],
     "@xihan-ui/expression": [
-      "."
+      ".",
+      "./template"
     ],
     "@xihan-ui/markdown": [
       "."
@@ -10080,6 +10081,8 @@
       "FORMAT_DECIMALS_LIMIT",
       "FORMAT_KINDS",
       "FORMAT_ROUNDINGS",
+      "FillTextTemplateOptions",
+      "FilledTextTemplate",
       "FormatOptions",
       "FormatRounding",
       "FormatSpec",
@@ -10105,11 +10108,15 @@
       "NumeralStyle",
       "ParseOptions",
       "ParseResult",
+      "ParsedTextTemplate",
       "PercentFormatSpec",
       "PlainValue",
       "PlanEvaluation",
       "PlanOptions",
       "RmbUpperFormatSpec",
+      "TemplateIssue",
+      "TemplateIssueCode",
+      "TemplateSegment",
       "UnaryNode",
       "UnaryOperator",
       "check",
@@ -10123,12 +10130,15 @@
       "evaluate",
       "evaluatePlan",
       "evaluateSource",
+      "fillTextTemplate",
       "formatValue",
       "isExprValue",
       "isPlainName",
       "parse",
+      "parseTextTemplate",
       "planExpressions",
       "print",
+      "splitTemplatePath",
       "toExpressionValue",
       "toPlain",
       "typeOf"
