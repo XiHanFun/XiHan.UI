@@ -30,6 +30,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./template": {
+      "types": "./dist/template.d.ts",
+      "import": "./dist/template.js"
     }
   },
   "main": "./dist/index.js",
