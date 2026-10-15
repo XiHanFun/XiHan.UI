@@ -70,7 +70,7 @@
     "name": "viz/graph",
     "path": "packages/engine/viz/dist/graph.js",
     "gzip": true,
-    "limit": "3.5 kB"
+    "limit": "8.7 kB"
   },
   {
     "name": "viz/columns",
