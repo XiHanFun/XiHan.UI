@@ -1,0 +1,1 @@
+import{Lt as e,Zt as t,at as n,ft as r,lt as i,ut as a,wt as o}from"./framework.eUj94whv.js";import{Sd as s,op as c,v as l}from"./theme.x3bdcchs.js";var u=`XiHan.UI`,d=r({__name:`01-basic`,setup(r){return(r,d)=>(o(),n(t(c),{data:u,"file-name":`xihan-ui.txt`},{default:e(()=>[a(t(s),{icon:t(l)},null,8,[`icon`]),d[0]||=i(` 下载文件 `,-1)]),_:1}))}});export{d as default};

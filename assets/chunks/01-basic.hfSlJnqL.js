@@ -1,0 +1,1 @@
+import{Zt as e,ft as t,st as n,ut as r,wt as i}from"./framework.eUj94whv.js";import{Ys as a}from"./theme.x3bdcchs.js";var o={style:{width:`100%`,display:`grid`,gap:`12px`}},s=t({__name:`01-basic`,setup(t){return(t,s)=>(i(),n(`div`,o,[r(e(a),{value:30}),r(e(a),{value:72}),r(e(a),{value:3,max:4})]))}});export{s as default};

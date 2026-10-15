@@ -1,0 +1,1 @@
+import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{Vo as i}from"./theme.x3bdcchs.js";var a=`ABCDEFGHIJKLMNOPQRSTUVWXYZ`,o=n({__name:`12-many-options`,setup(n){let o=Array.from(a,e=>({value:e,label:`${e} 区`}));return(n,a)=>(r(),t(e(i),{collection:e(o),label:`仓位`,placeholder:`敲 M 试试`},null,8,[`collection`]))}});export{o as default};

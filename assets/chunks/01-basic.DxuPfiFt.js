@@ -1,0 +1,1 @@
+import{f as e}from"./theme.x3bdcchs.js";import{t}from"./jsx-runtime.CoN_kYeJ.js";import{t as n}from"./icon.DyHd-CTt.js";var r=t();function i(){return(0,r.jsx)(n,{icon:e})}export{i as default};

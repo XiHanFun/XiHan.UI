@@ -1,0 +1,1 @@
+import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{Ss as i}from"./theme.x3bdcchs.js";var a=n({__name:`01-basic`,setup(n){let a=[{value:`free`,label:`免费版`},{value:`standard`,label:`标准版`},{value:`pro`,label:`专业版`}];return(n,o)=>(r(),t(e(i),{collection:a,"default-value":`standard`,label:`套餐`,name:`plan`}))}});export{a as default};

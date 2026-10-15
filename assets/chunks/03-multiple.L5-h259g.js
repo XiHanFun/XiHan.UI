@@ -1,0 +1,1 @@
+import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{cr as i}from"./theme.x3bdcchs.js";var a=n({__name:`03-multiple`,setup(n){let a=[{value:`bold`,label:`B`},{value:`italic`,label:`I`},{value:`underline`,label:`U`}];return(n,o)=>(r(),t(e(i),{collection:a,"default-value":[`bold`],multiple:``}))}});export{a as default};

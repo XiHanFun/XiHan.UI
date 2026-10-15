@@ -1,0 +1,1 @@
+import{$ as e,Zt as t,ft as n,st as r,ut as i,wt as a}from"./framework.eUj94whv.js";import{al as o}from"./theme.x3bdcchs.js";var s=n({__name:`01-basic`,setup(n){return(n,s)=>(a(),r(e,null,[i(t(o),{from:0,to:1024,size:`sm`}),i(t(o),{from:0,to:12480,size:`md`}),i(t(o),{from:0,to:98600,size:`lg`,tone:`brand`})],64))}});export{s as default};

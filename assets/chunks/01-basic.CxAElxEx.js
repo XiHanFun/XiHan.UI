@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CoN_kYeJ.js";import{a as t,i as n,n as r,s as i,t as a}from"./text-field.CAPFSmsa.js";var o=e();function s(){return(0,o.jsxs)(i,{name:`email`,type:`email`,placeholder:`输入你的邮箱`,clearable:!0,children:[(0,o.jsx)(t,{children:`邮箱`}),(0,o.jsxs)(r,{children:[(0,o.jsx)(n,{}),(0,o.jsx)(a,{})]})]})}export{s as default};

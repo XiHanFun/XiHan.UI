@@ -1,0 +1,1 @@
+import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{cr as i}from"./theme.x3bdcchs.js";var a=n({__name:`04-disabled`,setup(n){let a=[{value:`left`,label:`左对齐`},{value:`center`,label:`居中`,disabled:!0},{value:`right`,label:`右对齐`}];return(n,o)=>(r(),t(e(i),{collection:a,"default-value":`center`}))}});export{a as default};

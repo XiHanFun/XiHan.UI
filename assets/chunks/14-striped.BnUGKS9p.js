@@ -1,0 +1,1 @@
+import{Zt as e,ft as t,st as n,ut as r,wt as i}from"./framework.eUj94whv.js";import{Ys as a}from"./theme.x3bdcchs.js";var o={style:{width:`100%`,display:`grid`,gap:`12px`}},s=t({__name:`14-striped`,setup(t){return(t,s)=>(i(),n(`div`,o,[r(e(a),{value:45,striped:``,"aria-label":`导出进度`}),r(e(a),{value:100,striped:``,tone:`success`,"aria-label":`已完成的导出`})]))}});export{s as default};

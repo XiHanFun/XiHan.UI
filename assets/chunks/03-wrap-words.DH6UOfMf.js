@@ -1,0 +1,5 @@
+import{Lt as e,Zt as t,at as n,ft as r,it as i,rt as a,ut as o,wt as s}from"./framework.eUj94whv.js";import{cp as c,dD as l,fp as u,lp as d,sp as f,up as p}from"./theme.x3bdcchs.js";import{t as m}from"./dist.YQaPOLSi.js";var h=`const endpoint = "https://api.example.com/v1/workspaces/{id}/documents?include=revisions&limit=50"
+const timeout = 3000
+export const client = createClient({ endpoint, timeout })`,g=`const endpoint = "https://api.example.com/v2/workspaces/{id}/documents?include=revisions,authors&limit=100"
+const timeout = 8000
+export const client = createClient({ endpoint, timeout })`,_=r({__name:`03-wrap-words`,setup(r){let _=a(()=>l(h,g,{lang:`typescript`,highlighter:m()}));return(r,a)=>(s(),n(t(d),{model:_.value,wrap:``},{default:e(()=>[o(t(c),null,{default:e(()=>[a[0]||=i(`span`,null,`src/client.ts`,-1),o(t(p),{change:`added`}),o(t(p),{change:`removed`})]),_:1}),o(t(u),null,{default:e(()=>[o(t(f))]),_:1})]),_:1},8,[`model`]))}});export{_ as default};

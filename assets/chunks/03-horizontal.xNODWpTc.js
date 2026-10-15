@@ -1,0 +1,1 @@
+import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{Ss as i}from"./theme.x3bdcchs.js";var a=n({__name:`03-horizontal`,setup(n){let a=[{value:`sm`,label:`小`},{value:`md`,label:`中`},{value:`lg`,label:`大`}];return(n,o)=>(r(),t(e(i),{collection:a,"default-value":`md`,label:`尺寸`,orientation:`horizontal`}))}});export{a as default};

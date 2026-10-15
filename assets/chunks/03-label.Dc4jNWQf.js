@@ -1,0 +1,1 @@
+import{$ as e,Lt as t,Zt as n,ft as r,st as i,ut as a,wt as o}from"./framework.eUj94whv.js";import{La as s,Ra as c}from"./theme.x3bdcchs.js";var l=r({__name:`03-label`,setup(r){return(r,l)=>(o(),i(e,null,[a(n(s),{label:`正在加载数据`},{default:t(()=>[a(n(c))]),_:1}),a(n(s),{translations:{label:`正在提交表单`}},{default:t(()=>[a(n(c))]),_:1})],64))}});export{l as default};

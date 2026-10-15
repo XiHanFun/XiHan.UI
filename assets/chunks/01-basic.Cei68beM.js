@@ -1,0 +1,1 @@
+import{Lt as e,Zt as t,at as n,ft as r,lt as i,wt as a}from"./framework.eUj94whv.js";import{uv as o}from"./theme.x3bdcchs.js";var s=r({__name:`01-basic`,setup(r){return(r,s)=>(a(),n(t(o),null,{default:e(()=>[...s[0]||=[i(`按钮`,-1)]]),_:1}))}});export{s as default};

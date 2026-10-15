@@ -1,0 +1,1 @@
+import{Lt as e,Zt as t,at as n,ft as r,lt as i,wt as a}from"./framework.eUj94whv.js";import{Gg as o}from"./theme.x3bdcchs.js";var s=r({__name:`06-value-mapping`,setup(r){return(r,s)=>(a(),n(t(o),{invalid:``,required:``},{default:e(()=>[...s[0]||=[i(`我同意服务条款`,-1)]]),_:1}))}});export{s as default};

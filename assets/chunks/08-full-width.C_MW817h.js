@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.BhK2Qncf.js";import{t}from"./button.BL4QwqH6.js";var n=e();function r(){return(0,n.jsx)(t,{fullWidth:!0,children:`继续`})}export{r as default};

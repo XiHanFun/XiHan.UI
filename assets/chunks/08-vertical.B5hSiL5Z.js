@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CoN_kYeJ.js";import{n as t,t as n}from"./spinner.z48FcEDQ.js";var r=e();function i(){return(0,r.jsx)(n,{orientation:`vertical`,label:`正在加载数据`,children:(0,r.jsx)(t,{})})}export{i as default};

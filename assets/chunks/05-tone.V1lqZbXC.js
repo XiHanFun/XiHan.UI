@@ -1,0 +1,1 @@
+import{$ as e,Et as t,Zt as n,ft as r,st as i,ut as a,wt as o}from"./framework.eUj94whv.js";import{Sd as s,X as c}from"./theme.x3bdcchs.js";var l=r({__name:`05-tone`,setup(r){let l=[`brand`,`success`,`warning`,`danger`,`info`];return(r,u)=>(o(),i(e,null,t(l,e=>a(n(s),{key:e,icon:n(c),tone:e,size:`lg`},null,8,[`icon`,`tone`])),64))}});export{l as default};

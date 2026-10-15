@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.CoN_kYeJ.js";import{t}from"./react.CbNV8_UV.js";import{t as n}from"./kbd.BRyCOffh.js";var r=t(),i=e();function a(){let[e,t]=(0,r.useState)(0);return(0,i.jsxs)(i.Fragment,{children:[(0,i.jsx)(n,{keys:[`Mod`,`K`],register:!0,onHotKey:()=>t(e=>e+1)}),(0,i.jsx)(`output`,{"data-demo-output":!0,children:e?`已触发 ${e} 次`:`按下组合键`})]})}export{a as default};

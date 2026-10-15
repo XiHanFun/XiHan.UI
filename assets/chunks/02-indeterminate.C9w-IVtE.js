@@ -1,0 +1,1 @@
+import{Lt as e,Wt as t,Zt as n,at as r,ft as i,lt as a,wt as o}from"./framework.eUj94whv.js";import{Gg as s}from"./theme.x3bdcchs.js";var c=i({__name:`02-indeterminate`,setup(i){let c=t(`indeterminate`);return(t,i)=>(o(),r(n(s),{checked:c.value,"onUpdate:checked":i[0]||=e=>c.value=e},{default:e(()=>[...i[1]||=[a(`选择全部`,-1)]]),_:1},8,[`checked`]))}});export{c as default};

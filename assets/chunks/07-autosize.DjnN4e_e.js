@@ -1,0 +1,4 @@
+import{Lt as e,Zt as t,ft as n,lt as r,st as i,ut as a,wt as o}from"./framework.eUj94whv.js";import{Js as s,Ks as c,qs as l}from"./theme.x3bdcchs.js";var u={style:{display:`grid`,gap:`12px`}},d=`第一行
+第二行
+第三行
+再多敲几行，框会继续往下长`,f=n({__name:`07-autosize`,setup(n){return(n,f)=>(o(),i(`div`,u,[a(t(l),{translations:{input:`给助手写点什么`}},{default:e(()=>[a(t(c),{rows:`1`,placeholder:`按 Shift+Enter 换行试试`}),a(t(s),null,{default:e(()=>[...f[0]||=[r(`发送`,-1)]]),_:1})]),_:1}),a(t(l),{"default-value":d,translations:{input:`已经有草稿的输入框`}},{default:e(()=>[a(t(c),{rows:`1`}),a(t(s),null,{default:e(()=>[...f[1]||=[r(`发送`,-1)]]),_:1})]),_:1})]))}});export{f as default};

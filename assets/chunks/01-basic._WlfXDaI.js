@@ -1,0 +1,1 @@
+import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{Xg as i}from"./theme.x3bdcchs.js";var a=n({__name:`01-basic`,setup(n){let a=[{value:`email`,label:`邮件`},{value:`sms`,label:`短信`},{value:`push`,label:`推送通知`}];return(n,o)=>(r(),t(e(i),{collection:a,"default-value":[`email`],label:`通知方式`,name:`notification`}))}});export{a as default};

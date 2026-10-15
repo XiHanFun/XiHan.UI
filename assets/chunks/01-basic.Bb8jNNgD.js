@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.BhK2Qncf.js";import{i as t}from"./timer.Bq4Rrvmt.js";var n=e();function r(){return(0,n.jsx)(t,{autoStart:!0})}export{r as default};

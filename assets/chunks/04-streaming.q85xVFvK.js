@@ -1,0 +1,4 @@
+import{Lt as e,Wt as t,Zt as n,at as r,bt as i,ft as a,ut as o,wt as s,xt as c}from"./framework.eUj94whv.js";import{Eg as l,Mg as u,jg as d}from"./theme.x3bdcchs.js";var f=`async function load(id: string) {
+  const res = await fetch(\`/api/items/\${id}\`)
+  return res.json()
+}`,p=a({__name:`04-streaming`,setup(a){let p=t(``),m=t(!1),h=0;function g(){if(p.value.length>=f.length){m.value=!0;return}p.value=f.slice(0,p.value.length+2),h=window.setTimeout(g,60)}return c(g),i(()=>window.clearTimeout(h)),(t,i)=>(s(),r(n(u),{code:p.value,complete:m.value,lang:`typescript`,style:{"inline-size":`100%`}},{default:e(()=>[o(n(d),null,{default:e(()=>[o(n(l))]),_:1})]),_:1},8,[`code`,`complete`]))}});export{p as default};

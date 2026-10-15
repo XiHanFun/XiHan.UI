@@ -1,0 +1,1 @@
+import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{Vu as i}from"./theme.x3bdcchs.js";var a=n({__name:`06-circular`,setup(n){let a={id:1},o={name:`root`,left:a,right:a};return o.parent=o,(n,a)=>(r(),t(e(i),{value:o,"default-expanded-depth":2,style:{"inline-size":`100%`,"max-inline-size":`420px`}}))}});export{a as default};

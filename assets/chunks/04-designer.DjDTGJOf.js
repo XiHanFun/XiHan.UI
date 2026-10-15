@@ -1,0 +1,11 @@
+import{t as e}from"./jsx-runtime.CoN_kYeJ.js";import{t}from"./react.CbNV8_UV.js";import{t as n}from"./button.CQuwBOz_.js";import{o as r}from"./radio-group.6zY2WTrR.js";import{a as i,c as a,i as o,o as s,r as c,t as l}from"./slider.DMA9Ju1e.js";import{d as u,i as d,o as f}from"./dist.CyqdMJma.js";var p=t(),m=e(),h=[{value:`sine`,label:`sine`},{value:`triangle`,label:`triangle`},{value:`square`,label:`square`},{value:`sawtooth`,label:`sawtooth`}],g=[{key:`from`,label:`起始`,unit:`Hz`,min:80,max:2400,step:10},{key:`to`,label:`终止`,unit:`Hz`,min:80,max:2400,step:10},{key:`attack`,label:`起音`,unit:`ms`,min:1,max:80,step:1},{key:`decay`,label:`衰减`,unit:`ms`,min:20,max:900,step:10},{key:`peak`,label:`峰值`,unit:``,min:.05,max:.6,step:.05},{key:`space`,label:`空间`,unit:``,min:0,max:.6,step:.05}];function _(){let[e,t]=(0,p.useState)(`triangle`),[_,v]=(0,p.useState)({from:[880],to:[1320],attack:[5],decay:[180],peak:[.3],space:[.15]}),[y]=_.from,[b]=_.to,[x]=_.attack,[S]=_.decay,[C]=_.peak,[w]=_.space,T=Math.max(.01,S/1e3),E={layers:[{kind:`oscillator`,wave:e,frequency:f(y,b,T),gain:u(C,x/1e3,T)}],space:w},D=`sound.play({
+  layers: [
+    {
+      kind: 'oscillator',
+      wave: '${e}',
+      frequency: glide(${y}, ${b}, ${T.toFixed(3)}),
+      gain: strike(${C}, ${(x/1e3).toFixed(3)}, ${T.toFixed(3)}),
+    },
+  ],
+  space: ${w},
+})`,[O]=(0,p.useState)(d);return(0,p.useEffect)(()=>()=>O.dispose(),[O]),(0,m.jsxs)(`div`,{style:{display:`flex`,flexDirection:`column`,gap:`16px`,width:`100%`},children:[(0,m.jsx)(r,{value:e,onValueChange:e=>t(e.value??`triangle`),collection:h,label:`波形`,name:`sound-wave`}),(0,m.jsx)(`div`,{style:{display:`grid`,gridTemplateColumns:`repeat(auto-fit, minmax(190px, 1fr))`,gap:`10px 20px`},children:g.map(e=>(0,m.jsxs)(i,{value:_[e.key],onValueChange:t=>v(n=>({...n,[e.key]:t.value})),min:e.min,max:e.max,step:e.step,children:[(0,m.jsx)(c,{children:`${e.label} ${_[e.key][0]}${e.unit}`}),(0,m.jsxs)(l,{children:[(0,m.jsx)(a,{children:(0,m.jsx)(o,{})}),(0,m.jsx)(s,{})]})]},e.key))}),(0,m.jsx)(`div`,{children:(0,m.jsx)(n,{variant:`solid`,onClick:()=>O.play(E),children:`试听`})}),(0,m.jsx)(`pre`,{"data-xh-scroll":``,style:{margin:0,padding:`12px 14px`,borderRadius:`var(--xh-shape-surface)`,background:`var(--xh-bg-subtle)`,fontSize:`12px`,lineHeight:1.6,overflowX:`auto`},children:D})]})}export{_ as default};
