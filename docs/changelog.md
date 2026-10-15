@@ -2,6 +2,23 @@
 
 本文件记录 XiHan.UI 各版本的变更。每条标注 **新增 / 修复 / 优化 / 调整 / 移除** 类别。只收录使用者可感知的变更，仓库自身的配置、CI、测试与门禁不列入。组件以 npm 包形式发布，升级前请留意「调整」类中的破坏性变更。
 
+## v4.2.0 (2026-10-15)
+
+JsonViewer 新增按需打开的工具条与原文着色，图表配色整体改为浅色调，并新增命令行与 MCP 服务端 `@xihan-ui/cli`。
+
+- **新增** JsonViewer 内建工具条 `tools`：展开 / 收起全部、树与原文切换、原文自动换行、复制原文，可铺出全部或只列几项；新增 `source`，原文档与复制按后端原文显示，超出安全整数的 ID 不再失真；`view` 补上 `defaultView` / `onViewChange`，新增 `wrap` / `defaultWrap` / `onWrapChange`
+- **新增** JsonViewer 原文档按类别着色，键名、字符串、数字、布尔、null 与标点与树档同一套颜色
+- **新增** `@xihan-ui/cli`：组件 API、文档、示例、令牌、design.md 与更新日志的离线知识库，附命令行与 stdio MCP 服务端；`setup` 为 Claude Code、Cursor、VS Code、Codex 写入钉住版本的配置与使用技能
+- **新增** 文档站新增「AI 辅助开发」一册：For Agents、MCP Server、CLI、LLMs.txt、design.md
+- **新增** 图标 `list-tree`；表格单元格行内内衬令牌 `--xh-table-cell-px-sm` / `-md` / `-lg`；顺序色阶两段的文字色令牌 `--xh-chart-on-sequential-low` / `-high`
+- **调整** 图表缺省分类色板、配色方案、有序色阶、涨跌色与亮色下的顺序、发散色阶改为浅色调，色块内文字换成深色；`validateCategoricalPalette`、`validateOrdinalRamp` 新增 `tone: 'light'`
+- **调整** 表格单元格与列头的行内内衬随尺寸档换档（sm 8 / md 12 / lg 16px），此前三档都是 16px
+- **调整** 多行文本字段自增高的上限槽改名为 `--xh-text-field-input-max-h`，旧槽 `--xh-text-field-control-max-h` 仍兜底生效
+- **修复** Descriptions 描边档：标签在左时同一列的标签按最长的那个对齐；有跨列或最后一行不满时格线不再错位，也不再与外框叠成两道
+- **修复** 树形表的父行收起之后能再展开
+- **修复** Separator 竖线在由内容撑高的横排里铺满行高，不再只剩 1em 贴在行顶
+- **修复** 多行文本 `autoSize` 顶到上限后只剩一层滚动，行数界限超过 12rem 不再被截掉
+
 ## v4.1.0 (2026-10-13)
 
 看片工具条补齐复原钮图标，通知里的长串不再撑出滚动条。
