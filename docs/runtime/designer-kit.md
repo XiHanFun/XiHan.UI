@@ -1,6 +1,6 @@
 # 设计器内核
 
-`@xihan-ui/designer-kit` 是画布式设计器的公共内核：撤销重做历史栈、按 JSON 路径的编辑操作、文档内唯一 id、网格布局、视口平移缩放、对齐吸附与参考线、多选对齐与等距分布、框选与命中、变换控制柄、标尺刻度，以及属性面板的自定义编辑器接口。打印、流程、表单、报表这类设计器都要做这几件事，内核把它们写成与文档形状无关的纯函数，各设计器只需提供自己的文档模型与编辑操作。
+`@xihan-ui/designer-kit` 是画布式设计器的公共内核：撤销重做历史栈、按 JSON 路径的编辑操作、文档内唯一 id、网格布局、视口平移缩放、对齐吸附与参考线、多选对齐与等距分布、框选与命中、变换控制柄、标尺刻度、长度单位与纸张预设，以及属性面板的自定义编辑器接口。打印、流程、表单、报表这类设计器都要做这几件事，内核把它们写成与文档形状无关的纯函数，各设计器只需提供自己的文档模型与编辑操作。
 
 ```ts
 import { createHistory, fitRect, snapRect, zoomBy } from "@xihan-ui/designer-kit";
@@ -248,6 +248,20 @@ planTableLineInsert(size, cells, "column", 1); // c 加长到 3 列，b 后移�
 ## 标尺
 
 `rulerTicks({ start, end, pixelsPerUnit, minMajorSpacing?, minMinorSpacing?, steps? })` 返回 `{ step, minorStep, ticks }`，每个刻度是 `{ value, offset, major }`。单位由调用方决定：打印设计器传毫米与「每毫米的屏幕像素 × 缩放倍数」，画布设计器传世界坐标。主刻度间隔从 `steps`（缺省 1-2-5）的十进制倍数里取不小于 `minMajorSpacing`（缺省 64 像素）的最小一档，主刻度之间按 10、5、2 格依次尝试，取小格间距不小于 `minMinorSpacing`（缺省 6 像素）的最多分格。
+
+## 长度单位与纸张
+
+`convertLength(value, from, to, { dpi? })` 在 `LengthUnit` 之间换算：`mm`、`cm`、`in`、`pt`（1/72 英寸）与 `px`。像素按 `dpi` 折算，缺省 96，即 CSS 像素；按打印机分辨率出图时传 203、300 等。毫米、厘米、英寸与磅之间的换算没有浮点零头，如 25.4 mm 恰好是 72 pt。`dpi` 不是正的有限数或单位不认识时抛 `RangeError`。
+
+```ts
+import { convertLength, PAPER_PRESETS } from "@xihan-ui/designer-kit";
+
+const a4 = PAPER_PRESETS.A4; // { width: 210, height: 297 }，纵向，单位 mm
+const widthPx = convertLength(a4.width, "mm", "px"); // 793.7…
+const fontMm = convertLength(12, "pt", "mm"); // 4.233…
+```
+
+`PAPER_PRESETS` 收 ISO 216 的 A3–A6 与 B4、B5，以及北美的 Letter、Legal，都是纵向尺寸，横向时宽高互换。`PAPER_PRESET_NAMES` 与 `LENGTH_UNITS` 按声明顺序列出全部取值，供页面设置与属性面板列选项；`isPaperPresetName` 区分大小写。
 
 ## 属性编辑器接口
 
