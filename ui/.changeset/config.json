@@ -19,6 +19,7 @@
       "@xihan-ui/pointer",
       "@xihan-ui/viz",
       "@xihan-ui/expression",
+      "@xihan-ui/designer-kit",
       "@xihan-ui/backgrounds",
       "@xihan-ui/sound",
       "@xihan-ui/icons",

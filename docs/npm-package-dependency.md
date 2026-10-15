@@ -13,6 +13,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/pointer` | — | — | 1 |
 | `@xihan-ui/viz` | — | — | 1 |
 | `@xihan-ui/expression` | — | — | 1 |
+| `@xihan-ui/designer-kit` | — | — | 1 |
 | `@xihan-ui/position` | `core` | — | 2 |
 | `@xihan-ui/code-highlight` | `core` | — | 2 |
 | `@xihan-ui/chat-stream` | `core` | — | 2 |
@@ -50,17 +51,18 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
        └────┬─────┘ └───────┬────────┘ └──────┬──────┘ └───┬───┘ └─────┬──────┘ └──────────┘
             └───────────────┴─────────────────┴───────────┴───────────┘            无依赖
                           ▼
-层 1   ┌──────────┐  ┌──────────┐   ┌──────────┐  ┌───────┐  ┌─────────┐  ┌─────┐  ┌────────────┐
-       │   core   │─►│  motion  │   │  tokens  │  │ icons │  │ pointer │  │ viz │  │ expression │
-       └──────────┘  └──────────┘   └──────────┘  └───────┘  └─────────┘  └─────┘  └────────────┘
-                     零运行时依赖      无依赖        无依赖      无依赖     无依赖      无依赖
+层 1   ┌──────────┐  ┌──────────┐   ┌──────────┐  ┌───────┐  ┌─────────┐  ┌─────┐  ┌────────────┐  ┌──────────────┐
+       │   core   │─►│  motion  │   │  tokens  │  │ icons │  │ pointer │  │ viz │  │ expression │  │ designer-kit │
+       └──────────┘  └──────────┘   └──────────┘  └───────┘  └─────────┘  └─────┘  └────────────┘  └──────────────┘
+                     零运行时依赖      无依赖        无依赖      无依赖     无依赖      无依赖           无依赖
 ```
 
-四个包完全独立，可以单独使用：
+五个包完全独立，可以单独使用：
 
 - `@xihan-ui/tokens`：只需要设计令牌与主题运行时，不需要组件；
 - `@xihan-ui/markdown`：只需要流式 Markdown 渲染内核；
 - `@xihan-ui/expression`：只需要在模板里写公式与条件；
+- `@xihan-ui/designer-kit`：只需要撤销重做、视口与吸附这类画布式设计器的内核；
 - `@xihan-ui/styles`：纯 CSS，它对 `tokens` 的依赖只是为了 `@import` 令牌产物，不引入任何 JS。
 
 ## 依赖规则
@@ -130,7 +132,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/web-components` | `./define` `./backgrounds` `./locale` `./services` `./custom-elements.json` |
 | `@xihan-ui/styles` | 每份皮肤一条 CSS，共 152 条（140 份组件皮肤 + 12 份共享层），另有 `./index.css`（主入口，生成的扁平有层文件，家族只内联一次）与 `./index.unlayered.css` 两个整包入口 |
 
-其余十一个包（`motion` / `pointer` / `position` / `code-highlight` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound` / `cli` / `expression`）只有主入口。
+其余十二个包（`motion` / `pointer` / `position` / `code-highlight` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound` / `cli` / `expression` / `designer-kit`）只有主入口。
 
 组件没有单独的子路径导出：按需引入依靠 tree-shaking，不依靠手写路径。
 
