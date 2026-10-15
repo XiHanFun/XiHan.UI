@@ -5,7 +5,7 @@
 
 // Canvas 文字度量器：用 2D 上下文的 measureText 量出真实字宽，结果按字体与文字缓存。
 
-import type { FontSpec, TextMeasurer, TextSize } from './index'
+import type { FontSpec, TextMeasurer, TextSize } from './types'
 
 /** 缓存上限：满了整表清空重来。 */
 const CACHE_LIMIT = 2000
