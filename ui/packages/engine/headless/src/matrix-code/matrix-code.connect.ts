@@ -6,7 +6,7 @@
 // 提供 matrix code 相关实现。
 
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { MatrixCodeApi, MatrixCodeEyeShape, MatrixCodeFormat, MatrixCodeLevel, MatrixCodeLevelFit, MatrixCodeLogoArea, MatrixCodeLogoDamage, MatrixCodeModuleShape, MatrixCodeProps, MatrixCodeState, MatrixCodeValueIssue, MatrixCodeValueOptions } from './matrix-code.types'
+import type { MatrixCodeApi, MatrixCodeEyeShape, MatrixCodeFormat, MatrixCodeLevel, MatrixCodeLevelFit, MatrixCodeLevelRange, MatrixCodeLogoArea, MatrixCodeLogoDamage, MatrixCodeModuleShape, MatrixCodeProps, MatrixCodeState, MatrixCodeValueIssue, MatrixCodeValueOptions } from './matrix-code.types'
 import type { Pdf417Level } from './pdf417-encode'
 import type { QrLevel } from './qr-encode'
 import { dataAttr, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
@@ -28,13 +28,20 @@ const DEFAULT_LEVEL: QrLevel = 'M'
 /** QR 的四档纠错级别，由低到高；供属性面板列选项、宿主校验模板时取用。 */
 export const QR_LEVELS: readonly QrLevel[] = ['L', 'M', 'Q', 'H']
 const QR_LEVEL_SET: ReadonlySet<string> = new Set<string>(QR_LEVELS)
-/** PDF417 纠错级别的取值范围。 */
-const PDF417_MIN_LEVEL = 0
-const PDF417_MAX_LEVEL = 8
-/** Aztec 纠错百分比的缺省与取值范围。 */
+/**
+ * 数字纠错级别的取值范围，供属性面板做数字输入、宿主校验模板时取用：pdf417 为 0–8 的整数级别；
+ * aztec 为纠错码字至少占的百分比 5–95，小数截去。matrixCodeLevelFit 按这份范围判断。
+ */
+export const MATRIX_CODE_LEVEL_RANGES: Readonly<Record<'pdf417' | 'aztec', MatrixCodeLevelRange>> = {
+  pdf417: { min: 0, max: 8, step: 1 },
+  aztec: { min: 5, max: 95, step: 1 },
+}
+/** Aztec 纠错百分比的缺省值。 */
 const AZTEC_DEFAULT_PERCENT = 33
-const AZTEC_MIN_PERCENT = 5
-const AZTEC_MAX_PERCENT = 95
+
+function inRange(n: number, range: MatrixCodeLevelRange): boolean {
+  return n >= range.min && n <= range.max
+}
 /** 各码制的规范静区，单位是模块：QR 四格，Data Matrix 一格，PDF417 两格，Aztec 不需要；不认识的码制按 QR 的兜住 viewBox。 */
 function defaultMargin(format: MatrixCodeFormat): number {
   if (format === 'data-matrix')
@@ -63,9 +70,9 @@ export function matrixCodeLevelFit(format: MatrixCodeFormat, level: MatrixCodeLe
     return 'ignored'
   const n = Number(level)
   if (format === 'pdf417')
-    return Number.isInteger(n) && n >= PDF417_MIN_LEVEL && n <= PDF417_MAX_LEVEL ? 'valid' : 'invalid'
+    return Number.isInteger(n) && inRange(n, MATRIX_CODE_LEVEL_RANGES.pdf417) ? 'valid' : 'invalid'
   if (format === 'aztec')
-    return Number.isFinite(n) && n >= AZTEC_MIN_PERCENT && n <= AZTEC_MAX_PERCENT ? 'valid' : 'invalid'
+    return Number.isFinite(n) && inRange(n, MATRIX_CODE_LEVEL_RANGES.aztec) ? 'valid' : 'invalid'
   return 'invalid'
 }
 
@@ -74,8 +81,8 @@ function levelMessage(format: MatrixCodeFormat, level: MatrixCodeLevel | undefin
   if (format === 'qr')
     return `QR 的纠错级别只认 L / M / Q / H，收到「${String(level)}」`
   if (format === 'pdf417')
-    return `PDF417 的纠错级别是 ${PDF417_MIN_LEVEL}–${PDF417_MAX_LEVEL} 的整数，收到「${String(level)}」`
-  return `Aztec 的纠错级别是纠错码字至少占的百分比 ${AZTEC_MIN_PERCENT}–${AZTEC_MAX_PERCENT}，收到「${String(level)}」`
+    return `PDF417 的纠错级别是 ${MATRIX_CODE_LEVEL_RANGES.pdf417.min}–${MATRIX_CODE_LEVEL_RANGES.pdf417.max} 的整数，收到「${String(level)}」`
+  return `Aztec 的纠错级别是纠错码字至少占的百分比 ${MATRIX_CODE_LEVEL_RANGES.aztec.min}–${MATRIX_CODE_LEVEL_RANGES.aztec.max}，收到「${String(level)}」`
 }
 
 /** 编出来的矩阵：几何换算只用这几项。 */
