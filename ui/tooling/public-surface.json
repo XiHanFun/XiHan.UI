@@ -258,6 +258,9 @@
     "@xihan-ui/sound": [
       "."
     ],
+    "@xihan-ui/xlsx": [
+      "."
+    ],
     "@xihan-ui/cli": [
       "."
     ]
@@ -10075,6 +10078,32 @@
       "strike",
       "withDialogSoundService",
       "withNotificationSoundService"
+    ],
+    "@xihan-ui/xlsx": [
+      "XLSX_MIME",
+      "XlsxAlign",
+      "XlsxBooleanCell",
+      "XlsxCell",
+      "XlsxCellStyle",
+      "XlsxDateCell",
+      "XlsxDateTime",
+      "XlsxError",
+      "XlsxErrorCode",
+      "XlsxFrozen",
+      "XlsxMerge",
+      "XlsxNumberCell",
+      "XlsxRow",
+      "XlsxSheet",
+      "XlsxTextCell",
+      "XlsxWorkbook",
+      "XlsxWriteOptions",
+      "ZipCompression",
+      "ZipEntry",
+      "ZipOptions",
+      "sheetName",
+      "writeXlsx",
+      "writeZip",
+      "xlsxBlob"
     ],
     "@xihan-ui/cli": [
       "CliEnvironment",

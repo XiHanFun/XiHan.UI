@@ -209,6 +209,7 @@ const runtimeSidebar: DefaultTheme.SidebarItem[] = [
       { text: "代码着色", link: "/runtime/code-highlight" },
       { text: "受限表达式", link: "/runtime/expression" },
       { text: "设计器内核", link: "/runtime/designer-kit" },
+      { text: "表格导出", link: "/runtime/xlsx" },
     ],
   },
 ];
