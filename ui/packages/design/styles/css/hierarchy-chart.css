@@ -207,18 +207,18 @@
     cursor: pointer;
   }
 
-  /* 按值着色：颜色由 Chart 家族配方按段号与段内百分比兑好放在私有槽里，不再按层变浅。色阶的起点贴着承载面、
-     终点远离承载面：浅的一段写正文色，深的一段写承载面色，亮暗主题下都读得清 */
+  /* 按值着色：颜色由 Chart 家族配方按段号与段内百分比兑好放在私有槽里，不再按层变浅。两段上的名字取
+     --xh-chart-on-sequential-low / -high：亮色的浅色调色阶两段都写正文色，暗色的高段贴近亮端、写承载面色 */
   [data-scope='hierarchy-chart'][data-part='node'][data-seg] {
     fill: var(--xh-_chart-seq-fill);
   }
 
   [data-scope='hierarchy-chart'][data-seg='low'] {
-    --xh-_hierarchy-ink: var(--xh-fg-default);
+    --xh-_hierarchy-ink: var(--xh-chart-on-sequential-low);
   }
 
   [data-scope='hierarchy-chart'][data-seg='high'] {
-    --xh-_hierarchy-ink: var(--xh-chart-surface);
+    --xh-_hierarchy-ink: var(--xh-chart-on-sequential-high);
   }
 
   [data-scope='hierarchy-chart'][data-part='node'][data-dimmed],
