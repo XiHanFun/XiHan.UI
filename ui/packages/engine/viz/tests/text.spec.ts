@@ -1,6 +1,6 @@
 import type { FontSpec, TextMeasurer } from '../src'
 import { describe, expect, it } from 'vitest'
-import { createEstimatingMeasurer, ellipsize, wrapText } from '../src'
+import { createCanvasMeasurer, createEstimatingMeasurer, ellipsize, wrapText } from '../src'
 import { forAll, integer } from './helpers/property'
 
 const font: FontSpec = { family: 'sans-serif', size: 10, weight: 400, lineHeight: 16 }
@@ -98,5 +98,72 @@ describe('折行', () => {
       }
       expect(lines.join('').replace(/ /g, '')).toBe(text.replace(/ /g, ''))
     })
+  })
+})
+
+describe('字间距', () => {
+  it('每个字符之后加上字间距，一行放得下的字数随之减少', () => {
+    expect(wrapText('月度销售额汇总', 6, font, mono)).toEqual(['月度销售额汇', '总'])
+    expect(wrapText('月度销售额汇总', 6, font, mono, { letterSpacing: 1 })).toEqual(['月度销', '售额汇', '总'])
+  })
+
+  it('负字间距让一行放下更多字', () => {
+    expect(wrapText('abcdef', 4, font, mono, { letterSpacing: -0.5 })).toEqual(['abcdef'])
+  })
+
+  it('截断最后一行时同样计入字间距', () => {
+    expect(wrapText('abcdefgh', 4, font, mono, { maxLines: 1, letterSpacing: 1 })).toEqual(['a…'])
+  })
+
+  it('字间距不是有限数时报错', () => {
+    expect(() => wrapText('abc', 4, font, mono, { letterSpacing: Number.NaN })).toThrow(/letterSpacing/)
+  })
+})
+
+describe('canvas 度量器', () => {
+  function fakeDocument(context: unknown): Document {
+    return { createElement: () => ({ getContext: () => context }) } as unknown as Document
+  }
+
+  function fakeContext(): { font: string, fonts: string[], measureText: (text: string) => TextMetrics } {
+    const context = {
+      font: '',
+      fonts: [] as string[],
+      measureText(text: string): TextMetrics {
+        context.fonts.push(context.font)
+        return { width: text.length * 7, actualBoundingBoxAscent: 9, actualBoundingBoxDescent: 3 } as TextMetrics
+      },
+    }
+    return context
+  }
+
+  it('按斜体、字重、字号与字体族拼出 font 串，量出真实宽度与上下伸', () => {
+    const context = fakeContext()
+    const canvas = createCanvasMeasurer(fakeDocument(context))!
+    expect(canvas.measure('abc', { ...font, style: 'italic', weight: 700 })).toEqual({ width: 21, ascent: 9, descent: 3 })
+    canvas.measure('abc', font)
+    expect(context.fonts).toEqual(['italic 700 10px sans-serif', '400 10px sans-serif'])
+  })
+
+  it('同一字体与文字只量一次，refresh 清缓存并递增 version', () => {
+    const context = fakeContext()
+    const canvas = createCanvasMeasurer(fakeDocument(context))!
+    expect(canvas.version).toBe(1)
+    canvas.measure('abc', font)
+    canvas.measure('abc', font)
+    expect(context.fonts).toHaveLength(1)
+    canvas.refresh()
+    expect(canvas.version).toBe(2)
+    canvas.measure('abc', font)
+    expect(context.fonts).toHaveLength(2)
+  })
+
+  it('拿不到 2D 上下文或创建时抛错时返回 null', () => {
+    expect(createCanvasMeasurer(fakeDocument(null))).toBeNull()
+    const blocked = (): never => {
+      throw new Error('blocked')
+    }
+    const throwing = { createElement: () => ({ getContext: blocked }) } as unknown as Document
+    expect(createCanvasMeasurer(throwing)).toBeNull()
   })
 })
