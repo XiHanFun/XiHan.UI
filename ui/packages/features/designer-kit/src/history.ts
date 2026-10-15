@@ -16,6 +16,18 @@ export interface OperationResult<D, O> {
 /** 应用一个操作；不修改输入文档，失败时抛错。 */
 export type ApplyOperation<D, O> = (document: D, operation: O) => OperationResult<D, O>
 
+/** 依次应用一组操作，返回最终文档与按反序拼接的各步逆操作；任一操作抛错时整体抛错，输入文档不变。 */
+export function applyInSequence<D, O>(apply: ApplyOperation<D, O>, document: D, operations: readonly O[]): OperationResult<D, O> {
+  let current = document
+  const inverses: (readonly O[])[] = []
+  for (const operation of operations) {
+    const result = apply(current, operation)
+    current = result.document
+    inverses.push(result.inverse)
+  }
+  return { document: current, inverse: inverses.reverse().flat() }
+}
+
 export interface HistoryOptions<D, O> {
   /** 初始文档，视为已保存。 */
   readonly document: D
@@ -134,16 +146,7 @@ export function createHistory<D, O>(options: HistoryOptions<D, O>): History<D, O
       listener(change)
   }
 
-  const run = (operations: readonly O[]): OperationResult<D, O> => {
-    let current = document
-    const inverses: (readonly O[])[] = []
-    for (const operation of operations) {
-      const result = apply(current, operation)
-      current = result.document
-      inverses.push(result.inverse)
-    }
-    return { document: current, inverse: inverses.reverse().flat() }
-  }
+  const run = (operations: readonly O[]): OperationResult<D, O> => applyInSequence(apply, document, operations)
 
   const pushUndo = (entry: Entry<O>): void => {
     undoStack.push(entry)

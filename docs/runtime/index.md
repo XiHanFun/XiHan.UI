@@ -9,7 +9,7 @@
 | [流式 Markdown](./markdown) | 传入截至当前的全文，返回一组带稳定 key 的已渲染块 | `@xihan-ui/markdown` |
 | [代码着色](./code-highlight) | 零依赖的粗粒度词法着色，也是一个可替换的端口 | `@xihan-ui/code-highlight` |
 | [受限表达式](./expression) | 公式与条件解析成可序列化的语法树，静态检查后按十进制确定性求值 | `@xihan-ui/expression` |
-| [设计器内核](./designer-kit) | 撤销重做历史栈、视口平移缩放、对齐吸附与参考线、对齐分布与框选，与文档形状无关 | `@xihan-ui/designer-kit` |
+| [设计器内核](./designer-kit) | 撤销重做历史栈、按路径的编辑操作、视口平移缩放、对齐吸附与参考线、对齐分布与框选、文档内唯一 id | `@xihan-ui/designer-kit` |
 | [表格导出](./xlsx) | 带类型的单元格、数字与日期格式、合并单元格与冻结窗格，零依赖写成 xlsx | `@xihan-ui/xlsx` |
 
 ## 不在组件册中的原因

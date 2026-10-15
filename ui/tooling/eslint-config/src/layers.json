@@ -115,8 +115,10 @@
       "canDependOn": []
     },
     "features/designer-kit": {
-      "level": 1,
-      "canDependOn": []
+      "level": 2,
+      "canDependOn": [
+        "engine/core"
+      ]
     },
     "features/xlsx": {
       "level": 1,
