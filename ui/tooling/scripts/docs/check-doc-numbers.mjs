@@ -835,12 +835,12 @@ const truth = {
     },
   },
   WC元素类导出数: {
-    how: 'tooling/public-surface.json 里 @xihan-ui/web-components 形如 Xh*Element 的导出名',
+    how: 'tooling/public-surface.json 里 @xihan-ui/web-components 形如 Xh*Element 的元素类导出名（authoring 子入口的基类 XhReactiveElement 不算）',
     async value() {
       const surface = JSON.parse(await read('tooling/public-surface.json'))
       const wc = surface.exports['@xihan-ui/web-components']
       const names = Array.isArray(wc) ? wc : Object.values(wc).flat()
-      return names.filter(n => /^Xh[A-Za-z0-9]+Element$/.test(n)).length
+      return names.filter(n => /^Xh[A-Za-z0-9]+Element$/.test(n) && n !== 'XhReactiveElement').length
     },
   },
   库自用dataXh属性数: {
