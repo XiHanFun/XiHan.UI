@@ -1,5 +1,5 @@
 // 撤销重做历史栈：只依赖「应用操作 → 新文档 + 逆操作」，验证撤销重做往返、合并连续输入、事务分组与回滚、
-// 步数上限、封口、出错时状态不变，以及变化通知。
+// 步数上限、封口、保存点、跳过无变化的执行、出错时状态不变，以及变化通知。
 import type { ApplyOperation, HistoryChange } from '../src'
 import { describe, expect, it, vi } from 'vitest'
 import { createHistory } from '../src'
@@ -19,6 +19,8 @@ const apply: ApplyOperation<Doc, Op> = (doc, op) => {
     case 'remove':
       return { document: [...doc.slice(0, op.index), ...doc.slice(op.index + 1)], inverse: [{ type: 'insert', index: op.index, value: doc[op.index]! }] }
     case 'set':
+      if (doc[op.index] === op.value)
+        return { document: doc, inverse: [] }
       return { document: doc.map((v, i) => (i === op.index ? op.value : v)), inverse: [{ type: 'set', index: op.index, value: doc[op.index]! }] }
   }
 }
@@ -285,5 +287,120 @@ describe('createHistory', () => {
     const b = setup()
     a.execute([insert(1, 'b')])
     expect([b.document, b.canUndo]).toEqual([['a'], false])
+  })
+})
+
+describe('无变化的执行', () => {
+  it('文档引用不变时不入栈、不清重做栈、不通知', () => {
+    const history = setup()
+    history.execute([insert(1, 'b')])
+    history.undo()
+    const listener = vi.fn()
+    history.subscribe(listener)
+    expect(history.execute([set(0, 'a')])).toEqual(['a'])
+    expect([history.undoCount, history.redoCount]).toEqual([0, 1])
+    expect(listener).not.toHaveBeenCalled()
+  })
+
+  it('事务里的无变化执行不让事务变脏', () => {
+    const history = setup()
+    history.begin()
+    history.execute([set(0, 'a')])
+    expect(history.dirty).toBe(false)
+    history.commit()
+    expect(history.canUndo).toBe(false)
+  })
+})
+
+describe('保存点', () => {
+  it('初始文档视为已保存；执行后变脏，撤销回保存点后变干净', () => {
+    const history = setup()
+    expect(history.dirty).toBe(false)
+    history.execute([insert(1, 'b')])
+    expect(history.dirty).toBe(true)
+    history.undo()
+    expect(history.dirty).toBe(false)
+    history.redo()
+    expect(history.dirty).toBe(true)
+  })
+
+  it('标记保存点后在它两侧移动', () => {
+    const history = setup()
+    const changes: string[] = []
+    history.subscribe(change => changes.push(change.kind))
+    history.execute([insert(1, 'b')])
+    history.markSaved()
+    expect(history.dirty).toBe(false)
+    history.undo()
+    expect(history.dirty).toBe(true)
+    history.redo()
+    expect(history.dirty).toBe(false)
+    history.execute([insert(2, 'c')])
+    expect(history.dirty).toBe(true)
+    history.undo()
+    expect(history.dirty).toBe(false)
+    expect(changes).toEqual(['execute', 'save', 'undo', 'redo', 'execute', 'undo'])
+  })
+
+  it('保存点封口：之后同一合并键的输入另起一步', () => {
+    const history = setup()
+    history.execute([set(0, 'x')], { merge: 'k' })
+    history.markSaved()
+    history.execute([set(0, 'y')], { merge: 'k' })
+    expect([history.undoCount, history.dirty]).toEqual([2, true])
+    history.undo()
+    expect([history.document, history.dirty]).toEqual([['x'], false])
+  })
+
+  it('保存点被新执行清出重做栈后再也回不去', () => {
+    const history = setup()
+    history.execute([insert(1, 'b')])
+    history.markSaved()
+    history.undo()
+    history.execute([insert(1, 'c')])
+    history.undo()
+    expect([history.document, history.dirty]).toEqual([['a'], true])
+  })
+
+  it('步数上限丢弃的步：退到最早还能退到的位置时与当时的保存点比对', () => {
+    const history = setup({ limit: 2 })
+    history.execute([insert(1, 'b')])
+    history.markSaved()
+    history.execute([insert(2, 'c')])
+    history.execute([insert(3, 'd')])
+    history.undo()
+    history.undo()
+    expect([history.document, history.dirty]).toEqual([['a', 'b'], false])
+    const fresh = setup({ limit: 1 })
+    fresh.execute([insert(1, 'b')])
+    fresh.execute([insert(2, 'c')])
+    fresh.undo()
+    expect([fresh.document, fresh.dirty]).toEqual([['a', 'b'], true])
+  })
+
+  it('事务里有改动即为脏，回滚后恢复', () => {
+    const history = setup()
+    history.begin()
+    history.execute([insert(1, 'b')])
+    expect(history.dirty).toBe(true)
+    history.rollback()
+    expect(history.dirty).toBe(false)
+    expect(() => {
+      history.begin()
+      history.markSaved()
+    }).toThrow(/transaction/)
+  })
+
+  it('reset 后的新文档视为已保存；clear 不改是否已保存', () => {
+    const history = setup()
+    history.execute([insert(1, 'b')])
+    history.clear()
+    expect(history.dirty).toBe(true)
+    history.reset(['z'])
+    expect(history.dirty).toBe(false)
+    history.execute([insert(1, 'y')])
+    history.markSaved()
+    history.clear()
+    expect(history.dirty).toBe(false)
   })
 })

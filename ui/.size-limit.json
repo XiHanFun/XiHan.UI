@@ -112,7 +112,7 @@
     "name": "designer-kit",
     "path": "packages/features/designer-kit/dist/index.js",
     "gzip": true,
-    "limit": "3.4 kB"
+    "limit": "5.2 kB"
   },
   {
     "name": "backgrounds",

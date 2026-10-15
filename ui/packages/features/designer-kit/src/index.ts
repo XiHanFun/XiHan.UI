@@ -7,14 +7,31 @@
 
 export { alignRects, distributeRects } from './arrange'
 export type { AlignMode, DistributeAxis, DistributeSpacing } from './arrange'
-export { expandRect, rectCenter, rectContains, rectFromPoints, rectsIntersect, unionRects } from './geometry'
+export {
+  expandRect,
+  hitTest,
+  pointInRect,
+  rectCenter,
+  rectContains,
+  rectCorners,
+  rectFromPoints,
+  rectsIntersect,
+  rotatedBounds,
+  rotatedRectIntersects,
+  rotatePoint,
+  unionRects,
+} from './geometry'
 export type { Point, Rect, Size } from './geometry'
 export { createHistory } from './history'
 export type { ApplyOperation, ExecuteOptions, History, HistoryChange, HistoryChangeKind, HistoryOptions, OperationResult } from './history'
 export { marqueeModeFromDrag, marqueeRect, selectInMarquee } from './marquee'
 export type { MarqueeMode } from './marquee'
+export { rulerTicks } from './ruler'
+export type { RulerOptions, RulerTick, RulerTicks } from './ruler'
 export { snapPointToGrid, snapRect, snapToGrid } from './snap'
 export type { SnapGuide, SnapOptions, SnapResult } from './snap'
+export { handlePoints, nudgeDelta, resizeWithHandle, rotateWithHandle } from './transform'
+export type { NudgeOptions, ResizeHandle, ResizeOptions, RotateOptions, TransformHandle } from './transform'
 export {
   centerOn,
   clampZoom,

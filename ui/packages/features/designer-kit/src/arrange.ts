@@ -3,10 +3,10 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 多选元素的对齐与等距分布：输入一组矩形，按原顺序返回各自新的左上角。
+// 多选元素的对齐与等距分布：输入一组矩形，按原顺序返回各自新的左上角；带旋转角的矩形按旋转后的包围盒排。
 
 import type { Point, Rect } from './geometry'
-import { unionRects } from './geometry'
+import { rotatedBounds, unionRects } from './geometry'
 
 /**
  * 对齐方式：left / right / top / bottom 贴齐选区包围盒的对应边；
@@ -26,19 +26,21 @@ export function alignRects(rects: readonly Rect[], mode: AlignMode): Point[] {
   if (!bounds || rects.length < 2)
     return rects.map(rect => ({ x: rect.x, y: rect.y }))
   return rects.map((rect) => {
+    const box = rotatedBounds(rect)
+    const moveTo = (x: number, y: number): Point => ({ x: rect.x + x - box.x, y: rect.y + y - box.y })
     switch (mode) {
       case 'left':
-        return { x: bounds.x, y: rect.y }
+        return moveTo(bounds.x, box.y)
       case 'right':
-        return { x: bounds.x + bounds.width - rect.width, y: rect.y }
+        return moveTo(bounds.x + bounds.width - box.width, box.y)
       case 'top':
-        return { x: rect.x, y: bounds.y }
+        return moveTo(box.x, bounds.y)
       case 'bottom':
-        return { x: rect.x, y: bounds.y + bounds.height - rect.height }
+        return moveTo(box.x, bounds.y + bounds.height - box.height)
       case 'center-vertical':
-        return { x: bounds.x + (bounds.width - rect.width) / 2, y: rect.y }
+        return moveTo(bounds.x + (bounds.width - box.width) / 2, box.y)
       case 'center-horizontal':
-        return { x: rect.x, y: bounds.y + (bounds.height - rect.height) / 2 }
+        return moveTo(box.x, bounds.y + (bounds.height - box.height) / 2)
       default:
         throw new RangeError(`[designer-kit] unknown align mode "${String(mode)}"`)
     }
@@ -59,12 +61,19 @@ export function distributeRects(rects: readonly Rect[], axis: DistributeAxis, sp
   const start = (rect: Rect): number => (horizontal ? rect.x : rect.y)
   const length = (rect: Rect): number => (horizontal ? rect.width : rect.height)
   const order = rects
-    .map((rect, index) => ({ rect, index, center: start(rect) + length(rect) / 2 }))
+    .map((original, index) => {
+      const rect = rotatedBounds(original)
+      return { rect, index, center: start(rect) + length(rect) / 2 }
+    })
     .sort((a, b) => a.center - b.center || a.index - b.index)
   const first = order[0]!
   const last = order[order.length - 1]!
   const place = (index: number, value: number): void => {
-    result[index] = horizontal ? { x: value, y: rects[index]!.y } : { x: rects[index]!.x, y: value }
+    const original = rects[index]!
+    const box = rotatedBounds(original)
+    result[index] = horizontal
+      ? { x: original.x + value - box.x, y: original.y }
+      : { x: original.x, y: original.y + value - box.y }
   }
   if (spacing === 'center') {
     const step = (last.center - first.center) / (order.length - 1)

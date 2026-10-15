@@ -1,6 +1,6 @@
 # 设计器内核
 
-`@xihan-ui/designer-kit` 是画布式设计器的公共内核：撤销重做历史栈、视口平移缩放、对齐吸附与参考线、多选对齐与等距分布、框选。打印、流程、表单、报表这类设计器都要做这几件事，内核把它们写成与文档形状无关的纯函数，各设计器只需提供自己的文档模型与编辑操作。
+`@xihan-ui/designer-kit` 是画布式设计器的公共内核：撤销重做历史栈、视口平移缩放、对齐吸附与参考线、多选对齐与等距分布、框选与命中、变换控制柄、标尺刻度。打印、流程、表单、报表这类设计器都要做这几件事，内核把它们写成与文档形状无关的纯函数，各设计器只需提供自己的文档模型与编辑操作。
 
 ```ts
 import { createHistory, fitRect, snapRect, zoomBy } from "@xihan-ui/designer-kit";
@@ -49,16 +49,19 @@ type ApplyOperation<D, O> = (document: D, operation: O) => {
 
 | 成员 | 说明 |
 | --- | --- |
-| `execute(operations, { merge?, label? })` | 依次应用一组操作并记为一步，返回新文档；清空重做栈。空数组什么都不做 |
+| `execute(operations, { merge?, label? })` | 依次应用一组操作并记为一步，返回新文档；清空重做栈。空数组、或应用后文档仍是同一引用（操作没有带来变化）时什么都不做，不入栈也不通知 |
 | `undo()` / `redo()` | 撤销或重做一步，没有可执行的步时返回 `false` |
 | `canUndo` / `canRedo`、`undoCount` / `redoCount` | 工具栏按钮的可用状态与步数 |
 | `undoLabel` / `redoLabel` | 下一次撤销、重做那一步的说明 |
 | `document` | 当前文档 |
-| `reset(document)` | 换成新文档并清空两个栈（装载模板时用） |
-| `clear()` | 只清空两个栈 |
+| `markSaved()` / `dirty` | 把当前位置记为保存点；`dirty` 为当前位置与保存点不同，或事务中已有改动 |
+| `reset(document)` | 换成新文档并清空两个栈，新文档视为已保存（装载模板时用） |
+| `clear()` | 只清空两个栈，是否已保存不变 |
 | `subscribe(listener)` | 每次变化后通知 `{ kind, document, operations }`，返回取消订阅的函数 |
 
 应用失败时 `apply` 抛出的错误原样抛出，文档与两个栈都不变。`limit` 是撤销栈的步数上限，缺省 100，超出时丢弃最早的一步。
+
+保存点按位置比对：撤销、重做回到保存点时 `dirty` 变回 `false`；保存点被新执行清出重做栈、或早于步数上限能退回的位置时，再也回不到保存点。`markSaved()` 同时封口，保存之后的输入另起一步。
 
 ### 合并连续输入
 
@@ -124,6 +127,35 @@ interface SnapGuide {
 
 `rectFromPoints`、`unionRects`、`rectContains`、`rectsIntersect`、`expandRect`、`rectCenter` 是这些函数共用的矩形运算，同样公开。
 
+## 旋转与命中
+
+`Rect` 可带可选的 `rotation`：`x` / `y` / `width` / `height` 是旋转前的框，`rotation` 为绕中心顺时针旋转的角度（度），缺省 0。
+
+带旋转角的矩形一律按旋转后的包围盒计算：`unionRects`、`rectContains`、`rectsIntersect`、`alignRects`、`distributeRects`、`snapRect`（含网格退路），以及视口的 `fitRect`、`revealRect`、`constrainViewport` 都如此；对齐与分布移动的是包围盒，返回的左上角是旋转前的框跟着平移后的位置；`screenRectToWorld`、`worldRectToScreen`、`expandRect` 保留旋转角。需要按旋转后的实际形状判断时用下表的函数，框选的 `intersect` 也按实际形状判断。
+
+| 函数 | 说明 |
+| --- | --- |
+| `rotatePoint(point, center, degrees)` | 把点绕中心顺时针旋转 |
+| `rectCorners(rect)` / `rotatedBounds(rect)` | 旋转后的四角与轴对齐包围盒 |
+| `pointInRect(point, rect, tolerance?)` | 点是否落在旋转后的矩形内 |
+| `hitTest(point, rects, tolerance?)` | 命中的最上层下标（数组越靠后越在上），都不命中为 `-1` |
+| `rotatedRectIntersects(a, b)` | 两个矩形按旋转后的实际形状是否相交，按分离轴判断 |
+
+## 变换控制柄
+
+| 函数 | 说明 |
+| --- | --- |
+| `handlePoints(rect, rotateOffset?)` | 八个缩放柄与旋转柄的位置；旋转柄在上边中点再往外 `rotateOffset` |
+| `resizeWithHandle(start, handle, pointer, { keepAspect?, fromCenter?, minWidth?, minHeight? })` | 拖动缩放柄到指针处后的矩形：在矩形自身的坐标系里缩放，旋转角不变，对边或对角（`fromCenter` 时为中心）保持不动，拖过对边时停在最小尺寸上 |
+| `rotateWithHandle(start, pointer, { step? })` | 拖动旋转柄后的角度（0–360，旋转柄朝上为 0）；`step` 按步长吸附，按住 Shift 时通常传 15 |
+| `nudgeDelta(key, { large?, step?, largeStep? })` | 方向键对应的位移，缺省步长 1、大步长 10；不是方向键时为 `undefined` |
+
+控制柄只给几何，指针与键盘事件、等比与以中心缩放对应哪个修饰键由设计器决定；得到的矩形再由设计器换成自己的缩放或移动操作。
+
+## 标尺
+
+`rulerTicks({ start, end, pixelsPerUnit, minMajorSpacing?, minMinorSpacing?, steps? })` 返回 `{ step, minorStep, ticks }`，每个刻度是 `{ value, offset, major }`。单位由调用方决定：打印设计器传毫米与「每毫米的屏幕像素 × 缩放倍数」，画布设计器传世界坐标。主刻度间隔从 `steps`（缺省 1-2-5）的十进制倍数里取不小于 `minMajorSpacing`（缺省 64 像素）的最小一档，主刻度之间按 10、5、2 格依次尝试，取小格间距不小于 `minMinorSpacing`（缺省 6 像素）的最多分格。
+
 ## 状态
 
-实验级：四款设计器接入期间，历史栈的事务与通知、视口与吸附的选项仍可能调整，破坏性变更可以出现在 minor 中，并在更新日志中逐条列出。
+实验级：四款设计器接入期间，历史栈的事务与通知、视口、吸附与控制柄的选项仍可能调整，破坏性变更可以出现在 minor 中，并在更新日志中逐条列出。
