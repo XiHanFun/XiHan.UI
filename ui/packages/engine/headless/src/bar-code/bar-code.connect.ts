@@ -15,8 +15,10 @@ import { barEncode } from './bar-encode'
 const parts = barCodeAnatomy.build()
 
 const DEFAULT_FORMAT: BarCodeFormat = 'code128'
+/** 全部码制，与 `BarCodeFormat` 一一对应；供属性面板列选项、宿主校验模板时取用。 */
+export const BAR_CODE_FORMATS: readonly BarCodeFormat[] = ['code128', 'ean13', 'ean8', 'upca', 'upce', 'itf14', 'code39']
 /** 认识的码制；`format` 是从 DOM 特性来的字符串，得按运行时的表核，光靠类型拦不住。 */
-const FORMATS: ReadonlySet<string> = new Set<BarCodeFormat>(['code128', 'ean13', 'ean8', 'upca', 'upce', 'itf14', 'code39'])
+const FORMATS: ReadonlySet<string> = new Set<string>(BAR_CODE_FORMATS)
 const DEFAULT_BAR_WIDTH = 2
 const DEFAULT_HEIGHT = 64
 

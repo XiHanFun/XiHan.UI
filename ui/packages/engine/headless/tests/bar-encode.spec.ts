@@ -1,7 +1,8 @@
 // 一维码编码器：已知向量、结构性质与非法输入。回环解码见 bar-decode-roundtrip.spec.ts。
 import type { BarCodeFormat } from '../src/bar-code'
+import { normalizeProps } from '@xihan-ui/core'
 import { describe, expect, it } from 'vitest'
-import { BAR_FNC1_CHAR, barEncode, gs1CheckDigit, upceExpand } from '../src/bar-code'
+import { BAR_CODE_FORMATS, BAR_FNC1_CHAR, barEncode, connectBarCode, gs1CheckDigit, upceExpand } from '../src/bar-code'
 
 /** 序列从条起、于条止（奇数个元素），每一段都是正整数模块。 */
 function expectWellFormed(runs: readonly number[]): void {
@@ -11,6 +12,28 @@ function expectWellFormed(runs: readonly number[]): void {
     expect(run).toBeGreaterThanOrEqual(1)
   }
 }
+
+describe('码制列表', () => {
+  const samples: Record<BarCodeFormat, string> = {
+    code128: 'XiHan-128',
+    ean13: '400638133393',
+    ean8: '9638507',
+    upca: '03600029145',
+    upce: '0123456',
+    itf14: '1001234567890',
+    code39: 'XIHAN-39',
+  }
+
+  it('bAR_CODE_FORMATS 恰好列出每一种码制、不重复', () => {
+    expect([...BAR_CODE_FORMATS].sort()).toEqual(Object.keys(samples).sort())
+    expect(new Set(BAR_CODE_FORMATS).size).toBe(BAR_CODE_FORMATS.length)
+  })
+
+  it.each(BAR_CODE_FORMATS.map(format => [format]))('%s 能编码，connect 认得它并落到 ready 态', (format) => {
+    expect(barEncode(format, samples[format]).format).toBe(format)
+    expect(connectBarCode({ format, value: samples[format] }, normalizeProps).state).toBe('ready')
+  })
+})
 
 describe('gs1 校验位', () => {
   // GS1 通用规范与维基百科上的示例商品码
