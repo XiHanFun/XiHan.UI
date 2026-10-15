@@ -10,6 +10,7 @@
  * - `XH_VIZ_LOG_DOMAIN`：对数比例尺的定义域含 0 或跨越正负。
  * - `XH_VIZ_BAR_BASELINE`：与柱系列同轴的值轴被限定成不含 0，截断的柱长会误导比较。
  * - `XH_VIZ_NEGATIVE_SHARE`：占比类布局（饼、百分比堆叠）出现负值。
+ * - `XH_VIZ_FILTER_OPERAND`：筛选条件的操作数与运算符不匹配。
  */
 export type VizErrorCode
   = | 'XH_VIZ_INVALID_ARGUMENT'
@@ -19,6 +20,7 @@ export type VizErrorCode
     | 'XH_VIZ_NEGATIVE_SHARE'
     | 'XH_VIZ_HIERARCHY'
     | 'XH_VIZ_SANKEY_CYCLE'
+    | 'XH_VIZ_FILTER_OPERAND'
 
 /** viz 的唯一错误类型。`detail` 放定位问题所需的原始输入，由上层转成诊断。 */
 export class VizError extends Error {
