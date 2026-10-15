@@ -71,6 +71,7 @@ export const jsonViewerSuite: ConformanceSuite = {
           'branch-trigger[0]',
           'branch-indicator[0]',
           'preview[0]',
+          'branch-summary[0]',
           'branch-content',
           'item[0]',
           'item-key[0]',
@@ -84,12 +85,14 @@ export const jsonViewerSuite: ConformanceSuite = {
           'branch-indicator[1]',
           'branch-text[0]',
           'preview[1]',
+          'branch-summary[1]',
           'branch[2]',
           'branch-control[2]',
           'branch-trigger[2]',
           'branch-indicator[2]',
           'branch-text[1]',
           'preview[2]',
+          'branch-summary[2]',
           'empty',
         ],
         counts: {
@@ -102,6 +105,7 @@ export const jsonViewerSuite: ConformanceSuite = {
           'branch-text': 2,
           'branch-content': 1,
           'preview': 3,
+          'branch-summary': 3,
           'item': 2,
           'item-key': 2,
           'item-value': 2,
@@ -125,9 +129,9 @@ export const jsonViewerSuite: ConformanceSuite = {
             'aria-posinset': '1',
             'aria-setsize': '1',
             'aria-expanded': 'true',
-            // 分支裹着整棵子层，名字从内容算会把子孙的文字一并念出来，必须显式给；
-            // 根行没有键名，用文案里的称呼
-            'aria-label': 'root',
+            // 不显式给名字：取自己那一行的内容，按内容算名字不往 role=group 的子层里取字；
+            // 这一行念得出的只有视觉隐藏的 branch-summary（根行没有键名，用文案里的称呼）
+            'aria-label': null,
             'data-value': ROOT,
             'data-value-type': 'object',
             'data-state': 'open',
@@ -141,13 +145,13 @@ export const jsonViewerSuite: ConformanceSuite = {
             'aria-posinset': '3',
             'aria-setsize': '4',
             'aria-expanded': 'false',
-            // 收起时成员数折进名字：括号摘要那个部件对读屏是隐藏的
-            'aria-label': 'tags, 1 item',
+            // 收起时成员数折进 branch-summary：括号摘要那个部件对读屏是隐藏的
+            'aria-label': null,
             'data-value': TAGS,
             'data-value-type': 'array',
             'data-state': 'closed',
           },
-          'branch[2]': { 'aria-label': 'meta, 1 item', 'data-value': META, 'data-value-type': 'object' },
+          'branch[2]': { 'aria-label': null, 'data-value': META, 'data-value-type': 'object' },
           'branch-content': { role: 'group' },
           // 展开箭头只是重复了分支自己的语义：退出可及树。
           // 它铺成 span，本来就不在 Tab 序列里，绝不能再给 tabindex——
@@ -155,6 +159,9 @@ export const jsonViewerSuite: ConformanceSuite = {
           'branch-trigger[0]': { 'aria-hidden': 'true', 'tabindex': null },
           // 摘要是排版记号，念出来只有噪音
           'preview[0]': { 'aria-hidden': 'true' },
+          // 键名看得见，但读屏念的是 branch-summary 里那一句（键名打头），这里不再念一遍
+          'branch-text[0]': { 'aria-hidden': 'true' },
+          'branch-summary[0]': { 'aria-hidden': null },
           'item[0]': {
             'role': 'treeitem',
             'aria-level': '2',
@@ -175,6 +182,17 @@ export const jsonViewerSuite: ConformanceSuite = {
         },
         activeElement: null,
       },
+      steps: [{
+        kind: 'raw',
+        why: '分支的名字铺在 branch-summary 的文本里，文本节点进不了归一化快照',
+        run: ({ doc }) => {
+          const texts = [...doc.querySelectorAll<HTMLElement>('[data-scope="json-viewer"][data-part="branch-summary"]')].map(el => el.textContent)
+          // 根行没有键名，用文案里的称呼；收起的分支把成员数折进名字，键名打头
+          const want = ['root', 'tags, 1 item', 'meta, 1 item']
+          if (texts.join('|') !== want.join('|'))
+            throw new Error(`branch-summary 的文字应为 ${want.join(' / ')}，实际是 ${texts.join(' / ')}`)
+        },
+      }],
     },
     {
       name: 'roving tabindex：整棵树只有一个 Tab 停靠点，焦点进来后容器让位',
@@ -276,8 +294,17 @@ export const jsonViewerSuite: ConformanceSuite = {
           expect: {
             // 展开只改展开态，焦点留在分支上
             activeElement: { part: 'branch[1]', exact: true },
+            parts: { 'branch[1]': { 'aria-expanded': 'true', 'aria-label': null, 'data-state': 'open' } },
+          },
+        },
+        {
+          kind: 'raw',
+          why: '分支的名字铺在 branch-summary 的文本里，文本节点进不了归一化快照',
+          run: ({ doc }) => {
+            const summary = doc.querySelector<HTMLElement>(`[data-scope="json-viewer"][data-part="branch"][data-value='${TAGS}'] [data-part="branch-summary"]`)
             // 展开之后成员数由子行的 aria-setsize 报，名字不再带它
-            parts: { 'branch[1]': { 'aria-expanded': 'true', 'aria-label': 'tags', 'data-state': 'open' } },
+            if (summary?.textContent !== 'tags')
+              throw new Error(`展开后 tags 的名字应只剩键名，实际是 "${summary?.textContent ?? '(没有 branch-summary)'}"`)
           },
         },
         // 展开之后 tags 的子行插在它下面，item 的下标随之重排

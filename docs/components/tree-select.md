@@ -436,7 +436,6 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `branch` | `aria-checked` | 'true' \| 'mixed' \| 'false' \| undefined |
 | `branch` | `aria-disabled` | 'true' \| 'false' |
 | `branch` | `aria-expanded` | 'true' \| 'false' |
-| `branch` | `aria-label` | metaOf(node.value)?.label |
 | `branch` | `aria-level` | meta?.level |
 | `branch` | `aria-posinset` | meta?.posInSet |
 | `branch` | `aria-selected` | 'true' \| 'false' |

@@ -424,10 +424,10 @@ describe('connectTree 属性输出', () => {
     expect(index.getAttribute('aria-disabled')).toBe('false')
   })
 
-  it('分支显式带 aria-label：名字从内容算会把整棵子树的文字念进去', () => {
+  it('分支与叶子都不显式给 aria-label：名字取自己那一行的内容，按内容算名字不往子层里取字', () => {
     const h = mount()
-    expect(h.branch('src').branch.getAttribute('aria-label')).toBe('Source')
-    // 叶子的内容就是它自己的文本，不必也不该覆盖
+    // 显式给名字会让行里看得见的后缀、说明落在名字之外（WCAG 2.5.3）
+    expect(h.branch('src').branch.hasAttribute('aria-label')).toBe(false)
     expect(h.item('license').item.hasAttribute('aria-label')).toBe(false)
   })
 

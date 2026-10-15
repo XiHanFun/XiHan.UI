@@ -268,13 +268,11 @@ export interface CitationTranslations {
   /** 预览区域的可及名。 */
   preview: string
   closePreview: string
-  openSource: (title: string) => string
   citation: (index: number, title: string) => string
   /** 一处引了多个来源时引用编号的可及名，入参是这些来源在列表里的序号（1 基）。 */
   citations: (indexes: readonly number[]) => string
   previousSource: string
   nextSource: string
-  source: (index: number, title: string) => string
   document: string
   /** 预览卡里打开网页来源的链接上写的字。 */
   previewLinkSource: string

@@ -859,8 +859,8 @@ export function connectTreeSelect<T extends PropTypes>(
         ...outOfView(node.value),
         'aria-expanded': isExpanded(node.value) ? 'true' : 'false',
         'aria-busy': branchLoadState(node.value)?.status === 'loading' ? 'true' : undefined,
-        // 分支裹着整棵子树，可及名字显式取 collection 的 label（缺省退回 value）
-        'aria-label': metaOf(node.value)?.label,
+        // 名字取自己那一行的内容，与叶子行同一个来源：按内容算名字时不往 role=group 的子层里取字，
+        // 子孙的文字不会算进来。显式给 aria-label 反倒让行里看得见的字（后缀、说明）落在名字之外（WCAG 2.5.3）
         'onFocus': () => send({ type: 'NODE.FOCUS', value: node.value }),
         'onKeyDown': onSelf(handlers.onKeyDown),
         'onKeyUp': onSelf(handlers.onKeyUp),

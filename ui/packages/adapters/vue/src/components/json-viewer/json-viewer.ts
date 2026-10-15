@@ -92,6 +92,8 @@ function renderRow(
   if (node.key != null)
     control.push(h('span', api.getBranchTextProps(ref) as Record<string, unknown>, renderSegments(api, api.keySegments(node))))
   control.push(h('span', api.getPreviewProps(ref) as Record<string, unknown>, api.previewText(node)))
+  // 分支的可及名字：视觉隐藏，读屏从这一行的内容里取到它
+  control.push(h('span', api.getBranchSummaryProps(ref) as Record<string, unknown>, api.branchSummary(node)))
 
   const parts: VNode[] = [h('div', api.getBranchControlProps(ref) as Record<string, unknown>, control)]
   // 收起的子层不渲染：一份大 JSON 全铺出来会把页面压住，展开集合本来也是逐层放开的

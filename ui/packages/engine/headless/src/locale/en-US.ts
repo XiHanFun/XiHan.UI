@@ -228,12 +228,10 @@ export const CITATION_EN_US: XhLocaleBucket<'citation'> = {
   sources: 'Sources',
   preview: 'Source preview',
   closePreview: 'Close source preview',
-  openSource: title => `Open ${title}`,
   citation: (index, title) => `Source ${index}: ${title}`,
   citations: indexes => `Sources ${indexes.join(', ')}`,
   previousSource: 'Previous source',
   nextSource: 'Next source',
-  source: (index, title) => `Source ${index}: ${title}`,
   document: 'Document',
   previewLinkSource: 'Open source',
   previewLinkDocument: 'Open document',
@@ -350,7 +348,6 @@ export const FIELD_ARRAY_EN_US: XhLocaleBucket<'field-array'> = {
 }
 
 export const FILE_UPLOAD_EN_US: XhLocaleBucket<'file-upload'> = {
-  dropzone: 'Drop files here',
   deleteItem: file => `Delete ${file.name}`,
   clearTrigger: 'Clear all files',
 }

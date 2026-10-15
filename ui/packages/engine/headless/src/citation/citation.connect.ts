@@ -94,6 +94,8 @@ export function connectCitation<T extends PropTypes>(
   const indexOf = (sourceId: string): number => sources.findIndex(source => source.sourceId === sourceId)
   const previewId = (sourceId: string): string => citationPreviewId(scope, sourceId)
   const sourceLinkId = (sourceId: string): string => citationSourceLinkId(scope, sourceId)
+  const previewTitleId = (sourceId: string): string => scope.partId(citationAnatomy.name, `preview-title:${sourceId}`)
+  const previewLinkId = (sourceId: string): string => scope.partId(citationAnatomy.name, `preview-link:${sourceId}`)
   const triggerId = (item: CitationTriggerProps): string => scope.partId(
     citationAnatomy.name,
     `trigger:${item.citationId ?? `${triggerSourceIds(item).join('+')}:${item.anchorIndex ?? 0}`}`,
@@ -336,8 +338,10 @@ export function connectCitation<T extends PropTypes>(
     getPreviewHeaderProps: _item => normalize.element({
       ...parts['preview-header'].attrs,
     }),
-    getPreviewTitleProps: _item => normalize.element({
+    getPreviewTitleProps: item => normalize.element({
       ...parts['preview-title'].attrs,
+      // 预览里那颗打开钮借它当名字的后半句
+      id: previewTitleId(item.sourceId),
     }),
     getPreviewMetaProps: _item => normalize.element({
       ...parts['preview-meta'].attrs,
@@ -350,13 +354,15 @@ export function connectCitation<T extends PropTypes>(
     previewLinkText: item => (source(item.sourceId)?.type === 'source-document' ? labels.previewLinkDocument : labels.previewLinkSource),
     getPreviewLinkProps: (item) => {
       const current = source(item.sourceId)
-      const title = citationSourceTitle(current)
       const anchorIndex = item.sourceId === activeSourceId ? activeAnchorIndex ?? item.anchorIndex ?? 0 : item.anchorIndex ?? 0
       return normalize.element({
         ...parts['preview-link'].attrs,
         'href': current?.type === 'source-url' ? current.url : undefined,
         'type': current?.type === 'source-document' ? 'button' : undefined,
-        'aria-label': labels.openSource(title),
+        // 名字是它自己看得见的那句（打开来源 / 打开文档）再接上预览标题：
+        // 可见文字整句落在名字里（WCAG 2.5.3），读屏也知道打开的是哪一篇
+        'id': previewLinkId(item.sourceId),
+        'aria-labelledby': `${previewLinkId(item.sourceId)} ${previewTitleId(item.sourceId)}`,
         'data-xh-action-control': '',
         'data-xh-action-profile': current?.type === 'source-document' ? 'text' : undefined,
         'data-xh-action-variant': current?.type === 'source-document' ? 'ghost' : undefined,
@@ -440,7 +446,6 @@ export function connectCitation<T extends PropTypes>(
     }),
     getSourceLinkProps: (item) => {
       const current = source(item.sourceId)
-      const index = indexOf(item.sourceId)
       const off = disabled || !!item.disabled || !current
       const expanded = isVisible(item.sourceId)
       return normalize.button({
@@ -449,7 +454,7 @@ export function connectCitation<T extends PropTypes>(
         'id': sourceLinkId(item.sourceId),
         'type': 'button',
         'disabled': off || undefined,
-        'aria-label': labels.source(index + 1, citationSourceTitle(current)),
+        // 名字取这一行的内容：序号、标题与出处都看得见，显式名字装不下出处（WCAG 2.5.3）
         'aria-expanded': expanded ? 'true' : 'false',
         'aria-controls': previewId(item.sourceId),
         'aria-current': isActive(item.sourceId) ? 'true' : undefined,

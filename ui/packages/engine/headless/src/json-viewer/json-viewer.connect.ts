@@ -12,6 +12,7 @@ import { contains, createPressTracker, dataAttr, focusItem, ITEM_VALUE_ATTR, ite
 import { splitHighlight } from '../highlight/highlight.split'
 import { JSON_VIEWER_EN_US } from '../locale/en-US'
 import { resolveTranslations } from '../shared/translations'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { jsonViewerAnatomy, jsonViewerBranchQuery, jsonViewerItemQuery } from './json-viewer.anatomy'
 import { flattenJson, jsonExpandedPathsToDepth, jsonSearch, jsonSearchQuery, jsonSeedExpanded, jsonViewerText, resolveJsonViewerTools, tokenizeJsonText } from './json-viewer.machine'
 
@@ -149,10 +150,10 @@ export function connectJsonViewer<T extends PropTypes>(
   const valueText = (node: JsonViewerNode): string => (node.truncated ? label.moreItems(node.count) : node.text)
 
   /**
-   * 分支的可及名字：整份数据的最外层没有键名，得给它一个称呼；
+   * 分支的可及名字，铺在视觉隐藏的 branch-summary 里：整份数据的最外层没有键名，得给它一个称呼；
    * 收起时再把成员数念进来——括号摘要那个部件对读屏是隐藏的。
    */
-  const branchLabel = (node: JsonViewerNode): string => {
+  const branchSummary = (node: JsonViewerNode): string => {
     const name = node.key ?? label.root
     return isExpanded(node.value) ? name : label.collapsedBranchLabel(name, node.count)
   }
@@ -263,6 +264,7 @@ export function connectJsonViewer<T extends PropTypes>(
     isFocusWithin,
     isExpanded,
     previewText,
+    branchSummary,
     valueText,
     searchMatches: matches,
     activeMatch: activeMatch != null && matchSet.has(activeMatch) ? activeMatch : null,
@@ -443,8 +445,8 @@ export function connectJsonViewer<T extends PropTypes>(
         ...nodeAttrs(node, props.value),
         ...branchState(node, props.value),
         'aria-expanded': isExpanded(props.value) ? 'true' : 'false',
-        // 分支裹着整棵子层，从内容算名字会把所有子孙的文字一并念出来，必须显式给
-        'aria-label': node ? branchLabel(node) : undefined,
+        // 名字取自己那一行的内容（按内容算名字不往 role=group 的子层里取字），实际只剩 branch-summary 那一句：
+        // 不显式给 aria-label——展开后子层的字也算这一行看得见的字，显式名字装不下它们（WCAG 2.5.3）
         'onFocus': () => send({ type: 'NODE.FOCUS', value: props.value }),
         'onKeyDown': onSelf(handlers.onKeyDown),
         'onKeyUp': onSelf(handlers.onKeyUp),
@@ -500,6 +502,14 @@ export function connectJsonViewer<T extends PropTypes>(
     getBranchTextProps: props => normalize.element({
       ...parts['branch-text'].attrs,
       ...branchState(nodeOf(props.value), props.value),
+      // 键名照样看得见，读屏念的是 branch-summary 里那一句（键名打头），这里不再念一遍
+      'aria-hidden': true,
+    }),
+
+    getBranchSummaryProps: props => normalize.element({
+      ...parts['branch-summary'].attrs,
+      ...branchState(nodeOf(props.value), props.value),
+      style: VISUALLY_HIDDEN_STYLE,
     }),
 
     getBranchContentProps: props => normalize.element({

@@ -355,7 +355,6 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `branch` | `aria-checked` | 'true' \| 'mixed' \| 'false' \| undefined |
 | `branch` | `aria-disabled` | 'true' \| 'false' |
 | `branch` | `aria-expanded` | 'true' \| 'false' |
-| `branch` | `aria-label` | metaOf(node.value)?.label |
 | `branch` | `aria-level` | meta?.level |
 | `branch` | `aria-posinset` | meta?.posInSet |
 | `branch` | `aria-selected` | 'true' \| 'false' |
