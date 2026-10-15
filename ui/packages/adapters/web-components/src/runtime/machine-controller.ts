@@ -10,6 +10,7 @@ import type { XhConfig } from '../config'
 import type { ReactiveController, ReactiveControllerHost } from '../reactive'
 import type { LitRuntime } from './lit-runtime'
 import { createFormResetBridge, createService, declaresFormReset, FORM_RESET_EVENT } from '@xihan-ui/core'
+import { isPlainObject } from '@xihan-ui/core/json'
 import { withXhConfigBase } from '@xihan-ui/headless'
 import { resolveXhConfig, xhConfigGeneration } from '../config'
 import { createLitRuntime } from './lit-runtime'
@@ -28,13 +29,6 @@ export interface MachineControllerOptions<T extends MachineSchema> {
 
 /** 初值类 prop 的键：defaultValue、defaultOpen、defaultWindow…… */
 const SEED_KEY = /^default[A-Z]/
-
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  if (typeof value !== 'object' || value === null)
-    return false
-  const proto = Object.getPrototypeOf(value) as unknown
-  return proto === Object.prototype || proto === null
-}
 
 /** 初值按内容比：作者再给一份内容相同的新数组 / 对象，不算换了初值。 */
 function sameSeed(a: unknown, b: unknown): boolean {
