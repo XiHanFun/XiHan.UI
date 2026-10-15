@@ -52,7 +52,7 @@ const payload = {
 
 加粗的是必需部件。
 
-`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text` · `empty` · `mark`
+`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text` · `token` · `empty` · `mark` · `toolbar` · `expand-trigger` · `wrap-trigger` · `copy-trigger` · `view-trigger` · `status`
 
 ## 示例
 
@@ -620,6 +620,59 @@ const query = ref("xihan");
 </script>
 ```
 
+### 内建工具条
+
+tools 打开内建工具条：树档有展开全部 / 收起全部，原文档有自动换行，复制原文与原文开关固定在末端；数组只铺列出的几项
+
+```vue
+<script setup lang="ts">
+import { XhJsonViewerRoot } from "@xihan-ui/vue";
+
+const payload = {
+  traceId: "9ef5a8c3e1b44f0f",
+  request: {
+    method: "POST",
+    url: "/api/workflow/definition/new-version?tenant=hangzhou-branch&operator=owner&reason=quarterly-review",
+    headers: { "content-type": "application/json", "x-request-id": "c0d1e2f3" },
+  },
+  response: { status: 200, elapsed: 35, body: { id: "207795978470952990", version: 3 } },
+};
+</script>
+
+<template>
+  <div style="display: flex; flex-direction: column; gap: 16px; inline-size: 100%; max-inline-size: 480px">
+    <XhJsonViewerRoot :value="payload" tools :default-expanded-depth="2" />
+    <XhJsonViewerRoot :value="payload" :tools="['copy', 'view']" default-view="text" />
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-direction: column; gap: 16px; inline-size: 100%; max-inline-size: 480px">
+  <xh-json-viewer class="json-tools-demo" tools default-expanded-depth="2">
+    <div data-xh-part="root"></div>
+  </xh-json-viewer>
+  <xh-json-viewer class="json-tools-demo" tools="copy view" default-view="text">
+    <div data-xh-part="root"></div>
+  </xh-json-viewer>
+</div>
+
+<script type="module">
+  const payload = {
+    traceId: "9ef5a8c3e1b44f0f",
+    request: {
+      method: "POST",
+      url: "/api/workflow/definition/new-version?tenant=hangzhou-branch&operator=owner&reason=quarterly-review",
+      headers: { "content-type": "application/json", "x-request-id": "c0d1e2f3" },
+    },
+    response: { status: 200, elapsed: 35, body: { id: "207795978470952990", version: 3 } },
+  };
+
+  for (const viewer of document.querySelectorAll(".json-tools-demo"))
+    viewer.value = payload;
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -642,9 +695,13 @@ const query = ref("xihan");
 - 展开集合可受控（`expandedValue` / `defaultExpandedValue`），非受控时按 `defaultExpandedDepth` 计算：数据晚于组件挂载到达（自定义元素常先升级、再由脚本写 `.value`）也能计算，第一次展开或收起之后固定，不再跟随数据。
 - `maxStringLength` 截断长字符串，`maxItems` 折叠超长数组，`sortKeys` 让对象键按字典序排列。
 - 循环引用展开到即停，标记为 `[Circular]`，不会无限递归。
-- 每一行带 `data-value-type`，六种值形态各自着色。
+- 每一行带 `data-value-type`，六种值形态各自着色。原文档同样着色：原文按类别切成 `token` 部件（`data-kind` 为 `key`、`string`、`number`、`boolean`、`null`、`punctuation`），与树档使用同一组覆盖槽与语法令牌；原文无法识别为 JSON 时整段不着色。
 - 尺寸轴与其他组件同源；`variant` 决定外框形态，默认 `outline`；`subtle` 换成淡底无描边，`ghost` 去掉外框与底色只保留内容。
 - 没有任何行可展开时由 `empty` 部件说明，文案使用 `translations.empty`，作者也可以自行写入内容。
+- 内建工具条按需打开：`tools` 不提供即没有工具条；`true` 铺出全部工具；数组只铺列出的几项（`expand`、`wrap`、`copy`、`view`），数组里出现未知的工具名会抛错。条是根的第一个孩子，钮的排列由组件决定：展开 / 收起全部是一颗切换钮，只在树档出现：还有收着的分支时按下展开全部，已经全部展开时按下收回顶层，名称与字形随之变化；「自动换行」只在原文档出现；复制与树 / 原文切换钮固定在末端，切换形态时这两颗不移动，切换钮的名称与字形取要切去的那一档。
+- 树 / 原文切换钮改写 `view`：`view` 提供即受控，开关只触发 `onViewChange`；`defaultView` 是非受控初值。自动换行同理（`wrap` / `defaultWrap` / `onWrapChange`），开启后原文的长行折到下一行而不是横向滚动。
+- 复制钮写入的是原文档那一份文本（不受 `maxStringLength` / `maxItems` 折减），无论当前处于哪一档；成功后钮换成对钩约 3 秒，写入失败时回到常态并触发 `onCopyError`。剪贴板接口要求安全上下文。
+- 手里有值的原文（如后端下发的 JSON 文本）时传给 `source`：原文档与复制钮改用它，能解析成 JSON 就只按两格缩进重排，数字、字符串等字面量保持不变，解析不了就原样显示。`value` 是解析过的值，超出安全整数的数字（如 64 位 ID）已经失真，只有原文与来源一致；树档仍展示 `value`。headless 另导出同一个重排函数 `formatJsonSource`。
 - 只支持 JSON 能表达的形状，传入活对象时呈现有损：`Date` / `Map` / `Set` 一律按自有可枚举键展开，因此显示为 `{}`；`undefined` 归入 `null` 一档、显示为 `undefined`；`bigint` 归入 `number`；函数与 symbol 归入 `string`，按各自的字符串形式呈现。需要如实展示这些值时先转换为 JSON 能表达的形状。
 - 自定义元素侧：`value` 属性接受一段 JSON 文本（无法解析时按字符串值展示），对象与数组直接赋 property（`el.value = { … }`）；`expandedValue` / `defaultExpandedValue` / `translations` 没有对应属性，只能通过 property 设置，写成 `expanded-value='["$"]'` 不会生效。
 
@@ -653,7 +710,8 @@ const query = ref("xihan");
 - 搜索：`search` 标出键名与值里含有搜索词的行（不区分大小写），命中行的祖先分支自动展开（写进展开集合，之后照常能收起），命中的那一段铺成 `mark` 部件。搜索框与上一条 / 下一条由作者摆在树之前：Vue 写进 `toolbar` 插槽，React 经 `toolbar` 传入，载荷是 `searchMatches`、`activeMatch`、`nextMatch`、`prevMatch`；Web Components 在元素上取 `searchMatches` / `activeMatch` 并调用 `nextMatch()` / `prevMatch()`。停住的那一条投影 `data-current`、命中片段换成实心，并被滚进视野。
 
 - 放入[标签页](./tabs)或[抽屉](./drawer)作为调试面板；行数多时套一层[滚动区域](./scroll-area)。
-- 配合[剪贴板](./clipboard)提供原始 JSON 的复制。
+- 只需要复制原文时打开 `tools` 的 `copy` 一项；复制钮要放在别处或换成带文字的样式时，改用[剪贴板](./clipboard)并把 `jsonText(value, sortKeys)` 的结果交给它。
+- 搜索框（`toolbar` 插槽）与内建工具条可以同时使用：插槽内容排在根之前，内建工具条排在根内的最前面。
 
 ### 最佳实践
 
@@ -684,7 +742,12 @@ const query = ref("xihan");
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `value` | `unknown` |  | 要展示的值，任意形状。未提供时为空视图（不展开任何行）。 |
-| `view` | `JsonViewerView` |  | 展示形态，默认 tree。 text 档直接输出 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减： 目的是与后端下发的内容完全一致。展开集合与键盘导航在该档上不生效。 |
+| `view` | `JsonViewerView` |  | 展示形态。提供即受控：cell 直读 prop，原文开关只发 onViewChange 不落内部值。 text 档直接输出 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减： 目的是与后端下发的内容完全一致。展开集合与键盘导航在该档上不生效。 |
+| `defaultView` | `JsonViewerView` |  | 非受控初值，默认 tree。 |
+| `source` | `string` |  | 值的原文（如后端下发的那段 JSON 文本）。提供时原文档与复制钮一律取它：能解析成 JSON 就只按两格缩进重排， 数字、字符串等字面量一字不改；解析不了就原样。value 是解析过的值，超出安全整数的数字已经失真， 原文才是与后端一致的那一份。不提供时由 value 序列化。树档照旧展示 value。 |
+| `wrap` | `boolean` |  | 原文档是否自动换行。提供即受控，写入只发 onWrapChange。缺省不换行：长行横向滚动，缩进不被折乱。 |
+| `defaultWrap` | `boolean` |  | 非受控初值，默认 false。 |
+| `tools` | `boolean \| readonly JsonViewerTool[]` |  | 内建工具条：不提供即没有工具条；true 铺出全部工具；数组只铺列出的几项。 钮的排列由组件定（展开 / 收起、换行、复制、原文开关依次排在条的末端），与数组顺序无关； 数组里出现未知的工具名即抛错。 |
 | `variant` | `ControlVariant` |  | 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留内容。 |
 | `expandedValue` | `string[]` |  | 展开集合（元素是行路径）。提供即受控：cell 直读 prop，写入只发 onExpandedValueChange 不落内部值。 |
 | `defaultExpandedValue` | `string[]` |  | 非受控初值；未提供时按 defaultExpandedDepth 计算。 |
@@ -698,6 +761,9 @@ const query = ref("xihan");
 | `search` | `string` |  | 搜索词：键名与值文本里含有它（不区分大小写）的行即为命中。 命中行的祖先分支自动展开（写进展开集合），命中片段由作者按 `api.segments` 铺成 mark 部件。 空串与只含空白视为没有搜索。 |
 | `translations` | `Partial<JsonViewerTranslations>` |  |  |
 | `onExpandedValueChange` | `(details: JsonViewerExpandedValueChangeDetails) => void` |  |  |
+| `onViewChange` | `(details: JsonViewerViewChangeDetails) => void` |  | 原文开关切换了展示形态；受控时由宿主据此回写 view。 |
+| `onWrapChange` | `(details: JsonViewerWrapChangeDetails) => void` |  | 换行开关切换了原文档的换行；受控时由宿主据此回写 wrap。 |
+| `onCopyError` | `(details: JsonViewerCopyErrorDetails) => void` |  | 复制钮写入剪贴板失败时通知；此时复制钮已回到常态，不留下「已复制」的假象。 |
 
 ### 事件
 
@@ -706,6 +772,9 @@ const query = ref("xihan");
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `expanded-value-change` | `JsonViewerExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `view-change` | `JsonViewerViewChangeDetails` | 原文开关切换了展示形态；detail 为 `{ view: 'tree' \| 'text' }` |
+| `wrap-change` | `JsonViewerWrapChangeDetails` | 换行开关切换了原文档的换行；detail 为 `{ wrap: boolean }` |
+| `copy-error` | `JsonViewerCopyErrorDetails` | 复制钮写入剪贴板失败；detail 为 `{ error: unknown, value: string }` |
 
 ### 插槽
 
@@ -738,12 +807,16 @@ const query = ref("xihan");
 | `branch-text` | 'open' \| 'closed' |
 | `branch-content` | 'open' \| 'closed' |
 | `preview` | 'open' \| 'closed' |
+| `expand-trigger` | 'open' \| 'closed' |
+| `wrap-trigger` | 'on' \| 'off' |
+| `copy-trigger` | 'idle' \| 'copying' \| 'copied' |
+| `status` | 'idle' \| 'copying' \| 'copied' |
 
 以下名称仅用于内部状态机。
 
-**状态**：`idle`
+**状态**：`idle` · `copying` · `copied`
 
-**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `VIEWER.BLUR` · `PRESS.START` · `PRESS.END` · `MATCH.SET` · `SEARCH.SYNC`
+**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `VIEWER.BLUR` · `PRESS.START` · `PRESS.END` · `MATCH.SET` · `SEARCH.SYNC` · `VIEW.SET` · `WRAP.SET` · `COPY.TRIGGER` · `COPY.SUCCESS` · `COPY.ERROR` · `after.timeout` · `TOOL.PRESS.START` · `TOOL.PRESS.END`
 
 ### connect API
 
@@ -763,9 +836,21 @@ const query = ref("xihan");
 | `collapse` | `(value: string) => void` |  |
 | `toggle` | `(value: string) => void` |  |
 | `view` | `JsonViewerView` | 当前生效的展示形态。 |
+| `wrap` | `boolean` | 原文档当前是否自动换行。 |
+| `tools` | `readonly JsonViewerTool[]` | 工具条上铺的工具，按条上的排列顺序；没有工具条时为空。 |
+| `copyStatus` | `JsonViewerCopyStatus` | 复制钮的写入相位。 |
+| `copied` | `boolean` | 已复制成功且仍在停留窗口内：复制钮换成对钩、播报区念出成功回执的唯一判据。 |
+| `announcement` | `string` | 播报区该念的语句；未到已复制档时为空串。 |
+| `setView` | `(view: JsonViewerView) => void` |  |
+| `setWrap` | `(wrap: boolean) => void` |  |
+| `expandAll` | `() => void` | 展开全部分支（maxItems 折掉的成员与循环引用照旧不展开）。 |
+| `collapseAll` | `() => void` | 收起到只剩顶层：根行留着展开，其下的分支全部收起。 |
+| `allExpanded` | `boolean` | 每一层的分支都已展开（maxItems 折掉的成员与循环引用不算分支）。展开 / 收起钮据此决定这一下是展开还是收起； 只有根一层分支、没有可展开的子层时为 false。原文档不算，恒为 false。 |
+| `copy` | `() => void` | 把 JSON 原文写进剪贴板，与点复制钮走同一路径。 |
 | `isEmpty` | `boolean` | 无法展开任何一行：value 未提供或为 undefined。空态部件随它显隐。 |
 | `emptyText` | `string` | 空态的兜底文案，作者未向空态部件写入内容时铺设它。 |
-| `text` | `string` | 缩进后的 JSON 原文；键序与环路记号与树档一致。text 档之外也可获取，便于作者实现复制原文。 |
+| `text` | `string` | 原文档展示、复制钮写入的那份文本：提供了 source 时是它重排缩进后的样子，否则由 value 序列化（键序与环路记号与树档一致）。 |
+| `textSegments` | `readonly JsonViewerTextSegment[]` | 原文按类别切成的段，依次拼接恒等于 text：键名、标量与标点各成一段，铺成 token 部件着色，空白按纯文本铺。 原文解析不了时整段一个不着色的段。只在原文档切分，树档为空：树档用不上，不白算一遍。 |
 | `searchMatches` | `readonly string[]` | 命中搜索词的行路径，按树序排列；没有搜索时为空。 |
 | `activeMatch` | `string \| null` | 在命中之间逐个走时停在哪一行；没有时为 null。 |
 | `nextMatch` | `() => void` | 停到下一条命中（走到末尾回到第一条），并把它滚进视野。 |
@@ -776,6 +861,7 @@ const query = ref("xihan");
 | `getRootProps` | `() => T['element']` |  |
 | `getTreeProps` | `() => T['element']` |  |
 | `getTextProps` | `() => T['element']` |  |
+| `getTokenProps` | `(props: JsonViewerTokenProps) => T['element']` | 原文档里有类别的一段（键名、标量、标点），带 data-kind 供皮肤按树档同一套颜色着色。 |
 | `getItemProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getItemKeyProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getItemValueProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
@@ -788,6 +874,12 @@ const query = ref("xihan");
 | `getPreviewProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getMarkProps` | `() => T['element']` | 键名与值文本里命中搜索词的那一段。 |
+| `getToolbarProps` | `() => T['element']` | 内建工具条：根的第一个孩子，各颗钮按 tools 铺在其中。 报告 `role=group`：一组有名字的控件，每颗钮各占一个 Tab 位； 不报告 `role=toolbar`，那个角色承诺条内靠方向键移动。 |
+| `getExpandTriggerProps` | `() => T['button']` | 展开 / 收起全部的切换钮：data-state 为 open 时已全部展开（再按收起），closed 时还有收着的（再按展开）。 |
+| `getWrapTriggerProps` | `() => T['button']` |  |
+| `getCopyTriggerProps` | `() => T['button']` |  |
+| `getViewTriggerProps` | `() => T['button']` |  |
+| `getStatusProps` | `() => T['element']` | 复制成功的播报区：视觉隐藏的 polite 实时区，只要有复制钮就常驻，内容取 announcement。 |
 
 ## 无障碍
 
@@ -807,6 +899,7 @@ const query = ref("xihan");
 | `Enter` / `Space` | focus on branch | 切换该分支的展开态；焦点在标量行上时不吞这两个键 |
 | `Enter` / `Space` | held on branch | 按住期间该分支行（branch-control）投影 data-pressed，与指针 :active 同一副按压面（行只换面不缩放）；抬起或失焦撤下。展开态的切换照旧由这一次按键承担 |
 | `*` | focus in tree | 展开与焦点行同一父级的全部分支（已展开的不动）；同级没有可展开的分支时不吞这个键 |
+| `Enter` / `Space` | focus on a toolbar trigger（开启 tools 时） | 触发该钮：展开 / 收起全部、切换自动换行或原文、复制原文；按住期间投影 data-pressed，抬起或失焦撤下。工具钮各占一个 Tab 位，条内不靠方向键移动 |
 
 ### ARIA
 
@@ -832,12 +925,20 @@ const query = ref("xihan");
 | `preview` | `aria-hidden` | 'true' |
 | `text` | `aria-label` | label.text |
 | `text` | `role` | 'region' |
+| `toolbar` | `aria-label` | label.toolbar |
+| `toolbar` | `role` | 'group' |
+| `wrap-trigger` | `aria-pressed` | 'true' \| 'false' |
+| `status` | `aria-atomic` | 'true' |
+| `status` | `aria-live` | 'polite' |
+| `status` | `role` | 'status' |
 
 - 树是 `role=tree`，每一行是 `role=treeitem`，层级三项（`aria-level` / `aria-posinset` / `aria-setsize`）取自展开结果。
 - 整棵树只占一个 Tab 位：首次进入落在首行，之后 Tab 离开再返回时落回上次停留的行；组内靠上下键移动。
 - 展开箭头对读屏隐藏，它重复的是分支自身已报出的 `aria-expanded` 与左右方向键。
 - 分支的名称显式提供（`aria-label`）：它包裹整棵子层，从内容计算名称会把所有子孙的文字一并读出。
 - 收起摘要（`{…} 3`）是排版记号，对读屏隐藏；其中的成员数并入分支的可访问名称（默认读为 `tags, 3 items`，整句可用 `translations.collapsedBranchLabel` 替换）。
+- 工具条是 `role=group` 并带可访问名称（`translations.toolbar`），每颗钮各占一个 Tab 位；不报告 `role=toolbar`，条内不靠方向键移动。钮里只有字形，名称取自 `translations`；自动换行是开关钮，开关状态由 `aria-pressed` 报告、名称不变；展开 / 收起与树 / 原文两颗切换钮的名称随动作变化（如「展开全部」「收起全部」），不再另报 `aria-pressed`，免得名称与按下态各说各的。
+- 复制成功的回执由视觉隐藏的 `status` 部件（`aria-live="polite"`）读出，钮上的对钩只是视觉标记。
 
 ## 样式参考
 
@@ -855,7 +956,7 @@ const query = ref("xihan");
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
 | `root` | `data-variant` | props.variant |
-| `root` | `data-view` | props.view |
+| `root` | `data-view` | context.get('view') |
 | `item` | `data-circular` | ''（条件成立时才出现） |
 | `item` | `data-current` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
@@ -924,6 +1025,35 @@ const query = ref("xihan");
 | `preview` | `data-state` | 'open' \| 'closed' |
 | `preview` | `data-truncated` | ''（条件成立时才出现） |
 | `preview` | `data-value-type` | node?.type |
+| `text` | `data-wrap` | ''（条件成立时才出现） |
+| `token` | `data-kind` | props.kind |
+| `toolbar` | `data-view` | context.get('view') |
+| `expand-trigger` | `data-state` | 'open' \| 'closed' |
+| `expand-trigger` | `data-xh-action-control` | '' |
+| `expand-trigger` | `data-xh-action-display` | 'always' |
+| `expand-trigger` | `data-xh-action-profile` | 'icon' |
+| `expand-trigger` | `data-xh-action-size` | 'md' \| 'sm' |
+| `expand-trigger` | `data-xh-action-variant` | 'ghost' |
+| `wrap-trigger` | `data-state` | 'on' \| 'off' |
+| `wrap-trigger` | `data-xh-action-control` | '' |
+| `wrap-trigger` | `data-xh-action-display` | 'always' |
+| `wrap-trigger` | `data-xh-action-profile` | 'icon' |
+| `wrap-trigger` | `data-xh-action-size` | 'md' \| 'sm' |
+| `wrap-trigger` | `data-xh-action-variant` | 'ghost' |
+| `copy-trigger` | `data-copied` | ''（条件成立时才出现） |
+| `copy-trigger` | `data-state` | 'idle' \| 'copying' \| 'copied' |
+| `copy-trigger` | `data-xh-action-control` | '' |
+| `copy-trigger` | `data-xh-action-display` | 'always' |
+| `copy-trigger` | `data-xh-action-profile` | 'icon' |
+| `copy-trigger` | `data-xh-action-size` | 'md' \| 'sm' |
+| `copy-trigger` | `data-xh-action-variant` | 'ghost' |
+| `view-trigger` | `data-view` | context.get('view') |
+| `view-trigger` | `data-xh-action-control` | '' |
+| `view-trigger` | `data-xh-action-display` | 'always' |
+| `view-trigger` | `data-xh-action-profile` | 'icon' |
+| `view-trigger` | `data-xh-action-size` | 'md' \| 'sm' |
+| `view-trigger` | `data-xh-action-variant` | 'ghost' |
+| `status` | `data-state` | 'idle' \| 'copying' \| 'copied' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -933,7 +1063,7 @@ const query = ref("xihan");
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-json-viewer-bg` | `empty`<br>`root`<br>`text`<br>`tree` | `background` | `default`<br>`is([data-scope='json-viewer'][data-part='tree'], [data-scope='json-viewer'][data-part='text'], [data-scope='json-viewer'][data-part='empty'])`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | json-viewer 的 empty、root、text、tree 部件 background 覆盖槽。 |
-| `--xh-json-viewer-boolean-fg` | `item-value` | `color` | `value-type=boolean` | `--xh-syntax-keyword` | json-viewer 的 item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-boolean-fg` | `item-value`<br>`token` | `color` | `kind=boolean`<br>`value-type=boolean` | `--xh-syntax-keyword` | json-viewer 的 item-value、token 部件 color 覆盖槽。 |
 | `--xh-json-viewer-border` | `empty`<br>`text`<br>`tree` | `border` | `default` | `--xh-border-default` | json-viewer 的 empty、text、tree 部件 border 覆盖槽。 |
 | `--xh-json-viewer-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | json-viewer 的 empty 部件 color 覆盖槽。 |
 | `--xh-json-viewer-empty-gap` | `empty` | `gap` | `default` | `--xh-space-2` | json-viewer 的 empty 部件 gap 覆盖槽。 |
@@ -946,19 +1076,19 @@ const query = ref("xihan");
 | `--xh-json-viewer-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-_json-viewer-indent` | json-viewer 的 branch-content 部件 padding-inline-start 覆盖槽。 |
 | `--xh-json-viewer-indicator-fg` | `branch-trigger` | `color` | `default` | `--xh-fg-subtle` | json-viewer 的 branch-trigger 部件 color 覆盖槽。 |
 | `--xh-json-viewer-indicator-size` | `branch-trigger` | `--xh-icon-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | json-viewer 的 branch-trigger 部件 --xh-icon-size、inline-size 覆盖槽。 |
-| `--xh-json-viewer-key-fg` | `branch-text`<br>`item-key` | `color` | `default` | `--xh-fg-brand-strong` | json-viewer 的 branch-text、item-key 部件 color 覆盖槽。 |
-| `--xh-json-viewer-key-font-weight` | `branch-text`<br>`item-key` | `font-weight` | `default` | `--xh-font-weight-medium` | json-viewer 的 branch-text、item-key 部件 font-weight 覆盖槽。 |
+| `--xh-json-viewer-key-fg` | `branch-text`<br>`item-key`<br>`token` | `color` | `default`<br>`kind=key` | `--xh-fg-brand-strong` | json-viewer 的 branch-text、item-key、token 部件 color 覆盖槽。 |
+| `--xh-json-viewer-key-font-weight` | `branch-text`<br>`item-key`<br>`token` | `font-weight` | `default`<br>`kind=key` | `--xh-font-weight-medium` | json-viewer 的 branch-text、item-key、token 部件 font-weight 覆盖槽。 |
 | `--xh-json-viewer-mark-bg` | `mark` | `background` | `default` | `--xh-bg-brand-subtle` | json-viewer 的 mark 部件 background 覆盖槽。 |
 | `--xh-json-viewer-mark-bg-current` | `branch`<br>`branch-control`<br>`branch-text`<br>`item`<br>`item-key`<br>`item-value`<br>`mark` | `background` | `current` | `--xh-bg-brand` | json-viewer 的 branch、branch-control、branch-text、item、item-key、item-value、mark 部件 background 覆盖槽。 |
 | `--xh-json-viewer-mark-fg` | `mark` | `color` | `default` | `--xh-fg-brand-strong` | json-viewer 的 mark 部件 color 覆盖槽。 |
 | `--xh-json-viewer-mark-fg-current` | `branch`<br>`branch-control`<br>`branch-text`<br>`item`<br>`item-key`<br>`item-value`<br>`mark` | `color` | `current` | `--xh-fg-on-brand` | json-viewer 的 branch、branch-control、branch-text、item、item-key、item-value、mark 部件 color 覆盖槽。 |
 | `--xh-json-viewer-mark-radius` | `mark` | `border-radius` | `default` | `--xh-shape-inset` | json-viewer 的 mark 部件 border-radius 覆盖槽。 |
 | `--xh-json-viewer-max-h` | `text`<br>`tree` | `max-block-size` | `default` | `--xh-viewport-max-h` | json-viewer 的 text、tree 部件 max-block-size 覆盖槽。 |
-| `--xh-json-viewer-null-fg` | `item-value` | `color` | `value-type=null` | `--xh-fg-subtle` | json-viewer 的 item-value 部件 color 覆盖槽。 |
-| `--xh-json-viewer-number-fg` | `item-value` | `color` | `value-type=number` | `--xh-syntax-number` | json-viewer 的 item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-null-fg` | `item-value`<br>`token` | `color` | `kind=null`<br>`value-type=null` | `--xh-fg-subtle` | json-viewer 的 item-value、token 部件 color 覆盖槽。 |
+| `--xh-json-viewer-number-fg` | `item-value`<br>`token` | `color` | `kind=number`<br>`value-type=number` | `--xh-syntax-number` | json-viewer 的 item-value、token 部件 color 覆盖槽。 |
 | `--xh-json-viewer-preview-fg` | `preview` | `color` | `default` | `--xh-fg-muted` | json-viewer 的 preview 部件 color 覆盖槽。 |
 | `--xh-json-viewer-preview-font-size` | `preview` | `font-size` | `default` | `--xh-text-caption-size` | json-viewer 的 preview 部件 font-size 覆盖槽。 |
-| `--xh-json-viewer-punctuation-fg` | `branch-text`<br>`item-key`<br>`item-value` | `color` | `default`<br>`value-type=array`<br>`value-type=object` | `--xh-fg-subtle` | json-viewer 的 branch-text、item-key、item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-punctuation-fg` | `branch-text`<br>`item-key`<br>`item-value`<br>`token` | `color` | `default`<br>`kind=punctuation`<br>`value-type=array`<br>`value-type=object` | `--xh-fg-subtle` | json-viewer 的 branch-text、item-key、item-value、token 部件 color 覆盖槽。 |
 | `--xh-json-viewer-px` | `text`<br>`tree` | `padding-inline` | `default` | `--xh-space-2` | json-viewer 的 text、tree 部件 padding-inline 覆盖槽。 |
 | `--xh-json-viewer-py` | `text`<br>`tree` | `padding-block` | `default` | `--xh-space-2` | json-viewer 的 text、tree 部件 padding-block 覆盖槽。 |
 | `--xh-json-viewer-radius` | `empty`<br>`text`<br>`tree` | `border-radius` | `default` | `--xh-shape-surface` | json-viewer 的 empty、text、tree 部件 border-radius 覆盖槽。 |
@@ -969,8 +1099,13 @@ const query = ref("xihan");
 | `--xh-json-viewer-row-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-_json-viewer-row-py` | json-viewer 的 branch-control、item 部件 padding-block 覆盖槽。 |
 | `--xh-json-viewer-row-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `--xh-shape-inset` | json-viewer 的 branch-control、item 部件 border-radius 覆盖槽。 |
 | `--xh-json-viewer-shadow` | `empty`<br>`text`<br>`tree` | `box-shadow` | `default` | `none` | json-viewer 的 empty、text、tree 部件 box-shadow 覆盖槽。 |
-| `--xh-json-viewer-string-fg` | `item-value` | `color` | `value-type=string` | `--xh-syntax-string` | json-viewer 的 item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-string-fg` | `item-value`<br>`token` | `color` | `kind=string`<br>`value-type=string` | `--xh-syntax-string` | json-viewer 的 item-value、token 部件 color 覆盖槽。 |
 | `--xh-json-viewer-text-fg` | `text` | `color` | `default` | `--xh-fg-default` | json-viewer 的 text 部件 color 覆盖槽。 |
+| `--xh-json-viewer-tool-fg` | `status`<br>`toolbar` | `color` | `where(:not([data-part='status'])` | `--xh-fg-muted` | json-viewer 的 status、toolbar 部件 color 覆盖槽。 |
+| `--xh-json-viewer-tool-fg-copied` | `copy-trigger` | `color` | `copied`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-success` | json-viewer 的 copy-trigger 部件 color 覆盖槽。 |
+| `--xh-json-viewer-tool-icon-size` | `status`<br>`toolbar` | `--xh-icon-size` | `where(:not([data-part='status'])` | `--xh-_action-profile-glyph-size` | json-viewer 的 status、toolbar 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-json-viewer-toolbar-gap` | `toolbar` | `gap` | `default` | `--xh-space-0_5` | json-viewer 的 toolbar 部件 gap 覆盖槽。 |
+| `--xh-json-viewer-toolbar-mb` | `toolbar` | `margin-block-end` | `default` | `--xh-space-1` | json-viewer 的 toolbar 部件 margin-block-end 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

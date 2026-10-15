@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.7-0S9MOb.js";import{t}from"./highlight.B-wfmVCx.js";var n=e(),r=`曦寒 UI 是一套框架无关的设计系统运行时，组件的行为与皮肤各走各的。`;function i(){return(0,n.jsx)(t,{text:r,keyword:`组件`})}export{i as default};

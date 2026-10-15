@@ -1,6 +1,6 @@
 # 曦寒视图组件 · 设计令牌
 
-共 792 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
+共 803 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
 「改写档」列出还有哪几份令牌源重新给过它——深色、紧凑、更高对比度、减弱动效、打印各是一档。
 
 覆盖时在 `:root` 上直接设同名令牌即可，这一层是公开面。带下划线前缀的 `--xh-_*` 是私有槽，不要在外面设。
@@ -422,6 +422,12 @@
 | `--xh-glyph-mark-calendar` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M3 10h18'/%3E%3Cpath d='M8 3v4'/%3E%3Cpath d='M16 3v4'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-clock` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5.5l3.5 2'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-ellipsis` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='5' cy='12' r='1'/%3E%3Ccircle cx='12' cy='12' r='1'/%3E%3Ccircle cx='19' cy='12' r='1'/%3E%3C/svg%3E")` | — |
+| `--xh-glyph-mark-copy` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='12' height='12' rx='2'/%3E%3Cpath d='M15 6V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h1'/%3E%3C/svg%3E")` | — |
+| `--xh-glyph-mark-expand-all` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6L12 12L18 6'/%3E%3Cpath d='M6 12L12 18L18 12'/%3E%3C/svg%3E")` | — |
+| `--xh-glyph-mark-collapse-all` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 18L12 12L18 18'/%3E%3Cpath d='M6 12L12 6L18 12'/%3E%3C/svg%3E")` | — |
+| `--xh-glyph-mark-wrap` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 4v11H5'/%3E%3Cpath d='M9 11L5 15L9 19'/%3E%3C/svg%3E")` | — |
+| `--xh-glyph-mark-tree` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h9'/%3E%3Cpath d='M6 6v12h3'/%3E%3Cpath d='M6 12h3'/%3E%3Cpath d='M13 12h8'/%3E%3Cpath d='M13 18h8'/%3E%3C/svg%3E")` | — |
+| `--xh-glyph-mark-source` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z'/%3E%3Cpath d='M14 2.5V6a2 2 0 0 0 2 2h3.5'/%3E%3Cline x1='8' y1='9' x2='10.5' y2='9'/%3E%3Cline x1='8' y1='13' x2='16' y2='13'/%3E%3Cline x1='8' y1='17' x2='16' y2='17'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-required` | string | `'*'` | — |
 
 ## field
@@ -464,6 +470,9 @@
 | `--xh-table-cell-py-sm` | dimension | `var(--xh-space-2)` | compact |
 | `--xh-table-cell-py-md` | dimension | `var(--xh-space-3)` | compact |
 | `--xh-table-cell-py-lg` | dimension | `var(--xh-space-4)` | compact |
+| `--xh-table-cell-px-sm` | dimension | `var(--xh-space-2)` | — |
+| `--xh-table-cell-px-md` | dimension | `var(--xh-space-3)` | — |
+| `--xh-table-cell-px-lg` | dimension | `var(--xh-space-4)` | — |
 
 ## shape
 
@@ -788,67 +797,69 @@
 | `--xh-chart-pending-alpha` | number | `0.6` | — |
 | `--xh-chart-categorical-other` | color | `var(--xh-color-neutral-500)` | dark |
 | `--xh-chart-deemphasis` | color | `var(--xh-color-neutral-300)` | dark |
-| `--xh-chart-sequential-start` | color | `var(--xh-color-brand-100)` | dark |
-| `--xh-chart-sequential-mid` | color | `var(--xh-color-brand-400)` | dark |
-| `--xh-chart-sequential-end` | color | `var(--xh-color-brand-800)` | dark |
-| `--xh-chart-ordinal-1` | color | `var(--xh-color-brand-900)` | dark |
-| `--xh-chart-ordinal-2` | color | `var(--xh-color-brand-800)` | dark |
-| `--xh-chart-ordinal-3` | color | `var(--xh-color-brand-700)` | dark |
-| `--xh-chart-ordinal-4` | color | `var(--xh-color-brand-600)` | dark |
-| `--xh-chart-ordinal-5` | color | `var(--xh-color-brand-500)` | dark |
-| `--xh-chart-ordinal-6` | color | `var(--xh-color-brand-400)` | dark |
-| `--xh-chart-diverging-negative` | color | `var(--xh-color-amber-600)` | dark |
+| `--xh-chart-sequential-start` | color | `var(--xh-color-brand-50)` | dark |
+| `--xh-chart-sequential-mid` | color | `var(--xh-color-brand-300)` | dark |
+| `--xh-chart-sequential-end` | color | `var(--xh-color-brand-500)` | dark |
+| `--xh-chart-on-sequential-low` | color | `var(--xh-fg-default)` | dark |
+| `--xh-chart-on-sequential-high` | color | `var(--xh-fg-default)` | dark |
+| `--xh-chart-ordinal-1` | color | `var(--xh-color-brand-500)` | dark |
+| `--xh-chart-ordinal-2` | color | `color-mix(in oklab, var(--xh-color-brand-500) 50%, var(--xh-color-brand-400))` | dark |
+| `--xh-chart-ordinal-3` | color | `var(--xh-color-brand-400)` | dark |
+| `--xh-chart-ordinal-4` | color | `color-mix(in oklab, var(--xh-color-brand-400) 50%, var(--xh-color-brand-300))` | dark |
+| `--xh-chart-ordinal-5` | color | `var(--xh-color-brand-300)` | dark |
+| `--xh-chart-ordinal-6` | color | `color-mix(in oklab, var(--xh-color-brand-300) 50%, var(--xh-color-brand-200))` | dark |
+| `--xh-chart-diverging-negative` | color | `var(--xh-color-amber-500)` | dark |
 | `--xh-chart-diverging-center` | color | `var(--xh-color-neutral-100)` | dark |
-| `--xh-chart-diverging-positive` | color | `var(--xh-color-blue-600)` | dark |
-| `--xh-chart-rise` | color | `var(--xh-color-success-600)` | dark |
-| `--xh-chart-fall` | color | `var(--xh-color-danger-700)` | dark |
+| `--xh-chart-diverging-positive` | color | `var(--xh-color-blue-500)` | dark |
+| `--xh-chart-rise` | color | `color-mix(in oklab, var(--xh-color-success-600) 50%, var(--xh-color-neutral-0))` | dark |
+| `--xh-chart-fall` | color | `color-mix(in oklab, var(--xh-color-danger-600) 70%, var(--xh-color-neutral-0))` | dark |
 | `--xh-chart-surface` | color | `var(--xh-bg-surface)` | dark |
 | `--xh-chart-grid` | color | `var(--xh-border-subtle)` | dark / dark.more / light.more |
 | `--xh-chart-axis` | color | `var(--xh-border-default)` | dark / dark.more / light.more |
 | `--xh-chart-label` | color | `var(--xh-fg-muted)` | dark |
 | `--xh-chart-crosshair` | color | `var(--xh-fg-subtle)` | dark |
 | `--xh-chart-band-highlight` | color | `var(--xh-bg-subtle)` | dark |
-| `--xh-chart-categorical-1` |  | `var(--xh-color-indigo-500)` | — |
-| `--xh-chart-categorical-2` |  | `var(--xh-color-lime-500)` | — |
-| `--xh-chart-categorical-3` |  | `var(--xh-color-pink-600)` | — |
-| `--xh-chart-categorical-4` |  | `var(--xh-color-amber-500)` | — |
-| `--xh-chart-categorical-5` |  | `var(--xh-color-blue-700)` | — |
-| `--xh-chart-categorical-6` |  | `var(--xh-color-green-700)` | — |
-| `--xh-chart-categorical-7` |  | `var(--xh-color-purple-500)` | — |
-| `--xh-chart-categorical-8` |  | `var(--xh-color-teal-500)` | — |
+| `--xh-chart-categorical-1` |  | `color-mix(in oklab, var(--xh-color-indigo-600) 60%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-categorical-2` |  | `color-mix(in oklab, var(--xh-color-amber-600) 60%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-categorical-3` |  | `color-mix(in oklab, var(--xh-color-pink-500) 45%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-categorical-4` |  | `color-mix(in oklab, var(--xh-color-lime-600) 60%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-categorical-5` |  | `color-mix(in oklab, var(--xh-color-blue-300) 90%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-categorical-6` |  | `color-mix(in oklab, var(--xh-color-orange-400) 60%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-categorical-7` |  | `color-mix(in oklab, var(--xh-color-purple-400) 75%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-categorical-8` |  | `color-mix(in oklab, var(--xh-color-green-300) 90%, var(--xh-color-neutral-0))` | — |
 | `--xh-chart-on-categorical-1` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-on-categorical-2` |  | `var(--xh-color-neutral-950)` | — |
-| `--xh-chart-on-categorical-3` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-on-categorical-3` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-on-categorical-4` |  | `var(--xh-color-neutral-950)` | — |
-| `--xh-chart-on-categorical-5` |  | `var(--xh-color-neutral-0)` | — |
-| `--xh-chart-on-categorical-6` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-on-categorical-5` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-on-categorical-6` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-on-categorical-7` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-on-categorical-8` |  | `var(--xh-color-neutral-950)` | — |
-| `--xh-chart-palette-categorical-1` |  | `var(--xh-color-indigo-500)` | — |
-| `--xh-chart-palette-categorical-2` |  | `var(--xh-color-lime-500)` | — |
-| `--xh-chart-palette-categorical-3` |  | `var(--xh-color-pink-600)` | — |
-| `--xh-chart-palette-categorical-4` |  | `var(--xh-color-amber-500)` | — |
-| `--xh-chart-palette-categorical-5` |  | `var(--xh-color-blue-700)` | — |
-| `--xh-chart-palette-categorical-6` |  | `var(--xh-color-green-700)` | — |
-| `--xh-chart-palette-categorical-7` |  | `var(--xh-color-purple-500)` | — |
-| `--xh-chart-palette-categorical-8` |  | `var(--xh-color-teal-500)` | — |
+| `--xh-chart-palette-categorical-1` |  | `color-mix(in oklab, var(--xh-color-indigo-600) 60%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-palette-categorical-2` |  | `color-mix(in oklab, var(--xh-color-amber-600) 60%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-palette-categorical-3` |  | `color-mix(in oklab, var(--xh-color-pink-500) 45%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-palette-categorical-4` |  | `color-mix(in oklab, var(--xh-color-lime-600) 60%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-palette-categorical-5` |  | `color-mix(in oklab, var(--xh-color-blue-300) 90%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-palette-categorical-6` |  | `color-mix(in oklab, var(--xh-color-orange-400) 60%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-palette-categorical-7` |  | `color-mix(in oklab, var(--xh-color-purple-400) 75%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-palette-categorical-8` |  | `color-mix(in oklab, var(--xh-color-green-300) 90%, var(--xh-color-neutral-0))` | — |
 | `--xh-chart-palette-categorical-on-1` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-palette-categorical-on-2` |  | `var(--xh-color-neutral-950)` | — |
-| `--xh-chart-palette-categorical-on-3` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-categorical-on-3` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-palette-categorical-on-4` |  | `var(--xh-color-neutral-950)` | — |
-| `--xh-chart-palette-categorical-on-5` |  | `var(--xh-color-neutral-0)` | — |
-| `--xh-chart-palette-categorical-on-6` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-categorical-on-5` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-categorical-on-6` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-palette-categorical-on-7` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-palette-categorical-on-8` |  | `var(--xh-color-neutral-950)` | — |
-| `--xh-chart-palette-monochrome-1` |  | `var(--xh-color-brand-600)` | — |
-| `--xh-chart-palette-monochrome-2` |  | `var(--xh-color-brand-500)` | — |
-| `--xh-chart-palette-monochrome-3` |  | `var(--xh-color-brand-400)` | — |
-| `--xh-chart-palette-monochrome-4` |  | `var(--xh-color-brand-300)` | — |
-| `--xh-chart-palette-monochrome-5` |  | `var(--xh-color-brand-200)` | — |
-| `--xh-chart-palette-monochrome-6` |  | `var(--xh-color-brand-100)` | — |
-| `--xh-chart-palette-monochrome-7` |  | `var(--xh-color-brand-50)` | — |
-| `--xh-chart-palette-monochrome-8` |  | `color-mix(in oklab, var(--xh-color-brand-50) 50%, var(--xh-bg-surface))` | — |
-| `--xh-chart-palette-monochrome-on-1` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-monochrome-1` |  | `var(--xh-color-brand-500)` | — |
+| `--xh-chart-palette-monochrome-2` |  | `var(--xh-color-brand-400)` | — |
+| `--xh-chart-palette-monochrome-3` |  | `var(--xh-color-brand-300)` | — |
+| `--xh-chart-palette-monochrome-4` |  | `var(--xh-color-brand-200)` | — |
+| `--xh-chart-palette-monochrome-5` |  | `var(--xh-color-brand-100)` | — |
+| `--xh-chart-palette-monochrome-6` |  | `var(--xh-color-brand-50)` | — |
+| `--xh-chart-palette-monochrome-7` |  | `color-mix(in oklab, var(--xh-color-brand-50) 60%, var(--xh-bg-surface))` | — |
+| `--xh-chart-palette-monochrome-8` |  | `color-mix(in oklab, var(--xh-color-brand-50) 30%, var(--xh-bg-surface))` | — |
+| `--xh-chart-palette-monochrome-on-1` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-palette-monochrome-on-2` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-palette-monochrome-on-3` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-palette-monochrome-on-4` |  | `var(--xh-color-neutral-950)` | — |
@@ -856,37 +867,37 @@
 | `--xh-chart-palette-monochrome-on-6` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-palette-monochrome-on-7` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-palette-monochrome-on-8` |  | `var(--xh-color-neutral-950)` | — |
-| `--xh-chart-palette-brand-1` |  | `var(--xh-color-indigo-600)` | — |
-| `--xh-chart-palette-brand-2` |  | `var(--xh-color-teal-500)` | — |
-| `--xh-chart-palette-brand-3` |  | `var(--xh-color-pink-600)` | — |
-| `--xh-chart-palette-brand-4` |  | `var(--xh-color-blue-500)` | — |
-| `--xh-chart-palette-brand-5` |  | `var(--xh-color-purple-600)` | — |
-| `--xh-chart-palette-brand-6` |  | `var(--xh-color-cyan-600)` | — |
-| `--xh-chart-palette-brand-7` |  | `var(--xh-color-purple-500)` | — |
-| `--xh-chart-palette-brand-8` |  | `var(--xh-color-blue-700)` | — |
-| `--xh-chart-palette-brand-on-1` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-brand-1` |  | `color-mix(in oklab, var(--xh-color-indigo-300) 90%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-palette-brand-2` |  | `color-mix(in oklab, var(--xh-color-teal-400) 90%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-palette-brand-3` |  | `color-mix(in oklab, var(--xh-color-purple-600) 60%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-palette-brand-4` |  | `color-mix(in oklab, var(--xh-color-pink-400) 60%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-palette-brand-5` |  | `color-mix(in oklab, var(--xh-color-indigo-600) 60%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-palette-brand-6` |  | `color-mix(in oklab, var(--xh-color-pink-600) 60%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-palette-brand-7` |  | `color-mix(in oklab, var(--xh-color-purple-500) 45%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-palette-brand-8` |  | `color-mix(in oklab, var(--xh-color-cyan-600) 60%, var(--xh-color-neutral-0))` | — |
+| `--xh-chart-palette-brand-on-1` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-palette-brand-on-2` |  | `var(--xh-color-neutral-950)` | — |
-| `--xh-chart-palette-brand-on-3` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-brand-on-3` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-palette-brand-on-4` |  | `var(--xh-color-neutral-950)` | — |
-| `--xh-chart-palette-brand-on-5` |  | `var(--xh-color-neutral-0)` | — |
-| `--xh-chart-palette-brand-on-6` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-brand-on-5` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-brand-on-6` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-palette-brand-on-7` |  | `var(--xh-color-neutral-950)` | — |
-| `--xh-chart-palette-brand-on-8` |  | `var(--xh-color-neutral-0)` | — |
-| `--xh-chart-palette-muted-1` |  | `color-mix(in oklab, var(--xh-color-indigo-500) 40%, var(--xh-color-neutral-450))` | — |
-| `--xh-chart-palette-muted-2` |  | `color-mix(in oklab, var(--xh-color-amber-600) 55%, var(--xh-color-neutral-500))` | — |
-| `--xh-chart-palette-muted-3` |  | `color-mix(in oklab, var(--xh-color-green-500) 40%, var(--xh-color-neutral-450))` | — |
-| `--xh-chart-palette-muted-4` |  | `color-mix(in oklab, var(--xh-color-blue-600) 55%, var(--xh-color-neutral-500))` | — |
-| `--xh-chart-palette-muted-5` |  | `color-mix(in oklab, var(--xh-color-orange-500) 40%, var(--xh-color-neutral-450))` | — |
-| `--xh-chart-palette-muted-6` |  | `color-mix(in oklab, var(--xh-color-purple-600) 40%, var(--xh-color-neutral-500))` | — |
-| `--xh-chart-palette-muted-7` |  | `color-mix(in oklab, var(--xh-color-lime-600) 40%, var(--xh-color-neutral-500))` | — |
-| `--xh-chart-palette-muted-8` |  | `color-mix(in oklab, var(--xh-color-pink-500) 40%, var(--xh-color-neutral-450))` | — |
+| `--xh-chart-palette-brand-on-8` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-muted-1` |  | `color-mix(in oklab, var(--xh-color-indigo-800) 35%, var(--xh-color-neutral-300))` | — |
+| `--xh-chart-palette-muted-2` |  | `color-mix(in oklab, var(--xh-color-lime-600) 50%, var(--xh-color-neutral-300))` | — |
+| `--xh-chart-palette-muted-3` |  | `color-mix(in oklab, var(--xh-color-red-400) 35%, var(--xh-color-neutral-300))` | — |
+| `--xh-chart-palette-muted-4` |  | `color-mix(in oklab, var(--xh-color-amber-600) 50%, var(--xh-color-neutral-300))` | — |
+| `--xh-chart-palette-muted-5` |  | `color-mix(in oklab, var(--xh-color-blue-400) 35%, var(--xh-color-neutral-300))` | — |
+| `--xh-chart-palette-muted-6` |  | `color-mix(in oklab, var(--xh-color-teal-500) 65%, var(--xh-color-neutral-300))` | — |
+| `--xh-chart-palette-muted-7` |  | `color-mix(in oklab, var(--xh-color-purple-400) 50%, var(--xh-color-neutral-300))` | — |
+| `--xh-chart-palette-muted-8` |  | `color-mix(in oklab, var(--xh-color-green-400) 50%, var(--xh-color-neutral-300))` | — |
 | `--xh-chart-palette-muted-on-1` |  | `var(--xh-color-neutral-950)` | — |
-| `--xh-chart-palette-muted-on-2` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-muted-on-2` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-palette-muted-on-3` |  | `var(--xh-color-neutral-950)` | — |
-| `--xh-chart-palette-muted-on-4` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-muted-on-4` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-palette-muted-on-5` |  | `var(--xh-color-neutral-950)` | — |
-| `--xh-chart-palette-muted-on-6` |  | `var(--xh-color-neutral-0)` | — |
-| `--xh-chart-palette-muted-on-7` |  | `var(--xh-color-neutral-0)` | — |
+| `--xh-chart-palette-muted-on-6` |  | `var(--xh-color-neutral-950)` | — |
+| `--xh-chart-palette-muted-on-7` |  | `var(--xh-color-neutral-950)` | — |
 | `--xh-chart-palette-muted-on-8` |  | `var(--xh-color-neutral-950)` | — |
 
 ## direction

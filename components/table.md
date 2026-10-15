@@ -5083,7 +5083,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | --- | --- | --- | --- |
 | `id` | `string` | 是 | 全表唯一：DOM 身份（data-value）、选中 / 展开集合的元素、连接层查询行的键。 |
 | `disabled` | `boolean` |  | 行禁用：不可选中也不可展开，但仍可聚焦、仍是方向键的起点，也不计入全选基数。 |
-| `expandable` | `boolean` |  | 可展开：提供后才报告 aria-expanded，左右方向键与展开把手也才识别该行。 只要有一行提供，root 就从 role=grid 改为 role=treegrid。 |
+| `expandable` | `boolean` |  | 可展开：提供后才报告 aria-expanded，左右方向键与展开把手也才识别该行。 只要有一行提供，root 就从 role=grid 改为 role=treegrid。 有子行的行不提供也可展开，展开的是它的子行。 |
 | `parentId` | `string` |  | 父行 id。提供后该行即为该父行的子行，收起父行时它随之隐藏。 有子行的行不再产出详情行：一行不可能同时既展开出子行、又展开出一块详情。 指向不存在的父行时按根行处理，不丢弃该行。 |
 
 ### TableSortDescriptor
@@ -5486,7 +5486,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `--xh-table-caption-py` | `caption` | `padding-block` | `default` | `--xh-space-2` | table 的 caption 部件 padding-block 覆盖槽。 |
 | `--xh-table-cell-gap` | `cell`<br>`column-header` | `gap` | `default` | `--xh-control-gap-md` | table 的 cell、column-header 部件 gap 覆盖槽。 |
 | `--xh-table-cell-min-w` | `cell`<br>`column-header` | `min-inline-size` | `default` | `3rem` | table 的 cell、column-header 部件 min-inline-size 覆盖槽。 |
-| `--xh-table-cell-px` | `cell`<br>`column-header`<br>`root` | `padding-inline`<br>`padding-inline-end` | `default`<br>`not(:last-child)`<br>`split` | `--xh-space-4` | table 的 cell、column-header、root 部件 padding-inline、padding-inline-end 覆盖槽。 |
+| `--xh-table-cell-px` | `cell`<br>`column-header`<br>`root` | `padding-inline`<br>`padding-inline-end` | `default`<br>`not(:last-child)`<br>`split` | `--xh-_table-cell-px` | table 的 cell、column-header、root 部件 padding-inline、padding-inline-end 覆盖槽。 |
 | `--xh-table-cell-py` | `cell`<br>`column-header` | `padding-block` | `default` | `--xh-_table-cell-py` | table 的 cell、column-header 部件 padding-block 覆盖槽。 |
 | `--xh-table-column-fg` | `column-header` | `color` | `default` | `--xh-fg-default` | table 的 column-header 部件 color 覆盖槽。 |
 | `--xh-table-column-font-weight` | `column-header` | `font-weight` | `default` | `--xh-font-weight-medium` | table 的 column-header 部件 font-weight 覆盖槽。 |
@@ -5494,7 +5494,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `--xh-table-column-list-font-size` | `column-list` | `font-size` | `default` | `--xh-text-secondary-size` | table 的 column-list 部件 font-size 覆盖槽。 |
 | `--xh-table-column-list-gap` | `column-list` | `gap` | `default` | `--xh-_table-column-list-gap` | table 的 column-list 部件 gap 覆盖槽。 |
 | `--xh-table-detail-bg` | `expanded-row` | `background` | `default` | `--xh-bg-subtle` | table 的 expanded-row 部件 background 覆盖槽。 |
-| `--xh-table-detail-px` | `cell`<br>`expanded-row` | `padding-inline` | `default` | `--xh-space-4` | table 的 cell、expanded-row 部件 padding-inline 覆盖槽。 |
+| `--xh-table-detail-px` | `cell`<br>`expanded-row` | `padding-inline` | `default` | `--xh-_table-cell-px` | table 的 cell、expanded-row 部件 padding-inline 覆盖槽。 |
 | `--xh-table-detail-py` | `cell`<br>`expanded-row` | `padding-block` | `default` | `--xh-space-3` | table 的 cell、expanded-row 部件 padding-block 覆盖槽。 |
 | `--xh-table-drag-fg` | `column-drag-trigger` | `color` | `default` | `--xh-fg-subtle` | table 的 column-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-table-drag-fg-active` | `column-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | table 的 column-drag-trigger 部件 color 覆盖槽。 |

@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.7-0S9MOb.js";import{t}from"./checkbox.DIqk04Bv.js";var n=e();function r(){return(0,n.jsxs)(`div`,{style:{display:`flex`,alignItems:`center`,gap:`16px`},children:[(0,n.jsx)(t,{size:`sm`,defaultChecked:!0,children:`小`}),(0,n.jsx)(t,{defaultChecked:!0,children:`中`}),(0,n.jsx)(t,{size:`lg`,defaultChecked:!0,children:`大`})]})}export{r as default};

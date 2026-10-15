@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.7-0S9MOb.js";import{t}from"./spinner.B1qtYQ-7.js";var n=e();function r(){return(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(t,{size:`sm`,label:`加载中`}),(0,n.jsx)(t,{label:`加载中`}),(0,n.jsx)(t,{size:`lg`,label:`加载中`})]})}export{r as default};

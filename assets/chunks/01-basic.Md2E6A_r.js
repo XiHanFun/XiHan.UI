@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.7-0S9MOb.js";import{t}from"./button.B7mquJQS.js";import{t as n}from"./button-group.DJ6nb2m8.js";var r=e(),i=[`照片`,`视频`,`更多`];function a(){return(0,r.jsx)(n,{children:i.map(e=>(0,r.jsx)(t,{children:e},e))})}export{a as default};

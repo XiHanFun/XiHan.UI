@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.7-0S9MOb.js";import{t}from"./switch.DxuDvUPX.js";var n=e();function r(){return(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(t,{disabled:!0}),(0,n.jsx)(t,{disabled:!0,defaultChecked:!0})]})}export{r as default};

@@ -1,1 +1,0 @@
-import{Lt as e,Zt as t,at as n,ft as r,lt as i,ut as a,wt as o}from"./framework.WoOPT6Vw.js";import{Sd as s,or as c,w as l}from"./theme.DwlQyCE9.js";var u=r({__name:`01-basic`,setup(r){return(r,u)=>(o(),n(t(c),null,{default:e(()=>[a(t(s),{icon:t(l)},null,8,[`icon`]),u[0]||=i(` 点赞 `,-1)]),_:1}))}});export{u as default};

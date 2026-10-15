@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime.7-0S9MOb.js";import{m as t}from"./combobox.eU4_E2T4.js";var n=e(),r=[{value:`beijing`,label:`Beijing 北京`},{value:`berlin`,label:`Berlin 柏林`},{value:`chengdu`,label:`Chengdu 成都`}];function i(){return(0,n.jsx)(t,{collection:r,invalid:!0,label:`常驻城市`,openOnClick:!0,placeholder:`请选择城市`})}export{i as default};

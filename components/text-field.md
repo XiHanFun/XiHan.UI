@@ -1114,7 +1114,7 @@ const note = ref("");
       <XhTextFieldCount />
     </XhTextFieldRoot>
 
-    <XhTextFieldRoot auto-size placeholder="不设行数界限，完全跟内容走">
+    <XhTextFieldRoot auto-size placeholder="不设行数界限：随内容长高，到上限后框内滚动">
       <XhTextFieldLabel>随写随长</XhTextFieldLabel>
       <XhTextFieldControl>
         <XhTextFieldInput as="textarea" />
@@ -1136,7 +1136,7 @@ const note = ref("");
     </div>
   </xh-text-field>
 
-  <xh-text-field auto-size placeholder="不设行数界限，完全跟内容走">
+  <xh-text-field auto-size placeholder="不设行数界限：随内容长高，到上限后框内滚动">
     <div data-xh-part="root">
       <label data-xh-part="label">随写随长</label>
       <div data-xh-part="control">
@@ -1170,7 +1170,8 @@ const note = ref("");
 - `type` 覆盖 `text` / `password` / `email` / `tel` / `url` / `search`。
 - `clearable` 显示清空按钮，`maxLength` 设置字数上限。
 - 输入部件用 `as="textarea"` 切换到多行；`autoSize` 为 `true` 时随内容增高，也可用 `{ minRows, maxRows }` 限定行数。两个边界必须是大于等于 1 的有限整数，且 `minRows` 不得大于 `maxRows`；无效配置会明确失败，不夹取也不沿用旧配置。
-- 自动高度跟随输入、程序化写值与运行期配置变化重新测量。关闭 `autoSize`、换回单行、替换输入节点或卸载组件时，归还启用前的 `block-size` 与 `overflow-y` 内联声明及其 priority；只移除作者原本没有写的声明。
+- 自动高度只有一层滚动：顶到上限后由 textarea 自己滚，控件外壳只包住它，不设上限也不滚。给了 `maxRows` 时上限就是 `maxRows`；没给时上限取 textarea 的 `max-block-size` 计算值，默认皮肤为 `--xh-text-field-input-max-h`（依次退到旧槽 `--xh-text-field-control-max-h`、`--xh-viewport-h-sm`）。两种情况都不低于 `minRows`。没给 `maxRows` 时 `max-block-size` 的计算值只接受 `none` 或 px，百分比等要等布局才知道多高的取值会明确失败。
+- 自动高度跟随输入、程序化写值与运行期配置变化重新测量。量高结果写进 `block-size`，`max-block-size` 由自动高度接管为 `none`，`overflow-y` 按是否顶到上限切换。关闭 `autoSize`、换回单行、替换输入节点或卸载组件时，归还启用前的这三项内联声明及其 priority；只移除作者原本没有写的声明。
 - 自动高度把一个隐藏 textarea 临时挂到输入框所属 Document，以复制后的排版与宽度计算值取得真实内容高度和单行高度，换算 `minRows` / `maxRows`；`line-height: normal` 不按字号推测。`content-box` 与 `border-box` 分别按自己的声明盒计算内距和边框。测量要求 textarea 已连接到带 Window 的 Document，且当前只接受 `writing-mode: horizontal-tb`；其他书写模式会明确失败，不把物理纵向滚动尺寸误当逻辑块尺寸。
 - `prefix` / `suffix` 在框内放置货币符、单位或图标，两段对读屏隐藏。
 - 默认皮肤把控件接入 Field Chrome：Headless 在真实视觉盒、输入、装饰段上分别投影 `data-xh-field-chrome`、`data-xh-field-input`、`data-xh-field-affix`，单行与 textarea 由 `data-xh-field-layout` 区分。旧 `data-multiline` / `data-auto-resize` 视觉钩子已删除，自定义皮肤应读取新的家族角色，不提供双写兼容。
@@ -1224,7 +1225,7 @@ const note = ref("");
 | `maxLength` | `number` |  | 字数上限，按字素计（组合 emoji、国旗、带变音符的字母都算一个），与 count 同一口径。 原生 maxlength 按 UTF-16 码元计，会把一个 emoji 算成两个以上，因此不投影； 超出的部分由连接层从这次新插入的文本里截掉（与原生 maxlength 同样的做法），输入法组合期间不截、落定时再截。 |
 | `clearable` | `boolean` |  | 开启清空能力：有值时显示清空按钮、Escape 接管。关闭时按钮带 hidden 收起。 |
 | `showCount` | `boolean` |  | 显示字数部件：关闭时 count 部件带 hidden 收起。 |
-| `autoSize` | `boolean \| TextFieldAutoSize` |  | 多行宿主的自动高度：按横向书写的真实行盒随内容增高；对象形态固定行数上下限。 |
+| `autoSize` | `boolean \| TextFieldAutoSize` |  | 多行宿主的自动高度：按横向书写的真实行盒随内容增高，顶到上限后在 textarea 内部滚动；对象形态固定行数上下限。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 |
@@ -1408,7 +1409,7 @@ const note = ref("");
 | `--xh-text-field-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | text-field 的 control 部件 color 覆盖槽。 |
 | `--xh-text-field-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_text-field-gap` | text-field 的 control 部件 gap 覆盖槽。 |
 | `--xh-text-field-control-h` | `control` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_text-field-h` | text-field 的 control 部件 block-size、min-block-size 覆盖槽。 |
-| `--xh-text-field-control-max-h` | `control` | `max-block-size` | `has([data-xh-field-input][data-xh-field-auto-size])`<br>`xh-field-auto-size`<br>`xh-field-input` | `--xh-viewport-h-sm` | text-field 的 control 部件 max-block-size 覆盖槽。 |
+| `--xh-text-field-control-max-h` | `input` | `max-block-size` | `xh-field-auto-size` | `--xh-viewport-h-sm` | text-field 的 input 部件 max-block-size 覆盖槽。 |
 | `--xh-text-field-control-min-w` | `control`<br>`root` | `min-inline-size` | `default`<br>`xh-field-chrome` | `--xh-control-min-w` | text-field 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-text-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_text-field-px` | text-field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-text-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | text-field 的 control 部件 border-radius 覆盖槽。 |
@@ -1424,6 +1425,7 @@ const note = ref("");
 | `--xh-text-field-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-fg-default` | text-field 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-text-field-input-fg` | `input` | `color` | `xh-field-input` | `--xh-fg-default` | text-field 的 input 部件 color 覆盖槽。 |
 | `--xh-text-field-input-font-size` | `input` | `font-size` | `xh-field-input` | `--xh-_text-field-font-size` | text-field 的 input 部件 font-size 覆盖槽。 |
+| `--xh-text-field-input-max-h` | `input` | `max-block-size` | `xh-field-auto-size` | `--xh-text-field-control-max-h` | text-field 的 input 部件 max-block-size 覆盖槽。 |
 | `--xh-text-field-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | text-field 的 label 部件 color 覆盖槽。 |
 | `--xh-text-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | text-field 的 label 部件 color 覆盖槽。 |
 | `--xh-text-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | text-field 的 label 部件 font-size 覆盖槽。 |

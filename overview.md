@@ -119,6 +119,12 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 | `@xihan-ui/sound` | 纯 Web Audio 程序化 UI 音效，零音频文件 |
 | `@xihan-ui/animations` | 现成的进场与注意动效、错开起播、文字拆分 |
 
+**开发工具**
+
+| 包 | 职责 |
+| --- | --- |
+| `@xihan-ui/cli` | 命令行与 MCP 服务端：组件 API、文档、示例、令牌与 design.md 的离线知识库，见 [AI 辅助开发](/ai/agents) |
+
 `tooling/*` 下的构建、lint、tsconfig、测试与门禁脚本等内部包一律不发布。
 
 ## 目录结构
@@ -126,11 +132,12 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 ```
 XiHan.UI/
 ├── ui/                      # 组件库工作区（pnpm workspace）
-│   ├── packages/            # 对外发布的库包，按角色分四组
+│   ├── packages/            # 对外发布的库包，按角色分五组
 │   │   ├── adapters/        # vue · react · web-components，按宿主选择
 │   │   ├── design/          # tokens · styles · icons，外观
 │   │   ├── features/        # markdown · chat-stream · backgrounds · sound · animations · code-highlight，按需选用
-│   │   └── engine/          # core · motion · pointer · position · viz · headless
+│   │   ├── engine/          # core · motion · pointer · position · viz · headless
+│   │   └── tools/           # cli，开发时用，不进应用产物
 │   └── tooling/             # 内部构建与质量工具
 │       ├── build/           # 打包配置与 exports 回写
 │       ├── eslint-config/   # lint 规则 + 分层拓扑事实源

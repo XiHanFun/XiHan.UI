@@ -6,10 +6,12 @@
 
 ## 机读资产
 
-- [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 197 页正文，示例已按适配器内联为代码块
+- [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 202 页正文，示例已按适配器内联为代码块
 - [llms-components.txt](https://ui.docs.xihanfun.com/llms-components.txt): 141 页组件参考
 - [llms-guide.txt](https://ui.docs.xihanfun.com/llms-guide.txt): 30 页核心概念、适配器与运行时
-- [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 792 支设计令牌的名字、类型与缺省取值
+- [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 803 支设计令牌的名字、类型与缺省取值
+- [design.md](https://ui.docs.xihanfun.com/design.md): 缺省主题的设计语言（design.md 格式）：颜色、排版、间距、圆角与组件样式令牌，以及视觉规则
+- [ai/SKILL.md](https://ui.docs.xihanfun.com/ai/SKILL.md): 给 AI 编程工具的 XiHan.UI 使用规范，可放进项目的技能目录
 - 每页 Markdown：把站点地址后缀成 `.md`，如 https://ui.docs.xihanfun.com/adapters/react.md
 
 ## 开始
@@ -22,6 +24,14 @@
 - [包与依赖关系](https://ui.docs.xihanfun.com/npm-package-dependency): XiHan.UI 是一个 pnpm workspace。
 - [架构总览](https://ui.docs.xihanfun.com/overview): XiHan.UI 是一个 pnpm + turbo 的 monorepo。
 - [快速上手](https://ui.docs.xihanfun.com/quickstart): 同一个对话框的三种写法。
+
+## AI 辅助开发
+
+- [For Agents](https://ui.docs.xihanfun.com/ai/agents): 给 Claude Code、Cursor、Codex、GitHub Copilot 这类 AI 编程工具的入口：一段可以直接粘贴的提示词，加上 XiHan.UI 为 AI 准备的全部资料从哪里取。
+- [CLI](https://ui.docs.xihanfun.com/ai/cli): `@xihan-ui/cli` 是 XiHan.UI 的命令行工具：在终端里查组件 API、文档、示例源码、设计令牌与更新日志，也是 MCP 服务端 的载体。
+- [design.md](https://ui.docs.xihanfun.com/ai/design-md): `design.md` 是给 AI 设计与编码工具读的设计语言文件，描述 XiHan.UI 缺省主题（浅色 · 舒适密度 · 基础对比度）的颜色、排版、间距、圆角、组件样式令牌与视觉规则，帮助工具生成符合 XiHan.UI 视觉体系的界面。
+- [LLMs.txt](https://ui.docs.xihanfun.com/ai/llms): 文档站在构建时产出一组给大语言模型读的机读资产，内容与站点正文同源。
+- [MCP Server](https://ui.docs.xihanfun.com/ai/mcp): 本页介绍如何通过 Model Context Protocol（MCP）在 AI 编程工具中使用 XiHan.UI。
 
 ## 设计
 

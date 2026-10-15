@@ -1,0 +1,1 @@
+import{yO as e}from"./theme.CIoDV2FF.js";import{i as t,n,t as r}from"./jsx-runtime.BhK2Qncf.js";import{r as i}from"./config.lav88BhX.js";var a=r();function o({value:r,size:o,label:s,...c}){return(0,a.jsx)(`span`,{...t(e(i(`color-swatch`,{value:r,size:o,label:s}),n).getRootProps(),c)})}export{o as t};

@@ -1,6 +1,6 @@
 # 曦寒视图组件 · 全站正文
 
-共 197 页。示例已按适配器内联为代码块。
+共 202 页。示例已按适配器内联为代码块。
 索引见 https://ui.docs.xihanfun.com/llms.txt
 
 ---
@@ -1207,7 +1207,7 @@ XiHan.BasicApp 的前端构建于 XiHan.UI 之上：自 BasicApp v4.0.0 起整�
 
 # 包与依赖关系
 
-XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（按角色分 `adapters` / `design` / `features` / `engine` 四组），`tooling/*` 是内部工具（不发布）。
+XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（按角色分 `adapters` / `design` / `features` / `engine` / `tools` 五组），`tooling/*` 是内部工具（不发布）。
 
 ## 全部库包
 
@@ -1230,6 +1230,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/backgrounds` | `core` `motion` | — | 3 |
 | `@xihan-ui/vue` | `core` `motion` `pointer` `viz` `headless` `position` | `vue`、`backgrounds`（可选）、`sound`（可选）、`code-highlight`（可选） | 4 |
 | `@xihan-ui/web-components` | `core` `motion` `pointer` `viz` `headless` `position` | `backgrounds`（可选）、`code-highlight`（可选） | 4 |
+| `@xihan-ui/cli` | — | — | 5 |
 
 发布走 changesets，所有库包同属一个 fixed 版本组，一起升到同一个版本号。
 
@@ -1334,7 +1335,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/web-components` | `./define` `./backgrounds` `./locale` `./services` `./custom-elements.json` |
 | `@xihan-ui/styles` | 每份皮肤一条 CSS，共 152 条（140 份组件皮肤 + 12 份共享层），另有 `./index.css`（主入口，生成的扁平有层文件，家族只内联一次）与 `./index.unlayered.css` 两个整包入口 |
 
-其余九个包（`motion` / `pointer` / `position` / `code-highlight` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound`）只有主入口。
+其余十个包（`motion` / `pointer` / `position` / `code-highlight` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound` / `cli`）只有主入口。
 
 组件没有单独的子路径导出：按需引入依靠 tree-shaking，不依靠手写路径。
 
@@ -1468,6 +1469,12 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 | `@xihan-ui/sound` | 纯 Web Audio 程序化 UI 音效，零音频文件 |
 | `@xihan-ui/animations` | 现成的进场与注意动效、错开起播、文字拆分 |
 
+**开发工具**
+
+| 包 | 职责 |
+| --- | --- |
+| `@xihan-ui/cli` | 命令行与 MCP 服务端：组件 API、文档、示例、令牌与 design.md 的离线知识库，见 [AI 辅助开发](/ai/agents) |
+
 `tooling/*` 下的构建、lint、tsconfig、测试与门禁脚本等内部包一律不发布。
 
 ## 目录结构
@@ -1475,11 +1482,12 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 ```
 XiHan.UI/
 ├── ui/                      # 组件库工作区（pnpm workspace）
-│   ├── packages/            # 对外发布的库包，按角色分四组
+│   ├── packages/            # 对外发布的库包，按角色分五组
 │   │   ├── adapters/        # vue · react · web-components，按宿主选择
 │   │   ├── design/          # tokens · styles · icons，外观
 │   │   ├── features/        # markdown · chat-stream · backgrounds · sound · animations · code-highlight，按需选用
-│   │   └── engine/          # core · motion · pointer · position · viz · headless
+│   │   ├── engine/          # core · motion · pointer · position · viz · headless
+│   │   └── tools/           # cli，开发时用，不进应用产物
 │   └── tooling/             # 内部构建与质量工具
 │       ├── build/           # 打包配置与 exports 回写
 │       ├── eslint-config/   # lint 规则 + 分层拓扑事实源
@@ -1682,6 +1690,428 @@ visual.subscribe(state => console.log(state.mode, state.density, state.motion, s
 3. [connect 与属性产出](./guide/connect)：从状态机状态到 DOM 属性。
 
 按需求继续阅读：[Vue 适配器](./adapters/vue)、[Web Components 适配器](./adapters/web-components)、[皮肤与样式分层](./guide/styling)、[无障碍与键盘规格](./guide/a11y)。
+
+---
+
+来源：https://ui.docs.xihanfun.com/ai/agents
+
+# For Agents
+
+给 Claude Code、Cursor、Codex、GitHub Copilot 这类 AI 编程工具的入口：一段可以直接粘贴的提示词，加上 XiHan.UI 为 AI 准备的全部资料从哪里取。
+
+## 复制这段提示词
+
+把下面这段放进对话，或写进项目的 `AGENTS.md` / `CLAUDE.md` / `.cursor/rules`：
+
+```text
+这个项目用 XiHan.UI 写界面。写代码前先读这两份文档并按其中的规范执行：
+- https://ui.docs.xihanfun.com/ai/agents.md
+- https://ui.docs.xihanfun.com/ai/SKILL.md
+
+XiHan.UI 的组件名、部件、Props 与设计令牌以项目里安装的版本为准，可能与你记得的不同，也不要套用别的组件库的 API。
+不确定时用 CLI 查证（数据随包离线，版本与项目对齐）：
+  npx -y @xihan-ui/cli info <组件>      组件 API
+  npx -y @xihan-ui/cli demo <组件> 1    示例源码
+  npx -y @xihan-ui/cli parts <组件>     样式钩子与覆盖槽
+支持 MCP 时，运行 npx -y @xihan-ui/cli setup --client <claude|cursor|vscode|codex> 接入 XiHan.UI 的 MCP 服务端。
+```
+
+## Agent 能拿到什么
+
+### CLI：离线、与版本一致的知识库
+
+[`@xihan-ui/cli`](./cli) 把组件 API、全部文档页、三种写法的示例源码、设计令牌、design.md 与更新日志打包在 npm 包里，不联网，查到的内容与 CLI 的版本一致；它与其余 `@xihan-ui/*` 包同属一个版本组、始终同号。
+
+```bash
+npx -y @xihan-ui/cli list                     # 按分类列出组件
+npx -y @xihan-ui/cli info select              # 产物、部件、Props、事件、插槽、状态、键盘
+npx -y @xihan-ui/cli doc select --framework react   # 完整文档，示例按写法内联
+npx -y @xihan-ui/cli demo select 1            # 示例源码
+npx -y @xihan-ui/cli token bg-brand           # 设计令牌
+npx -y @xihan-ui/cli parts select             # 部件选择器、数据属性与覆盖槽
+npx -y @xihan-ui/cli design.md                # 设计语言
+npx -y @xihan-ui/cli changelog 4.0.0 4.1.0    # 两版之间的变更
+```
+
+### MCP Server：把 CLI 接进 AI 工具
+
+`xihan-ui mcp` 以 stdio 启动 [MCP 服务端](./mcp)，AI 工具可以直接调用 `xihan_ui_info`、`xihan_ui_demo`、`xihan_ui_token` 等工具，而不是靠记忆写代码。
+
+```json
+{
+  "mcpServers": {
+    "xihan-ui": {
+      "command": "npx",
+      "args": ["-y", "@xihan-ui/cli@<版本>", "mcp"]
+    }
+  }
+}
+```
+
+`<版本>` 写项目里装的 XiHan.UI 版本。`npx -y @xihan-ui/cli setup --client claude` 会自动读出版本并写好配置。
+
+### 技能：XiHan.UI 的使用规范
+
+[`SKILL.md`](https://ui.docs.xihanfun.com/ai/SKILL.md) 是写给 AI 的使用规范：先查证再写代码、包怎么装与接入、部件组件怎么组合、样式只走部件选择器与令牌、常见错误。它随 CLI 发布，`setup --mode skill` 把它写进项目：Claude Code 写到 `.claude/skills/xihan-ui/`，其余工具写到 `.agents/skills/xihan-ui/`。MCP 提示词 `xihan-ui-expert` 用的也是这一份。
+
+### LLMs.txt：直接放进上下文的文档
+
+文档站构建时产出 [机读资产](./llms)：`llms.txt` 索引、`llms-full.txt` 全站正文、`llms-components.txt` 组件参考、`llms-tokens.txt` 令牌全表，以及每一页的 Markdown（站点地址后加 `.md`，如 [components/select.md](https://ui.docs.xihanfun.com/components/select.md)）。
+
+### design.md：给 AI 设计工具的视觉语言
+
+[`design.md`](./design-md) 用 design.md 格式描述缺省主题的颜色、排版、间距、圆角与组件样式令牌，以及视觉规则与禁忌，供生成整页界面时参考。
+
+## 各部分的关系
+
+| 部分 | 回答什么 | 什么时候用 |
+| --- | --- | --- |
+| 提示词与技能 | 规范：该怎么写、不该怎么写 | 每次会话开头，或长期写进项目的 Agent 规则 |
+| CLI | 事实：某个组件现在有哪些部件、Props、令牌 | 写每一处组件代码之前 |
+| MCP Server | 同上，以工具的形式交给 AI | AI 工具支持 MCP 时，替代手动跑 CLI |
+| LLMs.txt | 整份文档 | 工具不能运行命令、只能读网页时 |
+| design.md | 视觉语言 | 生成整页界面、做视觉取舍时 |
+
+CLI、MCP 与技能都离线且跟随版本；LLMs.txt 与 design.md 在文档站上，内容对应最新发布的版本。
+
+## 相关
+
+- [安装与接入](../installation) · [快速上手](../quickstart)
+- [皮肤与样式分层](../guide/styling) · [设计令牌与主题](../guide/theme)
+
+---
+
+来源：https://ui.docs.xihanfun.com/ai/cli
+
+# CLI
+
+`@xihan-ui/cli` 是 XiHan.UI 的命令行工具：在终端里查组件 API、文档、示例源码、设计令牌与更新日志，也是 [MCP 服务端](./mcp) 的载体。
+
+## 特点
+
+- **离线**：组件元数据、全部文档页、示例源码、令牌、design.md 与更新日志随 npm 包发布，查询不联网。
+- **与版本一致**：数据在发版时从组件源码与文档生成，CLI 与其余 `@xihan-ui/*` 包同号。在装了 XiHan.UI 的项目里运行时，CLI 读取 `node_modules` 里的版本，与自身不一致时在 stderr 提示改用同号的 CLI。
+- **三种写法**：示例与文档可按 Vue、React、Web Components 输出，缺省取项目里装的适配器。
+- **给机器读**：所有查询命令都可输出 JSON；查不到时给出候选。
+
+## 安装
+
+不安装，直接用 `npx`：
+
+```bash
+npx -y @xihan-ui/cli info select
+```
+
+按项目版本查询时钉住版本号：
+
+```bash
+npx -y @xihan-ui/cli@<版本> info select
+```
+
+也可以装进项目的开发依赖，版本随项目一起升级：
+
+```bash
+pnpm add -D @xihan-ui/cli
+pnpm exec xihan-ui info select
+```
+
+需要 Node ≥ 18。
+
+## 快速开始
+
+```bash
+xihan-ui list --category form          # 数据录入类组件
+xihan-ui info DatePicker               # 组件 API
+xihan-ui demo date-picker              # 列出示例
+xihan-ui demo date-picker 2 --framework react   # 第二个示例的 React 写法
+xihan-ui parts date-picker             # 样式钩子
+xihan-ui token control-h               # 控件高令牌
+xihan-ui doc guide/theme               # 指南页全文
+```
+
+## 命令
+
+### 查询
+
+| 命令 | 参数 | 说明 |
+| --- | --- | --- |
+| `list` | `--category <分类>` `--query <关键字>` | 按分类列出组件，含中文名、Vue / React 根组件名、自定义元素标签与状态 |
+| `info` | `<组件>` | 组件 API：产物、部件、Props 与条目数据结构、事件、插槽、React 专有属性、状态、connect API、键盘 |
+| `doc` | `[<组件\|页面>]` | 组件页或指南页的完整 Markdown，示例按写法内联；不带参数时列出全部指南页 |
+| `demo` | `<组件> [<示例>]` | 不带示例时列出全部示例；示例可写序号、文件基名（`01-basic` 或 `basic`）或标题 |
+| `token` | `[<关键字>]` `--component <组件>` | 按名字片段查全局令牌及缺省取值；`--component` 列该组件的覆盖槽；都不给时列出令牌族 |
+| `parts` | `<组件>` | 部件选择器、数据属性与状态取值、ARIA、覆盖槽 |
+| `design.md` | — | 缺省主题的 [design.md](./design-md) |
+| `changelog` | `[<版本> [<版本>]]` `--keyword <词>` | 不带版本取最近一版；一个版本取这一版；两个版本取两者之间（不含较早的那一版）；`--keyword` 只留提到它的条目，可写组件名 |
+
+### 集成
+
+| 命令 | 参数 | 说明 |
+| --- | --- | --- |
+| `mcp` | — | 以 stdio 启动 MCP 服务端，见 [MCP Server](./mcp) |
+| `setup` | `--client <claude\|cursor\|vscode\|codex>` `--mode <mcp\|skill\|both>` `--pin <版本>` `--dry-run` `--check` | 把钉住版本的 MCP 配置与使用技能写进项目 |
+
+### 组件名
+
+组件名可以写标识（`date-picker`）、PascalCase（`DatePicker`）、导出名（`XhDatePickerRoot`、`XhDatePickerTrigger`）、自定义元素标签（`xh-date-picker`）或中文名（`日期选择器`）。文档页写站内路径，如 `guide/theme`、`installation`、`adapters/react`。
+
+## 全局选项
+
+| 选项 | 说明 | 缺省 |
+| --- | --- | --- |
+| `--framework <vue\|react\|web-components>` | 示例写法，`wc` 是 `web-components` 的简写 | 项目里装的适配器，识别不到时为 `vue` |
+| `--format <markdown\|json>` | 输出格式 | `markdown` |
+| `-v, --version` | 打印版本 | — |
+| `-h, --help` | 打印帮助 | — |
+
+## 退出码
+
+| 退出码 | 含义 |
+| --- | --- |
+| `0` | 成功 |
+| `1` | 查不到（stderr 给出候选）或配置核对未通过 |
+| `2` | 用法错误：未知命令、缺参数、选项取值不合法 |
+
+## 编程接口
+
+包的主入口导出 `runCli`、`loadKnowledge`、`serveStdio`、`handleMessage` 以及 MCP 工具与提示词的定义 `TOOLS` / `PROMPTS`，可以在脚本里复用同一份离线数据。
+
+## 相关
+
+- [For Agents](./agents) · [MCP Server](./mcp) · [LLMs.txt](./llms)
+
+---
+
+来源：https://ui.docs.xihanfun.com/ai/design-md
+
+# design.md
+
+[`design.md`](https://ui.docs.xihanfun.com/design.md) 是给 AI 设计与编码工具读的设计语言文件，描述 XiHan.UI 缺省主题（浅色 · 舒适密度 · 基础对比度）的颜色、排版、间距、圆角、组件样式令牌与视觉规则，帮助工具生成符合 XiHan.UI 视觉体系的界面。
+
+## 格式
+
+文件遵循 [google-labs-code/design.md](https://github.com/google-labs-code/design.md) 规范，分两部分：
+
+- **YAML 头**：机读令牌，包括 `colors`、`typography`、`rounded`、`spacing` 与 `components`。取值在构建时从 `@xihan-ui/tokens` 的 `tokens.json` 展开，不手抄，令牌改了它跟着改；组件条目引用前面的令牌，如 `{colors.primary}`、`{rounded.control}`。
+- **正文**：按 Overview、Colors、Typography、Layout、Elevation & Depth、Shapes、Components、Do's and Don'ts 的顺序说明视觉规则，最后一节 Customization 说明怎样改品牌色、视觉环境与令牌。
+
+正文是 [设计](/design/) 一册的浓缩：中性克制、边界由描边承担、4px 网格、圆角只有 control / surface / overlay 三个角色、阴影只表达抬升、组件按六个家族取样式。
+
+## 使用方式
+
+**在线读取**：让工具直接访问文件地址。
+
+```text
+阅读 https://ui.docs.xihanfun.com/design.md，按其中的 XiHan.UI 视觉语言生成界面。
+```
+
+**用 CLI 取**：工具不能访问网址时，用 [CLI](./cli) 输出同一份内容，版本与 CLI 一致。
+
+```bash
+npx -y @xihan-ui/cli design.md > DESIGN.md
+```
+
+**经 MCP 取**：接入 [MCP Server](./mcp) 后调用 `xihan_ui_design_md` 工具。
+
+## 适用场景
+
+- 让 AI 生成整页界面或页面草图时，作为视觉约束；
+- 让设计类工具理解 XiHan.UI 的缺省主题与组件形态；
+- 判断「这里该用什么颜色、圆角、阴影」这类视觉取舍。
+
+design.md 只描述缺省主题。项目改过品牌色或令牌时，以项目里的令牌为准：用 `xihan-ui token <关键字>` 查令牌名，写代码时引用令牌而不是 design.md 里的取值。
+
+## 相关
+
+- [设计体系](/design/) · [设计令牌与主题](../guide/theme) · [主题设计器](/design/theme-designer)
+- [For Agents](./agents) · [LLMs.txt](./llms)
+
+---
+
+来源：https://ui.docs.xihanfun.com/ai/llms
+
+# LLMs.txt
+
+文档站在构建时产出一组给大语言模型读的机读资产，内容与站点正文同源。AI 工具读取它们即可了解 XiHan.UI 的组件、API 与用法。
+
+## 可用资源
+
+| 文件 | 说明 |
+| --- | --- |
+| [llms.txt](https://ui.docs.xihanfun.com/llms.txt) | 索引：全部页面的标题、一句话摘要与地址，以及下列资产的入口 |
+| [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt) | 全站正文，组件示例已内联为 Vue 与 Web Components 源码 |
+| [llms-components.txt](https://ui.docs.xihanfun.com/llms-components.txt) | 组件参考：部件、Props、事件、状态、键盘、数据属性、CSS 变量与示例 |
+| [llms-guide.txt](https://ui.docs.xihanfun.com/llms-guide.txt) | 核心概念、适配器与服务运行时 |
+| [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt) | 设计令牌全表：名字、类型、缺省取值与改写档 |
+| [design.md](https://ui.docs.xihanfun.com/design.md) | 缺省主题的设计语言，见 [design.md](./design-md) |
+| [ai/SKILL.md](https://ui.docs.xihanfun.com/ai/SKILL.md) | 给 AI 编程工具的使用规范，见 [For Agents](./agents) |
+
+**单页 Markdown**：任何一页的站点地址后加 `.md` 即可取到这一页的 Markdown，如 [components/select.md](https://ui.docs.xihanfun.com/components/select.md)、[guide/theme.md](https://ui.docs.xihanfun.com/guide/theme.md)。每页正文上方的「取本页 Markdown」也指向它。
+
+`llms-full.txt` 体积较大，多数场景读 `llms.txt` 索引后按需取单页，或只取 `llms-components.txt` 中用到的组件。
+
+## 在 AI 工具中使用
+
+所有工具都可以用同一段提示词：
+
+```text
+阅读 https://ui.docs.xihanfun.com/llms.txt 了解 XiHan.UI，写 XiHan.UI 代码时按需读取其中列出的页面（站点地址后加 .md 取 Markdown），以文档为准，不要凭记忆写组件 API。
+```
+
+| 工具 | 做法 |
+| --- | --- |
+| Claude Code | 写进项目的 `CLAUDE.md`，或用 `/memory` 记下 |
+| Cursor | 在对话中用 `@Docs` 添加 `https://ui.docs.xihanfun.com/llms.txt`，或写进 `.cursor/rules` |
+| Codex | 写进项目的 `AGENTS.md` |
+| GitHub Copilot | 写进 `.github/copilot-instructions.md` |
+| Windsurf | 写进 `.windsurf/rules` |
+
+能运行命令或接入 MCP 的工具，优先用 [CLI](./cli) 或 [MCP Server](./mcp)：数据离线且与项目版本一致，而文档站上的资产对应最新发布的版本。
+
+## 相关
+
+- [For Agents](./agents) · [MCP Server](./mcp) · [design.md](./design-md)
+
+---
+
+来源：https://ui.docs.xihanfun.com/ai/mcp
+
+# MCP Server
+
+本页介绍如何通过 Model Context Protocol（MCP）在 AI 编程工具中使用 XiHan.UI。
+
+## 什么是 MCP
+
+[Model Context Protocol](https://modelcontextprotocol.io) 是一个开放协议，让 AI 模型调用外部工具与数据源。接入 XiHan.UI 的 MCP 服务端后，AI 写代码前可以直接查到组件的部件、Props、示例与令牌，而不是凭记忆猜。
+
+## 官方 MCP Server
+
+服务端由 [`@xihan-ui/cli`](./cli) 提供，命令是 `xihan-ui mcp`，走 stdio 传输。数据随 npm 包离线发布、不联网，内容与 CLI 的版本一致；CLI 与其余 `@xihan-ui/*` 包同属一个版本组，钉住与项目相同的版本号即可查到项目实际用的 API。
+
+### 工具
+
+| 工具 | 说明 |
+| --- | --- |
+| `xihan_ui_list` | 按分类列出组件：标识、中文名、Vue / React 根组件名、自定义元素标签 |
+| `xihan_ui_info` | 组件 API：产物、部件、Props 与条目数据结构、事件、插槽、React 专有属性、状态、connect API、键盘 |
+| `xihan_ui_doc` | 组件页或指南页的完整 Markdown，示例按所选写法内联；不传参数时列出指南页 |
+| `xihan_ui_demo` | 列出组件的示例，或取某个示例在 Vue / React / Web Components 下的源码 |
+| `xihan_ui_token` | 按名字查设计令牌及缺省取值，或列出某个组件的覆盖槽 |
+| `xihan_ui_parts` | 样式钩子：部件选择器、数据属性与状态取值、ARIA、覆盖槽 |
+| `xihan_ui_design_md` | 缺省主题的 [design.md](./design-md) |
+| `xihan_ui_changelog` | 查某一版或两版之间的更新日志，可按组件名过滤 |
+
+工具都是只读的。示例写法缺省取项目里装的适配器（`@xihan-ui/vue` / `@xihan-ui/react` / `@xihan-ui/web-components`），识别不到时为 Vue，每次调用也可以用 `framework` 参数指定。
+
+### 提示词
+
+| 提示词 | 说明 |
+| --- | --- |
+| `xihan-ui-expert` | 以 XiHan.UI 专家身份工作，内容就是 [使用技能](https://ui.docs.xihanfun.com/ai/SKILL.md) |
+| `xihan-ui-page-generator` | 按描述用 XiHan.UI 组件搭一整页，参数 `description`（必填）与 `framework` |
+
+### 配置
+
+多数工具使用同一种写法，只是配置文件的位置不同：
+
+```json
+{
+  "mcpServers": {
+    "xihan-ui": {
+      "command": "npx",
+      "args": ["-y", "@xihan-ui/cli@<版本>", "mcp"]
+    }
+  }
+}
+```
+
+`<版本>` 写项目里装的 XiHan.UI 版本（`npm view @xihan-ui/vue version` 或看 `package.json`）。省略版本号时 `npx` 取最新版，查到的 API 可能比项目里装的新。
+
+需要 Node ≥ 18。
+
+### 自动写入
+
+在项目里运行 `setup`，它会读出项目里装的 XiHan.UI 版本，把钉住版本的配置写进对应文件，只改 `xihan-ui` 这一项，不动已有的其他服务。配置写在所在 git 仓库的根目录（不在仓库里时写在 `package.json` 所在目录）；前端放在 `frontend/` 这类一级子目录时，在仓库根运行也能读出版本：
+
+```bash
+npx -y @xihan-ui/cli setup --client claude                 # .mcp.json，并写入技能
+npx -y @xihan-ui/cli setup --client cursor --mode mcp      # 只写 .cursor/mcp.json
+npx -y @xihan-ui/cli setup --client vscode                 # .vscode/mcp.json
+npx -y @xihan-ui/cli setup --client codex                  # 打印 ~/.codex/config.toml 片段
+npx -y @xihan-ui/cli setup --client claude --dry-run       # 只打印，不写文件
+npx -y @xihan-ui/cli setup --client claude --check         # 核对配置是否就绪、版本是否一致
+```
+
+`--mode` 取 `mcp`、`skill` 或 `both`（缺省）；`--pin <版本>` 显式指定版本。配置文件已存在但无法解析为 JSON（例如带注释）时，`setup` 不改动文件并给出提示，按 `--dry-run` 打印的片段手动合并即可。
+
+## 在各工具中配置
+
+### Claude Code
+
+项目根目录的 `.mcp.json` 使用上面的通用写法，也可以用命令添加：
+
+```bash
+claude mcp add --scope project xihan-ui -- npx -y @xihan-ui/cli@<版本> mcp
+```
+
+Windows（非 WSL）上 Claude Code 需要经 `cmd /c` 调用 `npx`，`setup --client claude` 会自动写成这种形式：
+
+```json
+{
+  "mcpServers": {
+    "xihan-ui": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@xihan-ui/cli@<版本>", "mcp"]
+    }
+  }
+}
+```
+
+### Cursor
+
+写在项目的 `.cursor/mcp.json`（只对本项目生效）或用户目录的 `~/.cursor/mcp.json`，使用通用写法。
+
+### VS Code
+
+写在项目的 `.vscode/mcp.json`，顶层键是 `servers`，并标明传输类型：
+
+```json
+{
+  "servers": {
+    "xihan-ui": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@xihan-ui/cli@<版本>", "mcp"]
+    }
+  }
+}
+```
+
+### Codex
+
+写在 `~/.codex/config.toml`：
+
+```toml
+[mcp_servers.xihan-ui]
+command = "npx"
+args = [
+  "-y",
+  "@xihan-ui/cli@<版本>",
+  "mcp"
+]
+```
+
+### Windsurf 与其他工具
+
+Windsurf 写在 `~/.codeium/windsurf/mcp_config.json`，使用通用写法。其他支持 stdio MCP 的工具，按各自的配置位置填入同一组 `command` 与 `args` 即可。
+
+## 备选：LLMs.txt
+
+工具不支持 MCP、也不能运行命令时，让它读文档站的 [机读资产](./llms)：`https://ui.docs.xihanfun.com/llms.txt` 是索引，组件页在站点地址后加 `.md` 即可取到 Markdown。
+
+## 相关
+
+- [For Agents](./agents) · [CLI](./cli) · [LLMs.txt](./llms) · [design.md](./design-md)
 
 ---
 
@@ -1992,25 +2422,25 @@ const surfaces = ["var(--xh-color-orange-500)", "var(--xh-color-teal-300)", "var
 - 单系列用色槽 1；突出一个系列时，其余系列改用 `--xh-chart-deemphasis`。
 - 写在色块内部的数值用 `--xh-chart-on-categorical-N`，按对比度在纯白与最深的中性档之间取一个，对色块 ≥ 4.5:1；上面色块里的序号就是用它写的。
 
-色板不是手挑的。`packages/design/tokens/build/emit-chart-palette.mjs` 在基础色板上为 8 个色槽搜索色相、顺序与亮暗两套档位，同一份基础色板永远得到同一套结果；`check-chart-palette` 门禁再从 `tokens.css` 复验。基础色板同一档跨色相同一明度，所以色板必须跨档取值，相邻色槽之间才有明度差——色觉障碍读者主要靠明度差分辨颜色。亮暗两套各自校验，承载面取各自的 `--xh-bg-surface`：
+色板不是手挑的。`packages/design/tokens/build/emit-chart-palette.mjs` 在基础色板上为 8 个色槽搜索色相、顺序与亮暗两套档位，同一份基础色板永远得到同一套结果；`check-chart-palette` 门禁再从 `tokens.css` 复验。缺省色板是浅色调：每个色槽都是基础色板的一档往纯白里在 oklab 里按 90% / 75% / 60% / 45% 混合，柱、扇区、面积这类大块填充读起来轻。基础色板同一档跨色相同一明度，所以色板必须跨档、跨比例取值，相邻色槽之间才有明度差——色觉障碍读者主要靠明度差分辨颜色。亮暗两套各自校验，承载面取各自的 `--xh-bg-surface`：
 
 | 检查 | 门槛 |
 | --- | --- |
-| 明度带 | OKLCH L：亮色 0.43–0.77，暗色 0.48–0.67 |
-| 彩度下限 | C ≥ 0.10 |
-| 对比度 | 每个色槽对承载面 ≥ 3:1 |
+| 明度带 | OKLCH L：亮色 0.72–0.84，暗色 0.68–0.80 |
+| 彩度带 | 0.07 ≤ C ≤ 0.14：低于下限读成灰，高于上限在亮端发荧光 |
+| 对比度 | 每个色槽对承载面 ≥ 1.6:1。浅色调到不了 3:1，系列身份由图例、色块内文字与数据表补偿 |
 | 相邻色槽 | 正常视觉 ΔE ≥ 15；红色弱、绿色弱模拟下 ΔE ≥ 8 |
 | 前 3 个色槽两两 | 同相邻：散点、气泡这类任意两个标记都可能挨着的形态，只有前 3 个色槽保证两两可分 |
-| 任意两色 | 正常视觉 ΔE ≥ 10：隐藏一个系列后，原本不相邻的两色就挨在了一起 |
+| 任意两色 | 正常视觉 ΔE ≥ 8：隐藏一个系列后，原本不相邻的两色就挨在了一起；浅色调挤在亮端，门槛与莫兰迪柔彩同档 |
 | 色相分散 | 任意 45° 扇区（8 个色槽的平均间隔）里至多 2 个色槽，同一色系不挤在一起 |
 | 离开告警色 | 与 danger 语气每一档的正常视觉 ΔE ≥ 10：图里的红色会被读成告警 |
 | 固定顺序 | 亮暗同一色槽同一色相，色槽 1 是品牌色相 |
 
-满足全部检查的排法里，取相邻色槽在两种色觉障碍模拟下最小 ΔE 最大的一种。red 与发红的 orange 被「离开告警色」挡在外面；yellow 整族不取，同档同明度的色板里，它在对白底 3:1 的明度上只剩橄榄色。颜色按浏览器在 sRGB 显示器上的画法换算：基础色板的中档允许略出 sRGB 色域，出界的通道逐个截断。色觉障碍的模拟用 Machado–Oliveira–Fernandes 2009（严重度 1.0），与 `@xihan-ui/viz` 校验色板的函数同一口径，使用者可以用它复验自己覆盖后的色板。
+满足全部检查的排法里，取相邻色槽在两种色觉障碍模拟下最小 ΔE 最大的一种。red 与发红的 orange 被「离开告警色」挡在外面；yellow 整族不取，浅色调的明度带里它在亮色发土黄、在暗色只剩橄榄色。颜色按浏览器在 sRGB 显示器上的画法换算：基础色板的中档允许略出 sRGB 色域，出界的通道逐个截断。色觉障碍的模拟用 Machado–Oliveira–Fernandes 2009（严重度 1.0），与 `@xihan-ui/viz` 校验色板的函数同一口径，使用者可以用它复验自己覆盖后的色板：浅色调传 `tone: 'light'`，缺省按标准明度带（亮色 0.43–0.77、暗色 0.48–0.67，彩度 ≥ 0.10）判。
 
 ### 配色方案
 
-上面的分类色板是缺省的「多彩分类」。另有三套配色方案，在任意祖先上写 `data-xh-chart-palette` 即把分类色槽与色块内文字整套换掉：写在 `<html>` 上全站生效，写在一个容器或一张图上只换这一块。方案落在令牌层，八个图表组件、图例、提示框与画布渲染器都不用改，切换时画布跟着重画。
+上面的分类色板是缺省的「多彩分类」。另有三套配色方案，四套都是浅色调，在任意祖先上写 `data-xh-chart-palette` 即把分类色槽与色块内文字整套换掉：写在 `<html>` 上全站生效，写在一个容器或一张图上只换这一块。方案落在令牌层，八个图表组件、图例、提示框与画布渲染器都不用改，切换时画布跟着重画。
 
 ```html
 <html data-xh-chart-palette="monochrome">
@@ -2023,9 +2453,9 @@ const surfaces = ["var(--xh-color-orange-500)", "var(--xh-color-teal-300)", "var
 | 取值 | 方案 | 取色 | 适合 |
 | --- | --- | --- | --- |
 | `categorical`（缺省） | 多彩分类 | 上一节的 8 个色槽 | 系列多、要一眼分清 |
-| `monochrome` | 主题单色 | 品牌色阶由深到浅：亮色从 600（主题色）起逐档变浅，末两档再往承载面里混；暗色从 500 起往深走 | 仪表盘与指标卡统一成主题色；随 `data-brand` 换色 |
-| `brand` | 柔和品牌 | 品牌色相两侧的冷色一族加一抹粉，同一色相至多取两档 | 品牌感强、又要比单色好分辨 |
-| `muted` | 莫兰迪柔彩 | 基础色与明度相近的中性档在 oklab 里按比例混合，彩度压到 0.035–0.10 | 信息密集或偏克制的页面 |
+| `monochrome` | 主题单色 | 品牌色阶由深到浅：亮色从 500 起逐档变浅，末两档再往承载面里混；暗色从 300 起往深走 | 仪表盘与指标卡统一成主题色；随 `data-brand` 换色 |
+| `brand` | 柔和品牌 | 品牌色相两侧的冷色一族加一抹粉，与多彩分类同样往纯白里混出浅色调，同一色相至多取两档 | 品牌感强、又要比单色好分辨 |
+| `muted` | 莫兰迪柔彩 | 基础色往浅灰（中性 300）里在 oklab 里按 35% / 50% / 65% 混合，带灰的浅色，彩度压到 0.035–0.10 | 信息密集或偏克制的页面 |
 
 <XhTokenSwatches prefix="--xh-chart-palette-monochrome-" :steps="['1', '2', '3', '4', '5', '6', '7', '8']" on-prefix="--xh-chart-palette-monochrome-on-" label="主题单色" compact />
 <XhTokenSwatches prefix="--xh-chart-palette-brand-" :steps="['1', '2', '3', '4', '5', '6', '7', '8']" on-prefix="--xh-chart-palette-brand-on-" label="柔和品牌" compact />
@@ -2035,11 +2465,11 @@ const surfaces = ["var(--xh-color-orange-500)", "var(--xh-color-teal-300)", "var
 
 | 方案 | 与多彩分类不同的检查 |
 | --- | --- |
-| 主题单色 | 只靠明度区分：色相随品牌、对承载面的对比度逐档递减、色槽 1 ≥ 3:1、前 4 个色槽相邻 ΔE ≥ 5。浅档低于 3:1，由图例、提示框与数据表补偿；系列超过 4 个时换多彩分类 |
-| 柔和品牌 | 不查色相分散；同一色相的两档只差一档明度，任意两色放宽到 ΔE ≥ 7。相邻色槽仍是正常视觉 ≥ 15、色觉障碍 ≥ 8 |
-| 莫兰迪柔彩 | 彩度 0.035–0.10；明度带收窄到亮色 0.52–0.68、暗色 0.55–0.72；相邻正常视觉 ΔE ≥ 12、色觉障碍 ≥ 6；任意两色 ≥ 8；任意 45° 扇区至多 3 个色槽 |
+| 主题单色 | 只靠明度区分：色相随品牌、对承载面的对比度逐档递减、色槽 1 ≥ 1.6:1、前 4 个色槽相邻 ΔE ≥ 5。浅档更弱，由图例、提示框与数据表补偿；系列超过 4 个时换多彩分类 |
+| 柔和品牌 | 明度带、彩度带与对比度同多彩分类；不查色相分散；冷色一族挤在亮端，相邻色槽放宽到正常视觉 ΔE ≥ 12、色觉障碍 ≥ 6；同一色相的两档只差一档明度，任意两色放宽到 ΔE ≥ 7 |
+| 莫兰迪柔彩 | 彩度 0.035–0.10；明度带亮色 0.70–0.82、暗色 0.64–0.76；对比度同多彩分类；相邻正常视觉 ΔE ≥ 12、色觉障碍 ≥ 6；任意两色 ≥ 8；任意 45° 扇区至多 3 个色槽 |
 
-对比度 ≥ 3:1（主题单色除外）、离开告警色与色块内文字 ≥ 4.5:1 三套都照常检查。有序与顺序色阶本来就是品牌色相，`data-brand` 换色时一起换，不随方案切换。
+离开告警色与色块内文字 ≥ 4.5:1 三套都照常检查。有序与顺序色阶本来就是品牌色相，`data-brand` 换色时一起换，不随方案切换。
 
 ### 有序、顺序与发散
 
@@ -2047,9 +2477,9 @@ const surfaces = ["var(--xh-color-orange-500)", "var(--xh-color-teal-300)", "var
 <XhTokenSwatches prefix="--xh-chart-sequential-" :steps="['start', 'mid', 'end']" label="顺序：大小" compact auto-ink />
 <XhTokenSwatches prefix="--xh-chart-diverging-" :steps="['negative', 'center', 'positive']" label="发散：高于 / 低于基线" compact auto-ink />
 
-- 有序：单色相，1 对承载面最强、逐档减弱，最弱一档仍 ≥ 2:1。
-- 顺序：单色相由浅到深，小值贴近承载面，暗色下锚点翻转。标记只带自己在色阶上的位置，皮肤用 `color-mix(in oklch, …)` 在锚点之间插值，切换主题时颜色跟着令牌走，不由脚本算色。
-- 发散：amber 与 blue 两臂同档，同一幅度读起来一样重；中点是贴近承载面的中性色。插值用 `in oklab`：中点没有色相，oklch 插值会绕着色相环走出一段杂色。
+- 有序：浅色调，亮色从品牌 500 起、暗色从 300 起，相邻两档之间补半档（两档在 oklab 里各半混合）；单色相，1 对承载面最强、逐档减弱，最弱一档仍 ≥ 1.5:1。
+- 顺序：浅色调，单色相由浅到深，亮色锚点取品牌 50 / 300 / 500，小值贴近承载面，终点仍 ≥ 3:1；暗色下锚点翻转。压在色块上的文字（层级图按值着色时的名字）按段取 `--xh-chart-on-sequential-low` / `-high`：亮色两段都写正文色，暗色高段贴近亮端、写承载面色。标记只带自己在色阶上的位置，皮肤用 `color-mix(in oklch, …)` 在锚点之间插值，切换主题时颜色跟着令牌走，不由脚本算色。
+- 发散：amber 与 blue 两臂同档（亮色 500、暗色 400），同一幅度读起来一样重；两端仍 ≥ 3:1；中点是贴近承载面的中性色。插值用 `in oklab`：中点没有色相，oklch 插值会绕着色相环走出一段杂色。
 
 ### 涨跌与图表家具
 
@@ -2057,8 +2487,8 @@ const surfaces = ["var(--xh-color-orange-500)", "var(--xh-color-teal-300)", "var
   kind="color"
   :names="['--xh-chart-rise', '--xh-chart-fall', '--xh-chart-deemphasis', '--xh-chart-surface', '--xh-chart-grid', '--xh-chart-axis', '--xh-chart-label', '--xh-chart-crosshair', '--xh-chart-band-highlight']"
   :notes="{
-    '--xh-chart-rise': '上涨：缺省成功色相',
-    '--xh-chart-fall': '下跌：缺省危险色相，与上涨在色觉障碍模拟下靠明度拉开',
+    '--xh-chart-rise': '上涨：缺省成功色相往纯白里混出的浅色调',
+    '--xh-chart-fall': '下跌：缺省危险色相的浅色调，与上涨在色觉障碍模拟下靠明度拉开',
     '--xh-chart-deemphasis': '强调一个系列时其余系列的颜色，比任何色槽都弱',
     '--xh-chart-surface': '承载面：相邻填充之间的间隙与点外的描边环取它，放进淡底容器时由宿主改写',
     '--xh-chart-grid': '网格线，内部分隔；高对比档升到装饰边',
@@ -2069,18 +2499,18 @@ const surfaces = ["var(--xh-color-orange-500)", "var(--xh-color-teal-300)", "var
   }"
 />
 
-涨跌缺省绿涨红跌。要换成红涨绿跌，在主题边界上对调两支令牌，档位保持不变，两色的对比度与可分性就仍然成立：
+涨跌缺省绿涨红跌，两色都是往纯白里混出的浅色调，对承载面 ≥ 1.6:1、在色觉障碍模拟下靠明度拉开。要换成红涨绿跌，在主题边界上对调两支令牌，混合比例保持不变，两色的对比度与可分性就仍然成立：
 
 ```css
 :root,
 [data-theme="light"] {
-  --xh-chart-rise: var(--xh-color-danger-700);
-  --xh-chart-fall: var(--xh-color-success-600);
+  --xh-chart-rise: color-mix(in oklab, var(--xh-color-danger-600) 70%, var(--xh-color-neutral-0));
+  --xh-chart-fall: color-mix(in oklab, var(--xh-color-success-600) 50%, var(--xh-color-neutral-0));
 }
 
 [data-theme="dark"] {
-  --xh-chart-rise: var(--xh-color-danger-600);
-  --xh-chart-fall: var(--xh-color-success-500);
+  --xh-chart-rise: color-mix(in oklab, var(--xh-color-danger-600) 80%, var(--xh-color-neutral-0));
+  --xh-chart-fall: color-mix(in oklab, var(--xh-color-success-600) 60%, var(--xh-color-neutral-0));
 }
 ```
 
@@ -8084,7 +8514,7 @@ pnpm gate:family  # 逐家族豁免表只减不增（条目数快照 + 键集合
 pnpm size
 ```
 
-48 条产物各有上限（gzip 后），超出即失败。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，具体数字以该文件为准。
+49 条产物各有上限（gzip 后），超出即失败。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，具体数字以该文件为准。
 
 
 ## 相关
@@ -8416,9 +8846,9 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 版本号采用语义化版本 `major.minor.patch`：受约束的成员变更走 major，新增走 minor，只修正行为不改名字走 patch。
 
-## 18 个包必须同版本安装
+## 19 个包必须同版本安装
 
-18 个包锁步发布：任何一个包发新版本，全部 18 个包一起发同一个号。
+19 个包锁步发布：任何一个包发新版本，全部 19 个包一起发同一个号。
 
 ```
 @xihan-ui/core     @xihan-ui/position       @xihan-ui/tokens
@@ -8426,7 +8856,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 @xihan-ui/vue      @xihan-ui/web-components @xihan-ui/chat-stream
 @xihan-ui/markdown @xihan-ui/code-highlight @xihan-ui/backgrounds
 @xihan-ui/sound    @xihan-ui/motion         @xihan-ui/animations
-@xihan-ui/pointer  @xihan-ui/viz
+@xihan-ui/pointer  @xihan-ui/viz            @xihan-ui/cli
 ```
 
 两条后果：
@@ -8438,14 +8868,14 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 一、JS / TS 导出面
 
-18 个包中 18 个出 JS 或类型入口，共 45 个带类型的入口。
+19 个包中 19 个出 JS 或类型入口，共 46 个带类型的入口。
 
 ### 受约束
 
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
-| 包名 | 18 | 把代码从一个包移到另一个包 = major |
-| `exports` 子路径 | 45 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
+| 包名 | 19 | 把代码从一个包移到另一个包 = major |
+| `exports` 子路径 | 46 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
 | Vue 组件导出 `Xh*` | 1183（140 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
 | Vue 组合式函数 `use<家族>` | 110 | `useSelect`、`useCombobox`。不使用库内部件、自行编写标记时的唯一入口 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
@@ -8492,8 +8922,8 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
 | `data-scope` 取值（组件身份） | 140 | **受约束**（新增第 141 个组件是 minor） |
-| `data-part` 取值（部件名） | 368 个不同名字 / 1345 条「组件 × 部件」配对 | **受约束** |
-| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 368 个 | **受约束** |
+| `data-part` 取值（部件名） | 370 个不同名字 / 1352 条「组件 × 部件」配对 | **受约束** |
+| `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 370 个 | **受约束** |
 | `meta.requiredParts`（必备部件） | 313 条 | **受约束**（加条目 = major），方向见下 |
 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改动一处即四处同时破坏。
@@ -8513,7 +8943,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 312 个不同的 `data-*` 属性名、2015 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 312 个不同的 `data-*` 属性名、2024 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -8525,7 +8955,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-样式钩子。自带皮肤消费了 260 个属性名 / 1145 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤依据的就是这一组：
+样式钩子。自带皮肤消费了 259 个属性名 / 1148 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤依据的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -8577,7 +9007,7 @@ brand  neutral  success  warning  danger  info
 | `@layer` 名与声明顺序 | 5 | `xihan.reset` → `xihan.tokens` → `xihan.motion` → `xihan.components` → `xihan.overrides`。改名、调序、增删中间层均为 major。`xihan.overrides` 刻意留空，专供使用方覆盖，不会作为未使用的层被清理 |
 | 全局令牌 · 原语层 | 115 | `--xh-color-brand-500`、`--xh-space-4`、`--xh-radius-md`。皮肤中不应直接使用它们，但接入品牌轴必须写 `--xh-color-brand-*`，因此它们是公开的 |
 | 全局令牌 · 语义层 | 302 | `--xh-bg-brand`、`--xh-fg-on-brand`、`--xh-control-h-md`、`--xh-shape-control`。主题定制的正门，见 [设计令牌与主题](./theme) |
-| 组件覆盖槽 | 4638（覆盖 140 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，在 `:root` 中设置即可修改该组件 |
+| 组件覆盖槽 | 4644（覆盖 140 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，在 `:root` 中设置即可修改该组件 |
 | 语气轴槽 | 12 | `--xh-_tone`、`--xh-_tone-on`、`--xh-_tone-hover`、`--xh-_tone-subtle`、`--xh-_tone-border` 等。这是自定义语气的唯一机制：写入 `[data-tone='premium'] { --xh-_tone: gold; --xh-_tone-on: #000 }`，读取这批槽的 64 份皮肤随之生效。虽然带下划线前缀，但按受约束处理 |
 | 关键帧名 | 42 | `xh-pop-in`、`xh-fade-out`、`xh-spin`。共享关键帧住在 `family/motion.css`（子入口 `@xihan-ui/styles/motion.css`），皮肤 `@import` 它；组件专属关键帧仍在各皮肤。在 `xihan.overrides` 层中重定义同名关键帧即可替换该段动画（关键帧名因此是公开面），所以改名与删名同样是 major |
 | 跨包内联属性 | 139 | 浮层定位共用的 `--xh-_<组件>-available-w` / `-available-h` / `-anchor-w` / `-arrow-x` / `-arrow-y`，指示条与滑块的几何 `--xh-_tabs-indicator-x`、`--xh-_radio-group-thumb-w`，值类比例 `--xh-_progress-value`、`--xh-_loading-bar-value`，浮动按钮的贴边与停点 `--xh-_float-button-offset`、`--xh-_float-button-ratio`、`--xh-_float-button-x`，图表提示框坐标 `--xh-_chart-tip-x`、`--xh-_chart-tip-y`，以及 `--xh-_truncate-lines`、`--xh-_color-picker-tag-color`、`--xh-_carousel-autoplay-duration` 等。由 headless 写入内联 `style`，皮肤必须读取。整套更换皮肤时若不读取这些值，浮层限高与箭头、选中指示、进度、文本截断、浮动按钮贴边或图表提示框会失效，且不报任何错误。core 写入的层级、动效与液态材质取值不在此列，见下方「排除」 |
@@ -8588,13 +9018,13 @@ brand  neutral  success  warning  danger  info
 
 | 类别 | 数量 | 排除原因 |
 | --- | --- | --- |
-| 其余 `--xh-_` 私有槽 | 875 | 皮肤内部的回退中转（`--xh-_bg`、`--xh-_bg-hover`、`--xh-_mention-py` 等），变体只改槽位、不重写规则依赖它。不应在外部设置它们。core 写入内联 `style` 的层级、动效与液态材质取值（`--xh-_layer`、`--xh-_stagger-index`、`--xh-_enter-from-opacity` 等）同属此档：层级的公开入口是 `--xh-<组件>-layer` 覆盖槽，私有值只作回落；后两类缺失时只少一段过渡或材质效果，组件功能不受影响 |
+| 其余 `--xh-_` 私有槽 | 878 | 皮肤内部的回退中转（`--xh-_bg`、`--xh-_bg-hover`、`--xh-_mention-py` 等），变体只改槽位、不重写规则依赖它。不应在外部设置它们。core 写入内联 `style` 的层级、动效与液态材质取值（`--xh-_layer`、`--xh-_stagger-index`、`--xh-_enter-from-opacity` 等）同属此档：层级的公开入口是 `--xh-<组件>-layer` 覆盖槽，私有值只作回落；后两类缺失时只少一段过渡或材质效果，组件功能不受影响 |
 | 令牌的取值 | — | `--xh-color-brand-500` 这个名字受约束，其对应的 `oklch()` 值不受约束。调色板随视觉迭代变化，这正是令牌存在的意义 |
 | `index.css` 的内部结构 | — | 它是生成的扁平文件：家族配方只内联一次、排在皮肤之前，皮肤段的顺序即源序。段标记注释（`/* styles/xxx.css */`）只作阅读定位，不是承诺 |
 | `index.unlayered.css` 的内部结构 | — | 它是同一源序的扁平镜像，不带 `@layer`。使用该入口时没有 `xihan.overrides` 覆盖槽位，层名承诺不适用 |
 
 ::: warning 命名前缀不能反推归属
-`--xh-field-py` 形似 `field` 组件的覆盖槽，实际是全局语义令牌，`field.css` 本身并不使用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 792 个全局令牌里，不按前缀推断。
+`--xh-field-py` 形似 `field` 组件的覆盖槽，实际是全局语义令牌，`field.css` 本身并不使用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 803 个全局令牌里，不按前缀推断。
 :::
 
 ---
@@ -8605,11 +9035,11 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 145（`defineXhElements()` 注册 144 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1556 条声明 / 479 个不同名字 | **受约束**（具体元素上的具体属性名） |
-| attribute 名词汇表本身 | 479 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
-| `CustomEvent` 名 | 121 个名字 / 277 条「元素 × 事件」 | **受约束** |
-| 事件传播语义 | `bubbles: true, composed: true`（262 处中 260 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
-| 事件 `detail` 形状 | 221 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
+| observed attribute | 1561 条声明 / 483 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| attribute 名词汇表本身 | 483 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
+| `CustomEvent` 名 | 122 个名字 / 280 条「元素 × 事件」 | **受约束** |
+| 事件传播语义 | `bubbles: true, composed: true`（265 处中 263 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
+| 事件 `detail` 形状 | 224 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
 | `attribute: false` 的 JS 字段 | 308 条（涉及 102 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 等只能通过 JS 赋值，HTML 中无法表达：不是每个 property 都有对应 attribute |
 | 命令式方法 | 157（分布在 60 个元素） | **受约束**，含参数与返回类型 |
 
@@ -8750,6 +9180,7 @@ brand  neutral  success  warning  danger  info
 | `scrollbar-gutter` | 94 | 97 | 18.2 | 滚动条出现时轻微位移 |
 | `dvh` / `svh` / `lvh` | 108 | 101 | 15.4 | 回落到 `vh` |
 | `text-wrap: balance` | 114 | 121 | 17.5 | 标题按默认换行 |
+| `grid-template-columns: subgrid` | 117 | 71 | 16.0 | Descriptions 标签在左时每格按自己的标签定宽，同一列上下行的标签不再对齐 |
 | `light-dark()` | 123 | 120 | 17.5 | 代码块语法色退化成单色 |
 | `field-sizing` | 123 | 152 | 26.2 | `prompt-input` 输入框退化成固定行数 |
 | `Intl.Segmenter` | 87 | 125 | 14.1 | `text-field` 的字数与上限退化成按码点计：代理对仍算一个字，组合 emoji 与国旗按码点算成几个 |
@@ -8764,7 +9195,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 | `@xihan-ui/vue`、`@xihan-ui/web-components` | `@xihan-ui/backgrounds`（optional） | 不使用背景效果时无需安装 |
 | `@xihan-ui/vue` | `@xihan-ui/sound`（optional） | 不使用音效时无需安装 |
 | `@xihan-ui/web-components` | 无框架 peer | 原生自定义元素，不要求任何框架 |
-| 其余 15 个包 | 无 | — |
+| 其余 16 个包 | 无 | — |
 
 ---
 
@@ -8772,7 +9203,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 
 锁步发版意味着版本号不反映稳定性，因此单独列表。
 
-下面两张表覆盖全部 18 个包，每个包必在其中一张中；门禁比对两张表的包名与 `packages/` 下的公开包，新增包未定级即构建失败。
+下面两张表覆盖全部 19 个包，每个包必在其中一张中；门禁比对两张表的包名与 `packages/` 下的公开包，新增包未定级即构建失败。
 
 ### 稳定
 
@@ -8785,7 +9216,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 | `@xihan-ui/web-components` | 145 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
 | `@xihan-ui/styles` | 140 份组件皮肤、5 个层名 |
-| `@xihan-ui/tokens` | 792 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
+| `@xihan-ui/tokens` | 803 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
 | `@xihan-ui/icons` | 图标集 |
 | `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约；另有 `./date` 子入口的全部导出（`PlainDate` / `PlainTime` / `PlainDateTime` / `ZonedDateTime`、时区换算、周规则、边界函数与格式化器） |
 | `@xihan-ui/position` | `createPositionEngine` 与它的选项；其余 9 个导出是内部算子 |
@@ -8794,7 +9225,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 
 ### 实验
 
-这七个包的破坏性变更可以出现在 minor 中，不适合用于不易升级的生产代码。
+这八个包的破坏性变更可以出现在 minor 中，不适合用于不易升级的生产代码。
 
 | 包 | 仍在变化的原因 |
 | --- | --- |
@@ -8805,6 +9236,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 | `@xihan-ui/backgrounds` | 效果参数与点云 API 仍在调整；通用短名（`bool` / `num` / `str` / `rgb`）不是公开 API |
 | `@xihan-ui/animations` | 公开面是 `MotionSpec` 的字段与 `BUILTIN_MOTION_NAMES` 里的预设名。预设表随组件接入继续调整，预设改名没有门禁拦截：它不是导出名，删除不会被报告 |
 | `@xihan-ui/sound` | 同上：`SoundSpec` 的层与包络字段、三套主题、`BUILTIN_SOUND_NAMES` 中的预设名仍在调整 |
+| `@xihan-ui/cli` | 开发期工具，不进应用产物。命令、MCP 工具与提示词的名字、参数和输出格式随使用反馈调整；离线数据的结构不是公开 API |
 
 ---
 
@@ -8813,12 +9245,12 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，18785 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，18847 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 214 条子入口、9584 个导出名、140 个 `data-scope` 与 1345 条部件配对、
-140 个组件的 2112 个 prop 名、314 种 `data-*`、33 个 `data-state` 取值、792 个令牌、
-5 个 `@layer` 名、4638 个组件覆盖槽、144 个自定义元素及其 attribute 与事件。
+覆盖：包名与 215 条子入口、9616 个导出名、140 个 `data-scope` 与 1352 条部件配对、
+140 个组件的 2120 个 prop 名、314 种 `data-*`、33 个 `data-state` 取值、801 个令牌、
+5 个 `@layer` 名、4644 个组件覆盖槽、144 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改
 `collection`、`splitter` 的 `size` 改 `sizes`）其余门禁全程沉默。它的事实源是无头内核的
@@ -8841,7 +9273,7 @@ changeset 按 patch / minor 记录即可：更新基线这一动作本身不代�
 
 另有三道门禁把原本依赖自觉的条款转为机器检查。`check-css-floor` 保证浏览器硬底线：
 `.browserslistrc` 记录底线，拒绝名单拦截 `@scope`、媒体查询区间写法等无兜底的抬底线特性，
-`light-dark()` / `dvh` / `lh` 必须带级联兜底。`check-version-lock` 保证 18 包锁步：任何一个
+`light-dark()` / `dvh` / `lh` 必须带级联兜底。`check-version-lock` 保证 19 包锁步：任何一个
 package.json 的 version 与其余不同，门禁直接失败。`check-wiring` 保证检查系统自身：新增的
 check 脚本未接入 `pnpm gate` 等同于未编写，死引用同样被拦截。
 
@@ -8858,7 +9290,7 @@ check 脚本未接入 `pnpm gate` 等同于未编写，死引用同样被拦截�
 | Vue 作用域插槽载荷 | 带载荷的插槽已声明 `slots:` 选项，由 `check-slot-types` 门禁的四条判据保证（缺声明 / 键非可选 / 值非函数 / 声明未用）。仅渲染无载荷插槽的部件仍不声明，消费方写错 slot 名不会报错 | 无载荷插槽也补充声明，或明确只有带载荷的插槽进入契约 |
 | 移除提示（CSS / `data-*` / attribute / 层名） | 这四种介质没有 IDE 提示：名字移除之后，消费方的声明只是静默失配，既不报错也不降级。唯一的告知渠道是更新日志，因此每次移除都在 changeset 中逐条列出旧名与替换写法，供使用方在自己的代码库中全文搜索 | 无 |
 | 浏览器硬底线 | 已落地：`.browserslistrc` 记录硬底线，`check-css-floor` 门禁拒绝抬底线的无兜底特性（`@scope`、媒体查询区间写法等），并校验 `light-dark()` / `dvh` / `lh` 的级联兜底 | 拒绝名单改动时联动本页支持面表格的提醒 |
-| 「18 个包必须同版本」 | `check-version-lock` 门禁保证 18 个 package.json 同版本。运行期一侧只在 dev 有提示：三个适配器启动时调用 `checkLockstepVersion`，自身版本与 core 不一致时经诊断通道发出一条 `warn`；生产构建中跳过，且只比对适配器与 core 两个版本，不是全部 18 个 | 提升为 peer，或把运行期比对扩展到全部包 |
+| 「19 个包必须同版本」 | `check-version-lock` 门禁保证 19 个 package.json 同版本。运行期一侧只在 dev 有提示：三个适配器启动时调用 `checkLockstepVersion`，自身版本与 core 不一致时经诊断通道发出一条 `warn`；生产构建中跳过，且只比对适配器与 core 两个版本，不是全部 19 个 | 提升为 peer，或把运行期比对扩展到全部包 |
 
 本页内容与实际行为不符时按缺陷处理，请提交 issue。
 
@@ -49317,6 +49749,70 @@ import {
 </xh-descriptions>
 ```
 
+### 标签对齐
+
+标签在左时同一列的标签收到这一列最长的那个，竖线上下对齐；跨列的格与没摆满的最后一行照常画线
+
+```vue
+<script setup lang="ts">
+import {
+  XhDescriptionsItem,
+  XhDescriptionsLabel,
+  XhDescriptionsRoot,
+  XhDescriptionsValue,
+} from "@xihan-ui/vue";
+
+const rows = [
+  { label: "申请人", value: "张三" },
+  { label: "状态", value: "待审批" },
+  { label: "申请对象", value: "财务部 · 报销审批", span: 2 },
+  { label: "申请原因", value: "季度结算期间临时代审，结算完成后收回", span: 2 },
+  { label: "期望有效期", value: "2026-10-14 至 2026-11-14", span: 2 },
+  { label: "申请时间", value: "2026-10-14 09:30" },
+];
+</script>
+
+<template>
+  <XhDescriptionsRoot :columns="2" variant="outline" placement="left" style="max-inline-size: 640px">
+    <XhDescriptionsItem v-for="row in rows" :key="row.label" :span="row.span">
+      <XhDescriptionsLabel>{{ row.label }}</XhDescriptionsLabel>
+      <XhDescriptionsValue>{{ row.value }}</XhDescriptionsValue>
+    </XhDescriptionsItem>
+  </XhDescriptionsRoot>
+</template>
+```
+
+```html
+<xh-descriptions columns="2" variant="outline" placement="left">
+  <dl data-xh-part="root" style="max-inline-size: 640px">
+    <div data-xh-part="item">
+      <dt data-xh-part="label">申请人</dt>
+      <dd data-xh-part="value">张三</dd>
+    </div>
+    <div data-xh-part="item">
+      <dt data-xh-part="label">状态</dt>
+      <dd data-xh-part="value">待审批</dd>
+    </div>
+    <div data-xh-part="item" span="2">
+      <dt data-xh-part="label">申请对象</dt>
+      <dd data-xh-part="value">财务部 · 报销审批</dd>
+    </div>
+    <div data-xh-part="item" span="2">
+      <dt data-xh-part="label">申请原因</dt>
+      <dd data-xh-part="value">季度结算期间临时代审，结算完成后收回</dd>
+    </div>
+    <div data-xh-part="item" span="2">
+      <dt data-xh-part="label">期望有效期</dt>
+      <dd data-xh-part="value">2026-10-14 至 2026-11-14</dd>
+    </div>
+    <div data-xh-part="item">
+      <dt data-xh-part="label">申请时间</dt>
+      <dd data-xh-part="value">2026-10-14 09:30</dd>
+    </div>
+  </dl>
+</xh-descriptions>
+```
+
 ### 标题与附加内容
 
 列表之前的头部放标题与作用于整份描述的操作；它排在 dl 之外，标题标签按页面层级由作者选
@@ -49408,7 +49904,9 @@ const order = [
 - 语义是 `dt` / `dd`，组件只提供身份与排版。
 - `columns` 决定每行几组，不传时每行一组。
 - 标签位置可以在值的上方或左侧；`variant="outline"` 提供外框与网格线。
+- 标签在左时，同一列的标签宽度取这一列最长的那个，标签与值之间的竖线上下对齐；各列各取各的。依赖 CSS 子网格（Chrome 117 起），更早的引擎里每格按自己的标签定宽。
 - 每一格可以通过 `span` 横跨多列，上限是当前列数；窄档一行只放一组时忽略该值。
+- 网格线与跨列、行里摆了几格无关；最后一行没摆满时，最后一格与空着的列连成一格。
 
 ### 组合
 
@@ -49419,7 +49917,7 @@ const order = [
 ### 最佳实践
 
 - 值为空时写“—”，不留空白，避免用户无法区分没有值与未加载。
-- 标签左置时给它们统一宽度，值才能对齐。
+- 标签左置时同一列自动对齐；要让各列的标签也一样宽，用 `--xh-descriptions-label-w` 定一个宽度。
 - 长文本字段用 `span` 占满整行，不为它另开一份描述列表。
 
 ### 反模式
@@ -49515,7 +50013,7 @@ const order = [
 | --- | --- | --- | --- | --- | --- |
 | `--xh-descriptions-bg` | `root` | `background` | `variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | descriptions 的 root 部件 background 覆盖槽。 |
 | `--xh-descriptions-border` | `root` | `border` | `variant=outline` | `--xh-border-default` | descriptions 的 root 部件 border 覆盖槽。 |
-| `--xh-descriptions-divider` | `item`<br>`label`<br>`root` | `border-block-start`<br>`border-inline-end`<br>`border-inline-start` | `@media (min-width: 768px)`<br>`placement=left`<br>`variant=outline` | `--xh-border-default` | descriptions 的 item、label、root 部件 border-block-start、border-inline-end、border-inline-start 覆盖槽。 |
+| `--xh-descriptions-divider` | `item`<br>`label`<br>`root` | `border-block-end`<br>`border-inline-end` | `@media (min-width: 768px)`<br>`placement=left`<br>`variant=outline` | `--xh-border-default` | descriptions 的 item、label、root 部件 border-block-end、border-inline-end 覆盖槽。 |
 | `--xh-descriptions-extra-gap` | `extra` | `gap` | `default` | `--xh-space-2` | descriptions 的 extra 部件 gap 覆盖槽。 |
 | `--xh-descriptions-fg` | `root` | `color` | `default` | `--xh-fg-default` | descriptions 的 root 部件 color 覆盖槽。 |
 | `--xh-descriptions-font-size` | `root` | `font-size` | `default` | `--xh-_descriptions-font-size` | descriptions 的 root 部件 font-size 覆盖槽。 |
@@ -49528,7 +50026,7 @@ const order = [
 | `--xh-descriptions-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | descriptions 的 label 部件 color 覆盖槽。 |
 | `--xh-descriptions-label-font-weight` | `label` | `font-weight` | `default` | `--xh-font-weight-medium` | descriptions 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-descriptions-label-gap` | `item`<br>`root` | `column-gap` | `@media (min-width: 768px)`<br>`placement=left` | `--xh-_descriptions-label-gap` | descriptions 的 item、root 部件 column-gap 覆盖槽。 |
-| `--xh-descriptions-label-w` | `item`<br>`root` | `grid-template-columns` | `@media (min-width: 768px)`<br>`placement=left` | `--xh-_descriptions-label-w` | descriptions 的 item、root 部件 grid-template-columns 覆盖槽。 |
+| `--xh-descriptions-label-w` | `item`<br>`root` | `grid-template-columns` | `@media (min-width: 768px)`<br>`@supports (grid-template-columns: subgrid)`<br>`columns=2`<br>`columns=3`<br>`columns=4`<br>`columns=5`<br>`columns=6`<br>`placement=left` | `--xh-_descriptions-label-w` | descriptions 的 item、root 部件 grid-template-columns 覆盖槽。 |
 | `--xh-descriptions-pair-gap` | `item` | `gap` | `default` | `--xh-_descriptions-pair-gap` | descriptions 的 item 部件 gap 覆盖槽。 |
 | `--xh-descriptions-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | descriptions 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-descriptions-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | descriptions 的 title 部件 color 覆盖槽。 |
@@ -69894,7 +70392,7 @@ const sizes = ["sm", "md", "lg"] as const;
 | `--xh-icon-frame-shadow` | `root` | `box-shadow` | `frame=solid`<br>`tone` | `--xh-_highlight-brand`<br>`--xh-_highlight-tone` | icon 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-icon-frame-size` | `root` | `block-size`<br>`inline-size`<br>`padding` | `frame`<br>`size=lg`<br>`size=sm` | `--xh-_icon-frame-step`<br>`--xh-control-h-lg`<br>`--xh-control-h-sm` | icon 的 root 部件 block-size、inline-size、padding 覆盖槽。 |
 | `--xh-icon-shift` | `root` | `vertical-align` | `default` | `--xh-glyph-baseline-shift` | icon 的 root 部件 vertical-align 覆盖槽。 |
-| `--xh-icon-size` | `autoplay-trigger`<br>`branch-error`<br>`branch-indicator`<br>`branch-loading`<br>`branch-trigger`<br>`cancel-trigger`<br>`caps-lock-indicator`<br>`clear-trigger`<br>`close-trigger`<br>`comment-trigger`<br>`control`<br>`decrement-trigger`<br>`dismiss-trigger`<br>`edit-trigger`<br>`ellipsis-trigger`<br>`expand-trigger`<br>`first-trigger`<br>`flip-horizontal-trigger`<br>`flip-vertical-trigger`<br>`increment-trigger`<br>`indicator`<br>`item`<br>`item-close-trigger`<br>`item-delete-trigger`<br>`item-indicator`<br>`item-preview`<br>`last-trigger`<br>`line-content`<br>`line-fold-trigger`<br>`loading`<br>`move-down-trigger`<br>`move-up-trigger`<br>`next-trigger`<br>`next-year-trigger`<br>`overflow-trigger`<br>`path`<br>`path-item`<br>`prev-trigger`<br>`prev-year-trigger`<br>`reset-trigger`<br>`root`<br>`rotate-left-trigger`<br>`rotate-right-trigger`<br>`scroll-to-end-trigger`<br>`separator`<br>`sort-trigger`<br>`submit-trigger`<br>`to-source-trigger`<br>`to-target-trigger`<br>`trend`<br>`trigger`<br>`trigger-indicator`<br>`truncation`<br>`viewport`<br>`visibility-trigger`<br>`window-state-trigger`<br>`zoom-in-trigger`<br>`zoom-out-trigger` | `block-size`<br>`column-gap`<br>`inline-size` | `@media (min-width: 640px)`<br>`default`<br>`direction`<br>`empty`<br>`error`<br>`folded`<br>`has(> [data-part='unread-count']:only-child)`<br>`is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])`<br>`mode=send`<br>`mode=stop`<br>`not([data-variant='dot'])`<br>`preset=toast`<br>`size=2xl`<br>`size=3xl`<br>`size=4xl`<br>`size=lg`<br>`size=md`<br>`size=sm`<br>`size=text`<br>`size=xl`<br>`sort=asc`<br>`sort=desc`<br>`state=completed`<br>`state=paused`<br>`state=running`<br>`state=visible`<br>`variant=dot` | `--xh-_color-swatch-picker-mark`<br>`--xh-glyph-size-2xl`<br>`--xh-glyph-size-3xl`<br>`--xh-glyph-size-4xl`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm`<br>`--xh-glyph-size-text`<br>`--xh-glyph-size-xl` | icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、comment-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、item-preview、last-trigger、line-content、line-fold-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、reset-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。 |
+| `--xh-icon-size` | `autoplay-trigger`<br>`branch-error`<br>`branch-indicator`<br>`branch-loading`<br>`branch-trigger`<br>`cancel-trigger`<br>`caps-lock-indicator`<br>`clear-trigger`<br>`close-trigger`<br>`comment-trigger`<br>`control`<br>`decrement-trigger`<br>`dismiss-trigger`<br>`edit-trigger`<br>`ellipsis-trigger`<br>`expand-trigger`<br>`first-trigger`<br>`flip-horizontal-trigger`<br>`flip-vertical-trigger`<br>`increment-trigger`<br>`indicator`<br>`item`<br>`item-close-trigger`<br>`item-delete-trigger`<br>`item-indicator`<br>`item-preview`<br>`last-trigger`<br>`line-content`<br>`line-fold-trigger`<br>`loading`<br>`move-down-trigger`<br>`move-up-trigger`<br>`next-trigger`<br>`next-year-trigger`<br>`overflow-trigger`<br>`path`<br>`path-item`<br>`prev-trigger`<br>`prev-year-trigger`<br>`reset-trigger`<br>`root`<br>`rotate-left-trigger`<br>`rotate-right-trigger`<br>`scroll-to-end-trigger`<br>`separator`<br>`sort-trigger`<br>`status`<br>`submit-trigger`<br>`to-source-trigger`<br>`to-target-trigger`<br>`toolbar`<br>`trend`<br>`trigger`<br>`trigger-indicator`<br>`truncation`<br>`viewport`<br>`visibility-trigger`<br>`window-state-trigger`<br>`zoom-in-trigger`<br>`zoom-out-trigger` | `block-size`<br>`column-gap`<br>`inline-size` | `@media (min-width: 640px)`<br>`default`<br>`direction`<br>`empty`<br>`error`<br>`folded`<br>`has(> [data-part='unread-count']:only-child)`<br>`is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])`<br>`mode=send`<br>`mode=stop`<br>`not([data-part='status'])`<br>`not([data-variant='dot'])`<br>`preset=toast`<br>`size=2xl`<br>`size=3xl`<br>`size=4xl`<br>`size=lg`<br>`size=md`<br>`size=sm`<br>`size=text`<br>`size=xl`<br>`sort=asc`<br>`sort=desc`<br>`state=completed`<br>`state=paused`<br>`state=running`<br>`state=visible`<br>`variant=dot` | `--xh-_color-swatch-picker-mark`<br>`--xh-glyph-size-2xl`<br>`--xh-glyph-size-3xl`<br>`--xh-glyph-size-4xl`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm`<br>`--xh-glyph-size-text`<br>`--xh-glyph-size-xl` | icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、comment-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、item-preview、last-trigger、line-content、line-fold-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、reset-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、status、submit-trigger、to-source-trigger、to-target-trigger、toolbar、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。 |
 | `--xh-icon-stroke` | `root` | `stroke-width` | `default`<br>`weight=bold`<br>`weight=light` | `--xh-glyph-stroke-bold`<br>`--xh-glyph-stroke-light`<br>`--xh-glyph-stroke-regular` | icon 的 root 部件 stroke-width 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
@@ -74568,7 +75066,7 @@ const payload = {
 
 加粗的是必需部件。
 
-`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text` · `empty` · `mark`
+`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text` · `token` · `empty` · `mark` · `toolbar` · `expand-trigger` · `wrap-trigger` · `copy-trigger` · `view-trigger` · `status`
 
 ## 示例
 
@@ -75136,6 +75634,59 @@ const query = ref("xihan");
 </script>
 ```
 
+### 内建工具条
+
+tools 打开内建工具条：树档有展开全部 / 收起全部，原文档有自动换行，复制原文与原文开关固定在末端；数组只铺列出的几项
+
+```vue
+<script setup lang="ts">
+import { XhJsonViewerRoot } from "@xihan-ui/vue";
+
+const payload = {
+  traceId: "9ef5a8c3e1b44f0f",
+  request: {
+    method: "POST",
+    url: "/api/workflow/definition/new-version?tenant=hangzhou-branch&operator=owner&reason=quarterly-review",
+    headers: { "content-type": "application/json", "x-request-id": "c0d1e2f3" },
+  },
+  response: { status: 200, elapsed: 35, body: { id: "207795978470952990", version: 3 } },
+};
+</script>
+
+<template>
+  <div style="display: flex; flex-direction: column; gap: 16px; inline-size: 100%; max-inline-size: 480px">
+    <XhJsonViewerRoot :value="payload" tools :default-expanded-depth="2" />
+    <XhJsonViewerRoot :value="payload" :tools="['copy', 'view']" default-view="text" />
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-direction: column; gap: 16px; inline-size: 100%; max-inline-size: 480px">
+  <xh-json-viewer class="json-tools-demo" tools default-expanded-depth="2">
+    <div data-xh-part="root"></div>
+  </xh-json-viewer>
+  <xh-json-viewer class="json-tools-demo" tools="copy view" default-view="text">
+    <div data-xh-part="root"></div>
+  </xh-json-viewer>
+</div>
+
+<script type="module">
+  const payload = {
+    traceId: "9ef5a8c3e1b44f0f",
+    request: {
+      method: "POST",
+      url: "/api/workflow/definition/new-version?tenant=hangzhou-branch&operator=owner&reason=quarterly-review",
+      headers: { "content-type": "application/json", "x-request-id": "c0d1e2f3" },
+    },
+    response: { status: 200, elapsed: 35, body: { id: "207795978470952990", version: 3 } },
+  };
+
+  for (const viewer of document.querySelectorAll(".json-tools-demo"))
+    viewer.value = payload;
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -75158,9 +75709,13 @@ const query = ref("xihan");
 - 展开集合可受控（`expandedValue` / `defaultExpandedValue`），非受控时按 `defaultExpandedDepth` 计算：数据晚于组件挂载到达（自定义元素常先升级、再由脚本写 `.value`）也能计算，第一次展开或收起之后固定，不再跟随数据。
 - `maxStringLength` 截断长字符串，`maxItems` 折叠超长数组，`sortKeys` 让对象键按字典序排列。
 - 循环引用展开到即停，标记为 `[Circular]`，不会无限递归。
-- 每一行带 `data-value-type`，六种值形态各自着色。
+- 每一行带 `data-value-type`，六种值形态各自着色。原文档同样着色：原文按类别切成 `token` 部件（`data-kind` 为 `key`、`string`、`number`、`boolean`、`null`、`punctuation`），与树档使用同一组覆盖槽与语法令牌；原文无法识别为 JSON 时整段不着色。
 - 尺寸轴与其他组件同源；`variant` 决定外框形态，默认 `outline`；`subtle` 换成淡底无描边，`ghost` 去掉外框与底色只保留内容。
 - 没有任何行可展开时由 `empty` 部件说明，文案使用 `translations.empty`，作者也可以自行写入内容。
+- 内建工具条按需打开：`tools` 不提供即没有工具条；`true` 铺出全部工具；数组只铺列出的几项（`expand`、`wrap`、`copy`、`view`），数组里出现未知的工具名会抛错。条是根的第一个孩子，钮的排列由组件决定：展开 / 收起全部是一颗切换钮，只在树档出现：还有收着的分支时按下展开全部，已经全部展开时按下收回顶层，名称与字形随之变化；「自动换行」只在原文档出现；复制与树 / 原文切换钮固定在末端，切换形态时这两颗不移动，切换钮的名称与字形取要切去的那一档。
+- 树 / 原文切换钮改写 `view`：`view` 提供即受控，开关只触发 `onViewChange`；`defaultView` 是非受控初值。自动换行同理（`wrap` / `defaultWrap` / `onWrapChange`），开启后原文的长行折到下一行而不是横向滚动。
+- 复制钮写入的是原文档那一份文本（不受 `maxStringLength` / `maxItems` 折减），无论当前处于哪一档；成功后钮换成对钩约 3 秒，写入失败时回到常态并触发 `onCopyError`。剪贴板接口要求安全上下文。
+- 手里有值的原文（如后端下发的 JSON 文本）时传给 `source`：原文档与复制钮改用它，能解析成 JSON 就只按两格缩进重排，数字、字符串等字面量保持不变，解析不了就原样显示。`value` 是解析过的值，超出安全整数的数字（如 64 位 ID）已经失真，只有原文与来源一致；树档仍展示 `value`。headless 另导出同一个重排函数 `formatJsonSource`。
 - 只支持 JSON 能表达的形状，传入活对象时呈现有损：`Date` / `Map` / `Set` 一律按自有可枚举键展开，因此显示为 `{}`；`undefined` 归入 `null` 一档、显示为 `undefined`；`bigint` 归入 `number`；函数与 symbol 归入 `string`，按各自的字符串形式呈现。需要如实展示这些值时先转换为 JSON 能表达的形状。
 - 自定义元素侧：`value` 属性接受一段 JSON 文本（无法解析时按字符串值展示），对象与数组直接赋 property（`el.value = { … }`）；`expandedValue` / `defaultExpandedValue` / `translations` 没有对应属性，只能通过 property 设置，写成 `expanded-value='["$"]'` 不会生效。
 
@@ -75169,7 +75724,8 @@ const query = ref("xihan");
 - 搜索：`search` 标出键名与值里含有搜索词的行（不区分大小写），命中行的祖先分支自动展开（写进展开集合，之后照常能收起），命中的那一段铺成 `mark` 部件。搜索框与上一条 / 下一条由作者摆在树之前：Vue 写进 `toolbar` 插槽，React 经 `toolbar` 传入，载荷是 `searchMatches`、`activeMatch`、`nextMatch`、`prevMatch`；Web Components 在元素上取 `searchMatches` / `activeMatch` 并调用 `nextMatch()` / `prevMatch()`。停住的那一条投影 `data-current`、命中片段换成实心，并被滚进视野。
 
 - 放入[标签页](./tabs)或[抽屉](./drawer)作为调试面板；行数多时套一层[滚动区域](./scroll-area)。
-- 配合[剪贴板](./clipboard)提供原始 JSON 的复制。
+- 只需要复制原文时打开 `tools` 的 `copy` 一项；复制钮要放在别处或换成带文字的样式时，改用[剪贴板](./clipboard)并把 `jsonText(value, sortKeys)` 的结果交给它。
+- 搜索框（`toolbar` 插槽）与内建工具条可以同时使用：插槽内容排在根之前，内建工具条排在根内的最前面。
 
 ### 最佳实践
 
@@ -75200,7 +75756,12 @@ const query = ref("xihan");
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `value` | `unknown` |  | 要展示的值，任意形状。未提供时为空视图（不展开任何行）。 |
-| `view` | `JsonViewerView` |  | 展示形态，默认 tree。 text 档直接输出 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减： 目的是与后端下发的内容完全一致。展开集合与键盘导航在该档上不生效。 |
+| `view` | `JsonViewerView` |  | 展示形态。提供即受控：cell 直读 prop，原文开关只发 onViewChange 不落内部值。 text 档直接输出 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减： 目的是与后端下发的内容完全一致。展开集合与键盘导航在该档上不生效。 |
+| `defaultView` | `JsonViewerView` |  | 非受控初值，默认 tree。 |
+| `source` | `string` |  | 值的原文（如后端下发的那段 JSON 文本）。提供时原文档与复制钮一律取它：能解析成 JSON 就只按两格缩进重排， 数字、字符串等字面量一字不改；解析不了就原样。value 是解析过的值，超出安全整数的数字已经失真， 原文才是与后端一致的那一份。不提供时由 value 序列化。树档照旧展示 value。 |
+| `wrap` | `boolean` |  | 原文档是否自动换行。提供即受控，写入只发 onWrapChange。缺省不换行：长行横向滚动，缩进不被折乱。 |
+| `defaultWrap` | `boolean` |  | 非受控初值，默认 false。 |
+| `tools` | `boolean \| readonly JsonViewerTool[]` |  | 内建工具条：不提供即没有工具条；true 铺出全部工具；数组只铺列出的几项。 钮的排列由组件定（展开 / 收起、换行、复制、原文开关依次排在条的末端），与数组顺序无关； 数组里出现未知的工具名即抛错。 |
 | `variant` | `ControlVariant` |  | 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留内容。 |
 | `expandedValue` | `string[]` |  | 展开集合（元素是行路径）。提供即受控：cell 直读 prop，写入只发 onExpandedValueChange 不落内部值。 |
 | `defaultExpandedValue` | `string[]` |  | 非受控初值；未提供时按 defaultExpandedDepth 计算。 |
@@ -75214,6 +75775,9 @@ const query = ref("xihan");
 | `search` | `string` |  | 搜索词：键名与值文本里含有它（不区分大小写）的行即为命中。 命中行的祖先分支自动展开（写进展开集合），命中片段由作者按 `api.segments` 铺成 mark 部件。 空串与只含空白视为没有搜索。 |
 | `translations` | `Partial<JsonViewerTranslations>` |  |  |
 | `onExpandedValueChange` | `(details: JsonViewerExpandedValueChangeDetails) => void` |  |  |
+| `onViewChange` | `(details: JsonViewerViewChangeDetails) => void` |  | 原文开关切换了展示形态；受控时由宿主据此回写 view。 |
+| `onWrapChange` | `(details: JsonViewerWrapChangeDetails) => void` |  | 换行开关切换了原文档的换行；受控时由宿主据此回写 wrap。 |
+| `onCopyError` | `(details: JsonViewerCopyErrorDetails) => void` |  | 复制钮写入剪贴板失败时通知；此时复制钮已回到常态，不留下「已复制」的假象。 |
 
 ### 事件
 
@@ -75222,6 +75786,9 @@ const query = ref("xihan");
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `expanded-value-change` | `JsonViewerExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `view-change` | `JsonViewerViewChangeDetails` | 原文开关切换了展示形态；detail 为 `{ view: 'tree' \| 'text' }` |
+| `wrap-change` | `JsonViewerWrapChangeDetails` | 换行开关切换了原文档的换行；detail 为 `{ wrap: boolean }` |
+| `copy-error` | `JsonViewerCopyErrorDetails` | 复制钮写入剪贴板失败；detail 为 `{ error: unknown, value: string }` |
 
 ### 插槽
 
@@ -75254,12 +75821,16 @@ const query = ref("xihan");
 | `branch-text` | 'open' \| 'closed' |
 | `branch-content` | 'open' \| 'closed' |
 | `preview` | 'open' \| 'closed' |
+| `expand-trigger` | 'open' \| 'closed' |
+| `wrap-trigger` | 'on' \| 'off' |
+| `copy-trigger` | 'idle' \| 'copying' \| 'copied' |
+| `status` | 'idle' \| 'copying' \| 'copied' |
 
 以下名称仅用于内部状态机。
 
-**状态**：`idle`
+**状态**：`idle` · `copying` · `copied`
 
-**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `VIEWER.BLUR` · `PRESS.START` · `PRESS.END` · `MATCH.SET` · `SEARCH.SYNC`
+**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `VIEWER.BLUR` · `PRESS.START` · `PRESS.END` · `MATCH.SET` · `SEARCH.SYNC` · `VIEW.SET` · `WRAP.SET` · `COPY.TRIGGER` · `COPY.SUCCESS` · `COPY.ERROR` · `after.timeout` · `TOOL.PRESS.START` · `TOOL.PRESS.END`
 
 ### connect API
 
@@ -75279,9 +75850,21 @@ const query = ref("xihan");
 | `collapse` | `(value: string) => void` |  |
 | `toggle` | `(value: string) => void` |  |
 | `view` | `JsonViewerView` | 当前生效的展示形态。 |
+| `wrap` | `boolean` | 原文档当前是否自动换行。 |
+| `tools` | `readonly JsonViewerTool[]` | 工具条上铺的工具，按条上的排列顺序；没有工具条时为空。 |
+| `copyStatus` | `JsonViewerCopyStatus` | 复制钮的写入相位。 |
+| `copied` | `boolean` | 已复制成功且仍在停留窗口内：复制钮换成对钩、播报区念出成功回执的唯一判据。 |
+| `announcement` | `string` | 播报区该念的语句；未到已复制档时为空串。 |
+| `setView` | `(view: JsonViewerView) => void` |  |
+| `setWrap` | `(wrap: boolean) => void` |  |
+| `expandAll` | `() => void` | 展开全部分支（maxItems 折掉的成员与循环引用照旧不展开）。 |
+| `collapseAll` | `() => void` | 收起到只剩顶层：根行留着展开，其下的分支全部收起。 |
+| `allExpanded` | `boolean` | 每一层的分支都已展开（maxItems 折掉的成员与循环引用不算分支）。展开 / 收起钮据此决定这一下是展开还是收起； 只有根一层分支、没有可展开的子层时为 false。原文档不算，恒为 false。 |
+| `copy` | `() => void` | 把 JSON 原文写进剪贴板，与点复制钮走同一路径。 |
 | `isEmpty` | `boolean` | 无法展开任何一行：value 未提供或为 undefined。空态部件随它显隐。 |
 | `emptyText` | `string` | 空态的兜底文案，作者未向空态部件写入内容时铺设它。 |
-| `text` | `string` | 缩进后的 JSON 原文；键序与环路记号与树档一致。text 档之外也可获取，便于作者实现复制原文。 |
+| `text` | `string` | 原文档展示、复制钮写入的那份文本：提供了 source 时是它重排缩进后的样子，否则由 value 序列化（键序与环路记号与树档一致）。 |
+| `textSegments` | `readonly JsonViewerTextSegment[]` | 原文按类别切成的段，依次拼接恒等于 text：键名、标量与标点各成一段，铺成 token 部件着色，空白按纯文本铺。 原文解析不了时整段一个不着色的段。只在原文档切分，树档为空：树档用不上，不白算一遍。 |
 | `searchMatches` | `readonly string[]` | 命中搜索词的行路径，按树序排列；没有搜索时为空。 |
 | `activeMatch` | `string \| null` | 在命中之间逐个走时停在哪一行；没有时为 null。 |
 | `nextMatch` | `() => void` | 停到下一条命中（走到末尾回到第一条），并把它滚进视野。 |
@@ -75292,6 +75875,7 @@ const query = ref("xihan");
 | `getRootProps` | `() => T['element']` |  |
 | `getTreeProps` | `() => T['element']` |  |
 | `getTextProps` | `() => T['element']` |  |
+| `getTokenProps` | `(props: JsonViewerTokenProps) => T['element']` | 原文档里有类别的一段（键名、标量、标点），带 data-kind 供皮肤按树档同一套颜色着色。 |
 | `getItemProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getItemKeyProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getItemValueProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
@@ -75304,6 +75888,12 @@ const query = ref("xihan");
 | `getPreviewProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getMarkProps` | `() => T['element']` | 键名与值文本里命中搜索词的那一段。 |
+| `getToolbarProps` | `() => T['element']` | 内建工具条：根的第一个孩子，各颗钮按 tools 铺在其中。 报告 `role=group`：一组有名字的控件，每颗钮各占一个 Tab 位； 不报告 `role=toolbar`，那个角色承诺条内靠方向键移动。 |
+| `getExpandTriggerProps` | `() => T['button']` | 展开 / 收起全部的切换钮：data-state 为 open 时已全部展开（再按收起），closed 时还有收着的（再按展开）。 |
+| `getWrapTriggerProps` | `() => T['button']` |  |
+| `getCopyTriggerProps` | `() => T['button']` |  |
+| `getViewTriggerProps` | `() => T['button']` |  |
+| `getStatusProps` | `() => T['element']` | 复制成功的播报区：视觉隐藏的 polite 实时区，只要有复制钮就常驻，内容取 announcement。 |
 
 ## 无障碍
 
@@ -75323,6 +75913,7 @@ const query = ref("xihan");
 | `Enter` / `Space` | focus on branch | 切换该分支的展开态；焦点在标量行上时不吞这两个键 |
 | `Enter` / `Space` | held on branch | 按住期间该分支行（branch-control）投影 data-pressed，与指针 :active 同一副按压面（行只换面不缩放）；抬起或失焦撤下。展开态的切换照旧由这一次按键承担 |
 | `*` | focus in tree | 展开与焦点行同一父级的全部分支（已展开的不动）；同级没有可展开的分支时不吞这个键 |
+| `Enter` / `Space` | focus on a toolbar trigger（开启 tools 时） | 触发该钮：展开 / 收起全部、切换自动换行或原文、复制原文；按住期间投影 data-pressed，抬起或失焦撤下。工具钮各占一个 Tab 位，条内不靠方向键移动 |
 
 ### ARIA
 
@@ -75348,12 +75939,20 @@ const query = ref("xihan");
 | `preview` | `aria-hidden` | 'true' |
 | `text` | `aria-label` | label.text |
 | `text` | `role` | 'region' |
+| `toolbar` | `aria-label` | label.toolbar |
+| `toolbar` | `role` | 'group' |
+| `wrap-trigger` | `aria-pressed` | 'true' \| 'false' |
+| `status` | `aria-atomic` | 'true' |
+| `status` | `aria-live` | 'polite' |
+| `status` | `role` | 'status' |
 
 - 树是 `role=tree`，每一行是 `role=treeitem`，层级三项（`aria-level` / `aria-posinset` / `aria-setsize`）取自展开结果。
 - 整棵树只占一个 Tab 位：首次进入落在首行，之后 Tab 离开再返回时落回上次停留的行；组内靠上下键移动。
 - 展开箭头对读屏隐藏，它重复的是分支自身已报出的 `aria-expanded` 与左右方向键。
 - 分支的名称显式提供（`aria-label`）：它包裹整棵子层，从内容计算名称会把所有子孙的文字一并读出。
 - 收起摘要（`{…} 3`）是排版记号，对读屏隐藏；其中的成员数并入分支的可访问名称（默认读为 `tags, 3 items`，整句可用 `translations.collapsedBranchLabel` 替换）。
+- 工具条是 `role=group` 并带可访问名称（`translations.toolbar`），每颗钮各占一个 Tab 位；不报告 `role=toolbar`，条内不靠方向键移动。钮里只有字形，名称取自 `translations`；自动换行是开关钮，开关状态由 `aria-pressed` 报告、名称不变；展开 / 收起与树 / 原文两颗切换钮的名称随动作变化（如「展开全部」「收起全部」），不再另报 `aria-pressed`，免得名称与按下态各说各的。
+- 复制成功的回执由视觉隐藏的 `status` 部件（`aria-live="polite"`）读出，钮上的对钩只是视觉标记。
 
 ## 样式参考
 
@@ -75371,7 +75970,7 @@ const query = ref("xihan");
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
 | `root` | `data-variant` | props.variant |
-| `root` | `data-view` | props.view |
+| `root` | `data-view` | context.get('view') |
 | `item` | `data-circular` | ''（条件成立时才出现） |
 | `item` | `data-current` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
@@ -75440,6 +76039,35 @@ const query = ref("xihan");
 | `preview` | `data-state` | 'open' \| 'closed' |
 | `preview` | `data-truncated` | ''（条件成立时才出现） |
 | `preview` | `data-value-type` | node?.type |
+| `text` | `data-wrap` | ''（条件成立时才出现） |
+| `token` | `data-kind` | props.kind |
+| `toolbar` | `data-view` | context.get('view') |
+| `expand-trigger` | `data-state` | 'open' \| 'closed' |
+| `expand-trigger` | `data-xh-action-control` | '' |
+| `expand-trigger` | `data-xh-action-display` | 'always' |
+| `expand-trigger` | `data-xh-action-profile` | 'icon' |
+| `expand-trigger` | `data-xh-action-size` | 'md' \| 'sm' |
+| `expand-trigger` | `data-xh-action-variant` | 'ghost' |
+| `wrap-trigger` | `data-state` | 'on' \| 'off' |
+| `wrap-trigger` | `data-xh-action-control` | '' |
+| `wrap-trigger` | `data-xh-action-display` | 'always' |
+| `wrap-trigger` | `data-xh-action-profile` | 'icon' |
+| `wrap-trigger` | `data-xh-action-size` | 'md' \| 'sm' |
+| `wrap-trigger` | `data-xh-action-variant` | 'ghost' |
+| `copy-trigger` | `data-copied` | ''（条件成立时才出现） |
+| `copy-trigger` | `data-state` | 'idle' \| 'copying' \| 'copied' |
+| `copy-trigger` | `data-xh-action-control` | '' |
+| `copy-trigger` | `data-xh-action-display` | 'always' |
+| `copy-trigger` | `data-xh-action-profile` | 'icon' |
+| `copy-trigger` | `data-xh-action-size` | 'md' \| 'sm' |
+| `copy-trigger` | `data-xh-action-variant` | 'ghost' |
+| `view-trigger` | `data-view` | context.get('view') |
+| `view-trigger` | `data-xh-action-control` | '' |
+| `view-trigger` | `data-xh-action-display` | 'always' |
+| `view-trigger` | `data-xh-action-profile` | 'icon' |
+| `view-trigger` | `data-xh-action-size` | 'md' \| 'sm' |
+| `view-trigger` | `data-xh-action-variant` | 'ghost' |
+| `status` | `data-state` | 'idle' \| 'copying' \| 'copied' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -75449,7 +76077,7 @@ const query = ref("xihan");
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-json-viewer-bg` | `empty`<br>`root`<br>`text`<br>`tree` | `background` | `default`<br>`is([data-scope='json-viewer'][data-part='tree'], [data-scope='json-viewer'][data-part='text'], [data-scope='json-viewer'][data-part='empty'])`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | json-viewer 的 empty、root、text、tree 部件 background 覆盖槽。 |
-| `--xh-json-viewer-boolean-fg` | `item-value` | `color` | `value-type=boolean` | `--xh-syntax-keyword` | json-viewer 的 item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-boolean-fg` | `item-value`<br>`token` | `color` | `kind=boolean`<br>`value-type=boolean` | `--xh-syntax-keyword` | json-viewer 的 item-value、token 部件 color 覆盖槽。 |
 | `--xh-json-viewer-border` | `empty`<br>`text`<br>`tree` | `border` | `default` | `--xh-border-default` | json-viewer 的 empty、text、tree 部件 border 覆盖槽。 |
 | `--xh-json-viewer-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | json-viewer 的 empty 部件 color 覆盖槽。 |
 | `--xh-json-viewer-empty-gap` | `empty` | `gap` | `default` | `--xh-space-2` | json-viewer 的 empty 部件 gap 覆盖槽。 |
@@ -75462,19 +76090,19 @@ const query = ref("xihan");
 | `--xh-json-viewer-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-_json-viewer-indent` | json-viewer 的 branch-content 部件 padding-inline-start 覆盖槽。 |
 | `--xh-json-viewer-indicator-fg` | `branch-trigger` | `color` | `default` | `--xh-fg-subtle` | json-viewer 的 branch-trigger 部件 color 覆盖槽。 |
 | `--xh-json-viewer-indicator-size` | `branch-trigger` | `--xh-icon-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | json-viewer 的 branch-trigger 部件 --xh-icon-size、inline-size 覆盖槽。 |
-| `--xh-json-viewer-key-fg` | `branch-text`<br>`item-key` | `color` | `default` | `--xh-fg-brand-strong` | json-viewer 的 branch-text、item-key 部件 color 覆盖槽。 |
-| `--xh-json-viewer-key-font-weight` | `branch-text`<br>`item-key` | `font-weight` | `default` | `--xh-font-weight-medium` | json-viewer 的 branch-text、item-key 部件 font-weight 覆盖槽。 |
+| `--xh-json-viewer-key-fg` | `branch-text`<br>`item-key`<br>`token` | `color` | `default`<br>`kind=key` | `--xh-fg-brand-strong` | json-viewer 的 branch-text、item-key、token 部件 color 覆盖槽。 |
+| `--xh-json-viewer-key-font-weight` | `branch-text`<br>`item-key`<br>`token` | `font-weight` | `default`<br>`kind=key` | `--xh-font-weight-medium` | json-viewer 的 branch-text、item-key、token 部件 font-weight 覆盖槽。 |
 | `--xh-json-viewer-mark-bg` | `mark` | `background` | `default` | `--xh-bg-brand-subtle` | json-viewer 的 mark 部件 background 覆盖槽。 |
 | `--xh-json-viewer-mark-bg-current` | `branch`<br>`branch-control`<br>`branch-text`<br>`item`<br>`item-key`<br>`item-value`<br>`mark` | `background` | `current` | `--xh-bg-brand` | json-viewer 的 branch、branch-control、branch-text、item、item-key、item-value、mark 部件 background 覆盖槽。 |
 | `--xh-json-viewer-mark-fg` | `mark` | `color` | `default` | `--xh-fg-brand-strong` | json-viewer 的 mark 部件 color 覆盖槽。 |
 | `--xh-json-viewer-mark-fg-current` | `branch`<br>`branch-control`<br>`branch-text`<br>`item`<br>`item-key`<br>`item-value`<br>`mark` | `color` | `current` | `--xh-fg-on-brand` | json-viewer 的 branch、branch-control、branch-text、item、item-key、item-value、mark 部件 color 覆盖槽。 |
 | `--xh-json-viewer-mark-radius` | `mark` | `border-radius` | `default` | `--xh-shape-inset` | json-viewer 的 mark 部件 border-radius 覆盖槽。 |
 | `--xh-json-viewer-max-h` | `text`<br>`tree` | `max-block-size` | `default` | `--xh-viewport-max-h` | json-viewer 的 text、tree 部件 max-block-size 覆盖槽。 |
-| `--xh-json-viewer-null-fg` | `item-value` | `color` | `value-type=null` | `--xh-fg-subtle` | json-viewer 的 item-value 部件 color 覆盖槽。 |
-| `--xh-json-viewer-number-fg` | `item-value` | `color` | `value-type=number` | `--xh-syntax-number` | json-viewer 的 item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-null-fg` | `item-value`<br>`token` | `color` | `kind=null`<br>`value-type=null` | `--xh-fg-subtle` | json-viewer 的 item-value、token 部件 color 覆盖槽。 |
+| `--xh-json-viewer-number-fg` | `item-value`<br>`token` | `color` | `kind=number`<br>`value-type=number` | `--xh-syntax-number` | json-viewer 的 item-value、token 部件 color 覆盖槽。 |
 | `--xh-json-viewer-preview-fg` | `preview` | `color` | `default` | `--xh-fg-muted` | json-viewer 的 preview 部件 color 覆盖槽。 |
 | `--xh-json-viewer-preview-font-size` | `preview` | `font-size` | `default` | `--xh-text-caption-size` | json-viewer 的 preview 部件 font-size 覆盖槽。 |
-| `--xh-json-viewer-punctuation-fg` | `branch-text`<br>`item-key`<br>`item-value` | `color` | `default`<br>`value-type=array`<br>`value-type=object` | `--xh-fg-subtle` | json-viewer 的 branch-text、item-key、item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-punctuation-fg` | `branch-text`<br>`item-key`<br>`item-value`<br>`token` | `color` | `default`<br>`kind=punctuation`<br>`value-type=array`<br>`value-type=object` | `--xh-fg-subtle` | json-viewer 的 branch-text、item-key、item-value、token 部件 color 覆盖槽。 |
 | `--xh-json-viewer-px` | `text`<br>`tree` | `padding-inline` | `default` | `--xh-space-2` | json-viewer 的 text、tree 部件 padding-inline 覆盖槽。 |
 | `--xh-json-viewer-py` | `text`<br>`tree` | `padding-block` | `default` | `--xh-space-2` | json-viewer 的 text、tree 部件 padding-block 覆盖槽。 |
 | `--xh-json-viewer-radius` | `empty`<br>`text`<br>`tree` | `border-radius` | `default` | `--xh-shape-surface` | json-viewer 的 empty、text、tree 部件 border-radius 覆盖槽。 |
@@ -75485,8 +76113,13 @@ const query = ref("xihan");
 | `--xh-json-viewer-row-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-_json-viewer-row-py` | json-viewer 的 branch-control、item 部件 padding-block 覆盖槽。 |
 | `--xh-json-viewer-row-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `--xh-shape-inset` | json-viewer 的 branch-control、item 部件 border-radius 覆盖槽。 |
 | `--xh-json-viewer-shadow` | `empty`<br>`text`<br>`tree` | `box-shadow` | `default` | `none` | json-viewer 的 empty、text、tree 部件 box-shadow 覆盖槽。 |
-| `--xh-json-viewer-string-fg` | `item-value` | `color` | `value-type=string` | `--xh-syntax-string` | json-viewer 的 item-value 部件 color 覆盖槽。 |
+| `--xh-json-viewer-string-fg` | `item-value`<br>`token` | `color` | `kind=string`<br>`value-type=string` | `--xh-syntax-string` | json-viewer 的 item-value、token 部件 color 覆盖槽。 |
 | `--xh-json-viewer-text-fg` | `text` | `color` | `default` | `--xh-fg-default` | json-viewer 的 text 部件 color 覆盖槽。 |
+| `--xh-json-viewer-tool-fg` | `status`<br>`toolbar` | `color` | `where(:not([data-part='status'])` | `--xh-fg-muted` | json-viewer 的 status、toolbar 部件 color 覆盖槽。 |
+| `--xh-json-viewer-tool-fg-copied` | `copy-trigger` | `color` | `copied`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-success` | json-viewer 的 copy-trigger 部件 color 覆盖槽。 |
+| `--xh-json-viewer-tool-icon-size` | `status`<br>`toolbar` | `--xh-icon-size` | `where(:not([data-part='status'])` | `--xh-_action-profile-glyph-size` | json-viewer 的 status、toolbar 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-json-viewer-toolbar-gap` | `toolbar` | `gap` | `default` | `--xh-space-0_5` | json-viewer 的 toolbar 部件 gap 覆盖槽。 |
+| `--xh-json-viewer-toolbar-mb` | `toolbar` | `margin-block-end` | `default` | `--xh-space-1` | json-viewer 的 toolbar 部件 margin-block-end 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -125250,7 +125883,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | --- | --- | --- | --- |
 | `id` | `string` | 是 | 全表唯一：DOM 身份（data-value）、选中 / 展开集合的元素、连接层查询行的键。 |
 | `disabled` | `boolean` |  | 行禁用：不可选中也不可展开，但仍可聚焦、仍是方向键的起点，也不计入全选基数。 |
-| `expandable` | `boolean` |  | 可展开：提供后才报告 aria-expanded，左右方向键与展开把手也才识别该行。 只要有一行提供，root 就从 role=grid 改为 role=treegrid。 |
+| `expandable` | `boolean` |  | 可展开：提供后才报告 aria-expanded，左右方向键与展开把手也才识别该行。 只要有一行提供，root 就从 role=grid 改为 role=treegrid。 有子行的行不提供也可展开，展开的是它的子行。 |
 | `parentId` | `string` |  | 父行 id。提供后该行即为该父行的子行，收起父行时它随之隐藏。 有子行的行不再产出详情行：一行不可能同时既展开出子行、又展开出一块详情。 指向不存在的父行时按根行处理，不丢弃该行。 |
 
 ### TableSortDescriptor
@@ -125653,7 +126286,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `--xh-table-caption-py` | `caption` | `padding-block` | `default` | `--xh-space-2` | table 的 caption 部件 padding-block 覆盖槽。 |
 | `--xh-table-cell-gap` | `cell`<br>`column-header` | `gap` | `default` | `--xh-control-gap-md` | table 的 cell、column-header 部件 gap 覆盖槽。 |
 | `--xh-table-cell-min-w` | `cell`<br>`column-header` | `min-inline-size` | `default` | `3rem` | table 的 cell、column-header 部件 min-inline-size 覆盖槽。 |
-| `--xh-table-cell-px` | `cell`<br>`column-header`<br>`root` | `padding-inline`<br>`padding-inline-end` | `default`<br>`not(:last-child)`<br>`split` | `--xh-space-4` | table 的 cell、column-header、root 部件 padding-inline、padding-inline-end 覆盖槽。 |
+| `--xh-table-cell-px` | `cell`<br>`column-header`<br>`root` | `padding-inline`<br>`padding-inline-end` | `default`<br>`not(:last-child)`<br>`split` | `--xh-_table-cell-px` | table 的 cell、column-header、root 部件 padding-inline、padding-inline-end 覆盖槽。 |
 | `--xh-table-cell-py` | `cell`<br>`column-header` | `padding-block` | `default` | `--xh-_table-cell-py` | table 的 cell、column-header 部件 padding-block 覆盖槽。 |
 | `--xh-table-column-fg` | `column-header` | `color` | `default` | `--xh-fg-default` | table 的 column-header 部件 color 覆盖槽。 |
 | `--xh-table-column-font-weight` | `column-header` | `font-weight` | `default` | `--xh-font-weight-medium` | table 的 column-header 部件 font-weight 覆盖槽。 |
@@ -125661,7 +126294,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `--xh-table-column-list-font-size` | `column-list` | `font-size` | `default` | `--xh-text-secondary-size` | table 的 column-list 部件 font-size 覆盖槽。 |
 | `--xh-table-column-list-gap` | `column-list` | `gap` | `default` | `--xh-_table-column-list-gap` | table 的 column-list 部件 gap 覆盖槽。 |
 | `--xh-table-detail-bg` | `expanded-row` | `background` | `default` | `--xh-bg-subtle` | table 的 expanded-row 部件 background 覆盖槽。 |
-| `--xh-table-detail-px` | `cell`<br>`expanded-row` | `padding-inline` | `default` | `--xh-space-4` | table 的 cell、expanded-row 部件 padding-inline 覆盖槽。 |
+| `--xh-table-detail-px` | `cell`<br>`expanded-row` | `padding-inline` | `default` | `--xh-_table-cell-px` | table 的 cell、expanded-row 部件 padding-inline 覆盖槽。 |
 | `--xh-table-detail-py` | `cell`<br>`expanded-row` | `padding-block` | `default` | `--xh-space-3` | table 的 cell、expanded-row 部件 padding-block 覆盖槽。 |
 | `--xh-table-drag-fg` | `column-drag-trigger` | `color` | `default` | `--xh-fg-subtle` | table 的 column-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-table-drag-fg-active` | `column-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | table 的 column-drag-trigger 部件 color 覆盖槽。 |
@@ -131706,7 +132339,7 @@ const note = ref("");
       <XhTextFieldCount />
     </XhTextFieldRoot>
 
-    <XhTextFieldRoot auto-size placeholder="不设行数界限，完全跟内容走">
+    <XhTextFieldRoot auto-size placeholder="不设行数界限：随内容长高，到上限后框内滚动">
       <XhTextFieldLabel>随写随长</XhTextFieldLabel>
       <XhTextFieldControl>
         <XhTextFieldInput as="textarea" />
@@ -131728,7 +132361,7 @@ const note = ref("");
     </div>
   </xh-text-field>
 
-  <xh-text-field auto-size placeholder="不设行数界限，完全跟内容走">
+  <xh-text-field auto-size placeholder="不设行数界限：随内容长高，到上限后框内滚动">
     <div data-xh-part="root">
       <label data-xh-part="label">随写随长</label>
       <div data-xh-part="control">
@@ -131762,7 +132395,8 @@ const note = ref("");
 - `type` 覆盖 `text` / `password` / `email` / `tel` / `url` / `search`。
 - `clearable` 显示清空按钮，`maxLength` 设置字数上限。
 - 输入部件用 `as="textarea"` 切换到多行；`autoSize` 为 `true` 时随内容增高，也可用 `{ minRows, maxRows }` 限定行数。两个边界必须是大于等于 1 的有限整数，且 `minRows` 不得大于 `maxRows`；无效配置会明确失败，不夹取也不沿用旧配置。
-- 自动高度跟随输入、程序化写值与运行期配置变化重新测量。关闭 `autoSize`、换回单行、替换输入节点或卸载组件时，归还启用前的 `block-size` 与 `overflow-y` 内联声明及其 priority；只移除作者原本没有写的声明。
+- 自动高度只有一层滚动：顶到上限后由 textarea 自己滚，控件外壳只包住它，不设上限也不滚。给了 `maxRows` 时上限就是 `maxRows`；没给时上限取 textarea 的 `max-block-size` 计算值，默认皮肤为 `--xh-text-field-input-max-h`（依次退到旧槽 `--xh-text-field-control-max-h`、`--xh-viewport-h-sm`）。两种情况都不低于 `minRows`。没给 `maxRows` 时 `max-block-size` 的计算值只接受 `none` 或 px，百分比等要等布局才知道多高的取值会明确失败。
+- 自动高度跟随输入、程序化写值与运行期配置变化重新测量。量高结果写进 `block-size`，`max-block-size` 由自动高度接管为 `none`，`overflow-y` 按是否顶到上限切换。关闭 `autoSize`、换回单行、替换输入节点或卸载组件时，归还启用前的这三项内联声明及其 priority；只移除作者原本没有写的声明。
 - 自动高度把一个隐藏 textarea 临时挂到输入框所属 Document，以复制后的排版与宽度计算值取得真实内容高度和单行高度，换算 `minRows` / `maxRows`；`line-height: normal` 不按字号推测。`content-box` 与 `border-box` 分别按自己的声明盒计算内距和边框。测量要求 textarea 已连接到带 Window 的 Document，且当前只接受 `writing-mode: horizontal-tb`；其他书写模式会明确失败，不把物理纵向滚动尺寸误当逻辑块尺寸。
 - `prefix` / `suffix` 在框内放置货币符、单位或图标，两段对读屏隐藏。
 - 默认皮肤把控件接入 Field Chrome：Headless 在真实视觉盒、输入、装饰段上分别投影 `data-xh-field-chrome`、`data-xh-field-input`、`data-xh-field-affix`，单行与 textarea 由 `data-xh-field-layout` 区分。旧 `data-multiline` / `data-auto-resize` 视觉钩子已删除，自定义皮肤应读取新的家族角色，不提供双写兼容。
@@ -131816,7 +132450,7 @@ const note = ref("");
 | `maxLength` | `number` |  | 字数上限，按字素计（组合 emoji、国旗、带变音符的字母都算一个），与 count 同一口径。 原生 maxlength 按 UTF-16 码元计，会把一个 emoji 算成两个以上，因此不投影； 超出的部分由连接层从这次新插入的文本里截掉（与原生 maxlength 同样的做法），输入法组合期间不截、落定时再截。 |
 | `clearable` | `boolean` |  | 开启清空能力：有值时显示清空按钮、Escape 接管。关闭时按钮带 hidden 收起。 |
 | `showCount` | `boolean` |  | 显示字数部件：关闭时 count 部件带 hidden 收起。 |
-| `autoSize` | `boolean \| TextFieldAutoSize` |  | 多行宿主的自动高度：按横向书写的真实行盒随内容增高；对象形态固定行数上下限。 |
+| `autoSize` | `boolean \| TextFieldAutoSize` |  | 多行宿主的自动高度：按横向书写的真实行盒随内容增高，顶到上限后在 textarea 内部滚动；对象形态固定行数上下限。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 |
@@ -132000,7 +132634,7 @@ const note = ref("");
 | `--xh-text-field-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | text-field 的 control 部件 color 覆盖槽。 |
 | `--xh-text-field-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_text-field-gap` | text-field 的 control 部件 gap 覆盖槽。 |
 | `--xh-text-field-control-h` | `control` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_text-field-h` | text-field 的 control 部件 block-size、min-block-size 覆盖槽。 |
-| `--xh-text-field-control-max-h` | `control` | `max-block-size` | `has([data-xh-field-input][data-xh-field-auto-size])`<br>`xh-field-auto-size`<br>`xh-field-input` | `--xh-viewport-h-sm` | text-field 的 control 部件 max-block-size 覆盖槽。 |
+| `--xh-text-field-control-max-h` | `input` | `max-block-size` | `xh-field-auto-size` | `--xh-viewport-h-sm` | text-field 的 input 部件 max-block-size 覆盖槽。 |
 | `--xh-text-field-control-min-w` | `control`<br>`root` | `min-inline-size` | `default`<br>`xh-field-chrome` | `--xh-control-min-w` | text-field 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-text-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_text-field-px` | text-field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-text-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | text-field 的 control 部件 border-radius 覆盖槽。 |
@@ -132016,6 +132650,7 @@ const note = ref("");
 | `--xh-text-field-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-fg-default` | text-field 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-text-field-input-fg` | `input` | `color` | `xh-field-input` | `--xh-fg-default` | text-field 的 input 部件 color 覆盖槽。 |
 | `--xh-text-field-input-font-size` | `input` | `font-size` | `xh-field-input` | `--xh-_text-field-font-size` | text-field 的 input 部件 font-size 覆盖槽。 |
+| `--xh-text-field-input-max-h` | `input` | `max-block-size` | `xh-field-auto-size` | `--xh-text-field-control-max-h` | text-field 的 input 部件 max-block-size 覆盖槽。 |
 | `--xh-text-field-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | text-field 的 label 部件 color 覆盖槽。 |
 | `--xh-text-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | text-field 的 label 部件 color 覆盖槽。 |
 | `--xh-text-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | text-field 的 label 部件 font-size 覆盖槽。 |

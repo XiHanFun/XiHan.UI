@@ -2,7 +2,7 @@
 
 # 包与依赖关系
 
-XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（按角色分 `adapters` / `design` / `features` / `engine` 四组），`tooling/*` 是内部工具（不发布）。
+XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（按角色分 `adapters` / `design` / `features` / `engine` / `tools` 五组），`tooling/*` 是内部工具（不发布）。
 
 ## 全部库包
 
@@ -25,6 +25,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/backgrounds` | `core` `motion` | — | 3 |
 | `@xihan-ui/vue` | `core` `motion` `pointer` `viz` `headless` `position` | `vue`、`backgrounds`（可选）、`sound`（可选）、`code-highlight`（可选） | 4 |
 | `@xihan-ui/web-components` | `core` `motion` `pointer` `viz` `headless` `position` | `backgrounds`（可选）、`code-highlight`（可选） | 4 |
+| `@xihan-ui/cli` | — | — | 5 |
 
 发布走 changesets，所有库包同属一个 fixed 版本组，一起升到同一个版本号。
 
@@ -129,7 +130,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/web-components` | `./define` `./backgrounds` `./locale` `./services` `./custom-elements.json` |
 | `@xihan-ui/styles` | 每份皮肤一条 CSS，共 152 条（140 份组件皮肤 + 12 份共享层），另有 `./index.css`（主入口，生成的扁平有层文件，家族只内联一次）与 `./index.unlayered.css` 两个整包入口 |
 
-其余九个包（`motion` / `pointer` / `position` / `code-highlight` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound`）只有主入口。
+其余十个包（`motion` / `pointer` / `position` / `code-highlight` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound` / `cli`）只有主入口。
 
 组件没有单独的子路径导出：按需引入依靠 tree-shaking，不依靠手写路径。
 
