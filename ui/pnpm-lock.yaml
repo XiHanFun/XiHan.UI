@@ -55,8 +55,8 @@ catalogs:
       specifier: ^2.5.1
       version: 2.5.1
     axe-core:
-      specifier: ~4.12.1
-      version: 4.12.1
+      specifier: ^4.14.0
+      version: 4.14.0
     commonmark-spec:
       specifier: 0.31.2
       version: 0.31.2
@@ -698,7 +698,7 @@ importers:
         version: link:../../packages/engine/headless
       axe-core:
         specifier: 'catalog:'
-        version: 4.12.1
+        version: 4.14.0
     devDependencies:
       '@vitest/browser-playwright':
         specifier: 'catalog:'
@@ -2647,8 +2647,8 @@ packages:
     resolution: {integrity: sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==}
     engines: {node: '>=8'}
 
-  axe-core@4.12.1:
-    resolution: {integrity: sha512-s7iGf5GaVMxEG0ENN9x+xTr7GFZCb1ZP/1uATUpCEK2X78nDB3RwbtFCo9pGAf9ru+VwoQ464DkaLEeRM08wJA==}
+  axe-core@4.14.0:
+    resolution: {integrity: sha512-9WTZxEjsZ7b13TH8JPmbV2z8CHbl80/2hm3XPEG4JgNdQLK81IBRXmSxHfMAOkSqQeRxT/0dwNDz2GOm3zzpcQ==}
     engines: {node: '>=4'}
 
   balanced-match@2.0.0:
@@ -6923,7 +6923,7 @@ snapshots:
 
   astral-regex@2.0.0: {}
 
-  axe-core@4.12.1: {}
+  axe-core@4.14.0: {}
 
   balanced-match@2.0.0: {}
 
