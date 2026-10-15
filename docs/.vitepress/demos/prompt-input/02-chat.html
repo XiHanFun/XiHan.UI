@@ -18,7 +18,7 @@
   <xh-prompt-input id="chat-input">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1" placeholder="给助手写点什么…"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
 </div>
@@ -27,7 +27,6 @@
   const feed = document.getElementById("chat-feed");
   const input = document.getElementById("chat-input");
   const list = feed.querySelector('[data-xh-part="list"]');
-  const button = input.querySelector('[data-xh-part="submit-trigger"]');
   input.translations = { input: "给助手写点什么" };
 
   let seq = 0;
@@ -51,7 +50,6 @@
 
   const setBusy = (loading) => {
     input.toggleAttribute("loading", loading);
-    button.textContent = loading ? "停止" : "发送";
   };
 
   input.addEventListener("submit", (event) => {

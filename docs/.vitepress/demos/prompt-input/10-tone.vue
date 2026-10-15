@@ -14,7 +14,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
       :translations="{ input: '给助手写点什么' }"
     >
       <XhPromptInputInput rows="1" :placeholder="`${tone} 档`" />
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+      <XhPromptInputSubmitTrigger />
     </XhPromptInputRoot>
   </div>
 </template>

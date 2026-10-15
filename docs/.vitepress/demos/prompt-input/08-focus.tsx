@@ -24,7 +24,7 @@ export default function Demo(): ReactNode {
     <div style={{ display: "grid", gap: "12px" }}>
       <XhPromptInputRoot translations={{ input: "给助手写点什么" }} onSubmit={onSubmit}>
         <XhPromptInputInput ref={input} rows={1} placeholder="发一条，焦点会自己回来" />
-        <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+        <XhPromptInputSubmitTrigger />
       </XhPromptInputRoot>
 
       <div style={{ display: "flex", gap: "8px" }}>

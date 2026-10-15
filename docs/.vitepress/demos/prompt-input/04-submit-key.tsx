@@ -14,7 +14,7 @@ export default function Demo(): ReactNode {
         onSubmit={details => setLog(`enter 档发出：${details.value}`)}
       >
         <XhPromptInputInput rows={1} placeholder="Enter 就发出去" />
-        <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+        <XhPromptInputSubmitTrigger />
       </XhPromptInputRoot>
 
       {/* Enter 留给换行，提交收到组合键上：长文起草时不会敲一半被发出去 */}
@@ -24,7 +24,7 @@ export default function Demo(): ReactNode {
         onSubmit={details => setLog(`mod-enter 档发出：${details.value}`)}
       >
         <XhPromptInputInput rows={2} placeholder="Enter 换行，Ctrl/Cmd+Enter 才发" />
-        <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+        <XhPromptInputSubmitTrigger />
       </XhPromptInputRoot>
 
       {/* 键盘一个提交出口都不留：Enter 与 Mod+Enter 都原样交回浏览器插换行 */}
@@ -34,7 +34,7 @@ export default function Demo(): ReactNode {
         onSubmit={details => setLog(`none 档发出：${details.value}`)}
       >
         <XhPromptInputInput rows={2} placeholder="键盘怎么按都只换行" />
-        <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+        <XhPromptInputSubmitTrigger />
       </XhPromptInputRoot>
 
       <span data-demo-output>{log}</span>

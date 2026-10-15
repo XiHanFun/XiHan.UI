@@ -237,7 +237,7 @@ export default function Demo(): ReactNode {
 
         <XhPromptInputRoot translations={{ input: "接着问点什么" }} onSubmit={onSubmit}>
           <XhPromptInputInput rows={1} placeholder="接着问点什么…" />
-          <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+          <XhPromptInputSubmitTrigger />
         </XhPromptInputRoot>
       </div>
 

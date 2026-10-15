@@ -12,7 +12,7 @@ const sent = ref<string[]>([]);
     @submit="sent.push($event.value)"
   >
     <XhPromptInputInput rows="1" placeholder="给助手写点什么…" />
-    <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+    <XhPromptInputSubmitTrigger />
   </XhPromptInputRoot>
   <p data-demo-output>已发出：{{ sent.join(" / ") || "（无）" }}</p>
 </template>

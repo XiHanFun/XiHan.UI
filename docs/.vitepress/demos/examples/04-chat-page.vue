@@ -208,7 +208,7 @@ function onSubmit({ value }: { value: string }): void {
 
     <XhPromptInputRoot :translations="{ input: '接着问点什么' }" @submit="onSubmit">
       <XhPromptInputInput rows="1" placeholder="接着问点什么…" />
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+      <XhPromptInputSubmitTrigger />
     </XhPromptInputRoot>
   </div>
 

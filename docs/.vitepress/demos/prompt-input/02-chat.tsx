@@ -96,7 +96,7 @@ export default function Demo(): ReactNode {
         onStop={onStop}
       >
         <XhPromptInputInput rows={1} placeholder="给助手写点什么…" />
-        <XhPromptInputSubmitTrigger>{loading ? "停止" : "发送"}</XhPromptInputSubmitTrigger>
+        <XhPromptInputSubmitTrigger />
       </XhPromptInputRoot>
     </div>
   );
