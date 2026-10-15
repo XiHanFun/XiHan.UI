@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { formValidateMessages, runFieldRules } from '../src/form/form.rules'
+import { formValidateMessages, isEmptyFormValue, runFieldRules } from '../src/form/form.rules'
 import { zhCN } from '../src/locale'
 
 describe('表单正则规则的幂等性', () => {
@@ -72,5 +72,45 @@ describe('校验报错的文案来源', () => {
   it('规则自己的 message 最优先', () => {
     const messages = formValidateMessages({ required: '请填写{name}' }, zhCN.translations.form)
     expect(runFieldRules({ required: true, message: '必须填' }, '', {}, 'a', messages)).toBe('必须填')
+  })
+})
+
+describe('空值判定', () => {
+  it.each([
+    ['undefined', undefined],
+    ['null', null],
+    ['空串', ''],
+    ['半角空格与制表、换行', ' \t\r\n'],
+    ['不换行空格', ' '],
+    ['全角空格', '　　'],
+    ['空数组', []],
+    ['元素全为空的数组', [null, '', ' ']],
+    ['嵌套的全空数组', [[], [undefined, ['　']]]],
+  ])('%s 算空', (_, value) => {
+    expect(isEmptyFormValue(value)).toBe(true)
+  })
+
+  it.each([
+    ['false', false],
+    ['0', 0],
+    ['带字的字符串', ' a '],
+    ['含 0 的数组', [null, 0]],
+    ['含 false 的数组', [false]],
+    ['含一个非空元素的数组', ['', 'x']],
+    ['对象', {}],
+  ])('%s 不算空', (_, value) => {
+    expect(isEmptyFormValue(value)).toBe(false)
+  })
+
+  it('required 拦下只含空白的字符串与元素全为空的数组，放过 false 与 0', () => {
+    const rule = { required: true, message: '必填' }
+    expect(runFieldRules(rule, '　', {}, 'name', undefined)).toBe('必填')
+    expect(runFieldRules(rule, [null, null], {}, 'range', undefined)).toBe('必填')
+    expect(runFieldRules(rule, false, {}, 'agree', undefined)).toBeUndefined()
+    expect(runFieldRules(rule, 0, {}, 'count', undefined)).toBeUndefined()
+  })
+
+  it('非必填规则对只含空白的字符串放行', () => {
+    expect(runFieldRules({ min: 3, pattern: /^\d+$/ }, '  ', {}, 'code', undefined)).toBeUndefined()
   })
 })

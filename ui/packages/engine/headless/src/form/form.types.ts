@@ -20,7 +20,7 @@ export type FormRuleType = 'string' | 'number' | 'integer' | 'email' | 'url' | '
 
 /** 一条声明式规则；各检查项都可省略，validator 支持异步。 */
 export interface FormRule {
-  /** 必填：空值（undefined / null / 空串 / 空数组）拦截。 */
+  /** 必填：空值拦截——undefined / null / 只含空白的字符串 / 空数组 / 元素全为空的数组；false 与 0 不算空。 */
   required?: boolean
   /** 类型检查档位；数值 / 整数会把字符串数字也识别为数。 */
   type?: FormRuleType
