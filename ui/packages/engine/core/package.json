@@ -57,6 +57,10 @@
       "types": "./dist/url.d.ts",
       "import": "./dist/url.js"
     },
+    "./template": {
+      "types": "./dist/template.d.ts",
+      "import": "./dist/template.js"
+    },
     "./vanilla": {
       "types": "./dist/vanilla.d.ts",
       "import": "./dist/vanilla.js"

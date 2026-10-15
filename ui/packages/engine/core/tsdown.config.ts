@@ -13,6 +13,7 @@ export default defineXihanPackage({
     'date': 'src/date/index.ts',
     'json': 'src/json/index.ts',
     'url': 'src/url/index.ts',
+    'template': 'src/template/index.ts',
     'visual-environment': 'src/visual-environment/index.ts',
   },
 })

@@ -24,6 +24,12 @@
     "limit": "0.32 kB"
   },
   {
+    "name": "core/template",
+    "path": "packages/engine/core/dist/template.js",
+    "gzip": true,
+    "limit": "1.55 kB"
+  },
+  {
     "name": "tokens",
     "path": "packages/design/tokens/dist/index.js",
     "gzip": true,
@@ -119,12 +125,6 @@
     "path": "packages/features/expression/dist/index.js",
     "gzip": true,
     "limit": "18.6 kB"
-  },
-  {
-    "name": "expression/template",
-    "path": "packages/features/expression/dist/template.js",
-    "gzip": true,
-    "limit": "1.05 kB"
   },
   {
     "name": "designer-kit",

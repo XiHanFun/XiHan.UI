@@ -30,7 +30,6 @@ if (result.ok)
 - `createExpressionEngine` 给出四款设计器统一注入的引擎形状：`compile(source, { identifiers })` 返回引用的顶层变量名与求值函数，求值结果是普通 JS 值。
 - `formatValue(value, spec, { locale, timeZone })` 格式化数字、百分比、日期、人民币大写与数字字形（罗马数字、中文数字），数字按十进制精确舍入；`checkFormatSpec` 在保存模板时校验格式说明。
 - `evaluateSource` 与 `conditionOf` 是宿主求值处的两步：按源码编译后求值、把结果解释成条件；`planExpressions` 把一组「名字 = 表达式」按依赖排序并查环。
-- 子入口 `@xihan-ui/expression/template`：`{{path}}` 文本模板，占位只写数据路径，不写表达式。
 - `tests/fixtures/conformance.json` 是跨实现一致性用例，其他语言的实现逐条比对。
 
 ## 装
