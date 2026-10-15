@@ -26,7 +26,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectHierarchyChart, hierarchyChartAnatomy, hierarchyChartMachine, hierarchyChartMeta } from '@xihan-ui/headless'
-import { GEN_ATTR, generated, hasAuthorContent, makeGen, reconcile, SVG_NS } from '../dom/generated-nodes'
+import { createGeneratedElement, GEN_ATTR, generatedChildren, hasAuthorContent, reconcile, SVG_NS } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -286,8 +286,8 @@ export class XhHierarchyChartElement extends XhElement {
 
     const empty = put('empty', api.getEmptyProps() as Record<string, unknown>)
     if (empty && !hasAuthorContent(empty)) {
-      const [own] = generated(empty)
-      const span = own ?? empty.appendChild(makeGen(empty.ownerDocument, 'span'))
+      const [own] = generatedChildren(empty)
+      const span = own ?? empty.appendChild(createGeneratedElement(empty.ownerDocument, 'span'))
       if (span.textContent !== api.emptyText)
         span.textContent = api.emptyText
     }
@@ -317,7 +317,7 @@ export class XhHierarchyChartElement extends XhElement {
   #paintPath(path: Element, api: HierarchyChartApi): void {
     const doc = path.ownerDocument
     reconcile(path, api.path, this.#keys, item => item.key ?? TOP_KEY, (item, reuse) => {
-      const button = reuse instanceof HTMLButtonElement ? reuse : makeGen(doc, 'button')
+      const button = reuse instanceof HTMLButtonElement ? reuse : createGeneratedElement(doc, 'button')
       this.spreader.spread(button, api.getPathItemProps(item) as Record<string, unknown>)
       if (button.textContent !== item.name)
         button.textContent = item.name
@@ -329,7 +329,7 @@ export class XhHierarchyChartElement extends XhElement {
   #paintLegend(legend: Element, api: HierarchyChartApi): void {
     const doc = legend.ownerDocument
     reconcile(legend, api.legendScales, this.#keys, scale => `level:${scale.level}`, (scale, reuse) => {
-      const node = reuse ?? makeGen(doc, 'div')
+      const node = reuse ?? createGeneratedElement(doc, 'div')
       if (node.children.length !== 4)
         node.replaceChildren(...Array.from({ length: 4 }, () => doc.createElement('span')))
       const [name, min, bar, max] = Array.from(node.children) as HTMLElement[]
@@ -353,18 +353,18 @@ export class XhHierarchyChartElement extends XhElement {
     const model = api.tooltip
     // 色标画成节点的颜色：换了节点就要重写，哪怕数值碰巧一样
     const key = model ? JSON.stringify([model.header, api.active?.seriesId ?? null, model.rows.map(row => [row.key, row.value, row.name])]) : ''
-    if (key === this.#tooltipKey && (generated(tooltip).length > 0) === (model != null))
+    if (key === this.#tooltipKey && (generatedChildren(tooltip).length > 0) === (model != null))
       return
     this.#tooltipKey = key
-    for (const node of generated(tooltip)) node.remove()
+    for (const node of generatedChildren(tooltip)) node.remove()
     if (!model)
       return
     const doc = tooltip.ownerDocument
-    const header = makeGen(doc, 'div')
+    const header = createGeneratedElement(doc, 'div')
     this.spreader.spread(header, api.getTooltipHeaderProps() as Record<string, unknown>)
     header.textContent = model.header
     const rows = model.rows.map((row) => {
-      const line = makeGen(doc, 'div')
+      const line = createGeneratedElement(doc, 'div')
       this.spreader.spread(line, api.getTooltipRowProps(row) as Record<string, unknown>)
       const swatch = doc.createElement('span')
       this.spreader.spread(swatch, api.getTooltipSwatchProps(row) as Record<string, unknown>)
@@ -384,11 +384,11 @@ export class XhHierarchyChartElement extends XhElement {
   #paintA11y(root: HTMLElement, api: HierarchyChartApi): void {
     const doc = root.ownerDocument
     // 摘要之后是数据表的隐藏区域，表格放在区域里：视觉隐藏写在表格上收不住它的高度
-    let [summary, region] = generated(root) as HTMLElement[]
+    let [summary, region] = generatedChildren(root) as HTMLElement[]
     if (!summary || !region || region.firstElementChild?.localName !== 'table') {
-      for (const node of generated(root)) node.remove()
-      summary = root.appendChild(makeGen(doc, 'p'))
-      region = root.appendChild(makeGen(doc, 'div'))
+      for (const node of generatedChildren(root)) node.remove()
+      summary = root.appendChild(createGeneratedElement(doc, 'p'))
+      region = root.appendChild(createGeneratedElement(doc, 'div'))
       region.appendChild(doc.createElement('table'))
       this.#table = null
     }

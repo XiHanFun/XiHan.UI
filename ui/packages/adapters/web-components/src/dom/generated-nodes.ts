@@ -15,12 +15,12 @@ export const SVG_NS = 'http://www.w3.org/2000/svg'
 export type KeyedChildren = WeakMap<Element, Map<string, Element>>
 
 /** 父节点里本元素生成的直接子节点，按文档序。 */
-export function generated(parent: Element): Element[] {
+export function generatedChildren(parent: Element): Element[] {
   return Array.from(parent.children).filter(node => node.hasAttribute(GEN_ATTR))
 }
 
 /** 建一个带生成标记的 HTML 节点。 */
-export function makeGen<K extends keyof HTMLElementTagNameMap>(doc: Document, tag: K): HTMLElementTagNameMap[K] {
+export function createGeneratedElement<K extends keyof HTMLElementTagNameMap>(doc: Document, tag: K): HTMLElementTagNameMap[K] {
   const node = doc.createElement(tag)
   node.setAttribute(GEN_ATTR, '')
   return node
@@ -51,11 +51,11 @@ export function reconcile<T>(
     next.set(key, make(item, known.get(key)))
   }
   const kept = new Set(next.values())
-  for (const node of generated(parent)) {
+  for (const node of generatedChildren(parent)) {
     if (!kept.has(node))
       node.remove()
   }
-  let cursor: Element | null = generated(parent)[0] ?? null
+  let cursor: Element | null = generatedChildren(parent)[0] ?? null
   for (const node of next.values()) {
     if (node === cursor)
       cursor = cursor.nextElementSibling
