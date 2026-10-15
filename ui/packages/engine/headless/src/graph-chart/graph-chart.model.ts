@@ -13,7 +13,7 @@ import type { HierarchyNode } from '@xihan-ui/viz/hierarchy'
 import type { ChartMetrics, ChartRow, ChartSize, ChartSpecIssue } from '../shared/chart'
 import type { GraphChartTranslations, GraphLayout, GraphLinkDatum, GraphNodeDatum, GraphSummary, GraphView } from './graph-chart.types'
 import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
-import { createNumberFormat, createScene, ellipsize, isVizError, segmentsPath } from '@xihan-ui/viz'
+import { arrowHead, createNumberFormat, createScene, ellipsize, isVizError, segmentsPath, shortenPolyline } from '@xihan-ui/viz'
 import { circular, forceSimulation } from '@xihan-ui/viz/graph'
 import { hierarchy, tree } from '@xihan-ui/viz/hierarchy'
 import { CHART_SLOT_COUNT, memoizeLast } from '../shared/chart'
@@ -425,20 +425,6 @@ export interface GraphLayoutResult {
   readonly font: FontSpec
 }
 
-/** 箭头：尖端落在目标节点的边上，沿连线方向。 */
-/** 箭头三角形的三个顶点：尖端在 to，底边垂直于连线。过渡按这三个点插值，与连线同步移动。 */
-function arrowPoints(from: { x: number, y: number }, to: { x: number, y: number }, length: number): PathSegment {
-  const dx = to.x - from.x
-  const dy = to.y - from.y
-  const d = Math.hypot(dx, dy) || 1
-  const ux = dx / d
-  const uy = dy / d
-  const half = length * 0.4
-  const bx = to.x - ux * length
-  const by = to.y - uy * length
-  return { points: [{ x: to.x, y: to.y }, { x: bx - uy * half, y: by + ux * half }, { x: bx + uy * half, y: by - ux * half }], closed: true }
-}
-
 export function layoutGraph(base: GraphBase, positions: Readonly<Record<string, { readonly x: number, readonly y: number }>> | null, view: GraphView, directed: boolean, measurer: TextMeasurer): GraphLayoutResult {
   const { derived, metrics, font, size } = base
   // 拖动过的位置盖在底图上；数据换过、对不上的就不用
@@ -551,12 +537,10 @@ export function layoutGraph(base: GraphBase, positions: Readonly<Record<string, 
     if (!directed)
       return { link, from: { x: s.x, y: s.y }, to: { x: t.x, y: t.y }, width, arrow: null, label: linkLabelOf(link, s, t) }
     // 有向：线停在箭头的底边，箭头的尖端停在目标节点的边上，隔一道间隙
-    const dx = t.x - s.x
-    const dy = t.y - s.y
-    const d = Math.hypot(dx, dy) || 1
-    const tip = { x: t.x - (dx / d) * (t.r + metrics.gap), y: t.y - (dy / d) * (t.r + metrics.gap) }
-    const end = { x: tip.x - (dx / d) * arrowLength * 0.8, y: tip.y - (dy / d) * arrowLength * 0.8 }
-    return { link, from: { x: s.x, y: s.y }, to: end, width, arrow: arrowPoints({ x: s.x, y: s.y }, tip, arrowLength), label: linkLabelOf(link, s, t) }
+    const from = { x: s.x, y: s.y }
+    const tip = shortenPolyline([from, { x: t.x, y: t.y }], { end: t.r + metrics.gap })[1]!
+    const end = shortenPolyline([from, tip], { end: arrowLength * 0.8 })[1]!
+    return { link, from, to: end, width, arrow: arrowHead(from, tip, { length: arrowLength }), label: linkLabelOf(link, s, t) }
   })
   return { base, size, view, placed, nodes: final, byId, links, metrics, font }
 }
