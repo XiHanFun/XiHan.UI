@@ -30,6 +30,7 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式服务于一个
 | 1 | `viz` | — |
 | 1 | `expression` | — |
 | 1 | `designer-kit` | — |
+| 1 | `xlsx` | — |
 | 2 | `position` | `core` |
 | 2 | `code-highlight` | `core` |
 | 2 | `chat-stream` | `core` |
@@ -120,6 +121,7 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 | `@xihan-ui/animations` | 现成的进场与注意动效、错开起播、文字拆分 |
 | `@xihan-ui/expression` | 受限表达式语言：公式与条件解析成可序列化的语法树，按十进制确定性求值，见[受限表达式](/runtime/expression) |
 | `@xihan-ui/designer-kit` | 画布式设计器的内核：撤销重做历史栈、视口平移缩放、对齐吸附与参考线、对齐分布与框选，见[设计器内核](/runtime/designer-kit) |
+| `@xihan-ui/xlsx` | 零依赖的 xlsx 写出：带类型的单元格、数字与日期格式、合并单元格与冻结窗格，见[表格导出](/runtime/xlsx) |
 
 **开发工具**
 
@@ -137,7 +139,7 @@ XiHan.UI/
 │   ├── packages/            # 对外发布的库包，按角色分五组
 │   │   ├── adapters/        # vue · react · web-components，按宿主选择
 │   │   ├── design/          # tokens · styles · icons，外观
-│   │   ├── features/        # markdown · chat-stream · backgrounds · sound · animations · code-highlight · expression · designer-kit，按需选用
+│   │   ├── features/        # markdown · chat-stream · backgrounds · sound · animations · code-highlight · expression · designer-kit · xlsx，按需选用
 │   │   ├── engine/          # core · motion · pointer · position · viz · headless
 │   │   └── tools/           # cli，开发时用，不进应用产物
 │   └── tooling/             # 内部构建与质量工具

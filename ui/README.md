@@ -33,6 +33,7 @@ Every component ships a headless core, Vue and React components, a custom elemen
 | `@xihan-ui/animations` | Animation layer: serializable motion recipes, built-in enter and attention effects, stagger, text splitting |
 | `@xihan-ui/expression` | Restricted expression language: parse to a serializable AST, static checks, deterministic evaluation with exact decimals and time-zone-free dates, no `eval` |
 | `@xihan-ui/designer-kit` | Designer kit for canvas editors: undo/redo history, viewport pan and zoom, snapping guides, alignment, distribution and marquee selection, independent of the document shape |
+| `@xihan-ui/xlsx` | Zero-dependency xlsx writer: typed text, number, date and boolean cells, number and date formats, bold and alignment, merged cells and frozen panes |
 | `@xihan-ui/icons` | First-party icon set: structured `IconRecord` data, rendered node by node, no runtime SVG string parsing |
 | `@xihan-ui/cli` | CLI and MCP server: offline component API, docs, demos, design tokens and design.md for AI coding agents |
 

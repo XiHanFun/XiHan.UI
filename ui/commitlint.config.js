@@ -26,6 +26,7 @@ export default {
         'animations',
         'expression',
         'designer-kit',
+        'xlsx',
         'vue',
         'react',
         'web-components',
