@@ -129,11 +129,11 @@ import { fillTextTemplate, parseTextTemplate } from "@xihan-ui/core/template";
 fillTextTemplate("订单 {{order.items[0].name}}，第 {{$page}} / {{$pages}} 页", { order: { items: [{ name: "笔" }] }, $page: 2, $pages: 7 });
 // { text: "订单 笔，第 2 / 7 页", nonScalar: [] }
 
-parseTextTemplate("{{ price * qty }}").issues; // [{ code: "XH_EXPR_TEMPLATE_INVALID_PATH", start: 0, end: 17 }]
+parseTextTemplate("{{ price * qty }}").issues; // [{ code: "invalid-path", start: 0, end: 17 }]
 ```
 
 - **路径**：写法同 `@xihan-ui/core/json` 的 `formatJsonPath`，由 `parseJsonPath` 解析：标识符以 `.` 相连，下标写成 `[0]`，不是标识符的键写成 `["unit price"]`；`$` 开头的宿主变量与中文名都按普通键处理。占位两侧的空白忽略。属性面板校验路径用 `isJsonPathText`。
-- **问题**：`parseTextTemplate` 一次给出全部问题，`{ code, start, end }` 的区间是整个占位；问题码为 `XH_EXPR_TEMPLATE_UNCLOSED`（没有闭合）、`XH_EXPR_TEMPLATE_EMPTY`（空占位）、`XH_EXPR_TEMPLATE_INVALID_PATH`（路径不合法，写了表达式也是这一条）。有问题的占位按原样文本保留。
+- **问题**：`parseTextTemplate` 一次给出全部问题，`{ code, start, end }` 的区间是整个占位；问题码为 `unclosed-placeholder`（没有闭合）、`empty-placeholder`（空占位）、`invalid-path`（路径不合法，写了表达式也是这一条，与 core/json 的 `JsonPathError` 同名同义）。有问题的占位按原样文本保留。
 - **读值**：同 `getJsonAt`，只读自有属性，下标只读数组，读不到的路径得到空串。
 - **显示**：`null` 与 `undefined` 为空串，字符串原样，有限数字、布尔与 `bigint` 转字符串，非有限数字为空串，`Date` 转 ISO 文本；对象与数组不能直接显示，得到空串并按出现顺序记入 `nonScalar`。传 `display(value, path)` 可以换掉这套规则，返回 `undefined` 表示不能显示。
 - **页码**：页码不另设记号，模板里放宿主变量 `$page` 与 `$pages` 的占位；要罗马数字或中文数字时，宿主先用 `formatValue(n, { kind: "numeral", style })` 转好再放进数据。
