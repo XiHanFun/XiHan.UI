@@ -21,10 +21,10 @@ import type {
   FormControlState,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
-import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled } from '@xihan-ui/core'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { comboboxAnatomy, comboboxMachine, comboboxMeta, connectCombobox, resolveFormControlState, tagAnatomy } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
-import { createDeclaredDisabled } from '../dom/declared-disabled'
+import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { createOverlayExit } from '../overlay-exit'
@@ -230,8 +230,8 @@ export class XhComboboxElement extends XhPortalHostElement {
     props: () => ({ size: 'sm' }),
   })
 
-  /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
-  private readonly declaredDisabled = createDeclaredDisabled()
+  /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。 */
+  private readonly declaredDisabled = createDisabledDeclarations()
   private readonly hiddenInputs = createRepeatedHiddenInputs(this.spreader)
   /** overflow-tag 的文字是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
   private readonly ownsText = new WeakMap<HTMLElement, boolean>()
@@ -457,15 +457,15 @@ export class XhComboboxElement extends XhPortalHostElement {
         this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
     }
 
-    // 候选逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled。
-    // 这里回读 aria-disabled 是安全的（整控件禁用不向下传导到候选，写回的就是作者那份声明）。
+    // 候选逐个打：身份取作者写的 value，禁用取作者在条目上的声明。
     // wire 跑在事件之前，按键时 data-scope/data-part/data-value 已在 DOM 上供方向键现查。
     for (const el of this.getParts('item')) {
       const item: ComboboxItemProps = {
         value: el.getAttribute('value') ?? '',
-        disabled: this.collection ? this.declaredDisabled(el) : isItemDisabled(el),
+        disabled: this.collection ? this.declaredDisabled.read(el) : this.declaredDisabled.read(el) ?? false,
       }
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.declaredDisabled.commit(el)
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
       for (const description of this.partsIn(el, 'item-description'))

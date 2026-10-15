@@ -7,9 +7,8 @@
 
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
 import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails, CheckboxGroupVariant, FormControlState, ResolvedFormControlState } from '@xihan-ui/headless'
-import { isItemDisabled } from '@xihan-ui/core'
 import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, connectCheckboxGroup, resolveFormControlState } from '@xihan-ui/headless'
-import { createDeclaredDisabled } from '../dom/declared-disabled'
+import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -97,12 +96,8 @@ export class XhCheckboxGroupElement extends XhElement {
   declare variant?: CheckboxGroupVariant
   declare name?: string
 
-  /** 条目自身 disabled 声明的快照，整组禁用期间 DOM 上的 aria-disabled 不可信。 */
-  private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
-  /** 上一帧是否整组禁用；解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled。 */
-  private wasGroupDisabled = false
-  /** 上一帧被选中数上下限锁住的条目：它们身上的 aria-disabled 是连接层写的，不是作者声明。 */
-  private readonly lockedLastFrame = new WeakSet<HTMLElement>()
+  /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。 */
+  private readonly declaredDisabled = createDisabledDeclarations()
 
   private readonly notify = (details: CheckboxGroupValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -148,30 +143,11 @@ export class XhCheckboxGroupElement extends XhElement {
     }
   }
 
-  /** 作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺 */
-  private readonly declaredItemDisabled = createDeclaredDisabled()
-
   private itemProps(el: HTMLElement): CheckboxGroupItemProps {
     const value = el.getAttribute('value') ?? ''
-    // 给了 collection 就以数据为事实源：现读会读到 connect 上一帧写回的 aria-disabled，
-    // 「作者没写」表达不出 undefined，数据里的禁用就永远轮不到生效。
-    if (this.collection)
-      return { value, disabled: this.declaredItemDisabled(el) }
-    const groupDisabled = this.controlState().disabled
-    // 首次见到该条目时 DOM 上只有作者写的东西，此刻现读即真声明
-    if (!this.declaredDisabled.has(el)) {
-      const own = isItemDisabled(el)
-      this.declaredDisabled.set(el, own)
-      return { value, disabled: own }
-    }
-    // 本帧与上一帧都未整组禁用、上一帧也没被上下限锁住时，节点上的 aria-disabled 才等于作者声明
-    if (!groupDisabled && !this.wasGroupDisabled && !this.lockedLastFrame.has(el)) {
-      const own = isItemDisabled(el)
-      this.declaredDisabled.set(el, own)
-      return { value, disabled: own }
-    }
-    // 整组禁用期间与解禁当帧只认快照
-    return { value, disabled: this.declaredDisabled.get(el)! }
+    // 给了 collection 时，作者没写的禁用为 undefined，交给数据定夺
+    const declared = this.declaredDisabled.read(el)
+    return { value, disabled: this.collection ? declared : declared ?? false }
   }
 
   /** 取指定角色节点在 item 子树内的实例。 */
@@ -213,11 +189,7 @@ export class XhCheckboxGroupElement extends XhElement {
     for (const el of this.getParts('item')) {
       const item = this.itemProps(el)
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
-      // 作者没禁用、整组也没禁用却报了 aria-disabled：那是上下限锁住的，下一帧别当作者声明读回去
-      if (!item.disabled && !this.controlState().disabled && el.getAttribute('aria-disabled') === 'true')
-        this.lockedLastFrame.add(el)
-      else
-        this.lockedLastFrame.delete(el)
+      this.declaredDisabled.commit(el)
       for (const input of this.partsIn(el, 'hidden-input'))
         this.spreadHiddenInput(input as HTMLInputElement, api.getHiddenInputProps(item) as Record<string, unknown>)
       for (const control of this.partsIn(el, 'indicator'))
@@ -227,7 +199,5 @@ export class XhCheckboxGroupElement extends XhElement {
       for (const description of this.partsIn(el, 'item-description'))
         this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
     }
-
-    this.wasGroupDisabled = this.controlState().disabled
   }
 }

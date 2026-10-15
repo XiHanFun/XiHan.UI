@@ -7,9 +7,9 @@
 
 import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, TagGroupApi, TagGroupItemDeleteDetails, TagGroupItemProps, TagGroupNode, TagGroupSchema, TagGroupSelectionMode, TagGroupTranslations, TagGroupValueChangeDetails, TagVariant } from '@xihan-ui/headless'
-import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTagGroup, resolveFormControlState, tagAnatomy, tagGroupAnatomy, tagGroupMachine, tagGroupMeta } from '@xihan-ui/headless'
-import { createDeclaredDisabled } from '../dom/declared-disabled'
+import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -110,11 +110,8 @@ export class XhTagGroupElement extends XhElement {
   declare tone?: Tone
   declare size?: Size
 
-  // 整组禁用期间的条目自身声明快照。connect 每帧都把 aria-disabled 写回条目，整组禁用更是写满每一个，
-  // 此时回读分不清「作者声明的」还是「自己上一帧写的」，解禁后条目就永远解不开。
-  private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
-  /** 上一帧是否整组禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。 */
-  private wasGroupDisabled = false
+  /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。 */
+  private readonly declaredDisabled = createDisabledDeclarations()
   private inheritedControl: FormControlState | undefined
 
   /** 最近的 Field/Form 只交状态；TagGroup 仅消费公开的禁用、只读两轴。 */
@@ -184,9 +181,6 @@ export class XhTagGroupElement extends XhElement {
       send({ type: 'LIST.BLUR' })
   }
 
-  /** 作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺 */
-  private readonly declaredItemDisabled = createDeclaredDisabled()
-
   /**
    * 作者声明的可摘：条目上写了 deletable 属性即为真，写 deletable="false" 即为假，
    * 没写返回 undefined 交给 collection 与整组定夺。
@@ -200,27 +194,9 @@ export class XhTagGroupElement extends XhElement {
   private itemProps(el: HTMLElement): TagGroupItemProps {
     const value = el.getAttribute('value') ?? ''
     const deletable = this.declaredDeletable(el)
-    // 给了 collection 就以数据为事实源：现读会读到 connect 上一帧写回的 aria-disabled，
-    // 「作者没写」表达不出 undefined，数据里的禁用就永远轮不到生效。
-    if (this.collection)
-      return { value, disabled: this.declaredItemDisabled(el), deletable }
-    const groupDisabled = this.controlState().disabled
-    // 只有「本帧与上一帧都没整组禁用」时，节点上的 aria-disabled 才等于作者声明：
-    // 整组禁用那几帧 connect 把每个条目都写成了 true，解禁当帧 DOM 上还留着这些写回值，
-    // 此刻现读会把机器自己的产物误当声明、条目再也解不开。
-    // 头一回见到这个条目时，DOM 上还只有作者写的东西（本帧的写回尚未发生），
-    // 此刻无论整组禁没禁用都记得下真声明。
-    if (!this.declaredDisabled.has(el)) {
-      const own = isItemDisabled(el)
-      this.declaredDisabled.set(el, own)
-      return { value, disabled: own, deletable }
-    }
-    if (!groupDisabled && !this.wasGroupDisabled) {
-      const own = isItemDisabled(el)
-      this.declaredDisabled.set(el, own)
-      return { value, disabled: own, deletable }
-    }
-    return { value, disabled: this.declaredDisabled.get(el)!, deletable }
+    // 给了 collection 时，作者没写的禁用为 undefined，交给数据定夺
+    const declared = this.declaredDisabled.read(el)
+    return { value, disabled: this.collection ? declared : declared ?? false, deletable }
   }
 
   // 条目内的子部件：getParts 收的是整个元素范围，按子树过滤才归得对。
@@ -292,11 +268,12 @@ export class XhTagGroupElement extends XhElement {
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('list', api.getListProps() as Record<string, unknown>)
 
-    // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled。
+    // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取作者在条目上的声明。
     // 条目节点接成 tag 的 root，文字与摘除钮接成同一份 tag 的 label 与 close-trigger
     for (const el of this.getParts('item')) {
       const item = this.itemProps(el)
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.declaredDisabled.commit(el)
       // 标签内的那一格、文字与摘除钮跟着同一份声明走，样式层各处状态一致
       for (const cell of this.partsIn(el, 'cell'))
         this.spreader.spread(cell, api.getCellProps(item) as Record<string, unknown>)
@@ -307,8 +284,5 @@ export class XhTagGroupElement extends XhElement {
       for (const trigger of this.partsIn(el, 'item-delete-trigger'))
         this.spreader.spread(trigger, api.getItemDeleteTriggerProps(item) as Record<string, unknown>)
     }
-
-    // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信
-    this.wasGroupDisabled = !!this.controlState().disabled
   }
 }

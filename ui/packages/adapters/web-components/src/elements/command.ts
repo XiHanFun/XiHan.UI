@@ -19,10 +19,10 @@ import type {
   CommandSelectDetails,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
-import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled } from '@xihan-ui/core'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { commandAnatomy, commandMachine, commandMeta, connectCommand } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
-import { createDeclaredDisabled } from '../dom/declared-disabled'
+import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -164,8 +164,8 @@ export class XhCommandElement extends XhPortalHostElement {
     onChange: () => this.requestUpdate(),
   })
 
-  /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
-  private readonly declaredDisabled = createDeclaredDisabled()
+  /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。 */
+  private readonly declaredDisabled = createDisabledDeclarations()
 
   private readonly notifyOpen = (details: CommandOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
@@ -375,14 +375,15 @@ export class XhCommandElement extends XhPortalHostElement {
         this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
     }
 
-    // 条目逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled。
+    // 条目逐个打：身份取作者写的 value，禁用取作者在条目上的声明。
     // wire 跑在事件之前，按键时 data-scope/data-part/data-value 已在 DOM 上供指针交互现查
     for (const el of this.getParts('item')) {
       const item: CommandItemProps = {
         value: el.getAttribute('value') ?? '',
-        disabled: this.collection ? this.declaredDisabled(el) : isItemDisabled(el),
+        disabled: this.collection ? this.declaredDisabled.read(el) : this.declaredDisabled.read(el) ?? false,
       }
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.declaredDisabled.commit(el)
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
       for (const description of this.partsIn(el, 'item-description'))

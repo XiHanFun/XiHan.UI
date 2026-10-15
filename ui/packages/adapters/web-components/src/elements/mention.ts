@@ -23,7 +23,7 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectMention, mentionAnatomy, mentionMachine, mentionMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
-import { createDeclaredDisabled } from '../dom/declared-disabled'
+import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -179,8 +179,8 @@ export class XhMentionElement extends XhPortalHostElement {
     props: () => ({ size: 'sm' }),
   })
 
-  /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
-  private readonly declaredDisabled = createDeclaredDisabled()
+  /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。 */
+  private readonly declaredDisabled = createDisabledDeclarations()
   private inheritedControl: FormControlState | undefined
 
   setFormControlState(state: FormControlState | undefined): void {
@@ -303,14 +303,15 @@ export class XhMentionElement extends XhPortalHostElement {
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
 
-    // 候选逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled。
+    // 候选逐个打：身份取作者写的 value，禁用取作者在条目上的声明。
     // wire 跑在事件之前，按键时 data-scope/data-part/data-value 已在 DOM 上供方向键现查。
     for (const el of this.getParts('item')) {
       const item: MentionItemProps = {
         value: el.getAttribute('value') ?? '',
-        disabled: this.declaredDisabled(el),
+        disabled: this.declaredDisabled.read(el),
       }
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.declaredDisabled.commit(el)
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
       for (const description of this.partsIn(el, 'item-description'))

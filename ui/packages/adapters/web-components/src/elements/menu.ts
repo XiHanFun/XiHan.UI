@@ -9,10 +9,10 @@ import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEngineP
 import type { MenuAnyItemProps, MenuCheckboxValueChangeDetails, MenuNode, MenuOpenChangeDetails, MenuRadioValue, MenuRadioValueChangeDetails, MenuSchema, MenuSelectDetails, MenuTranslations } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
-import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectMenu, createMenuTreeNode, menuAnatomy, menuMachine, menuMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
-import { createDeclaredDisabled } from '../dom/declared-disabled'
+import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -211,8 +211,8 @@ export class XhMenuElement extends XhPortalHostElement {
     props: () => ({ size: 'sm' }),
   })
 
-  /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
-  private readonly declaredDisabled = createDeclaredDisabled()
+  /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。 */
+  private readonly declaredDisabled = createDisabledDeclarations()
 
   private machineProps(): Partial<MenuSchema['props']> {
     return {
@@ -419,7 +419,7 @@ export class XhMenuElement extends XhPortalHostElement {
       const kind = (meta?.kind ?? el.getAttribute('kind') ?? 'item') as MenuAnyItemProps['kind']
       const closeAttr = el.getAttribute('close-on-select')
       const closeOnSelect = meta?.closeOnSelect ?? (closeAttr == null ? undefined : closeAttr !== 'false')
-      const disabled = this.collection ? this.declaredDisabled(el) : isItemDisabled(el)
+      const disabled = this.collection ? this.declaredDisabled.read(el) : this.declaredDisabled.read(el) ?? false
       if (kind === 'radio') {
         const group = meta?.group ?? el.closest<HTMLElement>('[data-xh-part="group"]')?.getAttribute('value') ?? ''
         return { value, disabled, closeOnSelect, kind, group }
@@ -427,7 +427,7 @@ export class XhMenuElement extends XhPortalHostElement {
       return { value, disabled, closeOnSelect, kind }
     }
 
-    // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled
+    // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取作者在条目上的声明
     // （集合条目一律 aria-disabled，原生 disabled 不可聚焦、也不派 click）。
     // 打上去的 data-scope/data-part/data-value 正是方向键在事件那一刻查 DOM 的依据，
     // 所以 wire 必须先于事件跑过——updated() 已保证。
@@ -439,6 +439,7 @@ export class XhMenuElement extends XhPortalHostElement {
           ? api.getRadioItemProps(declaration)
           : api.getItemProps(declaration)
       this.spreader.spread(el, props as Record<string, unknown>)
+      this.declaredDisabled.commit(el)
     }
     for (const child of this.submenuBridges.values())
       this.wireSubmenuChild(child)

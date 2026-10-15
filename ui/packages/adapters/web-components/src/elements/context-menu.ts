@@ -9,10 +9,10 @@ import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEngineP
 import type { ContextMenuAnyItemProps, ContextMenuCheckboxValueChangeDetails, ContextMenuNode, ContextMenuOpenChangeDetails, ContextMenuRadioValue, ContextMenuRadioValueChangeDetails, ContextMenuSchema, ContextMenuSelectDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
-import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectContextMenu, contextMenuAnatomy, contextMenuMachine, contextMenuMeta, createMenuTreeNode } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
-import { createDeclaredDisabled } from '../dom/declared-disabled'
+import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -246,25 +246,13 @@ export class XhContextMenuElement extends XhPortalHostElement {
     props: () => ({ size: 'sm' }),
   })
 
-  /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
-  private readonly declaredDisabled = createDeclaredDisabled()
+  /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。 */
+  private readonly declaredDisabled = createDisabledDeclarations()
 
-  // 整张禁用期间的条目自身声明快照：connect 每帧把 aria-disabled 写回条目，回读分不清作者声明与自己的写回
-  private readonly ownItemDisabled = new WeakMap<HTMLElement, boolean>()
-  /** 上一帧是否整张禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。 */
-  private wasMenuDisabled = false
-
-  private itemDisabled(el: HTMLElement, menuDisabled: boolean): boolean | undefined {
-    if (this.collection)
-      return this.declaredDisabled(el)
-    // 头一回见到这个条目，或本帧与上一帧都没整张禁用：DOM 上的 aria-disabled 就是作者声明
-    if (!this.ownItemDisabled.has(el) || (!menuDisabled && !this.wasMenuDisabled)) {
-      const own = isItemDisabled(el)
-      this.ownItemDisabled.set(el, own)
-      return own
-    }
-    // 整张禁用那几帧（以及解禁当帧）DOM 上留着机器的写回值，只认快照
-    return this.ownItemDisabled.get(el)
+  /** 条目的禁用：给了 collection 时作者没写为 undefined，交给数据定夺。 */
+  private itemDisabled(el: HTMLElement): boolean | undefined {
+    const declared = this.declaredDisabled.read(el)
+    return this.collection ? declared : declared ?? false
   }
 
   private machineProps(): Partial<ContextMenuSchema['props']> {
@@ -397,7 +385,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
         this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
     }
 
-    // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled
+    // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取作者在条目上的声明
     // （集合条目一律 aria-disabled，原生 disabled 不可聚焦、也不派 click）。
     // 打上去的 data-scope/data-part/data-value 正是方向键与连打检索在事件那一刻查 DOM 的依据，
     // 所以 wire 必须先于事件跑过——updated() 已保证。
@@ -407,7 +395,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
       const kind = (meta?.kind ?? el.getAttribute('kind') ?? 'item') as ContextMenuAnyItemProps['kind']
       const closeAttr = el.getAttribute('close-on-select')
       const closeOnSelect = meta?.closeOnSelect ?? (closeAttr == null ? undefined : closeAttr !== 'false')
-      const disabled = this.itemDisabled(el, api.disabled)
+      const disabled = this.itemDisabled(el)
       const item: ContextMenuAnyItemProps = kind === 'radio'
         ? { value, disabled, closeOnSelect, kind, group: meta?.group ?? el.closest<HTMLElement>('[data-xh-part="group"]')?.getAttribute('value') ?? '' }
         : kind === 'checkbox'
@@ -419,6 +407,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
           ? api.getRadioItemProps(item)
           : api.getItemProps(item)
       this.spreader.spread(el, itemProps as Record<string, unknown>)
+      this.declaredDisabled.commit(el)
       // 条目内的文本与标记位跟着同一份声明走，样式层各处状态一致
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
@@ -431,7 +420,6 @@ export class XhContextMenuElement extends XhPortalHostElement {
       for (const suffix of this.partsIn(el, 'item-suffix'))
         this.spreader.spread(suffix, api.getItemSuffixProps(item) as Record<string, unknown>)
     }
-    this.wasMenuDisabled = api.disabled
     for (const child of this.submenuBridges.values())
       this.wireSubmenuChild(child)
 

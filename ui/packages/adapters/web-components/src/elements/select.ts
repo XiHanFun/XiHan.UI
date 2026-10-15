@@ -8,10 +8,10 @@
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { CollectionVirtualizer, FormControlState, SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
-import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectSelect, resolveFormControlState, selectAnatomy, selectMachine, selectMeta, tagAnatomy } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
-import { createDeclaredDisabled } from '../dom/declared-disabled'
+import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
@@ -210,8 +210,8 @@ export class XhSelectElement extends XhPortalHostElement {
   /** list 里 `<template>` 写的条目按 headless 的判定克隆进来；没写模板的作者节点照旧常驻 */
   private readonly lazyList = new LazyContent({ stash: false })
 
-  /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
-  private readonly declaredDisabled = createDeclaredDisabled()
+  /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。 */
+  private readonly declaredDisabled = createDisabledDeclarations()
   private inheritedControl: FormControlState | undefined
 
   setFormControlState(state: FormControlState | undefined): void {
@@ -488,15 +488,16 @@ export class XhSelectElement extends XhPortalHostElement {
       this.syncHiddenOptions(hiddenSelect, api.value, api.valueText, api.multiple)
     }
 
-    // 条目逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled。
+    // 条目逐个打：身份取作者写的 value，禁用取作者在条目上的声明。
     // wire 跑在事件之前，按键时 data-scope/data-part/data-value 已在 DOM 上供方向键与连打检索现查。
     const items = this.getParts('item')
     for (const el of items) {
       const item: SelectItemProps = {
         value: el.getAttribute('value') ?? '',
-        disabled: this.collection ? this.declaredDisabled(el) : isItemDisabled(el),
+        disabled: this.collection ? this.declaredDisabled.read(el) : this.declaredDisabled.read(el) ?? false,
       }
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.declaredDisabled.commit(el)
       // 条目内的文本与选中标记跟着同一份声明走
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
