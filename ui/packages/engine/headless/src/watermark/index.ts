@@ -6,8 +6,8 @@
 // 导出 watermark 模块的公共接口。
 
 export { watermarkAnatomy } from './watermark.anatomy'
-export { connectWatermark } from './watermark.connect'
+export { connectWatermark, planWatermark } from './watermark.connect'
 export { watermarkKeyboard } from './watermark.keyboard'
 export { watermarkMachine } from './watermark.machine'
 export { watermarkMeta } from './watermark.meta'
-export type { WatermarkApi, WatermarkImageSize, WatermarkProps, WatermarkSchema, WatermarkState, WatermarkTile, WatermarkTranslations } from './watermark.types'
+export type { WatermarkApi, WatermarkImageSize, WatermarkPattern, WatermarkPatternOptions, WatermarkProps, WatermarkSchema, WatermarkState, WatermarkTile, WatermarkTranslations } from './watermark.types'

@@ -9,7 +9,7 @@ import type { PropFn } from '@xihan-ui/core'
 import type { WatermarkProps, WatermarkSchema } from './watermark.types'
 import { DIAGNOSTIC_CODES, reportDiagnostic, setup } from '@xihan-ui/core'
 import { watermarkAnatomy } from './watermark.anatomy'
-import { planWatermark, toWatermarkImageAddress } from './watermark.connect'
+import { planWatermarkRoot, toWatermarkImageAddress } from './watermark.connect'
 
 const { createMachine } = setup<WatermarkSchema>()
 
@@ -156,7 +156,7 @@ export const watermarkMachine = createMachine({
         let observer: MutationObserver | null = null
 
         const restore = (el: HTMLElement): void => {
-          const plan = planWatermark(readProps(prop), context.get('imageData') ?? null)
+          const plan = planWatermarkRoot(readProps(prop), context.get('imageData') ?? null)
           const expected: Record<string, string | undefined> = {
             'data-scope': parts.root.attrs['data-scope'],
             'data-part': parts.root.attrs['data-part'],
