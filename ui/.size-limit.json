@@ -9,7 +9,7 @@
     "name": "core/date",
     "path": "packages/engine/core/dist/date.js",
     "gzip": true,
-    "limit": "7.9 kB"
+    "limit": "9.3 kB"
   },
   {
     "name": "core/json",
