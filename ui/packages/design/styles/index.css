@@ -41473,10 +41473,12 @@
     margin-block: var(--xh-separator-my, var(--xh-space-5));
   }
 
+  /* 高度交给 stretch：写成 100% 时父容器高度若由内容撑出（工具条一类的横排）就解析不出来，
+     stretch 随之失效，线只剩下限那一截、贴在行顶。auto 才让 stretch 铺满这一行，父容器写死高度时同样铺满 */
   .xh-scope-separator[data-part='root'][data-orientation='vertical'] {
     align-self: stretch;
     inline-size: var(--xh-separator-thickness, var(--xh-stroke-thin));
-    block-size: 100%;
+    block-size: auto;
     /* 父容器没有高度时也留一截与文字等高的线 */
     min-block-size: var(--xh-glyph-size-text);
     margin-inline: var(--xh-separator-mx, var(--xh-space-3));
