@@ -151,15 +151,14 @@ document.querySelector("xh-dialog")
 `@xihan-ui/web-components/authoring` 公开库内元素所用的那套基础件，供设计器等第三方编写同样形态的 Light DOM 元素：自研的响应式基类、按 key 复用生成节点、事件派发、元素注册，以及读取全局配置与文案的控制器。这个子入口不含库内的元素类，Node 下可以安全 import。
 
 ```ts
+import type { KeyedChildren, PropertyValues } from "@xihan-ui/web-components/authoring";
 import {
-  XhReactiveElement,
-  XhConfigController,
+  createGeneratedElement,
   emitEvent,
   reconcile,
-  createGeneratedElement,
   registerElement,
-  type KeyedChildren,
-  type PropertyValues,
+  XhConfigController,
+  XhReactiveElement,
 } from "@xihan-ui/web-components/authoring";
 
 interface Step {
@@ -183,7 +182,7 @@ class XhStepList extends XhReactiveElement {
     super.update(changed);
     const t = this.config.translations("xh-step-list", { empty: "No steps" });
     this.dataset.empty = t.empty;
-    reconcile(this, this.steps ?? [], this.keys, (step) => step.id, (step, reuse) => {
+    reconcile(this, this.steps ?? [], this.keys, step => step.id, (step, reuse) => {
       const node = reuse ?? createGeneratedElement(this.ownerDocument, "button");
       node.textContent = step.label;
       node.onclick = () => emitEvent(this, "step-select", { id: step.id });
