@@ -45,6 +45,7 @@ const snap = snapRect({ x: 103, y: 40, width: 120, height: 48 }, {
 - 路径编辑操作 `applyPathOperation(s)`：`set`（`value` 缺省删除对象键，`createMissing` 补中间层）、`insert`、`remove`、`move`，可直接作为历史栈的 `apply`。不改输入，没有变化时返回同一文档、逆操作为空；失败抛 `PathOperationError`，`message` 即 `code`。路径语义同 `@xihan-ui/core/json`。
 - 文档内唯一 id：`nextFreeId(prefix, taken)` 取同前缀最大序号加一，`createIdAllocator` 连续分配并可登记已占用的 id，`remapIds` 给粘贴出的对象换新 id。
 - 网格布局：`GridItem` 是 `{ id, x, y, w, h }`，单位是格。`clampToGrid` 夹到网格内，`gridCollides` 判重叠（边相接不算），`compactLayout` 自上而下向上压实，`setGridItemRect` 拖动或改大小时推开压到的项、向下拖过下方项的顶边即与它对调，`placeGridItem` 放到第一个空位或指定位置，`removeGridItem` 移除一项；调整之后缺省整体压实，`{ compact: false }` 不压实。
+- 合并单元格的表格：`TableCell` 是 `{ id, row, column, rowSpan, columnSpan }`。`checkTableCells` 检查越界、重叠与留空，`planCellMerge` 判断所选单元格能否合并成一个矩形，`planCellSplit` 给出拆分后要补的位置，`planTableLineInsert` / `planTableLineRemove` 算出增删一行（列）后的新尺寸、变化的单元格与要新建、删除的单元格；只给计算结果，编辑操作由各设计器自己生成。
 - `PropertyEditor` 是属性面板自定义编辑器的接口（只是类型）：按上下文创建 `{ element, update?, destroy? }`。
 - 视口：屏幕坐标 = 世界坐标 × `zoom` + (`x`, `y`)。`zoomTo` / `zoomBy` 以锚点为中心缩放并夹在 `ZoomLimits` 内（缺省 0.1–4）；`fitRect` 适配内容（缺省不把小内容放大到 100% 以上）；`revealRect` 只在目标没整个露出时才居中；`constrainViewport` 不让内容整个拖出视野；`wheelZoomFactor` 把滚轮滚动量换成缩放倍数。
 - 吸附：`snapRect` 比对移动矩形与目标的左 / 中 / 右、上 / 中 / 下三条线，在阈值内取最近的一条，返回位移与吸附后重合的参考线；某一向没吸到目标时可退到网格。阈值与矩形同一坐标系。

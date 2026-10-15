@@ -37,6 +37,8 @@ export { rulerTicks } from './ruler'
 export type { RulerOptions, RulerTick, RulerTicks } from './ruler'
 export { snapPointToGrid, snapRect, snapToGrid } from './snap'
 export type { SnapGuide, SnapOptions, SnapResult } from './snap'
+export { checkTableCells, planCellMerge, planCellSplit, planTableLineInsert, planTableLineRemove } from './table-cells'
+export type { TableAxis, TableCell, TableCellIssue, TableCellPosition, TableLinePlan, TableMergePlan, TableSize } from './table-cells'
 export { handlePoints, nudgeDelta, resizeWithHandle, rotateWithHandle } from './transform'
 export type { NudgeOptions, ResizeHandle, ResizeOptions, RotateOptions, TransformHandle } from './transform'
 export {

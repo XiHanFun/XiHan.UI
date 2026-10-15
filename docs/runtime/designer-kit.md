@@ -221,6 +221,30 @@ items = setGridItemRect(items, "trend", { x: 0, y: 0 }, 12); // 拖到 sales 上
 
 返回新数组，次序与输入相同，不改输入。调整之后缺省整体向上压实，同位置时被拖动或放入的项优先；`{ compact: false }` 不压实，项可以悬空。位置大小不是有限数、id 不存在或重复时抛 `RangeError`。
 
+## 合并单元格的表格
+
+表单的表格布局、打印的表格元素、报表的网格都有合并单元格，几何运算由这一组函数给出。`TableCell` 是 `{ id, row, column, rowSpan, columnSpan }`，行列从 0 起，跨度至少 1。函数只给计算结果，编辑操作由各设计器按自己的文档形状生成：
+
+```ts
+import { checkTableCells, planCellMerge, planTableLineInsert } from "@xihan-ui/designer-kit";
+
+const size = { rows: 2, columns: 2 };
+const cells = [{ id: "a", row: 0, column: 0, rowSpan: 1, columnSpan: 1 }, { id: "b", row: 0, column: 1, rowSpan: 1, columnSpan: 1 }, { id: "c", row: 1, column: 0, rowSpan: 1, columnSpan: 2 }];
+checkTableCells(size, cells);             // []
+planCellMerge(cells, ["b", "a"]);         // { ok: true, anchor: "a", rowSpan: 1, columnSpan: 2, absorbed: ["b"] }
+planTableLineInsert(size, cells, "column", 1); // c 加长到 3 列，b 后移到第 2 列，第 0 行第 1 列补一个新格
+```
+
+| 函数 | 说明 |
+| --- | --- |
+| `checkTableCells(size, cells)` | 全部问题：`invalid-size`、`invalid-cell`（位置不是非负整数或跨度小于 1）、`out-of-bounds`、`overlap`（报在后出现的单元格上）、`gap`（按行优先给出没被覆盖的位置） |
+| `planCellMerge(cells, ids)` | 所选单元格须至少两个、恰好拼成一个矩形且矩形里没有未选的单元格；成功时给出左上角 `anchor`、新跨度与按输入顺序并入的 `absorbed`，失败时给出 `unknown-cell`、`too-few-cells` 或 `not-rectangle` |
+| `planCellSplit(cell)` | 跨度还原成 1 后要补新格的位置，行优先；本来就是 1 × 1 时为空数组 |
+| `planTableLineInsert(size, cells, axis, at)` | 在第 `at` 行（列）前插入：跨过的单元格加长，其后的后移，没被覆盖的位置补新格；`at` 等于行（列）数时追加在末尾 |
+| `planTableLineRemove(size, cells, axis, at)` | 删除第 `at` 行（列）：只占这一行（列）的单元格删除，跨过的缩短，其后的前移 |
+
+增删行列返回 `{ size, updates, added, removed }`：新尺寸、位置或跨度变了的单元格（给出新几何）、要新建的 1 × 1 单元格位置与要删除的单元格 id。不改输入；`at` 越界或表格只剩一行（列）还要删时抛 `RangeError`。
+
 ## 标尺
 
 `rulerTicks({ start, end, pixelsPerUnit, minMajorSpacing?, minMinorSpacing?, steps? })` 返回 `{ step, minorStep, ticks }`，每个刻度是 `{ value, offset, major }`。单位由调用方决定：打印设计器传毫米与「每毫米的屏幕像素 × 缩放倍数」，画布设计器传世界坐标。主刻度间隔从 `steps`（缺省 1-2-5）的十进制倍数里取不小于 `minMajorSpacing`（缺省 64 像素）的最小一档，主刻度之间按 10、5、2 格依次尝试，取小格间距不小于 `minMinorSpacing`（缺省 6 像素）的最多分格。
