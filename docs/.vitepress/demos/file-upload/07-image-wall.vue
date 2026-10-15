@@ -38,6 +38,11 @@ function previewUrl(file: File) {
   return url;
 }
 
+// 单条删除钮写了「移除」，读屏名得以它开头，再带上文件名才分得出移的是哪一张
+const translations = {
+  deleteItem: (file: File) => `移除 ${file.name}`,
+};
+
 onBeforeUnmount(() => {
   urls.forEach(url => URL.revokeObjectURL(url));
   urls.clear();
@@ -46,7 +51,12 @@ onBeforeUnmount(() => {
 
 <template>
   <div style="width: 100%; max-width: 480px">
-    <XhFileUploadRoot v-slot="{ acceptedFiles }" accept="image/*" :max-files="6">
+    <XhFileUploadRoot
+      v-slot="{ acceptedFiles }"
+      accept="image/*"
+      :max-files="6"
+      :translations="translations"
+    >
       <XhFileUploadLabel>相册</XhFileUploadLabel>
       <XhFileUploadDropzone>
         <span>把图片拖进来，最多 6 张</span>

@@ -22,6 +22,9 @@
   const card =
     "flex-direction: column; align-items: stretch; --xh-file-upload-preview-size: 96px";
 
+  // 单条删除钮写了「移除」，读屏名得以它开头，再带上文件名才分得出移的是哪一张；对象只走 property
+  upload.translations = { deleteItem: (file) => `移除 ${file.name}` };
+
   // 一批地址用完就交还，重铺时统一换成新的
   let urls = [];
 

@@ -20,11 +20,19 @@ const initialFiles = [
   new File(["甲方与乙方就本次合作达成如下条款……"], "合同正文.txt", { type: "text/plain" }),
   new File(["# 交付说明\n\n分三批交付。"], "交付说明.md", { type: "text/markdown" }),
 ];
+
+// 清空钮写了「清空」两个字，读屏名得以它开头：名字取 translations
+const translations = { clearTrigger: "清空全部" };
 </script>
 
 <template>
   <div style="width: 100%; max-width: 480px">
-    <XhFileUploadRoot v-slot="{ acceptedFiles }" :default-files="initialFiles" :max-files="4">
+    <XhFileUploadRoot
+      v-slot="{ acceptedFiles }"
+      :default-files="initialFiles"
+      :max-files="4"
+      :translations="translations"
+    >
       <XhFileUploadLabel>随件资料</XhFileUploadLabel>
       <XhFileUploadDropzone>
         <span>已经带了两份进来</span>

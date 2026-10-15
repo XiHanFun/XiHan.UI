@@ -1,4 +1,5 @@
 // 缩略图墙 | item-preview 是一个空方框，作者可放置任意内容；放入的图片会被裁为方格，一行排几张由外层网格决定
+import type { FileUploadFile } from "@xihan-ui/headless";
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhFileUploadDropzone,
@@ -24,6 +25,11 @@ const card = {
   "alignItems": "stretch",
   "--xh-file-upload-preview-size": "96px",
 } as CSSProperties;
+
+// 单条删除钮写了「移除」，读屏名得以它开头，再带上文件名才分得出移的是哪一张
+const translations = {
+  deleteItem: (file: FileUploadFile) => `移除 ${file.name}`,
+};
 
 // key 只收字符串：同名同大小是两份不同的文件，把改动时间也拼进去才分得开
 function keyOf(file: File): string {
@@ -54,7 +60,7 @@ export default function Demo(): ReactNode {
 
   return (
     <div style={{ width: "100%", maxWidth: "480px" }}>
-      <XhFileUploadRoot accept="image/*" maxFiles={6}>
+      <XhFileUploadRoot accept="image/*" maxFiles={6} translations={translations}>
         {({ acceptedFiles }) => (
           <>
             <XhFileUploadLabel>相册</XhFileUploadLabel>

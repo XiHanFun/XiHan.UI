@@ -21,6 +21,9 @@ const initialFiles = [
   new File(["# 交付说明\n\n分三批交付。"], "交付说明.md", { type: "text/markdown" }),
 ];
 
+// 清空钮写了「清空」两个字，读屏名得以它开头：名字取 translations
+const translations = { clearTrigger: "清空全部" };
+
 // key 只收字符串：同名同大小是两份不同的文件，把改动时间也拼进去才分得开
 function keyOf(file: File): string {
   return `${file.name}-${file.size}-${file.lastModified}`;
@@ -29,7 +32,7 @@ function keyOf(file: File): string {
 export default function Demo(): ReactNode {
   return (
     <div style={{ width: "100%", maxWidth: "480px" }}>
-      <XhFileUploadRoot defaultFiles={initialFiles} maxFiles={4}>
+      <XhFileUploadRoot defaultFiles={initialFiles} maxFiles={4} translations={translations}>
         {({ acceptedFiles }) => (
           <>
             <XhFileUploadLabel>随件资料</XhFileUploadLabel>
