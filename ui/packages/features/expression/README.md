@@ -27,6 +27,8 @@ if (result.ok)
 - 只读宿主数据的自有数据属性；`__proto__`、`constructor`、`prototype` 一律禁止，getter 不会被触发。
 - 步数、深度、源码长度与字符串长度都有上限，任何输入都在有界的时间与内存内结束。
 - `NOW()` / `TODAY()` 只读宿主经 `now` 选项传入的时间。
+- `createExpressionEngine` 给出四款设计器统一注入的引擎形状：`compile(source, { identifiers })` 返回引用的顶层变量名与求值函数，求值结果是普通 JS 值。
+- `formatValue(value, spec, { locale, timeZone })` 格式化数字、百分比、日期与人民币大写，数字按十进制精确舍入。
 - `tests/fixtures/conformance.json` 是跨实现一致性用例，其他语言的实现逐条比对。
 
 ## 装

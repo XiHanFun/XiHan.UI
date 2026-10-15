@@ -45,6 +45,41 @@ pnpm add @xihan-ui/expression
 
 语法树可以存进模板、跨端传输后再求值。来自不可信来源的语法树先过 `check`；`evaluate` 自身也逐节点校验结构，伪造的节点报 `XH_EXPR_INVALID_AST`，不会越权执行。
 
+## 注入引擎
+
+打印、流程、表单、报表四款设计器不直接调用上面三步，而是接收一个形状统一的引擎，由宿主注入：
+
+```ts
+interface ExpressionEngine {
+  compile(source: string, options?: { identifiers?: Iterable<string> | ((name: string) => boolean) }):
+    | { ok: true, references: readonly string[], evaluate(scope: Readonly<Record<string, unknown>>): { ok: true, value: unknown } | { ok: false, issue: ExpressionIssue } }
+    | { ok: false, issues: readonly ExpressionIssue[] }
+}
+```
+
+`createExpressionEngine(options?)` 直接给出这个形状，宿主不必再写转接代码：
+
+```ts
+import { createExpressionEngine, ExprDate } from "@xihan-ui/expression";
+
+const engine = createExpressionEngine({
+  builtins: "all",          // 或 "none"，或 ["SUM", "ROUND"] 这样的名单
+  functions: [],            // 宿主函数，见「宿主函数」一节
+  now: () => ExprDate.fromParts(2026, 10, 16), // 固定日期，或每次求值时调用的函数
+  limits: { maxSteps: 50000 },
+});
+
+const compiled = engine.compile("price * qty", { identifiers: ["price", "qty"] });
+if (compiled.ok) {
+  compiled.references;                    // ["price", "qty"]
+  compiled.evaluate({ price: 1.5, qty: 2 }); // { ok: true, value: 3 }
+}
+```
+
+- `references` 是引用的顶层变量名，按源码顺序去重，不含函数名，用于依赖分析。
+- `evaluate` 的结果是 `toPlain` 之后的普通 JS 值：数字转成 JS 数字，日期转成规范文本。它从不抛异常，结果里有不可表示的值或环时同样以问题返回。
+- 同一个引擎按源码缓存语法树（有条数上限），不同引擎互不影响。
+
 ## 文法
 
 ```text
@@ -230,6 +265,28 @@ const functions = createFunctionTable({
 
 `check` 与 `evaluate` 都接受同一个 `functions` 选项。`table.names` 列出全部函数名，`table.lookup(name)` 返回签名，可用来做编辑器里的自动补全与参数提示。
 
+## 格式化
+
+`formatValue(value, spec, { locale?, timeZone? })` 把值转成展示用的文本，四款设计器的数字、日期与金额展示共用它。数字类一律按十进制精确舍入：`1.005` 保留两位得到 `1.01`，`2.675` 得到 `2.68`。`null` 与 `undefined` 得到空串。
+
+| spec | 说明 | 例 |
+| --- | --- | --- |
+| `{ kind: "number", decimals?, minDecimals?, maxDecimals?, grouping?, rounding? }` | `decimals` 固定小数位并补 0；或 `maxDecimals` 舍入后去掉末尾的 0、至少保留 `minDecimals` 位；都不给时不舍入 | `1234567.891` 按 `{ decimals: 2, grouping: true }` 得 `1,234,567.89` |
+| `{ kind: "percent", …同上 }` | 乘 100 后按数字输出并接 `%` | `0.1234` 按 `{ decimals: 1 }` 得 `12.3%` |
+| `{ kind: "date", pattern }` | 占位符同 `FORMAT_DATE` | `yyyy年M月d日` |
+| `{ kind: "rmb-upper", rounding? }` | 人民币大写，舍入到分，用「元」不用「圆」 | `1001.5` 得 `壹仟零壹元伍角`，`100000` 得 `壹拾万元整` |
+
+- **舍入方式** `rounding`：`half-up`（四舍五入，缺省）、`half-even`、`floor`、`ceil`、`down`。
+- **数字输入**：`ExprNumber`、有限的 JS 数字（取最短往返十进制表示）、`bigint`、十进制文本。
+- **日期输入**：`ExprDate`、日期文本、毫秒时间戳、`Date`。不带偏移的文本按墙钟时间原样输出；带偏移的文本在给了 `timeZone` 时换算到该时区，没给时保留它自己的墙钟时间；时间戳与 `Date` 换算到 `timeZone`，缺省 UTC。
+- **`timeZone`**：取 `UTC`、`±HH:mm` 或 IANA 名称（如 `Asia/Shanghai`）。IANA 名称经运行环境的时区数据换算，不同环境的时区数据版本可能不同。
+- **`locale`**：只决定小数点与千分位符号，数字始终是 ASCII 数字、每三位一组；不给时用 `.` 与 `,`。
+- **人民币大写**：
+  - 零的写法：段内连续的 0 只写一个「零」，整段为 0 时只在后面还有非零段时补「零」，如 `100010001` 得 `壹亿零壹万零壹元整`。
+  - 角分：有角无分时不写「整」；无角有分时写「零×分」；整数部分为 0 时省去「元」，如 `0.5` 得 `伍角`。
+  - 范围：负数前加「负」，金额绝对值须小于一亿亿。
+- **出错**：格式说明不合法时抛 `TypeError("XH_EXPR_FORMAT_INVALID_SPEC")`，值不合法时抛 `TypeError("XH_EXPR_FORMAT_INVALID_VALUE")`，大写金额超出范围时抛 `TypeError("XH_EXPR_FORMAT_OUT_OF_RANGE")`。
+
 ## 上限
 
 | 选项 | 缺省 | 作用于 |
@@ -251,6 +308,8 @@ const functions = createFunctionTable({
 | `toExpressionValue(raw)` | 把宿主值转成表达式值，不可表示时抛 `TypeError` |
 | `typeOf(value)` | 值的类型名 |
 | `isPlainName(text)` | 能否不加反引号写成标识符 |
+| `createExpressionEngine(options?)` | 四款设计器统一注入的引擎，见「注入引擎」 |
+| `formatValue(value, spec, options?)` | 数字、百分比、日期、人民币大写的格式化，见「格式化」 |
 
 ## 问题码
 
