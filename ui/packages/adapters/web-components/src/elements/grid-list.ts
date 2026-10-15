@@ -16,7 +16,7 @@ import type {
   GridListValueChangeDetails,
 } from '@xihan-ui/headless'
 import { connectGridList, gridListAnatomy, gridListMachine, gridListMeta } from '@xihan-ui/headless'
-import { createDeclaredDisabled } from '../dom/declared-disabled'
+import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -99,7 +99,8 @@ export class XhGridListElement extends XhElement {
     return this.partRoots ?? []
   }
 
-  private readonly declaredRowDisabled = createDeclaredDisabled()
+  /** 给了 collection 时行的禁用声明：跳过 connect 写回的 aria-disabled，作者没写为 undefined。 */
+  private readonly declaredRowDisabled = createDisabledDeclarations()
   // 无 collection 时行自身禁用声明的快照。connect 每帧都把 aria-disabled 写回行，整体禁用更是写满每一行，
   // 此时回读分不清「作者声明的」还是「自己上一帧写的」，解禁后行就永远解不开。
   private readonly markupDisabled = new WeakMap<HTMLElement, boolean>()
@@ -157,7 +158,7 @@ export class XhGridListElement extends XhElement {
   /** 读行的禁用声明，并摘掉作者写的原生 disabled，禁用态归一到 aria-disabled。 */
   private rowProps(row: HTMLElement): GridListRowProps {
     const disabled = this.collection
-      ? this.declaredRowDisabled(row)
+      ? this.declaredRowDisabled.read(row)
       : this.markupRowDisabled(row)
     // row 不是表单控件，原生 disabled 在它上面不是有效属性；摘掉之后由 connect 写回的 aria-disabled 承接，下一轮接线照样读得到
     if (row.hasAttribute('disabled'))
@@ -180,6 +181,7 @@ export class XhGridListElement extends XhElement {
     for (const rowElement of this.getParts('row')) {
       const row = this.rowProps(rowElement)
       this.spreader.spread(rowElement, api.getRowProps(row) as Record<string, unknown>)
+      this.declaredRowDisabled.commit(rowElement)
       const bindings: Array<[string, (props: GridListRowProps) => unknown]> = [
         ['row-selection-indicator', api.getRowSelectionIndicatorProps],
         ['row-content', api.getRowContentProps],

@@ -7,8 +7,9 @@
 
 import type { ControlVariant, Direction, Orientation, Service, Size } from '@xihan-ui/core'
 import type { ToolbarItemProps, ToolbarSchema, ToolbarTranslations } from '@xihan-ui/headless'
-import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectToolbar, toolbarAnatomy, toolbarMachine, toolbarMeta, toolbarOverflowMenuProps } from '@xihan-ui/headless'
+import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { MachineController } from '../runtime/machine-controller'
 import { OverflowMenuController } from '../runtime/overflow-menu-controller'
@@ -81,11 +82,8 @@ export class XhToolbarElement extends XhPortalHostElement {
   declare size?: Size
   declare translations?: Partial<ToolbarTranslations>
 
-  // 整条禁用期间的条目自身声明快照。connect 每帧都把 aria-disabled 写回条目，整条禁用更是写满每一个，
-  // 此时回读分不清「作者声明的」还是「自己上一帧写的」，解禁后条目就永远解不开。
-  private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
-  /** 上一帧是否整条禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。 */
-  private wasToolbarDisabled = false
+  /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时要跳过这些写回值，只认作者写的。 */
+  private readonly declaredDisabled = createDisabledDeclarations()
 
   private readonly ctrl = new MachineController<ToolbarSchema>(this, toolbarMachine, () => this.machineProps(), {
     // 收纳量测在机器的挂载效应里跑，root 的取值口要赶在那之前交出去
@@ -139,25 +137,7 @@ export class XhToolbarElement extends XhPortalHostElement {
   }
 
   private itemProps(el: HTMLElement): ToolbarItemProps {
-    const value = el.getAttribute('value') ?? ''
-    // 只有「本帧与上一帧都没整条禁用」时，节点上的 aria-disabled 才等于作者声明：
-    // 整条禁用那几帧 connect 把每个条目都写成了 true，解禁当帧 DOM 上还留着这些写回值，
-    // 此刻现读会把机器自己的产物误当声明、条目再也解不开。
-    // 头一回见到这个条目时，DOM 上还只有作者写的东西（本帧的写回尚未发生），
-    // 此刻无论整条禁没禁用都记得下真声明。少了这一条，「挂载那刻就整条禁用」
-    // 会一路没有快照，解禁时退回现读、读到机器自己写的 true，整条就此永久锁死。
-    if (!this.declaredDisabled.has(el)) {
-      const own = isItemDisabled(el)
-      this.declaredDisabled.set(el, own)
-      return { value, disabled: own }
-    }
-    if (!this.disabled && !this.wasToolbarDisabled) {
-      const own = isItemDisabled(el)
-      this.declaredDisabled.set(el, own)
-      return { value, disabled: own }
-    }
-    // 整条禁用那几帧（以及解禁当帧）DOM 上留着机器的写回值，只认快照
-    return { value, disabled: this.declaredDisabled.get(el)! }
+    return { value: el.getAttribute('value') ?? '', disabled: this.declaredDisabled.read(el) ?? false }
   }
 
   protected wire(): void {
@@ -173,14 +153,13 @@ export class XhToolbarElement extends XhPortalHostElement {
     for (const el of this.getParts('separator'))
       this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
 
-    // 条目逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled。
+    // 条目逐个打：身份取作者写的 value，禁用取作者在条目上的声明。
     // 打上去的 data-scope/data-part/data-value 正是方向键在事件那一刻查 DOM 的依据，
     // 所以 wire 必须先于事件跑过——updated() 已保证。
-    for (const el of this.getParts('item'))
+    for (const el of this.getParts('item')) {
       this.spreader.spread(el, api.getItemProps(this.itemProps(el)) as Record<string, unknown>)
-
-    // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信
-    this.wasToolbarDisabled = !!this.disabled
+      this.declaredDisabled.commit(el)
+    }
 
     // 「更多」钮与它弹出的菜单：钮是作者写的工具条部件，菜单那一套由共用的控制器自建
     this.overflowMenu.wire(api.getOverflowTriggerProps() as Record<string, unknown>)

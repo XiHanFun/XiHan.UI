@@ -7,9 +7,9 @@
 
 import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core'
 import type { TabsActivationMode, TabsNode, TabsSchema, TabsTranslations, TabsValueChangeDetails, TabsVariant } from '@xihan-ui/headless'
-import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTabs, tabsAnatomy, tabsMachine, tabsMeta, tabsOverflowMenuProps } from '@xihan-ui/headless'
-import { createDeclaredDisabled } from '../dom/declared-disabled'
+import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { MachineController } from '../runtime/machine-controller'
 import { OverflowMenuController } from '../runtime/overflow-menu-controller'
@@ -148,8 +148,8 @@ export class XhTabsElement extends XhPortalHostElement {
     createPortal: options => this.createAnchoredPortalController(options),
   })
 
-  /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
-  private readonly declaredDisabled = createDeclaredDisabled()
+  /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。 */
+  private readonly declaredDisabled = createDisabledDeclarations()
 
   private machineProps(): Partial<TabsSchema['props']> {
     return {
@@ -264,13 +264,14 @@ export class XhTabsElement extends XhPortalHostElement {
       this.setPartHidden(next, nextProps.hidden === true)
     }
 
-    // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled
+    // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取作者在条目上的声明
     for (const el of this.getParts('trigger')) {
       const props = api.getTriggerProps({
         value: el.getAttribute('value') ?? '',
-        disabled: this.collection ? this.declaredDisabled(el) : isItemDisabled(el),
+        disabled: this.collection ? this.declaredDisabled.read(el) : this.declaredDisabled.read(el) ?? false,
       })
       this.spreader.spread(el, props as Record<string, unknown>)
+      this.declaredDisabled.commit(el)
     }
 
     // 关闭钮与标签平级，身份取作者写在它身上的 value；禁用与 trigger 同一套来路：给了 collection 以数据为准，
@@ -278,9 +279,10 @@ export class XhTabsElement extends XhPortalHostElement {
     for (const close of this.getParts('close-trigger')) {
       const props = api.getCloseTriggerProps({
         value: close.getAttribute('value') ?? '',
-        disabled: this.collection ? this.declaredDisabled(close) : isItemDisabled(close),
+        disabled: this.collection ? this.declaredDisabled.read(close) : this.declaredDisabled.read(close) ?? false,
       }) as Record<string, unknown>
       this.spreader.spread(close, props)
+      this.declaredDisabled.commit(close)
       this.setPartHidden(close, props.hidden === true)
     }
 
@@ -291,7 +293,7 @@ export class XhTabsElement extends XhPortalHostElement {
       const trigger = this.triggerElOf(el)
       const props = api.getTabDragTriggerProps({
         value: trigger.getAttribute('value') ?? '',
-        disabled: this.collection ? this.declaredDisabled(trigger) : isItemDisabled(trigger),
+        disabled: this.collection ? this.declaredDisabled.read(trigger) : this.declaredDisabled.read(trigger) ?? false,
       })
       this.spreader.spread(el, props as Record<string, unknown>)
     }

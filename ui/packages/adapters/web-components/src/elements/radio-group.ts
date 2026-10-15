@@ -7,9 +7,9 @@
 
 import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, RadioGroupItemProps, RadioGroupNode, RadioGroupSchema, RadioGroupValueChangeDetails, RadioGroupVariant, ResolvedFormControlState } from '@xihan-ui/headless'
-import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectRadioGroup, radioGroupAnatomy, radioGroupMachine, radioGroupMeta, resolveFormControlState } from '@xihan-ui/headless'
-import { createDeclaredDisabled } from '../dom/declared-disabled'
+import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -93,10 +93,8 @@ export class XhRadioGroupElement extends XhElement {
   declare size?: Size
   declare variant?: RadioGroupVariant
 
-  // 整组禁用期间的条目自身声明快照：connect 每帧把 aria-disabled 写回条目，回读分不清作者声明与自己的写回
-  private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
-  /** 上一帧是否整组禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。 */
-  private wasGroupDisabled = false
+  /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。 */
+  private readonly declaredDisabled = createDisabledDeclarations()
 
   private readonly notify = (details: RadioGroupValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -169,30 +167,11 @@ export class XhRadioGroupElement extends XhElement {
       send({ type: 'GROUP.BLUR' })
   }
 
-  /** 作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺 */
-  private readonly declaredItemDisabled = createDeclaredDisabled()
-
   private itemProps(el: HTMLElement): RadioGroupItemProps {
     const value = el.getAttribute('value') ?? ''
-    // 给了 collection 就以数据为事实源：现读会读到 connect 上一帧写回的 aria-disabled，
-    // 「作者没写」表达不出 undefined，数据里的禁用就永远轮不到生效。
-    if (this.collection)
-      return { value, disabled: this.declaredItemDisabled(el) }
-    const groupDisabled = this.controlState().disabled
-    // 头一回见到这个条目：本帧的写回尚未发生，DOM 上还只有作者声明，此刻无论禁没禁用都要记下快照
-    if (!this.declaredDisabled.has(el)) {
-      const own = isItemDisabled(el)
-      this.declaredDisabled.set(el, own)
-      return { value, disabled: own }
-    }
-    // 只有本帧与上一帧都没整组禁用时，节点上的 aria-disabled 才等于作者声明
-    if (!groupDisabled && !this.wasGroupDisabled) {
-      const own = isItemDisabled(el)
-      this.declaredDisabled.set(el, own)
-      return { value, disabled: own }
-    }
-    // 整组禁用那几帧（以及解禁当帧）DOM 上留着机器的写回值，只认快照
-    return { value, disabled: this.declaredDisabled.get(el)! }
+    // 给了 collection 时，作者没写的禁用为 undefined，交给数据定夺
+    const declared = this.declaredDisabled.read(el)
+    return { value, disabled: this.collection ? declared : declared ?? false }
   }
 
   // 条目内的子部件：getParts 收的是整个元素范围，按 item 子树过滤才归得对条目。
@@ -222,6 +201,7 @@ export class XhRadioGroupElement extends XhElement {
     for (const el of this.getParts('item')) {
       const item = this.itemProps(el)
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.declaredDisabled.commit(el)
       for (const input of this.partsIn(el, 'hidden-input'))
         this.spreadHiddenInput(input as HTMLInputElement, api.getHiddenInputProps(item) as Record<string, unknown>)
       for (const indicator of this.partsIn(el, 'indicator'))
@@ -241,8 +221,5 @@ export class XhRadioGroupElement extends XhElement {
       // 按本帧产出的 hidden 用内联 display 收起
       this.setPartHidden(thumb, props.hidden === true)
     }
-
-    // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信
-    this.wasGroupDisabled = this.controlState().disabled
   }
 }

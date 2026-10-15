@@ -7,9 +7,9 @@
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { CollectionVirtualizer, FormControlState, ListboxItemProps, ListboxNode, ListboxSchema, ListboxSelectionMode, ListboxValueChangeDetails } from '@xihan-ui/headless'
-import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectListbox, listboxAnatomy, listboxMachine, listboxMeta, resolveFormControlState } from '@xihan-ui/headless'
-import { createDeclaredDisabled } from '../dom/declared-disabled'
+import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -109,11 +109,8 @@ export class XhListboxElement extends XhElement {
   declare orientation?: Orientation
   declare typeahead?: boolean
 
-  // 整列禁用期间的条目自身声明快照。connect 每帧都把 aria-disabled 写回条目，整列禁用更是写满每一个，
-  // 此时回读分不清「作者声明的」还是「自己上一帧写的」，解禁后条目就永远解不开。
-  private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
-  /** 上一帧是否整列禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。 */
-  private wasListDisabled = false
+  /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。 */
+  private readonly declaredDisabled = createDisabledDeclarations()
   private inheritedControl: FormControlState | undefined
 
   /** 最近的 Field/Form 只交状态；Listbox 仅消费公开的禁用、只读、错误三轴。 */
@@ -198,33 +195,11 @@ export class XhListboxElement extends XhElement {
       send({ type: 'LIST.BLUR' })
   }
 
-  /** 作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺 */
-  private readonly declaredItemDisabled = createDeclaredDisabled()
-
   private itemProps(el: HTMLElement): ListboxItemProps {
     const value = el.getAttribute('value') ?? ''
-    // 给了 collection 就以数据为事实源：现读会读到 connect 上一帧写回的 aria-disabled，
-    // 「作者没写」表达不出 undefined，数据里的禁用就永远轮不到生效。
-    if (this.collection)
-      return { value, disabled: this.declaredItemDisabled(el) }
-    const listDisabled = this.controlState().disabled
-    // 只有「本帧与上一帧都没整列禁用」时，节点上的 aria-disabled 才等于作者声明：
-    // 整列禁用那几帧 connect 把每个条目都写成了 true，解禁当帧 DOM 上还留着这些写回值，
-    // 此刻现读会把机器自己的产物误当声明、条目再也解不开。
-    // 头一回见到这个条目时，DOM 上还只有作者写的东西（本帧的写回尚未发生），
-    // 此刻无论整列禁没禁用都记得下真声明。少了这一条，「挂载那刻就整列禁用」
-    // 会一路没有快照，解禁时退回现读、读到机器自己写的 true，整列就此永久锁死。
-    if (!this.declaredDisabled.has(el)) {
-      const own = isItemDisabled(el)
-      this.declaredDisabled.set(el, own)
-      return { value, disabled: own }
-    }
-    if (!listDisabled && !this.wasListDisabled) {
-      const own = isItemDisabled(el)
-      this.declaredDisabled.set(el, own)
-      return { value, disabled: own }
-    }
-    return { value, disabled: this.declaredDisabled.get(el)! }
+    // 给了 collection 时，作者没写的禁用为 undefined，交给数据定夺
+    const declared = this.declaredDisabled.read(el)
+    return { value, disabled: this.collection ? declared : declared ?? false }
   }
 
   // 条目/分组内的子部件：getParts 收的是整个元素范围，按子树过滤才归得对。
@@ -254,10 +229,11 @@ export class XhListboxElement extends XhElement {
         this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
     }
 
-    // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled
+    // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取作者在条目上的声明
     for (const el of this.getParts('item')) {
       const item = this.itemProps(el)
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.declaredDisabled.commit(el)
       // 条目内的文本与选中标记跟着同一份声明走，样式层各处状态一致
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
@@ -270,9 +246,6 @@ export class XhListboxElement extends XhElement {
       for (const indicator of this.partsIn(el, 'item-indicator'))
         this.spreader.spread(indicator, api.getItemIndicatorProps(item) as Record<string, unknown>)
     }
-
-    // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信
-    this.wasListDisabled = !!this.controlState().disabled
 
     this.bars.wire()
   }
