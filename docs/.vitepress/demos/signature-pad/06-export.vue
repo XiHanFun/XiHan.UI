@@ -19,7 +19,13 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 </script>
 
 <template>
-  <XhSignaturePadRoot v-slot="{ empty }" style="max-inline-size: 22rem" @draw-end="onDrawEnd">
+  <!-- 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文 -->
+  <XhSignaturePadRoot
+    v-slot="{ empty }"
+    :translations="{ clearTrigger: '清空签名' }"
+    style="max-inline-size: 22rem"
+    @draw-end="onDrawEnd"
+  >
     <XhSignaturePadControl>
       <XhSignaturePadGuide />
       <XhSignaturePadPath />

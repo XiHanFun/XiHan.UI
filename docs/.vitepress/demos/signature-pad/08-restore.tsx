@@ -30,6 +30,8 @@ export default function Demo(): ReactNode {
     <>
       <XhSignaturePadRoot
         defaultValue={saved}
+        // 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文
+        translations={{ undoTrigger: "撤销上一笔" }}
         style={{ maxInlineSize: "22rem" }}
         // 定稿的数据原样存下即可，下次回显时交回 defaultValue
         onValueChange={details => setStrokes(details.value.strokes.length)}

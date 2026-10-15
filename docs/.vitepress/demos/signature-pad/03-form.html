@@ -30,8 +30,9 @@
     .getElementById("xh-signature-form")
     .addEventListener("submit", (event) => event.preventDefault());
 
-  // 文案是对象，只走 property；属性装不下它
+  // 文案是对象，只走 property；属性装不下它。钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文
   document.getElementById("xh-signature-form-pad").translations = {
+    clearTrigger: "清空签名",
     statusEmpty: "尚未签名",
     statusSigned: "已签名",
   };

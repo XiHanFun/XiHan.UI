@@ -10,9 +10,12 @@ import {
   XhSignaturePadUndoTrigger,
 } from "@xihan-ui/react";
 
+// 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文
+const translations = { undoTrigger: "撤销上一笔", redoTrigger: "重做一笔", clearTrigger: "清空签名" };
+
 export default function Demo(): ReactNode {
   return (
-    <XhSignaturePadRoot style={{ maxInlineSize: "22rem" }}>
+    <XhSignaturePadRoot translations={translations} style={{ maxInlineSize: "22rem" }}>
       <XhSignaturePadControl>
         <XhSignaturePadGuide />
         <XhSignaturePadPath />

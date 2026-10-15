@@ -16,6 +16,8 @@ export default function Demo(): ReactNode {
   return (
     <>
       <XhSignaturePadRoot
+        // 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文
+        translations={{ clearTrigger: "清空签名" }}
         style={{ maxInlineSize: "22rem" }}
         // 签名定稿才发一次：抬笔、清空与表单重置三条路径都会走到这里
         onDrawEnd={details => setSize(details.svg.length)}

@@ -9,10 +9,13 @@ import {
   XhSignaturePadRoot,
 } from "@xihan-ui/react";
 
+// 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文
+const translations = { clearTrigger: "清空签名" };
+
 export default function Demo(): ReactNode {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px", maxInlineSize: "22rem" }}>
-      <XhSignaturePadRoot readOnly>
+      <XhSignaturePadRoot readOnly translations={translations}>
         <XhSignaturePadLabel>只读</XhSignaturePadLabel>
         <XhSignaturePadControl>
           <XhSignaturePadGuide />
@@ -20,7 +23,7 @@ export default function Demo(): ReactNode {
         </XhSignaturePadControl>
         <XhSignaturePadClearTrigger>清空</XhSignaturePadClearTrigger>
       </XhSignaturePadRoot>
-      <XhSignaturePadRoot disabled>
+      <XhSignaturePadRoot disabled translations={translations}>
         <XhSignaturePadLabel>禁用</XhSignaturePadLabel>
         <XhSignaturePadControl>
           <XhSignaturePadGuide />
