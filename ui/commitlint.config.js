@@ -24,6 +24,7 @@ export default {
         'markdown',
         'sound',
         'animations',
+        'expression',
         'vue',
         'react',
         'web-components',

@@ -1,0 +1,945 @@
+[
+  {
+    "source": "0.1 + 0.2",
+    "value": "number:0.3"
+  },
+  {
+    "source": "0.3 - 0.1",
+    "value": "number:0.2"
+  },
+  {
+    "source": "1.1 * 1.1",
+    "value": "number:1.21"
+  },
+  {
+    "source": "10 / 4",
+    "value": "number:2.5"
+  },
+  {
+    "source": "1 / 3",
+    "value": "number:0.3333333333333333333333333333333333"
+  },
+  {
+    "source": "2 / 3",
+    "value": "number:0.6666666666666666666666666666666667"
+  },
+  {
+    "source": "-0",
+    "value": "number:0"
+  },
+  {
+    "source": "1.50",
+    "value": "number:1.5"
+  },
+  {
+    "source": "1.2e3",
+    "value": "number:1200"
+  },
+  {
+    "source": "1200e-3",
+    "value": "number:1.2"
+  },
+  {
+    "source": "007",
+    "value": "number:7"
+  },
+  {
+    "source": "7 % 3",
+    "value": "number:1"
+  },
+  {
+    "source": "-7 % 3",
+    "value": "number:-1"
+  },
+  {
+    "source": "7 % -3",
+    "value": "number:1"
+  },
+  {
+    "source": "5.5 % 2",
+    "value": "number:1.5"
+  },
+  {
+    "source": "1 / 0",
+    "issue": {
+      "code": "XH_EXPR_DIVISION_BY_ZERO",
+      "start": 0,
+      "end": 5
+    }
+  },
+  {
+    "source": "1 % 0",
+    "issue": {
+      "code": "XH_EXPR_DIVISION_BY_ZERO",
+      "start": 0,
+      "end": 5
+    }
+  },
+  {
+    "source": "99999999999999999999999999999999999",
+    "value": "number:100000000000000000000000000000000000"
+  },
+  {
+    "source": "1234567890123456789012345678901234.5",
+    "value": "number:1234567890123456789012345678901234"
+  },
+  {
+    "source": "1234567890123456789012345678901235.5",
+    "value": "number:1234567890123456789012345678901236"
+  },
+  {
+    "source": "1e64",
+    "value": "number:10000000000000000000000000000000000000000000000000000000000000000"
+  },
+  {
+    "source": "1e64 * 10",
+    "issue": {
+      "code": "XH_EXPR_NUMBER_OVERFLOW",
+      "start": 0,
+      "end": 9
+    }
+  },
+  {
+    "source": "1e65",
+    "issue": {
+      "code": "XH_EXPR_NUMBER_OVERFLOW",
+      "start": 0,
+      "end": 4
+    }
+  },
+  {
+    "source": "1e-64",
+    "value": "number:0.0000000000000000000000000000000000000000000000000000000000000001"
+  },
+  {
+    "source": "1e-64 / 2",
+    "value": "number:0"
+  },
+  {
+    "source": "3e-64 / 2",
+    "value": "number:0.0000000000000000000000000000000000000000000000000000000000000002"
+  },
+  {
+    "source": "1e-65",
+    "value": "number:0"
+  },
+  {
+    "source": "a + b",
+    "scope": {
+      "a": 0.1,
+      "b": 0.2
+    },
+    "value": "number:0.3"
+  },
+  {
+    "source": "a == 0.3",
+    "scope": {
+      "a": 0.3
+    },
+    "value": "boolean:true"
+  },
+  {
+    "source": "0.1 + 0.2 == 0.3",
+    "value": "boolean:true"
+  },
+  {
+    "source": "ROUND(2.5)",
+    "value": "number:3"
+  },
+  {
+    "source": "ROUND(-2.5)",
+    "value": "number:-3"
+  },
+  {
+    "source": "ROUND(1.005, 2)",
+    "value": "number:1.01"
+  },
+  {
+    "source": "ROUND(1250, -2)",
+    "value": "number:1300"
+  },
+  {
+    "source": "FLOOR(-1.5)",
+    "value": "number:-2"
+  },
+  {
+    "source": "CEIL(-1.5)",
+    "value": "number:-1"
+  },
+  {
+    "source": "TRUNC(-1.59)",
+    "value": "number:-1"
+  },
+  {
+    "source": "FLOOR(1.239, 2)",
+    "value": "number:1.23"
+  },
+  {
+    "source": "ROUND(1, 0.5)",
+    "issue": {
+      "code": "XH_EXPR_INVALID_ARGUMENT",
+      "start": 9,
+      "end": 12,
+      "data": {
+        "function": "ROUND",
+        "index": 1
+      }
+    }
+  },
+  {
+    "source": "SQRT(2)",
+    "value": "number:1.414213562373095048801688724209698"
+  },
+  {
+    "source": "SQRT(-1)",
+    "issue": {
+      "code": "XH_EXPR_INVALID_ARGUMENT",
+      "start": 5,
+      "end": 7,
+      "data": {
+        "function": "SQRT",
+        "index": 0
+      }
+    }
+  },
+  {
+    "source": "POWER(2, -2)",
+    "value": "number:0.25"
+  },
+  {
+    "source": "POWER(3, -1)",
+    "value": "number:0.3333333333333333333333333333333333"
+  },
+  {
+    "source": "POWER(10, 65)",
+    "issue": {
+      "code": "XH_EXPR_NUMBER_OVERFLOW",
+      "start": 0,
+      "end": 13,
+      "data": {
+        "function": "POWER"
+      }
+    }
+  },
+  {
+    "source": "POWER(0.1, 65)",
+    "value": "number:0"
+  },
+  {
+    "source": "POWER(0, -1)",
+    "issue": {
+      "code": "XH_EXPR_DIVISION_BY_ZERO",
+      "start": 0,
+      "end": 12,
+      "data": {
+        "function": "POWER"
+      }
+    }
+  },
+  {
+    "source": "POWER(2, 1000)",
+    "issue": {
+      "code": "XH_EXPR_INVALID_ARGUMENT",
+      "start": 9,
+      "end": 13,
+      "data": {
+        "function": "POWER",
+        "index": 1
+      }
+    }
+  },
+  {
+    "source": "'it\\'s'",
+    "value": "string:it's"
+  },
+  {
+    "source": "\"say \\\"hi\\\"\"",
+    "value": "string:say \"hi\""
+  },
+  {
+    "source": "'\\u4E2D\\u6587'",
+    "value": "string:中文"
+  },
+  {
+    "source": "订单金额 * 2",
+    "scope": {
+      "订单金额": 3
+    },
+    "value": "number:6"
+  },
+  {
+    "source": "`order amount` + 1",
+    "scope": {
+      "order amount": 1
+    },
+    "value": "number:2"
+  },
+  {
+    "source": "missing",
+    "value": "null"
+  },
+  {
+    "source": "a + 1",
+    "value": "null"
+  },
+  {
+    "source": "'a' + 'b'",
+    "value": "string:ab"
+  },
+  {
+    "source": "'a' + 1",
+    "issue": {
+      "code": "XH_EXPR_TYPE_MISMATCH",
+      "start": 6,
+      "end": 7,
+      "data": {
+        "operator": "+",
+        "actual": "number"
+      }
+    }
+  },
+  {
+    "source": "1 + true",
+    "issue": {
+      "code": "XH_EXPR_TYPE_MISMATCH",
+      "start": 4,
+      "end": 8,
+      "data": {
+        "operator": "+",
+        "actual": "boolean"
+      }
+    }
+  },
+  {
+    "source": "-null",
+    "value": "null"
+  },
+  {
+    "source": "!1",
+    "issue": {
+      "code": "XH_EXPR_TYPE_MISMATCH",
+      "start": 1,
+      "end": 2,
+      "data": {
+        "operator": "!",
+        "actual": "number"
+      }
+    }
+  },
+  {
+    "source": "1 == 1.0",
+    "value": "boolean:true"
+  },
+  {
+    "source": "1 == '1'",
+    "value": "boolean:false"
+  },
+  {
+    "source": "null == null",
+    "value": "boolean:true"
+  },
+  {
+    "source": "[1, [2]] == [1, [2]]",
+    "value": "boolean:true"
+  },
+  {
+    "source": "'B' < 'a'",
+    "value": "boolean:true"
+  },
+  {
+    "source": "1 < a",
+    "value": "null"
+  },
+  {
+    "source": "1 < 'a'",
+    "issue": {
+      "code": "XH_EXPR_TYPE_MISMATCH",
+      "start": 4,
+      "end": 7,
+      "data": {
+        "operator": "<",
+        "actual": "string"
+      }
+    }
+  },
+  {
+    "source": "n && f",
+    "scope": {
+      "n": null,
+      "f": false
+    },
+    "value": "boolean:false"
+  },
+  {
+    "source": "n && t",
+    "scope": {
+      "n": null,
+      "t": true
+    },
+    "value": "null"
+  },
+  {
+    "source": "n || t",
+    "scope": {
+      "n": null,
+      "t": true
+    },
+    "value": "boolean:true"
+  },
+  {
+    "source": "n || f",
+    "scope": {
+      "n": null,
+      "f": false
+    },
+    "value": "null"
+  },
+  {
+    "source": "!n",
+    "scope": {
+      "n": null
+    },
+    "value": "null"
+  },
+  {
+    "source": "f && 1 / 0 > 1",
+    "scope": {
+      "f": false
+    },
+    "value": "boolean:false"
+  },
+  {
+    "source": "t || 1 / 0 > 1",
+    "scope": {
+      "t": true
+    },
+    "value": "boolean:true"
+  },
+  {
+    "source": "1 && true",
+    "issue": {
+      "code": "XH_EXPR_TYPE_MISMATCH",
+      "start": 0,
+      "end": 1,
+      "data": {
+        "operator": "&&",
+        "actual": "number"
+      }
+    }
+  },
+  {
+    "source": "n ? 1 : 2",
+    "scope": {
+      "n": null
+    },
+    "value": "number:2"
+  },
+  {
+    "source": "true ? 1 : 1 / 0",
+    "value": "number:1"
+  },
+  {
+    "source": "IF(true, 1, 1 / 0)",
+    "value": "number:1"
+  },
+  {
+    "source": "IF(false, 1)",
+    "value": "null"
+  },
+  {
+    "source": "IF('x', 1, 2)",
+    "issue": {
+      "code": "XH_EXPR_TYPE_MISMATCH",
+      "start": 3,
+      "end": 6,
+      "data": {
+        "function": "IF",
+        "index": 0,
+        "actual": "string"
+      }
+    }
+  },
+  {
+    "source": "items.amount",
+    "scope": {
+      "items": [
+        {
+          "amount": 1
+        },
+        {
+          "amount": 2.5
+        },
+        {}
+      ]
+    },
+    "value": [
+      "number:1",
+      "number:2.5",
+      "null"
+    ]
+  },
+  {
+    "source": "SUM(orders.lines.qty)",
+    "scope": {
+      "orders": [
+        {
+          "lines": [
+            {
+              "qty": 1
+            },
+            {
+              "qty": 2
+            }
+          ]
+        },
+        {
+          "lines": [
+            {
+              "qty": 3
+            }
+          ]
+        },
+        null
+      ]
+    },
+    "value": "number:6"
+  },
+  {
+    "source": "items[1].amount",
+    "scope": {
+      "items": [
+        {
+          "amount": 1
+        },
+        {
+          "amount": 2
+        }
+      ]
+    },
+    "value": "number:2"
+  },
+  {
+    "source": "items[5]",
+    "scope": {
+      "items": []
+    },
+    "value": "null"
+  },
+  {
+    "source": "items[0.5]",
+    "scope": {
+      "items": [
+        1
+      ]
+    },
+    "issue": {
+      "code": "XH_EXPR_INVALID_INDEX",
+      "start": 6,
+      "end": 9
+    }
+  },
+  {
+    "source": "r['x']",
+    "scope": {
+      "r": {
+        "x": 1
+      }
+    },
+    "value": "number:1"
+  },
+  {
+    "source": "nums.x",
+    "scope": {
+      "nums": [
+        1
+      ]
+    },
+    "issue": {
+      "code": "XH_EXPR_TYPE_MISMATCH",
+      "start": 0,
+      "end": 6,
+      "data": {
+        "operator": ".",
+        "actual": "number"
+      }
+    }
+  },
+  {
+    "source": "'abc'[0]",
+    "issue": {
+      "code": "XH_EXPR_TYPE_MISMATCH",
+      "start": 0,
+      "end": 8,
+      "data": {
+        "operator": "[]",
+        "actual": "string"
+      }
+    }
+  },
+  {
+    "source": "a.constructor",
+    "scope": {
+      "a": {}
+    },
+    "issue": {
+      "code": "XH_EXPR_FORBIDDEN_MEMBER",
+      "start": 0,
+      "end": 13,
+      "data": {
+        "name": "constructor"
+      }
+    }
+  },
+  {
+    "source": "a['__pro' + 'to__']",
+    "scope": {
+      "a": {}
+    },
+    "issue": {
+      "code": "XH_EXPR_FORBIDDEN_MEMBER",
+      "start": 0,
+      "end": 19,
+      "data": {
+        "name": "__proto__"
+      }
+    }
+  },
+  {
+    "source": "a.toString",
+    "scope": {
+      "a": {}
+    },
+    "value": "null"
+  },
+  {
+    "source": "SUM(1, [2, 3], null, [[4, null]])",
+    "value": "number:10"
+  },
+  {
+    "source": "SUM([])",
+    "value": "number:0"
+  },
+  {
+    "source": "SUM('a')",
+    "issue": {
+      "code": "XH_EXPR_TYPE_MISMATCH",
+      "start": 4,
+      "end": 7,
+      "data": {
+        "function": "SUM",
+        "index": 0,
+        "actual": "string"
+      }
+    }
+  },
+  {
+    "source": "AVG(1, 2, 2)",
+    "value": "number:1.666666666666666666666666666666667"
+  },
+  {
+    "source": "AVG([])",
+    "value": "null"
+  },
+  {
+    "source": "COUNT(1, null, 'a', [null, 2])",
+    "value": "number:3"
+  },
+  {
+    "source": "MIN(3, [1, 2])",
+    "value": "number:1"
+  },
+  {
+    "source": "MAX('a', 'b')",
+    "value": "string:b"
+  },
+  {
+    "source": "MIN(1, 'a')",
+    "issue": {
+      "code": "XH_EXPR_TYPE_MISMATCH",
+      "start": 7,
+      "end": 10,
+      "data": {
+        "function": "MIN",
+        "index": 1,
+        "actual": "string"
+      }
+    }
+  },
+  {
+    "source": "LEN('中文😀')",
+    "value": "number:3"
+  },
+  {
+    "source": "LEFT('😀abc', 2)",
+    "value": "string:😀a"
+  },
+  {
+    "source": "RIGHT('abc😀', 2)",
+    "value": "string:c😀"
+  },
+  {
+    "source": "MID('abcdef', 2, 3)",
+    "value": "string:bcd"
+  },
+  {
+    "source": "UPPER('aßc中é')",
+    "value": "string:AßC中é"
+  },
+  {
+    "source": "TRIM('\\u3000 a b \\n')",
+    "value": "string:a b"
+  },
+  {
+    "source": "CONTAINS('hello', 'ell')",
+    "value": "boolean:true"
+  },
+  {
+    "source": "CONTAINS([1, 2], 2.0)",
+    "value": "boolean:true"
+  },
+  {
+    "source": "REPLACE('a-b-c', '-', '+')",
+    "value": "string:a+b+c"
+  },
+  {
+    "source": "SPLIT('a,b,,c', ',')",
+    "value": [
+      "string:a",
+      "string:b",
+      "string:",
+      "string:c"
+    ]
+  },
+  {
+    "source": "JOIN(['a', 1.50, null, true], '-')",
+    "value": "string:a-1.5--true"
+  },
+  {
+    "source": "CONCAT('a', 1.50, null, true, DATE(2026, 1, 2))",
+    "value": "string:a1.5true2026-01-02"
+  },
+  {
+    "source": "TEXT(1.20)",
+    "value": "string:1.2"
+  },
+  {
+    "source": "FORMAT_NUMBER(1234567.891, 2, true)",
+    "value": "string:1,234,567.89"
+  },
+  {
+    "source": "FORMAT_NUMBER(-0.005, 2)",
+    "value": "string:-0.01"
+  },
+  {
+    "source": "FORMAT_NUMBER(-0.004, 2)",
+    "value": "string:0.00"
+  },
+  {
+    "source": "TO_NUMBER(' 12.50 ')",
+    "value": "number:12.5"
+  },
+  {
+    "source": "TO_NUMBER('1,000')",
+    "value": "null"
+  },
+  {
+    "source": "COALESCE(a, b, 3)",
+    "scope": {
+      "b": 2
+    },
+    "value": "number:2"
+  },
+  {
+    "source": "ISBLANK('')",
+    "value": "boolean:true"
+  },
+  {
+    "source": "DATE(2026, 10, 16, 8, 9, 10, 11)",
+    "value": "date:2026-10-16T08:09:10.011"
+  },
+  {
+    "source": "DATE(2026, 2, 30)",
+    "issue": {
+      "code": "XH_EXPR_INVALID_ARGUMENT",
+      "start": 14,
+      "end": 16,
+      "data": {
+        "function": "DATE",
+        "index": 2
+      }
+    }
+  },
+  {
+    "source": "NOW()",
+    "now": "2026-10-16T15:30:05.250",
+    "value": "date:2026-10-16T15:30:05.250"
+  },
+  {
+    "source": "TODAY()",
+    "now": "2026-10-16T15:30:05.250",
+    "value": "date:2026-10-16"
+  },
+  {
+    "source": "WEEKDAY(TODAY())",
+    "now": "2026-10-16T15:30:05.250",
+    "value": "number:5"
+  },
+  {
+    "source": "TO_DATE('2026-10-16T10:30:00.1234567+08:00')",
+    "value": "date:2026-10-16T10:30:00.123"
+  },
+  {
+    "source": "TO_DATE('2026-02-30')",
+    "value": "null"
+  },
+  {
+    "source": "DATE_ADD(DATE(2024, 1, 31), 1, 'month')",
+    "value": "date:2024-02-29"
+  },
+  {
+    "source": "DATE_ADD(DATE(2024, 2, 29), 1, 'year')",
+    "value": "date:2025-02-28"
+  },
+  {
+    "source": "DATE_ADD(DATE(2026, 10, 16), 25, 'hour')",
+    "value": "date:2026-10-17T01:00:00"
+  },
+  {
+    "source": "DATE_ADD(DATE(9999, 12, 31), 1, 'day')",
+    "issue": {
+      "code": "XH_EXPR_DATE_OUT_OF_RANGE",
+      "start": 0,
+      "end": 38,
+      "data": {
+        "function": "DATE_ADD"
+      }
+    }
+  },
+  {
+    "source": "DATE_DIFF(DATE(2026, 1, 1), DATE(2026, 10, 16), 'day')",
+    "value": "number:288"
+  },
+  {
+    "source": "DATE_DIFF(DATE(2024, 1, 31), DATE(2024, 2, 28), 'month')",
+    "value": "number:0"
+  },
+  {
+    "source": "DATE_DIFF(DATE(2000, 2, 29), DATE(2001, 2, 28), 'year')",
+    "value": "number:1"
+  },
+  {
+    "source": "FORMAT_DATE(DATE(2026, 3, 5, 7, 8, 9), 'yyyy-MM-dd HH:mm:ss')",
+    "value": "string:2026-03-05 07:08:09"
+  },
+  {
+    "source": "FORMAT_DATE(DATE(2026, 3, 5), 'yyyy\\'年\\'M\\'月\\'d\\'日\\'')",
+    "value": "string:2026年3月5日"
+  },
+  {
+    "source": "DATE(2026, 1, 1) < '2026-01-02'",
+    "issue": {
+      "code": "XH_EXPR_TYPE_MISMATCH",
+      "start": 19,
+      "end": 31,
+      "data": {
+        "operator": "<",
+        "actual": "string"
+      }
+    }
+  },
+  {
+    "source": "",
+    "issue": {
+      "code": "XH_EXPR_EMPTY",
+      "start": 0,
+      "end": 0
+    }
+  },
+  {
+    "source": "1 +",
+    "issue": {
+      "code": "XH_EXPR_UNEXPECTED_END",
+      "start": 3,
+      "end": 3
+    }
+  },
+  {
+    "source": "a = 1",
+    "issue": {
+      "code": "XH_EXPR_UNEXPECTED_CHARACTER",
+      "start": 2,
+      "end": 3,
+      "data": {
+        "char": "="
+      }
+    }
+  },
+  {
+    "source": "SUM（1）",
+    "issue": {
+      "code": "XH_EXPR_UNEXPECTED_CHARACTER",
+      "start": 3,
+      "end": 4,
+      "data": {
+        "char": "（"
+      }
+    }
+  },
+  {
+    "source": "'abc",
+    "issue": {
+      "code": "XH_EXPR_UNTERMINATED_STRING",
+      "start": 0,
+      "end": 4
+    }
+  },
+  {
+    "source": "1e",
+    "issue": {
+      "code": "XH_EXPR_INVALID_NUMBER",
+      "start": 0,
+      "end": 2
+    }
+  },
+  {
+    "source": "a < b < c",
+    "issue": {
+      "code": "XH_EXPR_CHAINED_COMPARISON",
+      "start": 6,
+      "end": 7
+    }
+  },
+  {
+    "source": "a.b()",
+    "issue": {
+      "code": "XH_EXPR_INVALID_CALLEE",
+      "start": 0,
+      "end": 4
+    }
+  },
+  {
+    "source": "FOO(1)",
+    "issue": {
+      "code": "XH_EXPR_UNKNOWN_FUNCTION",
+      "start": 0,
+      "end": 3,
+      "data": {
+        "name": "FOO"
+      }
+    }
+  },
+  {
+    "source": "ROUND()",
+    "issue": {
+      "code": "XH_EXPR_ARGUMENT_COUNT",
+      "start": 0,
+      "end": 7,
+      "data": {
+        "name": "ROUND",
+        "min": 1,
+        "actual": 0,
+        "max": 2
+      }
+    }
+  }
+]
