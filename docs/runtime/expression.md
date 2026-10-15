@@ -314,6 +314,7 @@ const functions = createFunctionTable({
 | `{ kind: "percent", …同上 }` | 乘 100 后按数字输出并接 `%` | `0.1234` 按 `{ decimals: 1 }` 得 `12.3%` |
 | `{ kind: "date", pattern }` | 占位符同 `FORMAT_DATE` | `yyyy年M月d日` |
 | `{ kind: "rmb-upper", rounding? }` | 人民币大写，舍入到分，用「元」不用「圆」 | `1001.5` 得 `壹仟零壹元伍角`，`100000` 得 `壹拾万元整` |
+| `{ kind: "numeral", style }` | 整数的字形：`roman-upper` / `roman-lower` 罗马数字，`cn-lower` / `cn-upper` 中文小写 / 大写数字 | `1994` 得 `MCMXCIV`，`110` 得 `一百一十` / `壹佰壹拾`，`15` 得 `十五` |
 
 - **舍入方式** `rounding`：`half-up`（四舍五入，缺省）、`half-even`、`floor`、`ceil`、`down`。
 - **数字输入**：`ExprNumber`、有限的 JS 数字（取最短往返十进制表示）、`bigint`、十进制文本。
@@ -324,7 +325,8 @@ const functions = createFunctionTable({
   - 零的写法：段内连续的 0 只写一个「零」，整段为 0 时只在后面还有非零段时补「零」，如 `100010001` 得 `壹亿零壹万零壹元整`。
   - 角分：有角无分时不写「整」；无角有分时写「零×分」；整数部分为 0 时省去「元」，如 `0.5` 得 `伍角`。
   - 范围：负数前加「负」，金额绝对值须小于一亿亿。
-- **出错**：格式说明不合法时抛 `TypeError("XH_EXPR_FORMAT_INVALID_SPEC")`，值不合法时抛 `TypeError("XH_EXPR_FORMAT_INVALID_VALUE")`，大写金额超出范围时抛 `TypeError("XH_EXPR_FORMAT_OUT_OF_RANGE")`。
+- **数字字形**：只接受整数，小数报值不合法。罗马数字取 1 至 3999；中文数字的零写法同人民币大写，小写以「一十」开头时省去「一」（`10` 得 `十`、`100000` 得 `十万`），大写保留（`壹拾`），`0` 得 `零`，负数前加「负」，绝对值须小于一亿亿。
+- **出错**：格式说明不合法时抛 `TypeError("XH_EXPR_FORMAT_INVALID_SPEC")`，值不合法时抛 `TypeError("XH_EXPR_FORMAT_INVALID_VALUE")`，大写金额、中文数字或罗马数字超出范围时抛 `TypeError("XH_EXPR_FORMAT_OUT_OF_RANGE")`。
 
 ## 上限
 

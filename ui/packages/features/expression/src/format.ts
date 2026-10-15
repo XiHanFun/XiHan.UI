@@ -46,8 +46,21 @@ export interface RmbUpperFormatSpec {
   readonly rounding?: FormatRounding
 }
 
+/**
+ * 数字字形，只接受整数：
+ * - `roman-upper` / `roman-lower`：罗马数字，1 至 3999；
+ * - `cn-lower` / `cn-upper`：中文小写（一、十、百）与大写（壹、拾、佰）数字，绝对值小于一亿亿，负数前加「负」。
+ */
+export interface NumeralFormatSpec {
+  readonly kind: 'numeral'
+  readonly style: NumeralStyle
+}
+
+/** 数字字形的样式。 */
+export type NumeralStyle = 'roman-upper' | 'roman-lower' | 'cn-lower' | 'cn-upper'
+
 /** 格式说明。 */
-export type FormatSpec = NumberFormatSpec | PercentFormatSpec | DateFormatSpec | RmbUpperFormatSpec
+export type FormatSpec = NumberFormatSpec | PercentFormatSpec | DateFormatSpec | RmbUpperFormatSpec | NumeralFormatSpec
 
 /** 格式化选项。 */
 export interface FormatOptions {
@@ -61,7 +74,12 @@ const ROUNDINGS: ReadonlySet<string> = new Set(['half-up', 'half-even', 'floor',
 const DECIMALS_LIMIT = 34
 const UPPER_DIGITS = '零壹贰叁肆伍陆柒捌玖'
 const UPPER_UNITS = ['', '拾', '佰', '仟']
+const LOWER_DIGITS = '零一二三四五六七八九'
+const LOWER_UNITS = ['', '十', '百', '千']
 const UPPER_SECTIONS = ['', '万', '亿', '万亿']
+const NUMERAL_STYLES: ReadonlySet<string> = new Set(['roman-upper', 'roman-lower', 'cn-lower', 'cn-upper'])
+const ROMAN: readonly (readonly [number, string])[] = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']]
+const ROMAN_LIMIT = 3999
 const UPPER_LIMIT = /* @__PURE__ */ ExprNumber.parse('1e16')!
 const HUNDRED = /* @__PURE__ */ numberFromInteger(100)
 const OFFSET_ZONE = /^([+-])(\d{2}):?(\d{2})$/
@@ -153,7 +171,7 @@ function formatNumberText(value: ExprNumber, spec: Omit<NumberFormatSpec, 'kind'
   return `${negative ? '-' : ''}${integer}${fraction === '' ? '' : decimal + fraction}`
 }
 
-function sectionText(section: number): string {
+function sectionText(section: number, numerals: string, units: readonly string[]): string {
   const digits = String(section).padStart(4, '0')
   let out = ''
   let zero = false
@@ -164,14 +182,14 @@ function sectionText(section: number): string {
       continue
     }
     if (zero)
-      out += '零'
+      out += numerals[0]
     zero = false
-    out += UPPER_DIGITS[digit]! + UPPER_UNITS[3 - index]!
+    out += numerals[digit]! + units[3 - index]!
   }
   return out
 }
 
-function integerUpper(integer: string): string {
+function integerChinese(integer: string, numerals: string, units: readonly string[]): string {
   const sections: number[] = []
   for (let end = integer.length; end > 0; end -= 4)
     sections.unshift(Number(integer.slice(Math.max(0, end - 4), end)))
@@ -184,11 +202,59 @@ function integerUpper(integer: string): string {
       return
     }
     if (out !== '' && (gap || section < 1000))
-      out += '零'
+      out += numerals[0]
     gap = false
-    out += sectionText(section) + unit
+    out += sectionText(section, numerals, units) + unit
   })
   return out
+}
+
+function wholeNumber(value: ExprNumber): string {
+  return value.isInteger ? value.toString() : invalidValue()
+}
+
+function roman(value: ExprNumber, lower: boolean): string {
+  const text = wholeNumber(value)
+  if (value.sign <= 0 || text.length > 4 || Number(text) > ROMAN_LIMIT)
+    throw new TypeError('XH_EXPR_FORMAT_OUT_OF_RANGE')
+  let rest = Number(text)
+  let out = ''
+  for (const [amount, symbol] of ROMAN) {
+    while (rest >= amount) {
+      out += symbol
+      rest -= amount
+    }
+  }
+  return lower ? out.toLowerCase() : out
+}
+
+function chineseNumeral(value: ExprNumber, upper: boolean): string {
+  const text = wholeNumber(value)
+  const negative = value.sign < 0
+  const digits = negative ? text.slice(1) : text
+  if (ExprNumber.parse(digits)!.compare(UPPER_LIMIT) >= 0)
+    throw new TypeError('XH_EXPR_FORMAT_OUT_OF_RANGE')
+  if (digits === '0')
+    return '零'
+  let out = upper ? integerChinese(digits, UPPER_DIGITS, UPPER_UNITS) : integerChinese(digits, LOWER_DIGITS, LOWER_UNITS)
+  if (!upper && out.startsWith('一十'))
+    out = out.slice(1)
+  return negative ? `负${out}` : out
+}
+
+function numeral(value: ExprNumber, spec: NumeralFormatSpec): string {
+  if (typeof spec.style !== 'string' || !NUMERAL_STYLES.has(spec.style))
+    invalidSpec()
+  switch (spec.style) {
+    case 'roman-upper':
+      return roman(value, false)
+    case 'roman-lower':
+      return roman(value, true)
+    case 'cn-lower':
+      return chineseNumeral(value, false)
+    case 'cn-upper':
+      return chineseNumeral(value, true)
+  }
 }
 
 function rmbUpper(value: ExprNumber, spec: RmbUpperFormatSpec): string {
@@ -201,7 +267,7 @@ function rmbUpper(value: ExprNumber, spec: RmbUpperFormatSpec): string {
   const jiao = Number(fractionPart[0] ?? '0')
   const fen = Number(fractionPart[1] ?? '0')
   const hasInteger = integerPart !== '0'
-  let out = hasInteger ? `${integerUpper(integerPart)}元` : ''
+  let out = hasInteger ? `${integerChinese(integerPart, UPPER_DIGITS, UPPER_UNITS)}元` : ''
   if (jiao === 0 && fen === 0)
     out = hasInteger ? `${out}整` : '零元整'
   else if (jiao === 0)
@@ -274,7 +340,7 @@ function toDate(value: unknown, timeZone: string | undefined): ExprDate {
  * 日期类接受 `ExprDate`、日期文本、毫秒时间戳与 `Date`：不带偏移的文本按墙钟时间原样输出，
  * 带偏移的文本在给了 `timeZone` 时换算到该时区，时间戳与 `Date` 换算到 `timeZone`（缺省 UTC）。
  * 格式说明不合法抛 `TypeError('XH_EXPR_FORMAT_INVALID_SPEC')`，值不合法抛 `TypeError('XH_EXPR_FORMAT_INVALID_VALUE')`，
- * 人民币大写的金额绝对值达到一亿亿时抛 `TypeError('XH_EXPR_FORMAT_OUT_OF_RANGE')`。
+ * 数字字形只接受整数；人民币大写与中文数字的绝对值达到一亿亿、罗马数字不在 1 至 3999 之间时抛 `TypeError('XH_EXPR_FORMAT_OUT_OF_RANGE')`。
  */
 export function formatValue(value: unknown, spec: FormatSpec, options: FormatOptions = {}): string {
   if (typeof spec !== 'object' || spec === null)
@@ -294,6 +360,8 @@ export function formatValue(value: unknown, spec: FormatSpec, options: FormatOpt
       return formatDate(toDate(value, options.timeZone), spec.pattern)
     case 'rmb-upper':
       return rmbUpper(toNumber(value), spec)
+    case 'numeral':
+      return numeral(toNumber(value), spec)
     default:
       return invalidSpec()
   }
