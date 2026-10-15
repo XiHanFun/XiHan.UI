@@ -128,6 +128,9 @@
       "cascader",
       "tree-select"
     ],
+    "branch-summary": [
+      "json-viewer"
+    ],
     "branch-text": [
       "json-viewer",
       "side-nav",

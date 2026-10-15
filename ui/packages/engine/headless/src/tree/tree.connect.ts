@@ -715,9 +715,8 @@ export function connectTree<T extends PropTypes>(
         // 这一枝在取子节点：读屏据此知道子层还没到齐，皮肤据此把展开箭头换成转圈
         'aria-busy': branchLoading.has(node.value) ? 'true' : undefined,
         'data-loading': dataAttr(branchLoading.has(node.value)),
-        // 分支的可及名字必须显式给：它裹着整棵子树，从内容算名字会把子孙的文字一并念出来。
-        // 名字取 collection 里的 label（缺省退回 value）
-        'aria-label': metaOf(node.value)?.label,
+        // 名字取自己那一行的内容，与叶子行同一个来源：按内容算名字时不往 role=group 的子层里取字，
+        // 子孙的文字不会算进来。显式给 aria-label 反倒让行里看得见的字（后缀、说明）落在名字之外（WCAG 2.5.3）
         'onFocus': () => send({ type: 'NODE.FOCUS', value: node.value }),
         'onKeyDown': onSelf(handlers.onKeyDown),
         'onKeyUp': onSelf(handlers.onKeyUp),

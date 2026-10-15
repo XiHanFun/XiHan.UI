@@ -331,6 +331,8 @@ export interface JsonViewerApi<T extends PropTypes = PropTypes> {
   isExpanded: (value: string) => boolean
   /** 分支收起摘要的显示文字（如 `{…} 3`），只用于视觉；叶子行返回空串。 */
   previewText: (node: JsonViewerNode) => string
+  /** 分支的可及名字（键名，根行取 translations.root；收起时带上成员数），铺进 branch-summary。 */
+  branchSummary: (node: JsonViewerNode) => string
   /** 值的显示文字；截断占位行返回其余 N 项的文案。 */
   valueText: (node: JsonViewerNode) => string
   setExpandedValue: (next: string[]) => void
@@ -402,6 +404,8 @@ export interface JsonViewerApi<T extends PropTypes = PropTypes> {
   getBranchTriggerProps: (props: JsonViewerNodeProps) => T['element']
   getBranchIndicatorProps: (props: JsonViewerNodeProps) => T['element']
   getBranchTextProps: (props: JsonViewerNodeProps) => T['element']
+  /** 视觉隐藏的分支名字，分支行的可及名字即取自它。 */
+  getBranchSummaryProps: (props: JsonViewerNodeProps) => T['element']
   getBranchContentProps: (props: JsonViewerNodeProps) => T['element']
   getPreviewProps: (props: JsonViewerNodeProps) => T['element']
   getEmptyProps: () => T['element']

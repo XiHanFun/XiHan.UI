@@ -72,6 +72,8 @@ function JsonBranch({ api, groups, node }: BranchProps): ReactNode {
         </span>
         {node.key != null ? <span {...api.getBranchTextProps(ref) as Record<string, unknown>}><Segments api={api} segments={api.keySegments(node)} /></span> : null}
         <span {...api.getPreviewProps(ref) as Record<string, unknown>}>{api.previewText(node)}</span>
+        {/* 分支的可及名字：视觉隐藏，读屏从这一行的内容里取到它 */}
+        <span {...api.getBranchSummaryProps(ref) as Record<string, unknown>}>{api.branchSummary(node)}</span>
       </div>
       {/* 收起的子层不渲染：一份大 JSON 全铺出来会把页面压住，展开集合本来也是逐层放开的 */}
       {api.isExpanded(node.value)

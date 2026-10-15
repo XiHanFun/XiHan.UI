@@ -108,6 +108,7 @@ interface RowEls {
   indicator?: HTMLElement
   text?: HTMLElement
   preview?: HTMLElement
+  summary?: HTMLElement
   content?: HTMLElement
 }
 
@@ -136,9 +137,11 @@ function makeRow(doc: Document, node: JsonViewerNode): RowEls {
       control.appendChild(text)
     }
     control.appendChild(preview)
+    const summary = doc.createElement('span')
+    control.appendChild(summary)
     host.appendChild(control)
     const content = doc.createElement('div')
-    return { host, control, trigger, indicator, text, preview, content }
+    return { host, control, trigger, indicator, text, preview, summary, content }
   }
   const host = doc.createElement('div')
   let itemKey: HTMLElement | undefined
@@ -210,6 +213,8 @@ function mount(initial: Partial<Props> = {}): Harness {
             spread(els.text, api.getBranchTextProps(ref) as Record<string, unknown>)
           spread(els.preview!, api.getPreviewProps(ref) as Record<string, unknown>)
           els.preview!.textContent = api.previewText(node)
+          spread(els.summary!, api.getBranchSummaryProps(ref) as Record<string, unknown>)
+          els.summary!.textContent = api.branchSummary(node)
           if (api.isExpanded(node.value)) {
             spread(els.content!, api.getBranchContentProps(ref) as Record<string, unknown>)
             // 已经挂着就别再 appendChild：那是一次真的移除再插入，焦点若在子层里会掉回 body
@@ -455,8 +460,12 @@ describe('connectJsonViewer ARIA 与层级', () => {
     expect(rootRow.getAttribute('role')).toBe('treeitem')
     expect(rootRow.getAttribute('aria-level')).toBe('1')
     expect(rootRow.getAttribute('aria-expanded')).toBe('true')
-    // 分支裹着整棵子层，名字必须显式给，否则读屏会把所有子孙的文字念一遍
-    expect(rootRow.getAttribute('aria-label')).toBe('root')
+    // 分支不显式给名字：取自己那一行的内容。看得见的键名与括号摘要都 aria-hidden，
+    // 念得出的只有视觉隐藏的 branch-summary；根行没有键名，用文案里的称呼
+    expect(rootRow.hasAttribute('aria-label')).toBe(false)
+    expect(h.row(ROOT).summary!.textContent).toBe('root')
+    // 视觉隐藏：与 VISUALLY_HIDDEN_STYLE 同一份内联样式
+    expect(h.api().getBranchSummaryProps({ value: ROOT })).toMatchObject({ style: expect.objectContaining({ clipPath: 'inset(50%)' }) })
 
     const name = h.row(path('name')).host
     expect(name.getAttribute('aria-level')).toBe('2')
@@ -490,12 +499,13 @@ describe('connectJsonViewer ARIA 与层级', () => {
 
   it('收起的分支把成员数折进可及名字，展开之后交还给子行的 aria-setsize', () => {
     const h = mount()
-    const tags = h.row(path('tags')).host
-    expect(tags.getAttribute('aria-label')).toBe('tags, 2 items')
+    // 键名看得见但对读屏隐藏，名字由 branch-summary 那一句给，键名打头
+    expect(h.row(path('tags')).text!.getAttribute('aria-hidden')).toBe('true')
+    expect(h.row(path('tags')).summary!.textContent).toBe('tags, 2 items')
     // 单数不写成 1 items
-    expect(h.row(path('nested')).host.getAttribute('aria-label')).toBe('nested, 1 item')
+    expect(h.row(path('nested')).summary!.textContent).toBe('nested, 1 item')
     h.api().expand(path('tags'))
-    expect(h.row(path('tags')).host.getAttribute('aria-label')).toBe('tags')
+    expect(h.row(path('tags')).summary!.textContent).toBe('tags')
   })
 
   it('展开箭头不进 Tab 序列也不接可编程焦点：它是 aria-hidden 的', () => {
@@ -516,9 +526,9 @@ describe('connectJsonViewer ARIA 与层级', () => {
     })
     expect(h.treeEl.getAttribute('aria-label')).toBe('数据')
     // 根行展开着，名字里不带成员数
-    expect(h.row(ROOT).host.getAttribute('aria-label')).toBe('根')
+    expect(h.row(ROOT).summary!.textContent).toBe('根')
     expect(h.row(path('tags')).preview!.textContent).toBe('数组 2 项')
-    expect(h.row(path('tags')).host.getAttribute('aria-label')).toBe('tags，共 2 项')
+    expect(h.row(path('tags')).summary!.textContent).toBe('tags，共 2 项')
     // 没覆盖的那句仍走内建英文
     expect(h.row(path('nested')).preview!.textContent).toBe('{…} 1')
   })

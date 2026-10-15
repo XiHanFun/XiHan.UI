@@ -36615,6 +36615,10 @@
               "name": "preview"
             },
             {
+              "description": "分支的可及名字（键名或根行称呼，收起时带成员数），视觉隐藏",
+              "name": "branch-summary"
+            },
+            {
               "description": "role=group 的子层容器，只在展开时存在",
               "name": "branch-content"
             },

@@ -171,9 +171,10 @@ export const fileUploadSuite: ConformanceSuite = {
           'dropzone': {
             'id': '@self',
             'role': 'button',
-            // 名字优先取 label；label 缺席时才回落到兜底文案，两条一起写才表达得出这个优先级
-            'aria-labelledby': '@part(label)',
-            'aria-label': 'Drop files here',
+            // 名字是 label 再接上投放区自己看得见的说明（WCAG 2.5.3）；不另给 aria-label，
+            // 否则 labelledby 引到自己时取的是它，说明被挤出名字
+            'aria-labelledby': '@part(label) @part(dropzone)',
+            'aria-label': null,
             // 省略与显式 false 不是一回事：前者是"没说"，后者是"明确说了没禁用"
             'aria-disabled': 'false',
             'tabindex': '0',

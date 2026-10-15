@@ -247,8 +247,8 @@ export const treeSuite: ConformanceSuite = {
             'aria-expanded': 'false',
             'aria-selected': 'false',
             'aria-disabled': 'false',
-            // 分支裹着整棵子树，名字从内容算会把所有子孙的文字念进去，必须显式给
-            'aria-label': 'Source',
+            // 分支不显式给名字：取自己那一行的内容，按内容算名字不往 role=group 的子层里取字（WCAG 2.5.3）
+            'aria-label': null,
             'data-value': 'src',
             'data-state': 'closed',
             'data-selected': null,
@@ -263,7 +263,7 @@ export const treeSuite: ConformanceSuite = {
             'aria-level': '2',
             'aria-posinset': '2',
             'aria-setsize': '3',
-            'aria-label': 'Utils',
+            'aria-label': null,
             'data-value': 'utils',
           },
           'branch[2]': {

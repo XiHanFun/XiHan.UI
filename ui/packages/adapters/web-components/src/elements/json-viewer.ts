@@ -59,6 +59,7 @@ interface JsonRow {
   indicator?: HTMLElement
   text?: HTMLElement
   preview?: HTMLElement
+  summary?: HTMLElement
   content?: HTMLElement
 }
 
@@ -167,6 +168,7 @@ function setSegments(
  * @csspart branch-indicator - 箭头字形，随 data-state 转向
  * @csspart branch-text - 分支的键名
  * @csspart preview - 收起摘要（如 `{…} 3`），对读屏隐藏
+ * @csspart branch-summary - 分支的可及名字（键名或根行称呼，收起时带成员数），视觉隐藏
  * @csspart branch-content - role=group 的子层容器，只在展开时存在
  * @csspart empty - 无法展开任何一行时的占位，铺设 translations.empty 的文案；有行可展开时带 hidden
  * @csspart mark - 键名与值里命中搜索词的那一段
@@ -308,6 +310,7 @@ export class XhJsonViewerElement extends XhElement {
       const trigger = doc.createElement('span')
       const indicator = doc.createElement('span')
       const preview = doc.createElement('span')
+      const summary = doc.createElement('span')
       trigger.appendChild(indicator)
       control.appendChild(trigger)
       let text: HTMLElement | undefined
@@ -317,8 +320,10 @@ export class XhJsonViewerElement extends XhElement {
         control.appendChild(text)
       }
       control.appendChild(preview)
+      // 分支的可及名字：视觉隐藏，读屏从这一行的内容里取到它
+      control.appendChild(summary)
       host.appendChild(control)
-      return { shape, host, control, trigger, indicator, text, preview, content: doc.createElement('div') }
+      return { shape, host, control, trigger, indicator, text, preview, summary, content: doc.createElement('div') }
     }
     const host = doc.createElement('div')
     let itemKey: HTMLElement | undefined
@@ -360,6 +365,8 @@ export class XhJsonViewerElement extends XhElement {
         }
         this.spreader.spread(row.preview!, api.getPreviewProps(ref) as Record<string, unknown>)
         setText(row.preview!, api.previewText(node))
+        this.spreader.spread(row.summary!, api.getBranchSummaryProps(ref) as Record<string, unknown>)
+        setText(row.summary!, api.branchSummary(node))
         if (api.isExpanded(node.value)) {
           this.spreader.spread(row.content!, api.getBranchContentProps(ref) as Record<string, unknown>)
           // 已经挂着就别再 appendChild：那是一次真的移除再插入，焦点若在子层里会掉回 body

@@ -21,6 +21,8 @@ export const jsonViewerAnatomy = createAnatomy('json-viewer', [
   'branch-trigger',
   'branch-indicator',
   'branch-text',
+  // 分支的可及名字（根行的称呼、收起时的成员数），视觉隐藏，由组件自己铺
+  'branch-summary',
   'branch-content',
   'preview',
   'text',

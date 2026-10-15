@@ -352,6 +352,17 @@ describe('citation 来源副文字与预览链接字走语言包', () => {
     expect(api().previewLinkText({ sourceId: 'doc' })).toBe('Open document')
   })
 
+  it('来源行与预览打开钮的名字都包含它们看得见的字（WCAG 2.5.3）', () => {
+    const { api } = setup({ sources })
+    // 来源行不显式给名字：序号、标题与出处都看得见，名字取这一行的内容
+    expect((api().getSourceLinkProps({ sourceId: 'web' }) as Record<string, unknown>)['aria-label']).toBeUndefined()
+    // 打开钮的名字是它自己那句再接上预览标题
+    const link = api().getPreviewLinkProps({ sourceId: 'web' }) as Record<string, unknown>
+    const title = api().getPreviewTitleProps({ sourceId: 'web' }) as Record<string, unknown>
+    expect(link['aria-label']).toBeUndefined()
+    expect(link['aria-labelledby']).toBe(`${link.id} ${title.id}`)
+  })
+
   it('换成别的说法时三句一起跟着换', () => {
     const { api } = setup({ sources: [...sources, plain], translations: { document: '文档', previewLinkSource: '打开来源', previewLinkDocument: '打开文档' } })
     expect(api().sourceMetaText(plain)).toBe('文档')

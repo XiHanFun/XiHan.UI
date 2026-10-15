@@ -1307,11 +1307,11 @@ describe('aRIA 契约', () => {
     expect(h.node('docs').getAttribute('aria-expanded')).toBe('false')
   })
 
-  it('选中与未选中都显式输出 aria-selected；分支的可及名字取 collection 的 label', () => {
+  it('选中与未选中都显式输出 aria-selected；分支不显式给名字，取自己那一行的内容', () => {
     const h = mount({ defaultValue: 'license' })
     expect(h.node('license').getAttribute('aria-selected')).toBe('true')
     expect(h.node('index').getAttribute('aria-selected')).toBe('false')
-    expect(h.node('src').getAttribute('aria-label')).toBe('Source')
+    expect(h.node('src').hasAttribute('aria-label')).toBe(false)
   })
 
   it('清空按钮退出 Tab 序列但留在可及树；展开箭头两者都退出', () => {

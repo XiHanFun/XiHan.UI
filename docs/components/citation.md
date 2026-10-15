@@ -237,7 +237,7 @@ preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指
 | `preview` | `aria-label` | labels.preview \| undefined |
 | `preview` | `aria-labelledby` | context.get('activeTriggerId') \| undefined |
 | `preview` | `role` | 'region' |
-| `preview-link` | `aria-label` | labels.openSource(title) |
+| `preview-link` | `aria-labelledby` | `preview-link` 部件的 id `preview-title` 部件的 id |
 | `dismiss-trigger` | `aria-label` | labels.closePreview |
 | `preview-index` | `aria-hidden` | 'true' |
 | `list` | `aria-label` | labels.sources |
@@ -246,7 +246,6 @@ preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指
 | `source-link` | `aria-controls` | `preview` 部件的 id |
 | `source-link` | `aria-current` | 'true' \| undefined |
 | `source-link` | `aria-expanded` | 'true' \| 'false' |
-| `source-link` | `aria-label` | labels.source(index + 1, citationSourceTitle(current)) |
 | `source-index` | `aria-hidden` | 'true' |
 
 ## 样式参考

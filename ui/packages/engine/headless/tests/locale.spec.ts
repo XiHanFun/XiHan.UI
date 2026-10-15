@@ -73,7 +73,7 @@ const SAMPLES: Record<string, Record<string, unknown[][]>> = {
     ],
   },
   'cascader': TAGGED,
-  'citation': { openSource: [['Doc']], citation: [[1, 'Doc']], citations: [[[1, 2, 3]]], source: [[1, 'Doc']] },
+  'citation': { citation: [[1, 'Doc']], citations: [[[1, 2, 3]]] },
   'code-view': { foldBlock: [[3, 3], [3, 9]] },
   'color-picker': {
     ...TAGGED,

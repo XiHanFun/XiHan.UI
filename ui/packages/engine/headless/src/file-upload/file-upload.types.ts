@@ -128,8 +128,6 @@ export interface FileUploadFileRejectDetails {
 }
 
 export interface FileUploadTranslations {
-  /** 投放区的兜底可及名：作者提供 label 部件时以 label 为准。 */
-  dropzone: string
   /** 单条删除按钮的可及名；只写「删除」时读屏无法区分删除的是哪一条。 */
   deleteItem: (file: FileUploadFile) => string
   /** 清空按钮的可及名。 */

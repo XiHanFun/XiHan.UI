@@ -470,13 +470,14 @@ describe('connectFileUpload 属性输出', () => {
     expect(m.hidden.getAttribute('id')).toBeTruthy()
   })
 
-  it('投放区是可聚焦的按钮，名字优先取 label', () => {
+  it('投放区是可聚焦的按钮，名字是 label 再接上它自己看得见的说明', () => {
     const m = open()
     expect(m.dropzone.getAttribute('role')).toBe('button')
     expect(m.dropzone.getAttribute('tabindex')).toBe('0')
     expect(m.dropzone.getAttribute('aria-disabled')).toBe('false')
-    expect(m.dropzone.getAttribute('aria-labelledby')).toBe(m.label.getAttribute('id'))
-    expect(m.dropzone.getAttribute('aria-label')).toBe('Drop files here')
+    expect(m.dropzone.getAttribute('aria-labelledby')).toBe(`${m.label.getAttribute('id')} ${m.dropzone.getAttribute('id')}`)
+    // 不另给 aria-label：labelledby 引到自己时取的是自己的 aria-label，说明会被挤出名字
+    expect(m.dropzone.hasAttribute('aria-label')).toBe(false)
   })
 
   it('disabled：投放区退出 Tab 序列并显式报 aria-disabled，两个按钮走原生 disabled', () => {
@@ -525,17 +526,15 @@ describe('connectFileUpload 属性输出', () => {
     expect(m.group.getAttribute('role')).toBe('list')
   })
 
-  it('translations 覆盖三处兜底文案', () => {
+  it('translations 覆盖两处兜底文案', () => {
     const m = open({
       maxFiles: 3,
       defaultFiles: [makeFile('a.txt')],
       translations: {
-        dropzone: '把文件拖到这里',
         deleteItem: file => `移除 ${file.name}`,
         clearTrigger: '全部移除',
       },
     })
-    expect(m.dropzone.getAttribute('aria-label')).toBe('把文件拖到这里')
     expect(m.clear.getAttribute('aria-label')).toBe('全部移除')
     expect(m.partIn(m.items()[0]!, 'item-delete-trigger').getAttribute('aria-label')).toBe('移除 a.txt')
   })
