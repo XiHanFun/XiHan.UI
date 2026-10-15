@@ -80,6 +80,19 @@ if (compiled.ok) {
 - `evaluate` 的结果是 `toPlain` 之后的普通 JS 值：数字转成 JS 数字，日期转成规范文本。它从不抛异常，结果里有不可表示的值或环时同样以问题返回。
 - 同一个引擎按源码缓存语法树（有条数上限），不同引擎互不影响。
 
+模板里的表达式以源码字符串保存，求值处还有两步四款都要做，由两个函数直接给出：
+
+```ts
+import { conditionOf, evaluateSource } from "@xihan-ui/expression";
+
+const cache = new Map();                       // 一轮批量求值建一个，同一源码只编译一次
+const outcome = evaluateSource(engine, "qty > 0", { qty: 3 }, cache);
+conditionOf(outcome);                          // true
+```
+
+- `evaluateSource(engine, source, scope, cache?)`：编译后求值；编译失败时以第一条问题作为求值失败返回，形状与 `evaluate` 的结果相同。不传 `cache` 时每次都编译。
+- `conditionOf(evaluation)`：把求值结果解释成条件。`true` 成立，`false` 与 `null` 不成立（与 `?:`、`IF` 中 null 走否定分支一致），其余结果为 `'not-boolean'`，求值失败为 `'failed'`。联动、网关、条件格式、显隐等条件位置都按这一条判定，后两种结果由宿主报成问题。
+
 ## 文法
 
 ```text
