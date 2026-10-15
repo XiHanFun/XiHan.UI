@@ -230,6 +230,7 @@ export { flatMoveCommand, flatMoveIntentFromKey, hitAlong, hitAlongNested, inser
 export type { DragAnnounceInput, DragAnnounceKind, DragRect, DragTranslations, DropPosition, DropTarget } from './shared/drag'
 export { dragAnnouncement } from './shared/drag-announce'
 export { isEditableTarget } from './shared/editable-target'
+export { graphemeLength } from './shared/grapheme'
 export { OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED, OVERLAY_PLACEMENT_LIST } from './shared/overlay'
 export { pressHandlers } from './shared/press'
 export type { PressEvent, PressService } from './shared/press'

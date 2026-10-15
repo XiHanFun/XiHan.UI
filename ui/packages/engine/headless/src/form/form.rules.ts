@@ -10,6 +10,7 @@ import type { FormErrorPatch, FormErrors } from './form.errors'
 import type { FormPath } from './form.path'
 import type { FormRule, FormRules, FormRuleType, FormTranslations, FormValidateMessages, FormValues } from './form.types'
 import { FORM_EN_US } from '../locale/en-US'
+import { graphemeLength } from '../shared/grapheme'
 import { normalizeFormErrors } from './form.errors'
 import { formPathEntries, getFormPathValue, setFormPathValue } from './form.path'
 
@@ -102,7 +103,7 @@ function typeError(type: FormRuleType, value: unknown): boolean {
 
 /**
  * min/max 的度量：规则声明了数值类型就按数值比（字符串数字也认），
- * 其余数值直接比大小、字符串与数组比长度；量不出来的不拦。
+ * 其余数值直接比大小、字符串按字素数比、数组按元素数比；量不出来的不拦。
  */
 function measure(value: unknown, type: FormRuleType | undefined): { size: number, byLength: boolean } | null {
   if (type === 'number' || type === 'integer') {
@@ -113,7 +114,7 @@ function measure(value: unknown, type: FormRuleType | undefined): { size: number
   if (typeof value !== 'string' && n !== null)
     return { size: n, byLength: false }
   if (typeof value === 'string')
-    return { size: value.length, byLength: true }
+    return { size: graphemeLength(value), byLength: true }
   if (Array.isArray(value))
     return { size: value.length, byLength: true }
   return null

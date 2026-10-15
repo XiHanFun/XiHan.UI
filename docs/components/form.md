@@ -83,6 +83,7 @@
 - `validateOn` 设置输入、失焦或提交时校验。
 - 支持声明式规则、自定义校验和异步校验。
 - 必填按空值判定：`undefined`、`null`、只含空白的字符串（含不换行空格与全角空格）、空数组与元素全为空的数组算空，`false` 与 `0` 不算空。「必须勾选同意」这类要求写 `validator`，判断值是否为 `true`。
+- `min` / `max` 对字符串按字素计数：组合 emoji、国旗、带变音符的字母各算一个字，与[文本框](./text-field)的计数和 `maxLength` 同一口径，`@xihan-ui/headless` 导出的 `graphemeLength` 就是这把尺子；数组按元素个数，数值比较大小。数据库按列长限制时（如 PostgreSQL 的 `varchar(n)` 按码点计），后端仍要自己校验长度；.NET 端用 `StringInfo.LengthInTextElements` 得到同样的字数。
 - 字段值、错误和校验状态均可受控。
 - 错误汇总可跳转到对应字段。
 - 支持纵向、横向、行内和网格布局。
