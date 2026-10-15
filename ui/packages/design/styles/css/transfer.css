@@ -219,13 +219,10 @@
     padding-block: var(--xh-transfer-list-py, var(--xh-space-0));
     padding-inline: var(--xh-transfer-list-px, var(--xh-space-0));
     overflow: auto;
-    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 刷新：这一侧已有条目时后台在取，保留上一帧，列表按 micro 淡下，数据到了再淡回；在途占位此时让位 */
-  [data-scope='transfer'][data-part='list'][aria-busy='true'] {
-    opacity: var(--xh-state-disabled-opacity);
-  }
+  /* 刷新（已有条目、后台在取）只报 aria-busy，内容原样留着、不淡化：条目此刻仍可操作，
+     淡到禁用透明度会把文字压到 4.5:1 以下，WCAG 1.4.3 只豁免失效控件；在途占位此时照旧让位 */
 
   /* Virtualizer viewport 才是真正的滚动层。此时 list 只负责 Transfer 的定高，
      不再用内边距和自身滚动制造第二个窗口；viewport 铺满整块内容区，

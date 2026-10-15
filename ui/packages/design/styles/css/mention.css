@@ -374,11 +374,8 @@
     display: none;
   }
 
-  /* 刷新：已有候选时后台在取，保留上一帧，候选按 micro 淡下，数据到了再淡回；在途占位此时让位。
-     淡的是候选不是面：content 是整块磨砂面，整块淡下去面就透了 */
-  [data-scope='mention'][data-part='content'][aria-busy='true'] [data-scope='mention'][data-part='item'] {
-    opacity: var(--xh-state-disabled-opacity);
-  }
+  /* 刷新（已有候选、后台在取）只报 aria-busy，内容原样留着、不淡化：候选此刻仍可操作，
+     淡到禁用透明度会把文字压到 4.5:1 以下，WCAG 1.4.3 只豁免失效控件；在途占位此时照旧让位 */
 
   /* 手写结构可以把全部候选留在 DOM 里只加 hidden；没有可见 item 也没有状态文案时，
      打开的空 listbox 不画无意义框。closed 不命中，content 仍能完成 Presence 退场。 */

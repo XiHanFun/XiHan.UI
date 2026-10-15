@@ -1504,7 +1504,7 @@ export function connectTable<T extends PropTypes>(
     }),
 
     // 只在还没有行时露面：环走加载环配方，随 data-loading 淡入并转；已有行时的重新取数不换成占位，
-    // 由 root 的 data-loading 让表体保留上一帧淡下
+    // 表体原样留着、照常可操作，只由 root 报 aria-busy
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
       'data-xh-loading-ring': '',

@@ -1,6 +1,6 @@
 // 占位态的四个相位在各集合组件上是同一副样子：
 // 首次加载 = 加载环 + 一句文案；空 = 一句文案；两者文字取次要文字、块向内距 space-3、字号随档；
-// 刷新 = 已有条目时保留上一帧、内容按 micro 淡下，在途占位让位。
+// 刷新 = 已有条目时保留上一帧、容器报 aria-busy，在途占位让位；条目此刻仍可操作，不淡化。
 //
 // 判据是伪元素、计算样式与过渡结果，jsdom 不给这些。
 import type { CascaderLevel } from '@xihan-ui/headless'
@@ -79,7 +79,7 @@ interface Case {
   render: (state: { loading: boolean, items: boolean }) => VNode
   /** 占位文字该取的次要文字令牌。 */
   muted: string
-  /** 刷新相位里淡下去的那一层。 */
+  /** 刷新相位里保留上一帧的那一层：它照常可操作，不该淡下去。 */
   dim: string
   /** 挂上之后把浮层打开（没有受控开合的组件靠真实输入唤起）。 */
   open?: () => Promise<void>
@@ -279,7 +279,7 @@ describe.each(CASES)('$scope 的占位态', (c) => {
     expect(style.paddingBottom).toBe(resolved(empty, 'padding-bottom', 'var(--xh-space-3)'))
   })
 
-  it('刷新：保留上一帧，在途占位让位，内容按 micro 淡下', async () => {
+  it('刷新：保留上一帧，在途占位让位，容器报 aria-busy，内容不淡化', async () => {
     const state = await mount(c, { loading: false, items: true })
     const target = part(c.scope, c.dim)
     expect(getComputedStyle(target).opacity).toBe('1')
@@ -287,9 +287,9 @@ describe.each(CASES)('$scope 的占位态', (c) => {
     await nextTick()
     await nextTick()
     expect(part(c.scope, 'loading').hidden).toBe(true)
-    const fade = target.getAnimations().find(a => (a as CSSTransition).transitionProperty === 'opacity')
-    expect(fade?.effect?.getComputedTiming().duration).toBe(120)
-    const disabled = resolved(target, 'opacity', 'var(--xh-state-disabled-opacity)')
-    await expect.poll(() => getComputedStyle(target).opacity).toBe(disabled)
+    expect(target.closest('[aria-busy="true"]')).not.toBeNull()
+    // 条目此刻仍可操作：淡到禁用透明度会把文字压到 4.5:1 以下（WCAG 1.4.3 只豁免失效控件）
+    expect(target.getAnimations().some(a => (a as CSSTransition).transitionProperty === 'opacity')).toBe(false)
+    expect(getComputedStyle(target).opacity).toBe('1')
   })
 })

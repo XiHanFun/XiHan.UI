@@ -393,7 +393,7 @@ ${rest}
        button:focus:not(:focus-visible) { outline: none } 复位（VitePress 等）是无层规则，压过本份；
        指针落焦时它把简写复位成 none，outline-color 同时落到 currentColor；焦点离开、规则失效的那一刻
        solid 立即回来，颜色若还在过渡就画成一圈实心边（上一条目闪边）。颜色即时切换后这条路径没有中间帧。
-       不透明度同一节奏：集合在后台刷新时保留上一帧、条目按 micro 淡下，数据到了再淡回 */
+       不透明度同一节奏：状态换面时的不透明度槽，与刷新期间不接交互的行（如 Tree）淡下再淡回，都走这一条 */
     transition:
       background-color ${source.motion.duration} ${source.motion.easing},
       color ${source.motion.duration} ${source.motion.easing},
