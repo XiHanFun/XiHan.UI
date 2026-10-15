@@ -12,6 +12,7 @@ export default defineXihanPackage({
     'presence': 'src/behavior/presence.ts',
     'date': 'src/date/index.ts',
     'json': 'src/json/index.ts',
+    'url': 'src/url/index.ts',
     'visual-environment': 'src/visual-environment/index.ts',
   },
 })

@@ -210,6 +210,7 @@
       "./metadata",
       "./presence",
       "./skin-check",
+      "./url",
       "./vanilla",
       "./visual-environment",
       "./vite"
@@ -5850,6 +5851,7 @@
       "stepIndex",
       "stripScopeClass",
       "toCleanup",
+      "toSafeImageSource",
       "toThemeAttrs",
       "toVisualEnvironmentAttrs",
       "today",

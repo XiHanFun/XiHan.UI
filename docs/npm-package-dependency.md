@@ -123,7 +123,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 | 包 | 子路径 |
 | --- | --- |
-| `@xihan-ui/core` | `./metadata` `./skin-check` `./vite` `./vanilla` `./presence` `./json`（JSON 值的类型与纯函数，零依赖） |
+| `@xihan-ui/core` | `./metadata` `./skin-check` `./vite` `./vanilla` `./presence` `./json`（JSON 值的类型与纯函数，零依赖） `./url`（图片地址的安全判定，零依赖） |
 | `@xihan-ui/tokens` | `./runtime` `./tokens.css` `./tokens.json` |
 | `@xihan-ui/icons` | `./codegen` |
 | `@xihan-ui/expression` | `./template`（文本模板，占位只写数据路径） |
