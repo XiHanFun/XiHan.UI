@@ -178,6 +178,17 @@ describe('分类色板校验', () => {
     expect(gray.checks.find(c => c.id === 'chroma')?.findings[0]).toMatchObject({ slots: [1], status: 'fail' })
   })
 
+  it('浅色调：明度带抬到亮端、彩度封顶，对比度不足照常只判 warn', () => {
+    const pale = ['#72a8f7', '#f5aed6'].map(hex)
+    expect(validateCategoricalPalette(pale, { mode: 'light', surface: WHITE, pairs: 'adjacent' }).checks.find(c => c.id === 'lightness')?.status).toBe('fail')
+    const report = validateCategoricalPalette(pale, { mode: 'light', surface: WHITE, pairs: 'adjacent', tone: 'light' })
+    const byId = Object.fromEntries(report.checks.map(c => [c.id, c.status]))
+    expect(byId).toMatchObject({ lightness: 'pass', chroma: 'pass', contrast: 'warn' })
+    expect(report.ok).toBe(true)
+    const neon = validateCategoricalPalette(['#72a8f7', '#7cff3a'].map(hex), { mode: 'light', surface: WHITE, pairs: 'adjacent', tone: 'light' })
+    expect(neon.checks.find(c => c.id === 'chroma')?.findings[0]).toMatchObject({ slots: [2], status: 'fail' })
+  })
+
   it('两套色板同一色槽色相不一致时判 fail', () => {
     const swapped = [DARK[1]!, DARK[0]!, ...DARK.slice(2)]
     const report = validateCategoricalPalette(LIGHT, { mode: 'light', surface: WHITE, pairs: 'adjacent', reference: swapped })

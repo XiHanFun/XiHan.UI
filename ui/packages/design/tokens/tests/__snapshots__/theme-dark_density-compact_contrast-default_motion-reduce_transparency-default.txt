@@ -54,14 +54,14 @@
 --xh-chart-axis: color-mix(in oklab, oklch(1 0 0) 22%, transparent)  ← var(--xh-_contrast-use-default, var(--xh-border-default)) var(--xh-_contrast-use-more, var(--xh-border-strong))
 --xh-chart-band-highlight: color-mix(in oklab, oklch(1 0 0) 6.2%, transparent)  ← var(--xh-bg-subtle)
 --xh-chart-bar-max: 24px  ← var(--xh-space-6)
---xh-chart-categorical-1: oklch(0.623 0.214 258)  ← var(--xh-color-indigo-500)
---xh-chart-categorical-2: oklch(0.623 0.206 125)  ← var(--xh-color-lime-500)
---xh-chart-categorical-3: oklch(0.546 0.216 345)  ← var(--xh-color-pink-600)
---xh-chart-categorical-4: oklch(0.623 0.18 70)  ← var(--xh-color-amber-500)
---xh-chart-categorical-5: oklch(0.488 0.163 237)  ← var(--xh-color-blue-700)
---xh-chart-categorical-6: oklch(0.488 0.196 149)  ← var(--xh-color-green-700)
---xh-chart-categorical-7: oklch(0.623 0.214 302)  ← var(--xh-color-purple-500)
---xh-chart-categorical-8: oklch(0.623 0.138 180)  ← var(--xh-color-teal-500)
+--xh-chart-categorical-1: color-mix(in oklab, oklch(0.488 0.196 258) 60%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-indigo-700) 60%, var(--xh-color-neutral-0))
+--xh-chart-categorical-2: color-mix(in oklab, oklch(0.623 0.18 70) 75%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-amber-500) 75%, var(--xh-color-neutral-0))
+--xh-chart-categorical-3: color-mix(in oklab, oklch(0.546 0.216 345) 45%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-pink-600) 45%, var(--xh-color-neutral-0))
+--xh-chart-categorical-4: color-mix(in oklab, oklch(0.488 0.196 125) 60%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-lime-700) 60%, var(--xh-color-neutral-0))
+--xh-chart-categorical-5: color-mix(in oklab, oklch(0.702 0.165 237) 75%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-blue-400) 75%, var(--xh-color-neutral-0))
+--xh-chart-categorical-6: color-mix(in oklab, oklch(0.546 0.216 50) 45%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-orange-600) 45%, var(--xh-color-neutral-0))
+--xh-chart-categorical-7: color-mix(in oklab, oklch(0.546 0.216 302) 60%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-purple-600) 60%, var(--xh-color-neutral-0))
+--xh-chart-categorical-8: color-mix(in oklab, oklch(0.702 0.165 149) 75%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-green-400) 75%, var(--xh-color-neutral-0))
 --xh-chart-categorical-other: oklch(0.556 0.018 255)  ← var(--xh-color-neutral-500)
 --xh-chart-crosshair: oklch(0.649 0.018 253)  ← var(--xh-fg-subtle)
 --xh-chart-deemphasis: oklch(0.371 0.006 258)  ← var(--xh-color-neutral-700)
@@ -82,10 +82,10 @@
 --xh-chart-node-width: 12px  ← var(--xh-space-3)
 --xh-chart-on-categorical-1: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-chart-on-categorical-2: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
---xh-chart-on-categorical-3: oklch(1 0 0)  ← var(--xh-color-neutral-0)
+--xh-chart-on-categorical-3: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-chart-on-categorical-4: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
---xh-chart-on-categorical-5: oklch(1 0 0)  ← var(--xh-color-neutral-0)
---xh-chart-on-categorical-6: oklch(1 0 0)  ← var(--xh-color-neutral-0)
+--xh-chart-on-categorical-5: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
+--xh-chart-on-categorical-6: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-chart-on-categorical-7: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-chart-on-categorical-8: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-chart-ordinal-1: oklch(0.885 0.062 258)  ← var(--xh-color-brand-200)
@@ -110,20 +110,20 @@
 --xh-chart-palette-brand-on-6: oklch(1 0 0)  ← var(--xh-color-neutral-0)
 --xh-chart-palette-brand-on-7: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-chart-palette-brand-on-8: oklch(1 0 0)  ← var(--xh-color-neutral-0)
---xh-chart-palette-categorical-1: oklch(0.623 0.214 258)  ← var(--xh-color-indigo-500)
---xh-chart-palette-categorical-2: oklch(0.623 0.206 125)  ← var(--xh-color-lime-500)
---xh-chart-palette-categorical-3: oklch(0.546 0.216 345)  ← var(--xh-color-pink-600)
---xh-chart-palette-categorical-4: oklch(0.623 0.18 70)  ← var(--xh-color-amber-500)
---xh-chart-palette-categorical-5: oklch(0.488 0.163 237)  ← var(--xh-color-blue-700)
---xh-chart-palette-categorical-6: oklch(0.488 0.196 149)  ← var(--xh-color-green-700)
---xh-chart-palette-categorical-7: oklch(0.623 0.214 302)  ← var(--xh-color-purple-500)
---xh-chart-palette-categorical-8: oklch(0.623 0.138 180)  ← var(--xh-color-teal-500)
+--xh-chart-palette-categorical-1: color-mix(in oklab, oklch(0.488 0.196 258) 60%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-indigo-700) 60%, var(--xh-color-neutral-0))
+--xh-chart-palette-categorical-2: color-mix(in oklab, oklch(0.623 0.18 70) 75%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-amber-500) 75%, var(--xh-color-neutral-0))
+--xh-chart-palette-categorical-3: color-mix(in oklab, oklch(0.546 0.216 345) 45%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-pink-600) 45%, var(--xh-color-neutral-0))
+--xh-chart-palette-categorical-4: color-mix(in oklab, oklch(0.488 0.196 125) 60%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-lime-700) 60%, var(--xh-color-neutral-0))
+--xh-chart-palette-categorical-5: color-mix(in oklab, oklch(0.702 0.165 237) 75%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-blue-400) 75%, var(--xh-color-neutral-0))
+--xh-chart-palette-categorical-6: color-mix(in oklab, oklch(0.546 0.216 50) 45%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-orange-600) 45%, var(--xh-color-neutral-0))
+--xh-chart-palette-categorical-7: color-mix(in oklab, oklch(0.546 0.216 302) 60%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-purple-600) 60%, var(--xh-color-neutral-0))
+--xh-chart-palette-categorical-8: color-mix(in oklab, oklch(0.702 0.165 149) 75%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-green-400) 75%, var(--xh-color-neutral-0))
 --xh-chart-palette-categorical-on-1: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-chart-palette-categorical-on-2: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
---xh-chart-palette-categorical-on-3: oklch(1 0 0)  ← var(--xh-color-neutral-0)
+--xh-chart-palette-categorical-on-3: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-chart-palette-categorical-on-4: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
---xh-chart-palette-categorical-on-5: oklch(1 0 0)  ← var(--xh-color-neutral-0)
---xh-chart-palette-categorical-on-6: oklch(1 0 0)  ← var(--xh-color-neutral-0)
+--xh-chart-palette-categorical-on-5: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
+--xh-chart-palette-categorical-on-6: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-chart-palette-categorical-on-7: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-chart-palette-categorical-on-8: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-chart-palette-monochrome-1: oklch(0.623 0.214 258)  ← var(--xh-color-brand-500)
@@ -246,9 +246,12 @@
 --xh-glyph-mark-chevrons-right: url("data:image/svg+xml,…")  sha256:6f309e052402
 --xh-glyph-mark-clock: url("data:image/svg+xml,…")  sha256:c83cb32c22e1
 --xh-glyph-mark-close: url("data:image/svg+xml,…")  sha256:247de13c80d0
+--xh-glyph-mark-collapse-all: url("data:image/svg+xml,…")  sha256:7c17b97ac480
+--xh-glyph-mark-copy: url("data:image/svg+xml,…")  sha256:d89ba3d64a3a
 --xh-glyph-mark-download: url("data:image/svg+xml,…")  sha256:ed3f64d86adf
 --xh-glyph-mark-edit: url("data:image/svg+xml,…")  sha256:88d66e363a68
 --xh-glyph-mark-ellipsis: url("data:image/svg+xml,…")  sha256:e7bb8cccc041
+--xh-glyph-mark-expand-all: url("data:image/svg+xml,…")  sha256:5c74f472d01b
 --xh-glyph-mark-eye: url("data:image/svg+xml,…")  sha256:0038fceca8f4
 --xh-glyph-mark-eye-off: url("data:image/svg+xml,…")  sha256:9adea7064151
 --xh-glyph-mark-file: url("data:image/svg+xml,…")  sha256:6e09bba9bc10
@@ -268,9 +271,12 @@
 --xh-glyph-mark-sort: url("data:image/svg+xml,…")  sha256:77960074f2de
 --xh-glyph-mark-sort-asc: url("data:image/svg+xml,…")  sha256:9ed79f28ca55
 --xh-glyph-mark-sort-desc: url("data:image/svg+xml,…")  sha256:a07f0e76013b
+--xh-glyph-mark-source: url("data:image/svg+xml,…")  sha256:78517fb830c8
 --xh-glyph-mark-star: url("data:image/svg+xml,…")  sha256:8b6d04fc240d
+--xh-glyph-mark-tree: url("data:image/svg+xml,…")  sha256:be31fbe3fdcb
 --xh-glyph-mark-undo: url("data:image/svg+xml,…")  sha256:8fb93e2d4e41
 --xh-glyph-mark-warning: url("data:image/svg+xml,…")  sha256:d1a7e5bfac39
+--xh-glyph-mark-wrap: url("data:image/svg+xml,…")  sha256:901f40569008
 --xh-glyph-mark-zoom-in: url("data:image/svg+xml,…")  sha256:f28482f0da28
 --xh-glyph-mark-zoom-out: url("data:image/svg+xml,…")  sha256:6779e03908af
 --xh-glyph-size-2xl: 40px
@@ -459,6 +465,9 @@
 --xh-syntax-keyword: oklch(0.82 0.14 300)
 --xh-syntax-number: oklch(0.85 0.12 75)
 --xh-syntax-string: oklch(0.85 0.12 165)
+--xh-table-cell-px-lg: 16px  ← var(--xh-space-4)
+--xh-table-cell-px-md: 12px  ← var(--xh-space-3)
+--xh-table-cell-px-sm: 8px  ← var(--xh-space-2)
 --xh-table-cell-py-lg: 12px  ← var(--xh-space-3)
 --xh-table-cell-py-md: 8px  ← var(--xh-space-2)
 --xh-table-cell-py-sm: 4px  ← var(--xh-space-1)

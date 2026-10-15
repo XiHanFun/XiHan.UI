@@ -1,39 +1,39 @@
 {
-  "$description": "由 build/emit-chart-palette.mjs 从基础色板计算，不要手改；emit-tokens.mjs 把 light / dark 两组并进对应主题的 chart 组。缺省的多彩分类：相邻色槽在红色弱、绿色弱模拟下的最小 ΔE 17.94，任意两色正常视觉 ΔE 的最小值 12.61。palette-<方案> 是 data-xh-chart-palette 可切换的各套配色。",
+  "$description": "由 build/emit-chart-palette.mjs 从基础色板计算，不要手改；emit-tokens.mjs 把 light / dark 两组并进对应主题的 chart 组。缺省的多彩分类：相邻色槽在红色弱、绿色弱模拟下的最小 ΔE 14.87，任意两色正常视觉 ΔE 的最小值 9.47。palette-<方案> 是 data-xh-chart-palette 可切换的各套配色。",
   "light": {
     "chart": {
       "categorical": {
         "1": {
           "$type": "color",
-          "$value": "{color.indigo.500}"
+          "$value": "color-mix(in oklab, {color.indigo.600} 60%, {color.neutral.0})"
         },
         "2": {
           "$type": "color",
-          "$value": "{color.lime.500}"
+          "$value": "color-mix(in oklab, {color.amber.600} 60%, {color.neutral.0})"
         },
         "3": {
           "$type": "color",
-          "$value": "{color.pink.600}"
+          "$value": "color-mix(in oklab, {color.pink.500} 45%, {color.neutral.0})"
         },
         "4": {
           "$type": "color",
-          "$value": "{color.amber.500}"
+          "$value": "color-mix(in oklab, {color.lime.600} 60%, {color.neutral.0})"
         },
         "5": {
           "$type": "color",
-          "$value": "{color.blue.700}"
+          "$value": "color-mix(in oklab, {color.blue.300} 90%, {color.neutral.0})"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.green.700}"
+          "$value": "color-mix(in oklab, {color.orange.400} 60%, {color.neutral.0})"
         },
         "7": {
           "$type": "color",
-          "$value": "{color.purple.500}"
+          "$value": "color-mix(in oklab, {color.purple.400} 75%, {color.neutral.0})"
         },
         "8": {
           "$type": "color",
-          "$value": "{color.teal.500}"
+          "$value": "color-mix(in oklab, {color.green.300} 90%, {color.neutral.0})"
         },
         "$description": "分类色槽：按系列在 series 中的声明顺序分配，隐藏、筛选、排序都不重新分配；不循环，没有第 9 色。"
       },
@@ -48,7 +48,7 @@
         },
         "3": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "4": {
           "$type": "color",
@@ -56,11 +56,11 @@
         },
         "5": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "7": {
           "$type": "color",
@@ -75,35 +75,35 @@
       "palette-categorical": {
         "1": {
           "$type": "color",
-          "$value": "{color.indigo.500}"
+          "$value": "color-mix(in oklab, {color.indigo.600} 60%, {color.neutral.0})"
         },
         "2": {
           "$type": "color",
-          "$value": "{color.lime.500}"
+          "$value": "color-mix(in oklab, {color.amber.600} 60%, {color.neutral.0})"
         },
         "3": {
           "$type": "color",
-          "$value": "{color.pink.600}"
+          "$value": "color-mix(in oklab, {color.pink.500} 45%, {color.neutral.0})"
         },
         "4": {
           "$type": "color",
-          "$value": "{color.amber.500}"
+          "$value": "color-mix(in oklab, {color.lime.600} 60%, {color.neutral.0})"
         },
         "5": {
           "$type": "color",
-          "$value": "{color.blue.700}"
+          "$value": "color-mix(in oklab, {color.blue.300} 90%, {color.neutral.0})"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.green.700}"
+          "$value": "color-mix(in oklab, {color.orange.400} 60%, {color.neutral.0})"
         },
         "7": {
           "$type": "color",
-          "$value": "{color.purple.500}"
+          "$value": "color-mix(in oklab, {color.purple.400} 75%, {color.neutral.0})"
         },
         "8": {
           "$type": "color",
-          "$value": "{color.teal.500}"
+          "$value": "color-mix(in oklab, {color.green.300} 90%, {color.neutral.0})"
         },
         "$description": "多彩分类（缺省）：与 chart.categorical 同值，供嵌套区域用 data-xh-chart-palette=\"categorical\" 改回缺省。"
       },
@@ -118,7 +118,7 @@
         },
         "3": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "4": {
           "$type": "color",
@@ -126,11 +126,11 @@
         },
         "5": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "7": {
           "$type": "color",
@@ -359,35 +359,35 @@
       "categorical": {
         "1": {
           "$type": "color",
-          "$value": "{color.indigo.500}"
+          "$value": "color-mix(in oklab, {color.indigo.700} 60%, {color.neutral.0})"
         },
         "2": {
           "$type": "color",
-          "$value": "{color.lime.500}"
+          "$value": "color-mix(in oklab, {color.amber.500} 75%, {color.neutral.0})"
         },
         "3": {
           "$type": "color",
-          "$value": "{color.pink.600}"
+          "$value": "color-mix(in oklab, {color.pink.600} 45%, {color.neutral.0})"
         },
         "4": {
           "$type": "color",
-          "$value": "{color.amber.500}"
+          "$value": "color-mix(in oklab, {color.lime.700} 60%, {color.neutral.0})"
         },
         "5": {
           "$type": "color",
-          "$value": "{color.blue.700}"
+          "$value": "color-mix(in oklab, {color.blue.400} 75%, {color.neutral.0})"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.green.700}"
+          "$value": "color-mix(in oklab, {color.orange.600} 45%, {color.neutral.0})"
         },
         "7": {
           "$type": "color",
-          "$value": "{color.purple.500}"
+          "$value": "color-mix(in oklab, {color.purple.600} 60%, {color.neutral.0})"
         },
         "8": {
           "$type": "color",
-          "$value": "{color.teal.500}"
+          "$value": "color-mix(in oklab, {color.green.400} 75%, {color.neutral.0})"
         },
         "$description": "分类色槽：按系列在 series 中的声明顺序分配，隐藏、筛选、排序都不重新分配；不循环，没有第 9 色。"
       },
@@ -402,7 +402,7 @@
         },
         "3": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "4": {
           "$type": "color",
@@ -410,11 +410,11 @@
         },
         "5": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "7": {
           "$type": "color",
@@ -429,35 +429,35 @@
       "palette-categorical": {
         "1": {
           "$type": "color",
-          "$value": "{color.indigo.500}"
+          "$value": "color-mix(in oklab, {color.indigo.700} 60%, {color.neutral.0})"
         },
         "2": {
           "$type": "color",
-          "$value": "{color.lime.500}"
+          "$value": "color-mix(in oklab, {color.amber.500} 75%, {color.neutral.0})"
         },
         "3": {
           "$type": "color",
-          "$value": "{color.pink.600}"
+          "$value": "color-mix(in oklab, {color.pink.600} 45%, {color.neutral.0})"
         },
         "4": {
           "$type": "color",
-          "$value": "{color.amber.500}"
+          "$value": "color-mix(in oklab, {color.lime.700} 60%, {color.neutral.0})"
         },
         "5": {
           "$type": "color",
-          "$value": "{color.blue.700}"
+          "$value": "color-mix(in oklab, {color.blue.400} 75%, {color.neutral.0})"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.green.700}"
+          "$value": "color-mix(in oklab, {color.orange.600} 45%, {color.neutral.0})"
         },
         "7": {
           "$type": "color",
-          "$value": "{color.purple.500}"
+          "$value": "color-mix(in oklab, {color.purple.600} 60%, {color.neutral.0})"
         },
         "8": {
           "$type": "color",
-          "$value": "{color.teal.500}"
+          "$value": "color-mix(in oklab, {color.green.400} 75%, {color.neutral.0})"
         },
         "$description": "多彩分类（缺省）：与 chart.categorical 同值，供嵌套区域用 data-xh-chart-palette=\"categorical\" 改回缺省。"
       },
@@ -472,7 +472,7 @@
         },
         "3": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "4": {
           "$type": "color",
@@ -480,11 +480,11 @@
         },
         "5": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "7": {
           "$type": "color",

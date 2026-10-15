@@ -51,6 +51,11 @@ export interface CategoricalPaletteOptions {
   readonly pairs: 'adjacent' | 'all'
   /** 另一模式下的同一套色板；给了才检查两套的色相顺序是否一致。 */
   readonly reference?: readonly Rgba[]
+  /**
+   * 色调：standard（缺省）走标准明度带；light 是往纯白里混出的浅色调，明度带抬到亮色 0.72–0.84、暗色 0.68–0.80，
+   * 彩度取 0.07–0.14（高于上限在亮端发荧光）。浅色调对承载面到不了 3:1，对比度照常记 warn，须由图例、色块内文字或数据表补偿。
+   */
+  readonly tone?: 'standard' | 'light'
 }
 
 export interface OrdinalRampOptions {
@@ -58,9 +63,11 @@ export interface OrdinalRampOptions {
   readonly surface: Rgba
 }
 
-/** OKLCH 明度带：亮色 0.43–0.77，暗色 0.48–0.67。 */
-const LIGHTNESS_BAND: Readonly<Record<PaletteMode, readonly [number, number]>> = { light: [0.43, 0.77], dark: [0.48, 0.67] }
-const CHROMA_FLOOR = 0.1
+/** 两种色调的 OKLCH 明度带与彩度带：标准亮色 0.43–0.77、暗色 0.48–0.67，彩度 ≥ 0.10；浅色调抬到亮端、彩度封顶。 */
+const TONES = {
+  standard: { band: { light: [0.43, 0.77], dark: [0.48, 0.67] }, chroma: [0.1, Number.POSITIVE_INFINITY] },
+  light: { band: { light: [0.72, 0.84], dark: [0.68, 0.8] }, chroma: [0.07, 0.14] },
+} as const satisfies Record<string, { band: Record<PaletteMode, readonly [number, number]>, chroma: readonly [number, number] }>
 /** 色觉障碍模拟下的 ΔE：≥ 8 通过，6–8 需要非颜色通道补偿，< 6 不合格。 */
 const CVD_TARGET = 8
 const CVD_FLOOR = 6
@@ -112,7 +119,8 @@ function report(mode: PaletteMode, checks: PaletteCheck[]): PaletteReport {
 export function validateCategoricalPalette(colors: readonly Rgba[], options: CategoricalPaletteOptions): PaletteReport {
   if (colors.length === 0 || colors.length > MAX_SLOTS)
     throw invalidArgument(`分类色板必须有 1–${MAX_SLOTS} 个颜色`, { count: colors.length })
-  const { mode, surface, pairs, reference } = options
+  const { mode, surface, pairs, reference, tone = 'standard' } = options
+  const { band, chroma: [chromaFloor, chromaCeiling] } = TONES[tone]
   const lch = colors.map(toOklch)
   const checks: PaletteCheck[] = []
 
@@ -136,7 +144,7 @@ export function validateCategoricalPalette(colors: readonly Rgba[], options: Cat
     checks.push({ id: 'order', status: 'skip', worst: null, findings: [] })
   }
 
-  const [low, high] = LIGHTNESS_BAND[mode]
+  const [low, high] = band[mode]
   const center = (low + high) / 2
   const lightFindings: PaletteFinding[] = []
   let farthest = lch[0]!.l
@@ -150,7 +158,7 @@ export function validateCategoricalPalette(colors: readonly Rgba[], options: Cat
 
   const chromaFindings: PaletteFinding[] = []
   lch.forEach(({ c }, i) => {
-    if (c < CHROMA_FLOOR)
+    if (c < chromaFloor || c > chromaCeiling)
       chromaFindings.push({ slots: [i + 1], value: c, status: 'fail' })
   })
   checks.push(summarize('chroma', Math.min(...lch.map(x => x.c)), chromaFindings))
