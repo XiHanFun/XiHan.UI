@@ -7,6 +7,9 @@
 
 import { invalidArgument } from '../errors'
 
+export { createCanvasMeasurer } from './canvas-measurer'
+export type { CanvasMeasurer } from './canvas-measurer'
+
 export interface FontSpec {
   readonly family: string
   /** 字号（px）。 */
@@ -14,6 +17,8 @@ export interface FontSpec {
   readonly weight: number
   /** 行高（px）。 */
   readonly lineHeight: number
+  /** 字形：normal（缺省）或 italic；估算器不区分，Canvas 度量器写进 font 串。 */
+  readonly style?: 'normal' | 'italic'
 }
 
 export interface TextSize {
@@ -115,6 +120,21 @@ export interface WrapOptions {
   readonly maxLines?: number
   /** auto：中日韩文字逐字可断、拉丁文按词断，单词本身过长时逐字断；char：任意两个字符之间都可断。 */
   readonly breakMode?: 'auto' | 'char'
+  /** 字间距（px），与 CSS letter-spacing 一样加在每个字符之后，可为负；缺省 0。 */
+  readonly letterSpacing?: number
+}
+
+/** 在度量器量出的宽度上，按字符数加上字间距。 */
+function withLetterSpacing(measurer: TextMeasurer, letterSpacing: number): TextMeasurer {
+  return {
+    get version() {
+      return measurer.version
+    },
+    measure(text: string, font: FontSpec): TextSize {
+      const size = measurer.measure(text, font)
+      return { ...size, width: size.width + letterSpacing * Array.from(text).length }
+    },
+  }
 }
 
 /** 把一段不含换行的文字切成可断的单元。 */
@@ -158,14 +178,17 @@ function tokenize(paragraph: string, mode: 'auto' | 'char'): string[] {
 
 /**
  * 折行：贪心地把单元放进 maxWidth 宽的行；显式换行符强制断行，行首行尾的空格去掉。
- * 超过 maxLines 时，余下的文字并进最后一行再截断加「…」。
+ * 超过 maxLines 时，余下的文字并进最后一行再截断加「…」。字间距计入每行宽度。
  */
 export function wrapText(text: string, maxWidth: number, font: FontSpec, measurer: TextMeasurer, options: WrapOptions = {}): string[] {
   checkWidth(maxWidth)
-  const { maxLines = Number.POSITIVE_INFINITY, breakMode = 'auto' } = options
+  const { maxLines = Number.POSITIVE_INFINITY, breakMode = 'auto', letterSpacing = 0 } = options
   if (!(maxLines >= 1))
     throw invalidArgument('maxLines 至少为 1', { maxLines })
-  const width = (s: string): number => measurer.measure(s, font).width
+  if (!Number.isFinite(letterSpacing))
+    throw invalidArgument('letterSpacing 必须是有限数', { letterSpacing })
+  const metered = letterSpacing === 0 ? measurer : withLetterSpacing(measurer, letterSpacing)
+  const width = (s: string): number => metered.measure(s, font).width
   const lines: string[] = []
 
   for (const paragraph of text.split(/\r?\n/)) {
@@ -213,6 +236,6 @@ export function wrapText(text: string, maxWidth: number, font: FontSpec, measure
       && !isWide(tail.codePointAt(0) as number) && !isWide(head.codePointAt(0) as number)
     return joined + (spaced ? ' ' : '') + next
   })
-  kept.push(ellipsize(rest, maxWidth, font, measurer))
+  kept.push(ellipsize(rest, maxWidth, font, metered))
   return kept
 }
