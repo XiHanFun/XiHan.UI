@@ -230,8 +230,8 @@ import { checkTableCells, planCellMerge, planTableLineInsert } from "@xihan-ui/d
 
 const size = { rows: 2, columns: 2 };
 const cells = [{ id: "a", row: 0, column: 0, rowSpan: 1, columnSpan: 1 }, { id: "b", row: 0, column: 1, rowSpan: 1, columnSpan: 1 }, { id: "c", row: 1, column: 0, rowSpan: 1, columnSpan: 2 }];
-checkTableCells(size, cells);             // []
-planCellMerge(cells, ["b", "a"]);         // { ok: true, anchor: "a", rowSpan: 1, columnSpan: 2, absorbed: ["b"] }
+checkTableCells(size, cells); // []
+planCellMerge(cells, ["b", "a"]); // { ok: true, anchor: "a", rowSpan: 1, columnSpan: 2, absorbed: ["b"] }
 planTableLineInsert(size, cells, "column", 1); // c 加长到 3 列，b 后移到第 2 列，第 0 行第 1 列补一个新格
 ```
 
