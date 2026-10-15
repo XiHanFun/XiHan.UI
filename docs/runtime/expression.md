@@ -93,6 +93,32 @@ conditionOf(outcome);                          // true
 - `evaluateSource(engine, source, scope, cache?)`：编译后求值；编译失败时以第一条问题作为求值失败返回，形状与 `evaluate` 的结果相同。不传 `cache` 时每次都编译。
 - `conditionOf(evaluation)`：把求值结果解释成条件。`true` 成立，`false` 与 `null` 不成立（与 `?:`、`IF` 中 null 走否定分支一致），其余结果为 `'not-boolean'`，求值失败为 `'failed'`。联动、网关、条件格式、显隐等条件位置都按这一条判定，后两种结果由宿主报成问题。
 
+## 依赖排序
+
+计算字段、联动赋值这类「名字 = 表达式」会互相引用，要按依赖先后求值，并在保存模板时查出循环：
+
+```ts
+import { checkExpressions, evaluatePlan, planExpressions } from "@xihan-ui/expression";
+
+const entries = [
+  { name: "total", expression: "subtotal + tax" },
+  { name: "tax", expression: "subtotal * 0.1" },
+  { name: "subtotal", expression: "price * qty" },
+];
+
+const plan = planExpressions(engine, entries, { identifiers: ["price", "qty"] });
+if (plan.ok)
+  evaluatePlan(plan.steps, { price: 10, qty: 3 }); // { ok: true, values: { subtotal: 30, tax: 3, total: 33 } }
+
+checkExpressions(engine, entries, { identifiers: ["price"] }); // 保存时校验：[{ code: "XH_EXPR_UNKNOWN_IDENTIFIER", name: "subtotal", ... }]
+```
+
+- `planExpressions(engine, entries, { identifiers? })`：编译每个条目并按相互引用排序，被引用的排在前面，互不相关的保持输入顺序。有问题时 `ok` 为 `false`，一次给出全部问题，不给步骤。
+- 问题有三类：条目编译不通过（带条目名 `name` 与引擎给出的问题码、源码区间）；两个条目同名（`XH_EXPR_DUPLICATE_NAME`）；循环引用（`XH_EXPR_CYCLE`，`names` 按引用顺序列出环上的名字，同一个环只报一次，自己引用自己也算）。
+- `identifiers` 是表达式之外可引用的名字，各条目自己的名字总是已知；不给时不检查未知名字。
+- `checkExpressions` 只返回问题，没有问题时为空数组。
+- `evaluatePlan(steps, scope)`：按步骤依次求值，每一步可以引用 `scope` 与此前各步的结果，同名时以步骤结果为准；遇到求值失败即停，返回失败的条目名与问题。不修改 `scope`。
+
 ## 文法
 
 ```text
@@ -330,6 +356,7 @@ const functions = createFunctionTable({
 | --- | --- |
 | 解析 | `XH_EXPR_EMPTY` `XH_EXPR_TOO_LONG` `XH_EXPR_TOO_DEEP` `XH_EXPR_UNEXPECTED_CHARACTER` `XH_EXPR_UNEXPECTED_TOKEN` `XH_EXPR_UNEXPECTED_END` `XH_EXPR_UNTERMINATED_STRING` `XH_EXPR_INVALID_ESCAPE` `XH_EXPR_INVALID_NUMBER` `XH_EXPR_INVALID_IDENTIFIER` `XH_EXPR_CHAINED_COMPARISON` `XH_EXPR_INVALID_CALLEE` `XH_EXPR_NUMBER_OVERFLOW` |
 | 检查 | `XH_EXPR_UNKNOWN_IDENTIFIER` `XH_EXPR_UNKNOWN_FUNCTION` `XH_EXPR_ARGUMENT_COUNT` `XH_EXPR_FORBIDDEN_MEMBER` `XH_EXPR_INVALID_AST` `XH_EXPR_TOO_DEEP` `XH_EXPR_NUMBER_OVERFLOW` |
+| 依赖排序 | `XH_EXPR_DUPLICATE_NAME` `XH_EXPR_CYCLE`，见「依赖排序」一节 |
 | 求值 | `XH_EXPR_TYPE_MISMATCH` `XH_EXPR_INVALID_ARGUMENT` `XH_EXPR_INVALID_INDEX` `XH_EXPR_DIVISION_BY_ZERO` `XH_EXPR_NUMBER_OVERFLOW` `XH_EXPR_DATE_OUT_OF_RANGE` `XH_EXPR_STRING_TOO_LONG` `XH_EXPR_STEP_LIMIT` `XH_EXPR_DEPTH_LIMIT` `XH_EXPR_UNSUPPORTED_VALUE` `XH_EXPR_NOW_UNAVAILABLE` `XH_EXPR_FUNCTION_FAILED`，以及运行时遇到的 `XH_EXPR_UNKNOWN_FUNCTION` `XH_EXPR_ARGUMENT_COUNT` `XH_EXPR_FORBIDDEN_MEMBER` `XH_EXPR_INVALID_AST` |
 
 `data` 里的键：`name`（标识符、函数或成员名）、`function`（出错的函数）、`index`（第几个实参，从 0 起）、`operator`、`actual`（实际类型）、`min` / `max` / `actual`（实参个数）、`max`（上限）、`char`（不认识的字符）、`kind` / `token`（意外的记号）。
