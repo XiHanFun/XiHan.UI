@@ -19,8 +19,10 @@ import { qrAlignmentPositions, qrDamage, qrEncode } from './qr-encode'
 const parts = matrixCodeAnatomy.build()
 
 const DEFAULT_FORMAT: MatrixCodeFormat = 'qr'
+/** 全部码制，与 `MatrixCodeFormat` 一一对应；供属性面板列选项、宿主校验模板时取用。 */
+export const MATRIX_CODE_FORMATS: readonly MatrixCodeFormat[] = ['qr', 'data-matrix', 'pdf417', 'aztec']
 /** 认识的码制；`format` 是从 DOM 特性来的字符串，得按运行时的表核，光靠类型拦不住。 */
-const FORMATS: ReadonlySet<string> = new Set<MatrixCodeFormat>(['qr', 'data-matrix', 'pdf417', 'aztec'])
+const FORMATS: ReadonlySet<string> = new Set<string>(MATRIX_CODE_FORMATS)
 const DEFAULT_LEVEL: QrLevel = 'M'
 const QR_LEVELS: ReadonlySet<string> = new Set<QrLevel>(['L', 'M', 'Q', 'H'])
 /** Aztec 纠错百分比的缺省与取值范围。 */

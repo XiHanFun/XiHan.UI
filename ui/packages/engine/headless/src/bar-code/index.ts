@@ -6,7 +6,7 @@
 // 导出 bar code 模块的公共接口。
 
 export { barCodeAnatomy } from './bar-code.anatomy'
-export { connectBarCode } from './bar-code.connect'
+export { BAR_CODE_FORMATS, connectBarCode } from './bar-code.connect'
 export { barCodeKeyboard } from './bar-code.keyboard'
 export { barCodeMeta } from './bar-code.meta'
 export type { BarCodeApi, BarCodeFormat, BarCodeProps, BarCodeState, BarCodeTextRun, BarCodeTranslations } from './bar-code.types'

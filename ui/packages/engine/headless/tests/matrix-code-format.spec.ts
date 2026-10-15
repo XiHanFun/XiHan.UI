@@ -1,11 +1,17 @@
 // matrix-code 的码制分派：缺省 qr、不认识的值落 error 态、不静默退回。
 import { normalizeProps } from '@xihan-ui/core'
 import { describe, expect, it } from 'vitest'
-import { connectMatrixCode } from '../src/matrix-code'
+import { connectMatrixCode, MATRIX_CODE_FORMATS } from '../src/matrix-code'
 
 const URL_23 = 'https://ui.xihanfun.com'
 
 describe('码制', () => {
+  it('mATRIX_CODE_FORMATS 列出 qr、data-matrix、pdf417、aztec 四种，每种都落到 ready 态', () => {
+    expect(MATRIX_CODE_FORMATS).toEqual(['qr', 'data-matrix', 'pdf417', 'aztec'])
+    for (const format of MATRIX_CODE_FORMATS)
+      expect(connectMatrixCode({ format, value: URL_23 }, normalizeProps).state, format).toBe('ready')
+  })
+
   it('缺省 qr：api 与根上的 data-format 都是 qr', () => {
     const api = connectMatrixCode({ value: URL_23 }, normalizeProps)
     expect(api.format).toBe('qr')
