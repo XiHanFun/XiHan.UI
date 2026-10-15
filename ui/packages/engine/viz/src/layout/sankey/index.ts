@@ -9,6 +9,7 @@
 // 流带在节点两端按对端的位置排序、算出两端的中线。走 @xihan-ui/viz/sankey 子路径。
 
 import { invalidArgument, VizError } from '../../errors'
+import { findCycle } from '../graph/algorithms'
 
 export interface SankeyNodeInput {
   readonly id: string
@@ -77,37 +78,6 @@ export interface SankeyGraph<N extends SankeyNodeInput = SankeyNodeInput> {
   readonly ky: number
 }
 
-/** 找一条环路：深度优先，回到栈里的节点就是环。 */
-function findCycle<N extends SankeyNodeInput>(nodes: readonly SankeyNode<N>[]): string[] | null {
-  const state = new Map<SankeyNode<N>, 0 | 1 | 2>()
-  const stack: SankeyNode<N>[] = []
-  const visit = (node: SankeyNode<N>): string[] | null => {
-    state.set(node, 1)
-    stack.push(node)
-    for (const link of node.sourceLinks) {
-      const next = link.target
-      if (state.get(next) === 1)
-        return [...stack.slice(stack.indexOf(next)).map(n => n.id), next.id]
-      if (!state.get(next)) {
-        const hit = visit(next)
-        if (hit)
-          return hit
-      }
-    }
-    stack.pop()
-    state.set(node, 2)
-    return null
-  }
-  for (const node of nodes) {
-    if (!state.get(node)) {
-      const hit = visit(node)
-      if (hit)
-        return hit
-    }
-  }
-  return null
-}
-
 export function sankey<N extends SankeyNodeInput>(nodeInputs: readonly N[], linkInputs: readonly SankeyLinkInput[], options: SankeyOptions): SankeyGraph<N> {
   const [width, height] = options.size
   if (!(width >= 0) || !(height >= 0))
@@ -142,9 +112,11 @@ export function sankey<N extends SankeyNodeInput>(nodeInputs: readonly N[], link
     target.targetLinks.push(link)
     return link
   })
-  const cycle = findCycle(nodes)
-  if (cycle)
+  const loop = findCycle(nodes.length, links.map(link => ({ source: link.source.index, target: link.target.index })))
+  if (loop) {
+    const cycle = loop.map(index => nodes[index]!.id)
     throw new VizError('XH_VIZ_SANKEY_CYCLE', `流带成环：${cycle.join(' → ')}`, { cycle })
+  }
 
   // 节点值：流入与流出里较大的
   for (const node of nodes) {

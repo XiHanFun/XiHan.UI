@@ -1,8 +1,8 @@
 // 折线工具的性质：总长、按比例取点（含零长段与零总长）、两端收回（跨点、收尽时相遇）、箭头三角形的朝向与尺寸，
-// 以及非法输入立即报错。
+// 拐角倒圆的折线路径与箭头路径，以及非法输入立即报错。
 import type { PolylinePoint } from '../src'
 import { describe, expect, it } from 'vitest'
-import { arrowHead, isVizError, polylineLength, polylinePointAt, segmentsPath, shortenPolyline } from '../src'
+import { arrowHead, arrowHeadPath, isVizError, polylineLength, polylinePointAt, roundedPolylinePath, segmentsPath, shortenPolyline } from '../src'
 import { forAll, integer } from './helpers/property'
 
 const p = (x: number, y: number): PolylinePoint => ({ x, y })
@@ -104,5 +104,28 @@ describe('非法输入', () => {
     expectThrows(() => shortenPolyline(L, { end: -1 }))
     expectThrows(() => arrowHead(p(0, 0), p(1, 0), { length: -1 }))
     expectThrows(() => arrowHead(p(0, 0), p(1, 0), { length: 1, width: Number.NaN }))
+  })
+})
+
+describe('roundedPolylinePath / arrowHeadPath', () => {
+  it('拐角倒圆弧，半径不越过相邻两段的一半', () => {
+    expect(roundedPolylinePath([p(0, 0), p(20, 0), p(20, 20)], 4)).toBe('M0,0L16,0A4,4,0,0,1,20,4L20,20')
+    expect(roundedPolylinePath([p(0, 0), p(4, 0), p(4, 20)], 10)).toBe('M0,0L2,0A2,2,0,0,1,4,2L4,20')
+    expect(roundedPolylinePath(L, 0)).toBe('M0,0L10,0L10,30')
+    expect(roundedPolylinePath([p(1, 2)], 5)).toBe('M1,2')
+    expect(roundedPolylinePath([], 5)).toBe('')
+  })
+
+  it('箭头路径与 arrowHead 同一几何，退化时为空串', () => {
+    expect(arrowHeadPath(p(0, 20), p(100, 20), { length: 10 })).toBe('M100,20L90,24L90,16Z')
+    expect(arrowHeadPath(p(0, 0), p(3, 0), { length: 1, width: 1 / 3, digits: 1 })).toBe('M3,0L2,0.2L2,-0.2Z')
+    expect(arrowHeadPath(p(5, 5), p(5, 5), { length: 6 })).toBe('')
+    expect(arrowHeadPath(p(0, 0), p(5, 5), { length: 0 })).toBe('')
+  })
+
+  it('非法输入立即报错', () => {
+    expectThrows(() => roundedPolylinePath(L, -1))
+    expectThrows(() => roundedPolylinePath([p(0, Number.NaN)], 1))
+    expectThrows(() => arrowHeadPath(p(0, 0), p(1, 0), { length: -1 }))
   })
 })
