@@ -52,7 +52,7 @@ export const SCHEMES: ChartScheme[]
 export const BRAND_HUES: string[]
 export const BRAND_PER_HUE: number
 export const BRAND_RULES: PaletteRules
-export const MUTED_MIX: number[]
+export const MUTED_TINT: { toward: string, amounts: number[] }
 export const MUTED_RULES: PaletteRules
 export const MONOCHROME: Record<'light' | 'dark', MonochromeStep[]>
 export const MONOCHROME_RULES: { contrast: number, head: { slots: number, distinct: number } }

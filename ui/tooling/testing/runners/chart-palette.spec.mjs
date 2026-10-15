@@ -1,7 +1,7 @@
 // 图表色板的两份实现对拍：令牌生成与门禁用的 packages/design/tokens/build/emit-chart-palette.mjs
 // （只依赖 node 内置模块，跑在构建之前），与 @xihan-ui/viz 的 color 模块（使用者拿来校验自己的色板）。
 // 两边的对比度、ΔE 与色觉障碍模拟必须逐值一致，令牌里的图表色板也必须过 viz 自己的检查——
-// 否则门禁判的与使用者复验的就不是同一件事。缺省分类色板是浅色调，viz 按 tone: 'light' 复验。
+// 否则门禁判的与使用者复验的就不是同一件事。缺省分类色板与有序色阶都是浅色调，viz 按 tone: 'light' 复验。
 // 颜色换算只在 sRGB 色域内对拍：出界时令牌一侧按浏览器的画法逐通道截断，viz 固定明度与色相降彩度收回。
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -87,9 +87,9 @@ describe('令牌里的图表色板过 viz 的检查', () => {
       close(worst(head, 'distinct'), ours['前 3 色两两 · 正常视觉 ΔE'])
     })
 
-    it(`${mode} 有序色阶通过`, () => {
-      const ordinal = Object.entries(semantic[mode].chart.ordinal).filter(([key]) => !key.startsWith('$')).map(([, token]) => withAlpha(resolve(token.$value)))
-      expect(viz.validateOrdinalRamp(ordinal, { mode, surface: withAlpha(surfaceOf(mode)) }).ok).toBe(true)
+    it(`${mode} 有序色阶按浅色调通过`, () => {
+      const ordinal = Object.entries(semantic[mode].chart.ordinal).filter(([key]) => !key.startsWith('$')).map(([, token]) => withAlpha(tokens.resolveExpression(colors, token.$value)))
+      expect(viz.validateOrdinalRamp(ordinal, { mode, surface: withAlpha(surfaceOf(mode)), tone: 'light' }).ok).toBe(true)
     })
   }
 })

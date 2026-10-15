@@ -24,14 +24,13 @@
 // ΔE 的最小值更大的一种，仍并列取先搜到的。搜索是确定的：同一份基础色板永远得到同一套结果。
 //
 // 配色方案：上面这套是缺省的「多彩分类」（categorical）。另有三套由祖先上的 data-xh-chart-palette 切换，
-// 同样写进 chart.palette.json，emit-tokens.mjs 为每套生成一个把分类色槽改指过去的取值块：
-//   monochrome  主题单色    品牌色阶由深到浅；色槽 1 是主题色（--xh-bg-brand 那一档），之后逐档变浅、贴近承载面，
-//                           末两档再往承载面里混。只靠明度区分系列，色槽 1 ≥ 3:1，浅档低于 3:1，靠图例与数据表补偿
-//   brand       柔和品牌    围着品牌色相取冷色一族加一抹粉，同一色相允许取两档；取基础色板原档、走标准明度带
-//                           （亮色 0.43–0.77、暗色 0.48–0.67，彩度 ≥ 0.10，对比度 ≥ 3:1），放开色相分散，
-//                           任意两色放宽到 7（同色相的两档只差一档）
-//   muted       莫兰迪柔彩  基础色板的色与明度相近的中性档在 oklab 里按比例混合压低彩度；彩度 0.035–0.10，
-//                           明度带收窄到中段，相邻正常视觉 ΔE ≥ 12、色觉障碍 ≥ 6
+// 同样写进 chart.palette.json，emit-tokens.mjs 为每套生成一个把分类色槽改指过去的取值块。四套都是浅色调：
+//   monochrome  主题单色    品牌色阶由深到浅；亮色从 500 起逐档变浅，末两档再往承载面里混，暗色从 300 起往深走、
+//                           贴近深色承载面。只靠明度区分系列，色槽 1 ≥ 1.6:1，浅档更低，靠图例与数据表补偿
+//   brand       柔和品牌    围着品牌色相取冷色一族加一抹粉，同一色相允许取两档；与多彩分类同样往纯白里混、同一明度带，
+//                           放开色相分散，相邻放宽到正常视觉 ΔE ≥ 12、色觉障碍 ≥ 6，任意两色 ≥ 7（同色相的两档只差一档）
+//   muted       莫兰迪柔彩  基础色板的色往浅灰（neutral 300）里在 oklab 里按比例混合，得到带灰的浅色；彩度 0.035–0.10，
+//                           明度带亮色 0.70–0.82、暗色 0.64–0.76，相邻正常视觉 ΔE ≥ 12、色觉障碍 ≥ 6
 // 三套都按亮暗两套承载面各自检查，门禁 check-chart-palette 从 tokens.css 复验。
 import { readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
@@ -47,9 +46,9 @@ export const STEPS = ['50', '100', '200', '300', '400', '500', '600', '700', '80
 /** 四套配色方案写进令牌的说明。 */
 const SCHEME_DESCRIPTIONS = {
   categorical: '多彩分类（缺省）：与 chart.categorical 同值，供嵌套区域用 data-xh-chart-palette="categorical" 改回缺省。',
-  monochrome: '主题单色：品牌色阶由深到浅，色槽 1 是主题色；随 data-brand 换色。浅档低于 3:1，靠图例与数据表补偿，单色方案适合四个以内的系列。',
-  brand: '柔和品牌：品牌色相两侧的冷色一族加一抹粉，同一色相至多两档。',
-  muted: '莫兰迪柔彩：基础色板的色与明度相近的中性档在 oklab 里混合，彩度 0.035–0.10。',
+  monochrome: '主题单色：品牌色阶由深到浅的浅色调，亮色从 500 起、暗色从 300 起；随 data-brand 换色。浅档对承载面很弱，靠图例与数据表补偿，单色方案适合四个以内的系列。',
+  brand: '柔和品牌：品牌色相两侧的冷色一族加一抹粉往纯白里混出的浅色调，同一色相至多两档。',
+  muted: '莫兰迪柔彩：基础色板的色往浅灰里在 oklab 里混出的带灰浅色，彩度 0.035–0.10。',
 }
 
 /** 色槽 1 的色相：基础色板里与品牌色逐值相同的那一族。 */
@@ -68,7 +67,7 @@ export const RULES = {
   chromaMax: 0.14,
   /** 分类色槽对承载面的下限：浅色调到不了 3:1，系列身份靠图例、色块内文字与数据表补偿。 */
   contrast: 1.6,
-  /** 其余数据色（顺序终点、发散两端、涨跌、「其他」）对承载面的下限。 */
+  /** 顺序终点、发散两端与「其他」对承载面的下限：它们承担大小、方向与照常可读的系列，不随浅色调放宽。 */
   markContrast: 3,
   adjacent: { distinct: 15, cvd: 8 },
   head: { slots: 3, distinct: 15, cvd: 8 },
@@ -79,7 +78,7 @@ export const RULES = {
   danger: 10,
   onContrast: 4.5,
   /** 有序色阶里对比度最低的一档对承载面的下限。 */
-  rampContrast: 2,
+  rampContrast: 1.5,
   /** 同一色阶各档之间、两套同一色槽之间允许的色相偏差（度）。 */
   hueTolerance: 30,
   /** 彩度低于它算中性色，色相不参与比较。 */
@@ -90,11 +89,8 @@ export const RULES = {
   centerContrast: 1.5,
 }
 
-/** 浅色调：多彩分类把基础色板各档往纯白里按这几个比例在 oklab 里混合（色占的百分比）。 */
+/** 浅色调：多彩分类与柔和品牌把基础色板各档往纯白里按这几个比例在 oklab 里混合（色占的百分比）。 */
 export const TINT = { toward: '{color.neutral.0}', amounts: [90, 75, 60, 45] }
-
-/** 标准明度带：柔和品牌取基础色板原档时的明度、彩度与对比度门槛。 */
-const STANDARD_BAND = { lightness: { light: [0.43, 0.77], dark: [0.48, 0.67] }, chroma: 0.1, chromaMax: null, contrast: 3 }
 
 /** 配色方案的取值：categorical 是缺省，其余经祖先上的 data-xh-chart-palette 切换。 */
 export const SCHEMES = ['categorical', 'monochrome', 'brand', 'muted']
@@ -102,14 +98,13 @@ export const SCHEMES = ['categorical', 'monochrome', 'brand', 'muted']
 /** 柔和品牌可取的色相：品牌色相两侧的冷色一族，粉作点缀；同一色相至多两档。 */
 export const BRAND_HUES = ['indigo', 'purple', 'blue', 'cyan', 'teal', 'pink']
 export const BRAND_PER_HUE = 2
-export const BRAND_RULES = { ...RULES, ...STANDARD_BAND, hueCluster: null, anyPair: 7 }
+export const BRAND_RULES = { ...RULES, hueCluster: null, anyPair: 7, adjacent: { distinct: 12, cvd: 6 }, head: { slots: 3, distinct: 12, cvd: 6 } }
 
-/** 莫兰迪柔彩：色与明度最接近的中性档按这几个比例在 oklab 里混合（色占的百分比）。 */
-export const MUTED_MIX = [40, 55]
+/** 莫兰迪柔彩：基础色板各档往浅灰里按这几个比例在 oklab 里混合（色占的百分比），得到带灰的浅色。 */
+export const MUTED_TINT = { toward: '{color.neutral.300}', amounts: [35, 50, 65] }
 export const MUTED_RULES = {
   ...RULES,
-  contrast: 3,
-  lightness: { light: [0.52, 0.68], dark: [0.55, 0.72] },
+  lightness: { light: [0.7, 0.82], dark: [0.64, 0.76] },
   chroma: 0.035,
   chromaMax: 0.1,
   adjacent: { distinct: 12, cvd: 6 },
@@ -119,16 +114,16 @@ export const MUTED_RULES = {
 }
 
 /**
- * 主题单色：品牌色阶由深到浅。亮色从 600（主题色）往浅走，暗色从 500（暗色的主题色）往深走、贴近深色承载面；
- * 对象项是往承载面里混（色占 amount%），给色阶末端再续两档。
+ * 主题单色：品牌色阶由深到浅的浅色调。亮色从 500 往浅走，暗色从 300 往深走、贴近深色承载面；
+ * 对象项是往承载面里混（色占 amount%），给亮色色阶末端再续两档。
  */
 export const MONOCHROME = {
-  light: ['600', '500', '400', '300', '200', '100', '50', { step: '50', amount: 50 }],
-  dark: ['500', '600', '700', '800', '900', '950', { step: '950', amount: 60 }, { step: '950', amount: 30 }],
+  light: ['500', '400', '300', '200', '100', '50', { step: '50', amount: 60 }, { step: '50', amount: 30 }],
+  dark: ['300', '400', '500', '600', '700', '800', '900', '950'],
 }
 export const MONOCHROME_RULES = {
-  /** 色槽 1 是主题色，对承载面 ≥ 3:1；其余逐档贴近承载面。 */
-  contrast: 3,
+  /** 色槽 1 对承载面的下限，与分类色槽同档；其余逐档贴近承载面。 */
+  contrast: RULES.contrast,
   /** 前几个色槽两两相邻的正常视觉 ΔE 下限：同色相只差一档明度，单色方案建议的系列数在这几个以内。 */
   head: { slots: 4, distinct: 5 },
 }
@@ -406,7 +401,7 @@ function monotonic(values) {
   return sign !== 0 && values.every((v, i) => i === 0 || Math.sign(v - values[i - 1]) === sign)
 }
 
-/** 有序色阶：单色相、明度单调、对承载面由强到弱，最弱一档 ≥ 2:1。 */
+/** 有序色阶：单色相、明度单调、对承载面由强到弱，最弱一档 ≥ 1.5:1（浅色调）。 */
 export function checkOrdinal(colors, { surface }) {
   const hue = singleHue(colors)
   const ratios = colors.map(c => contrastRatio(c, surface))
@@ -451,7 +446,7 @@ export function checkDiverging([negative, center, positive], { surface, danger }
   ]
 }
 
-/** 涨跌：两色都 ≥ 3:1，彼此在色觉障碍模拟下可分；缺省涨取成功色相、跌取危险色相。 */
+/** 涨跌：浅色调，两色都不低于分类色槽的对比度下限，彼此在色觉障碍模拟下可分；缺省涨取成功色相、跌取危险色相。 */
 export function checkRiseFall(rise, fall, { surface, success, danger }) {
   const ratio = Math.min(contrastRatio(rise, surface), contrastRatio(fall, surface))
   const apart = cvdDelta(rise, fall)
@@ -459,7 +454,7 @@ export function checkRiseFall(rise, fall, { surface, success, danger }) {
   const riseHue = hueDistance(toOklch(rise).h, toOklch(success).h)
   const fallHue = hueDistance(toOklch(fall).h, toOklch(danger).h)
   return [
-    item('涨跌 · 对比度', ratio, `≥ ${RULES.markContrast}`, ratio >= RULES.markContrast),
+    item('涨跌 · 对比度', ratio, `≥ ${RULES.contrast}`, ratio >= RULES.contrast),
     item('涨跌 · 色觉障碍 ΔE', apart, `≥ ${RULES.adjacent.cvd}`, apart >= RULES.adjacent.cvd),
     item('涨跌 · 正常视觉 ΔE', distinct, `≥ ${RULES.adjacent.distinct}`, distinct >= RULES.adjacent.distinct),
     item('涨跌 · 涨为成功色相', riseHue, `≤ ${RULES.hueTolerance}°`, riseHue <= RULES.hueTolerance),
@@ -707,13 +702,13 @@ export function solveCategorical(colors, palette, surfaces) {
 /** 柔和品牌：品牌色相两侧的冷色一族，同一色相至多两档。 */
 export function solveBrand(colors, palette, surfaces) {
   const hues = BRAND_HUES.filter(name => palette.includes(name))
-  return solve(nodesOf(colors, hues, surfaces, BRAND_RULES), { rules: BRAND_RULES, perHue: BRAND_PER_HUE, name: '柔和品牌' })
+  return solve(nodesOf(colors, hues, surfaces, BRAND_RULES, TINT), { rules: BRAND_RULES, perHue: BRAND_PER_HUE, name: '柔和品牌' })
 }
 
 /** 莫兰迪柔彩：每个色相的色与明度相近的中性档混合，压低彩度。 */
 export function solveMuted(colors, palette, surfaces) {
   const hues = palette.filter(name => !(name in EXCLUDED_HUES))
-  return solve(nodesOf(colors, hues, surfaces, MUTED_RULES, { amounts: MUTED_MIX }), { rules: MUTED_RULES, name: '莫兰迪柔彩' })
+  return solve(nodesOf(colors, hues, surfaces, MUTED_RULES, MUTED_TINT), { rules: MUTED_RULES, name: '莫兰迪柔彩' })
 }
 
 /** 主题单色的两套取值表达式。 */

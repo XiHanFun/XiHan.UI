@@ -14,6 +14,7 @@ import {
   loadPrimitiveColors,
   loadSurfaces,
   MONOCHROME,
+  MUTED_TINT,
   paletteDocument,
   parseOklch,
   SCHEMES,
@@ -50,12 +51,13 @@ const TINT_REF = /^color-mix\(in oklab, \{color\.([a-z]+)\.\d+\} (\d+)%, \{color
 const hueOf = (ref: string): string => (PRIMITIVE_REF.exec(ref) ?? TINT_REF.exec(ref))![1]!
 
 describe('图表分类色板', () => {
+  // 三套多色相方案各跑一次穷举搜索，本机约 3.5 秒；CI 的 2 核机器上会逼近 5 秒的缺省超时
   it('生成物与按当前基础色板重新搜索的结果逐字一致', async () => {
     const { colors, hues } = await loadPrimitiveColors()
     const surfaces = await loadSurfaces(colors)
     const fresh = await paletteDocument(colors, surfaces, solveCategorical(colors, hues, surfaces), hues)
     expect(committed).toEqual(fresh)
-  })
+  }, 30_000)
 
   it('亮暗两套各 8 个色槽，同一色槽同一色相，不取排除的色相', () => {
     const light = slotRefs(group('light', 'categorical')).map(hueOf)
@@ -96,17 +98,21 @@ describe('图表分类色板', () => {
     }
   })
 
-  it('主题单色取品牌色阶由深到浅，色槽 1 是主题色，末端往承载面里混', () => {
+  it('主题单色取品牌色阶由深到浅的浅色调：亮色从 500、暗色从 300 起，亮色末端往承载面里混', () => {
     for (const mode of MODES) {
       expect(slotRefs(group(mode, 'palette-monochrome'))).toEqual(MONOCHROME[mode].map(slot => typeof slot === 'string'
         ? `{color.brand.${slot}}`
         : `color-mix(in oklab, {color.brand.${slot.step}} ${slot.amount}%, {bg.surface})`))
     }
-    expect(slotRefs(group('light', 'palette-monochrome'))[0]).toBe('{color.brand.600}')
-    expect(slotRefs(group('dark', 'palette-monochrome'))[0]).toBe('{color.brand.500}')
+    expect(slotRefs(group('light', 'palette-monochrome'))[0]).toBe('{color.brand.500}')
+    expect(slotRefs(group('dark', 'palette-monochrome'))[0]).toBe('{color.brand.300}')
   })
 
-  it('柔和品牌只取品牌两侧的冷色一族与粉，同一色相至多两档，色槽 1 是品牌色相', () => {
+  it('柔和品牌只取品牌两侧的冷色一族与粉的浅色调，同一色相至多两档，色槽 1 是品牌色相', () => {
+    for (const mode of MODES) {
+      for (const ref of slotRefs(group(mode, 'palette-brand')))
+        expect(TINT.amounts).toContain(Number(TINT_REF.exec(ref)?.[2]))
+    }
     const hues = slotRefs(group('light', 'palette-brand')).map(hueOf)
     expect(hues[0]).toBe(FIRST_HUE)
     for (const hue of hues)
@@ -116,10 +122,12 @@ describe('图表分类色板', () => {
     expect(slotRefs(group('dark', 'palette-brand')).map(hueOf)).toEqual(hues)
   })
 
-  it('莫兰迪柔彩每个色槽都是基础色与中性档的 oklab 混合，色相互不重复', () => {
-    const mixed = /^color-mix\(in oklab, \{color\.([a-z]+)\.\d+\} \d+%, \{color\.neutral\.\d+\}\)$/
+  it('莫兰迪柔彩每个色槽都是基础色往浅灰里的 oklab 混合，色相互不重复', () => {
+    const mixed = /^color-mix\(in oklab, \{color\.([a-z]+)\.\d+\} (\d+)%, (\{color\.neutral\.\d+\})\)$/
     for (const mode of MODES) {
-      const hues = slotRefs(group(mode, 'palette-muted')).map(ref => mixed.exec(ref)?.[1])
+      const hits = slotRefs(group(mode, 'palette-muted')).map(ref => mixed.exec(ref))
+      expect(hits.every(hit => hit?.[3] === MUTED_TINT.toward && MUTED_TINT.amounts.includes(Number(hit[2])))).toBe(true)
+      const hues = hits.map(hit => hit?.[1])
       expect(hues.every(Boolean)).toBe(true)
       expect(new Set(hues).size).toBe(SLOTS)
       expect(hues[0]).toBe(FIRST_HUE)

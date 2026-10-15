@@ -145,42 +145,42 @@
       "palette-monochrome": {
         "1": {
           "$type": "color",
-          "$value": "{color.brand.600}"
+          "$value": "{color.brand.500}"
         },
         "2": {
           "$type": "color",
-          "$value": "{color.brand.500}"
+          "$value": "{color.brand.400}"
         },
         "3": {
           "$type": "color",
-          "$value": "{color.brand.400}"
+          "$value": "{color.brand.300}"
         },
         "4": {
           "$type": "color",
-          "$value": "{color.brand.300}"
+          "$value": "{color.brand.200}"
         },
         "5": {
           "$type": "color",
-          "$value": "{color.brand.200}"
+          "$value": "{color.brand.100}"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.brand.100}"
+          "$value": "{color.brand.50}"
         },
         "7": {
           "$type": "color",
-          "$value": "{color.brand.50}"
+          "$value": "color-mix(in oklab, {color.brand.50} 60%, {bg.surface})"
         },
         "8": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.brand.50} 50%, {bg.surface})"
+          "$value": "color-mix(in oklab, {color.brand.50} 30%, {bg.surface})"
         },
-        "$description": "主题单色：品牌色阶由深到浅，色槽 1 是主题色；随 data-brand 换色。浅档低于 3:1，靠图例与数据表补偿，单色方案适合四个以内的系列。"
+        "$description": "主题单色：品牌色阶由深到浅的浅色调，亮色从 500 起、暗色从 300 起；随 data-brand 换色。浅档对承载面很弱，靠图例与数据表补偿，单色方案适合四个以内的系列。"
       },
       "palette-monochrome-on": {
         "1": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "2": {
           "$type": "color",
@@ -215,42 +215,42 @@
       "palette-brand": {
         "1": {
           "$type": "color",
-          "$value": "{color.indigo.600}"
+          "$value": "color-mix(in oklab, {color.indigo.300} 90%, {color.neutral.0})"
         },
         "2": {
           "$type": "color",
-          "$value": "{color.teal.500}"
+          "$value": "color-mix(in oklab, {color.teal.400} 90%, {color.neutral.0})"
         },
         "3": {
           "$type": "color",
-          "$value": "{color.pink.600}"
+          "$value": "color-mix(in oklab, {color.purple.600} 60%, {color.neutral.0})"
         },
         "4": {
           "$type": "color",
-          "$value": "{color.blue.500}"
+          "$value": "color-mix(in oklab, {color.pink.400} 60%, {color.neutral.0})"
         },
         "5": {
           "$type": "color",
-          "$value": "{color.purple.600}"
+          "$value": "color-mix(in oklab, {color.indigo.600} 60%, {color.neutral.0})"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.cyan.600}"
+          "$value": "color-mix(in oklab, {color.pink.600} 60%, {color.neutral.0})"
         },
         "7": {
           "$type": "color",
-          "$value": "{color.purple.500}"
+          "$value": "color-mix(in oklab, {color.purple.500} 45%, {color.neutral.0})"
         },
         "8": {
           "$type": "color",
-          "$value": "{color.blue.700}"
+          "$value": "color-mix(in oklab, {color.cyan.600} 60%, {color.neutral.0})"
         },
-        "$description": "柔和品牌：品牌色相两侧的冷色一族加一抹粉，同一色相至多两档。"
+        "$description": "柔和品牌：品牌色相两侧的冷色一族加一抹粉往纯白里混出的浅色调，同一色相至多两档。"
       },
       "palette-brand-on": {
         "1": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "2": {
           "$type": "color",
@@ -258,7 +258,7 @@
         },
         "3": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "4": {
           "$type": "color",
@@ -266,11 +266,11 @@
         },
         "5": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "7": {
           "$type": "color",
@@ -278,44 +278,44 @@
         },
         "8": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "$description": "palette-brand 各色块内部的文字色，对色块 ≥ 4.5:1。"
       },
       "palette-muted": {
         "1": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.indigo.500} 40%, {color.neutral.450})"
+          "$value": "color-mix(in oklab, {color.indigo.800} 35%, {color.neutral.300})"
         },
         "2": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.amber.600} 55%, {color.neutral.500})"
+          "$value": "color-mix(in oklab, {color.lime.600} 50%, {color.neutral.300})"
         },
         "3": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.green.500} 40%, {color.neutral.450})"
+          "$value": "color-mix(in oklab, {color.red.400} 35%, {color.neutral.300})"
         },
         "4": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.blue.600} 55%, {color.neutral.500})"
+          "$value": "color-mix(in oklab, {color.amber.600} 50%, {color.neutral.300})"
         },
         "5": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.orange.500} 40%, {color.neutral.450})"
+          "$value": "color-mix(in oklab, {color.blue.400} 35%, {color.neutral.300})"
         },
         "6": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.purple.600} 40%, {color.neutral.500})"
+          "$value": "color-mix(in oklab, {color.teal.500} 65%, {color.neutral.300})"
         },
         "7": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.lime.600} 40%, {color.neutral.500})"
+          "$value": "color-mix(in oklab, {color.purple.400} 50%, {color.neutral.300})"
         },
         "8": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.pink.500} 40%, {color.neutral.450})"
+          "$value": "color-mix(in oklab, {color.green.400} 50%, {color.neutral.300})"
         },
-        "$description": "莫兰迪柔彩：基础色板的色与明度相近的中性档在 oklab 里混合，彩度 0.035–0.10。"
+        "$description": "莫兰迪柔彩：基础色板的色往浅灰里在 oklab 里混出的带灰浅色，彩度 0.035–0.10。"
       },
       "palette-muted-on": {
         "1": {
@@ -324,7 +324,7 @@
         },
         "2": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "3": {
           "$type": "color",
@@ -332,7 +332,7 @@
         },
         "4": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "5": {
           "$type": "color",
@@ -340,11 +340,11 @@
         },
         "6": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "7": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "8": {
           "$type": "color",
@@ -499,37 +499,37 @@
       "palette-monochrome": {
         "1": {
           "$type": "color",
-          "$value": "{color.brand.500}"
+          "$value": "{color.brand.300}"
         },
         "2": {
           "$type": "color",
-          "$value": "{color.brand.600}"
+          "$value": "{color.brand.400}"
         },
         "3": {
           "$type": "color",
-          "$value": "{color.brand.700}"
+          "$value": "{color.brand.500}"
         },
         "4": {
           "$type": "color",
-          "$value": "{color.brand.800}"
+          "$value": "{color.brand.600}"
         },
         "5": {
           "$type": "color",
-          "$value": "{color.brand.900}"
+          "$value": "{color.brand.700}"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.brand.950}"
+          "$value": "{color.brand.800}"
         },
         "7": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.brand.950} 60%, {bg.surface})"
+          "$value": "{color.brand.900}"
         },
         "8": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.brand.950} 30%, {bg.surface})"
+          "$value": "{color.brand.950}"
         },
-        "$description": "主题单色：品牌色阶由深到浅，色槽 1 是主题色；随 data-brand 换色。浅档低于 3:1，靠图例与数据表补偿，单色方案适合四个以内的系列。"
+        "$description": "主题单色：品牌色阶由深到浅的浅色调，亮色从 500 起、暗色从 300 起；随 data-brand 换色。浅档对承载面很弱，靠图例与数据表补偿，单色方案适合四个以内的系列。"
       },
       "palette-monochrome-on": {
         "1": {
@@ -538,11 +538,11 @@
         },
         "2": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "3": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "4": {
           "$type": "color",
@@ -569,42 +569,42 @@
       "palette-brand": {
         "1": {
           "$type": "color",
-          "$value": "{color.indigo.600}"
+          "$value": "color-mix(in oklab, {color.indigo.400} 75%, {color.neutral.0})"
         },
         "2": {
           "$type": "color",
-          "$value": "{color.teal.500}"
+          "$value": "color-mix(in oklab, {color.teal.400} 90%, {color.neutral.0})"
         },
         "3": {
           "$type": "color",
-          "$value": "{color.pink.600}"
+          "$value": "color-mix(in oklab, {color.purple.700} 60%, {color.neutral.0})"
         },
         "4": {
           "$type": "color",
-          "$value": "{color.blue.500}"
+          "$value": "color-mix(in oklab, {color.pink.600} 45%, {color.neutral.0})"
         },
         "5": {
           "$type": "color",
-          "$value": "{color.purple.600}"
+          "$value": "color-mix(in oklab, {color.indigo.700} 60%, {color.neutral.0})"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.cyan.600}"
+          "$value": "color-mix(in oklab, {color.pink.700} 60%, {color.neutral.0})"
         },
         "7": {
           "$type": "color",
-          "$value": "{color.purple.500}"
+          "$value": "color-mix(in oklab, {color.purple.400} 75%, {color.neutral.0})"
         },
         "8": {
           "$type": "color",
-          "$value": "{color.blue.700}"
+          "$value": "color-mix(in oklab, {color.cyan.700} 60%, {color.neutral.0})"
         },
-        "$description": "柔和品牌：品牌色相两侧的冷色一族加一抹粉，同一色相至多两档。"
+        "$description": "柔和品牌：品牌色相两侧的冷色一族加一抹粉往纯白里混出的浅色调，同一色相至多两档。"
       },
       "palette-brand-on": {
         "1": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "2": {
           "$type": "color",
@@ -612,7 +612,7 @@
         },
         "3": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "4": {
           "$type": "color",
@@ -620,11 +620,11 @@
         },
         "5": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "6": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "7": {
           "$type": "color",
@@ -632,44 +632,44 @@
         },
         "8": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "$description": "palette-brand 各色块内部的文字色，对色块 ≥ 4.5:1。"
       },
       "palette-muted": {
         "1": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.indigo.400} 40%, {color.neutral.400})"
+          "$value": "color-mix(in oklab, {color.indigo.600} 35%, {color.neutral.300})"
         },
         "2": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.amber.600} 55%, {color.neutral.500})"
+          "$value": "color-mix(in oklab, {color.lime.500} 50%, {color.neutral.300})"
         },
         "3": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.green.400} 55%, {color.neutral.400})"
+          "$value": "color-mix(in oklab, {color.red.800} 50%, {color.neutral.300})"
         },
         "4": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.blue.600} 55%, {color.neutral.500})"
+          "$value": "color-mix(in oklab, {color.amber.600} 35%, {color.neutral.300})"
         },
         "5": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.orange.400} 40%, {color.neutral.400})"
+          "$value": "color-mix(in oklab, {color.blue.800} 50%, {color.neutral.300})"
         },
         "6": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.purple.600} 40%, {color.neutral.500})"
+          "$value": "color-mix(in oklab, {color.teal.500} 50%, {color.neutral.300})"
         },
         "7": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.lime.600} 40%, {color.neutral.500})"
+          "$value": "color-mix(in oklab, {color.purple.800} 50%, {color.neutral.300})"
         },
         "8": {
           "$type": "color",
-          "$value": "color-mix(in oklab, {color.pink.500} 40%, {color.neutral.450})"
+          "$value": "color-mix(in oklab, {color.green.800} 50%, {color.neutral.300})"
         },
-        "$description": "莫兰迪柔彩：基础色板的色与明度相近的中性档在 oklab 里混合，彩度 0.035–0.10。"
+        "$description": "莫兰迪柔彩：基础色板的色往浅灰里在 oklab 里混出的带灰浅色，彩度 0.035–0.10。"
       },
       "palette-muted-on": {
         "1": {
@@ -678,7 +678,7 @@
         },
         "2": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "3": {
           "$type": "color",
@@ -686,7 +686,7 @@
         },
         "4": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "5": {
           "$type": "color",
@@ -694,11 +694,11 @@
         },
         "6": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "7": {
           "$type": "color",
-          "$value": "{color.neutral.0}"
+          "$value": "{color.neutral.950}"
         },
         "8": {
           "$type": "color",

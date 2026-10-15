@@ -221,6 +221,14 @@ describe('有序色阶校验', () => {
     expect(faint.checks.find(c => c.id === 'contrast')).toMatchObject({ status: 'fail', findings: [{ slots: [2] }] })
   })
 
+  it('浅色调：最弱一档放宽到 ≥ 1.5:1，再淡仍判 fail', () => {
+    const pale = ['oklch(0.62 0.17 258)', 'oklch(0.72 0.13 258)', 'oklch(0.85 0.07 258)'].map(hex)
+    expect(validateOrdinalRamp(pale, { mode: 'light', surface: WHITE }).ok).toBe(false)
+    expect(validateOrdinalRamp(pale, { mode: 'light', surface: WHITE, tone: 'light' }).ok).toBe(true)
+    const faint = validateOrdinalRamp([pale[0]!, hex('oklch(0.93 0.03 258)')], { mode: 'light', surface: WHITE, tone: 'light' })
+    expect(faint.checks.find(c => c.id === 'contrast')).toMatchObject({ status: 'fail', findings: [{ slots: [2] }] })
+  })
+
   it('少于 2 档时报错', () => {
     expect(() => validateOrdinalRamp([ramp[0]!], { mode: 'light', surface: WHITE })).toThrow(/2 档/)
   })
