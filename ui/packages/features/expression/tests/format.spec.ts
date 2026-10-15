@@ -148,3 +148,44 @@ describe('格式化：人民币大写', () => {
     expect(fails(-1e16, { kind: 'rmb-upper' })).toBe('XH_EXPR_FORMAT_OUT_OF_RANGE')
   })
 })
+
+describe('格式化：数字字形', () => {
+  it('罗马数字大小写，范围 1 至 3999', () => {
+    expect(formatValue(1, { kind: 'numeral', style: 'roman-upper' })).toBe('I')
+    expect(formatValue(4, { kind: 'numeral', style: 'roman-upper' })).toBe('IV')
+    expect(formatValue(14, { kind: 'numeral', style: 'roman-lower' })).toBe('xiv')
+    expect(formatValue(1994, { kind: 'numeral', style: 'roman-upper' })).toBe('MCMXCIV')
+    expect(formatValue('3999', { kind: 'numeral', style: 'roman-upper' })).toBe('MMMCMXCIX')
+    expect(fails(0, { kind: 'numeral', style: 'roman-upper' })).toBe('XH_EXPR_FORMAT_OUT_OF_RANGE')
+    expect(fails(4000, { kind: 'numeral', style: 'roman-upper' })).toBe('XH_EXPR_FORMAT_OUT_OF_RANGE')
+    expect(fails(-1, { kind: 'numeral', style: 'roman-lower' })).toBe('XH_EXPR_FORMAT_OUT_OF_RANGE')
+  })
+
+  it.each([
+    [0, '零', '零'],
+    [7, '七', '柒'],
+    [10, '十', '壹拾'],
+    [15, '十五', '壹拾伍'],
+    [20, '二十', '贰拾'],
+    [101, '一百零一', '壹佰零壹'],
+    [110, '一百一十', '壹佰壹拾'],
+    [1001, '一千零一', '壹仟零壹'],
+    [10010, '一万零一十', '壹万零壹拾'],
+    [100000, '十万', '壹拾万'],
+    [100010, '十万零一十', '壹拾万零壹拾'],
+    [100000000, '一亿', '壹亿'],
+    [-23, '负二十三', '负贰拾叁'],
+  ])('中文数字 %s：小写 %s，大写 %s', (value, lower, upper) => {
+    expect(formatValue(value, { kind: 'numeral', style: 'cn-lower' })).toBe(lower)
+    expect(formatValue(value, { kind: 'numeral', style: 'cn-upper' })).toBe(upper)
+  })
+
+  it('中文数字绝对值达到一亿亿时报错，小数报值不合法，样式不认识报格式说明不合法', () => {
+    expect(formatValue('9999999999999999', { kind: 'numeral', style: 'cn-lower' })).toBe('九千九百九十九万亿九千九百九十九亿九千九百九十九万九千九百九十九')
+    expect(fails('10000000000000000', { kind: 'numeral', style: 'cn-upper' })).toBe('XH_EXPR_FORMAT_OUT_OF_RANGE')
+    expect(fails(1.5, { kind: 'numeral', style: 'cn-lower' })).toBe('XH_EXPR_FORMAT_INVALID_VALUE')
+    expect(fails(1.5, { kind: 'numeral', style: 'roman-upper' })).toBe('XH_EXPR_FORMAT_INVALID_VALUE')
+    expect(fails(1, { kind: 'numeral', style: 'arabic' } as never)).toBe('XH_EXPR_FORMAT_INVALID_SPEC')
+    expect(formatValue(null, { kind: 'numeral', style: 'cn-lower' })).toBe('')
+  })
+})

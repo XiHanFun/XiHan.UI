@@ -10056,6 +10056,8 @@
       "NodeRange",
       "NumberFormatSpec",
       "NumberNode",
+      "NumeralFormatSpec",
+      "NumeralStyle",
       "ParseOptions",
       "ParseResult",
       "PercentFormatSpec",

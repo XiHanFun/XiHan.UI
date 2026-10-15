@@ -112,7 +112,7 @@
     "name": "expression",
     "path": "packages/features/expression/dist/index.js",
     "gzip": true,
-    "limit": "17.2 kB"
+    "limit": "18.6 kB"
   },
   {
     "name": "designer-kit",
