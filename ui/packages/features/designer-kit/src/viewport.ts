@@ -7,6 +7,7 @@
 // 带旋转角的矩形在适配、显露与限制平移时按旋转后的包围盒计算。
 
 import type { Point, Rect, Size } from './geometry'
+import { wheelPixels } from '@xihan-ui/pointer'
 import { rotatedBounds } from './geometry'
 
 /** 视口：平移量（屏幕像素）与缩放倍数。 */
@@ -88,10 +89,9 @@ export function zoomBy(viewport: Viewport, factor: number, anchor: Point, limits
   return zoomTo(viewport, viewport.zoom * factor, anchor, limits)
 }
 
-/** 滚轮滚动量换成缩放倍数：向上滚放大、向下滚缩小，按行或按页滚动先折成像素。 */
+/** 滚轮滚动量换成缩放倍数：向上滚放大、向下滚缩小，按行或按页滚动先经 wheelPixels 折成像素。 */
 export function wheelZoomFactor(deltaY: number, deltaMode = 0, speed = 0.002): number {
-  const pixels = deltaMode === 1 ? deltaY * 16 : deltaMode === 2 ? deltaY * 800 : deltaY
-  return Math.exp(-pixels * speed)
+  return Math.exp(-wheelPixels({ deltaX: 0, deltaY, deltaMode }).y * speed)
 }
 
 export interface FitOptions {

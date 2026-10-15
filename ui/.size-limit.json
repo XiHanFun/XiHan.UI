@@ -45,7 +45,7 @@
     "name": "pointer",
     "path": "packages/engine/pointer/dist/index.js",
     "gzip": true,
-    "limit": "2.8 kB"
+    "limit": "3.1 kB"
   },
   {
     "name": "viz",

@@ -117,7 +117,8 @@
     "features/designer-kit": {
       "level": 2,
       "canDependOn": [
-        "engine/core"
+        "engine/core",
+        "engine/pointer"
       ]
     },
     "features/xlsx": {

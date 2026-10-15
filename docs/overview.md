@@ -35,7 +35,7 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式服务于一个
 | 2 | `chat-stream` | `core` |
 | 2 | `markdown` | `core` |
 | 2 | `sound` | `core` |
-| 2 | `designer-kit` | `core` |
+| 2 | `designer-kit` | `core` `pointer` |
 | 2 | `animations` | `core` `motion` |
 | 3 | `headless` | `core` `tokens` `motion` `pointer` `viz` |
 | 3 | `styles` | —（纯 CSS，不得依赖任何 JS 包） |

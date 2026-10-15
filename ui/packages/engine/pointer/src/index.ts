@@ -44,3 +44,5 @@ export type {
   PointerSessionOptions,
   PointerVelocity,
 } from './session/types'
+export { wheelPixels } from './wheel/pixels'
+export type { WheelDelta, WheelPixelOptions } from './wheel/pixels'

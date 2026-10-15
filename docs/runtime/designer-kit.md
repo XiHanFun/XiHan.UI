@@ -30,7 +30,7 @@ const { dx, dy, guides } = snapRect(draggingRect, { targets, threshold: 6 / view
 pnpm add @xihan-ui/designer-kit
 ```
 
-运行时只依赖 `@xihan-ui/core` 的 `./json` 子入口，import 无副作用，浏览器与服务端都能运行。
+运行时只依赖 `@xihan-ui/core` 的 `./json` 子入口与 `@xihan-ui/pointer` 的滚轮换算，import 无副作用，浏览器与服务端都能运行。
 
 ## 撤销重做
 
