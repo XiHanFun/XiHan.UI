@@ -29,13 +29,13 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式服务于一个
 | 1 | `pointer` | — |
 | 1 | `viz` | — |
 | 1 | `expression` | — |
-| 1 | `designer-kit` | — |
 | 1 | `xlsx` | — |
 | 2 | `position` | `core` |
 | 2 | `code-highlight` | `core` |
 | 2 | `chat-stream` | `core` |
 | 2 | `markdown` | `core` |
 | 2 | `sound` | `core` |
+| 2 | `designer-kit` | `core` |
 | 2 | `animations` | `core` `motion` |
 | 3 | `headless` | `core` `tokens` `motion` `pointer` `viz` |
 | 3 | `styles` | —（纯 CSS，不得依赖任何 JS 包） |
@@ -120,7 +120,7 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 | `@xihan-ui/sound` | 纯 Web Audio 程序化 UI 音效，零音频文件 |
 | `@xihan-ui/animations` | 现成的进场与注意动效、错开起播、文字拆分 |
 | `@xihan-ui/expression` | 受限表达式语言：公式与条件解析成可序列化的语法树，按十进制确定性求值，见[受限表达式](/runtime/expression) |
-| `@xihan-ui/designer-kit` | 画布式设计器的内核：撤销重做历史栈、视口平移缩放、对齐吸附与参考线、对齐分布与框选，见[设计器内核](/runtime/designer-kit) |
+| `@xihan-ui/designer-kit` | 画布式设计器的内核：撤销重做历史栈、按路径的编辑操作、视口平移缩放、对齐吸附与参考线、对齐分布与框选、文档内唯一 id，见[设计器内核](/runtime/designer-kit) |
 | `@xihan-ui/xlsx` | 零依赖的 xlsx 写出：带类型的单元格、数字与日期格式、合并单元格与冻结窗格，见[表格导出](/runtime/xlsx) |
 
 **开发工具**

@@ -1,6 +1,6 @@
 # 设计器内核
 
-`@xihan-ui/designer-kit` 是画布式设计器的公共内核：撤销重做历史栈、视口平移缩放、对齐吸附与参考线、多选对齐与等距分布、框选与命中、变换控制柄、标尺刻度。打印、流程、表单、报表这类设计器都要做这几件事，内核把它们写成与文档形状无关的纯函数，各设计器只需提供自己的文档模型与编辑操作。
+`@xihan-ui/designer-kit` 是画布式设计器的公共内核：撤销重做历史栈、按 JSON 路径的编辑操作、文档内唯一 id、视口平移缩放、对齐吸附与参考线、多选对齐与等距分布、框选与命中、变换控制柄、标尺刻度，以及属性面板的自定义编辑器接口。打印、流程、表单、报表这类设计器都要做这几件事，内核把它们写成与文档形状无关的纯函数，各设计器只需提供自己的文档模型与编辑操作。
 
 ```ts
 import { createHistory, fitRect, snapRect, zoomBy } from "@xihan-ui/designer-kit";
@@ -30,7 +30,7 @@ const { dx, dy, guides } = snapRect(draggingRect, { targets, threshold: 6 / view
 pnpm add @xihan-ui/designer-kit
 ```
 
-零运行时依赖，import 无副作用，浏览器与服务端都能运行。
+运行时只依赖 `@xihan-ui/core` 的 `./json` 子入口，import 无副作用，浏览器与服务端都能运行。
 
 ## 撤销重做
 
@@ -85,6 +85,52 @@ history.commit(); // 整段拖动记为一步
 ```
 
 事务可嵌套，最外层 `commit` 时才入栈；`rollback` 放弃整个事务（含外层），重做栈保持事务前的样子。`transact(run, label)` 在 `run` 正常返回时提交、抛错时回滚后重新抛出。事务中调用 `undo`、`redo`、`reset`、`clear` 会抛错，事务中的执行忽略合并键。
+
+### 依次应用一组操作
+
+`applyInSequence(apply, document, operations)` 依次应用一组操作，返回最终文档与按反序拼接的逆操作，任一操作抛错时整体抛错、输入文档不变。历史栈的 `execute` 内部就是用它，设计器自己的 `applyOperations` 也可以直接写成它。
+
+## 路径编辑操作
+
+文档就是一份 JSON 时，可以不另写操作类型，直接按路径编辑。路径与读写语义见 `@xihan-ui/core/json`：段只有对象键（只认自有属性）与数组下标两种，原型键、负数与小数一律不合法。
+
+| 操作 | 作用 | 逆操作 |
+| --- | --- | --- |
+| `{ type: 'set', path, value?, createMissing? }` | 写入 `value`；`value` 缺省时删除对象键。缺中间层时报错，`createMissing: true` 才补成空对象。空路径替换整个文档 | 原来有值时 `set` 回原值，原来没有时 `remove`；补出中间层时删掉补出的最上面一层 |
+| `{ type: 'insert', path, index?, value }` | 把 `value` 插入 `path` 指向的数组，`index` 缺省时追加 | `remove` 插入的那一项 |
+| `{ type: 'remove', path }` | 删除对象键或数组项 | 对象键 `set` 回去，数组项 `insert` 回原位置 |
+| `{ type: 'move', path, index }` | 把数组项移到同一数组的 `index` 处 | `move` 回原位置 |
+
+```ts
+import { applyPathOperation, createHistory } from "@xihan-ui/designer-kit";
+
+const history = createHistory({ document: template, apply: applyPathOperation });
+history.execute([{ type: "set", path: ["rows", 0, "title"], value: "合计" }], { merge: "rows.0.title" });
+history.execute([{ type: "move", path: ["rows", 2], index: 0 }], { label: "上移" });
+```
+
+`applyPathOperation(document, operation)` 不修改输入，未改动的部分沿用原引用，写入的值不做拷贝；没有带来变化时返回同一个文档、逆操作为空数组，历史栈因此不会记下空步。`applyPathOperations` 依次应用一组。失败时抛 `PathOperationError`，`message` 就是 `code`，`operation` 是失败的那个操作：
+
+| `code` | 含义 |
+| --- | --- |
+| `invalid-operation` | 不是已知的操作或缺少 `path` |
+| `invalid-path` | 路径段不合法，或对空路径做 `remove` / `move` |
+| `path-not-found` | 路径不存在，或段的种类与所在容器不符 |
+| `invalid-value` | 值不是 JSON，或想用 `set` 删除数组项 |
+| `not-an-array` | `insert` / `move` 指向的不是数组 |
+| `index-out-of-range` | `insert` / `move` 的目标下标越界 |
+
+按 id 或名字定位数组项属于各设计器自己的语义，先把它解析成下标再交给路径操作。
+
+## 文档内唯一 id
+
+| 函数 | 说明 |
+| --- | --- |
+| `nextFreeId(prefix, taken)` | 形如 `${prefix}${n}`，`n` 取 `taken` 里同前缀正整数序号的最大值加一 |
+| `createIdAllocator(prefix, taken?)` | 分配器：`next()` 从已有最大序号之后连续分配、互不重复；`reserve(id)` 登记已被占用的 id |
+| `remapIds(ids, allocate)` | 为一组旧 id 各分配一个新 id，返回旧 → 新的对照表（粘贴、复制时改写引用用）；重复的旧 id 只分配一次 |
+
+分隔符算在前缀里：`createIdAllocator("text-")` 给出 `text-1`、`text-2`。这里生成的是文档里保存的 id；DOM 上关联 ARIA 用的 id 走适配器自己的生成器，两者不要混用。
 
 ## 视口
 
@@ -155,6 +201,27 @@ interface SnapGuide {
 ## 标尺
 
 `rulerTicks({ start, end, pixelsPerUnit, minMajorSpacing?, minMinorSpacing?, steps? })` 返回 `{ step, minorStep, ticks }`，每个刻度是 `{ value, offset, major }`。单位由调用方决定：打印设计器传毫米与「每毫米的屏幕像素 × 缩放倍数」，画布设计器传世界坐标。主刻度间隔从 `steps`（缺省 1-2-5）的十进制倍数里取不小于 `minMajorSpacing`（缺省 64 像素）的最小一档，主刻度之间按 10、5、2 格依次尝试，取小格间距不小于 `minMinorSpacing`（缺省 6 像素）的最多分格。
+
+## 属性编辑器接口
+
+属性面板里的某些属性需要宿主自己的编辑器（如选人、选部门）。设计器按 `PropertyEditor` 调用它：
+
+```ts
+type PropertyEditor<D, T> = (context: {
+  value: JsonValue | undefined; // 当前值
+  descriptor: D; // 属性描述，形状由设计器决定
+  target: T; // 被编辑的对象，如节点、元素、字段
+  readonly: boolean;
+  setValue: (value: JsonValue | undefined) => void; // 写入，连续输入并为一步撤销
+  commit: () => void; // 一次编辑结束（如失焦），此后的写入另起一步
+}) => {
+  element: HTMLElement;
+  update?: (context: PropertyEditorContext<D, T>) => void;
+  destroy?: () => void;
+};
+```
+
+设计器把 `element` 放进属性面板，值或只读状态变化时调用 `update`，移除前调用 `destroy`。接口本身只是类型，内核不创建任何 DOM。
 
 ## 状态
 

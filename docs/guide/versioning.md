@@ -419,7 +419,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 | `@xihan-ui/sound` | 同上：`SoundSpec` 的层与包络字段、三套主题、`BUILTIN_SOUND_NAMES` 中的预设名仍在调整 |
 | `@xihan-ui/cli` | 开发期工具，不进应用产物。命令、MCP 工具与提示词的名字、参数和输出格式随使用反馈调整；离线数据的结构不是公开 API |
 | `@xihan-ui/expression` | 四款设计器接入期间，内置函数表与宿主函数的上下文仍会补充；文法与求值语义的修改同步更新一致性用例并在更新日志中逐条列出 |
-| `@xihan-ui/designer-kit` | 四款设计器接入期间，历史栈的事务与通知、视口与吸附的选项仍会按接入反馈调整 |
+| `@xihan-ui/designer-kit` | 四款设计器接入期间，历史栈的事务与通知、视口与吸附的选项、路径编辑操作与属性编辑器接口仍会按接入反馈调整 |
 | `@xihan-ui/xlsx` | 报表设计器接入期间，单元格样式（边框、底色、换行等）可能按需补充 |
 
 ---
@@ -429,10 +429,10 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，19136 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，19149 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 220 条子入口、9903 个导出名、140 个 `data-scope` 与 1353 条部件配对、
+覆盖：包名与 220 条子入口、9916 个导出名、140 个 `data-scope` 与 1353 条部件配对、
 140 个组件的 2120 个 prop 名、314 种 `data-*`、33 个 `data-state` 取值、803 个令牌、
 5 个 `@layer` 名、4643 个组件覆盖槽、144 个自定义元素及其 attribute 与事件。
 
