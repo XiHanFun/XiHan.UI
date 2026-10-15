@@ -10,19 +10,21 @@ import {
 
 const sizes = ["sm", "md", "lg"] as const;
 const oneMinute = 60 * 1000;
+// 起停钮不写内容，组件照当前动作填 translations 里的那句，字与读屏名同一句
+const translations = { start: "开始", pause: "暂停", resume: "继续", reset: "重置" };
 
 export default function Demo(): ReactNode {
   return (
     <>
       {sizes.map(size => (
         <div key={size} style={{ marginBlockEnd: "12px" }}>
-          <XhTimerRoot size={size} countdown startMs={oneMinute}>
+          <XhTimerRoot size={size} countdown startMs={oneMinute} translations={translations}>
             <XhTimerDisplay>
               <XhTimerItem unit="minutes" />
               <XhTimerSeparator>:</XhTimerSeparator>
               <XhTimerItem unit="seconds" />
             </XhTimerDisplay>
-            <XhTimerControl>起停</XhTimerControl>
+            <XhTimerControl />
           </XhTimerRoot>
         </div>
       ))}

@@ -11,6 +11,8 @@ import { ref } from "vue";
 
 const ticks = ref(0);
 const done = ref(false);
+// 起停钮不写内容，组件照当前动作填 translations 里的那句，字与读屏名同一句
+const translations = { start: "开始", pause: "暂停", resume: "继续", reset: "重置" };
 
 // 按钮本身归组件管起停，这里只把计数一起归零
 function restart(): void {
@@ -23,6 +25,7 @@ function restart(): void {
   <XhTimerRoot
     countdown
     :start-ms="5000"
+    :translations="translations"
     @tick="ticks++"
     @complete="done = true"
   >
@@ -31,7 +34,7 @@ function restart(): void {
       <XhTimerSeparator>:</XhTimerSeparator>
       <XhTimerItem unit="seconds" />
     </XhTimerDisplay>
-    <XhTimerControl @click="restart">起停</XhTimerControl>
+    <XhTimerControl @click="restart" />
   </XhTimerRoot>
 
   <p>已经跳了 {{ ticks }} 拍{{ done ? "，到点了" : "" }}</p>
