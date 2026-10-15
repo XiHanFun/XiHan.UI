@@ -24,7 +24,7 @@ export interface FormRule {
   required?: boolean
   /** 类型检查档位；数值 / 整数会把字符串数字也识别为数。 */
   type?: FormRuleType
-  /** 下限：字符串 / 数组比较长度，数值比较大小。 */
+  /** 下限：字符串按字素数（用户数得出的字数，与文本框计数一致）、数组按元素数比较，数值比较大小。 */
   min?: number
   /** 上限：语义同 min。 */
   max?: number

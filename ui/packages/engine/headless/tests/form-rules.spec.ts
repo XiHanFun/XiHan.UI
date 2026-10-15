@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import { graphemeLength } from '../src'
 import { formValidateMessages, isEmptyFormValue, runFieldRules } from '../src/form/form.rules'
 import { zhCN } from '../src/locale'
 
@@ -112,5 +113,30 @@ describe('空值判定', () => {
 
   it('非必填规则对只含空白的字符串放行', () => {
     expect(runFieldRules({ min: 3, pattern: /^\d+$/ }, '  ', {}, 'code', undefined)).toBeUndefined()
+  })
+})
+
+describe('长度按字素计', () => {
+  it('组合 emoji、国旗与带变音符的字母各算一个字', () => {
+    expect(graphemeLength('👨‍👩‍👧‍👦')).toBe(1)
+    expect(graphemeLength('🇨🇳')).toBe(1)
+    expect(graphemeLength('é')).toBe(1)
+    expect(graphemeLength('曦寒')).toBe(2)
+    expect(graphemeLength('')).toBe(0)
+  })
+
+  it('min / max 对字符串按字素比，与文本框的计数一致', () => {
+    const family = '👨‍👩‍👧‍👦'
+    expect(family.length).toBeGreaterThan(2)
+    expect(runFieldRules({ max: 2, message: '太长' }, family, {}, 'name', undefined)).toBeUndefined()
+    expect(runFieldRules({ max: 2, message: '太长' }, `${family}${family}${family}`, {}, 'name', undefined)).toBe('太长')
+    expect(runFieldRules({ min: 2, message: '太短' }, family, {}, 'name', undefined)).toBe('太短')
+    expect(runFieldRules({ min: 2, message: '太短' }, 'éé', {}, 'name', undefined)).toBeUndefined()
+  })
+
+  it('数组仍按元素个数比', () => {
+    expect(runFieldRules({ max: 1, message: '太多' }, ['👨‍👩‍👧‍👦', 'a'], {}, 'tags', undefined)).toBe('太多')
+    expect(runFieldRules({ max: 2, message: '太多' }, ['ab', 'cd'], {}, 'tags', undefined)).toBeUndefined()
+    expect(runFieldRules({ min: 3, message: '太少' }, ['abcd', 'ef'], {}, 'tags', undefined)).toBe('太少')
   })
 })
