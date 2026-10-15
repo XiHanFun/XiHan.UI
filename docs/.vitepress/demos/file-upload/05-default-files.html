@@ -31,6 +31,8 @@
       <button data-xh-part="clear-trigger">清空</button>
     </div>`;
   upload.defaultFiles = initialFiles;
+  // 清空钮写了「清空」两个字，读屏名得以它开头：名字取 translations；对象只走 property
+  upload.translations = { clearTrigger: "清空全部" };
   document.getElementById("file-upload-default").append(upload);
 
   const group = upload.querySelector('[data-xh-part="list"]');
