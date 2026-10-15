@@ -181,6 +181,7 @@ export interface TableRowDef {
   /**
    * 可展开：提供后才报告 aria-expanded，左右方向键与展开把手也才识别该行。
    * 只要有一行提供，root 就从 role=grid 改为 role=treegrid。
+   * 有子行的行不提供也可展开，展开的是它的子行。
    */
   expandable?: boolean
   /**

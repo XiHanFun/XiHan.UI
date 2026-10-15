@@ -115,6 +115,26 @@ export function flattenTableRows(
 }
 
 /**
+ * 用户能不能展开这一行：与摊平同一口径，有子行或标了 expandable 才算可展开，再除去禁用行。
+ * 子行同样只认先出现的那一份 id；不在 rows 里的行一律不可展开。
+ */
+export function tableRowCanExpand(rows: readonly TableRowDef[], id: string): boolean {
+  const seen = new Set<string>()
+  let target: TableRowDef | undefined
+  let hasKids = false
+  for (const row of rows) {
+    if (seen.has(row.id))
+      continue
+    seen.add(row.id)
+    if (row.id === id)
+      target = row
+    else if (row.parentId === id)
+      hasKids = true
+  }
+  return !!target && !target.disabled && (hasKids || !!target.expandable)
+}
+
+/**
  * 把带 parentId 的扁平行摊回树，喂给级联算法：它只认 value / disabled / children。
  * 指向不存在的父行按根行算，与摊平的口径一致；id 重复只认先出现的那一行。
  */
