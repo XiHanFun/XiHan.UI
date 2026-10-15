@@ -108,6 +108,16 @@
         "$value": "{color.brand.200}"
       }
     },
+    "on-sequential": {
+      "low": {
+        "$type": "color",
+        "$value": "{fg.default}"
+      },
+      "high": {
+        "$type": "color",
+        "$value": "{chart.surface}"
+      }
+    },
     "ordinal": {
       "1": {
         "$type": "color",

@@ -299,18 +299,29 @@
       "$value": "{color.neutral.300}"
     },
     "sequential": {
-      "$description": "顺序色阶（大小）的三个锚点：单色相由浅到深，小值贴近承载面，暗色下锚点翻转。标记只带色阶位置，皮肤在锚点之间以 oklch 插值；缺省取品牌色相，随 data-brand 换色。",
+      "$description": "顺序色阶（大小）的三个锚点：浅色调，单色相由浅到深，小值贴近承载面，暗色下锚点翻转。标记只带色阶位置，皮肤在锚点之间以 oklch 插值；缺省取品牌色相，随 data-brand 换色。",
       "start": {
         "$type": "color",
-        "$value": "{color.brand.100}"
+        "$value": "{color.brand.50}"
       },
       "mid": {
         "$type": "color",
-        "$value": "{color.brand.400}"
+        "$value": "{color.brand.300}"
       },
       "end": {
         "$type": "color",
-        "$value": "{color.brand.800}"
+        "$value": "{color.brand.500}"
+      }
+    },
+    "on-sequential": {
+      "$description": "压在顺序色阶色块上的文字色（层级图按值着色时的名字）：low 是起点到中点那一段，high 是中点到终点那一段。浅色调的终点写不了反白字，亮色下两段都写正文色；暗色的高段贴近亮端，写承载面色。",
+      "low": {
+        "$type": "color",
+        "$value": "{fg.default}"
+      },
+      "high": {
+        "$type": "color",
+        "$value": "{fg.default}"
       }
     },
     "ordinal": {

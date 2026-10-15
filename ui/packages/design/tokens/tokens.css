@@ -808,9 +808,11 @@
     --xh-syntax-keyword: oklch(0.5 0.2 300);
     --xh-chart-categorical-other: var(--xh-color-neutral-500);
     --xh-chart-deemphasis: var(--xh-color-neutral-300);
-    --xh-chart-sequential-start: var(--xh-color-brand-100);
-    --xh-chart-sequential-mid: var(--xh-color-brand-400);
-    --xh-chart-sequential-end: var(--xh-color-brand-800);
+    --xh-chart-sequential-start: var(--xh-color-brand-50);
+    --xh-chart-sequential-mid: var(--xh-color-brand-300);
+    --xh-chart-sequential-end: var(--xh-color-brand-500);
+    --xh-chart-on-sequential-low: var(--xh-fg-default);
+    --xh-chart-on-sequential-high: var(--xh-fg-default);
     --xh-chart-ordinal-1: var(--xh-color-brand-500);
     --xh-chart-ordinal-2: color-mix(in oklab, var(--xh-color-brand-500) 50%, var(--xh-color-brand-400));
     --xh-chart-ordinal-3: var(--xh-color-brand-400);
@@ -1034,6 +1036,8 @@
     --xh-chart-sequential-start: var(--xh-color-brand-900);
     --xh-chart-sequential-mid: var(--xh-color-brand-500);
     --xh-chart-sequential-end: var(--xh-color-brand-200);
+    --xh-chart-on-sequential-low: var(--xh-fg-default);
+    --xh-chart-on-sequential-high: var(--xh-chart-surface);
     --xh-chart-ordinal-1: var(--xh-color-brand-300);
     --xh-chart-ordinal-2: color-mix(in oklab, var(--xh-color-brand-300) 50%, var(--xh-color-brand-400));
     --xh-chart-ordinal-3: var(--xh-color-brand-400);
@@ -1329,6 +1333,7 @@
       --xh-fg-scrollbar-thumb-hover: color-mix(in oklab, var(--xh-fg-default) 25%, transparent);
       --xh-fg-scrollbar-thumb-active: color-mix(in oklab, var(--xh-fg-default) 35%, transparent);
       --xh-border-control-focus: var(--xh-ring-focus);
+      --xh-chart-on-sequential-low: var(--xh-fg-default);
       --xh-chart-label: var(--xh-fg-muted);
       --xh-chart-crosshair: var(--xh-fg-subtle);
       --xh-chart-band-highlight: var(--xh-bg-subtle);

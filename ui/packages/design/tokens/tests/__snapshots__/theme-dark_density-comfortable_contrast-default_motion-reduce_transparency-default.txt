@@ -86,6 +86,8 @@
 --xh-chart-on-categorical-6: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-chart-on-categorical-7: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-chart-on-categorical-8: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
+--xh-chart-on-sequential-high: oklch(0.208 0.006 258)  ← var(--xh-chart-surface)
+--xh-chart-on-sequential-low: oklch(0.979 0.003 265)  ← var(--xh-fg-default)
 --xh-chart-ordinal-1: oklch(0.809 0.105 258)  ← var(--xh-color-brand-300)
 --xh-chart-ordinal-2: color-mix(in oklab, oklch(0.809 0.105 258) 50%, oklch(0.702 0.165 258))  ← color-mix(in oklab, var(--xh-color-brand-300) 50%, var(--xh-color-brand-400))
 --xh-chart-ordinal-3: oklch(0.702 0.165 258)  ← var(--xh-color-brand-400)
