@@ -10,6 +10,8 @@ import {
 } from "@xihan-ui/react";
 
 const handles = ["nw", "ne", "se", "sw"] as const;
+// 两颗钮写的字就是它们的读屏名：名字取 translations，与钮上的字给成同一句
+const translations = { flipHorizontal: "左右翻转", flipVertical: "上下翻转" };
 
 export default function Demo(): ReactNode {
   return (
@@ -18,6 +20,7 @@ export default function Demo(): ReactNode {
       alt="山谷与湖泊风景图"
       defaultValue={{ x: 96, y: 64, width: 448, height: 280 }}
       minWidth={40}
+      translations={translations}
       style={{ inlineSize: "min(100%, 420px)" }}
     >
       <XhImageCropperViewport>

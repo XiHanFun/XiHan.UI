@@ -1,5 +1,6 @@
 <!-- 翻转 | 两颗开关钮各管一条轴，图片与裁切框一起镜像；aria-pressed 报这条轴翻没翻 -->
 <xh-image-cropper
+  id="image-cropper-flip"
   src="/images/image-cropper-landscape.svg"
   alt="山谷与湖泊风景图"
   default-value="96,64,448,280"
@@ -21,3 +22,11 @@
     </div>
   </div>
 </xh-image-cropper>
+
+<script type="module">
+  // 两颗钮写的字就是它们的读屏名：名字取 translations，与钮上的字给成同一句；对象只走 property
+  document.getElementById("image-cropper-flip").translations = {
+    flipHorizontal: "左右翻转",
+    flipVertical: "上下翻转",
+  };
+</script>
