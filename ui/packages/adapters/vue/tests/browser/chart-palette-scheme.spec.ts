@@ -81,10 +81,10 @@ describe('配色方案换掉分类色槽', () => {
     expect(new Set(fills).size).toBe(3)
   })
 
-  it('主题单色：系列依次取品牌 600、500、400，由深到浅', async () => {
+  it('主题单色：系列依次取品牌 500、400、300，由深到浅的浅色调', async () => {
     const inner = mount({ 'data-xh-chart-palette': 'monochrome' })
     await settle()
-    expect(seriesFills(inner)).toEqual(['600', '500', '400'].map(step => tokenColor(inner, `--xh-color-brand-${step}`)))
+    expect(seriesFills(inner)).toEqual(['500', '400', '300'].map(step => tokenColor(inner, `--xh-color-brand-${step}`)))
   })
 
   it('柔和品牌与莫兰迪柔彩：系列取各自方案的色槽，且与缺省不同', async () => {
@@ -107,7 +107,7 @@ describe('配色方案换掉分类色槽', () => {
     await settle()
     const mono = seriesFills(inner)
     expect(mono).not.toEqual(muted)
-    expect(mono[0]).toBe(tokenColor(inner, '--xh-color-brand-600'))
+    expect(mono[0]).toBe(tokenColor(inner, '--xh-color-brand-500'))
   })
 
   it('嵌套区域写 categorical 改回缺省方案', async () => {
@@ -116,20 +116,20 @@ describe('配色方案换掉分类色槽', () => {
     expect(seriesFills(inner)).toEqual([1, 2, 3].map(n => tokenColor(inner, `--xh-chart-palette-categorical-${n}`)))
   })
 
-  it('方案下面的暗色子树取方案的暗色一套：主题单色从暗色主题色 500 起', async () => {
+  it('方案下面的暗色子树取方案的暗色一套：主题单色从品牌 300 起往深走', async () => {
     const inner = mount({ 'data-xh-chart-palette': 'monochrome' }, { 'data-theme': 'dark' })
     await settle()
-    expect(seriesFills(inner)).toEqual(['500', '600', '700'].map(step => tokenColor(inner, `--xh-color-brand-${step}`)))
+    expect(seriesFills(inner)).toEqual(['300', '400', '500'].map(step => tokenColor(inner, `--xh-color-brand-${step}`)))
   })
 
-  it('主题单色随 data-brand 换色：换成紫色品牌后系列 1 是新品牌的主题色', async () => {
+  it('主题单色随 data-brand 换色：换成紫色品牌后系列 1 取新品牌的色阶', async () => {
     cleanups.push(registerBrand('violet', '#6c5ce7'))
     document.documentElement.setAttribute('data-brand', 'violet')
     const inner = mount({ 'data-xh-chart-palette': 'monochrome' })
     await settle()
     const [first] = seriesFills(inner)
-    expect(first).toBe(tokenColor(inner, '--xh-color-brand-600'))
-    expect(first).toBe(tokenColor(document.body, '--xh-color-brand-600'))
-    expect(first).not.toBe(tokenColor(inner, '--xh-color-indigo-600'))
+    expect(first).toBe(tokenColor(inner, '--xh-color-brand-500'))
+    expect(first).toBe(tokenColor(document.body, '--xh-color-brand-500'))
+    expect(first).not.toBe(tokenColor(inner, '--xh-color-indigo-500'))
   })
 })

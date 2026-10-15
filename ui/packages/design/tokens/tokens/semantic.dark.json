@@ -111,11 +111,11 @@
     "ordinal": {
       "1": {
         "$type": "color",
-        "$value": "{color.brand.200}"
+        "$value": "{color.brand.300}"
       },
       "2": {
         "$type": "color",
-        "$value": "{color.brand.300}"
+        "$value": "color-mix(in oklab, {color.brand.300} 50%, {color.brand.400})"
       },
       "3": {
         "$type": "color",
@@ -123,15 +123,15 @@
       },
       "4": {
         "$type": "color",
-        "$value": "{color.brand.500}"
+        "$value": "color-mix(in oklab, {color.brand.400} 50%, {color.brand.500})"
       },
       "5": {
         "$type": "color",
-        "$value": "{color.brand.600}"
+        "$value": "{color.brand.500}"
       },
       "6": {
         "$type": "color",
-        "$value": "{color.brand.700}"
+        "$value": "color-mix(in oklab, {color.brand.500} 50%, {color.brand.600})"
       }
     },
     "diverging": {
@@ -150,11 +150,11 @@
     },
     "rise": {
       "$type": "color",
-      "$value": "{color.success.500}"
+      "$value": "color-mix(in oklab, {color.success.600} 60%, {color.neutral.0})"
     },
     "fall": {
       "$type": "color",
-      "$value": "{color.danger.600}"
+      "$value": "color-mix(in oklab, {color.danger.600} 80%, {color.neutral.0})"
     },
     "surface": {
       "$type": "color",

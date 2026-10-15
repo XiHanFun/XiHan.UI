@@ -61,6 +61,8 @@ export interface CategoricalPaletteOptions {
 export interface OrdinalRampOptions {
   readonly mode: PaletteMode
   readonly surface: Rgba
+  /** 色调：standard（缺省）最弱一档对承载面 ≥ 2:1；light 是浅色调，相邻两档之间补半档，最弱一档放宽到 ≥ 1.5:1。 */
+  readonly tone?: 'standard' | 'light'
 }
 
 /** 两种色调的 OKLCH 明度带与彩度带：标准亮色 0.43–0.77、暗色 0.48–0.67，彩度 ≥ 0.10；浅色调抬到亮端、彩度封顶。 */
@@ -75,8 +77,8 @@ const CVD_FLOOR = 6
 const DISTINCT_FLOOR = 15
 /** 数据标记对承载面的对比度。 */
 const MARK_CONTRAST = 3
-/** 有序色阶里对比度最低的一档对承载面的下限。 */
-const RAMP_CONTRAST = 2
+/** 有序色阶里对比度最低的一档对承载面的下限：标准 2:1，浅色调 1.5:1。 */
+const RAMP_CONTRAST = { standard: 2, light: 1.5 } as const
 /** 两套色板同一色槽、或有序色阶各档之间允许的色相偏差（度）。 */
 const HUE_TOLERANCE = 30
 /** 彩度低于它时色相不可靠，不参与色相比较。 */
@@ -204,7 +206,7 @@ export function validateCategoricalPalette(colors: readonly Rgba[], options: Cat
 export function validateOrdinalRamp(colors: readonly Rgba[], options: OrdinalRampOptions): PaletteReport {
   if (colors.length < 2)
     throw invalidArgument('有序色阶至少要有 2 档', { count: colors.length })
-  const { mode, surface } = options
+  const { mode, surface, tone = 'standard' } = options
   const lch = colors.map(toOklch)
   const checks: PaletteCheck[] = []
 
@@ -232,7 +234,7 @@ export function validateOrdinalRamp(colors: readonly Rgba[], options: OrdinalRam
 
   const ratios = colors.map(c => contrastRatio(c, surface))
   const weakest = Math.min(...ratios)
-  const contrastFindings: PaletteFinding[] = weakest < RAMP_CONTRAST
+  const contrastFindings: PaletteFinding[] = weakest < RAMP_CONTRAST[tone]
     ? [{ slots: [ratios.indexOf(weakest) + 1], value: weakest, status: 'fail' }]
     : []
   checks.push(summarize('contrast', weakest, contrastFindings))
