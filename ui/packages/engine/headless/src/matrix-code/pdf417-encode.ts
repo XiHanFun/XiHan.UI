@@ -18,6 +18,8 @@
  * 纠错是 GF(929) 上的里德-所罗门，素域，跟 GF(2^m) 那套不通用，在本文件内自算。
  */
 
+import { MatrixValueError } from './matrix-value-error'
+
 /** 纠错级别 0–8，纠错码字数依次是 2、4、8、…、512。 */
 export type Pdf417Level = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
 
@@ -230,7 +232,7 @@ function pickColumns(m: number, k: number, forced: number | undefined): { column
   if (forced !== undefined) {
     const rows = Math.max(MIN_ROWS, rowsFor(m, k, forced))
     if (rows > MAX_ROWS)
-      throw new RangeError(`内容要 ${m + 1 + k} 个码字，${forced} 列放不下 ${MAX_ROWS} 行`)
+      throw new MatrixValueError('capacity-exceeded', `内容要 ${m + 1 + k} 个码字，${forced} 列放不下 ${MAX_ROWS} 行`)
     return { columns: forced, rows }
   }
   let best: { columns: number, rows: number } | undefined
@@ -274,10 +276,14 @@ export function pdf417Encode(text: string, options: Pdf417EncodeOptions = {}): P
     data.unshift(ECI, ECI_UTF8)
   const level = options.level ?? pdf417RecommendedLevel(data.length)
   const k = pdf417EccCount(level)
-  if (data.length + 1 + k > GF)
-    throw new RangeError(`内容 ${text.length} 个字符要 ${data.length} 个码字，加 ${k} 个纠错码字超出 PDF417 的上限 929 个；截断会得到一张扫得出、但内容是半截的码`)
+  if (data.length + 1 + k > GF) {
+    throw new MatrixValueError(
+      'capacity-exceeded',
+      `内容 ${text.length} 个字符要 ${data.length} 个码字，加 ${k} 个纠错码字超出 PDF417 的上限 929 个；截断会得到一张扫得出、但内容是半截的码`,
+    )
+  }
   if (options.columns !== undefined && (!Number.isInteger(options.columns) || options.columns < MIN_COLUMNS || options.columns > MAX_COLUMNS))
-    throw new RangeError(`PDF417 的数据列数要在 ${MIN_COLUMNS}–${MAX_COLUMNS} 之间，收到 ${options.columns}`)
+    throw new MatrixValueError('invalid-columns', `PDF417 的数据列数要在 ${MIN_COLUMNS}–${MAX_COLUMNS} 之间，收到 ${options.columns}`)
 
   const { columns, rows } = pickColumns(data.length, k, options.columns)
   const padCount = Math.max(0, columns * rows - k - data.length - 1)

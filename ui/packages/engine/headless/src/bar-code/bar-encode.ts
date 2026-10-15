@@ -53,6 +53,32 @@ export interface BarEncodeOptions {
 /** GS1-128 里表示 FNC1 的字符：内容里写 GS（U+001D）就是变长 AI 之间的分隔。 */
 export const BAR_FNC1_CHAR = '\u001D'
 
+/**
+ * 内容不合码制规则的问题，不含文案，供使用方按问题码本地化：
+ * - `unknown-format`：码制不认识；
+ * - `invalid-character`：`character` 不在该码制的字符集里（数字码制里的非数字、Code 128 的非 ASCII、
+ *   非 gs1 模式下的 GS、Code 39 字符集以外的字符）；
+ * - `invalid-length`：位数不对，`lengths` 是该码制接受的位数，`length` 是收到的位数；
+ * - `invalid-check-digit`：给出的校验位与算出的不一致；
+ * - `invalid-number-system`：UPC-E 的数字系统位不是 0 或 1。
+ */
+export type BarCodeValueIssue
+  = | { readonly code: 'unknown-format' }
+    | { readonly code: 'invalid-character', readonly character: string }
+    | { readonly code: 'invalid-length', readonly lengths: readonly number[], readonly length: number }
+    | { readonly code: 'invalid-check-digit', readonly expected: number, readonly actual: number }
+    | { readonly code: 'invalid-number-system', readonly actual: string }
+
+/** 编码器在内容不合码制规则时抛出的错误：`message` 是说明，`issue` 是对应的问题。 */
+export class BarValueError extends Error {
+  readonly issue: BarCodeValueIssue
+
+  constructor(issue: BarCodeValueIssue, message: string) {
+    super(message)
+    this.issue = issue
+  }
+}
+
 // ── 公共 ──
 
 /** 一段内容全是 ASCII 数字。 */
@@ -83,18 +109,27 @@ export function gs1CheckDigit(digits: string): number {
  * 返回带校验位的完整数字串。
  */
 function resolveDigits(name: string, value: string, bodyLength: number): string {
-  if (!isDigits(value))
-    throw new Error(`${name} 只认数字，「${firstNonDigit(value)}」不在其中`)
+  if (!isDigits(value)) {
+    const character = firstNonDigit(value)
+    throw new BarValueError({ code: 'invalid-character', character }, `${name} 只认数字，「${character}」不在其中`)
+  }
   if (value.length === bodyLength)
     return value + gs1CheckDigit(value)
   if (value.length === bodyLength + 1) {
     const expected = gs1CheckDigit(value.slice(0, bodyLength))
     const given = value.charCodeAt(bodyLength) - 48
-    if (given !== expected)
-      throw new Error(`${name} 的校验位不对：按前 ${bodyLength} 位算应为 ${expected}，收到 ${given}`)
+    if (given !== expected) {
+      throw new BarValueError(
+        { code: 'invalid-check-digit', expected, actual: given },
+        `${name} 的校验位不对：按前 ${bodyLength} 位算应为 ${expected}，收到 ${given}`,
+      )
+    }
     return value
   }
-  throw new Error(`${name} 要 ${bodyLength} 或 ${bodyLength + 1} 位数字，收到 ${value.length} 位`)
+  throw new BarValueError(
+    { code: 'invalid-length', lengths: [bodyLength, bodyLength + 1], length: value.length },
+    `${name} 要 ${bodyLength} 或 ${bodyLength + 1} 位数字，收到 ${value.length} 位`,
+  )
 }
 
 /** 把一串 "212222" 这样的宽度字面量拆成数字数组。 */
@@ -350,9 +385,13 @@ function encodeCode128(value: string, gs1: boolean): BarSymbol {
   for (const ch of value) {
     const code = ch.codePointAt(0)!
     if (code > 127)
-      throw new Error(`Code 128 只认 ASCII 0–127，「${ch}」不在其中`)
-    if (code === 0x1D && !gs1)
-      throw new Error('内容里的 GS（U+001D）只在 gs1 模式下当 FNC1 分隔用，普通 Code 128 不收它')
+      throw new BarValueError({ code: 'invalid-character', character: ch }, `Code 128 只认 ASCII 0–127，「${ch}」不在其中`)
+    if (code === 0x1D && !gs1) {
+      throw new BarValueError(
+        { code: 'invalid-character', character: ch },
+        '内容里的 GS（U+001D）只在 gs1 模式下当 FNC1 分隔用，普通 Code 128 不收它',
+      )
+    }
     codes.push(code)
   }
   const words = code128Codewords(codes, gs1)
@@ -486,8 +525,10 @@ export function upceExpand(numberSystem: string, six: string): string {
  * 结构：左守卫 101、六位、终止 010101，共 51 模块。
  */
 function encodeUpce(value: string): BarSymbol {
-  if (!isDigits(value))
-    throw new Error(`UPC-E 只认数字，「${firstNonDigit(value)}」不在其中`)
+  if (!isDigits(value)) {
+    const character = firstNonDigit(value)
+    throw new BarValueError({ code: 'invalid-character', character }, `UPC-E 只认数字，「${character}」不在其中`)
+  }
   let numberSystem = '0'
   let six: string
   let givenCheck: number | undefined
@@ -501,13 +542,24 @@ function encodeUpce(value: string): BarSymbol {
       givenCheck = value.charCodeAt(7) - 48
   }
   else {
-    throw new Error(`UPC-E 要 6、7 或 8 位数字，收到 ${value.length} 位`)
+    throw new BarValueError(
+      { code: 'invalid-length', lengths: [6, 7, 8], length: value.length },
+      `UPC-E 要 6、7 或 8 位数字，收到 ${value.length} 位`,
+    )
   }
-  if (numberSystem !== '0' && numberSystem !== '1')
-    throw new Error(`UPC-E 的数字系统位只能是 0 或 1，收到 ${numberSystem}`)
+  if (numberSystem !== '0' && numberSystem !== '1') {
+    throw new BarValueError(
+      { code: 'invalid-number-system', actual: numberSystem },
+      `UPC-E 的数字系统位只能是 0 或 1，收到 ${numberSystem}`,
+    )
+  }
   const check = gs1CheckDigit(upceExpand(numberSystem, six))
-  if (givenCheck !== undefined && givenCheck !== check)
-    throw new Error(`UPC-E 的校验位不对：按展开后的 UPC-A 算应为 ${check}，收到 ${givenCheck}`)
+  if (givenCheck !== undefined && givenCheck !== check) {
+    throw new BarValueError(
+      { code: 'invalid-check-digit', expected: check, actual: givenCheck },
+      `UPC-E 的校验位不对：按展开后的 UPC-A 算应为 ${check}，收到 ${givenCheck}`,
+    )
+  }
 
   const parity = UPCE_PARITY[numberSystem === '0' ? 0 : 1]![check]!
   const runs: number[] = [1, 1, 1]
@@ -627,8 +679,12 @@ function encodeCode39(value: string, checksum: boolean): BarSymbol {
   const values: number[] = []
   for (const ch of value) {
     const at = CODE39_ALPHABET.indexOf(ch)
-    if (at < 0)
-      throw new Error(`Code 39 只认大写字母、数字与 - . 空格 $ / + %，「${ch}」不在其中`)
+    if (at < 0) {
+      throw new BarValueError(
+        { code: 'invalid-character', character: ch },
+        `Code 39 只认大写字母、数字与 - . 空格 $ / + %，「${ch}」不在其中`,
+      )
+    }
     values.push(at)
     total += at
   }
@@ -658,7 +714,8 @@ function encodeCode39(value: string, checksum: boolean): BarSymbol {
 
 /**
  * 把 value 按 format 编成条空序列。
- * 内容不合该码制的规则（字符不在字符集、位数不对、给的校验位对不上）抛 Error，信息说清是哪一条。
+ * 内容不合该码制的规则（字符不在字符集、位数不对、给的校验位对不上）抛 Error，信息说清是哪一条；
+ * 不抛异常的检查用 `checkBarCodeValue`。
  */
 export function barEncode(format: BarFormat, value: string, options: BarEncodeOptions = {}): BarSymbol {
   switch (format) {

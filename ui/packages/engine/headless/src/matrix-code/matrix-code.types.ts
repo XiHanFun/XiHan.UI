@@ -26,6 +26,23 @@ export type MatrixCodeFormat = 'qr' | 'data-matrix' | 'pdf417' | 'aztec'
  */
 export type MatrixCodeLevel = QrLevel | Pdf417Level | number
 
+/** 纠错级别对码制的适用情况：适用 / 超出该码制的取值域 / 该码制没有级别可选，给了也不用。 */
+export type MatrixCodeLevelFit = 'valid' | 'invalid' | 'ignored'
+
+/**
+ * 内容或选项不能按码制编码的问题，不含文案，供使用方按问题码本地化：
+ * - `unknown-format`：码制不认识；
+ * - `invalid-level`：纠错级别不在该码制的取值域里，见 `matrixCodeLevelFit`；
+ * - `invalid-columns`：pdf417 的数据列数不是 1–30 的整数；
+ * - `capacity-exceeded`：内容超出该码制在所选级别、形状或列数下能容纳的上限。
+ */
+export interface MatrixCodeValueIssue {
+  readonly code: 'unknown-format' | 'invalid-level' | 'invalid-columns' | 'capacity-exceeded'
+}
+
+/** `checkMatrixCodeValue` 的选项，含义与 `MatrixCodeProps` 中的同名属性相同。 */
+export type MatrixCodeValueOptions = Pick<MatrixCodeProps, 'level' | 'gs1' | 'rectangular' | 'columns'>
+
 /** 根的三态：已绘制 / 没有可编码的内容 / 内容无法容纳或码制未知。 */
 export type MatrixCodeState = 'ready' | 'empty' | 'error'
 

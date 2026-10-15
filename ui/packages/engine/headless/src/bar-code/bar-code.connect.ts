@@ -7,10 +7,10 @@
 
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { BarCodeApi, BarCodeFormat, BarCodeProps, BarCodeState, BarCodeTextRun } from './bar-code.types'
-import type { BarSymbol } from './bar-encode'
+import type { BarCodeValueIssue, BarEncodeOptions, BarSymbol } from './bar-encode'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { barCodeAnatomy } from './bar-code.anatomy'
-import { barEncode } from './bar-encode'
+import { barEncode, BarValueError } from './bar-encode'
 
 const parts = barCodeAnatomy.build()
 
@@ -19,6 +19,29 @@ const DEFAULT_FORMAT: BarCodeFormat = 'code128'
 export const BAR_CODE_FORMATS: readonly BarCodeFormat[] = ['code128', 'ean13', 'ean8', 'upca', 'upce', 'itf14', 'code39']
 /** 认识的码制；`format` 是从 DOM 特性来的字符串，得按运行时的表核，光靠类型拦不住。 */
 const FORMATS: ReadonlySet<string> = new Set<string>(BAR_CODE_FORMATS)
+
+/**
+ * 检查内容能否按码制编码，不抛异常：能编码或内容为空串时返回 undefined，否则返回第一处问题。
+ * 判据与 `connectBarCode` 相同：有问题时组件落 `error` 态，空串时落 `empty` 态。
+ *
+ * @example
+ * checkBarCodeValue('ean13', '4006381333932') // { code: 'invalid-check-digit', expected: 1, actual: 2 }
+ */
+export function checkBarCodeValue(format: BarCodeFormat, value: string, options: BarEncodeOptions = {}): BarCodeValueIssue | undefined {
+  if (!FORMATS.has(format))
+    return { code: 'unknown-format' }
+  if (value === '')
+    return undefined
+  try {
+    barEncode(format, value, options)
+    return undefined
+  }
+  catch (cause) {
+    if (cause instanceof BarValueError)
+      return cause.issue
+    throw cause
+  }
+}
 const DEFAULT_BAR_WIDTH = 2
 const DEFAULT_HEIGHT = 64
 
