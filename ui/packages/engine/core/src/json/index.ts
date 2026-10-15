@@ -4,7 +4,7 @@
  */
 
 // @xihan-ui/core/json —— JSON 值的类型与纯函数：普通对象判断、合法性检查、深拷贝、按值比较、深冻结、
-// 按路径读写、路径前缀与文字形式、JSON Pointer 片段与变化路径。零依赖。
+// 按路径读写、路径前缀、路径的文字形式与解析、JSON Pointer 片段与变化路径。零依赖。
 
 /** JSON 原始值。 */
 export type JsonPrimitive = string | number | boolean | null
@@ -281,8 +281,13 @@ export function isJsonPathPrefix(path: JsonPath, prefix: JsonPath): boolean {
 }
 
 const IDENTIFIER = /^[\p{ID_Start}$_][\p{ID_Continue}$]*$/u
+const IDENTIFIER_AT = /[\p{ID_Start}$_][\p{ID_Continue}$]*/uy
+const INDEX = /^(?:0|[1-9]\d*)$/
 
-/** 把路径写成便于阅读的文字，如 lines[1].price；不是标识符的键写成 ["a b"]，空路径为空串。 */
+/**
+ * 把路径写成便于阅读的文字，如 lines[1].price；以 $ 开头的标识符照写（$page），
+ * 不是标识符的键写成 ["a b"]，空路径为空串。parseJsonPath 是它的逆运算。
+ */
 export function formatJsonPath(path: JsonPath): string {
   let text = ''
   for (const segment of path) {
@@ -294,6 +299,86 @@ export function formatJsonPath(path: JsonPath): string {
       text += `[${JSON.stringify(segment)}]`
   }
   return text
+}
+
+/**
+ * 把 formatJsonPath 写出的文字解析回路径，二者互逆：parseJsonPath(formatJsonPath(path)) 与 path 相同。
+ * 文法：首段是标识符或方括号段，其后每段是「. 标识符」或方括号段；方括号里是不带前导零的非负整数（数组下标），
+ * 或 JSON 字符串（对象键，如 ["a b"]、["1a"]）。标识符同 JavaScript（含中文与 $、_ 开头）。
+ * 空串解析为空路径。文法不符、下标超出安全整数、出现 __proto__ / prototype / constructor 时抛 invalid-path。
+ */
+export function parseJsonPath(text: string): JsonPathSegment[] {
+  const path = scanJsonPath(text)
+  if (path === undefined)
+    throw new JsonPathError('invalid-path', [])
+  return path
+}
+
+/** 判断文字是不是合法的路径写法（与 parseJsonPath 同一文法），不抛异常；空串算合法（指根）。 */
+export function isJsonPathText(text: string): boolean {
+  return scanJsonPath(text) !== undefined
+}
+
+function scanJsonPath(text: string): JsonPathSegment[] | undefined {
+  if (typeof text !== 'string')
+    return undefined
+  const path: JsonPathSegment[] = []
+  let at = 0
+  while (at < text.length) {
+    const char = text[at]
+    if (char === '[') {
+      const close = text[at + 1] === '"' ? closingQuote(text, at + 2) : text.indexOf(']', at + 1)
+      if (close < 0)
+        return undefined
+      if (text[at + 1] === '"') {
+        if (text[close + 1] !== ']')
+          return undefined
+        let key: unknown
+        try {
+          key = JSON.parse(text.slice(at + 1, close + 1))
+        }
+        catch {
+          return undefined
+        }
+        if (typeof key !== 'string' || PROTOTYPE_KEYS.includes(key))
+          return undefined
+        path.push(key)
+        at = close + 2
+      }
+      else {
+        const digits = text.slice(at + 1, close)
+        const index = Number(digits)
+        if (!INDEX.test(digits) || !Number.isSafeInteger(index))
+          return undefined
+        path.push(index)
+        at = close + 1
+      }
+      continue
+    }
+    if (path.length > 0) {
+      if (char !== '.')
+        return undefined
+      at++
+    }
+    IDENTIFIER_AT.lastIndex = at
+    const match = IDENTIFIER_AT.exec(text)
+    if (!match || PROTOTYPE_KEYS.includes(match[0]))
+      return undefined
+    path.push(match[0])
+    at += match[0].length
+  }
+  return path
+}
+
+/** 从 from 起找 JSON 字符串的收尾引号，跳过反斜杠转义；找不到时为 -1。 */
+function closingQuote(text: string, from: number): number {
+  for (let i = from; i < text.length; i++) {
+    if (text[i] === '\\')
+      i++
+    else if (text[i] === '"')
+      return i
+  }
+  return -1
 }
 
 /**

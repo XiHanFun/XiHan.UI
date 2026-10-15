@@ -1,6 +1,6 @@
 // JSON 工具：普通对象判断、第一处非 JSON 值的 JSON Pointer（含转义、循环与共享引用）、深拷贝不共享引用、按值比较、
-// 深冻结、按路径读写（结构共享、补齐中间层、错误码）、路径前缀与文字形式、变化路径。
-import type { JsonObject, JsonValue } from '../src/json'
+// 深冻结、按路径读写（结构共享、补齐中间层、错误码）、路径前缀、路径的文字形式与解析（往返、非法文本、原型段）、变化路径。
+import type { JsonObject, JsonPathSegment, JsonValue } from '../src/json'
 import { describe, expect, it } from 'vitest'
 import {
   appendJsonPointer,
@@ -11,10 +11,12 @@ import {
   formatJsonPath,
   getJsonAt,
   isJsonPathPrefix,
+  isJsonPathText,
   isJsonValue,
   isPlainObject,
   jsonEquals,
   JsonPathError,
+  parseJsonPath,
   setJsonAt,
 } from '../src/json'
 
@@ -228,5 +230,66 @@ describe('changedJsonPaths', () => {
   it('只比较自有键', () => {
     expect(changedJsonPaths({ constructor: 1 }, {})).toEqual([['constructor']])
     expect(changedJsonPaths({}, { toString: 'x' })).toEqual([['toString']])
+  })
+})
+
+describe('parseJsonPath / isJsonPathText', () => {
+  it('解析标识符、下标与方括号里的 JSON 字符串键', () => {
+    expect(parseJsonPath('order.items[0].name')).toEqual(['order', 'items', 0, 'name'])
+    expect(parseJsonPath('[0].字段["a b"].$x')).toEqual([0, '字段', 'a b', '$x'])
+    expect(parseJsonPath('["1a"].b')).toEqual(['1a', 'b'])
+    expect(parseJsonPath('$page')).toEqual(['$page'])
+    expect(parseJsonPath('$row.amount')).toEqual(['$row', 'amount'])
+    expect(parseJsonPath('a["x\\"]y"]["\\u0041"]')).toEqual(['a', 'x"]y', 'A'])
+    expect(parseJsonPath('[""]')).toEqual([''])
+    expect(parseJsonPath('')).toEqual([])
+  })
+
+  it('$ 开头的标识符原样写出，与解析互逆', () => {
+    expect(formatJsonPath(['$page'])).toBe('$page')
+    expect(formatJsonPath(['$row', 'amount', 0])).toBe('$row.amount[0]')
+    expect(parseJsonPath(formatJsonPath(['$row', 'amount', 0]))).toEqual(['$row', 'amount', 0])
+  })
+
+  it('任意路径写出后再解析得到原路径', () => {
+    let seed = 7
+    const random = (): number => {
+      seed = (seed * 1103515245 + 12345) % 2147483648
+      return seed / 2147483648
+    }
+    const keys = ['a', 'items', '字段', '$page', '_x', 'a b', '1a', '', 'x.y', '[0]', 'q"uote', 'back\\slash', '😀', 'line\nbreak', 'é']
+    for (let run = 0; run < 500; run++) {
+      const path: JsonPathSegment[] = Array.from({ length: Math.floor(random() * 6) }, () =>
+        random() < 0.3 ? Math.floor(random() * 1000) : keys[Math.floor(random() * keys.length)]!)
+      expect(parseJsonPath(formatJsonPath(path))).toEqual(path)
+    }
+  })
+
+  it('文本不合法时抛 invalid-path', () => {
+    const bad = ['.a', 'a.', 'a..b', 'a b', 'a-b', '1a', '[01]', '[-1]', '[1.5]', '[ 0]', '[]', '[0', '[0]a', 'a[', '["a"', '["a"]]', '["a"x]', '[\'a\']', '[9007199254740992]', 'a[0]b', '[a]']
+    for (const text of bad) {
+      expect(() => parseJsonPath(text), text).toThrow('invalid-path')
+      expect(isJsonPathText(text), text).toBe(false)
+    }
+    let thrown: unknown
+    try {
+      parseJsonPath('a.')
+    }
+    catch (error) {
+      thrown = error
+    }
+    expect(thrown).toBeInstanceOf(JsonPathError)
+  })
+
+  it('原型段一律拒绝，写成标识符或方括号都一样', () => {
+    for (const text of ['__proto__', 'a.__proto__', 'prototype', 'a.constructor', '["__proto__"]', 'a["constructor"]'])
+      expect(isJsonPathText(text), text).toBe(false)
+  })
+
+  it('格式检查不抛异常', () => {
+    expect(isJsonPathText('order.items[0].name')).toBe(true)
+    expect(isJsonPathText('')).toBe(true)
+    expect(isJsonPathText('a..b')).toBe(false)
+    expect(isJsonPathText(1 as unknown as string)).toBe(false)
   })
 })
