@@ -56,7 +56,9 @@ catalog:
   '@vitest/browser': ^4.1.11
   '@vitest/browser-playwright': ^4.1.11
   playwright: ^1.62.0
-  axe-core: ^4.14.0
+  # 4.14 起 label-content-name-mismatch 判 Carousel 翻页钮与 CalendarPicker 年月钮「可见文字不在可访问名里」，
+  # 组件侧改好之前停在 4.12
+  axe-core: ~4.12.1
   publint: ^0.3.25
   size-limit: ^12.1.0
   stylelint: ^16.19.0
