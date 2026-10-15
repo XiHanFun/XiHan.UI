@@ -23,6 +23,8 @@ export { boxplotStats, kde, linearRegression, movingAverage, silvermanBandwidth,
 export type { BoxplotStats, DensityPoint, KernelName, LinearFit, WaterfallStep } from './layout'
 export { createSvgPath, segmentsPath } from './path'
 export type { PathSegment, PathSink, SvgPath } from './path'
+export { arrowHead, polylineLength, polylinePointAt, shortenPolyline } from './path/polyline'
+export type { ArrowHeadOptions, PolylinePoint, ShortenOptions } from './path/polyline'
 export { createRandom, hashSeed, jitter } from './random'
 export type { RandomSource } from './random'
 export { average, lttb, minMax, needsSampling } from './sampling'
