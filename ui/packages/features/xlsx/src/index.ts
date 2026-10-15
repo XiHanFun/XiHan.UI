@@ -10,6 +10,8 @@ export { XlsxError } from './errors'
 export type { XlsxErrorCode } from './errors'
 export { formatCode } from './format'
 export type { XlsxFormatRounding, XlsxFormatSpec } from './format'
+export { headerRows } from './header'
+export type { XlsxHeaderLayout, XlsxHeaderNode, XlsxHeaderOptions } from './header'
 export { sheetName, writeXlsx, XLSX_MIME, xlsxBlob } from './workbook'
 export type {
   XlsxAlign,

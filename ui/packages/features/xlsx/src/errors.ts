@@ -12,6 +12,7 @@ export type XlsxErrorCode
     | 'duplicate-sheet-name'
     | 'empty-workbook'
     | 'invalid-cell'
+    | 'invalid-header'
     | 'invalid-merge'
     | 'invalid-sheet-name'
 
