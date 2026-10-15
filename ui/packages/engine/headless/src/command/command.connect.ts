@@ -404,7 +404,7 @@ export function connectCommand<T extends PropTypes>(
       'hidden': !empty || loading || undefined,
     }),
 
-    // 在途占位只接管首次加载：清单里已有看得见的命令时列表原样留着、按 aria-busy 淡下，
+    // 在途占位只接管首次加载：清单里已有看得见的命令时列表原样留着、只报 aria-busy，
     // 占位让位。没给清单时库这一层判不出有没有候选，在途即露面
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,

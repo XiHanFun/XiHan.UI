@@ -17296,9 +17296,6 @@
               "name": "--xh-command-layer"
             },
             {
-              "name": "--xh-command-list-busy-opacity"
-            },
-            {
               "name": "--xh-command-list-gap"
             },
             {
@@ -63612,7 +63609,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "数据加载中：root 报告 aria-busy；表体为空时加载态节点显示，已有行时表体保留上一帧淡下",
+              "description": "数据加载中：root 报告 aria-busy；表体为空时加载态节点显示，已有行时表体原样保留、照常可操作",
               "name": "loading",
               "fieldName": "loading"
             },

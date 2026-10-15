@@ -1091,7 +1091,6 @@ export type ComponentTokenName
     | '--xh-command-item-py'
     | '--xh-command-item-radius'
     | '--xh-command-layer'
-    | '--xh-command-list-busy-opacity'
     | '--xh-command-list-gap'
     | '--xh-command-list-px'
     | '--xh-command-list-py'

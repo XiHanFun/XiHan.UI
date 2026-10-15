@@ -73,7 +73,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 - 零可见命令时列表不保留额外空白行；搜索输入和作者提供的状态、底栏仍然在场。未提供 Empty / Loading 文案时不显示空白占位，也不自动生成提示文字。
 - `collection` 与过滤结果保持数据语义；已挂载节点上的 `hidden` 会排除对应条目或分组的交互与 ARIA 高亮。未挂载或虚拟候选不按隐藏推断；展开期间替换列表节点后，可见性观察会切换到新节点。
 - `closeOnSelect` 决定选中后是否收起；连续执行多条命令时关闭它。
-- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
 
 ### 组合
 
@@ -413,7 +413,6 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `--xh-command-item-py` | `item` | `padding-block` | `default` | `--xh-_command-item-py` | command 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-command-item-radius` | `item` | `border-radius` | `default` | `0` | command 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-command-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | command 的 positioner 部件 z-index 覆盖槽。 |
-| `--xh-command-list-busy-opacity` | `list` | `opacity` | `default` | `--xh-state-disabled-opacity` | command 的 list 部件 opacity 覆盖槽。 |
 | `--xh-command-list-gap` | `list` | `gap` | `default` | `--xh-list-option-gap` | command 的 list 部件 gap 覆盖槽。 |
 | `--xh-command-list-px` | `list` | `padding-inline` | `default` | `--xh-space-0` | command 的 list 部件 padding-inline 覆盖槽。 |
 | `--xh-command-list-py` | `list` | `padding-block` | `default` | `--xh-space-1` | command 的 list 部件 padding-block 覆盖槽。 |
@@ -434,7 +433,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 
 动效角色：按压 · 状态 · 出现（锚定面板）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

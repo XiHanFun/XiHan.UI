@@ -69,7 +69,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @attr {'none'|'single'|'multiple'} selection-mode - 选择模式，默认 none（未声明则没有选择机制）
  * @attr {boolean} cascade - 树形表在 multiple 下父子级联勾选，与 Tree 的 cascade 同义
  * @attr {'child'|'parent'|'all'} checked-strategy - 级联下对外选中值的收敛策略，默认 child
- * @attr {boolean} loading - 数据加载中：root 报告 aria-busy；表体为空时加载态节点显示，已有行时表体保留上一帧淡下
+ * @attr {boolean} loading - 数据加载中：root 报告 aria-busy；表体为空时加载态节点显示，已有行时表体原样保留、照常可操作
  * @attr {boolean} empty - 显式声明表体为空；未提供时按 rows 是否为空推导，写 empty="false" 强制不为空
  * @attr {boolean} sticky-header - 表头吸顶，只写 data-fixed（布尔）；列冻结使用 data-frozen
  * @attr {boolean} striped - 斑马纹：表体偶数行换一层浅底

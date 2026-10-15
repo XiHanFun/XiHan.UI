@@ -21702,24 +21702,6 @@
       "description": "command 的 positioner 部件 z-index 覆盖槽。"
     },
     {
-      "name": "--xh-command-list-busy-opacity",
-      "component": "command",
-      "part": [
-        "list"
-      ],
-      "property": [
-        "opacity"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-state-disabled-opacity"
-      ],
-      "visibility": "public",
-      "description": "command 的 list 部件 opacity 覆盖槽。"
-    },
-    {
       "name": "--xh-command-list-gap",
       "component": "command",
       "part": [

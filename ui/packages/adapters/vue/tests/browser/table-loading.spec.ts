@@ -1,6 +1,6 @@
 // 表格的两种等待：还没有行时 loading 占位画一枚加载环（加载环家族配方，与 Spinner 环档同一副画法）排在文案之前；
-// 已有行时重新取数不换成占位，保留上一帧，表体与表尾按 micro 淡到禁用透明度，数据到了再淡回。
-// 环的几何、转与停、表体的淡变都得在真实浏览器里量。
+// 已有行时重新取数不换成占位，保留上一帧、root 报 aria-busy，表体照常可操作、不淡化。
+// 环的几何、转与停、表体的计算样式都得在真实浏览器里量。
 import type { App, Ref } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
@@ -86,22 +86,19 @@ describe('table 加载态', () => {
     await expect.poll(() => getComputedStyle(loading, '::before').opacity).toBe('1')
   })
 
-  it('已有行时重新取数：占位不出现，表体保留上一帧按 micro 淡到禁用透明度，取完再淡回', async () => {
+  it('已有行时重新取数：占位不出现，表体保留上一帧、照常可操作，不淡化', async () => {
     const loading = ref(false)
     await mount(loading, ref(['a', 'b']))
     const body = part('body')
     expect(getComputedStyle(body).opacity).toBe('1')
-    expect(getComputedStyle(body).transitionProperty).toBe('opacity')
-    expect(getComputedStyle(body).transitionDuration).toBe(`${Number.parseFloat(token('--xh-motion-duration-micro')) / 1000}s`)
 
     loading.value = true
     await nextTick()
     expect(part('loading').hidden).toBe(true)
+    expect(part('root').getAttribute('aria-busy')).toBe('true')
     expect(body.querySelectorAll('[data-part="row"]')).toHaveLength(2)
-    await expect.poll(() => getComputedStyle(body).opacity).toBe(token('--xh-state-disabled-opacity'))
-
-    loading.value = false
-    await nextTick()
-    await expect.poll(() => getComputedStyle(body).opacity).toBe('1')
+    // 行此刻仍可选、可展开：淡到禁用透明度会把文字压到 4.5:1 以下（WCAG 1.4.3 只豁免失效控件）
+    expect(body.getAnimations().some(a => (a as CSSTransition).transitionProperty === 'opacity')).toBe(false)
+    expect(getComputedStyle(body).opacity).toBe('1')
   })
 })

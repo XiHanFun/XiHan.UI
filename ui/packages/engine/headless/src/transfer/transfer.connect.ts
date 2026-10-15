@@ -496,7 +496,7 @@ export function connectTransfer<T extends PropTypes>(
     }),
 
     // 在途占位：与空态占位同一个位置、同一副观感，两者不同屏。只接管这一侧的首次加载：
-    // 已有看得见的条目时列表原样留着、按 aria-busy 淡下，占位让位
+    // 已有看得见的条目时列表原样留着、只报 aria-busy，占位让位
     getLoadingProps: panel => normalize.element({
       ...parts.loading.attrs,
       'data-side': panel.side,

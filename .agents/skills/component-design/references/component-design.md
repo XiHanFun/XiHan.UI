@@ -1131,7 +1131,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 相位 | 条件 | 画面 |
 | --- | --- | --- |
 | 加载 | 还没有数据、正在取 | 一枚加载环排在一句文案之前。环走加载环家族配方（`family/loading-ring.css`，与 Spinner 环档同一副画法：一段 270° 的弧、不画轨道、起始边留缺口，`--xh-stroke-thick`，弧取 `--xh-fg-brand`）；连接层在占位部件上投影 `data-xh-loading-ring` 与 `data-loading`，环随之按 `micro` 淡入淡出、转与停 |
-| 刷新 | 已有数据、后台在取 | 不换成占位：保留上一帧的内容，容器报 `aria-busy`，内容按 `micro` 淡到 `--xh-state-disabled-opacity`，数据到了再淡回；加载占位在这一相位让位 |
+| 刷新 | 已有数据、后台在取 | 不换成占位：保留上一帧的内容，容器报 `aria-busy`；加载占位在这一相位让位。内容在刷新期间仍可操作（Select、Combobox、Listbox、Mention、Cascader、TreeSelect、Command、Transfer 的条目，Table 的表体）时不淡化——淡到禁用透明度会把文字压到 4.5:1 以下，WCAG 1.4.3 只豁免失效控件；刷新期间不接交互的内容（Tree 与 GridList 的行）才按 `micro` 淡到 `--xh-state-disabled-opacity`，数据到了再淡回 |
 | 空 | 取完没有条目、筛完没有匹配 | 一句文案，由作者或 `translations` 供给；没给文案时不渲染一块空白 |
 | 错误 | 取数或载入失败 | 一枚 `--xh-glyph-mark-warning` 字形（`--xh-fg-danger`，非颜色通道）排在一句说明之前；有重试能力时另给重试入口。媒体在画面正中画同一枚字形，不露浏览器的破图 |
 

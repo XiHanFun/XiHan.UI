@@ -171,14 +171,10 @@
     font-weight: var(--xh-listbox-group-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     user-select: none;
-    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 刷新：已有选项时后台在取，保留上一帧，条目与分组标题按 micro 淡下，数据到了再淡回；在途占位此时让位。
-     淡的是内容不是面：content 自己是描边面，整块淡下去边也跟着淡 */
-  [data-scope='listbox'][data-part='content'][aria-busy='true'] [data-scope='listbox']:is([data-part='item'], [data-part='group-label']) {
-    opacity: var(--xh-state-disabled-opacity);
-  }
+  /* 刷新（已有选项、后台在取）只报 aria-busy，内容原样留着、不淡化：选项此刻仍可操作，
+     淡到禁用透明度会把文字压到 4.5:1 以下，WCAG 1.4.3 只豁免失效控件；在途占位此时照旧让位 */
 
   [data-scope='listbox'][data-part='group-label'][hidden] {
     display: none;
