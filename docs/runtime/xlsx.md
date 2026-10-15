@@ -85,6 +85,26 @@ pnpm add @xihan-ui/xlsx
 - **日期**：占位符 `MM → mm`、`HH → hh`、`SSS → 000`，其余文字写成字面文本。Excel 的 `mm` 只有紧挨 `h` / `hh` 之后或紧挨 `ss` 之前才是分钟，其余位置都当成月份；分钟或月份落在会被读错的位置（如 `yyyy-mm`、`HH:MM`），或毫秒不是紧跟在 `ss.` 之后时返回 `null`。
 - 格式说明的类型 `XlsxFormatSpec` 与 `formatValue` 的 `FormatSpec` 同形，测试里做了双向赋值检查，两边改动必须同步。
 
+## 多级表头
+
+分组列头、交叉表的行列表头写成表头树，`headerRows(tree, { axis? })` 展开成单元格与合并区：
+
+```ts
+import { headerRows } from "@xihan-ui/xlsx";
+
+const bold = (value: string) => ({ type: "text" as const, value, bold: true });
+const header = headerRows([
+  { cell: bold("华东"), children: [{ cell: bold("上海") }, { cell: bold("杭州") }] },
+  { cell: bold("合计") },
+]);
+// header.rows：[[华东, null, 合计], [上海, 杭州, null]]
+// header.merges：华东横跨两列，合计纵跨两行
+```
+
+- 叶子按深度优先的次序各占一列；有下级的节点横跨全部下级叶子、纵向占 `span` 层（缺省 1），没有下级的节点纵向占满到最内层，小计、合计这类标签因此向内合并。
+- `axis: "row"` 时转成行表头：层从左到右、叶子自上而下。
+- 结果的行列从 0 起，`depth` 是层数、`breadth` 是叶子数；放进工作表时由调用方给行与合并区加上偏移。`cell` 为空的节点只占位、不合并；`span` 不是正整数时抛 `invalid-header`。
+
 ## 写出
 
 `writeXlsx(workbook, { compression? })` 返回 `Promise<Uint8Array>`，`xlsxBlob(bytes)` 包成带 MIME 类型的 `Blob`，交给 `<a download>` 或上传接口即可。`compression` 缺省 `deflate`，使用运行环境自带的 `CompressionStream('deflate-raw')`；运行环境不支持时抛 `compression-unavailable`，不静默改为不压缩，此时可显式传 `store`。
@@ -101,6 +121,7 @@ pnpm add @xihan-ui/xlsx
 | `invalid-sheet-name` / `duplicate-sheet-name` | 表名不合法或重复，`params` 带表的下标与名字 |
 | `invalid-merge` | 合并区不足两格、越界或与前面的合并区重叠，`params` 带表名与合并区下标 |
 | `invalid-cell` | 单元格的类型或值不合法，`params` 带表的下标与行列号 |
+| `invalid-header` | 表头树节点的 `span` 不是正整数，`params` 带节点路径（各层下标）与 `span` |
 | `compression-unavailable` | 运行环境没有 `CompressionStream` |
 | `archive-too-large` | 条目数或总大小超出 zip 的 32 位上限 |
 
