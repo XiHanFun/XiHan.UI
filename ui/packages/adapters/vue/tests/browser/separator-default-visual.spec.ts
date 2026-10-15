@@ -42,6 +42,27 @@ describe('separator 缺省视觉', () => {
     expect(root.getBoundingClientRect().height).toBeGreaterThan(0)
   })
 
+  // 横排工具条里的竖线：行高由兄弟撑出来（没有写死高度），竖线要铺满这一行、与兄弟上下对齐。
+  // 此前 block-size 写成 100%，父容器高度不确定时解析不出来，stretch 也随之失效：线只剩 1em 高、贴着行顶
+  it('放在内容撑高、交叉轴居中的横排里：竖线铺满行高，不贴顶', () => {
+    const root = mount(`
+      <div style="display:flex;align-items:center;font-size:14px">
+        <button style="block-size:28px">A</button>
+        <div data-scope="separator" class="xh-scope-separator" data-part="root" data-orientation="vertical" role="separator"></div>
+        <button style="block-size:28px">B</button>
+      </div>`)
+    const row = root.parentElement!.getBoundingClientRect()
+    const line = root.getBoundingClientRect()
+    expect(row.height).toBe(28)
+    expect(line.height).toBe(28)
+    expect(line.top).toBe(row.top)
+  })
+
+  it('父容器写死高度时照样铺满', () => {
+    const root = mount('<div style="display:flex;block-size:40px"><div data-scope="separator" class="xh-scope-separator" data-part="root" data-orientation="vertical" role="separator"></div></div>')
+    expect(root.getBoundingClientRect().height).toBe(40)
+  })
+
   it('带分节文字：文字 14px / 500 / 正文色，与两条线各隔 16px，上下留白收到 10px', () => {
     const root = mount(`
       <div data-scope="separator" class="xh-scope-separator" data-part="root" data-orientation="horizontal" role="separator">
