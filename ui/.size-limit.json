@@ -118,7 +118,7 @@
     "name": "xlsx",
     "path": "packages/features/xlsx/dist/index.js",
     "gzip": true,
-    "limit": "4.4 kB"
+    "limit": "5.2 kB"
   },
   {
     "name": "backgrounds",

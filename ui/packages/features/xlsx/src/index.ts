@@ -8,6 +8,8 @@
 export type { XlsxDateTime } from './date'
 export { XlsxError } from './errors'
 export type { XlsxErrorCode } from './errors'
+export { formatCode } from './format'
+export type { XlsxFormatRounding, XlsxFormatSpec } from './format'
 export { sheetName, writeXlsx, XLSX_MIME, xlsxBlob } from './workbook'
 export type {
   XlsxAlign,
