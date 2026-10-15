@@ -25,7 +25,9 @@ export const ON_COLORS: string[]
 export const RULES: {
   lightness: Record<'light' | 'dark', [number, number]>
   chroma: number
+  chromaMax: number
   contrast: number
+  markContrast: number
   adjacent: { distinct: number, cvd: number }
   head: { slots: number, distinct: number, cvd: number }
   anyPair: number
@@ -40,7 +42,9 @@ export const RULES: {
 }
 
 export type ChartScheme = 'categorical' | 'monochrome' | 'brand' | 'muted'
-type PaletteRules = Omit<typeof RULES, 'hueCluster'> & { hueCluster: { span: number, max: number } | null, chromaMax?: number }
+type PaletteRules = Omit<typeof RULES, 'hueCluster' | 'chromaMax'> & { hueCluster: { span: number, max: number } | null, chromaMax?: number | null }
+/** 浅色调：多彩分类把基础色板各档往 toward 里按 amounts（色占的百分比）在 oklab 里混合。 */
+export const TINT: { toward: string, amounts: number[] }
 /** 主题单色的一档：色阶名，或往承载面里混（色占 amount%）的那一档。 */
 export type MonochromeStep = string | { step: string, amount: number }
 

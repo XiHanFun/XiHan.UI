@@ -1,7 +1,7 @@
 // 图表色板的两份实现对拍：令牌生成与门禁用的 packages/design/tokens/build/emit-chart-palette.mjs
 // （只依赖 node 内置模块，跑在构建之前），与 @xihan-ui/viz 的 color 模块（使用者拿来校验自己的色板）。
 // 两边的对比度、ΔE 与色觉障碍模拟必须逐值一致，令牌里的图表色板也必须过 viz 自己的检查——
-// 否则门禁判的与使用者复验的就不是同一件事。
+// 否则门禁判的与使用者复验的就不是同一件事。缺省分类色板是浅色调，viz 按 tone: 'light' 复验。
 // 颜色换算只在 sRGB 色域内对拍：出界时令牌一侧按浏览器的画法逐通道截断，viz 固定明度与色相降彩度收回。
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -63,19 +63,21 @@ describe('颜色换算与度量', () => {
 describe('令牌里的图表色板过 viz 的检查', () => {
   const resolve = ref => tokens.resolvePrimitive(colors, ref)
   const surfaceOf = mode => resolve(semantic[mode].bg.surface.$value)
-  const categoricalOf = mode => Array.from({ length: tokens.SLOTS }, (_, i) => resolve(chart[mode].chart.categorical[i + 1].$value))
+  const categoricalOf = mode => Array.from({ length: tokens.SLOTS }, (_, i) => tokens.resolveExpression(colors, chart[mode].chart.categorical[i + 1].$value))
 
   for (const mode of tokens.MODES) {
-    it(`${mode} 分类色板：相邻与前 3 色两两都通过，最差值与门禁同值`, () => {
+    it(`${mode} 分类色板：相邻与前 3 色两两都通过、对比度只记 warn，最差值与门禁同值`, () => {
       const surface = withAlpha(surfaceOf(mode))
       const categorical = categoricalOf(mode)
       const other = categoricalOf(mode === 'light' ? 'dark' : 'light').map(withAlpha)
       const ours = Object.fromEntries(tokens.checkCategorical(categorical, { mode, surface }).map(check => [check.label, check.worst]))
-      const adjacent = viz.validateCategoricalPalette(categorical.map(withAlpha), { mode, surface, pairs: 'adjacent', reference: other })
-      const head = viz.validateCategoricalPalette(categorical.map(withAlpha), { mode, surface, pairs: 'all' })
+      const adjacent = viz.validateCategoricalPalette(categorical.map(withAlpha), { mode, surface, pairs: 'adjacent', reference: other, tone: 'light' })
+      const head = viz.validateCategoricalPalette(categorical.map(withAlpha), { mode, surface, pairs: 'all', tone: 'light' })
+      // 浅色调对亮色承载面到不了 3:1，靠图例、色块内文字与数据表补偿；色觉障碍分离不许落进 6–8 的补偿区
+      const warned = mode === 'light' ? ['contrast'] : []
       for (const report of [adjacent, head]) {
         expect(report.ok).toBe(true)
-        expect(report.checks.filter(check => check.status === 'warn')).toEqual([])
+        expect(report.checks.filter(check => check.status === 'warn').map(check => check.id)).toEqual(warned)
       }
       const worst = (report, id) => report.checks.find(check => check.id === id).worst
       close(worst(adjacent, 'cvd'), ours['相邻 · 色觉障碍 ΔE'])

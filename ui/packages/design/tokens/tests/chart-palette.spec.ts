@@ -1,6 +1,7 @@
 // 图表分类色板：tokens/chart.palette.json 由 build/emit-chart-palette.mjs 从基础色板搜出来。
-// 这里核三件事：生成物与重新搜索的结果逐字一致（没人手改、基础色板改了就得重跑生成）、
-// 不取的色相确实不在色板里、色槽 1 与品牌色同色相；另核 data-xh-chart-palette 三套方案各自的取色来源。
+// 这里核四件事：生成物与重新搜索的结果逐字一致（没人手改、基础色板改了就得重跑生成）、
+// 缺省色板是基础色往纯白里混出的浅色调、不取的色相确实不在色板里、色槽 1 与品牌色同色相；
+// 另核 data-xh-chart-palette 三套方案各自的取色来源。
 // 色板本身的各项检查由 check-chart-palette 门禁判。
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -18,6 +19,7 @@ import {
   SCHEMES,
   SLOTS,
   solveCategorical,
+  TINT,
   toOklch,
 } from '../build/emit-chart-palette.mjs'
 
@@ -43,7 +45,9 @@ function slotRefs(chart: ChartGroup): string[] {
 }
 
 const PRIMITIVE_REF = /^\{color\.([a-z]+)\.\d+\}$/
-const hueOf = (ref: string): string => PRIMITIVE_REF.exec(ref)![1]!
+const TINT_REF = /^color-mix\(in oklab, \{color\.([a-z]+)\.\d+\} (\d+)%, \{color\.neutral\.0\}\)$/
+/** 原语引用与往纯白里混出的浅色调都取它的基础色相。 */
+const hueOf = (ref: string): string => (PRIMITIVE_REF.exec(ref) ?? TINT_REF.exec(ref))![1]!
 
 describe('图表分类色板', () => {
   it('生成物与按当前基础色板重新搜索的结果逐字一致', async () => {
@@ -61,6 +65,16 @@ describe('图表分类色板', () => {
     expect(dark).toEqual(light)
     for (const hue of Object.keys(EXCLUDED_HUES))
       expect(light).not.toContain(hue)
+  })
+
+  it('缺省色板是浅色调：每个色槽都是基础色板的一档按 TINT 的比例往纯白里混合', () => {
+    for (const mode of MODES) {
+      for (const ref of slotRefs(group(mode, 'categorical'))) {
+        const hit = TINT_REF.exec(ref)
+        expect(hit, ref).not.toBeNull()
+        expect(TINT.amounts).toContain(Number(hit![2]))
+      }
+    }
   })
 
   it('色槽 1 取品牌色相', () => {

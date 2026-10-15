@@ -7,17 +7,18 @@
 // 色觉障碍取 Machado–Oliveira–Fernandes 2009 严重度 1.0 的模拟矩阵（作用在线性 sRGB 上）；tooling/testing 的
 // chart-palette 用例拿 viz 逐值对拍。这里不 import viz：令牌生成与门禁跑在构建之前，只能依赖 node 内置模块。
 //
-// 分类色板的规则，亮暗两套各自成立，承载面取各自的 bg.surface：
-//   明度带        OKLCH L 亮色 0.43–0.77，暗色 0.48–0.67
-//   彩度下限      C ≥ 0.10
-//   对比度        每个色槽对承载面 ≥ 3:1
+// 分类色板是浅色调：基础色板各档往纯白里在 oklab 里按比例混合（TINT），亮暗两套各自成立，承载面取各自的 bg.surface：
+//   明度带        OKLCH L 亮色 0.72–0.84，暗色 0.68–0.80
+//   彩度带        0.07 ≤ C ≤ 0.14：低于下限读成灰，高于上限在亮端发荧光
+//   对比度        每个色槽对承载面 ≥ 1.6:1：浅色调到不了 3:1，系列身份靠图例、色块内文字与数据表补偿
 //   相邻          正常视觉 ΔE ≥ 15；红色弱、绿色弱模拟下 ΔE ≥ 8
 //   前 3 个色槽   两两之间同相邻：散点、气泡这类任意两个标记都可能挨着的形态只保证前 3 个
-//   任意两色      正常视觉 ΔE ≥ 10：隐藏、筛选都不重新分配颜色，原本不相邻的两色随时会挨在一起
+//   任意两色      正常视觉 ΔE ≥ 8：隐藏、筛选都不重新分配颜色，原本不相邻的两色随时会挨在一起；浅色调挤在亮端，
+//                 门槛与莫兰迪柔彩同档
 //   色相分散      任意 45° 扇区（8 个色槽的平均间隔）里至多 2 个色槽
 //   离开告警色    与 danger 语气的每一档正常视觉 ΔE ≥ 10：图里的红色会被读成告警，red 与发红的 orange 都落在这里
 //   固定顺序      两套同一色槽同一色相，色槽 1 是品牌色相
-// yellow 整族不取：同档同明度的色板里，对白底 3:1 的明度上黄色相只剩橄榄色。
+// yellow 整族不取：浅色调的明度带里它在亮色发土黄、在暗色只剩橄榄色。
 //
 // 在满足全部规则的排法里，取「相邻色槽在两种色觉障碍模拟下的最小 ΔE」最大的一种；并列时取任意两色正常视觉
 // ΔE 的最小值更大的一种，仍并列取先搜到的。搜索是确定的：同一份基础色板永远得到同一套结果。
@@ -26,7 +27,8 @@
 // 同样写进 chart.palette.json，emit-tokens.mjs 为每套生成一个把分类色槽改指过去的取值块：
 //   monochrome  主题单色    品牌色阶由深到浅；色槽 1 是主题色（--xh-bg-brand 那一档），之后逐档变浅、贴近承载面，
 //                           末两档再往承载面里混。只靠明度区分系列，色槽 1 ≥ 3:1，浅档低于 3:1，靠图例与数据表补偿
-//   brand       柔和品牌    围着品牌色相取冷色一族加一抹粉，同一色相允许取两档；规则同分类色板，放开色相分散，
+//   brand       柔和品牌    围着品牌色相取冷色一族加一抹粉，同一色相允许取两档；取基础色板原档、走标准明度带
+//                           （亮色 0.43–0.77、暗色 0.48–0.67，彩度 ≥ 0.10，对比度 ≥ 3:1），放开色相分散，
 //                           任意两色放宽到 7（同色相的两档只差一档）
 //   muted       莫兰迪柔彩  基础色板的色与明度相近的中性档在 oklab 里按比例混合压低彩度；彩度 0.035–0.10，
 //                           明度带收窄到中段，相邻正常视觉 ΔE ≥ 12、色觉障碍 ≥ 6
@@ -54,21 +56,26 @@ const SCHEME_DESCRIPTIONS = {
 export const FIRST_HUE = 'indigo'
 /** 不进分类色板的色相与理由。 */
 export const EXCLUDED_HUES = {
-  yellow: '同档同明度的色板里，对白底 3:1 的明度上黄色相只剩橄榄色',
+  yellow: '浅色调的明度带里黄色相在亮色发土黄、在暗色只剩橄榄色；标准明度带上对白底 3:1 时同样只剩橄榄色',
 }
 /** 色块内文字的两个候选：纯白与最深的中性档，取对比度高的一个。 */
 export const ON_COLORS = ['{color.neutral.0}', '{color.neutral.950}']
 
 export const RULES = {
-  lightness: { light: [0.43, 0.77], dark: [0.48, 0.67] },
-  chroma: 0.1,
-  contrast: 3,
+  lightness: { light: [0.72, 0.84], dark: [0.68, 0.8] },
+  chroma: 0.07,
+  /** 彩度上限：亮端的浅色调彩度再高就发荧光。 */
+  chromaMax: 0.14,
+  /** 分类色槽对承载面的下限：浅色调到不了 3:1，系列身份靠图例、色块内文字与数据表补偿。 */
+  contrast: 1.6,
+  /** 其余数据色（顺序终点、发散两端、涨跌、「其他」）对承载面的下限。 */
+  markContrast: 3,
   adjacent: { distinct: 15, cvd: 8 },
   head: { slots: 3, distinct: 15, cvd: 8 },
-  anyPair: 10,
+  anyPair: 8,
   /** 色相分散：8 个色槽平均相隔 360° ÷ 8 = 45°，任意 45° 扇区里至多 2 个，同一色系（比如三个蓝）不挤在一起。 */
   hueCluster: { span: 45, max: 2 },
-  /** 与 danger 语气每一档的正常视觉 ΔE 下限，与「任意两色」同一门槛。 */
+  /** 与 danger 语气每一档的正常视觉 ΔE 下限：图里的红色会被读成告警，不随浅色调放宽。 */
   danger: 10,
   onContrast: 4.5,
   /** 有序色阶里对比度最低的一档对承载面的下限。 */
@@ -83,18 +90,25 @@ export const RULES = {
   centerContrast: 1.5,
 }
 
+/** 浅色调：多彩分类把基础色板各档往纯白里按这几个比例在 oklab 里混合（色占的百分比）。 */
+export const TINT = { toward: '{color.neutral.0}', amounts: [90, 75, 60, 45] }
+
+/** 标准明度带：柔和品牌取基础色板原档时的明度、彩度与对比度门槛。 */
+const STANDARD_BAND = { lightness: { light: [0.43, 0.77], dark: [0.48, 0.67] }, chroma: 0.1, chromaMax: null, contrast: 3 }
+
 /** 配色方案的取值：categorical 是缺省，其余经祖先上的 data-xh-chart-palette 切换。 */
 export const SCHEMES = ['categorical', 'monochrome', 'brand', 'muted']
 
 /** 柔和品牌可取的色相：品牌色相两侧的冷色一族，粉作点缀；同一色相至多两档。 */
 export const BRAND_HUES = ['indigo', 'purple', 'blue', 'cyan', 'teal', 'pink']
 export const BRAND_PER_HUE = 2
-export const BRAND_RULES = { ...RULES, hueCluster: null, anyPair: 7 }
+export const BRAND_RULES = { ...RULES, ...STANDARD_BAND, hueCluster: null, anyPair: 7 }
 
 /** 莫兰迪柔彩：色与明度最接近的中性档按这几个比例在 oklab 里混合（色占的百分比）。 */
 export const MUTED_MIX = [40, 55]
 export const MUTED_RULES = {
   ...RULES,
+  contrast: 3,
   lightness: { light: [0.52, 0.68], dark: [0.55, 0.72] },
   chroma: 0.035,
   chromaMax: 0.1,
@@ -416,7 +430,7 @@ export function checkSequential(colors, { surface }) {
     item('顺序 · 单色相', hue, `≤ ${RULES.hueTolerance}°`, hue <= RULES.hueTolerance),
     item('顺序 · 明度单调', null, '单调', monotonic(colors.map(c => toOklch(c).l))),
     item('顺序 · 小值贴近表面', null, '对比度逐档递增', ascending),
-    item('顺序 · 终点对比度', end, `≥ ${RULES.contrast}`, end >= RULES.contrast),
+    item('顺序 · 终点对比度', end, `≥ ${RULES.markContrast}`, end >= RULES.markContrast),
   ]
 }
 
@@ -429,7 +443,7 @@ export function checkDiverging([negative, center, positive], { surface, danger }
   const midRatio = contrastRatio(center, surface)
   return [
     item('发散 · 两臂等档', arms, `≤ ${RULES.armLightness}`, arms <= RULES.armLightness),
-    item('发散 · 两端对比度', ends, `≥ ${RULES.contrast}`, ends >= RULES.contrast),
+    item('发散 · 两端对比度', ends, `≥ ${RULES.markContrast}`, ends >= RULES.markContrast),
     item('发散 · 两端色觉障碍 ΔE', apart, `≥ ${RULES.adjacent.cvd}`, apart >= RULES.adjacent.cvd),
     ...(danger ? [dangerCheck([negative, positive], danger, '发散 · 两端离开告警色')] : []),
     item('发散 · 中点中性', mid.c, `< ${RULES.neutralChroma}`, mid.c < RULES.neutralChroma),
@@ -445,7 +459,7 @@ export function checkRiseFall(rise, fall, { surface, success, danger }) {
   const riseHue = hueDistance(toOklch(rise).h, toOklch(success).h)
   const fallHue = hueDistance(toOklch(fall).h, toOklch(danger).h)
   return [
-    item('涨跌 · 对比度', ratio, `≥ ${RULES.contrast}`, ratio >= RULES.contrast),
+    item('涨跌 · 对比度', ratio, `≥ ${RULES.markContrast}`, ratio >= RULES.markContrast),
     item('涨跌 · 色觉障碍 ΔE', apart, `≥ ${RULES.adjacent.cvd}`, apart >= RULES.adjacent.cvd),
     item('涨跌 · 正常视觉 ΔE', distinct, `≥ ${RULES.adjacent.distinct}`, distinct >= RULES.adjacent.distinct),
     item('涨跌 · 涨为成功色相', riseHue, `≤ ${RULES.hueTolerance}°`, riseHue <= RULES.hueTolerance),
@@ -463,7 +477,7 @@ export function checkNeutrals({ other, deemphasis }, categorical, { surface }) {
   const weakestSlot = Math.min(...categorical.map(c => contrastRatio(c, surface)))
   return [
     item('其他 · 中性', otherLch.c, `< ${RULES.neutralChroma}`, otherLch.c < RULES.neutralChroma),
-    item('其他 · 对比度', otherRatio, `≥ ${RULES.contrast}`, otherRatio >= RULES.contrast),
+    item('其他 · 对比度', otherRatio, `≥ ${RULES.markContrast}`, otherRatio >= RULES.markContrast),
     item('其他 · 与各色槽正常视觉 ΔE', apart, `≥ ${RULES.anyPair}`, apart >= RULES.anyPair),
     item('淡出 · 中性', deemLch.c, `< ${RULES.neutralChroma}`, deemLch.c < RULES.neutralChroma),
     item('淡出 · 弱于各色槽', deemRatio, `< ${weakestSlot.toFixed(2)}`, deemRatio < weakestSlot),
@@ -537,15 +551,16 @@ export function resolveExpression(colors, expression, surfaceRef) {
 
 /**
  * 一个色相在一种模式下可用的取值：明度带、彩度带、对比度与离开告警色逐个筛。
- * mixes 为空时取基础色板的原档；给了比例就把每一档与明度最接近的中性档在 oklab 里按比例混合（莫兰迪柔彩）。
+ * mix 为空时取基础色板的原档；给了 amounts 就把每一档往 toward 在 oklab 里按比例混合：toward 缺省取与该档
+ * 明度最接近的中性档（莫兰迪柔彩），多彩分类的浅色调给纯白（TINT）。
  */
-function candidates(colors, hue, mode, surface, danger, rules = RULES, mixes = null) {
+function candidates(colors, hue, mode, surface, danger, rules = RULES, mix = null) {
   const neutrals = Object.keys(colors.neutral).filter(step => !step.startsWith('$'))
   const out = []
   for (const step of STEPS) {
     const source = parseOklchRaw(colors[hue][step].$value)
     const variants = []
-    if (!mixes) {
+    if (!mix) {
       variants.push({ ref: `{color.${hue}.${step}}`, rgb: fromOklch(source) })
     }
     else {
@@ -553,9 +568,10 @@ function candidates(colors, hue, mode, surface, danger, rules = RULES, mixes = n
         const l = parseOklchRaw(colors.neutral[n].$value).l
         return Math.abs(l - source.l) < Math.abs(best.l - source.l) ? { step: n, l } : best
       }, { step: neutrals[0], l: Number.POSITIVE_INFINITY })
-      const neutral = parseOklchRaw(colors.neutral[nearest.step].$value)
-      for (const amount of mixes)
-        variants.push({ ref: `color-mix(in oklab, {color.${hue}.${step}} ${amount}%, {color.neutral.${nearest.step}})`, rgb: mixOklab(source, neutral, amount) })
+      const toward = mix.toward ?? `{color.neutral.${nearest.step}}`
+      const target = parseOklchRaw(primitiveValue(colors, toward))
+      for (const amount of mix.amounts)
+        variants.push({ ref: `color-mix(in oklab, {color.${hue}.${step}} ${amount}%, ${toward})`, rgb: mixOklab(source, target, amount) })
     }
     for (const variant of variants) {
       const { l, c } = toOklch(variant.rgb)
@@ -609,11 +625,11 @@ function solve(nodes, { rules, perHue = 1, first = FIRST_HUE, name }) {
     return true
   }
   const take = (j, delta) => taken.set(nodes[j].hue, (taken.get(nodes[j].hue) ?? 0) + delta)
-  function visit(worst) {
+  // worst 与 pairFloor 只会随色槽变多而变小：最差边值追不过当前最优、任意两色下限又不比它大的分支不可能胜出。
+  // 最优解的最差边值常被许多排法共有，不剪这一支就要为任意两色的并列比较把它们全部走一遍
+  const hopeless = (worst, pairFloor) => worst < best.worst + EPSILON && pairFloor < best.anyPair + EPSILON
+  function visit(worst, pairFloor) {
     if (sequence.length === SLOTS) {
-      let pairFloor = Number.POSITIVE_INFINITY
-      for (const [i, j] of allPairs(SLOTS))
-        pairFloor = Math.min(pairFloor, anyPair[sequence[i] * n + sequence[j]])
       if (worst > best.worst + EPSILON || (worst > best.worst - EPSILON && pairFloor > best.anyPair + EPSILON))
         best = { worst, anyPair: pairFloor, sequence: [...sequence] }
       return
@@ -626,20 +642,23 @@ function solve(nodes, { rules, perHue = 1, first = FIRST_HUE, name }) {
       const value = Math.min(worst, edge[last * n + j])
       if (value < rules.adjacent.cvd || value < best.worst - EPSILON)
         continue
-      if (sequence.some(i => anyPair[i * n + j] < rules.anyPair))
+      let pairs = pairFloor
+      for (const i of sequence)
+        pairs = Math.min(pairs, anyPair[i * n + j])
+      if (pairs < rules.anyPair || hopeless(value, pairs))
         continue
       if (rules.hueCluster && MODES.some(mode => hueCrowding([...sequence.map(i => nodes[i].angle[mode]), nodes[j].angle[mode]], rules.hueCluster.span) > rules.hueCluster.max))
         continue
-      next.push([value, j])
+      next.push([value, j, pairs])
     }
     next.sort((a, b) => b[0] - a[0])
-    for (const [value, j] of next) {
-      if (value < best.worst - EPSILON)
+    for (const [value, j, pairs] of next) {
+      if (value < best.worst - EPSILON || hopeless(value, pairs))
         continue
       sequence.push(j)
       take(j, 1)
       if (sequence.length > rules.head.slots || headOk())
-        visit(value)
+        visit(value, pairs)
       sequence.pop()
       take(j, -1)
     }
@@ -649,7 +668,7 @@ function solve(nodes, { rules, perHue = 1, first = FIRST_HUE, name }) {
       continue
     sequence.push(i)
     take(i, 1)
-    visit(Number.POSITIVE_INFINITY)
+    visit(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY)
     sequence.pop()
     take(i, -1)
   }
@@ -663,12 +682,12 @@ function solve(nodes, { rules, perHue = 1, first = FIRST_HUE, name }) {
 }
 
 /** 搜索的节点：每个可用色相的亮色取值 × 暗色取值。 */
-function nodesOf(colors, hues, surfaces, rules, mixes) {
+function nodesOf(colors, hues, surfaces, rules, mix) {
   const danger = dangerColors(colors)
   const nodes = []
   for (const hue of hues) {
-    const light = candidates(colors, hue, 'light', surfaces.light, danger, rules, mixes)
-    const dark = candidates(colors, hue, 'dark', surfaces.dark, danger, rules, mixes)
+    const light = candidates(colors, hue, 'light', surfaces.light, danger, rules, mix)
+    const dark = candidates(colors, hue, 'dark', surfaces.dark, danger, rules, mix)
     for (const l of light) {
       for (const d of dark)
         nodes.push({ hue, light: l, dark: d, angle: { light: toOklch(l.rgb).h, dark: toOklch(d.rgb).h } })
@@ -682,7 +701,7 @@ export function solveCategorical(colors, palette, surfaces) {
   const hues = palette.filter(name => !(name in EXCLUDED_HUES))
   if (!hues.includes(FIRST_HUE))
     throw new Error(`[chart-palette] 基础色板里没有色槽 1 的色相 ${FIRST_HUE}`)
-  return solve(nodesOf(colors, hues, surfaces, RULES), { rules: RULES, name: '多彩分类' })
+  return solve(nodesOf(colors, hues, surfaces, RULES, TINT), { rules: RULES, name: '多彩分类' })
 }
 
 /** 柔和品牌：品牌色相两侧的冷色一族，同一色相至多两档。 */
@@ -694,7 +713,7 @@ export function solveBrand(colors, palette, surfaces) {
 /** 莫兰迪柔彩：每个色相的色与明度相近的中性档混合，压低彩度。 */
 export function solveMuted(colors, palette, surfaces) {
   const hues = palette.filter(name => !(name in EXCLUDED_HUES))
-  return solve(nodesOf(colors, hues, surfaces, MUTED_RULES, MUTED_MIX), { rules: MUTED_RULES, name: '莫兰迪柔彩' })
+  return solve(nodesOf(colors, hues, surfaces, MUTED_RULES, { amounts: MUTED_MIX }), { rules: MUTED_RULES, name: '莫兰迪柔彩' })
 }
 
 /** 主题单色的两套取值表达式。 */
@@ -785,7 +804,7 @@ async function main() {
   const solution = solveCategorical(colors, hues, surfaces)
   const document = await paletteDocument(colors, surfaces, solution, hues)
   await writeFile(OUT, `${JSON.stringify(document, null, 2)}\n`)
-  const order = solution.slots.map(slot => slot.light.replace(/^\{color\.|\}$/g, '')).join(' · ')
+  const order = solution.slots.map(slot => slot.light.replace(/^color-mix\(in oklab, \{color\.([\w.]+)\} (\d+)%, \{color\.neutral\.0\}\)$/, '$1 $2%')).join(' · ')
   console.log(`[emit-chart-palette] ${order} · 相邻色觉 ΔE ${solution.worst.toFixed(2)} · 任意两色 ΔE ${solution.anyPair.toFixed(2)} · 方案 ${SCHEMES.join(' / ')} → chart.palette.json`)
 }
 
