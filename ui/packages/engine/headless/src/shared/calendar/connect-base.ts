@@ -229,7 +229,7 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
         // 每行取第四格（行中那天）算周序号：不论周首日是哪天，它所在的 ISO 周都占了这一行七天里的至少四天
         weekNumbers: g.weeks.map(row => PlainDate.from(row[3]!.start).weekOfYear),
         periods: g.weeks.flat(),
-        cells: [],
+        rows: [],
         headingLabel: headingFormatter.format(start),
         headingYear: pieces.year,
         headingMonth: pieces.month,
@@ -244,8 +244,8 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
       startValue: g.startValue,
       weeks: [],
       weekNumbers: [],
-      periods: g.cells,
-      cells: g.cells,
+      periods: g.rows.flat(),
+      rows: g.rows,
       headingLabel: g.headingLabel,
       // 年视图的标题是整个十年跨度（2020年-2029年），钻不上去了，那一截就是它
       headingYear: view === 'year' ? g.headingLabel : pieces.year,
@@ -310,7 +310,7 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
       }
       continue
     }
-    for (const cell of panel.cells) {
+    for (const cell of panel.periods) {
       if (!cell.outside)
         ownerOf.set(cell.start, panel.index)
     }
@@ -330,7 +330,7 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
       // 粗粒度视图的格子值是那一段的第一天，与面板起点比月份恒不相等，改用网格自报的 outside
       outsideMonth: view === 'day'
         ? (!date || date.year !== panel.year || date.month !== panel.month)
-        : !!panel.cells.find(cell => cell.start === item.value)?.outside,
+        : !!panel.periods.find(cell => cell.start === item.value)?.outside,
       isToday: !!period && period.start <= todayValue && period.end >= todayValue,
       focused: period?.start === focusedCell,
     }

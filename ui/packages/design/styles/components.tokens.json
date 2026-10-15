@@ -5622,12 +5622,16 @@
       "name": "--xh-calendar-picker-period-gap",
       "component": "calendar-picker",
       "part": [
-        "grid"
+        "grid",
+        "week-row"
       ],
       "property": [
+        "column-gap",
         "gap"
       ],
       "state": [
+        "is([data-view='month'], [data-view='year'])",
+        "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
         "view=month",
         "view=quarter",
         "view=week",
@@ -5637,7 +5641,7 @@
         "--xh-space-0"
       ],
       "visibility": "public",
-      "description": "calendar-picker 的 grid 部件 gap 覆盖槽。"
+      "description": "calendar-picker 的 grid、week-row 部件 column-gap、gap 覆盖槽。"
     },
     {
       "name": "--xh-calendar-picker-period-px",
@@ -6854,12 +6858,16 @@
       "name": "--xh-calendar-range-picker-period-gap",
       "component": "calendar-range-picker",
       "part": [
-        "grid"
+        "grid",
+        "week-row"
       ],
       "property": [
+        "column-gap",
         "gap"
       ],
       "state": [
+        "is([data-view='month'], [data-view='year'])",
+        "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
         "view=month",
         "view=quarter",
         "view=week",
@@ -6869,7 +6877,7 @@
         "--xh-space-0"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 grid 部件 gap 覆盖槽。"
+      "description": "calendar-range-picker 的 grid、week-row 部件 column-gap、gap 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-period-px",

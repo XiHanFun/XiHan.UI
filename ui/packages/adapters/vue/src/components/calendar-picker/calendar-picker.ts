@@ -23,6 +23,7 @@ export type CalendarPickerRootSlotProps = Pick<
   | 'visibleMonth'
   | 'panels'
   | 'periods'
+  | 'rows'
   | 'weeks'
   | 'weekDays'
   | 'headingLabel'
@@ -98,13 +99,14 @@ export const XhCalendarPickerRoot = defineComponent({
     }
     const ctx = useCalendarPicker(withXhConfig('calendar-picker', props) as CalendarPickerProps, notifyValue, notifyFocus, notifyActiveView)
     provideCalendarPicker(ctx)
-    // 网格与表头由作者照插槽里的 weeks / weekDays 自行渲染
+    // 网格与表头由作者照插槽里的 weeks（日视图）/ rows（周期视图）/ weekDays 自行渲染
     return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: ctx.rootRef }, slots.default?.({
       value: ctx.api.value.value,
       focusedValue: ctx.api.value.focusedValue,
       visibleMonth: ctx.api.value.visibleMonth,
       panels: ctx.api.value.panels,
       periods: ctx.api.value.periods,
+      rows: ctx.api.value.rows,
       weeks: ctx.api.value.weeks,
       weekDays: ctx.api.value.weekDays,
       headingLabel: ctx.api.value.headingLabel,

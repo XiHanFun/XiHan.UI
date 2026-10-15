@@ -1,4 +1,4 @@
-<!-- 按周选择 | granularity=week：一行一个整周，格子直接铺进网格；值是两端两周的周首日；月、季度与年同理 -->
+<!-- 按周选择 | granularity=week：rows 已按行切好，周视图一行一个整周，每行写一个 week-row；值是两端两周的周首日；月、季度与年同理 -->
 <script setup lang="ts">
 import {
   XhCalendarRangePickerCell,
@@ -9,6 +9,7 @@ import {
   XhCalendarRangePickerNextTrigger,
   XhCalendarRangePickerPrevTrigger,
   XhCalendarRangePickerRoot,
+  XhCalendarRangePickerWeekRow,
 } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
 
@@ -20,7 +21,7 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 
 <template>
   <XhCalendarRangePickerRoot
-    v-slot="{ periods }"
+    v-slot="{ rows }"
     v-model:value="value"
     locale="zh-CN"
     granularity="week"
@@ -31,11 +32,13 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
       <XhCalendarRangePickerHeading />
       <XhCalendarRangePickerNextTrigger aria-label="下个月" />
     </XhCalendarRangePickerHeader>
-    <!-- 周期视图没有周行那一层：一格就是一整周，格子直接铺进网格 -->
+    <!-- 周期格按行收进 week-row：grid 底下得是行，格子落在行里 -->
     <XhCalendarRangePickerGrid>
-      <XhCalendarRangePickerCell v-for="period in periods" :key="period.key" :value="period.start">
-        <XhCalendarRangePickerCellTrigger>{{ period.label }}</XhCalendarRangePickerCellTrigger>
-      </XhCalendarRangePickerCell>
+      <XhCalendarRangePickerWeekRow v-for="row in rows" :key="row[0].key">
+        <XhCalendarRangePickerCell v-for="period in row" :key="period.key" :value="period.start">
+          <XhCalendarRangePickerCellTrigger>{{ period.label }}</XhCalendarRangePickerCellTrigger>
+        </XhCalendarRangePickerCell>
+      </XhCalendarRangePickerWeekRow>
     </XhCalendarRangePickerGrid>
   </XhCalendarRangePickerRoot>
 

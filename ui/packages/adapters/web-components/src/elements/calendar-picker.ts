@@ -39,7 +39,7 @@ function declaredIndex(el: Element | null | undefined, fallback = 0): number {
 /**
  * `<xh-calendar-picker>`：日历选择器行为宿主：选择一天或多天。
  *
- * 网格由作者渲染，元素不生成节点：读取 `weeks` / `weekDays` / `headingLabel` 三个只读属性，
+ * 网格由作者渲染，元素不生成节点：读取 `weeks`（日视图）/ `rows`（周期视图）/ `weekDays` / `headingLabel` 几个只读属性，
  * 监听 `focused-value-change` 重绘（须在收到事件的同一拍内完成）。日期身份取 cell 上的
  * `value`（ISO 串），cell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）。
  * 翻月按钮的可及名由作者提供。
@@ -203,6 +203,14 @@ export class XhCalendarPickerElement extends XhElement {
   /** 当前展示月的日期矩阵，作者据此渲染网格。状态机尚未建立时返回空数组。 */
   get weeks(): CalendarDay[][] {
     return this.ctrl.service ? connectCalendarPicker(this.ctrl.service, wcNormalize).weeks : []
+  }
+
+  /**
+   * 首个面板按行切好的周期格（周 / 月 / 季度 / 年视图），作者一行写一个 week-row、格子放进行里。
+   * 日视图下为空数组，多面板请改用 panels。状态机尚未建立时返回空数组。
+   */
+  get rows(): CalendarPeriod[][] {
+    return this.ctrl.service ? connectCalendarPicker(this.ctrl.service, wcNormalize).rows : []
   }
 
   /** 当前面板内的统一周期数据。 */

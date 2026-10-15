@@ -287,15 +287,29 @@ export function visibleCountOf(count: number | undefined): number {
 export const CALENDAR_YEARS_PER_PAGE = 10
 
 /**
- * 粗粒度视图每行几格。方向键上下移动要靠它换算。
- * 与 `packages/design/styles/css/calendar.css` 里那几条 grid-template-columns 是同一套档位，
- * 改一处必须改另一处——CSS 引不到 JS，这是唯一一处两头写死的数。
+ * 粗粒度视图每行几格：周期格按它切成行（role=row 的 week-row），方向键上下移动也靠它换算。
+ * 与 `packages/design/styles/css/calendar-picker.css`、`calendar-range-picker.css` 里周期视图
+ * week-row 的 grid-template-columns 是同一套档位，改一处必须改另一处——CSS 引不到 JS，这是唯一一处两头写死的数。
  */
 export const CALENDAR_PERIOD_COLUMNS: Readonly<Record<Exclude<CalendarView, 'day'>, number>> = {
   week: 1,
   month: 3,
   quarter: 4,
   year: 3,
+}
+
+/**
+ * 把一串周期格按视图的列数切成行，作者照它一行一个 week-row 地渲染。
+ *
+ * role=grid 底下得是 row、gridcell 得落在 row 里，格子不能直接铺进网格。面板自带的 rows 已经切好；
+ * 作者自备的格子列表（比如一页铺开两百年的年份）用它切，行宽与方向键上下一行的步长同一个数。
+ */
+export function calendarPeriodRows(periods: readonly CalendarPeriod[], view: Exclude<CalendarView, 'day'>): CalendarPeriod[][] {
+  const columns = CALENDAR_PERIOD_COLUMNS[view]
+  const rows: CalendarPeriod[][] = []
+  for (let i = 0; i < periods.length; i += columns)
+    rows.push(periods.slice(i, i + columns))
+  return rows
 }
 
 /** 一格跨多少个月：月一格一个月，季度三个月，年十二个月。 */
@@ -571,7 +585,8 @@ export interface CalendarPeriodGrid {
   startValue: string
   /** 标题文案（2026年 / 2020-2029）。 */
   headingLabel: string
-  cells: CalendarPeriod[]
+  /** 周期格，按 CALENDAR_PERIOD_COLUMNS 切好的行：周一行一格，月与年一行三格，季度一行四格。 */
+  rows: CalendarPeriod[][]
 }
 
 /** 一个视图翻一页走多少个月：月与季度按年翻，年按十年翻。 */
@@ -643,7 +658,7 @@ export function buildPeriodGrid(
     return {
       startValue: monthStart.toString(),
       headingLabel: createDateFormatter(locale, { year: 'numeric', month: 'long' }).format(monthStart),
-      cells,
+      rows: calendarPeriodRows(cells, view),
     }
   }
 
@@ -658,7 +673,7 @@ export function buildPeriodGrid(
     return {
       startValue: start.toString(),
       headingLabel: createDateFormatter(locale, { year: 'numeric' }).format(start),
-      cells,
+      rows: calendarPeriodRows(cells, view),
     }
   }
 
@@ -672,7 +687,7 @@ export function buildPeriodGrid(
   return {
     startValue: start.toString(),
     headingLabel: `${yearFmt.format(start)}-${yearFmt.format(last)}`,
-    cells,
+    rows: calendarPeriodRows(cells, 'year'),
   }
 }
 

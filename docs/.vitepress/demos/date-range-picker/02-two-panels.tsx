@@ -94,10 +94,14 @@ export default function Demo(): ReactNode {
                               </XhDateRangePickerGridBody>
                             </>
                           )
-                        : panel.cells.map(cell => (
-                            <XhDateRangePickerCell key={cell.start} value={cell.start}>
-                              <XhDateRangePickerCellTrigger>{cell.label}</XhDateRangePickerCellTrigger>
-                            </XhDateRangePickerCell>
+                        : panel.rows.map(row => (
+                            <XhDateRangePickerWeekRow key={row[0]!.start}>
+                              {row.map(cell => (
+                                <XhDateRangePickerCell key={cell.start} value={cell.start}>
+                                  <XhDateRangePickerCellTrigger>{cell.label}</XhDateRangePickerCellTrigger>
+                                </XhDateRangePickerCell>
+                              ))}
+                            </XhDateRangePickerWeekRow>
                           ))}
                     </XhDateRangePickerGrid>
                   </XhDateRangePickerCalendar>

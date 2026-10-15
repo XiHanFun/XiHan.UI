@@ -18492,30 +18492,13 @@
   min-inline-size: calc(7 * var(--xh-calendar-picker-cell-min-w, var(--xh-control-h-md)) + 2 * var(--xh-calendar-picker-grid-px, var(--xh-space-4)));
 }
 
-/* 周期视图：格子直接铺进网格，不再有周行那一层；格与格之间不留缝，区间的底色在一行里连成一条 */
-.xh-scope-calendar-picker[data-part='grid'][data-view='week'] {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--xh-calendar-picker-period-gap, var(--xh-space-0));
-}
-
-/* 月 3 列 × 4 行、季度 4 列一行、年 3 列。 */
-.xh-scope-calendar-picker[data-part='grid'][data-view='month'],
-.xh-scope-calendar-picker[data-part='grid'][data-view='year'] {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--xh-calendar-picker-period-gap, var(--xh-space-0));
-}
-
-.xh-scope-calendar-picker[data-part='grid'][data-view='quarter'] {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+/* 周期视图：格子按行收进 week-row（role=grid 底下得是 row），行与行之间不留缝，区间的底色上下接得上 */
+.xh-scope-calendar-picker[data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) {
   gap: var(--xh-calendar-picker-period-gap, var(--xh-space-0));
 }
 
 /* 年网格限高自滚：原生细条落在内衬之外的边缘，内衬两侧仍对称 */
 .xh-scope-calendar-picker[data-part='grid'][data-view='year'] {
-  align-content: start;
   max-block-size: var(--xh-calendar-picker-year-grid-max-h, var(--xh-viewport-h-sm));
   /* 页内结构容器走原生细条（reset 层统一给）、滚动链保持 auto；嵌进 date-picker 浮层时由那份皮肤补 contain */
   overflow-y: auto;
@@ -18573,6 +18556,23 @@
 }
 .xh-scope-calendar-picker[data-part='week-row'][hidden] {
   display: none;
+}
+
+/* 周期视图的一行：几格与 headless 的 CALENDAR_PERIOD_COLUMNS 同一套档位，周一行一整周、月与年一行三格、季度一行四格；
+   格与格之间不留缝，区间的底色在一行里连成一条 */
+.xh-scope-calendar-picker[data-part='week-row'][data-view='week'] {
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: var(--xh-calendar-picker-period-gap, var(--xh-space-0));
+}
+
+.xh-scope-calendar-picker[data-part='week-row']:is([data-view='month'], [data-view='year']) {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--xh-calendar-picker-period-gap, var(--xh-space-0));
+}
+
+.xh-scope-calendar-picker[data-part='week-row'][data-view='quarter'] {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--xh-calendar-picker-period-gap, var(--xh-space-0));
 }
 
 /* 星期行：与中号控件同高，正文字号、常规字重，颜色压一档 */
@@ -19034,30 +19034,13 @@
   min-inline-size: calc(7 * var(--xh-calendar-range-picker-cell-min-w, var(--xh-control-h-md)) + 2 * var(--xh-calendar-range-picker-grid-px, var(--xh-space-4)));
 }
 
-/* 周期视图：格子直接铺进网格，不再有周行那一层；格与格之间不留缝，区间的底色在一行里连成一条 */
-.xh-scope-calendar-range-picker[data-part='grid'][data-view='week'] {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--xh-calendar-range-picker-period-gap, var(--xh-space-0));
-}
-
-/* 月 3 列 × 4 行、季度 4 列一行、年 3 列。 */
-.xh-scope-calendar-range-picker[data-part='grid'][data-view='month'],
-.xh-scope-calendar-range-picker[data-part='grid'][data-view='year'] {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--xh-calendar-range-picker-period-gap, var(--xh-space-0));
-}
-
-.xh-scope-calendar-range-picker[data-part='grid'][data-view='quarter'] {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+/* 周期视图：格子按行收进 week-row（role=grid 底下得是 row），行与行之间不留缝，区间的底色上下接得上 */
+.xh-scope-calendar-range-picker[data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) {
   gap: var(--xh-calendar-range-picker-period-gap, var(--xh-space-0));
 }
 
 /* 年网格限高自滚：原生细条落在内衬之外的边缘，内衬两侧仍对称 */
 .xh-scope-calendar-range-picker[data-part='grid'][data-view='year'] {
-  align-content: start;
   max-block-size: var(--xh-calendar-range-picker-year-grid-max-h, var(--xh-viewport-h-sm));
   /* 页内结构容器走原生细条（reset 层统一给）、滚动链保持 auto；嵌进 date-range-picker 浮层时由那份皮肤补 contain */
   overflow-y: auto;
@@ -19120,6 +19103,23 @@
 }
 .xh-scope-calendar-range-picker[data-part='week-row'][hidden] {
   display: none;
+}
+
+/* 周期视图的一行：几格与 headless 的 CALENDAR_PERIOD_COLUMNS 同一套档位，周一行一整周、月与年一行三格、季度一行四格；
+   格与格之间不留缝，区间的底色在一行里连成一条 */
+.xh-scope-calendar-range-picker[data-part='week-row'][data-view='week'] {
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: var(--xh-calendar-range-picker-period-gap, var(--xh-space-0));
+}
+
+.xh-scope-calendar-range-picker[data-part='week-row']:is([data-view='month'], [data-view='year']) {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--xh-calendar-range-picker-period-gap, var(--xh-space-0));
+}
+
+.xh-scope-calendar-range-picker[data-part='week-row'][data-view='quarter'] {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--xh-calendar-range-picker-period-gap, var(--xh-space-0));
 }
 
 /* 星期行：与中号控件同高，正文字号、常规字重，颜色压一档 */

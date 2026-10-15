@@ -73,10 +73,13 @@ export interface CalendarPanel {
    * 周选时把它渲染成行首那一列，人才看得出挑的是第几周。
    */
   weekNumbers: number[]
-  /** 当前面板内的全部周期；五种粒度统一读取这一份。 */
+  /** 当前面板内的全部周期，平铺；五种粒度统一读取这一份。渲染照 weeks / rows 分行，不直接铺它。 */
   periods: CalendarPeriod[]
-  /** 周 / 月 / 季度 / 年的格子；activeView 是 day 时为空数组。 */
-  cells: CalendarPeriod[]
+  /**
+   * 周 / 月 / 季度 / 年的格子，按行切好：周一行一格，月与年一行三格，季度一行四格。
+   * 作者一行渲染一个 week-row（role=row），格子放进行里，不直接铺进 grid。activeView 是 day 时为空数组。
+   */
+  rows: CalendarPeriod[][]
   /** 这个面板的标题文案（2024年2月 / 2024年 / 2020-2029）。 */
   headingLabel: string
   /**
@@ -222,6 +225,8 @@ export interface CalendarBaseApi<T extends PropTypes = PropTypes> {
   visibleMonth: { year: number, month: number, startValue: string }
   /** 首个面板的日期矩阵。多面板请改用 panels。 */
   weeks: CalendarDay[][]
+  /** 首个面板按行切好的周期格（周 / 月 / 季度 / 年视图）；日视图下为空数组。多面板请改用 panels。 */
+  rows: CalendarPeriod[][]
   /** 七列表头，作者照它渲染 week-day。 */
   weekDays: CalendarWeekDay[]
   /** 首个面板的标题文案（如 2024年2月）。多面板请改用 panels。 */

@@ -102,9 +102,9 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * 本元素是编排状态机，只持有开合与分段输入 ↔ 日历之间的值同步；选日期、翻月、网格键盘导航
  * 委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各带各自的 data-scope。
  *
- * 网格由作者渲染，元素不生成节点：读取 `panels` / `weeks` / `weekDays` / `headingLabel` 几个只读属性，
+ * 网格由作者渲染，元素不生成节点：读取 `panels` / `weeks` / `rows` / `weekDays` / `headingLabel` 几个只读属性，
  * 监听 `focused-value-change` 与 `active-view-change` 重绘。并排多页时读取 `panels`，每页自带
- * 日期矩阵、粗粒度格子与标题；输入行铺设的段读取 `fieldSegments`。
+ * 日期矩阵、按行切好的粗粒度格子与标题；输入行铺设的段读取 `fieldSegments`。
  * 日期身份取 cell 节点上的 `value`（ISO 串），
  * cell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；
  * 段位可自带 `segment` 属性按段名归属（`segment="quarter"`），或自带 `index` 属性声明下标，
@@ -521,6 +521,11 @@ export class XhDatePickerElement extends XhPortalHostElement {
   /** 首个面板的日期矩阵，作者据此渲染网格。粗粒度视图下为空数组，多面板请改用 panels。 */
   get weeks(): CalendarDay[][] {
     return this.api()?.calendar.weeks ?? []
+  }
+
+  /** 首个面板按行切好的周期格，作者一行写一个 week-row、格子放进行里。日视图下为空数组，多面板请改用 panels。 */
+  get rows(): CalendarPeriod[][] {
+    return this.api()?.calendar.rows ?? []
   }
 
   /** 首个面板内的统一周期数据。 */

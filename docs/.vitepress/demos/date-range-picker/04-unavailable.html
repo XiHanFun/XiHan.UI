@@ -73,7 +73,7 @@
 
     const grid = node("div", "grid");
     grid.setAttribute("index", panel.index);
-    // 日视图铺周行，粗粒度视图把格子直接铺进网格
+    // 日视图铺周行；粗粒度视图照切好的 rows 一行写一个 week-row，格子落在行里
     if (panel.weeks.length > 0) {
       const head = node("div", "grid-head");
       const headRow = node("div", "week-row");
@@ -94,8 +94,12 @@
       }
       grid.append(head, body);
     } else {
-      for (const cell of panel.cells) {
-        grid.append(dayCell(cell.start, cell.label));
+      for (const periods of panel.rows) {
+        const row = node("div", "week-row");
+        for (const cell of periods) {
+          row.append(dayCell(cell.start, cell.label));
+        }
+        grid.append(row);
       }
     }
 

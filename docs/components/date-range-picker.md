@@ -82,6 +82,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 - `startPlaceholder` / `endPlaceholder` 是两组段位各自的整条占位：哪一端一段都没填、焦点也不在它的段上，就在那一组显示这句文字（「开始日期」「结束日期」）；`placeholder` 是两端共用的逐段占位串。
 - 浮层内是[日历范围选择器](./calendar-range-picker)：先选起点再选终点，两端都落定后才写值并收起浮层；支持按住拖选与拖动已选区间的一端。
 - `granularity` 支持 day / week / month / quarter / year，输入段、网格和周期边界一起切换。周粒度按 ISO 周（星期一到星期日）成段，输入行的「2026-33」按 ISO 周年计，与 `locale` 和 `firstDayOfWeek` 都无关：en-US 这类星期日开头的 locale 下，日视图的一行比所挑的 ISO 周早一天开始。
+- 浮层里的日历由作者照插槽数据渲染：日视图读 `weeks`，周、月、季度与年读按行切好的 `rows`（多面板读 `panels[i].rows`），一行写一个 `week-row`、格子放进行里，写法同[日历范围选择器](./calendar-range-picker)。
 - `min`、`max`、`isDateUnavailable`（第二个参数是当前起点）与 `allowsNonContiguousRanges` 一并转给日历。
 - `presets` 提供“近 7 天”“本月”等整段快捷项，值使用 ISO 8601 的区间写法拼接两端；每项是一颗淡底小钮，当前值落在哪一项就在它末端画对号。
 - 终点早于起点、任一端越界或不可用时整个字段标为不合法，也可以用 `invalid` 显式声明。

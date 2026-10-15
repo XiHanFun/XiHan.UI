@@ -1,7 +1,7 @@
 <!-- 周期选择 | granularity 决定输入行铺设哪几段、浮层铺设哪一档格子 -->
 <script setup lang="ts">
 import type { CalendarGranularity, CalendarPeriod } from "@xihan-ui/headless";
-import { calendarPeriodOf, calendarPeriodValue } from "@xihan-ui/headless";
+import { calendarPeriodOf, calendarPeriodRows, calendarPeriodValue } from "@xihan-ui/headless";
 import {
   XhButton,
   XhDatePickerCalendar,
@@ -46,8 +46,12 @@ const granularities: { value: CalendarGranularity; label: string }[] = [
 const granularity = ref<CalendarGranularity>("day");
 const value = ref<string[]>([]);
 
-const yearCells: CalendarPeriod[] = Array.from({ length: 200 }, (_, index) =>
-  calendarPeriodOf(`${1900 + index}-01-01`, "year", { locale: "zh-CN" })!);
+// 按年挑时一页铺开两百年；自备的格子同样按年视图的列数切成行
+const yearRows: CalendarPeriod[][] = calendarPeriodRows(
+  Array.from({ length: 200 }, (_, index) =>
+    calendarPeriodOf(`${1900 + index}-01-01`, "year", { locale: "zh-CN" })!),
+  "year",
+);
 
 const summary = computed(() => {
   const period = calendarPeriodValue(granularity.value, "single", value.value, { locale: "zh-CN" });
@@ -123,14 +127,15 @@ function changeGranularity(details: { value: string | string[] | null }) {
                 </XhDatePickerWeekRow>
               </XhDatePickerGridBody>
             </template>
-            <XhDatePickerCell
-              v-for="period in granularity === 'year' ? yearCells : panel.cells"
+            <XhDatePickerWeekRow
+              v-for="row in granularity === 'year' ? yearRows : panel.rows"
               v-else
-              :key="period.key"
-              :value="period.start"
+              :key="row[0].key"
             >
-              <XhDatePickerCellTrigger>{{ period.label }}</XhDatePickerCellTrigger>
-            </XhDatePickerCell>
+              <XhDatePickerCell v-for="period in row" :key="period.key" :value="period.start">
+                <XhDatePickerCellTrigger>{{ period.label }}</XhDatePickerCellTrigger>
+              </XhDatePickerCell>
+            </XhDatePickerWeekRow>
           </XhDatePickerGrid>
         </XhDatePickerCalendar>
 

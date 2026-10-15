@@ -80,6 +80,7 @@ export type DatePickerRootSlotProps
     | 'visibleMonth'
     | 'panels'
     | 'periods'
+    | 'rows'
     | 'weeks'
     | 'weekDays'
     | 'headingLabel'
@@ -165,7 +166,7 @@ export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   children?: SlotChildren<DatePickerRootSlotProps>
 }
 
-/** 网格与段位由作者按 children 载荷中的 weeks / segments 自行渲染。 */
+/** 网格与段位由作者按 children 载荷中的 weeks（日视图）/ rows（周期视图）/ segments 自行渲染。 */
 export function XhDatePickerRoot({
   value,
   defaultValue,
@@ -281,6 +282,7 @@ export function XhDatePickerRoot({
               visibleMonth: api.calendar.visibleMonth,
               panels: api.calendar.panels,
               periods: api.calendar.periods,
+              rows: api.calendar.rows,
               weeks: api.calendar.weeks,
               weekDays: api.calendar.weekDays,
               headingLabel: api.calendar.headingLabel,

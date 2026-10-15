@@ -1,4 +1,4 @@
-// 按周选择 | granularity=week：一行一个整周，格子直接铺进网格；值是两端两周的周首日；月、季度与年同理
+// 按周选择 | granularity=week：rows 已按行切好，周视图一行一个整周，每行写一个 week-row；值是两端两周的周首日；月、季度与年同理
 import type { ReactNode } from "react";
 import {
   XhCalendarRangePickerCell,
@@ -9,6 +9,7 @@ import {
   XhCalendarRangePickerNextTrigger,
   XhCalendarRangePickerPrevTrigger,
   XhCalendarRangePickerRoot,
+  XhCalendarRangePickerWeekRow,
 } from "@xihan-ui/react";
 import { useState } from "react";
 
@@ -27,19 +28,23 @@ export default function Demo(): ReactNode {
         granularity="week"
         style={{ maxInlineSize: "280px" }}
       >
-        {({ periods }) => (
+        {({ rows }) => (
           <>
             <XhCalendarRangePickerHeader>
               <XhCalendarRangePickerPrevTrigger aria-label="上个月" />
               <XhCalendarRangePickerHeading />
               <XhCalendarRangePickerNextTrigger aria-label="下个月" />
             </XhCalendarRangePickerHeader>
-            {/* 周期视图没有周行那一层：一格就是一整周，格子直接铺进网格 */}
+            {/* 周期格按行收进 week-row：grid 底下得是行，格子落在行里 */}
             <XhCalendarRangePickerGrid>
-              {periods.map(period => (
-                <XhCalendarRangePickerCell key={period.key} value={period.start}>
-                  <XhCalendarRangePickerCellTrigger>{period.label}</XhCalendarRangePickerCellTrigger>
-                </XhCalendarRangePickerCell>
+              {rows.map(row => (
+                <XhCalendarRangePickerWeekRow key={row[0]!.key}>
+                  {row.map(period => (
+                    <XhCalendarRangePickerCell key={period.key} value={period.start}>
+                      <XhCalendarRangePickerCellTrigger>{period.label}</XhCalendarRangePickerCellTrigger>
+                    </XhCalendarRangePickerCell>
+                  ))}
+                </XhCalendarRangePickerWeekRow>
               ))}
             </XhCalendarRangePickerGrid>
           </>

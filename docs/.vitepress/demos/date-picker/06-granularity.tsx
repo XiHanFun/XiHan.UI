@@ -1,7 +1,7 @@
 // 周期选择 | granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 import type { CalendarGranularity, CalendarPeriod } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
-import { calendarPeriodOf, calendarPeriodValue } from "@xihan-ui/headless";
+import { calendarPeriodOf, calendarPeriodRows, calendarPeriodValue } from "@xihan-ui/headless";
 import {
   XhButton,
   XhDatePickerCalendar,
@@ -43,8 +43,12 @@ const granularities: { value: CalendarGranularity; label: string }[] = [
   { value: "year", label: "年" },
 ];
 
-const yearCells: CalendarPeriod[] = Array.from({ length: 200 }, (_, index) =>
-  calendarPeriodOf(`${1900 + index}-01-01`, "year", { locale: "zh-CN" })!);
+// 按年挑时一页铺开两百年；自备的格子同样按年视图的列数切成行
+const yearRows: CalendarPeriod[][] = calendarPeriodRows(
+  Array.from({ length: 200 }, (_, index) =>
+    calendarPeriodOf(`${1900 + index}-01-01`, "year", { locale: "zh-CN" })!),
+  "year",
+);
 
 export default function Demo(): ReactNode {
   const [granularity, setGranularity] = useState<CalendarGranularity>("day");
@@ -133,10 +137,14 @@ export default function Demo(): ReactNode {
                             </XhDatePickerGridBody>
                           </>
                         )
-                      : (granularity === "year" ? yearCells : panel.cells).map(period => (
-                          <XhDatePickerCell key={period.key} value={period.start}>
-                            <XhDatePickerCellTrigger>{period.label}</XhDatePickerCellTrigger>
-                          </XhDatePickerCell>
+                      : (granularity === "year" ? yearRows : panel.rows).map(row => (
+                          <XhDatePickerWeekRow key={row[0]!.key}>
+                            {row.map(period => (
+                              <XhDatePickerCell key={period.key} value={period.start}>
+                                <XhDatePickerCellTrigger>{period.label}</XhDatePickerCellTrigger>
+                              </XhDatePickerCell>
+                            ))}
+                          </XhDatePickerWeekRow>
                         ))}
                   </XhDatePickerGrid>
                 </XhDatePickerCalendar>
