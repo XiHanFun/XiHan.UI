@@ -15,7 +15,7 @@
     "name": "core/json",
     "path": "packages/engine/core/dist/json.js",
     "gzip": true,
-    "limit": "0.55 kB"
+    "limit": "1.55 kB"
   },
   {
     "name": "tokens",

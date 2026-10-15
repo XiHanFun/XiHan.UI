@@ -399,7 +399,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 | `@xihan-ui/styles` | 140 份组件皮肤、5 个层名 |
 | `@xihan-ui/tokens` | 803 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
 | `@xihan-ui/icons` | 图标集 |
-| `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约；另有 `./json` 子入口的全部导出（JSON 值类型、普通对象判断、找出第一处非 JSON 值、深拷贝与按值比较），以及 `./date` 子入口的全部导出（`PlainDate` / `PlainTime` / `PlainDateTime` / `ZonedDateTime`、时区换算、周规则、边界函数与格式化器） |
+| `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约；另有 `./json` 子入口的全部导出（JSON 值类型、普通对象判断、合法性检查、深拷贝、按值比较、深冻结、按路径读写、路径前缀与文字形式、JSON Pointer 片段、变化路径），以及 `./date` 子入口的全部导出（`PlainDate` / `PlainTime` / `PlainDateTime` / `ZonedDateTime`、时区换算、周规则、边界函数与格式化器） |
 | `@xihan-ui/position` | `createPositionEngine` 与它的选项；其余 9 个导出是内部算子 |
 | `@xihan-ui/motion` | 缓动名、时长常量、`animate`、补间与弹簧算子。三值与令牌层同源（`check-motion-source` 比对），`core` / `headless` 与各适配器均建立在它之上，改名会先破坏库自身 |
 | `@xihan-ui/pointer` | `createPointerSession` / `createMultiPointerSession` 与四层几何纯函数。`headless` 与各适配器的拖拽、缩放、划动全部经由它，同上 |
@@ -429,10 +429,10 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，19071 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，19085 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 220 条子入口、9838 个导出名、140 个 `data-scope` 与 1353 条部件配对、
+覆盖：包名与 220 条子入口、9852 个导出名、140 个 `data-scope` 与 1353 条部件配对、
 140 个组件的 2120 个 prop 名、314 种 `data-*`、33 个 `data-state` 取值、803 个令牌、
 5 个 `@layer` 名、4643 个组件覆盖槽、144 个自定义元素及其 attribute 与事件。
 
