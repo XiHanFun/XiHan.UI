@@ -4,7 +4,7 @@ import type { MatrixCodeFormat, MatrixCodeLevel, MatrixCodeValueOptions } from '
 import { normalizeProps, resetDiagnostics, setDiagnosticsConsoleOutput } from '@xihan-ui/core'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { BAR_CODE_FORMATS, BAR_FNC1_CHAR, checkBarCodeValue, connectBarCode } from '../src/bar-code'
-import { checkMatrixCodeValue, connectMatrixCode, MATRIX_CODE_FORMATS, matrixCodeLevelFit, QR_LEVELS } from '../src/matrix-code'
+import { checkMatrixCodeValue, connectMatrixCode, MATRIX_CODE_FORMATS, MATRIX_CODE_LEVEL_RANGES, matrixCodeLevelFit, QR_LEVELS } from '../src/matrix-code'
 
 beforeEach(() => {
   resetDiagnostics()
@@ -84,6 +84,15 @@ describe('checkBarCodeValue', () => {
 describe('qR_LEVELS 与 matrixCodeLevelFit', () => {
   it('qR_LEVELS 由低到高列出四档', () => {
     expect(QR_LEVELS).toEqual(['L', 'M', 'Q', 'H'])
+  })
+
+  it('mATRIX_CODE_LEVEL_RANGES 给出 pdf417 与 aztec 的上下限，两端都适用、出界即不适用', () => {
+    expect(MATRIX_CODE_LEVEL_RANGES).toEqual({ pdf417: { min: 0, max: 8, step: 1 }, aztec: { min: 5, max: 95, step: 1 } })
+    for (const format of ['pdf417', 'aztec'] as const) {
+      const { min, max } = MATRIX_CODE_LEVEL_RANGES[format]
+      expect([min, max].map(level => matrixCodeLevelFit(format, level))).toEqual(['valid', 'valid'])
+      expect([min - 1, max + 1].map(level => matrixCodeLevelFit(format, level))).toEqual(['invalid', 'invalid'])
+    }
   })
 
   it.each(MATRIX_CODE_FORMATS.map(format => [format]))('%s 不给级别即 valid', (format) => {

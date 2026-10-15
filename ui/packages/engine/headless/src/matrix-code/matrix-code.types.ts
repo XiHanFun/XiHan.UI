@@ -26,6 +26,13 @@ export type MatrixCodeFormat = 'qr' | 'data-matrix' | 'pdf417' | 'aztec'
  */
 export type MatrixCodeLevel = QrLevel | Pdf417Level | number
 
+/** 数字纠错级别的取值范围：最小值、最大值与步长，两端都含。 */
+export interface MatrixCodeLevelRange {
+  readonly min: number
+  readonly max: number
+  readonly step: number
+}
+
 /** 纠错级别对码制的适用情况：适用 / 超出该码制的取值域 / 该码制没有级别可选，给了也不用。 */
 export type MatrixCodeLevelFit = 'valid' | 'invalid' | 'ignored'
 
