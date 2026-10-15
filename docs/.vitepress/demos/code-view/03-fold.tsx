@@ -8,6 +8,9 @@ const sample = Array.from(
   (_, i) => `const step${i + 1} = pipeline.at(${i})`,
 ).join("\n");
 
+// 读屏名由组件按折叠态取 translations 里的一句，钮上的字由作者写：两边取同一张表，看到的与读到的才对得上
+const translations = { expand: "展开全部 24 行", collapse: "收起" };
+
 export default function Demo(): ReactNode {
   const [clamped, setClamped] = useState(true);
 
@@ -20,14 +23,15 @@ export default function Demo(): ReactNode {
       complete
       lineNumbers
       clamp={8}
+      translations={translations}
       style={{ inlineSize: "100%" }}
     >
       <XhCodeViewPre>
         <XhCodeViewCode />
       </XhCodeViewPre>
-      {/* 按钮的文案与 aria-expanded 由组件按折叠态翻面 */}
+      {/* 读屏名与 aria-expanded 由组件按折叠态翻面，钮上的字照同一张表跟着翻 */}
       <XhCodeViewFoldTrigger>
-        {clamped ? `展开全部 24 行` : "收起"}
+        {clamped ? translations.expand : translations.collapse}
       </XhCodeViewFoldTrigger>
     </XhCodeViewRoot>
   );
