@@ -118,7 +118,7 @@
     "name": "designer-kit",
     "path": "packages/features/designer-kit/dist/index.js",
     "gzip": true,
-    "limit": "7.2 kB"
+    "limit": "8 kB"
   },
   {
     "name": "xlsx",

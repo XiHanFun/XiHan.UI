@@ -1,6 +1,6 @@
 # 设计器内核
 
-`@xihan-ui/designer-kit` 是画布式设计器的公共内核：撤销重做历史栈、按 JSON 路径的编辑操作、文档内唯一 id、视口平移缩放、对齐吸附与参考线、多选对齐与等距分布、框选与命中、变换控制柄、标尺刻度，以及属性面板的自定义编辑器接口。打印、流程、表单、报表这类设计器都要做这几件事，内核把它们写成与文档形状无关的纯函数，各设计器只需提供自己的文档模型与编辑操作。
+`@xihan-ui/designer-kit` 是画布式设计器的公共内核：撤销重做历史栈、按 JSON 路径的编辑操作、文档内唯一 id、网格布局、视口平移缩放、对齐吸附与参考线、多选对齐与等距分布、框选与命中、变换控制柄、标尺刻度，以及属性面板的自定义编辑器接口。打印、流程、表单、报表这类设计器都要做这几件事，内核把它们写成与文档形状无关的纯函数，各设计器只需提供自己的文档模型与编辑操作。
 
 ```ts
 import { createHistory, fitRect, snapRect, zoomBy } from "@xihan-ui/designer-kit";
@@ -197,6 +197,29 @@ interface SnapGuide {
 | `nudgeDelta(key, { large?, step?, largeStep? })` | 方向键对应的位移，缺省步长 1、大步长 10；不是方向键时为 `undefined` |
 
 控制柄只给几何，指针与键盘事件、等比与以中心缩放对应哪个修饰键由设计器决定；得到的矩形再由设计器换成自己的缩放或移动操作。
+
+## 网格布局
+
+看板、工作台这类按整数格排布的卡片用这一组函数。`GridItem` 是 `{ id, x, y, w, h }`，单位是格；列数由调用方给出，行数不限：
+
+```ts
+import { placeGridItem, setGridItemRect } from "@xihan-ui/designer-kit";
+
+let items = [{ id: "sales", x: 0, y: 0, w: 6, h: 2 }];
+items = placeGridItem(items, { id: "trend", w: 6, h: 2 }, 12); // 放到第一个空位：x 6、y 0
+items = setGridItemRect(items, "trend", { x: 0, y: 0 }, 12); // 拖到 sales 上：sales 被推到下面
+```
+
+| 函数 | 说明 |
+| --- | --- |
+| `clampToGrid(item, columns)` | 取整并夹到网格内：宽在 1 到列数之间，高至少 1，不越过右边界，x、y 不小于 0 |
+| `gridCollides(a, b)` | 两项是否重叠，边相接不算 |
+| `compactLayout(items, columns)` | 自上而下、自左而右把每项向上移到碰到别的项为止，原本重叠的项向下推开 |
+| `setGridItemRect(items, id, target, columns, { compact? })` | 拖动或改大小：压到的项向下推开并连锁推开；向下拖过下方项的顶边时两者对调 |
+| `placeGridItem(items, { id, w, h, x?, y? }, columns, { compact? })` | 放入新项：写了 x、y 放在那里并推开碰撞的项，没写时放到第一个放得下的空位；新项排在末尾 |
+| `removeGridItem(items, id, columns, { compact? })` | 移除一项 |
+
+返回新数组，次序与输入相同，不改输入。调整之后缺省整体向上压实，同位置时被拖动或放入的项优先；`{ compact: false }` 不压实，项可以悬空。位置大小不是有限数、id 不存在或重复时抛 `RangeError`。
 
 ## 标尺
 

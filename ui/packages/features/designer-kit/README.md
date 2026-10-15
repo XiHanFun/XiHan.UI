@@ -1,6 +1,6 @@
 # @xihan-ui/designer-kit
 
-画布式设计器的公共内核：撤销重做历史栈、按 JSON 路径的编辑操作、文档内唯一 id、视口平移缩放、对齐吸附与参考线、多选对齐与等距分布、框选与命中、变换控制柄、标尺刻度，以及属性面板的自定义编辑器接口。全部是纯函数与普通对象，不碰 DOM；文档与编辑操作的具体形状由使用方决定，历史栈只要求一个「应用操作，返回新文档与逆操作」的函数。自研实现，运行时只依赖 `@xihan-ui/core` 的 `./json` 子入口，import 无副作用。
+画布式设计器的公共内核：撤销重做历史栈、按 JSON 路径的编辑操作、文档内唯一 id、网格布局、视口平移缩放、对齐吸附与参考线、多选对齐与等距分布、框选与命中、变换控制柄、标尺刻度，以及属性面板的自定义编辑器接口。全部是纯函数与普通对象，不碰 DOM；文档与编辑操作的具体形状由使用方决定，历史栈只要求一个「应用操作，返回新文档与逆操作」的函数。自研实现，运行时只依赖 `@xihan-ui/core` 的 `./json` 子入口，import 无副作用。
 
 **谁会装它**：做打印、流程、表单、报表这类画布式设计器的人。普通页面用不到它，它也不随适配器安装。
 
@@ -44,6 +44,7 @@ const snap = snapRect({ x: 103, y: 40, width: 120, height: 48 }, {
 - `applyInSequence` 依次应用一组操作，逆操作按反序拼接；历史栈内部就用它。
 - 路径编辑操作 `applyPathOperation(s)`：`set`（`value` 缺省删除对象键，`createMissing` 补中间层）、`insert`、`remove`、`move`，可直接作为历史栈的 `apply`。不改输入，没有变化时返回同一文档、逆操作为空；失败抛 `PathOperationError`，`message` 即 `code`。路径语义同 `@xihan-ui/core/json`。
 - 文档内唯一 id：`nextFreeId(prefix, taken)` 取同前缀最大序号加一，`createIdAllocator` 连续分配并可登记已占用的 id，`remapIds` 给粘贴出的对象换新 id。
+- 网格布局：`GridItem` 是 `{ id, x, y, w, h }`，单位是格。`clampToGrid` 夹到网格内，`gridCollides` 判重叠（边相接不算），`compactLayout` 自上而下向上压实，`setGridItemRect` 拖动或改大小时推开压到的项、向下拖过下方项的顶边即与它对调，`placeGridItem` 放到第一个空位或指定位置，`removeGridItem` 移除一项；调整之后缺省整体压实，`{ compact: false }` 不压实。
 - `PropertyEditor` 是属性面板自定义编辑器的接口（只是类型）：按上下文创建 `{ element, update?, destroy? }`。
 - 视口：屏幕坐标 = 世界坐标 × `zoom` + (`x`, `y`)。`zoomTo` / `zoomBy` 以锚点为中心缩放并夹在 `ZoomLimits` 内（缺省 0.1–4）；`fitRect` 适配内容（缺省不把小内容放大到 100% 以上）；`revealRect` 只在目标没整个露出时才居中；`constrainViewport` 不让内容整个拖出视野；`wheelZoomFactor` 把滚轮滚动量换成缩放倍数。
 - 吸附：`snapRect` 比对移动矩形与目标的左 / 中 / 右、上 / 中 / 下三条线，在阈值内取最近的一条，返回位移与吸附后重合的参考线；某一向没吸到目标时可退到网格。阈值与矩形同一坐标系。

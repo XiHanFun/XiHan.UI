@@ -22,6 +22,8 @@ export {
   unionRects,
 } from './geometry'
 export type { Point, Rect, Size } from './geometry'
+export { clampToGrid, compactLayout, gridCollides, placeGridItem, removeGridItem, setGridItemRect } from './grid'
+export type { GridItem, GridOptions, GridPlacement, GridRect } from './grid'
 export { applyInSequence, createHistory } from './history'
 export type { ApplyOperation, ExecuteOptions, History, HistoryChange, HistoryChangeKind, HistoryOptions, OperationResult } from './history'
 export { createIdAllocator, nextFreeId, remapIds } from './ids'
