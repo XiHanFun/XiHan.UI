@@ -27,9 +27,9 @@ describe('解析文本模板', () => {
   it('空占位、不合法路径与未闭合的占位都报问题，带区间，原样保留成文本', () => {
     const parsed = parseTextTemplate('a{{ }}b{{x y}}c{{ok}}d{{tail')
     expect(parsed.issues).toEqual([
-      { code: 'XH_EXPR_TEMPLATE_EMPTY', start: 1, end: 6 },
-      { code: 'XH_EXPR_TEMPLATE_INVALID_PATH', start: 7, end: 14 },
-      { code: 'XH_EXPR_TEMPLATE_UNCLOSED', start: 22, end: 28 },
+      { code: 'empty-placeholder', start: 1, end: 6 },
+      { code: 'invalid-path', start: 7, end: 14 },
+      { code: 'unclosed-placeholder', start: 22, end: 28 },
     ])
     expect(parsed.segments).toEqual([
       { kind: 'text', text: 'a{{ }}b{{x y}}c' },
@@ -39,7 +39,7 @@ describe('解析文本模板', () => {
   })
 
   it.each(['price * qty', 'a..b', 'a.0', 'items[01]', 'a.constructor', '__proto__'])('占位 %j 不合法', (content) => {
-    expect(parseTextTemplate(`{{${content}}}`).issues.map(issue => issue.code)).toEqual(['XH_EXPR_TEMPLATE_INVALID_PATH'])
+    expect(parseTextTemplate(`{{${content}}}`).issues.map(issue => issue.code)).toEqual(['invalid-path'])
   })
 
   it('结果冻结，source 不是字符串时抛 TypeError', () => {

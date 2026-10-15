@@ -8,8 +8,8 @@
 import type { JsonPath, JsonValue } from '../json'
 import { getJsonAt, isJsonPathText, parseJsonPath } from '../json'
 
-/** 文本模板的问题码：占位没有闭合、占位为空、占位里的路径不合法。 */
-export type TemplateIssueCode = 'XH_EXPR_TEMPLATE_UNCLOSED' | 'XH_EXPR_TEMPLATE_EMPTY' | 'XH_EXPR_TEMPLATE_INVALID_PATH'
+/** 文本模板的问题码：占位没有闭合、占位为空、占位里的路径不合法（与 core/json 的 JsonPathError 同名同义）。 */
+export type TemplateIssueCode = 'unclosed-placeholder' | 'empty-placeholder' | 'invalid-path'
 
 /** 文本模板的一条问题：问题码加占位在模板里的区间（UTF-16 码元偏移，左闭右开）。 */
 export interface TemplateIssue {
@@ -70,14 +70,14 @@ export function parseTextTemplate(source: string): ParsedTextTemplate {
     pushText(source.slice(cursor, open))
     const close = source.indexOf('}}', open + 2)
     if (close === -1) {
-      issues.push(Object.freeze({ code: 'XH_EXPR_TEMPLATE_UNCLOSED', start: open, end: source.length }))
+      issues.push(Object.freeze({ code: 'unclosed-placeholder', start: open, end: source.length }))
       pushText(source.slice(open))
       break
     }
     const end = close + 2
     const content = source.slice(open + 2, close).trim()
     if (content === '' || !isJsonPathText(content)) {
-      issues.push(Object.freeze({ code: content === '' ? 'XH_EXPR_TEMPLATE_EMPTY' : 'XH_EXPR_TEMPLATE_INVALID_PATH', start: open, end }))
+      issues.push(Object.freeze({ code: content === '' ? 'empty-placeholder' : 'invalid-path', start: open, end }))
       pushText(source.slice(open, end))
     }
     else {
