@@ -79,6 +79,7 @@ pnpm add @xihan-ui/xlsx
 | `{ kind: "percent", decimals: 1 }` | `0.0%`；不舍入的百分比返回 `null` |
 | `{ kind: "date", pattern: "yyyy年M月d日 HH:mm" }` | `yyyy"年"m"月"d"日" hh:mm` |
 | `{ kind: "rmb-upper" }` | `null` |
+| `{ kind: "numeral", style: "cn-upper" }` | `null`：罗马数字与中文数字都写成文本 |
 
 - **舍入**：Excel 显示时一律四舍五入取整，不认 `rounding`。`rounding` 不是 `half-up` 时，先用十进制运算把值舍入到要显示的位数（例如用 `formatValue` 按同一份格式说明算出文本再换回数值），再写成数字单元格加格式代码，不要直接写原始值。
 - **日期**：占位符 `MM → mm`、`HH → hh`、`SSS → 000`，其余文字写成字面文本。Excel 的 `mm` 只有紧挨 `h` / `hh` 之后或紧挨 `ss` 之前才是分钟，其余位置都当成月份；分钟或月份落在会被读错的位置（如 `yyyy-mm`、`HH:MM`），或毫秒不是紧跟在 `ss.` 之后时返回 `null`。

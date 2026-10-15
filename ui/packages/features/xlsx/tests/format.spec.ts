@@ -29,8 +29,10 @@ describe('formatCode：数字与百分比', () => {
     expect(formatCode({ kind: 'number', decimals: 2, rounding: 'half-even' })).toBe(formatCode({ kind: 'number', decimals: 2 }))
   })
 
-  it('人民币大写返回 null', () => {
+  it('人民币大写与数字字形返回 null', () => {
     expect(formatCode({ kind: 'rmb-upper' })).toBeNull()
+    expect(formatCode({ kind: 'numeral', style: 'roman-upper' })).toBeNull()
+    expect(formatCode({ kind: 'numeral', style: 'cn-upper' })).toBeNull()
   })
 })
 
