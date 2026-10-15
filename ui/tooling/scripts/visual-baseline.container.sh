@@ -96,7 +96,8 @@ pnpm install --frozen-lockfile --store-dir /cache/pnpm-store
 echo "  装依赖耗时 $(($(date +%s) - INSTALL_STARTED)) 秒"
 
 step 构建
-pnpm build
+# @xihan-ui/cli 的离线数据取自仓库根的 docs/，容器里只同步了 ui/，跑用例也用不上它
+pnpm exec turbo run build --filter='!@xihan-ui/cli'
 
 step 跑用例
 # 工作副本留在卷上跨次运行，上一轮的差异图也留着。不先清掉的话，这一轮全绿也会
