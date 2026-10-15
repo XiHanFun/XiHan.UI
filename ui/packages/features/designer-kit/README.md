@@ -1,6 +1,6 @@
 # @xihan-ui/designer-kit
 
-画布式设计器的公共内核：撤销重做历史栈、按 JSON 路径的编辑操作、文档内唯一 id、网格布局、视口平移缩放、对齐吸附与参考线、多选对齐与等距分布、框选与命中、变换控制柄、标尺刻度，以及属性面板的自定义编辑器接口。全部是纯函数与普通对象，不碰 DOM；文档与编辑操作的具体形状由使用方决定，历史栈只要求一个「应用操作，返回新文档与逆操作」的函数。自研实现，运行时只依赖 `@xihan-ui/core` 的 `./json` 子入口与 `@xihan-ui/pointer` 的滚轮换算，import 无副作用。
+画布式设计器的公共内核：撤销重做历史栈、按 JSON 路径的编辑操作、文档内唯一 id、网格布局、视口平移缩放、对齐吸附与参考线、多选对齐与等距分布、框选与命中、变换控制柄、标尺刻度、长度单位与纸张预设，以及属性面板的自定义编辑器接口。全部是纯函数与普通对象，不碰 DOM；文档与编辑操作的具体形状由使用方决定，历史栈只要求一个「应用操作，返回新文档与逆操作」的函数。自研实现，运行时只依赖 `@xihan-ui/core` 的 `./json` 子入口与 `@xihan-ui/pointer` 的滚轮换算，import 无副作用。
 
 **谁会装它**：做打印、流程、表单、报表这类画布式设计器的人。普通页面用不到它，它也不随适配器安装。
 
@@ -53,6 +53,7 @@ const snap = snapRect({ x: 103, y: 40, width: 120, height: 48 }, {
 - `selectInMarquee` 按完整包住（`contain`）或碰到即选（`intersect`）挑出框里的矩形下标；`marqueeModeFromDrag` 按拖拽方向取方式。矩形可带 `rotation`（绕中心顺时针的角度），合并、包含、相交、对齐、分布、吸附与视口适配都按旋转后的包围盒计算，`hitTest`、`rotatedRectIntersects` 与框选的 `intersect` 按实际形状判断；`hitTest` 返回命中的最上层下标。
 - 变换控制柄：`handlePoints` 给出八个缩放柄与旋转柄的位置，`resizeWithHandle` 在矩形自身坐标系里缩放（等比、以中心、最小尺寸），`rotateWithHandle` 按指针算角度并可按步长吸附，`nudgeDelta` 把方向键换成位移（步长 1，大步长 10）。
 - `rulerTicks` 按每单位屏幕像素取 1-2-5 序列的主刻度与小刻度，单位由调用方决定（如毫米）。
+- 长度单位：`convertLength(value, from, to, { dpi? })` 在 `mm`、`cm`、`in`、`pt`、`px` 之间换算，像素缺省按 96 dpi（CSS 像素）；`PAPER_PRESETS` 是 A3–A6、B4、B5（ISO 216）与 Letter、Legal 的纵向毫米尺寸，`PAPER_PRESET_NAMES`、`LENGTH_UNITS` 供列选项，`isPaperPresetName` 供校验。
 - 非法输入立即抛 `RangeError`，不静默修正。
 
 ## 装
