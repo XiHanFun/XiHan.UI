@@ -54,6 +54,7 @@ body:
         - AI 协议内核（chat-stream）
         - 背景层（backgrounds）
         - 动效预设（animations）
+        - 受限表达式（expression）
         - 音效（sound）
         - 无头组件内核（headless）
         - 默认皮肤（styles）

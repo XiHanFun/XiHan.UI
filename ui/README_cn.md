@@ -31,6 +31,7 @@
 | `@xihan-ui/backgrounds` | 背景层：WebGL2 效果与数据驱动的粒子云，框架无关 |
 | `@xihan-ui/sound` | 声音层：纯 Web Audio 程序化 UI 音效，零音频文件，框架无关 |
 | `@xihan-ui/animations` | 动画层：可序列化的动效配方、内置进场与注意动效、错开起播、文字拆分 |
+| `@xihan-ui/expression` | 受限表达式语言：解析成可序列化的语法树、静态检查、十进制精确与不带时区日期的确定性求值，不用 `eval` |
 | `@xihan-ui/icons` | 首方图标集：`IconRecord` 结构化记录，渲染端逐节点建元素，运行期不解析 SVG 字符串 |
 | `@xihan-ui/cli` | 命令行与 MCP 服务端：组件 API、文档、示例、设计令牌与 design.md 的离线知识库，供 AI 编程工具查询 |
 

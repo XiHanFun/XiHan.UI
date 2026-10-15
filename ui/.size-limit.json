@@ -103,6 +103,12 @@
     "limit": "10.5 kB"
   },
   {
+    "name": "expression",
+    "path": "packages/features/expression/dist/index.js",
+    "gzip": true,
+    "limit": "15.1 kB"
+  },
+  {
     "name": "backgrounds",
     "path": "packages/features/backgrounds/dist/index.js",
     "gzip": true,

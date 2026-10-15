@@ -110,6 +110,10 @@
         "engine/motion"
       ]
     },
+    "features/expression": {
+      "level": 1,
+      "canDependOn": []
+    },
     "design/icons": {
       "level": 1,
       "canDependOn": []
