@@ -35,7 +35,7 @@ export default function Demo(): ReactNode {
           rows={1}
           placeholder="发一条试试"
         />
-        <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+        <XhPromptInputSubmitTrigger />
       </XhPromptInputRoot>
 
       {/* 节点常挂、靠 hidden 显隐：翻出来的那一刻读屏把原因念出来 */}

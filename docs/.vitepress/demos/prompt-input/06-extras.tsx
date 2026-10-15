@@ -29,7 +29,7 @@ export default function Demo(): ReactNode {
             <XhButton variant="ghost" size="sm" disabled={value === ""} onClick={() => setValue("")}>
               清空
             </XhButton>
-            <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+            <XhPromptInputSubmitTrigger />
           </>
         )}
       </XhPromptInputRoot>

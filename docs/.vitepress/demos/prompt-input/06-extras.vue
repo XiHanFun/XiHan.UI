@@ -26,7 +26,7 @@ const log = ref("（还没发过）");
     <XhButton variant="ghost" size="sm" :disabled="value === ''" @click="setValue('')">
       清空
     </XhButton>
-    <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+    <XhPromptInputSubmitTrigger />
   </XhPromptInputRoot>
   <span data-demo-output>{{ log }}</span>
 </template>
