@@ -231,6 +231,8 @@ export type { DragAnnounceInput, DragAnnounceKind, DragRect, DragTranslations, D
 export { dragAnnouncement } from './shared/drag-announce'
 export { isEditableTarget } from './shared/editable-target'
 export { graphemeLength } from './shared/grapheme'
+export { findOptionViolation } from './shared/option-collection'
+export type { OptionViolation, OptionViolationCode, OptionViolationOptions } from './shared/option-collection'
 export { OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED, OVERLAY_PLACEMENT_LIST } from './shared/overlay'
 export { pressHandlers } from './shared/press'
 export type { PressEvent, PressService } from './shared/press'
