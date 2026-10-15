@@ -21,6 +21,7 @@ import type {
   CartesianWindowRatio,
 } from './cartesian-chart.types'
 import { contains, createPressTracker, dataAttr, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
+import { wheelPixels } from '@xihan-ui/pointer'
 import { clampWindow, createScene, domainToWindow, indexRangeToWindow, isFullWindow, markPath, pan, windowToDomain, windowToIndexRange, zoomAt } from '@xihan-ui/viz'
 import { chartNavIntentFromKey, chartPatternFill, chartPatterns, placeChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
@@ -83,8 +84,6 @@ function sequentialStop(t: number): { seg: 'low' | 'high', p: string } {
 const WHEEL_ZOOM_RATE = 0.002
 
 /** 滚轮按行、按页报告滚动量时换算成像素。 */
-const WHEEL_LINE = 16
-const WHEEL_PAGE = 400
 /** 按像素报增量时，一次滚过这么多就算鼠标滚轮的一格：触控板的连续滑动每次只有几像素到十几像素。 */
 const WHEEL_NOTCH = 50
 
@@ -652,7 +651,7 @@ export function connectCartesianChart<T extends PropTypes>(
         if (!r)
           return
         event.preventDefault()
-        const delta = event.deltaMode === 1 ? event.deltaY * WHEEL_LINE : event.deltaMode === 2 ? event.deltaY * WHEEL_PAGE : event.deltaY
+        const delta = wheelPixels(event).y
         // 鼠标滚轮一格（按行、按页计，或一次滚过一整格的像素）补间过去；触控板的细小连续增量跟手
         zoomAround(r, Math.exp(-delta * WHEEL_ZOOM_RATE), event.deltaMode !== 0 || Math.abs(event.deltaY) >= WHEEL_NOTCH)
       },

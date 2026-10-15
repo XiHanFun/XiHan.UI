@@ -12,6 +12,7 @@ import type { GraphActive, GraphNavIntent } from './graph-chart.logic'
 import type { GraphChartApi, GraphChartSchema } from './graph-chart.schema'
 import type { GraphLegendItem, GraphMarkTag, GraphTooltipRow, GraphView } from './graph-chart.types'
 import { contains, createPressTracker, dataAttr, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
+import { wheelPixels } from '@xihan-ui/pointer'
 import { createScene, markPath } from '@xihan-ui/viz'
 import { placeChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
@@ -59,8 +60,6 @@ const ZOOM_MAX = 8
 const ZOOM_STEP = 1.25
 /** 滚轮缩放：每像素的指数速率；按行、按页滚动时换算成像素。 */
 const WHEEL_ZOOM_RATE = 0.002
-const WHEEL_LINE = 16
-const WHEEL_PAGE = 400
 
 /** 标记画成什么元素：分组是 g，文字是 text，其余几何一律是 path。 */
 export function graphMarkTag(mark: Mark): GraphMarkTag {
@@ -326,7 +325,7 @@ export function connectGraphChart<T extends PropTypes>(
         if (!at)
           return
         event.preventDefault()
-        const delta = event.deltaMode === 1 ? event.deltaY * WHEEL_LINE : event.deltaMode === 2 ? event.deltaY * WHEEL_PAGE : event.deltaY
+        const delta = wheelPixels(event).y
         zoomBy(Math.exp(-delta * WHEEL_ZOOM_RATE), at)
       },
       'onPointerDown': (event: PointerEvent) => {

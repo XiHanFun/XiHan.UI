@@ -619,6 +619,9 @@ importers:
       '@xihan-ui/core':
         specifier: workspace:^
         version: link:../../engine/core
+      '@xihan-ui/pointer':
+        specifier: workspace:^
+        version: link:../../engine/pointer
     devDependencies:
       '@xihan-ui/build':
         specifier: workspace:*

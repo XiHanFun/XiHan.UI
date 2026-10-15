@@ -76,7 +76,7 @@ describe('视口', () => {
     expect(wheelZoomFactor(100)).toBeLessThan(1)
     expect(wheelZoomFactor(100) * wheelZoomFactor(-100)).toBeCloseTo(1)
     expect(wheelZoomFactor(1, 1)).toBeCloseTo(wheelZoomFactor(16))
-    expect(wheelZoomFactor(1, 2)).toBeCloseTo(wheelZoomFactor(800))
+    expect(wheelZoomFactor(1, 2)).toBeCloseTo(wheelZoomFactor(400))
   })
 
   it('适配：大内容缩小到放得下并居中，小内容不放大', () => {

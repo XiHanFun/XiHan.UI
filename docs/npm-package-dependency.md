@@ -19,7 +19,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/chat-stream` | `core` | — | 2 |
 | `@xihan-ui/markdown` | — | — | 2 |
 | `@xihan-ui/sound` | `core` | — | 2 |
-| `@xihan-ui/designer-kit` | `core` | — | 2 |
+| `@xihan-ui/designer-kit` | `core` `pointer` | — | 2 |
 | `@xihan-ui/animations` | `core` `motion` | — | 2 |
 | `@xihan-ui/headless` | `core` `motion` `pointer` `viz` | — | 3 |
 | `@xihan-ui/styles` | `tokens`（只取其 CSS 产物） | — | 3 |

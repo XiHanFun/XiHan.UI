@@ -9282,6 +9282,8 @@
       "SortableProjection",
       "SortableProjectionInput",
       "TrackedPoint",
+      "WheelDelta",
+      "WheelPixelOptions",
       "applyAspectRatio",
       "clampSize",
       "createMultiPointerSession",
@@ -9298,7 +9300,8 @@
       "resolveSessionDoc",
       "shouldActivate",
       "snapSize",
-      "sortableOffsets"
+      "sortableOffsets",
+      "wheelPixels"
     ],
     "@xihan-ui/position": [
       "ComputeInput",

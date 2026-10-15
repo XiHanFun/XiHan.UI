@@ -9,6 +9,7 @@ import type { ItemQuery, NavIntent, NormalizeProps, PressHandlers, PropTypes, Se
 import type { DragRect } from '../shared/drag'
 import type { TabsApi, TabsNodeMeta, TabsOverflow, TabsSchema, TabsTriggerProps } from './tabs.types'
 import { anchorItem, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { wheelPixels } from '@xihan-ui/pointer'
 import { TABS_EN_US } from '../locale/en-US'
 import { flatMoveCommand, flatMoveIntentFromKey } from '../shared/drag'
 import { resolveTranslations } from '../shared/translations'
@@ -19,10 +20,6 @@ const parts = tabsAnatomy.build()
 
 // 集合容器是 list 不是 root：trigger 直属 list，按归属过滤才切得干净（嵌套 Tabs 互不吞并）
 const ITEM_QUERY: ItemQuery = { scope: tabsAnatomy.name, part: 'trigger' }
-
-/** deltaMode 按行 / 按页计量时的换算：浏览器不给像素值，按常见的行高与一页的量级估。 */
-const WHEEL_LINE_PX = 16
-const WHEEL_PAGE_PX = 400
 
 export function connectTabs<T extends PropTypes>(
   service: Service<TabsSchema>,
@@ -285,13 +282,12 @@ export function connectTabs<T extends PropTypes>(
       'onWheel': (event: WheelEvent) => {
         if (overflow == null)
           return
-        const raw = horizontal ? (event.deltaX || (event.shiftKey ? event.deltaY : 0)) : event.deltaY
+        const pixels = wheelPixels(event)
+        const raw = horizontal ? (pixels.x || (event.shiftKey ? pixels.y : 0)) : pixels.y
         if (raw === 0)
           return
-        // 按行 / 按页计量的滚轮换算成像素：一行按一行字高、一页按一页可见长度的量级估
-        const unit = event.deltaMode === 1 ? WHEEL_LINE_PX : event.deltaMode === 2 ? WHEEL_PAGE_PX : 1
         // 横排 RTL 下往左滚是朝结束端，逻辑方向翻过来
-        const delta = raw * unit * (horizontal && rtl ? -1 : 1)
+        const delta = raw * (horizontal && rtl ? -1 : 1)
         if ((delta > 0 && !overflow.end) || (delta < 0 && !overflow.start))
           return
         event.preventDefault()
