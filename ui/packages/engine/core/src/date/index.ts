@@ -42,6 +42,8 @@ export type {
   ZonedDateTimeInstantLike,
   ZonedDateTimeLike,
 } from './types'
+export { bucketKey, DATE_BUCKET_UNITS, wallClock, wallClockParts } from './wall-clock'
+export type { DateBucketUnit, WallClockOptions, WallClockParts } from './wall-clock'
 export { dayOfWeekIn, endOfWeek, getWeekInfo, isWeekend, startOfWeek, weeksInMonth } from './week'
 export type { WeekInfo, WeekStart } from './week'
 export { canonicalizeTimeZone, formatTimeZoneOffset, getAvailableTimeZones, getLocalTimeZone, getTimeZoneOffset, isValidTimeZone } from './zone'
