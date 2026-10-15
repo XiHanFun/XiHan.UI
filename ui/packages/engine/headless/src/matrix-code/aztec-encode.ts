@@ -18,6 +18,7 @@
  * 纠错是 GF(2^m) 上的里德-所罗门，m 随层数取 6 / 8 / 10 / 12，模式信息用 GF(16)。
  */
 
+import { MatrixValueError } from './matrix-value-error'
 import { createReedSolomon } from './reed-solomon'
 
 export interface AztecEncodeOptions {
@@ -386,7 +387,7 @@ export function aztecEncode(text: string, options: AztecEncodeOptions = {}): Azt
   let stuffed: number[] | undefined
   for (let i = 0; ; i++) {
     if (i > MAX_LAYERS)
-      throw new RangeError(`内容 ${text.length} 个字符编成 ${bits.length} 位，超出 Aztec 32 层的容量；截断会得到一张扫得出、但内容是半截的码`)
+      throw new MatrixValueError('capacity-exceeded', `内容 ${text.length} 个字符编成 ${bits.length} 位，超出 Aztec 32 层的容量；截断会得到一张扫得出、但内容是半截的码`)
     compact = i <= MAX_COMPACT_LAYERS - 1
     layers = compact ? i + 1 : i
     totalBits = totalBitsInLayer(layers, compact)

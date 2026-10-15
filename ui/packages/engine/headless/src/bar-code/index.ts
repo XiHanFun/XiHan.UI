@@ -6,9 +6,9 @@
 // 导出 bar code 模块的公共接口。
 
 export { barCodeAnatomy } from './bar-code.anatomy'
-export { BAR_CODE_FORMATS, connectBarCode } from './bar-code.connect'
+export { BAR_CODE_FORMATS, checkBarCodeValue, connectBarCode } from './bar-code.connect'
 export { barCodeKeyboard } from './bar-code.keyboard'
 export { barCodeMeta } from './bar-code.meta'
 export type { BarCodeApi, BarCodeFormat, BarCodeProps, BarCodeState, BarCodeTextRun, BarCodeTranslations } from './bar-code.types'
 export { BAR_FNC1_CHAR, barEncode, gs1CheckDigit, upceExpand } from './bar-encode'
-export type { BarEncodeOptions, BarSymbol, BarText } from './bar-encode'
+export type { BarCodeValueIssue, BarEncodeOptions, BarSymbol, BarText } from './bar-encode'

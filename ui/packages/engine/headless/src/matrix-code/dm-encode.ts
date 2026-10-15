@@ -19,6 +19,7 @@
  * 内容里的 GS（U+001D）也编成 FNC1，即变长 AI 之间的分隔。
  */
 
+import { MatrixValueError } from './matrix-value-error'
 import { createReedSolomon } from './reed-solomon'
 
 export interface DmEncodeOptions {
@@ -157,7 +158,8 @@ function pickSymbol(count: number, rectangular: boolean): DmSymbol {
     if (s.rectangular === rectangular && count <= s.dataCodewords)
       return s
   }
-  throw new RangeError(
+  throw new MatrixValueError(
+    'capacity-exceeded',
     `内容要 ${count} 个码字，超出${rectangular ? '矩形' : '正方形'} Data Matrix 的上限 ${dmCapacity(rectangular)} 个；`
     + '截断会得到一张扫得出、但内容是半截的码',
   )

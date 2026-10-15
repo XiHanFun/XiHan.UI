@@ -16,6 +16,7 @@
  * 变长 AI 之间的分隔就是内容里的 GS（U+001D）字节，字节模式原样带过去。
  */
 
+import { MatrixValueError } from './matrix-value-error'
 import { createReedSolomon } from './reed-solomon'
 
 /** 纠错级别，可恢复的码字比例依次约为 7% / 15% / 25% / 30%。 */
@@ -156,7 +157,8 @@ function pickVersion(byteLength: number, level: QrLevel, gs1: boolean): number {
     if (byteLength <= qrCapacityBytes(version, level, gs1))
       return version
   }
-  throw new RangeError(
+  throw new MatrixValueError(
+    'capacity-exceeded',
     `内容 ${byteLength} 字节，超出 ${QR_MAX_VERSION} 版 ${level} 级纠错的上限 `
     + `${qrCapacityBytes(QR_MAX_VERSION, level, gs1)} 字节；截断会得到一张扫得出、但内容是半截的码`,
   )
