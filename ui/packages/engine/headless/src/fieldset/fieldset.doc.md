@@ -19,7 +19,7 @@
 ## 特性
 
 - `disabled` 落为原生 `fieldset[disabled]`，同时作为作用域配置压进子树：组内组件库的控件各自拿到 `disabled`，不可聚焦、不可编辑、不参与提交，禁用面也一起到位，不需要逐个控件接线。
-- 说明文字与错误文案自动派生 `id` 并接入根节点的 `aria-describedby`，作者不需要写 `id`。
+- 说明文字与错误文案自动派生 `id` 并接入根节点的 `aria-describedby`，作者不需要写 `id`。描述链只引用实际渲染了的部件：没写说明、或说明读不出一句话（没有文字，或只有对读屏隐藏的内容，判断同 `hasNamingContent`）时不留 id，引用不会落空；说明后补上内容时跟着接上。
 - 错误文案带 `role="status"` + `aria-live="polite"`，节点常驻、通过 `hidden` 显隐，`invalid` 翻转时读屏排队播报，不打断当前朗读。整表提交失败时的打断式播报只由 Form 的错误摘要发出。
 - `invalid` 落为根与组标题上的 `data-invalid`，组标题据此转为警示色，同时把错误文案接入描述链并显示。
 - `required` 落为根与组标题上的 `data-required`，组标题的星号由 label 公共层按组标题自己的这一位画。

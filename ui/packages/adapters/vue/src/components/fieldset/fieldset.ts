@@ -7,10 +7,11 @@
 
 import type { FieldsetProps, FieldsetTranslations } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
-import { computed, defineComponent, h } from 'vue'
+import { hasNamingContent } from '@xihan-ui/headless'
+import { computed, defineComponent, h, ref } from 'vue'
 import { provideXhConfig, useXhConfig, withXhConfig } from '../../config/config'
 import { provideFieldset, provideFieldsetOuterDisabled, useFieldsetContext, useFieldsetOuterDisabled } from './context'
-import { useFieldset } from './use-fieldset'
+import { useFieldset, useFieldsetPartPresence } from './use-fieldset'
 
 export const XhFieldsetRoot = defineComponent({
   name: 'XhFieldsetRoot',
@@ -50,7 +51,10 @@ export const XhFieldsetDescription = defineComponent({
   name: 'XhFieldsetDescription',
   setup(_, { slots }) {
     const ctx = useFieldsetContext()
-    return () => h('p', ctx.api.value.getDescriptionProps() as Record<string, unknown>, slots.default?.())
+    const el = ref<HTMLElement | null>(null)
+    // 读不出一句话的说明不进描述链
+    useFieldsetPartPresence(ctx, 'description', () => el.value != null && hasNamingContent(el.value))
+    return () => h('p', { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el }, slots.default?.())
   },
 })
 
@@ -76,6 +80,7 @@ export const XhFieldsetErrorText = defineComponent({
   name: 'XhFieldsetErrorText',
   setup(_, { slots }) {
     const ctx = useFieldsetContext()
+    useFieldsetPartPresence(ctx, 'errorText')
     // 节点常挂，靠 hidden 显隐：活区要先在场才播报得出来，卸载重挂读屏读不到
     return () => h('p', ctx.api.value.getErrorTextProps() as Record<string, unknown>, slots.default?.())
   },

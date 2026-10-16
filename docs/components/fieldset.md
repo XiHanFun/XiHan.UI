@@ -67,7 +67,7 @@ required 写为 data-required，皮肤据此为组标题加星号；星号只是
 ### 特性
 
 - `disabled` 落为原生 `fieldset[disabled]`，同时作为作用域配置压进子树：组内组件库的控件各自拿到 `disabled`，不可聚焦、不可编辑、不参与提交，禁用面也一起到位，不需要逐个控件接线。
-- 说明文字与错误文案自动派生 `id` 并接入根节点的 `aria-describedby`，作者不需要写 `id`。
+- 说明文字与错误文案自动派生 `id` 并接入根节点的 `aria-describedby`，作者不需要写 `id`。描述链只引用实际渲染了的部件：没写说明、或说明读不出一句话（没有文字，或只有对读屏隐藏的内容，判断同 `hasNamingContent`）时不留 id，引用不会落空；说明后补上内容时跟着接上。
 - 错误文案带 `role="status"` + `aria-live="polite"`，节点常驻、通过 `hidden` 显隐，`invalid` 翻转时读屏排队播报，不打断当前朗读。整表提交失败时的打断式播报只由 Form 的错误摘要发出。
 - `invalid` 落为根与组标题上的 `data-invalid`，组标题据此转为警示色，同时把错误文案接入描述链并显示。
 - `required` 落为根与组标题上的 `data-required`，组标题的星号由 label 公共层按组标题自己的这一位画。
@@ -112,6 +112,7 @@ required 写为 data-required，皮肤据此为组标题加星号；星号只是
 | --- | --- | --- | --- |
 | `disabled` | `boolean` |  | 整组禁用。root 是原生 `&lt;fieldset&gt;`，该条落为原生 disabled 属性， 浏览器会把组内每个表单控件一并禁用（首个 `&lt;legend&gt;` 中的控件按 HTML 规范除外）。 |
 | `invalid` | `boolean` |  | 校验失败态：root 上写 data-invalid，错误文案接入描述链并显示。 |
+| `parts` | `FieldsetRenderedParts` |  | 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。 不在场的部件不进 root 的描述链：指向不存在的 id 会被判为无效引用。 description 渲染了但读不出一句话（判断同 `hasNamingContent`）也按不在场处理。 |
 | `required` | `boolean` |  | 必填标记：落为 data-required，供皮肤给组标题加星号，校验仍由宿主负责。 不产出 aria-required：该属性在 group 角色上不受支持，写入也不进入无障碍树。 |
 | `translations` | `Partial<FieldsetTranslations>` |  | 文案覆盖。本组件当前没有外露文案，保留该位，接全局配置的通道由适配器铺设。 |
 
@@ -153,7 +154,7 @@ required 写为 data-required，皮肤据此为组标题加星号；星号只是
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-describedby` | `description` 部件的 id `error-text` 部件的 id \| `description` 部件的 id |
+| `root` | `aria-describedby` | [ props.parts?.description !== false ? ids.descriptio… |
 | `error-text` | `aria-atomic` | 'true' |
 | `error-text` | `aria-live` | 'polite' |
 | `error-text` | `role` | 'status' |

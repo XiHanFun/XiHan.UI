@@ -7,11 +7,12 @@
 
 import type { FieldsetProps, FieldsetTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { useContext, useMemo } from 'react'
+import { hasNamingContent } from '@xihan-ui/headless'
+import { useContext, useMemo, useRef } from 'react'
 import { useXhConfig, withXhConfig, XhConfigProvider } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { FieldsetOuterDisabled, FieldsetProvider, useFieldsetContext } from './context'
-import { useFieldset } from './use-fieldset'
+import { useFieldset, useFieldsetPartPresence } from './use-fieldset'
 
 export interface XhFieldsetRootProps extends ComponentPropsWithRef<'fieldset'> {
   /** 整组禁用：写为原生 disabled，浏览器把组内每个表单控件一并禁用。 */
@@ -71,7 +72,10 @@ export function XhFieldsetLegend({ children, ...rest }: XhFieldsetLegendProps): 
 export interface XhFieldsetDescriptionProps extends ComponentPropsWithRef<'p'> {}
 export function XhFieldsetDescription({ children, ...rest }: XhFieldsetDescriptionProps): ReactNode {
   const ctx = useFieldsetContext()
-  return <p {...mergeReactProps(ctx.api.getDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</p>
+  const el = useRef<HTMLParagraphElement | null>(null)
+  // 读不出一句话的说明不进描述链
+  useFieldsetPartPresence(ctx, 'description', () => el.current != null && hasNamingContent(el.current))
+  return <p {...mergeReactProps({ ...ctx.api.getDescriptionProps() as Record<string, unknown>, ref: el }, rest as Record<string, unknown>)}>{children}</p>
 }
 
 export interface XhFieldsetFieldGroupProps extends ComponentPropsWithRef<'div'> {}
@@ -92,5 +96,6 @@ export interface XhFieldsetErrorTextProps extends ComponentPropsWithRef<'p'> {}
 /** 节点常驻，依靠 hidden 显隐：活区要先在场才能播报，卸载重挂读屏无法读到。 */
 export function XhFieldsetErrorText({ children, ...rest }: XhFieldsetErrorTextProps): ReactNode {
   const ctx = useFieldsetContext()
+  useFieldsetPartPresence(ctx, 'errorText')
   return <p {...mergeReactProps(ctx.api.getErrorTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</p>
 }

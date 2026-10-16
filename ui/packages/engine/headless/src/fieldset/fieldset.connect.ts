@@ -22,8 +22,11 @@ export function connectFieldset<T extends PropTypes>(
   const invalid = !!props.invalid
   const required = !!props.required
   const ids = scope.ids('fieldset', 'description', 'error-text')
-  // 错误文案只在 invalid 时进描述链
-  const describedBy = invalid ? `${ids.description} ${ids['error-text']}` : ids.description
+  // 描述链只收在场的部件，错误文案只在 invalid 时进；都不在场时不写，不留落空的引用
+  const describedBy = [
+    props.parts?.description !== false ? ids.description : null,
+    invalid && props.parts?.errorText !== false ? ids['error-text'] : null,
+  ].filter(Boolean).join(' ') || undefined
 
   return {
     disabled,

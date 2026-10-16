@@ -103,7 +103,7 @@ export type { FieldApi, FieldControlWiring, FieldProps, FieldRenderedParts, Fiel
 export { connectFieldArray, fieldArrayAnatomy, fieldArrayInsertIndex, fieldArrayKeyboard, fieldArrayMachine, fieldArrayMeta, fieldArrayTriggerId } from './field-array'
 export type { FieldArrayApi, FieldArrayItem, FieldArrayItemProps, FieldArrayPressedKey, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails } from './field-array'
 export { connectFieldset, fieldsetAnatomy, fieldsetKeyboard, fieldsetMeta } from './fieldset'
-export type { FieldsetApi, FieldsetProps, FieldsetTranslations } from './fieldset'
+export type { FieldsetApi, FieldsetProps, FieldsetRenderedParts, FieldsetTranslations } from './fieldset'
 export { acceptAttr, acceptsFile, connectFileUpload, FILE_UPLOAD_MAX_FILES, fileUploadAnatomy, fileUploadHiddenInputId, fileUploadKeyboard, fileUploadMachine, fileUploadMeta, formatFileSize, normalizeAccept, normalizeMaxConcurrentUploads, normalizeMaxFiles, sameFiles, sameRemoteFiles, validateFiles } from './file-upload'
 export type { FileRejectReason, FileUploadApi, FileUploadCancelDetails, FileUploadCompleteDetails, FileUploadErrorDetails, FileUploadFile, FileUploadFileAcceptDetails, FileUploadFileRejectDetails, FileUploadFilesChangeDetails, FileUploadItemProps, FileUploadPressedKey, FileUploadRejectCode, FileUploadRejection, FileUploadRemoteFile, FileUploadRemoteFilesChangeDetails, FileUploadRequest, FileUploadResult, FileUploadSchema, FileUploadSnapshot, FileUploadStatus, FileUploadTranslations, FileUploadValidateContext, FileUploadValidationResult, FileValidationOptions } from './file-upload'
 export { connectFlex, FLEX_TIER_NAMES, flexAnatomy, flexKeyboard, flexMeta, normalizeFlexTier } from './flex'
