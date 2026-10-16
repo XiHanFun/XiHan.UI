@@ -6,6 +6,12 @@
 /* @xihan-ui/designer-shell 的样式：只消费语义令牌，按零件标签与 data-part 书写，位于 xihan.components 层。 */
 
 @layer xihan.components {
+  /* —— 宿主收起：零件宿主自带 display，hidden 要另写一条才收得起来 —— */
+
+  :is(xh-designer-properties, xh-designer-issues, xh-designer-minimap, xh-designer-palette, xh-designer-transform, xh-designer-ruler, xh-designer-frame)[hidden] {
+    display: none;
+  }
+
   /* —— 属性面板 —— */
 
   xh-designer-properties {
