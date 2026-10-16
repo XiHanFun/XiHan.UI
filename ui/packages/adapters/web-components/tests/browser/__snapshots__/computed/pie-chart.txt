@@ -281,9 +281,9 @@ outline-offset: 0px
 outline-color: oklch(0.208 0.006 258)
 
 [legend-item]
-padding-top: 1px
+padding-top: 0px
 padding-right: 4px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 4px
 row-gap: 4px
 column-gap: 4px

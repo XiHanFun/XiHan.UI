@@ -46,14 +46,14 @@ border-top-left-radius: 2px
 border-top-right-radius: 2px
 border-bottom-right-radius: 2px
 border-bottom-left-radius: 2px
-border-top-width: 2px
-border-right-width: 2px
-border-bottom-width: 2px
-border-left-width: 2px
-border-top-color: platform
-border-right-color: platform
-border-bottom-color: platform
-border-left-color: platform
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: oklch(0.461 0.018 258)
+border-right-color: oklch(0.461 0.018 258)
+border-bottom-color: oklch(0.461 0.018 258)
+border-left-color: oklch(0.461 0.018 258)
 min-height: 24px
 font-size: 14px
 line-height: 17.5px

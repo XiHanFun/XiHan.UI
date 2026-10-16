@@ -36,9 +36,9 @@ outline-offset: 0px
 outline-color: rgb(0, 0, 0)
 
 [ellipsis-trigger]
-padding-top: 1px
+padding-top: 0px
 padding-right: 8px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 8px
 row-gap: 8px
 column-gap: 8px
@@ -71,9 +71,9 @@ outline-offset: 0px
 outline-color: oklch(0.52 0.018 256)
 
 [first-trigger]
-padding-top: 1px
+padding-top: 0px
 padding-right: 8px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 8px
 row-gap: 8px
 column-gap: 8px
@@ -106,9 +106,9 @@ outline-offset: 0px
 outline-color: oklch(0.7 0.016 258)
 
 [item]
-padding-top: 1px
+padding-top: 0px
 padding-right: 8px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 8px
 row-gap: 8px
 column-gap: 8px
@@ -141,9 +141,9 @@ outline-offset: 0px
 outline-color: oklch(0.208 0.006 258)
 
 [last-trigger]
-padding-top: 1px
+padding-top: 0px
 padding-right: 8px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 8px
 row-gap: 8px
 column-gap: 8px
@@ -176,9 +176,9 @@ outline-offset: 0px
 outline-color: oklch(0.7 0.016 258)
 
 [next-trigger]
-padding-top: 1px
+padding-top: 0px
 padding-right: 8px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 8px
 row-gap: 8px
 column-gap: 8px
@@ -246,9 +246,9 @@ outline-offset: 0px
 outline-color: rgb(0, 0, 0)
 
 [prev-trigger]
-padding-top: 1px
+padding-top: 0px
 padding-right: 8px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 8px
 row-gap: 8px
 column-gap: 8px

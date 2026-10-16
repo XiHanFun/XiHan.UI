@@ -209,13 +209,16 @@ function parseCompound(text: string): Compound {
  * 库随包发出去的样式表里，所有不带媒体条件（不在 @media / @container 里）的规则。
  * @supports 块按块内条件成立处理，里面的规则照收。
  */
-function unconditionalRules(): CSSStyleRule[] {
+function unconditionalRules(options: { skipReset?: boolean } = {}): CSSStyleRule[] {
   const out: CSSStyleRule[] = []
   const walk = (list: CSSRuleList, conditional: boolean) => {
     for (const rule of Array.from(list)) {
       if (rule instanceof CSSStyleRule) {
         if (!conditional)
           out.push(rule)
+      }
+      else if (options.skipReset && rule instanceof CSSLayerBlockRule && rule.name === 'xihan.reset') {
+        continue
       }
       else if ('cssRules' in rule) {
         const grouping = rule instanceof CSSMediaRule || rule.constructor.name === 'CSSContainerRule'
@@ -526,7 +529,9 @@ function ringOffKeys(target: HTMLElement): string[] {
 const uaFace = new Map<string, string>()
 function uaFaceOf(tag: string): string {
   if (!uaFace.has(tag)) {
+    // 探针带 data-scope：量的是 reset 层清过之后的同标签库节点（按钮是透明底），不是宿主页面里的裸元素
     const probe = document.createElement(tag)
+    probe.dataset.scope = 'probe'
     document.body.append(probe)
     uaFace.set(tag, getComputedStyle(probe).backgroundColor)
     probe.remove()
@@ -535,13 +540,13 @@ function uaFaceOf(tag: string): string {
 }
 
 /**
- * 这块面归使用者：库的样式表里没有一条画面的规则命中这个节点，
- * 算出来的底色就是同标签裸元素的 UA 底色。环内侧那块色不是库画的，量它量的是 UA。
+ * 这块面归使用者：库的皮肤与配方里没有一条画面的规则命中这个节点，
+ * 算出来的底色就是同标签库节点经 reset 层清过之后的底色。reset 层只清面不画面，不算库画的。
  */
 function consumerOwnsFace(target: HTMLElement): boolean {
   if (getComputedStyle(target).backgroundColor !== uaFaceOf(target.tagName.toLowerCase()))
     return false
-  for (const rule of unconditionalRules()) {
+  for (const rule of unconditionalRules({ skipReset: true })) {
     if (!(rule.style.getPropertyValue('background') || rule.style.getPropertyValue('background-color')))
       continue
     for (const branch of splitTop(sourceSelector(rule.selectorText), ch => ch === ',')) {
@@ -1204,7 +1209,7 @@ describe('聚焦环压着的那块面', () => {
     expect(ratio()).toBeLessThan(3)
   })
 
-  it('面归使用者的部件不进档位表：裸 <button> 的 UA 底色不是库画的', () => {
+  it('面归使用者的部件不进档位表：裸 <button> 经 reset 清成透明，那块面不是库画的', () => {
     const probe = document.createElement('button')
     probe.dataset.scope = 'menu'
     probe.classList.add('xh-scope-menu')

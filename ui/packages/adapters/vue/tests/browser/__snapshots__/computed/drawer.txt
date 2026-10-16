@@ -36,9 +36,9 @@ outline-offset: 0px
 outline-color: rgb(0, 0, 0)
 
 [trigger]
-padding-top: 1px
+padding-top: 0px
 padding-right: 16px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 16px
 row-gap: 8px
 column-gap: 8px

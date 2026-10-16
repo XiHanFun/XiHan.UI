@@ -176,9 +176,9 @@ outline-offset: -2px
 outline-color: rgba(0, 0, 0, 0)
 
 [row-action]
-padding-top: 1px
+padding-top: 0px
 padding-right: 4px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 4px
 row-gap: 4px
 column-gap: 4px

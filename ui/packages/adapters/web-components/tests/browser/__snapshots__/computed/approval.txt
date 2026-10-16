@@ -1,9 +1,9 @@
 # approval
 
 [approve-trigger]
-padding-top: 1px
+padding-top: 0px
 padding-right: 12px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 12px
 row-gap: 8px
 column-gap: 8px
@@ -36,9 +36,9 @@ outline-offset: 0px
 outline-color: oklch(1 0 0)
 
 [deny-trigger]
-padding-top: 1px
+padding-top: 0px
 padding-right: 12px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 12px
 row-gap: 8px
 column-gap: 8px
