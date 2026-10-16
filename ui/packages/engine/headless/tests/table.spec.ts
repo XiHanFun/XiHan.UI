@@ -1584,3 +1584,19 @@ describe('行主操作 onAction', () => {
     expect(actions).toEqual([{ value: 'b', column: 'size' }])
   })
 })
+
+describe('行表头列 rowHeader', () => {
+  it('表体与脚注里这一列的格子是 rowheader，其余列与列头不变', () => {
+    const columns: TableColumnDef[] = [
+      { id: 'select', label: 'Select', width: 40 },
+      { id: 'name', label: 'Name', rowHeader: true },
+      { id: 'size', label: 'Size' },
+    ]
+    const h = mount({ columns, footer: true })
+    expect(h.row('a').cells.name!.getAttribute('role')).toBe('rowheader')
+    expect(h.row('a').cells.size!.getAttribute('role')).toBe('gridcell')
+    expect(h.columnHeader('name').getAttribute('role')).toBe('columnheader')
+    const api = h.api()
+    expect((api.getCellProps({ value: 'name' }) as Record<string, unknown>).role).toBe('rowheader')
+  })
+})

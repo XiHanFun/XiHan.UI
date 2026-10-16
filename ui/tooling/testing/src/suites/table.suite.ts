@@ -575,6 +575,19 @@ export const tableSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '行表头列：表体与脚注里这一列的格子报 rowheader，其余列与列头不变',
+      spec: { apg: APG },
+      props: props({ columns: COLUMNS.map(column => (column.id === 'name' ? { ...column, rowHeader: true } : column)) }),
+      initial: {
+        parts: {
+          'cell[1]': { role: 'rowheader' },
+          'cell[2]': { role: 'gridcell' },
+          'cell[16]': { role: 'rowheader' },
+          'column-header[1]': { role: 'columnheader' },
+        },
+      },
+    },
+    {
       name: '行主操作：点在数据行的格子上报行与列，焦点停在行上按 Enter 报行、列为 null；把手上的点击不报',
       spec: { apg: `${APG}#keyboardinteraction` },
       props: props(),

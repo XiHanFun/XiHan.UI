@@ -167,6 +167,11 @@ export interface TableColumnDef {
    * 不提供时由皮肤决定（默认 start）。
    */
   align?: 'start' | 'center' | 'end'
+  /**
+   * 行表头列：表体与脚注里这一列的格子写 role="rowheader"，读屏报某一格时连着念出它所在行的表头
+   * （交叉表的行维度、分组标签、合计行的标题格）。列头不受影响，仍是 columnheader；合并格的起点跟着所在的列走。
+   */
+  rowHeader?: boolean
 }
 
 /**
