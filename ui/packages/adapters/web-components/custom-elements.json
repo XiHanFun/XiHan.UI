@@ -63408,6 +63408,12 @@
             },
             {
               "kind": "field",
+              "name": "notifyAction",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -63684,6 +63690,13 @@
               "name": "expanded-value-change",
               "type": {
                 "text": "TableExpandedValueChangeDetails"
+              }
+            },
+            {
+              "description": "行主操作：点在数据行上或焦点在行上按 Enter；detail 为 `{ value, column }`，value 是行 id，column 是点中那一格的列 id、键盘触发时为 null",
+              "name": "action",
+              "type": {
+                "text": "TableActionDetails"
               }
             },
             {

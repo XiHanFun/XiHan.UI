@@ -318,6 +318,14 @@ export interface TableExpandedValueChangeDetails {
   value: string[]
 }
 
+/** 行主操作：点在数据行上，或焦点在行上按 Enter。 */
+export interface TableActionDetails {
+  /** 行 id。 */
+  value: string
+  /** 点在哪一列的格子上（纵向合并格算它的起点行）；键盘触发时为 null。 */
+  column: string | null
+}
+
 /** 行系部件的声明：只声明行 id，禁用、可展开与行号一律从 rows 查询。 */
 export interface TableRowProps {
   value: string
@@ -456,6 +464,12 @@ export interface TableSchema extends MachineSchema {
     onSortChange?: (details: TableSortChangeDetails) => void
     onSelectionChange?: (details: TableSelectionChangeDetails) => void
     onExpandedValueChange?: (details: TableExpandedValueChangeDetails) => void
+    /**
+     * 行主操作：指针主键点在数据行上（column 是点中那一格的列 id），或焦点停在行上按 Enter（column 为 null）。
+     * 点在行内的交互控件与表格自己的把手上、行拖动松手的那一次点击、禁用行、详情行、表头与脚注都不触发；
+     * 选中、展开与 Space 的语义不变。
+     */
+    onAction?: (details: TableActionDetails) => void
   }
   context: {
     /** 排序链，有序且按 id 去重。受控（sort 提供）时 cell 直读 prop。 */
@@ -548,6 +562,8 @@ export interface TableSchema extends MachineSchema {
      * 宿主没写回时留到下一次提交前或卸载时停掉。
      */
     reorder: (() => void) | null
+    /** 行拖动刚松手：随后到来的那一次点击不算行主操作。下一次在行上按下时清掉。 */
+    swallowClick: boolean
   }
   /**
    * 排序、选中、展开与列偏好都不编码进状态：它们是随时可读可写的事实，不是过程。

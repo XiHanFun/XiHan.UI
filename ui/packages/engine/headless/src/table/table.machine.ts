@@ -136,6 +136,7 @@ export const tableMachine = createMachine({
     columnDrag: null,
     rowDrag: null,
     reorder: null,
+    swallowClick: false,
   }),
   initialState: () => 'idle',
   // 版面实测与拖动 / 改宽的过程无关，全程挂着；需不需要量由 props 现判
@@ -519,6 +520,7 @@ export const tableMachine = createMachine({
         // 没激活过就只是按了一下：不是拖动，什么都不做也不播报
         if (!session?.activated)
           return
+        refs.set('swallowClick', true)
         if (!target) {
           announceRowMove(context, prop, 'rejected', session.rowId)
           return
@@ -529,8 +531,10 @@ export const tableMachine = createMachine({
       cancelRowDrag: ({ context, prop, refs }) => {
         const session = refs.get('rowDrag')
         clearRowDrag(context, refs)
-        if (session?.activated)
+        if (session?.activated) {
+          refs.set('swallowClick', true)
           announceRowMove(context, prop, 'canceled', session.rowId)
+        }
       },
 
       blockRowReorder: ({ context, event }) => {

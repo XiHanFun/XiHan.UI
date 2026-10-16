@@ -101,6 +101,7 @@ interface Harness {
   emptyState: HTMLElement
   loadingState: HTMLElement
   setProps: (next: Partial<Props>) => void
+  service: ReturnType<typeof createService<TableSchema>>
   sort: () => TableSchema['context']['sort']
   selection: () => TableSchema['context']['selection']
   expanded: () => string[]
@@ -241,6 +242,7 @@ function mount(initial: Partial<Props> = {}): Harness {
       props.set({ ...props.get(), ...next })
       render()
     },
+    service,
     sort: () => service.context.get('sort'),
     selection: () => service.context.get('selection'),
     expanded: () => service.context.get('expandedValue'),
@@ -1511,5 +1513,69 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，七�
     expect(pressed(h.sortTrigger('name'))).toBe(true)
     h.setProps({ loading: true })
     expect(pressed(h.sortTrigger('name'))).toBe(false)
+  })
+})
+
+describe('行主操作 onAction', () => {
+  function withActions(initial: Partial<Props> = {}): { h: Harness, actions: unknown[] } {
+    const actions: unknown[] = []
+    const h = mount({ ...initial, onAction: details => actions.push(details) })
+    return { h, actions }
+  }
+
+  it('点在数据行的格子上：报行 id 与那一格的列 id', () => {
+    const { h, actions } = withActions()
+    h.row('b').cells.size!.click()
+    h.row('a').cells.name!.click()
+    expect(actions).toEqual([{ value: 'b', column: 'size' }, { value: 'a', column: 'name' }])
+  })
+
+  it('点在行选、展开把手与行内控件上不报，选中照旧由把手承担', () => {
+    const { h, actions } = withActions({ selectionMode: 'multiple' })
+    h.row('a').selectTrigger.click()
+    h.row('a').expandTrigger.click()
+    const button = document.createElement('button')
+    h.row('b').cells.size!.append(button)
+    button.click()
+    expect(actions).toEqual([])
+    expect(h.selection()).toEqual(['a'])
+  })
+
+  it('焦点停在行上按 Enter：报行 id，列为 null；连发与行内控件上的 Enter 不报', () => {
+    const { h, actions } = withActions()
+    h.row('a').row.focus()
+    expect(press(active(), 'Enter').defaultPrevented).toBe(true)
+    press(active(), 'Enter', { repeat: true })
+    const button = document.createElement('button')
+    h.row('a').cells.size!.append(button)
+    button.focus()
+    expect(press(button, 'Enter').defaultPrevented).toBe(false)
+    expect(actions).toEqual([{ value: 'a', column: null }])
+  })
+
+  it('禁用行点了、按 Enter 都不报', () => {
+    const { h, actions } = withActions()
+    h.row('c').cells.size!.click()
+    h.row('c').row.focus()
+    press(active(), 'Enter')
+    expect(actions).toEqual([])
+  })
+
+  it('详情行与脚注行里的点击不报', () => {
+    const { h, actions } = withActions({ footer: true, defaultExpandedValue: ['a'] })
+    h.row('a').expandedRow.click()
+    h.footerRow.click()
+    expect(actions).toEqual([])
+  })
+
+  it('行拖动松手的那一次点击不报，下一次按下之后照常报', () => {
+    const { h, actions } = withActions({ rowReorderable: true })
+    h.service.send({ type: 'ROW_DRAG.START', rowId: 'b', rects: [], originY: 0, pointerId: 1, activate: true, source: null })
+    h.service.send({ type: 'ROW_DRAG.END' })
+    h.row('b').cells.size!.click()
+    expect(actions).toEqual([])
+    h.row('b').row.dispatchEvent(new Event('pointerdown'))
+    h.row('b').cells.size!.click()
+    expect(actions).toEqual([{ value: 'b', column: 'size' }])
   })
 })

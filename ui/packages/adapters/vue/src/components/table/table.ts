@@ -176,6 +176,8 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
     'update:expandedValue': (_value: PayloadOf<TableProps, 'onExpandedValueChange'>['value']) => true,
     // 行换位是通知，行序与父子归属的真源在使用者的数据里，故没有配对的 update:*
     'row-move': (_details: PayloadOf<TableProps, 'onRowMove'>) => true,
+    // 行主操作是通知：点在数据行上或焦点在行上按 Enter
+    'action': (_details: PayloadOf<TableProps, 'onAction'>) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: TableRootSlotProps) => VNode[]
@@ -208,7 +210,10 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
     const onRowMove: TableProps['onRowMove'] = (details) => {
       emit('row-move', details)
     }
-    const ctx = useTable(withXhConfig('table', props) as TableProps, onSortChange, onSelectionChange, onExpandedValueChange, onColumnPreferenceChange, onRowMove)
+    const onAction: TableProps['onAction'] = (details) => {
+      emit('action', details)
+    }
+    const ctx = useTable(withXhConfig('table', props) as TableProps, onSortChange, onSelectionChange, onExpandedValueChange, onColumnPreferenceChange, onRowMove, onAction)
     provideTable(ctx)
     return () => h(Fragment, [
       // 工具条排在表前且在 root 之外：root 是 role=grid，子节点只能是 row 与 rowgroup。

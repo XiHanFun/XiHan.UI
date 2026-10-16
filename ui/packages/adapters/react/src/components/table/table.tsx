@@ -183,6 +183,8 @@ export interface XhTableRootProps extends RootElementProps {
   onExpandedValueChange?: TableProps['onExpandedValueChange']
   /** 行换位是通知，行序与父子归属的真源在使用者的数据中。 */
   onRowMove?: TableProps['onRowMove']
+  /** 行主操作：点在数据行上（带列 id），或焦点在行上按 Enter（列为 null）。 */
+  onAction?: TableProps['onAction']
   /**
    * 工具条槽：搜索、筛选、密度与列设置等作用于整张表的控件写在这里。
    * 它渲染为 root 的兄弟排在表前：root 是 grid 系角色，子节点只能是 row 与 rowgroup。
@@ -228,6 +230,7 @@ export function XhTableRoot({
   onSelectionChange,
   onExpandedValueChange,
   onRowMove,
+  onAction,
   toolbar,
   children,
   ...rest
@@ -269,6 +272,7 @@ export function XhTableRoot({
     onSelectionChange,
     onExpandedValueChange,
     onRowMove,
+    onAction,
   }) as TableProps)
   const api = ctx.api
   return (
@@ -343,6 +347,7 @@ XhTableRoot.xhEvents = [
   'selection-change',
   'expanded-value-change',
   'row-move',
+  'action',
 ] as const
 
 export interface XhTableToolbarProps extends ComponentPropsWithRef<'div'> {}

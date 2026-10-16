@@ -22,6 +22,7 @@ export const tableKeyboard: KeyboardTable = {
     { id: 'table.kbd.prev', keys: ['ArrowUp'], when: 'focus in table body', does: '焦点移到上一个可见数据行（禁用行跳过；loop 默认关，首行不回绕）' },
     { id: 'table.kbd.first', keys: ['Home'], when: 'focus in table body', does: '焦点移到首个可见数据行' },
     { id: 'table.kbd.last', keys: ['End'], when: 'focus in table body', does: '焦点移到末个可见数据行' },
+    { id: 'table.kbd.action', keys: ['Enter'], when: 'focus on row, 该行未禁用', does: '触发行主操作（onAction，column 为 null），用来下钻或联动；焦点停在行内控件上时 Enter 归那个控件，选中仍归 Space' },
     { id: 'table.kbd.select', keys: ['Space'], when: 'focus on row, selectionMode 非 none 且该行未禁用', does: '切换焦点行的选中（单选替换、复选增删）；选不动时不吞这个键，页面照常滚动' },
     { id: 'table.kbd.expand', keys: ['ArrowRight'], when: 'focus on 可展开且收起的行（dir=rtl 时改由 ArrowLeft 承担）', does: '就地展开当前行，焦点不动；不可展开、已展开或禁用的行上什么都不做且不吞键' },
     { id: 'table.kbd.collapse', keys: ['ArrowLeft'], when: 'focus on 可展开且已展开的行（dir=rtl 时改由 ArrowRight 承担）', does: '就地收起当前行，焦点不动；其余情形什么都不做且不吞键' },

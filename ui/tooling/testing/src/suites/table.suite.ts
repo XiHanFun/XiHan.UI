@@ -575,6 +575,18 @@ export const tableSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '行主操作：点在数据行的格子上报行与列，焦点停在行上按 Enter 报行、列为 null；把手上的点击不报',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: props(),
+      covers: ['table.kbd.action'],
+      steps: [
+        { kind: 'click', part: 'cell[6]', expect: { events: [{ type: 'action', detail: { value: 'b', column: 'size' } }] } },
+        { kind: 'click', part: 'row-select-trigger[0]', expect: { events: [] } },
+        { kind: 'focus', part: 'row[1]' },
+        { kind: 'key', key: 'Enter', expect: { events: [{ type: 'action', detail: { value: 'a', column: null } }] } },
+      ],
+    },
+    {
       name: 'selectionMode=none：行不报 aria-selected，把手与 Space 一概不生效',
       spec: { apg: APG },
       props: props(),

@@ -7,6 +7,7 @@
 
 import type { CascadeStrategy, ControlVariant, Direction, Size } from '@xihan-ui/core'
 import type {
+  TableActionDetails,
   TableApi,
   TableColumnDef,
   TableColumnKind,
@@ -86,6 +87,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @prop {TableColumnKind[]} prefixColumns - 需要的前缀列，按给定顺序插在最前面
  * @fires selection-change - 选中集合变化；detail 为 `{ value: string[] | 'all' }`
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
+ * @fires action - 行主操作：点在数据行上或焦点在行上按 Enter；detail 为 `{ value, column }`，value 是行 id，column 是点中那一格的列 id、键盘触发时为 null
  * @fires row-move - 行换位；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在该层的落位（已经过先移除后插入的修正），ids 是重排后的整份行序
  * @prop {(move: TableRowMoveDetails) => boolean} allowRowDrop - 本次移动是否允许，收到的是折算后的落点；未提供时全部允许
  * @csspart root - role=grid 容器（rows 中有可展开的行时为 treegrid），报告行列总数与多选声明
@@ -211,6 +213,10 @@ export class XhTableElement extends XhElement {
     this.dispatchEvent(new CustomEvent('row-move', { detail: details, bubbles: true, composed: true }))
   }
 
+  private readonly notifyAction = (details: TableActionDetails): void => {
+    this.dispatchEvent(new CustomEvent('action', { detail: details, bubbles: true, composed: true }))
+  }
+
   // table 机器无副作用，controller 只带 props。
   // 版面实测从 root 往下量：取值口惰性读，角色节点要等首次 updated 才发现得到
   private readonly ctrl = new MachineController<TableSchema>(
@@ -264,6 +270,7 @@ export class XhTableElement extends XhElement {
       onSelectionChange: this.notifySelection,
       onExpandedValueChange: this.notifyExpanded,
       onRowMove: this.notifyRowMove,
+      onAction: this.notifyAction,
     }
   }
 

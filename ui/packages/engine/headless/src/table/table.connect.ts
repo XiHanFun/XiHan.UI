@@ -854,6 +854,18 @@ export function connectTable<T extends PropTypes>(
         const row = focusedRow != null ? metaOf(focusedRow) : undefined
         if (!row)
           return
+
+        // Enter 触发行主操作：只认焦点停在行上，落在行内控件上的 Enter 归那个控件
+        if (event.key === 'Enter') {
+          const target = event.target as HTMLElement | null
+          if (!target?.matches(parts.row.selector) || itemValue(target) !== row.id || row.disabled)
+            return
+          event.preventDefault()
+          if (!event.repeat)
+            prop('onAction')?.({ value: row.id, column: null })
+          return
+        }
+
         // rtl 下左右键整体对调：展开永远是"往里去"的那个方向
         const forward = dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight'
         const backward = dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft'
@@ -978,9 +990,24 @@ export function connectTable<T extends PropTypes>(
         'data-draggable': dataAttr(rowReorderable && rowBlocked == null && !isRowDisabled(row.value)),
         // 焦点是事实不是许可：禁用行被点到也记锚点，方向键才知道从哪儿起步
         'onFocus': () => send({ type: 'ROW.FOCUS', value: row.value }),
+        // 行主操作：点中的那一格给出列 id。行内控件与把手各有自己的点击，拖动松手的那一次不算
+        'onClick': onRowItself((event: MouseEvent) => {
+          if (service.refs.get('swallowClick')) {
+            service.refs.set('swallowClick', false)
+            return
+          }
+          const target = event.target as HTMLElement | null
+          if (event.button !== 0 || isRowDisabled(row.value) || target?.closest(parts['row-drag-trigger'].selector))
+            return
+          const rowEl = event.currentTarget as HTMLElement
+          const cell = target?.closest<HTMLElement>(parts.cell.selector)
+          const column = cell && cell.closest(parts.row.selector) === rowEl ? cell.getAttribute(ITEM_VALUE_ATTR) : null
+          prop('onAction')?.({ value: row.value, column })
+        }),
         // 整行都是拖动源，没有把手。按在行里的交互控件上不起拖：
         // 那些地方按下去是要点它们，不是要搬这一行。触屏按下进按压通道，与起拖两路互不相干
         'onPointerDown': (event: PointerEvent) => {
+          service.refs.set('swallowClick', false)
           onRowItself(pressing.onPointerDown)(event)
           // 只认主键：右键要弹上下文菜单，中键是自动滚动。
           // 触屏也不认：拖行是纵向的，而纵向手势在按下那一刻就归了浏览器滚动，
