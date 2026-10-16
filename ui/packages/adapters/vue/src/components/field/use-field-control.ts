@@ -6,6 +6,7 @@
 // 提供 use field control 相关实现。
 
 import type { ComputedRef } from 'vue'
+import { fieldControlWiring, fieldGroupAttrs, fieldStateAttrs, withFieldLabel } from '@xihan-ui/headless'
 import { computed } from 'vue'
 import { useOptionalFieldContext } from './context'
 import { wiringOnly } from './field'
@@ -43,17 +44,7 @@ export function useFieldControl(): ComputedRef<Record<string, unknown>> {
  */
 export function useFieldStateWiring(): ComputedRef<Record<string, unknown>> {
   const ctx = useOptionalFieldContext()
-  return computed(() => {
-    if (!ctx)
-      return {}
-    const control = ctx.api.value.getControlProps() as Record<string, unknown>
-    const wiring: Record<string, unknown> = {}
-    for (const key of ['aria-describedby', 'aria-invalid', 'aria-required', 'aria-readonly']) {
-      if (control[key] !== undefined)
-        wiring[key] = control[key]
-    }
-    return wiring
-  })
+  return computed(() => (ctx ? fieldStateAttrs(fieldControlWiring(ctx.api.value)) : {}))
 }
 
 /**
@@ -64,10 +55,7 @@ export function useFieldStateWiring(): ComputedRef<Record<string, unknown>> {
  */
 export function useFieldGroupWiring(): ComputedRef<Record<string, unknown>> {
   const ctx = useOptionalFieldContext()
-  return computed(() => {
-    const describedBy = ctx ? (ctx.api.value.getControlProps() as Record<string, unknown>)['aria-describedby'] : undefined
-    return describedBy === undefined ? {} : { 'aria-describedby': describedBy }
-  })
+  return computed(() => (ctx ? fieldGroupAttrs(fieldControlWiring(ctx.api.value)) : {}))
 }
 
 /**
@@ -85,14 +73,6 @@ export function useFieldLabelWiring(): ComputedRef<(props: Record<string, unknow
   const ctx = useOptionalFieldContext()
   return computed(() => {
     const labelId = ctx?.api.value.labelId
-    return (props: Record<string, unknown>) => {
-      if (!labelId)
-        return props
-      const own = props['aria-labelledby']
-      return {
-        ...props,
-        'aria-labelledby': typeof own === 'string' && own ? `${labelId} ${own}` : labelId,
-      }
-    }
+    return (props: Record<string, unknown>) => withFieldLabel(props, labelId)
   })
 }

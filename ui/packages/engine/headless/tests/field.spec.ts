@@ -1,7 +1,7 @@
 import type { FieldProps } from '../src/field/index'
 import { createCounterIdGenerator, createScope, normalizeProps } from '@xihan-ui/core'
 import { describe, expect, it } from 'vitest'
-import { connectField } from '../src/field/index'
+import { connectField, fieldControlWiring, fieldGroupAttrs, fieldStateAttrs, withFieldLabel } from '../src/field/index'
 
 function api(props: FieldProps = {}) {
   const scope = createScope(null, createCounterIdGenerator())
@@ -52,5 +52,46 @@ describe('connectField 的 control 投影 Field Chrome 家族属性', () => {
 
   it('control 不投 data-xh-field-input：它自己就是盒，没有盒内输入段', () => {
     expect(controlProps()['data-xh-field-input']).toBeUndefined()
+  })
+})
+
+describe('字段交给库内控件的接线', () => {
+  it('接线取自 connect 结果：标签 id、描述链与三态；invalid 时描述链带上错误文案', () => {
+    const valid = fieldControlWiring(api())
+    const field = api({ invalid: true, required: true, readOnly: true })
+    const wiring = fieldControlWiring(field)
+    expect(wiring).toEqual({
+      labelId: field.labelId,
+      describedBy: (field.getControlProps() as Record<string, unknown>)['aria-describedby'],
+      invalid: true,
+      required: true,
+      readOnly: true,
+    })
+    expect(wiring.describedBy.split(' ')).toHaveLength(2)
+    expect(valid.describedBy.split(' ')).toHaveLength(1)
+  })
+
+  it('状态接线与字段 control 上的同名四条一致，组类接线只有描述链', () => {
+    const field = api({ invalid: true })
+    const control = field.getControlProps() as Record<string, unknown>
+    const wiring = fieldControlWiring(field)
+    expect(fieldStateAttrs(wiring)).toEqual({
+      'aria-describedby': control['aria-describedby'],
+      'aria-invalid': control['aria-invalid'],
+      'aria-required': control['aria-required'],
+      'aria-readonly': control['aria-readonly'],
+    })
+    expect(fieldGroupAttrs(wiring)).toEqual({ 'aria-describedby': control['aria-describedby'] })
+  })
+
+  it('字段标签排在名字链最前，控件自己的部分跟在后面；自己没有或为空时只剩字段标签', () => {
+    expect(withFieldLabel({ 'aria-labelledby': 'own value' }, 'label')['aria-labelledby']).toBe('label own value')
+    expect(withFieldLabel({}, 'label')['aria-labelledby']).toBe('label')
+    expect(withFieldLabel({ 'aria-labelledby': '' }, 'label')['aria-labelledby']).toBe('label')
+  })
+
+  it('没有字段标签时属性原样返回', () => {
+    const props = { 'aria-labelledby': 'own' }
+    expect(withFieldLabel(props, undefined)).toBe(props)
   })
 })

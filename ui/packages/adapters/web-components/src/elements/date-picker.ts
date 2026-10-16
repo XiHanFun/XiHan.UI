@@ -204,6 +204,8 @@ export class XhDatePickerElement extends XhPortalHostElement {
     delegates: [dateFieldAnatomy, calendarPickerAnatomy, { name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }],
   }
 
+  static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },

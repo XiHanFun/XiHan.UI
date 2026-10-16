@@ -57,6 +57,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 export class XhRadioGroupElement extends XhElement {
   static override partContract = { anatomy: radioGroupAnatomy, meta: radioGroupMeta }
 
+  static override fieldTarget = { parts: ['root'], kind: 'group' } as const
+
   // dir 是 HTMLElement 原生访问器，同名声明会与基类冲突并盖掉原生反射，故字段叫 direction、属性名仍用 dir
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准

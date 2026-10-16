@@ -216,6 +216,8 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     delegates: [dateFieldAnatomy, calendarRangePickerAnatomy],
   }
 
+  static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     // 区间两端是数组，只能走 property

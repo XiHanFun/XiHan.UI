@@ -5,11 +5,9 @@
 
 // 提供 use field control 相关实现。
 
+import { fieldControlWiring, fieldGroupAttrs, fieldStateAttrs, withFieldLabel } from '@xihan-ui/headless'
 import { useOptionalFieldContext } from './context'
 import { wiringOnly } from './field'
-
-/** 读屏只朗读焦点所在节点的描述，因此说明与校验状态要落到真实控件上，不能停留在封装根。 */
-const STATE_KEYS = ['aria-describedby', 'aria-invalid', 'aria-required', 'aria-readonly'] as const
 
 const EMPTY: Record<string, unknown> = {}
 
@@ -35,13 +33,7 @@ export function useFieldStateWiring(): Record<string, unknown> {
   const ctx = useOptionalFieldContext()
   if (!ctx)
     return EMPTY
-  const control = ctx.api.getControlProps() as Record<string, unknown>
-  const wiring: Record<string, unknown> = {}
-  for (const key of STATE_KEYS) {
-    if (control[key] !== undefined)
-      wiring[key] = control[key]
-  }
-  return wiring
+  return fieldStateAttrs(fieldControlWiring(ctx.api))
 }
 
 /**
@@ -54,8 +46,7 @@ export function useFieldGroupWiring(): Record<string, unknown> {
   const ctx = useOptionalFieldContext()
   if (!ctx)
     return EMPTY
-  const describedBy = (ctx.api.getControlProps() as Record<string, unknown>)['aria-describedby']
-  return describedBy === undefined ? EMPTY : { 'aria-describedby': describedBy }
+  return fieldGroupAttrs(fieldControlWiring(ctx.api))
 }
 
 /**
@@ -70,8 +61,5 @@ export function useFieldLabelWiring(): (props: Record<string, unknown>) => Recor
   if (!ctx)
     return identity
   const labelId = ctx.api.labelId
-  return (props) => {
-    const own = props['aria-labelledby']
-    return { ...props, 'aria-labelledby': own == null ? labelId : `${labelId} ${String(own)}` }
-  }
+  return props => withFieldLabel(props, labelId)
 }

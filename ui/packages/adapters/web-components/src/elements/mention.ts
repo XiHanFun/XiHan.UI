@@ -90,6 +90,8 @@ export class XhMentionElement extends XhPortalHostElement {
 
   static override partContract = { anatomy: mentionAnatomy, meta: mentionMeta }
 
+  static override fieldTarget = { parts: ['input'], kind: 'state' } as const
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     // 数组只走 property，属性表达不了；给了 collection 候选的文本与禁用即以数据为准

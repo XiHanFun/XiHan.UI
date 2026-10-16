@@ -102,6 +102,8 @@ export class XhSelectElement extends XhPortalHostElement {
     delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }],
   }
 
+  static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const
+
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
