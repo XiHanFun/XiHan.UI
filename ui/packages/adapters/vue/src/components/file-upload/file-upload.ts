@@ -8,7 +8,7 @@
 import type { FileUploadApi, FileUploadFile, FileUploadItemProps, FileUploadRemoteFile, FileUploadSchema, FileUploadTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h } from 'vue'
+import { computed, defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
@@ -123,6 +123,11 @@ export const XhFileUploadLabel = defineComponent({
   name: 'XhFileUploadLabel',
   setup(_, { slots }) {
     const ctx = useFileUploadContext()
+    // 渲出来就登记，在 setup 里同步做：排在输入之前时首帧与服务端直出就带上名字
+    ctx.labelCount.value++
+    onUnmounted(() => {
+      ctx.labelCount.value--
+    })
     // 用原生 label，getLabelProps 的 for 指向隐藏输入
     return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },

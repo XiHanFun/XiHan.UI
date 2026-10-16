@@ -117,6 +117,7 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
 | `value` | `string \| null` |  | 受控值，ISO 串（'2026-07-28' / '2026-07-28T13:45'）；null 表示空。提供即受控。 |
 | `defaultValue` | `string \| null` |  | 非受控初值，同样是 ISO 串。 |
 | `min` | `string` |  | 下界，ISO 串。参与各段区间的收窄，并决定 outOfRange。 |
@@ -234,7 +235,7 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `control` | `aria-disabled` | 'true' \| 'false' |
-| `control` | `aria-labelledby` | `label` 部件的 id |
+| `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `control` | `role` | 'group' |
 | `segment` | `aria-disabled` | undefined \| 'true' \| 'false' |
 | `segment` | `aria-invalid` | undefined \| 'true' \| 'false' |

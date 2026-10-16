@@ -153,7 +153,7 @@ export function connectColorSlider<T extends PropTypes>(
         'aria-valuenow': String(channelValue),
         // 单位必须补上，光念数字分不清角度与百分数
         'aria-valuetext': label.valueText(channel, channelValue),
-        'aria-labelledby': ids.label,
+        'aria-labelledby': prop('labelled') ? ids.label : undefined,
         // 作者没放 label 部件时名字从文案取，两者同时在时以 label 部件为准
         'aria-label': label.label(channel),
         'aria-orientation': orientation,

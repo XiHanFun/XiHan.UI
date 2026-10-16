@@ -16,6 +16,11 @@ import { useMachine } from '../../runtime/use-machine'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface ColorSliderContext {
+  /**
+   * 已渲染的 label 部件数量，由 XhColorSliderLabel 在 setup 里同步登记、卸载时撤销。
+   * 可聚焦部件的 aria-labelledby 据此决定指不指过去：label 排在输入之前时，首帧与服务端直出就带上名字。
+   */
+  labelCount: Ref<number>
   api: ComputedRef<ColorSliderApi>
   service: Service<ColorSliderSchema>
   /** 轨道节点，内嵌滑杆在指针事件中读取它的矩形。 */
@@ -30,7 +35,8 @@ export function useColorSlider(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(colorSliderMachine, () => ({ ...props, ...handlers }), scope)
+  const labelCount = ref(0)
+  const service = useMachine(colorSliderMachine, () => ({ ...props, labelled: labelCount.value > 0, ...handlers }), scope)
 
   // 内嵌一台滑杆：区间与当下的值从颜色滑块现读，颜色滑块须先建立；
   // 两台共用一份 scope，part id 里带组件名区分，不会撞
@@ -40,5 +46,5 @@ export function useColorSlider(
   const services: ColorSliderServices = { root: service, slider }
 
   const api = computed(() => connectColorSlider(services, vueNormalize))
-  return { api, service, trackRef }
+  return { labelCount, api, service, trackRef }
 }

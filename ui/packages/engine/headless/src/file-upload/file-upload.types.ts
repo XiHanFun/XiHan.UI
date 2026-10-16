@@ -147,6 +147,11 @@ export interface FileUploadItemProps {
 export interface FileUploadSchema extends MachineSchema {
   props: {
     /**
+     * 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。
+     * 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。
+     */
+    labelled?: boolean
+    /**
      * 允许的类型，写法与原生 input 的 accept 一致：
      * 接受 'image/*' 这类通配、'.png' 这类扩展名、'application/pdf' 这类精确 MIME，
      * 逗号分隔的整串或数组两种形态均可（属性只能表达整串，数组需通过 property）。

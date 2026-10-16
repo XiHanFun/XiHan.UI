@@ -110,7 +110,7 @@ export function connectEditable<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'role': 'group',
-      'aria-labelledby': ids.label,
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       // 三个视觉轴只落在 root，子部件从这里继承皮肤声明的私有槽
       'data-variant': variant,
       'data-tone': prop('tone'),
@@ -184,7 +184,7 @@ export function connectEditable<T extends PropTypes>(
       'disabled': disabled || undefined,
       'readonly': readOnly || undefined,
       // label 部件若不是 <label> 元素，for 会失效，靠这条兜住可访问名
-      'aria-labelledby': ids.label,
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       'aria-invalid': invalid ? 'true' : 'false',
       // Field Chrome 不读取 editable anatomy；原生输入角色与单行布局由 Headless 明确投影
       'data-xh-field-input': '',

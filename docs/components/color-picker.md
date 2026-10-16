@@ -139,6 +139,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
 | `value` | `string \| string[]` |  | 选中的颜色，值串数组。提供即受控：写入只发 onValueChange 不落内部值。 单选可写裸串，内部一律归一为数组；单选给空数组时按缺省色 #000000。 |
 | `defaultValue` | `string \| string[]` |  |  |
 | `selectionMode` | `ColorPickerSelectionMode` |  | 选择模式，默认 single。 |
@@ -312,10 +313,10 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
+| `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id |
 | `swatch` | `aria-hidden` | 'true' |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `label` 部件的 id |
+| `content` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `content` | `aria-modal` | undefined \| 'false' |
 | `content` | `role` | 'group' \| 'dialog' |
 | `area-thumb` | `aria-disabled` | 'true' \| 'false' |

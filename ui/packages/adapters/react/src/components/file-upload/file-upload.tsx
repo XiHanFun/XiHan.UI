@@ -9,7 +9,7 @@ import type { FileUploadApi, FileUploadFile, FileUploadRemoteFile, FileUploadSch
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
@@ -188,6 +188,9 @@ export interface XhFileUploadLabelProps extends ComponentPropsWithRef<'label'> {
 /** 原生 label，getLabelProps 的 for 指向隐藏输入。 */
 export function XhFileUploadLabel({ children, ...rest }: XhFileUploadLabelProps): ReactNode {
   const ctx = useFileUploadContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return (
     <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}

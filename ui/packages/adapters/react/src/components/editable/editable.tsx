@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { EditableActivationMode, EditableApi, EditableSchema, EditableSubmitMode } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { useEffect } from 'react'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
@@ -129,6 +130,9 @@ XhEditableRoot.xhEvents = ['value-change', 'value-commit', 'value-revert', 'edit
 export interface XhEditableLabelProps extends ComponentPropsWithRef<'label'> {}
 export function XhEditableLabel({ children, ...rest }: XhEditableLabelProps): ReactNode {
   const ctx = useEditableContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return (
     <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}

@@ -634,12 +634,16 @@ describe('connectDateField 结构与 ARIA', () => {
   })
 
   it('control 是 group 并由 label 命名，段位是 spinbutton', () => {
-    const m = open({ locale: 'zh-CN' })
+    const m = open({ labelled: true, locale: 'zh-CN' })
     expect(m.control.getAttribute('role')).toBe('group')
     expect(m.control.getAttribute('aria-labelledby')).toBe(m.label.getAttribute('id'))
     expect(m.seg[0]!.getAttribute('role')).toBe('spinbutton')
     // 段位是 div，不是可被 <label for> 标注的控件
     expect(m.label.hasAttribute('for')).toBe(false)
+  })
+
+  it('没渲染 label 时 control 不写 aria-labelledby', () => {
+    expect(open({ locale: 'zh-CN' }).control.hasAttribute('aria-labelledby')).toBe(false)
   })
 
   it('段序随 locale 走：同一份标记换个 locale 就换一副面孔', () => {

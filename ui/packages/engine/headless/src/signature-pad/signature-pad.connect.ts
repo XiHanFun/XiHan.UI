@@ -122,8 +122,8 @@ export function connectSignaturePad<T extends PropTypes>(
       // 签名是一张图。它不接键盘也不进 Tab 序列，报成控件就是骗读屏；
       // 可用性的落点在 doc.md 写明的替代路径上，不在这个节点上
       'role': 'img',
-      // 作者渲染了标题就用标题；没渲染时这条 IDREF 悬空，读屏退回下面这句内建文案
-      'aria-labelledby': ids.label,
+      // 作者渲染了标题就用标题；没渲染时不写这条引用，名字取下面这句内建文案
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       'aria-label': translations.label,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),

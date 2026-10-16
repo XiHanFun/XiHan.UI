@@ -9,13 +9,18 @@ import type { Service } from '@xihan-ui/core'
 import type { ColorSliderApi, ColorSliderSchema, ColorSliderServices, SliderSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import { colorSliderMachine, colorSliderSliderProps, connectColorSlider, sliderMachine } from '@xihan-ui/headless'
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useFormReset } from '../../runtime/attach-form-reset'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 
 export interface ColorSliderContext {
+  /**
+   * label 部件挂载时登记、卸载时注销。可聚焦部件的 aria-labelledby 据此决定输不输出；
+   * 首帧（含服务端直出）还没登记，不写这条引用。
+   */
+  registerLabel: () => () => void
   api: ColorSliderApi
   service: Service<ColorSliderSchema>
   /** 轨道节点，内嵌滑杆在指针事件中读取它的矩形。 */
@@ -29,7 +34,13 @@ export function useColorSlider(props: ColorSliderSchema['props']): ColorSliderCo
   const trackRef = useRef<HTMLElement | null>(null)
   const rootRef = useRef<HTMLElement | null>(null)
 
-  const service = useMachine(colorSliderMachine, () => props, { scope })
+  // 用状态而不是 ref：登记数要能把根重渲一次，connect 在渲染期求值
+  const [labelCount, setLabelCount] = useState(0)
+  const registerLabel = useCallback(() => {
+    setLabelCount(n => n + 1)
+    return () => setLabelCount(n => n - 1)
+  }, [])
+  const service = useMachine(colorSliderMachine, () => ({ ...props, labelled: labelCount > 0 }), { scope })
 
   // 轨道的矩形归内嵌那台滑杆量；机器的挂载效应会立刻读 refs，交在 onCreate 里才赶得上
   const onSliderCreate = useCallback((slider: Service<SliderSchema>) => {
@@ -43,5 +54,5 @@ export function useColorSlider(props: ColorSliderSchema['props']): ColorSliderCo
   // 颜色攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置颜色不变
   useFormReset(service, rootRef)
 
-  return { api: connectColorSlider(services, reactNormalize), service, trackRef, rootRef }
+  return { registerLabel, api: connectColorSlider(services, reactNormalize), service, trackRef, rootRef }
 }

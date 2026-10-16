@@ -9,13 +9,18 @@ import type { Service } from '@xihan-ui/core'
 import type { SignaturePadApi, SignaturePadSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import { connectSignaturePad, signaturePadMachine } from '@xihan-ui/headless'
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useFormReset } from '../../runtime/attach-form-reset'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 
 export interface SignaturePadContext {
+  /**
+   * label 部件挂载时登记、卸载时注销。可聚焦部件的 aria-labelledby 据此决定输不输出；
+   * 首帧（含服务端直出）还没登记，不写这条引用。
+   */
+  registerLabel: () => () => void
   service: Service<SignaturePadSchema>
   api: SignaturePadApi
   /** 画布节点，状态机在指针事件中用它把屏幕坐标换算为画布坐标。 */
@@ -35,10 +40,16 @@ export function useSignaturePad(props: SignaturePadSchema['props']): SignaturePa
     service.refs.set('getControlEl', () => controlRef.current)
   }, [])
 
-  const service = useMachine(signaturePadMachine, () => props, { scope, onCreate })
+  // 用状态而不是 ref：登记数要能把根重渲一次，connect 在渲染期求值
+  const [labelCount, setLabelCount] = useState(0)
+  const registerLabel = useCallback(() => {
+    setLabelCount(n => n + 1)
+    return () => setLabelCount(n => n - 1)
+  }, [])
+  const service = useMachine(signaturePadMachine, () => ({ ...props, labelled: labelCount > 0 }), { scope, onCreate })
 
   // 笔迹攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置签名还留在画布上
   useFormReset(service, rootRef)
 
-  return { service, api: connectSignaturePad(service, reactNormalize), controlRef, rootRef }
+  return { registerLabel, service, api: connectSignaturePad(service, reactNormalize), controlRef, rootRef }
 }

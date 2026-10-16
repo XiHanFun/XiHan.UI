@@ -98,6 +98,7 @@ orientation 竖排时渐变自下而上；禁用时标签换禁用前景、颜�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
 | `value` | `string` |  | 颜色值串。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string` |  |  |
 | `channel` | `ColorChannel` |  | 推动的通道：色相 / 饱和度 / 明度 / 透明度 / 红 / 绿 / 蓝，默认 hue。 |
@@ -200,7 +201,7 @@ orientation 竖排时渐变自下而上；禁用时标签换禁用前景、颜�
 | --- | --- | --- |
 | `thumb` | `aria-disabled` | 'true' \| 'false' |
 | `thumb` | `aria-label` | label.label(channel) |
-| `thumb` | `aria-labelledby` | `label` 部件的 id |
+| `thumb` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `thumb` | `aria-orientation` | props.orientation |
 | `thumb` | `aria-valuemax` | String(range.max) |
 | `thumb` | `aria-valuemin` | String(range.min) |

@@ -9,7 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { EditableActivationMode, EditableApi, EditableSchema, EditableSubmitMode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, onUnmounted } from 'vue'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideEditable, useEditableContext } from './context'
 import { useEditable } from './use-editable'
@@ -87,6 +87,11 @@ export const XhEditableLabel = defineComponent({
   name: 'XhEditableLabel',
   setup(_, { slots }) {
     const ctx = useEditableContext()
+    // 渲出来就登记，在 setup 里同步做：排在输入之前时首帧与服务端直出就带上名字
+    ctx.labelCount.value++
+    onUnmounted(() => {
+      ctx.labelCount.value--
+    })
     return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })

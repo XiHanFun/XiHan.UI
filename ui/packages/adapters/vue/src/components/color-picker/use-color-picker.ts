@@ -32,6 +32,11 @@ import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface ColorPickerContext {
+  /**
+   * 已渲染的 label 部件数量，由 XhColorPickerLabel 在 setup 里同步登记、卸载时撤销。
+   * 可聚焦部件的 aria-labelledby 据此决定指不指过去：label 排在输入之前时，首帧与服务端直出就带上名字。
+   */
+  labelCount: Ref<number>
   service: Service<ColorPickerSchema>
   api: ComputedRef<ColorPickerApi>
   /** 触发器，同时是浮层的定位锚点。 */
@@ -67,17 +72,20 @@ export function useColorPicker(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(colorPickerMachine, () => ({ ...props, ...handlers }), scope)
+  const labelCount = ref(0)
+  const service = useMachine(colorPickerMachine, () => ({ ...props, labelled: labelCount.value > 0, ...handlers }), scope)
 
   // 两条颜色滑块各自一台机器再各内嵌一台滑杆：值与工作色从取色器现读，取色器须先建立；
   // 几台共用一份 scope，part id 里带组件名区分，不会撞
-  const colorSlider = (sliderProps: (root: Service<ColorPickerSchema>) => ColorSliderSchema['props']): ColorSliderServices & { trackRef: Ref<HTMLElement | null> } => {
-    const root = useMachine<ColorSliderSchema>(colorSliderMachine, () => sliderProps(service), scope)
+  // 两条滑块同样可以放 label 部件：各自的登记数喂给各自的机器
+  const colorSlider = (sliderProps: (root: Service<ColorPickerSchema>) => ColorSliderSchema['props']): ColorSliderServices & { trackRef: Ref<HTMLElement | null>, labelCount: Ref<number> } => {
+    const labelCount = ref(0)
+    const root = useMachine<ColorSliderSchema>(colorSliderMachine, () => ({ ...sliderProps(service), labelled: labelCount.value > 0 }), scope)
     const slider = useMachine<SliderSchema>(sliderMachine, () => colorSliderSliderProps(root), scope)
     const trackRef = ref<HTMLElement | null>(null)
     // 传 getter 而非节点，轨道要到挂载后才有
     slider.refs.set('getTrackEl', () => trackRef.value)
-    return { root, slider, trackRef }
+    return { root, slider, trackRef, labelCount }
   }
   const hue = colorSlider(colorPickerHueSliderProps)
   const alpha = colorSlider(colorPickerAlphaSliderProps)
@@ -135,23 +143,10 @@ export function useColorPicker(
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
   // 内嵌组件的 api 从取色器那份 api 上取：同一帧算好的同一份，不另连一次
-  const hueSlider: ColorSliderContext = { api: computed(() => api.value.hueSlider), service: hue.root, trackRef: hue.trackRef }
-  const alphaSlider: ColorSliderContext = { api: computed(() => api.value.alphaSlider), service: alpha.root, trackRef: alpha.trackRef }
+  const hueSlider: ColorSliderContext = { api: computed(() => api.value.hueSlider), service: hue.root, trackRef: hue.trackRef, labelCount: hue.labelCount }
+  const alphaSlider: ColorSliderContext = { api: computed(() => api.value.alphaSlider), service: alpha.root, trackRef: alpha.trackRef, labelCount: alpha.labelCount }
   const swatchPickerCtx: ColorSwatchPickerContext = { api: computed(() => api.value.swatchPicker), service: swatchPicker, labelCount: swatchLabels }
   const recentSwatchPickerCtx: ColorSwatchPickerContext = { api: computed(() => api.value.recentSwatchPicker), service: recentSwatchPicker, labelCount: recentSwatchLabels }
 
-  return {
-    visible,
-    service,
-    api,
-    triggerRef,
-    positionerRef,
-    contentRef,
-    areaRef,
-    hueSlider,
-    alphaSlider,
-    swatchPicker: swatchPickerCtx,
-    recentSwatchPicker: recentSwatchPickerCtx,
-    portalTarget,
-  }
+  return { labelCount, visible, service, api, triggerRef, positionerRef, contentRef, areaRef, hueSlider, alphaSlider, swatchPicker: swatchPickerCtx, recentSwatchPicker: recentSwatchPickerCtx, portalTarget }
 }

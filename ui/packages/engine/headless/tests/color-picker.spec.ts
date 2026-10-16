@@ -1233,3 +1233,16 @@ describe('多选：工作色是草稿，按「添加」收进值，色块切换�
     expect((api(s).getHiddenInputProps({ value: '#000000' }) as Dict).value).toBe('#000000')
   })
 })
+
+describe('connectColorPicker 名字链只引用在场的 label', () => {
+  it('labelled 时触发钮是标题接当前值、浮层引用标题；没渲染 label 时触发钮只引当前值、浮层不写引用', () => {
+    const labelled = api(makeService({ labelled: true }))
+    const labelId = (labelled.getLabelProps() as Record<string, unknown>).id
+    const valueTextId = (labelled.getValueTextProps() as Record<string, unknown>).id
+    expect((labelled.getTriggerProps() as Record<string, unknown>)['aria-labelledby']).toBe(`${labelId} ${valueTextId}`)
+    expect((labelled.getContentProps() as Record<string, unknown>)['aria-labelledby']).toBe(labelId)
+    const bare = api(makeService())
+    expect((bare.getTriggerProps() as Record<string, unknown>)['aria-labelledby']).toBe((bare.getValueTextProps() as Record<string, unknown>).id)
+    expect((bare.getContentProps() as Record<string, unknown>)['aria-labelledby']).toBeUndefined()
+  })
+})

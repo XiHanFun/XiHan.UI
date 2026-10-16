@@ -33,6 +33,11 @@ export interface ClipboardIndicatorProps {
 
 export interface ClipboardSchema extends MachineSchema {
   props: {
+    /**
+     * 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。
+     * 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。
+     */
+    labelled?: boolean
     /** 要复制的文本；未提供时复制空串。 */
     value?: string
     /** 复制成功后指示器保持多久（毫秒），默认 3000；<=0 或非有限数表示不自动回落。 */

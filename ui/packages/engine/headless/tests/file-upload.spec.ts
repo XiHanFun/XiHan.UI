@@ -471,13 +471,18 @@ describe('connectFileUpload 属性输出', () => {
   })
 
   it('投放区是可聚焦的按钮，名字是 label 再接上它自己看得见的说明', () => {
-    const m = open()
+    const m = open({ labelled: true })
     expect(m.dropzone.getAttribute('role')).toBe('button')
     expect(m.dropzone.getAttribute('tabindex')).toBe('0')
     expect(m.dropzone.getAttribute('aria-disabled')).toBe('false')
     expect(m.dropzone.getAttribute('aria-labelledby')).toBe(`${m.label.getAttribute('id')} ${m.dropzone.getAttribute('id')}`)
     // 不另给 aria-label：labelledby 引到自己时取的是自己的 aria-label，说明会被挤出名字
     expect(m.dropzone.hasAttribute('aria-label')).toBe(false)
+  })
+
+  it('没渲染 label 时投放区的名字只引它自己看得见的说明', () => {
+    const m = open()
+    expect(m.dropzone.getAttribute('aria-labelledby')).toBe(m.dropzone.getAttribute('id'))
   })
 
   it('disabled：投放区退出 Tab 序列并显式报 aria-disabled，两个按钮走原生 disabled', () => {

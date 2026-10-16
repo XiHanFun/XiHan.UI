@@ -88,6 +88,11 @@ export interface SignaturePadDrawEndDetails {
 
 export interface SignaturePadSchema extends MachineSchema {
   props: {
+    /**
+     * 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。
+     * 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。
+     */
+    labelled?: boolean
     /** 整块不可交互：不响应落笔，清空、撤销与重做按钮也不可按下。 */
     disabled?: boolean
     /** 只读：已绘制的签名照常显示，但不可修改。 */

@@ -8,6 +8,7 @@
 import type { SignaturePadApi, SignaturePadDrawingOptions, SignaturePadSchema, SignaturePadTranslations, SignaturePadValue } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { useEffect } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
@@ -126,6 +127,9 @@ export interface XhSignaturePadLabelProps extends ComponentPropsWithRef<'span'> 
 /** 不使用原生 label：画布是 svg、不是可被 label 关联的表单控件，名字经 aria-labelledby 关联。 */
 export function XhSignaturePadLabel({ children, ...rest }: XhSignaturePadLabelProps): ReactNode {
   const ctx = useSignaturePadContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return (
     <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}

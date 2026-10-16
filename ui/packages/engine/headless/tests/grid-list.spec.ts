@@ -222,3 +222,12 @@ describe('gridList Shift 范围选', () => {
     root.remove()
   })
 })
+
+describe('connectGridList 名字链只引用在场的 label', () => {
+  it('labelled 时根引用 label；没渲染 label 时不写引用', () => {
+    const labelled = connectGridList(service({ labelled: true }).machine, normalizeProps)
+    expect((labelled.getRootProps() as Record<string, unknown>)['aria-labelledby']).toBe((labelled.getLabelProps() as Record<string, unknown>).id)
+    const bare = connectGridList(service().machine, normalizeProps)
+    expect((bare.getRootProps() as Record<string, unknown>)['aria-labelledby']).toBeUndefined()
+  })
+})

@@ -9,7 +9,7 @@ import type { ControlVariant, Direction, Size, Tone } from '@xihan-ui/core'
 import type { GridListNode, GridListRowProps, GridListSchema, GridListSelectionMode, GridListTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h } from 'vue'
+import { computed, defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideGridList, provideGridListRow, useGridListContext, useGridListRow } from './context'
 import { useGridList } from './use-grid-list'
@@ -62,6 +62,11 @@ export const XhGridListLabel = defineComponent({
   name: 'XhGridListLabel',
   setup(_, { slots }) {
     const context = useGridListContext()
+    // 渲出来就登记，在 setup 里同步做：排在输入之前时首帧与服务端直出就带上名字
+    context.labelCount.value++
+    onUnmounted(() => {
+      context.labelCount.value--
+    })
     return () => h('span', context.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })

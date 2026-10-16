@@ -8,7 +8,7 @@
 import type { SignaturePadApi, SignaturePadDrawingOptions, SignaturePadSchema, SignaturePadTranslations, SignaturePadValue } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFormControlProps } from '../form/use-form-control'
@@ -92,6 +92,11 @@ export const XhSignaturePadLabel = defineComponent({
   name: 'XhSignaturePadLabel',
   setup(_, { slots }) {
     const ctx = useSignaturePadContext()
+    // 渲出来就登记，在 setup 里同步做：排在输入之前时首帧与服务端直出就带上名字
+    ctx.labelCount.value++
+    onUnmounted(() => {
+      ctx.labelCount.value--
+    })
     // 不用原生 label：画布是 svg、不是可被 label 关联的表单控件，名字经 aria-labelledby 挂过去
     return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },

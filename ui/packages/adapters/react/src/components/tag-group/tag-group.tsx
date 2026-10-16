@@ -130,6 +130,9 @@ XhTagGroupRoot.xhEvents = ['value-change', 'item-delete'] as const
 export interface XhTagGroupLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhTagGroupLabel({ children, ...rest }: XhTagGroupLabelProps): ReactNode {
   const ctx = useTagGroupContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 

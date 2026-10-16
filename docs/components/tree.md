@@ -177,6 +177,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
 | `collection` | `TreeNode[]` |  | 树数据，层级元信息的唯一事实源。默认为空树。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 完整 collection 与 Virtualizer 的焦点桥；count 必须等于当前 visibleNodes.length。 |
 | `variant` | `ControlVariant` |  | 外框形态：ghost 去掉描边与底色只保留行（默认），outline 带描边与底色，subtle 淡底无描边。 |
@@ -339,7 +340,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | --- | --- | --- |
 | `tree` | `aria-busy` | 'true' \| undefined |
 | `tree` | `aria-disabled` | 'true' \| 'false' |
-| `tree` | `aria-labelledby` | `label` 部件的 id |
+| `tree` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `tree` | `aria-multiselectable` | 'true' \| 'false' |
 | `tree` | `aria-orientation` | 'vertical' |
 | `tree` | `role` | 'tree' |

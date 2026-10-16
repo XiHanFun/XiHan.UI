@@ -377,13 +377,17 @@ describe('treeMachine 展开与选中', () => {
 
 describe('connectTree 属性输出', () => {
   it('tree 是 role=tree：aria-multiselectable / aria-disabled / 标题关联都显式给出', () => {
-    const h = mount()
+    const h = mount({ labelled: true })
     expect(h.treeEl.getAttribute('role')).toBe('tree')
     // 省略与显式 false 不是一回事：前者是"没说"，后者是"明确说了不是多选"
     expect(h.treeEl.getAttribute('aria-multiselectable')).toBe('false')
     expect(h.treeEl.getAttribute('aria-disabled')).toBe('false')
     expect(h.treeEl.getAttribute('aria-labelledby')).toBe(h.label.id)
     expect(mount({ multiple: true }).treeEl.getAttribute('aria-multiselectable')).toBe('true')
+  })
+
+  it('没渲染 label 时 tree 不写 aria-labelledby', () => {
+    expect(mount().treeEl.hasAttribute('aria-labelledby')).toBe(false)
   })
 
   it('叶子与分支都是 treeitem，层级三件套取自 collection 而不是 DOM 深度', () => {

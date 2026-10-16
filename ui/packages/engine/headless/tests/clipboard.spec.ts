@@ -353,13 +353,18 @@ describe('connectClipboard 结构与标注', () => {
   })
 
   it('label 的 for 指向 input 自己的 id，input 反手 aria-labelledby 指回 label', () => {
-    const api = makeClipboard().api()
+    const api = makeClipboard({ labelled: true }).api()
     const label = api.getLabelProps() as Dict
     const input = api.getInputProps() as Dict
     expect(label.for).toBe(input.id)
     expect(input['aria-labelledby']).toBe(label.id)
     // 撞名会让 label 与 input 抢同一个 IDREF
     expect(label.id).not.toBe(input.id)
+  })
+
+  it('没渲染 label 时 input 不写 aria-labelledby', () => {
+    const input = makeClipboard().api().getInputProps() as Dict
+    expect(input['aria-labelledby']).toBeUndefined()
   })
 
   it('input 只读而不禁用：仍可聚焦、仍选得中', () => {

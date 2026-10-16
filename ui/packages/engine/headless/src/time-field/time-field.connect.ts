@@ -143,7 +143,7 @@ export function connectTimeField<T extends PropTypes>(
       'id': ids.control,
       // 几段合起来才是一个控件，靠 group 兜住，名字由 label 提供
       'role': 'group',
-      'aria-labelledby': ids.label,
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       // group 只支持全局属性，只读与必填不在其列，那两位由各段自己报
       'aria-disabled': disabled ? 'true' : 'false',
       'aria-invalid': flagged ? 'true' : 'false',

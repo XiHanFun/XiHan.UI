@@ -8,7 +8,7 @@
 import type { ControlVariant, Direction, Size, Tone } from '@xihan-ui/core'
 import type { GridListNode, GridListSchema, GridListSelectionMode, GridListTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -93,7 +93,9 @@ XhGridListRoot.xhEvents = ['value-change', 'action'] as const
 
 export interface XhGridListLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhGridListLabel({ children, ...rest }: XhGridListLabelProps): ReactNode {
-  const { api } = useGridListContext()
+  const { api, registerLabel } = useGridListContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  useEffect(() => registerLabel(), [registerLabel])
   return <span {...mergeReactProps(api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 

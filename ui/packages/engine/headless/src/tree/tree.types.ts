@@ -144,6 +144,11 @@ export type TreePressedPart = 'item' | 'branch-control'
 
 export interface TreeSchema extends MachineSchema {
   props: {
+    /**
+     * 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。
+     * 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。
+     */
+    labelled?: boolean
     /** 树数据，层级元信息的唯一事实源。默认为空树。 */
     collection?: TreeNode[]
     /** 完整 collection 与 Virtualizer 的焦点桥；count 必须等于当前 visibleNodes.length。 */
