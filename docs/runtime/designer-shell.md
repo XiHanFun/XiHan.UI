@@ -231,7 +231,7 @@ overlay.addEventListener("transform", (event) => {
 
 ## 标尺与参考线
 
-`<xh-designer-ruler>` 包住画布：上、左两条标尺，左上角角块，中间是作者内容，画布上方一层参考线。不带 `slot` 的子节点进画布区，`slot="corner"` 的进角块。画布区左上角就是视口的屏幕原点，覆盖层等放在画布区里即可对齐。画布区是只有一格的网格：子节点不写尺寸也撑满整块，多个子节点叠在同一块上。
+`<xh-designer-ruler>` 包住画布：上、左两条标尺，左上角角块，中间是作者内容，画布上方一层参考线。不带 `slot` 的子节点进画布区，`slot="corner"` 的进角块。画布区左上角就是视口的屏幕原点，覆盖层等放在画布区里即可对齐。画布区是只有一格的网格：子节点不写尺寸也撑满整块，多个子节点叠在同一块上。标尺的样式只认标尺自己生成的部件，画布区与角块里的作者内容即使也用了 `data-part="tick"`、`"marker"`、`"guide"` 之类的部件名，也不受标尺样式影响。
 
 ```ts
 const ruler = document.createElement("xh-designer-ruler");

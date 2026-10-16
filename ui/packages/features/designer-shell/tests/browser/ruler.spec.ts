@@ -85,4 +85,25 @@ describe('<xh-designer-ruler>（Chromium）', () => {
     expect(document.elementFromPoint(box.left + 30 + 260, box.top + 100)).toBe(content)
     expect(getComputedStyle(line).cursor).toBe('col-resize')
   })
+  it('画布里的作者内容不受标尺样式影响：带同名部件的作者元素保持浏览器缺省样式', async () => {
+    content.insertAdjacentHTML('beforeend', [
+      '<div data-part="ruler" data-orientation="horizontal">',
+      '<div data-part="ticks"><div data-part="tick" data-major><span data-part="tick-label">1</span></div></div>',
+      '<div data-part="markers"><div data-part="marker"></div></div>',
+      '<div data-part="cursor"></div><div data-part="highlight"></div>',
+      '</div>',
+      '<div data-part="guides"><div data-part="guide-lines"><div data-part="guide" data-axis="x" data-selected></div></div>',
+      '<div data-part="guide-preview" data-axis="x"></div><div data-part="guide-label">1</div></div>',
+    ].join(''))
+    const planted = Array.from(content.querySelectorAll<HTMLElement>('[data-part]'))
+    expect(planted).toHaveLength(13)
+    for (const element of planted) {
+      const style = getComputedStyle(element)
+      expect([element.dataset.part, style.position, style.backgroundColor, style.translate, style.cursor, style.marginTop, style.pointerEvents, style.overflow])
+        .toEqual([element.dataset.part, 'static', 'rgba(0, 0, 0, 0)', 'none', 'auto', '0px', 'auto', 'visible'])
+      expect(getComputedStyle(element, '::before').content).toBe('none')
+    }
+    const own = root.querySelector<HTMLElement>(':scope > [data-part="ruler"][data-orientation="horizontal"] > [data-part="ticks"] > [data-part="tick"]')!
+    expect(getComputedStyle(own).position).toBe('absolute')
+  })
 })
