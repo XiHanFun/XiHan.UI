@@ -56,6 +56,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 export class XhToggleGroupElement extends XhElement {
   static override partContract = { anatomy: toggleGroupAnatomy, meta: toggleGroupMeta }
 
+  static override fieldTarget = { parts: ['root'], kind: 'group' } as const
+
   // dir 占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。别名保留原生行为，
   // 同时让 dir 进 observedAttributes——运行期改 dir 才会重跑 wire 换掉按键处理器。

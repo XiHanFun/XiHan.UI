@@ -62,6 +62,8 @@ const LIST_CONVERTER = {
 export class XhCheckboxGroupElement extends XhElement {
   static override partContract = { anatomy: checkboxGroupAnatomy, meta: checkboxGroupMeta }
 
+  static override fieldTarget = { parts: ['root'], kind: 'group' } as const
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准

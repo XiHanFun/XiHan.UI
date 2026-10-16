@@ -37,6 +37,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 export class XhCheckboxElement extends XhElement {
   static override partContract = { anatomy: checkboxAnatomy, meta: checkboxMeta }
 
+  static override fieldTarget = { parts: ['root'], kind: 'state' } as const
+
   static override properties = {
     // 三态：写 checked="indeterminate" 表示半选；缺席即非受控
     checked: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v === 'indeterminate' ? 'indeterminate' : v !== 'false') } },

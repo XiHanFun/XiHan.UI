@@ -53,6 +53,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 export class XhRatingElement extends XhElement {
   static override partContract = { anatomy: ratingAnatomy, meta: ratingMeta }
 
+  static override fieldTarget = { parts: ['control'], kind: 'group' } as const
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   // dir 占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。别名保留原生行为，

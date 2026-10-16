@@ -5,8 +5,11 @@
 
 // 提供 element base 相关实现。
 
+import type { FieldControlWiring } from '@xihan-ui/headless'
 import type { PartContract } from './dom/part-contract'
 import type { Spreader } from './dom/spread'
+import type { FieldTarget } from './runtime/form-control-host'
+import { fieldGroupAttrs, fieldStateAttrs, withFieldLabel } from '@xihan-ui/headless'
 import { onXhConfigChange, withXhConfig } from './config'
 import { mergeAsChildProps } from './dom/as-child'
 import { validatePartContract } from './dom/part-contract'
@@ -46,10 +49,47 @@ function rewritesDeclaration(record: MutationRecord): boolean {
   return containsPart(el) && (AUTHORED_ATTRS as readonly string[]).includes(record.attributeName)
 }
 
+/** 两份字段接线是否相同：字段每帧都下发，相同时不再排更新。 */
+function sameWiring(a: FieldControlWiring | undefined, b: FieldControlWiring | undefined): boolean {
+  if (!a || !b)
+    return a === b
+  return a.labelId === b.labelId && a.describedBy === b.describedBy && a.invalid === b.invalid
+    && a.required === b.required && a.readOnly === b.readOnly
+}
+
 // Light-DOM 行为宿主基类：不渲染结构，发现用户写的 data-xh-part 角色节点并往上打属性/事件。
 export abstract class XhElement extends XhReactiveElement {
   /** 子类声明所属组件的解剖与元数据，接线后据它校验作者写的角色节点。 */
   static partContract?: PartContract
+
+  /** 库内表单控件声明：放进 `<xh-field>` 时字段接线并进哪几个部件。没声明的元素不接字段接线。 */
+  static fieldTarget?: FieldTarget
+
+  private fieldWiring: FieldControlWiring | undefined
+
+  /** `<xh-field>` 发现作用域内的库内控件后调用，undefined 收回；不是公开的业务写值入口。 */
+  setFieldWiring(wiring: FieldControlWiring | undefined): void {
+    if (sameWiring(this.fieldWiring, wiring))
+      return
+    this.fieldWiring = wiring
+    this.requestUpdate()
+  }
+
+  /**
+   * 这份属性铺的是本元素声明的接线目标部件时，把字段接线并进去：部件自己的属性在后，同名以部件为准；
+   * 字段标签拼在名字链最前。
+   */
+  private withFieldWiring(props: Record<string, unknown>): Record<string, unknown> {
+    const wiring = this.fieldWiring
+    const ctor = this.constructor as typeof XhElement
+    const target = ctor.fieldTarget
+    if (!wiring || !target || props['data-scope'] !== ctor.partContract?.anatomy.name)
+      return props
+    if (!target.parts.includes(props['data-part'] as string))
+      return props
+    const attrs = target.kind === 'state' ? fieldStateAttrs(wiring) : fieldGroupAttrs(wiring)
+    return withFieldLabel({ ...attrs, ...props }, wiring.labelId)
+  }
 
   private readonly ownSpreader: Spreader = createSpreader()
   /**
@@ -57,7 +97,8 @@ export abstract class XhElement extends XhReactiveElement {
    * 这份接线转交给那台组件，由它与自己的根属性合并后一次铺上——两台 spreader 不同时写一个节点。
    */
   protected readonly spreader: Spreader = {
-    spread: (node, props) => {
+    spread: (node, own) => {
+      const props = this.withFieldWiring(own)
       const host = this.asChildHosts.get(node)
       if (host)
         host.acceptAsChild(this, props)

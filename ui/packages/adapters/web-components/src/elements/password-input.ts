@@ -63,6 +63,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 export class XhPasswordInputElement extends XhElement {
   static override partContract = { anatomy: passwordInputAnatomy, meta: passwordInputMeta }
 
+  static override fieldTarget = { parts: ['input'], kind: 'state' } as const
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },

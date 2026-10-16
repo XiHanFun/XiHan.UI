@@ -58,6 +58,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 export class XhNumberFieldElement extends XhElement {
   static override partContract = { anatomy: numberFieldAnatomy, meta: numberFieldMeta }
 
+  static override fieldTarget = { parts: ['input'], kind: 'state' } as const
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },

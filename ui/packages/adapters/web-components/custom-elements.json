@@ -7517,6 +7517,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['trigger'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['trigger'], kind: 'state' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "collection",
               "privacy": "public",
               "type": {
@@ -8978,6 +8987,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['root'], kind: 'group' }",
+              "type": {
+                "text": "{ parts: ['root'], kind: 'group' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "collection",
               "privacy": "public",
               "type": {
@@ -9564,6 +9582,15 @@
               },
               "static": true,
               "default": "{ anatomy: checkboxAnatomy, meta: checkboxMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['root'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['root'], kind: 'state' }"
+              }
             },
             {
               "kind": "field",
@@ -11990,6 +12017,15 @@
               },
               "static": true,
               "default": "{ anatomy: colorFieldAnatomy, meta: colorFieldMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['input'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['input'], kind: 'state' }"
+              }
             },
             {
               "kind": "field",
@@ -14537,6 +14573,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['root'], kind: 'group' }",
+              "type": {
+                "text": "{ parts: ['root'], kind: 'group' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "swatches",
               "privacy": "public",
               "type": {
@@ -15278,6 +15323,15 @@
               },
               "static": true,
               "default": "{ anatomy: comboboxAnatomy, meta: comboboxMeta, delegates: [{ name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }], }"
+            },
+            {
+              "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['input'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['input'], kind: 'state' }"
+              }
             },
             {
               "kind": "field",
@@ -19193,6 +19247,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['trigger'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['trigger'], kind: 'state' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -20832,6 +20895,15 @@
               },
               "static": true,
               "default": "{ anatomy: dateRangePickerAnatomy, meta: dateRangePickerMeta, delegates: [dateFieldAnatomy, calendarRangePickerAnatomy], }"
+            },
+            {
+              "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['trigger'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['trigger'], kind: 'state' }"
+              }
             },
             {
               "kind": "field",
@@ -26144,7 +26216,7 @@
         },
         {
           "kind": "class",
-          "description": "`<xh-field>`：Light-DOM 行为宿主，无状态机，把 connectField 产出的 id 与 aria-* 接到\nlabel / control / description / error-text 角色节点上，自动对齐 `for` 与描述链。控件本身由作者渲染。\n\n每个实例自带一份 scope 派生 part id，同页多个 field 各自分配 id。",
+          "description": "`<xh-field>`：Light-DOM 行为宿主，无状态机，把 connectField 产出的 id 与 aria-* 接到\nlabel / control / description / error-text 角色节点上，自动对齐 `for` 与描述链。控件本身由作者渲染。\n\n每个实例自带一份 scope 派生 part id，同页多个 field 各自分配 id。\n\n作用域内的库内控件（不跨嵌套字段与 `<xh-field-boundary>`）还会收到字段接线：控件把描述链、校验三态与\n字段标签并进自己真正可聚焦的部件（输入框、触发钮、组根、拇指），提示与错误文案因此能被读屏念到。\n控件离开作用域或字段断开时接线收回。",
           "name": "XhFieldElement",
           "cssParts": [
             {
@@ -26230,6 +26302,13 @@
                 "text": "FormControlState | undefined"
               },
               "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "wiredControls",
+              "privacy": "private",
+              "default": "new Set<XhElement>()",
+              "description": "上一帧下发过接线的库内控件：这一帧不在作用域里的收回。"
             },
             {
               "kind": "field",
@@ -40894,6 +40973,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['input'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['input'], kind: 'state' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "collection",
               "privacy": "public",
               "type": {
@@ -45682,6 +45770,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['input'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['input'], kind: 'state' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -47411,6 +47508,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['input'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['input'], kind: 'state' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -48823,6 +48929,15 @@
               },
               "static": true,
               "default": "{ anatomy: pinInputAnatomy, meta: pinInputMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['root'], kind: 'group' }",
+              "type": {
+                "text": "{ parts: ['root'], kind: 'group' }"
+              }
             },
             {
               "kind": "field",
@@ -53075,6 +53190,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['root'], kind: 'group' }",
+              "type": {
+                "text": "{ parts: ['root'], kind: 'group' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "collection",
               "privacy": "public",
               "type": {
@@ -53739,6 +53863,15 @@
               },
               "static": true,
               "default": "{ anatomy: ratingAnatomy, meta: ratingMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['control'], kind: 'group' }",
+              "type": {
+                "text": "{ parts: ['control'], kind: 'group' }"
+              }
             },
             {
               "kind": "field",
@@ -56783,6 +56916,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['trigger'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['trigger'], kind: 'state' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "collection",
               "privacy": "public",
               "type": {
@@ -59687,6 +59829,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['thumb'], kind: 'group' }",
+              "type": {
+                "text": "{ parts: ['thumb'], kind: 'group' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -62516,6 +62667,15 @@
               },
               "static": true,
               "default": "{ anatomy: switchAnatomy, meta: switchMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['root'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['root'], kind: 'state' }"
+              }
             },
             {
               "kind": "field",
@@ -65690,6 +65850,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['input'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['input'], kind: 'state' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -66474,6 +66643,15 @@
               },
               "static": true,
               "default": "{ anatomy: textFieldAnatomy, meta: textFieldMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['input'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['input'], kind: 'state' }"
+              }
             },
             {
               "kind": "field",
@@ -67795,6 +67973,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['trigger'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['trigger'], kind: 'state' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -69008,6 +69195,15 @@
               },
               "static": true,
               "default": "{ anatomy: timeRangePickerAnatomy, meta: timeRangePickerMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['trigger'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['trigger'], kind: 'state' }"
+              }
             },
             {
               "kind": "field",
@@ -70914,6 +71110,15 @@
               },
               "static": true,
               "default": "{ anatomy: toggleGroupAnatomy, meta: toggleGroupMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['root'], kind: 'group' }",
+              "type": {
+                "text": "{ parts: ['root'], kind: 'group' }"
+              }
             },
             {
               "kind": "field",
@@ -74972,6 +75177,15 @@
               },
               "static": true,
               "default": "{ anatomy: treeSelectAnatomy, meta: treeSelectMeta, delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }], }"
+            },
+            {
+              "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['trigger'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['trigger'], kind: 'state' }"
+              }
             },
             {
               "kind": "field",

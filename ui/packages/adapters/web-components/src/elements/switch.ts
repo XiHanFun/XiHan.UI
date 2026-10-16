@@ -38,6 +38,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 export class XhSwitchElement extends XhElement {
   static override partContract = { anatomy: switchAnatomy, meta: switchMeta }
 
+  static override fieldTarget = { parts: ['root'], kind: 'state' } as const
+
   static override properties = {
     checked: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
     defaultChecked: { type: Boolean, attribute: 'default-checked' },

@@ -53,6 +53,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 export class XhColorSwatchPickerElement extends XhElement {
   static override partContract = { anatomy: colorSwatchPickerAnatomy, meta: colorSwatchPickerMeta }
 
+  static override fieldTarget = { parts: ['root'], kind: 'group' } as const
+
   static override properties = {
     swatches: { attribute: false },
     value: { converter: STRING_CONVERTER },

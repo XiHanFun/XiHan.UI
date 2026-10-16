@@ -70,6 +70,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
 export class XhPinInputElement extends XhElement {
   static override partContract = { anatomy: pinInputAnatomy, meta: pinInputMeta }
 
+  static override fieldTarget = { parts: ['root'], kind: 'group' } as const
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: ARRAY_CONVERTER },

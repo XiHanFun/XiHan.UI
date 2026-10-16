@@ -9,7 +9,7 @@ import type { Scope } from '@xihan-ui/core'
 import type { FieldProps, FormControlState } from '@xihan-ui/headless'
 import type { FormControlHost } from '../runtime/form-control-host'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { connectField, fieldAnatomy, fieldMeta, resolveFormControlState } from '@xihan-ui/headless'
+import { connectField, fieldAnatomy, fieldControlWiring, fieldMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { XhReactiveElement } from '../reactive'
@@ -27,6 +27,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * label / control / description / error-text 角色节点上，自动对齐 `for` 与描述链。控件本身由作者渲染。
  *
  * 每个实例自带一份 scope 派生 part id，同页多个 field 各自分配 id。
+ *
+ * 作用域内的库内控件（不跨嵌套字段与 `<xh-field-boundary>`）还会收到字段接线：控件把描述链、校验三态与
+ * 字段标签并进自己真正可聚焦的部件（输入框、触发钮、组根、拇指），提示与错误文案因此能被读屏念到。
+ * 控件离开作用域或字段断开时接线收回。
  *
  * @customElement xh-field
  * @attr {boolean} invalid - 校验失败态：控件 aria-invalid=true，错误文案接入描述链并显示
@@ -67,6 +71,9 @@ export class XhFieldElement extends XhElement {
 
   private inheritedControl: FormControlState | undefined
 
+  /** 上一帧下发过接线的库内控件：这一帧不在作用域里的收回。 */
+  private wiredControls = new Set<XhElement>()
+
   // 实例级 scope 只建一次，避免派生出的 id 每帧变化
   private readonly fieldScope: Scope = createScope(null, createCounterIdGenerator())
 
@@ -105,6 +112,8 @@ export class XhFieldElement extends XhElement {
     put('error-text', api.getErrorTextProps() as Record<string, unknown>)
 
     // Field 套库内控件时，状态必须进那台控件机器；只把 ARIA 铺在包装根上不足以挡住输入。
+    const wiring = fieldControlWiring(api)
+    const wired = new Set<XhElement>()
     for (const control of this.querySelectorAll<FormControlHost>(FORM_CONTROL_HOST_SELECTOR)) {
       // 嵌套 Field 的控件归更近的那一层，字段边界后面的控件不归任何外层字段，当前 Field 都不跨过去覆盖。
       if (control.closest(FIELD_SCOPE_SELECTOR) !== this)
@@ -115,10 +124,27 @@ export class XhFieldElement extends XhElement {
         required: api.required,
         invalid: api.invalid,
       })
+      // 描述链、校验三态与字段标签并进控件自己的可聚焦部件，由控件声明的 fieldTarget 决定落在哪里
+      if (control instanceof XhElement && (control.constructor as typeof XhElement).fieldTarget) {
+        control.setFieldWiring(wiring)
+        wired.add(control)
+      }
     }
+    for (const control of this.wiredControls) {
+      if (!wired.has(control))
+        control.setFieldWiring(undefined)
+    }
+    this.wiredControls = wired
 
     // 错误文案常挂，非 invalid 时用内联 display 收起
     this.setPartHidden(this.getPart('error-text'), !api.invalid)
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback()
+    // 字段离场时收回接线；只是被移动的话，重连后的那一帧会重新下发
+    for (const control of this.wiredControls) control.setFieldWiring(undefined)
+    this.wiredControls = new Set()
   }
 }
 
