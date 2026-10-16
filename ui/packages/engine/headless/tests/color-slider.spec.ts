@@ -202,3 +202,13 @@ describe('connectColorSlider 投影', () => {
     expect(api(s).channelValue).toBe(0)
   })
 })
+
+describe('connectColorSlider 名字链只引用在场的 label', () => {
+  it('labelled 时滑块引用 label；没渲染 label 时不写引用，名字取文案', () => {
+    const labelled = api(makeServices({ labelled: true, channel: 'hue' }))
+    expect((labelled.getThumbProps() as Dict)['aria-labelledby']).toBe((labelled.getLabelProps() as Dict).id)
+    const thumb = api(makeServices({ channel: 'hue' })).getThumbProps() as Dict
+    expect(thumb['aria-labelledby']).toBeUndefined()
+    expect(thumb['aria-label']).toBeTruthy()
+  })
+})

@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { DateFieldApi, DateFieldSchema, DateFieldSegmentState, DateFieldTranslations, DateGranularity, DateHourCycle, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { useEffect } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -154,6 +155,9 @@ export interface XhDateFieldLabelProps extends ComponentPropsWithRef<'span'> {}
 /** 渲染为 span 而非 label，段位不是可被 for 标注的控件；点击标题聚焦由连接层接管。 */
 export function XhDateFieldLabel({ children, ...rest }: XhDateFieldLabelProps): ReactNode {
   const ctx = useDateFieldContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 

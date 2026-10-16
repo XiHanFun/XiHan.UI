@@ -108,7 +108,7 @@ export function connectGridList<T extends PropTypes>(
       ...parts.root.attrs,
       'role': 'grid',
       'aria-label': translations.root,
-      'aria-labelledby': ids.label,
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       'aria-multiselectable': selectionMode === 'multiple' ? 'true' : undefined,
       'aria-disabled': disabled ? 'true' : 'false',
       'aria-readonly': readOnly ? 'true' : 'false',

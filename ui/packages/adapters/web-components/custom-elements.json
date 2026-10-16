@@ -12977,7 +12977,7 @@
               "name": "hueCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<ColorSliderSchema>( this, colorSliderMachine, () => colorPickerHueSliderProps(this.ctrl.service), { scope: this.pickerScope }, )"
+              "default": "new MachineController<ColorSliderSchema>( this, colorSliderMachine, () => ({ ...colorPickerHueSliderProps(this.ctrl.service), labelled: this.mountHasLabel('hue-slider') }), { scope: this.pickerScope }, )"
             },
             {
               "kind": "field",
@@ -12991,7 +12991,7 @@
               "name": "alphaCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<ColorSliderSchema>( this, colorSliderMachine, () => colorPickerAlphaSliderProps(this.ctrl.service), { scope: this.pickerScope }, )"
+              "default": "new MachineController<ColorSliderSchema>( this, colorSliderMachine, () => ({ ...colorPickerAlphaSliderProps(this.ctrl.service), labelled: this.mountHasLabel('alpha-slider') }), { scope: this.pickerScope }, )"
             },
             {
               "kind": "field",
@@ -13005,14 +13005,14 @@
               "name": "swatchCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController( this, colorSwatchPickerMachine, () => colorPickerSwatchPickerProps(this.ctrl.service), { scope: this.pickerScope }, )"
+              "default": "new MachineController( this, colorSwatchPickerMachine, () => ({ ...colorPickerSwatchPickerProps(this.ctrl.service), labelled: this.mountHasLabel('swatch-picker') }), { scope: this.pickerScope }, )"
             },
             {
               "kind": "field",
               "name": "recentSwatchCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController( this, colorSwatchPickerMachine, () => colorPickerRecentSwatchPickerProps(this.ctrl.service), { scope: this.pickerScope }, )"
+              "default": "new MachineController( this, colorSwatchPickerMachine, () => ({ ...colorPickerRecentSwatchPickerProps(this.ctrl.service), labelled: this.mountHasLabel('recent-swatch-picker') }), { scope: this.pickerScope }, )"
             },
             {
               "kind": "method",
@@ -13148,6 +13148,25 @@
                 }
               ],
               "description": "宿主自己的某个角色节点：同名的部件落在挂载点里的归内嵌组件，不算宿主的。"
+            },
+            {
+              "kind": "method",
+              "name": "mountHasLabel",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "mountName",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "内嵌组件的挂载点里作者写没写 label 角色节点。"
             },
             {
               "kind": "method",

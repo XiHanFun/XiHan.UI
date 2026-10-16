@@ -245,7 +245,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
   private readonly hueCtrl = new MachineController<ColorSliderSchema>(
     this,
     colorSliderMachine,
-    () => colorPickerHueSliderProps(this.ctrl.service),
+    () => ({ ...colorPickerHueSliderProps(this.ctrl.service), labelled: this.mountHasLabel('hue-slider') }),
     { scope: this.pickerScope },
   )
 
@@ -259,7 +259,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
   private readonly alphaCtrl = new MachineController<ColorSliderSchema>(
     this,
     colorSliderMachine,
-    () => colorPickerAlphaSliderProps(this.ctrl.service),
+    () => ({ ...colorPickerAlphaSliderProps(this.ctrl.service), labelled: this.mountHasLabel('alpha-slider') }),
     { scope: this.pickerScope },
   )
 
@@ -273,14 +273,14 @@ export class XhColorPickerElement extends XhPortalHostElement {
   private readonly swatchCtrl = new MachineController(
     this,
     colorSwatchPickerMachine,
-    () => colorPickerSwatchPickerProps(this.ctrl.service),
+    () => ({ ...colorPickerSwatchPickerProps(this.ctrl.service), labelled: this.mountHasLabel('swatch-picker') }),
     { scope: this.pickerScope },
   )
 
   private readonly recentSwatchCtrl = new MachineController(
     this,
     colorSwatchPickerMachine,
-    () => colorPickerRecentSwatchPickerProps(this.ctrl.service),
+    () => ({ ...colorPickerRecentSwatchPickerProps(this.ctrl.service), labelled: this.mountHasLabel('recent-swatch-picker') }),
     { scope: this.pickerScope },
   )
 
@@ -315,6 +315,8 @@ export class XhColorPickerElement extends XhPortalHostElement {
       readOnly: this.readOnly,
     }, this.inheritedControl)
     return {
+      // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去；挂载点里的 label 归内嵌组件
+      labelled: this.ownPart('label') != null,
       value: this.value,
       defaultValue: this.defaultValue,
       selectionMode: this.selectionMode,
@@ -385,6 +387,12 @@ export class XhColorPickerElement extends XhPortalHostElement {
   private ownPart(name: string): HTMLElement | null {
     const mounts = this.mounts()
     return this.getParts(name).find(el => !mounts.some(mount => mount.contains(el))) ?? null
+  }
+
+  /** 内嵌组件的挂载点里作者写没写 label 角色节点。 */
+  private mountHasLabel(mountName: string): boolean {
+    const mount = this.getPart(mountName)
+    return mount != null && this.partsIn(mount, 'label').length > 0
   }
 
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入；节点一律懒读，建机器时 partMap 还空着。

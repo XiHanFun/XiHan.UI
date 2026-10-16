@@ -214,13 +214,17 @@ describe('listboxMachine 选中集合', () => {
 
 describe('connectListbox 属性输出', () => {
   it('content 是 listbox：aria-multiselectable / aria-orientation / 标题关联都显式给出', () => {
-    const h = mount()
+    const h = mount({ labelled: true })
     expect(h.content.getAttribute('role')).toBe('listbox')
     // 省略与显式 false 不是一回事：前者是"没说"，后者是"明确说了不是多选"
     expect(h.content.getAttribute('aria-multiselectable')).toBe('false')
     expect(h.content.getAttribute('aria-orientation')).toBe('vertical')
     expect(h.content.getAttribute('aria-disabled')).toBe('false')
     expect(h.content.getAttribute('aria-labelledby')).toBe(h.root.querySelector('[data-part="label"]')!.id)
+  })
+
+  it('没渲染 label 时 content 不写 aria-labelledby', () => {
+    expect(mount().content.hasAttribute('aria-labelledby')).toBe(false)
   })
 
   it('aria-multiselectable 随 selectionMode：single 为 false，multiple 与 extended 为 true', () => {

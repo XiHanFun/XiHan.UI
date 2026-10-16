@@ -344,7 +344,7 @@ describe('connectEditable 结构与标注', () => {
   })
 
   it('root 是有名字的 group，状态位齐全', () => {
-    const api = makeService().api()
+    const api = makeService({ labelled: true }).api()
     const root = api.getRootProps() as Dict
     expect(root['data-scope']).toBe('editable')
     expect(root['data-part']).toBe('root')
@@ -356,13 +356,19 @@ describe('connectEditable 结构与标注', () => {
   })
 
   it('label 的 for 指向 input 自己的 id，input 反手 aria-labelledby 指回 label', () => {
-    const api = makeService().api()
+    const api = makeService({ labelled: true }).api()
     const label = api.getLabelProps() as Dict
     const input = api.getInputProps() as Dict
     expect(label.for).toBe(input.id)
     expect(input['aria-labelledby']).toBe(label.id)
     // 撞名会让两个节点抢同一个 IDREF
     expect(label.id).not.toBe(input.id)
+  })
+
+  it('没渲染 label 时 root 与 input 都不写 aria-labelledby', () => {
+    const api = makeService().api()
+    expect((api.getRootProps() as Dict)['aria-labelledby']).toBeUndefined()
+    expect((api.getInputProps() as Dict)['aria-labelledby']).toBeUndefined()
   })
 
   it('两个形态一个显示时另一个带 hidden，谁都不卸载', () => {

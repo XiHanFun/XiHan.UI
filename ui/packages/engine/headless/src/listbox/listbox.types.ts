@@ -91,6 +91,11 @@ export interface ListboxRefs {
 export interface ListboxSchema extends MachineSchema {
   props: {
     /**
+     * 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。
+     * 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。
+     */
+    labelled?: boolean
+    /**
      * 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。
      * 未提供时回到文本与禁用都写在条目部件上的方式。
      */

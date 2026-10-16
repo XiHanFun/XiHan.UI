@@ -9,7 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { TimeFieldApi, TimeFieldSchema, TimeGranularity, TimeHourCycle, TimeSegmentType } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFormControlProps } from '../form/use-form-control'
@@ -82,6 +82,11 @@ export const XhTimeFieldLabel = defineComponent({
   name: 'XhTimeFieldLabel',
   setup(_, { slots }) {
     const ctx = useTimeFieldContext()
+    // 渲出来就登记，在 setup 里同步做：排在输入之前时首帧与服务端直出就带上名字
+    ctx.labelCount.value++
+    onUnmounted(() => {
+      ctx.labelCount.value--
+    })
     // 仍用原生 label 保持表单语义，点标题聚焦第一段由连接层的 click 接管
     return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },

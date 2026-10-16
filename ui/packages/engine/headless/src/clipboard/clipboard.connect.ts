@@ -75,7 +75,7 @@ export function connectClipboard<T extends PropTypes>(
       // 用 readonly 不用 disabled，disabled 会让框选不中、Ctrl/Cmd+C 走不通
       'readonly': true,
       // 作者把 label 换成非 <label> 元素时 for 会失效，这条兜住名字
-      'aria-labelledby': ids.label,
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       'data-state': status,
       'onFocus': (event: FocusEvent) => {
         // 聚焦即全选；读事件目标节点，connect 求值期不得查 DOM

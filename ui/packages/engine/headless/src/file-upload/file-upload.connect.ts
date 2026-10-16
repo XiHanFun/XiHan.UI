@@ -163,9 +163,9 @@ export function connectFileUpload<T extends PropTypes>(
       'id': ids.dropzone,
       'role': 'button',
       // 名字是字段标题再接上投放区自己看得见的说明：说明整句落在名字里（WCAG 2.5.3），读屏也知道是哪个字段。
-      // 没写 label 时那一截是悬空 IDREF，按 accname 规则跳过。不另给 aria-label：labelledby 引到自己时
+      // 没渲染 label 时只引投放区自己。不另给 aria-label：labelledby 引到自己时
       // 取的是自己的 aria-label 而不是内容，兜底文案会把说明挤出名字
-      'aria-labelledby': `${ids.label} ${ids.dropzone}`,
+      'aria-labelledby': prop('labelled') ? `${ids.label} ${ids.dropzone}` : ids.dropzone,
       // div 上原生 disabled 不生效，显式写 aria-disabled 并退出 Tab 序列
       'aria-disabled': disabled ? 'true' : 'false',
       'tabindex': disabled ? -1 : 0,

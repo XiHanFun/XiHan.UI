@@ -195,8 +195,8 @@ export function connectTagGroup<T extends PropTypes>(
       ...parts.list.attrs,
       'id': ids.list,
       'role': 'grid',
-      // 作者没渲染 label 时这是条悬空 IDREF，按 accname 规则整条落空，名字退回下面的兜底
-      'aria-labelledby': ids.label,
+      // 作者渲染了 label 就引它；没渲染时不写这条引用，名字取下面的兜底
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       'aria-label': label.list,
       'aria-multiselectable': multiselectable ? 'true' : 'false',
       'aria-disabled': groupDisabled ? 'true' : 'false',

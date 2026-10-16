@@ -485,3 +485,13 @@ describe('按压通道', () => {
     expect(has(deleted.nodes('react').del)).toBe(false)
   })
 })
+
+describe('connectTagGroup 名字链只引用在场的 label', () => {
+  it('labelled 时列表引用 label；没渲染 label 时不写引用，名字取兜底', () => {
+    const labelled = mount({ labelled: true })
+    expect(labelled.list.getAttribute('aria-labelledby')).toBe(labelled.root.querySelector('[data-part="label"]')!.id)
+    const bare = mount()
+    expect(bare.list.hasAttribute('aria-labelledby')).toBe(false)
+    expect(bare.list.getAttribute('aria-label')).toBeTruthy()
+  })
+})

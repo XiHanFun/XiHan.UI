@@ -123,6 +123,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
 | `value` | `string` |  | 受控值，ISO 时间串。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string` |  |  |
 | `min` | `string` |  | 下界（含）。只用于标注越界，不改写用户填写的内容。 |
@@ -234,7 +235,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态�
 | --- | --- | --- |
 | `control` | `aria-disabled` | 'true' \| 'false' |
 | `control` | `aria-invalid` | 'true' \| 'false' |
-| `control` | `aria-labelledby` | `label` 部件的 id |
+| `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `control` | `role` | 'group' |
 | `segment` | `aria-disabled` | 'true' \| 'false' |
 | `segment` | `aria-invalid` | 'true' \| 'false' |

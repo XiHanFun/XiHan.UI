@@ -9,6 +9,7 @@ import type { Direction, Orientation, Size } from '@xihan-ui/core'
 import type { ColorChannel, ColorFormat, ColorSliderApi, ColorSliderSchema, ColorSliderTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { useEffect } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -121,6 +122,9 @@ export interface XhColorSliderLabelProps extends ComponentPropsWithRef<'label'> 
 
 export function XhColorSliderLabel({ children, ...rest }: XhColorSliderLabelProps): ReactNode {
   const ctx = useColorSliderContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return (
     <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}

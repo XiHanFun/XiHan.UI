@@ -25,6 +25,11 @@ export interface EditableCallbacks {
 }
 
 export interface EditableContext {
+  /**
+   * 已渲染的 label 部件数量，由 XhEditableLabel 在 setup 里同步登记、卸载时撤销。
+   * 可聚焦部件的 aria-labelledby 据此决定指不指过去：label 排在输入之前时，首帧与服务端直出就带上名字。
+   */
+  labelCount: Ref<number>
   api: ComputedRef<EditableApi>
   /** 状态机实例，供部件上报 DOM 侧的事实。 */
   service: Service<EditableSchema>
@@ -40,12 +45,13 @@ export function useEditable(props: Props, callbacks: EditableCallbacks = {}): Ed
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(editableMachine, () => ({ ...props, ...callbacks }), scope)
+  const labelCount = ref(0)
+  const service = useMachine(editableMachine, () => ({ ...props, labelled: labelCount.value > 0, ...callbacks }), scope)
 
   // 传 getter 而非节点，进出编辑态时由机器现取
   service.refs.set('getInputEl', () => inputRef.value)
   service.refs.set('getPreviewEl', () => previewRef.value)
 
   const api = computed(() => connectEditable(service, vueNormalize))
-  return { api, service, inputRef, previewRef }
+  return { labelCount, api, service, inputRef, previewRef }
 }

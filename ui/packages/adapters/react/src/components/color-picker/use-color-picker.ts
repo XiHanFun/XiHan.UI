@@ -32,6 +32,11 @@ import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
 
 export interface ColorPickerContext extends OverlayWiring {
+  /**
+   * label 部件挂载时登记、卸载时注销。可聚焦部件的 aria-labelledby 据此决定输不输出；
+   * 首帧（含服务端直出）还没登记，不写这条引用。
+   */
+  registerLabel: () => () => void
   service: Service<ColorPickerSchema>
   api: ColorPickerApi
   /** 表单重置的锚点：接在根节点上。 */
@@ -98,7 +103,13 @@ export function useColorPicker(props: ColorPickerSchema['props']): ColorPickerCo
     },
   })
 
-  const service = useMachine(colorPickerMachine, () => props, {
+  // 用状态而不是 ref：登记数要能把根重渲一次，connect 在渲染期求值
+  const [labelCount, setLabelCount] = useState(0)
+  const registerLabel = useCallback(() => {
+    setLabelCount(n => n + 1)
+    return () => setLabelCount(n => n - 1)
+  }, [])
+  const service = useMachine(colorPickerMachine, () => ({ ...props, labelled: labelCount > 0 }), {
     scope,
     onCreate: overlay.onCreate as never,
   })
@@ -113,9 +124,20 @@ export function useColorPicker(props: ColorPickerSchema['props']): ColorPickerCo
   }, [])
   // 两条颜色滑块各自一台机器再各内嵌一台滑杆：值与工作色从取色器现读，取色器须先建立；
   // 几台共用一份 scope，part id 里带组件名区分，不会撞
-  const hueRoot = useMachine<ColorSliderSchema>(colorSliderMachine, () => colorPickerHueSliderProps(service), { scope })
+  // 两条滑块同样可以放 label 部件：各自的登记数喂给各自的机器
+  const [hueLabels, setHueLabels] = useState(0)
+  const [alphaLabels, setAlphaLabels] = useState(0)
+  const registerHueLabel = useCallback(() => {
+    setHueLabels(n => n + 1)
+    return () => setHueLabels(n => n - 1)
+  }, [])
+  const registerAlphaLabel = useCallback(() => {
+    setAlphaLabels(n => n + 1)
+    return () => setAlphaLabels(n => n - 1)
+  }, [])
+  const hueRoot = useMachine<ColorSliderSchema>(colorSliderMachine, () => ({ ...colorPickerHueSliderProps(service), labelled: hueLabels > 0 }), { scope })
   const hueSliderMachine = useMachine(sliderMachine, () => colorSliderSliderProps(hueRoot), { scope, onCreate: onHueCreate })
-  const alphaRoot = useMachine<ColorSliderSchema>(colorSliderMachine, () => colorPickerAlphaSliderProps(service), { scope })
+  const alphaRoot = useMachine<ColorSliderSchema>(colorSliderMachine, () => ({ ...colorPickerAlphaSliderProps(service), labelled: alphaLabels > 0 }), { scope })
   const alphaSliderMachine = useMachine(sliderMachine, () => colorSliderSliderProps(alphaRoot), { scope, onCreate: onAlphaCreate })
   // 内嵌的两组色板同样可以放 label 部件：各自的登记数喂给各自的机器，根的 aria-labelledby 才只指向真渲染了的标题。
   // 用状态而不是 ref：登记数要能把根重渲一次，connect 在渲染期求值
@@ -144,23 +166,10 @@ export function useColorPicker(props: ColorPickerSchema['props']): ColorPickerCo
 
   const api = connectColorPicker(services, reactNormalize)
   // 内嵌组件的 api 从取色器那份 api 上取：同一帧算好的同一份，不另连一次
-  const hueSlider: ColorSliderContext = { api: api.hueSlider, service: hueRoot, trackRef: hueTrackRef, rootRef }
-  const alphaSlider: ColorSliderContext = { api: api.alphaSlider, service: alphaRoot, trackRef: alphaTrackRef, rootRef }
+  const hueSlider: ColorSliderContext = { api: api.hueSlider, service: hueRoot, trackRef: hueTrackRef, rootRef, registerLabel: registerHueLabel }
+  const alphaSlider: ColorSliderContext = { api: api.alphaSlider, service: alphaRoot, trackRef: alphaTrackRef, rootRef, registerLabel: registerAlphaLabel }
   const swatchPicker: ColorSwatchPickerContext = { api: api.swatchPicker, service: swatchPickerService, rootRef, registerLabel: registerSwatchLabel }
   const recentSwatchPicker: ColorSwatchPickerContext = { api: api.recentSwatchPicker, service: recentSwatchPickerService, rootRef, registerLabel: registerRecentSwatchLabel }
 
-  return {
-    ...overlay,
-    service,
-    api,
-    rootRef,
-    triggerRef,
-    positionerRef,
-    contentRef,
-    areaRef,
-    hueSlider,
-    alphaSlider,
-    swatchPicker,
-    recentSwatchPicker,
-  }
+  return { registerLabel, ...overlay, service, api, rootRef, triggerRef, positionerRef, contentRef, areaRef, hueSlider, alphaSlider, swatchPicker, recentSwatchPicker }
 }

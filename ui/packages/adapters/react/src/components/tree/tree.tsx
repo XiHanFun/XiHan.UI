@@ -191,6 +191,9 @@ XhTreeRoot.xhEvents = ['expanded-value-change', 'selection-change', 'node-move']
 export interface XhTreeLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhTreeLabel({ children, ...rest }: XhTreeLabelProps): ReactNode {
   const ctx = useTreeContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 

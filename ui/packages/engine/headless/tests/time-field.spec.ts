@@ -596,7 +596,7 @@ describe('connectTimeField 属性输出', () => {
   })
 
   it('control 是 group 并由 label 命名，段是 spinbutton', () => {
-    const m = open({ defaultValue: '13:45' })
+    const m = open({ labelled: true, defaultValue: '13:45' })
     const api = m.api()
     const label = api.getLabelProps() as Record<string, unknown>
     expect(m.control.getAttribute('role')).toBe('group')
@@ -604,6 +604,10 @@ describe('connectTimeField 属性输出', () => {
     expect(m.seg('hour').getAttribute('role')).toBe('spinbutton')
     expect(m.seg('hour').getAttribute('aria-label')).toBe('hour')
     expect(m.seg('hour').getAttribute('data-value')).toBe('hour')
+  })
+
+  it('没渲染 label 时 control 不写 aria-labelledby', () => {
+    expect(open({ defaultValue: '13:45' }).control.hasAttribute('aria-labelledby')).toBe(false)
   })
 
   it('aria 布尔一律显式写出，不省略', () => {

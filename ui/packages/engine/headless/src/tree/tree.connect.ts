@@ -467,7 +467,7 @@ export function connectTree<T extends PropTypes>(
       ...parts.tree.attrs,
       'id': ids.tree,
       'role': 'tree',
-      'aria-labelledby': ids.label,
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       'aria-orientation': 'vertical',
       // 复选与否必须显式说，省略只是没说
       'aria-multiselectable': multiselectable ? 'true' : 'false',

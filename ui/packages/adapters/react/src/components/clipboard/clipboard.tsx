@@ -9,6 +9,7 @@ import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { ClipboardApi, ClipboardSchema, ClipboardTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { useEffect } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -78,6 +79,9 @@ XhClipboardRoot.xhEvents = ['status-change', 'copy-error'] as const
 export interface XhClipboardLabelProps extends ComponentPropsWithRef<'label'> {}
 export function XhClipboardLabel({ children, ...rest }: XhClipboardLabelProps): ReactNode {
   const ctx = useClipboardContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   // 必须是原生 <label>，connect 把 for 写向 input
   return (
     <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>

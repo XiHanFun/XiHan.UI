@@ -688,3 +688,13 @@ describe('connectSignaturePad 属性表', () => {
     })
   })
 })
+
+describe('connectSignaturePad 名字链只引用在场的 label', () => {
+  it('labelled 时画板引用 label；没渲染 label 时不写引用，名字取内建文案', () => {
+    const labelled = api(makeService({ labelled: true }).service)
+    expect((labelled.getControlProps() as Record<string, unknown>)['aria-labelledby']).toBe((labelled.getLabelProps() as Record<string, unknown>).id)
+    const control = api(makeService().service).getControlProps() as Record<string, unknown>
+    expect(control['aria-labelledby']).toBeUndefined()
+    expect(control['aria-label']).toBeTruthy()
+  })
+})
