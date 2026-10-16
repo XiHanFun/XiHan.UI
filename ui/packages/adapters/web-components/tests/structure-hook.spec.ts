@@ -23,7 +23,7 @@ class XhStructureProbeElement extends XhElement {
   }
 
   static override structure: ElementStructure<XhStructureProbeElement> = {
-    rootTag: 'section',
+    rootTag: 'fieldset',
     takeover: { footer: 'trailing' },
     build: (host, taken) => host.nodes(taken),
   }
@@ -135,7 +135,7 @@ describe('标准结构的基类钩子', () => {
   it('不写结构：连 root 一起生成整棵子树，root 用声明的标签，生成节点带 structure 标记', async () => {
     const el = await mount()
     const root = el.querySelector(':scope > [data-xh-part="root"]')!
-    expect([root.localName, root.getAttribute('data-xh-gen')]).toEqual(['section', 'structure'])
+    expect([root.localName, root.getAttribute('data-xh-gen')]).toEqual(['fieldset', 'structure'])
     expect(parts(root)).toEqual(['list', 'panel', 'panel', 'footer'])
     expect(Array.from(root.querySelectorAll('[data-xh-part="item"]'), node => [node.localName, node.getAttribute('type'), node.textContent])).toEqual([['button', 'button', 'A'], ['button', 'button', 'B']])
   })
