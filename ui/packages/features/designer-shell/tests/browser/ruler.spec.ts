@@ -1,5 +1,5 @@
 // 标尺框在真实 Chromium 里：两条标尺与画布按网格排开，刻度与画布的视口对齐；从标尺拖进画布按真实几何新建参考线；
-// 参考线层除参考线外不挡作者内容的指针。
+// 参考线层除参考线外不挡作者内容的指针；画布区里的作者内容不写尺寸也撑满。
 import type { DesignerRulerEventMap, XhDesignerRulerElement } from '../../src'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { defineDesignerShell } from '../../src'
@@ -16,7 +16,7 @@ beforeEach(async () => {
   root.style.cssText = 'position:fixed;left:40px;top:30px;width:620px;height:420px'
   root.viewport = { x: 30, y: 10, zoom: 1 }
   content = document.createElement('div')
-  content.style.cssText = 'width:100%;height:100%;background:#eee'
+  content.style.background = '#eee'
   root.append(content)
   document.body.prepend(root)
   await root.updateComplete
@@ -43,10 +43,21 @@ describe('<xh-designer-ruler>（Chromium）', () => {
     expect(top.left).toBeCloseTo(box.left, 0)
     expect(left.right).toBeCloseTo(box.left, 0)
     expect(box.width).toBeCloseTo(620 - top.height, 0)
-    expect(content.getBoundingClientRect().width).toBeCloseTo(box.width, 0)
     const zero = Array.from(root.querySelectorAll<HTMLElement>('[data-orientation="horizontal"] [data-part="tick"][data-major]'))
       .find(tick => tick.textContent === '0')!
     expect(zero.getBoundingClientRect().left).toBeCloseTo(box.left + 30, 0)
+  })
+
+  it('画布区里不写尺寸的作者内容撑满画布区，多个子节点叠在同一块上', async () => {
+    const layer = document.createElement('div')
+    root.append(layer)
+    await Promise.resolve()
+    expect(layer.parentElement!.dataset.part).toBe('canvas')
+    const box = canvas()
+    for (const element of [content, layer]) {
+      const rect = element.getBoundingClientRect()
+      expect([rect.left, rect.top, rect.width, rect.height]).toEqual([box.left, box.top, box.width, box.height])
+    }
   })
 
   it('从上标尺拖进画布新建参考线，数值按画布与视口换算', async () => {
