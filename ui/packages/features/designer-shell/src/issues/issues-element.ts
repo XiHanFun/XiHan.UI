@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// <xh-designer-issues>：问题列表。列出设计器换好文字的结构问题，按严重程度分组或按传入顺序；头部的错误、警告
-// 开关带计数，过滤状态保留。方向键在条目间移动，回车或点击派发 issue-activate，悬停派发 issue-hover。
+// <xh-designer-issues>：问题列表。列出设计器换好文字的结构问题，按严重程度排列、按对象分组或按传入顺序；头部的
+// 错误、警告开关带计数，过滤状态保留。方向键在条目间移动，回车或点击派发 issue-activate，悬停派发 issue-hover。
 
 import type { IssueSeverity, SchemaIssue } from '@xihan-ui/designer-kit/schema'
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
@@ -39,10 +39,49 @@ const DEFAULT_TRANSLATIONS: DesignerIssuesTranslations = {
   severityError: 'Error',
   severityWarning: 'Warning',
   filter: 'Show problems by severity',
+  noTarget: 'General',
 }
 
 const TAG = 'xh-designer-issues'
 const STRING_CONVERTER = { fromAttribute: (value: string | null) => value ?? undefined }
+
+interface Entry {
+  readonly item: DesignerIssueItem
+  readonly index: number
+}
+
+interface TargetGroup {
+  /** 组标题：组内第一个有 subject 的条目的 subject，都没有时为对象 id；没有对象的一组为 undefined。 */
+  readonly label: string | undefined
+  readonly entries: Entry[]
+}
+
+/** 错误在前、警告在后，同级保持原有先后。 */
+function bySeverity(entries: readonly Entry[]): Entry[] {
+  return [...entries.filter(({ item }) => issueSeverity(item.issue) === 'error'), ...entries.filter(({ item }) => issueSeverity(item.issue) === 'warning')]
+}
+
+/** 按问题所在对象分组：组按对象第一次出现的先后，没有对象的问题归在最后一组。 */
+function byTarget(entries: readonly Entry[]): TargetGroup[] {
+  const groups = new Map<string, { label: string | undefined, id: string, entries: Entry[] }>()
+  const rest: Entry[] = []
+  for (const entry of entries) {
+    const target = entry.item.issue.target
+    if (target === undefined) {
+      rest.push(entry)
+      continue
+    }
+    const key = JSON.stringify([target.kind, target.id])
+    const group = groups.get(key) ?? { label: undefined, id: target.id, entries: [] }
+    group.label ??= entry.item.subject
+    group.entries.push(entry)
+    groups.set(key, group)
+  }
+  const result: TargetGroup[] = Array.from(groups.values(), group => ({ label: group.label ?? group.id, entries: bySeverity(group.entries) }))
+  if (rest.length > 0)
+    result.push({ label: undefined, entries: bySeverity(rest) })
+  return result
+}
 
 interface Parts {
   readonly header: HTMLElement
@@ -65,8 +104,11 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
 
   /** 要列出的问题。 */
   declare items: readonly DesignerIssueItem[] | undefined
-  /** severity：错误在前、警告在后分两组（缺省）；none：按传入顺序。 */
-  declare groupBy: 'severity' | 'none' | undefined
+  /**
+   * severity：错误在前、警告在后（缺省）；target：按问题所在对象分组，组标题取条目的 subject，组内错误在前，
+   * 没有对象的问题归在最后一组；none：按传入顺序。
+   */
+  declare groupBy: 'severity' | 'target' | 'none' | undefined
   /** 没有问题时的提示，缺省取文案 empty。 */
   declare emptyText: string | undefined
   /** 只读。问题列表没有修改类操作，只读时照常浏览与定位。 */
@@ -107,7 +149,7 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
     const visible = items.filter(item => this.#shown.has(issueSeverity(item.issue)))
     setText(parts.empty, this.emptyText ?? t.empty)
     parts.empty.hidden = visible.length > 0
-    const inputs = [items, this.groupBy, filter.join(','), t.severityError, t.severityWarning]
+    const inputs = [items, this.groupBy, filter.join(','), t.severityError, t.severityWarning, t.noTarget]
     if (inputs.length === this.#rendered.length && inputs.every((input, index) => input === this.#rendered[index]))
       return
     this.#rendered = inputs
@@ -151,17 +193,14 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
     const parts = this.#parts!
     const focused = this.#focusedIndex()
     const indexed = items.map((item, index) => ({ item, index })).filter(({ item }) => this.#shown.has(issueSeverity(item.issue)))
-    const ordered = this.groupBy === 'none'
-      ? indexed
-      : [...indexed.filter(({ item }) => issueSeverity(item.issue) === 'error'), ...indexed.filter(({ item }) => issueSeverity(item.issue) === 'warning')]
     const doc = this.ownerDocument
     let first = true
-    parts.list.replaceChildren(...ordered.map(({ item, index }) => {
+    const row = ({ item, index }: Entry, withSubject: boolean): HTMLElement => {
       const severity = issueSeverity(item.issue)
       const children: (Node | string)[] = [
         createAuthoredElement(doc, 'span', { 'data-part': 'issue-severity' }, [severity === 'error' ? t.severityError : t.severityWarning]),
       ]
-      if (item.subject !== undefined)
+      if (withSubject && item.subject !== undefined)
         children.push(createAuthoredElement(doc, 'span', { 'data-part': 'issue-subject' }, [item.subject]))
       children.push(createAuthoredElement(doc, 'span', { 'data-part': 'issue-message' }, [item.message]))
       if (item.source !== undefined) {
@@ -176,7 +215,20 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
       if (activatable)
         first = false
       return createAuthoredElement(doc, 'li', {}, [body])
-    }))
+    }
+    if (this.groupBy === 'target') {
+      parts.list.replaceChildren(...byTarget(indexed).map((group, position) => {
+        const id = `${parts.title.id}-group-${position}`
+        return createAuthoredElement(doc, 'li', { 'data-part': 'group' }, [
+          createAuthoredElement(doc, 'div', { 'data-part': 'group-label', id }, [group.label ?? t.noTarget]),
+          createAuthoredElement(doc, 'ul', { 'data-part': 'group-items', 'role': 'list', 'aria-labelledby': id }, group.entries.map(entry => row(entry, false))),
+        ])
+      }))
+    }
+    else {
+      const ordered = this.groupBy === 'none' ? indexed : bySeverity(indexed)
+      parts.list.replaceChildren(...ordered.map(entry => row(entry, true)))
+    }
     if (focused !== undefined)
       this.#focusIndex(focused)
   }

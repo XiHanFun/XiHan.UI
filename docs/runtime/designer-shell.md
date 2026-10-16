@@ -88,7 +88,7 @@ list.addEventListener("issue-hover", event => highlight(event.detail.issue?.targ
 | 属性 | 说明 |
 | --- | --- |
 | `items` | `{ issue, message, subject?, source? }[]`：`issue` 是 `SchemaIssue`，`subject` 是对象名，`source` 显示为来源小标签 |
-| `group-by` | `severity`（缺省）错误在前、警告在后；`none` 按传入顺序 |
+| `group-by` | `severity`（缺省）错误在前、警告在后；`target` 按问题所在对象分组；`none` 按传入顺序 |
 | `empty-text` | 没有问题时的提示 |
 | `readonly` | 列表没有修改类操作，只读时照常浏览与定位 |
 
@@ -98,6 +98,7 @@ list.addEventListener("issue-hover", event => highlight(event.detail.issue?.targ
 | `issue-hover` | `{ issue }`：指针移到条目上；移出列表时 `issue` 为 `undefined` |
 
 - 头部的错误、警告两个开关带条数，过滤状态在换 `items` 后保留。
+- 按对象分组时，组按对象在 `items` 里第一次出现的先后排列，组内错误在前。组标题取组内第一条的 `subject`，都没有时显示对象的 `id`；条目里不再重复对象名。没有 `target` 的问题归在最后一组，标题取文案 `noTarget`。
 - 有 `target` 的条目是按钮，方向键、Home、End 在它们之间移动焦点；没有 `target` 的条目只显示，不可激活。
 
 ## 小地图

@@ -72,6 +72,32 @@ describe('<xh-designer-issues>', () => {
     expect(rows(list).map(row => row.dataset.index)).toEqual(['0', '1', '2', '3'])
   })
 
+  it('group-by="target" 按对象分组：组标题取 subject，组内错误在前，没有对象的归最后一组', async () => {
+    setXhConfig(designerShellZhCN)
+    const more: DesignerIssueItem[] = [...items, { issue: { code: 'required', path: ['nodes', 1, 'label'], target: { kind: 'node', id: 'n2' } }, message: '名称必填' }]
+    const list = await mount((element) => {
+      element.groupBy = 'target'
+      element.items = more
+    })
+    const groups = (): string[][] => Array.from(list.querySelectorAll('[data-part="list"] > [data-part="group"]'), group => [
+      group.querySelector('[data-part="group-label"]')!.textContent!,
+      ...Array.from(group.querySelectorAll<HTMLElement>('[data-part="issue"]'), item => item.dataset.index!),
+    ])
+    expect(groups()).toEqual([['审批', '4', '0'], ['开始', '1'], ['e1', '3'], ['整体', '2']])
+    const group = list.querySelector('[data-part="group"]')!
+    expect(group.querySelector('[data-part="group-items"]')!.getAttribute('aria-labelledby')).toBe(group.querySelector('[data-part="group-label"]')!.id)
+    expect(list.querySelector('[data-part="issue-subject"]')).toBeNull()
+
+    const buttons = list.querySelectorAll<HTMLButtonElement>('button[data-part="issue"]')
+    buttons[0]!.focus()
+    key(buttons[1]!, 'ArrowDown')
+    expect(document.activeElement).toBe(buttons[2])
+
+    filterItem(list, 'error').click()
+    await list.updateComplete
+    expect(groups()).toEqual([['审批', '0']])
+  })
+
   it('条目显示严重程度、对象名、说明与来源标签；过滤开关带计数', async () => {
     setXhConfig(designerShellZhCN)
     const list = await mount((element) => {

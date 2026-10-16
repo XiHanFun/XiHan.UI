@@ -132,6 +132,23 @@
     list-style: none;
   }
 
+  xh-designer-issues [data-part='group'] + [data-part='group'] {
+    margin-block-start: var(--xh-space-2);
+  }
+
+  xh-designer-issues div[data-part='group-label'] {
+    padding: var(--xh-space-1) var(--xh-space-2);
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-font-size-xs);
+    font-weight: var(--xh-font-weight-medium);
+  }
+
+  xh-designer-issues [data-part='group-items'] {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
   xh-designer-issues [data-part='issue'] {
     display: flex;
     flex-wrap: wrap;
