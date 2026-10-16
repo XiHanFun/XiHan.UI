@@ -58,6 +58,10 @@ const DEFAULT_TRANSLATIONS: DesignerPropertiesTranslations = {
   empty: 'No properties to edit',
   mixed: 'Multiple values',
   invalidJson: 'Not valid JSON',
+  notInteger: 'Must be a whole number',
+  belowMinimum: min => `Must be at least ${min}`,
+  aboveMaximum: max => `Must be at most ${max}`,
+  notAboveMinimum: min => `Must be greater than ${min}`,
 }
 
 const TAG = 'xh-designer-properties'
@@ -430,8 +434,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
       target: targets,
       readonly: this.readonly,
       mixed,
-      mixedText: this.#t.mixed,
-      invalidJson: this.#t.invalidJson,
+      translations: this.#t,
       optionLabel: option => this.optionLabel?.(descriptor, option) ?? option.label ?? String(option.value),
       unitLabel: unit => this.unitLabel?.(unit) ?? unit,
       toggleLimit: this.toggleLimit ?? 0,

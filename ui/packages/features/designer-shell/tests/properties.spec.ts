@@ -237,6 +237,58 @@ describe('<xh-designer-properties>', () => {
     expect(json.querySelector('xh-field')!.hasAttribute('invalid')).toBe(false)
   })
 
+  it('数字违反整数、开区间下限或上下限时就地报错、不派发，改回合法值后清掉错误', async () => {
+    const panel = await mount((element) => {
+      element.unitLabel = unit => unit === 'px' ? '像素' : ''
+      element.targets = [{
+        ...task,
+        value: { data: { retries: 2, width: 120 } },
+        descriptors: [
+          task.descriptors[1]!,
+          { path: ['data', 'width'], control: { kind: 'number', exclusiveMin: 0, unit: 'px' } },
+        ],
+      }]
+    })
+    const changes = record(panel, 'property-change')
+    const error = (path: string): string | undefined => {
+      const field = row(panel, path).querySelector('xh-field')!
+      return field.hasAttribute('invalid') ? field.querySelector('[data-xh-part="error-text"]')!.textContent! : undefined
+    }
+    const input = (path: string, value: string): void => emit(row(panel, path).querySelector('xh-number-field')!, 'value-change', { value, valueAsNumber: Number(value) })
+
+    input('data.retries', '1.5')
+    expect(error('data.retries')).toBe('Must be a whole number')
+    input('data.retries', '12')
+    expect(error('data.retries')).toBe('Must be at most 9')
+    input('data.width', '0')
+    expect(error('data.width')).toBe('Must be greater than 0 像素')
+    expect(changes).toHaveLength(0)
+
+    setXhConfig(designerShellZhCN)
+    await panel.updateComplete
+    input('data.retries', '-1')
+    expect(error('data.retries')).toBe('不能小于 0')
+    expect((row(panel, 'data.retries').querySelector('xh-number-field') as HTMLElement & { value?: string }).value).toBe('-1')
+
+    input('data.retries', '3')
+    input('data.width', '0.5')
+    expect(changes.map(change => [change.path.at(-1), change.value])).toEqual([['retries', 3], ['width', 0.5]])
+    expect([error('data.retries'), error('data.width')]).toEqual([undefined, undefined])
+  })
+
+  it('单位文案为空串时不渲染后缀部件，有文案时再放回', async () => {
+    const panel = await mount((element) => {
+      element.unitLabel = () => ''
+      element.targets = [task]
+    })
+    const number = row(panel, 'data.retries').querySelector('xh-number-field')!
+    expect(number.querySelector('[data-xh-part="suffix"]')).toBeNull()
+    panel.unitLabel = () => '次'
+    await panel.updateComplete
+    expect(Array.from(number.querySelectorAll(':scope > [data-xh-part="root"] > [data-xh-part="control"] > *'), part => part.getAttribute('data-xh-part'))).toEqual(['decrement-trigger', 'input', 'suffix', 'increment-trigger'])
+    expect(number.querySelector('[data-xh-part="suffix"]')!.textContent).toBe('次')
+  })
+
   it('只读时字段只读、不派发；focusField 把焦点交给字段', async () => {
     const panel = await mount((element) => {
       element.readonly = true

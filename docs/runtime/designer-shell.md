@@ -54,7 +54,7 @@ panel.addEventListener("property-commit", () => history.seal());
 | `editors` | 宿主编辑器表，按 `resolvePropertyEditor` 查找；查不到的内建种类用自带编辑器 |
 | `groupOrder` / `groupLabel` | 分组的先后与标题，标题缺省显示分组 id |
 | `labelOf` / `hintOf` | 字段的标签与说明；标签缺省取描述的 `label`，再缺省取 `formatJsonPath(path)` |
-| `optionLabel` / `unitLabel` | select 选项与 number 单位的文案 |
+| `optionLabel` / `unitLabel` | select 选项与 number 单位的文案；单位文案为空串时不显示后缀 |
 | `errors` | 字段错误 `{ target, path, message }`，文字由设计器换好，`path` 相对对象 |
 | `heading` | 标题下一行，如「表格 · t1」「已选中 3 个」 |
 | `empty-text` | 空状态文案 |
@@ -70,6 +70,7 @@ panel.addEventListener("property-commit", () => history.seal());
 - 共同属性是每个对象都有、`path` 相同、`control` 按 JSON 相等的那些；任一对象上不显示即不显示。取值不同时字段留空，显示占位「多个值」，宿主编辑器拿到的 `value` 为 `undefined`。
 - 字段用 `<xh-field>` 包库内控件，标签、说明与错误接到控件的可聚焦部件上。换选择只换数据时，同一属性、同一编辑器的字段原样复用，焦点与光标不丢。
 - 宿主编辑器的 `setValue` 与 `commit` 也走这两个事件。
+- 数字字段按描述的 `integer`、`exclusiveMin`、`min`、`max` 依次校验：不合法时就地报错、不派发，框里保留输入；失焦时越出 `min` / `max` 的值夹回端点。JSON 字段不能解析时同样就地报错。
 - 插槽 `header` 在标题下方（如部位导航），`footer` 在字段之后（如「删除列」）。
 - `focusField(path)` 把焦点交给该属性的字段，找不到时返回 `false`。
 
