@@ -50,15 +50,15 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(0.577 0.213 25)
-border-right-color: oklch(0.577 0.213 25)
-border-bottom-color: oklch(0.577 0.213 25)
-border-left-color: oklch(0.577 0.213 25)
+border-top-color: oklch(0.5 0.2 25)
+border-right-color: oklch(0.5 0.2 25)
+border-bottom-color: oklch(0.5 0.2 25)
+border-left-color: oklch(0.5 0.2 25)
 min-height: 0px
 font-size: 12px
 line-height: 18px
 font-weight: 400
-color: oklch(0.577 0.213 25)
+color: oklch(0.5 0.2 25)
 background-color: rgba(0, 0, 0, 0)
 transition-property: none
 transition-duration: 0s
@@ -68,7 +68,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.577 0.213 25)
+outline-color: oklch(0.5 0.2 25)
 
 [legend]
 padding-top: 0px

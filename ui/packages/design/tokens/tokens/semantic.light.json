@@ -174,11 +174,11 @@
     },
     "danger": {
       "$type": "color",
-      "$value": "{color.danger.600}"
+      "$value": "{color.danger.700}"
     },
     "danger-hover": {
       "$type": "color",
-      "$value": "{color.danger.700}"
+      "$value": "color-mix(in oklab, {color.danger.700} 82%, {color.neutral.950})"
     },
     "scrollbar-thumb": {
       "$type": "color",

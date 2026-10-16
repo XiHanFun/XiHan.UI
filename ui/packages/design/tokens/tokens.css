@@ -789,8 +789,8 @@
     --xh-fg-success: var(--xh-color-success-700);
     --xh-fg-warning: var(--xh-color-warning-700);
     --xh-fg-info: var(--xh-color-info-700);
-    --xh-fg-danger: var(--xh-color-danger-600);
-    --xh-fg-danger-hover: var(--xh-color-danger-700);
+    --xh-fg-danger: var(--xh-color-danger-700);
+    --xh-fg-danger-hover: color-mix(in oklab, var(--xh-color-danger-700) 82%, var(--xh-color-neutral-950));
     --xh-fg-scrollbar-thumb: color-mix(in oklab, var(--xh-fg-default) 15%, transparent);
     --xh-fg-scrollbar-thumb-hover: color-mix(in oklab, var(--xh-fg-default) 25%, transparent);
     --xh-fg-scrollbar-thumb-active: color-mix(in oklab, var(--xh-fg-default) 35%, transparent);
@@ -1010,8 +1010,8 @@
     --xh-fg-success: var(--xh-color-success-500);
     --xh-fg-warning: var(--xh-color-warning-500);
     --xh-fg-info: var(--xh-color-info-500);
-    --xh-fg-danger: var(--xh-color-danger-500);
-    --xh-fg-danger-hover: var(--xh-color-danger-400);
+    --xh-fg-danger: color-mix(in oklab, var(--xh-color-danger-400) 88%, var(--xh-color-neutral-0));
+    --xh-fg-danger-hover: color-mix(in oklab, var(--xh-color-danger-400) 70%, var(--xh-color-neutral-0));
     --xh-fg-scrollbar-thumb: color-mix(in oklab, var(--xh-fg-default) 15%, transparent);
     --xh-fg-scrollbar-thumb-hover: color-mix(in oklab, var(--xh-fg-default) 25%, transparent);
     --xh-fg-scrollbar-thumb-active: color-mix(in oklab, var(--xh-fg-default) 35%, transparent);
