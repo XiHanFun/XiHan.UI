@@ -6652,6 +6652,7 @@
       "FieldTranslations",
       "FieldsetApi",
       "FieldsetProps",
+      "FieldsetRenderedParts",
       "FieldsetTranslations",
       "FileRejectReason",
       "FileUploadApi",
@@ -12934,6 +12935,7 @@
     "fieldset": [
       "disabled",
       "invalid",
+      "parts",
       "required",
       "translations"
     ],

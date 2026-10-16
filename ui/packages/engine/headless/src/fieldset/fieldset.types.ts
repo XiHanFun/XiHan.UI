@@ -7,6 +7,12 @@
 
 import type { PropTypes } from '@xihan-ui/core'
 
+/** 作者实际渲染了哪些部件；省略的一项按在场处理。 */
+export interface FieldsetRenderedParts {
+  description?: boolean
+  errorText?: boolean
+}
+
 export interface FieldsetProps {
   /**
    * 整组禁用。root 是原生 `<fieldset>`，该条落为原生 disabled 属性，
@@ -22,6 +28,12 @@ export interface FieldsetProps {
   required?: boolean
   /** 文案覆盖。本组件当前没有外露文案，保留该位，接全局配置的通道由适配器铺设。 */
   translations?: Partial<FieldsetTranslations>
+  /**
+   * 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。
+   * 不在场的部件不进 root 的描述链：指向不存在的 id 会被判为无效引用。
+   * description 渲染了但读不出一句话（判断同 `hasNamingContent`）也按不在场处理。
+   */
+  parts?: FieldsetRenderedParts
 }
 
 export interface FieldsetApi<T extends PropTypes = PropTypes> {

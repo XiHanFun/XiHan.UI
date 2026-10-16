@@ -10,8 +10,9 @@ import type { FieldsetProps, FieldsetTranslations } from '@xihan-ui/headless'
 import type { XhConfig } from '../config'
 import type { PropertyValues } from '../reactive'
 import { createCounterIdGenerator, createScope, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
-import { connectFieldset, fieldsetAnatomy, fieldsetMeta } from '@xihan-ui/headless'
+import { connectFieldset, fieldsetAnatomy, fieldsetMeta, hasNamingContent } from '@xihan-ui/headless'
 import { notifyXhConfigChange } from '../config'
+import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -86,6 +87,7 @@ export class XhFieldsetElement extends XhElement {
   }
 
   override disconnectedCallback(): void {
+    this.descriptionWatch.disconnect()
     super.disconnectedCallback()
     notifyXhConfigChange(this)
   }
@@ -99,12 +101,22 @@ export class XhFieldsetElement extends XhElement {
   // 实例级 scope 只建一次，避免派生出的 id 每帧变化
   private readonly fieldsetScope: Scope = createScope(null, createCounterIdGenerator())
 
+  /** 说明部件的内容从无到有、从有到无时重新接线：读不出一句话的说明不进 root 的描述链。 */
+  private readonly descriptionWatch = createNamingContentWatch(() => this.requestUpdate())
+
   protected wire(): void {
+    const description = this.getPart('description')
+    this.descriptionWatch.watch(description)
     const props: FieldsetProps = {
       disabled: this.disabled,
       invalid: this.invalid,
       required: this.required,
       translations: this.translations,
+      // 描述链只收作者写了的部件；读不出一句话的说明按没写处理
+      parts: {
+        description: description != null && hasNamingContent(description),
+        errorText: this.getPart('error-text') != null,
+      },
     }
     const api = connectFieldset(this.configured('fieldset', props), this.fieldsetScope, wcNormalize)
 

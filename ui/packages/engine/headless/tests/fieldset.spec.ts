@@ -94,3 +94,25 @@ describe('connectFieldset 无效与必填', () => {
     expect([one.disabled, one.invalid, one.required]).toEqual([false, false, false])
   })
 })
+
+describe('connectFieldset 只引用在场的部件', () => {
+  it('没写说明时描述链不带说明的 id；invalid 时只剩错误文案', () => {
+    expect(rootProps({ parts: { description: false, errorText: true } })['aria-describedby']).toBeUndefined()
+    const one = api({ invalid: true, parts: { description: false, errorText: true } })
+    expect(one.getRootProps()['aria-describedby']).toBe(one.getErrorTextProps().id)
+  })
+
+  it('说明与错误文案都没写时不写 aria-describedby，不留落空的引用', () => {
+    expect(rootProps({ invalid: true, parts: { description: false, errorText: false } })['aria-describedby']).toBeUndefined()
+  })
+
+  it('invalid 但没写错误文案时只引用说明', () => {
+    const one = api({ invalid: true, parts: { description: true, errorText: false } })
+    expect(one.getRootProps()['aria-describedby']).toBe(one.getDescriptionProps().id)
+  })
+
+  it('省略 parts（服务端直出与挂载前）按都在场处理', () => {
+    const one = api({ invalid: true })
+    expect(one.getRootProps()['aria-describedby']).toBe(`${one.getDescriptionProps().id} ${one.getErrorTextProps().id}`)
+  })
+})
