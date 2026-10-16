@@ -45,6 +45,8 @@ export interface ExecuteOptions {
   readonly merge?: string
   /** 这一步的说明，供撤销重做按钮提示；合并时保留上一步的说明。 */
   readonly label?: string
+  /** 这一次并入上一步的时限（毫秒），缺省取历史的 mergeWithin；Infinity 表示不看时间，只等封口。 */
+  readonly mergeWithin?: number
 }
 
 /** 历史变化的种类。 */
@@ -194,6 +196,9 @@ export function createHistory<D, O>(options: HistoryOptions<D, O>): History<D, O
     execute(operations, executeOptions = {}) {
       if (operations.length === 0)
         return document
+      const within = executeOptions.mergeWithin ?? mergeWithin
+      if (!(within >= 0))
+        throw new RangeError(`[designer-kit] execute mergeWithin must be non-negative, got ${within}`)
       const result = run(operations)
       if (result.document === document)
         return document
@@ -205,7 +210,7 @@ export function createHistory<D, O>(options: HistoryOptions<D, O>): History<D, O
         const time = now()
         const top = undoStack.at(-1)
         const merge = executeOptions.merge
-        if (merge !== undefined && top && !sealed && top.merge === merge && time - top.time <= mergeWithin) {
+        if (merge !== undefined && top && !sealed && top.merge === merge && time - top.time <= within) {
           top.operations = [...result.inverse, ...top.operations]
           top.time = time
         }
