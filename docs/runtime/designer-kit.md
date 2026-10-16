@@ -132,6 +132,38 @@ history.execute([{ type: "move", path: ["rows", 2], index: 0 }], { label: "上�
 
 分隔符算在前缀里：`createIdAllocator("text-")` 给出 `text-1`、`text-2`。这里生成的是文档里保存的 id；DOM 上关联 ARIA 用的 id 走适配器自己的生成器，两者不要混用。
 
+## 剪贴板数据
+
+复制出去的内容包成一个带格式标记、产品名与版本的 JSON 包，粘贴时先认包、再交给产品按版本校验载荷。同一产品的设计器之间（跨实例、跨标签页）可以互相粘贴，别的产品或普通文本粘进来时能明确拒绝。
+
+```ts
+import { clipboardMimeType, decodeClipboard, encodeClipboard } from "@xihan-ui/designer-kit";
+
+designer.addEventListener("copy", (event) => {
+  const text = encodeClipboard("print", 1, { elements: selectedElements });
+  event.clipboardData?.setData(clipboardMimeType("print"), text);
+  event.clipboardData?.setData("text/plain", text);
+  event.preventDefault();
+});
+
+designer.addEventListener("paste", (event) => {
+  const text = event.clipboardData?.getData(clipboardMimeType("print")) || event.clipboardData?.getData("text/plain") || "";
+  const result = decodeClipboard(text, "print");
+  if (result.ok)
+    pasteElements(result.version, result.payload); // 载荷的结构由产品自己校验
+});
+```
+
+| 函数 | 说明 |
+| --- | --- |
+| `encodeClipboard(product, version, payload)` | 序列化为 `{ format: "xihan-designer-clipboard", product, version, payload }` 的 JSON 文本 |
+| `decodeClipboard(text, product)` | 成功得到 `{ ok: true, version, payload }`；失败得到 `{ ok: false, reason }` |
+| `clipboardMimeType(product)` | `application/x-xihan-<product>+json` |
+
+- 产品名是小写字母开头的小写字母、数字与连字符，版本是正整数，载荷是合法 JSON 值；不满足时 `encodeClipboard` 抛 `RangeError`。
+- 失败原因：`invalid-json`（不是 JSON）、`not-clipboard`（没有格式标记）、`invalid-envelope`（产品名、版本或载荷缺失或不合法）、`other-product`（别的产品复制的）。包上多出的字段忽略。
+- 自定义 MIME 类型只在同一浏览器里有效，所以同时写一份 `text/plain`；粘贴时先读自定义类型，再退到纯文本。
+
 ## 视口
 
 视口是 `{ x, y, zoom }`：屏幕坐标 = 世界坐标 × `zoom` + (`x`, `y`)。

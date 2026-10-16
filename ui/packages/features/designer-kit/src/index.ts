@@ -7,6 +7,8 @@
 
 export { alignRects, distributeRects } from './arrange'
 export type { AlignMode, DistributeAxis, DistributeSpacing } from './arrange'
+export { CLIPBOARD_FORMAT, clipboardMimeType, decodeClipboard, encodeClipboard } from './clipboard'
+export type { ClipboardDecodeError, ClipboardDecodeResult, ClipboardEnvelope } from './clipboard'
 export {
   expandRect,
   hitTest,
