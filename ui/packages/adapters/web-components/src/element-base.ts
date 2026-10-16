@@ -79,6 +79,12 @@ export abstract class XhElement extends XhReactiveElement {
   /** 标准结构声明；没声明的元素照旧由作者全写。 */
   static structure?: ElementStructure<never>
 
+  /**
+   * 结构里组合进来的库内元素：标签 → 元素类（类引用，打包时随宿主带上）。按需注册宿主时沿它递归注册。
+   * 只登记真正生成了实例的元素；委派（把内嵌组件的部件摊在自己的 Light DOM 里接线）不在其列。
+   */
+  static dependencies?: Readonly<Record<string, CustomElementConstructor>>
+
   private readonly structureState = createStructureState()
 
   private fieldWiring: FieldControlWiring | undefined

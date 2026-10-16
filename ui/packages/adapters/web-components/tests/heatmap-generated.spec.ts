@@ -136,13 +136,13 @@ describe('xh-heatmap 生成结构', () => {
     expect(authored.getAttribute('role')).toBe('grid')
   })
 
-  it('作者写的 tooltip 与 legend 保留，元素只补其余部分', async () => {
+  it('作者写的 tooltip 与 legend 保留，元素只补其余部分，末尾几段按缺省结构的先后排', async () => {
     const el = mount(
       { 'start-date': RANGE.startDate, 'end-date': RANGE.endDate },
       '<div data-xh-part="root"><div data-xh-part="tooltip"></div><div data-xh-part="legend"></div></div>',
     )
     await settle(el)
-    expect(partsOf(root(el))).toEqual(['tooltip', 'legend', 'row', 'grid', 'empty'])
+    expect(partsOf(root(el))).toEqual(['row', 'grid', 'tooltip', 'empty', 'legend'])
     expect(root(el).querySelector('[data-part="legend"]')!.hasAttribute('data-xh-gen')).toBe(false)
   })
 

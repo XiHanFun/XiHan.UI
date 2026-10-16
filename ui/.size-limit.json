@@ -112,7 +112,7 @@
     "name": "chat-stream",
     "path": "packages/features/chat-stream/dist/index.js",
     "gzip": true,
-    "limit": "7.8 kB"
+    "limit": "7.9 kB"
   },
   {
     "name": "markdown",
@@ -148,7 +148,7 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "227 kB"
+    "limit": "228 kB"
   },
   {
     "name": "designer-shell/locale",
@@ -178,13 +178,13 @@
     "name": "animations",
     "path": "packages/features/animations/dist/index.js",
     "gzip": true,
-    "limit": "7.8 kB"
+    "limit": "7.9 kB"
   },
   {
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "697 kB"
+    "limit": "698 kB"
   },
   {
     "name": "headless/locale（十种语言整份）",

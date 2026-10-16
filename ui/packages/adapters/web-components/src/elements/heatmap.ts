@@ -30,6 +30,7 @@ import {
   buildHeatmapGrid,
   connectHeatmap,
   HEATMAP_LEGEND_TEXT,
+  HEATMAP_STRUCTURE_TAKEOVER,
   heatmapAnatomy,
   heatmapLegendEntries,
   heatmapMachine,
@@ -124,7 +125,7 @@ export class XhHeatmapElement extends XhElement {
 
   /** 作者没写结构时按网格模型生成；作者在 root 里写了 tooltip、empty 或 legend 的用作者的，其余照常生成。 */
   static override structure: ElementStructure<XhHeatmapElement> = {
-    takeover: ['tooltip', 'empty', 'legend'],
+    takeover: HEATMAP_STRUCTURE_TAKEOVER,
     build: (host, taken) => host.ctrl.service
       ? heatmapStructure(connectHeatmap(host.ctrl.service, wcNormalize), { empty: !taken.has('empty'), legend: !taken.has('legend') })
       : undefined,

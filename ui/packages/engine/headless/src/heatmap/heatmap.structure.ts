@@ -6,7 +6,7 @@
 // 热力图的标准结构：按当前形态的网格模型铺出整棵部件树。
 // Vue / React 不写默认插槽时的缺省树、Web Components 只写 root 时元素生成的节点，都照这一份渲。
 
-import type { StructureNode } from '../shared/structure'
+import type { StructureNode, StructureTakeoverPosition } from '../shared/structure'
 import type { heatmapAnatomy } from './heatmap.anatomy'
 import type { HeatmapApi } from './heatmap.types'
 import { heatmapMatrixKey } from './heatmap.grid'
@@ -33,7 +33,16 @@ export const HEATMAP_STRUCTURE_PARTS = [
 /** anatomy 里不进标准结构的部件。 */
 export const HEATMAP_STRUCTURE_OMITS = [] as const satisfies readonly HeatmapPart[]
 
-type HeatmapNode = StructureNode<(typeof HEATMAP_STRUCTURE_PARTS)[number]>
+type HeatmapStructurePart = (typeof HEATMAP_STRUCTURE_PARTS)[number]
+
+/** Web Components 侧作者可以在 root 里单独写的部件，按它们在 root 末尾的先后排列。 */
+export const HEATMAP_STRUCTURE_TAKEOVER = {
+  tooltip: 'trailing',
+  empty: 'trailing',
+  legend: 'trailing',
+} as const satisfies Readonly<Partial<Record<HeatmapStructurePart, StructureTakeoverPosition>>>
+
+type HeatmapNode = StructureNode<HeatmapStructurePart>
 
 /** 结构里要不要铺这几个可选部件。 */
 export interface HeatmapStructureOptions {

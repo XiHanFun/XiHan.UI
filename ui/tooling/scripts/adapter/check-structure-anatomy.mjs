@@ -9,7 +9,11 @@
 //   ② meta 的必备部件（root 以外）都在 PARTS 里；
 //   ③ 有结构文件的组件：Web Components 元素声明了 structure，Vue / React 的缺省树调结构函数渲、
 //      不再手写 renderDefaultTree，一致性套件有 defaultStructure 场景；
-//   ④ 反过来，声明了 structure 的元素都有结构文件。
+//   ④ 反过来，声明了 structure 的元素都有结构文件；
+//   ⑤ 结构节点的 attrs 只放身份属性：结构文件里不出现 role、aria-*、data-state、tabindex，这些归 connect；
+//   ⑥ 可接管部件登记在结构文件的 <名>_STRUCTURE_TAKEOVER（部件 → trailing / portal）里，部件都在 PARTS 里，
+//      Web Components 元素的 takeover 直接引用这张表，不另写一份。trailing 的确实排在 root 末尾，
+//      由钩子在生成时核对（wc.structure-takeover-order），一致性套件的 defaultStructure 场景断言它不出现。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
@@ -79,10 +83,28 @@ for (const comp of components) {
       errors.push(`${comp}：必备部件 ${part} 不在 _STRUCTURE_PARTS 里，缺省结构会缺它`)
   }
 
+  const code = structure.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
+  const owned = code.match(/['"]?(?:role|tabindex|data-state|aria-[a-z-]+)['"]?\s*:/g)
+  if (owned)
+    errors.push(`${comp}.structure.ts 的结构节点写了 connect 产出的属性（${[...new Set(owned.map(key => key.replace(/[\s:'"]/g, '')))].join('、')}），attrs 只放身份属性`)
+
+  const takeover = structure.match(/export const ([A-Z0-9_]+_STRUCTURE_TAKEOVER) = \{([\s\S]*?)\}/)
+  if (takeover) {
+    for (const [, part, position] of takeover[2].matchAll(/'?([a-z0-9-]+)'?\s*:\s*'([a-z]+)'/g)) {
+      if (!produced.includes(part))
+        errors.push(`${comp}：可接管部件 ${part} 不在 _STRUCTURE_PARTS 里`)
+      if (position !== 'trailing' && position !== 'portal')
+        errors.push(`${comp}：可接管部件 ${part} 的位置 ${position} 只能是 trailing 或 portal`)
+    }
+  }
+
   const fn = `${camel(comp)}Structure(`
   const wc = await read(join(WC, `${comp}.ts`))
   if (!wc?.includes('static override structure'))
     errors.push(`${comp}：Web Components 元素没有声明 static structure`)
+  const wcTakeover = wc?.match(/takeover:\s*([^,\n]+)/)?.[1]?.trim()
+  if (wcTakeover !== undefined && wcTakeover !== takeover?.[1])
+    errors.push(`${comp}：Web Components 元素的 takeover 要直接引用结构文件的 ${takeover?.[1] ?? '<名>_STRUCTURE_TAKEOVER'}`)
   const vue = await read(join(VUE, comp, `${comp}.ts`))
   if (!vue?.includes(fn))
     errors.push(`${comp}：Vue 的缺省树没有调 ${fn.slice(0, -1)}`)
