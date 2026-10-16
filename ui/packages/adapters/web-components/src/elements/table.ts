@@ -351,6 +351,24 @@ export class XhTableElement extends XhElement {
     return this.commands().headerRowCount
   }
 
+  /**
+   * 展开展平后的可见行序列：详情行插在所属数据行之后，收起的父行底下的子行不在其中。
+   * 树形表与分组报表按它铺表体，展开集合变化（expanded-value-change）后重铺。
+   */
+  get visibleRows(): TableApi['visibleRows'] {
+    return this.commands().visibleRows
+  }
+
+  /** 该行显示的序号：平表是分页全局序号，树形是大纲编号。 */
+  rowNumber(rowId: string): string {
+    return this.commands().rowNumber(rowId)
+  }
+
+  /** 该行此刻是否展开。 */
+  isExpanded(rowId: string): boolean {
+    return this.commands().isExpanded(rowId)
+  }
+
   /** 某一格此刻的合并情形：起点给出跨度，被合并掉的给 covered。 */
   cellSpanOf(rowId: string, columnId: string): ReturnType<TableApi['cellSpanOf']> {
     return this.commands().cellSpanOf(rowId, columnId)

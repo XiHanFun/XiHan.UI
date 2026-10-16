@@ -30,19 +30,20 @@
     { id: "ops-sre", label: "稳定性组", owner: "吴六", parentId: "ops" },
   ];
 
-  let expanded = ["rd", "ops"];
   table.columns = [
     { id: "select", width: "3rem" },
     { id: "name", label: "组织", width: "13rem" },
     { id: "owner", label: "负责人" },
   ];
   table.rows = units.map(unit => ({ id: unit.id, parentId: unit.parentId, disabled: unit.disabled }));
+  table.defaultExpandedValue = ["rd", "ops"];
+  const unitOf = new Map(units.map(unit => [unit.id, unit]));
 
-  // 收起的那一枝整段不渲：可见序与层级都照 parentId 与展开集合算
+  // 按元素给的可见行铺表体：收起的那一枝不在其中，层级也由它给出
   function render() {
-    table.expandedValue = expanded;
-    const visible = units.filter(unit => unit.parentId == null || expanded.includes(unit.parentId));
-    body.replaceChildren(...visible.map((unit) => {
+    const visible = table.visibleRows.filter(meta => meta.kind === "data");
+    body.replaceChildren(...visible.map((meta) => {
+      const unit = unitOf.get(meta.id);
       const row = document.createElement("div");
       row.dataset.xhPart = "row";
       row.setAttribute("value", unit.id);
@@ -55,8 +56,8 @@
       const name = document.createElement("div");
       name.dataset.xhPart = "cell";
       name.setAttribute("value", "name");
-      name.style.paddingInlineStart = `${unit.parentId == null ? 16 : 32}px`;
-      if (unit.parentId == null) {
+      name.style.paddingInlineStart = `${meta.level * 16}px`;
+      if (meta.expandable) {
         const expand = document.createElement("span");
         expand.dataset.xhPart = "expand-trigger";
         name.append(expand);
@@ -71,8 +72,9 @@
     }));
   }
 
-  table.addEventListener("expanded-value-change", (event) => {
-    expanded = event.detail.value;
+  // 展开集合变了就按新的可见行重铺
+  table.addEventListener("expanded-value-change", async () => {
+    await table.updateComplete;
     render();
   });
   table.addEventListener("selection-change", (event) => {
@@ -80,5 +82,6 @@
     log.textContent = `选中：${value === "all" ? "全部" : value.length ? value.join("、") : "（无）"}`;
   });
 
+  await table.updateComplete;
   render();
 </script>
