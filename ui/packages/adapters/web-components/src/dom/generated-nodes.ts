@@ -19,10 +19,50 @@ export function generatedChildren(parent: Element): Element[] {
   return Array.from(parent.children).filter(node => node.hasAttribute(GEN_ATTR))
 }
 
-/** 建一个带生成标记的 HTML 节点。 */
-export function createGeneratedElement<K extends keyof HTMLElementTagNameMap>(doc: Document, tag: K): HTMLElementTagNameMap[K] {
+/** 属性表：值为 false 或 undefined 的项删除该属性，true 写成空串，其余转成字符串。 */
+export type ElementAttributes = Readonly<Record<string, string | number | boolean | undefined>>
+
+/** 按属性表写入属性：值没变的不写，false 或 undefined 删除。 */
+export function setAttributes(element: Element, attributes: ElementAttributes): void {
+  for (const [name, value] of Object.entries(attributes)) {
+    if (value === undefined || value === false) {
+      if (element.hasAttribute(name))
+        element.removeAttribute(name)
+      continue
+    }
+    const text = value === true ? '' : String(value)
+    if (element.getAttribute(name) !== text)
+      element.setAttribute(name, text)
+  }
+}
+
+/** 文本不同时才改写，相同时不产生子树变更。 */
+export function setText(element: Element, text: string): void {
+  if (element.textContent !== text)
+    element.textContent = text
+}
+
+/**
+ * 建一个不带生成标记的 HTML 节点，写成作者会写的样子：按属性表写上属性，依次放入子节点（字符串作为文本）。
+ * 用代码搭库内元素的 Light DOM 结构（data-xh-part 角色节点）时用它，带生成标记的子节点会被宿主当作自己生成的节点收走。
+ */
+export function createAuthoredElement<K extends keyof HTMLElementTagNameMap>(doc: Document, tag: K, attributes?: ElementAttributes, children?: readonly (Node | string)[]): HTMLElementTagNameMap[K]
+export function createAuthoredElement(doc: Document, tag: string, attributes?: ElementAttributes, children?: readonly (Node | string)[]): HTMLElement
+export function createAuthoredElement(doc: Document, tag: string, attributes: ElementAttributes = {}, children: readonly (Node | string)[] = []): HTMLElement {
+  const node = doc.createElement(tag)
+  setAttributes(node, attributes)
+  node.append(...children)
+  return node
+}
+
+/** 建一个带生成标记的 HTML 节点；属性表与子节点同 createAuthoredElement。 */
+export function createGeneratedElement<K extends keyof HTMLElementTagNameMap>(doc: Document, tag: K, attributes?: ElementAttributes, children?: readonly (Node | string)[]): HTMLElementTagNameMap[K]
+export function createGeneratedElement(doc: Document, tag: string, attributes?: ElementAttributes, children?: readonly (Node | string)[]): HTMLElement
+export function createGeneratedElement(doc: Document, tag: string, attributes: ElementAttributes = {}, children: readonly (Node | string)[] = []): HTMLElement {
   const node = doc.createElement(tag)
   node.setAttribute(GEN_ATTR, '')
+  setAttributes(node, attributes)
+  node.append(...children)
   return node
 }
 

@@ -1,16 +1,19 @@
 // @vitest-environment jsdom
 
-// 第三方编写元素的入口：基类的属性声明与批量更新、按 key 复用生成节点、事件派发、注册的幂等与冲突、
+// 第三方编写元素的入口：基类的属性声明与批量更新、按 key 复用生成节点、建节点与写属性文本、事件派发、注册的幂等与冲突、
 // 配置控制器的文案优先级与随配置重渲、子树作用域与断开后退订。
 import type { KeyedChildren, PropertyValues } from '../src/authoring'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
+  createAuthoredElement,
   createGeneratedElement,
   emitEvent,
   GEN_ATTR,
   generatedChildren,
   reconcile,
   registerElement,
+  setAttributes,
+  setText,
   SVG_NS,
   XhConfigController,
   XhReactiveElement,
@@ -130,6 +133,40 @@ describe('reconcile 与生成节点', () => {
     const node = createGeneratedElement(document, 'div')
     expect(node.getAttribute(GEN_ATTR)).toBe('')
     expect(document.createElementNS(SVG_NS, 'path').namespaceURI).toBe('http://www.w3.org/2000/svg')
+  })
+
+  it('建节点时可同时写属性表与子节点：false 与 undefined 不写，true 写成空串，字符串子节点作为文本；作者形态的节点不带生成标记', () => {
+    const item = createGeneratedElement(document, 'button', { 'data-xh-part': 'item', 'value': 'undo', 'disabled': false, 'hidden': undefined, 'aria-pressed': true, 'tabindex': 0 }, ['撤销'])
+    const root = createGeneratedElement(document, 'xh-unknown-group', { 'data-xh-part': 'root' }, [item, ' '])
+    expect(root.localName).toBe('xh-unknown-group')
+    expect(root.childNodes).toHaveLength(2)
+    const authored = createAuthoredElement(document, 'div', { 'data-xh-part': 'group' }, [createAuthoredElement(document, 'span')])
+    expect(authored.hasAttribute(GEN_ATTR)).toBe(false)
+    expect(authored.firstElementChild!.hasAttribute(GEN_ATTR)).toBe(false)
+    expect(Array.from(item.attributes, attribute => [attribute.name, attribute.value])).toEqual([
+      [GEN_ATTR, ''],
+      ['data-xh-part', 'item'],
+      ['value', 'undo'],
+      ['aria-pressed', ''],
+      ['tabindex', '0'],
+    ])
+    expect(item.textContent).toBe('撤销')
+  })
+
+  it('setAttributes 与 setText：值没变时不产生变更记录，false 与 undefined 删除属性', async () => {
+    const node = createGeneratedElement(document, 'div', { 'title': 'a', 'aria-disabled': 'true' }, ['x'])
+    const records: MutationRecord[] = []
+    const observer = new MutationObserver(list => records.push(...list))
+    observer.observe(node, { attributes: true, childList: true, characterData: true, subtree: true })
+    setAttributes(node, { 'title': 'a', 'hidden': false, 'data-gone': undefined })
+    setText(node, 'x')
+    await Promise.resolve()
+    expect(observer.takeRecords().length + records.length).toBe(0)
+    setAttributes(node, { 'title': 'b', 'aria-disabled': undefined, 'hidden': true })
+    setText(node, 'y')
+    expect(observer.takeRecords().map(record => record.attributeName ?? record.type)).toEqual(['title', 'aria-disabled', 'hidden', 'childList'])
+    expect([node.getAttribute('title'), node.hasAttribute('aria-disabled'), node.getAttribute('hidden'), node.textContent]).toEqual(['b', false, '', 'y'])
+    observer.disconnect()
   })
 })
 
