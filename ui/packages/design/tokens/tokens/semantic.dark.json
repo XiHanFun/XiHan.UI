@@ -41,8 +41,8 @@
     "success": { "$type": "color", "$value": "{color.success.500}" },
     "warning": { "$type": "color", "$value": "{color.warning.500}" },
     "info": { "$type": "color", "$value": "{color.info.500}" },
-    "danger": { "$type": "color", "$value": "{color.danger.500}" },
-    "danger-hover": { "$type": "color", "$value": "{color.danger.400}" },
+    "danger": { "$type": "color", "$value": "color-mix(in oklab, {color.danger.400} 88%, {color.neutral.0})" },
+    "danger-hover": { "$type": "color", "$value": "color-mix(in oklab, {color.danger.400} 70%, {color.neutral.0})" },
     "scrollbar-thumb": { "$type": "color", "$value": "color-mix(in oklab, {fg.default} 15%, transparent)" },
     "scrollbar-thumb-hover": { "$type": "color", "$value": "color-mix(in oklab, {fg.default} 25%, transparent)" },
     "scrollbar-thumb-active": { "$type": "color", "$value": "color-mix(in oklab, {fg.default} 35%, transparent)" }
