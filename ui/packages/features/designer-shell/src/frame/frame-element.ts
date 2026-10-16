@@ -111,15 +111,21 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   #layoutKey = ''
   #splitters: FrameSplitter[] = []
   #current: Partial<Record<DesignerFrameResizable, number>> = {}
+  #dirObserver: MutationObserver | undefined
 
   override connectedCallback(): void {
     super.connectedCallback()
     this.#ensureParts()
     this.#syncRegions()
+    if (typeof MutationObserver === 'function') {
+      this.#dirObserver ??= new MutationObserver(() => this.requestUpdate())
+      this.#dirObserver.observe(this, { attributes: true, attributeFilter: ['dir'] })
+    }
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
+    this.#dirObserver?.disconnect()
     this.#releaseSlots?.()
     this.#releaseSlots = undefined
     this.#slotsKey = ''
@@ -142,7 +148,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       this.#current = { ...this.#current, ...this.sizes }
     const t = this.#config.translations<DesignerFrameTranslations>(TAG, DEFAULT_TRANSLATIONS, this.translations)
     const layout = this.#layout()
-    const key = JSON.stringify(Object.entries(layout).map(([position, regions]) => [position, regions.map(region => region.name)]))
+    const key = JSON.stringify([this.#direction(), Object.entries(layout).map(([position, regions]) => [position, regions.map(region => region.name)])])
     if (key !== this.#layoutKey || changed.has('sizes')) {
       this.#layoutKey = key
       this.#build(parts, layout)
@@ -153,6 +159,11 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     }
     for (const { element, triggers } of this.#splitters)
       element.translations = { root: t.layout, resizeTrigger: index => t.resize(labelOf(triggers[index] ?? '')) }
+  }
+
+  /** 外框所在的文字方向，交给分隔条换算左右键与指针位移的正负。 */
+  #direction(): 'ltr' | 'rtl' {
+    return this.ownerDocument.defaultView?.getComputedStyle(this).direction === 'rtl' ? 'rtl' : 'ltr'
   }
 
   #regionList(): readonly DesignerFrameRegion[] {
@@ -229,6 +240,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     })
     const splitter = createAuthoredElement(doc, 'xh-splitter', {
       'orientation': orientation,
+      'dir': this.#direction(),
       'default-sizes': panels.map(panel => Math.round(panel.size * 1000) / 1000).join(','),
       'panels': JSON.stringify(panels.map(panel => ({ id: panel.id, min: panel.min }))),
       'data-part': 'splitter',
