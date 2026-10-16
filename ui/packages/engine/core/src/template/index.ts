@@ -88,7 +88,11 @@ export function parseTextTemplate(source: string): ParsedTextTemplate {
   return Object.freeze({ segments: Object.freeze(segments.map(segment => Object.freeze(segment))), issues: Object.freeze(issues) })
 }
 
-function displayText(value: unknown): string | undefined {
+/**
+ * 文本模板缺省的显示规则：`null` 与 `undefined` 为空串，字符串原样，有限数字、布尔与 `bigint` 转字符串，
+ * 非有限数字为空串，`Date` 转 ISO 文本（无效日期为空串）；对象、数组等不能直接显示的值返回 `undefined`。
+ */
+export function displayText(value: unknown): string | undefined {
   if (value === null || value === undefined)
     return ''
   switch (typeof value) {
@@ -107,8 +111,7 @@ function displayText(value: unknown): string | undefined {
 
 /**
  * 按数据替换模板里的占位，不合法的占位按原样保留。读值同 `getJsonAt`：只读自有属性，下标只读数组，读不到得到空串。
- * 缺省的显示规则：`null` 与 `undefined` 为空串，字符串原样，有限数字、布尔与 `bigint` 转字符串，非有限数字为空串，
- * `Date` 转 ISO 文本；对象与数组不能直接显示，得到空串并记入 `nonScalar`。
+ * 缺省按 `displayText` 显示；对象与数组不能直接显示，得到空串并记入 `nonScalar`。
  */
 export function fillTextTemplate(template: string | ParsedTextTemplate, data: unknown, options: FillTextTemplateOptions = {}): FilledTextTemplate {
   const parsed = typeof template === 'string' ? parseTextTemplate(template) : template

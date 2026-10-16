@@ -1,7 +1,7 @@
 // 文本模板：路径写法与 formatJsonPath 一致（下标明写、引号键、宿主变量）、问题区间、占位里不能写表达式、
-// 填充时只读自有属性与数组下标、显示规则与 nonScalar、已解析模板与自定义显示。
+// 填充时只读自有属性与数组下标、显示规则与 nonScalar、已解析模板与自定义显示、单独调用缺省显示规则。
 import { describe, expect, it } from 'vitest'
-import { fillTextTemplate, parseTextTemplate } from '../src/template'
+import { displayText, fillTextTemplate, parseTextTemplate } from '../src/template'
 
 describe('解析文本模板', () => {
   it('切出原样文本与路径占位，占位两侧空白忽略，下标写成 [0]', () => {
@@ -77,5 +77,26 @@ describe('填充文本模板', () => {
     const parsed = parseTextTemplate('{{order.total}} / {{order.items}}')
     const display = (value: unknown, path: string): string | undefined => (typeof value === 'number' ? value.toFixed(2) : path === 'order.items' ? undefined : String(value))
     expect(fillTextTemplate(parsed, data, { display })).toEqual({ text: '12.50 / ', nonScalar: ['order.items'] })
+  })
+})
+
+describe('缺省显示规则', () => {
+  it('空值为空串，字符串原样，有限数字、布尔与 bigint 转字符串', () => {
+    expect([null, undefined, '', 'a b', 1.5, -0, false, 12n].map(displayText)).toEqual(['', '', '', 'a b', '1.5', '0', 'false', '12'])
+  })
+
+  it('非有限数字与无效日期为空串，有效日期转 ISO 文本', () => {
+    expect([Number.NaN, Number.POSITIVE_INFINITY, new Date(Number.NaN), new Date(Date.UTC(2026, 9, 16))].map(displayText))
+      .toEqual(['', '', '', '2026-10-16T00:00:00.000Z'])
+  })
+
+  it('对象、数组、函数与 symbol 不能直接显示，返回 undefined', () => {
+    expect([{ a: 1 }, [1], () => 1, Symbol('s')].map(displayText)).toEqual([undefined, undefined, undefined, undefined])
+  })
+
+  it('与 fillTextTemplate 的缺省显示一致', () => {
+    const values = { a: 1.5, b: null, c: new Date(Date.UTC(2026, 0, 1)), d: [1] }
+    const filled = fillTextTemplate('{{a}}|{{b}}|{{c}}|{{d}}', values)
+    expect(filled.text).toBe([values.a, values.b, values.c, values.d].map(value => displayText(value) ?? '').join('|'))
   })
 })
