@@ -23,7 +23,7 @@ import type {
 import { contains, createPressTracker, dataAttr, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { wheelPixels } from '@xihan-ui/pointer'
 import { clampWindow, createScene, domainToWindow, indexRangeToWindow, isFullWindow, markPath, pan, windowToDomain, windowToIndexRange, zoomAt } from '@xihan-ui/viz'
-import { chartNavIntentFromKey, chartPatternFill, chartPatterns, placeChartTooltip } from '../shared/chart'
+import { chartNavIntentFromKey, chartPatternFill, chartPatterns, chartPlotNameAttrs, placeChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { cartesianChartAnatomy } from './cartesian-chart.anatomy'
 import {
@@ -630,7 +630,7 @@ export function connectCartesianChart<T extends PropTypes>(
       'id': ids.plot,
       'role': 'graphics-document',
       'aria-roledescription': translations.chartRoleDescription,
-      'aria-labelledby': ids.caption,
+      ...chartPlotNameAttrs(context.get('plotName'), ids.caption),
       'aria-describedby': ids.summary,
       // 柱自己占 Tab 位；锚点在折线上时绘图区占，聚焦后转投焦点代理。没有数据时不占
       'tabindex': anchor == null ? undefined : anchorIsBar ? -1 : 0,

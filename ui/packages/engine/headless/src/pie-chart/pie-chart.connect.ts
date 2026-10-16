@@ -13,7 +13,7 @@ import type { PieChartApi, PieChartSchema } from './pie-chart.schema'
 import type { PieLegendItem, PieMarkTag, PieTooltipRow } from './pie-chart.types'
 import { contains, createPressTracker, dataAttr, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { createScene, markPath } from '@xihan-ui/viz'
-import { chartNavIntentFromKey, chartPatternFill, chartPatterns, placeChartTooltip } from '../shared/chart'
+import { chartNavIntentFromKey, chartPatternFill, chartPatterns, chartPlotNameAttrs, placeChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { pieChartAnatomy } from './pie-chart.anatomy'
 import {
@@ -280,7 +280,7 @@ export function connectPieChart<T extends PropTypes>(
       'id': ids.plot,
       'role': 'graphics-document',
       'aria-roledescription': translations.chartRoleDescription,
-      'aria-labelledby': ids.caption,
+      ...chartPlotNameAttrs(context.get('plotName'), ids.caption),
       'aria-describedby': ids.summary,
       // 扇区自己占 Tab 位，绘图区不占
       'tabindex': -1,
