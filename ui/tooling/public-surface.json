@@ -10215,7 +10215,13 @@
       "zoomTo"
     ],
     "@xihan-ui/designer-shell": [
+      "DESIGNER_FRAME_REGIONS",
       "DESIGNER_SHELL_ELEMENTS",
+      "DesignerFrameEventMap",
+      "DesignerFramePosition",
+      "DesignerFrameRegion",
+      "DesignerFrameResizable",
+      "DesignerFrameTranslations",
       "DesignerGesturePhase",
       "DesignerGuideAxis",
       "DesignerGuideChange",
@@ -10249,6 +10255,7 @@
       "DropOver",
       "DropTargetHandlers",
       "PanRequestDetail",
+      "XhDesignerFrameElement",
       "XhDesignerIssuesElement",
       "XhDesignerMinimapElement",
       "XhDesignerPaletteElement",
@@ -10258,6 +10265,7 @@
       "defineDesignerShell",
       "defineDesignerShellElement",
       "designerShellZhCN",
+      "parseDesignerPanels",
       "registerDropTarget",
       "startDrag"
     ],

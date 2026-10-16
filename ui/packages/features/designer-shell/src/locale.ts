@@ -36,5 +36,9 @@ export const designerShellZhCN: XhConfig = {
       horizontalGuide: value => `横向参考线 ${value}`,
       verticalGuide: value => `竖向参考线 ${value}`,
     },
+    'xh-designer-frame': {
+      layout: '设计器布局',
+      resize: label => `调整「${label}」的大小`,
+    },
   },
 }
