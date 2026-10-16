@@ -233,11 +233,13 @@ allowClear 默认开启：点击当前档位清回未评分，键盘在最低档
 | `value-text` | `aria-hidden` | 'true' |
 | `item` | `aria-checked` | 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
-| `item` | `aria-label` | itemLabel?.(item.value, count) |
+| `item` | `aria-label` | undefined \| itemLabel(item.value, count) |
 | `item` | `aria-posinset` | item.value |
 | `item` | `aria-setsize` | ratingMax(prop('count')) |
 | `item` | `role` | 'radio' |
 | `hidden-input` | `aria-hidden` | 'true' |
+
+- 每颗星是 `role=radio`，名字的取法：星里放了作者自己的内容（文字或带名字的节点），或作者直接在星上写了 `aria-label` / `aria-labelledby` 时，以作者的为名，不写缺省名、不盖住作者的标注；都没有时写 `aria-label`，取 `translations.item(分值, 总档数)`，没给时取当前语言包的缺省说法（英文「3 of 5 stars」）。
 
 ## 样式参考
 

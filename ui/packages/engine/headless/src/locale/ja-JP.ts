@@ -518,6 +518,7 @@ const translations = {
       return [head, ...parts].join('')
     },
   },
+  'rating': { item: (value, count) => `${count} 段階中 ${value}` },
   'reasoning': {
     label: '思考プロセス',
     thinking: '思考中…',

@@ -55,6 +55,22 @@ describe('字段只引用在场的部件', () => {
     expect(refs(trigger, 'aria-describedby')).toEqual([descriptionId])
   })
 
+  it('说明里只有对读屏隐藏的内容时按没写处理，换成带 alt 的图片后进描述链', () => {
+    const view = (hidden: boolean) => (
+      <XhFieldRoot>
+        <XhFieldLabel>部门</XhFieldLabel>
+        {SELECT}
+        <XhFieldDescription>{hidden ? <span aria-hidden="true">选所属部门</span> : <img alt="选所属部门" />}</XhFieldDescription>
+      </XhFieldRoot>
+    )
+    const { container, rerender } = render(view(true))
+    const trigger = container.querySelector('button')!
+    expect(trigger.hasAttribute('aria-describedby')).toBe(false)
+    rerender(view(false))
+    const descriptionId = container.querySelector('[data-scope="field"][data-part="description"]')!.id
+    expect(refs(trigger, 'aria-describedby')).toEqual([descriptionId])
+  })
+
   it('没写字段标签时名字链里没有字段标签的 id', () => {
     const { container } = render(
       <XhFieldRoot>

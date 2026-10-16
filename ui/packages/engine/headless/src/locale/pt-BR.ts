@@ -521,6 +521,7 @@ const translations = {
       return [head, ...parts].join(' ')
     },
   },
+  'rating': { item: (value, count) => `${value} de ${count} estrelas` },
   'reasoning': {
     label: 'Raciocínio',
     thinking: 'Pensando…',

@@ -9,7 +9,8 @@ import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { RatingApi, RatingItemState, RatingSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
+import { hasNamingContent } from '@xihan-ui/headless'
+import { computed, defineComponent, h, onBeforeUnmount, onMounted, onUnmounted, onUpdated, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -155,8 +156,17 @@ export const XhRatingItem = defineComponent({
         service.send({ type: 'CONTROL.BLUR' })
     })
 
+    // 作者在星里放了自己的内容（文字或带名字的节点）就以内容为名，connect 不写缺省名；按渲染出的节点判断
+    const authored = ref(false)
+    const readAuthored = (): void => {
+      if (itemEl.value)
+        authored.value = hasNamingContent(itemEl.value)
+    }
+    onMounted(readAuthored)
+    onUpdated(readAuthored)
+
     return () => h('span', {
-      ...ctx.api.value.getItemProps(item.value) as Record<string, unknown>,
+      ...ctx.api.value.getItemProps({ ...item.value, authored: authored.value }) as Record<string, unknown>,
       ref: itemEl,
     }, slots.default?.(ctx.api.value.getItemState(item.value)))
   },

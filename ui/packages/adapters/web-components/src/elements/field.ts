@@ -9,7 +9,7 @@ import type { Scope } from '@xihan-ui/core'
 import type { FieldProps, FormControlState } from '@xihan-ui/headless'
 import type { FormControlHost } from '../runtime/form-control-host'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { connectField, fieldAnatomy, fieldControlWiring, fieldMeta, resolveFormControlState } from '@xihan-ui/headless'
+import { connectField, fieldAnatomy, fieldControlWiring, fieldMeta, hasNamingContent, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { XhReactiveElement } from '../reactive'
@@ -19,6 +19,9 @@ import { FORM_CONTROL_HOST_SELECTOR } from '../runtime/form-control-host'
 export const FIELD_SCOPE_SELECTOR = 'xh-field, xh-field-boundary'
 
 // 属性缺席翻成 undefined，控件 id 的缺省由 connect 派生。
+/** 说明部件里会改变「读不读得出一句话」的属性：命名属性与对读屏隐藏的两种标记。 */
+const DESCRIPTION_NAMING_ATTRS = ['aria-label', 'aria-labelledby', 'alt', 'title', 'aria-hidden', 'hidden']
+
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
@@ -74,7 +77,7 @@ export class XhFieldElement extends XhElement {
   /** 上一帧下发过接线的库内控件：这一帧不在作用域里的收回。 */
   private wiredControls = new Set<XhElement>()
 
-  /** 说明部件的文字从无到有、从有到无时重新接线：没有文字的说明不进控件的描述链。 */
+  /** 说明部件的内容从无到有、从有到无时重新接线：读不出一句话的说明不进控件的描述链。 */
   private descriptionWatch: { el: HTMLElement, observer: MutationObserver } | undefined
 
   private watchDescription(el: HTMLElement | null): void {
@@ -85,7 +88,7 @@ export class XhFieldElement extends XhElement {
     if (!el || typeof MutationObserver === 'undefined')
       return
     const observer = new MutationObserver(() => this.requestUpdate())
-    observer.observe(el, { characterData: true, childList: true, subtree: true })
+    observer.observe(el, { characterData: true, childList: true, subtree: true, attributes: true, attributeFilter: DESCRIPTION_NAMING_ATTRS })
     this.descriptionWatch = { el, observer }
   }
 
@@ -113,10 +116,10 @@ export class XhFieldElement extends XhElement {
       disabled: state.disabled,
       readOnly: state.readOnly,
       controlId: this.controlId,
-      // 名字链与描述链只收作者写了的部件；没有文字的说明按没写处理
+      // 名字链与描述链只收作者写了的部件；读不出一句话的说明按没写处理
       parts: {
         label: this.getPart('label') != null,
-        description: description != null && (description.textContent ?? '').trim() !== '',
+        description: description != null && hasNamingContent(description),
         errorText: this.getPart('error-text') != null,
       },
     }

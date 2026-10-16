@@ -8,6 +8,8 @@
 import type { Direction, ItemQuery, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { RatingApi, RatingItemProps, RatingItemState, RatingSchema } from './rating.types'
 import { contains, createPressTracker, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/core'
+import { RATING_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { ratingAnatomy } from './rating.anatomy'
 import { clampRating, ratingMax } from './rating.machine'
@@ -112,9 +114,10 @@ export function connectRating<T extends PropTypes>(
 
   const items = Array.from({ length: count }, (_, i) => i + 1)
 
-  // 星星那一格里只有符号，交给内容会随高亮在两个符号之间来回变，所以留一条文案位由作者按需给名字。
-  // 不给就不发：作者往星星里塞了自己的标注时，写死一句会把那句盖掉，读屏念到的就不是屏幕上的东西。
-  const itemLabel = prop('translations')?.item
+  // 星星那一格里只有符号，交给内容会随高亮在两个符号之间来回变，所以星里没有作者内容时发一条名字，
+  // 取 translations.item（作者给的或语言包里的），都没给时取英文缺省。
+  // 作者往星里放了自己的内容（文字或带名字的节点）就不发：写死一句会把那句盖掉，读屏念到的就不是屏幕上的东西
+  const itemLabel = resolveTranslations(RATING_EN_US, prop('translations')).item
 
   // roving tabindex 锚点：优先焦点值，否则当前值；都没有时由 control 兜底进 Tab 序列
   const anchor = focusedValue ?? (value > 0 ? Math.min(Math.ceil(value), count) : null)
@@ -245,7 +248,7 @@ export function connectRating<T extends PropTypes>(
       return normalize.element({
         ...parts.item.attrs,
         'role': 'radio',
-        'aria-label': itemLabel?.(item.value, count),
+        'aria-label': item.authored ? undefined : itemLabel(item.value, count),
         'aria-posinset': item.value,
         'aria-setsize': count,
         'aria-checked': s.checked ? 'true' : 'false',

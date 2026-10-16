@@ -23,6 +23,11 @@ export interface RatingHoverChangeDetails {
  */
 export interface RatingItemProps {
   value: number
+  /**
+   * 作者给这颗星起了名字：星里放了能提供名字的内容（见 `hasNamingContent`），或在星节点上写了 aria-label / aria-labelledby；由适配器判断。
+   * 为真时这颗星以作者的为名、不写 aria-label；为假时取 translations.item 或语言包的缺省名。
+   */
+  authored?: boolean
 }
 
 /** 单个条目的呈现状态；自绘星形时按它取图案。 */
@@ -151,10 +156,10 @@ export interface RatingApi<T extends PropTypes = PropTypes> {
 /** 读屏文案，默认英文。 */
 export interface RatingTranslations {
   /**
-   * 一颗星的可及名，入参为它的分值与总档数。
+   * 一颗星的可及名，入参为它的分值与总档数；缺省取当前语言包（英文「3 of 5 stars」）。
    *
-   * 该文案总会发出：星星格内绘制的是符号，点亮与未点亮绘制的还不是同一个，
-   * 名字交给内容时会随高亮在两个符号之间来回变化。
+   * 星里没有作者内容时发出：格内绘制的是符号，点亮与未点亮绘制的还不是同一个，名字交给符号会随高亮来回变。
+   * 作者在星里放了自己的内容（文字或带名字的节点）时不发，以作者的内容为名，不盖住作者的标注。
    */
   item: (value: number, count: number) => string
 }

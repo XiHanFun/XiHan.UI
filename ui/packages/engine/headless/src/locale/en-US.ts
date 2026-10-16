@@ -675,6 +675,8 @@ export const REASONING_EN_US: XhLocaleBucket<'reasoning'> = {
   thoughtFor: 'Thought for {seconds}s',
 }
 
+export const RATING_EN_US: XhLocaleBucket<'rating'> = { item: (value, count) => `${value} of ${count} stars` }
+
 export const RESIZABLE_EN_US: XhLocaleBucket<'resizable'> = { root: 'Resizable', handle: edge => `Resize ${EDGE[edge]}` }
 
 export const SANKEY_CHART_EN_US: XhLocaleBucket<'sankey-chart'> = {
@@ -928,6 +930,7 @@ const translations = {
   'prompt-input': PROMPT_INPUT_EN_US,
   'question-flow': QUESTION_FLOW_EN_US,
   'radar-chart': RADAR_CHART_EN_US,
+  'rating': RATING_EN_US,
   'reasoning': REASONING_EN_US,
   'resizable': RESIZABLE_EN_US,
   'sankey-chart': SANKEY_CHART_EN_US,

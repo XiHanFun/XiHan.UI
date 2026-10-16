@@ -9,7 +9,8 @@ import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { RatingApi, RatingItemState, RatingSchema, RatingTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { useEffect, useMemo, useRef } from 'react'
+import { hasNamingContent } from '@xihan-ui/headless'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useFormReset } from '../../runtime/attach-form-reset'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
@@ -222,11 +223,18 @@ export function XhRatingItem({ value, children, ...rest }: XhRatingItemProps): R
       svc.send({ type: 'CONTROL.BLUR' })
   }, [ctx.service])
 
+  // 作者在星里放了自己的内容（文字或带名字的节点）就以内容为名，connect 不写缺省名；按渲染出的节点判断
+  const [authored, setAuthored] = useState(false)
+  useIsomorphicLayoutEffect(() => {
+    if (itemEl.current)
+      setAuthored(hasNamingContent(itemEl.current))
+  })
+
   // 星星上这三个处理器都要拿到原生事件：onFocus 是不冒泡的 DOM focus；
   // onClick 与 onPointerMove 要读 offsetX 判断指针落在这颗星的哪半边，
   // 而 React 的合成鼠标事件不带 offsetX，半档会被一律算成整颗
   const bind = useNativeEvents(
-    ctx.api.getItemProps(item) as Record<string, unknown>,
+    ctx.api.getItemProps({ ...item, authored }) as Record<string, unknown>,
     ['onFocus', 'onClick', 'onPointerMove'],
   )
 
