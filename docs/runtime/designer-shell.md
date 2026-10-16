@@ -33,3 +33,42 @@ defineDesignerShell();
 - 事件一律 `CustomEvent`，冒泡并穿过 shadow 边界，名字用短横线、不带前缀。
 - 每个零件都有 `readonly`：只能浏览与选择，不出编辑手势、不派发修改类事件。
 - 文案键是零件的标签名，自带英文缺省。中文在 `@xihan-ui/designer-shell/locale` 的 `designerShellZhCN`，各产品把它并进自己的语言包，宿主只合并一份产品包。
+
+## 属性面板
+
+`<xh-designer-properties>` 按 `@xihan-ui/designer-kit/properties` 的属性描述列出字段。设计器给出被编辑的对象，面板分组、挑编辑器、派发修改，自己不写文档。
+
+```ts
+const panel = document.createElement("xh-designer-properties");
+panel.targets = [{ kind: "task", id: "t1", value: node, descriptors }];
+panel.addEventListener("property-change", (event) => {
+  const { path, value, targets, merge } = event.detail;
+  history.execute(opsFor(targets, path, value), { merge, mergeWithin: Infinity });
+});
+panel.addEventListener("property-commit", () => history.seal());
+```
+
+| 属性 | 说明 |
+| --- | --- |
+| `targets` | 被编辑的对象 `{ kind, id, value, descriptors }`；空数组显示空状态，多个时只显示共同属性 |
+| `editors` | 宿主编辑器表，按 `resolvePropertyEditor` 查找；查不到的内建种类用自带编辑器 |
+| `groupOrder` / `groupLabel` | 分组的先后与标题，标题缺省显示分组 id |
+| `labelOf` / `hintOf` | 字段的标签与说明；标签缺省取描述的 `label`，再缺省取 `formatJsonPath(path)` |
+| `optionLabel` / `unitLabel` | select 选项与 number 单位的文案 |
+| `errors` | 字段错误 `{ target, path, message }`，文字由设计器换好，`path` 相对对象 |
+| `heading` | 标题下一行，如「表格 · t1」「已选中 3 个」 |
+| `empty-text` | 空状态文案 |
+| `toggle-limit` | select 单选且选项不超过它时改用切换按钮组；缺省不用 |
+| `collapsible` | 分组可折叠，折叠状态按分组 id 保留，换选择不重置 |
+| `readonly` | 字段只读，不派发修改 |
+
+| 事件 | detail |
+| --- | --- |
+| `property-change` | `{ path, value, targets, merge }`：每次输入都派发，`value` 为 `undefined` 表示清除；`merge` 是合并键，交给历史栈的 `execute` |
+| `property-commit` | `{ path }`：一次编辑结束（失焦、改选、切换、回车），设计器封口 |
+
+- 共同属性是每个对象都有、`path` 相同、`control` 按 JSON 相等的那些；任一对象上不显示即不显示。取值不同时字段留空，显示占位「多个值」，宿主编辑器拿到的 `value` 为 `undefined`。
+- 字段用 `<xh-field>` 包库内控件，标签、说明与错误接到控件的可聚焦部件上。换选择只换数据时，同一属性、同一编辑器的字段原样复用，焦点与光标不丢。
+- 宿主编辑器的 `setValue` 与 `commit` 也走这两个事件。
+- 插槽 `header` 在标题下方（如部位导航），`footer` 在字段之后（如「删除列」）。
+- `focusField(path)` 把焦点交给该属性的字段，找不到时返回 `false`。
