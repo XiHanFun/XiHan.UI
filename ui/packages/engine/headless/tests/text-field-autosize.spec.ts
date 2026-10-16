@@ -363,3 +363,39 @@ describe('autoSizeTextarea 上限只有一处、滚动只在 textarea', () => {
     expect(el.style.overflowY).toBe('scroll')
   })
 })
+
+describe('没有排版的环境里安静跳过', () => {
+  it('jsdom 的计算样式取不到写入方向、盒模型与行高：不抛错，不写任何内联声明', () => {
+    const el = textarea()
+    el.style.setProperty('block-size', '50px')
+    expect(() => autoSizeTextarea(el, true)).not.toThrow()
+    expect(() => autoSizeTextarea(el, { minRows: 2, maxRows: 4 })).not.toThrow()
+    expect(el.style.blockSize).toBe('50px')
+    expect(el.style.maxBlockSize).toBe('')
+    expect(el.style.overflowY).toBe('')
+    expect(document.querySelectorAll('textarea')).toHaveLength(1)
+  })
+
+  it.each(['writing-mode', 'box-sizing', 'line-height'])('只有 %s 取不到时同样跳过', (property) => {
+    const el = textarea()
+    vi.spyOn(window, 'getComputedStyle').mockReturnValue(computedStyle({ [property]: '' }))
+    expect(() => autoSizeTextarea(el, true)).not.toThrow()
+    expect(el.style.blockSize).toBe('')
+  })
+
+  it('镜像量出的 scrollHeight 两次都是 0：不抛错、不改高度，上限放回动手之前的样子，镜像照样摘掉', () => {
+    const el = textarea()
+    vi.spyOn(window, 'getComputedStyle').mockReturnValue(computedStyle())
+    mockMirrorMeasurements(document, [{ contentPaddingBox: 80, rowPaddingBox: 13 }, { contentPaddingBox: 0, rowPaddingBox: 0 }])
+    autoSizeTextarea(el, true)
+    const measured = { blockSize: el.style.blockSize, maxBlockSize: el.style.maxBlockSize, overflowY: el.style.overflowY }
+    expect(() => autoSizeTextarea(el, true)).not.toThrow()
+    expect({ blockSize: el.style.blockSize, maxBlockSize: el.style.maxBlockSize, overflowY: el.style.overflowY }).toEqual(measured)
+    expect(document.querySelectorAll('textarea')).toHaveLength(1)
+  })
+
+  it('行数配置非法时照旧明确失败：没有排版也不吞掉配置错误', () => {
+    const el = textarea()
+    expect(() => autoSizeTextarea(el, { minRows: 0 })).toThrow(/TextField autoSize/)
+  })
+})
