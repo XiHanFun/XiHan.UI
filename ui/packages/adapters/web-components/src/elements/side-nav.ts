@@ -9,7 +9,7 @@ import type { Cleanup, IdGenerator, Layer, PositionEnginePort, RuntimeConfig, Se
 import type { SideNavApi, SideNavExpandedValueChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails, TooltipSchema } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectSideNav, findSideNavRowEl, sideNavAnatomy, sideNavMachine, sideNavMeta, sideNavTooltipProps, tooltipAnatomy, tooltipMachine } from '@xihan-ui/headless'
+import { connectSideNav, findSideNavRowEl, sideNavAnatomy, sideNavMachine, sideNavMeta, sideNavTooltipProps, tooltipMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
@@ -81,7 +81,7 @@ export class XhSideNavElement extends XhPortalHostElement {
   static override partContract = {
     anatomy: sideNavAnatomy,
     meta: sideNavMeta,
-    delegates: [{ name: tooltipAnatomy.name, parts: ['tooltip-positioner', 'tooltip'] }],
+    delegates: [{ name: 'tooltip', parts: ['tooltip-positioner', 'tooltip'] }],
   }
 
   // dir 只占属性名、字段改叫 direction：同名声明会盖掉 HTMLElement 原生反射。

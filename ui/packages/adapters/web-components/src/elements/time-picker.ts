@@ -23,7 +23,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectTimePicker, resolveFormControlState, tagAnatomy, timePickerAnatomy, timePickerMachine, timePickerMeta } from '@xihan-ui/headless'
+import { connectTimePicker, resolveFormControlState, timePickerAnatomy, timePickerMachine, timePickerMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
@@ -132,7 +132,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
   static override partContract = {
     anatomy: timePickerAnatomy,
     meta: timePickerMeta,
-    delegates: [{ name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }],
+    delegates: [{ name: 'tag', parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }],
   }
 
   static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const

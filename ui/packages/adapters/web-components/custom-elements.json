@@ -7513,7 +7513,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: cascaderAnatomy, meta: cascaderMeta, delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }], }"
+              "default": "{ anatomy: cascaderAnatomy, meta: cascaderMeta, delegates: [{ name: 'tag', parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",
@@ -12684,7 +12684,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: colorPickerAnatomy, meta: colorPickerMeta, // tag / overflow-tag 接的是 tag 的 root，tag-label 接的是 tag 的 label，item-delete-trigger 接的是 tag 的 close-trigger delegates: [colorSliderAnatomy, colorSwatchPickerAnatomy, { name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }], }"
+              "default": "{ anatomy: colorPickerAnatomy, meta: colorPickerMeta, // tag / overflow-tag 接的是 tag 的 root，tag-label 接的是 tag 的 label，item-delete-trigger 接的是 tag 的 close-trigger delegates: [colorSliderAnatomy, colorSwatchPickerAnatomy, { name: 'tag', parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",
@@ -15322,7 +15322,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: comboboxAnatomy, meta: comboboxMeta, delegates: [{ name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }], }"
+              "default": "{ anatomy: comboboxAnatomy, meta: comboboxMeta, delegates: [{ name: 'tag', parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",
@@ -19243,7 +19243,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: datePickerAnatomy, meta: datePickerMeta, delegates: [dateFieldAnatomy, calendarPickerAnatomy, { name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }], }"
+              "default": "{ anatomy: datePickerAnatomy, meta: datePickerMeta, delegates: [dateFieldAnatomy, calendarPickerAnatomy, { name: 'tag', parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",
@@ -56936,7 +56936,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: selectAnatomy, meta: selectMeta, delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }], }"
+              "default": "{ anatomy: selectAnatomy, meta: selectMeta, delegates: [{ name: 'tag', parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",
@@ -58300,7 +58300,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: sideNavAnatomy, meta: sideNavMeta, delegates: [{ name: tooltipAnatomy.name, parts: ['tooltip-positioner', 'tooltip'] }], }"
+              "default": "{ anatomy: sideNavAnatomy, meta: sideNavMeta, delegates: [{ name: 'tooltip', parts: ['tooltip-positioner', 'tooltip'] }], }"
             },
             {
               "kind": "field",
@@ -65008,7 +65008,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: tagGroupAnatomy, meta: tagGroupMeta, delegates: [{ name: tagAnatomy.name, parts: ['item', 'item-text', 'item-delete-trigger'] }], }"
+              "default": "{ anatomy: tagGroupAnatomy, meta: tagGroupMeta, delegates: [{ name: 'tag', parts: ['item', 'item-text', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",
@@ -65972,7 +65972,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: tagsInputAnatomy, meta: tagsInputMeta, delegates: [{ name: tagAnatomy.name, parts: ['item-preview', 'item-text', 'item-delete-trigger'] }], }"
+              "default": "{ anatomy: tagsInputAnatomy, meta: tagsInputMeta, delegates: [{ name: 'tag', parts: ['item-preview', 'item-text', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",
@@ -68095,7 +68095,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: timePickerAnatomy, meta: timePickerMeta, delegates: [{ name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }], }"
+              "default": "{ anatomy: timePickerAnatomy, meta: timePickerMeta, delegates: [{ name: 'tag', parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",
@@ -75302,7 +75302,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: treeSelectAnatomy, meta: treeSelectMeta, delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }], }"
+              "default": "{ anatomy: treeSelectAnatomy, meta: treeSelectMeta, delegates: [{ name: 'tag', parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }], }"
             },
             {
               "kind": "field",

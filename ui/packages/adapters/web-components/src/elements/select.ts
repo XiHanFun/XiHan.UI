@@ -9,7 +9,7 @@ import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement,
 import type { CollectionVirtualizer, FormControlState, SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectSelect, resolveFormControlState, selectAnatomy, selectMachine, selectMeta, tagAnatomy } from '@xihan-ui/headless'
+import { connectSelect, resolveFormControlState, selectAnatomy, selectMachine, selectMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -99,7 +99,7 @@ export class XhSelectElement extends XhPortalHostElement {
   static override partContract = {
     anatomy: selectAnatomy,
     meta: selectMeta,
-    delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }],
+    delegates: [{ name: 'tag', parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }],
   }
 
   static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const

@@ -16,7 +16,7 @@ import type {
   TagsInputValueChangeDetails,
 } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTagsInput, resolveFormControlState, tagAnatomy, tagsInputAnatomy, tagsInputMachine, tagsInputMeta } from '@xihan-ui/headless'
+import { connectTagsInput, resolveFormControlState, tagsInputAnatomy, tagsInputMachine, tagsInputMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -90,7 +90,7 @@ export class XhTagsInputElement extends XhElement {
   static override partContract = {
     anatomy: tagsInputAnatomy,
     meta: tagsInputMeta,
-    delegates: [{ name: tagAnatomy.name, parts: ['item-preview', 'item-text', 'item-delete-trigger'] }],
+    delegates: [{ name: 'tag', parts: ['item-preview', 'item-text', 'item-delete-trigger'] }],
   }
 
   static override fieldTarget = { parts: ['input'], kind: 'state' } as const

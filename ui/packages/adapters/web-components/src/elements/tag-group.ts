@@ -8,7 +8,7 @@
 import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, TagGroupApi, TagGroupItemDeleteDetails, TagGroupItemProps, TagGroupNode, TagGroupSchema, TagGroupSelectionMode, TagGroupTranslations, TagGroupValueChangeDetails, TagVariant } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTagGroup, resolveFormControlState, tagAnatomy, tagGroupAnatomy, tagGroupMachine, tagGroupMeta } from '@xihan-ui/headless'
+import { connectTagGroup, resolveFormControlState, tagGroupAnatomy, tagGroupMachine, tagGroupMeta } from '@xihan-ui/headless'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -69,7 +69,7 @@ export class XhTagGroupElement extends XhElement {
   static override partContract = {
     anatomy: tagGroupAnatomy,
     meta: tagGroupMeta,
-    delegates: [{ name: tagAnatomy.name, parts: ['item', 'item-text', 'item-delete-trigger'] }],
+    delegates: [{ name: 'tag', parts: ['item', 'item-text', 'item-delete-trigger'] }],
   }
 
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，

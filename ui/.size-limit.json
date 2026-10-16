@@ -288,6 +288,13 @@
     "limit": "748 kB"
   },
   {
+    "name": "web-components/define：只按需注册一个元素（defineXhElement + XhStatisticElement）",
+    "path": "packages/adapters/web-components/dist/define.js",
+    "import": "{ defineXhElement, XhStatisticElement }",
+    "gzip": true,
+    "limit": "17 kB"
+  },
+  {
     "name": "web-components/backgrounds",
     "path": "packages/adapters/web-components/dist/backgrounds.js",
     "gzip": true,
