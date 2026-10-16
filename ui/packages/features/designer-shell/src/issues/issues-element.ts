@@ -11,7 +11,7 @@ import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { DesignerIssuesTranslations } from '../translations'
 import { createCounterIdGenerator } from '@xihan-ui/core'
 import { issueSeverity } from '@xihan-ui/designer-kit/schema'
-import { createAuthoredElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
+import { createAuthoredElement, createGeneratedElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { defineIssueListElements } from '../internal/ui-elements'
 
 /** 列表里的一条：问题本身与设计器换好的文字。 */
@@ -134,9 +134,9 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
       this.#shown = new Set(next.filter((severity): severity is IssueSeverity => severity === 'error' || severity === 'warning'))
       this.requestUpdate()
     })
-    const header = createAuthoredElement(doc, 'div', { 'data-part': 'header' }, [title, filter])
-    const list = createAuthoredElement(doc, 'ul', { 'data-part': 'list', 'role': 'list', 'aria-labelledby': title.id })
-    const empty = createAuthoredElement(doc, 'p', { 'data-part': 'empty' })
+    const header = createGeneratedElement(doc, 'div', { 'data-part': 'header' }, [title, filter])
+    const list = createGeneratedElement(doc, 'ul', { 'data-part': 'list', 'role': 'list', 'aria-labelledby': title.id })
+    const empty = createGeneratedElement(doc, 'p', { 'data-part': 'empty' })
     list.addEventListener('click', this.#onClick)
     list.addEventListener('keydown', this.#onKeyDown)
     list.addEventListener('mouseover', this.#onHover)

@@ -79,6 +79,7 @@ function record<K extends keyof DesignerPropertiesEventMap>(panel: Element, type
 describe('<xh-designer-properties>', () => {
   it('没有对象时显示空状态，标题与副标题取文案与 heading', async () => {
     const panel = await mount(element => element.heading = '任务 · t1')
+    expect(Array.from(panel.children, child => [child.getAttribute('data-part'), child.hasAttribute('data-xh-gen')])).toEqual([['header', true], ['body', true]])
     expect(panel.querySelector('[data-part="title"]')!.textContent).toBe('Properties')
     expect(panel.querySelector<HTMLElement>('[data-part="heading"]')!.hidden).toBe(false)
     expect(panel.querySelector('[data-part="empty"]')!.textContent).toBe('No properties to edit')

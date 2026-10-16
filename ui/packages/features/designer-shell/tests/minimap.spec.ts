@@ -59,6 +59,7 @@ describe('<xh-designer-minimap>', () => {
   it('整块 aria-hidden；没有图形时收起', async () => {
     const map = await mount()
     expect(map.getAttribute('aria-hidden')).toBe('true')
+    expect(Array.from(map.children, child => [child.getAttribute('data-part'), child.hasAttribute('data-xh-gen')])).toEqual([['canvas', true]])
     expect(map.hasAttribute('data-empty')).toBe(true)
     map.shapes = shapes
     await map.updateComplete

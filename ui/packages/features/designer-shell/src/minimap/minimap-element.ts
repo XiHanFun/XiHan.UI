@@ -10,7 +10,7 @@ import type { Point, Rect, Size, Viewport } from '@xihan-ui/designer-kit'
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import { fitRect, screenToWorld, unionRects, visibleWorldRect } from '@xihan-ui/designer-kit'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
-import { emitEvent, SVG_NS, XhReactiveElement } from '@xihan-ui/web-components/authoring'
+import { emitEvent, GEN_ATTR, SVG_NS, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 
 /** 小地图上的一个图形，世界坐标。 */
 export type DesignerMinimapShape
@@ -118,6 +118,7 @@ export class XhDesignerMinimapElement extends XhReactiveElement {
     const svg = doc.createElementNS(SVG_NS, 'svg')
     const world = doc.createElementNS(SVG_NS, 'g')
     const frame = doc.createElementNS(SVG_NS, 'rect')
+    svg.setAttribute(GEN_ATTR, '')
     svg.setAttribute('data-part', 'canvas')
     world.setAttribute('data-part', 'shapes')
     frame.setAttribute('data-part', 'frame')
