@@ -109,6 +109,8 @@ export type FormValidateOn = 'submit' | 'blur' | 'change'
 
 export interface FormValuesChangeDetails {
   values: FormValues
+  /** 这次变化来自某个字段组的行变更时带上：哪一个字段组、哪一种行变更，与字段组的 value-change 同一份。 */
+  arrayMutation?: { name: FormPath, mutation: FormArrayMutation }
 }
 
 export interface FormErrorsChangeDetails {

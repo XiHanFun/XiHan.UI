@@ -227,7 +227,7 @@ describe('受控：宿主说了算', () => {
     const before = keys(service)
 
     api(service).remove(1)
-    expect(onValueChange).toHaveBeenCalledWith({ value: ['甲', '丙'] })
+    expect(onValueChange).toHaveBeenCalledWith({ value: ['甲', '丙'], mutation: { type: 'remove', index: 1 } })
     expect(api(service).value).toEqual(['甲', '乙', '丙'])
     expect(keys(service)).toEqual(before)
   })
@@ -641,7 +641,7 @@ describe('在指定位置插入', () => {
     const service = makeService({ value: ['甲', '丙'], onValueChange })
     const before = keys(service)
     api(service).insert(1, '乙')
-    expect(onValueChange).toHaveBeenCalledWith({ value: ['甲', '乙', '丙'] })
+    expect(onValueChange).toHaveBeenCalledWith({ value: ['甲', '乙', '丙'], mutation: { type: 'insert', index: 1 } })
     expect(api(service).value).toEqual(['甲', '丙'])
     expect(keys(service)).toEqual(before)
   })
@@ -675,5 +675,56 @@ describe('在指定位置插入', () => {
     expect(formApi.getFieldError(['users', 2, 'email'])).toBe('随行后移')
     expect(formApi.isFieldRequired(['users', 2, 'email'])).toBe(true)
     expect(formApi.getFieldError(secondEmail)).toBeFalsy()
+  })
+})
+
+describe('value-change 带上行变更', () => {
+  it('非受控、不在表单里：增、删、移与整份写值各带对应的 mutation', () => {
+    const onValueChange = vi.fn()
+    const service = makeService({ defaultValue: ['甲', '乙'], movable: true, onValueChange, createItem: () => '新' })
+    api(service).add()
+    api(service).remove(0)
+    api(service).moveDown(0)
+    api(service).setValue(['丙'])
+    expect(onValueChange.mock.calls.map(([details]) => details.mutation)).toEqual([
+      { type: 'insert', index: 2 },
+      { type: 'remove', index: 0 },
+      { type: 'move', from: 0, to: 1 },
+      { type: 'replace', length: 1 },
+    ])
+    expect(onValueChange.mock.calls.at(-1)![0].value).toEqual(['丙'])
+  })
+
+  it('受控时整份写值同样带 replace：宿主据此整份迁移行级状态', () => {
+    const onValueChange = vi.fn()
+    const service = makeService({ value: ['甲'], onValueChange })
+    api(service).setValue(['乙'])
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['乙'], mutation: { type: 'replace', length: 1 } })
+  })
+
+  it('在表单里：字段组的 value-change 与表单的 values-change 带同一份行变更', () => {
+    const users = ['users'] as const
+    const onValuesChange = vi.fn()
+    const form = makeFormService({ defaultValues: createFormPathRecord([[users, ['甲', '乙']]]), onValuesChange })
+    const onValueChange = vi.fn()
+    const rows = makeService({ name: users, onValueChange })
+    rows.refs.set('form', form)
+    api(rows).remove(1)
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['甲'], mutation: { type: 'remove', index: 1 } })
+    expect(onValuesChange.mock.calls.at(-1)![0].arrayMutation).toEqual({ name: users, mutation: { type: 'remove', index: 1 } })
+  })
+
+  it('不是字段组发起的变化不带：表单重置、直接写字段值', () => {
+    const users = ['users'] as const
+    const onValuesChange = vi.fn()
+    const form = makeFormService({ defaultValues: createFormPathRecord([[users, ['甲', '乙']]]), onValuesChange })
+    const rows = makeService({ name: users })
+    rows.refs.set('form', form)
+    const formApi = connectForm(form, normalizeProps)
+    api(rows).remove(1)
+    formApi.reset()
+    expect(onValuesChange.mock.calls.at(-1)![0]).not.toHaveProperty('arrayMutation')
+    formApi.setFieldValue(users, ['丙'])
+    expect(onValuesChange.mock.calls.at(-1)![0]).not.toHaveProperty('arrayMutation')
   })
 })

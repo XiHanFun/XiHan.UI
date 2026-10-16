@@ -25956,7 +25956,7 @@
           ],
           "events": [
             {
-              "description": "数据数组变化；detail 为 `{ value: unknown[] }`",
+              "description": "数据数组变化；detail 为 `{ value: unknown[], mutation? }`，本组的增、删、移与整份写值带上 mutation（insert / remove / move / replace）",
               "name": "value-change",
               "type": {
                 "text": "FieldArrayValueChangeDetails"
@@ -29444,7 +29444,7 @@
           ],
           "events": [
             {
-              "description": "值表变化；detail 为 `{ values }`",
+              "description": "值表变化；detail 为 `{ values, arrayMutation? }`，来自字段组的行变更时 arrayMutation 是 `{ name, mutation }`",
               "name": "values-change",
               "type": {
                 "text": "FormValuesChangeDetails"

@@ -62,14 +62,14 @@ describe('fieldArray 命令式方法', () => {
     await tick()
 
     array.insert(1, '乙')
-    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['甲', '乙', '丙'] })
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['甲', '乙', '丙'], mutation: { type: 'insert', index: 1 } })
     array.insert(0)
-    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['空', '甲', '乙', '丙'] })
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['空', '甲', '乙', '丙'], mutation: { type: 'insert', index: 0 } })
     array.move(3, 0)
-    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['丙', '空', '甲', '乙'] })
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['丙', '空', '甲', '乙'], mutation: { type: 'move', from: 3, to: 0 } })
     array.removeItem(1)
     array.moveDown(0)
-    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['甲', '丙', '乙'] })
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['甲', '丙', '乙'], mutation: { type: 'move', from: 0, to: 1 } })
   })
 
   it('还没进文档时命令式接口明确报错', () => {

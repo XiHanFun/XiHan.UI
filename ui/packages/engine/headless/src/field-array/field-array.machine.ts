@@ -6,6 +6,7 @@
 // 提供 field array 相关实现。
 
 import type { Params, RefsFacade } from '@xihan-ui/core'
+import type { FormArrayMutation } from '../form'
 import type { FieldArrayFocusTarget, FieldArrayPendingKeys, FieldArrayPressedKey, FieldArraySchema } from './field-array.types'
 import { focusSafely, resetDeclaredValue, setup, trackListMotion } from '@xihan-ui/core'
 import { getFormPathValue } from '../form'
@@ -73,6 +74,15 @@ export function moveRow<T>(list: readonly T[], from: number, to: number): T[] {
   return out
 }
 
+/** 本组发起的那几次写值各是哪一种行变更：按新数组的身份记，落值的 onChange 取出来附上。 */
+const pendingMutations = new WeakMap<readonly unknown[], FormArrayMutation>()
+
+/** 写值通知的载荷：这份数组是本组的行变更写出来的就带上那一种。 */
+function changeDetails(value: unknown[]): { value: unknown[], mutation?: FormArrayMutation } {
+  const mutation = pendingMutations.get(value)
+  return mutation ? { value, mutation } : { value }
+}
+
 /**
  * 落一次结构改动：新号先搁进 pending，再写值。
  * 写值这一步在受控下只发通知、不改内部值，所以号不能当场落，得等 value 真的变了由 syncKeys 认领。
@@ -87,10 +97,11 @@ function commit(
   const name = params.prop('name')
   if (form && name !== undefined) {
     form.send({ type: 'FIELD.ARRAY.MUTATE', name, value: next.value, mutation })
-    params.prop('onValueChange')?.({ value: next.value })
+    params.prop('onValueChange')?.({ value: next.value, mutation })
     params.action(['syncKeys'])
     return
   }
+  pendingMutations.set(next.value, mutation)
   params.context.set('value', next.value)
 }
 
@@ -130,7 +141,7 @@ export const fieldArrayMachine = createMachine({
         defaultValue: prop('defaultValue') ?? [],
         isEqual: sameRows,
         // 通知必须挂在 cell 上：受控时 set 不写内部值，只有这条回调能把用户意图送出去
-        onChange: value => prop('onValueChange')?.({ value }),
+        onChange: value => prop('onValueChange')?.(changeDetails(value)),
       })),
       keys: cell<string[]>(() => ({ defaultValue: seedKeys, isEqual: sameRows })),
       // 按压通道：被 Space / Enter 或触屏按住的那一个把手（新增 / 逐行删除 / 上移 / 下移），按 key 记
@@ -251,12 +262,15 @@ export const fieldArrayMachine = createMachine({
         const form = params.refs.get('form')
         const name = params.prop('name')
         if (form && name !== undefined) {
-          form.send({ type: 'FIELD.ARRAY.MUTATE', name, value: [...e.value], mutation: { type: 'replace', length: e.value.length } })
-          params.prop('onValueChange')?.({ value: [...e.value] })
+          const mutation: FormArrayMutation = { type: 'replace', length: e.value.length }
+          form.send({ type: 'FIELD.ARRAY.MUTATE', name, value: [...e.value], mutation })
+          params.prop('onValueChange')?.({ value: [...e.value], mutation })
           params.action(['syncKeys'])
           return
         }
-        context.set('value', [...e.value])
+        const next = [...e.value]
+        pendingMutations.set(next, { type: 'replace', length: next.length })
+        context.set('value', next)
       },
 
       addItem: (params) => {

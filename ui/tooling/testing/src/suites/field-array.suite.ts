@@ -168,7 +168,7 @@ export const fieldArraySuite: ConformanceSuite = {
           kind: 'click',
           part: 'add-trigger',
           expect: {
-            events: [{ type: 'value-change', detail: { value: ['甲', '乙', '丙', '丁'] } }],
+            events: [{ type: 'value-change', detail: { value: ['甲', '乙', '丙', '丁'], mutation: { type: 'insert', index: 3 } } }],
           },
         },
       ],
@@ -183,7 +183,7 @@ export const fieldArraySuite: ConformanceSuite = {
           kind: 'click',
           part: 'add-trigger',
           expect: {
-            events: [{ type: 'value-change', detail: { value: ['甲', null] } }],
+            events: [{ type: 'value-change', detail: { value: ['甲', null], mutation: { type: 'insert', index: 1 } } }],
           },
         },
       ],
@@ -238,7 +238,7 @@ export const fieldArraySuite: ConformanceSuite = {
         {
           kind: 'click',
           part: 'item-delete-trigger[2]',
-          expect: { events: [{ type: 'value-change', detail: { value: ['甲', '乙'] } }] },
+          expect: { events: [{ type: 'value-change', detail: { value: ['甲', '乙'], mutation: { type: 'remove', index: 2 } } }] },
         },
         {
           // 被点的那个把手随行离场，不接住的话焦点会掉到 body 上
@@ -257,7 +257,7 @@ export const fieldArraySuite: ConformanceSuite = {
         {
           kind: 'click',
           part: 'item-delete-trigger',
-          expect: { events: [{ type: 'value-change', detail: { value: [] } }] },
+          expect: { events: [{ type: 'value-change', detail: { value: [], mutation: { type: 'remove', index: 0 } } }] },
         },
         {
           kind: 'settle',
@@ -277,7 +277,7 @@ export const fieldArraySuite: ConformanceSuite = {
         {
           kind: 'click',
           part: 'move-up-trigger[1]',
-          expect: { events: [{ type: 'value-change', detail: { value: ['乙', '甲', '丙'] } }] },
+          expect: { events: [{ type: 'value-change', detail: { value: ['乙', '甲', '丙'], mutation: { type: 'move', from: 1, to: 0 } } }] },
         },
         {
           kind: 'settle',
@@ -294,7 +294,7 @@ export const fieldArraySuite: ConformanceSuite = {
         {
           kind: 'click',
           part: 'move-down-trigger[0]',
-          expect: { events: [{ type: 'value-change', detail: { value: ['乙', '甲', '丙'] } }] },
+          expect: { events: [{ type: 'value-change', detail: { value: ['乙', '甲', '丙'], mutation: { type: 'move', from: 0, to: 1 } } }] },
         },
         {
           kind: 'settle',
@@ -312,7 +312,7 @@ export const fieldArraySuite: ConformanceSuite = {
           kind: 'click',
           part: 'item-delete-trigger[0]',
           expect: {
-            events: [{ type: 'value-change', detail: { value: ['乙', '丙'] } }],
+            events: [{ type: 'value-change', detail: { value: ['乙', '丙'], mutation: { type: 'remove', index: 0 } } }],
             // 名字里的总行数还是 3：宿主没写回，组件就没有自作主张
             parts: { 'item-delete-trigger[0]': { 'aria-label': 'Remove row 1 of 3' } },
           },

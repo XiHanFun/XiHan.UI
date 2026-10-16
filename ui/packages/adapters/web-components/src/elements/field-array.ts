@@ -50,7 +50,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} read-only - 只读：行数不可修改，行内的控件由作者自行设置只读
  * @attr {boolean} invalid - 校验失败标注；写在根与每一行上
  * @attr {string} name - 整份数组的表单字段名；嵌套 Form 时自动使用同一条 FormPath 真源
- * @fires value-change - 数据数组变化；detail 为 `{ value: unknown[] }`
+ * @fires value-change - 数据数组变化；detail 为 `{ value: unknown[], mutation? }`，本组的增、删、移与整份写值带上 mutation（insert / remove / move / replace）
  * @csspart root - 整份列表的容器，承载 data-disabled / data-empty / data-at-min / data-at-max / data-movable
  * @csspart item - 一行一个，可自带 index 属性声明下标，默认按文档序
  * @csspart item-label - 一行前面的行号或名目；纯标注
