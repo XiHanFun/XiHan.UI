@@ -143,6 +143,25 @@ describe('<xh-designer-frame>', () => {
     ])
   })
 
+  it('回填堆叠区大小：过期区名与无效值忽略，合计不是 100 的按比例归一，归一后低于 10% 的定在下限；sizes-change 只带登记着的区', async () => {
+    await mount((element) => {
+      element.regions = [
+        { name: 'canvas', position: 'center' },
+        { name: 'properties', position: 'end' },
+        { name: 'outline', position: 'end' },
+        { name: 'minimap', position: 'end' },
+      ]
+      element.sizes = { end: Number.NaN, regions: { properties: 1000, outline: 1, ghost: 50, minimap: -5 } }
+    })
+    const stack = frame.querySelector('[data-part="stack"][data-position="end"] [data-part="splitter"]')!
+    expect(stack.getAttribute('default-sizes')).toBe('80,10,10')
+    expect(splitter('horizontal')!.getAttribute('default-sizes')).toBe('80,20')
+    const seen: DesignerFrameEventMap['sizes-change']['detail'][] = []
+    frame.addEventListener('sizes-change', event => seen.push((event as DesignerFrameEventMap['sizes-change']).detail))
+    stack.dispatchEvent(new CustomEvent('sizes-change', { detail: { sizes: [70, 15, 15] }, bubbles: true }))
+    expect(seen).toEqual([{ sizes: { regions: { properties: 70, outline: 15, minimap: 15 } } }])
+  })
+
   it('分隔条跟着外框的文字方向，外框的 dir 变了就重排', async () => {
     await mount(element => element.setAttribute('dir', 'rtl'))
     const dirs = (): (string | null)[] => Array.from(frame.querySelectorAll('xh-splitter'), splitter => splitter.getAttribute('dir'))
