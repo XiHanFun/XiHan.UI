@@ -7,3 +7,13 @@
 
 export { defineDesignerShell, defineDesignerShellElement, DESIGNER_SHELL_ELEMENTS } from './define'
 export type { DesignerShellTagMap } from './define'
+export { XhDesignerPropertiesElement } from './properties/properties-element'
+export type {
+  DesignerPropertiesEventMap,
+  DesignerPropertyDescriptor,
+  DesignerPropertyEditor,
+  DesignerPropertyError,
+  DesignerPropertyTarget,
+  DesignerPropertyTargetRef,
+} from './properties/properties-element'
+export type { DesignerPropertiesTranslations } from './translations'

@@ -6,4 +6,86 @@
 /* @xihan-ui/designer-shell 的样式：只消费语义令牌，按零件标签与 data-part 书写，位于 xihan.components 层。 */
 
 @layer xihan.components {
+  /* —— 属性面板 —— */
+
+  xh-designer-properties {
+    display: flex;
+    flex-direction: column;
+    min-block-size: 0;
+    color: var(--xh-fg-default);
+    font-size: var(--xh-font-size-sm);
+  }
+
+  xh-designer-properties [hidden] {
+    display: none;
+  }
+
+  xh-designer-properties > [data-part='header'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-space-0_5);
+    padding: var(--xh-space-3) var(--xh-space-3) var(--xh-space-2);
+  }
+
+  xh-designer-properties [data-part='title'] {
+    font-weight: var(--xh-font-weight-semibold);
+  }
+
+  xh-designer-properties [data-part='heading'] {
+    overflow: hidden;
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-font-size-xs);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  xh-designer-properties [data-part='header-slot']:empty,
+  xh-designer-properties [data-part='footer-slot']:empty {
+    display: none;
+  }
+
+  xh-designer-properties > [data-part='body'] {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--xh-space-4);
+    min-block-size: 0;
+    overflow: auto;
+    padding: var(--xh-space-1) var(--xh-space-3) var(--xh-space-3);
+  }
+
+  xh-designer-properties [data-part='empty'] {
+    margin: 0;
+    color: var(--xh-fg-muted);
+  }
+
+  xh-designer-properties [data-part='groups'],
+  xh-designer-properties [data-part='group'],
+  xh-designer-properties [data-part='group-rows'] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  xh-designer-properties [data-part='groups'] {
+    gap: var(--xh-space-4);
+  }
+
+  xh-designer-properties [data-part='group'],
+  xh-designer-properties [data-part='group-rows'] {
+    gap: var(--xh-space-3);
+  }
+
+  xh-designer-properties div[data-part='group-label'] {
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-font-size-xs);
+  }
+
+  xh-designer-properties [data-control='unsupported'] {
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-font-size-xs);
+  }
+
+  xh-designer-properties [data-json] textarea {
+    font-family: var(--xh-font-family-mono);
+  }
 }
