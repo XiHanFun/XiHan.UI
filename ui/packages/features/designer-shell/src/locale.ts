@@ -32,5 +32,9 @@ export const designerShellZhCN: XhConfig = {
       noMatches: '没有匹配的物料',
       empty: '没有物料',
     },
+    'xh-designer-ruler': {
+      horizontalGuide: value => `横向参考线 ${value}`,
+      verticalGuide: value => `竖向参考线 ${value}`,
+    },
   },
 }
