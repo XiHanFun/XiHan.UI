@@ -21,11 +21,11 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/sound` | `core` | — | 2 |
 | `@xihan-ui/designer-kit` | `core` `pointer` | — | 2 |
 | `@xihan-ui/animations` | `core` `motion` | — | 2 |
-| `@xihan-ui/headless` | `core` `motion` `pointer` `viz` | — | 3 |
+| `@xihan-ui/headless` | `core` `motion` `pointer` `viz` `expression` | — | 3 |
 | `@xihan-ui/styles` | `tokens`（只取其 CSS 产物） | — | 3 |
 | `@xihan-ui/backgrounds` | `core` `motion` | — | 3 |
-| `@xihan-ui/vue` | `core` `motion` `pointer` `viz` `headless` `position` | `vue`、`backgrounds`（可选）、`sound`（可选）、`code-highlight`（可选） | 4 |
-| `@xihan-ui/web-components` | `core` `motion` `pointer` `viz` `headless` `position` | `backgrounds`（可选）、`code-highlight`（可选） | 4 |
+| `@xihan-ui/vue` | `core` `motion` `pointer` `viz` `expression` `headless` `position` | `vue`、`backgrounds`（可选）、`sound`（可选）、`code-highlight`（可选） | 4 |
+| `@xihan-ui/web-components` | `core` `motion` `pointer` `viz` `expression` `headless` `position` | `backgrounds`（可选）、`code-highlight`（可选） | 4 |
 | `@xihan-ui/designer-shell` | `core` `pointer` `designer-kit` `web-components` | — | 5 |
 | `@xihan-ui/cli` | — | — | 5 |
 
@@ -44,14 +44,14 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 层 4   ┌─────────────┐       ┌──────────────────┐
        │     vue     │       │  web-components  │  peer: backgrounds · code-highlight（可选）；vue 另有 peer: sound（可选）、vue
        └──────┬──────┘       └────────┬─────────┘
-              │  core · motion · pointer · viz · headless · position
+              │  core · motion · pointer · viz · expression · headless · position
               └───────────┬───────────┘
                           ▼
 层 3   ┌──────────────┐  ┌───────────────────┐   ┌────────────────┐
        │   headless   │  │    backgrounds    │   │ styles（纯CSS）│
        └──────┬───────┘  └─────────┬─────────┘   └───────┬────────┘
-   core·motion·pointer·viz         core·motion            tokens 的 CSS 产物
-              │                    │
+   core·motion·pointer·viz·        core·motion            tokens 的 CSS 产物
+   expression │                    │
               ▼                    ▼
 层 2   ┌──────────┐ ┌────────────────┐ ┌─────────────┐ ┌───────┐ ┌────────────┐ ┌──────────────┐ ┌──────────┐
        │ position │ │ code-highlight │ │ chat-stream │ │ sound │ │ animations │ │ designer-kit │ │ markdown │

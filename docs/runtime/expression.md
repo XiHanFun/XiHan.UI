@@ -27,7 +27,7 @@ if (result.ok)
 
 ## 是否安装
 
-它不随适配器安装，需要时单独安装：
+安装任意一个适配器即自动获得它：`headless` 与三个适配器都依赖它。只用表达式、不用组件时，也可以单独安装：
 
 ```bash
 pnpm add @xihan-ui/expression

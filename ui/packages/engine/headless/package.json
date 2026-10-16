@@ -56,6 +56,7 @@
   },
   "dependencies": {
     "@xihan-ui/core": "workspace:^",
+    "@xihan-ui/expression": "workspace:^",
     "@xihan-ui/motion": "workspace:^",
     "@xihan-ui/pointer": "workspace:^",
     "@xihan-ui/viz": "workspace:^"
