@@ -172,3 +172,54 @@ field.addEventListener("pointerdown", event => startDrag(event, { payload: { sou
 - 命中取指针下最内层的放置目标，预览不挡命中。
 - 贴着接受的目标边缘时逐帧在目标上派发 `pan-request` `{ dx, dy }`：视口要朝哪个方向看过去多少屏幕像素，贴右边缘时 `dx` 为正。
 - Esc、指针离开窗口、在不接受处松手即取消。
+
+## 变换覆盖层
+
+`<xh-designer-transform>` 叠在画布上方，画选中框、控制柄、旋转柄、对齐线、框选框、悬停框与度量标签，并跑移动、缩放、旋转与框选的手势。命中判断归设计器：设计器在选中项上按下后调 `startMove`，在空白处按下后调 `startMarquee`；控制柄由覆盖层自己接。覆盖层盖满画布、左上角就是视口的屏幕原点，除控制柄外不挡指针。
+
+```ts
+const overlay = document.createElement("xh-designer-transform");
+canvas.append(overlay);
+overlay.viewport = viewport;
+overlay.items = selection.map(node => ({ id: node.id, rect: node.rect, rotatable: false }));
+overlay.getSnap = () => ({ targets: others.map(node => node.rect), lines: guides, grid: 8 });
+canvas.addEventListener("pointerdown", (event) => {
+  const hit = hitTest(clientToWorld(event), rects);
+  if (hit >= 0)
+    overlay.startMove(event);
+  else
+    overlay.startMarquee(event, { additive: event.shiftKey });
+});
+overlay.addEventListener("transform", (event) => {
+  const { phase, rects, copy } = event.detail;
+  if (phase === "end")
+    commit(rects, copy);
+});
+```
+
+| 属性 | 说明 |
+| --- | --- |
+| `viewport` | 画布的视口 |
+| `items` | 选中项 `{ id, rect, handles?, rotatable?, keepAspect?, minSize? }`。`handles` 缺省 `true` 为八向，`false` 不能缩放，数组为只给这些方向；`rotatable` 缺省不显示旋转柄；`keepAspect` 为总是等比 |
+| `hover` | 悬停框，世界坐标 |
+| `getSnap(kind)` | 每次手势开始时取一次吸附选项，交给 `snapRect`；`threshold` 不给时取屏幕上的固定像素除以 `zoom` |
+| `formatMeasure(rect)` | 拖动中的尺寸与位置标签；不给不显示 |
+| `rotate-step` | 按住 Shift 旋转时吸附的角度，缺省 15 |
+| `readonly` | 不画控制柄，`startMove` 不起作用；框选照常 |
+
+| 方法 | 说明 |
+| --- | --- |
+| `startMove(event, { copy? })` | 越过激活距离后移动全部选中项 |
+| `startMarquee(event, { additive? })` | 越过激活距离后开始框选 |
+| `cancel()` | 取消进行中的手势，派发 `cancel` |
+
+| 事件 | detail |
+| --- | --- |
+| `transform` | `{ phase, kind, rects, guides, copy? }`：`phase` 为 `start`、`move`、`end`、`cancel`，`kind` 为 `move`、`resize`、`rotate`，`rects` 是 id 到新矩形的表，`cancel` 时为开始时的矩形；`copy` 只在移动时有 |
+| `marquee` | `{ phase, rect, mode, additive }`：`rect` 是世界坐标的选框，`mode` 自左向右拖为 `contain`、反向为 `intersect`，交给 `selectInMarquee` |
+| `pan-request` | `{ dx, dy }`：拖到画布边缘时逐帧派发，含义与通用拖放相同 |
+
+- 修饰键：缩放时 Shift 等比、Alt 以中心为基准；旋转时 Shift 按 `rotate-step` 吸附；移动时 Shift 锁定水平或竖直、Alt 为复制。修饰键在拖动中按下也算。Esc 取消。
+- 设计器在 `move` 阶段是只看预览还是执行事务自行决定；手势进行中覆盖层按自己算出的矩形画框，不等 `items` 更新。
+- 单选才出控制柄；多选画各自的细框与整体包围框，可以整体移动。缩放时只吸附被拖动的那条边，旋转过的矩形缩放时不吸附。
+- 控制柄是固定的屏幕尺寸，按旋转后的方向画，指针形状随角度换；粗指针设备放大命中区。

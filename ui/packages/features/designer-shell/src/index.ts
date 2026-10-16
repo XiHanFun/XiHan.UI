@@ -24,4 +24,12 @@ export type {
   DesignerPropertyTarget,
   DesignerPropertyTargetRef,
 } from './properties/properties-element'
+export { XhDesignerTransformElement } from './transform/transform-element'
+export type {
+  DesignerGesturePhase,
+  DesignerSnapOptions,
+  DesignerTransformEventMap,
+  DesignerTransformItem,
+  DesignerTransformKind,
+} from './transform/transform-element'
 export type { DesignerIssuesTranslations, DesignerPaletteTranslations, DesignerPropertiesTranslations } from './translations'
