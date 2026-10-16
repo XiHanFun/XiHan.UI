@@ -19,7 +19,7 @@ const ROLE_RULES = ['aria-required-children', 'aria-required-parent', 'aria-allo
 async function mount(rowHeader: boolean): Promise<HTMLElement> {
   host = document.createElement('div')
   host.innerHTML = `
-    <xh-table footer>
+    <xh-table footer-rows="1">
       <div data-xh-part="root" aria-label="采购清单">
         <div data-xh-part="header"><div data-xh-part="row">
           <div data-xh-part="column-header" value="item"><span data-xh-part="column-label">条目</span></div>

@@ -154,7 +154,10 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
     striped: Boolean,
     variant: { type: String as PropType<ControlVariant> },
     ruled: Boolean,
-    footer: Boolean,
+    /** 表尾行数：行号空间的最后几行留给表尾，每一行表尾写明 level。 */
+    footerRows: { type: Number },
+    /** 表尾吸底，与 stickyHeader 对称。 */
+    stickyFooter: Boolean,
     /** 行可以拖动换位。整行都是拖动源，不另设把手。 */
     rowReorderable: Boolean,
     /** 本次移动是否允许。收到的是折算后的落点（移动到哪个父节点下的第几位）。未提供时全部允许。 */
@@ -370,7 +373,7 @@ export const XhTableRow = /* @__PURE__ */ defineComponent({
   props: {
     /** 行 id：数据行必须提供，表头行与脚注行省略。 */
     value: { type: String },
-    /** 多级表头下写明这是第几行表头（1 起算），行里的列头据此定位；单行表头省略。 */
+    /** 多级表头写明这是第几行表头、多行表尾写明这是第几行表尾（1 起算）；只有一行时省略。 */
     level: { type: Number },
   },
   setup(props, { slots }) {
@@ -383,7 +386,7 @@ export const XhTableRow = /* @__PURE__ */ defineComponent({
         'div',
         (section === 'header'
           ? ctx.api.value.getHeaderRowProps({ level: props.level })
-          : ctx.api.value.getFooterRowProps()) as Record<string, unknown>,
+          : ctx.api.value.getFooterRowProps({ level: props.level })) as Record<string, unknown>,
         slots.default?.(),
       )
     }

@@ -1,6 +1,6 @@
-<!-- 脚注合计 | footer 把行号空间的最后一行留给脚注；脚注单元格不属于任何数据行，也就没有选中与禁用 -->
+<!-- 多行表尾 | footerRows 把行号空间的最后几行留给表尾，每一行表尾写明 level；表尾单元格不属于任何数据行，也就没有选中与禁用 -->
 <div style="width: 100%; max-width: 560px">
-  <xh-table id="table-footer" footer>
+  <xh-table id="table-footer" footer-rows="2">
     <div data-xh-part="root">
       <div data-xh-part="caption">采购清单</div>
       <div data-xh-part="header">
@@ -28,11 +28,16 @@
         </div>
       </div>
       <div data-xh-part="footer">
-        <!-- 脚注行不给 value：它占的是行号空间的最后一行 -->
-        <div data-xh-part="row">
+        <!-- 表尾行不给 value，写明是第几行表尾：它们占的是行号空间的最后几行 -->
+        <div data-xh-part="row" level="1">
           <div data-xh-part="cell" value="item">合计</div>
           <div data-xh-part="cell" value="count">6</div>
           <div data-xh-part="cell" value="amount">¥ 2047</div>
+        </div>
+        <div data-xh-part="row" level="2">
+          <div data-xh-part="cell" value="item">均价</div>
+          <div data-xh-part="cell" value="count"></div>
+          <div data-xh-part="cell" value="amount">¥ 341</div>
         </div>
       </div>
     </div>

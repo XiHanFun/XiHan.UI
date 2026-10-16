@@ -168,7 +168,10 @@ export interface XhTableRootProps extends RootElementProps {
   /** 形态：outline 画外框与圆角（默认），ghost 去掉外框只留行间横线，subtle 淡底。默认 outline。 */
   variant?: ControlVariant
   ruled?: boolean
-  footer?: boolean
+  /** 表尾行数：行号空间的最后几行留给表尾，每一行表尾写明 level。 */
+  footerRows?: number
+  /** 表尾吸底，与 stickyHeader 对称。 */
+  stickyFooter?: boolean
   /** 行可以拖动换位。整行都是拖动源，不另设把手。 */
   rowReorderable?: boolean
   /** 本次移动是否允许。收到的是折算后的落点（移动到哪个父节点下的第几位）。未提供时全部允许。 */
@@ -218,7 +221,8 @@ export function XhTableRoot({
   striped,
   variant,
   ruled,
-  footer,
+  footerRows,
+  stickyFooter,
   rowReorderable,
   allowRowDrop,
   loop,
@@ -260,7 +264,8 @@ export function XhTableRoot({
     striped,
     variant,
     ruled,
-    footer,
+    footerRows,
+    stickyFooter,
     rowReorderable,
     allowRowDrop,
     loop,
@@ -450,7 +455,7 @@ export function XhTableRow(props: XhTableRowProps): ReactNode {
 /** 表头行与脚注行：不认领 Tab 位、不报告行身份。 */
 function TableSectionRow({ section, value: _value, level, children, ...rest }: XhTableRowProps & { section: TableSection }): ReactNode {
   const ctx = useTableContext()
-  const attrs = (section === 'header' ? ctx.api.getHeaderRowProps({ level }) : ctx.api.getFooterRowProps()) as Record<string, unknown>
+  const attrs = (section === 'header' ? ctx.api.getHeaderRowProps({ level }) : ctx.api.getFooterRowProps({ level })) as Record<string, unknown>
   return (
     <TableHeaderLevelProvider value={section === 'header' ? level : undefined}>
       <div {...mergeReactProps(attrs, rest as Record<string, unknown>)}>{children}</div>

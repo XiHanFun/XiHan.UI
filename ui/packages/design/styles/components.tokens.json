@@ -72383,10 +72383,12 @@
         "background"
       ],
       "state": [
-        "default"
+        "default",
+        "fixed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle",
+        "--xh-bg-subtle-opaque"
       ],
       "visibility": "public",
       "description": "table 的 footer 部件 background 覆盖槽。"
@@ -73369,6 +73371,24 @@
       ],
       "visibility": "public",
       "description": "table 的 cell、column-header、row 部件 z-index 覆盖槽。"
+    },
+    {
+      "name": "--xh-table-sticky-footer-layer",
+      "component": "table",
+      "part": [
+        "footer"
+      ],
+      "property": [
+        "z-index"
+      ],
+      "state": [
+        "fixed"
+      ],
+      "defaultToken": [
+        "--xh-layer-sticky"
+      ],
+      "visibility": "public",
+      "description": "table 的 footer 部件 z-index 覆盖槽。"
     },
     {
       "name": "--xh-table-sticky-header-layer",

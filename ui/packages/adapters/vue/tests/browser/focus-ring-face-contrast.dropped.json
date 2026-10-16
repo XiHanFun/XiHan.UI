@@ -431,6 +431,7 @@
   "[data-scope=\"table\"][data-part=\"expand-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"table\"][data-part=\"expanded-row\"]": "部件不接焦点：table/expanded-row",
   "[data-scope=\"table\"][data-part=\"footer\"]": "部件不接焦点：table/footer",
+  "[data-scope=\"table\"][data-part=\"footer\"][data-fixed]": "部件不接焦点：table/footer",
   "[data-scope=\"table\"][data-part=\"header\"]": "部件不接焦点：table/header",
   "[data-scope=\"table\"][data-part=\"row\"][data-drop=\"after\"]::after": "写法挂不出来：::",
   "[data-scope=\"table\"][data-part=\"row\"][data-drop=\"before\"]::after": "写法挂不出来：::",

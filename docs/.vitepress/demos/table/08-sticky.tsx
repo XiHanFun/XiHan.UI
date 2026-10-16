@@ -1,10 +1,11 @@
-// 表头吸顶与列吸附 | root 自身就是滚动容器：stickyHeader 固定表头，列上标注 sticky 的固定该列
+// 表头吸顶、表尾吸底与列吸附 | root 自身就是滚动容器：stickyHeader 固定表头，stickyFooter 固定表尾，列上标注 sticky 的固定该列
 import type { ReactNode } from "react";
 import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
   XhTableColumnLabel,
+  XhTableFooter,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -36,7 +37,7 @@ const rows = members.map(m => ({ id: m.id }));
 export default function Demo(): ReactNode {
   return (
     <div style={{ width: "100%", maxWidth: "420px" }}>
-      <XhTableRoot columns={columns} rows={rows} stickyHeader>
+      <XhTableRoot columns={columns} rows={rows} stickyHeader stickyFooter footerRows={1}>
         <XhTableHeader>
           <XhTableRow>
             {columns.map(col => (
@@ -57,6 +58,15 @@ export default function Demo(): ReactNode {
             </XhTableRow>
           ))}
         </XhTableBody>
+        <XhTableFooter>
+          <XhTableRow>
+            <XhTableCell value="name">{`共 ${members.length} 人`}</XhTableCell>
+            <XhTableCell value="dept" />
+            <XhTableCell value="city" />
+            <XhTableCell value="ext" />
+            <XhTableCell value="mail" />
+          </XhTableRow>
+        </XhTableFooter>
       </XhTableRoot>
     </div>
   );

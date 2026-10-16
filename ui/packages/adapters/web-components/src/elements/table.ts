@@ -76,7 +76,8 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @attr {boolean} striped - 斑马纹：表体偶数行换一层浅底
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline 画外框与圆角，ghost 去掉外框只留行间横线，subtle 淡底；默认 outline
  * @attr {boolean} ruled - 列与列之间加竖分隔线
- * @attr {boolean} footer - 表格带脚注行：行号空间的最后一行留给它，aria-rowcount 也计入
+ * @attr {number} footer-rows - 表尾行数：行号空间的最后几行留给表尾，aria-rowcount 也计入；多行表尾在每个表尾 row 上写 level
+ * @attr {boolean} sticky-footer - 表尾吸底，只写 data-fixed（布尔），与 sticky-header 对称
  * @attr {boolean} row-reorderable - 行可以拖动换位：整行都是拖动源；触屏路径经 row-drag-trigger 把手
  * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭；写 loop="true" 开启
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开 / 收起语义，默认 ltr
@@ -149,7 +150,8 @@ export class XhTableElement extends XhElement {
     striped: { type: Boolean },
     variant: { converter: STRING_CONVERTER },
     ruled: { type: Boolean },
-    footer: { type: Boolean },
+    footerRows: { converter: NUMBER_CONVERTER, attribute: 'footer-rows' },
+    stickyFooter: { type: Boolean, attribute: 'sticky-footer' },
     rowReorderable: { type: Boolean, attribute: 'row-reorderable' },
     // 落点校验是函数，走不了属性；只作为 property 暴露
     allowRowDrop: { attribute: false },
@@ -184,7 +186,8 @@ export class XhTableElement extends XhElement {
   declare striped?: boolean
   declare variant?: ControlVariant
   declare ruled?: boolean
-  declare footer?: boolean
+  declare footerRows?: number
+  declare stickyFooter?: boolean
   declare rowReorderable?: boolean
   declare allowRowDrop?: (move: TableRowMoveDetails) => boolean
   declare loop?: boolean
@@ -261,7 +264,8 @@ export class XhTableElement extends XhElement {
       striped: this.striped ?? false,
       variant: this.variant,
       ruled: this.ruled ?? false,
-      footer: this.footer ?? false,
+      footerRows: this.footerRows,
+      stickyFooter: this.stickyFooter ?? false,
       rowReorderable: this.rowReorderable ?? false,
       allowRowDrop: this.allowRowDrop,
       loop: this.loop,
@@ -444,8 +448,10 @@ export class XhTableElement extends XhElement {
         const raw = el.getAttribute('level')
         return api.getHeaderRowProps({ level: raw == null ? undefined : Number(raw) })
       }
-      if (section === 'footer')
-        return api.getFooterRowProps()
+      if (section === 'footer') {
+        const raw = el.getAttribute('level')
+        return api.getFooterRowProps({ level: raw == null ? undefined : Number(raw) })
+      }
       return api.getRowProps(this.rowOf(el))
     })
     putAll('column-header', el => api.getColumnHeaderProps(this.columnOf(el)))

@@ -44398,6 +44398,14 @@
     font-weight: var(--xh-table-footer-font-weight, var(--xh-font-weight-medium));
   }
 
+  /* 吸底：滚动容器是 root，表尾钉在它的下沿。滚过的行会从底下经过，底色必须是实色——淡底取不透明档 */
+  .xh-scope-table[data-part='footer'][data-fixed] {
+    position: sticky;
+    z-index: var(--xh-table-sticky-footer-layer, var(--xh-layer-sticky));
+    inset-block-end: 0;
+    background: var(--xh-table-footer-bg, var(--xh-bg-subtle-opaque));
+  }
+
   /* 表体行走 Collection Item 的 page 语境（页内持久集合）：悬停 / 高亮 / 按下面（白底承载 hover 100 →
      pressed 200）与选中面（品牌淡底 + 淡底前景，selected+hover 20% / +pressed 28%）由家族按 aria-selected /
      aria-disabled 给出，标记由行首的勾选把手承担。这里只把公开槽映射到桥接槽，并逐项盖掉家族的行盒几何：

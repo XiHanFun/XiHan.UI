@@ -3679,6 +3679,7 @@ export type ComponentTokenName
     | '--xh-table-state-px'
     | '--xh-table-state-py'
     | '--xh-table-sticky-column-layer'
+    | '--xh-table-sticky-footer-layer'
     | '--xh-table-sticky-header-layer'
     | '--xh-table-sticky-inset'
     | '--xh-table-toolbar-fg'

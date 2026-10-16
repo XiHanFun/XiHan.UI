@@ -682,15 +682,15 @@ describe('connectTable 属性输出', () => {
   })
 
   it('脚注声明后进行号空间：总数多一行，脚注行号排在最后', () => {
-    const h = mount({ footer: true })
+    const h = mount({ footerRows: 1 })
     expect(h.root.getAttribute('aria-rowcount')).toBe('6')
     expect(h.headerRow.getAttribute('aria-rowindex')).toBe('1')
     expect(h.footerRow.getAttribute('aria-rowindex')).toBe('6')
   })
 
-  it('渲了脚注行却没声明 footer prop 时不报行号，宁可不报也不与末行数据行撞号', () => {
+  it('渲了脚注行却没声明 footerRows 时不报行号，宁可不报也不与末行数据行撞号', () => {
     const h = mount()
-    // 行号空间按 footer prop 算：没声明时 rowcount 就等于末行数据行的行号
+    // 行号空间按 footerRows 算：没声明时 rowcount 就等于末行数据行的行号
     expect(h.root.getAttribute('aria-rowcount')).toBe('5')
     expect(h.row('d').row.getAttribute('aria-rowindex')).toBe('5')
     expect(h.footerRow.hasAttribute('aria-rowindex')).toBe(false)
@@ -1567,7 +1567,7 @@ describe('行主操作 onAction', () => {
   })
 
   it('详情行与脚注行里的点击不报', () => {
-    const { h, actions } = withActions({ footer: true, defaultExpandedValue: ['a'] })
+    const { h, actions } = withActions({ footerRows: 1, defaultExpandedValue: ['a'] })
     h.row('a').expandedRow.click()
     h.footerRow.click()
     expect(actions).toEqual([])
@@ -1592,11 +1592,41 @@ describe('行表头列 rowHeader', () => {
       { id: 'name', label: 'Name', rowHeader: true },
       { id: 'size', label: 'Size' },
     ]
-    const h = mount({ columns, footer: true })
+    const h = mount({ columns, footerRows: 1 })
     expect(h.row('a').cells.name!.getAttribute('role')).toBe('rowheader')
     expect(h.row('a').cells.size!.getAttribute('role')).toBe('gridcell')
     expect(h.columnHeader('name').getAttribute('role')).toBe('columnheader')
     const api = h.api()
     expect((api.getCellProps({ value: 'name' }) as Record<string, unknown>).role).toBe('rowheader')
+  })
+})
+
+describe('多行表尾 footerRows 与吸底 stickyFooter', () => {
+  it('表尾按 level 依次占行号空间的最后几行，aria-rowcount 把它们都计入', () => {
+    const h = mount({ footerRows: 2 })
+    const api = h.api()
+    expect(api.footerRowCount).toBe(2)
+    expect(api.rowCount).toBe(1 + api.visibleRows.length + 2)
+    expect((api.getFooterRowProps({ level: 1 }) as Record<string, unknown>)['aria-rowindex']).toBe(1 + api.visibleRows.length + 1)
+    expect((api.getFooterRowProps({ level: 2 }) as Record<string, unknown>)['aria-rowindex']).toBe(api.rowCount)
+    expect((api.getRootProps() as Record<string, unknown>)['aria-rowcount']).toBe(api.rowCount)
+  })
+
+  it('层号越过 footerRows 或没声明 footerRows 时不报行号，并在开发期告警', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const api = mount({ footerRows: 1 }).api()
+    expect((api.getFooterRowProps({ level: 2 }) as Record<string, unknown>)['aria-rowindex']).toBeUndefined()
+    document.body.innerHTML = ''
+    const none = mount().api()
+    expect(none.footerRowCount).toBe(0)
+    expect((none.getFooterRowProps() as Record<string, unknown>)['aria-rowindex']).toBeUndefined()
+    expect(warn).toHaveBeenCalled()
+    warn.mockRestore()
+  })
+
+  it('stickyFooter 只在表尾落 data-fixed，与表头吸顶互不牵连', () => {
+    const api = mount({ footerRows: 1, stickyFooter: true }).api()
+    expect((api.getFooterProps() as Record<string, unknown>)['data-fixed']).toBe('')
+    expect((api.getHeaderProps() as Record<string, unknown>)['data-fixed']).toBeUndefined()
   })
 })
