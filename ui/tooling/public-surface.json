@@ -9256,6 +9256,7 @@
       "watermarkKeyboard",
       "watermarkMachine",
       "watermarkMeta",
+      "withFieldDescription",
       "withFieldLabel",
       "withXhConfigBase",
       "wrapSegment",

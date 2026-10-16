@@ -3,7 +3,7 @@
 // 单一控件的封装早已在真控件上并入字段接线；组类控件的焦点宿主是组根（或拇指、格子），
 // 字段的标题与说明要落在那里，读屏进组时才念得出组名与说明。
 import type { ReactNode } from 'react'
-import { render } from '@testing-library/react'
+import { act, render } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import {
   XhCheckboxGroupItem,
@@ -14,6 +14,10 @@ import {
   XhFieldErrorText,
   XhFieldLabel,
   XhFieldRoot,
+  XhPasswordInputCapsLockIndicator,
+  XhPasswordInputControl,
+  XhPasswordInputInput,
+  XhPasswordInputRoot,
   XhPinInputInput,
   XhPinInputRoot,
   XhRadioGroupItem,
@@ -113,5 +117,31 @@ describe('组类控件直接放进字段', () => {
       </XhPinInputRoot>,
     )
     expectWired(pin, part(pin, 'pin-input', 'root'), false)
+  })
+})
+
+describe('输入框自带描述链的控件放进字段', () => {
+  it('password-input：输入框自己的描述链不顶掉字段的说明与错误文案', () => {
+    const container = inField(<XhPasswordInputRoot><XhPasswordInputControl><XhPasswordInputInput /></XhPasswordInputControl></XhPasswordInputRoot>, true)
+    expectWired(container, part(container, 'password-input', 'input'), true)
+  })
+
+  it('password-input：大写锁定提示与字段的说明、错误文案同时在描述链上，字段的在前', () => {
+    const container = inField(
+      <XhPasswordInputRoot>
+        <XhPasswordInputControl><XhPasswordInputInput /></XhPasswordInputControl>
+        <XhPasswordInputCapsLockIndicator />
+      </XhPasswordInputRoot>,
+      true,
+    )
+    const input = part(container, 'password-input', 'input')
+    act(() => {
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'A', bubbles: true, modifierCapsLock: true }))
+    })
+    expect((input.getAttribute('aria-describedby') ?? '').split(/\s+/)).toEqual([
+      part(container, 'field', 'description').id,
+      part(container, 'field', 'error-text').id,
+      part(container, 'password-input', 'caps-lock-indicator').id,
+    ])
   })
 })

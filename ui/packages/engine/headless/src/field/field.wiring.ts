@@ -52,6 +52,18 @@ export function fieldGroupAttrs(wiring: FieldControlWiring): Record<string, stri
 }
 
 /**
+ * 把字段的描述链并进这份属性：字段的 id 排在前面，控件自己的（大写锁定提示等）跟在后面，重复的只留一份。
+ * 控件自己的描述链缺省或为 undefined 时只剩字段的；字段没有描述链时原样返回。
+ */
+export function withFieldDescription(props: Record<string, unknown>, describedBy: string | undefined): Record<string, unknown> {
+  if (!describedBy)
+    return props
+  const own = props['aria-describedby']
+  const ids = new Set([...describedBy.split(/\s+/), ...(typeof own === 'string' ? own.split(/\s+/) : [])].filter(Boolean))
+  return { ...props, 'aria-describedby': [...ids].join(' ') }
+}
+
+/**
  * 把字段标签的 id 并进这份属性的名字链：字段标签排在最前，控件自己的部分（值文本等）跟在后面。
  * 复合控件的可聚焦部件自带的 aria-labelledby 指向它自己的 label 部件，放进字段时那个部件不渲染。
  * 没有字段标签时原样返回。

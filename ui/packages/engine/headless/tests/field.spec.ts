@@ -1,7 +1,7 @@
 import type { FieldProps } from '../src/field/index'
 import { createCounterIdGenerator, createScope, normalizeProps } from '@xihan-ui/core'
 import { describe, expect, it } from 'vitest'
-import { connectField, fieldControlWiring, fieldGroupAttrs, fieldStateAttrs, withFieldLabel } from '../src/field/index'
+import { connectField, fieldControlWiring, fieldGroupAttrs, fieldStateAttrs, withFieldDescription, withFieldLabel } from '../src/field/index'
 
 function api(props: FieldProps = {}) {
   const scope = createScope(null, createCounterIdGenerator())
@@ -93,5 +93,18 @@ describe('字段交给库内控件的接线', () => {
   it('没有字段标签时属性原样返回', () => {
     const props = { 'aria-labelledby': 'own' }
     expect(withFieldLabel(props, undefined)).toBe(props)
+  })
+})
+
+describe('字段描述链与控件自己的拼接', () => {
+  it('字段的排在前面，控件自己的跟在后面，重复的只留一份', () => {
+    expect(withFieldDescription({ 'aria-describedby': 'caps' }, 'hint error')['aria-describedby']).toBe('hint error caps')
+    expect(withFieldDescription({ 'aria-describedby': 'hint caps' }, 'hint')['aria-describedby']).toBe('hint caps')
+  })
+
+  it('控件自己给 undefined 时不顶掉字段的；字段没有描述链时原样返回', () => {
+    expect(withFieldDescription({ 'aria-describedby': undefined }, 'hint')['aria-describedby']).toBe('hint')
+    const props = { 'aria-describedby': 'caps' }
+    expect(withFieldDescription(props, undefined)).toBe(props)
   })
 })
