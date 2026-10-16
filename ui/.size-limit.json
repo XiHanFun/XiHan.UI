@@ -122,7 +122,7 @@
   },
   {
     "name": "expression",
-    "path": "packages/features/expression/dist/index.js",
+    "path": "packages/engine/expression/dist/index.js",
     "gzip": true,
     "limit": "19 kB"
   },

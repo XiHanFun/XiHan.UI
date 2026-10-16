@@ -31,6 +31,10 @@
       "level": 1,
       "canDependOn": []
     },
+    "engine/expression": {
+      "level": 1,
+      "canDependOn": []
+    },
     "engine/headless": {
       "level": 3,
       "canDependOn": [
@@ -38,7 +42,8 @@
         "design/tokens",
         "engine/motion",
         "engine/pointer",
-        "engine/viz"
+        "engine/viz",
+        "engine/expression"
       ]
     },
     "design/styles": {
@@ -63,7 +68,8 @@
         "features/backgrounds",
         "features/sound",
         "engine/motion",
-        "engine/pointer"
+        "engine/pointer",
+        "engine/expression"
       ]
     },
     "adapters/web-components": {
@@ -76,7 +82,8 @@
         "design/tokens",
         "features/backgrounds",
         "engine/motion",
-        "engine/pointer"
+        "engine/pointer",
+        "engine/expression"
       ]
     },
     "features/chat-stream": {
@@ -110,15 +117,12 @@
         "engine/motion"
       ]
     },
-    "features/expression": {
-      "level": 1,
-      "canDependOn": []
-    },
     "features/designer-kit": {
       "level": 2,
       "canDependOn": [
         "engine/core",
-        "engine/pointer"
+        "engine/pointer",
+        "engine/expression"
       ]
     },
     "features/designer-shell": {
@@ -149,7 +153,8 @@
         "features/backgrounds",
         "features/sound",
         "engine/motion",
-        "engine/pointer"
+        "engine/pointer",
+        "engine/expression"
       ]
     },
     "tools/cli": {
