@@ -47,10 +47,19 @@ export interface DesignerPaletteTranslations {
   readonly empty: string
 }
 
+/** 标尺框的文案。 */
+export interface DesignerRulerTranslations {
+  /** 横向参考线的无障碍名称，入参是格式化后的数值。 */
+  readonly horizontalGuide: (value: string) => string
+  /** 竖向参考线的无障碍名称，入参是格式化后的数值。 */
+  readonly verticalGuide: (value: string) => string
+}
+
 declare module '@xihan-ui/web-components' {
   interface XhTranslationOverrides {
     'xh-designer-properties'?: Partial<DesignerPropertiesTranslations>
     'xh-designer-issues'?: Partial<DesignerIssuesTranslations>
     'xh-designer-palette'?: Partial<DesignerPaletteTranslations>
+    'xh-designer-ruler'?: Partial<DesignerRulerTranslations>
   }
 }

@@ -24,6 +24,8 @@ export type {
   DesignerPropertyTarget,
   DesignerPropertyTargetRef,
 } from './properties/properties-element'
+export { XhDesignerRulerElement } from './ruler/ruler-element'
+export type { DesignerGuideAxis, DesignerGuideChange, DesignerGuides, DesignerRulerEventMap } from './ruler/ruler-element'
 export { XhDesignerTransformElement } from './transform/transform-element'
 export type {
   DesignerGesturePhase,
@@ -32,4 +34,4 @@ export type {
   DesignerTransformItem,
   DesignerTransformKind,
 } from './transform/transform-element'
-export type { DesignerIssuesTranslations, DesignerPaletteTranslations, DesignerPropertiesTranslations } from './translations'
+export type { DesignerIssuesTranslations, DesignerPaletteTranslations, DesignerPropertiesTranslations, DesignerRulerTranslations } from './translations'

@@ -223,3 +223,37 @@ overlay.addEventListener("transform", (event) => {
 - 设计器在 `move` 阶段是只看预览还是执行事务自行决定；手势进行中覆盖层按自己算出的矩形画框，不等 `items` 更新。
 - 单选才出控制柄；多选画各自的细框与整体包围框，可以整体移动。缩放时只吸附被拖动的那条边，旋转过的矩形缩放时不吸附。
 - 控制柄是固定的屏幕尺寸，按旋转后的方向画，指针形状随角度换；粗指针设备放大命中区。
+
+## 标尺与参考线
+
+`<xh-designer-ruler>` 包住画布：上、左两条标尺，左上角角块，中间是作者内容，画布上方一层参考线。不带 `slot` 的子节点进画布区，`slot="corner"` 的进角块。画布区左上角就是视口的屏幕原点，覆盖层等放在画布区里即可对齐。
+
+```ts
+const ruler = document.createElement("xh-designer-ruler");
+ruler.append(canvasContent);
+ruler.viewport = viewport;
+ruler.unitSize = 1;
+ruler.guides = page.guides;
+ruler.snap = (axis, value) => snapToGrid(value, 1);
+ruler.addEventListener("guides-change", event => setGuides(event.detail.guides));
+```
+
+| 属性 | 说明 |
+| --- | --- |
+| `viewport` | 画布的视口 |
+| `unit-size` | 一个刻度单位等于多少世界单位，只管刻度显示，缺省 1 |
+| `guides` | `{ x, y }`：竖向（x 等于定值）与横向参考线的位置，世界单位；受控，零件不自己改 |
+| `highlight` | 在两条标尺上画淡底的范围，世界坐标，如选中项的包围框 |
+| `format(value)` | 刻度与参考线数值的文字，入参是刻度单位；缺省按主刻度间隔取整数或所需的小数位 |
+| `snap(axis, value)` | 拖动参考线时的吸附，入参与返回值都是世界单位 |
+| `readonly` | 照常显示参考线，不能新建、挪动或删除 |
+
+| 事件 | detail |
+| --- | --- |
+| `guides-change` | `{ guides, change }`：`guides` 是改后的整组参考线，`change` 为 `{ type, axis, index }`，`type` 为 `add`、`move`、`remove`，新增的 `index` 在末尾 |
+
+- 从上标尺拖进画布新建横向参考线，从左标尺拖出竖向参考线；松手时还在标尺上即取消。
+- 拖动已有参考线挪动，拖回对应的标尺即删除，拖到别处不变；拖动中显示预览线与数值。
+- 点参考线选中并取得焦点，Delete 或 Backspace 删除；Esc 放弃进行中的拖动。
+- 指针在标尺或画布上时，两条标尺上画跟随的细线；参考线在对应标尺上另画一道标记。
+- 参考线是带名称的 `separator`，名称取文案 `horizontalGuide` / `verticalGuide`。
