@@ -141,7 +141,7 @@ parseTextTemplate("{{ price * qty }}").issues; // [{ code: "invalid-path", start
 - **路径**：写法同 `@xihan-ui/core/json` 的 `formatJsonPath`，由 `parseJsonPath` 解析：标识符以 `.` 相连，下标写成 `[0]`，不是标识符的键写成 `["unit price"]`；`$` 开头的宿主变量与中文名都按普通键处理。占位两侧的空白忽略。属性面板校验路径用 `isJsonPathText`。
 - **问题**：`parseTextTemplate` 一次给出全部问题，`{ code, start, end }` 的区间是整个占位；问题码为 `unclosed-placeholder`（没有闭合）、`empty-placeholder`（空占位）、`invalid-path`（路径不合法，写了表达式也是这一条，与 core/json 的 `JsonPathError` 同名同义）。有问题的占位按原样文本保留。
 - **读值**：同 `getJsonAt`，只读自有属性，下标只读数组，读不到的路径得到空串。
-- **显示**：`null` 与 `undefined` 为空串，字符串原样，有限数字、布尔与 `bigint` 转字符串，非有限数字为空串，`Date` 转 ISO 文本；对象与数组不能直接显示，得到空串并按出现顺序记入 `nonScalar`。传 `display(value, path)` 可以换掉这套规则，返回 `undefined` 表示不能显示。
+- **显示**：缺省规则即导出的 `displayText(value)`：`null` 与 `undefined` 为空串，字符串原样，有限数字、布尔与 `bigint` 转字符串，非有限数字与无效日期为空串，`Date` 转 ISO 文本；对象与数组不能直接显示，`displayText` 返回 `undefined`，占位得到空串并按出现顺序记入 `nonScalar`。在模板之外显示单个数据值时直接调用 `displayText`，与模板保持一致。传 `display(value, path)` 可以换掉这套规则，返回 `undefined` 表示不能显示。
 - **页码**：页码不另设记号，模板里放宿主变量 `$page` 与 `$pages` 的占位；要罗马数字或中文数字时，宿主先用 `formatValue(n, { kind: "numeral", style })` 转好再放进数据。
 
 ## 文法

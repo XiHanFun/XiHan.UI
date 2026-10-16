@@ -11,3 +11,4 @@
   - `invalid-path`：路径不合法，在占位里写表达式也报这一条；与 core/json 的 `JsonPathError` 同名同义。
   有问题的占位按原样文本保留。
 - `fillTextTemplate(template, data, { display? })` 按数据替换占位，也可以直接传入已解析的模板。读值方式与 `getJsonAt` 相同。读到对象或数组时，占位得到空串，路径记进 `nonScalar`。
+- `displayText(value)` 是缺省的显示规则，单独公开，宿主在模板之外显示单个数据值时与模板保持一致：`null` 与 `undefined` 为空串，字符串原样，有限数字、布尔与 `bigint` 转字符串，非有限数字与无效日期为空串，`Date` 转 ISO 文本；对象、数组等不能直接显示的值返回 `undefined`。
