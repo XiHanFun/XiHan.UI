@@ -164,6 +164,33 @@ designer.addEventListener("paste", (event) => {
 - 失败原因：`invalid-json`（不是 JSON）、`not-clipboard`（没有格式标记）、`invalid-envelope`（产品名、版本或载荷缺失或不合法）、`other-product`（别的产品复制的）。包上多出的字段忽略。
 - 自定义 MIME 类型只在同一浏览器里有效，所以同时写一份 `text/plain`；粘贴时先读自定义类型，再退到纯文本。
 
+## 可绑定字段树
+
+宿主用字段树描述数据的形状，设计器的字段选择器据此列出可选字段。`list` 字段的子字段描述数组的一个元素，比如表格的列从行对象里取值。
+
+```ts
+import type { DataField } from "@xihan-ui/designer-kit";
+import { listDataFields } from "@xihan-ui/designer-kit";
+
+const fields: DataField[] = [
+  { name: "order", label: "订单", kind: "object", children: [
+    { name: "no", label: "单号", kind: "value" },
+    { name: "items", label: "明细", kind: "list", children: [{ name: "qty", kind: "value" }] },
+  ] },
+];
+
+listDataFields(fields, { kinds: ["value"] }); // order.no
+listDataFields(fields, { kinds: ["list"] }); // order.items
+listDataFields(fields, { base: ["order", "items"] }); // qty，相对数组的一个元素
+```
+
+| 函数 | 说明 |
+| --- | --- |
+| `listDataFields(fields, { base?, kinds? })` | 深度优先列出 `{ path, text, field }`：进入 `object` 的子字段，不进入 `list` 的子字段；`base` 是起点（只含键的路径），是 `list` 时列它的元素字段；`kinds` 只列这些种类 |
+| `findDataField(fields, path)` | 按只含键的路径找字段，经过 `list` 时进入元素字段，找不到为 `undefined` |
+
+`text` 是 `formatJsonPath` 写法，不是标识符的键写成 `["unit price"]`。同级字段重名、名字为空或种类未知时抛 `RangeError`。
+
 ## 视口
 
 视口是 `{ x, y, zoom }`：屏幕坐标 = 世界坐标 × `zoom` + (`x`, `y`)。
