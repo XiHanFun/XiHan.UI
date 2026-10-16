@@ -125,6 +125,14 @@ function restoreAfterFailure(el: HTMLTextAreaElement, primary: unknown): never {
   throw primary
 }
 
+/**
+ * 这只 textarea 所在的环境有没有排版：没有排版的环境（jsdom 一类）里计算样式多是空串。
+ * 写入方向、盒模型、行高任一取不到，就量不出高度；这时安静跳过，不当作配置或样式错误。
+ */
+function layoutUnavailable(style: CSSStyleDeclaration): boolean {
+  return ['writing-mode', 'box-sizing', 'line-height'].some(property => style.getPropertyValue(property) === '')
+}
+
 function readPixel(style: CSSStyleDeclaration, property: string): number {
   const source = style.getPropertyValue(property)
   const value = Number.parseFloat(source)
@@ -177,13 +185,13 @@ function throwWithMirrorCleanup(primary: unknown, cleanupError: unknown): never 
 /**
  * 在真实排版树中用一只横向书写 textarea 镜像量内容 padding-box 与单行 content-box。
  * 镜像挂到所属 Document 的 body，并显式复制目标的排版与宽度，避免触发组件业务子树观察器；
- * 结束后同步移除。
+ * 结束后同步移除。两次读到的 scrollHeight 都是 0 时说明没有排版，返回 null。
  */
 function measureTextarea(
   el: HTMLTextAreaElement,
   style: CSSStyleDeclaration,
   paddingBlock: number,
-): TextareaMeasurement {
+): TextareaMeasurement | null {
   const host = el.ownerDocument.body
   if (!el.isConnected || !host)
     throw new Error('[xh] TextField autoSize 需要已连接到 Document 的 textarea')
@@ -191,7 +199,7 @@ function measureTextarea(
   const mirror = el.ownerDocument.createElement('textarea')
   let failed = false
   let primary: unknown
-  let measurement: TextareaMeasurement | undefined
+  let measurement: TextareaMeasurement | null | undefined
   try {
     mirror.disabled = true
     mirror.tabIndex = -1
@@ -219,12 +227,17 @@ function measureTextarea(
     mirror.value = 'x'
     const rowPaddingBox = mirror.scrollHeight
     const rowBlock = rowPaddingBox - paddingBlock
-    if (!Number.isFinite(contentPaddingBox) || contentPaddingBox < paddingBlock) {
-      throw new Error(`[xh] TextField autoSize 得到了无效的内容高度：${contentPaddingBox}`)
+    if (contentPaddingBox === 0 && rowPaddingBox === 0) {
+      measurement = null
     }
-    if (!Number.isFinite(rowBlock) || rowBlock <= 0)
-      throw new Error(`[xh] TextField autoSize 得到了无效的单行高度：${rowBlock}`)
-    measurement = { contentPaddingBox, rowBlock }
+    else {
+      if (!Number.isFinite(contentPaddingBox) || contentPaddingBox < paddingBlock) {
+        throw new Error(`[xh] TextField autoSize 得到了无效的内容高度：${contentPaddingBox}`)
+      }
+      if (!Number.isFinite(rowBlock) || rowBlock <= 0)
+        throw new Error(`[xh] TextField autoSize 得到了无效的单行高度：${rowBlock}`)
+      measurement = { contentPaddingBox, rowBlock }
+    }
   }
   catch (error) {
     failed = true
@@ -243,7 +256,7 @@ function measureTextarea(
   }
   if (failed)
     throw primary
-  if (!measurement)
+  if (measurement === undefined)
     throw new Error('[xh] TextField autoSize 未得到 textarea 测量结果')
   return measurement
 }
@@ -305,6 +318,10 @@ export function autoSizeTextarea(el: HTMLTextAreaElement, autoSize: boolean | Te
   if (!view) {
     restoreAfterFailure(el, new Error('[xh] TextField autoSize 需要 textarea 所属 Document 的 Window'))
   }
+  // 计算样式是活的：取一次，之后归还内联上限再读，读到的就是归还之后的值。没有排版就量不出高度：不接管、不写任何内联声明
+  const style = view.getComputedStyle(el)
+  if (layoutUnavailable(style))
+    return
 
   let state = ownership.get(el)
   if (!state) {
@@ -317,11 +334,16 @@ export function autoSizeTextarea(el: HTMLTextAreaElement, autoSize: boolean | Te
   }
   try {
     // 先归还作者的内联上限再读计算值：读到的是样式表与作者给的上限，不是上一次接管时写下的 none
+    const current = readDeclaration(el.style, 'max-block-size')
     writeDeclaration(el.style, 'max-block-size', state.maxBlockSize)
-    const style = view.getComputedStyle(el)
     const metrics = readBoxMetrics(style)
     const styleCeiling = opts.maxRows == null ? readStyleCeiling(style) : null
     const measured = measureTextarea(el, style, metrics.paddingBlock)
+    // 量不出高度：上限放回这一轮动手之前的样子，高度不动
+    if (!measured) {
+      writeDeclaration(el.style, 'max-block-size', current)
+      return
+    }
 
     el.style.setProperty('block-size', 'auto', state.blockSize.priority)
     const content = toDeclaredBlockSize(measured.contentPaddingBox, metrics)
