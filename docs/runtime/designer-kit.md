@@ -356,7 +356,7 @@ const issues = checkProperties(descriptors, node, { path: ["nodes", 3], target: 
 | `{ kind: "text", multiline?, placeholder? }` | 字符串 |
 | `{ kind: "number", integer?, min?, max?, exclusiveMin?, step?, unit? }` | 有限数字；min / max 含端点，exclusiveMin 不含；step 与 unit 只给编辑器用 |
 | `{ kind: "boolean" }` | 布尔 |
-| `{ kind: "select", options, multiple? }` | 某个选项的 `value`；`multiple` 时是这些值组成的数组 |
+| `{ kind: "select", options, multiple?, appearance? }` | 某个选项的 `value`；`multiple` 时是这些值组成的数组。`appearance` 只给编辑器用：`auto`（缺省）由编辑器定，`dropdown` 总是下拉，`toggle` 总是切换按钮组 |
 | `{ kind: "tags" }` | 字符串数组 |
 | `{ kind: "color" }` | `transparent`，或 `#` 开头的 3、4、6、8 位十六进制色 |
 | `{ kind: "json" }` | 任意 JSON 值 |

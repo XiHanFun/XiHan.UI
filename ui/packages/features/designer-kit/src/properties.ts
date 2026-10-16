@@ -21,7 +21,8 @@ export interface PropertyOption {
  * - text：字符串；multiline 为多行。
  * - number：有限数字；integer 只收整数，min / max 含端点，exclusiveMin 不含，step 与 unit 只给编辑器用。
  * - boolean：布尔。
- * - select：options 里某一项的 value；multiple 为这些 value 组成的数组。
+ * - select：options 里某一项的 value；multiple 为这些 value 组成的数组。appearance 只给编辑器用：
+ *   auto（缺省）由编辑器自己定，dropdown 总是下拉，toggle 总是切换按钮组。
  * - tags：字符串数组。
  * - color：transparent，或 # 开头的 3、4、6、8 位十六进制色。
  * - json：任意 JSON 值。
@@ -38,7 +39,12 @@ export type PropertyControl
       readonly unit?: string
     }
     | { readonly kind: 'boolean' }
-    | { readonly kind: 'select', readonly options: readonly PropertyOption[], readonly multiple?: boolean }
+    | {
+      readonly kind: 'select'
+      readonly options: readonly PropertyOption[]
+      readonly multiple?: boolean
+      readonly appearance?: 'auto' | 'dropdown' | 'toggle'
+    }
     | { readonly kind: 'tags' }
     | { readonly kind: 'color' }
     | { readonly kind: 'json' }
