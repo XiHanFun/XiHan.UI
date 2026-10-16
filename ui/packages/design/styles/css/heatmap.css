@@ -177,6 +177,17 @@
     gap: var(--xh-heatmap-grid-gap, var(--xh-_heatmap-gap));
   }
 
+  /* 取数中的空态：加载环与文字之间的间距 */
+  [data-scope='heatmap'][data-part='empty'][data-state='loading'] {
+    --xh-_chart-empty-gap: var(--xh-heatmap-empty-gap, var(--xh-space-2));
+  }
+
+  /* 重取数据：网格与月份行保留上一帧、整体淡下去，对照条照常；与其余图表的绘图区同一个透明度 */
+  [data-scope='heatmap'][data-part='root'][data-loading] > :is([data-part='grid'], [data-part='row']):where([data-scope='heatmap']) {
+    opacity: var(--xh-chart-pending-alpha);
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
   [data-scope='heatmap'][data-part='row'] {
     /* 行首空出的列数由连接层写进这个槽：日历形态是区间起点不在周首日时的错列，
        月历形态是这一周里 1 号之前的那几个星期几 */

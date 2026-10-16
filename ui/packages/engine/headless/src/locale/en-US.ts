@@ -446,11 +446,13 @@ export const GRID_LIST_EN_US: XhLocaleBucket<'grid-list'> = { root: 'Items' }
 
 export const HEATMAP_EN_US: XhLocaleBucket<'heatmap'> = {
   gridLabel: 'Activity heatmap',
-  cellLabel: details => `${details.count} on ${details.date}`,
-  matrixCellLabel: details => `${details.count} at ${details.row} ${details.column}`,
+  cellLabel: details => `${details.formatted.value} on ${details.date}`,
+  matrixCellLabel: details => `${details.formatted.value} at ${details.row} ${details.column}`,
   legendLabel: 'Activity level',
   legendLow: 'Less',
   legendHigh: 'More',
+  emptyText,
+  loadingText,
 }
 
 export const HIERARCHY_CHART_EN_US: XhLocaleBucket<'hierarchy-chart'> = {

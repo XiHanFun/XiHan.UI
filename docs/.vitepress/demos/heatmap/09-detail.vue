@@ -1,6 +1,6 @@
 <!-- 悬停详情 | 指针悬停与键盘聚焦经同一条路径：详情条跟随该格，Escape 收起 -->
 <script setup lang="ts">
-import type { HeatmapCellDetails, HeatmapDatum } from "@xihan-ui/headless";
+import type { HeatmapDatum, HeatmapDatumDetails } from "@xihan-ui/headless";
 import { formatHeatmapDate } from "@xihan-ui/headless";
 import { XhHeatmapRoot } from "@xihan-ui/vue";
 
@@ -24,8 +24,8 @@ function buildYear(year: number): HeatmapDatum[] {
 const activity = buildYear(2024);
 
 // 详情条里写什么由作者定，组件只报是哪一格、数值多少
-function readout(details: HeatmapCellDetails | null): string {
-  return details ? `${details.date}：${details.count} 次（第 ${details.level} 档）` : "";
+function readout(details: HeatmapDatumDetails | null): string {
+  return details ? `${details.date}：${details.formatted.value} 次（第 ${details.level} 档）` : "";
 }
 
 // 详情条对读屏是藏起来的，同一句必须同时当每格的可及名字，两处才不会各说各的

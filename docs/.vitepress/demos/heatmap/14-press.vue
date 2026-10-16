@@ -1,6 +1,6 @@
 <!-- 按下下钻 | 点一格或焦点在格上按 Enter，报告那一格：据此打开明细 -->
 <script setup lang="ts">
-import type { HeatmapCellDetails } from "@xihan-ui/headless";
+import type { HeatmapDatumDetails } from "@xihan-ui/headless";
 import { XhHeatmapRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -18,20 +18,20 @@ const orders = [
   { row: "周三", column: "夜里", value: 15 },
 ];
 
-const picked = ref<HeatmapCellDetails | null>(null);
+const picked = ref<HeatmapDatumDetails | null>(null);
 </script>
 
 <template>
-  <!-- 载荷与详情同源：行、列、原始值与档位都在里面，不必回头查数据 -->
+  <!-- 载荷与详情同源：行、列、写好的数值与档位都在里面，不必回头查数据 -->
   <XhHeatmapRoot
     variant="matrix"
     :rows="days"
     :columns="slots"
     :value="orders"
     style="--xh-heatmap-column-w: 44px; --xh-heatmap-row-h: 28px"
-    @cell-press="picked = $event"
+    @datum-press="picked = $event"
   />
   <p data-demo-output aria-live="polite">
-    {{ picked ? `${picked.row} ${picked.column}：${picked.count} 单` : "点一格查看明细" }}
+    {{ picked ? `${picked.row} ${picked.column}：${picked.formatted.value} 单` : "点一格查看明细" }}
   </p>
 </template>

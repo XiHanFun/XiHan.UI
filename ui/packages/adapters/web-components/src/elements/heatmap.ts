@@ -7,9 +7,9 @@
 
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type {
+  HeatmapActiveKeyChangeDetails,
   HeatmapAxisInput,
-  HeatmapCellDetails,
-  HeatmapCellFocusDetails,
+  HeatmapDatumDetails,
   HeatmapGrid,
   HeatmapLegendEntry,
   HeatmapMatrixGrid,
@@ -22,7 +22,10 @@ import type {
   HeatmapTranslations,
   HeatmapValue,
   HeatmapVariant,
+  NumberFormatSpec,
 } from '@xihan-ui/headless'
+import type { KeyedChildren } from '../dom/generated-nodes'
+import type { PropertyValues } from '../reactive'
 import { DATA_PART, DATA_SCOPE } from '@xihan-ui/core'
 import {
   buildHeatmapGrid,
@@ -32,10 +35,13 @@ import {
   heatmapLegendEntries,
   heatmapMachine,
   heatmapMeta,
+  heatmapStructure,
   normalizeHeatmapNumber,
   normalizeHeatmapString,
 } from '@xihan-ui/headless'
+import { createGeneratedElement, GEN_ATTR, generatedChildren, hasAuthorContent } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
+import { placeStructure } from '../dom/structure'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
@@ -62,12 +68,13 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
 }
 
 /**
- * `<xh-heatmap>`：Light-DOM 行为宿主：作者写 root、grid、若干 row 与 cell 角色节点，
- * 元素运行 heatmap 状态机并把 connect 产出接上。
+ * `<xh-heatmap>`：Light-DOM 行为宿主，元素运行 heatmap 状态机并把 connect 产出接上。
  *
- * 网格由作者渲染，元素不生成节点：铺设一整年不必手写三百多个格子，读取 `grid` / `monthGrid` /
- * `matrixGrid` 三个只读属性，按推导出的行、列、月份段循环生成即可（三种形态各读其中一个）。
- * 每次读取都重新计算，取一次后保存使用。
+ * 作者只写 root（可另写 tooltip、empty、legend）时，元素按网格模型在 root 里生成整套结构：日历形态的月份行、
+ * grid、行、星期名、月份名、行列表头、格子、空态与图例，与 Vue / React 的缺省树逐节点一致，生成的节点带
+ * `data-xh-gen`、按身份复用。root 里有作者写的 grid 时元素不生成任何结构，各部件由作者写进标记；
+ * 这时可读取 `grid` / `monthGrid` / `matrixGrid` 三个只读属性按推导出的行、列、月份段循环铺设
+ * （三种形态各读其中一个），每次读取都重新计算，取一次后保存使用。
  *
  * 角色节点的身份一律取作者写在节点上的 value 属性，解释方式由 variant 决定：
  * 日历形态中 row 与 week-day 上是行序 0-6（未写即网格之外的月份行与其行首占位）、
@@ -77,7 +84,7 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * legend-item 上是档位（发散色阶下另写 polarity 属性标明在中点哪一侧，逐格读取 `legendItems`）、
  * legend-label 上是 low 或 high（两端的文字，文案读取 `legendText`）。
  *
- * 数据、行列、档位下界与文案只能通过 property 设置（`el.value = [...]`）：HTML 属性无法承载数组与函数。
+ * 数据、行列、档位下界、数值格式与文案只能通过 property 设置（`el.value = [...]`）：HTML 属性无法承载数组与函数。
  *
  * @customElement xh-heatmap
  * @attr {'calendar'|'month'|'matrix'} variant - 形态；默认 calendar
@@ -94,9 +101,11 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * @attr {'red'|'orange'|'amber'|'yellow'|'lime'|'green'|'teal'|'cyan'|'blue'|'indigo'|'purple'|'pink'|'gray'} palette - 色板，取基础色板同名色相作色阶满档的颜色；同时提供 tone 时以色板为准
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} animated - 播放过渡，默认开；`animated="false"` 时直接画终态
- * @fires cell-focus - 焦点落到某一格；detail 为 `{ date, row, column, count, level, polarity, percent }`
- * @fires cell-active - 详情应显示哪一格（悬停或聚焦）；收起时 detail 为 null
- * @fires cell-press - 点按一格，或焦点在格上按 Enter；detail 与 cell-focus 同形
+ * @attr {boolean} pending - 数据重取中：保留上一帧、网格整体降低不透明度
+ * @attr {string} active-key - 激活的键（受控）：日期形态是 ISO 日期，矩阵形态是 heatmapMatrixKey(row, column)
+ * @fires datum-active - 详情应显示哪一格（悬停或聚焦）；detail 为 `{ key, date, row, column, count, level, polarity, percent, formatted }`，收起时为 null
+ * @fires datum-press - 点按一格，或焦点在格上按 Enter；detail 与 datum-active 同形
+ * @fires active-key-change - 指针或键盘换了激活的格子；detail 为 `{ activeKey }`，收起时为 null
  * @csspart root - 承载三轴的最外层节点
  * @csspart grid - role=grid 的网格容器，键盘在它身上收口
  * @csspart month-block - 月历形态中的一个自然月块
@@ -110,6 +119,7 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * @csspart legend - 色阶对照条
  * @csspart legend-label - 对照条一端的文字，value 是 low 或 high
  * @csspart legend-item - 对照条中的一格，value 是档位，发散色阶下 polarity 是 negative 或 positive
+ * @csspart empty - 网格里一条数据都没有时叠在网格上的空态，留空时由元素写入空态文案，取数中改写加载文案
  */
 export class XhHeatmapElement extends XhElement {
   static override partContract = { anatomy: heatmapAnatomy, meta: heatmapMeta }
@@ -122,6 +132,7 @@ export class XhHeatmapElement extends XhElement {
     rows: { attribute: false },
     columns: { attribute: false },
     thresholds: { attribute: false },
+    format: { attribute: false },
     translations: { attribute: false },
     variant: { converter: STRING_CONVERTER },
     startDate: { converter: STRING_CONVERTER, attribute: 'start-date' },
@@ -137,12 +148,15 @@ export class XhHeatmapElement extends XhElement {
     palette: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     animated: { converter: BOOLEAN_CONVERTER },
+    pending: { converter: BOOLEAN_CONVERTER },
+    activeKey: { converter: STRING_CONVERTER, attribute: 'active-key' },
   }
 
   declare value?: HeatmapValue[]
   declare rows?: HeatmapAxisInput[]
   declare columns?: HeatmapAxisInput[]
   declare thresholds?: number[]
+  declare format?: NumberFormatSpec | ((value: number) => string)
   declare translations?: Partial<HeatmapTranslations>
   declare variant?: HeatmapVariant
   declare startDate?: string
@@ -158,18 +172,23 @@ export class XhHeatmapElement extends XhElement {
   declare palette?: HeatmapPalette
   declare size?: Size
   declare animated?: boolean
+  declare pending?: boolean
+  declare activeKey?: string | null
 
-  private readonly notifyFocus = (details: HeatmapCellFocusDetails): void => {
-    this.dispatchEvent(new CustomEvent('cell-focus', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyActive = (details: HeatmapDatumDetails | null): void => {
+    this.dispatchEvent(new CustomEvent('datum-active', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifyActive = (details: HeatmapCellDetails | null): void => {
-    this.dispatchEvent(new CustomEvent('cell-active', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyPress = (details: HeatmapDatumDetails): void => {
+    this.dispatchEvent(new CustomEvent('datum-press', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifyPress = (details: HeatmapCellDetails): void => {
-    this.dispatchEvent(new CustomEvent('cell-press', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyKey = (details: HeatmapActiveKeyChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('active-key-change', { detail: details, bubbles: true, composed: true }))
   }
+
+  /** 生成节点按 key 复用。 */
+  private readonly generatedKeys: KeyedChildren = new WeakMap()
 
   // 过渡的时长与减弱动效从 root 读：取值口惰性读，角色节点要等首次 updated 才发现得到
   private readonly ctrl = new MachineController<HeatmapSchema>(
@@ -199,11 +218,49 @@ export class XhHeatmapElement extends XhElement {
       palette: this.palette,
       size: this.size,
       animated: this.animated,
+      format: this.format,
+      pending: this.pending,
+      activeKey: this.activeKey,
       translations: this.translations,
-      onCellFocus: this.notifyFocus,
-      onCellActive: this.notifyActive,
-      onCellPress: this.notifyPress,
+      onDatumActive: this.notifyActive,
+      onDatumPress: this.notifyPress,
+      onActiveKeyChange: this.notifyKey,
     }
+  }
+
+  /** 本元素名下的某个作者节点：不是生成的，也不在嵌套的另一台热力图里。 */
+  private authoredPart(scope: ParentNode, name: string): HTMLElement | null {
+    for (const el of Array.from(scope.querySelectorAll<HTMLElement>(`[data-xh-part="${name}"]`))) {
+      if (!el.hasAttribute(GEN_ATTR) && el.closest('xh-heatmap') === this)
+        return el
+    }
+    return null
+  }
+
+  /**
+   * root 里没有作者写的 grid 时生成整套结构；有就撤掉生成过的节点。
+   * 排在部件发现之前：生成的节点这一轮就能被发现、接线，必备部件的校验也认得出 grid。
+   */
+  private syncGenerated(): void {
+    const root = this.authoredPart(this, 'root')
+    if (!root || !this.ctrl.service)
+      return
+    if (this.authoredPart(root, 'grid')) {
+      placeStructure(root, [], this.generatedKeys)
+      return
+    }
+    // 作者写了 empty 或 legend 就用作者的，元素只补其余部分；详情条的内容归作者，元素不生成
+    const api = connectHeatmap(this.ctrl.service, wcNormalize)
+    placeStructure(root, heatmapStructure(api, {
+      empty: !this.authoredPart(root, 'empty'),
+      legend: !this.authoredPart(root, 'legend'),
+    }), this.generatedKeys)
+  }
+
+  protected override updated(changed: PropertyValues): void {
+    if (this.isConnected)
+      this.syncGenerated()
+    super.updated(changed)
   }
 
   /**
@@ -246,6 +303,16 @@ export class XhHeatmapElement extends XhElement {
       : heatmapLegendEntries(buildHeatmapGrid().scale)
   }
 
+  /** 网格里一条数据都没有。状态机尚未建立时为 true。 */
+  get empty(): boolean {
+    return this.ctrl.service ? connectHeatmap(this.ctrl.service, wcNormalize).empty : true
+  }
+
+  /** 此刻激活的键。activeKey 是作者递进来的受控值，非受控时读这里。 */
+  get currentActiveKey(): string | null {
+    return this.ctrl.service ? connectHeatmap(this.ctrl.service, wcNormalize).activeKey : null
+  }
+
   /** 作者写在行上的身份，按形态转换为连接层识别的坐标。 */
   private rowProps(el: HTMLElement, variant: HeatmapVariant): HeatmapRowProps {
     if (variant === 'matrix')
@@ -268,6 +335,16 @@ export class XhHeatmapElement extends XhElement {
     put('grid', api.getGridProps() as Record<string, unknown>)
     put('tooltip', api.getTooltipProps() as Record<string, unknown>)
     put('legend', api.getLegendProps() as Record<string, unknown>)
+    put('empty', api.getEmptyProps() as Record<string, unknown>)
+
+    // 空态留空时写入文案：取数中是加载文案，否则是空态文案
+    const empty = this.getPart('empty')
+    if (empty && !hasAuthorContent(empty)) {
+      const [own] = generatedChildren(empty)
+      const span = own ?? empty.appendChild(createGeneratedElement(empty.ownerDocument, 'span'))
+      if (span.textContent !== api.emptyText)
+        span.textContent = api.emptyText
+    }
 
     for (const el of this.getParts('month-block'))
       this.spreader.spread(el, api.getMonthBlockProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)

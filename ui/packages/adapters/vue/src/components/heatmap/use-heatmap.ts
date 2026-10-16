@@ -24,12 +24,10 @@ export interface HeatmapContext {
 // 不建 scope：connect 不派生任何 id
 export function useHeatmap(
   props: HeatmapSchema['props'],
-  onCellFocus?: HeatmapSchema['props']['onCellFocus'],
-  onCellActive?: HeatmapSchema['props']['onCellActive'],
-  onCellPress?: HeatmapSchema['props']['onCellPress'],
+  callbacks: Pick<HeatmapSchema['props'], 'onDatumActive' | 'onDatumPress' | 'onActiveKeyChange'> = {},
 ): HeatmapContext {
   const rootRef = ref<HTMLElement | null>(null)
-  const service = useMachine(heatmapMachine, () => ({ ...props, onCellFocus, onCellActive, onCellPress }))
+  const service = useMachine(heatmapMachine, () => ({ ...props, ...callbacks }))
   service.refs.set('getRootEl', () => rootRef.value)
   const api = computed(() => connectHeatmap(service, vueNormalize))
   return { api, service, rootRef }

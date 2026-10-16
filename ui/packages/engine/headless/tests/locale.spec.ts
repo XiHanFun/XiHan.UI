@@ -117,8 +117,8 @@ const SAMPLES: Record<string, Record<string, unknown[][]>> = {
     ],
   },
   'heatmap': {
-    cellLabel: [[{ date: '2026-10-04', row: '', column: '', count: 3, level: 1, polarity: null, percent: 25 }]],
-    matrixCellLabel: [[{ date: '', row: 'Mon', column: '09:00', count: 2, level: 1, polarity: null, percent: 25 }]],
+    cellLabel: [[{ key: '2026-10-04', date: '2026-10-04', row: '', column: '', count: 3, level: 1, polarity: null, percent: 25, formatted: { value: '3' } }]],
+    matrixCellLabel: [[{ key: 'Mon\u001F09:00', date: '', row: 'Mon', column: '09:00', count: 2, level: 1, polarity: null, percent: 25, formatted: { value: '2' } }]],
   },
   'hierarchy-chart': {
     datumLabel: [[DATUM], [datum({ parentShare: '25%', parent: 'All' })]],

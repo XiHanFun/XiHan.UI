@@ -6,8 +6,8 @@
 // 提供 heatmap.grid 相关实现。
 
 import type { Direction } from '@xihan-ui/core'
-import type { LevelScale } from '@xihan-ui/viz'
-import { scaleQuantize, scaleThreshold } from '@xihan-ui/viz'
+import type { LevelScale, NumberFormatSpec } from '@xihan-ui/viz'
+import { createNumberFormat, scaleQuantize, scaleThreshold } from '@xihan-ui/viz'
 
 // 热力图的纯数学与纯格式化：把一段日期区间摊成「周列 × 星期行」的网格，把计数分成档位，
 // 再把方向键翻成落点。不碰 DOM、不认识状态机，也不引日期库——日期一律是 ISO 的 YYYY-MM-DD 串。
@@ -108,6 +108,14 @@ export interface HeatmapGridOptions {
   firstDayOfWeek?: number
   /** 月份名与星期名的书写 locale。 */
   locale?: string
+  /** 数值格式：详情、格子的可及名与发散色阶对照条两端共用；缺省按 locale 的常规数字写法。 */
+  format?: NumberFormatSpec | ((value: number) => string)
+}
+
+/** 数值的写法：给了函数就用它，否则按 locale 与格式参数建一个。 */
+export function heatmapValueFormat(options: Pick<HeatmapGridOptions, 'format' | 'locale'>): (value: number) => string {
+  const format = options.format
+  return typeof format === 'function' ? format : createNumberFormat(options.locale ?? HEATMAP_LOCALE, format ?? {})
 }
 
 /** 是不是按日期写的那一种数据。 */
@@ -1076,7 +1084,9 @@ export interface HeatmapCellRef {
 }
 
 /** 一格的全部数据：身份、原始值、档位，以及档位在色阶上的位置。 */
-export interface HeatmapCellDetails {
+export interface HeatmapDatumDetails {
+  /** 联动用的键：日期形态是 ISO 日期，矩阵形态是 `heatmapMatrixKey(row, column)`。 */
+  key: string
   /** ISO 日期；矩阵形态下是空串。 */
   date: string
   /** 行身份；日期形态下是空串。 */
@@ -1091,6 +1101,8 @@ export interface HeatmapCellDetails {
   polarity: HeatmapPolarity | null
   /** 在色阶上的位置，0-100：分档时是档位的位置，连续色阶是数值的确切位置。 */
   percent: number
+  /** 按 format 与 locale 写好的数值。 */
+  formatted: { value: string }
 }
 
 /** 一格的身份摊成一个串，用来判「还是不是同一格」。 */
@@ -1126,35 +1138,67 @@ export function heatmapMatrixStatsOf(options: HeatmapGridOptions, row: string, c
 }
 
 /**
- * 一格的全部数据。三种形态收在这一处：机器与连接层都调它，
- * 悬停与聚焦看到的数字因此不会各算各的。
+ * 由一格的身份与取值拼出详情：没有 date 即矩阵形态，键取行列合成的那个串。
+ * 连接层已经查到取值时直接调它，不再回头查一遍。
  */
-export function heatmapDetailsOf(options: HeatmapGridOptions, ref: HeatmapCellRef): HeatmapCellDetails {
-  if ((options.variant ?? 'calendar') === 'matrix') {
-    const row = ref.row ?? ''
-    const column = ref.column ?? ''
-    const stats = heatmapMatrixStatsOf(options, row, column)
-    return {
-      date: '',
-      row,
-      column,
-      count: stats.count,
-      level: stats.level,
-      polarity: stats.polarity,
-      percent: stats.percent,
-    }
-  }
-  const date = ref.date ?? ''
-  const stats = heatmapStatsOf(options, date)
+export function heatmapDatumDetails(
+  ref: HeatmapCellRef,
+  stats: Pick<HeatmapCellStats, 'count' | 'level' | 'polarity' | 'percent'>,
+  format: (value: number) => string,
+): HeatmapDatumDetails {
+  const matrix = ref.date === undefined
+  const date = matrix ? '' : (ref.date ?? '')
+  const row = matrix ? (ref.row ?? '') : ''
+  const column = matrix ? (ref.column ?? '') : ''
   return {
+    key: matrix ? heatmapMatrixKey(row, column) : date,
     date,
-    row: '',
-    column: '',
+    row,
+    column,
     count: stats.count,
     level: stats.level,
     polarity: stats.polarity,
     percent: stats.percent,
+    formatted: { value: format(stats.count) },
   }
+}
+
+/**
+ * 一格的全部数据。三种形态收在这一处：机器与连接层都调它，
+ * 悬停与聚焦看到的数字因此不会各算各的。
+ */
+export function heatmapDetailsOf(options: HeatmapGridOptions, ref: HeatmapCellRef): HeatmapDatumDetails {
+  const format = heatmapValueFormat(options)
+  if ((options.variant ?? 'calendar') === 'matrix') {
+    const row = ref.row ?? ''
+    const column = ref.column ?? ''
+    return heatmapDatumDetails({ row, column }, heatmapMatrixStatsOf(options, row, column), format)
+  }
+  const date = ref.date ?? ''
+  return heatmapDatumDetails({ date }, heatmapStatsOf(options, date), format)
+}
+
+/**
+ * 网格里有没有至少一条数据：日期形态看区间内，矩阵形态看行列上。写了 0 的条目也算数据，
+ * 区间不合法或行列为空时一条都落不进来。
+ */
+export function heatmapHasData(options: HeatmapGridOptions): boolean {
+  const items = options.value ?? []
+  if ((options.variant ?? 'calendar') === 'matrix') {
+    const rows = new Set(buildHeatmapAxis(options.rows).map(item => item.value))
+    const columns = new Set(buildHeatmapAxis(options.columns).map(item => item.value))
+    return items.some(item => !isDateDatum(item) && rows.has(item.row) && columns.has(item.column))
+  }
+  const startTime = parseHeatmapDate(options.startDate)
+  const endTime = parseHeatmapDate(options.endDate)
+  if (startTime == null || endTime == null)
+    return false
+  return items.some((item) => {
+    if (!isDateDatum(item))
+      return false
+    const time = parseHeatmapDate(item.date)
+    return time != null && time >= startTime && time <= endTime
+  })
 }
 
 // ── 详情条的几何：不引浮层引擎，位置由适配器在事件那一刻量出来回写 ──

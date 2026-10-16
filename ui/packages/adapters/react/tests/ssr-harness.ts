@@ -13,7 +13,9 @@ export function createReactSsrHarness(): SsrHarness {
     adapterName: 'react',
     async renderToString(fixture: Fixture) {
       const Root = resolveRoot(fixture.component)
-      const { children, slots } = renderFixtureSlots(fixture.tree.children, fixture.component)
+      const { children, slots } = fixture.tree.defaultStructure
+        ? { children: undefined, slots: {} }
+        : renderFixtureSlots(fixture.tree.children, fixture.component)
       return renderToStaticMarkup(createElement(
         Root,
         { ...fixture.tree.attrs, ...slots, ...fixture.props },

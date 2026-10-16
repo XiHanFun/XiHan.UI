@@ -344,11 +344,13 @@ const translations = {
   'grid-list': { root: '項目' },
   'heatmap': {
     gridLabel: '活動熱度圖',
-    cellLabel: details => `${details.date}：${details.count}`,
-    matrixCellLabel: details => `${details.row} ${details.column}：${details.count}`,
+    cellLabel: details => `${details.date}：${details.formatted.value}`,
+    matrixCellLabel: details => `${details.row} ${details.column}：${details.formatted.value}`,
     legendLabel: '活動程度',
     legendLow: '少',
     legendHigh: '多',
+    emptyText: chart.emptyText,
+    loadingText: chart.loadingText,
   },
   'hierarchy-chart': {
     ...chart,

@@ -9,12 +9,10 @@ import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type {
   HeatmapApi,
   HeatmapAxisInput,
-  HeatmapCellDetails,
   HeatmapCellMeta,
+  HeatmapDatumDetails,
   HeatmapLegendBound,
   HeatmapMatrixCellMeta,
-  HeatmapMatrixGrid,
-  HeatmapMonthGrid,
   HeatmapPalette,
   HeatmapPolarity,
   HeatmapRowProps,
@@ -23,14 +21,16 @@ import type {
   HeatmapTranslations,
   HeatmapValue,
   HeatmapVariant,
+  NumberFormatSpec,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { heatmapMatrixKey, normalizeHeatmapNumber, normalizeHeatmapString } from '@xihan-ui/headless'
+import { heatmapStructure, normalizeHeatmapNumber, normalizeHeatmapString } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import {
   HeatmapMonthProvider,
   HeatmapProvider,
@@ -59,6 +59,8 @@ export type HeatmapRootSlotProps = Pick<
   | 'anchorCell'
   | 'anchorDate'
   | 'activeCell'
+  | 'activeKey'
+  | 'empty'
   | 'detailOpen'
   | 'scaleMode'
   | 'legendItems'
@@ -102,17 +104,25 @@ export interface XhHeatmapRootProps extends Omit<ComponentPropsWithRef<'div'>, '
   size?: Size
   /** 播放过渡，默认开；关闭后直接画终态。 */
   animated?: boolean
+  /** 数值格式：详情、格子的可及名与发散色阶对照条两端共用。 */
+  format?: NumberFormatSpec | ((value: number) => string)
+  /** 数据重取中：保留上一帧、网格整体降低不透明度。 */
+  pending?: boolean
+  /** 激活的键（受控）：日期形态是 ISO 日期，矩阵形态是行列合成的串。 */
+  activeKey?: string | null
   translations?: Partial<HeatmapTranslations>
-  /** 焦点落到某一格。 */
-  onCellFocus?: HeatmapProps['onCellFocus']
   /** 详情所在的格子变化。 */
-  onCellActive?: HeatmapProps['onCellActive']
+  onDatumActive?: HeatmapProps['onDatumActive']
   /** 点按一格，或焦点在格上按 Enter。 */
-  onCellPress?: HeatmapProps['onCellPress']
+  onDatumPress?: HeatmapProps['onDatumPress']
+  /** 指针或键盘把激活的格子换掉。 */
+  onActiveKeyChange?: HeatmapProps['onActiveKeyChange']
   /** 铺开网格时每一格的内容；未提供时是空格子。 */
   renderCell?: (cell: HeatmapCellSlotProps) => ReactNode
   /** 详情条的内容；提供后才铺设 tooltip 部件。 */
-  renderTooltip?: (details: HeatmapCellDetails | null) => ReactNode
+  renderTooltip?: (details: HeatmapDatumDetails | null) => ReactNode
+  /** 缺省结构里的空态内容；未提供时是空态文案。 */
+  renderEmpty?: () => ReactNode
   children?: SlotChildren<HeatmapRootSlotProps>
 }
 
@@ -135,12 +145,16 @@ export function XhHeatmapRoot({
   palette,
   size,
   animated,
+  format,
+  pending,
+  activeKey,
   translations,
-  onCellFocus,
-  onCellActive,
-  onCellPress,
+  onDatumActive,
+  onDatumPress,
+  onActiveKeyChange,
   renderCell,
   renderTooltip,
+  renderEmpty,
   children,
   ...rest
 }: XhHeatmapRootProps): ReactNode {
@@ -163,14 +177,17 @@ export function XhHeatmapRoot({
     palette,
     size,
     animated,
+    format,
+    pending,
+    activeKey,
     translations,
-    onCellFocus,
-    onCellActive,
-    onCellPress,
+    onDatumActive,
+    onDatumPress,
+    onActiveKeyChange,
   }) as HeatmapProps)
   const { api } = ctx
   const body = children === undefined
-    ? <DefaultTree api={api} renderCell={renderCell} renderTooltip={renderTooltip} />
+    ? <DefaultTree api={api} renderCell={renderCell} renderTooltip={renderTooltip} renderEmpty={renderEmpty} />
     : renderSlot(children, {
         variant: api.variant,
         grid: api.grid,
@@ -181,6 +198,8 @@ export function XhHeatmapRoot({
         anchorCell: api.anchorCell,
         anchorDate: api.anchorDate,
         activeCell: api.activeCell,
+        activeKey: api.activeKey,
+        empty: api.empty,
         detailOpen: api.detailOpen,
         scaleMode: api.scaleMode,
         legendItems: api.legendItems,
@@ -203,7 +222,7 @@ export function XhHeatmapRoot({
   )
 }
 
-XhHeatmapRoot.xhEvents = ['cell-focus', 'cell-active', 'cell-press'] as const
+XhHeatmapRoot.xhEvents = ['datum-active', 'datum-press', 'active-key-change'] as const
 
 export interface XhHeatmapGridProps extends ComponentPropsWithRef<'div'> {}
 
@@ -397,6 +416,18 @@ export function XhHeatmapTooltip({ children, ...rest }: XhHeatmapTooltipProps): 
   )
 }
 
+export interface XhHeatmapEmptyProps extends ComponentPropsWithRef<'div'> {}
+
+/** 空态：网格里一条数据都没有时叠在网格上，取数中改写加载文案。 */
+export function XhHeatmapEmpty({ children, ...rest }: XhHeatmapEmptyProps): ReactNode {
+  const ctx = useHeatmapContext()
+  return (
+    <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children}
+    </div>
+  )
+}
+
 export interface XhHeatmapLegendProps extends ComponentPropsWithRef<'div'> {}
 
 /** 色阶对照条。 */
@@ -451,132 +482,42 @@ export function XhHeatmapLegendItem({ value, polarity, children, ...rest }: XhHe
   )
 }
 
+/** 标准结构里各部件对应的组件。 */
+const HEATMAP_PARTS = {
+  'grid': XhHeatmapGrid,
+  'month-block': XhHeatmapMonthBlock,
+  'row': XhHeatmapRow,
+  'week-day': XhHeatmapWeekDay,
+  'month-label': XhHeatmapMonthLabel,
+  'row-label': XhHeatmapRowLabel,
+  'column-label': XhHeatmapColumnLabel,
+  'cell': XhHeatmapCell,
+  'tooltip': XhHeatmapTooltip,
+  'legend': XhHeatmapLegend,
+  'legend-label': XhHeatmapLegendLabel,
+  'legend-item': XhHeatmapLegendItem,
+  'empty': XhHeatmapEmpty,
+}
+
 interface DefaultTreeProps {
   api: HeatmapApi
   renderCell?: (cell: HeatmapCellSlotProps) => ReactNode
-  renderTooltip?: (details: HeatmapCellDetails | null) => ReactNode
+  renderTooltip?: (details: HeatmapDatumDetails | null) => ReactNode
+  renderEmpty?: () => ReactNode
 }
 
 /**
- * 未写 children 时按网格模型铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时自行写部件，行为不变。
- * 详情条只有提供 renderTooltip 时才铺设。
+ * 未写 children 时铺开的整套结构，作者只提供数据：照 headless 的 heatmapStructure 渲，
+ * 与 Web Components 只写 root 时元素生成的节点出自同一份。格子、详情条与空态的内容由对应渲染函数接管。
  */
-function DefaultTree({ api, renderCell, renderTooltip }: DefaultTreeProps): ReactNode {
-  // 两端各一个字：一排色块自己说不出哪头是多
-  const legend = (
-    <XhHeatmapLegend>
-      <XhHeatmapLegendLabel value="low">{api.legendText.low}</XhHeatmapLegendLabel>
-      {api.legendItems.map(item => (
-        <XhHeatmapLegendItem key={`${item.polarity ?? 'center'}-${item.level}`} value={item.level} polarity={item.polarity ?? undefined} />
-      ))}
-      <XhHeatmapLegendLabel value="high">{api.legendText.high}</XhHeatmapLegendLabel>
-    </XhHeatmapLegend>
-  )
-  const tooltip = renderTooltip
-    ? <XhHeatmapTooltip>{renderTooltip(api.activeCell)}</XhHeatmapTooltip>
-    : null
-
-  if (api.matrixGrid) {
-    return (
-      <>
-        <MatrixTree grid={api.matrixGrid} renderCell={renderCell} />
-        {tooltip}
-        {legend}
-      </>
-    )
-  }
-  if (api.monthGrid) {
-    return (
-      <>
-        <MonthTree grid={api.monthGrid} renderCell={renderCell} />
-        {tooltip}
-        {legend}
-      </>
-    )
-  }
-
-  return (
-    <>
-      {/* 月份行排在网格之外：它只是一条对齐用的坐标轴，进了网格就得冒充表格行 */}
-      <XhHeatmapRow>
-        {/* 行首占位：与下面各行的星期名同宽，月份才对得上列 */}
-        <XhHeatmapWeekDay />
-        {api.grid.months.map(month => (
-          <XhHeatmapMonthLabel key={month.value} value={month.value}>{month.label}</XhHeatmapMonthLabel>
-        ))}
-      </XhHeatmapRow>
-      <XhHeatmapGrid>
-        {api.grid.rows.map(row => (
-          <XhHeatmapRow key={row.weekDay} value={row.weekDay}>
-            <XhHeatmapWeekDay value={row.weekDay}>{api.grid.weekDays[row.weekDay]?.label ?? ''}</XhHeatmapWeekDay>
-            {row.cells.map(cell => (
-              <XhHeatmapCell key={cell.date} value={cell.date}>{renderCell?.(cell)}</XhHeatmapCell>
-            ))}
-          </XhHeatmapRow>
-        ))}
-      </XhHeatmapGrid>
-      {tooltip}
-      {legend}
-    </>
-  )
-}
-
-/** 月历形态：网格中一个自然月一块，块内先一条星期名坐标轴，再逐周一行。 */
-function MonthTree({
-  grid,
-  renderCell,
-}: { grid: HeatmapMonthGrid, renderCell?: (cell: HeatmapCellSlotProps) => ReactNode }): ReactNode {
-  return (
-    <XhHeatmapGrid>
-      {grid.blocks.map(block => (
-        <XhHeatmapMonthBlock key={block.value} value={block.value}>
-          <XhHeatmapMonthLabel value={block.value}>{block.label}</XhHeatmapMonthLabel>
-          <XhHeatmapRow>
-            {grid.weekDays.map(day => (
-              <XhHeatmapWeekDay key={day.weekDay} value={day.weekDay}>{day.label}</XhHeatmapWeekDay>
-            ))}
-          </XhHeatmapRow>
-          {block.weeks.map(row => (
-            <XhHeatmapRow key={row.week} value={row.week}>
-              {row.cells.map(cell => (
-                <XhHeatmapCell key={cell.date} value={cell.date}>{renderCell?.(cell)}</XhHeatmapCell>
-              ))}
-            </XhHeatmapRow>
-          ))}
-        </XhHeatmapMonthBlock>
-      ))}
-    </XhHeatmapGrid>
-  )
-}
-
-/** 矩阵形态：首行是列名，其余每行行首一个行名、其后逐列一格。 */
-function MatrixTree({
-  grid,
-  renderCell,
-}: { grid: HeatmapMatrixGrid, renderCell?: (cell: HeatmapCellSlotProps) => ReactNode }): ReactNode {
-  return (
-    <XhHeatmapGrid>
-      <XhHeatmapRow>
-        {/* 角落占位：与下面各行的行名同宽，列名才对得上列 */}
-        <XhHeatmapRowLabel />
-        {grid.columns.map(column => (
-          <XhHeatmapColumnLabel key={column.value} value={column.value}>{column.label}</XhHeatmapColumnLabel>
-        ))}
-      </XhHeatmapRow>
-      {grid.rows.map(row => (
-        <XhHeatmapRow key={row.value} value={row.value}>
-          <XhHeatmapRowLabel value={row.value}>{row.label}</XhHeatmapRowLabel>
-          {grid.columns.map((column) => {
-            const meta = grid.cells.get(heatmapMatrixKey(row.value, column.value))
-            return (
-              <XhHeatmapCell key={column.value} value={column.value}>
-                {meta == null ? null : renderCell?.(meta)}
-              </XhHeatmapCell>
-            )
-          })}
-        </XhHeatmapRow>
-      ))}
-    </XhHeatmapGrid>
-  )
+function DefaultTree({ api, renderCell, renderTooltip, renderEmpty }: DefaultTreeProps): ReactNode {
+  return renderStructure(heatmapStructure(api, { tooltip: !!renderTooltip }), HEATMAP_PARTS, (node) => {
+    if (node.part === 'cell')
+      return node.data == null ? null : renderCell?.(node.data as HeatmapCellSlotProps) ?? null
+    if (node.part === 'tooltip')
+      return renderTooltip?.(api.activeCell)
+    if (node.part === 'empty')
+      return renderEmpty ? renderEmpty() : api.emptyText
+    return undefined
+  })
 }

@@ -6,7 +6,7 @@
  */
 
 import type { Service } from '@xihan-ui/core'
-import type { HeatmapCellFocusDetails, HeatmapSchema } from '../src/heatmap'
+import type { HeatmapDatumDetails, HeatmapSchema } from '../src/heatmap'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -94,15 +94,22 @@ interface Harness {
   grid: HTMLElement
   cell: (date: string) => HTMLElement
   render: () => void
-  focuses: HeatmapCellFocusDetails[]
+  /** 每次 onActiveKeyChange 报出的键。 */
+  keys: (string | null)[]
+  actives: (HeatmapDatumDetails | null)[]
 }
 
 const apiOf = (service: Service<HeatmapSchema>) => connectHeatmap(service, normalizeProps)
 
 /** 按 connect 给出的网格铺出 root > grid > 行 > 格的整棵树，并把属性打上去。 */
 function mount(initial: Props = {}): Harness {
-  const focuses: HeatmapCellFocusDetails[] = []
-  const props: Props = { ...initial, onCellFocus: details => focuses.push(details) }
+  const keys: (string | null)[] = []
+  const actives: (HeatmapDatumDetails | null)[] = []
+  const props: Props = {
+    ...initial,
+    onActiveKeyChange: details => keys.push(details.activeKey),
+    onDatumActive: details => actives.push(details),
+  }
   const runtime = createVanillaRuntime()
   const service = createService(heatmapMachine, { props: () => props, runtime })
   runtime.start()
@@ -143,7 +150,8 @@ function mount(initial: Props = {}): Harness {
     grid,
     cell: date => cells.get(date)!,
     render,
-    focuses,
+    keys,
+    actives,
   }
 }
 
@@ -540,32 +548,36 @@ describe('connectHeatmap 键盘走格', () => {
     expect(document.activeElement).toBe(harness.cell('2024-01-08'))
   })
 
-  it('焦点落到某一天只通知一次，原地重复聚焦不再通知', () => {
+  it('焦点落到某一天：激活的键与详情各报一次，原地重复聚焦不再报', () => {
     const harness = mount({ ...RANGE, value: VALUE })
     harness.cell('2024-01-02').focus()
     harness.render()
-    expect(harness.focuses).toEqual([{ date: '2024-01-02', row: '', column: '', count: 10, level: 4, polarity: null, percent: 100 }])
+    expect(harness.keys).toEqual(['2024-01-02'])
+    expect(harness.actives).toEqual([{ key: '2024-01-02', date: '2024-01-02', row: '', column: '', count: 10, level: 4, polarity: null, percent: 100, formatted: { value: '10' } }])
 
     harness.cell('2024-01-02').focus()
     harness.render()
-    expect(harness.focuses).toHaveLength(1)
+    expect(harness.keys).toHaveLength(1)
+    expect(harness.actives).toHaveLength(1)
 
     press(harness, 'ArrowDown')
-    expect(harness.focuses).toHaveLength(2)
-    expect(harness.focuses[1]).toEqual({ date: '2024-01-03', row: '', column: '', count: 0, level: 0, polarity: null, percent: 0 })
+    expect(harness.keys).toEqual(['2024-01-02', '2024-01-03'])
+    expect(harness.actives[1]).toEqual({ key: '2024-01-03', date: '2024-01-03', row: '', column: '', count: 0, level: 0, polarity: null, percent: 0, formatted: { value: '0' } })
   })
 
-  it('程序化挪锚点只改锚点，不报「焦点落到了这一天」：DOM 焦点根本没动', () => {
+  it('程序化挪锚点只改锚点，激活的键不动：DOM 焦点根本没动', () => {
     const harness = mount({ ...RANGE, value: VALUE })
     harness.service.send({ type: 'FOCUS.SET', cell: { date: '2024-01-02' } })
     harness.render()
     expect(apiOf(harness.service).focusedDate).toBe('2024-01-02')
-    expect(harness.focuses).toEqual([])
+    expect(harness.keys).toEqual([])
+    expect(harness.actives).toEqual([])
 
-    // 焦点真的落上去才通知
+    // 焦点真的落上去才报
     harness.cell('2024-01-01').focus()
     harness.render()
-    expect(harness.focuses).toEqual([{ date: '2024-01-01', row: '', column: '', count: 1, level: 1, polarity: null, percent: 25 }])
+    expect(harness.keys).toEqual(['2024-01-01'])
+    expect(harness.actives.at(-1)).toMatchObject({ key: '2024-01-01', count: 1, level: 1, percent: 25 })
   })
 
   it('区间换掉后锚点悬空，Tab 位退回文档序头一格：不然一个停靠点都没有，键盘再也进不来', () => {
@@ -746,17 +758,23 @@ describe('heatmapMatrixNavTarget 矩阵落点', () => {
 })
 
 describe('heatmapDetailsOf 一格的全部数据', () => {
-  it('日期形态报日期、计数、档位与色阶位置', () => {
+  it('日期形态报键、日期、计数、档位、色阶位置与写好的数值', () => {
     const details = heatmapDetailsOf({ startDate: '2024-01-01', endDate: '2024-01-31', value: VALUE }, { date: '2024-01-02' })
-    expect(details).toEqual({ date: '2024-01-02', row: '', column: '', count: 10, level: 4, polarity: null, percent: 100 })
+    expect(details).toEqual({ key: '2024-01-02', date: '2024-01-02', row: '', column: '', count: 10, level: 4, polarity: null, percent: 100, formatted: { value: '10' } })
   })
 
-  it('矩阵形态报行列身份，日期是空串', () => {
+  it('矩阵形态报行列身份，键是行列合成的串，日期是空串', () => {
     const details = heatmapDetailsOf(
       { variant: 'matrix', rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE },
       { row: '周一', column: '上午' },
     )
-    expect(details).toMatchObject({ date: '', row: '周一', column: '上午', count: 5 })
+    expect(details).toMatchObject({ key: heatmapMatrixKey('周一', '上午'), date: '', row: '周一', column: '上午', count: 5 })
+  })
+
+  it('数值按 format 写：格式参数按 locale 建，函数原样调用', () => {
+    const options = { startDate: '2024-01-01', endDate: '2024-01-31', value: [{ date: '2024-01-02', count: 12345.6 }] }
+    expect(heatmapDetailsOf({ ...options, locale: 'en-US', format: { notation: 'compact' } }, { date: '2024-01-02' }).formatted.value).toBe('12K')
+    expect(heatmapDetailsOf({ ...options, format: value => `${value} 次` }, { date: '2024-01-02' }).formatted.value).toBe('12345.6 次')
   })
 
   it('网格里没有这一格时给 0，不是报错', () => {
@@ -903,8 +921,7 @@ interface MultiHarness {
   render: () => void
   /** 换一份 props 并触发一轮 tracker：props 装在裸 signal 里，写它才通知得到。 */
   setProps: (next: Partial<Props>) => void
-  focuses: HeatmapCellFocusDetails[]
-  actives: (HeatmapCellFocusDetails | null)[]
+  actives: (HeatmapDatumDetails | null)[]
 }
 
 interface BuildDoc {
@@ -918,12 +935,10 @@ function mountVariant(
   initial: Props,
   build: (api: ReturnType<typeof apiOf>, doc: BuildDoc) => void,
 ): MultiHarness {
-  const focuses: HeatmapCellFocusDetails[] = []
-  const actives: (HeatmapCellFocusDetails | null)[] = []
+  const actives: (HeatmapDatumDetails | null)[] = []
   const props: Props = {
     ...initial,
-    onCellFocus: details => focuses.push(details),
-    onCellActive: details => actives.push(details),
+    onDatumActive: details => actives.push(details),
   }
   const runtime = createVanillaRuntime()
   const propsSignal = runtime.signal<Props>(props)
@@ -957,7 +972,7 @@ function mountVariant(
     render()
   }
 
-  return { service, root, grid, tooltip, cell: key => cells.get(key)!, render, setProps, focuses, actives }
+  return { service, root, grid, tooltip, cell: key => cells.get(key)!, render, setProps, actives }
 }
 
 /** 给一格按上一份固定的量测：jsdom 里所有盒子都是零，不打桩两路量测分不出来。 */
@@ -1591,13 +1606,13 @@ describe('发散色阶与连续色阶', () => {
   })
 })
 
-describe('onCellPress', () => {
+describe('onDatumPress', () => {
   it('点一格与焦点在格上按 Enter 都派发，载荷与详情同源', () => {
     const presses: unknown[] = []
-    const harness = mountMatrix({ rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE, onCellPress: details => presses.push(details) })
+    const harness = mountMatrix({ rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE, onDatumPress: details => presses.push(details) })
     harness.cell(`${MATRIX_ROWS[0]}/${MATRIX_COLUMNS[0]}`).click()
     expect(presses).toHaveLength(1)
-    expect(presses[0]).toMatchObject({ row: MATRIX_ROWS[0], column: MATRIX_COLUMNS[0] })
+    expect(presses[0]).toMatchObject({ key: heatmapMatrixKey(MATRIX_ROWS[0]!, MATRIX_COLUMNS[0]!), row: MATRIX_ROWS[0], column: MATRIX_COLUMNS[0] })
 
     const first = harness.cell(`${MATRIX_ROWS[0]}/${MATRIX_COLUMNS[0]}`)
     first.focus()
@@ -1610,7 +1625,7 @@ describe('onCellPress', () => {
 
   it('空格键不报告也不拦截，留给页面滚动；按住 Enter 的重复按键不再报告', () => {
     const presses: unknown[] = []
-    const harness = mountMatrix({ rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE, onCellPress: details => presses.push(details) })
+    const harness = mountMatrix({ rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE, onDatumPress: details => presses.push(details) })
     const first = harness.cell(`${MATRIX_ROWS[0]}/${MATRIX_COLUMNS[0]}`)
     first.focus()
     harness.render()
@@ -1620,5 +1635,81 @@ describe('onCellPress', () => {
     expect(presses).toHaveLength(0)
     first.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true, repeat: true }))
     expect(presses).toHaveLength(0)
+  })
+})
+
+describe('图表家族的约定', () => {
+  it('受控 activeKey：指针与键盘都不在网格上时，键命中的那一格描圈，详情条不打开', () => {
+    const harness = mount({ ...RANGE, value: VALUE, activeKey: '2024-01-03' })
+    const api = apiOf(harness.service)
+    expect(api.activeKey).toBe('2024-01-03')
+    expect(api.detailOpen).toBe(false)
+    expect(harness.cell('2024-01-03').hasAttribute('data-highlighted')).toBe(true)
+    expect(harness.cell('2024-01-02').hasAttribute('data-highlighted')).toBe(false)
+  })
+
+  it('受控 activeKey：指针压过联动键，换格只发 onActiveKeyChange、不改受控值', () => {
+    const harness = mount({ ...RANGE, value: VALUE, activeKey: '2024-01-03' })
+    harness.cell('2024-01-02').dispatchEvent(new Event('pointerenter'))
+    harness.render()
+    expect(harness.keys).toEqual(['2024-01-02'])
+    expect(harness.cell('2024-01-02').hasAttribute('data-highlighted')).toBe(true)
+    expect(harness.cell('2024-01-03').hasAttribute('data-highlighted')).toBe(false)
+    expect(apiOf(harness.service).activeKey).toBe('2024-01-03')
+  })
+
+  it('不受控时指针进出各报一次键，离开报 null', () => {
+    const harness = mount({ ...RANGE, value: VALUE })
+    harness.cell('2024-01-02').dispatchEvent(new Event('pointerenter'))
+    harness.cell('2024-01-02').dispatchEvent(new Event('pointerleave'))
+    expect(harness.keys).toEqual(['2024-01-02', null])
+  })
+
+  it('矩阵形态的联动键是行列合成的串', () => {
+    const harness = mountMatrix({ rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE, activeKey: heatmapMatrixKey('周二', '下午') })
+    expect(harness.cell('周二/下午').hasAttribute('data-highlighted')).toBe(true)
+    expect(harness.cell('周一/下午').hasAttribute('data-highlighted')).toBe(false)
+  })
+
+  it('pending：根上 data-loading 与 aria-busy，网格照常在场', () => {
+    const api = apiOf(mount({ ...RANGE, value: VALUE, pending: true }).service)
+    const root = api.getRootProps() as Record<string, unknown>
+    expect(root['data-loading']).toBe('')
+    expect(root['aria-busy']).toBe('true')
+    expect(api.empty).toBe(false)
+    expect((api.getEmptyProps() as Record<string, unknown>).hidden).toBe(true)
+  })
+
+  it('区间内一条数据都没有即空态；写了 0 的条目也算数据', () => {
+    expect(apiOf(mount(RANGE).service).empty).toBe(true)
+    expect(apiOf(mount({ ...RANGE, value: [{ date: '2023-12-31', count: 3 }] }).service).empty).toBe(true)
+    expect(apiOf(mount({ ...RANGE, value: [{ date: '2024-01-05', count: 0 }] }).service).empty).toBe(false)
+    const api = apiOf(mount(RANGE).service)
+    const empty = api.getEmptyProps() as Record<string, unknown>
+    expect(empty.hidden).toBeUndefined()
+    expect(empty['data-xh-chart-part']).toBe('empty')
+    expect(api.emptyText).toBe('No data')
+  })
+
+  it('矩阵形态只认落在行列上的数据', () => {
+    const offAxis = mountMatrix({ rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: [{ row: '周日', column: '上午', value: 3 }] })
+    expect(apiOf(offAxis.service).empty).toBe(true)
+    expect(apiOf(mountMatrix({ rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE }).service).empty).toBe(false)
+  })
+
+  it('取数中且还没有数据：空态写加载文案并带加载环', () => {
+    const api = apiOf(mount({ ...RANGE, pending: true, translations: { loadingText: '取数中' } }).service)
+    const empty = api.getEmptyProps() as Record<string, unknown>
+    expect(empty['data-state']).toBe('loading')
+    expect(empty['data-loading']).toBe('')
+    expect(api.emptyText).toBe('取数中')
+  })
+
+  it('format 同时作用于格子的可及名与发散色阶对照条两端', () => {
+    const harness = mount({ ...RANGE, value: VALUE, format: value => `${value} 件` })
+    expect(harness.cell('2024-01-02').getAttribute('aria-label')).toBe('10 件 on 2024-01-02')
+    const signed: Props = { variant: 'matrix', rows: ['a', 'b'], columns: ['a'], value: [{ row: 'a', column: 'a', value: -1 }, { row: 'b', column: 'a', value: 1 }] }
+    const api = apiOf(mountMatrix({ ...signed, format: { precision: { type: 'fixed', digits: 1 } } }).service)
+    expect(api.legendText).toEqual({ low: '-1.0', high: '1.0' })
   })
 })

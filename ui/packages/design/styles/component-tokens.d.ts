@@ -1980,6 +1980,7 @@ export type ComponentTokenName
     | '--xh-heatmap-diverging-negative'
     | '--xh-heatmap-diverging-positive'
     | '--xh-heatmap-empty'
+    | '--xh-heatmap-empty-gap'
     | '--xh-heatmap-fg'
     | '--xh-heatmap-font-size'
     | '--xh-heatmap-gap'

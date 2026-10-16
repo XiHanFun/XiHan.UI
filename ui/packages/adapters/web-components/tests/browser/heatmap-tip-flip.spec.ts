@@ -78,7 +78,7 @@ async function mount(): Promise<Mounted> {
     gridEl.append(line)
   }
   root.insertBefore(gridEl, tip)
-  heatmap.addEventListener('cell-active', (event) => {
+  heatmap.addEventListener('datum-active', (event) => {
     tip.textContent = readout((event as CustomEvent).detail)
   })
   await heatmap.updateComplete

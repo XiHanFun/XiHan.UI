@@ -15,7 +15,7 @@ export function createVueSsrHarness(): SsrHarness {
       const Root = resolveRoot(fixture.component)
       const app = createSSRApp({
         setup: () => () =>
-          h(Root, { ...fixture.tree.attrs, ...fixture.props }, renderFixtureSlots(fixture.tree.children, fixture.component)),
+          h(Root, { ...fixture.tree.attrs, ...fixture.props }, fixture.tree.defaultStructure ? undefined : renderFixtureSlots(fixture.tree.children, fixture.component)),
       })
       app.config.warnHandler = (message) => {
         throw new Error(`[Vue warn]: ${message}`)

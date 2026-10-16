@@ -1,4 +1,4 @@
-<!-- 焦点明细 | 焦点落到某一天时报告日期与计数，键盘用户与鼠标用户看到同一份明细 -->
+<!-- 焦点明细 | 悬停或焦点落到某一天时报告日期与计数，键盘用户与鼠标用户看到同一份明细 -->
 <script setup lang="ts">
 import { XhHeatmapRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -24,7 +24,7 @@ const readout = ref("（把焦点移到某一格）");
     :value="activity"
     start-date="2024-01-01"
     end-date="2024-01-28"
-    @cell-focus="readout = `${$event.date}：${$event.count} 次（第 ${$event.level} 档）`"
+    @datum-active="$event && (readout = `${$event.date}：${$event.formatted.value} 次（第 ${$event.level} 档）`)"
   />
   <span data-demo-output>{{ readout }}</span>
 </template>

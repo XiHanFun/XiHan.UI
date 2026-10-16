@@ -45,6 +45,11 @@ export interface FixtureNode {
    * 给 Vue 与 React 由根组件铺在 root 之后的兄弟节点用（truncate 的展开按钮），三侧的文档序才对得上。
    */
   readonly slotAfter?: boolean
+  /**
+   * 只对根节点有效：作者不写结构，由组件按自己的标准结构生成。Vue 侧不给默认插槽、React 侧不给 children，
+   * Web Components 侧只写 root 本身；三侧的 DOM 因此都出自组件的结构函数，逐帧对拍比的正是这一份。
+   */
+  readonly defaultStructure?: boolean
 }
 
 export interface Fixture {

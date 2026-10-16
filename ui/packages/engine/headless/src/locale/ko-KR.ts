@@ -344,11 +344,13 @@ const translations = {
   'grid-list': { root: '항목' },
   'heatmap': {
     gridLabel: '활동 히트맵',
-    cellLabel: details => `${details.date}: ${details.count}`,
-    matrixCellLabel: details => `${details.row} ${details.column}: ${details.count}`,
+    cellLabel: details => `${details.date}: ${details.formatted.value}`,
+    matrixCellLabel: details => `${details.row} ${details.column}: ${details.formatted.value}`,
     legendLabel: '활동 수준',
     legendLow: '적음',
     legendHigh: '많음',
+    emptyText: chart.emptyText,
+    loadingText: chart.loadingText,
   },
   'hierarchy-chart': {
     ...chart,
