@@ -26248,7 +26248,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: fieldAnatomy, meta: fieldMeta, tags: { label: ['label'] }, }"
+              "default": "{ anatomy: fieldAnatomy, meta: fieldMeta, tags: { label: ['label'] }, fulfilledBy: { control: FORM_CONTROL_HOST_SELECTOR }, }"
             },
             {
               "kind": "field",

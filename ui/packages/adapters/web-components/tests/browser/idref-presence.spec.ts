@@ -44,7 +44,7 @@ async function refViolations(root: HTMLElement): Promise<string[]> {
 }
 
 const SELECT = `
-  <xh-select data-xh-part="control">
+  <xh-select>
     <div data-xh-part="root">
       <button data-xh-part="trigger"><span data-xh-part="value-text"></span></button>
       <select data-xh-part="hidden-select"></select>
@@ -52,7 +52,7 @@ const SELECT = `
     </div>
   </xh-select>`
 const TEXT_FIELD = `
-  <xh-text-field data-xh-part="control">
+  <xh-text-field>
     <div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div>
   </xh-text-field>`
 

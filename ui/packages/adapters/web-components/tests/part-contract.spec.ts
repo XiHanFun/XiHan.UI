@@ -517,3 +517,20 @@ describe('只注册一个元素时的委派核对', () => {
     expect(delegated.map(r => r.message)).toEqual([])
   })
 })
+
+describe('字段的 control 可由库内控件顶替', () => {
+  async function mountField(inner: string): Promise<void> {
+    document.body.innerHTML = `<xh-field><div data-xh-part="root"><label data-xh-part="label">邮箱</label>${inner}</div></xh-field>`
+    await (document.querySelector('xh-field') as Updatable).updateComplete
+  }
+
+  it('放进字段的库内控件算 control 在场，不报缺必需部件', async () => {
+    await mountField('<xh-text-field><div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div></xh-text-field>')
+    expect(codes(DIAGNOSTIC_CODES.wcMissingPart).filter(r => r.scope === 'field')).toEqual([])
+  })
+
+  it('既没写 control、也没放库内控件时照旧报缺 control', async () => {
+    await mountField('<span>只有文字</span>')
+    expect(codes(DIAGNOSTIC_CODES.wcMissingPart).filter(r => r.scope === 'field').map(r => r.part)).toEqual(['control'])
+  })
+})

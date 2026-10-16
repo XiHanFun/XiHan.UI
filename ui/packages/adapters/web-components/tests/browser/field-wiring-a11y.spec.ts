@@ -53,7 +53,7 @@ function descriptions(el: Element): string[] {
 describe('库内控件放进字段的无障碍接线', () => {
   it('文本框：input 念字段标题，描述链念说明与错误文案，axe 无违规', async () => {
     const root = mount('邮箱', `
-      <xh-text-field data-xh-part="control">
+      <xh-text-field>
         <div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div>
       </xh-text-field>`)
     await settle()
@@ -65,7 +65,7 @@ describe('库内控件放进字段的无障碍接线', () => {
 
   it('下拉：触发钮念字段标题，描述链念说明与错误文案，axe 无违规', async () => {
     const root = mount('部门', `
-      <xh-select data-xh-part="control">
+      <xh-select>
         <div data-xh-part="root">
           <button data-xh-part="trigger"><span data-xh-part="value-text"></span></button>
           <select data-xh-part="hidden-select"></select>

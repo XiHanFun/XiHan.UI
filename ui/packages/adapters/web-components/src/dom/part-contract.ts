@@ -36,6 +36,26 @@ export interface PartContract {
    * 不登记的话示例门禁会把它当成接错了名。键是作者写的角色名，值是允许接出来的 data-part。
    */
   readonly rewired?: Readonly<Record<string, readonly string[]>>
+  /**
+   * 可由宿主子树里的库内元素顶替的必需部件：部件名 → 选择器。
+   *
+   * 作者不写这个部件、而在宿主里放了匹配的元素时，必需部件校验算它在场。字段的 control 就是这样：
+   * 库内控件放进 <xh-field> 时由字段按发现表接线，作者不另写 control 部件。
+   */
+  readonly fulfilledBy?: Readonly<Record<string, string>>
+}
+
+/** 必需部件在场：作者写了这个角色节点，或宿主子树里有契约登记的顶替元素。 */
+export function requiredPartPresent(
+  contract: PartContract,
+  part: string,
+  parts: ReadonlyMap<string, readonly HTMLElement[]>,
+  host: Element,
+): boolean {
+  if (parts.has(part))
+    return true
+  const selector = contract.fulfilledBy?.[part]
+  return selector != null && host.querySelector(selector) != null
 }
 
 /**
@@ -77,7 +97,7 @@ export function validatePartContract(
   const scope = contract.anatomy.name
 
   for (const part of contract.meta.requiredParts) {
-    if (parts.has(part))
+    if (requiredPartPresent(contract, part, parts, host))
       continue
     reportDiagnostic({
       code: DIAGNOSTIC_CODES.wcMissingPart,

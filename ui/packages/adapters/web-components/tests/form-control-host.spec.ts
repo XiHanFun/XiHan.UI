@@ -34,7 +34,7 @@ describe('补进发现表的控件继承字段状态', () => {
       <xh-field disabled>
         <div data-xh-part="root">
           <label data-xh-part="label">主题色</label>
-          <xh-color-field data-xh-part="control">
+          <xh-color-field>
             <div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div><input data-xh-part="hidden-input"></div>
           </xh-color-field>
         </div>

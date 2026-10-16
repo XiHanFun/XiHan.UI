@@ -16,7 +16,7 @@ import {
 import * as headless from '@xihan-ui/headless'
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../../src/define'
-import { delegatedScopesOf } from '../../src/dom/part-contract'
+import { delegatedScopesOf, requiredPartPresent } from '../../src/dom/part-contract'
 import { discoverParts } from '../../src/dom/parts'
 // 皮肤与令牌一起加载：示例在文档站里就是带皮肤跑的，缺皮肤会引出与示例本身无关的诊断
 import '@xihan-ui/tokens/tokens.css'
@@ -234,10 +234,11 @@ describe('自定义元素版示例', () => {
           continue
         }
 
-        // 判据三：必需部件齐备。清单取自 headless 的运行期元数据
+        // 判据三：必需部件齐备。清单取自 headless 的运行期元数据；契约登记了顶替元素的部件，放了顶替元素也算在场
         const owned = discoverParts(host)
+        const contract = (ctor as unknown as typeof XhElement).partContract
         for (const part of requiredParts(component) ?? []) {
-          if (!owned.has(part))
+          if (contract ? !requiredPartPresent(contract, part, owned, host) : !owned.has(part))
             problems.push(`<${tag}> 缺必需部件 data-xh-part="${part}"`)
         }
       }
