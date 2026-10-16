@@ -1237,7 +1237,7 @@ describe('内嵌范围日历原样复用，不重写一条', () => {
 
 describe('无障碍与表单出口', () => {
   it('两组分段容器各自报「开始日期」「结束日期」，禁用态显式报出来', () => {
-    const h = mount({ disabled: true })
+    const h = mount({ labelled: true, disabled: true })
     expect(h.input.getAttribute('aria-label')).toBe('Start date')
     expect(h.inputEnd.getAttribute('aria-label')).toBe('End date')
     expect(h.input.getAttribute('aria-disabled')).toBe('true')

@@ -167,6 +167,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
 | `collection` | `TreeSelectNode[]` |  | 树数据，层级元信息与显示文本的唯一事实源。`hasChildren` 且未提供 children 是懒分支；已提供 children 时它优先。默认为空树。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 完整 collection 与 Virtualizer 的焦点桥：键盘、检索与展开时的锚点按可见行的数据算，DOM 只承载窗口里那几行。 count 必须等于当前 visibleNodes.length（展开收起后同步更新）；与 searchable 不能同开。 |
 | `loadChildren` | `(request: TreeSelectLoadChildrenRequest) => Promise<TreeSelectNode[] \| undefined \| void> \| TreeSelectNode[] \| undefined \| void` |  | 取回 `hasChildren: true` 分支的直接子项。首次展开自动调用，失败后用 api.retryBranch 显式重试。旧请求的兑现或拒绝不会覆盖更新的一轮，也不会写回已移除的分支。 |
@@ -410,7 +411,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'tree' |
 | `trigger` | `aria-invalid` | 'true' \| 'false' |
-| `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
+| `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id |
 | `trigger` | `aria-readonly` | 'true' \| 'false' |
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
@@ -421,7 +422,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `tree` | `aria-busy` | 'true' \| undefined |
 | `tree` | `aria-disabled` | 'true' \| 'false' |
 | `tree` | `aria-label` | translations.tree |
-| `tree` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
+| `tree` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id |
 | `tree` | `aria-multiselectable` | 'true' \| 'false' |
 | `tree` | `role` | 'tree' |
 | `item` | `aria-checked` | 'true' \| 'mixed' \| 'false' \| undefined |

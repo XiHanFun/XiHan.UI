@@ -1137,7 +1137,7 @@ describe('roving tabindex 与 ARIA 骨架', () => {
   })
 
   it('trigger 扮演 combobox，名字取标题加当前值', () => {
-    const h = mount()
+    const h = mount({ labelled: true })
     expect(h.trigger.getAttribute('role')).toBe('combobox')
     expect(h.trigger.getAttribute('aria-haspopup')).toBe('listbox')
     expect(h.trigger.getAttribute('aria-controls')).toBe(h.content.getAttribute('id'))

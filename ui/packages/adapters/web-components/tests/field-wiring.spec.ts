@@ -166,3 +166,35 @@ describe('控件自己也带描述链', () => {
     await vi.waitFor(() => expect(input().getAttribute('aria-describedby')).toBe(`${idOf(field, 'description')} ${idOf(field, 'error-text')} ${caps().id}`))
   })
 })
+
+describe('字段只引用在场的部件', () => {
+  function mountBare(inner: string, attrs = ''): HTMLElement {
+    document.body.innerHTML = `<xh-field ${attrs}><div data-xh-part="root"><label data-xh-part="label">部门</label>${SELECT}${inner}</div></xh-field>`
+    return document.querySelector('xh-field')!
+  }
+  const trigger = (field: HTMLElement) => field.querySelector('button')!
+
+  it('没写说明部件时，触发钮的描述链不带说明的 id；invalid 时只剩错误文案', async () => {
+    const field = mountBare('<p data-xh-part="error-text">必填</p>', 'invalid')
+    await vi.waitFor(() => expect(trigger(field).getAttribute('aria-describedby')).toBe(idOf(field, 'error-text')))
+    for (const id of (trigger(field).getAttribute('aria-labelledby') ?? '').split(/\s+/).filter(Boolean).slice(0, 1))
+      expect(document.getElementById(id)).not.toBeNull()
+  })
+
+  it('说明部件没有文字时按没写处理，补上文字后进描述链', async () => {
+    const field = mountBare('<p data-xh-part="description"></p>')
+    await vi.waitFor(() => expect(trigger(field).getAttribute('data-scope')).toBe('select'))
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(trigger(field).hasAttribute('aria-describedby')).toBe(false)
+    field.querySelector('[data-xh-part="description"]')!.textContent = '选所属部门'
+    await vi.waitFor(() => expect(trigger(field).getAttribute('aria-describedby')).toBe(idOf(field, 'description')))
+  })
+
+  it('没写字段标签时，名字链里没有字段标签的 id', async () => {
+    document.body.innerHTML = `<xh-field><div data-xh-part="root">${TEXT_FIELD}<p data-xh-part="description">工作邮箱</p></div></xh-field>`
+    const field = document.querySelector<HTMLElement>('xh-field')!
+    const input = field.querySelector('input')!
+    await vi.waitFor(() => expect(input.getAttribute('aria-describedby')).toBe(idOf(field, 'description')))
+    expect((input.getAttribute('aria-labelledby') ?? '').split(/\s+/).filter(id => id.startsWith('field:'))).toEqual([])
+  })
+})

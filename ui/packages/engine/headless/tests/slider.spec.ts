@@ -352,7 +352,7 @@ describe('connectSlider 键盘', () => {
 
 describe('connectSlider 属性输出', () => {
   it('拇指是 role=slider，四个 aria-value* 与朝向、名字都写全', () => {
-    const s = makeService({ defaultValue: [40], min: 10, max: 90 })
+    const s = makeService({ labelled: true, defaultValue: [40], min: 10, max: 90 })
     const thumb = thumbProps(s)
     expect(thumb.role).toBe('slider')
     expect(thumb['aria-valuemin']).toBe('10')

@@ -19,6 +19,11 @@ import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface ComboboxContext {
+  /**
+   * 已渲染的 label 部件数量，由 XhComboboxLabel 在 setup 里同步登记、卸载时撤销。
+   * 可聚焦部件的 aria-labelledby 据此决定指不指过去：label 排在输入之前时，首帧与服务端直出就带上名字。
+   */
+  labelCount: Ref<number>
   /** 状态机实例，供部件直接上报 DOM 侧事实。 */
   service: Service<ComboboxSchema>
   api: ComputedRef<ComboboxApi>
@@ -47,7 +52,8 @@ export function useCombobox(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(comboboxMachine, () => ({ ...props, ...handlers }), scope)
+  const labelCount = ref(0)
+  const service = useMachine(comboboxMachine, () => ({ ...props, labelled: labelCount.value > 0, ...handlers }), scope)
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
   let config: RuntimeConfig | null = null
@@ -100,5 +106,5 @@ export function useCombobox(
   // 先问全局配置的落点，没有才落 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, controlRef, inputRef, positionerRef, contentRef, syncItems, portalTarget }
+  return { labelCount, visible, service, api, controlRef, inputRef, positionerRef, contentRef, syncItems, portalTarget }
 }

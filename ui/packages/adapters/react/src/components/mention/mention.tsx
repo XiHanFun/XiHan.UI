@@ -172,6 +172,9 @@ export interface XhMentionLabelProps extends ComponentPropsWithRef<'label'> {}
 /** 使用原生 label，connect 给出的 for 恒指向输入框。 */
 export function XhMentionLabel({ children, ...rest }: XhMentionLabelProps): ReactNode {
   const ctx = useMentionContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</label>
 }
 

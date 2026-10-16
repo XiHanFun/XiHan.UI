@@ -16,7 +16,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h, onBeforeUnmount, onMounted } from 'vue'
+import { computed, defineComponent, h, onUnmounted } from 'vue'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import {
@@ -100,11 +100,9 @@ export const XhCheckboxGroupLabel = defineComponent({
   name: 'XhCheckboxGroupLabel',
   setup(_, { slots }) {
     const ctx = useCheckboxGroupContext()
-    // 渲出来了才登记：根的 aria-labelledby 只在这个节点真在场时才指过来
-    onMounted(() => {
-      ctx.labelCount.value++
-    })
-    onBeforeUnmount(() => {
+    // 渲出来就登记，在 setup 里同步做：排在条目之前时首帧与服务端直出就带上名字
+    ctx.labelCount.value++
+    onUnmounted(() => {
       ctx.labelCount.value--
     })
     return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())

@@ -200,7 +200,7 @@ export function connectSlider<T extends PropTypes>(
         // 没给格式化函数就不写：缺席时读屏念 aria-valuenow
         'aria-valuetext': prop('getValueText')?.({ value: thumb.value, index: thumb.index }),
         'aria-orientation': orientation,
-        'aria-labelledby': ids.label,
+        'aria-labelledby': prop('labelled') ? ids.label : undefined,
         // div 上原生 disabled 不生效，用 aria-disabled 并抽掉 Tab 位；readOnly 不抽 Tab 位
         'aria-disabled': disabled ? 'true' : 'false',
         'tabindex': disabled ? undefined : 0,

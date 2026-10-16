@@ -164,7 +164,7 @@ export function connectNumberField<T extends PropTypes>(
       'disabled': disabled || undefined,
       'readonly': readOnly || undefined,
       'required': prop('required') || undefined,
-      'aria-labelledby': ids.label,
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       // 三个 aria-value* 显式给，读屏据此念出区间
       'aria-valuenow': empty ? undefined : valueAsNumber,
       'aria-valuemin': min,

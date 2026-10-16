@@ -123,6 +123,11 @@ export const XhMentionLabel = defineComponent({
   name: 'XhMentionLabel',
   setup(_, { slots }) {
     const ctx = useMentionContext()
+    // 渲出来就登记，在 setup 里同步做：排在输入之前时首帧与服务端直出就带上名字
+    ctx.labelCount.value++
+    onUnmounted(() => {
+      ctx.labelCount.value--
+    })
     return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })

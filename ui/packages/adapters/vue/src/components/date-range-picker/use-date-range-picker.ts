@@ -27,6 +27,11 @@ import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface DateRangePickerContext {
+  /**
+   * 已渲染的 label 部件数量，由 XhDateRangePickerLabel 在 setup 里同步登记、卸载时撤销。
+   * 可聚焦部件的 aria-labelledby 据此决定指不指过去：label 排在输入之前时，首帧与服务端直出就带上名字。
+   */
+  labelCount: Ref<number>
   api: ComputedRef<DateRangePickerApi>
   /** 四台状态机的句柄，供部件上报 DOM 侧的事实。 */
   services: DateRangePickerServices
@@ -82,7 +87,8 @@ function createDateRangePickerContext(
   const scope = rootRef ? createScope(() => rootRef.value, idGen) : createScope(null, idGen)
 
   // 三台内嵌机器的 props 都从编排机现读，编排机须先建立
-  const root = useMachine(dateRangePickerMachine, () => ({ ...props, ...handlers }), scope)
+  const labelCount = ref(0)
+  const root = useMachine(dateRangePickerMachine, () => ({ ...props, labelled: labelCount.value > 0, ...handlers }), scope)
   const calendar = useMachine<CalendarRangePickerSchema>(calendarRangePickerMachine, () => dateRangePickerCalendarProps(root), scope)
   const field = useMachine<DateFieldSchema>(dateFieldMachine, () => dateRangePickerFieldProps(root), scope)
   // 终点那组段位：与起点那组同一台分段输入机器，各管区间的一端
@@ -187,7 +193,7 @@ function createDateRangePickerContext(
     })
   }
 
-  return { visible, api, services, controlRef, positionerRef, contentRef, gridRef, portalTarget }
+  return { labelCount, visible, api, services, controlRef, positionerRef, contentRef, gridRef, portalTarget }
 }
 
 /** 公开 composable 保留 ambient Scope 合同。 */

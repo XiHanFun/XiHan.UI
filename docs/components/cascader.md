@@ -116,6 +116,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
 | `collection` | `CascaderNode[]` |  | 树数据，层级元信息与显示文本的唯一事实源。`hasChildren` 且未提供 children 是懒分支。默认为空树。 |
 | `loadChildren` | `(request: CascaderLoadChildrenRequest) => Promise<CascaderNode[] \| undefined \| void> \| CascaderNode[] \| undefined \| void` |  | 取回懒分支的直接子项：展开路径走到它时自动调用，结果留在组件里，宿主不必为此重建 collection。 失败后在它那一列里给出重试入口；旧请求的兑现或拒绝不会覆盖更新的一轮，也不会写回已移除的分支。 |
 | `value` | `CascaderValue` |  | 选中路径。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单条路径是简写，内部一律归一为路径集合。 |
@@ -356,7 +357,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'listbox' |
 | `trigger` | `aria-invalid` | 'true' \| 'false' |
-| `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
+| `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id |
 | `trigger` | `aria-readonly` | 'true' \| 'false' |
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
@@ -377,7 +378,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `column` | `aria-busy` | 'true' \| undefined |
 | `column` | `aria-disabled` | 'true' \| 'false' \| undefined |
 | `column` | `aria-label` | translations.column \| undefined |
-| `column` | `aria-labelledby` | undefined \| `label` 部件的 id `value-text` 部件的 id \| `item` 部件的 id |
+| `column` | `aria-labelledby` | undefined \| `label` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id \| `item` 部件的 id |
 | `column` | `aria-multiselectable` | 'true' \| 'false' \| undefined |
 | `column` | `aria-orientation` | 'vertical' \| undefined |
 | `column` | `role` | 'listbox' \| undefined |

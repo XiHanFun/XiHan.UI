@@ -19,6 +19,11 @@ import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface TimeRangePickerContext {
+  /**
+   * 已渲染的 label 部件数量，由 XhTimeRangePickerLabel 在 setup 里同步登记、卸载时撤销。
+   * 可聚焦部件的 aria-labelledby 据此决定指不指过去：label 排在输入之前时，首帧与服务端直出就带上名字。
+   */
+  labelCount: Ref<number>
   api: ComputedRef<TimeRangePickerApi>
   controlRef: Ref<HTMLElement | null>
   triggerRef: Ref<HTMLElement | null>
@@ -43,7 +48,8 @@ export function useTimeRangePicker(
   // scope id 走 Vue 的 useId，保证同页多实例的 IDREF 不相撞
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(timeRangePickerMachine, () => ({ ...props, ...handlers }), scope)
+  const labelCount = ref(0)
+  const service = useMachine(timeRangePickerMachine, () => ({ ...props, labelled: labelCount.value > 0, ...handlers }), scope)
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
   let config: RuntimeConfig | null = null
@@ -83,5 +89,5 @@ export function useTimeRangePicker(
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, api, controlRef, triggerRef, positionerRef, contentRef, portalTarget }
+  return { labelCount, visible, api, controlRef, triggerRef, positionerRef, contentRef, portalTarget }
 }

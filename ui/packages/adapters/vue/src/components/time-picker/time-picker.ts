@@ -22,7 +22,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h, mergeProps, onUpdated, ref } from 'vue'
+import { computed, defineComponent, h, mergeProps, onUnmounted, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText, slotPaints } from '../../runtime/slot-content'
@@ -156,6 +156,11 @@ export const XhTimePickerLabel = defineComponent({
   name: 'XhTimePickerLabel',
   setup(_, { slots }) {
     const ctx = useTimePickerContext()
+    // 渲出来就登记，在 setup 里同步做：排在输入之前时首帧与服务端直出就带上名字
+    ctx.labelCount.value++
+    onUnmounted(() => {
+      ctx.labelCount.value--
+    })
     // 仍用原生 label 保持表单语义，点标题聚焦第一段由连接层的 click 接管
     return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },

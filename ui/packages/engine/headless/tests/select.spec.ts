@@ -775,7 +775,7 @@ describe('selectSelect 列表框的名字', () => {
   })
 
   it('名字与 trigger 同源：标题 + 当前值', () => {
-    const h = mount({ defaultValue: 'apple' })
+    const h = mount({ labelled: true, defaultValue: 'apple' })
     expect(h.list.getAttribute('role')).toBe('listbox')
     expect(h.list.getAttribute('aria-labelledby')).toBe(`${labelId(h)} ${h.valueTextEl.id}`)
     expect(h.list.getAttribute('aria-labelledby')).toBe(h.trigger.getAttribute('aria-labelledby'))

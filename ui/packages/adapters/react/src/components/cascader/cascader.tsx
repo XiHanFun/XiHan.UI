@@ -234,6 +234,9 @@ XhCascaderRoot.xhEvents = ['clear', 'value-change', 'open-change', 'branch-load-
 export interface XhCascaderLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhCascaderLabel({ children, ...rest }: XhCascaderLabelProps): ReactNode {
   const ctx = useCascaderContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 

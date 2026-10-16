@@ -10,7 +10,7 @@ import type { SliderApi, SliderMark, SliderMarkMeta, SliderSchema } from '@xihan
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { normalizeItemIndex } from '@xihan-ui/core'
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
@@ -160,6 +160,9 @@ export interface XhSliderLabelProps extends ComponentPropsWithRef<'label'> {}
 
 export function XhSliderLabel({ children, ...rest }: XhSliderLabelProps): ReactNode {
   const ctx = useSliderContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return (
     <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}

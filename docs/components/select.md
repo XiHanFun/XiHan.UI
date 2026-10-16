@@ -218,6 +218,7 @@ outline、subtle 和 ghost
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
 | `collection` | `SelectNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value， 显示文本也不再从 DOM 查询。未提供时回到文本写在条目中、从 DOM 查询的方式。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 完整 collection 与 Virtualizer 的焦点桥；count 必须与 collection.length 一致。 |
 | `lazyMount` | `boolean` |  | 列表内容第一次展开时才挂载，默认 false（随组件一起挂载、收起时只隐藏）。挂过之后一直留着，来回开合不重建。 页面上 Select 很多（表格每行一个、长表单）时打开它：收起态每个实例都背着一整份条目，挂载开销大半在这里。 打开前的选中文字与收起态连打按 collection 计算；没给 collection 时，打开前选中文字退回值本身、连打不生效。 |
@@ -416,7 +417,7 @@ outline、subtle 和 ghost
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'listbox' |
 | `trigger` | `aria-invalid` | 'true' \| 'false' |
-| `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
+| `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id |
 | `trigger` | `aria-readonly` | 'true' \| 'false' |
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
@@ -424,7 +425,7 @@ outline、subtle 和 ghost
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `list` | `aria-busy` | 'true' \| undefined |
 | `list` | `aria-label` | translations.content |
-| `list` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
+| `list` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id |
 | `list` | `aria-multiselectable` | 'true' \| 'false' |
 | `list` | `role` | 'listbox' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |

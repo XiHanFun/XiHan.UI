@@ -359,7 +359,7 @@ describe('pinInputMachine', () => {
 
 describe('connectPinInput 属性输出', () => {
   it('root 是 group 并由 label 命名；label 的 for 指向首格', () => {
-    const m = open({ length: 3 })
+    const m = open({ labelled: true, length: 3 })
     expect(m.root.getAttribute('role')).toBe('group')
     const api = m.api()
     const label = api.getLabelProps() as Record<string, unknown>

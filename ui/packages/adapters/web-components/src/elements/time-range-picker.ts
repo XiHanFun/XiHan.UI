@@ -242,6 +242,8 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
       required: this.required,
     }, this.inheritedControl)
     return {
+      // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
+      labelled: this.getPart('label') != null,
       value: this.value,
       defaultValue: this.defaultValue,
       open: this.open,

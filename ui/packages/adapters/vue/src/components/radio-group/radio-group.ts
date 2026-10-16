@@ -9,7 +9,7 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupVariant } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, defineComponent, h, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideRadioGroup, provideRadioGroupItem, useRadioGroupContext, useRadioGroupItemContext } from './context'
@@ -78,11 +78,9 @@ export const XhRadioGroupLabel = defineComponent({
   name: 'XhRadioGroupLabel',
   setup(_, { slots }) {
     const ctx = useRadioGroupContext()
-    // 渲出来了才登记：根的 aria-labelledby 只在这个节点真在场时才指过来
-    onMounted(() => {
-      ctx.labelCount.value++
-    })
-    onBeforeUnmount(() => {
+    // 渲出来就登记，在 setup 里同步做：排在条目之前时首帧与服务端直出就带上名字
+    ctx.labelCount.value++
+    onUnmounted(() => {
       ctx.labelCount.value--
     })
     return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())

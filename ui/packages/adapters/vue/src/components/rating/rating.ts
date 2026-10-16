@@ -9,7 +9,7 @@ import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { RatingApi, RatingItemState, RatingSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, defineComponent, h, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -89,6 +89,11 @@ export const XhRatingLabel = defineComponent({
   name: 'XhRatingLabel',
   setup(_, { slots }) {
     const ctx = useRatingContext()
+    // 渲出来就登记，在 setup 里同步做：排在输入之前时首帧与服务端直出就带上名字
+    ctx.labelCount.value++
+    onUnmounted(() => {
+      ctx.labelCount.value--
+    })
     return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })

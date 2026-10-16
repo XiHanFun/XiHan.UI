@@ -133,6 +133,7 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
 | `collection` | `ComboboxNode[]` |  | 候选数据，显示文本与禁用的事实源。过滤仍由调用方完成：传入的即当前应显示的候选。 提供后条目部件只需声明 value，显示文本也不再从 DOM 查询。 未提供时回到文本写在条目中、从 DOM 查询的方式。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 当前已过滤 collection 与 Virtualizer 的滚动桥；count 必须与 collection.length 一致。 |
 | `value` | `string \| string[]` |  | 选中值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单选写为裸串是简写，内部一律归一为数组。 |
@@ -339,14 +340,14 @@
 | `input` | `aria-expanded` | undefined \| 'true' \| 'false' |
 | `input` | `aria-haspopup` | 'listbox' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
-| `input` | `aria-labelledby` | `label` 部件的 id |
+| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `input` | `role` | undefined \| 'combobox' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-label` | translations.trigger |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `content` | `aria-busy` | 'true' \| undefined |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `label` 部件的 id |
+| `content` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `content` | `aria-multiselectable` | 'true' \| 'false' |
 | `content` | `role` | 'listbox' |
 | `item` | `aria-disabled` | 'true' \| 'false' |

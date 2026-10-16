@@ -10,7 +10,7 @@ import type { TagsInputApi, TagsInputBlurBehavior, TagsInputSchema, TagsInputTra
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { contains } from '@xihan-ui/core'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -182,6 +182,9 @@ export interface XhTagsInputLabelProps extends ComponentPropsWithRef<'label'> {}
 /** 使用原生 label，getLabelProps 的 for 指向输入框。 */
 export function XhTagsInputLabel({ children, ...rest }: XhTagsInputLabelProps): ReactNode {
   const ctx = useTagsInputContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return (
     <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}

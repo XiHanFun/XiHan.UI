@@ -968,7 +968,7 @@ describe('内嵌日历原样复用，不重写一条', () => {
 
 describe('无障碍与表单出口', () => {
   it('分段容器由标题命名，禁用态显式报出来', () => {
-    const h = mount({ disabled: true })
+    const h = mount({ labelled: true, disabled: true })
     expect(h.input.getAttribute('aria-labelledby')).toBe(h.label.getAttribute('id'))
     expect(h.input.getAttribute('aria-disabled')).toBe('true')
     expect(h.segments()[0]!.getAttribute('aria-disabled')).toBe('true')

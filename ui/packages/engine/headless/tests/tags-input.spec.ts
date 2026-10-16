@@ -439,7 +439,7 @@ describe('connectTagsInput 属性输出', () => {
   })
 
   it('control 是 group 并由 label 命名；label 的 for 指向输入框', () => {
-    const h = mount()
+    const h = mount({ labelled: true })
     expect(h.control.getAttribute('role')).toBe('group')
     expect(h.control.getAttribute('aria-labelledby')).toBe(h.label.id)
     expect(h.label.getAttribute('for')).toBe(h.input.id)

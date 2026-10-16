@@ -10,7 +10,7 @@ import type { CollectionVirtualizer, TreeSelectApi, TreeSelectNode, TreeSelectNo
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TreeSelectContext } from './use-tree-select'
-import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText } from '../../runtime/slot-content'
@@ -225,6 +225,11 @@ export const XhTreeSelectLabel = defineComponent({
   name: 'XhTreeSelectLabel',
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
+    // 渲出来就登记，在 setup 里同步做：排在输入之前时首帧与服务端直出就带上名字
+    ctx.labelCount.value++
+    onUnmounted(() => {
+      ctx.labelCount.value--
+    })
     return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })

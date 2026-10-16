@@ -69,7 +69,7 @@ describe('numberFieldMachine 缺省与投影', () => {
   })
 
   it('有值时 aria-value* 三件齐全，label 与 input 互指；贴着边界时那一侧的按钮禁用', () => {
-    const f = makeField({ defaultValue: '10', min: 0, max: 10, name: 'qty', required: true })
+    const f = makeField({ labelled: true, defaultValue: '10', min: 0, max: 10, name: 'qty', required: true })
     const input = f.input()
     expect(input).toMatchObject({ 'aria-valuenow': 10, 'aria-valuemin': 0, 'aria-valuemax': 10, 'name': 'qty', 'required': true })
     expect(input['aria-labelledby']).toBe((f.api().getLabelProps() as Record<string, unknown>).id)

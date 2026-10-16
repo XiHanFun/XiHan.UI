@@ -125,6 +125,11 @@ export type ComboboxPressedPart = 'item' | 'trigger' | 'clear-trigger'
 export interface ComboboxSchema extends MachineSchema {
   props: {
     /**
+     * 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。
+     * 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。
+     */
+    labelled?: boolean
+    /**
      * 候选数据，显示文本与禁用的事实源。过滤仍由调用方完成：传入的即当前应显示的候选。
      * 提供后条目部件只需声明 value，显示文本也不再从 DOM 查询。
      * 未提供时回到文本写在条目中、从 DOM 查询的方式。

@@ -134,7 +134,7 @@ export function connectPasswordInput<T extends PropTypes>(
       'readonly': readOnly || undefined,
       'required': prop('required') || undefined,
       // 作者把 label 换成非 <label> 元素时 for 会失效，这条兜住名字
-      'aria-labelledby': ids.label,
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       // 显式 true/false：省略是没说，显式 false 是明确说了不是
       'aria-invalid': invalid ? 'true' : 'false',
       // 大写锁定亮着时把提示挂进描述：焦点晚于提示出现的用户，进框就能听见

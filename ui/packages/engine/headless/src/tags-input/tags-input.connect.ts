@@ -209,7 +209,7 @@ export function connectTagsInput<T extends PropTypes>(
       'data-instant': dataAttr(!context.get('listTracked')),
       // 一排标签加一个输入框在读屏那里是一个整体，靠 group 兜住，名字由 label 提供
       'role': 'group',
-      'aria-labelledby': ids.label,
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       // 显式 true/false：省略是没说，显式 false 是明确说了不是
       'aria-disabled': disabled ? 'true' : 'false',
       'onPointerDown': (event: PointerEvent) => {
@@ -237,7 +237,7 @@ export function connectTagsInput<T extends PropTypes>(
       'disabled': disabled || undefined,
       'readonly': readOnly || undefined,
       // 作者把 label 换成非 <label> 元素时 for 会失效，这条兜住名字
-      'aria-labelledby': ids.label,
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       // 表单出口是 hidden-input，原生 required 挂上去也不参与校验，必填只经 aria 上报
       'aria-required': required ? 'true' : 'false',
       'aria-invalid': invalid ? 'true' : 'false',

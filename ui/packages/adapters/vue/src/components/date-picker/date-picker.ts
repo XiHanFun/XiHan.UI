@@ -28,7 +28,7 @@ import type {
 import type { ComputedRef, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { resolveDatePickerPanelIndex } from '@xihan-ui/headless'
-import { computed, defineComponent, h, mergeProps, onUpdated, ref } from 'vue'
+import { computed, defineComponent, h, mergeProps, onUnmounted, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText, slotPaints } from '../../runtime/slot-content'
@@ -224,6 +224,11 @@ export const XhDatePickerLabel = defineComponent({
   name: 'XhDatePickerLabel',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
+    // 渲出来就登记，在 setup 里同步做：排在输入之前时首帧与服务端直出就带上名字
+    ctx.labelCount.value++
+    onUnmounted(() => {
+      ctx.labelCount.value--
+    })
     // 渲染为 span 而非 label，点击聚焦由连接层接管
     return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },

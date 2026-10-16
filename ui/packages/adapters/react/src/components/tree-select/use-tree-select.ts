@@ -11,7 +11,7 @@ import type { RefObject } from 'react'
 import type { OverlayWiring } from '../../runtime/use-overlay'
 import { connectTreeSelect, treeSelectMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useFormReset } from '../../runtime/attach-form-reset'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
@@ -19,6 +19,11 @@ import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
 
 export interface TreeSelectContext extends OverlayWiring {
+  /**
+   * label 部件挂载时登记、卸载时注销。可聚焦部件的 aria-labelledby 据此决定输不输出；
+   * 首帧（含服务端直出）还没登记，不写这条引用。
+   */
+  registerLabel: () => () => void
   /** 状态机实例，供部件上报 DOM 侧的事实（如节点卸载带走了焦点）。 */
   service: Service<TreeSelectSchema>
   api: TreeSelectApi
@@ -71,7 +76,13 @@ export function useTreeSelect(props: TreeSelectSchema['props']): TreeSelectConte
     },
   })
 
-  const service = useMachine(treeSelectMachine, () => props, {
+  // 用状态而不是 ref：登记数要能把根重渲一次，connect 在渲染期求值
+  const [labelCount, setLabelCount] = useState(0)
+  const registerLabel = useCallback(() => {
+    setLabelCount(n => n + 1)
+    return () => setLabelCount(n => n - 1)
+  }, [])
+  const service = useMachine(treeSelectMachine, () => ({ ...props, labelled: labelCount > 0 }), {
     scope,
     onCreate: overlay.onCreate as never,
   })
@@ -81,6 +92,7 @@ export function useTreeSelect(props: TreeSelectSchema['props']): TreeSelectConte
   useFormReset(service, rootRef)
 
   return {
+    registerLabel,
     ...overlay,
     service,
     api: connectTreeSelect(service, reactNormalize),

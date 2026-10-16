@@ -1269,7 +1269,7 @@ describe('清空按钮', () => {
 
 describe('aRIA 契约', () => {
   it('trigger 是 combobox：aria-haspopup=tree、aria-controls 指向 role=tree 的那个部件', () => {
-    const h = mount()
+    const h = mount({ labelled: true })
     expect(h.trigger.getAttribute('role')).toBe('combobox')
     expect(h.trigger.getAttribute('aria-haspopup')).toBe('tree')
     expect(h.trigger.getAttribute('aria-controls')).toBe(h.treeEl.id)

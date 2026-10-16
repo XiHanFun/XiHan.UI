@@ -17,6 +17,19 @@ export interface FieldProps {
   readOnly?: boolean
   /** 控件 id；作者接管时以它为准。 */
   controlId?: string
+  /**
+   * 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。
+   * 不在场的部件不进控件的名字链与描述链：指向不存在的 id 会被判为无效引用。
+   * description 渲染了但没有文字也按不在场处理。
+   */
+  parts?: FieldRenderedParts
+}
+
+/** 字段里哪些部件在场；某一项省略即按在场处理。 */
+export interface FieldRenderedParts {
+  label?: boolean
+  description?: boolean
+  errorText?: boolean
 }
 
 export interface FieldApi<T extends PropTypes = PropTypes> {

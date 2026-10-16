@@ -74,6 +74,21 @@ export class XhFieldElement extends XhElement {
   /** 上一帧下发过接线的库内控件：这一帧不在作用域里的收回。 */
   private wiredControls = new Set<XhElement>()
 
+  /** 说明部件的文字从无到有、从有到无时重新接线：没有文字的说明不进控件的描述链。 */
+  private descriptionWatch: { el: HTMLElement, observer: MutationObserver } | undefined
+
+  private watchDescription(el: HTMLElement | null): void {
+    if (this.descriptionWatch?.el === el)
+      return
+    this.descriptionWatch?.observer.disconnect()
+    this.descriptionWatch = undefined
+    if (!el || typeof MutationObserver === 'undefined')
+      return
+    const observer = new MutationObserver(() => this.requestUpdate())
+    observer.observe(el, { characterData: true, childList: true, subtree: true })
+    this.descriptionWatch = { el, observer }
+  }
+
   // 实例级 scope 只建一次，避免派生出的 id 每帧变化
   private readonly fieldScope: Scope = createScope(null, createCounterIdGenerator())
 
@@ -90,12 +105,20 @@ export class XhFieldElement extends XhElement {
       disabled: this.disabled,
       readOnly: this.readOnly,
     }, this.inheritedControl)
+    const description = this.getPart('description')
+    this.watchDescription(description)
     const props: FieldProps = {
       invalid: state.invalid,
       required: state.required,
       disabled: state.disabled,
       readOnly: state.readOnly,
       controlId: this.controlId,
+      // 名字链与描述链只收作者写了的部件；没有文字的说明按没写处理
+      parts: {
+        label: this.getPart('label') != null,
+        description: description != null && (description.textContent ?? '').trim() !== '',
+        errorText: this.getPart('error-text') != null,
+      },
     }
     const api = connectField(props, this.fieldScope, wcNormalize)
 
@@ -142,6 +165,7 @@ export class XhFieldElement extends XhElement {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
+    this.watchDescription(null)
     // 字段离场时收回接线；只是被移动的话，重连后的那一帧会重新下发
     for (const control of this.wiredControls) control.setFieldWiring(undefined)
     this.wiredControls = new Set()

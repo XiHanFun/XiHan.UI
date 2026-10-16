@@ -241,7 +241,7 @@ describe('ratingMachine', () => {
 
 describe('connectRating', () => {
   it('control 是 radiogroup，三个 aria 布尔显式给出', () => {
-    const { service } = makeService({ required: true })
+    const { service } = makeService({ labelled: true, required: true })
     const control = controlAttrs(service)
     expect(control.role).toBe('radiogroup')
     expect(control['data-scope']).toBe('rating')

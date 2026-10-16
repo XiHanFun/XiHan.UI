@@ -26,6 +26,11 @@ import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface DatePickerContext {
+  /**
+   * 已渲染的 label 部件数量，由 XhDatePickerLabel 在 setup 里同步登记、卸载时撤销。
+   * 可聚焦部件的 aria-labelledby 据此决定指不指过去：label 排在输入之前时，首帧与服务端直出就带上名字。
+   */
+  labelCount: Ref<number>
   api: ComputedRef<DatePickerApi>
   /** 四台状态机的句柄，供部件上报 DOM 侧的事实。 */
   services: DatePickerServices
@@ -81,7 +86,8 @@ function createDatePickerContext(
   const scope = rootRef ? createScope(() => rootRef.value, idGen) : createScope(null, idGen)
 
   // 两台内嵌机器的 props 都从编排机现读，编排机须先建立
-  const root = useMachine(datePickerMachine, () => ({ ...props, ...handlers }), scope)
+  const labelCount = ref(0)
+  const root = useMachine(datePickerMachine, () => ({ ...props, labelled: labelCount.value > 0, ...handlers }), scope)
   const calendar = useMachine<CalendarPickerSchema>(calendarPickerMachine, () => datePickerCalendarProps(root), scope)
   const field = useMachine<DateFieldSchema>(dateFieldMachine, () => datePickerFieldProps(root), scope)
   const services: DatePickerServices = { root, calendar, field }
@@ -182,7 +188,7 @@ function createDatePickerContext(
     })
   }
 
-  return { visible, api, services, controlRef, positionerRef, contentRef, gridRef, portalTarget }
+  return { labelCount, visible, api, services, controlRef, positionerRef, contentRef, gridRef, portalTarget }
 }
 
 /** 公开 composable 保留 ambient Scope 合同。 */
