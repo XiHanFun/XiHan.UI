@@ -1,6 +1,8 @@
 // 属性面板在真实 Chromium 里：数字字段在真实输入与失焦下的约束（开区间下限拦住不派发，越出上限的值失焦时夹回端点）；
-// 没有编辑器的占位与宿主编辑器的外包不当字段控件，必填、只读、报错时 axe 也没有违规。
+// 没有编辑器的属性是只读的一行，宿主编辑器按一组控件或字段控件接线：必填、只读、报错时没有 wc.* 诊断，axe 也没有违规。
+import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { DesignerPropertiesEventMap, XhDesignerPropertiesElement } from '../../src'
+import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
 import { expectNoAxeViolations } from '@xihan-ui/testing/a11y'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
@@ -64,15 +66,28 @@ describe('属性面板的数字约束（Chromium）', () => {
     expect(changes.at(-1)).toBe(4)
   })
 
-  it('没有编辑器的占位与宿主编辑器的外包不当字段控件：必填、只读、报错时 axe 也没有违规', async () => {
+  it('没有编辑器的属性是只读的一行，宿主编辑器按一组控件或字段控件接线：没有 wc.* 诊断、标签不指向空、axe 无违规', async () => {
+    const diagnostics: DiagnosticRecord[] = []
+    resetDiagnostics()
+    setDiagnosticsConsoleOutput(false)
+    setDiagnosticsLevel('warn')
+    setDiagnosticsDedupe(false)
+    const off = onDiagnostic(record => void diagnostics.push(record))
     panel = document.createElement('xh-designer-properties')
     panel.readonly = true
-    panel.editors = { byControl: { picker: () => {
-      const button = document.createElement('button')
-      button.type = 'button'
-      button.textContent = 'Choose people'
-      return { element: button }
-    } } }
+    panel.editors = { byControl: {
+      picker: () => {
+        const button = document.createElement('button')
+        button.type = 'button'
+        button.textContent = 'Choose people'
+        return { element: button }
+      },
+      code: () => {
+        const input = document.createElement('input')
+        input.setAttribute('data-xh-part', 'control')
+        return { element: input }
+      },
+    } }
     panel.targets = [{
       kind: 'task',
       id: 't1',
@@ -80,6 +95,7 @@ describe('属性面板的数字约束（Chromium）', () => {
       descriptors: [
         { path: ['who'], control: { kind: 'assignees' }, label: 'Assignees', required: true },
         { path: ['owner'], control: { kind: 'picker' }, label: 'Owner', required: true },
+        { path: ['code'], control: { kind: 'code' }, label: 'Code', required: true },
       ],
     }]
     panel.errors = [
@@ -88,10 +104,26 @@ describe('属性面板的数字约束（Chromium）', () => {
     ]
     document.body.append(panel)
     await panel.updateComplete
-    for (const name of ['unsupported', 'custom']) {
-      const placeholder = panel.querySelector(`[data-control="${name}"]`)!
-      expect(placeholder.getAttributeNames().filter(attribute => attribute.startsWith('aria-') || attribute === 'id')).toEqual([])
-    }
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    off()
+    resetDiagnostics()
+    expect(diagnostics.filter(record => record.code.startsWith('wc.')).map(record => `${record.code} ${record.part ?? ''}`)).toEqual([])
+
+    const row = (path: string): HTMLElement => panel!.querySelector<HTMLElement>(`[data-part="property"][data-path="${path}"]`)!
+    const texts = (ids: string | null): string[] => (ids ?? '').split(/\s+/).filter(Boolean).map(id => document.getElementById(id)!.textContent!)
+    const who = row('who')
+    expect(who.querySelector('xh-field, label')).toBeNull()
+    expect([who.querySelector('[data-part="property-label"]')!.textContent, who.querySelector('[data-control="unsupported"]')!.textContent]).toEqual(['Assignees', 'assignees'])
+    expect(who.querySelector('[data-part="property-error"]')!.textContent).toBe('Required')
+
+    const owner = row('owner')
+    expect(owner.querySelector('xh-field')).toBeNull()
+    expect([owner.getAttribute('role'), texts(owner.getAttribute('aria-labelledby')), texts(owner.getAttribute('aria-describedby'))]).toEqual(['group', ['Owner'], ['Required']])
+
+    const code = row('code').querySelector('input')!
+    expect([row('code').querySelector('xh-field') !== null, code.labels?.[0]?.textContent]).toEqual([true, 'Code'])
+    for (const label of panel.querySelectorAll('label'))
+      expect(label.htmlFor === '' || document.getElementById(label.htmlFor) !== null).toBe(true)
     await expectNoAxeViolations(panel)
   })
 })
