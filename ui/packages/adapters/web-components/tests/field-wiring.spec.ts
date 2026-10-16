@@ -117,6 +117,7 @@ describe('字段接线的目标声明', () => {
 const CONTROLS: ReadonlyArray<readonly [tag: string, target: string, markup: string]> = [
   ['text-field', 'input', '<div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div>'],
   ['number-field', 'input', '<div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div>'],
+  ['password-input', 'input', '<div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div>'],
   ['color-field', 'input', '<div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div><input data-xh-part="hidden-input"></div>'],
   ['combobox', 'input', '<div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div>'],
   ['mention', 'input', '<div data-xh-part="root"><input data-xh-part="input"><div data-xh-part="positioner"><div data-xh-part="content"></div></div></div>'],
@@ -139,12 +140,29 @@ const CONTROLS: ReadonlyArray<readonly [tag: string, target: string, markup: str
   ['slider', 'thumb', '<div data-xh-part="root"><div data-xh-part="control"><div data-xh-part="track"></div><div data-xh-part="thumb" index="0"></div></div></div>'],
 ]
 
-describe('库内控件放进 xh-field', () => {
+describe('23 个库内控件放进 xh-field', () => {
   it.each(CONTROLS)('%s：描述链与字段标签落在 %s 部件上', async (tag, target, markup) => {
     const field = mountField(`<xh-${tag}>${markup}</xh-${tag}>`, 'invalid')
     const el = () => field.querySelector(`xh-${tag} [data-xh-part="${target}"], xh-${tag} > [data-xh-part="${target}"]`)!
     await vi.waitFor(() => expect(el().getAttribute('aria-describedby')).toBe(`${idOf(field, 'description')} ${idOf(field, 'error-text')}`))
     expect(el().getAttribute('aria-labelledby')?.split(' ')[0]).toBe(idOf(field, 'label'))
     expect(el().getAttribute('data-scope')).toBe(tag)
+  })
+})
+
+describe('控件自己也带描述链', () => {
+  it('password-input：大写锁定提示与字段的说明、错误文案同时在描述链上，字段的在前', async () => {
+    const field = mountField(`
+      <xh-password-input>
+        <div data-xh-part="root">
+          <div data-xh-part="control"><input data-xh-part="input"></div>
+          <span data-xh-part="caps-lock-indicator"></span>
+        </div>
+      </xh-password-input>`, 'invalid')
+    const input = () => field.querySelector('input')!
+    await vi.waitFor(() => expect(input().getAttribute('aria-describedby')).toBe(`${idOf(field, 'description')} ${idOf(field, 'error-text')}`))
+    input().dispatchEvent(new KeyboardEvent('keydown', { key: 'A', bubbles: true, modifierCapsLock: true }))
+    const caps = () => field.querySelector('[data-part="caps-lock-indicator"]')!
+    await vi.waitFor(() => expect(input().getAttribute('aria-describedby')).toBe(`${idOf(field, 'description')} ${idOf(field, 'error-text')} ${caps().id}`))
   })
 })

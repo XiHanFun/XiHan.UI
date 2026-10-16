@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { PasswordInputApi, PasswordInputSchema, PasswordInputTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { withFieldDescription } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
@@ -155,10 +156,11 @@ export function XhPasswordInputInput({ ...rest }: XhPasswordInputInputProps): Re
   return (
     <input
       {...mergeReactProps(
-        fieldLabel({
-          ...fieldWiring,
-          ...ctx.api.getInputProps() as Record<string, unknown>,
-        }),
+        // 输入框自己的描述链（大写锁定提示）与字段的拼起来，不互相顶掉
+        fieldLabel(withFieldDescription(
+          { ...fieldWiring, ...ctx.api.getInputProps() as Record<string, unknown> },
+          fieldWiring['aria-describedby'] as string | undefined,
+        )),
         rest as Record<string, unknown>,
       )}
     />

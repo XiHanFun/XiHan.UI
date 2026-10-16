@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { PasswordInputApi, PasswordInputSchema, PasswordInputTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { withFieldDescription } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
@@ -109,7 +110,11 @@ export const XhPasswordInputInput = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     const ctx = usePasswordInputContext()
     // 原生 <input>：光标、选区与撤销都归浏览器，label 的 for 也指着它
-    return () => h('input', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getInputProps() as Record<string, unknown> }))
+    // 输入框自己的描述链（大写锁定提示）与字段的拼起来，不互相顶掉
+    return () => h('input', fieldLabel.value(withFieldDescription(
+      { ...fieldWiring.value, ...ctx.api.value.getInputProps() as Record<string, unknown> },
+      fieldWiring.value['aria-describedby'] as string | undefined,
+    )))
   },
 })
 

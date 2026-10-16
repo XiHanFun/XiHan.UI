@@ -15,6 +15,10 @@ import {
   XhFieldErrorText,
   XhFieldLabel,
   XhFieldRoot,
+  XhPasswordInputCapsLockIndicator,
+  XhPasswordInputControl,
+  XhPasswordInputInput,
+  XhPasswordInputRoot,
   XhPinInputInput,
   XhPinInputRoot,
   XhRadioGroupItem,
@@ -129,5 +133,28 @@ describe('组类控件直接放进字段', () => {
   it('pin-input：整组念字段标题，描述链挂说明', async () => {
     await mountInField(() => h(XhPinInputRoot, { length: 2 }, () => [0, 1].map(index => h(XhPinInputInput, { key: index, index }))))
     expectWired(part('pin-input', 'root'), false)
+  })
+})
+
+describe('输入框自带描述链的控件放进字段', () => {
+  it('password-input：输入框自己的描述链不顶掉字段的说明与错误文案', async () => {
+    await mountInField(() => h(XhPasswordInputRoot, null, () => [h(XhPasswordInputControl, null, () => [h(XhPasswordInputInput)])]), true)
+    expectWired(part('password-input', 'input'), true)
+  })
+
+  it('password-input：大写锁定提示与字段的说明、错误文案同时在描述链上，字段的在前', async () => {
+    await mountInField(() => h(XhPasswordInputRoot, null, () => [
+      h(XhPasswordInputControl, null, () => [h(XhPasswordInputInput)]),
+      h(XhPasswordInputCapsLockIndicator),
+    ]), true)
+    const input = part('password-input', 'input')
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'A', bubbles: true, modifierCapsLock: true }))
+    await nextTick()
+    await nextTick()
+    expect((input.getAttribute('aria-describedby') ?? '').split(/\s+/)).toEqual([
+      part('field', 'description').id,
+      part('field', 'error-text').id,
+      part('password-input', 'caps-lock-indicator').id,
+    ])
   })
 })

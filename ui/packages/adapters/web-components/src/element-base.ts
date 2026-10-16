@@ -9,7 +9,7 @@ import type { FieldControlWiring } from '@xihan-ui/headless'
 import type { PartContract } from './dom/part-contract'
 import type { Spreader } from './dom/spread'
 import type { FieldTarget } from './runtime/form-control-host'
-import { fieldGroupAttrs, fieldStateAttrs, withFieldLabel } from '@xihan-ui/headless'
+import { fieldGroupAttrs, fieldStateAttrs, withFieldDescription, withFieldLabel } from '@xihan-ui/headless'
 import { onXhConfigChange, withXhConfig } from './config'
 import { mergeAsChildProps } from './dom/as-child'
 import { validatePartContract } from './dom/part-contract'
@@ -77,7 +77,7 @@ export abstract class XhElement extends XhReactiveElement {
 
   /**
    * 这份属性铺的是本元素声明的接线目标部件时，把字段接线并进去：部件自己的属性在后，同名以部件为准；
-   * 字段标签拼在名字链最前。
+   * 描述链与名字链两边拼起来，字段的在前。
    */
   private withFieldWiring(props: Record<string, unknown>): Record<string, unknown> {
     const wiring = this.fieldWiring
@@ -88,7 +88,7 @@ export abstract class XhElement extends XhReactiveElement {
     if (!target.parts.includes(props['data-part'] as string))
       return props
     const attrs = target.kind === 'state' ? fieldStateAttrs(wiring) : fieldGroupAttrs(wiring)
-    return withFieldLabel({ ...attrs, ...props }, wiring.labelId)
+    return withFieldLabel(withFieldDescription({ ...attrs, ...props }, wiring.describedBy), wiring.labelId)
   }
 
   private readonly ownSpreader: Spreader = createSpreader()
