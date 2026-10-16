@@ -26312,6 +26312,33 @@
             },
             {
               "kind": "field",
+              "name": "descriptionWatch",
+              "type": {
+                "text": "{ el: HTMLElement, observer: MutationObserver } | undefined"
+              },
+              "privacy": "private",
+              "description": "说明部件的文字从无到有、从有到无时重新接线：没有文字的说明不进控件的描述链。"
+            },
+            {
+              "kind": "method",
+              "name": "watchDescription",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement | null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
               "name": "fieldScope",
               "type": {
                 "text": "Scope"

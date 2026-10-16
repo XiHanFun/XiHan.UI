@@ -56,7 +56,7 @@ describe('combobox 输入宿主可换成 textarea', () => {
   })
 
   it('多行宿主：textbox 支持的那几条组合框属性照样产出', () => {
-    const props = api({ placeholder: '写点什么' }).getInputProps({ as: 'textarea' }) as Record<string, unknown>
+    const props = api({ labelled: true, placeholder: '写点什么' }).getInputProps({ as: 'textarea' }) as Record<string, unknown>
     expect(props['aria-haspopup']).toBe('listbox')
     expect(props['aria-autocomplete']).toBe('list')
     expect(props['aria-controls']).toEqual(expect.stringContaining('content'))

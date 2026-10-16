@@ -19,6 +19,11 @@ import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface TreeSelectContext {
+  /**
+   * 已渲染的 label 部件数量，由 XhTreeSelectLabel 在 setup 里同步登记、卸载时撤销。
+   * 可聚焦部件的 aria-labelledby 据此决定指不指过去：label 排在输入之前时，首帧与服务端直出就带上名字。
+   */
+  labelCount: Ref<number>
   /** 状态机实例，供部件上报 DOM 侧的事实（如节点卸载带走了焦点）。 */
   service: Service<TreeSelectSchema>
   api: ComputedRef<TreeSelectApi>
@@ -48,7 +53,8 @@ export function useTreeSelect(
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   // 对外回调由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
-  const service = useMachine(treeSelectMachine, () => ({ ...props, ...handlers }), scope)
+  const labelCount = ref(0)
+  const service = useMachine(treeSelectMachine, () => ({ ...props, labelled: labelCount.value > 0, ...handlers }), scope)
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
   let config: RuntimeConfig | null = null
@@ -89,5 +95,5 @@ export function useTreeSelect(
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, triggerRef, controlRef, positionerRef, contentRef, treeRef, portalTarget }
+  return { labelCount, visible, service, api, triggerRef, controlRef, positionerRef, contentRef, treeRef, portalTarget }
 }

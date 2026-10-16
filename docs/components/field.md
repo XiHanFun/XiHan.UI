@@ -59,6 +59,7 @@
 - 自动关联标签、说明、错误信息与控件。
 - `disabled`、`readOnly`、`invalid` 和 `required` 可传递给内部控件。
 - 说明和错误信息可以同时显示。
+- 控件的名字链与描述链只引用实际渲染了的标题、说明与错误文案：没写的部件、没有文字的说明不留 id，引用不会落空；部件后补进来、说明补上文字时跟着接上。
 - `FieldControl` 默认将属性合并到唯一子节点。
 - 点标题把焦点交给控件；控件是弹出式触发钮（选择器、日期选择器等）时只聚焦、不开合，与原生 select 一致，浮层展开时点标题即收起。
 - 字段的标签、说明、状态与控件 id 沿组件树（Web Components 沿 DOM 祖先链）交给子树里的库内控件。组合控件内嵌的输入（图标选择器里的搜索框、筛选框）不该被读成外层字段的名字时，包进 `XhFieldBoundary`（Web Components 为 `display: contents` 的 `<xh-field-boundary>`）：边界后面的控件不再继承外层字段与表单字段组。浮层内容经 Portal 搬到落点后已自动断开，放在弹出层、对话框里的输入框不归外层字段管。
@@ -103,6 +104,7 @@
 | `controlId` | `string` |  | 控件 id；作者接管时以它为准。 |
 | `disabled` | `boolean` |  |  |
 | `invalid` | `boolean` |  | 校验失败态：控件上 aria-invalid=true，错误文案接入描述链并显示。 |
+| `parts` | `FieldRenderedParts` |  | 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。 不在场的部件不进控件的名字链与描述链：指向不存在的 id 会被判为无效引用。 description 渲染了但没有文字也按不在场处理。 |
 | `readOnly` | `boolean` |  | 只读：控件上 aria-readonly=true。与 disabled 不同，只读仍可聚焦、仍参与提交。 |
 | `required` | `boolean` |  | 必填：控件上 aria-required=true。 |
 
@@ -156,9 +158,9 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `control` | `aria-describedby` | `description` 部件的 id `error-text` 部件的 id \| `description` 部件的 id |
+| `control` | `aria-describedby` | [ rendered?.description === false ? null : ids.descri… |
 | `control` | `aria-invalid` | 'true' \| 'false' |
-| `control` | `aria-labelledby` | `label` 部件的 id |
+| `control` | `aria-labelledby` | undefined \| `label` 部件的 id |
 | `control` | `aria-readonly` | 'true' \| 'false' |
 | `control` | `aria-required` | 'true' \| 'false' |
 | `error-text` | `aria-atomic` | 'true' |

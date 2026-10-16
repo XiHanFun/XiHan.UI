@@ -25,8 +25,13 @@ export function connectField<T extends PropTypes>(
   const ids = scope.ids('field', 'label', 'control', 'description', 'error-text')
   // 作者接管 id 时以作者的为准，label 的 for 随之改写
   const controlId = props.controlId ?? ids.control
-  // 错误文案只在 invalid 时进描述链
-  const describedBy = invalid ? `${ids.description} ${ids['error-text']}` : ids.description
+  // 名字链与描述链只收在场的部件；错误文案只在 invalid 时进描述链
+  const rendered = props.parts
+  const labelledBy = rendered?.label === false ? undefined : ids.label
+  const describedBy = [
+    rendered?.description === false ? null : ids.description,
+    invalid && rendered?.errorText !== false ? ids['error-text'] : null,
+  ].filter(Boolean).join(' ') || undefined
 
   return {
     invalid,
@@ -80,7 +85,7 @@ export function connectField<T extends PropTypes>(
       'id': controlId,
       // label 的 for 只对可标注元素生效，而作者把 control 标在 div 上是常态
       // （包一层再放原生控件）。那种情形下 for 静默失效，靠这条把名字接回来。
-      'aria-labelledby': ids.label,
+      'aria-labelledby': labelledBy,
       'aria-describedby': describedBy,
       // 显式 true/false，不靠属性缺席表达
       'aria-invalid': invalid ? 'true' : 'false',

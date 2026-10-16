@@ -395,7 +395,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
       'id': ids.control,
       // 两组段位合起来才是一个控件，靠 group 兜住，名字由 label 提供；两组各自再报「开始 / 结束」
       'role': 'group',
-      'aria-labelledby': ids.label,
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       // group 只支持全局属性，只读与必填不在其列，那两位由各段自己报
       'aria-disabled': disabled ? 'true' : 'false',
       'aria-invalid': flagged ? 'true' : 'false',
@@ -587,7 +587,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
         'aria-expanded': open ? 'true' : 'false',
         'aria-controls': ids.content,
         // 图标按钮自己没有文字，名字借标题；作者写了 aria-label 会盖过这条
-        'aria-labelledby': ids.label,
+        'aria-labelledby': prop('labelled') ? ids.label : undefined,
         'data-state': stateAttr,
         'data-disabled': dataAttr(disabled),
         // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
@@ -701,7 +701,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
       // 里面两组各几列各自是 listbox。模态与否显式说，省略只是没说
       'role': 'dialog',
       'aria-modal': 'false',
-      'aria-labelledby': ids.label,
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       // 写 -1 而不是整个不给：某些浏览器会把可滚动区域自动塞进 Tab 序列
       'tabindex': -1,
       'data-state': stateAttr,

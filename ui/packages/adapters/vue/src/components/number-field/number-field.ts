@@ -9,7 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { NumberFieldApi, NumberFieldSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, onUnmounted } from 'vue'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideNumberField, useNumberFieldContext } from './context'
@@ -81,6 +81,11 @@ export const XhNumberFieldLabel = defineComponent({
   name: 'XhNumberFieldLabel',
   setup(_, { slots }) {
     const ctx = useNumberFieldContext()
+    // 渲出来就登记，在 setup 里同步做：排在输入之前时首帧与服务端直出就带上名字
+    ctx.labelCount.value++
+    onUnmounted(() => {
+      ctx.labelCount.value--
+    })
     return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })

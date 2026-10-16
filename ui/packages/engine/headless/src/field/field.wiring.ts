@@ -9,10 +9,10 @@ import type { FieldApi } from './field.types'
 
 /** 字段交给库内控件的接线。控件并进自己的可聚焦部件（输入框、触发钮、组根、拇指）。 */
 export interface FieldControlWiring {
-  /** 字段标签的 id，排在控件名字链的最前。 */
-  readonly labelId: string
-  /** 说明与错误文案的 id 链，invalid 时才含错误文案。 */
-  readonly describedBy: string
+  /** 字段标签的 id，排在控件名字链的最前；字段没渲染标签时为 undefined。 */
+  readonly labelId: string | undefined
+  /** 在场的说明与错误文案的 id 链，invalid 时才含错误文案；一个都不在场时为 undefined。 */
+  readonly describedBy: string | undefined
   readonly invalid: boolean
   readonly required: boolean
   readonly readOnly: boolean
@@ -22,8 +22,8 @@ export interface FieldControlWiring {
 export function fieldControlWiring(api: FieldApi): FieldControlWiring {
   const control = api.getControlProps() as Record<string, unknown>
   return {
-    labelId: api.labelId,
-    describedBy: String(control['aria-describedby'] ?? ''),
+    labelId: control['aria-labelledby'] as string | undefined,
+    describedBy: control['aria-describedby'] as string | undefined,
     invalid: api.invalid,
     required: api.required,
     readOnly: api.readOnly,
@@ -34,7 +34,7 @@ export function fieldControlWiring(api: FieldApi): FieldControlWiring {
  * 输入框、触发钮这类控件的接线属性：描述链与校验、必填、只读三态。
  * 读屏只朗读焦点所在节点的描述，所以这几条要落在真实控件上，不能停在封装根。
  */
-export function fieldStateAttrs(wiring: FieldControlWiring): Record<string, string> {
+export function fieldStateAttrs(wiring: FieldControlWiring): Record<string, string | undefined> {
   return {
     'aria-describedby': wiring.describedBy,
     'aria-invalid': wiring.invalid ? 'true' : 'false',
@@ -47,7 +47,7 @@ export function fieldStateAttrs(wiring: FieldControlWiring): Record<string, stri
  * 组类控件（单选组、复选框组、滑块、评分、分格输入……）的接线属性：只有描述链。
  * 校验、必填与只读由组件按字段状态自己投影：role=group 不接受 aria-invalid / aria-required。
  */
-export function fieldGroupAttrs(wiring: FieldControlWiring): Record<string, string> {
+export function fieldGroupAttrs(wiring: FieldControlWiring): Record<string, string | undefined> {
   return { 'aria-describedby': wiring.describedBy }
 }
 

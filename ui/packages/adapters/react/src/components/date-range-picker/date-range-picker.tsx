@@ -330,6 +330,9 @@ export interface XhDateRangePickerLabelProps extends ComponentPropsWithRef<'span
 /** 渲染为 span 而非 label，点击聚焦由连接层接管。 */
 export function XhDateRangePickerLabel({ children, ...rest }: XhDateRangePickerLabelProps): ReactNode {
   const ctx = useDateRangePickerContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 

@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { NumberFieldApi, NumberFieldSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { useEffect } from 'react'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
@@ -136,6 +137,9 @@ XhNumberFieldRoot.xhEvents = ['value-change'] as const
 export interface XhNumberFieldLabelProps extends ComponentPropsWithRef<'label'> {}
 export function XhNumberFieldLabel({ children, ...rest }: XhNumberFieldLabelProps): ReactNode {
   const ctx = useNumberFieldContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return (
     <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}

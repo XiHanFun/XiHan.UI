@@ -211,6 +211,9 @@ export interface XhTimePickerLabelProps extends ComponentPropsWithRef<'label'> {
 /** 仍使用原生 label 保持表单语义，点击标题聚焦第一段由连接层的 click 接管。 */
 export function XhTimePickerLabel({ children, ...rest }: XhTimePickerLabelProps): ReactNode {
   const ctx = useTimePickerContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</label>
 }
 

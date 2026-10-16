@@ -194,7 +194,7 @@ describe('connectTextField 结构与标注', () => {
   })
 
   it('label 的 for 指向 input 自己的 id，input 反手 aria-labelledby 指回 label', () => {
-    const api = makeService().api()
+    const api = makeService({ labelled: true }).api()
     const label = api.getLabelProps() as Dict
     const input = api.getInputProps() as Dict
     expect(label.for).toBe(input.id)

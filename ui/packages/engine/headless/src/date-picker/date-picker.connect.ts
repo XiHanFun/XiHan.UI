@@ -545,7 +545,7 @@ export function connectDatePicker<T extends PropTypes>(
         ...parts['segment-group'].attrs,
         'id': ids['segment-group'],
         'role': 'group',
-        'aria-labelledby': ids.label,
+        'aria-labelledby': prop('labelled') ? ids.label : undefined,
         // 整条占位：一段都没填、焦点也不在段上时才露出，文字由皮肤以生成内容画出，段位与分隔符让位
         'hidden': multiple || undefined,
         'data-placeholder-text': placeholderText,
@@ -597,7 +597,7 @@ export function connectDatePicker<T extends PropTypes>(
         'aria-expanded': open ? 'true' : 'false',
         'aria-controls': ids.content,
         // 图标按钮无文字，名字借标题；作者写的 aria-label 会盖过这条
-        'aria-labelledby': ids.label,
+        'aria-labelledby': prop('labelled') ? ids.label : undefined,
         'data-state': stateAttr,
         'data-disabled': dataAttr(disabled),
         // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
@@ -688,7 +688,7 @@ export function connectDatePicker<T extends PropTypes>(
       // 模态与否显式说，省略只是「没说」
       'role': 'dialog',
       'aria-modal': 'false',
-      'aria-labelledby': ids.label,
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       // 写 -1 而不是整个不给：它是可滚动容器，某些浏览器会把可滚动区域自动塞进 Tab 序列
       'tabindex': -1,
       'data-state': stateAttr,

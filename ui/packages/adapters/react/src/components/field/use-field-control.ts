@@ -60,6 +60,6 @@ export function useFieldLabelWiring(): (props: Record<string, unknown>) => Recor
   const ctx = useOptionalFieldContext()
   if (!ctx)
     return identity
-  const labelId = ctx.api.labelId
+  const labelId = fieldControlWiring(ctx.api).labelId
   return props => withFieldLabel(props, labelId)
 }

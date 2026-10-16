@@ -99,7 +99,7 @@ export type { EditableActivationMode, EditableApi, EditableEditChangeDetails, Ed
 export { connectEmptyState, emptyStateAnatomy, emptyStateKeyboard, emptyStateMachine, emptyStateMeta } from './empty-state'
 export type { EmptyStateApi, EmptyStateLive, EmptyStateProps, EmptyStateRefs, EmptyStateSchema, EmptyStateStatus, EmptyStateTranslations } from './empty-state'
 export { connectField, fieldAnatomy, fieldControlWiring, fieldGroupAttrs, fieldKeyboard, fieldMeta, fieldStateAttrs, withFieldDescription, withFieldLabel } from './field'
-export type { FieldApi, FieldControlWiring, FieldProps, FieldTranslations } from './field'
+export type { FieldApi, FieldControlWiring, FieldProps, FieldRenderedParts, FieldTranslations } from './field'
 export { connectFieldArray, fieldArrayAnatomy, fieldArrayInsertIndex, fieldArrayKeyboard, fieldArrayMachine, fieldArrayMeta, fieldArrayTriggerId } from './field-array'
 export type { FieldArrayApi, FieldArrayItem, FieldArrayItemProps, FieldArrayPressedKey, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails } from './field-array'
 export { connectFieldset, fieldsetAnatomy, fieldsetKeyboard, fieldsetMeta } from './fieldset'

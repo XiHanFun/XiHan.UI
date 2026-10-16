@@ -143,6 +143,11 @@ export interface DatePickerRefs {
 export interface DatePickerSchema extends MachineSchema {
   props: {
     /**
+     * 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。
+     * 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。
+     */
+    labelled?: boolean
+    /**
      * 选中值，ISO 串。提供即受控：读取直取 prop，写入只发 onValueChange 不落内部值。
      * 单选可写裸串，内部一律归一为数组。
      */

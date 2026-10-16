@@ -72,7 +72,7 @@ export function useFieldGroupWiring(): ComputedRef<Record<string, unknown>> {
 export function useFieldLabelWiring(): ComputedRef<(props: Record<string, unknown>) => Record<string, unknown>> {
   const ctx = useOptionalFieldContext()
   return computed(() => {
-    const labelId = ctx?.api.value.labelId
+    const labelId = ctx ? fieldControlWiring(ctx.api.value).labelId : undefined
     return (props: Record<string, unknown>) => withFieldLabel(props, labelId)
   })
 }

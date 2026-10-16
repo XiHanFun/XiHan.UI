@@ -189,7 +189,7 @@ export function connectRating<T extends PropTypes>(
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
       'role': 'radiogroup',
-      'aria-labelledby': ids.label,
+      'aria-labelledby': prop('labelled') ? ids.label : undefined,
       'aria-orientation': 'horizontal',
       // 三个 aria 布尔显式写 true/false：省略是"没说"，显式 false 是"明确说了不是"
       'aria-disabled': disabled ? 'true' : 'false',

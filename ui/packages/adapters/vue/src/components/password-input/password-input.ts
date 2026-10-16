@@ -10,7 +10,7 @@ import type { PasswordInputApi, PasswordInputSchema, PasswordInputTranslations }
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { withFieldDescription } from '@xihan-ui/headless'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -87,6 +87,11 @@ export const XhPasswordInputLabel = defineComponent({
   name: 'XhPasswordInputLabel',
   setup(_, { slots }) {
     const ctx = usePasswordInputContext()
+    // 渲出来就登记，在 setup 里同步做：排在输入之前时首帧与服务端直出就带上名字
+    ctx.labelCount.value++
+    onUnmounted(() => {
+      ctx.labelCount.value--
+    })
     // 必须是原生 <label>，connect 把 for 写向 input
     return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },

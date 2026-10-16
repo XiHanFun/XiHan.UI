@@ -391,7 +391,7 @@ export function connectTreeSelect<T extends PropTypes>(
       // 指向 role=tree 的部件，而非外层浮层壳
       'aria-controls': ids.tree,
       // 名字 = 标签 + 当前值；未写 label 时该段为悬空 IDREF，名字回落成当前值
-      'aria-labelledby': `${ids.label} ${ids['value-text']}`,
+      'aria-labelledby': prop('labelled') ? `${ids.label} ${ids['value-text']}` : ids['value-text'],
       'aria-invalid': invalid ? 'true' : 'false',
       'aria-readonly': readOnly ? 'true' : 'false',
       'data-state': stateAttr,
@@ -746,7 +746,7 @@ export function connectTreeSelect<T extends PropTypes>(
       // 名字与 trigger 同源（标签 + 当前值）：无锚点时焦点歇在这儿，读屏只报得出容器的名字与角色。
       // 作者没渲染 label / value-text 时两段都是悬空 IDREF，按 accname 规则整条落空，
       // 名字退回下面那个可写的兜底
-      'aria-labelledby': `${ids.label} ${ids['value-text']}`,
+      'aria-labelledby': prop('labelled') ? `${ids.label} ${ids['value-text']}` : ids['value-text'],
       'aria-label': translations.tree,
       // 复选与否显式输出
       'aria-multiselectable': multiple ? 'true' : 'false',

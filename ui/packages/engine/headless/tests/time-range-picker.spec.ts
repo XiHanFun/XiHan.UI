@@ -788,7 +788,7 @@ describe('两条路写的是同一个值', () => {
 
 describe('分段输入', () => {
   it('两组各是一个 group、各报各的名字、各占一个 Tab 位；分隔符退出可访问树', () => {
-    const h = open()
+    const h = open({ labelled: true })
     expect(h.group(0).getAttribute('role')).toBe('group')
     expect(h.group(0).getAttribute('aria-label')).toBe('Start time')
     expect(h.group(1).getAttribute('aria-label')).toBe('End time')

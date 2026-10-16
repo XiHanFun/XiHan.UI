@@ -102,8 +102,7 @@ describe('字段标签要念到真控件上', () => {
     )
     const chain = part('select', 'trigger').getAttribute('aria-labelledby')!
 
-    // 只剩组件自己的两截，没有多出来的前缀
-    expect(chain.split(' ')).toHaveLength(2)
-    expect(chain.startsWith('select:')).toBe(true)
+    // 没写标题时只剩组件自己在场的值文本，不挂落空的 label id，也没有多出来的前缀
+    expect(chain.split(' ')).toEqual([part('select', 'value-text').id])
   })
 })

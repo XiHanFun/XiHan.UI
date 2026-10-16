@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { ColorFieldApi, ColorFieldSchema, ColorFormat } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { useEffect } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
@@ -124,6 +125,9 @@ export interface XhColorFieldLabelProps extends ComponentPropsWithRef<'label'> {
 
 export function XhColorFieldLabel({ children, ...rest }: XhColorFieldLabelProps): ReactNode {
   const ctx = useColorFieldContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   // 必须是原生 <label>，connect 把 for 写向 input
   return (
     <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>

@@ -15,6 +15,11 @@ export interface ColorFieldValueChangeDetails {
 
 export interface ColorFieldSchema extends MachineSchema {
   props: {
+    /**
+     * 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。
+     * 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。
+     */
+    labelled?: boolean
     /** 受控的颜色串；提供后由宿主决定，状态机不自行修改。空串表示没有颜色。 */
     value?: string
     /** 非受控初值，默认空串。 */

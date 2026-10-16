@@ -6,12 +6,12 @@
 // 提供 field 相关实现。
 
 import type { SlotsType, VNode } from 'vue'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, ref } from 'vue'
 import { isRoleMarker, mergeIntoChild } from '../../runtime/as-child'
 import { useOptionalFormContext, useOptionalFormField } from '../form/context'
 import { useFormControlProps } from '../form/use-form-control'
 import { clearFieldContext, provideField, useFieldContext } from './context'
-import { useField } from './use-field'
+import { useField, useFieldPartPresence } from './use-field'
 
 export const XhFieldRoot = defineComponent({
   name: 'XhFieldRoot',
@@ -48,6 +48,7 @@ export const XhFieldLabel = defineComponent({
   name: 'XhFieldLabel',
   setup(_, { slots }) {
     const ctx = useFieldContext()
+    useFieldPartPresence(ctx, 'label')
     return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -102,7 +103,10 @@ export const XhFieldDescription = defineComponent({
   name: 'XhFieldDescription',
   setup(_, { slots }) {
     const ctx = useFieldContext()
-    return () => h('p', ctx.api.value.getDescriptionProps() as Record<string, unknown>, slots.default?.())
+    const el = ref<HTMLElement | null>(null)
+    // 没有文字的说明不进描述链
+    useFieldPartPresence(ctx, 'description', () => (el.value?.textContent ?? '').trim() !== '')
+    return () => h('p', { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el }, slots.default?.())
   },
 })
 
@@ -110,6 +114,7 @@ export const XhFieldErrorText = defineComponent({
   name: 'XhFieldErrorText',
   setup(_, { slots }) {
     const ctx = useFieldContext()
+    useFieldPartPresence(ctx, 'errorText')
     const form = useOptionalFormContext()
     const handle = useOptionalFormField()
     // 节点常挂，靠 hidden 显隐；插槽没给内容时在表单里自取该字段的错误文案

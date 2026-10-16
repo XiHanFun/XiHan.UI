@@ -144,6 +144,9 @@ export interface XhRatingLabelProps extends ComponentPropsWithRef<'span'> {}
 
 export function XhRatingLabel({ children, ...rest }: XhRatingLabelProps): ReactNode {
   const ctx = useRatingContext()
+  // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerLabel } = ctx
+  useEffect(() => registerLabel(), [registerLabel])
   return (
     <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}

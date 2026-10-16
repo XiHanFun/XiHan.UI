@@ -164,6 +164,11 @@ export const XhComboboxLabel = defineComponent({
   name: 'XhComboboxLabel',
   setup(_, { slots }) {
     const ctx = useComboboxContext()
+    // 渲出来就登记，在 setup 里同步做：排在输入之前时首帧与服务端直出就带上名字
+    ctx.labelCount.value++
+    onUnmounted(() => {
+      ctx.labelCount.value--
+    })
     // 用原生 label，connect 给的 for 指向输入框
     return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },

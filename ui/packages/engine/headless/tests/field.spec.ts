@@ -67,8 +67,8 @@ describe('字段交给库内控件的接线', () => {
       required: true,
       readOnly: true,
     })
-    expect(wiring.describedBy.split(' ')).toHaveLength(2)
-    expect(valid.describedBy.split(' ')).toHaveLength(1)
+    expect(wiring.describedBy!.split(' ')).toHaveLength(2)
+    expect(valid.describedBy!.split(' ')).toHaveLength(1)
   })
 
   it('状态接线与字段 control 上的同名四条一致，组类接线只有描述链', () => {
@@ -106,5 +106,38 @@ describe('字段描述链与控件自己的拼接', () => {
     expect(withFieldDescription({ 'aria-describedby': undefined }, 'hint')['aria-describedby']).toBe('hint')
     const props = { 'aria-describedby': 'caps' }
     expect(withFieldDescription(props, undefined)).toBe(props)
+  })
+})
+
+describe('名字链与描述链只收在场的部件', () => {
+  const control = (props: FieldProps) => api(props).getControlProps() as Record<string, unknown>
+
+  it('省略 parts 时按都在场处理，与服务端直出、挂载前一致', () => {
+    const field = api({ invalid: true })
+    const props = field.getControlProps() as Record<string, unknown>
+    expect(props['aria-labelledby']).toBe(field.labelId)
+    expect((props['aria-describedby'] as string).split(' ')).toHaveLength(2)
+  })
+
+  it('标签与说明都不在场时，两条链都不写', () => {
+    const props = control({ parts: { label: false, description: false, errorText: true } })
+    expect(props['aria-labelledby']).toBeUndefined()
+    expect(props['aria-describedby']).toBeUndefined()
+  })
+
+  it('没有说明但 invalid 时只引用错误文案；错误文案也不在场时不写', () => {
+    const field = api({ invalid: true, parts: { label: true, description: false, errorText: true } })
+    const errorId = (field.getErrorTextProps() as Record<string, unknown>).id
+    expect((field.getControlProps() as Record<string, unknown>)['aria-describedby']).toBe(errorId)
+    expect(control({ invalid: true, parts: { description: false, errorText: false } })['aria-describedby']).toBeUndefined()
+  })
+
+  it('接线跟着走：没有标签时 labelId 为 undefined，没有任何描述时状态接线不写 aria-describedby', () => {
+    const wiring = fieldControlWiring(api({ parts: { label: false, description: false } }))
+    expect(wiring.labelId).toBeUndefined()
+    expect(wiring.describedBy).toBeUndefined()
+    expect(fieldStateAttrs(wiring)['aria-describedby']).toBeUndefined()
+    expect(fieldGroupAttrs(wiring)['aria-describedby']).toBeUndefined()
+    expect(withFieldLabel({ 'aria-labelledby': 'own' }, wiring.labelId)['aria-labelledby']).toBe('own')
   })
 })

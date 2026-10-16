@@ -7,13 +7,14 @@
 
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { useRef } from 'react'
 import { isRoleMarker, mergeIntoChild } from '../../runtime/as-child'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
 import { useOptionalFormContext, useOptionalFormField } from '../form/context'
 import { useFormControlProps } from '../form/use-form-control'
 import { FieldProvider, useFieldContext } from './context'
-import { useField } from './use-field'
+import { useField, useFieldPartPresence } from './use-field'
 
 /**
  * 去掉角色标记，只保留接线属性（id、aria-* 与状态位）。
@@ -63,6 +64,7 @@ export interface XhFieldLabelProps extends ComponentPropsWithRef<'label'> {}
 
 export function XhFieldLabel({ children, ...rest }: XhFieldLabelProps): ReactNode {
   const ctx = useFieldContext()
+  useFieldPartPresence(ctx, 'label')
   return (
     <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}
@@ -100,8 +102,11 @@ export interface XhFieldDescriptionProps extends ComponentPropsWithRef<'p'> {}
 
 export function XhFieldDescription({ children, ...rest }: XhFieldDescriptionProps): ReactNode {
   const ctx = useFieldContext()
+  const el = useRef<HTMLParagraphElement | null>(null)
+  // 没有文字的说明不进描述链
+  useFieldPartPresence(ctx, 'description', () => (el.current?.textContent ?? '').trim() !== '')
   return (
-    <p {...mergeReactProps(ctx.api.getDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <p {...mergeReactProps({ ...ctx.api.getDescriptionProps() as Record<string, unknown>, ref: el }, rest as Record<string, unknown>)}>
       {children}
     </p>
   )
@@ -112,6 +117,7 @@ export interface XhFieldErrorTextProps extends ComponentPropsWithRef<'p'> {}
 /** 节点常驻，依靠 hidden 显隐；未提供内容时在表单中自取该字段的错误文案。 */
 export function XhFieldErrorText({ children, ...rest }: XhFieldErrorTextProps): ReactNode {
   const ctx = useFieldContext()
+  useFieldPartPresence(ctx, 'errorText')
   const form = useOptionalFormContext()
   const handle = useOptionalFormField()
   const given = slotPaints(children)

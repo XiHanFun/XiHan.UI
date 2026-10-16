@@ -19,6 +19,11 @@ import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface CascaderContext {
+  /**
+   * 已渲染的 label 部件数量，由 XhCascaderLabel 在 setup 里同步登记、卸载时撤销。
+   * 可聚焦部件的 aria-labelledby 据此决定指不指过去：label 排在输入之前时，首帧与服务端直出就带上名字。
+   */
+  labelCount: Ref<number>
   /** 状态机实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
   service: Service<CascaderSchema>
   api: ComputedRef<CascaderApi>
@@ -44,7 +49,8 @@ export function useCascader(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(cascaderMachine, () => ({ ...props, ...handlers }), scope)
+  const labelCount = ref(0)
+  const service = useMachine(cascaderMachine, () => ({ ...props, labelled: labelCount.value > 0, ...handlers }), scope)
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
   let config: RuntimeConfig | null = null
@@ -85,5 +91,5 @@ export function useCascader(
   // 先问全局配置的落点，没有才落 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, triggerRef, controlRef, positionerRef, contentRef, portalTarget }
+  return { labelCount, visible, service, api, triggerRef, controlRef, positionerRef, contentRef, portalTarget }
 }
