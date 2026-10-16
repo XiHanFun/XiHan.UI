@@ -1,9 +1,9 @@
 # time-picker
 
 [clear-trigger]
-padding-top: 1px
+padding-top: 0px
 padding-right: 0px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 0px
 row-gap: 0px
 column-gap: 0px
@@ -71,9 +71,9 @@ outline-offset: 0px
 outline-color: oklch(0.208 0.006 258)
 
 [confirm-trigger]
-padding-top: 1px
+padding-top: 0px
 padding-right: 8px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 8px
 row-gap: 4px
 column-gap: 4px
@@ -456,9 +456,9 @@ outline-offset: 0px
 outline-color: oklch(0.208 0.006 258)
 
 [trigger]
-padding-top: 1px
+padding-top: 0px
 padding-right: 0px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 0px
 row-gap: 0px
 column-gap: 0px

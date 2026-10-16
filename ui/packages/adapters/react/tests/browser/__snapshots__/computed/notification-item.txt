@@ -36,9 +36,9 @@ outline-offset: 0px
 outline-color: oklch(0.208 0.006 258)
 
 [item-action-trigger]
-padding-top: 1px
+padding-top: 0px
 padding-right: 12px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 12px
 row-gap: 4px
 column-gap: 4px
@@ -71,9 +71,9 @@ outline-offset: 0px
 outline-color: oklch(0.208 0.006 258)
 
 [item-close-trigger]
-padding-top: 1px
+padding-top: 0px
 padding-right: 0px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 0px
 row-gap: 0px
 column-gap: 0px

@@ -1,10 +1,10 @@
 # tag
 
 [close-trigger]
-padding-top: 1px
-padding-right: 6px
-padding-bottom: 1px
-padding-left: 6px
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
 row-gap: normal
 column-gap: normal
 border-top-left-radius: 2px

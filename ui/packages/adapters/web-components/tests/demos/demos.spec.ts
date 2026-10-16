@@ -1,6 +1,7 @@
 // 文档站自定义元素版示例的批量验证台：每份 .html 在真实 Chromium 里挂一遍，逐条判据过。
 //
-// 判据五条：元素升级、作者写的角色节点全被发现、必需部件齐备、控制台零 error、脚本是 type="module"。
+// 判据六条：元素升级、作者写的角色节点全被发现、必需部件齐备、控制台零 error、脚本是 type="module"、
+// 渲染成 button 的部件不吃浏览器缺省的内衬与凸边。
 // 判据一与二只有在真浏览器里才成立——jsdom 不升级自定义元素。
 //
 // 只跑指定组件：置环境变量 XH_WC_DEMOS=select,dialog（由 tooling/scripts/docs/check-wc-demos.mjs 传入）。
@@ -107,6 +108,18 @@ async function settle(host: HTMLElement): Promise<void> {
 }
 
 /** 描述一个节点：标签 + 作者写的角色名，报错时据它回文件里找。 */
+const PADDING_SIDES = ['padding-top', 'padding-right', 'padding-bottom', 'padding-left'] as const
+
+/** 浏览器给裸 <button> 的内衬与边框样式：示例页没有任何全局 reset，库内按钮部件的计算值不得与它相同。 */
+function uaButtonDefaults(): { padding: string, borderStyle: string } {
+  const probe = document.createElement('button')
+  document.body.append(probe)
+  const cs = getComputedStyle(probe)
+  const out = { padding: PADDING_SIDES.map(side => cs.getPropertyValue(side)).join(' '), borderStyle: cs.borderTopStyle }
+  probe.remove()
+  return out
+}
+
 function describeNode(el: Element): string {
   const part = el.getAttribute('data-xh-part')
   return `<${el.tagName.toLowerCase()}${part ? ` data-xh-part="${part}"` : ''}>`
@@ -282,6 +295,20 @@ describe('自定义元素版示例', () => {
           // 契约登记了双重身份的（子菜单的 trigger 接成父菜单的 item）不算接错名
           problems.push(`${describeNode(el)} 接成了 data-part="${wired}"`)
         }
+      }
+
+      // 判据六：渲染成 button 的库内部件不吃浏览器缺省的内衬与凸边。示例页没有任何全局 reset，
+      // 1px 6px 的缺省内衬原样留着时，定尺小钮里的字形会被挤扁；只比对这两个不会与皮肤取值撞上的指纹
+      const ua = uaButtonDefaults()
+      for (const el of Array.from(stage.querySelectorAll('button[data-scope][data-part]'))) {
+        const cs = getComputedStyle(el)
+        if (cs.display === 'none')
+          continue
+        const padding = PADDING_SIDES.map(side => cs.getPropertyValue(side)).join(' ')
+        if (padding === ua.padding)
+          problems.push(`${describeNode(el)} 留着浏览器按钮的缺省内衬 ${padding}`)
+        if (cs.borderTopStyle === ua.borderStyle && ua.borderStyle !== 'none')
+          problems.push(`${describeNode(el)} 留着浏览器按钮的缺省边框 ${cs.borderTopStyle}`)
       }
 
       // 判据四：控制台零 error，未捕获异常与 error 级诊断同论

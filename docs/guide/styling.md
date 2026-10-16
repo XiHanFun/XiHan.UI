@@ -46,10 +46,19 @@ CSS 的级联顺序由 `@layer` 声明的首次出现顺序决定，与 `@import
     font: inherit;
     letter-spacing: inherit;
   }
+
+  :where([data-scope]):where(button) {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+  }
 }
 ```
 
 没有全局 reset，不影响宿主页面的任何元素。与现有页面共存不需要隔离。
+
+库里渲染成 `<button>` 的部件（关闭钮、步进钮、图例项、分页条目……）不依赖宿主页面的全局 reset：浏览器给按钮的缺省内衬、边框、外边距与底色在 reset 层清掉，皮肤要哪一项再自己写。作者自己写的 `<button data-xh-part="trigger">` 接线后同样带 `data-scope`，也会被清成无壳的样子，与文档站里看到的一致；触发钮要按钮外观时，把 [按钮](../components/button) 当作这个部件写进去。
 
 reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪元素自身的 (0,0,1) 无法再低）。有层版本里这一点无关紧要，层序已经保证皮肤压得住 reset；无层版本 `index.unlayered.css` 只按特指度竞争：Family Recipe 的根规则在产物里由 `[data-scope]` 前缀抬到 (0,2,0)（源文件仍是 `[data-xh-action-control]` 一类的 (0,1,0)），与皮肤选择器同档，并在四份公共层之后、先于全部组件皮肤与 reset 内联一次——同档只剩源序竞争，皮肤对配方物理属性的直接覆盖只有配方先出现才成立，与有层版本里皮肤高一级即胜等价；reset 只有低一档才不会靠源序把配方的字号压掉。代价是无层模式下宿主页面的元素选择器（`div { visibility: hidden }` 这类 (0,0,1)）可以压过 reset——这是无层模式「按特指度竞争」既有取舍的延伸，宿主有这类规则时请自行提高 reset 覆盖的特指度或改用有层版本。
 

@@ -71,9 +71,9 @@ outline-offset: 0px
 outline-color: rgb(0, 0, 0)
 
 [item-drag-trigger]
-padding-top: 1px
+padding-top: 0px
 padding-right: 0px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 0px
 row-gap: 0px
 column-gap: 0px
