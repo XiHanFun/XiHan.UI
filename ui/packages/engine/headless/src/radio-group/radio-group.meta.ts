@@ -12,5 +12,6 @@ import type { ComponentMeta } from '../spec/types'
 // 隐藏输入只在参与表单提交时才需要。
 export const radioGroupMeta: ComponentMeta = {
   component: 'radio-group',
-  requiredParts: ['item'],
+  // item 不列：选项可以由 collection 异步给出，取回之前与级联清空之后都是空的
+  requiredParts: [],
 }

@@ -534,3 +534,42 @@ describe('字段的 control 可由库内控件顶替', () => {
     expect(codes(DIAGNOSTIC_CODES.wcMissingPart).filter(r => r.scope === 'field').map(r => r.part)).toEqual(['control'])
   })
 })
+
+describe('可以为空的集合', () => {
+  it('每个元素的必需部件都落在自己的解剖或委派登记里', () => {
+    const stray: string[] = []
+    for (const [tag, ctor] of registeredElements()) {
+      const contract = ctor.partContract
+      if (!contract)
+        continue
+      const known = new Set([...contract.anatomy.parts, ...(contract.delegates ?? []).flatMap(d => d.parts)])
+      for (const part of contract.meta.requiredParts) {
+        if (!known.has(part))
+          stray.push(`${tag}: ${part}`)
+      }
+    }
+    expect(stray).toEqual([])
+  })
+
+  it.each([
+    ['xh-sortable', '<div data-xh-part="root"></div>'],
+    ['xh-tag-group', '<div data-xh-part="root"><div data-xh-part="list"></div></div>'],
+    ['xh-checkbox-group', '<div data-xh-part="root"></div>'],
+    ['xh-radio-group', '<div data-xh-part="root"></div>'],
+    ['xh-toggle-group', '<div data-xh-part="root"></div>'],
+  ])('%s 一个条目都没有时不报缺必需部件', async (tag, markup) => {
+    document.body.innerHTML = `<${tag}>${markup}</${tag}>`
+    await (document.querySelector(tag) as Updatable).updateComplete
+    expect(codes(DIAGNOSTIC_CODES.wcMissingPart).map(r => `${r.scope}: ${r.part}`)).toEqual([])
+  })
+
+  it('xh-sortable 移走最后一项后照样不报', async () => {
+    document.body.innerHTML = '<xh-sortable><div data-xh-part="root"><div data-xh-part="item" value="a">甲</div></div></xh-sortable>'
+    const host = document.querySelector('xh-sortable') as Updatable
+    await host.updateComplete
+    host.querySelector('[data-xh-part="item"]')!.remove()
+    await new Promise(resolve => setTimeout(resolve, 0))
+    await host.updateComplete
+    expect(codes(DIAGNOSTIC_CODES.wcMissingPart)).toEqual([])
+  })
+})

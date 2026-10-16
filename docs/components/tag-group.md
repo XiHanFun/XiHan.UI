@@ -22,7 +22,7 @@
 
 加粗的是必需部件。
 
-`data-scope="tag-group"`：`root` · `label` · **`list`** · **`cell`** · `item-indicator`
+`data-scope="tag-group"`：`root` · `label` · **`list`** · `cell` · `item-indicator`
 
 ## 示例
 

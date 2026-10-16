@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="sortable"`：**`root`** · **`item`** · `item-drag-trigger` · `drop-indicator` · `live-region`
+`data-scope="sortable"`：**`root`** · `item` · `item-drag-trigger` · `drop-indicator` · `live-region`
 
 ## 示例
 

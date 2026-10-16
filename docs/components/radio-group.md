@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="radio-group"`：`root` · `label` · `thumb` · **`item`** · `item-icon` · `item-text` · `item-description` · `indicator` · `hidden-input`
+`data-scope="radio-group"`：`root` · `label` · `thumb` · `item` · `item-icon` · `item-text` · `item-description` · `indicator` · `hidden-input`
 
 ## 示例
 

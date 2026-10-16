@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="checkbox-group"`：**`root`** · `label` · **`item`** · `indicator` · `item-text` · `item-description` · `hidden-input` · `select-all-trigger`
+`data-scope="checkbox-group"`：**`root`** · `label` · `item` · `indicator` · `item-text` · `item-description` · `hidden-input` · `select-all-trigger`
 
 ## 示例
 
