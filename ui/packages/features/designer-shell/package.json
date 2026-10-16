@@ -1,0 +1,73 @@
+{
+  "name": "@xihan-ui/designer-shell",
+  "type": "module",
+  "version": "4.2.0",
+  "description": "XiHan.UI designer shell — Web Components parts shared by visual designers: property panel, rulers and guides, transform overlay, palette drag and drop, issue list, minimap and frame.",
+  "author": {
+    "name": "XiHanFun",
+    "url": "https://github.com/XiHanFun"
+  },
+  "license": "MIT",
+  "homepage": "https://ui.docs.xihanfun.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XiHanFun/XiHan.UI.git",
+    "directory": "ui/packages/features/designer-shell"
+  },
+  "bugs": {
+    "url": "https://github.com/XiHanFun/XiHan.UI/issues"
+  },
+  "keywords": [
+    "designer",
+    "web-components",
+    "property-panel",
+    "ruler",
+    "drag-and-drop"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./locale": {
+      "types": "./dist/locale.d.ts",
+      "import": "./dist/locale.js"
+    },
+    "./style.css": "./style.css"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "CHANGELOG.md",
+    "dist",
+    "style.css"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@xihan-ui/core": "workspace:^",
+    "@xihan-ui/designer-kit": "workspace:^",
+    "@xihan-ui/pointer": "workspace:^",
+    "@xihan-ui/web-components": "workspace:^"
+  },
+  "devDependencies": {
+    "@xihan-ui/build": "workspace:*",
+    "@xihan-ui/tsconfig": "workspace:*",
+    "jsdom": "catalog:",
+    "vitest": "catalog:"
+  }
+}

@@ -6,7 +6,7 @@
 packages/
   adapters/   vue  react  web-components                            ← 你选一个
   design/     tokens  styles  icons                                 ← 你的外观
-  features/   markdown  chat-stream  backgrounds  sound  animations  code-highlight  expression  designer-kit  xlsx ← 按需自选
+  features/   markdown  chat-stream  backgrounds  sound  animations  code-highlight  expression  designer-kit  designer-shell  xlsx ← 按需自选
   engine/     core  motion  pointer  position  viz  headless          ← 你不用管
   tools/      cli                                                   ← 开发时用
 ```
@@ -18,9 +18,9 @@ packages/
 
 | 组 | 判据 | 使用者视角 |
 | --- | --- | --- |
-| `adapters/` | 有框架 peer 依赖（`vue`）或注册自定义元素 | 渲染目标，选一个 |
+| `adapters/` | 渲染目标：有框架 peer 依赖（`vue`），或把全部组件注册成自定义元素 | 渲染目标，选一个 |
 | `engine/` | **每个适配器的硬依赖** | 装了适配器就自动拿到，做不了取舍 |
-| `features/` | **没有任何适配器硬依赖它**（可选 peer 或谁都不依赖） | 你不点头它就不来 |
+| `features/` | **没有任何适配器硬依赖它**（可选 peer 或谁都不依赖）；也可以是只为某一个适配器做的可选包，它依赖那个适配器、层级排在适配器之上（如 `designer-shell`） | 你不点头它就不来 |
 | `design/` | 纯视觉资产，谁都不硬依赖 | 显式安装的外观层 |
 | `tools/` | 开发期工具：没有任何包依赖它，它也不依赖任何库包的运行时 | 写代码时用，不进应用产物 |
 

@@ -633,6 +633,34 @@ importers:
         specifier: 'catalog:'
         version: 4.1.11(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@27.4.0)(vite@8.3.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.1))
 
+  packages/features/designer-shell:
+    dependencies:
+      '@xihan-ui/core':
+        specifier: workspace:^
+        version: link:../../engine/core
+      '@xihan-ui/designer-kit':
+        specifier: workspace:^
+        version: link:../designer-kit
+      '@xihan-ui/pointer':
+        specifier: workspace:^
+        version: link:../../engine/pointer
+      '@xihan-ui/web-components':
+        specifier: workspace:^
+        version: link:../../adapters/web-components
+    devDependencies:
+      '@xihan-ui/build':
+        specifier: workspace:*
+        version: link:../../../tooling/build
+      '@xihan-ui/tsconfig':
+        specifier: workspace:*
+        version: link:../../../tooling/tsconfig
+      jsdom:
+        specifier: 'catalog:'
+        version: 27.4.0
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.11(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@27.4.0)(vite@8.3.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.1))
+
   packages/features/expression:
     devDependencies:
       '@xihan-ui/build':
