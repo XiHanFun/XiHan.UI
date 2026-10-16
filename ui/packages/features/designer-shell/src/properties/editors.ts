@@ -9,7 +9,7 @@
 import type { JsonValue } from '@xihan-ui/core/json'
 import type { PropertyControl, PropertyDescriptor, PropertyEditorContext, PropertyOption } from '@xihan-ui/designer-kit/properties'
 import { jsonEquals } from '@xihan-ui/core/json'
-import { h } from '../internal/dom'
+import { createAuthoredElement } from '@xihan-ui/web-components/authoring'
 
 /** 内建编辑器在通用上下文之外拿到的东西。 */
 export interface FieldContext extends PropertyEditorContext<PropertyDescriptor<{ readonly kind: string }>, unknown> {
@@ -82,9 +82,9 @@ function placeholder(field: HTMLElement, context: FieldContext, own: string | un
 function textEditor(initial: FieldContext): FieldInstance {
   const doc = initial.ownerDocument
   const control = controlOf<'text'>(initial)
-  const input = h(doc, control.multiline ? 'textarea' : 'input', { 'data-xh-part': 'input' })
-  const field: ControlElement = h(doc, 'xh-text-field', { 'data-xh-part': 'control', 'size': 'sm' }, [
-    h(doc, 'div', { 'data-xh-part': 'root' }, [h(doc, 'div', { 'data-xh-part': 'control' }, [input])]),
+  const input = createAuthoredElement(doc, control.multiline ? 'textarea' : 'input', { 'data-xh-part': 'input' })
+  const field: ControlElement = createAuthoredElement(doc, 'xh-text-field', { 'data-xh-part': 'control', 'size': 'sm' }, [
+    createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'control' }, [input])]),
   ])
   if (control.multiline)
     field.autoSize = { minRows: 2, maxRows: 6 }
@@ -110,18 +110,18 @@ function textEditor(initial: FieldContext): FieldInstance {
 function numberEditor(initial: FieldContext): FieldInstance {
   const doc = initial.ownerDocument
   const control = controlOf<'number'>(initial)
-  const parts: HTMLElement[] = [h(doc, 'button', { 'data-xh-part': 'decrement-trigger', 'type': 'button' }), h(doc, 'input', { 'data-xh-part': 'input' })]
-  const suffix = control.unit === undefined ? undefined : h(doc, 'span', { 'data-xh-part': 'suffix' })
+  const parts: HTMLElement[] = [createAuthoredElement(doc, 'button', { 'data-xh-part': 'decrement-trigger', 'type': 'button' }), createAuthoredElement(doc, 'input', { 'data-xh-part': 'input' })]
+  const suffix = control.unit === undefined ? undefined : createAuthoredElement(doc, 'span', { 'data-xh-part': 'suffix' })
   if (suffix)
     parts.push(suffix)
-  parts.push(h(doc, 'button', { 'data-xh-part': 'increment-trigger', 'type': 'button' }))
-  const field: ControlElement = h(doc, 'xh-number-field', {
+  parts.push(createAuthoredElement(doc, 'button', { 'data-xh-part': 'increment-trigger', 'type': 'button' }))
+  const field: ControlElement = createAuthoredElement(doc, 'xh-number-field', {
     'data-xh-part': 'control',
     'size': 'sm',
     'min': control.min,
     'max': control.max,
     'step': control.step ?? (control.integer ? 1 : undefined),
-  }, [h(doc, 'div', { 'data-xh-part': 'root' }, [h(doc, 'div', { 'data-xh-part': 'control' }, parts)])])
+  }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'control' }, parts)])])
   let context = initial
   field.addEventListener('value-change', (event) => {
     event.stopPropagation()
@@ -150,8 +150,8 @@ function numberEditor(initial: FieldContext): FieldInstance {
 
 function booleanEditor(initial: FieldContext): FieldInstance {
   const doc = initial.ownerDocument
-  const field: ControlElement = h(doc, 'xh-switch', { 'data-xh-part': 'control', 'size': 'sm' }, [
-    h(doc, 'button', { 'data-xh-part': 'root', 'type': 'button' }, [h(doc, 'span', { 'data-xh-part': 'thumb' })]),
+  const field: ControlElement = createAuthoredElement(doc, 'xh-switch', { 'data-xh-part': 'control', 'size': 'sm' }, [
+    createAuthoredElement(doc, 'button', { 'data-xh-part': 'root', 'type': 'button' }, [createAuthoredElement(doc, 'span', { 'data-xh-part': 'thumb' })]),
   ])
   let context = initial
   field.addEventListener('checked-change', (event) => {
@@ -177,21 +177,21 @@ function selectEditor(initial: FieldContext): FieldInstance {
     return toggleEditor(initial)
   const doc = initial.ownerDocument
   const options: readonly PropertyOption[] = control.options
-  const box: HTMLElement[] = [h(doc, 'button', { 'data-xh-part': 'trigger', 'type': 'button' }, [
-    h(doc, 'span', { 'data-xh-part': 'value-text' }),
-    h(doc, 'span', { 'data-xh-part': 'indicator' }),
+  const box: HTMLElement[] = [createAuthoredElement(doc, 'button', { 'data-xh-part': 'trigger', 'type': 'button' }, [
+    createAuthoredElement(doc, 'span', { 'data-xh-part': 'value-text' }),
+    createAuthoredElement(doc, 'span', { 'data-xh-part': 'indicator' }),
   ])]
   if (!initial.descriptor.required)
-    box.push(h(doc, 'button', { 'data-xh-part': 'clear-trigger', 'type': 'button' }))
-  const texts = options.map(() => h(doc, 'span', { 'data-xh-part': 'item-text' }))
-  const items = options.map((_, index) => h(doc, 'div', { 'data-xh-part': 'item', 'value': String(index) }, [
+    box.push(createAuthoredElement(doc, 'button', { 'data-xh-part': 'clear-trigger', 'type': 'button' }))
+  const texts = options.map(() => createAuthoredElement(doc, 'span', { 'data-xh-part': 'item-text' }))
+  const items = options.map((_, index) => createAuthoredElement(doc, 'div', { 'data-xh-part': 'item', 'value': String(index) }, [
     texts[index]!,
-    h(doc, 'span', { 'data-xh-part': 'item-indicator' }),
+    createAuthoredElement(doc, 'span', { 'data-xh-part': 'item-indicator' }),
   ]))
-  const field: ControlElement = h(doc, 'xh-select', { 'data-xh-part': 'control', 'size': 'sm', 'multiple': control.multiple === true }, [
-    h(doc, 'div', { 'data-xh-part': 'root' }, [
-      h(doc, 'div', { 'data-xh-part': 'control' }, box),
-      h(doc, 'div', { 'data-xh-part': 'positioner' }, [h(doc, 'div', { 'data-xh-part': 'content' }, [h(doc, 'div', { 'data-xh-part': 'list' }, items)])]),
+  const field: ControlElement = createAuthoredElement(doc, 'xh-select', { 'data-xh-part': 'control', 'size': 'sm', 'multiple': control.multiple === true }, [
+    createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [
+      createAuthoredElement(doc, 'div', { 'data-xh-part': 'control' }, box),
+      createAuthoredElement(doc, 'div', { 'data-xh-part': 'positioner' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'content' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'list' }, items)])]),
     ]),
   ])
   const keysOf = (value: JsonValue | undefined): string[] => {
@@ -230,9 +230,9 @@ function selectEditor(initial: FieldContext): FieldInstance {
 function toggleEditor(initial: FieldContext): FieldInstance {
   const doc = initial.ownerDocument
   const options: readonly PropertyOption[] = controlOf<'select'>(initial).options
-  const items = options.map((_, index) => h(doc, 'button', { 'data-xh-part': 'item', 'type': 'button', 'value': String(index) }))
-  const field: ControlElement = h(doc, 'xh-toggle-group', { 'data-xh-part': 'control', 'size': 'sm' }, [
-    h(doc, 'div', { 'data-xh-part': 'root' }, items),
+  const items = options.map((_, index) => createAuthoredElement(doc, 'button', { 'data-xh-part': 'item', 'type': 'button', 'value': String(index) }))
+  const field: ControlElement = createAuthoredElement(doc, 'xh-toggle-group', { 'data-xh-part': 'control', 'size': 'sm' }, [
+    createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, items),
   ])
   let context = initial
   field.addEventListener('value-change', (event) => {
@@ -261,9 +261,9 @@ function toggleEditor(initial: FieldContext): FieldInstance {
 
 function tagsEditor(initial: FieldContext): FieldInstance {
   const doc = initial.ownerDocument
-  const input = h(doc, 'input', { 'data-xh-part': 'input' })
-  const box = h(doc, 'div', { 'data-xh-part': 'control' }, [input])
-  const field: ControlElement = h(doc, 'xh-tags-input', { 'data-xh-part': 'control', 'size': 'sm' }, [h(doc, 'div', { 'data-xh-part': 'root' }, [box])])
+  const input = createAuthoredElement(doc, 'input', { 'data-xh-part': 'input' })
+  const box = createAuthoredElement(doc, 'div', { 'data-xh-part': 'control' }, [input])
+  const field: ControlElement = createAuthoredElement(doc, 'xh-tags-input', { 'data-xh-part': 'control', 'size': 'sm' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [box])])
   const render = (tags: readonly string[]): void => {
     const alive = new Map<string, Element>()
     for (const item of Array.from(box.querySelectorAll('[data-xh-part="item"]')))
@@ -275,10 +275,10 @@ function tagsEditor(initial: FieldContext): FieldInstance {
     for (const tag of tags) {
       if (alive.has(tag))
         continue
-      box.insertBefore(h(doc, 'div', { 'data-xh-part': 'item', 'value': tag }, [
-        h(doc, 'div', { 'data-xh-part': 'item-preview' }, [
-          h(doc, 'span', { 'data-xh-part': 'item-text' }, [tag]),
-          h(doc, 'button', { 'data-xh-part': 'item-delete-trigger', 'type': 'button' }),
+      box.insertBefore(createAuthoredElement(doc, 'div', { 'data-xh-part': 'item', 'value': tag }, [
+        createAuthoredElement(doc, 'div', { 'data-xh-part': 'item-preview' }, [
+          createAuthoredElement(doc, 'span', { 'data-xh-part': 'item-text' }, [tag]),
+          createAuthoredElement(doc, 'button', { 'data-xh-part': 'item-delete-trigger', 'type': 'button' }),
         ]),
       ]), input)
     }
@@ -310,11 +310,11 @@ function tagsEditor(initial: FieldContext): FieldInstance {
 
 function colorEditor(initial: FieldContext): FieldInstance {
   const doc = initial.ownerDocument
-  const box: HTMLElement[] = [h(doc, 'span', { 'data-xh-part': 'swatch' }), h(doc, 'input', { 'data-xh-part': 'input' })]
+  const box: HTMLElement[] = [createAuthoredElement(doc, 'span', { 'data-xh-part': 'swatch' }), createAuthoredElement(doc, 'input', { 'data-xh-part': 'input' })]
   if (!initial.descriptor.required)
-    box.push(h(doc, 'button', { 'data-xh-part': 'clear-trigger', 'type': 'button' }))
-  const field: ControlElement = h(doc, 'xh-color-field', { 'data-xh-part': 'control', 'size': 'sm' }, [
-    h(doc, 'div', { 'data-xh-part': 'root' }, [h(doc, 'div', { 'data-xh-part': 'control' }, box)]),
+    box.push(createAuthoredElement(doc, 'button', { 'data-xh-part': 'clear-trigger', 'type': 'button' }))
+  const field: ControlElement = createAuthoredElement(doc, 'xh-color-field', { 'data-xh-part': 'control', 'size': 'sm' }, [
+    createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'control' }, box)]),
   ])
   let context = initial
   field.addEventListener('value-change', (event) => {
@@ -337,8 +337,8 @@ function colorEditor(initial: FieldContext): FieldInstance {
 
 function jsonEditor(initial: FieldContext): FieldInstance {
   const doc = initial.ownerDocument
-  const field: ControlElement = h(doc, 'xh-text-field', { 'data-xh-part': 'control', 'size': 'sm', 'data-json': '' }, [
-    h(doc, 'div', { 'data-xh-part': 'root' }, [h(doc, 'div', { 'data-xh-part': 'control' }, [h(doc, 'textarea', { 'data-xh-part': 'input', 'spellcheck': 'false' })])]),
+  const field: ControlElement = createAuthoredElement(doc, 'xh-text-field', { 'data-xh-part': 'control', 'size': 'sm', 'data-json': '' }, [
+    createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'control' }, [createAuthoredElement(doc, 'textarea', { 'data-xh-part': 'input', 'spellcheck': 'false' })])]),
   ])
   field.autoSize = { minRows: 3, maxRows: 10 }
   const format = (value: JsonValue | undefined): string => value === undefined ? '' : JSON.stringify(value, null, 2)

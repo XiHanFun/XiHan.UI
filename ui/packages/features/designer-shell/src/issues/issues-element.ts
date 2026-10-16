@@ -11,8 +11,7 @@ import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { DesignerIssuesTranslations } from '../translations'
 import { createCounterIdGenerator } from '@xihan-ui/core'
 import { issueSeverity } from '@xihan-ui/designer-kit/schema'
-import { emitEvent, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
-import { h, setText } from '../internal/dom'
+import { createAuthoredElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { defineIssueListElements } from '../internal/ui-elements'
 
 /** 列表里的一条：问题本身与设计器换好的文字。 */
@@ -119,13 +118,13 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
     if (this.#parts?.header.isConnected && this.#parts.header.parentElement === this)
       return this.#parts
     const doc = this.ownerDocument
-    const title = h(doc, 'span', { 'data-part': 'title', 'id': this.#ids.scopeId() })
-    const errorCount = h(doc, 'span', {})
-    const warningCount = h(doc, 'span', {})
-    const filter: Parts['filter'] = h(doc, 'xh-toggle-group', { 'multiple': true, 'size': 'sm', 'data-part': 'filter' }, [
-      h(doc, 'div', { 'data-xh-part': 'root' }, [
-        h(doc, 'button', { 'data-xh-part': 'item', 'type': 'button', 'value': 'error', 'data-severity': 'error' }, [errorCount]),
-        h(doc, 'button', { 'data-xh-part': 'item', 'type': 'button', 'value': 'warning', 'data-severity': 'warning' }, [warningCount]),
+    const title = createAuthoredElement(doc, 'span', { 'data-part': 'title', 'id': this.#ids.scopeId() })
+    const errorCount = createAuthoredElement(doc, 'span', {})
+    const warningCount = createAuthoredElement(doc, 'span', {})
+    const filter: Parts['filter'] = createAuthoredElement(doc, 'xh-toggle-group', { 'multiple': true, 'size': 'sm', 'data-part': 'filter' }, [
+      createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [
+        createAuthoredElement(doc, 'button', { 'data-xh-part': 'item', 'type': 'button', 'value': 'error', 'data-severity': 'error' }, [errorCount]),
+        createAuthoredElement(doc, 'button', { 'data-xh-part': 'item', 'type': 'button', 'value': 'warning', 'data-severity': 'warning' }, [warningCount]),
       ]),
     ])
     filter.addEventListener('value-change', (event) => {
@@ -135,9 +134,9 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
       this.#shown = new Set(next.filter((severity): severity is IssueSeverity => severity === 'error' || severity === 'warning'))
       this.requestUpdate()
     })
-    const header = h(doc, 'div', { 'data-part': 'header' }, [title, filter])
-    const list = h(doc, 'ul', { 'data-part': 'list', 'role': 'list', 'aria-labelledby': title.id })
-    const empty = h(doc, 'p', { 'data-part': 'empty' })
+    const header = createAuthoredElement(doc, 'div', { 'data-part': 'header' }, [title, filter])
+    const list = createAuthoredElement(doc, 'ul', { 'data-part': 'list', 'role': 'list', 'aria-labelledby': title.id })
+    const empty = createAuthoredElement(doc, 'p', { 'data-part': 'empty' })
     list.addEventListener('click', this.#onClick)
     list.addEventListener('keydown', this.#onKeyDown)
     list.addEventListener('mouseover', this.#onHover)
@@ -160,23 +159,23 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
     parts.list.replaceChildren(...ordered.map(({ item, index }) => {
       const severity = issueSeverity(item.issue)
       const children: (Node | string)[] = [
-        h(doc, 'span', { 'data-part': 'issue-severity' }, [severity === 'error' ? t.severityError : t.severityWarning]),
+        createAuthoredElement(doc, 'span', { 'data-part': 'issue-severity' }, [severity === 'error' ? t.severityError : t.severityWarning]),
       ]
       if (item.subject !== undefined)
-        children.push(h(doc, 'span', { 'data-part': 'issue-subject' }, [item.subject]))
-      children.push(h(doc, 'span', { 'data-part': 'issue-message' }, [item.message]))
+        children.push(createAuthoredElement(doc, 'span', { 'data-part': 'issue-subject' }, [item.subject]))
+      children.push(createAuthoredElement(doc, 'span', { 'data-part': 'issue-message' }, [item.message]))
       if (item.source !== undefined) {
-        children.push(h(doc, 'xh-tag', { 'size': 'sm', 'variant': 'subtle', 'data-part': 'issue-source' }, [
-          h(doc, 'span', { 'data-xh-part': 'root' }, [h(doc, 'span', { 'data-xh-part': 'label' }, [item.source])]),
+        children.push(createAuthoredElement(doc, 'xh-tag', { 'size': 'sm', 'variant': 'subtle', 'data-part': 'issue-source' }, [
+          createAuthoredElement(doc, 'span', { 'data-xh-part': 'root' }, [createAuthoredElement(doc, 'span', { 'data-xh-part': 'label' }, [item.source])]),
         ]))
       }
       const activatable = item.issue.target !== undefined
       const body = activatable
-        ? h(doc, 'button', { 'data-part': 'issue', 'data-severity': severity, 'data-index': index, 'type': 'button', 'tabindex': first ? 0 : -1 }, children)
-        : h(doc, 'div', { 'data-part': 'issue', 'data-severity': severity, 'data-index': index }, children)
+        ? createAuthoredElement(doc, 'button', { 'data-part': 'issue', 'data-severity': severity, 'data-index': index, 'type': 'button', 'tabindex': first ? 0 : -1 }, children)
+        : createAuthoredElement(doc, 'div', { 'data-part': 'issue', 'data-severity': severity, 'data-index': index }, children)
       if (activatable)
         first = false
-      return h(doc, 'li', {}, [body])
+      return createAuthoredElement(doc, 'li', {}, [body])
     }))
     if (focused !== undefined)
       this.#focusIndex(focused)
