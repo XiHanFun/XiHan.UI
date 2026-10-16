@@ -39,7 +39,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { calendarPickerAnatomy, calendarPickerMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldProps, datePickerMachine, datePickerMeta, resolveDatePickerPanelIndex, resolveFormControlState, tagAnatomy } from '@xihan-ui/headless'
+import { calendarPickerAnatomy, calendarPickerMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldProps, datePickerMachine, datePickerMeta, resolveDatePickerPanelIndex, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { HOUR_CYCLE_CONVERTER } from '../dom/hour-cycle'
 import { wcNormalize } from '../dom/normalize'
@@ -201,7 +201,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
   static override partContract = {
     anatomy: datePickerAnatomy,
     meta: datePickerMeta,
-    delegates: [dateFieldAnatomy, calendarPickerAnatomy, { name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }],
+    delegates: [dateFieldAnatomy, calendarPickerAnatomy, { name: 'tag', parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }],
   }
 
   static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const

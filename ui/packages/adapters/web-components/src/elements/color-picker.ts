@@ -44,7 +44,6 @@ import {
   connectColorPicker,
   resolveFormControlState,
   sliderMachine,
-  tagAnatomy,
 } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
@@ -148,7 +147,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
     anatomy: colorPickerAnatomy,
     meta: colorPickerMeta,
     // tag / overflow-tag 接的是 tag 的 root，tag-label 接的是 tag 的 label，item-delete-trigger 接的是 tag 的 close-trigger
-    delegates: [colorSliderAnatomy, colorSwatchPickerAnatomy, { name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }],
+    delegates: [colorSliderAnatomy, colorSwatchPickerAnatomy, { name: 'tag', parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }],
   }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。

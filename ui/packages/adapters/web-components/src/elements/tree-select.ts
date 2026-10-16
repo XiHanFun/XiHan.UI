@@ -24,7 +24,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTreeSelect, resolveFormControlState, tagAnatomy, treeSelectAnatomy, treeSelectMachine, treeSelectMeta } from '@xihan-ui/headless'
+import { connectTreeSelect, resolveFormControlState, treeSelectAnatomy, treeSelectMachine, treeSelectMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
@@ -135,7 +135,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   static override partContract = {
     anatomy: treeSelectAnatomy,
     meta: treeSelectMeta,
-    delegates: [{ name: tagAnatomy.name, parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }],
+    delegates: [{ name: 'tag', parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }],
   }
 
   static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const

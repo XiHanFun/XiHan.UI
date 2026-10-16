@@ -22,7 +22,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { comboboxAnatomy, comboboxMachine, comboboxMeta, connectCombobox, resolveFormControlState, tagAnatomy } from '@xihan-ui/headless'
+import { comboboxAnatomy, comboboxMachine, comboboxMeta, connectCombobox, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -117,7 +117,7 @@ export class XhComboboxElement extends XhPortalHostElement {
   static override partContract = {
     anatomy: comboboxAnatomy,
     meta: comboboxMeta,
-    delegates: [{ name: tagAnatomy.name, parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }],
+    delegates: [{ name: 'tag', parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }],
   }
 
   static override fieldTarget = { parts: ['input'], kind: 'state' } as const
