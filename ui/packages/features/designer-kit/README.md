@@ -49,7 +49,7 @@ const snap = snapRect({ x: 103, y: 40, width: 120, height: 48 }, {
 - 子入口 `@xihan-ui/designer-kit/properties`：属性描述 `PropertyDescriptor`（按 `JsonPath` 相对被编辑对象寻址，内建 text / number / boolean / select / tags / color / json 七种编辑方式，可用泛型扩展产品的种类）、显示条件、`groupProperties`、`checkPropertyValue` / `checkProperties`、`applyDefaults`、`resolvePropertyEditor`，以及自定义编辑器接口 `PropertyEditor`（只是类型）。
 - 子入口 `@xihan-ui/designer-kit/schema`：结构问题 `SchemaIssue`（`code`、从文档根算起的 `path`、可选的 `target` / `severity` / `params`，不带文案）、通用问题码、`withSeverity` / `hasErrors`、`createIssueSink`，以及 `readObject` / `readArray` / `readString` / `readNumber` / `readBoolean` / `readOneOf` / `readJson` / `checkUniqueKeys` 读取器。
 - 视口：屏幕坐标 = 世界坐标 × `zoom` + (`x`, `y`)。`zoomTo` / `zoomBy` 以锚点为中心缩放并夹在 `ZoomLimits` 内（缺省 0.1–4）；`fitRect` 适配内容（缺省不把小内容放大到 100% 以上）；`revealRect` 只在目标没整个露出时才居中；`constrainViewport` 不让内容整个拖出视野；`wheelZoomFactor` 把滚轮滚动量换成缩放倍数。
-- 吸附：`snapRect` 比对移动矩形与目标的左 / 中 / 右、上 / 中 / 下三条线，在阈值内取最近的一条，返回位移与吸附后重合的参考线；某一向没吸到目标时可退到网格。阈值与矩形同一坐标系。
+- 吸附：`snapRect` 比对移动矩形与目标的左 / 中 / 右、上 / 中 / 下三条线，在阈值内取最近的一条，返回位移与吸附后重合的参考线；`lines` 另给贯穿画布的吸附线（如标尺拖出的参考线）；某一向没吸到目标时可退到网格。阈值与矩形同一坐标系。
 - `alignRects` 按选区包围盒贴边或居中，`distributeRects` 沿一个方向等空隙（缺省）或等中心距分布，首尾不动；两者按输入顺序返回新的左上角。
 - `selectInMarquee` 按完整包住（`contain`）或碰到即选（`intersect`）挑出框里的矩形下标；`marqueeModeFromDrag` 按拖拽方向取方式。矩形可带 `rotation`（绕中心顺时针的角度），合并、包含、相交、对齐、分布、吸附与视口适配都按旋转后的包围盒计算，`hitTest`、`rotatedRectIntersects` 与框选的 `intersect` 按实际形状判断；`hitTest` 返回命中的最上层下标。
 - 变换控制柄：`handlePoints` 给出八个缩放柄与旋转柄的位置，`resizeWithHandle` 在矩形自身坐标系里缩放（等比、以中心、最小尺寸），`rotateWithHandle` 按指针算角度并可按步长吸附，`nudgeDelta` 把方向键换成位移（步长 1，大步长 10）。
