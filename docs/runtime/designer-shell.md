@@ -121,3 +121,54 @@ map.addEventListener("navigate", event => setViewport(centerOn(viewport, event.d
 - 比例把内容与视口范围一并装下；拖动期间比例与位置保持不变，松手后重新适配。
 - 没有图形时收起（`data-empty`），整块 `aria-hidden`，不进 Tab 顺序。
 - 零件只画自身的框，摆在画布的哪个角由设计器决定。
+
+## 物料面板与拖放
+
+`<xh-designer-palette>` 按分组列出物料。点击、回车、空格或触屏轻点派发 `item-activate`，设计器一般把物料加到视口中央；按下拖动（触屏长按）经下面的通用拖放拖向画布。
+
+```ts
+const palette = document.createElement("xh-designer-palette");
+palette.groups = [{ id: "human", label: "人工处理", items: [{ id: "approve", label: "审批", payload: { type: "approve" } }] }];
+palette.addEventListener("item-activate", event => addAtCenter(event.detail.payload));
+```
+
+| 属性 | 说明 |
+| --- | --- |
+| `groups` | `{ id, label, items }[]`，物料为 `{ id, label, icon?, description?, disabled?, payload? }`；`icon` 是图标记录，`description` 显示在名称下方 |
+| `searchable` | 显示搜索框，按名称过滤 |
+| `collapsible` | 分组可折叠，折叠状态按分组 id 保留；搜索时匹配的分组一律展开 |
+| `readonly` | 物料只能浏览，不派发 `item-activate`、不能拖出 |
+
+| 事件 | detail |
+| --- | --- |
+| `item-activate` | `{ id, payload }` |
+
+- 方向键、Home、End 在物料间移动焦点，禁用的物料也能停留，读屏照样念出。
+- 从物料拖出时的载荷是 `{ source: "palette", id, payload }`。
+
+### 通用拖放
+
+物料面板之外的拖动源（如字段树）也用这两个函数。坐标一律是浏览器视口坐标，设计器自己换算成世界坐标。
+
+```ts
+import { registerDropTarget, startDrag } from "@xihan-ui/designer-shell";
+
+const unregister = registerDropTarget(canvas, {
+  over: (point, payload) => ({ accept: payload.source === "palette", ghost: "hide" }),
+  drop: (point, payload) => addAt(clientToWorld(point), payload.payload),
+  leave: () => clearDropPreview(),
+});
+canvas.addEventListener("pan-request", event => setViewport(panBy(viewport, -event.detail.dx, -event.detail.dy)));
+
+field.addEventListener("pointerdown", event => startDrag(event, { payload: { source: "field", path } }));
+```
+
+| 函数 | 说明 |
+| --- | --- |
+| `startDrag(event, { payload, source?, preview?, onEnd? })` | 从一次指针按下开始拖动，返回 `{ active, cancel }`。`preview` 缺省为拖动源的缩小副本，按下处保持在指针下；给 `null` 不显示。`onEnd` 收到 `{ dragged, dropped }`，拖过之后可借它吞掉随后的点击 |
+| `registerDropTarget(element, { over, drop, leave? })` | 把元素登记为放置目标，返回取消登记的函数。`over(point, payload)` 答复 `{ accept, ghost? }`，`ghost` 为 `hide` 时藏起预览、由目标自己画落点；`leave` 在指针离开、取消或在不接受处松手时调用 |
+
+- 鼠标与笔移动过激活距离才开始拖；触屏长按开始拖，长按前先移动即视为滚动，开始拖之后不再滚动页面。
+- 命中取指针下最内层的放置目标，预览不挡命中。
+- 贴着接受的目标边缘时逐帧在目标上派发 `pan-request` `{ dx, dy }`：视口要朝哪个方向看过去多少屏幕像素，贴右边缘时 `dx` 为正。
+- Esc、指针离开窗口、在不接受处松手即取消。
