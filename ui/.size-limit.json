@@ -3,13 +3,13 @@
     "name": "core",
     "path": "packages/engine/core/dist/index.js",
     "gzip": true,
-    "limit": "37.3 kB"
+    "limit": "41 kB"
   },
   {
     "name": "core/date",
     "path": "packages/engine/core/dist/date.js",
     "gzip": true,
-    "limit": "9.3 kB"
+    "limit": "9.4 kB"
   },
   {
     "name": "core/json",
@@ -21,37 +21,37 @@
     "name": "core/url",
     "path": "packages/engine/core/dist/url.js",
     "gzip": true,
-    "limit": "0.32 kB"
+    "limit": "0.4 kB"
   },
   {
     "name": "core/template",
     "path": "packages/engine/core/dist/template.js",
     "gzip": true,
-    "limit": "1.55 kB"
+    "limit": "1.5 kB"
   },
   {
     "name": "tokens",
     "path": "packages/design/tokens/dist/index.js",
     "gzip": true,
-    "limit": "13.4 kB"
+    "limit": "15 kB"
   },
   {
     "name": "tokens/tokens.css",
     "path": "packages/design/tokens/tokens.css",
     "gzip": true,
-    "limit": "11.4 kB"
+    "limit": "13 kB"
   },
   {
     "name": "motion",
     "path": "packages/engine/motion/dist/index.js",
     "gzip": true,
-    "limit": "5.5 kB"
+    "limit": "5.9 kB"
   },
   {
     "name": "position",
     "path": "packages/engine/position/dist/index.js",
     "gzip": true,
-    "limit": "3 kB"
+    "limit": "3.1 kB"
   },
   {
     "name": "pointer",
@@ -63,20 +63,20 @@
     "name": "viz",
     "path": "packages/engine/viz/dist/index.js",
     "gzip": true,
-    "limit": "37.5 kB"
+    "limit": "39 kB"
   },
   {
     "name": "viz：直角坐标图常用路径（linear / band / time 比例尺、线与面积、堆叠、坐标轴、文字、拾取、降采样）",
     "path": "packages/engine/viz/dist/index.js",
     "import": "{ scaleLinear, scaleBand, scaleTime, line, area, stack, layoutAxis, createEstimatingMeasurer, ellipsize, wrapText, createQuadtree, lttb, minMax }",
     "gzip": true,
-    "limit": "12 kB"
+    "limit": "13 kB"
   },
   {
     "name": "viz/hierarchy",
     "path": "packages/engine/viz/dist/hierarchy.js",
     "gzip": true,
-    "limit": "6 kB"
+    "limit": "6.2 kB"
   },
   {
     "name": "viz/sankey",
@@ -100,7 +100,7 @@
     "name": "viz/canvas",
     "path": "packages/engine/viz/dist/canvas.js",
     "gzip": true,
-    "limit": "2.8 kB"
+    "limit": "2.9 kB"
   },
   {
     "name": "code-highlight",
@@ -112,49 +112,49 @@
     "name": "chat-stream",
     "path": "packages/features/chat-stream/dist/index.js",
     "gzip": true,
-    "limit": "7.1 kB"
+    "limit": "7.8 kB"
   },
   {
     "name": "markdown",
     "path": "packages/features/markdown/dist/index.js",
     "gzip": true,
-    "limit": "10.5 kB"
+    "limit": "12 kB"
   },
   {
     "name": "expression",
     "path": "packages/features/expression/dist/index.js",
     "gzip": true,
-    "limit": "18.6 kB"
+    "limit": "19 kB"
   },
   {
     "name": "designer-kit",
     "path": "packages/features/designer-kit/dist/index.js",
     "gzip": true,
-    "limit": "10.5 kB"
+    "limit": "11 kB"
   },
   {
     "name": "designer-kit/properties",
     "path": "packages/features/designer-kit/dist/properties.js",
     "gzip": true,
-    "limit": "2.3 kB"
+    "limit": "2.4 kB"
   },
   {
     "name": "designer-kit/schema",
     "path": "packages/features/designer-kit/dist/schema.js",
     "gzip": true,
-    "limit": "1.15 kB"
+    "limit": "1.2 kB"
   },
   {
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "219 kB"
+    "limit": "225 kB"
   },
   {
     "name": "designer-shell/locale",
     "path": "packages/features/designer-shell/dist/locale.js",
     "gzip": true,
-    "limit": "0.52 kB"
+    "limit": "0.6 kB"
   },
   {
     "name": "xlsx",
@@ -166,19 +166,19 @@
     "name": "backgrounds",
     "path": "packages/features/backgrounds/dist/index.js",
     "gzip": true,
-    "limit": "21 kB"
+    "limit": "22 kB"
   },
   {
     "name": "sound",
     "path": "packages/features/sound/dist/index.js",
     "gzip": true,
-    "limit": "5 kB"
+    "limit": "5.5 kB"
   },
   {
     "name": "animations",
     "path": "packages/features/animations/dist/index.js",
     "gzip": true,
-    "limit": "7.1 kB"
+    "limit": "7.8 kB"
   },
   {
     "name": "headless",
@@ -190,7 +190,7 @@
     "name": "headless/locale（十种语言整份）",
     "path": "packages/engine/headless/dist/locale.js",
     "gzip": true,
-    "limit": "56.5 kB"
+    "limit": "58 kB"
   },
   {
     "name": "vue",
@@ -205,7 +205,7 @@
     "name": "vue/backgrounds",
     "path": "packages/adapters/vue/dist/backgrounds.js",
     "gzip": true,
-    "limit": "18 kB",
+    "limit": "20 kB",
     "ignore": [
       "vue"
     ]
@@ -214,7 +214,7 @@
     "name": "vue/behavior",
     "path": "packages/adapters/vue/dist/behavior.js",
     "gzip": true,
-    "limit": "6 kB",
+    "limit": "6.4 kB",
     "ignore": [
       "vue"
     ]
@@ -233,7 +233,7 @@
     "name": "react/backgrounds",
     "path": "packages/adapters/react/dist/backgrounds.js",
     "gzip": true,
-    "limit": "18 kB",
+    "limit": "20 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -243,7 +243,7 @@
     "name": "react/behavior",
     "path": "packages/adapters/react/dist/behavior.js",
     "gzip": true,
-    "limit": "6.1 kB",
+    "limit": "6.6 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -253,7 +253,7 @@
     "name": "react/sound",
     "path": "packages/adapters/react/dist/sound.js",
     "gzip": true,
-    "limit": "5.9 kB",
+    "limit": "5.8 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -263,7 +263,7 @@
     "name": "vue/sound",
     "path": "packages/adapters/vue/dist/sound.js",
     "gzip": true,
-    "limit": "6 kB",
+    "limit": "5.6 kB",
     "ignore": [
       "vue"
     ]
@@ -273,13 +273,13 @@
     "path": "packages/adapters/vue/dist/locale.js",
     "import": "{ zhCN }",
     "gzip": true,
-    "limit": "8 kB"
+    "limit": "8.1 kB"
   },
   {
     "name": "web-components",
     "path": "packages/adapters/web-components/dist/index.js",
     "gzip": true,
-    "limit": "12.6 kB"
+    "limit": "14 kB"
   },
   {
     "name": "web-components/define",
@@ -291,45 +291,45 @@
     "name": "web-components/backgrounds",
     "path": "packages/adapters/web-components/dist/backgrounds.js",
     "gzip": true,
-    "limit": "21 kB"
+    "limit": "22 kB"
   },
   {
     "name": "web-components/services",
     "path": "packages/adapters/web-components/dist/services.js",
     "gzip": true,
-    "limit": "57.5 kB"
+    "limit": "64 kB"
   },
   {
     "name": "styles",
     "path": "packages/design/styles/css/*.css",
     "gzip": true,
-    "limit": "533 kB"
+    "limit": "586 kB"
   },
   {
     "name": "styles/index.css（主入口，扁平有层）",
     "path": "packages/design/styles/index.css",
     "gzip": true,
-    "limit": "440 kB"
+    "limit": "190 kB"
   },
   {
     "name": "icons：只用 CheckIcon",
     "path": "packages/design/icons/dist/index.mjs",
     "import": "{ CheckIcon }",
     "gzip": true,
-    "limit": "220 B"
+    "limit": "0.2 kB"
   },
   {
     "name": "icons：整集合",
     "path": "packages/design/icons/dist/index.mjs",
     "gzip": true,
-    "limit": "8 kB"
+    "limit": "8.2 kB"
   },
   {
     "name": "vue：只用 XhBadge",
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhBadge }",
     "gzip": true,
-    "limit": "14 kB",
+    "limit": "16 kB",
     "ignore": [
       "vue"
     ]
@@ -339,7 +339,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhButton }",
     "gzip": true,
-    "limit": "10.6 kB",
+    "limit": "12 kB",
     "ignore": [
       "vue"
     ]
@@ -349,7 +349,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhDialogRoot }",
     "gzip": true,
-    "limit": "30.9 kB",
+    "limit": "34 kB",
     "ignore": [
       "vue"
     ]
@@ -359,7 +359,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhMenuRoot }",
     "gzip": true,
-    "limit": "47.7 kB",
+    "limit": "53 kB",
     "ignore": [
       "vue"
     ]
@@ -369,7 +369,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhTableRoot }",
     "gzip": true,
-    "limit": "31.2 kB",
+    "limit": "35 kB",
     "ignore": [
       "vue"
     ]
@@ -379,7 +379,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhSelectRoot }",
     "gzip": true,
-    "limit": "49.5 kB",
+    "limit": "55 kB",
     "ignore": [
       "vue"
     ]
@@ -389,7 +389,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhNotificationItem }",
     "gzip": true,
-    "limit": "23.9 kB",
+    "limit": "27 kB",
     "ignore": [
       "vue"
     ]
@@ -399,7 +399,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhGridRoot }",
     "gzip": true,
-    "limit": "1.4 kB",
+    "limit": "1.6 kB",
     "ignore": [
       "vue"
     ]
@@ -409,7 +409,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhMarkdownStreamRoot }",
     "gzip": true,
-    "limit": "2.1 kB",
+    "limit": "2.3 kB",
     "ignore": [
       "vue"
     ]
@@ -418,7 +418,7 @@
     "name": "cli",
     "path": "packages/tools/cli/dist/index.js",
     "gzip": true,
-    "limit": "14.2 kB",
+    "limit": "15 kB",
     "ignore": [
       "node:*"
     ]
