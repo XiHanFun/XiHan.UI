@@ -14,7 +14,7 @@ import type { GraphLegendItem, GraphMarkTag, GraphTooltipRow, GraphView } from '
 import { contains, createPressTracker, dataAttr, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { wheelPixels } from '@xihan-ui/pointer'
 import { createScene, markPath } from '@xihan-ui/viz'
-import { placeChartTooltip } from '../shared/chart'
+import { chartPlotNameAttrs, placeChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { graphChartAnatomy } from './graph-chart.anatomy'
 import {
@@ -307,7 +307,7 @@ export function connectGraphChart<T extends PropTypes>(
       'id': ids.plot,
       'role': 'graphics-document',
       'aria-roledescription': translations.chartRoleDescription,
-      'aria-labelledby': ids.caption,
+      ...chartPlotNameAttrs(context.get('plotName'), ids.caption),
       'aria-describedby': ids.summary,
       // 节点自己占 Tab 位，绘图区不占
       'tabindex': -1,

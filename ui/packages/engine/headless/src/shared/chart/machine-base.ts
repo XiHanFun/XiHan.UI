@@ -64,6 +64,49 @@ export interface ChartBaseContext {
   notified: string | null
   /** 过渡中正在显示的那一帧；null 表示显示目标场景本身。 */
   frame: ChartFrame | null
+  /** 绘图区的名字从哪来；挂载前按有 caption 处理，挂载后按 DOM 现读。 */
+  plotName: ChartPlotName
+}
+
+/**
+ * 绘图区（graphics-document / tree）的名字来源：caption 在场时引用它；
+ * 没有 caption 时沿用作者写在根上的 aria-labelledby 或 aria-label；都没有时不写。
+ */
+export type ChartPlotName
+  = | { readonly from: 'caption' }
+    | { readonly from: 'labelledby', readonly value: string }
+    | { readonly from: 'label', readonly value: string }
+    | { readonly from: 'none' }
+
+function samePlotName(a: ChartPlotName, b: ChartPlotName | undefined): boolean {
+  return b != null && a.from === b.from && (a as { value?: string }).value === (b as { value?: string }).value
+}
+
+/** 按根节点的现状读出绘图区的名字来源：先看根的直接子节点里有没有 caption 部件，再看根上作者写的名字。 */
+export function readChartPlotName(root: Element): ChartPlotName {
+  if (root.querySelector(':scope > [data-part="caption"], :scope > [data-xh-part="caption"]'))
+    return { from: 'caption' }
+  const labelledBy = root.getAttribute('aria-labelledby')?.trim()
+  if (labelledBy)
+    return { from: 'labelledby', value: labelledBy }
+  const label = root.getAttribute('aria-label')?.trim()
+  if (label)
+    return { from: 'label', value: label }
+  return { from: 'none' }
+}
+
+/** 绘图区上的名字属性：引用 caption、照抄根上的名字，或者都不写。 */
+export function chartPlotNameAttrs(name: ChartPlotName, captionId: string): Record<string, string> {
+  switch (name.from) {
+    case 'caption':
+      return { 'aria-labelledby': captionId }
+    case 'labelledby':
+      return { 'aria-labelledby': name.value }
+    case 'label':
+      return { 'aria-label': name.value }
+    default:
+      return {}
+  }
 }
 
 export interface ChartBaseRefs {
@@ -108,6 +151,8 @@ export type ChartBaseEvent
     | { type: 'LEGEND.PRESS', id: string | null }
     /** 过渡的逐帧推进。 */
     | { type: 'SCENE.FRAME' }
+    /** 绘图区的名字来源变了：caption 进出、根上的 aria-label / aria-labelledby 改动。 */
+    | { type: 'NAME', name: ChartPlotName }
 
 export type ChartBaseAction
   = | 'setSize'
@@ -128,6 +173,7 @@ export type ChartBaseAction
     | 'focusLegendItem'
     | 'syncTransition'
     | 'advanceTransition'
+    | 'setPlotName'
 
 /**
  * 各图表机器的公共 schema 下界：只钉住 props / context / refs 三片的最小形状，
@@ -240,6 +286,7 @@ export function chartBaseContext<S extends ChartBaseSchema>(
     })),
     notified: cell<string | null>(() => ({ defaultValue: null })),
     frame: cell<ChartFrame | null>(() => ({ defaultValue: null })),
+    plotName: cell<ChartPlotName>(() => ({ defaultValue: { from: 'caption' }, isEqual: samePlotName })),
   }
 }
 
@@ -319,6 +366,12 @@ export function chartBaseActions<S extends ChartBaseSchema>(options: {
       const e = event.current() as ChartBaseEvent
       if (e.type === 'METRICS')
         context.set('metrics', e.metrics)
+    },
+
+    setPlotName: ({ context, event }) => {
+      const e = event.current() as ChartBaseEvent
+      if (e.type === 'NAME')
+        context.set('plotName', e.name)
     },
 
     bumpMeasurer: ({ context }) => context.set('measurerVersion', v => v + 1),
@@ -536,6 +589,15 @@ export function trackChartViewport<S extends ChartViewportSchema>(options: { rea
       for (let el: Element | null = root; el; el = el.parentElement)
         density?.observe(el, { attributes: true, attributeFilter: ['data-density'] })
 
+      // 绘图区的名字跟着 caption 进出、根上的命名改动走
+      const readName = (): void => {
+        if (!disposed)
+          send({ type: 'NAME', name: readChartPlotName(root) })
+      }
+      const naming = typeof win.MutationObserver === 'function' ? new win.MutationObserver(readName) : null
+      naming?.observe(root, { attributes: true, attributeFilter: ['aria-label', 'aria-labelledby'], childList: true })
+      readName()
+
       const measurer = text ? createCanvasMeasurer(root.ownerDocument) : null
       if (measurer) {
         refs.set('measurer', measurer)
@@ -556,6 +618,7 @@ export function trackChartViewport<S extends ChartViewportSchema>(options: { rea
       stop = () => {
         resize?.disconnect()
         density?.disconnect()
+        naming?.disconnect()
         fonts?.removeEventListener('loadingdone', onFonts)
         if (frame !== 0 && typeof win.cancelAnimationFrame === 'function')
           win.cancelAnimationFrame(frame)
@@ -591,5 +654,6 @@ export function chartBaseTransitions<S extends ChartBaseSchema>(): TransitionMap
     'LEGEND.FOCUS': { actions: ['setLegendFocus', 'focusLegendItem'] },
     'LEGEND.PRESS': { actions: ['setLegendPressed'] },
     'SCENE.FRAME': { actions: ['advanceTransition'] },
+    'NAME': { actions: ['setPlotName'] },
   } as TransitionMap<S, undefined>
 }

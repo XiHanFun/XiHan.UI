@@ -49,7 +49,7 @@
 
 ## 无障碍
 
-- 根是 `<figure>`，可访问名称来自 `caption`；不放标题时在根上写 `aria-label`。
+- 根是 `<figure>`，可访问名称来自 `caption`；不放标题时在根上写 `aria-label` 或 `aria-labelledby`。绘图区念同一个名字：有 caption 时引用它，没有时沿用根上的那一条。
 - 绘图区是 `role="graphics-document"`，`aria-describedby` 指向组件生成的摘要；每个实体是一个 `role="graphics-object"` 的分组，名称是实体名；每个顶点是 `role="graphics-symbol"`，名称取 `translations.datumLabel`（缺省「指标, 实体 值」），务必按本地语言改写。
 - 绘图区只占一个 Tab 位，焦点落在顶点上：左右键沿顺时针在同一个实体的指标之间走，上下键在同一个指标上换实体，Home / End 到第一个与最后一个指标。焦点环画在顶点之外，只在键盘聚焦时出现。
 - 网格、指标轴、指标名、准线与焦点环一律 `aria-hidden`；提示框同样 `aria-hidden`：它显示的内容与顶点的名称是同一份。

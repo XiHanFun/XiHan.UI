@@ -13,7 +13,7 @@ import type { RadarChartApi, RadarChartSchema } from './radar-chart.schema'
 import type { RadarLegendItem, RadarMarkTag, RadarTooltipRow } from './radar-chart.types'
 import { contains, createPressTracker, dataAttr, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { createScene, markPath } from '@xihan-ui/viz'
-import { chartNavIntentFromKey, chartPatternFill, chartPatterns, placeChartTooltip } from '../shared/chart'
+import { chartNavIntentFromKey, chartPatternFill, chartPatterns, chartPlotNameAttrs, placeChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { radarChartAnatomy } from './radar-chart.anatomy'
 import {
@@ -250,7 +250,7 @@ export function connectRadarChart<T extends PropTypes>(
       'id': ids.plot,
       'role': 'graphics-document',
       'aria-roledescription': translations.chartRoleDescription,
-      'aria-labelledby': ids.caption,
+      ...chartPlotNameAttrs(context.get('plotName'), ids.caption),
       'aria-describedby': ids.summary,
       // 顶点自己占 Tab 位，绘图区不占
       'tabindex': -1,

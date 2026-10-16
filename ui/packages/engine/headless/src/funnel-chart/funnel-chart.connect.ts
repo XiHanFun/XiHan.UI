@@ -13,7 +13,7 @@ import type { FunnelChartApi, FunnelChartSchema } from './funnel-chart.schema'
 import type { FunnelMarkTag, FunnelTooltipRow } from './funnel-chart.types'
 import { contains, dataAttr } from '@xihan-ui/core'
 import { createScene, markPath } from '@xihan-ui/viz'
-import { chartNavIntentFromKey, placeChartTooltip } from '../shared/chart'
+import { chartNavIntentFromKey, chartPlotNameAttrs, placeChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { funnelChartAnatomy } from './funnel-chart.anatomy'
 import {
@@ -166,7 +166,7 @@ export function connectFunnelChart<T extends PropTypes>(
       'id': ids.plot,
       'role': 'graphics-document',
       'aria-roledescription': translations.chartRoleDescription,
-      'aria-labelledby': ids.caption,
+      ...chartPlotNameAttrs(context.get('plotName'), ids.caption),
       'aria-describedby': ids.summary,
       // 阶段自己占 Tab 位，绘图区不占
       'tabindex': -1,

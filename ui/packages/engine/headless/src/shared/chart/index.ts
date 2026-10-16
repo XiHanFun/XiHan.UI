@@ -18,12 +18,14 @@ export {
   chartBaseContext,
   chartBaseRefs,
   chartBaseTransitions,
+  chartPlotNameAttrs,
   notifyChartActive,
+  readChartPlotName,
   sameChartDatum,
   sameChartKey,
   trackChartViewport,
 } from './machine-base'
-export type { ChartBaseAction, ChartBaseComputed, ChartBaseContext, ChartBaseEvent, ChartBaseProps, ChartBaseRefs, ChartBaseSchema, ChartBaseTransition, ChartOffset, ChartViewportSchema } from './machine-base'
+export type { ChartBaseAction, ChartBaseComputed, ChartBaseContext, ChartBaseEvent, ChartBaseProps, ChartBaseRefs, ChartBaseSchema, ChartBaseTransition, ChartOffset, ChartPlotName, ChartViewportSchema } from './machine-base'
 export { CHART_ESTIMATING_MEASURER, createCanvasMeasurer } from './measure'
 export { memoizeLast } from './memo'
 export { CHART_METRIC_SLOTS, CHART_METRICS, readChartMetrics, sameChartMetrics } from './metrics'

@@ -14,7 +14,7 @@ import type { HierarchyChartApi, HierarchyChartSchema } from './hierarchy-chart.
 import type { HierarchyLegendScale, HierarchyMarkTag, HierarchyPathItem, HierarchyTooltipRow } from './hierarchy-chart.types'
 import { contains, createPressTracker, dataAttr } from '@xihan-ui/core'
 import { createScene, markPath } from '@xihan-ui/viz'
-import { placeChartTooltip } from '../shared/chart'
+import { chartPlotNameAttrs, placeChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { hierarchyChartAnatomy } from './hierarchy-chart.anatomy'
 import {
@@ -288,7 +288,7 @@ export function connectHierarchyChart<T extends PropTypes>(
       'role': 'tree',
       // 绘图区按树导航（方向键展开、收起），角色说明得留着「树」字，读屏才不会把操作提示一并盖掉
       'aria-roledescription': translations.chartRoleDescription,
-      'aria-labelledby': ids.caption,
+      ...chartPlotNameAttrs(context.get('plotName'), ids.caption),
       'aria-describedby': ids.summary,
       // 节点自己占 Tab 位，绘图区不占
       'tabindex': -1,

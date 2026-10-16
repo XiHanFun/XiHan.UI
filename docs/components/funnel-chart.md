@@ -240,13 +240,12 @@ direction="up" 画成金字塔：第一阶段在最下面，往上逐级收窄�
 | --- | --- | --- |
 | `root` | `aria-busy` | 'true' \| undefined |
 | `plot` | `aria-describedby` | `summary` 部件的 id |
-| `plot` | `aria-labelledby` | `caption` 部件的 id |
 | `plot` | `aria-roledescription` | translations.chartRoleDescription |
 | `plot` | `role` | 'graphics-document' |
 | `tooltip` | `aria-hidden` | 'true' |
 | `mark` | `aria-hidden` | 'true' |
 
-- 根是 `<figure>`，可访问名称来自 `caption`；不放标题时在根上写 `aria-label`。
+- 根是 `<figure>`，可访问名称来自 `caption`；不放标题时在根上写 `aria-label` 或 `aria-labelledby`。绘图区念同一个名字：有 caption 时引用它，没有时沿用根上的那一条。
 - 绘图区是 `role="graphics-document"`，`aria-describedby` 指向组件生成的摘要；每个阶段是 `role="graphics-symbol"`，名称取 `translations.datumLabel`（缺省「阶段名, 数值, 相对上一阶段的转化率」），务必按本地语言改写。
 - 绘图区只占一个 Tab 位，焦点落在阶段上：右键与下键到下一阶段，左键与上键到上一阶段；金字塔里上下两个键跟着画面对调。Home / End 到第一与最后一个阶段。焦点环画在阶段之外，只在键盘聚焦时出现。
 - 阶段标签、转化率与焦点环一律 `aria-hidden`：它们的内容已在阶段的名称里；提示框同样 `aria-hidden`。
