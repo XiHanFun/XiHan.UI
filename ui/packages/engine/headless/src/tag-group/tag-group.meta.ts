@@ -13,5 +13,6 @@ import type { ComponentMeta } from '../spec/types'
 // root / label 与摘除钮都可缺省。
 export const tagGroupMeta: ComponentMeta = {
   component: 'tag-group',
-  requiredParts: ['list', 'item', 'cell'],
+  // item 与 cell 不列：标签可以全部移除，移除最后一枚后焦点交给 list，空着是正当状态
+  requiredParts: ['list'],
 }

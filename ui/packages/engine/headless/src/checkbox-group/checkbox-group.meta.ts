@@ -11,5 +11,6 @@ import type { ComponentMeta } from '../spec/types'
 // 无条目的组则无从勾选。select-all-trigger 是可选件——不接全选就不必写。
 export const checkboxGroupMeta: ComponentMeta = {
   component: 'checkbox-group',
-  requiredParts: ['root', 'item'],
+  // item 不列：选项可以由 collection 异步给出，取回之前与级联清空之后都是空的
+  requiredParts: ['root'],
 }

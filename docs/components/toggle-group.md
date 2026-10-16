@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="toggle-group"`：**`root`** · **`item`** · `hidden-input`
+`data-scope="toggle-group"`：**`root`** · `item` · `hidden-input`
 
 ## 示例
 
