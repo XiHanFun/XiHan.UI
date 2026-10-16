@@ -1,5 +1,7 @@
-// 属性面板的数字字段在真实输入与失焦下的约束：开区间下限拦住不派发，越出上限的值失焦时夹回端点。
+// 属性面板在真实 Chromium 里：数字字段在真实输入与失焦下的约束（开区间下限拦住不派发，越出上限的值失焦时夹回端点）；
+// 没有编辑器的占位与宿主编辑器的外包不当字段控件，必填、只读、报错时 axe 也没有违规。
 import type { DesignerPropertiesEventMap, XhDesignerPropertiesElement } from '../../src'
+import { expectNoAxeViolations } from '@xihan-ui/testing/a11y'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { defineDesignerShell } from '../../src'
@@ -60,5 +62,36 @@ describe('属性面板的数字约束（Chromium）', () => {
     await userEvent.tab()
     expect([input('span').value, error('span')]).toEqual(['4', undefined])
     expect(changes.at(-1)).toBe(4)
+  })
+
+  it('没有编辑器的占位与宿主编辑器的外包不当字段控件：必填、只读、报错时 axe 也没有违规', async () => {
+    panel = document.createElement('xh-designer-properties')
+    panel.readonly = true
+    panel.editors = { byControl: { picker: () => {
+      const button = document.createElement('button')
+      button.type = 'button'
+      button.textContent = 'Choose people'
+      return { element: button }
+    } } }
+    panel.targets = [{
+      kind: 'task',
+      id: 't1',
+      value: {},
+      descriptors: [
+        { path: ['who'], control: { kind: 'assignees' }, label: 'Assignees', required: true },
+        { path: ['owner'], control: { kind: 'picker' }, label: 'Owner', required: true },
+      ],
+    }]
+    panel.errors = [
+      { target: { kind: 'task', id: 't1' }, path: ['who'], message: 'Required' },
+      { target: { kind: 'task', id: 't1' }, path: ['owner'], message: 'Required' },
+    ]
+    document.body.append(panel)
+    await panel.updateComplete
+    for (const name of ['unsupported', 'custom']) {
+      const placeholder = panel.querySelector(`[data-control="${name}"]`)!
+      expect(placeholder.getAttributeNames().filter(attribute => attribute.startsWith('aria-') || attribute === 'id')).toEqual([])
+    }
+    await expectNoAxeViolations(panel)
   })
 })
