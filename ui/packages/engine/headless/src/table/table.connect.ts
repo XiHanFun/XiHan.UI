@@ -393,7 +393,7 @@ export function connectTable<T extends PropTypes>(
    * 被合并掉的格子分两种：与起点同一行的（横向跨过的）不渲染，下面行里的在合并区最左那一列留占位，
    * 占位带着合并区的宽度，其余列同样不渲染。
    */
-  interface SpanOrigin { rowSpan: number, colSpan: number, rowIndex: number }
+  interface SpanOrigin { rowSpan: number, colSpan: number, rowIndex: number, columnId: string }
   interface SpanCover { origin: string, spacer: boolean, colSpan: number, columnIndex: number }
   const spanKey = (rowId: string, columnId: string): string => `${rowId}\u0000${columnId}`
   const spanOrigins = new Map<string, SpanOrigin>()
@@ -429,7 +429,7 @@ export function connectTable<T extends PropTypes>(
           const colSpan = Math.max(1, Math.min(Math.trunc(span?.colSpan ?? 1) || 1, columns.length - c))
           if (rowSpan === 1 && colSpan === 1)
             return
-          spanOrigins.set(key, { rowSpan, colSpan, rowIndex: dataRowIndex.get(row.id) ?? 0 })
+          spanOrigins.set(key, { rowSpan, colSpan, rowIndex: dataRowIndex.get(row.id) ?? 0, columnId: column.id })
           for (let dr = 0; dr < rowSpan; dr++) {
             for (let dc = 0; dc < colSpan; dc++) {
               if (dr === 0 && dc === 0)
@@ -444,21 +444,49 @@ export function connectTable<T extends PropTypes>(
       dataIndex += segment.length
     }
   }
+  /**
+   * 实测过行位之后，只渲了一段行（接了虚拟滚动，或宿主只渲了一页）时：起点行不在 DOM 里的合并区，
+   * 由区里第一条在场的行接替起点，跨度是从它往下剩下的行数。还没量过时不接替，全部在场时没有可接替的。
+   */
+  const renderedRows = layout.rowBoxes
+  const spanRelays = new Map<string, SpanOrigin>()
+  if (Object.keys(renderedRows).length > 0) {
+    const rowIdAt = new Map<number, string>()
+    for (const [id, index] of dataRowIndex) rowIdAt.set(index, id)
+    for (const origin of spanOrigins.values()) {
+      if (origin.rowSpan < 2 || renderedRows[origin.rowIndex])
+        continue
+      for (let index = origin.rowIndex + 1; index < origin.rowIndex + origin.rowSpan; index++) {
+        const rowId = rowIdAt.get(index)
+        if (!renderedRows[index] || rowId == null)
+          continue
+        spanRelays.set(spanKey(rowId, origin.columnId), {
+          ...origin,
+          rowSpan: origin.rowIndex + origin.rowSpan - index,
+          rowIndex: index,
+        })
+        break
+      }
+    }
+  }
   const cellSpanOf = (rowId: string, columnId: string): { rowSpan: number, colSpan: number, covered: boolean } => {
     const key = spanKey(rowId, columnId)
-    const origin = spanOrigins.get(key)
+    const origin = spanRelays.get(key) ?? spanOrigins.get(key)
     return origin
       ? { rowSpan: origin.rowSpan, colSpan: origin.colSpan, covered: false }
       : { rowSpan: 1, colSpan: 1, covered: spanCovers.has(key) }
   }
 
   /**
-   * 纵向合并格的高度：从起点行的内容盒上沿铺到最后一行的下沿；多出自己那一行的部分用负的下外边距让回去，
-   * 自己那一行的高度因此不被它撑高。行位还没量到时不写，合并格先按普通格子排。
+   * 纵向合并格的高度：从起点行的内容盒上沿铺到合并区里最后一条在场的行的下沿；多出自己那一行的部分用负的
+   * 下外边距让回去，自己那一行的高度因此不被它撑高。行位还没量到时不写，合并格先按普通格子排。
    */
   const rowSpanStyle = (startRowIndex: number, rowSpan: number): Record<string, string> => {
     const first = layout.rowBoxes[startRowIndex]
-    const last = layout.rowBoxes[startRowIndex + rowSpan - 1]
+    let end = startRowIndex + rowSpan - 1
+    while (end > startRowIndex && !layout.rowBoxes[end])
+      end--
+    const last = layout.rowBoxes[end]
     if (!first || !last)
       return {}
     return {
@@ -1133,7 +1161,8 @@ export function connectTable<T extends PropTypes>(
     getCellProps: (cell) => {
       const def = columnOf(cell.value)
       const sticky = stickyAttrs(def)
-      const cover = cell.row != null ? spanCovers.get(spanKey(cell.row, cell.value)) : undefined
+      const relay = cell.row != null ? spanRelays.get(spanKey(cell.row, cell.value)) : undefined
+      const cover = relay ? undefined : cell.row != null ? spanCovers.get(spanKey(cell.row, cell.value)) : undefined
       // 被合并掉的格子：同一行里横向跨过的不渲染；下面行里合并区最左那一列留占位保住宽度，其余不渲染
       if (cover) {
         return normalize.element({
@@ -1146,7 +1175,7 @@ export function connectTable<T extends PropTypes>(
           'style': { ...sticky.style as Record<string, unknown>, ...spanColumnsStyle(cover.columnIndex, cover.colSpan) },
         })
       }
-      const origin = cell.row != null ? spanOrigins.get(spanKey(cell.row, cell.value)) : undefined
+      const origin = relay ?? (cell.row != null ? spanOrigins.get(spanKey(cell.row, cell.value)) : undefined)
       // 跨列数只在真的跨了列时报，1 是默认值；合并区算出来的与作者写的取大者
       const spanCols = Math.max(cell.colSpan ?? 1, origin?.colSpan ?? 1)
       const colSpan = spanCols > 1 ? spanCols : undefined
