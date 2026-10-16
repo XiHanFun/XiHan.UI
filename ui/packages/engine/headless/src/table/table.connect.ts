@@ -1154,7 +1154,8 @@ export function connectTable<T extends PropTypes>(
         // 列身份与表头格发同一份：少了它，使用者按列写的样式只命中表头，
         // 同一列在表头与表体分到的余量就不一样，列边界跟着错开
         [ITEM_VALUE_ATTR]: cell.value,
-        'role': 'gridcell',
+        // 行表头列的格子报 rowheader：读屏念某一格时连着念出这一行的表头
+        'role': def?.rowHeader ? 'rowheader' : 'gridcell',
         'aria-colindex': columnIndex.get(cell.value),
         'aria-colspan': colSpan,
         'aria-rowspan': rowSpan,
