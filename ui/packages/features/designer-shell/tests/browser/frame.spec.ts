@@ -167,4 +167,33 @@ describe('<xh-designer-frame>（Chromium）', () => {
     const shares = seen.at(-1)!.sizes.regions!
     expect(shares.properties! / 100).toBeCloseTo(height('properties') / (height('properties') + height('minimap')), 1)
   })
+
+  it('堆叠区之间的分隔条带名称，可用方向键调高度；回填含过期区名、合计不是 100 的 sizes 时按比例排开', async () => {
+    frame.regions = [
+      { name: 'toolbar', position: 'top' },
+      { name: 'canvas', position: 'center' },
+      { name: 'properties', position: 'end', size: 24, label: '属性' },
+      { name: 'minimap', position: 'end' },
+    ]
+    frame.translations = { resize: label => `调整「${label}」的大小` }
+    frame.sizes = { regions: { properties: 300, ghost: 40, minimap: 100 } }
+    await frame.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const height = (name: string): number => frame.querySelector(`[data-part="region"][data-region="${name}"]`)!.getBoundingClientRect().height
+    const total = (): number => height('properties') + height('minimap')
+    expect(height('properties') / total()).toBeCloseTo(0.75, 1)
+    expect(frame.querySelector('[data-region="ghost"]')).toBeNull()
+
+    const trigger = frame.querySelector<HTMLElement>('[data-part="stack"][data-position="end"] [data-xh-part="resize-trigger"]')!
+    expect([trigger.getAttribute('role'), trigger.getAttribute('aria-label')]).toEqual(['separator', '调整「属性」的大小'])
+    const seen: DesignerFrameEventMap['sizes-change']['detail'][] = []
+    frame.addEventListener('sizes-change', event => seen.push((event as DesignerFrameEventMap['sizes-change']).detail))
+    const before = height('properties')
+    trigger.focus()
+    trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', shiftKey: true, bubbles: true, cancelable: true }))
+    await frame.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    expect(height('properties')).toBeCloseTo(before - total() * 0.1, -1)
+    expect(seen.at(-1)!.sizes.regions).toEqual({ properties: expect.closeTo(65, 0), minimap: expect.closeTo(35, 0) })
+  })
 })

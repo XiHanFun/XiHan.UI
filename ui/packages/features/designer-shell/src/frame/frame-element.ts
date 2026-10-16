@@ -89,6 +89,29 @@ interface Parts {
   readonly body: HTMLElement
 }
 
+function isPositive(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0
+}
+
+/** 堆叠区的下限：缺省 10%，区多到放不下时取等分。 */
+function stackMinSize(count: number): number {
+  return Math.min(DEFAULT_MIN_SIZE, 100 / count)
+}
+
+/** 按比例归一到合计 100；归一后低于下限的区定在下限，其余区按比例分剩下的。 */
+function normalizeShares(raw: readonly number[], min: number): number[] {
+  const fixed = new Set<number>()
+  for (;;) {
+    const room = 100 - fixed.size * min
+    const free = raw.reduce((sum, value, index) => (fixed.has(index) ? sum : sum + value), 0)
+    const shares = raw.map((value, index) => (fixed.has(index) ? min : free > 0 ? value / free * room : room / (raw.length - fixed.size)))
+    const low = shares.findIndex((share, index) => !fixed.has(index) && share < min)
+    if (low < 0)
+      return shares
+    fixed.add(low)
+  }
+}
+
 /** 一轮布局：各位置当前显示的区。 */
 type Layout = Readonly<Record<DesignerFramePosition, readonly DesignerFrameRegion[]>>
 
@@ -158,8 +181,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     this.#syncRegions()
     if (changed.has('sizes') && this.sizes !== undefined) {
       const { regions, ...positions } = this.sizes
-      this.#current = { ...this.#current, ...positions }
-      this.#shares = { ...this.#shares, ...regions }
+      this.#current = { ...this.#current, ...Object.fromEntries(Object.entries(positions).filter(([, value]) => isPositive(value))) }
+      this.#shares = { ...this.#shares, ...Object.fromEntries(Object.entries(regions ?? {}).filter(([, value]) => isPositive(value))) }
     }
     const t = this.#config.translations<DesignerFrameTranslations>(TAG, DEFAULT_TRANSLATIONS, this.translations)
     const layout = this.#layout()
@@ -235,14 +258,10 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     return Math.min(Math.max(this.#current[position] ?? regions[0]?.size ?? 20, min), Math.max(min, room))
   }
 
-  /** 堆叠区各自的高度（百分比）：记下的值缺的按平均补上，再按合计 100 缩放，不低于下限。 */
+  /** 堆叠区各自的高度（百分比）：记下的值缺的按平均补上，再按比例归一到合计 100，不低于下限。 */
   #stackSizes(regions: readonly DesignerFrameRegion[]): number[] {
     const even = 100 / regions.length
-    const raw = regions.map(region => this.#shares[region.name] ?? even)
-    const total = raw.reduce((sum, value) => sum + value, 0)
-    const scaled = raw.map(value => Math.max(DEFAULT_MIN_SIZE, total > 0 ? value / total * 100 : even))
-    const scaledTotal = scaled.reduce((sum, value) => sum + value, 0)
-    return scaled.map(value => value / scaledTotal * 100)
+    return normalizeShares(regions.map(region => this.#shares[region.name] ?? even), stackMinSize(regions.length))
   }
 
   /** 一个位置的区：一个区时直接放进去，多个区时上下排列并以分隔条隔开。 */
@@ -254,7 +273,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       return stack
     }
     const sizes = this.#stackSizes(regions)
-    stack.append(this.#splitter('vertical', regions.map((region, index) => ({ node: nodes[index]!, id: region.name, size: sizes[index]!, min: DEFAULT_MIN_SIZE })), regions.slice(0, -1).map(region => region.name), (next) => {
+    const min = stackMinSize(regions.length)
+    stack.append(this.#splitter('vertical', regions.map((region, index) => ({ node: nodes[index]!, id: region.name, size: sizes[index]!, min })), regions.slice(0, -1).map(region => region.name), (next) => {
       regions.forEach((region, index) => {
         this.#shares[region.name] = next[index]!
       })
@@ -292,9 +312,11 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     return splitter
   }
 
-  /** 交给 sizes-change 的大小：位置的大小，加上记下过的堆叠区高度。 */
+  /** 交给 sizes-change 的大小：位置的大小，加上记下过的、现在仍登记着的堆叠区高度。 */
   #snapshot(): DesignerFrameSizes {
-    return Object.keys(this.#shares).length === 0 ? { ...this.#current } : { ...this.#current, regions: { ...this.#shares } }
+    const names = new Set(this.#regionList().map(region => region.name))
+    const regions = Object.fromEntries(Object.entries(this.#shares).filter(([name]) => names.has(name)))
+    return Object.keys(regions).length === 0 ? { ...this.#current } : { ...this.#current, regions }
   }
 
   #build(parts: Parts, layout: Layout): void {
