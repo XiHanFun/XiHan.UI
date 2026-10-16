@@ -54,15 +54,15 @@ size 只写为 root 的 data-size，改变的是单元格纵向内边距与字�
 
 <XhDemo src="table/06-empty-loading" />
 
-### 脚注合计
+### 多行表尾
 
-footer 把行号空间的最后一行留给脚注；脚注单元格不属于任何数据行，也就没有选中与禁用
+footerRows 把行号空间的最后几行留给表尾，每一行表尾写明 level；表尾单元格不属于任何数据行，也就没有选中与禁用
 
 <XhDemo src="table/07-footer" />
 
-### 表头吸顶与列吸附
+### 表头吸顶、表尾吸底与列吸附
 
-root 自身就是滚动容器：stickyHeader 固定表头，列上标注 sticky 的固定该列
+root 自身就是滚动容器：stickyHeader 固定表头，stickyFooter 固定表尾，列上标注 sticky 的固定该列
 
 <XhDemo src="table/08-sticky" />
 
@@ -219,6 +219,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 - 树形表（行声明了 `parentId`）在 `multiple` 下可以打开 `cascade` 级联勾选，与[树](./tree)的 `cascade` 同一套算法：勾父行整枝传导，子行全勾上父行跟着勾中，勾了一部分的父行把手显示半选（`data-indeterminate`），禁用行的子树整棵冻结。对外值按 `checkedStrategy` 收敛，缺省 `child` 只收叶行；`parent` 收到最高的整枝，`all` 收全部勾中的行。全选的基数是够得着的叶行，禁用子树冻结着的父行不妨碍全选把手勾满。级联下不接 Shift 范围选。
 - 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐接出：设置区按 `columnSettings` 渲染，隐藏的列也包含在内。两块都放在 `root` 之外：`root` 是 grid 系角色，子节点只能是行与行组。
 - 行主操作 `onAction`（事件名 `action`）：指针主键点在数据行上时报 `{ value: 行 id, column: 点中那一格的列 id }`（纵向合并格算它的起点行），焦点停在行上按 Enter 时 `column` 为 null，用来下钻或把表格当联动源。点在行内的交互控件与表格自己的把手上、行拖动松手的那一次点击、禁用行、详情行、表头与脚注都不触发；选中、展开与 Space 不受影响，点行本身不选中。
+- 表尾可以有多行：`footerRows` 声明表尾行数，行号空间的最后几行留给它们，每一行表尾写明 `level`（与多级表头同一写法，只有一行时可省）；`aria-rowcount` 把它们都计入。`stickyFooter` 把表尾钉在滚动容器的下沿（`data-fixed`），与 `stickyHeader` 对称，滚动之后总计行仍看得见；接了虚拟滚动时滚动在表体的视口里，表尾本来就常驻在视口之外。
 - 三种非条目相位各有部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。取下一页按钮的行为由作者决定，取数在途时自动停用。
 - 在途分两种：表体为空时 `loading` 占位露面，一枚加载环排在文案之前；已有行时重新取数（排序、翻页、筛选）不换成占位，表体与表尾原样保留、照常可操作，不淡化（淡到禁用透明度会把文字压到 4.5:1 以下）。两种都由 `root` 报告 `aria-busy`。
 
@@ -278,7 +279,8 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `striped` | `boolean` |  | 斑马纹：表体偶数行换一层浅底。 |
 | `variant` | `ControlVariant` |  | 形态：outline 画外框与圆角（默认），ghost 去掉外框只留行间横线，subtle 淡底。默认 outline。 |
 | `ruled` | `boolean` |  | 列与列之间加竖分隔线，写为 root 上的 data-split。 |
-| `footer` | `boolean` |  | 表格带脚注行。行号空间的最后一行留给它，aria-rowcount 也把它计入。 |
+| `footerRows` | `number` |  | 表尾行数，缺省 0。行号空间的最后几行留给它们，aria-rowcount 也把它们计入； 每一行表尾经 getFooterRowProps 写明第几行（level）。 |
+| `stickyFooter` | `boolean` |  | 表尾吸底：只写 data-fixed（布尔），钉在滚动容器下沿的实现归皮肤，与 stickyHeader 对称。 |
 | `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的展开 / 收起语义。 |
 | `size` | `Size` |  | 密度：sm / md / lg。只影响单元格的纵向内边距与字号，列宽算法不受影响。 |
@@ -412,7 +414,8 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `focusedRow` | `string \| null` | 焦点锚点；焦点不在表体中时为 null。 |
 | `loading` | `boolean` |  |
 | `empty` | `boolean` | 表体为空（显式声明或 rows 为空）。 |
-| `rowCount` | `number` | aria-rowcount：表头行 + 可见行 + 脚注行。 |
+| `rowCount` | `number` | aria-rowcount：表头行 + 可见行 + 表尾行。 |
+| `footerRowCount` | `number` | 表尾占几行，即 footerRows 取整后的值。 |
 | `columnCount` | `number` | aria-colcount：列定义的条数。 |
 | `headerRows` | `readonly (readonly TableHeaderCell[])[]` | 表头按层排好的格子，每层一行；没有分组时只有一行、每格是一列。 多级表头按它逐层渲染表头行与列头（带上 level），占位格也要渲。 |
 | `headerRowCount` | `number` | 表头占几行，数据行的行号从它之后起算。 |
@@ -439,7 +442,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `getBodyProps` | `() => T['element']` |  |
 | `getFooterProps` | `() => T['element']` |  |
 | `getHeaderRowProps` | `(props?: TableHeaderRowProps) => T['element']` | 表头行：占行号空间最前面的几行；多级表头下写明第几行。 |
-| `getFooterRowProps` | `() => T['element']` | 脚注行：占行号空间的最后一行。 |
+| `getFooterRowProps` | `(props?: TableFooterRowProps) => T['element']` | 表尾行：占行号空间最后的几行；多行表尾下写明第几行。 |
 | `rowNumber` | `(rowId: string) => string` | 该行显示的序号。平表是分页全局序号，树形是大纲编号。 不显示序号列时仍可调用：它是纯计算，不依赖是否有该列。 |
 | `columnPreference` | `TableColumnPreference` | 当前的列偏好。原样交出即可存储。 |
 | `columnSettings` | `readonly TableColumnSetting[]` | 列设置区按它渲染：作者定义的列，按偏好排序，隐藏的也在其中。 每条自带显隐、冻结、宽度与排序，足以渲染一整行设置项而不必回头比对两份数组。 |
@@ -504,7 +507,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `root` | `aria-colcount` | columns.length \|\| undefined |
 | `root` | `aria-labelledby` | `caption` 部件的 id \| undefined |
 | `root` | `aria-multiselectable` | 'true' \| 'false' |
-| `root` | `aria-rowcount` | headerRowCount + visibleRows.length + (hasFooter ? 1 … |
+| `root` | `aria-rowcount` | headerRowCount + visibleRows.length + footerRowCount |
 | `root` | `role` | 'treegrid' \| 'grid' |
 | `header` | `role` | 'rowgroup' |
 | `body` | `role` | 'rowgroup' |
@@ -566,7 +569,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `live-region` | `aria-live` | 'polite' |
 | `live-region` | `role` | 'status' |
 | `header-row` | `aria-rowindex` | Math.max(1, Math.min(Math.trunc(header?.level ?? 1) \|… |
-| `footer-row` | `aria-rowindex` | headerRowCount + visibleRows.length + (hasFooter ? 1 … \| undefined |
+| `footer-row` | `aria-rowindex` | headerRowCount + visibleRows.length + level \| undefined |
 | `header-row` | `role` | 'row' |
 | `footer-row` | `role` | 'row' |
 
@@ -604,6 +607,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `root` | `data-variant` | props.variant |
 | `header` | `data-fixed` | ''（条件成立时才出现） |
 | `body` | `data-empty` | ''（条件成立时才出现） |
+| `footer` | `data-fixed` | ''（条件成立时才出现） |
 | `row` | `data-disabled` | ''（条件成立时才出现） |
 | `row` | `data-draggable` | ''（条件成立时才出现） |
 | `row` | `data-dragging` | ''（条件成立时才出现） |
@@ -749,7 +753,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `--xh-table-expand-fg` | `expand-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-subtle` | table 的 expand-trigger 部件 color 覆盖槽。 |
 | `--xh-table-fg` | `root` | `color` | `default` | `--xh-fg-default` | table 的 root 部件 color 覆盖槽。 |
 | `--xh-table-font-size` | `root`<br>`row` | `font-size` | `default` | `--xh-_table-font-size` | table 的 root、row 部件 font-size 覆盖槽。 |
-| `--xh-table-footer-bg` | `footer` | `background` | `default` | `--xh-bg-subtle` | table 的 footer 部件 background 覆盖槽。 |
+| `--xh-table-footer-bg` | `footer` | `background` | `default`<br>`fixed` | `--xh-bg-subtle`<br>`--xh-bg-subtle-opaque` | table 的 footer 部件 background 覆盖槽。 |
 | `--xh-table-footer-border` | `footer` | `border-block-start` | `default` | `--xh-border-subtle` | table 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-table-footer-font-weight` | `footer` | `font-weight` | `default` | `--xh-font-weight-medium` | table 的 footer 部件 font-weight 覆盖槽。 |
 | `--xh-table-frozen-edge` | `cell`<br>`column-header` | `background` | `frozen-edge`<br>`is([data-part='column-header'], [data-part='cell'])` | `--xh-border-default` | table 的 cell、column-header 部件 background 覆盖槽。 |
@@ -798,6 +802,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `--xh-table-state-px` | `empty`<br>`loading` | `padding-inline` | `default` | `--xh-control-px-sm` | table 的 empty、loading 部件 padding-inline 覆盖槽。 |
 | `--xh-table-state-py` | `empty`<br>`loading` | `padding-block` | `default` | `--xh-space-3` | table 的 empty、loading 部件 padding-block 覆盖槽。 |
 | `--xh-table-sticky-column-layer` | `cell`<br>`column-header`<br>`row` | `z-index` | `drop=after`<br>`drop=before`<br>`drop=inside`<br>`frozen`<br>`is([data-drop='before'], [data-drop='after'])` | `1` | table 的 cell、column-header、row 部件 z-index 覆盖槽。 |
+| `--xh-table-sticky-footer-layer` | `footer` | `z-index` | `fixed` | `--xh-layer-sticky` | table 的 footer 部件 z-index 覆盖槽。 |
 | `--xh-table-sticky-header-layer` | `header` | `z-index` | `fixed` | `--xh-layer-sticky` | table 的 header 部件 z-index 覆盖槽。 |
 | `--xh-table-sticky-inset` | `cell`<br>`column-header` | `inset-inline-end`<br>`inset-inline-start` | `frozen=end`<br>`frozen=start` | `0` | table 的 cell、column-header 部件 inset-inline-end、inset-inline-start 覆盖槽。 |
 | `--xh-table-toolbar-fg` | `toolbar` | `color` | `default` | `--xh-fg-default` | table 的 toolbar 部件 color 覆盖槽。 |

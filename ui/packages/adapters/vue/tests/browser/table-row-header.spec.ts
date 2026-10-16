@@ -26,7 +26,7 @@ async function mount(rowHeader: boolean): Promise<HTMLElement> {
   document.body.append(host)
   const columns = [{ id: 'item', label: '条目', rowHeader }, { id: 'count', label: '数量' }]
   app = createApp({
-    render: () => h(XhTableRoot, { 'columns': columns, 'rows': LINES.map(l => ({ id: l.id })), 'footer': true, 'aria-label': '采购清单' }, () => [
+    render: () => h(XhTableRoot, { 'columns': columns, 'rows': LINES.map(l => ({ id: l.id })), 'footerRows': 1, 'aria-label': '采购清单' }, () => [
       h(XhTableHeader, null, () => [h(XhTableRow, null, () => columns.map(c => h(XhTableColumnHeader, { key: c.id, value: c.id }, () => [h(XhTableColumnLabel, null, () => c.label)])))]),
       h(XhTableBody, null, () => LINES.map(l => h(XhTableRow, { key: l.id, value: l.id }, () => [
         h(XhTableCell, { value: 'item' }, () => l.item),

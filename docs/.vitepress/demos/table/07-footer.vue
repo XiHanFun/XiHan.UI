@@ -1,4 +1,4 @@
-<!-- 脚注合计 | footer 把行号空间的最后一行留给脚注；脚注单元格不属于任何数据行，也就没有选中与禁用 -->
+<!-- 多行表尾 | footerRows 把行号空间的最后几行留给表尾，每一行表尾写明 level；表尾单元格不属于任何数据行，也就没有选中与禁用 -->
 <script setup lang="ts">
 import {
   XhTableBody,
@@ -29,11 +29,12 @@ const rows = lines.map(l => ({ id: l.id }));
 
 const totalCount = computed(() => lines.reduce((sum, l) => sum + l.count, 0));
 const totalAmount = computed(() => lines.reduce((sum, l) => sum + l.amount, 0));
+const averagePrice = computed(() => Math.round(totalAmount.value / totalCount.value));
 </script>
 
 <template>
   <div style="width: 100%; max-width: 560px">
-    <XhTableRoot :columns="columns" :rows="rows" footer>
+    <XhTableRoot :columns="columns" :rows="rows" :footer-rows="2">
       <XhTableCaption>采购清单</XhTableCaption>
       <XhTableHeader>
         <XhTableRow>
@@ -50,11 +51,16 @@ const totalAmount = computed(() => lines.reduce((sum, l) => sum + l.amount, 0));
         </XhTableRow>
       </XhTableBody>
       <XhTableFooter>
-        <!-- 脚注行不给 value：它占的是行号空间的最后一行 -->
-        <XhTableRow>
+        <!-- 表尾行不给 value，写明是第几行表尾：它们占的是行号空间的最后几行 -->
+        <XhTableRow :level="1">
           <XhTableCell value="item">合计</XhTableCell>
           <XhTableCell value="count">{{ totalCount }}</XhTableCell>
           <XhTableCell value="amount">¥ {{ totalAmount }}</XhTableCell>
+        </XhTableRow>
+        <XhTableRow :level="2">
+          <XhTableCell value="item">均价</XhTableCell>
+          <XhTableCell value="count"></XhTableCell>
+          <XhTableCell value="amount">¥ {{ averagePrice }}</XhTableCell>
         </XhTableRow>
       </XhTableFooter>
     </XhTableRoot>

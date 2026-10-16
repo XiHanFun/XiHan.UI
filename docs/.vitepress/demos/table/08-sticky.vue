@@ -1,10 +1,11 @@
-<!-- 表头吸顶与列吸附 | root 自身就是滚动容器：stickyHeader 固定表头，列上标注 sticky 的固定该列 -->
+<!-- 表头吸顶、表尾吸底与列吸附 | root 自身就是滚动容器：stickyHeader 固定表头，stickyFooter 固定表尾，列上标注 sticky 的固定该列 -->
 <script setup lang="ts">
 import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
   XhTableColumnLabel,
+  XhTableFooter,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -36,7 +37,7 @@ const rows = members.map(m => ({ id: m.id }));
 
 <template>
   <div style="width: 100%; max-width: 420px">
-    <XhTableRoot :columns="columns" :rows="rows" sticky-header>
+    <XhTableRoot :columns="columns" :rows="rows" sticky-header sticky-footer :footer-rows="1">
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
@@ -53,6 +54,15 @@ const rows = members.map(m => ({ id: m.id }));
           <XhTableCell value="mail">{{ m.mail }}</XhTableCell>
         </XhTableRow>
       </XhTableBody>
+      <XhTableFooter>
+        <XhTableRow>
+          <XhTableCell value="name">共 {{ members.length }} 人</XhTableCell>
+          <XhTableCell value="dept"></XhTableCell>
+          <XhTableCell value="city"></XhTableCell>
+          <XhTableCell value="ext"></XhTableCell>
+          <XhTableCell value="mail"></XhTableCell>
+        </XhTableRow>
+      </XhTableFooter>
     </XhTableRoot>
   </div>
 </template>

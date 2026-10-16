@@ -109,7 +109,7 @@ const TREE_ROWS: TableRowDef[] = [
 
 /** 给用例补上同一份行列定义与 footer 声明。 */
 function props(extra: Readonly<Record<string, unknown>> = {}): Readonly<Record<string, unknown>> {
-  return { columns: COLUMNS, rows: ROWS, footer: true, ...extra }
+  return { columns: COLUMNS, rows: ROWS, footerRows: 1, ...extra }
 }
 
 /**

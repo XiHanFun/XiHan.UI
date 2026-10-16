@@ -211,7 +211,8 @@ export function connectTable<T extends PropTypes>(
   const mode = tableSelectionMode(prop('selectionMode'))
   const loading = !!prop('loading')
   const stickyHeader = !!prop('stickyHeader')
-  const hasFooter = !!prop('footer')
+  const stickyFooter = !!prop('stickyFooter')
+  const footerRowCount = Math.max(0, Math.trunc(prop('footerRows') ?? 0) || 0)
   const dir = prop('dir') ?? 'ltr'
   const numericWidth = (id: string, def: TableColumnDef | undefined): number | null =>
     columnNumericWidth(context.get('columnPreference').widths?.[id], def?.width)
@@ -333,7 +334,7 @@ export function connectTable<T extends PropTypes>(
   // 两个状态节点常挂且互斥，只在表体为空时显形
   const showLoading = loading && isEmpty
   const showEmpty = !loading && isEmpty
-  const rowCount = headerRowCount + visibleRows.length + (hasFooter ? 1 : 0)
+  const rowCount = headerRowCount + visibleRows.length + footerRowCount
 
   const metaOf = (value: string): TableVisibleRow | undefined => metaIndex.get(value)
   const columnOf = (value: string): TableColumnDef | undefined => columnIndexDefs.get(value)
@@ -662,6 +663,7 @@ export function connectTable<T extends PropTypes>(
     loading,
     empty: isEmpty,
     rowCount,
+    footerRowCount,
     columnCount: columns.length,
     headerRows,
     headerRowCount,
@@ -920,7 +922,9 @@ export function connectTable<T extends PropTypes>(
 
     getFooterProps: () => normalize.element({
       ...parts.footer.attrs,
-      role: 'rowgroup',
+      'role': 'rowgroup',
+      // 吸底只落标记，钉住的实现归皮肤
+      'data-fixed': dataAttr(stickyFooter),
     }),
 
     // 表头行不进方向键序列，也不认领 Tab 位；表头里的排序与全选把手各自占位
@@ -932,15 +936,17 @@ export function connectTable<T extends PropTypes>(
       'data-section': 'header',
     }),
 
-    getFooterRowProps: () => {
-      // 行号空间是按 footer prop 算的。渲了脚注行却没声明这个 prop，rowCount 就等于末行数据行的行号，
-      // 报出去会与它撞号；此时宁可不报行号，也不给一个错的
-      warn(hasFooter, 'table: 渲染了脚注行但没有设置 footer prop，脚注行不会报 aria-rowindex')
+    getFooterRowProps: (footer) => {
+      // 行号空间是按 footerRows 算的。渲了表尾行却没声明行数，或层号越过了行数，报出去会与别的行撞号；
+      // 此时宁可不报行号，也不给一个错的
+      const level = Math.trunc(footer?.level ?? 1) || 1
+      const counted = level >= 1 && level <= footerRowCount
+      warn(counted, `table: 第 ${level} 行表尾超出了 footerRows（${footerRowCount}），这一行不会报 aria-rowindex`)
       return normalize.element({
         ...parts.row.attrs,
         'role': 'row',
-        // 脚注排在行号空间的最后一行
-        'aria-rowindex': hasFooter ? rowCount : undefined,
+        // 表尾排在行号空间的最后几行，第几行表尾按 level 往后数
+        'aria-rowindex': counted ? headerRowCount + visibleRows.length + level : undefined,
         'data-section': 'footer',
       })
     },

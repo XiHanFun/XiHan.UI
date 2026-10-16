@@ -351,6 +351,11 @@ export interface TableHeaderRowProps {
   level?: number
 }
 
+/** 表尾行的声明：多行表尾下写明第几行，1 起算；省略即第 1 行。 */
+export interface TableFooterRowProps {
+  level?: number
+}
+
 /**
  * 单元格的声明：value 是列 id（列号由它计算）。
  * row 只在表体单元格上提供，用于跟随行绘制选中底色；表头与脚注的格子省略即可。
@@ -450,8 +455,13 @@ export interface TableSchema extends MachineSchema {
     variant?: ControlVariant
     /** 列与列之间加竖分隔线，写为 root 上的 data-split。 */
     ruled?: boolean
-    /** 表格带脚注行。行号空间的最后一行留给它，aria-rowcount 也把它计入。 */
-    footer?: boolean
+    /**
+     * 表尾行数，缺省 0。行号空间的最后几行留给它们，aria-rowcount 也把它们计入；
+     * 每一行表尾经 getFooterRowProps 写明第几行（level）。
+     */
+    footerRows?: number
+    /** 表尾吸底：只写 data-fixed（布尔），钉在滚动容器下沿的实现归皮肤，与 stickyHeader 对称。 */
+    stickyFooter?: boolean
     /** 上下键到达首尾是否回绕，默认 false。 */
     loop?: boolean
     /** 文字方向，默认 ltr；只对调左右方向键的展开 / 收起语义。 */
@@ -722,8 +732,10 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   loading: boolean
   /** 表体为空（显式声明或 rows 为空）。 */
   empty: boolean
-  /** aria-rowcount：表头行 + 可见行 + 脚注行。 */
+  /** aria-rowcount：表头行 + 可见行 + 表尾行。 */
   rowCount: number
+  /** 表尾占几行，即 footerRows 取整后的值。 */
+  footerRowCount: number
   /** aria-colcount：列定义的条数。 */
   columnCount: number
   /**
@@ -776,8 +788,8 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   getFooterProps: () => T['element']
   /** 表头行：占行号空间最前面的几行；多级表头下写明第几行。 */
   getHeaderRowProps: (props?: TableHeaderRowProps) => T['element']
-  /** 脚注行：占行号空间的最后一行。 */
-  getFooterRowProps: () => T['element']
+  /** 表尾行：占行号空间最后的几行；多行表尾下写明第几行。 */
+  getFooterRowProps: (props?: TableFooterRowProps) => T['element']
   /**
    * 该行显示的序号。平表是分页全局序号，树形是大纲编号。
    * 不显示序号列时仍可调用：它是纯计算，不依赖是否有该列。

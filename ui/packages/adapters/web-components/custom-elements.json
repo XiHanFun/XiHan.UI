@@ -63431,12 +63431,21 @@
             },
             {
               "kind": "field",
-              "name": "footer",
+              "name": "footerRows",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "footer-rows"
+            },
+            {
+              "kind": "field",
+              "name": "stickyFooter",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "footer"
+              "attribute": "sticky-footer"
             },
             {
               "kind": "field",
@@ -63935,11 +63944,19 @@
             },
             {
               "type": {
+                "text": "number | undefined"
+              },
+              "description": "表尾行数：行号空间的最后几行留给表尾，aria-rowcount 也计入；多行表尾在每个表尾 row 上写 level",
+              "name": "footer-rows",
+              "fieldName": "footerRows"
+            },
+            {
+              "type": {
                 "text": "boolean | undefined"
               },
-              "description": "表格带脚注行：行号空间的最后一行留给它，aria-rowcount 也计入",
-              "name": "footer",
-              "fieldName": "footer"
+              "description": "表尾吸底，只写 data-fixed（布尔），与 sticky-header 对称",
+              "name": "sticky-footer",
+              "fieldName": "stickyFooter"
             },
             {
               "type": {
@@ -64237,6 +64254,9 @@
             },
             {
               "name": "--xh-table-sticky-column-layer"
+            },
+            {
+              "name": "--xh-table-sticky-footer-layer"
             },
             {
               "name": "--xh-table-sticky-header-layer"

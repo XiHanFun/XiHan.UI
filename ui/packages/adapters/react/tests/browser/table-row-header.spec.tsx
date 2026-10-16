@@ -28,7 +28,7 @@ async function mount(rowHeader: boolean): Promise<HTMLElement> {
   const root = createRoot(host)
   await act(async () => {
     root.render(
-      <XhTableRoot columns={columns} rows={LINES.map(l => ({ id: l.id }))} footer aria-label="采购清单">
+      <XhTableRoot columns={columns} rows={LINES.map(l => ({ id: l.id }))} footerRows={1} aria-label="采购清单">
         <XhTableHeader>
           <XhTableRow>
             {columns.map(c => <XhTableColumnHeader key={c.id} value={c.id}><XhTableColumnLabel>{c.label}</XhTableColumnLabel></XhTableColumnHeader>)}

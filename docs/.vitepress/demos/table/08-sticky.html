@@ -1,6 +1,6 @@
-<!-- 表头吸顶与列吸附 | root 自身就是滚动容器：stickyHeader 固定表头，列上标注 sticky 的固定该列 -->
+<!-- 表头吸顶、表尾吸底与列吸附 | root 自身就是滚动容器：stickyHeader 固定表头，stickyFooter 固定表尾，列上标注 sticky 的固定该列 -->
 <div style="width: 100%; max-width: 420px">
-  <xh-table id="table-sticky" sticky-header>
+  <xh-table id="table-sticky" sticky-header sticky-footer footer-rows="1">
     <div data-xh-part="root">
       <div data-xh-part="header">
         <div data-xh-part="row">
@@ -12,6 +12,15 @@
         </div>
       </div>
       <div data-xh-part="body"></div>
+      <div data-xh-part="footer">
+        <div data-xh-part="row">
+          <div data-xh-part="cell" value="name">共 16 人</div>
+          <div data-xh-part="cell" value="dept"></div>
+          <div data-xh-part="cell" value="city"></div>
+          <div data-xh-part="cell" value="ext"></div>
+          <div data-xh-part="cell" value="mail"></div>
+        </div>
+      </div>
     </div>
   </xh-table>
 </div>
