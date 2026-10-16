@@ -202,7 +202,7 @@ overlay.addEventListener("transform", (event) => {
 | 属性 | 说明 |
 | --- | --- |
 | `viewport` | 画布的视口 |
-| `items` | 选中项 `{ id, rect, handles?, rotatable?, keepAspect?, minSize? }`。`handles` 缺省 `true` 为八向，`false` 不能缩放，数组为只给这些方向；`rotatable` 缺省不显示旋转柄；`keepAspect` 为总是等比 |
+| `items` | 选中项 `{ id, rect, handles?, rotatable?, keepAspect?, minSize? }`。`handles` 缺省 `true` 为八向，`false` 不能缩放，数组为只给这些方向；`rotatable` 缺省不显示旋转柄；`keepAspect` 为总是等比；`minSize` 是缩放的下限 |
 | `hover` | 悬停框，世界坐标 |
 | `getSnap(kind)` | 每次手势开始时取一次吸附选项，交给 `snapRect`；`threshold` 不给时取屏幕上的固定像素除以 `zoom` |
 | `formatMeasure(rect)` | 拖动中的尺寸与位置标签；不给不显示 |
@@ -223,7 +223,8 @@ overlay.addEventListener("transform", (event) => {
 
 - 修饰键：缩放时 Shift 等比、Alt 以中心为基准；旋转时 Shift 按 `rotate-step` 吸附；移动时 Shift 锁定水平或竖直、Alt 为复制。修饰键在拖动中按下也算。Esc 取消。
 - 设计器在 `move` 阶段是只看预览还是执行事务自行决定；手势进行中覆盖层按自己算出的矩形画框，不等 `items` 更新。
-- 单选才出控制柄；多选画各自的细框与整体包围框，可以整体移动。缩放时只吸附被拖动的那条边，旋转过的矩形缩放时不吸附。
+- 单选按该项的能力出控制柄。多选画各自的细框与整体包围框，可以整体移动；每一项都能八向缩放时，包围框上出八个控制柄（不出旋转柄），拖动按包围框等比缩放全部选中项：位置与尺寸乘同一比例，旋转角不变，Alt 以中心为基准，任一项缩到 `minSize` 即停。`transform` 事件的 `kind` 为 `resize`，`rects` 带全部选中项。
+- 缩放时只吸附被拖动的那条边；单选时旋转过的矩形缩放时不吸附。
 - 控制柄是固定的屏幕尺寸，按旋转后的方向画，指针形状随角度换；粗指针设备放大命中区。
 
 ## 标尺与参考线

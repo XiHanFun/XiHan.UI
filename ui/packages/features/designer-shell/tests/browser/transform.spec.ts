@@ -90,6 +90,30 @@ describe('<xh-designer-transform>（Chromium）', () => {
     expect(seen.at(-1)!.rects.get('a')).toEqual({ x: 10, y: 20, width: 120, height: 50 })
   })
 
+  it('多选时控制柄落在整体包围框的角上，拖动按包围框等比缩放全部选中项', async () => {
+    overlay.items = [
+      { id: 'a', rect: { x: 10, y: 20, width: 100, height: 50 } },
+      { id: 'b', rect: { x: 150, y: 20, width: 50, height: 50 } },
+    ]
+    await overlay.updateComplete
+    const bounds = overlay.querySelector('[data-part="bounds"]')!.getBoundingClientRect()
+    const corner = handle('se').getBoundingClientRect()
+    const x = corner.left + corner.width / 2
+    const y = corner.top + corner.height / 2
+    expect([x, y]).toEqual([bounds.right, bounds.bottom])
+    expect(document.elementFromPoint(x, y)).toBe(handle('se'))
+    const seen: DesignerTransformEventMap['transform']['detail'][] = []
+    overlay.addEventListener('transform', event => seen.push((event as DesignerTransformEventMap['transform']).detail))
+    pointer(handle('se'), 'pointerdown', x, y)
+    pointer(document, 'pointermove', x + 190, y)
+    pointer(document, 'pointerup', x + 190, y)
+    expect(seen.at(-1)!.phase).toBe('end')
+    expect(Object.fromEntries(seen.at(-1)!.rects)).toEqual({
+      a: { x: 10, y: 20, width: 150, height: 75 },
+      b: { x: 220, y: 20, width: 75, height: 75 },
+    })
+  })
+
   it('移动拖到画布右边缘时逐帧派发 pan-request，视口平移后选中项跟着指针走', async () => {
     const seen: DesignerTransformEventMap['transform']['detail'][] = []
     overlay.addEventListener('transform', event => seen.push((event as DesignerTransformEventMap['transform']).detail))

@@ -6,6 +6,7 @@
 // <xh-designer-transform>：变换覆盖层。叠在画布上方，画选中框、控制柄、旋转柄、对齐线、框选框、悬停框与度量标签，
 // 并跑移动、框选与控制柄的手势会话；命中判断归设计器。坐标只认 Viewport，覆盖层左上角就是视口的屏幕原点。
 // 覆盖层本身不接指针，只有控制柄接；移动与框选由设计器命中后调 startMove / startMarquee 开始。
+// 多选时控制柄画在整体包围框上，拖动按包围框等比缩放全部选中项。
 
 import type { MarqueeMode, Point, Rect, ResizeHandle, Size, SnapGuide, SnapOptions, Viewport } from '@xihan-ui/designer-kit'
 import type { PointerEndDetails, PointerSession, PointerSessionDetails } from '@xihan-ui/pointer'
@@ -32,13 +33,13 @@ export interface DesignerTransformItem {
   readonly id: string
   /** 世界坐标，可带旋转角。 */
   readonly rect: Rect
-  /** 缩放控制柄：true 为八向（缺省），false 为不能缩放，数组为只给这些方向。 */
+  /** 缩放控制柄：true 为八向（缺省），false 为不能缩放，数组为只给这些方向；多选时每一项都是八向才出整体控制柄。 */
   readonly handles?: readonly ResizeHandle[] | boolean
   /** 显示旋转柄，缺省不显示。 */
   readonly rotatable?: boolean
   /** 缩放时总是保持宽高比；没开时按住 Shift 也保持。 */
   readonly keepAspect?: boolean
-  /** 缩放的最小尺寸，世界单位。 */
+  /** 缩放的最小尺寸，世界单位；多选整体缩放时任一项缩到它即停。 */
   readonly minSize?: Size
 }
 
@@ -93,6 +94,12 @@ interface Gesture {
   guides: readonly SnapGuide[]
   marquee?: Rect
   frame: number
+}
+
+/** 出控制柄的框与可用的方向。 */
+interface HandleTarget {
+  readonly rect: Rect
+  readonly allowed: ReadonlySet<ResizeHandle | 'rotate'>
 }
 
 interface Parts {
@@ -193,7 +200,7 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     this.#placeBox(parts.bounds, rects.length > 1 ? unionRects(rects.map(rotatedBounds)) : undefined, viewport)
     this.#placeGuides(parts.guides, gesture?.guides ?? [], viewport)
     this.#placeBox(parts.marquee, gesture?.marquee, viewport)
-    this.#placeHandles(parts.handles, items.length === 1 && !this.readonly ? items[0]! : undefined, rects[0], viewport, gesture)
+    this.#placeHandles(parts.handles, this.readonly ? undefined : handleTargetOf(items, rects), viewport, gesture)
     this.#placeMeasure(parts.measure, gesture && gesture.kind !== 'marquee' ? unionRects(rects.map(rotatedBounds)) : undefined, viewport)
   }
 
@@ -255,14 +262,11 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     })
   }
 
-  #placeHandles(handles: ReadonlyMap<ResizeHandle | 'rotate', HTMLElement>, item: DesignerTransformItem | undefined, rect: Rect | undefined, viewport: Viewport, gesture: Gesture | undefined): void {
-    const allowed = new Set<ResizeHandle | 'rotate'>(item ? resizeHandlesOf(item) : [])
-    if (item?.rotatable)
-      allowed.add('rotate')
-    const points = item && rect ? handlePoints(rect, ROTATE_OFFSET / viewport.zoom) : undefined
-    const rotation = rect?.rotation ?? 0
+  #placeHandles(handles: ReadonlyMap<ResizeHandle | 'rotate', HTMLElement>, target: HandleTarget | undefined, viewport: Viewport, gesture: Gesture | undefined): void {
+    const points = target ? handlePoints(target.rect, ROTATE_OFFSET / viewport.zoom) : undefined
+    const rotation = target?.rect.rotation ?? 0
     for (const [handle, element] of handles) {
-      const shown = points !== undefined && allowed.has(handle) && (!gesture || gesture.handle === handle || gesture.kind === 'move')
+      const shown = points !== undefined && target!.allowed.has(handle) && (!gesture || gesture.handle === handle || gesture.kind === 'move')
       element.hidden = !shown
       if (!shown)
         continue
@@ -389,9 +393,13 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     gesture.guides = guides
   }
 
+  /** 单选按该项缩放；多选按整体包围框等比缩放，再把每一项按同一比例换算。 */
   #stepResize(gesture: Gesture, world: Point): void {
-    const [id, start] = [...gesture.startRects][0]!
-    const item = (this.items ?? []).find(entry => entry.id === id)
+    const starts = [...gesture.startRects]
+    const group = starts.length > 1
+    const [id, first] = starts[0]!
+    const item = group ? undefined : (this.items ?? []).find(entry => entry.id === id)
+    const start = group ? unionRects(starts.map(([, rect]) => rotatedBounds(rect)))! : first
     const handle = gesture.handle as ResizeHandle
     let pointer = world
     let guides: readonly SnapGuide[] = []
@@ -406,13 +414,11 @@ export class XhDesignerTransformElement extends XhReactiveElement {
       pointer = { x: pointer.x + snapped.dx, y: pointer.y + snapped.dy }
       guides = snapped.guides
     }
-    const rect = resizeWithHandle(start, handle, pointer, {
-      keepAspect: item?.keepAspect === true || gesture.shift,
-      fromCenter: gesture.alt,
-      minWidth: item?.minSize?.width,
-      minHeight: item?.minSize?.height,
-    })
-    gesture.rects = new Map([[id, rect]])
+    const floor = group ? scaleFloorOf(this.items ?? [], gesture.startRects) : 0
+    const rect = resizeWithHandle(start, handle, pointer, group
+      ? { keepAspect: true, fromCenter: gesture.alt, minWidth: start.width * floor, minHeight: start.height * floor }
+      : { keepAspect: item?.keepAspect === true || gesture.shift, fromCenter: gesture.alt, minWidth: item?.minSize?.width, minHeight: item?.minSize?.height })
+    gesture.rects = group ? scaleRects(gesture.startRects, start, rect) : new Map([[id, rect]])
     gesture.guides = guides.map(guide => guide.axis === 'x'
       ? { ...guide, from: Math.min(guide.from, rect.y), to: Math.max(guide.to, rect.y + rect.height) }
       : { ...guide, from: Math.min(guide.from, rect.x), to: Math.max(guide.to, rect.x + rect.width) })
@@ -461,7 +467,7 @@ export class XhDesignerTransformElement extends XhReactiveElement {
   readonly #onHandleDown = (event: PointerEvent): void => {
     const element = event.currentTarget as HTMLElement
     const handle = element.dataset.handle as ResizeHandle | 'rotate'
-    if (event.button !== 0 || !event.isPrimary || this.readonly || (this.items ?? []).length !== 1)
+    if (event.button !== 0 || !event.isPrimary || this.readonly || (this.items ?? []).length === 0)
       return
     event.preventDefault()
     event.stopPropagation()
@@ -533,6 +539,47 @@ function resizeHandlesOf(item: DesignerTransformItem): readonly ResizeHandle[] {
   if (item.handles === false)
     return []
   return item.handles === undefined || item.handles === true ? ALL_HANDLES : item.handles
+}
+
+/** 单选取该项的框与能力；多选在每一项都能八向缩放时取整体包围框的八个方向，不出旋转柄。 */
+function handleTargetOf(items: readonly DesignerTransformItem[], rects: readonly Rect[]): HandleTarget | undefined {
+  if (items.length === 1) {
+    const allowed = new Set<ResizeHandle | 'rotate'>(resizeHandlesOf(items[0]!))
+    if (items[0]!.rotatable)
+      allowed.add('rotate')
+    return { rect: rects[0]!, allowed }
+  }
+  const all = items.length > 1 && items.every(item => ALL_HANDLES.every(handle => resizeHandlesOf(item).includes(handle)))
+  const bounds = all ? unionRects(rects.map(rotatedBounds)) : undefined
+  return bounds && { rect: bounds, allowed: new Set(ALL_HANDLES) }
+}
+
+/** 多选整体缩放的最小比例：任一项缩到它的 minSize 即停。 */
+function scaleFloorOf(items: readonly DesignerTransformItem[], rects: ReadonlyMap<string, Rect>): number {
+  let floor = 0
+  for (const item of items) {
+    const rect = rects.get(item.id)
+    if (!rect || !item.minSize)
+      continue
+    if (rect.width > 0)
+      floor = Math.max(floor, item.minSize.width / rect.width)
+    if (rect.height > 0)
+      floor = Math.max(floor, item.minSize.height / rect.height)
+  }
+  return floor
+}
+
+/** 把每个矩形按 from → to 换算：相对 from 左上角的位置与尺寸乘同一比例，旋转角不变。 */
+function scaleRects(rects: ReadonlyMap<string, Rect>, from: Rect, to: Rect): Map<string, Rect> {
+  const sx = from.width > 0 ? to.width / from.width : 1
+  const sy = from.height > 0 ? to.height / from.height : 1
+  return new Map([...rects].map(([id, rect]) => [id, {
+    ...rect,
+    x: to.x + (rect.x - from.x) * sx,
+    y: to.y + (rect.y - from.y) * sy,
+    width: rect.width * sx,
+    height: rect.height * sy,
+  }]))
 }
 
 /** 控制柄朝外的方向角对应的缩放指针。 */

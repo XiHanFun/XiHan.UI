@@ -65,13 +65,22 @@ describe('<xh-designer-transform>', () => {
     expect(part(overlay, 'bounds').hidden).toBe(true)
   })
 
-  it('多选时各自画细框，另画整体包围框，不出控制柄', async () => {
-    const overlay = await mount(element => element.items = [box, { id: 'b', rect: { x: 200, y: 20, width: 50, height: 50 } }])
+  it('多选时各自画细框，另画整体包围框；每项都能八向缩放时包围框上出八个控制柄，不出旋转柄', async () => {
+    const overlay = await mount(element => element.items = [{ ...box, rotatable: true }, { id: 'b', rect: { x: 200, y: 20, width: 50, height: 50 } }])
     expect(overlay.querySelectorAll('[data-part="frame"]')).toHaveLength(2)
     const bounds = part(overlay, 'bounds')
     expect(bounds.hidden).toBe(false)
     expect(bounds.style.inlineSize).toBe('480px')
-    expect(Array.from(overlay.querySelectorAll<HTMLElement>('[data-part="handle"]')).every(element => element.hidden)).toBe(true)
+    const shown = (): string[] => Array.from(overlay.querySelectorAll<HTMLElement>('[data-part="handle"]')).filter(element => !element.hidden).map(element => element.dataset.handle!)
+    expect(shown()).toEqual(['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'])
+    expect(handle(overlay, 'se').style.transform).toBe('translate(500px, 140px) translate(-50%, -50%) rotate(0deg)')
+    overlay.items = [box, { id: 'b', rect: { x: 200, y: 20, width: 50, height: 50 }, handles: ['e', 'w'] }]
+    await overlay.updateComplete
+    expect(shown()).toEqual([])
+    overlay.items = [box, { id: 'b', rect: { x: 200, y: 20, width: 50, height: 50 } }]
+    overlay.readonly = true
+    await overlay.updateComplete
+    expect(shown()).toEqual([])
   })
 
   it('单选按每项能力出控制柄；指针形状随旋转角换；只读时不出控制柄', async () => {
@@ -196,6 +205,29 @@ describe('<xh-designer-transform>', () => {
     up(260, 140, { shiftKey: true })
     expect(seen.at(-1)).toMatchObject({ phase: 'end', kind: 'resize' })
     expect(seen.at(-1)!.copy).toBeUndefined()
+  })
+
+  it('多选拖动整体控制柄：按包围框等比缩放全部选中项，旋转角不变，Alt 以中心为基准，任一项不小于 minSize', async () => {
+    const other: DesignerTransformItem = { id: 'b', rect: { x: 200, y: 20, width: 50, height: 50, rotation: 90 }, minSize: { width: 25, height: 25 } }
+    const overlay = await mount(element => element.items = [box, other])
+    const seen = record(overlay)
+    handle(overlay, 'se').dispatchEvent(pointer('pointerdown', 500, 140))
+    move(740, 140)
+    expect(seen.at(-1)).toMatchObject({ phase: 'move', kind: 'resize' })
+    expect(rectOf(seen.at(-1))).toEqual({ x: 10, y: 20, width: 150, height: 75 })
+    expect(rectOf(seen.at(-1), 'b')).toEqual({ x: 295, y: 20, width: 75, height: 75, rotation: 90 })
+    await overlay.updateComplete
+    expect(part(overlay, 'bounds').style.inlineSize).toBe('720px')
+    expect(Array.from(overlay.querySelectorAll<HTMLElement>('[data-part="handle"]')).filter(element => !element.hidden).map(element => element.dataset.handle)).toEqual(['se'])
+    move(740, 140, { altKey: true })
+    expect(rectOf(seen.at(-1))).toEqual({ x: -110, y: -5, width: 200, height: 100 })
+    expect(rectOf(seen.at(-1), 'b')).toEqual({ x: 270, y: -5, width: 100, height: 100, rotation: 90 })
+    move(20, 40)
+    expect(rectOf(seen.at(-1))).toEqual({ x: 10, y: 20, width: 50, height: 25 })
+    expect(rectOf(seen.at(-1), 'b')).toEqual({ x: 105, y: 20, width: 25, height: 25, rotation: 90 })
+    up(20, 40)
+    expect(seen.at(-1)).toMatchObject({ phase: 'end', kind: 'resize' })
+    expect([...seen.at(-1)!.rects.keys()]).toEqual(['a', 'b'])
   })
 
   it('拖动旋转柄得到旋转角，Shift 按 rotateStep 吸附', async () => {
