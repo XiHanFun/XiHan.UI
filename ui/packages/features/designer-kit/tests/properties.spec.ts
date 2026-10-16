@@ -108,6 +108,7 @@ describe('checkPropertyValue', () => {
     [{ kind: 'select', options: [{ value: 'a' }, { value: 'b' }], multiple: true }, ['a', 'b'], undefined],
     [{ kind: 'select', options: [{ value: 'a' }], multiple: true }, ['a', 'c'], 'invalid-option'],
     [{ kind: 'select', options: [{ value: 'a' }], multiple: true }, 'a', 'invalid-type'],
+    [{ kind: 'select', options: [{ value: 'a' }], appearance: 'toggle' }, 'b', 'invalid-option'],
     [{ kind: 'tags' }, ['x', 'y'], undefined],
     [{ kind: 'tags' }, ['x', 1], 'invalid-type'],
     [{ kind: 'color' }, '#1a2B3c', undefined],
