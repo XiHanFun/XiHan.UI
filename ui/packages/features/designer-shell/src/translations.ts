@@ -41,6 +41,8 @@ export interface DesignerIssuesTranslations {
   readonly severityWarning: string
   /** 过滤开关组的无障碍名称。 */
   readonly filter: string
+  /** 按对象分组时，没有对象的问题那一组的标题。 */
+  readonly noTarget: string
 }
 
 /** 物料面板的文案。 */
