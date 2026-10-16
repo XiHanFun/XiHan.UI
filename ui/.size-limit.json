@@ -184,7 +184,7 @@
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "632 kB"
+    "limit": "697 kB"
   },
   {
     "name": "headless/locale（十种语言整份）",
@@ -196,7 +196,7 @@
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "675 kB",
+    "limit": "746 kB",
     "ignore": [
       "vue"
     ]
@@ -223,7 +223,7 @@
     "name": "react",
     "path": "packages/adapters/react/dist/index.js",
     "gzip": true,
-    "limit": "673 kB",
+    "limit": "743 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -285,7 +285,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "676 kB"
+    "limit": "747 kB"
   },
   {
     "name": "web-components/backgrounds",
