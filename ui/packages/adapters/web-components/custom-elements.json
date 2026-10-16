@@ -9106,26 +9106,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "default": "new WeakMap<HTMLElement, boolean>()",
-              "description": "条目自身 disabled 声明的快照，整组禁用期间 DOM 上的 aria-disabled 不可信。"
-            },
-            {
-              "kind": "field",
-              "name": "wasGroupDisabled",
-              "type": {
-                "text": "boolean"
-              },
-              "privacy": "private",
-              "default": "false",
-              "description": "上一帧是否整组禁用；解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled。"
-            },
-            {
-              "kind": "field",
-              "name": "lockedLastFrame",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new WeakSet<HTMLElement>()",
-              "description": "上一帧被选中数上下限锁住的条目：它们身上的 aria-disabled 是连接层写的，不是作者声明。"
+              "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。"
             },
             {
               "kind": "field",
@@ -9185,13 +9166,6 @@
                   "text": "Partial<CheckboxGroupSchema['props']>"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "declaredItemDisabled",
-              "privacy": "private",
-              "readonly": true,
-              "description": "作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺"
             },
             {
               "kind": "method",
@@ -14674,17 +14648,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "default": "new WeakMap<HTMLElement, boolean>()"
-            },
-            {
-              "kind": "field",
-              "name": "wasGroupDisabled",
-              "type": {
-                "text": "boolean"
-              },
-              "privacy": "private",
-              "default": "false",
-              "description": "上一帧是否整组禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。"
+              "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。"
             },
             {
               "kind": "field",
@@ -14826,13 +14790,6 @@
                 }
               ],
               "description": "承载焦点的格子被移出 DOM 时浏览器不派 focusout，这里替 DOM 上报焦点离场，免得焦点锚点停在已消失的值上。"
-            },
-            {
-              "kind": "field",
-              "name": "declaredItemDisabled",
-              "privacy": "private",
-              "readonly": true,
-              "description": "作者声明的格子禁用，只认首见那一份；没写即 undefined，交给 swatches 定夺"
             },
             {
               "kind": "method",
@@ -15665,7 +15622,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "description": "作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读"
+              "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。"
             },
             {
               "kind": "field",
@@ -16735,7 +16692,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "description": "作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读"
+              "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。"
             },
             {
               "kind": "field",
@@ -18059,24 +18016,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "description": "作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读"
-            },
-            {
-              "kind": "field",
-              "name": "ownItemDisabled",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new WeakMap<HTMLElement, boolean>()"
-            },
-            {
-              "kind": "field",
-              "name": "wasMenuDisabled",
-              "type": {
-                "text": "boolean"
-              },
-              "privacy": "private",
-              "default": "false",
-              "description": "上一帧是否整张禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。"
+              "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。"
             },
             {
               "kind": "method",
@@ -18093,14 +18033,9 @@
                   "type": {
                     "text": "HTMLElement"
                   }
-                },
-                {
-                  "name": "menuDisabled",
-                  "type": {
-                    "text": "boolean"
-                  }
                 }
-              ]
+              ],
+              "description": "条目的禁用：给了 collection 时作者没写为 undefined，交给数据定夺。"
             },
             {
               "kind": "method",
@@ -31491,7 +31426,8 @@
               "kind": "field",
               "name": "declaredRowDisabled",
               "privacy": "private",
-              "readonly": true
+              "readonly": true,
+              "description": "给了 collection 时行的禁用声明：跳过 connect 写回的 aria-disabled，作者没写为 undefined。"
             },
             {
               "kind": "field",
@@ -38716,17 +38652,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "default": "new WeakMap<HTMLElement, boolean>()"
-            },
-            {
-              "kind": "field",
-              "name": "wasListDisabled",
-              "type": {
-                "text": "boolean"
-              },
-              "privacy": "private",
-              "default": "false",
-              "description": "上一帧是否整列禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。"
+              "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。"
             },
             {
               "kind": "field",
@@ -38823,13 +38749,6 @@
                 }
               ],
               "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：\n容器判自己\"焦点在列表内\"退出 Tab 序列，又没有条目认领得了这个锚点，\n整组零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。"
-            },
-            {
-              "kind": "field",
-              "name": "declaredItemDisabled",
-              "privacy": "private",
-              "readonly": true,
-              "description": "作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺"
             },
             {
               "kind": "method",
@@ -41226,7 +41145,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "description": "作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读"
+              "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。"
             },
             {
               "kind": "field",
@@ -42162,7 +42081,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "description": "作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读"
+              "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。"
             },
             {
               "kind": "method",
@@ -53293,17 +53212,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "default": "new WeakMap<HTMLElement, boolean>()"
-            },
-            {
-              "kind": "field",
-              "name": "wasGroupDisabled",
-              "type": {
-                "text": "boolean"
-              },
-              "privacy": "private",
-              "default": "false",
-              "description": "上一帧是否整组禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。"
+              "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。"
             },
             {
               "kind": "field",
@@ -53400,13 +53309,6 @@
                 }
               ],
               "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，这里替 DOM 上报焦点离场，免得焦点锚点停在已消失的值上。"
-            },
-            {
-              "kind": "field",
-              "name": "declaredItemDisabled",
-              "privacy": "private",
-              "readonly": true,
-              "description": "作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺"
             },
             {
               "kind": "method",
@@ -57213,7 +57115,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "description": "作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读"
+              "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。"
             },
             {
               "kind": "field",
@@ -64385,7 +64287,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "description": "作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读"
+              "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。"
             },
             {
               "kind": "method",
@@ -64960,17 +64862,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "default": "new WeakMap<HTMLElement, boolean>()"
-            },
-            {
-              "kind": "field",
-              "name": "wasGroupDisabled",
-              "type": {
-                "text": "boolean"
-              },
-              "privacy": "private",
-              "default": "false",
-              "description": "上一帧是否整组禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。"
+              "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。"
             },
             {
               "kind": "field",
@@ -65055,13 +64947,6 @@
                 }
               ],
               "description": "承载焦点的标签被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：\n容器判自己「焦点在组内」退出 Tab 序列，又没有条目认领得了这个锚点，\n整组零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。"
-            },
-            {
-              "kind": "field",
-              "name": "declaredItemDisabled",
-              "privacy": "private",
-              "readonly": true,
-              "description": "作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺"
             },
             {
               "kind": "method",
@@ -71178,17 +71063,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "default": "new WeakMap<HTMLElement, boolean>()"
-            },
-            {
-              "kind": "field",
-              "name": "wasGroupDisabled",
-              "type": {
-                "text": "boolean"
-              },
-              "privacy": "private",
-              "default": "false",
-              "description": "上一帧是否整组禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。"
+              "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。"
             },
             {
               "kind": "field",
@@ -71267,13 +71142,6 @@
                 }
               ],
               "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：\n容器判自己\"焦点在组内\"退出 Tab 序列，又没有条目认领得了这个锚点，\n整组零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。"
-            },
-            {
-              "kind": "field",
-              "name": "declaredItemDisabled",
-              "privacy": "private",
-              "readonly": true,
-              "description": "作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺"
             },
             {
               "kind": "method",
@@ -72467,17 +72335,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "default": "new WeakMap<HTMLElement, boolean>()"
-            },
-            {
-              "kind": "field",
-              "name": "wasToolbarDisabled",
-              "type": {
-                "text": "boolean"
-              },
-              "privacy": "private",
-              "default": "false",
-              "description": "上一帧是否整条禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。"
+              "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时要跳过这些写回值，只认作者写的。"
             },
             {
               "kind": "field",
