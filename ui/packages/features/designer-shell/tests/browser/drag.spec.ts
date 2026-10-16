@@ -3,6 +3,7 @@
 import type { DesignerPaletteDragPayload, PanRequestDetail } from '../../src'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { defineDesignerShell, registerDropTarget } from '../../src'
+import '@xihan-ui/tokens/tokens.css'
 import '../../style.css'
 
 defineDesignerShell()

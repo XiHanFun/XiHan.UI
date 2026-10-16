@@ -10,6 +10,7 @@ import { XhDesignerIssuesElement } from './issues/issues-element'
 import { XhDesignerMinimapElement } from './minimap/minimap-element'
 import { XhDesignerPaletteElement } from './palette/palette-element'
 import { XhDesignerPropertiesElement } from './properties/properties-element'
+import { XhDesignerTransformElement } from './transform/transform-element'
 
 /** 零件元素类：可以带一个注册它用到的库内元素的静态方法。 */
 interface ShellElementClass extends CustomElementConstructor {
@@ -22,6 +23,7 @@ export const DESIGNER_SHELL_ELEMENTS = {
   'xh-designer-issues': XhDesignerIssuesElement,
   'xh-designer-minimap': XhDesignerMinimapElement,
   'xh-designer-palette': XhDesignerPaletteElement,
+  'xh-designer-transform': XhDesignerTransformElement,
 } as const satisfies Readonly<Record<`xh-designer-${string}`, ShellElementClass>>
 
 /** 标签名 → 元素实例类型。 */
