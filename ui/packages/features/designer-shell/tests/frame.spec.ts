@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 // 外框：panels 的解析，作者内容按 slot 进区、没写 slot 的进中间区，按显示的区搭分隔条，收起再展开时内容还在，
-// 产品自己登记的区与同一位置的堆叠，分隔条的文案，以及恢复大小与 sizes-change。
+// 产品自己登记的区与同一位置的堆叠（堆叠区之间的分隔条、等分、恢复与按比例重分），分隔条的文案，以及恢复大小与 sizes-change。
 import type { DesignerFrameEventMap, XhDesignerFrameElement } from '../src'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineDesignerShell, parseDesignerPanels } from '../src'
@@ -97,10 +97,50 @@ describe('<xh-designer-frame>', () => {
     })
     expect(Array.from(frame.querySelectorAll('[data-part="top"] > [data-region]'), node => node.getAttribute('data-region'))).toEqual(['toolbar', 'pages'])
     const end = frame.querySelector('[data-part="stack"][data-position="end"]')!
-    expect(Array.from(end.children, node => node.getAttribute('data-region'))).toEqual(['properties', 'minimap'])
+    expect(Array.from(end.querySelectorAll('[data-part="region"]'), node => node.getAttribute('data-region'))).toEqual(['properties', 'minimap'])
     expect(splitter('horizontal')!.getAttribute('default-sizes')).toBe('70,30')
     expect(frame.querySelector('[data-xh-part="resize-trigger"], [data-part="resize-trigger"]')!.getAttribute('aria-label')).toBe('调整「属性」')
     expect(region('palette')).toBeNull()
+  })
+
+  it('同一位置堆叠的区之间有分隔条：缺省等分，sizes.regions 恢复，收起其中一个后其余按比例重分，拖动后并进 sizes-change', async () => {
+    const regions = [
+      { name: 'canvas', position: 'center' as const },
+      { name: 'properties', position: 'end' as const, label: '属性' },
+      { name: 'outline', position: 'end' as const },
+      { name: 'minimap', position: 'end' as const },
+    ]
+    await mount(element => element.regions = regions)
+    const stack = (): HTMLElement | null => frame.querySelector('[data-part="stack"][data-position="end"] [data-part="splitter"]')
+    expect([stack()!.getAttribute('data-orientation'), stack()!.getAttribute('default-sizes')]).toEqual(['vertical', '33.333,33.333,33.333'])
+    const panels = Array.from(stack()!.querySelectorAll(':scope > div > [data-xh-part="panel"]'), panel => panel.querySelector('[data-part="region"]')!.getAttribute('data-region'))
+    expect(panels).toEqual(['properties', 'outline', 'minimap'])
+    expect(Array.from(stack()!.querySelectorAll('[data-xh-part="resize-trigger"]'), trigger => trigger.getAttribute('aria-label'))).toEqual(['Resize 属性', 'Resize outline'])
+
+    frame.sizes = { regions: { properties: 50, outline: 25 } }
+    await frame.updateComplete
+    expect(stack()!.getAttribute('default-sizes')).toBe('46.154,23.077,30.769')
+    frame.sizes = { regions: { minimap: 25 } }
+    await frame.updateComplete
+    expect(stack()!.getAttribute('default-sizes')).toBe('50,25,25')
+    frame.panels = 'properties minimap'
+    await frame.updateComplete
+    expect(stack()!.getAttribute('default-sizes')).toBe('66.667,33.333')
+    frame.panels = 'properties'
+    await frame.updateComplete
+    expect(stack()).toBeNull()
+    expect(frame.querySelector('[data-part="stack"][data-position="end"] > [data-region="properties"]')).not.toBeNull()
+
+    frame.panels = undefined
+    await frame.updateComplete
+    const seen: DesignerFrameEventMap['sizes-change']['detail'][] = []
+    frame.addEventListener('sizes-change', event => seen.push((event as DesignerFrameEventMap['sizes-change']).detail))
+    stack()!.dispatchEvent(new CustomEvent('sizes-change', { detail: { sizes: [20, 30, 50] }, bubbles: true }))
+    splitter('horizontal')!.dispatchEvent(new CustomEvent('sizes-change', { detail: { sizes: [70, 30] }, bubbles: true }))
+    expect(seen).toEqual([
+      { sizes: { regions: { properties: 20, outline: 30, minimap: 50 } } },
+      { sizes: { end: 30, regions: { properties: 20, outline: 30, minimap: 50 } } },
+    ])
   })
 
   it('分隔条跟着外框的文字方向，外框的 dir 变了就重排', async () => {

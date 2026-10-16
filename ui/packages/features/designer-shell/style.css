@@ -858,15 +858,17 @@
     min-block-size: 0;
   }
 
-  xh-designer-frame [data-part='stack'] > [data-part='region'] {
+  /* 区直接放在位置里，或堆叠时放在分隔条的面板里 */
+  xh-designer-frame [data-part='stack'] > [data-part='region'],
+  xh-designer-frame [data-part='stack'] [data-scope='splitter'][data-part='panel'] > [data-part='region'] {
     flex: 1 1 auto;
   }
 
-  xh-designer-frame [data-part='stack']:not([data-position='center']) > [data-part='region'] {
+  xh-designer-frame [data-part='stack']:not([data-position='center']) [data-part='region'] {
     overflow: auto;
   }
 
-  xh-designer-frame [data-part='stack'][data-position='center'] > [data-part='region'] {
+  xh-designer-frame [data-part='stack'][data-position='center'] [data-part='region'] {
     overflow: hidden;
   }
 
