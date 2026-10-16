@@ -118,7 +118,7 @@ const PENDING = {
   'sortable': ['items', 'dragging', 'activeId', 'from', 'to', 'mode'],
   'splitter': ['size', 'panels', 'dragging', 'setSizes', 'setPanelSize', 'collapsePanel', 'expandPanel', 'togglePanel'],
   'steps': ['value', 'count', 'complete', 'setValue', 'goToNextStep', 'goToPrevStep'],
-  'table': ['columns', 'columnPreference', 'setColumnHidden', 'moveColumn', 'setColumnWidth', 'setColumnPreference', 'rowNumber', 'visibleRows', 'sort', 'selection', 'selectionState', 'expandedValue', 'focusedRow', 'empty', 'loading', 'isSelected', 'isExpanded', 'sortDirection', 'sortPriority', 'toggleSort', 'selectRow', 'toggleSelectAll', 'toggleExpandRow', 'rowReorderDisabledReason'],
+  'table': ['columns', 'columnPreference', 'setColumnHidden', 'moveColumn', 'setColumnWidth', 'setColumnPreference', 'sort', 'selection', 'selectionState', 'expandedValue', 'focusedRow', 'empty', 'loading', 'isSelected', 'sortDirection', 'sortPriority', 'toggleSort', 'selectRow', 'toggleSelectAll', 'toggleExpandRow', 'rowReorderDisabledReason'],
   'tags-input': ['value', 'count', 'inputValue', 'empty', 'atMax', 'overflow', 'highlightedValue', 'editedValue', 'canClear', 'setValue', 'addValue', 'deleteValue', 'clear', 'setInputValue', 'highlight', 'edit'],
   'text-field': ['value', 'empty', 'atLimit'],
   'color-field': ['value', 'empty', 'text', 'valid', 'invalid'],

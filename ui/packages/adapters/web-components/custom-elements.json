@@ -63727,6 +63727,51 @@
               "readonly": true
             },
             {
+              "kind": "field",
+              "name": "visibleRows",
+              "type": {
+                "text": "TableApi['visibleRows']"
+              },
+              "description": "展开展平后的可见行序列：详情行插在所属数据行之后，收起的父行底下的子行不在其中。\n树形表与分组报表按它铺表体，展开集合变化（expanded-value-change）后重铺。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "rowNumber",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "rowId",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "该行显示的序号：平表是分页全局序号，树形是大纲编号。"
+            },
+            {
+              "kind": "method",
+              "name": "isExpanded",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "rowId",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "该行此刻是否展开。"
+            },
+            {
               "kind": "method",
               "name": "cellSpanOf",
               "return": {
