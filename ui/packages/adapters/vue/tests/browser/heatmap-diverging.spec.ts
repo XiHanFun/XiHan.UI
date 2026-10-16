@@ -123,7 +123,7 @@ describe('热力图的发散色阶', () => {
 
   it('焦点在格上按 Enter 报告那一格；Space 不报告', async () => {
     const presses: unknown[] = []
-    mountHeatmap({ onCellPress: (details: unknown) => presses.push(details) })
+    mountHeatmap({ onDatumPress: (details: unknown) => presses.push(details) })
     await settle()
     cell('a', 'b').focus()
     await userEvent.keyboard('{Enter}')

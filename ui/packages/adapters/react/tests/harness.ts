@@ -54,7 +54,6 @@ const PUBLIC_EVENTS = {
   'active-key-change': 'onActiveKeyChange',
   'datum-active': 'onDatumActive',
   'datum-press': 'onDatumPress',
-  'cell-press': 'onCellPress',
   'view-change': 'onViewChange',
   'window-change': 'onWindowChange',
   'brush-selection-change': 'onBrushSelectionChange',
@@ -148,7 +147,9 @@ export function createReactHarness(): AdapterHarness {
       }
 
       root = createRoot(host)
-      const { children, slots } = renderFixtureSlots(fixture.tree.children, fixture.component)
+      const { children, slots } = fixture.tree.defaultStructure
+        ? { children: undefined, slots: {} }
+        : renderFixtureSlots(fixture.tree.children, fixture.component)
       render = (next) => {
         root!.render(createElement(
           Root,

@@ -6,11 +6,12 @@
 // 定义 heatmap 类型契约。
 
 import type { Direction, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { NumberFormatSpec } from '@xihan-ui/viz'
 import type {
   HeatmapAxisInput,
-  HeatmapCellDetails,
   HeatmapCellMeta,
   HeatmapCellRef,
+  HeatmapDatumDetails,
   HeatmapGrid,
   HeatmapLegendEntry,
   HeatmapMatrixGrid,
@@ -22,11 +23,10 @@ import type {
   HeatmapVariant,
 } from './heatmap.grid'
 
-/**
- * 聚焦或悬停到某一格时报出的信息。
- * 名字保留给早先只有聚焦一条路径的写法，形状与 `HeatmapCellDetails` 相同。
- */
-export type HeatmapCellFocusDetails = HeatmapCellDetails
+/** 激活的键变化时报告的内容；收起时为 null。 */
+export interface HeatmapActiveKeyChangeDetails {
+  activeKey: string | null
+}
 
 /**
  * 色板：直接按颜色命名，决定色阶满档一端的实心底色，取基础色板里同名色相的那一档。
@@ -134,15 +134,19 @@ export interface HeatmapTranslations {
   /** 网格的可及名：一片方格无法自行表达图表含义。 */
   gridLabel: string
   /** 日期形态每格的可及名：格内没有文字，日期与数值只能从这里朗读。 */
-  cellLabel: (details: HeatmapCellDetails) => string
+  cellLabel: (details: HeatmapDatumDetails) => string
   /** 矩阵形态每格的可及名：行列身份与数值都需要朗读。 */
-  matrixCellLabel: (details: HeatmapCellDetails) => string
+  matrixCellLabel: (details: HeatmapDatumDetails) => string
   /** 对照条整体的可及名：一排色块无法自行表达用途。 */
   legendLabel: string
   /** 顺序色阶对照条起点一端的可见文字，默认 Less。发散色阶两端恒写数值（中点减去两侧最远距离），不读这一条。 */
   legendLow: string
   /** 顺序色阶对照条终点一端的可见文字，默认 More。发散色阶两端恒写数值（中点加上两侧最远距离），不读这一条。 */
   legendHigh: string
+  /** 网格里一条数据都没有时空态的文字。 */
+  emptyText: string
+  /** 取数中、还没有数据时空态的文字。 */
+  loadingText: string
 }
 
 export interface HeatmapSchema extends MachineSchema {
@@ -193,22 +197,29 @@ export interface HeatmapSchema extends MachineSchema {
      * 之后的数据变化从旧档的颜色过渡到新档。关闭后直接画终态。
      */
     animated?: boolean
-    translations?: Partial<HeatmapTranslations>
+    /** 数值格式：详情、格子的可及名与发散色阶对照条两端共用；缺省按 locale 的常规数字写法。 */
+    format?: NumberFormatSpec | ((value: number) => string)
+    /** 数据重取中：保留上一帧，网格整体降低不透明度，根上 aria-busy。 */
+    pending?: boolean
     /**
-     * DOM 焦点落到某一格时通知一次；同一格重复聚焦不重复通知。
-     * 只由真实的聚焦触发，程序化移动锚点（`setFocusedCell`）不派发该回调。
+     * 激活的键（受控）：日期形态是 ISO 日期，矩阵形态是 `heatmapMatrixKey(row, column)`。
+     * 指针与键盘都不在网格上时，键命中的那一格描出与悬停相同的一圈，用来与别的图联动；
+     * 字符串之外的键不命中任何一格。
      */
-    onCellFocus?: (details: HeatmapCellFocusDetails) => void
+    activeKey?: string | null
+    /** 指针或键盘把激活的格子换掉时通知；收起时为 null。 */
+    onActiveKeyChange?: (details: HeatmapActiveKeyChangeDetails) => void
+    translations?: Partial<HeatmapTranslations>
     /**
      * 详情应显示哪一格：指针悬停或键盘聚焦都会走到这里，收起时为 null。
      * 详情条的内容由作者决定，组件只报告是哪一格、数值多少。
      */
-    onCellActive?: (details: HeatmapCellDetails | null) => void
+    onDatumActive?: (details: HeatmapDatumDetails | null) => void
     /**
-     * 一格被按下：指针点击，或焦点在格上按 Enter。载荷与 onCellActive 同形，
+     * 一格被按下：指针点击，或焦点在格上按 Enter。载荷与 onDatumActive 同形，
      * 用来下钻到那一天或那一对行列。Space 不接，照常滚动页面。
      */
-    onCellPress?: (details: HeatmapCellDetails) => void
+    onDatumPress?: (details: HeatmapDatumDetails) => void
   }
   context: {
     /**
@@ -226,8 +237,10 @@ export interface HeatmapSchema extends MachineSchema {
     hoverTip: HeatmapTipRect | null
     /** 聚焦格的落点，由事件处理器测量后写回；未聚焦过时为 null。 */
     focusTip: HeatmapTipRect | null
-    /** 上一次通知过的详情身份与数值；只用于去重，不对外。 */
+    /** 激活的键：指针或键盘换格时写入，activeKey 给出即受控。 */
     activeKey: string | null
+    /** 上一次通知过的详情身份与数值；只用于去重，不对外。 */
+    notified: string | null
     /** 在播的过渡：entry 是首次出现的填色，update 是数据变化后的换色；没有在播时为 null。 */
     transition: 'entry' | 'update' | null
   }
@@ -289,7 +302,13 @@ export interface HeatmapApi<T extends PropTypes = PropTypes> {
   /** 当前占据 Tab 位的日期；矩阵形态下恒为 null。 */
   anchorDate: string | null
   /** 详情应显示的格的数据：身份、原始值、档位与色阶位置；不显示时为 null。 */
-  activeCell: HeatmapCellDetails | null
+  activeCell: HeatmapDatumDetails | null
+  /** 激活的键：指针、键盘或受控的 activeKey 给出的那一格；没有时为 null。 */
+  activeKey: string | null
+  /** 网格里一条数据都没有。 */
+  empty: boolean
+  /** 空态的文字：取数中写加载文案，否则写空态文案。 */
+  emptyText: string
   /** 详情条当前是否显示。 */
   detailOpen: boolean
   /**
@@ -300,8 +319,7 @@ export interface HeatmapApi<T extends PropTypes = PropTypes> {
   /** 按日期取一格；不在区间内时为 null。矩阵形态下恒为 null。 */
   cellAt: (date: string) => HeatmapCellMeta | null
   /**
-   * 移动锚点。只改锚点不移动 DOM 焦点，也不派发 `onCellFocus`；
-   * 需要焦点跟随时自行调用元素的 focus()。
+   * 移动锚点。只改锚点不移动 DOM 焦点；需要焦点跟随时自行调用元素的 focus()。
    */
   setFocusedCell: (cell: HeatmapCellRef | null) => void
   /** 按日期移动锚点，等同于 `setFocusedCell({ date })`。 */
@@ -319,4 +337,5 @@ export interface HeatmapApi<T extends PropTypes = PropTypes> {
   getLegendProps: () => T['element']
   getLegendLabelProps: (props: HeatmapLegendLabelProps) => T['element']
   getLegendItemProps: (props: HeatmapLegendItemProps) => T['element']
+  getEmptyProps: () => T['element']
 }

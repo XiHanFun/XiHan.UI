@@ -362,11 +362,13 @@ const translations = {
   'grid-list': { root: 'Элементы' },
   'heatmap': {
     gridLabel: 'Тепловая карта активности',
-    cellLabel: details => `${details.date}: ${details.count}`,
-    matrixCellLabel: details => `${details.row} ${details.column}: ${details.count}`,
+    cellLabel: details => `${details.date}: ${details.formatted.value}`,
+    matrixCellLabel: details => `${details.row} ${details.column}: ${details.formatted.value}`,
     legendLabel: 'Уровень активности',
     legendLow: 'Меньше',
     legendHigh: 'Больше',
+    emptyText: chart.emptyText,
+    loadingText: chart.loadingText,
   },
   'hierarchy-chart': {
     ...chart,

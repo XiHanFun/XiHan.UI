@@ -42,6 +42,7 @@ export function heatmapGridOptions(prop: PropFn<HeatmapSchema>, scope?: Scope): 
     continuous: prop('continuous'),
     firstDayOfWeek: prop('firstDayOfWeek'),
     locale: resolveLocale(prop('locale'), scope),
+    format: prop('format'),
   }
 }
 
@@ -138,7 +139,7 @@ function syncHeatmapTransition({ prop, context, refs, scope, send }: Params<Heat
 export const heatmapMachine = createMachine({
   name: 'heatmap',
   refs: () => ({ getRootEl: () => null, drawn: false, stopTransition: null }),
-  context: ({ cell }) => ({
+  context: ({ cell, prop }) => ({
     // 身份是对象，不给 isEqual 的话每次上报都算变更，版本号会一直空转自增
     focusedCell: cell<HeatmapCellRef | null>(() => ({ defaultValue: null, isEqual: sameHeatmapCell })),
     focusWithin: cell<boolean>(() => ({ defaultValue: false })),
@@ -147,8 +148,14 @@ export const heatmapMachine = createMachine({
     // 两路各存各的量测：合成时按同一条优先级挑，内容与落点因此同源
     hoverTip: cell<HeatmapTipRect | null>(() => ({ defaultValue: null, isEqual: sameHeatmapTip })),
     focusTip: cell<HeatmapTipRect | null>(() => ({ defaultValue: null, isEqual: sameHeatmapTip })),
+    // 激活的键：给了 activeKey 即受控，写入只发 onActiveKeyChange
+    activeKey: cell<string | null>(() => ({
+      value: prop('activeKey'),
+      defaultValue: null,
+      onChange: activeKey => prop('onActiveKeyChange')?.({ activeKey }),
+    })),
     // 上一次通知过的详情身份与数值，用来判「还是不是同一格、数还是不是那个数」
-    activeKey: cell<string | null>(() => ({ defaultValue: null })),
+    notified: cell<string | null>(() => ({ defaultValue: null })),
     transition: cell<'entry' | 'update' | null>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
@@ -170,6 +177,8 @@ export const heatmapMachine = createMachine({
       () => prop('endDate'),
       () => prop('rows'),
       () => prop('columns'),
+      () => prop('format'),
+      () => prop('locale'),
     ], () => action(['notifyActive']))
     // 决定格子颜色的输入换了就安排过渡；animated 改了也要重新核一遍
     track([
@@ -199,34 +208,30 @@ export const heatmapMachine = createMachine({
   },
   implementations: {
     actions: {
-      setFocusedCell: ({ context, prop, event }) => {
+      setFocusedCell: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'CELL.FOCUS' && e.type !== 'FOCUS.SET')
           return
         const next = e.cell
-        if (e.type === 'CELL.FOCUS') {
-          // 焦点真落上去了：详情跟着走，Escape 收起过也重新打开
-          context.set('focusWithin', true)
-          context.set('dismissed', false)
-          context.set('focusTip', e.tip)
-        }
-        // 同一格反复聚焦（点一下再按一次方向键回来）不重复通知
-        const same = sameHeatmapCell(context.get('focusedCell'), next)
-        if (!same)
+        if (!sameHeatmapCell(context.get('focusedCell'), next))
           context.set('focusedCell', next)
-        if (same || next == null)
-          return
-        // 只有 DOM 焦点真的落到某一格时才通知；FOCUS.SET 只挪锚点、焦点没动，
-        // 通知了就是报一件没发生的事
+        // FOCUS.SET 只挪锚点、焦点没动，激活的键不跟着换
         if (e.type !== 'CELL.FOCUS')
           return
-        // 只查这一格的数值与档位，不建整张网格：方向键每按一下都会走到这里
-        prop('onCellFocus')?.(heatmapDetailsOf(heatmapGridOptions(prop), next))
+        // 焦点真落上去了：详情跟着走，Escape 收起过也重新打开
+        context.set('focusWithin', true)
+        context.set('dismissed', false)
+        context.set('focusTip', e.tip)
+        // 指针停在别的格子上时激活的仍是指针那一格
+        if (context.get('hoveredCell') == null)
+          context.set('activeKey', heatmapCellKey(e.cell))
       },
 
       clearFocusWithin: ({ context }) => {
         // 锚点留着：清掉就意味着 Tab 回来永远落回第一格
         context.set('focusWithin', false)
+        if (context.get('hoveredCell') == null)
+          context.set('activeKey', null)
       },
 
       setHoveredCell: ({ context, event }) => {
@@ -236,6 +241,7 @@ export const heatmapMachine = createMachine({
         context.set('hoveredCell', e.cell)
         context.set('dismissed', false)
         context.set('hoverTip', e.tip)
+        context.set('activeKey', heatmapCellKey(e.cell))
       },
 
       clearHoveredCell: ({ context }) => {
@@ -243,6 +249,9 @@ export const heatmapMachine = createMachine({
         // 量测跟着身份一起清：留着它，指针离开后详情会退回聚焦的那一格，
         // 却还摆在指针刚离开的那一格上
         context.set('hoverTip', null)
+        // 键盘还在网格里时激活的键退回聚焦的那一格
+        const focused = context.get('focusedCell')
+        context.set('activeKey', context.get('focusWithin') && focused != null ? heatmapCellKey(focused) : null)
       },
 
       dismissDetail: ({ context }) => context.set('dismissed', true),
@@ -258,12 +267,12 @@ export const heatmapMachine = createMachine({
         // 去重键把数值一起拼进去：格子没换而数据换了，条上的数也要跟着更新
         const key = active == null || details == null
           ? null
-          : `${heatmapCellKey(active)}|${details.count}|${details.level}`
+          : `${details.key}|${details.count}|${details.level}|${details.formatted.value}`
         // 悬停与聚焦落在同一格时两处 context 各变一次，合成结果没变就不必再派一次回调
-        if (context.get('activeKey') === key)
+        if ((context.get('notified') ?? null) === key)
           return
-        context.set('activeKey', key)
-        prop('onCellActive')?.(details)
+        context.set('notified', key)
+        prop('onDatumActive')?.(details)
       },
 
       syncTransition: params => syncHeatmapTransition(params),

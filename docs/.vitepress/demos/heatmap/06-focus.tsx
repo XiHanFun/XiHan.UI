@@ -1,4 +1,4 @@
-// 焦点明细 | 焦点落到某一天时报告日期与计数，键盘用户与鼠标用户看到同一份明细
+// 焦点明细 | 悬停或焦点落到某一天时报告日期与计数，键盘用户与鼠标用户看到同一份明细
 import type { ReactNode } from "react";
 import { XhHeatmapRoot } from "@xihan-ui/react";
 import { useState } from "react";
@@ -25,7 +25,7 @@ export default function Demo(): ReactNode {
         value={activity}
         startDate="2024-01-01"
         endDate="2024-01-28"
-        onCellFocus={details => setReadout(`${details.date}：${details.count} 次（第 ${details.level} 档）`)}
+        onDatumActive={details => details && setReadout(`${details.date}：${details.formatted.value} 次（第 ${details.level} 档）`)}
       />
       <span data-demo-output>{readout}</span>
     </>

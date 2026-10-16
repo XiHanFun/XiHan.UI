@@ -32081,7 +32081,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-heatmap>`：Light-DOM 行为宿主：作者写 root、grid、若干 row 与 cell 角色节点，\n元素运行 heatmap 状态机并把 connect 产出接上。\n\n网格由作者渲染，元素不生成节点：铺设一整年不必手写三百多个格子，读取 `grid` / `monthGrid` /\n`matrixGrid` 三个只读属性，按推导出的行、列、月份段循环生成即可（三种形态各读其中一个）。\n每次读取都重新计算，取一次后保存使用。\n\n角色节点的身份一律取作者写在节点上的 value 属性，解释方式由 variant 决定：\n日历形态中 row 与 week-day 上是行序 0-6（未写即网格之外的月份行与其行首占位）、\ncell 上是 ISO 日期、month-label 上是 YYYY-MM；月历形态中 month-block 上是 YYYY-MM、\nrow 上是月内周序（未写即块内的星期名坐标轴）；矩阵形态中 row 与 row-label 上是行身份\n（未写即表头行与角落占位）、column-label 与 cell 上是列身份，格子的行身份从所在的行取。\nlegend-item 上是档位（发散色阶下另写 polarity 属性标明在中点哪一侧，逐格读取 `legendItems`）、\nlegend-label 上是 low 或 high（两端的文字，文案读取 `legendText`）。\n\n数据、行列、档位下界与文案只能通过 property 设置（`el.value = [...]`）：HTML 属性无法承载数组与函数。",
+          "description": "`<xh-heatmap>`：Light-DOM 行为宿主，元素运行 heatmap 状态机并把 connect 产出接上。\n\n作者只写 root（可另写 tooltip、empty、legend）时，元素按网格模型在 root 里生成整套结构：日历形态的月份行、\ngrid、行、星期名、月份名、行列表头、格子、空态与图例，与 Vue / React 的缺省树逐节点一致，生成的节点带\n`data-xh-gen`、按身份复用。root 里有作者写的 grid 时元素不生成任何结构，各部件由作者写进标记；\n这时可读取 `grid` / `monthGrid` / `matrixGrid` 三个只读属性按推导出的行、列、月份段循环铺设\n（三种形态各读其中一个），每次读取都重新计算，取一次后保存使用。\n\n角色节点的身份一律取作者写在节点上的 value 属性，解释方式由 variant 决定：\n日历形态中 row 与 week-day 上是行序 0-6（未写即网格之外的月份行与其行首占位）、\ncell 上是 ISO 日期、month-label 上是 YYYY-MM；月历形态中 month-block 上是 YYYY-MM、\nrow 上是月内周序（未写即块内的星期名坐标轴）；矩阵形态中 row 与 row-label 上是行身份\n（未写即表头行与角落占位）、column-label 与 cell 上是列身份，格子的行身份从所在的行取。\nlegend-item 上是档位（发散色阶下另写 polarity 属性标明在中点哪一侧，逐格读取 `legendItems`）、\nlegend-label 上是 low 或 high（两端的文字，文案读取 `legendText`）。\n\n数据、行列、档位下界、数值格式与文案只能通过 property 设置（`el.value = [...]`）：HTML 属性无法承载数组与函数。",
           "name": "XhHeatmapElement",
           "cssParts": [
             {
@@ -32135,6 +32135,10 @@
             {
               "description": "对照条中的一格，value 是档位，发散色阶下 polarity 是 negative 或 positive",
               "name": "legend-item"
+            },
+            {
+              "description": "网格里一条数据都没有时叠在网格上的空态，留空时由元素写入空态文案，取数中改写加载文案",
+              "name": "empty"
             }
           ],
           "members": [
@@ -32177,6 +32181,14 @@
               "privacy": "public",
               "type": {
                 "text": "number[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "privacy": "public",
+              "type": {
+                "text": "NumberFormatSpec | ((value: number) => string) | undefined"
               }
             },
             {
@@ -32315,9 +32327,21 @@
             },
             {
               "kind": "field",
-              "name": "notifyFocus",
-              "privacy": "private",
-              "readonly": true
+              "name": "pending",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "pending"
+            },
+            {
+              "kind": "field",
+              "name": "activeKey",
+              "privacy": "public",
+              "type": {
+                "text": "string | null | undefined"
+              },
+              "attribute": "active-key"
             },
             {
               "kind": "field",
@@ -32330,6 +32354,23 @@
               "name": "notifyPress",
               "privacy": "private",
               "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyKey",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "generatedKeys",
+              "type": {
+                "text": "KeyedChildren"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap()",
+              "description": "生成节点按 key 复用。"
             },
             {
               "kind": "field",
@@ -32347,6 +32388,42 @@
                   "text": "Partial<HeatmapSchema['props']>"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "authoredPart",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "scope",
+                  "type": {
+                    "text": "ParentNode"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "本元素名下的某个作者节点：不是生成的，也不在嵌套的另一台热力图里。"
+            },
+            {
+              "kind": "method",
+              "name": "syncGenerated",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "root 里没有作者写的 grid 时生成整套结构；有就撤掉生成过的节点。\n排在部件发现之前：生成的节点这一轮就能被发现、接线，必备部件的校验也认得出 grid。"
             },
             {
               "kind": "field",
@@ -32403,6 +32480,24 @@
               "readonly": true
             },
             {
+              "kind": "field",
+              "name": "empty",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "网格里一条数据都没有。状态机尚未建立时为 true。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "currentActiveKey",
+              "type": {
+                "text": "string | null"
+              },
+              "description": "此刻激活的键。activeKey 是作者递进来的受控值，非受控时读这里。",
+              "readonly": true
+            },
+            {
               "kind": "method",
               "name": "rowProps",
               "privacy": "private",
@@ -32440,24 +32535,24 @@
           ],
           "events": [
             {
-              "description": "焦点落到某一格；detail 为 `{ date, row, column, count, level, polarity, percent }`",
-              "name": "cell-focus",
+              "description": "详情应显示哪一格（悬停或聚焦）；detail 为 `{ key, date, row, column, count, level, polarity, percent, formatted }`，收起时为 null",
+              "name": "datum-active",
               "type": {
-                "text": "HeatmapCellFocusDetails"
+                "text": "HeatmapDatumDetails"
               }
             },
             {
-              "description": "详情应显示哪一格（悬停或聚焦）；收起时 detail 为 null",
-              "name": "cell-active",
+              "description": "点按一格，或焦点在格上按 Enter；detail 与 datum-active 同形",
+              "name": "datum-press",
               "type": {
-                "text": "HeatmapCellDetails"
+                "text": "HeatmapDatumDetails"
               }
             },
             {
-              "description": "点按一格，或焦点在格上按 Enter；detail 与 cell-focus 同形",
-              "name": "cell-press",
+              "description": "指针或键盘换了激活的格子；detail 为 `{ activeKey }`，收起时为 null",
+              "name": "active-key-change",
               "type": {
-                "text": "HeatmapCellDetails"
+                "text": "HeatmapActiveKeyChangeDetails"
               }
             }
           ],
@@ -32573,6 +32668,22 @@
               "description": "播放过渡，默认开；`animated=\"false\"` 时直接画终态",
               "name": "animated",
               "fieldName": "animated"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "数据重取中：保留上一帧、网格整体降低不透明度",
+              "name": "pending",
+              "fieldName": "pending"
+            },
+            {
+              "type": {
+                "text": "string | null | undefined"
+              },
+              "description": "激活的键（受控）：日期形态是 ISO 日期，矩阵形态是 heatmapMatrixKey(row, column)",
+              "name": "active-key",
+              "fieldName": "activeKey"
             }
           ],
           "superclass": {
@@ -32620,6 +32731,9 @@
             },
             {
               "name": "--xh-heatmap-empty"
+            },
+            {
+              "name": "--xh-heatmap-empty-gap"
             },
             {
               "name": "--xh-heatmap-fg"

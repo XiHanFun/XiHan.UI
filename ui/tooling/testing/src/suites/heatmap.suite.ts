@@ -66,6 +66,12 @@ function buildFixture(): FixtureNode {
   }
 }
 
+/** 带空态部件的日历：空态叠在网格上，有数据时收起。 */
+function buildEmptyFixture(): FixtureNode {
+  const tree = buildFixture()
+  return { ...tree, children: [...(tree.children ?? []), { part: 'empty' }] }
+}
+
 /**
  * 月历形态挑一段跨月的短区间：2024-01-29 是星期一，2 月 1 日是星期四，
  * 两个月块各只有一行，既演得出跨块走格，节点又少得能逐个断言。
@@ -758,9 +764,10 @@ export const heatmapSuite: ConformanceSuite = {
       props: RANGE,
       steps: [
         { kind: 'focus', part: `cell[${at('2024-01-02')}]` },
-        { kind: 'key', key: 'Enter', expect: { events: [{ type: 'cell-press' }] } },
+        { kind: 'key', key: 'Enter', expect: { events: [{ type: 'datum-press' }] } },
         { kind: 'key', key: 'Space', expect: { events: [] } },
-        { kind: 'click', part: `cell[${at('2024-01-03')}]`, expect: { events: [{ type: 'cell-press' }] } },
+        // 点按先经过指针悬停：激活的键与详情跟着换到这一格
+        { kind: 'click', part: `cell[${at('2024-01-03')}]`, expect: { events: [{ type: 'active-key-change' }, { type: 'datum-press' }, { type: 'datum-active' }] } },
       ],
     },
     {
@@ -781,6 +788,64 @@ export const heatmapSuite: ConformanceSuite = {
           [`cell[${matrixAt('甲', '上午')}]`]: { 'data-polarity': 'negative' },
           [`cell[${matrixAt('甲', '下午')}]`]: { 'data-polarity': null },
           [`cell[${matrixAt('乙', '夜里')}]`]: { 'data-polarity': 'positive' },
+        },
+      },
+    },
+    {
+      name: '空态：区间内一条数据都没有时显示，取数中改写加载文案并在根上报 aria-busy',
+      spec: { adr: 'visual-axes' },
+      fixture: buildEmptyFixture,
+      props: { ...RANGE, pending: true },
+      initial: {
+        parts: {
+          root: { 'data-loading': '', 'aria-busy': 'true' },
+          empty: { 'hidden': null, 'data-state': 'loading' },
+        },
+      },
+    },
+    {
+      name: '空态：区间内有数据时收起',
+      spec: { adr: 'visual-axes' },
+      fixture: buildEmptyFixture,
+      props: { ...RANGE, value: [{ date: '2024-01-02', count: 3 }] },
+      initial: {
+        parts: { empty: { 'hidden': '', 'data-state': null } },
+      },
+    },
+    {
+      name: '作者只写 root：三端都照 heatmapStructure 铺出同一棵树（月份行、七行星期、格子、空态与对照条）',
+      spec: { adr: 'visual-axes' },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { ...RANGE, value: [{ date: '2024-01-02', count: 3 }] },
+      initial: {
+        counts: { 'row': GRID.rows.length + 1, 'cell': DAYS.length, 'month-label': GRID.months.length, 'legend-item': GRID.levels, 'legend-label': 2, 'empty': 1, 'grid': 1 },
+        parts: {
+          [`cell[${at('2024-01-02')}]`]: { 'data-level': '3' },
+          grid: { role: 'grid' },
+          empty: { hidden: '' },
+        },
+      },
+    },
+    {
+      name: '作者只写 root（矩阵形态）：表头行接列名，数据行接行名与格子',
+      spec: { adr: 'visual-axes' },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: MATRIX_RANGE,
+      initial: {
+        counts: { 'row': MATRIX_RANGE.rows.length + 1, 'cell': MATRIX_RANGE.rows.length * MATRIX_RANGE.columns.length, 'column-label': MATRIX_RANGE.columns.length, 'row-label': MATRIX_RANGE.rows.length + 1 },
+        parts: {
+          [`cell[${matrixAt('乙', '夜里')}]`]: { 'aria-colindex': '4' },
+        },
+      },
+    },
+    {
+      name: '受控 activeKey：指针与键盘都不在网格上时，键命中的那一格描圈',
+      spec: { adr: 'visual-axes' },
+      props: { ...RANGE, activeKey: '2024-01-03' },
+      initial: {
+        parts: {
+          [`cell[${at('2024-01-03')}]`]: { 'data-highlighted': '' },
+          [`cell[${at('2024-01-02')}]`]: { 'data-highlighted': null },
         },
       },
     },

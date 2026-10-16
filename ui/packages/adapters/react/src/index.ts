@@ -1280,6 +1280,7 @@ export { useHeatmapContext, useHeatmapMonth, useHeatmapRow } from './components/
 export {
   XhHeatmapCell,
   XhHeatmapColumnLabel,
+  XhHeatmapEmpty,
   XhHeatmapGrid,
   XhHeatmapLegend,
   XhHeatmapLegendItem,
@@ -1297,6 +1298,7 @@ export type {
   HeatmapRootSlotProps,
   XhHeatmapCellProps,
   XhHeatmapColumnLabelProps,
+  XhHeatmapEmptyProps,
   XhHeatmapGridProps,
   XhHeatmapLegendItemProps,
   XhHeatmapLegendLabelProps,

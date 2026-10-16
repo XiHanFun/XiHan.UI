@@ -39432,6 +39432,24 @@
       "description": "heatmap 的 cell、legend-item、root 部件 background、background-color 覆盖槽。"
     },
     {
+      "name": "--xh-heatmap-empty-gap",
+      "component": "heatmap",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "state=loading"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "heatmap 的 empty 部件 gap 覆盖槽。"
+    },
+    {
       "name": "--xh-heatmap-fg",
       "component": "heatmap",
       "part": [

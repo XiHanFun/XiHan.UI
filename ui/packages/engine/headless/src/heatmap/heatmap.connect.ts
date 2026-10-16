@@ -24,7 +24,10 @@ import {
   buildHeatmapGrid,
   buildHeatmapMatrixGrid,
   buildHeatmapMonthGrid,
+  heatmapCellKey,
+  heatmapDatumDetails,
   heatmapDetailsOf,
+  heatmapHasData,
   heatmapLegendEntries,
   heatmapMatrixKey,
   heatmapMatrixNavTarget,
@@ -32,6 +35,7 @@ import {
   heatmapNavIntentFromKey,
   heatmapNavTarget,
   heatmapTipPlacement,
+  heatmapValueFormat,
   normalizeHeatmapThresholds,
   parseHeatmapDate,
   resolveHeatmapTip,
@@ -127,12 +131,15 @@ export function connectHeatmap<T extends PropTypes>(
 
   const translations = resolveTranslations(HEATMAP_EN_US, prop('translations'))
   const { gridLabel, cellLabel, matrixCellLabel, legendLabel } = translations
+  const format = heatmapValueFormat(options)
+  const pending = prop('pending') === true
+  const empty = !heatmapHasData(options)
+  const loading = pending && empty
   // 对照条两端是写进界面的可见文字，缺省跟着月份名、星期名那条 locale 的缺省走。
   // 发散色阶两端各代表中点两侧最远的那个数，「少 / 多」说不清哪端是负，两端恒写数值；
   // legendLow / legendHigh 只换顺序色阶两端的词，全局语言包里的「少 / 多」因此落不到发散色阶上
-  const bound = (value: number): string => new Intl.NumberFormat(options.locale, { maximumFractionDigits: 2 }).format(value)
-  const legendLow = diverging ? bound(scale.midpoint - scale.extent) : translations.legendLow
-  const legendHigh = diverging ? bound(scale.midpoint + scale.extent) : translations.legendHigh
+  const legendLow = diverging ? format(scale.midpoint - scale.extent) : translations.legendLow
+  const legendHigh = diverging ? format(scale.midpoint + scale.extent) : translations.legendHigh
 
   const monthOf = new Map(grid.months.map(month => [month.value, month]))
   const monthBlockOf = new Map((monthGrid?.blocks ?? []).map(block => [block.value, block]))
@@ -175,6 +182,10 @@ export function connectHeatmap<T extends PropTypes>(
   }
   const activeRef = heatmapActiveCell(activeContext)
   const activeCell = activeRef == null ? null : heatmapDetailsOf(options, activeRef)
+  const activeKey = context.get('activeKey') ?? null
+  // 指针与键盘都不在网格上时，受控的键命中的那一格描出同一圈：别的图联动过来的键
+  const linkedKey = activeRef == null && !activeContext.dismissed ? activeKey : null
+  const highlightedKey = activeRef == null ? linkedKey : heatmapCellKey(activeRef)
   const tip = heatmapActiveTip({
     ...activeContext,
     hoverTip: context.get('hoverTip'),
@@ -231,9 +242,9 @@ export function connectHeatmap<T extends PropTypes>(
     }
   }
 
-  /** 一格被按下：点击与 Enter / Space 走同一条路，载荷与详情同源。 */
+  /** 一格被按下：点击与 Enter 走同一条路，载荷与详情同源。 */
   const pressCell = (ref: HeatmapCellRef): void => {
-    prop('onCellPress')?.(heatmapDetailsOf(options, ref))
+    prop('onDatumPress')?.(heatmapDetailsOf(options, ref))
   }
 
   /** 一步走到哪一格；走不动给 null（焦点原地不动）。 */
@@ -291,6 +302,9 @@ export function connectHeatmap<T extends PropTypes>(
     anchorCell,
     anchorDate: matrixGrid ? null : (anchorCell?.date ?? null),
     activeCell,
+    activeKey,
+    empty,
+    emptyText: loading ? translations.loadingText : translations.emptyText,
     detailOpen: activeRef != null,
     legendText: { low: legendLow, high: legendHigh },
     cellAt: date => (monthGrid?.cells ?? grid.cells).get(date) ?? null,
@@ -311,6 +325,9 @@ export function connectHeatmap<T extends PropTypes>(
       'data-scale': diverging ? 'diverging' : undefined,
       // 数据变化后的换色进行中：格子的颜色按数据角色的时长过渡，主题与语气换色不受它拖慢
       'data-animating': dataAttr(transition === 'update'),
+      // 重取数据：网格保留上一帧并淡下去
+      'data-loading': dataAttr(pending),
+      'aria-busy': pending ? 'true' : undefined,
     }),
 
     getGridProps: () => normalize.element({
@@ -510,17 +527,11 @@ export function connectHeatmap<T extends PropTypes>(
           [ITEM_VALUE_ATTR]: column,
           [CELL_ROW_ATTR]: row,
           'role': 'gridcell',
-          'aria-label': matrixCellLabel({
-            date: '',
-            row,
-            column,
-            count,
-            ...place,
-          }),
+          'aria-label': matrixCellLabel(heatmapDatumDetails({ row, column }, { count, ...place }, format)),
           'aria-colindex': meta ? meta.columnIndex + 2 : undefined,
           'tabindex': anchorCell?.row === row && anchorCell.column === column ? 0 : -1,
           // 详情条正在说的那一格：指针停着或焦点落着，皮肤据此给它描一圈
-          'data-highlighted': dataAttr(activeRef != null && activeRef.row === row && activeRef.column === column),
+          'data-highlighted': dataAttr(highlightedKey === heatmapMatrixKey(row, column)),
           ...cellPaint(place, () => revealAt({ columnIndex: meta?.columnIndex })),
           ...cellHandlers({ row, column }),
         })
@@ -535,13 +546,13 @@ export function connectHeatmap<T extends PropTypes>(
         // 导航与锚点都以此为格子身份
         [ITEM_VALUE_ATTR]: date,
         'role': 'gridcell',
-        'aria-label': cellLabel({ date, row: '', column: '', count, ...place }),
+        'aria-label': cellLabel(heatmapDatumDetails({ date }, { count, ...place }, format)),
         // 各行的格子数不一样齐（首行可能少一格），列号显式给出来才对得上
         'aria-colindex': meta ? (monthGrid ? meta.weekDay + 1 : meta.weekIndex + 1) : undefined,
         // 锚点那一格独占 Tab 序列位
         'tabindex': anchorCell?.date === date ? 0 : -1,
         // 详情条正在说的那一格：指针停着或焦点落着，皮肤据此给它描一圈
-        'data-highlighted': dataAttr(activeRef != null && activeRef.date === date),
+        'data-highlighted': dataAttr(highlightedKey === date),
         ...cellPaint(place, () => revealAt({ date })),
         ...cellHandlers({ date }),
       })
@@ -601,5 +612,15 @@ export function connectHeatmap<T extends PropTypes>(
         'style': levelStyle(entry?.percent ?? 0),
       })
     },
+
+    // 空态叠在网格上，走 Chart 家族的空态配方；取数中写加载文案并带一枚加载环
+    getEmptyProps: () => normalize.element({
+      ...parts.empty.attrs,
+      'data-xh-chart-part': 'empty',
+      'hidden': !empty || undefined,
+      'data-state': loading ? 'loading' : undefined,
+      'data-xh-loading-ring': '',
+      'data-loading': dataAttr(loading),
+    }),
   }
 }

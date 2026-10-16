@@ -9,12 +9,10 @@ import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type {
   HeatmapApi,
   HeatmapAxisInput,
-  HeatmapCellDetails,
   HeatmapCellMeta,
+  HeatmapDatumDetails,
   HeatmapLegendBound,
   HeatmapMatrixCellMeta,
-  HeatmapMatrixGrid,
-  HeatmapMonthGrid,
   HeatmapPalette,
   HeatmapPolarity,
   HeatmapRowProps,
@@ -23,12 +21,14 @@ import type {
   HeatmapTranslations,
   HeatmapValue,
   HeatmapVariant,
+  NumberFormatSpec,
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { heatmapMatrixKey, normalizeHeatmapNumber, normalizeHeatmapString } from '@xihan-ui/headless'
+import { heatmapStructure, normalizeHeatmapNumber, normalizeHeatmapString } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
 import {
   provideHeatmap,
   provideHeatmapMonth,
@@ -57,6 +57,8 @@ export type HeatmapRootSlotProps = Pick<
   | 'anchorCell'
   | 'anchorDate'
   | 'activeCell'
+  | 'activeKey'
+  | 'empty'
   | 'detailOpen'
   | 'scaleMode'
   | 'legendItems'
@@ -93,26 +95,36 @@ export const XhHeatmapRoot = defineComponent({
     palette: { type: String as PropType<HeatmapPalette> },
     size: { type: String as PropType<Size> },
     animated: { type: Boolean, default: undefined },
+    format: { type: [Object, Function] as PropType<NumberFormatSpec | ((value: number) => string)> },
+    pending: { type: Boolean, default: undefined },
+    activeKey: { type: [String, null] as PropType<string | null> },
     translations: { type: Object as PropType<Partial<HeatmapTranslations>> },
   },
-  // 只读事件，没有双向绑定：热力图不产生值，只报焦点、详情与按下落在哪一格
+  // 热力图不产生值：报详情、按下与激活的键落在哪一格，激活的键可双向绑定
   emits: {
-    'cell-focus': (_details: PayloadOf<HeatmapProps, 'onCellFocus'>) => true,
-    'cell-active': (_details: PayloadOf<HeatmapProps, 'onCellActive'>) => true,
-    'cell-press': (_details: PayloadOf<HeatmapProps, 'onCellPress'>) => true,
+    'datum-active': (_details: PayloadOf<HeatmapProps, 'onDatumActive'>) => true,
+    'datum-press': (_details: PayloadOf<HeatmapProps, 'onDatumPress'>) => true,
+    'active-key-change': (_details: PayloadOf<HeatmapProps, 'onActiveKeyChange'>) => true,
+    'update:activeKey': (_key: PayloadOf<HeatmapProps, 'onActiveKeyChange'>['activeKey']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: HeatmapRootSlotProps) => VNode[]
     /** 铺开网格时每一格的内容插槽，默认是空格子；三种形态都铺设。 */
     cell?: (props: HeatmapCellSlotProps) => VNode[]
     /** 详情条的内容插槽；写了它才会铺设 tooltip 部件。 */
-    tooltip?: (props: HeatmapCellDetails | null) => VNode[]
+    tooltip?: (props: HeatmapDatumDetails | null) => VNode[]
+    /** 缺省结构里的空态内容；未写时是空态文案。 */
+    empty?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
-    const notifyFocus: HeatmapProps['onCellFocus'] = details => emit('cell-focus', details)
-    const notifyActive: HeatmapProps['onCellActive'] = details => emit('cell-active', details)
-    const notifyPress: HeatmapProps['onCellPress'] = details => emit('cell-press', details)
-    const ctx = useHeatmap(withXhConfig('heatmap', props) as HeatmapProps, notifyFocus, notifyActive, notifyPress)
+    const ctx = useHeatmap(withXhConfig('heatmap', props) as HeatmapProps, {
+      onDatumActive: details => emit('datum-active', details),
+      onDatumPress: details => emit('datum-press', details),
+      onActiveKeyChange: (details) => {
+        emit('active-key-change', details)
+        emit('update:activeKey', details.activeKey)
+      },
+    })
     provideHeatmap(ctx)
     return () => {
       const api = ctx.api.value
@@ -133,6 +145,8 @@ export const XhHeatmapRoot = defineComponent({
               anchorCell: api.anchorCell,
               anchorDate: api.anchorDate,
               activeCell: api.activeCell,
+              activeKey: api.activeKey,
+              empty: api.empty,
               detailOpen: api.detailOpen,
               scaleMode: api.scaleMode,
               legendItems: api.legendItems,
@@ -140,7 +154,7 @@ export const XhHeatmapRoot = defineComponent({
               setFocusedCell: api.setFocusedCell,
               setFocusedDate: api.setFocusedDate,
             })
-          : renderDefaultTree(api, slots.cell, slots.tooltip),
+          : renderDefaultTree(api, slots.cell, slots.tooltip, slots.empty),
       )
     }
   },
@@ -313,77 +327,49 @@ export const XhHeatmapLegendItem = defineComponent({
   },
 })
 
+/** 空态：网格里一条数据都没有时叠在网格上，取数中改写加载文案。 */
+export const XhHeatmapEmpty = defineComponent({
+  name: 'XhHeatmapEmpty',
+  setup(_, { slots }) {
+    const ctx = useHeatmapContext()
+    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 标准结构里各部件对应的组件。 */
+const HEATMAP_PARTS = {
+  'grid': XhHeatmapGrid,
+  'month-block': XhHeatmapMonthBlock,
+  'row': XhHeatmapRow,
+  'week-day': XhHeatmapWeekDay,
+  'month-label': XhHeatmapMonthLabel,
+  'row-label': XhHeatmapRowLabel,
+  'column-label': XhHeatmapColumnLabel,
+  'cell': XhHeatmapCell,
+  'tooltip': XhHeatmapTooltip,
+  'legend': XhHeatmapLegend,
+  'legend-label': XhHeatmapLegendLabel,
+  'legend-item': XhHeatmapLegendItem,
+  'empty': XhHeatmapEmpty,
+}
+
 /**
- * 未写默认插槽时按网格模型铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
- * 详情条只有写了 tooltip 插槽才铺设，未写时整棵树与从前逐字一致。
+ * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 heatmapStructure 渲，
+ * 与 Web Components 只写 root 时元素生成的节点出自同一份。格子、详情条与空态的内容由对应插槽接管。
  */
 function renderDefaultTree(
   api: HeatmapApi,
   cellSlot?: (node: HeatmapCellSlotProps) => VNode[],
-  tooltipSlot?: (details: HeatmapCellDetails | null) => VNode[],
+  tooltipSlot?: (details: HeatmapDatumDetails | null) => VNode[],
+  emptySlot?: () => VNode[],
 ): VNode[] {
-  // 两端各一个字：一排色块自己说不出哪头是多
-  const legend = h(
-    XhHeatmapLegend,
-    null,
-    () => [
-      h(XhHeatmapLegendLabel, { value: 'low' }, () => api.legendText.low),
-      ...api.legendItems.map(item => h(XhHeatmapLegendItem, { key: `${item.polarity ?? 'center'}-${item.level}`, value: item.level, polarity: item.polarity ?? undefined })),
-      h(XhHeatmapLegendLabel, { value: 'high' }, () => api.legendText.high),
-    ],
-  )
-  const tooltip = tooltipSlot
-    ? [h(XhHeatmapTooltip, null, () => tooltipSlot(api.activeCell))]
-    : []
-
-  if (api.matrixGrid)
-    return [...renderMatrixTree(api.matrixGrid, cellSlot), ...tooltip, legend]
-  if (api.monthGrid)
-    return [...renderMonthTree(api.monthGrid, cellSlot), ...tooltip, legend]
-
-  // 月份行排在网格之外：它只是一条对齐用的坐标轴，进了网格就得冒充表格行
-  const monthRow = h(XhHeatmapRow, null, () => [
-    // 行首占位：与下面各行的星期名同宽，月份才对得上列
-    h(XhHeatmapWeekDay),
-    ...api.grid.months.map(month => h(XhHeatmapMonthLabel, { key: month.value, value: month.value }, () => month.label)),
-  ])
-  const weekRows = api.grid.rows.map(row => h(XhHeatmapRow, { key: row.weekDay, value: row.weekDay }, () => [
-    h(XhHeatmapWeekDay, { value: row.weekDay }, () => api.grid.weekDays[row.weekDay]?.label ?? ''),
-    ...row.cells.map(cell => h(XhHeatmapCell, { key: cell.date, value: cell.date }, () => cellSlot?.(cell) ?? [])),
-  ]))
-  return [monthRow, h(XhHeatmapGrid, null, () => weekRows), ...tooltip, legend]
-}
-
-/** 月历形态：网格中一个自然月一块，块内先一条星期名坐标轴，再逐周一行。 */
-function renderMonthTree(grid: HeatmapMonthGrid, cellSlot?: (node: HeatmapCellSlotProps) => VNode[]): VNode[] {
-  const blocks = grid.blocks.map(block => h(XhHeatmapMonthBlock, { key: block.value, value: block.value }, () => [
-    h(XhHeatmapMonthLabel, { value: block.value }, () => block.label),
-    h(XhHeatmapRow, null, () => grid.weekDays.map(day =>
-      h(XhHeatmapWeekDay, { key: day.weekDay, value: day.weekDay }, () => day.label))),
-    ...block.weeks.map(row => h(XhHeatmapRow, { key: row.week, value: row.week }, () =>
-      row.cells.map(cell => h(XhHeatmapCell, { key: cell.date, value: cell.date }, () => cellSlot?.(cell) ?? [])))),
-  ]))
-  return [h(XhHeatmapGrid, null, () => blocks)]
-}
-
-/** 矩阵形态：首行是列名，其余每行行首一个行名、其后逐列一格。 */
-function renderMatrixTree(grid: HeatmapMatrixGrid, cellSlot?: (node: HeatmapCellSlotProps) => VNode[]): VNode[] {
-  const header = h(XhHeatmapRow, null, () => [
-    // 角落占位：与下面各行的行名同宽，列名才对得上列
-    h(XhHeatmapRowLabel),
-    ...grid.columns.map(column => h(XhHeatmapColumnLabel, { key: column.value, value: column.value }, () => column.label)),
-  ])
-  const rows = grid.rows.map(row => h(XhHeatmapRow, { key: row.value, value: row.value }, () => [
-    h(XhHeatmapRowLabel, { value: row.value }, () => row.label),
-    ...grid.columns.map((column) => {
-      const meta = grid.cells.get(heatmapMatrixKey(row.value, column.value))
-      return h(
-        XhHeatmapCell,
-        { key: column.value, value: column.value },
-        () => (meta == null ? [] : cellSlot?.(meta) ?? []),
-      )
-    }),
-  ]))
-  return [h(XhHeatmapGrid, null, () => [header, ...rows])]
+  return renderStructure(heatmapStructure(api, { tooltip: !!tooltipSlot }), HEATMAP_PARTS, (node) => {
+    if (node.part === 'cell')
+      return node.data == null ? [] : cellSlot?.(node.data as HeatmapCellSlotProps) ?? []
+    if (node.part === 'tooltip')
+      return tooltipSlot?.(api.activeCell)
+    if (node.part === 'empty')
+      return emptySlot?.() ?? api.emptyText
+    return undefined
+  })
 }

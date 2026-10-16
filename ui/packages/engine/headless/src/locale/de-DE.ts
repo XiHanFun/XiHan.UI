@@ -346,11 +346,13 @@ const translations = {
   'grid-list': { root: 'Elemente' },
   'heatmap': {
     gridLabel: 'Aktivitäts-Heatmap',
-    cellLabel: details => `${details.count} am ${details.date}`,
-    matrixCellLabel: details => `${details.row} ${details.column}: ${details.count}`,
+    cellLabel: details => `${details.formatted.value} am ${details.date}`,
+    matrixCellLabel: details => `${details.row} ${details.column}: ${details.formatted.value}`,
     legendLabel: 'Aktivitätsniveau',
     legendLow: 'Weniger',
     legendHigh: 'Mehr',
+    emptyText: chart.emptyText,
+    loadingText: chart.loadingText,
   },
   'hierarchy-chart': {
     ...chart,
