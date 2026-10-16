@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 
+import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { DesignerPropertiesEventMap, DesignerPropertyEditor, DesignerPropertyTarget, XhDesignerPropertiesElement } from '../src'
+import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
 import { setXhConfig } from '@xihan-ui/web-components'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineDesignerShell } from '../src'
@@ -52,6 +54,23 @@ const task: DesignerPropertyTarget = {
     { path: ['data', 'note'], control: { kind: 'text', multiline: true }, label: '备注', visibleWhen: { path: ['data', 'urgent'], equals: true } },
     { path: ['data', 'who'], control: { kind: 'assignees' }, label: '受理人' },
   ],
+}
+
+/** 收集这一段里的 wc.* 诊断：部件契约不全的库内元素会在这里报出来。 */
+function recordWcDiagnostics(): { readonly codes: () => string[], readonly stop: () => void } {
+  const seen: DiagnosticRecord[] = []
+  resetDiagnostics()
+  setDiagnosticsConsoleOutput(false)
+  setDiagnosticsLevel('warn')
+  setDiagnosticsDedupe(false)
+  const off = onDiagnostic(record => void seen.push(record))
+  return {
+    codes: () => seen.filter(record => record.code.startsWith('wc.')).map(record => `${record.code} ${record.scope ?? ''}/${record.part ?? ''}`),
+    stop: () => {
+      off()
+      resetDiagnostics()
+    },
+  }
 }
 
 async function mount(setup: (panel: XhDesignerPropertiesElement) => void = () => {}): Promise<XhDesignerPropertiesElement> {
@@ -218,6 +237,26 @@ describe('<xh-designer-properties>', () => {
     panel.targets = [{ ...task, id: 't9' }]
     await panel.updateComplete
     expect(accordion.value).toEqual(['basic'])
+  })
+
+  it('collapsible 时没有带 id 的分组就平铺、不建手风琴；有了再建，没有 wc.* 诊断', async () => {
+    const diagnostics = recordWcDiagnostics()
+    const ungrouped: DesignerPropertyTarget = { ...task, descriptors: task.descriptors.map(({ group: _, ...descriptor }) => descriptor) }
+    const panel = await mount((element) => {
+      element.collapsible = true
+      element.targets = [ungrouped]
+    })
+    expect(panel.querySelector('xh-accordion')).toBeNull()
+    expect(row(panel, 'label')).not.toBeNull()
+    panel.targets = [task]
+    await panel.updateComplete
+    expect(panel.querySelector('xh-accordion')).not.toBeNull()
+    panel.targets = [ungrouped]
+    await panel.updateComplete
+    expect(panel.querySelector('xh-accordion')).toBeNull()
+    await new Promise(resolve => setTimeout(resolve))
+    expect(diagnostics.codes()).toEqual([])
+    diagnostics.stop()
   })
 
   it('页头与页尾插槽搬进对应区域', async () => {

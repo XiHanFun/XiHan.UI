@@ -178,7 +178,8 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
       const label = createAuthoredElement(doc, 'div', { 'data-part': 'group-label', 'id': this.#ids.scopeId() }, [group.label])
       return createAuthoredElement(doc, 'div', { 'data-part': 'group', 'role': 'group', 'aria-labelledby': label.id }, [label, list])
     })
-    if (this.collapsible) {
+    // 一个分组都没有时不建空的手风琴
+    if (this.collapsible && sections.length > 0) {
       const accordion: HTMLElement & { value?: string[] } = createAuthoredElement(doc, 'xh-accordion', { 'multiple': true, 'size': 'sm', 'data-part': 'accordion' }, [
         createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, sections),
       ])
