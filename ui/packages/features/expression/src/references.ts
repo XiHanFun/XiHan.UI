@@ -32,10 +32,16 @@ function staticPath(node: ExpressionNode): string[] | null {
   }
 }
 
-function collect(node: ExpressionNode, out: ExpressionReference[]): void {
+/** 一处引用与它在语法树上的节点：节点是从顶层标识符起的点号成员或字符串下标链的末端。 */
+export interface ReferenceNode {
+  readonly path: readonly string[]
+  readonly node: ExpressionNode
+}
+
+function collect(node: ExpressionNode, out: ReferenceNode[]): void {
   const path = staticPath(node)
   if (path !== null) {
-    out.push(Object.freeze({ path: Object.freeze(path), start: node.start, end: node.end }))
+    out.push({ path, node })
     return
   }
   switch (node.type) {
@@ -72,7 +78,12 @@ function collect(node: ExpressionNode, out: ExpressionReference[]): void {
  * 数字下标与表达式下标截断路径，下标里的引用另行列出。
  */
 export function collectReferences(ast: ExpressionNode): readonly ExpressionReference[] {
-  const out: ExpressionReference[] = []
+  return Object.freeze(collectReferenceNodes(ast).map(({ path, node }) => Object.freeze({ path: Object.freeze([...path]), start: node.start, end: node.end })))
+}
+
+/** 按源码顺序列出全部引用及其节点，供按引用改写源码。 */
+export function collectReferenceNodes(ast: ExpressionNode): readonly ReferenceNode[] {
+  const out: ReferenceNode[] = []
   collect(ast, out)
-  return Object.freeze(out)
+  return out
 }
