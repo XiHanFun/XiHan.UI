@@ -778,9 +778,9 @@ const HANDLERS = {
     )
     const withDefine = insertSorted(
       withImport,
-      /^ {2}defineElement\('xh-([\w-]+)', \w+, VERSION\)$/,
+      /^ {2}'xh-([\w-]+)': \w+,$/,
       hit => hit[1],
-      [`  defineElement('xh-${n.c}', Xh${n.P}Element, VERSION)`],
+      [`  'xh-${n.c}': Xh${n.P}Element,`],
       n.c,
     )
     return insertSorted(

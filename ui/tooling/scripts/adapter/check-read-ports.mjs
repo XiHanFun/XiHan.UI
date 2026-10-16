@@ -211,7 +211,7 @@ function aliasesOf(scopeNode, isRoot) {
 async function readRegistry() {
   const src = await readFile(DEFINE, 'utf8')
   const tagToClass = new Map()
-  for (const m of src.matchAll(/defineElement\('([\w-]+)',\s*(\w+)/g))
+  for (const m of src.matchAll(/^ {2}'(xh-[\w-]+)': (Xh\w+),$/gm))
     tagToClass.set(m[1], m[2])
   const classToFile = new Map()
   for (const m of src.matchAll(/import \{([^}]+)\} from '\.\/elements\/([\w-]+)'/g)) {

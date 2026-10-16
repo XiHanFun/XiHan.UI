@@ -22,7 +22,7 @@ const SCOPE = '只核 Web Components 一家；Vue 与 React 不在其列：它�
 const DEFINE = 'packages/adapters/web-components/src/define.ts'
 const MANIFEST = 'packages/adapters/web-components/custom-elements.json'
 
-const RE_DEFINE_CALL = /defineElement\(\s*['"]([^'"]+)['"]/g
+const RE_DEFINE_CALL = /^ {2}'(xh-[\w-]+)': Xh\w+,$/gm
 
 const source = await readFile(DEFINE, 'utf8')
 const registered = new Set()

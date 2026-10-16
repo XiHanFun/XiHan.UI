@@ -14,6 +14,17 @@ defineXhElements(); // 注册全部 144 个 xh-* 元素
 
 主入口的 `import` 本身不注册，必须显式调用这一行。注册是幂等的：同版本重复调用直接返回；同标签不同版本，或标签已被非 XiHan.UI 代码占用，都会抛错而不是静默覆盖。无 `customElements` 的环境（SSR）静默跳过。
 
+只用到其中几个元素时逐个注册。每个元素类都从 `./define` 导出，`defineXhElement` 与全量注册走同一张注册表，幂等与冲突规则相同；标签与元素类由 `XhElementTagMap` 约束，写错一侧类型检查不通过：
+
+```ts
+import { defineXhElement, XhStatisticElement, XhTableElement } from "@xihan-ui/web-components/define";
+
+defineXhElement("xh-statistic", XhStatisticElement);
+defineXhElement("xh-table", XhTableElement);
+```
+
+标记里嵌套的其它 `xh-*` 元素要各自注册，没注册的标签只是普通的未知元素。
+
 背景层单独注册，不引入就不会把 WebGL 引擎打进包：
 
 ```ts

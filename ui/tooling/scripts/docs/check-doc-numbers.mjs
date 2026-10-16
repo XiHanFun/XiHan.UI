@@ -243,10 +243,10 @@ const truth = {
     },
   },
   自定义元素数: {
-    how: 'packages/adapters/web-components/src/define.ts 里 defineElement( 的次数',
+    how: 'packages/adapters/web-components/src/define.ts 里 XH_ELEMENTS 表的条目数（一条 = 一个标签）',
     async value() {
       const src = await read('packages/adapters/web-components/src/define.ts')
-      return (src.match(/defineElement\(/g) ?? []).length
+      return (src.match(/^ {2}'xh-[a-z0-9-]+': Xh\w+,$/gm) ?? []).length
     },
   },
   CEM元素数: {

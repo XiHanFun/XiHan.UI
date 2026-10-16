@@ -151,174 +151,206 @@ import { XhVirtualizerElement } from './elements/virtualizer'
 import { XhWatermarkElement } from './elements/watermark'
 import { defineElement } from './runtime/registry'
 
-// 注册全部 xh-* 元素，需显式调用，主入口 import 不注册。
-export function defineXhElements(): void {
-  defineElement('xh-affix', XhAffixElement, VERSION)
-  defineElement('xh-alert', XhAlertElement, VERSION)
-  defineElement('xh-avatar-group', XhAvatarGroupElement, VERSION)
-  defineElement('xh-back-top', XhBackTopElement, VERSION)
-  defineElement('xh-bar-code', XhBarCodeElement, VERSION)
-  defineElement('xh-button-group', XhButtonGroupElement, VERSION)
-  defineElement('xh-cartesian-chart', XhCartesianChartElement, VERSION)
-  defineElement('xh-citation', XhCitationElement, VERSION)
-  defineElement('xh-color-field', XhColorFieldElement, VERSION)
-  defineElement('xh-color-slider', XhColorSliderElement, VERSION)
-  defineElement('xh-color-swatch', XhColorSwatchElement, VERSION)
-  defineElement('xh-color-swatch-picker', XhColorSwatchPickerElement, VERSION)
-  defineElement('xh-command', XhCommandElement, VERSION)
-  defineElement('xh-date-range-picker', XhDateRangePickerElement, VERSION)
-  defineElement('xh-descriptions', XhDescriptionsElement, VERSION)
-  defineElement('xh-diff-view', XhDiffViewElement, VERSION)
-  defineElement('xh-download-trigger', XhDownloadTriggerElement, VERSION)
-  defineElement('xh-empty-state', XhEmptyStateElement, VERSION)
-  defineElement('xh-field-array', XhFieldArrayElement, VERSION)
-  defineElement('xh-fieldset', XhFieldsetElement, VERSION)
-  defineElement('xh-flex', XhFlexElement, VERSION)
-  defineElement('xh-float-button', XhFloatButtonElement, VERSION)
-  defineElement('xh-floating-panel', XhFloatingPanelElement, VERSION)
-  defineElement('xh-funnel-chart', XhFunnelChartElement, VERSION)
-  defineElement('xh-graph-chart', XhGraphChartElement, VERSION)
-  defineElement('xh-grid', XhGridElement, VERSION)
-  defineElement('xh-grid-list', XhGridListElement, VERSION)
-  defineElement('xh-heatmap', XhHeatmapElement, VERSION)
-  defineElement('xh-hierarchy-chart', XhHierarchyChartElement, VERSION)
-  defineElement('xh-highlight', XhHighlightElement, VERSION)
-  defineElement('xh-kbd', XhKbdElement, VERSION)
-  defineElement('xh-image-cropper', XhImageCropperElement, VERSION)
-  defineElement('xh-infinite-scroll', XhInfiniteScrollElement, VERSION)
-  defineElement('xh-input-group', XhInputGroupElement, VERSION)
-  defineElement('xh-json-viewer', XhJsonViewerElement, VERSION)
-  defineElement('xh-layout', XhLayoutElement, VERSION)
-  defineElement('xh-list', XhListElement, VERSION)
-  defineElement('xh-log', XhLogElement, VERSION)
-  defineElement('xh-markdown-stream', XhMarkdownStreamElement, VERSION)
-  defineElement('xh-marquee', XhMarqueeElement, VERSION)
-  defineElement('xh-masonry', XhMasonryElement, VERSION)
-  defineElement('xh-matrix-code', XhMatrixCodeElement, VERSION)
-  defineElement('xh-mention', XhMentionElement, VERSION)
-  defineElement('xh-number-animation', XhNumberAnimationElement, VERSION)
-  defineElement('xh-page-header', XhPageHeaderElement, VERSION)
-  defineElement('xh-password-input', XhPasswordInputElement, VERSION)
-  defineElement('xh-pie-chart', XhPieChartElement, VERSION)
-  defineElement('xh-popconfirm', XhPopconfirmElement, VERSION)
-  defineElement('xh-question-flow', XhQuestionFlowElement, VERSION)
-  defineElement('xh-radar-chart', XhRadarChartElement, VERSION)
-  defineElement('xh-reasoning', XhReasoningElement, VERSION)
-  defineElement('xh-resizable', XhResizableElement, VERSION)
-  defineElement('xh-sankey-chart', XhSankeyChartElement, VERSION)
-  defineElement('xh-signature-pad', XhSignaturePadElement, VERSION)
-  defineElement('xh-skeleton', XhSkeletonElement, VERSION)
-  defineElement('xh-sparkline', XhSparklineElement, VERSION)
-  defineElement('xh-spinner', XhSpinnerElement, VERSION)
-  defineElement('xh-accordion', XhAccordionElement, VERSION)
-  defineElement('xh-anchor', XhAnchorElement, VERSION)
-  defineElement('xh-approval', XhApprovalElement, VERSION)
-  defineElement('xh-avatar', XhAvatarElement, VERSION)
-  defineElement('xh-badge', XhBadgeElement, VERSION)
-  defineElement('xh-breadcrumb', XhBreadcrumbElement, VERSION)
-  defineElement('xh-button', XhButtonElement, VERSION)
-  defineElement('xh-calendar-picker', XhCalendarPickerElement, VERSION)
-  defineElement('xh-calendar-range-picker', XhCalendarRangePickerElement, VERSION)
-  defineElement('xh-card', XhCardElement, VERSION)
-  defineElement('xh-carousel', XhCarouselElement, VERSION)
-  defineElement('xh-cascader', XhCascaderElement, VERSION)
-  defineElement('xh-checkbox', XhCheckboxElement, VERSION)
-  defineElement('xh-checkbox-group', XhCheckboxGroupElement, VERSION)
-  defineElement('xh-clipboard', XhClipboardElement, VERSION)
-  defineElement('xh-config', XhConfigElement, VERSION)
-  defineElement('xh-code-view', XhCodeViewElement, VERSION)
-  defineElement('xh-collapsible', XhCollapsibleElement, VERSION)
-  defineElement('xh-color-picker', XhColorPickerElement, VERSION)
-  defineElement('xh-combobox', XhComboboxElement, VERSION)
-  defineElement('xh-context-menu', XhContextMenuElement, VERSION)
-  defineElement('xh-date-field', XhDateFieldElement, VERSION)
-  defineElement('xh-date-picker', XhDatePickerElement, VERSION)
-  defineElement('xh-dialog', XhDialogElement, VERSION)
-  defineElement('xh-drawer', XhDrawerElement, VERSION)
-  defineElement('xh-editable', XhEditableElement, VERSION)
-  defineElement('xh-field', XhFieldElement, VERSION)
-  defineElement('xh-field-boundary', XhFieldBoundaryElement, VERSION)
-  defineElement('xh-file-upload', XhFileUploadElement, VERSION)
-  defineElement('xh-form', XhFormElement, VERSION)
-  defineElement('xh-hover-card', XhHoverCardElement, VERSION)
-  defineElement('xh-icon', XhIconElement, VERSION)
-  defineElement('xh-image', XhImageElement, VERSION)
-  defineElement('xh-image-viewer', XhImageViewerElement, VERSION)
-  defineElement('xh-listbox', XhListboxElement, VERSION)
-  defineElement('xh-loading-bar', XhLoadingBarElement, VERSION)
-  defineElement('xh-menu', XhMenuElement, VERSION)
-  defineElement('xh-menubar', XhMenubarElement, VERSION)
-  defineElement('xh-message-feed', XhMessageFeedElement, VERSION)
-  defineElement('xh-navigation-menu', XhNavigationMenuElement, VERSION)
-  defineElement('xh-notification', XhNotificationElement, VERSION)
-  defineElement('xh-notification-item', XhNotificationItemElement, VERSION)
-  defineElement('xh-pagination', XhPaginationElement, VERSION)
-  defineElement('xh-pin-input', XhPinInputElement, VERSION)
-  defineElement('xh-popover', XhPopoverElement, VERSION)
-  defineElement('xh-progress', XhProgressElement, VERSION)
-  defineElement('xh-prompt-input', XhPromptInputElement, VERSION)
-  defineElement('xh-radio-group', XhRadioGroupElement, VERSION)
-  defineElement('xh-number-field', XhNumberFieldElement, VERSION)
-  defineElement('xh-rating', XhRatingElement, VERSION)
-  defineElement('xh-scroll-area', XhScrollAreaElement, VERSION)
-  defineElement('xh-scrollbar', XhScrollbarElement, VERSION)
-  defineElement('xh-select', XhSelectElement, VERSION)
-  defineElement('xh-separator', XhSeparatorElement, VERSION)
-  defineElement('xh-side-nav', XhSideNavElement, VERSION)
-  defineElement('xh-slider', XhSliderElement, VERSION)
-  defineElement('xh-sortable', XhSortableElement, VERSION)
-  defineElement('xh-splitter', XhSplitterElement, VERSION)
-  defineElement('xh-statistic', XhStatisticElement, VERSION)
-  defineElement('xh-steps', XhStepsElement, VERSION)
-  defineElement('xh-switch', XhSwitchElement, VERSION)
-  defineElement('xh-table', XhTableElement, VERSION)
-  defineElement('xh-tabs', XhTabsElement, VERSION)
-  defineElement('xh-tag', XhTagElement, VERSION)
-  defineElement('xh-tag-group', XhTagGroupElement, VERSION)
-  defineElement('xh-tags-input', XhTagsInputElement, VERSION)
-  defineElement('xh-text-field', XhTextFieldElement, VERSION)
-  defineElement('xh-time-field', XhTimeFieldElement, VERSION)
-  defineElement('xh-time-picker', XhTimePickerElement, VERSION)
-  defineElement('xh-time-range-picker', XhTimeRangePickerElement, VERSION)
-  defineElement('xh-timeline', XhTimelineElement, VERSION)
-  defineElement('xh-timer', XhTimerElement, VERSION)
-  defineElement('xh-timestamp', XhTimestampElement, VERSION)
-  defineElement('xh-toggle', XhToggleElement, VERSION)
-  defineElement('xh-toggle-group', XhToggleGroupElement, VERSION)
-  defineElement('xh-tool-call', XhToolCallElement, VERSION)
-  defineElement('xh-toolbar', XhToolbarElement, VERSION)
-  defineElement('xh-tooltip', XhTooltipElement, VERSION)
-  defineElement('xh-tooltip-provider', XhTooltipProviderElement, VERSION)
-  defineElement('xh-tour', XhTourElement, VERSION)
-  defineElement('xh-transfer', XhTransferElement, VERSION)
-  defineElement('xh-tree', XhTreeElement, VERSION)
-  defineElement('xh-tree-select', XhTreeSelectElement, VERSION)
-  defineElement('xh-truncate', XhTruncateElement, VERSION)
-  defineElement('xh-typography', XhTypographyElement, VERSION)
-  defineElement('xh-virtualizer', XhVirtualizerElement, VERSION)
-  defineElement('xh-watermark', XhWatermarkElement, VERSION)
+/**
+ * 标签 → 元素类：全量注册按这张表的次序逐个注册，按需注册的类型约束也从它推出，两处不会对不上。
+ */
+const XH_ELEMENTS = {
+  'xh-affix': XhAffixElement,
+  'xh-alert': XhAlertElement,
+  'xh-avatar-group': XhAvatarGroupElement,
+  'xh-back-top': XhBackTopElement,
+  'xh-bar-code': XhBarCodeElement,
+  'xh-button-group': XhButtonGroupElement,
+  'xh-cartesian-chart': XhCartesianChartElement,
+  'xh-citation': XhCitationElement,
+  'xh-color-field': XhColorFieldElement,
+  'xh-color-slider': XhColorSliderElement,
+  'xh-color-swatch': XhColorSwatchElement,
+  'xh-color-swatch-picker': XhColorSwatchPickerElement,
+  'xh-command': XhCommandElement,
+  'xh-date-range-picker': XhDateRangePickerElement,
+  'xh-descriptions': XhDescriptionsElement,
+  'xh-diff-view': XhDiffViewElement,
+  'xh-download-trigger': XhDownloadTriggerElement,
+  'xh-empty-state': XhEmptyStateElement,
+  'xh-field-array': XhFieldArrayElement,
+  'xh-fieldset': XhFieldsetElement,
+  'xh-flex': XhFlexElement,
+  'xh-float-button': XhFloatButtonElement,
+  'xh-floating-panel': XhFloatingPanelElement,
+  'xh-funnel-chart': XhFunnelChartElement,
+  'xh-graph-chart': XhGraphChartElement,
+  'xh-grid': XhGridElement,
+  'xh-grid-list': XhGridListElement,
+  'xh-heatmap': XhHeatmapElement,
+  'xh-hierarchy-chart': XhHierarchyChartElement,
+  'xh-highlight': XhHighlightElement,
+  'xh-kbd': XhKbdElement,
+  'xh-image-cropper': XhImageCropperElement,
+  'xh-infinite-scroll': XhInfiniteScrollElement,
+  'xh-input-group': XhInputGroupElement,
+  'xh-json-viewer': XhJsonViewerElement,
+  'xh-layout': XhLayoutElement,
+  'xh-list': XhListElement,
+  'xh-log': XhLogElement,
+  'xh-markdown-stream': XhMarkdownStreamElement,
+  'xh-marquee': XhMarqueeElement,
+  'xh-masonry': XhMasonryElement,
+  'xh-matrix-code': XhMatrixCodeElement,
+  'xh-mention': XhMentionElement,
+  'xh-number-animation': XhNumberAnimationElement,
+  'xh-page-header': XhPageHeaderElement,
+  'xh-password-input': XhPasswordInputElement,
+  'xh-pie-chart': XhPieChartElement,
+  'xh-popconfirm': XhPopconfirmElement,
+  'xh-question-flow': XhQuestionFlowElement,
+  'xh-radar-chart': XhRadarChartElement,
+  'xh-reasoning': XhReasoningElement,
+  'xh-resizable': XhResizableElement,
+  'xh-sankey-chart': XhSankeyChartElement,
+  'xh-signature-pad': XhSignaturePadElement,
+  'xh-skeleton': XhSkeletonElement,
+  'xh-sparkline': XhSparklineElement,
+  'xh-spinner': XhSpinnerElement,
+  'xh-accordion': XhAccordionElement,
+  'xh-anchor': XhAnchorElement,
+  'xh-approval': XhApprovalElement,
+  'xh-avatar': XhAvatarElement,
+  'xh-badge': XhBadgeElement,
+  'xh-breadcrumb': XhBreadcrumbElement,
+  'xh-button': XhButtonElement,
+  'xh-calendar-picker': XhCalendarPickerElement,
+  'xh-calendar-range-picker': XhCalendarRangePickerElement,
+  'xh-card': XhCardElement,
+  'xh-carousel': XhCarouselElement,
+  'xh-cascader': XhCascaderElement,
+  'xh-checkbox': XhCheckboxElement,
+  'xh-checkbox-group': XhCheckboxGroupElement,
+  'xh-clipboard': XhClipboardElement,
+  'xh-config': XhConfigElement,
+  'xh-code-view': XhCodeViewElement,
+  'xh-collapsible': XhCollapsibleElement,
+  'xh-color-picker': XhColorPickerElement,
+  'xh-combobox': XhComboboxElement,
+  'xh-context-menu': XhContextMenuElement,
+  'xh-date-field': XhDateFieldElement,
+  'xh-date-picker': XhDatePickerElement,
+  'xh-dialog': XhDialogElement,
+  'xh-drawer': XhDrawerElement,
+  'xh-editable': XhEditableElement,
+  'xh-field': XhFieldElement,
+  'xh-field-boundary': XhFieldBoundaryElement,
+  'xh-file-upload': XhFileUploadElement,
+  'xh-form': XhFormElement,
+  'xh-hover-card': XhHoverCardElement,
+  'xh-icon': XhIconElement,
+  'xh-image': XhImageElement,
+  'xh-image-viewer': XhImageViewerElement,
+  'xh-listbox': XhListboxElement,
+  'xh-loading-bar': XhLoadingBarElement,
+  'xh-menu': XhMenuElement,
+  'xh-menubar': XhMenubarElement,
+  'xh-message-feed': XhMessageFeedElement,
+  'xh-navigation-menu': XhNavigationMenuElement,
+  'xh-notification': XhNotificationElement,
+  'xh-notification-item': XhNotificationItemElement,
+  'xh-pagination': XhPaginationElement,
+  'xh-pin-input': XhPinInputElement,
+  'xh-popover': XhPopoverElement,
+  'xh-progress': XhProgressElement,
+  'xh-prompt-input': XhPromptInputElement,
+  'xh-radio-group': XhRadioGroupElement,
+  'xh-number-field': XhNumberFieldElement,
+  'xh-rating': XhRatingElement,
+  'xh-scroll-area': XhScrollAreaElement,
+  'xh-scrollbar': XhScrollbarElement,
+  'xh-select': XhSelectElement,
+  'xh-separator': XhSeparatorElement,
+  'xh-side-nav': XhSideNavElement,
+  'xh-slider': XhSliderElement,
+  'xh-sortable': XhSortableElement,
+  'xh-splitter': XhSplitterElement,
+  'xh-statistic': XhStatisticElement,
+  'xh-steps': XhStepsElement,
+  'xh-switch': XhSwitchElement,
+  'xh-table': XhTableElement,
+  'xh-tabs': XhTabsElement,
+  'xh-tag': XhTagElement,
+  'xh-tag-group': XhTagGroupElement,
+  'xh-tags-input': XhTagsInputElement,
+  'xh-text-field': XhTextFieldElement,
+  'xh-time-field': XhTimeFieldElement,
+  'xh-time-picker': XhTimePickerElement,
+  'xh-time-range-picker': XhTimeRangePickerElement,
+  'xh-timeline': XhTimelineElement,
+  'xh-timer': XhTimerElement,
+  'xh-timestamp': XhTimestampElement,
+  'xh-toggle': XhToggleElement,
+  'xh-toggle-group': XhToggleGroupElement,
+  'xh-tool-call': XhToolCallElement,
+  'xh-toolbar': XhToolbarElement,
+  'xh-tooltip': XhTooltipElement,
+  'xh-tooltip-provider': XhTooltipProviderElement,
+  'xh-tour': XhTourElement,
+  'xh-transfer': XhTransferElement,
+  'xh-tree': XhTreeElement,
+  'xh-tree-select': XhTreeSelectElement,
+  'xh-truncate': XhTruncateElement,
+  'xh-typography': XhTypographyElement,
+  'xh-virtualizer': XhVirtualizerElement,
+  'xh-watermark': XhWatermarkElement,
+} as const
 
+/** 标签 → 元素实例的类型，按需注册时用它约束标签与类对得上。 */
+export type XhElementTagMap = { [K in keyof typeof XH_ELEMENTS]: InstanceType<(typeof XH_ELEMENTS)[K]> }
+
+/** 宿主登记与版本核对：注册过任何一个元素后执行一次。 */
+let hostRegistered = false
+function registerHost(): void {
+  if (hostRegistered)
+    return
+  hostRegistered = true
   // 宿主登记不分 dev/prod：元数据要能报出运行在哪个适配器上
   registerRuntimeHost('web-components', VERSION)
-  // 引用即打印：注册全部元素时打一次启动横幅（内部 dev 门禁 + 每页一次）
-  printMetadataBannerOnce()
-
   if (isDev())
     checkLockstepVersion('web-components', VERSION, CORE_VERSION)
 }
 
+/**
+ * 按库版本注册一个元素：与 defineXhElements 走同一张注册表，重复注册同一版本不报错，标签被别的版本或
+ * 别的代码占用时抛错。只引用到的元素类会进打包结果，其余元素随 tree-shaking 去掉。
+ */
+export function defineXhElement<K extends keyof XhElementTagMap>(tag: K, ctor: new () => XhElementTagMap[K]): void {
+  defineElement(tag, ctor, VERSION)
+  registerHost()
+}
+
+// 注册全部 xh-* 元素，需显式调用，主入口 import 不注册。
+export function defineXhElements(): void {
+  for (const [tag, ctor] of Object.entries(XH_ELEMENTS))
+    defineElement(tag, ctor, VERSION)
+  registerHost()
+  // 引用即打印：注册全部元素时打一次启动横幅（内部 dev 门禁 + 每页一次）
+  printMetadataBannerOnce()
+}
+
 export {
   XhAccordionElement,
+  XhAffixElement,
   XhAlertElement,
   XhAnchorElement,
   XhApprovalElement,
   XhAvatarElement,
+  XhAvatarGroupElement,
+  XhBackTopElement,
   XhBadgeElement,
   XhBarCodeElement,
   XhBreadcrumbElement,
   XhButtonElement,
+  XhButtonGroupElement,
   XhCalendarPickerElement,
   XhCalendarRangePickerElement,
+  XhCardElement,
   XhCarouselElement,
   XhCartesianChartElement,
   XhCascaderElement,
@@ -340,46 +372,62 @@ export {
   XhDateFieldElement,
   XhDatePickerElement,
   XhDateRangePickerElement,
+  XhDescriptionsElement,
   XhDialogElement,
   XhDiffViewElement,
   XhDownloadTriggerElement,
   XhDrawerElement,
   XhEditableElement,
   XhEmptyStateElement,
+  XhFieldArrayElement,
   XhFieldBoundaryElement,
   XhFieldElement,
   XhFieldsetElement,
   XhFileUploadElement,
+  XhFlexElement,
+  XhFloatButtonElement,
   XhFloatingPanelElement,
   XhFormElement,
   XhFunnelChartElement,
   XhGraphChartElement,
+  XhGridElement,
   XhGridListElement,
   XhHeatmapElement,
   XhHierarchyChartElement,
+  XhHighlightElement,
   XhHoverCardElement,
   XhIconElement,
   XhImageCropperElement,
   XhImageElement,
   XhImageViewerElement,
+  XhInfiniteScrollElement,
   XhInputGroupElement,
   XhJsonViewerElement,
   XhKbdElement,
+  XhLayoutElement,
   XhListboxElement,
+  XhListElement,
   XhLoadingBarElement,
+  XhLogElement,
   XhMarkdownStreamElement,
+  XhMarqueeElement,
   XhMasonryElement,
+  XhMatrixCodeElement,
+  XhMentionElement,
   XhMenubarElement,
   XhMenuElement,
   XhMessageFeedElement,
   XhNavigationMenuElement,
   XhNotificationElement,
   XhNotificationItemElement,
+  XhNumberAnimationElement,
   XhNumberFieldElement,
+  XhPageHeaderElement,
   XhPaginationElement,
   XhPasswordInputElement,
   XhPieChartElement,
   XhPinInputElement,
+  XhPopconfirmElement,
   XhPopoverElement,
   XhProgressElement,
   XhPromptInputElement,
@@ -402,6 +450,7 @@ export {
   XhSparklineElement,
   XhSpinnerElement,
   XhSplitterElement,
+  XhStatisticElement,
   XhStepsElement,
   XhSwitchElement,
   XhTableElement,
@@ -411,9 +460,11 @@ export {
   XhTagsInputElement,
   XhTextFieldElement,
   XhTimeFieldElement,
+  XhTimelineElement,
   XhTimePickerElement,
   XhTimeRangePickerElement,
   XhTimerElement,
+  XhTimestampElement,
   XhToggleElement,
   XhToggleGroupElement,
   XhToolbarElement,
@@ -424,5 +475,8 @@ export {
   XhTransferElement,
   XhTreeElement,
   XhTreeSelectElement,
+  XhTruncateElement,
+  XhTypographyElement,
   XhVirtualizerElement,
+  XhWatermarkElement,
 }
