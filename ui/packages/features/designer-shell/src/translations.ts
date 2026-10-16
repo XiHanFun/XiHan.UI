@@ -15,6 +15,14 @@ export interface DesignerPropertiesTranslations {
   readonly mixed: string
   /** JSON 编辑框里的文字不是合法 JSON。 */
   readonly invalidJson: string
+  /** 数字要求整数却填了小数。 */
+  readonly notInteger: string
+  /** 数字小于下限 min（不含单位的数值与单位已拼好）。 */
+  readonly belowMinimum: (min: string) => string
+  /** 数字大于上限 max。 */
+  readonly aboveMaximum: (max: string) => string
+  /** 数字没有大于开区间下限 min。 */
+  readonly notAboveMinimum: (min: string) => string
 }
 
 /** 问题列表的文案。 */

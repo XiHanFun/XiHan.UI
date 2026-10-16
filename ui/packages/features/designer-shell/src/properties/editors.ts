@@ -8,18 +8,17 @@
 
 import type { JsonValue } from '@xihan-ui/core/json'
 import type { PropertyControl, PropertyDescriptor, PropertyEditorContext, PropertyOption } from '@xihan-ui/designer-kit/properties'
+import type { DesignerPropertiesTranslations } from '../translations'
 import { jsonEquals } from '@xihan-ui/core/json'
-import { createAuthoredElement } from '@xihan-ui/web-components/authoring'
+import { createAuthoredElement, setText } from '@xihan-ui/web-components/authoring'
 
 /** 内建编辑器在通用上下文之外拿到的东西。 */
 export interface FieldContext extends PropertyEditorContext<PropertyDescriptor<{ readonly kind: string }>, unknown> {
   readonly ownerDocument: Document
   /** 各对象取值不同。 */
   readonly mixed: boolean
-  /** 取值不同时的占位文字。 */
-  readonly mixedText: string
-  /** JSON 编辑框里的文字不合法时的提示。 */
-  readonly invalidJson: string
+  /** 面板的文案：取值不同时的占位、编辑框自己发现的错误。 */
+  readonly translations: DesignerPropertiesTranslations
   readonly optionLabel: (option: PropertyOption) => string
   readonly unitLabel: (unit: string) => string
   /** select 单选且选项不超过它时改用切换按钮组；0 不用。 */
@@ -72,7 +71,7 @@ function textOf(value: JsonValue | undefined): string {
 
 /** 取值不同时把占位换成「多个值」，否则用编辑方式自己的占位。 */
 function placeholder(field: HTMLElement, context: FieldContext, own: string | undefined): void {
-  const text = context.mixed ? context.mixedText : own
+  const text = context.mixed ? context.translations.mixed : own
   if (text === undefined)
     field.removeAttribute('placeholder')
   else if (field.getAttribute('placeholder') !== text)
@@ -110,39 +109,82 @@ function textEditor(initial: FieldContext): FieldInstance {
 function numberEditor(initial: FieldContext): FieldInstance {
   const doc = initial.ownerDocument
   const control = controlOf<'number'>(initial)
-  const parts: HTMLElement[] = [createAuthoredElement(doc, 'button', { 'data-xh-part': 'decrement-trigger', 'type': 'button' }), createAuthoredElement(doc, 'input', { 'data-xh-part': 'input' })]
-  const suffix = control.unit === undefined ? undefined : createAuthoredElement(doc, 'span', { 'data-xh-part': 'suffix' })
-  if (suffix)
-    parts.push(suffix)
-  parts.push(createAuthoredElement(doc, 'button', { 'data-xh-part': 'increment-trigger', 'type': 'button' }))
+  const increment = createAuthoredElement(doc, 'button', { 'data-xh-part': 'increment-trigger', 'type': 'button' })
+  const suffix = createAuthoredElement(doc, 'span', { 'data-xh-part': 'suffix' })
+  const box = createAuthoredElement(doc, 'div', { 'data-xh-part': 'control' }, [
+    createAuthoredElement(doc, 'button', { 'data-xh-part': 'decrement-trigger', 'type': 'button' }),
+    createAuthoredElement(doc, 'input', { 'data-xh-part': 'input' }),
+    increment,
+  ])
   const field: ControlElement = createAuthoredElement(doc, 'xh-number-field', {
     'data-xh-part': 'control',
     'size': 'sm',
     'min': control.min,
     'max': control.max,
     'step': control.step ?? (control.integer ? 1 : undefined),
-  }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'control' }, parts)])])
+  }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [box])])
   let context = initial
+  const unitText = (): string => (control.unit === undefined ? '' : context.unitLabel(control.unit))
+  const bound = (value: number): string => {
+    const unit = unitText()
+    return unit === '' ? String(value) : `${value} ${unit}`
+  }
+  /** 违反的约束；合法时为 undefined。 */
+  const problem = (value: number): string | undefined => {
+    const t = context.translations
+    if (control.integer && !Number.isInteger(value))
+      return t.notInteger
+    if (control.exclusiveMin !== undefined && value <= control.exclusiveMin)
+      return t.notAboveMinimum(bound(control.exclusiveMin))
+    if (control.min !== undefined && value < control.min)
+      return t.belowMinimum(bound(control.min))
+    if (control.max !== undefined && value > control.max)
+      return t.aboveMaximum(bound(control.max))
+    return undefined
+  }
   field.addEventListener('value-change', (event) => {
     event.stopPropagation()
     const { value, valueAsNumber } = (event as CustomEvent<{ value: string, valueAsNumber: number }>).detail
     field.value = value
-    if (value.trim() === '')
+    if (value.trim() === '') {
+      context.setLocalError(undefined)
       context.setValue(undefined)
-    else if (Number.isFinite(valueAsNumber))
+      return
+    }
+    if (!Number.isFinite(valueAsNumber))
+      return
+    const message = problem(valueAsNumber)
+    context.setLocalError(message)
+    if (message === undefined)
       context.setValue(valueAsNumber)
   })
   field.addEventListener('focusout', () => context.commit())
+  // 上一次从对象里读到的值：没变就保留框里的文字（哪怕违反约束），变了才按新值重写
+  let seen: JsonValue | undefined
+  let first = true
   const update = (next: FieldContext): void => {
     context = next
-    if (suffix && control.unit !== undefined)
-      suffix.textContent = next.unitLabel(control.unit)
+    const unit = unitText()
+    if (unit === '') {
+      suffix.remove()
+    }
+    else {
+      setText(suffix, unit)
+      if (suffix.parentElement !== box)
+        box.insertBefore(suffix, increment)
+    }
     placeholder(field, next, undefined)
-    const shown = typeof field.value === 'string' ? field.value : ''
     const target = next.mixed ? undefined : next.value
+    if (!first && jsonEquals(target, seen))
+      return
+    first = false
+    seen = target
+    const shown = typeof field.value === 'string' ? field.value : ''
     const same = target === undefined ? shown.trim() === '' : shown.trim() !== '' && Number(shown) === target
-    if (!same)
+    if (!same) {
       field.value = textOf(target)
+      next.setLocalError(undefined)
+    }
   }
   update(initial)
   return { element: field, update }
@@ -366,7 +408,7 @@ function jsonEditor(initial: FieldContext): FieldInstance {
       context.setValue(parsed.value)
     }
     else {
-      context.setLocalError(context.invalidJson)
+      context.setLocalError(context.translations.invalidJson)
     }
   })
   field.addEventListener('focusout', () => context.commit())

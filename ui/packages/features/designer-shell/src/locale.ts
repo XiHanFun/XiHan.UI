@@ -16,6 +16,10 @@ export const designerShellZhCN: XhConfig = {
       empty: '没有可编辑的属性',
       mixed: '多个值',
       invalidJson: '不是合法的 JSON',
+      notInteger: '必须是整数',
+      belowMinimum: min => `不能小于 ${min}`,
+      aboveMaximum: max => `不能大于 ${max}`,
+      notAboveMinimum: min => `必须大于 ${min}`,
     },
     'xh-designer-issues': {
       title: '问题',
