@@ -6,6 +6,7 @@
 // 设计器零件的登记表：全量注册、按需注册与标签到元素类型的映射都从这张表来。元素不在 import 时注册。
 
 import { registerElement } from '@xihan-ui/web-components/authoring'
+import { XhDesignerIssuesElement } from './issues/issues-element'
 import { XhDesignerPropertiesElement } from './properties/properties-element'
 
 /** 零件元素类：可以带一个注册它用到的库内元素的静态方法。 */
@@ -16,6 +17,7 @@ interface ShellElementClass extends CustomElementConstructor {
 /** 标签名 → 元素类。 */
 export const DESIGNER_SHELL_ELEMENTS = {
   'xh-designer-properties': XhDesignerPropertiesElement,
+  'xh-designer-issues': XhDesignerIssuesElement,
 } as const satisfies Readonly<Record<`xh-designer-${string}`, ShellElementClass>>
 
 /** 标签名 → 元素实例类型。 */

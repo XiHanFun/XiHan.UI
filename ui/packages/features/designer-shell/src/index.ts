@@ -7,6 +7,8 @@
 
 export { defineDesignerShell, defineDesignerShellElement, DESIGNER_SHELL_ELEMENTS } from './define'
 export type { DesignerShellTagMap } from './define'
+export { XhDesignerIssuesElement } from './issues/issues-element'
+export type { DesignerIssueItem, DesignerIssuesEventMap } from './issues/issues-element'
 export { XhDesignerPropertiesElement } from './properties/properties-element'
 export type {
   DesignerPropertiesEventMap,
@@ -16,4 +18,4 @@ export type {
   DesignerPropertyTarget,
   DesignerPropertyTargetRef,
 } from './properties/properties-element'
-export type { DesignerPropertiesTranslations } from './translations'
+export type { DesignerIssuesTranslations, DesignerPropertiesTranslations } from './translations'
