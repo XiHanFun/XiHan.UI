@@ -150,7 +150,7 @@ history.execute([{ type: "move", path: ["rows", 2], index: 0 }], { label: "上�
 
 ## 对齐吸附与参考线
 
-`snapRect(rect, { targets, threshold, x?, y?, grid? })` 把移动中矩形的左 / 中 / 右（上 / 中 / 下）三条线与每个目标的同类线比对，在阈值内取最近的一条，返回应再平移的 `dx` / `dy` 与吸附后重合的参考线：
+`snapRect(rect, { targets, threshold, x?, y?, grid?, lines? })` 把移动中矩形的左 / 中 / 右（上 / 中 / 下）三条线与每个目标的同类线比对，在阈值内取最近的一条，返回应再平移的 `dx` / `dy` 与吸附后重合的参考线：
 
 ```ts
 interface SnapGuide {
@@ -161,7 +161,7 @@ interface SnapGuide {
 }
 ```
 
-阈值与矩形同一坐标系，屏幕上的固定像素先除以 `zoom`。某一向没吸到目标、又给了 `grid` 时，矩形左上角落到最近的网格线上。`snapToGrid` / `snapPointToGrid` 单独把数值或点落到网格上。
+阈值与矩形同一坐标系，屏幕上的固定像素先除以 `zoom`。`lines: { x?, y? }` 给出贯穿画布的吸附线（如从标尺拖出的参考线）：`x` 是竖线的横坐标，`y` 是横线的纵坐标，与目标矩形的线一同比对；吸上时返回的参考线只覆盖移动的矩形。某一向没吸到目标、又给了 `grid` 时，矩形左上角落到最近的网格线上。`snapToGrid` / `snapPointToGrid` 单独把数值或点落到网格上。
 
 ## 对齐与分布
 

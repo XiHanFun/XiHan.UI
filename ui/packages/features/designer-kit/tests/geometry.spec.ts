@@ -65,6 +65,24 @@ describe('snapRect', () => {
     expect(onlyY.guides.every(guide => guide.axis === 'y')).toBe(true)
   })
 
+  it('吸附线与目标矩形一同比对，取最近的一条；对齐线跨度只覆盖移动的矩形', () => {
+    const result = snapRect(rect(52, 300, 20, 10), { targets: [target], threshold: 5, lines: { x: [50, 99], y: [305] } })
+    expect([result.dx, result.dy]).toEqual([-2, 0])
+    expect(result.guides).toEqual([
+      { axis: 'x', position: 50, from: 300, to: 310 },
+      { axis: 'y', position: 305, from: 50, to: 70 },
+    ])
+    const tie = snapRect(rect(101, 0, 10, 10), { targets: [target], threshold: 5, lines: { x: [100] } })
+    expect(tie.dx).toBe(-1)
+    expect(tie.guides.filter(guide => guide.axis === 'x')).toEqual([{ axis: 'x', position: 100, from: 0, to: 140 }])
+  })
+
+  it('吸附线优先于网格，只吸关闭的方向时忽略该向的线', () => {
+    const result = snapRect(rect(13, 27, 20, 20), { targets: [], threshold: 2, grid: 10, lines: { x: [12] } })
+    expect([result.dx, result.dy]).toEqual([-1, 3])
+    expect(snapRect(rect(13, 27, 20, 20), { targets: [], threshold: 2, lines: { x: [12] }, x: false })).toEqual({ dx: 0, dy: 0, guides: [] })
+  })
+
   it('没有可吸的目标时落到网格上', () => {
     const result = snapRect(rect(13, 27, 20, 20), { targets: [], threshold: 2, grid: 10 })
     expect([result.dx, result.dy]).toEqual([-3, 3])
@@ -75,6 +93,7 @@ describe('snapRect', () => {
   it('非法参数报错；网格工具', () => {
     expect(() => snapRect(rect(0, 0, 1, 1), { targets: [], threshold: -1 })).toThrow(RangeError)
     expect(() => snapRect(rect(0, 0, 1, 1), { targets: [], threshold: 1, grid: 0 })).toThrow(RangeError)
+    expect(() => snapRect(rect(0, 0, 1, 1), { targets: [], threshold: 1, lines: { y: [Number.NaN] } })).toThrow(RangeError)
     expect(snapToGrid(14, 8)).toBe(16)
     expect(snapPointToGrid({ x: 3, y: 13 }, 5)).toEqual({ x: 5, y: 15 })
     expect(() => snapToGrid(1, -2)).toThrow(RangeError)
