@@ -72,6 +72,16 @@ describe('xh-heatmap 生成结构', () => {
     expect(records.some(record => record.code === DIAGNOSTIC_CODES.wcMissingPart)).toBe(false)
   })
 
+  it('什么都不写：连 root 一起生成，不报缺少部件', async () => {
+    const records: DiagnosticRecord[] = []
+    stops.push(onDiagnostic(record => records.push(record)))
+    const el = mount({ 'start-date': RANGE.startDate, 'end-date': RANGE.endDate }, '')
+    await settle(el)
+    expect(partsOf(root(el))).toEqual(['row', 'grid', 'empty', 'legend'])
+    expect(root(el).getAttribute('data-xh-gen')).toBe('structure')
+    expect(records.filter(record => record.code === DIAGNOSTIC_CODES.wcMissingPart)).toEqual([])
+  })
+
   it('数据变化时按身份复用格子，只改档位', async () => {
     const el = mount({ 'start-date': RANGE.startDate, 'end-date': RANGE.endDate })
     el.value = [{ date: '2024-01-02', count: 1 }]

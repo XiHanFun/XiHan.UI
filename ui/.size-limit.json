@@ -148,7 +148,7 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "226 kB"
+    "limit": "227 kB"
   },
   {
     "name": "designer-shell/locale",
@@ -223,7 +223,7 @@
     "name": "react",
     "path": "packages/adapters/react/dist/index.js",
     "gzip": true,
-    "limit": "743 kB",
+    "limit": "744 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -285,7 +285,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "747 kB"
+    "limit": "748 kB"
   },
   {
     "name": "web-components/backgrounds",
@@ -297,7 +297,7 @@
     "name": "web-components/services",
     "path": "packages/adapters/web-components/dist/services.js",
     "gzip": true,
-    "limit": "64 kB"
+    "limit": "65 kB"
   },
   {
     "name": "styles",

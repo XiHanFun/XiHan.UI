@@ -77,6 +77,21 @@ Shadow DOM 会封闭结构：无法更换标签、无法插入自定义节点、
 代价是需要自行编写结构，因此必备部件的校验必须存在。
 :::
 
+### 不写结构：按标准结构生成
+
+有标准结构的元素（目前是热力图，逐批扩到表单控件与容器）可以不写结构，元素按组件的标准结构自己生成部件树。标准结构与 Vue / React 不写插槽时的缺省树出自同一个结构函数，三端的 DOM 一致。
+
+```html
+<xh-heatmap start-date="2024-01-01" end-date="2024-03-31"></xh-heatmap>
+```
+
+生成按下面几条规则：
+
+- 宿主里没有作者写的部件节点时连 root 一起生成；只写了 `root` 时生成在它里面。
+- 作者写了 root 以外的部件，整棵结构就归作者，元素撤掉生成过的节点，与手写结构的写法完全一样。少数部件可以单独接管：写在 root 里，其余照常生成，如热力图的 `tooltip`、`empty`、`legend`。各组件页写明有哪些。
+- 生成的节点带 `data-xh-gen="structure"`，按身份复用：数据变化时只改动变了的节点，换序时焦点所在的节点照旧有焦点。
+- 部件里要放作者内容的（标签页的面板、手风琴的内容等），作者在宿主的直接子节点上写 `slot`，元素把它搬进对应的部件。单个的部件写 `slot="<名>"`，按条目重复的部件写 `slot="<名>:<条目键>"`。搬进去以后内容归作者，元素不改写；对应的部件没了时节点回到宿主，由作者自己移除。
+
 ## 部件契约校验
 
 元素接线时比对作者编写的 DOM 与组件解剖，三种问题报告到[诊断通道](../guide/diagnostics)：
@@ -211,8 +226,8 @@ registerElement("xh-step-list", XhStepList);
 | 导出 | 说明 |
 | --- | --- |
 | `XhReactiveElement` | 响应式基类。渲染根就是元素自身（Light DOM）；`static properties` 声明字段，声明键只认 `attribute`（`false` 不观察，字符串指定属性名，缺省为字段名转小写）、`type`（`Boolean` / `Number` / `Object` / `Array`，其余按字符串）与 `converter`；属性单向转成字段，不回写；同一拍里的多次写入合并成一轮更新；生命周期为 `update(changed)`（覆盖时必须调 `super.update(changed)`）、`firstUpdated`、`updated`，另有 `requestUpdate()`、`updateComplete` 与控制器 |
-| `reconcile(parent, items, keys, keyOf, make)` | 按 key 把一组节点排进父节点：已有的复用、缺的新建、多的移除，次序与输入一致；作者写在父节点里的节点不动，生成的节点排在它们之后 |
-| `createGeneratedElement(doc, tag, attributes?, children?)` / `generatedChildren(parent)` | 建一个带生成标记（`GEN_ATTR`，即 `data-xh-gen`）的 HTML 节点，可同时按属性表写上属性、依次放入子节点（字符串作为文本） / 取父节点里生成的直接子节点；SVG 节点用 `createElementNS(SVG_NS, tag)` 建好后自己加 `GEN_ATTR` |
+| `reconcile(parent, items, keys, keyOf, make, mark?)` | 按 key 把一组节点排进父节点：已有的复用、缺的新建、多的移除，次序与输入一致；作者写在父节点里的节点不动，生成的节点排在它们之后。给了 `mark` 时只认、只摘生成标记等于它的节点，同一父节点里另一套生成逻辑写的节点不动 |
+| `createGeneratedElement(doc, tag, attributes?, children?)` / `generatedChildren(parent)` | 建一个带生成标记（`GEN_ATTR`，即 `data-xh-gen`）的 HTML 节点，可同时按属性表写上属性、依次放入子节点（字符串作为文本） / 取父节点里生成的直接子节点（给了第二个参数时只取生成标记等于它的）；SVG 节点用 `createElementNS(SVG_NS, tag)` 建好后自己加 `GEN_ATTR` |
 | `createAuthoredElement(doc, tag, attributes?, children?)` | 同上，但不带生成标记，节点就像作者手写的：用代码搭库内元素的 Light DOM 结构（`data-xh-part` 角色节点、空状态与提示框里的自定义内容）时用它。带生成标记的子节点会被宿主当作自己生成的节点——补结构时收走，判断有没有作者内容时略过 |
 | `setAttributes(element, attributes)` / `setText(element, text)` | 按属性表更新属性、改写文本，值没变时不写。属性表 `ElementAttributes` 里 `false` 与 `undefined` 删除该属性，`true` 写成空串。库内元素监听子树里角色节点的增删与声明属性的改写来重新接线，每轮更新都重写同样的值会白白触发重新接线 |
 | `emitEvent(target, type, detail, { cancelable? })` | 与库内元素同一约定派发 `CustomEvent`（`bubbles: true, composed: true`），返回 `false` 表示被 `preventDefault` |

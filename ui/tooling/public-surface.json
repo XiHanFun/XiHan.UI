@@ -7482,6 +7482,8 @@
       "StepsValueChangeDetails",
       "StepsVariant",
       "StructureNode",
+      "StructureSlot",
+      "StructureTag",
       "SwitchApi",
       "SwitchCheckedChangeDetails",
       "SwitchSchema",
