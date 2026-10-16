@@ -98,3 +98,26 @@ list.addEventListener("issue-hover", event => highlight(event.detail.issue?.targ
 
 - 头部的错误、警告两个开关带条数，过滤状态在换 `items` 后保留。
 - 有 `target` 的条目是按钮，方向键、Home、End 在它们之间移动焦点；没有 `target` 的条目只显示，不可激活。
+
+## 小地图
+
+`<xh-designer-minimap>` 按比例画出设计器给的图形与当前视口的范围。按下或拖动时派发 `navigate`，由设计器把视口中心移过去。
+
+```ts
+const map = document.createElement("xh-designer-minimap");
+map.shapes = nodes.map(node => ({ kind: "rect", rect: node.rect }));
+map.viewport = viewport;
+map.canvasSize = { width: canvas.clientWidth, height: canvas.clientHeight };
+map.addEventListener("navigate", event => setViewport(centerOn(viewport, event.detail.center, map.canvasSize)));
+```
+
+| 属性 | 说明 |
+| --- | --- |
+| `shapes` | 世界坐标的图形：`{ kind: "rect", rect, tone? }`（`tone` 为 `muted` 时取淡色）或 `{ kind: "path", d }` |
+| `bounds` | 内容范围，缺省取全部矩形的外包；路径伸出矩形之外时由设计器给出 |
+| `viewport` / `canvasSize` | 画布的视口与屏幕尺寸，两者都给时画出视口框 |
+| `readonly` | 小地图只做导航，只读时照常可用 |
+
+- 比例把内容与视口范围一并装下；拖动期间比例与位置保持不变，松手后重新适配。
+- 没有图形时收起（`data-empty`），整块 `aria-hidden`，不进 Tab 顺序。
+- 零件只画自身的框，摆在画布的哪个角由设计器决定。
