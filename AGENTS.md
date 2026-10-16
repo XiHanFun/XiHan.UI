@@ -142,6 +142,7 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 - Web Components 使用作者提供的 Light DOM；作者节点用 `data-xh-part` 声明角色，升级后库写入 `data-scope`/`data-part`。
 - Web Components 元素登记在 `ui/packages/adapters/web-components/src/define.ts` 的 `XH_ELEMENTS` 表里，一行一个 `'xh-<名>': Xh<名>Element,`：全量注册 `defineXhElements()`、按需注册 `defineXhElement(tag, ctor)` 的类型约束 `XhElementTagMap` 与类导出都从这张表来。新元素用脚手架会自动写进表、导入与导出三处；手工加时三处一起补，`check-exports` 与 `check-cem-coverage` 按这张表核对。
 - 非冒泡事件使用原生监听，不假设框架合成事件等价。
+- `@xihan-ui/designer-shell`（设计器零件）是三端齐备的例外，经用户批准：只出 Web Components，没有 headless 契约、没有 Vue / React 版本、不进三端一致性套件；元素自己生成内部结构，部件用 `data-part` 标出，作者内容用 `slot="<名>"` 标在直接子节点上；内部用到的库内元素经 `defineXhElement` 按需注册；样式随包发 `style.css`，只消费语义令牌，不进 `@xihan-ui/styles`；文档只有服务与运行时册的一页。新增这类「只为一个适配器做」的包前先征得同意。
 
 ### 样式
 

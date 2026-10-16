@@ -26,6 +26,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/backgrounds` | `core` `motion` | — | 3 |
 | `@xihan-ui/vue` | `core` `motion` `pointer` `viz` `headless` `position` | `vue`、`backgrounds`（可选）、`sound`（可选）、`code-highlight`（可选） | 4 |
 | `@xihan-ui/web-components` | `core` `motion` `pointer` `viz` `headless` `position` | `backgrounds`（可选）、`code-highlight`（可选） | 4 |
+| `@xihan-ui/designer-shell` | `core` `pointer` `designer-kit` `web-components` | — | 5 |
 | `@xihan-ui/cli` | — | — | 5 |
 
 发布走 changesets，所有库包同属一个 fixed 版本组，一起升到同一个版本号。
@@ -35,6 +36,11 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 箭头方向 = 依赖方向，只画实际声明的依赖。同层之间只有 `core → motion` 一条横向依赖。
 
 ```
+层 5   ┌──────────────────┐
+       │  designer-shell  │  只出 Web Components
+       └────────┬─────────┘
+                │  core · pointer · designer-kit · web-components
+                ▼
 层 4   ┌─────────────┐       ┌──────────────────┐
        │     vue     │       │  web-components  │  peer: backgrounds · code-highlight（可选）；vue 另有 peer: sound（可选）、vue
        └──────┬──────┘       └────────┬─────────┘
@@ -113,7 +119,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | 模块格式 | ESM only，不提供 CJS |
 | Node | `>= 18` |
 | 类型 | 每个入口一份 `.d.ts` |
-| 副作用 | 全部 `sideEffects: false`，`styles` 与 `tokens/tokens.css` 除外 |
+| 副作用 | 全部 `sideEffects: false`，`styles`、`tokens/tokens.css` 与 `designer-shell/style.css` 除外 |
 
 `pnpm gate:publish` 逐包运行 publint 与 attw，按 ESM-only 的支持面校验 exports 条件与类型解析（`node16-from-ESM` 与 `bundler` 两列）。
 
@@ -125,6 +131,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | --- | --- |
 | `@xihan-ui/core` | `./metadata` `./skin-check` `./vite` `./vanilla` `./presence` `./json`（JSON 值的类型与纯函数，零依赖） `./url`（图片地址的安全判定，零依赖） `./template`（文本模板，占位只写数据路径） |
 | `@xihan-ui/designer-kit` | `./properties`（属性描述、显示条件、取值检查与自定义编辑器接口） `./schema`（结构校验的问题形状与读取器） |
+| `@xihan-ui/designer-shell` | `./locale`（零件的中文文案） `./style.css`（零件的样式） |
 | `@xihan-ui/tokens` | `./runtime` `./tokens.css` `./tokens.json` |
 | `@xihan-ui/icons` | `./codegen` |
 | `@xihan-ui/viz` | `./hierarchy`（层级布局：层级节点、组树、矩形树图、分区与圆堆积） `./sankey`（桑基布局） |

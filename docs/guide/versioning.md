@@ -24,9 +24,9 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 版本号采用语义化版本 `major.minor.patch`：受约束的成员变更走 major，新增走 minor，只修正行为不改名字走 patch。
 
-## 22 个包必须同版本安装
+## 23 个包必须同版本安装
 
-22 个包锁步发布：任何一个包发新版本，全部 22 个包一起发同一个号。
+23 个包锁步发布：任何一个包发新版本，全部 23 个包一起发同一个号。
 
 ```
 @xihan-ui/core     @xihan-ui/position       @xihan-ui/tokens
@@ -37,6 +37,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 @xihan-ui/pointer  @xihan-ui/viz            @xihan-ui/cli
 @xihan-ui/expression
 @xihan-ui/designer-kit
+@xihan-ui/designer-shell
 @xihan-ui/xlsx
 ```
 
@@ -49,14 +50,14 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 一、JS / TS 导出面
 
-22 个包中 22 个出 JS 或类型入口，共 55 个带类型的入口。
+23 个包中 23 个出 JS 或类型入口，共 57 个带类型的入口。
 
 ### 受约束
 
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
-| 包名 | 22 | 把代码从一个包移到另一个包 = major |
-| `exports` 子路径 | 55 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
+| 包名 | 23 | 把代码从一个包移到另一个包 = major |
+| `exports` 子路径 | 57 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
 | Vue 组件导出 `Xh*` | 1184（140 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
 | Vue 组合式函数 `use<家族>` | 110 | `useSelect`、`useCombobox`。不使用库内部件、自行编写标记时的唯一入口 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
@@ -384,7 +385,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 
 锁步发版意味着版本号不反映稳定性，因此单独列表。
 
-下面两张表覆盖全部 22 个包，每个包必在其中一张中；门禁比对两张表的包名与 `packages/` 下的公开包，新增包未定级即构建失败。
+下面两张表覆盖全部 23 个包，每个包必在其中一张中；门禁比对两张表的包名与 `packages/` 下的公开包，新增包未定级即构建失败。
 
 ### 稳定
 
@@ -406,7 +407,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 
 ### 实验
 
-这十一个包的破坏性变更可以出现在 minor 中，不适合用于不易升级的生产代码。
+这十二个包的破坏性变更可以出现在 minor 中，不适合用于不易升级的生产代码。
 
 | 包 | 仍在变化的原因 |
 | --- | --- |
@@ -420,6 +421,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 | `@xihan-ui/cli` | 开发期工具，不进应用产物。命令、MCP 工具与提示词的名字、参数和输出格式随使用反馈调整；离线数据的结构不是公开 API |
 | `@xihan-ui/expression` | 四款设计器接入期间，内置函数表与宿主函数的上下文仍会补充；文法与求值语义的修改同步更新一致性用例并在更新日志中逐条列出 |
 | `@xihan-ui/designer-kit` | 四款设计器接入期间，历史栈的事务与通知、视口与吸附的选项、路径编辑操作、属性描述与结构校验的形状仍会按接入反馈调整 |
+| `@xihan-ui/designer-shell` | 四款设计器接入期间，零件按批次加入，属性、事件与部件名仍会按接入反馈调整 |
 | `@xihan-ui/xlsx` | 报表设计器接入期间，单元格样式（边框、底色、换行等）可能按需补充 |
 
 ---
@@ -429,10 +431,10 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，19342 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，19347 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 224 条子入口、10103 个导出名、140 个 `data-scope` 与 1354 条部件配对、
+覆盖：包名与 227 条子入口、10108 个导出名、140 个 `data-scope` 与 1354 条部件配对、
 140 个组件的 2124 个 prop 名、314 种 `data-*`、33 个 `data-state` 取值、803 个令牌、
 5 个 `@layer` 名、4644 个组件覆盖槽、144 个自定义元素及其 attribute 与事件。
 
@@ -457,7 +459,7 @@ changeset 按 patch / minor 记录即可：更新基线这一动作本身不代�
 
 另有三道门禁把原本依赖自觉的条款转为机器检查。`check-css-floor` 保证浏览器硬底线：
 `.browserslistrc` 记录底线，拒绝名单拦截 `@scope`、媒体查询区间写法等无兜底的抬底线特性，
-`light-dark()` / `dvh` / `lh` 必须带级联兜底。`check-version-lock` 保证 22 包锁步：任何一个
+`light-dark()` / `dvh` / `lh` 必须带级联兜底。`check-version-lock` 保证 23 包锁步：任何一个
 package.json 的 version 与其余不同，门禁直接失败。`check-wiring` 保证检查系统自身：新增的
 check 脚本未接入 `pnpm gate` 等同于未编写，死引用同样被拦截。
 
@@ -474,6 +476,6 @@ check 脚本未接入 `pnpm gate` 等同于未编写，死引用同样被拦截�
 | Vue 作用域插槽载荷 | 带载荷的插槽已声明 `slots:` 选项，由 `check-slot-types` 门禁的四条判据保证（缺声明 / 键非可选 / 值非函数 / 声明未用）。仅渲染无载荷插槽的部件仍不声明，消费方写错 slot 名不会报错 | 无载荷插槽也补充声明，或明确只有带载荷的插槽进入契约 |
 | 移除提示（CSS / `data-*` / attribute / 层名） | 这四种介质没有 IDE 提示：名字移除之后，消费方的声明只是静默失配，既不报错也不降级。唯一的告知渠道是更新日志，因此每次移除都在 changeset 中逐条列出旧名与替换写法，供使用方在自己的代码库中全文搜索 | 无 |
 | 浏览器硬底线 | 已落地：`.browserslistrc` 记录硬底线，`check-css-floor` 门禁拒绝抬底线的无兜底特性（`@scope`、媒体查询区间写法等），并校验 `light-dark()` / `dvh` / `lh` 的级联兜底 | 拒绝名单改动时联动本页支持面表格的提醒 |
-| 「22 个包必须同版本」 | `check-version-lock` 门禁保证 22 个 package.json 同版本。运行期一侧只在 dev 有提示：三个适配器启动时调用 `checkLockstepVersion`，自身版本与 core 不一致时经诊断通道发出一条 `warn`；生产构建中跳过，且只比对适配器与 core 两个版本，不是全部 22 个 | 提升为 peer，或把运行期比对扩展到全部包 |
+| 「23 个包必须同版本」 | `check-version-lock` 门禁保证 23 个 package.json 同版本。运行期一侧只在 dev 有提示：三个适配器启动时调用 `checkLockstepVersion`，自身版本与 core 不一致时经诊断通道发出一条 `warn`；生产构建中跳过，且只比对适配器与 core 两个版本，不是全部 23 个 | 提升为 peer，或把运行期比对扩展到全部包 |
 
 本页内容与实际行为不符时按缺陷处理，请提交 issue。

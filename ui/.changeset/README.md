@@ -2,7 +2,7 @@
 
 版本与发布由 [changesets](https://github.com/changesets/changesets) 驱动。**全部公开包**
 （core / motion / pointer / viz / tokens / headless / styles / vue / react / web-components /
-chat-stream / markdown / position / code-highlight / backgrounds / sound / icons / animations / expression / designer-kit / xlsx / cli）
+chat-stream / markdown / position / code-highlight / backgrounds / sound / icons / animations / expression / designer-kit / designer-shell / xlsx / cli）
 经 `fixed` 组**锁步同版**；私有包（testing / build / scripts / tsconfig / eslint-config /
 stylelint-config）不发布、不计版。
 

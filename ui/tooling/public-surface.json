@@ -254,6 +254,11 @@
       "./properties",
       "./schema"
     ],
+    "@xihan-ui/designer-shell": [
+      ".",
+      "./locale",
+      "./style.css"
+    ],
     "@xihan-ui/expression": [
       "."
     ],
@@ -10206,6 +10211,13 @@
       "worldToScreen",
       "zoomBy",
       "zoomTo"
+    ],
+    "@xihan-ui/designer-shell": [
+      "DESIGNER_SHELL_ELEMENTS",
+      "DesignerShellTagMap",
+      "defineDesignerShell",
+      "defineDesignerShellElement",
+      "designerShellZhCN"
     ],
     "@xihan-ui/expression": [
       "ArrayNode",

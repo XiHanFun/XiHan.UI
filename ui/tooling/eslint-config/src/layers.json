@@ -121,6 +121,15 @@
         "engine/pointer"
       ]
     },
+    "features/designer-shell": {
+      "level": 5,
+      "canDependOn": [
+        "engine/core",
+        "engine/pointer",
+        "features/designer-kit",
+        "adapters/web-components"
+      ]
+    },
     "features/xlsx": {
       "level": 1,
       "canDependOn": []

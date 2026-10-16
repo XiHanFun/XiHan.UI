@@ -1,0 +1,13 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// @xihan-ui/designer-shell/locale —— 设计器零件的中文文案。各产品把它并进自己的语言包，宿主只合并一份产品包。
+
+import type { XhConfig } from '@xihan-ui/web-components'
+
+/** 设计器零件的中文文案。 */
+export const designerShellZhCN: XhConfig = {
+  translations: {},
+}

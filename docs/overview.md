@@ -43,6 +43,7 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式服务于一个
 | 4 | `vue` | `core` `headless` `position` `code-highlight` `tokens` `backgrounds` `sound` `motion` `pointer` |
 | 4 | `react` | `core` `headless` `position` `code-highlight` `tokens` `backgrounds` `sound` `motion` `pointer` |
 | 4 | `web-components` | `core` `headless` `position` `code-highlight` `tokens` `backgrounds` `motion` `pointer` |
+| 5 | `designer-shell` | `core` `pointer` `designer-kit` `web-components` |
 
 除分层外还有三条硬规则，同样由门禁执行：
 
@@ -121,6 +122,7 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 | `@xihan-ui/animations` | 现成的进场与注意动效、错开起播、文字拆分 |
 | `@xihan-ui/expression` | 受限表达式语言：公式与条件解析成可序列化的语法树，按十进制确定性求值，见[受限表达式](/runtime/expression) |
 | `@xihan-ui/designer-kit` | 画布式设计器的内核：撤销重做历史栈、按路径的编辑操作、视口平移缩放、对齐吸附与参考线、对齐分布与框选、文档内唯一 id，见[设计器内核](/runtime/designer-kit) |
+| `@xihan-ui/designer-shell` | 画布式设计器共用的界面零件，只出 Web Components：属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、问题列表、小地图与外框，见[设计器零件](/runtime/designer-shell) |
 | `@xihan-ui/xlsx` | 零依赖的 xlsx 写出：带类型的单元格、数字与日期格式、合并单元格与冻结窗格，见[表格导出](/runtime/xlsx) |
 
 **开发工具**
@@ -139,7 +141,7 @@ XiHan.UI/
 │   ├── packages/            # 对外发布的库包，按角色分五组
 │   │   ├── adapters/        # vue · react · web-components，按宿主选择
 │   │   ├── design/          # tokens · styles · icons，外观
-│   │   ├── features/        # markdown · chat-stream · backgrounds · sound · animations · code-highlight · expression · designer-kit · xlsx，按需选用
+│   │   ├── features/        # markdown · chat-stream · backgrounds · sound · animations · code-highlight · expression · designer-kit · designer-shell · xlsx，按需选用
 │   │   ├── engine/          # core · motion · pointer · position · viz · headless
 │   │   └── tools/           # cli，开发时用，不进应用产物
 │   └── tooling/             # 内部构建与质量工具
