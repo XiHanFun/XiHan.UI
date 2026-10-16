@@ -26,5 +26,11 @@ export const designerShellZhCN: XhConfig = {
       severityWarning: '警告',
       filter: '按严重程度显示问题',
     },
+    'xh-designer-palette': {
+      title: '物料',
+      search: '搜索物料',
+      noMatches: '没有匹配的物料',
+      empty: '没有物料',
+    },
   },
 }

@@ -10,6 +10,7 @@ import {
   XhAccordionElement,
   XhColorFieldElement,
   XhFieldElement,
+  XhIconElement,
   XhNumberFieldElement,
   XhSelectElement,
   XhSwitchElement,
@@ -31,6 +32,13 @@ export function definePropertyFieldElements(): void {
   defineXhElement('xh-color-field', XhColorFieldElement)
   defineXhElement('xh-toggle-group', XhToggleGroupElement)
   defineXhElement('xh-accordion', XhAccordionElement)
+}
+
+/** 物料面板的搜索框、折叠分组与图标用到的元素。 */
+export function definePaletteElements(): void {
+  defineXhElement('xh-text-field', XhTextFieldElement)
+  defineXhElement('xh-accordion', XhAccordionElement)
+  defineXhElement('xh-icon', XhIconElement)
 }
 
 /** 问题列表的过滤开关与来源标签用到的元素。 */

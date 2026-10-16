@@ -35,9 +35,22 @@ export interface DesignerIssuesTranslations {
   readonly filter: string
 }
 
+/** 物料面板的文案。 */
+export interface DesignerPaletteTranslations {
+  /** 面板标题。 */
+  readonly title: string
+  /** 搜索框的名称与占位。 */
+  readonly search: string
+  /** 搜索没有结果时的提示。 */
+  readonly noMatches: string
+  /** 没有物料时的提示。 */
+  readonly empty: string
+}
+
 declare module '@xihan-ui/web-components' {
   interface XhTranslationOverrides {
     'xh-designer-properties'?: Partial<DesignerPropertiesTranslations>
     'xh-designer-issues'?: Partial<DesignerIssuesTranslations>
+    'xh-designer-palette'?: Partial<DesignerPaletteTranslations>
   }
 }
