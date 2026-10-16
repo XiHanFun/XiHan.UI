@@ -126,4 +126,47 @@ describe('属性面板的数字约束（Chromium）', () => {
       expect(label.htmlFor === '' || document.getElementById(label.htmlFor) !== null).toBe(true)
     await expectNoAxeViolations(panel)
   })
+  it('插槽与自定义编辑器里的作者内容不受属性面板样式影响：带同名部件的作者元素保持自己的样式', async () => {
+    const tree = [
+      '<div data-part="title">t</div><div data-part="heading">h</div><p data-part="empty">e</p>',
+      '<div data-part="groups"><div data-part="group" role="group"><div data-part="group-label">g</div><div data-part="group-rows">r</div></div></div>',
+      '<div data-part="property" role="group"><div data-part="property-line"><span data-part="property-label" data-required>l</span>',
+      '<span data-control="unsupported">u</span></div><p data-part="property-hint">i</p><p data-part="property-error">x</p></div>',
+      '<div data-json><textarea>{}</textarea></div>',
+    ].join('')
+    panel = document.createElement('xh-designer-properties')
+    panel.editors = { byControl: {
+      picker: () => {
+        const element = document.createElement('div')
+        element.innerHTML = tree
+        return { element }
+      },
+    } }
+    panel.targets = [{ kind: 'task', id: 't1', value: {}, descriptors: [{ path: ['owner'], control: { kind: 'picker' }, label: 'Owner' }] }]
+    const header = document.createElement('div')
+    header.setAttribute('slot', 'header')
+    header.innerHTML = tree
+    panel.append(header)
+    document.body.append(panel)
+    await panel.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+
+    const custom = panel.querySelector('[data-control="custom"]')!
+    const planted = [header, custom.firstElementChild!].flatMap(root => Array.from(root.querySelectorAll<HTMLElement>('[data-part], [data-control], [data-json], textarea')))
+    expect(planted).toHaveLength(30)
+    for (const element of planted) {
+      const style = getComputedStyle(element)
+      const parent = getComputedStyle(element.parentElement!)
+      const name = element.dataset.part ?? element.dataset.control ?? element.localName
+      expect([name, style.display, style.overflow, style.rowGap, style.justifyContent])
+        .toEqual([name, element.localName === 'span' ? 'inline' : element.localName === 'textarea' ? 'inline-block' : 'block', element.localName === 'textarea' ? 'auto' : 'visible', 'normal', 'normal'])
+      if (element.localName !== 'textarea')
+        expect([name, style.color, style.fontSize, style.fontWeight, style.fontFamily]).toEqual([name, parent.color, parent.fontSize, parent.fontWeight, parent.fontFamily])
+      if (element.localName === 'p')
+        expect([name, style.marginTop]).toEqual([name, style.fontSize])
+      expect(getComputedStyle(element, '::before').content).toBe('none')
+    }
+    const own = panel.querySelector<HTMLElement>('[data-scope="designer-properties"][data-part="title"]')!
+    expect(getComputedStyle(own).fontWeight).not.toBe(getComputedStyle(own.parentElement!).fontWeight)
+  })
 })

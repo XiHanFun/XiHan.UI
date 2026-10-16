@@ -38,6 +38,8 @@ defineDesignerShell();
 
 `<xh-designer-properties>` 按 `@xihan-ui/designer-kit/properties` 的属性描述列出字段。设计器给出被编辑的对象，面板分组、挑编辑器、派发修改，自己不写文档。
 
+面板生成的部件都带 `data-scope="designer-properties"`，样式只认它：`header`、`footer` 插槽与宿主编辑器里的作者内容，即使也用了 `data-part="title"` 之类的部件名，也不受面板样式影响。
+
 ```ts
 const panel = document.createElement("xh-designer-properties");
 panel.targets = [{ kind: "task", id: "t1", value: node, descriptors }];
