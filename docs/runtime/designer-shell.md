@@ -295,6 +295,7 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 - `size` 是位置的缺省大小：`start`、`end` 占中间一行的宽度，`bottom` 占中间一栏的高度；`minSize` 是拖动的下限，缺省 10。都取该位置第一个区的值。中间区至少留 20。
 - `label` 是分隔条无障碍名称里的区名，缺省用 `name`；名称取文案 `resize`，分隔条所在的布局取文案 `layout`。
 - 收起的区移出文档，内容保留，再展开时原样放回。
+- 外框自己生成的结构（上方条、中间行、位置、分隔条与区容器）都带 `data-scope="designer-frame"`，区容器另带 `data-region`（区名）与 `data-position`（所在位置）。外框的样式只认这个 scope，区里的作者内容即使也用了 `data-part="region"` 之类的部件名，也不受外框样式影响。
 
 堆叠区的大小记在 `sizes.regions`：
 

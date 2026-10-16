@@ -80,6 +80,8 @@ const DEFAULT_TRANSLATIONS: DesignerFrameTranslations = {
 }
 
 const TAG = 'xh-designer-frame'
+/** 外框生成的结构都带这个 data-scope，样式只认它，不碰区里的作者内容。 */
+const SCOPE = 'designer-frame'
 const DEFAULT_MIN_SIZE = 10
 const CENTER_MIN_SIZE = 20
 const STRING_CONVERTER = { fromAttribute: (value: string | null) => value ?? undefined }
@@ -212,8 +214,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     if (this.#parts?.top.parentElement === this)
       return this.#parts
     const doc = this.ownerDocument
-    const top = createGeneratedElement(doc, 'div', { 'data-part': 'top' })
-    const body = createGeneratedElement(doc, 'div', { 'data-part': 'body' })
+    const top = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'top' })
+    const body = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'body' })
     this.append(top, body)
     this.#parts = { top, body }
     return this.#parts
@@ -226,7 +228,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     for (const region of this.#regionList()) {
       names.add(region.name)
       if (!this.#regions.has(region.name))
-        this.#regions.set(region.name, createAuthoredElement(doc, 'div', { 'data-part': 'region', 'data-region': region.name }))
+        this.#regions.set(region.name, createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'region', 'data-region': region.name }))
     }
     for (const name of [...this.#regions.keys()]) {
       if (!names.has(name)) {
@@ -266,7 +268,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
 
   /** 一个位置的区：一个区时直接放进去，多个区时上下排列并以分隔条隔开。 */
   #stack(regions: readonly DesignerFrameRegion[], position: DesignerFramePosition): HTMLElement {
-    const stack = createAuthoredElement(this.ownerDocument, 'div', { 'data-part': 'stack', 'data-position': position })
+    const stack = createAuthoredElement(this.ownerDocument, 'div', { 'data-scope': SCOPE, 'data-part': 'stack', 'data-position': position })
     const nodes = regions.map(region => this.#regions.get(region.name)!)
     if (regions.length < 2) {
       stack.append(...nodes)
@@ -296,6 +298,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       'dir': this.#direction(),
       'default-sizes': panels.map(panel => Math.round(panel.size * 1000) / 1000).join(','),
       'panels': JSON.stringify(panels.map(panel => ({ id: panel.id, min: panel.min }))),
+      'data-scope': SCOPE,
       'data-part': 'splitter',
       'data-orientation': orientation,
     }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, children)]) as XhSplitterElement
@@ -321,6 +324,10 @@ export class XhDesignerFrameElement extends XhReactiveElement {
 
   #build(parts: Parts, layout: Layout): void {
     this.#splitters = []
+    for (const [position, regions] of Object.entries(layout)) {
+      for (const region of regions)
+        this.#regions.get(region.name)!.setAttribute('data-position', position)
+    }
     parts.top.replaceChildren(...layout.top.map(region => this.#regions.get(region.name)!))
     parts.top.hidden = layout.top.length === 0
 
@@ -343,7 +350,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       row.push({ node: this.#stack(layout.start, 'start'), id: 'start', size: start, min: layout.start[0]!.minSize ?? DEFAULT_MIN_SIZE })
       triggers.push(layout.start[0]!.name)
     }
-    row.push({ node: createAuthoredElement(this.ownerDocument, 'div', { 'data-part': 'main' }, [main]), id: 'center', size: 100 - start - end, min: CENTER_MIN_SIZE })
+    row.push({ node: createAuthoredElement(this.ownerDocument, 'div', { 'data-scope': SCOPE, 'data-part': 'main' }, [main]), id: 'center', size: 100 - start - end, min: CENTER_MIN_SIZE })
     if (layout.end.length > 0) {
       row.push({ node: this.#stack(layout.end, 'end'), id: 'end', size: end, min: layout.end[0]!.minSize ?? DEFAULT_MIN_SIZE })
       triggers.push(layout.end[0]!.name)
