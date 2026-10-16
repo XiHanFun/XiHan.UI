@@ -55,11 +55,20 @@ export interface DesignerRulerTranslations {
   readonly verticalGuide: (value: string) => string
 }
 
+/** 外框的文案。 */
+export interface DesignerFrameTranslations {
+  /** 分隔条所在布局的无障碍名称。 */
+  readonly layout: string
+  /** 分隔条的无障碍名称，入参是它调整的那个区的名称。 */
+  readonly resize: (label: string) => string
+}
+
 declare module '@xihan-ui/web-components' {
   interface XhTranslationOverrides {
     'xh-designer-properties'?: Partial<DesignerPropertiesTranslations>
     'xh-designer-issues'?: Partial<DesignerIssuesTranslations>
     'xh-designer-palette'?: Partial<DesignerPaletteTranslations>
     'xh-designer-ruler'?: Partial<DesignerRulerTranslations>
+    'xh-designer-frame'?: Partial<DesignerFrameTranslations>
   }
 }

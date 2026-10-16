@@ -9,6 +9,8 @@ export { defineDesignerShell, defineDesignerShellElement, DESIGNER_SHELL_ELEMENT
 export type { DesignerShellTagMap } from './define'
 export { registerDropTarget, startDrag } from './drag/drag'
 export type { DragOptions, DragSession, DropOver, DropTargetHandlers, PanRequestDetail } from './drag/drag'
+export { DESIGNER_FRAME_REGIONS, parseDesignerPanels, XhDesignerFrameElement } from './frame/frame-element'
+export type { DesignerFrameEventMap, DesignerFramePosition, DesignerFrameRegion, DesignerFrameResizable } from './frame/frame-element'
 export { XhDesignerIssuesElement } from './issues/issues-element'
 export type { DesignerIssueItem, DesignerIssuesEventMap } from './issues/issues-element'
 export { XhDesignerMinimapElement } from './minimap/minimap-element'
@@ -34,4 +36,10 @@ export type {
   DesignerTransformItem,
   DesignerTransformKind,
 } from './transform/transform-element'
-export type { DesignerIssuesTranslations, DesignerPaletteTranslations, DesignerPropertiesTranslations, DesignerRulerTranslations } from './translations'
+export type {
+  DesignerFrameTranslations,
+  DesignerIssuesTranslations,
+  DesignerPaletteTranslations,
+  DesignerPropertiesTranslations,
+  DesignerRulerTranslations,
+} from './translations'

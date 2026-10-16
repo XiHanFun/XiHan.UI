@@ -6,6 +6,7 @@
 // 设计器零件的登记表：全量注册、按需注册与标签到元素类型的映射都从这张表来。元素不在 import 时注册。
 
 import { registerElement } from '@xihan-ui/web-components/authoring'
+import { XhDesignerFrameElement } from './frame/frame-element'
 import { XhDesignerIssuesElement } from './issues/issues-element'
 import { XhDesignerMinimapElement } from './minimap/minimap-element'
 import { XhDesignerPaletteElement } from './palette/palette-element'
@@ -26,6 +27,7 @@ export const DESIGNER_SHELL_ELEMENTS = {
   'xh-designer-palette': XhDesignerPaletteElement,
   'xh-designer-transform': XhDesignerTransformElement,
   'xh-designer-ruler': XhDesignerRulerElement,
+  'xh-designer-frame': XhDesignerFrameElement,
 } as const satisfies Readonly<Record<`xh-designer-${string}`, ShellElementClass>>
 
 /** 标签名 → 元素实例类型。 */

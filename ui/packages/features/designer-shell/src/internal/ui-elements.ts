@@ -13,6 +13,7 @@ import {
   XhIconElement,
   XhNumberFieldElement,
   XhSelectElement,
+  XhSplitterElement,
   XhSwitchElement,
   XhTagElement,
   XhTagsInputElement,
@@ -39,6 +40,11 @@ export function definePaletteElements(): void {
   defineXhElement('xh-text-field', XhTextFieldElement)
   defineXhElement('xh-accordion', XhAccordionElement)
   defineXhElement('xh-icon', XhIconElement)
+}
+
+/** 外框的分隔条用到的元素。 */
+export function defineFrameElements(): void {
+  defineXhElement('xh-splitter', XhSplitterElement)
 }
 
 /** 问题列表的过滤开关与来源标签用到的元素。 */

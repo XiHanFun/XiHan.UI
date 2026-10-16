@@ -154,7 +154,7 @@
     "name": "designer-shell/locale",
     "path": "packages/features/designer-shell/dist/locale.js",
     "gzip": true,
-    "limit": "0.46 kB"
+    "limit": "0.52 kB"
   },
   {
     "name": "xlsx",

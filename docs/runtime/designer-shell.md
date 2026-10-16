@@ -257,3 +257,38 @@ ruler.addEventListener("guides-change", event => setGuides(event.detail.guides))
 - 点参考线选中并取得焦点，Delete 或 Backspace 删除；Esc 放弃进行中的拖动。
 - 指针在标尺或画布上时，两条标尺上画跟随的细线；参考线在对应标尺上另画一道标记。
 - 参考线是带名称的 `separator`，名称取文案 `horizontalGuide` / `verticalGuide`。
+
+## 外框
+
+`<xh-designer-frame>` 是设计器的整体版式：上方一条，中间一行左、中、右三栏，中间一栏的下方再分一块。版式按命名区排，缺省登记工具栏 `toolbar`、物料 `palette`、画布 `canvas`、属性 `properties`、问题 `issues` 五个区。作者内容用 `slot="<区名>"` 标在直接子节点上，没写 `slot` 的进中间区。区与区之间是 `<xh-splitter>` 的分隔条，可以拖动或用键盘调整大小。
+
+```ts
+const frame = document.createElement("xh-designer-frame");
+frame.append(toolbar, palette, canvas, properties, issues); // 各自写好 slot="toolbar" 等
+frame.panels = "toolbar palette properties";
+frame.sizes = saved.sizes;
+frame.addEventListener("sizes-change", event => save(event.detail.sizes));
+```
+
+| 属性 | 说明 |
+| --- | --- |
+| `panels` | 要显示的区，空格分隔；不写即全部显示，写空串则只留中间区。中间区总是显示。同名 attribute |
+| `regions` | 产品登记的命名区，缺省为 `DESIGNER_FRAME_REGIONS` |
+| `sizes` | `{ start, end, bottom }`：各位置的大小（百分比），用来恢复上次的布局；不给的位置用区的缺省大小 |
+
+| 方法 | 说明 |
+| --- | --- |
+| `showsPanel(name)` | 这个区是否显示：中间区总是显示，其余按 `panels`，没登记的区为否 |
+
+| 事件 | detail |
+| --- | --- |
+| `sizes-change` | `{ sizes }`：拖动或用键盘调整后各位置的大小（百分比）；拖动途中连续发出 |
+
+命名区是 `{ name, position, size?, minSize?, label? }`：
+
+- `position` 取 `top`、`start`、`center`、`end`、`bottom`。同一位置的多个区按登记顺序上下排列，共用一个大小。
+- `size` 是位置的缺省大小：`start`、`end` 占中间一行的宽度，`bottom` 占中间一栏的高度；`minSize` 是拖动的下限，缺省 10。都取该位置第一个区的值。中间区至少留 20。
+- `label` 是分隔条无障碍名称里的区名，缺省用 `name`；名称取文案 `resize`，分隔条所在的布局取文案 `layout`。
+- 收起的区移出文档，内容保留，再展开时原样放回。
+
+`parseDesignerPanels(value)` 按同一口径解析 `panels`：没写为 `undefined`（全部显示），空串为空集合（全部收起），多个空白与制表符都当分隔。设计器自己的 `panels` 属性可以直接转给外框。
