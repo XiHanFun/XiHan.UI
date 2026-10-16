@@ -16,6 +16,8 @@ export type { CompileFilterOptions, FilterCondition, FilterGroup, FilterNode, Fi
 export { group, index, rollup } from './group'
 export { compareMixed, isMissing, tupleKey, valueKey } from './mixed'
 export type { CollateOptions, StringCollator } from './mixed'
+export { pivotWider } from './pivot'
+export type { PivotWiderColumn, PivotWiderOptions, PivotWiderResult } from './pivot'
 export { sortBy } from './sort'
 export type { NullsPosition, SortDirection, SortKey } from './sort'
 export { cumsum, deviation, extent, mean, median, quantile, range, sum, variance } from './statistics'
