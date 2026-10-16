@@ -17,8 +17,27 @@ export interface DesignerPropertiesTranslations {
   readonly invalidJson: string
 }
 
+/** 问题列表的文案。 */
+export interface DesignerIssuesTranslations {
+  /** 列表标题。 */
+  readonly title: string
+  /** 没有问题时的提示。 */
+  readonly empty: string
+  /** 错误过滤开关的文字，带条数。 */
+  readonly errors: (count: number) => string
+  /** 警告过滤开关的文字，带条数。 */
+  readonly warnings: (count: number) => string
+  /** 条目前的严重程度：错误。 */
+  readonly severityError: string
+  /** 条目前的严重程度：警告。 */
+  readonly severityWarning: string
+  /** 过滤开关组的无障碍名称。 */
+  readonly filter: string
+}
+
 declare module '@xihan-ui/web-components' {
   interface XhTranslationOverrides {
     'xh-designer-properties'?: Partial<DesignerPropertiesTranslations>
+    'xh-designer-issues'?: Partial<DesignerIssuesTranslations>
   }
 }

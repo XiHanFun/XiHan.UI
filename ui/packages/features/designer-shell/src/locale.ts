@@ -17,5 +17,14 @@ export const designerShellZhCN: XhConfig = {
       mixed: '多个值',
       invalidJson: '不是合法的 JSON',
     },
+    'xh-designer-issues': {
+      title: '问题',
+      empty: '没有问题',
+      errors: count => `${count} 个错误`,
+      warnings: count => `${count} 个警告`,
+      severityError: '错误',
+      severityWarning: '警告',
+      filter: '按严重程度显示问题',
+    },
   },
 }

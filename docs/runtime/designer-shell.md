@@ -72,3 +72,29 @@ panel.addEventListener("property-commit", () => history.seal());
 - 宿主编辑器的 `setValue` 与 `commit` 也走这两个事件。
 - 插槽 `header` 在标题下方（如部位导航），`footer` 在字段之后（如「删除列」）。
 - `focusField(path)` 把焦点交给该属性的字段，找不到时返回 `false`。
+
+## 问题列表
+
+`<xh-designer-issues>` 列出结构问题。文字由设计器换好，零件只管排列、过滤与定位。
+
+```ts
+const list = document.createElement("xh-designer-issues");
+list.items = issues.map(issue => ({ issue, message: t(issue), subject: nameOf(issue.target) }));
+list.addEventListener("issue-activate", event => select(event.detail.issue.target));
+list.addEventListener("issue-hover", event => highlight(event.detail.issue?.target));
+```
+
+| 属性 | 说明 |
+| --- | --- |
+| `items` | `{ issue, message, subject?, source? }[]`：`issue` 是 `SchemaIssue`，`subject` 是对象名，`source` 显示为来源小标签 |
+| `group-by` | `severity`（缺省）错误在前、警告在后；`none` 按传入顺序 |
+| `empty-text` | 没有问题时的提示 |
+| `readonly` | 列表没有修改类操作，只读时照常浏览与定位 |
+
+| 事件 | detail |
+| --- | --- |
+| `issue-activate` | `{ issue, index }`：点击或回车；`index` 是在 `items` 里的下标 |
+| `issue-hover` | `{ issue }`：指针移到条目上；移出列表时 `issue` 为 `undefined` |
+
+- 头部的错误、警告两个开关带条数，过滤状态在换 `items` 后保留。
+- 有 `target` 的条目是按钮，方向键、Home、End 在它们之间移动焦点；没有 `target` 的条目只显示，不可激活。

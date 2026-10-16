@@ -10214,6 +10214,9 @@
     ],
     "@xihan-ui/designer-shell": [
       "DESIGNER_SHELL_ELEMENTS",
+      "DesignerIssueItem",
+      "DesignerIssuesEventMap",
+      "DesignerIssuesTranslations",
       "DesignerPropertiesEventMap",
       "DesignerPropertiesTranslations",
       "DesignerPropertyDescriptor",
@@ -10222,6 +10225,7 @@
       "DesignerPropertyTarget",
       "DesignerPropertyTargetRef",
       "DesignerShellTagMap",
+      "XhDesignerIssuesElement",
       "XhDesignerPropertiesElement",
       "defineDesignerShell",
       "defineDesignerShellElement",

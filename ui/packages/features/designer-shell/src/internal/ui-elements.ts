@@ -32,3 +32,9 @@ export function definePropertyFieldElements(): void {
   defineXhElement('xh-toggle-group', XhToggleGroupElement)
   defineXhElement('xh-accordion', XhAccordionElement)
 }
+
+/** 问题列表的过滤开关与来源标签用到的元素。 */
+export function defineIssueListElements(): void {
+  defineXhElement('xh-toggle-group', XhToggleGroupElement)
+  defineXhElement('xh-tag', XhTagElement)
+}
