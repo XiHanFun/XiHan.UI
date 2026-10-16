@@ -1,10 +1,14 @@
 // @vitest-environment jsdom
-// 标准结构的基类钩子：作者没写结构时元素按结构生成，按 key 复用，可接管部件让位，作者写了结构就全归作者；
-// 宿主里写了 slot 的作者节点搬进对应部件，部件没了搬回宿主；挪动前后焦点不丢。
+// 标准结构的基类钩子：作者没写结构时元素按结构生成，按 key 复用，可接管部件让位并按缺省结构排在末尾，
+// 作者写了结构就全归作者；宿主里写了 slot 的作者节点搬进对应部件，部件没了搬回宿主；挪动前后焦点不丢。
+// 组合进来的库内元素经 static dependencies 随宿主注册，没注册就生成时告警。
 
+import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { StructureNode } from '@xihan-ui/headless'
 import type { ElementStructure } from '../src/element-base'
-import { afterEach, describe, expect, it } from 'vitest'
+import { DIAGNOSTIC_CODES, onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { defineXhElement } from '../src/define'
 import { XhElement } from '../src/element-base'
 
 interface ProbeItem {
@@ -20,7 +24,7 @@ class XhStructureProbeElement extends XhElement {
 
   static override structure: ElementStructure<XhStructureProbeElement> = {
     rootTag: 'section',
-    takeover: ['footer'],
+    takeover: { footer: 'trailing' },
     build: (host, taken) => host.nodes(taken),
   }
 
@@ -53,12 +57,54 @@ class XhStructureProbeElement extends XhElement {
 
 customElements.define('xh-structure-probe', XhStructureProbeElement)
 
+/** 可接管部件没排在末尾的结构：生成时报 wc.structure-takeover-order。 */
+class XhStructureMisorderedElement extends XhElement {
+  static override structure: ElementStructure<XhStructureMisorderedElement> = {
+    takeover: { header: 'trailing' },
+    build: () => [{ key: 'header', tag: 'div', part: 'header' }, { key: 'body', tag: 'div', part: 'body' }],
+  }
+
+  protected wire(): void {}
+}
+
+customElements.define('xh-structure-misordered', XhStructureMisorderedElement)
+
+/** 结构里组合了另一个库内元素：一个声明为依赖，一个没声明也没注册。 */
+class XhStructureChildElement extends XhElement {
+  protected wire(): void {}
+}
+
+class XhStructureParentElement extends XhElement {
+  static override dependencies = { 'xh-structure-child': XhStructureChildElement }
+
+  static override structure: ElementStructure<XhStructureParentElement> = {
+    build: () => [
+      { key: 'child', tag: 'xh-structure-child', part: 'child' },
+      { key: 'stray', tag: 'xh-structure-stray', part: 'stray' },
+    ],
+  }
+
+  protected wire(): void {}
+}
+
+let diagnostics: DiagnosticRecord[] = []
+
+beforeEach(() => {
+  resetDiagnostics()
+  setDiagnosticsConsoleOutput(false)
+  setDiagnosticsLevel('warn')
+  setDiagnosticsDedupe(false)
+  diagnostics = []
+  onDiagnostic(record => void diagnostics.push(record))
+})
+
 const A = { value: 'a', label: 'A' }
 const B = { value: 'b', label: 'B' }
 const C = { value: 'c', label: 'C' }
 
 afterEach(() => {
   document.body.replaceChildren()
+  resetDiagnostics()
 })
 
 async function settle(el: XhStructureProbeElement): Promise<void> {
@@ -123,10 +169,11 @@ describe('标准结构的基类钩子', () => {
     expect(document.activeElement).toBe(b)
   })
 
-  it('可接管部件：作者在 root 里写了 footer，结构不再铺它；没写 root 就写 footer 时全归作者', async () => {
+  it('可接管部件：作者在 root 里写了 footer，结构不再铺它，作者的 footer 按缺省结构排到末尾；没写 root 就写 footer 时全归作者', async () => {
     const el = await mount('<div data-xh-part="root"><div data-xh-part="footer">mine</div></div>')
     const root = el.querySelector('[data-xh-part="root"]')!
-    expect(parts(root)).toEqual(['footer', 'list', 'panel', 'panel'])
+    expect(parts(root)).toEqual(['list', 'panel', 'panel', 'footer'])
+    expect(root.lastElementChild!.hasAttribute('data-xh-gen')).toBe(false)
     expect(root.querySelector('[data-xh-part="footer"]')!.textContent).toBe('mine')
 
     const bare = await mount('<div data-xh-part="footer">mine</div>')
@@ -168,6 +215,25 @@ describe('标准结构的基类钩子', () => {
     el.items = []
     await settle(el)
     expect(b.isConnected).toBe(false)
+  })
+
+  it('可接管部件没排在 root 末尾的结构报 wc.structure-takeover-order；排对了的不报', async () => {
+    await mount()
+    expect(diagnostics.filter(record => record.code === DIAGNOSTIC_CODES.wcStructureTakeoverOrder)).toEqual([])
+    const el = document.createElement('xh-structure-misordered') as XhStructureMisorderedElement
+    document.body.append(el)
+    await el.updateComplete
+    expect(diagnostics.filter(record => record.code === DIAGNOSTIC_CODES.wcStructureTakeoverOrder).map(record => record.part)).toEqual(['header'])
+  })
+
+  it('按需注册宿主时连带注册 static dependencies 里的组合元素；生成了没注册的库内元素时告警', async () => {
+    defineXhElement('xh-structure-parent' as never, XhStructureParentElement as never)
+    expect(customElements.get('xh-structure-child')).toBe(XhStructureChildElement)
+    const el = document.createElement('xh-structure-parent') as XhStructureParentElement
+    document.body.append(el)
+    await el.updateComplete
+    expect(el.querySelector('xh-structure-child')).toBeInstanceOf(XhStructureChildElement)
+    expect(diagnostics.filter(record => record.code === DIAGNOSTIC_CODES.wcUnregisteredElement).map(record => record.detail?.tag)).toEqual(['xh-structure-stray'])
   })
 
   it('build 返回 undefined 时不动现有节点', async () => {

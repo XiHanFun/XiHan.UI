@@ -80,7 +80,7 @@ export { heatmapKeyboard } from './heatmap.keyboard'
 export { heatmapActiveCell, heatmapActiveSource, heatmapActiveTip, heatmapGridOptions, heatmapMachine } from './heatmap.machine'
 export type { HeatmapActiveContext, HeatmapActiveSource } from './heatmap.machine'
 export { heatmapMeta } from './heatmap.meta'
-export { heatmapStructure } from './heatmap.structure'
+export { HEATMAP_STRUCTURE_TAKEOVER, heatmapStructure } from './heatmap.structure'
 export type { HeatmapStructureOptions } from './heatmap.structure'
 export type {
   HeatmapActiveKeyChangeDetails,

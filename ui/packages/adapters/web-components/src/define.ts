@@ -319,10 +319,21 @@ function registerHost(): void {
 /**
  * 按库版本注册一个元素：与 defineXhElements 走同一张注册表，重复注册同一版本不报错，标签被别的版本或
  * 别的代码占用时抛错。只引用到的元素类会进打包结果，其余元素随 tree-shaking 去掉。
+ * 元素类在 static dependencies 里声明的组合元素随之递归注册；委派目标不连带注册。
  */
 export function defineXhElement<K extends keyof XhElementTagMap>(tag: K, ctor: new () => XhElementTagMap[K]): void {
-  defineElement(tag, ctor, VERSION)
+  defineWithDependencies(tag, ctor)
   registerHost()
+}
+
+/** 注册一个元素，再沿它的 static dependencies 递归注册；先注册自己，依赖成环时也会停。 */
+function defineWithDependencies(tag: string, ctor: CustomElementConstructor): void {
+  if (typeof customElements !== 'undefined' && customElements.get(tag) === ctor)
+    return
+  defineElement(tag, ctor, VERSION)
+  const dependencies = (ctor as { dependencies?: Readonly<Record<string, CustomElementConstructor>> }).dependencies
+  for (const [dependencyTag, dependency] of Object.entries(dependencies ?? {}))
+    defineWithDependencies(dependencyTag, dependency)
 }
 
 // 注册全部 xh-* 元素，需显式调用，主入口 import 不注册。

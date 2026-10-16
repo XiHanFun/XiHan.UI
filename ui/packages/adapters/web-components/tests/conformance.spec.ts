@@ -36,6 +36,8 @@ afterEach(() => {
 
 afterEach(() => {
   expect(diagnostics.filter(record => record.code === DIAGNOSTIC_CODES.wcUnknownPart)).toEqual([])
+  // 标准结构生成时核对的两条：可接管部件排在末尾、组合进来的库内元素已注册
+  expect(diagnostics.filter(record => record.code === DIAGNOSTIC_CODES.wcStructureTakeoverOrder || record.code === DIAGNOSTIC_CODES.wcUnregisteredElement)).toEqual([])
   document.body.innerHTML = ''
   resetDiagnostics()
 })

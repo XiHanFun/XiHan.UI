@@ -23,6 +23,10 @@ export const DIAGNOSTIC_CODES = {
   wcUnknownPart: 'wc.unknown-part',
   /** 角色节点用的标签不满足元素文档的要求，原生语义会静默失效。 */
   wcWrongPartTag: 'wc.wrong-part-tag',
+  /** 标准结构里可接管的部件没有排在 root 的末尾：作者接管它时 DOM 序与 Tab 序会和缺省结构不一致。 */
+  wcStructureTakeoverOrder: 'wc.structure-takeover-order',
+  /** 标准结构生成了一个还没注册的库内元素：它不会升级，结构里那一块是空的。 */
+  wcUnregisteredElement: 'wc.unregistered-element',
   /** 二维码中心 logo 挖掉的码字超出所选纠错级别能恢复的量。 */
   matrixCodeLogoDamage: 'matrix-code.logo-damage',
   /** 二维码收到一个对当前码制没有意义的选项，按没给处理。 */

@@ -6,9 +6,10 @@
 // 按组件的标准结构生成作者没写的部件节点：节点写成作者会写的样子（data-xh-part 与身份属性），
 // 带生成标记（值为 structure，与元素别的生成节点分开）、按 key 复用，接线照常经部件发现。
 
-import type { StructureNode, StructureSlot, StructureTag } from '@xihan-ui/headless'
+import type { StructureNode, StructureSlot, StructureTag, StructureTakeoverPosition } from '@xihan-ui/headless'
 import type { KeyedChildren } from './generated-nodes'
-import { createGeneratedElement, GEN_ATTR, reconcile } from './generated-nodes'
+import { DIAGNOSTIC_CODES, isDev, reportDiagnostic } from '@xihan-ui/core'
+import { createGeneratedElement, GEN_ATTR, generatedChildren, reconcile } from './generated-nodes'
 
 /** 标准结构生成的节点在 data-xh-gen 上写的值。 */
 export const STRUCTURE_MARK = 'structure'
@@ -37,7 +38,7 @@ export function placeStructure(parent: Element, nodes: readonly StructureNode[],
   reconcile(parent, nodes, keys, node => node.key, (node, reuse) => {
     const el = reuse instanceof HTMLElement && reuse.localName === node.tag
       ? reuse
-      : createGeneratedElement(doc, node.tag, { [GEN_ATTR]: STRUCTURE_MARK })
+      : createStructureElement(doc, node.tag)
     setAttr(el, 'data-xh-part', node.part)
     const attrs = node.attrs ?? {}
     const names = Object.keys(attrs)
@@ -56,6 +57,21 @@ export function placeStructure(parent: Element, nodes: readonly StructureNode[],
       el.textContent = node.text
     return el
   }, STRUCTURE_MARK)
+}
+
+/** 建一个结构节点；结构里组合进来的库内元素还没注册时，开发期告警：它不会升级，那一块是空的。 */
+function createStructureElement(doc: Document, tag: StructureTag): HTMLElement {
+  const el = createGeneratedElement(doc, tag, { [GEN_ATTR]: STRUCTURE_MARK })
+  if (tag.startsWith('xh-') && isDev() && typeof customElements !== 'undefined' && !customElements.get(tag)) {
+    reportDiagnostic({
+      code: DIAGNOSTIC_CODES.wcUnregisteredElement,
+      level: 'warn',
+      message: `标准结构生成了 <${tag}>，它还没注册：在宿主元素类的 static dependencies 里声明它，按需注册宿主时会连带注册`,
+      node: el,
+      detail: { tag },
+    })
+  }
+  return el
 }
 
 /**
@@ -88,8 +104,62 @@ export function authoredParts(host: Element): Map<string, HTMLElement[]> {
 export interface StructureSpec {
   /** 元素自己生成 root 时用的标签，缺省 div。 */
   readonly rootTag?: StructureTag
-  /** 作者可以在 root 里单独写、其余仍照常生成的部件。 */
-  readonly takeover?: readonly string[]
+  /** 作者可以在 root 里单独写、其余仍照常生成的部件及其位置，trailing 的按 root 末尾的先后排列。 */
+  readonly takeover?: Readonly<Record<string, StructureTakeoverPosition>>
+}
+
+/**
+ * 开发期核对：排在末尾的可接管部件必须在 root 子节点的最后、按登记的先后排列；不然作者接管它时，
+ * 作者节点与生成节点的先后会和缺省结构不一致，DOM 序与 Tab 序跟着错。经 portal 的部件不受限。
+ */
+function checkTakeoverOrder(host: Element, nodes: readonly StructureNode[], takeover: ReadonlyMap<string, StructureTakeoverPosition>): void {
+  if (takeover.size === 0 || !isDev())
+    return
+  const order = [...takeover].filter(([, position]) => position === 'trailing').map(([part]) => part)
+  let rank = -1
+  let last: string | undefined
+  for (const node of nodes) {
+    const position = takeover.get(node.part)
+    if (position === 'portal')
+      continue
+    const next = position === 'trailing' ? order.indexOf(node.part) : -1
+    // 末尾部件后面又出现了普通部件，错的是那个末尾部件；末尾部件之间先后不对，错的是排到前面的这一个
+    const misplaced = position === undefined ? (rank >= 0 ? last : undefined) : (next < rank ? node.part : undefined)
+    if (misplaced !== undefined) {
+      reportDiagnostic({
+        code: DIAGNOSTIC_CODES.wcStructureTakeoverOrder,
+        level: 'error',
+        message: `标准结构里可接管的部件 ${misplaced} 没有排在 root 末尾、或没按登记的先后排列`,
+        part: misplaced,
+        node: host,
+        detail: { tag: host.localName, order },
+      })
+      return
+    }
+    if (position === 'trailing') {
+      rank = next
+      last = node.part
+    }
+  }
+}
+
+/** 作者接管了末尾部件时，把末尾那一段按登记的先后排好：接管的用作者节点，其余用生成节点；已在位的不动。 */
+function placeTrailing(root: Element, takeover: ReadonlyMap<string, StructureTakeoverPosition>, taken: ReadonlySet<string>, authored: ReadonlyMap<string, HTMLElement[]>): void {
+  const tail: Element[] = []
+  for (const [part, position] of takeover) {
+    if (position !== 'trailing')
+      continue
+    if (taken.has(part))
+      tail.push(...(authored.get(part) ?? []).filter(node => node.parentElement === root))
+    else
+      tail.push(...generatedChildren(root, STRUCTURE_MARK).filter(node => node.getAttribute('data-xh-part') === part))
+  }
+  const children = Array.from(root.children)
+  const start = children.length - tail.length
+  if (!tail.every((node, index) => children[start + index] === node)) {
+    for (const node of tail)
+      root.append(node)
+  }
 }
 
 /** 一台宿主的生成状态：按 key 复用的节点表，以及搬进结构里的作者节点 → 它所在的部件。 */
@@ -106,6 +176,7 @@ export function createStructureState(): StructureState {
  * 按规则同步宿主的标准结构：
  * 1. 作者没写部件（或只写了 root）时生成：没写 root 连 root 一起生成，写了就生成在它里面；
  * 2. 作者在 root 里写了可接管部件时，结构不再铺这些部件（build 收到它们的名字），其余照常生成；
+ *    排在末尾的可接管部件按登记的先后放回 root 的末尾，作者节点与生成节点交错时次序照缺省结构；
  * 3. 作者写了别的部件，或没写 root 就写了可接管部件，就由作者全写，撤掉生成过的节点；
  * 4. 宿主直接子节点里写了 slot 的作者节点搬进结构里对应的部件；部件没了时搬回宿主。
  * build 返回 undefined（状态还算不出）时这一轮不动。挪动节点前后焦点所在的节点不变。
@@ -120,7 +191,7 @@ export function syncStructure(
   const active = doc.activeElement
   const authored = authoredParts(host)
   const root = authored.get('root')?.[0]
-  const takeover = new Set(spec.takeover ?? [])
+  const takeover = new Map(Object.entries(spec.takeover ?? {}))
   const taken = new Set<string>()
   let owned = false
   for (const [part, nodes] of authored) {
@@ -142,9 +213,12 @@ export function syncStructure(
     const nodes = build(taken)
     if (!nodes)
       return
+    checkTakeoverOrder(host, nodes, takeover)
     if (root) {
       placeStructure(host, [], state.keys)
       placeStructure(root, nodes, state.keys, slots)
+      if (taken.size > 0)
+        placeTrailing(root, takeover, taken, authored)
     }
     else {
       placeStructure(host, [{ key: 'root', part: 'root', tag: spec.rootTag ?? 'div', children: nodes }], state.keys, slots)
