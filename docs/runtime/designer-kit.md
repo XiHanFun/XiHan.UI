@@ -71,7 +71,7 @@ type ApplyOperation<D, O> = (document: D, operation: O) => {
 history.execute([setLabel(nodeId, value)], { merge: `node:${nodeId}:label`, label: "改名" });
 ```
 
-上一步带同一合并键且没有封口时，新执行并入上一步，说明保留上一步的。`seal()`、撤销、重做与事务都会封口；字段失焦时调用 `seal()`，下次再输入就另起一步。`mergeWithin`（毫秒）可再加一道时间窗，配合 `now` 选项注入时钟。
+上一步带同一合并键且没有封口时，新执行并入上一步，说明保留上一步的。`seal()`、撤销、重做与事务都会封口；字段失焦时调用 `seal()`，下次再输入就另起一步。`mergeWithin`（毫秒）可再加一道时间窗，配合 `now` 选项注入时钟；单次执行也可以带自己的 `mergeWithin` 盖过它，比如属性面板的输入传 `Infinity`，不论停顿多久都并成一步，只等失焦封口，而方向键微移仍按历史的时间窗合并。
 
 ### 事务
 

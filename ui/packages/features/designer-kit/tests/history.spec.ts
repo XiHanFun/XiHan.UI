@@ -276,6 +276,21 @@ describe('createHistory', () => {
     ])
   })
 
+  it('单次执行可以带自己的合并时限', () => {
+    let time = 0
+    const history = setup({ mergeWithin: 500, now: () => time })
+    history.execute([set(0, 'x')], { merge: 'k' })
+    time = 5000
+    history.execute([set(0, 'y')], { merge: 'k', mergeWithin: Infinity })
+    expect(history.undoCount).toBe(1)
+    time = 5100
+    history.execute([set(0, 'z')], { merge: 'k', mergeWithin: 50 })
+    expect(history.undoCount).toBe(2)
+    expect(() => history.execute([set(0, 'w')], { merge: 'k', mergeWithin: -1 })).toThrow(RangeError)
+    expect(history.document).toEqual(['z'])
+    expect(history.undoCount).toBe(2)
+  })
+
   it('非法配置立即报错', () => {
     expect(() => createHistory<Doc, Op>({ document: [], apply, limit: -1 })).toThrow(RangeError)
     expect(() => createHistory<Doc, Op>({ document: [], apply, limit: 1.5 })).toThrow(RangeError)
