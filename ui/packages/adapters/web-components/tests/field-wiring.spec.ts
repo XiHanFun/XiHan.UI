@@ -190,6 +190,20 @@ describe('字段只引用在场的部件', () => {
     await vi.waitFor(() => expect(trigger(field).getAttribute('aria-describedby')).toBe(idOf(field, 'description')))
   })
 
+  it('说明部件里只有对读屏隐藏的内容时按没写处理，撤掉 aria-hidden 后进描述链', async () => {
+    const field = mountBare('<p data-xh-part="description"><span aria-hidden="true">选所属部门</span></p>')
+    await vi.waitFor(() => expect(trigger(field).getAttribute('data-scope')).toBe('select'))
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(trigger(field).hasAttribute('aria-describedby')).toBe(false)
+    field.querySelector('[data-xh-part="description"] span')!.removeAttribute('aria-hidden')
+    await vi.waitFor(() => expect(trigger(field).getAttribute('aria-describedby')).toBe(idOf(field, 'description')))
+  })
+
+  it('说明部件里只有带 alt 的图片时进描述链', async () => {
+    const field = mountBare('<p data-xh-part="description"><img alt="选所属部门"></p>')
+    await vi.waitFor(() => expect(trigger(field).getAttribute('aria-describedby')).toBe(idOf(field, 'description')))
+  })
+
   it('没写字段标签时，名字链里没有字段标签的 id', async () => {
     document.body.innerHTML = `<xh-field><div data-xh-part="root">${TEXT_FIELD}<p data-xh-part="description">工作邮箱</p></div></xh-field>`
     const field = document.querySelector<HTMLElement>('xh-field')!

@@ -8491,6 +8491,7 @@
       "groupJsonViewerNodesByParent",
       "gs1CheckDigit",
       "hasFormPathValue",
+      "hasNamingContent",
       "hasSegmentSet",
       "hasTimeSegment",
       "heatmapActiveCell",

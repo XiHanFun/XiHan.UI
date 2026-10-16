@@ -8,7 +8,7 @@
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, RatingHoverChangeDetails, RatingItemProps, RatingSchema, RatingTranslations, RatingValueChangeDetails } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectRating, ratingAnatomy, ratingMachine, ratingMeta, resolveFormControlState } from '@xihan-ui/headless'
+import { connectRating, hasNamingContent, ratingAnatomy, ratingMachine, ratingMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -168,9 +168,25 @@ export class XhRatingElement extends XhElement {
     el.textContent = text
   }
 
-  /** 条目身份取自作者写的 value 属性；没写就不是一颗合法的星，交给 connect 按非法值处理。 */
+  /** 每颗星首次同步时，作者是否已在星节点自己身上写了 aria-label / aria-labelledby。 */
+  private readonly namedItems = new WeakMap<Element, boolean>()
+
+  /**
+   * 条目身份取自作者写的 value 属性；没写就不是一颗合法的星，交给 connect 按非法值处理。
+   * 作者在星里放了自己的内容（文字或带名字的节点），或在星节点上写了自己的名字时，这颗星以作者的为名，connect 不写缺省名。
+   */
   private itemProps(el: HTMLElement): RatingItemProps {
-    return { value: Number(el.getAttribute('value')) }
+    return { value: Number(el.getAttribute('value')), authored: this.itemNamedByAuthor(el) || hasNamingContent(el) }
+  }
+
+  /** 首次同步时连接层还没往星节点上写过名字，此刻读到的 aria-label / aria-labelledby 是作者的；按节点只读这一次。 */
+  private itemNamedByAuthor(el: HTMLElement): boolean {
+    let named = this.namedItems.get(el)
+    if (named === undefined) {
+      named = ['aria-label', 'aria-labelledby'].some(attr => (el.getAttribute(attr) ?? '').trim() !== '')
+      this.namedItems.set(el, named)
+    }
+    return named
   }
 
   protected wire(): void {

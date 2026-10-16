@@ -6,6 +6,7 @@
 // 提供 field 相关实现。
 
 import type { SlotsType, VNode } from 'vue'
+import { hasNamingContent } from '@xihan-ui/headless'
 import { defineComponent, h, ref } from 'vue'
 import { isRoleMarker, mergeIntoChild } from '../../runtime/as-child'
 import { useOptionalFormContext, useOptionalFormField } from '../form/context'
@@ -104,8 +105,8 @@ export const XhFieldDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useFieldContext()
     const el = ref<HTMLElement | null>(null)
-    // 没有文字的说明不进描述链
-    useFieldPartPresence(ctx, 'description', () => (el.value?.textContent ?? '').trim() !== '')
+    // 读不出一句话的说明不进描述链
+    useFieldPartPresence(ctx, 'description', () => el.value != null && hasNamingContent(el.value))
     return () => h('p', { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el }, slots.default?.())
   },
 })

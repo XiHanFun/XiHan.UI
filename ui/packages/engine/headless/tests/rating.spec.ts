@@ -547,17 +547,26 @@ describe('connectRating 的指针处理器', () => {
 })
 
 describe('评分 · 每颗星的名字', () => {
-  it('没给文案就不发名字，作者标在星星上的那句自己当名字', () => {
+  function authoredAttrs(service: Service<RatingSchema>, index: number): Record<string, unknown> {
+    return api(service).getItemProps({ value: index, authored: true }) as Record<string, unknown>
+  }
+
+  it('星里没有作者内容时发缺省名，带上分值与总档数', () => {
     const { service } = makeService({ defaultValue: 3, count: 5 })
-    // 星里只有符号时名字会随高亮在两个符号间变，所以留了文案位；但写死一句会把作者
-    // 标在星星上的那句盖掉，读屏念到的就不是屏幕上的东西——不给就不发。
-    expect(itemAttrs(service, 2)['aria-label']).toBeUndefined()
-    expect(itemAttrs(service, 4)['aria-label']).toBeUndefined()
+    expect(itemAttrs(service, 2)['aria-label']).toBe('2 of 5 stars')
+    expect(itemAttrs(service, 4)['aria-label']).toBe('4 of 5 stars')
   })
 
-  it('文案拿得到档位与总数，作者给了就用作者那份', () => {
+  it('星里有作者内容时不写 aria-label，以作者的内容为名', () => {
+    const { service } = makeService({ defaultValue: 3, count: 5 })
+    expect(authoredAttrs(service, 2)['aria-label']).toBeUndefined()
+    expect(authoredAttrs(service, 2)['aria-posinset']).toBe(2)
+  })
+
+  it('作者给了 translations.item：没有作者内容时用它，有作者内容时照样不写', () => {
     const { service } = makeService({ count: 4, translations: { item: (value, count) => `${count} 分里的 ${value} 分` } })
     expect(itemAttrs(service, 3)['aria-label']).toBe('4 分里的 3 分')
+    expect(authoredAttrs(service, 3)['aria-label']).toBeUndefined()
   })
 })
 

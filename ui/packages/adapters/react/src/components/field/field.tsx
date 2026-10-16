@@ -7,6 +7,7 @@
 
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { hasNamingContent } from '@xihan-ui/headless'
 import { useRef } from 'react'
 import { isRoleMarker, mergeIntoChild } from '../../runtime/as-child'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -103,8 +104,8 @@ export interface XhFieldDescriptionProps extends ComponentPropsWithRef<'p'> {}
 export function XhFieldDescription({ children, ...rest }: XhFieldDescriptionProps): ReactNode {
   const ctx = useFieldContext()
   const el = useRef<HTMLParagraphElement | null>(null)
-  // 没有文字的说明不进描述链
-  useFieldPartPresence(ctx, 'description', () => (el.current?.textContent ?? '').trim() !== '')
+  // 读不出一句话的说明不进描述链
+  useFieldPartPresence(ctx, 'description', () => el.current != null && hasNamingContent(el.current))
   return (
     <p {...mergeReactProps({ ...ctx.api.getDescriptionProps() as Record<string, unknown>, ref: el }, rest as Record<string, unknown>)}>
       {children}

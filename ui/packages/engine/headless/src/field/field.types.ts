@@ -20,7 +20,7 @@ export interface FieldProps {
   /**
    * 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。
    * 不在场的部件不进控件的名字链与描述链：指向不存在的 id 会被判为无效引用。
-   * description 渲染了但没有文字也按不在场处理。
+   * description 渲染了但读不出一句话（判断同 `hasNamingContent`）也按不在场处理。
    */
   parts?: FieldRenderedParts
 }

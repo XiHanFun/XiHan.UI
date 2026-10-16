@@ -168,6 +168,7 @@ const SAMPLES: Record<string, Record<string, unknown[][]>> = {
       }],
     ],
   },
+  'rating': { item: [[1, 5], [3, 5], [5, 5], [2, 10]] },
   'resizable': { handle: EDGES },
   'sankey-chart': {
     datumLabel: [[DATUM]],

@@ -29,7 +29,6 @@ interface LocaleExcludedKeys {
   'menu': 'content'
   'prompt-input': 'input'
   'question-flow': 'notePlaceholder' | 'skip' | 'continue' | 'send'
-  'rating': 'item'
   'sortable': 'item'
   'steps': 'list'
   'table': 'item'
