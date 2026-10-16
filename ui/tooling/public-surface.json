@@ -7471,6 +7471,7 @@
       "TOUR_TARGET_TIMEOUT",
       "TREE_SELECT_DEFAULT_PLACEMENT",
       "TRUNCATE_DEFAULT_LINES",
+      "TableActionDetails",
       "TableApi",
       "TableCellProps",
       "TableCellSpan",
@@ -13942,6 +13943,7 @@
       "footer",
       "loading",
       "loop",
+      "onAction",
       "onColumnPreferenceChange",
       "onExpandedValueChange",
       "onRowMove",
@@ -22437,6 +22439,7 @@
         "variant"
       ],
       "events": [
+        "action",
         "column-preference-change",
         "expanded-value-change",
         "row-move",

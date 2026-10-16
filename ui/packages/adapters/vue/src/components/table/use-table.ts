@@ -30,12 +30,13 @@ export function useTable(
   onExpandedValueChange?: TableSchema['props']['onExpandedValueChange'],
   onColumnPreferenceChange?: TableSchema['props']['onColumnPreferenceChange'],
   onRowMove?: TableSchema['props']['onRowMove'],
+  onAction?: TableSchema['props']['onAction'],
 ): TableContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const service = useMachine(
     tableMachine,
-    () => ({ ...props, onSortChange, onSelectionChange, onExpandedValueChange, onColumnPreferenceChange, onRowMove }),
+    () => ({ ...props, onSortChange, onSelectionChange, onExpandedValueChange, onColumnPreferenceChange, onRowMove, onAction }),
     scope,
   )
   const rootRef = ref<HTMLElement | null>(null)
