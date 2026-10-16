@@ -130,7 +130,7 @@ function fieldPathOf(el: HTMLElement): FormPath {
  * @csspart field-group - 单个字段的容器，须自带 name 标识字符串字段；数组路径写严格 JSON `data-path`；带 id 供摘要链接指向。
  *   grid 排布下再写个 `span` 属性（1 至 4，或 full 占满整行）就是这一格占多宽，落成 data-span；
  *   运行期改写它不触发重新接线，需作者自行 requestUpdate。
- *   组里的 `<xh-field>` 由表单驱动 invalid/required/disabled，作者显式设的会被顶掉
+ *   组里的 `<xh-field>` 没显式设 invalid/required/disabled 时由表单驱动；作者显式设的优先（实例 > 字段 > 表单）
  * @csspart error-summary - role=alert 的错误汇总（一次提交失败中唯一打断朗读的活区），提交失败且仍有错误时才显示
  * @csspart error-summary-item - 摘要里的一条，须是原生 `<a>` 且用 name 或严格 JSON `data-path` 标识字段；无对应错误时带 hidden
  * @csspart submit-trigger - 提交键，须是原生 button（连接层写成 type=submit）
