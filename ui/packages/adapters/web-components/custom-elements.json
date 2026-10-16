@@ -32195,6 +32195,16 @@
             },
             {
               "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhHeatmapElement>"
+              },
+              "static": true,
+              "default": "{ takeover: ['tooltip', 'empty', 'legend'], build: (host, taken) => host.ctrl.service ? heatmapStructure(connectHeatmap(host.ctrl.service, wcNormalize), { empty: !taken.has('empty'), legend: !taken.has('legend') }) : undefined, }",
+              "description": "作者没写结构时按网格模型生成；作者在 root 里写了 tooltip、empty 或 legend 的用作者的，其余照常生成。"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -32405,17 +32415,6 @@
             },
             {
               "kind": "field",
-              "name": "generatedKeys",
-              "type": {
-                "text": "KeyedChildren"
-              },
-              "privacy": "private",
-              "readonly": true,
-              "default": "new WeakMap()",
-              "description": "生成节点按 key 复用。"
-            },
-            {
-              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -32430,42 +32429,6 @@
                   "text": "Partial<HeatmapSchema['props']>"
                 }
               }
-            },
-            {
-              "kind": "method",
-              "name": "authoredPart",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HTMLElement | null"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "scope",
-                  "type": {
-                    "text": "ParentNode"
-                  }
-                },
-                {
-                  "name": "name",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ],
-              "description": "本元素名下的某个作者节点：不是生成的，也不在嵌套的另一台热力图里。"
-            },
-            {
-              "kind": "method",
-              "name": "syncGenerated",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "root 里没有作者写的 grid 时生成整套结构；有就撤掉生成过的节点。\n排在部件发现之前：生成的节点这一轮就能被发现、接线，必备部件的校验也认得出 grid。"
             },
             {
               "kind": "field",

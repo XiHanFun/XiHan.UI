@@ -203,3 +203,40 @@ describe('冻结列按实测宽度累加偏移', () => {
     expect(inset('c')).toBe('320px')
   })
 })
+
+describe('纵向合并只渲了一段行时', () => {
+  // 六行一组：group 列从第 0 行起纵向合并六行；行号从 2 起（第 1 行是表头）
+  const columns: NonNullable<Props['columns']> = [{ id: 'group', width: 100 }, { id: 'name', width: 160 }]
+  const rows = Array.from({ length: 6 }, (_, i) => ({ id: `r${i}` }))
+  const cellSpan: Props['cellSpan'] = ({ rowIndex, column }) => (column.id === 'group' && rowIndex === 0 ? { rowSpan: 6 } : null)
+  const boxes = (indexes: number[]) => Object.fromEntries(indexes.map(index => [index, { top: (index - 2) * 40, bottom: (index - 1) * 40 }]))
+
+  it('起点行在场、末几行不在：高度铺到最后一条在场的行，跨度照旧报全区', () => {
+    const t = mount({ columns, rows, cellSpan })
+    t.service.context.set('layout', { columnWidths: {}, rowBoxes: boxes([2, 3, 4]) })
+    const origin = t.api().getCellProps({ value: 'group', row: 'r0' }) as Dict
+    expect(origin['aria-rowspan']).toBe(6)
+    expect((origin.style as Dict)['--xh-_table-span-block']).toBe('120px')
+  })
+
+  it('起点行不在场：区里第一条在场的行接替起点，跨度是剩下的行数，cellSpanOf 不再报它被合并', () => {
+    const t = mount({ columns, rows, cellSpan })
+    t.service.context.set('layout', { columnWidths: {}, rowBoxes: boxes([4, 5, 6]) })
+    const api = t.api()
+    const relay = api.getCellProps({ value: 'group', row: 'r2' }) as Dict
+    expect(relay['aria-hidden']).toBeUndefined()
+    expect(relay['aria-rowspan']).toBe(4)
+    expect(relay.role).toBe('gridcell')
+    expect((relay.style as Dict)['--xh-_table-span-block']).toBe('120px')
+    expect(api.cellSpanOf('r2', 'group')).toEqual({ rowSpan: 4, colSpan: 1, covered: false })
+    expect((api.getCellProps({ value: 'group', row: 'r3' }) as Dict)['aria-hidden']).toBe(true)
+  })
+
+  it('还没量过行位或全部在场时不接替', () => {
+    const t = mount({ columns, rows, cellSpan })
+    expect(t.api().cellSpanOf('r2', 'group').covered).toBe(true)
+    t.service.context.set('layout', { columnWidths: {}, rowBoxes: boxes([2, 3, 4, 5, 6, 7]) })
+    expect(t.api().cellSpanOf('r2', 'group').covered).toBe(true)
+    expect(t.api().cellSpanOf('r0', 'group').rowSpan).toBe(6)
+  })
+})
