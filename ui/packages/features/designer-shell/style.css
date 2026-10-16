@@ -869,4 +869,11 @@
   xh-designer-frame [data-part='stack'][data-position='center'] > [data-part='region'] {
     overflow: hidden;
   }
+
+  /* 上面的部件声明了 display，盖掉了 UA 的 [hidden]{display:none}，收起时补回来 */
+  xh-designer-frame > :is([data-part='top'], [data-part='body'])[hidden],
+  xh-designer-frame :is([data-part='splitter'], [data-part='main'], [data-part='stack'], [data-part='region'])[hidden],
+  xh-designer-frame [data-scope='splitter']:is([data-part='root'], [data-part='panel'])[hidden] {
+    display: none;
+  }
 }

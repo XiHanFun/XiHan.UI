@@ -64,6 +64,31 @@ describe('<xh-designer-frame>（Chromium）', () => {
     expect(width('toolbar')).toBeCloseTo(1000, 0)
   })
 
+  it('没有区的位置不占尺寸、不画边框：空的顶部条收起，左右与下方不留部件', async () => {
+    const borders = (element: Element): number[] => {
+      const style = getComputedStyle(element)
+      return [style.borderTopWidth, style.borderRightWidth, style.borderBottomWidth, style.borderLeftWidth].map(Number.parseFloat)
+    }
+    const stacks: Readonly<Record<string, readonly string[]>> = { '': ['center'], 'palette': ['start', 'center'], 'properties': ['center', 'end'], 'issues': ['center', 'bottom'] }
+    for (const [panels, expected] of Object.entries(stacks)) {
+      frame.panels = panels
+      await frame.updateComplete
+      const top = frame.querySelector<HTMLElement>(':scope > [data-part="top"]')!
+      expect(top.hidden).toBe(true)
+      expect(getComputedStyle(top).display).toBe('none')
+      expect(top.getBoundingClientRect().height).toBe(0)
+      const body = frame.querySelector(':scope > [data-part="body"]')!.getBoundingClientRect()
+      expect([body.top, body.height]).toEqual([20, 600])
+      const positions = Array.from(frame.querySelectorAll<HTMLElement>('[data-part="stack"]'), stack => stack.dataset.position)
+      expect(positions).toEqual(expected)
+      for (const part of frame.querySelectorAll('[data-part="body"], [data-part="main"], [data-part="stack"], [data-part="region"]'))
+        expect(borders(part)).toEqual([0, 0, 0, 0])
+    }
+    frame.panels = undefined
+    await frame.updateComplete
+    expect(getComputedStyle(frame.querySelector(':scope > [data-part="top"]')!).display).toBe('flex')
+  })
+
   it('拖动分隔条后区宽跟着变，派发 sizes-change；收起再展开时保留拖过的大小', async () => {
     const seen: DesignerFrameEventMap['sizes-change']['detail'][] = []
     frame.addEventListener('sizes-change', event => seen.push((event as DesignerFrameEventMap['sizes-change']).detail))

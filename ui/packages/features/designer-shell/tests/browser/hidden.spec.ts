@@ -1,4 +1,4 @@
-// 零件宿主各自带 display，宿主写上 hidden 时要真的收起，不被零件自己的样式顶掉。
+// 零件宿主各自带 display，宿主写上 hidden 时要真的收起，不被零件自己的样式顶掉；零件自己收起的部件也一样。
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineDesignerShell, DESIGNER_SHELL_ELEMENTS } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
@@ -24,5 +24,20 @@ describe('零件宿主的 hidden（Chromium）', () => {
     expect(getComputedStyle(host).display).not.toBe('none')
     host.hidden = true
     expect(getComputedStyle(host).display).toBe('none')
+  })
+
+  // 小地图没有会收起的部件
+  it.each(Object.keys(DESIGNER_SHELL_ELEMENTS).filter(tag => tag !== 'xh-designer-minimap'))('%s 里零件自己收起的部件都不显示', async (tag) => {
+    const host = document.createElement(tag)
+    if (tag === 'xh-designer-frame')
+      host.setAttribute('panels', '')
+    if (tag === 'xh-designer-issues')
+      Object.assign(host, { items: [{ issue: { code: 'required', path: [] }, message: 'Required' }] })
+    hosts.push(host)
+    document.body.append(host)
+    await (host as HTMLElement & { updateComplete?: Promise<unknown> }).updateComplete
+    const hidden = Array.from(host.querySelectorAll<HTMLElement>('[hidden]'))
+    expect(hidden.length).toBeGreaterThan(0)
+    expect(hidden.filter(element => getComputedStyle(element).display !== 'none').map(element => element.dataset.part)).toEqual([])
   })
 })
