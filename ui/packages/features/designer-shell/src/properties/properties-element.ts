@@ -14,8 +14,8 @@ import type { FieldContext, FieldInstance } from './editors'
 import { createCounterIdGenerator } from '@xihan-ui/core'
 import { formatJsonPath, getJsonAt, jsonEquals } from '@xihan-ui/core/json'
 import { groupProperties, isPropertyVisible, resolvePropertyEditor } from '@xihan-ui/designer-kit/properties'
-import { emitEvent, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
-import { h, placeChildren, setText } from '../internal/dom'
+import { createAuthoredElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
+import { placeChildren } from '../internal/dom'
 import { adoptSlots } from '../internal/slots'
 import { definePropertyFieldElements } from '../internal/ui-elements'
 import { builtinEditor } from './editors'
@@ -218,14 +218,14 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     if (this.#parts?.header.isConnected && this.#parts.header.parentElement === this)
       return this.#parts
     const doc = this.ownerDocument
-    const title = h(doc, 'div', { 'data-part': 'title' })
-    const heading = h(doc, 'div', { 'data-part': 'heading', 'hidden': true })
-    const headerSlot = h(doc, 'div', { 'data-part': 'header-slot' })
-    const header = h(doc, 'div', { 'data-part': 'header' }, [title, heading, headerSlot])
-    const empty = h(doc, 'p', { 'data-part': 'empty' })
-    const groups = h(doc, 'div', { 'data-part': 'groups' })
-    const footerSlot = h(doc, 'div', { 'data-part': 'footer-slot' })
-    const body = h(doc, 'div', { 'data-part': 'body' }, [empty, groups, footerSlot])
+    const title = createAuthoredElement(doc, 'div', { 'data-part': 'title' })
+    const heading = createAuthoredElement(doc, 'div', { 'data-part': 'heading', 'hidden': true })
+    const headerSlot = createAuthoredElement(doc, 'div', { 'data-part': 'header-slot' })
+    const header = createAuthoredElement(doc, 'div', { 'data-part': 'header' }, [title, heading, headerSlot])
+    const empty = createAuthoredElement(doc, 'p', { 'data-part': 'empty' })
+    const groups = createAuthoredElement(doc, 'div', { 'data-part': 'groups' })
+    const footerSlot = createAuthoredElement(doc, 'div', { 'data-part': 'footer-slot' })
+    const body = createAuthoredElement(doc, 'div', { 'data-part': 'body' }, [empty, groups, footerSlot])
     this.prepend(header, body)
     this.#parts = { header, title, heading, headerSlot, body, empty, groups, footerSlot }
     this.#rows.clear()
@@ -301,7 +301,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     if (this.#accordion)
       return this.#accordion
     const doc = this.ownerDocument
-    const accordion: HTMLElement & { value?: string[] } = h(doc, 'xh-accordion', { 'multiple': true, 'size': 'sm', 'data-part': 'accordion' }, [h(doc, 'div', { 'data-xh-part': 'root' })])
+    const accordion: HTMLElement & { value?: string[] } = createAuthoredElement(doc, 'xh-accordion', { 'multiple': true, 'size': 'sm', 'data-part': 'accordion' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' })])
     accordion.addEventListener('value-change', (event) => {
       event.stopPropagation()
       const open = (event as CustomEvent<{ value: string[] }>).detail.value
@@ -327,27 +327,27 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
       return existing
     }
     const doc = this.ownerDocument
-    const rows = h(doc, 'div', { 'data-part': 'group-rows' })
+    const rows = createAuthoredElement(doc, 'div', { 'data-part': 'group-rows' })
     let created: Group
     if (this.collapsible && group !== undefined) {
-      const label = h(doc, 'span', { 'data-part': 'group-label' }, [title!])
-      const element = h(doc, 'div', { 'data-xh-part': 'item', 'value': group }, [
-        h(doc, 'div', { 'data-xh-part': 'header' }, [
-          h(doc, 'button', { 'data-xh-part': 'trigger', 'type': 'button' }, [label, h(doc, 'span', { 'data-xh-part': 'indicator' })]),
+      const label = createAuthoredElement(doc, 'span', { 'data-part': 'group-label' }, [title!])
+      const element = createAuthoredElement(doc, 'div', { 'data-xh-part': 'item', 'value': group }, [
+        createAuthoredElement(doc, 'div', { 'data-xh-part': 'header' }, [
+          createAuthoredElement(doc, 'button', { 'data-xh-part': 'trigger', 'type': 'button' }, [label, createAuthoredElement(doc, 'span', { 'data-xh-part': 'indicator' })]),
         ]),
-        h(doc, 'div', { 'data-xh-part': 'content' }, [rows]),
+        createAuthoredElement(doc, 'div', { 'data-xh-part': 'content' }, [rows]),
       ])
       created = { key, element, label, rows }
     }
     else if (group !== undefined) {
-      const label = h(doc, 'div', { 'data-part': 'group-label' }, [title!])
-      const element = h(doc, 'div', { 'data-part': 'group', 'role': 'group' }, [label, rows])
+      const label = createAuthoredElement(doc, 'div', { 'data-part': 'group-label' }, [title!])
+      const element = createAuthoredElement(doc, 'div', { 'data-part': 'group', 'role': 'group' }, [label, rows])
       label.id = this.#ids.scopeId()
       element.setAttribute('aria-labelledby', label.id)
       created = { key, element, label, rows }
     }
     else {
-      const element = h(doc, 'div', { 'data-part': 'group' }, [rows])
+      const element = createAuthoredElement(doc, 'div', { 'data-part': 'group' }, [rows])
       created = { key, element, label: undefined, rows }
     }
     this.#groups.set(key, created)
@@ -381,12 +381,12 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
 
   #createRow(key: string, descriptor: DesignerPropertyDescriptor, editor: DesignerPropertyEditor | undefined, targets: readonly DesignerPropertyTarget[]): Row {
     const doc = this.ownerDocument
-    const label = h(doc, 'label', { 'data-xh-part': 'label' })
-    const hint = h(doc, 'p', { 'data-xh-part': 'description' })
-    const error = h(doc, 'p', { 'data-xh-part': 'error-text' })
-    const root = h(doc, 'div', { 'data-xh-part': 'root' }, [label])
-    const field = h(doc, 'xh-field', {}, [root])
-    const element = h(doc, 'div', { 'data-part': 'property', 'data-path': formatJsonPath(descriptor.path) }, [field])
+    const label = createAuthoredElement(doc, 'label', { 'data-xh-part': 'label' })
+    const hint = createAuthoredElement(doc, 'p', { 'data-xh-part': 'description' })
+    const error = createAuthoredElement(doc, 'p', { 'data-xh-part': 'error-text' })
+    const root = createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [label])
+    const field = createAuthoredElement(doc, 'xh-field', {}, [root])
+    const element = createAuthoredElement(doc, 'div', { 'data-part': 'property', 'data-path': formatJsonPath(descriptor.path) }, [field])
     const row: Row = { key, element, field, label, hint, error, control: {}, descriptor, localError: undefined }
     const context = this.#context(row, targets)
     const builtin = editor ? undefined : builtinEditor(descriptor.control.kind)
@@ -399,10 +399,10 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     else if (editor) {
       const created = editor(plainContext(context, targets))
       Object.assign(row, { control: { update: (next: FieldContext) => created.update?.(plainContext(next, targets)), destroy: created.destroy } })
-      control = h(doc, 'div', { 'data-xh-part': 'control', 'data-control': 'custom' }, [created.element])
+      control = createAuthoredElement(doc, 'div', { 'data-xh-part': 'control', 'data-control': 'custom' }, [created.element])
     }
     else {
-      control = h(doc, 'div', { 'data-xh-part': 'control', 'data-control': 'unsupported' }, [descriptor.control.kind])
+      control = createAuthoredElement(doc, 'div', { 'data-xh-part': 'control', 'data-control': 'unsupported' }, [descriptor.control.kind])
     }
     root.append(control, hint, error)
     return row
