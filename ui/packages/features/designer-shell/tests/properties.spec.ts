@@ -178,6 +178,34 @@ describe('<xh-designer-properties>', () => {
     expect(changes[0]!.value).toBe('all')
   })
 
+  it('select 的 appearance 压过 toggle-limit：dropdown 总是下拉，toggle 总是切换按钮组，多选的切换按钮组写入数组', async () => {
+    const options = (...values: string[]) => values.map(value => ({ value }))
+    const panel = await mount((element) => {
+      element.toggleLimit = 4
+      element.targets = [{
+        kind: 'field',
+        id: 'f1',
+        value: { bind: 'a', mode: 'b', size: 'c', tags: ['a', 'c'] },
+        descriptors: [
+          { path: ['bind'], control: { kind: 'select', options: options('a', 'b'), appearance: 'dropdown' } },
+          { path: ['mode'], control: { kind: 'select', options: options('a', 'b') } },
+          { path: ['size'], control: { kind: 'select', options: options('a', 'b', 'c', 'd', 'e', 'f'), appearance: 'toggle' } },
+          { path: ['tags'], control: { kind: 'select', options: options('a', 'b', 'c'), multiple: true, appearance: 'toggle' } },
+        ],
+      }]
+    })
+    const control = (path: string) => row(panel, path).querySelector<HTMLElement & { value?: unknown }>('[data-xh-part="control"]')!
+    expect(['bind', 'mode', 'size', 'tags'].map(path => control(path).localName)).toEqual(['xh-select', 'xh-toggle-group', 'xh-toggle-group', 'xh-toggle-group'])
+    expect([control('size').value, control('size').hasAttribute('multiple')]).toEqual(['2', false])
+    expect([control('tags').value, control('tags').hasAttribute('multiple')]).toEqual([['0', '2'], true])
+
+    const changes = record(panel, 'property-change')
+    emit(control('tags'), 'value-change', { value: ['0', '1'] })
+    emit(control('tags'), 'value-change', { value: [] })
+    emit(control('size'), 'value-change', { value: '5' })
+    expect(changes.map(change => [change.path[0], change.value])).toEqual([['tags', ['a', 'b']], ['tags', undefined], ['size', 'f']])
+  })
+
   it('分组可折叠，折叠状态按分组 id 保留，换对象不重置', async () => {
     const panel = await mount((element) => {
       element.collapsible = true

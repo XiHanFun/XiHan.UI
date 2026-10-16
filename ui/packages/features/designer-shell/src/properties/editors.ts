@@ -21,7 +21,7 @@ export interface FieldContext extends PropertyEditorContext<PropertyDescriptor<{
   readonly translations: DesignerPropertiesTranslations
   readonly optionLabel: (option: PropertyOption) => string
   readonly unitLabel: (unit: string) => string
-  /** select 单选且选项不超过它时改用切换按钮组；0 不用。 */
+  /** select 的 appearance 为 auto、单选且选项不超过它时改用切换按钮组；0 不用。 */
   readonly toggleLimit: number
   /** 报告编辑框自己发现的错误（如文字不是 JSON），undefined 表示没有。 */
   readonly setLocalError: (message: string | undefined) => void
@@ -213,9 +213,20 @@ function booleanEditor(initial: FieldContext): FieldInstance {
   return { element: field, update }
 }
 
+/** 取值在 options 里的下标（字段元素的 value 用下标串）；对不上的值略过。 */
+function optionKeys(control: Extract<PropertyControl, { kind: 'select' }>, value: JsonValue | undefined): string[] {
+  const values = control.multiple ? (Array.isArray(value) ? value : []) : value === undefined ? [] : [value]
+  return values.flatMap((item) => {
+    const index = control.options.findIndex(option => option.value === item)
+    return index < 0 ? [] : [String(index)]
+  })
+}
+
+/** appearance 为 toggle 时用切换按钮组，dropdown 时用下拉；auto 时单选且选项不超过 toggleLimit 才用切换按钮组。 */
 function selectEditor(initial: FieldContext): FieldInstance {
   const control = controlOf<'select'>(initial)
-  if (!control.multiple && initial.toggleLimit > 0 && control.options.length <= initial.toggleLimit)
+  const appearance = control.appearance ?? 'auto'
+  if (appearance === 'toggle' || (appearance === 'auto' && !control.multiple && initial.toggleLimit > 0 && control.options.length <= initial.toggleLimit))
     return toggleEditor(initial)
   const doc = initial.ownerDocument
   const options: readonly PropertyOption[] = control.options
@@ -236,13 +247,6 @@ function selectEditor(initial: FieldContext): FieldInstance {
       createAuthoredElement(doc, 'div', { 'data-xh-part': 'positioner' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'content' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'list' }, items)])]),
     ]),
   ])
-  const keysOf = (value: JsonValue | undefined): string[] => {
-    const values = control.multiple ? (Array.isArray(value) ? value : []) : value === undefined ? [] : [value]
-    return values.flatMap((item) => {
-      const index = options.findIndex(option => option.value === item)
-      return index < 0 ? [] : [String(index)]
-    })
-  }
   let context = initial
   field.addEventListener('value-change', (event) => {
     event.stopPropagation()
@@ -260,7 +264,7 @@ function selectEditor(initial: FieldContext): FieldInstance {
         texts[index]!.textContent = text
     })
     placeholder(field, next, undefined)
-    const keys = next.mixed ? [] : keysOf(next.value)
+    const keys = next.mixed ? [] : optionKeys(control, next.value)
     const current = Array.isArray(field.value) ? field.value as string[] : []
     if (current.length !== keys.length || current.some((key, index) => key !== keys[index]))
       field.value = keys
@@ -271,18 +275,23 @@ function selectEditor(initial: FieldContext): FieldInstance {
 
 function toggleEditor(initial: FieldContext): FieldInstance {
   const doc = initial.ownerDocument
-  const options: readonly PropertyOption[] = controlOf<'select'>(initial).options
+  const control = controlOf<'select'>(initial)
+  const options: readonly PropertyOption[] = control.options
+  const multiple = control.multiple === true
   const items = options.map((_, index) => createAuthoredElement(doc, 'button', { 'data-xh-part': 'item', 'type': 'button', 'value': String(index) }))
-  const field: ControlElement = createAuthoredElement(doc, 'xh-toggle-group', { 'data-xh-part': 'control', 'size': 'sm' }, [
+  const field: ControlElement = createAuthoredElement(doc, 'xh-toggle-group', { 'data-xh-part': 'control', 'size': 'sm', 'multiple': multiple }, [
     createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, items),
   ])
+  /** 单选时字段元素的 value 是一个下标串，没选时为空数组；多选时是下标串数组。 */
+  const shown = (keys: readonly string[]): string | readonly string[] => (multiple ? keys : keys[0] ?? [])
   let context = initial
   field.addEventListener('value-change', (event) => {
     event.stopPropagation()
     const { value } = (event as CustomEvent<{ value: string | string[] | null }>).detail
-    const key = Array.isArray(value) ? value[0] : value
-    field.value = key ?? []
-    context.setValue(key === undefined || key === null ? undefined : options[Number(key)]!.value)
+    const keys = Array.isArray(value) ? value : value === null ? [] : [value]
+    field.value = shown(keys)
+    const values = keys.map(key => options[Number(key)]!.value)
+    context.setValue(multiple ? (values.length === 0 ? undefined : values) : values[0])
     context.commit()
   })
   const update = (next: FieldContext): void => {
@@ -292,10 +301,9 @@ function toggleEditor(initial: FieldContext): FieldInstance {
       if (items[index]!.textContent !== text)
         items[index]!.textContent = text
     })
-    const index = next.mixed ? -1 : options.findIndex(option => option.value === next.value)
-    const key = index < 0 ? [] : String(index)
-    if (JSON.stringify(field.value ?? []) !== JSON.stringify(key))
-      field.value = key
+    const target = shown(next.mixed ? [] : optionKeys(control, next.value))
+    if (JSON.stringify(field.value ?? []) !== JSON.stringify(target))
+      field.value = target
   }
   update(initial)
   return { element: field, update }

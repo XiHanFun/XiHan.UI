@@ -141,7 +141,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
   declare heading: string | undefined
   /** 空状态文案，缺省取文案 empty。 */
   declare emptyText: string | undefined
-  /** select 单选且选项不超过它时改用切换按钮组；缺省不用。 */
+  /** select 的 appearance 为 auto（缺省）、单选且选项不超过它时改用切换按钮组；缺省不用。 */
   declare toggleLimit: number | undefined
   /** 分组可折叠，折叠状态按分组 id 保留。 */
   declare collapsible: boolean
