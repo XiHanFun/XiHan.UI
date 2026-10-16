@@ -63745,6 +63745,43 @@
               "description": "按祖先链现查行所在的区段。"
             },
             {
+              "kind": "field",
+              "name": "rootNamingWritten",
+              "type": {
+                "text": "Record<string, string | undefined>"
+              },
+              "privacy": "private",
+              "default": "{}",
+              "description": "上一帧写到根上的两条命名属性：根上的值与它不同即是作者自己写的，以根上的为准。"
+            },
+            {
+              "kind": "field",
+              "name": "hostNamingWatch",
+              "type": {
+                "text": "MutationObserver | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "hostNaming",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Record<string, unknown>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "rootProps",
+                  "type": {
+                    "text": "Record<string, unknown>"
+                  }
+                }
+              ],
+              "description": "没有 caption 时，作者把名字写在 `<xh-table>` 宿主上（宿主不是 grid）就转到根上：根才是读屏念的那个表格。\n根上已有作者自己写的 aria-label / aria-labelledby 时不动；宿主上的命名改了跟着变。"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",

@@ -14049,6 +14049,7 @@
     ],
     "table": [
       "allowRowDrop",
+      "captioned",
       "cascade",
       "cellSpan",
       "checkedStrategy",

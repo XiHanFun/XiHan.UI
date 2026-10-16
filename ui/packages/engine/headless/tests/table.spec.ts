@@ -618,8 +618,13 @@ describe('tableMachine 排序 / 选择 / 展开', () => {
 })
 
 describe('connectTable 属性输出', () => {
-  it('root 是 role=treegrid，行列总数与多选声明都显式给出', () => {
+  it('没写 caption 时根不写 aria-labelledby：名字由作者写在根上，不留指向未渲染节点的引用', () => {
     const h = mount({ selectionMode: 'multiple' })
+    expect(h.root.hasAttribute('aria-labelledby')).toBe(false)
+  })
+
+  it('root 是 role=treegrid，行列总数与多选声明都显式给出', () => {
+    const h = mount({ selectionMode: 'multiple', captioned: true })
     expect(h.root.getAttribute('role')).toBe('treegrid')
     // 表头 1 行 + 四个数据行；脚注没声明就不算
     expect(h.root.getAttribute('aria-rowcount')).toBe('5')

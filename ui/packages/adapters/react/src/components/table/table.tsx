@@ -390,6 +390,9 @@ export function XhTableColumnVisibilityTrigger({ value, children, ...rest }: XhT
 export interface XhTableCaptionProps extends ComponentPropsWithRef<'div'> {}
 export function XhTableCaption({ children, ...rest }: XhTableCaptionProps): ReactNode {
   const ctx = useTableContext()
+  // 渲出来了才登记：根的 aria-labelledby 只在这个节点真在场时才指过来
+  const { registerCaption } = ctx
+  useEffect(() => registerCaption(), [registerCaption])
   return <div {...mergeReactProps(ctx.api.getCaptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
 }
 
