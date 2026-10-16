@@ -10166,6 +10166,7 @@
       "listDataFields",
       "marqueeModeFromDrag",
       "marqueeRect",
+      "nestProperties",
       "nextFreeId",
       "nudgeDelta",
       "panBy",

@@ -365,6 +365,7 @@ const issues = checkProperties(descriptors, node, { path: ["nodes", 3], target: 
 | --- | --- |
 | `evaluateCondition(condition, target)` / `isPropertyVisible(descriptor, target)` | 求值显示条件，equals 与 oneOf 按 JSON 值比较 |
 | `groupProperties(descriptors, target, order?)` | 只收显示中的属性；`order` 里的组在前，其余按出现先后，无组的排最后，空组不出现 |
+| `nestProperties(prefix, descriptors)` | 把相对子对象的描述换成相对上级对象：`path` 与显示条件里的 `path` 都接在 `prefix` 之后，产品扩展的字段原样保留；同一组描述既给子对象的面板用，又拼进上级对象的描述时用它 |
 | `checkPropertyValue(control, value)` | 内建编辑方式的取值检查，返回 `invalid-type`、`out-of-range`、`not-integer`、`invalid-option`、`invalid-color` 或 `undefined` |
 | `checkProperties(descriptors, target, { path?, target?, checkCustom? })` | 只看显示中的属性：必填未填报 `required`，内建取值不合法报对应码，产品的编辑方式交给 `checkCustom`；返回结构问题，路径以 `path` 为前缀 |
 | `applyDefaults(target, descriptors)` | 写入缺省值，中间缺少的对象键补成空对象；没有可写的返回同一个对象 |

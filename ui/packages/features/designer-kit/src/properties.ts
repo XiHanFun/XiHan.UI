@@ -113,6 +113,28 @@ export function evaluateCondition(condition: PropertyCondition, target: JsonValu
   return isFilled(value) === condition.filled
 }
 
+function nestCondition(prefix: JsonPath, condition: PropertyCondition): PropertyCondition {
+  if ('all' in condition)
+    return { all: condition.all.map(item => nestCondition(prefix, item)) }
+  if ('any' in condition)
+    return { any: condition.any.map(item => nestCondition(prefix, item)) }
+  if ('not' in condition)
+    return { not: nestCondition(prefix, condition.not) }
+  return { ...condition, path: [...prefix, ...condition.path] }
+}
+
+/**
+ * 把相对某个子对象的属性描述换成相对上级对象：path 与显示条件里的 path 都接在 prefix 之后，
+ * 其余字段（含产品扩展的字段）原样保留。
+ */
+export function nestProperties<D extends PropertyDescriptor<{ readonly kind: string }>>(prefix: JsonPath, descriptors: readonly D[]): D[] {
+  return descriptors.map(descriptor => ({
+    ...descriptor,
+    path: [...prefix, ...descriptor.path],
+    ...(descriptor.visibleWhen === undefined ? {} : { visibleWhen: nestCondition(prefix, descriptor.visibleWhen) }),
+  }))
+}
+
 /** 判断属性在当前对象上是否显示。 */
 export function isPropertyVisible(descriptor: PropertyDescriptor<{ readonly kind: string }>, target: JsonValue | undefined): boolean {
   return descriptor.visibleWhen === undefined || evaluateCondition(descriptor.visibleWhen, target)
