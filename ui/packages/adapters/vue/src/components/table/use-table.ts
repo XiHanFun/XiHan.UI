@@ -21,6 +21,8 @@ export interface TableContext {
   service: Service<TableSchema>
   /** root 节点：版面实测（冻结列偏移、纵向合并格的高度）从它往下量。 */
   rootRef: Ref<HTMLElement | null>
+  /** 已渲染的 caption 部件数量，由 XhTableCaption 在 setup 里同步登记、卸载时撤销；根的 aria-labelledby 据此决定指不指过去。 */
+  captionCount: Ref<number>
 }
 
 export function useTable(
@@ -34,13 +36,14 @@ export function useTable(
 ): TableContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
+  const captionCount = ref(0)
   const service = useMachine(
     tableMachine,
-    () => ({ ...props, onSortChange, onSelectionChange, onExpandedValueChange, onColumnPreferenceChange, onRowMove, onAction }),
+    () => ({ ...props, captioned: captionCount.value > 0, onSortChange, onSelectionChange, onExpandedValueChange, onColumnPreferenceChange, onRowMove, onAction }),
     scope,
   )
   const rootRef = ref<HTMLElement | null>(null)
   service.refs.set('getRootEl', () => rootRef.value)
   const api = computed(() => connectTable(service, vueNormalize))
-  return { api, service, rootRef }
+  return { api, service, rootRef, captionCount }
 }

@@ -22,7 +22,7 @@ import type {
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TableContext } from './use-table'
-import { computed, defineComponent, Fragment, h, mergeProps, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, defineComponent, Fragment, h, mergeProps, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import {
   provideTable,
@@ -328,6 +328,11 @@ export const XhTableCaption = /* @__PURE__ */ defineComponent({
   name: 'XhTableCaption',
   setup(_, { slots }) {
     const ctx = useTableContext()
+    // 渲出来就登记，在 setup 里同步做；根是 caption 的祖先，服务端直出时根先渲染，挂载后补上引用
+    ctx.captionCount.value++
+    onUnmounted(() => {
+      ctx.captionCount.value--
+    })
     return () => h('div', ctx.api.value.getCaptionProps() as Record<string, unknown>, slots.default?.())
   },
 })

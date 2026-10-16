@@ -233,6 +233,8 @@ export class XhTableElement extends XhElement {
 
   private machineProps(): Partial<TableSchema['props']> {
     return {
+      // 作者写没写 caption 角色节点决定根的 aria-labelledby 指不指过去
+      captioned: this.getPart('caption') != null,
       columns: this.columns,
       rows: this.rows,
       sort: this.sort,
@@ -375,6 +377,38 @@ export class XhTableElement extends XhElement {
     return 'body'
   }
 
+  /** 上一帧写到根上的两条命名属性：根上的值与它不同即是作者自己写的，以根上的为准。 */
+  private rootNamingWritten: Record<string, string | undefined> = {}
+  private hostNamingWatch: MutationObserver | undefined
+
+  /**
+   * 没有 caption 时，作者把名字写在 `<xh-table>` 宿主上（宿主不是 grid）就转到根上：根才是读屏念的那个表格。
+   * 根上已有作者自己写的 aria-label / aria-labelledby 时不动；宿主上的命名改了跟着变。
+   */
+  private hostNaming(rootProps: Record<string, unknown>): Record<string, unknown> {
+    if (!this.hostNamingWatch && typeof MutationObserver !== 'undefined') {
+      this.hostNamingWatch = new MutationObserver(() => this.requestUpdate())
+      this.hostNamingWatch.observe(this, { attributes: true, attributeFilter: ['aria-label', 'aria-labelledby'] })
+    }
+    const root = this.getPart('root')
+    const next: Record<string, unknown> = { ...rootProps }
+    const written: Record<string, string | undefined> = {}
+    for (const attr of ['aria-labelledby', 'aria-label']) {
+      const authored = root?.hasAttribute(attr) && root.getAttribute(attr) !== this.rootNamingWritten[attr]
+      if (next[attr] === undefined && !authored && !this.getPart('caption'))
+        next[attr] = this.getAttribute(attr) ?? undefined
+      written[attr] = next[attr] as string | undefined
+    }
+    this.rootNamingWritten = written
+    return next
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback()
+    this.hostNamingWatch?.disconnect()
+    this.hostNamingWatch = undefined
+  }
+
   protected wire(): void {
     const api = connectTable(this.ctrl.service, wcNormalize)
 
@@ -383,7 +417,7 @@ export class XhTableElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
+    put('root', this.hostNaming(api.getRootProps() as Record<string, unknown>))
     put('caption', api.getCaptionProps() as Record<string, unknown>)
     // 工具条与列设置区都写在 root 之外：root 是 role=grid，子节点只能是 row 与 rowgroup
     put('toolbar', api.getToolbarProps() as Record<string, unknown>)

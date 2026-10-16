@@ -252,6 +252,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `captioned` | `boolean` |  | 作者渲染了 caption 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时根不输出 aria-labelledby：指向未渲染的 id 是无效引用，作者写在根上的 aria-label / aria-labelledby 也会被它压住。 |
 | `columns` | `TableColumnDef[]` |  | 列定义，列号与列总数的唯一事实源。默认为空表。 |
 | `rows` | `TableRowDef[]` |  | 行定义，行序与行号的唯一事实源。默认为空表。 |
 | `sort` | `TableSortDescriptor[]` |  | 排序链。提供即受控：cell 直读 prop，写入只发 onSortChange 不落内部值。 |
@@ -499,7 +500,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | --- | --- | --- |
 | `root` | `aria-busy` | 'true' \| undefined |
 | `root` | `aria-colcount` | columns.length \|\| undefined |
-| `root` | `aria-labelledby` | `caption` 部件的 id |
+| `root` | `aria-labelledby` | `caption` 部件的 id \| undefined |
 | `root` | `aria-multiselectable` | 'true' \| 'false' |
 | `root` | `aria-rowcount` | headerRowCount + visibleRows.length + (hasFooter ? 1 … |
 | `root` | `role` | 'treegrid' \| 'grid' |
@@ -567,6 +568,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `header-row` | `role` | 'row' |
 | `footer-row` | `role` | 'row' |
 
+- 表格的名字来自 `caption` 部件：放了 caption 时根（`role=grid` / `treegrid`）经 `aria-labelledby` 引用它。不放 caption 时在根上写 `aria-label` 或 `aria-labelledby`：Vue 写在 `XhTableRoot` 上，React 写在 `<XhTableRoot>` 上，Web Components 写在 `data-xh-part="root"` 的节点上；写在 `<xh-table>` 宿主上的也会转到根上，宿主上的命名改了跟着变。caption 后补进来时根改为引用它。什么都不写时根不写 `aria-labelledby`，不留指向未渲染节点的引用。
 - 排序钮是 `role=button`，自占一个 Tab 位；它不包列名，可及名取 `translations.sort(列名)`（默认 `Sort by <列名>`），当前方向由所在列头的 `aria-sort` 报出，钮上不重复。
 - `column-label` 不带角色与状态：列头 `role=columnheader` 的可及名由它里面的文字算出，视觉上被省略号截断的列名读屏仍读全文。
 - 列宽把手与列拖拽把手同样各占一个 Tab 位，名字分别取 `translations.columnResize` 与 `translations.columnDrag`。

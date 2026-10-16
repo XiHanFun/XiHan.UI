@@ -37,6 +37,7 @@
 
 ## 无障碍
 
+- 表格的名字来自 `caption` 部件：放了 caption 时根（`role=grid` / `treegrid`）经 `aria-labelledby` 引用它。不放 caption 时在根上写 `aria-label` 或 `aria-labelledby`：Vue 写在 `XhTableRoot` 上，React 写在 `<XhTableRoot>` 上，Web Components 写在 `data-xh-part="root"` 的节点上；写在 `<xh-table>` 宿主上的也会转到根上，宿主上的命名改了跟着变。caption 后补进来时根改为引用它。什么都不写时根不写 `aria-labelledby`，不留指向未渲染节点的引用。
 - 排序钮是 `role=button`，自占一个 Tab 位；它不包列名，可及名取 `translations.sort(列名)`（默认 `Sort by <列名>`），当前方向由所在列头的 `aria-sort` 报出，钮上不重复。
 - `column-label` 不带角色与状态：列头 `role=columnheader` 的可及名由它里面的文字算出，视觉上被省略号截断的列名读屏仍读全文。
 - 列宽把手与列拖拽把手同样各占一个 Tab 位，名字分别取 `translations.columnResize` 与 `translations.columnDrag`。

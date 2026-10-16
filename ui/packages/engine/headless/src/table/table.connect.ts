@@ -686,7 +686,8 @@ export function connectTable<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'role': hierarchical ? 'treegrid' : 'grid',
-      'aria-labelledby': ids.caption,
+      // 只在 caption 在场时引用它；没有 caption 时名字由作者写在根上
+      'aria-labelledby': prop('captioned') ? ids.caption : undefined,
       'aria-rowcount': rowCount,
       // 一列都没声明时不报列数
       'aria-colcount': columns.length || undefined,
