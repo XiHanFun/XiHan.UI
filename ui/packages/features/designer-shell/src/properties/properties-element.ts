@@ -403,10 +403,11 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     else if (editor) {
       const created = editor(plainContext(context, targets))
       Object.assign(row, { control: { update: (next: FieldContext) => created.update?.(plainContext(next, targets)), destroy: created.destroy } })
-      control = createAuthoredElement(doc, 'div', { 'data-xh-part': 'control', 'data-control': 'custom' }, [created.element])
+      // 外包与占位都不是字段的 control 部件：xh-field 的 id 与 aria-* 不落在它们身上，外包里的库内控件由字段按 fieldTarget 接线
+      control = createAuthoredElement(doc, 'div', { 'data-control': 'custom' }, [created.element])
     }
     else {
-      control = createAuthoredElement(doc, 'div', { 'data-xh-part': 'control', 'data-control': 'unsupported' }, [descriptor.control.kind])
+      control = createAuthoredElement(doc, 'div', { 'data-control': 'unsupported' }, [descriptor.control.kind])
     }
     root.append(control, hint, error)
     return row

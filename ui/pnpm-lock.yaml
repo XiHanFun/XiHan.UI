@@ -657,6 +657,9 @@ importers:
       '@xihan-ui/build':
         specifier: workspace:*
         version: link:../../../tooling/build
+      '@xihan-ui/testing':
+        specifier: workspace:*
+        version: link:../../../tooling/testing
       '@xihan-ui/tokens':
         specifier: workspace:*
         version: link:../../design/tokens
