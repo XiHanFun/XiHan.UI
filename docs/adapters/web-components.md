@@ -23,7 +23,7 @@ defineXhElement("xh-statistic", XhStatisticElement);
 defineXhElement("xh-table", XhTableElement);
 ```
 
-标记里嵌套的其它 `xh-*` 元素要各自注册，没注册的标签只是普通的未知元素。
+标记里嵌套的其它 `xh-*` 元素要各自注册，没注册的标签只是普通的未知元素。元素自己接线的内嵌部件（日期选择器里的日期输入与日历、选择器里的标签、侧边导航的名称提示）不在此列：它们的状态机跑在宿主身上，不用注册对应的元素。
 
 背景层单独注册，不引入就不会把 WebGL 引擎打进包：
 

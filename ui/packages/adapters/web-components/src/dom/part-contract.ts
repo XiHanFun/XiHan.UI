@@ -23,7 +23,7 @@ export interface PartContract {
    * calendar 就是这样），这些角色节点归内嵌部件的 scope 管，本就不该出现在宿主自己的解剖里。
    * 不登记的话它们会被当成解剖外的野节点逐个报警，而它们恰恰是被正常接线的。
    *
-   * `name` 须是已注册元素 `xh-<name>` 的解剖名；`parts` 是作者写的角色名。
+   * `name` 是被委派的那个组件的解剖名，委派方自己跑它的状态机，不要求 `xh-<name>` 已注册；`parts` 是作者写的角色名。
    * 与宿主解剖重名的角色名归宿主，其余的接线后 data-scope 必须是 `name`。
    */
   readonly delegates?: readonly { readonly name: string, readonly parts: readonly string[] }[]
@@ -36,17 +36,6 @@ export interface PartContract {
    * 不登记的话示例门禁会把它当成接错了名。键是作者写的角色名，值是允许接出来的 data-part。
    */
   readonly rewired?: Readonly<Record<string, readonly string[]>>
-}
-
-/** 元素类上挂的契约，只取校验用得上的那一项。 */
-interface ContractHolder { partContract?: PartContract }
-
-/** `name` 是否已注册为 `xh-<name>` 元素、且该元素的解剖名就是它。 */
-export function isRegisteredScope(name: string): boolean {
-  if (typeof customElements === 'undefined')
-    return false
-  const ctor = customElements.get(`xh-${name}`) as ContractHolder | undefined
-  return ctor?.partContract?.anatomy.name === name
 }
 
 /**
@@ -143,44 +132,25 @@ export function validatePartContract(
 
   if (!contract.delegates?.length)
     return
-  const unregistered = new Set<string>()
-  for (const delegate of contract.delegates) {
-    if (isRegisteredScope(delegate.name))
-      continue
-    unregistered.add(delegate.name)
-    reportDiagnostic({
-      code: DIAGNOSTIC_CODES.invariant,
-      level: 'error',
-      message: `partContract.delegates 登记的 "${delegate.name}" 不是已注册元素 <xh-${delegate.name}> 的解剖名，委派给它的角色节点无从核对`,
-      scope,
-      instanceId,
-      node: host,
-      detail: { tag: host.tagName.toLowerCase(), delegate: delegate.name, parts: delegate.parts },
-    })
-  }
-
-  queueMicrotask(() => validateDelegatedParts(contract, parts, host, instanceId, unregistered))
+  queueMicrotask(() => validateDelegatedParts(contract, parts, host, instanceId))
 }
 
 /**
  * 核对委派节点的接线结果：登记为归内嵌部件的角色节点，接线后 data-scope 必须是登记的 scope。
  * 没拿到 data-scope 即没被接线（多半是写错了位置），拿到别的 scope 即登记与接线对不上。
- * 已从宿主离场的节点与登记目标未注册的委派跳过。
+ * 已从宿主离场的节点跳过。
  */
 export function validateDelegatedParts(
   contract: PartContract,
   parts: ReadonlyMap<string, HTMLElement[]>,
   host: HTMLElement,
   instanceId: string,
-  skipScopes: ReadonlySet<string> = new Set(),
 ): void {
   if (!host.isConnected || getDiagnostics().getLevel() === 'silent')
     return
   const scope = contract.anatomy.name
   for (const [part, scopes] of delegatedScopesOf(contract)) {
-    const expected = [...scopes].filter(s => !skipScopes.has(s))
-    if (expected.length === 0)
-      continue
+    const expected = [...scopes]
     for (const el of parts.get(part) ?? []) {
       if (!host.contains(el))
         continue
