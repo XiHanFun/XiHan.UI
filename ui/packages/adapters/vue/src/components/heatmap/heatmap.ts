@@ -154,7 +154,7 @@ export const XhHeatmapRoot = defineComponent({
               setFocusedCell: api.setFocusedCell,
               setFocusedDate: api.setFocusedDate,
             })
-          : renderDefaultTree(api, slots.cell, slots.tooltip, slots.empty),
+          : renderDefaultStructure(api, slots.cell, slots.tooltip, slots.empty),
       )
     }
   },
@@ -357,7 +357,7 @@ const HEATMAP_PARTS = {
  * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 heatmapStructure 渲，
  * 与 Web Components 只写 root 时元素生成的节点出自同一份。格子、详情条与空态的内容由对应插槽接管。
  */
-function renderDefaultTree(
+function renderDefaultStructure(
   api: HeatmapApi,
   cellSlot?: (node: HeatmapCellSlotProps) => VNode[],
   tooltipSlot?: (details: HeatmapDatumDetails | null) => VNode[],

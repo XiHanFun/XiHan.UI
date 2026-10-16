@@ -14,9 +14,9 @@ export const SVG_NS = 'http://www.w3.org/2000/svg'
 /** 生成节点按 key 复用：父节点 → (key → 节点)。 */
 export type KeyedChildren = WeakMap<Element, Map<string, Element>>
 
-/** 父节点里本元素生成的直接子节点，按文档序。 */
-export function generatedChildren(parent: Element): Element[] {
-  return Array.from(parent.children).filter(node => node.hasAttribute(GEN_ATTR))
+/** 父节点里本元素生成的直接子节点，按文档序；给了 mark 时只取生成标记等于它的那些。 */
+export function generatedChildren(parent: Element, mark?: string): Element[] {
+  return Array.from(parent.children).filter(node => node.hasAttribute(GEN_ATTR) && (mark === undefined || node.getAttribute(GEN_ATTR) === mark))
 }
 
 /** 属性表：值为 false 或 undefined 的项删除该属性，true 写成空串，其余转成字符串。 */
@@ -73,7 +73,8 @@ export function hasAuthorContent(host: Element): boolean {
 
 /**
  * 按 key 把一组节点排进父节点：已有的复用、缺的新建、多的移除，次序与输入一致。
- * 作者写在父节点里的节点不动，生成的节点排在它们之后。
+ * 作者写在父节点里的节点不动，生成的节点排在它们之后。给了 mark 时只认、只摘生成标记等于它的节点，
+ * 同一父节点里别的生成节点（另一套生成逻辑写的）不动。
  * 先摘掉多出的再排次序：挪动一个已在文档里的节点会让它里面的焦点丢掉，
  * 前景层的标记收起时若先排后摘，其后的节点都得挪一遍，聚焦的图元随之失焦。
  */
@@ -83,6 +84,7 @@ export function reconcile<T>(
   keys: KeyedChildren,
   keyOf: (item: T) => string,
   make: (item: T, reuse: Element | undefined) => Element,
+  mark?: string,
 ): void {
   const known = keys.get(parent) ?? new Map<string, Element>()
   const next = new Map<string, Element>()
@@ -91,11 +93,11 @@ export function reconcile<T>(
     next.set(key, make(item, known.get(key)))
   }
   const kept = new Set(next.values())
-  for (const node of generatedChildren(parent)) {
+  for (const node of generatedChildren(parent, mark)) {
     if (!kept.has(node))
       node.remove()
   }
-  let cursor: Element | null = generatedChildren(parent)[0] ?? null
+  let cursor: Element | null = generatedChildren(parent, mark)[0] ?? null
   for (const node of next.values()) {
     if (node === cursor)
       cursor = cursor.nextElementSibling

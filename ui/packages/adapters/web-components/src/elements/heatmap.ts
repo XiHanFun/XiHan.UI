@@ -24,8 +24,7 @@ import type {
   HeatmapVariant,
   NumberFormatSpec,
 } from '@xihan-ui/headless'
-import type { KeyedChildren } from '../dom/generated-nodes'
-import type { PropertyValues } from '../reactive'
+import type { ElementStructure } from '../element-base'
 import { DATA_PART, DATA_SCOPE } from '@xihan-ui/core'
 import {
   buildHeatmapGrid,
@@ -39,9 +38,8 @@ import {
   normalizeHeatmapNumber,
   normalizeHeatmapString,
 } from '@xihan-ui/headless'
-import { createGeneratedElement, GEN_ATTR, generatedChildren, hasAuthorContent } from '../dom/generated-nodes'
+import { createGeneratedElement, generatedChildren, hasAuthorContent } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
-import { placeStructure } from '../dom/structure'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
@@ -124,6 +122,14 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
 export class XhHeatmapElement extends XhElement {
   static override partContract = { anatomy: heatmapAnatomy, meta: heatmapMeta }
 
+  /** 作者没写结构时按网格模型生成；作者在 root 里写了 tooltip、empty 或 legend 的用作者的，其余照常生成。 */
+  static override structure: ElementStructure<XhHeatmapElement> = {
+    takeover: ['tooltip', 'empty', 'legend'],
+    build: (host, taken) => host.ctrl.service
+      ? heatmapStructure(connectHeatmap(host.ctrl.service, wcNormalize), { empty: !taken.has('empty'), legend: !taken.has('legend') })
+      : undefined,
+  }
+
   // dir 占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -187,9 +193,6 @@ export class XhHeatmapElement extends XhElement {
     this.dispatchEvent(new CustomEvent('active-key-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  /** 生成节点按 key 复用。 */
-  private readonly generatedKeys: KeyedChildren = new WeakMap()
-
   // 过渡的时长与减弱动效从 root 读：取值口惰性读，角色节点要等首次 updated 才发现得到
   private readonly ctrl = new MachineController<HeatmapSchema>(
     this,
@@ -226,41 +229,6 @@ export class XhHeatmapElement extends XhElement {
       onDatumPress: this.notifyPress,
       onActiveKeyChange: this.notifyKey,
     }
-  }
-
-  /** 本元素名下的某个作者节点：不是生成的，也不在嵌套的另一台热力图里。 */
-  private authoredPart(scope: ParentNode, name: string): HTMLElement | null {
-    for (const el of Array.from(scope.querySelectorAll<HTMLElement>(`[data-xh-part="${name}"]`))) {
-      if (!el.hasAttribute(GEN_ATTR) && el.closest('xh-heatmap') === this)
-        return el
-    }
-    return null
-  }
-
-  /**
-   * root 里没有作者写的 grid 时生成整套结构；有就撤掉生成过的节点。
-   * 排在部件发现之前：生成的节点这一轮就能被发现、接线，必备部件的校验也认得出 grid。
-   */
-  private syncGenerated(): void {
-    const root = this.authoredPart(this, 'root')
-    if (!root || !this.ctrl.service)
-      return
-    if (this.authoredPart(root, 'grid')) {
-      placeStructure(root, [], this.generatedKeys)
-      return
-    }
-    // 作者写了 empty 或 legend 就用作者的，元素只补其余部分；详情条的内容归作者，元素不生成
-    const api = connectHeatmap(this.ctrl.service, wcNormalize)
-    placeStructure(root, heatmapStructure(api, {
-      empty: !this.authoredPart(root, 'empty'),
-      legend: !this.authoredPart(root, 'legend'),
-    }), this.generatedKeys)
-  }
-
-  protected override updated(changed: PropertyValues): void {
-    if (this.isConnected)
-      this.syncGenerated()
-    super.updated(changed)
   }
 
   /**

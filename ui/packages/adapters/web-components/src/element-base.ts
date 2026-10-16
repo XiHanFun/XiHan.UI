@@ -5,9 +5,10 @@
 
 // 提供 element base 相关实现。
 
-import type { FieldControlWiring } from '@xihan-ui/headless'
+import type { FieldControlWiring, StructureNode } from '@xihan-ui/headless'
 import type { PartContract } from './dom/part-contract'
 import type { Spreader } from './dom/spread'
+import type { StructureSpec } from './dom/structure'
 import type { FieldTarget } from './runtime/form-control-host'
 import { fieldGroupAttrs, fieldStateAttrs, withFieldDescription, withFieldLabel } from '@xihan-ui/headless'
 import { onXhConfigChange, withXhConfig } from './config'
@@ -16,9 +17,19 @@ import { validatePartContract } from './dom/part-contract'
 import { containsPart, discoverParts, PART_OWNER_ATTR } from './dom/parts'
 import { createSpreader } from './dom/spread'
 import { reportStackingTrap } from './dom/stacking-context'
+import { createStructureState, syncStructure } from './dom/structure'
 import { XhReactiveElement } from './reactive'
 
 let instanceSeq = 0
+
+/**
+ * 元素的标准结构：作者没写结构时元素按它生成，规则见 dom/structure.ts 的 syncStructure。
+ * build 按宿主当前状态算出 root 的子树（通常就是调 headless 的结构函数），taken 是作者已经写了的可接管部件；
+ * 状态还算不出时返回 undefined，这一轮不动。
+ */
+export interface ElementStructure<H> extends StructureSpec {
+  readonly build: (host: H, taken: ReadonlySet<string>) => readonly StructureNode[] | undefined
+}
 
 /**
  * 变动中是否真有角色节点进出。只认进出的元素自身是角色节点、或其子树中有角色节点：
@@ -64,6 +75,11 @@ export abstract class XhElement extends XhReactiveElement {
 
   /** 库内表单控件声明：放进 `<xh-field>` 时字段接线并进哪几个部件。没声明的元素不接字段接线。 */
   static fieldTarget?: FieldTarget
+
+  /** 标准结构声明；没声明的元素照旧由作者全写。 */
+  static structure?: ElementStructure<never>
+
+  private readonly structureState = createStructureState()
 
   private fieldWiring: FieldControlWiring | undefined
 
@@ -353,7 +369,7 @@ export abstract class XhElement extends XhReactiveElement {
     this.partObserver = new MutationObserver((records) => {
       if (this.wiring)
         return
-      const hit = records.some(r => (touchesParts(r) || rewritesDeclaration(r)) && (this.ownsSubtree(r.target) || this.claimsMoved(r)))
+      const hit = records.some(r => ((touchesParts(r) || rewritesDeclaration(r)) && (this.ownsSubtree(r.target) || this.claimsMoved(r))) || this.addsSlotContent(r))
       if (hit)
         this.requestUpdate()
     })
@@ -396,6 +412,13 @@ export abstract class XhElement extends XhReactiveElement {
     return false
   }
 
+  /** 有标准结构的宿主新收到写了 slot 的直接子节点：要搬进结构里对应的部件。 */
+  private addsSlotContent(record: MutationRecord): boolean {
+    if (record.target !== this || !(this.constructor as typeof XhElement).structure)
+      return false
+    return Array.from(record.addedNodes).some(node => node.nodeType === 1 && (node as Element).hasAttribute('slot'))
+  }
+
   /** 目标是否归本宿主管：嵌套 xh-* 子树归内层元素自己管，外层不替它重跑 wire（discoverParts 本来也跳过它们）。 */
   private ownsSubtree(target: Node): boolean {
     for (const root of this.externalPartRoots()) {
@@ -430,13 +453,18 @@ export abstract class XhElement extends XhReactiveElement {
     // 重连时 connectedCallback 会排一轮补上
     if (!this.isConnected)
       return
-    this.refreshParts()
-    const contract = (this.constructor as typeof XhElement).partContract
-    if (contract)
-      validatePartContract(contract, this.partMap, this as unknown as HTMLElement, this.instanceId)
-    // 观察器与 wire() 写的是同一批节点，不圈出本区间会自己触发自己；观察器回调是微任务，故圈到微任务排空为止。
+    const ctor = this.constructor as typeof XhElement
+    const contract = ctor.partContract
+    // 观察器与生成结构、wire() 写的是同一批节点，不圈出本区间会自己触发自己；观察器回调是微任务，故圈到微任务排空为止。
     this.wiring = true
     try {
+      // 排在部件发现之前：生成的节点这一轮就能被发现、接线，必备部件的校验也认得出它们
+      const structure = ctor.structure
+      if (structure)
+        syncStructure(this as unknown as HTMLElement, structure, taken => structure.build(this as never, taken), this.structureState)
+      this.refreshParts()
+      if (contract)
+        validatePartContract(contract, this.partMap, this as unknown as HTMLElement, this.instanceId)
       this.wire()
     }
     finally {

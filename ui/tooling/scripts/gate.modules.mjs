@@ -164,6 +164,7 @@ export const MODULES = [
       'node tooling/scripts/adapter/check-dead-state-attr.mjs',
       'node tooling/scripts/adapter/check-cem-coverage.mjs',
       'node tooling/scripts/adapter/check-read-ports.mjs',
+      'node tooling/scripts/adapter/check-structure-anatomy.mjs',
       'node scripts/new-component.mjs --verify',
     ],
   },
