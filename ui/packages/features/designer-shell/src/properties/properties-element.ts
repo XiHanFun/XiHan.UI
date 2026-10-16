@@ -14,7 +14,7 @@ import type { FieldContext, FieldInstance } from './editors'
 import { createCounterIdGenerator } from '@xihan-ui/core'
 import { formatJsonPath, getJsonAt, jsonEquals } from '@xihan-ui/core/json'
 import { groupProperties, isPropertyVisible, resolvePropertyEditor } from '@xihan-ui/designer-kit/properties'
-import { createAuthoredElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
+import { createAuthoredElement, createGeneratedElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { placeChildren } from '../internal/dom'
 import { adoptSlots } from '../internal/slots'
 import { definePropertyFieldElements } from '../internal/ui-elements'
@@ -221,11 +221,11 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     const title = createAuthoredElement(doc, 'div', { 'data-part': 'title' })
     const heading = createAuthoredElement(doc, 'div', { 'data-part': 'heading', 'hidden': true })
     const headerSlot = createAuthoredElement(doc, 'div', { 'data-part': 'header-slot' })
-    const header = createAuthoredElement(doc, 'div', { 'data-part': 'header' }, [title, heading, headerSlot])
+    const header = createGeneratedElement(doc, 'div', { 'data-part': 'header' }, [title, heading, headerSlot])
     const empty = createAuthoredElement(doc, 'p', { 'data-part': 'empty' })
     const groups = createAuthoredElement(doc, 'div', { 'data-part': 'groups' })
     const footerSlot = createAuthoredElement(doc, 'div', { 'data-part': 'footer-slot' })
-    const body = createAuthoredElement(doc, 'div', { 'data-part': 'body' }, [empty, groups, footerSlot])
+    const body = createGeneratedElement(doc, 'div', { 'data-part': 'body' }, [empty, groups, footerSlot])
     this.prepend(header, body)
     this.#parts = { header, title, heading, headerSlot, body, empty, groups, footerSlot }
     this.#rows.clear()

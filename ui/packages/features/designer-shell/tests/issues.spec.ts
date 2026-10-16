@@ -50,6 +50,7 @@ describe('<xh-designer-issues>', () => {
   it('没有问题时显示空状态，标题与空提示取文案', async () => {
     setXhConfig(designerShellZhCN)
     const list = await mount()
+    expect(Array.from(list.children, child => [child.getAttribute('data-part'), child.hasAttribute('data-xh-gen')])).toEqual([['header', true], ['list', true], ['empty', true]])
     expect(list.querySelector('[data-part="title"]')!.textContent).toBe('问题')
     const empty = list.querySelector<HTMLElement>('[data-part="empty"]')!
     expect(empty.hidden).toBe(false)
