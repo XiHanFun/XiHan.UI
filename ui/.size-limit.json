@@ -136,7 +136,7 @@
     "name": "designer-kit/properties",
     "path": "packages/features/designer-kit/dist/properties.js",
     "gzip": true,
-    "limit": "2.2 kB"
+    "limit": "2.3 kB"
   },
   {
     "name": "designer-kit/schema",

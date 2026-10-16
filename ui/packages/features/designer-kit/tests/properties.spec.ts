@@ -1,4 +1,4 @@
-// 属性描述模型：判空、显示条件、分组、内建编辑方式的取值检查、按描述检查对象、写入缺省值与编辑器查找。
+// 属性描述模型：判空、显示条件、给描述加路径前缀、分组、内建编辑方式的取值检查、按描述检查对象、写入缺省值与编辑器查找。
 import type { JsonObject } from '@xihan-ui/core/json'
 import type { PropertyControl, PropertyDescriptor } from '../src/properties'
 import { describe, expect, it } from 'vitest'
@@ -10,6 +10,7 @@ import {
   groupProperties,
   isFilled,
   isPropertyVisible,
+  nestProperties,
   resolvePropertyEditor,
 } from '../src/properties'
 
@@ -48,6 +49,23 @@ describe('evaluateCondition / isPropertyVisible', () => {
     expect(isPropertyVisible(fallback, target)).toBe(true)
     expect(isPropertyVisible(fallback, { mode: 'Fault' })).toBe(false)
     expect(isPropertyVisible({ path: ['x'], control: { kind: 'text' } }, undefined)).toBe(true)
+  })
+})
+
+describe('nestProperties', () => {
+  it('path 与显示条件里的 path 都接上前缀，组合条件逐层改写，其余字段原样保留', () => {
+    type Extended = PropertyDescriptor & { readonly present: boolean }
+    const descriptors: Extended[] = [
+      { path: ['visible'], control: { kind: 'boolean' }, group: 'table', present: true },
+      { path: ['height'], control: { kind: 'number', min: 0 }, present: false, visibleWhen: { all: [{ path: ['visible'], equals: true }, { not: { path: ['style'], filled: false } }, { any: [{ path: ['mode'], oneOf: ['a', 'b'] }] }] } },
+    ]
+    const nested = nestProperties(['header'], descriptors)
+    expect(nested[0]).toEqual({ path: ['header', 'visible'], control: { kind: 'boolean' }, group: 'table', present: true })
+    expect(nested[1]!.visibleWhen).toEqual({ all: [{ path: ['header', 'visible'], equals: true }, { not: { path: ['header', 'style'], filled: false } }, { any: [{ path: ['header', 'mode'], oneOf: ['a', 'b'] }] }] })
+    expect(nested[1]!.present).toBe(false)
+    expect(descriptors[0]!.path).toEqual(['visible'])
+    const target = { header: { visible: true, style: { a: 1 }, mode: 'a' } }
+    expect(isPropertyVisible(nested[1]!, target)).toBe(true)
   })
 })
 
