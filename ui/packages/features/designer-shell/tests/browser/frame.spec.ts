@@ -1,5 +1,5 @@
 // 外框在真实 Chromium 里：区按缺省比例排开，拖动分隔条后区宽跟着变并派发 sizes-change；
-// 收起再展开时保留拖过的大小；中间区始终填满剩下的空间。
+// 收起再展开时保留拖过的大小；中间区始终填满剩下的空间；同一位置堆叠的区按分隔条等分，不随内容多少分高度。
 import type { DesignerFrameEventMap, XhDesignerFrameElement } from '../../src'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { defineDesignerShell } from '../../src'
@@ -134,5 +134,37 @@ describe('<xh-designer-frame>（Chromium）', () => {
     const before = issues.height
     await drag(trigger, 0, -60)
     expect(frame.querySelector('[data-region="issues"]')!.getBoundingClientRect().height).toBeCloseTo(before + 60, -1)
+  })
+
+  it('同一位置堆叠的两区缺省等分，内容多的不挤内容少的；拖动两区间的分隔条后高度跟着变，并进 sizes-change', async () => {
+    frame.regions = [
+      { name: 'toolbar', position: 'top' },
+      { name: 'palette', position: 'start', size: 18 },
+      { name: 'canvas', position: 'center' },
+      { name: 'properties', position: 'end', size: 24 },
+      { name: 'minimap', position: 'end' },
+    ]
+    frame.querySelector('[slot="properties"], [data-region="properties"] > div')!.replaceChildren(Object.assign(document.createElement('div'), { style: 'height:2000px' }))
+    const minimap = document.createElement('div')
+    minimap.setAttribute('slot', 'minimap')
+    minimap.style.cssText = 'height:40px'
+    frame.append(minimap)
+    await frame.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const height = (name: string): number => frame.querySelector(`[data-part="region"][data-region="${name}"]`)!.getBoundingClientRect().height
+    const stack = frame.querySelector('[data-part="stack"][data-position="end"]')!.getBoundingClientRect()
+    expect(height('properties')).toBeCloseTo(height('minimap'), -1)
+    expect(height('properties') + height('minimap')).toBeGreaterThan(stack.height - 20)
+    expect(height('minimap')).toBeGreaterThan(200)
+
+    const seen: DesignerFrameEventMap['sizes-change']['detail'][] = []
+    frame.addEventListener('sizes-change', event => seen.push((event as DesignerFrameEventMap['sizes-change']).detail))
+    const before = { properties: height('properties'), minimap: height('minimap') }
+    const trigger = frame.querySelector('[data-part="stack"][data-position="end"] [data-xh-part="resize-trigger"]')!
+    await drag(trigger, 0, 80)
+    expect(height('properties')).toBeCloseTo(before.properties + 80, -1)
+    expect(height('minimap')).toBeCloseTo(before.minimap - 80, -1)
+    const shares = seen.at(-1)!.sizes.regions!
+    expect(shares.properties! / 100).toBeCloseTo(height('properties') / (height('properties') + height('minimap')), 1)
   })
 })

@@ -10222,6 +10222,7 @@
       "DesignerFramePosition",
       "DesignerFrameRegion",
       "DesignerFrameResizable",
+      "DesignerFrameSizes",
       "DesignerFrameTranslations",
       "DesignerGesturePhase",
       "DesignerGuideAxis",

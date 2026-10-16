@@ -277,7 +277,7 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 | --- | --- |
 | `panels` | 要显示的区，空格分隔；不写即全部显示，写空串则只留中间区。中间区总是显示。同名 attribute |
 | `regions` | 产品登记的命名区，缺省为 `DESIGNER_FRAME_REGIONS` |
-| `sizes` | `{ start, end, bottom }`：各位置的大小（百分比），用来恢复上次的布局；不给的位置用区的缺省大小 |
+| `sizes` | `{ start, end, bottom, regions }`：各处的大小（百分比），用来恢复上次的布局。`start`、`end`、`bottom` 是位置的大小，不给的用区的缺省大小；`regions` 是同一位置堆叠的区各自占该位置高度的百分比，键为区名，不给的等分 |
 
 | 方法 | 说明 |
 | --- | --- |
@@ -285,11 +285,11 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 
 | 事件 | detail |
 | --- | --- |
-| `sizes-change` | `{ sizes }`：拖动或用键盘调整后各位置的大小（百分比）；拖动途中连续发出 |
+| `sizes-change` | `{ sizes }`：拖动或用键盘调整后的大小，形状同 `sizes`；拖动途中连续发出 |
 
 命名区是 `{ name, position, size?, minSize?, label? }`：
 
-- `position` 取 `top`、`start`、`center`、`end`、`bottom`。同一位置的多个区按登记顺序上下排列，共用一个大小。
+- `position` 取 `top`、`start`、`center`、`end`、`bottom`。同一位置的多个区按登记顺序上下排列，共用一个大小；除 `top` 外，区与区之间有分隔条，缺省等分，每个区至少占 10%。收起其中一个区时其余按比例分它的高度，再展开时恢复拖过的比例。
 - `size` 是位置的缺省大小：`start`、`end` 占中间一行的宽度，`bottom` 占中间一栏的高度；`minSize` 是拖动的下限，缺省 10。都取该位置第一个区的值。中间区至少留 20。
 - `label` 是分隔条无障碍名称里的区名，缺省用 `name`；名称取文案 `resize`，分隔条所在的布局取文案 `layout`。
 - 收起的区移出文档，内容保留，再展开时原样放回。

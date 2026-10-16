@@ -5,7 +5,8 @@
 
 // <xh-designer-frame>：设计器外框。按命名区布局：上方一条（工具栏），中间一行左、中、右（物料、画布、属性），
 // 中间一列的下方（问题列表）。区名由产品登记，作者内容用 slot="<区名>" 放进对应的区，没写 slot 的放进中间区。
-// panels 列出要显示的区（空格分隔），不写即全部显示，写空串则只留中间区。区间用 <xh-splitter>，宽度可拖。
+// panels 列出要显示的区（空格分隔），不写即全部显示，写空串则只留中间区。区间用 <xh-splitter>，宽度可拖；
+// 同一位置上下堆叠的几个区之间也有分隔条，缺省等分。
 
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { XhSplitterElement } from '@xihan-ui/web-components/define'
@@ -26,7 +27,7 @@ export type DesignerFramePosition = 'top' | 'start' | 'center' | 'end' | 'bottom
 /** 可以拖动调整大小的位置。 */
 export type DesignerFrameResizable = 'start' | 'end' | 'bottom'
 
-/** 一个命名区。同一位置的多个区按登记顺序上下排列，共用一个可调整的大小。 */
+/** 一个命名区。同一位置的多个区按登记顺序上下排列，共用一个可调整的大小，区与区之间可拖动分高度。 */
 export interface DesignerFrameRegion {
   readonly name: string
   readonly position: DesignerFramePosition
@@ -38,10 +39,20 @@ export interface DesignerFrameRegion {
   readonly label?: string
 }
 
+/** 外框各处的大小（百分比）。 */
+export interface DesignerFrameSizes {
+  /** start、end 占中间一行的宽度，bottom 占中间一列的高度。 */
+  readonly start?: number
+  readonly end?: number
+  readonly bottom?: number
+  /** 同一位置上下堆叠的区各自占该位置高度的百分比，键为区名；只有一个区的位置不出现。 */
+  readonly regions?: Readonly<Record<string, number>>
+}
+
 /** 外框派发的事件。 */
 export interface DesignerFrameEventMap {
-  /** 拖动或用键盘调整了某个位置的大小；拖动途中连续发出。 */
-  'sizes-change': CustomEvent<{ sizes: Readonly<Partial<Record<DesignerFrameResizable, number>>> }>
+  /** 拖动或用键盘调整了某个位置或堆叠区的大小；拖动途中连续发出。 */
+  'sizes-change': CustomEvent<{ sizes: DesignerFrameSizes }>
 }
 
 /** 缺省的命名区：工具栏、物料、画布、属性、问题。 */
@@ -93,8 +104,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   declare regions: readonly DesignerFrameRegion[] | undefined
   /** 要显示的区，空格分隔；不写即全部显示，写空串则只留中间区。中间区总是显示。同名 attribute。 */
   declare panels: string | undefined
-  /** 各位置的大小（百分比），用来恢复上次的布局；不给的位置用区的缺省大小。 */
-  declare sizes: Readonly<Partial<Record<DesignerFrameResizable, number>>> | undefined
+  /** 各处的大小（百分比），用来恢复上次的布局；不给的位置用区的缺省大小，不给的堆叠区等分。 */
+  declare sizes: DesignerFrameSizes | undefined
   /** 元素自己的文案，压在全局配置之上。 */
   declare translations: Partial<DesignerFrameTranslations> | undefined
 
@@ -111,6 +122,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   #layoutKey = ''
   #splitters: FrameSplitter[] = []
   #current: Partial<Record<DesignerFrameResizable, number>> = {}
+  #shares: Record<string, number> = {}
   #dirObserver: MutationObserver | undefined
 
   override connectedCallback(): void {
@@ -144,8 +156,11 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     super.update(changed)
     const parts = this.#ensureParts()
     this.#syncRegions()
-    if (changed.has('sizes') && this.sizes !== undefined)
-      this.#current = { ...this.#current, ...this.sizes }
+    if (changed.has('sizes') && this.sizes !== undefined) {
+      const { regions, ...positions } = this.sizes
+      this.#current = { ...this.#current, ...positions }
+      this.#shares = { ...this.#shares, ...regions }
+    }
     const t = this.#config.translations<DesignerFrameTranslations>(TAG, DEFAULT_TRANSLATIONS, this.translations)
     const layout = this.#layout()
     const key = JSON.stringify([this.#direction(), Object.entries(layout).map(([position, regions]) => [position, regions.map(region => region.name)])])
@@ -220,22 +235,40 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     return Math.min(Math.max(this.#current[position] ?? regions[0]?.size ?? 20, min), Math.max(min, room))
   }
 
+  /** 堆叠区各自的高度（百分比）：记下的值缺的按平均补上，再按合计 100 缩放，不低于下限。 */
+  #stackSizes(regions: readonly DesignerFrameRegion[]): number[] {
+    const even = 100 / regions.length
+    const raw = regions.map(region => this.#shares[region.name] ?? even)
+    const total = raw.reduce((sum, value) => sum + value, 0)
+    const scaled = raw.map(value => Math.max(DEFAULT_MIN_SIZE, total > 0 ? value / total * 100 : even))
+    const scaledTotal = scaled.reduce((sum, value) => sum + value, 0)
+    return scaled.map(value => value / scaledTotal * 100)
+  }
+
+  /** 一个位置的区：一个区时直接放进去，多个区时上下排列并以分隔条隔开。 */
   #stack(regions: readonly DesignerFrameRegion[], position: DesignerFramePosition): HTMLElement {
     const stack = createAuthoredElement(this.ownerDocument, 'div', { 'data-part': 'stack', 'data-position': position })
-    stack.append(...regions.map(region => this.#regions.get(region.name)!))
+    const nodes = regions.map(region => this.#regions.get(region.name)!)
+    if (regions.length < 2) {
+      stack.append(...nodes)
+      return stack
+    }
+    const sizes = this.#stackSizes(regions)
+    stack.append(this.#splitter('vertical', regions.map((region, index) => ({ node: nodes[index]!, id: region.name, size: sizes[index]!, min: DEFAULT_MIN_SIZE })), regions.slice(0, -1).map(region => region.name), (next) => {
+      regions.forEach((region, index) => {
+        this.#shares[region.name] = next[index]!
+      })
+    }))
     return stack
   }
 
-  /** 两到三块面板的 <xh-splitter>：sizes 与 panels 按面板顺序，triggers 为每条分隔条对应的区名。 */
-  #splitter(orientation: 'horizontal' | 'vertical', panels: readonly { readonly node: HTMLElement, readonly id: string, readonly size: number, readonly min: number, readonly trigger?: string }[]): HTMLElement {
+  /** 两块以上面板的 <xh-splitter>：sizes 与 panels 按面板顺序，triggers 为每条分隔条名称里的区名，record 记下拖动后的大小。 */
+  #splitter(orientation: 'horizontal' | 'vertical', panels: readonly { readonly node: HTMLElement, readonly id: string, readonly size: number, readonly min: number }[], triggers: readonly string[], record: (sizes: readonly number[]) => void): HTMLElement {
     const doc = this.ownerDocument
     const children: HTMLElement[] = []
-    const triggers: string[] = []
     panels.forEach((panel, index) => {
-      if (index > 0) {
-        triggers.push(panel.trigger ?? panels[index - 1]!.trigger!)
+      if (index > 0)
         children.push(createAuthoredElement(doc, 'div', { 'data-xh-part': 'resize-trigger', 'index': index - 1 }))
-      }
       children.push(createAuthoredElement(doc, 'div', { 'data-xh-part': 'panel', 'index': index }, [panel.node]))
     })
     const splitter = createAuthoredElement(doc, 'xh-splitter', {
@@ -253,13 +286,15 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       if (event.target !== splitter)
         return
       const { sizes } = (event as CustomEvent<{ sizes: number[] }>).detail
-      panels.forEach((panel, index) => {
-        if (panel.id === 'start' || panel.id === 'end' || panel.id === 'bottom')
-          this.#current[panel.id] = sizes[index]!
-      })
-      emitEvent(this, 'sizes-change', { sizes: { ...this.#current } })
+      record(sizes)
+      emitEvent(this, 'sizes-change', { sizes: this.#snapshot() })
     })
     return splitter
+  }
+
+  /** 交给 sizes-change 的大小：位置的大小，加上记下过的堆叠区高度。 */
+  #snapshot(): DesignerFrameSizes {
+    return Object.keys(this.#shares).length === 0 ? { ...this.#current } : { ...this.#current, regions: { ...this.#shares } }
   }
 
   #build(parts: Parts, layout: Layout): void {
@@ -272,19 +307,33 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       const bottom = this.#sizeOf('bottom', layout.bottom, 100 - CENTER_MIN_SIZE)
       main = this.#splitter('vertical', [
         { node: main, id: 'center', size: 100 - bottom, min: CENTER_MIN_SIZE },
-        { node: this.#stack(layout.bottom, 'bottom'), id: 'bottom', size: bottom, min: layout.bottom[0]!.minSize ?? DEFAULT_MIN_SIZE, trigger: layout.bottom[0]!.name },
-      ])
+        { node: this.#stack(layout.bottom, 'bottom'), id: 'bottom', size: bottom, min: layout.bottom[0]!.minSize ?? DEFAULT_MIN_SIZE },
+      ], [layout.bottom[0]!.name], (next) => {
+        this.#current.bottom = next[1]!
+      })
     }
 
-    const row: { node: HTMLElement, id: string, size: number, min: number, trigger?: string }[] = []
+    const row: { node: HTMLElement, id: string, size: number, min: number }[] = []
+    const triggers: string[] = []
     const start = layout.start.length > 0 ? this.#sizeOf('start', layout.start, 100 - CENTER_MIN_SIZE - (layout.end.length > 0 ? layout.end[0]!.minSize ?? DEFAULT_MIN_SIZE : 0)) : 0
     const end = layout.end.length > 0 ? this.#sizeOf('end', layout.end, 100 - CENTER_MIN_SIZE - start) : 0
-    if (layout.start.length > 0)
-      row.push({ node: this.#stack(layout.start, 'start'), id: 'start', size: start, min: layout.start[0]!.minSize ?? DEFAULT_MIN_SIZE, trigger: layout.start[0]!.name })
+    if (layout.start.length > 0) {
+      row.push({ node: this.#stack(layout.start, 'start'), id: 'start', size: start, min: layout.start[0]!.minSize ?? DEFAULT_MIN_SIZE })
+      triggers.push(layout.start[0]!.name)
+    }
     row.push({ node: createAuthoredElement(this.ownerDocument, 'div', { 'data-part': 'main' }, [main]), id: 'center', size: 100 - start - end, min: CENTER_MIN_SIZE })
-    if (layout.end.length > 0)
-      row.push({ node: this.#stack(layout.end, 'end'), id: 'end', size: end, min: layout.end[0]!.minSize ?? DEFAULT_MIN_SIZE, trigger: layout.end[0]!.name })
-    parts.body.replaceChildren(row.length > 1 ? this.#splitter('horizontal', row) : row[0]!.node)
+    if (layout.end.length > 0) {
+      row.push({ node: this.#stack(layout.end, 'end'), id: 'end', size: end, min: layout.end[0]!.minSize ?? DEFAULT_MIN_SIZE })
+      triggers.push(layout.end[0]!.name)
+    }
+    parts.body.replaceChildren(row.length > 1
+      ? this.#splitter('horizontal', row, triggers, (next) => {
+          row.forEach((panel, index) => {
+            if (panel.id === 'start' || panel.id === 'end')
+              this.#current[panel.id] = next[index]!
+          })
+        })
+      : row[0]!.node)
   }
 }
 
