@@ -196,4 +196,72 @@
     padding-block-end: var(--xh-space-3);
     color: var(--xh-fg-muted);
   }
+
+  /* —— 小地图 —— */
+
+  xh-designer-minimap {
+    display: block;
+    box-sizing: border-box;
+    inline-size: var(--xh-layout-col-min-xs);
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    border: var(--xh-stroke-thin) solid var(--xh-border-default);
+    border-radius: var(--xh-shape-surface);
+    background: var(--xh-bg-surface);
+    box-shadow: var(--xh-shadow-sm);
+    cursor: pointer;
+    touch-action: none;
+    user-select: none;
+  }
+
+  xh-designer-minimap[data-empty] {
+    display: none;
+  }
+
+  xh-designer-minimap > svg[data-part='canvas'] {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  xh-designer-minimap rect[data-part='rect'] {
+    fill: var(--xh-bg-muted);
+    stroke: var(--xh-border-strong);
+    stroke-width: var(--xh-stroke-thin);
+    vector-effect: non-scaling-stroke;
+  }
+
+  xh-designer-minimap rect[data-part='rect'][data-tone='muted'] {
+    fill: var(--xh-bg-subtle);
+    stroke: var(--xh-border-default);
+  }
+
+  xh-designer-minimap path[data-part='path'] {
+    fill: none;
+    stroke: var(--xh-fg-subtle);
+    stroke-width: var(--xh-stroke-thin);
+    vector-effect: non-scaling-stroke;
+  }
+
+  xh-designer-minimap rect[data-part='frame'] {
+    fill: var(--xh-bg-brand-subtle);
+    stroke: var(--xh-border-control-focus);
+    stroke-width: var(--xh-stroke-thin);
+  }
+
+  @media (forced-colors: active) {
+    xh-designer-minimap rect[data-part='rect'] {
+      fill: Canvas;
+      stroke: CanvasText;
+    }
+
+    xh-designer-minimap path[data-part='path'] {
+      stroke: GrayText;
+    }
+
+    xh-designer-minimap rect[data-part='frame'] {
+      fill: none;
+      stroke: Highlight;
+    }
+  }
 }
