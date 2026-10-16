@@ -196,4 +196,32 @@ describe('<xh-designer-frame>（Chromium）', () => {
     expect(height('properties')).toBeCloseTo(before - total() * 0.1, -1)
     expect(seen.at(-1)!.sizes.regions).toEqual({ properties: expect.closeTo(65, 0), minimap: expect.closeTo(35, 0) })
   })
+  it('区里的作者内容不受外框样式影响：带同名部件的作者元素保持自己的 display 与 overflow', async () => {
+    const plant = (host: Element): HTMLElement[] => {
+      host.insertAdjacentHTML('beforeend', [
+        '<div data-part="region">',
+        '<div data-part="stack" data-position="center"><div data-part="region"></div></div>',
+        '<div data-part="main"></div>',
+        '<div data-part="splitter"><div data-scope="splitter" data-part="root"><div data-scope="splitter" data-part="panel"></div></div></div>',
+        '</div>',
+      ].join(''))
+      const root = host.lastElementChild as HTMLElement
+      return [root, ...root.querySelectorAll<HTMLElement>('[data-part]')]
+    }
+    const planted = [
+      ...plant(frame.querySelector('[data-part="region"][data-region="canvas"] > div')!),
+      ...plant(frame.querySelector('[data-part="region"][data-region="palette"] > [slot="palette"]')!),
+    ]
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    expect(planted).toHaveLength(14)
+    for (const element of planted) {
+      const style = getComputedStyle(element)
+      expect([element.dataset.part, style.display, style.overflow, style.flexGrow, style.borderRadius]).toEqual([element.dataset.part, 'block', 'visible', '0', '0px'])
+    }
+    const region = (name: string): CSSStyleDeclaration => getComputedStyle(frame.querySelector(`[data-part="region"][data-region="${name}"]`)!)
+    expect([region('canvas').display, region('canvas').overflow]).toEqual(['flex', 'hidden'])
+    expect([region('palette').display, region('palette').overflow]).toEqual(['flex', 'auto'])
+    expect(['body', 'main', 'stack', 'region', 'splitter'].every(part => frame.querySelector(`[data-part="${part}"][data-scope="designer-frame"]`) !== null)).toBe(true)
+    expect(['canvas', 'palette', 'properties', 'issues', 'toolbar'].map(name => frame.querySelector(`[data-region="${name}"]`)!.getAttribute('data-position'))).toEqual(['center', 'start', 'end', 'bottom', 'top'])
+  })
 })

@@ -840,7 +840,10 @@
     }
   }
 
-  /* —— 外框 —— */
+  /* —— 外框 ——
+     外框生成的结构都带 data-scope="designer-frame"，样式只认它：区里放的是作者内容，
+     即使带了同名的 data-part（画布自己的 region、stack、splitter 等）也不受影响。
+     区随所在位置写上 data-position，按位置定的样式写在区自己身上，不经祖先选择器 */
 
   xh-designer-frame {
     display: flex;
@@ -851,28 +854,25 @@
     contain: inline-size;
   }
 
-  xh-designer-frame [hidden] {
-    display: none;
-  }
-
-  xh-designer-frame > [data-part='top'] {
+  xh-designer-frame > [data-scope='designer-frame'][data-part='top'] {
     display: flex;
     flex: none;
     flex-direction: column;
     border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle);
   }
 
-  xh-designer-frame > [data-part='body'] {
+  xh-designer-frame > [data-scope='designer-frame'][data-part='body'] {
     display: flex;
     flex: 1 1 auto;
     min-block-size: 0;
   }
 
-  xh-designer-frame [data-part='splitter'] {
+  /* 外框的分隔条：宿主不占盒，根与面板按方向排开 */
+  xh-designer-frame [data-scope='designer-frame'][data-part='splitter'] {
     display: contents;
   }
 
-  xh-designer-frame [data-scope='splitter'][data-part='root'] {
+  xh-designer-frame [data-scope='designer-frame'][data-part='splitter'] > [data-scope='splitter'][data-part='root'] {
     display: flex;
     flex: 1 1 auto;
     min-inline-size: 0;
@@ -880,17 +880,17 @@
     border-radius: 0;
   }
 
-  xh-designer-frame [data-scope='splitter'][data-part='root'][data-orientation='vertical'] {
+  xh-designer-frame [data-scope='designer-frame'][data-part='splitter'][data-orientation='vertical'] > [data-scope='splitter'][data-part='root'] {
     flex-direction: column;
   }
 
-  xh-designer-frame [data-scope='splitter'][data-part='panel'] {
+  xh-designer-frame [data-scope='designer-frame'][data-part='splitter'] > [data-scope='splitter'][data-part='root'] > [data-scope='splitter'][data-part='panel'] {
     display: flex;
     min-inline-size: 0;
     min-block-size: 0;
   }
 
-  xh-designer-frame :is([data-part='main'], [data-part='stack']) {
+  xh-designer-frame [data-scope='designer-frame']:is([data-part='main'], [data-part='stack']) {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
@@ -898,31 +898,30 @@
     min-block-size: 0;
   }
 
-  xh-designer-frame [data-part='region'] {
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'] {
     display: flex;
     flex-direction: column;
     min-inline-size: 0;
     min-block-size: 0;
   }
 
-  /* 区直接放在位置里，或堆叠时放在分隔条的面板里 */
-  xh-designer-frame [data-part='stack'] > [data-part='region'],
-  xh-designer-frame [data-part='stack'] [data-scope='splitter'][data-part='panel'] > [data-part='region'] {
+  /* 左右、中间与下方的区占满所在位置；顶部的区按内容高 */
+  xh-designer-frame [data-scope='designer-frame'][data-part='region']:not([data-position='top']) {
     flex: 1 1 auto;
   }
 
-  xh-designer-frame [data-part='stack']:not([data-position='center']) [data-part='region'] {
+  xh-designer-frame [data-scope='designer-frame'][data-part='region']:is([data-position='start'], [data-position='end'], [data-position='bottom']) {
     overflow: auto;
   }
 
-  xh-designer-frame [data-part='stack'][data-position='center'] [data-part='region'] {
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-position='center'] {
     overflow: hidden;
   }
 
   /* 上面的部件声明了 display，盖掉了 UA 的 [hidden]{display:none}，收起时补回来 */
-  xh-designer-frame > :is([data-part='top'], [data-part='body'])[hidden],
-  xh-designer-frame :is([data-part='splitter'], [data-part='main'], [data-part='stack'], [data-part='region'])[hidden],
-  xh-designer-frame [data-scope='splitter']:is([data-part='root'], [data-part='panel'])[hidden] {
+  xh-designer-frame [data-scope='designer-frame'][hidden],
+  xh-designer-frame [data-scope='designer-frame'][data-part='splitter'] > [data-scope='splitter'][data-part='root'][hidden],
+  xh-designer-frame [data-scope='designer-frame'][data-part='splitter'] > [data-scope='splitter'][data-part='root'] > [data-scope='splitter'][data-part='panel'][hidden] {
     display: none;
   }
 }
