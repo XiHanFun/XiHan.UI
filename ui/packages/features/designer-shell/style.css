@@ -588,12 +588,21 @@
     cursor: default;
   }
 
+  /* 画布区是一格的网格：作者内容不写尺寸也撑满，多个子节点叠在同一块上 */
   xh-designer-ruler > [data-part='canvas'] {
     position: relative;
+    display: grid;
     grid-area: canvas;
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr);
     min-block-size: 0;
     min-inline-size: 0;
     overflow: hidden;
+  }
+
+  xh-designer-ruler > [data-part='canvas'] > * {
+    grid-area: 1 / 1;
+    min-block-size: 0;
+    min-inline-size: 0;
   }
 
   xh-designer-ruler > [data-part='guides'] {
