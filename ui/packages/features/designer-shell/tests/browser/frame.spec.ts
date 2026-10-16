@@ -86,6 +86,19 @@ describe('<xh-designer-frame>（Chromium）', () => {
     expect(width('palette')).toBeCloseTo(dragged, -1)
   })
 
+  it('从右到左时物料在右侧，往画布方向拖分隔条物料变宽', async () => {
+    frame.setAttribute('dir', 'rtl')
+    await new Promise(resolve => setTimeout(resolve))
+    await frame.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const palette = frame.querySelector('[data-region="palette"]')!.getBoundingClientRect()
+    const canvas = frame.querySelector('[data-region="canvas"]')!.getBoundingClientRect()
+    expect(palette.left).toBeGreaterThan(canvas.left)
+    const before = palette.width
+    await drag(rowTriggers()[0]!, -100, 0)
+    expect(width('palette')).toBeCloseTo(before + 100, -1)
+  })
+
   it('下方的问题区在中间一列里，可上下拖动', async () => {
     const issues = frame.querySelector('[data-region="issues"]')!.getBoundingClientRect()
     const canvas = frame.querySelector('[data-region="canvas"]')!.getBoundingClientRect()

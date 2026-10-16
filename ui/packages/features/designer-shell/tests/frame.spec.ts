@@ -103,6 +103,16 @@ describe('<xh-designer-frame>', () => {
     expect(region('palette')).toBeNull()
   })
 
+  it('分隔条跟着外框的文字方向，外框的 dir 变了就重排', async () => {
+    await mount(element => element.setAttribute('dir', 'rtl'))
+    const dirs = (): (string | null)[] => Array.from(frame.querySelectorAll('xh-splitter'), splitter => splitter.getAttribute('dir'))
+    expect(dirs()).toEqual(['rtl', 'rtl'])
+    frame.setAttribute('dir', 'ltr')
+    await new Promise(resolve => setTimeout(resolve))
+    await frame.updateComplete
+    expect(dirs()).toEqual(['ltr', 'ltr'])
+  })
+
   it('sizes 恢复各位置的大小（夹在下限与中间区之间），分隔条变化时派发 sizes-change', async () => {
     await mount(element => element.sizes = { start: 25, end: 90 })
     const row = splitter('horizontal')!
