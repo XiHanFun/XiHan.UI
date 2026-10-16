@@ -6,12 +6,17 @@
 // 定义 field array 类型契约。
 
 import type { MachineSchema, PropTypes, Service } from '@xihan-ui/core'
-import type { FormPath } from '../form/form.path'
+import type { FormArrayMutation, FormPath } from '../form/form.path'
 import type { FormSchema } from '../form/form.types'
 
 export interface FieldArrayValueChangeDetails {
   /** 变化后的整份数据数组，顺序即界面上从上到下的顺序。 */
   value: unknown[]
+  /**
+   * 这次变化是哪一种行变更：增、删、移，或整份写值（replace）。值存在外部 store 的宿主据此迁移行级状态；
+   * 受控值从外面换掉、表单重置这类不是本组发起的变化不带。
+   */
+  mutation?: FormArrayMutation
 }
 
 /**

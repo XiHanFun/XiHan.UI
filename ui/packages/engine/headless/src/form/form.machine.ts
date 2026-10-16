@@ -331,6 +331,9 @@ function fieldResultErrors(all: FormErrors, name: FormPath): FormErrors {
 
 // 值表与错误表住在 context 的 cell 里（给定 prop 即受控：读直取 prop、写只发回调不落内部值）。
 // 状态只编码"上一次提交有没有被拦下"，它不受控、也没有对应的 prop。
+/** 字段组的行变更写出来的那几份值表：按值表的身份记，落值的 onChange 取出来附上。 */
+const pendingArrayMutations = new WeakMap<FormValues, { name: FormPath, mutation: FormArrayMutation }>()
+
 export const formMachine = createMachine({
   name: 'form',
   refs: ({ prop }) => ({
@@ -347,7 +350,10 @@ export const formMachine = createMachine({
       value: prop('values'),
       defaultValue: cloneFormPathRecord(prop('defaultValues')),
       isEqual: sameFormValues,
-      onChange: values => prop('onValuesChange')?.({ values }),
+      onChange: (values) => {
+        const arrayMutation = pendingArrayMutations.get(values)
+        prop('onValuesChange')?.(arrayMutation ? { values, arrayMutation } : { values })
+      },
     })),
     errors: cell<FormErrors>(() => ({
       // 受控的错误表也要过清理：空串是"这条没错"，原样收下会让它一直算作有错
@@ -562,6 +568,7 @@ export const formMachine = createMachine({
             ? null
             : { ...previousError, field, values: setFormPathValue(rebaseFormPathRecord(previousError.values, e.name, e.mutation), e.name, e.value) })
         }
+        pendingArrayMutations.set(nextValues, { name: e.name, mutation: e.mutation })
         context.set('values', nextValues)
         context.set('errors', nextErrors)
       },

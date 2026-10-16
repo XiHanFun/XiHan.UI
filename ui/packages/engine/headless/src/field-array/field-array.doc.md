@@ -15,6 +15,7 @@
 
 - `min` 与 `max` 限制行数。
 - `movable` 启用上移和下移操作。
+- `onValueChange`（事件名 `value-change`）的载荷带上这次是哪一种行变更：`mutation` 为 `{ type: 'insert', index }`、`{ type: 'remove', index }`、`{ type: 'move', from, to }` 或整份写值的 `{ type: 'replace', length }`（类型 `FormArrayMutation`）。值存在外部 store 的宿主据此迁移行级状态（强制设定、选项、校验进度），不必整份替换后丢掉。
 - `createItem` 设置新增行的初始值。
 - `insert(index, item?)` 在指定位置插入一行，后面的行往后挪；`move(from, to)` 一步挪到任意位置。两者与 `add` 同受 `max`、`movable` 与禁用约束。
 - 每行可以包含一个或多个字段。

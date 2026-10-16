@@ -119,7 +119,7 @@ function fieldPathOf(el: HTMLElement): FormPath {
  * @attr {string} label-align - horizontal 下标签对齐缘：end（默认，贴近控件）/ start
  * @attr {boolean} disabled - 整个表单禁用：提交、重置、写值一概不发生，两个按钮带原生 disabled
  * @attr {boolean} read-only - 只读：写值与重置不发生，但仍可提交
- * @fires values-change - 值表变化；detail 为 `{ values }`
+ * @fires values-change - 值表变化；detail 为 `{ values, arrayMutation? }`，来自字段组的行变更时 arrayMutation 是 `{ name, mutation }`
  * @fires errors-change - 错误表变化；detail 为 `{ errors }`
  * @fires submit - 校验通过才派发；detail 为 `{ values }`。异步提交门经 submitAction 属性：事件拿不到监听函数的返回值，
  *   给元素赋 `submitAction = details => thenable` 即在提交通过校验后调用它，期间 submitting 为真、提交钮报在途
