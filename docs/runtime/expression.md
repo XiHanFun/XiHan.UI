@@ -22,7 +22,7 @@ if (result.ok)
 - **结果确定。** 同样的语法树、同样的数据、同样的函数表与当前时间，永远得到同样的结果。语言本身不读时钟、不读随机数，`NOW()` 只返回宿主传入的时间。
 - **类型规则写死。** 没有 JS 式的隐式转换：`'1' + 1` 是类型错误，不是 `'11'`；条件必须是布尔或 `null`，没有「真值」「假值」。
 - **数值是十进制。** 数字按十进制精确运算，`0.1 + 0.2 == 0.3` 为真，金额计算不会出现二进制浮点的尾差。
-- **可在其他语言复刻。** 数值、日期、字符串的每一条规则都不依赖 JS 引擎的实现细节，包内附带一份跨实现一致性用例（`tests/fixtures/conformance.json`），其他语言的实现逐条比对即可。
+- **可在其他语言复刻。** 数值、日期、字符串的每一条规则都不依赖 JS 引擎的实现细节，包内附带两份跨实现一致性用例：求值的 `tests/fixtures/conformance.json`，按引用改写的 `tests/fixtures/rename-references.json`，其他语言的实现逐条比对即可。
 - **问题只给码与位置。** 解析、检查、求值的问题都是 `{ code, start, end, data? }`，不带文案；界面按问题码自行组织提示语。
 
 ## 是否安装
@@ -373,12 +373,31 @@ const functions = createFunctionTable({
 | --- | --- |
 | `print(ast)` | 打印成规范源码；结果再解析得到同一棵树 |
 | `collectReferences(ast)` | 按源码顺序列出字段引用的最长静态路径，用于依赖分析与改名 |
+| `renameReferences(source, rename, options?)` | 按引用改写源码，见下文「按引用改名」 |
 | `toPlain(value)` | 转成 JSON 能表示的值：数字转 JS 数字，日期转规范文本 |
 | `toExpressionValue(raw)` | 把宿主值转成表达式值，不可表示时抛 `TypeError` |
 | `typeOf(value)` | 值的类型名 |
 | `isPlainName(text)` | 能否不加反引号写成标识符 |
 | `createExpressionEngine(options?)` | 四款设计器统一注入的引擎，见「注入引擎」 |
 | `formatValue(value, spec, options?)` | 数字、百分比、日期、人民币大写的格式化，见「格式化」 |
+
+### 按引用改名
+
+字段、参数改名时，用 `renameReferences` 把公式里对它的引用一并改掉：
+
+```ts
+import { renameReferences } from "@xihan-ui/expression";
+
+const result = renameReferences("IF($year > 2025, $row.amount, 0)", path =>
+  path[0] === "$year" ? ["$fiscalYear", ...path.slice(1)] : undefined);
+// { ok: true, source: "IF($fiscalYear > 2025, $row.amount, 0)", renamed: 1 }
+```
+
+- `rename` 收到每一处引用的路径（与 `collectReferences` 相同），返回新路径；返回 `undefined` 或原路径表示不改。
+- 只重写名字变了的那几段，其余源码一字不动：字符串字面量与函数名里的同名文字、空白、括号、原来的点号或下标写法都保留。
+- 新名字不合标识符规则或是关键字时加反引号，写进字符串下标时按字符串转义；改写后的源码再解析，引用路径就是 `rename` 给的新路径。
+- 新路径更长时多出的段接成点号成员，更短时去掉多出的段。
+- 不改入参。源码解析失败时返回 `{ ok: false, source, issue }`，`source` 原样不动，不做半截改写。
 
 ## 问题码
 

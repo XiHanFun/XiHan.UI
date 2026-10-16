@@ -33,5 +33,7 @@ export type { ExpressionEntry, ExpressionPlan, ExpressionPlanIssue, ExpressionPl
 export { isPlainName, print } from './print'
 export { collectReferences } from './references'
 export type { ExpressionReference } from './references'
+export { renameReferences } from './rename'
+export type { ReferenceRename, RenameReferencesResult } from './rename'
 export { ExprList, ExprRecord, isExprValue, toExpressionValue, toPlain, typeOf } from './value'
 export type { ExprValue, ExprValueType, PlainValue } from './value'

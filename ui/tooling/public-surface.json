@@ -10342,6 +10342,8 @@
       "PlainValue",
       "PlanEvaluation",
       "PlanOptions",
+      "ReferenceRename",
+      "RenameReferencesResult",
       "RmbUpperFormatSpec",
       "UnaryNode",
       "UnaryOperator",
@@ -10362,6 +10364,7 @@
       "parse",
       "planExpressions",
       "print",
+      "renameReferences",
       "toExpressionValue",
       "toPlain",
       "typeOf"

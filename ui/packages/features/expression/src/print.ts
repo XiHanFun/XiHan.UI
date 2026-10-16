@@ -105,6 +105,18 @@ function wrap(node: ExpressionNode, parenthesize: boolean): string {
   return parenthesize ? `(${text})` : text
 }
 
+/**
+ * 引用路径里一段的源码：首段写成标识符（不合标识符规则或是关键字时加反引号），成员写成 `.名字`，
+ * 下标写成字符串下标；转义与 print 相同。
+ */
+export function printReferenceSegment(name: string, as: 'identifier' | 'member' | 'index'): string {
+  if (as === 'identifier')
+    return isPlainName(name) ? name : quoteName(name)
+  if (as === 'member')
+    return `.${matchesName(name) ? name : quoteName(name)}`
+  return `[${quoteString(name)}]`
+}
+
 function printNode(node: ExpressionNode): string {
   switch (node.type) {
     case 'Literal':
