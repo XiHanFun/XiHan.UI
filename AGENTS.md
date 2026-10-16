@@ -140,6 +140,7 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 - React 使用函数组件与显式 props 类型。
 - Vue 使用组合式和带类型 emits/slots。
 - Web Components 使用作者提供的 Light DOM；作者节点用 `data-xh-part` 声明角色，升级后库写入 `data-scope`/`data-part`。
+- Web Components 元素登记在 `ui/packages/adapters/web-components/src/define.ts` 的 `XH_ELEMENTS` 表里，一行一个 `'xh-<名>': Xh<名>Element,`：全量注册 `defineXhElements()`、按需注册 `defineXhElement(tag, ctor)` 的类型约束 `XhElementTagMap` 与类导出都从这张表来。新元素用脚手架会自动写进表、导入与导出三处；手工加时三处一起补，`check-exports` 与 `check-cem-coverage` 按这张表核对。
 - 非冒泡事件使用原生监听，不假设框架合成事件等价。
 
 ### 样式

@@ -114,8 +114,8 @@
     {
       "id": "wc-define",
       "path": "packages/adapters/web-components/src/define.ts",
-      "what": "元素注册：import + defineElement + 类导出",
-      "probeAnchor": "(?m)^  defineElement\\('xh-{c}', Xh{P}Element, VERSION\\)$"
+      "what": "元素注册：import + XH_ELEMENTS 表 + 类导出",
+      "probeAnchor": "(?m)^  'xh-{c}': Xh{P}Element,$"
     },
     {
       "id": "wc-suites",

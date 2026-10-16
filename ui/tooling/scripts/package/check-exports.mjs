@@ -45,7 +45,7 @@ const RE_VUE_COMPONENT = /^export const (Xh\w+)/gm
 // react 的组件是函数声明，hook 与内部接线口不带 Xh 前缀，跟 vue 侧一样只收组件名
 const RE_REACT_COMPONENT = /^export (?:function|const) (Xh\w+)/gm
 const RE_WC_ELEMENT = /^export class (Xh\w*Element)\b/gm
-const RE_DEFINE_CALL = /defineElement\(\s*['"][^'"]*['"]\s*,\s*(Xh\w+)/g
+const RE_DEFINE_CALL = /^ {2}'xh-[\w-]+': (Xh\w+),$/gm
 
 async function read(path) {
   return readFile(path, 'utf8')
@@ -207,7 +207,7 @@ const covered = await reactCovered()
       wcCount++
       if (defined.has(name))
         continue
-      problems.push(`${posix(file)}:${lineOf(source, match.index)} 的 ${name} 没注册——把 defineElement('${tag}', ${name}, VERSION) 加进 ${anchor} 所在的 defineXhElements`)
+      problems.push(`${posix(file)}:${lineOf(source, match.index)} 的 ${name} 没注册——把 '${tag}': ${name}, 加进 ${anchor} 所在的 XH_ELEMENTS 表`)
     }
   }
 }
