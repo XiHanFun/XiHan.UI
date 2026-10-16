@@ -10,10 +10,10 @@ import {
   setDiagnosticsLevel,
 } from '@xihan-ui/core'
 import { dialogAnatomy, dialogMeta } from '@xihan-ui/headless'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import manifest from '../custom-elements.json'
 import { defineXhElements } from '../src/define'
-import { delegatedScopesOf, isRegisteredScope } from '../src/dom/part-contract'
+import { delegatedScopesOf } from '../src/dom/part-contract'
 import { XhDialogElement } from '../src/elements/dialog'
 import { XhSelectElement } from '../src/elements/select'
 
@@ -272,12 +272,13 @@ describe('双重身份登记的核实', () => {
 })
 
 describe('委派登记的核实', () => {
-  it('每个元素登记的委派目标都是已注册元素的解剖名', () => {
+  it('每个元素登记的委派目标都是元素表里某个元素的解剖名', () => {
+    const anatomies = new Set([...registeredElements().values()].map(ctor => ctor.partContract?.anatomy.name))
     let delegates = 0
     for (const [tag, ctor] of registeredElements()) {
       for (const delegate of ctor.partContract?.delegates ?? []) {
         delegates++
-        expect(isRegisteredScope(delegate.name), `${tag} 委派给 "${delegate.name}"`).toBe(true)
+        expect(anatomies.has(delegate.name), `${tag} 委派给 "${delegate.name}"`).toBe(true)
       }
     }
     expect(delegates).toBeGreaterThan(0)
@@ -307,11 +308,6 @@ describe('委派登记的核实', () => {
       }
     }
     expect(checked).toBeGreaterThan(0)
-  })
-
-  it('isRegisteredScope 只认「xh-<name> 已注册且解剖名就是 name」', () => {
-    expect(isRegisteredScope('tag')).toBe(true)
-    expect(isRegisteredScope('并不存在')).toBe(false)
   })
 
   it('delegatedScopesOf 剔除与宿主重名的角色，其余按作者名归到 scope', () => {
@@ -383,20 +379,17 @@ describe('委派登记的核实', () => {
     expect(seen).toEqual([])
   })
 
-  it('委派目标不是已注册元素的解剖名：报 error，指向宿主，每实例一次', async () => {
+  it('委派名写错时运行时不看注册表，接线核对在委派节点上报 error：名字本身由元素表的静态核对拦住', async () => {
     const original = XhSelectElement.partContract
     await withSelectContract({ ...original, delegates: [{ name: '并不存在的scope', parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }] }, async () => {
-      const host = await mountSelect(root => root.append(tagWithTrigger()))
-      host.setAttribute('placeholder', '再渲一轮')
-      await host.updateComplete
-      await host.updateComplete
+      const el = await mountSelect(root => root.append(tagWithTrigger()))
+      const tag = el.querySelector('[data-xh-part="tag"]')!
 
       const hits = codes(DIAGNOSTIC_CODES.invariant)
-      expect(hits).toHaveLength(1)
-      expect(hits[0]).toMatchObject({ level: 'error', scope: 'select', detail: { delegate: '并不存在的scope' } })
-      expect(hits[0]!.node).toBe(host)
-      // 目标都没注册，逐节点的核对不再重复报
-      expect(seen).toHaveLength(1)
+      expect(hits.map(h => h.part).sort()).toEqual(['item-delete-trigger', 'tag'])
+      const onTag = hits.find(h => h.part === 'tag')!
+      expect(onTag).toMatchObject({ level: 'error', scope: 'select', detail: { expectedScopes: ['并不存在的scope'], wiredScope: 'tag' } })
+      expect(onTag.node).toBe(tag)
     })
   })
 
@@ -497,5 +490,30 @@ describe('委派登记的核实', () => {
     await el.updateComplete
     await el.updateComplete
     expect(seen).toEqual([])
+  })
+})
+
+/** 只注册一个元素的页面：委派方自己跑被委派组件的状态机，不要求被委派的元素已注册。 */
+const ISOLATED: ReadonlyArray<readonly [tag: string, attrs: string, markup: string]> = [
+  ['xh-select', '', '<div data-xh-part="root"><button data-xh-part="trigger">选择</button><select data-xh-part="hidden-select"></select><div data-xh-part="positioner"><div data-xh-part="content"><div data-xh-part="list"></div></div></div></div>'],
+  ['xh-date-picker', 'segments="year"', '<div data-xh-part="root"><div data-xh-part="control"><div data-xh-part="segment-group"><span data-xh-part="segment" segment="year"></span></div><button data-xh-part="trigger">选择</button></div><input data-xh-part="hidden-input"><div data-xh-part="positioner"><div data-xh-part="content"><div data-xh-part="calendar"></div></div></div></div>'],
+  ['xh-side-nav', '', '<nav data-xh-part="root"><ul data-xh-part="list"><li data-xh-part="item"><a data-xh-part="link" value="home"><span data-xh-part="link-text">工作台</span></a></li></ul><div data-xh-part="tooltip-positioner"><div data-xh-part="tooltip"></div></div></nav>'],
+  ['xh-scroll-area', '', '<div data-xh-part="root"><div data-xh-part="viewport"><div data-xh-part="content">内容</div></div><div data-xh-part="scrollbar" orientation="vertical"><div data-xh-part="track"><div data-xh-part="thumb"></div></div></div></div>'],
+]
+
+describe('只注册一个元素时的委派核对', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+    document.body.innerHTML = ''
+  })
+
+  it.each(ISOLATED)('%s：被委派的元素都没注册时，挂载不报委派相关的错', async (tag, attrs, markup) => {
+    const realGet = customElements.get.bind(customElements)
+    vi.spyOn(customElements, 'get').mockImplementation(name => (name === tag ? realGet(name) : undefined))
+    document.body.innerHTML = `<${tag} ${attrs}>${markup}</${tag}>`
+    await (document.querySelector(tag) as Updatable).updateComplete
+    await new Promise(resolve => setTimeout(resolve, 0))
+    const delegated = seen.filter(r => r.code === DIAGNOSTIC_CODES.invariant || /委派|delegates/.test(r.message))
+    expect(delegated.map(r => r.message)).toEqual([])
   })
 })
