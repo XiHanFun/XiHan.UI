@@ -294,9 +294,10 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
       if (!shownGroups.has(key))
         this.#groups.delete(key)
     }
-    if (this.collapsible) {
+    const items = this.collapsible ? groupElements.filter(element => element.hasAttribute('data-xh-part')) : []
+    // 可折叠且有带 id 的分组时才进手风琴；一个分组都没有时直接平铺，不建空的手风琴
+    if (items.length > 0) {
       const accordion = this.#ensureAccordion()
-      const items = groupElements.filter(element => element.hasAttribute('data-xh-part'))
       placeChildren(accordion.firstElementChild!, items)
       const open = this.#shownGroups.filter(group => !this.#collapsed.has(group))
       if (JSON.stringify(accordion.value ?? []) !== JSON.stringify(open))

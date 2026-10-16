@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 
+import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { DesignerPaletteEventMap, DesignerPaletteGroup, XhDesignerPaletteElement } from '../src'
+import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
 import { setXhConfig } from '@xihan-ui/web-components'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineDesignerShell } from '../src'
@@ -33,6 +35,23 @@ const groups: DesignerPaletteGroup[] = [
     ],
   },
 ]
+
+/** 收集这一段里的 wc.* 诊断：部件契约不全的库内元素会在这里报出来。 */
+function recordWcDiagnostics(): { readonly codes: () => string[], readonly stop: () => void } {
+  const seen: DiagnosticRecord[] = []
+  resetDiagnostics()
+  setDiagnosticsConsoleOutput(false)
+  setDiagnosticsLevel('warn')
+  setDiagnosticsDedupe(false)
+  const off = onDiagnostic(record => void seen.push(record))
+  return {
+    codes: () => seen.filter(record => record.code.startsWith('wc.')).map(record => `${record.code} ${record.scope ?? ''}/${record.part ?? ''}`),
+    stop: () => {
+      off()
+      resetDiagnostics()
+    },
+  }
+}
 
 async function mount(setup: (palette: XhDesignerPaletteElement) => void = () => {}): Promise<XhDesignerPaletteElement> {
   const palette = document.createElement('xh-designer-palette')
@@ -165,6 +184,26 @@ describe('<xh-designer-palette>', () => {
     expect(accordion().value).toEqual(['human'])
     await search(palette, '')
     expect(accordion().value).toEqual(['control'])
+  })
+
+  it('collapsible 时一个分组都没有（空数据或搜索无结果）不建手风琴，没有 wc.* 诊断', async () => {
+    const diagnostics = recordWcDiagnostics()
+    const palette = await mount((element) => {
+      element.collapsible = true
+      element.searchable = true
+      element.groups = []
+    })
+    expect(palette.querySelector('xh-accordion')).toBeNull()
+    palette.groups = groups
+    await palette.updateComplete
+    expect(palette.querySelector('xh-accordion')).not.toBeNull()
+    const search = palette.querySelector('[data-part="search"]')!
+    search.dispatchEvent(new CustomEvent('value-change', { detail: { value: '没有这一项' }, bubbles: true }))
+    await palette.updateComplete
+    expect(palette.querySelector('xh-accordion')).toBeNull()
+    await new Promise(resolve => setTimeout(resolve))
+    expect(diagnostics.codes()).toEqual([])
+    diagnostics.stop()
   })
 
   it('换了 groups 后焦点回到原来那一项', async () => {
