@@ -58,7 +58,7 @@ panel.addEventListener("property-commit", () => history.seal());
 | `errors` | 字段错误 `{ target, path, message }`，文字由设计器换好，`path` 相对对象 |
 | `heading` | 标题下一行，如「表格 · t1」「已选中 3 个」 |
 | `empty-text` | 空状态文案 |
-| `toggle-limit` | select 单选且选项不超过它时改用切换按钮组；缺省不用 |
+| `toggle-limit` | select 单选且选项不超过它时改用切换按钮组；缺省不用。描述写了 `appearance: "dropdown"` 或 `"toggle"` 的 select 不看它，总是下拉或总是切换按钮组（多选也可以），绑定字段这类运行时生成的选项宜写 `dropdown` |
 | `collapsible` | 分组可折叠，折叠状态按分组 id 保留，换选择不重置 |
 | `readonly` | 字段只读，不派发修改 |
 
