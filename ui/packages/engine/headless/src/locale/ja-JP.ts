@@ -223,7 +223,7 @@ const translations = {
     valueText: (channel, value) => `${value}${COLOR_UNIT[channel]}`,
   },
   'color-swatch-picker': { group: 'カラースウォッチ', swatch: value => `色 ${value}` },
-  'combobox': { ...tagged, trigger: '候補を表示', clearTrigger: 'クリア' },
+  'combobox': { ...tagged, trigger: '候補を表示', clearTrigger: 'クリア', loading: '読み込み中' },
   'command': { title: 'コマンドパレット', input: 'コマンドを検索', list: 'コマンド' },
   'context-menu': { content: 'コンテキストメニュー' },
   'date-field': {

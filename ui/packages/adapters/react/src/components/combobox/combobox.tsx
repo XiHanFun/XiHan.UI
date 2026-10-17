@@ -15,7 +15,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
-import { renderSlot, slotIsPlainText } from '../../runtime/slot-content'
+import { renderSlot, slotIsPlainText, slotPaints } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
@@ -500,10 +500,10 @@ export function XhComboboxEmpty({ children, ...rest }: XhComboboxEmptyProps): Re
 }
 
 export interface XhComboboxLoadingProps extends ComponentPropsWithRef<'div'> {}
-/** 在途占位：与空态占位同一个位置，取数期间显示。 */
+/** 在途占位：与空态占位同一个位置，取数期间显示；没写内容时显示 translations.loading。 */
 export function XhComboboxLoading({ children, ...rest }: XhComboboxLoadingProps): ReactNode {
   const ctx = useComboboxContext()
-  return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{slotPaints(children) ? children : ctx.api.translations.loading}</div>
 }
 
 function noop(): void {}
@@ -529,6 +529,7 @@ const COMBOBOX_PARTS = {
   'item-suffix': XhComboboxItemSuffix,
   'item-indicator': XhComboboxItemIndicator,
   'empty': XhComboboxEmpty,
+  'loading': XhComboboxLoading,
   'hidden-input': XhComboboxHiddenInput,
 }
 

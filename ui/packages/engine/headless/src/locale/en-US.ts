@@ -236,7 +236,7 @@ export const COLOR_SWATCH_PICKER_EN_US: XhLocaleBucket<'color-swatch-picker'> = 
   swatch: value => `Color ${value}`,
 }
 
-export const COMBOBOX_EN_US: XhLocaleBucket<'combobox'> = { deleteItem, overflowTag, trigger: 'Show suggestions', clearTrigger: 'Clear' }
+export const COMBOBOX_EN_US: XhLocaleBucket<'combobox'> = { deleteItem, overflowTag, trigger: 'Show suggestions', clearTrigger: 'Clear', loading: 'Loading' }
 
 export const COMMAND_EN_US: XhLocaleBucket<'command'> = { title: 'Command palette', input: 'Search commands', list: 'Commands' }
 

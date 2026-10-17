@@ -65,7 +65,7 @@ describe('xh-combobox 生成结构', () => {
     expect(root.getAttribute('data-xh-gen')).toBe('structure')
     expect(Array.from(root.children).map(node => node.getAttribute('data-xh-part'))).toEqual(['label', 'control', 'positioner', 'hidden-input'])
     expect(partsOf(part(el, 'control')!)).toEqual(['input', 'clear-trigger', 'trigger'])
-    expect(Array.from(part(el, 'positioner')!.children).map(node => node.getAttribute('data-xh-part')).filter(Boolean)).toEqual(['content', 'empty'])
+    expect(Array.from(part(el, 'positioner')!.children).map(node => node.getAttribute('data-xh-part')).filter(Boolean)).toEqual(['content', 'empty', 'loading'])
     expect(part(el, 'label')!.localName).toBe('label')
     expect(part(el, 'input')!.getAttribute('aria-labelledby')).toBe(part(el, 'label')!.id)
     expect(part(el, 'empty')!.textContent).toBe('没有匹配项')
@@ -81,6 +81,16 @@ describe('xh-combobox 生成结构', () => {
     await settle(el)
     expect(document.querySelectorAll('[data-scope="combobox"][data-part="item"]')).toHaveLength(0)
     expect(part(document, 'empty')!.style.display).toBe('')
+  })
+
+  it('在途占位：生成时写 translations.loading，展开、在途且没有候选时露出', async () => {
+    const el = mount({ collection: [], open: true })
+    await settle(el)
+    const loading = part(document, 'loading')!
+    expect([loading.textContent, loading.hidden]).toEqual(['Loading', true])
+    Object.assign(el, { loading: true })
+    await settle(el)
+    expect(part(document, 'loading')!.hidden).toBe(false)
   })
 
   it('多选：标签行里每枚标签带文字与删除钮，摆不下的折进 +N', async () => {

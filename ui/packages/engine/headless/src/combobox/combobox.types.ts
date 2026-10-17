@@ -322,6 +322,8 @@ export interface ComboboxTagMeta {
 
 export interface ComboboxApi<T extends PropTypes = PropTypes> {
   open: boolean
+  /** 解析后的读屏文案；loading 没写内容时显示其中的 loading。 */
+  translations: ComboboxTranslations
   /** 由 collection 推导的候选元信息，按数据顺序排列；未提供 collection 时为空数组。 */
   collection: readonly ComboboxNodeMeta[]
   /** 选中集合；单选模式下长度 ≤ 1，形状不随模式变化。 */
@@ -407,4 +409,6 @@ export interface ComboboxTranslations {
   deleteItem: (label: string) => string
   /** 被折叠的标签（overflow-tag）显示的文字，接收折叠的个数；默认 +N。 */
   overflowTag: (count: number) => string
+  /** 候选取数在途时 loading 部件里的文字，默认 'Loading'。 */
+  loading: string
 }

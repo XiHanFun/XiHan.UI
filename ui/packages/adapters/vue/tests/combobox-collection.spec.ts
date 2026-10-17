@@ -14,6 +14,7 @@ import {
   XhComboboxItemIndicator,
   XhComboboxItemText,
   XhComboboxLabel,
+  XhComboboxLoading,
   XhComboboxPositioner,
   XhComboboxRoot,
   XhComboboxTrigger,
@@ -65,6 +66,7 @@ function mountFromParts(value: string[]) {
           ]),
         )),
         h(XhComboboxEmpty, () => '无匹配水果'),
+        h(XhComboboxLoading),
       ]),
       h(XhComboboxHiddenInput),
     ]),
@@ -117,6 +119,7 @@ describe('combobox 的 collection', () => {
       'item-text',
       'item-indicator',
       'empty',
+      'loading',
     ])
     w.unmount()
   })

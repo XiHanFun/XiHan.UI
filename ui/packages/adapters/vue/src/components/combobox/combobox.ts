@@ -447,8 +447,8 @@ export const XhComboboxLoading = defineComponent({
   name: 'XhComboboxLoading',
   setup(_, { slots }) {
     const ctx = useComboboxContext()
-    // 在途占位：与空态占位同一个位置，取数期间顶上来
-    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
+    // 在途占位：与空态占位同一个位置，取数期间顶上来；没写内容时显示 translations.loading
+    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.loading)
   },
 })
 
@@ -473,6 +473,7 @@ const COMBOBOX_PARTS = {
   'item-suffix': XhComboboxItemSuffix,
   'item-indicator': XhComboboxItemIndicator,
   'empty': XhComboboxEmpty,
+  'loading': XhComboboxLoading,
   'hidden-input': XhComboboxHiddenInput,
 }
 

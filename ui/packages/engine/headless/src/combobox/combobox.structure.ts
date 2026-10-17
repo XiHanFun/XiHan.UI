@@ -29,14 +29,14 @@ export const COMBOBOX_STRUCTURE_PARTS = [
   'item-suffix',
   'item-indicator',
   'empty',
+  'loading',
   'hidden-input',
 ] as const satisfies readonly ComboboxPart[]
 
-/** anatomy 里不进标准结构的部件：分组与在途占位由作者手写结构时自己摆。 */
+/** anatomy 里不进标准结构的部件：分组由作者手写结构时自己摆。 */
 export const COMBOBOX_STRUCTURE_OMITS = [
   'group',
   'group-label',
-  'loading',
 ] as const satisfies readonly ComboboxPart[]
 
 type ComboboxStructurePart = (typeof COMBOBOX_STRUCTURE_PARTS)[number]
@@ -61,7 +61,7 @@ export interface ComboboxStructureOptions {
   slotted?: StructureSlotted
 }
 
-type ComboboxStructureModel = Pick<ComboboxApi, 'collection' | 'multiple' | 'tags'>
+type ComboboxStructureModel = Pick<ComboboxApi, 'collection' | 'multiple' | 'tags' | 'translations'>
 
 /** 一个条目：行首、文字、副文本、行尾、选中标记；带 slot 的格子的 data 是这一条的元信息。 */
 function itemStructure(node: ComboboxNodeMeta, slotted: StructureSlotted): ComboboxNode {
@@ -131,6 +131,7 @@ export function comboboxStructure(model: ComboboxStructureModel, options: Combob
         slotted('empty')
           ? { key: 'empty', tag: 'div', part: 'empty', slot: { name: 'empty' } }
           : { key: 'empty', tag: 'div', part: 'empty', ...(options.empty == null ? {} : { text: options.empty }) },
+        { key: 'loading', tag: 'div', part: 'loading', text: model.translations.loading },
       ],
     },
     { key: 'hidden-input', tag: 'input', part: 'hidden-input' },
