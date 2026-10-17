@@ -686,7 +686,6 @@ export const XhTreeSelectHiddenInput = defineComponent({
   },
 })
 
-
 /** 标准结构里各部件对应的组件。 */
 const TREE_SELECT_PARTS = {
   'label': XhTreeSelectLabel,

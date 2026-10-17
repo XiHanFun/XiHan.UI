@@ -7,8 +7,8 @@
 
 import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core'
 import type { TabsActivationMode, TabsNode, TabsSchema, TabsTranslations, TabsValueChangeDetails, TabsVariant } from '@xihan-ui/headless'
-import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import type { ElementStructure } from '../element-base'
+import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTabs, tabsAnatomy, tabsMachine, tabsMeta, tabsOverflowMenuProps, tabsStructure } from '@xihan-ui/headless'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
