@@ -6,11 +6,13 @@
 // 提供 color swatch picker 相关实现。
 
 import type { Direction, Size, Tone } from '@xihan-ui/core'
-import type { ColorSwatchPickerApi, ColorSwatchPickerItemProps, ColorSwatchPickerNode, ColorSwatchPickerNodeMeta, ColorSwatchPickerSchema } from '@xihan-ui/headless'
+import type { ColorSwatchPickerApi, ColorSwatchPickerItemProps, ColorSwatchPickerNode, ColorSwatchPickerSchema, StructureChild } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { colorSwatchPickerStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideColorSwatchPicker, useColorSwatchPickerContext } from './context'
@@ -79,9 +81,7 @@ export const XhColorSwatchPickerRoot = defineComponent({
               isSelected: api.isSelected,
               setValue: api.setValue,
             })]
-          : props.swatches
-            ? renderDefaultTree(api.swatches, title)
-            : renderLabel(title),
+          : renderDefaultStructure(api, props.label, slots.label),
       )
     }
   },
@@ -141,18 +141,32 @@ export const XhColorSwatchPickerItem = defineComponent({
   },
 })
 
+/** 标准结构里各部件对应的组件。 */
+const COLOR_SWATCH_PICKER_PARTS = {
+  label: XhColorSwatchPickerLabel,
+  item: XhColorSwatchPickerItem,
+}
+
+/** 格子自己装配表单影子、色块面与选中标记：铺结构时去掉这几格。 */
+const SELF_ASSEMBLED: ReadonlySet<string> = new Set(['hidden-input', 'swatch', 'indicator'])
+
+function withoutSelfAssembled(nodes: readonly StructureChild[]): StructureChild[] {
+  return nodes.flatMap((node): StructureChild[] => {
+    if (!('part' in node))
+      return [node]
+    if (SELF_ASSEMBLED.has(node.part))
+      return []
+    return [node.children ? { ...node, children: withoutSelfAssembled(node.children) } : node]
+  })
+}
+
 /**
- * 未写默认插槽时按 swatches 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
+ * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 colorSwatchPickerStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题由 label 插槽接管。
  */
-function renderDefaultTree(
-  swatches: readonly ColorSwatchPickerNodeMeta[],
-  label: (VNode | string)[] | null,
-): VNode[] {
-  return [
-    ...renderLabel(label),
-    ...swatches.map(node => h(XhColorSwatchPickerItem, { key: node.value, value: node.value })),
-  ]
+function renderDefaultStructure(api: ColorSwatchPickerApi, label: string | undefined, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = colorSwatchPickerStructure(api, { label, slotted: name => name === 'label' && labelSlot != null })
+  return renderStructure(withoutSelfAssembled(nodes), COLOR_SWATCH_PICKER_PARTS, node => (node.slot ? labelSlot?.() : undefined))
 }
 
 /** 组标题：给了文字或 label 插槽才铺 label 部件。 */

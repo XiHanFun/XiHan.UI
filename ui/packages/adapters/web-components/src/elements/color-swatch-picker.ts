@@ -7,8 +7,9 @@
 
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { ColorSwatchPickerItemProps, ColorSwatchPickerNode, ColorSwatchPickerNodeMeta, ColorSwatchPickerSchema, ColorSwatchPickerValueChangeDetails, FormControlState, ResolvedFormControlState } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { colorSwatchPickerAnatomy, colorSwatchPickerMachine, colorSwatchPickerMeta, connectColorSwatchPicker, resolveFormControlState } from '@xihan-ui/headless'
+import { colorSwatchPickerAnatomy, colorSwatchPickerMachine, colorSwatchPickerMeta, colorSwatchPickerStructure, connectColorSwatchPicker, resolveFormControlState } from '@xihan-ui/headless'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -26,7 +27,11 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 从若干固定颜色中选择一个：与单选组同一套 roving tabindex，方向键移动焦点并选中，Space 选中；
  * 每格的色块面经 Swatch 家族绘制，颜色由元素写入私有槽。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）与 swatches 的每一格（表单影子、色块面与选中标记）。
+ * 标题可以由宿主直接子节点 `slot="label"` 接管。
+ *
  * @customElement xh-color-swatch-picker
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控选中的颜色串；未提供该属性即非受控。写法不同的同一颜色也视为选中
  * @attr {string} default-value - 非受控初始选中值
  * @attr {boolean} disabled - 整组禁用
@@ -55,8 +60,18 @@ export class XhColorSwatchPickerElement extends XhElement {
 
   static override fieldTarget = { parts: ['root'], kind: 'group' } as const
 
+  static override structure: ElementStructure<XhColorSwatchPickerElement> = {
+    build: host => host.ctrl.service
+      ? colorSwatchPickerStructure(connectColorSwatchPicker(host.ctrl.service, wcNormalize), {
+          label: host.label,
+          slotted: (name, key) => host.slotted(name, key),
+        })
+      : undefined,
+  }
+
   static override properties = {
     swatches: { attribute: false },
+    label: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     disabled: { converter: BOOLEAN_CONVERTER },
@@ -71,6 +86,7 @@ export class XhColorSwatchPickerElement extends XhElement {
   }
 
   declare swatches?: ColorSwatchPickerNode[]
+  declare label?: string
   declare value?: string
   declare defaultValue?: string
   declare disabled?: boolean

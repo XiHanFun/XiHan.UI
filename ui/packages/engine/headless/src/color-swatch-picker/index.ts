@@ -10,6 +10,8 @@ export { connectColorSwatchPicker } from './color-swatch-picker.connect'
 export { colorSwatchPickerKeyboard } from './color-swatch-picker.keyboard'
 export { colorSwatchPickerMachine } from './color-swatch-picker.machine'
 export { colorSwatchPickerMeta } from './color-swatch-picker.meta'
+export { colorSwatchPickerStructure } from './color-swatch-picker.structure'
+export type { ColorSwatchPickerStructureOptions } from './color-swatch-picker.structure'
 export type {
   ColorSwatchPickerApi,
   ColorSwatchPickerItemProps,
