@@ -9,6 +9,7 @@ import type { KeyTextTable } from '@xihan-ui/core/hotkey'
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { XhLocale, XhLocaleTranslations } from './types'
 import { keyText } from '@xihan-ui/core/hotkey'
+import { FORMAT_INPUT_EN_US } from './en-US'
 import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -307,6 +308,25 @@ const translations = {
     minNumber: '{name} 항목은 {min} 이상이어야 합니다',
     maxNumber: '{name} 항목은 {max} 이하여야 합니다',
     pattern: '{name} 항목의 형식이 올바르지 않습니다',
+  },
+  'format-input': {
+    kind: '서식',
+    kindOption: kind => ({ 'none': '서식 없음', 'number': '숫자', 'percent': '백분율', 'date': '날짜', 'rmb-upper': '인민폐 대문자', 'numeral': '숫자 글꼴' })[kind],
+    decimalsMode: '소수 자릿수',
+    decimalsModeOption: mode => ({ fixed: '고정', range: '범위', exact: '그대로' })[mode],
+    decimals: '자릿수',
+    minDecimals: '최소',
+    maxDecimals: '최대',
+    grouping: '천 단위 구분',
+    rounding: '반올림 방식',
+    roundingOption: rounding => ({ 'half-up': '반올림', 'half-even': '짝수 반올림', 'floor': '내림', 'ceil': '올림', 'down': '버림' })[rounding],
+    pattern: '패턴',
+    patternHint: 'yyyy 연, MM 월, dd 일, HH 시, mm 분, ss 초, SSS 밀리초',
+    numeralStyle: '스타일',
+    numeralStyleOption: style => ({ 'roman-upper': '로마 숫자(대문자)', 'roman-lower': '로마 숫자(소문자)', 'cn-lower': '중국어 숫자', 'cn-upper': '중국어 갖은자' })[style],
+    preview: text => `예시: ${text}`,
+    sampleUnavailable: '예시 값이 이 서식에 맞지 않습니다',
+    issue: FORMAT_INPUT_EN_US.issue,
   },
   'funnel-chart': {
     ...chart,

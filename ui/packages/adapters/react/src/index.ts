@@ -1251,6 +1251,32 @@ export type {
 } from './components/form/form'
 export { useForm } from './components/form/use-form'
 export type { FormCallbacks, FormContext } from './components/form/use-form'
+export { useFormatInputContext } from './components/format-input/context'
+export {
+  XhFormatInputErrorText,
+  XhFormatInputFieldGroup,
+  XhFormatInputItem,
+  XhFormatInputItemLabel,
+  XhFormatInputKind,
+  XhFormatInputLabel,
+  XhFormatInputPatternDescription,
+  XhFormatInputPreview,
+  XhFormatInputRoot,
+} from './components/format-input/format-input'
+export type {
+  FormatInputRootSlotProps,
+  XhFormatInputErrorTextProps,
+  XhFormatInputFieldGroupProps,
+  XhFormatInputItemLabelProps,
+  XhFormatInputItemProps,
+  XhFormatInputKindProps,
+  XhFormatInputLabelProps,
+  XhFormatInputPatternDescriptionProps,
+  XhFormatInputPreviewProps,
+  XhFormatInputRootProps,
+} from './components/format-input/format-input'
+export { useFormatInput } from './components/format-input/use-format-input'
+export type { FormatInputContext } from './components/format-input/use-format-input'
 export { useFunnelChartContext } from './components/funnel-chart/context'
 export {
   XhFunnelChartCaption,

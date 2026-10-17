@@ -52,6 +52,7 @@ const GROUP_CONTROLS = {
   'pin-input': '整组 role=group，每格的名字是「第几格」',
   'file-upload': '投放区是按钮：不收 aria-required / aria-readonly，只取描述链，aria-invalid 由组件自己投影',
   'field-array': '表格排布时 table 部件 role=table，字段的标题与说明落在它上面；列表排布没有这个部件，不接线',
+  'format-input': '组根 role=group：里面的下拉、分段切换、数字框、开关与组合框各自是焦点目标，字段的标题与说明落在组根上',
 }
 
 /** 不必接线的，各带理由。 */

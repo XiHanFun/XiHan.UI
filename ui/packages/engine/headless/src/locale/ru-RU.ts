@@ -9,6 +9,7 @@ import type { KeyTextTable } from '@xihan-ui/core/hotkey'
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { XhLocale, XhLocaleTranslations } from './types'
 import { keyText } from '@xihan-ui/core/hotkey'
+import { FORMAT_INPUT_EN_US } from './en-US'
 import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -321,6 +322,25 @@ const translations = {
     minNumber: 'Значение поля «{name}» должно быть не меньше {min}',
     maxNumber: 'Значение поля «{name}» должно быть не больше {max}',
     pattern: 'Поле «{name}» не соответствует требуемому формату',
+  },
+  'format-input': {
+    kind: 'Формат',
+    kindOption: kind => ({ 'none': 'Без формата', 'number': 'Число', 'percent': 'Процент', 'date': 'Дата', 'rmb-upper': 'Юани прописью', 'numeral': 'Цифры' })[kind],
+    decimalsMode: 'Знаки после запятой',
+    decimalsModeOption: mode => ({ fixed: 'Фиксировано', range: 'Диапазон', exact: 'Как есть' })[mode],
+    decimals: 'Знаков',
+    minDecimals: 'Минимум',
+    maxDecimals: 'Максимум',
+    grouping: 'Разделитель тысяч',
+    rounding: 'Округление',
+    roundingOption: rounding => ({ 'half-up': 'Математическое', 'half-even': 'Банковское', 'floor': 'Вниз', 'ceil': 'Вверх', 'down': 'Отбросить' })[rounding],
+    pattern: 'Шаблон',
+    patternHint: 'yyyy год, MM месяц, dd день, HH час, mm минута, ss секунда, SSS миллисекунда',
+    numeralStyle: 'Стиль',
+    numeralStyleOption: style => ({ 'roman-upper': 'Римские (прописные)', 'roman-lower': 'Римские (строчные)', 'cn-lower': 'Китайские', 'cn-upper': 'Китайские (финансовые)' })[style],
+    preview: text => `Пример: ${text}`,
+    sampleUnavailable: 'Значение примера не подходит к этому формату',
+    issue: FORMAT_INPUT_EN_US.issue,
   },
   'funnel-chart': {
     ...chart,

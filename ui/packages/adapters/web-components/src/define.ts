@@ -61,6 +61,7 @@ import { XhFlexElement } from './elements/flex'
 import { XhFloatButtonElement } from './elements/float-button'
 import { XhFloatingPanelElement } from './elements/floating-panel'
 import { XhFormElement } from './elements/form'
+import { XhFormatInputElement } from './elements/format-input'
 import { XhFunnelChartElement } from './elements/funnel-chart'
 import { XhGraphChartElement } from './elements/graph-chart'
 import { XhGridElement } from './elements/grid'
@@ -180,6 +181,7 @@ const XH_ELEMENTS = {
   'xh-flex': XhFlexElement,
   'xh-float-button': XhFloatButtonElement,
   'xh-floating-panel': XhFloatingPanelElement,
+  'xh-format-input': XhFormatInputElement,
   'xh-funnel-chart': XhFunnelChartElement,
   'xh-graph-chart': XhGraphChartElement,
   'xh-grid': XhGridElement,
@@ -401,6 +403,7 @@ export {
   XhFlexElement,
   XhFloatButtonElement,
   XhFloatingPanelElement,
+  XhFormatInputElement,
   XhFormElement,
   XhFunnelChartElement,
   XhGraphChartElement,

@@ -255,6 +255,10 @@
           "name": "表单"
         },
         {
+          "id": "format-input",
+          "name": "格式输入"
+        },
+        {
           "id": "image-cropper",
           "name": "图片裁切"
         },

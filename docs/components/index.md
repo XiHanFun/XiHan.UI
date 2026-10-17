@@ -84,6 +84,7 @@
 <XhComponentCard src="fieldset" name="Fieldset" label="字段集" href="/components/fieldset" />
 <XhComponentCard src="file-upload" name="FileUpload" label="文件上传" href="/components/file-upload" />
 <XhComponentCard src="form" name="Form" label="表单" href="/components/form" />
+<XhComponentCard src="format-input" name="FormatInput" label="格式输入" href="/components/format-input" />
 <XhComponentCard src="image-cropper" name="ImageCropper" label="图片裁切" href="/components/image-cropper" />
 <XhComponentCard src="input-group" name="InputGroup" label="输入组" href="/components/input-group" />
 <XhComponentCard src="listbox" name="Listbox" label="列表框" href="/components/listbox" />

@@ -59,6 +59,7 @@ import type { FlexTranslations } from '../flex/flex.types'
 import type { FloatButtonTranslations } from '../float-button/float-button.types'
 import type { FloatingPanelTranslations } from '../floating-panel/floating-panel.types'
 import type { FormTranslations } from '../form/form.types'
+import type { FormatInputTranslations } from '../format-input/format-input.types'
 import type { FunnelChartTranslations } from '../funnel-chart/funnel-chart.types'
 import type { GraphChartTranslations } from '../graph-chart/graph-chart.types'
 import type { GridListTranslations } from '../grid-list/grid-list.types'
@@ -203,6 +204,7 @@ export interface XhTranslationOverrides {
   'float-button'?: Partial<FloatButtonTranslations>
   'floating-panel'?: Partial<FloatingPanelTranslations>
   'form'?: Partial<FormTranslations>
+  'format-input'?: Partial<FormatInputTranslations>
   'funnel-chart'?: Partial<FunnelChartTranslations>
   'graph-chart'?: Partial<GraphChartTranslations>
   'grid'?: Partial<GridTranslations>

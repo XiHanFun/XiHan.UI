@@ -99,6 +99,7 @@
     "./floating-panel.css": "./dist/css/floating-panel.css",
     "./forced-colors.css": "./dist/css/forced-colors.css",
     "./form.css": "./dist/css/form.css",
+    "./format-input.css": "./dist/css/format-input.css",
     "./funnel-chart.css": "./dist/css/funnel-chart.css",
     "./graph-chart.css": "./dist/css/graph-chart.css",
     "./grid.css": "./dist/css/grid.css",
