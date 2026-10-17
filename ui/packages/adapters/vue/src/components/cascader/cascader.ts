@@ -16,14 +16,17 @@ import type {
   CascaderSearchResult,
   CascaderTranslations,
   CascaderValue,
+  StructureChild,
 } from '@xihan-ui/headless'
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { CascaderContext } from './use-cascader'
+import { cascaderStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUnmounted, onUpdated, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
@@ -94,6 +97,10 @@ export const XhCascaderRoot = defineComponent({
   name: 'XhCascaderRoot',
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
+    /** 标题文字。不写默认插槽时铺 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
+    /** 不写默认插槽时盒里带清空按钮；写了插槽时放 clear-trigger 部件即可清空。 */
+    clearable: Boolean,
     /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
     ariaLabel: { type: String },
     collection: { type: Array as PropType<CascaderNode[]> },
@@ -144,6 +151,7 @@ export const XhCascaderRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: CascaderRootSlotProps) => VNode[]
+    label?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notifyValue: CascaderProps['onValueChange'] = (details) => {
@@ -163,31 +171,33 @@ export const XhCascaderRoot = defineComponent({
     })
     provideCascader(ctx)
 
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [slots.default?.({
-      open: ctx.api.value.open,
-      // levels 每层一列、层内节点各一条目，供作者渲染；columns 只读当前展开的列
-      levels: ctx.api.value.levels,
-      columns: ctx.api.value.columns,
-      value: ctx.api.value.value,
-      valuePath: ctx.api.value.valuePath,
-      activePath: ctx.api.value.activePath,
-      focusedPath: ctx.api.value.focusedPath,
-      displayText: ctx.api.value.displayText,
-      canClear: ctx.api.value.canClear,
-      tags: ctx.api.value.tags,
-      overflowCount: ctx.api.value.overflowCount,
-      overflowText: ctx.api.value.overflowText,
-      isSelected: ctx.api.value.isSelected,
-      isIndeterminate: ctx.api.value.isIndeterminate,
-      isActive: ctx.api.value.isActive,
-      isVisible: ctx.api.value.isVisible,
-      setOpen: ctx.api.value.setOpen,
-      setValue: ctx.api.value.setValue,
-      setActivePath: ctx.api.value.setActivePath,
-      select: ctx.api.value.select,
-      clear: ctx.api.value.clear,
-      deselect: ctx.api.value.deselect,
-    }), ...ctx.api.value.value.map(path => h('input', {
+    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [!slots.default
+      ? renderDefaultStructure(ctx.api.value, { label: props.label, clearable: props.clearable, searchable: props.searchable }, slots.label)
+      : slots.default({
+          open: ctx.api.value.open,
+          // levels 每层一列、层内节点各一条目，供作者渲染；columns 只读当前展开的列
+          levels: ctx.api.value.levels,
+          columns: ctx.api.value.columns,
+          value: ctx.api.value.value,
+          valuePath: ctx.api.value.valuePath,
+          activePath: ctx.api.value.activePath,
+          focusedPath: ctx.api.value.focusedPath,
+          displayText: ctx.api.value.displayText,
+          canClear: ctx.api.value.canClear,
+          tags: ctx.api.value.tags,
+          overflowCount: ctx.api.value.overflowCount,
+          overflowText: ctx.api.value.overflowText,
+          isSelected: ctx.api.value.isSelected,
+          isIndeterminate: ctx.api.value.isIndeterminate,
+          isActive: ctx.api.value.isActive,
+          isVisible: ctx.api.value.isVisible,
+          setOpen: ctx.api.value.setOpen,
+          setValue: ctx.api.value.setValue,
+          setActivePath: ctx.api.value.setActivePath,
+          select: ctx.api.value.select,
+          clear: ctx.api.value.clear,
+          deselect: ctx.api.value.deselect,
+        }), ...ctx.api.value.value.map(path => h('input', {
       ...ctx.api.value.getHiddenInputProps({ path }) as Record<string, unknown>,
       key: JSON.stringify(path),
     })), ...(ctx.api.value.value.length === 0 && ctx.api.value.required
@@ -620,3 +630,47 @@ export const XhCascaderFooter = defineComponent({
     return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+/** 标准结构里各部件对应的组件；委派部件按「组件名/部件名」查。 */
+const CASCADER_PARTS = {
+  'label': XhCascaderLabel,
+  'control': XhCascaderControl,
+  'trigger': XhCascaderTrigger,
+  'value-text': XhCascaderValueText,
+  'tag-list': XhCascaderTagList,
+  'indicator': XhCascaderIndicator,
+  'clear-trigger': XhCascaderClearTrigger,
+  'positioner': XhCascaderPositioner,
+  'content': XhCascaderContent,
+  'input': XhCascaderInput,
+  'search-list': XhCascaderSearchList,
+  'column': XhCascaderColumn,
+  'item': XhCascaderItem,
+  'item-text': XhCascaderItemText,
+  'item-description': XhCascaderItemDescription,
+  'item-indicator': XhCascaderItemIndicator,
+  'tag/tag': XhCascaderTag,
+  'tag/overflow-tag': XhCascaderOverflowTag,
+}
+
+/** 浮层自己铺空态与在途，候选列表自己铺每条候选，列自己铺懒分支的三块状态：铺结构时去掉这些格子。 */
+const SELF_ASSEMBLED: ReadonlySet<string> = new Set(['empty', 'loading', 'search-item', 'branch-loading', 'branch-error', 'branch-retry-trigger'])
+
+function withoutSelfAssembled(nodes: readonly StructureChild[]): StructureChild[] {
+  return nodes.flatMap((node): StructureChild[] => {
+    if (!('part' in node))
+      return [node]
+    if (SELF_ASSEMBLED.has(node.part))
+      return []
+    return [node.children ? { ...node, children: withoutSelfAssembled(node.children) } : node]
+  })
+}
+
+/**
+ * 未写默认插槽时铺开的整套结构：照 headless 的 cascaderStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题由 label 插槽接管；表单影子仍由根按选中路径装配在后面。
+ */
+function renderDefaultStructure(api: CascaderApi, options: { label?: string, clearable?: boolean, searchable?: boolean }, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = cascaderStructure(api, { ...options, slotted: name => name === 'label' && labelSlot != null })
+  return renderStructure(withoutSelfAssembled(nodes), CASCADER_PARTS, node => (node.slot ? labelSlot?.() : undefined))
+}

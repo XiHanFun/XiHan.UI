@@ -7418,7 +7418,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-cascader>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content 与\n每一级一个 column、层内每个节点一个 item，元素运行 cascader 状态机并把 connect 产出接上。\n浮层定位引擎在本元素中创建、经 refs 注入状态机，锚点取 trigger、被定位的浮层取 positioner；\n状态机只识别端口，不识别具体引擎。\n\n标记是静态的：列按树的深度写满（第 L 列放置第 L 层的全部节点），当前应显示的条目\n由元素加 hidden 收口，作者节点一个都不卸载。可先取 `cascaderBuildLevels(collection)` 按此编写。\n\n所在列、整条路径、禁用与显示文本都查询 `collection` 这份树数据，不从 DOM 反推。\ncollection 必须与标记同源且 value 全树唯一。\n\nvalue-text 的显示文字由元素填入；作者在该节点中写了内容则由作者负责，元素不再改写。\n\n树数据与选中路径都是数组，只能通过 property 设置（`el.collection = [...]`、\n`el.value = ['zhejiang','hangzhou']`）。",
+          "description": "`<xh-cascader>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content 与\n每一级一个 column、层内每个节点一个 item，元素运行 cascader 状态机并把 connect 产出接上。\n浮层定位引擎在本元素中创建、经 refs 注入状态机，锚点取 trigger、被定位的浮层取 positioner；\n状态机只识别端口，不识别具体引擎。\n\n标记是静态的：列按树的深度写满（第 L 列放置第 L 层的全部节点），当前应显示的条目\n由元素加 hidden 收口，作者节点一个都不卸载。可先取 `cascaderBuildLevels(collection)` 按此编写。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）、盒（触发钮，带不带清空钮看 clearable）与浮层；\n触发钮里是值串、多选的标签行与展开箭头，浮层里开了 searchable 时先是搜索框与候选，再是当前展开的各列与\n懒分支那一列的三块状态，末尾是空态与在途占位。标题可以由宿主直接子节点 `slot=\"label\"` 接管；\n分组、条目行尾与底部操作区不在生成的结构里，要用时手写部件。\n\n所在列、整条路径、禁用与显示文本都查询 `collection` 这份树数据，不从 DOM 反推。\ncollection 必须与标记同源且 value 全树唯一。\n\nvalue-text 的显示文字由元素填入；作者在该节点中写了内容则由作者负责，元素不再改写。\n\n树数据与选中路径都是数组，只能通过 property 设置（`el.collection = [...]`、\n`el.value = ['zhejiang','hangzhou']`）。",
           "name": "XhCascaderElement",
           "cssParts": [
             {
@@ -7572,6 +7572,33 @@
               "type": {
                 "text": "{ parts: ['trigger'], kind: 'state' }"
               }
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhCascaderElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? cascaderStructure(connectCascader(host.ctrl.service, wcNormalize), { label: host.label, clearable: host.clearable, searchable: host.searchable, slotted: name => host.slotted(name), }) : undefined, }"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "clearable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "clearable"
             },
             {
               "kind": "field",
@@ -8465,6 +8492,22 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "生成结构时盒里带清空按钮；手写部件时不使用它，写了 clear-trigger 即可清空",
+              "name": "clearable",
+              "fieldName": "clearable"
+            },
             {
               "type": {
                 "text": "string | undefined"
