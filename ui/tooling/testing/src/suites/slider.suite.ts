@@ -502,5 +502,22 @@ export const sliderSuite: ConformanceSuite = {
         },
       ],
     },
+    {
+      name: '作者不写结构：三端都照 sliderStructure 铺出标题、轨道与区间、刻度、每个值一个拇指与表单影子',
+      spec: { apg: APG_MULTI },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '价格区间', defaultValue: [20, 80], marks: [{ value: 0, label: '0' }, { value: 50 }], name: 'price' },
+      initial: {
+        order: ['root', 'label', 'control', 'track', 'range', 'tick-group', 'tick[0]', 'tick-label[0]', 'tick[1]', 'tick-label[1]', 'thumb[0]', 'hidden-input[0]', 'thumb[1]', 'hidden-input[1]'],
+        parts: {
+          'thumb[0]': { 'aria-valuenow': '20', 'aria-labelledby': '@part(label)' },
+          'thumb[1]': { 'aria-valuenow': '80', 'aria-labelledby': '@part(label)' },
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'thumb[1]' },
+        { kind: 'key', key: 'ArrowLeft', expect: { parts: { 'thumb[1]': { 'aria-valuenow': '79' } } } },
+      ],
+    },
   ],
 }

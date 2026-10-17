@@ -6,11 +6,13 @@
 // 提供 slider 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { SliderApi, SliderMark, SliderMarkMeta, SliderSchema, SliderValueTextDetails } from '@xihan-ui/headless'
+import type { SliderApi, SliderMark, SliderMarkMeta, SliderSchema, SliderValueTextDetails, StructureChild } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { normalizeItemIndex } from '@xihan-ui/core'
+import { sliderStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onUnmounted } from 'vue'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideSlider, provideSliderThumb, useSliderContext, useSliderThumbContext } from './context'
@@ -32,6 +34,8 @@ export interface SliderTickGroupTickSlotProps {
 export const XhSliderRoot = defineComponent({
   name: 'XhSliderRoot',
   props: {
+    /** 标题文字。不写默认插槽时铺 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
     /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
     ariaLabel: { type: String },
     // 值恒是数组，单滑块即长度 1；缺席值 undefined 表示非受控
@@ -68,6 +72,7 @@ export const XhSliderRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: SliderRootSlotProps) => VNode[]
+    label?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notify: SliderProps['onValueChange'] = (details) => {
@@ -79,14 +84,19 @@ export const XhSliderRoot = defineComponent({
     }
     const ctx = useSlider(useFormControlProps(props) as SliderProps, notify, notifyEnd)
     provideSlider(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      value: ctx.api.value.value,
-      thumbs: ctx.api.value.thumbs,
-      range: ctx.api.value.range,
-      dragging: ctx.api.value.dragging,
-      setValue: ctx.api.value.setValue,
-      setThumbValue: ctx.api.value.setThumbValue,
-    }))
+    return () => {
+      const api = ctx.api.value
+      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+        ? slots.default({
+            value: api.value,
+            thumbs: api.thumbs,
+            range: api.range,
+            dragging: api.dragging,
+            setValue: api.setValue,
+            setThumbValue: api.setThumbValue,
+          })
+        : renderDefaultStructure(api, props.label, props.name !== undefined, slots.label))
+    }
   },
 })
 
@@ -189,3 +199,34 @@ export const XhSliderHiddenInput = defineComponent({
     return () => h('input', ctx.api.value.getHiddenInputProps(index.value) as Record<string, unknown>)
   },
 })
+
+/** 标准结构里各部件对应的组件；刻度的圆点与文案由 XhSliderTickGroup 自己铺。 */
+const SLIDER_PARTS = {
+  'label': XhSliderLabel,
+  'control': XhSliderControl,
+  'track': XhSliderTrack,
+  'range': XhSliderRange,
+  'tick-group': XhSliderTickGroup,
+  'thumb': XhSliderThumb,
+  'hidden-input': XhSliderHiddenInput,
+}
+
+/** 刻度组自己按 marks 铺圆点与文案，铺结构时去掉这两格。 */
+function withoutSelfAssembled(nodes: readonly StructureChild[]): StructureChild[] {
+  return nodes.flatMap((node): StructureChild[] => {
+    if (!('part' in node))
+      return [node]
+    if (node.part === 'tick' || node.part === 'tick-label')
+      return []
+    return [node.children ? { ...node, children: withoutSelfAssembled(node.children) } : node]
+  })
+}
+
+/**
+ * 未写默认插槽时铺开的整套结构：照 headless 的 sliderStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题由 label 插槽接管。
+ */
+function renderDefaultStructure(api: SliderApi, label: string | undefined, hiddenInput: boolean, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = sliderStructure(api, { label, hiddenInput, slotted: name => name === 'label' && labelSlot != null })
+  return renderStructure(withoutSelfAssembled(nodes), SLIDER_PARTS, node => (node.slot ? labelSlot?.() : undefined))
+}

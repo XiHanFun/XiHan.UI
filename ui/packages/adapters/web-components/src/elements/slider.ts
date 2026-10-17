@@ -7,8 +7,9 @@
 
 import type { Direction, IdGenerator, Orientation, Service, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, SliderSchema, SliderValueChangeDetails, SliderValueChangeEndDetails, SliderValueTextDetails } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import { createCounterIdGenerator, createScope, normalizeItemIndex } from '@xihan-ui/core'
-import { connectSlider, resolveFormControlState, sliderAnatomy, sliderMachine, sliderMeta } from '@xihan-ui/headless'
+import { connectSlider, resolveFormControlState, sliderAnatomy, sliderMachine, sliderMeta, sliderStructure } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -44,7 +45,11 @@ const NUMBER_LIST_CONVERTER = {
  * 多滑块时每个拇指要用 index 属性写明序号（`index="1"`），
  * 拇指内的 hidden-input 按所在拇指的下标取值，不必另写。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）、控制区里的轨道与已选区间、刻度（给了 marks 才有）、
+ * 每个值一个拇指（给了 name 再带表单影子）；标题可以由宿主直接子节点 `slot="label"` 接管。拖动时的值气泡要用时手写部件。
+ *
  * @customElement xh-slider
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控值，逗号分隔（如 "20,80"）；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值，同样逗号分隔；未提供时是单滑块停在 min
  * @attr {number} min - 下界，默认 0
@@ -84,10 +89,17 @@ export class XhSliderElement extends XhElement {
 
   static override fieldTarget = { parts: ['thumb'], kind: 'group' } as const
 
+  static override structure: ElementStructure<XhSliderElement> = {
+    build: host => host.ctrl.service
+      ? sliderStructure(connectSlider(host.ctrl.service, wcNormalize), { label: host.label, hiddenInput: host.name !== undefined, slotted: (name, key) => host.slotted(name, key) })
+      : undefined,
+  }
+
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    label: { converter: STRING_CONVERTER },
     value: { converter: NUMBER_LIST_CONVERTER },
     defaultValue: { converter: NUMBER_LIST_CONVERTER, attribute: 'default-value' },
     min: { converter: NUMBER_CONVERTER },
@@ -113,6 +125,7 @@ export class XhSliderElement extends XhElement {
     getValueText: { attribute: false },
   }
 
+  declare label?: string
   declare value?: number[]
   declare defaultValue?: number[]
   declare min?: number
