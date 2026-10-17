@@ -1063,5 +1063,103 @@ export const comboboxSuite: ConformanceSuite = {
         },
       ],
     },
+    {
+      name: '作者不写结构：三端都照 comboboxStructure 铺出同一棵树（标题、盒与清空钮、浮层里的候选与空态），选中后表单影子带上值',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: {
+        collection: [
+          { value: 'apple', label: 'Apple' },
+          { value: 'banana', label: 'Banana', description: '黄色' },
+          { value: 'cherry', label: 'Cherry' },
+        ],
+        label: '水果',
+        empty: '没有匹配的水果',
+        clearable: true,
+        name: 'fruit',
+      },
+      initial: {
+        order: [
+          'root',
+          'label',
+          'control',
+          'input',
+          'clear-trigger',
+          'trigger',
+          'positioner',
+          'content',
+          'item[0]',
+          'item-text[0]',
+          'item-indicator[0]',
+          'item[1]',
+          'item-text[1]',
+          'item-description',
+          'item-indicator[1]',
+          'item[2]',
+          'item-text[2]',
+          'item-indicator[2]',
+          'empty',
+        ],
+        parts: {
+          input: { 'aria-labelledby': '@part(label)' },
+          empty: { hidden: '' },
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'input' },
+        { kind: 'key', key: 'ArrowDown' },
+        { kind: 'key', key: 'ArrowDown' },
+        {
+          kind: 'key',
+          key: 'Enter',
+          expect: {
+            parts: { 'item[1]': { 'aria-selected': 'true' }, 'clear-trigger': { hidden: null } },
+            events: [
+              { type: 'value-change', detail: { value: ['banana'] } },
+              { type: 'open-change', detail: { open: false } },
+            ],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '输入框文字与表单值都只落 DOM property，不进属性快照',
+          run: ({ doc }) => {
+            assertInputValue(doc, 'Banana')
+            assertHiddenInput(doc, ['fruit', ['banana'], false])
+          },
+        },
+      ],
+    },
+    {
+      name: '多选不写结构：盒里铺标签行，每枚标签带文字与删除钮，摆不下的折进 +N',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: {
+        collection: [
+          { value: 'apple', label: 'Apple' },
+          { value: 'banana', label: 'Banana' },
+          { value: 'cherry', label: 'Cherry' },
+        ],
+        multiple: true,
+        maxTagCount: 2,
+        defaultValue: ['apple', 'banana', 'cherry'],
+      },
+      initial: {
+        counts: { 'tag-list': 1, 'item': 3, 'label': 0, 'clear-trigger': 0 },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '标签戴 tag 的 scope，不进本组件的属性快照',
+          run: ({ doc }) => {
+            const tags = [...doc.querySelectorAll('[data-scope="combobox"][data-part="tag-list"] > [data-scope="tag"][data-part="root"]')]
+            const actual = tags.map(tag => [tag.textContent?.trim(), tag.querySelector('[data-scope="tag"][data-part="close-trigger"]') != null])
+            const expected = [['Apple', true], ['Banana', true], ['+1', false]]
+            if (JSON.stringify(actual) !== JSON.stringify(expected))
+              throw new Error(`标签行期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+          },
+        },
+      ],
+    },
   ],
 }

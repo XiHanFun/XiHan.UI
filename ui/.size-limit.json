@@ -196,7 +196,7 @@
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "701 kB"
+    "limit": "702 kB"
   },
   {
     "name": "headless/locale（十种语言整份）",
@@ -235,7 +235,7 @@
     "name": "react",
     "path": "packages/adapters/react/dist/index.js",
     "gzip": true,
-    "limit": "749 kB",
+    "limit": "750 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -297,7 +297,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "753 kB"
+    "limit": "754 kB"
   },
   {
     "name": "web-components/define：只按需注册一个元素（defineXhElement + XhStatisticElement）",

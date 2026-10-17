@@ -15302,7 +15302,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-combobox>`：Light-DOM 行为宿主：作者写 root / label / control / input / trigger / positioner / content / item / ...\n角色节点，元素运行 combobox 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。\n\n焦点自始至终在 input 上：候选不可聚焦、也不进入 Tab 序列，高亮经 aria-activedescendant 报告给读屏。\n\n过滤不由本元素完成：输入串变化时派发 input-value-change，作者据此增删 item 节点；\n元素每次接线完成后都会把当前候选条数与悬空高亮重新结算一次，空态节点（empty）据此显示。\n\n多选的已选项排在盒里、输入框之前的 tag-list 中：作者按 tags 渲染 tag 节点（与 Select 同一写法），\ntag 与 overflow-tag 接线为库内 tag 的 root（data-scope=\"tag\"），语气、尺寸与禁用从本元素传下，\n形态按盒的面派生；节点中只有文字时元素为它包一层 tag 的 label。item-delete-trigger 接线为所在标签\n那份 tag 的 close-trigger，不占 Tab 位、按下不夺焦。overflow-tag 留空即由元素填入 +N。",
+          "description": "`<xh-combobox>`：Light-DOM 行为宿主：作者写 root / label / control / input / trigger / positioner / content / item / ...\n角色节点，元素运行 combobox 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。\n\n焦点自始至终在 input 上：候选不可聚焦、也不进入 Tab 序列，高亮经 aria-activedescendant 报告给读屏。\n\n过滤不由本元素完成：输入串变化时派发 input-value-change，作者据此增删 item 节点；\n元素每次接线完成后都会把当前候选条数与悬空高亮重新结算一次，空态节点（empty）据此显示。\n\n多选的已选项排在盒里、输入框之前的 tag-list 中：作者按 tags 渲染 tag 节点（与 Select 同一写法），\ntag 与 overflow-tag 接线为库内 tag 的 root（data-scope=\"tag\"），语气、尺寸与禁用从本元素传下，\n形态按盒的面派生；节点中只有文字时元素为它包一层 tag 的 label。item-delete-trigger 接线为所在标签\n那份 tag 的 close-trigger，不占 Tab 位、按下不夺焦。overflow-tag 留空即由元素填入 +N。\n\n不写部件（或只写 root）时元素按标准结构生成整套节点：标题（label）、盒（多选的标签行、输入框、\n带不带清空钮看 clearable、展开钮）、浮层里的候选与空态（empty）、表单影子。标题、空态、条目文字与行首行尾\n可以由宿主直接子节点接管：`slot=\"label\"`、`slot=\"empty\"`、`slot=\"item:<值>\"`、`slot=\"item-prefix:<值>\"`、\n`slot=\"item-suffix:<值>\"`。",
           "name": "XhComboboxElement",
           "cssParts": [
             {
@@ -15431,11 +15431,47 @@
             },
             {
               "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhComboboxElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? comboboxStructure(connectCombobox(host.ctrl.service, wcNormalize), { label: host.label, empty: host.empty, clearable: host.clearable, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
+            },
+            {
+              "kind": "field",
               "name": "collection",
               "privacy": "public",
               "type": {
                 "text": "ComboboxNode[] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "empty",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "empty"
+            },
+            {
+              "kind": "field",
+              "name": "clearable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "clearable"
             },
             {
               "kind": "field",
@@ -16054,6 +16090,30 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "空态文字：生成结构时写进 empty 部件；手写部件时不使用它",
+              "name": "empty",
+              "fieldName": "empty"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "生成结构时盒里带清空按钮；手写部件时不使用它，写了 clear-trigger 即可清空",
+              "name": "clearable",
+              "fieldName": "clearable"
+            },
             {
               "type": {
                 "text": "string | string[] | undefined"

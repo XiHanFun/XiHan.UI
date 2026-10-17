@@ -6,13 +6,15 @@
 // 提供 combobox 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, ComboboxApi, ComboboxGroupProps, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema, ComboboxTagMeta } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, ComboboxApi, ComboboxGroupProps, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { comboboxStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
@@ -145,18 +147,13 @@ export const XhComboboxRoot = defineComponent({
             clear: ctx.api.value.clear,
             deselect: ctx.api.value.deselect,
           })
-        : props.collection
-          ? renderDefaultTree(
-              ctx.api.value.collection,
-              props.multiple ? ctx.api.value.tags : null,
-              slots.label?.() ?? (props.label != null ? [props.label] : null),
-              slots.empty?.() ?? (props.empty != null ? [props.empty] : null),
-              slots.item,
-              props.clearable,
-              slots['item-prefix'],
-              slots['item-suffix'],
-            )
-          : [],
+        : renderDefaultStructure(ctx.api.value, props, {
+            'label': slots.label,
+            'empty': slots.empty,
+            'item': slots.item,
+            'item-prefix': slots['item-prefix'],
+            'item-suffix': slots['item-suffix'],
+          }),
     )
   },
 })
@@ -455,50 +452,69 @@ export const XhComboboxLoading = defineComponent({
   },
 })
 
+/** 标准结构里各部件对应的组件；标签、标签文字、删除钮与 +N 委派给 tag，按「tag/部件名」找。 */
+const COMBOBOX_PARTS = {
+  'label': XhComboboxLabel,
+  'control': XhComboboxControl,
+  'tag-list': XhComboboxTagList,
+  'tag/tag': XhComboboxTag,
+  'tag/tag-label': XhComboboxTagLabel,
+  'tag/item-delete-trigger': XhComboboxItemDeleteTrigger,
+  'tag/overflow-tag': XhComboboxOverflowTag,
+  'input': XhComboboxInput,
+  'clear-trigger': XhComboboxClearTrigger,
+  'trigger': XhComboboxTrigger,
+  'positioner': XhComboboxPositioner,
+  'content': XhComboboxContent,
+  'item': XhComboboxItem,
+  'item-prefix': XhComboboxItemPrefix,
+  'item-text': XhComboboxItemText,
+  'item-description': XhComboboxItemDescription,
+  'item-suffix': XhComboboxItemSuffix,
+  'item-indicator': XhComboboxItemIndicator,
+  'empty': XhComboboxEmpty,
+  'hidden-input': XhComboboxHiddenInput,
+}
+
+interface ComboboxStructureContent {
+  'label'?: () => VNode[]
+  'empty'?: () => VNode[]
+  'item'?: (node: ComboboxNodeMeta) => VNode[]
+  'item-prefix'?: (node: ComboboxNodeMeta) => VNode[]
+  'item-suffix'?: (node: ComboboxNodeMeta) => VNode[]
+}
+
 /**
- * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
+ * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 comboboxStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题、空态、条目文字与行首行尾由对应插槽接管。
  * 过滤仍归调用方：collection 就是当前应显示的候选。
  */
-function renderDefaultTree(
-  collection: readonly ComboboxNodeMeta[],
-  tags: readonly ComboboxTagMeta[] | null,
-  label: (VNode | string)[] | null,
-  empty: (VNode | string)[] | null,
-  itemSlot: ((node: ComboboxNodeMeta) => VNode[]) | undefined,
-  clearable: boolean,
-  prefixSlot?: (node: ComboboxNodeMeta) => VNode[],
-  suffixSlot?: (node: ComboboxNodeMeta) => VNode[],
+function renderDefaultStructure(
+  api: ComboboxApi,
+  props: { label?: string, empty?: string, clearable: boolean },
+  content: ComboboxStructureContent,
 ): VNode[] {
-  return [
-    ...(label ? [h(XhComboboxLabel, null, () => label)] : []),
-    h(XhComboboxControl, null, () => [
-      // 多选的已选项排在输入框之前：一枚一个带删除钮的标签，摆不下的折进 +N
-      ...(tags
-        ? [h(XhComboboxTagList, null, () => [
-            ...tags.map(tag => h(XhComboboxTag, { key: tag.value, value: tag.value }, () => [
-              h(XhComboboxTagLabel, null, () => tag.label),
-              h(XhComboboxItemDeleteTrigger),
-            ])),
-            h(XhComboboxOverflowTag),
-          ])]
-        : []),
-      h(XhComboboxInput),
-      ...(clearable ? [h(XhComboboxClearTrigger)] : []),
-      h(XhComboboxTrigger),
-    ]),
-    h(XhComboboxPositioner, null, () => [
-      h(XhComboboxContent, null, () => collection.map(node =>
-        h(XhComboboxItem, { key: node.value, value: node.value }, () => [
-          ...(prefixSlot ? [h(XhComboboxItemPrefix, null, () => prefixSlot(node))] : []),
-          h(XhComboboxItemText, null, () => itemSlot?.(node) ?? node.label),
-          ...(node.description != null ? [h(XhComboboxItemDescription, null, () => node.description)] : []),
-          ...(suffixSlot ? [h(XhComboboxItemSuffix, null, () => suffixSlot(node))] : []),
-          h(XhComboboxItemIndicator),
-        ]),
-      )),
-      // 空态节点是 content 的兄弟，不进 role=listbox
-      h(XhComboboxEmpty, null, () => empty ?? []),
-    ]),
-  ]
+  const nodes = comboboxStructure(api, {
+    label: props.label,
+    empty: props.empty,
+    clearable: props.clearable,
+    slotted: name => content[name as keyof ComboboxStructureContent] != null,
+  })
+  return renderStructure(nodes, COMBOBOX_PARTS, (node) => {
+    const meta = node.data as ComboboxNodeMeta
+    switch (node.slot?.name) {
+      case 'label':
+        return content.label?.()
+      case 'empty':
+        return content.empty?.()
+      case 'item':
+        return content.item?.(meta) ?? meta.label
+      case 'item-prefix':
+        return content['item-prefix']?.(meta)
+      case 'item-suffix':
+        return content['item-suffix']?.(meta)
+      default:
+        return undefined
+    }
+  })
 }
