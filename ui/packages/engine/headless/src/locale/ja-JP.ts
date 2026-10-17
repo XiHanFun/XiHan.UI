@@ -256,6 +256,7 @@ const translations = {
     endTime: '終了時刻',
     presets: 'ショートカット',
     clearTrigger: 'クリア',
+    confirmTrigger: '決定',
   },
   'dialog': {
     close: '閉じる',

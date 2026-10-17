@@ -5,7 +5,7 @@
 
 // 提供 context 相关实现。
 
-import type { CalendarCellProps } from '@xihan-ui/headless'
+import type { CalendarCellProps, DatePickerTimeUnit, DateRangePickerEndIndex } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey } from 'vue'
 import type { DateRangePickerContext } from './use-date-range-picker'
 import { computed, inject, provide } from 'vue'
@@ -26,10 +26,23 @@ export interface DateRangePickerPanelContext {
   index: ComputedRef<number>
 }
 
+/** 时间组声明的端号，供组内的小标题、时间列与时间项认领起止之一。 */
+export interface DateRangePickerColumnGroupContext {
+  /** 0 是起点组，1 是终点组。 */
+  index: ComputedRef<DateRangePickerEndIndex>
+}
+
+/** 时间列声明的单位，供列里的时间项认领。 */
+export interface DateRangePickerTimeColumnContext {
+  unit: ComputedRef<DatePickerTimeUnit>
+}
+
 const KEY: InjectionKey<DateRangePickerContext> = Symbol.for('xh-date-range-picker')
 const CELL_KEY: InjectionKey<DateRangePickerCellContext> = Symbol.for('xh-date-range-picker-cell')
 const SEGMENT_GROUP_KEY: InjectionKey<DateRangePickerSegmentGroupContext> = Symbol.for('xh-date-range-picker-segment-group')
 const PANEL_KEY: InjectionKey<DateRangePickerPanelContext> = Symbol.for('xh-date-range-picker-panel')
+const COLUMN_GROUP_KEY: InjectionKey<DateRangePickerColumnGroupContext> = Symbol.for('xh-date-range-picker-column-group')
+const TIME_COLUMN_KEY: InjectionKey<DateRangePickerTimeColumnContext> = Symbol.for('xh-date-range-picker-time-column')
 
 /** 没有分段容器时的组号，段位与隐藏输入落到起点组。 */
 const START_GROUP: DateRangePickerSegmentGroupContext = { index: computed<0 | 1>(() => 0) }
@@ -73,4 +86,26 @@ export function provideDateRangePickerPanel(ctx: DateRangePickerPanelContext): v
 
 export function useDateRangePickerPanelContext(): DateRangePickerPanelContext {
   return inject(PANEL_KEY, FIRST_PANEL)
+}
+
+export function provideDateRangePickerColumnGroup(ctx: DateRangePickerColumnGroupContext): void {
+  provide(COLUMN_GROUP_KEY, ctx)
+}
+
+export function useDateRangePickerColumnGroupContext(): DateRangePickerColumnGroupContext {
+  const ctx = inject(COLUMN_GROUP_KEY, null)
+  if (!ctx)
+    throw new Error('[xh] DateRangePicker 的时间列与小标题要放在 XhDateRangePickerColumnGroup 里')
+  return ctx
+}
+
+export function provideDateRangePickerTimeColumn(ctx: DateRangePickerTimeColumnContext): void {
+  provide(TIME_COLUMN_KEY, ctx)
+}
+
+export function useDateRangePickerTimeColumnContext(): DateRangePickerTimeColumnContext {
+  const ctx = inject(TIME_COLUMN_KEY, null)
+  if (!ctx)
+    throw new Error('[xh] XhDateRangePickerTimeItem 要放在 XhDateRangePickerTimeColumn 里')
+  return ctx
 }

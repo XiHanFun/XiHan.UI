@@ -17,6 +17,7 @@
 ## 特性
 
 - 值始终为区间两端 `[start, end]`，按位存放：只填了终点时是 `['', 终点]`，受控回写按同一下标对应。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：标题（`label` 给文字），盒里的起止两组段位、分隔符、清空钮与日历钮，起止两份表单影子，浮层里依次是快捷选项列、每个面板一份日历、`showTime` 的起止两组时间列（各带小标题）与底栏的确认钮（文字取 `translations.confirmTrigger`）。翻月、换层级与选中变化时结构随之重铺。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。自己写结构时，Vue / React 的时间列可以用 `XhDateRangePickerTimePanel` 整组铺，也可以逐组写 `XhDateRangePickerColumnGroup`（`index`），组里不写内容时铺小标题 `XhDateRangePickerColumnGroupLabel` 与各列 `XhDateRangePickerTimeColumn`（`unit`），列里不写内容时按可选值铺 `XhDateRangePickerTimeItem`。
 - 起止各一组段位，`range-separator` 隔在中间；方向键换段不跨组，`name` 与 `endName` 各自决定两份隐藏输入参不参与提交。
 - 输入行与别的字段同取缺省宽 `--xh-control-w`。起止两组按日带时刻放不进时，两组按各自内容宽一起收、各在组内裁掉放不下的段位，键盘走到被裁的段位时组跟着滚过去；分隔符与日历钮始终留在框里。要整段露出，经 `--xh-date-range-picker-control-w` 钉宽。
 - `startPlaceholder` / `endPlaceholder` 是两组段位各自的整条占位：哪一端一段都没填、焦点也不在它的段上，就在那一组显示这句文字（「开始日期」「结束日期」）；`placeholder` 是两端共用的逐段占位串。

@@ -1324,5 +1324,93 @@ export const dateRangePickerSuite: ConformanceSuite = {
         },
       ],
     },
+    {
+      name: '作者不写结构：三端都照 dateRangePickerStructure 铺出标题、起止两组段与分隔符、两颗钮、两份表单影子与浮层里的日历',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { ...BASE_PROPS, label: '有效期', name: 'period' },
+      initial: {
+        order: ['root', 'label', 'control', 'segment-group[0]', 'range-separator', 'segment-group[1]', 'clear-trigger', 'trigger', 'positioner', 'content', 'calendar'],
+        counts: { 'preset-group': 0, 'column-group': 0, 'footer': 0 },
+        parts: {
+          'segment-group[0]': { 'role': 'group', 'data-index': '0' },
+          'segment-group[1]': { 'role': 'group', 'data-index': '1' },
+          'trigger': { 'aria-haspopup': 'dialog', 'aria-expanded': 'false' },
+          'content': { hidden: '' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '段位、日历格与表单影子戴的是分段输入与内嵌日历的 scope，按本组件的 scope 采不进快照',
+          run: ({ doc }) => {
+            expectRange(doc, START, END, '默认值落进两组段与两份表单影子')
+            const texts = [0, 1].map(group => segmentGroupAt(doc, group).textContent)
+            if (texts.join('|') !== '2024/02/10|2024/02/20')
+              throw new Error(`两组段期望读作 2024/02/10 与 2024/02/20，实际 ${JSON.stringify(texts)}`)
+            const separator = doc.querySelector('[data-scope="date-range-picker"][data-part="range-separator"]')?.textContent
+            if (separator !== '-')
+              throw new Error(`分隔符期望 "-"，实际 ${JSON.stringify(separator)}`)
+            // fixedWeeks 缺省开启：恒六行
+            const cells = doc.querySelectorAll(`${CALENDAR}[data-part="cell"]`).length
+            if (cells !== 6 * 7)
+              throw new Error(`日历期望铺 42 格，实际 ${cells}`)
+            for (const part of ['prev-year-trigger', 'prev-trigger', 'next-trigger', 'next-year-trigger', 'heading-year-trigger', 'heading-month-trigger']) {
+              if (doc.querySelectorAll(`${CALENDAR}[data-part="${part}"]`).length !== 1)
+                throw new Error(`标题栏期望有一颗 ${part}`)
+            }
+          },
+        },
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        {
+          kind: 'raw',
+          why: '先后点两天写成一段区间，再看两组段与表单影子跟上',
+          run: async (ctx) => {
+            await pickDay(ctx, '2024-02-05')
+            await pickDay(ctx, '2024-02-12')
+            expectRange(ctx.doc, '2024-02-05', '2024-02-12', '点选的两天落进起止两端')
+          },
+        },
+      ],
+    },
+    {
+      name: '作者不写结构（快捷选项与时间）：浮层里先铺快捷选项列，日历之后是起止两组时间列与底栏的确认钮',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      // 确认钮的文字由作者经 translations 改写，生成的结构照改写后的那份填；两组小标题取缺省语言包
+      props: { ...BASE_PROPS, presets: [...PRESETS], showTime: true, translations: { confirmTrigger: '确定' }, label: '有效期' },
+      initial: {
+        counts: { 'preset-group': 1, 'preset': PRESETS.length, 'calendar': 1, 'column-group': 2, 'column-group-label': 2, 'time-column': 4, 'time-item': (24 + 60) * 2, 'footer': 1, 'confirm-trigger': 1 },
+        parts: {
+          'column-group[0]': { 'role': 'group', 'data-index': '0' },
+          'column-group[1]': { 'role': 'group', 'data-index': '1' },
+        },
+      },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        {
+          kind: 'raw',
+          why: '快捷选项、小标题与确认钮的文字不进属性快照',
+          run: ({ doc }) => {
+            const presets = presetItems(doc).map(el => el.textContent)
+            if (presets.join('|') !== PRESETS.map(preset => preset.label).join('|'))
+              throw new Error(`快捷选项期望 [${PRESETS.map(preset => preset.label).join(',')}]，实际 [${presets.join(',')}]`)
+            const content = doc.querySelector('[data-scope="date-range-picker"][data-part="content"]')
+            // 滚动面旁的竖条也是 content 的子节点（戴竖条自己的 scope），只数本组件的部件
+            const order = [...(content?.children ?? [])].filter(el => el.getAttribute('data-scope') === 'date-range-picker').map(el => el.getAttribute('data-part'))
+            if (order.join('|') !== 'preset-group|calendar|column-group|column-group|footer')
+              throw new Error(`浮层里的次序期望快捷选项、日历、两组时间、底栏，实际 [${order.join(',')}]`)
+            const labels = [...doc.querySelectorAll('[data-scope="date-range-picker"][data-part="column-group-label"]')].map(el => el.textContent)
+            if (labels.join('|') !== 'Start time|End time')
+              throw new Error(`两组小标题期望 Start time 与 End time，实际 [${labels.join(',')}]`)
+            const confirm = doc.querySelector('[data-scope="date-range-picker"][data-part="confirm-trigger"]')?.textContent
+            if (confirm !== '确定')
+              throw new Error(`确认钮期望显示 "确定"，实际 ${JSON.stringify(confirm)}`)
+          },
+        },
+      ],
+    },
   ],
 }

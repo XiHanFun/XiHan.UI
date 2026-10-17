@@ -256,6 +256,7 @@ const translations = {
     endTime: 'Hora de término',
     presets: 'Atalhos',
     clearTrigger: 'Limpar',
+    confirmTrigger: 'Confirmar',
   },
   'dialog': {
     close: 'Fechar',

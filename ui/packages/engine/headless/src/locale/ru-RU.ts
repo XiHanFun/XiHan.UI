@@ -270,6 +270,7 @@ const translations = {
     endTime: 'Время окончания',
     presets: 'Быстрый выбор',
     clearTrigger: 'Очистить',
+    confirmTrigger: 'Применить',
   },
   'dialog': {
     close: 'Закрыть',

@@ -305,6 +305,7 @@ export const DATE_RANGE_PICKER_EN_US: XhLocaleBucket<'date-range-picker'> = {
   endTime: 'End time',
   presets: 'Shortcuts',
   clearTrigger: 'Clear',
+  confirmTrigger: 'OK',
 }
 
 export const DIALOG_EN_US: XhLocaleBucket<'dialog'> = {
