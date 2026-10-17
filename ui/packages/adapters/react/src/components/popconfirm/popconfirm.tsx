@@ -14,6 +14,7 @@ import { renderAsChild } from '../../runtime/as-child'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
+import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { PopconfirmProvider, usePopconfirmContext } from './context'
 import { usePopconfirm } from './use-popconfirm'
@@ -161,13 +162,16 @@ export function XhPopconfirmContent({ children, ...rest }: XhPopconfirmContentPr
 export interface XhPopconfirmTitleProps extends ComponentPropsWithRef<'h2'> {}
 export function XhPopconfirmTitle({ children, ...rest }: XhPopconfirmTitleProps): ReactNode {
   const ctx = usePopconfirmContext()
+  useTitleDescriptionPart(ctx.presence, 'title')
   return <h2 {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</h2>
 }
 
 export interface XhPopconfirmDescriptionProps extends ComponentPropsWithRef<'p'> {}
 export function XhPopconfirmDescription({ children, ...rest }: XhPopconfirmDescriptionProps): ReactNode {
   const ctx = usePopconfirmContext()
-  return <p {...mergeReactProps(ctx.api.getDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</p>
+  // 读不出一句话的说明不进描述链
+  const el = useDescriptionPart<HTMLParagraphElement>(ctx.presence)
+  return <p {...mergeReactProps({ ...ctx.api.getDescriptionProps() as Record<string, unknown>, ref: el }, rest as Record<string, unknown>)}>{children}</p>
 }
 
 export interface XhPopconfirmConfirmTriggerProps extends ComponentPropsWithRef<'button'> {}

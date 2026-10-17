@@ -8,6 +8,7 @@
 import type { Layer, Service } from '@xihan-ui/core'
 import type { PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmIntents, PopconfirmNotifiers, PopconfirmOverlayProps, PopoverSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
+import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import type { OverlayWiring } from '../../runtime/use-overlay'
 import { connectPopconfirm, popoverMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
@@ -15,6 +16,7 @@ import { useCallback, useRef, useState } from 'react'
 import { invalidateMachineProps } from '../../runtime/create-react-runtime'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
+import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
 
@@ -27,6 +29,8 @@ export interface PopconfirmContext extends OverlayWiring {
   positionerRef: RefObject<HTMLElement | null>
   /** 浮层本体，退场动画从它上面探测。 */
   contentRef: RefObject<HTMLElement | null>
+  /** 标题与说明在不在场，由 XhPopconfirmTitle / XhPopconfirmDescription 登记；content 只引用在场的部件。 */
+  presence: TitleDescriptionPresence
 }
 
 export function usePopconfirm(
@@ -76,6 +80,7 @@ export function usePopconfirm(
   // 它们不改开合以外的状态，走 connect 不进机器。
   // modal 与 translations 不往下传：不陷焦点，按钮文案由作者写在节点里。
   // 每帧现搭这份 props，消解那一刻读到的 closeOnEscape / closeOnInteractOutside 就是此刻这一份
+  const presence = useTitleDescriptionPresence()
   const service = useMachine(popoverMachine, (): PopoverSchema['props'] => ({
     open: props.open,
     defaultOpen: props.defaultOpen,
@@ -86,6 +91,7 @@ export function usePopconfirm(
     closeOnEscape: pendingRef.current ? false : props.closeOnEscape,
     closeOnInteractOutside: pendingRef.current ? false : props.closeOnInteractOutside,
     size: props.size,
+    parts: presence.parts,
     onOpenChange: notify?.onOpenChange,
   }), {
     scope,
@@ -119,5 +125,6 @@ export function usePopconfirm(
     triggerRef,
     positionerRef,
     contentRef,
+    presence,
   }
 }

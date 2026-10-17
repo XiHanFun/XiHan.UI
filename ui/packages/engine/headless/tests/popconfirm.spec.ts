@@ -134,3 +134,22 @@ describe('popconfirm 按压通道：跑的是 popover 机器，按住的是哪�
     expect(cancel()['data-pressed']).toBeUndefined()
   })
 })
+
+describe('popconfirm 只引用在场的标题与说明', () => {
+  const content = (props: PopoverSchema['props']): Record<string, unknown> =>
+    api(makeService({ defaultOpen: true, ...props })).getContentProps() as Record<string, unknown>
+
+  it('省略 parts 按都在场：content 引用 title 与 description 的 id', () => {
+    const a = api(makeService())
+    const props = a.getContentProps() as Record<string, unknown>
+    expect(props['aria-labelledby']).toBe((a.getTitleProps() as Record<string, unknown>).id)
+    expect(props['aria-describedby']).toBe((a.getDescriptionProps() as Record<string, unknown>).id)
+  })
+
+  it('标题不在场时不写 aria-labelledby，说明不在场时不写 aria-describedby，两项各管各的', () => {
+    expect(content({ parts: { title: false, description: true } })['aria-labelledby']).toBeUndefined()
+    expect(content({ parts: { title: false, description: true } })['aria-describedby']).toBeTypeOf('string')
+    expect(content({ parts: { title: true, description: false } })['aria-labelledby']).toBeTypeOf('string')
+    expect(content({ parts: { title: true, description: false } })['aria-describedby']).toBeUndefined()
+  })
+})

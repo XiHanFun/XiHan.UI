@@ -199,9 +199,9 @@ size 改变面板的内边距与最大宽度，三个档位落在 content 上
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `content` | `aria-describedby` | `description` 部件的 id |
+| `content` | `aria-describedby` | `description` 部件的 id \| undefined |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `title` 部件的 id |
+| `content` | `aria-labelledby` | `title` 部件的 id \| undefined |
 | `content` | `role` | 'dialog' |
 | `confirm-trigger` | `aria-busy` | 'true' \| undefined |
 | `confirm-trigger` | `aria-disabled` | 'true' \| undefined |
