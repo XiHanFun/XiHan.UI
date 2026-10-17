@@ -1,4 +1,4 @@
-import type { ConformanceSuite, StepWithExpect } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { numberFieldAnatomy, numberFieldKeyboard } from '@xihan-ui/headless'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
@@ -469,6 +469,23 @@ export const numberFieldSuite: ConformanceSuite = {
         { kind: 'setProps', props: { disabled: false, readOnly: true } },
         heldPressIgnored('number-field', 'increment-trigger', '只读时不接受按压'),
         heldPressIgnored('number-field', 'decrement-trigger', '只读时不接受按压'),
+      ],
+    },
+    {
+      name: '作者不写结构：三端都照 numberFieldStructure 铺出标题与盒里的减号、输入框、加号',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '宽度', defaultValue: '1024', min: 0, max: 2048, name: 'width' },
+      initial: {
+        order: ['root', 'label', 'control', 'decrement-trigger', 'input', 'increment-trigger'],
+        parts: { input: { 'aria-labelledby': '@part(label)', 'aria-valuenow': '1024' } },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'increment-trigger',
+          expect: { parts: { input: { 'aria-valuenow': '1025' } } },
+        },
       ],
     },
   ],

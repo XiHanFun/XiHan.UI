@@ -7,7 +7,8 @@
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, NumberFieldSchema, NumberFieldValueChangeDetails } from '@xihan-ui/headless'
-import { connectNumberField, numberFieldAnatomy, numberFieldMachine, numberFieldMeta, resolveFormControlState } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { connectNumberField, numberFieldAnatomy, numberFieldMachine, numberFieldMeta, numberFieldStructure, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -24,7 +25,11 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 键盘全部在 input 上（ArrowUp / Down 步进、PageUp / Down 大步进、Home / End 取端点），
  * 两个按钮对读屏隐藏：它们只是指针用户的快捷方式，暴露出来等于把同一个控件报告两遍。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label），盒里减号、输入框、加号；
+ * 标题可以由宿主直接子节点 `slot="label"` 接管。前后缀照旧手写部件。
+ *
  * @customElement xh-number-field
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控值（原始输入串）；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值
  * @attr {number} min - 下界；提供后 Home 才接管
@@ -61,8 +66,13 @@ export class XhNumberFieldElement extends XhElement {
 
   static override fieldTarget = { parts: ['input'], kind: 'state' } as const
 
+  static override structure: ElementStructure<XhNumberFieldElement> = {
+    build: host => numberFieldStructure({ label: host.label, slotted: (name, key) => host.slotted(name, key) }),
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    label: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     min: { converter: NUMBER_CONVERTER },
@@ -87,6 +97,7 @@ export class XhNumberFieldElement extends XhElement {
     format: { attribute: false },
   }
 
+  declare label?: string
   declare value?: string
   declare defaultValue?: string
   declare min?: number

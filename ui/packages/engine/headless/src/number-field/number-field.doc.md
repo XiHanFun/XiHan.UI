@@ -15,6 +15,7 @@
 ## 特性
 
 - `step` 与 `largeStep` 分别对应方向键和 PageUp / PageDown。
+- 不写结构时按标准结构铺出标题与盒里的减号、输入框、加号（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数，`label` 给标题文字。前后缀照旧手写部件。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
 - 长按加减按钮连续步进，按住越久越快：先等 `changeDelay`（300ms），随后从 `changeInterval`（50ms）一拍起，每连发一次间隔缩到上一拍的 0.85，约半秒后收到 `minChangeInterval`（10ms）。把 `minChangeInterval` 写成与 `changeInterval` 相同即按固定节奏连发。
 - `parse` / `format` 成对，用于接入固定小数位、千分位、货币符号或自定义换算。
 - 越界的值在失焦规范化时被夹回区间；`clampValueOnBlur` 关掉后越界值原样留在框里（仍按 `format` 补格式），由 `outOfRange` 与根上的 `data-out-of-range` 报出来，交给表单层提示。步进在两种情形下都不会越界。
