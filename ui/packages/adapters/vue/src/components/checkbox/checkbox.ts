@@ -6,16 +6,51 @@
 // 提供 checkbox 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { CheckboxCheckedState, CheckboxSchema } from '@xihan-ui/headless'
-import type { PropType, SlotsType, VNode } from 'vue'
+import type { CheckboxApi, CheckboxCheckedState, CheckboxSchema } from '@xihan-ui/headless'
+import type { InjectionKey, PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, useId } from 'vue'
+import { checkboxStructure } from '@xihan-ui/headless'
+import { defineComponent, h, inject, provide, useId } from 'vue'
 import { slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { useCheckbox } from './use-checkbox'
 
 type CheckboxProps = CheckboxSchema['props']
+
+const CHECKBOX_API: InjectionKey<Readonly<Ref<CheckboxApi>>> = Symbol('XhCheckboxApi')
+
+function useCheckboxApi(): Readonly<Ref<CheckboxApi>> {
+  const api = inject(CHECKBOX_API)
+  if (!api)
+    throw new Error('[xh] 复选框的部件只能渲在 XhCheckbox 里')
+  return api
+}
+
+/** 勾选标记：作者给了 indicator 插槽时装它的内容，没给时由皮肤画勾。 */
+const CheckboxIndicator = defineComponent({
+  name: 'XhCheckboxIndicator',
+  setup(_, { slots }) {
+    const api = useCheckboxApi()
+    return () => h('span', api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 表单影子：单体控件的方框里没有子部件插槽，作者递不进来，由组件自己渲。 */
+const CheckboxHiddenInput = defineComponent({
+  name: 'XhCheckboxHiddenInput',
+  setup() {
+    const api = useCheckboxApi()
+    return () => h('input', api.value.getHiddenInputProps() as Record<string, unknown>)
+  },
+})
+
+/** 标准结构里各部件对应的组件。 */
+const CHECKBOX_PARTS = {
+  'indicator': CheckboxIndicator,
+  'hidden-input': CheckboxHiddenInput,
+}
 
 export const XhCheckbox = defineComponent({
   name: 'XhCheckbox',
@@ -52,6 +87,7 @@ export const XhCheckbox = defineComponent({
       emit('update:checked', details.checked)
     }
     const { api } = useCheckbox(useFormControlProps(props) as CheckboxProps, notify)
+    provide(CHECKBOX_API, api)
     // 字段的说明与校验状态要落在焦点所在的那颗按钮上：给了文字时封装根是外面那个 <label>，
     // XhFieldControl 把整份接线合在它身上，而读屏只念焦点所在节点的描述
     const fieldWiring = useFieldStateWiring()
@@ -69,10 +105,11 @@ export const XhCheckbox = defineComponent({
         ...api.value.getRootProps() as Record<string, unknown>,
         // 有文字时名字改由它承担；没文字时不写，作者写在组件上的 aria-label 照旧生效
         ...(labelled ? { 'aria-labelledby': textId } : null),
-      }), [
-        h('span', api.value.getIndicatorProps() as Record<string, unknown>, slots.indicator?.()),
-        props.name === undefined ? null : h('input', api.value.getHiddenInputProps() as Record<string, unknown>),
-      ])
+      }), renderStructure(
+        checkboxStructure({ hiddenInput: props.name !== undefined, slotted: name => name === 'indicator' && slots.indicator !== undefined }),
+        CHECKBOX_PARTS,
+        node => (node.slot?.name === 'indicator' ? slots.indicator?.() : undefined),
+      ))
       if (!labelled)
         return box
       return h('label', api.value.getLabelProps() as Record<string, unknown>, [

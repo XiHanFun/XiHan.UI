@@ -74,6 +74,7 @@ tone 决定勾中后方框使用哪族颜色，因此这里都设为勾中
 - `readOnly` 仍可聚焦并参与提交，`disabled` 不参与提交。
 - 标签、三档尺寸、校验状态和自定义指示器均使用同一状态动画。
 - `name` 与 `value` 通过隐藏字段参与原生表单。
+- 方框里的一段照标准结构铺：勾选标记，给了 `name` 再带一份表单影子；Vue / React 的组件与 Web Components 不写部件（或只写一颗原生按钮当 `root`）时生成的节点出自同一个结构函数。带文字时 label 包在方框外面，Web Components 要手写 label、root 与 text。
 
 ### 组合
 

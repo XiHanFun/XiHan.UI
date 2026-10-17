@@ -1,4 +1,4 @@
-import type { ConformanceSuite } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { checkboxAnatomy, checkboxKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
@@ -167,6 +167,30 @@ export const checkboxSuite: ConformanceSuite = {
           parts: { root: { 'disabled': '', 'data-disabled': '', 'aria-checked': 'false', 'data-state': 'unchecked' } },
           events: [],
         }),
+      ],
+    },
+    {
+      name: '作者不写结构：三端都照 checkboxStructure 在方框里铺勾选标记，给了 name 再带表单影子',
+      spec: { apg: APG },
+      // Web Components 只写 root 时它得是原生按钮：组件的 root 就是那颗方框按钮
+      fixture: (): FixtureNode => ({ part: 'root', tag: 'button', attrs: { 'aria-label': '同意条款' }, defaultStructure: true }),
+      props: { name: 'agree', defaultChecked: true },
+      initial: {
+        order: ['root', 'indicator', 'hidden-input'],
+        parts: {
+          'root': { 'role': 'checkbox', 'aria-checked': 'true' },
+          'hidden-input': { type: 'hidden', name: 'agree' },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'root',
+          expect: {
+            parts: { root: { 'aria-checked': 'false' } },
+            events: [{ type: 'checked-change', detail: { checked: false } }],
+          },
+        },
       ],
     },
   ],
