@@ -32226,7 +32226,7 @@
                 "text": "ElementStructure<XhHeatmapElement>"
               },
               "static": true,
-              "default": "{ takeover: ['tooltip', 'empty', 'legend'], build: (host, taken) => host.ctrl.service ? heatmapStructure(connectHeatmap(host.ctrl.service, wcNormalize), { empty: !taken.has('empty'), legend: !taken.has('legend') }) : undefined, }",
+              "default": "{ takeover: HEATMAP_STRUCTURE_TAKEOVER, build: (host, taken) => host.ctrl.service ? heatmapStructure(connectHeatmap(host.ctrl.service, wcNormalize), { empty: !taken.has('empty'), legend: !taken.has('legend') }) : undefined, }",
               "description": "作者没写结构时按网格模型生成；作者在 root 里写了 tooltip、empty 或 legend 的用作者的，其余照常生成。"
             },
             {
