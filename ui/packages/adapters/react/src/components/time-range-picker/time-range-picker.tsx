@@ -22,13 +22,14 @@ import type {
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { resolveTimeRangePickerEndIndex } from '@xihan-ui/headless'
+import { resolveTimeRangePickerEndIndex, timeRangePickerStructure } from '@xihan-ui/headless'
 import { useEffect, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -122,11 +123,15 @@ export interface XhTimeRangePickerRootProps extends Omit<ComponentPropsWithRef<'
   /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
   onClear?: () => void
   onOpenChange?: TimeRangePickerProps['onOpenChange']
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
+  /** 不给时照标准结构铺整套部件。 */
   children?: SlotChildren<TimeRangePickerRootSlotProps>
 }
 
 export function XhTimeRangePickerRoot({
   ariaLabel,
+  label,
   value,
   defaultValue,
   open,
@@ -204,7 +209,7 @@ export function XhTimeRangePickerRoot({
         )}
       >
         {children == null
-          ? null
+          ? renderDefaultStructure(api, label)
           : renderSlot(children, {
               open: api.open,
               value: api.value,
@@ -516,4 +521,34 @@ export function XhTimeRangePickerHiddenInput({ index, ...rest }: XhTimeRangePick
       )}
     />
   )
+}
+
+/** 结构里的部件 → 部件组件。 */
+const TIME_RANGE_PICKER_PARTS = {
+  'label': XhTimeRangePickerLabel,
+  'control': XhTimeRangePickerControl,
+  'segment-group': XhTimeRangePickerSegmentGroup,
+  'segment': XhTimeRangePickerSegment,
+  'range-separator': XhTimeRangePickerRangeSeparator,
+  'trigger': XhTimeRangePickerTrigger,
+  'clear-trigger': XhTimeRangePickerClearTrigger,
+  'positioner': XhTimeRangePickerPositioner,
+  'content': XhTimeRangePickerContent,
+  'preset-group': XhTimeRangePickerPresetGroup,
+  'preset': XhTimeRangePickerPreset,
+  'column-group': XhTimeRangePickerColumnGroup,
+  'column-group-label': XhTimeRangePickerColumnGroupLabel,
+  'column': XhTimeRangePickerColumn,
+  'item': XhTimeRangePickerItem,
+  'hidden-input': XhTimeRangePickerHiddenInput,
+}
+
+/**
+ * 不给 children 时照 timeRangePickerStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 文字以外的标题内容交给 label 部件。
+ */
+function renderDefaultStructure(api: TimeRangePickerApi, label: ReactNode): ReactNode[] {
+  const slotted = label != null && typeof label !== 'string'
+  const nodes = timeRangePickerStructure(api, { label: typeof label === 'string' ? label : undefined, slotted: name => name === 'label' && slotted })
+  return renderStructure(nodes, TIME_RANGE_PICKER_PARTS, node => (node.slot ? label : undefined))
 }

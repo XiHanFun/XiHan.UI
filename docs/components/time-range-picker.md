@@ -64,6 +64,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 ### 特性
 
 - 值始终为区间两端 `[start, end]`，按位存放：只填了终点时是 `['', 终点]`，受控回写按同一下标对应。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：标题（`label` 给文字，是原生 `label`），盒里的起止两组段位（时、分、秒之间是冒号，挨着上下午段的是空格）、分隔符、清空钮与触发钮，起止两份表单影子，浮层里依次是快捷选项列与起止两组时间列（小标题取 `translations.startTime` / `endTime`）。精度、小时制与选中变化时结构随之重铺。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
 - 起止各一组段位，`range-separator` 隔在中间；方向键换段不跨组，`name` 与 `endName` 各自决定两份隐藏输入是否参与提交。
 - 浮层内起止两组时间列并排，左右键跨组换列；选中一格只改对应端的段，浮层不收起。
 - 终点组以起点为下界、起点组以终点为上界：另一端填满后，界外的格留在原位并标为禁用，列高、滚动位置与焦点节点不跳。
@@ -170,6 +171,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `XhTimeRangePickerPreset` | `default` | — | 条目内容；未写时使用数据中的 label。 |
 | `XhTimeRangePickerPresetGroup` | `default` | `TimeRangePickerPresetsSlotProps` | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
 | `XhTimeRangePickerRoot` | `default` | `TimeRangePickerRootSlotProps` |  |
+| `XhTimeRangePickerRoot` | `label` | — | 不写默认插槽时标题的内容，盖过 label 文字。 |
 
 ### React 适配器 props
 
@@ -186,7 +188,8 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `XhTimeRangePickerPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
 | `XhTimeRangePickerPreset` | `value` | `string` | 是 | 该条目的身份，与 presets 数据中的 value 逐字对应。 |
 | `XhTimeRangePickerPresetGroup` | `children` | `SlotChildren<TimeRangePickerPresetsSlotProps>` |  | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
-| `XhTimeRangePickerRoot` | `children` | `SlotChildren<TimeRangePickerRootSlotProps>` |  |  |
+| `XhTimeRangePickerRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhTimeRangePickerRoot` | `children` | `SlotChildren<TimeRangePickerRootSlotProps>` |  | 不给时照标准结构铺整套部件。 |
 | `XhTimeRangePickerSegment` | `segment` | `TimeSegmentType` | 是 | 段的身份由作者声明；属于哪一端跟随所在的段位容器。 |
 | `XhTimeRangePickerSegmentGroup` | `index` | `number \| string` |  | 端号：0 起点、1 终点，兼收字符串。 |
 
@@ -240,6 +243,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `focusedItem` | `string \| null` |  |
 | `presets` | `readonly TimeRangePickerPresetState[]` | 快捷选项逐条的状态，数据顺序。未提供 presets 时为空数组。 |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
+| `translations` | `TimeRangePickerTranslations` | 解析后的文案：作者给的 translations 盖在当前语言包上。 |
 | `getSegmentText` | `(props: TimeRangePickerSegmentProps) => string` | 某一端某一段应显示的文字（空段是占位串）。各适配器都用它填充文本，保证同构。 |
 | `getItemText` | `(props: TimeRangePickerItemTextProps) => string` | 某一格应显示的文字。数字列即格子自身的值，上下午列按 locale 给出「上午 / 下午」。 各适配器都用它填充文本，保证同构。 |
 | `isItemSelected` | `(props: TimeRangePickerItemProps) => boolean` |  |

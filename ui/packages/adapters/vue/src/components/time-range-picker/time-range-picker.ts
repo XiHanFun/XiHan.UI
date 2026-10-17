@@ -22,11 +22,12 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { resolveTimeRangePickerEndIndex } from '@xihan-ui/headless'
+import { resolveTimeRangePickerEndIndex, timeRangePickerStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onUnmounted, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
@@ -82,6 +83,8 @@ export const XhTimeRangePickerRoot = defineComponent({
   props: {
     /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
     ariaLabel: { type: String },
+    /** 标题文字：不写默认插槽时铺带这段文字的 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
     /** 区间两端 [start, end]；空缺的一端用空串占位。 */
     value: { type: Array as PropType<string[]> },
     defaultValue: { type: Array as PropType<string[]> },
@@ -129,6 +132,8 @@ export const XhTimeRangePickerRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: TimeRangePickerRootSlotProps) => VNode[]
+    /** 不写默认插槽时标题的内容，盖过 label 文字。 */
+    label?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notifyValue: TimeRangePickerProps['onValueChange'] = (details) => {
@@ -145,21 +150,24 @@ export const XhTimeRangePickerRoot = defineComponent({
     })
     provideTimeRangePicker(ctx)
 
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      open: ctx.api.value.open,
-      value: ctx.api.value.value,
-      start: ctx.api.value.start,
-      end: ctx.api.value.end,
-      empty: ctx.api.value.empty,
-      outOfRange: ctx.api.value.outOfRange,
-      reversed: ctx.api.value.reversed,
-      segments: ctx.api.value.segments,
-      columnGroups: ctx.api.value.columnGroups,
-      canClear: ctx.api.value.canClear,
-      setOpen: ctx.api.value.setOpen,
-      setValue: ctx.api.value.setValue,
-      clear: ctx.api.value.clear,
-    }))
+    // 没写默认插槽时照 timeRangePickerStructure 铺整套结构
+    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, !slots.default
+      ? renderDefaultStructure(ctx.api.value, props.label, slots.label)
+      : slots.default({
+          open: ctx.api.value.open,
+          value: ctx.api.value.value,
+          start: ctx.api.value.start,
+          end: ctx.api.value.end,
+          empty: ctx.api.value.empty,
+          outOfRange: ctx.api.value.outOfRange,
+          reversed: ctx.api.value.reversed,
+          segments: ctx.api.value.segments,
+          columnGroups: ctx.api.value.columnGroups,
+          canClear: ctx.api.value.canClear,
+          setOpen: ctx.api.value.setOpen,
+          setValue: ctx.api.value.setValue,
+          clear: ctx.api.value.clear,
+        }))
   },
 })
 
@@ -468,3 +476,32 @@ export const XhTimeRangePickerHiddenInput = defineComponent({
     }
   },
 })
+
+/** 结构里的部件 → 部件组件。 */
+const TIME_RANGE_PICKER_PARTS = {
+  'label': XhTimeRangePickerLabel,
+  'control': XhTimeRangePickerControl,
+  'segment-group': XhTimeRangePickerSegmentGroup,
+  'segment': XhTimeRangePickerSegment,
+  'range-separator': XhTimeRangePickerRangeSeparator,
+  'trigger': XhTimeRangePickerTrigger,
+  'clear-trigger': XhTimeRangePickerClearTrigger,
+  'positioner': XhTimeRangePickerPositioner,
+  'content': XhTimeRangePickerContent,
+  'preset-group': XhTimeRangePickerPresetGroup,
+  'preset': XhTimeRangePickerPreset,
+  'column-group': XhTimeRangePickerColumnGroup,
+  'column-group-label': XhTimeRangePickerColumnGroupLabel,
+  'column': XhTimeRangePickerColumn,
+  'item': XhTimeRangePickerItem,
+  'hidden-input': XhTimeRangePickerHiddenInput,
+}
+
+/**
+ * 未写默认插槽时照 timeRangePickerStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 标题文字由 label 给出，需要放置其他内容时由 label 插槽接管。
+ */
+function renderDefaultStructure(api: TimeRangePickerApi, label: string | undefined, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = timeRangePickerStructure(api, { label, slotted: name => name === 'label' && labelSlot != null })
+  return renderStructure(nodes, TIME_RANGE_PICKER_PARTS, node => node.slot?.name === 'label' ? labelSlot?.() : undefined)
+}

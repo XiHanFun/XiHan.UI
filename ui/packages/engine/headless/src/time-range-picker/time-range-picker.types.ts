@@ -350,6 +350,8 @@ export interface TimeRangePickerApi<T extends PropTypes = PropTypes> {
   presets: readonly TimeRangePickerPresetState[]
   /** 清空按钮当前是否可按。 */
   canClear: boolean
+  /** 解析后的文案：作者给的 translations 盖在当前语言包上。 */
+  translations: TimeRangePickerTranslations
   /** 某一端某一段应显示的文字（空段是占位串）。各适配器都用它填充文本，保证同构。 */
   getSegmentText: (props: TimeRangePickerSegmentProps) => string
   /**
