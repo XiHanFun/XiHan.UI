@@ -152,9 +152,191 @@ function tokenize(paragraph: string, mode: 'auto' | 'char'): string[] {
   return merged
 }
 
+/** 一段带字体的文字。 */
+export interface TextRun {
+  readonly text: string
+  readonly font: FontSpec
+  /** 字间距（px），加在这一段的每个字符之后，可为负；缺省 0。 */
+  readonly letterSpacing?: number
+}
+
+/** 一行里同一段文字的一截。 */
+export interface WrappedRunSegment {
+  /** 所在段的下标。 */
+  readonly run: number
+  /** 在该段文字里的起止下标（UTF-16，左闭右开）。 */
+  readonly start: number
+  readonly end: number
+  readonly text: string
+  /** 距行首的横向位置（px）。 */
+  readonly x: number
+  readonly width: number
+}
+
+/** 折出的一行。 */
+export interface WrappedRunLine {
+  /** 至少一截；空行是一截长度为 0 的文字，指明这一行用哪一段的字体。 */
+  readonly segments: readonly WrappedRunSegment[]
+  readonly width: number
+  /** 各截量出的最大上伸与下伸（px）。 */
+  readonly ascent: number
+  readonly descent: number
+}
+
+export interface WrapRunsOptions {
+  /** auto：中日韩文字逐字可断、拉丁文按词断，单词本身过长时逐字断；char：任意两个字符之间都可断。 */
+  readonly breakMode?: 'auto' | 'char'
+}
+
+/** 段落里的一个字符（码点）与它的出处。 */
+interface RunChar {
+  readonly char: string
+  readonly run: number
+  /** 在所在段文字里的下标（UTF-16）。 */
+  readonly offset: number
+}
+
+/** 一个不含换行的段落；空段落用 anchor 定字体：结束它的换行所在处，最后一段没有换行时是段落起点。 */
+interface RunParagraph {
+  readonly chars: RunChar[]
+  anchor: { readonly run: number, readonly offset: number }
+}
+
+/** 按显式换行把几段文字切成段落；`\r\n` 当一个换行。 */
+function splitParagraphs(runs: readonly TextRun[]): RunParagraph[] {
+  const paragraphs: RunParagraph[] = [{ chars: [], anchor: { run: 0, offset: 0 } }]
+  runs.forEach((run, index) => {
+    let offset = 0
+    for (const char of run.text) {
+      const current = paragraphs[paragraphs.length - 1] as RunParagraph
+      if (char === '\n') {
+        const last = current.chars[current.chars.length - 1]
+        if (last?.char === '\r')
+          current.chars.pop()
+        if (current.chars.length === 0)
+          current.anchor = { run: index, offset }
+        paragraphs.push({ chars: [], anchor: { run: index, offset: offset + 1 } })
+      }
+      else {
+        current.chars.push({ char, run: index, offset })
+      }
+      offset += char.length
+    }
+  })
+  return paragraphs
+}
+
+/**
+ * 多样式折行：几段各带字体与字间距的文字连成一串，按与 wrapText 相同的规则贪心折行——
+ * 中日韩文字逐字可断、拉丁文按词断（单词跨两段样式时不拆开）、收尾标点不落到行首、单词比一行还宽时逐字断、
+ * 显式换行强制断行，行首行尾的空白去掉。每行给出各截的出处、横向位置与宽度，以及这一行的最大上下伸；
+ * 行高怎么算由调用方决定。
+ */
+export function wrapRuns(runs: readonly TextRun[], maxWidth: number, measurer: TextMeasurer, options: WrapRunsOptions = {}): WrappedRunLine[] {
+  checkWidth(maxWidth)
+  runs.forEach((run, index) => {
+    if (run.letterSpacing !== undefined && !Number.isFinite(run.letterSpacing))
+      throw invalidArgument('letterSpacing 必须是有限数', { run: index, letterSpacing: run.letterSpacing })
+  })
+  if (runs.length === 0)
+    return []
+  const { breakMode = 'auto' } = options
+  const measureRun = (run: number, text: string): TextSize => {
+    const spec = runs[run] as TextRun
+    const size = measurer.measure(text, spec.font)
+    const spacing = spec.letterSpacing ?? 0
+    return spacing === 0 ? size : { ...size, width: size.width + spacing * Array.from(text).length }
+  }
+  const lines: WrappedRunLine[] = []
+
+  for (const { chars, anchor } of splitParagraphs(runs)) {
+    /** 字符区间按所在段分组，返回每组的段下标与文字。 */
+    const groups = (from: number, to: number): { run: number, first: number, text: string }[] => {
+      const result: { run: number, first: number, text: string }[] = []
+      for (let index = from; index < to; index++) {
+        const item = chars[index] as RunChar
+        const last = result[result.length - 1]
+        if (last !== undefined && last.run === item.run)
+          last.text += item.char
+        else
+          result.push({ run: item.run, first: index, text: item.char })
+      }
+      return result
+    }
+    const width = (from: number, to: number): number => groups(from, to).reduce((sum, group) => sum + measureRun(group.run, group.text).width, 0)
+    const hasContent = (from: number, to: number): boolean => chars.slice(from, to).some(item => item.char.trim() !== '')
+
+    let start = 0
+    let end = 0
+    const push = (): void => {
+      let from = start
+      let to = end
+      while (from < to && (chars[from] as RunChar).char.trim() === '')
+        from++
+      while (to > from && (chars[to - 1] as RunChar).char.trim() === '')
+        to--
+      if (from === to) {
+        const at = chars[start] ?? anchor
+        const size = measureRun(at.run, '')
+        lines.push({ segments: [{ run: at.run, start: at.offset, end: at.offset, text: '', x: 0, width: 0 }], width: 0, ascent: size.ascent, descent: size.descent })
+      }
+      else {
+        let x = 0
+        let ascent = 0
+        let descent = 0
+        const segments = groups(from, to).map((group) => {
+          const size = measureRun(group.run, group.text)
+          const offset = (chars[group.first] as RunChar).offset
+          const segment: WrappedRunSegment = { run: group.run, start: offset, end: offset + group.text.length, text: group.text, x, width: size.width }
+          x += size.width
+          ascent = Math.max(ascent, size.ascent)
+          descent = Math.max(descent, size.descent)
+          return segment
+        })
+        lines.push({ segments, width: x, ascent, descent })
+      }
+      start = end
+    }
+
+    let cursor = 0
+    for (const token of tokenize(chars.map(item => item.char).join(''), breakMode)) {
+      const tokenStart = cursor
+      const tokenEnd = cursor + Array.from(token).length
+      cursor = tokenEnd
+      if (token === ' ') {
+        if (end > start)
+          end = tokenEnd
+        else
+          start = end = tokenEnd
+        continue
+      }
+      if (width(start, tokenEnd) <= maxWidth) {
+        end = tokenEnd
+        continue
+      }
+      if (hasContent(start, end))
+        push()
+      else
+        start = end = tokenStart
+      if (width(tokenStart, tokenEnd) <= maxWidth) {
+        end = tokenEnd
+        continue
+      }
+      // 单元本身比一行还宽：逐字断开
+      for (let index = tokenStart; index < tokenEnd; index++) {
+        if (end > start && width(start, index + 1) > maxWidth)
+          push()
+        end = index + 1
+      }
+    }
+    push()
+  }
+  return lines
+}
+
 /**
  * 折行：贪心地把单元放进 maxWidth 宽的行；显式换行符强制断行，行首行尾的空格去掉。
- * 超过 maxLines 时，余下的文字并进最后一行再截断加「…」。字间距计入每行宽度。
+ * 超过 maxLines 时，余下的文字并进最后一行再截断加「…」。字间距计入每行宽度。断行规则与 wrapRuns 是同一份。
  */
 export function wrapText(text: string, maxWidth: number, font: FontSpec, measurer: TextMeasurer, options: WrapOptions = {}): string[] {
   checkWidth(maxWidth)
@@ -163,46 +345,12 @@ export function wrapText(text: string, maxWidth: number, font: FontSpec, measure
     throw invalidArgument('maxLines 至少为 1', { maxLines })
   if (!Number.isFinite(letterSpacing))
     throw invalidArgument('letterSpacing 必须是有限数', { letterSpacing })
-  const metered = letterSpacing === 0 ? measurer : withLetterSpacing(measurer, letterSpacing)
-  const width = (s: string): number => metered.measure(s, font).width
-  const lines: string[] = []
-
-  for (const paragraph of text.split(/\r?\n/)) {
-    let line = ''
-    const push = (): void => {
-      lines.push(line.trim())
-      line = ''
-    }
-    for (const token of tokenize(paragraph, breakMode)) {
-      if (token === ' ') {
-        if (line !== '')
-          line += token
-        continue
-      }
-      if (width(line + token) <= maxWidth) {
-        line += token
-        continue
-      }
-      if (line.trim() !== '')
-        push()
-      else
-        line = ''
-      if (width(token) <= maxWidth) {
-        line = token
-        continue
-      }
-      // 单元本身比一行还宽：逐字断开
-      for (const char of Array.from(token)) {
-        if (line !== '' && width(line + char) > maxWidth)
-          push()
-        line += char
-      }
-    }
-    push()
-  }
+  const lines = wrapRuns([{ text, font, letterSpacing }], maxWidth, measurer, { breakMode })
+    .map(line => line.segments.map(segment => segment.text).join(''))
 
   if (lines.length <= maxLines)
     return lines
+  const metered = letterSpacing === 0 ? measurer : withLetterSpacing(measurer, letterSpacing)
   const kept = lines.slice(0, maxLines - 1)
   // 余下的行接回一行：两侧都是拉丁文时补回被折掉的空格
   const rest = lines.slice(maxLines - 1).reduce((joined, next) => {
