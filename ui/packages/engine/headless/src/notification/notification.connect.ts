@@ -157,6 +157,7 @@ export function connectNotificationItem<T extends PropTypes>(
   const { state, prop, send, context, scope } = service
   const translations = resolveTranslations(NOTIFICATION_EN_US, prop('translations'))
   const ids = scope.ids('notification-item', 'title', 'description')
+  const rendered = prop('parts')
 
   const preset = prop('preset') ?? 'card'
   const toast = preset === 'toast'
@@ -199,8 +200,9 @@ export function connectNotificationItem<T extends PropTypes>(
       'aria-live': tone === 'danger' ? 'assertive' : 'polite',
       // 整条一起念，否则用户会听到半截话
       'aria-atomic': 'true',
-      'aria-labelledby': ids.title,
-      'aria-describedby': ids.description,
+      // 只引用作者渲染了的标题与说明：省略 parts 按都在场
+      'aria-labelledby': rendered?.title !== false ? ids.title : undefined,
+      'aria-describedby': rendered?.description !== false ? ids.description : undefined,
       // 排版随预设：卡片是两列网格、叉钉在右上角；轻提示是一行，叉排在行尾
       'data-preset': preset,
       // 不报 aria-busy：这一块本身就是活区，busy 会让读屏把「正在上传」这句压到完事才念

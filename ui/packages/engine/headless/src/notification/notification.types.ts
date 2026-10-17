@@ -7,6 +7,7 @@
 
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { TitleDescriptionParts } from '../shared/title-description'
 
 /** 语气：与全库语气轴使用同一套词，决定行首字形与实时区级别。加载中不是语气，另有 loading 一位。 */
 export type NotificationTone = 'info' | 'success' | 'warning' | 'danger'
@@ -236,6 +237,12 @@ export interface NotificationItemSchema extends MachineSchema {
      * 置真时登记 'service' 暂停来源，置假时移除它，与指针、焦点等来源并存。
      */
     paused?: boolean
+    /**
+     * 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。
+     * title 对应 item-title、description 对应 item-description：不在场、或渲染了但读不出一句话
+     * （判断同 `hasNamingContent`；没写 description 的那条记录就是这样）时，卡片不写对应的引用。
+     */
+    parts?: TitleDescriptionParts
     translations?: Partial<NotificationTranslations>
     /** 生命周期落定时通知：dismissing 与 unmounted 各一次。宿主据此把条目移出队列。 */
     onStatusChange?: (details: NotificationStatusChangeDetails) => void

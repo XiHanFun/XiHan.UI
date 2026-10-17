@@ -594,3 +594,21 @@ describe('所在那一摞被展开时一起按住', () => {
     t.stop()
   })
 })
+
+describe('notification 卡片只引用在场的标题与说明', () => {
+  const item = (props: Props): Record<string, unknown> => makeItem(props).api().getItemProps() as Record<string, unknown>
+
+  it('省略 parts 按都在场：卡片引用 item-title 与 item-description 的 id', () => {
+    const api = makeItem().api()
+    const props = api.getItemProps() as Record<string, unknown>
+    expect(props['aria-labelledby']).toBe((api.getItemTitleProps() as Record<string, unknown>).id)
+    expect(props['aria-describedby']).toBe((api.getItemDescriptionProps() as Record<string, unknown>).id)
+  })
+
+  it('标题不在场时不写 aria-labelledby，说明不在场时不写 aria-describedby，两项各管各的', () => {
+    expect(item({ parts: { title: false, description: true } })['aria-labelledby']).toBeUndefined()
+    expect(item({ parts: { title: false, description: true } })['aria-describedby']).toBeTypeOf('string')
+    expect(item({ parts: { title: true, description: false } })['aria-labelledby']).toBeTypeOf('string')
+    expect(item({ parts: { title: true, description: false } })['aria-describedby']).toBeUndefined()
+  })
+})

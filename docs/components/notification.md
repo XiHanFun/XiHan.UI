@@ -268,8 +268,8 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 | `group` | `aria-label` | translations.region |
 | `group` | `role` | 'region' |
 | `item` | `aria-atomic` | 'true' |
-| `item` | `aria-describedby` | `description` 部件的 id |
-| `item` | `aria-labelledby` | `title` 部件的 id |
+| `item` | `aria-describedby` | `description` 部件的 id \| undefined |
+| `item` | `aria-labelledby` | `title` 部件的 id \| undefined |
 | `item` | `aria-live` | 'assertive' \| 'polite' |
 | `item` | `role` | 'alert' \| 'status' |
 | `item-indicator` | `aria-hidden` | 'true' |

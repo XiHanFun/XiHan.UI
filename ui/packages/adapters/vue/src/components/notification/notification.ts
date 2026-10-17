@@ -22,6 +22,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, Fragment, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { provideNotification, provideNotificationItem, useNotificationContext, useNotificationItemContext } from './context'
 import { useNotification, useNotificationItem } from './use-notification'
 
@@ -186,6 +187,7 @@ export const XhNotificationItemTitle = defineComponent({
   name: 'XhNotificationItemTitle',
   setup(_, { slots }) {
     const ctx = useNotificationItemContext()
+    useTitleDescriptionPart(ctx.presence, 'title')
     // 作者没写内容就用队列里那条记录的标题
     return () => h(
       'div',
@@ -199,9 +201,11 @@ export const XhNotificationItemDescription = defineComponent({
   name: 'XhNotificationItemDescription',
   setup(_, { slots }) {
     const ctx = useNotificationItemContext()
+    // 读不出一句话的说明不进描述链：记录没写 description 时它是空的
+    const el = useDescriptionPart(ctx.presence)
     return () => h(
       'div',
-      ctx.api.value.getItemDescriptionProps() as Record<string, unknown>,
+      { ...ctx.api.value.getItemDescriptionProps() as Record<string, unknown>, ref: el },
       slots.default?.() ?? ctx.api.value.description,
     )
   },

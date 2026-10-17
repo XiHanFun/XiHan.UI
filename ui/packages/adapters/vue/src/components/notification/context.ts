@@ -7,6 +7,7 @@
 
 import type { NotificationApi, NotificationItemApi, NotificationOptions } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey, Ref } from 'vue'
+import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import { inject, provide } from 'vue'
 
 export interface NotificationContext {
@@ -24,6 +25,8 @@ export interface NotificationItemContext {
   api: ComputedRef<NotificationItemApi>
   /** 卡片根节点：退场动画从它上面探测。 */
   rootRef: Ref<HTMLElement | null>
+  /** item-title 与 item-description 在不在场，由两个部件登记；卡片只引用在场的部件。 */
+  presence: TitleDescriptionPresence
 }
 
 const KEY: InjectionKey<NotificationContext> = Symbol.for('xh-notification')

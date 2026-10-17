@@ -29,7 +29,9 @@ import {
   notificationMachine,
   notificationMeta,
 } from '@xihan-ui/headless'
+import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
+import { renderedTitleDescription } from '../dom/title-description'
 import { XhElement } from '../element-base'
 import { NotificationItemExitGate } from '../notification-item-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -326,6 +328,8 @@ export class XhNotificationItemElement extends XhElement {
       pauseOnPageIdle: this.pauseOnPageIdle,
       paused: this.paused,
       translations: this.translations,
+      // 卡片只引用作者写了的标题与说明
+      parts: renderedTitleDescription(this.getPart('item-title'), this.getPart('item-description')),
       onStatusChange: this.notifyStatus,
       onAction: this.notifyAction,
     }
@@ -359,7 +363,11 @@ export class XhNotificationItemElement extends XhElement {
       el.textContent = next
   }
 
+  /** 说明部件的内容从无到有、从有到无时重新接线：读不出一句话的说明不进卡片的描述链。 */
+  private readonly descriptionWatch = createNamingContentWatch(() => this.requestUpdate())
+
   protected wire(): void {
+    this.descriptionWatch.watch(this.getPart('item-description'))
     const api = connectNotificationItem(this.ctrl.service, wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
@@ -388,6 +396,7 @@ export class XhNotificationItemElement extends XhElement {
   }
 
   override disconnectedCallback(): void {
+    this.descriptionWatch.disconnect()
     super.disconnectedCallback()
     this.exitGate.dispose()
   }
