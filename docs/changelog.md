@@ -2,6 +2,40 @@
 
 本文件记录 XiHan.UI 各版本的变更。每条标注 **新增 / 修复 / 优化 / 调整 / 移除** 类别。只收录使用者可感知的变更，仓库自身的配置、CI、测试与门禁不列入。组件以 npm 包形式发布，升级前请留意「调整」类中的破坏性变更。
 
+## v5.0.0（待发布）
+
+本版为打印、流程、表单、报表四款设计器补齐组件能力：多数组件改用标准结构，不写结构就能用；库内表单控件统一命名与表单状态继承；新增条件编辑器、格式输入、表达式输入框，首发设计器内核、设计器界面零件、受限表达式与 xlsx 写出四个包。少数事件、属性、类型、语言包键与覆盖槽有改动，全部包同号升到 5.0.0，升级前请看升级须知。
+
+::: warning 升级须知
+- **日历族**：周、月、季度、年视图改为按行渲染，面板与 `buildPeriodGrid` 的 `cells` 改为 `rows`，网格底下写 `week-row`、格子放进行里；自备格子列表用 `calendarPeriodRows(periods, view)` 切行
+- **热力图**：`cell-press` / `cell-active` 改名 `datum-press` / `datum-active`（`onCellPress` / `onCellActive` → `onDatumPress` / `onDatumActive`），删除 `cell-focus` / `onCellFocus`；`HeatmapCellDetails` 改名 `HeatmapDatumDetails`，删除 `HeatmapCellFocusDetails`
+- **表格**：删除 `footer`（WC `footer`），改写 `footerRows: 1`（WC `footer-rows="1"`）；`getFooterRowProps()` 改为 `getFooterRowProps({ level })`，多行表尾每行写 `level`
+- **快捷键**：`formatHotkey`、`matchesHotkey`、`detectKbdPlatform`、`resolveKbdPlatform` 与 `KbdPlatform`、`KbdResolvedPlatform`、`HotkeySegment` 改从 `@xihan-ui/core/hotkey` 引入，`@xihan-ui/headless` 不再导出
+- **语言包**：删除 Citation 的 `openSource`、`source` 与 FileUpload 的 `dropzone`，覆盖过的直接去掉；投放区改由标题接上投放区里看得见的说明命名
+- **覆盖槽**：删除 `--xh-command-list-busy-opacity`
+- **HoverCard**：`HoverCardRefs` 删去 `getTitleEl` / `getDescriptionEl`，Vue 的 `HoverCardContext` 删去 `titleRef` / `descriptionRef`，React 的删去 `setTitleEl` / `setDescriptionEl`；自写标题、说明部件的改为经 `parts` 报告在场
+- **表单校验**：只含空白的字符串与元素全为空的数组算空，`required` 会拦下；`min` / `max` 对字符串改按字素计数。依赖原行为的改在 `validator` 里自行判断
+- **React Card**：`XhCardRoot` 的 `title`、`content` 改为卡片的标题与正文，不再作为原生属性写到根上
+- **Web Components FileUpload**：条目改按 `allFiles` 对应（远程附件在前、本地文件在后）；用了 `remoteFiles` 的改按 `allFiles` 铺行
+- **缺省结构**：根组件不写默认插槽 / 不给 children、Web Components 元素不写部件时，原先渲出空的根，现在铺出整套部件
+- **外观**：渲染成 `<button>` 的部件清掉浏览器缺省样式，WC 作者自写的按钮部件接线后同样无壳，要按钮外观时把 Button 当作这个部件写进去
+:::
+
+- **新增** 标准结构：Select、Combobox、TreeSelect、Cascader、Menu、ContextMenu、Menubar、Accordion、Tabs、ToggleGroup、RadioGroup、CheckboxGroup、Checkbox、Switch、Slider、Rating、TextField、NumberField、PasswordInput、PinInput、DateField、DatePicker、DateRangePicker、TimePicker、TimeRangePicker、ColorField、ColorPicker、TagsInput、TagGroup、Listbox、Transfer、SignaturePad、Field、Fieldset、FieldArray、Card、Separator、Heatmap 等不写结构即可使用，Vue、React 与 Web Components 照同一个结构函数铺出同一棵树；Web Components 用 `slot="<名>"` / `slot="<名>:<键>"` 把作者内容放进对应部件
+- **新增** 条件编辑器 FilterBuilder、格式输入 FormatInput、表达式输入框 ExpressionInput，三端同时可用
+- **新增** 包 `@xihan-ui/designer-kit`（画布式设计器的公共内核：历史栈、视口、命中与变换、属性描述、扩展机制、表格与网格几何、剪贴板）、`@xihan-ui/designer-shell`（设计器界面零件：外框、属性面板、物料面板、问题列表、小地图、变换覆盖层、标尺）、`@xihan-ui/expression`（受限表达式与格式化）、`@xihan-ui/xlsx`（零依赖的 xlsx 写出）
+- **新增** `@xihan-ui/core` 子入口 `json`、`rich-text`、`rich-text-dom`、`url`、`template`、`hotkey`；`core/date` 新增墙上时间与分桶键
+- **新增** 库内表单控件统一新增 `ariaLabel`；ToggleGroup、Combobox、ColorPicker、Transfer、CheckboxGroup、Slider、TreeSelect、Cascader、FileUpload 补齐 `required` / `readOnly` / `invalid`，放进字段或表单时自动继承；字段标题点击聚焦库内控件，Web Components 的字段接线落到控件真正可聚焦的部件上
+- **新增** FieldArray 表格排布 `layout="table"`、`insert` / `move`、`value-change` 带行变更；不写结构时只给每行内容即可
+- **新增** Table 多行表尾 `footerRows` 与吸底 `stickyFooter`、行主操作 `onAction`、列的 `rowHeader`，Web Components 新增 `visibleRows`；Select 新增取数失败状态与重试，Combobox 新增在途占位；Heatmap 新增受控联动键 `activeKey`、`pending`、`empty` 与 `format`
+- **新增** TextField `multiline`、NumberField 与 TimePicker 的 `placeholder`、TimeRangePicker 的 `startPlaceholder` / `endPlaceholder`、Grid `ruled`、Accordion `contentRole`；日历翻页钮带上按视图的缺省读屏名
+- **新增** Web Components 子入口 `authoring`（编写同形 Light DOM 元素的基类与工具）与按需注册 `defineXhElement`
+- **新增** `@xihan-ui/viz` 有向图算法、分层布局与直角连线、折线工具、多样式折行 `wrapRuns`、表格数据处理与 `pivotWider`
+- **优化** 按需注册一个元素的产物从约 160 kB 降到约 15 kB（gzip）；`@xihan-ui/expression` 可摇树
+- **修复** 弹层、提示与图表族只引用实际渲染了的标题与说明（Dialog、Drawer、Popover、Popconfirm、Tour、Alert、Approval、Notification、FloatingPanel、Fieldset、Field、Table、图表），不再挂落空的 id
+- **修复** Tree、TreeSelect、JsonViewer、Citation、FileUpload 的可访问名包含看得见的字；危险色文字与刷新中的集合在所有表面上达到 4.5:1 对比度
+- **修复** 列表删行时淡出的替身显示删除前的值；条目禁用随作者的修改来回切换；多行文本自动增高在无排版环境里安静跳过
+
 ## v4.2.0 (2026-10-15)
 
 JsonViewer 新增按需打开的工具条与原文着色，图表配色整体改为浅色调，并新增命令行与 MCP 服务端 `@xihan-ui/cli`。
