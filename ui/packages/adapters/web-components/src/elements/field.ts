@@ -123,6 +123,7 @@ export class XhFieldElement extends XhElement {
         label: this.getPart('label') != null,
         description: description != null && hasNamingContent(description),
         errorText: this.getPart('error-text') != null,
+        control: this.getPart('control') != null,
       },
     }
     const api = connectField(props, this.fieldScope, wcNormalize)

@@ -104,7 +104,7 @@
 | `controlId` | `string` |  | 控件 id；作者接管时以它为准。 |
 | `disabled` | `boolean` |  |  |
 | `invalid` | `boolean` |  | 校验失败态：控件上 aria-invalid=true，错误文案接入描述链并显示。 |
-| `parts` | `FieldRenderedParts` |  | 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。 不在场的部件不进控件的名字链与描述链：指向不存在的 id 会被判为无效引用。 description 渲染了但读不出一句话（判断同 `hasNamingContent`）也按不在场处理。 |
+| `parts` | `FieldRenderedParts` |  | 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。 不在场的部件不进控件的名字链与描述链：指向不存在的 id 会被判为无效引用。 description 渲染了但读不出一句话（判断同 `hasNamingContent`）也按不在场处理。 control 不在场（库内控件直接放进字段）时 label 不写 for，点 label 由字段聚焦控件的焦点宿主。 |
 | `readOnly` | `boolean` |  | 只读：控件上 aria-readonly=true。与 disabled 不同，只读仍可聚焦、仍参与提交。 |
 | `required` | `boolean` |  | 必填：控件上 aria-required=true。 |
 

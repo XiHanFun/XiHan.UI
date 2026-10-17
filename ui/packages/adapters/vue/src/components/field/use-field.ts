@@ -26,14 +26,14 @@ export interface FieldContext {
 export function useField(props: FieldProps): FieldContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const partCounts = reactive<Record<FieldPartName, number>>({ label: 0, description: 0, errorText: 0 })
+  const partCounts = reactive<Record<FieldPartName, number>>({ label: 0, description: 0, errorText: 0, control: 0 })
   // 挂载前（含服务端直出）不知道部件在不在场，按在场处理；子部件先于根挂载，根挂载时登记已齐
   const mounted = ref(false)
   onMounted(() => {
     mounted.value = true
   })
   const parts = computed<FieldRenderedParts | undefined>(() => mounted.value
-    ? { label: partCounts.label > 0, description: partCounts.description > 0, errorText: partCounts.errorText > 0 }
+    ? { label: partCounts.label > 0, description: partCounts.description > 0, errorText: partCounts.errorText > 0, control: partCounts.control > 0 }
     : undefined)
   const api = computed(() => connectField({ ...props, parts: parts.value }, scope, vueNormalize))
   return { api, partCounts }

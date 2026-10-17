@@ -88,6 +88,8 @@ export const XhFieldControl = defineComponent({
   }>,
   setup(props, { slots }) {
     const ctx = useFieldContext()
+    // control 在场：label 的 for 指向它；不在场时由字段代为聚焦库内控件
+    useFieldPartPresence(ctx, 'control')
     return () => {
       const controlProps = ctx.api.value.getControlProps() as Record<string, unknown>
       // control props 经 slot props 交给作者，控件节点由作者渲染
