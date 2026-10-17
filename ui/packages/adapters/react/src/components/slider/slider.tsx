@@ -6,14 +6,16 @@
 // 提供 slider 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { SliderApi, SliderMark, SliderMarkMeta, SliderSchema } from '@xihan-ui/headless'
+import type { SliderApi, SliderMark, SliderMarkMeta, SliderSchema, StructureChild } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { normalizeItemIndex } from '@xihan-ui/core'
+import { sliderStructure } from '@xihan-ui/headless'
 import { Fragment, useEffect } from 'react'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { SliderProvider, SliderThumbProvider, useSliderContext, useSliderThumbContext } from './context'
@@ -38,6 +40,8 @@ export interface SliderTickSlotProps {
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'defaultValue' | 'dir' | 'children'>
 
 export interface XhSliderRootProps extends RootElementProps {
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
   /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
   ariaLabel?: string
   /** 受控值；值恒为数组，单滑块即长度 1。给定即受控。 */
@@ -83,6 +87,7 @@ export interface XhSliderRootProps extends RootElementProps {
 }
 
 export function XhSliderRoot({
+  label,
   ariaLabel,
   value,
   defaultValue,
@@ -149,14 +154,16 @@ export function XhSliderRoot({
           { ref: ctx.rootRef },
         )}
       >
-        {renderSlot(children, {
-          value: api.value,
-          thumbs: api.thumbs,
-          range: api.range,
-          dragging: api.dragging,
-          setValue: api.setValue,
-          setThumbValue: api.setThumbValue,
-        })}
+        {children != null
+          ? renderSlot(children, {
+              value: api.value,
+              thumbs: api.thumbs,
+              range: api.range,
+              dragging: api.dragging,
+              setValue: api.setValue,
+              setThumbValue: api.setThumbValue,
+            })
+          : renderDefaultStructure(api, label, name !== undefined)}
       </div>
     </SliderProvider>
   )
@@ -300,4 +307,36 @@ export function XhSliderHiddenInput({ ...rest }: XhSliderHiddenInputProps): Reac
       )}
     />
   )
+}
+
+/** 标准结构里各部件对应的组件；刻度的圆点与文案由 XhSliderTickGroup 自己铺。 */
+const SLIDER_PARTS = {
+  'label': XhSliderLabel,
+  'control': XhSliderControl,
+  'track': XhSliderTrack,
+  'range': XhSliderRange,
+  'tick-group': XhSliderTickGroup,
+  'thumb': XhSliderThumb,
+  'hidden-input': XhSliderHiddenInput,
+}
+
+/** 刻度组自己按 marks 铺圆点与文案，铺结构时去掉这两格。 */
+function withoutSelfAssembled(nodes: readonly StructureChild[]): StructureChild[] {
+  return nodes.flatMap((node): StructureChild[] => {
+    if (!('part' in node))
+      return [node]
+    if (node.part === 'tick' || node.part === 'tick-label')
+      return []
+    return [node.children ? { ...node, children: withoutSelfAssembled(node.children) } : node]
+  })
+}
+
+/**
+ * 未写 children 时铺开的整套结构：照 headless 的 sliderStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容交给 label 部件。
+ */
+function renderDefaultStructure(api: SliderApi, label: ReactNode, hiddenInput: boolean): ReactNode[] {
+  const slotted = label != null && typeof label !== 'string'
+  const nodes = sliderStructure(api, { label: typeof label === 'string' ? label : undefined, hiddenInput, slotted: name => name === 'label' && slotted })
+  return renderStructure(withoutSelfAssembled(nodes), SLIDER_PARTS, node => (node.slot ? label : undefined))
 }
