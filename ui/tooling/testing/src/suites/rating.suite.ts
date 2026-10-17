@@ -110,14 +110,16 @@ export const ratingSuite: ConformanceSuite = {
             'aria-labelledby': '@part(label)',
             // 星星恒是一条横排，上下键照样接
             'aria-orientation': 'horizontal',
-            // 三个 aria 布尔显式给出 false，不省略
+            // 四个 aria 布尔显式给出 false，不省略
             'aria-disabled': 'false',
             'aria-readonly': 'false',
             'aria-required': 'false',
+            'aria-invalid': 'false',
             // 一颗星都没评，无锚点，Tab 位由容器兜底
             'tabindex': '0',
             'data-disabled': null,
             'data-readonly': null,
+            'data-invalid': null,
           },
           'item': Array.from({ length: COUNT }, (_, i) => ({
             'role': 'radio',
@@ -495,6 +497,18 @@ export const ratingSuite: ConformanceSuite = {
           expect: { parts: { item: stars('●●○○○', 2) }, events: [] },
         },
       ],
+    },
+    {
+      name: 'invalid：星星带报 aria-invalid，root、星星带与每颗星带 data-invalid，交互照常',
+      spec: { apg: APG_ARIA },
+      props: { defaultValue: 2, invalid: true },
+      initial: {
+        parts: {
+          'root': { 'data-invalid': '' },
+          'control': { 'aria-invalid': 'true', 'data-invalid': '', 'tabindex': '0' },
+          'item[1]': { 'data-invalid': '', 'aria-checked': 'true', 'tabindex': '0' },
+        },
+      },
     },
     {
       name: 'disabled：整条带子退出 Tab 序列，键盘与指针一概不认，也不吞键',

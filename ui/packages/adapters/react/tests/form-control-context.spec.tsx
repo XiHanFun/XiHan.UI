@@ -83,10 +83,6 @@ function nonRequiredState(props: ControlState) {
   return { disabled: props.disabled, readOnly: props.readOnly, invalid: props.invalid }
 }
 
-function ratingState(props: ControlState) {
-  return { disabled: props.disabled, readOnly: props.readOnly, required: props.required }
-}
-
 function disabledState(props: ControlState) {
   return { disabled: props.disabled }
 }
@@ -157,7 +153,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'Mention')
     return <XhMentionRoot {...nonRequiredState(props)}><XhMentionInput /></XhMentionRoot>
   if (kind === 'Rating')
-    return <XhRatingRoot {...ratingState(props)} count={1}><XhRatingControl><XhRatingItem value={1} /></XhRatingControl></XhRatingRoot>
+    return <XhRatingRoot {...props} count={1}><XhRatingControl><XhRatingItem value={1} /></XhRatingControl></XhRatingRoot>
   if (kind === 'ToggleGroup')
     return <XhToggleGroupRoot {...disabledState(props)} collection={[{ value: 'a', label: '甲' }]} />
   if (kind === 'Transfer') {
@@ -243,6 +239,7 @@ function expectAtomicState(container: HTMLElement, kind: AtomicControl, enabled:
     expect(control.getAttribute('aria-disabled')).toBe(String(enabled))
     expect(control.getAttribute('aria-readonly')).toBe(String(enabled))
     expect(control.getAttribute('aria-required')).toBe(String(enabled))
+    expect(control.getAttribute('aria-invalid')).toBe(String(enabled))
     return
   }
   if (kind === 'ToggleGroup') {

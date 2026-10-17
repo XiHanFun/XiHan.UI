@@ -3139,6 +3139,7 @@ export type ComponentTokenName
     | '--xh-rating-item-bg-pressed'
     | '--xh-rating-item-fg'
     | '--xh-rating-item-fg-highlighted'
+    | '--xh-rating-item-fg-invalid'
     | '--xh-rating-item-font-size'
     | '--xh-rating-item-gap'
     | '--xh-rating-item-radius'

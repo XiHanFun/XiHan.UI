@@ -40330,6 +40330,19 @@
     transition: clip-path var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
   }
 
+  /* 校验失败：没点亮的那部分星形换成无效色，点亮的部分仍取语气色，分值照样看得出来。
+     排在点亮规则之前：两条同权重，点亮的星由后面那条盖回语气色 */
+  .xh-scope-rating[data-part='item'][data-invalid] {
+    --xh-action-fg-rest: var(--xh-rating-item-fg-invalid, var(--xh-border-invalid));
+    --xh-action-fg-hover: var(--xh-rating-item-fg-invalid, var(--xh-border-invalid));
+    --xh-action-fg-pressed: var(--xh-rating-item-fg-invalid, var(--xh-border-invalid));
+    --xh-action-fg-focus-visible: var(--xh-rating-item-fg-invalid, var(--xh-border-invalid));
+  }
+
+  .xh-scope-rating[data-part='item'][data-invalid]:empty::before {
+    background-color: var(--xh-rating-item-fg-invalid, var(--xh-border-invalid));
+  }
+
   /* 点亮的判据是 data-highlighted，不是 aria-checked：
      aria-checked 只认落定的值，而悬停预览要求手划过去当场就亮。
      两者共用同一档颜色，预览与选中因此看不出差别——这正是"预览"该有的样子。 */
@@ -40402,7 +40415,8 @@
     }
 
     /* 两层星形都是 mask 挖出来的底色：退出强制换色、直接写系统色，空星 GrayText、点亮的那层 Highlight */
-    .xh-scope-rating[data-part='item']:empty::before {
+    .xh-scope-rating[data-part='item']:empty::before,
+    .xh-scope-rating[data-part='item'][data-invalid]:empty::before {
       forced-color-adjust: none;
       background-color: GrayText;
     }

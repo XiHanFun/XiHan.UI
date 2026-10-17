@@ -36,13 +36,14 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} disabled - 完全不可交互：整条评分带退出 Tab 序列，指针与键盘都不响应
  * @attr {boolean} read-only - 只读：仍可聚焦与朗读，但不可修改，也没有悬停预览
  * @attr {boolean} required - 必填标注；表单影子据此参与原生校验
+ * @attr {boolean} invalid - 校验失败标注：星星带写 aria-invalid，各部件写 data-invalid
  * @attr {string} name - 表单字段名；提供后表单影子才带 name 并参与提交
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键与指针落在哪半边的语义，默认 ltr
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 评分变化；detail 为 `{ value: number }`
  * @fires hover-change - 悬停预览变化；detail 为 `{ value: number | null }`，指针离开时带 null
- * @csspart root - 承载 data-disabled / data-readonly / data-empty 的外壳
+ * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty 的外壳
  * @csspart label - 评分带标题（aria-labelledby 目标）
  * @csspart control - role=radiogroup 的星星带，键盘交互全部在它身上
  * @csspart item - role=radio 的一颗星，作者用 value 属性声明它是第几颗；
@@ -68,6 +69,7 @@ export class XhRatingElement extends XhElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     required: { converter: BOOLEAN_CONVERTER },
+    invalid: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     tone: { converter: STRING_CONVERTER },
@@ -84,6 +86,7 @@ export class XhRatingElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare required?: boolean
+  declare invalid?: boolean
   declare name?: string
   declare direction?: Direction
   declare tone?: Tone
@@ -101,7 +104,7 @@ export class XhRatingElement extends XhElement {
   private readonly ctrl = new MachineController<RatingSchema>(this, ratingMachine, () => this.machineProps())
   private inheritedControl: FormControlState | undefined
 
-  /** 最近的 Field 或 Form 只交状态；Rating 仅消费公开的禁用、只读、必填三轴。 */
+  /** 最近的 Field 或 Form 只交状态；Rating 消费公开的禁用、只读、必填与无效四轴。 */
   setFormControlState(state: FormControlState | undefined): void {
     this.inheritedControl = state
     this.requestUpdate()
@@ -112,6 +115,7 @@ export class XhRatingElement extends XhElement {
       disabled: this.disabled,
       readOnly: this.readOnly,
       required: this.required,
+      invalid: this.invalid,
     }, this.inheritedControl)
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
@@ -124,6 +128,7 @@ export class XhRatingElement extends XhElement {
       disabled: control.disabled,
       readOnly: control.readOnly,
       required: control.required,
+      invalid: control.invalid,
       name: this.name,
       dir: this.direction,
       tone: this.tone,

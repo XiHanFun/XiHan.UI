@@ -63,6 +63,8 @@ export interface RatingSchema extends MachineSchema {
     /** 只读：仍可聚焦、仍能被读屏朗读，但不可修改，也不提供悬停预览。 */
     readOnly?: boolean
     required?: boolean
+    /** 校验失败标注：radiogroup 写 aria-invalid，各部件写 data-invalid。 */
+    invalid?: boolean
     /** 表单字段名；提供后表单影子才带 name 并参与提交。 */
     name?: string
     /** 文字方向，默认 'ltr'。只改写左右方向键与指针落在哪半边的语义。 */
@@ -139,6 +141,7 @@ export interface RatingApi<T extends PropTypes = PropTypes> {
   empty: boolean
   disabled: boolean
   readOnly: boolean
+  invalid: boolean
   /** 1..count 的序号表，作者直接遍历它渲染星星。 */
   items: readonly number[]
   getItemState: (props: RatingItemProps) => RatingItemState

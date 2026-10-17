@@ -69,10 +69,8 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
     return `<xh-color-picker ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger">选择</button></div><div data-xh-part="positioner"><div data-xh-part="content"></div></div></div></xh-color-picker>`
   if (kind === 'mention')
     return `<xh-mention ${nonRequiredMarkup}><div data-xh-part="root"><input data-xh-part="input"><div data-xh-part="positioner"><div data-xh-part="content"></div></div></div></xh-mention>`
-  if (kind === 'rating') {
-    const ratingMarkup = markup.replace(/\binvalid(?:="false")?/g, '')
-    return `<xh-rating ${ratingMarkup} count="1"><div data-xh-part="root"><div data-xh-part="control"><span data-xh-part="item" value="1"></span></div></div></xh-rating>`
-  }
+  if (kind === 'rating')
+    return `<xh-rating ${markup} count="1"><div data-xh-part="root"><div data-xh-part="control"><span data-xh-part="item" value="1"></span></div></div></xh-rating>`
   if (kind === 'toggle-group') {
     const disabledMarkup = markup.replace(/\b(?:read-only|required|invalid)(?:="false")?/g, '')
     return `<xh-toggle-group ${disabledMarkup}><div data-xh-part="root"><button data-xh-part="item" value="a">甲</button></div></xh-toggle-group>`
@@ -164,6 +162,7 @@ async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabl
     })
     expect(control!.getAttribute('aria-readonly')).toBe(String(enabled))
     expect(control!.getAttribute('aria-required')).toBe(String(enabled))
+    expect(control!.getAttribute('aria-invalid')).toBe(String(enabled))
     return
   }
   if (kind === 'toggle-group') {

@@ -59,6 +59,8 @@ export interface XhRatingRootProps extends RootElementProps {
   disabled?: boolean
   readOnly?: boolean
   required?: boolean
+  /** 校验失败标注。 */
+  invalid?: boolean
   /** 表单字段名；提供后表单影子才带 name 并参与提交。 */
   name?: string
   /** 文字方向，默认 ltr。 */
@@ -81,6 +83,7 @@ export function XhRatingRoot({
   disabled,
   readOnly,
   required,
+  invalid,
   name,
   dir,
   tone,
@@ -100,6 +103,7 @@ export function XhRatingRoot({
     disabled,
     readOnly,
     required,
+    invalid,
     name,
     dir,
     tone,

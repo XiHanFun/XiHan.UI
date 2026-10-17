@@ -62618,6 +62618,34 @@
       "description": "rating 的 item 部件 background-color、background-image、color 覆盖槽。"
     },
     {
+      "name": "--xh-rating-item-fg-invalid",
+      "component": "rating",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color",
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "empty",
+        "focus-visible",
+        "hover",
+        "invalid",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "rating 的 item 部件 background-color、color 覆盖槽。"
+    },
+    {
       "name": "--xh-rating-item-font-size",
       "component": "rating",
       "part": [
