@@ -152,8 +152,9 @@ const wcAccordionSuite = authorDisabled(accordionSuite)
 // 用例级 fixture 有两种：整棵重建（此时树里没有影子）与从默认树派生（此时影子已在树里）。
 // 后者再补一个就成了两份 hidden-select——元素只接线头一份，第二份是个裸 <select>，
 // 既没名字也没藏起来，读屏能走到它。补之前先看有没有，两种写法都只得到一份。
+// 不写结构的用例只写 root，影子由元素按标准结构生成，不补。
 function withHiddenSelect(node: FixtureNode): FixtureNode {
-  if (node.part !== 'root')
+  if (node.part !== 'root' || node.defaultStructure)
     return node
   const children = node.children ?? []
   if (children.some(c => c.part === 'hidden-select'))

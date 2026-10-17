@@ -57019,7 +57019,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-select>`：Light-DOM 行为宿主：作者写 root / trigger / value-text / positioner / content / item / ...\n角色节点，元素运行 select 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 trigger、被定位的浮层取 positioner。\n条目身份取作者写在 item 上的 value 属性，禁用由部件声明（aria-disabled）。\n\nvalue-text 的显示文字、overflow-tag 的 +N 与表单影子 hidden-select 的选项由元素填入，作者只需提供空节点；\nvalue-text / overflow-tag 中作者写了内容则由作者负责，元素不再改写。\n\ntag 与 overflow-tag 两个角色节点接线为库内 tag 的 root（DOM 上带 data-scope=\"tag\"，使用 tag 的皮肤）：\n语气、尺寸与禁用从本元素传下，形态按控件的面派生（outline / ghost / 默认使用淡底标签，subtle 使用描边标签）。\n节点中只有文字时元素为它包一层 tag 的 label（截断落在该层），\n作者自行写了子节点则原样保留。item-delete-trigger 接线为所在标签那份 tag 的 close-trigger。",
+          "description": "`<xh-select>`：Light-DOM 行为宿主：作者写 root / trigger / value-text / positioner / content / item / ...\n角色节点，元素运行 select 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 trigger、被定位的浮层取 positioner。\n条目身份取作者写在 item 上的 value 属性，禁用由部件声明（aria-disabled）。\n\n不写部件（或只写 root）时元素按标准结构生成整套节点：表单影子、标题（label）、盒（带不带清空钮看 clearable）、\n浮层与 collection 的条目。标题、条目文字与行首行尾可以由宿主直接子节点接管：`slot=\"label\"`、\n`slot=\"item:<值>\"`、`slot=\"item-prefix:<值>\"`、`slot=\"item-suffix:<值>\"`。\n\nvalue-text 的显示文字、overflow-tag 的 +N 与表单影子 hidden-select 的选项由元素填入，作者只需提供空节点；\nvalue-text / overflow-tag 中作者写了内容则由作者负责，元素不再改写。\n\ntag 与 overflow-tag 两个角色节点接线为库内 tag 的 root（DOM 上带 data-scope=\"tag\"，使用 tag 的皮肤）：\n语气、尺寸与禁用从本元素传下，形态按控件的面派生（outline / ghost / 默认使用淡底标签，subtle 使用描边标签）。\n节点中只有文字时元素为它包一层 tag 的 label（截断落在该层），\n作者自行写了子节点则原样保留。item-delete-trigger 接线为所在标签那份 tag 的 close-trigger。",
           "name": "XhSelectElement",
           "cssParts": [
             {
@@ -57156,6 +57156,15 @@
             },
             {
               "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhSelectElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? selectStructure(connectSelect(host.ctrl.service, wcNormalize), { label: host.label, clearable: host.clearable, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
+            },
+            {
+              "kind": "field",
               "name": "collection",
               "privacy": "public",
               "type": {
@@ -57178,6 +57187,24 @@
                 "text": "boolean | undefined"
               },
               "attribute": "lazy-mount"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "clearable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "clearable"
             },
             {
               "kind": "field",
@@ -57771,6 +57798,22 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "生成结构时盒里带清空按钮；手写部件时不使用它，写了 clear-trigger 即可清空",
+              "name": "clearable",
+              "fieldName": "clearable"
+            },
             {
               "type": {
                 "text": "string | string[] | undefined"

@@ -264,6 +264,19 @@ export function createStructureState(): StructureState {
   return { keys: new WeakMap(), adopted: new Map() }
 }
 
+/** 作者有没有给这个插槽（slot 属性值）写内容：宿主直接子节点里待搬的，或已经搬进结构、还在原处的。 */
+export function hasSlotContent(host: Element, state: StructureState, slot: string): boolean {
+  for (const child of Array.from(host.children)) {
+    if (child.getAttribute('slot') === slot && !child.hasAttribute(GEN_ATTR))
+      return true
+  }
+  for (const [node, target] of state.adopted) {
+    if (node.parentElement === target && node.getAttribute('slot') === slot)
+      return true
+  }
+  return false
+}
+
 /**
  * 按规则同步宿主的标准结构：
  * 1. 作者没写部件（或只写了 root）时生成：没写 root 连 root 一起生成，写了就生成在它里面；
@@ -317,12 +330,13 @@ export function syncStructure(
     }
   }
 
-  // 部件随结构被摘掉时，里面的作者节点跟着离场：放回宿主，等下一个同名部件出现再搬；作者自己挪走的不管
+  // 部件随结构被摘掉时，里面的作者节点跟着离场：放回宿主，等下一个同名部件出现再搬；作者自己挪走的不管。
+  // 部件跟着浮层搬进 portal 落点时仍在文档里，不算摘掉
   for (const [node, target] of state.adopted) {
     if (node.parentElement !== target) {
       state.adopted.delete(node)
     }
-    else if (!host.contains(target)) {
+    else if (!target.isConnected) {
       host.append(node)
       state.adopted.delete(node)
     }

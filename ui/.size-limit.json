@@ -196,7 +196,7 @@
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "698 kB"
+    "limit": "701 kB"
   },
   {
     "name": "headless/locale（十种语言整份）",
@@ -208,7 +208,7 @@
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "747 kB",
+    "limit": "750 kB",
     "ignore": [
       "vue"
     ]
@@ -235,7 +235,7 @@
     "name": "react",
     "path": "packages/adapters/react/dist/index.js",
     "gzip": true,
-    "limit": "745 kB",
+    "limit": "749 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -297,7 +297,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "750 kB"
+    "limit": "753 kB"
   },
   {
     "name": "web-components/define：只按需注册一个元素（defineXhElement + XhStatisticElement）",
@@ -398,7 +398,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhSelectRoot }",
     "gzip": true,
-    "limit": "55 kB",
+    "limit": "56 kB",
     "ignore": [
       "vue"
     ]

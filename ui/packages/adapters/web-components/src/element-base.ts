@@ -17,7 +17,7 @@ import { validatePartContract } from './dom/part-contract'
 import { containsPart, discoverParts, PART_OWNER_ATTR } from './dom/parts'
 import { createSpreader } from './dom/spread'
 import { reportStackingTrap } from './dom/stacking-context'
-import { createStructureState, syncStructure } from './dom/structure'
+import { createStructureState, hasSlotContent, slotAttrOf, syncStructure } from './dom/structure'
 import { XhReactiveElement } from './reactive'
 
 let instanceSeq = 0
@@ -86,6 +86,11 @@ export abstract class XhElement extends XhReactiveElement {
   static dependencies?: Readonly<Record<string, CustomElementConstructor>>
 
   private readonly structureState = createStructureState()
+
+  /** 作者有没有给标准结构的这个插槽写内容（宿主直接子节点上的 `slot="<name>"` / `slot="<name>:<key>"`）：结构函数的 slotted 照它答。 */
+  protected slotted(name: string, key?: string): boolean {
+    return hasSlotContent(this as unknown as HTMLElement, this.structureState, slotAttrOf({ name, key }))
+  }
 
   private fieldWiring: FieldControlWiring | undefined
 

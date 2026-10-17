@@ -6,12 +6,14 @@
 // 提供 select 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, SelectApi, SelectGroupProps, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, SelectApi, SelectGroupProps, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
+import { selectStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
@@ -26,6 +28,24 @@ export type SelectRootSlotProps = Pick<
   SelectApi,
   'open' | 'value' | 'displayText' | 'tags' | 'overflowCount' | 'overflowText' | 'setOpen' | 'setValue' | 'clear' | 'deselect'
 >
+
+/**
+ * 表单影子：由根部件装配，作者不必手写。空串选项打底，每个选中值一个 selected 选项，供 required 判定。
+ * 选中态一律靠选项的 selected 表达，多选下 select.value 表达不了集合。
+ */
+const SelectHiddenSelect = /* @__PURE__ */ defineComponent({
+  name: 'XhSelectHiddenSelect',
+  setup() {
+    const ctx = useSelectContext()
+    return () => {
+      const api = ctx.api.value
+      const options = [h('option', { value: '' })]
+      for (const [i, v] of api.value.entries())
+        options.push(h('option', { value: v, selected: true }, api.valueText[i] ?? v))
+      return h('select', api.getHiddenSelectProps() as Record<string, unknown>, options)
+    }
+  },
+})
 
 export const XhSelectRoot = /* @__PURE__ */ defineComponent({
   name: 'XhSelectRoot',
@@ -93,43 +113,27 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
     const ctx = useSelect(withHandlers(withXhConfig('select', useFormControlProps(props)), { onClear: () => emit('clear') }) as SelectProps, notifyValue, notifyOpen)
     provideSelect(ctx)
 
-    // 表单影子由根部件装配：空串选项打底，每个选中值一个 selected 选项，供 required 判定。
-    // 选中态一律靠选项的 selected 表达，多选下 select.value 表达不了集合。
-    const hiddenSelect = (): VNode => {
+    return () => {
       const api = ctx.api.value
-      const options = [h('option', { value: '' })]
-      for (const [i, v] of api.value.entries())
-        options.push(h('option', { value: v, selected: true }, api.valueText[i] ?? v))
-      return h('select', api.getHiddenSelectProps() as Record<string, unknown>, options)
+      const rootProps = api.getRootProps() as Record<string, unknown>
+      if (!slots.default)
+        return h('div', rootProps, renderDefaultStructure(api, props.label, props.clearable, slots))
+      return h('div', rootProps, [
+        h(SelectHiddenSelect),
+        ...(slots.default({
+          open: api.open,
+          value: api.value,
+          displayText: api.displayText,
+          tags: api.tags,
+          overflowCount: api.overflowCount,
+          overflowText: api.overflowText,
+          setOpen: api.setOpen,
+          setValue: api.setValue,
+          clear: api.clear,
+          deselect: api.deselect,
+        }) ?? []),
+      ])
     }
-
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [
-      hiddenSelect(),
-      ...(slots.default
-        ? slots.default({
-          open: ctx.api.value.open,
-          value: ctx.api.value.value,
-          displayText: ctx.api.value.displayText,
-          tags: ctx.api.value.tags,
-          overflowCount: ctx.api.value.overflowCount,
-          overflowText: ctx.api.value.overflowText,
-          setOpen: ctx.api.value.setOpen,
-          setValue: ctx.api.value.setValue,
-          clear: ctx.api.value.clear,
-          deselect: ctx.api.value.deselect,
-        }) ?? []
-        : props.collection
-          ? renderDefaultTree(
-              ctx.api.value.collection,
-              props.multiple ? ctx.api.value.tags : null,
-              slots.label?.() ?? (props.label != null ? [props.label] : null),
-              props.clearable,
-              slots.item,
-              slots['item-prefix'],
-              slots['item-suffix'],
-            )
-          : []),
-    ])
   },
 })
 
@@ -460,47 +464,54 @@ export const XhSelectItemIndicator = /* @__PURE__ */ defineComponent({
   },
 })
 
+/** 标准结构里各部件对应的组件；标签与 +N 委派给 tag，按「tag/部件名」找。 */
+const SELECT_PARTS = {
+  'hidden-select': SelectHiddenSelect,
+  'label': XhSelectLabel,
+  'control': XhSelectControl,
+  'trigger': XhSelectTrigger,
+  'value-text': XhSelectValueText,
+  'indicator': XhSelectIndicator,
+  'clear-trigger': XhSelectClearTrigger,
+  'tag-list': XhSelectTagList,
+  'tag/tag': XhSelectTag,
+  'tag/overflow-tag': XhSelectOverflowTag,
+  'positioner': XhSelectPositioner,
+  'content': XhSelectContent,
+  'list': XhSelectList,
+  'item': XhSelectItem,
+  'item-prefix': XhSelectItemPrefix,
+  'item-text': XhSelectItemText,
+  'item-description': XhSelectItemDescription,
+  'item-suffix': XhSelectItemSuffix,
+  'item-indicator': XhSelectItemIndicator,
+}
+
+interface SelectStructureSlots {
+  'label'?: () => VNode[]
+  'item'?: (node: SelectNodeMeta) => VNode[]
+  'item-prefix'?: (node: SelectNodeMeta) => VNode[]
+  'item-suffix'?: (node: SelectNodeMeta) => VNode[]
+}
+
 /**
- * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
+ * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 selectStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题、条目文字与行首行尾由对应插槽接管。
  */
-function renderDefaultTree(
-  collection: readonly SelectNodeMeta[],
-  tags: readonly SelectTagMeta[] | null,
-  label: (VNode | string)[] | null,
-  clearable: boolean,
-  itemSlot?: (node: SelectNodeMeta) => VNode[],
-  prefixSlot?: (node: SelectNodeMeta) => VNode[],
-  suffixSlot?: (node: SelectNodeMeta) => VNode[],
-): VNode[] {
-  // 多选的已选项在触发器里排成标签：占位文字与标签行同时写着，有选中时标签露面、占位让位；
-  // 触发器里的标签只作展示（按钮不能套按钮），摆不下的折进 +N
-  const trigger = h(XhSelectTrigger, null, () => [
-    h(XhSelectValueText),
-    ...(tags
-      ? [h(XhSelectTagList, null, () => [
-          ...tags.map(tag => h(XhSelectTag, { key: tag.value, value: tag.value }, () => tag.label)),
-          h(XhSelectOverflowTag),
-        ])]
-      : []),
-    h(XhSelectIndicator),
-  ])
-  return [
-    ...(label ? [h(XhSelectLabel, null, () => label)] : []),
-    // control 是盒：描边、底色与聚焦环都长在它上面，触发器与清空钮在里面并排。
-    // 清空钮排在触发器之后（按钮不能套按钮），展开箭头是触发器里的指示符，
-    // 视觉上仍是「清空在左、箭头在右」
-    h(XhSelectControl, null, () => (clearable ? [trigger, h(XhSelectClearTrigger)] : [trigger])),
-    h(XhSelectPositioner, null, () => [
-      h(XhSelectContent, null, () => h(XhSelectList, null, () => collection.map(node =>
-        h(XhSelectItem, { key: node.value, value: node.value }, () => [
-          ...(prefixSlot ? [h(XhSelectItemPrefix, null, () => prefixSlot(node))] : []),
-          h(XhSelectItemText, null, () => itemSlot?.(node) ?? node.label),
-          ...(node.description != null ? [h(XhSelectItemDescription, null, () => node.description)] : []),
-          ...(suffixSlot ? [h(XhSelectItemSuffix, null, () => suffixSlot(node))] : []),
-          h(XhSelectItemIndicator),
-        ]),
-      ))),
-    ]),
-  ]
+function renderDefaultStructure(api: SelectApi, label: string | undefined, clearable: boolean, slots: SelectStructureSlots): VNode[] {
+  const nodes = selectStructure(api, { label, clearable, slotted: name => slots[name as keyof SelectStructureSlots] != null })
+  return renderStructure(nodes, SELECT_PARTS, (node) => {
+    switch (node.slot?.name) {
+      case 'label':
+        return slots.label?.()
+      case 'item':
+        return slots.item?.(node.data as SelectNodeMeta) ?? (node.data as SelectNodeMeta).label
+      case 'item-prefix':
+        return slots['item-prefix']?.(node.data as SelectNodeMeta)
+      case 'item-suffix':
+        return slots['item-suffix']?.(node.data as SelectNodeMeta)
+      default:
+        return undefined
+    }
+  })
 }

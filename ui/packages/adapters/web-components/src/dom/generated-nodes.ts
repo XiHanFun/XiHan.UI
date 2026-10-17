@@ -77,6 +77,7 @@ export function hasAuthorContent(host: Element): boolean {
  * 同一父节点里别的生成节点（另一套生成逻辑写的）不动，夹在这些节点之间的作者节点也不动：只排它们之间的先后。
  * 先摘掉多出的再排次序：挪动一个已在文档里的节点会让它里面的焦点丢掉，
  * 前景层的标记收起时若先排后摘，其后的节点都得挪一遍，聚焦的图元随之失焦。
+ * 复用的节点被搬到了别处、仍在文档里（浮层搬进 portal 落点）时留在原处，不拉回来：搬走它的一方会把它放回原位。
  */
 export function reconcile<T>(
   parent: Element,
@@ -106,7 +107,9 @@ export function reconcile<T>(
     return sibling
   }
   let cursor: Element | null = generatedChildren(parent, mark)[0] ?? null
-  for (const node of next.values()) {
+  for (const [key, node] of next) {
+    if (node.parentNode !== parent && node.isConnected && known.get(key) === node)
+      continue
     if (node === cursor)
       cursor = after(cursor)
     else
