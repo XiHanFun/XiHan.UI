@@ -7,8 +7,9 @@
 
 import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, TagGroupApi, TagGroupItemDeleteDetails, TagGroupItemProps, TagGroupNode, TagGroupSchema, TagGroupSelectionMode, TagGroupTranslations, TagGroupValueChangeDetails, TagVariant } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTagGroup, resolveFormControlState, tagGroupAnatomy, tagGroupMachine, tagGroupMeta } from '@xihan-ui/headless'
+import { connectTagGroup, resolveFormControlState, tagGroupAnatomy, tagGroupMachine, tagGroupMeta, tagGroupStructure } from '@xihan-ui/headless'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -38,7 +39,12 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 选中值是集合：单选可以直接写 value="a" 属性，多选只能通过 property 设置（`el.value = ['a','b']`），
  * 属性无法表达数组。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）与标签列表，列表里 collection 的每条数据一枚标签
+ * （格子里是文字、选中标记与摘除钮）；这时移除标签由宿主改 collection。标题与标签文字可以由宿主直接子节点接管：
+ * `slot="label"`、`slot="item:<值>"`。
+ *
  * @customElement xh-tag-group
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控选中值（单选简写）；未提供该属性即非受控，多选通过 property 设置
  * @attr {string} default-value - 非受控初始选中值
  * @attr {'none'|'single'|'multiple'} selection-mode - 选择模式，默认 none
@@ -72,6 +78,15 @@ export class XhTagGroupElement extends XhElement {
     delegates: [{ name: 'tag', parts: ['item', 'item-text', 'item-delete-trigger'] }],
   }
 
+  static override structure: ElementStructure<XhTagGroupElement> = {
+    build: host => host.ctrl.service
+      ? tagGroupStructure(connectTagGroup(host.ctrl.service, wcNormalize), {
+          label: host.label,
+          slotted: (name, key) => host.slotted(name, key),
+        })
+      : undefined,
+  }
+
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -79,6 +94,7 @@ export class XhTagGroupElement extends XhElement {
     // 数组只走 property，属性表达不了；给了它条目的禁用与可摘即以数据为准
     collection: { attribute: false },
     translations: { attribute: false },
+    label: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
@@ -96,6 +112,7 @@ export class XhTagGroupElement extends XhElement {
 
   declare collection?: TagGroupNode[]
   declare translations?: Partial<TagGroupTranslations>
+  declare label?: string
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare selectionMode?: TagGroupSelectionMode
