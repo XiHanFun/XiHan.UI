@@ -303,6 +303,18 @@ export const transferSuite: ConformanceSuite = {
       },
     },
     {
+      name: '必填：已选一侧的列表报 aria-required，待选一侧不写，根带 data-required',
+      spec: { apg: APG },
+      props: { required: true },
+      initial: {
+        parts: {
+          'root': { 'data-required': '' },
+          'list[0]': { 'aria-required': null },
+          'list[1]': { 'aria-required': 'true' },
+        },
+      },
+    },
+    {
       name: 'roving tabindex：两侧各留一个 Tab 停靠点，焦点进来后该侧列表让位、另一侧不受影响',
       spec: { apg: APG },
       covers: ['transfer.kbd.tab'],

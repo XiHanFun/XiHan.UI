@@ -71,6 +71,7 @@ function stripNativeDisabled(el: HTMLElement): void {
  * @attr {boolean} disabled - 整个控件禁用：条目为 aria-disabled，按钮与搜索框使用原生 disabled
  * @attr {boolean} read-only - 只读：两侧照常浏览与搜索，但勾选不可修改、也不可移动
  * @attr {boolean} invalid - 校验失败标注
+ * @attr {boolean} required - 必填：至少移过去一项。已选一侧的列表报告 aria-required，没有值时表单的空值占位影子带原生 required
  * @attr {boolean} loading - 条目加载中：两侧列表报告 aria-busy，显示在途占位、隐藏空态占位
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -122,6 +123,7 @@ export class XhTransferElement extends XhElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
+    required: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -146,6 +148,7 @@ export class XhTransferElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
+  declare required?: boolean
   declare loading?: boolean
   declare tone?: Tone
   declare size?: Size
@@ -213,6 +216,7 @@ export class XhTransferElement extends XhElement {
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
+      required: this.required,
     }, this.inheritedControl)
     return {
       collection: this.collection,
@@ -229,6 +233,7 @@ export class XhTransferElement extends XhElement {
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,
+      required: control.required,
       loading: this.loading,
       tone: this.tone,
       size: this.size,
@@ -304,16 +309,19 @@ export class XhTransferElement extends XhElement {
   protected wire(): void {
     const api = connectTransfer(this.ctrl.service, wcNormalize)
 
-    // 原生出口由宿主管理，零值不产生空字符串字段；不带 data-xh-part 以免重复接管。
-    while (this.formInputs.length > api.value.length) {
+    // 原生出口由宿主管理，零值不产生空字符串字段，必填时补一条空值占位（原生 required 才拦得住）；
+    // 不带 data-xh-part 以免重复接管。
+    const inputCount = api.value.length || (api.required ? 1 : 0)
+    while (this.formInputs.length > inputCount) {
       const input = this.formInputs.pop()!
       this.spreader.release(input)
       input.remove()
     }
-    for (let index = 0; index < api.value.length; index++) {
+    for (let index = 0; index < inputCount; index++) {
       const input = this.formInputs[index] ?? this.ownerDocument.createElement('input')
       this.formInputs[index] = input
-      this.spreader.spread(input, api.getHiddenInputProps({ value: api.value[index]! }) as Record<string, unknown>)
+      const value = api.value[index]
+      this.spreader.spread(input, api.getHiddenInputProps(value === undefined ? undefined : { value }) as Record<string, unknown>)
       if (input.parentElement !== this)
         this.append(input)
     }

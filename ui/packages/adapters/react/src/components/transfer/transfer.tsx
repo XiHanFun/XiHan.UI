@@ -88,6 +88,8 @@ export interface XhTransferRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
+  /** 必填：至少移过去一项。已选一侧的列表报告 aria-required，没有值时表单的空值占位影子带原生 required。 */
+  required?: boolean
   loading?: boolean
   tone?: Tone
   size?: Size
@@ -115,6 +117,7 @@ export function XhTransferRoot({
   disabled,
   readOnly,
   invalid,
+  required,
   loading,
   tone,
   size,
@@ -142,6 +145,7 @@ export function XhTransferRoot({
     disabled,
     readOnly,
     invalid,
+    required,
     loading,
     tone,
     size,
@@ -171,6 +175,8 @@ export function XhTransferRoot({
           move: api.move,
         })}
         {api.value.map(value => <input key={value} {...api.getHiddenInputProps({ value }) as Record<string, unknown>} />)}
+        {/* 必填且没有值：补一份空值占位，原生 required 才拦得住空表单 */}
+        {api.value.length === 0 && api.required && <input {...mergeReactProps(api.getHiddenInputProps() as Record<string, unknown>, { onChange: noop })} />}
       </div>
     </TransferProvider>
   )

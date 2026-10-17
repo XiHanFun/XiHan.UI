@@ -165,6 +165,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `disabled` | `boolean` |  | 整个控件禁用：条目为 aria-disabled，三个按钮与搜索框使用原生 disabled。 |
 | `readOnly` | `boolean` |  | 只读：两侧照常浏览与搜索，但勾选不可修改、也不可移动。禁用还额外移除键盘入口。 |
 | `invalid` | `boolean` |  | 校验失败：两侧列表报告 aria-invalid，各角色节点带 data-invalid。 |
+| `required` | `boolean` |  | 必填：至少移过去一项。已选一侧（target）的列表报告 aria-required，根带 data-required； 一个值一份表单影子，没有值时没有影子，此时补一份空值的占位影子带原生 required，拦下空表单的提交。 |
 | `loading` | `boolean` |  | 条目加载中：两侧列表报告 aria-busy，显示在途占位、隐藏空态占位。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选标记使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目与勾选格的几何档位。 |
@@ -247,6 +248,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
+| `required` | `boolean` |  |
 | `oneWay` | `boolean` |  |
 | `searchable` | `boolean` |  |
 | `visibleItems` | `(side: TransferSide) => readonly TransferItem[]` | 某一侧当前可见的条目（分侧 + 搜索 + 分页之后），顺序恒为 collection 原序。 |
@@ -268,7 +270,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `toggleAll` | `(side: TransferSide) => void` |  |
 | `move` | `(to: TransferSide) => void` | 程序化移动；焦点安排不在这里处理，那需要知道触发的节点。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getHiddenInputProps` | `(props: { value: string }) => T['input']` | 单个目标值的原生出口；适配器按 value 数组逐项渲染，空集合不提交字段。 |
+| `getHiddenInputProps` | `(props?: { value: string }) => T['input']` | 单个目标值的原生出口；适配器按 value 数组逐项渲染，空集合不提交字段。不给 value 是必填且没有值时的空值占位，带原生 required。 |
 | `getPanelProps` | `(props: TransferPanelProps) => T['element']` |  |
 | `getPanelHeaderProps` | `(props: TransferPanelProps) => T['element']` |  |
 | `getPanelTitleProps` | `(props: TransferPanelProps) => T['element']` |  |
@@ -315,6 +317,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `hidden-input` | `aria-hidden` | 'true' |
 | `search` | `aria-controls` | listId[panel.side] |
 | `search` | `aria-labelledby` | titleId[panel.side] |
 | `list` | `aria-busy` | 'true' \| undefined |
@@ -323,6 +326,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `list` | `aria-labelledby` | titleId[panel.side] |
 | `list` | `aria-multiselectable` | 'true' \| 'false' |
 | `list` | `aria-readonly` | 'true' \| 'false' |
+| `list` | `aria-required` | 'true' \| 'false' \| undefined |
 | `list` | `role` | 'listbox' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
 | `group` | `role` | 'group' |
@@ -357,6 +361,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-one-way` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `panel-header` | `data-disabled` | ''（条件成立时才出现） |

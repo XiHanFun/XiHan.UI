@@ -128,6 +128,11 @@ export interface TransferSchema extends MachineSchema {
     readOnly?: boolean
     /** 校验失败：两侧列表报告 aria-invalid，各角色节点带 data-invalid。 */
     invalid?: boolean
+    /**
+     * 必填：至少移过去一项。已选一侧（target）的列表报告 aria-required，根带 data-required；
+     * 一个值一份表单影子，没有值时没有影子，此时补一份空值的占位影子带原生 required，拦下空表单的提交。
+     */
+    required?: boolean
     /** 条目加载中：两侧列表报告 aria-busy，显示在途占位、隐藏空态占位。 */
     loading?: boolean
     /** 语气：brand / neutral / success / warning / danger / info，决定勾选标记使用哪族颜色。 */
@@ -231,6 +236,7 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   disabled: boolean
   readOnly: boolean
   invalid: boolean
+  required: boolean
   oneWay: boolean
   searchable: boolean
   /** 某一侧当前可见的条目（分侧 + 搜索 + 分页之后），顺序恒为 collection 原序。 */
@@ -262,8 +268,8 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   /** 程序化移动；焦点安排不在这里处理，那需要知道触发的节点。 */
   move: (to: TransferSide) => void
   getRootProps: () => T['element']
-  /** 单个目标值的原生出口；适配器按 value 数组逐项渲染，空集合不提交字段。 */
-  getHiddenInputProps: (props: { value: string }) => T['input']
+  /** 单个目标值的原生出口；适配器按 value 数组逐项渲染，空集合不提交字段。不给 value 是必填且没有值时的空值占位，带原生 required。 */
+  getHiddenInputProps: (props?: { value: string }) => T['input']
   getPanelProps: (props: TransferPanelProps) => T['element']
   getPanelHeaderProps: (props: TransferPanelProps) => T['element']
   getPanelTitleProps: (props: TransferPanelProps) => T['element']
