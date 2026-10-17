@@ -323,7 +323,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     if (this.#accordion)
       return this.#accordion
     const doc = this.ownerDocument
-    const accordion: HTMLElement & { value?: string[] } = createAuthoredElement(doc, 'xh-accordion', { 'multiple': true, 'size': 'sm', 'data-part': 'accordion' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' })])
+    const accordion: HTMLElement & { value?: string[] } = createAuthoredElement(doc, 'xh-accordion', { 'multiple': true, 'size': 'sm', 'content-role': 'group', 'data-part': 'accordion' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' })])
     accordion.addEventListener('value-change', (event) => {
       event.stopPropagation()
       const open = (event as CustomEvent<{ value: string[] }>).detail.value

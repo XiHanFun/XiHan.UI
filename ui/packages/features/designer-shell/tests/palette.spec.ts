@@ -168,7 +168,7 @@ describe('<xh-designer-palette>', () => {
     expect(items(palette)).toHaveLength(4)
   })
 
-  it('collapsible 时分组用手风琴，折叠状态保留，搜索时匹配的分组展开', async () => {
+  it('collapsible 时分组用手风琴，正文是组而非地标，折叠状态保留，搜索时匹配的分组展开', async () => {
     const palette = await mount((element) => {
       element.groups = groups
       element.collapsible = true
@@ -176,6 +176,11 @@ describe('<xh-designer-palette>', () => {
     })
     const accordion = (): HTMLElement & { value?: string[] } => palette.querySelector('xh-accordion')!
     expect(accordion().value).toEqual(['human', 'control'])
+    // 分组正文是以分组标题命名的组，不当地标
+    const contents = Array.from(accordion().querySelectorAll('[data-scope="accordion"][data-part="content"]'))
+    expect(contents.map(content => content.getAttribute('role'))).toEqual(['group', 'group'])
+    expect(contents.every(content => content.getAttribute('aria-labelledby'))).toBe(true)
+    expect(accordion().querySelector('[role="region"]')).toBeNull()
     accordion().dispatchEvent(new CustomEvent('value-change', { detail: { value: ['control'] }, bubbles: true }))
     palette.groups = [...groups]
     await palette.updateComplete
