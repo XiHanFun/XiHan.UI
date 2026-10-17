@@ -223,6 +223,10 @@ max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `prev-year-trigger` | `aria-label` | translations.prevYearTrigger(view) |
+| `prev-trigger` | `aria-label` | translations.prevTrigger(view) |
+| `next-trigger` | `aria-label` | translations.nextTrigger(view) |
+| `next-year-trigger` | `aria-label` | translations.nextYearTrigger(view) |
 | `grid` | `aria-disabled` | 'true' \| 'false' |
 | `grid` | `aria-labelledby` | frame.headingId(panel.index) |
 | `grid` | `aria-multiselectable` | 'true' \| 'false' |

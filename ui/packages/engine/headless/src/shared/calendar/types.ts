@@ -91,6 +91,17 @@ export interface CalendarPanel {
   headingMonth: string
 }
 
+/**
+ * 四颗翻页钮的读屏名，按当前视图给出：日视图翻一页是一个月、快速翻页是一年，月与季度视图是一年与十年，
+ * 年视图是十年与一百年。作者在按钮上自己写了名字时以作者的为准。
+ */
+export interface CalendarNavTranslations {
+  prevTrigger: (view: CalendarView) => string
+  nextTrigger: (view: CalendarView) => string
+  prevYearTrigger: (view: CalendarView) => string
+  nextYearTrigger: (view: CalendarView) => string
+}
+
 /** 两个日历组件都有的 props；各自的选择模型在此之上追加。 */
 export interface CalendarBaseProps {
   /**

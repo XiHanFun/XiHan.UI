@@ -6,7 +6,7 @@
 // 定义 calendar range picker 类型契约。
 
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
-import type { CalendarBaseAction, CalendarBaseApi, CalendarBaseContext, CalendarBaseEffect, CalendarBaseEvent, CalendarBaseProps, CalendarBaseRefs } from '../shared/calendar'
+import type { CalendarBaseAction, CalendarBaseApi, CalendarBaseContext, CalendarBaseEffect, CalendarBaseEvent, CalendarBaseProps, CalendarBaseRefs, CalendarNavTranslations } from '../shared/calendar'
 
 export interface CalendarRangePickerValueChangeDetails {
   /**
@@ -33,7 +33,7 @@ export interface CalendarRangePickerPress {
 }
 
 /** 读屏文案，默认英文。 */
-export interface CalendarRangePickerTranslations {
+export interface CalendarRangePickerTranslations extends CalendarNavTranslations {
   /** 聚焦格上的提示：尚未落下起点时，告知读屏用户本次操作是开始选择区间。 */
   startRangeSelectionPrompt: string
   /** 起点已落下时的提示：本次操作是收尾。 */

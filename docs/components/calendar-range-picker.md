@@ -215,6 +215,10 @@ activeIndex=1 时起点当锚：点在起点之后只改终点，点在起点之
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `prev-year-trigger` | `aria-label` | translations.prevYearTrigger(view) |
+| `prev-trigger` | `aria-label` | translations.prevTrigger(view) |
+| `next-trigger` | `aria-label` | translations.nextTrigger(view) |
+| `next-year-trigger` | `aria-label` | translations.nextYearTrigger(view) |
 | `grid` | `aria-disabled` | 'true' \| 'false' |
 | `grid` | `aria-labelledby` | frame.headingId(panel.index) |
 | `grid` | `aria-multiselectable` | 'true' |

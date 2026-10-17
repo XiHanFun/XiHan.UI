@@ -68,6 +68,7 @@ export type {
   CalendarCellProps,
   CalendarFocusChangeDetails,
   CalendarFocusModel,
+  CalendarNavTranslations,
   CalendarPanel,
   CalendarPanelProps,
   CalendarViewChangeDetails,

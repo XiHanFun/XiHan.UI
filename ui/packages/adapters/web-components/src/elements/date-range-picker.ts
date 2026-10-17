@@ -733,10 +733,16 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
 
     // 内嵌范围日历的角色节点：行为取自本元素持有的那台日历机器
     putAll('header', api.calendar.getHeaderProps() as Record<string, unknown>)
-    putAll('prev-year-trigger', api.calendar.getPrevYearTriggerProps() as Record<string, unknown>)
-    putAll('prev-trigger', api.calendar.getPrevTriggerProps() as Record<string, unknown>)
-    putAll('next-trigger', api.calendar.getNextTriggerProps() as Record<string, unknown>)
-    putAll('next-year-trigger', api.calendar.getNextYearTriggerProps() as Record<string, unknown>)
+    // 四颗翻页钮：作者在按钮上写了名字时以作者的为准
+    for (const [name, props] of [
+      ['prev-year-trigger', api.calendar.getPrevYearTriggerProps()],
+      ['prev-trigger', api.calendar.getPrevTriggerProps()],
+      ['next-trigger', api.calendar.getNextTriggerProps()],
+      ['next-year-trigger', api.calendar.getNextYearTriggerProps()],
+    ] as const) {
+      for (const el of this.getParts(name))
+        this.spreader.spread(el, this.withAuthoredName(el, props as Record<string, unknown>))
+    }
     // 面板逐个打：下标取作者写的 index，没写就按文档序（第 N 张就是第 N 个面板）
     this.getParts('heading').forEach((el, position) => {
       this.spreader.spread(el, api.calendar.getHeadingProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)

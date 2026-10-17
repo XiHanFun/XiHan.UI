@@ -6,9 +6,11 @@
 // 日语语言包。
 
 import type { KeyTextTable } from '@xihan-ui/core/hotkey'
+import type { CalendarView } from '../shared/calendar/grid'
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { XhLocale, XhLocaleTranslations } from './types'
 import { keyText } from '@xihan-ui/core/hotkey'
+import { calendarStepSpan } from './calendar-step'
 import { FILTER_BUILDER_EN_US, FORMAT_INPUT_EN_US } from './en-US'
 import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 
@@ -78,7 +80,16 @@ const tagged = {
 
 const segments = { hour: '時', minute: '分', second: '秒', dayPeriod: '午前/午後' }
 
-const calendar = { todayDate: (date: string) => `今日、${date}` }
+const CALENDAR_PREV = ['前の月', '前の年', '前の10年', '前の100年'] as const
+const CALENDAR_NEXT = ['次の月', '次の年', '次の10年', '次の100年'] as const
+
+const calendar = {
+  todayDate: (date: string) => `今日、${date}`,
+  prevTrigger: (view: CalendarView) => CALENDAR_PREV[calendarStepSpan(view, false)],
+  nextTrigger: (view: CalendarView) => CALENDAR_NEXT[calendarStepSpan(view, false)],
+  prevYearTrigger: (view: CalendarView) => CALENDAR_PREV[calendarStepSpan(view, true)],
+  nextYearTrigger: (view: CalendarView) => CALENDAR_NEXT[calendarStepSpan(view, true)],
+}
 
 const rangeCalendar = {
   ...calendar,

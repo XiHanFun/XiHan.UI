@@ -160,11 +160,12 @@ export function connectCalendarPicker<T extends PropTypes>(
     }),
 
     // 翻月是单体控件，用原生 disabled（不可聚焦、不进 Tab 序列）；日期格子才用 aria-disabled。
-    // 可及名字由作者写在按钮里（文案或 aria-label）
+    // 可及名字按当前视图取 translations；作者在按钮上写了名字时以作者的为准
     // 快速翻年：与上下一页同一副长相，只是步子大。两个都是可选部件，不写即不渲染
     getPrevYearTriggerProps: () => normalize.button({
       ...parts['prev-year-trigger'].attrs,
       'type': 'button',
+      'aria-label': translations.prevYearTrigger(view),
       // 定尺的图标钮（日期翻页按钮）：接 Action Control icon 档、ghost 形态、xs 档正方盒（--xh-control-action-size），
       // 悬停 / 按下 / 禁用面、按压换底、粗指针热区由家族给
       'data-xh-action-control': '',
@@ -181,6 +182,7 @@ export function connectCalendarPicker<T extends PropTypes>(
     getPrevTriggerProps: () => normalize.button({
       ...parts['prev-trigger'].attrs,
       'type': 'button',
+      'aria-label': translations.prevTrigger(view),
       // 定尺的图标钮（日期翻页按钮）：接 Action Control icon 档、ghost 形态、xs 档正方盒（--xh-control-action-size），
       // 悬停 / 按下 / 禁用面、按压换底、粗指针热区由家族给
       'data-xh-action-control': '',
@@ -197,6 +199,7 @@ export function connectCalendarPicker<T extends PropTypes>(
     getNextTriggerProps: () => normalize.button({
       ...parts['next-trigger'].attrs,
       'type': 'button',
+      'aria-label': translations.nextTrigger(view),
       // 定尺的图标钮（日期翻页按钮）：接 Action Control icon 档、ghost 形态、xs 档正方盒（--xh-control-action-size），
       // 悬停 / 按下 / 禁用面、按压换底、粗指针热区由家族给
       'data-xh-action-control': '',
@@ -213,6 +216,7 @@ export function connectCalendarPicker<T extends PropTypes>(
     getNextYearTriggerProps: () => normalize.button({
       ...parts['next-year-trigger'].attrs,
       'type': 'button',
+      'aria-label': translations.nextYearTrigger(view),
       // 定尺的图标钮（日期翻页按钮）：接 Action Control icon 档、ghost 形态、xs 档正方盒（--xh-control-action-size），
       // 悬停 / 按下 / 禁用面、按压换底、粗指针热区由家族给
       'data-xh-action-control': '',

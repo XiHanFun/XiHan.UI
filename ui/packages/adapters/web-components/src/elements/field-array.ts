@@ -196,9 +196,6 @@ export class XhFieldArrayElement extends XhElement {
     this.commands().moveDown(index)
   }
 
-  /** 作者在表格节点上自己写没写名字：头一回见到它时定案。 */
-  private tableOwnName: boolean | undefined
-
   /** 元素代填的文字：首次见到该节点时若已有内容则归作者，之后不再改写。 */
   private readonly ownsText = new WeakMap<HTMLElement, boolean>()
 
@@ -230,10 +227,8 @@ export class XhFieldArrayElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     // 作者在表格节点上自己写了名字时不覆盖
     const tableEl = this.getPart('table')
-    if (tableEl && this.tableOwnName === undefined)
-      this.tableOwnName = tableEl.hasAttribute('aria-label') || tableEl.hasAttribute('aria-labelledby')
-    const tableProps = api.getTableProps() as Record<string, unknown>
-    put('table', this.tableOwnName ? { ...tableProps, 'aria-label': undefined } : tableProps)
+    if (tableEl)
+      this.spreader.spread(tableEl, this.withAuthoredName(tableEl, api.getTableProps() as Record<string, unknown>))
     put('header', api.getHeaderProps() as Record<string, unknown>)
     for (const el of this.getParts('column-header')) {
       const value = el.getAttribute('value') ?? ''

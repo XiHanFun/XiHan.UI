@@ -124,6 +124,22 @@ export abstract class XhElement extends XhReactiveElement {
     return true
   }
 
+  /** 部件头一回见到时作者有没有自己写名字（aria-label / aria-labelledby）：定案后不再改判。 */
+  private readonly authoredNames = new WeakMap<HTMLElement, boolean>()
+
+  /**
+   * 作者在部件上自己写了名字时，去掉这份属性里组件给的缺省名，作者的留着。
+   * 头一回见到部件时判定（那时组件还没往上写过），与 Vue / React 里作者属性排在组件属性之后同一效果。
+   */
+  protected withAuthoredName(el: HTMLElement, props: Record<string, unknown>): Record<string, unknown> {
+    let authored = this.authoredNames.get(el)
+    if (authored === undefined) {
+      authored = el.hasAttribute('aria-label') || el.hasAttribute('aria-labelledby')
+      this.authoredNames.set(el, authored)
+    }
+    return authored ? { ...props, 'aria-label': undefined, 'aria-labelledby': undefined } : props
+  }
+
   private readonly ownSpreader: Spreader = createSpreader()
   /**
    * 子类经它往角色节点上铺属性。节点若是嵌套组件当的部件（asChild）合进去的那个根节点，

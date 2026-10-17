@@ -250,10 +250,16 @@ export class XhCalendarRangePickerElement extends XhElement {
     }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('header', api.getHeaderProps() as Record<string, unknown>)
-    put('prev-year-trigger', api.getPrevYearTriggerProps() as Record<string, unknown>)
-    put('prev-trigger', api.getPrevTriggerProps() as Record<string, unknown>)
-    put('next-trigger', api.getNextTriggerProps() as Record<string, unknown>)
-    put('next-year-trigger', api.getNextYearTriggerProps() as Record<string, unknown>)
+    // 四颗翻页钮：作者在按钮上写了名字时以作者的为准
+    for (const [name, props] of [
+      ['prev-year-trigger', api.getPrevYearTriggerProps()],
+      ['prev-trigger', api.getPrevTriggerProps()],
+      ['next-trigger', api.getNextTriggerProps()],
+      ['next-year-trigger', api.getNextYearTriggerProps()],
+    ] as const) {
+      for (const el of this.getParts(name))
+        this.spreader.spread(el, this.withAuthoredName(el, props as Record<string, unknown>))
+    }
     // 面板逐个打：下标取作者写的 index，没写就按文档序（第 N 张就是第 N 个面板）
     this.getParts('heading').forEach((el, position) => {
       this.spreader.spread(el, api.getHeadingProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)

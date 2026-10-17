@@ -8,9 +8,11 @@
 // 与其他语言包同一形状，只多一层拆分：每个组件一桶，各自是顶层具名导出。组件只引用自己那一桶，
 // 打包器按引用摇树，单个组件不会把整张英文表带进产物；enUS 这一整份只在作者引用它时才进包。
 
+import type { CalendarView } from '../shared/calendar/grid'
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { XhLocale, XhLocaleBucket, XhLocaleTranslations } from './types'
 import { HOTKEY_TEXT_EN_US } from '@xihan-ui/core/hotkey'
+import { calendarStepSpan } from './calendar-step'
 import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 
 const EDGE = {
@@ -48,6 +50,14 @@ const deleteItem = (label: string): string => `Delete ${label}`
 const overflowTag = (count: number): string => `+${count}`
 
 const todayDate = (date: string): string => `Today, ${date}`
+
+const CALENDAR_PREV = ['Previous month', 'Previous year', 'Previous decade', 'Previous century'] as const
+const CALENDAR_NEXT = ['Next month', 'Next year', 'Next decade', 'Next century'] as const
+
+const prevTrigger = (view: CalendarView): string => CALENDAR_PREV[calendarStepSpan(view, false)]
+const nextTrigger = (view: CalendarView): string => CALENDAR_NEXT[calendarStepSpan(view, false)]
+const prevYearTrigger = (view: CalendarView): string => CALENDAR_PREV[calendarStepSpan(view, true)]
+const nextYearTrigger = (view: CalendarView): string => CALENDAR_NEXT[calendarStepSpan(view, true)]
 const startRangeSelectionPrompt = 'Click to start selecting date range'
 const finishRangeSelectionPrompt = 'Click to finish selecting date range'
 const selectedRange = (start: string, end: string): string => `Selected Range: ${start} to ${end}`
@@ -109,9 +119,13 @@ export const BACK_TOP_EN_US: XhLocaleBucket<'back-top'> = { trigger: 'Back to to
 
 export const BREADCRUMB_EN_US: XhLocaleBucket<'breadcrumb'> = { root: 'Breadcrumb', ellipsis: 'Show full path' }
 
-export const CALENDAR_PICKER_EN_US: XhLocaleBucket<'calendar-picker'> = { todayDate }
+export const CALENDAR_PICKER_EN_US: XhLocaleBucket<'calendar-picker'> = { todayDate, prevTrigger, nextTrigger, prevYearTrigger, nextYearTrigger }
 
 export const CALENDAR_RANGE_PICKER_EN_US: XhLocaleBucket<'calendar-range-picker'> = {
+  prevTrigger,
+  nextTrigger,
+  prevYearTrigger,
+  nextYearTrigger,
   todayDate,
   startRangeSelectionPrompt,
   finishRangeSelectionPrompt,
@@ -256,6 +270,10 @@ export const DATE_FIELD_EN_US: XhLocaleBucket<'date-field'> = {
 }
 
 export const DATE_PICKER_EN_US: XhLocaleBucket<'date-picker'> = {
+  prevTrigger,
+  nextTrigger,
+  prevYearTrigger,
+  nextYearTrigger,
   deleteItem,
   overflowTag,
   hour: 'hour',
@@ -268,6 +286,10 @@ export const DATE_PICKER_EN_US: XhLocaleBucket<'date-picker'> = {
 }
 
 export const DATE_RANGE_PICKER_EN_US: XhLocaleBucket<'date-range-picker'> = {
+  prevTrigger,
+  nextTrigger,
+  prevYearTrigger,
+  nextYearTrigger,
   hour: 'hour',
   minute: 'minute',
   second: 'second',
