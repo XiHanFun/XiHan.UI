@@ -13644,6 +13644,7 @@
       "onOpenChange",
       "open",
       "openDelay",
+      "parts",
       "placement",
       "size"
     ],

@@ -9,7 +9,7 @@ import { wcSuites } from '../suites'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-const COMPONENTS = ['dialog', 'drawer', 'popover', 'popconfirm', 'alert', 'approval', 'tour', 'floating-panel', 'notification-item']
+const COMPONENTS = ['dialog', 'drawer', 'popover', 'popconfirm', 'alert', 'approval', 'tour', 'floating-panel', 'notification-item', 'hover-card']
 
 type Variant = 'full' | 'drop' | 'empty-description'
 
@@ -28,6 +28,7 @@ const MOUNT_PROPS: Record<string, (suite: ConformanceSuite, variant: Variant) =>
     return { ...props, steps: steps.map(({ description: _, ...step }) => step) }
   },
   'floating-panel': () => ({ defaultOpen: true }),
+  'hover-card': () => ({ defaultOpen: true }),
   // 停留时长 0：卡片不会在断言途中自己退场
   'notification-item': () => ({ duration: 0 }),
 }
@@ -149,4 +150,14 @@ describe('只引用在场的标题与说明', () => {
       expect(danglingRefs()).toEqual([])
     })
   }
+
+  it('hover-card：去掉标题时卡片的名字指回 trigger', async () => {
+    const suite = suites.find(s => s.component === 'hover-card')!
+    await mountTree(suite, 'drop')
+    const trigger = document.querySelector<HTMLElement>('[data-scope="hover-card"][data-part="trigger"]')!
+    const content = document.querySelector<HTMLElement>('[data-scope="hover-card"][data-part="content"]')!
+    expect(trigger.id).toBeTruthy()
+    expect(content.getAttribute('aria-labelledby')).toBe(trigger.id)
+    expect(content.hasAttribute('aria-describedby')).toBe(false)
+  })
 })

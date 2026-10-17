@@ -13,6 +13,7 @@ import { defineComponent, h, mergeProps } from 'vue'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
+import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { provideHoverCard, useHoverCardContext } from './context'
 import { useHoverCard } from './use-hover-card'
@@ -125,10 +126,8 @@ export const XhHoverCardTitle = defineComponent({
   name: 'XhHoverCardTitle',
   setup(_, { slots }) {
     const ctx = useHoverCardContext()
-    return () => h('h2', {
-      ...ctx.api.value.getTitleProps() as Record<string, unknown>,
-      ref: (el: unknown) => { ctx.titleRef.value = el as HTMLElement },
-    }, slots.default?.())
+    useTitleDescriptionPart(ctx.presence, 'title')
+    return () => h('h2', ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
   },
 })
 
@@ -136,10 +135,9 @@ export const XhHoverCardDescription = defineComponent({
   name: 'XhHoverCardDescription',
   setup(_, { slots }) {
     const ctx = useHoverCardContext()
-    return () => h('p', {
-      ...ctx.api.value.getDescriptionProps() as Record<string, unknown>,
-      ref: (el: unknown) => { ctx.descriptionRef.value = el as HTMLElement },
-    }, slots.default?.())
+    // 读不出一句话的说明不进描述链
+    const el = useDescriptionPart(ctx.presence)
+    return () => h('p', { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el }, slots.default?.())
   },
 })
 

@@ -502,8 +502,19 @@ describe('hoverCard 受控 open', () => {
 })
 
 describe('connectHoverCard', () => {
+  it('标题与说明：省略 parts 按都在场引用它们；标题不在场时名字指回 trigger，说明不在场时不写描述链', () => {
+    const present = makeCard().api()
+    const content = present.getContentProps() as Record<string, unknown>
+    expect(content['aria-labelledby']).toBe((present.getTitleProps() as Record<string, unknown>).id)
+    expect(content['aria-describedby']).toBe((present.getDescriptionProps() as Record<string, unknown>).id)
+    const absent = makeCard({ parts: { title: false, description: false } }).api()
+    const bare = absent.getContentProps() as Record<string, unknown>
+    expect(bare['aria-labelledby']).toBe((absent.getTriggerProps() as Record<string, unknown>).id)
+    expect(bare['aria-describedby']).toBeUndefined()
+  })
+
   it('收起态：content 常挂带 hidden，trigger 的 aria 显式为 false', () => {
-    const c = makeCard()
+    const c = makeCard({ parts: { title: false, description: false } })
     const api = c.api()
     const trigger = api.getTriggerProps() as Record<string, unknown>
     const content = api.getContentProps() as Record<string, unknown>
