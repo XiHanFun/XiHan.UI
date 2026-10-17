@@ -214,26 +214,34 @@ export function checkPropertyValue(control: PropertyControl, value: JsonValue): 
   }
 }
 
-const BUILTIN_KINDS: readonly string[] = ['text', 'number', 'boolean', 'select', 'tags', 'color', 'json']
+/** 内建编辑方式的种类名；登记的新编辑方式不能与它们重名。 */
+export const BUILTIN_CONTROL_KINDS: readonly PropertyControlKind[] = ['text', 'number', 'boolean', 'select', 'tags', 'color', 'json']
+
+/** 新的编辑方式：属性描述里 control.kind 等于登记的键时，checkProperties 用它校验取值。 */
+export interface ControlKind {
+  /** 检查已填写的取值；没问题返回 undefined，否则给出问题码。不给即不检查取值。 */
+  readonly check?: (value: JsonValue, control: { readonly kind: string }) => string | undefined
+}
 
 /** checkProperties 的选项。 */
-export interface CheckPropertiesOptions<C extends { readonly kind: string }> {
+export interface CheckPropertiesOptions {
   /** 被编辑对象在文档里的路径，问题路径以它为前缀；缺省为空路径。 */
   readonly path?: JsonPath
   /** 问题落在的对象，原样写进每条问题。 */
   readonly target?: SchemaIssueTarget
-  /** 检查产品自己的编辑方式；返回问题码，没问题时为 undefined。不给时不检查这些属性的取值。 */
-  readonly checkCustom?: (descriptor: PropertyDescriptor<C>, value: JsonValue) => string | undefined
+  /** 内建之外登记的编辑方式，键是 control.kind（如设计器扩展合并出的那张表）。 */
+  readonly controls?: Readonly<Record<string, ControlKind>>
 }
 
 /**
  * 按描述检查被编辑的对象，只看当前显示的属性：必填却未填报 required，
- * 已填的值不符合内建编辑方式报对应问题码，产品的编辑方式交给 checkCustom。
+ * 已填的值不符合内建编辑方式报对应问题码，登记的编辑方式交给它的 check；
+ * 既不是内建也没登记的编辑方式报 unknown-control。
  */
 export function checkProperties<C extends { readonly kind: string } = PropertyControl>(
   descriptors: readonly PropertyDescriptor<C>[],
   target: JsonValue | undefined,
-  options: CheckPropertiesOptions<C> = {},
+  options: CheckPropertiesOptions = {},
 ): SchemaIssue[] {
   const base = options.path ?? []
   const issues: SchemaIssue[] = []
@@ -250,9 +258,13 @@ export function checkProperties<C extends { readonly kind: string } = PropertyCo
       if (value === undefined)
         continue
     }
-    const code = BUILTIN_KINDS.includes(descriptor.control.kind)
+    const kind = descriptor.control.kind
+    const controls = options.controls ?? {}
+    const code = (BUILTIN_CONTROL_KINDS as readonly string[]).includes(kind)
       ? checkPropertyValue(descriptor.control as unknown as PropertyControl, value!)
-      : options.checkCustom?.(descriptor, value!)
+      : Object.hasOwn(controls, kind)
+        ? controls[kind]!.check?.(value!, descriptor.control)
+        : 'unknown-control'
     if (code !== undefined)
       push(code, descriptor)
   }
@@ -300,6 +312,25 @@ export interface PropertyEditorTable<E> {
   readonly byPath?: Readonly<Record<string, E>>
   /** 按对象种类与属性路径，只对该种类生效。 */
   readonly byTarget?: Readonly<Record<string, Readonly<Record<string, E>>>>
+}
+
+/** 编辑器表的一层：三张表都可以缺，按层叠起来用。 */
+export type PropertyEditorLayer<E> = Partial<PropertyEditorTable<E>>
+
+/** 把几层编辑器表叠成一张：按顺序逐键合并，后面的压前面的；undefined 的层跳过。 */
+export function mergePropertyEditorTables<E>(layers: readonly (PropertyEditorLayer<E> | undefined)[]): PropertyEditorTable<E> {
+  const byControl: Record<string, E> = {}
+  const byPath: Record<string, E> = {}
+  const byTarget: Record<string, Record<string, E>> = {}
+  for (const layer of layers) {
+    if (!layer)
+      continue
+    Object.assign(byControl, layer.byControl)
+    Object.assign(byPath, layer.byPath)
+    for (const [kind, table] of Object.entries(layer.byTarget ?? {}))
+      byTarget[kind] = { ...byTarget[kind], ...table }
+  }
+  return { byControl, byPath, byTarget }
 }
 
 /** 查出某种对象的某个属性用哪个编辑器：对象种类 + 路径 → 路径 → 编辑方式；都没有时为 undefined。 */

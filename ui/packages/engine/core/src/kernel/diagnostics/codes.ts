@@ -27,6 +27,8 @@ export const DIAGNOSTIC_CODES = {
   wcStructureTakeoverOrder: 'wc.structure-takeover-order',
   /** 标准结构生成了一个还没注册的库内元素：它不会升级，结构里那一块是空的。 */
   wcUnregisteredElement: 'wc.unregistered-element',
+  /** 设计器扩展在两处登记了同一个名字（扩展 id、命令、快捷键、编辑方式、种类等）：给 extensions 赋值时抛错，不在诊断通道里报。 */
+  designerExtensionConflict: 'designer.extension-conflict',
   /** 二维码中心 logo 挖掉的码字超出所选纠错级别能恢复的量。 */
   matrixCodeLogoDamage: 'matrix-code.logo-damage',
   /** 二维码收到一个对当前码制没有意义的选项，按没给处理。 */
