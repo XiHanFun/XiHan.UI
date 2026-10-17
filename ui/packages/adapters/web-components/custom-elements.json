@@ -65904,7 +65904,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tabs>`：Light-DOM 行为宿主，运行 tabs 状态机并把 connect 产出接到 root / list / trigger / content\n角色节点上。条目身份取作者写在 trigger / content 上的 value 属性，trigger 的禁用由部件声明。\n\n读屏文案 `translations` 是对象，属性无法表达，只能通过 property 设置（`el.translations = {...}`）。\n\n开启 reorderable 后标签可以拖动换位：整个标签都是拖动源。拖动中被拖的标签原地不动，\n只写 data-dragging；落点绘制在参照标签上，data-drop 为 before / after 即插在该标签前后。触屏路径经 tab-drag-trigger 把手。\n键盘使用 Alt + 主轴方向键（横向是左右、纵向是上下，横向 rtl 下左右对调），按一次即一次完整提交。\n顺序不由元素保管：换位只发出 tab-move，标签序由使用方写回自己的数据源。\n\n标签带放不下时，root 里紧跟 list 之后的 overflow-trigger 露面，弹出的下拉列出可见区外的标签。\n下拉的定位层、列表与条目由元素自己建（与工具条的「更多」菜单同一套）：作者只写一颗空的 overflow-trigger，\n建出来的节点归 menu 的 scope，不写 data-xh-part。",
+          "description": "`<xh-tabs>`：Light-DOM 行为宿主，运行 tabs 状态机并把 connect 产出接到 root / list / trigger / content\n角色节点上。条目身份取作者写在 trigger / content 上的 value 属性，trigger 的禁用由部件声明。\n\n不写部件时元素按标准结构生成：标签带里每条一个标签（文字取 label），closable 时标签后面紧跟它的关闭钮，再是每条一块面板；\n只写 root 时生成在它里面。某一块面板的内容用宿主直接子节点 `slot=\"panel:<值>\"` 接管，\n要按 lazy-mount / unmount-on-exit 挂卸时写成 `<template slot=\"panel:<值>\">`。\n\n读屏文案 `translations` 是对象，属性无法表达，只能通过 property 设置（`el.translations = {...}`）。\n\n开启 reorderable 后标签可以拖动换位：整个标签都是拖动源。拖动中被拖的标签原地不动，\n只写 data-dragging；落点绘制在参照标签上，data-drop 为 before / after 即插在该标签前后。触屏路径经 tab-drag-trigger 把手。\n键盘使用 Alt + 主轴方向键（横向是左右、纵向是上下，横向 rtl 下左右对调），按一次即一次完整提交。\n顺序不由元素保管：换位只发出 tab-move，标签序由使用方写回自己的数据源。\n\n标签带放不下时，root 里紧跟 list 之后的 overflow-trigger 露面，弹出的下拉列出可见区外的标签。\n下拉的定位层、列表与条目由元素自己建（与工具条的「更多」菜单同一套）：作者只写一颗空的 overflow-trigger，\n建出来的节点归 menu 的 scope，不写 data-xh-part。",
           "name": "XhTabsElement",
           "cssParts": [
             {
@@ -65973,6 +65973,15 @@
               },
               "static": true,
               "default": "{ anatomy: tabsAnatomy, meta: tabsMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhTabsElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? tabsStructure(connectTabs(host.ctrl.service, wcNormalize), { closable: host.closable ?? false, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
             },
             {
               "kind": "field",

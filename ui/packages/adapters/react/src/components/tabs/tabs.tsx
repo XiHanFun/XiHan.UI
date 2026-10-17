@@ -6,15 +6,16 @@
 // 提供 tabs 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { TabsActivationMode, TabsNode, TabsNodeMeta, TabsSchema, TabsVariant } from '@xihan-ui/headless'
+import type { TabsActivationMode, TabsApi, TabsNode, TabsNodeMeta, TabsSchema, TabsVariant } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { tabsOverflowMenuProps } from '@xihan-ui/headless'
-import { Fragment, useEffect, useRef } from 'react'
+import { tabsOverflowMenuProps, tabsStructure } from '@xihan-ui/headless'
+import { useEffect, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { XhMenuRoot } from '../menu/menu'
 import { TabsProvider, useTabsContext } from './context'
 import { useTabs } from './use-tabs'
@@ -98,11 +99,10 @@ export function XhTabsRoot({
     onTabMove,
     onTabClose,
   }) as TabsProps)
-  // children 里有真会画出东西的节点就照旧交给作者；只剩空白时当没写，
-  // 给了 collection 就按数据铺开整套结构
+  // children 里有真会画出东西的节点就照旧交给作者；只剩空白时当没写，照标准结构按数据铺开
   const body = slotPaints(children)
     ? children
-    : (collection ? <DefaultTree collection={ctx.api.collection} closable={!!closable} renderPanel={renderPanel} /> : null)
+    : renderDefaultStructure(ctx.api, !!closable, renderPanel)
   return (
     <TabsProvider value={ctx}>
       <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
@@ -311,28 +311,20 @@ export function XhTabsContent({ value, children, ...rest }: XhTabsContentProps):
   )
 }
 
+/** 标准结构里各部件对应的组件。 */
+const TABS_PARTS = {
+  'list': XhTabsList,
+  'trigger': XhTabsTrigger,
+  'close-trigger': XhTabsCloseTrigger,
+  'content': XhTabsContent,
+}
+
 /**
- * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。可关闭时每个标签后面跟一枚关闭钮。
+ * 未写 children 时照 tabsStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 面板内容经 renderPanel，未给时为空面板。可关闭时每个标签后面跟一枚关闭钮。
  */
-function DefaultTree(props: {
-  collection: readonly TabsNodeMeta[]
-  closable: boolean
-  renderPanel?: (node: TabsNodeMeta) => ReactNode
-}): ReactNode {
-  return (
-    <>
-      <XhTabsList>
-        {props.collection.map(node => (
-          <Fragment key={node.value}>
-            <XhTabsTrigger value={node.value}>{node.label}</XhTabsTrigger>
-            {props.closable ? <XhTabsCloseTrigger value={node.value} /> : null}
-          </Fragment>
-        ))}
-      </XhTabsList>
-      {props.collection.map(node => (
-        <XhTabsContent key={node.value} value={node.value}>{props.renderPanel?.(node) ?? null}</XhTabsContent>
-      ))}
-    </>
-  )
+function renderDefaultStructure(api: TabsApi, closable: boolean, renderPanel?: (node: TabsNodeMeta) => ReactNode): ReactNode[] {
+  const nodes = tabsStructure(api, { closable, slotted: name => name === 'panel' && renderPanel != null })
+  return renderStructure(nodes, TABS_PARTS, node =>
+    node.slot?.name === 'panel' ? renderPanel?.(node.data as TabsNodeMeta) : undefined)
 }

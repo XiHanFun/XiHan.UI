@@ -1,5 +1,6 @@
 import type { ConformanceCase, ConformanceSuite, FixtureNode } from '../conformance/types'
 import { tabsAnatomy, tabsKeyboard } from '@xihan-ui/headless'
+import { expectPartText } from './shared/content-text'
 import { singleTabStop } from './shared/native-activation'
 import { focusSettled, menuExited, overflowMenuItem, settled } from './shared/overflow-menu'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
@@ -7,6 +8,13 @@ import { heldPress, heldPressIgnored } from './shared/press-channel'
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/tabs/'
 
 const VALUES = ['one', 'two', 'three'] as const
+
+/** 标准结构场景的数据：第二条禁用。 */
+const STRUCTURE_COLLECTION = [
+  { value: 'one', label: '一' },
+  { value: 'two', label: '二', disabled: true },
+  { value: 'three', label: '三' },
+]
 
 /** 标签序的真源是 collection：换位报出的新顺序按它算，没有它一次也搬不动。 */
 const COLLECTION = VALUES.map(value => ({ value }))
@@ -997,6 +1005,59 @@ export const tabsSuite: ConformanceSuite = {
             activeElement: { part: 'overflow-trigger', exact: true },
           },
         },
+      ],
+    },
+    {
+      name: '作者不写结构：三端都照 tabsStructure 铺出标签带（标签与关闭钮）与面板；换数据按值复用标签，可关闭随 closable 进出',
+      spec: { apg: `${APG}#wai-ariaroles,states,andproperties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { collection: STRUCTURE_COLLECTION, closable: true, defaultValue: 'one' },
+      initial: {
+        order: [
+          'root',
+          'list',
+          'trigger[0]',
+          'close-trigger[0]',
+          'trigger[1]',
+          'close-trigger[1]',
+          'trigger[2]',
+          'close-trigger[2]',
+          'content[0]',
+          'content[1]',
+          'content[2]',
+        ],
+        parts: {
+          'list': { role: 'tablist' },
+          'trigger[0]': { 'type': 'button', 'data-value': 'one', 'aria-selected': 'true', 'aria-controls': '@part(content[0])' },
+          'trigger[1]': { 'data-value': 'two', 'aria-disabled': 'true' },
+          'close-trigger[0]': { 'hidden': null, 'aria-hidden': 'true' },
+          'content[0]': { 'role': 'tabpanel', 'aria-labelledby': '@part(trigger[0])', 'hidden': null },
+          'content[2]': { hidden: '' },
+        },
+      },
+      steps: [
+        { kind: 'raw', why: '标签文字是子节点，快照不收子节点', run: expectPartText('tabs', 'trigger', 2, '三') },
+        {
+          kind: 'click',
+          part: 'trigger[2]',
+          expect: {
+            parts: { 'trigger[0]': { 'aria-selected': 'false' }, 'trigger[2]': { 'aria-selected': 'true' }, 'content[2]': { hidden: null } },
+            events: [{ type: 'value-change', detail: { value: 'three' } }],
+          },
+        },
+        {
+          kind: 'setProps',
+          props: { collection: [STRUCTURE_COLLECTION[2], { value: 'four', label: '四' }] },
+          expect: {
+            order: ['root', 'list', 'trigger[0]', 'close-trigger[0]', 'trigger[1]', 'close-trigger[1]', 'content[0]', 'content[1]'],
+            parts: {
+              'trigger[0]': { 'data-value': 'three', 'aria-selected': 'true' },
+              'trigger[1]': { 'data-value': 'four', 'aria-selected': 'false', 'aria-controls': '@part(content[1])' },
+            },
+          },
+        },
+        { kind: 'raw', why: '标签文字是子节点，快照不收子节点', run: expectPartText('tabs', 'trigger', 1, '四') },
+        { kind: 'setProps', props: { closable: false }, expect: { counts: { 'trigger': 2, 'close-trigger': 0 } } },
       ],
     },
   ],
