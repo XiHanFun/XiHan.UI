@@ -22,6 +22,7 @@
 - 键盘聚焦 trigger 时焦点环画在整张卡片外沿，与点击区是同一块轮廓；trigger 自己不再画环。
 - 脚部叠在点击区之上：里面另放的按钮照常可点、不触发整卡，脚部的空白处也不触发。其余部件都在点击区之下。
 - `data-material="liquid"` 下，可交互卡片在细指针悬停时描边扫过一道交互光，只播一遍，与 Button 实心钮同一配方；standard 档、粗指针与强制色下不画。时长槽 `--xh-card-glint-duration`。
+- 不写结构时按标准结构铺（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：给了标题或说明才铺页头（标题在前），给了正文、页脚才铺对应一段，内容都归作者。Vue 是 `title`、`description`、`content`、`footer` 四个具名插槽，React 是同名的四个属性，Web Components 是宿主直接子节点上的同名 `slot`。整卡可交互的 trigger 要用时手写结构。
 
 ## 无障碍
 

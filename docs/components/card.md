@@ -70,6 +70,7 @@ interactive 加标题里的 trigger：整张卡片都是点击区，读屏只读
 - 键盘聚焦 trigger 时焦点环画在整张卡片外沿，与点击区是同一块轮廓；trigger 自己不再画环。
 - 脚部叠在点击区之上：里面另放的按钮照常可点、不触发整卡，脚部的空白处也不触发。其余部件都在点击区之下。
 - `data-material="liquid"` 下，可交互卡片在细指针悬停时描边扫过一道交互光，只播一遍，与 Button 实心钮同一配方；standard 档、粗指针与强制色下不画。时长槽 `--xh-card-glint-duration`。
+- 不写结构时按标准结构铺（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：给了标题或说明才铺页头（标题在前），给了正文、页脚才铺对应一段，内容都归作者。Vue 是 `title`、`description`、`content`、`footer` 四个具名插槽，React 是同名的四个属性，Web Components 是宿主直接子节点上的同名 `slot`。整卡可交互的 trigger 要用时手写结构。
 
 ### 组合
 
@@ -104,6 +105,29 @@ interactive 加标题里的 trigger：整张卡片都是点击区，读屏只读
 | --- | --- | --- | --- |
 | `interactive` | `boolean` |  | 整卡可交互：标题里的 trigger（链接或按钮）把点击区铺满整张卡片，悬停抬起、按下换面， 焦点环画在卡片外沿。可及名只取 trigger 自己的文字，卡片里的其余内容不进链接名。 默认 false。 |
 | `variant` | `ControlVariant` |  | 形态：outline 为带影的抬起面，subtle 为淡底，ghost 无底无影。默认 outline。 |
+
+### 插槽
+
+仅列出带载荷的插槽。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhCardRoot` | `default` | — |  |
+| `XhCardRoot` | `title` | — |  |
+| `XhCardRoot` | `description` | — |  |
+| `XhCardRoot` | `content` | — |  |
+| `XhCardRoot` | `footer` | — |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhCardRoot` | `title` | `ReactNode` |  | 标题。不给 children 时铺进页头的 title 部件。 |
+| `XhCardRoot` | `description` | `ReactNode` |  | 标题下的说明。不给 children 时铺进页头的 description 部件。 |
+| `XhCardRoot` | `content` | `ReactNode` |  | 正文。不给 children 时铺进 content 部件。 |
+| `XhCardRoot` | `footer` | `ReactNode` |  | 页脚，通常放操作。不给 children 时铺进 footer 部件。 |
 
 ### connect API
 

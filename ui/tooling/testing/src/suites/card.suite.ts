@@ -87,5 +87,15 @@ export const cardSuite: ConformanceSuite = {
         counts: { root: 1, header: 1, title: 1, description: 1, content: 1, footer: 1 },
       },
     },
+    {
+      name: '作者不写结构：三端都照 cardStructure 渲，一段内容都没给时是一张空卡片',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { variant: 'subtle' },
+      initial: {
+        order: ['root'],
+        parts: { root: { 'data-variant': 'subtle' } },
+      },
+    },
   ],
 }
