@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // 标准结构的基类钩子：作者没写结构时元素按结构生成，按 key 复用，可接管部件让位并按缺省结构排在末尾，
 // 作者写了结构就全归作者；宿主里写了 slot 的作者节点搬进对应部件，部件没了搬回宿主；挪动前后焦点不丢。
-// 组合进来的库内元素经 static dependencies 随宿主注册，没注册就生成时告警。
+// 组合节点：内层元素经 static dependencies 随宿主注册，props 按 property 赋值、回调接事件；没注册就生成时告警。
 
 import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { StructureNode } from '@xihan-ui/headless'
@@ -69,19 +69,52 @@ class XhStructureMisorderedElement extends XhElement {
 
 customElements.define('xh-structure-misordered', XhStructureMisorderedElement)
 
-/** 结构里组合了另一个库内元素：一个声明为依赖，一个没声明也没注册。 */
+/** 组合进来的内层元素：记下 items 被赋值的次数。 */
 class XhStructureChildElement extends XhElement {
+  sets = 0
+  #items: unknown
+
+  get items(): unknown {
+    return this.#items
+  }
+
+  set items(value: unknown) {
+    this.sets++
+    this.#items = value
+  }
+
   protected wire(): void {}
 }
 
+/** 结构里组合了另一个库内元素：一个声明为依赖，一个没声明也没注册（stray 打开时才生成）。 */
 class XhStructureParentElement extends XhElement {
+  static override properties = {
+    items: { attribute: false },
+    stray: { type: Boolean },
+  }
+
   static override dependencies = { 'xh-structure-child': XhStructureChildElement }
 
   static override structure: ElementStructure<XhStructureParentElement> = {
-    build: () => [
-      { key: 'child', tag: 'xh-structure-child', part: 'child' },
-      { key: 'stray', tag: 'xh-structure-stray', part: 'stray' },
+    build: host => [
+      {
+        key: 'box',
+        tag: 'div',
+        part: 'box',
+        children: [{ key: 'child', instance: 'structure-child', props: { items: [...host.items], onPing: (detail: unknown) => host.pinged.push(detail) } }],
+      },
+      ...(host.stray ? [{ key: 'stray', instance: 'structure-stray' }] : []),
     ],
+  }
+
+  declare items: readonly string[]
+  declare stray: boolean
+  readonly pinged: unknown[] = []
+
+  constructor() {
+    super()
+    this.items = []
+    this.stray = false
   }
 
   protected wire(): void {}
@@ -107,7 +140,7 @@ afterEach(() => {
   resetDiagnostics()
 })
 
-async function settle(el: XhStructureProbeElement): Promise<void> {
+async function settle(el: { readonly updateComplete: Promise<unknown> }): Promise<void> {
   for (let i = 0; i < 3; i++) {
     await el.updateComplete
     await Promise.resolve()
@@ -226,13 +259,36 @@ describe('标准结构的基类钩子', () => {
     expect(diagnostics.filter(record => record.code === DIAGNOSTIC_CODES.wcStructureTakeoverOrder).map(record => record.part)).toEqual(['header'])
   })
 
-  it('按需注册宿主时连带注册 static dependencies 里的组合元素；生成了没注册的库内元素时告警', async () => {
+  it('组合节点：按需注册宿主时连带注册内层元素；数据按 property 赋值，相等不重设；回调收到 detail，事件不冒出宿主', async () => {
     defineXhElement('xh-structure-parent' as never, XhStructureParentElement as never)
     expect(customElements.get('xh-structure-child')).toBe(XhStructureChildElement)
     const el = document.createElement('xh-structure-parent') as XhStructureParentElement
+    el.items = ['a']
+    document.body.append(el)
+    await settle(el)
+    const child = el.querySelector('[data-xh-part="box"] > xh-structure-child') as XhStructureChildElement
+    expect(child).toBeInstanceOf(XhStructureChildElement)
+    expect([child.items, child.sets, child.hasAttribute('items'), child.getAttribute('data-xh-gen')]).toEqual([['a'], 1, false, 'structure'])
+
+    el.items = ['a']
+    await settle(el)
+    expect(child.sets).toBe(1)
+    el.items = ['a', 'b']
+    await settle(el)
+    expect([el.querySelector('xh-structure-child'), child.items, child.sets]).toEqual([child, ['a', 'b'], 2])
+
+    const leaked: Event[] = []
+    el.addEventListener('ping', event => leaked.push(event))
+    child.dispatchEvent(new CustomEvent('ping', { detail: 7, bubbles: true }))
+    expect([el.pinged, leaked]).toEqual([[7], []])
+  })
+
+  it('生成了没注册的库内元素时告警', async () => {
+    defineXhElement('xh-structure-parent' as never, XhStructureParentElement as never)
+    const el = document.createElement('xh-structure-parent') as XhStructureParentElement
+    el.stray = true
     document.body.append(el)
     await el.updateComplete
-    expect(el.querySelector('xh-structure-child')).toBeInstanceOf(XhStructureChildElement)
     expect(diagnostics.filter(record => record.code === DIAGNOSTIC_CODES.wcUnregisteredElement).map(record => record.detail?.tag)).toEqual(['xh-structure-stray'])
   })
 
