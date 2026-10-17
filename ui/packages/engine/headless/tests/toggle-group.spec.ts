@@ -674,3 +674,70 @@ describe('connectToggleGroup 按压通道', () => {
     expect(isPressed(g, 0)).toBe(false)
   })
 })
+
+describe('connectToggleGroup 只读、无效与必填', () => {
+  const ITEMS: ToggleGroupItemProps[] = [{ value: 'a' }, { value: 'b' }]
+
+  it('单选：radiogroup 显式写三条 aria 布尔，缺省全是 false；整组与条目写对应的 data-*', () => {
+    const plain = rootProps(makeService().service)
+    expect(plain['aria-readonly']).toBe('false')
+    expect(plain['aria-invalid']).toBe('false')
+    expect(plain['aria-required']).toBe('false')
+    const { service } = makeService({ readOnly: true, invalid: true, required: true })
+    const root = rootProps(service)
+    expect(root.role).toBe('radiogroup')
+    expect(root['aria-readonly']).toBe('true')
+    expect(root['aria-invalid']).toBe('true')
+    expect(root['aria-required']).toBe('true')
+    expect(root['data-readonly']).toBe('')
+    expect(root['data-invalid']).toBe('')
+    expect(root['data-required']).toBe('')
+    const item = itemProps(service, { value: 'a' })
+    expect(item['data-readonly']).toBe('')
+    expect(item['data-invalid']).toBe('')
+  })
+
+  it('多选是 role=group：不写这三条 aria，只写 data-*', () => {
+    const root = rootProps(makeService({ multiple: true, readOnly: true, invalid: true, required: true }).service)
+    expect(root.role).toBe('group')
+    expect(root['aria-readonly']).toBeUndefined()
+    expect(root['aria-invalid']).toBeUndefined()
+    expect(root['aria-required']).toBeUndefined()
+    expect(root['data-readonly']).toBe('')
+    expect(root['data-invalid']).toBe('')
+    expect(root['data-required']).toBe('')
+  })
+
+  it('只读：点击不改选中，但记下锚点；Space / Enter 不进按压面', () => {
+    const { service, changes } = makeService({ readOnly: true, defaultValue: 'a' })
+    const g = mountGroup(service, ITEMS)
+    g.items[1]!.click()
+    g.render()
+    expect(api(service).value).toEqual(['a'])
+    expect(changes).toEqual([])
+    expect(service.context.get('focusedValue')).toBe('b')
+    g.items[1]!.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+    g.render()
+    expect(g.items[1]!.hasAttribute('data-pressed')).toBe(false)
+  })
+
+  it('只读不挡程序化写值', () => {
+    const { service } = makeService({ readOnly: true })
+    api(service).setValue('b')
+    expect(api(service).value).toEqual(['b'])
+  })
+
+  it('表单影子是视觉隐藏的文本输入：没选时值为空串，required、readonly 随 prop 走', () => {
+    const input = api(makeService({ required: true, readOnly: true, name: 'size' }).service).getHiddenInputProps() as Record<string, unknown>
+    expect(input.type).toBe('text')
+    expect(input.value).toBe('')
+    expect(input.required).toBe(true)
+    expect(input.readonly).toBe(true)
+    expect(input.tabindex).toBe(-1)
+    expect(input['aria-hidden']).toBe(true)
+    const plain = api(makeService({ name: 'size', defaultValue: 'b' }).service).getHiddenInputProps() as Record<string, unknown>
+    expect(plain.value).toBe('b')
+    expect(plain.required).toBeUndefined()
+    expect(plain.readonly).toBeUndefined()
+  })
+})

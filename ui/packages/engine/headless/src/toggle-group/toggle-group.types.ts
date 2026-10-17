@@ -59,6 +59,12 @@ export interface ToggleGroupSchema extends MachineSchema {
     multiple?: boolean
     /** 整组禁用：条目全部 aria-disabled，点击与方向键都不生效。 */
     disabled?: boolean
+    /** 只读：条目仍可聚焦、方向键照常走，点击与 Space / Enter 不改选中，也不进按压面。 */
+    readOnly?: boolean
+    /** 校验失败标注：单选组写 aria-invalid；多选是 role=group，只写 data-invalid。 */
+    invalid?: boolean
+    /** 必填：单选组写 aria-required，表单影子写原生 required；多选只写 data-required 与原生 required。 */
+    required?: boolean
     /**
      * 不允许清空值：单选模式下点击当前选中项不再取消它，多选模式下不可移除最后一个。
      * 默认 false（可以点击为无选中）。
@@ -117,7 +123,7 @@ export interface ToggleGroupSchema extends MachineSchema {
     /** 按住的条目抬起、失焦或指针取消；只松开 value 对应的那一个。 */
     | { type: 'PRESS.END', value: string }
   tag: never
-  guard: 'canPress'
+  guard: 'canPress' | 'canToggle'
   action:
     | 'setValue'
     | 'toggleItem'
@@ -139,6 +145,9 @@ export interface ToggleGroupApi<T extends PropTypes = PropTypes> {
   focusedValue: string | null
   multiple: boolean
   disabled: boolean
+  readOnly: boolean
+  invalid: boolean
+  required: boolean
   orientation: Orientation
   separators: boolean
   isSelected: (value: string) => boolean

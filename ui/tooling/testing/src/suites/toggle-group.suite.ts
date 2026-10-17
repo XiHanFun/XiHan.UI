@@ -50,6 +50,10 @@ export const toggleGroupSuite: ConformanceSuite = {
             'aria-orientation': 'horizontal',
             'data-orientation': 'horizontal',
             'data-disabled': null,
+            // radiogroup 收这三条：缺省显式 false
+            'aria-readonly': 'false',
+            'aria-invalid': 'false',
+            'aria-required': 'false',
             'tabindex': '0',
           },
           item: [
@@ -377,6 +381,33 @@ export const toggleGroupSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'ArrowRight',
+          expect: { activeElement: { part: 'item[0]', exact: true }, events: [] },
+        },
+      ],
+    },
+    {
+      name: '只读、无效与必填：单选组写三条 aria 布尔，点击只搬锚点不改选中，方向键照走',
+      spec: { apg: APG },
+      props: { defaultValue: 'left', readOnly: true, invalid: true, required: true },
+      steps: [
+        {
+          kind: 'click',
+          part: 'item[2]',
+          expect: {
+            parts: {
+              root: { 'aria-readonly': 'true', 'aria-invalid': 'true', 'aria-required': 'true', 'data-readonly': '', 'data-invalid': '', 'data-required': '' },
+              item: [
+                { 'aria-checked': 'true', 'data-readonly': '', 'data-invalid': '' },
+                { 'aria-checked': 'false', 'data-readonly': '', 'data-invalid': '' },
+                { 'aria-checked': 'false', 'data-readonly': '', 'data-invalid': '' },
+              ],
+            },
+            events: [],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowLeft',
           expect: { activeElement: { part: 'item[0]', exact: true }, events: [] },
         },
       ],

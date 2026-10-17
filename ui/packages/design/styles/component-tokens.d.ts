@@ -4183,6 +4183,7 @@ export type ComponentTokenName
     | '--xh-toggle-font-size'
     | '--xh-toggle-font-weight'
     | '--xh-toggle-gap'
+    | '--xh-toggle-group-border-invalid'
     | '--xh-toggle-group-item-bg'
     | '--xh-toggle-group-item-bg-active'
     | '--xh-toggle-group-item-bg-disabled'

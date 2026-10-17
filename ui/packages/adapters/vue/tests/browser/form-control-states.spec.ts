@@ -11,6 +11,7 @@ import {
   XhRatingControl,
   XhRatingItem,
   XhRatingRoot,
+  XhToggleGroupRoot,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -35,6 +36,12 @@ const CASES: Case[] = [
     axes: { invalid: 'aria-invalid' },
     render: props => h(XhRatingRoot, { count: 3, ...props }, () => h(XhRatingControl, null, () => [1, 2, 3].map(value => h(XhRatingItem, { key: value, value })))),
     host: root => root.querySelector<HTMLElement>('[data-scope="rating"][data-part="control"]')!,
+  },
+  {
+    name: 'toggle-group',
+    axes: { readOnly: 'aria-readonly', invalid: 'aria-invalid', required: 'aria-required' },
+    render: props => h(XhToggleGroupRoot, { collection: [{ value: 'a', label: '甲' }, { value: 'b', label: '乙' }], ...props }),
+    host: root => root.querySelector<HTMLElement>('[data-scope="toggle-group"][data-part="root"]')!,
   },
 ]
 
@@ -93,6 +100,16 @@ describe('rating 的无效态皮肤（Vue）', () => {
     expect(getComputedStyle(unlit!, '::before').backgroundColor).toBe(invalid)
     expect(getComputedStyle(lit!, '::after').backgroundColor).not.toBe(invalid)
     expect(lit!.hasAttribute('data-highlighted')).toBe(true)
+  })
+})
+
+describe('toggle-group 的只读与无效态皮肤（Vue）', () => {
+  it('invalid 时整组外沿是一圈无效色的线；只读的段不显示可点的光标', async () => {
+    const root = await mountInField(CASES[1]!, {}, { invalid: true, readOnly: true })
+    const group = root.querySelector<HTMLElement>('[data-scope="toggle-group"][data-part="root"]')!
+    expect(getComputedStyle(group, '::after').borderTopColor).toBe(resolveColor('var(--xh-border-invalid)'))
+    const item = group.querySelector<HTMLElement>('[data-part="item"]')!
+    expect(getComputedStyle(item).cursor).toBe('default')
   })
 })
 

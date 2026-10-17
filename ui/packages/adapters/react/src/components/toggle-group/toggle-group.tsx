@@ -25,6 +25,12 @@ export interface XhToggleGroupRootProps extends Omit<ComponentPropsWithRef<'div'
   defaultValue?: ToggleGroupValue
   multiple?: boolean
   disabled?: boolean
+  /** 只读：条目仍可聚焦，不能改选中。 */
+  readOnly?: boolean
+  /** 校验失败标注。 */
+  invalid?: boolean
+  /** 必填：表单影子写原生 required。 */
+  required?: boolean
   /** 不允许把值清空：单选点击当前项不取消，多选无法移除最后一个。 */
   disallowEmpty?: boolean
   variant?: ActionVariant
@@ -50,6 +56,9 @@ export function XhToggleGroupRoot({
   defaultValue,
   multiple,
   disabled,
+  readOnly,
+  invalid,
+  required,
   disallowEmpty,
   variant,
   tone,
@@ -72,6 +81,9 @@ export function XhToggleGroupRoot({
     defaultValue,
     multiple,
     disabled,
+    readOnly,
+    invalid,
+    required,
     disallowEmpty,
     variant,
     tone,
