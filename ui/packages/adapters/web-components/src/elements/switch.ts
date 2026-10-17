@@ -7,7 +7,8 @@
 
 import type { Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, SwitchCheckedChangeDetails, SwitchSchema } from '@xihan-ui/headless'
-import { connectSwitch, resolveFormControlState, switchAnatomy, switchMachine, switchMeta } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { connectSwitch, resolveFormControlState, switchAnatomy, switchMachine, switchMeta, switchStructure } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -16,6 +17,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 
 /**
  * `<xh-switch>`：Light-DOM 行为宿主，运行 switch 状态机并把 connect 产出接到 root / thumb 角色节点。
+ *
+ * 不写部件时元素按标准结构生成：root 是一颗原生按钮，里面一个滑块，给了 name 再带一份表单影子；
+ * 只写 root（须是原生 `<button>`）时生成在它里面。要带文字时作者手写 label、root 与 text。
  *
  * @customElement xh-switch
  * @attr {boolean} checked - 受控开合；未提供该属性即非受控
@@ -39,6 +43,11 @@ export class XhSwitchElement extends XhElement {
   static override partContract = { anatomy: switchAnatomy, meta: switchMeta }
 
   static override fieldTarget = { parts: ['root'], kind: 'state' } as const
+
+  static override structure: ElementStructure<XhSwitchElement> = {
+    rootTag: 'button',
+    build: host => switchStructure({ hiddenInput: host.name !== undefined }),
+  }
 
   static override properties = {
     checked: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },

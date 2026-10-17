@@ -6,16 +6,51 @@
 // 提供 switch 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { SwitchSchema } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { SwitchApi, SwitchSchema } from '@xihan-ui/headless'
+import type { InjectionKey, PropType, Ref } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, useId } from 'vue'
+import { switchStructure } from '@xihan-ui/headless'
+import { defineComponent, h, inject, provide, useId } from 'vue'
 import { slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { useSwitch } from './use-switch'
 
 type SwitchProps = SwitchSchema['props']
+
+const SWITCH_API: InjectionKey<Readonly<Ref<SwitchApi>>> = Symbol('XhSwitchApi')
+
+function useSwitchApi(): Readonly<Ref<SwitchApi>> {
+  const api = inject(SWITCH_API)
+  if (!api)
+    throw new Error('[xh] 开关的部件只能渲在 XhSwitch 里')
+  return api
+}
+
+/** 滑块。 */
+const SwitchThumb = defineComponent({
+  name: 'XhSwitchThumb',
+  setup() {
+    const api = useSwitchApi()
+    return () => h('span', api.value.getThumbProps() as Record<string, unknown>)
+  },
+})
+
+/** 表单影子：单体控件的轨道里没有子部件插槽，作者递不进来，由组件自己渲。 */
+const SwitchHiddenInput = defineComponent({
+  name: 'XhSwitchHiddenInput',
+  setup() {
+    const api = useSwitchApi()
+    return () => h('input', api.value.getHiddenInputProps() as Record<string, unknown>)
+  },
+})
+
+/** 标准结构里各部件对应的组件。 */
+const SWITCH_PARTS = {
+  'thumb': SwitchThumb,
+  'hidden-input': SwitchHiddenInput,
+}
 
 export const XhSwitch = defineComponent({
   name: 'XhSwitch',
@@ -44,6 +79,7 @@ export const XhSwitch = defineComponent({
       emit('update:checked', details.checked)
     }
     const { api } = useSwitch(useFormControlProps(props) as SwitchProps, notify)
+    provide(SWITCH_API, api)
     // 字段的说明与校验状态要落在焦点所在的那颗按钮上：给了文字时封装根是外面那个 <label>，
     // XhFieldControl 把整份接线合在它身上，而读屏只念焦点所在节点的描述
     const fieldWiring = useFieldStateWiring()
@@ -62,10 +98,7 @@ export const XhSwitch = defineComponent({
         ...api.value.getRootProps() as Record<string, unknown>,
         // 有文字时名字改由它承担；没文字时不写，作者写在组件上的 aria-label 照旧生效
         ...(labelled ? { 'aria-labelledby': textId } : null),
-      }), [
-        h('span', api.value.getThumbProps() as Record<string, unknown>),
-        props.name === undefined ? null : h('input', api.value.getHiddenInputProps() as Record<string, unknown>),
-      ])
+      }), renderStructure(switchStructure({ hiddenInput: props.name !== undefined }), SWITCH_PARTS))
       if (!labelled)
         return track
       return h('label', api.value.getLabelProps() as Record<string, unknown>, [

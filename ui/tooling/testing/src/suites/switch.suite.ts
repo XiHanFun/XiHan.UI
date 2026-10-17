@@ -1,4 +1,4 @@
-import type { ConformanceSuite } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { switchAnatomy, switchKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
@@ -124,6 +124,30 @@ export const switchSuite: ConformanceSuite = {
           parts: { root: { 'disabled': '', 'data-disabled': '', 'aria-checked': 'false', 'data-state': 'unchecked' } },
           events: [],
         }),
+      ],
+    },
+    {
+      name: '作者不写结构：三端都照 switchStructure 在按钮里铺滑块，给了 name 再带表单影子',
+      spec: { apg: APG },
+      // Web Components 只写 root 时它得是原生按钮：组件的 root 就是那颗按钮
+      fixture: (): FixtureNode => ({ part: 'root', tag: 'button', attrs: { 'aria-label': '通知' }, defaultStructure: true }),
+      props: { name: 'notify', defaultChecked: true },
+      initial: {
+        order: ['root', 'thumb', 'hidden-input'],
+        parts: {
+          'root': { 'role': 'switch', 'aria-checked': 'true' },
+          'hidden-input': { type: 'hidden', name: 'notify' },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'root',
+          expect: {
+            parts: { root: { 'aria-checked': 'false' } },
+            events: [{ type: 'checked-change', detail: { checked: false } }],
+          },
+        },
       ],
     },
   ],

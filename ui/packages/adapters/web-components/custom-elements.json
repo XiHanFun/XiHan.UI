@@ -63039,7 +63039,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-switch>`：Light-DOM 行为宿主，运行 switch 状态机并把 connect 产出接到 root / thumb 角色节点。",
+          "description": "`<xh-switch>`：Light-DOM 行为宿主，运行 switch 状态机并把 connect 产出接到 root / thumb 角色节点。\n\n不写部件时元素按标准结构生成：root 是一颗原生按钮，里面一个滑块，给了 name 再带一份表单影子；\n只写 root（须是原生 `<button>`）时生成在它里面。要带文字时作者手写 label、root 与 text。",
           "name": "XhSwitchElement",
           "cssParts": [
             {
@@ -63081,6 +63081,15 @@
               "type": {
                 "text": "{ parts: ['root'], kind: 'state' }"
               }
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhSwitchElement>"
+              },
+              "static": true,
+              "default": "{ rootTag: 'button', build: host => switchStructure({ hiddenInput: host.name !== undefined }), }"
             },
             {
               "kind": "field",
