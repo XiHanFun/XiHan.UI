@@ -45,6 +45,33 @@ export const colorSwatchPickerSuite: ConformanceSuite = {
   },
   cases: [
     {
+      name: '作者不写结构：三端都照 colorSwatchPickerStructure 铺出标题与每一格（表单影子、色块面、选中标记），点格子即选中',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: {
+        label: '主题色',
+        swatches: [{ value: RED, label: '红' }, { value: GREEN, disabled: true }, { value: BLUE }],
+      },
+      initial: {
+        order: ['root', 'label', 'item[0]', 'hidden-input[0]', 'swatch[0]', 'indicator[0]', 'item[1]', 'hidden-input[1]', 'swatch[1]', 'indicator[1]', 'item[2]', 'hidden-input[2]', 'swatch[2]', 'indicator[2]'],
+        parts: {
+          'root': { 'role': 'radiogroup', 'aria-labelledby': '@part(label)' },
+          'item[0]': { 'role': 'radio', 'aria-label': '红', 'aria-checked': 'false' },
+          'item[1]': { 'aria-disabled': 'true' },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'item[2]',
+          expect: {
+            parts: { 'item[2]': { 'aria-checked': 'true' } },
+            events: [{ type: 'value-change', detail: { value: BLUE } }],
+          },
+        },
+      ],
+    },
+    {
       // 整组只占一个 Tab 位；无锚点时须由容器兜底
       name: 'roving tabindex：整组只有一个 Tab 停靠点，无锚点时容器兜底',
       spec: { apg: APG },

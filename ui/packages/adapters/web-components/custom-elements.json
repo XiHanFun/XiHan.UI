@@ -14808,7 +14808,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-color-swatch-picker>`：Light-DOM 行为宿主，运行 color-swatch-picker 状态机并把 connect 产出接到\nroot / label / item / swatch / indicator / hidden-input 等角色节点。\n\n从若干固定颜色中选择一个：与单选组同一套 roving tabindex，方向键移动焦点并选中，Space 选中；\n每格的色块面经 Swatch 家族绘制，颜色由元素写入私有槽。",
+          "description": "`<xh-color-swatch-picker>`：Light-DOM 行为宿主，运行 color-swatch-picker 状态机并把 connect 产出接到\nroot / label / item / swatch / indicator / hidden-input 等角色节点。\n\n从若干固定颜色中选择一个：与单选组同一套 roving tabindex，方向键移动焦点并选中，Space 选中；\n每格的色块面经 Swatch 家族绘制，颜色由元素写入私有槽。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）与 swatches 的每一格（表单影子、色块面与选中标记）。\n标题可以由宿主直接子节点 `slot=\"label\"` 接管。",
           "name": "XhColorSwatchPickerElement",
           "cssParts": [
             {
@@ -14857,12 +14857,30 @@
             },
             {
               "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhColorSwatchPickerElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? colorSwatchPickerStructure(connectColorSwatchPicker(host.ctrl.service, wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
+            },
+            {
+              "kind": "field",
               "name": "swatches",
               "privacy": "public",
               "type": {
                 "text": "ColorSwatchPickerNode[]"
               },
               "description": "格子数据（只能通过 property 设置）：可及名与禁用的事实源，格子部件只需声明 value"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
             },
             {
               "kind": "field",
@@ -15198,6 +15216,14 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
             {
               "type": {
                 "text": "string | undefined"

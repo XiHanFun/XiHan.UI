@@ -6,15 +6,17 @@
 // 提供 color swatch picker 相关实现。
 
 import type { Direction, Size, Tone } from '@xihan-ui/core'
-import type { ColorSwatchPickerApi, ColorSwatchPickerNode, ColorSwatchPickerNodeMeta, ColorSwatchPickerSchema } from '@xihan-ui/headless'
+import type { ColorSwatchPickerApi, ColorSwatchPickerNode, ColorSwatchPickerSchema, StructureChild } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { colorSwatchPickerStructure } from '@xihan-ui/headless'
 import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { ColorSwatchPickerProvider, useColorSwatchPickerContext } from './context'
@@ -105,9 +107,7 @@ export function XhColorSwatchPickerRoot({
         isSelected: api.isSelected,
         setValue: api.setValue,
       })
-    : swatches
-      ? <DefaultTree swatches={api.swatches} label={label} />
-      : title
+    : renderDefaultStructure(api, label)
   return (
     <ColorSwatchPickerProvider value={ctx}>
       <div
@@ -194,15 +194,33 @@ export function XhColorSwatchPickerItem({ value, label, disabled, children, ...r
 
 function noop(): void {}
 
+/** 标准结构里各部件对应的组件。 */
+const COLOR_SWATCH_PICKER_PARTS = {
+  label: XhColorSwatchPickerLabel,
+  item: XhColorSwatchPickerItem,
+}
+
+/** 格子自己装配表单影子、色块面与选中标记：铺结构时去掉这几格。 */
+const SELF_ASSEMBLED: ReadonlySet<string> = new Set(['hidden-input', 'swatch', 'indicator'])
+
+function withoutSelfAssembled(nodes: readonly StructureChild[]): StructureChild[] {
+  return nodes.flatMap((node): StructureChild[] => {
+    if (!('part' in node))
+      return [node]
+    if (SELF_ASSEMBLED.has(node.part))
+      return []
+    return [node.children ? { ...node, children: withoutSelfAssembled(node.children) } : node]
+  })
+}
+
 /**
- * 未写 children 时按 swatches 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
+ * 未写 children 时铺开的整套结构，作者只提供数据：照 headless 的 colorSwatchPickerStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题原样放进 label 部件。
  */
-function DefaultTree(props: { swatches: readonly ColorSwatchPickerNodeMeta[], label?: ReactNode }): ReactNode {
-  return (
-    <>
-      {props.label != null ? <XhColorSwatchPickerLabel>{props.label}</XhColorSwatchPickerLabel> : null}
-      {props.swatches.map(node => <XhColorSwatchPickerItem key={node.value} value={node.value} />)}
-    </>
-  )
+function renderDefaultStructure(api: ColorSwatchPickerApi, label: ReactNode): ReactNode[] {
+  const nodes = colorSwatchPickerStructure(api, {
+    label: typeof label === 'string' ? label : undefined,
+    slotted: name => name === 'label' && label != null && typeof label !== 'string',
+  })
+  return renderStructure(withoutSelfAssembled(nodes), COLOR_SWATCH_PICKER_PARTS, node => (node.slot ? label : undefined))
 }
