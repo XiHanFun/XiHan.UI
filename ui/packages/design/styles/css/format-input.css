@@ -1,0 +1,126 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 format input 样式。 */
+
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='format-input'] {
+    --xh-format-input-skin: 1;
+  }
+
+  /* 组本身不画壳：边界由里面各个控件自己的描边承担。
+     自上而下是种类、参数行、样例、行内说明，块与块之间隔一段 gap。
+     里面的下拉、数字框与组合框都铺满所在的那一格，与放进 Field 时同一条 */
+  [data-scope='format-input'][data-part='root'] {
+    --xh-control-w: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-format-input-gap, var(--xh-space-4));
+    min-inline-size: 0;
+  }
+
+  /* 标题与字段标签同一档：muted、label 字号与字重 */
+  [data-scope='format-input'][data-part='label'] {
+    color: var(--xh-format-input-label-fg, var(--xh-fg-muted));
+    font-size: var(--xh-format-input-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-format-input-label-font-weight, var(--xh-text-label-weight));
+    line-height: var(--xh-leading-none);
+  }
+
+  /* 种类控件与每个参数行：里面的控件纵向排、靠起始边，不在行内留基线下方的那截空隙。
+     种类与分段切换那一行是 fieldset：抹掉 UA 的边框、内外边距与 min-content 下限 */
+  [data-scope='format-input']:is([data-part='kind'], [data-part='item']) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    min-inline-size: 0;
+  }
+
+  /* 参数行：窄时一列，够宽了按列宽自动分栏；各格底边对齐，带标题的控件与开关那一行的轨道落在同一条线上 */
+  [data-scope='format-input'][data-part='field-group'] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--xh-format-input-field-group-col-w, var(--xh-layout-col-min-sm)), 1fr));
+    gap: var(--xh-format-input-field-group-gap, var(--xh-space-3));
+    align-items: end;
+  }
+
+  /* 开关那一行：名字在前、轨道在后，整行一档控件高，与旁边的输入框等高居中。
+     整行是 label，点名字等于点轨道 */
+  [data-scope='format-input'][data-part='item'][data-value='grouping'] {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--xh-format-input-item-gap, var(--xh-space-3));
+    min-block-size: var(--xh-control-h-md);
+    cursor: pointer;
+  }
+
+  [data-scope='format-input'][data-part='root'][data-size='sm'] [data-scope='format-input'][data-part='item'][data-value='grouping'] {
+    min-block-size: var(--xh-control-h-sm);
+  }
+
+  [data-scope='format-input'][data-part='root'][data-size='lg'] [data-scope='format-input'][data-part='item'][data-value='grouping'] {
+    min-block-size: var(--xh-control-h-lg);
+  }
+
+  /* 禁用与只读时整行点了不生效，不给手形 */
+  :is([data-scope='format-input'][data-part='root'][data-disabled], [data-scope='format-input'][data-part='root'][data-readonly]) [data-scope='format-input'][data-part='item'][data-value='grouping'] {
+    cursor: default;
+  }
+
+  /* 参数行的名字与里面控件自带的标题同一档：muted、label 字号与字重、行距 none */
+  [data-scope='format-input'][data-part='item-label'] {
+    padding: 0;
+    color: var(--xh-format-input-item-label-fg, var(--xh-fg-muted));
+    font-size: var(--xh-format-input-item-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-format-input-item-label-font-weight, var(--xh-text-label-weight));
+    line-height: var(--xh-leading-none);
+  }
+
+  /* legend 压在分段切换上方，与控件自带标题到盒的距离相同 */
+  [data-scope='format-input'][data-part='item-label']:where(legend) {
+    margin-block-end: var(--xh-format-input-item-label-gap, var(--xh-space-2));
+  }
+
+  /* 占位符说明独占一整行，排在参数格之后；与其余说明同一档：secondary 字号、muted */
+  [data-scope='format-input'][data-part='pattern-description'] {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--xh-format-input-pattern-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-format-input-pattern-description-font-size, var(--xh-text-secondary-size));
+    line-height: var(--xh-leading-normal);
+  }
+
+  /* 样例：一行正文，数字等宽，换种类或改参数时整行换字 */
+  [data-scope='format-input'][data-part='preview'] {
+    color: var(--xh-format-input-preview-fg, var(--xh-fg-muted));
+    font-size: var(--xh-format-input-preview-font-size, var(--xh-text-body-size));
+    font-variant-numeric: tabular-nums;
+    line-height: var(--xh-leading-normal);
+    overflow-wrap: anywhere;
+  }
+
+  /* 行内说明：草稿不完整时出现，警示色、secondary 字号 */
+  [data-scope='format-input'][data-part='error-text'] {
+    margin: 0;
+    color: var(--xh-format-input-error-fg, var(--xh-fg-danger));
+    font-size: var(--xh-format-input-error-font-size, var(--xh-text-secondary-size));
+    line-height: var(--xh-leading-normal);
+  }
+
+  /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+     写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+  [data-scope='format-input'][data-part='root'][hidden],
+  [data-scope='format-input'][data-part='kind'][hidden],
+  [data-scope='format-input'][data-part='field-group'][hidden],
+  [data-scope='format-input'][data-part='item'][hidden] {
+    display: none;
+  }
+}

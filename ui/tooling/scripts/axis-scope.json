@@ -139,6 +139,9 @@
   ],
   "floating-panel": [],
   "form": [],
+  "format-input": [
+    "size"
+  ],
   "funnel-chart": [],
   "graph-chart": [],
   "grid": [],

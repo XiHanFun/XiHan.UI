@@ -9,6 +9,7 @@ import type { KeyTextTable } from '@xihan-ui/core/hotkey'
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { XhLocale, XhLocaleTranslations } from './types'
 import { keyText } from '@xihan-ui/core/hotkey'
+import { FORMAT_INPUT_EN_US } from './en-US'
 import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -310,6 +311,25 @@ const translations = {
     minNumber: '{name} deve ser no mínimo {min}',
     maxNumber: '{name} deve ser no máximo {max}',
     pattern: '{name} não corresponde ao formato exigido',
+  },
+  'format-input': {
+    kind: 'Formato',
+    kindOption: kind => ({ 'none': 'Sem formato', 'number': 'Número', 'percent': 'Porcentagem', 'date': 'Data', 'rmb-upper': 'RMB por extenso', 'numeral': 'Numeral' })[kind],
+    decimalsMode: 'Casas decimais',
+    decimalsModeOption: mode => ({ fixed: 'Fixo', range: 'Intervalo', exact: 'Sem arredondar' })[mode],
+    decimals: 'Casas',
+    minDecimals: 'Mínimo',
+    maxDecimals: 'Máximo',
+    grouping: 'Separador de milhar',
+    rounding: 'Arredondamento',
+    roundingOption: rounding => ({ 'half-up': 'Metade para cima', 'half-even': 'Metade para o par', 'floor': 'Para baixo', 'ceil': 'Para cima', 'down': 'Truncar' })[rounding],
+    pattern: 'Padrão',
+    patternHint: 'yyyy ano, MM mês, dd dia, HH hora, mm minuto, ss segundo, SSS milissegundo',
+    numeralStyle: 'Estilo',
+    numeralStyleOption: style => ({ 'roman-upper': 'Romano (maiúsculas)', 'roman-lower': 'Romano (minúsculas)', 'cn-lower': 'Chinês', 'cn-upper': 'Chinês (financeiro)' })[style],
+    preview: text => `Exemplo: ${text}`,
+    sampleUnavailable: 'O valor de exemplo não se encaixa neste formato',
+    issue: FORMAT_INPUT_EN_US.issue,
   },
   'funnel-chart': {
     ...chart,

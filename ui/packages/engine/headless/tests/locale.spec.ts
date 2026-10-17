@@ -139,6 +139,14 @@ const SAMPLES: Record<string, Record<string, unknown[][]>> = {
   },
   'field-array': { deleteItem: [[1, 3]], moveUpTrigger: [[2, 3]], moveDownTrigger: [[1, 3]] },
   'file-upload': { deleteItem: [[{ name: 'report.pdf' }]] },
+  'format-input': {
+    kindOption: ['none', 'number', 'percent', 'date', 'rmb-upper', 'numeral'].map(kind => [kind]),
+    decimalsModeOption: [['fixed'], ['range'], ['exact']],
+    roundingOption: [['half-up'], ['half-even'], ['floor'], ['ceil'], ['down']],
+    numeralStyleOption: [['roman-upper'], ['roman-lower'], ['cn-lower'], ['cn-upper']],
+    preview: [['1,234.50']],
+    issue: ['decimals-empty', 'range-inverted', 'pattern-empty', 'XH_EXPR_FORMAT_INVALID_SPEC', 'XH_EXPR_FORMAT_INVALID_KIND', 'XH_EXPR_FORMAT_INVALID_OPTION', 'XH_EXPR_FORMAT_CONFLICT', 'XH_EXPR_FORMAT_UNKNOWN_KEY'].map(code => [code]),
+  },
   'floating-panel': {
     resizeTrigger: EDGES,
     resizeValueText: [[{ width: 320.4, height: 200 }]],

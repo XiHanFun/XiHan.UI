@@ -9,6 +9,7 @@ import type { KeyTextTable } from '@xihan-ui/core/hotkey'
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { XhLocale, XhLocaleTranslations } from './types'
 import { keyText } from '@xihan-ui/core/hotkey'
+import { FORMAT_INPUT_EN_US } from './en-US'
 import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -307,6 +308,25 @@ const translations = {
     minNumber: '{name} 不能小於 {min}',
     maxNumber: '{name} 不能大於 {max}',
     pattern: '{name} 格式不正確',
+  },
+  'format-input': {
+    kind: '格式',
+    kindOption: kind => ({ 'none': '不設格式', 'number': '數字', 'percent': '百分比', 'date': '日期', 'rmb-upper': '人民幣大寫', 'numeral': '數字字形' })[kind],
+    decimalsMode: '小數位',
+    decimalsModeOption: mode => ({ fixed: '固定', range: '範圍', exact: '不捨入' })[mode],
+    decimals: '位數',
+    minDecimals: '最少',
+    maxDecimals: '最多',
+    grouping: '千分位',
+    rounding: '捨入',
+    roundingOption: rounding => ({ 'half-up': '四捨五入', 'half-even': '銀行家捨入', 'floor': '向下', 'ceil': '向上', 'down': '截斷' })[rounding],
+    pattern: '模式',
+    patternHint: 'yyyy 年、MM 月、dd 日、HH 時、mm 分、ss 秒、SSS 毫秒',
+    numeralStyle: '樣式',
+    numeralStyleOption: style => ({ 'roman-upper': '羅馬大寫', 'roman-lower': '羅馬小寫', 'cn-lower': '中文小寫', 'cn-upper': '中文大寫' })[style],
+    preview: text => `範例：${text}`,
+    sampleUnavailable: '範例值套不上這個格式',
+    issue: FORMAT_INPUT_EN_US.issue,
   },
   'funnel-chart': {
     ...chart,

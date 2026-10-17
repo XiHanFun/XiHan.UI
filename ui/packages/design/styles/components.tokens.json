@@ -39252,6 +39252,312 @@
       "description": "form 的 reset-trigger、submit-trigger 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-format-input-error-fg",
+      "component": "format-input",
+      "part": [
+        "error-text"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-danger"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 error-text 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-format-input-error-font-size",
+      "component": "format-input",
+      "part": [
+        "error-text"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-secondary-size"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 error-text 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-format-input-field-group-col-w",
+      "component": "format-input",
+      "part": [
+        "field-group"
+      ],
+      "property": [
+        "grid-template-columns"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-layout-col-min-sm"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 field-group 部件 grid-template-columns 覆盖槽。"
+    },
+    {
+      "name": "--xh-format-input-field-group-gap",
+      "component": "format-input",
+      "part": [
+        "field-group"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 field-group 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-format-input-gap",
+      "component": "format-input",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-4"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-format-input-item-gap",
+      "component": "format-input",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "value=grouping"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 item 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-format-input-item-label-fg",
+      "component": "format-input",
+      "part": [
+        "item-label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 item-label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-format-input-item-label-font-size",
+      "component": "format-input",
+      "part": [
+        "item-label"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-size"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 item-label 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-format-input-item-label-font-weight",
+      "component": "format-input",
+      "part": [
+        "item-label"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 item-label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-format-input-item-label-gap",
+      "component": "format-input",
+      "part": [
+        "item-label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "where(legend)"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 item-label 部件 margin-block-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-format-input-label-fg",
+      "component": "format-input",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-format-input-label-font-size",
+      "component": "format-input",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-size"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 label 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-format-input-label-font-weight",
+      "component": "format-input",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-format-input-pattern-description-fg",
+      "component": "format-input",
+      "part": [
+        "pattern-description"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 pattern-description 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-format-input-pattern-description-font-size",
+      "component": "format-input",
+      "part": [
+        "pattern-description"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-secondary-size"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 pattern-description 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-format-input-preview-fg",
+      "component": "format-input",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 preview 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-format-input-preview-font-size",
+      "component": "format-input",
+      "part": [
+        "preview"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-body-size"
+      ],
+      "visibility": "public",
+      "description": "format-input 的 preview 部件 font-size 覆盖槽。"
+    },
+    {
       "name": "--xh-funnel-chart-empty-gap",
       "component": "funnel-chart",
       "part": [

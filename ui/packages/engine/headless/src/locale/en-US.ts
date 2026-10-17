@@ -357,6 +357,35 @@ export const FORM_EN_US: XhLocaleBucket<'form'> = {
   pattern: '{name} does not match the required pattern',
 }
 
+export const FORMAT_INPUT_EN_US: XhLocaleBucket<'format-input'> = {
+  kind: 'Format',
+  kindOption: kind => ({ 'none': 'No format', 'number': 'Number', 'percent': 'Percent', 'date': 'Date', 'rmb-upper': 'RMB in words', 'numeral': 'Numeral' })[kind],
+  decimalsMode: 'Decimal places',
+  decimalsModeOption: mode => ({ fixed: 'Fixed', range: 'Range', exact: 'As is' })[mode],
+  decimals: 'Places',
+  minDecimals: 'Min places',
+  maxDecimals: 'Max places',
+  grouping: 'Thousands separator',
+  rounding: 'Rounding',
+  roundingOption: rounding => ({ 'half-up': 'Half up', 'half-even': 'Half to even', 'floor': 'Down', 'ceil': 'Up', 'down': 'Truncate' })[rounding],
+  pattern: 'Pattern',
+  patternHint: 'yyyy year, MM month, dd day, HH hour, mm minute, ss second, SSS millisecond',
+  numeralStyle: 'Style',
+  numeralStyleOption: style => ({ 'roman-upper': 'Roman (upper)', 'roman-lower': 'Roman (lower)', 'cn-lower': 'Chinese', 'cn-upper': 'Chinese (financial)' })[style],
+  preview: text => `Example: ${text}`,
+  sampleUnavailable: 'The example value does not fit this format',
+  issue: code => ({
+    'decimals-empty': 'Enter the number of decimal places',
+    'range-inverted': 'The minimum exceeds the maximum',
+    'pattern-empty': 'Enter a date pattern',
+    'XH_EXPR_FORMAT_INVALID_SPEC': 'Invalid format',
+    'XH_EXPR_FORMAT_INVALID_KIND': 'This kind of format is not allowed here',
+    'XH_EXPR_FORMAT_INVALID_OPTION': 'A setting is out of range',
+    'XH_EXPR_FORMAT_CONFLICT': 'Settings conflict with each other',
+    'XH_EXPR_FORMAT_UNKNOWN_KEY': 'Unknown setting',
+  })[code],
+}
+
 export const FUNNEL_CHART_EN_US: XhLocaleBucket<'funnel-chart'> = {
   chartRoleDescription,
   seriesRoleDescription,
@@ -881,6 +910,7 @@ const translations = {
   'float-button': FLOAT_BUTTON_EN_US,
   'floating-panel': FLOATING_PANEL_EN_US,
   'form': FORM_EN_US,
+  'format-input': FORMAT_INPUT_EN_US,
   'funnel-chart': FUNNEL_CHART_EN_US,
   'graph-chart': GRAPH_CHART_EN_US,
   'grid-list': GRID_LIST_EN_US,
