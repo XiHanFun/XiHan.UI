@@ -82,6 +82,46 @@ panel.addEventListener("property-commit", () => history.seal());
 - 插槽 `header` 在标题下方（如部位导航），`footer` 在字段之后（如「删除列」）。
 - `focusField(path)` 把焦点交给该属性的字段，找不到时返回 `false`。
 
+### 复合编辑器里的字段
+
+宿主编辑器常要拼几个字段，比如四边边框的每一边有线宽、线型与颜色。`createPropertyField` 按一种内建编辑方式建出一行字段，控件、单位后缀、数字约束与 JSON、字段路径的就地校验、空值、「多个值」与只读，都和属性面板里的同一套。复合编辑器在 `setValue` 里拼出整个值，再交给自己的 `setValue`：
+
+```ts
+import type { DesignerPropertyEditor } from "@xihan-ui/designer-shell";
+import { createPropertyField } from "@xihan-ui/designer-shell";
+
+const stroke: DesignerPropertyEditor = (initial) => {
+  let context = initial;
+  const current = (): Record<string, unknown> => ({ ...(context.value as Record<string, unknown> | undefined) });
+  const width = createPropertyField({
+    ownerDocument: document,
+    control: { kind: "number", min: 0, step: 0.05, unit: "mm" },
+    label: "线宽",
+    setValue: value => context.setValue({ ...current(), width: value ?? 0 }),
+    commit: () => context.commit(),
+  }, { value: current().width as number | undefined });
+  const element = document.createElement("div");
+  element.append(width.element);
+  return {
+    element,
+    update: (next) => {
+      context = next;
+      width.update({ value: current().width as number | undefined, readonly: next.readonly });
+    },
+  };
+};
+```
+
+| 选项 | 说明 |
+| --- | --- |
+| `control` | 内建的编辑方式；别的种类抛 `TypeError` |
+| `label` / `required` | 字段的标题与必填标记 |
+| `setValue` / `commit` | 写入新值（`undefined` 为清除）与一次编辑结束；只读时不调用 |
+| `optionLabel` / `unitLabel` / `dataFields` / `toggleLimit` | 同属性面板的同名属性 |
+| `translations` | 压在配置文案之上；配置取字段所在位置的（`xh-designer-properties` 那一桶） |
+
+`update(state)` 每次整份给状态：`value`、`readonly`、`mixed`（多个值）、`hint`（说明）与 `error`（外面给的错误，控件自己发现的错误优先显示）。返回的 `element` 是一整行：控件在 `<xh-field>` 里，标题、说明与错误由字段接上；四边（`sides`）这类一组控件时整行是 `role="group"`。
+
 ## 问题列表
 
 `<xh-designer-issues>` 列出结构问题。文字由设计器换好，零件只管排列、过滤与定位。

@@ -21,6 +21,8 @@ export { XhDesignerMinimapElement } from './minimap/minimap-element'
 export type { DesignerMinimapEventMap, DesignerMinimapShape } from './minimap/minimap-element'
 export { XhDesignerPaletteElement } from './palette/palette-element'
 export type { DesignerPaletteDragPayload, DesignerPaletteEventMap, DesignerPaletteGroup, DesignerPaletteItem } from './palette/palette-element'
+export { createPropertyField } from './properties/field'
+export type { PropertyField, PropertyFieldOptions, PropertyFieldState } from './properties/field'
 export { XhDesignerPropertiesElement } from './properties/properties-element'
 export type {
   DesignerPropertiesEventMap,
