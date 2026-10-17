@@ -50,14 +50,14 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 一、JS / TS 导出面
 
-23 个包中 23 个出 JS 或类型入口，共 57 个带类型的入口。
+23 个包中 23 个出 JS 或类型入口，共 59 个带类型的入口。
 
 ### 受约束
 
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
 | 包名 | 23 | 把代码从一个包移到另一个包 = major |
-| `exports` 子路径 | 57 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
+| `exports` 子路径 | 59 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
 | Vue 组件导出 `Xh*` | 1184（140 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
 | Vue 组合式函数 `use<家族>` | 110 | `useSelect`、`useCombobox`。不使用库内部件、自行编写标记时的唯一入口 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
@@ -125,7 +125,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 312 个不同的 `data-*` 属性名、2039 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 312 个不同的 `data-*` 属性名、2040 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -217,7 +217,7 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 145（`defineXhElements()` 注册 144 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1578 条声明 / 484 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| observed attribute | 1579 条声明 / 484 个不同名字 | **受约束**（具体元素上的具体属性名） |
 | attribute 名词汇表本身 | 484 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
 | `CustomEvent` 名 | 119 个名字 / 281 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（267 处中 265 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
@@ -431,11 +431,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，19473 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，19517 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 227 条子入口、10182 个导出名、140 个 `data-scope` 与 1354 条部件配对、
-140 个组件的 2171 个 prop 名、314 种 `data-*`、33 个 `data-state` 取值、803 个令牌、
+覆盖：包名与 229 条子入口、10225 个导出名、140 个 `data-scope` 与 1354 条部件配对、
+140 个组件的 2172 个 prop 名、314 种 `data-*`、33 个 `data-state` 取值、803 个令牌、
 5 个 `@layer` 名、4649 个组件覆盖槽、144 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改

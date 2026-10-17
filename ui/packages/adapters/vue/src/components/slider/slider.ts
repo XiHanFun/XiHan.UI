@@ -50,6 +50,7 @@ export const XhSliderRoot = defineComponent({
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
     name: { type: String },

@@ -167,6 +167,7 @@ draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽�
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |
+| `required` | `boolean` |  | 必填：根与标题带 data-required（标题据此画星号）。拇指是 role=slider，不收 aria-required； 滑块恒有值，表单影子不带原生 required。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定拇指直径与轨道厚度 |
 | `name` | `string` |  | 表单字段名；多滑块时逐个 append。 |
@@ -304,6 +305,7 @@ draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽�
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
@@ -311,6 +313,7 @@ draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽�
 | `label` | `data-invalid` | ''（条件成立时才出现） |
 | `label` | `data-orientation` | props.orientation |
 | `label` | `data-readonly` | ''（条件成立时才出现） |
+| `label` | `data-required` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-dragging` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |

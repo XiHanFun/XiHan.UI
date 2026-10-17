@@ -95,7 +95,7 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
       <div data-xh-part="item" value="a"><input data-xh-part="hidden-input"><span data-xh-part="indicator"></span><span data-xh-part="item-text">甲</span></div>
     </div></xh-checkbox-group>`
   }
-  return `<xh-slider ${nonRequiredMarkup} default-value="50"><div data-xh-part="root"><div data-xh-part="control"><div data-xh-part="track"></div><div data-xh-part="thumb" index="0"></div></div></div></xh-slider>`
+  return `<xh-slider ${markup} default-value="50"><div data-xh-part="root"><div data-xh-part="control"><div data-xh-part="track"></div><div data-xh-part="thumb" index="0"></div></div></div></xh-slider>`
 }
 
 async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabled: boolean): Promise<void> {
@@ -266,6 +266,8 @@ async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabl
     const root = form.querySelector<HTMLElement>('xh-slider [data-scope="slider"][data-part="root"]')!
     expect(root.hasAttribute('data-readonly')).toBe(enabled)
     expect(root.hasAttribute('data-invalid')).toBe(enabled)
+    expect(root.hasAttribute('data-required')).toBe(enabled)
+    expect(thumb!.hasAttribute('aria-required')).toBe(false)
     return
   }
   if (kind === 'date-field' || kind === 'time-field') {

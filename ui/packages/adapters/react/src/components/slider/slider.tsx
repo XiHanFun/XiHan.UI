@@ -65,6 +65,8 @@ export interface XhSliderRootProps extends RootElementProps {
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
+  /** 必填：根与标题带 data-required；拇指是 role=slider，不收 aria-required。 */
+  required?: boolean
   tone?: Tone
   size?: Size
   /** 表单字段名；多滑块时逐个 append。 */
@@ -96,6 +98,7 @@ export function XhSliderRoot({
   disabled,
   readOnly,
   invalid,
+  required,
   tone,
   size,
   name,
@@ -123,6 +126,7 @@ export function XhSliderRoot({
     disabled,
     readOnly,
     invalid,
+    required,
     tone,
     size,
     name,

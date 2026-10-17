@@ -146,7 +146,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
     return h(XhListboxRoot, { ...nonRequiredState(props), collection: [{ value: 'a', label: '甲' }] })
   if (kind === 'TagGroup')
     return h(XhTagGroupRoot, { ...disabledReadOnlyState(props), collection: [{ value: 'a', label: '甲' }] })
-  return h(XhSliderRoot, { ...nonRequiredState(props), defaultValue: [50] }, () => h(XhSliderControl, null, () => [h(XhSliderTrack), h(XhSliderThumb, { index: 0 })]))
+  return h(XhSliderRoot, { ...props, defaultValue: [50] }, () => h(XhSliderControl, null, () => [h(XhSliderTrack), h(XhSliderThumb, { index: 0 })]))
 }
 
 function mountAtomicControl(kind: AtomicControl, instance: ControlState = {}, field?: ControlState) {
@@ -304,6 +304,8 @@ function expectAtomicState(wrapper: ReturnType<typeof mount>, kind: AtomicContro
     expect(thumb.attributes('aria-disabled')).toBe(String(enabled))
     expect(root.attributes('data-readonly') !== undefined).toBe(enabled)
     expect(root.attributes('data-invalid') !== undefined).toBe(enabled)
+    expect(root.attributes('data-required') !== undefined).toBe(enabled)
+    expect(thumb.attributes('aria-required')).toBeUndefined()
     return
   }
   if (kind === 'DateField' || kind === 'TimeField') {
