@@ -1521,7 +1521,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<ApprovalSchema>(this, approvalMachine, () => ({ requestId: this.requestId, status: this.status, defaultStatus: this.defaultStatus, timeoutMs: this.timeoutMs, scopes: this.scopes, grantedScopes: this.grantedScopes, defaultGrantedScopes: this.defaultGrantedScopes, note: this.note, defaultNote: this.defaultNote, loading: this.loading, denyOnEscape: this.denyOnEscape, denyOnUnmount: this.denyOnUnmount, requireReason: this.requireReason, live: this.live, variant: this.variant, tone: this.tone, size: this.size, translations: this.translations, onDecision: this.notifyDecision, onGrantedScopesChange: this.notifyScopes, onNoteChange: this.notifyNote, }))"
+              "default": "new MachineController<ApprovalSchema>(this, approvalMachine, () => ({ requestId: this.requestId, status: this.status, defaultStatus: this.defaultStatus, timeoutMs: this.timeoutMs, scopes: this.scopes, grantedScopes: this.grantedScopes, defaultGrantedScopes: this.defaultGrantedScopes, note: this.note, defaultNote: this.defaultNote, loading: this.loading, denyOnEscape: this.denyOnEscape, denyOnUnmount: this.denyOnUnmount, requireReason: this.requireReason, live: this.live, variant: this.variant, tone: this.tone, size: this.size, translations: this.translations, // 只引用作者写了的标题与说明 parts: renderedTitleDescription(this.getPart('title'), this.getPart('description')), onDecision: this.notifyDecision, onGrantedScopesChange: this.notifyScopes, onNoteChange: this.notifyNote, }))"
             },
             {
               "kind": "method",
@@ -1541,6 +1541,13 @@
                 }
               ],
               "description": "一项授权的声明，全部取自作者写在节点上的 scope-* 属性。"
+            },
+            {
+              "kind": "field",
+              "name": "descriptionWatch",
+              "privacy": "private",
+              "readonly": true,
+              "description": "说明部件的内容从无到有、从有到无时重新接线：读不出一句话的说明不进描述链。"
             },
             {
               "kind": "method",

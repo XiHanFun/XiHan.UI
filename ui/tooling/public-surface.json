@@ -12266,6 +12266,7 @@
       "onDecision",
       "onGrantedScopesChange",
       "onNoteChange",
+      "parts",
       "requestId",
       "requireReason",
       "scopes",

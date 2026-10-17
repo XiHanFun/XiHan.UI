@@ -7,9 +7,11 @@
 
 import type { Service } from '@xihan-ui/core'
 import type { ApprovalApi, ApprovalSchema } from '@xihan-ui/headless'
+import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import { approvalMachine, connectApproval } from '@xihan-ui/headless'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactScope } from '../../runtime/react-id'
+import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
 
 type Props = ApprovalSchema['props']
@@ -17,10 +19,13 @@ type Props = ApprovalSchema['props']
 export interface ApprovalContext {
   service: Service<ApprovalSchema>
   api: ApprovalApi
+  /** 标题与说明在不在场，由 XhApprovalTitle / XhApprovalDescription 登记；只引用在场的部件。 */
+  presence: TitleDescriptionPresence
 }
 
 export function useApproval(props: Props): ApprovalContext {
   const scope = useReactScope()
-  const service = useMachine(approvalMachine, () => props, { scope })
-  return { service, api: connectApproval(service, reactNormalize) }
+  const presence = useTitleDescriptionPresence()
+  const service = useMachine(approvalMachine, () => ({ ...props, parts: presence.parts }), { scope })
+  return { service, api: connectApproval(service, reactNormalize), presence }
 }

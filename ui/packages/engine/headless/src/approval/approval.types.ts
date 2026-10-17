@@ -6,6 +6,7 @@
 // 定义 approval 类型契约。
 
 import type { ControlVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { TitleDescriptionParts } from '../shared/title-description'
 
 export type ApprovalStatus = 'pending' | 'approved' | 'denied' | 'expired'
 
@@ -93,6 +94,11 @@ export interface ApprovalSchema extends MachineSchema {
     variant?: ControlVariant
     tone?: Tone
     size?: Size
+    /**
+     * 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。
+     * title 不在场时不写 aria-labelledby；description 不在场、或渲染了但读不出一句话（判断同 `hasNamingContent`）时不写 aria-describedby。
+     */
+    parts?: TitleDescriptionParts
     translations?: Partial<ApprovalTranslations>
     onDecision?: (details: ApprovalDecisionDetails) => void
     onGrantedScopesChange?: (details: ApprovalScopesChangeDetails) => void

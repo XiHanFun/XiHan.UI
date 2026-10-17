@@ -7,10 +7,12 @@
 
 import type { ApprovalApi, ApprovalSchema } from '@xihan-ui/headless'
 import type { ComputedRef } from 'vue'
+import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import { createScope } from '@xihan-ui/core'
 import { approvalMachine, connectApproval } from '@xihan-ui/headless'
 import { computed } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
+import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
@@ -24,12 +26,15 @@ export interface ApprovalCallbacks {
 
 export interface ApprovalContext {
   api: ComputedRef<ApprovalApi>
+  /** 标题与说明在不在场，由 XhApprovalTitle / XhApprovalDescription 登记；只引用在场的部件。 */
+  presence: TitleDescriptionPresence
 }
 
 export function useApproval(props: Props, callbacks: ApprovalCallbacks = {}): ApprovalContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(approvalMachine, () => ({ ...props, ...callbacks }), scope)
+  const presence = useTitleDescriptionPresence()
+  const service = useMachine(approvalMachine, () => ({ ...props, parts: presence.parts.value, ...callbacks }), scope)
   const api = computed(() => connectApproval(service, vueNormalize))
-  return { api }
+  return { api, presence }
 }

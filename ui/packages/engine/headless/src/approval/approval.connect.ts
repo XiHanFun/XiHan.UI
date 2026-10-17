@@ -50,6 +50,7 @@ export function connectApproval<T extends PropTypes>(
   const scopes = prop('scopes')
   const translations = resolveTranslations(APPROVAL_EN_US, prop('translations'))
   const ids = scope.ids('approval', 'title', 'description')
+  const rendered = prop('parts')
   // 必选项没勾满、或判定在途，都批不了；拒绝这条路不受它们影响
   const canApprove = !loading && canApproveScopes(scopes, granted)
   // 必选项没勾满的那一档：aria 上与在途同为 aria-disabled，家族按 data-disabled 给置灰面、按 data-loading 给在途面
@@ -106,8 +107,9 @@ export function connectApproval<T extends PropTypes>(
     getRootProps: () => normalize.element({
       'role': 'group',
       ...parts.root.attrs,
-      'aria-labelledby': ids.title,
-      'aria-describedby': ids.description,
+      // 只引用作者渲染了的标题与说明：省略 parts 按都在场
+      'aria-labelledby': rendered?.title !== false ? ids.title : undefined,
+      'aria-describedby': rendered?.description !== false ? ids.description : undefined,
       'data-state': status,
       'data-loading': dataAttr(loading),
       'data-variant': prop('variant') ?? 'outline',
