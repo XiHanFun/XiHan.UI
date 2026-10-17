@@ -56,7 +56,7 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
     return `<xh-tag-group ${tagGroupMarkup}><div data-xh-part="root"><div data-xh-part="list"><span data-xh-part="item" value="a"><span data-xh-part="cell"><span data-xh-part="item-text">甲</span></span></span></div></div></xh-tag-group>`
   }
   if (kind === 'cascader')
-    return `<xh-cascader ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger">选择</button></div></div></xh-cascader>`
+    return `<xh-cascader ${markup}><div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger">选择</button></div></div></xh-cascader>`
   if (kind === 'combobox')
     return `<xh-combobox ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div></xh-combobox>`
   if (kind === 'tree-select')
@@ -218,6 +218,11 @@ async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabl
     expect(trigger.getAttribute('aria-invalid')).toBe(String(enabled))
     if (kind === 'select')
       expect((form.querySelector('xh-select select') as HTMLSelectElement).required).toBe(enabled)
+    if (kind === 'cascader') {
+      expect(trigger.getAttribute('aria-required')).toBe(String(enabled))
+      // 没选值：必填时补一份空值占位影子带原生 required，不必填时没有影子
+      expect(form.querySelector<HTMLInputElement>('xh-cascader input[required]') != null).toBe(enabled)
+    }
     return
   }
   if (kind === 'number-field' || kind === 'password-input' || kind === 'pin-input' || kind === 'editable' || kind === 'tags-input') {

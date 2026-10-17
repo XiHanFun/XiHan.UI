@@ -116,6 +116,7 @@ export const XhCascaderRoot = defineComponent({
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
     loading: Boolean,
     translations: { type: Object as PropType<Partial<CascaderTranslations>> },
     variant: { type: String as PropType<ControlVariant> },
@@ -187,7 +188,10 @@ export const XhCascaderRoot = defineComponent({
     }), ...ctx.api.value.value.map(path => h('input', {
       ...ctx.api.value.getHiddenInputProps({ path }) as Record<string, unknown>,
       key: JSON.stringify(path),
-    }))])
+    })), ...(ctx.api.value.value.length === 0 && ctx.api.value.required
+      // 必填且没选值：补一份空值占位，原生 required 才拦得住空表单
+      ? [h('input', { ...ctx.api.value.getHiddenInputProps() as Record<string, unknown>, key: 'required' })]
+      : [])])
   },
 })
 

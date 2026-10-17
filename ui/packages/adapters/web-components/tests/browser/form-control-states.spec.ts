@@ -51,6 +51,13 @@ const CASES: Case[] = [
     markup: attrs => `<xh-file-upload ${attrs}><div data-xh-part="root"><div data-xh-part="dropzone">把文件拖到这里<input data-xh-part="hidden-input"></div></div></xh-file-upload>`,
     host: root => root.querySelector<HTMLElement>('[data-scope="file-upload"][data-part="dropzone"]')!,
   },
+  {
+    name: 'cascader',
+    axes: { required: 'aria-required' },
+    markup: attrs => `<xh-cascader ${attrs}><div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger"><span data-xh-part="value-text"></span></button></div><div data-xh-part="positioner"><div data-xh-part="content"></div></div></div></xh-cascader>`,
+    host: root => root.querySelector<HTMLElement>('[data-scope="cascader"][data-part="trigger"]')!,
+    wired: true,
+  },
 ]
 
 const ARIA_RULES = ['aria-allowed-attr', 'aria-valid-attr-value', 'aria-prohibited-attr', 'aria-required-attr', 'aria-allowed-role']
@@ -107,7 +114,8 @@ describe('字段控件的 readOnly / invalid / required（Web Components）', ()
 
     if (c.wired) {
       it(`${c.name}：字段的标签并进名字链、错误文案并进描述链`, async () => {
-        const root = await mountInField(c, allOn(c), {})
+        // 错误文案只在字段 invalid 时渲出来
+        const root = await mountInField(c, { ...allOn(c), invalid: true }, {})
         const label = root.querySelector<HTMLElement>('[data-scope="field"][data-part="label"]')!.id
         const error = root.querySelector<HTMLElement>('[data-scope="field"][data-part="error-text"]')!.id
         expect(c.host(root).getAttribute('aria-labelledby')?.split(/\s+/)).toContain(label)

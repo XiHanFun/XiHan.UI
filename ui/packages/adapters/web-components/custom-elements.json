@@ -7694,6 +7694,15 @@
             },
             {
               "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
               "name": "loading",
               "privacy": "public",
               "type": {
@@ -8518,6 +8527,14 @@
               "description": "校验失败标注",
               "name": "invalid",
               "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填：trigger 报告 aria-required，没选值时补一份带原生 required 的占位影子",
+              "name": "required",
+              "fieldName": "required"
             },
             {
               "type": {

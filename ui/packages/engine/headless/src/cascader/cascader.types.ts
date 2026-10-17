@@ -312,6 +312,11 @@ export interface CascaderSchema extends MachineSchema {
     readOnly?: boolean
     /** 校验失败：trigger 报告 aria-invalid，各角色节点带 data-invalid。 */
     invalid?: boolean
+    /**
+     * 必填：trigger 报告 aria-required，根与标题带 data-required（标题据此画星号）。
+     * 一条完整路径一份表单影子，没选值时没有影子；此时补一份空值的占位影子带原生 required，拦下空表单的提交。
+     */
+    required?: boolean
     /** 候选加载中：浮层报告 aria-busy；当前视图无候选时显示在途占位。 */
     loading?: boolean
     /** 空态占位的文案覆盖，默认英文。 */
@@ -488,6 +493,7 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   disabled: boolean
   readOnly: boolean
   invalid: boolean
+  required: boolean
   /** 清空按钮当前是否可按。 */
   canClear: boolean
   /** 可见标签（受 maxTagCount 截断），与 value 同序；文字是整条路径的显示名按 separator 连缀。 */
@@ -531,7 +537,8 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   deselect: (path: readonly string[]) => void
   getRootProps: () => T['element']
   /** 每条路径独立编码，适配器按 value 渲染重复同名字段。 */
-  getHiddenInputProps: (props: { path: readonly string[] }) => T['input']
+  /** 一条完整路径的表单影子；不给 path 是必填且没选值时的空值占位，带原生 required。 */
+  getHiddenInputProps: (props?: { path: readonly string[] }) => T['input']
   getLabelProps: () => T['element']
   getControlProps: () => T['element']
   getTriggerProps: () => T['button']

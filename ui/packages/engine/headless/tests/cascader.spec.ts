@@ -2026,3 +2026,29 @@ describe('列的进场只在头一次出现时播', () => {
     expect(instant(h, 'zhejiang')).toBeUndefined()
   })
 })
+
+describe('cascader 必填', () => {
+  it('trigger 报 aria-required，缺省显式 false；根与标题带 data-required', () => {
+    expect(mount().trigger.getAttribute('aria-required')).toBe('false')
+    const h = mount({ required: true })
+    expect(h.trigger.getAttribute('aria-required')).toBe('true')
+    const api = h.api()
+    expect((api.getRootProps() as Record<string, unknown>)['data-required']).toBe('')
+    expect((api.getLabelProps() as Record<string, unknown>)['data-required']).toBe('')
+    expect(api.required).toBe(true)
+  })
+
+  it('不给 path 是空值占位：视觉隐藏的文本输入、值为空串，必填时带原生 required', () => {
+    const placeholder = mount({ required: true, name: 'region' }).api().getHiddenInputProps() as Record<string, unknown>
+    expect(placeholder.type).toBe('text')
+    expect(placeholder.value).toBe('')
+    expect(placeholder.name).toBe('region')
+    expect(placeholder.required).toBe(true)
+    expect(placeholder.tabindex).toBe(-1)
+    expect(placeholder['aria-hidden']).toBe(true)
+    // 有值时的影子照旧是 hidden，不带 required
+    const filled = mount({ required: true, name: 'region' }).api().getHiddenInputProps({ path: ['zj', 'hz'] }) as Record<string, unknown>
+    expect(filled.type).toBe('hidden')
+    expect(filled.required).toBeUndefined()
+  })
+})

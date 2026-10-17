@@ -5,6 +5,10 @@ import { runAxe } from '@xihan-ui/testing/a11y'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import {
+  XhCascaderControl,
+  XhCascaderRoot,
+  XhCascaderTrigger,
+  XhCascaderValueText,
   XhColorPickerControl,
   XhColorPickerRoot,
   XhColorPickerTrigger,
@@ -63,6 +67,13 @@ const CASES: Case[] = [
     axes: { readOnly: 'aria-disabled' },
     render: props => h(XhFileUploadRoot, { ...props }, () => [h(XhFileUploadDropzone, null, () => '把文件拖到这里')]),
     host: root => root.querySelector<HTMLElement>('[data-scope="file-upload"][data-part="dropzone"]')!,
+  },
+  {
+    name: 'cascader',
+    axes: { required: 'aria-required' },
+    render: props => h(XhCascaderRoot, { collection: [{ value: 'zj', label: '浙江' }], ...props }, () => h(XhCascaderControl, null, () => h(XhCascaderTrigger, null, () => [h(XhCascaderValueText)]))),
+    host: root => root.querySelector<HTMLElement>('[data-scope="cascader"][data-part="trigger"]')!,
+    wired: true,
   },
 ]
 
@@ -150,7 +161,8 @@ describe('字段控件的 readOnly / invalid / required（Vue）', () => {
 
     if (c.wired) {
       it(`${c.name}：字段的标签并进名字链、错误文案并进描述链`, async () => {
-        const root = await mountInField(c, allOn(c), {})
+        // 错误文案只在字段 invalid 时渲出来
+        const root = await mountInField(c, { ...allOn(c), invalid: true }, {})
         const label = root.querySelector<HTMLElement>('[data-scope="field"][data-part="label"]')!.id
         const error = root.querySelector<HTMLElement>('[data-scope="field"][data-part="error-text"]')!.id
         expect(c.host(root).getAttribute('aria-labelledby')?.split(/\s+/)).toContain(label)

@@ -113,7 +113,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'Select')
     return <XhSelectRoot {...props}><XhSelectTrigger>选择</XhSelectTrigger></XhSelectRoot>
   if (kind === 'Cascader')
-    return <XhCascaderRoot {...nonRequiredState(props)} collection={[]}><XhCascaderControl><XhCascaderTrigger>选择</XhCascaderTrigger></XhCascaderControl></XhCascaderRoot>
+    return <XhCascaderRoot {...props} collection={[]}><XhCascaderControl><XhCascaderTrigger>选择</XhCascaderTrigger></XhCascaderControl></XhCascaderRoot>
   if (kind === 'Combobox')
     return <XhComboboxRoot {...nonRequiredState(props)} collection={[]}><XhComboboxControl><XhComboboxInput /></XhComboboxControl></XhComboboxRoot>
   if (kind === 'TreeSelect')
@@ -288,6 +288,11 @@ function expectAtomicState(container: HTMLElement, kind: AtomicControl, enabled:
     expect(trigger.getAttribute('aria-invalid')).toBe(String(enabled))
     if (kind === 'Select')
       expect(container.querySelector<HTMLSelectElement>('select[data-part="hidden-select"]')?.required).toBe(enabled)
+    if (kind === 'Cascader') {
+      expect(trigger.getAttribute('aria-required')).toBe(String(enabled))
+      // 没选值：必填时补一份空值占位影子带原生 required，不必填时没有影子
+      expect(container.querySelector('input[required]') != null).toBe(enabled)
+    }
     return
   }
   if (kind === 'NumberField' || kind === 'PasswordInput' || kind === 'PinInput' || kind === 'Editable' || kind === 'TagsInput') {

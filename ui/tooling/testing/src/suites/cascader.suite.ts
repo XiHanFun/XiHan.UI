@@ -435,6 +435,7 @@ export const cascaderSuite: ConformanceSuite = {
             'aria-labelledby': '@part(label) @part(value-text)',
             'aria-invalid': 'false',
             'aria-readonly': 'false',
+            'aria-required': 'false',
             'data-state': 'closed',
             'data-placeholder': '',
             'disabled': null,
@@ -526,6 +527,18 @@ export const cascaderSuite: ConformanceSuite = {
           run: ({ doc }) => assertValueText(doc, '请选择'),
         },
       ],
+    },
+    {
+      name: '必填：trigger 报 aria-required，根与标题带 data-required',
+      spec: { apg: APG_COMBOBOX },
+      props: { required: true },
+      initial: {
+        parts: {
+          trigger: { 'aria-required': 'true' },
+          root: { 'data-required': '' },
+          label: { 'data-required': '' },
+        },
+      },
     },
     {
       name: '点 trigger 展开：无选中值不预落锚点也不铺列，Tab 位由根列兜底',

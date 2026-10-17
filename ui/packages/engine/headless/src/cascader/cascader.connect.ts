@@ -12,6 +12,7 @@ import { CASCADER_EN_US } from '../locale/en-US'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
 import { resolveTranslations } from '../shared/translations'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { cascaderAnatomy } from './cascader.anatomy'
 import {
   cascaderBuildColumns,
@@ -55,6 +56,7 @@ export function connectCascader<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
+  const required = !!prop('required')
   const loading = !!prop('loading')
   // 只读与禁用都改不了选中值，区别在于禁用连浮层都展不开
   const interactive = !disabled && !readOnly
@@ -317,6 +319,7 @@ export function connectCascader<T extends PropTypes>(
     disabled,
     readOnly,
     invalid,
+    required,
     canClear,
     tags,
     overflowCount,
@@ -347,14 +350,28 @@ export function connectCascader<T extends PropTypes>(
     retryBranch: v => send({ type: 'BRANCH.RETRY', value: v }),
     deselect: target => send({ type: 'VALUE.SET', value: withoutKey(cascaderPathKey(target)) }),
 
-    getHiddenInputProps: input => normalize.input({
-      type: 'hidden',
-      ...parts['hidden-input'].attrs,
-      name: prop('name'),
-      form: prop('form'),
-      value: encodeCascaderPath(input.path),
-      disabled: disabled || undefined,
-    }),
+    getHiddenInputProps: input => input
+      ? normalize.input({
+          type: 'hidden',
+          ...parts['hidden-input'].attrs,
+          name: prop('name'),
+          form: prop('form'),
+          value: encodeCascaderPath(input.path),
+          disabled: disabled || undefined,
+        })
+      // 空值占位：hidden 不参与约束校验，写成视觉隐藏的文本输入，required 才拦得住
+      : normalize.input({
+          ...parts['hidden-input'].attrs,
+          'type': 'text',
+          'name': prop('name'),
+          'form': prop('form'),
+          'value': '',
+          'required': required || undefined,
+          'disabled': disabled || undefined,
+          'tabindex': -1,
+          'aria-hidden': true,
+          'style': VISUALLY_HIDDEN_STYLE,
+        }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -366,6 +383,7 @@ export function connectCascader<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
+      'data-required': dataAttr(required),
       'data-loading': dataAttr(loading),
     }),
 
@@ -373,6 +391,7 @@ export function connectCascader<T extends PropTypes>(
       ...parts.label.attrs,
       'id': ids.label,
       'data-disabled': dataAttr(disabled),
+      'data-required': dataAttr(required),
     }),
 
     /**
@@ -402,10 +421,11 @@ export function connectCascader<T extends PropTypes>(
       'aria-expanded': open ? 'true' : 'false',
       // 指向浮层壳而不是某一列，列随展开路径增减
       'aria-controls': ids.content,
-      // 名字 = 标签 + 当前值；作者没写 label 时那一段是悬空 IDREF，按 accname 规则跳过
+      // 名字 = 标签 + 当前值；作者没渲染 label 时只引当前值
       'aria-labelledby': prop('labelled') ? `${ids.label} ${ids['value-text']}` : ids['value-text'],
       'aria-invalid': invalid ? 'true' : 'false',
       'aria-readonly': readOnly ? 'true' : 'false',
+      'aria-required': required ? 'true' : 'false',
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),

@@ -115,7 +115,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'Select')
     return h(XhSelectRoot, props, () => h(XhSelectTrigger, null, () => '选择'))
   if (kind === 'Cascader')
-    return h(XhCascaderRoot, { ...nonRequiredState(props), collection: [] }, () => h(XhCascaderControl, null, () => h(XhCascaderTrigger, null, () => '选择')))
+    return h(XhCascaderRoot, { ...props, collection: [] }, () => h(XhCascaderControl, null, () => h(XhCascaderTrigger, null, () => '选择')))
   if (kind === 'Combobox')
     return h(XhComboboxRoot, { ...nonRequiredState(props), collection: [] }, () => h(XhComboboxControl, null, () => h(XhComboboxInput)))
   if (kind === 'TreeSelect')
@@ -262,6 +262,11 @@ function expectAtomicState(wrapper: ReturnType<typeof mount>, kind: AtomicContro
     expect(trigger.attributes('aria-invalid')).toBe(String(enabled))
     if (kind === 'Select')
       expect(wrapper.find('select[data-part="hidden-select"]').attributes('required') !== undefined).toBe(enabled)
+    if (kind === 'Cascader') {
+      expect(trigger.attributes('aria-required')).toBe(String(enabled))
+      // 没选值：必填时补一份空值占位影子带原生 required，不必填时没有影子
+      expect(wrapper.find('input[required]').exists()).toBe(enabled)
+    }
     return
   }
   if (kind === 'NumberField' || kind === 'PasswordInput' || kind === 'PinInput' || kind === 'Editable' || kind === 'TagsInput') {
