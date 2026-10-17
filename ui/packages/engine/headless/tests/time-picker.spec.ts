@@ -1289,3 +1289,34 @@ describe('多选：列上拼草稿，按「添加」收进值，选中的时刻�
     expect((h.api().getHiddenInputProps({ value: '18:00' }) as Record<string, unknown>).value).toBe('18:00')
   })
 })
+
+describe('time-picker 整条占位', () => {
+  const group = (h: Harness): Record<string, unknown> => h.api().getSegmentGroupProps() as Record<string, unknown>
+  const segmentHandlers = (h: Harness): Record<string, () => void> => h.api().getSegmentProps({ segment: 'hour' }) as unknown as Record<string, () => void>
+
+  it('一段都没填、焦点不在段上时段组带占位；焦点进到段上撤下，离开又回来', () => {
+    const h = mount({ placeholder: '请选择开始时间' })
+    expect(group(h)['data-placeholder-text']).toBe('请选择开始时间')
+    expect(group(h)['data-placeholder-shown']).toBe('')
+    segmentHandlers(h).onFocus!()
+    expect(group(h)['data-placeholder-shown']).toBeUndefined()
+    segmentHandlers(h).onBlur!()
+    expect(group(h)['data-placeholder-shown']).toBe('')
+  })
+
+  it('有值时不露占位；不给 placeholder 时两个属性都不写', () => {
+    expect(group(mount({ placeholder: '请选择开始时间', defaultValue: '09:30' }))['data-placeholder-shown']).toBeUndefined()
+    const bare = group(mount())
+    expect(bare['data-placeholder-text']).toBeUndefined()
+    expect(bare['data-placeholder-shown']).toBeUndefined()
+  })
+
+  it('多选：没有选中值时标签行带占位，段组不露；选了一个即撤下', () => {
+    const empty = mount({ placeholder: '请选择时间', selectionMode: 'multiple' }).api()
+    expect((empty.getTagListProps() as Record<string, unknown>)['data-placeholder-text']).toBe('请选择时间')
+    expect((empty.getTagListProps() as Record<string, unknown>)['data-placeholder-shown']).toBe('')
+    expect((empty.getSegmentGroupProps() as Record<string, unknown>)['data-placeholder-shown']).toBeUndefined()
+    const picked = mount({ placeholder: '请选择时间', selectionMode: 'multiple', defaultValue: ['09:30'] }).api()
+    expect((picked.getTagListProps() as Record<string, unknown>)['data-placeholder-shown']).toBeUndefined()
+  })
+})

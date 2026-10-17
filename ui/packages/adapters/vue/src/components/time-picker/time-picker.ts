@@ -101,6 +101,7 @@ export const XhTimePickerRoot = defineComponent({
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     name: { type: String },
+    placeholder: { type: String },
     variant: { type: String as PropType<ControlVariant> },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },

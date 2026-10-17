@@ -169,6 +169,26 @@ export const timePickerSuite: ConformanceSuite = {
   },
   cases: [
     {
+      name: '整条占位：一段都没填时段组带占位文字，给了值就撤下',
+      spec: { apg: APG },
+      props: { placeholder: '请选择开始时间' },
+      initial: {
+        parts: {
+          'segment-group': { 'data-placeholder-text': '请选择开始时间', 'data-placeholder-shown': '' },
+        },
+      },
+    },
+    {
+      name: '整条占位：有值时段组不露占位',
+      spec: { apg: APG },
+      props: { placeholder: '请选择开始时间', defaultValue: '09:30' },
+      initial: {
+        parts: {
+          'segment-group': { 'data-placeholder-text': '请选择开始时间', 'data-placeholder-shown': null },
+        },
+      },
+    },
+    {
       name: '快捷选项列自成一套键盘：上下键在条目间走，Enter 整份写进值并收起',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['time-picker.kbd.preset-move', 'time-picker.kbd.preset-pick'],

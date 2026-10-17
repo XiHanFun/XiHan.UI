@@ -79916,19 +79916,22 @@
       "name": "--xh-time-picker-placeholder-fg",
       "component": "time-picker",
       "part": [
-        "segment"
+        "segment",
+        "segment-group",
+        "tag-list"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "placeholder"
+        "placeholder",
+        "placeholder-shown"
       ],
       "defaultToken": [
         "--xh-fg-subtle"
       ],
       "visibility": "public",
-      "description": "time-picker 的 segment 部件 color 覆盖槽。"
+      "description": "time-picker 的 segment、segment-group、tag-list 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-time-picker-preset-bg",

@@ -94,6 +94,8 @@ export interface XhTimePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   invalid?: boolean
   required?: boolean
   name?: string
+  /** 整条占位：一段都没填、焦点也不在段上时输入行显示这句文字；多选没有选中值时标签行显示它。 */
+  placeholder?: string
   variant?: ControlVariant
   tone?: Tone
   size?: Size
@@ -130,6 +132,7 @@ export function XhTimePickerRoot({
   invalid,
   required,
   name,
+  placeholder,
   variant,
   tone,
   size,
@@ -164,6 +167,7 @@ export function XhTimePickerRoot({
     invalid,
     required,
     name,
+    placeholder,
     variant,
     tone,
     size,

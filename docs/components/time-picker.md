@@ -178,6 +178,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `invalid` | `boolean` |  | 校验失败标注。 |
 | `required` | `boolean` |  | 必填标注（写入每段的 aria-required）。 |
 | `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，值随表单一并提交。 |
+| `placeholder` | `string` |  | 整条占位：一段都没填、焦点也不在段上时，输入行显示这句文字（「请选择开始时间」），焦点进到段上即换回段位。 多选时没有选中值，标签行显示这句文字。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，输入行与浮层中的格子一并换档。 |
@@ -436,9 +437,13 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `control` | `data-xh-field-size` | props.size |
 | `tag-list` | `data-disabled` | ''（条件成立时才出现） |
 | `tag-list` | `data-instant` | ''（条件成立时才出现） |
+| `tag-list` | `data-placeholder-shown` | ''（条件成立时才出现） |
+| `tag-list` | `data-placeholder-text` | props.placeholder \| undefined \| undefined |
 | `tag-list` | `data-xh-tag-list` | '' |
 | `segment-group` | `data-disabled` | ''（条件成立时才出现） |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-shown` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-text` | props.placeholder \| undefined |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `segment` | `data-disabled` | ''（条件成立时才出现） |
 | `segment` | `data-focus` | ''（条件成立时才出现） |
@@ -579,7 +584,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `--xh-time-picker-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | time-picker 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-time-picker-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | time-picker 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-time-picker-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | time-picker 的 segment-group 部件 color 覆盖槽。 |
-| `--xh-time-picker-placeholder-fg` | `segment` | `color` | `placeholder` | `--xh-fg-subtle` | time-picker 的 segment 部件 color 覆盖槽。 |
+| `--xh-time-picker-placeholder-fg` | `segment`<br>`segment-group`<br>`tag-list` | `color` | `placeholder`<br>`placeholder-shown` | `--xh-fg-subtle` | time-picker 的 segment、segment-group、tag-list 部件 color 覆盖槽。 |
 | `--xh-time-picker-preset-bg` | `preset` | `background-color` | `default`<br>`disabled`<br>`error`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | time-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-time-picker-preset-bg-hover` | `preset` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | time-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-time-picker-preset-bg-pressed` | `preset` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-active` | time-picker 的 preset 部件 background-color 覆盖槽。 |
