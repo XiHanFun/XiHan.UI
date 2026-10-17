@@ -128,14 +128,14 @@ export function treeSelectStructure(model: TreeSelectStructureModel, options: Tr
       { key: 'value-text', tag: 'span', part: 'value-text' },
       ...(model.multiple
         ? [{
-            key: 'tag-list',
-            tag: 'span',
-            part: 'tag-list',
-            children: [
-              ...model.tags.map((tag): TreeSelectStructureNode => ({ key: `tag:${tag.value}`, tag: 'span', component: 'tag', part: 'tag', attrs: { value: tag.value }, text: tag.label })),
-              { key: 'overflow-tag', tag: 'span', component: 'tag', part: 'overflow-tag' },
-            ],
-          } satisfies TreeSelectStructureNode]
+          key: 'tag-list',
+          tag: 'span',
+          part: 'tag-list',
+          children: [
+            ...model.tags.map((tag): TreeSelectStructureNode => ({ key: `tag:${tag.value}`, tag: 'span', component: 'tag', part: 'tag', attrs: { value: tag.value }, text: tag.label })),
+            { key: 'overflow-tag', tag: 'span', component: 'tag', part: 'overflow-tag' },
+          ],
+        } satisfies TreeSelectStructureNode]
         : []),
       { key: 'indicator', tag: 'span', part: 'indicator' },
     ],
