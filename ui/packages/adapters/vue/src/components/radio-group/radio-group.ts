@@ -6,10 +6,12 @@
 // 提供 radio group 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupVariant } from '@xihan-ui/headless'
+import type { RadioGroupApi, RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupVariant, StructureChild } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { radioGroupStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideRadioGroup, provideRadioGroupItem, useRadioGroupContext, useRadioGroupItemContext } from './context'
@@ -61,14 +63,7 @@ export const XhRadioGroupRoot = defineComponent({
         { ...fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getRootProps() as Record<string, unknown> }), ref: ctx.rootRef },
         slots.default
           ? [...renderLabel(title), ...slots.default()]
-          : props.collection
-            ? renderDefaultTree(
-                ctx.api.value.collection,
-                ctx.api.value.variant === 'segmented',
-                title,
-                slots.item,
-              )
-            : renderLabel(title),
+          : renderDefaultStructure(ctx.api.value, props.label, { label: slots.label, item: slots.item }),
       )
     }
   },
@@ -163,27 +158,49 @@ export const XhRadioGroupItemDescription = defineComponent({
   },
 })
 
+/** 标准结构里各部件对应的组件；条目里的表单影子与圆圈由 XhRadioGroupItem 自行装配，铺结构时去掉这两格。 */
+const RADIO_GROUP_PARTS = {
+  'label': XhRadioGroupLabel,
+  'thumb': XhRadioGroupThumb,
+  'item': XhRadioGroupItem,
+  'item-icon': XhRadioGroupItemIcon,
+  'item-text': XhRadioGroupItemText,
+  'item-description': XhRadioGroupItemDescription,
+}
+
+const SELF_ASSEMBLED = new Set(['hidden-input', 'indicator'])
+
+function withoutSelfAssembled(nodes: readonly StructureChild[]): StructureChild[] {
+  return nodes.flatMap((node): StructureChild[] => {
+    if (!('part' in node))
+      return [node]
+    if (SELF_ASSEMBLED.has(node.part))
+      return []
+    return [node.children ? { ...node, children: withoutSelfAssembled(node.children) } : node]
+  })
+}
+
+interface RadioGroupStructureSlots {
+  label?: () => VNode[]
+  item?: (node: RadioGroupNodeMeta) => VNode[]
+}
+
 /**
- * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
- * segmented 形态的滑块排在条目之前：它绝对定位，依靠文档序让后面的条目覆盖在它上面，文字才不会被遮住。
+ * 未写默认插槽时铺开的整套结构：照 headless 的 radioGroupStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题与条目文字由对应插槽接管。
  */
-function renderDefaultTree(
-  collection: readonly RadioGroupNodeMeta[],
-  segmented: boolean,
-  label: (VNode | string)[] | null,
-  itemSlot?: (node: RadioGroupNodeMeta) => VNode[],
-): VNode[] {
-  return [
-    ...renderLabel(label),
-    ...(segmented ? [h(XhRadioGroupThumb)] : []),
-    // 条目内的 hidden-input 与 indicator 由 XhRadioGroupItem 自行装配
-    ...collection.map(node => h(XhRadioGroupItem, { key: node.value, value: node.value }, () => [
-      ...(node.icon != null ? [h(XhRadioGroupItemIcon, null, () => node.icon)] : []),
-      h(XhRadioGroupItemText, null, () => itemSlot?.(node) ?? node.label),
-      ...(node.description != null ? [h(XhRadioGroupItemDescription, null, () => node.description)] : []),
-    ])),
-  ]
+function renderDefaultStructure(api: RadioGroupApi, label: string | undefined, content: RadioGroupStructureSlots): VNode[] {
+  const nodes = radioGroupStructure(api, { label, slotted: name => content[name as keyof RadioGroupStructureSlots] != null })
+  return renderStructure(withoutSelfAssembled(nodes), RADIO_GROUP_PARTS, (node) => {
+    switch (node.slot?.name) {
+      case 'label':
+        return content.label?.()
+      case 'item':
+        return content.item?.(node.data as RadioGroupNodeMeta) ?? (node.data as RadioGroupNodeMeta).label
+      default:
+        return undefined
+    }
+  })
 }
 
 /** 组标题：给了文字或 label 插槽才铺 label 部件。 */

@@ -714,7 +714,7 @@ export const radioGroupSuite: ConformanceSuite = {
           'item[0]',
           'hidden-input[0]',
           'indicator[0]',
-          'item-icon[0]',
+          'item-icon',
           'item-text[0]',
           'item[1]',
           'hidden-input[1]',
@@ -837,6 +837,59 @@ export const radioGroupSuite: ConformanceSuite = {
           },
         },
       },
+    },
+    {
+      name: '作者不写结构：三端都照 radioGroupStructure 铺出标题与条目，条目里表单影子、圆圈、图标、文字与说明',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: {
+        collection: [
+          { value: 'free', label: '免费版', icon: '☆' },
+          { value: 'standard', label: '标准版', description: '适合小团队' },
+          { value: 'pro', label: '专业版', disabled: true },
+        ],
+        label: '套餐',
+        defaultValue: 'standard',
+        name: 'plan',
+      },
+      initial: {
+        order: [
+          'root',
+          'label',
+          'item[0]',
+          'hidden-input[0]',
+          'indicator[0]',
+          'item-icon',
+          'item-text[0]',
+          'item[1]',
+          'hidden-input[1]',
+          'indicator[1]',
+          'item-text[1]',
+          'item-description',
+          'item[2]',
+          'hidden-input[2]',
+          'indicator[2]',
+          'item-text[2]',
+        ],
+        parts: {
+          root: { 'aria-labelledby': '@part(label)' },
+          item: [
+            { 'aria-checked': 'false', 'data-value': 'free' },
+            { 'aria-checked': 'true', 'data-value': 'standard' },
+            { 'aria-checked': 'false', 'aria-disabled': 'true', 'data-value': 'pro' },
+          ],
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'item[0]',
+          expect: {
+            parts: { item: [{ 'aria-checked': 'true' }, { 'aria-checked': 'false' }, { 'aria-checked': 'false' }] },
+            events: [{ type: 'value-change', detail: { value: 'free' } }],
+          },
+        },
+      ],
     },
   ],
 }
