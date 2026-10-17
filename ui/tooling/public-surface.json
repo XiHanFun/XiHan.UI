@@ -5913,6 +5913,7 @@
       "stripScopeClass",
       "toCleanup",
       "toSafeImageSource",
+      "toSafeLinkHref",
       "toThemeAttrs",
       "toVisualEnvironmentAttrs",
       "today",

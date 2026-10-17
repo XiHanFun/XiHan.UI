@@ -1,6 +1,6 @@
-// toSafeImageSource：放行的四类地址、挡下的协议，以及按 URL 解析规则去掉的空白与控制字符。
+// toSafeImageSource 与 toSafeLinkHref：各自放行的地址、挡下的协议，以及按 URL 解析规则去掉的空白与控制字符。
 import { describe, expect, it } from 'vitest'
-import { toSafeImageSource } from '../src/url'
+import { toSafeImageSource, toSafeLinkHref } from '../src/url'
 
 describe('toSafeImageSource', () => {
   it.each([
@@ -55,5 +55,52 @@ describe('toSafeImageSource', () => {
 
   it('串中的空格不删：协议名里带空格即不成协议，按相对地址放行', () => {
     expect(toSafeImageSource('java script:alert(1)')).toBe('java script:alert(1)')
+  })
+})
+
+describe('toSafeLinkHref', () => {
+  it.each([
+    'https://example.com/docs?page=2#top',
+    'http://example.com',
+    'HTTPS://EXAMPLE.COM',
+    'mailto:service@example.com',
+    'MAILTO:service@example.com?subject=hi',
+    'tel:+86-571-0000-0000',
+    'docs/start.html',
+    '/docs/start',
+    '../start',
+    '//example.com/start',
+    '#section-2',
+    '?tab=print',
+  ])('放行「%s」并原样返回', (href) => {
+    expect(toSafeLinkHref(href)).toBe(href)
+  })
+
+  it.each([
+    'javascript:alert(1)',
+    'JavaScript:void(0)',
+    'vbscript:msgbox(1)',
+    'data:text/html,<script>alert(1)</script>',
+    'data:image/png;base64,iVBORw0KGgo=',
+    'blob:https://example.com/0b4c8e1a',
+    'file:///etc/passwd',
+    'ftp://example.com/a.txt',
+    'sms:10086',
+  ])('挡下「%s」', (href) => {
+    expect(toSafeLinkHref(href)).toBeUndefined()
+  })
+
+  it('非字符串、空串与只有空白的串返回 undefined', () => {
+    expect(toSafeLinkHref(undefined)).toBeUndefined()
+    expect(toSafeLinkHref(null)).toBeUndefined()
+    expect(toSafeLinkHref(7)).toBeUndefined()
+    expect(toSafeLinkHref('')).toBeUndefined()
+    expect(toSafeLinkHref(' \t\n ')).toBeUndefined()
+  })
+
+  it('去掉首尾空白与控制字符，串中的制表与换行先删去再认协议', () => {
+    expect(toSafeLinkHref('  https://example.com \n')).toBe('https://example.com')
+    expect(toSafeLinkHref('java\nscript:alert(1)')).toBeUndefined()
+    expect(toSafeLinkHref('\u0000mailto:a@example.com')).toBe('mailto:a@example.com')
   })
 })
