@@ -1113,3 +1113,19 @@ describe('file-upload 只读与必填', () => {
     expect(open({ maxFiles: 5 }).hidden.required).toBe(false)
   })
 })
+
+describe('file-upload 接字段', () => {
+  it('投放区报 aria-invalid，缺省显式 false；按钮不收 aria-required', () => {
+    expect(mount().dropzone.getAttribute('aria-invalid')).toBe('false')
+    const m = mount({ invalid: true, required: true })
+    expect(m.dropzone.getAttribute('aria-invalid')).toBe('true')
+    expect(m.dropzone.hasAttribute('aria-required')).toBe(false)
+  })
+
+  it('隐藏输入的名字与投放区同源：有 label 时连标题，没有时只引投放区', () => {
+    const bare = mount()
+    expect(bare.hidden.getAttribute('aria-labelledby')).toBe(bare.dropzone.id)
+    const labelled = mount({ labelled: true })
+    expect(labelled.hidden.getAttribute('aria-labelledby')).toBe(labelled.dropzone.getAttribute('aria-labelledby'))
+  })
+})

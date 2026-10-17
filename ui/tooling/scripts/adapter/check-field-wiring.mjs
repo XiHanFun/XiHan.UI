@@ -50,6 +50,7 @@ const GROUP_CONTROLS = {
   'rating': '星组 control 部件 role=radiogroup',
   'slider': '每个拇指 role=slider，焦点落在拇指上',
   'pin-input': '整组 role=group，每格的名字是「第几格」',
+  'file-upload': '投放区是按钮：不收 aria-required / aria-readonly，只取描述链，aria-invalid 由组件自己投影',
 }
 
 /** 不必接线的，各带理由。 */
@@ -63,7 +64,6 @@ const NOT_SINGLE_CONTROL = {
   'time-field': '同 date-field',
   'color-slider': '图形控件：焦点在拇指上',
   'signature-pad': '图形控件：画布自己承担名字与描述',
-  'file-upload': '根是投放区，触发钮只是其中一个入口',
   'editable': '预览态与编辑态是两个不同的焦点目标',
   'field-array': '一列行，每行里的控件各自是焦点目标；这一层没有单一可聚焦控件',
 }

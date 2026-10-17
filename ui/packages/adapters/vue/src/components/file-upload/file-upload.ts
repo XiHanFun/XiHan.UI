@@ -13,6 +13,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { withHandlers } from '../../runtime/with-handlers'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideFileUpload, provideFileUploadItem, useFileUploadContext, useFileUploadItemContext } from './context'
 import { useFileUpload } from './use-file-upload'
@@ -138,8 +139,11 @@ export const XhFileUploadLabel = defineComponent({
 export const XhFileUploadDropzone = defineComponent({
   name: 'XhFileUploadDropzone',
   setup(_, { slots }) {
+    // 放进字段时字段的标签并进名字链、说明与错误文案进描述链；投放区是按钮，只取描述链，aria-invalid 由组件自己投影
+    const fieldWiring = useFieldGroupWiring()
+    const fieldLabel = useFieldLabelWiring()
     const ctx = useFileUploadContext()
-    return () => h('div', ctx.api.value.getDropzoneProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getDropzoneProps() as Record<string, unknown> }), slots.default?.())
   },
 })
 
@@ -170,8 +174,10 @@ export const XhFileUploadTrigger = defineComponent({
 export const XhFileUploadHiddenInput = defineComponent({
   name: 'XhFileUploadHiddenInput',
   setup() {
+    // 隐藏输入也并进字段的标签：原生表单控件没有名字会被判为未标注
+    const fieldLabel = useFieldLabelWiring()
     const ctx = useFileUploadContext()
-    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+    return () => h('input', fieldLabel.value(ctx.api.value.getHiddenInputProps() as Record<string, unknown>))
   },
 })
 
