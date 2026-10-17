@@ -120,7 +120,7 @@ const stroke: DesignerPropertyEditor = (initial) => {
 | `optionLabel` / `unitLabel` / `dataFields` / `toggleLimit` | 同属性面板的同名属性 |
 | `translations` | 压在配置文案之上；配置取字段所在位置的（`xh-designer-properties` 那一桶） |
 
-`update(state)` 每次整份给状态：`value`、`readonly`、`mixed`（多个值）、`hint`（说明）与 `error`（外面给的错误，控件自己发现的错误优先显示）。返回的 `element` 是一整行：控件在 `<xh-field>` 里，标题、说明与错误由字段接上；四边（`sides`）这类一组控件时整行是 `role="group"`。
+`update(state)` 每次整份给状态：`value`、`readonly`、`mixed`（多个值）、`label`（给了就换掉建字段时的标题，如切换语言后）、`hint`（说明）与 `error`（外面给的错误，控件自己发现的错误优先显示）。返回的 `element` 是一整行：控件在 `<xh-field>` 里，标题、说明与错误由字段接上；四边（`sides`）这类一组控件时整行是 `role="group"`。
 
 ## 问题列表
 

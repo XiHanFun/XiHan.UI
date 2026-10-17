@@ -60,6 +60,8 @@ export interface PropertyFieldOptions {
 /** 字段此刻的状态：每次 update 整份给。 */
 export interface PropertyFieldState {
   readonly value: JsonValue | undefined
+  /** 标题；给了就换掉建字段时的 label（如切换语言后）。 */
+  readonly label?: string
   readonly readonly?: boolean
   /** 多个对象取值不同：字段留空，显示占位「多个值」。 */
   readonly mixed?: boolean
@@ -132,7 +134,7 @@ export function createPropertyField(options: PropertyFieldOptions, initial: Prop
   })
   function refresh(): void {
     refreshFieldRow(row, {
-      label: options.label,
+      label: state.label ?? options.label,
       hint: state.hint,
       error: localError ?? state.error,
       required: options.required === true,
