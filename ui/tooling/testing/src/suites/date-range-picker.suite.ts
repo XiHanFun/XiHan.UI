@@ -195,9 +195,10 @@ const FIXTURE: FixtureNode = {
             {
               part: 'header',
               children: [
-                { part: 'prev-trigger', tag: 'button', text: '上个月' },
+                // 翻页钮照文档的写法留空：字形由皮肤画，名字取 translations；写进与缺省名对不上的可见文字就是 label-content-name-mismatch
+                { part: 'prev-trigger', tag: 'button' },
                 { part: 'heading', text: '2024年2月' },
-                { part: 'next-trigger', tag: 'button', text: '下个月' },
+                { part: 'next-trigger', tag: 'button' },
               ],
             },
             {
