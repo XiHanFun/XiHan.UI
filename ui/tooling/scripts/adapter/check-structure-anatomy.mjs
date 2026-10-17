@@ -4,9 +4,10 @@
 // 每份 headless/<组件>/<组件>.structure.ts 登记两张表：<名>_STRUCTURE_PARTS（结构会产出的部件）
 // 与 <名>_STRUCTURE_OMITS（anatomy 里不进标准结构的部件）。类型已经管住两张表只收 anatomy 里的名字、
 // 结构函数只产出 PARTS 里的部件；这里核类型核不到的：
-//   ① PARTS、OMITS 与 root（由组件或元素自己给出；菜单这类没有 root 的组件不算它）正好分完 anatomy，不重不漏——
-//      anatomy 加了部件、结构既不产出也不登记时判红；
-//   ② meta 的必备部件（root 以外）都在 PARTS 里；
+//   ① PARTS、OMITS、OUTLETS（可选）与 root（由组件或元素自己给出；菜单这类没有 root 的组件不算它）正好分完 anatomy，
+//      不重不漏——anatomy 加了部件、结构既不产出也不登记时判红；
+//   ② meta 的必备部件（root 以外）都在 PARTS 或 OUTLETS 里；OUTLETS 是由出口处的作者内容充当的部件（字段的控件），
+//      结构里得真有一个同名插槽的出口节点；
 //   ③ 有结构文件的组件：Web Components 元素声明了 structure，Vue / React 的缺省树调结构函数渲、
 //      不再手写 renderDefaultTree，一致性套件有 defaultStructure 场景；
 //   ④ 反过来，声明了 structure 的元素都有结构文件；
@@ -59,6 +60,8 @@ for (const comp of components) {
   }
   const produced = names(parts[1])
   const omitted = names(omits[1])
+  const outletsTable = structure.match(/export const [A-Z0-9_]+_STRUCTURE_OUTLETS = \[([\s\S]*?)\]/)
+  const outlets = outletsTable ? names(outletsTable[1]) : []
   const anatomySrc = await read(join(HEADLESS, comp, `${comp}.anatomy.ts`))
   const anatomyBlock = anatomySrc?.match(/createAnatomy\([^,]+,\s*\[([\s\S]*?)\]/)
   if (!anatomyBlock) {
@@ -66,13 +69,13 @@ for (const comp of components) {
     continue
   }
   const anatomy = names(anatomyBlock[1])
-  const listed = [...(anatomy.includes('root') ? ['root'] : []), ...produced, ...omitted]
+  const listed = [...(anatomy.includes('root') ? ['root'] : []), ...produced, ...omitted, ...outlets]
   for (const part of anatomy) {
     const count = listed.filter(name => name === part).length
     if (count === 0)
-      errors.push(`${comp}：anatomy 的部件 ${part} 既不在 _STRUCTURE_PARTS 也不在 _STRUCTURE_OMITS（结构没跟上 anatomy）`)
+      errors.push(`${comp}：anatomy 的部件 ${part} 不在 _STRUCTURE_PARTS、_STRUCTURE_OMITS、_STRUCTURE_OUTLETS 任何一张表里（结构没跟上 anatomy）`)
     else if (count > 1)
-      errors.push(`${comp}：部件 ${part} 在 root、_STRUCTURE_PARTS、_STRUCTURE_OMITS 里登记了不止一处`)
+      errors.push(`${comp}：部件 ${part} 在 root、_STRUCTURE_PARTS、_STRUCTURE_OMITS、_STRUCTURE_OUTLETS 里登记了不止一处`)
   }
   for (const part of listed) {
     if (!anatomy.includes(part))
@@ -81,8 +84,12 @@ for (const comp of components) {
   const meta = await read(join(HEADLESS, comp, `${comp}.meta.ts`))
   const required = names(meta?.match(/requiredParts:\s*\[([^\]]*)\]/)?.[1] ?? '')
   for (const part of required) {
-    if (part !== 'root' && !produced.includes(part))
-      errors.push(`${comp}：必备部件 ${part} 不在 _STRUCTURE_PARTS 里，缺省结构会缺它`)
+    if (part !== 'root' && !produced.includes(part) && !outlets.includes(part))
+      errors.push(`${comp}：必备部件 ${part} 不在 _STRUCTURE_PARTS 或 _STRUCTURE_OUTLETS 里，缺省结构会缺它`)
+  }
+  for (const part of outlets) {
+    if (!new RegExp(`outlet: true,\\s*slot: \\{ name: '${part}'`).test(structure))
+      errors.push(`${comp}：_STRUCTURE_OUTLETS 登记了 ${part}，结构里却没有插槽名为 ${part} 的出口节点`)
   }
 
   const code = structure.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')

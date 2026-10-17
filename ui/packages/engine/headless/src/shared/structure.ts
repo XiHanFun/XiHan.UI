@@ -88,8 +88,24 @@ export interface StructureLiteralNode {
   readonly literal: string
 }
 
-/** 结构里的一个子节点：部件节点、组合节点或装饰文字。 */
-export type StructureChild<P extends string = string> = StructureNode<P> | StructureInstanceNode | StructureLiteralNode
+/**
+ * 作者内容的出口：作者给的内容原样放在这个位置，外面不包部件节点。
+ * Vue 渲同名插槽的内容、React 渲同名属性的内容；Web Components 把宿主直接子节点里写了 `slot="<name>"` 的那个节点本身
+ * 挪到这里。作者内容自己就是完整的一块（如放进字段的库内控件），再包一层部件会多出一个不该有的节点时用它。
+ * 作者没给内容时这个位置什么都没有。
+ */
+export interface StructureOutletNode {
+  /** 同一父节点下唯一。 */
+  readonly key: string
+  readonly outlet: true
+  /** 内容来自哪个插槽；Web Components 侧作者在宿主的直接子节点上写 `slot="<name>"`（带 key 时 `<name>:<key>`）。 */
+  readonly slot: StructureSlot
+  /** 交给插槽的参数，不写进 DOM。 */
+  readonly data?: unknown
+}
+
+/** 结构里的一个子节点：部件节点、组合节点、装饰文字或作者内容的出口。 */
+export type StructureChild<P extends string = string> = StructureNode<P> | StructureInstanceNode | StructureLiteralNode | StructureOutletNode
 
 /** 是不是装饰文字。 */
 export function isStructureLiteral(node: StructureChild): node is StructureLiteralNode {
@@ -99,4 +115,9 @@ export function isStructureLiteral(node: StructureChild): node is StructureLiter
 /** 是不是组合节点。 */
 export function isStructureInstance(node: StructureChild): node is StructureInstanceNode {
   return 'instance' in node
+}
+
+/** 是不是作者内容的出口。 */
+export function isStructureOutlet(node: StructureChild): node is StructureOutletNode {
+  return 'outlet' in node
 }
