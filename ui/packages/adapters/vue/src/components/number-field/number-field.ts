@@ -38,6 +38,7 @@ export const XhNumberFieldRoot = defineComponent({
     required: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     name: { type: String },
+    placeholder: { type: String },
     changeDelay: { type: Number },
     changeInterval: { type: Number },
     minChangeInterval: { type: Number },

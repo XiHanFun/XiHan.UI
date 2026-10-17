@@ -38,6 +38,8 @@ export interface NumberFieldSchema extends MachineSchema {
     invalid?: boolean
     /** 表单字段名；提供后才参与提交。 */
     name?: string
+    /** 值为空时输入框显示的提示文字。 */
+    placeholder?: string
     /** 按住加减按钮多久开始连发，默认 300ms。 */
     changeDelay?: number
     /** 连发开始时的间隔，默认 50ms；按住越久间隔越短，逐次收到 minChangeInterval。 */

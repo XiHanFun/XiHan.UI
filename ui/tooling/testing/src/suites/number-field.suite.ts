@@ -91,6 +91,22 @@ export const numberFieldSuite: ConformanceSuite = {
       },
     },
     {
+      name: '占位：placeholder 落到输入框的原生 placeholder 上',
+      spec: { apg: APG },
+      props: { placeholder: '请输入数量' },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'placeholder 不在快照的采集清单里（既不是 aria- 也不是 data-）',
+          run: ({ doc }) => {
+            const got = doc.querySelector('[data-scope="number-field"][data-part="input"]')?.getAttribute('placeholder')
+            if (got !== '请输入数量')
+              throw new Error(`占位文案应落到 input 上：期望 "请输入数量"，实际 ${got == null ? '缺席' : `"${got}"`}`)
+          },
+        },
+      ],
+    },
+    {
       name: 'ArrowUp / ArrowDown 按 step 步进，aria-valuenow 跟着走',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['number-field.kbd.increment', 'number-field.kbd.decrement'],

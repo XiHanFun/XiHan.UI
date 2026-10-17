@@ -46045,6 +46045,15 @@
             },
             {
               "kind": "field",
+              "name": "placeholder",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
               "name": "changeDelay",
               "privacy": "public",
               "type": {
@@ -46290,6 +46299,14 @@
               "description": "表单字段名；提供后才参与提交",
               "name": "name",
               "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "值为空时输入框显示的提示文字",
+              "name": "placeholder",
+              "fieldName": "placeholder"
             },
             {
               "type": {
