@@ -704,7 +704,7 @@ export const SANKEY_CHART_EN_US: XhLocaleBucket<'sankey-chart'> = {
 
 export const SCROLLBAR_EN_US: XhLocaleBucket<'scrollbar'> = { thumb: 'Scrollbar' }
 
-export const SELECT_EN_US: XhLocaleBucket<'select'> = { deleteItem, overflowTag, clearTrigger: 'Clear', content: 'Options' }
+export const SELECT_EN_US: XhLocaleBucket<'select'> = { deleteItem, overflowTag, clearTrigger: 'Clear', content: 'Options', loadError: 'Couldn’t load options', retry: 'Retry' }
 
 export const SIDE_NAV_EN_US: XhLocaleBucket<'side-nav'> = { root: 'Sidebar', input: 'Filter navigation', noMatch: 'No matches' }
 

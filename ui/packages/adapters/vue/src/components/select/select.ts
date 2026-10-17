@@ -69,6 +69,8 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
     clearable: Boolean,
     invalid: { type: Boolean, default: undefined },
     loading: { type: Boolean, default: undefined },
+    /** 整表取数失败：浮层里露出 error 与 retry-trigger，空态占位让位；重试由 retry 事件交给宿主。 */
+    error: Boolean,
     required: { type: Boolean, default: undefined },
     name: { type: String },
     translations: { type: Object as PropType<SelectProps['translations']> },
@@ -86,6 +88,8 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
   // 校验函数恒真，只声明载荷类型：'update:value' 是 string[]，单选也是长度 1 的数组而非裸串。
   emits: {
     'clear': () => true,
+    // 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space
+    'retry': () => true,
     'value-change': (_details: SelectValueChangeDetails) => true,
     'open-change': (_details: SelectOpenChangeDetails) => true,
     'update:value': (_value: string[]) => true,
@@ -110,7 +114,7 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useSelect(withHandlers(withXhConfig('select', useFormControlProps(props)), { onClear: () => emit('clear') }) as SelectProps, notifyValue, notifyOpen)
+    const ctx = useSelect(withHandlers(withXhConfig('select', useFormControlProps(props)), { onClear: () => emit('clear'), onRetry: () => emit('retry') }) as SelectProps, notifyValue, notifyOpen)
     provideSelect(ctx)
 
     return () => {
@@ -350,6 +354,24 @@ export const XhSelectLoading = /* @__PURE__ */ defineComponent({
     const ctx = useSelectContext()
     // 在途占位：与空态占位同一个位置，取数期间顶上来
     return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhSelectError = /* @__PURE__ */ defineComponent({
+  name: 'XhSelectError',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    // 整表取数失败的提示：与空态、在途占位同一个位置；没写内容时显示 translations.loadError
+    return () => h('div', ctx.api.value.getErrorProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.loadError)
+  },
+})
+
+export const XhSelectRetryTrigger = /* @__PURE__ */ defineComponent({
+  name: 'XhSelectRetryTrigger',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    // 重试钮：没写内容时显示 translations.retry
+    return () => h('button', ctx.api.value.getRetryTriggerProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.retry)
   },
 })
 

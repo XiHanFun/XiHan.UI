@@ -1329,3 +1329,50 @@ describe('副文本', () => {
     expect(h.api().collection.map(node => node.description)).toEqual(['青苹果', null])
   })
 })
+
+describe('select 整表取数失败', () => {
+  type Dict = Record<string, unknown>
+
+  it('error 时露出提示与重试钮、空态让位；同时在途时在途占位优先；不失败时两者都收起', () => {
+    const api = mount({ collection: [], error: true }).api()
+    expect(api.error).toBe(true)
+    expect((api.getErrorProps() as Dict).role).toBe('alert')
+    expect((api.getErrorProps() as Dict).hidden).toBeUndefined()
+    expect((api.getRetryTriggerProps() as Dict).hidden).toBeUndefined()
+    expect((api.getRetryTriggerProps() as Dict).tabindex).toBe(-1)
+    expect((api.getEmptyProps() as Dict).hidden).toBe(true)
+
+    const loading = mount({ collection: [], error: true, loading: true }).api()
+    expect(loading.error).toBe(false)
+    expect((loading.getErrorProps() as Dict).hidden).toBe(true)
+    expect((loading.getLoadingProps() as Dict).hidden).toBeUndefined()
+
+    const fine = mount({ collection: [] }).api()
+    expect((fine.getErrorProps() as Dict).hidden).toBe(true)
+    expect((fine.getRetryTriggerProps() as Dict).hidden).toBe(true)
+    expect((fine.getEmptyProps() as Dict).hidden).toBeUndefined()
+  })
+
+  it('点重试钮派发 onRetry；浮层里没有高亮条目时 Enter / Space 也派发，不失败时不派发', () => {
+    const onRetry = vi.fn()
+    const h = mount({ collection: [], error: true, onRetry, defaultOpen: true })
+    ;(h.api().getRetryTriggerProps() as { onClick: () => void }).onClick()
+    expect(onRetry).toHaveBeenCalledTimes(1)
+    press(h.content, 'Enter')
+    press(h.content, ' ')
+    expect(onRetry).toHaveBeenCalledTimes(3)
+
+    const quiet = vi.fn()
+    const fine = mount({ collection: [], onRetry: quiet, defaultOpen: true })
+    press(fine.content, 'Enter')
+    expect(quiet).not.toHaveBeenCalled()
+  })
+
+  it('提示与重试钮的文案缺省英文，translations 可覆盖', () => {
+    expect(mount().api().translations.loadError).toBe('Couldn’t load options')
+    expect(mount().api().translations.retry).toBe('Retry')
+    const custom = mount({ translations: { loadError: '加载失败', retry: '再来一次' } }).api()
+    expect(custom.translations.loadError).toBe('加载失败')
+    expect(custom.translations.retry).toBe('再来一次')
+  })
+})

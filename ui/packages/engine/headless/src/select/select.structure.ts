@@ -33,13 +33,15 @@ export const SELECT_STRUCTURE_PARTS = [
   'item-indicator',
 ] as const satisfies readonly SelectPart[]
 
-/** anatomy 里不进标准结构的部件：分组、底部操作区与空态、在途占位由作者手写结构时自己摆。 */
+/** anatomy 里不进标准结构的部件：分组、底部操作区与空态、在途、取数失败的占位由作者手写结构时自己摆。 */
 export const SELECT_STRUCTURE_OMITS = [
   'footer',
   'group',
   'group-label',
   'empty',
   'loading',
+  'error',
+  'retry-trigger',
 ] as const satisfies readonly SelectPart[]
 
 type SelectStructurePart = (typeof SELECT_STRUCTURE_PARTS)[number]

@@ -16,7 +16,7 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
-import { renderSlot, slotIsPlainText } from '../../runtime/slot-content'
+import { renderSlot, slotIsPlainText, slotPaints } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
@@ -63,6 +63,8 @@ export interface XhSelectRootProps extends RootElementProps {
   clearable?: boolean
   invalid?: boolean
   loading?: boolean
+  /** 整表取数失败：浮层里露出 error 与 retry-trigger，空态占位让位；重试由 onRetry 交给宿主。 */
+  error?: boolean
   required?: boolean
   name?: string
   translations?: SelectProps['translations']
@@ -79,6 +81,8 @@ export interface XhSelectRootProps extends RootElementProps {
   /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
   onClear?: () => void
   onOpenChange?: SelectProps['onOpenChange']
+  /** 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space。 */
+  onRetry?: () => void
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: SelectNodeMeta) => ReactNode
   /** 只接管条目行首那一格；其余槽仍由数据铺。 */
@@ -119,6 +123,7 @@ export function XhSelectRoot({
   clearable,
   invalid,
   loading,
+  error,
   required,
   name,
   translations,
@@ -134,6 +139,7 @@ export function XhSelectRoot({
   onValueChange,
   onClear,
   onOpenChange,
+  onRetry,
   renderItem,
   renderItemPrefix,
   renderItemSuffix,
@@ -154,6 +160,7 @@ export function XhSelectRoot({
     clearable,
     invalid,
     loading,
+    error,
     required,
     name,
     translations,
@@ -169,6 +176,7 @@ export function XhSelectRoot({
     onValueChange,
     onClear,
     onOpenChange,
+    onRetry,
   })) as SelectProps)
   const api = ctx.api
 
@@ -207,7 +215,7 @@ export function XhSelectRoot({
   )
 }
 
-XhSelectRoot.xhEvents = ['clear', 'value-change', 'open-change'] as const
+XhSelectRoot.xhEvents = ['clear', 'value-change', 'open-change', 'retry'] as const
 
 export interface XhSelectLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhSelectLabel({ children, ...rest }: XhSelectLabelProps): ReactNode {
@@ -415,6 +423,20 @@ export interface XhSelectLoadingProps extends ComponentPropsWithRef<'div'> {}
 export function XhSelectLoading({ children, ...rest }: XhSelectLoadingProps): ReactNode {
   const ctx = useSelectContext()
   return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+}
+
+export interface XhSelectErrorProps extends ComponentPropsWithRef<'div'> {}
+/** 整表取数失败的提示：与空态、在途占位同一个位置；没写内容时显示 translations.loadError。 */
+export function XhSelectError({ children, ...rest }: XhSelectErrorProps): ReactNode {
+  const ctx = useSelectContext()
+  return <div {...mergeReactProps(ctx.api.getErrorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{slotPaints(children) ? children : ctx.api.translations.loadError}</div>
+}
+
+export interface XhSelectRetryTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 重试钮：没写内容时显示 translations.retry。 */
+export function XhSelectRetryTrigger({ children, ...rest }: XhSelectRetryTriggerProps): ReactNode {
+  const ctx = useSelectContext()
+  return <button {...mergeReactProps(ctx.api.getRetryTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{slotPaints(children) ? children : ctx.api.translations.retry}</button>
 }
 
 export interface XhSelectGroupProps extends ComponentPropsWithRef<'div'> {

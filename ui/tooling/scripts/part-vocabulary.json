@@ -490,6 +490,7 @@
       "cartesian-chart"
     ],
     "error": [
+      "select",
       "tool-call"
     ],
     "error-summary": [
@@ -1425,6 +1426,9 @@
     "result": [
       "approval",
       "question-flow"
+    ],
+    "retry-trigger": [
+      "select"
     ],
     "ring-label": [
       "radar-chart"

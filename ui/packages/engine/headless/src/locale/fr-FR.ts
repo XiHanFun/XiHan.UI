@@ -544,7 +544,7 @@ const translations = {
     },
   },
   'scrollbar': { thumb: 'Barre de défilement' },
-  'select': { ...tagged, clearTrigger: 'Effacer', content: 'Options' },
+  'select': { ...tagged, clearTrigger: 'Effacer', content: 'Options', loadError: 'Impossible de charger les options', retry: 'Réessayer' },
   'side-nav': { root: 'Barre latérale', input: 'Filtrer la navigation', noMatch: 'Aucun résultat' },
   'signature-pad': {
     label: 'Signature',

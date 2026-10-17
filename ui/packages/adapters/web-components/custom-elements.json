@@ -57226,6 +57226,14 @@
               "name": "loading"
             },
             {
+              "description": "整表取数失败的提示（role=alert），与空态、在途占位同一位置；留空即由元素填入 translations.loadError",
+              "name": "error"
+            },
+            {
+              "description": "整表取数失败后的重试按钮，不占 Tab 位；留空即由元素填入 translations.retry",
+              "name": "retry-trigger"
+            },
+            {
               "description": "role=group 分组容器，须自带 value 属性标识身份；条目挂在其中",
               "name": "group"
             },
@@ -57412,6 +57420,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "loading"
+            },
+            {
+              "kind": "field",
+              "name": "error",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "error"
             },
             {
               "kind": "field",
@@ -57621,6 +57638,13 @@
               "name": "notifyOpen",
               "privacy": "private",
               "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyRetry",
+              "privacy": "private",
+              "readonly": true,
+              "description": "整表取数失败后请求重试。"
             },
             {
               "kind": "field",
@@ -57930,6 +57954,10 @@
               "type": {
                 "text": "SelectOpenChangeDetails"
               }
+            },
+            {
+              "description": "整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space",
+              "name": "retry"
             }
           ],
           "attributes": [
@@ -58012,6 +58040,14 @@
               "description": "条目加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位",
               "name": "loading",
               "fieldName": "loading"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整表取数失败：浮层里露出 error 与 retry-trigger，空态占位让位",
+              "name": "error",
+              "fieldName": "error"
             },
             {
               "type": {
@@ -58244,6 +58280,18 @@
             },
             {
               "name": "--xh-select-empty-py"
+            },
+            {
+              "name": "--xh-select-error-fg"
+            },
+            {
+              "name": "--xh-select-error-font-size"
+            },
+            {
+              "name": "--xh-select-error-px"
+            },
+            {
+              "name": "--xh-select-error-py"
             },
             {
               "name": "--xh-select-footer-border"

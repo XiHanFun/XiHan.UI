@@ -562,7 +562,7 @@ const translations = {
     },
   },
   'scrollbar': { thumb: 'Полоса прокрутки' },
-  'select': { ...tagged, clearTrigger: 'Очистить', content: 'Варианты' },
+  'select': { ...tagged, clearTrigger: 'Очистить', content: 'Варианты', loadError: 'Не удалось загрузить варианты', retry: 'Повторить' },
   'side-nav': { root: 'Боковая панель', input: 'Фильтр навигации', noMatch: 'Нет совпадений' },
   'signature-pad': {
     label: 'Подпись',

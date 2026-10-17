@@ -542,7 +542,7 @@ const translations = {
     },
   },
   'scrollbar': { thumb: 'Barra de desplazamiento' },
-  'select': { ...tagged, clearTrigger: 'Borrar', content: 'Opciones' },
+  'select': { ...tagged, clearTrigger: 'Borrar', content: 'Opciones', loadError: 'No se pudieron cargar las opciones', retry: 'Reintentar' },
   'side-nav': { root: 'Barra lateral', input: 'Filtrar la navegación', noMatch: 'Sin resultados' },
   'signature-pad': {
     label: 'Firma',

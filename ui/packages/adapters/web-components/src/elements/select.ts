@@ -55,6 +55,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} read-only - 只读：浮层照常展开、条目照常浏览，但选中值不可修改、也不可清空
  * @attr {boolean} invalid - 校验错误态：trigger 标红并输出 aria-invalid
  * @attr {boolean} loading - 条目加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位
+ * @attr {boolean} error - 整表取数失败：浮层里露出 error 与 retry-trigger，空态占位让位
  * @attr {number} max-tag-count - 多选标签最多显示的数量，其余折叠进 overflowCount 并合成 overflow-tag；默认 3
  * @attr {boolean} required - 原生表单校验：无选中值时提交被拦截；多选下的条件是至少选中一项
  * @attr {string} name - 表单字段名；提供后表单影子才带 name 并参与提交
@@ -71,6 +72,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires value-change - 选中值变化；detail 为 `{ value: string[] }`
  * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires retry - 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space
  * @csspart root - 组件根容器（承载 data-state / data-disabled，也是表单影子的定位基准）
  * @csspart label - 组标题（aria-labelledby 目标）
  * @csspart trigger - 触发按钮（aria-haspopup=listbox / aria-expanded / aria-controls 所在），同时是定位锚点，须是原生 button
@@ -88,6 +90,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart footer - 浮层底部的操作区，是 list 的兄弟；不进入列表框的拥有关系，方向键与连打检索也不识别它
  * @csspart empty - 空态占位，须放在 content 中作为 list 的兄弟；提供 collection 时由元素按条数收放，条目手写时由作者负责
  * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
+ * @csspart error - 整表取数失败的提示（role=alert），与空态、在途占位同一位置；留空即由元素填入 translations.loadError
+ * @csspart retry-trigger - 整表取数失败后的重试按钮，不占 Tab 位；留空即由元素填入 translations.retry
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份；条目挂在其中
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标），须放在 group 中
  * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
@@ -138,6 +142,7 @@ export class XhSelectElement extends XhPortalHostElement {
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     loading: { type: Boolean },
+    error: { type: Boolean },
     required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
@@ -167,6 +172,7 @@ export class XhSelectElement extends XhPortalHostElement {
   declare readOnly?: boolean
   declare invalid?: boolean
   declare loading?: boolean
+  declare error?: boolean
   declare required?: boolean
   declare name?: string
   declare placeholder?: string
@@ -216,6 +222,11 @@ export class XhSelectElement extends XhPortalHostElement {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
   }
 
+  /** 整表取数失败后请求重试。 */
+  private readonly notifyRetry = (): void => {
+    this.dispatchEvent(new CustomEvent('retry', { bubbles: true, composed: true }))
+  }
+
   private readonly ctrl = new MachineController<SelectSchema>(
     this,
     selectMachine,
@@ -263,6 +274,7 @@ export class XhSelectElement extends XhPortalHostElement {
       readOnly: control.readOnly,
       invalid: control.invalid,
       loading: this.loading ?? false,
+      error: this.error ?? false,
       required: control.required,
       name: this.name,
       placeholder: this.placeholder,
@@ -279,6 +291,7 @@ export class XhSelectElement extends XhPortalHostElement {
       onValueChange: this.notifyValue,
       onClear: this.notifyClear,
       onOpenChange: this.notifyOpen,
+      onRetry: this.notifyRetry,
     }
   }
 
@@ -490,6 +503,15 @@ export class XhSelectElement extends XhPortalHostElement {
     put('footer', api.getFooterProps() as Record<string, unknown>)
     put('empty', api.getEmptyProps() as Record<string, unknown>)
     put('loading', api.getLoadingProps() as Record<string, unknown>)
+    put('error', api.getErrorProps() as Record<string, unknown>)
+    put('retry-trigger', api.getRetryTriggerProps() as Record<string, unknown>)
+    // 两个部件留空时由元素填文字：作者写了就归作者
+    const errorEl = this.getPart('error')
+    if (errorEl)
+      this.fillText(errorEl, api.translations.loadError)
+    const retryEl = this.getPart('retry-trigger')
+    if (retryEl)
+      this.fillText(retryEl, api.translations.retry)
 
     // 分组是多实例 part：身份取自己的 value 属性，组内标题跟着同一份身份
     for (const el of this.getParts('group')) {
