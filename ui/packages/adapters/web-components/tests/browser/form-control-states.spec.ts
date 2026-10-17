@@ -21,6 +21,8 @@ interface Case {
   markup: (attrs: string) => string
   /** 承载状态的那个节点。 */
   host: (root: HTMLElement) => HTMLElement
+  /** 承载节点另接字段的标签与描述链（按钮这类不收 aria-required 的控件走组类接线）。 */
+  wired?: boolean
 }
 
 const CASES: Case[] = [
@@ -35,6 +37,13 @@ const CASES: Case[] = [
     axes: { readOnly: 'aria-readonly', invalid: 'aria-invalid', required: 'aria-required' },
     markup: attrs => `<xh-toggle-group ${attrs}><div data-xh-part="root"><button data-xh-part="item" value="a">甲</button><button data-xh-part="item" value="b">乙</button></div></xh-toggle-group>`,
     host: root => root.querySelector<HTMLElement>('[data-scope="toggle-group"][data-part="root"]')!,
+  },
+  {
+    name: 'color-picker',
+    axes: { invalid: 'aria-invalid' },
+    markup: attrs => `<xh-color-picker ${attrs}><div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger"><span data-xh-part="value-text"></span></button></div><div data-xh-part="positioner"><div data-xh-part="content"></div></div></div></xh-color-picker>`,
+    host: root => root.querySelector<HTMLElement>('[data-scope="color-picker"][data-part="trigger"]')!,
+    wired: true,
   },
 ]
 
@@ -89,6 +98,16 @@ describe('字段控件的 readOnly / invalid / required（Web Components）', ()
       for (const attr of Object.values(c.axes))
         expect(c.host(root).getAttribute(attr!)).toBe('false')
     })
+
+    if (c.wired) {
+      it(`${c.name}：字段的标签并进名字链、错误文案并进描述链`, async () => {
+        const root = await mountInField(c, allOn(c), {})
+        const label = root.querySelector<HTMLElement>('[data-scope="field"][data-part="label"]')!.id
+        const error = root.querySelector<HTMLElement>('[data-scope="field"][data-part="error-text"]')!.id
+        expect(c.host(root).getAttribute('aria-labelledby')?.split(/\s+/)).toContain(label)
+        expect(c.host(root).getAttribute('aria-describedby')?.split(/\s+/)).toContain(error)
+      })
+    }
 
     it(`${c.name}：axe 不报属性与角色问题`, async () => {
       const root = await mountInField(c, allOn(c), {})

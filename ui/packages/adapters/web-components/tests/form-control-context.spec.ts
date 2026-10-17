@@ -66,7 +66,7 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
   if (kind === 'time-picker')
     return `<xh-time-picker ${markup} granularity="hour"><div data-xh-part="root"><div data-xh-part="control"><div data-xh-part="segment-group"><span data-xh-part="segment" segment="hour"></span></div><button data-xh-part="trigger">选择</button></div><input data-xh-part="hidden-input"><div data-xh-part="positioner"><div data-xh-part="content"></div></div></div></xh-time-picker>`
   if (kind === 'color-picker')
-    return `<xh-color-picker ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger">选择</button></div><div data-xh-part="positioner"><div data-xh-part="content"></div></div></div></xh-color-picker>`
+    return `<xh-color-picker ${markup}><div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger">选择</button></div><div data-xh-part="positioner"><div data-xh-part="content"></div></div></div></xh-color-picker>`
   if (kind === 'mention')
     return `<xh-mention ${nonRequiredMarkup}><div data-xh-part="root"><input data-xh-part="input"><div data-xh-part="positioner"><div data-xh-part="content"></div></div></div></xh-mention>`
   if (kind === 'rating')
@@ -197,7 +197,11 @@ async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabl
     const trigger = form.querySelector(`xh-${kind} button[data-xh-part="trigger"]`) as HTMLButtonElement
     await vi.waitFor(() => expect(trigger.disabled).toBe(enabled))
     if (kind === 'color-picker') {
-      expect(form.querySelector<HTMLElement>('xh-color-picker [data-scope="color-picker"][data-part="root"]')!.hasAttribute('data-readonly')).toBe(enabled)
+      const root = form.querySelector<HTMLElement>('xh-color-picker [data-scope="color-picker"][data-part="root"]')!
+      expect(root.hasAttribute('data-readonly')).toBe(enabled)
+      expect(root.hasAttribute('data-invalid')).toBe(enabled)
+      expect(root.hasAttribute('data-required')).toBe(enabled)
+      expect(trigger.getAttribute('aria-invalid')).toBe(String(enabled))
     }
     else {
       const segment = form.querySelector<HTMLElement>(`xh-${kind} [role="spinbutton"]`)!

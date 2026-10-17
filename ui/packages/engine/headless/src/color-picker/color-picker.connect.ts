@@ -21,6 +21,7 @@ import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from 
 import { pressHandlers } from '../shared/press'
 import { connectSelectionTags } from '../shared/selection-tags'
 import { resolveTranslations } from '../shared/translations'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { colorPickerAnatomy } from './color-picker.anatomy'
 import { colorPickerInputText } from './color-picker.color'
 import { colorPickerPercent } from './color-picker.geometry'
@@ -78,6 +79,8 @@ export function connectColorPicker<T extends PropTypes>(
   const alpha = prop('alpha') ?? false
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
+  const invalid = !!prop('invalid')
+  const required = !!prop('required')
   const dir = prop('dir') ?? 'ltr'
   const swatches = prop('swatches') ?? []
   const inline = !!prop('inline')
@@ -106,6 +109,8 @@ export function connectColorPicker<T extends PropTypes>(
     'data-state': stateAttr,
     'data-disabled': dataAttr(disabled),
     'data-readonly': dataAttr(readOnly),
+    'data-invalid': dataAttr(invalid),
+    'data-required': dataAttr(required),
   })
 
   /**
@@ -172,6 +177,8 @@ export function connectColorPicker<T extends PropTypes>(
     alpha,
     disabled,
     readOnly,
+    invalid,
+    required,
     dragging,
     picking,
     eyeDropperSupported,
@@ -274,6 +281,7 @@ export function connectColorPicker<T extends PropTypes>(
       'aria-controls': ids.content,
       // 名字由标题加当前值合成
       'aria-labelledby': prop('labelled') ? `${ids.label} ${ids['value-text']}` : ids['value-text'],
+      'aria-invalid': invalid ? 'true' : 'false',
       // 单体控件走原生 disabled。只读不禁用：浮层照开，进去只是改不动
       'disabled': disabled || undefined,
       'onClick': () => {
@@ -527,16 +535,23 @@ export function connectColorPicker<T extends PropTypes>(
       },
     }),
 
+    // 表单影子写成视觉隐藏的文本输入而不是 type=hidden：hidden 不参与约束校验，required 拦不住空值提交
     getHiddenInputProps: input => normalize.input({
       ...parts['hidden-input'].attrs,
       // type 先于 value 写入：改 type 会重置输入的值
-      type: 'hidden',
+      'type': 'text',
       // name 缺省即不产出该属性，此时这份输入不参与提交
-      name: prop('name'),
-      // 多选时一个选中值一份同名输入
-      value: input ? input.value : (values[0] ?? ''),
+      'name': prop('name'),
+      // 多选时一个选中值一份同名输入；没选时是空串，required 据此拦下
+      'value': input ? input.value : (values[0] ?? ''),
+      'required': required || undefined,
       // 禁用的控件不该提交出值。只读照常提交
-      disabled: disabled || undefined,
+      'disabled': disabled || undefined,
+      // 只读随 prop 走，恒真会让 required 不生效
+      'readonly': readOnly || undefined,
+      'tabindex': -1,
+      'aria-hidden': true,
+      'style': VISUALLY_HIDDEN_STYLE,
     }),
   }
 }

@@ -150,6 +150,8 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `defaultOpen` | `boolean` |  |  |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 与两个按钮使用原生 disabled，取色区与滑杆退出 Tab 序列。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开（可查看当前颜色），但任何改值的动作都不发生。 |
+| `invalid` | `boolean` |  | 校验失败标注：触发钮写 aria-invalid，各部件写 data-invalid，字段外壳按它描红。 |
+| `required` | `boolean` |  | 必填：各部件写 data-required（标题据此画星号），表单影子写原生 required；触发钮是按钮，不收 aria-required。 |
 | `swatches` | `string[]` |  | 预设色板：交给内嵌的色块选择器铺格，选中的格按颜色比较。 |
 | `inline` | `boolean` |  | 常驻形态：取色面直接铺在页面里，不经触发钮与浮层，与浮层形态共用同一台机器与同一组部件。 开着时恒为展开态，open / defaultOpen / onOpenChange 不起作用，也不接管焦点与点外关闭。 |
 | `recentColors` | `string[]` |  | 最近使用色（最新的在最前）。提供即受控：内部只发 onRecentColorsChange，由宿主写回（也由宿主持久化）。 一次取色结束时记一笔：浮层形态在收起那一刻，常驻形态在焦点离开取色面那一刻； 这一轮里颜色没变、或只经 api.setValue 改过就不记。 |
@@ -241,6 +243,8 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `alpha` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
+| `invalid` | `boolean` |  |
+| `required` | `boolean` |  |
 | `dragging` | `boolean` | 指针正在拖动某一部位。 |
 | `picking` | `boolean` | 屏幕取色正在进行。 |
 | `eyeDropperSupported` | `boolean` |  |
@@ -313,6 +317,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
+| `trigger` | `aria-invalid` | 'true' \| 'false' |
 | `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id |
 | `swatch` | `aria-hidden` | 'true' |
 | `content` | `aria-hidden` | !open \|\| undefined |
@@ -329,6 +334,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `channel-input` | `aria-invalid` | 'true' \| 'false' |
 | `channel-input` | `aria-label` | label.input(channel) |
 | `eye-dropper-trigger` | `aria-label` | label.eyeDropperTrigger |
+| `hidden-input` | `aria-hidden` | 'true' |
 
 - 触发按钮是原生按钮，`aria-haspopup="dialog"`，名称由标题与当前值串合成；浮层是非模态 `role="dialog"`。
 - 多选标签上的删除钮不占 Tab 位，可及名取 `translations.deleteItem`；键盘从触发钮上按退格摘掉最后一个。色点只是辅助，标签文字就是值串，颜色不是唯一的信息通道。
@@ -354,14 +360,20 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-inline` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
+| `label` | `data-invalid` | ''（条件成立时才出现） |
 | `label` | `data-readonly` | ''（条件成立时才出现） |
+| `label` | `data-required` | ''（条件成立时才出现） |
 | `label` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
+| `control` | `data-required` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-variant` | props.variant |
 | `control` | `data-xh-field-chrome` | '' |
@@ -371,13 +383,19 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `tag-list` | `data-instant` | ''（条件成立时才出现） |
 | `tag-list` | `data-xh-tag-list` | '' |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-invalid` | ''（条件成立时才出现） |
 | `trigger` | `data-readonly` | ''（条件成立时才出现） |
+| `trigger` | `data-required` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `value-text` | `data-disabled` | ''（条件成立时才出现） |
+| `value-text` | `data-invalid` | ''（条件成立时才出现） |
 | `value-text` | `data-readonly` | ''（条件成立时才出现） |
+| `value-text` | `data-required` | ''（条件成立时才出现） |
 | `value-text` | `data-state` | 'open' \| 'closed' |
 | `swatch` | `data-disabled` | ''（条件成立时才出现） |
+| `swatch` | `data-invalid` | ''（条件成立时才出现） |
 | `swatch` | `data-readonly` | ''（条件成立时才出现） |
+| `swatch` | `data-required` | ''（条件成立时才出现） |
 | `swatch` | `data-state` | 'open' \| 'closed' |
 | `swatch` | `data-value` | context.get('value') |
 | `swatch` | `data-xh-swatch` | '' |
@@ -390,16 +408,22 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `content` | `data-disabled` | ''（条件成立时才出现） |
 | `content` | `data-inline` | ''（条件成立时才出现） |
 | `content` | `data-instant` | ''（条件成立时才出现） |
+| `content` | `data-invalid` | ''（条件成立时才出现） |
 | `content` | `data-placement` | undefined \| 定位引擎算出的实际落位 |
 | `content` | `data-readonly` | ''（条件成立时才出现） |
+| `content` | `data-required` | ''（条件成立时才出现） |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `saturation-area` | `data-disabled` | ''（条件成立时才出现） |
 | `saturation-area` | `data-dragging` | ''（条件成立时才出现） |
+| `saturation-area` | `data-invalid` | ''（条件成立时才出现） |
 | `saturation-area` | `data-readonly` | ''（条件成立时才出现） |
+| `saturation-area` | `data-required` | ''（条件成立时才出现） |
 | `saturation-area` | `data-state` | 'open' \| 'closed' |
 | `area-thumb` | `data-disabled` | ''（条件成立时才出现） |
 | `area-thumb` | `data-dragging` | ''（条件成立时才出现） |
+| `area-thumb` | `data-invalid` | ''（条件成立时才出现） |
 | `area-thumb` | `data-readonly` | ''（条件成立时才出现） |
+| `area-thumb` | `data-required` | ''（条件成立时才出现） |
 | `area-thumb` | `data-state` | 'open' \| 'closed' |
 | `hue-slider` | `data-channel` | 'hue' |
 | `alpha-slider` | `data-channel` | 'alpha' |
@@ -408,10 +432,13 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `channel-input` | `data-disabled` | ''（条件成立时才出现） |
 | `channel-input` | `data-invalid` | ''（条件成立时才出现） |
 | `channel-input` | `data-readonly` | ''（条件成立时才出现） |
+| `channel-input` | `data-required` | ''（条件成立时才出现） |
 | `channel-input` | `data-state` | 'open' \| 'closed' |
 | `eye-dropper-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `eye-dropper-trigger` | `data-invalid` | ''（条件成立时才出现） |
 | `eye-dropper-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `eye-dropper-trigger` | `data-readonly` | ''（条件成立时才出现） |
+| `eye-dropper-trigger` | `data-required` | ''（条件成立时才出现） |
 | `eye-dropper-trigger` | `data-state` | 'picking' \| 'open' \| 'closed' |
 | `confirm-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `confirm-trigger` | `data-xh-action-control` | '' |

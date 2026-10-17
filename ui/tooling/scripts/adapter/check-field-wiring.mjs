@@ -46,6 +46,7 @@ const GROUP_CONTROLS = {
   'checkbox-group': '组根 role=group',
   'color-swatch-picker': '组根 role=radiogroup',
   'toggle-group': '组根 role=group（多选）/ radiogroup（单选）',
+  'color-picker': '触发钮是按钮：不收 aria-required / aria-readonly，只取描述链，aria-invalid 由组件自己投影',
   'rating': '星组 control 部件 role=radiogroup',
   'slider': '每个拇指 role=slider，焦点落在拇指上',
   'pin-input': '整组 role=group，每格的名字是「第几格」',

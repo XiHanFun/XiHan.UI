@@ -12688,6 +12688,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['trigger'], kind: 'group' }",
+              "type": {
+                "text": "{ parts: ['trigger'], kind: 'group' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -12775,6 +12784,24 @@
                 "text": "boolean | undefined"
               },
               "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
             },
             {
               "kind": "field",
@@ -13641,6 +13668,22 @@
               "description": "只读：浮层照常打开，其中内容不可修改",
               "name": "read-only",
               "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败标注：触发钮写 aria-invalid，字段外壳按 data-invalid 描红",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填：标题画星号，表单影子写原生 required",
+              "name": "required",
+              "fieldName": "required"
             },
             {
               "type": {

@@ -275,6 +275,7 @@ export const colorPickerSuite: ConformanceSuite = {
             'aria-controls': '@part(content)',
             // 名字由标题加当前值合成：只报标题的话，一排取色器读起来全都一样
             'aria-labelledby': '@part(label) @part(value-text)',
+            'aria-invalid': 'false',
             'data-state': 'closed',
             'disabled': null,
           },
@@ -353,6 +354,18 @@ export const colorPickerSuite: ConformanceSuite = {
           },
         },
       ],
+    },
+    {
+      name: '无效与必填：触发钮报 aria-invalid、不收 aria-required；标题与字段外壳带 data-invalid / data-required',
+      spec: { apg: APG_DIALOG },
+      props: { defaultValue: '#3b82f6', invalid: true, required: true },
+      initial: {
+        parts: {
+          trigger: { 'aria-invalid': 'true', 'aria-required': null, 'data-invalid': '', 'data-required': '' },
+          control: { 'data-invalid': '', 'data-required': '' },
+          label: { 'data-required': '' },
+        },
+      },
     },
     {
       name: 'Enter / Space 开合：trigger 是原生 <button type="button">，激活交给平台',
@@ -840,7 +853,7 @@ export const colorPickerSuite: ConformanceSuite = {
       props: { defaultValue: '#3b82f6', name: 'theme' },
       initial: {
         parts: {
-          'hidden-input': { type: 'hidden', name: 'theme' },
+          'hidden-input': { 'type': 'text', 'name': 'theme', 'tabindex': '-1', 'aria-hidden': 'true' },
         },
       },
       steps: [
@@ -877,7 +890,7 @@ export const colorPickerSuite: ConformanceSuite = {
       props: { defaultValue: '#3b82f6' },
       initial: {
         parts: {
-          'hidden-input': { type: 'hidden', name: null },
+          'hidden-input': { type: 'text', name: null },
         },
       },
     },
