@@ -145,7 +145,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
     )
   }
   if (kind === 'ColorPicker')
-    return <XhColorPickerRoot disabled={props.disabled} readOnly={props.readOnly}><XhColorPickerControl><XhColorPickerTrigger>选择</XhColorPickerTrigger></XhColorPickerControl></XhColorPickerRoot>
+    return <XhColorPickerRoot {...props}><XhColorPickerControl><XhColorPickerTrigger>选择</XhColorPickerTrigger></XhColorPickerControl></XhColorPickerRoot>
   if (kind === 'Mention')
     return <XhMentionRoot {...nonRequiredState(props)}><XhMentionInput /></XhMentionRoot>
   if (kind === 'Rating')
@@ -270,6 +270,9 @@ function expectAtomicState(container: HTMLElement, kind: AtomicControl, enabled:
     if (kind === 'ColorPicker') {
       const root = container.querySelector<HTMLElement>('[data-scope="color-picker"][data-part="root"]')!
       expect(root.hasAttribute('data-readonly')).toBe(enabled)
+      expect(root.hasAttribute('data-invalid')).toBe(enabled)
+      expect(root.hasAttribute('data-required')).toBe(enabled)
+      expect(trigger.getAttribute('aria-invalid')).toBe(String(enabled))
     }
     else {
       const segment = container.querySelector<HTMLElement>('[role="spinbutton"]')!

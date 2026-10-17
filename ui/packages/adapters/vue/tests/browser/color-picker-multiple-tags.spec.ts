@@ -146,7 +146,7 @@ describe('color-picker 多选成标签', () => {
 
   it('表单出口：一个选中值一份同名隐藏输入', async () => {
     await mount({ defaultValue: ['#ff0000', '#00ff00'] })
-    const inputs = [...host!.querySelectorAll<HTMLInputElement>('input[type="hidden"][name="palette"]')]
+    const inputs = [...host!.querySelectorAll<HTMLInputElement>('input[name="palette"]')]
     expect(inputs.map(input => input.value)).toEqual(['#ff0000', '#00ff00'])
   })
 })

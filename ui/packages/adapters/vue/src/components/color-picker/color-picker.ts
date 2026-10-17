@@ -26,6 +26,7 @@ import { XhColorSliderControl, XhColorSliderThumb, XhColorSliderTrack } from '..
 import { provideColorSlider } from '../color-slider/context'
 import { XhColorSwatchPickerItem } from '../color-swatch-picker/color-swatch-picker'
 import { provideColorSwatchPicker } from '../color-swatch-picker/context'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideColorPicker, provideColorPickerTag, useColorPickerContext, useColorPickerTagContext } from './context'
 import { useColorPicker } from './use-color-picker'
@@ -56,6 +57,8 @@ export const XhColorPickerRoot = defineComponent({
     defaultOpen: Boolean,
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
     alpha: Boolean,
     swatches: { type: Array as PropType<string[]> },
     inline: Boolean,
@@ -151,10 +154,15 @@ export const XhColorPickerControl = defineComponent({
 export const XhColorPickerTrigger = defineComponent({
   name: 'XhColorPickerTrigger',
   setup(_, { slots }) {
+    // 放进字段时字段的说明与错误文案接到触发钮上；按钮不收 aria-required / aria-readonly，只取描述链，
+    // aria-invalid 由组件自己按字段状态投影
+    const fieldWiring = useFieldGroupWiring()
+    // 字段的标签并进名字链，排在当前值前面
+    const fieldLabel = useFieldLabelWiring()
     const ctx = useColorPickerContext()
     // 原生 button，激活交给平台；同时是浮层的定位锚点
     return () => h('button', {
-      ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
+      ...fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getTriggerProps() as Record<string, unknown> }),
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
     }, slots.default?.())
   },

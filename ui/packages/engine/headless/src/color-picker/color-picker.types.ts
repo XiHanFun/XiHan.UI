@@ -195,6 +195,10 @@ export interface ColorPickerSchema extends MachineSchema {
     disabled?: boolean
     /** 只读：浮层照常展开（可查看当前颜色），但任何改值的动作都不发生。 */
     readOnly?: boolean
+    /** 校验失败标注：触发钮写 aria-invalid，各部件写 data-invalid，字段外壳按它描红。 */
+    invalid?: boolean
+    /** 必填：各部件写 data-required（标题据此画星号），表单影子写原生 required；触发钮是按钮，不收 aria-required。 */
+    required?: boolean
     /** 预设色板：交给内嵌的色块选择器铺格，选中的格按颜色比较。 */
     swatches?: string[]
     /**
@@ -380,6 +384,8 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   alpha: boolean
   disabled: boolean
   readOnly: boolean
+  invalid: boolean
+  required: boolean
   /** 指针正在拖动某一部位。 */
   dragging: boolean
   /** 屏幕取色正在进行。 */

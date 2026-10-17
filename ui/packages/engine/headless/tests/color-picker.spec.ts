@@ -1246,3 +1246,37 @@ describe('connectColorPicker 名字链只引用在场的 label', () => {
     expect((bare.getContentProps() as Record<string, unknown>)['aria-labelledby']).toBeUndefined()
   })
 })
+
+describe('connectColorPicker 无效与必填', () => {
+  it('invalid：触发钮写 aria-invalid，字段外壳与其余部件写 data-invalid；缺省 aria-invalid 显式 false', () => {
+    const bad = api(makeService({ invalid: true }))
+    expect((bad.getTriggerProps() as Record<string, unknown>)['aria-invalid']).toBe('true')
+    expect((bad.getControlProps() as Record<string, unknown>)['data-invalid']).toBe('')
+    expect((bad.getRootProps() as Record<string, unknown>)['data-invalid']).toBe('')
+    expect(bad.invalid).toBe(true)
+    const ok = api(makeService())
+    expect((ok.getTriggerProps() as Record<string, unknown>)['aria-invalid']).toBe('false')
+    expect((ok.getControlProps() as Record<string, unknown>)['data-invalid']).toBeUndefined()
+  })
+
+  it('required：标题写 data-required，触发钮是按钮不收 aria-required，表单影子写原生 required', () => {
+    const picker = api(makeService({ required: true, name: 'color', selectionMode: 'multiple' }))
+    expect((picker.getLabelProps() as Record<string, unknown>)['data-required']).toBe('')
+    expect((picker.getTriggerProps() as Record<string, unknown>)['aria-required']).toBeUndefined()
+    const input = picker.getHiddenInputProps(undefined) as Record<string, unknown>
+    expect(input.type).toBe('text')
+    expect(input.required).toBe(true)
+    // 多选一个都没选时影子是空串，required 据此拦下
+    expect(input.value).toBe('')
+    expect(input.tabindex).toBe(-1)
+    expect(input['aria-hidden']).toBe(true)
+    expect(picker.required).toBe(true)
+  })
+
+  it('表单影子的 readonly 随只读走，不写 required 时不带', () => {
+    const input = api(makeService({ readOnly: true, defaultValue: '#ff0000' })).getHiddenInputProps(undefined) as Record<string, unknown>
+    expect(input.readonly).toBe(true)
+    expect(input.required).toBeUndefined()
+    expect(input.value).toBe('#ff0000')
+  })
+})

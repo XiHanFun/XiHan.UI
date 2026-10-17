@@ -28,6 +28,7 @@ import { XhColorSliderControl, XhColorSliderThumb, XhColorSliderTrack } from '..
 import { ColorSliderProvider } from '../color-slider/context'
 import { XhColorSwatchPickerItem } from '../color-swatch-picker/color-swatch-picker'
 import { ColorSwatchPickerProvider } from '../color-swatch-picker/context'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { ColorPickerProvider, ColorPickerTagProvider, useColorPickerContext, useColorPickerTagContext } from './context'
 import { useColorPicker } from './use-color-picker'
@@ -63,6 +64,10 @@ export interface XhColorPickerRootProps extends RootElementProps {
   disabled?: boolean
   /** 只读：浮层照常展开（可查看当前颜色），但任何改值的动作都不发生。 */
   readOnly?: boolean
+  /** 校验失败标注。 */
+  invalid?: boolean
+  /** 必填：表单影子写原生 required。 */
+  required?: boolean
   /** 带透明度，默认关闭。 */
   alpha?: boolean
   /** 预设色板：交给内嵌的色块选择器铺设格子，选中的格子按颜色比较。 */
@@ -102,6 +107,8 @@ export function XhColorPickerRoot({
   defaultOpen,
   disabled,
   readOnly,
+  invalid,
+  required,
   alpha,
   swatches,
   inline,
@@ -133,6 +140,8 @@ export function XhColorPickerRoot({
     defaultOpen,
     disabled,
     readOnly,
+    invalid,
+    required,
     alpha,
     swatches,
     inline,
@@ -217,11 +226,16 @@ export interface XhColorPickerTriggerProps extends ComponentPropsWithRef<'button
 
 /** 原生 button，激活交给平台；同时是浮层的定位锚点。 */
 export function XhColorPickerTrigger({ children, ...rest }: XhColorPickerTriggerProps): ReactNode {
+  // 放进字段时字段的说明与错误文案接到触发钮上；按钮不收 aria-required / aria-readonly，只取描述链，
+  // aria-invalid 由组件自己按字段状态投影
+  const fieldWiring = useFieldGroupWiring()
+  // 字段的标签并进名字链，排在当前值前面
+  const fieldLabel = useFieldLabelWiring()
   const ctx = useColorPickerContext()
   return (
     <button
       {...mergeReactProps(
-        ctx.api.getTriggerProps() as Record<string, unknown>,
+        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() as Record<string, unknown> }),
         rest as Record<string, unknown>,
         { ref: (el: HTMLButtonElement | null) => { ctx.triggerRef.current = el } },
       )}

@@ -129,7 +129,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'TimePicker')
     return h(XhTimePickerRoot, { ...props, granularity: 'hour' }, () => [h(XhTimePickerControl, null, () => [h(XhTimePickerSegmentGroup, null, () => h(XhTimePickerSegment, { segment: 'hour' })), h(XhTimePickerTrigger, null, () => '选择')]), h(XhTimePickerHiddenInput)])
   if (kind === 'ColorPicker')
-    return h(XhColorPickerRoot, { disabled: props.disabled, readOnly: props.readOnly }, () => h(XhColorPickerControl, null, () => h(XhColorPickerTrigger, null, () => '选择')))
+    return h(XhColorPickerRoot, { ...props }, () => h(XhColorPickerControl, null, () => h(XhColorPickerTrigger, null, () => '选择')))
   if (kind === 'Mention')
     return h(XhMentionRoot, nonRequiredState(props), () => h(XhMentionInput))
   if (kind === 'Rating')
@@ -242,7 +242,11 @@ function expectAtomicState(wrapper: ReturnType<typeof mount>, kind: AtomicContro
     const trigger = wrapper.find(`[data-scope="${scope}"][data-part="trigger"]`)
     expect(trigger.attributes('disabled') !== undefined).toBe(enabled)
     if (kind === 'ColorPicker') {
-      expect(wrapper.find('[data-scope="color-picker"][data-part="root"]').attributes('data-readonly') !== undefined).toBe(enabled)
+      const root = wrapper.find('[data-scope="color-picker"][data-part="root"]')
+      expect(root.attributes('data-readonly') !== undefined).toBe(enabled)
+      expect(root.attributes('data-invalid') !== undefined).toBe(enabled)
+      expect(root.attributes('data-required') !== undefined).toBe(enabled)
+      expect(trigger.attributes('aria-invalid')).toBe(String(enabled))
     }
     else {
       const segment = wrapper.find('[role="spinbutton"]')

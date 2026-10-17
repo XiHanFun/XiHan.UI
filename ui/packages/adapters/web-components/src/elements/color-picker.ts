@@ -94,6 +94,8 @@ const STRING_LIST_CONVERTER = {
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} disabled - 禁用：触发器与按钮使用原生 disabled，取色区与滑杆退出 Tab 序列
  * @attr {boolean} read-only - 只读：浮层照常打开，其中内容不可修改
+ * @attr {boolean} invalid - 校验失败标注：触发钮写 aria-invalid，字段外壳按 data-invalid 描红
+ * @attr {boolean} required - 必填：标题画星号，表单影子写原生 required
  * @attr {boolean} alpha - 带透明度，默认关闭；关闭时透明度滑杆与输入框整条禁用
  * @attr {string} swatches - 预设色板，逗号分隔（如 "#ff0000,#00ff00"）
  * @attr {boolean} inline - 常驻形态：取色面直接铺在页面里，不经触发钮与浮层；此时不写 control / trigger / positioner
@@ -150,6 +152,9 @@ export class XhColorPickerElement extends XhPortalHostElement {
     delegates: [colorSliderAnatomy, colorSwatchPickerAnatomy, { name: 'tag', parts: ['tag', 'tag-label', 'overflow-tag', 'item-delete-trigger'] }],
   }
 
+  // 放进字段时字段的标签与说明接到触发钮上；触发钮是按钮，不收 aria-required / aria-readonly，只走组类接线
+  static override fieldTarget = { parts: ['trigger'], kind: 'group' } as const
+
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
@@ -163,6 +168,8 @@ export class XhColorPickerElement extends XhPortalHostElement {
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    invalid: { converter: BOOLEAN_CONVERTER },
+    required: { converter: BOOLEAN_CONVERTER },
     alpha: { converter: BOOLEAN_CONVERTER },
     swatches: { converter: STRING_LIST_CONVERTER },
     inline: { converter: BOOLEAN_CONVERTER },
@@ -189,6 +196,8 @@ export class XhColorPickerElement extends XhPortalHostElement {
   declare defaultOpen?: boolean
   declare disabled?: boolean
   declare readOnly?: boolean
+  declare invalid?: boolean
+  declare required?: boolean
   declare alpha?: boolean
   declare swatches?: string[]
   declare inline?: boolean
@@ -313,6 +322,8 @@ export class XhColorPickerElement extends XhPortalHostElement {
     const control = resolveFormControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
+      invalid: this.invalid,
+      required: this.required,
     }, this.inheritedControl)
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去；挂载点里的 label 归内嵌组件
@@ -327,6 +338,8 @@ export class XhColorPickerElement extends XhPortalHostElement {
       defaultOpen: this.defaultOpen ?? false,
       disabled: control.disabled,
       readOnly: control.readOnly,
+      invalid: control.invalid,
+      required: control.required,
       alpha: this.alpha ?? false,
       swatches: this.swatches,
       inline: this.inline ?? false,
