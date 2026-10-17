@@ -60,7 +60,7 @@ export function runCommand<Ctx>(commands: DesignerCommandTable<Ctx>, id: string,
   return true
 }
 
-/** 命令工具栏：一条 <xh-toolbar>，按分组铺按钮，放不下的收进行尾的「更多」菜单。 */
+/** 命令工具栏：一条 <xh-toolbar>，按分组铺按钮，放不下的收进行尾的「更多」菜单；命令的语气写成按钮的 data-tone。 */
 export interface CommandToolbar<Ctx> {
   readonly element: HTMLElement
   /** 换上这组分组与此刻的状态：分组变了才重铺按钮，文字、可用与选中状态每次都刷新。 */
@@ -113,6 +113,10 @@ export function createCommandToolbar<Ctx>(doc: Document): CommandToolbar<Ctx> {
           item.setAttribute('aria-pressed', String(command.checked(context)))
         else
           item.removeAttribute('aria-pressed')
+        if (command.tone)
+          item.setAttribute('data-tone', command.tone)
+        else
+          item.removeAttribute('data-tone')
       }
     },
   }
@@ -120,7 +124,7 @@ export function createCommandToolbar<Ctx>(doc: Document): CommandToolbar<Ctx> {
 
 /**
  * 把分组铺成 <xh-context-menu> content 里的条目：组与组之间一条分隔线，条目的 value 是命令 id，
- * 此刻不可用的写 aria-disabled，带快捷键的在行尾写快捷键提示（platform 由调用方测出，缺省按非 macOS 写）。
+ * 此刻不可用的写 aria-disabled，命令的语气写 data-tone，带快捷键的在行尾写快捷键提示（platform 由调用方测出，缺省按非 macOS 写）。
  * 选中条目时用 runCommand 执行。
  */
 export function renderCommandMenu<Ctx>(
@@ -147,6 +151,7 @@ export function renderCommandMenu<Ctx>(
         'data-xh-part': 'item',
         'value': id,
         'aria-disabled': commandEnabled(command, context) ? undefined : 'true',
+        'data-tone': command.tone,
       }, parts))
     }
   })

@@ -94,7 +94,7 @@ describe('命令', () => {
   const cmd = (id: string, extra: Partial<DesignerCommand<Ctx>> = {}): DesignerCommand<Ctx> => ({ id, label: id.toUpperCase(), run: () => ran.push(id), ...extra })
   const commands = new Map<string, DesignerCommand<Ctx>>([
     ['undo', cmd('undo')],
-    ['delete', cmd('delete', { enabled: ctx => ctx.selected > 0, placement: ['menu:node'] })],
+    ['delete', cmd('delete', { enabled: ctx => ctx.selected > 0, placement: ['menu:node'], tone: 'danger' })],
     ['sim.run', cmd('sim.run', { label: ctx => `运行 ${ctx.selected}`, placement: ['toolbar'], checked: () => true, shortcut: ['Mod', 'R'] })],
   ])
 
@@ -105,7 +105,7 @@ describe('命令', () => {
     expect(() => arrangeCommands('toolbar', commands, [['undo']], { toolbar: [['redo']] })).toThrow('不是登记过的命令')
   })
 
-  it('工具栏：按分组铺按钮，文字、可用与选中状态随上下文刷新，点击执行', async () => {
+  it('工具栏：按分组铺按钮，文字、可用、选中状态与语气随上下文刷新，点击执行', async () => {
     ran.length = 0
     const toolbar = createCommandToolbar<Ctx>(document)
     document.body.append(toolbar.element)
@@ -116,6 +116,7 @@ describe('命令', () => {
       ['delete', 'DELETE', true, null],
       ['sim.run', '运行 0', false, 'true'],
     ])
+    expect(buttons().map(button => button.getAttribute('data-tone'))).toEqual([null, 'danger', null])
     expect(toolbar.element.querySelectorAll('[data-xh-part="separator"]')).toHaveLength(1)
 
     const first = buttons()[0]
@@ -126,7 +127,7 @@ describe('命令', () => {
     expect(ran).toEqual(['delete', 'sim.run'])
   })
 
-  it('菜单：铺条目与分隔线，不可用的写 aria-disabled，带快捷键的写提示；runCommand 只执行可用的', () => {
+  it('菜单：铺条目与分隔线，不可用的写 aria-disabled，语气写 data-tone，带快捷键的写提示；runCommand 只执行可用的', () => {
     ran.length = 0
     const content = document.createElement('div')
     renderCommandMenu(content, [['delete'], ['sim.run']], commands, { selected: 0 }, { platform: 'other' })
@@ -135,6 +136,7 @@ describe('命令', () => {
       ['separator', null, null, ''],
       ['item', 'sim.run', null, '运行 0Ctrl+R'],
     ])
+    expect([...content.children].map(item => item.getAttribute('data-tone'))).toEqual(['danger', null, null])
     expect(runCommand(commands, 'delete', { selected: 0 })).toBe(false)
     expect(runCommand(commands, 'delete', { selected: 1 })).toBe(true)
     expect(runCommand(commands, 'missing', { selected: 1 })).toBe(false)
