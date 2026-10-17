@@ -34893,6 +34893,26 @@
       "description": "field-array 的 add-trigger 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-field-array-cell-control-h",
+      "component": "field-array",
+      "part": [
+        "item-action",
+        "item-label"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "is([data-part='item-label'], [data-part='item-action'])",
+        "layout=table"
+      ],
+      "defaultToken": [
+        "--xh-control-h-md"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 item-action、item-label 部件 min-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-field-array-cell-px",
       "component": "field-array",
       "part": [
