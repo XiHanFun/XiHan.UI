@@ -5644,6 +5644,7 @@
       "FocusScopeOptions",
       "FocusableElement",
       "FormResetBridgeOptions",
+      "GHOST_ATTR",
       "GuardCombinators",
       "GuardExpr",
       "GuardFn",

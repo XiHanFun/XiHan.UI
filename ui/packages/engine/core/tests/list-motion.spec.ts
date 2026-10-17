@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { glideBy, glideFrom, INSTANT_ATTR, STAGGER_INDEX_PROPERTY, trackListMotion, trackReorder } from '../src/behavior/arrival'
+import { GHOST_ATTR, glideBy, glideFrom, INSTANT_ATTR, STAGGER_INDEX_PROPERTY, trackListMotion, trackReorder } from '../src/behavior/arrival'
 
 let stops: Array<() => void> = []
 
@@ -137,6 +137,7 @@ describe('离场', () => {
     expect(ghost.hasAttribute('inert')).toBe(true)
     expect(ghost.getAttribute('aria-hidden')).toBe('true')
     expect(ghost.hasAttribute(INSTANT_ATTR)).toBe(false)
+    expect(ghost.hasAttribute(GHOST_ATTR)).toBe(true)
     expect(ghost.id).toBe('')
     expect(ghost.hasAttribute('data-xh-part')).toBe(false)
     const input = ghost.querySelector('input')!
@@ -155,6 +156,23 @@ describe('离场', () => {
       await flush()
     expect(ghost.isConnected).toBe(false)
     expect(container.querySelectorAll('[data-state="closed"]')).toHaveLength(0)
+  })
+
+  it('替身插进文档之前就带上替身标记：里面的自定义元素连上时就认得出自己在替身里', async () => {
+    const seen: boolean[] = []
+    customElements.define('ghost-probe', class extends HTMLElement {
+      connectedCallback(): void {
+        seen.push(this.closest(`[${GHOST_ATTR}]`) !== null)
+      }
+    })
+    const container = list(2)
+    container.children[0]!.append(document.createElement('ghost-probe'))
+    track(container)
+    stubExitAnimation()
+    seen.length = 0
+    container.children[0]!.remove()
+    await flush()
+    expect(seen).toEqual([true])
   })
 
   it('条目选择器带祖先限定时（某一摞里的卡片），删掉的条目同样留替身：按已知条目认，不靠离开文档后的匹配', async () => {

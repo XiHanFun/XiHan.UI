@@ -5,7 +5,7 @@
 
 // 导出 arrival 模块的公共接口。
 
-export { glideBy, glideFrom, trackListMotion, trackReorder } from './list-motion'
+export { GHOST_ATTR, glideBy, glideFrom, trackListMotion, trackReorder } from './list-motion'
 export type { TrackListMotionOptions, TrackReorderOptions } from './list-motion'
 export { trackAppearance } from './track-appearance'
 export type { TrackAppearanceOptions } from './track-appearance'

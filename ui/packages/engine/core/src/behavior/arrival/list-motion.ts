@@ -22,6 +22,12 @@ import { INSTANT_ATTR, STAGGER_CAP, STAGGER_INDEX_PROPERTY } from './track-arriv
 /** 离场替身的状态：皮肤把退场关键帧写在它的 `[data-state='closed']` 下。 */
 const DEPARTING_STATE = 'closed'
 
+/**
+ * 离场替身的标记，插进文档之前写上。替身里克隆出来的库内元素是新实例，见到它就不接线、不重建标准结构，
+ * 原样留着克隆时的子节点与表单值播完退场。
+ */
+export const GHOST_ATTR = 'data-xh-ghost'
+
 /** 离场替身身上要摘掉的属性：id 与表单名会和留下来的条目撞车，data-xh-part 会让作者脚本与元素把它当成在场的部件。 */
 const DETACHED_ATTRS = ['id', 'name', 'data-xh-part'] as const
 
@@ -88,6 +94,7 @@ function byDocumentOrder(a: Element, b: Element): number {
  * 离场条目的替身：同样的结构与属性，表单控件带上此刻的值（cloneNode 只复制 attribute）。
  * 放回去的是替身而不是原节点：原节点仍归宿主处置——Web Components 会在下一轮接线时撤掉它身上库写的属性，
  * 框架也可能在别处复用它；替身谁都不认识，退场播到结束不会被中途改写。
+ * 替身带 {@link GHOST_ATTR}：里面克隆出来的库内元素是新实例，见到它就不接线，原样留着克隆时的子节点与值。
  */
 function standIn(source: HTMLElement): HTMLElement {
   const copy = source.cloneNode(true) as HTMLElement
@@ -280,6 +287,7 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
     el.setAttribute('inert', '')
     el.setAttribute('aria-hidden', 'true')
     el.setAttribute('data-state', DEPARTING_STATE)
+    el.setAttribute(GHOST_ATTR, '')
     el.style.setProperty('position', 'absolute')
     el.style.setProperty('left', `${slot.left}px`)
     el.style.setProperty('top', `${slot.top}px`)
