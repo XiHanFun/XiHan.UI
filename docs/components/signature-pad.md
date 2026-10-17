@@ -93,6 +93,7 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 - 标签走字段标签档（14 / 500 / `--xh-fg-default`），贴画布 `--xh-space-1`；状态句是说明角色（13 / `--xh-fg-muted`）。
 - 清空按钮走 Action Control text 档 sm：缺省 `outline` 描边，白底承载阶梯悬停 100 → 按下 200，按下缩放并换底；空画布时只把静息前景压淡，按钮照常可按。
 - 撤销与重做按钮与清空按钮同一身份；没有可撤销、可重做的一步时投影 `aria-disabled` 与家族置灰面，焦点仍留在钮上。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是画布（基准线与笔迹）、清空按钮与状态，给了 `name` 再带表单影子；清空按钮的字与状态句取 translations。撤销与重做按钮不在其中，要用时手写结构。Web Components 里标题可以写在宿主的直接子节点 `slot="label"` 上接管。
 
 ### 组合
 
@@ -182,6 +183,7 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhSignaturePadRoot` | `default` | `SignaturePadRootSlotProps` |  |
+| `XhSignaturePadRoot` | `label` | — |  |
 
 ### React 适配器 props
 
@@ -189,6 +191,7 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhSignaturePadRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
 | `XhSignaturePadRoot` | `children` | `SlotChildren<SignaturePadRootSlotProps>` |  |  |
 
 ### 状态
@@ -216,6 +219,7 @@ drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，sim
 | `canUndo` | `boolean` | 有可撤销的一步：上一笔、上一次清空或上一次重做。 |
 | `canRedo` | `boolean` | 有被撤销、还能重做的一步。 |
 | `statusText` | `string` | 是否已签名的文案，写入 status 部件；适配器在作者未自行编写文字时把它填入节点。 |
+| `translations` | `SignaturePadTranslations` | 合上作者覆盖后的文案。 |
 | `toSvg` | `() => string` | 当前签名的独立 SVG 文档，与表单影子提交的是同一份；空签名为空串。 |
 | `clear` | `() => void` |  |
 | `undo` | `() => void` | 撤销最近一步（一笔、一次清空或一次重做）；没有可撤销的就什么都不做。 |

@@ -1,4 +1,4 @@
-import type { ConformanceSuite, StepWithExpect } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { signaturePadAnatomy, signaturePadKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
@@ -547,6 +547,29 @@ export const signaturePadSuite: ConformanceSuite = {
               throw new Error('表单影子没带 required，空签名照样提交得出去')
           },
         },
+      ],
+    },
+    {
+      name: '作者不写结构：三端都照 signaturePadStructure 铺出标题、画布（基准线与笔迹）、清空钮、状态与表单影子，落笔照常',
+      spec: { apg: NAMING },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '请签名', name: 'signature' },
+      initial: {
+        order: ['root', 'label', 'control', 'guide', 'path', 'clear-trigger', 'status', 'hidden-input'],
+        parts: {
+          'control': { 'role': 'img', 'aria-labelledby': '@part(label)' },
+          'clear-trigger': { 'aria-label': 'Clear signature' },
+        },
+      },
+      steps: [
+        assertStatusText('No signature yet'),
+        layoutStep,
+        penDown(20, 20),
+        penMove(120, 80),
+        penUp(),
+        assertInk(true),
+        assertStatusText('Signed'),
+        assertSubmitted(v => v.startsWith('<svg'), '签了名，表单影子该交一份 SVG'),
       ],
     },
     {
