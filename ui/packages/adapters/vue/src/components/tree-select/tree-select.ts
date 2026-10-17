@@ -6,14 +6,16 @@
 // 提供 tree select 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, TreeSelectApi, TreeSelectNode, TreeSelectNodeProps, TreeSelectSchema, TreeSelectTagMeta } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, TreeSelectApi, TreeSelectNode, TreeSelectNodeProps, TreeSelectSchema } from '@xihan-ui/headless'
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TreeSelectContext } from './use-tree-select'
+import { treeSelectStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
@@ -210,15 +212,7 @@ export const XhTreeSelectRoot = defineComponent({
           clear: ctx.api.value.clear,
           deselect: ctx.api.value.deselect,
         })
-      : props.collection
-        ? renderDefaultTree(
-            ctx.api.value.collection,
-            props.multiple ? ctx.api.value.tags : null,
-            props.searchable,
-            slots.label?.() ?? (props.label != null ? [props.label] : null),
-            props.clearable,
-          )
-        : [])
+      : renderDefaultStructure(ctx.api.value, props.label, props.clearable, props.searchable, slots.label))
   },
 })
 
@@ -692,58 +686,43 @@ export const XhTreeSelectHiddenInput = defineComponent({
   },
 })
 
-/** 按 collection 递归铺设节点：带 children 的渲染为 branch，其余渲染为 item。 */
-function renderNodes(nodes: readonly TreeSelectNode[]): VNode[] {
-  return nodes.map(node => (node.children || node.hasChildren)
-    ? h(XhTreeSelectBranch, { key: node.value, value: node.value }, () => [
-        h(XhTreeSelectBranchControl, null, () => [
-          h(XhTreeSelectBranchTrigger),
-          h(XhTreeSelectBranchText, null, () => node.label ?? node.value),
-          h(XhTreeSelectItemIndicator),
-        ]),
-        h(XhTreeSelectBranchContent, null, () => renderNodes(node.children ?? [])),
-      ])
-    : h(XhTreeSelectItem, { key: node.value, value: node.value }, () => [
-        h(XhTreeSelectItemIndicator),
-        h(XhTreeSelectItemText, null, () => node.label ?? node.value),
-      ]))
+
+/** 标准结构里各部件对应的组件。 */
+const TREE_SELECT_PARTS = {
+  'label': XhTreeSelectLabel,
+  'control': XhTreeSelectControl,
+  'trigger': XhTreeSelectTrigger,
+  'value-text': XhTreeSelectValueText,
+  'tag-list': XhTreeSelectTagList,
+  'tag/tag': XhTreeSelectTag,
+  'tag/overflow-tag': XhTreeSelectOverflowTag,
+  'indicator': XhTreeSelectIndicator,
+  'clear-trigger': XhTreeSelectClearTrigger,
+  'positioner': XhTreeSelectPositioner,
+  'content': XhTreeSelectContent,
+  'input': XhTreeSelectInput,
+  'tree': XhTreeSelectTree,
+  'item': XhTreeSelectItem,
+  'item-text': XhTreeSelectItemText,
+  'item-indicator': XhTreeSelectItemIndicator,
+  'branch': XhTreeSelectBranch,
+  'branch-control': XhTreeSelectBranchControl,
+  'branch-trigger': XhTreeSelectBranchTrigger,
+  'branch-text': XhTreeSelectBranchText,
+  'branch-content': XhTreeSelectBranchContent,
 }
 
 /**
- * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
+ * 未写默认插槽时照 treeSelectStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 标题文字由 label 给出，需要放置其他内容时由 label 插槽接管。
  */
-function renderDefaultTree(
-  collection: readonly TreeSelectNode[],
-  tags: readonly TreeSelectTagMeta[] | null,
-  searchable: boolean,
-  label: (VNode | string)[] | null,
+function renderDefaultStructure(
+  api: TreeSelectApi,
+  label: string | undefined,
   clearable: boolean,
+  searchable: boolean,
+  labelSlot?: () => VNode[],
 ): VNode[] {
-  return [
-    ...(label ? [h(XhTreeSelectLabel, null, () => label)] : []),
-    // 盒里放触发器；清空钮是触发器的兄弟（按钮不能套按钮）
-    h(XhTreeSelectControl, null, () => [
-      // 多选的已选项在触发器里排成标签：占位文字与标签行同时写着，有选中时标签露面、占位让位；
-      // 触发器里的标签只作展示（按钮不能套按钮），摆不下的折进 +N
-      h(XhTreeSelectTrigger, null, () => [
-        h(XhTreeSelectValueText),
-        ...(tags
-          ? [h(XhTreeSelectTagList, null, () => [
-              ...tags.map(tag => h(XhTreeSelectTag, { key: tag.value, value: tag.value }, () => tag.label)),
-              h(XhTreeSelectOverflowTag),
-            ])]
-          : []),
-        h(XhTreeSelectIndicator),
-      ]),
-      ...(clearable ? [h(XhTreeSelectClearTrigger)] : []),
-    ]),
-    h(XhTreeSelectPositioner, null, () => [
-      // 开了搜索时搜索框排在树之前；collection 此刻已是裁剪后的树
-      h(XhTreeSelectContent, null, () => [
-        ...(searchable ? [h(XhTreeSelectInput)] : []),
-        h(XhTreeSelectTree, null, () => renderNodes(collection)),
-      ]),
-    ]),
-  ]
+  const nodes = treeSelectStructure(api, { label, clearable, searchable, slotted: name => name === 'label' && labelSlot != null })
+  return renderStructure(nodes, TREE_SELECT_PARTS, node => node.slot?.name === 'label' ? labelSlot?.() : undefined)
 }

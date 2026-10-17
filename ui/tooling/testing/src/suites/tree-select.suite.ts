@@ -28,6 +28,12 @@ const COLLECTION: TreeNode[] = [
   { value: 'license', label: 'License' },
 ]
 
+/** 标准结构场景的数据：一个分支（下面一条禁用）加一条叶子。 */
+const STRUCTURE_COLLECTION: TreeNode[] = [
+  { value: 'src', label: 'Source', children: [{ value: 'index', label: 'Index' }, { value: 'readme', label: 'Readme', disabled: true }] },
+  { value: 'license', label: 'License' },
+]
+
 /** 给用例补上同一份 collection。 */
 function props(extra: Readonly<Record<string, unknown>> = {}): Readonly<Record<string, unknown>> {
   return { collection: COLLECTION, ...extra }
@@ -1778,6 +1784,102 @@ export const treeSelectSuite: ConformanceSuite = {
           kind: 'setProps',
           props: { value: [] },
           expect: { parts: { 'tag-list': { hidden: '' } } },
+        },
+      ],
+    },
+    {
+      name: '作者不写结构：三端都照 treeSelectStructure 铺出标题、盒与清空钮、浮层里的树；点选后换数据，按值复用节点',
+      spec: { apg: `${APG_COMBOBOX}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { collection: STRUCTURE_COLLECTION, label: '目录', clearable: true, defaultValue: 'index', defaultExpandedValue: ['src'] },
+      initial: {
+        order: [
+          'root',
+          'label',
+          'control',
+          'trigger',
+          'value-text',
+          'indicator',
+          'clear-trigger',
+          'positioner',
+          'content',
+          'tree',
+          'branch',
+          'branch-control',
+          'branch-trigger',
+          'branch-text',
+          'item-indicator[0]',
+          'branch-content',
+          'item[0]',
+          'item-indicator[1]',
+          'item-text[0]',
+          'item[1]',
+          'item-indicator[2]',
+          'item-text[1]',
+          'item[2]',
+          'item-indicator[3]',
+          'item-text[2]',
+          // 整树的空态与在途占位：没写时由组件或元素补齐，收着
+          'empty',
+          'loading',
+        ],
+        parts: {
+          'trigger': { 'type': 'button', 'aria-labelledby': '@part(label) @part(value-text)' },
+          'branch': { 'aria-expanded': 'true' },
+          'item[0]': { 'aria-selected': 'true' },
+          'item[1]': { 'aria-disabled': 'true' },
+        },
+      },
+      steps: [
+        { kind: 'raw', why: '显示文字不进属性快照，只能直接读 DOM', run: ({ doc }) => assertValueText(doc, 'Index') },
+        { kind: 'click', part: 'trigger', expect: { parts: { trigger: { 'aria-expanded': 'true' } } } },
+        {
+          kind: 'click',
+          part: 'item[2]',
+          expect: {
+            parts: { 'item[2]': { 'aria-selected': 'true' }, 'item[0]': { 'aria-selected': 'false' } },
+            events: [
+              { type: 'value-change', detail: { value: ['license'] } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
+            ],
+          },
+        },
+        { kind: 'raw', why: '显示文字不进属性快照，只能直接读 DOM', run: ({ doc }) => assertValueText(doc, 'License') },
+        {
+          kind: 'setProps',
+          props: { collection: [STRUCTURE_COLLECTION[1], { value: 'notes', label: 'Notes' }] },
+          expect: {
+            counts: { 'branch': 0, 'item': 2, 'item-text': 2 },
+            parts: { 'item[0]': { 'aria-selected': 'true' }, 'item[1]': { 'aria-selected': 'false' } },
+          },
+        },
+      ],
+    },
+    {
+      name: '多选不写结构：触发器里铺标签行，已选项是 tag 的 root，点选再加一枚',
+      spec: { apg: `${APG_COMBOBOX}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { collection: STRUCTURE_COLLECTION, multiple: true, defaultValue: ['index'], defaultExpandedValue: ['src'] },
+      initial: {
+        counts: { 'tag-list': 1, 'label': 0, 'clear-trigger': 0, 'item': 3 },
+        parts: { 'tag-list': { hidden: null } },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '标签戴 tag 的 scope，快照采不到',
+          run: ({ doc }) => assertTagAttrs(doc, VALUE_TAG, 'value tag', [{ 'data-value': 'index' }]),
+        },
+        { kind: 'click', part: 'trigger' },
+        {
+          kind: 'click',
+          part: 'item[2]',
+          expect: { events: [{ type: 'value-change', detail: { value: ['index', 'license'] } }] },
+        },
+        {
+          kind: 'raw',
+          why: '标签戴 tag 的 scope，快照采不到',
+          run: ({ doc }) => assertTagAttrs(doc, VALUE_TAG, 'value tag', [{ 'data-value': 'index' }, { 'data-value': 'license' }]),
         },
       ],
     },

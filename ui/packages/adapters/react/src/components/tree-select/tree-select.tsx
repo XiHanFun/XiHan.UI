@@ -6,9 +6,10 @@
 // 提供 tree select 相关实现。
 
 import type { ControlVariant, Direction, Placement, Service, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, TreeSelectApi, TreeSelectNode, TreeSelectSchema, TreeSelectTagMeta } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, TreeSelectApi, TreeSelectNode, TreeSelectSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { treeSelectStructure } from '@xihan-ui/headless'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
@@ -16,6 +17,7 @@ import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotIsPlainText } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -264,9 +266,7 @@ export function XhTreeSelectRoot({
         clear: api.clear,
         deselect: api.deselect,
       })
-    : collection
-      ? <DefaultTree collection={api.collection} tags={multiple ? api.tags : null} searchable={!!searchable} label={label} clearable={clearable} />
-      : null
+    : renderDefaultStructure(api, label, !!clearable, !!searchable)
 
   return (
     <TreeSelectProvider value={ctx}>
@@ -742,66 +742,41 @@ export function XhTreeSelectHiddenInput({ ...rest }: XhTreeSelectHiddenInputProp
 
 function noop(): void {}
 
-/** 按 collection 递归铺设节点：带 children 的渲染为 branch，其余渲染为 item。 */
-function renderNodes(nodes: readonly TreeSelectNode[]): ReactNode[] {
-  return nodes.map(node => (node.children || node.hasChildren)
-    ? (
-        <XhTreeSelectBranch key={node.value} value={node.value}>
-          <XhTreeSelectBranchControl>
-            <XhTreeSelectBranchTrigger />
-            <XhTreeSelectBranchText>{node.label ?? node.value}</XhTreeSelectBranchText>
-            <XhTreeSelectItemIndicator />
-          </XhTreeSelectBranchControl>
-          <XhTreeSelectBranchContent>{renderNodes(node.children ?? [])}</XhTreeSelectBranchContent>
-        </XhTreeSelectBranch>
-      )
-    : (
-        <XhTreeSelectItem key={node.value} value={node.value}>
-          <XhTreeSelectItemIndicator />
-          <XhTreeSelectItemText>{node.label ?? node.value}</XhTreeSelectItemText>
-        </XhTreeSelectItem>
-      ))
+/** 标准结构里各部件对应的组件。 */
+const TREE_SELECT_PARTS = {
+  'label': XhTreeSelectLabel,
+  'control': XhTreeSelectControl,
+  'trigger': XhTreeSelectTrigger,
+  'value-text': XhTreeSelectValueText,
+  'tag-list': XhTreeSelectTagList,
+  'tag/tag': XhTreeSelectTag,
+  'tag/overflow-tag': XhTreeSelectOverflowTag,
+  'indicator': XhTreeSelectIndicator,
+  'clear-trigger': XhTreeSelectClearTrigger,
+  'positioner': XhTreeSelectPositioner,
+  'content': XhTreeSelectContent,
+  'input': XhTreeSelectInput,
+  'tree': XhTreeSelectTree,
+  'item': XhTreeSelectItem,
+  'item-text': XhTreeSelectItemText,
+  'item-indicator': XhTreeSelectItemIndicator,
+  'branch': XhTreeSelectBranch,
+  'branch-control': XhTreeSelectBranchControl,
+  'branch-trigger': XhTreeSelectBranchTrigger,
+  'branch-text': XhTreeSelectBranchText,
+  'branch-content': XhTreeSelectBranchContent,
 }
 
 /**
- * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
+ * 未写 children 时照 treeSelectStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 标题是文字时照结构铺，是别的节点时由它接管。
  */
-function DefaultTree(props: {
-  collection: readonly TreeSelectNode[]
-  tags: readonly TreeSelectTagMeta[] | null
-  searchable: boolean
-  label?: ReactNode
-  clearable?: boolean
-}): ReactNode {
-  return (
-    <>
-      {props.label != null ? <XhTreeSelectLabel>{props.label}</XhTreeSelectLabel> : null}
-      {/* 盒里放触发器；清空钮是触发器的兄弟（按钮不能套按钮） */}
-      <XhTreeSelectControl>
-        {/* 多选的已选项在触发器里排成标签：占位文字与标签行同时写着，有选中时标签露面、占位让位；
-            触发器里的标签只作展示（按钮不能套按钮），摆不下的折进 +N */}
-        <XhTreeSelectTrigger>
-          <XhTreeSelectValueText />
-          {props.tags
-            ? (
-                <XhTreeSelectTagList>
-                  {props.tags.map(tag => <XhTreeSelectTag key={tag.value} value={tag.value}>{tag.label}</XhTreeSelectTag>)}
-                  <XhTreeSelectOverflowTag />
-                </XhTreeSelectTagList>
-              )
-            : null}
-          <XhTreeSelectIndicator />
-        </XhTreeSelectTrigger>
-        {props.clearable ? <XhTreeSelectClearTrigger /> : null}
-      </XhTreeSelectControl>
-      <XhTreeSelectPositioner>
-        <XhTreeSelectContent>
-          {/* 开了搜索时搜索框排在树之前；collection 此刻已是裁剪后的树 */}
-          {props.searchable ? <XhTreeSelectInput /> : null}
-          <XhTreeSelectTree>{renderNodes(props.collection)}</XhTreeSelectTree>
-        </XhTreeSelectContent>
-      </XhTreeSelectPositioner>
-    </>
-  )
+function renderDefaultStructure(api: TreeSelectApi, label: ReactNode, clearable: boolean, searchable: boolean): ReactNode[] {
+  const nodes = treeSelectStructure(api, {
+    label: typeof label === 'string' ? label : undefined,
+    clearable,
+    searchable,
+    slotted: name => name === 'label' && label != null && typeof label !== 'string',
+  })
+  return renderStructure(nodes, TREE_SELECT_PARTS, node => node.slot?.name === 'label' ? label : undefined)
 }

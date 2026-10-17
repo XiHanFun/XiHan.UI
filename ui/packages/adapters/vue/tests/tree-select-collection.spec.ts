@@ -256,9 +256,11 @@ describe('tree-select 的 collection', () => {
     w.unmount()
   })
 
-  it('没给 collection 也没写插槽时根里为空', () => {
+  it('没给 collection 也没写插槽时照标准结构铺出盒与一棵空树', () => {
     const w = mount(XhTreeSelectRoot, { attachTo: document.body })
-    expect(w.element.querySelectorAll('[data-part]').length).toBe(0)
+    expect(w.element.querySelector('[data-scope="tree-select"][data-part="trigger"]')).not.toBeNull()
+    expect(document.querySelector('[data-scope="tree-select"][data-part="tree"]')).not.toBeNull()
+    expect(document.querySelectorAll('[data-scope="tree-select"][data-part="item"], [data-scope="tree-select"][data-part="branch"]')).toHaveLength(0)
     w.unmount()
   })
 
