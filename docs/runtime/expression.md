@@ -354,6 +354,7 @@ const functions = createFunctionTable({
   - 范围：负数前加「负」，金额绝对值须小于一亿亿。
 - **数字字形**：只接受整数，小数报值不合法。罗马数字取 1 至 3999；中文数字的零写法同人民币大写，小写以「一十」开头时省去「一」（`10` 得 `十`、`100000` 得 `十万`），大写保留（`壹拾`），`0` 得 `零`，负数前加「负」，绝对值须小于一亿亿。
 - **保存时校验**：`checkFormatSpec(spec, { kinds? })` 不抛异常，返回全部问题 `{ code, path }[]`，`path` 是出问题的那一项的键路径。问题码：不是普通对象 `XH_EXPR_FORMAT_INVALID_SPEC`；种类缺失、不认识或不在 `kinds` 里 `XH_EXPR_FORMAT_INVALID_KIND`；取值不合法或必填项缺失 `XH_EXPR_FORMAT_INVALID_OPTION`；`decimals` 与 `minDecimals` / `maxDecimals` 同给、或 `minDecimals` 大于 `maxDecimals` `XH_EXPR_FORMAT_CONFLICT`；该种类没有的键 `XH_EXPR_FORMAT_UNKNOWN_KEY`（`formatValue` 本身不理会多余的键）。图表数值这类只收数字的位置传 `kinds: ["number", "percent"]`。属性面板列选项用 `FORMAT_KINDS`、`FORMAT_ROUNDINGS`、`NUMERAL_STYLES`，小数位上限是 `FORMAT_DECIMALS_LIMIT`（34）。
+- **注入类型**：设计器把格式化作为注入项时用 `ValueFormatter` 声明，签名与 `formatValue` 相同（`(value, spec, options) => string`），宿主直接传 `formatValue`。
 - **出错**：格式说明不合法时抛 `TypeError("XH_EXPR_FORMAT_INVALID_SPEC")`，值不合法时抛 `TypeError("XH_EXPR_FORMAT_INVALID_VALUE")`，大写金额、中文数字或罗马数字超出范围时抛 `TypeError("XH_EXPR_FORMAT_OUT_OF_RANGE")`。
 
 ## 上限

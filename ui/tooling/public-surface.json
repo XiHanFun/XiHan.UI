@@ -6007,6 +6007,7 @@
       "RmbUpperFormatSpec",
       "UnaryNode",
       "UnaryOperator",
+      "ValueFormatter",
       "check",
       "checkExpressions",
       "checkFormatSpec",
