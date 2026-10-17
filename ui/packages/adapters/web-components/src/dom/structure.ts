@@ -226,8 +226,9 @@ function placeInstance(doc: Document, node: StructureInstanceNode, reuse: Elemen
 /**
  * 宿主名下作者写的部件节点（含 SVG 图元），按部件名归组：跳过生成的节点（连同其中搬进去的作者内容）、
  * 宿主直接子节点里待搬的 slot 节点，以及嵌套库内元素的内部（嵌套元素本身当部件时照算）。
+ * external 是跟着浮层搬出宿主的根：作者写的根连同里面的部件照算，生成的根不算。
  */
-export function authoredParts(host: Element): Map<string, Element[]> {
+export function authoredParts(host: Element, external: readonly Element[] = []): Map<string, Element[]> {
   const out = new Map<string, Element[]>()
   const walk = (parent: Element, top: boolean): void => {
     for (const child of Array.from(parent.children)) {
@@ -246,6 +247,14 @@ export function authoredParts(host: Element): Map<string, Element[]> {
     }
   }
   walk(host, true)
+  for (const root of external) {
+    if (root.hasAttribute(GEN_ATTR))
+      continue
+    const part = root.getAttribute('data-xh-part')
+    if (part)
+      out.set(part, [...(out.get(part) ?? []), root])
+    walk(root, false)
+  }
   return out
 }
 
@@ -345,16 +354,18 @@ export function hasSlotContent(host: Element, state: StructureState, slot: strin
  * 3. 作者写了别的部件，或没写 root 就写了可接管部件，就由作者全写，撤掉生成过的节点；
  * 4. 宿主直接子节点里写了 slot 的作者节点搬进结构里对应的部件，对着出口的那个节点本身挪到出口处；部件没了时搬回宿主。
  * build 返回 undefined（状态还算不出）时这一轮不动。挪动节点前后焦点所在的节点不变。
+ * external 是跟着浮层搬出宿主的根：作者写的部件搬进 portal 落点后照样算作者写的，不因宿主里空了就生成一套。
  */
 export function syncStructure(
   host: HTMLElement,
   spec: StructureSpec,
   build: (taken: ReadonlySet<string>) => readonly StructureChild[] | undefined,
   state: StructureState,
+  external: readonly Element[] = [],
 ): void {
   const doc = host.ownerDocument
   const active = doc.activeElement
-  const authored = authoredParts(host)
+  const authored = authoredParts(host, external)
   const root = authored.get('root')?.[0]
   const takeover = new Map(Object.entries(spec.takeover ?? {}))
   const taken = new Set<string>()

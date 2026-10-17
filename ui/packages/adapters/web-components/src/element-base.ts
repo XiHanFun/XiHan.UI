@@ -514,7 +514,7 @@ export abstract class XhElement extends XhReactiveElement {
       // 排在部件发现之前：生成的节点这一轮就能被发现、接线，必备部件的校验也认得出它们
       const structure = ctor.structure
       if (structure)
-        syncStructure(this as unknown as HTMLElement, structure, taken => structure.build(this as never, taken), this.structureState)
+        syncStructure(this as unknown as HTMLElement, structure, taken => structure.build(this as never, taken), this.structureState, this.externalPartRoots())
       this.refreshParts()
       if (contract)
         validatePartContract(contract, this.partMap, this as unknown as HTMLElement, this.instanceId)

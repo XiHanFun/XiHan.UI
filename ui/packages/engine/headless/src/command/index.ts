@@ -11,4 +11,6 @@ export { COMMAND_UNGROUPED, flattenCommandGroups, matchesCommandTerms, navigateC
 export { commandKeyboard } from './command.keyboard'
 export { commandMachine } from './command.machine'
 export { commandMeta } from './command.meta'
+export { commandStructure } from './command.structure'
+export type { CommandStructureOptions } from './command.structure'
 export type { CommandApi, CommandGroup, CommandGroupMeta, CommandGroupProps, CommandInputValueChangeDetails, CommandItemProps, CommandNode, CommandNodeMeta, CommandOpenChangeDetails, CommandRefs, CommandSchema, CommandSelectDetails, CommandTranslations } from './command.types'

@@ -6,15 +6,16 @@
 // 提供 command 相关实现。
 
 import type { Direction, OverlayBackdropVariant, Size } from '@xihan-ui/core'
-import type { CommandApi, CommandGroup, CommandGroupMeta, CommandGroupProps, CommandItemProps, CommandNode, CommandNodeMeta, CommandSchema } from '@xihan-ui/headless'
+import type { CommandApi, CommandGroup, CommandGroupMeta, CommandGroupProps, CommandItemProps, CommandNode, CommandNodeMeta, CommandSchema, StructureNode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { COMMAND_UNGROUPED, resolveCommandGroups } from '@xihan-ui/headless'
+import { commandStructure, resolveCommandGroups } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import {
   provideCommand,
@@ -126,15 +127,14 @@ export const XhCommandRoot = defineComponent({
           select: api.select,
         })
       }
-      return renderDefaultTree(
-        fullTree.value,
-        slots.trigger,
-        slots.item,
-        slots.empty?.() ?? (props.empty != null ? [props.empty] : null),
-        slots.footer?.(),
-        slots['item-prefix'],
-        slots['item-suffix'],
-      )
+      return renderDefaultStructure(fullTree.value, props.empty, {
+        'trigger': slots.trigger,
+        'empty': slots.empty,
+        'footer': slots.footer,
+        'item': slots.item,
+        'item-prefix': slots['item-prefix'],
+        'item-suffix': slots['item-suffix'],
+      })
     }
   },
 })
@@ -334,45 +334,70 @@ export const XhCommandFooter = defineComponent({
   },
 })
 
-/**
- * 未写默认插槽时按清单铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
- */
-function renderDefaultTree(
-  tree: readonly CommandGroupMeta[],
-  triggerSlot: (() => VNode[]) | undefined,
-  itemSlot: ((node: CommandNodeMeta) => VNode[]) | undefined,
-  empty: (VNode | string)[] | null,
-  footer: VNode[] | undefined,
-  prefixSlot?: (node: CommandNodeMeta) => VNode[],
-  suffixSlot?: (node: CommandNodeMeta) => VNode[],
-): VNode[] {
-  const renderItem = (node: CommandNodeMeta): VNode =>
-    h(XhCommandItem, { key: node.value, value: node.value }, () => [
-      ...(prefixSlot ? [h(XhCommandItemPrefix, null, () => prefixSlot(node))] : []),
-      h(XhCommandItemText, null, () => itemSlot?.(node) ?? node.label),
-      ...(node.description != null ? [h(XhCommandItemDescription, null, () => node.description)] : []),
-      ...(node.shortcut != null ? [h(XhCommandItemShortcut, null, () => node.shortcut)] : []),
-      ...(suffixSlot ? [h(XhCommandItemSuffix, null, () => suffixSlot(node))] : []),
-    ])
+/** 遮罩：XhCommandContent 连同定位层一起把它铺在浮层落点里，结构里这个节点不另渲。 */
+const CommandStructureBackdrop = /* @__PURE__ */ defineComponent({
+  name: 'CommandStructureBackdrop',
+  setup() {
+    return () => null
+  },
+})
 
-  return [
-    ...(triggerSlot ? [h(XhCommandTrigger, null, triggerSlot)] : []),
-    h(XhCommandContent, null, () => [
-      h(XhCommandInput),
-      h(XhCommandList, null, () => tree.map(group =>
-        // 没归组的那批直接铺条目，不套分组外壳——空标题的分组只会在列表里留一道白
-        group.value === COMMAND_UNGROUPED
-          ? group.items.map(renderItem)
-          : h(XhCommandGroup, { key: group.value, value: group.value }, () => [
-              h(XhCommandGroupLabel, null, () => group.label),
-              ...group.items.map(renderItem),
-            ]),
-      )),
-      // 空态与在途占位都是 list 的兄弟，不进 role=listbox
-      h(XhCommandEmpty, null, () => empty ?? []),
-      h(XhCommandLoading),
-      ...(footer ? [h(XhCommandFooter, null, () => footer)] : []),
-    ]),
-  ]
+/** 定位层：由 XhCommandContent 铺在浮层落点里，结构里这一层只把面板交下去。 */
+const CommandStructurePositioner = /* @__PURE__ */ defineComponent({
+  name: 'CommandStructurePositioner',
+  setup(_, { slots }) {
+    return () => slots.default?.()
+  },
+})
+
+/** 标准结构里各部件对应的组件。 */
+const COMMAND_PARTS = {
+  'trigger': XhCommandTrigger,
+  'backdrop': CommandStructureBackdrop,
+  'positioner': CommandStructurePositioner,
+  'content': XhCommandContent,
+  'input': XhCommandInput,
+  'list': XhCommandList,
+  'group': XhCommandGroup,
+  'group-label': XhCommandGroupLabel,
+  'item': XhCommandItem,
+  'item-prefix': XhCommandItemPrefix,
+  'item-text': XhCommandItemText,
+  'item-description': XhCommandItemDescription,
+  'item-shortcut': XhCommandItemShortcut,
+  'item-suffix': XhCommandItemSuffix,
+  'empty': XhCommandEmpty,
+  'loading': XhCommandLoading,
+  'footer': XhCommandFooter,
+}
+
+/** 不写默认插槽时可给内容的插槽。 */
+interface CommandStructureSlots {
+  trigger?: () => VNode[]
+  empty?: () => VNode[]
+  footer?: () => VNode[]
+  item?: (node: CommandNodeMeta) => VNode[]
+  ['item-prefix']?: (node: CommandNodeMeta) => VNode[]
+  ['item-suffix']?: (node: CommandNodeMeta) => VNode[]
+}
+
+/**
+ * 未写默认插槽时照 commandStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 铺的是整份清单分好的组，不是过滤后那几条：此刻该不该露面由 connect 打在条目上的 hidden 说了算。
+ * 触发按钮、空态与页脚的内容归作者（同名插槽），空态没给插槽时取 empty 文字；条目文字、行首、行尾可由 item 系插槽逐槽接管。
+ */
+function renderDefaultStructure(tree: readonly CommandGroupMeta[], empty: string | undefined, content: CommandStructureSlots): VNode[] {
+  const nodes = commandStructure(tree, {
+    ...(empty === undefined ? {} : { empty }),
+    slotted: name => content[name as keyof CommandStructureSlots] != null,
+  })
+  return renderStructure(nodes, COMMAND_PARTS, (node: StructureNode) => {
+    const name = node.slot?.name
+    if (name === 'trigger' || name === 'empty' || name === 'footer')
+      return content[name]?.()
+    if (name !== 'item' && name !== 'item-prefix' && name !== 'item-suffix')
+      return undefined
+    const meta = node.data as CommandNodeMeta | undefined
+    return meta ? content[name]?.(meta) : undefined
+  })
 }

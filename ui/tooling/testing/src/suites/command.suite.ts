@@ -516,5 +516,57 @@ export const commandSuite: ConformanceSuite = {
         heldPressIgnored('command', 'item', '加载中命令不接受按压', { value: 'page-users', keyboardHost: INPUT }),
       ],
     },
+    {
+      // 收起态下 Vue / React 卸载面板子树，结构只在展开时对拍
+      name: '作者不写结构：三端都照 commandStructure 铺出遮罩、定位层、面板与按整份清单分好组的命令；检索只写 hidden 不增删，换数据按值复用',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ defaultStructure: true }),
+      props: { ...OPEN, collection: [...COLLECTION.slice(0, 2), { ...COLLECTION[2]!, description: '导出为表格', shortcut: 'Ctrl+E' }] },
+      initial: {
+        order: [
+          'backdrop',
+          'positioner',
+          'content',
+          'input',
+          'list',
+          'group',
+          'group-label',
+          'item[0]',
+          'item-text[0]',
+          'item[1]',
+          'item-text[1]',
+          'item[2]',
+          'item-text[2]',
+          'item-description',
+          'item-shortcut',
+          'empty',
+          'loading',
+        ],
+        parts: {
+          'content': { role: 'dialog' },
+          'input': { 'role': 'combobox', 'aria-controls': '@part(list)' },
+          'list': { role: 'listbox' },
+          'group': { 'role': 'group', 'aria-labelledby': '@part(group-label)' },
+          'item[0]': { 'role': 'option', 'data-value': 'page-users' },
+          'item[2]': { 'data-value': 'action-export' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '检索的入口是原生 input 事件，type 步骤改不动输入框的值',
+          run: async ({ doc, flush }) => typeInto(doc, 'export', flush),
+          expect: { parts: { 'group': { hidden: '' }, 'item[0]': { hidden: '' }, 'item[2]': { hidden: null } } },
+        },
+        {
+          kind: 'setProps',
+          props: { collection: [COLLECTION[2], { value: 'action-print', label: '打印' }] },
+          expect: {
+            order: ['backdrop', 'positioner', 'content', 'input', 'list', 'item[0]', 'item-text[0]', 'item[1]', 'item-text[1]', 'empty', 'loading'],
+            parts: { 'item[0]': { 'data-value': 'action-export' }, 'item[1]': { 'data-value': 'action-print' } },
+          },
+        },
+      ],
+    },
   ],
 }

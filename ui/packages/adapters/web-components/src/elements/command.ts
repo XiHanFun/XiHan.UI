@@ -18,9 +18,10 @@ import type {
   CommandSchema,
   CommandSelectDetails,
 } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { commandAnatomy, commandMachine, commandMeta, connectCommand } from '@xihan-ui/headless'
+import { commandAnatomy, commandMachine, commandMeta, commandStructure, connectCommand, resolveCommandGroups } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -42,6 +43,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 由 connect 写上 hidden。作者只需把整份清单铺设为节点，不必自行增删。
  *
  * 焦点自始至终在 input 上：条目不可聚焦、也不进入 Tab 序列，锚点经 aria-activedescendant 报告给读屏。
+ *
+ * 不写部件时元素按标准结构直接在自己里面生成：触发按钮（宿主直接子节点 `slot="trigger"` 给了内容才生成）、遮罩，
+ * 定位层里的面板依次是检索框、按整份 collection 铺的结果列表、空态与在途占位、页脚（`slot="footer"` 给了内容才生成）；
+ * 空态内容用 `slot="empty"` 给出，条目文字、行首、行尾可用 `slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 给出。
  *
  * @customElement xh-command
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
@@ -87,6 +92,14 @@ export class XhCommandElement extends XhPortalHostElement {
   declare portalContainer?: () => Element | null
 
   static override partContract = { anatomy: commandAnatomy, meta: commandMeta }
+
+  static override structure: ElementStructure<XhCommandElement> = {
+    rootless: true,
+    build: host => commandStructure(
+      resolveCommandGroups(host.collection ?? [], host.groups ?? [], '', { filter: false, caseSensitive: false }),
+      { slotted: (name, key) => host.slotted(name, key) },
+    ),
+  }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
