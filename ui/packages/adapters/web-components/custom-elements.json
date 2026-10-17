@@ -46033,7 +46033,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-menubar>`：Light-DOM 行为宿主：作者写\nroot / trigger / positioner / content / item / item-text / item-indicator / separator / group / group-label 角色节点，\n元素运行 menubar 状态机并把 connect 产出接上。\n\n一排菜单同时只展开一张：已展开时指针掠过其他 trigger 直接切换，未展开时掠过不响应。\n整条菜单栏只有一个 Tab 位（roving tabindex），进入之后依靠方向键在 trigger 之间移动。\n\n标签由作者编写：trigger 必须是 `<button>`。\ntrigger / positioner / content 三者依靠各自的 value 属性配对，同一项写同一个值。",
+          "description": "`<xh-menubar>`：Light-DOM 行为宿主：作者写\nroot / trigger / positioner / content / item / item-text / item-indicator / separator / group / group-label 角色节点，\n元素运行 menubar 状态机并把 connect 产出接上。\n\n一排菜单同时只展开一张：已展开时指针掠过其他 trigger 直接切换，未展开时掠过不响应。\n整条菜单栏只有一个 Tab 位（roving tabindex），进入之后依靠方向键在 trigger 之间移动。\n\n标签由作者编写：trigger 必须是 `<button>`。\ntrigger / positioner / content 三者依靠各自的 value 属性配对，同一项写同一个值。\n\n不写部件（或只写 root）时元素按标准结构生成：一排入口按钮（文字取入口的 label），其后是各自菜单的定位层，\n里面的 content 按这张菜单的 items 铺条目、分组与分隔线；条目文字、行首、行尾可用 `slot=\"item:<值>\"`、\n`slot=\"item-prefix:<值>\"`、`slot=\"item-suffix:<值>\"` 给出。带 children 的条目生成一个嵌套的 `<xh-menu submenu>`，\n它的触发条目写着 value、文字取 label，子菜单那一层按数据铺。",
           "name": "XhMenubarElement",
           "cssParts": [
             {
@@ -46143,6 +46143,25 @@
               },
               "static": true,
               "default": "{ anatomy: menubarAnatomy, meta: menubarMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "dependencies",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ 'xh-menu': XhMenuElement }",
+              "description": "结构里带 children 的条目生成嵌套的子菜单。"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhMenubarElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? menubarStructure(connectMenubar(host.ctrl.service, wcNormalize), { slotted: (name, key) => host.slotted(name, key) }) : undefined, }"
             },
             {
               "kind": "field",

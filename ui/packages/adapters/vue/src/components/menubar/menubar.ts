@@ -7,16 +7,18 @@
 
 import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { MenubarAnyItemProps, MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarNode, MenubarNodeMeta, MenubarRadioValue, MenubarSchema, MenuNode } from '@xihan-ui/headless'
+import type { MenubarAnyItemProps, MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarNode, MenubarNodeMeta, MenubarRadioValue, MenubarSchema, MenuNode, StructureNode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { MenubarPartRegistry } from './use-menubar'
-import { createRuntimeConfig, groupAdjacentRuns } from '@xihan-ui/core'
+import { createRuntimeConfig } from '@xihan-ui/core'
+import { menubarStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
+import { renderStructure } from '../../runtime/structure'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { provideMenu, useMenuContext } from '../menu/context'
@@ -134,9 +136,7 @@ export const XhMenubarRoot = defineComponent({
           setCheckboxValue: ctx.api.value.setCheckboxValue,
           setRadioValue: ctx.api.value.setRadioValue,
         })
-      : props.collection
-        ? renderDefaultTree(ctx.api.value.collection, { 'item': slots.item, 'item-prefix': slots['item-prefix'], 'item-suffix': slots['item-suffix'] })
-        : [])
+      : renderDefaultStructure(ctx.api.value, { 'item': slots.item, 'item-prefix': slots['item-prefix'], 'item-suffix': slots['item-suffix'] }))
   },
 })
 
@@ -451,78 +451,6 @@ export const XhMenubarSeparator = defineComponent({
   },
 })
 
-/**
- * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
- * 一排入口排在前、各自菜单的浮层排在后，与手写部件产出的 DOM 完全一致；
- * 需要修改结构时写默认插槽，行为不变。
- */
-function renderDefaultTree(
-  collection: readonly MenubarNodeMeta[],
-  itemSlots: MenubarItemSlots,
-): VNode[] {
-  return [
-    ...collection.map(menu =>
-      h(XhMenubarTrigger, { key: `trigger:${menu.value}`, value: menu.value }, () => menu.label),
-    ),
-    ...collection.map(menu =>
-      h(XhMenubarPositioner, { key: `positioner:${menu.value}`, value: menu.value }, () => [
-        h(XhMenubarContent, null, () => renderNodes(menu.items, itemSlots)),
-      ]),
-    ),
-  ]
-}
-
-/**
- * 单个条目：文字在上，副文本在下，未提供副文本时不铺设该部件。
- * `item-prefix` / `item-suffix` 插槽各接管首尾一格，其余槽照旧由数据铺。
- */
-function renderNode(
-  meta: MenubarNodeMeta,
-  itemSlots: MenubarItemSlots,
-): VNode {
-  if (meta.children)
-    return renderSubmenu(meta)
-  const prefix = itemSlots['item-prefix']
-  const suffix = itemSlots['item-suffix']
-  const Item = meta.kind === 'checkbox' ? XhMenubarCheckboxItem : meta.kind === 'radio' ? XhMenubarRadioItem : XhMenubarItem
-  return h(Item, { key: meta.value, value: meta.value, closeOnSelect: meta.closeOnSelect }, () => [
-    ...(prefix
-      ? [h(XhMenubarItemIndicator, null, () => prefix(meta))]
-      : meta.kind !== 'item' ? [h(XhMenubarItemIndicator)] : []),
-    h(XhMenubarItemText, null, () => itemSlots.item?.(meta) ?? meta.label),
-    ...(meta.description != null ? [h(XhMenubarItemDescription, null, () => meta.description)] : []),
-    ...(meta.shortcut != null ? [h(XhMenubarItemShortcut, null, () => meta.shortcut)] : []),
-    ...(suffix ? [h(XhMenubarItemSuffix, null, () => suffix(meta))] : []),
-  ])
-}
-
-/** content 的内容：分组段铺为 group，段首的分隔线落在 group 外面。 */
-function renderNodes(
-  collection: readonly MenubarNodeMeta[],
-  itemSlots: MenubarItemSlots,
-): VNode[] {
-  return groupAdjacentRuns(collection, node => node.group).flatMap((run, runIndex) => {
-    const head = run[0]!
-    // 首条上的标记不产出分隔线：菜单开头不留一道空隔
-    const lead = runIndex > 0 && head.separatorBefore
-      ? [h(XhMenubarSeparator, { key: `separator:${head.value}` })]
-      : []
-    if (head.group == null)
-      return [...lead, renderNode(head, itemSlots)]
-    const groupLabel = run.find(node => node.groupLabel != null)?.groupLabel ?? null
-    return [
-      ...lead,
-      h(head.kind === 'radio' ? XhMenubarRadioGroup : XhMenubarGroup, { key: `group:${head.group}`, value: head.group }, () => [
-        ...(groupLabel != null ? [h(XhMenubarGroupLabel, null, () => groupLabel)] : []),
-        ...run.flatMap((node, index) => [
-          ...(index > 0 && node.separatorBefore ? [h(XhMenubarSeparator, { key: `separator:${node.value}` })] : []),
-          renderNode(node, itemSlots),
-        ]),
-      ]),
-    ]
-  })
-}
-
 /** XhMenubarSub 默认插槽得到的载荷。 */
 export interface MenubarSubSlotProps {
   open: boolean
@@ -531,9 +459,13 @@ export interface MenubarSubSlotProps {
 
 export const XhMenubarSub = defineComponent({
   name: 'XhMenubarSub',
+  // 本身不渲染节点，作为组合节点收到的 submenu 等标记无处可落
+  inheritAttrs: false,
   props: {
     /** 它在所属菜单中的条目身份。 */
     value: { type: String, required: true },
+    /** 按数据铺设时触发条目的文字；缺省取所属菜单 items 里这一条的 label。 */
+    label: { type: String },
     disabled: { type: Boolean, default: undefined },
     /** 子层的条目数据：显示文本与禁用的事实源，按数据铺子层时由默认树代填。 */
     collection: { type: Array as PropType<MenuNode[]> },
@@ -578,7 +510,9 @@ export const XhMenubarSub = defineComponent({
       if (!open)
         sub.api.value.setOpen(false)
     })
-    return () => slots.default?.({ open: sub.api.value.open, setOpen: sub.api.value.setOpen })
+    return () => slots.default
+      ? slots.default({ open: sub.api.value.open, setOpen: sub.api.value.setOpen })
+      : renderSubLayer(props.label ?? parent.api.value.collection.find(menu => menu.value === owner.menu.value.value)?.items.find(node => node.value === props.value)?.label ?? props.value)
   },
 })
 
@@ -602,10 +536,83 @@ export const XhMenubarSubTrigger = defineComponent({
   },
 })
 
-/** 带 children 的条目铺成子菜单：子层跑的是 menu 机器，条目按数据铺、不经本层的插槽。 */
-function renderSubmenu(meta: MenubarNodeMeta): VNode {
-  return h(XhMenubarSub, { key: meta.value, value: meta.value, disabled: meta.disabled || undefined, collection: meta.children as MenuNode[] }, () => [
-    h(XhMenubarSubTrigger, null, () => [meta.label]),
+/** 子菜单不写插槽时那一层：触发条目、定位层与按本层 collection 铺的条目；子层不经菜单栏上的条目插槽。 */
+function renderSubLayer(label: string): VNode[] {
+  return [
+    h(XhMenubarSubTrigger, null, () => [label]),
     h(XhMenuPositioner, null, () => [h(XhMenuContent, null, () => [h(MenuDefaultNodes)])]),
-  ])
+  ]
+}
+
+/** 所属那张菜单里按数据铺的条目元信息。 */
+function ownItems(ctx: ReturnType<typeof useMenubarContext>, owner: ReturnType<typeof useMenubarMenuContext>): readonly MenubarNodeMeta[] {
+  const menu = owner?.menu.value.value
+  return ctx.api.value.collection.find(node => node.value === menu)?.items ?? []
+}
+
+/** 按数据铺的条目：kind 取所属菜单 items 里这一条，勾选与单选条目各用自己的部件组件。 */
+const MenubarStructureItem = /* @__PURE__ */ defineComponent({
+  name: 'MenubarStructureItem',
+  props: {
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useMenubarContext()
+    const owner = useMenubarMenuContext()
+    return () => {
+      const meta = ownItems(ctx, owner).find(node => node.value === props.value)
+      const Item = meta?.kind === 'checkbox' ? XhMenubarCheckboxItem : meta?.kind === 'radio' ? XhMenubarRadioItem : XhMenubarItem
+      return h(Item, { value: props.value, closeOnSelect: meta?.closeOnSelect }, slots)
+    }
+  },
+})
+
+/** 按数据铺的分组：组里有单选条目时是单选组。 */
+const MenubarStructureGroup = /* @__PURE__ */ defineComponent({
+  name: 'MenubarStructureGroup',
+  props: {
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useMenubarContext()
+    const owner = useMenubarMenuContext()
+    return () => {
+      const radio = ownItems(ctx, owner).some(node => node.kind === 'radio' && node.group === props.value)
+      return h(radio ? XhMenubarRadioGroup : XhMenubarGroup, { value: props.value }, slots)
+    }
+  },
+})
+
+/** 标准结构里各部件对应的组件。 */
+const MENUBAR_PARTS = {
+  'trigger': XhMenubarTrigger,
+  'positioner': XhMenubarPositioner,
+  'content': XhMenubarContent,
+  'item': MenubarStructureItem,
+  'item-text': XhMenubarItemText,
+  'item-indicator': XhMenubarItemIndicator,
+  'item-description': XhMenubarItemDescription,
+  'item-shortcut': XhMenubarItemShortcut,
+  'item-suffix': XhMenubarItemSuffix,
+  'separator': XhMenubarSeparator,
+  'group': MenubarStructureGroup,
+  'group-label': XhMenubarGroupLabel,
+}
+
+/** 结构里组合进来的组件：带 children 的条目是嵌套的子菜单。 */
+const MENUBAR_INSTANCES = { menu: XhMenubarSub }
+
+/**
+ * 未写默认插槽时照 menubarStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 入口按钮的文字取入口的 label；条目文字、行首、行尾可由 item 系插槽逐槽接管，其余照数据铺。
+ */
+function renderDefaultStructure(api: MenubarApi, itemSlots: MenubarItemSlots): VNode[] {
+  const nodes = menubarStructure(api, { slotted: name => itemSlots[name as keyof MenubarItemSlots] != null })
+  return renderStructure(nodes, MENUBAR_PARTS, (node: StructureNode) => {
+    const name = node.slot?.name
+    if (name !== 'item' && name !== 'item-prefix' && name !== 'item-suffix')
+      return undefined
+    const meta = node.data as MenubarNodeMeta | undefined
+    return meta ? itemSlots[name]?.(meta) : undefined
+  }, MENUBAR_INSTANCES)
 }

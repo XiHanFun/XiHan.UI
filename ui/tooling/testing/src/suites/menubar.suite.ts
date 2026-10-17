@@ -23,6 +23,26 @@ const MENUS: readonly MenuDecl[] = [
   { value: 'view', text: '视图', items: [{ value: 'zoom', text: 'Zoom' }, { value: 'full', text: 'Fullscreen' }, { value: 'zen', text: 'Zen' }] },
 ]
 
+/** 不写结构时按数据铺的两张菜单：快捷键、说明，以及带标题的勾选分组。 */
+const STRUCTURE_COLLECTION = [
+  {
+    value: 'file',
+    label: '文件',
+    items: [
+      { value: 'open', label: '打开', shortcut: 'Ctrl+O' },
+      { value: 'rename', label: '重命名', description: '改文件名' },
+    ],
+  },
+  {
+    value: 'format',
+    label: '格式',
+    items: [
+      { value: 'bold', label: '粗体', kind: 'checkbox', group: 'style', groupLabel: '样式' },
+      { value: 'italic', label: '斜体', kind: 'checkbox', group: 'style' },
+    ],
+  },
+]
+
 interface TreeOptions {
   /** 被禁用的 trigger（对应 MENUS 里的 value）。 */
   disabledMenu?: string
@@ -924,6 +944,58 @@ export const menubarSuite: ConformanceSuite = {
       fixture: () => menubarTree({ disabledMenu: 'file', disabledItem: 'new' }),
       props: { value: 'file' },
       steps: [heldPressIgnored('menubar', 'trigger', '禁用入口不接受按压'), heldPressIgnored('menubar', 'item', '禁用条目不接受按压', { value: 'new' })],
+    },
+    {
+      name: '作者不写结构：三端都照 menubarStructure 铺出入口按钮与各自菜单的定位层、条目（快捷键、说明、带标题的勾选分组）；勾选可多选，换数据按值复用条目',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { collection: STRUCTURE_COLLECTION },
+      initial: {
+        order: [
+          'root',
+          'trigger[0]',
+          'trigger[1]',
+          'positioner[0]',
+          'content[0]',
+          'item[0]',
+          'item-text[0]',
+          'item-shortcut',
+          'item[1]',
+          'item-text[1]',
+          'item-description',
+          'positioner[1]',
+          'content[1]',
+          'group',
+          'group-label',
+          'item[2]',
+          'item-indicator[0]',
+          'item-text[2]',
+          'item[3]',
+          'item-indicator[1]',
+          'item-text[3]',
+        ],
+        parts: {
+          'trigger[0]': { 'aria-haspopup': 'menu', 'aria-controls': '@part(content[0])' },
+          'content[1]': { 'aria-labelledby': '@part(trigger[1])' },
+          'item[0]': { 'role': 'menuitem', 'data-value': 'open' },
+          'item[2]': { 'role': 'menuitemcheckbox', 'aria-checked': 'false' },
+          'group': { 'role': 'group', 'aria-labelledby': '@part(group-label)' },
+        },
+      },
+      steps: [
+        { kind: 'click', part: 'trigger[1]', expect: { parts: { 'trigger[1]': { 'aria-expanded': 'true' } } } },
+        { kind: 'click', part: 'item[2]', expect: { parts: { 'item[2]': { 'aria-checked': 'true' } } } },
+        { kind: 'click', part: 'item[3]', expect: { parts: { 'item[2]': { 'aria-checked': 'true' }, 'item[3]': { 'aria-checked': 'true' } } } },
+        { kind: 'key', key: 'Escape', expect: { parts: { 'trigger[1]': { 'aria-expanded': 'false' } } } },
+        {
+          kind: 'setProps',
+          props: { collection: [{ value: 'file', label: '文件', items: [STRUCTURE_COLLECTION[0]!.items[1], { value: 'delete', label: '删除' }] }] },
+          expect: {
+            order: ['root', 'trigger', 'positioner', 'content', 'item[0]', 'item-text[0]', 'item-description', 'item[1]', 'item-text[1]'],
+            parts: { 'item[0]': { 'data-value': 'rename' }, 'item[1]': { 'data-value': 'delete' } },
+          },
+        },
+      ],
     },
   ],
 }

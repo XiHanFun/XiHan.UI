@@ -7,13 +7,14 @@
 
 import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { MenuApi, MenubarAnyItemProps, MenubarApi, MenubarCheckboxItemProps, MenubarContentProps, MenubarGroupProps, MenubarNode, MenubarNodeMeta, MenubarRadioItemProps, MenubarRadioValue, MenubarSchema, MenubarTranslations, MenuNode, MenuSchema } from '@xihan-ui/headless'
+import type { MenuApi, MenubarAnyItemProps, MenubarApi, MenubarCheckboxItemProps, MenubarContentProps, MenubarGroupProps, MenubarNode, MenubarNodeMeta, MenubarRadioItemProps, MenubarRadioValue, MenubarSchema, MenubarTranslations, MenuNode, MenuSchema, StructureNode } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import type { MenubarPartRegistry } from './use-menubar'
-import { groupAdjacentRuns, mergeProps } from '@xihan-ui/core'
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { mergeProps } from '@xihan-ui/core'
+import { menubarStructure } from '@xihan-ui/headless'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
@@ -21,6 +22,7 @@ import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { MenuProvider, useMenuContext } from '../menu/context'
@@ -168,9 +170,7 @@ export function XhMenubarRoot({
         setCheckboxValue: ctx.api.setCheckboxValue,
         setRadioValue: ctx.api.setRadioValue,
       })
-    : collection
-      ? <DefaultTree collection={ctx.api.collection} renderers={{ item: renderItem, prefix: renderItemPrefix, suffix: renderItemSuffix }} />
-      : null
+    : renderDefaultStructure(ctx.api, { item: renderItem, prefix: renderItemPrefix, suffix: renderItemSuffix })
 
   return (
     <MenubarProvider value={ctx}>
@@ -508,6 +508,8 @@ export type MenubarSubSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 export interface XhMenubarSubProps {
   /** 它在所属菜单中的条目身份。 */
   value: string
+  /** 按数据铺设时触发条目的文字；缺省取所属菜单 items 里这一条的 label。 */
+  label?: string
   disabled?: boolean
   /** 子层的条目数据：显示文本与禁用的事实源，按数据铺子层时由默认树代填。 */
   collection?: MenuNode[]
@@ -529,8 +531,9 @@ export interface XhMenubarSubProps {
 /**
  * 子菜单：内部再运行一台 menu 状态机（submenu 模式），触发条目由 XhMenubarSubTrigger
  * 渲染为菜单栏条目与本子菜单触发器的双重身份。本身不渲染节点。
+ * 不给 children 时照标准结构铺自己那一层：触发条目、定位层与按 collection 铺的条目。
  */
-export function XhMenubarSub({ value, disabled, children, ...props }: XhMenubarSubProps): ReactNode {
+export function XhMenubarSub({ value, label, disabled, children, ...props }: XhMenubarSubProps): ReactNode {
   const parent = useMenubarContext()
   const owner = useMenubarMenuContext()
   if (!owner)
@@ -559,7 +562,18 @@ export function XhMenubarSub({ value, disabled, children, ...props }: XhMenubarS
   return (
     <MenuProvider value={sub}>
       <MenubarSubProvider value={handle}>
-        {renderSlot(children, { open: sub.api.open, setOpen: sub.api.setOpen })}
+        {children != null
+          ? renderSlot(children, { open: sub.api.open, setOpen: sub.api.setOpen })
+          : (
+              <>
+                <XhMenubarSubTrigger>{label ?? ownItems(parent.api, owner).find(node => node.value === value)?.label ?? value}</XhMenubarSubTrigger>
+                <XhMenuPositioner>
+                  <XhMenuContent>
+                    <MenuDefaultNodes />
+                  </XhMenuContent>
+                </XhMenuPositioner>
+              </>
+            )}
       </MenubarSubProvider>
     </MenuProvider>
   )
@@ -595,104 +609,59 @@ export function XhMenubarSubTrigger({ children, ...rest }: XhMenubarSubTriggerPr
   )
 }
 
-/** 单个条目：文字在上，副文本在下，未提供副文本时不铺设该部件。 */
-function renderNode(meta: MenubarNodeMeta, renderers: MenubarItemRenderers): ReactNode {
-  // 带 children 的条目铺成子菜单：子层跑的是 menu 机器，条目按数据铺、不经本层的渲染函数
-  if (meta.children) {
-    return (
-      <XhMenubarSub key={meta.value} value={meta.value} disabled={meta.disabled || undefined} collection={meta.children as MenuNode[]}>
-        <XhMenubarSubTrigger>{meta.label}</XhMenubarSubTrigger>
-        <XhMenuPositioner>
-          <XhMenuContent>
-            <MenuDefaultNodes />
-          </XhMenuContent>
-        </XhMenuPositioner>
-      </XhMenubarSub>
-    )
-  }
-  const content = (
-    <>
-      {renderers.prefix
-        ? <XhMenubarItemIndicator>{renderers.prefix(meta)}</XhMenubarItemIndicator>
-        : meta.kind !== 'item' ? <XhMenubarItemIndicator /> : null}
-      <XhMenubarItemText>{renderers.item?.(meta) ?? meta.label}</XhMenubarItemText>
-      {meta.description != null ? <XhMenubarItemDescription>{meta.description}</XhMenubarItemDescription> : null}
-      {meta.shortcut != null ? <XhMenubarItemShortcut>{meta.shortcut}</XhMenubarItemShortcut> : null}
-      {renderers.suffix ? <XhMenubarItemSuffix>{renderers.suffix(meta)}</XhMenubarItemSuffix> : null}
-    </>
-  )
-  if (meta.kind === 'checkbox')
-    return <XhMenubarCheckboxItem key={meta.value} value={meta.value} closeOnSelect={meta.closeOnSelect}>{content}</XhMenubarCheckboxItem>
-  if (meta.kind === 'radio')
-    return <XhMenubarRadioItem key={meta.value} value={meta.value} closeOnSelect={meta.closeOnSelect}>{content}</XhMenubarRadioItem>
-  return <XhMenubarItem key={meta.value} value={meta.value}>{content}</XhMenubarItem>
+/** 所属那张菜单里按数据铺的条目元信息。 */
+function ownItems(api: MenubarApi, owner: MenubarContentProps | null): readonly MenubarNodeMeta[] {
+  return api.collection.find(node => node.value === owner?.value)?.items ?? []
 }
 
-/** content 的内容：分组段铺为 group，段首的分隔线落在 group 外面。 */
-function renderNodes(collection: readonly MenubarNodeMeta[], renderers: MenubarItemRenderers): ReactNode {
-  return groupAdjacentRuns(collection, node => node.group).map((run, runIndex) => {
-    const head = run[0]!
-    // 首条上的标记不产出分隔线：菜单开头不留一道空隔
-    const lead = runIndex > 0 && head.separatorBefore ? <XhMenubarSeparator /> : null
-    if (head.group == null) {
-      return (
-        <Fragment key={head.value}>
-          {lead}
-          {renderNode(head, renderers)}
-        </Fragment>
-      )
-    }
-    const groupLabel = run.find(node => node.groupLabel != null)?.groupLabel ?? null
-    return (
-      <Fragment key={`group:${head.group}`}>
-        {lead}
-        {head.kind === 'radio'
-          ? (
-              <XhMenubarRadioGroup value={head.group}>
-                {groupLabel != null ? <XhMenubarGroupLabel>{groupLabel}</XhMenubarGroupLabel> : null}
-                {run.map((node, index) => (
-                  <Fragment key={node.value}>
-                    {index > 0 && node.separatorBefore ? <XhMenubarSeparator /> : null}
-                    {renderNode(node, renderers)}
-                  </Fragment>
-                ))}
-              </XhMenubarRadioGroup>
-            )
-          : (
-              <XhMenubarGroup value={head.group}>
-                {groupLabel != null ? <XhMenubarGroupLabel>{groupLabel}</XhMenubarGroupLabel> : null}
-                {run.map((node, index) => (
-                  <Fragment key={node.value}>
-                    {index > 0 && node.separatorBefore ? <XhMenubarSeparator /> : null}
-                    {renderNode(node, renderers)}
-                  </Fragment>
-                ))}
-              </XhMenubarGroup>
-            )}
-      </Fragment>
-    )
-  })
+/** 按数据铺的条目：kind 取所属菜单 items 里这一条，勾选与单选条目各用自己的部件组件。 */
+function MenubarStructureItem({ value, children }: { value: string, children?: ReactNode }): ReactNode {
+  const ctx = useMenubarContext()
+  const meta = ownItems(ctx.api, useMenubarMenuContext()).find(node => node.value === value)
+  if (meta?.kind === 'checkbox')
+    return <XhMenubarCheckboxItem value={value} closeOnSelect={meta.closeOnSelect}>{children}</XhMenubarCheckboxItem>
+  if (meta?.kind === 'radio')
+    return <XhMenubarRadioItem value={value} closeOnSelect={meta.closeOnSelect}>{children}</XhMenubarRadioItem>
+  return <XhMenubarItem value={value}>{children}</XhMenubarItem>
 }
+
+/** 按数据铺的分组：组里有单选条目时是单选组。 */
+function MenubarStructureGroup({ value, children }: { value: string, children?: ReactNode }): ReactNode {
+  const ctx = useMenubarContext()
+  return ownItems(ctx.api, useMenubarMenuContext()).some(node => node.kind === 'radio' && node.group === value)
+    ? <XhMenubarRadioGroup value={value}>{children}</XhMenubarRadioGroup>
+    : <XhMenubarGroup value={value}>{children}</XhMenubarGroup>
+}
+
+/** 标准结构里各部件对应的组件。 */
+const MENUBAR_PARTS = {
+  'trigger': XhMenubarTrigger,
+  'positioner': XhMenubarPositioner,
+  'content': XhMenubarContent,
+  'item': MenubarStructureItem,
+  'item-text': XhMenubarItemText,
+  'item-indicator': XhMenubarItemIndicator,
+  'item-description': XhMenubarItemDescription,
+  'item-shortcut': XhMenubarItemShortcut,
+  'item-suffix': XhMenubarItemSuffix,
+  'separator': XhMenubarSeparator,
+  'group': MenubarStructureGroup,
+  'group-label': XhMenubarGroupLabel,
+}
+
+/** 结构里组合进来的组件：带 children 的条目是嵌套的子菜单。 */
+const MENUBAR_INSTANCES = { menu: XhMenubarSub }
 
 /**
- * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
- * 一排入口排在前、各自菜单的浮层排在后，与手写部件产出的 DOM 完全一致；
- * 需要修改结构时写 children，行为不变。
+ * 未写 children 时照 menubarStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 入口按钮的文字取入口的 label；条目文字、行首、行尾可由三个渲染函数逐槽接管，其余照数据铺。
  */
-function DefaultTree(props: {
-  collection: readonly MenubarNodeMeta[]
-  renderers: MenubarItemRenderers
-}): ReactNode {
-  return (
-    <>
-      {props.collection.map(menu => (
-        <XhMenubarTrigger key={`trigger:${menu.value}`} value={menu.value}>{menu.label}</XhMenubarTrigger>
-      ))}
-      {props.collection.map(menu => (
-        <XhMenubarPositioner key={`positioner:${menu.value}`} value={menu.value}>
-          <XhMenubarContent>{renderNodes(menu.items, props.renderers)}</XhMenubarContent>
-        </XhMenubarPositioner>
-      ))}
-    </>
-  )
+function renderDefaultStructure(api: MenubarApi, renderers: MenubarItemRenderers): ReactNode[] {
+  const renderOf = (name: string | undefined): ((node: MenubarNodeMeta) => ReactNode) | undefined =>
+    name === 'item' ? renderers.item : name === 'item-prefix' ? renderers.prefix : name === 'item-suffix' ? renderers.suffix : undefined
+  return renderStructure(menubarStructure(api, { slotted: name => renderOf(name) != null }), MENUBAR_PARTS, (node: StructureNode) => {
+    const render = renderOf(node.slot?.name)
+    const meta = node.data as MenubarNodeMeta | undefined
+    return render && meta ? render(meta) : undefined
+  }, MENUBAR_INSTANCES)
 }
