@@ -18,7 +18,7 @@ const DELETE_TRIGGER = `${ITEM} > [data-scope="tag-group"][data-part="cell"] > [
  * 四枚标签：react 禁用（方向键与连打都跳过它，但它仍可聚焦、仍是导航起点）。
  * 文字用拉丁字母，连打检索按首字母匹配得上；四枚首字母互不相同。
  * item / item-text / item-delete-trigger 是作者侧的写法名，渲出来是 tag 的 root / label / close-trigger；
- * item-indicator 是本组件的选中标记，领在文字前面。
+ * item-indicator 是本组件的选中标记，跟在文字后面、摘除钮前面。
  */
 function item(value: string, text: string, disabled = false): FixtureNode {
   const attrs: Record<string, string> = { value }
@@ -33,8 +33,8 @@ function item(value: string, text: string, disabled = false): FixtureNode {
         part: 'cell',
         tag: 'span',
         children: [
-          { part: 'item-indicator', tag: 'span' },
           { part: 'item-text', tag: 'span', text },
+          { part: 'item-indicator', tag: 'span' },
           { part: 'item-delete-trigger', tag: 'button' },
         ],
       },
