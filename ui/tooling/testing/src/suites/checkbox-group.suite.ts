@@ -124,6 +124,17 @@ export const checkboxGroupSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '必填：根与标题带 data-required，组根与条目不收 aria-required',
+      spec: { apg: APG },
+      props: { required: true, name: 'fruit' },
+      initial: {
+        parts: {
+          'root': { 'data-required': '', 'aria-required': null },
+          'item[0]': { 'aria-required': null },
+        },
+      },
+    },
+    {
       name: 'max：选满时没选的条目报 aria-disabled 且点不动，摘掉一项后恢复',
       spec: { apg: `${APG}#roles_states_properties` },
       fixture: allEnabled,

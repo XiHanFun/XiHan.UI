@@ -44,6 +44,7 @@ const LIST_CONVERTER = {
  * @attr {boolean} disabled - 整组禁用
  * @attr {boolean} read-only - 只读：可聚焦可朗读，不可修改
  * @attr {boolean} invalid - 校验失败标注
+ * @attr {boolean} required - 必填：至少选一项，一项都没选时每份表单影子带原生 required
  * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 vertical
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -76,6 +77,7 @@ export class XhCheckboxGroupElement extends XhElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
+    required: { converter: BOOLEAN_CONVERTER },
     orientation: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -92,6 +94,7 @@ export class XhCheckboxGroupElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
+  declare required?: boolean
   declare orientation?: Orientation
   declare tone?: Tone
   declare size?: Size
@@ -119,6 +122,7 @@ export class XhCheckboxGroupElement extends XhElement {
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
+      required: this.required,
     }, this.inheritedControl)
   }
 
@@ -134,6 +138,7 @@ export class XhCheckboxGroupElement extends XhElement {
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,
+      required: control.required,
       orientation: this.orientation,
       tone: this.tone,
       size: this.size,

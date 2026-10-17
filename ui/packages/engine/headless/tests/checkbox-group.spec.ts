@@ -674,3 +674,24 @@ describe('checkbox-group 选中数上下限', () => {
     expect(itemProps(service, { value: 'b' })).toMatchObject({ 'aria-disabled': 'false' })
   })
 })
+
+describe('checkbox-group 必填', () => {
+  it('根与标题写 data-required；组根与条目都不写 aria-required', () => {
+    const s = makeService({ required: true })
+    expect((api(s).getRootProps() as Record<string, unknown>)['data-required']).toBe('')
+    expect((api(s).getLabelProps() as Record<string, unknown>)['data-required']).toBe('')
+    expect((api(s).getRootProps() as Record<string, unknown>)['aria-required']).toBeUndefined()
+    expect(itemProps(s, { value: 'a' })['aria-required']).toBeUndefined()
+    expect(api(s).required).toBe(true)
+  })
+
+  it('一项都没选时每份表单影子带 required，选了任何一项就都撤掉；不必填时恒不带', () => {
+    const empty = api(makeService({ required: true }))
+    expect((empty.getHiddenInputProps({ value: 'a' }) as Record<string, unknown>).required).toBe(true)
+    expect((empty.getHiddenInputProps({ value: 'b' }) as Record<string, unknown>).required).toBe(true)
+    const picked = api(makeService({ required: true, defaultValue: ['b'] }))
+    expect((picked.getHiddenInputProps({ value: 'a' }) as Record<string, unknown>).required).toBeUndefined()
+    expect((picked.getHiddenInputProps({ value: 'b' }) as Record<string, unknown>).required).toBeUndefined()
+    expect((api(makeService()).getHiddenInputProps({ value: 'a' }) as Record<string, unknown>).required).toBeUndefined()
+  })
+})

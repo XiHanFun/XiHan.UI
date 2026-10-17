@@ -9093,6 +9093,15 @@
             },
             {
               "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
               "name": "orientation",
               "privacy": "public",
               "type": {
@@ -9371,6 +9380,14 @@
               "description": "校验失败标注",
               "name": "invalid",
               "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填：至少选一项，一项都没选时每份表单影子带原生 required",
+              "name": "required",
+              "fieldName": "required"
             },
             {
               "type": {
