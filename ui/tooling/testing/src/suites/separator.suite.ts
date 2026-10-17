@@ -1,4 +1,4 @@
-import type { ConformanceSuite } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { separatorAnatomy, separatorKeyboard } from '@xihan-ui/headless'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/separator/'
@@ -80,6 +80,16 @@ export const separatorSuite: ConformanceSuite = {
           'line[0]': { 'role': 'none', 'data-orientation': 'horizontal' },
           'line[1]': { 'role': 'none', 'data-orientation': 'horizontal' },
         },
+      },
+    },
+    {
+      name: '作者不写结构：三端都照 separatorStructure 渲，不给分节文字时 root 自己就是那条线',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { orientation: 'vertical' },
+      initial: {
+        order: ['root'],
+        parts: { root: { 'role': 'separator', 'aria-orientation': 'vertical' } },
       },
     },
   ],
