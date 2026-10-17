@@ -13,6 +13,7 @@ import { useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
+import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { ApprovalProvider, useApprovalContext } from './context'
 import { useApproval } from './use-approval'
 
@@ -140,13 +141,16 @@ XhApprovalRoot.xhEvents = ['decision', 'granted-scopes-change', 'note-change'] a
 export interface XhApprovalTitleProps extends ComponentPropsWithRef<'h3'> {}
 export function XhApprovalTitle({ children, ...rest }: XhApprovalTitleProps): ReactNode {
   const ctx = useApprovalContext()
+  useTitleDescriptionPart(ctx.presence, 'title')
   return <h3 {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</h3>
 }
 
 export interface XhApprovalDescriptionProps extends ComponentPropsWithRef<'p'> {}
 export function XhApprovalDescription({ children, ...rest }: XhApprovalDescriptionProps): ReactNode {
   const ctx = useApprovalContext()
-  return <p {...mergeReactProps(ctx.api.getDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</p>
+  // 读不出一句话的说明不进描述链
+  const el = useDescriptionPart(ctx.presence)
+  return <p {...mergeReactProps({ ...ctx.api.getDescriptionProps() as Record<string, unknown>, ref: el }, rest as Record<string, unknown>)}>{children}</p>
 }
 
 export interface XhApprovalLiveRegionProps extends ComponentPropsWithRef<'div'> {}

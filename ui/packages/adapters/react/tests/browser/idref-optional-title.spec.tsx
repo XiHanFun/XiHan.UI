@@ -9,14 +9,16 @@ import { createReactHarness } from '../harness'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-const COMPONENTS = ['dialog', 'drawer', 'popover', 'popconfirm', 'alert']
+const COMPONENTS = ['dialog', 'drawer', 'popover', 'popconfirm', 'alert', 'approval']
 
-/** 挂载时要先展开的组件：收起时内容不渲染，部件也就无从登记。 */
-const OPEN_PROPS: Record<string, Record<string, unknown>> = {
-  dialog: { defaultOpen: true },
-  drawer: { defaultOpen: true },
-  popover: { defaultOpen: true },
-  popconfirm: { defaultOpen: true },
+type Variant = 'full' | 'drop' | 'empty-description'
+
+/** 挂载用的 props：收起时内容不渲染，部件也就无从登记，这几个要先展开。 */
+const MOUNT_PROPS: Record<string, (suite: ConformanceSuite, variant: Variant) => Record<string, unknown>> = {
+  dialog: () => ({ defaultOpen: true }),
+  drawer: () => ({ defaultOpen: true }),
+  popover: () => ({ defaultOpen: true }),
+  popconfirm: () => ({ defaultOpen: true }),
 }
 
 const harness = createReactHarness()
@@ -26,7 +28,7 @@ afterEach(async () => {
 })
 
 /** 改写套件自己那个组件的 title / description 部件：drop 去掉，empty 留节点、清掉文字。 */
-function rewrite(node: FixtureNode, component: string, mode: 'drop' | 'empty-description'): FixtureNode {
+function rewrite(node: FixtureNode, component: string, mode: Exclude<Variant, 'full'>): FixtureNode {
   if (!node.children)
     return node
   const own = (child: FixtureNode): boolean => (child.component ?? component) === component
@@ -40,8 +42,9 @@ function rewrite(node: FixtureNode, component: string, mode: 'drop' | 'empty-des
   }
 }
 
-async function mountTree(suite: ConformanceSuite, tree: FixtureNode): Promise<HTMLElement> {
-  const props = { ...suite.defaultProps, ...OPEN_PROPS[suite.component] }
+async function mountTree(suite: ConformanceSuite, variant: Variant): Promise<HTMLElement> {
+  const tree = variant === 'full' ? suite.fixture : rewrite(suite.fixture, suite.component, variant)
+  const props = { ...suite.defaultProps, ...MOUNT_PROPS[suite.component]?.(suite, variant) }
   const { root } = await harness.mount({ component: suite.component, props, tree })
   await harness.flush()
   for (let i = 0; i < 3; i++)
@@ -85,24 +88,24 @@ describe('只引用在场的标题与说明', () => {
       const suite = suites.find(s => s.component === component)!
       const part = (name: string): string => `[data-scope="${component}"][data-part="${name}"]`
 
-      await mountTree(suite, suite.fixture)
+      await mountTree(suite, 'full')
       const title = document.querySelector(part('title'))
-      const description = document.querySelector(part('description'))
       expect(title?.id).toBeTruthy()
-      expect(description?.id).toBeTruthy()
       expect(refIds('aria-labelledby')).toContain(title!.id)
+      const description = document.querySelector(part('description'))
+      expect(description?.id).toBeTruthy()
       expect(refIds('aria-describedby')).toContain(description!.id)
       expect(danglingRefs()).toEqual([])
       await harness.unmount()
 
-      await mountTree(suite, rewrite(suite.fixture, component, 'drop'))
+      await mountTree(suite, 'drop')
       expect(document.querySelector(part('title'))).toBeNull()
       expect(document.querySelector(part('description'))).toBeNull()
       expect(danglingRefs()).toEqual([])
       expect(await invalidRefs()).toEqual([])
       await harness.unmount()
 
-      await mountTree(suite, rewrite(suite.fixture, component, 'empty-description'))
+      await mountTree(suite, 'empty-description')
       const empty = document.querySelector(part('description'))
       expect(empty?.id).toBeTruthy()
       expect(refIds('aria-describedby')).not.toContain(empty!.id)

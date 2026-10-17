@@ -131,6 +131,7 @@ requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或
 | `variant` | `ControlVariant` |  | 形态：outline 描边、subtle 底色分区、ghost 无壳内联。默认 outline。 |
 | `tone` | `Tone` |  |  |
 | `size` | `Size` |  |  |
+| `parts` | `TitleDescriptionParts` |  | 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。 title 不在场时不写 aria-labelledby；description 不在场、或渲染了但读不出一句话（判断同 `hasNamingContent`）时不写 aria-describedby。 |
 | `translations` | `Partial<ApprovalTranslations>` |  |  |
 | `onDecision` | `(details: ApprovalDecisionDetails) => void` |  |  |
 | `onGrantedScopesChange` | `(details: ApprovalScopesChangeDetails) => void` |  |  |
@@ -262,8 +263,8 @@ requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-describedby` | `description` 部件的 id |
-| `root` | `aria-labelledby` | `title` 部件的 id |
+| `root` | `aria-describedby` | `description` 部件的 id \| undefined |
+| `root` | `aria-labelledby` | `title` 部件的 id \| undefined |
 | `root` | `role` | 'group' |
 | `pending-indicator` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |

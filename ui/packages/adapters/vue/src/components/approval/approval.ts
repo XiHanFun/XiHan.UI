@@ -11,6 +11,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { provideApproval, useApprovalContext } from './context'
 import { useApproval } from './use-approval'
 
@@ -103,6 +104,7 @@ export const XhApprovalTitle = defineComponent({
   name: 'XhApprovalTitle',
   setup(_, { slots }) {
     const ctx = useApprovalContext()
+    useTitleDescriptionPart(ctx.presence, 'title')
     return () => h('h3', ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -111,7 +113,9 @@ export const XhApprovalDescription = defineComponent({
   name: 'XhApprovalDescription',
   setup(_, { slots }) {
     const ctx = useApprovalContext()
-    return () => h('p', ctx.api.value.getDescriptionProps() as Record<string, unknown>, slots.default?.())
+    // 读不出一句话的说明不进描述链
+    const el = useDescriptionPart(ctx.presence)
+    return () => h('p', { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el }, slots.default?.())
   },
 })
 
