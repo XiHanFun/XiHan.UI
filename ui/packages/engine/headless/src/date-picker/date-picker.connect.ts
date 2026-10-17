@@ -356,6 +356,7 @@ export function connectDatePicker<T extends PropTypes>(
     hiddenValue?: string,
   ): DatePickerFieldApi<T> => ({
     value: raw.value,
+    locale: raw.locale,
     segments: raw.segments,
     complete: raw.complete,
     empty: raw.empty,
@@ -430,6 +431,7 @@ export function connectDatePicker<T extends PropTypes>(
     getTimeItemText: ({ unit, value: option }) => time.itemText(unit, option),
     isTimeItemDisabled: ({ unit, value: option }) => timeItemDisabled(unit, option),
     calendar,
+    translations: label,
     field,
     setOpen: (next) => {
       if (next !== open)

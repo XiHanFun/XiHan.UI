@@ -246,7 +246,7 @@ const translations = {
     day: '日',
     clearTrigger: 'クリア',
   },
-  'date-picker': { ...tagged, ...segments, ...calendar, presets: 'ショートカット', clearTrigger: 'クリア' },
+  'date-picker': { ...tagged, ...segments, ...calendar, presets: 'ショートカット', clearTrigger: 'クリア', confirmTrigger: '決定' },
   'date-range-picker': {
     ...segments,
     ...rangeCalendar,

@@ -26,6 +26,8 @@ export interface DatePickerTranslations extends CalendarPickerTranslations {
   presets: string
   /** 清空按钮的名字。 */
   clearTrigger: string
+  /** 带时间时浮层底部确认钮的文字，标准结构铺这颗钮时用它。 */
+  confirmTrigger: string
   /** 小时列的名字。 */
   hour: string
   /** 分钟列的名字。 */
@@ -393,6 +395,8 @@ export interface DatePickerServices {
 export interface DatePickerFieldApi<T extends PropTypes = PropTypes> {
   /** ISO 串；段位未填齐时为 null。 */
   value: string | null
+  /** 分段输入解析后的语言标记：段序与段间分隔符跟着它走。 */
+  locale: string
   /** 逐段投影，文档序即 locale 决定的段序。 */
   segments: DateFieldSegmentState[]
   /** 段位已填齐。 */
@@ -463,6 +467,8 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   isTimeItemDisabled: (props: DatePickerTimeItemProps) => boolean
   /** 内嵌日历：选日期、翻月、键盘导航都在它身上。 */
   calendar: CalendarPickerApi<T>
+  /** 解析后的文案：作者给的 translations 盖在当前语言包上。 */
+  translations: DatePickerTranslations
   /** 内嵌分段输入。 */
   field: DatePickerFieldApi<T>
   getRootProps: () => T['element']

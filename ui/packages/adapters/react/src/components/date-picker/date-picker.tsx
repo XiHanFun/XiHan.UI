@@ -26,13 +26,14 @@ import type {
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { resolveDatePickerPanelIndex } from '@xihan-ui/headless'
+import { datePickerStructure, resolveDatePickerPanelIndex } from '@xihan-ui/headless'
 import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotIsPlainText, slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -41,10 +42,12 @@ import {
   DatePickerPanelProvider,
   DatePickerProvider,
   DatePickerTagProvider,
+  DatePickerTimeUnitProvider,
   useDatePickerCellContext,
   useDatePickerContext,
   useDatePickerPanelContext,
   useDatePickerTagContext,
+  useDatePickerTimeUnitContext,
 } from './context'
 import { useDatePicker } from './use-date-picker'
 
@@ -165,12 +168,19 @@ export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   onOpenChange?: DatePickerProps['onOpenChange']
   onFocusedValueChange?: DatePickerProps['onFocusedValueChange']
   onActiveViewChange?: DatePickerProps['onActiveViewChange']
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
+  /** 不给时照标准结构铺整套部件。 */
   children?: SlotChildren<DatePickerRootSlotProps>
 }
 
-/** 网格与段位由作者按 children 载荷中的 weeks（日视图）/ rows（周期视图）/ segments 自行渲染。 */
+/**
+ * 给了 children 时网格与段位由作者按载荷中的 weeks（日视图）/ rows（周期视图）/ segments 自行渲染；
+ * 没给时照 datePickerStructure 铺整套结构。
+ */
 export function XhDatePickerRoot({
   ariaLabel,
+  label,
   value,
   defaultValue,
   open,
@@ -276,7 +286,7 @@ export function XhDatePickerRoot({
         )}
       >
         {children == null
-          ? null
+          ? renderDefaultStructure(api, label)
           : renderSlot(children, {
               open: api.open,
               value: api.value,
@@ -580,8 +590,31 @@ export function XhDatePickerPreset({ value, children, ...rest }: XhDatePickerPre
 }
 
 /** 时间列整组自动铺设：时/分[/秒][/上下午]各一列，选项点按写值；未开启 showTime 时整组带 hidden。 */
-/** 一列时间选项连同贴在它盒子上的竖条：每列一台滚动条机器，列数随 showSeconds 变时组件实例跟着增减。 */
-function XhDatePickerTimeColumnHost({ unit }: { unit: DatePickerTimeUnit }): ReactNode {
+export interface XhDatePickerTimeItemProps extends ComponentPropsWithRef<'div'> {
+  /** 这一格的值，与时间列的可选值逐字对应：两位补零（上下午列写 '00' / '01'）。 */
+  value: string
+}
+/** 一格时间选项：没写 children 时显示按 locale 译好的文字。要放在 XhDatePickerTimeColumn 里。 */
+export function XhDatePickerTimeItem({ value, children, ...rest }: XhDatePickerTimeItemProps): ReactNode {
+  const ctx = useDatePickerContext()
+  const unit = useDatePickerTimeUnitContext()
+  const item = { unit, value }
+  return (
+    <div {...mergeReactProps(ctx.api.getTimeItemProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {slotPaints(children) ? children : ctx.api.getTimeItemText(item)}
+    </div>
+  )
+}
+
+export interface XhDatePickerTimeColumnProps extends ComponentPropsWithRef<'div'> {
+  /** 这一列的单位：hour、minute、second 或 dayPeriod。 */
+  unit: DatePickerTimeUnit
+}
+/**
+ * 一列时间选项连同贴在它盒子上的竖条：每列一台滚动条机器。不写 children 时按这一列的可选值铺 XhDatePickerTimeItem；
+ * 这一单位不在当前精度里（如没开秒）时整列不渲染。
+ */
+export function XhDatePickerTimeColumn({ unit, children, ...rest }: XhDatePickerTimeColumnProps): ReactNode {
   const ctx = useDatePickerContext()
   const api = ctx.api
   const timeColumnRef = useRef<HTMLDivElement | null>(null)
@@ -596,16 +629,12 @@ function XhDatePickerTimeColumnHost({ unit }: { unit: DatePickerTimeUnit }): Rea
   if (!column)
     return null
   return (
-    <>
-      <div {...mergeReactProps(api.getTimeColumnProps({ unit: column.unit }) as Record<string, unknown>, { ref: timeColumnRef })}>
-        {column.options.map(option => (
-          <div key={option} {...api.getTimeItemProps({ unit: column.unit, value: option }) as Record<string, unknown>}>
-            {api.getTimeItemText({ unit: column.unit, value: option })}
-          </div>
-        ))}
+    <DatePickerTimeUnitProvider value={column.unit}>
+      <div {...mergeReactProps(api.getTimeColumnProps({ unit: column.unit }) as Record<string, unknown>, rest as Record<string, unknown>, { ref: timeColumnRef })}>
+        {children ?? column.options.map(option => <XhDatePickerTimeItem key={option} value={option} />)}
       </div>
       {bars.render()}
-    </>
+    </DatePickerTimeUnitProvider>
   )
 }
 
@@ -615,7 +644,7 @@ export function XhDatePickerTimePanel(): ReactNode {
   return (
     <>
       {api.timeColumns.map(column => (
-        <XhDatePickerTimeColumnHost key={column.unit} unit={column.unit} />
+        <XhDatePickerTimeColumn key={column.unit} unit={column.unit} />
       ))}
     </>
   )
@@ -848,4 +877,54 @@ export function XhDatePickerHiddenInput(rest: XhDatePickerHiddenInputProps): Rea
       )}
     />
   )
+}
+
+/** 结构里的部件 → 部件组件；委派出去的部件按「组件名/部件名」查。 */
+const DATE_PICKER_PARTS = {
+  'label': XhDatePickerLabel,
+  'control': XhDatePickerControl,
+  'tag-list': XhDatePickerTagList,
+  'segment-group': XhDatePickerSegmentGroup,
+  'trigger': XhDatePickerTrigger,
+  'clear-trigger': XhDatePickerClearTrigger,
+  'positioner': XhDatePickerPositioner,
+  'content': XhDatePickerContent,
+  'preset-group': XhDatePickerPresetGroup,
+  'preset': XhDatePickerPreset,
+  'calendar': XhDatePickerCalendar,
+  'time-column': XhDatePickerTimeColumn,
+  'time-item': XhDatePickerTimeItem,
+  'footer': XhDatePickerFooter,
+  'confirm-trigger': XhDatePickerConfirmTrigger,
+  'date-field/segment': XhDatePickerSegment,
+  'date-field/hidden-input': XhDatePickerHiddenInput,
+  'tag/tag': XhDatePickerTag,
+  'tag/tag-label': XhDatePickerTagLabel,
+  'tag/item-delete-trigger': XhDatePickerItemDeleteTrigger,
+  'tag/overflow-tag': XhDatePickerOverflowTag,
+  'calendar-picker/header': XhDatePickerHeader,
+  'calendar-picker/prev-year-trigger': XhDatePickerPrevYearTrigger,
+  'calendar-picker/prev-trigger': XhDatePickerPrevTrigger,
+  'calendar-picker/heading': XhDatePickerHeading,
+  'calendar-picker/heading-year-trigger': XhDatePickerHeadingYearTrigger,
+  'calendar-picker/heading-month-trigger': XhDatePickerHeadingMonthTrigger,
+  'calendar-picker/next-trigger': XhDatePickerNextTrigger,
+  'calendar-picker/next-year-trigger': XhDatePickerNextYearTrigger,
+  'calendar-picker/grid': XhDatePickerGrid,
+  'calendar-picker/grid-head': XhDatePickerGridHead,
+  'calendar-picker/week-row': XhDatePickerWeekRow,
+  'calendar-picker/week-day': XhDatePickerWeekDay,
+  'calendar-picker/grid-body': XhDatePickerGridBody,
+  'calendar-picker/cell': XhDatePickerCell,
+  'calendar-picker/cell-trigger': XhDatePickerCellTrigger,
+}
+
+/**
+ * 不给 children 时照 datePickerStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 文字以外的标题内容交给 label 部件。
+ */
+function renderDefaultStructure(api: DatePickerApi, label: ReactNode): ReactNode[] {
+  const slotted = label != null && typeof label !== 'string'
+  const nodes = datePickerStructure(api, { label: typeof label === 'string' ? label : undefined, slotted: name => name === 'label' && slotted })
+  return renderStructure(nodes, DATE_PICKER_PARTS, node => (node.slot ? label : undefined))
 }

@@ -31,6 +31,8 @@ export {
 } from './date-picker.presets'
 export { resolveDatePickerPanelIndex } from './date-picker.projection'
 export type { DatePickerIndexInput } from './date-picker.projection'
+export { datePickerStructure } from './date-picker.structure'
+export type { DatePickerStructureOptions } from './date-picker.structure'
 export {
   datePickerDatePart,
   datePickerJoinDateTime,

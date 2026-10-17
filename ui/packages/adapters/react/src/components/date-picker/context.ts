@@ -5,7 +5,7 @@
 
 // 提供 context 相关实现。
 
-import type { CalendarCellProps } from '@xihan-ui/headless'
+import type { CalendarCellProps, DatePickerTimeUnit } from '@xihan-ui/headless'
 import type { DatePickerContext } from './use-date-picker'
 import { createContext, useContext } from 'react'
 
@@ -15,11 +15,14 @@ const CellCtx = createContext<CalendarCellProps | undefined>(undefined)
 /** 日历未声明面板号时的落点，与单面板时一致。 */
 const PanelCtx = createContext<number>(0)
 const TagCtx = createContext<string | undefined>(undefined)
+/** 时间项所在那一列的单位，由 XhDatePickerTimeColumn 提供。 */
+const TimeUnitCtx = createContext<DatePickerTimeUnit | undefined>(undefined)
 
 export const DatePickerProvider = Ctx
 export const DatePickerCellProvider = CellCtx
 export const DatePickerPanelProvider = PanelCtx
 export const DatePickerTagProvider = TagCtx
+export const DatePickerTimeUnitProvider = TimeUnitCtx
 
 export function useDatePickerContext(): DatePickerContext {
   const ctx = useContext(Ctx)
@@ -44,4 +47,11 @@ export function useDatePickerTagContext(): string {
   if (value === undefined)
     throw new Error('XhDatePickerItemDeleteTrigger 要放在 XhDatePickerTag 里')
   return value
+}
+
+export function useDatePickerTimeUnitContext(): DatePickerTimeUnit {
+  const unit = useContext(TimeUnitCtx)
+  if (unit === undefined)
+    throw new Error('XhDatePickerTimeItem 要放在 XhDatePickerTimeColumn 里')
+  return unit
 }

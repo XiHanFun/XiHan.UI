@@ -246,7 +246,7 @@ const translations = {
     day: 'jour',
     clearTrigger: 'Effacer',
   },
-  'date-picker': { ...tagged, ...segments, ...calendar, presets: 'Raccourcis', clearTrigger: 'Effacer' },
+  'date-picker': { ...tagged, ...segments, ...calendar, presets: 'Raccourcis', clearTrigger: 'Effacer', confirmTrigger: 'Valider' },
   'date-range-picker': {
     ...segments,
     ...rangeCalendar,

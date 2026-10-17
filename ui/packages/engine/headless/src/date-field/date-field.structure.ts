@@ -101,18 +101,36 @@ function literalBetween(literals: LocaleLiterals, before: DateSegmentType, after
 }
 
 /**
- * 日期输入框在 root 里的标准结构，次序是标题、盒、表单影子。
- * 盒里是段组与清空按钮（清不了时由组件收起）；段组里按当前段序铺段，段与段之间是按 locale 取的分隔符文字。
+ * 段组里的子节点：按当前段序铺段，段与段之间是按 locale 取的分隔符文字。
+ * component 是段所属的组件：日期输入框自己铺时省略，内嵌分段输入的选择器写 'date-field'。
  */
-export function dateFieldStructure(model: Pick<DateFieldApi, 'segments' | 'locale'>, options: DateFieldStructureOptions = {}): DateFieldNode[] {
+export function dateSegmentGroupChildren(
+  model: Pick<DateFieldApi, 'segments' | 'locale'>,
+  component?: string,
+): StructureChild<'segment'>[] {
   const literals = localeLiterals(model.locale)
-  const group: StructureChild<DateFieldStructurePart>[] = []
+  const group: StructureChild<'segment'>[] = []
   model.segments.forEach((segment, i) => {
     const previous = model.segments[i - 1]
     if (previous)
       group.push({ key: `literal:${previous.type}`, literal: literalBetween(literals, previous.type, segment.type) })
-    group.push({ key: `segment:${segment.type}`, tag: 'div', part: 'segment', attrs: { index: String(segment.index) } })
+    group.push({
+      key: `segment:${segment.type}`,
+      tag: 'div',
+      ...(component === undefined ? {} : { component }),
+      part: 'segment',
+      attrs: { index: String(segment.index) },
+    })
   })
+  return group
+}
+
+/**
+ * 日期输入框在 root 里的标准结构，次序是标题、盒、表单影子。
+ * 盒里是段组与清空按钮（清不了时由组件收起）；段组里按当前段序铺段，段与段之间是按 locale 取的分隔符文字。
+ */
+export function dateFieldStructure(model: Pick<DateFieldApi, 'segments' | 'locale'>, options: DateFieldStructureOptions = {}): DateFieldNode[] {
+  const group: StructureChild<DateFieldStructurePart>[] = dateSegmentGroupChildren(model)
   const nodes: DateFieldNode[] = []
   if (options.slotted?.('label'))
     nodes.push({ key: 'label', tag: 'span', part: 'label', slot: { name: 'label' } })

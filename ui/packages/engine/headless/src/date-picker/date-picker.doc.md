@@ -16,7 +16,8 @@
 ## 特性
 
 - `granularity` 支持 day / week / month / quarter / year，`selectionMode` 独立控制单选或多选。
-- 浮层里的日历由作者照插槽数据渲染：日视图读 `weeks`，周、月、季度与年读按行切好的 `rows`（多面板读 `panels[i].rows`），一行写一个 `week-row`、格子放进行里，写法同[日历选择器](./calendar-picker)。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：标题（`label` 给文字），盒里的段组（多选时是带删除钮的标签行）、清空钮与日历钮，表单影子，浮层里依次是快捷选项列、每个面板一份日历（标题栏、表头与日期格）、`showTime` 的时间列与底栏的确认钮（文字取 `translations.confirmTrigger`）。翻月、换层级与选中变化时结构随之重铺。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
+- 自己写结构时，浮层里的日历照插槽数据渲染：日视图读 `weeks`，周、月、季度与年读按行切好的 `rows`（多面板读 `panels[i].rows`），一行写一个 `week-row`、格子放进行里，写法同[日历选择器](./calendar-picker)。Vue / React 的时间列可以用 `XhDatePickerTimePanel` 整组铺，也可以逐列写 `XhDatePickerTimeColumn`（`unit`），列里不写内容时按可选值铺 `XhDatePickerTimeItem`。
 - 多选（`selectionMode="multiple"`）时选中的日期在输入行里排成标签（库内 [标签](./tag)，与[选择器](./select)多选同一套）：段位收起，日历钮常驻并成为键盘入口，在它上面按退格摘掉最后一个，点标签上的叉摘掉那一个；标签文字按粒度与 `locale` 排出（日 2026/10/02、月 2026年10月、周 2026-W40、季 2026-Q4），标签是定长文字、不截短，一行放不下就折到下一行，盒随行数长高、到上限后在盒内滚动；超过 `maxTagCount`（默认 3）的折进 +N；没有选中时整条 `placeholder` 落在标签行上；表单一个选中值一份同名隐藏输入。
 - `placeholder` 给字符串是整条占位：一段都没填、焦点也不在段上时输入行显示这句文字（「请选择生效时间」），段位与分隔符淡出让位，焦点一进到段上就换回 yyyy / mm / dd 段位；给对象是逐段的占位串。整条占位由皮肤以生成内容画出，段位仍可聚焦、仍在读屏树里。
 - 周选择直接渲染整周周期格；不再需要 `weekSelection` 特殊开关。周粒度按 ISO 周（星期一到星期日）成段，输入行的「2026-33」按 ISO 周年计，与 `locale` 和 `firstDayOfWeek` 都无关：en-US 这类星期日开头的 locale 下，日视图的一行比所挑的 ISO 周早一天开始。
