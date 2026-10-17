@@ -51,6 +51,8 @@ export interface XhSelectRootProps extends RootElementProps {
   lazyMount?: boolean
   /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
+  /** 自动渲染树中的空态内容，没给时取 translations.empty。 */
+  empty?: ReactNode
   value?: string | string[] | null
   defaultValue?: string | string[] | null
   multiple?: boolean
@@ -113,6 +115,7 @@ export function XhSelectRoot({
   virtualizer,
   lazyMount,
   label,
+  empty,
   value,
   defaultValue,
   multiple,
@@ -198,7 +201,7 @@ export function XhSelectRoot({
           })}
         </>
       )
-    : renderDefaultStructure(api, { label, clearable, renderItem, renderItemPrefix, renderItemSuffix })
+    : renderDefaultStructure(api, { label, empty, clearable, renderItem, renderItemPrefix, renderItemSuffix })
 
   return (
     <SelectProvider value={ctx}>
@@ -414,15 +417,17 @@ export function XhSelectFooter({ children, ...rest }: XhSelectFooterProps): Reac
 }
 
 export interface XhSelectEmptyProps extends ComponentPropsWithRef<'div'> {}
+/** 空态占位：没写内容时显示 translations.empty。 */
 export function XhSelectEmpty({ children, ...rest }: XhSelectEmptyProps): ReactNode {
   const ctx = useSelectContext()
-  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{slotPaints(children) ? children : ctx.api.translations.empty}</div>
 }
 
 export interface XhSelectLoadingProps extends ComponentPropsWithRef<'div'> {}
+/** 在途占位：没写内容时显示 translations.loading。 */
 export function XhSelectLoading({ children, ...rest }: XhSelectLoadingProps): ReactNode {
   const ctx = useSelectContext()
-  return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{slotPaints(children) ? children : ctx.api.translations.loading}</div>
 }
 
 export interface XhSelectErrorProps extends ComponentPropsWithRef<'div'> {}
@@ -573,12 +578,17 @@ const SELECT_PARTS = {
   'item-prefix': XhSelectItemPrefix,
   'item-text': XhSelectItemText,
   'item-description': XhSelectItemDescription,
+  'empty': XhSelectEmpty,
+  'loading': XhSelectLoading,
+  'error': XhSelectError,
+  'retry-trigger': XhSelectRetryTrigger,
   'item-suffix': XhSelectItemSuffix,
   'item-indicator': XhSelectItemIndicator,
 }
 
 interface SelectStructureContent {
   label?: ReactNode
+  empty?: ReactNode
   clearable?: boolean
   renderItem?: (node: SelectNodeMeta) => ReactNode
   renderItemPrefix?: (node: SelectNodeMeta) => ReactNode
@@ -590,15 +600,17 @@ interface SelectStructureContent {
  * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题、条目文字与行首行尾由对应渲染函数接管。
  */
 function renderDefaultStructure(api: SelectApi, content: SelectStructureContent): ReactNode[] {
-  const { label, renderItem, renderItemPrefix, renderItemSuffix } = content
+  const { label, empty, renderItem, renderItemPrefix, renderItemSuffix } = content
   const slotted: Readonly<Record<string, boolean>> = {
     'label': label != null && typeof label !== 'string',
+    'empty': empty != null && typeof empty !== 'string',
     'item': renderItem != null,
     'item-prefix': renderItemPrefix != null,
     'item-suffix': renderItemSuffix != null,
   }
   const nodes = selectStructure(api, {
     label: typeof label === 'string' ? label : undefined,
+    empty: typeof empty === 'string' ? empty : undefined,
     clearable: content.clearable,
     slotted: name => slotted[name] === true,
   })
@@ -607,6 +619,8 @@ function renderDefaultStructure(api: SelectApi, content: SelectStructureContent)
     switch (node.slot?.name) {
       case 'label':
         return label
+      case 'empty':
+        return empty
       case 'item':
         return renderItem?.(meta) ?? meta.label
       case 'item-prefix':

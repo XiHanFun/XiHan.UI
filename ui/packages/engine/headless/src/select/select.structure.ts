@@ -31,17 +31,17 @@ export const SELECT_STRUCTURE_PARTS = [
   'item-description',
   'item-suffix',
   'item-indicator',
-] as const satisfies readonly SelectPart[]
-
-/** anatomy 里不进标准结构的部件：分组、底部操作区与空态、在途、取数失败的占位由作者手写结构时自己摆。 */
-export const SELECT_STRUCTURE_OMITS = [
-  'footer',
-  'group',
-  'group-label',
   'empty',
   'loading',
   'error',
   'retry-trigger',
+] as const satisfies readonly SelectPart[]
+
+/** anatomy 里不进标准结构的部件：分组与底部操作区由作者手写结构时自己摆。 */
+export const SELECT_STRUCTURE_OMITS = [
+  'footer',
+  'group',
+  'group-label',
 ] as const satisfies readonly SelectPart[]
 
 type SelectStructurePart = (typeof SELECT_STRUCTURE_PARTS)[number]
@@ -57,14 +57,16 @@ export interface SelectStructureOptions {
   label?: string
   /** 盒里带不带清空按钮，缺省不带。 */
   clearable?: boolean
+  /** 空态文字：给了就写进 empty，没给时取 translations.empty；empty 插槽有内容时内容归作者。 */
+  empty?: string
   /**
-   * 作者给了哪些插槽的内容：label、item（条目文字）、item-prefix、item-suffix，后三个按条目的值带 key。
+   * 作者给了哪些插槽的内容：label、empty、item（条目文字）、item-prefix、item-suffix，后三个按条目的值带 key。
    * 条目文字没给插槽时铺 collection 里的 label；行首、行尾没给插槽时不铺这两格。
    */
   slotted?: StructureSlotted
 }
 
-type SelectStructureModel = Pick<SelectApi, 'collection' | 'multiple' | 'tags' | 'isContentMounted'>
+type SelectStructureModel = Pick<SelectApi, 'collection' | 'multiple' | 'tags' | 'isContentMounted' | 'translations'>
 
 /** 一个条目：行首、文字、副文本、行尾、选中标记；带 slot 的格子的 data 是这一条的元信息。 */
 function itemStructure(node: SelectNodeMeta, slotted: StructureSlotted): SelectNode {
@@ -88,6 +90,7 @@ const NOTHING_SLOTTED: StructureSlotted = () => false
  * 选择器在 root 里的标准结构，次序是表单影子、标题、盒、浮层。
  * 盒里触发器在前、清空按钮在后（按钮不能套按钮），展开箭头是触发器里的指示符；
  * 多选的已选项在触发器里排成标签（只作展示），摆不下的折进 +N；列表内容懒挂载、还没展开过时列表先空着。
+ * 浮层里列表之后是空态、在途、取数失败的提示与重试钮，文字取 translations（空态先取 empty），露哪一种归连接层。
  */
 export function selectStructure(model: SelectStructureModel, options: SelectStructureOptions = {}): SelectNode[] {
   const slotted = options.slotted ?? NOTHING_SLOTTED
@@ -131,12 +134,20 @@ export function selectStructure(model: SelectStructureModel, options: SelectStru
         key: 'content',
         tag: 'div',
         part: 'content',
-        children: [{
-          key: 'list',
-          tag: 'div',
-          part: 'list',
-          children: model.isContentMounted() ? model.collection.map(node => itemStructure(node, slotted)) : [],
-        }],
+        children: [
+          {
+            key: 'list',
+            tag: 'div',
+            part: 'list',
+            children: model.isContentMounted() ? model.collection.map(node => itemStructure(node, slotted)) : [],
+          },
+          slotted('empty')
+            ? { key: 'empty', tag: 'div', part: 'empty', slot: { name: 'empty' } }
+            : { key: 'empty', tag: 'div', part: 'empty', text: options.empty ?? model.translations.empty },
+          { key: 'loading', tag: 'div', part: 'loading', text: model.translations.loading },
+          { key: 'error', tag: 'div', part: 'error', text: model.translations.loadError },
+          { key: 'retry-trigger', tag: 'button', part: 'retry-trigger', text: model.translations.retry },
+        ],
       }],
     },
   )

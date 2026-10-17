@@ -577,7 +577,7 @@ const translations = {
     },
   },
   'scrollbar': { thumb: 'Bildlaufleiste' },
-  'select': { ...tagged, clearTrigger: 'Leeren', content: 'Optionen', loadError: 'Optionen konnten nicht geladen werden', retry: 'Erneut versuchen' },
+  'select': { ...tagged, clearTrigger: 'Leeren', content: 'Optionen', empty: 'Keine Daten', loading: 'Wird geladen', loadError: 'Optionen konnten nicht geladen werden', retry: 'Erneut versuchen' },
   'side-nav': { root: 'Seitenleiste', input: 'Navigation filtern', noMatch: 'Keine Treffer' },
   'signature-pad': {
     label: 'Unterschrift',

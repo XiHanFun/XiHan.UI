@@ -57,6 +57,8 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
     lazyMount: { type: Boolean, default: undefined },
     /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
+    /** 自动渲染树中的空态文字，没给时取 translations.empty；需要放置其他内容时改用 empty 插槽。 */
+    empty: { type: String },
     value: { type: [String, Array] as PropType<string | string[] | null> },
     defaultValue: { type: [String, Array] as PropType<string | string[] | null> },
     multiple: Boolean,
@@ -98,6 +100,8 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
   slots: Object as SlotsType<{
     'default'?: (props: SelectRootSlotProps) => VNode[]
     'label'?: () => VNode[]
+    /** 自动渲染树中空态占位的内容 */
+    'empty'?: () => VNode[]
     /** 只填条目的文字槽，副文本与首尾两格照旧各归各的 */
     'item'?: (node: SelectNodeMeta) => VNode[]
     /** 只接管行首那一格，其余槽照旧由数据铺 */
@@ -121,7 +125,7 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
       const api = ctx.api.value
       const rootProps = api.getRootProps() as Record<string, unknown>
       if (!slots.default)
-        return h('div', rootProps, renderDefaultStructure(api, props.label, props.clearable, slots))
+        return h('div', rootProps, renderDefaultStructure(api, { label: props.label, empty: props.empty, clearable: props.clearable }, slots))
       return h('div', rootProps, [
         h(SelectHiddenSelect),
         ...(slots.default({
@@ -343,8 +347,8 @@ export const XhSelectEmpty = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     // 空态占位：写在 content 里、list 的兄弟，不进列表框的拥有关系。
-    // 给了 collection 时收放归连接层，条目手写时归作者
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+    // 给了 collection 时收放归连接层，条目手写时归作者；没写内容时显示 translations.empty
+    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.empty)
   },
 })
 
@@ -352,8 +356,8 @@ export const XhSelectLoading = /* @__PURE__ */ defineComponent({
   name: 'XhSelectLoading',
   setup(_, { slots }) {
     const ctx = useSelectContext()
-    // 在途占位：与空态占位同一个位置，取数期间顶上来
-    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
+    // 在途占位：与空态占位同一个位置，取数期间顶上来；没写内容时显示 translations.loading
+    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.loading)
   },
 })
 
@@ -507,10 +511,15 @@ const SELECT_PARTS = {
   'item-description': XhSelectItemDescription,
   'item-suffix': XhSelectItemSuffix,
   'item-indicator': XhSelectItemIndicator,
+  'empty': XhSelectEmpty,
+  'loading': XhSelectLoading,
+  'error': XhSelectError,
+  'retry-trigger': XhSelectRetryTrigger,
 }
 
 interface SelectStructureSlots {
   'label'?: () => VNode[]
+  'empty'?: () => VNode[]
   'item'?: (node: SelectNodeMeta) => VNode[]
   'item-prefix'?: (node: SelectNodeMeta) => VNode[]
   'item-suffix'?: (node: SelectNodeMeta) => VNode[]
@@ -518,14 +527,16 @@ interface SelectStructureSlots {
 
 /**
  * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 selectStructure 渲，
- * 与 Web Components 不写部件时元素生成的节点出自同一份。标题、条目文字与行首行尾由对应插槽接管。
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题、空态、条目文字与行首行尾由对应插槽接管。
  */
-function renderDefaultStructure(api: SelectApi, label: string | undefined, clearable: boolean, slots: SelectStructureSlots): VNode[] {
-  const nodes = selectStructure(api, { label, clearable, slotted: name => slots[name as keyof SelectStructureSlots] != null })
+function renderDefaultStructure(api: SelectApi, options: { label?: string, empty?: string, clearable: boolean }, slots: SelectStructureSlots): VNode[] {
+  const nodes = selectStructure(api, { ...options, slotted: name => slots[name as keyof SelectStructureSlots] != null })
   return renderStructure(nodes, SELECT_PARTS, (node) => {
     switch (node.slot?.name) {
       case 'label':
         return slots.label?.()
+      case 'empty':
+        return slots.empty?.()
       case 'item':
         return slots.item?.(node.data as SelectNodeMeta) ?? (node.data as SelectNodeMeta).label
       case 'item-prefix':

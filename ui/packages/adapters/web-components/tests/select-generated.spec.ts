@@ -16,6 +16,9 @@ interface SelectHost extends HTMLElement {
   multiple?: boolean
   value?: string | string[]
   open?: boolean
+  empty?: string
+  loading?: boolean
+  error?: boolean
 }
 
 const COLLECTION: SelectNode[] = [
@@ -160,5 +163,49 @@ describe('xh-select 生成结构', () => {
     await settle(el)
     expect(el.querySelectorAll('[data-xh-gen="structure"]')).toHaveLength(0)
     expect(el.querySelectorAll('[data-scope="select"][data-part="item"]')).toHaveLength(1)
+  })
+
+  it('浮层里生成空态、在途、取数失败的提示与重试钮：文字取 translations，按状态收放', async () => {
+    const el = mount({ collection: [] })
+    await settle(el)
+    expect(partsOf(part(el, 'content')!)).toEqual(['list', 'empty', 'loading', 'error', 'retry-trigger'])
+    const shown = (): string[] => ['empty', 'loading', 'error', 'retry-trigger'].filter(name => !part(el, name)!.hidden)
+    expect([part(el, 'empty')!.textContent, part(el, 'loading')!.textContent, part(el, 'error')!.textContent, part(el, 'retry-trigger')!.textContent])
+      .toEqual(['No data', 'Loading', 'Couldn’t load options', 'Retry'])
+    expect(shown()).toEqual(['empty'])
+    el.loading = true
+    await settle(el)
+    expect(shown()).toEqual(['loading'])
+    el.loading = false
+    el.error = true
+    await settle(el)
+    expect(shown()).toEqual(['error', 'retry-trigger'])
+    el.error = false
+    el.collection = COLLECTION
+    await settle(el)
+    expect(shown()).toEqual([])
+  })
+
+  it('空态文字：empty 属性写进生成的 empty，slot="empty" 接管它', async () => {
+    const el = mount({ collection: [], empty: '没有水果' })
+    await settle(el)
+    expect(part(el, 'empty')!.textContent).toBe('没有水果')
+    el.empty = '换一个'
+    await settle(el)
+    expect(part(el, 'empty')!.textContent).toBe('换一个')
+
+    const slotted = mount({ collection: [] }, '<strong slot="empty">空空如也</strong>')
+    await settle(slotted)
+    expect(part(slotted, 'empty')!.querySelector('strong')!.textContent).toBe('空空如也')
+  })
+
+  it('手写的空态与在途占位留空时由元素填 translations，作者写了内容就归作者', async () => {
+    const el = mount({ collection: [] }, [
+      '<div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger"><span data-xh-part="value-text"></span></button></div>',
+      '<div data-xh-part="positioner"><div data-xh-part="content"><div data-xh-part="list"></div>',
+      '<div data-xh-part="empty"></div><div data-xh-part="loading">载入中</div></div></div></div>',
+    ].join(''))
+    await settle(el)
+    expect([part(el, 'empty')!.textContent, part(el, 'loading')!.textContent]).toEqual(['No data', '载入中'])
   })
 })

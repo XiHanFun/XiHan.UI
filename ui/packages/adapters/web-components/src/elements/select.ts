@@ -33,8 +33,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 条目身份取作者写在 item 上的 value 属性，禁用由部件声明（aria-disabled）。
  *
  * 不写部件（或只写 root）时元素按标准结构生成整套节点：表单影子、标题（label）、盒（带不带清空钮看 clearable）、
- * 浮层与 collection 的条目。标题、条目文字与行首行尾可以由宿主直接子节点接管：`slot="label"`、
- * `slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"`。
+ * 浮层与 collection 的条目，以及浮层里的空态、在途、取数失败的提示与重试钮（按状态收放）。标题、空态、条目文字与
+ * 行首行尾可以由宿主直接子节点接管：`slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、
+ * `slot="item-suffix:<值>"`。
  *
  * value-text 的显示文字、overflow-tag 的 +N 与表单影子 hidden-select 的选项由元素填入，作者只需提供空节点；
  * value-text / overflow-tag 中作者写了内容则由作者负责，元素不再改写。
@@ -47,6 +48,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @customElement xh-select
  * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {boolean} clearable - 生成结构时盒里带清空按钮；手写部件时不使用它，写了 clear-trigger 即可清空
+ * @attr {string} empty - 空态文字：生成结构时写进 empty 部件，没写时取 translations.empty；手写部件时不使用它
  * @attr {string} value - 受控选中值；未提供该属性即非受控。多选集合通过 property 设置，属性只能传入单值
  * @attr {string} default-value - 非受控初始选中值。多选集合通过 property 设置，属性只能传入单值
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
@@ -88,8 +90,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart content - 浮层外壳（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart list - role=listbox 本体，条目放在其中；滚动也在这一层
  * @csspart footer - 浮层底部的操作区，是 list 的兄弟；不进入列表框的拥有关系，方向键与连打检索也不识别它
- * @csspart empty - 空态占位，须放在 content 中作为 list 的兄弟；提供 collection 时由元素按条数收放，条目手写时由作者负责
- * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
+ * @csspart empty - 空态占位，须放在 content 中作为 list 的兄弟；提供 collection 时由元素按条数收放，条目手写时由作者负责；留空即由元素填入 translations.empty
+ * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示；留空即由元素填入 translations.loading
  * @csspart error - 整表取数失败的提示（role=alert），与空态、在途占位同一位置；留空即由元素填入 translations.loadError
  * @csspart retry-trigger - 整表取数失败后的重试按钮，不占 Tab 位；留空即由元素填入 translations.retry
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份；条目挂在其中
@@ -120,6 +122,7 @@ export class XhSelectElement extends XhPortalHostElement {
       ? selectStructure(connectSelect(host.ctrl.service, wcNormalize), {
           label: host.label,
           clearable: host.clearable,
+          empty: host.empty,
           slotted: (name, key) => host.slotted(name, key),
         })
       : undefined,
@@ -134,6 +137,7 @@ export class XhSelectElement extends XhPortalHostElement {
     lazyMount: { type: Boolean, attribute: 'lazy-mount' },
     label: { converter: STRING_CONVERTER },
     clearable: { type: Boolean },
+    empty: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     open: { converter: BOOLEAN_CONVERTER },
@@ -164,6 +168,7 @@ export class XhSelectElement extends XhPortalHostElement {
   declare lazyMount?: boolean
   declare label?: string
   declare clearable?: boolean
+  declare empty?: string
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare open?: boolean
@@ -505,13 +510,18 @@ export class XhSelectElement extends XhPortalHostElement {
     put('loading', api.getLoadingProps() as Record<string, unknown>)
     put('error', api.getErrorProps() as Record<string, unknown>)
     put('retry-trigger', api.getRetryTriggerProps() as Record<string, unknown>)
-    // 两个部件留空时由元素填文字：作者写了就归作者
-    const errorEl = this.getPart('error')
-    if (errorEl)
-      this.fillText(errorEl, api.translations.loadError)
-    const retryEl = this.getPart('retry-trigger')
-    if (retryEl)
-      this.fillText(retryEl, api.translations.retry)
+    // 四个部件留空时由元素填文字：作者写了就归作者
+    const texts: readonly (readonly [string, string])[] = [
+      ['empty', api.translations.empty],
+      ['loading', api.translations.loading],
+      ['error', api.translations.loadError],
+      ['retry-trigger', api.translations.retry],
+    ]
+    for (const [name, text] of texts) {
+      const el = this.getPart(name)
+      if (el)
+        this.fillText(el, text)
+    }
 
     // 分组是多实例 part：身份取自己的 value 属性，组内标题跟着同一份身份
     for (const el of this.getParts('group')) {

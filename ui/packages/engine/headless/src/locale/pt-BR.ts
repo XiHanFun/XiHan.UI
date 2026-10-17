@@ -578,7 +578,7 @@ const translations = {
     },
   },
   'scrollbar': { thumb: 'Barra de rolagem' },
-  'select': { ...tagged, clearTrigger: 'Limpar', content: 'Opções', loadError: 'Não foi possível carregar as opções', retry: 'Tentar novamente' },
+  'select': { ...tagged, clearTrigger: 'Limpar', content: 'Opções', empty: 'Nenhum dado', loading: 'Carregando', loadError: 'Não foi possível carregar as opções', retry: 'Tentar novamente' },
   'side-nav': { root: 'Barra lateral', input: 'Filtrar navegação', noMatch: 'Nenhum resultado' },
   'signature-pad': {
     label: 'Assinatura',

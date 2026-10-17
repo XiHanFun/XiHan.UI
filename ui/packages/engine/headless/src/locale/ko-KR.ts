@@ -575,7 +575,7 @@ const translations = {
     },
   },
   'scrollbar': { thumb: '스크롤 막대' },
-  'select': { ...tagged, clearTrigger: '지우기', content: '옵션', loadError: '옵션을 로드하지 못했습니다', retry: '다시 시도' },
+  'select': { ...tagged, clearTrigger: '지우기', content: '옵션', empty: '데이터 없음', loading: '로드 중', loadError: '옵션을 로드하지 못했습니다', retry: '다시 시도' },
   'side-nav': { root: '사이드바', input: '탐색 필터', noMatch: '일치하는 항목 없음' },
   'signature-pad': {
     label: '서명',
