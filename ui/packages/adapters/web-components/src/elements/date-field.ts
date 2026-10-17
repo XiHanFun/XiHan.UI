@@ -7,7 +7,8 @@
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldTranslations, DateFieldValueChangeDetails, DateGranularity, DateHourCycle, DateSegmentSet, DateSegmentType, FormControlState } from '@xihan-ui/headless'
-import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta, resolveFormControlState } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta, dateFieldStructure, resolveFormControlState } from '@xihan-ui/headless'
 import { HOUR_CYCLE_CONVERTER } from '../dom/hour-cycle'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -80,7 +81,11 @@ function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentPro
  * 整条占位可写成 placeholder 属性（一段都没填、焦点也不在段上时显示）；逐段的占位串与读屏名字是对象，
  * 属性无法表达，只能通过 property 设置（`el.placeholder = { year: '年' }`）。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label），盒里的段组与清空按钮，表单影子；
+ * 段按当前段序铺，段与段之间是按 locale 取的分隔符文字。标题可以由宿主直接子节点 `slot="label"` 接管。
+ *
  * @customElement xh-date-field
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控值，ISO 串；写为空串即受控且当前为空；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值，同样是 ISO 串
  * @attr {string} min - 下界 ISO 串，参与各段区间的收窄
@@ -114,8 +119,15 @@ function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentPro
 export class XhDateFieldElement extends XhElement {
   static override partContract = { anatomy: dateFieldAnatomy, meta: dateFieldMeta }
 
+  static override structure: ElementStructure<XhDateFieldElement> = {
+    build: host => host.ctrl.service
+      ? dateFieldStructure(connectDateField(host.ctrl.service, wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key) })
+      : undefined,
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    label: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     min: { converter: STRING_CONVERTER },
@@ -138,6 +150,7 @@ export class XhDateFieldElement extends XhElement {
     size: { converter: STRING_CONVERTER },
   }
 
+  declare label?: string
   declare value?: string
   declare defaultValue?: string
   declare min?: string

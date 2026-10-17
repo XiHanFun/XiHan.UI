@@ -9,8 +9,10 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { DateFieldApi, DateFieldSchema, DateFieldSegmentState, DateFieldTranslations, DateGranularity, DateHourCycle, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { dateFieldStructure } from '@xihan-ui/headless'
 import { defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideDateField, useDateFieldContext } from './context'
@@ -43,6 +45,8 @@ export const XhDateFieldRoot = defineComponent({
   name: 'XhDateFieldRoot',
   // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
+    /** 标题文字。不写默认插槽时铺 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
     value: { type: String as PropType<string | null> },
     defaultValue: { type: String as PropType<string | null> },
     min: { type: String },
@@ -74,6 +78,7 @@ export const XhDateFieldRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: DateFieldRootSlotProps) => VNode[]
+    label?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const onValueChange: DateFieldProps['onValueChange'] = (details) => {
@@ -82,18 +87,23 @@ export const XhDateFieldRoot = defineComponent({
     }
     const ctx = useDateField(withHandlers(withXhConfig('date-field', useFormControlProps(props)), { onClear: () => emit('clear') }) as DateFieldProps, { onValueChange })
     provideDateField(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      value: ctx.api.value.value,
-      valueAsDate: ctx.api.value.valueAsDate,
-      segments: ctx.api.value.segments,
-      complete: ctx.api.value.complete,
-      empty: ctx.api.value.empty,
-      outOfRange: ctx.api.value.outOfRange,
-      focusedSegment: ctx.api.value.focusedSegment,
-      setValue: ctx.api.value.setValue,
-      clear: ctx.api.value.clear,
-      canClear: ctx.api.value.canClear,
-    }))
+    return () => {
+      const api = ctx.api.value
+      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+        ? slots.default({
+            value: api.value,
+            valueAsDate: api.valueAsDate,
+            segments: api.segments,
+            complete: api.complete,
+            empty: api.empty,
+            outOfRange: api.outOfRange,
+            focusedSegment: api.focusedSegment,
+            setValue: api.setValue,
+            clear: api.clear,
+            canClear: api.canClear,
+          })
+        : renderDefaultStructure(api, props.label, slots.label))
+    }
   },
 })
 
@@ -173,3 +183,22 @@ export const XhDateFieldHiddenInput = defineComponent({
     return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
   },
 })
+
+/** 标准结构里各部件对应的组件。 */
+const DATE_FIELD_PARTS = {
+  'label': XhDateFieldLabel,
+  'control': XhDateFieldControl,
+  'segment-group': XhDateFieldSegmentGroup,
+  'segment': XhDateFieldSegment,
+  'clear-trigger': XhDateFieldClearTrigger,
+  'hidden-input': XhDateFieldHiddenInput,
+}
+
+/**
+ * 未写默认插槽时铺开的整套结构：照 headless 的 dateFieldStructure 渲，段按当前段序铺、段间是 locale 的分隔符，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题由 label 插槽接管。
+ */
+function renderDefaultStructure(api: DateFieldApi, label: string | undefined, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = dateFieldStructure(api, { label, slotted: name => name === 'label' && labelSlot != null })
+  return renderStructure(nodes, DATE_FIELD_PARTS, node => (node.slot ? labelSlot?.() : undefined))
+}

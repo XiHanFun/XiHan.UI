@@ -927,5 +927,59 @@ export const dateFieldSuite: ConformanceSuite = {
       props: { locale: 'zh-CN' },
       steps: [heldPressIgnored('date-field', 'clear-trigger', '一段都没填时清空钮藏着，不接受按压')],
     },
+    {
+      name: '作者不写结构：三端都照 dateFieldStructure 铺出标题、按段序的段与 locale 的分隔符、清空钮与表单影子',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { locale: 'zh-CN', label: '截止日期', defaultValue: '2026-07-28', name: 'due' },
+      initial: {
+        order: ['root', 'label', 'control', 'segment-group', 'segment[0]', 'segment[1]', 'segment[2]', 'clear-trigger', 'hidden-input'],
+        parts: {
+          'control': { 'role': 'group', 'aria-labelledby': '@part(label)' },
+          'segment[0]': { 'data-segment': 'year' },
+          'segment[1]': { 'data-segment': 'month' },
+          'segment[2]': { 'data-segment': 'day' },
+          'clear-trigger': { hidden: null },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '段位文字、分隔符与表单值都不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            expectTexts(doc, ['2026', '07', '28'], '默认值落进三段')
+            expectHidden(doc, '2026-07-28', '表单影子带上整串')
+            const text = doc.querySelector(`${SCOPE}[data-part="segment-group"]`)?.textContent
+            if (text !== '2026/07/28')
+              throw new Error(`段组期望读作 "2026/07/28"，实际 ${JSON.stringify(text)}`)
+          },
+        },
+      ],
+    },
+    {
+      name: '作者不写结构（en-US 到分钟）：段按月日年时分排，分隔符取自 locale',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { locale: 'en-US', granularity: 'minute', defaultValue: '2026-07-28T13:45' },
+      initial: {
+        counts: { segment: 5, label: 0 },
+        parts: {
+          'segment[0]': { 'data-segment': 'month' },
+          'segment[2]': { 'data-segment': 'year' },
+          'segment[4]': { 'data-segment': 'minute' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '分隔符是装饰文字，不进属性快照',
+          run: ({ doc }) => {
+            const text = doc.querySelector(`${SCOPE}[data-part="segment-group"]`)?.textContent
+            if (text !== '07/28/2026, 13:45')
+              throw new Error(`段组期望读作 "07/28/2026, 13:45"，实际 ${JSON.stringify(text)}`)
+          },
+        },
+      ],
+    },
   ],
 }

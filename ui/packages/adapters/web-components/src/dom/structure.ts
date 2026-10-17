@@ -9,7 +9,7 @@
 import type { StructureChild, StructureInstanceNode, StructureSlot, StructureTag, StructureTakeoverPosition } from '@xihan-ui/headless'
 import type { KeyedChildren } from './generated-nodes'
 import { DIAGNOSTIC_CODES, isDev, reportDiagnostic } from '@xihan-ui/core'
-import { isStructureInstance } from '@xihan-ui/headless'
+import { isStructureInstance, isStructureLiteral } from '@xihan-ui/headless'
 import { createGeneratedElement, GEN_ATTR, generatedChildren, reconcile } from './generated-nodes'
 
 /** 标准结构生成的节点在 data-xh-gen 上写的值。 */
@@ -39,6 +39,14 @@ export function placeStructure(parent: Element, nodes: readonly StructureChild[]
   reconcile(parent, nodes, keys, node => node.key, (node, reuse) => {
     if (isStructureInstance(node))
       return placeInstance(doc, node, reuse)
+    if (isStructureLiteral(node)) {
+      const el = reuse instanceof HTMLElement && reuse.localName === 'span' && !reuse.hasAttribute('data-xh-part')
+        ? reuse
+        : createGeneratedElement(doc, 'span', { [GEN_ATTR]: STRUCTURE_MARK })
+      if (el.textContent !== node.literal)
+        el.textContent = node.literal
+      return el
+    }
     const el = reuse instanceof HTMLElement && reuse.localName === node.tag
       ? reuse
       : createStructureElement(doc, node.tag)
@@ -210,7 +218,7 @@ function checkTakeoverOrder(host: Element, nodes: readonly StructureChild[], tak
   let rank = -1
   let last: string | undefined
   for (const node of nodes) {
-    const part = isStructureInstance(node) ? undefined : node.part
+    const part = isStructureInstance(node) || isStructureLiteral(node) ? undefined : node.part
     const position = part === undefined ? undefined : takeover.get(part)
     if (position === 'portal')
       continue

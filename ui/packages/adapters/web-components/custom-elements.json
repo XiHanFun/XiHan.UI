@@ -18668,7 +18668,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-date-field>`：Light-DOM 行为宿主：作者写 root / label / control / segment-group / segment（多个）/ hidden-input\n角色节点，元素运行 date-field 状态机并把 connect 产出接上。\n\n每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间内回绕、左右键与 Home/End 换段、\n数字键直接填入且输满自动跳到下一段、Backspace 清除本段；可选的 clear-trigger 一键清空全部段。\n\n段的身份有两种写法：只声明下标（`index`，或按文档序），具体是哪一段由 locale（zh-CN 年月日、\nen-US 月日年）与段集计算：同一份标记更换 locale 即更换形态；或按段名固定\n（`segment=\"quarter\"`），段集中没有该段时该格收起。不使用的段带 hidden 保留在文档中，\n不卸载作者节点。\n\n段位未填齐时整份值为 null；填齐后才拼出 ISO 串，由 hidden-input 随表单提交。\n\n整条占位可写成 placeholder 属性（一段都没填、焦点也不在段上时显示）；逐段的占位串与读屏名字是对象，\n属性无法表达，只能通过 property 设置（`el.placeholder = { year: '年' }`）。",
+          "description": "`<xh-date-field>`：Light-DOM 行为宿主：作者写 root / label / control / segment-group / segment（多个）/ hidden-input\n角色节点，元素运行 date-field 状态机并把 connect 产出接上。\n\n每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间内回绕、左右键与 Home/End 换段、\n数字键直接填入且输满自动跳到下一段、Backspace 清除本段；可选的 clear-trigger 一键清空全部段。\n\n段的身份有两种写法：只声明下标（`index`，或按文档序），具体是哪一段由 locale（zh-CN 年月日、\nen-US 月日年）与段集计算：同一份标记更换 locale 即更换形态；或按段名固定\n（`segment=\"quarter\"`），段集中没有该段时该格收起。不使用的段带 hidden 保留在文档中，\n不卸载作者节点。\n\n段位未填齐时整份值为 null；填齐后才拼出 ISO 串，由 hidden-input 随表单提交。\n\n整条占位可写成 placeholder 属性（一段都没填、焦点也不在段上时显示）；逐段的占位串与读屏名字是对象，\n属性无法表达，只能通过 property 设置（`el.placeholder = { year: '年' }`）。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label），盒里的段组与清空按钮，表单影子；\n段按当前段序铺，段与段之间是按 locale 取的分隔符文字。标题可以由宿主直接子节点 `slot=\"label\"` 接管。",
           "name": "XhDateFieldElement",
           "cssParts": [
             {
@@ -18709,6 +18709,24 @@
               },
               "static": true,
               "default": "{ anatomy: dateFieldAnatomy, meta: dateFieldMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhDateFieldElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? dateFieldStructure(connectDateField(host.ctrl.service, wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key) }) : undefined, }"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
             },
             {
               "kind": "field",
@@ -18961,6 +18979,14 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
             {
               "type": {
                 "text": "string | undefined"

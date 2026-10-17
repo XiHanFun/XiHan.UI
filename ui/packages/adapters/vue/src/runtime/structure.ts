@@ -3,11 +3,11 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 按组件的标准结构渲缺省树：每个部件节点换成同名的部件组件（委派部件按「组件名/部件名」找），组合节点换成那个组件的根组件，身份属性当 prop 传，子节点进默认插槽。
+// 按组件的标准结构渲缺省树：每个部件节点换成同名的部件组件（委派部件按「组件名/部件名」找），组合节点换成那个组件的根组件，装饰文字渲成 span，身份属性当 prop 传，子节点进默认插槽。
 
 import type { StructureChild, StructureNode } from '@xihan-ui/headless'
 import type { Component, VNode, VNodeChild } from 'vue'
-import { isStructureInstance } from '@xihan-ui/headless'
+import { isStructureInstance, isStructureLiteral } from '@xihan-ui/headless'
 import { h } from 'vue'
 
 /**
@@ -26,6 +26,8 @@ export function renderStructure(
   instances: Readonly<Record<string, Component>> = {},
 ): VNode[] {
   return nodes.map((node) => {
+    if (isStructureLiteral(node))
+      return h('span', { key: node.key }, node.literal)
     if (isStructureInstance(node)) {
       const root = instances[node.instance]
       if (!root)
