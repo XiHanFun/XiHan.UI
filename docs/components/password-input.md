@@ -169,7 +169,7 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhPasswordInputRoot` | `default` | `PasswordInputRootSlotProps` |  |
-| `XhPasswordInputRoot` | `label` | — |  |
+| `XhPasswordInputRoot` | `label` | — | 不写默认插槽时标题的内容，代替 label 文字。 |
 
 ### React 适配器 props
 

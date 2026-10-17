@@ -464,6 +464,7 @@ export const passwordInputSuite: ConformanceSuite = {
         parts: {
           'label': { for: '@part(input)' },
           'input': { type: 'password' },
+          'visibility-trigger': { 'aria-label': 'Show password' },
           'strength-meter': { 'data-level': '2', 'hidden': null },
         },
       },
@@ -471,7 +472,7 @@ export const passwordInputSuite: ConformanceSuite = {
         {
           kind: 'click',
           part: 'visibility-trigger',
-          expect: { parts: { 'input': { type: 'text' }, 'visibility-trigger': { 'data-state': 'visible' } } },
+          expect: { parts: { 'input': { type: 'text' }, 'visibility-trigger': { 'aria-label': 'Hide password', 'data-state': 'visible' } } },
         },
       ],
     },

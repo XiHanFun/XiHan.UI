@@ -80,4 +80,21 @@ describe('xh-password-input 生成结构', () => {
     expect(label.querySelector('b')!.textContent).toBe('登录密码')
     expect(label.getAttribute('for')).toBe(part(el, 'input')!.id)
   })
+
+  it('大写锁定提示的文字由元素写入，改了 label 重铺结构后仍在', async () => {
+    const el = mount({ label: '密码' })
+    await settle(el)
+    const keydown = Object.assign(new KeyboardEvent('keydown', { key: 'A', bubbles: true }), { getModifierState: (key: string) => key === 'CapsLock' })
+    part(el, 'input')!.dispatchEvent(keydown)
+    await settle(el)
+    const hint = part(el, 'caps-lock-indicator')!
+    const text = hint.textContent
+    expect(text).not.toBe('')
+
+    el.label = '新密码'
+    await settle(el)
+    expect(part(el, 'label')!.textContent).toBe('新密码')
+    expect(part(el, 'caps-lock-indicator')).toBe(hint)
+    expect(hint.textContent).toBe(text)
+  })
 })
