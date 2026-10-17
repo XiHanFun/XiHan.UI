@@ -23,6 +23,14 @@ export interface DesignerPropertiesTranslations {
   readonly aboveMaximum: (max: string) => string
   /** 数字没有大于开区间下限 min。 */
   readonly notAboveMinimum: (min: string) => string
+  /** 没有字段树时，绑定字段框里的文字不是字段路径。 */
+  readonly invalidDataField: string
+  /** 四边编辑器的开关文字。 */
+  readonly sidesLinked: string
+  /** 四边编辑器各数字框的名字：all 是四边相同时那一个。 */
+  readonly sides: Readonly<{ all: string, top: string, right: string, bottom: string, left: string }>
+  /** 四边分开填时有边空着。 */
+  readonly sidesIncomplete: string
 }
 
 /** 问题列表的文案。 */

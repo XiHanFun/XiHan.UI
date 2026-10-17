@@ -3,14 +3,21 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 属性面板的内建编辑器：七种内建编辑方式各用一个库内字段元素，放在 <xh-field> 里作为它的 control 部件；
-// 标签、说明、错误、必填、只读与无效由字段接到控件真正可聚焦的部件上。
+// 属性面板的内建编辑器：每种内建编辑方式用库内元素。多数是一个字段元素，放在 <xh-field> 里作为它的 control 部件，
+// 标签、说明、错误、必填、只读与无效由字段接到控件真正可聚焦的部件上；四边（sides）是一组控件，整行按组排。
 
 import type { JsonValue } from '@xihan-ui/core/json'
-import type { PropertyControl, PropertyDescriptor, PropertyEditorContext, PropertyOption } from '@xihan-ui/designer-kit/properties'
+import type { DataField, DataFieldKind } from '@xihan-ui/designer-kit'
+import type { PropertyControl, PropertyDescriptor, PropertyEditorContext, PropertyNumberConstraints, PropertyOption, PropertySide } from '@xihan-ui/designer-kit/properties'
 import type { DesignerPropertiesTranslations } from '../translations'
-import { jsonEquals } from '@xihan-ui/core/json'
+import { formatJsonPath, isJsonPathText, isPlainObject, jsonEquals } from '@xihan-ui/core/json'
+import { listDataFields } from '@xihan-ui/designer-kit'
+import { PROPERTY_SIDES } from '@xihan-ui/designer-kit/properties'
 import { createAuthoredElement, setText } from '@xihan-ui/web-components/authoring'
+import { placeChildren } from '../internal/dom'
+
+/** 属性面板生成的部件都带这个 data-scope，样式只认它。 */
+export const PROPERTIES_SCOPE = 'designer-properties'
 
 /** 内建编辑器在通用上下文之外拿到的东西。 */
 export interface FieldContext extends PropertyEditorContext<PropertyDescriptor<{ readonly kind: string }>, unknown> {
@@ -23,14 +30,17 @@ export interface FieldContext extends PropertyEditorContext<PropertyDescriptor<{
   readonly unitLabel: (unit: string) => string
   /** select 的 appearance 为 auto、单选且选项不超过它时改用切换按钮组；0 不用。 */
   readonly toggleLimit: number
+  /** dataField 选字段用的字段树；undefined 时 dataField 是输入路径的文本框。 */
+  readonly dataFields: readonly DataField[] | undefined
   /** 报告编辑框自己发现的错误（如文字不是 JSON），undefined 表示没有。 */
   readonly setLocalError: (message: string | undefined) => void
 }
 
-/** 内建编辑器实例：element 是放进字段的 control 部件。 */
+/** 内建编辑器实例：element 是放进字段的 control 部件；group 为 true 时它是一组控件，整行按组排、不进字段。 */
 export interface FieldInstance {
   readonly element: HTMLElement
   readonly update: (context: FieldContext) => void
+  readonly group?: boolean
 }
 
 type FieldEditor = (context: FieldContext) => FieldInstance
@@ -40,6 +50,28 @@ interface ControlElement extends HTMLElement {
   value?: unknown
   checked?: boolean
   autoSize?: unknown
+}
+
+/** 树选择上受控的数据、值与展开集合。 */
+interface TreeSelectControl extends ControlElement {
+  collection?: TreeSelectItem[]
+  expandedValue?: string[]
+}
+
+/** 树选择的一个节点。 */
+interface TreeSelectItem {
+  value: string
+  label: string
+  description?: string
+  disabled?: boolean
+  children?: TreeSelectItem[]
+}
+
+/** 格式输入上受控的格式说明与选项。 */
+interface FormatControl extends HTMLElement {
+  value?: JsonValue | null
+  kinds?: readonly string[]
+  clearable?: boolean
 }
 
 type ValueChange<T> = CustomEvent<{ value: T }>
@@ -52,6 +84,9 @@ const EDITORS: Readonly<Record<PropertyControl['kind'], FieldEditor>> = {
   tags: tagsEditor,
   color: colorEditor,
   json: jsonEditor,
+  dataField: dataFieldEditor,
+  sides: sidesEditor,
+  format: formatEditor,
 }
 
 /** 按编辑方式取内建编辑器；不是内建种类时为 undefined。 */
@@ -106,42 +141,69 @@ function textEditor(initial: FieldContext): FieldInstance {
   return { element: field, update }
 }
 
-function numberEditor(initial: FieldContext): FieldInstance {
-  const doc = initial.ownerDocument
-  const control = controlOf<'number'>(initial)
+/** 一个数字框：库内 xh-number-field，带约束的上下限与步长，单位放在 suffix，prefix 是框前的短名。 */
+interface NumberBox {
+  readonly field: ControlElement
+  readonly input: HTMLElement
+  /** 换单位文案，空串时撤掉 suffix。 */
+  readonly setUnit: (unit: string) => void
+}
+
+function numberBox(doc: Document, constraints: PropertyNumberConstraints, part: string | undefined, prefix?: HTMLElement): NumberBox {
+  const input = createAuthoredElement(doc, 'input', { 'data-xh-part': 'input' })
   const increment = createAuthoredElement(doc, 'button', { 'data-xh-part': 'increment-trigger', 'type': 'button' })
   const suffix = createAuthoredElement(doc, 'span', { 'data-xh-part': 'suffix' })
   const box = createAuthoredElement(doc, 'div', { 'data-xh-part': 'control' }, [
+    ...(prefix ? [prefix] : []),
     createAuthoredElement(doc, 'button', { 'data-xh-part': 'decrement-trigger', 'type': 'button' }),
-    createAuthoredElement(doc, 'input', { 'data-xh-part': 'input' }),
+    input,
     increment,
   ])
   const field: ControlElement = createAuthoredElement(doc, 'xh-number-field', {
-    'data-xh-part': 'control',
+    'data-xh-part': part,
     'size': 'sm',
-    'min': control.min,
-    'max': control.max,
-    'step': control.step ?? (control.integer ? 1 : undefined),
+    'min': constraints.min,
+    'max': constraints.max,
+    'step': constraints.step ?? (constraints.integer ? 1 : undefined),
   }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [box])])
+  const setUnit = (unit: string): void => {
+    if (unit === '') {
+      suffix.remove()
+      return
+    }
+    setText(suffix, unit)
+    if (suffix.parentElement !== box)
+      box.insertBefore(suffix, increment)
+  }
+  return { field, input, setUnit }
+}
+
+/** 数字违反的约束，依次看整数、开区间下限、下限与上限；合法时为 undefined。 */
+function numberProblem(constraints: PropertyNumberConstraints, value: number, context: FieldContext): string | undefined {
+  const t = context.translations
+  const unit = constraints.unit === undefined ? '' : context.unitLabel(constraints.unit)
+  const bound = (limit: number): string => (unit === '' ? String(limit) : `${limit} ${unit}`)
+  if (constraints.integer && !Number.isInteger(value))
+    return t.notInteger
+  if (constraints.exclusiveMin !== undefined && value <= constraints.exclusiveMin)
+    return t.notAboveMinimum(bound(constraints.exclusiveMin))
+  if (constraints.min !== undefined && value < constraints.min)
+    return t.belowMinimum(bound(constraints.min))
+  if (constraints.max !== undefined && value > constraints.max)
+    return t.aboveMaximum(bound(constraints.max))
+  return undefined
+}
+
+/** 框里的文字与这个值一致：没有值时框里为空，有值时框里的数等于它。 */
+function showsNumber(field: ControlElement, value: JsonValue | undefined): boolean {
+  const shown = typeof field.value === 'string' ? field.value.trim() : ''
+  return value === undefined ? shown === '' : shown !== '' && Number(shown) === value
+}
+
+function numberEditor(initial: FieldContext): FieldInstance {
+  const control = controlOf<'number'>(initial)
+  const { field, setUnit } = numberBox(initial.ownerDocument, control, 'control')
   let context = initial
-  const unitText = (): string => (control.unit === undefined ? '' : context.unitLabel(control.unit))
-  const bound = (value: number): string => {
-    const unit = unitText()
-    return unit === '' ? String(value) : `${value} ${unit}`
-  }
-  /** 违反的约束；合法时为 undefined。 */
-  const problem = (value: number): string | undefined => {
-    const t = context.translations
-    if (control.integer && !Number.isInteger(value))
-      return t.notInteger
-    if (control.exclusiveMin !== undefined && value <= control.exclusiveMin)
-      return t.notAboveMinimum(bound(control.exclusiveMin))
-    if (control.min !== undefined && value < control.min)
-      return t.belowMinimum(bound(control.min))
-    if (control.max !== undefined && value > control.max)
-      return t.aboveMaximum(bound(control.max))
-    return undefined
-  }
   field.addEventListener('value-change', (event) => {
     event.stopPropagation()
     const { value, valueAsNumber } = (event as CustomEvent<{ value: string, valueAsNumber: number }>).detail
@@ -153,7 +215,7 @@ function numberEditor(initial: FieldContext): FieldInstance {
     }
     if (!Number.isFinite(valueAsNumber))
       return
-    const message = problem(valueAsNumber)
+    const message = numberProblem(control, valueAsNumber, context)
     context.setLocalError(message)
     if (message === undefined)
       context.setValue(valueAsNumber)
@@ -164,24 +226,14 @@ function numberEditor(initial: FieldContext): FieldInstance {
   let first = true
   const update = (next: FieldContext): void => {
     context = next
-    const unit = unitText()
-    if (unit === '') {
-      suffix.remove()
-    }
-    else {
-      setText(suffix, unit)
-      if (suffix.parentElement !== box)
-        box.insertBefore(suffix, increment)
-    }
+    setUnit(control.unit === undefined ? '' : next.unitLabel(control.unit))
     placeholder(field, next, undefined)
     const target = next.mixed ? undefined : next.value
     if (!first && jsonEquals(target, seen))
       return
     first = false
     seen = target
-    const shown = typeof field.value === 'string' ? field.value : ''
-    const same = target === undefined ? shown.trim() === '' : shown.trim() !== '' && Number(shown) === target
-    if (!same) {
+    if (!showsNumber(field, target)) {
       field.value = textOf(target)
       next.setLocalError(undefined)
     }
@@ -432,6 +484,320 @@ function jsonEditor(initial: FieldContext): FieldInstance {
         next.setLocalError(undefined)
       }
     }
+  }
+  update(initial)
+  return { element: field, update }
+}
+
+/**
+ * 字段树换成树选择的节点：按 listDataFields 列出起点之下的字段，kinds 里的种类可选；
+ * 不可选的 object 留作禁用的分支，没有可选后代的字段不列。branches 收集所有分支的值。
+ */
+function dataFieldItems(fields: readonly DataField[], control: Extract<PropertyControl, { kind: 'dataField' }>, branches: string[]): TreeSelectItem[] {
+  interface Draft {
+    readonly item: TreeSelectItem
+    readonly selectable: boolean
+    readonly children: Draft[]
+  }
+  const kinds: readonly DataFieldKind[] | undefined = control.kinds
+  const drafts = new Map<string, Draft>()
+  const roots: Draft[] = []
+  for (const entry of listDataFields(fields, control.base === undefined ? {} : { base: control.base })) {
+    const label = entry.field.label ?? entry.field.name
+    const draft: Draft = {
+      item: { value: entry.text, label, ...(label === entry.text ? {} : { description: entry.text }) },
+      selectable: kinds === undefined || kinds.includes(entry.field.kind),
+      children: [],
+    }
+    drafts.set(entry.text, draft)
+    const parent = entry.path.length > 1 ? drafts.get(formatJsonPath(entry.path.slice(0, -1))) : undefined
+    if (parent)
+      parent.children.push(draft)
+    else
+      roots.push(draft)
+  }
+  const build = (level: readonly Draft[]): TreeSelectItem[] => level.flatMap((draft) => {
+    const children = build(draft.children)
+    if (!draft.selectable && children.length === 0)
+      return []
+    if (children.length > 0)
+      branches.push(draft.item.value)
+    return [{ ...draft.item, ...(draft.selectable ? {} : { disabled: true }), ...(children.length > 0 ? { children } : {}) }]
+  })
+  return build(roots)
+}
+
+/** 绑定字段：有字段树时是可搜索的树选择，分支起初都展开；没有时是输入路径的文本框。 */
+function dataFieldEditor(initial: FieldContext): FieldInstance {
+  if (initial.dataFields === undefined)
+    return dataPathEditor(initial)
+  const control = controlOf<'dataField'>(initial)
+  const field: TreeSelectControl = createAuthoredElement(initial.ownerDocument, 'xh-tree-select', {
+    'data-xh-part': 'control',
+    'size': 'sm',
+    'searchable': true,
+    'clearable': initial.descriptor.required !== true,
+  })
+  let context = initial
+  let fields: readonly DataField[] | undefined
+  let branches: string[] = []
+  const collapsed = new Set<string>()
+  field.addEventListener('value-change', (event) => {
+    event.stopPropagation()
+    const [value] = (event as ValueChange<string[]>).detail.value
+    field.value = value === undefined ? [] : [value]
+    context.setValue(value)
+    context.commit()
+  })
+  field.addEventListener('expanded-value-change', (event) => {
+    event.stopPropagation()
+    const open = (event as ValueChange<string[]>).detail.value
+    field.expandedValue = open
+    for (const branch of branches) {
+      if (open.includes(branch))
+        collapsed.delete(branch)
+      else
+        collapsed.add(branch)
+    }
+  })
+  const update = (next: FieldContext): void => {
+    context = next
+    if (next.dataFields !== fields) {
+      fields = next.dataFields
+      branches = []
+      field.collection = dataFieldItems(fields ?? [], control, branches)
+      field.expandedValue = branches.filter(branch => !collapsed.has(branch))
+    }
+    placeholder(field, next, undefined)
+    const value = !next.mixed && typeof next.value === 'string' && next.value !== '' ? [next.value] : []
+    // 起初就写 value，树选择从一开始就是受控的
+    const current = Array.isArray(field.value) ? field.value as string[] : undefined
+    if (current === undefined || current.length !== value.length || current[0] !== value[0])
+      field.value = value
+  }
+  update(initial)
+  return { element: field, update }
+}
+
+/** 没有字段树时的绑定字段：文本框里直接写字段路径，写法不对时就地报错、不派发，框里保留输入。 */
+function dataPathEditor(initial: FieldContext): FieldInstance {
+  const doc = initial.ownerDocument
+  const field: ControlElement = createAuthoredElement(doc, 'xh-text-field', { 'data-xh-part': 'control', 'size': 'sm' }, [
+    createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [
+      createAuthoredElement(doc, 'div', { 'data-xh-part': 'control' }, [createAuthoredElement(doc, 'input', { 'data-xh-part': 'input', 'spellcheck': 'false' })]),
+    ]),
+  ])
+  let context = initial
+  // 上一次从对象里读到的值：没变就保留框里的文字（哪怕写法不对），变了才按新值重写
+  let seen: JsonValue | undefined = initial.mixed ? undefined : initial.value
+  field.value = textOf(seen)
+  field.addEventListener('value-change', (event) => {
+    event.stopPropagation()
+    const { value } = (event as ValueChange<string>).detail
+    field.value = value
+    const text = value.trim()
+    if (text !== '' && !isJsonPathText(text)) {
+      context.setLocalError(context.translations.invalidDataField)
+      return
+    }
+    context.setLocalError(undefined)
+    context.setValue(text === '' ? undefined : text)
+  })
+  field.addEventListener('focusout', () => context.commit())
+  const update = (next: FieldContext): void => {
+    context = next
+    placeholder(field, next, undefined)
+    const value = next.mixed ? undefined : next.value
+    if (jsonEquals(value, seen))
+      return
+    seen = value
+    const shown = typeof field.value === 'string' ? field.value.trim() : ''
+    if (shown !== textOf(value)) {
+      field.value = textOf(value)
+      next.setLocalError(undefined)
+    }
+  }
+  update(initial)
+  return { element: field, update }
+}
+
+/** 取值里四边各自的数字，不是数字的边为 undefined。 */
+function sidesOf(value: JsonValue | undefined): Readonly<Record<PropertySide, number | undefined>> {
+  const sides = isPlainObject(value) ? value : {}
+  return Object.fromEntries(PROPERTY_SIDES.map(side => [side, typeof sides[side] === 'number' ? sides[side] : undefined])) as Record<PropertySide, number | undefined>
+}
+
+/**
+ * 四边：「四边相同」开关加一个数字框，关掉时换成上、右、下、左四个；四边都按描述的数值约束校验，
+ * 有边没填或违反约束时就地报错、不派发。取值不同时开关禁用，只能四边一起改。
+ */
+function sidesEditor(initial: FieldContext): FieldInstance {
+  const doc = initial.ownerDocument
+  const control = controlOf<'sides'>(initial)
+  const linkText = createAuthoredElement(doc, 'span', { 'data-xh-part': 'text' })
+  const link: ControlElement = createAuthoredElement(doc, 'xh-switch', { size: 'sm' }, [
+    createAuthoredElement(doc, 'label', { 'data-xh-part': 'label' }, [
+      createAuthoredElement(doc, 'button', { 'data-xh-part': 'root', 'type': 'button' }, [createAuthoredElement(doc, 'span', { 'data-xh-part': 'thumb' })]),
+      linkText,
+    ]),
+  ])
+  const all = numberBox(doc, control, undefined)
+  const prefixes = new Map<PropertySide, HTMLElement>()
+  const sides = new Map<PropertySide, NumberBox>(PROPERTY_SIDES.map((side) => {
+    const prefix = createAuthoredElement(doc, 'span', { 'data-xh-part': 'prefix' })
+    prefixes.set(side, prefix)
+    return [side, numberBox(doc, control, undefined, prefix)]
+  }))
+  const boxes = [all, ...sides.values()]
+  const fields = createAuthoredElement(doc, 'div', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'sides-fields' })
+  const element = createAuthoredElement(doc, 'div', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'sides' }, [link, fields])
+  let context = initial
+  let linked = true
+  // 自己最近一次写出的值：对象里的值等于它时是自己写入的回声，不改开关、不重写框里的文字
+  let written: JsonValue | undefined
+  let seen: JsonValue | undefined
+  let first = true
+  const write = (value: JsonValue | undefined): void => {
+    written = value
+    context.setValue(value)
+  }
+  const uniform = (value: number): JsonValue => Object.fromEntries(PROPERTY_SIDES.map(side => [side, value]))
+  const report = (box: NumberBox | undefined, message: string | undefined): void => {
+    for (const item of boxes)
+      item.field.toggleAttribute('invalid', item === box && message !== undefined)
+    context.setLocalError(message)
+  }
+  const layout = (): void => {
+    link.checked = linked
+    element.toggleAttribute('data-linked', linked)
+    placeChildren(fields, linked ? [all.field] : PROPERTY_SIDES.map(side => sides.get(side)!.field))
+  }
+  const fill = (value: JsonValue | undefined): void => {
+    const numbers = sidesOf(value)
+    all.field.value = linked ? textOf(numbers.top) : ''
+    for (const side of PROPERTY_SIDES)
+      sides.get(side)!.field.value = textOf(numbers[side])
+  }
+  all.field.addEventListener('value-change', (event) => {
+    event.stopPropagation()
+    const { value, valueAsNumber } = (event as CustomEvent<{ value: string, valueAsNumber: number }>).detail
+    all.field.value = value
+    if (value.trim() === '') {
+      report(undefined, undefined)
+      write(undefined)
+      return
+    }
+    if (!Number.isFinite(valueAsNumber))
+      return
+    const message = numberProblem(control, valueAsNumber, context)
+    report(all, message)
+    if (message === undefined)
+      write(uniform(valueAsNumber))
+  })
+  const writeSides = (): void => {
+    const texts = PROPERTY_SIDES.map(side => String(sides.get(side)!.field.value ?? '').trim())
+    if (texts.every(text => text === '')) {
+      report(undefined, undefined)
+      write(undefined)
+      return
+    }
+    const value: Record<string, number> = {}
+    for (const [index, side] of PROPERTY_SIDES.entries()) {
+      const box = sides.get(side)!
+      if (texts[index] === '') {
+        report(box, context.translations.sidesIncomplete)
+        return
+      }
+      const number = Number(texts[index])
+      if (!Number.isFinite(number))
+        return
+      const message = numberProblem(control, number, context)
+      if (message !== undefined) {
+        report(box, message)
+        return
+      }
+      value[side] = number
+    }
+    report(undefined, undefined)
+    write(value)
+  }
+  for (const box of sides.values()) {
+    box.field.addEventListener('value-change', (event) => {
+      event.stopPropagation()
+      box.field.value = (event as ValueChange<string>).detail.value
+      writeSides()
+    })
+  }
+  link.addEventListener('checked-change', (event) => {
+    linked = (event as CustomEvent<{ checked: boolean }>).detail.checked
+    report(undefined, undefined)
+    let value = context.value
+    const numbers = sidesOf(value)
+    // 打开开关时四边不同就按上边统一
+    if (linked && numbers.top !== undefined && PROPERTY_SIDES.some(side => numbers[side] !== numbers.top)) {
+      value = uniform(numbers.top)
+      write(value)
+    }
+    fill(value)
+    layout()
+    context.commit()
+  })
+  element.addEventListener('focusout', () => context.commit())
+  const update = (next: FieldContext): void => {
+    context = next
+    const t = next.translations
+    setText(linkText, t.sidesLinked)
+    all.input.setAttribute('aria-label', t.sides.all)
+    for (const side of PROPERTY_SIDES) {
+      setText(prefixes.get(side)!, t.sides[side])
+      sides.get(side)!.input.setAttribute('aria-label', t.sides[side])
+    }
+    const unit = control.unit === undefined ? '' : next.unitLabel(control.unit)
+    for (const box of boxes) {
+      box.setUnit(unit)
+      box.field.toggleAttribute('read-only', next.readonly)
+    }
+    link.toggleAttribute('read-only', next.readonly)
+    link.toggleAttribute('disabled', next.mixed)
+    placeholder(all.field, next, undefined)
+    const value = next.mixed ? undefined : next.value
+    if (first || !jsonEquals(value, seen)) {
+      const echo = !first && jsonEquals(value, written)
+      first = false
+      seen = value
+      if (!echo) {
+        const numbers = sidesOf(value)
+        linked = next.mixed || PROPERTY_SIDES.every(side => numbers[side] === numbers.top)
+        fill(value)
+        report(undefined, undefined)
+      }
+    }
+    layout()
+  }
+  update(initial)
+  return { element, update, group: true }
+}
+
+/** 格式：库内 xh-format-input，种类限在描述的 kinds；不是必填时可选「不设格式」，选它即清除。 */
+function formatEditor(initial: FieldContext): FieldInstance {
+  const control = controlOf<'format'>(initial)
+  const field: FormatControl = createAuthoredElement(initial.ownerDocument, 'xh-format-input', { 'data-xh-part': 'control', 'size': 'sm' })
+  if (control.kinds !== undefined)
+    field.kinds = control.kinds
+  field.clearable = initial.descriptor.required !== true
+  let context = initial
+  field.addEventListener('value-change', (event) => {
+    event.stopPropagation()
+    const { value } = (event as ValueChange<JsonValue | null>).detail
+    field.value = value
+    context.setValue(value ?? undefined)
+  })
+  field.addEventListener('focusout', () => context.commit())
+  const update = (next: FieldContext): void => {
+    context = next
+    const value = !next.mixed && isPlainObject(next.value) ? next.value : null
+    if (field.value === undefined || !jsonEquals(field.value, value))
+      field.value = value
   }
   update(initial)
   return { element: field, update }

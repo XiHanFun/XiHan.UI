@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 
 import type { DiagnosticRecord } from '@xihan-ui/core'
+import type { JsonValue } from '@xihan-ui/core/json'
+import type { DataField } from '@xihan-ui/designer-kit'
 import type { DesignerPropertiesEventMap, DesignerPropertyEditor, DesignerPropertyTarget, XhDesignerPropertiesElement } from '../src'
 import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
 import { setXhConfig } from '@xihan-ui/web-components'
@@ -354,6 +356,162 @@ describe('<xh-designer-properties>', () => {
     await panel.updateComplete
     expect(Array.from(number.querySelectorAll(':scope > [data-xh-part="root"] > [data-xh-part="control"] > *'), part => part.getAttribute('data-xh-part'))).toEqual(['decrement-trigger', 'input', 'suffix', 'increment-trigger'])
     expect(number.querySelector('[data-xh-part="suffix"]')!.textContent).toBe('次')
+  })
+
+  it('dataField 给了字段树时是树选择：按 kinds 与 base 列字段，不能选的对象是禁用的分支且起初展开，选中写入路径文字', async () => {
+    const diagnostics = recordWcDiagnostics()
+    const fields: DataField[] = [
+      { name: 'order', kind: 'object', label: '订单', children: [
+        { name: 'no', kind: 'value', label: '单号' },
+        { name: 'items', kind: 'list', label: '明细', children: [{ name: 'sku', kind: 'value' }] },
+        { name: 'buyer', kind: 'object', children: [{ name: 'name', kind: 'value', label: '姓名' }] },
+      ] },
+      { name: 'title', kind: 'value' },
+    ]
+    const panel = await mount((element) => {
+      element.dataFields = fields
+      element.targets = [{
+        kind: 'table',
+        id: 'tb',
+        value: { data: 'order.items', cell: '' },
+        descriptors: [
+          { path: ['data'], control: { kind: 'dataField', kinds: ['list'] }, label: '数据' },
+          { path: ['cell'], control: { kind: 'dataField', kinds: ['value'], base: ['order'] }, label: '单元格' },
+        ],
+      }]
+    })
+    type TreeSelect = HTMLElement & { collection?: unknown, value?: unknown, expandedValue?: unknown }
+    const data = row(panel, 'data').querySelector<TreeSelect>('xh-field > [data-xh-part="root"] > xh-tree-select')!
+    const cell = row(panel, 'cell').querySelector<TreeSelect>('xh-tree-select')!
+    expect(data.getAttribute('data-xh-part')).toBe('control')
+    expect(data.collection).toEqual([{ value: 'order', label: '订单', description: 'order', disabled: true, children: [{ value: 'order.items', label: '明细', description: 'order.items' }] }])
+    expect([data.expandedValue, data.value]).toEqual([['order'], ['order.items']])
+    expect(cell.collection).toEqual([
+      { value: 'no', label: '单号', description: 'no' },
+      { value: 'buyer', label: 'buyer', disabled: true, children: [{ value: 'buyer.name', label: '姓名', description: 'buyer.name' }] },
+    ])
+    expect([cell.expandedValue, cell.value]).toEqual([['buyer'], []])
+
+    const changes = record(panel, 'property-change')
+    const commits = record(panel, 'property-commit')
+    emit(cell, 'value-change', { value: ['buyer.name'] })
+    emit(cell, 'value-change', { value: [] })
+    emit(cell, 'expanded-value-change', { value: [] })
+    expect(changes.map(change => [change.path[0], change.value])).toEqual([['cell', 'buyer.name'], ['cell', undefined]])
+    expect(commits).toHaveLength(2)
+
+    panel.dataFields = [...fields]
+    await panel.updateComplete
+    expect(cell.expandedValue).toEqual([])
+    await new Promise(resolve => setTimeout(resolve))
+    expect(diagnostics.codes()).toEqual([])
+    diagnostics.stop()
+  })
+
+  it('dataField 没有字段树时是输入路径的文本框：写法不对就地报错、不派发', async () => {
+    const panel = await mount(element => element.targets = [{ kind: 'text', id: 'x', value: { field: 'a.b' }, descriptors: [{ path: ['field'], control: { kind: 'dataField' } }] }])
+    const field = row(panel, 'field').querySelector<HTMLElement & { value?: string }>('xh-text-field')!
+    expect(field.value).toBe('a.b')
+    const changes = record(panel, 'property-change')
+    emit(field, 'value-change', { value: 'a..b' })
+    expect(row(panel, 'field').querySelector('[data-xh-part="error-text"]')!.textContent).toBe('Not a valid field path')
+    expect(changes).toHaveLength(0)
+    emit(field, 'value-change', { value: ' order.no ' })
+    emit(field, 'value-change', { value: '' })
+    expect(changes.map(change => change.value)).toEqual(['order.no', undefined])
+    expect(row(panel, 'field').querySelector('xh-field')!.hasAttribute('invalid')).toBe(false)
+
+    panel.dataFields = [{ name: 'order', kind: 'value' }]
+    await panel.updateComplete
+    expect(row(panel, 'field').querySelector('xh-tree-select')).not.toBeNull()
+  })
+
+  it('sides 是一组控件：四边相同时一个数字框，关掉开关换成上右下左四个，有边空着或违反约束就地报错、不派发', async () => {
+    const margin = (value: JsonValue): DesignerPropertyTarget => ({
+      kind: 'page',
+      id: 'p1',
+      value: { margin: value },
+      descriptors: [{ path: ['margin'], control: { kind: 'sides', min: 0, unit: 'mm' }, label: '页边距' }],
+    })
+    const panel = await mount((element) => {
+      element.unitLabel = unit => unit === 'mm' ? '毫米' : unit
+      element.targets = [margin({ top: 5, right: 5, bottom: 5, left: 5 })]
+    })
+    const group = row(panel, 'margin')
+    expect([group.getAttribute('role'), group.querySelector('xh-field')]).toEqual(['group', null])
+    expect(panel.querySelector(`#${group.getAttribute('aria-labelledby')}`)!.textContent).toBe('页边距')
+    const toggle = group.querySelector<HTMLElement & { checked?: boolean }>('xh-switch')!
+    const boxes = (): (HTMLElement & { value?: string })[] => Array.from(group.querySelectorAll('xh-number-field'))
+    const shown = (): unknown[] => boxes().map(box => [box.value, box.querySelector('input')!.getAttribute('aria-label'), box.querySelector('[data-xh-part="prefix"]')?.textContent])
+    expect([toggle.checked, toggle.querySelector('[data-xh-part="text"]')!.textContent]).toEqual([true, 'Same on all sides'])
+    expect(shown()).toEqual([['5', 'All sides', undefined]])
+    expect(boxes()[0]!.querySelector('[data-xh-part="suffix"]')!.textContent).toBe('毫米')
+
+    const changes = record(panel, 'property-change')
+    const commits = record(panel, 'property-commit')
+    emit(boxes()[0]!, 'value-change', { value: '8', valueAsNumber: 8 })
+    expect(changes.at(-1)!.value).toEqual({ top: 8, right: 8, bottom: 8, left: 8 })
+
+    emit(toggle, 'checked-change', { checked: false })
+    expect(toggle.checked).toBe(false)
+    expect(shown()).toEqual([['5', 'Top', 'Top'], ['5', 'Right', 'Right'], ['5', 'Bottom', 'Bottom'], ['5', 'Left', 'Left']])
+    const error = (): string | undefined => group.hasAttribute('data-invalid') ? group.querySelector('[data-part="property-error"]')!.textContent! : undefined
+    emit(boxes()[1]!, 'value-change', { value: '' })
+    expect([error(), boxes()[1]!.hasAttribute('invalid')]).toEqual(['Fill in all four sides', true])
+    emit(boxes()[1]!, 'value-change', { value: '-1' })
+    expect(error()).toBe('Must be at least 0 毫米')
+    const before = changes.length
+    emit(boxes()[1]!, 'value-change', { value: '3' })
+    expect(changes.slice(before).map(change => change.value)).toEqual([{ top: 5, right: 3, bottom: 5, left: 5 }])
+    expect([error(), boxes()[1]!.hasAttribute('invalid')]).toEqual([undefined, false])
+
+    // 自己写入的值回到面板时不改开关
+    panel.targets = [margin({ top: 5, right: 3, bottom: 5, left: 5 })]
+    await panel.updateComplete
+    expect(boxes()).toHaveLength(4)
+    emit(toggle, 'checked-change', { checked: true })
+    expect(changes.at(-1)!.value).toEqual({ top: 5, right: 5, bottom: 5, left: 5 })
+    expect(shown()).toEqual([['5', 'All sides', undefined]])
+    expect(commits.length).toBeGreaterThan(0)
+
+    // 换成四边不同的对象：开关跟着关掉
+    panel.targets = [margin({ top: 1, right: 2, bottom: 3, left: 4 })]
+    await panel.updateComplete
+    expect([toggle.checked, boxes().map(box => box.value)]).toEqual([false, ['1', '2', '3', '4']])
+
+    // 多个对象取值不同：开关禁用，只能四边一起改
+    panel.targets = [margin({ top: 1, right: 1, bottom: 1, left: 1 }), { ...margin({ top: 2, right: 2, bottom: 2, left: 2 }), id: 'p2' }]
+    await panel.updateComplete
+    expect([toggle.checked, toggle.hasAttribute('disabled'), boxes().map(box => [box.value, box.getAttribute('placeholder')])]).toEqual([true, true, [['', 'Multiple values']]])
+  })
+
+  it('format 是格式输入框：种类限在 kinds，必填时不能选「不设格式」，合法的格式说明写入，不设格式即清除', async () => {
+    const diagnostics = recordWcDiagnostics()
+    const panel = await mount(element => element.targets = [{
+      kind: 'text',
+      id: 'x',
+      value: { format: { kind: 'number', decimals: 2 } },
+      descriptors: [
+        { path: ['format'], control: { kind: 'format', kinds: ['number', 'percent'] }, label: '格式' },
+        { path: ['axis'], control: { kind: 'format' }, label: '轴', required: true },
+      ],
+    }])
+    type FormatInput = HTMLElement & { kinds?: unknown, clearable?: boolean, value?: unknown }
+    const format = row(panel, 'format').querySelector<FormatInput>('xh-field > [data-xh-part="root"] > xh-format-input')!
+    const axis = row(panel, 'axis').querySelector<FormatInput>('xh-format-input')!
+    expect([format.getAttribute('data-xh-part'), format.kinds, format.clearable, format.value]).toEqual(['control', ['number', 'percent'], true, { kind: 'number', decimals: 2 }])
+    expect([axis.kinds, axis.clearable, axis.value]).toEqual([undefined, false, null])
+
+    const changes = record(panel, 'property-change')
+    const commits = record(panel, 'property-commit')
+    emit(format, 'value-change', { value: { kind: 'percent' } })
+    emit(format, 'value-change', { value: null })
+    format.dispatchEvent(new FocusEvent('focusout', { bubbles: true }))
+    expect(changes.map(change => change.value)).toEqual([{ kind: 'percent' }, undefined])
+    expect(commits).toEqual([{ path: ['format'] }])
+    await new Promise(resolve => setTimeout(resolve))
+    expect(diagnostics.codes()).toEqual([])
+    diagnostics.stop()
   })
 
   it('只读时字段只读、不派发；focusField 把焦点交给字段', async () => {

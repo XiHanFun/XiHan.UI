@@ -20,6 +20,10 @@ export const designerShellZhCN: XhConfig = {
       belowMinimum: min => `不能小于 ${min}`,
       aboveMaximum: max => `不能大于 ${max}`,
       notAboveMinimum: min => `必须大于 ${min}`,
+      invalidDataField: '不是合法的字段路径',
+      sidesLinked: '四边相同',
+      sides: { all: '四边', top: '上', right: '右', bottom: '下', left: '左' },
+      sidesIncomplete: '四边都要填写',
     },
     'xh-designer-issues': {
       title: '问题',

@@ -30,7 +30,7 @@ const { dx, dy, guides } = snapRect(draggingRect, { targets, threshold: 6 / view
 pnpm add @xihan-ui/designer-kit
 ```
 
-运行时只依赖 `@xihan-ui/core` 的 `./json` 与 `./hotkey` 子入口（`./hotkey` 是快捷键的平台写法与按键命中）和 `@xihan-ui/pointer` 的滚轮换算，import 无副作用，浏览器与服务端都能运行。属性描述与结构校验分别在子入口 `./properties` 与 `./schema`，只做画布的页面（如流程查看器）不为它们付字节。
+运行时只依赖 `@xihan-ui/core` 的 `./json` 与 `./hotkey` 子入口（`./hotkey` 是快捷键的平台写法与按键命中）和 `@xihan-ui/pointer` 的滚轮换算，子入口 `./properties` 另用 `@xihan-ui/expression` 的 `checkFormatSpec` 检查格式说明；import 无副作用，浏览器与服务端都能运行。属性描述与结构校验分别在子入口 `./properties` 与 `./schema`，只做画布的页面（如流程查看器）不为它们付字节。
 
 ## 撤销重做
 
@@ -360,13 +360,18 @@ const issues = checkProperties(descriptors, node, { path: ["nodes", 3], target: 
 | `{ kind: "tags" }` | 字符串数组 |
 | `{ kind: "color" }` | `transparent`，或 `#` 开头的 3、4、6、8 位十六进制色 |
 | `{ kind: "json" }` | 任意 JSON 值 |
+| `{ kind: "dataField", kinds?, base? }` | 字段路径的 `formatJsonPath` 写法，空串为没有绑定，写法不对报 `invalid-value`。字段树不写在描述里，由属性面板给出；`kinds` 是能选的字段种类，`base` 是相对路径的起点（从字段树根开始、只含键），同 `listDataFields` 的两个选项，只给编辑器用 |
+| `{ kind: "sides", integer?, min?, max?, exclusiveMin?, step?, unit? }` | `{ top, right, bottom, left }` 四个数字，每边按 number 的约束检查；缺边或某边不是数字报 `invalid-type`，多出别的键报 `unknown-key` |
+| `{ kind: "format", kinds? }` | `@xihan-ui/expression` 的格式说明，按 `checkFormatSpec` 检查，没过报 `invalid-value`；`kinds` 是允许的格式种类，缺省全部 |
+
+number 与 sides 的数值约束是同一个类型 `PropertyNumberConstraints`；四边的键与次序是 `PROPERTY_SIDES`（`top`、`right`、`bottom`、`left`），取值类型是 `PropertySides`。
 
 | 函数 | 说明 |
 | --- | --- |
 | `evaluateCondition(condition, target)` / `isPropertyVisible(descriptor, target)` | 求值显示条件，equals 与 oneOf 按 JSON 值比较 |
 | `groupProperties(descriptors, target, order?)` | 只收显示中的属性；`order` 里的组在前，其余按出现先后，无组的排最后，空组不出现 |
 | `nestProperties(prefix, descriptors)` | 把相对子对象的描述换成相对上级对象：`path` 与显示条件里的 `path` 都接在 `prefix` 之后，产品扩展的字段原样保留；同一组描述既给子对象的面板用，又拼进上级对象的描述时用它 |
-| `checkPropertyValue(control, value)` | 内建编辑方式的取值检查，返回 `invalid-type`、`out-of-range`、`not-integer`、`invalid-option`、`invalid-color` 或 `undefined` |
+| `checkPropertyValue(control, value)` | 内建编辑方式的取值检查，返回 `invalid-type`、`invalid-value`、`out-of-range`、`not-integer`、`invalid-option`、`invalid-color`、`unknown-key` 或 `undefined` |
 | `checkProperties(descriptors, target, { path?, target?, controls? })` | 只看显示中的属性：必填未填报 `required`，内建取值不合法报对应码，登记在 `controls` 里的编辑方式交给它的 `check`，既不是内建也没登记的报 `unknown-control`；返回结构问题，路径以 `path` 为前缀 |
 | `mergePropertyEditorTables(layers)` | 把几层编辑器表叠成一张，逐键合并，后面的压前面的 |
 | `applyDefaults(target, descriptors)` | 写入缺省值，中间缺少的对象键补成空对象；没有可写的返回同一个对象 |

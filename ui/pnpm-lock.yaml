@@ -652,6 +652,9 @@ importers:
       '@xihan-ui/core':
         specifier: workspace:^
         version: link:../../engine/core
+      '@xihan-ui/expression':
+        specifier: workspace:^
+        version: link:../../engine/expression
       '@xihan-ui/pointer':
         specifier: workspace:^
         version: link:../../engine/pointer
@@ -690,6 +693,9 @@ importers:
       '@xihan-ui/build':
         specifier: workspace:*
         version: link:../../../tooling/build
+      '@xihan-ui/styles':
+        specifier: workspace:*
+        version: link:../../design/styles
       '@xihan-ui/testing':
         specifier: workspace:*
         version: link:../../../tooling/testing
