@@ -8,6 +8,7 @@
 import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { MenuCheckboxValueChangeDetails, MenuChoiceGroupProps, MenuChoiceKind, MenuRadioValue, MenuRadioValueChangeDetails, MenuCheckboxItemProps as SharedMenuCheckboxItemProps, MenuRadioItemProps as SharedMenuRadioItemProps } from '../shared/menu-choice'
+import type { StructureSlotted } from '../shared/structure'
 
 export type { MenuCheckboxValueChangeDetails, MenuChoiceKind, MenuRadioValue, MenuRadioValueChangeDetails } from '../shared/menu-choice'
 
@@ -296,4 +297,19 @@ export interface MenuApi<T extends PropTypes = PropTypes> {
 export interface MenuTranslations {
   /** 菜单容器的名字。默认不写，读屏改由 aria-labelledby 指向触发器取名。 */
   content: string
+}
+
+/** 结构里触发器怎么铺、作者接管哪些格。 */
+export interface MenuStructureOptions {
+  /** 子菜单那一层：触发器是父菜单里的一条条目（div，写着 value），缺省是根菜单，触发器是按钮。 */
+  submenu?: boolean
+  /** 子菜单在父菜单里的条目身份，写在触发条目上。 */
+  value?: string
+  /** 触发器的文字：根菜单是按钮里的文字（trigger 插槽没有内容时），子菜单是触发条目的文字。 */
+  label?: string
+  /**
+   * 作者给了哪些插槽的内容：trigger（根菜单的触发按钮）；item（整条接管）、item-prefix（行首标记位）、
+   * item-suffix（行尾），后三个按条目的值带 key。子菜单的触发条目也认 item。
+   */
+  slotted?: StructureSlotted
 }
