@@ -788,3 +788,11 @@ describe('floatingPanelMachine 内建默认矩形按视口夹', () => {
     expect(position.x + rig.service.context.get('dimensions').width).toBeLessThanOrEqual(375)
   })
 })
+
+describe('floating-panel 只引用在场的标题', () => {
+  it('省略 parts 按在场：引用 title 的 id；标题不在场时不写 aria-labelledby', () => {
+    const panel = api(makeRig({}).service)
+    expect((panel.getContentProps() as Record<string, unknown>)['aria-labelledby']).toBe((panel.getTitleProps() as Record<string, unknown>).id)
+    expect((api(makeRig({ parts: { title: false } }).service).getContentProps() as Record<string, unknown>)['aria-labelledby']).toBeUndefined()
+  })
+})

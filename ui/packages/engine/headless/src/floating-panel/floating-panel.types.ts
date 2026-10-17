@@ -6,6 +6,7 @@
 // 定义 floating panel 类型契约。
 
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
+import type { TitleDescriptionParts } from '../shared/title-description'
 
 /**
  * 面板的三种形态：常规（作者设置的位置与尺寸）、收拢（只保留标题栏）、铺满（占满视口）。
@@ -131,6 +132,11 @@ export interface FloatingPanelSchema extends MachineSchema {
     resizable?: boolean
     /** 禁用：不可移动、不可改尺寸、不可切换形态；开合与关闭不受影响。 */
     disabled?: boolean
+    /**
+     * 作者实际渲染了哪些部件，由适配器统计；省略即按在场处理（服务端直出与挂载前）。
+     * title 不在场时 content 不写 aria-labelledby，名字由作者在 content 上写 aria-label。
+     */
+    parts?: Pick<TitleDescriptionParts, 'title'>
     translations?: Partial<FloatingPanelTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: FloatingPanelOpenChangeDetails) => void

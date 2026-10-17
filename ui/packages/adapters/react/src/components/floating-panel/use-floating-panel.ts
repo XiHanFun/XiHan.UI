@@ -8,12 +8,14 @@
 import type { RuntimeConfig, Service } from '@xihan-ui/core'
 import type { FloatingPanelApi, FloatingPanelSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
+import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import { createRuntimeConfig } from '@xihan-ui/core'
 import { connectFloatingPanel, floatingPanelMachine } from '@xihan-ui/headless'
 import { useCallback, useMemo, useRef } from 'react'
 import { useXhConfig } from '../../config/config'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
+import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 
@@ -28,6 +30,8 @@ export interface FloatingPanelContext {
   visible: boolean
   /** 浮层迁移到的位置：全局配置 > 运行时配置 > body。 */
   portalContainer: () => Element | null
+  /** 标题在不在场，由 XhFloatingPanelTitle 登记；只引用在场的部件。 */
+  presence: TitleDescriptionPresence
 }
 
 export function useFloatingPanel(props: FloatingPanelSchema['props']): FloatingPanelContext {
@@ -48,7 +52,8 @@ export function useFloatingPanel(props: FloatingPanelSchema['props']): FloatingP
     service.refs.set('getContentEl', () => contentRef.current)
   }, [])
 
-  const service = useMachine(floatingPanelMachine, () => props, { scope, onCreate })
+  const presence = useTitleDescriptionPresence()
+  const service = useMachine(floatingPanelMachine, () => ({ ...props, parts: presence.parts }), { scope, onCreate })
   const api = connectFloatingPanel(service, reactNormalize)
 
   // 退场闸门：收起从跟着展开态走，改成跟着 presence 走。面板整棵子树都在 positioner 底下，
@@ -65,5 +70,5 @@ export function useFloatingPanel(props: FloatingPanelSchema['props']): FloatingP
     [xhConfig, config],
   )
 
-  return { api, service, contentRef, positionerRef, visible, portalContainer }
+  return { api, service, contentRef, positionerRef, visible, portalContainer, presence }
 }

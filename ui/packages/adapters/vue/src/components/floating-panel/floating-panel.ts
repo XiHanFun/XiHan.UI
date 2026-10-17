@@ -18,6 +18,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
+import { useTitleDescriptionPart } from '../../runtime/title-description'
 import { provideFloatingPanel, useFloatingPanelContext } from './context'
 import { useFloatingPanel } from './use-floating-panel'
 
@@ -165,6 +166,7 @@ export const XhFloatingPanelTitle = defineComponent({
   name: 'XhFloatingPanelTitle',
   setup(_, { slots }) {
     const ctx = useFloatingPanelContext()
+    useTitleDescriptionPart(ctx.presence, 'title')
     return () => h('h2', ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
   },
 })

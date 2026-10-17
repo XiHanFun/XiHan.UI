@@ -8,11 +8,13 @@
 import type { RuntimeConfig, Service } from '@xihan-ui/core'
 import type { FloatingPanelApi, FloatingPanelSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
+import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import { createRuntimeConfig, createScope, ensurePortalRoot } from '@xihan-ui/core'
 import { connectFloatingPanel, floatingPanelMachine } from '@xihan-ui/headless'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
+import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
@@ -28,6 +30,8 @@ export interface FloatingPanelContext {
   visible: Ref<boolean>
   /** 浮层迁移到的位置：全局配置的 portalContainer > 单一落点。 */
   portalTarget: ComputedRef<string | Element>
+  /** 标题在不在场，由 XhFloatingPanelTitle 登记；只引用在场的部件。 */
+  presence: TitleDescriptionPresence
 }
 
 /** 回调打包为一个对象：该组件有四路对外通知，逐个作为形参排列不便阅读。 */
@@ -47,7 +51,8 @@ export function useFloatingPanel(
   // 同页多个面板的 IDREF 才不会相撞
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(floatingPanelMachine, () => ({ ...props, ...notifiers }), scope)
+  const presence = useTitleDescriptionPresence()
+  const service = useMachine(floatingPanelMachine, () => ({ ...props, parts: presence.parts.value, ...notifiers }), scope)
 
   // 传 getter 而非节点，ref 在挂载后才有值
   service.refs.set('getContentEl', () => contentRef.value)
@@ -71,5 +76,5 @@ export function useFloatingPanel(
     xhConfig.value.portalContainer?.() ?? (typeof document === 'undefined' ? 'body' : ensurePortalRoot(document)),
   )
 
-  return { api, service, contentRef, positionerRef, visible, portalTarget }
+  return { api, service, contentRef, positionerRef, visible, portalTarget, presence }
 }
