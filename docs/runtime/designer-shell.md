@@ -350,8 +350,8 @@ menu.addEventListener("select", event => runCommand(commands, event.detail.value
 | 函数 | 说明 |
 | --- | --- |
 | `arrangeCommands(placement, commands, defaults, layout?)` | 排出某个位置的分组：`layout` 写了这个位置就只用它；否则用 `defaults`（各款内置的缺省排列），再把 `placement` 含这个位置、又不在缺省排列里的命令按登记顺序追加成一组。排列里写了没登记的命令 id 时抛 `TypeError` |
-| `createCommandToolbar(document)` | 一条 `<xh-toolbar>`：`update(groups, commands, context, label)` 分组变了才重铺按钮，文字、可用与 `aria-pressed`（开关式命令）每次刷新；点击按钮执行命令，放不下的收进行尾的「更多」菜单 |
-| `renderCommandMenu(content, groups, commands, context, { platform? })` | 把分组铺成 `<xh-context-menu>` content 里的条目，组间一条分隔线；不可用的写 `aria-disabled`，带快捷键的在行尾写提示 |
+| `createCommandToolbar(document)` | 一条 `<xh-toolbar>`：`update(groups, commands, context, label)` 分组变了才重铺按钮，文字、可用、`aria-pressed`（开关式命令）与 `data-tone`（命令的语气）每次刷新；点击按钮执行命令，放不下的收进行尾的「更多」菜单，语气随按钮带进菜单项 |
+| `renderCommandMenu(content, groups, commands, context, { platform? })` | 把分组铺成 `<xh-context-menu>` content 里的条目，组间一条分隔线；不可用的写 `aria-disabled`，命令的语气写 `data-tone`，带快捷键的在行尾写提示 |
 | `runCommand(commands, id, context)` | 命令存在且此刻可用才执行，返回是否执行了 |
 | `commandLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；此刻能否执行 |
 

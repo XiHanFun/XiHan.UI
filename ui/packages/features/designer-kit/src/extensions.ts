@@ -6,7 +6,7 @@
 // @xihan-ui/designer-kit —— 设计器扩展：按实例传入的扩展对象的公共骨架、合并与查重、装上与卸下、
 // 规则执行、命令的快捷键，以及模板里各扩展自己的数据。
 
-import type { DIAGNOSTIC_CODES } from '@xihan-ui/core'
+import type { DIAGNOSTIC_CODES, Tone } from '@xihan-ui/core'
 import type { HotkeyEvent, KbdPlatform } from '@xihan-ui/core/hotkey'
 import type { JsonObject, JsonPath, JsonValue } from '@xihan-ui/core/json'
 import type { PathOperation } from './path-operation'
@@ -35,6 +35,8 @@ export interface DesignerCommand<Ctx = unknown> {
   readonly enabled?: (context: Ctx) => boolean
   /** 给了就是开关式命令，按钮与菜单项显示选中状态。 */
   readonly checked?: (context: Ctx) => boolean
+  /** 语气：按钮与菜单项按这族色显示，破坏性命令写 danger。不给即不带语气。 */
+  readonly tone?: Tone
   readonly run: (context: Ctx) => void
 }
 
