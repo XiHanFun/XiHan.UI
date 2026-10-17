@@ -49745,7 +49745,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-password-input>`：Light-DOM 行为宿主：作者写 root / label / control / input /\nvisibility-trigger / caps-lock-indicator 六类角色节点，元素运行 password-input 状态机并把 connect 产出接上。\n\nlabel 的 `for` 恒指向 input 的 id，因此 label 角色节点必须是原生 `<label>`、input 角色节点必须是原生\n`<input>`；切换按钮必须是原生 `<button>`，Enter / Space 的激活由平台负责。\n\n显隐只改变 input 的 type：隐藏态 password、显示态 text。切换之后焦点留在按钮上，\n框中的光标与选中范围由状态机放回原处。\n\n大写锁定依靠按键事件中的 getModifierState 判定：平台没有主动查询修饰键的接口，\n因此提示要等用户按下第一个键才显示，焦点离开输入框即熄灭。提示节点由作者写空壳，\n其中的文字由元素写入。",
+          "description": "`<xh-password-input>`：Light-DOM 行为宿主：作者写 root / label / control / input /\nvisibility-trigger / caps-lock-indicator 六类角色节点，元素运行 password-input 状态机并把 connect 产出接上。\n\nlabel 的 `for` 恒指向 input 的 id，因此 label 角色节点必须是原生 `<label>`、input 角色节点必须是原生\n`<input>`；切换按钮必须是原生 `<button>`，Enter / Space 的激活由平台负责。\n\n显隐只改变 input 的 type：隐藏态 password、显示态 text。切换之后焦点留在按钮上，\n框中的光标与选中范围由状态机放回原处。\n\n大写锁定依靠按键事件中的 getModifierState 判定：平台没有主动查询修饰键的接口，\n因此提示要等用户按下第一个键才显示，焦点离开输入框即熄灭。提示节点由作者写空壳，\n其中的文字由元素写入。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）、盒里的输入框、大写锁定提示与明暗切换钮、\n强度条（给了 strength 才有）；标题可以由宿主直接子节点 `slot=\"label\"` 接管。",
           "name": "XhPasswordInputElement",
           "cssParts": [
             {
@@ -49795,6 +49795,24 @@
               "type": {
                 "text": "{ parts: ['input'], kind: 'state' }"
               }
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhPasswordInputElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? passwordInputStructure(connectPasswordInput(host.ctrl.service, wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key) }) : undefined, }"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
             },
             {
               "kind": "field",
@@ -50022,6 +50040,14 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
             {
               "type": {
                 "text": "string | undefined"

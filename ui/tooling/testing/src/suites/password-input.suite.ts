@@ -1,4 +1,4 @@
-import type { ConformanceSuite, RawStepContext } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { passwordInputAnatomy, passwordInputKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
@@ -452,6 +452,27 @@ export const passwordInputSuite: ConformanceSuite = {
         heldPressIgnored('password-input', 'visibility-trigger', '禁用时切换钮 disabled，不接受按压'),
         { kind: 'setProps', props: { disabled: false, readOnly: true }, expect: { parts: { 'visibility-trigger': { disabled: null } } } },
         heldPress('password-input', 'visibility-trigger'),
+      ],
+    },
+    {
+      name: '作者不写结构：三端都照 passwordInputStructure 铺出标题、盒里的输入框、大写锁定提示与切换钮、强度条',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '密码', strength: 2, defaultValue: 'hunter2', name: 'password' },
+      initial: {
+        order: ['root', 'label', 'control', 'input', 'caps-lock-indicator', 'visibility-trigger', 'strength-meter'],
+        parts: {
+          'label': { for: '@part(input)' },
+          'input': { type: 'password' },
+          'strength-meter': { 'data-level': '2', 'hidden': null },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'visibility-trigger',
+          expect: { parts: { 'input': { type: 'text' }, 'visibility-trigger': { 'data-state': 'visible' } } },
+        },
       ],
     },
   ],
