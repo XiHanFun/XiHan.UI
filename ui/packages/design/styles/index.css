@@ -7774,6 +7774,32 @@
     }
   }
 
+  /* —— 格线：外框加格与格之间的横竖线 —— */
+  /* 格线画在格与格之间那道间隙里：间隙、格线与让位用的负外边距读同一个线宽，三者差一点线就画偏。
+     与间距档位同权重，排在它们之后取胜：画格线时间距档位与 --xh-grid-gap 一律不生效，线才首尾相接 */
+  .xh-scope-grid[data-part='root'][data-split] {
+    --xh-_grid-line: var(--xh-stroke-thin);
+
+    gap: var(--xh-_grid-line);
+    border: var(--xh-_grid-line) solid var(--xh-grid-divider, var(--xh-border-default));
+    /* 最后一列与最后一行朝外画的那道线落在外框底下，在这里裁掉。
+       用 clip 不用 hidden：hidden 让根成为滚动容器，探到框外的那道线能被 scrollIntoView 滚进来 */
+    overflow: clip;
+  }
+
+  /* 每格只画行尾一侧与下方各一道线，画在它外面的那道间隙里（负外边距把边框让进间隙）：
+     相邻两格之间、上下两行之间都只有一道，跨几行几列都一样，合并区里不出线。
+     线色是半透明的墨色比例，同一个像素画两遍会叠深一档，所以一道线只归一格画。
+     格子必须铺满所在格，线才够得着间隙：画格线时 align / justify-items 不生效 */
+  .xh-scope-grid[data-part='root'][data-split] > .xh-scope-grid[data-part='item'] {
+    place-self: stretch;
+    margin-block-end: calc(-1 * var(--xh-_grid-line));
+    margin-inline-end: calc(-1 * var(--xh-_grid-line));
+    padding: var(--xh-grid-ruled-padding, var(--xh-space-1_5) var(--xh-space-5));
+    border-block-end: var(--xh-_grid-line) solid var(--xh-grid-divider, var(--xh-border-default));
+    border-inline-end: var(--xh-_grid-line) solid var(--xh-grid-divider, var(--xh-border-default));
+  }
+
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
   .xh-scope-grid[data-part='root'][hidden] {

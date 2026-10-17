@@ -7,6 +7,7 @@
 
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { GridApi, GridBreakpoint, GridCols, GridColsByBreakpoint, GridOffset, GridProps, GridRowSpan, GridSpan } from './grid.types'
+import { dataAttr } from '@xihan-ui/core'
 import { gridAnatomy } from './grid.anatomy'
 
 const parts = gridAnatomy.build()
@@ -73,6 +74,7 @@ export function connectGrid<T extends PropTypes>(
         'data-column-gap': props.columnGap,
         'data-align': props.align,
         'data-justify-items': props.justifyItems,
+        'data-split': dataAttr(!!props.ruled),
       })
     },
 

@@ -13112,7 +13112,8 @@
       "justifyItems",
       "minColWidth",
       "rowGap",
-      "rows"
+      "rows",
+      "ruled"
     ],
     "grid-list": [
       "collection",
@@ -17665,6 +17666,7 @@
     "--xh-graph-chart-tooltip-shadow",
     "--xh-grid-column-gap",
     "--xh-grid-columns",
+    "--xh-grid-divider",
     "--xh-grid-gap",
     "--xh-grid-list-bg",
     "--xh-grid-list-border",
@@ -17704,6 +17706,7 @@
     "--xh-grid-list-state-py",
     "--xh-grid-row-gap",
     "--xh-grid-rows",
+    "--xh-grid-ruled-padding",
     "--xh-heatmap-bg",
     "--xh-heatmap-block-gap",
     "--xh-heatmap-block-inner-gap",
@@ -21506,7 +21509,8 @@
         "justify-items",
         "min-col-width",
         "row-gap",
-        "rows"
+        "rows",
+        "ruled"
       ],
       "events": []
     },
