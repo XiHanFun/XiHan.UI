@@ -404,6 +404,8 @@ export {
   XhDatePickerTag,
   XhDatePickerTagLabel,
   XhDatePickerTagList,
+  XhDatePickerTimeColumn,
+  XhDatePickerTimeItem,
   XhDatePickerTimePanel,
   XhDatePickerTrigger,
   XhDatePickerWeekDay,

@@ -260,7 +260,7 @@ const translations = {
     day: 'день',
     clearTrigger: 'Очистить',
   },
-  'date-picker': { ...tagged, ...segments, ...calendar, presets: 'Быстрый выбор', clearTrigger: 'Очистить' },
+  'date-picker': { ...tagged, ...segments, ...calendar, presets: 'Быстрый выбор', clearTrigger: 'Очистить', confirmTrigger: 'Применить' },
   'date-range-picker': {
     ...segments,
     ...rangeCalendar,

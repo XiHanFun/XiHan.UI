@@ -246,7 +246,7 @@ const translations = {
     day: '일',
     clearTrigger: '지우기',
   },
-  'date-picker': { ...tagged, ...segments, ...calendar, presets: '바로 가기', clearTrigger: '지우기' },
+  'date-picker': { ...tagged, ...segments, ...calendar, presets: '바로 가기', clearTrigger: '지우기', confirmTrigger: '확인' },
   'date-range-picker': {
     ...segments,
     ...rangeCalendar,

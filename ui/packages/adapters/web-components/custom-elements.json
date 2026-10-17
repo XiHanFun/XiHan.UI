@@ -19380,7 +19380,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-date-picker>`：Light-DOM 行为宿主：作者写 root / label / control / segment-group / segment / trigger /\nclear-trigger / positioner / content / calendar 角色节点，calendar 之内再按日历选择器的方式写\nheader / prev-trigger / next-trigger / heading / grid / grid-head / week-day / grid-body / week-row / cell / cell-trigger。\n\n本元素是编排状态机，只持有开合与分段输入 ↔ 日历之间的值同步；选日期、翻月、网格键盘导航\n委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各带各自的 data-scope。\n\n网格由作者渲染，元素不生成节点：读取 `panels` / `weeks` / `rows` / `weekDays` / `headingLabel` 几个只读属性，\n监听 `focused-value-change` 与 `active-view-change` 重绘。并排多页时读取 `panels`，每页自带\n日期矩阵、按行切好的粗粒度格子与标题；输入行铺设的段读取 `fieldSegments`。\n日期身份取 cell 节点上的 `value`（ISO 串），\ncell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；\n段位可自带 `segment` 属性按段名归属（`segment=\"quarter\"`），或自带 `index` 属性声明下标，\n两者都未写时按所在 segment-group 之内的文档序。区间选择是另一个元素 `<xh-date-range-picker>`。",
+          "description": "`<xh-date-picker>`：Light-DOM 行为宿主：作者写 root / label / control / segment-group / segment / trigger /\nclear-trigger / positioner / content / calendar 角色节点，calendar 之内再按日历选择器的方式写\nheader / prev-trigger / next-trigger / heading / grid / grid-head / week-day / grid-body / week-row / cell / cell-trigger。\n\n本元素是编排状态机，只持有开合与分段输入 ↔ 日历之间的值同步；选日期、翻月、网格键盘导航\n委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各带各自的 data-scope。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label），盒里的段组（多选时是带删除钮的标签行）、清空钮与触发钮，\n表单影子，浮层里的快捷选项、每页一份日历、showTime 的时间列与底栏的确认钮；状态变了（翻月、换层级、选中变化）随之重生成。\n标题可以由宿主直接子节点 `slot=\"label\"` 接管。\n\n手写部件时网格由作者渲染：读取 `panels` / `weeks` / `rows` / `weekDays` / `headingLabel` 几个只读属性，\n监听 `focused-value-change` 与 `active-view-change` 重绘。并排多页时读取 `panels`，每页自带\n日期矩阵、按行切好的粗粒度格子与标题；输入行铺设的段读取 `fieldSegments`。\n日期身份取 cell 节点上的 `value`（ISO 串），\ncell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；\n段位可自带 `segment` 属性按段名归属（`segment=\"quarter\"`），或自带 `index` 属性声明下标，\n两者都未写时按所在 segment-group 之内的文档序。区间选择是另一个元素 `<xh-date-range-picker>`。",
           "name": "XhDatePickerElement",
           "cssParts": [
             {
@@ -19562,6 +19562,25 @@
               "type": {
                 "text": "{ parts: ['trigger'], kind: 'state' }"
               }
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhDatePickerElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.rootCtrl.service ? datePickerStructure(connectDatePicker(host.services(), wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key) }) : undefined, }",
+              "description": "作者没写结构时按标准结构生成：标题、盒、表单影子与浮层里的快捷选项、日历、时间列与底栏。"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
             },
             {
               "kind": "field",
@@ -20442,6 +20461,14 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
             {
               "type": {
                 "text": "string | string[] | undefined"

@@ -25,13 +25,14 @@ import type {
   TimeStep,
   TimeUnavailablePredicate,
 } from '@xihan-ui/headless'
-import type { ComputedRef, PropType, SlotsType, VNode } from 'vue'
+import type { ComputedRef, InjectionKey, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { resolveDatePickerPanelIndex } from '@xihan-ui/headless'
-import { computed, defineComponent, h, mergeProps, onUnmounted, onUpdated, ref } from 'vue'
+import { datePickerStructure, resolveDatePickerPanelIndex } from '@xihan-ui/headless'
+import { computed, defineComponent, h, inject, mergeProps, onUnmounted, onUpdated, provide, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText, slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
@@ -105,6 +106,8 @@ export const XhDatePickerRoot = defineComponent({
   props: {
     /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
     ariaLabel: { type: String },
+    /** 标题文字：不写默认插槽时铺带这段文字的 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
     value: { type: [String, Array] as PropType<string | string[]> },
     defaultValue: { type: [String, Array] as PropType<string | string[]> },
     open: { type: Boolean, default: undefined },
@@ -173,6 +176,8 @@ export const XhDatePickerRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: DatePickerRootSlotProps) => VNode[]
+    /** 不写默认插槽时标题的内容，盖过 label 文字。 */
+    label?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const rootRef = ref<HTMLElement | null>(null)
@@ -197,28 +202,31 @@ export const XhDatePickerRoot = defineComponent({
       onActiveViewChange: notifyActiveView,
     }, rootRef)
     provideDatePicker(ctx)
-    // 网格与段位由作者照插槽里的 weeks（日视图）/ rows（周期视图）/ segments 自行渲染
-    return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: rootRef }, slots.default?.({
-      open: ctx.api.value.open,
-      value: ctx.api.value.value,
-      valueAsString: ctx.api.value.valueAsString,
-      periodValue: ctx.api.value.periodValue,
-      focusedValue: ctx.api.value.focusedValue,
-      visibleMonth: ctx.api.value.calendar.visibleMonth,
-      panels: ctx.api.value.calendar.panels,
-      periods: ctx.api.value.calendar.periods,
-      rows: ctx.api.value.calendar.rows,
-      weeks: ctx.api.value.calendar.weeks,
-      weekDays: ctx.api.value.calendar.weekDays,
-      headingLabel: ctx.api.value.calendar.headingLabel,
-      canGoPrev: ctx.api.value.calendar.canGoPrev,
-      canGoNext: ctx.api.value.calendar.canGoNext,
-      segments: ctx.api.value.field.segments,
-      canClear: ctx.api.value.canClear,
-      setOpen: ctx.api.value.setOpen,
-      setValue: ctx.api.value.setValue,
-      clear: ctx.api.value.clear,
-    }))
+    // 写了默认插槽时网格与段位由作者照插槽里的 weeks（日视图）/ rows（周期视图）/ segments 自行渲染；
+    // 没写时照 datePickerStructure 铺整套结构
+    return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: rootRef }, !slots.default
+      ? renderDefaultStructure(ctx.api.value, props.label, slots.label)
+      : slots.default({
+          open: ctx.api.value.open,
+          value: ctx.api.value.value,
+          valueAsString: ctx.api.value.valueAsString,
+          periodValue: ctx.api.value.periodValue,
+          focusedValue: ctx.api.value.focusedValue,
+          visibleMonth: ctx.api.value.calendar.visibleMonth,
+          panels: ctx.api.value.calendar.panels,
+          periods: ctx.api.value.calendar.periods,
+          rows: ctx.api.value.calendar.rows,
+          weeks: ctx.api.value.calendar.weeks,
+          weekDays: ctx.api.value.calendar.weekDays,
+          headingLabel: ctx.api.value.calendar.headingLabel,
+          canGoPrev: ctx.api.value.calendar.canGoPrev,
+          canGoNext: ctx.api.value.calendar.canGoNext,
+          segments: ctx.api.value.field.segments,
+          canClear: ctx.api.value.canClear,
+          setOpen: ctx.api.value.setOpen,
+          setValue: ctx.api.value.setValue,
+          clear: ctx.api.value.clear,
+        }))
   },
 })
 
@@ -516,14 +524,51 @@ export const XhDatePickerPreset = defineComponent({
   },
 })
 
-/** 一列时间选项连同贴在它盒子上的竖条：每列一台滚动条机器，列数随 showSeconds 变时组件实例跟着增减。 */
-const XhDatePickerTimeColumnHost = defineComponent({
-  name: 'XhDatePickerTimeColumnHost',
+/** 时间项所在那一列的单位，由 XhDatePickerTimeColumn 提供。 */
+const DATE_PICKER_TIME_UNIT: InjectionKey<() => DatePickerTimeUnit> = Symbol('XhDatePickerTimeUnit')
+
+/** 一格时间选项：value 写两位补零的值（上下午列写 '00' / '01'）；没写内容时显示按 locale 译好的文字。要放在 XhDatePickerTimeColumn 里。 */
+export const XhDatePickerTimeItem = defineComponent({
+  name: 'XhDatePickerTimeItem',
   props: {
+    /** 这一格的值，与时间列的可选值逐字对应。 */
+    value: { type: String, required: true },
+  },
+  slots: Object as SlotsType<{
+    /** 格里的内容；未写时显示按 locale 译好的文字。 */
+    default?: () => VNode[]
+  }>,
+  setup(props, { slots }) {
+    const ctx = useDatePickerContext()
+    const unit = inject(DATE_PICKER_TIME_UNIT, null)
+    if (!unit)
+      throw new Error('[xh] XhDatePickerTimeItem 要放在 XhDatePickerTimeColumn 里')
+    return () => {
+      const api = ctx.api.value
+      const item = { unit: unit(), value: props.value }
+      const authored = slots.default?.()
+      return h('div', api.getTimeItemProps(item) as Record<string, unknown>, slotPaints(authored) ? authored : api.getTimeItemText(item))
+    }
+  },
+})
+
+/**
+ * 一列时间选项连同贴在它盒子上的竖条：每列一台滚动条机器。不写默认插槽时按这一列的可选值铺 XhDatePickerTimeItem；
+ * 这一单位不在当前精度里（如没开秒）时整列不渲染。
+ */
+export const XhDatePickerTimeColumn = defineComponent({
+  name: 'XhDatePickerTimeColumn',
+  props: {
+    /** 这一列的单位：hour、minute、second 或 dayPeriod。 */
     unit: { type: String as PropType<DatePickerTimeUnit>, required: true },
   },
-  setup(props) {
+  slots: Object as SlotsType<{
+    /** 自行铺 XhDatePickerTimeItem；未写时按这一列的可选值自动铺。 */
+    default?: () => VNode[]
+  }>,
+  setup(props, { slots }) {
     const ctx = useDatePickerContext()
+    provide(DATE_PICKER_TIME_UNIT, () => props.unit)
     const timeColumnRef = ref<HTMLElement | null>(null)
     // 定高的时间列自己竖滚：条子贴在本列的盒子上、紧跟在它后面（浮层 4px 档）
     const bars = useScrollbars({
@@ -544,13 +589,7 @@ const XhDatePickerTimeColumnHost = defineComponent({
             ...api.getTimeColumnProps({ unit: column.unit }) as Record<string, unknown>,
             ref: (el: unknown) => { timeColumnRef.value = el as HTMLElement },
           },
-          column.options.map(option =>
-            h(
-              'div',
-              { ...api.getTimeItemProps({ unit: column.unit, value: option }) as Record<string, unknown>, key: option },
-              api.getTimeItemText({ unit: column.unit, value: option }),
-            ),
-          ),
+          slots.default?.() ?? column.options.map(option => h(XhDatePickerTimeItem, { key: option, value: option })),
         ),
         ...bars.render(),
       ]
@@ -564,7 +603,7 @@ export const XhDatePickerTimePanel = defineComponent({
     const ctx = useDatePickerContext()
     // 时间列整组自动铺：时/分[/秒][/上下午]各一列，选项点按写值；没开 showTime 时整组带 hidden
     return () => ctx.api.value.timeColumns.map(column =>
-      h(XhDatePickerTimeColumnHost, { unit: column.unit, key: column.unit }),
+      h(XhDatePickerTimeColumn, { unit: column.unit, key: column.unit }),
     )
   },
 })
@@ -804,3 +843,52 @@ export const XhDatePickerHiddenInput = defineComponent({
       : h('input', ctx.api.value.field.getHiddenInputProps() as Record<string, unknown>)
   },
 })
+
+/** 结构里的部件 → 部件组件；委派出去的部件按「组件名/部件名」查。 */
+const DATE_PICKER_PARTS = {
+  'label': XhDatePickerLabel,
+  'control': XhDatePickerControl,
+  'tag-list': XhDatePickerTagList,
+  'segment-group': XhDatePickerSegmentGroup,
+  'trigger': XhDatePickerTrigger,
+  'clear-trigger': XhDatePickerClearTrigger,
+  'positioner': XhDatePickerPositioner,
+  'content': XhDatePickerContent,
+  'preset-group': XhDatePickerPresetGroup,
+  'preset': XhDatePickerPreset,
+  'calendar': XhDatePickerCalendar,
+  'time-column': XhDatePickerTimeColumn,
+  'time-item': XhDatePickerTimeItem,
+  'footer': XhDatePickerFooter,
+  'confirm-trigger': XhDatePickerConfirmTrigger,
+  'date-field/segment': XhDatePickerSegment,
+  'date-field/hidden-input': XhDatePickerHiddenInput,
+  'tag/tag': XhDatePickerTag,
+  'tag/tag-label': XhDatePickerTagLabel,
+  'tag/item-delete-trigger': XhDatePickerItemDeleteTrigger,
+  'tag/overflow-tag': XhDatePickerOverflowTag,
+  'calendar-picker/header': XhDatePickerHeader,
+  'calendar-picker/prev-year-trigger': XhDatePickerPrevYearTrigger,
+  'calendar-picker/prev-trigger': XhDatePickerPrevTrigger,
+  'calendar-picker/heading': XhDatePickerHeading,
+  'calendar-picker/heading-year-trigger': XhDatePickerHeadingYearTrigger,
+  'calendar-picker/heading-month-trigger': XhDatePickerHeadingMonthTrigger,
+  'calendar-picker/next-trigger': XhDatePickerNextTrigger,
+  'calendar-picker/next-year-trigger': XhDatePickerNextYearTrigger,
+  'calendar-picker/grid': XhDatePickerGrid,
+  'calendar-picker/grid-head': XhDatePickerGridHead,
+  'calendar-picker/week-row': XhDatePickerWeekRow,
+  'calendar-picker/week-day': XhDatePickerWeekDay,
+  'calendar-picker/grid-body': XhDatePickerGridBody,
+  'calendar-picker/cell': XhDatePickerCell,
+  'calendar-picker/cell-trigger': XhDatePickerCellTrigger,
+}
+
+/**
+ * 未写默认插槽时照 datePickerStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 标题文字由 label 给出，需要放置其他内容时由 label 插槽接管。
+ */
+function renderDefaultStructure(api: DatePickerApi, label: string | undefined, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = datePickerStructure(api, { label, slotted: name => name === 'label' && labelSlot != null })
+  return renderStructure(nodes, DATE_PICKER_PARTS, node => node.slot?.name === 'label' ? labelSlot?.() : undefined)
+}

@@ -329,6 +329,7 @@ export function connectDateRangePicker<T extends PropTypes>(
     raw: DateFieldApi,
   ): DateRangePickerFieldApi<T> => ({
     value: raw.value,
+    locale: raw.locale,
     segments: raw.segments,
     complete: raw.complete,
     empty: raw.empty,

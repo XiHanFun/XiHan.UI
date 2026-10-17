@@ -246,7 +246,7 @@ const translations = {
     day: '日',
     clearTrigger: '清除',
   },
-  'date-picker': { ...tagged, ...segments, ...calendar, presets: '快速選項', clearTrigger: '清除' },
+  'date-picker': { ...tagged, ...segments, ...calendar, presets: '快速選項', clearTrigger: '清除', confirmTrigger: '確定' },
   'date-range-picker': {
     ...segments,
     ...rangeCalendar,

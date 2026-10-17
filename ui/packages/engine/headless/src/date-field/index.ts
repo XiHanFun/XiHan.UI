@@ -63,6 +63,6 @@ export {
 } from './date-field.machine'
 export type { DateDigitResult, DateSegmentOptions } from './date-field.machine'
 export { dateFieldMeta } from './date-field.meta'
-export { dateFieldStructure } from './date-field.structure'
+export { dateFieldStructure, dateSegmentGroupChildren } from './date-field.structure'
 export type { DateFieldStructureOptions } from './date-field.structure'
 export type { DateDayPeriod, DateFieldApi, DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateFieldTranslations, DateFieldValueChangeDetails, DateGranularity, DateHourCycle, DateSegmentPlaceholders, DateSegmentRange, DateSegments, DateSegmentSet, DateSegmentType, DateTypingBuffer } from './date-field.types'

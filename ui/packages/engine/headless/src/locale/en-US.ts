@@ -283,6 +283,7 @@ export const DATE_PICKER_EN_US: XhLocaleBucket<'date-picker'> = {
   todayDate,
   presets: 'Shortcuts',
   clearTrigger: 'Clear',
+  confirmTrigger: 'OK',
 }
 
 export const DATE_RANGE_PICKER_EN_US: XhLocaleBucket<'date-range-picker'> = {

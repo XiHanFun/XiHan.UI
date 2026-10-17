@@ -57,6 +57,8 @@ export {
   trackLiveness,
 } from './machine-base'
 export type { CalendarBaseSchema } from './machine-base'
+export { calendarPanelStructure } from './structure'
+export type { CalendarStructureModel, CalendarStructurePart } from './structure'
 export type {
   CalendarBaseAction,
   CalendarBaseApi,

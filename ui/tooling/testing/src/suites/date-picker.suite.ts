@@ -1186,5 +1186,122 @@ export const datePickerSuite: ConformanceSuite = {
         },
       ],
     },
+    {
+      name: '作者不写结构：三端都照 datePickerStructure 铺出标题、盒里的段组与两颗钮、表单影子与浮层里的日历',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { ...BASE_PROPS, label: '出发日期', name: 'depart' },
+      initial: {
+        order: ['root', 'label', 'control', 'segment-group', 'clear-trigger', 'trigger', 'positioner', 'content', 'calendar'],
+        counts: { 'tag-list': 0, 'preset-group': 0, 'time-column': 0, 'footer': 0 },
+        parts: {
+          'segment-group': { 'role': 'group', 'aria-labelledby': '@part(label)' },
+          'trigger': { 'aria-haspopup': 'dialog', 'aria-expanded': 'false' },
+          'content': { hidden: '' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '段位、日历格与表单影子戴的是分段输入与内嵌日历的 scope，按本组件的 scope 采不进快照',
+          run: ({ doc }) => {
+            expectTexts(doc, ['2024', '02', '15'], '默认值落进三段')
+            expectHidden(doc, ANCHOR, '表单影子带上整串')
+            const text = segmentGroupAt(doc, 0).textContent
+            if (text !== '2024/02/15')
+              throw new Error(`段组期望读作 "2024/02/15"，实际 ${JSON.stringify(text)}`)
+            // fixedWeeks 缺省开启：恒六行
+            const cells = doc.querySelectorAll(`${CALENDAR}[data-part="cell"]`).length
+            if (cells !== 6 * 7)
+              throw new Error(`日历期望铺 42 格，实际 ${cells}`)
+            const weekDays = [...doc.querySelectorAll(`${CALENDAR}[data-part="week-day"]`)].map(el => el.textContent)
+            if (weekDays.join('|') !== WEEK_DAYS.map(d => d.label).join('|'))
+              throw new Error(`表头期望 [${WEEK_DAYS.map(d => d.label).join(',')}]，实际 [${weekDays.join(',')}]`)
+            for (const part of ['prev-year-trigger', 'prev-trigger', 'next-trigger', 'next-year-trigger', 'heading-year-trigger', 'heading-month-trigger']) {
+              if (doc.querySelectorAll(`${CALENDAR}[data-part="${part}"]`).length !== 1)
+                throw new Error(`标题栏期望有一颗 ${part}`)
+            }
+          },
+        },
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        {
+          kind: 'raw',
+          why: '点格子写值，再看段位与表单影子跟上',
+          run: async (ctx) => {
+            await pickDay(ctx, '2024-02-20')
+            expectTexts(ctx.doc, ['2024', '02', '20'], '点选的日子落进三段')
+            expectHidden(ctx.doc, '2024-02-20', '表单影子跟着点选的日子')
+          },
+        },
+      ],
+    },
+    {
+      name: '作者不写结构（快捷选项与时间）：浮层里先铺快捷选项列，日历之后是各时间列与底栏的确认钮',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      // 确认钮的文字由作者经 translations 改写，生成的结构照改写后的那份填
+      props: { ...BASE_PROPS, presets: [...PRESETS], showTime: true, translations: { confirmTrigger: '确定' } },
+      initial: {
+        counts: { 'label': 0, 'preset-group': 1, 'preset': PRESETS.length, 'calendar': 1, 'time-column': 2, 'time-item': 24 + 60, 'footer': 1, 'confirm-trigger': 1 },
+        parts: {
+          'time-column[0]': { 'data-unit': 'hour' },
+          'time-column[1]': { 'data-unit': 'minute' },
+        },
+      },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        {
+          kind: 'raw',
+          why: '快捷选项、时间格与确认钮的文字不进属性快照',
+          run: ({ doc }) => {
+            const presets = presetItems(doc).map(el => el.textContent)
+            if (presets.join('|') !== PRESETS.map(preset => preset.label).join('|'))
+              throw new Error(`快捷选项期望 [${PRESETS.map(preset => preset.label).join(',')}]，实际 [${presets.join(',')}]`)
+            const content = doc.querySelector('[data-scope="date-picker"][data-part="content"]')
+            // 滚动面旁的竖条也是 content 的子节点（戴竖条自己的 scope），只数本组件的部件
+            const order = [...(content?.children ?? [])].filter(el => el.getAttribute('data-scope') === 'date-picker').map(el => el.getAttribute('data-part'))
+            if (order.join('|') !== 'preset-group|calendar|time-column|time-column|footer')
+              throw new Error(`浮层里的次序期望快捷选项、日历、两列时间、底栏，实际 [${order.join(',')}]`)
+            expectTimeItem(doc, 'hour', '09', 'text', '09', '时列的格照值显示')
+            const confirm = doc.querySelector('[data-scope="date-picker"][data-part="confirm-trigger"]')?.textContent
+            if (confirm !== '确定')
+              throw new Error(`确认钮期望显示 "确定"，实际 ${JSON.stringify(confirm)}`)
+          },
+        },
+      ],
+    },
+    {
+      name: '作者不写结构（多选）：盒里换成标签行，已选日期一枚一个带删除钮的标签，按删除钮摘掉那一天',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      // 多选时触发钮是键盘入口，名字借标题
+      props: { ...BASE_PROPS, defaultValue: ['2024-02-01', ANCHOR], selectionMode: 'multiple', label: '出差日期' },
+      initial: {
+        order: ['root', 'label', 'control', 'tag-list', 'clear-trigger', 'trigger', 'positioner', 'content', 'calendar'],
+        counts: { 'segment-group': 0 },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '标签戴的是 tag 的 scope，按本组件的 scope 采不进快照',
+          run: async (ctx) => {
+            const tags = [...ctx.doc.querySelectorAll<HTMLElement>('[data-scope="tag"][data-part="root"]:not([hidden])')]
+            const labels = tags.map(el => el.querySelector('[data-part="label"]')?.textContent ?? '')
+            if (tags.length !== 2 || labels.includes(''))
+              throw new Error(`期望两枚带文字的标签，实际 ${tags.length} 枚：[${labels.join(',')}]`)
+            const remove = tags[0]!.querySelector<HTMLElement>('[data-part="close-trigger"]')
+            if (!remove)
+              throw new Error('标签上期望有删除钮')
+            remove.click()
+            await ctx.flush()
+            const left = [...ctx.doc.querySelectorAll(`${FIELD}[data-part="hidden-input"]`)].map(el => (el as HTMLInputElement).value)
+            if (left.join('|') !== ANCHOR)
+              throw new Error(`按删除钮后表单影子期望只剩 ${ANCHOR}，实际 [${left.join(',')}]`)
+          },
+        },
+      ],
+    },
   ],
 }
