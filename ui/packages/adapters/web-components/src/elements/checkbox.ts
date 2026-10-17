@@ -7,7 +7,8 @@
 
 import type { Size, Tone } from '@xihan-ui/core'
 import type { CheckboxCheckedChangeDetails, CheckboxCheckedState, CheckboxSchema, FormControlState } from '@xihan-ui/headless'
-import { checkboxAnatomy, checkboxMachine, checkboxMeta, connectCheckbox, resolveFormControlState } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { checkboxAnatomy, checkboxMachine, checkboxMeta, checkboxStructure, connectCheckbox, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -16,6 +17,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 
 /**
  * `<xh-checkbox>`：Light-DOM 行为宿主，运行 checkbox 状态机并把 connect 产出接到 root / indicator 角色节点。
+ *
+ * 不写部件时元素按标准结构生成：root 是一颗原生按钮，里面一个勾选标记，给了 name 再带一份表单影子；
+ * 只写 root（须是原生 `<button>`）时生成在它里面。宿主直接子节点写 `slot="indicator"` 时搬进勾选标记，代替皮肤画的勾。
+ * 要带文字时作者手写 label、root 与 text。
  *
  * @customElement xh-checkbox
  * @attr {boolean|'indeterminate'} checked - 受控选中；写 indeterminate 为半选，未提供该属性即非受控
@@ -38,6 +43,11 @@ export class XhCheckboxElement extends XhElement {
   static override partContract = { anatomy: checkboxAnatomy, meta: checkboxMeta }
 
   static override fieldTarget = { parts: ['root'], kind: 'state' } as const
+
+  static override structure: ElementStructure<XhCheckboxElement> = {
+    rootTag: 'button',
+    build: host => checkboxStructure({ hiddenInput: host.name !== undefined, slotted: name => host.slotted(name) }),
+  }
 
   static override properties = {
     // 三态：写 checked="indeterminate" 表示半选；缺席即非受控

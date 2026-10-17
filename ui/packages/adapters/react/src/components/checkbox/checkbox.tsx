@@ -6,12 +6,14 @@
 // 提供 checkbox 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { CheckboxCheckedState, CheckboxSchema } from '@xihan-ui/headless'
+import type { CheckboxApi, CheckboxCheckedState, CheckboxSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
-import { useId, useRef } from 'react'
+import { checkboxStructure } from '@xihan-ui/headless'
+import { createContext, useContext, useId, useRef } from 'react'
 import { useFormReset } from '../../runtime/attach-form-reset'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { useCheckbox } from './use-checkbox'
@@ -41,6 +43,31 @@ export interface XhCheckboxProps extends ButtonProps {
   indicator?: ReactNode
   /** 方框旁的文字；未写时只有一个方框。 */
   children?: ReactNode
+}
+
+const CheckboxApiContext = createContext<CheckboxApi | null>(null)
+
+function useCheckboxApi(): CheckboxApi {
+  const api = useContext(CheckboxApiContext)
+  if (!api)
+    throw new Error('[xh] 复选框的部件只能渲在 XhCheckbox 里')
+  return api
+}
+
+/** 勾选标记：作者给了 indicator 时装它，没给时由皮肤画勾。 */
+function CheckboxIndicator({ children }: { children?: ReactNode }): ReactNode {
+  return <span {...useCheckboxApi().getIndicatorProps() as Record<string, unknown>}>{children}</span>
+}
+
+/** 表单影子：单体控件的方框里没有子部件插槽，作者递不进来，由组件自己渲。 */
+function CheckboxHiddenInput(): ReactNode {
+  return <input {...useCheckboxApi().getHiddenInputProps() as Record<string, unknown>} />
+}
+
+/** 标准结构里各部件对应的组件。 */
+const CHECKBOX_PARTS = {
+  'indicator': CheckboxIndicator,
+  'hidden-input': CheckboxHiddenInput,
 }
 
 export function XhCheckbox({
@@ -104,10 +131,13 @@ export function XhCheckbox({
         labelled ? {} : { ref: rootRef },
       )}
     >
-      <span {...api.getIndicatorProps() as Record<string, unknown>}>{indicator}</span>
-      {/* 表单影子由组件自己渲染：单体控件的方框里没有子部件插槽，作者递不进来。
-          给了 name 才有这个节点——type=hidden 不是交互内容，放进 button 里是合法的 */}
-      {name === undefined ? null : <input {...api.getHiddenInputProps() as Record<string, unknown>} />}
+      <CheckboxApiContext value={api}>
+        {renderStructure(
+          checkboxStructure({ hiddenInput: name !== undefined, slotted: slot => slot === 'indicator' && indicator != null }),
+          CHECKBOX_PARTS,
+          node => (node.slot?.name === 'indicator' ? indicator : undefined),
+        )}
+      </CheckboxApiContext>
     </button>
   )
 
