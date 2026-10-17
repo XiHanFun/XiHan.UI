@@ -6949,6 +6949,7 @@
       "FieldsetApi",
       "FieldsetProps",
       "FieldsetRenderedParts",
+      "FieldsetStructureOptions",
       "FieldsetTranslations",
       "FileRejectReason",
       "FileUploadApi",
@@ -8869,6 +8870,7 @@
       "fieldsetAnatomy",
       "fieldsetKeyboard",
       "fieldsetMeta",
+      "fieldsetStructure",
       "fileUploadAnatomy",
       "fileUploadHiddenInputId",
       "fileUploadKeyboard",
@@ -22185,6 +22187,7 @@
       "attributes": [
         "disabled",
         "invalid",
+        "legend",
         "required"
       ],
       "events": []

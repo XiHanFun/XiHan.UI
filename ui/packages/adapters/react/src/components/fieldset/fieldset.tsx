@@ -7,14 +7,25 @@
 
 import type { FieldsetProps, FieldsetTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { hasNamingContent } from '@xihan-ui/headless'
+import { fieldsetStructure, hasNamingContent } from '@xihan-ui/headless'
 import { useContext, useMemo, useRef } from 'react'
 import { useXhConfig, withXhConfig, XhConfigProvider } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
+import { renderStructure } from '../../runtime/structure'
 import { FieldsetOuterDisabled, FieldsetProvider, useFieldsetContext } from './context'
 import { useFieldset, useFieldsetPartPresence } from './use-fieldset'
 
 export interface XhFieldsetRootProps extends ComponentPropsWithRef<'fieldset'> {
+  /** 组标题。不给 children 时铺 legend 部件。 */
+  legend?: ReactNode
+  /** 组标题下的说明。不给 children 时铺 description 部件。 */
+  description?: ReactNode
+  /** 组里的字段。不给 children 时铺进 field-group 部件：宽度够时并排分栏，只放一个容器时它占满整行。 */
+  fieldGroup?: ReactNode
+  /** 错误文案。不给 children 时铺 error-text 部件，invalid 时显示。 */
+  errorText?: ReactNode
+  /** 组末尾的按钮行。不给 children 时铺 actions 部件。 */
+  actions?: ReactNode
   /** 整组禁用：写为原生 disabled，浏览器把组内每个表单控件一并禁用。 */
   disabled?: boolean
   invalid?: boolean
@@ -25,6 +36,11 @@ export interface XhFieldsetRootProps extends ComponentPropsWithRef<'fieldset'> {
 
 /** 必须是原生 fieldset：整组禁用连带组内控件是浏览器提供的，换为 div 就只剩一层灰样式。 */
 export function XhFieldsetRoot({
+  legend,
+  description,
+  fieldGroup,
+  errorText,
+  actions,
   disabled,
   invalid,
   required,
@@ -47,7 +63,7 @@ export function XhFieldsetRoot({
       <FieldsetOuterDisabled value={outerDisabled}>
         <XhConfigProvider config={scope}>
           <fieldset {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-            {children}
+            {children ?? renderDefaultStructure(legend, { 'description': description, 'field-group': fieldGroup, 'error-text': errorText, 'actions': actions })}
           </fieldset>
         </XhConfigProvider>
       </FieldsetOuterDisabled>
@@ -98,4 +114,28 @@ export function XhFieldsetErrorText({ children, ...rest }: XhFieldsetErrorTextPr
   const ctx = useFieldsetContext()
   useFieldsetPartPresence(ctx, 'errorText')
   return <p {...mergeReactProps(ctx.api.getErrorTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</p>
+}
+
+/** 标准结构里各部件对应的组件。 */
+const FIELDSET_PARTS = {
+  'legend': XhFieldsetLegend,
+  'description': XhFieldsetDescription,
+  'field-group': XhFieldsetFieldGroup,
+  'error-text': XhFieldsetErrorText,
+  'actions': XhFieldsetActions,
+}
+
+type FieldsetSections = Readonly<Partial<Record<'legend' | 'description' | 'field-group' | 'error-text' | 'actions', ReactNode>>>
+
+/**
+ * 未写 children 时铺开的整套结构：照 headless 的 fieldsetStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的组标题内容交给 legend 部件。
+ */
+function renderDefaultStructure(legend: ReactNode, rest: Omit<FieldsetSections, 'legend'>): ReactNode[] {
+  const sections: FieldsetSections = { ...rest, legend: typeof legend === 'string' ? undefined : legend }
+  const nodes = fieldsetStructure({
+    legend: typeof legend === 'string' ? legend : undefined,
+    slotted: name => sections[name as keyof FieldsetSections] != null,
+  })
+  return renderStructure(nodes, FIELDSET_PARTS, node => (node.slot ? sections[node.slot.name as keyof FieldsetSections] : undefined))
 }

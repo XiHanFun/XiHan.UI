@@ -24,6 +24,7 @@
 - `invalid` 落为根与组标题上的 `data-invalid`，组标题据此转为警示色，同时把错误文案接入描述链并显示。
 - `required` 落为根与组标题上的 `data-required`，组标题的星号由 label 公共层按组标题自己的这一位画。
 - `field-group` 把并排的几个字段圈成一段（宽度足够时自动分栏），`actions` 承载组末尾的按钮行。
+- 不写结构时按标准结构铺（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：组标题恒铺在最前，文字取 `legend`；说明、字段区、错误文案、按钮行给了内容才铺，依次排在后面。Vue 是 `legend`、`description`、`fieldGroup`、`errorText`、`actions` 具名插槽，React 是同名属性，Web Components 是宿主直接子节点上的 `slot="legend"`、`slot="description"`、`slot="field-group"`、`slot="error-text"`、`slot="actions"`。
 - 作用域禁用只落在组件库的控件上；作者自己写的 `div` 型交互节点不在原生 `fieldset[disabled]` 的管辖内，需要各自接 `disabled`。
 
 ## 无障碍

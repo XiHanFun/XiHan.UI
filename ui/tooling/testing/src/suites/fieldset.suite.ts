@@ -1,4 +1,4 @@
-import type { ConformanceSuite } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { fieldsetAnatomy, fieldsetKeyboard } from '@xihan-ui/headless'
 
 const HTML_SPEC = 'https://html.spec.whatwg.org/multipage/form-elements.html#the-fieldset-element'
@@ -186,6 +186,20 @@ export const fieldsetSuite: ConformanceSuite = {
           },
         },
       ],
+    },
+    {
+      name: '作者不写结构：三端都照 fieldsetStructure 渲，组标题恒在且是原生 fieldset 的首个子节点',
+      spec: { apg: APG },
+      // Web Components 只写 root 时它得是原生 fieldset：组件的 root 就是它
+      fixture: (): FixtureNode => ({ part: 'root', tag: 'fieldset', defaultStructure: true }),
+      props: { legend: '联系方式', required: true },
+      initial: {
+        order: ['root', 'legend'],
+        parts: {
+          root: { 'data-required': '', 'aria-describedby': null },
+          legend: { 'data-required': '' },
+        },
+      },
     },
   ],
 }
