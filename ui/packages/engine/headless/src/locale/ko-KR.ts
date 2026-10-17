@@ -9,7 +9,7 @@ import type { KeyTextTable } from '@xihan-ui/core/hotkey'
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { XhLocale, XhLocaleTranslations } from './types'
 import { keyText } from '@xihan-ui/core/hotkey'
-import { FORMAT_INPUT_EN_US } from './en-US'
+import { FILTER_BUILDER_EN_US, FORMAT_INPUT_EN_US } from './en-US'
 import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -284,6 +284,30 @@ const translations = {
   'file-upload': {
     deleteItem: file => `${file.name} 삭제`,
     clearTrigger: '모든 파일 지우기',
+  },
+  'filter-builder': {
+    logic: logic => (logic === 'and' ? '모두' : '하나라도'),
+    match: '일치 방식',
+    group: logic => (logic === 'and' ? '다음 조건 모두 충족' : '다음 조건 중 하나 충족'),
+    condition: number => `조건 ${number}`,
+    field: number => `조건 ${number}의 필드`,
+    operator: number => `조건 ${number}의 연산자`,
+    operand: (number, end) => (end === 'from' ? `조건 ${number}의 시작 값` : end === 'to' ? `조건 ${number}의 끝 값` : `조건 ${number}의 값`),
+    source: number => `조건 ${number}의 값 출처`,
+    sourceOption: source => (source === 'value' ? '값' : '매개변수'),
+    operatorOption: operator => ({ eq: '같음', neq: '같지 않음', gt: '보다 큼', gte: '이상', lt: '보다 작음', lte: '이하', between: '사이', in: '포함됨', notIn: '포함되지 않음', contains: '포함', notContains: '포함하지 않음', startsWith: '시작 문자', endsWith: '끝 문자', isEmpty: '비어 있음', isNotEmpty: '비어 있지 않음' })[operator],
+    ignoreCase: '대소문자 무시',
+    rangeSeparator: '~',
+    booleanOption: value => (value ? '예' : '아니요'),
+    addCondition: '조건 추가',
+    addGroup: '그룹 추가',
+    removeCondition: number => `조건 ${number} 삭제`,
+    removeGroup: '그룹 삭제',
+    empty: '아직 조건이 없습니다',
+    added: number => `조건 ${number}을(를) 추가했습니다`,
+    removed: number => `조건 ${number}을(를) 삭제했습니다`,
+    moved: number => `조건 ${number}을(를) 이동했습니다`,
+    issue: FILTER_BUILDER_EN_US.issue,
   },
   'float-button': { trigger: '작업' },
   'floating-panel': {

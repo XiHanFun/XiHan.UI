@@ -9,7 +9,7 @@ import type { KeyTextTable } from '@xihan-ui/core/hotkey'
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { XhLocale, XhLocaleTranslations } from './types'
 import { keyText } from '@xihan-ui/core/hotkey'
-import { FORMAT_INPUT_EN_US } from './en-US'
+import { FILTER_BUILDER_EN_US, FORMAT_INPUT_EN_US } from './en-US'
 import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -284,6 +284,30 @@ const translations = {
   'file-upload': {
     deleteItem: file => `${file.name} を削除`,
     clearTrigger: 'すべてのファイルをクリア',
+  },
+  'filter-builder': {
+    logic: logic => (logic === 'and' ? 'すべて' : 'いずれか'),
+    match: '一致の条件',
+    group: logic => (logic === 'and' ? '次のすべてに一致' : '次のいずれかに一致'),
+    condition: number => `条件 ${number}`,
+    field: number => `条件 ${number} の項目`,
+    operator: number => `条件 ${number} の演算子`,
+    operand: (number, end) => (end === 'from' ? `条件 ${number} の開始値` : end === 'to' ? `条件 ${number} の終了値` : `条件 ${number} の値`),
+    source: number => `条件 ${number} の値の出どころ`,
+    sourceOption: source => (source === 'value' ? '値' : 'パラメーター'),
+    operatorOption: operator => ({ eq: '等しい', neq: '等しくない', gt: 'より大きい', gte: '以上', lt: 'より小さい', lte: '以下', between: 'の範囲内', in: 'のいずれか', notIn: 'のいずれでもない', contains: 'を含む', notContains: 'を含まない', startsWith: 'で始まる', endsWith: 'で終わる', isEmpty: '空', isNotEmpty: '空でない' })[operator],
+    ignoreCase: '大文字小文字を区別しない',
+    rangeSeparator: '〜',
+    booleanOption: value => (value ? 'はい' : 'いいえ'),
+    addCondition: '条件を追加',
+    addGroup: 'グループを追加',
+    removeCondition: number => `条件 ${number} を削除`,
+    removeGroup: 'グループを削除',
+    empty: '条件はまだありません',
+    added: number => `条件 ${number} を追加しました`,
+    removed: number => `条件 ${number} を削除しました`,
+    moved: number => `条件 ${number} を移動しました`,
+    issue: FILTER_BUILDER_EN_US.issue,
   },
   'float-button': { trigger: 'アクション' },
   'floating-panel': {

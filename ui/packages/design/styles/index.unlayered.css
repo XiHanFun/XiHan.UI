@@ -31643,6 +31643,246 @@
   }
 }
 
+/* styles/filter-builder.css */
+/* 定义 filter builder 样式。 */
+
+/* FilterBuilder 独立皮肤同时传递引入加删钮的动作控件配方；full bundle 递归去重。 */
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+.xh-scope-filter-builder {
+  --xh-filter-builder-skin: 1;
+}
+
+/* 根本身不画壳：边界由里面各个控件自己的描边承担。自上而下是标题、根组与空态 */
+.xh-scope-filter-builder[data-part='root'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-filter-builder-gap, var(--xh-space-2));
+  min-inline-size: 0;
+}
+
+/* 标题与字段标签同一档：muted、label 字号与字重 */
+.xh-scope-filter-builder[data-part='label'] {
+  color: var(--xh-filter-builder-label-fg, var(--xh-fg-muted));
+  font-size: var(--xh-filter-builder-label-font-size, var(--xh-text-label-size));
+  font-weight: var(--xh-filter-builder-label-font-weight, var(--xh-text-label-weight));
+  line-height: var(--xh-leading-none);
+}
+
+/* 一个组：组头、条目、组尾纵向排 */
+.xh-scope-filter-builder[data-part='group'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-filter-builder-group-gap, var(--xh-space-2));
+  min-inline-size: 0;
+}
+
+/* 子组缩进一段，起始缘一条细线标出它管到哪一行 */
+.xh-scope-filter-builder[data-part='group']:not([data-depth='0']) {
+  padding-inline-start: var(--xh-filter-builder-indent, var(--xh-space-4));
+  border-inline-start: var(--xh-stroke-thin) solid var(--xh-filter-builder-guide-color, var(--xh-border-subtle));
+}
+
+/* 组头：逻辑切换在起始端，子组的删除钮推到行尾 */
+.xh-scope-filter-builder[data-part='group-header'] {
+  display: flex;
+  align-items: center;
+  gap: var(--xh-filter-builder-header-gap, var(--xh-space-2));
+  min-inline-size: 0;
+}
+
+.xh-scope-filter-builder[data-part='group-items'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-filter-builder-items-gap, var(--xh-space-2));
+  min-inline-size: 0;
+}
+
+/* 组尾：加条件与加条件组并排，靠起始端 */
+.xh-scope-filter-builder[data-part='group-footer'] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--xh-filter-builder-footer-gap, var(--xh-space-2));
+}
+
+/* 一个条件：字段、运算符、来源、操作数、开关、扩展位与删除钮排成一行，放不下时折行；
+   行内说明独占下一行 */
+.xh-scope-filter-builder[data-part='condition'] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--xh-filter-builder-condition-gap, var(--xh-space-2));
+  min-inline-size: 0;
+}
+
+/* 字段与运算符的外包：定一个列宽，里面的下拉铺满这一格 */
+.xh-scope-filter-builder[data-part='condition-field'],
+.xh-scope-filter-builder[data-part='condition-operator'] {
+  --xh-control-w: 100%;
+
+  display: grid;
+  flex: 0 1 var(--xh-filter-builder-select-w, var(--xh-layout-col-min-xs));
+  min-inline-size: 0;
+}
+
+/* 操作数占满一行余下的宽度：单值与一组值是一格，区间是两端夹着分隔文字的三格 */
+.xh-scope-filter-builder[data-part='condition-operand'] {
+  --xh-control-w: 100%;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: var(--xh-filter-builder-operand-gap, var(--xh-space-2));
+  flex: 1 1 var(--xh-filter-builder-operand-w, var(--xh-layout-col-min-sm));
+  min-inline-size: 0;
+}
+
+.xh-scope-filter-builder[data-part='condition-operand'][data-shape='range'] {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+/* 区间两端之间的文字与标签同一档 */
+.xh-scope-filter-builder[data-part='range-separator'] {
+  color: var(--xh-filter-builder-separator-fg, var(--xh-fg-muted));
+  font-size: var(--xh-filter-builder-separator-font-size, var(--xh-text-label-size));
+  line-height: var(--xh-leading-none);
+}
+
+/* 来源切换、忽略大小写开关与扩展位按内容宽 */
+.xh-scope-filter-builder[data-part='condition-source'],
+.xh-scope-filter-builder[data-part='condition-ignore-case'],
+.xh-scope-filter-builder[data-part='condition-extra'] {
+  display: flex;
+  flex: none;
+  align-items: center;
+}
+
+/* 行内说明：不完整的条件才有，独占一行，与错误文案同一档 */
+.xh-scope-filter-builder[data-part='condition-error'] {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--xh-filter-builder-error-fg, var(--xh-fg-danger));
+  font-size: var(--xh-filter-builder-error-font-size, var(--xh-text-caption-size));
+  line-height: var(--xh-leading-normal);
+}
+
+/* 根组没有条件时的提示：其余说明那一档 */
+.xh-scope-filter-builder[data-part='empty'] {
+  color: var(--xh-filter-builder-empty-fg, var(--xh-fg-muted));
+  font-size: var(--xh-filter-builder-empty-font-size, var(--xh-text-secondary-size));
+  line-height: var(--xh-leading-normal);
+}
+
+/* —— 删除钮 ——
+   只有字形的离散动作钮：icon 档 xs 的正方盒、ghost 静息透明，白底承载 hover 100 → pressed 200；
+   静息字取 muted，悬停转危险色：删掉的是整行或整组 */
+.xh-scope-filter-builder[data-part='condition-delete-trigger'],
+.xh-scope-filter-builder[data-part='group-delete-trigger'] {
+  --xh-action-visual-size: var(--xh-filter-builder-delete-size, var(--xh-_action-profile-visual-size));
+  --xh-action-min-inline-size: var(--xh-filter-builder-delete-size, var(--xh-_action-profile-visual-size));
+  --xh-action-radius: var(--xh-filter-builder-delete-radius, var(--xh-shape-control));
+  --xh-action-bg-rest: var(--xh-filter-builder-delete-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-hover: var(--xh-filter-builder-delete-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-filter-builder-delete-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-fg-rest: var(--xh-filter-builder-delete-fg, var(--xh-fg-muted));
+  --xh-action-fg-hover: var(--xh-filter-builder-delete-fg-hover, var(--xh-fg-danger-hover));
+  --xh-action-fg-pressed: var(--xh-filter-builder-delete-fg-hover, var(--xh-fg-danger-hover));
+  --xh-action-border-rest: transparent;
+  --xh-action-highlight-rest: transparent;
+  --xh-action-shadow-rest: none;
+  --xh-action-shadow-hover: none;
+  --xh-action-shadow-pressed: none;
+  --xh-icon-size: var(--xh-filter-builder-icon-size, var(--xh-_action-profile-glyph-size));
+
+  flex: none;
+  border-width: 0;
+}
+
+.xh-scope-filter-builder[data-part='group-delete-trigger'] {
+  margin-inline-start: auto;
+}
+
+/* —— 加条件与加条件组 ——
+   带文案的离散动作钮，走 text outline 档（中性描边、透明底，hover 100 → pressed 200），随根的尺寸；
+   虚线描边把它们和行里的实心控件区分开：它们加的是行，不是行里的值 */
+.xh-scope-filter-builder[data-part='add-condition-trigger'],
+.xh-scope-filter-builder[data-part='add-group-trigger'] {
+  --xh-action-visual-size: var(--xh-filter-builder-add-height, var(--xh-_action-profile-visual-size));
+  --xh-action-padding-inline: var(--xh-filter-builder-add-px, var(--xh-_action-profile-padding-inline));
+  --xh-action-radius: var(--xh-filter-builder-add-radius, var(--xh-shape-control));
+  --xh-action-bg-rest: var(--xh-filter-builder-add-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-hover: var(--xh-filter-builder-add-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-filter-builder-add-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-fg-rest: var(--xh-filter-builder-add-fg, var(--xh-fg-brand));
+  --xh-action-fg-hover: var(--xh-filter-builder-add-fg, var(--xh-fg-brand));
+  --xh-action-fg-pressed: var(--xh-filter-builder-add-fg, var(--xh-fg-brand));
+  --xh-action-border-rest: var(--xh-filter-builder-add-border, var(--xh-_action-variant-border-rest));
+  --xh-action-border-hover: var(--xh-filter-builder-add-border-hover, var(--xh-_action-variant-border-hover));
+  --xh-action-border-disabled: var(--xh-filter-builder-add-border-disabled, var(--xh-_action-variant-border-disabled));
+  --xh-action-highlight-rest: transparent;
+  --xh-action-shadow-rest: none;
+  --xh-action-shadow-hover: none;
+  --xh-action-shadow-pressed: none;
+  --xh-action-font-size: var(--xh-filter-builder-add-font-size, var(--xh-text-label-size));
+
+  border-style: dashed;
+}
+
+/* 删除钮没写内容就由皮肤画兜底的叉；作者往部件里塞了自己的图形，这条即不命中 */
+.xh-scope-filter-builder[data-part='condition-delete-trigger']:empty::before,
+.xh-scope-filter-builder[data-part='group-delete-trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
+/* 高对比档里掩码字形的底色会被换成 Canvas：取消强制配色，改用 ButtonText 着色 */
+@media (forced-colors: active) {
+  .xh-scope-filter-builder[data-part='condition-delete-trigger']:empty::before,
+  .xh-scope-filter-builder[data-part='group-delete-trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+}
+
+/* 打印只留条件本身：增删钮与扩展位不进纸面 */
+@media print {
+  .xh-scope-filter-builder[data-part='condition-delete-trigger'],
+  .xh-scope-filter-builder[data-part='group-delete-trigger'],
+  .xh-scope-filter-builder[data-part='add-condition-trigger'],
+  .xh-scope-filter-builder[data-part='add-group-trigger'],
+  .xh-scope-filter-builder[data-part='group-footer'] {
+    display: none;
+  }
+}
+
+/* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
+   写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+.xh-scope-filter-builder[data-part='root'][hidden],
+.xh-scope-filter-builder[data-part='group'][hidden],
+.xh-scope-filter-builder[data-part='group-header'][hidden],
+.xh-scope-filter-builder[data-part='group-items'][hidden],
+.xh-scope-filter-builder[data-part='group-footer'][hidden],
+.xh-scope-filter-builder[data-part='condition'][hidden],
+.xh-scope-filter-builder[data-part='condition-field'][hidden],
+.xh-scope-filter-builder[data-part='condition-operator'][hidden],
+.xh-scope-filter-builder[data-part='condition-operand'][hidden],
+.xh-scope-filter-builder[data-part='condition-source'][hidden],
+.xh-scope-filter-builder[data-part='condition-ignore-case'][hidden],
+.xh-scope-filter-builder[data-part='condition-extra'][hidden],
+.xh-scope-filter-builder[data-part='condition-delete-trigger'][hidden],
+.xh-scope-filter-builder[data-part='group-delete-trigger'][hidden],
+.xh-scope-filter-builder[data-part='add-condition-trigger'][hidden],
+.xh-scope-filter-builder[data-part='add-group-trigger'][hidden] {
+  display: none;
+}
+
 /* styles/form.css */
 /* 定义 form 样式。 */
 

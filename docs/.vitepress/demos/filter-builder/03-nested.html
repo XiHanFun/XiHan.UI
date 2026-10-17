@@ -1,0 +1,36 @@
+<!-- 嵌套的条件组 | 组里可以再套子组，表达「A 且（B 或 C）」；max-depth 限定层数，到上限时「加条件组」收起 -->
+<!-- 不写部件：组、条件行与组尾由元素按值铺在里面 -->
+<xh-filter-builder id="filter-builder-nested" aria-label="订单筛选" max-depth="1"></xh-filter-builder>
+<p id="filter-builder-nested-output" data-demo-output></p>
+
+<script type="module">
+  const builder = document.getElementById("filter-builder-nested");
+  const output = document.getElementById("filter-builder-nested-output");
+
+  // 字段、参数与值都是对象，只能经 property 赋值；受控时由宿主写回
+  builder.fields = [
+    { name: "region", type: "string", label: "区域", options: [{ value: "east", label: "华东" }, { value: "south", label: "华南" }, { value: "north", label: "华北" }] },
+    { name: "customer", type: "string", label: "客户" },
+    { name: "amount", type: "number", label: "金额" },
+    { name: "orderedAt", type: "date", label: "下单日期" },
+    { name: "paid", type: "boolean", label: "已付款" },
+  ];
+  builder.value = {
+    logic: "and",
+    conditions: [
+      { field: "paid", operator: "eq", value: true },
+      {
+        logic: "or",
+        conditions: [
+          { field: "region", operator: "in", value: ["east", "south"] },
+          { field: "customer", operator: "contains", value: "集团" },
+        ],
+      },
+    ],
+  };
+  output.textContent = `值：${JSON.stringify(builder.value)}`;
+  builder.addEventListener("value-change", (event) => {
+    builder.value = event.detail.value;
+    output.textContent = `值：${JSON.stringify(event.detail.value)}`;
+  });
+</script>

@@ -1,0 +1,351 @@
+# filter-builder
+
+[add-condition-trigger]
+padding-top: 0px
+padding-right: 16px
+padding-bottom: 0px
+padding-left: 16px
+row-gap: 8px
+column-gap: 8px
+border-top-left-radius: 2px
+border-top-right-radius: 2px
+border-bottom-right-radius: 2px
+border-bottom-left-radius: 2px
+border-top-width: 1px
+border-right-width: 1px
+border-bottom-width: 1px
+border-left-width: 1px
+border-top-color: oklab(0 0 0 / 0.102)
+border-right-color: oklab(0 0 0 / 0.102)
+border-bottom-color: oklab(0 0 0 / 0.102)
+border-left-color: oklab(0 0 0 / 0.102)
+min-height: auto
+font-size: 14px
+line-height: 14px
+font-weight: 400
+color: oklch(0.546 0.216 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: background-color, border-color, color, box-shadow, opacity, scale
+transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
+transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.546 0.216 258)
+
+[add-group-trigger]
+padding-top: 0px
+padding-right: 16px
+padding-bottom: 0px
+padding-left: 16px
+row-gap: 8px
+column-gap: 8px
+border-top-left-radius: 2px
+border-top-right-radius: 2px
+border-bottom-right-radius: 2px
+border-bottom-left-radius: 2px
+border-top-width: 1px
+border-right-width: 1px
+border-bottom-width: 1px
+border-left-width: 1px
+border-top-color: oklab(0 0 0 / 0.102)
+border-right-color: oklab(0 0 0 / 0.102)
+border-bottom-color: oklab(0 0 0 / 0.102)
+border-left-color: oklab(0 0 0 / 0.102)
+min-height: auto
+font-size: 14px
+line-height: 14px
+font-weight: 400
+color: oklch(0.546 0.216 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: background-color, border-color, color, box-shadow, opacity, scale
+transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
+transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.546 0.216 258)
+
+[empty]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: normal
+column-gap: normal
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: oklch(0.461 0.018 258)
+border-right-color: oklch(0.461 0.018 258)
+border-bottom-color: oklch(0.461 0.018 258)
+border-left-color: oklch(0.461 0.018 258)
+min-height: auto
+font-size: 13px
+line-height: 19.5px
+font-weight: 400
+color: oklch(0.461 0.018 258)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: oklch(0.461 0.018 258)
+
+[group]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: 8px
+column-gap: 8px
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: rgb(0, 0, 0)
+border-right-color: rgb(0, 0, 0)
+border-bottom-color: rgb(0, 0, 0)
+border-left-color: rgb(0, 0, 0)
+min-height: auto
+font-size: 16px
+line-height: normal
+font-weight: 400
+color: rgb(0, 0, 0)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: rgb(0, 0, 0)
+
+[group-footer]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: 8px
+column-gap: 8px
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: rgb(0, 0, 0)
+border-right-color: rgb(0, 0, 0)
+border-bottom-color: rgb(0, 0, 0)
+border-left-color: rgb(0, 0, 0)
+min-height: auto
+font-size: 16px
+line-height: normal
+font-weight: 400
+color: rgb(0, 0, 0)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: rgb(0, 0, 0)
+
+[group-header]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: 8px
+column-gap: 8px
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: rgb(0, 0, 0)
+border-right-color: rgb(0, 0, 0)
+border-bottom-color: rgb(0, 0, 0)
+border-left-color: rgb(0, 0, 0)
+min-height: auto
+font-size: 16px
+line-height: normal
+font-weight: 400
+color: rgb(0, 0, 0)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: rgb(0, 0, 0)
+
+[group-items]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: 8px
+column-gap: 8px
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: rgb(0, 0, 0)
+border-right-color: rgb(0, 0, 0)
+border-bottom-color: rgb(0, 0, 0)
+border-left-color: rgb(0, 0, 0)
+min-height: auto
+font-size: 16px
+line-height: normal
+font-weight: 400
+color: rgb(0, 0, 0)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: rgb(0, 0, 0)
+
+[live-region]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: normal
+column-gap: normal
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: rgb(0, 0, 0)
+border-right-color: rgb(0, 0, 0)
+border-bottom-color: rgb(0, 0, 0)
+border-left-color: rgb(0, 0, 0)
+min-height: 0px
+font-size: 16px
+line-height: normal
+font-weight: 400
+color: rgb(0, 0, 0)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: rgb(0, 0, 0)
+
+[logic]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: normal
+column-gap: normal
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: rgb(0, 0, 0)
+border-right-color: rgb(0, 0, 0)
+border-bottom-color: rgb(0, 0, 0)
+border-left-color: rgb(0, 0, 0)
+min-height: auto
+font-size: 16px
+line-height: normal
+font-weight: 400
+color: rgb(0, 0, 0)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: rgb(0, 0, 0)
+
+[root]
+padding-top: 0px
+padding-right: 0px
+padding-bottom: 0px
+padding-left: 0px
+row-gap: 8px
+column-gap: 8px
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: rgb(0, 0, 0)
+border-right-color: rgb(0, 0, 0)
+border-bottom-color: rgb(0, 0, 0)
+border-left-color: rgb(0, 0, 0)
+min-height: 0px
+font-size: 16px
+line-height: normal
+font-weight: 400
+color: rgb(0, 0, 0)
+background-color: rgba(0, 0, 0, 0)
+transition-property: all
+transition-duration: 0s
+transition-timing-function: ease
+animation-name: none
+animation-duration: 0s
+animation-timing-function: ease
+outline-width: 3px
+outline-offset: 0px
+outline-color: rgb(0, 0, 0)

@@ -44,6 +44,7 @@
     "@xihan-ui/sound": "link:../ui/packages/features/sound",
     "@xihan-ui/styles": "link:../ui/packages/design/styles",
     "@xihan-ui/tokens": "link:../ui/packages/design/tokens",
+    "@xihan-ui/viz": "link:../ui/packages/engine/viz",
     "@xihan-ui/vue": "link:../ui/packages/adapters/vue",
     "@xihan-ui/web-components": "link:../ui/packages/adapters/web-components",
     "@xihanfun/vitepress-theme": "^1.1.0",

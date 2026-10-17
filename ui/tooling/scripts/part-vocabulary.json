@@ -8,6 +8,12 @@
     "actions": [
       "fieldset"
     ],
+    "add-condition-trigger": [
+      "filter-builder"
+    ],
+    "add-group-trigger": [
+      "filter-builder"
+    ],
     "add-trigger": [
       "field-array"
     ],
@@ -284,6 +290,33 @@
     "comment-trigger": [
       "diff-view"
     ],
+    "condition": [
+      "filter-builder"
+    ],
+    "condition-delete-trigger": [
+      "filter-builder"
+    ],
+    "condition-error": [
+      "filter-builder"
+    ],
+    "condition-extra": [
+      "filter-builder"
+    ],
+    "condition-field": [
+      "filter-builder"
+    ],
+    "condition-ignore-case": [
+      "filter-builder"
+    ],
+    "condition-operand": [
+      "filter-builder"
+    ],
+    "condition-operator": [
+      "filter-builder"
+    ],
+    "condition-source": [
+      "filter-builder"
+    ],
     "confirm-trigger": [
       "color-picker",
       "date-picker",
@@ -472,6 +505,7 @@
       "command",
       "diff-view",
       "expression-input",
+      "filter-builder",
       "funnel-chart",
       "graph-chart",
       "grid-list",
@@ -620,6 +654,7 @@
       "combobox",
       "command",
       "context-menu",
+      "filter-builder",
       "listbox",
       "menu",
       "menubar",
@@ -631,8 +666,18 @@
       "toolbar",
       "transfer"
     ],
+    "group-delete-trigger": [
+      "filter-builder"
+    ],
+    "group-footer": [
+      "filter-builder"
+    ],
     "group-header": [
+      "filter-builder",
       "hierarchy-chart"
+    ],
+    "group-items": [
+      "filter-builder"
     ],
     "group-label": [
       "cascader",
@@ -1022,6 +1067,7 @@
       "expression-input",
       "field",
       "file-upload",
+      "filter-builder",
       "format-input",
       "grid-list",
       "listbox",
@@ -1167,6 +1213,7 @@
     ],
     "live-region": [
       "approval",
+      "filter-builder",
       "log",
       "markdown-stream",
       "message-feed",
@@ -1193,6 +1240,9 @@
       "transfer",
       "tree",
       "tree-select"
+    ],
+    "logic": [
+      "filter-builder"
     ],
     "logo": [
       "matrix-code"
@@ -1443,6 +1493,7 @@
     ],
     "range-separator": [
       "date-range-picker",
+      "filter-builder",
       "time-range-picker"
     ],
     "recent-swatch-picker": [
@@ -1520,6 +1571,7 @@
       "field-array",
       "fieldset",
       "file-upload",
+      "filter-builder",
       "flex",
       "float-button",
       "floating-panel",
@@ -2172,12 +2224,14 @@
     "candle": true,
     "canvas": true,
     "caption": true,
+    "case": true,
     "cell": true,
     "center": true,
     "change": true,
     "checkbox": true,
     "code": true,
     "column": true,
+    "condition": true,
     "connector": true,
     "content": true,
     "control": true,
@@ -2198,6 +2252,7 @@
     "error": true,
     "extra": true,
     "fallback": true,
+    "field": true,
     "filename": true,
     "fill": true,
     "footer": true,
@@ -2220,6 +2275,7 @@
     "issue": true,
     "issues": true,
     "item": true,
+    "items": true,
     "jumper": true,
     "key": true,
     "kind": true,
@@ -2229,6 +2285,7 @@
     "link": true,
     "list": true,
     "loading": true,
+    "logic": true,
     "logo": true,
     "mark": true,
     "media": true,
@@ -2240,6 +2297,8 @@
     "node": true,
     "note": true,
     "number": true,
+    "operand": true,
+    "operator": true,
     "outlier": true,
     "output": true,
     "panel": true,

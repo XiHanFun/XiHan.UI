@@ -29303,6 +29303,840 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/filter-builder.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-filter-builder>`：编辑一棵筛选条件树（`@xihan-ui/viz` 的 FilterGroup）。组里是条件与子组，\n组头切「全部满足 / 任一满足」，条件行是字段、运算符、操作数，有参数时还能切到参数引用。\n\n不写部件（或只写 root）时元素按值生成整棵树：树的形状随值变，增删改都派发一棵新树。\n行里的下拉、输入框、日期框、标签输入、分段切换与开关都是库内元素的实例，结构由它们自己生成；按需注册本元素时连带注册它们。\n带 id 的条件行尾有扩展位：在宿主的直接子节点上写 `slot=\"condition-extra:<条件 id>\"`，元素把它搬进那一行。\n值、字段与参数都是对象，只能经 property 赋值。",
+          "name": "XhFilterBuilderElement",
+          "cssParts": [
+            {
+              "description": "role=group，承载 data-empty / data-invalid / data-disabled / data-readonly",
+              "name": "root"
+            },
+            {
+              "description": "标题，可选；写了它根以它为名，放进 xh-field 时用字段的标题",
+              "name": "label"
+            },
+            {
+              "description": "一个组，role=group，以逻辑为名；value 是节点身份，承载 data-depth / data-logic",
+              "name": "group"
+            },
+            {
+              "description": "组头：逻辑切换与子组的删除钮",
+              "name": "group-header"
+            },
+            {
+              "description": "「全部满足 / 任一满足」切换的外包",
+              "name": "logic"
+            },
+            {
+              "description": "删除子组的钮，根组没有",
+              "name": "group-delete-trigger"
+            },
+            {
+              "description": "组里的条件与子组",
+              "name": "group-items"
+            },
+            {
+              "description": "组尾：加条件与加条件组",
+              "name": "group-footer"
+            },
+            {
+              "description": "在组里加一个条件",
+              "name": "add-condition-trigger"
+            },
+            {
+              "description": "在组里加一个子组；到 max-depth 时收起",
+              "name": "add-group-trigger"
+            },
+            {
+              "description": "一个条件，role=group，可及名「条件 n」；value 是节点身份，承载 data-invalid",
+              "name": "condition"
+            },
+            {
+              "description": "字段下拉的外包",
+              "name": "condition-field"
+            },
+            {
+              "description": "运算符下拉的外包",
+              "name": "condition-operator"
+            },
+            {
+              "description": "「值 / 参数」切换的外包：有可用参数时才有",
+              "name": "condition-source"
+            },
+            {
+              "description": "操作数控件的外包；区间时是两个，夹着分隔文字",
+              "name": "condition-operand"
+            },
+            {
+              "description": "区间两端之间的文字",
+              "name": "range-separator"
+            },
+            {
+              "description": "「忽略大小写」开关的外包",
+              "name": "condition-ignore-case"
+            },
+            {
+              "description": "行尾的扩展位，内容归宿主",
+              "name": "condition-extra"
+            },
+            {
+              "description": "删除这个条件的钮",
+              "name": "condition-delete-trigger"
+            },
+            {
+              "description": "不完整的条件的行内说明，进条件的描述链",
+              "name": "condition-error"
+            },
+            {
+              "description": "根组没有条件时的提示",
+              "name": "empty"
+            },
+            {
+              "description": "增删与挪动的播报",
+              "name": "live-region"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: filterBuilderAnatomy, meta: filterBuilderMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['root'], kind: 'group' }",
+              "type": {
+                "text": "{ parts: ['root'], kind: 'group' }"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "dependencies",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ 'xh-date-field': XhDateFieldElement, 'xh-number-field': XhNumberFieldElement, 'xh-select': XhSelectElement, 'xh-switch': XhSwitchElement, 'xh-tags-input': XhTagsInputElement, 'xh-text-field': XhTextFieldElement, 'xh-toggle-group': XhToggleGroupElement, }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhFilterBuilderElement>"
+              },
+              "static": true,
+              "default": "{ build: (host) => { if (!host.ctrl.service) return undefined return filterBuilderStructure(connectFilterBuilder(host.ctrl.service, wcNormalize), filterBuilderTranslations(host.ctrl.service.prop), { slotted: (name, key) => host.slotted(name, key), }) }, }"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "FilterGroup"
+              },
+              "description": "受控的条件树，未赋值即非受控"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "FilterGroup"
+              },
+              "description": "非受控初值"
+            },
+            {
+              "kind": "field",
+              "name": "fields",
+              "privacy": "public",
+              "type": {
+                "text": "FilterBuilderField[]"
+              },
+              "description": "可筛选的字段；条件的字段下拉按它的顺序"
+            },
+            {
+              "kind": "field",
+              "name": "parameters",
+              "privacy": "public",
+              "type": {
+                "text": "FilterBuilderParameter[]"
+              },
+              "description": "可引用的参数；不给或为空时不显示「值 / 参数」切换"
+            },
+            {
+              "kind": "field",
+              "name": "createId",
+              "privacy": "public",
+              "type": {
+                "text": "FilterBuilderCreateId"
+              },
+              "description": "新节点的 id；不给时新建的条件与组不带 id，也就没有扩展位"
+            },
+            {
+              "kind": "field",
+              "name": "maxDepth",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-depth"
+            },
+            {
+              "kind": "field",
+              "name": "ignoreCase",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "ignore-case"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "description": "文案（只能通过 property 设置）"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<FilterBuilderSchema>(this, filterBuilderMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；条件编辑器消费禁用、只读与无效三轴，再经组合节点交给里面的控件。"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<FilterBuilderSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "FilterBuilderApi | null"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "currentValue",
+              "type": {
+                "text": "FilterGroup | null"
+              },
+              "description": "此刻的条件树；状态机尚未建立时取 value 或 defaultValue。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "tree",
+              "type": {
+                "text": "FilterBuilderApi['tree'] | null"
+              },
+              "description": "整棵树的视图，根组在最外层；状态机尚未建立时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "conditions",
+              "type": {
+                "text": "FilterBuilderApi['conditions']"
+              },
+              "description": "按文档序排的全部条件。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "hasIssues",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "有没有不完整的条件。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "hasParameters",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "有没有可引用的参数。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "announcement",
+              "type": {
+                "text": "string"
+              },
+              "description": "读屏此刻播报的说明。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "setLogic",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "FilterPath"
+                  }
+                },
+                {
+                  "name": "logic",
+                  "type": {
+                    "text": "FilterGroup['logic']"
+                  }
+                }
+              ],
+              "description": "改组的逻辑。"
+            },
+            {
+              "kind": "method",
+              "name": "addCondition",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "groupPath",
+                  "type": {
+                    "text": "FilterPath"
+                  }
+                }
+              ],
+              "description": "在组里加一个条件。"
+            },
+            {
+              "kind": "method",
+              "name": "addGroup",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "groupPath",
+                  "type": {
+                    "text": "FilterPath"
+                  }
+                }
+              ],
+              "description": "在组里加一个子组。"
+            },
+            {
+              "kind": "method",
+              "name": "removeNode",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "FilterPath"
+                  }
+                }
+              ],
+              "description": "删除一个条件或子组。"
+            },
+            {
+              "kind": "method",
+              "name": "move",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "FilterPath"
+                  }
+                },
+                {
+                  "name": "delta",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "在同组里挪一个条件或子组，delta 是挪几位。"
+            },
+            {
+              "kind": "method",
+              "name": "setField",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "FilterPath"
+                  }
+                },
+                {
+                  "name": "field",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "换条件的字段。"
+            },
+            {
+              "kind": "method",
+              "name": "setOperator",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "FilterPath"
+                  }
+                },
+                {
+                  "name": "operator",
+                  "type": {
+                    "text": "FilterOperator"
+                  }
+                }
+              ],
+              "description": "换条件的运算符。"
+            },
+            {
+              "kind": "method",
+              "name": "setOperand",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "FilterPath"
+                  }
+                },
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "unknown"
+                  }
+                }
+              ],
+              "description": "改条件的操作数。"
+            },
+            {
+              "kind": "method",
+              "name": "setSource",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "FilterPath"
+                  }
+                },
+                {
+                  "name": "source",
+                  "type": {
+                    "text": "Parameters<FilterBuilderApi['setSource']>[1]"
+                  }
+                }
+              ],
+              "description": "切操作数的来源：字面值或参数引用。"
+            },
+            {
+              "kind": "method",
+              "name": "setIgnoreCase",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "FilterPath"
+                  }
+                },
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ],
+              "description": "开关忽略大小写。"
+            },
+            {
+              "kind": "method",
+              "name": "ownerPath",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "FilterPath | undefined"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "selector",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "FilterBuilderApi"
+                  }
+                }
+              ],
+              "description": "部件所属的组或条件的路径：向上找本宿主内最近的那一个，按它的 value 查路径。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "条件树变了；detail 为 `{ value: FilterGroup }`",
+              "name": "value-change",
+              "type": {
+                "text": "FilterBuilderValueChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "子组最多嵌套几层，缺省 2；0 表示不能加子组",
+              "name": "max-depth",
+              "fieldName": "maxDepth"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "字符串运算符旁给不给「忽略大小写」开关；缺省 true，写 ignore-case=\"false\" 关掉",
+              "name": "ignore-case",
+              "fieldName": "ignoreCase"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用：里面的控件都不可操作",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读：里面的控件可聚焦、不可修改",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败标注；有不完整的条件时也标",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "description": "形态，传给里面的控件",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸，传给里面的控件",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-filter-builder",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-filter-builder-add-bg"
+            },
+            {
+              "name": "--xh-filter-builder-add-bg-active"
+            },
+            {
+              "name": "--xh-filter-builder-add-bg-hover"
+            },
+            {
+              "name": "--xh-filter-builder-add-border"
+            },
+            {
+              "name": "--xh-filter-builder-add-border-disabled"
+            },
+            {
+              "name": "--xh-filter-builder-add-border-hover"
+            },
+            {
+              "name": "--xh-filter-builder-add-fg"
+            },
+            {
+              "name": "--xh-filter-builder-add-font-size"
+            },
+            {
+              "name": "--xh-filter-builder-add-height"
+            },
+            {
+              "name": "--xh-filter-builder-add-px"
+            },
+            {
+              "name": "--xh-filter-builder-add-radius"
+            },
+            {
+              "name": "--xh-filter-builder-condition-gap"
+            },
+            {
+              "name": "--xh-filter-builder-delete-bg"
+            },
+            {
+              "name": "--xh-filter-builder-delete-bg-active"
+            },
+            {
+              "name": "--xh-filter-builder-delete-bg-hover"
+            },
+            {
+              "name": "--xh-filter-builder-delete-fg"
+            },
+            {
+              "name": "--xh-filter-builder-delete-fg-hover"
+            },
+            {
+              "name": "--xh-filter-builder-delete-radius"
+            },
+            {
+              "name": "--xh-filter-builder-delete-size"
+            },
+            {
+              "name": "--xh-filter-builder-empty-fg"
+            },
+            {
+              "name": "--xh-filter-builder-empty-font-size"
+            },
+            {
+              "name": "--xh-filter-builder-error-fg"
+            },
+            {
+              "name": "--xh-filter-builder-error-font-size"
+            },
+            {
+              "name": "--xh-filter-builder-footer-gap"
+            },
+            {
+              "name": "--xh-filter-builder-gap"
+            },
+            {
+              "name": "--xh-filter-builder-group-gap"
+            },
+            {
+              "name": "--xh-filter-builder-guide-color"
+            },
+            {
+              "name": "--xh-filter-builder-header-gap"
+            },
+            {
+              "name": "--xh-filter-builder-icon-size"
+            },
+            {
+              "name": "--xh-filter-builder-indent"
+            },
+            {
+              "name": "--xh-filter-builder-items-gap"
+            },
+            {
+              "name": "--xh-filter-builder-label-fg"
+            },
+            {
+              "name": "--xh-filter-builder-label-font-size"
+            },
+            {
+              "name": "--xh-filter-builder-label-font-weight"
+            },
+            {
+              "name": "--xh-filter-builder-operand-gap"
+            },
+            {
+              "name": "--xh-filter-builder-operand-w"
+            },
+            {
+              "name": "--xh-filter-builder-select-w"
+            },
+            {
+              "name": "--xh-filter-builder-separator-fg"
+            },
+            {
+              "name": "--xh-filter-builder-separator-font-size"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhFilterBuilderElement",
+          "declaration": {
+            "name": "XhFilterBuilderElement",
+            "module": "src/elements/filter-builder.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/flex.ts",
       "declarations": [
         {

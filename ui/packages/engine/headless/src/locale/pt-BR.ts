@@ -9,7 +9,7 @@ import type { KeyTextTable } from '@xihan-ui/core/hotkey'
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { XhLocale, XhLocaleTranslations } from './types'
 import { keyText } from '@xihan-ui/core/hotkey'
-import { FORMAT_INPUT_EN_US } from './en-US'
+import { FILTER_BUILDER_EN_US, FORMAT_INPUT_EN_US } from './en-US'
 import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -287,6 +287,30 @@ const translations = {
   'file-upload': {
     deleteItem: file => `Remover ${file.name}`,
     clearTrigger: 'Limpar todos os arquivos',
+  },
+  'filter-builder': {
+    logic: logic => (logic === 'and' ? 'Todas' : 'Alguma'),
+    match: 'Correspondência',
+    group: logic => (logic === 'and' ? 'Atender a todas as condições a seguir' : 'Atender a alguma das condições a seguir'),
+    condition: number => `Condição ${number}`,
+    field: number => `Campo da condição ${number}`,
+    operator: number => `Operador da condição ${number}`,
+    operand: (number, end) => (end === 'from' ? `Valor inicial da condição ${number}` : end === 'to' ? `Valor final da condição ${number}` : `Valor da condição ${number}`),
+    source: number => `Origem do valor da condição ${number}`,
+    sourceOption: source => (source === 'value' ? 'Valor' : 'Parâmetro'),
+    operatorOption: operator => ({ eq: 'igual a', neq: 'diferente de', gt: 'maior que', gte: 'pelo menos', lt: 'menor que', lte: 'no máximo', between: 'entre', in: 'em', notIn: 'fora de', contains: 'contém', notContains: 'não contém', startsWith: 'começa com', endsWith: 'termina com', isEmpty: 'está vazio', isNotEmpty: 'não está vazio' })[operator],
+    ignoreCase: 'Ignorar maiúsculas',
+    rangeSeparator: 'a',
+    booleanOption: value => (value ? 'Sim' : 'Não'),
+    addCondition: 'Adicionar condição',
+    addGroup: 'Adicionar grupo',
+    removeCondition: number => `Remover a condição ${number}`,
+    removeGroup: 'Remover grupo',
+    empty: 'Ainda não há condições',
+    added: number => `Condição ${number} adicionada`,
+    removed: number => `Condição ${number} removida`,
+    moved: number => `Condição ${number} movida`,
+    issue: FILTER_BUILDER_EN_US.issue,
   },
   'float-button': { trigger: 'Ações' },
   'floating-panel': {

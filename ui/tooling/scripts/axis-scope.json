@@ -132,6 +132,7 @@
   "field-array": [],
   "fieldset": [],
   "file-upload": [],
+  "filter-builder": [],
   "flex": [],
   "float-button": [
     "variant",

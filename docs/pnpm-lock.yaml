@@ -47,6 +47,9 @@ importers:
       '@xihan-ui/tokens':
         specifier: link:../ui/packages/design/tokens
         version: link:../ui/packages/design/tokens
+      '@xihan-ui/viz':
+        specifier: link:../ui/packages/engine/viz
+        version: link:../ui/packages/engine/viz
       '@xihan-ui/vue':
         specifier: link:../ui/packages/adapters/vue
         version: link:../ui/packages/adapters/vue

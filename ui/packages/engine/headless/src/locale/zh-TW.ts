@@ -9,7 +9,7 @@ import type { KeyTextTable } from '@xihan-ui/core/hotkey'
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { XhLocale, XhLocaleTranslations } from './types'
 import { keyText } from '@xihan-ui/core/hotkey'
-import { FORMAT_INPUT_EN_US } from './en-US'
+import { FILTER_BUILDER_EN_US, FORMAT_INPUT_EN_US } from './en-US'
 import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -284,6 +284,30 @@ const translations = {
   'file-upload': {
     deleteItem: file => `刪除 ${file.name}`,
     clearTrigger: '清除所有檔案',
+  },
+  'filter-builder': {
+    logic: logic => (logic === 'and' ? '全部符合' : '任一符合'),
+    match: '滿足方式',
+    group: logic => (logic === 'and' ? '全部符合以下條件' : '任一符合以下條件'),
+    condition: number => `條件 ${number}`,
+    field: number => `條件 ${number} 的欄位`,
+    operator: number => `條件 ${number} 的運算子`,
+    operand: (number, end) => (end === 'from' ? `條件 ${number} 的起始值` : end === 'to' ? `條件 ${number} 的結束值` : `條件 ${number} 的值`),
+    source: number => `條件 ${number} 的取值來源`,
+    sourceOption: source => (source === 'value' ? '值' : '參數'),
+    operatorOption: operator => ({ eq: '等於', neq: '不等於', gt: '大於', gte: '大於等於', lt: '小於', lte: '小於等於', between: '介於', in: '屬於', notIn: '不屬於', contains: '包含', notContains: '不包含', startsWith: '開頭是', endsWith: '結尾是', isEmpty: '為空', isNotEmpty: '不為空' })[operator],
+    ignoreCase: '忽略大小寫',
+    rangeSeparator: '至',
+    booleanOption: value => (value ? '是' : '否'),
+    addCondition: '加條件',
+    addGroup: '加條件組',
+    removeCondition: number => `刪除條件 ${number}`,
+    removeGroup: '刪除條件組',
+    empty: '還沒有條件',
+    added: number => `已新增條件 ${number}`,
+    removed: number => `已刪除條件 ${number}`,
+    moved: number => `已移動條件 ${number}`,
+    issue: FILTER_BUILDER_EN_US.issue,
   },
   'float-button': { trigger: '動作' },
   'floating-panel': {
