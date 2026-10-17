@@ -1,8 +1,8 @@
 ---
-'@xihan-ui/headless': minor
-'@xihan-ui/vue': minor
-'@xihan-ui/react': minor
-'@xihan-ui/web-components': minor
+'@xihan-ui/headless': major
+'@xihan-ui/vue': major
+'@xihan-ui/react': major
+'@xihan-ui/web-components': major
 ---
 
 几处可访问名改为包含它们看得见的字（WCAG 2.5.3 Label in Name，axe 4.14 起 `label-content-name-mismatch` 默认开启）。

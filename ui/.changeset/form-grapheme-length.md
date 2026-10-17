@@ -1,8 +1,8 @@
 ---
-'@xihan-ui/headless': minor
-'@xihan-ui/vue': minor
-'@xihan-ui/react': minor
-'@xihan-ui/web-components': minor
+'@xihan-ui/headless': major
+'@xihan-ui/vue': major
+'@xihan-ui/react': major
+'@xihan-ui/web-components': major
 ---
 
 表单规则的 `min` / `max` 对字符串改按字素计数，和文本框的字数统计、`maxLength` 用同一把尺子。`@xihan-ui/headless` 同时公开这把尺子 `graphemeLength(text)`。
