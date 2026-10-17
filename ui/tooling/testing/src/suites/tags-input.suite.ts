@@ -958,5 +958,37 @@ export const tagsInputSuite: ConformanceSuite = {
         heldPressIgnored('tags-input', 'clear-trigger', '既无标签也无文本时清空钮藏着，不接受按压'),
       ],
     },
+    {
+      name: '作者不写结构：三端都照 tagsInputStructure 铺出标题、按值铺的标签（带编辑框）、输入框、清空钮、计数与表单影子',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '技术栈', defaultValue: ['vue', 'react'], editable: true, showCount: true, max: 5, name: 'stack' },
+      initial: {
+        order: ['root', 'label', 'control', 'item[0]', 'item-input[0]', 'item[1]', 'item-input[1]', 'input', 'clear-trigger', 'count', 'hidden-input'],
+        parts: {
+          'label': { for: '@part(input)' },
+          'item[0]': { 'data-value': 'vue' },
+          'item[1]': { 'data-value': 'react' },
+          'clear-trigger': { hidden: null },
+          'hidden-input': { type: 'hidden', name: 'stack' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '标签的常态部分戴 tag 的 scope，计数文字不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            const previews = [...doc.querySelectorAll('[data-scope="tags-input"][data-part="item"] > [data-scope="tag"][data-part="root"]')]
+            const actual = previews.map(el => [el.textContent?.trim(), el.querySelector('[data-scope="tag"][data-part="close-trigger"]') != null])
+            const expected = [['vue', true], ['react', true]]
+            if (JSON.stringify(actual) !== JSON.stringify(expected))
+              throw new Error(`标签期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+            const count = doc.querySelector('[data-scope="tags-input"][data-part="count"]')?.textContent?.trim()
+            if (count !== '2 / 5')
+              throw new Error(`计数期望 "2 / 5"，实际 ${JSON.stringify(count)}`)
+          },
+        },
+      ],
+    },
   ],
 }

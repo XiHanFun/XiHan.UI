@@ -116,6 +116,7 @@ delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号�
 
 ### 特性
 
+- 不写结构时按标准结构铺出标题、盒里按当前值铺的标签与输入框、清空按钮、计数与表单影子（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，开了 `editable` 每个标签带编辑框，开了 `showCount` 才铺计数。标签文本缺省就是它的值，Vue 的 `item` 插槽、React 的 `renderItem`、Web Components 宿主直接子节点上的 `slot="item:<值>"` 可以接管；标题在 Web Components 里用 `slot="label"` 接管。
 - `delimiter` 与 `addOnPaste` 一起处理粘贴拆分；`delimiter` 给一组时其中任何一个都断词（如半角与全角逗号），提交串用第一个。
 - `validate` 逐个判定新标签，返回拒绝码即拒收：这一次提交整体不生效、文本留在框里；拒收的标签连同原因（重复、放不下或自定义码）经 `onTagReject` 报告。
 - 标签是一个集合：已有的标签再输入一次照常被消费、值不变，只报一笔 `duplicate`。
@@ -204,6 +205,8 @@ delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号�
 | --- | --- | --- | --- |
 | `XhTagsInputCount` | `default` | `TagsInputCountSlotProps` |  |
 | `XhTagsInputRoot` | `default` | `TagsInputRootSlotProps` |  |
+| `XhTagsInputRoot` | `label` | — |  |
+| `XhTagsInputRoot` | `item` | `{ value: string }` | 只填标签文本，常态部分的删除钮与就地编辑照旧由结构铺 |
 
 ### React 适配器 props
 
@@ -213,6 +216,8 @@ delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号�
 | --- | --- | --- | --- | --- |
 | `XhTagsInputCount` | `children` | `SlotChildren<TagsInputCountSlotProps>` |  |  |
 | `XhTagsInputItem` | `value` | `string` | 是 |  |
+| `XhTagsInputRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhTagsInputRoot` | `renderItem` | `(value: string) => ReactNode` |  | 不给 children 时标签文本的内容；未提供时就是标签的值。 |
 | `XhTagsInputRoot` | `children` | `SlotChildren<TagsInputRootSlotProps>` |  |  |
 
 ### 状态

@@ -10,11 +10,13 @@ import type { TagsInputApi, TagsInputBlurBehavior, TagsInputSchema, TagsInputTra
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { contains } from '@xihan-ui/core'
+import { tagsInputStructure } from '@xihan-ui/headless'
 import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { TagsInputItemProvider, TagsInputProvider, useTagsInputContext, useTagsInputItemContext } from './context'
@@ -51,6 +53,10 @@ export type TagsInputRootSlotProps = Pick<
 >
 
 export interface XhTagsInputRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
+  /** 不给 children 时标签文本的内容；未提供时就是标签的值。 */
+  renderItem?: (value: string) => ReactNode
   value?: string[]
   defaultValue?: string[]
   inputValue?: string
@@ -86,6 +92,8 @@ export interface XhTagsInputRootProps extends Omit<ComponentPropsWithRef<'div'>,
 }
 
 export function XhTagsInputRoot({
+  label,
+  renderItem,
   value,
   defaultValue,
   inputValue,
@@ -153,24 +161,26 @@ export function XhTagsInputRoot({
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
-        {renderSlot(children, {
-          value: api.value,
-          count: api.count,
-          inputValue: api.inputValue,
-          empty: api.empty,
-          atMax: api.atMax,
-          overflow: api.overflow,
-          highlightedValue: api.highlightedValue,
-          editedValue: api.editedValue,
-          canClear: api.canClear,
-          setValue: api.setValue,
-          addValue: api.addValue,
-          deleteValue: api.deleteValue,
-          clear: api.clear,
-          setInputValue: api.setInputValue,
-          highlight: api.highlight,
-          edit: api.edit,
-        })}
+        {children != null
+          ? renderSlot(children, {
+              value: api.value,
+              count: api.count,
+              inputValue: api.inputValue,
+              empty: api.empty,
+              atMax: api.atMax,
+              overflow: api.overflow,
+              highlightedValue: api.highlightedValue,
+              editedValue: api.editedValue,
+              canClear: api.canClear,
+              setValue: api.setValue,
+              addValue: api.addValue,
+              deleteValue: api.deleteValue,
+              clear: api.clear,
+              setInputValue: api.setInputValue,
+              highlight: api.highlight,
+              edit: api.edit,
+            })
+          : renderDefaultStructure(api, { label, editable, renderItem })}
       </div>
     </TagsInputProvider>
   )
@@ -363,4 +373,43 @@ export function XhTagsInputHiddenInput({ ...rest }: XhTagsInputHiddenInputProps)
       )}
     />
   )
+}
+
+/** 标准结构里各部件对应的组件；标签的常态部分、文本与删除钮委派给 tag，按「tag/部件名」找。 */
+const TAGS_INPUT_PARTS = {
+  'label': XhTagsInputLabel,
+  'control': XhTagsInputControl,
+  'item': XhTagsInputItem,
+  'tag/item-preview': XhTagsInputItemPreview,
+  'tag/item-text': XhTagsInputItemText,
+  'tag/item-delete-trigger': XhTagsInputItemDeleteTrigger,
+  'item-input': XhTagsInputItemInput,
+  'input': XhTagsInputInput,
+  'clear-trigger': XhTagsInputClearTrigger,
+  'count': XhTagsInputCount,
+  'hidden-input': XhTagsInputHiddenInput,
+}
+
+/**
+ * 未写 children 时铺开的整套结构：照 headless 的 tagsInputStructure 渲，标签按当前值铺，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容与标签文本交给对应部件。
+ */
+function renderDefaultStructure(api: TagsInputApi, content: { label?: ReactNode, editable?: boolean, renderItem?: (value: string) => ReactNode }): ReactNode[] {
+  const { label, renderItem } = content
+  const slotted: Readonly<Record<string, boolean>> = {
+    label: label != null && typeof label !== 'string',
+    item: renderItem != null,
+  }
+  const nodes = tagsInputStructure(api, {
+    label: typeof label === 'string' ? label : undefined,
+    editable: content.editable,
+    slotted: name => slotted[name] === true,
+  })
+  return renderStructure(nodes, TAGS_INPUT_PARTS, (node) => {
+    if (node.slot?.name === 'label')
+      return label
+    if (node.slot?.name === 'item')
+      return renderItem?.(node.data as string) ?? (node.data as string)
+    return undefined
+  })
 }
