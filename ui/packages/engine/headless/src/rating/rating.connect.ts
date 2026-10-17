@@ -197,6 +197,7 @@ export function connectRating<T extends PropTypes>(
       ...parts.control.attrs,
       'role': 'radiogroup',
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
+      'aria-label': prop('ariaLabel'),
       'aria-orientation': 'horizontal',
       // 四个 aria 布尔显式写 true/false：省略是"没说"，显式 false 是"明确说了不是"
       'aria-disabled': disabled ? 'true' : 'false',

@@ -234,6 +234,7 @@ export function connectListbox<T extends PropTypes>(
       'id': ids.content,
       'role': 'listbox',
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
+      'aria-label': prop('ariaLabel'),
       'aria-multiselectable': multiselectable ? 'true' : 'false',
       'aria-orientation': orientation,
       'aria-disabled': listDisabled ? 'true' : 'false',

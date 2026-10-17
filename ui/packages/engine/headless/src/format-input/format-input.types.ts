@@ -45,6 +45,11 @@ export interface FormatInputSchema extends MachineSchema {
     invalid?: boolean
     /** 作者渲染了 label 部件：根以它为名。 */
     labelled?: boolean
+    /**
+     * 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。
+     * 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。
+     */
+    ariaLabel?: string
     /** 视觉轴，传给里面的控件。 */
     variant?: ControlVariant
     size?: Size

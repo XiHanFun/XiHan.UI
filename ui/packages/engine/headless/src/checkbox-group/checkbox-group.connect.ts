@@ -149,6 +149,7 @@ export function connectCheckboxGroup<T extends PropTypes>(
       'role': 'group',
       // 只指向真渲染了的标题：悬空的 IDREF 让组没有名字
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
+      'aria-label': prop('ariaLabel'),
       // role=group 不接受 aria-orientation，只出 data-orientation
       'data-orientation': orientation,
       // 视觉轴打在根上，条目与方框从这里继承私有槽，子部件不重复标注

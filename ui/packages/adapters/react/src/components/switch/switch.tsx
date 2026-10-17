@@ -24,6 +24,8 @@ type SwitchProps = SwitchSchema['props']
 type ButtonProps = Omit<ComponentPropsWithRef<'button'>, 'value' | 'defaultChecked' | 'onChange'>
 
 export interface XhSwitchProps extends ButtonProps {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   checked?: boolean
   defaultChecked?: boolean
   disabled?: boolean
@@ -66,6 +68,7 @@ const SWITCH_PARTS = {
 }
 
 export function XhSwitch({
+  ariaLabel,
   checked,
   defaultChecked,
   disabled,
@@ -82,6 +85,7 @@ export function XhSwitch({
   ...rest
 }: XhSwitchProps): ReactNode {
   const { api, service } = useSwitch(useFormControlProps({
+    ariaLabel,
     checked,
     defaultChecked,
     disabled,

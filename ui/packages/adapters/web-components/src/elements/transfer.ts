@@ -219,6 +219,7 @@ export class XhTransferElement extends XhElement {
       required: this.required,
     }, this.inheritedControl)
     return {
+      ariaLabel: this.hostAriaLabel(),
       collection: this.collection,
       virtualizers: this.virtualizers,
       value: this.value,

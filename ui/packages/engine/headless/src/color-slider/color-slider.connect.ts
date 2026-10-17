@@ -155,7 +155,7 @@ export function connectColorSlider<T extends PropTypes>(
         'aria-valuetext': label.valueText(channel, channelValue),
         'aria-labelledby': prop('labelled') ? ids.label : undefined,
         // 作者没放 label 部件时名字从文案取，两者同时在时以 label 部件为准
-        'aria-label': label.label(channel),
+        'aria-label': prop('ariaLabel') ?? label.label(channel),
         'aria-orientation': orientation,
         // div 上原生 disabled 不生效，用 aria-disabled 并抽掉 Tab 位；readOnly 不抽 Tab 位
         'aria-disabled': disabled ? 'true' : 'false',

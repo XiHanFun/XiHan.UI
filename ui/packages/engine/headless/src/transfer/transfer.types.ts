@@ -122,6 +122,11 @@ export interface TransferSchema extends MachineSchema {
      * 搜索串一变该侧回到第 1 页；条目搬走后页数变少时页码夹回最后一页。
      */
     pageSize?: number
+    /**
+     * 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。
+     * 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。
+     */
+    ariaLabel?: string
     /** 整个控件禁用：条目为 aria-disabled，三个按钮与搜索框使用原生 disabled。 */
     disabled?: boolean
     /** 只读：两侧照常浏览与搜索，但勾选不可修改、也不可移动。禁用还额外移除键盘入口。 */

@@ -112,6 +112,7 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `collection` | `ListboxNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 完整 collection 与 Virtualizer 的焦点桥；count 必须与 collection.length 一致。 |
 | `value` | `string \| string[]` |  | 选中值，提供即受控；单选可写为裸串，内部归一为数组。 |
@@ -259,6 +260,7 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 | `content` | `aria-busy` | 'true' \| undefined |
 | `content` | `aria-disabled` | 'true' \| 'false' |
 | `content` | `aria-invalid` | 'true' \| 'false' |
+| `content` | `aria-label` | props.ariaLabel |
 | `content` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `content` | `aria-multiselectable` | 'true' \| 'false' |
 | `content` | `aria-orientation` | props.orientation |

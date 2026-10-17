@@ -66264,14 +66264,6 @@
               "description": "上一帧写到根上的两条命名属性：根上的值与它不同即是作者自己写的，以根上的为准。"
             },
             {
-              "kind": "field",
-              "name": "hostNamingWatch",
-              "type": {
-                "text": "MutationObserver | undefined"
-              },
-              "privacy": "private"
-            },
-            {
               "kind": "method",
               "name": "hostNaming",
               "privacy": "private",

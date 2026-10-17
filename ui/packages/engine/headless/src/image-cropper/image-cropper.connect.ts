@@ -223,7 +223,7 @@ export function connectImageCropper<T extends PropTypes>(
       // 平移压根到不了这里。slider 不能用——它的子节点按规范一律当装饰，
       // 那样八个把手会整批从无障碍树里消失。application 的代价只覆盖框内那一小块，见 doc.md
       'role': 'application',
-      'aria-label': label.cropArea,
+      'aria-label': prop('ariaLabel') ?? label.cropArea,
       'aria-disabled': disabled ? 'true' : 'false',
       'tabindex': disabled ? undefined : 0,
       'data-shape': shape,

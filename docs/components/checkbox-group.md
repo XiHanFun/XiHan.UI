@@ -134,6 +134,7 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定方框与文字的几何档位。 |
 | `variant` | `CheckboxGroupVariant` |  | 结构形态，默认 list；card 把每个条目画成一张可点的卡。 |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时根不输出 aria-labelledby：指向未渲染的 id 会让组没有名字，作者写在根上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `onValueChange` | `(details: CheckboxGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### CheckboxGroupNode
@@ -244,6 +245,7 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `aria-label` | props.ariaLabel |
 | `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `root` | `role` | 'group' |
 | `item` | `aria-checked` | 'true' \| 'false' |

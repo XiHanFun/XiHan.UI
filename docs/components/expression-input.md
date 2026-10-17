@@ -108,6 +108,7 @@
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `label` | `string` |  | 标题文字；给了即由标准结构生成 label 部件。 |
 | `multiline` | `boolean` |  | 多行：输入框是 textarea，位置说明带行号，补全浮层锚在光标处。 |
 | `issuesRendered` | `boolean` |  | 作者渲染了 issues 部件时置真，由适配器统计；为假时输入框的描述链不引用它。 |
@@ -257,6 +258,7 @@
 | `input` | `aria-expanded` | undefined \| 'true' \| 'false' |
 | `input` | `aria-haspopup` | 'listbox' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
+| `input` | `aria-label` | props.ariaLabel |
 | `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `input` | `aria-readonly` | 'true' \| 'false' |
 | `input` | `aria-required` | 'true' \| 'false' |

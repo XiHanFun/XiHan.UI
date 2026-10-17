@@ -341,6 +341,7 @@ export function connectCombobox<T extends PropTypes>(
       'readonly': readOnly || undefined,
       // 作者把 label 换成非 <label> 元素时 for 会失效，这条兜住名字
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
+      'aria-label': prop('ariaLabel'),
       'aria-haspopup': 'listbox',
       // aria-expanded 不在 textbox 的支持属性里，多行宿主上整条缺席
       'aria-expanded': isMultilineHost(input) ? undefined : (open ? 'true' : 'false'),
@@ -582,6 +583,7 @@ export function connectCombobox<T extends PropTypes>(
       'id': ids.content,
       'role': 'listbox',
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
+      'aria-label': prop('ariaLabel'),
       // 单选也显式写 'false'，不省略
       'aria-multiselectable': multiple ? 'true' : 'false',
       // 取数在途的播报归列表本体：两个相位占位自己不带这一位

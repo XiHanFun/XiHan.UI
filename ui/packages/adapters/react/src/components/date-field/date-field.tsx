@@ -46,6 +46,8 @@ export interface DateFieldSegmentSlotProps {
 }
 
 export interface XhDateFieldRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   /** 标题。不给 children 时铺 label 部件。 */
   label?: ReactNode
   value?: string | null
@@ -77,6 +79,7 @@ export interface XhDateFieldRootProps extends Omit<ComponentPropsWithRef<'div'>,
 }
 
 export function XhDateFieldRoot({
+  ariaLabel,
   label,
   value,
   defaultValue,
@@ -103,6 +106,7 @@ export function XhDateFieldRoot({
   ...rest
 }: XhDateFieldRootProps): ReactNode {
   const ctx = useDateField(withXhConfig('date-field', useFormControlProps({
+    ariaLabel,
     value,
     defaultValue,
     min,

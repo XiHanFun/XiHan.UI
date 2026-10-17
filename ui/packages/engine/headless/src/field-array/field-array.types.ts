@@ -111,6 +111,11 @@ export interface FieldArraySchema extends MachineSchema {
     createItem?: () => unknown
     /** 是否显示换序把手。关闭（默认）时两个换序把手一律收起。 */
     movable?: boolean
+    /**
+     * 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上（表格本体）；只在表格排布下生效。
+     * 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。
+     */
+    ariaLabel?: string
     /** 禁用：新增、删除、换序三路都不可按下。 */
     disabled?: boolean
     /** 只读：行数不可修改（新增、删除、换序都不可按下），行内的控件仍由作者自行设置只读。 */

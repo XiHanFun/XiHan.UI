@@ -401,34 +401,23 @@ export class XhTableElement extends XhElement {
 
   /** 上一帧写到根上的两条命名属性：根上的值与它不同即是作者自己写的，以根上的为准。 */
   private rootNamingWritten: Record<string, string | undefined> = {}
-  private hostNamingWatch: MutationObserver | undefined
 
   /**
    * 没有 caption 时，作者把名字写在 `<xh-table>` 宿主上（宿主不是 grid）就转到根上：根才是读屏念的那个表格。
    * 根上已有作者自己写的 aria-label / aria-labelledby 时不动；宿主上的命名改了跟着变。
    */
   private hostNaming(rootProps: Record<string, unknown>): Record<string, unknown> {
-    if (!this.hostNamingWatch && typeof MutationObserver !== 'undefined') {
-      this.hostNamingWatch = new MutationObserver(() => this.requestUpdate())
-      this.hostNamingWatch.observe(this, { attributes: true, attributeFilter: ['aria-label', 'aria-labelledby'] })
-    }
     const root = this.getPart('root')
     const next: Record<string, unknown> = { ...rootProps }
     const written: Record<string, string | undefined> = {}
-    for (const attr of ['aria-labelledby', 'aria-label']) {
+    for (const attr of ['aria-labelledby', 'aria-label'] as const) {
       const authored = root?.hasAttribute(attr) && root.getAttribute(attr) !== this.rootNamingWritten[attr]
       if (next[attr] === undefined && !authored && !this.getPart('caption'))
-        next[attr] = this.getAttribute(attr) ?? undefined
+        next[attr] = this.readHostNaming(attr)
       written[attr] = next[attr] as string | undefined
     }
     this.rootNamingWritten = written
     return next
-  }
-
-  override disconnectedCallback(): void {
-    super.disconnectedCallback()
-    this.hostNamingWatch?.disconnect()
-    this.hostNamingWatch = undefined
   }
 
   protected wire(): void {

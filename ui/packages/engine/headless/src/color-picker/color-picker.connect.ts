@@ -280,7 +280,10 @@ export function connectColorPicker<T extends PropTypes>(
       'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,
       // 名字由标题加当前值合成
-      'aria-labelledby': prop('labelled') ? `${ids.label} ${ids['value-text']}` : ids['value-text'],
+      'aria-labelledby': prop('labelled')
+        ? `${ids.label} ${ids['value-text']}`
+        : prop('ariaLabel') ? `${ids.trigger} ${ids['value-text']}` : ids['value-text'],
+      'aria-label': prop('ariaLabel'),
       'aria-invalid': invalid ? 'true' : 'false',
       // 单体控件走原生 disabled。只读不禁用：浮层照开，进去只是改不动
       'disabled': disabled || undefined,
@@ -346,6 +349,7 @@ export function connectColorPicker<T extends PropTypes>(
       'role': inline ? 'group' : 'dialog',
       'aria-modal': inline ? undefined : 'false',
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
+      'aria-label': prop('ariaLabel'),
       // 浮层形态的 tabindex 写 -1 不能省：焦点域在无可聚焦子控件时会退回聚焦容器本身；常驻形态没有焦点域
       'tabindex': inline ? undefined : -1,
       'data-placement': inline ? undefined : placement,

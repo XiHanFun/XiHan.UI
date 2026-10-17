@@ -72,8 +72,11 @@ export function withFieldLabel(props: Record<string, unknown>, labelId: string |
   if (!labelId)
     return props
   const own = props['aria-labelledby']
+  // 名字链引到部件自己只为取它的 aria-label；字段标签在场时名字归字段，这一段去掉
+  const selfNamed = typeof props['aria-label'] === 'string' && props['aria-label'] !== '' ? props.id : undefined
+  const ownIds = typeof own === 'string' ? own.split(/\s+/).filter(id => id !== '' && id !== selfNamed) : []
   return {
     ...props,
-    'aria-labelledby': typeof own === 'string' && own ? `${labelId} ${own}` : labelId,
+    'aria-labelledby': [labelId, ...ownIds].join(' '),
   }
 }

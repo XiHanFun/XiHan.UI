@@ -38,6 +38,8 @@ export interface SliderTickSlotProps {
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'defaultValue' | 'dir' | 'children'>
 
 export interface XhSliderRootProps extends RootElementProps {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   /** 受控值；值恒为数组，单滑块即长度 1。给定即受控。 */
   value?: number[]
   /** 非受控初值。 */
@@ -81,6 +83,7 @@ export interface XhSliderRootProps extends RootElementProps {
 }
 
 export function XhSliderRoot({
+  ariaLabel,
   value,
   defaultValue,
   min,
@@ -109,6 +112,7 @@ export function XhSliderRoot({
   ...rest
 }: XhSliderRootProps): ReactNode {
   const ctx = useSlider(useFormControlProps({
+    ariaLabel,
     value,
     defaultValue,
     min,

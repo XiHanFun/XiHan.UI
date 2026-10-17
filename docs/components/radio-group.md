@@ -169,6 +169,7 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `variant` | `RadioGroupVariant` |  | 结构形态，默认 list；card 把每个条目画成一张可点的卡，segmented 画成轨道里的一排段。 |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时根不输出 aria-labelledby：指向未渲染的 id 会让组没有名字，作者写在根上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `onValueChange` | `(details: RadioGroupValueChangeDetails) => void` |  | value 变化回调。 |
 
 ### RadioGroupNode
@@ -267,6 +268,7 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-invalid` | 'true' \| 'false' |
+| `root` | `aria-label` | props.ariaLabel |
 | `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `root` | `aria-orientation` | 'horizontal' \| 'vertical' |
 | `root` | `aria-readonly` | 'true' \| 'false' |

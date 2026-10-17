@@ -199,6 +199,8 @@ export function connectFieldArray<T extends PropTypes>(
     getTableProps: () => normalize.element({
       ...parts.table.attrs,
       'role': table ? 'table' : undefined,
+      // 列表排布下表格本体没有角色，不带名字
+      'aria-label': table ? prop('ariaLabel') : undefined,
       // 表头算第 1 行
       'aria-rowcount': table ? count + 1 : undefined,
       'data-layout': layout,

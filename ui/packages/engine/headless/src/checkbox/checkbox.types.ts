@@ -22,6 +22,11 @@ export interface CheckboxSchema extends MachineSchema {
   props: {
     checked?: CheckboxCheckedState
     defaultChecked?: CheckboxCheckedState
+    /**
+     * 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。
+     * 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。
+     */
+    ariaLabel?: string
     disabled?: boolean
     /** 只读：不可勾选，但仍可聚焦、仍参与提交，对比度不降低。 */
     readOnly?: boolean

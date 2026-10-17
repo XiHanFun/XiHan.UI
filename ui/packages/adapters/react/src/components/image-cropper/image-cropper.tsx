@@ -35,6 +35,8 @@ export type ImageCropperRootSlotProps = Pick<
 >
 
 export interface XhImageCropperRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   src?: string
   alt?: string
   aspectRatio?: number | null
@@ -71,6 +73,7 @@ export interface XhImageCropperRootProps extends Omit<ComponentPropsWithRef<'div
 }
 
 export function XhImageCropperRoot({
+  ariaLabel,
   src,
   alt,
   aspectRatio,
@@ -104,6 +107,7 @@ export function XhImageCropperRoot({
   ...rest
 }: XhImageCropperRootProps): ReactNode {
   const ctx = useImageCropper(withXhConfig('image-cropper', useFormControlProps({
+    ariaLabel,
     src,
     alt,
     aspectRatio,

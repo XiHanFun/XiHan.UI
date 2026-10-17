@@ -228,6 +228,7 @@ export class XhExpressionInputElement extends XhPortalHostElement {
     }, this.inheritedControl)
     return {
       labelled: this.getPart('label') != null,
+      ariaLabel: this.hostAriaLabel(),
       issuesRendered: this.getPart('issues') != null,
       label: this.label,
       multiline: this.multiline === true || this.getPart('input')?.tagName === 'TEXTAREA',

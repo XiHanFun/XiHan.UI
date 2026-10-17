@@ -304,6 +304,24 @@ export abstract class XhElement extends XhReactiveElement {
   }
 
   private stopConfigWatch: (() => void) | undefined
+  private hostNamingWatch: MutationObserver | undefined
+
+  /**
+   * 宿主上的 aria-label / aria-labelledby，空串按没写。头一回读时开始盯着这两条，改了就排一轮更新。
+   * 宿主不是读屏念的那个节点：子类把它转给承担名字的部件。
+   */
+  protected readHostNaming(attr: 'aria-label' | 'aria-labelledby'): string | undefined {
+    if (!this.hostNamingWatch && typeof MutationObserver !== 'undefined') {
+      this.hostNamingWatch = new MutationObserver(() => this.requestUpdate())
+      this.hostNamingWatch.observe(this, { attributes: true, attributeFilter: ['aria-label', 'aria-labelledby'] })
+    }
+    return this.getAttribute(attr) || undefined
+  }
+
+  /** 宿主上的 aria-label：表单控件当 ariaLabel 交给 headless，写到与字段标签同一个部件上。 */
+  protected hostAriaLabel(): string | undefined {
+    return this.readHostNaming('aria-label')
+  }
 
   /**
    * 把沿祖先链解析到的全局配置合入这份 props：translations 按组件名分桶合并，
@@ -320,6 +338,8 @@ export abstract class XhElement extends XhReactiveElement {
     super.disconnectedCallback()
     this.stopConfigWatch?.()
     this.stopConfigWatch = undefined
+    this.hostNamingWatch?.disconnect()
+    this.hostNamingWatch = undefined
     this.partObserver?.disconnect()
     this.partObserver = undefined
     this.scheduleRelease()

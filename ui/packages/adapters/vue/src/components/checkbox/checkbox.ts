@@ -20,6 +20,8 @@ type CheckboxProps = CheckboxSchema['props']
 export const XhCheckbox = defineComponent({
   name: 'XhCheckbox',
   props: {
+    /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+    ariaLabel: { type: String },
     // 三态：true / false / 'indeterminate'。半选只能由外部给，点击不会切进去
     checked: { type: [Boolean, String] as PropType<CheckboxCheckedState>, default: undefined },
     defaultChecked: { type: [Boolean, String] as PropType<CheckboxCheckedState>, default: undefined },

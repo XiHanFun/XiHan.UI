@@ -96,6 +96,7 @@ kinds 只留数字与百分比；连同「不设格式」不超过三项时，�
 | `readOnly` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件：根以它为名。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `variant` | `ControlVariant` |  | 视觉轴，传给里面的控件。 |
 | `size` | `Size` |  |  |
 | `translations` | `Partial<FormatInputTranslations>` |  |  |
@@ -196,6 +197,7 @@ kinds 只留数字与百分比；连同「不设格式」不超过三项时，�
 | --- | --- | --- |
 | `root` | `aria-describedby` | undefined \| `error-text` 部件的 id |
 | `root` | `aria-invalid` | 'true' \| undefined |
+| `root` | `aria-label` | props.ariaLabel |
 | `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `root` | `role` | 'group' |
 | `preview` | `aria-live` | 'polite' |

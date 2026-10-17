@@ -26,6 +26,8 @@ export type ColorSwatchPickerRootSlotProps = Pick<
 export const XhColorSwatchPickerRoot = defineComponent({
   name: 'XhColorSwatchPickerRoot',
   props: {
+    /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+    ariaLabel: { type: String },
     /** 格子数据；未写默认插槽时按它自动铺开。 */
     swatches: { type: Array as PropType<ColorSwatchPickerNode[]> },
     /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */

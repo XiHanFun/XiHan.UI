@@ -148,6 +148,11 @@ export interface DatePickerSchema extends MachineSchema {
      */
     labelled?: boolean
     /**
+     * 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。
+     * 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。
+     */
+    ariaLabel?: string
+    /**
      * 选中值，ISO 串。提供即受控：读取直取 prop，写入只发 onValueChange 不落内部值。
      * 单选可写裸串，内部一律归一为数组。
      */

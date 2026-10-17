@@ -233,6 +233,7 @@ export class XhImageCropperElement extends XhElement {
       readOnly: this.readOnly,
     }, this.inheritedControl)
     return {
+      ariaLabel: this.hostAriaLabel(),
       src: this.src,
       alt: this.alt,
       value: this.value,

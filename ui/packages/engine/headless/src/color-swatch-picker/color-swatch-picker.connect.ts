@@ -118,7 +118,7 @@ export function connectColorSwatchPicker<T extends PropTypes>(
       'role': 'radiogroup',
       // 只指向真渲染了的标题：作者没放 label 部件时名字从文案取，两者同时在时以 label 部件为准
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
-      'aria-label': label.group,
+      'aria-label': prop('ariaLabel') ?? label.group,
       'data-size': prop('size'),
       'data-tone': prop('tone'),
       'data-disabled': dataAttr(groupDisabled),

@@ -124,6 +124,7 @@ export function connectFormatInput<T extends PropTypes>(
       'role': 'group',
       // 只指向真渲染了的标题：悬空的 IDREF 让组没有名字
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
+      'aria-label': prop('ariaLabel'),
       'aria-invalid': invalid ? 'true' : undefined,
       'aria-describedby': issue === null ? undefined : ids['error-text'],
       'data-kind': draft.kind ?? 'none',

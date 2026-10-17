@@ -48,6 +48,7 @@ export function connectSwitch<T extends PropTypes>(
       ...parts.root.attrs,
       'type': 'button',
       'role': 'switch',
+      'aria-label': prop('ariaLabel'),
       'aria-checked': checked ? 'true' : 'false',
       // 提交中不算禁用：仍可聚焦，读屏经 aria-busy 知道在忙
       'aria-busy': loading ? 'true' : undefined,

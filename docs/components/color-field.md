@@ -98,6 +98,7 @@
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string` |  | 受控的颜色串；提供后由宿主决定，状态机不自行修改。空串表示没有颜色。 |
 | `defaultValue` | `string` |  | 非受控初值，默认空串。 |
 | `format` | `ColorFormat` |  | 值串的写法，默认 hex。手动输入的任何写法接受后都按它重写。 |
@@ -201,6 +202,7 @@
 | --- | --- | --- |
 | `swatch` | `aria-hidden` | 'true' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
+| `input` | `aria-label` | props.ariaLabel |
 | `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `input` | `aria-readonly` | 'true' \| 'false' |
 | `input` | `aria-required` | 'true' \| 'false' |

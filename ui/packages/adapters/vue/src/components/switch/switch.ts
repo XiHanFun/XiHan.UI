@@ -55,6 +55,8 @@ const SWITCH_PARTS = {
 export const XhSwitch = defineComponent({
   name: 'XhSwitch',
   props: {
+    /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+    ariaLabel: { type: String },
     checked: { type: Boolean, default: undefined },
     defaultChecked: Boolean,
     disabled: { type: Boolean, default: undefined },

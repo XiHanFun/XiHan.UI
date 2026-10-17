@@ -47,6 +47,8 @@ export type ColorPickerRootSlotProps = Pick<
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'defaultValue' | 'dir' | 'children' | 'color'>
 
 export interface XhColorPickerRootProps extends RootElementProps {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   /** 受控的选中颜色，值串数组；给定即受控。单选可写裸串。 */
   value?: string | string[]
   /** 非受控初值。 */
@@ -97,6 +99,7 @@ export interface XhColorPickerRootProps extends RootElementProps {
 }
 
 export function XhColorPickerRoot({
+  ariaLabel,
   value,
   defaultValue,
   selectionMode,
@@ -130,6 +133,7 @@ export function XhColorPickerRoot({
   ...rest
 }: XhColorPickerRootProps): ReactNode {
   const ctx = useColorPicker(withXhConfig('color-picker', useFormControlProps({
+    ariaLabel,
     value,
     defaultValue,
     selectionMode,

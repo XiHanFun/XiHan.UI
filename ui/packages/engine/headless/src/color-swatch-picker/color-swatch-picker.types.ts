@@ -73,6 +73,11 @@ export interface ColorSwatchPickerSchema extends MachineSchema {
      * 为假时根不输出 aria-labelledby，名字交给 aria-label 的文案：指向未渲染的 id 是悬空引用。
      */
     labelled?: boolean
+    /**
+     * 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。
+     * 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。
+     */
+    ariaLabel?: string
     /** value 变化回调。 */
     onValueChange?: (details: ColorSwatchPickerValueChangeDetails) => void
   }

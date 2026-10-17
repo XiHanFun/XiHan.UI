@@ -59,6 +59,7 @@ export function connectMention<T extends PropTypes>(
   const loop = prop('loop') ?? true
   const translations = resolveTranslations(MENTION_EN_US, prop('translations'))
   const inputLabel = translations.input
+  const ariaLabel = prop('ariaLabel')
   const placeholder = prop('placeholder')
   const stateAttr = open ? 'open' : 'closed'
   // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
@@ -193,7 +194,9 @@ export function connectMention<T extends PropTypes>(
       'name': prop('name'),
       // 给了 translations.input 就走 aria-label；没给才指向 label 部件——
       // 两条同时写时 aria-labelledby 优先，会把作者那句盖掉
-      ...(inputLabel === undefined ? { 'aria-labelledby': prop('labelled') ? ids.label : undefined } : { 'aria-label': inputLabel }),
+      ...(inputLabel === undefined
+        ? { 'aria-labelledby': prop('labelled') ? ids.label : undefined, ...(ariaLabel === undefined ? {} : { 'aria-label': ariaLabel }) }
+        : { 'aria-label': inputLabel }),
       ...(placeholder === undefined ? {} : { placeholder }),
       // textarea 没有 type 属性，也不写组合框角色：它的允许角色只有 textbox，组合框语义改由下面几条属性表达
       'type': isMultilineHost(input) ? undefined : 'text',

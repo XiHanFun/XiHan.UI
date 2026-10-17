@@ -136,6 +136,7 @@ pattern 是一段正则源码，逐个字符整格匹配；写法无效时退回
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string[]` |  | 逐格的值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
 | `length` | `number` |  | 格数，默认 6。值的长度恒归一到它。 |
@@ -237,6 +238,7 @@ pattern 是一段正则源码，逐个字符整格匹配；写法无效时退回
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `aria-label` | props.ariaLabel |
 | `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `root` | `role` | 'group' |
 | `input` | `aria-invalid` | 'true' \| 'false' |

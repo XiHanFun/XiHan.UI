@@ -45,6 +45,8 @@ export type SelectRootSlotProps = Pick<
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhSelectRootProps extends RootElementProps {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   collection?: SelectNode[]
   virtualizer?: CollectionVirtualizer
   /** 列表内容第一次展开时才挂载；打开前的选中文字与收起态连打按 collection 算。 */
@@ -111,6 +113,7 @@ function SelectHiddenSelect(): ReactNode {
 }
 
 export function XhSelectRoot({
+  ariaLabel,
   collection,
   virtualizer,
   lazyMount,
@@ -150,6 +153,7 @@ export function XhSelectRoot({
   ...rest
 }: XhSelectRootProps): ReactNode {
   const ctx = useSelect(withXhConfig('select', useFormControlProps({
+    ariaLabel,
     collection,
     virtualizer,
     lazyMount,

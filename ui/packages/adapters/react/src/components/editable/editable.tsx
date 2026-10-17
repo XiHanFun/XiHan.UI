@@ -26,6 +26,8 @@ export type EditableRootSlotProps = Pick<
 >
 
 export interface XhEditableRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   value?: string
   defaultValue?: string
   /** 受控编辑态。 */
@@ -53,6 +55,7 @@ export interface XhEditableRootProps extends Omit<ComponentPropsWithRef<'div'>, 
 }
 
 export function XhEditableRoot({
+  ariaLabel,
   value,
   defaultValue,
   edit,
@@ -78,6 +81,7 @@ export function XhEditableRoot({
   ...rest
 }: XhEditableRootProps): ReactNode {
   const ctx = useEditable(useFormControlProps({
+    ariaLabel,
     value,
     defaultValue,
     edit,

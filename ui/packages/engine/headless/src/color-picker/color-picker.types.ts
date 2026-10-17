@@ -175,6 +175,11 @@ export interface ColorPickerSchema extends MachineSchema {
      */
     labelled?: boolean
     /**
+     * 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。
+     * 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。
+     */
+    ariaLabel?: string
+    /**
      * 选中的颜色，值串数组。提供即受控：写入只发 onValueChange 不落内部值。
      * 单选可写裸串，内部一律归一为数组；单选给空数组时按缺省色 #000000。
      */

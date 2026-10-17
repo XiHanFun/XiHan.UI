@@ -73,6 +73,8 @@ export type CascaderRootSlotProps = Pick<
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhCascaderRootProps extends RootElementProps {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   collection?: CascaderNode[]
   /** 取回懒分支（hasChildren 且没给 children）的直接子项；展开路径走到它时自动调用。 */
   loadChildren?: CascaderProps['loadChildren']
@@ -119,6 +121,7 @@ export interface XhCascaderRootProps extends RootElementProps {
 }
 
 export function XhCascaderRoot({
+  ariaLabel,
   collection,
   loadChildren,
   value,
@@ -160,6 +163,7 @@ export function XhCascaderRoot({
   ...rest
 }: XhCascaderRootProps): ReactNode {
   const ctx = useCascader(withXhConfig('cascader', useFormControlProps({
+    ariaLabel,
     collection,
     loadChildren,
     value,

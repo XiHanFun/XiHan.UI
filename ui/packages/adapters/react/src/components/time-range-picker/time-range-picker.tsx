@@ -80,6 +80,8 @@ export interface TimeRangePickerPresetsSlotProps {
 }
 
 export interface XhTimeRangePickerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   /** 区间两端 [start, end]；空缺的一端用空串占位。 */
   value?: string[]
   defaultValue?: string[]
@@ -124,6 +126,7 @@ export interface XhTimeRangePickerRootProps extends Omit<ComponentPropsWithRef<'
 }
 
 export function XhTimeRangePickerRoot({
+  ariaLabel,
   value,
   defaultValue,
   open,
@@ -158,6 +161,7 @@ export function XhTimeRangePickerRoot({
   ...rest
 }: XhTimeRangePickerRootProps): ReactNode {
   const ctx = useTimeRangePicker(withXhConfig('time-range-picker', useFormControlProps({
+    ariaLabel,
     value,
     defaultValue,
     open,

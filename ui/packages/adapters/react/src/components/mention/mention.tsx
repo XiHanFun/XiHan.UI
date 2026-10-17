@@ -39,6 +39,8 @@ export type MentionRootSlotProps = Pick<
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir' | 'onSelect'>
 
 export interface XhMentionRootProps extends RootElementProps {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   /** 打开候选的前缀字符，默认 '@'；传数组即多种前缀并存。 */
   triggerPrefix?: string | string[]
   collection?: MentionNode[]
@@ -76,6 +78,7 @@ export interface XhMentionRootProps extends RootElementProps {
 }
 
 export function XhMentionRoot({
+  ariaLabel,
   triggerPrefix,
   collection,
   value,
@@ -106,6 +109,7 @@ export function XhMentionRoot({
   ...rest
 }: XhMentionRootProps): ReactNode {
   const machineProps = {
+    ariaLabel,
     triggerPrefix,
     collection,
     value,

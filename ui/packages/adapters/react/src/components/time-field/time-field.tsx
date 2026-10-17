@@ -29,6 +29,8 @@ export type TimeFieldRootSlotProps = Pick<
 >
 
 export interface XhTimeFieldRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   value?: string
   defaultValue?: string
   min?: string
@@ -53,6 +55,7 @@ export interface XhTimeFieldRootProps extends Omit<ComponentPropsWithRef<'div'>,
 }
 
 export function XhTimeFieldRoot({
+  ariaLabel,
   value,
   defaultValue,
   min,
@@ -76,6 +79,7 @@ export function XhTimeFieldRoot({
   ...rest
 }: XhTimeFieldRootProps): ReactNode {
   const ctx = useTimeField(withXhConfig('time-field', useFormControlProps({
+    ariaLabel,
     value,
     defaultValue,
     min,

@@ -204,6 +204,7 @@ export function connectSlider<T extends PropTypes>(
         'aria-valuetext': prop('getValueText')?.({ value: thumb.value, index: thumb.index }),
         'aria-orientation': orientation,
         'aria-labelledby': prop('labelled') ? ids.label : undefined,
+        'aria-label': prop('ariaLabel'),
         // div 上原生 disabled 不生效，用 aria-disabled 并抽掉 Tab 位；readOnly 不抽 Tab 位
         'aria-disabled': disabled ? 'true' : 'false',
         'tabindex': disabled ? undefined : 0,

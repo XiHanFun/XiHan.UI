@@ -43,6 +43,8 @@ export type FileUploadRootSlotProps = Pick<
 >
 
 export interface XhFileUploadRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'onChange'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   /** 受控的本地文件清单；给定即受控。 */
   files?: File[]
   /** 非受控初值。 */
@@ -91,6 +93,7 @@ export interface XhFileUploadRootProps extends Omit<ComponentPropsWithRef<'div'>
 }
 
 export function XhFileUploadRoot({
+  ariaLabel,
   files,
   defaultFiles,
   remoteFiles,
@@ -125,6 +128,7 @@ export function XhFileUploadRoot({
   ...rest
 }: XhFileUploadRootProps): ReactNode {
   const ctx = useFileUpload(withXhConfig('file-upload', useFormControlProps({
+    ariaLabel,
     files,
     defaultFiles,
     remoteFiles,

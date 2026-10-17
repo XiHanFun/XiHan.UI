@@ -159,6 +159,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string \| string[]` |  | 受控值，ISO 时间串数组。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单选可写裸串，内部一律归一为数组（空串即空数组）。 |
 | `defaultValue` | `string \| string[]` |  |  |
 | `selectionMode` | `TimePickerSelectionMode` |  | 选择模式，默认 single。 |
@@ -364,6 +365,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | --- | --- | --- |
 | `control` | `aria-disabled` | 'true' \| 'false' |
 | `control` | `aria-invalid` | 'true' \| 'false' |
+| `control` | `aria-label` | props.ariaLabel |
 | `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `control` | `role` | 'group' |
 | `segment` | `aria-disabled` | 'true' \| 'false' |
@@ -379,9 +381,11 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
+| `trigger` | `aria-label` | props.ariaLabel |
 | `trigger` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `content` | `aria-hidden` | !open \|\| undefined |
+| `content` | `aria-label` | props.ariaLabel |
 | `content` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |

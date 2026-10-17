@@ -288,6 +288,8 @@ export function connectTransfer<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      'role': prop('ariaLabel') ? 'group' : undefined,
+      'aria-label': prop('ariaLabel'),
       // 两个视觉轴打在根上，两侧面板与条目从这里继承私有槽，子部件不重复标注
       'data-tone': prop('tone'),
       'data-size': prop('size'),

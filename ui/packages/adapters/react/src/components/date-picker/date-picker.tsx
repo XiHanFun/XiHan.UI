@@ -103,6 +103,8 @@ export interface DatePickerPresetsSlotProps {
 }
 
 export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   value?: string | string[]
   defaultValue?: string | string[]
   open?: boolean
@@ -168,6 +170,7 @@ export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
 
 /** 网格与段位由作者按 children 载荷中的 weeks（日视图）/ rows（周期视图）/ segments 自行渲染。 */
 export function XhDatePickerRoot({
+  ariaLabel,
   value,
   defaultValue,
   open,
@@ -216,6 +219,7 @@ export function XhDatePickerRoot({
   ...rest
 }: XhDatePickerRootProps): ReactNode {
   const ctx = useDatePicker(withXhConfig('date-picker', useFormControlProps({
+    ariaLabel,
     value,
     defaultValue,
     open,

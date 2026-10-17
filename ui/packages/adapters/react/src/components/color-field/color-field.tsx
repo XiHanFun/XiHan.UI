@@ -26,6 +26,8 @@ export type ColorFieldRootSlotProps = Pick<
 >
 
 export interface XhColorFieldRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   /** 颜色串；给定即受控。空串表示没有颜色。 */
   value?: string
   defaultValue?: string
@@ -52,6 +54,7 @@ export interface XhColorFieldRootProps extends Omit<ComponentPropsWithRef<'div'>
 }
 
 export function XhColorFieldRoot({
+  ariaLabel,
   value,
   defaultValue,
   format,
@@ -73,6 +76,7 @@ export function XhColorFieldRoot({
   ...rest
 }: XhColorFieldRootProps): ReactNode {
   const ctx = useColorField(withXhConfig('color-field', useFormControlProps({
+    ariaLabel,
     value,
     defaultValue,
     format,

@@ -44,6 +44,8 @@ export type ComboboxRootSlotProps = Pick<
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'>
 
 export interface XhComboboxRootProps extends RootElementProps {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   collection?: ComboboxNode[]
   virtualizer?: CollectionVirtualizer
   /** 标题文字。提供后不必再写 label 部件。 */
@@ -98,6 +100,7 @@ export interface XhComboboxRootProps extends RootElementProps {
 }
 
 export function XhComboboxRoot({
+  ariaLabel,
   collection,
   virtualizer,
   label,
@@ -141,6 +144,7 @@ export function XhComboboxRoot({
   ...rest
 }: XhComboboxRootProps): ReactNode {
   const ctx = useCombobox(withXhConfig('combobox', useFormControlProps({
+    ariaLabel,
     collection,
     virtualizer,
     value,

@@ -31,6 +31,8 @@ export type TagGroupRootSlotProps = Pick<
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhTagGroupRootProps extends RootElementProps {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   collection?: TagGroupNode[]
   /** 标题内容。提供后不必再写 label 部件。 */
   label?: ReactNode
@@ -60,6 +62,7 @@ export interface XhTagGroupRootProps extends RootElementProps {
 
 /** 一排可选、可移除的标签。回传值恒为数组，单选时长度 ≤ 1。 */
 export function XhTagGroupRoot({
+  ariaLabel,
   collection,
   label,
   value,
@@ -83,6 +86,7 @@ export function XhTagGroupRoot({
   ...rest
 }: XhTagGroupRootProps): ReactNode {
   const ctx = useTagGroup(withXhConfig('tag-group', useFormControlProps({
+    ariaLabel,
     collection,
     value,
     defaultValue,

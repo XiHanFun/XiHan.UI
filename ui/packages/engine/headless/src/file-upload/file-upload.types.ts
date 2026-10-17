@@ -161,6 +161,11 @@ export interface FileUploadSchema extends MachineSchema {
      */
     labelled?: boolean
     /**
+     * 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。
+     * 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。
+     */
+    ariaLabel?: string
+    /**
      * 允许的类型，写法与原生 input 的 accept 一致：
      * 接受 'image/*' 这类通配、'.png' 这类扩展名、'application/pdf' 这类精确 MIME，
      * 逗号分隔的整串或数组两种形态均可（属性只能表达整串，数组需通过 property）。

@@ -107,6 +107,8 @@ export interface DateRangePickerPresetsSlotProps {
 }
 
 export interface XhDateRangePickerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   /** 区间两端 [start, end]；空缺的一端用空串占位。 */
   value?: string[]
   defaultValue?: string[]
@@ -183,6 +185,7 @@ export interface XhDateRangePickerRootProps extends Omit<ComponentPropsWithRef<'
 
 /** 网格与段位由作者按 children 载荷中的 weeks（日视图）/ rows（周期视图）/ segments 自行渲染。 */
 export function XhDateRangePickerRoot({
+  ariaLabel,
   value,
   defaultValue,
   open,
@@ -235,6 +238,7 @@ export function XhDateRangePickerRoot({
   ...rest
 }: XhDateRangePickerRootProps): ReactNode {
   const ctx = useDateRangePicker(withXhConfig('date-range-picker', useFormControlProps({
+    ariaLabel,
     value,
     defaultValue,
     open,

@@ -25,6 +25,8 @@ export type ColorSliderRootSlotProps = Pick<
 export const XhColorSliderRoot = defineComponent({
   name: 'XhColorSliderRoot',
   props: {
+    /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+    ariaLabel: { type: String },
     /** 颜色值串；缺席即非受控。 */
     value: { type: String },
     defaultValue: { type: String },

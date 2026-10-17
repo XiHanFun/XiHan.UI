@@ -115,6 +115,11 @@ export interface DateFieldSchema extends MachineSchema {
      * 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。
      */
     labelled?: boolean
+    /**
+     * 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。
+     * 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。
+     */
+    ariaLabel?: string
     /** 受控值，ISO 串（'2026-07-28' / '2026-07-28T13:45'）；null 表示空。提供即受控。 */
     value?: string | null
     /** 非受控初值，同样是 ISO 串。 */

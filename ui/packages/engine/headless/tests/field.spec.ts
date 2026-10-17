@@ -88,6 +88,15 @@ describe('字段交给库内控件的接线', () => {
     expect(withFieldLabel({ 'aria-labelledby': 'own value' }, 'label')['aria-labelledby']).toBe('label own value')
     expect(withFieldLabel({}, 'label')['aria-labelledby']).toBe('label')
     expect(withFieldLabel({ 'aria-labelledby': '' }, 'label')['aria-labelledby']).toBe('label')
+    expect(withFieldLabel({ 'aria-labelledby': 'select:s1:label  select:s1:value-text' }, 'field:s2:label')['aria-labelledby'])
+      .toBe('field:s2:label select:s1:label select:s1:value-text')
+  })
+
+  it('部件写了 aria-label、名字链引到自己取它时，并进字段标签就去掉这段自引用；没写 aria-label 的自引用取的是内容，留着', () => {
+    const named = { 'id': 'select:s1:trigger', 'aria-label': '类别', 'aria-labelledby': 'select:s1:trigger select:s1:value-text' }
+    expect(withFieldLabel(named, 'field:s2:label')['aria-labelledby']).toBe('field:s2:label select:s1:value-text')
+    const content = { 'id': 'file-upload:s3:dropzone', 'aria-labelledby': 'file-upload:s3:dropzone' }
+    expect(withFieldLabel(content, 'field:s2:label')['aria-labelledby']).toBe('field:s2:label file-upload:s3:dropzone')
   })
 
   it('没有字段标签时属性原样返回', () => {

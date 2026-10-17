@@ -132,6 +132,7 @@
 | `value` | `ToggleGroupValue` |  | 选中值。提供即受控：内部不再自行修改，只发 onValueChange。 |
 | `defaultValue` | `ToggleGroupValue` |  |  |
 | `multiple` | `boolean` |  | 允许多项同时选中；false 时选中一项即替换其余。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `disabled` | `boolean` |  | 整组禁用：条目全部 aria-disabled，点击与方向键都不生效。 |
 | `readOnly` | `boolean` |  | 只读：条目仍可聚焦、方向键照常走，点击与 Space / Enter 不改选中，也不进按压面。 |
 | `invalid` | `boolean` |  | 校验失败标注：单选组写 aria-invalid；多选是 role=group，只写 data-invalid。 |
@@ -239,6 +240,7 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-invalid` | undefined \| 'true' \| 'false' |
+| `root` | `aria-label` | props.ariaLabel |
 | `root` | `aria-orientation` | undefined \| props.orientation |
 | `root` | `aria-readonly` | undefined \| 'true' \| 'false' |
 | `root` | `aria-required` | undefined \| 'true' \| 'false' |

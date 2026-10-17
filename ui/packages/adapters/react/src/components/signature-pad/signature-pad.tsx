@@ -39,6 +39,8 @@ export type SignaturePadRootSlotProps = Pick<
 >
 
 export interface XhSignaturePadRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   disabled?: boolean
   readOnly?: boolean
   required?: boolean
@@ -60,6 +62,7 @@ export interface XhSignaturePadRootProps extends Omit<ComponentPropsWithRef<'div
 }
 
 export function XhSignaturePadRoot({
+  ariaLabel,
   disabled,
   readOnly,
   required,
@@ -77,6 +80,7 @@ export function XhSignaturePadRoot({
   ...rest
 }: XhSignaturePadRootProps): ReactNode {
   const ctx = useSignaturePad(withXhConfig('signature-pad', useFormControlProps({
+    ariaLabel,
     disabled,
     readOnly,
     required,
