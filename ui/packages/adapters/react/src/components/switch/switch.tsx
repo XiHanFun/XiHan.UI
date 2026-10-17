@@ -6,12 +6,14 @@
 // 提供 switch 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { SwitchSchema } from '@xihan-ui/headless'
+import type { SwitchApi, SwitchSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { useId, useRef } from 'react'
+import { switchStructure } from '@xihan-ui/headless'
+import { createContext, useContext, useId, useRef } from 'react'
 import { useFormReset } from '../../runtime/attach-form-reset'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { useSwitch } from './use-switch'
@@ -36,6 +38,31 @@ export interface XhSwitchProps extends ButtonProps {
   size?: Size
   onCheckedChange?: SwitchProps['onCheckedChange']
   children?: ReactNode
+}
+
+const SwitchApiContext = createContext<SwitchApi | null>(null)
+
+function useSwitchApi(): SwitchApi {
+  const api = useContext(SwitchApiContext)
+  if (!api)
+    throw new Error('[xh] 开关的部件只能渲在 XhSwitch 里')
+  return api
+}
+
+/** 滑块。 */
+function SwitchThumb(): ReactNode {
+  return <span {...useSwitchApi().getThumbProps() as Record<string, unknown>} />
+}
+
+/** 表单影子：单体控件的轨道里没有子部件插槽，作者递不进来，由组件自己渲。 */
+function SwitchHiddenInput(): ReactNode {
+  return <input {...useSwitchApi().getHiddenInputProps() as Record<string, unknown>} />
+}
+
+/** 标准结构里各部件对应的组件。 */
+const SWITCH_PARTS = {
+  'thumb': SwitchThumb,
+  'hidden-input': SwitchHiddenInput,
 }
 
 export function XhSwitch({
@@ -98,10 +125,9 @@ export function XhSwitch({
         labelled ? {} : { ref: rootRef },
       )}
     >
-      <span {...api.getThumbProps() as Record<string, unknown>} />
-      {/* 表单影子由组件自己渲染：单体控件的轨道里没有子部件插槽，作者递不进来。
-          给了 name 才有这个节点——type=hidden 不是交互内容，放进 button 里是合法的 */}
-      {name === undefined ? null : <input {...api.getHiddenInputProps() as Record<string, unknown>} />}
+      <SwitchApiContext value={api}>
+        {renderStructure(switchStructure({ hiddenInput: name !== undefined }), SWITCH_PARTS)}
+      </SwitchApiContext>
     </button>
   )
 
