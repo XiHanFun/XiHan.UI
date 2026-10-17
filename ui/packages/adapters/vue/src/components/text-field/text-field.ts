@@ -9,9 +9,10 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { TextFieldApi, TextFieldInputHost, TextFieldSchema, TextFieldType } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { autoSizeTextarea } from '@xihan-ui/headless'
+import { autoSizeTextarea, textFieldStructure } from '@xihan-ui/headless'
 import { defineComponent, h, onBeforeUnmount, onMounted, onUnmounted, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -32,6 +33,8 @@ export type TextFieldCountSlotProps = Pick<TextFieldApi, 'count' | 'maxLength' |
 export const XhTextFieldRoot = defineComponent({
   name: 'XhTextFieldRoot',
   props: {
+    /** 标题文字。不写默认插槽时铺 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
     // 缺席值 undefined 表示非受控
     value: { type: String },
     defaultValue: { type: String },
@@ -60,6 +63,7 @@ export const XhTextFieldRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: TextFieldRootSlotProps) => VNode[]
+    label?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notify: TextFieldProps['onValueChange'] = (details) => {
@@ -68,15 +72,20 @@ export const XhTextFieldRoot = defineComponent({
     }
     const ctx = useTextField(withHandlers(withXhConfig('text-field', useFormControlProps(props)), { onClear: () => emit('clear') }) as TextFieldProps, notify)
     provideTextField(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      value: ctx.api.value.value,
-      empty: ctx.api.value.empty,
-      atLimit: ctx.api.value.atLimit,
-      count: ctx.api.value.count,
-      canClear: ctx.api.value.canClear,
-      setValue: ctx.api.value.setValue,
-      clear: ctx.api.value.clear,
-    }))
+    return () => {
+      const api = ctx.api.value
+      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+        ? slots.default({
+            value: api.value,
+            empty: api.empty,
+            atLimit: api.atLimit,
+            count: api.count,
+            canClear: api.canClear,
+            setValue: api.setValue,
+            clear: api.clear,
+          })
+        : renderDefaultStructure(api, props.label, slots.label))
+    }
   },
 })
 
@@ -186,3 +195,21 @@ export const XhTextFieldCount = defineComponent({
     }
   },
 })
+
+/** 标准结构里各部件对应的组件。 */
+const TEXT_FIELD_PARTS = {
+  'label': XhTextFieldLabel,
+  'control': XhTextFieldControl,
+  'input': XhTextFieldInput,
+  'clear-trigger': XhTextFieldClearTrigger,
+  'count': XhTextFieldCount,
+}
+
+/**
+ * 未写默认插槽时铺开的整套结构：照 headless 的 textFieldStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题由 label 插槽接管。
+ */
+function renderDefaultStructure(api: TextFieldApi, label: string | undefined, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = textFieldStructure(api, { label, slotted: name => name === 'label' && labelSlot != null })
+  return renderStructure(nodes, TEXT_FIELD_PARTS, node => (node.slot ? labelSlot?.() : undefined))
+}

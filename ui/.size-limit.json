@@ -160,7 +160,7 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "124 kB"
+    "limit": "125 kB"
   },
   {
     "name": "designer-shell/locale",
@@ -208,7 +208,7 @@
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "751 kB",
+    "limit": "752 kB",
     "ignore": [
       "vue"
     ]

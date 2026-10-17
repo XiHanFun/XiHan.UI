@@ -9,12 +9,13 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { TextFieldApi, TextFieldInputHost, TextFieldSchema, TextFieldType } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { autoSizeTextarea } from '@xihan-ui/headless'
+import { autoSizeTextarea, textFieldStructure } from '@xihan-ui/headless'
 import { useCallback, useEffect, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { TextFieldProvider, useTextFieldContext } from './context'
@@ -32,6 +33,8 @@ export type TextFieldRootSlotProps = Pick<
 export type TextFieldCountSlotProps = Pick<TextFieldApi, 'count' | 'maxLength' | 'atLimit'>
 
 export interface XhTextFieldRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
   value?: string
   defaultValue?: string
   type?: TextFieldType
@@ -57,6 +60,7 @@ export interface XhTextFieldRootProps extends Omit<ComponentPropsWithRef<'div'>,
 }
 
 export function XhTextFieldRoot({
+  label,
   value,
   defaultValue,
   type,
@@ -110,15 +114,17 @@ export function XhTextFieldRoot({
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
-        {renderSlot(children, {
-          value: api.value,
-          empty: api.empty,
-          atLimit: api.atLimit,
-          count: api.count,
-          canClear: api.canClear,
-          setValue: api.setValue,
-          clear: api.clear,
-        })}
+        {children != null
+          ? renderSlot(children, {
+              value: api.value,
+              empty: api.empty,
+              atLimit: api.atLimit,
+              count: api.count,
+              canClear: api.canClear,
+              setValue: api.setValue,
+              clear: api.clear,
+            })
+          : renderDefaultStructure(api, label)}
       </div>
     </TextFieldProvider>
   )
@@ -253,4 +259,23 @@ export function XhTextFieldCount({ children, ...rest }: XhTextFieldCountProps): 
       {body}
     </span>
   )
+}
+
+/** 标准结构里各部件对应的组件。 */
+const TEXT_FIELD_PARTS = {
+  'label': XhTextFieldLabel,
+  'control': XhTextFieldControl,
+  'input': XhTextFieldInput,
+  'clear-trigger': XhTextFieldClearTrigger,
+  'count': XhTextFieldCount,
+}
+
+/**
+ * 未写 children 时铺开的整套结构：照 headless 的 textFieldStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容交给 label 部件。
+ */
+function renderDefaultStructure(api: TextFieldApi, label: ReactNode): ReactNode[] {
+  const slotted = label != null && typeof label !== 'string'
+  const nodes = textFieldStructure(api, { label: typeof label === 'string' ? label : undefined, slotted: name => name === 'label' && slotted })
+  return renderStructure(nodes, TEXT_FIELD_PARTS, node => (node.slot ? label : undefined))
 }

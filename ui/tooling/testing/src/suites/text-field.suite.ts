@@ -1,4 +1,4 @@
-import type { ConformanceSuite, RawStepContext } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { textFieldAnatomy, textFieldKeyboard } from '@xihan-ui/headless'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
@@ -390,6 +390,30 @@ export const textFieldSuite: ConformanceSuite = {
         heldPressIgnored('text-field', 'clear-trigger', '只读时清空钮藏着，不接受按压'),
         { kind: 'setProps', props: { readOnly: false, value: '' } },
         heldPressIgnored('text-field', 'clear-trigger', '没有值可清时清空钮藏着，不接受按压'),
+      ],
+    },
+    {
+      name: '作者不写结构：三端都照 textFieldStructure 铺出标题、盒里的输入框与清空钮、字数',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '昵称', clearable: true, showCount: true, maxLength: 10, defaultValue: '曦寒', name: 'nick' },
+      initial: {
+        order: ['root', 'label', 'control', 'input', 'clear-trigger', 'count'],
+        parts: {
+          'label': { for: '@part(input)' },
+          'clear-trigger': { hidden: null },
+          'count': { hidden: null },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'clear-trigger',
+          expect: {
+            parts: { 'root': { 'data-empty': '' }, 'clear-trigger': { hidden: '' } },
+            events: [{ type: 'value-change', detail: { value: '' } }, { type: 'clear', detail: null }],
+          },
+        },
       ],
     },
   ],
