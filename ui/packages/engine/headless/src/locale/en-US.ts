@@ -605,6 +605,7 @@ export const KBD_EN_US: XhLocaleBucket<'kbd'> = {
   hotkey: names => names.join(' + '),
 }
 
+export const LISTBOX_EN_US: XhLocaleBucket<'listbox'> = { empty: 'No data', loading: 'Loading' }
 export const LOADING_BAR_EN_US: XhLocaleBucket<'loading-bar'> = { root: 'Loading' }
 
 export const LOG_EN_US: XhLocaleBucket<'log'> = { log: 'Log', scrollToBottom: 'Scroll to bottom' }
@@ -979,6 +980,7 @@ const translations = {
   'image-viewer': IMAGE_VIEWER_EN_US,
   'json-viewer': JSON_VIEWER_EN_US,
   'kbd': KBD_EN_US,
+  'listbox': LISTBOX_EN_US,
   'loading-bar': LOADING_BAR_EN_US,
   'log': LOG_EN_US,
   'markdown-stream': MARKDOWN_STREAM_EN_US,

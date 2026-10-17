@@ -6,7 +6,7 @@
 // 提供 listbox 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, FormControlState, ListboxItemProps, ListboxNode, ListboxSchema, ListboxSelectionMode, ListboxValueChangeDetails } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, FormControlState, ListboxItemProps, ListboxNode, ListboxSchema, ListboxSelectionMode, ListboxTranslations, ListboxValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectListbox, listboxAnatomy, listboxMachine, listboxMeta, listboxStructure, resolveFormControlState } from '@xihan-ui/headless'
@@ -38,9 +38,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  *
  * 条目的禁用也可以交给数据：`el.collection = [{ value, label, disabled }]`，此时条目部件只需声明 value。
  *
- * 不写部件（或只写 root）时元素按标准结构生成：标题（label）与列表，列表里 collection 的每条数据一个条目
- * （文字、有副文本时的副文本与选中标记）。标题、条目文字与行首行尾可以由宿主直接子节点接管：`slot="label"`、
- * `slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"`。
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）、列表与空态、在途两块占位，列表里 collection 的
+ * 每条数据一个条目（文字、有副文本时的副文本与选中标记），两块占位的字取 translations（empty / loading），按状态收放。
+ * 标题、空态、条目文字与行首行尾可以由宿主直接子节点接管：`slot="label"`、`slot="empty"`、`slot="item:<值>"`、
+ * `slot="item-prefix:<值>"`、`slot="item-suffix:<值>"`。
  *
  * @customElement xh-listbox
  * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
@@ -93,6 +94,7 @@ export class XhListboxElement extends XhElement {
     // 数组只走 property，属性表达不了；给了它条目的禁用即以数据为准
     collection: { attribute: false },
     virtualizer: { attribute: false },
+    translations: { attribute: false },
     label: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
@@ -111,6 +113,7 @@ export class XhListboxElement extends XhElement {
 
   declare collection?: ListboxNode[]
   declare virtualizer?: CollectionVirtualizer
+  declare translations?: Partial<ListboxTranslations>
   declare label?: string
   declare value?: string | string[]
   declare defaultValue?: string | string[]
@@ -190,6 +193,7 @@ export class XhListboxElement extends XhElement {
       dir: this.direction,
       orientation: this.orientation,
       typeahead: this.typeahead,
+      translations: this.translations,
       onValueChange: this.notify,
     }
   }

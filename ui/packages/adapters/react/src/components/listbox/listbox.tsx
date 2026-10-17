@@ -6,11 +6,12 @@
 // 提供 listbox 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, ListboxApi, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, ListboxApi, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode, ListboxTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { listboxStructure } from '@xihan-ui/headless'
 import { useEffect, useMemo, useRef } from 'react'
+import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -60,7 +61,10 @@ export interface XhListboxRootProps extends RootElementProps {
   typeahead?: boolean
   dir?: Direction
   orientation?: Orientation
+  translations?: Partial<ListboxTranslations>
   onValueChange?: ListboxProps['onValueChange']
+  /** 不给 children 时空态占位的内容；未写时取 translations.empty。 */
+  empty?: ReactNode
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: ListboxNodeMeta) => ReactNode
   /** 只接管条目行首那一格；其余槽仍由数据铺。 */
@@ -87,15 +91,17 @@ export function XhListboxRoot({
   typeahead,
   dir,
   orientation,
+  translations,
   onValueChange,
   children,
   label,
+  empty,
   renderItem,
   renderItemPrefix,
   renderItemSuffix,
   ...rest
 }: XhListboxRootProps): ReactNode {
-  const ctx = useListbox(useFormControlProps({
+  const ctx = useListbox(withXhConfig('listbox', useFormControlProps({
     ariaLabel,
     collection,
     virtualizer,
@@ -112,8 +118,9 @@ export function XhListboxRoot({
     typeahead,
     dir,
     orientation,
+    translations,
     onValueChange,
-  }) as ListboxProps)
+  })) as ListboxProps)
   const api = ctx.api
 
   const body = children != null
@@ -126,7 +133,7 @@ export function XhListboxRoot({
         select: api.select,
         toggle: api.toggle,
       })
-    : renderDefaultStructure(api, { label, renderItem, renderItemPrefix, renderItemSuffix })
+    : renderDefaultStructure(api, { label, empty, renderItem, renderItemPrefix, renderItemSuffix })
 
   return (
     <ListboxProvider value={ctx}>
@@ -319,10 +326,13 @@ const LISTBOX_PARTS = {
   'item-description': XhListboxItemDescription,
   'item-suffix': XhListboxItemSuffix,
   'item-indicator': XhListboxItemIndicator,
+  'empty': XhListboxEmpty,
+  'loading': XhListboxLoading,
 }
 
 interface ListboxStructureContent {
   label?: ReactNode
+  empty?: ReactNode
   renderItem?: (node: ListboxNodeMeta) => ReactNode
   renderItemPrefix?: (node: ListboxNodeMeta) => ReactNode
   renderItemSuffix?: (node: ListboxNodeMeta) => ReactNode
@@ -333,15 +343,17 @@ interface ListboxStructureContent {
  * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题、条目文字与行首行尾由对应渲染函数接管。
  */
 function renderDefaultStructure(api: ListboxApi, content: ListboxStructureContent): ReactNode[] {
-  const { label, renderItem, renderItemPrefix, renderItemSuffix } = content
+  const { label, empty, renderItem, renderItemPrefix, renderItemSuffix } = content
   const slotted: Readonly<Record<string, boolean>> = {
     'label': label != null && typeof label !== 'string',
+    'empty': empty != null && typeof empty !== 'string',
     'item': renderItem != null,
     'item-prefix': renderItemPrefix != null,
     'item-suffix': renderItemSuffix != null,
   }
   const nodes = listboxStructure(api, {
     label: typeof label === 'string' ? label : undefined,
+    empty: typeof empty === 'string' ? empty : undefined,
     slotted: name => slotted[name] === true,
   })
   return renderStructure(nodes, LISTBOX_PARTS, (node) => {
@@ -349,6 +361,8 @@ function renderDefaultStructure(api: ListboxApi, content: ListboxStructureConten
     switch (node.slot?.name) {
       case 'label':
         return label
+      case 'empty':
+        return empty
       case 'item':
         return renderItem?.(meta) ?? meta.label
       case 'item-prefix':
