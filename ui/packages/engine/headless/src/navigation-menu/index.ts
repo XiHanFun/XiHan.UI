@@ -10,6 +10,8 @@ export { connectNavigationMenu } from './navigation-menu.connect'
 export { navigationMenuKeyboard } from './navigation-menu.keyboard'
 export { NAVIGATION_MENU_DELAY, NAVIGATION_MENU_SKIP_DELAY, navigationMenuMachine } from './navigation-menu.machine'
 export { navigationMenuMeta } from './navigation-menu.meta'
+export { navigationMenuStructure } from './navigation-menu.structure'
+export type { NavigationMenuStructureOptions } from './navigation-menu.structure'
 export type {
   NavigationMenuApi,
   NavigationMenuContentProps,

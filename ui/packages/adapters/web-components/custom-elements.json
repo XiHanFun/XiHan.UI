@@ -47450,7 +47450,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-navigation-menu>`：Light-DOM 行为宿主：作者写\nroot / list / item / trigger / content / branch-trigger / branch-content / link / indicator / viewport 角色节点，\n元素运行 navigation-menu 状态机并把 connect 产出接上。\n\n与 `<xh-menu>` 的差别：这里的条目是链接不是命令，因此不做 roving tabindex：\n每个 trigger 都保留在 Tab 序列中，面板紧跟在 trigger 之后，Tab 才能进入。\n\n标签由作者编写，且必须正确：root 是 `<nav>`（地标语义只能由标签提供），list 是 `<ul>`，\nitem 与 indicator 都是 `<li>`（`<ul>` 中只能放置 `<li>`），trigger 与 branch-trigger 是 `<button>`，\nlink 是 `<a>`。面板（content）写在同一个 item 中、紧跟 trigger 之后；面板里的一枝子级\n（branch-content）同样紧跟自己的 branch-trigger 之后。",
+          "description": "`<xh-navigation-menu>`：Light-DOM 行为宿主：作者写\nroot / list / item / trigger / content / branch-trigger / branch-content / link / indicator / viewport 角色节点，\n元素运行 navigation-menu 状态机并把 connect 产出接上。\n\n与 `<xh-menu>` 的差别：这里的条目是链接不是命令，因此不做 roving tabindex：\n每个 trigger 都保留在 Tab 序列中，面板紧跟在 trigger 之后，Tab 才能进入。\n\n标签由作者编写，且必须正确：root 是 `<nav>`（地标语义只能由标签提供），list 是 `<ul>`，\nitem 与 indicator 都是 `<li>`（`<ul>` 中只能放置 `<li>`），trigger 与 branch-trigger 是 `<button>`，\nlink 是 `<a>`。面板（content）写在同一个 item 中、紧跟 trigger 之后；面板里的一枝子级\n（branch-content）同样紧跟自己的 branch-trigger 之后。\n\n不写部件（或只写 root）时元素按标准结构生成：`<nav>` 里一个列表，按 collection 一项一个 li，带 href 的入口是\n直达链接，其余是入口按钮加面板，面板按 children 铺链接与子级；列表末尾是指示条。某个入口的整块面板内容可用\n宿主直接子节点 `slot=\"panel:<值>\"` 给出。",
           "name": "XhNavigationMenuElement",
           "cssParts": [
             {
@@ -47529,6 +47529,15 @@
               },
               "static": true,
               "default": "{ anatomy: navigationMenuAnatomy, meta: navigationMenuMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhNavigationMenuElement>"
+              },
+              "static": true,
+              "default": "{ rootTag: 'nav', build: host => host.ctrl.service ? navigationMenuStructure(connectNavigationMenu(host.ctrl.service, wcNormalize), { slotted: (name, key) => host.slotted(name, key) }) : undefined, }"
             },
             {
               "kind": "field",

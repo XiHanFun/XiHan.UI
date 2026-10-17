@@ -7,9 +7,10 @@
 
 import type { Cleanup, Direction, IdGenerator, Layer, Orientation, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { NavigationMenuNode, NavigationMenuSchema, NavigationMenuTranslations, NavigationMenuValueChangeDetails } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled } from '@xihan-ui/core'
-import { connectNavigationMenu, navigationMenuAnatomy, navigationMenuMachine, navigationMenuMeta } from '@xihan-ui/headless'
+import { connectNavigationMenu, navigationMenuAnatomy, navigationMenuMachine, navigationMenuMeta, navigationMenuStructure } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
@@ -58,6 +59,10 @@ function authorDisabled(el: HTMLElement): boolean {
  * link 是 `<a>`。面板（content）写在同一个 item 中、紧跟 trigger 之后；面板里的一枝子级
  * （branch-content）同样紧跟自己的 branch-trigger 之后。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：`<nav>` 里一个列表，按 collection 一项一个 li，带 href 的入口是
+ * 直达链接，其余是入口按钮加面板，面板按 children 铺链接与子级；列表末尾是指示条。某个入口的整块面板内容可用
+ * 宿主直接子节点 `slot="panel:<值>"` 给出。
+ *
  * @customElement xh-navigation-menu
  * @attr {string} value - 受控展开项；未提供该属性即非受控
  * @attr {string} default-value - 非受控的初始展开项
@@ -90,6 +95,13 @@ export class XhNavigationMenuElement extends XhElement {
   private config: RuntimeConfig | null = null
 
   static override partContract = { anatomy: navigationMenuAnatomy, meta: navigationMenuMeta }
+
+  static override structure: ElementStructure<XhNavigationMenuElement> = {
+    rootTag: 'nav',
+    build: host => host.ctrl.service
+      ? navigationMenuStructure(connectNavigationMenu(host.ctrl.service, wcNormalize), { slotted: (name, key) => host.slotted(name, key) })
+      : undefined,
+  }
 
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
