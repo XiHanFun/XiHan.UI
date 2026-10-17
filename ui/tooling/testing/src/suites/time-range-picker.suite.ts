@@ -1028,5 +1028,78 @@ export const timeRangePickerSuite: ConformanceSuite = {
         heldPressIgnored('time-range-picker', 'preset', '颠倒的快捷选项按不下去，不接受按压', { value: '10:30/09:00', keyboardHost: null }),
       ],
     },
+    {
+      name: '作者不写结构：三端都照 timeRangePickerStructure 铺出标题、起止两组段与分隔符、两颗钮、两份表单影子与起止两组时间列',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { ...BASE, label: '营业时段', defaultValue: ['08:30', '10:30'], name: 'open-at', endName: 'close-at' },
+      initial: {
+        // 两组列不按 min / max 裁格：每组时列 24 格、分列按 30 分步进 2 格
+        counts: { 'preset-group': 0, 'column-group': 2, 'column': 4, 'item': (24 + 2) * 2 },
+        parts: {
+          'segment-group[0]': { 'role': 'group', 'data-index': '0' },
+          'segment-group[1]': { 'role': 'group', 'data-index': '1' },
+          'segment[0]': { 'role': 'spinbutton', 'data-value': 'hour' },
+          'column-group[0]': { 'role': 'group', 'data-index': '0' },
+          'column-group[1]': { 'role': 'group', 'data-index': '1' },
+          'column[0]': { 'role': 'listbox', 'data-value': 'hour' },
+          'content': { hidden: '' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '各层子部件的次序、段位文字、分隔符、小标题与表单值，直接读 DOM',
+          run: ({ doc }) => {
+            const childParts = (el: Element | null): string => [...(el?.children ?? [])].filter(node => node.getAttribute('data-scope') === 'time-range-picker').map(node => node.getAttribute('data-part')).join('|')
+            // 浮层可被搬到落点，根里剩下的按序比
+            const root = childParts(doc.querySelector(`${SCOPE}[data-part="root"]`)).replace(/\|positioner$/, '')
+            if (root !== 'label|control|hidden-input|hidden-input')
+              throw new Error(`根里的次序期望标题、盒、两份表单影子，实际 [${root}]`)
+            const control = doc.querySelector(`${SCOPE}[data-part="control"]`)
+            if (childParts(control) !== 'segment-group|range-separator|segment-group|clear-trigger|trigger')
+              throw new Error(`盒里的次序期望两组段夹着分隔符、清空钮、触发钮，实际 [${childParts(control)}]`)
+            const groupParts = [...doc.querySelectorAll(`${SCOPE}[data-part="column-group"]`)].map(childParts)
+            if (groupParts.join(',') !== 'column-group-label|column|column,column-group-label|column|column')
+              throw new Error(`两组时间列期望各是小标题与时、分两列，实际 [${groupParts.join(',')}]`)
+            const groups = [...doc.querySelectorAll(`${SCOPE}[data-part="segment-group"]`)].map(el => el.textContent)
+            if (groups.join('|') !== '08:30|10:30')
+              throw new Error(`两组段期望读作 08:30 与 10:30，实际 ${JSON.stringify(groups)}`)
+            const separator = doc.querySelector(`${SCOPE}[data-part="range-separator"]`)?.textContent
+            if (separator !== '-')
+              throw new Error(`分隔符期望 "-"，实际 ${JSON.stringify(separator)}`)
+            expectHidden(doc, ['08:30', '10:30'], '两份表单影子带上起止两端')
+            const labels = [...doc.querySelectorAll(`${SCOPE}[data-part="column-group-label"]`)].map(el => el.textContent)
+            if (labels.join('|') !== 'Start time|End time')
+              throw new Error(`两组小标题期望 Start time 与 End time，实际 [${labels.join(',')}]`)
+          },
+        },
+      ],
+    },
+    {
+      name: '作者不写结构（快捷选项）：浮层里先铺快捷选项列，再是起止两组时间列',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { ...BASE, label: '营业时段', presets: [...PRESETS] },
+      initial: {
+        counts: { 'preset-group': 1, 'preset': PRESETS.length, 'column-group': 2, 'column': 4, 'item': (24 + 2) * 2 },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '快捷选项的文字与浮层里的次序不进属性快照',
+          run: ({ doc }) => {
+            const presets = presetItems(doc).map(el => el.textContent)
+            if (presets.join('|') !== PRESETS.map(preset => preset.label).join('|'))
+              throw new Error(`快捷选项期望 [${PRESETS.map(preset => preset.label).join(',')}]，实际 [${presets.join(',')}]`)
+            const content = doc.querySelector(`${SCOPE}[data-part="content"]`)
+            // 滚动面旁的竖条也是 content 的子节点（戴竖条自己的 scope），只数本组件的部件
+            const order = [...(content?.children ?? [])].filter(el => el.getAttribute('data-scope') === 'time-range-picker').map(el => el.getAttribute('data-part'))
+            if (order.join('|') !== 'preset-group|column-group|column-group')
+              throw new Error(`浮层里的次序期望快捷选项、两组时间列，实际 [${order.join(',')}]`)
+          },
+        },
+      ],
+    },
   ],
 }

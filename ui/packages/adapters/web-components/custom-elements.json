@@ -73065,7 +73065,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-time-range-picker>`：Light-DOM 行为宿主：作者写 root / label / control / segment-group（两个）/ segment（多个）/\nrange-separator / trigger / clear-trigger / positioner / content / column-group（两个）/ column（多个）/ item（多个）/\nhidden-input（两个）角色节点，元素运行 time-range-picker 状态机并把 connect 产出接上。\n浮层定位引擎在本元素中创建、经 refs 注入状态机，锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。\n\n起止两端各一组：segment-group、column-group 与 hidden-input 都写两个，文档序在前的是起点、在后的是终点，\n也可以自带 index 属性显式声明；段位、列与格子按所在的组归属到对应的端。\n\n两条改值路径写入同一份值：输入行中逐段输入（每段是 role=spinbutton，上下键加减、数字直接输入自动跳段，方向键不跨组），\n浮层中按列选择（每列是一个 listbox，上下键在列内移动、左右键换列（跨组也换）、Enter 选中）。\n\n段与格子上的文字由元素填入；作者自行写了内容的不修改。",
+          "description": "`<xh-time-range-picker>`：Light-DOM 行为宿主：作者写 root / label / control / segment-group（两个）/ segment（多个）/\nrange-separator / trigger / clear-trigger / positioner / content / column-group（两个）/ column（多个）/ item（多个）/\nhidden-input（两个）角色节点，元素运行 time-range-picker 状态机并把 connect 产出接上。\n浮层定位引擎在本元素中创建、经 refs 注入状态机，锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。\n\n起止两端各一组：segment-group、column-group 与 hidden-input 都写两个，文档序在前的是起点、在后的是终点，\n也可以自带 index 属性显式声明；段位、列与格子按所在的组归属到对应的端。\n\n两条改值路径写入同一份值：输入行中逐段输入（每段是 role=spinbutton，上下键加减、数字直接输入自动跳段，方向键不跨组），\n浮层中按列选择（每列是一个 listbox，上下键在列内移动、左右键换列（跨组也换）、Enter 选中）。\n\n段与格子上的文字由元素填入；作者自行写了内容的不修改。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label），盒里的起止两组段、分隔符、清空钮与触发钮，起止两份表单影子，\n浮层里的快捷选项与起止两组时间列（各带小标题）；精度、小时制与选中变化时随之重生成。\n标题可以由宿主直接子节点 `slot=\"label\"` 接管。",
           "name": "XhTimeRangePickerElement",
           "cssParts": [
             {
@@ -73163,6 +73163,25 @@
               "type": {
                 "text": "{ parts: ['trigger'], kind: 'state' }"
               }
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhTimeRangePickerElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? timeRangePickerStructure(connectTimeRangePicker(host.ctrl.service, wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key) }) : undefined, }",
+              "description": "作者没写结构时按标准结构生成：标题、盒、两份表单影子与浮层里的快捷选项、起止两组时间列。"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
             },
             {
               "kind": "field",
@@ -73688,6 +73707,14 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
             {
               "type": {
                 "text": "boolean | undefined"

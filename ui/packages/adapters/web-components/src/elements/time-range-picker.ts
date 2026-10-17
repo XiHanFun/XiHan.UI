@@ -21,9 +21,10 @@ import type {
   TimeSegmentType,
   TimeStep,
 } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectTimeRangePicker, resolveFormControlState, resolveTimeRangePickerEndIndex, timeRangePickerAnatomy, timeRangePickerMachine, timeRangePickerMeta } from '@xihan-ui/headless'
+import { connectTimeRangePicker, resolveFormControlState, resolveTimeRangePickerEndIndex, timeRangePickerAnatomy, timeRangePickerMachine, timeRangePickerMeta, timeRangePickerStructure } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { TIME_STEP_CONVERTER } from '../dom/time-step'
@@ -81,7 +82,12 @@ function declaredEnd(el: HTMLElement, position: number): TimeRangePickerEndIndex
  *
  * 段与格子上的文字由元素填入；作者自行写了内容的不修改。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label），盒里的起止两组段、分隔符、清空钮与触发钮，起止两份表单影子，
+ * 浮层里的快捷选项与起止两组时间列（各带小标题）；精度、小时制与选中变化时随之重生成。
+ * 标题可以由宿主直接子节点 `slot="label"` 接管。
+ *
  * @customElement xh-time-range-picker
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @prop {string[]} value - 受控的区间两端 [start, end]（数组只能通过 property 设置），每端是 ISO 时间串；空缺的一端用空串占位；未提供即非受控
  * @prop {string[]} default-value - 非受控初始区间
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
@@ -136,8 +142,16 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
 
   static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const
 
+  /** 作者没写结构时按标准结构生成：标题、盒、两份表单影子与浮层里的快捷选项、起止两组时间列。 */
+  static override structure: ElementStructure<XhTimeRangePickerElement> = {
+    build: host => host.ctrl.service
+      ? timeRangePickerStructure(connectTimeRangePicker(host.ctrl.service, wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key) })
+      : undefined,
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    label: { converter: STRING_CONVERTER },
     // 区间两端是数组，只能走 property
     value: { attribute: false },
     defaultValue: { attribute: false },
@@ -171,6 +185,7 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
   }
 
+  declare label?: string
   declare value?: string[]
   declare defaultValue?: string[]
   declare open?: boolean

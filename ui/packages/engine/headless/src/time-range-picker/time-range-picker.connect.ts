@@ -347,6 +347,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
     focusedItem,
     presets,
     canClear,
+    translations,
     getSegmentText: ({ index, segment }) => segmentTextOf(index, segment),
     getItemText: itemTextOf,
     isItemSelected: itemSelected,

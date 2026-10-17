@@ -2,6 +2,7 @@
 import type { RuntimeConfig } from '@xihan-ui/core'
 import type { ExitLease, PresenceHandle } from '@xihan-ui/core/presence'
 import type { VanillaRuntime } from '@xihan-ui/core/vanilla'
+import type { StructureChild, StructureNode } from '../src/shared/structure'
 import type { TimeSegmentType } from '../src/time-field'
 import type { TimePickerColumnUnit } from '../src/time-picker'
 import type { TimeRangePickerApi, TimeRangePickerEndIndex, TimeRangePickerSchema } from '../src/time-range-picker'
@@ -18,6 +19,7 @@ import {
   timeRangePickerPresetFromNow,
   timeRangePickerPresetTimes,
   timeRangePickerPresetValue,
+  timeRangePickerStructure,
   trimTimeRangeHoles,
 } from '../src/time-range-picker'
 
@@ -1214,5 +1216,37 @@ describe('time-range-picker 两组段位各自的整条占位', () => {
     const bare = group(mount(), 0)
     expect(bare['data-placeholder-text']).toBeUndefined()
     expect(bare['data-placeholder-shown']).toBeUndefined()
+  })
+})
+
+describe('timeRangePickerStructure', () => {
+  const parts = (nodes: readonly StructureChild[]): string[] => nodes.map(node => ('part' in node ? node.part : 'literal' in node ? `literal:${node.literal}` : 'instance'))
+
+  it('标题（原生 label）、盒里的起止两组段与分隔符、两颗钮、两份表单影子、浮层里的起止两组时间列', () => {
+    const api = mount({ defaultValue: ['09:00', '18:00'] }).api()
+    const nodes = timeRangePickerStructure(api, { label: '营业时段' })
+    expect(parts(nodes)).toEqual(['label', 'control', 'hidden-input', 'hidden-input', 'positioner'])
+    expect(nodes[0]).toMatchObject({ tag: 'label', text: '营业时段' })
+    expect(nodes.slice(2, 4).map(node => (node as StructureNode).attrs?.index)).toEqual(['0', '1'])
+    const control = nodes[1]!.children! as StructureNode[]
+    expect(parts(control)).toEqual(['segment-group', 'range-separator', 'segment-group', 'clear-trigger', 'trigger'])
+    expect(control.map(node => node.attrs?.index)).toEqual(['0', undefined, '1', undefined, undefined])
+    expect(parts(control[0]!.children!)).toEqual(['segment', 'literal::', 'segment'])
+    const content = (nodes.at(-1)!.children![0] as StructureNode).children! as StructureNode[]
+    expect(parts(content)).toEqual(['column-group', 'column-group'])
+    expect(content.map(group => group.attrs?.index)).toEqual(['0', '1'])
+    expect(content.map(group => group.children![0])).toMatchObject([{ part: 'column-group-label', text: api.translations.startTime }, { part: 'column-group-label', text: api.translations.endTime }])
+    expect(parts(content[0]!.children!)).toEqual(['column-group-label', 'column', 'column'])
+  })
+
+  it('快捷选项排在两组时间列前面；12 小时制时两组段都在上下午段前放空格', () => {
+    const api = mount({ hourCycle: 12, presets: [{ value: '09:00/18:00', label: '白班' }] }).api()
+    const nodes = timeRangePickerStructure(api, { slotted: name => name === 'label' })
+    expect(nodes[0]).toMatchObject({ tag: 'label', slot: { name: 'label' } })
+    const control = nodes[1]!.children! as StructureNode[]
+    for (const group of [control[0]!, control[2]!])
+      expect(parts(group.children!)).toEqual(['segment', 'literal::', 'segment', 'literal: ', 'segment'])
+    const content = (nodes.at(-1)!.children![0] as StructureNode).children! as StructureNode[]
+    expect(parts(content)).toEqual(['preset-group', 'column-group', 'column-group'])
   })
 })

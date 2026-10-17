@@ -59,6 +59,18 @@ function literalBetween(before: TimeSegmentType, after: TimeSegmentType): string
   return before === 'dayPeriod' || after === 'dayPeriod' ? ' ' : ':'
 }
 
+/** 段组里的子节点：按当前段序铺段，段与段之间是分隔符文字。时间选择器与时间范围选择器的起止两组共用。 */
+export function timeSegmentGroupChildren(segments: readonly TimeSegmentType[]): StructureChild<'segment'>[] {
+  const group: StructureChild<'segment'>[] = []
+  segments.forEach((segment, i) => {
+    const previous = segments[i - 1]
+    if (previous)
+      group.push({ key: `literal:${previous}`, literal: literalBetween(previous, segment) })
+    group.push({ key: `segment:${segment}`, tag: 'span', part: 'segment', attrs: { segment } })
+  })
+  return group
+}
+
 /**
  * 时间选择器在 root 里的标准结构，次序是标题、盒、表单影子、浮层。
  * - 盒：单选时是段组（段按当前段序铺，段间是分隔符文字），多选时是标签行（每个选中值一枚带删除钮的标签，
@@ -96,14 +108,7 @@ export function timePickerStructure(model: TimePickerStructureModel, options: Ti
     }
   }
   else {
-    const group: StructureChild<TimePickerStructurePart>[] = []
-    model.segments.forEach((segment, i) => {
-      const previous = model.segments[i - 1]
-      if (previous)
-        group.push({ key: `literal:${previous}`, literal: literalBetween(previous, segment) })
-      group.push({ key: `segment:${segment}`, tag: 'span', part: 'segment', attrs: { segment } })
-    })
-    entry = { key: 'segment-group', tag: 'div', part: 'segment-group', children: group }
+    entry = { key: 'segment-group', tag: 'div', part: 'segment-group', children: timeSegmentGroupChildren(model.segments) }
   }
 
   const content: TimePickerNode[] = []

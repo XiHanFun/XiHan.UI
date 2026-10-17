@@ -35,6 +35,8 @@ export {
   timeRangePickerPresetTimes,
   timeRangePickerPresetValue,
 } from './time-range-picker.presets'
+export { timeRangePickerStructure } from './time-range-picker.structure'
+export type { TimeRangePickerStructureOptions } from './time-range-picker.structure'
 export type {
   TimeRangePickerApi,
   TimeRangePickerColumnGroup,
