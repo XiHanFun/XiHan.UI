@@ -8,7 +8,8 @@
 import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core'
 import type { TabsActivationMode, TabsNode, TabsSchema, TabsTranslations, TabsValueChangeDetails, TabsVariant } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTabs, tabsAnatomy, tabsMachine, tabsMeta, tabsOverflowMenuProps } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { connectTabs, tabsAnatomy, tabsMachine, tabsMeta, tabsOverflowMenuProps, tabsStructure } from '@xihan-ui/headless'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { MachineController } from '../runtime/machine-controller'
@@ -31,6 +32,10 @@ const TRIGGER_SELECTOR = '[data-xh-part="trigger"]'
 /**
  * `<xh-tabs>`：Light-DOM 行为宿主，运行 tabs 状态机并把 connect 产出接到 root / list / trigger / content
  * 角色节点上。条目身份取作者写在 trigger / content 上的 value 属性，trigger 的禁用由部件声明。
+ *
+ * 不写部件时元素按标准结构生成：标签带里每条一个标签（文字取 label），closable 时标签后面紧跟它的关闭钮，再是每条一块面板；
+ * 只写 root 时生成在它里面。某一块面板的内容用宿主直接子节点 `slot="panel:<值>"` 接管，
+ * 要按 lazy-mount / unmount-on-exit 挂卸时写成 `<template slot="panel:<值>">`。
  *
  * 读屏文案 `translations` 是对象，属性无法表达，只能通过 property 设置（`el.translations = {...}`）。
  *
@@ -78,6 +83,15 @@ export class XhTabsElement extends XhPortalHostElement {
   declare portalContainer?: () => Element | null
 
   static override partContract = { anatomy: tabsAnatomy, meta: tabsMeta }
+
+  static override structure: ElementStructure<XhTabsElement> = {
+    build: host => host.ctrl.service
+      ? tabsStructure(connectTabs(host.ctrl.service, wcNormalize), {
+          closable: host.closable ?? false,
+          slotted: (name, key) => host.slotted(name, key),
+        })
+      : undefined,
+  }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。

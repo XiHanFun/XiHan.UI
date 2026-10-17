@@ -6,14 +6,15 @@
 // 提供 tabs 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { TabsActivationMode, TabsNode, TabsNodeMeta, TabsSchema, TabsVariant } from '@xihan-ui/headless'
+import type { TabsActivationMode, TabsApi, TabsNode, TabsNodeMeta, TabsSchema, TabsVariant } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { tabsOverflowMenuProps } from '@xihan-ui/headless'
+import { tabsOverflowMenuProps, tabsStructure } from '@xihan-ui/headless'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergePartProps } from '../../runtime/merge-props'
 import { slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { XhMenuRoot } from '../menu/menu'
 import { provideTabs, useTabsContext } from './context'
 import { useTabs } from './use-tabs'
@@ -68,11 +69,11 @@ export const XhTabsRoot = defineComponent({
     const ctx = useTabs(withXhConfig('tabs', props) as TabsProps, notify, onTabMove, onTabClose)
     provideTabs(ctx)
     return () => {
-      // 默认插槽里有真内容就照旧交给作者；只剩注释或空白时当没写，给了 collection 就按数据铺开整套结构
+      // 默认插槽里有真内容就照旧交给作者；只剩注释或空白时当没写，照标准结构按数据铺开
       const authored = slots.default?.()
       const children = slotPaints(authored)
         ? authored
-        : (props.collection ? renderDefaultTree(ctx.api.value.collection, props.closable, slots.panel) : undefined)
+        : renderDefaultStructure(ctx.api.value, props.closable, slots.panel)
       return h('div', ctx.api.value.getRootProps() as Record<string, unknown>, children)
     }
   },
@@ -258,23 +259,20 @@ export const XhTabsContent = defineComponent({
   },
 })
 
+/** 标准结构里各部件对应的组件。 */
+const TABS_PARTS = {
+  'list': XhTabsList,
+  'trigger': XhTabsTrigger,
+  'close-trigger': XhTabsCloseTrigger,
+  'content': XhTabsContent,
+}
+
 /**
- * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
+ * 未写默认插槽时照 tabsStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
  * 面板内容经 panel 插槽，未写时为空面板。可关闭时每个标签后面跟一枚关闭钮。
  */
-function renderDefaultTree(
-  collection: readonly TabsNodeMeta[],
-  closable: boolean,
-  panelSlot?: (node: TabsNodeMeta) => VNode[],
-): VNode[] {
-  return [
-    h(XhTabsList, null, () => collection.flatMap(node => [
-      h(XhTabsTrigger, { key: node.value, value: node.value }, () => node.label),
-      ...(closable ? [h(XhTabsCloseTrigger, { key: `${node.value}:close`, value: node.value })] : []),
-    ])),
-    ...collection.map(node =>
-      h(XhTabsContent, { key: node.value, value: node.value }, () => panelSlot?.(node) ?? []),
-    ),
-  ]
+function renderDefaultStructure(api: TabsApi, closable: boolean, panelSlot?: (node: TabsNodeMeta) => VNode[]): VNode[] {
+  const nodes = tabsStructure(api, { closable, slotted: name => name === 'panel' && panelSlot != null })
+  return renderStructure(nodes, TABS_PARTS, node =>
+    node.slot?.name === 'panel' ? panelSlot?.(node.data as TabsNodeMeta) : undefined)
 }
