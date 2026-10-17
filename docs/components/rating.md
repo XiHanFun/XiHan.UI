@@ -128,6 +128,7 @@ allowClear 默认开启：点击当前档位清回未评分，键盘在最低档
 | `disabled` | `boolean` |  | 完全不可交互：退出 Tab 序列，指针与键盘都不响应。 |
 | `readOnly` | `boolean` |  | 只读：仍可聚焦、仍能被读屏朗读，但不可修改，也不提供悬停预览。 |
 | `required` | `boolean` |  |  |
+| `invalid` | `boolean` |  | 校验失败标注：radiogroup 写 aria-invalid，各部件写 data-invalid。 |
 | `name` | `string` |  | 表单字段名；提供后表单影子才带 name 并参与提交。 |
 | `dir` | `Direction` |  | 文字方向，默认 'ltr'。只改写左右方向键与指针落在哪半边的语义。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
@@ -194,6 +195,7 @@ allowClear 默认开启：点击当前档位清回未评分，键盘在最低档
 | `empty` | `boolean` | 尚未评分（value 为 0）。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
+| `invalid` | `boolean` |  |
 | `items` | `readonly number[]` | 1..count 的序号表，作者直接遍历它渲染星星。 |
 | `getItemState` | `(props: RatingItemProps) => RatingItemState` |  |
 | `setValue` | `(next: number) => void` |  |
@@ -225,6 +227,7 @@ allowClear 默认开启：点击当前档位清回未评分，键盘在最低档
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `control` | `aria-disabled` | 'true' \| 'false' |
+| `control` | `aria-invalid` | 'true' \| 'false' |
 | `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `control` | `aria-orientation` | 'horizontal' |
 | `control` | `aria-readonly` | 'true' \| 'false' |
@@ -257,18 +260,22 @@ allowClear 默认开启：点击当前档位清回未评分，键盘在最低档
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `value-text` | `data-disabled` | ''（条件成立时才出现） |
 | `value-text` | `data-empty` | ''（条件成立时才出现） |
+| `value-text` | `data-invalid` | ''（条件成立时才出现） |
 | `value-text` | `data-readonly` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-half` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
+| `item` | `data-invalid` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-readonly` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
@@ -290,6 +297,7 @@ allowClear 默认开启：点击当前档位清回未评分，键盘在最低档
 | `--xh-rating-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | rating 的 item 部件 background-color 覆盖槽。 |
 | `--xh-rating-item-fg` | `item` | `background-color`<br>`background-image`<br>`color` | `default`<br>`disabled`<br>`empty`<br>`focus-visible`<br>`half`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not(:empty)`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-subtle` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
 | `--xh-rating-item-fg-highlighted` | `item` | `background-color`<br>`background-image`<br>`color` | `@media print`<br>`disabled`<br>`empty`<br>`focus-visible`<br>`half`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not(:empty)`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_rating-accent` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
+| `--xh-rating-item-fg-invalid` | `item` | `background-color`<br>`color` | `disabled`<br>`empty`<br>`focus-visible`<br>`hover`<br>`invalid`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-invalid` | rating 的 item 部件 background-color、color 覆盖槽。 |
 | `--xh-rating-item-font-size` | `item`<br>`root` | `--xh-icon-size`<br>`font-size` | `default` | `--xh-_rating-item-size` | rating 的 item、root 部件 --xh-icon-size、font-size 覆盖槽。 |
 | `--xh-rating-item-gap` | `control` | `gap` | `default` | `--xh-_rating-item-gap` | rating 的 control 部件 gap 覆盖槽。 |
 | `--xh-rating-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | rating 的 item 部件 border-radius 覆盖槽。 |

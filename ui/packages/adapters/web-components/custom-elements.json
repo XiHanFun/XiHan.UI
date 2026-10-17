@@ -53869,7 +53869,7 @@
           "name": "XhRatingElement",
           "cssParts": [
             {
-              "description": "承载 data-disabled / data-readonly / data-empty 的外壳",
+              "description": "承载 data-disabled / data-readonly / data-invalid / data-empty 的外壳",
               "name": "root"
             },
             {
@@ -53986,6 +53986,15 @@
             },
             {
               "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
               "name": "name",
               "privacy": "public",
               "type": {
@@ -54071,7 +54080,7 @@
                   }
                 }
               ],
-              "description": "最近的 Field 或 Form 只交状态；Rating 仅消费公开的禁用、只读、必填三轴。"
+              "description": "最近的 Field 或 Form 只交状态；Rating 消费公开的禁用、只读、必填与无效四轴。"
             },
             {
               "kind": "method",
@@ -54275,6 +54284,14 @@
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败标注：星星带写 aria-invalid，各部件写 data-invalid",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
                 "text": "string | undefined"
               },
               "description": "表单字段名；提供后表单影子才带 name 并参与提交",
@@ -54324,6 +54341,9 @@
             },
             {
               "name": "--xh-rating-item-fg-highlighted"
+            },
+            {
+              "name": "--xh-rating-item-fg-invalid"
             },
             {
               "name": "--xh-rating-item-font-size"

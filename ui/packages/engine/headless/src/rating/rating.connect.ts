@@ -90,6 +90,7 @@ export function connectRating<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const required = !!prop('required')
+  const invalid = !!prop('invalid')
   const dir = prop('dir') ?? 'ltr'
   // 能否改值；能否聚焦另见 tabindex
   const interactive = !disabled && !readOnly
@@ -159,6 +160,7 @@ export function connectRating<T extends PropTypes>(
     empty,
     disabled,
     readOnly,
+    invalid,
     items,
     getItemState,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
@@ -169,6 +171,7 @@ export function connectRating<T extends PropTypes>(
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
       'data-empty': dataAttr(empty),
     }),
 
@@ -185,6 +188,7 @@ export function connectRating<T extends PropTypes>(
       'aria-hidden': true,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
       // 一颗星没点亮：作者据此换一句「暂无评分」
       'data-empty': dataAttr(highlightedValue === 0),
     }),
@@ -194,12 +198,14 @@ export function connectRating<T extends PropTypes>(
       'role': 'radiogroup',
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
       'aria-orientation': 'horizontal',
-      // 三个 aria 布尔显式写 true/false：省略是"没说"，显式 false 是"明确说了不是"
+      // 四个 aria 布尔显式写 true/false：省略是"没说"，显式 false 是"明确说了不是"
       'aria-disabled': disabled ? 'true' : 'false',
       'aria-readonly': readOnly ? 'true' : 'false',
       'aria-required': required ? 'true' : 'false',
+      'aria-invalid': invalid ? 'true' : 'false',
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
       // 禁用时整条带子退出 Tab 序列；否则焦点在带外时容器兜底进 Tab 序列。
       // 判据只能用 focusedValue：anchor 可能指向一个已被删掉的条目，那时没有条目认领 tabindex=0
       'tabindex': disabled ? undefined : (focusedValue == null ? 0 : -1),
@@ -269,6 +275,7 @@ export function connectRating<T extends PropTypes>(
         'data-half': dataAttr(s.half),
         'data-disabled': dataAttr(disabled),
         'data-readonly': dataAttr(readOnly),
+        'data-invalid': dataAttr(invalid),
         // 锚点条目独占 Tab 位；整体禁用时节点彻底不可聚焦
         'tabindex': disabled ? undefined : (anchor === item.value ? 0 : -1),
         // 触屏按住投影 data-pressed，皮肤的按下面同时认它与指针 :active；与评分、预览互相独立

@@ -47,6 +47,7 @@ export const XhRatingRoot = defineComponent({
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     name: { type: String },
     dir: { type: String as PropType<Direction> },
     tone: { type: String as PropType<Tone> },

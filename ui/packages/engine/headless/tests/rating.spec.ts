@@ -254,6 +254,20 @@ describe('connectRating', () => {
     expect(control['aria-labelledby']).toBe((api(service).getLabelProps() as Record<string, unknown>).id)
   })
 
+  it('invalid：星星带写 aria-invalid，root、星星带、每颗星与分值文本写 data-invalid；不写时显式 false、不落 data-invalid', () => {
+    const bad = makeService({ invalid: true }).service
+    expect(controlAttrs(bad)['aria-invalid']).toBe('true')
+    expect(controlAttrs(bad)['data-invalid']).toBe('')
+    expect((api(bad).getRootProps() as Record<string, unknown>)['data-invalid']).toBe('')
+    expect(itemAttrs(bad, 1)['data-invalid']).toBe('')
+    expect((api(bad).getValueTextProps() as Record<string, unknown>)['data-invalid']).toBe('')
+    expect(api(bad).invalid).toBe(true)
+    const ok = makeService().service
+    expect(controlAttrs(ok)['aria-invalid']).toBe('false')
+    expect(controlAttrs(ok)['data-invalid']).toBeUndefined()
+    expect(itemAttrs(ok, 1)['data-invalid']).toBeUndefined()
+  })
+
   it('条目报得出自己是第几颗、一共几颗', () => {
     const { service } = makeService({ count: 4 })
     const third = itemAttrs(service, 3)

@@ -352,6 +352,7 @@
   "[data-scope=\"radio-group\"][data-part=\"thumb\"]": "部件不接焦点：radio-group/thumb",
   "[data-scope=\"rating\"][data-part=\"item\"]:empty::after": "写法挂不出来：:empty",
   "[data-scope=\"rating\"][data-part=\"item\"]:empty::before": "写法挂不出来：:empty",
+  "[data-scope=\"rating\"][data-part=\"item\"][data-invalid]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"reasoning\"][data-part=\"indicator\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"reasoning\"][data-part=\"root\"]": "部件不接焦点：reasoning/root",
   "[data-scope=\"reasoning\"][data-part=\"root\"][data-variant=\"ghost\"]": "部件不接焦点：reasoning/root",
