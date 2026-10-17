@@ -2,9 +2,10 @@
 // 标准结构的基类钩子：作者没写结构时元素按结构生成，按 key 复用，可接管部件让位并按缺省结构排在末尾，
 // 作者写了结构就全归作者；宿主里写了 slot 的作者节点搬进对应部件，部件没了搬回宿主；挪动前后焦点不丢。
 // 组合节点：内层元素经 static dependencies 随宿主注册，props 按 property 赋值、回调接事件；没注册就生成时告警。
+// 出口节点：宿主里对着出口的作者节点本身挪到出口处，不包部件；已在位的不再挪，焦点不丢。
 
 import type { DiagnosticRecord } from '@xihan-ui/core'
-import type { StructureNode } from '@xihan-ui/headless'
+import type { StructureChild, StructureNode } from '@xihan-ui/headless'
 import type { ElementStructure } from '../src/element-base'
 import { DIAGNOSTIC_CODES, onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -119,6 +120,32 @@ class XhStructureParentElement extends XhElement {
 
   protected wire(): void {}
 }
+
+/** 结构里有一个出口：标题、作者给的控件、说明。 */
+class XhStructureOutletElement extends XhElement {
+  static override properties = {
+    hint: {},
+  }
+
+  static override structure: ElementStructure<XhStructureOutletElement> = {
+    build: (host): StructureChild[] => [
+      { key: 'label', tag: 'label', part: 'label', text: '名称' },
+      { key: 'control', outlet: true, slot: { name: 'control' } },
+      { key: 'description', tag: 'p', part: 'description', text: host.hint },
+    ],
+  }
+
+  declare hint: string
+
+  constructor() {
+    super()
+    this.hint = '说明'
+  }
+
+  protected wire(): void {}
+}
+
+customElements.define('xh-structure-outlet', XhStructureOutletElement)
 
 let diagnostics: DiagnosticRecord[] = []
 
@@ -300,5 +327,62 @@ describe('标准结构的基类钩子', () => {
     await settle(el)
     expect(el.querySelector('[data-xh-part="root"]')).toBe(root)
     expect(Array.from(root.querySelectorAll('[data-xh-part="item"]'), node => node.getAttribute('value'))).toEqual(['a', 'b'])
+  })
+})
+
+describe('标准结构的出口节点', () => {
+  async function mountOutlet(inner: string): Promise<XhStructureOutletElement> {
+    const el = document.createElement('xh-structure-outlet') as XhStructureOutletElement
+    el.innerHTML = inner
+    document.body.append(el)
+    await settle(el)
+    return el
+  }
+
+  it('对着出口的作者节点本身挪到出口处，夹在前后两个生成部件之间，不包部件也不带生成标记', async () => {
+    const el = await mountOutlet('<input slot="control" aria-label="名称">')
+    const root = el.querySelector(':scope > [data-xh-part="root"]')!
+    expect(parts(root)).toEqual(['label', '<input>', 'description'])
+    const input = root.querySelector('input')!
+    expect(input.hasAttribute('data-xh-gen')).toBe(false)
+    expect(el.querySelector(':scope > input')).toBeNull()
+  })
+
+  it('再生成一轮时已在位的作者节点不重新插入，焦点留在它上面', async () => {
+    const el = await mountOutlet('<input slot="control" aria-label="名称">')
+    const input = el.querySelector('input')!
+    input.focus()
+    const moved: Node[] = []
+    const observer = new MutationObserver(records => records.forEach(record => moved.push(...record.addedNodes)))
+    observer.observe(input.parentElement!, { childList: true })
+    el.hint = '换了说明'
+    await settle(el)
+    observer.disconnect()
+    expect(moved).not.toContain(input)
+    expect(document.activeElement).toBe(input)
+    expect(el.querySelector('[data-xh-part="description"]')!.textContent).toBe('换了说明')
+  })
+
+  it('没给内容时出口处什么都没有；后补的作者节点照样挪进来，撤掉后出口又空着', async () => {
+    const el = await mountOutlet('')
+    const root = el.querySelector(':scope > [data-xh-part="root"]')!
+    expect(parts(root)).toEqual(['label', 'description'])
+
+    const select = document.createElement('select')
+    select.setAttribute('slot', 'control')
+    el.append(select)
+    await settle(el)
+    expect(parts(root)).toEqual(['label', '<select>', 'description'])
+
+    select.remove()
+    await settle(el)
+    expect(parts(root)).toEqual(['label', 'description'])
+  })
+
+  it('只写 root：作者节点挪进作者的 root 里出口的位置', async () => {
+    const el = await mountOutlet('<div data-xh-part="root"></div><input slot="control" aria-label="名称">')
+    const root = el.querySelector(':scope > [data-xh-part="root"]')!
+    expect(root.hasAttribute('data-xh-gen')).toBe(false)
+    expect(parts(root)).toEqual(['label', '<input>', 'description'])
   })
 })

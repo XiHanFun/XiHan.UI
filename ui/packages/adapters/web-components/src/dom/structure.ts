@@ -5,11 +5,12 @@
 
 // 按组件的标准结构生成作者没写的部件节点：节点写成作者会写的样子（data-xh-part 与身份属性），
 // 带生成标记（值为 structure，与元素别的生成节点分开）、按 key 复用，接线照常经部件发现。
+// 出口节点不生成东西：作者在宿主直接子节点上写了对应 slot 的那个节点本身挪到这个位置。
 
-import type { StructureChild, StructureInstanceNode, StructureSlot, StructureTag, StructureTakeoverPosition } from '@xihan-ui/headless'
+import type { StructureChild, StructureInstanceNode, StructureOutletNode, StructureSlot, StructureTag, StructureTakeoverPosition } from '@xihan-ui/headless'
 import type { KeyedChildren } from './generated-nodes'
 import { DIAGNOSTIC_CODES, isDev, reportDiagnostic } from '@xihan-ui/core'
-import { isStructureInstance, isStructureLiteral } from '@xihan-ui/headless'
+import { isStructureInstance, isStructureLiteral, isStructureOutlet } from '@xihan-ui/headless'
 import { createGeneratedElement, GEN_ATTR, generatedChildren, reconcile, SVG_NS } from './generated-nodes'
 
 /** 标准结构生成的节点在 data-xh-gen 上写的值。 */
@@ -32,14 +33,24 @@ function setAttr(el: Element, name: string, value: string): void {
     el.setAttribute(name, value)
 }
 
+/** 出口节点取作者内容的地方：按 slot 值找宿主名下的作者节点，挪进结构后登记归属。 */
+export interface StructureOutlets {
+  /** slot 值对应的作者节点：宿主直接子节点里待挪的，或已经挪进结构、还在原处的。 */
+  readonly find: (slot: string) => Element | undefined
+  /** 作者节点挪进了结构里的这个父节点。 */
+  readonly adopt: (node: Element, parent: Element) => void
+}
+
 /**
  * 把一组结构节点按 key 排进父节点：已有的复用、缺的新建、多的移除，作者写的节点不动、排在前面。
  * 节点上逐个写作者会写的身份属性，上一轮写过、这一轮没有的删掉。
  * 带 slot 的节点内容归作者，这里不碰，只把它记进 slots（slot 值 → 节点），由调用方把作者节点搬进去。
+ * 出口节点处放作者节点本身（经 outlets 找），没有作者节点的出口跳过。
  */
-export function placeStructure(parent: Element, nodes: readonly StructureChild[], keys: KeyedChildren, slots?: Map<string, Element>): void {
+export function placeStructure(parent: Element, nodes: readonly StructureChild[], keys: KeyedChildren, slots?: Map<string, Element>, outlets?: StructureOutlets): void {
   const doc = parent.ownerDocument
-  reconcile(parent, nodes, keys, node => node.key, (node, reuse) => {
+  const generated = nodes.filter((node): node is Exclude<StructureChild, StructureOutletNode> => !isStructureOutlet(node))
+  reconcile(parent, generated, keys, node => node.key, (node, reuse) => {
     if (isStructureInstance(node))
       return placeInstance(doc, node, reuse)
     if (isStructureLiteral(node)) {
@@ -66,11 +77,39 @@ export function placeStructure(parent: Element, nodes: readonly StructureChild[]
     if (node.slot)
       slots?.set(slotAttrOf(node.slot), el)
     else if (node.children)
-      placeStructure(el, node.children, keys, slots)
+      placeStructure(el, node.children, keys, slots, outlets)
     else if (node.text !== undefined && el.textContent !== node.text)
       el.textContent = node.text
     return el
   }, STRUCTURE_MARK)
+  if (outlets && generated.length !== nodes.length)
+    placeOutlets(parent, nodes, keys, outlets)
+}
+
+/**
+ * 把出口处的作者节点挪到结构里该在的位置：紧跟在前一个结构节点之后，排在最前时是父节点的第一个子节点。
+ * 已在位的不动：挪动一个已在文档里的节点会让里面的焦点丢掉。
+ */
+function placeOutlets(parent: Element, nodes: readonly StructureChild[], keys: KeyedChildren, outlets: StructureOutlets): void {
+  const placed = keys.get(parent)
+  let previous: Element | null = null
+  for (const node of nodes) {
+    if (!isStructureOutlet(node)) {
+      // 跟着浮层搬去 portal 落点的节点不在父节点里，不拿它定位
+      const el = placed?.get(node.key)
+      if (el?.parentElement === parent)
+        previous = el
+      continue
+    }
+    const authored = outlets.find(slotAttrOf(node.slot))
+    if (!authored)
+      continue
+    const anchor = previous ? previous.nextElementSibling : parent.firstElementChild
+    if (authored !== anchor)
+      parent.insertBefore(authored, anchor)
+    outlets.adopt(authored, parent)
+    previous = authored
+  }
 }
 
 /**
@@ -231,7 +270,7 @@ function checkTakeoverOrder(host: Element, nodes: readonly StructureChild[], tak
   let rank = -1
   let last: string | undefined
   for (const node of nodes) {
-    const part = isStructureInstance(node) || isStructureLiteral(node) ? undefined : node.part
+    const part = isStructureInstance(node) || isStructureLiteral(node) || isStructureOutlet(node) ? undefined : node.part
     const position = part === undefined ? undefined : takeover.get(part)
     if (position === 'portal')
       continue
@@ -304,7 +343,7 @@ export function hasSlotContent(host: Element, state: StructureState, slot: strin
  * 2. 作者在 root 里写了可接管部件时，结构不再铺这些部件（build 收到它们的名字），其余照常生成；
  *    排在末尾的可接管部件按登记的先后放回 root 的末尾，作者节点与生成节点交错时次序照缺省结构；
  * 3. 作者写了别的部件，或没写 root 就写了可接管部件，就由作者全写，撤掉生成过的节点；
- * 4. 宿主直接子节点里写了 slot 的作者节点搬进结构里对应的部件；部件没了时搬回宿主。
+ * 4. 宿主直接子节点里写了 slot 的作者节点搬进结构里对应的部件，对着出口的那个节点本身挪到出口处；部件没了时搬回宿主。
  * build 返回 undefined（状态还算不出）时这一轮不动。挪动节点前后焦点所在的节点不变。
  */
 export function syncStructure(
@@ -330,6 +369,22 @@ export function syncStructure(
   }
 
   const slots = new Map<string, Element>()
+  const outlets: StructureOutlets = {
+    find: (slot) => {
+      for (const child of Array.from(host.children)) {
+        if (child.getAttribute('slot') === slot && !child.hasAttribute(GEN_ATTR))
+          return child
+      }
+      for (const [node, target] of state.adopted) {
+        if (node.getAttribute('slot') === slot && node.parentElement === target)
+          return node
+      }
+      return undefined
+    },
+    adopt: (node, parent) => {
+      state.adopted.set(node, parent)
+    },
+  }
   if (owned) {
     placeStructure(host, [], state.keys)
     if (root)
@@ -341,16 +396,16 @@ export function syncStructure(
       return
     checkTakeoverOrder(host, nodes, takeover)
     if (spec.rootless) {
-      placeStructure(host, nodes, state.keys, slots)
+      placeStructure(host, nodes, state.keys, slots, outlets)
     }
     else if (root) {
       placeStructure(host, [], state.keys)
-      placeStructure(root, nodes, state.keys, slots)
+      placeStructure(root, nodes, state.keys, slots, outlets)
       if (taken.size > 0)
         placeTrailing(root, takeover, taken, authored)
     }
     else {
-      placeStructure(host, [{ key: 'root', part: 'root', tag: spec.rootTag ?? 'div', children: nodes }], state.keys, slots)
+      placeStructure(host, [{ key: 'root', part: 'root', tag: spec.rootTag ?? 'div', children: nodes }], state.keys, slots, outlets)
     }
   }
 
