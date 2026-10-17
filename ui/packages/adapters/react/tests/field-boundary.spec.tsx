@@ -4,6 +4,7 @@
 // 字段禁用时它也跟着禁用；放在浮层里的输入框同理，浮层经 Portal 搬到落点后不该再归外层字段管。
 import type { ReactNode } from 'react'
 import { cleanup, render } from '@testing-library/react'
+import { structureInstance } from '@xihan-ui/headless'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   XhFieldBoundary,
@@ -17,6 +18,7 @@ import {
   XhTextFieldInput,
   XhTextFieldRoot,
 } from '../src'
+import { renderStructure } from '../src/runtime/structure'
 
 afterEach(() => {
   cleanup()
@@ -66,6 +68,14 @@ describe('字段边界', () => {
   it('xhFieldBoundary 后面的控件不再继承外层字段', () => {
     inField(<XhFieldBoundary>{searchBox}</XhFieldBoundary>)
     expectIsolated()
+  })
+
+  it('组合节点生成的控件包在字段边界里：外层组件放进字段时，里面的输入框不被字段命名，也不跟着禁用', () => {
+    inField(<div>{renderStructure([structureInstance('search', 'text-field', {})], {}, undefined, { 'text-field': XhTextFieldRoot as (props: never) => ReactNode })}</div>)
+    const labelId = document.querySelector('[data-scope="field"][data-part="label"]')!.id
+    const el = document.querySelector<HTMLInputElement>('[data-scope="text-field"][data-part="input"]')!
+    expect((el.getAttribute('aria-labelledby') ?? '').split(/\s+/)).not.toContain(labelId)
+    expect(el.disabled).toBe(false)
   })
 
   it('浮层内容搬到落点后自动断开：放在里面的输入框不归外层字段管', () => {

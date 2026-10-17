@@ -392,6 +392,16 @@ describe('form control context 接线', () => {
     expect(getComputedStyle(form.querySelector('xh-field-boundary')!).display).toBe('contents')
   })
 
+  it('组合节点生成的控件（带 data-xh-gen="structure"）归生成它的组件管，不继承表单字段组的状态', async () => {
+    const form = makeForm(`${textField('id="outer"')}${textField('id="inner" data-xh-gen="structure"')}`)
+    const outer = form.querySelector('#outer input') as HTMLInputElement
+    const inner = form.querySelector('#inner input') as HTMLInputElement
+    await vi.waitFor(() => expect(outer.disabled).toBe(true))
+    expect(inner.disabled).toBe(false)
+    expect(inner.readOnly).toBe(false)
+    expect(inner.required).toBe(false)
+  })
+
   it.each(ATOMIC_CONTROLS)('%s 直接继承 Form 的四条状态轴', async (kind) => {
     await expectAtomicState(makeForm(atomicControl(kind)), kind, true)
   })
