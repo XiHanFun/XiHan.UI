@@ -8,6 +8,7 @@
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type {
   CollectionVirtualizer,
+  TransferApi,
   TransferCheckState,
   TransferFilter,
   TransferGroupProps,
@@ -19,8 +20,10 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { transferStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUpdated, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFormControlProps } from '../form/use-form-control'
 import {
@@ -127,20 +130,22 @@ export const XhTransferRoot = defineComponent({
       onSelectionChange: notifySelection,
     })
     provideTransfer(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [slots.default?.({
-      value: ctx.api.value.value,
-      selection: ctx.api.value.selection,
-      sourceItems: ctx.api.value.visibleItems('source'),
-      targetItems: ctx.api.value.visibleItems('target'),
-      canMove: ctx.api.value.canMove,
-      checkState: ctx.api.value.checkState,
-      isChecked: ctx.api.value.isChecked,
-      setValue: ctx.api.value.setValue,
-      setSelection: ctx.api.value.setSelection,
-      toggle: ctx.api.value.toggle,
-      toggleAll: ctx.api.value.toggleAll,
-      move: ctx.api.value.move,
-    }), ...ctx.api.value.value.map(value => h('input', {
+    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [slots.default
+      ? slots.default({
+          value: ctx.api.value.value,
+          selection: ctx.api.value.selection,
+          sourceItems: ctx.api.value.visibleItems('source'),
+          targetItems: ctx.api.value.visibleItems('target'),
+          canMove: ctx.api.value.canMove,
+          checkState: ctx.api.value.checkState,
+          isChecked: ctx.api.value.isChecked,
+          setValue: ctx.api.value.setValue,
+          setSelection: ctx.api.value.setSelection,
+          toggle: ctx.api.value.toggle,
+          toggleAll: ctx.api.value.toggleAll,
+          move: ctx.api.value.move,
+        })
+      : renderDefaultStructure(ctx.api.value), ...ctx.api.value.value.map(value => h('input', {
       ...ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown>,
       key: value,
     })), ...(ctx.api.value.value.length === 0 && ctx.api.value.required
@@ -399,3 +404,31 @@ export const XhTransferToSourceTrigger = defineComponent({
     return () => h('button', ctx.api.value.getToSourceTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+/** 标准结构里各部件对应的组件。 */
+const TRANSFER_PARTS = {
+  'source-panel': XhTransferSourcePanel,
+  'target-panel': XhTransferTargetPanel,
+  'panel-header': XhTransferPanelHeader,
+  'panel-title': XhTransferPanelTitle,
+  'panel-count': XhTransferPanelCount,
+  'select-all-trigger': XhTransferSelectAllTrigger,
+  'search': XhTransferSearch,
+  'list': XhTransferList,
+  'item': XhTransferItem,
+  'item-checkbox': XhTransferItemCheckbox,
+  'item-text': XhTransferItemText,
+  'item-description': XhTransferItemDescription,
+  'empty': XhTransferEmpty,
+  'loading': XhTransferLoading,
+  'to-target-trigger': XhTransferToTargetTrigger,
+  'to-source-trigger': XhTransferToSourceTrigger,
+}
+
+/**
+ * 未写默认插槽时铺开的整套结构：照 headless 的 transferStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。表单影子仍由根按值装配在后面。
+ */
+function renderDefaultStructure(api: TransferApi): VNode[] {
+  return renderStructure(transferStructure(api), TRANSFER_PARTS)
+}

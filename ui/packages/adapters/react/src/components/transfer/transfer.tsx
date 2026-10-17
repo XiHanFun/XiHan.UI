@@ -8,6 +8,7 @@
 import type { Direction, Service, Size, Tone } from '@xihan-ui/core'
 import type {
   CollectionVirtualizer,
+  TransferApi,
   TransferCheckState,
   TransferFilter,
   TransferItem,
@@ -16,12 +17,14 @@ import type {
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { transferStructure } from '@xihan-ui/headless'
 import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFormControlProps } from '../form/use-form-control'
 import {
@@ -164,20 +167,22 @@ export function XhTransferRoot({
   return (
     <TransferProvider value={ctx}>
       <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>, { ref: ctx.rootRef })}>
-        {renderSlot(children, {
-          value: api.value,
-          selection: api.selection,
-          sourceItems: api.visibleItems('source'),
-          targetItems: api.visibleItems('target'),
-          canMove: api.canMove,
-          checkState: api.checkState,
-          isChecked: api.isChecked,
-          setValue: api.setValue,
-          setSelection: api.setSelection,
-          toggle: api.toggle,
-          toggleAll: api.toggleAll,
-          move: api.move,
-        })}
+        {children != null
+          ? renderSlot(children, {
+              value: api.value,
+              selection: api.selection,
+              sourceItems: api.visibleItems('source'),
+              targetItems: api.visibleItems('target'),
+              canMove: api.canMove,
+              checkState: api.checkState,
+              isChecked: api.isChecked,
+              setValue: api.setValue,
+              setSelection: api.setSelection,
+              toggle: api.toggle,
+              toggleAll: api.toggleAll,
+              move: api.move,
+            })
+          : renderDefaultStructure(api)}
         {api.value.map(value => <input key={value} {...api.getHiddenInputProps({ value }) as Record<string, unknown>} />)}
         {/* 必填且没有值：补一份空值占位，原生 required 才拦得住空表单 */}
         {api.value.length === 0 && api.required && <input {...mergeReactProps(api.getHiddenInputProps() as Record<string, unknown>, { onChange: noop })} />}
@@ -458,3 +463,31 @@ export function XhTransferToSourceTrigger({ children, ...rest }: XhTransferToSou
 }
 
 function noop(): void {}
+
+/** 标准结构里各部件对应的组件。 */
+const TRANSFER_PARTS = {
+  'source-panel': XhTransferSourcePanel,
+  'target-panel': XhTransferTargetPanel,
+  'panel-header': XhTransferPanelHeader,
+  'panel-title': XhTransferPanelTitle,
+  'panel-count': XhTransferPanelCount,
+  'select-all-trigger': XhTransferSelectAllTrigger,
+  'search': XhTransferSearch,
+  'list': XhTransferList,
+  'item': XhTransferItem,
+  'item-checkbox': XhTransferItemCheckbox,
+  'item-text': XhTransferItemText,
+  'item-description': XhTransferItemDescription,
+  'empty': XhTransferEmpty,
+  'loading': XhTransferLoading,
+  'to-target-trigger': XhTransferToTargetTrigger,
+  'to-source-trigger': XhTransferToSourceTrigger,
+}
+
+/**
+ * 未写 children 时铺开的整套结构：照 headless 的 transferStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。表单影子仍由根按值装配在后面。
+ */
+function renderDefaultStructure(api: TransferApi): ReactNode[] {
+  return renderStructure(transferStructure(api), TRANSFER_PARTS)
+}

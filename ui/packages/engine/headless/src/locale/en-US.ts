@@ -913,7 +913,7 @@ export const TOOLBAR_EN_US: XhLocaleBucket<'toolbar'> = { overflowTrigger: 'More
 
 export const TOUR_EN_US: XhLocaleBucket<'tour'> = { close: 'Close', progress: (step, count) => `Step ${step} of ${count}` }
 
-export const TRANSFER_EN_US: XhLocaleBucket<'transfer'> = { toTarget: 'Move to target list', toSource: 'Move to source list' }
+export const TRANSFER_EN_US: XhLocaleBucket<'transfer'> = { toTarget: 'Move to target list', toSource: 'Move to source list', sourceTitle: 'Source list', targetTitle: 'Target list', selectAll: 'Select all', empty: 'No data', loading: 'Loading' }
 
 export const TREE_EN_US: XhLocaleBucket<'tree'> = DRAG_EN_US
 

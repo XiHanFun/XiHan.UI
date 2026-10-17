@@ -27,4 +27,5 @@ export {
   transferVisibleItems,
 } from './transfer.sets'
 export type { TransferMoveInput, TransferMoveResult } from './transfer.sets'
+export { transferStructure } from './transfer.structure'
 export type { TransferApi, TransferCheckState, TransferFilter, TransferGroupProps, TransferItem, TransferItemProps, TransferPanelProps, TransferPressedKey, TransferSchema, TransferSelectionChangeDetails, TransferSide, TransferTranslations, TransferValueChangeDetails } from './transfer.types'
