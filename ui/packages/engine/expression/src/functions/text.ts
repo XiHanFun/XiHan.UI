@@ -43,7 +43,7 @@ export function trimText(text: string): string {
 }
 
 function unaryText(name: string, transform: (text: string) => ExprValue): FunctionEntry {
-  return builtin(name, 1, 1, (args) => {
+  return builtin(name, ['text'], 1, 1, (args) => {
     if (anyNull(args))
       return null
     const text = stringArg(args, 0)
@@ -51,8 +51,8 @@ function unaryText(name: string, transform: (text: string) => ExprValue): Functi
   })
 }
 
-function pairText(name: string, test: (text: string, part: string) => boolean): FunctionEntry {
-  return builtin(name, 2, 2, (args) => {
+function pairText(name: string, part: string, test: (text: string, part: string) => boolean): FunctionEntry {
+  return builtin(name, ['text', part], 2, 2, (args) => {
     if (anyNull(args))
       return null
     const text = stringArg(args, 0)
@@ -64,7 +64,7 @@ function pairText(name: string, test: (text: string, part: string) => boolean): 
 }
 
 function sliceText(name: string, pick: (points: string[], count: number) => string[]): FunctionEntry {
-  return builtin(name, 2, 2, (args) => {
+  return builtin(name, ['text', 'count'], 2, 2, (args) => {
     if (anyNull(args))
       return null
     const text = stringArg(args, 0)
@@ -141,7 +141,7 @@ function listContains(list: ExprList, needle: ExprValue, runtime: Runtime): bool
 
 /** 文本函数：长度、截取按 Unicode 码点计，大小写只转换 ASCII 字母。 */
 export const TEXT_FUNCTIONS: readonly FunctionEntry[] = [
-  builtin('CONCAT', 1, null, (args, runtime) => {
+  builtin('CONCAT', ['value'], 1, null, (args, runtime) => {
     let out = ''
     for (let index = 0; index < args.length; index += 1) {
       const text = toText(args[index]!)
@@ -153,7 +153,7 @@ export const TEXT_FUNCTIONS: readonly FunctionEntry[] = [
     }
     return out
   }),
-  builtin('TEXT', 1, 1, (args) => {
+  builtin('TEXT', ['value'], 1, 1, (args) => {
     const text = toText(args[0]!)
     return text instanceof Fault ? new Fault('XH_EXPR_TYPE_MISMATCH', { ...text.data, index: 0 }) : text
   }),
@@ -163,7 +163,7 @@ export const TEXT_FUNCTIONS: readonly FunctionEntry[] = [
   unaryText('TRIM', trimText),
   sliceText('LEFT', (points, count) => points.slice(0, count)),
   sliceText('RIGHT', (points, count) => (count === 0 ? [] : points.slice(-count))),
-  builtin('MID', 3, 3, (args) => {
+  builtin('MID', ['text', 'start', 'length'], 3, 3, (args) => {
     if (anyNull(args))
       return null
     const text = stringArg(args, 0)
@@ -175,7 +175,7 @@ export const TEXT_FUNCTIONS: readonly FunctionEntry[] = [
     const length = integerArg(args, 2, 0, LENGTH_LIMIT)
     return length instanceof Fault ? length : codePoints(text).slice(start - 1, start - 1 + length).join('')
   }),
-  builtin('CONTAINS', 2, 2, (args, runtime) => {
+  builtin('CONTAINS', ['source', 'search'], 2, 2, (args, runtime) => {
     const [haystack = null, needle = null] = args
     if (haystack instanceof ExprList)
       return listContains(haystack, needle, runtime)
@@ -185,9 +185,9 @@ export const TEXT_FUNCTIONS: readonly FunctionEntry[] = [
       return typeMismatch(0, haystack)
     return typeof needle === 'string' ? haystack.includes(needle) : typeMismatch(1, needle)
   }),
-  pairText('STARTS_WITH', (text, part) => text.startsWith(part)),
-  pairText('ENDS_WITH', (text, part) => text.endsWith(part)),
-  builtin('REPLACE', 3, 3, (args, runtime) => {
+  pairText('STARTS_WITH', 'prefix', (text, part) => text.startsWith(part)),
+  pairText('ENDS_WITH', 'suffix', (text, part) => text.endsWith(part)),
+  builtin('REPLACE', ['text', 'search', 'replacement'], 3, 3, (args, runtime) => {
     if (anyNull(args))
       return null
     const text = stringArg(args, 0)
@@ -207,7 +207,7 @@ export const TEXT_FUNCTIONS: readonly FunctionEntry[] = [
       return new Fault('XH_EXPR_STRING_TOO_LONG', { max: runtime.maxStringLength })
     return parts.join(replacement)
   }),
-  builtin('SPLIT', 2, 2, (args, runtime) => {
+  builtin('SPLIT', ['text', 'separator'], 2, 2, (args, runtime) => {
     if (anyNull(args))
       return null
     const text = stringArg(args, 0)
@@ -222,7 +222,7 @@ export const TEXT_FUNCTIONS: readonly FunctionEntry[] = [
     const charged = runtime.charge(parts.length)
     return charged ?? listOf(parts)
   }),
-  builtin('JOIN', 1, 2, (args, runtime) => {
+  builtin('JOIN', ['list', 'separator'], 1, 2, (args, runtime) => {
     if (anyNull(args))
       return null
     const list = args[0]!
@@ -231,7 +231,7 @@ export const TEXT_FUNCTIONS: readonly FunctionEntry[] = [
     const separator = args.length > 1 ? stringArg(args, 1) : ''
     return separator instanceof Fault ? separator : joinList(list, separator, runtime)
   }),
-  builtin('FORMAT_NUMBER', 2, 3, (args) => {
+  builtin('FORMAT_NUMBER', ['number', 'decimals', 'grouping'], 2, 3, (args) => {
     if (anyNull(args))
       return null
     const value = args[0]!
@@ -245,7 +245,7 @@ export const TEXT_FUNCTIONS: readonly FunctionEntry[] = [
       return typeMismatch(2, grouping)
     return formatNumber(value, places, grouping)
   }),
-  builtin('TO_NUMBER', 1, 1, (args) => {
+  builtin('TO_NUMBER', ['value'], 1, 1, (args) => {
     const value = args[0]!
     if (value === null || value instanceof ExprNumber)
       return value

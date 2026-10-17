@@ -29,7 +29,7 @@ function sum(args: readonly ExprValue[], runtime: Runtime): { total: ExprNumber,
 }
 
 function extreme(name: string, direction: 1 | -1): FunctionEntry {
-  return builtin(name, 1, null, (args, runtime) => {
+  return builtin(name, ['value'], 1, null, (args, runtime) => {
     let best: ExprNumber | ExprDate | string | null = null
     const failed = forEachLeaf(args, runtime, (value, index) => {
       if (best === null) {
@@ -57,17 +57,17 @@ function extreme(name: string, direction: 1 | -1): FunctionEntry {
 
 /** 聚合函数：实参里的列表递归展开，`null` 跳过。 */
 export const AGGREGATE_FUNCTIONS: readonly FunctionEntry[] = [
-  builtin('SUM', 1, null, (args, runtime) => {
+  builtin('SUM', ['value'], 1, null, (args, runtime) => {
     const result = sum(args, runtime)
     return result instanceof Fault ? result : result.total
   }),
-  builtin('AVG', 1, null, (args, runtime) => {
+  builtin('AVG', ['value'], 1, null, (args, runtime) => {
     const result = sum(args, runtime)
     if (result instanceof Fault)
       return result
     return result.count === 0 ? null : divide(result.total, numberFromInteger(result.count))
   }),
-  builtin('COUNT', 1, null, (args, runtime) => {
+  builtin('COUNT', ['value'], 1, null, (args, runtime) => {
     let count = 0
     const failed = forEachLeaf(args, runtime, () => {
       count += 1

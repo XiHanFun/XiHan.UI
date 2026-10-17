@@ -146,8 +146,20 @@ describe('函数表', () => {
     expect(DEFAULT_FUNCTION_TABLE.names).toEqual([...DEFAULT_FUNCTION_TABLE.names].sort())
     expect(DEFAULT_FUNCTION_TABLE.names).toContain('SUM')
     expect(DEFAULT_FUNCTION_TABLE.names).toHaveLength(46)
-    expect(DEFAULT_FUNCTION_TABLE.lookup('round')).toEqual({ name: 'ROUND', minArgs: 1, maxArgs: 2 })
+    expect(DEFAULT_FUNCTION_TABLE.lookup('round')).toEqual({ name: 'ROUND', minArgs: 1, maxArgs: 2, params: ['number', 'places'] })
     expect(DEFAULT_FUNCTION_TABLE.lookup('nope')).toBeUndefined()
+  })
+
+  it('每个内置函数都有参数名：英文键、互不重复，个数等于 maxArgs，不限时等于 max(minArgs, 1)', () => {
+    for (const name of DEFAULT_FUNCTION_TABLE.names) {
+      const { minArgs, maxArgs, params } = DEFAULT_FUNCTION_TABLE.lookup(name)!
+      expect(params, name).toHaveLength(maxArgs ?? Math.max(minArgs, 1))
+      expect(new Set(params).size, name).toBe(params.length)
+      expect(params.every(param => /^[a-z][A-Za-z0-9]*$/.test(param)), name).toBe(true)
+    }
+    expect(DEFAULT_FUNCTION_TABLE.lookup('IF')!.params).toEqual(['condition', 'whenTrue', 'whenFalse'])
+    expect(DEFAULT_FUNCTION_TABLE.lookup('SUM')!.params).toEqual(['value'])
+    expect(DEFAULT_FUNCTION_TABLE.lookup('NOW')!.params).toEqual([])
   })
 
   it('可以只启用部分内置函数或完全不启用', () => {
@@ -205,6 +217,17 @@ describe('宿主函数', () => {
     expect(issue('PICKY(1 + 1, 2)', {}, { functions })).toEqual({ code: 'XH_EXPR_INVALID_ARGUMENT', start: 6, end: 11, data: { function: 'PICKY', index: 0 } })
   })
 
+  it('参数名可省略，省略时为空数组；给出时随签名一起查到', () => {
+    const call = (): null => null
+    const functions = createFunctionTable({
+      builtins: 'none',
+      functions: [{ name: 'CLAMP', minArgs: 3, maxArgs: 3, params: ['value', 'low', 'high'], call }, { name: 'PICK', minArgs: 2, maxArgs: null, params: ['index', 'option'], call }, { name: 'BARE', minArgs: 1, maxArgs: 1, call }],
+    })
+    expect(functions.lookup('clamp')).toEqual({ name: 'CLAMP', minArgs: 3, maxArgs: 3, params: ['value', 'low', 'high'] })
+    expect(functions.lookup('PICK')!.params).toEqual(['index', 'option'])
+    expect(functions.lookup('BARE')!.params).toEqual([])
+  })
+
   it('登记时校验名字与签名', () => {
     const call = (): null => null
     expect(() => createFunctionTable({ functions: [{ name: 'lower', minArgs: 0, maxArgs: 0, call }] })).toThrow(TypeError)
@@ -214,6 +237,10 @@ describe('宿主函数', () => {
     expect(() => createFunctionTable({ functions: [{ name: 'A', minArgs: -1, maxArgs: null, call }] })).toThrow(TypeError)
     expect(() => createFunctionTable({ functions: [{ name: 'A', minArgs: 0, maxArgs: 0, call: 'x' as never }] })).toThrow(TypeError)
     expect(() => createFunctionTable({ functions: [{ name: 'A', minArgs: 0, maxArgs: 0, call }, { name: 'A', minArgs: 0, maxArgs: 0, call }] })).toThrow(TypeError)
+    expect(() => createFunctionTable({ functions: [{ name: 'A', minArgs: 1, maxArgs: 1, params: ['Value'], call }] })).toThrow(TypeError)
+    expect(() => createFunctionTable({ functions: [{ name: 'A', minArgs: 2, maxArgs: 2, params: ['x', 'x'], call }] })).toThrow(TypeError)
+    expect(() => createFunctionTable({ functions: [{ name: 'A', minArgs: 1, maxArgs: 2, params: ['x'], call }] })).toThrow(TypeError)
+    expect(() => createFunctionTable({ functions: [{ name: 'A', minArgs: 0, maxArgs: null, params: [], call }] })).toThrow(TypeError)
     expect(createFunctionTable({ builtins: 'none', functions: [{ name: 'SUM', minArgs: 0, maxArgs: 0, call }] }).names).toEqual(['SUM'])
   })
 })
