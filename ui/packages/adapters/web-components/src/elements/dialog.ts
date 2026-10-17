@@ -11,7 +11,9 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectDialog, dialogAnatomy, dialogMachine, dialogMeta } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
+import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
+import { renderedTitleDescription } from '../dom/title-description'
 import { createOverlayExit } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
@@ -132,6 +134,8 @@ export class XhDialogElement extends XhPortalHostElement {
       variant: this.variant,
       draggable: this.panelDraggable,
       unmountOnExit: this.unmountOnExit,
+      // content 只引用作者写了的标题与说明
+      parts: renderedTitleDescription(this.getPart('title'), this.getPart('description')),
       translations: this.translations,
       onOpenChange: this.notify,
       onExitComplete: () => this.dispatchEvent(new CustomEvent('exit-complete', { bubbles: true, composed: true })),
@@ -186,7 +190,11 @@ export class XhDialogElement extends XhPortalHostElement {
     svc.refs.set('branches', () => [])
   }
 
+  /** 说明部件的内容从无到有、从有到无时重新接线：读不出一句话的说明不进 content 的描述链。 */
+  private readonly descriptionWatch = createNamingContentWatch(() => this.requestUpdate())
+
   protected wire(): void {
+    this.descriptionWatch.watch(this.getPart('description'))
     const svc = this.ctrl.service
     const api = connectDialog(svc, wcNormalize)
     const open = svc.state.get() === 'open'
@@ -237,6 +245,7 @@ export class XhDialogElement extends XhPortalHostElement {
   }
 
   override disconnectedCallback(): void {
+    this.descriptionWatch.disconnect()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并把子树收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上。
     // 只在机器已经收起时才强收——元素被移动（remove 后立刻 append）时展开态不该被打断

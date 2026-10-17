@@ -8,11 +8,13 @@
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
 import type { DialogApi, DialogSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
+import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectDialog, dialogMachine } from '@xihan-ui/headless'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
+import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
@@ -25,6 +27,8 @@ export interface DialogContext {
   rendered: Ref<boolean>
   contentRef: Ref<HTMLElement | null>
   backdropRef: Ref<HTMLElement | null>
+  /** 标题与说明在不在场，由 XhDialogTitle / XhDialogDescription 登记；content 只引用在场的部件。 */
+  presence: TitleDescriptionPresence
 }
 
 export function useDialog(
@@ -37,7 +41,8 @@ export function useDialog(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(dialogMachine, () => ({ ...props, onOpenChange, onExitComplete }), scope)
+  const presence = useTitleDescriptionPresence()
+  const service = useMachine(dialogMachine, () => ({ ...props, parts: presence.parts.value, onOpenChange, onExitComplete }), scope)
 
   const xhConfig = useXhConfig()
   let config: RuntimeConfig | null = null
@@ -76,5 +81,5 @@ export function useDialog(
   const api = computed(() => connectDialog(service, vueNormalize))
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { service, api, rendered, contentRef, backdropRef, portalTarget }
+  return { service, api, rendered, contentRef, backdropRef, portalTarget, presence }
 }

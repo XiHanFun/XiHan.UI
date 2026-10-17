@@ -14,6 +14,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
+import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { OVERLAY_STOWED_PROPS } from '../../runtime/use-overlay-exit'
 import { provideDialog, useDialogContext } from './context'
 import { useDialog } from './use-dialog'
@@ -153,6 +154,7 @@ export const XhDialogTitle = /* @__PURE__ */ defineComponent({
   name: 'XhDialogTitle',
   setup(_, { slots }) {
     const ctx = useDialogContext()
+    useTitleDescriptionPart(ctx.presence, 'title')
     return () => h('h2', ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -161,7 +163,9 @@ export const XhDialogDescription = /* @__PURE__ */ defineComponent({
   name: 'XhDialogDescription',
   setup(_, { slots }) {
     const ctx = useDialogContext()
-    return () => h('p', ctx.api.value.getDescriptionProps() as Record<string, unknown>, slots.default?.())
+    // 读不出一句话的说明不进描述链
+    const el = useDescriptionPart(ctx.presence)
+    return () => h('p', { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el }, slots.default?.())
   },
 })
 
