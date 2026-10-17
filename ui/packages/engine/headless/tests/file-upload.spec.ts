@@ -1063,3 +1063,53 @@ describe('file-upload 并发上限与取消', () => {
     expect(pending.has('b.txt')).toBe(false)
   })
 })
+
+describe('file-upload 只读与必填', () => {
+  it('只读：投放区仍在 Tab 序列里、报 aria-disabled；三种按钮不用原生 disabled、报 aria-disabled 并画禁用面', () => {
+    const file = makeFile('a.txt')
+    const m = open({ readOnly: true, defaultFiles: [file], maxFiles: 5 })
+    expect(m.dropzone.getAttribute('aria-disabled')).toBe('true')
+    expect(m.dropzone.getAttribute('tabindex')).toBe('0')
+    expect(m.dropzone.hasAttribute('data-readonly')).toBe(true)
+    for (const button of [m.trigger, m.clear, m.partIn(m.items()[0]!, 'item-delete-trigger')]) {
+      expect(button.hasAttribute('disabled')).toBe(false)
+      expect(button.getAttribute('aria-disabled')).toBe('true')
+      expect(button.hasAttribute('data-disabled')).toBe(true)
+      expect(button.hasAttribute('data-readonly')).toBe(true)
+    }
+  })
+
+  it('只读：选择、拖放、粘贴、删除与清空都不改列表', () => {
+    const file = makeFile('a.txt')
+    const onFilesChange = vi.fn()
+    const m = open({ readOnly: true, defaultFiles: [file], maxFiles: 5, onFilesChange })
+    const opened = vi.spyOn(m.hidden, 'click')
+    m.dropzone.click()
+    m.trigger.click()
+    expect(opened).not.toHaveBeenCalled()
+    m.dropzone.dispatchEvent(dragEvent('drop', { files: [makeFile('b.txt')] }))
+    m.api().addFiles([makeFile('c.txt')])
+    m.partIn(m.items()[0]!, 'item-delete-trigger').click()
+    m.clear.click()
+    expect(m.api().acceptedFiles).toEqual([file])
+    expect(onFilesChange).not.toHaveBeenCalled()
+  })
+
+  it('只读不挡传输：已有的文件照样能开传', async () => {
+    const file = makeFile('a.txt')
+    const upload = vi.fn(() => Promise.resolve())
+    const m = open({ readOnly: true, defaultFiles: [file], autoUpload: false, upload })
+    m.api().startUpload(file)
+    await vi.waitFor(() => expect(upload).toHaveBeenCalledTimes(1))
+  })
+
+  it('必填：根与标题写 data-required；文件输入只在列表为空时带 required', () => {
+    const m = open({ required: true, maxFiles: 5 })
+    expect(m.root.hasAttribute('data-required')).toBe(true)
+    expect(m.label.hasAttribute('data-required')).toBe(true)
+    expect(m.hidden.required).toBe(true)
+    m.api().addFiles([makeFile('a.txt')])
+    expect(m.hidden.required).toBe(false)
+    expect(open({ maxFiles: 5 }).hidden.required).toBe(false)
+  })
+})

@@ -45,6 +45,12 @@ const CASES: Case[] = [
     host: root => root.querySelector<HTMLElement>('[data-scope="color-picker"][data-part="trigger"]')!,
     wired: true,
   },
+  {
+    name: 'file-upload',
+    axes: { readOnly: 'aria-disabled' },
+    markup: attrs => `<xh-file-upload ${attrs}><div data-xh-part="root"><div data-xh-part="dropzone">把文件拖到这里<input data-xh-part="hidden-input"></div></div></xh-file-upload>`,
+    host: root => root.querySelector<HTMLElement>('[data-scope="file-upload"][data-part="dropzone"]')!,
+  },
 ]
 
 const ARIA_RULES = ['aria-allowed-attr', 'aria-valid-attr-value', 'aria-prohibited-attr', 'aria-required-attr', 'aria-allowed-role']

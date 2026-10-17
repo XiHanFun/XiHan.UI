@@ -167,7 +167,7 @@
   "[data-scope=\"field-array\"][data-part=\"move-down-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"field-array\"][data-part=\"move-up-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"file-upload\"][data-part=\"clear-trigger\"]:empty::before": "写法挂不出来：:empty",
-  "[data-scope=\"file-upload\"][data-part=\"dropzone\"]:hover:not([data-disabled], [data-invalid], [data-dragging])": "写法挂不出来：:hover",
+  "[data-scope=\"file-upload\"][data-part=\"dropzone\"]:hover:not([data-disabled], [data-readonly], [data-invalid], [data-dragging])": "写法挂不出来：:hover",
   "[data-scope=\"file-upload\"][data-part=\"item-delete-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"file-upload\"][data-part=\"item-preview\"]": "部件不接焦点：file-upload/item-preview",
   "[data-scope=\"file-upload\"][data-part=\"item-preview\"]:empty::before": "写法挂不出来：:empty",

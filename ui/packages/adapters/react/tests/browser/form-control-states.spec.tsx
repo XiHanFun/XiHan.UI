@@ -13,6 +13,8 @@ import {
   XhFieldErrorText,
   XhFieldLabel,
   XhFieldRoot,
+  XhFileUploadDropzone,
+  XhFileUploadRoot,
   XhRatingControl,
   XhRatingItem,
   XhRatingRoot,
@@ -54,6 +56,12 @@ const CASES: Case[] = [
     render: state => <XhColorPickerRoot {...state}><XhColorPickerControl><XhColorPickerTrigger><XhColorPickerValueText /></XhColorPickerTrigger></XhColorPickerControl></XhColorPickerRoot>,
     host: root => root.querySelector<HTMLElement>('[data-scope="color-picker"][data-part="trigger"]')!,
     wired: true,
+  },
+  {
+    name: 'file-upload',
+    axes: { readOnly: 'aria-disabled' },
+    render: state => <XhFileUploadRoot {...state}><XhFileUploadDropzone>把文件拖到这里</XhFileUploadDropzone></XhFileUploadRoot>,
+    host: root => root.querySelector<HTMLElement>('[data-scope="file-upload"][data-part="dropzone"]')!,
   },
 ]
 

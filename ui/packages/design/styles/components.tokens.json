@@ -34645,7 +34645,8 @@
         "dragging",
         "hover",
         "invalid",
-        "not([data-disabled], [data-invalid], [data-dragging])"
+        "not([data-disabled], [data-readonly], [data-invalid], [data-dragging])",
+        "readonly"
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
@@ -34725,7 +34726,8 @@
         "dragging",
         "hover",
         "invalid",
-        "not([data-disabled], [data-invalid], [data-dragging])"
+        "not([data-disabled], [data-readonly], [data-invalid], [data-dragging])",
+        "readonly"
       ],
       "defaultToken": [
         "--xh-border-strong"

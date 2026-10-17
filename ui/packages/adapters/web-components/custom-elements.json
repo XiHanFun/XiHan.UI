@@ -27007,6 +27007,24 @@
             },
             {
               "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
               "name": "name",
               "privacy": "public",
               "type": {
@@ -27526,6 +27544,22 @@
               "description": "校验失败标注",
               "name": "invalid",
               "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读：选择、拖放、粘贴、删除与清空都不收，投放区与按钮仍可聚焦",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填：标题画星号，列表为空时文件输入带原生 required",
+              "name": "required",
+              "fieldName": "required"
             },
             {
               "type": {

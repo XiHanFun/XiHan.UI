@@ -12985,7 +12985,9 @@
       "onUploadCancel",
       "onUploadComplete",
       "onUploadError",
+      "readOnly",
       "remoteFiles",
+      "required",
       "translations",
       "upload",
       "validate"
@@ -21362,7 +21364,9 @@
         "max-file-size",
         "max-files",
         "min-file-size",
-        "name"
+        "name",
+        "read-only",
+        "required"
       ],
       "events": [
         "clear",

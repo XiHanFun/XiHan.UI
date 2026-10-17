@@ -43,9 +43,13 @@ export function connectFileUpload<T extends PropTypes>(
   const dragging = state.get() === 'dragging'
   const disabled = !!prop('disabled')
   const invalid = !!prop('invalid')
+  const readOnly = !!prop('readOnly')
+  const required = !!prop('required')
+  // 只读与禁用一样改不动列表，只是不置灰、不退出 Tab 序列
+  const editable = !disabled && !readOnly
   const allowDrop = prop('allowDrop') ?? true
-  const canDrop = allowDrop && !disabled
-  const canPaste = (prop('allowPaste') ?? true) && !disabled
+  const canDrop = allowDrop && editable
+  const canPaste = (prop('allowPaste') ?? true) && editable
   const maxFiles = normalizeMaxFiles(prop('maxFiles'))
   const empty = acceptedFiles.length === 0 && remoteFiles.length === 0
   const ids = scope.ids('file-upload', 'label', 'dropzone')
@@ -121,6 +125,8 @@ export function connectFileUpload<T extends PropTypes>(
     dragging,
     disabled,
     invalid,
+    readOnly,
+    required,
     empty,
     maxFiles,
     getFileSizeText: file => (isRemote(file) ? (file.size == null ? '' : formatFileSize(file.size)) : formatFileSize(file.size)),
@@ -135,6 +141,8 @@ export function connectFileUpload<T extends PropTypes>(
       'data-dragging': dataAttr(dragging),
       'data-disabled': dataAttr(disabled),
       'data-invalid': dataAttr(invalid),
+      'data-readonly': dataAttr(readOnly),
+      'data-required': dataAttr(required),
       'data-empty': dataAttr(empty),
       // 粘贴冒泡到这里：焦点在投放区、选择钮或删除钮上时 Ctrl / Cmd+V 都收得到。
       // 剪贴板里没有文件时不拦截，文字照常粘贴
@@ -155,6 +163,7 @@ export function connectFileUpload<T extends PropTypes>(
       'id': ids.label,
       'for': hiddenInputId,
       'data-disabled': dataAttr(disabled),
+      'data-required': dataAttr(required),
     }),
 
     /** 投放区兼作打开选择框的按钮，故报 role=button；trigger 宜放在投放区之外。 */
@@ -166,21 +175,22 @@ export function connectFileUpload<T extends PropTypes>(
       // 没渲染 label 时只引投放区自己。不另给 aria-label：labelledby 引到自己时
       // 取的是自己的 aria-label 而不是内容，兜底文案会把说明挤出名字
       'aria-labelledby': prop('labelled') ? `${ids.label} ${ids.dropzone}` : ids.dropzone,
-      // div 上原生 disabled 不生效，显式写 aria-disabled 并退出 Tab 序列
-      'aria-disabled': disabled ? 'true' : 'false',
+      // div 上原生 disabled 不生效，显式写 aria-disabled 并退出 Tab 序列；只读也报按不动，但留在 Tab 序列里
+      'aria-disabled': editable ? 'false' : 'true',
       'tabindex': disabled ? -1 : 0,
       'data-dragging': dataAttr(dragging),
       'data-disabled': dataAttr(disabled),
       'data-invalid': dataAttr(invalid),
+      'data-readonly': dataAttr(readOnly),
       'onClick': (event: MouseEvent) => {
-        if (disabled)
+        if (!editable)
           return
         if (fromInteractivePart(event.target))
           return
         send({ type: 'PICKER.OPEN' })
       },
       'onKeyDown': (event: KeyboardEvent) => {
-        if (disabled)
+        if (!editable)
           return
         if (event.key !== 'Enter' && event.key !== ' ')
           return
@@ -218,7 +228,10 @@ export function connectFileUpload<T extends PropTypes>(
       ...parts.trigger.attrs,
       'type': 'button',
       'disabled': disabled || undefined,
-      'data-disabled': dataAttr(disabled),
+      // 只读时按不动却仍可聚焦：不用原生 disabled，报 aria-disabled，禁用面照画
+      'aria-disabled': readOnly && !disabled ? 'true' : undefined,
+      'data-disabled': dataAttr(!editable),
+      'data-readonly': dataAttr(readOnly),
       'data-xh-action-control': '',
       'data-xh-action-profile': 'text',
       'data-xh-action-display': 'always',
@@ -242,6 +255,8 @@ export function connectFileUpload<T extends PropTypes>(
       webkitdirectory: prop('directory') || undefined,
       capture: prop('capture'),
       disabled: disabled || undefined,
+      // 只在列表为空时带：选完文件输入就被清空，恒带会把已经选了文件的表单也拦下
+      required: (required && empty) || undefined,
       // 隐藏输入不占 Tab 位，键盘入口是投放区与 trigger
       tabindex: -1,
       style: VISUALLY_HIDDEN_STYLE,
@@ -336,7 +351,9 @@ export function connectFileUpload<T extends PropTypes>(
       // 名字带上文件名，否则多条删除按钮的可访问名完全相同
       'aria-label': label.deleteItem(file),
       'disabled': disabled || undefined,
-      'data-disabled': dataAttr(disabled),
+      'aria-disabled': readOnly && !disabled ? 'true' : undefined,
+      'data-disabled': dataAttr(!editable),
+      'data-readonly': dataAttr(readOnly),
       // 一行里的小图标钮：Action Control icon 档 ghost，xs 视觉盒
       'data-xh-action-control': '',
       'data-xh-action-profile': 'icon',
@@ -346,6 +363,8 @@ export function connectFileUpload<T extends PropTypes>(
       // Enter 在 keydown 即删掉这一条，按钮随文件离开列表后由机器松开
       ...press(fileUploadPressKey(service.refs, file)),
       'onClick': (event: MouseEvent) => {
+        if (!editable)
+          return
         const el = event.currentTarget as HTMLElement
         // 判据是本节点当下正持有焦点：删完按钮就没了，焦点会掉到 body 上。
         // 落点必须在送事件之前算好——那之后这棵子树可能已经离开文档，再也 closest 不到 root
@@ -363,7 +382,9 @@ export function connectFileUpload<T extends PropTypes>(
       'aria-label': label.clearTrigger,
       // 空列表时按钮照常在位、可聚焦，只打 data-empty 由皮肤压淡；点击是空操作
       'disabled': disabled || undefined,
-      'data-disabled': dataAttr(disabled),
+      'aria-disabled': readOnly && !disabled ? 'true' : undefined,
+      'data-disabled': dataAttr(!editable),
+      'data-readonly': dataAttr(readOnly),
       'data-empty': dataAttr(empty),
       // 收尾动作画成不带底的文字钮：Action Control text 档 ghost，比「选择文件」小一档
       'data-xh-action-control': '',
@@ -374,6 +395,8 @@ export function connectFileUpload<T extends PropTypes>(
       // 空列表时按钮照常在位、可按（激活是空操作），按压面也照常
       ...press('clear'),
       'onClick': () => {
+        if (!editable)
+          return
         send({ type: 'FILES.CLEAR' })
         // 列表本来就空时激活是空操作，不报清空
         if (!empty)
