@@ -9,6 +9,7 @@ import type { StructureChild, StructureNode } from '@xihan-ui/headless'
 import type { ReactNode } from 'react'
 import { isStructureInstance, isStructureLiteral } from '@xihan-ui/headless'
 import { createElement } from 'react'
+import { XhFieldBoundary } from '../components/field/boundary'
 
 /**
  * 部件的内容由作者的渲染函数接管时返回要放进去的内容；返回 undefined 时照结构渲（子节点或文字，带 slot 的节点为空）。
@@ -18,6 +19,7 @@ export type StructureContent = (node: StructureNode) => ReactNode | undefined
 /**
  * instances 是结构里组合进来的组件：组件名 → 根组件。组合节点渲那个根组件，props 原样传（`onXxx` 即回调），不给 children，
  * 内层走它自己的缺省树；与 Web Components 元素的 static dependencies 是同一份清单。
+ * 组合进来的组件包在字段边界里：它的状态与名字由外层经 props 给，外层放进字段时，字段只接线外层，不认领它。
  */
 export function renderStructure(
   nodes: readonly StructureChild[],
@@ -32,7 +34,7 @@ export function renderStructure(
       const root = instances[node.instance]
       if (!root)
         throw new Error(`[xh] 标准结构里的组合节点 ${node.instance} 没有对应的组件`)
-      return createElement(root as (props: Record<string, unknown>) => ReactNode, { key: node.key, ...node.props })
+      return createElement(XhFieldBoundary, { key: node.key }, createElement(root as (props: Record<string, unknown>) => ReactNode, node.props))
     }
     const name = node.component === undefined ? node.part : `${node.component}/${node.part}`
     const component = components[name]

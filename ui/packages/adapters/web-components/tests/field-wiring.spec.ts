@@ -92,6 +92,18 @@ describe('xh-field 给库内控件接线', () => {
     await vi.waitFor(() => expect(input.hasAttribute('aria-describedby')).toBe(false))
   })
 
+  it('组合节点生成的控件（带 data-xh-gen="structure"）归生成它的组件管，不接外层字段的线', async () => {
+    const field = mountField(`${TEXT_FIELD}${SELECT.replace('<xh-select>', '<xh-select data-xh-gen="structure">')}`, 'required')
+    const input = field.querySelector('input')!
+    const trigger = field.querySelector<HTMLElement>('xh-select [data-xh-part="trigger"]')!
+    await vi.waitFor(() => expect(input.getAttribute('aria-describedby')).toBe(idOf(field, 'description')))
+    await vi.waitFor(() => expect(trigger.getAttribute('data-scope')).toBe('select'))
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(trigger.getAttribute('aria-labelledby') ?? '').not.toContain(idOf(field, 'label'))
+    expect(trigger.hasAttribute('aria-describedby')).toBe(false)
+    expect(trigger.hasAttribute('aria-required')).toBe(false)
+  })
+
   it('字段边界后面的控件不接外层字段的线', async () => {
     const field = mountField(`<xh-field-boundary>${TEXT_FIELD}</xh-field-boundary>`)
     const input = field.querySelector('input')!

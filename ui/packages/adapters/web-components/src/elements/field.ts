@@ -13,7 +13,7 @@ import { connectField, fieldAnatomy, fieldControlWiring, fieldMeta, hasNamingCon
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { XhReactiveElement } from '../reactive'
-import { FORM_CONTROL_HOST_SELECTOR } from '../runtime/form-control-host'
+import { FORM_CONTROL_HOST_SELECTOR, isComposedControl } from '../runtime/form-control-host'
 
 /** 字段沿 DOM 祖先链认领控件时停在这两种节点上：更近的字段，或作者放的字段边界。 */
 export const FIELD_SCOPE_SELECTOR = 'xh-field, xh-field-boundary'
@@ -146,6 +146,8 @@ export class XhFieldElement extends XhElement {
     for (const control of this.querySelectorAll<FormControlHost>(FORM_CONTROL_HOST_SELECTOR)) {
       // 嵌套 Field 的控件归更近的那一层，字段边界后面的控件不归任何外层字段，当前 Field 都不跨过去覆盖。
       if (control.closest(FIELD_SCOPE_SELECTOR) !== this)
+        continue
+      if (isComposedControl(control))
         continue
       control.setFormControlState({
         disabled: api.disabled,

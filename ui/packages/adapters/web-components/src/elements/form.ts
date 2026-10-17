@@ -30,7 +30,7 @@ import type { FormControlHost } from '../runtime/form-control-host'
 import { connectForm, formAnatomy, formMachine, formMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-import { FORM_CONTROL_HOST_SELECTOR } from '../runtime/form-control-host'
+import { FORM_CONTROL_HOST_SELECTOR, isComposedControl } from '../runtime/form-control-host'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -392,6 +392,8 @@ export class XhFormElement extends XhElement {
       for (const control of el.querySelectorAll<FormControlHost>(`xh-field, ${FORM_CONTROL_HOST_SELECTOR}`)) {
         // Field 自己会再把已合并状态交给其内的控件，避免 Form 越过 Field 覆盖最近继承源。
         if (control.tagName !== 'XH-FIELD' && control.closest('xh-field'))
+          continue
+        if (isComposedControl(control))
           continue
         // 字段边界后面的控件与 Field 不归这个字段组：边界落在字段组里面时跳过
         const boundary = control.parentElement?.closest('xh-field-boundary')
