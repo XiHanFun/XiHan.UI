@@ -8,6 +8,7 @@
 import type { Service } from '@xihan-ui/core'
 import type { NotificationApi, NotificationItemApi, NotificationItemSchema, NotificationOptions, NotificationSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
+import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import { createContext, useContext } from 'react'
 
 export interface NotificationContext {
@@ -27,6 +28,8 @@ export interface NotificationItemContext {
   service: Service<NotificationItemSchema>
   /** 卡片根节点：退场动画从它上面探测。 */
   rootRef: RefObject<HTMLElement | null>
+  /** item-title 与 item-description 在不在场，由两个部件登记；卡片只引用在场的部件。 */
+  presence: TitleDescriptionPresence
 }
 
 const Ctx = createContext<NotificationContext | undefined>(undefined)

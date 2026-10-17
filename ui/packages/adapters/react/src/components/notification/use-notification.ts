@@ -10,6 +10,7 @@ import type { NotificationContext, NotificationItemContext } from './context'
 import { connectNotification, connectNotificationItem, notificationItemMachine, notificationMachine } from '@xihan-ui/headless'
 import { useMemo, useRef } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
 import { useNotificationContextOptional } from './context'
 import { useNotificationItemExit } from './use-item-exit'
@@ -41,8 +42,10 @@ export function useNotification(props: NotificationSchema['props']): Notificatio
  */
 export function useNotificationItem(props: NotificationItemSchema['props']): NotificationItemContext {
   const queue = useNotificationContextOptional()
+  const presence = useTitleDescriptionPresence()
   const service = useMachine(notificationItemMachine, () => ({
     ...props,
+    parts: presence.parts,
     onStatusChange: (details) => {
       props.onStatusChange?.(details)
       if (details.status === 'unmounted')
@@ -54,5 +57,5 @@ export function useNotificationItem(props: NotificationItemSchema['props']): Not
   // 传 getter 而非节点本身，ref 在提交后才附着；叠摞展开的追踪从它找所在的那一摞
   service.refs.set('getRootEl', () => rootRef.current)
   useNotificationItemExit({ service, isOpen: () => api.status === 'visible', rootRef })
-  return { api, service, rootRef }
+  return { api, service, rootRef, presence }
 }

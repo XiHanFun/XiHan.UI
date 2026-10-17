@@ -11,6 +11,7 @@ import type { NotificationContext, NotificationItemContext } from './context'
 import { connectNotification, connectNotificationItem, notificationItemMachine, notificationMachine } from '@xihan-ui/headless'
 import { computed, ref, toValue } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
+import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
 import { useNotificationContextOptional } from './context'
 import { useNotificationItemExit } from './use-item-exit'
@@ -51,11 +52,12 @@ export function useNotificationItem(
     if (details.status === 'unmounted')
       queue?.dismiss(details.id)
   }
-  const service = useMachine(notificationItemMachine, () => ({ ...props, onStatusChange: notifyStatus, onAction }))
+  const presence = useTitleDescriptionPresence()
+  const service = useMachine(notificationItemMachine, () => ({ ...props, parts: presence.parts.value, onStatusChange: notifyStatus, onAction }))
   const api = computed(() => connectNotificationItem(service, vueNormalize))
   const rootRef = ref<HTMLElement | null>(null)
   // 传 getter 而非节点本身，ref 在挂载后才有值；叠摞展开的追踪从它找所在的那一摞
   service.refs.set('getRootEl', () => rootRef.value)
   useNotificationItemExit({ service, isOpen: () => api.value.status === 'visible', rootRef })
-  return { api, rootRef }
+  return { api, rootRef, presence }
 }

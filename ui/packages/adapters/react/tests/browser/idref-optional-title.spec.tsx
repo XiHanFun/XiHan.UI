@@ -9,7 +9,7 @@ import { createReactHarness } from '../harness'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-const COMPONENTS = ['dialog', 'drawer', 'popover', 'popconfirm', 'alert', 'approval', 'tour', 'floating-panel']
+const COMPONENTS = ['dialog', 'drawer', 'popover', 'popconfirm', 'alert', 'approval', 'tour', 'floating-panel', 'notification-item']
 
 type Variant = 'full' | 'drop' | 'empty-description'
 
@@ -19,6 +19,7 @@ const MOUNT_PROPS: Record<string, (suite: ConformanceSuite, variant: Variant) =>
   'drawer': () => ({ defaultOpen: true }),
   'popover': () => ({ defaultOpen: true }),
   'popconfirm': () => ({ defaultOpen: true }),
+  // 标题与说明的文字取自步骤：展开那条用例的 props 带着步骤；说明留空那一轮把步骤里的说明拿掉
   'tour': (suite, variant) => {
     const props = suite.cases.find(c => c.props?.defaultOpen)?.props ?? {}
     if (variant !== 'empty-description')
@@ -27,27 +28,38 @@ const MOUNT_PROPS: Record<string, (suite: ConformanceSuite, variant: Variant) =>
     return { ...props, steps: steps.map(({ description: _, ...step }) => step) }
   },
   'floating-panel': () => ({ defaultOpen: true }),
+  // 停留时长 0：卡片不会在断言途中自己退场
+  'notification-item': () => ({ duration: 0 }),
 }
 
 /** 没有说明部件的组件：只验标题。 */
-const TITLE_ONLY = ['floating-panel']
+const TITLE_ONLY: string[] = ['floating-panel']
+
+/** data-scope 与部件名跟组件名不一样的组件。 */
+const NAMING: Record<string, { scope: string, title: string, description: string }> = {
+  'notification-item': { scope: 'notification', title: 'item-title', description: 'item-description' },
+}
 
 const harness = createReactHarness()
-
 afterEach(async () => {
   await harness.unmount()
 })
+
+function naming(component: string): { scope: string, title: string, description: string } {
+  return NAMING[component] ?? { scope: component, title: 'title', description: 'description' }
+}
 
 /** 改写套件自己那个组件的 title / description 部件：drop 去掉，empty 留节点、清掉文字。 */
 function rewrite(node: FixtureNode, component: string, mode: Exclude<Variant, 'full'>): FixtureNode {
   if (!node.children)
     return node
-  const own = (child: FixtureNode): boolean => (child.component ?? component) === component
+  const { scope, title, description } = naming(component)
+  const own = (child: FixtureNode): boolean => (child.component ?? scope) === scope
   return {
     ...node,
     children: node.children
-      .filter(child => !(mode === 'drop' && own(child) && (child.part === 'title' || child.part === 'description')))
-      .map(child => mode === 'empty-description' && own(child) && child.part === 'description'
+      .filter(child => !(mode === 'drop' && own(child) && (child.part === title || child.part === description)))
+      .map(child => mode === 'empty-description' && own(child) && child.part === description
         ? { ...child, text: undefined, children: undefined }
         : rewrite(child, component, mode)),
   }
@@ -89,17 +101,18 @@ async function invalidRefs(): Promise<string[]> {
 
 describe('只引用在场的标题与说明', () => {
   const suites = allSuites.filter(suite => COMPONENTS.includes(suite.component))
-
   it('每个组件都取到了套件', () => {
     expect(suites.map(suite => suite.component).sort()).toEqual([...COMPONENTS].sort())
   })
 
   for (const component of COMPONENTS) {
-    it(`${component}：写了标题与说明时引用它们，去掉后不留落空的引用，说明留空时不进描述链`, async () => {
+    const titleOnly = TITLE_ONLY.includes(component)
+    it(titleOnly
+      ? `${component}：写了标题时引用它，去掉后不留落空的引用`
+      : `${component}：写了标题与说明时引用它们，去掉后不留落空的引用，说明留空时不进描述链`, async () => {
       const suite = suites.find(s => s.component === component)!
-      const part = (name: string): string => `[data-scope="${component}"][data-part="${name}"]`
-
-      const titleOnly = TITLE_ONLY.includes(component)
+      const names = naming(component)
+      const part = (name: 'title' | 'description'): string => `[data-scope="${names.scope}"][data-part="${names[name]}"]`
 
       await mountTree(suite, 'full')
       const title = document.querySelector(part('title'))
@@ -119,7 +132,6 @@ describe('只引用在场的标题与说明', () => {
       expect(danglingRefs()).toEqual([])
       expect(await invalidRefs()).toEqual([])
       await harness.unmount()
-
       if (titleOnly)
         return
 

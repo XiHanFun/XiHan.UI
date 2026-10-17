@@ -24,6 +24,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
+import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { NotificationItemProvider, NotificationProvider, useNotificationContext, useNotificationItemContext } from './context'
 import { useNotification, useNotificationItem } from './use-notification'
 
@@ -236,6 +237,7 @@ export function XhNotificationItemContent({ children, ...rest }: XhNotificationI
 export interface XhNotificationItemTitleProps extends ComponentPropsWithRef<'div'> {}
 export function XhNotificationItemTitle({ children, ...rest }: XhNotificationItemTitleProps): ReactNode {
   const ctx = useNotificationItemContext()
+  useTitleDescriptionPart(ctx.presence, 'title')
   // 作者没写内容就用队列里那条记录的标题
   return (
     <div {...mergeReactProps(ctx.api.getItemTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
@@ -247,8 +249,10 @@ export function XhNotificationItemTitle({ children, ...rest }: XhNotificationIte
 export interface XhNotificationItemDescriptionProps extends ComponentPropsWithRef<'div'> {}
 export function XhNotificationItemDescription({ children, ...rest }: XhNotificationItemDescriptionProps): ReactNode {
   const ctx = useNotificationItemContext()
+  // 读不出一句话的说明不进描述链：记录没写 description 时它是空的
+  const el = useDescriptionPart(ctx.presence)
   return (
-    <div {...mergeReactProps(ctx.api.getItemDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps({ ...ctx.api.getItemDescriptionProps() as Record<string, unknown>, ref: el }, rest as Record<string, unknown>)}>
       {slotPaints(children) ? children : ctx.api.description}
     </div>
   )
