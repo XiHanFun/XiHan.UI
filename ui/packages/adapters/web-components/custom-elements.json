@@ -16804,7 +16804,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-command>`：Light-DOM 行为宿主：作者写 trigger / backdrop / positioner / content / input / list / item / ...\n角色节点，元素运行 command 状态机并把 connect 产出接上。\n\n过滤在库这一层完成：命令清单经 collection 传入，检索串变化时，不在结果中的条目与整组被筛空的分组\n由 connect 写上 hidden。作者只需把整份清单铺设为节点，不必自行增删。\n\n焦点自始至终在 input 上：条目不可聚焦、也不进入 Tab 序列，锚点经 aria-activedescendant 报告给读屏。",
+          "description": "`<xh-command>`：Light-DOM 行为宿主：作者写 trigger / backdrop / positioner / content / input / list / item / ...\n角色节点，元素运行 command 状态机并把 connect 产出接上。\n\n过滤在库这一层完成：命令清单经 collection 传入，检索串变化时，不在结果中的条目与整组被筛空的分组\n由 connect 写上 hidden。作者只需把整份清单铺设为节点，不必自行增删。\n\n焦点自始至终在 input 上：条目不可聚焦、也不进入 Tab 序列，锚点经 aria-activedescendant 报告给读屏。\n\n不写部件时元素按标准结构直接在自己里面生成：触发按钮（宿主直接子节点 `slot=\"trigger\"` 给了内容才生成）、遮罩，\n定位层里的面板依次是检索框、按整份 collection 铺的结果列表、空态与在途占位、页脚（`slot=\"footer\"` 给了内容才生成）；\n空态内容用 `slot=\"empty\"` 给出，条目文字、行首、行尾可用 `slot=\"item:<值>\"`、`slot=\"item-prefix:<值>\"`、`slot=\"item-suffix:<值>\"` 给出。",
           "name": "XhCommandElement",
           "cssParts": [
             {
@@ -16893,6 +16893,15 @@
               },
               "static": true,
               "default": "{ anatomy: commandAnatomy, meta: commandMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhCommandElement>"
+              },
+              "static": true,
+              "default": "{ rootless: true, build: host => commandStructure( resolveCommandGroups(host.collection ?? [], host.groups ?? [], '', { filter: false, caseSensitive: false }), { slotted: (name, key) => host.slotted(name, key) }, ), }"
             },
             {
               "kind": "field",

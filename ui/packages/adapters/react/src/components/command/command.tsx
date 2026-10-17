@@ -6,18 +6,19 @@
 // 提供 command 相关实现。
 
 import type { Direction, OverlayBackdropVariant, Size } from '@xihan-ui/core'
-import type { CommandApi, CommandGroup, CommandGroupMeta, CommandNode, CommandNodeMeta, CommandSchema } from '@xihan-ui/headless'
+import type { CommandApi, CommandGroup, CommandGroupMeta, CommandNode, CommandNodeMeta, CommandSchema, StructureNode } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { COMMAND_UNGROUPED, resolveCommandGroups } from '@xihan-ui/headless'
-import { Fragment, useCallback, useMemo } from 'react'
+import { commandStructure, resolveCommandGroups } from '@xihan-ui/headless'
+import { useCallback, useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import {
   CommandGroupProvider,
@@ -101,17 +102,7 @@ export function XhCommandRoot({ children, empty, trigger, footer, renderItem, re
         setInputValue: api.setInputValue,
         select: api.select,
       })
-    : (
-        <DefaultTree
-          tree={fullTree}
-          trigger={trigger}
-          empty={empty}
-          footer={footer}
-          renderItem={renderItem}
-          renderItemPrefix={renderItemPrefix}
-          renderItemSuffix={renderItemSuffix}
-        />
-      )
+    : renderDefaultStructure(fullTree, { trigger, empty, footer, item: renderItem, prefix: renderItemPrefix, suffix: renderItemSuffix })
 
   return <CommandProvider value={ctx}>{body}</CommandProvider>
 }
@@ -306,51 +297,64 @@ export function XhCommandFooter({ children, ...rest }: XhCommandFooterProps): Re
   return <footer {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</footer>
 }
 
-/**
- * 未写 children 时按清单铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
- */
-function DefaultTree(props: {
-  tree: readonly CommandGroupMeta[]
+/** 遮罩：XhCommandContent 连同定位层一起把它铺在浮层落点里，结构里这个节点不另渲。 */
+function CommandStructureBackdrop(): ReactNode {
+  return null
+}
+
+/** 定位层：由 XhCommandContent 铺在浮层落点里，结构里这一层只把面板交下去。 */
+function CommandStructurePositioner({ children }: { children?: ReactNode }): ReactNode {
+  return children
+}
+
+/** 标准结构里各部件对应的组件。 */
+const COMMAND_PARTS = {
+  'trigger': XhCommandTrigger,
+  'backdrop': CommandStructureBackdrop,
+  'positioner': CommandStructurePositioner,
+  'content': XhCommandContent,
+  'input': XhCommandInput,
+  'list': XhCommandList,
+  'group': XhCommandGroup,
+  'group-label': XhCommandGroupLabel,
+  'item': XhCommandItem,
+  'item-prefix': XhCommandItemPrefix,
+  'item-text': XhCommandItemText,
+  'item-description': XhCommandItemDescription,
+  'item-shortcut': XhCommandItemShortcut,
+  'item-suffix': XhCommandItemSuffix,
+  'empty': XhCommandEmpty,
+  'loading': XhCommandLoading,
+  'footer': XhCommandFooter,
+}
+
+/** 不写 children 时可给的作者内容。 */
+interface CommandStructureContent {
   trigger?: ReactNode
   empty?: ReactNode
   footer?: ReactNode
-  renderItem?: (node: CommandNodeMeta) => ReactNode
-  renderItemPrefix?: (node: CommandNodeMeta) => ReactNode
-  renderItemSuffix?: (node: CommandNodeMeta) => ReactNode
-}): ReactNode {
-  const item = (node: CommandNodeMeta): ReactNode => (
-    <XhCommandItem key={node.value} value={node.value}>
-      {props.renderItemPrefix ? <XhCommandItemPrefix>{props.renderItemPrefix(node)}</XhCommandItemPrefix> : null}
-      <XhCommandItemText>{props.renderItem?.(node) ?? node.label}</XhCommandItemText>
-      {node.description != null ? <XhCommandItemDescription>{node.description}</XhCommandItemDescription> : null}
-      {node.shortcut != null ? <XhCommandItemShortcut>{node.shortcut}</XhCommandItemShortcut> : null}
-      {props.renderItemSuffix ? <XhCommandItemSuffix>{props.renderItemSuffix(node)}</XhCommandItemSuffix> : null}
-    </XhCommandItem>
-  )
-  return (
-    <>
-      {props.trigger != null ? <XhCommandTrigger>{props.trigger}</XhCommandTrigger> : null}
-      <XhCommandContent>
-        <XhCommandInput />
-        <XhCommandList>
-          {props.tree.map(group => (
-            // 没归组的那批直接铺条目，不套分组外壳——空标题的分组只会在列表里留一道白
-            group.value === COMMAND_UNGROUPED
-              ? <Fragment key={group.value}>{group.items.map(item)}</Fragment>
-              : (
-                  <XhCommandGroup key={group.value} value={group.value}>
-                    <XhCommandGroupLabel>{group.label}</XhCommandGroupLabel>
-                    {group.items.map(item)}
-                  </XhCommandGroup>
-                )
-          ))}
-        </XhCommandList>
-        {/* 空态与在途占位都是 list 的兄弟，不进 role=listbox */}
-        <XhCommandEmpty>{props.empty}</XhCommandEmpty>
-        <XhCommandLoading />
-        {props.footer != null ? <XhCommandFooter>{props.footer}</XhCommandFooter> : null}
-      </XhCommandContent>
-    </>
-  )
+  item?: (node: CommandNodeMeta) => ReactNode
+  prefix?: (node: CommandNodeMeta) => ReactNode
+  suffix?: (node: CommandNodeMeta) => ReactNode
+}
+
+/**
+ * 未写 children 时照 commandStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 铺的是整份清单分好的组，不是过滤后那几条：此刻该不该露面由 connect 打在条目上的 hidden 说了算。
+ * 触发按钮、空态与页脚给了内容才归作者；条目文字、行首、行尾可由三个渲染函数逐槽接管。
+ */
+function renderDefaultStructure(tree: readonly CommandGroupMeta[], content: CommandStructureContent): ReactNode[] {
+  const renderOf = (name: string | undefined): ((node: CommandNodeMeta) => ReactNode) | undefined =>
+    name === 'item' ? content.item : name === 'item-prefix' ? content.prefix : name === 'item-suffix' ? content.suffix : undefined
+  const fixed = (name: string | undefined): ReactNode => name === 'trigger' ? content.trigger : name === 'empty' ? content.empty : name === 'footer' ? content.footer : undefined
+  const nodes = commandStructure(tree, { slotted: name => fixed(name) != null || renderOf(name) != null })
+  return renderStructure(nodes, COMMAND_PARTS, (node: StructureNode) => {
+    const name = node.slot?.name
+    const own = fixed(name)
+    if (own != null)
+      return own
+    const render = renderOf(name)
+    const meta = node.data as CommandNodeMeta | undefined
+    return render && meta ? render(meta) : undefined
+  })
 }
