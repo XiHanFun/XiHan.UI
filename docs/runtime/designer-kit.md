@@ -30,7 +30,7 @@ const { dx, dy, guides } = snapRect(draggingRect, { targets, threshold: 6 / view
 pnpm add @xihan-ui/designer-kit
 ```
 
-运行时只依赖 `@xihan-ui/core` 的 `./json` 子入口与 `@xihan-ui/pointer` 的滚轮换算，import 无副作用，浏览器与服务端都能运行。属性描述与结构校验分别在子入口 `./properties` 与 `./schema`，只做画布的页面（如流程查看器）不为它们付字节。
+运行时只依赖 `@xihan-ui/core` 的 `./json` 子入口、`@xihan-ui/pointer` 的滚轮换算与 `@xihan-ui/headless` 的快捷键格式化与匹配，import 无副作用，浏览器与服务端都能运行。属性描述与结构校验分别在子入口 `./properties` 与 `./schema`，只做画布的页面（如流程查看器）不为它们付字节。
 
 ## 撤销重做
 
@@ -367,7 +367,8 @@ const issues = checkProperties(descriptors, node, { path: ["nodes", 3], target: 
 | `groupProperties(descriptors, target, order?)` | 只收显示中的属性；`order` 里的组在前，其余按出现先后，无组的排最后，空组不出现 |
 | `nestProperties(prefix, descriptors)` | 把相对子对象的描述换成相对上级对象：`path` 与显示条件里的 `path` 都接在 `prefix` 之后，产品扩展的字段原样保留；同一组描述既给子对象的面板用，又拼进上级对象的描述时用它 |
 | `checkPropertyValue(control, value)` | 内建编辑方式的取值检查，返回 `invalid-type`、`out-of-range`、`not-integer`、`invalid-option`、`invalid-color` 或 `undefined` |
-| `checkProperties(descriptors, target, { path?, target?, checkCustom? })` | 只看显示中的属性：必填未填报 `required`，内建取值不合法报对应码，产品的编辑方式交给 `checkCustom`；返回结构问题，路径以 `path` 为前缀 |
+| `checkProperties(descriptors, target, { path?, target?, controls? })` | 只看显示中的属性：必填未填报 `required`，内建取值不合法报对应码，登记在 `controls` 里的编辑方式交给它的 `check`，既不是内建也没登记的报 `unknown-control`；返回结构问题，路径以 `path` 为前缀 |
+| `mergePropertyEditorTables(layers)` | 把几层编辑器表叠成一张，逐键合并，后面的压前面的 |
 | `applyDefaults(target, descriptors)` | 写入缺省值，中间缺少的对象键补成空对象；没有可写的返回同一个对象 |
 | `resolvePropertyEditor(table, targetKind, descriptor)` | 按「对象种类 + 路径」→「路径」→「编辑方式」查编辑器；表里放 `PropertyEditor` 或编辑器 id 都可以，路径键用 `formatJsonPath` 的写法 |
 
@@ -404,7 +405,7 @@ interface SchemaIssue<C extends string = string> {
 }
 ```
 
-通用问题码：`required`、`invalid-type`、`invalid-value`、`out-of-range`、`not-integer`、`invalid-option`、`invalid-color`、`empty`、`unknown-key`、`duplicate-key`、`duplicate-id`。
+通用问题码：`required`、`invalid-type`、`invalid-value`、`out-of-range`、`not-integer`、`invalid-option`、`invalid-color`、`empty`、`unknown-key`、`duplicate-key`、`duplicate-id`、`unknown-control`。
 
 ```ts
 import { createIssueSink, readNumber, readObject, readString, withSeverity } from "@xihan-ui/designer-kit/schema";
@@ -430,6 +431,76 @@ const issues = withSeverity(sink.issues, { "node.isolated": "warning" }, userOve
 
 各 `read` 函数把 `undefined` 视为缺省，返回 `undefined` 且不报问题，必填由 `readObject` 的 `required` 管；读到的值不拷贝。读取器只要求收集器有 `report`（`IssueReporter`），问题码比通用码更宽的产品收集器也能直接传入。按 id 或名字定位数组项属于产品语义：先按下标报出，再由产品换成自己的定位。
 
+## 设计器扩展
+
+四款设计器都收一个按实例传入的 `extensions` 属性，值是扩展对象的数组：`designer.extensions = [xihanWorkflow, hostExtension]`。同页多实例各给各的，不做全局登记。内置的种类、命令、面板与导出也写成内置扩展，放在列表最前面，与传入的走同一条路。这里放四款共用的骨架；种类、渲染、面板这些由各款在骨架之上加。
+
+```ts
+import type { DesignerExtensionBase } from "@xihan-ui/designer-kit";
+
+const simulation: DesignerExtensionBase<FlowContext> = {
+  id: "@xihan-flow-pro/simulation", // 全局唯一，也是模板里扩展数据的键
+  controls: { cron: { check: value => (typeof value === "string" ? undefined : "invalid-type") } },
+  rules: [doc => doc.nodes.length > 200 ? [{ code: "simulation.too-many-nodes", path: ["nodes"] }] : []],
+  editors: { byControl: { cron: createCronEditor } },
+  commands: [{ id: "@xihan-flow-pro/simulation.run", label: ctx => ctx.t.run, placement: ["toolbar"], shortcut: ["Mod", "R"], run: ctx => ctx.simulate() }],
+  setup: ctx => ctx.designer.addEventListener("schema-change", onChange), // 返回的函数在卸下时调用
+};
+```
+
+| 字段 | 说明 |
+| --- | --- |
+| `id` | 全局唯一，用包名加功能名；问题码的前缀取它的末段（`@xihan-flow-pro/simulation` → `simulation.`） |
+| `controls` | 新的编辑方式，键是属性描述里的 `control.kind`，不能与内建的重名；`checkProperties` 的 `controls` 用合并后的这张表 |
+| `rules` | `(document, context) => SchemaIssue[]`；问题码必须以「id 末段.」开头，否则执行器抛 `TypeError` |
+| `editors` | 属性编辑器表的一层（三张表都可以缺），按扩展顺序压在设计器内建的之上 |
+| `commands` | 工具栏、右键菜单与快捷键共用的命令：`{ id, label, placement?, shortcut?, enabled?, checked?, run }`；`shortcut` 的写法同 `xh-kbd` 的 `keys` |
+| `importers` / `exporters` | 粘贴、拖放、打开文件时的导入，以及导出成文件；形状由各款定 |
+| `setup` | 装上时调用，返回卸下时的清理 |
+
+`DesignerExtensionCore` 只含 `id`、`controls` 与 `rules`，给只读纯数据与纯函数的 core 函数（校验、计算）用；`DesignerExtensionBase` 在它之上加设计器层的字段。各款的扩展类型按层是超集：设计器层 ⊇ 运行时层 ⊇ core 层，只用查看器的页面只引运行时层。
+
+### 合并、冲突与装卸
+
+```ts
+import { createExtensionHost } from "@xihan-ui/designer-kit";
+
+const host = createExtensionHost({
+  builtins: [flowBuiltins],
+  spaces: { "node-type": ext => Object.keys(ext.nodeTypes ?? {}) }, // 各款自己的名字空间
+  context: () => this.commandContext(),
+});
+host.assign(this.extensions ?? []); // 给 extensions 赋值时调用；冲突在这里抛
+host.dispose(); // 元素离开文档时调用
+```
+
+- 顺序：内置在前，传入的按数组顺序在后。物料分组、追加的属性、规则执行、命令的缺省排列、面板的上下次序都按这个顺序。
+- 冲突在给 `extensions` 赋值、合并登记表的那一刻抛 `DesignerExtensionError`（`code` 为 `designer.extension-conflict`），报出名字空间、名字与先后登记它的两个扩展的 id，设计器保持赋值前的状态。查的名字有：扩展 id、命令 id、快捷键（Mod 按 Ctrl 算，`Mod+S` 与 `Ctrl+S` 算同一个）、编辑方式（含内建的那几种）、导入导出 id，以及 `spaces` 里各款的名字（种类、面板区名等）。不支持后登记的就地覆盖先登记的：要换掉内置行为，用自己的 id 另登记一项，再用命令排列或 `panels` 把内置那项去掉。
+- 编辑器表例外：本来就是层叠模型，按顺序合并，后面的压前面的。
+- 装卸按扩展 id 与对象引用比对：去掉的调它 `setup` 返回的清理，新加的调 `setup`；id 没变但换了一个对象，当作卸下再装上。所以宿主要保持扩展对象的引用稳定，不要每次渲染都新建一个同 id 的对象。
+
+| 函数 | 说明 |
+| --- | --- |
+| `mergeExtensions(builtins, extensions, spaces?)` | 只合并查重，返回列表 |
+| `createExtensionHost({ builtins?, spaces?, context })` | 合并查重加装卸：`assign(extensions)` 返回新列表，`list` 是当前列表，`dispose()` 全部卸下 |
+| `extensionEditors(base, extensions)` | 编辑器表：`base` 是设计器内建的那层 |
+| `extensionControls(extensions)` | 编辑方式合成一张表 |
+| `extensionCommands(extensions)` | 命令按登记顺序排成 `Map`，键是命令 id |
+| `runExtensionRules(extensions, document, context)` | 按扩展顺序逐条跑规则，检查问题码前缀 |
+| `shortcutKey(keys)` / `formatShortcut(keys, platform)` | 快捷键的比较用写法；显示文字，macOS 上 `⌘⇧P`，其余平台 `Ctrl+Shift+P` |
+| `commandForShortcut(commands, event, context, platform)` | 这次按键命中的、此刻可用的命令；`platform` 由 `detectKbdPlatform()` 测出 |
+
+### 模板里的扩展数据
+
+文档与每个对象（节点、元素、字段、卡片、连线）都可以带 `extensions: { [扩展 id]: JsonObject }`。校验只查它是对象、每一块也是对象，里面不看；编辑操作、复制粘贴与导入导出原样带着走。扩展只读写自己 id 下的那一块，与宿主的业务数据分开。
+
+| 函数 | 说明 |
+| --- | --- |
+| `getExtensionData(object, id)` | 读对象上某个扩展的数据，没有时为 `undefined` |
+| `setExtensionData(id, data, base?)` | 写入或去掉（`data` 为 `undefined`）的路径编辑操作，`base` 是对象自己的路径 |
+| `extensionDataPath(id, base?)` | 那一块在文档里的路径 |
+| `checkExtensionData(object, path?)` | 结构检查，不是对象报 `invalid-type` |
+
 ## 状态
 
-实验级：四款设计器接入期间，历史栈的事务与通知、视口、吸附与控制柄的选项、属性描述与结构校验的形状仍可能调整，破坏性变更可以出现在 minor 中，并在更新日志中逐条列出。
+实验级：四款设计器接入期间，历史栈的事务与通知、视口、吸附与控制柄的选项、属性描述、结构校验与扩展的形状仍可能调整，破坏性变更可以出现在 minor 中，并在更新日志中逐条列出。

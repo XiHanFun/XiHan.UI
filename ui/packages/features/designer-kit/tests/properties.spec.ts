@@ -134,12 +134,14 @@ describe('checkProperties', () => {
     { path: ['data', 'fallback'], control: { kind: 'assignees' }, required: true, visibleWhen: { path: ['data', 'mode'], equals: 'Fallback' } },
   ]
 
-  it('只看显示中的属性：必填未填报 required，内建取值不合法报对应码，产品的编辑方式交给 checkCustom', () => {
+  it('只看显示中的属性：必填未填报 required，内建取值不合法报对应码，登记的编辑方式交给它的 check', () => {
     const target: JsonObject = { label: '', data: { count: 1.5, rules: [{ kind: 'x' }], mode: 'Fault' } }
     const issues = checkProperties(descriptors, target, {
       path: ['nodes', 3],
       target: { kind: 'node', id: 'approve' },
-      checkCustom: (_, value) => (Array.isArray(value) && value.every(item => typeof item === 'object' && item !== null && 'id' in item) ? undefined : 'invalid-value'),
+      controls: {
+        assignees: { check: value => (Array.isArray(value) && value.every(item => typeof item === 'object' && item !== null && 'id' in item) ? undefined : 'invalid-value') },
+      },
     })
     expect(issues).toEqual([
       { code: 'required', path: ['nodes', 3, 'label'], target: { kind: 'node', id: 'approve' } },
@@ -148,9 +150,15 @@ describe('checkProperties', () => {
     ])
   })
 
-  it('没有 checkCustom 时不检查产品编辑方式的取值；缺省路径为空', () => {
-    expect(checkProperties(descriptors, { label: 'a', data: { rules: 1, mode: 'Fallback' } })).toEqual([
+  it('登记了却没给 check 的编辑方式不检查取值；缺省路径为空', () => {
+    expect(checkProperties(descriptors, { label: 'a', data: { rules: 1, mode: 'Fallback' } }, { controls: { assignees: {} } })).toEqual([
       { code: 'required', path: ['data', 'fallback'] },
+    ])
+  })
+
+  it('既不是内建、也没登记的编辑方式报 unknown-control，不静默跳过', () => {
+    expect(checkProperties(descriptors, { label: 'a', data: { rules: [{ id: 'u1' }] } })).toEqual([
+      { code: 'unknown-control', path: ['data', 'rules'] },
     ])
   })
 })

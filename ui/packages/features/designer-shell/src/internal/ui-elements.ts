@@ -9,6 +9,7 @@ import {
   defineXhElement,
   XhAccordionElement,
   XhColorFieldElement,
+  XhContextMenuElement,
   XhFieldElement,
   XhIconElement,
   XhNumberFieldElement,
@@ -19,6 +20,7 @@ import {
   XhTagsInputElement,
   XhTextFieldElement,
   XhToggleGroupElement,
+  XhToolbarElement,
 } from '@xihan-ui/web-components/define'
 
 /** 属性面板的字段与分组用到的元素。 */
@@ -51,4 +53,10 @@ export function defineFrameElements(): void {
 export function defineIssueListElements(): void {
   defineXhElement('xh-toggle-group', XhToggleGroupElement)
   defineXhElement('xh-tag', XhTagElement)
+}
+
+/** 命令工具栏与命令菜单用到的元素。 */
+export function defineCommandElements(): void {
+  defineXhElement('xh-toolbar', XhToolbarElement)
+  defineXhElement('xh-context-menu', XhContextMenuElement)
 }

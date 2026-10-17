@@ -652,6 +652,9 @@ importers:
       '@xihan-ui/core':
         specifier: workspace:^
         version: link:../../engine/core
+      '@xihan-ui/headless':
+        specifier: workspace:^
+        version: link:../../engine/headless
       '@xihan-ui/pointer':
         specifier: workspace:^
         version: link:../../engine/pointer

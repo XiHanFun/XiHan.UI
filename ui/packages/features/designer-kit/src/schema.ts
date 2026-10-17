@@ -44,6 +44,7 @@ export type CommonIssueCode
     | 'unknown-key'
     | 'duplicate-key'
     | 'duplicate-id'
+    | 'unknown-control'
 
 /** 问题的严重程度；没写时为 error。 */
 export function issueSeverity(issue: SchemaIssue): IssueSeverity {

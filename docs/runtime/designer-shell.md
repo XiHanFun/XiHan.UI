@@ -307,3 +307,48 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 - 回填的 `sizes` 里有已不存在的区名、或不是正数的值，一律忽略；`sizes-change` 只带当前登记着的区。
 
 `parseDesignerPanels(value)` 按同一口径解析 `panels`：没写为 `undefined`（全部显示），空串为空集合（全部收起），多个空白与制表符都当分隔。设计器自己的 `panels` 属性可以直接转给外框。
+
+## 扩展的面板与命令
+
+设计器扩展的骨架、合并查重与装卸在 `@xihan-ui/designer-kit`（见那一页的「设计器扩展」）。这里放跟界面有关的两样：面板登记到外框的区，命令铺成工具栏按钮与右键菜单条目。
+
+### 面板
+
+```ts
+import { createPanelHost } from "@xihan-ui/designer-shell";
+
+const panels = createPanelHost(frame); // 内置区缺省为 DESIGNER_FRAME_REGIONS，产品有自己的就传 { regions }
+panels.assign(host.list, context); // 每次 extensions 变化后调用
+panels.update(context); // 设计器状态变化后刷新
+panels.dispose();
+```
+
+- 扩展的 `panels` 是 `{ region, create(context) => { element, update?, destroy? } }`：`region` 是外框的命名区（`{ name, position, size?, minSize?, label? }`），追加在内置区之后，同一位置按扩展顺序上下排；`element` 以 `slot` 交给外框，放进那个区。
+- 区名与内置区或别的扩展重名时 `assign` 抛 `DesignerExtensionError`（名字空间 `panel`），什么都不变。
+- 按面板对象的引用比对：留下来的不重建，去掉的调 `destroy` 后撤掉。
+- `panels` 照旧只管显隐，扩展登记的区也能用它开关。宿主写在 HTML 里的内容照样用 `slot="<区名>"` 交给外框，不必经扩展。
+
+### 命令
+
+工具栏与右键菜单的排列用 `commandLayout`：位置 → 若干组命令 id，内置命令与扩展命令混排。
+
+```ts
+import { arrangeCommands, createCommandToolbar, renderCommandMenu, runCommand } from "@xihan-ui/designer-shell";
+
+const commands = extensionCommands(host.list); // designer-kit，内置在前
+const toolbar = createCommandToolbar(document);
+toolbar.update(arrangeCommands("toolbar", commands, BUILTIN_TOOLBAR, designer.commandLayout), commands, context, t.toolbar);
+
+renderCommandMenu(menuContent, arrangeCommands("menu:node", commands, BUILTIN_NODE_MENU, designer.commandLayout), commands, context, { platform });
+menu.addEventListener("select", event => runCommand(commands, event.detail.value, context));
+```
+
+| 函数 | 说明 |
+| --- | --- |
+| `arrangeCommands(placement, commands, defaults, layout?)` | 排出某个位置的分组：`layout` 写了这个位置就只用它；否则用 `defaults`（各款内置的缺省排列），再把 `placement` 含这个位置、又不在缺省排列里的命令按登记顺序追加成一组。排列里写了没登记的命令 id 时抛 `TypeError` |
+| `createCommandToolbar(document)` | 一条 `<xh-toolbar>`：`update(groups, commands, context, label)` 分组变了才重铺按钮，文字、可用与 `aria-pressed`（开关式命令）每次刷新；点击按钮执行命令，放不下的收进行尾的「更多」菜单 |
+| `renderCommandMenu(content, groups, commands, context, { platform? })` | 把分组铺成 `<xh-context-menu>` content 里的条目，组间一条分隔线；不可用的写 `aria-disabled`，带快捷键的在行尾写提示 |
+| `runCommand(commands, id, context)` | 命令存在且此刻可用才执行，返回是否执行了 |
+| `commandLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；此刻能否执行 |
+
+两个铺法用到的 `<xh-toolbar>` 与 `<xh-context-menu>` 按需注册。快捷键的命中用 designer-kit 的 `commandForShortcut`。

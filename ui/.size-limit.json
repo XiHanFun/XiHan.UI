@@ -3,7 +3,7 @@
     "name": "core",
     "path": "packages/engine/core/dist/index.js",
     "gzip": true,
-    "limit": "41 kB"
+    "limit": "42 kB"
   },
   {
     "name": "core/date",
@@ -142,13 +142,13 @@
     "name": "designer-kit",
     "path": "packages/features/designer-kit/dist/index.js",
     "gzip": true,
-    "limit": "11 kB"
+    "limit": "13 kB"
   },
   {
     "name": "designer-kit/properties",
     "path": "packages/features/designer-kit/dist/properties.js",
     "gzip": true,
-    "limit": "2.4 kB"
+    "limit": "2.5 kB"
   },
   {
     "name": "designer-kit/schema",
@@ -160,7 +160,7 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "126 kB"
+    "limit": "143 kB"
   },
   {
     "name": "designer-shell/locale",
@@ -208,7 +208,7 @@
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "774 kB",
+    "limit": "775 kB",
     "ignore": [
       "vue"
     ]
@@ -368,7 +368,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhDialogRoot }",
     "gzip": true,
-    "limit": "34 kB",
+    "limit": "35 kB",
     "ignore": [
       "vue"
     ]
