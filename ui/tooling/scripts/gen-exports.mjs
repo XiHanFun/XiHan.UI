@@ -36,6 +36,7 @@ if (dirs.length === 0) {
  * 登记了却在该包的 exports 里找不到，就是名单过期，报错。
  */
 const HANDWRITTEN = {
+  '@xihan-ui/designer-shell': ['./style.css'],
   '@xihan-ui/tokens': ['./tokens.css', './tokens.json'],
   '@xihan-ui/web-components': ['./custom-elements.json'],
 }
