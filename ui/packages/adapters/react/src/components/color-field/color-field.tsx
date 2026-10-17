@@ -9,10 +9,12 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { ColorFieldApi, ColorFieldSchema, ColorFormat } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { colorFieldStructure } from '@xihan-ui/headless'
 import { useEffect } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { ColorFieldProvider, useColorFieldContext } from './context'
@@ -26,6 +28,8 @@ export type ColorFieldRootSlotProps = Pick<
 >
 
 export interface XhColorFieldRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
   /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
   ariaLabel?: string
   /** 颜色串；给定即受控。空串表示没有颜色。 */
@@ -54,6 +58,7 @@ export interface XhColorFieldRootProps extends Omit<ComponentPropsWithRef<'div'>
 }
 
 export function XhColorFieldRoot({
+  label,
   ariaLabel,
   value,
   defaultValue,
@@ -106,18 +111,20 @@ export function XhColorFieldRoot({
           { ref: ctx.rootRef },
         )}
       >
-        {renderSlot(children, {
-          value: api.value,
-          empty: api.empty,
-          text: api.text,
-          editing: api.editing,
-          valid: api.valid,
-          invalid: api.invalid,
-          canClear: api.canClear,
-          setValue: api.setValue,
-          clear: api.clear,
-          commit: api.commit,
-        })}
+        {children != null
+          ? renderSlot(children, {
+              value: api.value,
+              empty: api.empty,
+              text: api.text,
+              editing: api.editing,
+              valid: api.valid,
+              invalid: api.invalid,
+              canClear: api.canClear,
+              setValue: api.setValue,
+              clear: api.clear,
+              commit: api.commit,
+            })
+          : renderDefaultStructure(api, label, name !== undefined)}
       </div>
     </ColorFieldProvider>
   )
@@ -194,4 +201,24 @@ export interface XhColorFieldHiddenInputProps extends ComponentPropsWithRef<'inp
 export function XhColorFieldHiddenInput(props: XhColorFieldHiddenInputProps): ReactNode {
   const ctx = useColorFieldContext()
   return <input {...mergeReactProps(ctx.api.getHiddenInputProps() as Record<string, unknown>, props as Record<string, unknown>)} />
+}
+
+/** 标准结构里各部件对应的组件。 */
+const COLOR_FIELD_PARTS = {
+  'label': XhColorFieldLabel,
+  'control': XhColorFieldControl,
+  'swatch': XhColorFieldSwatch,
+  'input': XhColorFieldInput,
+  'clear-trigger': XhColorFieldClearTrigger,
+  'hidden-input': XhColorFieldHiddenInput,
+}
+
+/**
+ * 未写 children 时铺开的整套结构：照 headless 的 colorFieldStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容交给 label 部件。
+ */
+function renderDefaultStructure(api: ColorFieldApi, label: ReactNode, hiddenInput: boolean): ReactNode[] {
+  const slotted = label != null && typeof label !== 'string'
+  const nodes = colorFieldStructure(api, { label: typeof label === 'string' ? label : undefined, hiddenInput, slotted: name => name === 'label' && slotted })
+  return renderStructure(nodes, COLOR_FIELD_PARTS, node => (node.slot ? label : undefined))
 }

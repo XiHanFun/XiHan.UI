@@ -7,7 +7,8 @@
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { ColorFieldSchema, ColorFieldValueChangeDetails, ColorFormat, FormControlState } from '@xihan-ui/headless'
-import { colorFieldAnatomy, colorFieldMachine, colorFieldMeta, connectColorField, resolveFormControlState } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { colorFieldAnatomy, colorFieldMachine, colorFieldMeta, colorFieldStructure, connectColorField, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -24,7 +25,11 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 一个可手动输入颜色串的字段：框中的文字是草稿，回车或失焦时接受，可解析时按 format 重写为值，
  * 不可解析时留在框中并标为无效；旁边的色块经色块面家族绘制当前颜色。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）、盒里的色块与输入框、清空按钮（开了 clearable 才有）、
+ * 表单影子（给了 name 才有）；标题可以由宿主直接子节点 `slot="label"` 接管。
+ *
  * @customElement xh-color-field
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控的颜色串；未提供该属性即非受控。空串表示没有颜色
  * @attr {string} default-value - 非受控初值，默认空串
  * @attr {'hex'|'rgba'|'hsla'|'oklch'} format - 值串的写法，默认 hex；手动输入的任何写法接受后都按它重写
@@ -55,8 +60,15 @@ export class XhColorFieldElement extends XhElement {
 
   static override fieldTarget = { parts: ['input'], kind: 'state' } as const
 
+  static override structure: ElementStructure<XhColorFieldElement> = {
+    build: host => host.ctrl.service
+      ? colorFieldStructure(connectColorField(host.ctrl.service, wcNormalize), { label: host.label, hiddenInput: host.name !== undefined, slotted: (name, key) => host.slotted(name, key) })
+      : undefined,
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    label: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     format: { converter: STRING_CONVERTER },
@@ -74,6 +86,7 @@ export class XhColorFieldElement extends XhElement {
     translations: { attribute: false },
   }
 
+  declare label?: string
   declare value?: string
   declare defaultValue?: string
   declare format?: ColorFormat
