@@ -5,8 +5,10 @@
 
 // 提供 kbd 展示与快捷键注册实现。
 
-import type { KbdApi, KbdPlatform, KbdProps, KbdTarget, KbdTranslations, KbdTriggerDetails, KbdVariant } from '@xihan-ui/headless'
-import { connectKbd, detectKbdPlatform, kbdAnatomy, kbdMeta } from '@xihan-ui/headless'
+import type { KbdPlatform } from '@xihan-ui/core/hotkey'
+import type { KbdApi, KbdProps, KbdTarget, KbdTranslations, KbdTriggerDetails, KbdVariant } from '@xihan-ui/headless'
+import { detectKbdPlatform } from '@xihan-ui/core/hotkey'
+import { connectKbd, kbdAnatomy, kbdMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 

@@ -30,7 +30,7 @@ const { dx, dy, guides } = snapRect(draggingRect, { targets, threshold: 6 / view
 pnpm add @xihan-ui/designer-kit
 ```
 
-运行时只依赖 `@xihan-ui/core` 的 `./json` 子入口、`@xihan-ui/pointer` 的滚轮换算与 `@xihan-ui/headless` 的快捷键格式化与匹配，import 无副作用，浏览器与服务端都能运行。属性描述与结构校验分别在子入口 `./properties` 与 `./schema`，只做画布的页面（如流程查看器）不为它们付字节。
+运行时只依赖 `@xihan-ui/core` 的 `./json` 与 `./hotkey` 子入口（`./hotkey` 是快捷键的平台写法与按键命中）和 `@xihan-ui/pointer` 的滚轮换算，import 无副作用，浏览器与服务端都能运行。属性描述与结构校验分别在子入口 `./properties` 与 `./schema`，只做画布的页面（如流程查看器）不为它们付字节。
 
 ## 撤销重做
 
@@ -488,7 +488,7 @@ host.dispose(); // 元素离开文档时调用
 | `extensionCommands(extensions)` | 命令按登记顺序排成 `Map`，键是命令 id |
 | `runExtensionRules(extensions, document, context)` | 按扩展顺序逐条跑规则，检查问题码前缀 |
 | `shortcutKey(keys)` / `formatShortcut(keys, platform)` | 快捷键的比较用写法；显示文字，macOS 上 `⌘⇧P`，其余平台 `Ctrl+Shift+P` |
-| `commandForShortcut(commands, event, context, platform)` | 这次按键命中的、此刻可用的命令；`platform` 由 `detectKbdPlatform()` 测出 |
+| `commandForShortcut(commands, event, context, platform)` | 这次按键命中的、此刻可用的命令；`platform` 由 `@xihan-ui/core/hotkey` 的 `detectKbdPlatform()` 测出；`event` 只读 key、code 与四个修饰键 |
 
 ### 模板里的扩展数据
 

@@ -6,10 +6,12 @@
 // 提供 kbd 展示与快捷键匹配实现。
 
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { HotkeySegment, KbdApi, KbdProps } from './kbd.types'
+import type { HotkeySegment } from '@xihan-ui/core/hotkey'
+import type { KbdApi, KbdProps } from './kbd.types'
 import { dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { formatHotkey, matchesHotkey, resolveKbdPlatform } from '@xihan-ui/core/hotkey'
 import { KBD_EN_US } from '../locale/en-US'
-import { formatHotkey, isTypingTarget, matchesHotkey, resolveKbdPlatform } from '../shared/hotkey'
+import { isTypingTarget } from '../shared/hotkey'
 import { resolveTranslations } from '../shared/translations'
 import { kbdAnatomy } from './kbd.anatomy'
 

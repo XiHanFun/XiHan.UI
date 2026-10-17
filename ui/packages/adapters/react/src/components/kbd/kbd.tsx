@@ -5,7 +5,8 @@
 
 // 提供 kbd 展示与快捷键注册实现。
 
-import type { KbdPlatform, KbdProps, KbdTarget, KbdTranslations, KbdVariant } from '@xihan-ui/headless'
+import type { KbdPlatform } from '@xihan-ui/core/hotkey'
+import type { KbdProps, KbdTarget, KbdTranslations, KbdVariant } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { connectKbd } from '@xihan-ui/headless'
 import { useCallback, useEffect, useRef } from 'react'

@@ -129,7 +129,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 | 包 | 子路径 |
 | --- | --- |
-| `@xihan-ui/core` | `./metadata` `./skin-check` `./vite` `./vanilla` `./presence` `./json`（JSON 值的类型与纯函数，零依赖） `./url`（图片与链接地址的安全判定，零依赖） `./template`（文本模板，占位只写数据路径） `./rich-text`（富文本模型、HTML 白名单解析与检查，零依赖） `./rich-text-dom`（按富文本模型生成 DOM） |
+| `@xihan-ui/core` | `./metadata` `./skin-check` `./vite` `./vanilla` `./presence` `./json`（JSON 值的类型与纯函数，零依赖） `./hotkey`（快捷键的平台写法与按键命中，零依赖） `./url`（图片与链接地址的安全判定，零依赖） `./template`（文本模板，占位只写数据路径） `./rich-text`（富文本模型、HTML 白名单解析与检查，零依赖） `./rich-text-dom`（按富文本模型生成 DOM） |
 | `@xihan-ui/designer-kit` | `./properties`（属性描述、显示条件、取值检查与自定义编辑器接口） `./schema`（结构校验的问题形状与读取器） |
 | `@xihan-ui/designer-shell` | `./locale`（零件的中文文案） `./style.css`（零件的样式） |
 | `@xihan-ui/tokens` | `./runtime` `./tokens.css` `./tokens.json` |
