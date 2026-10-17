@@ -115,6 +115,7 @@ ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档�
 - 指示器可置于标题前或标题后，图形可自定义。
 - 支持嵌套；触发区大小由作者决定。
 - 条目内容缺省随组件一起挂载、收起只隐藏；`lazyMount` 让每个条目第一次展开才挂载内容，`unmountOnExit` 让条目在收起动画播完后卸载内容。content 节点本身始终在场。Web Components 里把面板内容写进一个 `<template>`，挂载时克隆、卸载时丢弃。
+- 条目正文缺省是以标题命名的地标（`role="region"`）。条目多且能同时展开，或页面上别处已有同名区块时，`contentRole` 设为 `group`：正文仍以标题命名，但不进地标导航。
 - 只给 `collection` 时照标准结构铺：每条一个条目，标题（`h3`）里的按钮装标题文字与指示符，正文取 `content`；Vue / React 不写默认插槽与 Web Components 不写部件（或只写 `root`）时生成的节点出自同一个结构函数。正文可由 Vue 的 `content` 插槽、React 的 `renderContent` 或 Web Components 宿主直接子节点 `slot="content:<值>"` 接管。
 
 ### 组合
@@ -161,6 +162,7 @@ ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档�
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `lazyMount` | `boolean` |  | 条目内容第一次展开时才挂载，默认 false（随组件一起挂载、收起时只隐藏）。 条目多、内容重且多数不会被展开时打开它。 |
 | `unmountOnExit` | `boolean` |  | 收起动画播完后卸载条目内容，再展开时重新挂载，默认 false。 内容里的输入与滚动位置随之丢失；与 lazyMount 一起用即「只在展开期间存在」。 |
+| `contentRole` | `'region' \| 'group'` |  | 条目正文的角色，默认 region：每个正文是以标题命名的地标。 group 时正文仍以标题命名，但不进地标导航；条目多、能同时展开，或者页面上别处已有同名区块时用它。 |
 | `onValueChange` | `(details: AccordionValueChangeDetails) => void` |  | 展开集合变化回调。 |
 
 ### AccordionNode
@@ -261,7 +263,7 @@ ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档�
 | `trigger` | `aria-disabled` | 'true' \| 'false' |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
-| `content` | `role` | 'region' |
+| `content` | `role` | props.contentRole |
 | `indicator` | `aria-hidden` | 'true' |
 
 ## 样式参考

@@ -147,7 +147,7 @@ export function connectAccordion<T extends PropTypes>(
     getContentProps: item => normalize.element({
       ...parts.content.attrs,
       'id': contentId(item.value),
-      'role': 'region',
+      'role': prop('contentRole') ?? 'region',
       'aria-labelledby': triggerId(item.value),
       'data-state': stateAttr(item),
       'data-instant': instant(item),

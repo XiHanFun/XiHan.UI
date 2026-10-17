@@ -39,6 +39,8 @@ export interface XhAccordionRootProps extends RootElementProps {
   lazyMount?: boolean
   /** 收起动画播完后卸载条目内容，再展开时重新挂载。 */
   unmountOnExit?: boolean
+  /** 条目正文的角色：region 是地标（默认），group 不进地标导航。 */
+  contentRole?: AccordionProps['contentRole']
   onValueChange?: AccordionProps['onValueChange']
   /** 每个条目正文的自定义内容；未提供时使用 collection 中的 content。 */
   renderContent?: (node: AccordionNodeMeta) => ReactNode
@@ -60,6 +62,7 @@ export function XhAccordionRoot({
   size,
   lazyMount,
   unmountOnExit,
+  contentRole,
   onValueChange,
   renderContent,
   children,
@@ -80,6 +83,7 @@ export function XhAccordionRoot({
     size,
     lazyMount,
     unmountOnExit,
+    contentRole,
     onValueChange,
   } as AccordionProps)
   const body = children ?? renderDefaultStructure(ctx.api, renderContent)

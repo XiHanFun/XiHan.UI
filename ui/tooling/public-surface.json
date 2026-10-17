@@ -12502,6 +12502,7 @@
     "accordion": [
       "collapsible",
       "collection",
+      "contentRole",
       "defaultValue",
       "dir",
       "disabled",
@@ -21013,6 +21014,7 @@
     "xh-accordion": {
       "attributes": [
         "collapsible",
+        "content-role",
         "dir",
         "disabled",
         "lazy-mount",

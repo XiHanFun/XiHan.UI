@@ -40,6 +40,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} lazy-mount - 条目内容第一次展开时才挂载；内容写在面板里的一个 `<template>` 中时首次展开才实例化
  * @attr {boolean} unmount-on-exit - 收起动画播完后卸载条目内容，再展开时从 `<template>` 重新克隆（没写模板时原样放回）
+ * @attr {'region'|'group'} content-role - 条目正文的角色：region 是以标题命名的地标（默认），group 不进地标导航
  * @fires value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @csspart root - 手风琴根容器
  * @csspart item - 单个条目容器，作者在此写 value 与可选 disabled
@@ -88,6 +89,7 @@ export class XhAccordionElement extends XhElement {
     size: {},
     lazyMount: { type: Boolean, attribute: 'lazy-mount' },
     unmountOnExit: { type: Boolean, attribute: 'unmount-on-exit' },
+    contentRole: { attribute: 'content-role' },
   }
 
   declare collection?: AccordionNode[]
@@ -104,6 +106,7 @@ export class XhAccordionElement extends XhElement {
   declare size?: Size
   declare lazyMount?: boolean
   declare unmountOnExit?: boolean
+  declare contentRole?: AccordionSchema['props']['contentRole']
 
   private readonly notify = (details: AccordionValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -131,6 +134,7 @@ export class XhAccordionElement extends XhElement {
       size: this.size,
       lazyMount: this.lazyMount ?? false,
       unmountOnExit: this.unmountOnExit ?? false,
+      contentRole: this.contentRole,
       onValueChange: this.notify,
     }
   }

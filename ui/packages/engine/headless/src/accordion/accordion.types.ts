@@ -78,6 +78,11 @@ export interface AccordionSchema extends MachineSchema {
      * 内容里的输入与滚动位置随之丢失；与 lazyMount 一起用即「只在展开期间存在」。
      */
     unmountOnExit?: boolean
+    /**
+     * 条目正文的角色，默认 region：每个正文是以标题命名的地标。
+     * group 时正文仍以标题命名，但不进地标导航；条目多、能同时展开，或者页面上别处已有同名区块时用它。
+     */
+    contentRole?: 'region' | 'group'
     /** 展开集合变化回调。 */
     onValueChange?: (details: AccordionValueChangeDetails) => void
   }

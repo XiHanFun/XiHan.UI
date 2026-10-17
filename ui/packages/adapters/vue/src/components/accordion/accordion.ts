@@ -36,6 +36,7 @@ export const XhAccordionRoot = defineComponent({
     size: { type: String as PropType<Size> },
     lazyMount: Boolean,
     unmountOnExit: Boolean,
+    contentRole: { type: String as PropType<AccordionProps['contentRole']> },
   },
   // value-change 携带 { value }，update:value 携带裸数组
   emits: {

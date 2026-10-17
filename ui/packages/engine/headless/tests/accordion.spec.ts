@@ -114,6 +114,15 @@ describe('connectAccordion 投影', () => {
     a.stop()
   })
 
+  it('contentRole 为 group 时正文改作以标题命名的组，不当地标', () => {
+    const a = makeAccordion({ defaultValue: ['install'], contentRole: 'group' })
+    const trigger = a.api().getTriggerProps({ value: 'install' }) as Record<string, unknown>
+    const content = a.api().getContentProps({ value: 'install' }) as Record<string, unknown>
+    expect(content.role).toBe('group')
+    expect(content['aria-labelledby']).toBe(trigger.id)
+    a.stop()
+  })
+
   it('根落方向与三轴；collection 推出文本、正文与禁用，部件上写的禁用优先，整组禁用一票通过', () => {
     const a = makeAccordion({ collection: [{ value: 'install' }, { value: 'theme', label: '换皮肤', content: '覆写令牌', disabled: true }], variant: 'outline', tone: 'brand', size: 'sm' })
     expect(a.api().getRootProps()).toMatchObject({ 'data-orientation': 'vertical', 'data-variant': 'outline', 'data-tone': 'brand', 'data-size': 'sm' })
