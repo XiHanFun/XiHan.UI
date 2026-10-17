@@ -8,12 +8,14 @@
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
 import type { PopoverApi, PopoverSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
+import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectPopover, popoverMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
+import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
@@ -28,6 +30,8 @@ export interface PopoverContext {
   visible: Ref<boolean>
   /** 浮层迁移到的位置：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
+  /** 标题与说明在不在场，由 XhPopoverTitle / XhPopoverDescription 登记；content 只引用在场的部件。 */
+  presence: TitleDescriptionPresence
 }
 
 export function usePopover(
@@ -41,7 +45,8 @@ export function usePopover(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(popoverMachine, () => ({ ...props, onOpenChange }), scope)
+  const presence = useTitleDescriptionPresence()
+  const service = useMachine(popoverMachine, () => ({ ...props, parts: presence.parts.value, onOpenChange }), scope)
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
   let config: RuntimeConfig | null = null
@@ -80,5 +85,5 @@ export function usePopover(
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, triggerRef, positionerRef, contentRef, portalTarget }
+  return { visible, service, api, triggerRef, positionerRef, contentRef, portalTarget, presence }
 }

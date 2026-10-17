@@ -15,6 +15,7 @@ import { renderAsChild } from '../../runtime/as-child'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
+import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { PopoverProvider, usePopoverContext } from './context'
 import { usePopover } from './use-popover'
@@ -116,13 +117,16 @@ export function XhPopoverContent({ children, ...rest }: XhPopoverContentProps): 
 export interface XhPopoverTitleProps extends ComponentPropsWithRef<'h2'> {}
 export function XhPopoverTitle({ children, ...rest }: XhPopoverTitleProps): ReactNode {
   const ctx = usePopoverContext()
+  useTitleDescriptionPart(ctx.presence, 'title')
   return <h2 {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</h2>
 }
 
 export interface XhPopoverDescriptionProps extends ComponentPropsWithRef<'p'> {}
 export function XhPopoverDescription({ children, ...rest }: XhPopoverDescriptionProps): ReactNode {
   const ctx = usePopoverContext()
-  return <p {...mergeReactProps(ctx.api.getDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</p>
+  // 读不出一句话的说明不进描述链
+  const el = useDescriptionPart<HTMLParagraphElement>(ctx.presence)
+  return <p {...mergeReactProps({ ...ctx.api.getDescriptionProps() as Record<string, unknown>, ref: el }, rest as Record<string, unknown>)}>{children}</p>
 }
 
 export interface XhPopoverCloseTriggerProps extends ComponentPropsWithRef<'button'> {}
