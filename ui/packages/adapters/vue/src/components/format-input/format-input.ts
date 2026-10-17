@@ -43,6 +43,8 @@ export const XhFormatInputRoot = defineComponent({
     kinds: { type: Array as PropType<readonly FormatInputKind[]> },
     // undefined 才表示「本实例没说」，缺省 true
     clearable: { type: Boolean, default: undefined },
+    /** 几个对象的取值各不相同：种类一项都不选、下拉显示「多个值」，选了种类即派发。 */
+    mixed: { type: Boolean, default: undefined },
     datePatterns: { type: Array as PropType<readonly string[]> },
     sample: { type: null as unknown as PropType<unknown> },
     locale: { type: String },

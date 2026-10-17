@@ -346,6 +346,7 @@ const translations = {
   },
   'format-input': {
     kind: '서식',
+    mixed: '여러 값',
     kindOption: kind => ({ 'none': '서식 없음', 'number': '숫자', 'percent': '백분율', 'date': '날짜', 'rmb-upper': '인민폐 대문자', 'numeral': '숫자 글꼴' })[kind],
     decimalsMode: '소수 자릿수',
     decimalsModeOption: mode => ({ fixed: '고정', range: '범위', exact: '그대로' })[mode],

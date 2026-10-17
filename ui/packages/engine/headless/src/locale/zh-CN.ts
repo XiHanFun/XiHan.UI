@@ -350,6 +350,7 @@ const translations = {
   },
   'format-input': {
     kind: '格式',
+    mixed: '多个值',
     kindOption: kind => ({ 'none': '不设格式', 'number': '数字', 'percent': '百分比', 'date': '日期', 'rmb-upper': '人民币大写', 'numeral': '数字字形' })[kind],
     decimalsMode: '小数位',
     decimalsModeOption: mode => ({ fixed: '固定', range: '范围', exact: '不舍入' })[mode],

@@ -62,6 +62,7 @@ kinds 只留数字与百分比；连同「不设格式」不超过三项时，�
 - 输入中途的不完整状态（位数清空、范围下限大于上限、日期模式清空）不派发，根标 `aria-invalid`，行内说明进描述链；改回合法后再派发。派发的值都能通过 `checkFormatSpec`。
 - 样例是 `role="status"`：停止输入一会儿后才换文字，连续输入时读屏不反复播报；样例值套不上格式时显示说明。
 - 不设格式用 `null`；`value` 为 `undefined` 表示非受控。
+- 几个对象一起编辑而取值各不相同时（属性面板多选）传 `mixed`：种类一项都不选、下拉显示「多个值」，参数行与样例不铺；选一个种类（含「不设格式」）即按它新起一份格式说明派发，宿主写回后撤掉 `mixed`。
 
 ### 最佳实践
 
@@ -88,6 +89,7 @@ kinds 只留数字与百分比；连同「不设格式」不超过三项时，�
 | `defaultValue` | `FormatSpec \| null` |  |  |
 | `kinds` | `readonly FormatInputKind[]` |  | 可选的种类，缺省全部；与 checkFormatSpec 的同名选项一致。 |
 | `clearable` | `boolean` |  | 种类里多一项「不设格式」，选它派发 null；缺省 true。 |
+| `mixed` | `boolean` |  | 几个对象的取值各不相同（属性面板多选时）：种类控件一项都不选，下拉显示「多个值」的占位，参数行与样例不铺。 选一个种类（含「不设格式」）即按它新起一份格式说明并派发，宿主写回后撤掉 mixed。 |
 | `datePatterns` | `readonly string[]` |  | 日期模式的预设，缺省 FORMAT_INPUT_DATE_PATTERNS；也可以自由输入。 |
 | `sample` | `unknown` |  | 样例的输入值；缺省按种类取。 |
 | `locale` | `string` |  | 交给 formatValue，只影响样例。 |
@@ -217,7 +219,7 @@ kinds 只留数字与百分比；连同「不设格式」不超过三项时，�
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
-| `root` | `data-kind` | draft.kind |
+| `root` | `data-kind` | undefined \| draft.kind |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-variant` | props.variant |

@@ -360,6 +360,7 @@ const translations = {
   },
   'format-input': {
     kind: 'Формат',
+    mixed: 'Несколько значений',
     kindOption: kind => ({ 'none': 'Без формата', 'number': 'Число', 'percent': 'Процент', 'date': 'Дата', 'rmb-upper': 'Юани прописью', 'numeral': 'Цифры' })[kind],
     decimalsMode: 'Знаки после запятой',
     decimalsModeOption: mode => ({ fixed: 'Фиксировано', range: 'Диапазон', exact: 'Как есть' })[mode],

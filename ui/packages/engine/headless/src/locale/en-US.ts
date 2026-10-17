@@ -411,6 +411,7 @@ export const FORM_EN_US: XhLocaleBucket<'form'> = {
 
 export const FORMAT_INPUT_EN_US: XhLocaleBucket<'format-input'> = {
   kind: 'Format',
+  mixed: 'Multiple values',
   kindOption: kind => ({ 'none': 'No format', 'number': 'Number', 'percent': 'Percent', 'date': 'Date', 'rmb-upper': 'RMB in words', 'numeral': 'Numeral' })[kind],
   decimalsMode: 'Decimal places',
   decimalsModeOption: mode => ({ fixed: 'Fixed', range: 'Range', exact: 'As is' })[mode],

@@ -33,6 +33,11 @@ export interface FormatInputSchema extends MachineSchema {
     kinds?: readonly FormatInputKind[]
     /** 种类里多一项「不设格式」，选它派发 null；缺省 true。 */
     clearable?: boolean
+    /**
+     * 几个对象的取值各不相同（属性面板多选时）：种类控件一项都不选，下拉显示「多个值」的占位，参数行与样例不铺。
+     * 选一个种类（含「不设格式」）即按它新起一份格式说明并派发，宿主写回后撤掉 mixed。
+     */
+    mixed?: boolean
     /** 日期模式的预设，缺省 FORMAT_INPUT_DATE_PATTERNS；也可以自由输入。 */
     datePatterns?: readonly string[]
     /** 样例的输入值；缺省按种类取。 */
@@ -139,6 +144,8 @@ export interface FormatInputApi<T extends PropTypes = PropTypes> {
 export interface FormatInputTranslations {
   /** 种类控件与各种类的名字。 */
   kind: string
+  /** 几个对象的取值各不相同时种类下拉的占位。 */
+  mixed: string
   kindOption: (kind: FormatInputKindOption) => string
   decimalsMode: string
   decimalsModeOption: (mode: FormatInputDecimalsMode) => string

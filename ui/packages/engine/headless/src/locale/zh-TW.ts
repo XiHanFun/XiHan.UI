@@ -346,6 +346,7 @@ const translations = {
   },
   'format-input': {
     kind: '格式',
+    mixed: '多個值',
     kindOption: kind => ({ 'none': '不設格式', 'number': '數字', 'percent': '百分比', 'date': '日期', 'rmb-upper': '人民幣大寫', 'numeral': '數字字形' })[kind],
     decimalsMode: '小數位',
     decimalsModeOption: mode => ({ fixed: '固定', range: '範圍', exact: '不捨入' })[mode],

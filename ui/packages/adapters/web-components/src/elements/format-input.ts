@@ -44,6 +44,7 @@ function notConnected(method: string): Error {
  * @prop {unknown} sample - 样例的输入值；缺省按种类取
  * @prop {object} translations - 文案（只能通过 property 设置）
  * @attr {boolean} clearable - 种类里多一项「不设格式」，选它派发 null；缺省 true，写 clearable="false" 关掉
+ * @attr {boolean} mixed - 几个对象的取值各不相同：种类一项都不选、下拉显示「多个值」，参数行与样例不铺；选了种类即派发
  * @attr {string} locale - 交给格式化，只影响样例
  * @attr {string} time-zone - 交给格式化，只影响样例
  * @attr {boolean} disabled - 禁用：里面的控件都不可操作
@@ -89,6 +90,7 @@ export class XhFormatInputElement extends XhElement {
     datePatterns: { attribute: false },
     sample: { attribute: false },
     clearable: { converter: BOOLEAN_CONVERTER },
+    mixed: { converter: BOOLEAN_CONVERTER },
     locale: { converter: STRING_CONVERTER },
     timeZone: { converter: STRING_CONVERTER, attribute: 'time-zone' },
     disabled: { converter: BOOLEAN_CONVERTER },
@@ -105,6 +107,7 @@ export class XhFormatInputElement extends XhElement {
   declare datePatterns?: readonly string[]
   declare sample?: unknown
   declare clearable?: boolean
+  declare mixed?: boolean
   declare locale?: string
   declare timeZone?: string
   declare disabled?: boolean
@@ -142,6 +145,7 @@ export class XhFormatInputElement extends XhElement {
       datePatterns: this.datePatterns,
       sample: this.sample,
       clearable: this.clearable,
+      mixed: this.mixed,
       locale: this.locale,
       timeZone: this.timeZone,
       disabled: control.disabled,
