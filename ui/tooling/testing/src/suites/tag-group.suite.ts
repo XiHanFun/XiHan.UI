@@ -242,12 +242,58 @@ function settleItem(index: number, name: string, value: string | null, expect?: 
   }
 }
 
+/** 每枚标签那一格里的次序与文字：文字（tag 的 label）、选中标记、摘除钮（tag 的 close-trigger）。 */
+function cellLayout(texts: readonly string[]): StepWithExpect {
+  return {
+    kind: 'raw',
+    why: '文字与摘除钮戴 tag 的 scope，快照的 order 采不到它们',
+    run: ({ doc }) => {
+      const want = ['tag/label', 'tag-group/item-indicator', 'tag/close-trigger']
+      items(doc).forEach((item, index) => {
+        const cell = item.querySelector(':scope > [data-scope="tag-group"][data-part="cell"]')
+        const got = [...(cell?.children ?? [])].map(el => `${el.getAttribute('data-scope')}/${el.getAttribute('data-part')}`)
+        if (got.join(' ') !== want.join(' '))
+          throw new Error(`item[${index}] 的格子次序不符：期望 ${want.join(' ')}，实际 ${got.join(' ')}`)
+        const text = cell?.querySelector('[data-scope="tag"][data-part="label"]')?.textContent
+        if (text !== texts[index])
+          throw new Error(`item[${index}] 的文字不符：期望 ${JSON.stringify(texts[index])}，实际 ${JSON.stringify(text)}`)
+      })
+    },
+  }
+}
+
 export const tagGroupSuite: ConformanceSuite = {
   component: 'tag-group',
   anatomy: tagGroupAnatomy,
   keyboard: tagGroupKeyboard,
   fixture: FIXTURE,
   cases: [
+    {
+      name: '作者不写结构：三端都照 tagGroupStructure 铺出标题与标签列表，每枚标签的格子里是文字、选中标记与摘除钮，点标签即选中',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: {
+        label: '技术栈',
+        selectionMode: 'single',
+        deletable: true,
+        collection: [
+          { value: 'vue', label: 'Vue' },
+          { value: 'react', label: 'React', disabled: true },
+          { value: 'svelte', label: 'Svelte' },
+          { value: 'angular', label: 'Angular' },
+        ],
+      },
+      initial: {
+        order: ['root', 'label', 'list', 'cell[0]', 'item-indicator[0]', 'cell[1]', 'item-indicator[1]', 'cell[2]', 'item-indicator[2]', 'cell[3]', 'item-indicator[3]'],
+        parts: { list: { 'role': 'grid', 'aria-labelledby': '@part(label)' } },
+      },
+      steps: [
+        cellLayout(['Vue', 'React', 'Svelte', 'Angular']),
+        tags({ items: { 1: { 'aria-disabled': 'true' } }, deleteTriggers: { 0: { hidden: null } } }),
+        clickItem(2, { events: [{ type: 'value-change', detail: { value: ['svelte'] } }] }),
+        tags({ items: selectedMarks('svelte') }),
+      ],
+    },
     {
       name: '初始：list 是 grid、标签是 tag 的 root 并担 row、格子是 gridcell、文字是 tag 的 label；不接选中即不出 aria-selected、选中标记全部收起，摘除钮是 tag 的 close-trigger、收起且不占 Tab 位',
       spec: { apg: `${APG}#roles_states_properties` },

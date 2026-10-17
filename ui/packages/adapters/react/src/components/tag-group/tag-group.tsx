@@ -9,12 +9,14 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { TagGroupApi, TagGroupNode, TagGroupNodeMeta, TagGroupSchema, TagGroupSelectionMode, TagGroupTranslations, TagVariant } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { tagGroupStructure } from '@xihan-ui/headless'
 import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFormControlProps } from '../form/use-form-control'
 import { TagGroupItemProvider, TagGroupProvider, useTagGroupContext, useTagGroupItemContext } from './context'
 import { useTagGroup } from './use-tag-group'
@@ -118,9 +120,7 @@ export function XhTagGroupRoot({
         toggle: api.toggle,
         deleteItem: api.deleteItem,
       })
-    : collection
-      ? <DefaultTree collection={api.collection} label={label} renderItem={renderItem} />
-      : null
+    : renderDefaultStructure(api, { label, renderItem })
 
   return (
     <TagGroupProvider value={ctx}>
@@ -246,29 +246,45 @@ export function XhTagGroupItemDeleteTrigger({ children, ...rest }: XhTagGroupIte
   return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
 }
 
-/**
- * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
- */
-function DefaultTree(props: {
-  collection: readonly TagGroupNodeMeta[]
+/** 标准结构里各部件对应的组件；标签、标签文字与摘除钮委派给 tag，按「tag/部件名」找。 */
+const TAG_GROUP_PARTS = {
+  'label': XhTagGroupLabel,
+  'list': XhTagGroupList,
+  'tag/item': XhTagGroupItem,
+  'cell': XhTagGroupCell,
+  'tag/item-text': XhTagGroupItemText,
+  'item-indicator': XhTagGroupItemIndicator,
+  'tag/item-delete-trigger': XhTagGroupItemDeleteTrigger,
+}
+
+interface TagGroupStructureContent {
   label?: ReactNode
   renderItem?: (node: TagGroupNodeMeta) => ReactNode
-}): ReactNode {
-  return (
-    <>
-      {props.label != null ? <XhTagGroupLabel>{props.label}</XhTagGroupLabel> : null}
-      <XhTagGroupList>
-        {props.collection.map(node => (
-          <XhTagGroupItem key={node.value} value={node.value}>
-            <XhTagGroupCell>
-              <XhTagGroupItemText>{props.renderItem?.(node) ?? node.label}</XhTagGroupItemText>
-              <XhTagGroupItemIndicator />
-              <XhTagGroupItemDeleteTrigger />
-            </XhTagGroupCell>
-          </XhTagGroupItem>
-        ))}
-      </XhTagGroupList>
-    </>
-  )
+}
+
+/**
+ * 未写 children 时铺开的整套结构，作者只提供数据：照 headless 的 tagGroupStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题与标签文字由对应渲染函数接管。
+ */
+function renderDefaultStructure(api: TagGroupApi, content: TagGroupStructureContent): ReactNode[] {
+  const { label, renderItem } = content
+  const slotted: Readonly<Record<string, boolean>> = {
+    label: label != null && typeof label !== 'string',
+    item: renderItem != null,
+  }
+  const nodes = tagGroupStructure(api, {
+    label: typeof label === 'string' ? label : undefined,
+    slotted: name => slotted[name] === true,
+  })
+  return renderStructure(nodes, TAG_GROUP_PARTS, (node) => {
+    const meta = node.data as TagGroupNodeMeta
+    switch (node.slot?.name) {
+      case 'label':
+        return label
+      case 'item':
+        return renderItem?.(meta) ?? meta.label
+      default:
+        return undefined
+    }
+  })
 }

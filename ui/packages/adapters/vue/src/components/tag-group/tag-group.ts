@@ -9,8 +9,10 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { TagGroupApi, TagGroupItemProps, TagGroupNode, TagGroupNodeMeta, TagGroupSchema, TagGroupSelectionMode, TagGroupTranslations, TagVariant } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { tagGroupStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideTagGroup, provideTagGroupItem, useTagGroupContext, useTagGroupItemContext } from './context'
 import { useTagGroup } from './use-tag-group'
@@ -81,13 +83,7 @@ export const XhTagGroupRoot = defineComponent({
           toggle: ctx.api.value.toggle,
           deleteItem: ctx.api.value.deleteItem,
         }) ?? []
-        : props.collection
-          ? renderDefaultTree(
-              ctx.api.value.collection,
-              slots.label?.() ?? (props.label != null ? [props.label] : null),
-              slots.item,
-            )
-          : []),
+        : renderDefaultStructure(ctx.api.value, props.label, { label: slots.label, item: slots.item })),
     ])
   },
 })
@@ -196,25 +192,37 @@ export const XhTagGroupItemDeleteTrigger = defineComponent({
   },
 })
 
+/** 标准结构里各部件对应的组件；标签、标签文字与摘除钮委派给 tag，按「tag/部件名」找。 */
+const TAG_GROUP_PARTS = {
+  'label': XhTagGroupLabel,
+  'list': XhTagGroupList,
+  'tag/item': XhTagGroupItem,
+  'cell': XhTagGroupCell,
+  'tag/item-text': XhTagGroupItemText,
+  'item-indicator': XhTagGroupItemIndicator,
+  'tag/item-delete-trigger': XhTagGroupItemDeleteTrigger,
+}
+
+interface TagGroupStructureSlots {
+  label?: () => VNode[]
+  item?: (node: TagGroupNodeMeta) => VNode[]
+}
+
 /**
- * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽。
+ * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 tagGroupStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题与标签文字由对应插槽接管。
  */
-function renderDefaultTree(
-  collection: readonly TagGroupNodeMeta[],
-  label: (VNode | string)[] | null,
-  itemSlot?: (node: TagGroupNodeMeta) => VNode[],
-): VNode[] {
-  return [
-    ...(label ? [h(XhTagGroupLabel, null, () => label)] : []),
-    h(XhTagGroupList, null, () => collection.map(node =>
-      h(XhTagGroupItem, { key: node.value, value: node.value }, () => [
-        h(XhTagGroupCell, null, () => [
-          h(XhTagGroupItemText, null, () => itemSlot?.(node) ?? node.label),
-          h(XhTagGroupItemIndicator),
-          h(XhTagGroupItemDeleteTrigger),
-        ]),
-      ]),
-    )),
-  ]
+function renderDefaultStructure(api: TagGroupApi, label: string | undefined, authored: TagGroupStructureSlots): VNode[] {
+  const nodes = tagGroupStructure(api, { label, slotted: name => authored[name as keyof TagGroupStructureSlots] != null })
+  return renderStructure(nodes, TAG_GROUP_PARTS, (node) => {
+    const meta = node.data as TagGroupNodeMeta
+    switch (node.slot?.name) {
+      case 'label':
+        return authored.label?.()
+      case 'item':
+        return authored.item?.(meta) ?? meta.label
+      default:
+        return undefined
+    }
+  })
 }
