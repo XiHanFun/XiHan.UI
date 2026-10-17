@@ -65,29 +65,38 @@ describe('scrollbar 默认视觉', () => {
     expect(style.getPropertyValue('--xh-scrollbar-thickness-md').trim()).toBe('6px')
   })
 
-  it('快速选年使用三列可滚动网格并继承内部滚动条', () => {
+  it('快速选年一行三格、网格限高可滚动并继承内部滚动条', () => {
     host = document.createElement('div')
-    const grid = document.createElement('div')
-    grid.dataset.scope = 'calendar-picker'
-    grid.classList.add('xh-scope-calendar-picker')
-    grid.dataset.part = 'grid'
-    grid.dataset.view = 'year'
+    const calendarPart = (part: string, tag = 'div'): HTMLElement => {
+      const el = document.createElement(tag)
+      el.dataset.scope = 'calendar-picker'
+      el.classList.add('xh-scope-calendar-picker')
+      el.dataset.part = part
+      el.dataset.view = 'year'
+      return el
+    }
+    const grid = calendarPart('grid')
     grid.style.inlineSize = '240px'
 
+    let row: HTMLElement | null = null
     for (let year = 1900; year <= 2099; year += 1) {
-      const cell = document.createElement('button')
-      cell.dataset.scope = 'calendar-picker'
-      cell.classList.add('xh-scope-calendar-picker')
-      cell.dataset.part = 'cell-trigger'
-      cell.textContent = `${year}年`
-      grid.append(cell)
+      if ((year - 1900) % 3 === 0) {
+        row = calendarPart('week-row')
+        grid.append(row)
+      }
+      const cell = calendarPart('cell')
+      const trigger = calendarPart('cell-trigger', 'button')
+      trigger.textContent = `${year}年`
+      cell.append(trigger)
+      row!.append(cell)
     }
 
     host.append(grid)
     document.body.append(host)
 
+    const firstRow = grid.querySelector<HTMLElement>('[data-part="week-row"]')!
+    expect(getComputedStyle(firstRow).gridTemplateColumns.split(' ').length).toBe(3)
     const style = getComputedStyle(grid)
-    expect(style.gridTemplateColumns.split(' ').length).toBe(3)
     expect(grid.scrollHeight).toBeGreaterThan(grid.clientHeight)
     expect(style.scrollbarWidth).toBe('thin')
     expect(style.scrollbarColor).not.toBe('auto')
