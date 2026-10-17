@@ -44,6 +44,7 @@ export function connectDrawer<T extends PropTypes>(
   const panelSize = context.get('panelSize') ?? null
   const resizing = context.get('gesture') === 'resize'
   const ids = scope.ids('drawer', 'trigger', 'content', 'title', 'description')
+  const rendered = prop('parts')
   const stateAttr = open ? 'open' : 'closed'
   // 首帧标记：挂载时就开着、还没收起过（与对话框共用的机器记下）
   const instant = dataAttr(context.get('openedAtMount'))
@@ -140,8 +141,9 @@ export function connectDrawer<T extends PropTypes>(
       'aria-hidden': !open || undefined,
       // 非模态时显式写 "false"，不能省略：读屏对"未声明"与"声明为非模态"处理不同
       'aria-modal': modal ? 'true' : 'false',
-      'aria-labelledby': ids.title,
-      'aria-describedby': ids.description,
+      // 只引用作者渲染了的标题与说明：省略 parts 按都在场
+      'aria-labelledby': rendered?.title !== false ? ids.title : undefined,
+      'aria-describedby': rendered?.description !== false ? ids.description : undefined,
       'data-state': stateAttr,
       'data-instant': instant,
       // content 被 portal 到 body 后 root 上的选择器够不着它，故自身也带 data-side / data-size

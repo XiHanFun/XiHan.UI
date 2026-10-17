@@ -8,11 +8,13 @@
 import type { Layer, Service } from '@xihan-ui/core'
 import type { DrawerApi, DrawerSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
+import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import type { OverlayWiring } from '../../runtime/use-overlay'
 import { connectDrawer, drawerMachine } from '@xihan-ui/headless'
 import { useCallback, useRef } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
+import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
 
@@ -21,6 +23,8 @@ export interface DrawerContext extends OverlayWiring {
   api: DrawerApi
   contentRef: RefObject<HTMLElement | null>
   backdropRef: RefObject<HTMLElement | null>
+  /** 标题与说明在不在场，由 XhDrawerTitle / XhDrawerDescription 登记；content 只引用在场的部件。 */
+  presence: TitleDescriptionPresence
 }
 
 export function useDrawer(
@@ -64,14 +68,16 @@ export function useDrawer(
 
   // 容器一处给定，两件事都从它派生：contained 交给机器（皮肤据此把遮罩与定位层
   // 从 fixed 换成 absolute），同一个值又是浮层的落点
+  const presence = useTitleDescriptionPresence()
   const service = useMachine(drawerMachine, () => ({
     ...props,
     contained: props.contained ?? container?.() != null,
+    parts: presence.parts,
   }), {
     scope,
     onCreate: overlay.onCreate as never,
   })
   serviceRef.current = service
 
-  return { ...overlay, service, api: connectDrawer(service, reactNormalize), contentRef, backdropRef }
+  return { ...overlay, service, api: connectDrawer(service, reactNormalize), contentRef, backdropRef, presence }
 }

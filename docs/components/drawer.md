@@ -133,6 +133,7 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `size` | `Size` |  | 尺寸：sm / md / lg。横向放置时影响面板宽度、纵向放置时影响面板高度，随 side 而定。 |
 | `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 |
 | `unmountOnExit` | `boolean` |  | 收起动画播完后卸载内容，默认 true。内容总是第一次打开才挂载；设为 false 时此后收起只隐藏、不卸载， 再打开不重挂：内容里的组件状态、输入与滚动位置都留着，重开也不再付一遍挂载开销。 适合反复开合、内容又重（设置面板、长表单）的抽屉。 |
+| `parts` | `TitleDescriptionParts` |  | 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。 title 不在场时 content 不写 aria-labelledby，名字由作者在 content 上写 aria-label； description 不在场、或渲染了但读不出一句话（判断同 `hasNamingContent`）时不写 aria-describedby。 |
 | `translations` | `Partial<DrawerTranslations>` |  |  |
 | `onOpenChange` | `(details: DrawerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onExitComplete` | `() => void` |  | 退出动画结束或取消，且本层资源全部释放后通知；卸载和重新打开不通知。 |
@@ -241,9 +242,9 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `content` | `aria-describedby` | `description` 部件的 id |
+| `content` | `aria-describedby` | `description` 部件的 id \| undefined |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `title` 部件的 id |
+| `content` | `aria-labelledby` | `title` 部件的 id \| undefined |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | props.role |
 | `close-trigger` | `aria-label` | translations.close |
