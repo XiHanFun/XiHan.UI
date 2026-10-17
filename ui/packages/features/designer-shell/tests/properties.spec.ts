@@ -227,7 +227,7 @@ describe('<xh-designer-properties>', () => {
     expect(changes.map(change => [change.path[0], change.value])).toEqual([['tags', ['a', 'b']], ['tags', undefined], ['size', 'f']])
   })
 
-  it('分组可折叠，折叠状态按分组 id 保留，换对象不重置', async () => {
+  it('分组可折叠，正文是组而非地标，折叠状态按分组 id 保留，换对象不重置', async () => {
     const panel = await mount((element) => {
       element.collapsible = true
       element.targets = [task]
@@ -235,6 +235,10 @@ describe('<xh-designer-properties>', () => {
     const accordion = panel.querySelector('xh-accordion') as HTMLElement & { value?: string[] }
     expect(Array.from(accordion.querySelectorAll(':scope > [data-xh-part="root"] > [data-xh-part="item"]'), item => item.getAttribute('value'))).toEqual(['basic', 'run'])
     expect(accordion.value).toEqual(['basic', 'run'])
+    // 分组正文是以分组标题命名的组，不当地标
+    const contents = Array.from(accordion.querySelectorAll('[data-scope="accordion"][data-part="content"]'))
+    expect(contents.map(content => content.getAttribute('role'))).toEqual(['group', 'group'])
+    expect(accordion.querySelector('[role="region"]')).toBeNull()
     emit(accordion, 'value-change', { value: ['basic'] })
     panel.targets = [{ ...task, id: 't9' }]
     await panel.updateComplete

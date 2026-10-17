@@ -180,7 +180,7 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
     })
     // 一个分组都没有时不建空的手风琴
     if (this.collapsible && sections.length > 0) {
-      const accordion: HTMLElement & { value?: string[] } = createAuthoredElement(doc, 'xh-accordion', { 'multiple': true, 'size': 'sm', 'data-part': 'accordion' }, [
+      const accordion: HTMLElement & { value?: string[] } = createAuthoredElement(doc, 'xh-accordion', { 'multiple': true, 'size': 'sm', 'content-role': 'group', 'data-part': 'accordion' }, [
         createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, sections),
       ])
       accordion.value = groups.map(({ group }) => group.id).filter(id => searching || !this.#collapsed.has(id))
