@@ -5,13 +5,15 @@
 
 // 提供 field array 相关实现。
 
-import type { FieldArrayApi, FieldArrayColumn, FieldArrayLayout, FieldArraySchema, FieldArrayTranslations, FormPath } from '@xihan-ui/headless'
+import type { FieldArrayApi, FieldArrayCellSlotData, FieldArrayColumn, FieldArrayItem, FieldArrayLayout, FieldArraySchema, FieldArrayTranslations, FormPath } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { fieldArrayStructure } from '@xihan-ui/headless'
 import { useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useOptionalFormContext } from '../form/context'
 import { useFormControlProps } from '../form/use-form-control'
@@ -59,6 +61,11 @@ export interface XhFieldArrayRootProps extends Omit<ComponentPropsWithRef<'div'>
   name?: FormPath
   translations?: Partial<FieldArrayTranslations>
   onValueChange?: FieldArrayProps['onValueChange']
+  /** 不给 children 时每一行的作者内容（列表排布）。 */
+  renderItemContent?: (item: FieldArrayItem) => ReactNode
+  /** 不给 children 时每一格的作者内容（表格排布）。 */
+  renderItemCell?: (item: FieldArrayItem, column: FieldArrayColumn) => ReactNode
+  /** 不给时照标准结构铺整套部件。 */
   children?: SlotChildren<FieldArrayRootSlotProps>
 }
 
@@ -78,6 +85,8 @@ export function XhFieldArrayRoot({
   name,
   translations,
   onValueChange,
+  renderItemContent,
+  renderItemCell,
   children,
   ...rest
 }: XhFieldArrayRootProps): ReactNode {
@@ -110,23 +119,25 @@ export function XhFieldArrayRoot({
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
-        {/* items 里每一项都带 key，作者铺行时直接用 row.key */}
-        {renderSlot(children, {
-          items: api.items,
-          value: api.value,
-          count: api.count,
-          empty: api.empty,
-          atMin: api.atMin,
-          atMax: api.atMax,
-          canAdd: api.canAdd,
-          setValue: api.setValue,
-          add: api.add,
-          insert: api.insert,
-          remove: api.remove,
-          move: api.move,
-          moveUp: api.moveUp,
-          moveDown: api.moveDown,
-        })}
+        {/* 给了 children 时 items 里每一项都带 key，作者铺行时直接用 row.key；没给时照 fieldArrayStructure 铺整套结构 */}
+        {children == null
+          ? renderDefaultStructure(api, renderItemContent, renderItemCell)
+          : renderSlot(children, {
+              items: api.items,
+              value: api.value,
+              count: api.count,
+              empty: api.empty,
+              atMin: api.atMin,
+              atMax: api.atMax,
+              canAdd: api.canAdd,
+              setValue: api.setValue,
+              add: api.add,
+              insert: api.insert,
+              remove: api.remove,
+              move: api.move,
+              moveUp: api.moveUp,
+              moveDown: api.moveDown,
+            })}
       </div>
     </FieldArrayProvider>
   )
@@ -243,4 +254,40 @@ export function XhFieldArrayMoveDownTrigger({ children, ...rest }: XhFieldArrayM
   const ctx = useFieldArrayContext()
   const item = useFieldArrayItemContext()
   return <button {...mergeReactProps(ctx.api.getMoveDownTriggerProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+}
+
+/** 结构里的部件 → 部件组件。 */
+const FIELD_ARRAY_PARTS = {
+  'table': XhFieldArrayTable,
+  'header': XhFieldArrayHeader,
+  'column-header': XhFieldArrayColumnHeader,
+  'item': XhFieldArrayItem,
+  'item-label': XhFieldArrayItemLabel,
+  'item-content': XhFieldArrayItemContent,
+  'item-cell': XhFieldArrayItemCell,
+  'item-action': XhFieldArrayItemAction,
+  'add-trigger': XhFieldArrayAddTrigger,
+  'item-delete-trigger': XhFieldArrayItemDeleteTrigger,
+  'move-up-trigger': XhFieldArrayMoveUpTrigger,
+  'move-down-trigger': XhFieldArrayMoveDownTrigger,
+}
+
+/**
+ * 不给 children 时照 fieldArrayStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 每一行（表格排布下每一格）的内容由 renderItemContent / renderItemCell 给出，没给时那一格空着。
+ */
+function renderDefaultStructure(
+  api: FieldArrayApi,
+  renderItemContent?: (item: FieldArrayItem) => ReactNode,
+  renderItemCell?: (item: FieldArrayItem, column: FieldArrayColumn) => ReactNode,
+): ReactNode[] {
+  return renderStructure(fieldArrayStructure(api), FIELD_ARRAY_PARTS, (node) => {
+    if (node.slot?.name === 'item-content')
+      return renderItemContent?.(node.data as FieldArrayItem)
+    if (node.slot?.name === 'item-cell') {
+      const cell = node.data as FieldArrayCellSlotData
+      return renderItemCell?.(cell.item, cell.column)
+    }
+    return undefined
+  })
 }

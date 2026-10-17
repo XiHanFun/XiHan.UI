@@ -20,6 +20,8 @@
 - `insert(index, item?)` 在指定位置插入一行，后面的行往后挪；`move(from, to)` 一步挪到任意位置。两者与 `add` 同受 `max`、`movable` 与禁用约束。
 - 每行可以包含一个或多个字段。
 - `layout="table"` 换成表格排布：`table` 部件是 role=table，表头 `header` 与各行放在它里面，`add-trigger` 仍排在它之后；表头里一列一个 `column-header`，行里一列一个 `item-cell`，都用 `value` 写列 id。`columns` 给出列序、列头文字与列宽（数字按 px，字符串原样，不写按 1fr），表头与各行共用这一套列宽。不带键盘模型，Tab 依次经过各格里的控件与把手。放进字段时字段的标签接到表格上，不在字段里时在表格上写 `aria-label`。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：列表排布下每行是行号（`item-label`，第几行）、内容格与把手（开了 `movable` 时先是上移与下移，再是删除），表格排布下是表格本体里的表头（每列一个列头）与各行、行里每列一格；最后是新增把手，文字取 `translations.addTrigger`。每行的内容归作者：Vue 写 `item-content` 插槽（载荷 `{ item }`），表格排布写 `item-cell` 插槽（载荷 `{ item, column }`）；React 给 `renderItemContent(item)` / `renderItemCell(item, column)`；Web Components 在宿主的直接子节点上写 `slot="item-content:<行 key>"`，表格排布写 `slot="item-cell:<行 key>:<列 id>"`，元素把它挪进对应的格子，换序时内容跟着行走。没给内容的行就空着，不报缺部件。
+- Web Components 里行 key 从元素只读的 `items` 读（每项的 `key`，由组件分配、跟着这一行走）。`value-change` 同步派发、早于结构重铺，在它的处理函数里（受控时先写回 `value`）按 `items` 补上新行的内容、删掉已删行的内容，新行在同一帧就带上内容；行被删掉后它的内容会回到宿主里，不删会留在根的后面。
 - 在 Form 中会同步迁移数组子字段的值、规则和错误。
 - 行的增删与移动有进退场：首次渲染时已有的行直接呈现，新增的行淡入，删掉的行在原处淡出，上移、下移与增删带来的换位滑到新位置。行照常按 `items` 渲染，删掉即卸载。
 

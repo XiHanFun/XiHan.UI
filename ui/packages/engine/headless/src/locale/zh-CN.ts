@@ -292,6 +292,7 @@ const translations = {
     deleteItem: (index, count) => `删除第 ${index} 行，共 ${count} 行`,
     moveUpTrigger: (index, count) => `上移第 ${index} 行，共 ${count} 行`,
     moveDownTrigger: (index, count) => `下移第 ${index} 行，共 ${count} 行`,
+    addTrigger: '添加一行',
   },
   'file-upload': {
     deleteItem: file => `删除 ${file.name}`,

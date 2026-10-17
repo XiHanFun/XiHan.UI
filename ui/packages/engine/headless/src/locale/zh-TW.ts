@@ -293,6 +293,7 @@ const translations = {
     deleteItem: (index, count) => `移除第 ${index} 列，共 ${count} 列`,
     moveUpTrigger: (index, count) => `上移第 ${index} 列，共 ${count} 列`,
     moveDownTrigger: (index, count) => `下移第 ${index} 列，共 ${count} 列`,
+    addTrigger: '新增一列',
   },
   'file-upload': {
     deleteItem: file => `刪除 ${file.name}`,

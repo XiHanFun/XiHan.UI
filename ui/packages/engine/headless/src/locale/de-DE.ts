@@ -295,6 +295,7 @@ const translations = {
     deleteItem: (index, count) => `Zeile ${index} von ${count} entfernen`,
     moveUpTrigger: (index, count) => `Zeile ${index} von ${count} nach oben verschieben`,
     moveDownTrigger: (index, count) => `Zeile ${index} von ${count} nach unten verschieben`,
+    addTrigger: 'Zeile hinzufügen',
   },
   'file-upload': {
     deleteItem: file => `${file.name} entfernen`,

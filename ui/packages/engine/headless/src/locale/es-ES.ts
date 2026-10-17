@@ -293,6 +293,7 @@ const translations = {
     deleteItem: (index, count) => `Quitar la fila ${index} de ${count}`,
     moveUpTrigger: (index, count) => `Subir la fila ${index} de ${count}`,
     moveDownTrigger: (index, count) => `Bajar la fila ${index} de ${count}`,
+    addTrigger: 'Añadir fila',
   },
   'file-upload': {
     deleteItem: file => `Eliminar ${file.name}`,

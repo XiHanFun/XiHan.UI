@@ -5,11 +5,13 @@
 
 // 提供 field array 相关实现。
 
-import type { FieldArrayApi, FieldArrayColumn, FieldArrayItemProps, FieldArrayLayout, FieldArraySchema, FieldArrayTranslations, FormPath } from '@xihan-ui/headless'
+import type { FieldArrayApi, FieldArrayCellSlotData, FieldArrayColumn, FieldArrayItem, FieldArrayItemProps, FieldArrayLayout, FieldArraySchema, FieldArrayTranslations, FormPath } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { fieldArrayStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useOptionalFormContext } from '../form/context'
 import { useFormControlProps } from '../form/use-form-control'
@@ -36,6 +38,14 @@ export type FieldArrayRootSlotProps = Pick<
   | 'moveUp'
   | 'moveDown'
 >
+
+/** item-content 插槽的载荷：这一行。 */
+export interface FieldArrayItemContentSlotProps {
+  item: FieldArrayItem
+}
+
+/** item-cell 插槽的载荷：所在的行与列。 */
+export type FieldArrayItemCellSlotProps = FieldArrayCellSlotData
 
 export const XhFieldArrayRoot = defineComponent({
   name: 'XhFieldArrayRoot',
@@ -66,7 +76,11 @@ export const XhFieldArrayRoot = defineComponent({
     'update:value': (_value: PayloadOf<FieldArrayProps, 'onValueChange'>['value']) => true,
   },
   slots: Object as SlotsType<{
-    default?: (props: FieldArrayRootSlotProps) => VNode[]
+    'default'?: (props: FieldArrayRootSlotProps) => VNode[]
+    /** 不写默认插槽时每一行的作者内容（列表排布），载荷是这一行。 */
+    'item-content'?: (props: FieldArrayItemContentSlotProps) => VNode[]
+    /** 不写默认插槽时每一格的作者内容（表格排布），载荷是所在的行与列。 */
+    'item-cell'?: (props: FieldArrayItemCellSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const form = useOptionalFormContext()
@@ -76,23 +90,25 @@ export const XhFieldArrayRoot = defineComponent({
     }
     const ctx = useFieldArray(withXhConfig('field-array', useFormControlProps(props)) as FieldArrayProps, { onValueChange }, form?.service)
     provideFieldArray(ctx)
-    // items 里每一项都带 key，作者铺行时直接 :key="row.key"
-    return () => h('div', { ...(ctx.api.value.getRootProps() as Record<string, unknown>), ref: ctx.rootRef }, slots.default?.({
-      items: ctx.api.value.items,
-      value: ctx.api.value.value,
-      count: ctx.api.value.count,
-      empty: ctx.api.value.empty,
-      atMin: ctx.api.value.atMin,
-      atMax: ctx.api.value.atMax,
-      canAdd: ctx.api.value.canAdd,
-      setValue: ctx.api.value.setValue,
-      add: ctx.api.value.add,
-      insert: ctx.api.value.insert,
-      remove: ctx.api.value.remove,
-      move: ctx.api.value.move,
-      moveUp: ctx.api.value.moveUp,
-      moveDown: ctx.api.value.moveDown,
-    }))
+    // 写了默认插槽时 items 里每一项都带 key，作者铺行时直接 :key="row.key"；没写时照 fieldArrayStructure 铺整套结构
+    return () => h('div', { ...(ctx.api.value.getRootProps() as Record<string, unknown>), ref: ctx.rootRef }, !slots.default
+      ? renderDefaultStructure(ctx.api.value, { 'item-content': slots['item-content'], 'item-cell': slots['item-cell'] })
+      : slots.default({
+          items: ctx.api.value.items,
+          value: ctx.api.value.value,
+          count: ctx.api.value.count,
+          empty: ctx.api.value.empty,
+          atMin: ctx.api.value.atMin,
+          atMax: ctx.api.value.atMax,
+          canAdd: ctx.api.value.canAdd,
+          setValue: ctx.api.value.setValue,
+          add: ctx.api.value.add,
+          insert: ctx.api.value.insert,
+          remove: ctx.api.value.remove,
+          move: ctx.api.value.move,
+          moveUp: ctx.api.value.moveUp,
+          moveDown: ctx.api.value.moveDown,
+        }))
   },
 })
 
@@ -221,3 +237,38 @@ export const XhFieldArrayMoveDownTrigger = defineComponent({
     return () => h('button', ctx.api.value.getMoveDownTriggerProps(item.value) as Record<string, unknown>, slots.default?.())
   },
 })
+
+/** 结构里的部件 → 部件组件。 */
+const FIELD_ARRAY_PARTS = {
+  'table': XhFieldArrayTable,
+  'header': XhFieldArrayHeader,
+  'column-header': XhFieldArrayColumnHeader,
+  'item': XhFieldArrayItem,
+  'item-label': XhFieldArrayItemLabel,
+  'item-content': XhFieldArrayItemContent,
+  'item-cell': XhFieldArrayItemCell,
+  'item-action': XhFieldArrayItemAction,
+  'add-trigger': XhFieldArrayAddTrigger,
+  'item-delete-trigger': XhFieldArrayItemDeleteTrigger,
+  'move-up-trigger': XhFieldArrayMoveUpTrigger,
+  'move-down-trigger': XhFieldArrayMoveDownTrigger,
+}
+
+interface FieldArrayStructureSlots {
+  'item-content'?: (props: FieldArrayItemContentSlotProps) => VNode[]
+  'item-cell'?: (props: FieldArrayItemCellSlotProps) => VNode[]
+}
+
+/**
+ * 未写默认插槽时照 fieldArrayStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 每一行（表格排布下每一格）的内容由 item-content / item-cell 插槽给出，没给时那一格空着。
+ */
+function renderDefaultStructure(api: FieldArrayApi, content: FieldArrayStructureSlots): VNode[] {
+  return renderStructure(fieldArrayStructure(api), FIELD_ARRAY_PARTS, (node) => {
+    if (node.slot?.name === 'item-content')
+      return content['item-content']?.({ item: node.data as FieldArrayItem })
+    if (node.slot?.name === 'item-cell')
+      return content['item-cell']?.(node.data as FieldArrayCellSlotData)
+    return undefined
+  })
+}

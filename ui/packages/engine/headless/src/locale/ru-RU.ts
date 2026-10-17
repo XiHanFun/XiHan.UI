@@ -307,6 +307,7 @@ const translations = {
     deleteItem: (index, count) => `Удалить строку ${index} из ${count}`,
     moveUpTrigger: (index, count) => `Переместить строку ${index} из ${count} вверх`,
     moveDownTrigger: (index, count) => `Переместить строку ${index} из ${count} вниз`,
+    addTrigger: 'Добавить строку',
   },
   'file-upload': {
     deleteItem: file => `Удалить: ${file.name}`,

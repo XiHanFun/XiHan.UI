@@ -6,8 +6,9 @@
 // 提供 field array 相关实现。
 
 import type { Service } from '@xihan-ui/core'
-import type { FieldArrayApi, FieldArrayColumn, FieldArrayItemProps, FieldArrayLayout, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails, FormControlState, FormPath, FormSchema } from '@xihan-ui/headless'
-import { connectFieldArray, fieldArrayAnatomy, fieldArrayMachine, fieldArrayMeta, resolveFormControlState } from '@xihan-ui/headless'
+import type { FieldArrayApi, FieldArrayColumn, FieldArrayItem, FieldArrayItemProps, FieldArrayLayout, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails, FormControlState, FormPath, FormSchema } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { connectFieldArray, fieldArrayAnatomy, fieldArrayMachine, fieldArrayMeta, fieldArrayStructure, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -37,7 +38,14 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * 元素运行 field-array 状态机并把 connect 产出接上。
  *
  * 值是宿主自己的数据数组，元素只负责增删与换序这套动作，行中放置的控件由作者写进 item-content。
- * 行节点由作者按当前值渲染（一行一个 item，身份取节点上的 index 属性，默认按文档序），
+ * 不写部件（或只写 root）时元素按标准结构生成：列表排布下每行是行号、作者内容与把手（开了 movable 时有上移与下移，
+ * 再是删除），表格排布下是表格本体里的表头与各行、行里每列一格；最后是新增把手（文字取 translations.addTrigger）。
+ * 每行的作者内容写在宿主的直接子节点上：列表排布 `slot="item-content:<行 key>"`，表格排布 `slot="item-cell:<行 key>:<列 id>"`，
+ * 元素把它挪进对应的格子；行 key 从只读的 `items` 上读，换序时内容跟着行走。没给内容的行就空着，不报缺部件。
+ * value-change 同步派发、早于结构重铺：在它的处理函数里按 `items` 增删作者内容，新行在同一帧就带上内容；
+ * 行被删掉后作者内容会回到宿主里，处理函数里一并删掉。
+ *
+ * 手写部件时行节点由作者按当前值渲染（一行一个 item，身份取节点上的 index 属性，默认按文档序），
  * 值变化时由作者侧增删行节点，修改后 MutationObserver 会自动重新接线。
  *
  * 数据数组、造行工厂与读屏文案都无法表达为属性，三者只作为 property 暴露。
@@ -71,6 +79,11 @@ export class XhFieldArrayElement extends XhElement {
   static override partContract = { anatomy: fieldArrayAnatomy, meta: fieldArrayMeta }
   // 放进字段时字段的标签与说明落在表格本体上（组类接线）
   static override fieldTarget = { parts: ['table'], kind: 'group' } as const
+
+  /** 作者没写结构时按标准结构生成：各行（或表格本体里的表头与各行）与新增把手。 */
+  static override structure: ElementStructure<XhFieldArrayElement> = {
+    build: host => host.ctrl.service ? fieldArrayStructure(connectFieldArray(host.ctrl.service, wcNormalize)) : undefined,
+  }
 
   // 列表排布下表格部件不带角色，不承接字段的名字与说明
   protected override acceptsFieldWiring(): boolean {
@@ -152,6 +165,14 @@ export class XhFieldArrayElement extends XhElement {
       translations: this.translations,
       onValueChange: this.notifyValue,
     }
+  }
+
+  /**
+   * 逐行的读侧投影，含组件分配的行 key；状态机还没建立时为空数组。
+   * 标准结构下作者按 key 写每行内容的 slot 名（`item-content:<key>` / `item-cell:<key>:<列 id>`）。
+   */
+  get items(): FieldArrayItem[] {
+    return this.ctrl.service ? connectFieldArray(this.ctrl.service, wcNormalize).items : []
   }
 
   /** 命令式入口共用的取法；状态机在进入文档（hostConnected）后才建立，未建立则抛错。 */
