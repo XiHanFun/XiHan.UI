@@ -45,6 +45,8 @@ export interface XhCheckboxGroupRootProps extends Omit<ComponentPropsWithRef<'di
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
+  /** 必填：至少选一项，一项都没选时每份表单影子带原生 required。 */
+  required?: boolean
   name?: string
   orientation?: Orientation
   tone?: Tone
@@ -68,6 +70,7 @@ export function XhCheckboxGroupRoot({
   disabled,
   readOnly,
   invalid,
+  required,
   name,
   orientation,
   tone,
@@ -88,6 +91,7 @@ export function XhCheckboxGroupRoot({
     disabled,
     readOnly,
     invalid,
+    required,
     name,
     orientation,
     tone,

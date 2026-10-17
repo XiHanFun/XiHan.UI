@@ -126,6 +126,7 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 | `disabled` | `boolean` |  | 整组禁用：每一项随之禁用，且隐藏输入不参与提交。 |
 | `readOnly` | `boolean` |  | 只读：仍可聚焦与朗读，但用户不可修改。 |
 | `invalid` | `boolean` |  | 校验失败标注，写入每个条目的 aria-invalid。 |
+| `required` | `boolean` |  | 必填：至少选一项。根与标题写 data-required（标题据此画星号）；一项都没选时每份表单影子带原生 required， 拦下空表单的提交，选了任何一项就都撤掉。影子是 inert 的、不可聚焦，浏览器的校验气泡落不到它上面， 提交照样被拦下，错误文案交给字段给出。组根是 role=group，不收 aria-required； 条目的 aria-required 说的是「这一项必须勾上」，也不对，读屏经字段的描述链得知必填。 |
 | `name` | `string` |  | 表单字段名；提供后每个条目的隐藏输入才带 name，同名多值一并提交。 |
 | `orientation` | `Orientation` |  | 视觉排布，默认 vertical。只输出 data-orientation，不输出 aria-orientation。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选方框使用哪族颜色。 |
@@ -208,6 +209,7 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
+| `required` | `boolean` |  |
 | `atMax` | `boolean` | 选中数到了 max：未选的条目改不动。未设 max 时恒为 false。 |
 | `atMin` | `boolean` | 选中数降到 min：已选的条目改不动。未设 min（或为 0）时恒为 false。 |
 | `isChecked` | `(value: string) => boolean` |  |
@@ -274,9 +276,11 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
+| `label` | `data-required` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-readonly` | ''（条件成立时才出现） |

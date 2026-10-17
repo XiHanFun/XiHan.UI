@@ -91,7 +91,7 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
   if (kind === 'tags-input')
     return `<xh-tags-input ${markup}><div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div></xh-tags-input>`
   if (kind === 'checkbox-group') {
-    return `<xh-checkbox-group ${nonRequiredMarkup}><div data-xh-part="root">
+    return `<xh-checkbox-group ${markup}><div data-xh-part="root">
       <div data-xh-part="item" value="a"><input data-xh-part="hidden-input"><span data-xh-part="indicator"></span><span data-xh-part="item-text">甲</span></div>
     </div></xh-checkbox-group>`
   }
@@ -245,6 +245,9 @@ async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabl
     })
     expect(item!.getAttribute('aria-readonly')).toBe(String(enabled))
     expect(item!.getAttribute('aria-invalid')).toBe(String(enabled))
+    expect(form.querySelector('xh-checkbox-group [data-scope="checkbox-group"][data-part="root"]')!.hasAttribute('data-required')).toBe(enabled)
+    // 一项都没选：必填时表单影子带 required
+    expect(form.querySelector<HTMLInputElement>('xh-checkbox-group input[type="checkbox"]')!.required).toBe(enabled)
     return
   }
   if (kind === 'slider') {

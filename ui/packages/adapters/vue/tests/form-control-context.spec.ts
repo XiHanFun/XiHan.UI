@@ -111,7 +111,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'TagsInput')
     return h(XhTagsInputRoot, props, () => h(XhTagsInputInput))
   if (kind === 'CheckboxGroup')
-    return h(XhCheckboxGroupRoot, { ...nonRequiredState(props), collection: [{ value: 'a', label: '甲' }] })
+    return h(XhCheckboxGroupRoot, { ...props, collection: [{ value: 'a', label: '甲' }] })
   if (kind === 'Select')
     return h(XhSelectRoot, props, () => h(XhSelectTrigger, null, () => '选择'))
   if (kind === 'Cascader')
@@ -286,6 +286,9 @@ function expectAtomicState(wrapper: ReturnType<typeof mount>, kind: AtomicContro
     expect(item.attributes('aria-disabled')).toBe(String(enabled))
     expect(item.attributes('aria-readonly')).toBe(String(enabled))
     expect(item.attributes('aria-invalid')).toBe(String(enabled))
+    expect(wrapper.find('[data-scope="checkbox-group"][data-part="root"]').attributes('data-required') !== undefined).toBe(enabled)
+    // 一项都没选：必填时表单影子带 required
+    expect(wrapper.find('input[type="checkbox"]').attributes('required') !== undefined).toBe(enabled)
     return
   }
   if (kind === 'Slider') {

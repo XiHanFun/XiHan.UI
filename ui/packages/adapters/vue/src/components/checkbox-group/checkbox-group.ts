@@ -50,6 +50,7 @@ export const XhCheckboxGroupRoot = defineComponent({
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
     name: { type: String },
     orientation: { type: String as PropType<Orientation> },
     tone: { type: String as PropType<Tone> },

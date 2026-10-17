@@ -46,6 +46,7 @@ export function connectCheckboxGroup<T extends PropTypes>(
   const groupDisabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
+  const required = !!prop('required')
   const orientation = prop('orientation') ?? 'vertical'
   const name = prop('name')
   const variant = prop('variant') ?? 'list'
@@ -136,6 +137,7 @@ export function connectCheckboxGroup<T extends PropTypes>(
     disabled: groupDisabled,
     readOnly,
     invalid,
+    required,
     atMax,
     atMin,
     isChecked,
@@ -156,10 +158,11 @@ export function connectCheckboxGroup<T extends PropTypes>(
       'data-disabled': dataAttr(groupDisabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
+      'data-required': dataAttr(required),
       // 容器不占 Tab 位，每个条目自己是停靠点
     }),
 
-    getLabelProps: () => normalize.element({ ...parts.label.attrs, id: ids.label }),
+    getLabelProps: () => normalize.element({ ...parts.label.attrs, 'id': ids.label, 'data-required': dataAttr(required) }),
 
     getItemProps: (item) => {
       const handlers = press('item', item.value, itemDisabled(item) || isLocked(item))
@@ -245,6 +248,8 @@ export function connectCheckboxGroup<T extends PropTypes>(
       'checked': isChecked(item.value),
       // 单体输入用原生 disabled，禁用项不提交出值
       'disabled': isDisabled(item) || undefined,
+      // 必填且一项都没选：每份都带 required，拦下空表单；选了任何一项就都撤掉——同名多值里只要有一项勾上就算填了
+      'required': (required && value.length === 0) || undefined,
       // inert 把这份输入从焦点与无障碍树里整个摘掉：条目那层是 role=checkbox，
       // 它的后代里不能留下可聚焦的控件（负 tabindex 与 aria-hidden 都拦不住读屏的虚拟光标）
       'inert': true,
