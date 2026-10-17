@@ -9,8 +9,10 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { TagsInputApi, TagsInputBlurBehavior, TagsInputItemProps, TagsInputSchema, TagsInputTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { tagsInputStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -47,6 +49,8 @@ export const XhTagsInputRoot = defineComponent({
   name: 'XhTagsInputRoot',
   // 有 connect 与机器兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
+    /** 标题文字。不写默认插槽时铺 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
     // 缺席值 undefined 表示非受控
     value: { type: Array as PropType<string[]> },
     defaultValue: { type: Array as PropType<string[]> },
@@ -82,6 +86,9 @@ export const XhTagsInputRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: TagsInputRootSlotProps) => VNode[]
+    label?: () => VNode[]
+    /** 只填标签文本，常态部分的删除钮与就地编辑照旧由结构铺 */
+    item?: (props: { value: string }) => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const onValueChange: TagsInputProps['onValueChange'] = (details) => {
@@ -95,24 +102,29 @@ export const XhTagsInputRoot = defineComponent({
     const onTagReject: TagsInputProps['onTagReject'] = details => emit('tag-reject', details)
     const ctx = useTagsInput(withHandlers(withXhConfig('tags-input', useFormControlProps(props)), { onClear: () => emit('clear') }) as TagsInputProps, { onValueChange, onInputValueChange, onTagReject })
     provideTagsInput(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      value: ctx.api.value.value,
-      count: ctx.api.value.count,
-      inputValue: ctx.api.value.inputValue,
-      empty: ctx.api.value.empty,
-      atMax: ctx.api.value.atMax,
-      overflow: ctx.api.value.overflow,
-      highlightedValue: ctx.api.value.highlightedValue,
-      editedValue: ctx.api.value.editedValue,
-      canClear: ctx.api.value.canClear,
-      setValue: ctx.api.value.setValue,
-      addValue: ctx.api.value.addValue,
-      deleteValue: ctx.api.value.deleteValue,
-      clear: ctx.api.value.clear,
-      setInputValue: ctx.api.value.setInputValue,
-      highlight: ctx.api.value.highlight,
-      edit: ctx.api.value.edit,
-    }))
+    return () => {
+      const api = ctx.api.value
+      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+        ? slots.default({
+            value: api.value,
+            count: api.count,
+            inputValue: api.inputValue,
+            empty: api.empty,
+            atMax: api.atMax,
+            overflow: api.overflow,
+            highlightedValue: api.highlightedValue,
+            editedValue: api.editedValue,
+            canClear: api.canClear,
+            setValue: api.setValue,
+            addValue: api.addValue,
+            deleteValue: api.deleteValue,
+            clear: api.clear,
+            setInputValue: api.setInputValue,
+            highlight: api.highlight,
+            edit: api.edit,
+          })
+        : renderDefaultStructure(api, { label: props.label, editable: props.editable }, { label: slots.label, item: slots.item }))
+    }
   },
 })
 
@@ -258,3 +270,42 @@ export const XhTagsInputHiddenInput = defineComponent({
     return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
   },
 })
+
+/** 标准结构里各部件对应的组件；标签的常态部分、文本与删除钮委派给 tag，按「tag/部件名」找。 */
+const TAGS_INPUT_PARTS = {
+  'label': XhTagsInputLabel,
+  'control': XhTagsInputControl,
+  'item': XhTagsInputItem,
+  'tag/item-preview': XhTagsInputItemPreview,
+  'tag/item-text': XhTagsInputItemText,
+  'tag/item-delete-trigger': XhTagsInputItemDeleteTrigger,
+  'item-input': XhTagsInputItemInput,
+  'input': XhTagsInputInput,
+  'clear-trigger': XhTagsInputClearTrigger,
+  'count': XhTagsInputCount,
+  'hidden-input': XhTagsInputHiddenInput,
+}
+
+interface TagsInputStructureContent {
+  label?: () => VNode[]
+  item?: (props: { value: string }) => VNode[]
+}
+
+/**
+ * 未写默认插槽时铺开的整套结构：照 headless 的 tagsInputStructure 渲，标签按当前值铺，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题与标签文本由对应插槽接管。
+ */
+function renderDefaultStructure(api: TagsInputApi, options: { label?: string, editable: boolean }, content: TagsInputStructureContent): VNode[] {
+  const nodes = tagsInputStructure(api, {
+    label: options.label,
+    editable: options.editable,
+    slotted: name => content[name as keyof TagsInputStructureContent] != null,
+  })
+  return renderStructure(nodes, TAGS_INPUT_PARTS, (node) => {
+    if (node.slot?.name === 'label')
+      return content.label?.()
+    if (node.slot?.name === 'item')
+      return content.item?.({ value: node.data as string }) ?? (node.data as string)
+    return undefined
+  })
+}

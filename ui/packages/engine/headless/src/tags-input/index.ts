@@ -24,6 +24,8 @@ export {
 } from './tags-input.machine'
 export type { TagsAppendOptions, TagsAppendResult } from './tags-input.machine'
 export { tagsInputMeta } from './tags-input.meta'
+export { tagsInputStructure } from './tags-input.structure'
+export type { TagsInputStructureOptions } from './tags-input.structure'
 export type {
   TagsInputApi,
   TagsInputBlurBehavior,

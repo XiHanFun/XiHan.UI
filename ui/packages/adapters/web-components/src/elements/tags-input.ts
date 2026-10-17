@@ -15,8 +15,9 @@ import type {
   TagsInputTagRejectDetails,
   TagsInputValueChangeDetails,
 } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTagsInput, resolveFormControlState, tagsInputAnatomy, tagsInputMachine, tagsInputMeta } from '@xihan-ui/headless'
+import { connectTagsInput, resolveFormControlState, tagsInputAnatomy, tagsInputMachine, tagsInputMeta, tagsInputStructure } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -47,7 +48,12 @@ const ARRAY_CONVERTER = {
  * （DOM 上带 data-scope="tag"，使用 tag 的皮肤）：语气、尺寸、禁用与只读从本元素传下，
  * 形态按控件的面派生（outline / ghost / 默认使用淡底标签，subtle 使用描边标签）。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label），盒里按当前值铺的标签（开了 editable 每个再带编辑框）、
+ * 输入框与清空按钮，计数（开了 show-count），表单影子。标题与某个标签的文本可以由宿主直接子节点接管：
+ * `slot="label"`、`slot="item:<值>"`。
+ *
  * @customElement xh-tags-input
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控标签集合，按逗号拆分；未提供该属性即非受控，其他分隔符通过 property 设置
  * @attr {string} default-value - 非受控初始标签集合，同样按逗号拆分
  * @attr {string} input-value - 受控输入文本
@@ -95,8 +101,19 @@ export class XhTagsInputElement extends XhElement {
 
   static override fieldTarget = { parts: ['input'], kind: 'state' } as const
 
+  static override structure: ElementStructure<XhTagsInputElement> = {
+    build: host => host.ctrl.service
+      ? tagsInputStructure(connectTagsInput(host.ctrl.service, wcNormalize), {
+          label: host.label,
+          editable: host.editable,
+          slotted: (name, key) => host.slotted(name, key),
+        })
+      : undefined,
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    label: { converter: STRING_CONVERTER },
     value: { converter: ARRAY_CONVERTER },
     defaultValue: { converter: ARRAY_CONVERTER, attribute: 'default-value' },
     inputValue: { converter: STRING_CONVERTER, attribute: 'input-value' },
@@ -123,6 +140,7 @@ export class XhTagsInputElement extends XhElement {
     translations: { attribute: false },
   }
 
+  declare label?: string
   declare value?: string[]
   declare defaultValue?: string[]
   declare inputValue?: string
