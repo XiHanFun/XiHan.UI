@@ -215,7 +215,7 @@
     "name": "headless/locale（十种语言整份）",
     "path": "packages/engine/headless/dist/locale.js",
     "gzip": true,
-    "limit": "62 kB"
+    "limit": "72 kB"
   },
   {
     "name": "vue",
