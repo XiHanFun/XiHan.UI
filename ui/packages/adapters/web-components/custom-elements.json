@@ -15421,7 +15421,7 @@
               "name": "empty"
             },
             {
-              "description": "在途占位，与空态占位同一位置，加载期间显示",
+              "description": "在途占位，与空态占位同一位置，加载期间显示；留空即由元素填入 translations.loading",
               "name": "loading"
             }
           ],

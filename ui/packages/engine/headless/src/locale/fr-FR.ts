@@ -223,7 +223,7 @@ const translations = {
     valueText: (channel, value) => `${value}${COLOR_UNIT[channel]}`,
   },
   'color-swatch-picker': { group: 'Nuancier', swatch: value => `Couleur ${value}` },
-  'combobox': { ...tagged, trigger: 'Afficher les suggestions', clearTrigger: 'Effacer' },
+  'combobox': { ...tagged, trigger: 'Afficher les suggestions', clearTrigger: 'Effacer', loading: 'Chargement' },
   'command': { title: 'Palette de commandes', input: 'Rechercher des commandes', list: 'Commandes' },
   'context-menu': { content: 'Menu contextuel' },
   'date-field': {

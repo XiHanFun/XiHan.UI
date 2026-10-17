@@ -223,7 +223,7 @@ const translations = {
     valueText: (channel, value) => `${value}${COLOR_UNIT[channel]}`,
   },
   'color-swatch-picker': { group: '色票', swatch: value => `顏色 ${value}` },
-  'combobox': { ...tagged, trigger: '顯示建議', clearTrigger: '清除' },
+  'combobox': { ...tagged, trigger: '顯示建議', clearTrigger: '清除', loading: '載入中' },
   'command': { title: '命令選擇區', input: '搜尋命令', list: '命令' },
   'context-menu': { content: '右鍵選單' },
   'date-field': {

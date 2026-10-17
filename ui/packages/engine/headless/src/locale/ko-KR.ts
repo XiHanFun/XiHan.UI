@@ -223,7 +223,7 @@ const translations = {
     valueText: (channel, value) => `${value}${COLOR_UNIT[channel]}`,
   },
   'color-swatch-picker': { group: '색상 견본', swatch: value => `색상 ${value}` },
-  'combobox': { ...tagged, trigger: '제안 표시', clearTrigger: '지우기' },
+  'combobox': { ...tagged, trigger: '제안 표시', clearTrigger: '지우기', loading: '로드 중' },
   'command': { title: '명령 팔레트', input: '명령 검색', list: '명령' },
   'context-menu': { content: '상황에 맞는 메뉴' },
   'date-field': {

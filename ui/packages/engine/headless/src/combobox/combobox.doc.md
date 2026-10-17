@@ -16,7 +16,7 @@
 ## 特性
 
 - 支持单选、多选、分组和自定义值。
-- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字、`empty` 给空态文字、`clearable` 带清空按钮，末尾一份表单影子，给了 `name` 才参与提交。Web Components 里标题、空态、条目文字与行首行尾可以写在宿主的直接子节点上接管：`slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"`。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字、`empty` 给空态文字、`clearable` 带清空按钮，空态之后是在途占位（文字取 `translations.loading`，展开、在途且没有候选时露出），末尾一份表单影子，给了 `name` 才参与提交。Web Components 里标题、空态、条目文字与行首行尾可以写在宿主的直接子节点上接管：`slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"`。
 - 多选的已选项在输入框前排成标签，与[选择器](./select)同一套呈现：超出 `maxTagCount`（默认 3）合并为 `+N`，标签带删除钮，输入串为空时退格删掉最后一个；已选项被筛出候选后标签仍显示选中那一刻的文字。
 - 候选可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
 - 候选可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。

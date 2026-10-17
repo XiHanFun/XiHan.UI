@@ -116,7 +116,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} form - 显式关联的原生表单 ID，提交与 reset 使用同一所有者
  * @csspart hidden-input - type=hidden 的表单出口，省略该节点即不参与表单
  * @csspart empty - 无匹配项提示；须放在 positioner 中作为 content 的兄弟（列表内只允许 option 与 group）
- * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
+ * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示；留空即由元素填入 translations.loading
  */
 export class XhComboboxElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
@@ -482,6 +482,10 @@ export class XhComboboxElement extends XhPortalHostElement {
     put('content', api.getContentProps() as Record<string, unknown>)
     put('empty', api.getEmptyProps() as Record<string, unknown>)
     put('loading', api.getLoadingProps() as Record<string, unknown>)
+    // 留空时由元素填文字：作者写了就归作者
+    const loadingEl = this.getPart('loading')
+    if (loadingEl)
+      this.fillText(loadingEl, api.translations.loading)
     // 必填且没选值时补一份空值占位，原生 required 才拦得住空表单
     this.hiddenInputs.sync(this.getPart('hidden-input'), api.value.length === 0 && api.required
       ? [api.getHiddenInputProps() as Record<string, unknown>]

@@ -225,6 +225,7 @@ export function connectCombobox<T extends PropTypes>(
 
   return {
     open,
+    translations,
     collection,
     value,
     inputValue,

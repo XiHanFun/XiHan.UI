@@ -237,7 +237,7 @@ const translations = {
     valueText: (channel, value) => `${value}${COLOR_UNIT[channel]}`,
   },
   'color-swatch-picker': { group: 'Образцы цветов', swatch: value => `Цвет ${value}` },
-  'combobox': { ...tagged, trigger: 'Показать варианты', clearTrigger: 'Очистить' },
+  'combobox': { ...tagged, trigger: 'Показать варианты', clearTrigger: 'Очистить', loading: 'Загрузка' },
   'command': { title: 'Палитра команд', input: 'Поиск команд', list: 'Команды' },
   'context-menu': { content: 'Контекстное меню' },
   'date-field': {
