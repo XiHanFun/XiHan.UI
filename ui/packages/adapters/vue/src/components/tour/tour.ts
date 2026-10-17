@@ -12,6 +12,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
+import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { provideTour, useTourContext } from './context'
 import { useTour } from './use-tour'
 
@@ -177,6 +178,7 @@ export const XhTourTitle = defineComponent({
   name: 'XhTourTitle',
   setup(_, { slots }) {
     const ctx = useTourContext()
+    useTitleDescriptionPart(ctx.presence, 'title')
     return () => h(
       'h2',
       ctx.api.value.getTitleProps() as Record<string, unknown>,
@@ -189,9 +191,11 @@ export const XhTourDescription = defineComponent({
   name: 'XhTourDescription',
   setup(_, { slots }) {
     const ctx = useTourContext()
+    // 读不出一句话的说明不进描述链
+    const el = useDescriptionPart(ctx.presence)
     return () => h(
       'p',
-      ctx.api.value.getDescriptionProps() as Record<string, unknown>,
+      { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el },
       slots.default?.() ?? ctx.api.value.currentStep?.description,
     )
   },

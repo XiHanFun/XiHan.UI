@@ -7,6 +7,7 @@
 
 import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { TitleDescriptionParts } from '../shared/title-description'
 
 /**
  * 一步引导的高亮目标：CSS 选择器、元素，或返回元素的函数（每次取目标时现调，适合路由切换后才挂上的节点）。
@@ -143,6 +144,11 @@ export interface TourSchema extends MachineSchema {
      * 超时后该步按居中呈现、不再等待；之后目标挂上来了，调用 remeasure 重新锚定。
      */
     targetTimeout?: number
+    /**
+     * 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。
+     * title 不在场时不写 aria-labelledby；description 不在场、或渲染了但读不出一句话（判断同 `hasNamingContent`）时不写 aria-describedby。
+     */
+    parts?: TitleDescriptionParts
     translations?: Partial<TourTranslations>
     /** 步序变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: TourValueChangeDetails) => void

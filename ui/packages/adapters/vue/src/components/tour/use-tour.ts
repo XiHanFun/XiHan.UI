@@ -8,12 +8,14 @@
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
 import type { TourApi, TourSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
+import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectTour, tourMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
+import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
@@ -31,6 +33,8 @@ export interface TourContext {
   showBackdrop: () => boolean
   /** 浮层迁移到的位置：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
+  /** 标题与说明在不在场，由 XhTourTitle / XhTourDescription 登记；只引用在场的部件。 */
+  presence: TitleDescriptionPresence
 }
 
 export function useTour(
@@ -47,7 +51,8 @@ export function useTour(
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   // 四个回调由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
-  const service = useMachine(tourMachine, () => ({ ...props, ...notify }), scope)
+  const presence = useTitleDescriptionPresence()
+  const service = useMachine(tourMachine, () => ({ ...props, parts: presence.parts.value, ...notify }), scope)
 
   // 服务端没有 DOM、也就没有落点：config 为 null 时浮层退回 body
   let config: RuntimeConfig | null = null
@@ -87,5 +92,5 @@ export function useTour(
 
   const showBackdrop = (): boolean => props.showBackdrop ?? true
 
-  return { service, api, backdropRef, spotlightRef, positionerRef, contentRef, visible, showBackdrop, portalTarget }
+  return { service, api, backdropRef, spotlightRef, positionerRef, contentRef, visible, showBackdrop, portalTarget, presence }
 }

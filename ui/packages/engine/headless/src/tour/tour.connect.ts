@@ -42,6 +42,7 @@ export function connectTour<T extends PropTypes>(
   const anchored = !!currentStep?.target && !context.get('missingTarget')
 
   const ids = scope.ids('tour', 'content', 'title', 'description')
+  const rendered = prop('parts')
   const stateAttr = open ? 'open' : 'closed'
   const stepAttr = String(value)
 
@@ -173,8 +174,9 @@ export function connectTour<T extends PropTypes>(
       'tabindex': -1,
       // 引导期间页面其余部分不该被误触，与焦点陷阱一致
       'aria-modal': 'true',
-      'aria-labelledby': ids.title,
-      'aria-describedby': ids.description,
+      // 只引用作者渲染了的标题与说明：省略 parts 按都在场
+      'aria-labelledby': rendered?.title !== false ? ids.title : undefined,
+      'aria-describedby': rendered?.description !== false ? ids.description : undefined,
       'data-state': stateAttr,
       // 挂载时就开着的这一段直接呈现，不播进场
       'data-instant': dataAttr(context.get('openedAtMount')),
