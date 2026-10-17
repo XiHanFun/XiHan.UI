@@ -7,13 +7,17 @@ import {
   provideXhConfig,
   XhSelectContent,
   XhSelectControl,
+  XhSelectEmpty,
+  XhSelectError,
   XhSelectIndicator,
   XhSelectItem,
   XhSelectItemIndicator,
   XhSelectItemText,
   XhSelectLabel,
   XhSelectList,
+  XhSelectLoading,
   XhSelectPositioner,
+  XhSelectRetryTrigger,
   XhSelectRoot,
   XhSelectTrigger,
   XhSelectValueText,
@@ -64,12 +68,18 @@ function mountFromParts(value: string[], portal: HTMLElement = newPortal()) {
         h(XhSelectLabel, () => '水果'),
         h(XhSelectControl, () => [h(XhSelectTrigger, () => [h(XhSelectValueText), h(XhSelectIndicator)])]),
         h(XhSelectPositioner, () => [
-          h(XhSelectContent, () => h(XhSelectList, null, () => COLLECTION.map(node =>
-            h(XhSelectItem, { key: node.value, value: node.value }, () => [
-              h(XhSelectItemText, () => node.label),
-              h(XhSelectItemIndicator),
-            ]),
-          ))),
+          h(XhSelectContent, () => [
+            h(XhSelectList, null, () => COLLECTION.map(node =>
+              h(XhSelectItem, { key: node.value, value: node.value }, () => [
+                h(XhSelectItemText, () => node.label),
+                h(XhSelectItemIndicator),
+              ]),
+            )),
+            h(XhSelectEmpty),
+            h(XhSelectLoading),
+            h(XhSelectError),
+            h(XhSelectRetryTrigger),
+          ]),
         ]),
       ])
     },
@@ -112,6 +122,10 @@ describe('select 的 collection', () => {
       'item',
       'item-text',
       'item-indicator',
+      'empty',
+      'loading',
+      'error',
+      'retry-trigger',
     ])
     w.unmount()
   })
@@ -177,5 +191,23 @@ describe('select 的 collection', () => {
       .map(el => el.getAttribute('aria-disabled'))
     expect(flags).toEqual(['false', 'true'])
     w.unmount()
+  })
+
+  it('空态文字：empty 写进生成的 empty，没给时取 translations.empty，empty 插槽接管它', () => {
+    const emptyText = (props: Record<string, unknown>, slots: Record<string, () => unknown> = {}): string => {
+      const portal = newPortal()
+      const w = mount(defineComponent({
+        setup() {
+          provideXhConfig({ portalContainer: () => portal })
+          return () => h(XhSelectRoot, { collection: [], ...props }, slots)
+        },
+      }), { attachTo: document.body })
+      const text = portal.querySelector('[data-scope="select"][data-part="empty"]')!.innerHTML
+      w.unmount()
+      return text
+    }
+    expect(emptyText({})).toBe('No data')
+    expect(emptyText({ empty: '没有水果' })).toBe('没有水果')
+    expect(emptyText({}, { empty: () => h('strong', '空空如也') })).toBe('<strong>空空如也</strong>')
   })
 })

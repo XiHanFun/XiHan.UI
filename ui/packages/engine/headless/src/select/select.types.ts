@@ -84,6 +84,10 @@ export interface SelectTranslations {
   overflowTag: (count: number) => string
   /** 列表框容器的兜底名字，作者两个名字部件（label / value-text）都未渲染时才使用。 */
   content: string
+  /** 没有选项时 empty 部件里的文字。 */
+  empty: string
+  /** 取数在途时 loading 部件里的文字。 */
+  loading: string
   /** 整表取数失败时 error 部件里的提示。 */
   loadError: string
   /** 整表取数失败后的重试按钮文字与可及名。 */

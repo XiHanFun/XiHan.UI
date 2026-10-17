@@ -575,7 +575,7 @@ const translations = {
     },
   },
   'scrollbar': { thumb: '捲軸' },
-  'select': { ...tagged, clearTrigger: '清除', content: '選項', loadError: '無法載入選項', retry: '重試' },
+  'select': { ...tagged, clearTrigger: '清除', content: '選項', empty: '沒有資料', loading: '載入中', loadError: '無法載入選項', retry: '重試' },
   'side-nav': { root: '側邊欄', input: '篩選導覽', noMatch: '沒有相符的結果' },
   'signature-pad': {
     label: '簽名',

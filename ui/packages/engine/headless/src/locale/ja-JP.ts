@@ -575,7 +575,7 @@ const translations = {
     },
   },
   'scrollbar': { thumb: 'スクロールバー' },
-  'select': { ...tagged, clearTrigger: 'クリア', content: '選択肢', loadError: '選択肢を読み込めませんでした', retry: '再試行' },
+  'select': { ...tagged, clearTrigger: 'クリア', content: '選択肢', empty: 'データがありません', loading: '読み込み中', loadError: '選択肢を読み込めませんでした', retry: '再試行' },
   'side-nav': { root: 'サイドバー', input: 'ナビゲーションを絞り込み', noMatch: '一致する項目がありません' },
   'signature-pad': {
     label: '署名',
