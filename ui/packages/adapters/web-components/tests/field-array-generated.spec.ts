@@ -63,13 +63,17 @@ function contentFor(el: FieldArrayHost, slot: string, value: string): HTMLInputE
   return input
 }
 
-/** 按当前 items 把宿主里的作者内容对齐：新行补上，删掉的行连内容一起删。 */
-function syncContent(el: FieldArrayHost): void {
+/** 删掉的行的内容在行离场后回到宿主（宿主的直接子节点），这时再删：淡出的替身要带着它。 */
+function dropOrphans(el: FieldArrayHost): void {
   const keys = new Set(el.items.map(item => `item-content:${item.key}`))
-  for (const node of [...el.querySelectorAll<HTMLElement>('[slot^="item-content:"]')]) {
+  for (const node of [...el.querySelectorAll<HTMLElement>(':scope > [slot^="item-content:"]')]) {
     if (!keys.has(node.getAttribute('slot')!))
       node.remove()
   }
+}
+
+/** 按当前 items 补上新行的内容。 */
+function syncContent(el: FieldArrayHost): void {
   for (const item of el.items) {
     if (!el.querySelector(`[slot="item-content:${item.key}"]`))
       contentFor(el, `item-content:${item.key}`, String(item.value))
@@ -132,7 +136,9 @@ describe('xh-field-array 生成结构', () => {
     el.removeItem(0)
     await settle(el)
     expect(parts(el, 'item')).toHaveLength(2)
-    // 宿主里不剩挪不进去的作者内容
+    // 离场那一行的内容回到宿主，作者随后删掉，宿主里不剩挪不进去的作者内容
+    expect([...el.children].filter(child => child.hasAttribute('slot'))).toHaveLength(1)
+    dropOrphans(el)
     expect([...el.children].filter(child => child.hasAttribute('slot'))).toEqual([])
     expect(records.filter(record => record.code.startsWith('wc.'))).toEqual([])
   })

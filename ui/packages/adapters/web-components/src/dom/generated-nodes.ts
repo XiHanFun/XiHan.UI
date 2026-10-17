@@ -6,6 +6,8 @@
 // 元素自己生成进作者外壳里的节点：图表的图元、图例项、提示框的缺省内容。
 // 作者写的节点不带标记，重画时只动自己生成的那些。
 
+import { GHOST_ATTR } from '@xihan-ui/core'
+
 /** 本元素生成的节点的标记。 */
 export const GEN_ATTR = 'data-xh-gen'
 
@@ -14,9 +16,9 @@ export const SVG_NS = 'http://www.w3.org/2000/svg'
 /** 生成节点按 key 复用：父节点 → (key → 节点)。 */
 export type KeyedChildren = WeakMap<Element, Map<string, Element>>
 
-/** 父节点里本元素生成的直接子节点，按文档序；给了 mark 时只取生成标记等于它的那些。 */
+/** 父节点里本元素生成的直接子节点，按文档序；给了 mark 时只取生成标记等于它的那些。列表动效放的离场替身不算。 */
 export function generatedChildren(parent: Element, mark?: string): Element[] {
-  return Array.from(parent.children).filter(node => node.hasAttribute(GEN_ATTR) && (mark === undefined || node.getAttribute(GEN_ATTR) === mark))
+  return Array.from(parent.children).filter(node => node.hasAttribute(GEN_ATTR) && !node.hasAttribute(GHOST_ATTR) && (mark === undefined || node.getAttribute(GEN_ATTR) === mark))
 }
 
 /** 属性表：值为 false 或 undefined 的项删除该属性，true 写成空串，其余转成字符串。 */
@@ -98,11 +100,11 @@ export function reconcile<T>(
     if (!kept.has(node))
       node.remove()
   }
+  // 排位时跳过离场替身与别的生成标记的节点
+  const passes = (sibling: Element): boolean => sibling.hasAttribute(GHOST_ATTR) || (mark !== undefined && sibling.getAttribute(GEN_ATTR) !== mark)
   const after = (node: Element): Element | null => {
     let sibling = node.nextElementSibling
-    if (mark === undefined)
-      return sibling
-    while (sibling && sibling.getAttribute(GEN_ATTR) !== mark)
+    while (sibling && passes(sibling))
       sibling = sibling.nextElementSibling
     return sibling
   }

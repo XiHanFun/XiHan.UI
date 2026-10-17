@@ -5,12 +5,16 @@
   const host = document.getElementById("field-array-generated");
   let links = ["https://xihan.fun", ""];
 
-  // 按 items 对齐宿主里的行内容：每行一个 slot="item-content:<行 key>" 的文本框，删掉的行连内容一起删
-  function sync() {
+  // 删掉的行的内容等行离场、回到宿主（宿主的直接子节点）之后再删：淡出的替身要带着它
+  function dropOrphans() {
     const slots = new Set(host.items.map((item) => `item-content:${item.key}`));
-    for (const node of host.querySelectorAll('[slot^="item-content:"]')) {
+    for (const node of host.querySelectorAll(':scope > [slot^="item-content:"]')) {
       if (!slots.has(node.getAttribute("slot"))) node.remove();
     }
+  }
+
+  // 按 items 补上每行的内容：每行一个 slot="item-content:<行 key>" 的文本框
+  function addMissing() {
     for (const item of host.items) {
       const slot = `item-content:${item.key}`;
       if (host.querySelector(`[slot="${slot}"]`)) continue;
@@ -33,12 +37,13 @@
   customElements.whenDefined("xh-field-array").then(() => {
     host.createItem = () => "";
     host.value = links;
-    // 值给了即受控：先写回值，再按新的 items 对齐内容，新行在同一帧就带上文本框
+    // 值给了即受控：先写回值，再按新的 items 补内容，新行在同一帧就带上文本框；删掉的行下一帧再清
     host.addEventListener("value-change", (event) => {
       links = event.detail.value;
       host.value = links;
-      sync();
+      addMissing();
+      requestAnimationFrame(dropOrphans);
     });
-    sync();
+    addMissing();
   });
 </script>

@@ -14,6 +14,7 @@ import { GHOST_ATTR } from '@xihan-ui/core'
 import { fieldGroupAttrs, fieldStateAttrs, withFieldDescription, withFieldLabel } from '@xihan-ui/headless'
 import { onXhConfigChange, withXhConfig } from './config'
 import { mergeAsChildProps } from './dom/as-child'
+import { GEN_ATTR } from './dom/generated-nodes'
 import { validatePartContract } from './dom/part-contract'
 import { containsPart, discoverParts, PART_OWNER_ATTR } from './dom/parts'
 import { createSpreader } from './dom/spread'
@@ -295,8 +296,15 @@ export abstract class XhElement extends XhReactiveElement {
     if (gone.length)
       this.onPartsReleased(gone)
     // 离开本宿主的角色节点必须交还：否则它带着本机器的属性与监听器走，被挪进另一台同类元素后
-    // 会同时挂上两台机器的处理器（一次点击驱动两台）；单纯被移除的节点也仍能派事件、改本组状态
-    for (const el of gone) this.spreader.release(el)
+    // 会同时挂上两台机器的处理器（一次点击驱动两台）；单纯被移除的节点也仍能派事件、改本组状态。
+    // 随标准结构摘出文档的生成节点排到微任务里交还：列表动效在摘下那一刻入队的观察器回调先克隆它当离场替身，
+    // 替身身上还带着部件属性，皮肤按它们播退场；这些节点已从结构里拿掉，不会再被复用
+    for (const el of gone) {
+      if (!el.isConnected && el.hasAttribute(GEN_ATTR))
+        queueMicrotask(() => this.spreader.release(el))
+      else
+        this.spreader.release(el)
+    }
     // 嵌套组件当的部件可能换了根节点：映射在接线时经 getPart 重新建立
     this.asChildHosts.clear()
     this.partMap = next

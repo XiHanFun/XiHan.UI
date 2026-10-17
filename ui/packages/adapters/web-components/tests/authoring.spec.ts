@@ -3,6 +3,7 @@
 // 第三方编写元素的入口：基类的属性声明与批量更新、按 key 复用生成节点、建节点与写属性文本、事件派发、注册的幂等与冲突、
 // 配置控制器的文案优先级与随配置重渲、子树作用域与断开后退订。
 import type { KeyedChildren, PropertyValues } from '../src/authoring'
+import { GHOST_ATTR } from '@xihan-ui/core'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   createAuthoredElement,
@@ -127,6 +128,22 @@ describe('reconcile 与生成节点', () => {
     expect(next[0]).toBe(b)
     expect(a!.isConnected).toBe(false)
     expect(element.firstElementChild).toBe(authored)
+  })
+
+  it('列表动效放的离场替身不算生成节点：对账不摘它、不按它排位', async () => {
+    const element = mount()
+    element.items = [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }]
+    await element.updateComplete
+    const [a] = generatedChildren(element)
+    const ghost = a!.cloneNode(true) as Element
+    ghost.setAttribute(GHOST_ATTR, '')
+    element.insertBefore(ghost, a!)
+    expect(generatedChildren(element)).toHaveLength(2)
+
+    element.items = [{ id: 'b', label: 'B' }, { id: 'c', label: 'C' }]
+    await element.updateComplete
+    expect(ghost.isConnected).toBe(true)
+    expect(generatedChildren(element).map(node => node.textContent)).toEqual(['B', 'C'])
   })
 
   it('生成节点带标记，SVG 命名空间常量可直接用于 createElementNS', () => {

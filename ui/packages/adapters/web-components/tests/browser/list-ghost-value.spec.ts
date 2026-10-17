@@ -63,3 +63,44 @@ describe('删掉受控写值的一行：淡出的替身显示删除前的值', (
     })
   }
 })
+
+describe('标准结构下删掉受控写值的一行：淡出的替身照样带着作者内容与删除前的值', () => {
+  for (const layout of ['list', 'table'] as const) {
+    it(`${layout} 排布`, async () => {
+      document.body.innerHTML = `<div style="inline-size: 480px"><xh-field-array${layout === 'table' ? ' layout="table"' : ''}></xh-field-array></div>`
+      const host = document.querySelector<HTMLElement & { columns?: unknown, value: unknown[], items: Array<{ key: string }>, removeItem: (index: number) => void }>('xh-field-array')!
+      if (layout === 'table')
+        host.columns = [{ id: 'note', label: '备注' }]
+      host.value = VALUES.map(note => ({ note }))
+      host.addEventListener('value-change', (event) => {
+        host.value = (event as CustomEvent<{ value: unknown[] }>).detail.value
+      })
+      await settle()
+      // 每行的内容按行 key 写进 slot，与表单渲染器的写法一致
+      host.items.forEach((item, i) => {
+        const slot = layout === 'table' ? `item-cell:${item.key}:note` : `item-content:${item.key}`
+        host.insertAdjacentHTML('beforeend', control(i).replace('<xh-field>', `<xh-field slot="${slot}">`))
+      })
+      await settle()
+      const fields = [...document.querySelectorAll<HTMLElement & { value: string }>('xh-text-field')]
+      fields.forEach((field, i) => {
+        field.value = VALUES[i]!
+      })
+      await settle()
+      const input = (row: Element): HTMLInputElement => row.querySelector<HTMLInputElement>('[data-scope="text-field"][data-part="input"], input')!
+      const rows = [...document.querySelectorAll('[data-scope="field-array"][data-part="item"]')]
+      expect(rows.map(row => input(row).value)).toEqual(VALUES)
+
+      host.removeItem(0)
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+      const ghost = document.querySelector<HTMLElement>(`[${GHOST_ATTR}]`)!
+      expect(ghost).not.toBeNull()
+      expect(ghost.getAttribute('data-state')).toBe('closed')
+      expect(ghost.querySelectorAll('input')).toHaveLength(1)
+      expect(input(ghost).value).toBe('高铁')
+      // 离场那一行的作者内容随后回到宿主，留在场的那一行照旧
+      expect([...host.children].filter(child => child.hasAttribute('slot'))).toHaveLength(1)
+      expect(input(document.querySelector('[data-scope="field-array"][data-part="item"]:not([data-xh-ghost])')!).value).toBe('餐饮')
+    })
+  }
+})
