@@ -85,10 +85,6 @@ function nonRequiredState(props: ControlState) {
   return { disabled: props.disabled, readOnly: props.readOnly, invalid: props.invalid }
 }
 
-function disabledInvalidState(props: ControlState) {
-  return { disabled: props.disabled, invalid: props.invalid }
-}
-
 function disabledReadOnlyState(props: ControlState) {
   return { disabled: props.disabled, readOnly: props.readOnly }
 }
@@ -141,7 +137,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'FieldArray')
     return h(XhFieldArrayRoot, nonRequiredState(props))
   if (kind === 'FileUpload')
-    return h(XhFileUploadRoot, disabledInvalidState(props))
+    return h(XhFileUploadRoot, props)
   if (kind === 'ImageCropper')
     return h(XhImageCropperRoot, disabledReadOnlyState(props))
   if (kind === 'SignaturePad')
@@ -188,6 +184,8 @@ function expectAtomicState(wrapper: ReturnType<typeof mount>, kind: AtomicContro
     const root = wrapper.find('[data-scope="file-upload"][data-part="root"]')
     expect(root.attributes('data-disabled') !== undefined).toBe(enabled)
     expect(root.attributes('data-invalid') !== undefined).toBe(enabled)
+    expect(root.attributes('data-readonly') !== undefined).toBe(enabled)
+    expect(root.attributes('data-required') !== undefined).toBe(enabled)
     return
   }
   if (kind === 'ImageCropper') {

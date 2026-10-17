@@ -30769,7 +30769,7 @@
 
 /* hover 只在中性态命中：invalid 与 dragging 正拿边框颜色说事，被 hover 盖掉那条信息就没了。
    描边与底一起换（淡底承载的阶梯升一档）：这块面有十来行高，只挪一圈 1px 的描边在这个面积上几乎读不出来 */
-.xh-scope-file-upload[data-part='dropzone']:hover:not([data-disabled], [data-invalid], [data-dragging]) {
+.xh-scope-file-upload[data-part='dropzone']:hover:not([data-disabled], [data-readonly], [data-invalid], [data-dragging]) {
   border-color: var(--xh-file-upload-dropzone-border-hover, var(--xh-border-strong));
   background: var(--xh-file-upload-dropzone-bg-hover, var(--xh-bg-subtle-hover));
 }
@@ -30789,6 +30789,11 @@
 
 .xh-scope-file-upload[data-part='dropzone'][data-invalid] {
   border-color: var(--xh-file-upload-dropzone-border-invalid, var(--xh-border-invalid));
+}
+
+/* 只读：点开、拖入都不收，把「可点」的光标与悬停面收回来；颜色照常，不画成禁用 */
+.xh-scope-file-upload[data-part='dropzone'][data-readonly] {
+  cursor: default;
 }
 
 /* 投放区是 div，没有原生 disabled 可用，禁用态只能靠 data-disabled 表达，写 :disabled 永远不命中 */

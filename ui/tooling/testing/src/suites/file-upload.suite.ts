@@ -321,6 +321,24 @@ export const fileUploadSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '只读：投放区留在 Tab 序列里、报 aria-disabled；清空与删除按钮报 aria-disabled，点了列表不动',
+      spec: { apg: APG },
+      fixture: withItems(2),
+      props: { maxFiles: 3, defaultFiles: [PHOTO, NOTES], readOnly: true, required: true },
+      initial: {
+        parts: {
+          'root': { 'data-readonly': '', 'data-required': '' },
+          'dropzone': { 'tabindex': '0', 'aria-disabled': 'true', 'data-readonly': '' },
+          'clear-trigger': { 'disabled': null, 'aria-disabled': 'true', 'data-disabled': '' },
+          'hidden-input': { required: null },
+        },
+      },
+      steps: [
+        { kind: 'click', part: 'clear-trigger', expect: { counts: { item: 2 }, events: [] } },
+        { kind: 'click', part: 'item-delete-trigger[0]', expect: { counts: { item: 2 }, events: [] } },
+      ],
+    },
+    {
       name: '投放区上 Enter / Space 打开选择框，选中的文件进列表',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['file-upload.kbd.open-dropzone'],

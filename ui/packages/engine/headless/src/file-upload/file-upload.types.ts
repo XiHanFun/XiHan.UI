@@ -175,6 +175,16 @@ export interface FileUploadSchema extends MachineSchema {
     disabled?: boolean
     /** 校验失败标注；只作用于样式与 data-invalid，不阻断接收文件。 */
     invalid?: boolean
+    /**
+     * 只读：列表改不动——选择、拖放、粘贴、删除与清空都不收，已经开始的传输照常进行。
+     * 投放区与三种按钮仍可聚焦，报 aria-disabled="true"。
+     */
+    readOnly?: boolean
+    /**
+     * 必填：根与标题写 data-required（标题据此画星号）；列表为空时文件输入带原生 required，拦下空表单的提交。
+     * 有文件时不带：选完文件输入就被清空，恒带 required 会把已经选了文件的表单也拦下。
+     */
+    required?: boolean
     /** 表单字段名；提供后隐藏输入才参与提交。 */
     name?: string
     /** 已选文件。提供即受控：cell 直读 prop，写入只发 onFilesChange 不落内部值。 */
@@ -294,7 +304,7 @@ export interface FileUploadSchema extends MachineSchema {
     /** 某个文件传完后，进度条走满并淡出播完。 */
     | { type: 'PROGRESS.SETTLED', id: string }
   tag: never
-  guard: 'canChange' | 'canDrop' | 'canPaste'
+  guard: 'canChange' | 'canTransfer' | 'canDrop' | 'canPaste'
   action: 'setFiles' | 'addFiles' | 'deleteFile' | 'clearFiles' | 'openFilePicker' | 'resetToDefault' | 'syncUploads' | 'startUpload' | 'cancelUpload' | 'deleteRemoteFile' | 'settleRemotePromotions' | 'startPress' | 'endPress' | 'releaseWhenInert' | 'markListTracked' | 'settleProgress'
   effect: 'trackUploads' | 'trackListMotion' | 'trackProgressExit'
 }
@@ -309,6 +319,8 @@ export interface FileUploadApi<T extends PropTypes = PropTypes> {
   dragging: boolean
   disabled: boolean
   invalid: boolean
+  readOnly: boolean
+  required: boolean
   /** 没有任何文件。清空按钮据此写 data-empty，空列表据此显示占位。 */
   empty: boolean
   /** 生效的数量上限（已按默认值与非法值归一）。 */

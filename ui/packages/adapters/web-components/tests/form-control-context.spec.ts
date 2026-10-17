@@ -78,10 +78,8 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
   }
   if (kind === 'field-array')
     return `<xh-field-array ${nonRequiredMarkup}><div data-xh-part="root"></div></xh-field-array>`
-  if (kind === 'file-upload') {
-    const fileUploadMarkup = markup.replace(/\b(?:read-only|required)(?:="false")?/g, '')
-    return `<xh-file-upload ${fileUploadMarkup}><div data-xh-part="root"></div></xh-file-upload>`
-  }
+  if (kind === 'file-upload')
+    return `<xh-file-upload ${markup}><div data-xh-part="root"></div></xh-file-upload>`
   if (kind === 'image-cropper') {
     const imageCropperMarkup = markup.replace(/\b(?:required|invalid)(?:="false")?/g, '')
     return `<xh-image-cropper ${imageCropperMarkup}><div data-xh-part="root"></div></xh-image-cropper>`
@@ -129,6 +127,8 @@ async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabl
       expect(root?.hasAttribute('data-disabled')).toBe(enabled)
     })
     expect(root!.hasAttribute('data-invalid')).toBe(enabled)
+    expect(root!.hasAttribute('data-readonly')).toBe(enabled)
+    expect(root!.hasAttribute('data-required')).toBe(enabled)
     return
   }
   if (kind === 'image-cropper') {

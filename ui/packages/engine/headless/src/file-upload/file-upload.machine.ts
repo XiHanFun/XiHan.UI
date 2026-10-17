@@ -394,8 +394,9 @@ export const fileUploadMachine = createMachine({
     'FILE.DELETE': { guard: 'canChange', actions: ['deleteFile'] },
     'FILES.CLEAR': { guard: 'canChange', actions: ['clearFiles'] },
     'PICKER.OPEN': { guard: 'canChange', actions: ['openFilePicker'] },
-    'UPLOAD.START': { guard: 'canChange', actions: ['startUpload'] },
-    'UPLOAD.CANCEL': { guard: 'canChange', actions: ['cancelUpload'] },
+    // 开传与取消不改列表：只读照常，禁用才挡
+    'UPLOAD.START': { guard: 'canTransfer', actions: ['startUpload'] },
+    'UPLOAD.CANCEL': { guard: 'canTransfer', actions: ['cancelUpload'] },
     // 粘贴在两个状态下一样：不改悬停态
     'PASTE': { guard: 'canPaste', actions: ['addFiles'] },
     'REMOTE.DELETE': { guard: 'canChange', actions: ['deleteRemoteFile'] },
@@ -427,9 +428,10 @@ export const fileUploadMachine = createMachine({
   },
   implementations: {
     guards: {
-      canChange: ({ prop }) => !prop('disabled'),
-      canDrop: ({ prop }) => !prop('disabled') && (prop('allowDrop') ?? true),
-      canPaste: ({ prop }) => !prop('disabled') && (prop('allowPaste') ?? true),
+      canChange: ({ prop }) => !prop('disabled') && !prop('readOnly'),
+      canTransfer: ({ prop }) => !prop('disabled'),
+      canDrop: ({ prop }) => !prop('disabled') && !prop('readOnly') && (prop('allowDrop') ?? true),
+      canPaste: ({ prop }) => !prop('disabled') && !prop('readOnly') && (prop('allowPaste') ?? true),
     },
     actions: {
       resetToDefault: (params) => {

@@ -64,6 +64,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {number} min-file-size - 单个文件的字节下限，默认 0
  * @attr {boolean} disabled - 禁用：投放区退出 Tab 序列，各按钮带原生 disabled，增删改一律被守卫拦截
  * @attr {boolean} invalid - 校验失败标注
+ * @attr {boolean} read-only - 只读：选择、拖放、粘贴、删除与清空都不收，投放区与按钮仍可聚焦
+ * @attr {boolean} required - 必填：标题画星号，列表为空时文件输入带原生 required
  * @attr {string} name - 表单字段名；提供后隐藏输入才参与提交
  * @attr {boolean} allow-drop - 是否接受拖拽投放，默认 true；写 allow-drop="false" 关闭
  * @attr {boolean} allow-paste - 是否接受粘贴，默认 true：焦点在组件里时 Ctrl / Cmd+V 收下剪贴板里的文件；写 allow-paste="false" 关闭
@@ -102,6 +104,8 @@ export class XhFileUploadElement extends XhElement {
     files: { attribute: false },
     defaultFiles: { attribute: false },
     remoteFiles: { attribute: false },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    required: { converter: BOOLEAN_CONVERTER },
     defaultRemoteFiles: { attribute: false },
     upload: { attribute: false },
     autoUpload: { converter: BOOLEAN_CONVERTER, attribute: 'auto-upload' },
@@ -134,6 +138,8 @@ export class XhFileUploadElement extends XhElement {
   declare minFileSize?: number
   declare disabled?: boolean
   declare invalid?: boolean
+  declare readOnly?: boolean
+  declare required?: boolean
   declare name?: string
   declare allowDrop?: boolean
   declare allowPaste?: boolean
@@ -199,6 +205,8 @@ export class XhFileUploadElement extends XhElement {
     const control = resolveFormControlState({
       disabled: this.disabled,
       invalid: this.invalid,
+      readOnly: this.readOnly,
+      required: this.required,
     }, this.inheritedControl)
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
@@ -215,6 +223,8 @@ export class XhFileUploadElement extends XhElement {
       minFileSize: this.minFileSize,
       disabled: control.disabled,
       invalid: control.invalid,
+      readOnly: control.readOnly,
+      required: control.required,
       name: this.name,
       allowDrop: this.allowDrop,
       allowPaste: this.allowPaste,

@@ -109,6 +109,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 - `validate` 在类型与大小校验之后逐个判定，返回拒绝码即拒收，与内建原因一起进 `onFileReject`。
 - 焦点在组件里时可以直接粘贴文件（`allowPaste`，默认开启），与选择、投放走同一道校验。
 - 上传生命周期（完成、失败、取消）各有回调；`maxConcurrentUploads` 限定同时在传的份数，其余排队。
+- `readOnly` 时列表改不动（选择、拖放、粘贴、删除与清空都不收），已经开始的传输照常；`required` 时标题画星号，列表为空时文件输入带原生 `required`。
 - `cancelUpload` 中止传输但保留文件，`startUpload` 让取消或失败的文件重新开传；删除文件同样中止它的传输。
 - `upload` 返回 `{ id }` 时，传完的文件转成服务器已有附件：从 `files` 移出、追加进 `remoteFiles`，表单值直接是附件记录。`remoteFiles` 受控时宿主写回含这个 id 的列表之后才移出。
 
@@ -149,6 +150,8 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `minFileSize` | `number` |  | 单个文件的字节下限，默认 0（拦截 0 字节的空文件可设为 1）。 |
 | `disabled` | `boolean` |  |  |
 | `invalid` | `boolean` |  | 校验失败标注；只作用于样式与 data-invalid，不阻断接收文件。 |
+| `readOnly` | `boolean` |  | 只读：列表改不动——选择、拖放、粘贴、删除与清空都不收，已经开始的传输照常进行。 投放区与三种按钮仍可聚焦，报 aria-disabled="true"。 |
+| `required` | `boolean` |  | 必填：根与标题写 data-required（标题据此画星号）；列表为空时文件输入带原生 required，拦下空表单的提交。 有文件时不带：选完文件输入就被清空，恒带 required 会把已经选了文件的表单也拦下。 |
 | `name` | `string` |  | 表单字段名；提供后隐藏输入才参与提交。 |
 | `files` | `File[]` |  | 已选文件。提供即受控：cell 直读 prop，写入只发 onFilesChange 不落内部值。 |
 | `defaultFiles` | `File[]` |  |  |
@@ -232,7 +235,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 
 **事件**：`FILES.SET` · `FILES.ADD` · `FILE.DELETE` · `FILES.CLEAR` · `PICKER.OPEN` · `DRAG.OVER` · `DRAG.LEAVE` · `DROP` · `PASTE` · `UPLOAD.CANCEL` · `UPLOAD.START` · `REMOTE.DELETE` · `FORM.RESET` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED` · `PROGRESS.SETTLED`
 
-**判据**：`canChange` · `canDrop` · `canPaste`
+**判据**：`canChange` · `canTransfer` · `canDrop` · `canPaste`
 
 ### connect API
 
@@ -246,6 +249,8 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `dragging` | `boolean` | 有内容正悬停在投放区上方。 |
 | `disabled` | `boolean` |  |
 | `invalid` | `boolean` |  |
+| `readOnly` | `boolean` |  |
+| `required` | `boolean` |  |
 | `empty` | `boolean` | 没有任何文件。清空按钮据此写 data-empty，空列表据此显示占位。 |
 | `maxFiles` | `number` | 生效的数量上限（已按默认值与非法值归一）。 |
 | `getFileSizeText` | `(file: FileUploadFile) => string` | 字节数格式化为可读形式，供作者渲染 item-size-text；远程附件未报大小时为空串。 |
@@ -293,14 +298,17 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `dropzone` | `aria-disabled` | 'true' \| 'false' |
+| `dropzone` | `aria-disabled` | 'false' \| 'true' |
 | `dropzone` | `aria-labelledby` | `label` 部件的 id `dropzone` 部件的 id \| `dropzone` 部件的 id |
 | `dropzone` | `role` | 'button' |
+| `trigger` | `aria-disabled` | 'true' \| undefined |
 | `list` | `role` | 'list' |
 | `item` | `role` | 'listitem' |
 | `item-preview` | `aria-hidden` | 'true' |
 | `item-progress` | `aria-hidden` | 'true' |
+| `item-delete-trigger` | `aria-disabled` | 'true' \| undefined |
 | `item-delete-trigger` | `aria-label` | label.deleteItem(file) |
+| `clear-trigger` | `aria-disabled` | 'true' \| undefined |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
 
 ## 样式参考
@@ -321,12 +329,17 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
+| `label` | `data-required` | ''（条件成立时才出现） |
 | `dropzone` | `data-disabled` | ''（条件成立时才出现） |
 | `dropzone` | `data-dragging` | ''（条件成立时才出现） |
 | `dropzone` | `data-invalid` | ''（条件成立时才出现） |
+| `dropzone` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
 | `trigger` | `data-xh-action-profile` | 'text' |
@@ -349,6 +362,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `item-progress` | `data-state` | upload?.status |
 | `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `item-delete-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `item-delete-trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `item-delete-trigger` | `data-xh-action-control` | '' |
 | `item-delete-trigger` | `data-xh-action-display` | 'always' |
 | `item-delete-trigger` | `data-xh-action-profile` | 'icon' |
@@ -357,6 +371,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-empty` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-xh-action-control` | '' |
 | `clear-trigger` | `data-xh-action-display` | 'always' |
 | `clear-trigger` | `data-xh-action-profile` | 'text' |
@@ -388,11 +403,11 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `--xh-file-upload-dropzone-bg` | `dropzone` | `background` | `default` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
 | `--xh-file-upload-dropzone-bg-disabled` | `dropzone` | `background` | `disabled` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
 | `--xh-file-upload-dropzone-bg-dragging` | `dropzone` | `background` | `dragging` | `--xh-bg-subtle-hover` | file-upload 的 dropzone 部件 background 覆盖槽。 |
-| `--xh-file-upload-dropzone-bg-hover` | `dropzone` | `background` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-bg-subtle-hover` | file-upload 的 dropzone 部件 background 覆盖槽。 |
+| `--xh-file-upload-dropzone-bg-hover` | `dropzone` | `background` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid], [data-dragging])`<br>`readonly` | `--xh-bg-subtle-hover` | file-upload 的 dropzone 部件 background 覆盖槽。 |
 | `--xh-file-upload-dropzone-border` | `dropzone` | `border` | `default` | `--xh-border-control` | file-upload 的 dropzone 部件 border 覆盖槽。 |
 | `--xh-file-upload-dropzone-border-dragging` | `dropzone` | `border-color` | `dragging` | `--xh-bg-brand` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
 | `--xh-file-upload-dropzone-border-focus` | `dropzone` | `border-color` | `disabled`<br>`dragging`<br>`focus-visible`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-_tone` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
-| `--xh-file-upload-dropzone-border-hover` | `dropzone` | `border-color` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-border-strong` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
+| `--xh-file-upload-dropzone-border-hover` | `dropzone` | `border-color` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid], [data-dragging])`<br>`readonly` | `--xh-border-strong` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
 | `--xh-file-upload-dropzone-border-invalid` | `dropzone` | `border-color` | `invalid` | `--xh-border-invalid` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
 | `--xh-file-upload-dropzone-fg` | `dropzone` | `color` | `default` | `--xh-fg-default` | file-upload 的 dropzone 部件 color 覆盖槽。 |
 | `--xh-file-upload-dropzone-font-size` | `dropzone` | `font-size` | `default` | `--xh-text-body-size` | file-upload 的 dropzone 部件 font-size 覆盖槽。 |

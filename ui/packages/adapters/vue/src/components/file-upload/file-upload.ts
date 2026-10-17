@@ -57,6 +57,8 @@ export const XhFileUploadRoot = defineComponent({
     minFileSize: { type: Number },
     disabled: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
     name: { type: String },
     allowDrop: { type: Boolean, default: undefined },
     allowPaste: { type: Boolean, default: undefined },

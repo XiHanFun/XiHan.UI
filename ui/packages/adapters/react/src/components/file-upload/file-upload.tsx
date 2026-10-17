@@ -59,6 +59,10 @@ export interface XhFileUploadRootProps extends Omit<ComponentPropsWithRef<'div'>
   minFileSize?: number
   disabled?: boolean
   invalid?: boolean
+  /** 只读：列表改不动，投放区与按钮仍可聚焦。 */
+  readOnly?: boolean
+  /** 必填：列表为空时文件输入带原生 required。 */
+  required?: boolean
   /** 表单字段名；提供后影子输入才带 name。 */
   name?: string
   /** 是否接受拖放，默认接受。 */
@@ -98,6 +102,8 @@ export function XhFileUploadRoot({
   minFileSize,
   disabled,
   invalid,
+  readOnly,
+  required,
   name,
   allowDrop,
   allowPaste,
@@ -130,6 +136,8 @@ export function XhFileUploadRoot({
     minFileSize,
     disabled,
     invalid,
+    readOnly,
+    required,
     name,
     allowDrop,
     allowPaste,
