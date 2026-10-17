@@ -9,11 +9,12 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { PasswordInputApi, PasswordInputSchema, PasswordInputTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { withFieldDescription } from '@xihan-ui/headless'
+import { passwordInputStructure, withFieldDescription } from '@xihan-ui/headless'
 import { useEffect } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { PasswordInputProvider, usePasswordInputContext } from './context'
@@ -31,6 +32,8 @@ export type PasswordInputRootSlotProps = Pick<
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'>
 
 export interface XhPasswordInputRootProps extends RootElementProps {
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
   /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
   ariaLabel?: string
   value?: string
@@ -57,6 +60,7 @@ export interface XhPasswordInputRootProps extends RootElementProps {
 }
 
 export function XhPasswordInputRoot({
+  label,
   ariaLabel,
   value,
   defaultValue,
@@ -111,16 +115,18 @@ export function XhPasswordInputRoot({
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
-        {renderSlot(children, {
-          value: api.value,
-          empty: api.empty,
-          revealed: api.revealed,
-          capsLock: api.capsLock,
-          inputType: api.inputType,
-          setValue: api.setValue,
-          setRevealed: api.setRevealed,
-          toggleRevealed: api.toggleRevealed,
-        })}
+        {children != null
+          ? renderSlot(children, {
+              value: api.value,
+              empty: api.empty,
+              revealed: api.revealed,
+              capsLock: api.capsLock,
+              inputType: api.inputType,
+              setValue: api.setValue,
+              setRevealed: api.setRevealed,
+              toggleRevealed: api.toggleRevealed,
+            })
+          : renderDefaultStructure(api, label)}
       </div>
     </PasswordInputProvider>
   )
@@ -206,4 +212,24 @@ export function XhPasswordInputStrengthMeter({ children, ...rest }: XhPasswordIn
       {children}
     </div>
   )
+}
+
+/** 标准结构里各部件对应的组件。 */
+const PASSWORD_INPUT_PARTS = {
+  'label': XhPasswordInputLabel,
+  'control': XhPasswordInputControl,
+  'input': XhPasswordInputInput,
+  'caps-lock-indicator': XhPasswordInputCapsLockIndicator,
+  'visibility-trigger': XhPasswordInputVisibilityTrigger,
+  'strength-meter': XhPasswordInputStrengthMeter,
+}
+
+/**
+ * 未写 children 时铺开的整套结构：照 headless 的 passwordInputStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容交给 label 部件。
+ */
+function renderDefaultStructure(api: PasswordInputApi, label: ReactNode): ReactNode[] {
+  const slotted = label != null && typeof label !== 'string'
+  const nodes = passwordInputStructure(api, { label: typeof label === 'string' ? label : undefined, slotted: name => name === 'label' && slotted })
+  return renderStructure(nodes, PASSWORD_INPUT_PARTS, node => (node.slot ? label : undefined))
 }

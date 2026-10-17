@@ -9,9 +9,10 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { PasswordInputApi, PasswordInputSchema, PasswordInputTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { withFieldDescription } from '@xihan-ui/headless'
+import { passwordInputStructure, withFieldDescription } from '@xihan-ui/headless'
 import { defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { providePasswordInput, usePasswordInputContext } from './context'
@@ -28,6 +29,8 @@ export type PasswordInputRootSlotProps = Pick<
 export const XhPasswordInputRoot = defineComponent({
   name: 'XhPasswordInputRoot',
   props: {
+    /** 标题文字。不写默认插槽时铺 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
     /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
     ariaLabel: { type: String },
     // 缺席值 undefined 表示非受控
@@ -57,6 +60,7 @@ export const XhPasswordInputRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: PasswordInputRootSlotProps) => VNode[]
+    label?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const onValueChange: PasswordInputProps['onValueChange'] = (details) => {
@@ -72,16 +76,21 @@ export const XhPasswordInputRoot = defineComponent({
       { onValueChange, onRevealedChange },
     )
     providePasswordInput(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      value: ctx.api.value.value,
-      empty: ctx.api.value.empty,
-      revealed: ctx.api.value.revealed,
-      capsLock: ctx.api.value.capsLock,
-      inputType: ctx.api.value.inputType,
-      setValue: ctx.api.value.setValue,
-      setRevealed: ctx.api.value.setRevealed,
-      toggleRevealed: ctx.api.value.toggleRevealed,
-    }))
+    return () => {
+      const api = ctx.api.value
+      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+        ? slots.default({
+            value: api.value,
+            empty: api.empty,
+            revealed: api.revealed,
+            capsLock: api.capsLock,
+            inputType: api.inputType,
+            setValue: api.setValue,
+            setRevealed: api.setRevealed,
+            toggleRevealed: api.toggleRevealed,
+          })
+        : renderDefaultStructure(api, props.label, slots.label))
+    }
   },
 })
 
@@ -151,3 +160,22 @@ export const XhPasswordInputStrengthMeter = defineComponent({
     return () => h('div', ctx.api.value.getStrengthMeterProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+/** 标准结构里各部件对应的组件。 */
+const PASSWORD_INPUT_PARTS = {
+  'label': XhPasswordInputLabel,
+  'control': XhPasswordInputControl,
+  'input': XhPasswordInputInput,
+  'caps-lock-indicator': XhPasswordInputCapsLockIndicator,
+  'visibility-trigger': XhPasswordInputVisibilityTrigger,
+  'strength-meter': XhPasswordInputStrengthMeter,
+}
+
+/**
+ * 未写默认插槽时铺开的整套结构：照 headless 的 passwordInputStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题由 label 插槽接管。
+ */
+function renderDefaultStructure(api: PasswordInputApi, label: string | undefined, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = passwordInputStructure(api, { label, slotted: name => name === 'label' && labelSlot != null })
+  return renderStructure(nodes, PASSWORD_INPUT_PARTS, node => (node.slot ? labelSlot?.() : undefined))
+}

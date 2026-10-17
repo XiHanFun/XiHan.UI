@@ -86,6 +86,7 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 - 大写锁定提示由按键事件驱动，焦点离开输入框即熄灭。
 - `autoComplete` 默认 `current-password`，注册表单应显式改为 `new-password`。
 - `strength` 传入 0–4 五档即显示强度条；评分算法由调用方负责，组件只绘制档位。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，盒里依次是输入框、大写锁定提示与明暗切换钮，给了 `strength` 再铺强度条。Web Components 里标题可以写在宿主的直接子节点 `slot="label"` 上接管。
 - 形态、语气、尺寸三轴与[文本字段](./text-field)同源，并排放置不会相差一档。
 - 一体式 `control` 投影 Field Chrome 家族，字段淡底 + 描边静息、无影，聚焦换承载面与 `--xh-border-control-focus`；显隐动作走 Action Control 的 `field-inset` ghost 档：视觉盒按字段内钮尺寸表随档（sm 取 `--xh-control-action-size`、md 取 `--xh-control-h-sm`、lg 取 `--xh-control-h-md`），inset 圆角，按所在承载面取悬停 / 按下中性底，字形取次要前景；与输入之间不画分隔线。
 - 自动填充由家族用 canvas 实体底与默认前景重绘，避免浏览器注入的颜色把框切成异色段。
@@ -168,6 +169,7 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhPasswordInputRoot` | `default` | `PasswordInputRootSlotProps` |  |
+| `XhPasswordInputRoot` | `label` | — |  |
 
 ### React 适配器 props
 
@@ -175,6 +177,7 @@ size 只改变高度、内边距与字号，标签、切换按钮与大写锁定
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhPasswordInputRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
 | `XhPasswordInputRoot` | `children` | `SlotChildren<PasswordInputRootSlotProps>` |  |  |
 
 ### 状态

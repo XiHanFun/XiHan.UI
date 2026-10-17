@@ -7,7 +7,8 @@
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, PasswordInputRevealedChangeDetails, PasswordInputSchema, PasswordInputTranslations, PasswordInputValueChangeDetails } from '@xihan-ui/headless'
-import { connectPasswordInput, passwordInputAnatomy, passwordInputMachine, passwordInputMeta, resolveFormControlState } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { connectPasswordInput, passwordInputAnatomy, passwordInputMachine, passwordInputMeta, passwordInputStructure, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -34,7 +35,11 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * 因此提示要等用户按下第一个键才显示，焦点离开输入框即熄灭。提示节点由作者写空壳，
  * 其中的文字由元素写入。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）、盒里的输入框、大写锁定提示与明暗切换钮、
+ * 强度条（给了 strength 才有）；标题可以由宿主直接子节点 `slot="label"` 接管。
+ *
  * @customElement xh-password-input
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控值；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值
  * @attr {boolean} revealed - 受控的显隐态（明文是否显示）；未提供该属性即非受控
@@ -65,8 +70,15 @@ export class XhPasswordInputElement extends XhElement {
 
   static override fieldTarget = { parts: ['input'], kind: 'state' } as const
 
+  static override structure: ElementStructure<XhPasswordInputElement> = {
+    build: host => host.ctrl.service
+      ? passwordInputStructure(connectPasswordInput(host.ctrl.service, wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key) })
+      : undefined,
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    label: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     revealed: { converter: BOOLEAN_CONVERTER },
@@ -86,6 +98,7 @@ export class XhPasswordInputElement extends XhElement {
     translations: { attribute: false },
   }
 
+  declare label?: string
   declare value?: string
   declare defaultValue?: string
   declare revealed?: boolean
