@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 列表框的标准结构：标题与按 collection 铺的条目。
+// 列表框的标准结构：标题、按 collection 铺的条目与空态、在途两块占位。
 // Vue / React 不写默认插槽时的缺省树、Web Components 不写部件（或只写 root）时元素生成的节点，都照这一份渲。
 
 import type { StructureNode, StructureSlotted } from '../shared/structure'
@@ -22,14 +22,14 @@ export const LISTBOX_STRUCTURE_PARTS = [
   'item-description',
   'item-suffix',
   'item-indicator',
+  'empty',
+  'loading',
 ] as const satisfies readonly ListboxPart[]
 
-/** anatomy 里不进标准结构的部件：分组、空态、在途与取下一页的按钮由作者手写结构时自己摆。 */
+/** anatomy 里不进标准结构的部件：分组与取下一页的按钮由作者手写结构时自己摆。 */
 export const LISTBOX_STRUCTURE_OMITS = [
   'group',
   'group-label',
-  'empty',
-  'loading',
   'load-more-trigger',
 ] as const satisfies readonly ListboxPart[]
 
@@ -41,14 +41,16 @@ type ListboxNode = StructureNode<ListboxStructurePart>
 export interface ListboxStructureOptions {
   /** 标题文字：给了就铺带这段文字的 label；label 插槽有内容时铺内容归作者的 label。 */
   label?: string
+  /** 空态文字：给了就写进 empty，没给时取 translations.empty；empty 插槽有内容时内容归作者。 */
+  empty?: string
   /**
-   * 作者给了哪些插槽的内容：label、item（条目文字）、item-prefix、item-suffix，后三个按条目的值带 key。
+   * 作者给了哪些插槽的内容：label、empty、item（条目文字）、item-prefix、item-suffix，后三个按条目的值带 key。
    * 条目文字没给插槽时铺 collection 里的 label；行首、行尾没给插槽时不铺这两格。
    */
   slotted?: StructureSlotted
 }
 
-type ListboxStructureModel = Pick<ListboxApi, 'collection'>
+type ListboxStructureModel = Pick<ListboxApi, 'collection' | 'translations'>
 
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
@@ -68,7 +70,10 @@ function itemStructure(node: ListboxNodeMeta, slotted: StructureSlotted): Listbo
   return { key: `item:${node.value}`, tag: 'div', part: 'item', attrs: { value: node.value }, children }
 }
 
-/** 列表框在 root 里的标准结构，次序是标题、列表；列表里每条数据一个条目，没给 collection 时列表是空的。 */
+/**
+ * 列表框在 root 里的标准结构，次序是标题、列表、空态、在途；列表里每条数据一个条目，没给 collection 时列表是空的。
+ * 空态与在途是列表的兄弟，文字取 translations（空态先取 empty），露哪一块归连接层。
+ */
 export function listboxStructure(model: ListboxStructureModel, options: ListboxStructureOptions = {}): ListboxNode[] {
   const slotted = options.slotted ?? NOTHING_SLOTTED
   const nodes: ListboxNode[] = []
@@ -76,6 +81,12 @@ export function listboxStructure(model: ListboxStructureModel, options: ListboxS
     nodes.push({ key: 'label', tag: 'span', part: 'label', slot: { name: 'label' } })
   else if (options.label != null)
     nodes.push({ key: 'label', tag: 'span', part: 'label', text: options.label })
-  nodes.push({ key: 'content', tag: 'div', part: 'content', children: model.collection.map(node => itemStructure(node, slotted)) })
+  nodes.push(
+    { key: 'content', tag: 'div', part: 'content', children: model.collection.map(node => itemStructure(node, slotted)) },
+    slotted('empty')
+      ? { key: 'empty', tag: 'div', part: 'empty', slot: { name: 'empty' } }
+      : { key: 'empty', tag: 'div', part: 'empty', text: options.empty ?? model.translations.empty },
+    { key: 'loading', tag: 'div', part: 'loading', text: model.translations.loading },
+  )
   return nodes
 }

@@ -501,6 +501,7 @@ const translations = {
     keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform),
     hotkey: names => names.join(' + '),
   },
+  'listbox': { empty: 'Aucune donnée', loading: 'Chargement' },
   'loading-bar': { root: 'Chargement' },
   'log': { log: 'Journal', scrollToBottom: 'Faire défiler jusqu’en bas' },
   'markdown-stream': { completed: 'Réponse terminée' },

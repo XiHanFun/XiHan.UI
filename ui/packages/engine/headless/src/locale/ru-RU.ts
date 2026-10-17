@@ -517,6 +517,7 @@ const translations = {
     keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform),
     hotkey: names => names.join(' + '),
   },
+  'listbox': { empty: 'Нет данных', loading: 'Загрузка' },
   'loading-bar': { root: 'Загрузка' },
   'log': { log: 'Журнал', scrollToBottom: 'Прокрутить в конец' },
   'markdown-stream': { completed: 'Ответ готов' },

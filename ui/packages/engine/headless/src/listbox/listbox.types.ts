@@ -132,6 +132,7 @@ export interface ListboxSchema extends MachineSchema {
     orientation?: Orientation
     /** 连打检索，默认开启。 */
     typeahead?: boolean
+    translations?: Partial<ListboxTranslations>
     /** value 变化意图回调。 */
     onValueChange?: (details: ListboxValueChangeDetails) => void
   }
@@ -187,6 +188,8 @@ export interface ListboxApi<T extends PropTypes = PropTypes> {
   readOnly: boolean
   invalid: boolean
   loading: boolean
+  /** 合上作者覆盖后的文案。 */
+  translations: ListboxTranslations
   isSelected: (value: string) => boolean
   setValue: (next: string[]) => void
   /** 只保留该条目；加选使用 toggle。 */
@@ -220,5 +223,10 @@ export interface ListboxApi<T extends PropTypes = PropTypes> {
   getItemIndicatorProps: (props: ListboxItemProps) => T['element']
 }
 
-/** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */
-export interface ListboxTranslations {}
+/** 组件自带的固定文案，缺省英文。 */
+export interface ListboxTranslations {
+  /** 标准结构里空态占位的文字。 */
+  empty: string
+  /** 标准结构里在途占位的文字。 */
+  loading: string
+}

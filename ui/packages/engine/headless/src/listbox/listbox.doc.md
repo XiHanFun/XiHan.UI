@@ -22,7 +22,7 @@
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - 提供空态、加载态与加载更多部件。
 - 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
-- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是列表，`collection` 的每条数据一个条目（文字、有副文本时的副文本与选中标记）；没给 `collection` 时列表是空的。分组、空态、在途与加载更多不在其中，要用时手写结构。Web Components 里标题、条目文字与行首行尾可以写在宿主的直接子节点 `slot="label"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 上接管。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是列表、空态与在途占位：`collection` 的每条数据一个条目（文字、有副文本时的副文本与选中标记），没给 `collection` 时列表是空的；空态与在途的文字取 `translations`（`empty`、`loading`），按状态收放。分组与加载更多不在其中，要用时手写结构。Web Components 里标题、空态、条目文字与行首行尾可以写在宿主的直接子节点 `slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 上接管。
 
 ## 组合
 

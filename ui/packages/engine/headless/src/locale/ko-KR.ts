@@ -499,6 +499,7 @@ const translations = {
     keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform),
     hotkey: names => names.join(' + '),
   },
+  'listbox': { empty: '데이터 없음', loading: '로드 중' },
   'loading-bar': { root: '로드 중' },
   'log': { log: '로그', scrollToBottom: '맨 아래로 스크롤' },
   'markdown-stream': { completed: '응답 완료' },

@@ -94,14 +94,30 @@ export const listboxSuite: ConformanceSuite = {
         ],
       },
       initial: {
-        order: ['root', 'label', 'content', 'item[0]', 'item-text[0]', 'item-description', 'item-indicator[0]', 'item[1]', 'item-text[1]', 'item-indicator[1]', 'item[2]', 'item-text[2]', 'item-indicator[2]'],
+        order: ['root', 'label', 'content', 'item[0]', 'item-text[0]', 'item-description', 'item-indicator[0]', 'item[1]', 'item-text[1]', 'item-indicator[1]', 'item[2]', 'item-text[2]', 'item-indicator[2]', 'empty', 'loading'],
         parts: {
           'content': { 'role': 'listbox', 'aria-labelledby': '@part(label)' },
           'item[1]': { 'aria-disabled': 'true' },
+          // 有条目可看：空态与在途两块都收起
+          'empty': { hidden: '' },
+          'loading': { hidden: '' },
         },
       },
       steps: [
         { kind: 'click', part: 'item[2]', expect: { parts: { 'item[2]': { 'aria-selected': 'true' } } } },
+      ],
+    },
+    {
+      name: '作者不写结构且没有条目：结构铺出的空态露面，取数在途时让位给在途占位',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '水果', collection: [] },
+      initial: {
+        order: ['root', 'label', 'content', 'empty', 'loading'],
+        parts: { empty: { hidden: null }, loading: { hidden: '' } },
+      },
+      steps: [
+        { kind: 'setProps', props: { loading: true }, expect: { parts: { empty: { hidden: '' }, loading: { 'hidden': null, 'data-loading': '' } } } },
       ],
     },
     {

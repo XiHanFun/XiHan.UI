@@ -499,6 +499,7 @@ const translations = {
     keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform),
     hotkey: names => names.join(' + '),
   },
+  'listbox': { empty: '沒有資料', loading: '載入中' },
   'loading-bar': { root: '載入中' },
   'log': { log: '記錄', scrollToBottom: '捲動到底部' },
   'markdown-stream': { completed: '回應已完成' },

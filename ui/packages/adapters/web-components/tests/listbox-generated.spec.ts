@@ -13,6 +13,8 @@ interface ListboxHost extends HTMLElement {
   collection?: ListboxNode[]
   label?: string
   value?: string | string[]
+  loading?: boolean
+  translations?: { empty?: string, loading?: string }
 }
 
 const COLLECTION: ListboxNode[] = [
@@ -66,7 +68,8 @@ describe('xh-listbox 生成结构', () => {
 
     const root = part(el, 'root')!
     expect(root.getAttribute('data-xh-gen')).toBe('structure')
-    expect(partsOf(root)).toEqual(['label', 'content'])
+    expect(partsOf(root)).toEqual(['label', 'content', 'empty', 'loading'])
+    expect([part(el, 'empty')!.hidden, part(el, 'loading')!.hidden]).toEqual([true, true])
     const content = part(el, 'content')!
     expect(content.getAttribute('role')).toBe('listbox')
     expect(content.getAttribute('aria-labelledby')).toBe(part(el, 'label')!.id)
@@ -110,6 +113,24 @@ describe('xh-listbox 生成结构', () => {
 
     expect(part(el, 'content')!.children).toHaveLength(0)
     expect(records.filter(record => record.code.startsWith('wc.'))).toEqual([])
+  })
+
+  it('没有条目时空态露面，取数在途时让位给在途占位；两块的字取 translations，slot="empty" 接管空态', async () => {
+    const el = mount({ collection: [], translations: { empty: '没有水果', loading: '正在取' } })
+    await settle(el)
+    const empty = part(el, 'empty')!
+    const loading = part(el, 'loading')!
+    expect([empty.textContent, empty.hidden, loading.textContent, loading.hidden]).toEqual(['没有水果', false, '正在取', true])
+
+    el.loading = true
+    await settle(el)
+    expect([empty.hidden, loading.hidden]).toEqual([true, false])
+    expect(part(el, 'content')!.getAttribute('aria-busy')).toBe('true')
+
+    const slotted = mount({ collection: [] }, '<strong slot="empty">空空如也</strong>')
+    await settle(slotted)
+    expect(part(slotted, 'empty')!.innerHTML).toBe('<strong slot="empty">空空如也</strong>')
+    expect(part(slotted, 'loading')!.textContent).toBe('Loading')
   })
 
   it('数据增删时条目随之增删，留下的条目节点原样复用', async () => {

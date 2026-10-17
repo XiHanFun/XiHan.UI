@@ -6,11 +6,12 @@
 // 提供 listbox 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, ListboxApi, ListboxGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, ListboxApi, ListboxGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode, ListboxTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { listboxStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUnmounted, onUpdated, ref, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFormControlProps } from '../form/use-form-control'
@@ -55,6 +56,7 @@ export const XhListboxRoot = defineComponent({
     typeahead: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction> },
     orientation: { type: String as PropType<Orientation> },
+    translations: { type: Object as PropType<Partial<ListboxTranslations>> },
   },
   // value-change 携带 { value }，update:value 携带裸集合；回传值恒为数组，单选时长度 ≤ 1
   emits: {
@@ -64,6 +66,8 @@ export const XhListboxRoot = defineComponent({
   slots: Object as SlotsType<{
     'default'?: (props: ListboxRootSlotProps) => VNode[]
     'label'?: () => VNode[]
+    /** 不写默认插槽时空态占位的内容；未写时取 translations.empty。 */
+    'empty'?: () => VNode[]
     /** 只填条目的文字槽，副文本与首尾两格照旧各归各的 */
     'item'?: (node: ListboxNodeMeta) => VNode[]
     /** 只接管行首那一格，其余槽照旧由数据铺 */
@@ -76,7 +80,7 @@ export const XhListboxRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useListbox(useFormControlProps(props) as ListboxProps, notify)
+    const ctx = useListbox(withXhConfig('listbox', useFormControlProps(props)) as ListboxProps, notify)
     provideListbox(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [
       ...(slots.default
@@ -91,6 +95,7 @@ export const XhListboxRoot = defineComponent({
         }) ?? []
         : renderDefaultStructure(ctx.api.value, props.label, {
             'label': slots.label,
+            'empty': slots.empty,
             'item': slots.item,
             'item-prefix': slots['item-prefix'],
             'item-suffix': slots['item-suffix'],
@@ -288,10 +293,13 @@ const LISTBOX_PARTS = {
   'item-description': XhListboxItemDescription,
   'item-suffix': XhListboxItemSuffix,
   'item-indicator': XhListboxItemIndicator,
+  'empty': XhListboxEmpty,
+  'loading': XhListboxLoading,
 }
 
 interface ListboxStructureSlots {
   'label'?: () => VNode[]
+  'empty'?: () => VNode[]
   'item'?: (node: ListboxNodeMeta) => VNode[]
   'item-prefix'?: (node: ListboxNodeMeta) => VNode[]
   'item-suffix'?: (node: ListboxNodeMeta) => VNode[]
@@ -308,6 +316,8 @@ function renderDefaultStructure(api: ListboxApi, label: string | undefined, auth
     switch (node.slot?.name) {
       case 'label':
         return authored.label?.()
+      case 'empty':
+        return authored.empty?.()
       case 'item':
         return authored.item?.(meta) ?? meta.label
       case 'item-prefix':

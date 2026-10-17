@@ -8,6 +8,8 @@
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, SelectionOrder, Service } from '@xihan-ui/core'
 import type { ListboxApi, ListboxItemProps, ListboxNodeMeta, ListboxSchema } from './listbox.types'
 import { applySelection, contains, createPressTracker, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemQuerySelector, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems, toggleSelectAll } from '@xihan-ui/core'
+import { LISTBOX_EN_US } from '../locale/en-US'
+import { resolveTranslations } from '../shared/translations'
 import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionMatch, virtualCollectionTarget } from '../shared/virtual-collection'
 import { listboxAnatomy, listboxItemQuery, listboxItemText } from './listbox.anatomy'
 
@@ -205,6 +207,7 @@ export function connectListbox<T extends PropTypes>(
     readOnly,
     invalid,
     loading,
+    translations: resolveTranslations(LISTBOX_EN_US, prop('translations')),
     isSelected,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     select: v => send({ type: 'ITEM.SELECT', value: v }),
