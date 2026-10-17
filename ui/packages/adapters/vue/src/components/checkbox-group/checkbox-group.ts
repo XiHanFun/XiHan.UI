@@ -13,10 +13,13 @@ import type {
   CheckboxGroupNodeMeta,
   CheckboxGroupSchema,
   CheckboxGroupVariant,
+  StructureChild,
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { checkboxGroupStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onUnmounted } from 'vue'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import {
@@ -90,9 +93,7 @@ export const XhCheckboxGroupRoot = defineComponent({
             setValue: ctx.api.value.setValue,
             toggleValue: ctx.api.value.toggleValue,
           })]
-        : props.collection
-          ? renderDefaultTree(ctx.api.value.collection, title, slots.item)
-          : renderLabel(title))
+        : renderDefaultStructure(ctx.api.value, props.label, { label: slots.label, item: slots.item }))
     }
   },
 })
@@ -166,26 +167,46 @@ export const XhCheckboxGroupSelectAllTrigger = defineComponent({
   },
 })
 
+/** 标准结构里各部件对应的组件；条目里的表单影子由 XhCheckboxGroupItem 自行装配，铺结构时去掉这一格。 */
+const CHECKBOX_GROUP_PARTS = {
+  'label': XhCheckboxGroupLabel,
+  'item': XhCheckboxGroupItem,
+  'indicator': XhCheckboxGroupIndicator,
+  'item-text': XhCheckboxGroupItemText,
+  'item-description': XhCheckboxGroupItemDescription,
+}
+
+function withoutSelfAssembled(nodes: readonly StructureChild[]): StructureChild[] {
+  return nodes.flatMap((node): StructureChild[] => {
+    if (!('part' in node))
+      return [node]
+    if (node.part === 'hidden-input')
+      return []
+    return [node.children ? { ...node, children: withoutSelfAssembled(node.children) } : node]
+  })
+}
+
+interface CheckboxGroupStructureSlots {
+  label?: () => VNode[]
+  item?: (node: CheckboxGroupNodeMeta) => VNode[]
+}
+
 /**
- * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
- * 全选控件不在其中：它是可选部件，需要时写默认插槽。
+ * 未写默认插槽时铺开的整套结构：照 headless 的 checkboxGroupStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题与条目文字由对应插槽接管；全选控件要用时写默认插槽。
  */
-function renderDefaultTree(
-  collection: readonly CheckboxGroupNodeMeta[],
-  label: (VNode | string)[] | null,
-  itemSlot?: (node: CheckboxGroupNodeMeta) => VNode[],
-): VNode[] {
-  return [
-    ...renderLabel(label),
-    ...collection.map(node =>
-      h(XhCheckboxGroupItem, { key: node.value, value: node.value }, () => [
-        h(XhCheckboxGroupIndicator),
-        h(XhCheckboxGroupItemText, null, () => itemSlot?.(node) ?? node.label),
-        ...(node.description != null ? [h(XhCheckboxGroupItemDescription, null, () => node.description)] : []),
-      ]),
-    ),
-  ]
+function renderDefaultStructure(api: CheckboxGroupApi, label: string | undefined, content: CheckboxGroupStructureSlots): VNode[] {
+  const nodes = checkboxGroupStructure(api, { label, slotted: name => content[name as keyof CheckboxGroupStructureSlots] != null })
+  return renderStructure(withoutSelfAssembled(nodes), CHECKBOX_GROUP_PARTS, (node) => {
+    switch (node.slot?.name) {
+      case 'label':
+        return content.label?.()
+      case 'item':
+        return content.item?.(node.data as CheckboxGroupNodeMeta) ?? (node.data as CheckboxGroupNodeMeta).label
+      default:
+        return undefined
+    }
+  })
 }
 
 /** 组标题：给了文字或 label 插槽才铺 label 部件。 */

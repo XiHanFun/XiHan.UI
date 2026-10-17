@@ -7,7 +7,8 @@
 
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
 import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails, CheckboxGroupVariant, FormControlState, ResolvedFormControlState } from '@xihan-ui/headless'
-import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, connectCheckboxGroup, resolveFormControlState } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, checkboxGroupStructure, connectCheckboxGroup, resolveFormControlState } from '@xihan-ui/headless'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -35,7 +36,12 @@ const LIST_CONVERTER = {
  *
  * 不做 roving tabindex：组内每一项都是独立的 Tab 停靠点（禁用项也保留），容器自身不占位。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）与 collection 的条目，每个条目带表单影子、方框、
+ * 文字与说明（给了才有）；全选格要用时手写部件。标题与条目文字可以由宿主直接子节点
+ * `slot="label"`、`slot="item:<值>"` 接管。
+ *
  * @customElement xh-checkbox-group
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控选中值，逗号分隔；未提供该属性即非受控
  * @attr {string} default-value - 非受控初始选中值，逗号分隔
  * @attr {string} item-values - 组内全部条目的值，逗号分隔；trigger 据此分辨全选与半选
@@ -65,10 +71,20 @@ export class XhCheckboxGroupElement extends XhElement {
 
   static override fieldTarget = { parts: ['root'], kind: 'group' } as const
 
+  static override structure: ElementStructure<XhCheckboxGroupElement> = {
+    build: host => host.ctrl.service
+      ? checkboxGroupStructure(connectCheckboxGroup(host.ctrl.service, wcNormalize), {
+          label: host.label,
+          slotted: (name, key) => host.slotted(name, key),
+        })
+      : undefined,
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
     collection: { attribute: false },
+    label: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     value: { converter: LIST_CONVERTER },
     defaultValue: { converter: LIST_CONVERTER, attribute: 'default-value' },
     itemValues: { converter: LIST_CONVERTER, attribute: 'item-values' },
@@ -86,6 +102,7 @@ export class XhCheckboxGroupElement extends XhElement {
   }
 
   declare collection?: CheckboxGroupNode[]
+  declare label?: string
   declare value?: string[]
   declare defaultValue?: string[]
   declare itemValues?: string[]

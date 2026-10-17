@@ -8979,7 +8979,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-checkbox-group>`：Light-DOM 行为宿主：作者写 root / label 与若干 item 角色节点，\n每个 item 内自带 hidden-input / indicator / item-text，元素运行 checkbox-group 状态机\n并把 connect 产出接上。条目身份取自条目节点上的 value 属性。\n\n不做 roving tabindex：组内每一项都是独立的 Tab 停靠点（禁用项也保留），容器自身不占位。",
+          "description": "`<xh-checkbox-group>`：Light-DOM 行为宿主：作者写 root / label 与若干 item 角色节点，\n每个 item 内自带 hidden-input / indicator / item-text，元素运行 checkbox-group 状态机\n并把 connect 产出接上。条目身份取自条目节点上的 value 属性。\n\n不做 roving tabindex：组内每一项都是独立的 Tab 停靠点（禁用项也保留），容器自身不占位。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）与 collection 的条目，每个条目带表单影子、方框、\n文字与说明（给了才有）；全选格要用时手写部件。标题与条目文字可以由宿主直接子节点\n`slot=\"label\"`、`slot=\"item:<值>\"` 接管。",
           "name": "XhCheckboxGroupElement",
           "cssParts": [
             {
@@ -9036,11 +9036,29 @@
             },
             {
               "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhCheckboxGroupElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? checkboxGroupStructure(connectCheckboxGroup(host.ctrl.service, wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
+            },
+            {
+              "kind": "field",
               "name": "collection",
               "privacy": "public",
               "type": {
                 "text": "CheckboxGroupNode[] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
             },
             {
               "kind": "field",
@@ -9340,6 +9358,14 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
             {
               "type": {
                 "text": "string[] | undefined"

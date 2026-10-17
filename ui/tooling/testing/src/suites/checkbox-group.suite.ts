@@ -768,5 +768,56 @@ export const checkboxGroupSuite: ConformanceSuite = {
         heldPressIgnored('checkbox-group', 'select-all-trigger', '只读时全选格不接受按压'),
       ],
     },
+    {
+      name: '作者不写结构：三端都照 checkboxGroupStructure 铺出标题与条目，条目里表单影子、方框、文字与说明',
+      spec: { apg: `${APG}#wai-ariaroles,states,andproperties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: {
+        collection: [
+          { value: 'read', label: '读' },
+          { value: 'write', label: '写', description: '包含新建与修改' },
+          { value: 'admin', label: '管理', disabled: true },
+        ],
+        label: '权限',
+        defaultValue: ['write'],
+        name: 'perm',
+      },
+      initial: {
+        order: [
+          'root',
+          'label',
+          'item[0]',
+          'hidden-input[0]',
+          'indicator[0]',
+          'item-text[0]',
+          'item[1]',
+          'hidden-input[1]',
+          'indicator[1]',
+          'item-text[1]',
+          'item-description',
+          'item[2]',
+          'hidden-input[2]',
+          'indicator[2]',
+          'item-text[2]',
+        ],
+        parts: {
+          root: { 'role': 'group', 'aria-labelledby': '@part(label)' },
+          item: [
+            { 'aria-checked': 'false' },
+            { 'aria-checked': 'true' },
+            { 'aria-checked': 'false', 'aria-disabled': 'true' },
+          ],
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'item[0]',
+          expect: {
+            parts: { item: [{ 'aria-checked': 'true' }, { 'aria-checked': 'true' }, { 'aria-checked': 'false' }] },
+          },
+        },
+      ],
+    },
   ],
 }
