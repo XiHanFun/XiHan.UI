@@ -124,6 +124,8 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `required` | `boolean` |  | 必填标注（写入每段的 aria-required）。 |
 | `name` | `string` |  | 起点隐藏输入的表单字段名；提供后才带 name。 |
 | `endName` | `string` |  | 终点隐藏输入的表单字段名；未提供时终点不参与提交。 |
+| `startPlaceholder` | `string` |  | 起点那组段位的整条占位：一段都没填、焦点也不在段上时显示这句文字，焦点进到段上即换回段位。 |
+| `endPlaceholder` | `string` |  | 终点那组段位的整条占位，规则同 startPlaceholder。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，输入行与浮层中的格子一并换档。 |
@@ -387,6 +389,8 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `segment-group` | `data-index` | String(index) |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
 | `segment-group` | `data-out-of-range` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-shown` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-text` | props.endPlaceholder \| props.startPlaceholder \| undefined |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `segment` | `data-disabled` | ''（条件成立时才出现） |
 | `segment` | `data-focus` | ''（条件成立时才出现） |
@@ -514,7 +518,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `--xh-time-range-picker-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | time-range-picker 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-time-range-picker-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | time-range-picker 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-time-range-picker-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | time-range-picker 的 segment-group 部件 color 覆盖槽。 |
-| `--xh-time-range-picker-placeholder-fg` | `segment` | `color` | `placeholder` | `--xh-fg-subtle` | time-range-picker 的 segment 部件 color 覆盖槽。 |
+| `--xh-time-range-picker-placeholder-fg` | `segment`<br>`segment-group` | `color` | `placeholder`<br>`placeholder-shown` | `--xh-fg-subtle` | time-range-picker 的 segment、segment-group 部件 color 覆盖槽。 |
 | `--xh-time-range-picker-preset-bg` | `preset` | `background-color` | `default`<br>`disabled`<br>`error`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | time-range-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-time-range-picker-preset-bg-hover` | `preset` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | time-range-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-time-range-picker-preset-bg-pressed` | `preset` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-active` | time-range-picker 的 preset 部件 background-color 覆盖槽。 |

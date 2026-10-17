@@ -105,6 +105,10 @@ export const XhTimeRangePickerRoot = defineComponent({
     name: { type: String },
     // 终点那份隐藏输入的表单名；不给即终点不参与提交
     endName: { type: String },
+    /** 起点那组段位的整条占位：一段都没填、焦点也不在段上时显示这句文字，焦点进到段上即换回段位。 */
+    startPlaceholder: { type: String },
+    /** 终点那组段位的整条占位，规则同 startPlaceholder。 */
+    endPlaceholder: { type: String },
     variant: { type: String as PropType<ControlVariant> },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },

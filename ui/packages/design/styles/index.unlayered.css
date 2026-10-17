@@ -48543,6 +48543,36 @@
   display: none;
 }
 
+/* 整条占位：这一端一段都没填、焦点也不在这一端的段上时，段位与分隔符让位给一句占位文字，焦点一进来就换回段位。
+   段位只是淡出（仍可聚焦、仍在读屏树里），文字以生成内容压在同一行上、不吃指针，点下去落到底下的段位 */
+.xh-scope-time-range-picker[data-part='segment-group'][data-placeholder-shown] {
+  position: relative;
+  color: transparent;
+}
+
+/* 段位与分隔符一起淡出：显隐写在 segment-group 自己的私有槽上，
+   子节点只读槽——主体无特征的规则不挂在 data-placeholder-shown 后面，输入时翻转只让这一组失效 */
+.xh-scope-time-range-picker[data-part='segment-group'][data-placeholder-shown] {
+  --xh-_time-range-picker-segment-opacity: 0;
+}
+
+.xh-scope-time-range-picker[data-part='segment-group'] > * {
+  opacity: var(--xh-_time-range-picker-segment-opacity, 1);
+}
+
+.xh-scope-time-range-picker[data-part='segment-group'][data-placeholder-shown]::before {
+  content: attr(data-placeholder-text);
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 50%;
+  overflow: hidden;
+  color: var(--xh-time-range-picker-placeholder-fg, var(--xh-fg-subtle));
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  translate: 0 -50%;
+}
+
 .xh-scope-time-range-picker[data-part='range-separator'] {
   display: inline-flex;
   flex: none;
@@ -49040,6 +49070,15 @@
 }
 
 @media (forced-colors: active) {
+  /* 整条占位的文字照系统的弱色画；段位让位时的透明字不被强制换色顶回来 */
+  .xh-scope-time-range-picker[data-part='segment-group'][data-placeholder-shown] {
+    forced-color-adjust: none;
+  }
+
+  .xh-scope-time-range-picker[data-part='segment-group'][data-placeholder-shown]::before {
+    color: GrayText;
+  }
+
   .xh-scope-time-range-picker[data-part='segment'][data-invalid]:is([data-focus], :focus-visible) {
     outline: var(--xh-ring-width) solid Highlight;
     outline-offset: var(--xh-ring-offset);

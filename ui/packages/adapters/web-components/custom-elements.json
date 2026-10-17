@@ -71107,6 +71107,24 @@
             },
             {
               "kind": "field",
+              "name": "startPlaceholder",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "start-placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "endPlaceholder",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "end-placeholder"
+            },
+            {
+              "kind": "field",
               "name": "variant",
               "privacy": "public",
               "type": {
@@ -71554,6 +71572,22 @@
               "description": "终点隐藏输入的表单字段名；未提供时终点不参与提交",
               "name": "end-name",
               "fieldName": "endName"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "起点那组段位的整条占位：一段都没填、焦点也不在段上时显示这句文字",
+              "name": "start-placeholder",
+              "fieldName": "startPlaceholder"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "终点那组段位的整条占位，规则同 start-placeholder",
+              "name": "end-placeholder",
+              "fieldName": "endPlaceholder"
             },
             {
               "type": {

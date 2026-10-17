@@ -1189,3 +1189,30 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
     expect(pressed(cleared.clear)).toBe(false)
   })
 })
+
+describe('time-range-picker 两组段位各自的整条占位', () => {
+  const group = (h: Harness, index: 0 | 1): Record<string, unknown> => h.api().getSegmentGroupProps({ index }) as Record<string, unknown>
+  const segmentHandlers = (h: Harness, index: 0 | 1): Record<string, () => void> => h.api().getSegmentProps({ index, segment: 'hour' }) as unknown as Record<string, () => void>
+
+  it('两端都空时各带各的占位；焦点进到起点的段上只撤起点那句', () => {
+    const h = mount({ startPlaceholder: '开始时间', endPlaceholder: '结束时间' })
+    expect(group(h, 0)['data-placeholder-text']).toBe('开始时间')
+    expect(group(h, 1)['data-placeholder-text']).toBe('结束时间')
+    expect(group(h, 0)['data-placeholder-shown']).toBe('')
+    expect(group(h, 1)['data-placeholder-shown']).toBe('')
+    segmentHandlers(h, 0).onFocus!()
+    expect(group(h, 0)['data-placeholder-shown']).toBeUndefined()
+    expect(group(h, 1)['data-placeholder-shown']).toBe('')
+    segmentHandlers(h, 0).onBlur!()
+    expect(group(h, 0)['data-placeholder-shown']).toBe('')
+  })
+
+  it('起点有值时只有终点露占位；不给时两个属性都不写', () => {
+    const h = mount({ startPlaceholder: '开始时间', endPlaceholder: '结束时间', defaultValue: ['09:00'] })
+    expect(group(h, 0)['data-placeholder-shown']).toBeUndefined()
+    expect(group(h, 1)['data-placeholder-shown']).toBe('')
+    const bare = group(mount(), 0)
+    expect(bare['data-placeholder-text']).toBeUndefined()
+    expect(bare['data-placeholder-shown']).toBeUndefined()
+  })
+})

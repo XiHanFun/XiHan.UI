@@ -428,10 +428,17 @@ export function connectTimeRangePicker<T extends PropTypes>(
     // 它同时是本组段间移动的查询边界：方向键不跨组
     getSegmentGroupProps: ({ index }) => {
       const endOutOfRange = outOfRangeAt(index)
+      const placeholder = index === 1 ? prop('endPlaceholder') : prop('startPlaceholder')
+      const placeholderText = placeholder != null && placeholder !== '' ? placeholder : undefined
+      // 这一端一段都没填：没有值，草稿里也没有哪一段填过
+      const untouched = ends[index] === '' && !draftDirty(drafts[index])
       return normalize.element({
         ...parts['segment-group'].attrs,
         'id': index === 1 ? ids['segment-group-end'] : ids['segment-group'],
         'data-index': String(index),
+        // 整条占位：这一端一段都没填、焦点也不在这一端的段上时才露出，文字由皮肤以生成内容画出，段位与分隔符让位
+        'data-placeholder-text': placeholderText,
+        'data-placeholder-shown': dataAttr(placeholderText != null && untouched && focusedSegment?.index !== index),
         'role': 'group',
         'aria-label': endLabel(index, translations),
         'aria-disabled': disabled ? 'true' : 'false',
