@@ -55387,7 +55387,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-radio-group>`：Light-DOM 行为宿主：作者写 root / label 与若干 item 角色节点，\n每个 item 内自带 hidden-input / indicator / item-icon / item-text，元素运行 radio-group 状态机并把 connect 产出接上。\n条目身份取自条目节点上的 value 属性；导航与选中在事件发生时按 data-scope + data-part 查询 DOM，\n依赖 connect 回写的 data-value，因此 wire 必须先于交互运行（基类 updated 已保证）。\n条目不要用原生 `<button>`：role=radio 只有 Space 是激活键，按钮会把 Enter 翻成 click。\n\nsegmented 形态里 thumb 是滑动的选中标记，位置由状态机测量后写为内联样式中的私有槽；\n它绝对定位，必须写在条目之前，依靠文档序让条目覆盖在它上面。",
+          "description": "`<xh-radio-group>`：Light-DOM 行为宿主：作者写 root / label 与若干 item 角色节点，\n每个 item 内自带 hidden-input / indicator / item-icon / item-text，元素运行 radio-group 状态机并把 connect 产出接上。\n条目身份取自条目节点上的 value 属性；导航与选中在事件发生时按 data-scope + data-part 查询 DOM，\n依赖 connect 回写的 data-value，因此 wire 必须先于交互运行（基类 updated 已保证）。\n条目不要用原生 `<button>`：role=radio 只有 Space 是激活键，按钮会把 Enter 翻成 click。\n\nsegmented 形态里 thumb 是滑动的选中标记，位置由状态机测量后写为内联样式中的私有槽；\n它绝对定位，必须写在条目之前，依靠文档序让条目覆盖在它上面。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）、segmented 形态的滑块与 collection 的条目，\n每个条目带表单影子、圆圈、图标（给了才有）、文字与说明（给了才有）；标题与条目文字可以由宿主直接子节点\n`slot=\"label\"`、`slot=\"item:<值>\"` 接管。",
           "name": "XhRadioGroupElement",
           "cssParts": [
             {
@@ -55448,11 +55448,29 @@
             },
             {
               "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhRadioGroupElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? radioGroupStructure(connectRadioGroup(host.ctrl.service, wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
+            },
+            {
+              "kind": "field",
               "name": "collection",
               "privacy": "public",
               "type": {
                 "text": "RadioGroupNode[] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
             },
             {
               "kind": "field",
@@ -55770,6 +55788,14 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
             {
               "type": {
                 "text": "string | undefined"

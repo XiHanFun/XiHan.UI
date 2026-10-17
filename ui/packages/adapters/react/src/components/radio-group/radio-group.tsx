@@ -6,12 +6,14 @@
 // 提供 radio group 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupVariant } from '@xihan-ui/headless'
+import type { RadioGroupApi, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupVariant, StructureChild } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
+import { radioGroupStructure } from '@xihan-ui/headless'
 import { useEffect, useMemo, useRef } from 'react'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { RadioGroupItemProvider, RadioGroupProvider, useRadioGroupContext, useRadioGroupItemContext } from './context'
@@ -107,9 +109,7 @@ export function XhRadioGroupRoot({
           {children}
         </>
       )
-    : collection
-      ? <DefaultTree collection={api.collection} segmented={api.variant === 'segmented'} label={label} renderItem={renderItem} />
-      : label != null ? <XhRadioGroupLabel>{label}</XhRadioGroupLabel> : null
+    : renderDefaultStructure(api, label, renderItem)
 
   return (
     <RadioGroupProvider value={ctx}>
@@ -226,28 +226,46 @@ export function XhRadioGroupItemDescription({ children, ...rest }: XhRadioGroupI
 
 function noop(): void {}
 
+/** 标准结构里各部件对应的组件；条目里的表单影子与圆圈由 XhRadioGroupItem 自行装配，铺结构时去掉这两格。 */
+const RADIO_GROUP_PARTS = {
+  'label': XhRadioGroupLabel,
+  'thumb': XhRadioGroupThumb,
+  'item': XhRadioGroupItem,
+  'item-icon': XhRadioGroupItemIcon,
+  'item-text': XhRadioGroupItemText,
+  'item-description': XhRadioGroupItemDescription,
+}
+
+const SELF_ASSEMBLED = new Set(['hidden-input', 'indicator'])
+
+function withoutSelfAssembled(nodes: readonly StructureChild[]): StructureChild[] {
+  return nodes.flatMap((node): StructureChild[] => {
+    if (!('part' in node))
+      return [node]
+    if (SELF_ASSEMBLED.has(node.part))
+      return []
+    return [node.children ? { ...node, children: withoutSelfAssembled(node.children) } : node]
+  })
+}
+
 /**
- * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
- * segmented 形态的滑块排在条目之前：它绝对定位，依靠文档序让后面的条目覆盖在它上面，文字才不会被遮住。
+ * 未写 children 时铺开的整套结构：照 headless 的 radioGroupStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容交给 label 部件，条目文字交给 renderItem。
  */
-function DefaultTree(props: {
-  collection: readonly RadioGroupNodeMeta[]
-  segmented: boolean
-  label?: ReactNode
-  renderItem?: (node: RadioGroupNodeMeta) => ReactNode
-}): ReactNode {
-  return (
-    <>
-      {props.label != null ? <XhRadioGroupLabel>{props.label}</XhRadioGroupLabel> : null}
-      {props.segmented ? <XhRadioGroupThumb /> : null}
-      {props.collection.map(node => (
-        <XhRadioGroupItem key={node.value} value={node.value}>
-          {node.icon != null ? <XhRadioGroupItemIcon>{node.icon}</XhRadioGroupItemIcon> : null}
-          <XhRadioGroupItemText>{props.renderItem?.(node) ?? node.label}</XhRadioGroupItemText>
-          {node.description != null ? <XhRadioGroupItemDescription>{node.description}</XhRadioGroupItemDescription> : null}
-        </XhRadioGroupItem>
-      ))}
-    </>
-  )
+function renderDefaultStructure(api: RadioGroupApi, label: ReactNode, renderItem?: (node: RadioGroupNodeMeta) => ReactNode): ReactNode[] {
+  const slotted: Readonly<Record<string, boolean>> = {
+    label: label != null && typeof label !== 'string',
+    item: renderItem != null,
+  }
+  const nodes = radioGroupStructure(api, { label: typeof label === 'string' ? label : undefined, slotted: name => slotted[name] === true })
+  return renderStructure(withoutSelfAssembled(nodes), RADIO_GROUP_PARTS, (node) => {
+    switch (node.slot?.name) {
+      case 'label':
+        return label
+      case 'item':
+        return renderItem?.(node.data as RadioGroupNodeMeta) ?? (node.data as RadioGroupNodeMeta).label
+      default:
+        return undefined
+    }
+  })
 }

@@ -10,6 +10,8 @@ export { connectRadioGroup } from './radio-group.connect'
 export { radioGroupKeyboard } from './radio-group.keyboard'
 export { radioGroupMachine } from './radio-group.machine'
 export { radioGroupMeta } from './radio-group.meta'
+export { radioGroupStructure } from './radio-group.structure'
+export type { RadioGroupStructureOptions } from './radio-group.structure'
 export type {
   RadioGroupApi,
   RadioGroupItemProps,

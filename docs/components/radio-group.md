@@ -104,6 +104,7 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 - 整组只占一个 Tab 位，组内靠方向键移动，与原生单选组一致。
 - `hidden-input` 承担表单参与，宿主表单重置时选中值回落到 `defaultValue`。
 - `collection` 可数据驱动，也可以逐项编写；节点的 `description` 与 `icon` 自动铺出说明行与图标位。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，segmented 形态在条目之前铺滑块，每个条目带表单影子、圆圈、图标、文字与说明。Web Components 里标题与条目文字可以写在宿主的直接子节点上接管：`slot="label"`、`slot="item:<值>"`。
 - 圆圈是字段家族的控制盒：不填底、描边与无影，选中后以语气色圆点填充；整行接 Action Control row 档，悬停 / 按下换面不缩放，圆圈随行换到承载面阶梯的下一档。
 - `variant` 是结构形态，三种形态共用同一台状态机、同一张键盘表：
   - 缺省 `list` 是一列「圆圈 + 文案」的行。

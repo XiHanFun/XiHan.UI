@@ -7,8 +7,9 @@
 
 import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, RadioGroupItemProps, RadioGroupNode, RadioGroupSchema, RadioGroupValueChangeDetails, RadioGroupVariant, ResolvedFormControlState } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectRadioGroup, radioGroupAnatomy, radioGroupMachine, radioGroupMeta, resolveFormControlState } from '@xihan-ui/headless'
+import { connectRadioGroup, radioGroupAnatomy, radioGroupMachine, radioGroupMeta, radioGroupStructure, resolveFormControlState } from '@xihan-ui/headless'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -28,7 +29,12 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * segmented 形态里 thumb 是滑动的选中标记，位置由状态机测量后写为内联样式中的私有槽；
  * 它绝对定位，必须写在条目之前，依靠文档序让条目覆盖在它上面。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）、segmented 形态的滑块与 collection 的条目，
+ * 每个条目带表单影子、圆圈、图标（给了才有）、文字与说明（给了才有）；标题与条目文字可以由宿主直接子节点
+ * `slot="label"`、`slot="item:<值>"` 接管。
+ *
  * @customElement xh-radio-group
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控选中值；未提供该属性即非受控
  * @attr {string} default-value - 非受控初始选中值
  * @attr {boolean} disabled - 整组禁用
@@ -59,10 +65,20 @@ export class XhRadioGroupElement extends XhElement {
 
   static override fieldTarget = { parts: ['root'], kind: 'group' } as const
 
+  static override structure: ElementStructure<XhRadioGroupElement> = {
+    build: host => host.ctrl.service
+      ? radioGroupStructure(connectRadioGroup(host.ctrl.service, wcNormalize), {
+          label: host.label,
+          slotted: (name, key) => host.slotted(name, key),
+        })
+      : undefined,
+  }
+
   // dir 是 HTMLElement 原生访问器，同名声明会与基类冲突并盖掉原生反射，故字段叫 direction、属性名仍用 dir
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
     collection: { attribute: false },
+    label: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     value: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     defaultValue: { attribute: 'default-value' },
     disabled: { converter: BOOLEAN_CONVERTER },
@@ -80,6 +96,7 @@ export class XhRadioGroupElement extends XhElement {
   }
 
   declare collection?: RadioGroupNode[]
+  declare label?: string
   declare value?: string
   declare defaultValue?: string
   declare disabled?: boolean
