@@ -57005,7 +57005,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-rating>`：Light-DOM 行为宿主：作者写 root / label / control 与若干 item 角色节点\n（可选再写一个 hidden-input 参与表单提交），元素运行 rating 状态机并把 connect 产出接上。\n\n每颗星用 value 属性声明自身是第几颗（1 起），导航与选中都以它识别；\n键盘挂在 control 上（它才是 role=radiogroup 的星星带），指针预览挂在每颗星上。",
+          "description": "`<xh-rating>`：Light-DOM 行为宿主：作者写 root / label / control 与若干 item 角色节点\n（可选再写一个 hidden-input 参与表单提交），元素运行 rating 状态机并把 connect 产出接上。\n\n每颗星用 value 属性声明自身是第几颗（1 起），导航与选中都以它识别；\n键盘挂在 control 上（它才是 role=radiogroup 的星星带），指针预览挂在每颗星上。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）、星星带里每档一颗星、表单影子（给了 name 才有）；\n标题可以由宿主直接子节点 `slot=\"label\"` 接管。星星带旁的分值文本要用时手写部件。",
           "name": "XhRatingElement",
           "cssParts": [
             {
@@ -57051,6 +57051,24 @@
               "type": {
                 "text": "{ parts: ['control'], kind: 'group' }"
               }
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhRatingElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? ratingStructure(connectRating(host.ctrl.service, wcNormalize), { label: host.label, hiddenInput: host.name !== undefined, slotted: (name, key) => host.slotted(name, key) }) : undefined, }"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
             },
             {
               "kind": "field",
@@ -57358,6 +57376,14 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
             {
               "type": {
                 "text": "number | undefined"
