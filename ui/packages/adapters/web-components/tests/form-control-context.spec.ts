@@ -74,7 +74,7 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
   if (kind === 'toggle-group')
     return `<xh-toggle-group ${markup}><div data-xh-part="root"><button data-xh-part="item" value="a">甲</button></div></xh-toggle-group>`
   if (kind === 'transfer') {
-    return `<xh-transfer ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="source-panel"><div data-xh-part="list"></div></div></div></xh-transfer>`
+    return `<xh-transfer ${markup}><div data-xh-part="root"><div data-xh-part="source-panel"><div data-xh-part="list"></div></div></div></xh-transfer>`
   }
   if (kind === 'field-array')
     return `<xh-field-array ${nonRequiredMarkup}><div data-xh-part="root"></div></xh-field-array>`
@@ -184,6 +184,9 @@ async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabl
       expect(list?.getAttribute('aria-readonly')).toBe(String(enabled))
     })
     expect(list!.getAttribute('aria-invalid')).toBe(String(enabled))
+    expect(root!.hasAttribute('data-required')).toBe(enabled)
+    // 没有值：必填时补一份空值占位影子带原生 required
+    expect(form.querySelector('xh-transfer input[required]') != null).toBe(enabled)
     return
   }
   if (kind === 'combobox' || kind === 'mention') {

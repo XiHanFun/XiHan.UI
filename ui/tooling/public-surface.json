@@ -14469,6 +14469,7 @@
       "oneWay",
       "pageSize",
       "readOnly",
+      "required",
       "searchable",
       "selection",
       "size",
@@ -23013,6 +23014,7 @@
         "one-way",
         "page-size",
         "read-only",
+        "required",
         "searchable",
         "size",
         "tone"

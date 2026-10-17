@@ -22,6 +22,10 @@ import {
   XhRatingItem,
   XhRatingRoot,
   XhToggleGroupRoot,
+  XhTransferList,
+  XhTransferRoot,
+  XhTransferSourcePanel,
+  XhTransferTargetPanel,
   XhTreeSelectControl,
   XhTreeSelectRoot,
   XhTreeSelectTrigger,
@@ -85,6 +89,15 @@ const CASES: Case[] = [
     render: props => h(XhTreeSelectRoot, { collection: [{ value: 'src', label: 'src' }], ...props }, () => h(XhTreeSelectControl, null, () => h(XhTreeSelectTrigger, null, () => [h(XhTreeSelectValueText)]))),
     host: root => root.querySelector<HTMLElement>('[data-scope="tree-select"][data-part="trigger"]')!,
     wired: true,
+  },
+  {
+    name: 'transfer',
+    axes: { required: 'aria-required' },
+    render: props => h(XhTransferRoot, { collection: [{ value: 'a', label: '甲' }], ...props }, () => [
+      h(XhTransferSourcePanel, null, () => h(XhTransferList)),
+      h(XhTransferTargetPanel, null, () => h(XhTransferList)),
+    ]),
+    host: root => root.querySelector<HTMLElement>('[data-scope="transfer"][data-part="target-panel"] [data-scope="transfer"][data-part="list"]')!,
   },
 ]
 

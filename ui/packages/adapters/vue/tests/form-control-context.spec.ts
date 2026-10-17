@@ -133,7 +133,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'ToggleGroup')
     return h(XhToggleGroupRoot, { ...props, collection: [{ value: 'a', label: '甲' }] })
   if (kind === 'Transfer')
-    return h(XhTransferRoot, { ...nonRequiredState(props), collection: [] }, () => h(XhTransferSourcePanel, null, () => h(XhTransferList)))
+    return h(XhTransferRoot, { ...props, collection: [] }, () => h(XhTransferSourcePanel, null, () => h(XhTransferList)))
   if (kind === 'FieldArray')
     return h(XhFieldArrayRoot, nonRequiredState(props))
   if (kind === 'FileUpload')
@@ -225,6 +225,9 @@ function expectAtomicState(wrapper: ReturnType<typeof mount>, kind: AtomicContro
     expect(root.attributes('data-disabled') !== undefined).toBe(enabled)
     expect(list.attributes('aria-readonly')).toBe(String(enabled))
     expect(list.attributes('aria-invalid')).toBe(String(enabled))
+    expect(root.attributes('data-required') !== undefined).toBe(enabled)
+    // 没有值：必填时补一份空值占位影子带原生 required
+    expect(wrapper.find('input[required]').exists()).toBe(enabled)
     return
   }
   if (kind === 'Combobox' || kind === 'Mention') {

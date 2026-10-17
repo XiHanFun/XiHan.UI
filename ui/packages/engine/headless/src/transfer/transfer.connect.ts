@@ -19,6 +19,7 @@ import { contains, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM
 import { TRANSFER_EN_US } from '../locale/en-US'
 import { resolveTranslations } from '../shared/translations'
 import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionTarget } from '../shared/virtual-collection'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { transferAnatomy, transferItemQuery } from './transfer.anatomy'
 import { transferFocusKey, transferOppositeSide, transferPageKey, transferQueryKey } from './transfer.machine'
 import {
@@ -55,6 +56,7 @@ export function connectTransfer<T extends PropTypes>(
   const loading = !!prop('loading')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
+  const required = !!prop('required')
   const oneWay = !!prop('oneWay')
   const searchable = !!prop('searchable')
   const loop = prop('loop') ?? true
@@ -239,6 +241,7 @@ export function connectTransfer<T extends PropTypes>(
     disabled,
     readOnly,
     invalid,
+    required,
     oneWay,
     searchable,
     visibleItems: side => visible[side],
@@ -260,14 +263,28 @@ export function connectTransfer<T extends PropTypes>(
     toggleAll: side => send({ type: 'SIDE.TOGGLE_ALL', side }),
     move: to => send({ type: 'ITEMS.MOVE', to }),
 
-    getHiddenInputProps: input => normalize.input({
-      ...parts['hidden-input'].attrs,
-      type: 'hidden',
-      name: prop('name'),
-      form: prop('form'),
-      disabled: disabled || undefined,
-      value: input.value,
-    }),
+    getHiddenInputProps: input => input
+      ? normalize.input({
+          ...parts['hidden-input'].attrs,
+          type: 'hidden',
+          name: prop('name'),
+          form: prop('form'),
+          disabled: disabled || undefined,
+          value: input.value,
+        })
+      // 空值占位：hidden 不参与约束校验，写成视觉隐藏的文本输入，required 才拦得住
+      : normalize.input({
+          ...parts['hidden-input'].attrs,
+          'type': 'text',
+          'name': prop('name'),
+          'form': prop('form'),
+          'value': '',
+          'required': required || undefined,
+          'disabled': disabled || undefined,
+          'tabindex': -1,
+          'aria-hidden': true,
+          'style': VISUALLY_HIDDEN_STYLE,
+        }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -277,6 +294,7 @@ export function connectTransfer<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
+      'data-required': dataAttr(required),
       'data-loading': dataAttr(loading),
       'data-one-way': dataAttr(oneWay),
       // 只在作者显式给了 dir 时才写，默认写 ltr 会盖掉外层文档的 rtl
@@ -343,6 +361,8 @@ export function connectTransfer<T extends PropTypes>(
       'aria-disabled': disabled ? 'true' : 'false',
       'aria-readonly': readOnly ? 'true' : 'false',
       'aria-invalid': invalid ? 'true' : 'false',
+      // 必填说的是已选那一侧：至少移过去一项
+      'aria-required': panel.side === 'target' ? (required ? 'true' : 'false') : undefined,
       // 取数在途的播报归列表本体：两个相位占位自己不带这一位
       'aria-busy': loading ? 'true' : undefined,
       // 判据用 focusedValue 而非锚点：锚点可能指向已搬走的值，那时没有条目认领 tabindex=0

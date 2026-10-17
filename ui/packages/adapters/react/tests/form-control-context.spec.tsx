@@ -150,7 +150,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
     return <XhToggleGroupRoot {...props} collection={[{ value: 'a', label: '甲' }]} />
   if (kind === 'Transfer') {
     return (
-      <XhTransferRoot {...nonRequiredState(props)} collection={[]}>
+      <XhTransferRoot {...props} collection={[]}>
         <XhTransferSourcePanel><XhTransferList /></XhTransferSourcePanel>
       </XhTransferRoot>
     )
@@ -251,6 +251,9 @@ function expectAtomicState(container: HTMLElement, kind: AtomicControl, enabled:
     expect(root.hasAttribute('data-disabled')).toBe(enabled)
     expect(list.getAttribute('aria-readonly')).toBe(String(enabled))
     expect(list.getAttribute('aria-invalid')).toBe(String(enabled))
+    expect(root.hasAttribute('data-required')).toBe(enabled)
+    // 没有值：必填时补一份空值占位影子带原生 required
+    expect(container.querySelector('input[required]') != null).toBe(enabled)
     return
   }
   if (kind === 'Combobox' || kind === 'Mention') {

@@ -92,6 +92,7 @@ export const XhTransferRoot = defineComponent({
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
     loading: Boolean,
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
@@ -140,7 +141,10 @@ export const XhTransferRoot = defineComponent({
     }), ...ctx.api.value.value.map(value => h('input', {
       ...ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown>,
       key: value,
-    }))])
+    })), ...(ctx.api.value.value.length === 0 && ctx.api.value.required
+      // 必填且没有值：补一份空值占位，原生 required 才拦得住空表单
+      ? [h('input', { ...ctx.api.value.getHiddenInputProps() as Record<string, unknown>, key: 'required' })]
+      : [])])
   },
 })
 

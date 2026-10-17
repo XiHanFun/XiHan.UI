@@ -1295,3 +1295,27 @@ describe('分页', () => {
     expect(document.activeElement).toBe(cherry)
   })
 })
+
+describe('transfer 必填', () => {
+  it('已选一侧的列表报 aria-required，缺省显式 false；待选一侧不写；根带 data-required', () => {
+    expect(mount().side('target').list.getAttribute('aria-required')).toBe('false')
+    const h = mount({ required: true })
+    expect(h.side('target').list.getAttribute('aria-required')).toBe('true')
+    expect(h.side('source').list.hasAttribute('aria-required')).toBe(false)
+    expect(h.root.hasAttribute('data-required')).toBe(true)
+    expect(h.api().required).toBe(true)
+  })
+
+  it('不给 value 是空值占位：视觉隐藏的文本输入、值为空串，必填时带原生 required；有值的影子照旧是 hidden', () => {
+    const api = mount({ required: true, name: 'roles' }).api()
+    const placeholder = api.getHiddenInputProps() as Record<string, unknown>
+    expect(placeholder.type).toBe('text')
+    expect(placeholder.value).toBe('')
+    expect(placeholder.name).toBe('roles')
+    expect(placeholder.required).toBe(true)
+    expect(placeholder['aria-hidden']).toBe(true)
+    const filled = api.getHiddenInputProps({ value: 'a' }) as Record<string, unknown>
+    expect(filled.type).toBe('hidden')
+    expect(filled.required).toBeUndefined()
+  })
+})

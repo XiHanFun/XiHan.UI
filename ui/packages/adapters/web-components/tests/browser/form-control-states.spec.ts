@@ -65,6 +65,12 @@ const CASES: Case[] = [
     host: root => root.querySelector<HTMLElement>('[data-scope="tree-select"][data-part="trigger"]')!,
     wired: true,
   },
+  {
+    name: 'transfer',
+    axes: { required: 'aria-required' },
+    markup: attrs => `<xh-transfer ${attrs}><div data-xh-part="root"><div data-xh-part="source-panel"><div data-xh-part="list"></div></div><div data-xh-part="target-panel"><div data-xh-part="list"></div></div></div></xh-transfer>`,
+    host: root => root.querySelector<HTMLElement>('[data-scope="transfer"][data-part="target-panel"] [data-scope="transfer"][data-part="list"]')!,
+  },
 ]
 
 const ARIA_RULES = ['aria-allowed-attr', 'aria-valid-attr-value', 'aria-prohibited-attr', 'aria-required-attr', 'aria-allowed-role']
