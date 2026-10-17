@@ -88,6 +88,7 @@
     "./drawer.css": "./dist/css/drawer.css",
     "./editable.css": "./dist/css/editable.css",
     "./empty-state.css": "./dist/css/empty-state.css",
+    "./expression-input.css": "./dist/css/expression-input.css",
     "./field-array.css": "./dist/css/field-array.css",
     "./field.css": "./dist/css/field.css",
     "./fieldset.css": "./dist/css/fieldset.css",

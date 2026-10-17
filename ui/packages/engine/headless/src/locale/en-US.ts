@@ -11,6 +11,7 @@
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { KeyTextTable } from './key-text'
 import type { XhLocale, XhLocaleBucket, XhLocaleTranslations } from './types'
+import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 import { keyText } from './key-text'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -340,6 +341,19 @@ export const DIFF_VIEW_EN_US: XhLocaleBucket<'diff-view'> = {
 }
 
 export const DRAWER_EN_US: XhLocaleBucket<'drawer'> = { close: 'Close', resizeTrigger: 'Resize drawer' }
+
+export const EXPRESSION_INPUT_EN_US: XhLocaleBucket<'expression-input'> = {
+  content: 'Suggestions',
+  noMatches: 'No matches',
+  kindVariable: 'Variable',
+  kindFunction: 'Function',
+  position: (line, column) => (line === null ? `Column ${column}` : `Line ${line}, column ${column}`),
+  issueRow: (position, message) => `${position}: ${message}`,
+  issue: expressionIssueEnUS,
+  param: expressionParamEnUS,
+  paramOrdinal: index => `argument ${index}`,
+  functionDescription: expressionFunctionEnUS,
+}
 
 export const FIELD_ARRAY_EN_US: XhLocaleBucket<'field-array'> = {
   deleteItem: (index, count) => `Remove row ${index} of ${count}`,
@@ -898,6 +912,7 @@ const translations = {
   'dialog': DIALOG_EN_US,
   'diff-view': DIFF_VIEW_EN_US,
   'drawer': DRAWER_EN_US,
+  'expression-input': EXPRESSION_INPUT_EN_US,
   'field-array': FIELD_ARRAY_EN_US,
   'file-upload': FILE_UPLOAD_EN_US,
   'float-button': FLOAT_BUTTON_EN_US,

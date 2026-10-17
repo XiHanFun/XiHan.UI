@@ -70,6 +70,7 @@ const PRESSABLE = {
   // 命令走 Collection Item 的 overlay 语境，按下面由家族给
   'command': [{ part: 'item', feedback: 'surface' }],
   'mention': [{ part: 'item', feedback: 'surface' }],
+  'expression-input': [{ part: 'item', feedback: 'surface' }],
   'tree': [{ part: 'item', feedback: 'surface' }, { part: 'branch-control', feedback: 'surface' }],
   'json-viewer': [{ part: 'branch-control', feedback: 'surface' }],
   'side-nav': [{ part: 'link', feedback: 'surface' }, { part: 'branch-trigger', feedback: 'surface' }],

@@ -50,6 +50,7 @@ import type { DownloadTriggerTranslations } from '../download-trigger/download-t
 import type { DrawerTranslations } from '../drawer/drawer.types'
 import type { EditableTranslations } from '../editable/editable.types'
 import type { EmptyStateTranslations } from '../empty-state/empty-state.types'
+import type { ExpressionInputTranslations } from '../expression-input/expression-input.types'
 import type { FieldArrayTranslations } from '../field-array/field-array.types'
 import type { FieldTranslations } from '../field/field.types'
 import type { FieldsetTranslations } from '../fieldset/fieldset.types'
@@ -193,6 +194,7 @@ export interface XhTranslationOverrides {
   'drawer'?: Partial<DrawerTranslations>
   'editable'?: Partial<EditableTranslations>
   'empty-state'?: Partial<EmptyStateTranslations>
+  'expression-input'?: Partial<ExpressionInputTranslations>
   'field'?: Partial<FieldTranslations>
   'field-array'?: Partial<FieldArrayTranslations>
   'fieldset'?: Partial<FieldsetTranslations>

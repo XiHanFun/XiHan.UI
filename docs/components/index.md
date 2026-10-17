@@ -78,6 +78,7 @@
 <XhComponentCard src="date-picker" name="DatePicker" label="日期选择器" href="/components/date-picker" />
 <XhComponentCard src="date-range-picker" name="DateRangePicker" label="日期范围选择器" href="/components/date-range-picker" />
 <XhComponentCard src="editable" name="Editable" label="就地编辑" href="/components/editable" />
+<XhComponentCard src="expression-input" name="ExpressionInput" label="表达式输入框" href="/components/expression-input" />
 <XhComponentCard src="field" name="Field" label="表单字段" href="/components/field" />
 <XhComponentCard src="field-array" name="FieldArray" label="字段数组" href="/components/field-array" />
 <XhComponentCard src="fieldset" name="Fieldset" label="字段集" href="/components/fieldset" />

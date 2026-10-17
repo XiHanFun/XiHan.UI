@@ -16,7 +16,8 @@
 // 写进同一条列表等于两边都不生效，所以这里也查「有没有把两个名字并进同一条选择器」。
 //
 // 名单不手写：候选来自解剖里带 input 部件的组件，元素类型从 Vue 适配器里那个渲染
-// input 部件的组件读出来（h('input') / h('textarea') / h(props.as) 的 as 默认值）。
+// input 部件的组件读出来（h('input') / h('textarea') / h(props.as) 的 as 默认值 /
+// h(tag.value) 时 tag 那条 computed 里写出的标签字面量）。
 // 浏览器只填原生表单控件，所以只有解析出 input / textarea 的才受这条约束。
 // 解析出别的标签的登记进 NOT_NATIVE，登记项在候选里扫不到、或者它其实渲染的是原生控件，
 // 都判名单过期。
@@ -78,10 +79,13 @@ if (candidates.length === 0)
   problems.push('一个带 input 部件的解剖都没扫到——解剖的写法变了，这条门禁已经形同虚设')
 
 // —— 二、元素类型：从 Vue 适配器里读那个渲染 input 部件的组件 ——
-/** 找出 idx 之前最近的一个 h(…) 调用，返回它渲染的标签名（props.as 时回填 as 的默认值）。 */
+/**
+ * 找出 idx 之前最近的一个 h(…) 调用，返回它渲染的标签名：props.as 时回填 as 的默认值；
+ * h(tag.value) 时读 tag 那条 computed 里写出的标签字面量（as 缺省时跟着别的状态在 input 与 textarea 间切换）。
+ */
 function hostTagBefore(src, idx) {
   let found = null
-  for (const m of src.matchAll(/\bh\(\s*(?:'([a-z]+)'|(props\.as))/g)) {
+  for (const m of src.matchAll(/\bh\(\s*(?:'([a-z]+)'|(props\.as)|(\w+)\.value\b)/g)) {
     if (m.index >= idx)
       break
     found = m
@@ -90,6 +94,10 @@ function hostTagBefore(src, idx) {
     return null
   if (found[1])
     return found[1]
+  if (found[3]) {
+    const decl = new RegExp(`const ${found[3]} = computed\\b[^\\n]*`).exec(src.slice(0, found.index))
+    return decl ? /'([a-z]+)'/.exec(decl[0])?.[1] ?? null : null
+  }
   // h(props.as)：标签由 as 这个 prop 决定，取它声明的默认值
   let fallback = null
   for (const m of src.matchAll(/\bas:\s*\{[^{}]*default:\s*'([a-z]+)'/g)) {

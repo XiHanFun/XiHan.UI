@@ -35,6 +35,7 @@
     "@xihan-ui/chat-stream": "link:../ui/packages/features/chat-stream",
     "@xihan-ui/code-highlight": "link:../ui/packages/features/code-highlight",
     "@xihan-ui/core": "link:../ui/packages/engine/core",
+    "@xihan-ui/expression": "link:../ui/packages/engine/expression",
     "@xihan-ui/headless": "link:../ui/packages/engine/headless",
     "@xihan-ui/icons": "link:../ui/packages/design/icons",
     "@xihan-ui/markdown": "link:../ui/packages/features/markdown",

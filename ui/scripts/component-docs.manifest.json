@@ -231,6 +231,10 @@
           "name": "就地编辑"
         },
         {
+          "id": "expression-input",
+          "name": "表达式输入框"
+        },
+        {
           "id": "field",
           "name": "表单字段"
         },

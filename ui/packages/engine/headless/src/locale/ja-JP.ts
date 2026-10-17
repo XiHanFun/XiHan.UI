@@ -8,6 +8,7 @@
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { KeyTextTable } from './key-text'
 import type { XhLocale, XhLocaleTranslations } from './types'
+import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 import { keyText } from './key-text'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -262,6 +263,18 @@ const translations = {
     commentOn: (line, side) => `${side === 'old' ? '変更前' : '変更後'}の ${line} 行目にコメント`,
   },
   'drawer': { close: '閉じる', resizeTrigger: 'ドロワーのサイズを変更' },
+  'expression-input': {
+    content: '候補',
+    noMatches: '一致する候補がありません',
+    kindVariable: '変数',
+    kindFunction: '関数',
+    position: (line, column) => (line === null ? `${column} 列目` : `${line} 行 ${column} 列目`),
+    issueRow: (position, message) => `${position}：${message}`,
+    paramOrdinal: index => `引数 ${index}`,
+    issue: expressionIssueEnUS,
+    param: expressionParamEnUS,
+    functionDescription: expressionFunctionEnUS,
+  },
   'field-array': {
     deleteItem: (index, count) => `${count} 行中 ${index} 行目を削除`,
     moveUpTrigger: (index, count) => `${count} 行中 ${index} 行目を上へ移動`,

@@ -40,6 +40,9 @@ const SUFFIX = {
  * 键是 `<组件>.<槽名的部件段>`，值是允许读到它的部件。
  */
 const CROSS_PART = {
+  // 镜像层必须与输入框逐字对齐，字号读输入框那支槽；波浪线与框下问题行同色，读问题行的色槽
+  'expression-input.input': ['highlight'],
+  'expression-input.issue': ['highlight-segment'],
   // segment 档的白色抬起面：放了 indicator 部件时长在部件上跟着滑，没放长在选中标签上；
   // 两处必须同一块面，描边 / 圆角 / 底 / 影读同一组按标签取名的槽，作者改一处两处一起变
   // 两端的翻页钮是与标签同高的正方形，高读标签的高度槽（两只钮合写一条规则，按选择器组的末一个部件记为 next-trigger）；

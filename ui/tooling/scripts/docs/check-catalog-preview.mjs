@@ -78,7 +78,7 @@ const CHECK_MARKER_STROKE = 'var(--xh-border-strong)'
 const CHECK_MARKER_MAX = 16
 
 /** 行是通栏的列表：锚定浮层里的列表、Command 结果列表与 Transfer 列表；其中多列面板的行铺到列分隔线为止。 */
-const FLUSH_ROW_LISTS = new Set(['menu', 'context-menu', 'menubar', 'select', 'combobox', 'tree-select', 'mention', 'cascader', 'time-picker', 'time-range-picker', 'command', 'transfer'])
+const FLUSH_ROW_LISTS = new Set(['menu', 'context-menu', 'menubar', 'select', 'combobox', 'tree-select', 'mention', 'expression-input', 'cascader', 'time-picker', 'time-range-picker', 'command', 'transfer'])
 /** 承载列表的面板底：浮层面与页内面。 */
 const LIST_PANEL_FILLS = new Set(['var(--xh-bg-surface-raised)', 'var(--xh-bg-surface)'])
 /** 列表行的面：悬停淡底，或页内持久集合的选中面。 */

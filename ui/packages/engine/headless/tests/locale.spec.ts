@@ -44,6 +44,43 @@ const KEY_SAMPLES = ['Alt', 'Control', 'Meta', 'Shift', ' ', 'ArrowDown', 'Arrow
 
 const TAGGED = { deleteItem: [['A / B']], overflowTag: [[3]] }
 
+/** 表达式问题码逐个过一遍，带数据的分支各给一组；不认识的码原样写出。 */
+const EXPRESSION_ISSUES = [
+  ['XH_EXPR_EMPTY', {}],
+  ['XH_EXPR_TOO_LONG', { max: 2000 }],
+  ['XH_EXPR_TOO_DEEP', {}],
+  ['XH_EXPR_UNEXPECTED_CHARACTER', { char: '#' }],
+  ['XH_EXPR_UNEXPECTED_TOKEN', {}],
+  ['XH_EXPR_UNEXPECTED_TOKEN', { token: ')' }],
+  ['XH_EXPR_UNEXPECTED_END', {}],
+  ['XH_EXPR_UNTERMINATED_STRING', {}],
+  ['XH_EXPR_INVALID_ESCAPE', {}],
+  ['XH_EXPR_INVALID_NUMBER', {}],
+  ['XH_EXPR_INVALID_IDENTIFIER', {}],
+  ['XH_EXPR_CHAINED_COMPARISON', {}],
+  ['XH_EXPR_INVALID_CALLEE', {}],
+  ['XH_EXPR_UNKNOWN_IDENTIFIER', { name: 'amont' }],
+  ['XH_EXPR_UNKNOWN_FUNCTION', { name: 'SUMM' }],
+  ['XH_EXPR_ARGUMENT_COUNT', { name: 'SUM', min: 1, actual: 0 }],
+  ['XH_EXPR_ARGUMENT_COUNT', { name: 'ROUND', min: 2, max: 2, actual: 1 }],
+  ['XH_EXPR_ARGUMENT_COUNT', { name: 'IF', min: 2, max: 3, actual: 4 }],
+  ['XH_EXPR_FORBIDDEN_MEMBER', { name: '__proto__' }],
+  ['XH_EXPR_INVALID_AST', {}],
+  ['XH_EXPR_TYPE_MISMATCH', {}],
+  ['XH_EXPR_INVALID_ARGUMENT', {}],
+  ['XH_EXPR_INVALID_INDEX', {}],
+  ['XH_EXPR_DIVISION_BY_ZERO', {}],
+  ['XH_EXPR_NUMBER_OVERFLOW', {}],
+  ['XH_EXPR_DATE_OUT_OF_RANGE', {}],
+  ['XH_EXPR_STRING_TOO_LONG', {}],
+  ['XH_EXPR_STEP_LIMIT', {}],
+  ['XH_EXPR_DEPTH_LIMIT', {}],
+  ['XH_EXPR_UNSUPPORTED_VALUE', {}],
+  ['XH_EXPR_NOW_UNAVAILABLE', {}],
+  ['XH_EXPR_FUNCTION_FAILED', {}],
+  ['HOST_RULE', {}],
+]
+
 /**
  * 每个函数式文案的样例入参，一条一组，覆盖空数据、单数与多数等分支。
  * 语言包新增函数键而这里没有样例时用例直接报缺，不会静默跳过。
@@ -92,6 +129,14 @@ const SAMPLES: Record<string, Record<string, unknown[][]>> = {
   'date-picker': { ...TAGGED, todayDate: [['October 4, 2026']] },
   'date-range-picker': { todayDate: [['October 4, 2026']], selectedRange: [['October 1, 2026', 'October 4, 2026']] },
   'diff-view': { expandGap: [[1], [5]], truncated: [[1], [20]], commentOn: [[3, 'old'], [3, 'new']] },
+  'expression-input': {
+    position: [[null, 5], [2, 5]],
+    issueRow: [['Column 5', 'Unknown name amont']],
+    paramOrdinal: [[1]],
+    issue: EXPRESSION_ISSUES,
+    param: [['condition'], ['value'], ['unknown-key']],
+    functionDescription: [['IF'], ['SUM']],
+  },
   'field-array': { deleteItem: [[1, 3]], moveUpTrigger: [[2, 3]], moveDownTrigger: [[1, 3]] },
   'file-upload': { deleteItem: [[{ name: 'report.pdf' }]] },
   'floating-panel': {

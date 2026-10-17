@@ -42,6 +42,7 @@ import { downloadTriggerSuite } from './download-trigger.suite'
 import { drawerSuite } from './drawer.suite'
 import { editableSuite } from './editable.suite'
 import { emptyStateSuite } from './empty-state.suite'
+import { expressionInputSuite } from './expression-input.suite'
 import { fieldArraySuite } from './field-array.suite'
 import { fieldSuite } from './field.suite'
 import { fieldsetSuite } from './fieldset.suite'
@@ -284,4 +285,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   graphChartSuite,
   gridListSuite,
   citationSuite,
+  expressionInputSuite,
 ]

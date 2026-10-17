@@ -32803,6 +32803,1266 @@
       "description": "empty-state 的 title 部件 line-height 覆盖槽。"
     },
     {
+      "name": "--xh-expression-input-content-backdrop",
+      "component": "expression-input",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "-webkit-backdrop-filter",
+        "backdrop-filter"
+      ],
+      "state": [
+        "xh-material=frosted"
+      ],
+      "defaultToken": [
+        "--xh-_material-backdrop"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-content-bg",
+      "component": "expression-input",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
+      ],
+      "defaultToken": [
+        "--xh-_material-bg"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 content 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-content-border",
+      "component": "expression-input",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
+      ],
+      "defaultToken": [
+        "--xh-_material-border"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 content 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-content-fg",
+      "component": "expression-input",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
+      ],
+      "defaultToken": [
+        "--xh-_material-fg"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 content 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-content-gap",
+      "component": "expression-input",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-list-option-gap"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 content 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-content-highlight",
+      "component": "expression-input",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
+      ],
+      "defaultToken": [
+        "--xh-_material-highlight"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 content 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-content-max-h",
+      "component": "expression-input",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "max-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-overlay-max-h"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 content 部件 max-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-content-max-w",
+      "component": "expression-input",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "max-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-overlay-max-w"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 content 部件 max-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-content-min-w",
+      "component": "expression-input",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-overlay-min-w"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 content 部件 min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-content-px",
+      "component": "expression-input",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "0"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 content 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-content-py",
+      "component": "expression-input",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 content 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-content-radius",
+      "component": "expression-input",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-overlay"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 content 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-content-shadow",
+      "component": "expression-input",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "not([data-xh-action-control])",
+        "xh-material=frosted"
+      ],
+      "defaultToken": [
+        "--xh-_material-shadow"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 content 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-control-bg",
+      "component": "expression-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_field-variant-bg-rest"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 control 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-control-bg-disabled",
+      "component": "expression-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_field-variant-bg-disabled"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 control 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-control-bg-hover",
+      "component": "expression-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "invalid",
+        "loading",
+        "not(:focus-within)",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_field-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 control 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-control-bg-readonly",
+      "component": "expression-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "readonly",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_field-variant-bg-read-only"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 control 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-control-border",
+      "component": "expression-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_field-variant-border-rest"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 control 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-control-border-focus",
+      "component": "expression-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "focus-within",
+        "not([data-disabled])",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_field-variant-border-focus"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-control-border-hover",
+      "component": "expression-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "invalid",
+        "loading",
+        "not(:focus-within)",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_field-variant-border-hover"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-control-border-invalid",
+      "component": "expression-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "invalid",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_field-variant-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-control-fg",
+      "component": "expression-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 control 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-control-gap",
+      "component": "expression-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_expression-input-gap"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 control 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-control-h",
+      "component": "expression-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "block-size",
+        "min-block-size"
+      ],
+      "state": [
+        "has([data-xh-field-input][data-xh-field-layout='multi-tag'])",
+        "has([data-xh-field-input][data-xh-field-layout='single-line'])",
+        "has([data-xh-field-input][data-xh-field-layout='textarea'])",
+        "xh-field-chrome",
+        "xh-field-input",
+        "xh-field-layout=multi-tag",
+        "xh-field-layout=single-line",
+        "xh-field-layout=textarea"
+      ],
+      "defaultToken": [
+        "--xh-_expression-input-h"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 control 部件 block-size、min-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-control-min-w",
+      "component": "expression-input",
+      "part": [
+        "control",
+        "root"
+      ],
+      "property": [
+        "min-inline-size"
+      ],
+      "state": [
+        "default",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-control-min-w"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 control、root 部件 min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-control-px",
+      "component": "expression-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_expression-input-px"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 control 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-control-radius",
+      "component": "expression-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 control 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-control-shadow",
+      "component": "expression-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "none"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 control 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-control-w",
+      "component": "expression-input",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-w"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 root 部件 inline-size、min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-empty-fg",
+      "component": "expression-input",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 empty 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-empty-font-size",
+      "component": "expression-input",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_expression-input-font-size"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 empty 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-empty-px",
+      "component": "expression-input",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_expression-input-px"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 empty 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-empty-py",
+      "component": "expression-input",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 empty 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-gap",
+      "component": "expression-input",
+      "part": [
+        "label",
+        "root"
+      ],
+      "property": [
+        "gap",
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 label、root 部件 gap、margin-block-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-input-autofill-bg",
+      "component": "expression-input",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "-webkit-autofill",
+        "autofill",
+        "xh-field-input"
+      ],
+      "defaultToken": [
+        "--xh-bg-canvas"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 input 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-input-autofill-fg",
+      "component": "expression-input",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "-webkit-text-fill-color"
+      ],
+      "state": [
+        "-webkit-autofill",
+        "autofill",
+        "xh-field-input"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 input 部件 -webkit-text-fill-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-input-fg",
+      "component": "expression-input",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "xh-field-input"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 input 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-input-font-size",
+      "component": "expression-input",
+      "part": [
+        "highlight",
+        "input"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default",
+        "xh-field-input"
+      ],
+      "defaultToken": [
+        "--xh-_expression-input-font-size"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 highlight、input 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-input-max-h",
+      "component": "expression-input",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "max-block-size"
+      ],
+      "state": [
+        "xh-field-auto-size"
+      ],
+      "defaultToken": [
+        "--xh-viewport-h-sm"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 input 部件 max-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-issue-error-fg",
+      "component": "expression-input",
+      "part": [
+        "highlight-segment",
+        "issue"
+      ],
+      "property": [
+        "color",
+        "text-decoration-color"
+      ],
+      "state": [
+        "default",
+        "issue"
+      ],
+      "defaultToken": [
+        "--xh-fg-danger"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 highlight-segment、issue 部件 color、text-decoration-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-issue-font-size",
+      "component": "expression-input",
+      "part": [
+        "issue"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-caption-size"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 issue 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-issue-warning-fg",
+      "component": "expression-input",
+      "part": [
+        "highlight-segment",
+        "issue"
+      ],
+      "property": [
+        "color",
+        "text-decoration-color"
+      ],
+      "state": [
+        "severity=warning"
+      ],
+      "defaultToken": [
+        "--xh-fg-warning"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 highlight-segment、issue 部件 color、text-decoration-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-issues-gap",
+      "component": "expression-input",
+      "part": [
+        "issues"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 issues 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-item-bg-hover",
+      "component": "expression-input",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:focus-visible, [data-highlighted])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
+        "xh-collection-context=overlay"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-item-bg-pressed",
+      "component": "expression-input",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "is(:active, [data-pressed])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "selected",
+        "xh-collection-context=overlay"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-item-fg",
+      "component": "expression-input",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default",
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "selected",
+        "xh-collection-context=overlay"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-fg"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 item 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-item-font-size",
+      "component": "expression-input",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_expression-input-font-size"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 item 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-item-gap",
+      "component": "expression-input",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "margin-inline-end",
+        "margin-inline-start"
+      ],
+      "state": [
+        "xh-collection-slot=indicator",
+        "xh-collection-slot=prefix",
+        "xh-collection-slot=shortcut",
+        "xh-collection-slot=suffix"
+      ],
+      "defaultToken": [
+        "--xh-_expression-input-gap"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-item-h",
+      "component": "expression-input",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_expression-input-item-h"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 item 部件 min-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-item-leading",
+      "component": "expression-input",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "line-height"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-leading-normal"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 item 部件 line-height 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-item-prefix-fg",
+      "component": "expression-input",
+      "part": [
+        "item-prefix"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 item-prefix 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-item-prefix-font-size",
+      "component": "expression-input",
+      "part": [
+        "item-prefix"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_expression-input-caption-size"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 item-prefix 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-item-prefix-w",
+      "component": "expression-input",
+      "part": [
+        "item-prefix"
+      ],
+      "property": [
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-8"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 item-prefix 部件 min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-item-px",
+      "component": "expression-input",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_expression-input-px"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 item 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-item-py",
+      "component": "expression-input",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_expression-input-item-py"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 item 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-item-radius",
+      "component": "expression-input",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "0"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 item 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-item-suffix-fg",
+      "component": "expression-input",
+      "part": [
+        "item-suffix"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 item-suffix 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-item-suffix-font-size",
+      "component": "expression-input",
+      "part": [
+        "item-suffix"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_expression-input-caption-size"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 item-suffix 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-label-fg",
+      "component": "expression-input",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-label-font-size",
+      "component": "expression-input",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-size"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 label 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-label-font-weight",
+      "component": "expression-input",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-label-gap",
+      "component": "expression-input",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "margin-block-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 label 部件 margin-block-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-layer",
+      "component": "expression-input",
+      "part": [
+        "positioner"
+      ],
+      "property": [
+        "z-index"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_layer"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 positioner 部件 z-index 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-placeholder-fg",
+      "component": "expression-input",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "placeholder",
+        "xh-field-input"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 input 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-expression-input-textarea-py",
+      "component": "expression-input",
+      "part": [
+        "highlight",
+        "input"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "multiline",
+        "xh-field-input",
+        "xh-field-layout=textarea"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "expression-input 的 highlight、input 部件 padding-block 覆盖槽。"
+    },
+    {
       "name": "--xh-field-border-invalid",
       "component": "field",
       "part": [

@@ -309,6 +309,7 @@
       "date-range-picker",
       "dialog",
       "drawer",
+      "expression-input",
       "floating-panel",
       "hover-card",
       "image-viewer",
@@ -351,6 +352,7 @@
       "date-picker",
       "date-range-picker",
       "editable",
+      "expression-input",
       "field",
       "number-field",
       "password-input",
@@ -468,6 +470,7 @@
       "combobox",
       "command",
       "diff-view",
+      "expression-input",
       "funnel-chart",
       "graph-chart",
       "grid-list",
@@ -706,6 +709,12 @@
     "hidden-select": [
       "select"
     ],
+    "highlight": [
+      "expression-input"
+    ],
+    "highlight-segment": [
+      "expression-input"
+    ],
     "hue-slider": [
       "color-picker"
     ],
@@ -762,6 +771,7 @@
       "combobox",
       "command",
       "editable",
+      "expression-input",
       "mention",
       "number-field",
       "password-input",
@@ -772,6 +782,12 @@
       "text-field",
       "tool-call",
       "tree-select"
+    ],
+    "issue": [
+      "expression-input"
+    ],
+    "issues": [
+      "expression-input"
     ],
     "item": [
       "accordion",
@@ -786,6 +802,7 @@
       "command",
       "context-menu",
       "descriptions",
+      "expression-input",
       "field-array",
       "file-upload",
       "grid",
@@ -849,6 +866,7 @@
       "combobox",
       "command",
       "context-menu",
+      "expression-input",
       "list",
       "listbox",
       "mention",
@@ -902,6 +920,7 @@
     "item-prefix": [
       "combobox",
       "command",
+      "expression-input",
       "listbox",
       "mention",
       "select"
@@ -930,6 +949,7 @@
       "combobox",
       "command",
       "context-menu",
+      "expression-input",
       "listbox",
       "mention",
       "menu",
@@ -946,6 +966,7 @@
       "combobox",
       "command",
       "context-menu",
+      "expression-input",
       "listbox",
       "mention",
       "menu",
@@ -986,6 +1007,7 @@
       "date-range-picker",
       "descriptions",
       "editable",
+      "expression-input",
       "field",
       "file-upload",
       "grid-list",
@@ -1302,6 +1324,7 @@
       "date-range-picker",
       "dialog",
       "drawer",
+      "expression-input",
       "floating-panel",
       "hover-card",
       "image-viewer",
@@ -1475,6 +1498,7 @@
       "drawer",
       "editable",
       "empty-state",
+      "expression-input",
       "field",
       "field-array",
       "fieldset",
@@ -2168,11 +2192,14 @@
     "head": true,
     "header": true,
     "heading": true,
+    "highlight": true,
     "icon": true,
     "image": true,
     "index": true,
     "indicator": true,
     "input": true,
+    "issue": true,
+    "issues": true,
     "item": true,
     "jumper": true,
     "key": true,

@@ -23,6 +23,7 @@ const ROOTS = ['packages/engine/headless/src', 'packages/engine/core/src']
 
 /** 时长常量：键写「相对 packages/engine 的路径:常量名」，值写它属于哪一类、为什么不是动画时长。 */
 const TIMING_CONSTANTS = {
+  'headless/src/expression-input/expression-input.machine.ts:EXPRESSION_INPUT_CHECK_DELAY': '停留：值变化后等多久再检查（去抖），属性 checkDelay 的缺省值；失焦时不等',
   'headless/src/notification/notification.presets.ts:NOTIFICATION_CARD_DURATION': '停留：通知卡片停多久才自动收起，卡片预设里属性 duration 的缺省值',
   'headless/src/notification/notification.presets.ts:NOTIFICATION_TOAST_DURATION': '停留：轻提示停多久才自动收起，轻提示预设里属性 duration 的缺省值',
   'headless/src/heatmap/heatmap.grid.ts:DAY_MS': '单位：一天的毫秒数，日期换算用，不是时长',
