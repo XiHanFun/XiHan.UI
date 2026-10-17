@@ -121,7 +121,7 @@ describe('字段接线的目标声明', () => {
   it('声明了 fieldTarget 的控件都在发现表里，字段接线到得了它', () => {
     const missing = tags.filter(tag => ctorOf(tag).fieldTarget && !listed.has(tag))
     expect(missing).toEqual([])
-    expect(tags.filter(tag => ctorOf(tag).fieldTarget)).toHaveLength(28)
+    expect(tags.filter(tag => ctorOf(tag).fieldTarget)).toHaveLength(29)
   })
 })
 

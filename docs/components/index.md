@@ -83,6 +83,7 @@
 <XhComponentCard src="field-array" name="FieldArray" label="字段数组" href="/components/field-array" />
 <XhComponentCard src="fieldset" name="Fieldset" label="字段集" href="/components/fieldset" />
 <XhComponentCard src="file-upload" name="FileUpload" label="文件上传" href="/components/file-upload" />
+<XhComponentCard src="filter-builder" name="FilterBuilder" label="条件编辑器" href="/components/filter-builder" />
 <XhComponentCard src="form" name="Form" label="表单" href="/components/form" />
 <XhComponentCard src="format-input" name="FormatInput" label="格式输入" href="/components/format-input" />
 <XhComponentCard src="image-cropper" name="ImageCropper" label="图片裁切" href="/components/image-cropper" />

@@ -47,6 +47,7 @@ import { fieldArraySuite } from './field-array.suite'
 import { fieldSuite } from './field.suite'
 import { fieldsetSuite } from './fieldset.suite'
 import { fileUploadSuite } from './file-upload.suite'
+import { filterBuilderSuite } from './filter-builder.suite'
 import { flexSuite } from './flex.suite'
 import { floatButtonSuite } from './float-button.suite'
 import { floatingPanelSuite } from './floating-panel.suite'
@@ -288,4 +289,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   citationSuite,
   expressionInputSuite,
   formatInputSuite,
+  filterBuilderSuite,
 ]

@@ -329,6 +329,36 @@ export const FILE_UPLOAD_EN_US: XhLocaleBucket<'file-upload'> = {
   clearTrigger: 'Clear all files',
 }
 
+export const FILTER_BUILDER_EN_US: XhLocaleBucket<'filter-builder'> = {
+  logic: logic => (logic === 'and' ? 'All' : 'Any'),
+  match: 'Match',
+  group: logic => (logic === 'and' ? 'Match all of the following' : 'Match any of the following'),
+  condition: number => `Condition ${number}`,
+  field: number => `Field of condition ${number}`,
+  operator: number => `Operator of condition ${number}`,
+  operand: (number, end) => (end === 'from' ? `Start value of condition ${number}` : end === 'to' ? `End value of condition ${number}` : `Value of condition ${number}`),
+  source: number => `Value source of condition ${number}`,
+  sourceOption: source => (source === 'value' ? 'Value' : 'Parameter'),
+  operatorOption: operator => ({ eq: 'equals', neq: 'not equal', gt: 'greater than', gte: 'at least', lt: 'less than', lte: 'at most', between: 'between', in: 'in', notIn: 'not in', contains: 'contains', notContains: 'does not contain', startsWith: 'starts with', endsWith: 'ends with', isEmpty: 'is empty', isNotEmpty: 'is not empty' })[operator],
+  ignoreCase: 'Ignore case',
+  rangeSeparator: 'to',
+  booleanOption: value => (value ? 'Yes' : 'No'),
+  addCondition: 'Add condition',
+  addGroup: 'Add group',
+  removeCondition: number => `Remove condition ${number}`,
+  removeGroup: 'Remove group',
+  empty: 'No conditions yet',
+  added: number => `Condition ${number} added`,
+  removed: number => `Condition ${number} removed`,
+  moved: number => `Condition ${number} moved`,
+  issue: code => ({
+    'field-missing': 'The field no longer exists',
+    'operator-invalid': 'This operator does not apply to the field',
+    'operand-empty': 'Enter a value',
+    'parameter-invalid': 'The parameter no longer exists or does not fit',
+  })[code],
+}
+
 export const FLOAT_BUTTON_EN_US: XhLocaleBucket<'float-button'> = { trigger: 'Actions' }
 
 export const FLOATING_PANEL_EN_US: XhLocaleBucket<'floating-panel'> = {
@@ -907,6 +937,7 @@ const translations = {
   'expression-input': EXPRESSION_INPUT_EN_US,
   'field-array': FIELD_ARRAY_EN_US,
   'file-upload': FILE_UPLOAD_EN_US,
+  'filter-builder': FILTER_BUILDER_EN_US,
   'float-button': FLOAT_BUTTON_EN_US,
   'floating-panel': FLOATING_PANEL_EN_US,
   'form': FORM_EN_US,

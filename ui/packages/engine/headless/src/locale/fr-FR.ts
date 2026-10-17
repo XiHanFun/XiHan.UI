@@ -9,7 +9,7 @@ import type { KeyTextTable } from '@xihan-ui/core/hotkey'
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { XhLocale, XhLocaleTranslations } from './types'
 import { keyText } from '@xihan-ui/core/hotkey'
-import { FORMAT_INPUT_EN_US } from './en-US'
+import { FILTER_BUILDER_EN_US, FORMAT_INPUT_EN_US } from './en-US'
 import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -286,6 +286,30 @@ const translations = {
   'file-upload': {
     deleteItem: file => `Supprimer ${file.name}`,
     clearTrigger: 'Retirer tous les fichiers',
+  },
+  'filter-builder': {
+    logic: logic => (logic === 'and' ? 'Toutes' : 'Au moins une'),
+    match: 'Correspondance',
+    group: logic => (logic === 'and' ? 'Remplir toutes les conditions suivantes' : 'Remplir au moins une des conditions suivantes'),
+    condition: number => `Condition ${number}`,
+    field: number => `Champ de la condition ${number}`,
+    operator: number => `Opérateur de la condition ${number}`,
+    operand: (number, end) => (end === 'from' ? `Valeur de début de la condition ${number}` : end === 'to' ? `Valeur de fin de la condition ${number}` : `Valeur de la condition ${number}`),
+    source: number => `Origine de la valeur de la condition ${number}`,
+    sourceOption: source => (source === 'value' ? 'Valeur' : 'Paramètre'),
+    operatorOption: operator => ({ eq: 'égal à', neq: 'différent de', gt: 'supérieur à', gte: 'au moins', lt: 'inférieur à', lte: 'au plus', between: 'entre', in: 'parmi', notIn: 'hors de', contains: 'contient', notContains: 'ne contient pas', startsWith: 'commence par', endsWith: 'se termine par', isEmpty: 'est vide', isNotEmpty: 'n’est pas vide' })[operator],
+    ignoreCase: 'Ignorer la casse',
+    rangeSeparator: 'à',
+    booleanOption: value => (value ? 'Oui' : 'Non'),
+    addCondition: 'Ajouter une condition',
+    addGroup: 'Ajouter un groupe',
+    removeCondition: number => `Supprimer la condition ${number}`,
+    removeGroup: 'Supprimer le groupe',
+    empty: 'Aucune condition pour l’instant',
+    added: number => `Condition ${number} ajoutée`,
+    removed: number => `Condition ${number} supprimée`,
+    moved: number => `Condition ${number} déplacée`,
+    issue: FILTER_BUILDER_EN_US.issue,
   },
   'float-button': { trigger: 'Actions' },
   'floating-panel': {

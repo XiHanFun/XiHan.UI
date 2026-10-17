@@ -57,6 +57,7 @@ import { XhFieldBoundaryElement, XhFieldElement } from './elements/field'
 import { XhFieldArrayElement } from './elements/field-array'
 import { XhFieldsetElement } from './elements/fieldset'
 import { XhFileUploadElement } from './elements/file-upload'
+import { XhFilterBuilderElement } from './elements/filter-builder'
 import { XhFlexElement } from './elements/flex'
 import { XhFloatButtonElement } from './elements/float-button'
 import { XhFloatingPanelElement } from './elements/floating-panel'
@@ -178,6 +179,7 @@ const XH_ELEMENTS = {
   'xh-expression-input': XhExpressionInputElement,
   'xh-field-array': XhFieldArrayElement,
   'xh-fieldset': XhFieldsetElement,
+  'xh-filter-builder': XhFilterBuilderElement,
   'xh-flex': XhFlexElement,
   'xh-float-button': XhFloatButtonElement,
   'xh-floating-panel': XhFloatingPanelElement,
@@ -400,6 +402,7 @@ export {
   XhFieldElement,
   XhFieldsetElement,
   XhFileUploadElement,
+  XhFilterBuilderElement,
   XhFlexElement,
   XhFloatButtonElement,
   XhFloatingPanelElement,

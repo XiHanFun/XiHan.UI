@@ -55,6 +55,7 @@ import type { FieldArrayTranslations } from '../field-array/field-array.types'
 import type { FieldTranslations } from '../field/field.types'
 import type { FieldsetTranslations } from '../fieldset/fieldset.types'
 import type { FileUploadTranslations } from '../file-upload/file-upload.types'
+import type { FilterBuilderTranslations } from '../filter-builder/filter-builder.types'
 import type { FlexTranslations } from '../flex/flex.types'
 import type { FloatButtonTranslations } from '../float-button/float-button.types'
 import type { FloatingPanelTranslations } from '../floating-panel/floating-panel.types'
@@ -200,6 +201,7 @@ export interface XhTranslationOverrides {
   'field-array'?: Partial<FieldArrayTranslations>
   'fieldset'?: Partial<FieldsetTranslations>
   'file-upload'?: Partial<FileUploadTranslations>
+  'filter-builder'?: Partial<FilterBuilderTranslations>
   'flex'?: Partial<FlexTranslations>
   'float-button'?: Partial<FloatButtonTranslations>
   'floating-panel'?: Partial<FloatingPanelTranslations>

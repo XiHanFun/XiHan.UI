@@ -9,7 +9,7 @@ import type { KeyTextTable } from '@xihan-ui/core/hotkey'
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { XhLocale, XhLocaleTranslations } from './types'
 import { keyText } from '@xihan-ui/core/hotkey'
-import { FORMAT_INPUT_EN_US } from './en-US'
+import { FILTER_BUILDER_EN_US, FORMAT_INPUT_EN_US } from './en-US'
 import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -284,6 +284,30 @@ const translations = {
   'file-upload': {
     deleteItem: file => `Eliminar ${file.name}`,
     clearTrigger: 'Quitar todos los archivos',
+  },
+  'filter-builder': {
+    logic: logic => (logic === 'and' ? 'Todas' : 'Alguna'),
+    match: 'Coincidencia',
+    group: logic => (logic === 'and' ? 'Cumplir todas las condiciones siguientes' : 'Cumplir alguna de las condiciones siguientes'),
+    condition: number => `Condición ${number}`,
+    field: number => `Campo de la condición ${number}`,
+    operator: number => `Operador de la condición ${number}`,
+    operand: (number, end) => (end === 'from' ? `Valor inicial de la condición ${number}` : end === 'to' ? `Valor final de la condición ${number}` : `Valor de la condición ${number}`),
+    source: number => `Origen del valor de la condición ${number}`,
+    sourceOption: source => (source === 'value' ? 'Valor' : 'Parámetro'),
+    operatorOption: operator => ({ eq: 'es igual a', neq: 'no es igual a', gt: 'mayor que', gte: 'al menos', lt: 'menor que', lte: 'como máximo', between: 'entre', in: 'en', notIn: 'no en', contains: 'contiene', notContains: 'no contiene', startsWith: 'empieza por', endsWith: 'termina en', isEmpty: 'está vacío', isNotEmpty: 'no está vacío' })[operator],
+    ignoreCase: 'Ignorar mayúsculas',
+    rangeSeparator: 'a',
+    booleanOption: value => (value ? 'Sí' : 'No'),
+    addCondition: 'Añadir condición',
+    addGroup: 'Añadir grupo',
+    removeCondition: number => `Quitar la condición ${number}`,
+    removeGroup: 'Quitar grupo',
+    empty: 'Todavía no hay condiciones',
+    added: number => `Condición ${number} añadida`,
+    removed: number => `Condición ${number} quitada`,
+    moved: number => `Condición ${number} movida`,
+    issue: FILTER_BUILDER_EN_US.issue,
   },
   'float-button': { trigger: 'Acciones' },
   'floating-panel': {

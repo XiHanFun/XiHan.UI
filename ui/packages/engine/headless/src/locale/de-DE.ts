@@ -9,7 +9,7 @@ import type { KeyTextTable } from '@xihan-ui/core/hotkey'
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { XhLocale, XhLocaleTranslations } from './types'
 import { keyText } from '@xihan-ui/core/hotkey'
-import { FORMAT_INPUT_EN_US } from './en-US'
+import { FILTER_BUILDER_EN_US, FORMAT_INPUT_EN_US } from './en-US'
 import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -286,6 +286,30 @@ const translations = {
   'file-upload': {
     deleteItem: file => `${file.name} entfernen`,
     clearTrigger: 'Alle Dateien entfernen',
+  },
+  'filter-builder': {
+    logic: logic => (logic === 'and' ? 'Alle' : 'Eine'),
+    match: 'Übereinstimmung',
+    group: logic => (logic === 'and' ? 'Alle folgenden Bedingungen erfüllen' : 'Eine der folgenden Bedingungen erfüllen'),
+    condition: number => `Bedingung ${number}`,
+    field: number => `Feld von Bedingung ${number}`,
+    operator: number => `Operator von Bedingung ${number}`,
+    operand: (number, end) => (end === 'from' ? `Startwert von Bedingung ${number}` : end === 'to' ? `Endwert von Bedingung ${number}` : `Wert von Bedingung ${number}`),
+    source: number => `Wertquelle von Bedingung ${number}`,
+    sourceOption: source => (source === 'value' ? 'Wert' : 'Parameter'),
+    operatorOption: operator => ({ eq: 'gleich', neq: 'ungleich', gt: 'größer als', gte: 'mindestens', lt: 'kleiner als', lte: 'höchstens', between: 'zwischen', in: 'in', notIn: 'nicht in', contains: 'enthält', notContains: 'enthält nicht', startsWith: 'beginnt mit', endsWith: 'endet mit', isEmpty: 'ist leer', isNotEmpty: 'ist nicht leer' })[operator],
+    ignoreCase: 'Groß-/Kleinschreibung ignorieren',
+    rangeSeparator: 'bis',
+    booleanOption: value => (value ? 'Ja' : 'Nein'),
+    addCondition: 'Bedingung hinzufügen',
+    addGroup: 'Gruppe hinzufügen',
+    removeCondition: number => `Bedingung ${number} entfernen`,
+    removeGroup: 'Gruppe entfernen',
+    empty: 'Noch keine Bedingungen',
+    added: number => `Bedingung ${number} hinzugefügt`,
+    removed: number => `Bedingung ${number} entfernt`,
+    moved: number => `Bedingung ${number} verschoben`,
+    issue: FILTER_BUILDER_EN_US.issue,
   },
   'float-button': { trigger: 'Aktionen' },
   'floating-panel': {

@@ -45,6 +45,7 @@ export const FORM_CONTROL_HOST_SELECTOR = [
   'xh-mention',
   'xh-expression-input',
   'xh-format-input',
+  'xh-filter-builder',
   'xh-password-input',
   'xh-pin-input',
   'xh-date-field',

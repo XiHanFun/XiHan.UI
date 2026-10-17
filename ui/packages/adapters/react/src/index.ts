@@ -1181,6 +1181,59 @@ export type {
 } from './components/file-upload/file-upload'
 export { useFileUpload } from './components/file-upload/use-file-upload'
 export type { FileUploadContext } from './components/file-upload/use-file-upload'
+export { useFilterBuilderConditionContext, useFilterBuilderContext, useFilterBuilderGroupContext } from './components/filter-builder/context'
+export {
+  XhFilterBuilderAddConditionTrigger,
+  XhFilterBuilderAddGroupTrigger,
+  XhFilterBuilderCondition,
+  XhFilterBuilderConditionDeleteTrigger,
+  XhFilterBuilderConditionError,
+  XhFilterBuilderConditionExtra,
+  XhFilterBuilderConditionField,
+  XhFilterBuilderConditionIgnoreCase,
+  XhFilterBuilderConditionOperand,
+  XhFilterBuilderConditionOperator,
+  XhFilterBuilderConditionSource,
+  XhFilterBuilderEmpty,
+  XhFilterBuilderGroup,
+  XhFilterBuilderGroupDeleteTrigger,
+  XhFilterBuilderGroupFooter,
+  XhFilterBuilderGroupHeader,
+  XhFilterBuilderGroupItems,
+  XhFilterBuilderLabel,
+  XhFilterBuilderLiveRegion,
+  XhFilterBuilderLogic,
+  XhFilterBuilderRangeSeparator,
+  XhFilterBuilderRoot,
+} from './components/filter-builder/filter-builder'
+export type {
+  FilterBuilderConditionExtraSlotProps,
+  FilterBuilderRootSlotProps,
+  XhFilterBuilderAddConditionTriggerProps,
+  XhFilterBuilderAddGroupTriggerProps,
+  XhFilterBuilderConditionDeleteTriggerProps,
+  XhFilterBuilderConditionErrorProps,
+  XhFilterBuilderConditionExtraProps,
+  XhFilterBuilderConditionFieldProps,
+  XhFilterBuilderConditionIgnoreCaseProps,
+  XhFilterBuilderConditionOperandProps,
+  XhFilterBuilderConditionOperatorProps,
+  XhFilterBuilderConditionProps,
+  XhFilterBuilderConditionSourceProps,
+  XhFilterBuilderEmptyProps,
+  XhFilterBuilderGroupDeleteTriggerProps,
+  XhFilterBuilderGroupFooterProps,
+  XhFilterBuilderGroupHeaderProps,
+  XhFilterBuilderGroupItemsProps,
+  XhFilterBuilderGroupProps,
+  XhFilterBuilderLabelProps,
+  XhFilterBuilderLiveRegionProps,
+  XhFilterBuilderLogicProps,
+  XhFilterBuilderRangeSeparatorProps,
+  XhFilterBuilderRootProps,
+} from './components/filter-builder/filter-builder'
+export { useFilterBuilder } from './components/filter-builder/use-filter-builder'
+export type { FilterBuilderContext } from './components/filter-builder/use-filter-builder'
 export { useFlexContext } from './components/flex/context'
 export type { FlexContext } from './components/flex/context'
 export { XhFlex, XhFlexSplit } from './components/flex/flex'

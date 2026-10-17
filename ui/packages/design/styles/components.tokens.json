@@ -37207,6 +37207,774 @@
       "description": "file-upload 的 trigger 部件 box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-filter-builder-add-bg",
+      "component": "filter-builder",
+      "part": [
+        "add-condition-trigger",
+        "add-group-trigger"
+      ],
+      "property": [
+        "--xh-ink-surface",
+        "background-color"
+      ],
+      "state": [
+        "default",
+        "xh-ink-surface"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-rest"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 add-condition-trigger、add-group-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-add-bg-active",
+      "component": "filter-builder",
+      "part": [
+        "add-condition-trigger",
+        "add-group-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 add-condition-trigger、add-group-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-add-bg-hover",
+      "component": "filter-builder",
+      "part": [
+        "add-condition-trigger",
+        "add-group-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 add-condition-trigger、add-group-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-add-border",
+      "component": "filter-builder",
+      "part": [
+        "add-condition-trigger",
+        "add-group-trigger"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-border-rest"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 add-condition-trigger、add-group-trigger 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-add-border-disabled",
+      "component": "filter-builder",
+      "part": [
+        "add-condition-trigger",
+        "add-group-trigger"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-border-disabled"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 add-condition-trigger、add-group-trigger 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-add-border-hover",
+      "component": "filter-builder",
+      "part": [
+        "add-condition-trigger",
+        "add-group-trigger"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-border-hover"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 add-condition-trigger、add-group-trigger 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-add-fg",
+      "component": "filter-builder",
+      "part": [
+        "add-condition-trigger",
+        "add-group-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 add-condition-trigger、add-group-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-add-font-size",
+      "component": "filter-builder",
+      "part": [
+        "add-condition-trigger",
+        "add-group-trigger"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-size"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 add-condition-trigger、add-group-trigger 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-add-height",
+      "component": "filter-builder",
+      "part": [
+        "add-condition-trigger",
+        "add-group-trigger"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "default",
+        "xh-action-profile=icon"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-visual-size"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 add-condition-trigger、add-group-trigger 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-add-px",
+      "component": "filter-builder",
+      "part": [
+        "add-condition-trigger",
+        "add-group-trigger"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-padding-inline"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 add-condition-trigger、add-group-trigger 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-add-radius",
+      "component": "filter-builder",
+      "part": [
+        "add-condition-trigger",
+        "add-group-trigger"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 add-condition-trigger、add-group-trigger 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-condition-gap",
+      "component": "filter-builder",
+      "part": [
+        "condition"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 condition 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-delete-bg",
+      "component": "filter-builder",
+      "part": [
+        "condition-delete-trigger",
+        "group-delete-trigger"
+      ],
+      "property": [
+        "--xh-ink-surface",
+        "background-color"
+      ],
+      "state": [
+        "default",
+        "xh-ink-surface"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-rest"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 condition-delete-trigger、group-delete-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-delete-bg-active",
+      "component": "filter-builder",
+      "part": [
+        "condition-delete-trigger",
+        "group-delete-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 condition-delete-trigger、group-delete-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-delete-bg-hover",
+      "component": "filter-builder",
+      "part": [
+        "condition-delete-trigger",
+        "group-delete-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 condition-delete-trigger、group-delete-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-delete-fg",
+      "component": "filter-builder",
+      "part": [
+        "condition-delete-trigger",
+        "group-delete-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 condition-delete-trigger、group-delete-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-delete-fg-hover",
+      "component": "filter-builder",
+      "part": [
+        "condition-delete-trigger",
+        "group-delete-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-fg-danger-hover"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 condition-delete-trigger、group-delete-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-delete-radius",
+      "component": "filter-builder",
+      "part": [
+        "condition-delete-trigger",
+        "group-delete-trigger"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 condition-delete-trigger、group-delete-trigger 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-delete-size",
+      "component": "filter-builder",
+      "part": [
+        "condition-delete-trigger",
+        "group-delete-trigger"
+      ],
+      "property": [
+        "block-size",
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default",
+        "xh-action-profile=icon"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-visual-size"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 condition-delete-trigger、group-delete-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-empty-fg",
+      "component": "filter-builder",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 empty 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-empty-font-size",
+      "component": "filter-builder",
+      "part": [
+        "empty"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-secondary-size"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 empty 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-error-fg",
+      "component": "filter-builder",
+      "part": [
+        "condition-error"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-danger"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 condition-error 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-error-font-size",
+      "component": "filter-builder",
+      "part": [
+        "condition-error"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-caption-size"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 condition-error 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-footer-gap",
+      "component": "filter-builder",
+      "part": [
+        "group-footer"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 group-footer 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-gap",
+      "component": "filter-builder",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-group-gap",
+      "component": "filter-builder",
+      "part": [
+        "group"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 group 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-guide-color",
+      "component": "filter-builder",
+      "part": [
+        "group"
+      ],
+      "property": [
+        "border-inline-start"
+      ],
+      "state": [
+        "depth=0",
+        "not([data-depth='0'])"
+      ],
+      "defaultToken": [
+        "--xh-border-subtle"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 group 部件 border-inline-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-header-gap",
+      "component": "filter-builder",
+      "part": [
+        "group-header"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 group-header 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-icon-size",
+      "component": "filter-builder",
+      "part": [
+        "condition-delete-trigger",
+        "group-delete-trigger"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-glyph-size"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 condition-delete-trigger、group-delete-trigger 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-indent",
+      "component": "filter-builder",
+      "part": [
+        "group"
+      ],
+      "property": [
+        "padding-inline-start"
+      ],
+      "state": [
+        "depth=0",
+        "not([data-depth='0'])"
+      ],
+      "defaultToken": [
+        "--xh-space-4"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 group 部件 padding-inline-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-items-gap",
+      "component": "filter-builder",
+      "part": [
+        "group-items"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 group-items 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-label-fg",
+      "component": "filter-builder",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-label-font-size",
+      "component": "filter-builder",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-size"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 label 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-label-font-weight",
+      "component": "filter-builder",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-operand-gap",
+      "component": "filter-builder",
+      "part": [
+        "condition-operand"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 condition-operand 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-operand-w",
+      "component": "filter-builder",
+      "part": [
+        "condition-operand"
+      ],
+      "property": [
+        "flex"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-layout-col-min-sm"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 condition-operand 部件 flex 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-select-w",
+      "component": "filter-builder",
+      "part": [
+        "condition-field",
+        "condition-operator"
+      ],
+      "property": [
+        "flex"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-layout-col-min-xs"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 condition-field、condition-operator 部件 flex 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-separator-fg",
+      "component": "filter-builder",
+      "part": [
+        "range-separator"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 range-separator 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-filter-builder-separator-font-size",
+      "component": "filter-builder",
+      "part": [
+        "range-separator"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-size"
+      ],
+      "visibility": "public",
+      "description": "filter-builder 的 range-separator 部件 font-size 覆盖槽。"
+    },
+    {
       "name": "--xh-flex-gap",
       "component": "flex",
       "part": [
@@ -42959,6 +43727,7 @@
         "clear-trigger",
         "close-trigger",
         "comment-trigger",
+        "condition-delete-trigger",
         "control",
         "decrement-trigger",
         "dismiss-trigger",
@@ -42968,6 +43737,7 @@
         "first-trigger",
         "flip-horizontal-trigger",
         "flip-vertical-trigger",
+        "group-delete-trigger",
         "increment-trigger",
         "indicator",
         "item",
@@ -43057,7 +43827,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、comment-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、item-preview、last-trigger、line-content、line-fold-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、reset-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、status、submit-trigger、to-source-trigger、to-target-trigger、toolbar、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、comment-trigger、condition-delete-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、group-delete-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、item-preview、last-trigger、line-content、line-fold-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、reset-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、status、submit-trigger、to-source-trigger、to-target-trigger、toolbar、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",

@@ -9,7 +9,7 @@ import type { KeyTextTable } from '@xihan-ui/core/hotkey'
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { XhLocale, XhLocaleTranslations } from './types'
 import { keyText } from '@xihan-ui/core/hotkey'
-import { FORMAT_INPUT_EN_US } from './en-US'
+import { FILTER_BUILDER_EN_US, FORMAT_INPUT_EN_US } from './en-US'
 import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -298,6 +298,30 @@ const translations = {
   'file-upload': {
     deleteItem: file => `Удалить: ${file.name}`,
     clearTrigger: 'Удалить все файлы',
+  },
+  'filter-builder': {
+    logic: logic => (logic === 'and' ? 'Все' : 'Любое'),
+    match: 'Совпадение',
+    group: logic => (logic === 'and' ? 'Выполняются все условия ниже' : 'Выполняется любое из условий ниже'),
+    condition: number => `Условие ${number}`,
+    field: number => `Поле условия ${number}`,
+    operator: number => `Оператор условия ${number}`,
+    operand: (number, end) => (end === 'from' ? `Начальное значение условия ${number}` : end === 'to' ? `Конечное значение условия ${number}` : `Значение условия ${number}`),
+    source: number => `Источник значения условия ${number}`,
+    sourceOption: source => (source === 'value' ? 'Значение' : 'Параметр'),
+    operatorOption: operator => ({ eq: 'равно', neq: 'не равно', gt: 'больше', gte: 'не меньше', lt: 'меньше', lte: 'не больше', between: 'между', in: 'в списке', notIn: 'не в списке', contains: 'содержит', notContains: 'не содержит', startsWith: 'начинается с', endsWith: 'заканчивается на', isEmpty: 'пусто', isNotEmpty: 'не пусто' })[operator],
+    ignoreCase: 'Без учёта регистра',
+    rangeSeparator: 'до',
+    booleanOption: value => (value ? 'Да' : 'Нет'),
+    addCondition: 'Добавить условие',
+    addGroup: 'Добавить группу',
+    removeCondition: number => `Удалить условие ${number}`,
+    removeGroup: 'Удалить группу',
+    empty: 'Условий пока нет',
+    added: number => `Условие ${number} добавлено`,
+    removed: number => `Условие ${number} удалено`,
+    moved: number => `Условие ${number} перемещено`,
+    issue: FILTER_BUILDER_EN_US.issue,
   },
   'float-button': { trigger: 'Действия' },
   'floating-panel': {

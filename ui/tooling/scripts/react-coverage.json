@@ -49,6 +49,7 @@
     "field-array",
     "fieldset",
     "file-upload",
+    "filter-builder",
     "flex",
     "float-button",
     "floating-panel",

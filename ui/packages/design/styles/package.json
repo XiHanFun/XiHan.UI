@@ -93,6 +93,7 @@
     "./field.css": "./dist/css/field.css",
     "./fieldset.css": "./dist/css/fieldset.css",
     "./file-upload.css": "./dist/css/file-upload.css",
+    "./filter-builder.css": "./dist/css/filter-builder.css",
     "./flex.css": "./dist/css/flex.css",
     "./float-button.css": "./dist/css/float-button.css",
     "./focus.css": "./dist/css/focus.css",

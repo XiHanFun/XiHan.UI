@@ -135,6 +135,11 @@ const HOOKS = {
   // 只读：观感落在真正的输入件身上
   'field-array:data-readonly': '行数改不动的观感落在三个把手的 aria-disabled 上，行里控件的只读由作者自己置，这一层只往下传状态',
   'field-array:data-invalid': '校验失败的观感落在行里各输入件自己身上，这一层只往下传状态',
+  'filter-builder:data-invalid': '根本身不画壳：不完整的条件由行内说明与里面控件自己的描红承载，字段级的无效由字段的错误文案承载；根与条件行上这一位留给作者的钩子',
+  'filter-builder:data-logic': '组的逻辑由组头的分段切换显示，组本身的排布不分逻辑；这一位留给作者按逻辑写样式的钩子',
+  'filter-builder:data-readonly': '只读经组合节点交给里面的控件，加删钮随之禁用，根本身没有只读面；这一位留给作者的钩子',
+  'filter-builder:data-size': '尺寸经组合节点交给里面的控件，加条件钮按 data-xh-action-size 取档；根上这一位留给作者按整件尺寸写样式的钩子',
+  'filter-builder:data-variant': '形态经组合节点交给里面的下拉、输入框与分段切换，根本身不画壳；根上这一位留给作者按整件形态写样式的钩子',
   'format-input:data-invalid': '组本身不画壳：草稿不完整时由出错的位数或日期模式输入框自己描红，字段级的无效由字段的错误文案承载；组根这一位留给作者的钩子',
   'format-input:data-kind': '当前种类。参数行整组随种类换，排布不分种类；这一位留给作者按种类写样式的钩子',
   'format-input:data-variant': '形态经组合节点交给里面的下拉、数字框与组合框，组本身不画壳；根上这一位留给作者按整件形态写样式的钩子',

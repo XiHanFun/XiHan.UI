@@ -251,6 +251,10 @@
           "name": "文件上传"
         },
         {
+          "id": "filter-builder",
+          "name": "条件编辑器"
+        },
+        {
           "id": "form",
           "name": "表单"
         },
