@@ -58,7 +58,7 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
   if (kind === 'cascader')
     return `<xh-cascader ${markup}><div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger">选择</button></div></div></xh-cascader>`
   if (kind === 'combobox')
-    return `<xh-combobox ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div></xh-combobox>`
+    return `<xh-combobox ${markup}><div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div></xh-combobox>`
   if (kind === 'tree-select')
     return `<xh-tree-select ${markup}><div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger">选择</button></div></div></xh-tree-select>`
   if (kind === 'date-picker')
@@ -194,6 +194,10 @@ async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabl
     await vi.waitFor(() => expect(input.disabled).toBe(enabled))
     expect(input.readOnly).toBe(enabled)
     expect(input.getAttribute('aria-invalid')).toBe(String(enabled))
+    if (kind === 'combobox') {
+      expect(input.getAttribute('aria-required')).toBe(String(enabled))
+      expect(form.querySelector('xh-combobox [data-scope="combobox"][data-part="root"]')!.hasAttribute('data-required')).toBe(enabled)
+    }
     return
   }
   if (kind === 'date-picker' || kind === 'time-picker' || kind === 'color-picker') {

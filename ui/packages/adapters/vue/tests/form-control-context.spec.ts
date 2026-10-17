@@ -117,7 +117,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'Cascader')
     return h(XhCascaderRoot, { ...props, collection: [] }, () => h(XhCascaderControl, null, () => h(XhCascaderTrigger, null, () => '选择')))
   if (kind === 'Combobox')
-    return h(XhComboboxRoot, { ...nonRequiredState(props), collection: [] }, () => h(XhComboboxControl, null, () => h(XhComboboxInput)))
+    return h(XhComboboxRoot, { ...props, collection: [] }, () => h(XhComboboxControl, null, () => h(XhComboboxInput)))
   if (kind === 'TreeSelect')
     return h(XhTreeSelectRoot, { ...props, collection: [] }, () => h(XhTreeSelectControl, null, () => h(XhTreeSelectTrigger, null, () => '选择')))
   if (kind === 'DatePicker')
@@ -236,6 +236,10 @@ function expectAtomicState(wrapper: ReturnType<typeof mount>, kind: AtomicContro
     expect(input.attributes('disabled') !== undefined).toBe(enabled)
     expect(input.attributes('readonly') !== undefined).toBe(enabled)
     expect(input.attributes('aria-invalid')).toBe(String(enabled))
+    if (kind === 'Combobox') {
+      expect(input.attributes('aria-required')).toBe(String(enabled))
+      expect(wrapper.find('[data-scope="combobox"][data-part="root"]').attributes('data-required') !== undefined).toBe(enabled)
+    }
     return
   }
   if (kind === 'DatePicker' || kind === 'TimePicker' || kind === 'ColorPicker') {

@@ -149,6 +149,7 @@
 | `disabled` | `boolean` |  | 整个控件禁用：输入框与两个按钮都使用原生 disabled。 |
 | `readOnly` | `boolean` |  | 只读：文字可选可复制，但展开、选中、清空一概不发生。 |
 | `invalid` | `boolean` |  | 校验失败：输入框报告 aria-invalid，各角色节点带 data-invalid。 |
+| `required` | `boolean` |  | 必填：输入框报告 aria-required，根与标题带 data-required（标题据此画星号）。 一个选中值一份表单影子，没选值时没有影子；此时补一份空值的占位影子带原生 required，拦下空表单的提交。 |
 | `loading` | `boolean` |  | 候选加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位。 |
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `placeholder` | `string` |  | 输入框占位文字。 |
@@ -268,6 +269,7 @@
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
+| `required` | `boolean` |  |
 | `empty` | `boolean` | 候选为空（已结算且条数为 0）且当前展开：empty 角色节点据此显示。 |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
 | `tags` | `ComboboxTagMeta[]` | 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组，选中项的文字在输入框里。 |
@@ -302,7 +304,7 @@
 | `getItemIndicatorProps` | `(props: ComboboxItemProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 与 content 是兄弟，同样不进入 role=listbox。 |
-| `getHiddenInputProps` | `(props: { value: string }) => T['input']` | 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。 |
+| `getHiddenInputProps` | `(props?: { value: string }) => T['input']` | 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。不给 value 是必填且没选值时的空值占位，带原生 required。 |
 
 ## 无障碍
 
@@ -341,6 +343,7 @@
 | `input` | `aria-haspopup` | 'listbox' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `input` | `aria-required` | 'true' \| 'false' |
 | `input` | `role` | undefined \| 'combobox' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-label` | translations.trigger |
@@ -359,6 +362,7 @@
 | `group` | `role` | 'group' |
 | `empty` | `role` | 'status' |
 | `loading` | `role` | 'status' |
+| `hidden-input` | `aria-hidden` | 'true' |
 
 ## 样式参考
 
@@ -378,11 +382,13 @@
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
+| `label` | `data-required` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |

@@ -228,6 +228,7 @@ export const comboboxSuite: ConformanceSuite = {
             'aria-autocomplete': 'list',
             'aria-labelledby': '@part(label)',
             'aria-invalid': 'false',
+            'aria-required': 'false',
             'data-state': 'closed',
             // 收起态没有高亮可指，属性整个缺席
             'aria-activedescendant': null,
@@ -274,6 +275,18 @@ export const comboboxSuite: ConformanceSuite = {
           'empty': { 'role': 'status', 'hidden': '', 'data-state': 'closed' },
         },
         activeElement: null,
+      },
+    },
+    {
+      name: '必填：输入框报 aria-required，根与标题带 data-required',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { required: true },
+      initial: {
+        parts: {
+          input: { 'aria-required': 'true' },
+          root: { 'data-required': '' },
+          label: { 'data-required': '' },
+        },
       },
     },
     {

@@ -166,6 +166,11 @@ export interface ComboboxSchema extends MachineSchema {
     readOnly?: boolean
     /** 校验失败：输入框报告 aria-invalid，各角色节点带 data-invalid。 */
     invalid?: boolean
+    /**
+     * 必填：输入框报告 aria-required，根与标题带 data-required（标题据此画星号）。
+     * 一个选中值一份表单影子，没选值时没有影子；此时补一份空值的占位影子带原生 required，拦下空表单的提交。
+     */
+    required?: boolean
     /** 候选加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位。 */
     loading?: boolean
     /** 方向键到达末尾是否回绕，默认 true。 */
@@ -331,6 +336,7 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
   disabled: boolean
   readOnly: boolean
   invalid: boolean
+  required: boolean
   /** 候选为空（已结算且条数为 0）且当前展开：empty 角色节点据此显示。 */
   empty: boolean
   /** 清空按钮当前是否可按。 */
@@ -384,8 +390,8 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
    * 与 content 是兄弟，同样不进入 role=listbox。
    */
   getLoadingProps: () => T['element']
-  /** 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。 */
-  getHiddenInputProps: (props: { value: string }) => T['input']
+  /** 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。不给 value 是必填且没选值时的空值占位，带原生 required。 */
+  getHiddenInputProps: (props?: { value: string }) => T['input']
 }
 
 /** 读屏文案。 */

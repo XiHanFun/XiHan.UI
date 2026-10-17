@@ -14,6 +14,9 @@ import {
   XhColorPickerRoot,
   XhColorPickerTrigger,
   XhColorPickerValueText,
+  XhComboboxControl,
+  XhComboboxInput,
+  XhComboboxRoot,
   XhFieldErrorText,
   XhFieldLabel,
   XhFieldRoot,
@@ -99,6 +102,13 @@ const CASES: Case[] = [
       </XhTransferRoot>
     ),
     host: root => root.querySelector<HTMLElement>('[data-scope="transfer"][data-part="target-panel"] [data-scope="transfer"][data-part="list"]')!,
+  },
+  {
+    name: 'combobox',
+    axes: { required: 'aria-required' },
+    render: state => <XhComboboxRoot collection={[{ value: 'apple', label: '苹果' }]} {...state}><XhComboboxControl><XhComboboxInput /></XhComboboxControl></XhComboboxRoot>,
+    host: root => root.querySelector<HTMLElement>('[data-scope="combobox"][data-part="input"]')!,
+    wired: true,
   },
 ]
 

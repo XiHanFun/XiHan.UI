@@ -65,6 +65,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} disabled - 整个控件禁用：输入框与两个按钮都使用原生 disabled
  * @attr {boolean} read-only - 只读：文字可选可复制，但展开、选中、清空一概不发生
  * @attr {boolean} invalid - 校验失败标注
+ * @attr {boolean} required - 必填：输入框报告 aria-required；没选值时表单的空值占位影子带原生 required
  * @attr {boolean} loading - 候选加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位
  * @attr {boolean} loop - 方向键到达末尾回绕，默认 true；写 loop="false" 关闭
  * @attr {string} placeholder - 输入框占位文字
@@ -142,6 +143,7 @@ export class XhComboboxElement extends XhPortalHostElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
+    required: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
@@ -172,6 +174,7 @@ export class XhComboboxElement extends XhPortalHostElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
+  declare required?: boolean
   declare loading?: boolean
   declare loop?: boolean
   declare name?: string
@@ -251,6 +254,7 @@ export class XhComboboxElement extends XhPortalHostElement {
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
+      required: this.required,
     }, this.inheritedControl)
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
@@ -269,6 +273,7 @@ export class XhComboboxElement extends XhPortalHostElement {
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,
+      required: control.required,
       loading: this.loading ?? false,
       loop: this.loop,
       name: this.name,
@@ -451,8 +456,10 @@ export class XhComboboxElement extends XhPortalHostElement {
     put('content', api.getContentProps() as Record<string, unknown>)
     put('empty', api.getEmptyProps() as Record<string, unknown>)
     put('loading', api.getLoadingProps() as Record<string, unknown>)
-    this.hiddenInputs.sync(this.getPart('hidden-input'), api.value.map(value =>
-      api.getHiddenInputProps({ value }) as Record<string, unknown>))
+    // 必填且没选值时补一份空值占位，原生 required 才拦得住空表单
+    this.hiddenInputs.sync(this.getPart('hidden-input'), api.value.length === 0 && api.required
+      ? [api.getHiddenInputProps() as Record<string, unknown>]
+      : api.value.map(value => api.getHiddenInputProps({ value }) as Record<string, unknown>))
 
     for (const el of this.getParts('group')) {
       const group = { value: el.getAttribute('value') ?? '' }
