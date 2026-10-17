@@ -1,7 +1,7 @@
 // 可绑定数据的字段树：按路径找字段、列出可直接读到的字段（进入对象、不进入数组）、按种类筛选、以数组为起点列元素字段，以及非法字段树的报错。
 import type { DataField } from '../src'
 import { describe, expect, it } from 'vitest'
-import { findDataField, listDataFields } from '../src'
+import { findDataField, listDataFields, listFilterFields } from '../src'
 
 const fields: readonly DataField[] = [
   { name: 'order', label: '订单', kind: 'object', children: [
@@ -43,6 +43,22 @@ describe('listDataFields', () => {
   it('起点找不到或是标量时为空', () => {
     expect(listDataFields(fields, { base: ['order', 'missing'] })).toEqual([])
     expect(listDataFields(fields, { base: ['printedBy'] })).toEqual([])
+  })
+})
+
+describe('listFilterFields', () => {
+  it('列出根上与对象里的 value 字段，不进入数组；type 取字段的 type，没写时按文本', () => {
+    const typed: readonly DataField[] = [
+      { name: 'region', label: '区域', kind: 'value' },
+      { name: 'amount', kind: 'value', type: 'number' },
+      { name: 'customer', kind: 'object', children: [{ name: 'since', kind: 'value', type: 'date' }] },
+      { name: 'items', kind: 'list', children: [{ name: 'qty', kind: 'value', type: 'number' }] },
+    ]
+    expect(listFilterFields(typed)).toEqual([
+      { name: 'region', label: '区域', type: 'string' },
+      { name: 'amount', type: 'number' },
+      { name: 'customer.since', type: 'date' },
+    ])
   })
 })
 

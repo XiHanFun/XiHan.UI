@@ -1,5 +1,4 @@
-import type { FilterCondition, FilterGroup } from '@xihan-ui/viz'
-import type { FilterBuilderField, FilterBuilderParameter } from '../src/filter-builder/filter-builder.model'
+import type { FilterCondition, FilterField, FilterGroup, FilterParameter } from '@xihan-ui/viz'
 import { describe, expect, it } from 'vitest'
 import {
   canAddFilterGroup,
@@ -23,7 +22,7 @@ import {
   updateFilterNode,
 } from '../src/filter-builder/filter-builder.model'
 
-const fields: FilterBuilderField[] = [
+const fields: FilterField[] = [
   { name: 'region', type: 'string', label: '区域' },
   { name: 'amount', type: 'number' },
   { name: 'date', type: 'date' },
@@ -31,7 +30,7 @@ const fields: FilterBuilderField[] = [
   { name: 'channel', type: 'string', operators: ['eq', 'in'] },
 ]
 
-const parameters: FilterBuilderParameter[] = [
+const parameters: FilterParameter[] = [
   { name: 'minAmount', type: 'number' },
   { name: 'regions', type: 'string', multiple: true },
   { name: 'region', type: 'string' },

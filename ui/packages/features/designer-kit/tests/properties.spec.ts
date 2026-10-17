@@ -136,6 +136,12 @@ describe('checkPropertyValue', () => {
     [{ kind: 'format' }, { kind: 'number', decimals: -1 }, 'invalid-value'],
     [{ kind: 'format' }, { kind: 'number', scale: 2 }, 'invalid-value'],
     [{ kind: 'format' }, 'number', 'invalid-type'],
+    [{ kind: 'filter' }, { logic: 'and', conditions: [] }, undefined],
+    [{ kind: 'filter' }, { logic: 'or', conditions: [{ field: 'a', operator: 'eq', value: 1 }, { logic: 'and', conditions: [{ field: 'b', operator: 'isEmpty' }] }] }, undefined],
+    [{ kind: 'filter' }, { logic: 'xor', conditions: [] }, 'invalid-value'],
+    [{ kind: 'filter' }, { logic: 'and', conditions: [{ field: 'a' }] }, 'invalid-value'],
+    [{ kind: 'filter' }, { logic: 'and', conditions: [{ logic: 'or', conditions: 'x' }] }, 'invalid-value'],
+    [{ kind: 'filter' }, [], 'invalid-type'],
   ]
   it('内建编辑方式的取值约束', () => {
     for (const [control, value, code] of cases)

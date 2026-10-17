@@ -9,9 +9,10 @@
 import type { JsonValue } from '@xihan-ui/core/json'
 import type { DataField, DataFieldKind } from '@xihan-ui/designer-kit'
 import type { PropertyControl, PropertyDescriptor, PropertyEditorContext, PropertyNumberConstraints, PropertyOption, PropertySide } from '@xihan-ui/designer-kit/properties'
+import type { FilterField, FilterParameter } from '@xihan-ui/viz'
 import type { DesignerPropertiesTranslations } from '../translations'
 import { formatJsonPath, isJsonPathText, isPlainObject, jsonEquals } from '@xihan-ui/core/json'
-import { listDataFields } from '@xihan-ui/designer-kit'
+import { createIdAllocator, listDataFields, listFilterFields } from '@xihan-ui/designer-kit'
 import { PROPERTY_SIDES } from '@xihan-ui/designer-kit/properties'
 import { createAuthoredElement, setText } from '@xihan-ui/web-components/authoring'
 import { placeChildren } from '../internal/dom'
@@ -75,6 +76,17 @@ interface FormatControl extends HTMLElement {
   mixed?: boolean
 }
 
+/** 条件编辑器上受控的条件树与选项。 */
+interface FilterControl extends HTMLElement {
+  value?: JsonValue
+  readonly currentValue?: JsonValue | null
+  fields?: readonly FilterField[]
+  parameters?: readonly FilterParameter[]
+  maxDepth?: number
+  createId?: (kind: 'condition' | 'group') => string
+  translations?: { readonly empty?: string }
+}
+
 type ValueChange<T> = CustomEvent<{ value: T }>
 
 const EDITORS: Readonly<Record<PropertyControl['kind'], FieldEditor>> = {
@@ -88,6 +100,7 @@ const EDITORS: Readonly<Record<PropertyControl['kind'], FieldEditor>> = {
   dataField: dataFieldEditor,
   sides: sidesEditor,
   format: formatEditor,
+  filter: filterEditor,
 }
 
 /** 按编辑方式取内建编辑器；不是内建种类时为 undefined。 */
@@ -97,6 +110,70 @@ export function builtinEditor(kind: string): FieldEditor | undefined {
 
 function controlOf<K extends PropertyControl['kind']>(context: FieldContext): Extract<PropertyControl, { kind: K }> {
   return context.descriptor.control as Extract<PropertyControl, { kind: K }>
+}
+
+/** 空的条件树：没写取值或多个对象取值不同时显示它。 */
+const EMPTY_FILTER: JsonValue = { logic: 'and', conditions: [] }
+
+/** 条件树里已有的 id：新节点按前缀取未用的号。 */
+function filterIds(node: JsonValue | null | undefined, out: string[] = []): string[] {
+  if (!isPlainObject(node))
+    return out
+  if (typeof node.id === 'string')
+    out.push(node.id)
+  if (Array.isArray(node.conditions)) {
+    for (const child of node.conditions)
+      filterIds(child, out)
+  }
+  return out
+}
+
+/** 条件编辑器的字段：描述写了 fields 就用它，没写时由面板的字段树按 listFilterFields 列出值字段。 */
+export function filterFieldsOf(control: { readonly fields?: readonly FilterField[] }, panel: readonly DataField[] | undefined): readonly FilterField[] {
+  return control.fields ?? (panel === undefined ? [] : listFilterFields(panel))
+}
+
+/**
+ * 条件树：库内 xh-filter-builder，参数与嵌套层数取描述；一次增删改就是一步，写入即封口。
+ * ids 为 true 时新建的条件与组按 c1、g1 这样取树里没用过的 id。多个对象取值不同时显示空树，空态写「多个值」，
+ * 在上面加的条件整体写给这几个对象。
+ */
+function filterEditor(initial: FieldContext): FieldInstance {
+  const control = controlOf<'filter'>(initial)
+  const field: FilterControl = createAuthoredElement(initial.ownerDocument, 'xh-filter-builder', { 'data-xh-part': 'control', 'size': 'sm' })
+  if (control.parameters !== undefined)
+    field.parameters = control.parameters
+  if (control.maxDepth !== undefined)
+    field.maxDepth = control.maxDepth
+  if (control.ids === true)
+    field.createId = kind => createIdAllocator(kind === 'condition' ? 'c' : 'g', filterIds(field.currentValue)).next()
+  let context = initial
+  field.addEventListener('value-change', (event) => {
+    event.stopPropagation()
+    const { value } = (event as ValueChange<JsonValue>).detail
+    field.value = value
+    context.setValue(value)
+    context.commit()
+  })
+  let source: readonly DataField[] | undefined
+  let fields: readonly FilterField[] | undefined
+  const update = (next: FieldContext): void => {
+    context = next
+    // 字段树没换时沿用上一份清单
+    if (fields === undefined || (control.fields === undefined && next.dataFields !== source)) {
+      source = next.dataFields
+      fields = filterFieldsOf(control, source)
+      field.fields = fields
+    }
+    const empty = next.mixed ? next.translations.mixed : undefined
+    if (field.translations?.empty !== empty)
+      field.translations = empty === undefined ? undefined : { empty }
+    const value = !next.mixed && isPlainObject(next.value) ? next.value : EMPTY_FILTER
+    if (field.value === undefined || !jsonEquals(field.value, value))
+      field.value = value
+  }
+  update(initial)
+  return { element: field, update }
 }
 
 function textOf(value: JsonValue | undefined): string {

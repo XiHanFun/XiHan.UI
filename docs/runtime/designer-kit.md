@@ -188,8 +188,11 @@ listDataFields(fields, { base: ["order", "items"] }); // qty，相对数组的�
 | --- | --- |
 | `listDataFields(fields, { base?, kinds? })` | 深度优先列出 `{ path, text, field }`：进入 `object` 的子字段，不进入 `list` 的子字段；`base` 是起点（只含键的路径），是 `list` 时列它的元素字段；`kinds` 只列这些种类 |
 | `findDataField(fields, path)` | 按只含键的路径找字段，经过 `list` 时进入元素字段，找不到为 `undefined` |
+| `listFilterFields(fields)` | 条件编辑器用的字段清单（`@xihan-ui/viz` 的 `FilterField`）：根上与 `object` 里的 `value` 字段，`name` 是路径的 `formatJsonPath` 写法，不进入 `list`（条件筛的是行，不是行里数组的元素）；`type` 取字段的 `type`，没写时按文本（`"string"`） |
 
 `text` 是 `formatJsonPath` 写法，不是标识符的键写成 `["unit price"]`。同级字段重名、名字为空或种类未知时抛 `RangeError`。
+
+`value` 字段可以写 `type`（`"string" | "number" | "boolean" | "date" | "datetime"`，即 `@xihan-ui/viz` 的 `FilterValueType`）：条件编辑器据此给运算符与值的控件，不写时按文本。
 
 ## 视口
 
@@ -363,6 +366,7 @@ const issues = checkProperties(descriptors, node, { path: ["nodes", 3], target: 
 | `{ kind: "dataField", fields?, kinds?, base? }` | 字段路径的 `formatJsonPath` 写法，空串为没有绑定，写法不对报 `invalid-value`。字段树：描述里写了 `fields` 就用它，没写时用属性面板给的（`<xh-designer-properties>` 的 `dataFields`）；`kinds` 是能选的字段种类，`base` 是相对路径的起点（从字段树根开始、只含键），同 `listDataFields` 的两个选项。这三项只给编辑器用 |
 | `{ kind: "sides", integer?, min?, max?, exclusiveMin?, step?, unit? }` | `{ top, right, bottom, left }` 四个数字，每边按 number 的约束检查；缺边或某边不是数字报 `invalid-type`，多出别的键报 `unknown-key` |
 | `{ kind: "format", kinds? }` | `@xihan-ui/expression` 的格式说明，按 `checkFormatSpec` 检查，没过报 `invalid-value`；`kinds` 是允许的格式种类，缺省全部 |
+| `{ kind: "filter", fields?, parameters?, maxDepth?, ids? }` | 条件树（`@xihan-ui/viz` 的 `FilterGroup`）：组是 `{ logic: "and" \| "or", conditions }`，条件是 `{ field, operator }`，不是对象报 `invalid-type`，这层形状不对报 `invalid-value`；字段在不在、运算符合不合由各款自己的校验报。可筛选的字段：描述里写了 `fields`（`FilterField`）就用它，没写时用属性面板给的 `dataFields` 按 `listFilterFields` 列出的值字段。`parameters` 是可引用的参数（`FilterParameter`），`maxDepth` 限子组层数，`ids` 为 true 时新建的条件与组带 id。这四项只给编辑器用 |
 
 number 与 sides 的数值约束是同一个类型 `PropertyNumberConstraints`；四边的键与次序是 `PROPERTY_SIDES`（`top`、`right`、`bottom`、`left`），取值类型是 `PropertySides`。
 

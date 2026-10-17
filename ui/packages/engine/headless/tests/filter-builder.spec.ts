@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import type { FilterCondition, FilterGroup } from '@xihan-ui/viz'
-import type { FilterBuilderField, FilterBuilderParameter, FilterBuilderSchema, FilterBuilderValueChangeDetails } from '../src/filter-builder'
+import type { FilterCondition, FilterField, FilterGroup, FilterParameter } from '@xihan-ui/viz'
+import type { FilterBuilderSchema, FilterBuilderValueChangeDetails } from '../src/filter-builder'
 import type { StructureChild } from '../src/shared/structure'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
@@ -10,7 +10,7 @@ import { FILTER_BUILDER_EN_US } from '../src/locale/en-US'
 
 type Props = FilterBuilderSchema['props']
 
-const fields: FilterBuilderField[] = [
+const fields: FilterField[] = [
   { name: 'region', type: 'string', label: 'Region' },
   { name: 'amount', type: 'number', label: 'Amount' },
   { name: 'date', type: 'date' },
@@ -18,7 +18,7 @@ const fields: FilterBuilderField[] = [
   { name: 'channel', type: 'string', options: [{ value: 'web', label: 'Web' }, { value: 'shop' }] },
 ]
 
-const parameters: FilterBuilderParameter[] = [
+const parameters: FilterParameter[] = [
   { name: 'minAmount', type: 'number', label: 'Min amount' },
   { name: 'regions', type: 'string', multiple: true },
 ]

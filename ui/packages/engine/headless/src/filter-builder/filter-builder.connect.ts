@@ -6,8 +6,8 @@
 // 提供 filter builder 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { FilterCondition, FilterGroup, FilterOperator } from '@xihan-ui/viz'
-import type { FilterBuilderField, FilterBuilderParameter, FilterPath } from './filter-builder.model'
+import type { FilterCondition, FilterField, FilterGroup, FilterOperator, FilterParameter } from '@xihan-ui/viz'
+import type { FilterPath } from './filter-builder.model'
 import type {
   FilterBuilderApi,
   FilterBuilderConditionView,
@@ -52,8 +52,8 @@ function sourceOf(condition: FilterCondition): FilterOperandSource {
 export function filterBuilderView(
   tree: FilterGroup,
   options: {
-    readonly fields: readonly FilterBuilderField[]
-    readonly parameters: readonly FilterBuilderParameter[]
+    readonly fields: readonly FilterField[]
+    readonly parameters: readonly FilterParameter[]
     readonly sources: Readonly<Record<string, FilterOperandSource>>
     readonly maxDepth: number
     readonly ignoreCase: boolean

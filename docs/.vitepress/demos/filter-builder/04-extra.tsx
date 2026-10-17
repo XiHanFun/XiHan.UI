@@ -1,11 +1,10 @@
 // 行尾扩展位 | 给了 createId 的条件带 id，行尾留一个扩展位放宿主自己的控件，参数带上条件与路径
-import type { FilterBuilderField } from "@xihan-ui/headless";
-import type { FilterCondition, FilterGroup } from "@xihan-ui/viz";
+import type { FilterCondition, FilterField, FilterGroup } from "@xihan-ui/viz";
 import type { ReactNode } from "react";
 import { XhFilterBuilderRoot, XhTagLabel, XhTagRoot } from "@xihan-ui/react";
 import { useRef, useState } from "react";
 
-const fields: FilterBuilderField[] = [
+const fields: FilterField[] = [
   { name: "region", type: "string", label: "区域", options: [{ value: "east", label: "华东" }, { value: "south", label: "华南" }, { value: "north", label: "华北" }] },
   { name: "customer", type: "string", label: "客户" },
   { name: "amount", type: "number", label: "金额" },

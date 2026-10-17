@@ -61,7 +61,8 @@
   "dependencies": {
     "@xihan-ui/core": "workspace:^",
     "@xihan-ui/expression": "workspace:^",
-    "@xihan-ui/pointer": "workspace:^"
+    "@xihan-ui/pointer": "workspace:^",
+    "@xihan-ui/viz": "workspace:^"
   },
   "devDependencies": {
     "@xihan-ui/build": "workspace:*",

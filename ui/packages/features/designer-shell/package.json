@@ -63,6 +63,7 @@
     "@xihan-ui/core": "workspace:^",
     "@xihan-ui/designer-kit": "workspace:^",
     "@xihan-ui/pointer": "workspace:^",
+    "@xihan-ui/viz": "workspace:^",
     "@xihan-ui/web-components": "workspace:^"
   },
   "devDependencies": {

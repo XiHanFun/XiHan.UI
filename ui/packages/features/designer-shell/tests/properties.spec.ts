@@ -550,6 +550,42 @@ describe('<xh-designer-properties>', () => {
     diagnostics.stop()
   })
 
+  it('filter 是条件编辑器：字段取描述的 fields，没写时用面板 dataFields 列出的值字段；一次增删改写入即封口，ids 时新节点取未用的 id', async () => {
+    const diagnostics = recordWcDiagnostics()
+    const tree = { logic: 'and', conditions: [{ id: 'c1', field: 'region', operator: 'eq', value: 'East' }] }
+    const target = (id: string, value: JsonValue, control: JsonValue): DesignerPropertyTarget => ({ kind: 'card', id, value: { filter: value }, descriptors: [{ path: ['filter'], control: control as never, label: '筛选' }] })
+    const panel = await mount((element) => {
+      element.dataFields = [{ name: 'region', label: '区域', kind: 'value' }, { name: 'amount', kind: 'value', type: 'number' }, { name: 'items', kind: 'list', children: [{ name: 'qty', kind: 'value' }] }]
+      element.targets = [target('a', tree, { kind: 'filter', ids: true, maxDepth: 1, parameters: [{ name: 'min', type: 'number' }] })]
+    })
+    type FilterBuilder = HTMLElement & { value?: unknown, fields?: unknown, parameters?: unknown, maxDepth?: number, createId?: (kind: 'condition' | 'group') => string, translations?: { empty?: string } }
+    const builder = row(panel, 'filter').querySelector<FilterBuilder>('xh-filter-builder')!
+    expect([builder.getAttribute('data-xh-part'), builder.value, builder.fields, builder.parameters, builder.maxDepth]).toEqual([
+      'control',
+      tree,
+      [{ name: 'region', label: '区域', type: 'string' }, { name: 'amount', type: 'number' }],
+      [{ name: 'min', type: 'number' }],
+      1,
+    ])
+    expect([builder.createId!('condition'), builder.createId!('group')]).toEqual(['c2', 'g1'])
+
+    const changes = record(panel, 'property-change')
+    const commits = record(panel, 'property-commit')
+    const next = { logic: 'or', conditions: tree.conditions }
+    emit(builder, 'value-change', { value: next })
+    expect([changes.map(change => change.value), commits]).toEqual([[next], [{ path: ['filter'] }]])
+
+    // 描述写了 fields 就用描述的；多个对象取值不同时是空树，空态写「多个值」
+    const own = [{ name: 'channel', type: 'string' }]
+    panel.targets = [target('a', tree, { kind: 'filter', fields: own }), target('b', next, { kind: 'filter', fields: own })]
+    await panel.updateComplete
+    const shared = row(panel, 'filter').querySelector<FilterBuilder>('xh-filter-builder')!
+    expect([shared.fields, shared.value, shared.translations?.empty, shared.createId]).toEqual([own, { logic: 'and', conditions: [] }, 'Multiple values', undefined])
+    await new Promise(resolve => setTimeout(resolve))
+    expect(diagnostics.codes()).toEqual([])
+    diagnostics.stop()
+  })
+
   it('只读时字段只读、不派发；focusField 把焦点交给字段', async () => {
     const panel = await mount((element) => {
       element.readonly = true

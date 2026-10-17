@@ -6,6 +6,7 @@
 // 可绑定数据的字段树：宿主描述数据的形状，设计器的字段选择器据此列出可选字段。
 
 import type { JsonPath } from '@xihan-ui/core/json'
+import type { FilterField, FilterValueType } from '@xihan-ui/viz'
 import { formatJsonPath } from '@xihan-ui/core/json'
 
 /** 字段的种类：value 为标量；object 为含子字段的对象；list 为数组，子字段描述数组的一个元素。 */
@@ -21,6 +22,8 @@ export interface DataField {
   /** 显示的名称，缺省用 name。 */
   readonly label?: string
   readonly kind: DataFieldKind
+  /** value 字段的数据类型：条件编辑器据此给运算符与操作数控件；不写时按文本。 */
+  readonly type?: FilterValueType
   /** object 与 list 的子字段；list 的子字段相对数组的一个元素。 */
   readonly children?: readonly DataField[]
 }
@@ -99,4 +102,24 @@ export function listDataFields(fields: readonly DataField[], options: ListDataFi
   }
   visit(start, [])
   return result
+}
+
+/**
+ * 字段树里能写进条件的字段：根上与对象里的 value 字段，name 是路径的 formatJsonPath 写法；数组里的字段不列（条件筛的是行，
+ * 不是行里数组的元素）。type 取字段的 type，没写时按文本。属性面板的条件编辑器在描述没写 fields 时用它。
+ */
+export function listFilterFields(fields: readonly DataField[]): FilterField[] {
+  const out: FilterField[] = []
+  const visit = (level: readonly DataField[], path: JsonPath): void => {
+    checkLevel(level)
+    for (const field of level) {
+      const at = [...path, field.name]
+      if (field.kind === 'value')
+        out.push(field.label === undefined ? { name: formatJsonPath(at), type: field.type ?? 'string' } : { name: formatJsonPath(at), label: field.label, type: field.type ?? 'string' })
+      else if (field.kind === 'object')
+        visit(field.children ?? [], at)
+    }
+  }
+  visit(fields, [])
+  return out
 }

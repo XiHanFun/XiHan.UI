@@ -6,8 +6,8 @@
 // 提供 filter builder 相关实现。
 
 import type { ControlVariant, Size } from '@xihan-ui/core'
-import type { FilterBuilderApi, FilterBuilderCreateId, FilterBuilderField, FilterBuilderParameter, FilterBuilderSchema, FilterBuilderTranslations, FilterPath } from '@xihan-ui/headless'
-import type { FilterCondition, FilterGroup } from '@xihan-ui/viz'
+import type { FilterBuilderApi, FilterBuilderCreateId, FilterBuilderSchema, FilterBuilderTranslations, FilterPath } from '@xihan-ui/headless'
+import type { FilterCondition, FilterField, FilterGroup, FilterParameter } from '@xihan-ui/viz'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { filterBuilderStructure } from '@xihan-ui/headless'
@@ -56,9 +56,9 @@ export interface XhFilterBuilderRootProps extends Omit<ComponentPropsWithRef<'di
   value?: FilterGroup
   defaultValue?: FilterGroup
   /** 可筛选的字段；条件的字段下拉按它的顺序。 */
-  fields?: readonly FilterBuilderField[]
+  fields?: readonly FilterField[]
   /** 可引用的参数；不给或为空时不显示「值 / 参数」切换。 */
-  parameters?: readonly FilterBuilderParameter[]
+  parameters?: readonly FilterParameter[]
   /** 新节点的 id；不给时新建的条件与组不带 id，也就没有扩展位。 */
   createId?: FilterBuilderCreateId
   /** 子组最多嵌套几层，缺省 2；0 表示不能加子组。 */

@@ -6,8 +6,8 @@
 // 提供 filter builder 相关实现。
 
 import type { ControlVariant, Size } from '@xihan-ui/core'
-import type { FilterBuilderApi, FilterBuilderCreateId, FilterBuilderField, FilterBuilderParameter, FilterBuilderSchema, FilterBuilderTranslations, FilterPath } from '@xihan-ui/headless'
-import type { FilterCondition, FilterGroup } from '@xihan-ui/viz'
+import type { FilterBuilderApi, FilterBuilderCreateId, FilterBuilderSchema, FilterBuilderTranslations, FilterPath } from '@xihan-ui/headless'
+import type { FilterCondition, FilterField, FilterGroup, FilterParameter } from '@xihan-ui/viz'
 import type { ComputedRef, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { filterBuilderStructure } from '@xihan-ui/headless'
@@ -55,8 +55,8 @@ export const XhFilterBuilderRoot = defineComponent({
     // 缺席值 undefined 表示非受控
     value: { type: Object as PropType<FilterGroup> },
     defaultValue: { type: Object as PropType<FilterGroup> },
-    fields: { type: Array as PropType<readonly FilterBuilderField[]> },
-    parameters: { type: Array as PropType<readonly FilterBuilderParameter[]> },
+    fields: { type: Array as PropType<readonly FilterField[]> },
+    parameters: { type: Array as PropType<readonly FilterParameter[]> },
     createId: { type: Function as PropType<FilterBuilderCreateId> },
     maxDepth: { type: Number },
     // undefined 才表示「本实例没说」，缺省 true
