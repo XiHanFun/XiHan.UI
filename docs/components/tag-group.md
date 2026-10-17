@@ -108,6 +108,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `collection` | `TagGroupNode[]` |  | 条目数据，显示文本、禁用与可移除的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
 | `value` | `string \| string[]` |  | 选中值，提供即受控；单选可写为裸串，内部归一为数组。 |
 | `defaultValue` | `string \| string[]` |  |  |
@@ -232,7 +233,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `list` | `aria-disabled` | 'true' \| 'false' |
-| `list` | `aria-label` | label.list |
+| `list` | `aria-label` | props.ariaLabel |
 | `list` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `list` | `aria-multiselectable` | 'true' \| 'false' |
 | `list` | `aria-readonly` | 'true' \| 'false' |

@@ -153,6 +153,11 @@ export interface MentionSchema extends MachineSchema {
      */
     labelled?: boolean
     /**
+     * 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。
+     * 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。
+     */
+    ariaLabel?: string
+    /**
      * 打开候选的前缀字符，默认 '@'。提供数组即多种前缀并存，宿主按 onQueryChange 报回的 prefix 分流。
      * 前缀必须紧跟在行首或空白之后，邮箱地址中的 @ 因此不会误触发。
      */

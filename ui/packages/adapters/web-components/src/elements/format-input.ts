@@ -135,6 +135,7 @@ export class XhFormatInputElement extends XhElement {
     }, this.inheritedControl)
     return {
       labelled: this.getPart('label') != null,
+      ariaLabel: this.hostAriaLabel(),
       value: this.value,
       defaultValue: this.defaultValue,
       kinds: this.kinds,

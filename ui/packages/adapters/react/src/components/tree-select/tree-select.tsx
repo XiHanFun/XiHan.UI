@@ -96,6 +96,8 @@ function useNodeFocusReport(
 }
 
 export interface XhTreeSelectRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   collection?: TreeSelectNode[]
   /** 完整 collection 与 Virtualizer 的焦点桥；count 必须等于当前 visibleNodes.length。 */
   virtualizer?: CollectionVirtualizer
@@ -149,6 +151,7 @@ export interface XhTreeSelectRootProps extends Omit<ComponentPropsWithRef<'div'>
 }
 
 export function XhTreeSelectRoot({
+  ariaLabel,
   collection,
   virtualizer,
   loadChildren,
@@ -193,6 +196,7 @@ export function XhTreeSelectRoot({
   ...rest
 }: XhTreeSelectRootProps): ReactNode {
   const ctx = useTreeSelect(withXhConfig('tree-select', useFormControlProps({
+    ariaLabel,
     collection,
     virtualizer,
     loadChildren,

@@ -31,6 +31,8 @@ export type ColorSwatchPickerRootSlotProps = Pick<
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhColorSwatchPickerRootProps extends RootElementProps {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   /** 格子数据；未写 children 时按它自动铺开。 */
   swatches?: ColorSwatchPickerNode[]
   /** 标题文字。提供后不必再写 label 部件。 */
@@ -51,6 +53,7 @@ export interface XhColorSwatchPickerRootProps extends RootElementProps {
 }
 
 export function XhColorSwatchPickerRoot({
+  ariaLabel,
   swatches,
   label,
   value,
@@ -69,6 +72,7 @@ export function XhColorSwatchPickerRoot({
   ...rest
 }: XhColorSwatchPickerRootProps): ReactNode {
   const ctx = useColorSwatchPicker(withXhConfig('color-swatch-picker', useFormControlProps({
+    ariaLabel,
     swatches,
     value,
     defaultValue,

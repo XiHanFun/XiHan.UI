@@ -261,7 +261,10 @@ export function connectSelect<T extends PropTypes>(
       'aria-controls': ids.content,
       // 名字 = 标签 + 当前值：aria-labelledby 优先级高于元素内容，只指 label 会挤掉 value-text。
       // 作者没写 label 时那段是悬空 IDREF，按 accname 规则跳过。
-      'aria-labelledby': prop('labelled') ? `${ids.label} ${ids['value-text']}` : ids['value-text'],
+      'aria-labelledby': prop('labelled')
+        ? `${ids.label} ${ids['value-text']}`
+        : prop('ariaLabel') ? `${ids.trigger} ${ids['value-text']}` : ids['value-text'],
+      'aria-label': prop('ariaLabel'),
       'aria-invalid': invalid ? 'true' : 'false',
       'aria-readonly': readOnly ? 'true' : 'false',
       'data-state': stateAttr,
@@ -493,7 +496,9 @@ export function connectSelect<T extends PropTypes>(
       // 名字与 trigger 同源（标签 + 当前值）：无锚点时焦点歇在这儿，读屏只报得出容器的名字与角色。
       // 作者没渲染 label / value-text 时两段都是悬空 IDREF，按 accname 规则整条落空，
       // 名字退回下面那个可写的兜底
-      'aria-labelledby': prop('labelled') ? `${ids.label} ${ids['value-text']}` : ids['value-text'],
+      'aria-labelledby': prop('labelled')
+        ? `${ids.label} ${ids['value-text']}`
+        : prop('ariaLabel') ? `${ids.trigger} ${ids['value-text']}` : ids['value-text'],
       'aria-label': translations.content,
       // 多选语义显式报出，读屏据此播报「可多选」
       'aria-multiselectable': multiple ? 'true' : 'false',

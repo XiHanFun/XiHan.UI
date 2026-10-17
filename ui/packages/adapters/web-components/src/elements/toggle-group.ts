@@ -148,6 +148,7 @@ export class XhToggleGroupElement extends XhElement {
   private machineProps(): Partial<ToggleGroupSchema['props']> {
     const control = this.controlState()
     return {
+      ariaLabel: this.hostAriaLabel(),
       collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,

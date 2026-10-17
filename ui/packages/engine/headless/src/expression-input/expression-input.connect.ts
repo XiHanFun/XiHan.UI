@@ -164,6 +164,7 @@ export function connectExpressionInput<T extends PropTypes>(
         'readonly': readOnly || undefined,
         'required': prop('required') || undefined,
         'aria-labelledby': prop('labelled') ? ids.label : undefined,
+        'aria-label': prop('ariaLabel'),
         'aria-describedby': describedByIssues,
         'aria-invalid': invalid ? 'true' : 'false',
         'aria-readonly': readOnly ? 'true' : 'false',

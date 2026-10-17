@@ -103,6 +103,8 @@ export const XhDatePickerRoot = defineComponent({
   name: 'XhDatePickerRoot',
   // 有 connect / machine 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
+    /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+    ariaLabel: { type: String },
     value: { type: [String, Array] as PropType<string | string[]> },
     defaultValue: { type: [String, Array] as PropType<string | string[]> },
     open: { type: Boolean, default: undefined },

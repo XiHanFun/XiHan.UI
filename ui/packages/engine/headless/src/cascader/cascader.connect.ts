@@ -422,7 +422,10 @@ export function connectCascader<T extends PropTypes>(
       // 指向浮层壳而不是某一列，列随展开路径增减
       'aria-controls': ids.content,
       // 名字 = 标签 + 当前值；作者没渲染 label 时只引当前值
-      'aria-labelledby': prop('labelled') ? `${ids.label} ${ids['value-text']}` : ids['value-text'],
+      'aria-labelledby': prop('labelled')
+        ? `${ids.label} ${ids['value-text']}`
+        : prop('ariaLabel') ? `${ids.trigger} ${ids['value-text']}` : ids['value-text'],
+      'aria-label': prop('ariaLabel'),
       'aria-invalid': invalid ? 'true' : 'false',
       'aria-readonly': readOnly ? 'true' : 'false',
       'aria-required': required ? 'true' : 'false',
@@ -888,7 +891,11 @@ export function connectCascader<T extends PropTypes>(
         // 作者没渲染 label / value-text 时两段都是悬空 IDREF，按 accname 规则整条落空，
         // 名字退回下面那个可写的兜底
         // 不是列表框的那一刻不带名字：没有角色的容器不许命名
-        'aria-labelledby': !listbox ? undefined : parent == null ? (prop('labelled') ? `${ids.label} ${ids['value-text']}` : ids['value-text']) : itemId(parent),
+        'aria-labelledby': !listbox
+          ? undefined
+          : parent == null
+            ? (prop('labelled') ? `${ids.label} ${ids['value-text']}` : prop('ariaLabel') ? `${ids.trigger} ${ids['value-text']}` : ids['value-text'])
+            : itemId(parent),
         'aria-label': listbox && parent == null ? translations.column : undefined,
         'data-level': String(column.level),
         // 懒分支的子列正在取数：读屏据此知道这一列的条目还在路上

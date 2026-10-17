@@ -35,6 +35,8 @@ export type FormatInputRootSlotProps = Pick<
 >
 
 export interface XhFormatInputRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   /** 受控的格式说明；null 表示不设格式，undefined 表示非受控。 */
   value?: FormatSpec | null
   defaultValue?: FormatSpec | null
@@ -59,6 +61,7 @@ export interface XhFormatInputRootProps extends Omit<ComponentPropsWithRef<'div'
 }
 
 export function XhFormatInputRoot({
+  ariaLabel,
   value,
   defaultValue,
   kinds,
@@ -78,6 +81,7 @@ export function XhFormatInputRoot({
   ...rest
 }: XhFormatInputRootProps): ReactNode {
   const ctx = useFormatInput(withXhConfig('format-input', useFormControlProps({
+    ariaLabel,
     value,
     defaultValue,
     kinds,

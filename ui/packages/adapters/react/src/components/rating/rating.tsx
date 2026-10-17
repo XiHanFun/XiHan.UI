@@ -46,6 +46,8 @@ export type RatingItemSlotProps = RatingItemState
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'defaultValue' | 'dir' | 'children' | 'onChange'>
 
 export interface XhRatingRootProps extends RootElementProps {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   /** 受控评分；给定即受控。 */
   value?: number
   /** 非受控初值。 */
@@ -75,6 +77,7 @@ export interface XhRatingRootProps extends RootElementProps {
 }
 
 export function XhRatingRoot({
+  ariaLabel,
   value,
   defaultValue,
   count,
@@ -95,6 +98,7 @@ export function XhRatingRoot({
   ...rest
 }: XhRatingRootProps): ReactNode {
   const ctx = useRating(withXhConfig('rating', useFormControlProps({
+    ariaLabel,
     value,
     defaultValue,
     count,

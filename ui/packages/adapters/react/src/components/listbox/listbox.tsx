@@ -38,6 +38,8 @@ export type ListboxRootSlotProps = Pick<
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhListboxRootProps extends RootElementProps {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   collection?: ListboxNode[]
   virtualizer?: CollectionVirtualizer
   /** 标题文字。提供后不必再写 label 部件。 */
@@ -67,6 +69,7 @@ export interface XhListboxRootProps extends RootElementProps {
 }
 
 export function XhListboxRoot({
+  ariaLabel,
   collection,
   virtualizer,
   value,
@@ -91,6 +94,7 @@ export function XhListboxRoot({
   ...rest
 }: XhListboxRootProps): ReactNode {
   const ctx = useListbox(useFormControlProps({
+    ariaLabel,
     collection,
     virtualizer,
     value,

@@ -33,6 +33,8 @@ export type PinInputRootSlotProps = Pick<
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'>
 
 export interface XhPinInputRootProps extends RootElementProps {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   value?: string[]
   defaultValue?: string[]
   length?: number
@@ -61,6 +63,7 @@ export interface XhPinInputRootProps extends RootElementProps {
 }
 
 export function XhPinInputRoot({
+  ariaLabel,
   value,
   defaultValue,
   length,
@@ -85,6 +88,7 @@ export function XhPinInputRoot({
   ...rest
 }: XhPinInputRootProps): ReactNode {
   const machineProps = {
+    ariaLabel,
     value,
     defaultValue,
     length,

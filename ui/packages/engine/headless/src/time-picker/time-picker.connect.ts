@@ -414,6 +414,7 @@ export function connectTimePicker<T extends PropTypes>(
       // 几段合起来才是一个控件，靠 group 兜住，名字由 label 提供
       'role': 'group',
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
+      'aria-label': prop('ariaLabel'),
       // group 只支持全局属性，只读与必填不在其列，那两位由各段自己报
       'aria-disabled': disabled ? 'true' : 'false',
       'aria-invalid': flagged ? 'true' : 'false',
@@ -629,6 +630,7 @@ export function connectTimePicker<T extends PropTypes>(
         'aria-controls': ids.content,
         // 图标按钮自己没有文字，名字借标题；作者写了 aria-label 会盖过这条
         'aria-labelledby': prop('labelled') ? ids.label : undefined,
+        'aria-label': prop('ariaLabel'),
         'data-state': stateAttr,
         'data-disabled': dataAttr(disabled),
         // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
@@ -746,6 +748,7 @@ export function connectTimePicker<T extends PropTypes>(
       'role': 'dialog',
       'aria-modal': 'false',
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
+      'aria-label': prop('ariaLabel'),
       // 写 -1 而不是整个不给：某些浏览器会把可滚动区域自动塞进 Tab 序列
       'tabindex': -1,
       'data-state': stateAttr,

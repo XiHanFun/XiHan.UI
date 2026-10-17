@@ -197,7 +197,7 @@ export function connectTagGroup<T extends PropTypes>(
       'role': 'grid',
       // 作者渲染了 label 就引它；没渲染时不写这条引用，名字取下面的兜底
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
-      'aria-label': label.list,
+      'aria-label': prop('ariaLabel') ?? label.list,
       'aria-multiselectable': multiselectable ? 'true' : 'false',
       'aria-disabled': groupDisabled ? 'true' : 'false',
       // 列表动效接上之前，首帧的标签直接呈现

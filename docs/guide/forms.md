@@ -101,6 +101,26 @@ const controlProps = useFieldControl();
 
 标签那份是并入而不是覆盖：字段的标签排在最前，控件自己的部分（下拉的当前值等）跟在后面，两者都能读出。控件自带的 `aria-labelledby` 指向它自己的 `label` 部件，使用字段的标签时该部件未渲染，只保留它会形成悬空引用：按 accname 规则跳过，名称又无法回退到 `for`（`for` 指向封装根的 `div`），焦点所在的控件就没有名称。
 
+## 不显示出来的名字
+
+库内的表单控件都收 `ariaLabel`，用在没有可见标题的地方，例如表格的一格、工具条上单独放的控件、组合节点里的一段。它写成 `aria-label`，落在字段标签会接到的那个部件上。
+
+名称的先后：
+
+1. 放进字段时，取字段的标签。
+2. 其次是控件自己渲染的 `label` 部件。
+3. 前两者都不在时，才用 `ariaLabel`。
+
+前两者在场时 `ariaLabel` 不进名称。select、cascader、tree-select、color-picker 的名称原本是「标签 + 当前值」，只给 `ariaLabel` 时是「`ariaLabel` + 当前值」。
+
+三端的写法：
+
+- Vue：写 `ariaLabel`；模板里写 `aria-label` 也落到这个 prop 上。
+- React：写 `ariaLabel`。JSX 里的 `aria-label` 是透传到根节点的 DOM 属性，不是这一项。
+- Web Components：写在宿主的 `aria-label` 特性上，或给元素的 `ariaLabel` 属性赋值（浏览器把它映射到同一个特性），改了随时跟着变。
+
+field-array 只在表格排布下有落点（表格本体）。transfer 平时只是容器，给了名称才作为一个具名的组。
+
 ## 参与的组件
 
 checkbox、cascader、checkbox-group、color-field、color-picker、color-slider、color-swatch-picker、combobox、date-field、date-picker、date-range-picker、editable、field-array、file-upload、image-cropper、mention、number-field、password-input、pin-input、radio-group、rating、select、signature-pad、slider、switch、tags-input、text-field、time-field、time-picker、time-range-picker、toggle-group、transfer、tree-select。

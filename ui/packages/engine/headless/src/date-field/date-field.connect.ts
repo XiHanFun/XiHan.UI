@@ -199,6 +199,7 @@ export function connectDateField<T extends PropTypes>(
       // 一排段位在读屏那里是一个整体，靠 group 兜住，名字由 label 提供
       'role': 'group',
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
+      'aria-label': prop('ariaLabel'),
       'aria-disabled': disabled ? 'true' : 'false',
       'data-xh-field-chrome': '',
       'data-xh-field-size': prop('size') ?? 'md',

@@ -124,7 +124,7 @@ export function connectSignaturePad<T extends PropTypes>(
       'role': 'img',
       // 作者渲染了标题就用标题；没渲染时不写这条引用，名字取下面这句内建文案
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
-      'aria-label': translations.label,
+      'aria-label': prop('ariaLabel') ?? translations.label,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),

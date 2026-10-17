@@ -40,6 +40,8 @@ export type FieldArrayRootSlotProps = Pick<
 >
 
 export interface XhFieldArrayRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   value?: unknown[]
   defaultValue?: unknown[]
   min?: number
@@ -61,6 +63,7 @@ export interface XhFieldArrayRootProps extends Omit<ComponentPropsWithRef<'div'>
 }
 
 export function XhFieldArrayRoot({
+  ariaLabel,
   value,
   defaultValue,
   min,
@@ -80,6 +83,7 @@ export function XhFieldArrayRoot({
 }: XhFieldArrayRootProps): ReactNode {
   const form = useOptionalFormContext()
   const ctx = useFieldArray(withXhConfig('field-array', useFormControlProps({
+    ariaLabel,
     value,
     defaultValue,
     min,

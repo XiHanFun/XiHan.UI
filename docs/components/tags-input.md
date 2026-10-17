@@ -159,6 +159,7 @@ delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号�
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string[]` |  | 受控标签集合；提供后由宿主决定，状态机不自行修改，只发 onValueChange。 |
 | `defaultValue` | `string[]` |  | 非受控初始标签集合。 |
 | `inputValue` | `string` |  | 受控输入文本；与 value 各自独立受控。 |
@@ -301,9 +302,11 @@ delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `control` | `aria-disabled` | 'true' \| 'false' |
+| `control` | `aria-label` | props.ariaLabel |
 | `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `control` | `role` | 'group' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
+| `input` | `aria-label` | props.ariaLabel |
 | `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `input` | `aria-required` | 'true' \| 'false' |
 | `item-input` | `aria-label` | label.editTagInput(item.value) |

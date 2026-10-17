@@ -33,6 +33,8 @@ export type TextFieldRootSlotProps = Pick<
 export type TextFieldCountSlotProps = Pick<TextFieldApi, 'count' | 'maxLength' | 'atLimit'>
 
 export interface XhTextFieldRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   /** 标题。不给 children 时铺 label 部件。 */
   label?: ReactNode
   /** 不给 children 时输入框铺 textarea（多行，接入 autoSize 自动高度）；手写部件时由 XhTextFieldInput 的 as 决定。 */
@@ -62,6 +64,7 @@ export interface XhTextFieldRootProps extends Omit<ComponentPropsWithRef<'div'>,
 }
 
 export function XhTextFieldRoot({
+  ariaLabel,
   label,
   multiline,
   value,
@@ -87,6 +90,7 @@ export function XhTextFieldRoot({
   ...rest
 }: XhTextFieldRootProps): ReactNode {
   const ctx = useTextField(withXhConfig('text-field', useFormControlProps({
+    ariaLabel,
     value,
     defaultValue,
     type,

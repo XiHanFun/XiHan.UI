@@ -12754,6 +12754,7 @@
       "zoom"
     ],
     "cascader": [
+      "ariaLabel",
       "cascade",
       "changeOnSelect",
       "checkedStrategy",
@@ -12794,6 +12795,7 @@
       "variant"
     ],
     "checkbox": [
+      "ariaLabel",
       "checked",
       "defaultChecked",
       "disabled",
@@ -12807,6 +12809,7 @@
       "value"
     ],
     "checkbox-group": [
+      "ariaLabel",
       "collection",
       "defaultValue",
       "disabled",
@@ -12893,6 +12896,7 @@
     ],
     "color-field": [
       "alpha",
+      "ariaLabel",
       "clearable",
       "defaultValue",
       "disabled",
@@ -12913,6 +12917,7 @@
     ],
     "color-picker": [
       "alpha",
+      "ariaLabel",
       "defaultOpen",
       "defaultRecentColors",
       "defaultValue",
@@ -12945,6 +12950,7 @@
     ],
     "color-slider": [
       "alpha",
+      "ariaLabel",
       "channel",
       "defaultValue",
       "dir",
@@ -12968,6 +12974,7 @@
       "value"
     ],
     "color-swatch-picker": [
+      "ariaLabel",
       "defaultValue",
       "dir",
       "disabled",
@@ -12985,6 +12992,7 @@
     ],
     "combobox": [
       "allowCustomValue",
+      "ariaLabel",
       "collection",
       "defaultInputValue",
       "defaultOpen",
@@ -13068,6 +13076,7 @@
       "typeahead"
     ],
     "date-field": [
+      "ariaLabel",
       "defaultValue",
       "disabled",
       "granularity",
@@ -13093,6 +13102,7 @@
     ],
     "date-picker": [
       "activeView",
+      "ariaLabel",
       "closeOnSelect",
       "defaultFocusedValue",
       "defaultOpen",
@@ -13142,6 +13152,7 @@
       "activeIndex",
       "activeView",
       "allowsNonContiguousRanges",
+      "ariaLabel",
       "closeOnSelect",
       "defaultFocusedValue",
       "defaultOpen",
@@ -13266,6 +13277,7 @@
     ],
     "editable": [
       "activationMode",
+      "ariaLabel",
       "autoResize",
       "defaultEdit",
       "defaultValue",
@@ -13295,6 +13307,7 @@
       "tone"
     ],
     "expression-input": [
+      "ariaLabel",
       "autoSize",
       "check",
       "checkDelay",
@@ -13334,6 +13347,7 @@
       "required"
     ],
     "field-array": [
+      "ariaLabel",
       "columns",
       "createItem",
       "defaultValue",
@@ -13360,6 +13374,7 @@
       "accept",
       "allowDrop",
       "allowPaste",
+      "ariaLabel",
       "autoUpload",
       "capture",
       "defaultFiles",
@@ -13461,6 +13476,7 @@
       "values"
     ],
     "format-input": [
+      "ariaLabel",
       "clearable",
       "datePatterns",
       "defaultValue",
@@ -13645,6 +13661,7 @@
     ],
     "image-cropper": [
       "alt",
+      "ariaLabel",
       "aspectRatio",
       "defaultFlip",
       "defaultRotation",
@@ -13761,6 +13778,7 @@
       "variant"
     ],
     "listbox": [
+      "ariaLabel",
       "collection",
       "defaultValue",
       "dir",
@@ -13841,6 +13859,7 @@
       "value"
     ],
     "mention": [
+      "ariaLabel",
       "collection",
       "defaultValue",
       "dir",
@@ -13969,6 +13988,7 @@
       "tone"
     ],
     "number-field": [
+      "ariaLabel",
       "changeDelay",
       "changeInterval",
       "clampValueOnBlur",
@@ -14019,6 +14039,7 @@
       "translations"
     ],
     "password-input": [
+      "ariaLabel",
       "autoComplete",
       "defaultRevealed",
       "defaultValue",
@@ -14064,6 +14085,7 @@
       "variant"
     ],
     "pin-input": [
+      "ariaLabel",
       "blurOnComplete",
       "defaultValue",
       "disabled",
@@ -14203,6 +14225,7 @@
       "translations"
     ],
     "radio-group": [
+      "ariaLabel",
       "block",
       "collection",
       "defaultValue",
@@ -14224,6 +14247,7 @@
     "rating": [
       "allowClear",
       "allowHalf",
+      "ariaLabel",
       "count",
       "defaultValue",
       "dir",
@@ -14321,6 +14345,7 @@
       "type"
     ],
     "select": [
+      "ariaLabel",
       "collection",
       "defaultOpen",
       "defaultValue",
@@ -14379,6 +14404,7 @@
       "value"
     ],
     "signature-pad": [
+      "ariaLabel",
       "defaultValue",
       "disabled",
       "drawing",
@@ -14400,6 +14426,7 @@
       "shape"
     ],
     "slider": [
+      "ariaLabel",
       "defaultValue",
       "dir",
       "disabled",
@@ -14504,6 +14531,7 @@
       "variant"
     ],
     "switch": [
+      "ariaLabel",
       "checked",
       "defaultChecked",
       "disabled",
@@ -14591,6 +14619,7 @@
       "variant"
     ],
     "tag-group": [
+      "ariaLabel",
       "collection",
       "defaultValue",
       "deletable",
@@ -14613,6 +14642,7 @@
     "tags-input": [
       "addOnPaste",
       "allowOverflow",
+      "ariaLabel",
       "blurBehavior",
       "defaultInputValue",
       "defaultValue",
@@ -14640,6 +14670,7 @@
       "variant"
     ],
     "text-field": [
+      "ariaLabel",
       "autoSize",
       "clearable",
       "defaultValue",
@@ -14662,6 +14693,7 @@
       "variant"
     ],
     "time-field": [
+      "ariaLabel",
       "defaultValue",
       "disabled",
       "granularity",
@@ -14684,6 +14716,7 @@
       "variant"
     ],
     "time-picker": [
+      "ariaLabel",
       "defaultOpen",
       "defaultValue",
       "dir",
@@ -14718,6 +14751,7 @@
       "variant"
     ],
     "time-range-picker": [
+      "ariaLabel",
       "defaultOpen",
       "defaultValue",
       "dir",
@@ -14793,6 +14827,7 @@
       "variant"
     ],
     "toggle-group": [
+      "ariaLabel",
       "collection",
       "defaultValue",
       "dir",
@@ -14877,6 +14912,7 @@
       "value"
     ],
     "transfer": [
+      "ariaLabel",
       "collection",
       "defaultSelection",
       "defaultValue",
@@ -14932,6 +14968,7 @@
       "virtualizer"
     ],
     "tree-select": [
+      "ariaLabel",
       "cascade",
       "checkedStrategy",
       "collection",

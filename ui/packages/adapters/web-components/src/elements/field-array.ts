@@ -136,6 +136,7 @@ export class XhFieldArrayElement extends XhElement {
       invalid: this.invalid,
     }, this.inheritedControl)
     return {
+      ariaLabel: this.hostAriaLabel(),
       value: this.value,
       defaultValue: this.defaultValue,
       min: this.min,
@@ -227,12 +228,12 @@ export class XhFieldArrayElement extends XhElement {
         this.spreader.spread(el, props)
     }
     put('root', api.getRootProps() as Record<string, unknown>)
-    // 宿主上的 aria-label 转给表格本体；作者在表格节点上自己写了名字时不覆盖
+    // 作者在表格节点上自己写了名字时不覆盖
     const tableEl = this.getPart('table')
     if (tableEl && this.tableOwnName === undefined)
       this.tableOwnName = tableEl.hasAttribute('aria-label') || tableEl.hasAttribute('aria-labelledby')
-    const hostName = this.tableOwnName ? undefined : this.getAttribute('aria-label') ?? undefined
-    put('table', { ...api.getTableProps() as Record<string, unknown>, 'aria-label': hostName })
+    const tableProps = api.getTableProps() as Record<string, unknown>
+    put('table', this.tableOwnName ? { ...tableProps, 'aria-label': undefined } : tableProps)
     put('header', api.getHeaderProps() as Record<string, unknown>)
     for (const el of this.getParts('column-header')) {
       const value = el.getAttribute('value') ?? ''

@@ -43,6 +43,7 @@ export function connectCheckbox<T extends PropTypes>(
       ...parts.root.attrs,
       'type': 'button',
       'role': 'checkbox',
+      'aria-label': prop('ariaLabel'),
       // 三态：勾了一部分的父项报 mixed，读屏才念得出「部分选中」
       'aria-checked': checked === 'indeterminate' ? 'mixed' : checked ? 'true' : 'false',
       'disabled': disabled || undefined,

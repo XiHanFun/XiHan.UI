@@ -26,6 +26,8 @@ export const XhEditableRoot = defineComponent({
   name: 'XhEditableRoot',
   // 缺省值由 connect 与机器给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
+    /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+    ariaLabel: { type: String },
     value: { type: String },
     defaultValue: { type: String },
     edit: { type: Boolean, default: undefined },

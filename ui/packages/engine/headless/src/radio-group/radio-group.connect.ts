@@ -99,6 +99,7 @@ export function connectRadioGroup<T extends PropTypes>(
       'role': 'radiogroup',
       // 只指向真渲染了的标题：悬空的 IDREF 让组没有名字
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
+      'aria-label': prop('ariaLabel'),
       // 只描述视觉排布，与方向键接受的轴无关（见 onKeyDown 的 axis: 'both'）
       'aria-orientation': orientation,
       'data-orientation': orientation,

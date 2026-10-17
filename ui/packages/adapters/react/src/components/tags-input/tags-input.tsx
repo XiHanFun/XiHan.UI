@@ -53,6 +53,8 @@ export type TagsInputRootSlotProps = Pick<
 >
 
 export interface XhTagsInputRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   /** 标题。不给 children 时铺 label 部件。 */
   label?: ReactNode
   /** 不给 children 时标签文本的内容；未提供时就是标签的值。 */
@@ -92,6 +94,7 @@ export interface XhTagsInputRootProps extends Omit<ComponentPropsWithRef<'div'>,
 }
 
 export function XhTagsInputRoot({
+  ariaLabel,
   label,
   renderItem,
   value,
@@ -124,6 +127,7 @@ export function XhTagsInputRoot({
   ...rest
 }: XhTagsInputRootProps): ReactNode {
   const ctx = useTagsInput(withXhConfig('tags-input', useFormControlProps({
+    ariaLabel,
     value,
     defaultValue,
     inputValue,

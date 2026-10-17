@@ -144,6 +144,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照常触发�
 | --- | --- | --- | --- |
 | `checked` | `boolean` |  |  |
 | `defaultChecked` | `boolean` |  |  |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  | 只读：不可切换，但仍可聚焦、仍参与提交，对比度不降低。 |
 | `invalid` | `boolean` |  | 校验失败：只改变呈现，不阻止交互。 |
@@ -225,6 +226,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照常触发�
 | `root` | `aria-busy` | 'true' \| undefined |
 | `root` | `aria-checked` | 'true' \| 'false' |
 | `root` | `aria-invalid` | 'true' \| 'false' |
+| `root` | `aria-label` | props.ariaLabel |
 | `root` | `aria-readonly` | 'true' \| 'false' |
 | `root` | `aria-required` | 'true' \| 'false' |
 | `root` | `role` | 'switch' |

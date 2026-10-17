@@ -115,6 +115,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `max` | `number` |  | 最多行数。到达该数值时新增把手不可按下。默认不限。 |
 | `createItem` | `() => unknown` |  | 新增一行时创建一个空项。未提供时插入 null。 |
 | `movable` | `boolean` |  | 是否显示换序把手。关闭（默认）时两个换序把手一律收起。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上（表格本体）；只在表格排布下生效。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `disabled` | `boolean` |  | 禁用：新增、删除、换序三路都不可按下。 |
 | `readOnly` | `boolean` |  | 只读：行数不可修改（新增、删除、换序都不可按下），行内的控件仍由作者自行设置只读。 |
 | `invalid` | `boolean` |  | 校验失败标注：写在根与每一行上。 |
@@ -227,6 +228,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `table` | `aria-label` | props.ariaLabel \| undefined |
 | `table` | `aria-rowcount` | count + 1 \| undefined |
 | `table` | `role` | 'table' \| undefined |
 | `header` | `aria-rowindex` | 1 \| undefined |

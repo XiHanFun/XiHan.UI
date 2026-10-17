@@ -144,6 +144,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `accept` | `string \| string[]` |  | 允许的类型，写法与原生 input 的 accept 一致： 接受 'image/*' 这类通配、'.png' 这类扩展名、'application/pdf' 这类精确 MIME， 逗号分隔的整串或数组两种形态均可（属性只能表达整串，数组需通过 property）。 |
 | `maxFiles` | `number` |  | 最多保留的文件数，默认 1。提供 Infinity 即不限。 |
 | `maxFileSize` | `number` |  | 单个文件的字节上限，默认不限。 |
@@ -300,6 +301,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | --- | --- | --- |
 | `dropzone` | `aria-disabled` | 'false' \| 'true' |
 | `dropzone` | `aria-invalid` | 'true' \| 'false' |
+| `dropzone` | `aria-label` | undefined \| props.ariaLabel |
 | `dropzone` | `aria-labelledby` | `label` 部件的 id `dropzone` 部件的 id \| `dropzone` 部件的 id |
 | `dropzone` | `role` | 'button' |
 | `trigger` | `aria-disabled` | 'true' \| undefined |

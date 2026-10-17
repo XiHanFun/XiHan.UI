@@ -162,6 +162,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `searchable` | `boolean` |  | 每侧带一个搜索框；关闭时搜索框仍在 DOM 中但带 hidden，且搜索串一律按空处理。 |
 | `filter` | `TransferFilter` |  | 自定义匹配规则；默认为标签大小写不敏感包含。 |
 | `pageSize` | `number` |  | 每侧每页几条；给了即分页，两侧各翻各的，缺省不分页。 分页只决定这一页渲染哪些条目、方向键在哪些条目间走；全选、三态、计数与搬运仍按整侧（分侧 + 搜索之后）算。 搜索串一变该侧回到第 1 页；条目搬走后页数变少时页码夹回最后一页。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `disabled` | `boolean` |  | 整个控件禁用：条目为 aria-disabled，三个按钮与搜索框使用原生 disabled。 |
 | `readOnly` | `boolean` |  | 只读：两侧照常浏览与搜索，但勾选不可修改、也不可移动。禁用还额外移除键盘入口。 |
 | `invalid` | `boolean` |  | 校验失败：两侧列表报告 aria-invalid，各角色节点带 data-invalid。 |
@@ -317,6 +318,8 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `aria-label` | props.ariaLabel |
+| `root` | `role` | 'group' \| undefined |
 | `hidden-input` | `aria-hidden` | 'true' |
 | `search` | `aria-controls` | listId[panel.side] |
 | `search` | `aria-labelledby` | titleId[panel.side] |

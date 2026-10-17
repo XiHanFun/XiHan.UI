@@ -25,6 +25,8 @@ type RadioGroupProps = RadioGroupSchema['props']
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhRadioGroupRootProps extends RootElementProps {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   collection?: RadioGroupNode[]
   /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
@@ -52,6 +54,7 @@ export interface XhRadioGroupRootProps extends RootElementProps {
 }
 
 export function XhRadioGroupRoot({
+  ariaLabel,
   collection,
   label,
   value,
@@ -74,6 +77,7 @@ export function XhRadioGroupRoot({
   ...rest
 }: XhRadioGroupRootProps): ReactNode {
   const ctx = useRadioGroup(useFormControlProps({
+    ariaLabel,
     collection,
     value,
     defaultValue,

@@ -97,6 +97,11 @@ export interface TagGroupSchema extends MachineSchema {
      */
     labelled?: boolean
     /**
+     * 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。
+     * 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。
+     */
+    ariaLabel?: string
+    /**
      * 条目数据，显示文本、禁用与可移除的事实源。提供后条目部件只需声明 value。
      * 未提供时回到文本与禁用都写在条目部件上的方式。
      */

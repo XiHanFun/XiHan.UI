@@ -122,6 +122,7 @@ export function connectToggleGroup<T extends PropTypes>(
       // 单选借 radiogroup 语义，多选用中性的 group 容器。
       // 两套语义不混用：radiogroup 配 aria-checked、group 配 aria-pressed。
       'role': multiple ? 'group' : 'radiogroup',
+      'aria-label': prop('ariaLabel'),
       // aria-orientation 只有 radiogroup 收，role=group 给了是无效 ARIA；
       // 排布信息一律走 data-orientation
       'aria-orientation': multiple ? undefined : orientation,

@@ -175,6 +175,7 @@ export function connectFileUpload<T extends PropTypes>(
       // 没渲染 label 时只引投放区自己。不另给 aria-label：labelledby 引到自己时
       // 取的是自己的 aria-label 而不是内容，兜底文案会把说明挤出名字
       'aria-labelledby': prop('labelled') ? `${ids.label} ${ids.dropzone}` : ids.dropzone,
+      'aria-label': prop('labelled') ? undefined : prop('ariaLabel'),
       // div 上原生 disabled 不生效，显式写 aria-disabled 并退出 Tab 序列；只读也报按不动，但留在 Tab 序列里
       'aria-disabled': editable ? 'false' : 'true',
       // aria-invalid 是全局属性，role=button 也收；按钮不收 aria-required，必填只落 data-required

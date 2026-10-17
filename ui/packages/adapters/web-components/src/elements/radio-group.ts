@@ -163,6 +163,7 @@ export class XhRadioGroupElement extends XhElement {
       variant: this.variant,
       // 作者写没写 label 角色节点决定根的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,
+      ariaLabel: this.hostAriaLabel(),
       onValueChange: this.notify,
     }
   }

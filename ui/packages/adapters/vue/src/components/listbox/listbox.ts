@@ -34,6 +34,8 @@ export const XhListboxRoot = defineComponent({
   name: 'XhListboxRoot',
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
+    /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+    ariaLabel: { type: String },
     collection: { type: Array as PropType<ListboxNode[]> },
     virtualizer: { type: Object as PropType<CollectionVirtualizer> },
     /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */

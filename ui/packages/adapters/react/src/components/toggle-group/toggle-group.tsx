@@ -22,6 +22,8 @@ import { useToggleGroup } from './use-toggle-group'
 type ToggleGroupProps = ToggleGroupSchema['props']
 
 export interface XhToggleGroupRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   collection?: ToggleGroupNode[]
   value?: ToggleGroupValue
   defaultValue?: ToggleGroupValue
@@ -53,6 +55,7 @@ export interface XhToggleGroupRootProps extends Omit<ComponentPropsWithRef<'div'
 }
 
 export function XhToggleGroupRoot({
+  ariaLabel,
   collection,
   value,
   defaultValue,
@@ -78,6 +81,7 @@ export function XhToggleGroupRoot({
   ...rest
 }: XhToggleGroupRootProps): ReactNode {
   const ctx = useToggleGroup(useFormControlProps({
+    ariaLabel,
     collection,
     value,
     defaultValue,

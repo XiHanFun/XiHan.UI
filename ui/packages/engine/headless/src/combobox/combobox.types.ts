@@ -130,6 +130,11 @@ export interface ComboboxSchema extends MachineSchema {
      */
     labelled?: boolean
     /**
+     * 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。
+     * 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。
+     */
+    ariaLabel?: string
+    /**
      * 候选数据，显示文本与禁用的事实源。过滤仍由调用方完成：传入的即当前应显示的候选。
      * 提供后条目部件只需声明 value，显示文本也不再从 DOM 查询。
      * 未提供时回到文本写在条目中、从 DOM 查询的方式。

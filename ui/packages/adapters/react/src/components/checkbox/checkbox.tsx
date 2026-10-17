@@ -22,6 +22,8 @@ type CheckboxProps = CheckboxSchema['props']
 type ButtonProps = Omit<ComponentPropsWithRef<'button'>, 'value' | 'defaultChecked' | 'onChange'>
 
 export interface XhCheckboxProps extends ButtonProps {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   /** 三态：true / false / 'indeterminate'。半选只能由外部提供，点击不会切换到该态。 */
   checked?: CheckboxCheckedState
   defaultChecked?: CheckboxCheckedState
@@ -42,6 +44,7 @@ export interface XhCheckboxProps extends ButtonProps {
 }
 
 export function XhCheckbox({
+  ariaLabel,
   checked,
   defaultChecked,
   disabled,
@@ -58,6 +61,7 @@ export function XhCheckbox({
   ...rest
 }: XhCheckboxProps): ReactNode {
   const { api, service } = useCheckbox(useFormControlProps({
+    ariaLabel,
     checked,
     defaultChecked,
     disabled,

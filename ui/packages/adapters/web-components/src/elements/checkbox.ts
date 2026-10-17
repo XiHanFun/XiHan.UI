@@ -85,6 +85,7 @@ export class XhCheckboxElement extends XhElement {
       required: this.required,
     }, this.inheritedControl)
     return {
+      ariaLabel: this.hostAriaLabel(),
       checked: this.checked,
       defaultChecked: this.defaultChecked ?? false,
       disabled: control.disabled,

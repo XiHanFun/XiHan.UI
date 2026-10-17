@@ -66,6 +66,8 @@ export interface TimePickerPresetsSlotProps {
 }
 
 export interface XhTimePickerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   /** 选中的时刻，ISO 时间串数组；单选可写裸串。 */
   value?: string | string[]
   defaultValue?: string | string[]
@@ -111,6 +113,7 @@ export interface XhTimePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
 }
 
 export function XhTimePickerRoot({
+  ariaLabel,
   value,
   defaultValue,
   selectionMode,
@@ -146,6 +149,7 @@ export function XhTimePickerRoot({
   ...rest
 }: XhTimePickerRootProps): ReactNode {
   const ctx = useTimePicker(withXhConfig('time-picker', useFormControlProps({
+    ariaLabel,
     value,
     defaultValue,
     selectionMode,

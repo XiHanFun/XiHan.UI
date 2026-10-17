@@ -45,6 +45,8 @@ export type ExpressionInputRootSlotProps = Pick<
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhExpressionInputRootProps extends RootElementProps {
+  /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
+  ariaLabel?: string
   value?: string
   defaultValue?: string
   check?: ExpressionCheck
@@ -78,6 +80,7 @@ export interface XhExpressionInputRootProps extends RootElementProps {
 }
 
 export function XhExpressionInputRoot({
+  ariaLabel,
   value,
   defaultValue,
   check,
@@ -109,6 +112,7 @@ export function XhExpressionInputRoot({
   ...rest
 }: XhExpressionInputRootProps): ReactNode {
   const machineProps = {
+    ariaLabel,
     value,
     defaultValue,
     check,
