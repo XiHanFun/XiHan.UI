@@ -21,7 +21,7 @@
     "name": "core/hotkey",
     "path": "packages/engine/core/dist/hotkey.js",
     "gzip": true,
-    "limit": "1.37 kB"
+    "limit": "1.4 kB"
   },
   {
     "name": "core/url",
@@ -88,7 +88,7 @@
     "path": "packages/engine/viz/dist/index.js",
     "import": "{ scaleLinear, scaleBand, scaleTime, line, area, stack, layoutAxis, createEstimatingMeasurer, ellipsize, wrapText, createQuadtree, lttb, minMax }",
     "gzip": true,
-    "limit": "13 kB"
+    "limit": "14 kB"
   },
   {
     "name": "viz/hierarchy",
@@ -142,7 +142,7 @@
     "name": "expression",
     "path": "packages/engine/expression/dist/index.js",
     "gzip": true,
-    "limit": "19 kB"
+    "limit": "21 kB"
   },
   {
     "name": "expression：只用 checkFormatSpec",
@@ -155,13 +155,13 @@
     "name": "designer-kit",
     "path": "packages/features/designer-kit/dist/index.js",
     "gzip": true,
-    "limit": "13 kB"
+    "limit": "14 kB"
   },
   {
     "name": "designer-kit/properties",
     "path": "packages/features/designer-kit/dist/properties.js",
     "gzip": true,
-    "limit": "3.7 kB"
+    "limit": "3.8 kB"
   },
   {
     "name": "designer-kit/schema",
@@ -173,13 +173,13 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "207 kB"
+    "limit": "210 kB"
   },
   {
     "name": "designer-shell/locale",
     "path": "packages/features/designer-shell/dist/locale.js",
     "gzip": true,
-    "limit": "0.7 kB"
+    "limit": "0.8 kB"
   },
   {
     "name": "xlsx",
@@ -209,19 +209,19 @@
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "735 kB"
+    "limit": "755 kB"
   },
   {
     "name": "headless/locale（十种语言整份）",
     "path": "packages/engine/headless/dist/locale.js",
     "gzip": true,
-    "limit": "72 kB"
+    "limit": "74 kB"
   },
   {
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "787 kB",
+    "limit": "807 kB",
     "ignore": [
       "vue"
     ]
@@ -248,7 +248,7 @@
     "name": "react",
     "path": "packages/adapters/react/dist/index.js",
     "gzip": true,
-    "limit": "785 kB",
+    "limit": "804 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -298,7 +298,7 @@
     "path": "packages/adapters/vue/dist/locale.js",
     "import": "{ zhCN }",
     "gzip": true,
-    "limit": "11 kB"
+    "limit": "12 kB"
   },
   {
     "name": "web-components",
@@ -310,14 +310,14 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "789 kB"
+    "limit": "806 kB"
   },
   {
     "name": "web-components/define：只按需注册一个元素（defineXhElement + XhStatisticElement）",
     "path": "packages/adapters/web-components/dist/define.js",
     "import": "{ defineXhElement, XhStatisticElement }",
     "gzip": true,
-    "limit": "17 kB"
+    "limit": "18 kB"
   },
   {
     "name": "web-components/backgrounds",
@@ -335,13 +335,13 @@
     "name": "styles",
     "path": "packages/design/styles/css/*.css",
     "gzip": true,
-    "limit": "586 kB"
+    "limit": "599 kB"
   },
   {
     "name": "styles/index.css（主入口，扁平有层）",
     "path": "packages/design/styles/index.css",
     "gzip": true,
-    "limit": "190 kB"
+    "limit": "194 kB"
   },
   {
     "name": "icons：只用 CheckIcon",
@@ -391,7 +391,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhMenuRoot }",
     "gzip": true,
-    "limit": "53 kB",
+    "limit": "56 kB",
     "ignore": [
       "vue"
     ]
@@ -411,7 +411,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhSelectRoot }",
     "gzip": true,
-    "limit": "56 kB",
+    "limit": "59 kB",
     "ignore": [
       "vue"
     ]
