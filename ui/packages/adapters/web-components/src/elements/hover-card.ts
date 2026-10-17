@@ -11,7 +11,9 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectHoverCard, hoverCardAnatomy, hoverCardMachine, hoverCardMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
+import { renderedTitleDescription } from '../dom/title-description'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -125,6 +127,8 @@ export class XhHoverCardElement extends XhPortalHostElement {
 
   private machineProps(): Partial<HoverCardSchema['props']> {
     return {
+      // 卡片只引用作者写了的标题与说明
+      parts: renderedTitleDescription(this.getPart('title'), this.getPart('description')),
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       placement: this.placement,
@@ -179,8 +183,6 @@ export class XhHoverCardElement extends XhPortalHostElement {
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     svc.refs.set('getContentEl', () => this.getPart('content'))
-    svc.refs.set('getTitleEl', () => this.getPart('title'))
-    svc.refs.set('getDescriptionEl', () => this.getPart('description'))
   }
 
   /**
@@ -193,7 +195,11 @@ export class XhHoverCardElement extends XhPortalHostElement {
     super.connectedCallback()
   }
 
+  /** 说明部件的内容从无到有、从有到无时重新接线：读不出一句话的说明不进卡片的描述链。 */
+  private readonly descriptionWatch = createNamingContentWatch(() => this.requestUpdate())
+
   protected wire(): void {
+    this.descriptionWatch.watch(this.getPart('description'))
     const api = connectHoverCard(this.ctrl.service, wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
@@ -232,6 +238,7 @@ export class XhHoverCardElement extends XhPortalHostElement {
   }
 
   override disconnectedCallback(): void {
+    this.descriptionWatch.disconnect()
     this.portal.dispose()
     super.disconnectedCallback()
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上

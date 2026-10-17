@@ -110,6 +110,7 @@ disabled 只关闭卡片本身，触发器照常可点击、可聚焦，也照�
 | `openDelay` | `number` |  | 悬停进入到展开的等待毫秒，默认 700。 |
 | `closeDelay` | `number` |  | 指针离开 trigger 或 content 到收起的等待毫秒，默认 300。 |
 | `dir` | `Direction` |  | 文字方向，仅在显式提供时写到根节点上。 |
+| `parts` | `TitleDescriptionParts` |  | 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。 title 不在场时卡片的可及名指回 trigger；description 不在场、或渲染了但读不出一句话（判断同 `hasNamingContent`） 时不写 aria-describedby。 |
 | `disabled` | `boolean` |  | 只关闭卡片本身，不影响 trigger 元素自身的可用性。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定卡片的内边距档位。 |
 | `onOpenChange` | `(details: HoverCardOpenChangeDetails) => void` |  | open 变化意图回调。 |

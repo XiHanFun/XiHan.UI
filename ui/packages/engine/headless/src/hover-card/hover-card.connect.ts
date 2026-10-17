@@ -55,10 +55,11 @@ export function connectHoverCard<T extends PropTypes>(
       send({ type: next ? 'OPEN' : 'CLOSE' })
   }
 
+  const rendered = prop('parts')
   // 卡片的可及名指 title 部件；作者没放 title 时指回 trigger
-  const labelledBy = refs.get('getTitleEl')() ? ids.title : ids.trigger
+  const labelledBy = rendered?.title !== false ? ids.title : ids.trigger
   // 说明部件在场才发 aria-describedby：指向不存在的 id 等于没有说明，还多一条空指
-  const describedBy = refs.get('getDescriptionEl')() ? ids.description : undefined
+  const describedBy = rendered?.description !== false ? ids.description : undefined
 
   return {
     open,

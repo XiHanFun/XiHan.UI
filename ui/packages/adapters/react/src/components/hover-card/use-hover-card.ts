@@ -7,13 +7,15 @@
 
 import type { Layer, Service } from '@xihan-ui/core'
 import type { HoverCardApi, HoverCardSchema } from '@xihan-ui/headless'
-import type { RefCallback, RefObject } from 'react'
+import type { RefObject } from 'react'
+import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import type { OverlayWiring } from '../../runtime/use-overlay'
 import { connectHoverCard, hoverCardMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useRef } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
+import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
 
@@ -26,10 +28,8 @@ export interface HoverCardContext extends OverlayWiring {
   positionerRef: RefObject<HTMLElement | null>
   /** 浮层本体，退场动画从它上面探测。 */
   contentRef: RefObject<HTMLElement | null>
-  /** title 部件的落位口：它是否在场决定卡片的名字指向 title 还是 trigger。 */
-  setTitleEl: RefCallback<HTMLElement>
-  /** description 部件的落位口：它不在场时不发 aria-describedby。 */
-  setDescriptionEl: RefCallback<HTMLElement>
+  /** 标题与说明在不在场，由 XhHoverCardTitle / XhHoverCardDescription 登记：title 不在场时卡片的可及名指回 trigger。 */
+  presence: TitleDescriptionPresence
 }
 
 export function useHoverCard(props: HoverCardSchema['props']): HoverCardContext {
@@ -38,22 +38,9 @@ export function useHoverCard(props: HoverCardSchema['props']): HoverCardContext 
   const triggerRef = useRef<HTMLElement | null>(null)
   const positionerRef = useRef<HTMLElement | null>(null)
   const contentRef = useRef<HTMLElement | null>(null)
-  const titleRef = useRef<HTMLElement | null>(null)
-  const descriptionRef = useRef<HTMLElement | null>(null)
   const serviceRef = useRef<Service<HoverCardSchema> | null>(null)
 
-  // 名字链与说明链在连接期就要算出来，而 ref 落位不引发重渲：
-  // 这两格状态记下两个可选部件在不在场，落位那一刻把属性重算一遍
-  const [, setTitlePresent] = useState(false)
-  const [, setDescriptionPresent] = useState(false)
-  const setTitleEl = useCallback<RefCallback<HTMLElement>>((el) => {
-    titleRef.current = el
-    setTitlePresent(el != null)
-  }, [])
-  const setDescriptionEl = useCallback<RefCallback<HTMLElement>>((el) => {
-    descriptionRef.current = el
-    setDescriptionPresent(el != null)
-  }, [])
+  const presence = useTitleDescriptionPresence()
 
   const initialOpen = (props.open ?? props.defaultOpen) ?? false
 
@@ -80,12 +67,10 @@ export function useHoverCard(props: HoverCardSchema['props']): HoverCardContext 
       service.refs.set('getAnchorEl', (() => triggerRef.current) as never)
       service.refs.set('getFloatingEl', (() => positionerRef.current) as never)
       service.refs.set('getContentEl', (() => contentRef.current) as never)
-      service.refs.set('getTitleEl', (() => titleRef.current) as never)
-      service.refs.set('getDescriptionEl', (() => descriptionRef.current) as never)
     },
   })
 
-  const service = useMachine(hoverCardMachine, () => props, {
+  const service = useMachine(hoverCardMachine, () => ({ ...props, parts: presence.parts }), {
     scope,
     onCreate: overlay.onCreate as never,
   })
@@ -98,7 +83,6 @@ export function useHoverCard(props: HoverCardSchema['props']): HoverCardContext 
     triggerRef,
     positionerRef,
     contentRef,
-    setTitleEl,
-    setDescriptionEl,
+    presence,
   }
 }

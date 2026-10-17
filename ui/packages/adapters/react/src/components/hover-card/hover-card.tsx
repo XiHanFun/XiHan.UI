@@ -15,6 +15,7 @@ import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
+import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { HoverCardProvider, useHoverCardContext } from './context'
 import { useHoverCard } from './use-hover-card'
@@ -156,12 +157,12 @@ export function XhHoverCardContent({ children, ...rest }: XhHoverCardContentProp
 export interface XhHoverCardTitleProps extends ComponentPropsWithRef<'h2'> {}
 export function XhHoverCardTitle({ children, ...rest }: XhHoverCardTitleProps): ReactNode {
   const ctx = useHoverCardContext()
+  useTitleDescriptionPart(ctx.presence, 'title')
   return (
     <h2
       {...mergeReactProps(
         ctx.api.getTitleProps() as Record<string, unknown>,
         rest as Record<string, unknown>,
-        { ref: ctx.setTitleEl },
       )}
     >
       {children}
@@ -172,12 +173,14 @@ export function XhHoverCardTitle({ children, ...rest }: XhHoverCardTitleProps): 
 export interface XhHoverCardDescriptionProps extends ComponentPropsWithRef<'p'> {}
 export function XhHoverCardDescription({ children, ...rest }: XhHoverCardDescriptionProps): ReactNode {
   const ctx = useHoverCardContext()
+  // 读不出一句话的说明不进描述链
+  const el = useDescriptionPart<HTMLParagraphElement>(ctx.presence)
   return (
     <p
       {...mergeReactProps(
         ctx.api.getDescriptionProps() as Record<string, unknown>,
         rest as Record<string, unknown>,
-        { ref: ctx.setDescriptionEl },
+        { ref: el },
       )}
     >
       {children}
