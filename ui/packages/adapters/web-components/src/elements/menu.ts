@@ -7,10 +7,11 @@
 
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { MenuAnyItemProps, MenuCheckboxValueChangeDetails, MenuNode, MenuOpenChangeDetails, MenuRadioValue, MenuRadioValueChangeDetails, MenuSchema, MenuSelectDetails, MenuTranslations } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectMenu, createMenuTreeNode, menuAnatomy, menuMachine, menuMeta } from '@xihan-ui/headless'
+import { connectMenu, createMenuTreeNode, menuAnatomy, menuMachine, menuMeta, menuStructure } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -33,6 +34,11 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 锚点取 trigger、被定位的浮层取 positioner；状态机只识别端口，不识别具体引擎。
  * 条目身份取作者写在 item 上的 value 属性，禁用由部件声明（aria-disabled）。
  *
+ * 不写部件时元素按标准结构直接在自己里面生成：触发按钮（内容用宿主直接子节点 `slot="trigger"` 接管，没写时取 label），
+ * 定位层里的 content 按 collection 铺条目、分组与分隔线；条目的整条、行首、行尾可用 `slot="item:<值>"`、
+ * `slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 接管。带 children 的条目生成一个嵌套的 `<xh-menu submenu>`，
+ * 它的触发条目写着 value、文字取 label，slot 接管只到根菜单这一层。
+ *
  * @customElement xh-menu
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
@@ -44,6 +50,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} typeahead - 首字符连打检索，默认开启；写 typeahead="false" 关闭
  * @attr {boolean} disabled - 整张菜单禁用：触发器不再展开，条目全部为 aria-disabled
+ * @attr {string} label - 生成结构时的触发器文字：根菜单是按钮里的文字（没写 slot="trigger" 时），子菜单是触发条目的文字；手写部件时不使用它
+ * @attr {string} value - 子菜单在父菜单里的条目身份：生成结构时写在触发条目上；手写部件时写在触发条目自己身上
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires select - 条目被选中（菜单随之关闭）；detail 为 `{ value: string }`
  * @fires checkbox-value-change - checkbox 选中集合变化；detail 为 `{ value: string[] }`
@@ -69,6 +77,21 @@ export class XhMenuElement extends XhPortalHostElement {
   // 子菜单形态的 trigger 接线后是父菜单里的一条 item（双重身份，见 wire 与 Headless 的 getSubmenuTriggerProps）
   static override partContract = { anatomy: menuAnatomy, meta: menuMeta, rewired: { trigger: ['item'] } }
 
+  /** 结构里带 children 的条目生成嵌套的子菜单。 */
+  static override dependencies = { 'xh-menu': XhMenuElement }
+
+  static override structure: ElementStructure<XhMenuElement> = {
+    rootless: true,
+    build: host => host.ctrl.service
+      ? menuStructure(connectMenu(host.ctrl.service, wcNormalize), {
+          submenu: host.submenu ?? false,
+          ...(host.value === undefined ? {} : { value: host.value }),
+          ...(host.label === undefined ? {} : { label: host.label }),
+          slotted: (name, key) => host.slotted(name, key),
+        })
+      : undefined,
+  }
+
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -92,6 +115,8 @@ export class XhMenuElement extends XhPortalHostElement {
     // 文案是对象，只走 property
     translations: { attribute: false },
     submenu: { converter: BOOLEAN_CONVERTER },
+    label: { converter: STRING_CONVERTER },
+    value: { converter: STRING_CONVERTER },
     openOnHover: { converter: BOOLEAN_CONVERTER, attribute: 'open-on-hover' },
     hoverOpenDelay: { converter: NUMBER_CONVERTER, attribute: 'hover-open-delay' },
     hoverCloseDelay: { converter: NUMBER_CONVERTER, attribute: 'hover-close-delay' },
@@ -114,6 +139,8 @@ export class XhMenuElement extends XhPortalHostElement {
   declare disabled?: boolean
   declare translations?: Partial<MenuTranslations>
   declare submenu?: boolean
+  declare label?: string
+  declare value?: string
   declare openOnHover?: boolean
   declare hoverOpenDelay?: number
   declare hoverCloseDelay?: number

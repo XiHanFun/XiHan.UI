@@ -43212,7 +43212,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-menu>`：Light-DOM 行为宿主：作者写 trigger / positioner / content / item / group / ... 角色节点，\n元素运行 menu 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 trigger、被定位的浮层取 positioner；状态机只识别端口，不识别具体引擎。\n条目身份取作者写在 item 上的 value 属性，禁用由部件声明（aria-disabled）。",
+          "description": "`<xh-menu>`：Light-DOM 行为宿主：作者写 trigger / positioner / content / item / group / ... 角色节点，\n元素运行 menu 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 trigger、被定位的浮层取 positioner；状态机只识别端口，不识别具体引擎。\n条目身份取作者写在 item 上的 value 属性，禁用由部件声明（aria-disabled）。\n\n不写部件时元素按标准结构直接在自己里面生成：触发按钮（内容用宿主直接子节点 `slot=\"trigger\"` 接管，没写时取 label），\n定位层里的 content 按 collection 铺条目、分组与分隔线；条目的整条、行首、行尾可用 `slot=\"item:<值>\"`、\n`slot=\"item-prefix:<值>\"`、`slot=\"item-suffix:<值>\"` 接管。带 children 的条目生成一个嵌套的 `<xh-menu submenu>`，\n它的触发条目写着 value、文字取 label，slot 接管只到根菜单这一层。",
           "name": "XhMenuElement",
           "cssParts": [
             {
@@ -43285,6 +43285,25 @@
               },
               "static": true,
               "default": "{ anatomy: menuAnatomy, meta: menuMeta, rewired: { trigger: ['item'] } }"
+            },
+            {
+              "kind": "field",
+              "name": "dependencies",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ 'xh-menu': XhMenuElement }",
+              "description": "结构里带 children 的条目生成嵌套的子菜单。"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhMenuElement>"
+              },
+              "static": true,
+              "default": "{ rootless: true, build: host => host.ctrl.service ? menuStructure(connectMenu(host.ctrl.service, wcNormalize), { submenu: host.submenu ?? false, ...(host.value === undefined ? {} : { value: host.value }), ...(host.label === undefined ? {} : { label: host.label }), slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
             },
             {
               "kind": "field",
@@ -43432,6 +43451,24 @@
                 "text": "boolean | undefined"
               },
               "attribute": "submenu"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value"
             },
             {
               "kind": "field",
@@ -43937,6 +43974,22 @@
               "description": "整张菜单禁用：触发器不再展开，条目全部为 aria-disabled",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "生成结构时的触发器文字：根菜单是按钮里的文字（没写 slot=\"trigger\" 时），子菜单是触发条目的文字；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "子菜单在父菜单里的条目身份：生成结构时写在触发条目上；手写部件时写在触发条目自己身上",
+              "name": "value",
+              "fieldName": "value"
             },
             {
               "name": "submenu",

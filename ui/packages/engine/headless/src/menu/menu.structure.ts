@@ -1,0 +1,148 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 菜单的标准结构：触发器，定位层里的 content 按 collection 铺出条目、分组与分隔线；带 children 的条目是一个嵌套的子菜单。
+// Vue / React 不写默认插槽时的缺省树、Web Components 不写部件时元素生成的节点，都照这一份渲。
+
+import type { StructureChild, StructureNode, StructureSlotted } from '../shared/structure'
+import type { menuAnatomy } from './menu.anatomy'
+import type { MenuApi, MenuNodeMeta } from './menu.types'
+import { groupAdjacentRuns } from '@xihan-ui/core'
+import { structureInstance } from '../shared/structure-instance'
+
+type MenuPart = (typeof menuAnatomy)['parts'][number]
+
+/** 结构会产出的部件；菜单没有 root，部件直接长在组件或元素里。 */
+export const MENU_STRUCTURE_PARTS = [
+  'trigger',
+  'positioner',
+  'content',
+  'item',
+  'item-text',
+  'item-indicator',
+  'item-description',
+  'item-shortcut',
+  'item-suffix',
+  'separator',
+  'group',
+  'group-label',
+] as const satisfies readonly MenuPart[]
+
+/** anatomy 里不进标准结构的部件：指向锚点的箭头由作者手写结构时自己摆。 */
+export const MENU_STRUCTURE_OMITS = [
+  'arrow',
+] as const satisfies readonly MenuPart[]
+
+type MenuStructureNode = StructureNode<(typeof MENU_STRUCTURE_PARTS)[number]>
+
+/** 结构里触发器怎么铺、作者接管哪些格。 */
+export interface MenuStructureOptions {
+  /** 子菜单那一层：触发器是父菜单里的一条条目（div，写着 value），缺省是根菜单，触发器是按钮。 */
+  submenu?: boolean
+  /** 子菜单在父菜单里的条目身份，写在触发条目上。 */
+  value?: string
+  /** 触发器的文字：根菜单是按钮里的文字（trigger 插槽没有内容时），子菜单是触发条目的文字。 */
+  label?: string
+  /**
+   * 作者给了哪些插槽的内容：trigger（根菜单的触发按钮）；item（整条接管）、item-prefix（行首标记位）、
+   * item-suffix（行尾），后三个按条目的值带 key。子菜单的触发条目也认 item。
+   */
+  slotted?: StructureSlotted
+}
+
+const NOTHING_SLOTTED: StructureSlotted = () => false
+
+/**
+ * 一条条目：带 children 的是嵌套的子菜单；item 插槽有内容时整条归作者；否则按数据铺标记位、文字、说明、
+ * 快捷键与行尾，没有的格不铺。勾选与单选条目没写标记位时也留一格空的给勾。
+ */
+function itemStructure(meta: MenuNodeMeta, slotted: StructureSlotted): StructureChild<MenuStructureNode['part']> {
+  if (meta.children) {
+    return structureInstance(`submenu:${meta.value}`, 'menu', {
+      collection: [...meta.children],
+      submenu: true,
+      value: meta.value,
+      label: meta.label,
+      ...(meta.disabled ? { disabled: true } : {}),
+    })
+  }
+  const base = { key: `item:${meta.value}`, tag: 'div', part: 'item', attrs: { value: meta.value } } as const
+  if (slotted('item', meta.value))
+    return { ...base, slot: { name: 'item', key: meta.value }, data: meta }
+  const children: MenuStructureNode[] = []
+  if (slotted('item-prefix', meta.value))
+    children.push({ key: 'indicator', tag: 'span', part: 'item-indicator', slot: { name: 'item-prefix', key: meta.value }, data: meta })
+  else if (meta.indicator != null)
+    children.push({ key: 'indicator', tag: 'span', part: 'item-indicator', text: meta.indicator })
+  else if (meta.kind !== 'item')
+    children.push({ key: 'indicator', tag: 'span', part: 'item-indicator' })
+  children.push({ key: 'text', tag: 'span', part: 'item-text', text: meta.label })
+  if (meta.description != null)
+    children.push({ key: 'description', tag: 'span', part: 'item-description', text: meta.description })
+  if (meta.shortcut != null)
+    children.push({ key: 'shortcut', tag: 'span', part: 'item-shortcut', text: meta.shortcut })
+  if (slotted('item-suffix', meta.value))
+    children.push({ key: 'suffix', tag: 'span', part: 'item-suffix', slot: { name: 'item-suffix', key: meta.value }, data: meta })
+  return { ...base, children }
+}
+
+function separator(meta: MenuNodeMeta): MenuStructureNode {
+  return { key: `separator:${meta.value}`, tag: 'div', part: 'separator' }
+}
+
+/**
+ * content 里的节点：相邻且同组的条目铺成一个 group（有组标题时排在组首），条目上的 separatorBefore 在它前面铺一道分隔线，
+ * 段首的分隔线落在 group 外面；整份菜单的第一条不铺分隔线。
+ */
+export function menuNodesStructure(collection: readonly MenuNodeMeta[], slotted: StructureSlotted = NOTHING_SLOTTED): StructureChild<MenuStructureNode['part']>[] {
+  return groupAdjacentRuns(collection, node => node.group).flatMap((run, runIndex) => {
+    const head = run[0]
+    const lead = runIndex > 0 && head.separatorBefore ? [separator(head)] : []
+    if (head.group == null)
+      return [...lead, itemStructure(head, slotted)]
+    const groupLabel = run.find(node => node.groupLabel != null)?.groupLabel ?? null
+    const group: MenuStructureNode = {
+      key: `group:${head.group}`,
+      tag: 'div',
+      part: 'group',
+      attrs: { value: head.group },
+      children: [
+        ...(groupLabel != null ? [{ key: 'label', tag: 'span', part: 'group-label', text: groupLabel } satisfies MenuStructureNode] : []),
+        ...run.flatMap((node, index) => [
+          ...(index > 0 && node.separatorBefore ? [separator(node)] : []),
+          itemStructure(node, slotted),
+        ]),
+      ],
+    }
+    return [...lead, group]
+  })
+}
+
+/** 菜单的标准结构：触发器在前，定位层在后，定位层里是 content 与按数据铺的节点。 */
+export function menuStructure(model: Pick<MenuApi, 'collection'>, options: MenuStructureOptions = {}): StructureChild<MenuStructureNode['part']>[] {
+  const slotted = options.slotted ?? NOTHING_SLOTTED
+  let trigger: MenuStructureNode
+  if (options.submenu) {
+    const value = options.value ?? ''
+    trigger = slotted('item', value)
+      ? { key: 'trigger', tag: 'div', part: 'trigger', attrs: { value }, slot: { name: 'item', key: value } }
+      : { key: 'trigger', tag: 'div', part: 'trigger', attrs: { value }, text: options.label ?? value }
+  }
+  else if (slotted('trigger')) {
+    trigger = { key: 'trigger', tag: 'button', part: 'trigger', slot: { name: 'trigger' } }
+  }
+  else {
+    trigger = options.label != null ? { key: 'trigger', tag: 'button', part: 'trigger', text: options.label } : { key: 'trigger', tag: 'button', part: 'trigger' }
+  }
+  return [
+    trigger,
+    {
+      key: 'positioner',
+      tag: 'div',
+      part: 'positioner',
+      children: [{ key: 'content', tag: 'div', part: 'content', children: menuNodesStructure(model.collection, slotted) }],
+    },
+  ]
+}

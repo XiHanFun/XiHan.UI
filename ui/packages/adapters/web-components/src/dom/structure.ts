@@ -203,6 +203,8 @@ export function authoredParts(host: Element): Map<string, HTMLElement[]> {
 export interface StructureSpec {
   /** 元素自己生成 root 时用的标签，缺省 div。 */
   readonly rootTag?: StructureTag
+  /** 组件的 anatomy 没有 root（如菜单）：结构直接生成在宿主里，作者写了任何部件就全归作者。 */
+  readonly rootless?: boolean
   /** 作者可以在 root 里单独写、其余仍照常生成的部件及其位置，trailing 的按 root 末尾的先后排列。 */
   readonly takeover?: Readonly<Record<string, StructureTakeoverPosition>>
 }
@@ -287,7 +289,7 @@ export function hasSlotContent(host: Element, state: StructureState, slot: strin
 
 /**
  * 按规则同步宿主的标准结构：
- * 1. 作者没写部件（或只写了 root）时生成：没写 root 连 root 一起生成，写了就生成在它里面；
+ * 1. 作者没写部件（或只写了 root）时生成：没写 root 连 root 一起生成，写了就生成在它里面；没有 root 的组件直接生成在宿主里；
  * 2. 作者在 root 里写了可接管部件时，结构不再铺这些部件（build 收到它们的名字），其余照常生成；
  *    排在末尾的可接管部件按登记的先后放回 root 的末尾，作者节点与生成节点交错时次序照缺省结构；
  * 3. 作者写了别的部件，或没写 root 就写了可接管部件，就由作者全写，撤掉生成过的节点；
@@ -327,7 +329,10 @@ export function syncStructure(
     if (!nodes)
       return
     checkTakeoverOrder(host, nodes, takeover)
-    if (root) {
+    if (spec.rootless) {
+      placeStructure(host, nodes, state.keys, slots)
+    }
+    else if (root) {
       placeStructure(host, [], state.keys)
       placeStructure(root, nodes, state.keys, slots)
       if (taken.size > 0)
