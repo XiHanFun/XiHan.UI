@@ -6,10 +6,12 @@
 // 提供 toggle group 相关实现。
 
 import type { ActionVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupValue } from '@xihan-ui/headless'
+import type { ToggleGroupApi, ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupValue } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { toggleGroupStructure } from '@xihan-ui/headless'
 import { Comment, defineComponent, Fragment, h, onBeforeUnmount, ref, Text, watch } from 'vue'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideToggleGroup, useToggleGroupContext } from './context'
@@ -71,11 +73,7 @@ export const XhToggleGroupRoot = defineComponent({
     const fieldWiring = useFieldGroupWiring()
     const fieldLabel = useFieldLabelWiring()
     return () => {
-      const children = slots.default
-        ? slots.default()
-        : props.collection
-          ? renderDefaultTree(ctx.api.value.collection, slots.item)
-          : []
+      const children = slots.default ? slots.default() : renderDefaultStructure(ctx.api.value, slots.item)
       return h(
         'div',
         fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getRootProps() as Record<string, unknown> }),
@@ -157,18 +155,22 @@ export const XhToggleGroupHiddenInput = defineComponent({
   },
 })
 
+/** 标准结构里各部件对应的组件。 */
+const TOGGLE_GROUP_PARTS = {
+  'item': XhToggleGroupItem,
+  'hidden-input': XhToggleGroupHiddenInput,
+}
+
 /**
- * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
- * 条目下没有文本部件，文字直接落在条目中。
+ * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 toggleGroupStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。条目的内容由 item 插槽接管。
  */
-function renderDefaultTree(
-  collection: readonly ToggleGroupNodeMeta[],
-  itemSlot?: (node: ToggleGroupNodeMeta) => VNode[],
-): VNode[] {
-  return collection.map(node => h(
-    XhToggleGroupItem,
-    { key: node.value, value: node.value },
-    () => itemSlot?.(node) ?? node.label,
-  ))
+function renderDefaultStructure(api: ToggleGroupApi, itemSlot?: (node: ToggleGroupNodeMeta) => VNode[]): VNode[] {
+  const nodes = toggleGroupStructure(api, { slotted: name => name === 'item' && itemSlot != null })
+  return renderStructure(nodes, TOGGLE_GROUP_PARTS, (node) => {
+    if (node.slot?.name !== 'item')
+      return undefined
+    const meta = node.data as ToggleGroupNodeMeta
+    return itemSlot?.(meta) ?? meta.label
+  })
 }

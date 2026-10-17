@@ -71495,7 +71495,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-toggle-group>`：Light-DOM 行为宿主：作者写 root 与若干 item 角色节点，\n元素运行 toggle-group 状态机并把 connect 产出接上。条目须是原生 `<button>`\n（Enter / Space 的激活由平台负责），身份取写在条目上的 value 属性，禁用由条目声明 aria-disabled。\n\n单选（默认）与多选是两套 ARIA：单选 root=radiogroup、条目 role=radio + aria-checked；\n多选 root=group、条目保持原生按钮 + aria-pressed。\n\n受控值的多选形态只能通过 property 设置（`el.value = ['a','b']`）：HTML 属性只能承载一个字符串。",
+          "description": "`<xh-toggle-group>`：Light-DOM 行为宿主：作者写 root 与若干 item 角色节点，\n元素运行 toggle-group 状态机并把 connect 产出接上。条目须是原生 `<button>`\n（Enter / Space 的激活由平台负责），身份取写在条目上的 value 属性，禁用由条目声明 aria-disabled。\n\n单选（默认）与多选是两套 ARIA：单选 root=radiogroup、条目 role=radio + aria-checked；\n多选 root=group、条目保持原生按钮 + aria-pressed。\n\n受控值的多选形态只能通过 property 设置（`el.value = ['a','b']`）：HTML 属性只能承载一个字符串。\n\n不写部件（或只写 root）时元素按标准结构生成：collection 的每一条一个按钮，末尾一份表单影子；\n条目的内容可以由宿主直接子节点 `slot=\"item:<值>\"` 接管。",
           "name": "XhToggleGroupElement",
           "cssParts": [
             {
@@ -71529,6 +71529,15 @@
               "type": {
                 "text": "{ parts: ['root'], kind: 'group' }"
               }
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhToggleGroupElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? toggleGroupStructure(connectToggleGroup(host.ctrl.service, wcNormalize), { slotted: (name, key) => host.slotted(name, key) }) : undefined, }"
             },
             {
               "kind": "field",

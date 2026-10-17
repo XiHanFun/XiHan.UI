@@ -3,7 +3,7 @@ import type { ToggleGroupNode } from '@xihan-ui/headless'
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'
-import { XhToggleGroupItem, XhToggleGroupRoot } from '../src'
+import { XhToggleGroupHiddenInput, XhToggleGroupItem, XhToggleGroupRoot } from '../src'
 
 const COLLECTION: ToggleGroupNode[] = [
   { value: 'left', label: '左对齐' },
@@ -22,12 +22,13 @@ function mountFromCollection(value: string) {
   }), { attachTo: document.body })
 }
 
-/** 手写全套部件，条目只报 value，文本与禁用交给 collection */
+/** 手写全套部件，条目只报 value，文本与禁用交给 collection；末尾一份表单影子 */
 function mountFromParts(value: string) {
   return mount(defineComponent({
-    setup: () => () => h(XhToggleGroupRoot, { value, collection: COLLECTION }, () => COLLECTION.map(node =>
-      h(XhToggleGroupItem, { key: node.value, value: node.value }, () => node.label),
-    )),
+    setup: () => () => h(XhToggleGroupRoot, { value, collection: COLLECTION }, () => [
+      ...COLLECTION.map(node => h(XhToggleGroupItem, { key: node.value, value: node.value }, () => node.label)),
+      h(XhToggleGroupHiddenInput),
+    ]),
   }), { attachTo: document.body })
 }
 
@@ -64,7 +65,7 @@ function skeleton(root: Element): string[] {
 describe('toggleGroup 的 collection', () => {
   it('不写插槽时按数据铺开条目', () => {
     const w = mountFromCollection('left')
-    expect(parts(w.element)).toEqual(['root', 'item', 'item', 'item'])
+    expect(parts(w.element)).toEqual(['root', 'item', 'item', 'item', 'hidden-input'])
     // 条目底下没有文本部件，文字是条目自己的内容
     const items = [...w.element.querySelectorAll('[data-part="item"]')]
     expect(items.map(el => el.children.length)).toEqual([0, 0, 0])
@@ -105,7 +106,7 @@ describe('toggleGroup 的 collection', () => {
         item: (node: { value: string, label: string }) => [h('span', { class: 'mark' }, node.label)],
       }),
     }), { attachTo: document.body })
-    expect(parts(w.element)).toEqual(['root', 'item', 'item', 'item'])
+    expect(parts(w.element)).toEqual(['root', 'item', 'item', 'item', 'hidden-input'])
     const texts = [...w.element.querySelectorAll('[data-part="item"] > .mark')].map(el => el.textContent)
     expect(texts).toEqual(['左对齐', '居中', '右对齐'])
     w.unmount()

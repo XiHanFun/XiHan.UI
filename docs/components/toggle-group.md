@@ -94,6 +94,7 @@
 - 使用 roving tabindex 管理组内键盘导航。
 - `disallowEmpty` 可阻止清空最后一个选中项。
 - `collection` 可统一提供标签和禁用状态。
+- 不写结构时按标准结构铺出整组（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`）：每一条一个按钮，末尾一份表单影子，给了 `name` 才参与提交。Web Components 里某一条的内容可以写在宿主的直接子节点上接管：`slot="item:<值>"`。
 
 ### 组合
 

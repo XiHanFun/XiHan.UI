@@ -516,5 +516,40 @@ export const toggleGroupSuite: ConformanceSuite = {
         heldPressIgnored('toggle-group', 'item', '整组禁用时条目不接受按压', { value: 'left' }),
       ],
     },
+    {
+      name: '作者不写结构：三端都照 toggleGroupStructure 铺出条目按钮与末尾的表单影子',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/radio/#roles_states_properties' },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: {
+        collection: [
+          { value: 'left', label: '左对齐' },
+          { value: 'center', label: '居中', disabled: true },
+          { value: 'right', label: '右对齐' },
+        ],
+        defaultValue: 'right',
+        name: 'align',
+      },
+      initial: {
+        order: ['root', 'item[0]', 'item[1]', 'item[2]', 'hidden-input'],
+        parts: {
+          'item': [
+            { 'type': 'button', 'aria-checked': 'false', 'aria-disabled': 'false', 'data-value': 'left' },
+            { 'type': 'button', 'aria-checked': 'false', 'aria-disabled': 'true', 'data-value': 'center' },
+            { 'type': 'button', 'aria-checked': 'true', 'aria-disabled': 'false', 'data-value': 'right' },
+          ],
+          'hidden-input': { name: 'align', tabindex: '-1' },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'item[0]',
+          expect: {
+            parts: { item: [{ 'aria-checked': 'true' }, { 'aria-checked': 'false' }, { 'aria-checked': 'false' }] },
+            events: [{ type: 'value-change', detail: { value: 'left' } }],
+          },
+        },
+      ],
+    },
   ],
 }
