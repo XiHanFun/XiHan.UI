@@ -162,6 +162,7 @@ export function connectPopconfirm<T extends PropTypes>(
   const { state, prop, send, context, scope } = service
   const open = state.get() === 'open'
   const ids = scope.ids('popconfirm', 'trigger', 'content', 'title', 'description')
+  const rendered = prop('parts')
   const stateAttr = open ? 'open' : 'closed'
   const disabled = !!prop('disabled')
   // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
@@ -368,8 +369,9 @@ export function connectPopconfirm<T extends PropTypes>(
       // Presence 会把收起内容留到动画结束；这段期间必须先退出焦点树与交互树。
       'inert': !open || undefined,
       'aria-hidden': !open || undefined,
-      'aria-labelledby': ids.title,
-      'aria-describedby': ids.description,
+      // 只引用作者渲染了的标题与说明：省略 parts 按都在场
+      'aria-labelledby': rendered?.title !== false ? ids.title : undefined,
+      'aria-describedby': rendered?.description !== false ? ids.description : undefined,
       'data-state': stateAttr,
       // 挂载时就开着的这一段直接呈现，不播进场
       'data-instant': dataAttr(context.get('openedAtMount')),

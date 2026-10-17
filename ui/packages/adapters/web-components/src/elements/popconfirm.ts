@@ -11,7 +11,9 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectPopconfirm, popconfirmAnatomy, popconfirmMeta, popoverMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
+import { renderedTitleDescription } from '../dom/title-description'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -175,6 +177,8 @@ export class XhPopconfirmElement extends XhPortalHostElement {
       closeOnInteractOutside: this.pendingState ? false : this.closeOnInteractOutside,
       disabled: this.disabled,
       size: this.size,
+      // content 只引用作者写了的标题与说明
+      parts: renderedTitleDescription(this.getPart('title'), this.getPart('description')),
       onOpenChange: this.notify,
     }
   }
@@ -238,7 +242,11 @@ export class XhPopconfirmElement extends XhPortalHostElement {
     super.connectedCallback()
   }
 
+  /** 说明部件的内容从无到有、从有到无时重新接线：读不出一句话的说明不进 content 的描述链。 */
+  private readonly descriptionWatch = createNamingContentWatch(() => this.requestUpdate())
+
   protected wire(): void {
+    this.descriptionWatch.watch(this.getPart('description'))
     // 挂起布尔按 wire 那一刻现读
     const api = connectPopconfirm(this.ctrl.service, {
       ...this.intents,
@@ -277,6 +285,7 @@ export class XhPopconfirmElement extends XhPortalHostElement {
   }
 
   override disconnectedCallback(): void {
+    this.descriptionWatch.disconnect()
     this.portal.dispose()
     super.disconnectedCallback()
     // 断开即结束这次可交互会话；业务 Promise 不取消，旧服务的事务票据会让其迟到结果失效。

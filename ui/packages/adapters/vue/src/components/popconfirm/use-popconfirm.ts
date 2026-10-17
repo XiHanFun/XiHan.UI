@@ -8,12 +8,14 @@
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
 import type { PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmIntents, PopconfirmNotifiers, PopconfirmOverlayProps, PopoverSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
+import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectPopconfirm, popoverMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
+import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
@@ -28,6 +30,8 @@ export interface PopconfirmContext {
   visible: Ref<boolean>
   /** 浮层迁移到的位置：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
+  /** 标题与说明在不在场，由 XhPopconfirmTitle / XhPopconfirmDescription 登记；content 只引用在场的部件。 */
+  presence: TitleDescriptionPresence
 }
 
 export function usePopconfirm(
@@ -48,6 +52,7 @@ export function usePopconfirm(
   // 开合、定位、消解层与焦点域全交给 popover 机器；气泡确认只多出确认/取消两个意图，
   // 它们不改开合以外的状态，走 connect 不进机器。
   // modal 与 translations 不往下传：不陷焦点，按钮文案由作者写在节点里。
+  const presence = useTitleDescriptionPresence()
   const service = useMachine(popoverMachine, (): PopoverSchema['props'] => ({
     open: props.open,
     defaultOpen: props.defaultOpen,
@@ -58,6 +63,7 @@ export function usePopconfirm(
     closeOnEscape: pending.value ? false : props.closeOnEscape,
     closeOnInteractOutside: pending.value ? false : props.closeOnInteractOutside,
     size: props.size,
+    parts: presence.parts.value,
     onOpenChange: notify?.onOpenChange,
   }), scope)
 
@@ -117,5 +123,5 @@ export function usePopconfirm(
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, triggerRef, positionerRef, contentRef, portalTarget }
+  return { visible, service, api, triggerRef, positionerRef, contentRef, portalTarget, presence }
 }

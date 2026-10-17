@@ -13,6 +13,7 @@ import { defineComponent, h, mergeProps } from 'vue'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
+import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { providePopconfirm, usePopconfirmContext } from './context'
 import { usePopconfirm } from './use-popconfirm'
@@ -144,6 +145,7 @@ export const XhPopconfirmTitle = defineComponent({
   name: 'XhPopconfirmTitle',
   setup(_, { slots }) {
     const ctx = usePopconfirmContext()
+    useTitleDescriptionPart(ctx.presence, 'title')
     return () => h('h2', ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -152,7 +154,9 @@ export const XhPopconfirmDescription = defineComponent({
   name: 'XhPopconfirmDescription',
   setup(_, { slots }) {
     const ctx = usePopconfirmContext()
-    return () => h('p', ctx.api.value.getDescriptionProps() as Record<string, unknown>, slots.default?.())
+    // 读不出一句话的说明不进描述链
+    const el = useDescriptionPart(ctx.presence)
+    return () => h('p', { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el }, slots.default?.())
   },
 })
 
