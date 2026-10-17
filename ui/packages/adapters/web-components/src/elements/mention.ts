@@ -19,9 +19,10 @@ import type {
   MentionTranslations,
   MentionValueChangeDetails,
 } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectMention, mentionAnatomy, mentionMachine, mentionMeta, resolveFormControlState } from '@xihan-ui/headless'
+import { connectMention, mentionAnatomy, mentionMachine, mentionMeta, mentionStructure, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -50,7 +51,13 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  *
  * 过滤不由本元素完成：查询串变化时派发 query-change，作者据此增删 item 节点。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）、单行输入框与浮层，浮层里是 collection 的候选
+ * 与空态（文字取 translations.empty）；这时过滤由作者改 collection。标题、空态、候选文字与行首行尾可以由宿主
+ * 直接子节点接管：`slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、
+ * `slot="item-suffix:<值>"`。
+ *
  * @customElement xh-mention
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} trigger-prefix - 打开候选的前缀字符，默认 '@'；多种前缀并存时通过 property 传入数组
  * @attr {string} value - 受控正文；未提供该属性即非受控
  * @attr {string} default-value - 非受控初始正文
@@ -92,11 +99,21 @@ export class XhMentionElement extends XhPortalHostElement {
 
   static override fieldTarget = { parts: ['input'], kind: 'state' } as const
 
+  static override structure: ElementStructure<XhMentionElement> = {
+    build: host => host.ctrl.service
+      ? mentionStructure(connectMention(host.ctrl.service, wcNormalize), {
+          label: host.label,
+          slotted: (name, key) => host.slotted(name, key),
+        })
+      : undefined,
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     // 数组只走 property，属性表达不了；给了 collection 候选的文本与禁用即以数据为准
     collection: { attribute: false },
     translations: { attribute: false },
+    label: { converter: STRING_CONVERTER },
     // prefix 撞 Element 的原生只读属性（命名空间前缀），属性名与字段名一并加 trigger- 前缀
     triggerPrefix: { converter: STRING_CONVERTER, attribute: 'trigger-prefix' },
     value: { converter: STRING_CONVERTER },
@@ -120,6 +137,7 @@ export class XhMentionElement extends XhPortalHostElement {
 
   declare collection?: MentionNode[]
   declare translations?: MentionTranslations
+  declare label?: string
   declare triggerPrefix?: string | string[]
   declare value?: string
   declare defaultValue?: string

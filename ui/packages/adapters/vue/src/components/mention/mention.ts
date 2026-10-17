@@ -9,9 +9,11 @@ import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui
 import type { MentionApi, MentionInputEl, MentionInputHost, MentionItemProps, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { mentionStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -41,6 +43,8 @@ export const XhMentionRoot = defineComponent({
     ariaLabel: { type: String },
     triggerPrefix: { type: [String, Array] as PropType<string | string[]> },
     collection: { type: Array as PropType<MentionNode[]> },
+    /** 标题文字。不写默认插槽时铺 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
     value: { type: String },
     defaultValue: { type: String },
     disabled: { type: Boolean, default: undefined },
@@ -69,6 +73,7 @@ export const XhMentionRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     'default'?: (props: MentionRootSlotProps) => VNode[]
+    'label'?: () => VNode[]
     /** 铺开 collection 时每条候选的文本插槽。 */
     'item'?: (props: MentionNodeMeta) => VNode[]
     /** 只接管行首那一格，其余槽照旧由数据铺 */
@@ -113,9 +118,13 @@ export const XhMentionRoot = defineComponent({
             setValue: ctx.api.value.setValue,
             close: ctx.api.value.close,
           })
-        : props.collection
-          ? renderDefaultTree(ctx.api.value.collection, ctx.api.value.emptyText, slots.item, slots['item-prefix'], slots['item-suffix'], slots.empty)
-          : [],
+        : renderDefaultStructure(ctx.api.value, props.label, {
+            'label': slots.label,
+            'empty': slots.empty,
+            'item': slots.item,
+            'item-prefix': slots['item-prefix'],
+            'item-suffix': slots['item-suffix'],
+          }),
     )
   },
 })
@@ -271,32 +280,50 @@ export const XhMentionItemDescription = defineComponent({
   },
 })
 
+/** 标准结构里各部件对应的组件。 */
+const MENTION_PARTS = {
+  'label': XhMentionLabel,
+  'input': XhMentionInput,
+  'positioner': XhMentionPositioner,
+  'content': XhMentionContent,
+  'item': XhMentionItem,
+  'item-prefix': XhMentionItemPrefix,
+  'item-text': XhMentionItemText,
+  'item-description': XhMentionItemDescription,
+  'item-suffix': XhMentionItemSuffix,
+  'empty': XhMentionEmpty,
+}
+
+interface MentionStructureSlots {
+  'label'?: () => VNode[]
+  'empty'?: () => VNode[]
+  'item'?: (node: MentionNodeMeta) => VNode[]
+  'item-prefix'?: (node: MentionNodeMeta) => VNode[]
+  'item-suffix'?: (node: MentionNodeMeta) => VNode[]
+}
+
 /**
- * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
+ * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 mentionStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题、空态、候选文字与行首行尾由对应插槽接管。
  * 过滤仍归调用方：collection 就是当前应显示的候选。
  */
-function renderDefaultTree(
-  collection: readonly MentionNodeMeta[],
-  defaultEmpty: string,
-  itemSlot?: (node: MentionNodeMeta) => VNode[],
-  prefixSlot?: (node: MentionNodeMeta) => VNode[],
-  suffixSlot?: (node: MentionNodeMeta) => VNode[],
-  emptySlot?: () => VNode[],
-): VNode[] {
-  const emptyText = emptySlot?.() ?? defaultEmpty
-  return [
-    h(XhMentionInput),
-    h(XhMentionPositioner, null, () => [
-      h(XhMentionContent, null, () => collection.map(node =>
-        h(XhMentionItem, { key: node.value, value: node.value }, () => [
-          ...(prefixSlot ? [h(XhMentionItemPrefix, null, () => prefixSlot(node))] : []),
-          h(XhMentionItemText, null, () => itemSlot?.(node) ?? node.label),
-          ...(node.description != null ? [h(XhMentionItemDescription, null, () => node.description)] : []),
-          ...(suffixSlot ? [h(XhMentionItemSuffix, null, () => suffixSlot(node))] : []),
-        ]),
-      )),
-      h(XhMentionEmpty, null, () => emptyText),
-    ]),
-  ]
+function renderDefaultStructure(api: MentionApi, label: string | undefined, authored: MentionStructureSlots): VNode[] {
+  const nodes = mentionStructure(api, { label, slotted: name => authored[name as keyof MentionStructureSlots] != null })
+  return renderStructure(nodes, MENTION_PARTS, (node) => {
+    const meta = node.data as MentionNodeMeta
+    switch (node.slot?.name) {
+      case 'label':
+        return authored.label?.()
+      case 'empty':
+        return authored.empty?.()
+      case 'item':
+        return authored.item?.(meta) ?? meta.label
+      case 'item-prefix':
+        return authored['item-prefix']?.(meta)
+      case 'item-suffix':
+        return authored['item-suffix']?.(meta)
+      default:
+        return undefined
+    }
+  })
 }
