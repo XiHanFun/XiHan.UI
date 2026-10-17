@@ -4,7 +4,7 @@
  */
 
 /** 解析、检查与求值的上限缺省值。 */
-export const DEFAULT_LIMITS = Object.freeze({
+export const DEFAULT_LIMITS = /* @__PURE__ */ Object.freeze({
   /** 源码长度上限（UTF-16 码元）。 */
   maxLength: 10_000,
   /** 语法树深度与求值嵌套深度上限。 */

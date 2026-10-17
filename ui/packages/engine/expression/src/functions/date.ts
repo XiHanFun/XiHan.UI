@@ -21,6 +21,7 @@ function dateArg(args: readonly ExprValue[], index: number): ExprDate | Fault {
   return value instanceof ExprDate ? value : typeMismatch(index, value)
 }
 
+/* @__NO_SIDE_EFFECTS__ */
 function datePart(name: string, read: (parts: DateParts, date: ExprDate) => number): FunctionEntry {
   return builtin(name, ['date'], 1, 1, (args) => {
     if (anyNull(args))

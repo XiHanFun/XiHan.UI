@@ -53,13 +53,7 @@ const FUNCTION_NAME = /^[A-Z][A-Z0-9_]*$/
 const PARAM_NAME = /^[a-z][A-Za-z0-9]*$/
 
 /** 全部内置函数。 */
-export const BUILTIN_FUNCTIONS: readonly FunctionEntry[] = [
-  ...LOGIC_FUNCTIONS,
-  ...MATH_FUNCTIONS,
-  ...AGGREGATE_FUNCTIONS,
-  ...TEXT_FUNCTIONS,
-  ...DATE_FUNCTIONS,
-]
+export const BUILTIN_FUNCTIONS: readonly FunctionEntry[] = /* @__PURE__ */ LOGIC_FUNCTIONS.concat(MATH_FUNCTIONS, AGGREGATE_FUNCTIONS, TEXT_FUNCTIONS, DATE_FUNCTIONS)
 
 function wrapDefinition(definition: FunctionDefinition): FunctionEntry {
   const { name, minArgs, maxArgs, call } = definition
@@ -107,16 +101,11 @@ function assertSignature(definition: FunctionDefinition): void {
     throw new TypeError(`函数 ${name} 的 call 必须是函数`)
 }
 
-let resolveEntry: (table: FunctionTable, name: string) => FunctionEntry | undefined
+/** 各函数表的表项：大写名字 → 表项。 */
+const TABLE_ENTRIES = /* @__PURE__ */ new WeakMap<FunctionTable, ReadonlyMap<string, FunctionEntry>>()
 
 /** 函数表：按名字查函数，名字不区分 ASCII 大小写。 */
 export class FunctionTable {
-  readonly #entries: ReadonlyMap<string, FunctionEntry>
-
-  static {
-    resolveEntry = (table, name) => table.#entries.get(asciiUpper(name))
-  }
-
   constructor(options: FunctionTableOptions = {}) {
     const entries = new Map<string, FunctionEntry>()
     const selection = options.builtins ?? 'all'
@@ -139,25 +128,25 @@ export class FunctionTable {
         throw new TypeError(`函数 ${definition.name} 重复登记`)
       entries.set(definition.name, wrapDefinition(definition))
     }
-    this.#entries = entries
+    TABLE_ENTRIES.set(this, entries)
     Object.freeze(this)
   }
 
   /** 全部函数名，按字母序。 */
   get names(): readonly string[] {
-    return [...this.#entries.keys()].sort()
+    return [...TABLE_ENTRIES.get(this)!.keys()].sort()
   }
 
   /** 按名字查签名；名字不区分 ASCII 大小写。 */
   lookup(name: string): FunctionSignature | undefined {
-    const entry = resolveEntry(this, name)
+    const entry = resolveFunction(this, name)
     return entry === undefined ? undefined : { name: entry.name, minArgs: entry.minArgs, maxArgs: entry.maxArgs, params: entry.params }
   }
 }
 
 /** 按名字查表项，供求值器调用。 */
 export function resolveFunction(table: FunctionTable, name: string): FunctionEntry | undefined {
-  return resolveEntry(table, name)
+  return TABLE_ENTRIES.get(table)!.get(asciiUpper(name))
 }
 
 function asciiUpper(text: string): string {

@@ -27,8 +27,6 @@ const NONZERO_DIGIT = /[1-9]/
 const LEADING_ZEROS = /^0+/
 const EXPONENT_CLAMP = 1_000_000_000
 
-let construct: (coefficient: bigint, exponent: number) => ExprNumber
-
 /**
  * 十进制数：值为 `coefficient × 10^exponent`。
  * 规范形式：系数不带末尾的 0，零的系数与指数都是 0；所以两数相等当且仅当两个字段都相等。
@@ -37,10 +35,6 @@ let construct: (coefficient: bigint, exponent: number) => ExprNumber
 export class ExprNumber {
   readonly coefficient: bigint
   readonly exponent: number
-
-  static {
-    construct = (coefficient, exponent) => new ExprNumber(coefficient, exponent)
-  }
 
   private constructor(coefficient: bigint, exponent: number) {
     this.coefficient = coefficient
@@ -105,6 +99,11 @@ export class ExprNumber {
   toJSON(): string {
     return this.toString()
   }
+}
+
+/** 新建十进制数：构造函数不对外，模块里经它新建，不经 static 块，类才能被摇掉。 */
+function construct(coefficient: bigint, exponent: number): ExprNumber {
+  return new (ExprNumber as unknown as new (coefficient: bigint, exponent: number) => ExprNumber)(coefficient, exponent)
 }
 
 /** 0。 */

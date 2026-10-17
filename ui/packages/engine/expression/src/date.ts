@@ -92,18 +92,12 @@ function inRange(value: number, min: number, max: number): boolean {
   return Number.isInteger(value) && value >= min && value <= max
 }
 
-let construct: (epochMilliseconds: number) => ExprDate
-
 /**
  * 不带时区的日期时间，精确到毫秒，范围 0001-01-01 至 9999-12-31。
  * `epochMilliseconds` 是距 1970-01-01T00:00:00 的毫秒数，按前推格里历计算，不经过任何时区。实例冻结。
  */
 export class ExprDate {
   readonly epochMilliseconds: number
-
-  static {
-    construct = epochMilliseconds => new ExprDate(epochMilliseconds)
-  }
 
   private constructor(epochMilliseconds: number) {
     this.epochMilliseconds = epochMilliseconds
@@ -182,6 +176,11 @@ export class ExprDate {
   toJSON(): string {
     return this.toString()
   }
+}
+
+/** 新建日期：构造函数不对外，模块里经它新建，不经 static 块，类才能被摇掉。 */
+function construct(epochMilliseconds: number): ExprDate {
+  return new (ExprDate as unknown as new (epochMilliseconds: number) => ExprDate)(epochMilliseconds)
 }
 
 function pad(value: number, width: number): string {

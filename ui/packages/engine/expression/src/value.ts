@@ -39,32 +39,21 @@ function readOwnData(source: object, key: string): { found: boolean, value: unkn
   return { found: true, value: descriptor.value }
 }
 
-let createList: (items: readonly unknown[], converted: boolean) => ExprList
-let readItem: (list: ExprList, index: number) => ExprValue | Fault
+/** 列表的内部状态：宿主数组（或已转换的值数组）与元素是否已转换。 */
+interface ListState {
+  readonly items: readonly unknown[]
+  readonly converted: boolean
+}
+
+const LIST_STATES = /* @__PURE__ */ new WeakMap<ExprList, ListState>()
 
 /**
  * 只读列表。来自宿主的数组按需转换元素：只读自有、可枚举的数据属性，不触发 getter。
  * 越界读取得到 `null`。
  */
 export class ExprList {
-  readonly #items: readonly unknown[]
-  readonly #converted: boolean
-
-  static {
-    createList = (items, converted) => new ExprList(items, converted)
-    readItem = (list, index) => {
-      if (index < 0 || index >= list.#items.length)
-        return null
-      if (list.#converted)
-        return list.#items[index] as ExprValue
-      const { found, value } = readOwnData(list.#items, String(index))
-      return found ? fromHost(value) : null
-    }
-  }
-
   private constructor(items: readonly unknown[], converted: boolean) {
-    this.#items = items
-    this.#converted = converted
+    LIST_STATES.set(this, { items, converted })
     Object.freeze(this)
   }
 
@@ -78,7 +67,7 @@ export class ExprList {
   }
 
   get length(): number {
-    return this.#items.length
+    return LIST_STATES.get(this)!.items.length
   }
 
   /** 读第 `index` 个元素；越界得到 `null`，元素不可表示时抛 `TypeError`。 */
@@ -100,28 +89,32 @@ export class ExprList {
   }
 }
 
-let readField: (record: ExprRecord, key: string) => ExprValue | Fault | undefined
-let fieldKeys: (record: ExprRecord) => string[]
+/** 新建列表：构造函数不对外，模块里经它新建，不经 static 块，类才能被摇掉。 */
+function createList(items: readonly unknown[], converted: boolean): ExprList {
+  return new (ExprList as unknown as new (items: readonly unknown[], converted: boolean) => ExprList)(items, converted)
+}
+
+/** 读列表元素：越界得到 `null`，宿主数组的元素按需转换。 */
+function readItem(list: ExprList, index: number): ExprValue | Fault {
+  const { items, converted } = LIST_STATES.get(list)!
+  if (index < 0 || index >= items.length)
+    return null
+  if (converted)
+    return items[index] as ExprValue
+  const { found, value } = readOwnData(items, String(index))
+  return found ? fromHost(value) : null
+}
+
+/** 记录包着的宿主对象。 */
+const RECORD_SOURCES = /* @__PURE__ */ new WeakMap<ExprRecord, object>()
 
 /**
  * 只读记录，包着宿主的普通对象。只读自有、可枚举的数据属性：原型链、getter 与
  * `__proto__` / `constructor` / `prototype` 都读不到。
  */
 export class ExprRecord {
-  readonly #source: object
-
-  static {
-    readField = (record, key) => {
-      if (isForbiddenName(key))
-        return undefined
-      const { found, value } = readOwnData(record.#source, key)
-      return found ? fromHost(value) : undefined
-    }
-    fieldKeys = record => Object.keys(record.#source).filter(key => !isForbiddenName(key) && readOwnData(record.#source, key).found)
-  }
-
   private constructor(source: object) {
-    this.#source = source
+    RECORD_SOURCES.set(this, source)
     Object.freeze(this)
   }
 
@@ -129,7 +122,7 @@ export class ExprRecord {
   static from(source: object): ExprRecord {
     if (!isPlainObject(source))
       throw new TypeError('ExprRecord.from 只接受普通对象')
-    return new ExprRecord(source)
+    return new (ExprRecord as unknown as new (source: object) => ExprRecord)(source)
   }
 
   /** 是否有这个字段。 */
@@ -149,6 +142,20 @@ export class ExprRecord {
   keys(): string[] {
     return fieldKeys(this)
   }
+}
+
+/** 读记录字段：禁止访问的名字与不是自有数据属性的都当没有。 */
+function readField(record: ExprRecord, key: string): ExprValue | Fault | undefined {
+  if (isForbiddenName(key))
+    return undefined
+  const { found, value } = readOwnData(RECORD_SOURCES.get(record)!, key)
+  return found ? fromHost(value) : undefined
+}
+
+/** 记录的字段名：宿主对象的自有可枚举数据属性，去掉禁止访问的名字。 */
+function fieldKeys(record: ExprRecord): string[] {
+  const source = RECORD_SOURCES.get(record)!
+  return Object.keys(source).filter(key => !isForbiddenName(key) && readOwnData(source, key).found)
 }
 
 /** 原型是 `Object.prototype` 或 `null` 的对象；数组与类实例都不是。 */

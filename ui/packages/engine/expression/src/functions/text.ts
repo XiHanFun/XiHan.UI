@@ -42,6 +42,7 @@ export function trimText(text: string): string {
   return text.slice(start, end)
 }
 
+/* @__NO_SIDE_EFFECTS__ */
 function unaryText(name: string, transform: (text: string) => ExprValue): FunctionEntry {
   return builtin(name, ['text'], 1, 1, (args) => {
     if (anyNull(args))
@@ -51,6 +52,7 @@ function unaryText(name: string, transform: (text: string) => ExprValue): Functi
   })
 }
 
+/* @__NO_SIDE_EFFECTS__ */
 function pairText(name: string, part: string, test: (text: string, part: string) => boolean): FunctionEntry {
   return builtin(name, ['text', part], 2, 2, (args) => {
     if (anyNull(args))
@@ -63,6 +65,7 @@ function pairText(name: string, part: string, test: (text: string, part: string)
   })
 }
 
+/* @__NO_SIDE_EFFECTS__ */
 function sliceText(name: string, pick: (points: string[], count: number) => string[]): FunctionEntry {
   return builtin(name, ['text', 'count'], 2, 2, (args) => {
     if (anyNull(args))
