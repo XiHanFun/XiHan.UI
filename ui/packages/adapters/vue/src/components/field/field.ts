@@ -5,10 +5,12 @@
 
 // 提供 field 相关实现。
 
+import type { FieldStructureOptions } from '@xihan-ui/headless'
 import type { SlotsType, VNode } from 'vue'
-import { hasNamingContent } from '@xihan-ui/headless'
+import { fieldStructure, hasNamingContent } from '@xihan-ui/headless'
 import { defineComponent, h, ref } from 'vue'
 import { isRoleMarker, mergeIntoChild } from '../../runtime/as-child'
+import { renderStructure } from '../../runtime/structure'
 import { useOptionalFormContext, useOptionalFormField } from '../form/context'
 import { useFormControlProps } from '../form/use-form-control'
 import { clearFieldContext, provideField, useFieldContext } from './context'
@@ -18,6 +20,12 @@ export const XhFieldRoot = defineComponent({
   name: 'XhFieldRoot',
   // 三个布尔缺省 undefined：在 XhFormFieldGroup 里没写就从表单上下文自取，写了以写的为准
   props: {
+    /** 标题文字。不写默认插槽时铺 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
+    /** 说明文字。不写默认插槽时铺说明部件；需要放置其他内容时改用 description 插槽。 */
+    description: { type: String },
+    /** 错误文案。不写默认插槽时给了（空串也算）就铺错误文案部件，空串时在表单里自取该项的错误。 */
+    errorText: { type: String },
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
@@ -25,10 +33,22 @@ export const XhFieldRoot = defineComponent({
     // 控件节点的 id，不占用根节点自己的 DOM id
     controlId: { type: String },
   },
+  slots: Object as SlotsType<{
+    default?: () => VNode[]
+    label?: () => VNode[]
+    control?: () => VNode[]
+    description?: () => VNode[]
+    errorText?: () => VNode[]
+  }>,
   setup(props, { slots }) {
     const ctx = useField(useFormControlProps(props))
     provideField(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default
+      ? slots.default()
+      : renderDefaultStructure(
+          { label: props.label, description: props.description, errorText: props.errorText },
+          { 'label': slots.label, 'control': slots.control, 'description': slots.description, 'error-text': slots.errorText },
+        ))
   },
 })
 
@@ -130,3 +150,27 @@ export const XhFieldErrorText = defineComponent({
     }
   },
 })
+
+/** 标准结构里各部件对应的组件；控件是出口，原样放作者给的内容。 */
+const FIELD_PARTS = {
+  'label': XhFieldLabel,
+  'description': XhFieldDescription,
+  'error-text': XhFieldErrorText,
+}
+
+type FieldSectionSlots = Readonly<Partial<Record<'label' | 'control' | 'description' | 'error-text', () => VNode[]>>>
+
+/**
+ * 未写默认插槽时铺开的整套结构：照 headless 的 fieldStructure 渲，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * control 插槽的内容原样放在标题之后；标题、说明、错误文案取文字，或由同名插槽接管。
+ */
+function renderDefaultStructure(text: Pick<FieldStructureOptions, 'label' | 'description' | 'errorText'>, sections: FieldSectionSlots): VNode[] {
+  const nodes = fieldStructure({ ...text, slotted: name => sections[name as keyof FieldSectionSlots] != null })
+  return renderStructure(
+    nodes,
+    FIELD_PARTS,
+    node => (node.slot ? sections[node.slot.name as keyof FieldSectionSlots]?.() : undefined),
+    {},
+    () => sections.control?.(),
+  )
+}

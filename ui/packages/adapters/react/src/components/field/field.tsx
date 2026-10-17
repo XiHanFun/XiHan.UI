@@ -7,11 +7,12 @@
 
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { hasNamingContent } from '@xihan-ui/headless'
+import { fieldStructure, hasNamingContent } from '@xihan-ui/headless'
 import { useRef } from 'react'
 import { isRoleMarker, mergeIntoChild } from '../../runtime/as-child'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useOptionalFormContext, useOptionalFormField } from '../form/context'
 import { useFormControlProps } from '../form/use-form-control'
 import { FieldProvider, useFieldContext } from './context'
@@ -33,6 +34,14 @@ export function wiringOnly(controlProps: Record<string, unknown>): Record<string
 }
 
 export interface XhFieldRootProps extends ComponentPropsWithRef<'div'> {
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
+  /** 字段里的控件。不给 children 时原样放在标题之后，外面不包部件。 */
+  control?: ReactNode
+  /** 说明。不给 children 时铺说明部件。 */
+  description?: ReactNode
+  /** 错误文案。不给 children 时给了（空串也算）就铺错误文案部件，空串时在表单里自取该项的错误。 */
+  errorText?: ReactNode
   invalid?: boolean
   required?: boolean
   disabled?: boolean
@@ -43,6 +52,10 @@ export interface XhFieldRootProps extends ComponentPropsWithRef<'div'> {
 
 /** 四个布尔默认 undefined：在 XhFormFieldGroup 中未写时从表单上下文自取，写了以写的为准。 */
 export function XhFieldRoot({
+  label,
+  control,
+  description,
+  errorText,
   invalid,
   required,
   disabled,
@@ -55,7 +68,7 @@ export function XhFieldRoot({
   return (
     <FieldProvider value={ctx}>
       <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-        {children}
+        {children ?? renderDefaultStructure({ label, control, description, errorText })}
       </div>
     </FieldProvider>
   )
@@ -129,5 +142,40 @@ export function XhFieldErrorText({ children, ...rest }: XhFieldErrorTextProps): 
     <p {...mergeReactProps(ctx.api.getErrorTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {given ? children : auto}
     </p>
+  )
+}
+
+/** 标准结构里各部件对应的组件；控件是出口，原样放作者给的内容。 */
+const FIELD_PARTS = {
+  'label': XhFieldLabel,
+  'description': XhFieldDescription,
+  'error-text': XhFieldErrorText,
+}
+
+interface FieldSections {
+  readonly label: ReactNode
+  readonly control: ReactNode
+  readonly description: ReactNode
+  readonly errorText: ReactNode
+}
+
+/**
+ * 未写 children 时铺开的整套结构：照 headless 的 fieldStructure 渲，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * control 原样放在标题之后；标题、说明、错误文案是字符串时作文字，是别的节点时由对应部件装着。
+ */
+function renderDefaultStructure({ label, control, description, errorText }: FieldSections): ReactNode[] {
+  const text = (value: ReactNode): string | undefined => (typeof value === 'string' ? value : undefined)
+  const nodes: Readonly<Record<string, ReactNode>> = {
+    'label': typeof label === 'string' ? undefined : label,
+    'description': typeof description === 'string' ? undefined : description,
+    'error-text': typeof errorText === 'string' ? undefined : errorText,
+    'control': control,
+  }
+  return renderStructure(
+    fieldStructure({ label: text(label), description: text(description), errorText: text(errorText), slotted: name => nodes[name] != null }),
+    FIELD_PARTS,
+    node => (node.slot ? nodes[node.slot.name] : undefined),
+    {},
+    () => control ?? undefined,
   )
 }

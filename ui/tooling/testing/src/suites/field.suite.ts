@@ -1,4 +1,4 @@
-import type { ConformanceSuite } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { fieldAnatomy, fieldKeyboard } from '@xihan-ui/headless'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/'
@@ -207,6 +207,20 @@ export const fieldSuite: ConformanceSuite = {
           },
         },
       ],
+    },
+    {
+      name: '作者不写结构：三端都照 fieldStructure 铺出标题、说明与错误文案；没给控件时 label 不写 for',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '邮箱', description: '用于接收通知', errorText: '邮箱格式不正确', invalid: true },
+      initial: {
+        order: ['root', 'label', 'description', 'error-text'],
+        parts: {
+          'root': { 'data-invalid': '' },
+          'label': { for: null },
+          'error-text': { hidden: null },
+        },
+      },
     },
   ],
 }

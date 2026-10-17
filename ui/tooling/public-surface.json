@@ -6965,6 +6965,7 @@
       "FieldControlWiring",
       "FieldProps",
       "FieldRenderedParts",
+      "FieldStructureOptions",
       "FieldTranslations",
       "FieldsetApi",
       "FieldsetProps",
@@ -8892,6 +8893,7 @@
       "fieldKeyboard",
       "fieldMeta",
       "fieldStateAttrs",
+      "fieldStructure",
       "fieldsetAnatomy",
       "fieldsetKeyboard",
       "fieldsetMeta",
@@ -22201,8 +22203,11 @@
     "xh-field": {
       "attributes": [
         "control-id",
+        "description",
         "disabled",
+        "error-text",
         "invalid",
+        "label",
         "read-only",
         "required"
       ],
