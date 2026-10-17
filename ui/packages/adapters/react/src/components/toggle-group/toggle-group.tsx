@@ -177,8 +177,20 @@ export interface XhToggleGroupHiddenInputProps extends ComponentPropsWithRef<'in
 /** 表单出口：整组只有一份，提供 name 后才参与提交。 */
 export function XhToggleGroupHiddenInput({ ...rest }: XhToggleGroupHiddenInputProps): ReactNode {
   const ctx = useToggleGroupContext()
-  return <input {...mergeReactProps(ctx.api.getHiddenInputProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return (
+    <input
+      {...mergeReactProps(
+        ctx.api.getHiddenInputProps() as Record<string, unknown>,
+        // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
+        // 交出一个出口，否则在开发构建里逐帧告警；这个出口不会被调用
+        { onChange: noop },
+        rest as Record<string, unknown>,
+      )}
+    />
+  )
 }
+
+function noop(): void {}
 
 /**
  * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。

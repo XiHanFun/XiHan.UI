@@ -228,12 +228,15 @@ export function XhCascaderRoot({
           deselect: api.deselect,
         })}
         {api.value.map(path => <input key={JSON.stringify(path)} {...api.getHiddenInputProps({ path }) as Record<string, unknown>} />)}
-        {/* 必填且没选值：补一份空值占位，原生 required 才拦得住空表单 */}
-        {api.value.length === 0 && api.required && <input {...api.getHiddenInputProps() as Record<string, unknown>} />}
+        {/* 必填且没选值：补一份空值占位，原生 required 才拦得住空表单。它是带 value 的文本输入，
+            交一个不会被调用的 onChange，免得 React 在开发构建里报受控输入告警 */}
+        {api.value.length === 0 && api.required && <input {...mergeReactProps(api.getHiddenInputProps() as Record<string, unknown>, { onChange: noop })} />}
       </div>
     </CascaderProvider>
   )
 }
+
+function noop(): void {}
 
 XhCascaderRoot.xhEvents = ['clear', 'value-change', 'open-change', 'branch-load-start', 'branch-load', 'branch-load-error'] as const
 
