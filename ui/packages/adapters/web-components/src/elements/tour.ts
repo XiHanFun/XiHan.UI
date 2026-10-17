@@ -19,7 +19,9 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectTour, tourAnatomy, tourMachine, tourMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
+import { renderedTitleDescription } from '../dom/title-description'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -184,6 +186,8 @@ export class XhTourElement extends XhPortalHostElement {
       autoScroll: this.autoScroll,
       targetTimeout: this.targetTimeout,
       translations: this.translations,
+      // 只引用作者写了的标题与说明
+      parts: renderedTitleDescription(this.getPart('title'), this.getPart('description')),
       onOpenChange: this.notifyOpen,
       onValueChange: this.notifyValue,
       onComplete: this.notifyComplete,
@@ -270,7 +274,11 @@ export class XhTourElement extends XhPortalHostElement {
     el.textContent = text
   }
 
+  /** 说明部件的内容从无到有、从有到无时重新接线：读不出一句话的说明不进描述链。 */
+  private readonly descriptionWatch = createNamingContentWatch(() => this.requestUpdate())
+
   protected wire(): void {
+    this.descriptionWatch.watch(this.getPart('description'))
     this.wireWith(this.ctrl.service)
   }
 
@@ -369,6 +377,7 @@ export class XhTourElement extends XhPortalHostElement {
   }
 
   override disconnectedCallback(): void {
+    this.descriptionWatch.disconnect()
     this.portal.dispose()
     super.disconnectedCallback()
     // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管

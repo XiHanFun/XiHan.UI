@@ -8,7 +8,7 @@ import { createVueHarness } from '../harness'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-const COMPONENTS = ['dialog', 'drawer', 'popover', 'popconfirm', 'alert', 'approval']
+const COMPONENTS = ['dialog', 'drawer', 'popover', 'popconfirm', 'alert', 'approval', 'tour']
 
 type Variant = 'full' | 'drop' | 'empty-description'
 
@@ -18,6 +18,13 @@ const MOUNT_PROPS: Record<string, (suite: ConformanceSuite, variant: Variant) =>
   drawer: () => ({ defaultOpen: true }),
   popover: () => ({ defaultOpen: true }),
   popconfirm: () => ({ defaultOpen: true }),
+  tour: (suite, variant) => {
+    const props = suite.cases.find(c => c.props?.defaultOpen)?.props ?? {}
+    if (variant !== 'empty-description')
+      return props
+    const steps = props.steps as Array<Record<string, unknown>>
+    return { ...props, steps: steps.map(({ description: _, ...step }) => step) }
+  },
 }
 
 const harness = createVueHarness()

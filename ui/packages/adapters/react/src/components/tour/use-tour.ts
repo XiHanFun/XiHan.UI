@@ -8,12 +8,14 @@
 import type { Layer, Service } from '@xihan-ui/core'
 import type { TourApi, TourSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
+import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import type { OverlayWiring } from '../../runtime/use-overlay'
 import { connectTour, tourMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { useRef } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
+import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
 
@@ -26,6 +28,8 @@ export interface TourContext extends OverlayWiring {
   contentRef: RefObject<HTMLElement | null>
   /** 作者是否要绘制遮罩。 */
   showBackdrop: boolean
+  /** 标题与说明在不在场，由 XhTourTitle / XhTourDescription 登记；只引用在场的部件。 */
+  presence: TitleDescriptionPresence
 }
 
 export function useTour(props: TourSchema['props'], container?: () => Element | null): TourContext {
@@ -64,7 +68,8 @@ export function useTour(props: TourSchema['props'], container?: () => Element | 
     },
   })
 
-  const service = useMachine(tourMachine, () => props, { scope, onCreate: overlay.onCreate as never })
+  const presence = useTitleDescriptionPresence()
+  const service = useMachine(tourMachine, () => ({ ...props, parts: presence.parts }), { scope, onCreate: overlay.onCreate as never })
   serviceRef.current = service
   const api = connectTour(service, reactNormalize)
 
@@ -77,5 +82,6 @@ export function useTour(props: TourSchema['props'], container?: () => Element | 
     positionerRef,
     contentRef,
     showBackdrop: props.showBackdrop ?? true,
+    presence,
   }
 }

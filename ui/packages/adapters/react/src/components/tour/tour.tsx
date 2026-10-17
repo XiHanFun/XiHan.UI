@@ -13,6 +13,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
+import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { TourProvider, useTourContext } from './context'
 import { useTour } from './use-tour'
 
@@ -227,6 +228,7 @@ export interface XhTourTitleProps extends ComponentPropsWithRef<'h2'> {}
 // 标题与描述的文字取自步骤声明，作者写了内容就用作者的
 export function XhTourTitle({ children, ...rest }: XhTourTitleProps): ReactNode {
   const ctx = useTourContext()
+  useTitleDescriptionPart(ctx.presence, 'title')
   return (
     <h2 {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {slotPaints(children) ? children : ctx.api.currentStep?.title}
@@ -237,8 +239,10 @@ export function XhTourTitle({ children, ...rest }: XhTourTitleProps): ReactNode 
 export interface XhTourDescriptionProps extends ComponentPropsWithRef<'p'> {}
 export function XhTourDescription({ children, ...rest }: XhTourDescriptionProps): ReactNode {
   const ctx = useTourContext()
+  // 读不出一句话的说明不进描述链
+  const el = useDescriptionPart(ctx.presence)
   return (
-    <p {...mergeReactProps(ctx.api.getDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <p {...mergeReactProps({ ...ctx.api.getDescriptionProps() as Record<string, unknown>, ref: el }, rest as Record<string, unknown>)}>
       {slotPaints(children) ? children : ctx.api.currentStep?.description}
     </p>
   )

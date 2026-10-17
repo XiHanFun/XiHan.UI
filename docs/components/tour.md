@@ -113,6 +113,7 @@
 | `spotlightPadding` | `number` |  | 高亮框在目标四周留出的空白（px），默认 8。 |
 | `autoScroll` | `boolean` |  | 展开与换步时自动把目标滚进视口（nearest，已可见时不动），默认 true。 |
 | `targetTimeout` | `number` |  | 目标缺席时等它出现的时长（ms），默认 3000；只收有限非负数，0 即不等。 超时后该步按居中呈现、不再等待；之后目标挂上来了，调用 remeasure 重新锚定。 |
+| `parts` | `TitleDescriptionParts` |  | 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。 title 不在场时不写 aria-labelledby；description 不在场、或渲染了但读不出一句话（判断同 `hasNamingContent`）时不写 aria-describedby。 |
 | `translations` | `Partial<TourTranslations>` |  |  |
 | `onValueChange` | `(details: TourValueChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onOpenChange` | `(details: TourOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -241,9 +242,9 @@
 | --- | --- | --- |
 | `backdrop` | `aria-hidden` | 'true' |
 | `spotlight` | `aria-hidden` | 'true' |
-| `content` | `aria-describedby` | `description` 部件的 id |
+| `content` | `aria-describedby` | `description` 部件的 id \| undefined |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `title` 部件的 id |
+| `content` | `aria-labelledby` | `title` 部件的 id \| undefined |
 | `content` | `aria-modal` | 'true' |
 | `content` | `role` | 'dialog' |
 | `progress-text` | `aria-live` | 'polite' |
