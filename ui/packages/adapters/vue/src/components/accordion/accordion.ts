@@ -6,10 +6,12 @@
 // 提供 accordion 相关实现。
 
 import type { ControlVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { AccordionNode, AccordionNodeMeta, AccordionSchema } from '@xihan-ui/headless'
+import type { AccordionApi, AccordionNode, AccordionNodeMeta, AccordionSchema } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { accordionStructure } from '@xihan-ui/headless'
 import { defineComponent, h, ref } from 'vue'
+import { renderStructure } from '../../runtime/structure'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { provideAccordion, provideAccordionItem, useAccordionContext, useAccordionItem } from './context'
 import { useAccordion } from './use-accordion'
@@ -50,11 +52,7 @@ export const XhAccordionRoot = defineComponent({
     return () => h(
       'div',
       ctx.api.value.getRootProps() as Record<string, unknown>,
-      slots.default
-        ? slots.default()
-        : props.collection
-          ? renderDefaultTree(ctx.api.value.collection, slots.content)
-          : [],
+      slots.default ? slots.default() : renderDefaultStructure(ctx.api.value, slots.content),
     )
   },
 })
@@ -136,22 +134,21 @@ export const XhAccordionIndicator = defineComponent({
   },
 })
 
+/** 标准结构里各部件对应的组件。 */
+const ACCORDION_PARTS = {
+  item: XhAccordionItem,
+  header: XhAccordionHeader,
+  trigger: XhAccordionTrigger,
+  indicator: XhAccordionIndicator,
+  content: XhAccordionContent,
+}
+
 /**
- * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
- * 正文默认取 node.content，写 content 插槽即由作者接管。
+ * 未写默认插槽时照 accordionStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 正文默认取 node.content，写 content 插槽即由作者接管；挂不挂由正文部件自己按挂载判定决定。
  */
-function renderDefaultTree(
-  collection: readonly AccordionNodeMeta[],
-  contentSlot?: (node: AccordionNodeMeta) => VNode[],
-): VNode[] {
-  return collection.map(node => h(XhAccordionItem, { key: node.value, value: node.value }, () => [
-    h(XhAccordionHeader, null, () => [
-      h(XhAccordionTrigger, null, () => [
-        h('span', null, node.label),
-        h(XhAccordionIndicator),
-      ]),
-    ]),
-    h(XhAccordionContent, null, () => contentSlot?.(node) ?? node.content ?? ''),
-  ]))
+function renderDefaultStructure(api: AccordionApi, contentSlot?: (node: AccordionNodeMeta) => VNode[]): VNode[] {
+  const nodes = accordionStructure(api, { slotted: name => name === 'content' && contentSlot != null })
+  return renderStructure(nodes, ACCORDION_PARTS, node =>
+    node.slot?.name === 'content' ? contentSlot?.(node.data as AccordionNodeMeta) ?? (node.data as AccordionNodeMeta).content : undefined)
 }

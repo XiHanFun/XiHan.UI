@@ -7,10 +7,13 @@
 
 import type { ControlVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { AccordionItemProps, AccordionNode, AccordionSchema, AccordionValueChangeDetails } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { isItemDisabled } from '@xihan-ui/core'
-import { accordionAnatomy, accordionMachine, accordionMeta, connectAccordion } from '@xihan-ui/headless'
+import { accordionAnatomy, accordionMachine, accordionMeta, accordionStructure, connectAccordion } from '@xihan-ui/headless'
+import { GEN_ATTR } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
+import { STRUCTURE_MARK } from '../dom/structure'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
@@ -20,6 +23,10 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
 
 /**
  * `<xh-accordion>`：手风琴行为宿主，条目身份写在 item 节点的 value 属性上。
+ *
+ * 不写部件时元素按标准结构生成：collection 里每条一个条目，标题里的按钮装标题文字与指示符，正文取 content；
+ * 只写 root 时生成在它里面。某一条的正文可用宿主直接子节点 `slot="content:<值>"` 接管；要按 lazy-mount 第一次展开才实例化，
+ * 写成 `<template slot="content:<值>">`。
  *
  * @customElement xh-accordion
  * @attr {'ltr'|'rtl'} dir - 文字方向，影响水平轴左右键语义
@@ -45,10 +52,23 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
 export class XhAccordionElement extends XhElement {
   // 闸门按面板各持一个：手风琴模式下切换项时，一个进场一个退场是同时发生的
   private readonly exits = new Map<string, OverlayExit>()
-  /** 每个面板里内容的挂卸落点，按条目 value 各持一个。 */
-  private readonly lazyContents = new Map<string, LazyContent>()
+  /** 每个面板里内容的挂卸落点，按面板节点各持一个。 */
+  private readonly lazyContents = new WeakMap<HTMLElement, LazyContent>()
 
   static override partContract = { anatomy: accordionAnatomy, meta: accordionMeta }
+
+  static override structure: ElementStructure<XhAccordionElement> = {
+    build: (host) => {
+      if (!host.ctrl.service)
+        return undefined
+      const api = connectAccordion(host.ctrl.service, wcNormalize)
+      return accordionStructure(api, {
+        slotted: (name, key) => host.slotted(name, key),
+        // 正文挂不挂跟着各面板的退场闸门：这一轮要展开的面板闸门在接线时才打开，所以开着的按在场算
+        mounted: node => api.isContentMounted({ value: node.value }, api.isOpen(node.value) || (host.exits.get(node.value)?.visible ?? false)),
+      })
+    },
+  }
 
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的标题文本与禁用即以数据为准
@@ -157,10 +177,12 @@ export class XhAccordionElement extends XhElement {
       exit.track(el)
       exit.update(open)
       this.setPartHidden(el, !exit.visible)
-      let lazy = this.lazyContents.get(item.value)
+      let lazy = this.lazyContents.get(el)
       if (!lazy) {
-        lazy = new LazyContent()
-        this.lazyContents.set(item.value, lazy)
+        // 标准结构生成的面板：照数据铺的正文由结构按挂载判定填空，slot 搬进来的作者节点不暂存（暂存了就认不出插槽），
+        // 只有写成模板的才按判定挂卸
+        lazy = new LazyContent({ stash: el.getAttribute(GEN_ATTR) !== STRUCTURE_MARK })
+        this.lazyContents.set(el, lazy)
       }
       lazy.sync(el, api.isContentMounted(item, exit.visible))
     }

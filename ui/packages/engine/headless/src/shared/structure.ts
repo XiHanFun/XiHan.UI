@@ -11,7 +11,7 @@
  * 结构里用得到的标签：与 Vue / React 部件组件渲出的标签一致，按需要补，不放开成任意字符串。
  * 组合进来的另一个库内组件不走标签，走组合节点（StructureInstanceNode）。
  */
-export type StructureTag = 'div' | 'span' | 'button' | 'label' | 'input' | 'textarea' | 'select' | 'p' | 'ul' | 'li' | 'fieldset' | 'legend'
+export type StructureTag = 'div' | 'span' | 'button' | 'label' | 'input' | 'textarea' | 'select' | 'p' | 'ul' | 'li' | 'fieldset' | 'legend' | 'h3'
 
 /**
  * 可接管部件在 root 里的位置：trailing 排在 root 子节点的末尾，portal 经 Portal 脱离文档流。

@@ -16,6 +16,18 @@ function item(value: string, label: string): FixtureNode {
   }
 }
 
+/** 标准结构场景的数据：第三条禁用。 */
+const STRUCTURE_COLLECTION = [
+  { value: 'one', label: '第一项', content: '一的内容' },
+  { value: 'two', label: '第二项', content: '二的内容' },
+  { value: 'three', label: '第三项', content: '三的内容', disabled: true },
+]
+
+/** 标准结构里一个条目的文档序：标题文字是按钮里不带部件名的 span，不进部件序。 */
+function structureOrder(index: number): string[] {
+  return [`item[${index}]`, `header[${index}]`, `trigger[${index}]`, `indicator[${index}]`, `content[${index}]`]
+}
+
 // 三个条目的文档序；集合 part 用下标寻址。
 const ORDER = [
   'root',
@@ -371,6 +383,61 @@ export const accordionSuite: ConformanceSuite = {
         { kind: 'raw', why: '挂卸看的是子节点，快照不收子节点', run: expectPartText('accordion', 'content', 1, '') },
         { kind: 'click', part: 'trigger[0]', expect: { parts: { 'content[0]': { 'data-state': 'closed' } } } },
         { kind: 'raw', why: '挂卸看的是子节点，快照不收子节点', run: expectPartText('accordion', 'content', 0, '') },
+      ],
+    },
+    {
+      name: '作者不写结构：三端都照 accordionStructure 铺出条目、标题里的按钮与指示符、正文；换数据按值复用条目，多选时各自展开',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { collection: STRUCTURE_COLLECTION, defaultValue: ['one'] },
+      initial: {
+        order: ['root', ...structureOrder(0), ...structureOrder(1), ...structureOrder(2)],
+        parts: {
+          'header[0]': { 'role': 'heading', 'aria-level': '3' },
+          'trigger[0]': { 'type': 'button', 'data-value': 'one', 'aria-expanded': 'true', 'aria-controls': '@part(content[0])' },
+          'trigger[2]': { 'data-value': 'three', 'aria-disabled': 'true' },
+          'content[0]': { 'aria-labelledby': '@part(trigger[0])', 'hidden': null },
+          'content[1]': { hidden: '' },
+        },
+      },
+      steps: [
+        { kind: 'raw', why: '标题文字与正文都是子节点，快照不收子节点', run: expectPartText('accordion', 'trigger', 0, '第一项') },
+        { kind: 'raw', why: '同上', run: expectPartText('accordion', 'content', 1, '二的内容') },
+        {
+          kind: 'click',
+          part: 'trigger[1]',
+          expect: {
+            parts: { 'trigger[0]': { 'aria-expanded': 'false' }, 'trigger[1]': { 'aria-expanded': 'true' } },
+            events: [{ type: 'value-change', detail: { value: ['two'] } }],
+          },
+        },
+        {
+          kind: 'setProps',
+          props: { collection: [STRUCTURE_COLLECTION[1], { value: 'four', label: '第四项', content: '四的内容' }] },
+          expect: {
+            order: ['root', ...structureOrder(0), ...structureOrder(1)],
+            counts: { item: 2 },
+            parts: {
+              'trigger[0]': { 'data-value': 'two', 'aria-expanded': 'true' },
+              'trigger[1]': { 'data-value': 'four', 'aria-expanded': 'false', 'aria-controls': '@part(content[1])' },
+            },
+          },
+        },
+        { kind: 'raw', why: '标题文字与正文都是子节点，快照不收子节点', run: expectPartText('accordion', 'trigger', 1, '第四项') },
+        { kind: 'raw', why: '同上', run: expectPartText('accordion', 'content', 1, '四的内容') },
+        { kind: 'setProps', props: { multiple: true } },
+        {
+          kind: 'click',
+          part: 'trigger[1]',
+          expect: {
+            parts: {
+              'trigger[0]': { 'aria-expanded': 'true' },
+              'trigger[1]': { 'aria-expanded': 'true' },
+              'content[1]': { hidden: null },
+            },
+            events: [{ type: 'value-change', detail: { value: ['two', 'four'] } }],
+          },
+        },
       ],
     },
   ],
