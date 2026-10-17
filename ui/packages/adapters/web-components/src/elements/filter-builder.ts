@@ -6,8 +6,7 @@
 // 提供 filter builder 相关实现。
 
 import type { ControlVariant, Size } from '@xihan-ui/core'
-import type { FilterBuilderApi, FilterBuilderCreateId, FilterBuilderSchema, FilterBuilderValueChangeDetails, FilterPath, FormControlState } from '@xihan-ui/headless'
-import type { FilterField, FilterGroup, FilterOperator, FilterParameter } from '@xihan-ui/viz'
+import type { FilterBuilderApi, FilterBuilderCreateId, FilterBuilderSchema, FilterBuilderValueChangeDetails, FilterField, FilterGroup, FilterOperator, FilterParameter, FilterPath, FormControlState } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectFilterBuilder, filterBuilderAnatomy, filterBuilderMachine, filterBuilderMeta, filterBuilderStructure, filterBuilderTranslations, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'

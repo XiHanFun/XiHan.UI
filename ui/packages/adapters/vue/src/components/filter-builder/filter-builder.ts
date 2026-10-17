@@ -6,8 +6,7 @@
 // 提供 filter builder 相关实现。
 
 import type { ControlVariant, Size } from '@xihan-ui/core'
-import type { FilterBuilderApi, FilterBuilderCreateId, FilterBuilderSchema, FilterBuilderTranslations, FilterPath } from '@xihan-ui/headless'
-import type { FilterCondition, FilterField, FilterGroup, FilterParameter } from '@xihan-ui/viz'
+import type { FilterBuilderApi, FilterBuilderCreateId, FilterBuilderSchema, FilterBuilderTranslations, FilterCondition, FilterField, FilterGroup, FilterParameter, FilterPath } from '@xihan-ui/headless'
 import type { ComputedRef, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { filterBuilderStructure } from '@xihan-ui/headless'
