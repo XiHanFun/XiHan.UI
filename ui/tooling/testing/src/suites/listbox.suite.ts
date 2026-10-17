@@ -82,6 +82,29 @@ export const listboxSuite: ConformanceSuite = {
   fixture: FIXTURE,
   cases: [
     {
+      name: '作者不写结构：三端都照 listboxStructure 铺出标题与列表，collection 每条一个条目（文字、有副文本时的副文本、选中标记），点条目即选中',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: {
+        label: '水果',
+        collection: [
+          { value: 'apple', label: 'Apple', description: '红富士' },
+          { value: 'banana', label: 'Banana', disabled: true },
+          { value: 'cherry', label: 'Cherry' },
+        ],
+      },
+      initial: {
+        order: ['root', 'label', 'content', 'item[0]', 'item-text[0]', 'item-description', 'item-indicator[0]', 'item[1]', 'item-text[1]', 'item-indicator[1]', 'item[2]', 'item-text[2]', 'item-indicator[2]'],
+        parts: {
+          'content': { 'role': 'listbox', 'aria-labelledby': '@part(label)' },
+          'item[1]': { 'aria-disabled': 'true' },
+        },
+      },
+      steps: [
+        { kind: 'click', part: 'item[2]', expect: { parts: { 'item[2]': { 'aria-selected': 'true' } } } },
+      ],
+    },
+    {
       name: '初始：content 是 listbox，条目 role=option 且选中/禁用两态都显式给出，分组各自认领标题',
       spec: { apg: `${APG}#roles_states_properties` },
       initial: {
