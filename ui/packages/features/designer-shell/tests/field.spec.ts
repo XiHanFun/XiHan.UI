@@ -51,9 +51,9 @@ describe('createPropertyField', () => {
   it('update 换状态：外面给的错误与说明，多个值时留空并显示占位，只读时字段只读、不写入', () => {
     const { field, values } = mountField({ kind: 'text' }, { value: 'a' })
     const text = field.element.querySelector<HTMLElement & { value?: string }>('xh-text-field')!
-    field.update({ value: 'b', error: 'Required', hint: 'Shown on the label' })
+    field.update({ value: 'b', error: 'Required', hint: 'Shown on the label', label: '名称' })
     const xhField = field.element.querySelector('xh-field')!
-    expect([text.value, xhField.querySelector('[data-xh-part="error-text"]')!.textContent, xhField.querySelector('[data-xh-part="description"]')!.textContent]).toEqual(['b', 'Required', 'Shown on the label'])
+    expect([text.value, xhField.querySelector('[data-xh-part="label"]')!.textContent, xhField.querySelector('[data-xh-part="error-text"]')!.textContent, xhField.querySelector('[data-xh-part="description"]')!.textContent]).toEqual(['b', '名称', 'Required', 'Shown on the label'])
     field.update({ value: undefined, mixed: true })
     expect([text.value, text.getAttribute('placeholder'), xhField.hasAttribute('invalid')]).toEqual(['', 'Multiple values', false])
     field.update({ value: 'c', readonly: true })
