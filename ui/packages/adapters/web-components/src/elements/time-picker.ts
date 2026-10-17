@@ -93,6 +93,7 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @attr {boolean} invalid - 校验失败标注
  * @attr {boolean} required - 必填标注，写入每段的 aria-required
  * @attr {string} name - 表单字段名；提供后隐藏输入才带 name
+ * @attr {string} placeholder - 整条占位：一段都没填、焦点也不在段上时输入行显示这句文字；多选没有选中值时标签行显示它
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -161,6 +162,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
     isTimeUnavailable: { attribute: false },
     required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
+    placeholder: { converter: STRING_CONVERTER },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -192,6 +194,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
   declare isTimeUnavailable?: TimePickerSchema['props']['isTimeUnavailable']
   declare required?: boolean
   declare name?: string
+  declare placeholder?: string
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
@@ -271,6 +274,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
       isTimeUnavailable: this.isTimeUnavailable,
       required: control.required,
       name: this.name,
+      placeholder: this.placeholder,
       variant: this.variant,
       tone: this.tone,
       size: this.size,

@@ -189,6 +189,11 @@ export interface TimePickerSchema extends MachineSchema {
     required?: boolean
     /** 表单字段名；提供后隐藏输入才带 name，值随表单一并提交。 */
     name?: string
+    /**
+     * 整条占位：一段都没填、焦点也不在段上时，输入行显示这句文字（「请选择开始时间」），焦点进到段上即换回段位。
+     * 多选时没有选中值，标签行显示这句文字。
+     */
+    placeholder?: string
     /** 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 */

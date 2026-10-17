@@ -112,6 +112,8 @@ export function connectTimePicker<T extends PropTypes>(
     ? values.length > 0
     : value !== '' || draft.hour != null || draft.minute != null || draft.second != null || draft.dayPeriod != null
   const canClear = editable && dirty
+  const placeholder = prop('placeholder')
+  const placeholderText = placeholder != null && placeholder !== '' ? placeholder : undefined
   const maxSelected = resolveTimePickerMaxSelected(prop('maxSelected'))
   const full = maxSelected != null && values.length >= maxSelected
   // 「添加」：草稿填全、在界内、还没选过、没到上限
@@ -448,6 +450,9 @@ export function connectTimePicker<T extends PropTypes>(
       // 列表动效接上之前，首帧的标签直接呈现
       'data-instant': dataAttr(!context.get('tagListTracked')),
       'hidden': !multiple || undefined,
+      // 多选没有选中时这一行承载整条占位，与单选那条占位同一个通道
+      'data-placeholder-text': multiple ? placeholderText : undefined,
+      'data-placeholder-shown': dataAttr(multiple && placeholderText != null && values.length === 0),
       'data-disabled': dataAttr(disabled),
     }),
 
@@ -481,6 +486,9 @@ export function connectTimePicker<T extends PropTypes>(
     getSegmentGroupProps: () => normalize.element({
       ...parts['segment-group'].attrs,
       'hidden': multiple || undefined,
+      // 整条占位：一段都没填、焦点也不在段上时才露出，文字由皮肤以生成内容画出，段位与分隔符让位
+      'data-placeholder-text': placeholderText,
+      'data-placeholder-shown': dataAttr(!multiple && placeholderText != null && !dirty && focusedSegment == null),
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(flagged),

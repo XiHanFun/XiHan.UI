@@ -68519,6 +68519,15 @@
             },
             {
               "kind": "field",
+              "name": "placeholder",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
               "name": "variant",
               "privacy": "public",
               "type": {
@@ -69073,6 +69082,14 @@
               "description": "表单字段名；提供后隐藏输入才带 name",
               "name": "name",
               "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "整条占位：一段都没填、焦点也不在段上时输入行显示这句文字；多选没有选中值时标签行显示它",
+              "name": "placeholder",
+              "fieldName": "placeholder"
             },
             {
               "type": {
