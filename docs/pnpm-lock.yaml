@@ -20,6 +20,9 @@ importers:
       '@xihan-ui/core':
         specifier: link:../ui/packages/engine/core
         version: link:../ui/packages/engine/core
+      '@xihan-ui/expression':
+        specifier: link:../ui/packages/engine/expression
+        version: link:../ui/packages/engine/expression
       '@xihan-ui/headless':
         specifier: link:../ui/packages/engine/headless
         version: link:../ui/packages/engine/headless

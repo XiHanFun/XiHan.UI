@@ -59,6 +59,8 @@ const PUBLIC_EVENTS = {
   'root-key-change': 'onRootKeyChange',
   'source-open': 'onSourceOpen',
   'panel-size-change': 'onPanelSizeChange',
+  'issues-change': 'onIssuesChange',
+  'completion-select': 'onCompletionSelect',
 } as const
 
 function declaredEvents(component: Component): Set<string> {

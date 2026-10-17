@@ -8,6 +8,7 @@
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { KeyTextTable } from './key-text'
 import type { XhLocale, XhLocaleTranslations } from './types'
+import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 import { keyText } from './key-text'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -262,6 +263,18 @@ const translations = {
     commentOn: (line, side) => `對${side === 'old' ? '舊' : '新'}版本第 ${line} 行留言`,
   },
   'drawer': { close: '關閉', resizeTrigger: '調整抽屜大小' },
+  'expression-input': {
+    content: '建議',
+    noMatches: '沒有符合的項目',
+    kindVariable: '變數',
+    kindFunction: '函式',
+    position: (line, column) => (line === null ? `第 ${column} 欄` : `第 ${line} 行第 ${column} 欄`),
+    issueRow: (position, message) => `${position}：${message}`,
+    paramOrdinal: index => `參數 ${index}`,
+    issue: expressionIssueEnUS,
+    param: expressionParamEnUS,
+    functionDescription: expressionFunctionEnUS,
+  },
   'field-array': {
     deleteItem: (index, count) => `移除第 ${index} 列，共 ${count} 列`,
     moveUpTrigger: (index, count) => `上移第 ${index} 列，共 ${count} 列`,

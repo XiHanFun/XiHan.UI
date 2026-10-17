@@ -88,6 +88,12 @@
       "gutter": false,
       "why": "提及候选浮层面"
     },
+    "expression-input:content": {
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "表达式补全浮层面"
+    },
     "popover:content": {
       "mode": "drawn",
       "overscroll": true,

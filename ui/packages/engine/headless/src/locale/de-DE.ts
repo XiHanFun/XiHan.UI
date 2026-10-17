@@ -8,6 +8,7 @@
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { KeyTextTable } from './key-text'
 import type { XhLocale, XhLocaleTranslations } from './types'
+import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 import { keyText } from './key-text'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -264,6 +265,18 @@ const translations = {
     commentOn: (line, side) => `Zeile ${line} der ${side === 'old' ? 'alten' : 'neuen'} Version kommentieren`,
   },
   'drawer': { close: 'Schließen', resizeTrigger: 'Größe des Bereichs ändern' },
+  'expression-input': {
+    content: 'Vorschläge',
+    noMatches: 'Keine Treffer',
+    kindVariable: 'Variable',
+    kindFunction: 'Funktion',
+    position: (line, column) => (line === null ? `Spalte ${column}` : `Zeile ${line}, Spalte ${column}`),
+    issueRow: (position, message) => `${position}: ${message}`,
+    paramOrdinal: index => `Argument ${index}`,
+    issue: expressionIssueEnUS,
+    param: expressionParamEnUS,
+    functionDescription: expressionFunctionEnUS,
+  },
   'field-array': {
     deleteItem: (index, count) => `Zeile ${index} von ${count} entfernen`,
     moveUpTrigger: (index, count) => `Zeile ${index} von ${count} nach oben verschieben`,

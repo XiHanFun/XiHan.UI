@@ -97,6 +97,7 @@ const EXPECTED = {
   'hover-card': { content: ['frosted'] },
   // 覆盖档的侧栏是盖在内容之上、带遮罩的一面，与抽屉同档；占位档的侧栏不画投影
   'layout': { sider: ['sheet'] },
+  'expression-input': { content: ['frosted'] },
   'mention': { content: ['frosted'] },
   'menu': { content: ['frosted'] },
   'menubar': { content: ['frosted'] },

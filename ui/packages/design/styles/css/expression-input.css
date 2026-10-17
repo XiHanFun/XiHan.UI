@@ -1,0 +1,376 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 expression input 样式。
+   字段外框与输入框走 Field Chrome 家族，补全列表走 Collection Item 家族与 frosted 材质，与提及同一套做法；
+   本皮肤自己只画三样：叠在输入框下的镜像层（问题区间的波浪下划线）、条目里的种类小标与签名、框下的问题列表。 */
+
+@import '../family/field-chrome.css';
+@import '../family/collection-item.css';
+
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
+@import '../family/material.css';
+
+@layer xihan.components {
+  [data-scope='expression-input'] {
+    --xh-expression-input-skin: 1;
+  }
+
+  /* 元素宿主不占盒，与 Vue / React 直接渲染 root 一致。零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+  :where(xh-expression-input:not([hidden])) {
+    display: contents;
+  }
+
+  [data-scope='expression-input']:is([data-part='root'], [data-part='positioner']) {
+    --xh-_expression-input-h: var(--xh-control-h-md);
+    --xh-_expression-input-px: var(--xh-control-px-md);
+    --xh-_expression-input-gap: var(--xh-control-gap-md);
+    --xh-_expression-input-font-size: var(--xh-control-font-md);
+    --xh-_expression-input-caption-size: var(--xh-control-caption-md);
+    --xh-_expression-input-item-py: var(--xh-list-option-py-md);
+    --xh-_expression-input-item-h: var(--xh-list-option-h-md);
+  }
+
+  [data-scope='expression-input']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
+    --xh-_expression-input-h: var(--xh-control-h-sm);
+    --xh-_expression-input-px: var(--xh-control-px-sm);
+    --xh-_expression-input-gap: var(--xh-control-gap-sm);
+    --xh-_expression-input-font-size: var(--xh-control-font-sm);
+    --xh-_expression-input-caption-size: var(--xh-control-caption-sm);
+    --xh-_expression-input-item-py: var(--xh-list-option-py-sm);
+    --xh-_expression-input-item-h: var(--xh-list-option-h-sm);
+  }
+
+  [data-scope='expression-input']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
+    --xh-_expression-input-h: var(--xh-control-h-lg);
+    --xh-_expression-input-px: var(--xh-control-px-lg);
+    --xh-_expression-input-gap: var(--xh-control-gap-lg);
+    --xh-_expression-input-font-size: var(--xh-control-font-lg);
+    --xh-_expression-input-caption-size: var(--xh-control-caption-lg);
+    --xh-_expression-input-item-py: var(--xh-list-option-py-lg);
+    --xh-_expression-input-item-h: var(--xh-list-option-h-lg);
+  }
+
+  /* 根：标题、外框与问题列表纵向排列；宽度与文本字段同一档，放进字段即铺满 */
+  [data-scope='expression-input'][data-part='root'] {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--xh-expression-input-gap, var(--xh-space-1));
+    inline-size: var(--xh-expression-input-control-w, var(--xh-control-w));
+    min-inline-size: min(var(--xh-expression-input-control-w, var(--xh-control-w)), var(--xh-expression-input-control-min-w, var(--xh-control-min-w)), 100%);
+    max-inline-size: 100%;
+  }
+
+  [data-scope='expression-input'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='expression-input'][data-part='label'] {
+    margin-block-end: calc(var(--xh-expression-input-label-gap, var(--xh-space-2)) - var(--xh-expression-input-gap, var(--xh-space-1)));
+    color: var(--xh-expression-input-label-fg, var(--xh-fg-muted));
+    font-size: var(--xh-expression-input-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-expression-input-label-font-weight, var(--xh-text-label-weight));
+  }
+
+  /* 外框：视觉盒由家族画，这里只把公开槽接进家族合同；镜像层以它为定位基准 */
+  [data-scope='expression-input'][data-part='control'] {
+    --xh-field-control-height: var(--xh-expression-input-control-h, var(--xh-_expression-input-h));
+    --xh-field-control-padding-inline: var(--xh-expression-input-control-px, var(--xh-_expression-input-px));
+    --xh-field-control-gap: var(--xh-expression-input-control-gap, var(--xh-_expression-input-gap));
+    --xh-field-control-min-inline-size: var(--xh-expression-input-control-min-w, var(--xh-control-min-w));
+    --xh-field-control-radius: var(--xh-expression-input-control-radius, var(--xh-shape-control));
+    --xh-field-bg-rest: var(--xh-expression-input-control-bg, var(--xh-_field-variant-bg-rest));
+    --xh-field-bg-hover: var(--xh-expression-input-control-bg-hover, var(--xh-_field-variant-bg-hover));
+    --xh-field-bg-read-only: var(--xh-expression-input-control-bg-readonly, var(--xh-_field-variant-bg-read-only));
+    --xh-field-bg-disabled: var(--xh-expression-input-control-bg-disabled, var(--xh-_field-variant-bg-disabled));
+    --xh-field-fg-rest: var(--xh-expression-input-control-fg, var(--xh-fg-default));
+    --xh-field-border-rest: var(--xh-expression-input-control-border, var(--xh-_field-variant-border-rest));
+    --xh-field-border-hover: var(--xh-expression-input-control-border-hover, var(--xh-_field-variant-border-hover));
+    --xh-field-border-focus: var(--xh-expression-input-control-border-focus, var(--xh-_field-variant-border-focus));
+    --xh-field-border-invalid: var(--xh-expression-input-control-border-invalid, var(--xh-_field-variant-border-invalid));
+    --xh-field-shadow-rest: var(--xh-expression-input-control-shadow, none);
+
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* 输入框排在镜像层之上：文字由它画，镜像层只露出下划线 */
+  [data-scope='expression-input'][data-part='input'] {
+    --xh-field-input-fg: var(--xh-expression-input-input-fg, var(--xh-fg-default));
+    --xh-field-input-font-size: var(--xh-expression-input-input-font-size, var(--xh-_expression-input-font-size));
+    --xh-field-placeholder-fg: var(--xh-expression-input-placeholder-fg, var(--xh-fg-subtle));
+    --xh-field-autofill-bg: var(--xh-expression-input-input-autofill-bg, var(--xh-bg-canvas));
+    --xh-field-autofill-fg: var(--xh-expression-input-input-autofill-fg, var(--xh-fg-default));
+    --xh-field-textarea-padding-block: var(--xh-expression-input-textarea-py, var(--xh-space-1));
+
+    position: relative;
+    z-index: 1;
+  }
+
+  [data-scope='expression-input'][data-part='input'][data-xh-field-auto-size] {
+    max-block-size: var(--xh-expression-input-input-max-h, var(--xh-viewport-h-sm));
+  }
+
+  /* 镜像层：与输入框同字号、同行高、同换行，盒的位置与尺寸由行为层按输入框写进私有槽，滚动跟着输入框走。
+     文字透明，只露出问题区间的下划线；对指针透明，点击落到输入框上 */
+  [data-scope='expression-input'][data-part='highlight'] {
+    --xh-_expression-input-mirror-block: 0px;
+    --xh-_expression-input-mirror-inline: 0px;
+    --xh-_expression-input-mirror-w: 100%;
+    --xh-_expression-input-mirror-h: 100%;
+
+    position: absolute;
+    inset-block-start: var(--xh-_expression-input-mirror-block);
+    inset-inline-start: var(--xh-_expression-input-mirror-inline);
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    inline-size: var(--xh-_expression-input-mirror-w);
+    block-size: var(--xh-_expression-input-mirror-h);
+    overflow: hidden;
+    color: transparent;
+    font-size: var(--xh-expression-input-input-font-size, var(--xh-_expression-input-font-size));
+    line-height: var(--xh-leading-normal);
+    white-space: pre;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  [data-scope='expression-input'][data-part='highlight'][data-multiline] {
+    display: block;
+    padding-block: var(--xh-expression-input-textarea-py, var(--xh-space-1));
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+
+  [data-scope='expression-input'][data-part='highlight'][hidden] {
+    display: none;
+  }
+
+  /* 问题区间：error 画危险色波浪线，warning 画警告色 */
+  [data-scope='expression-input'][data-part='highlight-segment'][data-issue] {
+    text-decoration-line: underline;
+    text-decoration-style: wavy;
+    text-decoration-color: var(--xh-expression-input-issue-error-fg, var(--xh-fg-danger));
+    text-decoration-thickness: var(--xh-stroke-thin);
+    text-decoration-skip-ink: none;
+    text-underline-offset: var(--xh-space-0_5);
+  }
+
+  [data-scope='expression-input'][data-part='highlight-segment'][data-severity='warning'] {
+    text-decoration-color: var(--xh-expression-input-issue-warning-fg, var(--xh-fg-warning));
+  }
+
+  /* 问题列表：框下逐行列出，error 用危险色，warning 用警告色 */
+  [data-scope='expression-input'][data-part='issues'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-expression-input-issues-gap, var(--xh-space-0_5));
+    margin: 0;
+  }
+
+  [data-scope='expression-input'][data-part='issues'][hidden] {
+    display: none;
+  }
+
+  [data-scope='expression-input'][data-part='issue'] {
+    margin: 0;
+    color: var(--xh-expression-input-issue-error-fg, var(--xh-fg-danger));
+    font-size: var(--xh-expression-input-issue-font-size, var(--xh-text-caption-size));
+    line-height: var(--xh-leading-normal);
+  }
+
+  [data-scope='expression-input'][data-part='issue'][data-severity='warning'] {
+    color: var(--xh-expression-input-issue-warning-fg, var(--xh-fg-warning));
+  }
+
+  /* 补全浮层的定位层：坐标由引擎写成内联样式，可用空间换成私有槽给列表限高 */
+  [data-scope='expression-input'][data-part='positioner'] {
+    --xh-_expression-input-available-h: 100vh;
+    --xh-_expression-input-available-w: 100vw;
+    --xh-_expression-input-anchor-w: initial;
+    --xh-_overlay-enter-up: 0;
+    --xh-_overlay-enter-down: 0;
+    --xh-_overlay-enter-left: 0;
+    --xh-_overlay-enter-right: 0;
+
+    --xh-scrollbar-track-bg: transparent;
+
+    position: fixed;
+    display: grid;
+    z-index: var(--xh-expression-input-layer, var(--xh-_layer, var(--xh-layer-popover)));
+    pointer-events: none;
+  }
+
+  [data-scope='expression-input'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  [data-scope='expression-input'][data-part='positioner'][hidden] {
+    display: none;
+  }
+
+  [data-scope='expression-input'][data-part='positioner'][data-placement^='top'] {
+    --xh-_overlay-enter-down: 1;
+  }
+
+  [data-scope='expression-input'][data-part='positioner'][data-placement^='bottom'] {
+    --xh-_overlay-enter-up: 1;
+  }
+
+  [data-scope='expression-input'][data-part='positioner'][data-placement^='left'] {
+    --xh-_overlay-enter-right: 1;
+  }
+
+  [data-scope='expression-input'][data-part='positioner'][data-placement^='right'] {
+    --xh-_overlay-enter-left: 1;
+  }
+
+  [data-scope='expression-input'][data-part='content'] {
+    --xh-frosted-bg: var(--xh-expression-input-content-bg, var(--xh-_material-bg));
+    --xh-frosted-border: var(--xh-expression-input-content-border, var(--xh-_material-border));
+    --xh-frosted-fg: var(--xh-expression-input-content-fg, var(--xh-_material-fg));
+    --xh-frosted-shadow: var(--xh-expression-input-content-shadow, var(--xh-_material-shadow));
+    --xh-frosted-backdrop: var(--xh-expression-input-content-backdrop, var(--xh-_material-backdrop));
+    --xh-frosted-highlight: var(--xh-expression-input-content-highlight, var(--xh-_material-highlight));
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-expression-input-content-gap, var(--xh-list-option-gap));
+    grid-area: 1 / 1;
+    /* 单行：与字段盒等宽，长条目在条目里截断；多行锚在光标上，没有锚宽，宽度随内容落在上下界之间 */
+    inline-size: var(--xh-_expression-input-anchor-w, auto);
+    min-inline-size: min(
+      max(var(--xh-expression-input-content-min-w, var(--xh-overlay-min-w)), var(--xh-_expression-input-anchor-w, 0px)),
+      var(--xh-_expression-input-available-w)
+    );
+    max-inline-size: min(
+      max(var(--xh-expression-input-content-max-w, var(--xh-overlay-max-w)), var(--xh-_expression-input-anchor-w, 0px)),
+      var(--xh-_expression-input-available-w)
+    );
+    max-block-size: min(var(--xh-expression-input-content-max-h, var(--xh-overlay-max-h)), var(--xh-_expression-input-available-h));
+    padding-block: var(--xh-expression-input-content-py, var(--xh-space-1));
+    padding-inline: var(--xh-expression-input-content-px, 0);
+    border-radius: var(--xh-expression-input-content-radius, var(--xh-shape-overlay));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    pointer-events: auto;
+  }
+
+  [data-scope='expression-input'][data-part='content']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='expression-input'][data-part='content'][data-state='open'] {
+    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='expression-input'][data-part='content'][data-state='closed'] {
+    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
+  /* 补全条目：即选即插入，aria-selected 只标当前高亮那一条，overlay 语境的选中面透明，高亮与悬停同一面 */
+  [data-scope='expression-input'][data-part='item'] {
+    --xh-collection-block-padding: var(--xh-expression-input-item-py, var(--xh-_expression-input-item-py));
+    --xh-collection-row-h: var(--xh-expression-input-item-h, var(--xh-_expression-input-item-h));
+    --xh-collection-inline-padding: var(--xh-expression-input-item-px, var(--xh-_expression-input-px));
+    --xh-collection-gap: var(--xh-expression-input-item-gap, var(--xh-_expression-input-gap));
+    --xh-collection-font-size: var(--xh-expression-input-item-font-size, var(--xh-_expression-input-font-size));
+    --xh-collection-radius: var(--xh-expression-input-item-radius, 0);
+    --xh-collection-fg-rest: var(--xh-expression-input-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-hover: var(--xh-expression-input-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-keyboard-highlight: var(--xh-expression-input-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-selected: var(--xh-expression-input-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-selected-highlight: var(--xh-expression-input-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-selected-hover: var(--xh-expression-input-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-selected-pressed: var(--xh-expression-input-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-pressed: var(--xh-expression-input-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-font-weight-selected: var(--xh-font-weight-regular);
+    --xh-collection-font-weight-selected-highlight: var(--xh-font-weight-regular);
+    --xh-collection-font-weight-selected-hover: var(--xh-font-weight-regular);
+    --xh-collection-font-weight-selected-pressed: var(--xh-font-weight-regular);
+    --xh-collection-bg-hover: var(--xh-expression-input-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-keyboard-highlight: var(--xh-expression-input-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-selected-highlight: var(--xh-expression-input-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-selected-hover: var(--xh-expression-input-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-pressed: var(--xh-expression-input-item-bg-pressed, var(--xh-bg-subtle-hover));
+    --xh-collection-bg-selected-pressed: var(--xh-expression-input-item-bg-pressed, var(--xh-bg-subtle-hover));
+    --xh-collection-outline-keyboard-highlight: transparent;
+    --xh-collection-outline-selected-highlight: transparent;
+
+    line-height: var(--xh-expression-input-item-leading, var(--xh-leading-normal));
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  /* 种类小标：弱一档的小字，定宽让名字列对齐 */
+  [data-scope='expression-input'][data-part='item-prefix'] {
+    flex: none;
+    min-inline-size: var(--xh-expression-input-item-prefix-w, var(--xh-space-8));
+    color: var(--xh-expression-input-item-prefix-fg, var(--xh-material-frosted-fg-muted));
+    font-size: var(--xh-expression-input-item-prefix-font-size, var(--xh-_expression-input-caption-size));
+  }
+
+  [data-scope='expression-input'][data-part='item-text'] {
+    min-inline-size: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* 签名：跟在名字后面的弱一档文字，放不下时截断 */
+  [data-scope='expression-input'][data-part='item-suffix'] {
+    min-inline-size: 0;
+    overflow: hidden;
+    color: var(--xh-expression-input-item-suffix-fg, var(--xh-material-frosted-fg-muted));
+    font-size: var(--xh-expression-input-item-suffix-font-size, var(--xh-_expression-input-caption-size));
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  [data-scope='expression-input'][data-part='empty'] {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-area: 1 / 1;
+    padding-block: var(--xh-expression-input-empty-py, var(--xh-space-3));
+    padding-inline: var(--xh-expression-input-empty-px, var(--xh-_expression-input-px));
+    color: var(--xh-expression-input-empty-fg, var(--xh-material-frosted-fg-muted));
+    font-size: var(--xh-expression-input-empty-font-size, var(--xh-_expression-input-font-size));
+    line-height: var(--xh-leading-none);
+    text-align: center;
+  }
+
+  [data-scope='expression-input'][data-part='empty'][hidden] {
+    display: none;
+  }
+
+  [data-scope='expression-input'][data-part='empty']:empty {
+    display: none;
+  }
+
+  /* 打开的空列表不画无意义的框：没有条目、空态也不显示时整层不可见；closed 不命中，content 仍能完成退场 */
+  [data-scope='expression-input'][data-part='positioner']:not(:has(
+    > [data-scope='expression-input'][data-part='empty']:not([hidden]):not(:empty)
+  )) > [data-scope='expression-input'][data-part='content'][data-state='open']:not(:has(
+    > [data-scope='expression-input'][data-part='item']
+  )) {
+    visibility: hidden;
+  }
+
+  @media print {
+    /* 打印：定位层是交互期才存在的东西，镜像层的下划线也不落到纸上 */
+    [data-scope='expression-input'][data-part='positioner'] {
+      display: none;
+    }
+
+    [data-scope='expression-input'][data-part='highlight'] {
+      display: none;
+    }
+  }
+}

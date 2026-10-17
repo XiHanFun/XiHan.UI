@@ -8,6 +8,7 @@
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { KeyTextTable } from './key-text'
 import type { XhLocale, XhLocaleTranslations } from './types'
+import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 import { keyText } from './key-text'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -262,6 +263,18 @@ const translations = {
     commentOn: (line, side) => `${side === 'old' ? '이전' : '새'} 버전 줄 ${line}에 댓글 달기`,
   },
   'drawer': { close: '닫기', resizeTrigger: '드로어 크기 조정' },
+  'expression-input': {
+    content: '추천',
+    noMatches: '일치하는 항목 없음',
+    kindVariable: '변수',
+    kindFunction: '함수',
+    position: (line, column) => (line === null ? `${column}열` : `${line}행 ${column}열`),
+    issueRow: (position, message) => `${position}: ${message}`,
+    paramOrdinal: index => `인수 ${index}`,
+    issue: expressionIssueEnUS,
+    param: expressionParamEnUS,
+    functionDescription: expressionFunctionEnUS,
+  },
   'field-array': {
     deleteItem: (index, count) => `총 ${count}개 행 중 ${index}번째 행 삭제`,
     moveUpTrigger: (index, count) => `총 ${count}개 행 중 ${index}번째 행 위로 이동`,

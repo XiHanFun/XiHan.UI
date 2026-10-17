@@ -1,0 +1,24 @@
+<template>
+  <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="24.5" y="16.5" width="191" height="31" rx="2" fill="var(--xh-bg-field)" stroke="var(--xh-border-control)" />
+    <path d="M37 32h26" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M71 32h8" stroke="var(--xh-fg-muted)" stroke-width="6" />
+    <path d="M87 32h30" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M125 24v16" stroke="var(--xh-fg-default)" stroke-width="2" />
+    <g data-tone="danger">
+      <path d="M87 40l3 2l3-2l3 2l3-2l3 2l3-2l3 2l3-2l3 2l3-2" stroke="var(--xh-tone-fg)" stroke-width="1" />
+      <path d="M26 58h76" stroke="var(--xh-tone-fg)" stroke-width="4" />
+    </g>
+    <rect x="72.5" y="68.5" width="135" height="75" rx="4" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <rect x="81" y="76" width="16" height="12" rx="2" fill="var(--xh-bg-subtle-hover)" />
+    <path d="M105 82h30" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M161 82h36" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <rect x="73" y="94" width="134" height="24" fill="var(--xh-bg-subtle)" />
+    <rect x="81" y="100" width="16" height="12" rx="2" fill="var(--xh-bg-subtle-hover)" />
+    <path d="M105 106h42" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M169 106h28" stroke="var(--xh-fg-muted)" stroke-width="4" />
+    <rect x="81" y="124" width="16" height="12" rx="2" fill="var(--xh-bg-subtle-hover)" />
+    <path d="M105 130h24" stroke="var(--xh-fg-default)" stroke-width="6" />
+    <path d="M153 130h44" stroke="var(--xh-fg-muted)" stroke-width="4" />
+  </svg>
+</template>

@@ -61,6 +61,8 @@ const PUBLIC_EVENTS = {
   'root-key-change': 'onRootKeyChange',
   'source-open': 'onSourceOpen',
   'panel-size-change': 'onPanelSizeChange',
+  'issues-change': 'onIssuesChange',
+  'completion-select': 'onCompletionSelect',
 } as const
 
 const globals = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }

@@ -52,6 +52,7 @@ import { XhDownloadTriggerElement } from './elements/download-trigger'
 import { XhDrawerElement } from './elements/drawer'
 import { XhEditableElement } from './elements/editable'
 import { XhEmptyStateElement } from './elements/empty-state'
+import { XhExpressionInputElement } from './elements/expression-input'
 import { XhFieldBoundaryElement, XhFieldElement } from './elements/field'
 import { XhFieldArrayElement } from './elements/field-array'
 import { XhFieldsetElement } from './elements/fieldset'
@@ -173,6 +174,7 @@ const XH_ELEMENTS = {
   'xh-diff-view': XhDiffViewElement,
   'xh-download-trigger': XhDownloadTriggerElement,
   'xh-empty-state': XhEmptyStateElement,
+  'xh-expression-input': XhExpressionInputElement,
   'xh-field-array': XhFieldArrayElement,
   'xh-fieldset': XhFieldsetElement,
   'xh-flex': XhFlexElement,
@@ -390,6 +392,7 @@ export {
   XhDrawerElement,
   XhEditableElement,
   XhEmptyStateElement,
+  XhExpressionInputElement,
   XhFieldArrayElement,
   XhFieldBoundaryElement,
   XhFieldElement,

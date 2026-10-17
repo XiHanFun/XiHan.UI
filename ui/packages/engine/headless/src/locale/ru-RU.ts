@@ -8,6 +8,7 @@
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { KeyTextTable } from './key-text'
 import type { XhLocale, XhLocaleTranslations } from './types'
+import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 import { keyText } from './key-text'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -276,6 +277,18 @@ const translations = {
     commentOn: (line, side) => `Комментировать строку ${line} ${side === 'old' ? 'старой' : 'новой'} версии`,
   },
   'drawer': { close: 'Закрыть', resizeTrigger: 'Изменить размер выдвижной панели' },
+  'expression-input': {
+    content: 'Подсказки',
+    noMatches: 'Совпадений нет',
+    kindVariable: 'Переменная',
+    kindFunction: 'Функция',
+    position: (line, column) => (line === null ? `Столбец ${column}` : `Строка ${line}, столбец ${column}`),
+    issueRow: (position, message) => `${position}: ${message}`,
+    paramOrdinal: index => `аргумент ${index}`,
+    issue: expressionIssueEnUS,
+    param: expressionParamEnUS,
+    functionDescription: expressionFunctionEnUS,
+  },
   'field-array': {
     deleteItem: (index, count) => `Удалить строку ${index} из ${count}`,
     moveUpTrigger: (index, count) => `Переместить строку ${index} из ${count} вверх`,

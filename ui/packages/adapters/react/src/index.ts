@@ -1033,6 +1033,46 @@ export type {
 } from './components/empty-state/empty-state'
 export { useEmptyState } from './components/empty-state/use-empty-state'
 export type { EmptyStateContext } from './components/empty-state/use-empty-state'
+export { useExpressionInputContext, useExpressionInputItemContext } from './components/expression-input/context'
+export {
+  XhExpressionInputContent,
+  XhExpressionInputControl,
+  XhExpressionInputEmpty,
+  XhExpressionInputHighlight,
+  XhExpressionInputHighlightSegment,
+  XhExpressionInputInput,
+  XhExpressionInputIssue,
+  XhExpressionInputIssues,
+  XhExpressionInputItem,
+  XhExpressionInputItemDescription,
+  XhExpressionInputItemPrefix,
+  XhExpressionInputItemSuffix,
+  XhExpressionInputItemText,
+  XhExpressionInputLabel,
+  XhExpressionInputPositioner,
+  XhExpressionInputRoot,
+} from './components/expression-input/expression-input'
+export type {
+  ExpressionInputRootSlotProps,
+  XhExpressionInputContentProps,
+  XhExpressionInputControlProps,
+  XhExpressionInputEmptyProps,
+  XhExpressionInputHighlightProps,
+  XhExpressionInputHighlightSegmentProps,
+  XhExpressionInputInputProps,
+  XhExpressionInputIssueProps,
+  XhExpressionInputIssuesProps,
+  XhExpressionInputItemDescriptionProps,
+  XhExpressionInputItemPrefixProps,
+  XhExpressionInputItemProps,
+  XhExpressionInputItemSuffixProps,
+  XhExpressionInputItemTextProps,
+  XhExpressionInputLabelProps,
+  XhExpressionInputPositionerProps,
+  XhExpressionInputRootProps,
+} from './components/expression-input/expression-input'
+export { useExpressionInput } from './components/expression-input/use-expression-input'
+export type { ExpressionInputContext } from './components/expression-input/use-expression-input'
 export { useFieldArrayContext, useFieldArrayItemContext } from './components/field-array/context'
 export {
   XhFieldArrayAddTrigger,

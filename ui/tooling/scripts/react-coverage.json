@@ -44,6 +44,7 @@
     "drawer",
     "editable",
     "empty-state",
+    "expression-input",
     "field",
     "field-array",
     "fieldset",

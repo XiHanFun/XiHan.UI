@@ -25852,6 +25852,1066 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/expression-input.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-expression-input>`：表达式输入框。输入受限表达式，按检查函数即时报出问题，补全可引用的名字与函数。\n\n结构由元素按标准结构生成：作者什么都不写、或只写 root 时，元素铺出字段外框、输入框、镜像层、补全浮层与问题列表；\n补全条目、镜像层的分段与问题行随数据增删。写了 label 属性才铺标题，放进 `<xh-field>` 时名字由字段给。\n\n单行时输入框是 role=combobox，多行（multiline）时是 textarea，保持 textbox 角色、不写 aria-expanded；\n补全身份都经 aria-controls、aria-autocomplete 与 aria-activedescendant 上报，焦点始终在输入框上。",
+          "name": "XhExpressionInputElement",
+          "cssParts": [
+            {
+              "description": "组件根容器（承载 data-state、data-invalid 与三个视觉轴）",
+              "name": "root"
+            },
+            {
+              "description": "标题；`for` 恒指向输入框",
+              "name": "label"
+            },
+            {
+              "description": "字段视觉盒：描边与底色画在它上面",
+              "name": "control"
+            },
+            {
+              "description": "输入框：单行 `<input>` 或多行 `<textarea>`",
+              "name": "input"
+            },
+            {
+              "description": "叠在输入框下的镜像层，对读屏隐藏",
+              "name": "highlight"
+            },
+            {
+              "description": "镜像层里的一段；问题区间带 data-issue 与 data-severity，画成波浪下划线",
+              "name": "highlight-segment"
+            },
+            {
+              "description": "补全浮层的定位容器，坐标由引擎写为内联样式",
+              "name": "positioner"
+            },
+            {
+              "description": "role=listbox 的补全列表，收起时带 hidden",
+              "name": "content"
+            },
+            {
+              "description": "role=option 的一条补全",
+              "name": "item"
+            },
+            {
+              "description": "条目种类小标（变量 / 函数），对读屏隐藏",
+              "name": "item-prefix"
+            },
+            {
+              "description": "条目名字",
+              "name": "item-text"
+            },
+            {
+              "description": "名字后面的提示：函数是签名，如 IF(条件, 真值[, 假值])",
+              "name": "item-suffix"
+            },
+            {
+              "description": "条目的第 2 行说明",
+              "name": "item-description"
+            },
+            {
+              "description": "没有匹配的补全时显示的空态；与 content 同级",
+              "name": "empty"
+            },
+            {
+              "description": "问题列表（role=status），没有问题时带 hidden",
+              "name": "issues"
+            },
+            {
+              "description": "问题列表里的一行，如「第 3 列：未知的名字 amont」",
+              "name": "issue"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: expressionInputAnatomy, meta: expressionInputMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['input'], kind: 'state' }",
+              "type": {
+                "text": "{ parts: ['input'], kind: 'state' }"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhExpressionInputElement>"
+              },
+              "static": true,
+              "default": "{ takeover: EXPRESSION_INPUT_STRUCTURE_TAKEOVER, build: host => host.ctrl.service ? expressionInputStructure(connectExpressionInput(host.ctrl.service, wcNormalize), { label: host.label, multiline: host.multiline === true }) : undefined, }",
+              "description": "结构整棵随数据生成：作者什么都不写或只写 root。"
+            },
+            {
+              "kind": "field",
+              "name": "check",
+              "privacy": "public",
+              "type": {
+                "text": "ExpressionCheck | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "completions",
+              "privacy": "public",
+              "type": {
+                "text": "ExpressionCompletionSource | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "functions",
+              "privacy": "public",
+              "type": {
+                "text": "FunctionTable | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "autoSize",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | ExpressionInputAutoSize | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<ExpressionInputTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "multiline",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "multiline"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "checkDelay",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "check-delay"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "privacy": "public",
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "attribute": "placement"
+            },
+            {
+              "kind": "field",
+              "name": "offset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "offset"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "inputScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "positionEngine",
+              "type": {
+                "text": "PositionEnginePort"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyIssues",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifySelect",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyOpen",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "readonly": true,
+              "default": "new MachineController<ExpressionInputSchema>( this, expressionInputMachine, () => this.machineProps(), { scope: this.inputScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<ExpressionInputSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<ExpressionInputSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "insert",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "在光标处插入一段文本（替换选区），光标落在插入内容之后；例如宿主的「插入字段」按钮。"
+            },
+            {
+              "kind": "method",
+              "name": "focus",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "options",
+                  "optional": true,
+                  "type": {
+                    "text": "FocusOptions"
+                  }
+                }
+              ],
+              "description": "让输入框获得焦点。"
+            },
+            {
+              "kind": "method",
+              "name": "api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ExpressionInputApi | null"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "currentValue",
+              "type": {
+                "text": "string"
+              },
+              "description": "状态机此刻的值：受控时即作者给的 value，非受控时是输入框里的文字；状态机尚未建立时为空串。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "补全列表是否打开。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "items",
+              "type": {
+                "text": "readonly ExpressionInputItem[]"
+              },
+              "description": "光标处此刻的补全条目，按显示顺序排列。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "issues",
+              "type": {
+                "text": "readonly ExpressionInputIssueView[]"
+              },
+              "description": "最近一次检查报出的问题，带行列与说明文字；值改过、还没重新检查时为空数组。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "segments",
+              "type": {
+                "text": "readonly ExpressionInputSegment[]"
+              },
+              "description": "镜像层的分段：问题区间单独成段，带问题序号与严重度。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "emptyText",
+              "type": {
+                "text": "string"
+              },
+              "description": "没有匹配的补全时显示的文字。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "highlightedKey",
+              "type": {
+                "text": "string | null"
+              },
+              "description": "当前高亮的补全条目的键；没有高亮时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "kindText",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "kind",
+                  "type": {
+                    "text": "ExpressionCompletionKind"
+                  }
+                }
+              ],
+              "description": "条目种类的显示文字（变量 / 函数），随语言包。"
+            },
+            {
+              "kind": "method",
+              "name": "setValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "改写整段值；受控时只派 value-change，由宿主写回。"
+            },
+            {
+              "kind": "method",
+              "name": "close",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "收起补全列表，值不变。"
+            },
+            {
+              "kind": "method",
+              "name": "partsIn",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "owner",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "值变化；detail 为 `{ value: string }`",
+              "name": "value-change",
+              "type": {
+                "text": "ExpressionInputValueChangeDetails"
+              }
+            },
+            {
+              "description": "检查结果变了；detail 为 `{ issues }`",
+              "name": "issues-change",
+              "type": {
+                "text": "ExpressionInputIssuesChangeDetails"
+              }
+            },
+            {
+              "description": "接受了一条补全；detail 为 `{ completion }`",
+              "name": "completion-select",
+              "type": {
+                "text": "ExpressionInputCompletionSelectDetails"
+              }
+            },
+            {
+              "description": "补全开合；detail 为 `{ open: boolean }`",
+              "name": "open-change",
+              "type": {
+                "text": "ExpressionInputOpenChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "受控值；未提供该属性即非受控",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "非受控初值",
+              "name": "default-value",
+              "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字；提供后元素铺 label 部件",
+              "name": "label",
+              "fieldName": "label"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "多行：输入框是 textarea，位置说明带行号，补全浮层锚在光标处",
+              "name": "multiline",
+              "fieldName": "multiline"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "输入框占位文字",
+              "name": "placeholder",
+              "fieldName": "placeholder"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名",
+              "name": "name",
+              "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读：可聚焦、可复制，不能改值，补全不打开",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填标注",
+              "name": "required",
+              "fieldName": "required"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败标注；与检查报出的 error 取或",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "输入后多久检查，单位毫秒，缺省 150；失焦时立即检查",
+              "name": "check-delay",
+              "fieldName": "checkDelay"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "方向键到达末尾回绕，默认 true；写 loop=\"false\" 关闭",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "description": "首选放置位，默认 bottom-start",
+              "name": "placement",
+              "fieldName": "placement"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "浮层与锚点的间距（px）",
+              "name": "offset",
+              "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，翻转浮层在行内轴上 start 与 end 的落点",
+              "name": "dir",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "description": "形态，默认 outline",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
+          },
+          "tagName": "xh-expression-input",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-expression-input-content-backdrop"
+            },
+            {
+              "name": "--xh-expression-input-content-bg"
+            },
+            {
+              "name": "--xh-expression-input-content-border"
+            },
+            {
+              "name": "--xh-expression-input-content-fg"
+            },
+            {
+              "name": "--xh-expression-input-content-gap"
+            },
+            {
+              "name": "--xh-expression-input-content-highlight"
+            },
+            {
+              "name": "--xh-expression-input-content-max-h"
+            },
+            {
+              "name": "--xh-expression-input-content-max-w"
+            },
+            {
+              "name": "--xh-expression-input-content-min-w"
+            },
+            {
+              "name": "--xh-expression-input-content-px"
+            },
+            {
+              "name": "--xh-expression-input-content-py"
+            },
+            {
+              "name": "--xh-expression-input-content-radius"
+            },
+            {
+              "name": "--xh-expression-input-content-shadow"
+            },
+            {
+              "name": "--xh-expression-input-control-bg"
+            },
+            {
+              "name": "--xh-expression-input-control-bg-disabled"
+            },
+            {
+              "name": "--xh-expression-input-control-bg-hover"
+            },
+            {
+              "name": "--xh-expression-input-control-bg-readonly"
+            },
+            {
+              "name": "--xh-expression-input-control-border"
+            },
+            {
+              "name": "--xh-expression-input-control-border-focus"
+            },
+            {
+              "name": "--xh-expression-input-control-border-hover"
+            },
+            {
+              "name": "--xh-expression-input-control-border-invalid"
+            },
+            {
+              "name": "--xh-expression-input-control-fg"
+            },
+            {
+              "name": "--xh-expression-input-control-gap"
+            },
+            {
+              "name": "--xh-expression-input-control-h"
+            },
+            {
+              "name": "--xh-expression-input-control-min-w"
+            },
+            {
+              "name": "--xh-expression-input-control-px"
+            },
+            {
+              "name": "--xh-expression-input-control-radius"
+            },
+            {
+              "name": "--xh-expression-input-control-shadow"
+            },
+            {
+              "name": "--xh-expression-input-control-w"
+            },
+            {
+              "name": "--xh-expression-input-empty-fg"
+            },
+            {
+              "name": "--xh-expression-input-empty-font-size"
+            },
+            {
+              "name": "--xh-expression-input-empty-px"
+            },
+            {
+              "name": "--xh-expression-input-empty-py"
+            },
+            {
+              "name": "--xh-expression-input-gap"
+            },
+            {
+              "name": "--xh-expression-input-input-autofill-bg"
+            },
+            {
+              "name": "--xh-expression-input-input-autofill-fg"
+            },
+            {
+              "name": "--xh-expression-input-input-fg"
+            },
+            {
+              "name": "--xh-expression-input-input-font-size"
+            },
+            {
+              "name": "--xh-expression-input-input-max-h"
+            },
+            {
+              "name": "--xh-expression-input-issue-error-fg"
+            },
+            {
+              "name": "--xh-expression-input-issue-font-size"
+            },
+            {
+              "name": "--xh-expression-input-issue-warning-fg"
+            },
+            {
+              "name": "--xh-expression-input-issues-gap"
+            },
+            {
+              "name": "--xh-expression-input-item-bg-hover"
+            },
+            {
+              "name": "--xh-expression-input-item-bg-pressed"
+            },
+            {
+              "name": "--xh-expression-input-item-fg"
+            },
+            {
+              "name": "--xh-expression-input-item-font-size"
+            },
+            {
+              "name": "--xh-expression-input-item-gap"
+            },
+            {
+              "name": "--xh-expression-input-item-h"
+            },
+            {
+              "name": "--xh-expression-input-item-leading"
+            },
+            {
+              "name": "--xh-expression-input-item-prefix-fg"
+            },
+            {
+              "name": "--xh-expression-input-item-prefix-font-size"
+            },
+            {
+              "name": "--xh-expression-input-item-prefix-w"
+            },
+            {
+              "name": "--xh-expression-input-item-px"
+            },
+            {
+              "name": "--xh-expression-input-item-py"
+            },
+            {
+              "name": "--xh-expression-input-item-radius"
+            },
+            {
+              "name": "--xh-expression-input-item-suffix-fg"
+            },
+            {
+              "name": "--xh-expression-input-item-suffix-font-size"
+            },
+            {
+              "name": "--xh-expression-input-label-fg"
+            },
+            {
+              "name": "--xh-expression-input-label-font-size"
+            },
+            {
+              "name": "--xh-expression-input-label-font-weight"
+            },
+            {
+              "name": "--xh-expression-input-label-gap"
+            },
+            {
+              "name": "--xh-expression-input-layer"
+            },
+            {
+              "name": "--xh-expression-input-placeholder-fg"
+            },
+            {
+              "name": "--xh-expression-input-textarea-py"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhExpressionInputElement",
+          "declaration": {
+            "name": "XhExpressionInputElement",
+            "module": "src/elements/expression-input.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/field-array.ts",
       "declarations": [
         {
