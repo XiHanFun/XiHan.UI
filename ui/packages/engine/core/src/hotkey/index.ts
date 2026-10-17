@@ -231,11 +231,66 @@ function hitsMainKey(event: HotkeyEvent, key: string): boolean {
   return false
 }
 
+/** 符号键：单个可见字符，不是字母、数字与空格。 */
+function isSymbolKey(key: string): boolean {
+  return key.length === 1 && key !== ' ' && !/[a-z\d]/i.test(key)
+}
+
+/** 符号在美式键盘上所在的物理键（KeyboardEvent.code），本位与 Shift 位的字都列上。 */
+const SYMBOL_CODE: Record<string, string> = {
+  '`': 'Backquote',
+  '~': 'Backquote',
+  '-': 'Minus',
+  '_': 'Minus',
+  '=': 'Equal',
+  '+': 'Equal',
+  '[': 'BracketLeft',
+  '{': 'BracketLeft',
+  ']': 'BracketRight',
+  '}': 'BracketRight',
+  '\\': 'Backslash',
+  '|': 'Backslash',
+  ';': 'Semicolon',
+  ':': 'Semicolon',
+  '\'': 'Quote',
+  '"': 'Quote',
+  ',': 'Comma',
+  '<': 'Comma',
+  '.': 'Period',
+  '>': 'Period',
+  '/': 'Slash',
+  '?': 'Slash',
+  '!': 'Digit1',
+  '@': 'Digit2',
+  '#': 'Digit3',
+  '$': 'Digit4',
+  '%': 'Digit5',
+  '^': 'Digit6',
+  '&': 'Digit7',
+  '*': 'Digit8',
+  '(': 'Digit9',
+  ')': 'Digit0',
+}
+
+/**
+ * 符号键是否被按下。没写 Shift 时比 event.key，Shift 按没按下都算；写了 Shift 时要求按着 Shift，
+ * 按物理键位比（表里没有的符号仍比 event.key），按出来的字是什么不管。
+ */
+function hitsSymbolKey(event: HotkeyEvent, key: string, shift: boolean): boolean {
+  if (!shift)
+    return event.key === key
+  if (!event.shiftKey)
+    return false
+  const code = lookup(SYMBOL_CODE, key)
+  return code === undefined ? event.key === key : event.code === code
+}
+
 /**
  * 这次按键是不是恰好命中这组组合。
  *
- * 四个修饰键逐个全等比，不是「至少按了」：那样 Ctrl+Shift+S 会同时命中 Ctrl+S，
- * 两条快捷键就分不开了。组合里没有主键（只写了修饰键）或有两个主键时一律不命中——那种组合按不出来。
+ * 修饰键逐个全等比，不是「至少按了」：那样 Ctrl+Shift+S 会同时命中 Ctrl+S，
+ * 两条快捷键就分不开了。只有符号键的 Shift 另算，见 hitsSymbolKey。
+ * 组合里没有主键（只写了修饰键）或有两个主键时一律不命中——那种组合按不出来。
  */
 export function matchesHotkey(
   event: HotkeyEvent,
@@ -253,7 +308,10 @@ export function matchesHotkey(
     return false
   if (event.altKey !== modifiers.has('Alt'))
     return false
+  const main = mains[0]!.key
+  if (isSymbolKey(main))
+    return hitsSymbolKey(event, main, modifiers.has('Shift'))
   if (event.shiftKey !== modifiers.has('Shift'))
     return false
-  return hitsMainKey(event, mains[0]!.key)
+  return hitsMainKey(event, main)
 }

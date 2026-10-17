@@ -21,7 +21,7 @@
     "name": "core/hotkey",
     "path": "packages/engine/core/dist/hotkey.js",
     "gzip": true,
-    "limit": "1.1 kB"
+    "limit": "1.37 kB"
   },
   {
     "name": "core/url",
