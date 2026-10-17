@@ -163,9 +163,6 @@ export class XhFieldElement extends XhElement {
         control.setFieldWiring(undefined)
     }
     this.wiredControls = wired
-
-    // 错误文案常挂，非 invalid 时用内联 display 收起
-    this.setPartHidden(this.getPart('error-text'), !api.invalid)
   }
 
   override disconnectedCallback(): void {

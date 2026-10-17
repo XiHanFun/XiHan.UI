@@ -158,7 +158,8 @@ export class XhLogElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('viewport', api.getViewportProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
-    put('scroll-to-end-trigger', api.getScrollToEndTriggerProps() as Record<string, unknown>)
+    const triggerProps = api.getScrollToEndTriggerProps() as Record<string, unknown>
+    put('scroll-to-end-trigger', triggerProps)
     put('live-region', api.getLiveRegionProps() as Record<string, unknown>)
 
     // 多实例 part 逐个打，行有几条打几条；级别取作者写在节点上的 level
@@ -168,7 +169,7 @@ export class XhLogElement extends XhElement {
         this.#paintAnsi(el, api)
     }
 
-    // 除 hidden 属性外还写内联 display，压住作者层给该 part 声明的 display
-    this.setPartHidden(this.getPart('scroll-to-end-trigger'), !api.showScrollToEndTrigger)
+    // 除 hidden 属性外还写内联 display，压住作者层给该 part 声明的 display；收起时机与 connect 的 hidden 一致，退场播完才收
+    this.setPartHidden(this.getPart('scroll-to-end-trigger'), triggerProps.hidden === true)
   }
 }

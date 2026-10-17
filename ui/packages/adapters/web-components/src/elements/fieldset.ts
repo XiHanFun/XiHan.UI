@@ -135,10 +135,8 @@ export class XhFieldsetElement extends XhElement {
       this.spreader.spread(el, api.getFieldGroupProps() as Record<string, unknown>)
     for (const el of this.getParts('actions'))
       this.spreader.spread(el, api.getActionsProps() as Record<string, unknown>)
+    // 错误文案常挂，非 invalid 时由 connect 给的 hidden 属性收起
     put('error-text', api.getErrorTextProps() as Record<string, unknown>)
-
-    // 错误文案常挂，非 invalid 时用内联 display 收起（作者层的 display 会盖过 UA 的 [hidden] 规则）
-    this.setPartHidden(this.getPart('error-text'), !api.invalid)
   }
 
   /**
