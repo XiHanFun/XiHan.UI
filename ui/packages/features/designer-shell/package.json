@@ -69,6 +69,7 @@
     "@vitest/browser": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "@xihan-ui/build": "workspace:*",
+    "@xihan-ui/styles": "workspace:*",
     "@xihan-ui/testing": "workspace:*",
     "@xihan-ui/tokens": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",

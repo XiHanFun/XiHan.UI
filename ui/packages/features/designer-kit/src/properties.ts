@@ -7,8 +7,11 @@
 // 显示条件、分组、缺省值，以及自定义编辑器接口与编辑器查找。
 
 import type { JsonObject, JsonPath, JsonPrimitive, JsonValue } from '@xihan-ui/core/json'
+import type { FormatSpec } from '@xihan-ui/expression'
+import type { DataFieldKind } from './data-fields'
 import type { SchemaIssue, SchemaIssueTarget } from './schema'
-import { formatJsonPath, getJsonAt, isPlainObject, jsonEquals, setJsonAt } from '@xihan-ui/core/json'
+import { formatJsonPath, getJsonAt, isJsonPathText, isPlainObject, jsonEquals, setJsonAt } from '@xihan-ui/core/json'
+import { checkFormatSpec } from '@xihan-ui/expression'
 
 /** 选择类编辑方式的一项。 */
 export interface PropertyOption {
@@ -16,28 +19,43 @@ export interface PropertyOption {
   readonly label?: string
 }
 
+/** number 与 sides 共用的数值约束：integer 只收整数，min / max 含端点，exclusiveMin 不含，step 与 unit 只给编辑器用。 */
+export interface PropertyNumberConstraints {
+  readonly integer?: boolean
+  readonly min?: number
+  readonly max?: number
+  readonly exclusiveMin?: number
+  readonly step?: number
+  readonly unit?: string
+}
+
+/** sides 的四边，也是取值对象的四个键。 */
+export const PROPERTY_SIDES = ['top', 'right', 'bottom', 'left'] as const
+
+/** sides 的一边。 */
+export type PropertySide = (typeof PROPERTY_SIDES)[number]
+
+/** sides 的取值：四边各一个数字。 */
+export type PropertySides = Readonly<Record<PropertySide, number>>
+
 /**
  * 内建编辑方式与取值约束：
  * - text：字符串；multiline 为多行。
- * - number：有限数字；integer 只收整数，min / max 含端点，exclusiveMin 不含，step 与 unit 只给编辑器用。
+ * - number：有限数字，约束见 PropertyNumberConstraints。
  * - boolean：布尔。
  * - select：options 里某一项的 value；multiple 为这些 value 组成的数组。appearance 只给编辑器用：
  *   auto（缺省）由编辑器自己定，dropdown 总是下拉，toggle 总是切换按钮组。
  * - tags：字符串数组。
  * - color：transparent，或 # 开头的 3、4、6、8 位十六进制色。
  * - json：任意 JSON 值。
+ * - dataField：绑定的数据字段，取值是字段路径的 formatJsonPath 写法，空串为没有绑定。字段树由属性面板给出；
+ *   kinds 是能选的字段种类（缺省全部），base 是相对路径的起点（从字段树根开始、只含键，同 listDataFields），两者只给编辑器用。
+ * - sides：四边各一个数字的对象 { top, right, bottom, left }，每边都按 PropertyNumberConstraints 检查。
+ * - format：@xihan-ui/expression 的格式说明，按 checkFormatSpec 检查；kinds 是允许的格式种类，缺省全部。
  */
 export type PropertyControl
   = | { readonly kind: 'text', readonly multiline?: boolean, readonly placeholder?: string }
-    | {
-      readonly kind: 'number'
-      readonly integer?: boolean
-      readonly min?: number
-      readonly max?: number
-      readonly exclusiveMin?: number
-      readonly step?: number
-      readonly unit?: string
-    }
+    | ({ readonly kind: 'number' } & PropertyNumberConstraints)
     | { readonly kind: 'boolean' }
     | {
       readonly kind: 'select'
@@ -48,6 +66,9 @@ export type PropertyControl
     | { readonly kind: 'tags' }
     | { readonly kind: 'color' }
     | { readonly kind: 'json' }
+    | { readonly kind: 'dataField', readonly kinds?: readonly DataFieldKind[], readonly base?: JsonPath }
+    | ({ readonly kind: 'sides' } & PropertyNumberConstraints)
+    | { readonly kind: 'format', readonly kinds?: readonly FormatSpec['kind'][] }
 
 /** 内建编辑方式的种类。 */
 export type PropertyControlKind = PropertyControl['kind']
@@ -90,7 +111,7 @@ export interface PropertyGroup<D> {
 }
 
 /** 内建编辑方式的取值问题。 */
-export type PropertyValueIssueCode = 'invalid-type' | 'out-of-range' | 'not-integer' | 'invalid-option' | 'invalid-color'
+export type PropertyValueIssueCode = 'invalid-type' | 'invalid-value' | 'out-of-range' | 'not-integer' | 'invalid-option' | 'invalid-color' | 'unknown-key'
 
 /** 判断值是否已填写：undefined、null、空串、空数组与空对象视为未填写。 */
 export function isFilled(value: JsonValue | undefined): boolean {
@@ -176,22 +197,31 @@ export function groupProperties<D extends PropertyDescriptor<{ readonly kind: st
 
 const HEX_COLOR = /^#(?:[\da-f]{3,4}|[\da-f]{6}|[\da-f]{8})$/i
 
-/** 检查值是否符合内建编辑方式的约束；符合时为 undefined，否则给出问题码。 */
+/** 检查一个数字是否符合数值约束。 */
+function checkNumber(constraints: PropertyNumberConstraints, value: JsonValue | undefined): PropertyValueIssueCode | undefined {
+  if (typeof value !== 'number' || !Number.isFinite(value))
+    return 'invalid-type'
+  if (constraints.integer && !Number.isInteger(value))
+    return 'not-integer'
+  if ((constraints.min !== undefined && value < constraints.min)
+    || (constraints.max !== undefined && value > constraints.max)
+    || (constraints.exclusiveMin !== undefined && value <= constraints.exclusiveMin)) {
+    return 'out-of-range'
+  }
+  return undefined
+}
+
+/**
+ * 检查值是否符合内建编辑方式的约束；符合时为 undefined，否则给出问题码。
+ * dataField 不是路径写法报 invalid-value；sides 多出四边以外的键报 unknown-key，缺边或某边不是数字报 invalid-type；
+ * format 不是对象报 invalid-type，没过 checkFormatSpec 报 invalid-value。
+ */
 export function checkPropertyValue(control: PropertyControl, value: JsonValue): PropertyValueIssueCode | undefined {
   switch (control.kind) {
     case 'text':
       return typeof value === 'string' ? undefined : 'invalid-type'
     case 'number':
-      if (typeof value !== 'number' || !Number.isFinite(value))
-        return 'invalid-type'
-      if (control.integer && !Number.isInteger(value))
-        return 'not-integer'
-      if ((control.min !== undefined && value < control.min)
-        || (control.max !== undefined && value > control.max)
-        || (control.exclusiveMin !== undefined && value <= control.exclusiveMin)) {
-        return 'out-of-range'
-      }
-      return undefined
+      return checkNumber(control, value)
     case 'boolean':
       return typeof value === 'boolean' ? undefined : 'invalid-type'
     case 'select': {
@@ -211,11 +241,31 @@ export function checkPropertyValue(control: PropertyControl, value: JsonValue): 
       return value === 'transparent' || HEX_COLOR.test(value) ? undefined : 'invalid-color'
     case 'json':
       return undefined
+    case 'dataField':
+      if (typeof value !== 'string')
+        return 'invalid-type'
+      return value === '' || isJsonPathText(value) ? undefined : 'invalid-value'
+    case 'sides': {
+      if (!isPlainObject(value))
+        return 'invalid-type'
+      if (Object.keys(value).some(key => !(PROPERTY_SIDES as readonly string[]).includes(key)))
+        return 'unknown-key'
+      for (const side of PROPERTY_SIDES) {
+        const code = checkNumber(control, value[side])
+        if (code !== undefined)
+          return code
+      }
+      return undefined
+    }
+    case 'format':
+      if (!isPlainObject(value))
+        return 'invalid-type'
+      return checkFormatSpec(value, control.kinds === undefined ? {} : { kinds: control.kinds }).length === 0 ? undefined : 'invalid-value'
   }
 }
 
 /** 内建编辑方式的种类名；登记的新编辑方式不能与它们重名。 */
-export const BUILTIN_CONTROL_KINDS: readonly PropertyControlKind[] = ['text', 'number', 'boolean', 'select', 'tags', 'color', 'json']
+export const BUILTIN_CONTROL_KINDS: readonly PropertyControlKind[] = ['text', 'number', 'boolean', 'select', 'tags', 'color', 'json', 'dataField', 'sides', 'format']
 
 /** 新的编辑方式：属性描述里 control.kind 等于登记的键时，checkProperties 用它校验取值。 */
 export interface ControlKind {

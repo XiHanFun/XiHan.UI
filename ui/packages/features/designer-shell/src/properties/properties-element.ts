@@ -7,6 +7,7 @@
 // 都用 designer-kit/properties；多选时只显示共同属性。写入派发事件，由设计器换成编辑操作。
 
 import type { JsonPath, JsonValue } from '@xihan-ui/core/json'
+import type { DataField } from '@xihan-ui/designer-kit'
 import type { PropertyControl, PropertyDescriptor, PropertyEditor, PropertyEditorContext, PropertyEditorTable, PropertyOption } from '@xihan-ui/designer-kit/properties'
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { DesignerPropertiesTranslations } from '../translations'
@@ -18,9 +19,9 @@ import { createAuthoredElement, createGeneratedElement, emitEvent, setAttributes
 import { placeChildren } from '../internal/dom'
 import { adoptSlots } from '../internal/slots'
 import { definePropertyFieldElements } from '../internal/ui-elements'
-import { builtinEditor } from './editors'
+import { builtinEditor, PROPERTIES_SCOPE } from './editors'
 
-/** 属性描述，编辑方式可以是内建七种之外的产品种类。 */
+/** 属性描述，编辑方式可以是内建种类之外的产品种类。 */
 export type DesignerPropertyDescriptor = PropertyDescriptor<PropertyControl | { readonly kind: string }>
 
 /** 被编辑的对象：种类（用于按对象种类查编辑器）、id、对象本身与它的属性描述。 */
@@ -62,11 +63,15 @@ const DEFAULT_TRANSLATIONS: DesignerPropertiesTranslations = {
   belowMinimum: min => `Must be at least ${min}`,
   aboveMaximum: max => `Must be at most ${max}`,
   notAboveMinimum: min => `Must be greater than ${min}`,
+  invalidDataField: 'Not a valid field path',
+  sidesLinked: 'Same on all sides',
+  sides: { all: 'All sides', top: 'Top', right: 'Right', bottom: 'Bottom', left: 'Left' },
+  sidesIncomplete: 'Fill in all four sides',
 }
 
 const TAG = 'xh-designer-properties'
 /** 属性面板生成的部件都带这个 data-scope，样式只认它，不碰插槽与自定义编辑器里的作者内容。 */
-const SCOPE = 'designer-properties'
+const SCOPE = PROPERTIES_SCOPE
 /** 字段里接焦点的部件：输入框、触发钮、开关与切换组的条目；加减与清空钮不算。 */
 const FOCUSABLE = 'input:not([type="hidden"]), textarea, [role="switch"], [data-xh-part="trigger"], [data-xh-part="item"], [tabindex]:not([tabindex="-1"])'
 const NUMBER_CONVERTER = { fromAttribute: (value: string | null) => (value === null ? undefined : Number(value)) }
@@ -119,6 +124,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     hintOf: { attribute: false },
     optionLabel: { attribute: false },
     unitLabel: { attribute: false },
+    dataFields: { attribute: false },
     errors: { attribute: false },
     heading: { converter: STRING_CONVERTER },
     emptyText: { converter: STRING_CONVERTER, attribute: 'empty-text' },
@@ -142,8 +148,10 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
   declare hintOf: ((descriptor: DesignerPropertyDescriptor) => string | undefined) | undefined
   /** select 选项的文案，缺省取 option.label，再缺省取值本身。 */
   declare optionLabel: ((descriptor: DesignerPropertyDescriptor, option: PropertyOption) => string) | undefined
-  /** number 后缀的单位文案，缺省原样显示。 */
+  /** number 与 sides 后缀的单位文案，缺省原样显示。 */
   declare unitLabel: ((unit: string) => string) | undefined
+  /** dataField 选字段用的字段树；不给时 dataField 是输入字段路径的文本框。 */
+  declare dataFields: readonly DataField[] | undefined
   /** 落在字段上的错误。 */
   declare errors: readonly DesignerPropertyError[] | undefined
   /** 标题下一行，如「表格 · t1」。 */
@@ -371,13 +379,22 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
   #editorKey(kind: string, descriptor: DesignerPropertyDescriptor): { key: string, editor: DesignerPropertyEditor | undefined } {
     const editor = this.editors ? resolvePropertyEditor(this.editors, kind, descriptor) : undefined
     if (!editor)
-      return { key: `builtin:${JSON.stringify(descriptor.control)}:${descriptor.control.kind === 'select' ? this.toggleLimit ?? 0 : ''}`, editor }
+      return { key: `builtin:${JSON.stringify(descriptor.control)}:${this.#builtinVariant(descriptor.control.kind)}`, editor }
     let id = this.#editorIds.get(editor)
     if (id === undefined) {
       id = ++this.#editorCount
       this.#editorIds.set(editor, id)
     }
     return { key: `editor:${id}`, editor }
+  }
+
+  /** 内建编辑器的元素随面板设置而变的那部分：select 看 toggle-limit，dataField 看有没有字段树。 */
+  #builtinVariant(kind: string): string {
+    if (kind === 'select')
+      return String(this.toggleLimit ?? 0)
+    if (kind === 'dataField')
+      return this.dataFields === undefined ? 'path' : 'tree'
+    return ''
   }
 
   #row(kind: string, descriptor: DesignerPropertyDescriptor, targets: readonly DesignerPropertyTarget[]): Row {
@@ -404,6 +421,11 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     if (builtin) {
       const created: FieldInstance = builtin(this.#context(row, targets))
       Object.assign(row, { control: created })
+      if (created.group) {
+        setAttributes(element, { 'role': 'group', 'aria-labelledby': label.id })
+        element.append(label, created.element, hint, error)
+        return row
+      }
       this.#placeInField(row, created.element)
       return row
     }
@@ -463,6 +485,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
       optionLabel: option => this.optionLabel?.(descriptor, option) ?? option.label ?? String(option.value),
       unitLabel: unit => this.unitLabel?.(unit) ?? unit,
       toggleLimit: this.toggleLimit ?? 0,
+      dataFields: this.dataFields,
       setValue: (value) => {
         if (!this.readonly)
           emitEvent(this, 'property-change', { path: descriptor.path, value, targets: refs, merge })

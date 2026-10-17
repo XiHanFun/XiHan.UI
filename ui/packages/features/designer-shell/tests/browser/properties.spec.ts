@@ -133,6 +133,7 @@ describe('属性面板的数字约束（Chromium）', () => {
       '<div data-part="property" role="group"><div data-part="property-line"><span data-part="property-label" data-required>l</span>',
       '<span data-control="unsupported">u</span></div><p data-part="property-hint">i</p><p data-part="property-error">x</p></div>',
       '<div data-json><textarea>{}</textarea></div>',
+      '<div data-part="sides" data-linked><div data-part="sides-fields">s</div></div>',
     ].join('')
     panel = document.createElement('xh-designer-properties')
     panel.editors = { byControl: {
@@ -153,7 +154,7 @@ describe('属性面板的数字约束（Chromium）', () => {
 
     const custom = panel.querySelector('[data-control="custom"]')!
     const planted = [header, custom.firstElementChild!].flatMap(root => Array.from(root.querySelectorAll<HTMLElement>('[data-part], [data-control], [data-json], textarea')))
-    expect(planted).toHaveLength(30)
+    expect(planted).toHaveLength(34)
     for (const element of planted) {
       const style = getComputedStyle(element)
       const parent = getComputedStyle(element.parentElement!)

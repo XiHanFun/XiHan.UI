@@ -142,6 +142,25 @@
     font-family: var(--xh-font-family-mono);
   }
 
+  /* 四边：开关在上，下面四边相同时一个数字框，分开时两列四个，框铺满所在的格 */
+  xh-designer-properties [data-scope='designer-properties'][data-part='sides'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-space-2);
+  }
+
+  xh-designer-properties [data-scope='designer-properties'][data-part='sides-fields'] {
+    --xh-number-field-control-w: 100%;
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--xh-space-2);
+  }
+
+  xh-designer-properties [data-scope='designer-properties'][data-part='sides'][data-linked] > [data-scope='designer-properties'][data-part='sides-fields'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   /* —— 问题列表 —— */
 
   xh-designer-issues {

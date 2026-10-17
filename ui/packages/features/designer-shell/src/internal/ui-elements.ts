@@ -11,6 +11,7 @@ import {
   XhColorFieldElement,
   XhContextMenuElement,
   XhFieldElement,
+  XhFormatInputElement,
   XhIconElement,
   XhNumberFieldElement,
   XhSelectElement,
@@ -21,6 +22,7 @@ import {
   XhTextFieldElement,
   XhToggleGroupElement,
   XhToolbarElement,
+  XhTreeSelectElement,
 } from '@xihan-ui/web-components/define'
 
 /** 属性面板的字段与分组用到的元素。 */
@@ -34,6 +36,8 @@ export function definePropertyFieldElements(): void {
   defineXhElement('xh-tags-input', XhTagsInputElement)
   defineXhElement('xh-color-field', XhColorFieldElement)
   defineXhElement('xh-toggle-group', XhToggleGroupElement)
+  defineXhElement('xh-tree-select', XhTreeSelectElement)
+  defineXhElement('xh-format-input', XhFormatInputElement)
   defineXhElement('xh-accordion', XhAccordionElement)
 }
 
