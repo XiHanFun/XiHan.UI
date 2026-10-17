@@ -7,6 +7,7 @@
 
 export { glideBy, glideFrom, INSTANT_ATTR, STAGGER_CAP, STAGGER_INDEX_PROPERTY, trackAppearance, trackArrivals, trackListMotion, trackReorder } from './arrival'
 export type { TrackAppearanceOptions, TrackArrivalsOptions, TrackListMotionOptions, TrackReorderOptions } from './arrival'
+export { caretClientRect } from './caret/caret-rect'
 export { cascadeState, cascadeToggle, collapseChecked } from './collection/cascade'
 export type { CascadeNodeLike, CascadeState, CascadeStrategy } from './collection/cascade'
 export { readDirection } from './collection/direction'

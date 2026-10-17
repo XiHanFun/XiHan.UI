@@ -84,6 +84,7 @@ export type { ActionVariant, Cleanup, ControlVariant, Dict, Direction, Disposabl
 export { toCleanup } from './types'
 
 // 端口类型
+export type { ExpressionCheck, ExpressionCompletion, ExpressionCompletionKind, ExpressionCompletionQuery, ExpressionCompletionSource, ExpressionInputIssue } from './types/expression-input'
 export type { CodeToken, CodeTokenKind, HighlighterPort } from './types/highlighter'
 export type { IconNode, IconRecord, IconTag } from './types/icon'
 export type {

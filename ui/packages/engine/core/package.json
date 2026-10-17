@@ -91,15 +91,19 @@
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
-    "test": "vitest run && node tests/production/run-machine-implementation-contract.mjs"
+    "test": "vitest run && node tests/production/run-machine-implementation-contract.mjs",
+    "test:browser": "vitest run --config vitest.browser.config.ts"
   },
   "dependencies": {
     "@xihan-ui/motion": "workspace:^"
   },
   "devDependencies": {
+    "@vitest/browser": "catalog:",
+    "@vitest/browser-playwright": "catalog:",
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
     "jsdom": "catalog:",
+    "playwright": "catalog:",
     "vitest": "catalog:"
   }
 }

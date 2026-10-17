@@ -330,6 +330,21 @@ stick.retarget(); // 节点更换后解绑重绑
 
 会话线程组件使用的就是它。
 
+## 光标矩形
+
+浮层要贴着输入框里的光标弹出时（如表达式补全），把光标矩形当作虚拟锚点：
+
+```ts
+import { caretClientRect } from "@xihan-ui/core";
+
+const anchor = {
+  getBoundingClientRect: () =>
+    caretClientRect(textarea, textarea.selectionEnd ?? 0) ?? textarea.getBoundingClientRect(),
+};
+```
+
+矩形是视口坐标，宽度为 0，纵向是光标所在那一行，已经扣掉输入框自己的滚动。`<textarea>` 按当前内容宽度软换行，`<input>` 取内容区里居中的那一行。元素不在文档里或没有布局时返回 `null`。
+
 ## 其他
 
 | 导出 | 用途 |
