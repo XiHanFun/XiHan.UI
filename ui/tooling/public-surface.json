@@ -12233,6 +12233,7 @@
       "defaultOpen",
       "onOpenChange",
       "open",
+      "parts",
       "tone",
       "translations"
     ],

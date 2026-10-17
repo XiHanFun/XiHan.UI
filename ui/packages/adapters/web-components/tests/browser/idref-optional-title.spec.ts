@@ -9,7 +9,7 @@ import { wcSuites } from '../suites'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-const COMPONENTS = ['dialog', 'drawer', 'popover', 'popconfirm']
+const COMPONENTS = ['dialog', 'drawer', 'popover', 'popconfirm', 'alert']
 
 /** 挂载时要先展开的组件：收起时内容不渲染，部件也就无从登记。 */
 const OPEN_PROPS: Record<string, Record<string, unknown>> = {

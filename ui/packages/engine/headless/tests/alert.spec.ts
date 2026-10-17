@@ -345,3 +345,21 @@ describe('横幅', () => {
     a.stop()
   })
 })
+
+describe('alert 只引用在场的标题与说明', () => {
+  const host = (props: Props): Record<string, unknown> => makeAlert(props).api().getRootProps() as Record<string, unknown>
+
+  it('省略 parts 按都在场：引用 title 与 description 的 id', () => {
+    const api = makeAlert({}).api()
+    const props = api.getRootProps() as Record<string, unknown>
+    expect(props['aria-labelledby']).toBe((api.getTitleProps() as Record<string, unknown>).id)
+    expect(props['aria-describedby']).toBe((api.getDescriptionProps() as Record<string, unknown>).id)
+  })
+
+  it('标题不在场时不写 aria-labelledby，说明不在场时不写 aria-describedby，两项各管各的', () => {
+    expect(host({ parts: { title: false, description: true } })['aria-labelledby']).toBeUndefined()
+    expect(host({ parts: { title: false, description: true } })['aria-describedby']).toBeTypeOf('string')
+    expect(host({ parts: { title: true, description: false } })['aria-labelledby']).toBeTypeOf('string')
+    expect(host({ parts: { title: true, description: false } })['aria-describedby']).toBeUndefined()
+  })
+})
