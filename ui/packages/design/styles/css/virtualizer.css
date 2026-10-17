@@ -31,6 +31,13 @@
     overflow: hidden;
   }
 
+  /* 随整页滚动或滚可滚动的祖先：根不裁。裁了它就成了吸附的参照容器，列表里 sticky 的格子（冻结列）钉不住，
+     横向溢出的行也被切掉 */
+  [data-scope='virtualizer'][data-part='root'][data-scroll-container='window'],
+  [data-scope='virtualizer'][data-part='root'][data-scroll-container='ancestor'] {
+    overflow: visible;
+  }
+
   /* 真正滚动的那层。滚动能力一点不减——键盘（PageUp/PageDown、方向键、Home/End）
      与滚轮走的都还是浏览器原生通路，组件只是跟着滚动量换一批该渲的下标。 */
   [data-scope='virtualizer'][data-part='viewport'] {
@@ -54,8 +61,9 @@
     overflow-y: hidden;
   }
 
-  /* 随整页滚动：这层不再是滚动容器，高度随内容撑开，两向都不裁 */
-  [data-scope='virtualizer'][data-part='viewport'][data-scroll-container='window'] {
+  /* 随整页滚动或滚可滚动的祖先：这层不再是滚动容器，高度随内容撑开，两向都不裁 */
+  [data-scope='virtualizer'][data-part='viewport'][data-scroll-container='window'],
+  [data-scope='virtualizer'][data-part='viewport'][data-scroll-container='ancestor'] {
     block-size: auto;
     overflow-x: visible;
     overflow-y: visible;

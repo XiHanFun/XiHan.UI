@@ -248,6 +248,9 @@
 
     display: flex;
     align-items: stretch;
+    /* 行不窄于自己那排格子：装在虚拟条目里时，条目随表体宽、不随列宽，行照样和表头一样宽，
+       冻结格的吸附范围（它的包含块就是行）才盖得住整段横向滚动 */
+    min-inline-size: max-content;
     padding: 0;
     border-radius: 0;
     /* 文字度量归单元格，行不给行高 */

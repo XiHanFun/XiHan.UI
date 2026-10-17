@@ -32,8 +32,11 @@ export const VIRTUALIZER_SCROLL_IDLE_DELAY = 150
 /** 条目节点自报下标用的属性，内核按它反查节点是第几条。 */
 export const VIRTUALIZER_INDEX_ATTRIBUTE = 'data-index'
 
-/** 滚动容器：视口节点自己滚，或者列表铺在页面里、随窗口滚。 */
-export type VirtualizerScrollContainer = 'viewport' | 'window'
+/**
+ * 滚动容器：视口节点自己滚；列表铺在页面里、随窗口滚；或者滚视口最近的、在主轴上可滚动的祖先
+ * （表格根节点自己滚，表头、冻结列与行在同一个滚动面里），找不到这样的祖先时随窗口滚。
+ */
+export type VirtualizerScrollContainer = 'viewport' | 'window' | 'ancestor'
 
 /** 内容增减时钉住哪一头：start 钉住视口里第一条，end 在已经滚到底时继续贴底（聊天流）。 */
 export type VirtualizerAnchor = 'start' | 'end'
@@ -53,7 +56,7 @@ export interface VirtualizerKernelOptions extends VirtualizerMetrics {
   stickyIndices?: readonly number[]
   /**
    * 惰性取视口节点：适配器提交完这一帧节点才存在。
-   * viewport 形态下它就是滚动容器；window 形态下只用来量列表在页面里的起点。
+   * viewport 形态下它就是滚动容器；window 与 ancestor 形态下只用来找滚动容器、量列表在里面的起点。
    */
   getScrollElement: () => HTMLElement | null
   /** 惰性取撑出总长的那层：它长高之后，被浏览器夹住的滚动写回才能补上。 */
@@ -165,6 +168,42 @@ function windowTarget(win: Window, list: HTMLElement, horizontal: boolean): Scro
         win.removeEventListener('scroll', onScroll)
         win.removeEventListener('resize', onResize)
       }
+    },
+  }
+}
+
+/** 在主轴上能滚动的 overflow 取值；hidden 与 clip 不接用户滚动，不算。 */
+const SCROLLABLE_OVERFLOW = new Set(['auto', 'scroll', 'overlay'])
+
+/** 视口最近的、在主轴上可滚动的祖先；一路到 body 都没有就是 null（随窗口滚）。 */
+function scrollableAncestor(el: HTMLElement, horizontal: boolean, win: Window): HTMLElement | null {
+  const doc = win.document
+  for (let node = el.parentElement; node && node !== doc.body && node !== doc.documentElement; node = node.parentElement) {
+    const style = win.getComputedStyle(node)
+    if (SCROLLABLE_OVERFLOW.has(horizontal ? style.overflowX : style.overflowY))
+      return node
+  }
+  return null
+}
+
+/**
+ * 祖先形态：列表铺在一个可滚动的祖先里，滚的是那个祖先，视口本身不滚。
+ * 可视区取祖先的内容区（不含边框与滚动条）；列表起点每次现量：祖先里排在列表前面的内容（吸顶表头）会变高变矮。
+ */
+function ancestorTarget(container: HTMLElement, list: HTMLElement, horizontal: boolean, scope: Scope): ScrollTarget {
+  const base = elementTarget(container, horizontal, scope)
+  return {
+    ...base,
+    viewport: () => ({ width: Math.round(container.clientWidth), height: Math.round(container.clientHeight) }),
+    listStart: () => {
+      if (!list.isConnected || !container.isConnected)
+        return 0
+      const listRect = list.getBoundingClientRect()
+      const boxRect = container.getBoundingClientRect()
+      const start = horizontal
+        ? listRect.left - boxRect.left - container.clientLeft + container.scrollLeft
+        : listRect.top - boxRect.top - container.clientTop + container.scrollTop
+      return Math.max(0, Math.round(start))
     },
   }
 }
@@ -452,9 +491,14 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
     const el = options.getScrollElement()
     if (!el)
       return null
-    if ((options.scrollContainer ?? 'viewport') === 'window')
-      return target && target.node === scope.getWin() ? target : windowTarget(scope.getWin(), el, options.horizontal)
-    return target && target.node === el ? target : elementTarget(el, options.horizontal, scope)
+    const mode = options.scrollContainer ?? 'viewport'
+    const win = scope.getWin()
+    if (mode === 'viewport')
+      return target && target.node === el ? target : elementTarget(el, options.horizontal, scope)
+    const container = mode === 'ancestor' ? scrollableAncestor(el, options.horizontal, win) : null
+    if (!container)
+      return target && target.node === win ? target : windowTarget(win, el, options.horizontal)
+    return target && target.node === container ? target : ancestorTarget(container, el, options.horizontal, scope)
   }
 
   function indexFromElement(el: HTMLElement): number | null {

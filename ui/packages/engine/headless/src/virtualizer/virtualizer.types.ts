@@ -37,6 +37,11 @@ export interface CollectionVirtualizer {
   focusIndex: (index: number, options: CollectionVirtualizerFocusOptions) => void
   /** Web Components 跨 Light-DOM 宿主接线使用：每个虚拟外壳内恰好一个语义集合条目根。 */
   getRenderedItemRoots: () => readonly HTMLElement[]
+  /**
+   * 滚动面在哪：viewport 是视口自己滚，window 随整页滚，ancestor 滚视口最近的可滚动祖先。
+   * 组合组件据此判断滚动面是不是落在自己身上；自己实现这份协议时可以不给。
+   */
+  scrollContainer?: VirtualizerScrollContainer
   /** 实际滚动视口。组合组件的自绘滚动条通过它接管 Virtualizer 的滚动层。 */
   getViewportElement: () => HTMLElement | null
   /**
@@ -107,11 +112,12 @@ export interface VirtualizerSchema extends MachineSchema {
     paddingEnd?: number
     /** 多列网格的列数，默认 1（单列）。条目按下标轮流落到各列上。 */
     lanes?: number
-    /** viewport 的 Tab 位；独立列表默认 0，组合进有自身焦点模型的集合时设为 -1。window 形态下视口不滚动，不占 Tab 位。 */
+    /** viewport 的 Tab 位；独立列表默认 0，组合进有自身焦点模型的集合时设为 -1。window 与 ancestor 形态下视口不滚动，不占 Tab 位。 */
     viewportTabIndex?: number
     /**
-     * 滚动容器：viewport（缺省）是视口节点自己滚；window 是列表铺在页面里、随整页滚动，
-     * 列表在页面里的起点由内核现量，不必再给 scrollMargin。
+     * 滚动容器：viewport（缺省）是视口节点自己滚；window 是列表铺在页面里、随整页滚动；
+     * ancestor 滚视口最近的、在主轴上可滚动的祖先（computed overflow 为 auto / scroll / overlay），找不到时随整页滚。
+     * 后两种形态下列表在滚动容器里的起点由内核现量，不必再给 scrollMargin。
      */
     scrollContainer?: VirtualizerScrollContainer
     /**

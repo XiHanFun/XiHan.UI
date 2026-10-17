@@ -63,7 +63,7 @@ function wantsMeasure(el: HTMLElement): boolean {
  * @attr {number} padding-start - 列表前内边距（px），默认 0
  * @attr {number} padding-end - 列表后内边距（px），默认 0
  * @attr {number} lanes - 多列网格的列数，默认 1
- * @attr {'viewport'|'window'} scroll-container - 滚动容器：viewport（默认）是视口自己滚，window 是列表铺在页面里随整页滚
+ * @attr {'viewport'|'window'|'ancestor'} scroll-container - 滚动容器：viewport（默认）是视口自己滚，window 是列表铺在页面里随整页滚，ancestor 滚视口最近的可滚动祖先（找不到时随整页滚）
  * @attr {'start'|'end'} anchor - 条目增删时钉住哪一头；end 从底部看起、贴底时继续贴底，默认 start
  * @fires range-change - 应渲染的区间变化；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }`
  * @csspart root - 组件根容器，承载 data-orientation 与 data-scrolling

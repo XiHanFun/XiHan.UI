@@ -30,12 +30,12 @@
 - 横向滚过之后，冻结列与滚动区之间只在确有内容被压住时出现一道描边：行首冻结列滚离起始端后画在紧挨滚动区那一列的行尾侧，行尾冻结列没滚到末端时画在它的行首侧（`data-frozen-edge` 标出那一列，`root` 以 `data-at-min-horizontal` / `data-at-max-horizontal` 报两端）。滚动容器是 `root` 自己；放进滚动区的表格不画这道边界。
 - 行换位（拖放与 Alt + 方向键）提交之后，宿主按 `ids` 重排的那一次里行从旧位置滑到新位置，详情行随它的数据行一起走；落点线取品牌实心色，与树、排序同一种。
 - 冻结列不必都写数字宽度：同侧多列冻结时，数字宽度直接累加，其余（没写、百分比、`fr`）取挂载后实测的列头宽度；量到之前那一侧从该列起暂时贴边。
-- 行数很大时只渲染窗口内的行：把[虚拟滚动](./virtualizer)的 `collectionVirtualizer` 交给 `virtualizer`，表体里放它的视口，每个虚拟条目装一行数据行（`count` 等于可见数据行的条数，展开的详情行跟在同一个条目里）。行号与 `aria-rowcount` 照旧按完整行序报；上下键与 Home / End 按完整行序求落点，落点不在窗口里时先把它滚进来再交焦点。窗口外的行没有落点，接上后行拖动换位不可用（`rowReorderDisabledReason` 为 `virtualized`）。Web Components 下行隔着一层 `xh-virtualizer`，行节点写 `data-xh-part-owner="table"` 归表格。
+- 行数很大时只渲染窗口内的行：把[虚拟滚动](./virtualizer)的 `collectionVirtualizer` 交给 `virtualizer`，虚拟滚动写 `scrollContainer="ancestor"`，表体里放它的视口（不定高），每个虚拟条目装一行数据行（`count` 等于可见数据行的条数，展开的详情行跟在同一个条目里）。行号与 `aria-rowcount` 照旧按完整行序报；上下键与 Home / End 按完整行序求落点，落点不在窗口里时先把它滚进来再交焦点。窗口外的行没有落点，接上后行拖动换位不可用（`rowReorderDisabledReason` 为 `virtualized`）。Web Components 下行隔着一层 `xh-virtualizer`，行节点写 `data-xh-part-owner="table"` 归表格。表格根节点保留皮肤给的限高与滚动，表头吸顶、冻结列、横向溢出与行都在这一个滚动面里，列宽之和超过容器时表头与行照样对齐；视口不滚动，也就不占 Tab 位。表体里的视口自己滚时，表头与冻结列落在另一个滚动面上，开发模式下会提醒一次。
 - 树形表（行声明了 `parentId`）按展开展平后的可见行渲染：Vue 与 React 从插槽载荷的 `visibleRows` 读，Web Components 从元素的只读属性 `visibleRows` 读，收起的父行底下的子行不在其中；`rowNumber(行 id)` 给出大纲编号，`isExpanded(行 id)` 查展开态，展开集合变化（`expanded-value-change`）后按新的可见行重铺表体。
 - 树形表（行声明了 `parentId`）在 `multiple` 下可以打开 `cascade` 级联勾选，与[树](./tree)的 `cascade` 同一套算法：勾父行整枝传导，子行全勾上父行跟着勾中，勾了一部分的父行把手显示半选（`data-indeterminate`），禁用行的子树整棵冻结。对外值按 `checkedStrategy` 收敛，缺省 `child` 只收叶行；`parent` 收到最高的整枝，`all` 收全部勾中的行。全选的基数是够得着的叶行，禁用子树冻结着的父行不妨碍全选把手勾满。级联下不接 Shift 范围选。
 - 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐接出：设置区按 `columnSettings` 渲染，隐藏的列也包含在内。两块都放在 `root` 之外：`root` 是 grid 系角色，子节点只能是行与行组。
 - 行主操作 `onAction`（事件名 `action`）：指针主键点在数据行上时报 `{ value: 行 id, column: 点中那一格的列 id }`（纵向合并格算它的起点行），焦点停在行上按 Enter 时 `column` 为 null，用来下钻或把表格当联动源。点在行内的交互控件与表格自己的把手上、行拖动松手的那一次点击、禁用行、详情行、表头与脚注都不触发；选中、展开与 Space 不受影响，点行本身不选中。
-- 表尾可以有多行：`footerRows` 声明表尾行数，行号空间的最后几行留给它们，每一行表尾写明 `level`（与多级表头同一写法，只有一行时可省）；`aria-rowcount` 把它们都计入。`stickyFooter` 把表尾钉在滚动容器的下沿（`data-fixed`），与 `stickyHeader` 对称，滚动之后总计行仍看得见；接了虚拟滚动时滚动在表体的视口里，表尾本来就常驻在视口之外。
+- 表尾可以有多行：`footerRows` 声明表尾行数，行号空间的最后几行留给它们，每一行表尾写明 `level`（与多级表头同一写法，只有一行时可省）；`aria-rowcount` 把它们都计入。`stickyFooter` 把表尾钉在滚动容器的下沿（`data-fixed`），与 `stickyHeader` 对称，滚动之后总计行仍看得见；接了虚拟滚动、滚动面在根节点上时同样钉在根的下沿。
 - 三种非条目相位各有部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。取下一页按钮的行为由作者决定，取数在途时自动停用。
 - 在途分两种：表体为空时 `loading` 占位露面，一枚加载环排在文案之前；已有行时重新取数（排序、翻页、筛选）不换成占位，表体与表尾原样保留、照常可操作，不淡化（淡到禁用透明度会把文字压到 4.5:1 以下）。两种都由 `root` 报告 `aria-busy`。
 

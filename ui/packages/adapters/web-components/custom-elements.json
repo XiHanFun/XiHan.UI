@@ -78407,7 +78407,7 @@
               "type": {
                 "text": "VirtualizerScrollContainer | undefined"
               },
-              "description": "滚动容器：viewport（默认）是视口自己滚，window 是列表铺在页面里随整页滚",
+              "description": "滚动容器：viewport（默认）是视口自己滚，window 是列表铺在页面里随整页滚，ancestor 滚视口最近的可滚动祖先（找不到时随整页滚）",
               "name": "scroll-container",
               "fieldName": "scrollContainer"
             },
