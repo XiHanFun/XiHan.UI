@@ -71354,6 +71354,33 @@
             },
             {
               "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
               "name": "disallowEmpty",
               "privacy": "public",
               "type": {
@@ -71495,15 +71522,15 @@
                   }
                 }
               ],
-              "description": "最近的 Field 或 Form 只交状态；ToggleGroup 仅消费公开的禁用轴。"
+              "description": "最近的 Field 或 Form 只交状态；ToggleGroup 消费公开的禁用、只读、必填与无效四轴。"
             },
             {
               "kind": "method",
-              "name": "disabledState",
+              "name": "controlState",
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "boolean"
+                  "text": "ReturnType<typeof resolveFormControlState>"
                 }
               }
             },
@@ -71636,6 +71663,30 @@
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "只读：条目仍可聚焦、方向键照常走，不能改选中",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败标注：单选组写 aria-invalid，多选只写 data-invalid",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填：单选组写 aria-required，表单影子写原生 required",
+              "name": "required",
+              "fieldName": "required"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
               "description": "不允许清空值（最后一个选中项不可移除）",
               "name": "disallow-empty",
               "fieldName": "disallowEmpty"
@@ -71728,6 +71779,9 @@
           "tagName": "xh-toggle-group",
           "customElement": true,
           "cssProperties": [
+            {
+              "name": "--xh-toggle-group-border-invalid"
+            },
             {
               "name": "--xh-toggle-group-item-bg"
             },

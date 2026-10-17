@@ -69,7 +69,7 @@ export const toggleGroupMachine = createMachine({
   initialState: () => 'idle',
   // 按住途中整组转入禁用：不会再来 keyup，按压面由机器自己收
   watch: ({ track, prop, action }) => {
-    track([() => prop('disabled')], () => action(['releaseWhenInert']))
+    track([() => prop('disabled'), () => prop('readOnly')], () => action(['releaseWhenInert']))
   },
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
@@ -79,7 +79,11 @@ export const toggleGroupMachine = createMachine({
       on: {
         'VALUE.SET': { actions: ['setValue'] },
         // 激活顺带把锚点搬过来，下次 Tab 进组落在刚点过的那个条目上
-        'ITEM.TOGGLE': { actions: ['toggleItem', 'setFocusedValue'] },
+        'ITEM.TOGGLE': [
+          { guard: 'canToggle', actions: ['toggleItem', 'setFocusedValue'] },
+          // 只读也记锚点：点过的条目仍是下次 Tab 进组的落点
+          { actions: ['setFocusedValue'] },
+        ],
         'ITEM.FOCUS': { actions: ['setFocusedValue'] },
         'GROUP.BLUR': { actions: ['clearFocusedValue'] },
         // 按压通道：条目按 value 记按住的那一个；整组禁用不进，条目自身的禁用由 connect 判定后随事件带入
@@ -90,11 +94,13 @@ export const toggleGroupMachine = createMachine({
   },
   implementations: {
     guards: {
-      // 整组禁用一票否决；条目自身的禁用随事件带入
+      // 整组禁用或只读一票否决；条目自身的禁用随事件带入
       canPress: ({ prop, event }) => {
         const e = event.current()
-        return e.type === 'PRESS.START' && !prop('disabled') && !e.disabled
+        return e.type === 'PRESS.START' && !prop('disabled') && !prop('readOnly') && !e.disabled
       },
+      // 只读不改选中；禁用由 connect 在点击时先挡下
+      canToggle: ({ prop }) => !prop('readOnly'),
     },
     actions: {
       startPress: ({ context, event }) => {
@@ -109,7 +115,7 @@ export const toggleGroupMachine = createMachine({
           context.set('pressedValue', null)
       },
       releaseWhenInert: ({ context, prop }) => {
-        if (prop('disabled'))
+        if (prop('disabled') || prop('readOnly'))
           context.set('pressedValue', null)
       },
       // 受控（给了 value 却没给 defaultValue）时不自改，交给宿主回写

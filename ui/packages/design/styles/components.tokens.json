@@ -83804,6 +83804,24 @@
       "description": "toggle 的 root 部件 box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-toggle-group-border-invalid",
+      "component": "toggle-group",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "toggle-group 的 root 部件 border 覆盖槽。"
+    },
+    {
       "name": "--xh-toggle-group-item-bg",
       "component": "toggle-group",
       "part": [
@@ -83815,7 +83833,15 @@
       ],
       "state": [
         "default",
+        "disabled",
         "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
+        "readonly",
         "xh-ink-surface"
       ],
       "defaultToken": [
@@ -83900,7 +83926,15 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
+        "readonly",
         "state=on",
         "xh-ink-surface"
       ],
@@ -84265,6 +84299,7 @@
       "state": [
         "first-child",
         "first-of-type",
+        "invalid",
         "last-child",
         "last-of-type",
         "orientation=horizontal",

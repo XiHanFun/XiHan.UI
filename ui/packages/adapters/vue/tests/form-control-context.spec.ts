@@ -85,10 +85,6 @@ function nonRequiredState(props: ControlState) {
   return { disabled: props.disabled, readOnly: props.readOnly, invalid: props.invalid }
 }
 
-function disabledState(props: ControlState) {
-  return { disabled: props.disabled }
-}
-
 function disabledInvalidState(props: ControlState) {
   return { disabled: props.disabled, invalid: props.invalid }
 }
@@ -139,7 +135,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'Rating')
     return h(XhRatingRoot, { ...props, count: 1 }, () => h(XhRatingControl, null, () => h(XhRatingItem, { value: 1 })))
   if (kind === 'ToggleGroup')
-    return h(XhToggleGroupRoot, { ...disabledState(props), collection: [{ value: 'a', label: '甲' }] })
+    return h(XhToggleGroupRoot, { ...props, collection: [{ value: 'a', label: '甲' }] })
   if (kind === 'Transfer')
     return h(XhTransferRoot, { ...nonRequiredState(props), collection: [] }, () => h(XhTransferSourcePanel, null, () => h(XhTransferList)))
   if (kind === 'FieldArray')
@@ -219,6 +215,10 @@ function expectAtomicState(wrapper: ReturnType<typeof mount>, kind: AtomicContro
   if (kind === 'ToggleGroup') {
     const item = wrapper.find('[data-scope="toggle-group"][data-part="item"]')
     expect(item.attributes('aria-disabled')).toBe(String(enabled))
+    const group = wrapper.find('[role="radiogroup"]')
+    expect(group.attributes('aria-readonly')).toBe(String(enabled))
+    expect(group.attributes('aria-required')).toBe(String(enabled))
+    expect(group.attributes('aria-invalid')).toBe(String(enabled))
     return
   }
   if (kind === 'Transfer') {

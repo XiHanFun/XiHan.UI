@@ -8,6 +8,7 @@
 import type { ItemQuery, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { ToggleGroupApi, ToggleGroupItemProps, ToggleGroupNodeMeta, ToggleGroupSchema } from './toggle-group.types'
 import { contains, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { toggleGroupAnatomy } from './toggle-group.anatomy'
 
 const parts = toggleGroupAnatomy.build()
@@ -33,6 +34,9 @@ export function connectToggleGroup<T extends PropTypes>(
   const focusedValue = context.get('focusedValue') ?? null
   const multiple = !!prop('multiple')
   const groupDisabled = !!prop('disabled')
+  const readOnly = !!prop('readOnly')
+  const invalid = !!prop('invalid')
+  const required = !!prop('required')
   const orientation = prop('orientation') ?? 'horizontal'
   const dir = prop('dir') ?? 'ltr'
   const loop = prop('loop') ?? true
@@ -55,7 +59,7 @@ export function connectToggleGroup<T extends PropTypes>(
   const press = (item: ToggleGroupItemProps): PressHandlers => createPressTracker({
     isPressed: () => context.get('pressedValue') === item.value,
     onChange: down => send(down
-      ? { type: 'PRESS.START', value: item.value, disabled: isDisabled(item) }
+      ? { type: 'PRESS.START', value: item.value, disabled: isDisabled(item) || readOnly }
       : { type: 'PRESS.END', value: item.value }),
   })
 
@@ -105,6 +109,9 @@ export function connectToggleGroup<T extends PropTypes>(
     focusedValue,
     multiple,
     disabled: groupDisabled,
+    readOnly,
+    invalid,
+    required,
     orientation,
     separators,
     isSelected,
@@ -118,12 +125,19 @@ export function connectToggleGroup<T extends PropTypes>(
       // aria-orientation 只有 radiogroup 收，role=group 给了是无效 ARIA；
       // 排布信息一律走 data-orientation
       'aria-orientation': multiple ? undefined : orientation,
+      // radiogroup 收这三条；role=group 不收，多选只走 data-*，错误文案由字段的描述链带到
+      'aria-readonly': multiple ? undefined : (readOnly ? 'true' : 'false'),
+      'aria-invalid': multiple ? undefined : (invalid ? 'true' : 'false'),
+      'aria-required': multiple ? undefined : (required ? 'true' : 'false'),
       'data-variant': prop('variant'),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-orientation': orientation,
       'data-full-width': dataAttr(!!prop('fullWidth')),
       'data-disabled': dataAttr(groupDisabled),
+      'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
+      'data-required': dataAttr(required),
       'tabindex': rootTabIndex(),
       // 键盘全在容器上收口：条目只管声明自己，一次冒泡一个处理器
       'onKeyDown': (event: KeyboardEvent) => {
@@ -173,6 +187,8 @@ export function connectToggleGroup<T extends PropTypes>(
         'tabindex': itemTabIndex(item),
         'data-state': selected ? 'on' : 'off',
         'data-disabled': dataAttr(disabled),
+        'data-readonly': dataAttr(readOnly),
+        'data-invalid': dataAttr(invalid),
         // 段是 Action Control 的 text 档定尺按钮：盒型、三档几何与四态面由家族配方给；
         // variant 未提供时按皮肤缺省档（subtle）投影，皮肤按 data-variant 改写桥接槽
         'data-xh-action-control': '',
@@ -197,17 +213,24 @@ export function connectToggleGroup<T extends PropTypes>(
       })
     },
 
-    // 表单出口：整组只有一份，提交的就是当前选中值
+    // 表单出口：整组只有一份，提交的就是当前选中值。写成视觉隐藏的文本输入而不是 type=hidden：
+    // hidden 不参与约束校验，required 拦不住空值提交
     getHiddenInputProps: () => normalize.input({
       ...parts['hidden-input'].attrs,
       // type 须先于 value 写入：改 type 会重置输入的值
-      type: 'hidden',
+      'type': 'text',
       // 未给 name 时不产出该属性，这份输入便不参与提交
-      name: prop('name'),
-      // 多选把整组值并成一串：一份隐藏输入只提交得出一个值
-      value: value.join(','),
+      'name': prop('name'),
+      // 多选把整组值并成一串：一份输入只提交得出一个值；没选时是空串，required 据此拦下
+      'value': value.join(','),
+      'required': required || undefined,
       // 禁用的控件不该提交出值
-      disabled: groupDisabled || undefined,
+      'disabled': groupDisabled || undefined,
+      // 只读随 prop 走，恒真会让 required 不生效
+      'readonly': readOnly || undefined,
+      'tabindex': -1,
+      'aria-hidden': true,
+      'style': VISUALLY_HIDDEN_STYLE,
     }),
   }
 }

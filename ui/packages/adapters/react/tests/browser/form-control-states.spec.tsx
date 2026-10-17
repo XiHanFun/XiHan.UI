@@ -12,6 +12,7 @@ import {
   XhRatingControl,
   XhRatingItem,
   XhRatingRoot,
+  XhToggleGroupRoot,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -34,6 +35,12 @@ const CASES: Case[] = [
     axes: { invalid: 'aria-invalid' },
     render: state => <XhRatingRoot count={3} {...state}><XhRatingControl>{[1, 2, 3].map(value => <XhRatingItem key={value} value={value} />)}</XhRatingControl></XhRatingRoot>,
     host: root => root.querySelector<HTMLElement>('[data-scope="rating"][data-part="control"]')!,
+  },
+  {
+    name: 'toggle-group',
+    axes: { readOnly: 'aria-readonly', invalid: 'aria-invalid', required: 'aria-required' },
+    render: state => <XhToggleGroupRoot collection={[{ value: 'a', label: '甲' }, { value: 'b', label: '乙' }]} {...state} />,
+    host: root => root.querySelector<HTMLElement>('[data-scope="toggle-group"][data-part="root"]')!,
   },
 ]
 

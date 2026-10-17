@@ -308,6 +308,39 @@
     z-index: 2;
   }
 
+  /* —— 只读与校验失败 —— */
+  /* 只读整组都改不动，但不是禁用：颜色照常，把悬停 / 按下面与「可点」这个暗示一起收回来，悬停与按下都停在静息面上。
+     排掉禁用项：这条权重高过家族的禁用块，不排就会把 not-allowed 覆盖回 default */
+  [data-scope='toggle-group'][data-part='item'][data-readonly]:not([data-disabled]) {
+    --xh-action-bg-hover: var(--xh-toggle-group-item-bg, var(--xh-_toggle-group-item-bg));
+    --xh-action-bg-pressed: var(--xh-toggle-group-item-bg, var(--xh-_toggle-group-item-bg));
+    --xh-action-cursor-rest: default;
+    --xh-action-cursor-hover: default;
+    --xh-action-cursor-pressed: default;
+    --xh-action-cursor-focus-visible: default;
+  }
+
+  [data-scope='toggle-group'][data-part='item'][data-readonly][data-state='on']:not([data-disabled]) {
+    --xh-action-bg-hover: var(--xh-toggle-group-item-bg-on, var(--xh-_toggle-group-item-bg-on));
+    --xh-action-bg-pressed: var(--xh-toggle-group-item-bg-on, var(--xh-_toggle-group-item-bg-on));
+  }
+
+  /* 校验失败：整组外沿画一圈无效色的线，四种形态一样；outline 档原有的那圈换成无效色 */
+  [data-scope='toggle-group'][data-part='root'][data-invalid] {
+    position: relative;
+    border-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='toggle-group'][data-part='root'][data-invalid]::after {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-toggle-group-border-invalid, var(--xh-border-invalid));
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
   /* —— 撑满行宽 —— */
   /* 整组占满可用宽度，每段等分剩余空间。inline-flex 改成 flex：行内盒撑不满一行 */
   [data-scope='toggle-group'][data-part='root'][data-full-width] {
@@ -417,6 +450,11 @@
     }
 
     [data-scope='toggle-group'][data-part='root'][data-variant='outline']::after {
+      border-color: ButtonText;
+    }
+
+    /* 无效那圈线换成系统色；这一档里看不出它与 outline 档原有那圈的差别，失败由字段的错误文案说 */
+    [data-scope='toggle-group'][data-part='root'][data-invalid]::after {
       border-color: ButtonText;
     }
 

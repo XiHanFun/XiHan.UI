@@ -37,6 +37,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} default-value - 非受控的初始选中值
  * @attr {boolean} multiple - 允许多项同时选中，默认关闭
  * @attr {boolean} disabled - 整组禁用
+ * @attr {boolean} read-only - 只读：条目仍可聚焦、方向键照常走，不能改选中
+ * @attr {boolean} invalid - 校验失败标注：单选组写 aria-invalid，多选只写 data-invalid
+ * @attr {boolean} required - 必填：单选组写 aria-required，表单影子写原生 required
  * @attr {boolean} disallow-empty - 不允许清空值（最后一个选中项不可移除）
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体，决定段的底色与描边使用方式
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
@@ -69,6 +72,9 @@ export class XhToggleGroupElement extends XhElement {
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     multiple: { converter: BOOLEAN_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    invalid: { converter: BOOLEAN_CONVERTER },
+    required: { converter: BOOLEAN_CONVERTER },
     disallowEmpty: { converter: BOOLEAN_CONVERTER, attribute: 'disallow-empty' },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
@@ -88,6 +94,9 @@ export class XhToggleGroupElement extends XhElement {
   declare defaultValue?: string | string[]
   declare multiple?: boolean
   declare disabled?: boolean
+  declare readOnly?: boolean
+  declare invalid?: boolean
+  declare required?: boolean
   declare disallowEmpty?: boolean
   declare variant?: ActionVariant
   declare tone?: Tone
@@ -111,17 +120,23 @@ export class XhToggleGroupElement extends XhElement {
   private readonly ctrl = new MachineController<ToggleGroupSchema>(this, toggleGroupMachine, () => this.machineProps())
   private inheritedControl: FormControlState | undefined
 
-  /** 最近的 Field 或 Form 只交状态；ToggleGroup 仅消费公开的禁用轴。 */
+  /** 最近的 Field 或 Form 只交状态；ToggleGroup 消费公开的禁用、只读、必填与无效四轴。 */
   setFormControlState(state: FormControlState | undefined): void {
     this.inheritedControl = state
     this.requestUpdate()
   }
 
-  private disabledState(): boolean {
-    return resolveFormControlState({ disabled: this.disabled }, this.inheritedControl).disabled
+  private controlState(): ReturnType<typeof resolveFormControlState> {
+    return resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      required: this.required,
+      invalid: this.invalid,
+    }, this.inheritedControl)
   }
 
   private machineProps(): Partial<ToggleGroupSchema['props']> {
+    const control = this.controlState()
     return {
       collection: this.collection,
       value: this.value,
@@ -129,7 +144,10 @@ export class XhToggleGroupElement extends XhElement {
       // 布尔一律原样透传：属性不在即 undefined，把缺省交回 connect
       // （multiple / disabled / disallowEmpty 默认关，loop / rovingFocus 默认开）
       multiple: this.multiple,
-      disabled: this.disabledState(),
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
+      required: control.required,
       disallowEmpty: this.disallowEmpty,
       variant: this.variant,
       tone: this.tone,

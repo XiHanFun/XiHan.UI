@@ -71,10 +71,8 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
     return `<xh-mention ${nonRequiredMarkup}><div data-xh-part="root"><input data-xh-part="input"><div data-xh-part="positioner"><div data-xh-part="content"></div></div></div></xh-mention>`
   if (kind === 'rating')
     return `<xh-rating ${markup} count="1"><div data-xh-part="root"><div data-xh-part="control"><span data-xh-part="item" value="1"></span></div></div></xh-rating>`
-  if (kind === 'toggle-group') {
-    const disabledMarkup = markup.replace(/\b(?:read-only|required|invalid)(?:="false")?/g, '')
-    return `<xh-toggle-group ${disabledMarkup}><div data-xh-part="root"><button data-xh-part="item" value="a">甲</button></div></xh-toggle-group>`
-  }
+  if (kind === 'toggle-group')
+    return `<xh-toggle-group ${markup}><div data-xh-part="root"><button data-xh-part="item" value="a">甲</button></div></xh-toggle-group>`
   if (kind === 'transfer') {
     return `<xh-transfer ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="source-panel"><div data-xh-part="list"></div></div></div></xh-transfer>`
   }
@@ -170,6 +168,10 @@ async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabl
       const item = form.querySelector<HTMLElement>('xh-toggle-group [data-scope="toggle-group"][data-part="item"]')
       expect(item?.getAttribute('aria-disabled')).toBe(String(enabled))
     })
+    const group = form.querySelector<HTMLElement>('xh-toggle-group [role="radiogroup"]')!
+    expect(group.getAttribute('aria-readonly')).toBe(String(enabled))
+    expect(group.getAttribute('aria-required')).toBe(String(enabled))
+    expect(group.getAttribute('aria-invalid')).toBe(String(enabled))
     return
   }
   if (kind === 'transfer') {

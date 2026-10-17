@@ -30,6 +30,12 @@ const CASES: Case[] = [
     markup: attrs => `<xh-rating count="3" ${attrs}><div data-xh-part="root"><div data-xh-part="control">${[1, 2, 3].map(v => `<span data-xh-part="item" value="${v}"></span>`).join('')}</div></div></xh-rating>`,
     host: root => root.querySelector<HTMLElement>('[data-scope="rating"][data-part="control"]')!,
   },
+  {
+    name: 'toggle-group',
+    axes: { readOnly: 'aria-readonly', invalid: 'aria-invalid', required: 'aria-required' },
+    markup: attrs => `<xh-toggle-group ${attrs}><div data-xh-part="root"><button data-xh-part="item" value="a">甲</button><button data-xh-part="item" value="b">乙</button></div></xh-toggle-group>`,
+    host: root => root.querySelector<HTMLElement>('[data-scope="toggle-group"][data-part="root"]')!,
+  },
 ]
 
 const ARIA_RULES = ['aria-allowed-attr', 'aria-valid-attr-value', 'aria-prohibited-attr', 'aria-required-attr', 'aria-allowed-role']
