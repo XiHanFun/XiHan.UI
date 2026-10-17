@@ -130,7 +130,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 
 - `type` 覆盖 `text` / `password` / `email` / `tel` / `url` / `search`。
 - `clearable` 显示清空按钮，`maxLength` 设置字数上限。
-- 不写结构时按标准结构铺出标题、盒里的单行输入框与清空按钮、字数（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，开了 `clearable` 才铺清空按钮，开了 `showCount` 才铺字数。前后缀与多行宿主照旧手写部件。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
+- 不写结构时按标准结构铺出标题、盒里的输入框与清空按钮、字数（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，开了 `multiline` 输入框铺 textarea（否则是单行 input），开了 `clearable` 才铺清空按钮，开了 `showCount` 才铺字数。前后缀照旧手写部件。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
 - 输入部件用 `as="textarea"` 切换到多行；`autoSize` 为 `true` 时随内容增高，也可用 `{ minRows, maxRows }` 限定行数。两个边界必须是大于等于 1 的有限整数，且 `minRows` 不得大于 `maxRows`；无效配置会明确失败，不夹取也不沿用旧配置。
 - 自动高度只有一层滚动：顶到上限后由 textarea 自己滚，控件外壳只包住它，不设上限也不滚。给了 `maxRows` 时上限就是 `maxRows`；没给时上限取 textarea 的 `max-block-size` 计算值，默认皮肤为 `--xh-text-field-input-max-h`（依次退到旧槽 `--xh-text-field-control-max-h`、`--xh-viewport-h-sm`）。两种情况都不低于 `minRows`。没给 `maxRows` 时 `max-block-size` 的计算值只接受 `none` 或 px，百分比等要等布局才知道多高的取值会明确失败。
 - 自动高度跟随输入、程序化写值与运行期配置变化重新测量。量高结果写进 `block-size`，`max-block-size` 由自动高度接管为 `none`，`overflow-y` 按是否顶到上限切换。关闭 `autoSize`、换回单行、替换输入节点或卸载组件时，归还启用前的这三项内联声明及其 priority；只移除作者原本没有写的声明。
@@ -224,6 +224,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `XhTextFieldCount` | `children` | `SlotChildren<TextFieldCountSlotProps>` |  |  |
 | `XhTextFieldInput` | `as` | `TextFieldInputHost` |  | 输入框渲染为哪个标签，默认 input；写 textarea 即多行宿主，接入 autoSize 自动高度。 |
 | `XhTextFieldRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhTextFieldRoot` | `multiline` | `boolean` |  | 不给 children 时输入框铺 textarea（多行，接入 autoSize 自动高度）；手写部件时由 XhTextFieldInput 的 as 决定。 |
 | `XhTextFieldRoot` | `children` | `SlotChildren<TextFieldRootSlotProps>` |  |  |
 
 ### 状态

@@ -23316,6 +23316,7 @@
         "invalid",
         "label",
         "max-length",
+        "multiline",
         "name",
         "placeholder",
         "read-only",
