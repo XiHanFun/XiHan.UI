@@ -7,8 +7,9 @@
 
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, RatingHoverChangeDetails, RatingItemProps, RatingSchema, RatingTranslations, RatingValueChangeDetails } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectRating, hasNamingContent, ratingAnatomy, ratingMachine, ratingMeta, resolveFormControlState } from '@xihan-ui/headless'
+import { connectRating, hasNamingContent, ratingAnatomy, ratingMachine, ratingMeta, ratingStructure, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -27,7 +28,11 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 每颗星用 value 属性声明自身是第几颗（1 起），导航与选中都以它识别；
  * 键盘挂在 control 上（它才是 role=radiogroup 的星星带），指针预览挂在每颗星上。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）、星星带里每档一颗星、表单影子（给了 name 才有）；
+ * 标题可以由宿主直接子节点 `slot="label"` 接管。星星带旁的分值文本要用时手写部件。
+ *
  * @customElement xh-rating
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {number} value - 受控评分；未提供该属性即非受控
  * @attr {number} default-value - 非受控初值，默认 0（尚未评分）
  * @attr {number} count - 星星颗数，默认 5
@@ -56,11 +61,18 @@ export class XhRatingElement extends XhElement {
 
   static override fieldTarget = { parts: ['control'], kind: 'group' } as const
 
+  static override structure: ElementStructure<XhRatingElement> = {
+    build: host => host.ctrl.service
+      ? ratingStructure(connectRating(host.ctrl.service, wcNormalize), { label: host.label, hiddenInput: host.name !== undefined, slotted: (name, key) => host.slotted(name, key) })
+      : undefined,
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   // dir 占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。别名保留原生行为，
   // 同时让 dir 进 observedAttributes——运行期改 dir 才会重跑 wire 换掉按键处理器。
   static override properties = {
+    label: { converter: STRING_CONVERTER },
     value: { converter: NUMBER_CONVERTER },
     defaultValue: { converter: NUMBER_CONVERTER, attribute: 'default-value' },
     count: { converter: NUMBER_CONVERTER },
@@ -78,6 +90,7 @@ export class XhRatingElement extends XhElement {
     translations: { attribute: false },
   }
 
+  declare label?: string
   declare value?: number
   declare defaultValue?: number
   declare count?: number

@@ -16,6 +16,7 @@
 - `allowHalf` 支持半档，`allowClear` 允许再次点击清空。
 - 悬停预览与实际值分开，`onHoverChange` 单独回调。
 - 条目留空时使用库内置的星形图标；也可传入自定义图标与颜色。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，星星带里每档一颗星，给了 `name` 再带表单影子。星星带旁的分值文本不在其中，要用时手写结构。Web Components 里标题可以写在宿主的直接子节点 `slot="label"` 上接管。
 
 ## 无障碍
 
