@@ -346,6 +346,7 @@ const translations = {
   },
   'format-input': {
     kind: '書式',
+    mixed: '複数の値',
     kindOption: kind => ({ 'none': '書式なし', 'number': '数値', 'percent': 'パーセント', 'date': '日付', 'rmb-upper': '人民元大写', 'numeral': '数字の字形' })[kind],
     decimalsMode: '小数桁',
     decimalsModeOption: mode => ({ fixed: '固定', range: '範囲', exact: 'そのまま' })[mode],

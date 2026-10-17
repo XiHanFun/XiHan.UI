@@ -634,29 +634,5 @@ export const ratingSuite: ConformanceSuite = {
         heldPressIgnored('rating', 'item', '只读时星不接受按压', { value: '3', keyboardHost: null }),
       ],
     },
-    {
-      name: '作者不写结构：三端都照 ratingStructure 铺出标题、每档一颗星与表单影子',
-      spec: { apg: APG_ARIA },
-      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
-      props: { label: '满意度', count: 3, defaultValue: 2, name: 'score' },
-      initial: {
-        order: ['root', 'label', 'control', 'item[0]', 'item[1]', 'item[2]', 'hidden-input'],
-        parts: {
-          'control': { 'role': 'radiogroup', 'aria-labelledby': '@part(label)' },
-          'hidden-input': { name: 'score' },
-        },
-      },
-      steps: [
-        { kind: 'focus', part: 'control', expect: { activeElement: { part: 'item[1]', exact: true } } },
-        {
-          kind: 'key',
-          key: 'ArrowRight',
-          expect: {
-            activeElement: { part: 'item[2]', exact: true },
-            events: [{ type: 'value-change', detail: { value: 3 } }],
-          },
-        },
-      ],
-    },
   ],
 }

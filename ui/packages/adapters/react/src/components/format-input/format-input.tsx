@@ -44,6 +44,8 @@ export interface XhFormatInputRootProps extends Omit<ComponentPropsWithRef<'div'
   kinds?: readonly FormatInputKind[]
   /** 种类里多一项「不设格式」，缺省 true。 */
   clearable?: boolean
+  /** 几个对象的取值各不相同：种类一项都不选、下拉显示「多个值」，选了种类即派发。 */
+  mixed?: boolean
   /** 日期模式的预设。 */
   datePatterns?: readonly string[]
   /** 样例的输入值；缺省按种类取。 */
@@ -66,6 +68,7 @@ export function XhFormatInputRoot({
   defaultValue,
   kinds,
   clearable,
+  mixed,
   datePatterns,
   sample,
   locale,
@@ -86,6 +89,7 @@ export function XhFormatInputRoot({
     defaultValue,
     kinds,
     clearable,
+    mixed,
     datePatterns,
     sample,
     locale,

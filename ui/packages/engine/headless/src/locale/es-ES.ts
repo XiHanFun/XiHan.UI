@@ -346,6 +346,7 @@ const translations = {
   },
   'format-input': {
     kind: 'Formato',
+    mixed: 'Varios valores',
     kindOption: kind => ({ 'none': 'Sin formato', 'number': 'Número', 'percent': 'Porcentaje', 'date': 'Fecha', 'rmb-upper': 'RMB en letras', 'numeral': 'Numeral' })[kind],
     decimalsMode: 'Decimales',
     decimalsModeOption: mode => ({ fixed: 'Fijo', range: 'Rango', exact: 'Sin redondear' })[mode],

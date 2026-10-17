@@ -348,6 +348,7 @@ const translations = {
   },
   'format-input': {
     kind: 'Format',
+    mixed: 'Mehrere Werte',
     kindOption: kind => ({ 'none': 'Kein Format', 'number': 'Zahl', 'percent': 'Prozent', 'date': 'Datum', 'rmb-upper': 'RMB in Worten', 'numeral': 'Zahlzeichen' })[kind],
     decimalsMode: 'Dezimalstellen',
     decimalsModeOption: mode => ({ fixed: 'Fest', range: 'Bereich', exact: 'Unverändert' })[mode],

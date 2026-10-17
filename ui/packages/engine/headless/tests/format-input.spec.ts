@@ -121,6 +121,21 @@ describe('formatInputMachine', () => {
     expect(g.api().issue).toBe('XH_EXPR_FORMAT_INVALID_KIND')
   })
 
+  it('mixed：种类一项都不选，下拉显示「多个值」，参数行与样例不铺；选了种类即派发，与当前值相同也派发', () => {
+    const f = makeInput({ value: null, mixed: true })
+    expect([f.api().kind, f.api().options, f.root()['data-kind']]).toEqual([null, [], undefined])
+    expect(f.api().getKindSelectProps()).toMatchObject({ value: null, placeholder: 'Multiple values' })
+    expect(f.api().getPreviewProps().hidden).toBe(true)
+    f.api().setKind(null)
+    expect(f.changes).toEqual([{ value: null }])
+    f.api().setKind('number')
+    expect(f.changes.at(-1)!.value).toMatchObject({ kind: 'number' })
+    const toggle = makeInput({ value: { kind: 'percent' }, kinds: ['number', 'percent'], clearable: false, mixed: true })
+    expect(toggle.api().getKindToggleGroupProps().value).toBeNull()
+    toggle.setProps({ mixed: false })
+    expect([toggle.api().getKindToggleGroupProps().value, toggle.api().options.length > 0]).toEqual(['percent', true])
+  })
+
   it('禁用与只读时不改草稿', () => {
     const f = makeInput({ disabled: true })
     f.api().setKind('number')

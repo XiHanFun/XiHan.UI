@@ -79,16 +79,19 @@ export function connectFormatInput<T extends PropTypes>(
   const size = prop('size')
   const variant = prop('variant')
   const result = formatFromDraft(draft, kinds)
-  const issue = result.ok ? null : result.issue
+  // 几个对象的取值各不相同：种类未定，没有草稿的问题
+  const mixed = prop('mixed') === true
+  const issue = mixed || result.ok ? null : result.issue
   const invalid = !!prop('invalid') || issue !== null
-  const options = formatInputOptions(draft)
+  // 取值各不相同时种类未定：参数行不铺
+  const options = mixed ? [] : formatInputOptions(draft)
   const ids = scope.ids('format-input', 'label', 'preview', 'error-text')
   const kindItems: { value: FormatInputKindOption, label: string }[] = [
     ...(clearable ? [{ value: 'none' as const, label: t.kindOption('none') }] : []),
     ...kinds.map(kind => ({ value: kind, label: t.kindOption(kind) })),
   ]
   const kindControl = kindItems.length <= TOGGLE_LIMIT ? 'toggle-group' : 'select'
-  const kindValue: FormatInputKindOption = draft.kind ?? 'none'
+  const kindValue: FormatInputKindOption | null = mixed ? null : draft.kind ?? 'none'
   const patterns = prop('datePatterns') ?? FORMAT_INPUT_DATE_PATTERNS
   const shared = { disabled, readOnly, size }
   // 下拉、数字框与组合框是字段形态的控件，形态跟着本组件走；开关与分段切换没有这一轴
@@ -103,7 +106,7 @@ export function connectFormatInput<T extends PropTypes>(
 
   return {
     value,
-    kind: draft.kind,
+    kind: mixed ? null : draft.kind,
     draft,
     issue,
     issueText: issue === null ? '' : t.issue(issue),
@@ -127,7 +130,7 @@ export function connectFormatInput<T extends PropTypes>(
       'aria-label': prop('ariaLabel'),
       'aria-invalid': invalid ? 'true' : undefined,
       'aria-describedby': issue === null ? undefined : ids['error-text'],
-      'data-kind': draft.kind ?? 'none',
+      'data-kind': mixed ? undefined : draft.kind ?? 'none',
       'data-size': size,
       'data-variant': variant,
       'data-disabled': dataAttr(disabled),
@@ -139,13 +142,13 @@ export function connectFormatInput<T extends PropTypes>(
     getFieldGroupProps: () => normalize.element({ ...parts['field-group'].attrs, hidden: options.length === 0 || undefined }),
     getItemProps: option => normalize.element({ ...parts.item.attrs, 'data-value': option, 'hidden': !options.includes(option) || undefined }),
     getItemLabelProps: option => normalize.element({ ...parts['item-label'].attrs, 'data-value': option }),
-    getPatternDescriptionProps: () => normalize.element({ ...parts['pattern-description'].attrs, hidden: draft.kind !== 'date' || undefined }),
+    getPatternDescriptionProps: () => normalize.element({ ...parts['pattern-description'].attrs, hidden: mixed || draft.kind !== 'date' || undefined }),
     getPreviewProps: () => normalize.element({
       ...parts.preview.attrs,
       'id': ids.preview,
       'role': 'status',
       'aria-live': 'polite',
-      'hidden': value === null || undefined,
+      'hidden': mixed || value === null || undefined,
     }),
     getErrorTextProps: () => normalize.element({ ...parts['error-text'].attrs, id: ids['error-text'], hidden: issue === null || undefined }),
 
@@ -166,6 +169,7 @@ export function connectFormatInput<T extends PropTypes>(
       label: t.kind,
       collection: kindItems.map(item => ({ value: item.value, label: item.label })),
       value: kindValue,
+      placeholder: mixed ? t.mixed : undefined,
       onValueChange: (details) => {
         const next = kindOf(details.value[0])
         if (next !== undefined)

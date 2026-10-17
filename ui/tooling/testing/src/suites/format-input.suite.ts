@@ -180,6 +180,22 @@ export const formatInputSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'mixed（几个对象取值不同）：种类下拉显示「多个值」，没有参数行与样例；选了种类即派发',
+      spec: { adr: 'controlled-uncontrolled' },
+      props: { value: null, mixed: true },
+      initial: {
+        counts: { 'kind': 1, 'field-group': 0, 'item': 0, 'preview': 0 },
+        parts: { root: { 'data-kind': null } },
+      },
+      steps: [
+        raw('种类下拉是 select 组件的实例，占位写在它的 value-text 上', ({ doc }) => {
+          const text = inner(doc, null, 'select', 'value-text')
+          expectEqual(text.textContent?.trim(), 'Multiple values', '种类下拉的占位')
+          expectEqual(text.hasAttribute('data-placeholder'), true, '种类下拉无选中')
+        }),
+      ],
+    },
+    {
       name: '禁用：根标 data-disabled，里面的控件一并禁用',
       spec: { adr: 'controlled-uncontrolled' },
       props: { disabled: true, defaultValue: NUMBER },

@@ -72,6 +72,7 @@ interface FormatControl extends HTMLElement {
   value?: JsonValue | null
   kinds?: readonly string[]
   clearable?: boolean
+  mixed?: boolean
 }
 
 type ValueChange<T> = CustomEvent<{ value: T }>
@@ -783,7 +784,7 @@ function sidesEditor(initial: FieldContext): FieldInstance {
   return { element, update, group: true }
 }
 
-/** 格式：库内 xh-format-input，种类限在描述的 kinds；不是必填时可选「不设格式」，选它即清除。 */
+/** 格式：库内 xh-format-input，种类限在描述的 kinds；不是必填时可选「不设格式」，选它即清除。多个对象取值不同时种类显示「多个值」。 */
 function formatEditor(initial: FieldContext): FieldInstance {
   const control = controlOf<'format'>(initial)
   const field: FormatControl = createAuthoredElement(initial.ownerDocument, 'xh-format-input', { 'data-xh-part': 'control', 'size': 'sm' })
@@ -800,6 +801,8 @@ function formatEditor(initial: FieldContext): FieldInstance {
   field.addEventListener('focusout', () => context.commit())
   const update = (next: FieldContext): void => {
     context = next
+    if (field.mixed !== next.mixed)
+      field.mixed = next.mixed
     const value = !next.mixed && isPlainObject(next.value) ? next.value : null
     if (field.value === undefined || !jsonEquals(field.value, value))
       field.value = value

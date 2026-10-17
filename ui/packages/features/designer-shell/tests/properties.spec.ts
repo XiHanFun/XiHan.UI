@@ -532,6 +532,19 @@ describe('<xh-designer-properties>', () => {
     format.dispatchEvent(new FocusEvent('focusout', { bubbles: true }))
     expect(changes.map(change => change.value)).toEqual([{ kind: 'percent' }, undefined])
     expect(commits).toEqual([{ path: ['format'] }])
+
+    // 多个对象取值不同：格式输入框标 mixed（种类显示「多个值」），选了种类就整体写入；取值相同后撤掉 mixed
+    const formatOf = (id: string, value: JsonValue): DesignerPropertyTarget => ({ kind: 'text', id, value: { format: value }, descriptors: [{ path: ['format'], control: { kind: 'format' }, label: '格式' }] })
+    panel.targets = [formatOf('a', { kind: 'number' }), formatOf('b', { kind: 'percent' })]
+    await panel.updateComplete
+    const shared = row(panel, 'format').querySelector<FormatInput & { mixed?: boolean }>('xh-format-input')!
+    expect([shared.mixed, shared.value]).toEqual([true, null])
+    emit(shared, 'value-change', { value: { kind: 'number', decimals: 1 } })
+    expect(changes.at(-1)).toMatchObject({ path: ['format'], value: { kind: 'number', decimals: 1 } })
+    panel.targets = [formatOf('a', { kind: 'number' }), formatOf('b', { kind: 'number' })]
+    await panel.updateComplete
+    const same = row(panel, 'format').querySelector<FormatInput & { mixed?: boolean }>('xh-format-input')!
+    expect([same.mixed, same.value]).toEqual([false, { kind: 'number' }])
     await new Promise(resolve => setTimeout(resolve))
     expect(diagnostics.codes()).toEqual([])
     diagnostics.stop()

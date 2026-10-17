@@ -116,8 +116,15 @@ export const formatInputMachine = createMachine({
     actions: {
       setKind: ({ context, prop, event: facade }) => {
         const event = facade.current()
-        if (event.type === 'KIND.SET')
-          commit(context, prop, switchFormatKind(context.get('draft'), event.kind))
+        if (event.type !== 'KIND.SET')
+          return
+        const before = context.get('value')
+        const draft = switchFormatKind(context.get('draft'), event.kind)
+        commit(context, prop, draft)
+        // 取值各不相同时选了种类就要派发：与当前值不同的照常由值的 cell 派发，相同的在这里补发，几个对象要统一成这一份
+        const result = formatFromDraft(draft, prop('kinds') ?? FORMAT_KINDS)
+        if (prop('mixed') === true && result.ok && sameFormat(before, result.value ?? null))
+          prop('onValueChange')?.({ value: result.value ?? null })
       },
       setDecimalsMode: ({ context, prop, event: facade }) => {
         const event = facade.current()
