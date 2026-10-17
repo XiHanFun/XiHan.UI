@@ -7,7 +7,8 @@
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, PinInputSchema, PinInputTranslations, PinInputType, PinInputValueChangeDetails } from '@xihan-ui/headless'
-import { connectPinInput, pinInputAnatomy, pinInputMachine, pinInputMeta, resolveFormControlState } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { connectPinInput, pinInputAnatomy, pinInputMachine, pinInputMeta, pinInputStructure, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -40,7 +41,11 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * 按顺序录入：焦点落在第一个空格上，尚未轮到的格子既不可点击、也不是 Tab 停靠点；
  * 向回修改已填的格子照常可用，填满之后任何格都可以修改。read-only 与 disabled 不设该限制。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（给了 label）、一段装下 length 个格子的分段，
+ * 给了 name 再带表单影子；标题可以由宿主直接子节点 `slot="label"` 接管。要分段（123-456）时手写结构。
+ *
  * @customElement xh-pin-input
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控值，逐字符分配到各格；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值，同样逐字符分配
  * @attr {number} length - 格数，默认 6
@@ -72,8 +77,15 @@ export class XhPinInputElement extends XhElement {
 
   static override fieldTarget = { parts: ['root'], kind: 'group' } as const
 
+  static override structure: ElementStructure<XhPinInputElement> = {
+    build: host => host.ctrl.service
+      ? pinInputStructure(connectPinInput(host.ctrl.service, wcNormalize), { label: host.label, hiddenInput: host.name !== undefined, slotted: (name, key) => host.slotted(name, key) })
+      : undefined,
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    label: { converter: STRING_CONVERTER },
     value: { converter: ARRAY_CONVERTER },
     defaultValue: { converter: ARRAY_CONVERTER, attribute: 'default-value' },
     length: { converter: NUMBER_CONVERTER },
@@ -95,6 +107,7 @@ export class XhPinInputElement extends XhElement {
     translations: { attribute: false },
   }
 
+  declare label?: string
   declare value?: string[]
   declare defaultValue?: string[]
   declare length?: number

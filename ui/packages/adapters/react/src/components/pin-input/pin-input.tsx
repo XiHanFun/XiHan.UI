@@ -9,11 +9,13 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { PinInputApi, PinInputSchema, PinInputTranslations, PinInputType } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { pinInputStructure } from '@xihan-ui/headless'
 import { useEffect } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { PinInputProvider, usePinInputContext } from './context'
@@ -35,6 +37,8 @@ type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'default
 export interface XhPinInputRootProps extends RootElementProps {
   /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
   ariaLabel?: string
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
   value?: string[]
   defaultValue?: string[]
   length?: number
@@ -64,6 +68,7 @@ export interface XhPinInputRootProps extends RootElementProps {
 
 export function XhPinInputRoot({
   ariaLabel,
+  label,
   value,
   defaultValue,
   length,
@@ -124,15 +129,17 @@ export function XhPinInputRoot({
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
-        {renderSlot(children, {
-          value: api.value,
-          valueAsString: api.valueAsString,
-          complete: api.complete,
-          length: api.length,
-          focusedIndex: api.focusedIndex,
-          setValue: api.setValue,
-          clear: api.clear,
-        })}
+        {children != null
+          ? renderSlot(children, {
+              value: api.value,
+              valueAsString: api.valueAsString,
+              complete: api.complete,
+              length: api.length,
+              focusedIndex: api.focusedIndex,
+              setValue: api.setValue,
+              clear: api.clear,
+            })
+          : renderDefaultStructure(api, label, name !== undefined)}
       </div>
     </PinInputProvider>
   )
@@ -209,4 +216,22 @@ export function XhPinInputHiddenInput({ ...rest }: XhPinInputHiddenInputProps): 
       )}
     />
   )
+}
+
+/** 标准结构里各部件对应的组件。 */
+const PIN_INPUT_PARTS = {
+  'label': XhPinInputLabel,
+  'group': XhPinInputGroup,
+  'input': XhPinInputInput,
+  'hidden-input': XhPinInputHiddenInput,
+}
+
+/**
+ * 未写 children 时铺开的整套结构：照 headless 的 pinInputStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容交给 label 部件。
+ */
+function renderDefaultStructure(api: PinInputApi, label: ReactNode, hiddenInput: boolean): ReactNode[] {
+  const slotted = label != null && typeof label !== 'string'
+  const nodes = pinInputStructure(api, { label: typeof label === 'string' ? label : undefined, hiddenInput, slotted: name => name === 'label' && slotted })
+  return renderStructure(nodes, PIN_INPUT_PARTS, node => (node.slot ? label : undefined))
 }

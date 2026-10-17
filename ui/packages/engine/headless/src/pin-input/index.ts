@@ -20,6 +20,8 @@ export {
   sanitizePin,
 } from './pin-input.machine'
 export { pinInputMeta } from './pin-input.meta'
+export { pinInputStructure } from './pin-input.structure'
+export type { PinInputStructureOptions } from './pin-input.structure'
 export type {
   PinInputApi,
   PinInputInputProps,

@@ -9,8 +9,10 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { PinInputApi, PinInputSchema, PinInputTranslations, PinInputType } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { pinInputStructure } from '@xihan-ui/headless'
 import { defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { providePinInput, usePinInputContext } from './context'
@@ -29,6 +31,8 @@ export const XhPinInputRoot = defineComponent({
   props: {
     /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
     ariaLabel: { type: String },
+    /** 标题文字。不写默认插槽时铺 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
     // 缺席值 undefined 表示非受控
     value: { type: Array as PropType<string[]> },
     defaultValue: { type: Array as PropType<string[]> },
@@ -58,6 +62,8 @@ export const XhPinInputRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: PinInputRootSlotProps) => VNode[]
+    /** 不写默认插槽时标题的内容，代替 label 文字。 */
+    label?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const onValueChange: PinInputProps['onValueChange'] = (details) => {
@@ -70,15 +76,17 @@ export const XhPinInputRoot = defineComponent({
     // 放进表单字段时，字段的标题与说明接到整组上：读屏进组时念组名与说明，每格的名字仍是「第几格」
     const fieldWiring = useFieldGroupWiring()
     const fieldLabel = useFieldLabelWiring()
-    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getRootProps() as Record<string, unknown> }), slots.default?.({
-      value: ctx.api.value.value,
-      valueAsString: ctx.api.value.valueAsString,
-      complete: ctx.api.value.complete,
-      length: ctx.api.value.length,
-      focusedIndex: ctx.api.value.focusedIndex,
-      setValue: ctx.api.value.setValue,
-      clear: ctx.api.value.clear,
-    }))
+    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getRootProps() as Record<string, unknown> }), slots.default
+      ? slots.default({
+          value: ctx.api.value.value,
+          valueAsString: ctx.api.value.valueAsString,
+          complete: ctx.api.value.complete,
+          length: ctx.api.value.length,
+          focusedIndex: ctx.api.value.focusedIndex,
+          setValue: ctx.api.value.setValue,
+          clear: ctx.api.value.clear,
+        })
+      : renderDefaultStructure(ctx.api.value, { label: props.label, hiddenInput: props.name !== undefined }, slots.label))
   },
 })
 
@@ -133,3 +141,20 @@ export const XhPinInputHiddenInput = defineComponent({
     return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
   },
 })
+
+/** 标准结构里各部件对应的组件。 */
+const PIN_INPUT_PARTS = {
+  'label': XhPinInputLabel,
+  'group': XhPinInputGroup,
+  'input': XhPinInputInput,
+  'hidden-input': XhPinInputHiddenInput,
+}
+
+/**
+ * 未写默认插槽时铺开的整套结构：照 headless 的 pinInputStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题由 label 插槽接管。
+ */
+function renderDefaultStructure(api: PinInputApi, options: { label?: string, hiddenInput: boolean }, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = pinInputStructure(api, { ...options, slotted: name => name === 'label' && labelSlot != null })
+  return renderStructure(nodes, PIN_INPUT_PARTS, node => (node.slot ? labelSlot?.() : undefined))
+}

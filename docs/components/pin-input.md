@@ -104,6 +104,7 @@ pattern 是一段正则源码，逐个字符整格匹配；写法无效时退回
 - `onValueComplete` 在填满时发出一次，用于自动提交。
 - `group` 与 `separator` 把格子分段排列（123-456），下标仍按文档序计算。
 - `readOnly` 让格子只能查看与复制，`required` 为每格补上原生必填。
+- 不写结构时三端照同一份标准结构铺出标题、一段装下 `length` 个格子的分段，给了 `name` 再带表单影子；要分段（123-456）时手写结构。
 
 ### 组合
 
@@ -174,6 +175,7 @@ pattern 是一段正则源码，逐个字符整格匹配；写法无效时退回
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhPinInputRoot` | `default` | `PinInputRootSlotProps` |  |
+| `XhPinInputRoot` | `label` | — | 不写默认插槽时标题的内容，代替 label 文字。 |
 
 ### React 适配器 props
 
@@ -182,6 +184,7 @@ pattern 是一段正则源码，逐个字符整格匹配；写法无效时退回
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhPinInputInput` | `index` | `number \| string` | 是 | 下标由作者声明；兼收字符串，与另外两个适配器读取的是同一份声明。 |
+| `XhPinInputRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
 | `XhPinInputRoot` | `children` | `SlotChildren<PinInputRootSlotProps>` |  |  |
 
 ### 状态

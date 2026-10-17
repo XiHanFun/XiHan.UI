@@ -620,5 +620,31 @@ export const pinInputSuite: ConformanceSuite = {
         },
       ],
     },
+    {
+      name: '作者不写结构：三端都照 pinInputStructure 铺出标题、一段装下全部格子的分段，给了 name 再带表单影子',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '验证码', length: 4, name: 'code' },
+      initial: {
+        order: ['root', 'label', 'group', ...Array.from({ length: 4 }, (_, i) => `input[${i}]`), 'hidden-input'],
+        counts: { input: 4, group: 1 },
+        parts: {
+          'root': { 'role': 'group', 'aria-labelledby': '@part(label)' },
+          'label': { for: '@part(input[0])' },
+          'input': Array.from({ length: 4 }, (_, i) => ({ 'data-index': String(i), 'aria-label': `Character ${i + 1} of 4` })),
+          'hidden-input': { type: 'hidden', name: 'code' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '逐格的 value 是 property',
+          run: async (ctx) => {
+            await typeInto(ctx, 0, '7')
+            expectHidden(ctx.doc, '7', '首格填了之后表单影子应跟着走')
+          },
+        },
+      ],
+    },
   ],
 }
