@@ -227,6 +227,7 @@ const translations = {
     swatchGroup: '色板',
     recentSwatchGroup: '最近使用的颜色',
     eyeDropperTrigger: '从屏幕取色',
+    confirmTrigger: '添加',
   },
   'color-slider': {
     label: channel => COLOR_CHANNEL[channel],

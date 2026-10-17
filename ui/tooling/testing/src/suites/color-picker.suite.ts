@@ -233,6 +233,40 @@ export const colorPickerSuite: ConformanceSuite = {
   },
   cases: [
     {
+      name: '作者不写结构：三端都照 colorPickerStructure 铺出标题、盒、表单影子与浮层里的取色面，点触发钮展开',
+      spec: { apg: APG_DIALOG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '品牌色', defaultValue: '#3b82f6', swatches: ['#ff0000', '#00ff00'], name: 'theme' },
+      initial: {
+        order: ['root', 'label', 'control', 'trigger', 'swatch', 'value-text', 'hidden-input', 'positioner', 'content', 'saturation-area', 'area-thumb', 'hue-slider', 'channel-input', 'swatch-picker', 'recent-swatch-picker'],
+        parts: {
+          'trigger': { 'aria-haspopup': 'dialog', 'aria-expanded': 'false' },
+          'content': { hidden: '' },
+          'hidden-input': { name: 'theme' },
+        },
+      },
+      steps: [
+        { kind: 'click', part: 'trigger', expect: { parts: { content: { hidden: null } } } },
+      ],
+    },
+    {
+      name: '作者不写结构的多选：盒里铺标签行，浮层末尾是「添加」，按下把工作色收进值',
+      spec: { apg: APG_DIALOG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { selectionMode: 'multiple', defaultValue: ['#ff0000', '#00ff00'], defaultOpen: true },
+      initial: {
+        order: ['root', 'control', 'tag-list', 'trigger', 'swatch', 'value-text', 'positioner', 'content', 'saturation-area', 'area-thumb', 'hue-slider', 'channel-input', 'recent-swatch-picker', 'confirm-trigger'],
+        parts: { 'confirm-trigger': { hidden: null, disabled: null } },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'confirm-trigger',
+          expect: { events: [{ type: 'value-change', detail: { value: ['#ff0000', '#00ff00', '#000000'] } }] },
+        },
+      ],
+    },
+    {
       name: '默认收起：触发器报 dialog 弹出物，浮层带 hidden，取色区拇指是 role=slider',
       spec: { apg: `${APG_SLIDER}#roles_states_properties` },
       props: { defaultValue: '#3b82f6' },

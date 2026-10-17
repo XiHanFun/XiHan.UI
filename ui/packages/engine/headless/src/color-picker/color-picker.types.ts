@@ -67,6 +67,8 @@ export interface ColorPickerTranslations {
   recentSwatchGroup: string
   /** 屏幕取色按钮的名字。 */
   eyeDropperTrigger: string
+  /** 多选时「添加」按钮的文字：标准结构里铺这颗按钮时写进去。 */
+  confirmTrigger: string
   /** 多选标签删除按钮的可及名，接收标签文本；默认 `Delete <label>`。 */
   deleteItem: (label: string) => string
   /** 被折叠的标签（+N）显示的文字，接收折叠的个数；默认 +N。 */
@@ -408,6 +410,8 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   canAdd: boolean
   /** 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组。 */
   tags: ColorPickerTagMeta[]
+  /** 合上作者覆盖后的文案。 */
+  translations: ColorPickerTranslations
   /** 被 maxTagCount 折叠的标签数。 */
   overflowCount: number
   /** +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 */

@@ -25,6 +25,7 @@ import type {
   FormControlState,
   SliderSchema,
 } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import {
@@ -34,6 +35,7 @@ import {
   colorPickerMachine,
   colorPickerMeta,
   colorPickerRecentSwatchPickerProps,
+  colorPickerStructure,
   colorPickerSwatchPickerProps,
   colorPickerToInputChannel,
   colorSliderAnatomy,
@@ -74,6 +76,11 @@ const STRING_LIST_CONVERTER = {
  * 等角色节点，元素运行 color-picker 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，
  * 锚点取 trigger，被定位的浮层取 positioner。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）、盒（多选时的标签行与触发钮）、表单影子（给了 name 才有）
+ * 与浮层里的取色面；常驻形态（inline）把取色面直接铺在 root 里。取色面里依次是取色区、色相滑块、透明度滑块（开了 alpha
+ * 才有）、十六进制输入框、预设色板（给了 swatches 才有）、最近使用色，多选时末尾是「添加」（字取 translations.confirmTrigger）。
+ * 标题可以由宿主直接子节点 `slot="label"` 接管；屏幕取色按钮不在生成的结构里，要用时手写部件。
+ *
  * 工作色恒为 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。
  * format 只在落值时起作用，单独修改它不重排已有的值串：需要当前颜色按新写法产出时，
  * 更换 format 后再调用一次 `setValue(当前值)`。取色区与滑块轨道的矩形只在指针事件时测量。
@@ -84,6 +91,7 @@ const STRING_LIST_CONVERTER = {
  * data-scope；色板的格子用 value 属性写明颜色。数值框用 channel 属性写明所调的通道（`channel="r"`）。
  *
  * @customElement xh-color-picker
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控颜色值串；未提供该属性即非受控。多选的一组颜色是数组，只走 property
  * @attr {string} default-value - 非受控初值，默认 #000000；多选的数组只走 property
  * @attr {'single'|'multiple'} selection-mode - 选择模式，默认 single；multiple 时浮层里调出的工作色是草稿、按 confirm-trigger 收进值，色板的格子点一下切换，输入行里排成标签
@@ -155,9 +163,20 @@ export class XhColorPickerElement extends XhPortalHostElement {
   // 放进字段时字段的标签与说明接到触发钮上；触发钮是按钮，不收 aria-required / aria-readonly，只走组类接线
   static override fieldTarget = { parts: ['trigger'], kind: 'group' } as const
 
+  static override structure: ElementStructure<XhColorPickerElement> = {
+    build: host => host.ctrl.service
+      ? colorPickerStructure(connectColorPicker(host.services(), wcNormalize), {
+          label: host.label,
+          hiddenInput: host.name !== undefined,
+          slotted: name => host.slotted(name),
+        })
+      : undefined,
+  }
+
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    label: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
@@ -186,6 +205,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
     translations: { attribute: false },
   }
 
+  declare label?: string
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare selectionMode?: ColorPickerSelectionMode

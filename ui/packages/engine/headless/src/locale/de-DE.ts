@@ -228,6 +228,7 @@ const translations = {
     swatchGroup: 'Farbfelder',
     recentSwatchGroup: 'Zuletzt verwendete Farben',
     eyeDropperTrigger: 'Farbe vom Bildschirm aufnehmen',
+    confirmTrigger: 'Hinzufügen',
   },
   'color-slider': {
     label: channel => COLOR_CHANNEL[channel],

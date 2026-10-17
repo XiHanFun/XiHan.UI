@@ -189,6 +189,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhColorPickerRoot` | `default` | `ColorPickerRootSlotProps` |  |
+| `XhColorPickerRoot` | `label` | — |  |
 
 ### React 适配器 props
 
@@ -198,6 +199,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | --- | --- | --- | --- | --- |
 | `XhColorPickerChannelInput` | `channel` | `ColorPickerInputChannel` |  | 该输入框编辑的通道：hex 是整串，r/g/b 是分量，a 是透明度百分数；默认或无法识别时按 hex 处理。 |
 | `XhColorPickerPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhColorPickerRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
 | `XhColorPickerRoot` | `children` | `SlotChildren<ColorPickerRootSlotProps>` |  |  |
 | `XhColorPickerTag` | `value` | `string` | 是 | 它代表哪个选中颜色。 |
 
@@ -255,6 +257,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `recentColors` | `string[]` | 最近使用色，最新的在最前。 |
 | `canAdd` | `boolean` | 多选时「添加」此刻可按：工作色还没选过、也没到 maxSelected。 |
 | `tags` | `ColorPickerTagMeta[]` | 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组。 |
+| `translations` | `ColorPickerTranslations` | 合上作者覆盖后的文案。 |
 | `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
 | `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
 | `hueSlider` | `ColorSliderApi<T>` | 色相颜色滑块的 api：部件属性与取值都从这里获取，DOM 带 data-scope="color-slider"。 |
@@ -570,6 +573,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 
 - 浮层的宽度与高度分别受可用空间约束，窄视口下面板不会超出屏幕，容纳不下时在面板内滚动。
 - 粗指针下命中区是取色面、滑块整条与色板整格。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是盒（多选时先是标签行，再是带色块与值串的触发钮）、表单影子（给了 `name` 才有）与浮层；`inline` 时取色面直接铺在 root 里。取色面里依次是取色区、色相滑块、透明度滑块（开了 `alpha` 才有）、十六进制输入框、预设色板（给了 `swatches` 才有）、最近使用色，多选时末尾是「添加」，字取 `translations.confirmTrigger`。屏幕取色按钮要放图标，不在其中，要用时手写结构。Web Components 里标题可以写在宿主的直接子节点 `slot="label"` 上接管。
 
 ### RTL
 

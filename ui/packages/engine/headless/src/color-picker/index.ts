@@ -35,6 +35,8 @@ export {
   colorPickerSwatchPickerProps,
 } from './color-picker.machine'
 export { colorPickerMeta } from './color-picker.meta'
+export { colorPickerStructure } from './color-picker.structure'
+export type { ColorPickerStructureOptions } from './color-picker.structure'
 export type {
   ColorPickerApi,
   ColorPickerDraft,
