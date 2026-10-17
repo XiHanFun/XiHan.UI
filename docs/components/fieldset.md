@@ -72,6 +72,7 @@ required 写为 data-required，皮肤据此为组标题加星号；星号只是
 - `invalid` 落为根与组标题上的 `data-invalid`，组标题据此转为警示色，同时把错误文案接入描述链并显示。
 - `required` 落为根与组标题上的 `data-required`，组标题的星号由 label 公共层按组标题自己的这一位画。
 - `field-group` 把并排的几个字段圈成一段（宽度足够时自动分栏），`actions` 承载组末尾的按钮行。
+- 不写结构时按标准结构铺（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：组标题恒铺在最前，文字取 `legend`；说明、字段区、错误文案、按钮行给了内容才铺，依次排在后面。Vue 是 `legend`、`description`、`fieldGroup`、`errorText`、`actions` 具名插槽，React 是同名属性，Web Components 是宿主直接子节点上的 `slot="legend"`、`slot="description"`、`slot="field-group"`、`slot="error-text"`、`slot="actions"`。
 - 作用域禁用只落在组件库的控件上；作者自己写的 `div` 型交互节点不在原生 `fieldset[disabled]` 的管辖内，需要各自接 `disabled`。
 
 ### 组合
@@ -116,12 +117,30 @@ required 写为 data-required，皮肤据此为组标题加星号；星号只是
 | `required` | `boolean` |  | 必填标记：落为 data-required，供皮肤给组标题加星号，校验仍由宿主负责。 不产出 aria-required：该属性在 group 角色上不受支持，写入也不进入无障碍树。 |
 | `translations` | `Partial<FieldsetTranslations>` |  | 文案覆盖。本组件当前没有外露文案，保留该位，接全局配置的通道由适配器铺设。 |
 
+### 插槽
+
+仅列出带载荷的插槽。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhFieldsetRoot` | `default` | — |  |
+| `XhFieldsetRoot` | `legend` | — |  |
+| `XhFieldsetRoot` | `description` | — |  |
+| `XhFieldsetRoot` | `fieldGroup` | — |  |
+| `XhFieldsetRoot` | `errorText` | — |  |
+| `XhFieldsetRoot` | `actions` | — |  |
+
 ### React 适配器 props
 
 只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhFieldsetRoot` | `legend` | `ReactNode` |  | 组标题。不给 children 时铺 legend 部件。 |
+| `XhFieldsetRoot` | `description` | `ReactNode` |  | 组标题下的说明。不给 children 时铺 description 部件。 |
+| `XhFieldsetRoot` | `fieldGroup` | `ReactNode` |  | 组里的字段。不给 children 时铺进 field-group 部件：宽度够时并排分栏，只放一个容器时它占满整行。 |
+| `XhFieldsetRoot` | `errorText` | `ReactNode` |  | 错误文案。不给 children 时铺 error-text 部件，invalid 时显示。 |
+| `XhFieldsetRoot` | `actions` | `ReactNode` |  | 组末尾的按钮行。不给 children 时铺 actions 部件。 |
 | `XhFieldsetRoot` | `children` | `ReactNode` |  |  |
 
 ### connect API

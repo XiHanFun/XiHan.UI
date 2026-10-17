@@ -6,10 +6,11 @@
 // 提供 fieldset 相关实现。
 
 import type { FieldsetProps, FieldsetTranslations } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
-import { hasNamingContent } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
+import { fieldsetStructure, hasNamingContent } from '@xihan-ui/headless'
 import { computed, defineComponent, h, ref } from 'vue'
 import { provideXhConfig, useXhConfig, withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
 import { provideFieldset, provideFieldsetOuterDisabled, useFieldsetContext, useFieldsetOuterDisabled } from './context'
 import { useFieldset, useFieldsetPartPresence } from './use-fieldset'
 
@@ -17,11 +18,21 @@ export const XhFieldsetRoot = defineComponent({
   name: 'XhFieldsetRoot',
   // 三个布尔缺省 undefined：缺省值的事实源在 connect，写死 false 会挡住将来从上下文取值
   props: {
+    /** 组标题文字。不写默认插槽时铺 legend 部件；需要放置其他内容时改用 legend 插槽。 */
+    legend: { type: String },
     disabled: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<FieldsetTranslations>> },
   },
+  slots: Object as SlotsType<{
+    default?: () => VNode[]
+    legend?: () => VNode[]
+    description?: () => VNode[]
+    fieldGroup?: () => VNode[]
+    errorText?: () => VNode[]
+    actions?: () => VNode[]
+  }>,
   setup(props, { slots }) {
     const outer = useXhConfig()
     const ctx = useFieldset(withXhConfig('fieldset', props) as FieldsetProps)
@@ -31,7 +42,15 @@ export const XhFieldsetRoot = defineComponent({
     provideXhConfig(() => ({ disabled: ctx.api.value.disabled || undefined }))
     provideFieldsetOuterDisabled(computed(() => outer.value.disabled === true))
     // 必须是原生 <fieldset>：整组禁用连坐组内控件是浏览器给的，换成 div 就只剩一层灰样式
-    return () => h('fieldset', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('fieldset', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default
+      ? slots.default()
+      : renderDefaultStructure(props.legend, {
+          'legend': slots.legend,
+          'description': slots.description,
+          'field-group': slots.fieldGroup,
+          'error-text': slots.errorText,
+          'actions': slots.actions,
+        }))
   },
 })
 
@@ -85,3 +104,23 @@ export const XhFieldsetErrorText = defineComponent({
     return () => h('p', ctx.api.value.getErrorTextProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+/** 标准结构里各部件对应的组件。 */
+const FIELDSET_PARTS = {
+  'legend': XhFieldsetLegend,
+  'description': XhFieldsetDescription,
+  'field-group': XhFieldsetFieldGroup,
+  'error-text': XhFieldsetErrorText,
+  'actions': XhFieldsetActions,
+}
+
+type FieldsetSectionSlots = Readonly<Partial<Record<'legend' | 'description' | 'field-group' | 'error-text' | 'actions', () => VNode[]>>>
+
+/**
+ * 未写默认插槽时铺开的整套结构：照 headless 的 fieldsetStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。组标题恒在，其余给了哪个插槽才铺哪一段。
+ */
+function renderDefaultStructure(legend: string | undefined, sections: FieldsetSectionSlots): VNode[] {
+  const nodes = fieldsetStructure({ legend, slotted: name => sections[name as keyof FieldsetSectionSlots] != null })
+  return renderStructure(nodes, FIELDSET_PARTS, node => (node.slot ? sections[node.slot.name as keyof FieldsetSectionSlots]?.() : undefined))
+}

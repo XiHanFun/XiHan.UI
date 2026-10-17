@@ -8,9 +8,10 @@
 import type { Scope } from '@xihan-ui/core'
 import type { FieldsetProps, FieldsetTranslations } from '@xihan-ui/headless'
 import type { XhConfig } from '../config'
+import type { ElementStructure } from '../element-base'
 import type { PropertyValues } from '../reactive'
 import { createCounterIdGenerator, createScope, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
-import { connectFieldset, fieldsetAnatomy, fieldsetMeta, hasNamingContent } from '@xihan-ui/headless'
+import { connectFieldset, fieldsetAnatomy, fieldsetMeta, fieldsetStructure, hasNamingContent } from '@xihan-ui/headless'
 import { notifyXhConfigChange } from '../config'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
@@ -28,7 +29,12 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  *
  * 每个实例自带一份 scope 派生 part id，同页多个字段集各自分配 id。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：root 是原生 fieldset，组标题恒在（文字取 legend 属性）；
+ * 宿主直接子节点写 `slot="legend"`、`slot="description"`、`slot="field-group"`、`slot="error-text"`、
+ * `slot="actions"` 的，生成对应部件并把节点搬进去，次序是组标题、说明、字段区、错误文案、按钮行。
+ *
  * @customElement xh-fieldset
+ * @attr {string} legend - 组标题文字：生成结构时铺带这段文字的 legend 部件；手写部件时不使用它
  * @attr {boolean} disabled - 整组禁用：root 写原生 disabled，组内表单控件一并禁用
  * @attr {boolean} invalid - 校验失败态：错误文案接入描述链并显示
  * @attr {boolean} required - 必填标记，只写 data-required 供皮肤给组标题加星号
@@ -47,9 +53,15 @@ export class XhFieldsetElement extends XhElement {
     tags: { root: ['fieldset'], legend: ['legend'] },
   }
 
+  static override structure: ElementStructure<XhFieldsetElement> = {
+    rootTag: 'fieldset',
+    build: host => fieldsetStructure({ legend: host.legend, slotted: (name, key) => host.slotted(name, key) }),
+  }
+
   // 三个开关走三态转换器：disabled="false" 读成假，与 Vue 侧 :disabled="false" 同解。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    legend: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     disabled: { converter: BOOLEAN_CONVERTER },
     invalid: { converter: BOOLEAN_CONVERTER },
     required: { converter: BOOLEAN_CONVERTER },
@@ -57,6 +69,7 @@ export class XhFieldsetElement extends XhElement {
     translations: { attribute: false },
   }
 
+  declare legend?: string
   declare disabled?: boolean
   declare invalid?: boolean
   declare required?: boolean

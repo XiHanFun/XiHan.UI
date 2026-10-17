@@ -28064,7 +28064,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-fieldset>`：Light-DOM 行为宿主，无状态机，把 connectFieldset 产出的属性接到\nroot / legend / description / error-text 角色节点上：说明与错误文案的 id 自动接入 root 的描述链。\n\nroot 必须是原生 `<fieldset>`、legend 必须是原生 `<legend>` 且写为 root 的首个子节点：\n整组禁用连带组内控件与 legend 即组名都由浏览器提供，写为 div 时两者都静默失效。\n\n每个实例自带一份 scope 派生 part id，同页多个字段集各自分配 id。",
+          "description": "`<xh-fieldset>`：Light-DOM 行为宿主，无状态机，把 connectFieldset 产出的属性接到\nroot / legend / description / error-text 角色节点上：说明与错误文案的 id 自动接入 root 的描述链。\n\nroot 必须是原生 `<fieldset>`、legend 必须是原生 `<legend>` 且写为 root 的首个子节点：\n整组禁用连带组内控件与 legend 即组名都由浏览器提供，写为 div 时两者都静默失效。\n\n每个实例自带一份 scope 派生 part id，同页多个字段集各自分配 id。\n\n不写部件（或只写 root）时元素按标准结构生成：root 是原生 fieldset，组标题恒在（文字取 legend 属性）；\n宿主直接子节点写 `slot=\"legend\"`、`slot=\"description\"`、`slot=\"field-group\"`、`slot=\"error-text\"`、\n`slot=\"actions\"` 的，生成对应部件并把节点搬进去，次序是组标题、说明、字段区、错误文案、按钮行。",
           "name": "XhFieldsetElement",
           "cssParts": [
             {
@@ -28101,6 +28101,24 @@
               },
               "static": true,
               "default": "{ anatomy: fieldsetAnatomy, meta: fieldsetMeta, tags: { root: ['fieldset'], legend: ['legend'] }, }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhFieldsetElement>"
+              },
+              "static": true,
+              "default": "{ rootTag: 'fieldset', build: host => fieldsetStructure({ legend: host.legend, slotted: (name, key) => host.slotted(name, key) }), }"
+            },
+            {
+              "kind": "field",
+              "name": "legend",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "legend"
             },
             {
               "kind": "field",
@@ -28176,6 +28194,14 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "组标题文字：生成结构时铺带这段文字的 legend 部件；手写部件时不使用它",
+              "name": "legend",
+              "fieldName": "legend"
+            },
             {
               "type": {
                 "text": "boolean | undefined"
