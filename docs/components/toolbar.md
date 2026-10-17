@@ -74,7 +74,7 @@
 
 - 使用 `group` 收紧相关操作。
 - 使用 `separator` 区分操作组。
-- 使用 `overflow-trigger` 放在 `root` 的最后，承接放不下的条目。菜单里的文字取条目的 `aria-label`（没有时取条目文字），写了 `aria-pressed` 的开关条目在菜单里显示为勾选项，工具条上的分组与分隔线在菜单里画成分隔线。不写内容时由皮肤画一枚横排三点，可及名缺省为 `More`，用 `translations.overflowTrigger` 换成本地文案。
+- 使用 `overflow-trigger` 放在 `root` 的最后，承接放不下的条目。菜单里的文字取条目的 `aria-label`（没有时取条目文字），写了 `aria-pressed` 的开关条目在菜单里显示为勾选项，条目上写的 `data-tone`（如破坏性操作的 `danger`）随条目带进菜单项，工具条上的分组与分隔线在菜单里画成分隔线。不写内容时由皮肤画一枚横排三点，可及名缺省为 `More`，用 `translations.overflowTrigger` 换成本地文案。
 - Web Components 只写一颗空的 `<button data-xh-part="overflow-trigger">`，菜单的浮层与条目由元素自己建。
 
 ### 最佳实践

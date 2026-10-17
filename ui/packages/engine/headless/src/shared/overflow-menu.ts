@@ -9,7 +9,7 @@
 // 这里只管两件共同的事：条目在菜单里叫什么（按读屏取可及名的先后），以及菜单的机器 props 怎样拼。
 // 只在挂载后的效应与事件处理器里读 DOM，渲染期不得调用 overflowItemLabel。
 
-import type { Direction, Orientation, Placement, Size } from '@xihan-ui/core'
+import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
 import type { MenuNode, MenuSchema } from '../menu/menu.types'
 
 /** 空白折成一个空格再去掉两端：条目里的图标与换行不该把菜单文字撑出空洞。 */
@@ -46,6 +46,8 @@ export interface OverflowMenuEntry {
   checked: boolean | null
   /** 与上一项之间隔着分组边界，菜单在两者之间画一条分隔线。 */
   separatorBefore: boolean
+  /** 条目的语气，菜单项按这族色显示；没有为 null。 */
+  tone?: Tone | null
 }
 
 export interface OverflowMenuOptions {
@@ -82,6 +84,7 @@ export function overflowMenuProps(options: OverflowMenuOptions): MenuSchema['pro
     disabled: entry.disabled,
     kind: entry.checked == null ? 'item' : 'checkbox',
     separatorBefore: entry.separatorBefore,
+    tone: entry.tone ?? undefined,
     closeOnSelect: true,
   }))
   return {

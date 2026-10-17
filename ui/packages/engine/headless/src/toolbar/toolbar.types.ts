@@ -5,7 +5,7 @@
 
 // 定义 toolbar 类型契约。
 
-import type { ControlVariant, Direction, MachineSchema, Orientation, PropTypes, Size } from '@xihan-ui/core'
+import type { ControlVariant, Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /**
  * 条目的声明：值与禁用由作者在部件上声明，connect 据此产出属性。
@@ -32,6 +32,8 @@ export interface ToolbarOverflowItem {
   pressed: boolean | null
   /** 与菜单里的上一条之间隔着分隔线或分组边界，菜单在两者之间画一条分隔线。 */
   separatorBefore: boolean
+  /** 条目上写的 data-tone，菜单项照搬；没写为 null。 */
+  tone: Tone | null
 }
 
 /** 读屏文案，默认英文。 */
