@@ -1,5 +1,5 @@
 ---
-'@xihan-ui/web-components': minor
+'@xihan-ui/web-components': major
 ---
 
 `xh-file-upload` 的条目（item）改按 `allFiles` 对应：远程附件在前、本地文件在后，与 Vue / React 的 `XhFileUploadItem` 同一口径。此前只对应 `acceptedFiles`，远程附件没有可接线的行，上传返回 id 转入 `remoteFiles` 的文件整行被收起。

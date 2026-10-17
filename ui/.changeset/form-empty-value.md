@@ -1,8 +1,8 @@
 ---
-'@xihan-ui/headless': minor
-'@xihan-ui/vue': minor
-'@xihan-ui/react': minor
-'@xihan-ui/web-components': minor
+'@xihan-ui/headless': major
+'@xihan-ui/vue': major
+'@xihan-ui/react': major
+'@xihan-ui/web-components': major
 ---
 
 表单的空值判定（`isEmptyFormValue`，即 `required` 拦截的范围）扩大，必填的结果随之变化。

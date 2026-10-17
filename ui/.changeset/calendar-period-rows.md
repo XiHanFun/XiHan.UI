@@ -1,9 +1,9 @@
 ---
-'@xihan-ui/headless': minor
-'@xihan-ui/vue': minor
-'@xihan-ui/react': minor
-'@xihan-ui/web-components': minor
-'@xihan-ui/styles': minor
+'@xihan-ui/headless': major
+'@xihan-ui/vue': major
+'@xihan-ui/react': major
+'@xihan-ui/web-components': major
+'@xihan-ui/styles': major
 ---
 
 日历族（CalendarPicker、CalendarRangePicker、DatePicker、DateRangePicker）的周、月、季度、年视图改为按行渲染。`role="grid"` 底下得是 `role="row"`、`gridcell` 得落在行里；此前周期格直接铺进网格，读屏报不出格子落在第几行第几列，axe 判 `aria-required-children` 与 `aria-required-parent`。
