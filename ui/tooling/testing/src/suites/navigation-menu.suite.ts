@@ -8,6 +8,19 @@ const TRIGGER = '[data-scope="navigation-menu"][data-part="trigger"]'
 
 const VALUES = ['products', 'docs', 'company'] as const
 
+/** 不写结构时按数据铺：一个直达链接（当前页），一个带面板的入口，面板里一条链接与一枝子级。 */
+const STRUCTURE_COLLECTION = [
+  { value: 'home', label: '首页', href: '#home', current: true },
+  {
+    value: 'products',
+    label: '产品',
+    children: [
+      { value: 'flow', label: '流程设计器', href: '#flow' },
+      { value: 'more', label: '更多', children: [{ value: 'print', label: '打印设计器', href: '#print' }] },
+    ],
+  },
+]
+
 /**
  * 三项导航，每项一个 trigger + 一个面板，面板里各一条链接；末尾一根指示条与一个共享外壳。
  *
@@ -796,6 +809,46 @@ export const navigationMenuSuite: ConformanceSuite = {
         heldPressIgnored('navigation-menu', 'trigger', '整套导航禁用时入口不接受按压', { value: 'products' }),
         // 文档序首条链接就是展开着的 products 面板里的那条
         heldPressIgnored('navigation-menu', 'link', '整套导航禁用时面板链接不接受按压'),
+      ],
+    },
+    {
+      name: '作者不写结构：三端都照 navigationMenuStructure 铺出列表、直达链接、入口与面板（链接与一枝子级）、指示条；换数据按值复用',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', tag: 'nav', defaultStructure: true }),
+      props: { collection: STRUCTURE_COLLECTION },
+      initial: {
+        order: [
+          'root',
+          'list',
+          'item[0]',
+          'link[0]',
+          'item[1]',
+          'trigger',
+          'content',
+          'link[1]',
+          'branch-trigger',
+          'branch-indicator',
+          'branch-content',
+          'link[2]',
+          'indicator',
+        ],
+        parts: {
+          'link[0]': { 'aria-current': 'page' },
+          'trigger': { 'aria-expanded': 'false', 'aria-controls': '@part(content)' },
+          'content': { hidden: '' },
+          'branch-trigger': { 'aria-expanded': 'false', 'aria-controls': '@part(branch-content)' },
+        },
+      },
+      steps: [
+        { kind: 'click', part: 'trigger', expect: { parts: { trigger: { 'aria-expanded': 'true' }, content: { hidden: null } } } },
+        {
+          kind: 'setProps',
+          props: { collection: [STRUCTURE_COLLECTION[0], { value: 'about', label: '关于', href: '#about' }] },
+          expect: {
+            order: ['root', 'list', 'item[0]', 'link[0]', 'item[1]', 'link[1]', 'indicator'],
+            parts: { 'link[0]': { 'aria-current': 'page' }, 'link[1]': { 'aria-current': null } },
+          },
+        },
       ],
     },
   ],

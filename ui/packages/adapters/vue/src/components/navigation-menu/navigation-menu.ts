@@ -7,14 +7,16 @@
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTranslations } from '@xihan-ui/headless'
+import type { NavigationMenuApi, NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTranslations, StructureNode } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { navigationMenuStructure } from '@xihan-ui/headless'
 import { defineComponent, h, nextTick, onMounted, ref, useId } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { provideNavigationMenu, useNavigationMenuContext } from './context'
 import { useNavigationMenu } from './use-navigation-menu'
@@ -52,11 +54,11 @@ export const XhNavigationMenuRoot = defineComponent({
     const ctx = useNavigationMenu(withXhConfig('navigation-menu', props) as NavigationMenuProps, notify)
     provideNavigationMenu(ctx)
     return () => {
-      // 默认插槽里有真内容就照旧交给作者；只剩注释或空白时当没写，给了 collection 就按数据铺开整套结构
+      // 默认插槽里有真内容就照旧交给作者；只剩注释或空白时当没写，照标准结构铺开
       const authored = slots.default?.()
       const children = slotPaints(authored)
         ? authored
-        : (props.collection ? renderDefaultTree(ctx.api.value.collection, slots.panel) : undefined)
+        : renderDefaultStructure(ctx.api.value, slots.panel)
       return h('nav', {
         ...ctx.api.value.getRootProps() as Record<string, unknown>,
         ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
@@ -263,44 +265,27 @@ export const XhNavigationMenuViewport = defineComponent({
   },
 })
 
+/** 标准结构里各部件对应的组件。 */
+const NAVIGATION_MENU_PARTS = {
+  'list': XhNavigationMenuList,
+  'item': XhNavigationMenuItem,
+  'trigger': XhNavigationMenuTrigger,
+  'content': XhNavigationMenuContent,
+  'branch-trigger': XhNavigationMenuBranchTrigger,
+  'branch-indicator': XhNavigationMenuBranchIndicator,
+  'branch-content': XhNavigationMenuBranchContent,
+  'link': XhNavigationMenuLink,
+  'indicator': XhNavigationMenuIndicator,
+}
+
 /**
- * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
- * 一项一个 li：带 href 的铺为直达链接，其余铺为 trigger 加面板。面板内容给了 panel 插槽就由它提供，
- * 否则按这一项的 children 铺开：带 href 的条目铺为链接，带 children 的铺为一枝子级（开关 + 箭头 + 子级里的链接）。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
+ * 未写默认插槽时照 navigationMenuStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 面板内容给了 panel 插槽就由它提供，否则按这一项的 children 铺链接与子级。
  */
-function renderDefaultTree(
-  collection: readonly NavigationMenuNodeMeta[],
-  panelSlot?: (node: NavigationMenuNodeMeta) => VNode[],
-): VNode[] {
-  return [
-    h(XhNavigationMenuList, null, () => [
-      ...collection.map(node => h(XhNavigationMenuItem, { key: node.value }, () => (
-        node.href != null
-          ? [renderLink(node)]
-          : [
-              h(XhNavigationMenuTrigger, { value: node.value }, () => node.label),
-              h(XhNavigationMenuContent, { value: node.value }, () => (panelSlot ? panelSlot(node) : renderPanelEntries(node.children))),
-            ]
-      ))),
-      h(XhNavigationMenuIndicator),
-    ]),
-  ]
-}
-
-function renderLink(node: NavigationMenuNodeMeta): VNode {
-  return h(XhNavigationMenuLink, { key: node.value, href: node.href, current: node.current }, () => node.label)
-}
-
-/** 面板条目：带 children 的铺为一枝子级，开关与容器相邻；其余铺为链接 */
-function renderPanelEntries(entries: readonly NavigationMenuNodeMeta[]): VNode[] {
-  return entries.flatMap(entry => (entry.children.length > 0
-    ? [
-        h(XhNavigationMenuBranchTrigger, { key: `${entry.value}:trigger`, value: entry.value }, () => [
-          entry.label,
-          h(XhNavigationMenuBranchIndicator, { value: entry.value }),
-        ]),
-        h(XhNavigationMenuBranchContent, { key: `${entry.value}:content`, value: entry.value }, () => entry.children.map(renderLink)),
-      ]
-    : [renderLink(entry)]))
+function renderDefaultStructure(api: NavigationMenuApi, panel: ((node: NavigationMenuNodeMeta) => VNode[]) | undefined): VNode[] {
+  const nodes = navigationMenuStructure(api, { slotted: name => name === 'panel' && panel != null })
+  return renderStructure(nodes, NAVIGATION_MENU_PARTS, (node: StructureNode) => {
+    const meta = node.data as NavigationMenuNodeMeta | undefined
+    return node.slot?.name === 'panel' && meta ? panel?.(meta) : undefined
+  })
 }

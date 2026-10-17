@@ -7,15 +7,17 @@
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTranslations } from '@xihan-ui/headless'
+import type { NavigationMenuApi, NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTranslations, StructureNode } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
-import { Fragment, useEffect, useId, useRef } from 'react'
+import { navigationMenuStructure } from '@xihan-ui/headless'
+import { useEffect, useId, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { NavigationMenuProvider, useNavigationMenuContext } from './context'
 import { useNavigationMenu } from './use-navigation-menu'
@@ -84,11 +86,10 @@ export function XhNavigationMenuRoot({
     ctx.api.getRootProps() as Record<string, unknown>,
     ['onPointerLeave'],
   )
-  // children 里有真会画出东西的节点就照旧交给作者；只剩空白时当没写，
-  // 给了 collection 就按数据铺开整套结构
+  // children 里有真会画出东西的节点就照旧交给作者；只剩空白时当没写，照标准结构铺开
   const body = slotPaints(children)
     ? children
-    : (collection ? <DefaultTree collection={ctx.api.collection} renderPanel={renderPanel} /> : null)
+    : renderDefaultStructure(ctx.api, renderPanel)
   return (
     <NavigationMenuProvider value={ctx}>
       <nav
@@ -296,52 +297,32 @@ export function XhNavigationMenuViewport({ children, ...rest }: XhNavigationMenu
   return <div {...mergeReactProps(ctx.api.getViewportProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
 }
 
-/**
- * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
- * 一项一个 li：带 href 的铺为直达链接，其余铺为 trigger 加面板。面板内容给了 renderPanel 就由它提供，
- * 否则按这一项的 children 铺开：带 href 的条目铺为链接，带 children 的铺为一枝子级（开关 + 箭头 + 子级里的链接）。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
- */
-function DefaultTree(props: {
-  collection: readonly NavigationMenuNodeMeta[]
-  renderPanel?: (node: NavigationMenuNodeMeta) => ReactNode
-}): ReactNode {
-  return (
-    <XhNavigationMenuList>
-      {props.collection.map(node => (
-        <XhNavigationMenuItem key={node.value}>
-          {node.href != null
-            ? <XhNavigationMenuLink href={node.href} current={node.current}>{node.label}</XhNavigationMenuLink>
-            : (
-                <Fragment>
-                  <XhNavigationMenuTrigger value={node.value}>{node.label}</XhNavigationMenuTrigger>
-                  <XhNavigationMenuContent value={node.value}>
-                    {props.renderPanel ? props.renderPanel(node) : <PanelEntries entries={node.children} />}
-                  </XhNavigationMenuContent>
-                </Fragment>
-              )}
-        </XhNavigationMenuItem>
-      ))}
-      <XhNavigationMenuIndicator />
-    </XhNavigationMenuList>
-  )
+/** 按数据铺的链接：结构节点上的 current 是作者声明（在场即是），交给链接时换成布尔。 */
+function NavigationMenuStructureLink({ current, ...rest }: Omit<XhNavigationMenuLinkProps, 'current'> & { current?: string }): ReactNode {
+  return <XhNavigationMenuLink {...rest} current={current != null} />
 }
 
-/** 面板条目：带 children 的铺为一枝子级，开关与容器相邻；其余铺为链接。 */
-function PanelEntries(props: { entries: readonly NavigationMenuNodeMeta[] }): ReactNode {
-  return props.entries.map(entry => (entry.children.length > 0
-    ? (
-        <Fragment key={entry.value}>
-          <XhNavigationMenuBranchTrigger value={entry.value}>
-            {entry.label}
-            <XhNavigationMenuBranchIndicator value={entry.value} />
-          </XhNavigationMenuBranchTrigger>
-          <XhNavigationMenuBranchContent value={entry.value}>
-            {entry.children.map(leaf => (
-              <XhNavigationMenuLink key={leaf.value} href={leaf.href} current={leaf.current}>{leaf.label}</XhNavigationMenuLink>
-            ))}
-          </XhNavigationMenuBranchContent>
-        </Fragment>
-      )
-    : <XhNavigationMenuLink key={entry.value} href={entry.href} current={entry.current}>{entry.label}</XhNavigationMenuLink>))
+/** 标准结构里各部件对应的组件。 */
+const NAVIGATION_MENU_PARTS = {
+  'list': XhNavigationMenuList,
+  'item': XhNavigationMenuItem,
+  'trigger': XhNavigationMenuTrigger,
+  'content': XhNavigationMenuContent,
+  'branch-trigger': XhNavigationMenuBranchTrigger,
+  'branch-indicator': XhNavigationMenuBranchIndicator,
+  'branch-content': XhNavigationMenuBranchContent,
+  'link': NavigationMenuStructureLink,
+  'indicator': XhNavigationMenuIndicator,
+}
+
+/**
+ * 未写 children 时照 navigationMenuStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 面板内容给了 renderPanel 就由它提供，否则按这一项的 children 铺链接与子级。
+ */
+function renderDefaultStructure(api: NavigationMenuApi, renderPanel: ((node: NavigationMenuNodeMeta) => ReactNode) | undefined): ReactNode[] {
+  const nodes = navigationMenuStructure(api, { slotted: name => name === 'panel' && renderPanel != null })
+  return renderStructure(nodes, NAVIGATION_MENU_PARTS, (node: StructureNode) => {
+    const meta = node.data as NavigationMenuNodeMeta | undefined
+    return node.slot?.name === 'panel' && meta ? renderPanel?.(meta) : undefined
+  })
 }
