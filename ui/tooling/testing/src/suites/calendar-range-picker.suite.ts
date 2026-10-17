@@ -44,9 +44,10 @@ function buildFixture(options: { fixedWeeks?: boolean, firstDayOfWeek?: number }
       {
         part: 'header',
         children: [
-          { part: 'prev-trigger', tag: 'button', text: '上个月' },
+          // 翻页钮照文档的写法留空：字形由皮肤画，名字取 translations；写进与缺省名对不上的可见文字就是 label-content-name-mismatch
+          { part: 'prev-trigger', tag: 'button' },
           { part: 'heading', text: '2024年2月' },
-          { part: 'next-trigger', tag: 'button', text: '下个月' },
+          { part: 'next-trigger', tag: 'button' },
         ],
       },
       {
@@ -125,9 +126,9 @@ function withYearTriggers(base: FixtureNode): FixtureNode {
       : {
           ...header,
           children: [
-            { part: 'prev-year-trigger', tag: 'button', text: '上一年' },
+            { part: 'prev-year-trigger', tag: 'button' },
             ...header.children!,
-            { part: 'next-year-trigger', tag: 'button', text: '下一年' },
+            { part: 'next-year-trigger', tag: 'button' },
           ],
         })),
   }
@@ -145,9 +146,9 @@ function buildMonthPeriodFixture(): FixtureNode {
       {
         part: 'header',
         children: [
-          { part: 'prev-trigger', tag: 'button', text: '上一年' },
+          { part: 'prev-trigger', tag: 'button' },
           { part: 'heading', text: grid.headingLabel },
-          { part: 'next-trigger', tag: 'button', text: '下一年' },
+          { part: 'next-trigger', tag: 'button' },
         ],
       },
       {
