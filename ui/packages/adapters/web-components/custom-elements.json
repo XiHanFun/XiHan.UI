@@ -12700,7 +12700,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-color-picker>`：Light-DOM 行为宿主：作者写 root / label / trigger / value-text / swatch /\npositioner / content / saturation-area / area-thumb / hue-slider / alpha-slider / channel-input / swatch-picker\n等角色节点，元素运行 color-picker 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 trigger，被定位的浮层取 positioner。\n\n工作色恒为 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。\nformat 只在落值时起作用，单独修改它不重排已有的值串：需要当前颜色按新写法产出时，\n更换 format 后再调用一次 `setValue(当前值)`。取色区与滑块轨道的矩形只在指针事件时测量。\n\n色相 / 透明度两条颜色滑块与预设色板是内嵌组件：hue-slider / alpha-slider / swatch-picker 三个挂载点\n同时充当它们的根节点，挂载点中作者编写的是 color-slider 的 control / track / thumb / label / value-text /\nhidden-input 与 color-swatch-picker 的 item / swatch / indicator / hidden-input，接线后各带自己的\ndata-scope；色板的格子用 value 属性写明颜色。数值框用 channel 属性写明所调的通道（`channel=\"r\"`）。",
+          "description": "`<xh-color-picker>`：Light-DOM 行为宿主：作者写 root / label / trigger / value-text / swatch /\npositioner / content / saturation-area / area-thumb / hue-slider / alpha-slider / channel-input / swatch-picker\n等角色节点，元素运行 color-picker 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 trigger，被定位的浮层取 positioner。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）、盒（多选时的标签行与触发钮）、表单影子（给了 name 才有）\n与浮层里的取色面；常驻形态（inline）把取色面直接铺在 root 里。取色面里依次是取色区、色相滑块、透明度滑块（开了 alpha\n才有）、十六进制输入框、预设色板（给了 swatches 才有）、最近使用色，多选时末尾是「添加」（字取 translations.confirmTrigger）。\n标题可以由宿主直接子节点 `slot=\"label\"` 接管；屏幕取色按钮不在生成的结构里，要用时手写部件。\n\n工作色恒为 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。\nformat 只在落值时起作用，单独修改它不重排已有的值串：需要当前颜色按新写法产出时，\n更换 format 后再调用一次 `setValue(当前值)`。取色区与滑块轨道的矩形只在指针事件时测量。\n\n色相 / 透明度两条颜色滑块与预设色板是内嵌组件：hue-slider / alpha-slider / swatch-picker 三个挂载点\n同时充当它们的根节点，挂载点中作者编写的是 color-slider 的 control / track / thumb / label / value-text /\nhidden-input 与 color-swatch-picker 的 item / swatch / indicator / hidden-input，接线后各带自己的\ndata-scope；色板的格子用 value 属性写明颜色。数值框用 channel 属性写明所调的通道（`channel=\"r\"`）。",
           "name": "XhColorPickerElement",
           "cssParts": [
             {
@@ -12838,6 +12838,24 @@
               "type": {
                 "text": "{ parts: ['trigger'], kind: 'group' }"
               }
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhColorPickerElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? colorPickerStructure(connectColorPicker(host.services(), wcNormalize), { label: host.label, hiddenInput: host.name !== undefined, slotted: name => host.slotted(name), }) : undefined, }"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
             },
             {
               "kind": "field",
@@ -13733,6 +13751,14 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
             {
               "type": {
                 "text": "string | string[] | undefined"

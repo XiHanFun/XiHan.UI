@@ -13,16 +13,18 @@ import type {
   ColorPickerSchema,
   ColorPickerSelectionMode,
   ColorPickerTranslations,
+  StructureChild,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { colorPickerToInputChannel } from '@xihan-ui/headless'
+import { colorPickerStructure, colorPickerToInputChannel } from '@xihan-ui/headless'
 import { useEffect } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotIsPlainText } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { XhColorSliderControl, XhColorSliderThumb, XhColorSliderTrack } from '../color-slider/color-slider'
 import { ColorSliderProvider } from '../color-slider/context'
@@ -47,6 +49,8 @@ export type ColorPickerRootSlotProps = Pick<
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'defaultValue' | 'dir' | 'children' | 'color'>
 
 export interface XhColorPickerRootProps extends RootElementProps {
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
   /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
   ariaLabel?: string
   /** 受控的选中颜色，值串数组；给定即受控。单选可写裸串。 */
@@ -99,6 +103,7 @@ export interface XhColorPickerRootProps extends RootElementProps {
 }
 
 export function XhColorPickerRoot({
+  label,
   ariaLabel,
   value,
   defaultValue,
@@ -175,24 +180,26 @@ export function XhColorPickerRoot({
           { ref: ctx.rootRef },
         )}
       >
-        {renderSlot(children, {
-          open: api.open,
-          value: api.value,
-          color: api.color,
-          canAdd: api.canAdd,
-          rgba: api.rgba,
-          hsva: api.hsva,
-          swatches: api.swatches,
-          recentColors: api.recentColors,
-          picking: api.picking,
-          eyeDropperSupported: api.eyeDropperSupported,
-          errors: api.errors,
-          setOpen: api.setOpen,
-          setValue: api.setValue,
-          add: api.add,
-          clearError: api.clearError,
-          clearRecentColors: api.clearRecentColors,
-        })}
+        {children != null
+          ? renderSlot(children, {
+              open: api.open,
+              value: api.value,
+              color: api.color,
+              canAdd: api.canAdd,
+              rgba: api.rgba,
+              hsva: api.hsva,
+              swatches: api.swatches,
+              recentColors: api.recentColors,
+              picking: api.picking,
+              eyeDropperSupported: api.eyeDropperSupported,
+              errors: api.errors,
+              setOpen: api.setOpen,
+              setValue: api.setValue,
+              add: api.add,
+              clearError: api.clearError,
+              clearRecentColors: api.clearRecentColors,
+            })
+          : renderDefaultStructure(api, label, name !== undefined)}
       </div>
     </ColorPickerProvider>
   )
@@ -569,4 +576,54 @@ export function XhColorPickerHiddenInput({ ...rest }: XhColorPickerHiddenInputPr
       )}
     />
   )
+}
+
+/** 标准结构里各部件对应的组件；委派部件按「组件名/部件名」查，色板的每一格自己铺表单影子、色块与选中标记。 */
+const COLOR_PICKER_PARTS = {
+  'label': XhColorPickerLabel,
+  'control': XhColorPickerControl,
+  'tag-list': XhColorPickerTagList,
+  'trigger': XhColorPickerTrigger,
+  'value-text': XhColorPickerValueText,
+  'swatch': XhColorPickerSwatch,
+  'positioner': XhColorPickerPositioner,
+  'content': XhColorPickerContent,
+  'saturation-area': XhColorPickerSaturationArea,
+  'area-thumb': XhColorPickerAreaThumb,
+  'hue-slider': XhColorPickerHueSlider,
+  'alpha-slider': XhColorPickerAlphaSlider,
+  'channel-input': XhColorPickerChannelInput,
+  'swatch-picker': XhColorPickerSwatchPicker,
+  'recent-swatch-picker': XhColorPickerRecentSwatchPicker,
+  'confirm-trigger': XhColorPickerConfirmTrigger,
+  'hidden-input': XhColorPickerHiddenInput,
+  'color-slider/control': XhColorSliderControl,
+  'color-slider/track': XhColorSliderTrack,
+  'color-slider/thumb': XhColorSliderThumb,
+  'color-swatch-picker/item': XhColorSwatchPickerItem,
+  'tag/tag': XhColorPickerTag,
+  'tag/tag-label': XhColorPickerTagLabel,
+  'tag/item-delete-trigger': XhColorPickerItemDeleteTrigger,
+  'tag/overflow-tag': XhColorPickerOverflowTag,
+}
+
+/** 色板的每一格自己铺表单影子、色块与选中标记，铺结构时去掉这几格。 */
+function withoutSelfAssembled(nodes: readonly StructureChild[]): StructureChild[] {
+  return nodes.map((node): StructureChild => {
+    if (!('part' in node) || !node.children)
+      return node
+    if (node.component === 'color-swatch-picker' && node.part === 'item')
+      return { ...node, children: [] }
+    return { ...node, children: withoutSelfAssembled(node.children) }
+  })
+}
+
+/**
+ * 未写 children 时铺开的整套结构：照 headless 的 colorPickerStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容交给 label 部件。
+ */
+function renderDefaultStructure(api: ColorPickerApi, label: ReactNode, hiddenInput: boolean): ReactNode[] {
+  const slotted = label != null && typeof label !== 'string'
+  const nodes = colorPickerStructure(api, { label: typeof label === 'string' ? label : undefined, hiddenInput, slotted: name => name === 'label' && slotted })
+  return renderStructure(withoutSelfAssembled(nodes), COLOR_PICKER_PARTS, node => (node.slot ? label : undefined))
 }

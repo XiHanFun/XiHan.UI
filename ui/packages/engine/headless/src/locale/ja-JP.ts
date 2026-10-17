@@ -228,6 +228,7 @@ const translations = {
     swatchGroup: 'カラースウォッチ',
     recentSwatchGroup: '最近使用した色',
     eyeDropperTrigger: '画面から色を選択',
+    confirmTrigger: '追加',
   },
   'color-slider': {
     label: channel => COLOR_CHANNEL[channel],

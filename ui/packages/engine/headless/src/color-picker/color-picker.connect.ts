@@ -169,6 +169,7 @@ export function connectColorPicker<T extends PropTypes>(
     color: value,
     canAdd,
     tags: selectionTags.visible.map(tag => ({ value: tag.key, label: tag.label })),
+    translations: label,
     overflowCount,
     overflowText,
     rgba,
