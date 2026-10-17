@@ -14,6 +14,9 @@ import { resolveTranslations } from '../shared/translations'
 import { fieldArrayAnatomy, fieldArrayTriggerId } from './field-array.anatomy'
 import { atRowMax, atRowMin, fieldArrayValue, rowBound } from './field-array.machine'
 
+/** 没写宽度的列取的轨道：分剩余宽度，内容再宽也不撑破表格。 */
+const FLEX_TRACK = 'minmax(0, 1fr)'
+
 const parts = fieldArrayAnatomy.build()
 
 /** 号还没对上这一帧的兜底 key，与机器发的 `row-<流水号>` 形状不同，不会撞上。 */
@@ -43,6 +46,18 @@ export function connectFieldArray<T extends PropTypes>(
   // 只读与禁用一样按不动行数，只是不置灰
   const editable = !disabled && !readOnly
   const canAdd = editable && !atMax
+  const layout = prop('layout') === 'table' ? 'table' : 'list'
+  const table = layout === 'table'
+  const columns = prop('columns') ?? []
+  // 轨道：行头一条、每列一条、把手一条；表头与各行共用，行头与把手按内容取宽
+  const columnTrack = (width: string | number | undefined): string =>
+    typeof width === 'number' ? `${width}px` : width ?? FLEX_TRACK
+  const columnTracks = columns.map(column => columnTrack(column.width)).join(' ')
+  // 列 id 到第几条轨道：第 1 条给行头，列从第 2 条起
+  const columnLine = (id: string): string | undefined => {
+    const at = columns.findIndex(column => column.id === id)
+    return at < 0 ? undefined : String(at + 2)
+  }
 
   // 三个行内把手都只装得下一个图形，行号只能由名字带出来；
   // 新增把手装的是一句话，名字取它自己的内容，这里不覆盖
@@ -102,6 +117,7 @@ export function connectFieldArray<T extends PropTypes>(
   // 行下标落到行内每个部件上，皮肤与测试据此认出这是第几行
   const itemAttrs = (item: FieldArrayItemProps): Record<string, string | undefined> => ({
     'data-index': String(item.index),
+    'data-layout': layout,
     'data-disabled': dataAttr(disabled),
     'data-readonly': dataAttr(readOnly),
     'data-invalid': dataAttr(invalid),
@@ -151,6 +167,8 @@ export function connectFieldArray<T extends PropTypes>(
     readOnly,
     invalid,
     movable,
+    layout,
+    columns,
     atMin,
     atMax,
     canAdd,
@@ -172,21 +190,62 @@ export function connectFieldArray<T extends PropTypes>(
       'data-at-min': dataAttr(atMin),
       'data-at-max': dataAttr(atMax),
       'data-movable': dataAttr(movable),
+      'data-layout': layout,
       // 列表动效接上之前的这一帧（含服务端渲染）里的行都属于首帧，不播进场
       'data-instant': dataAttr(!context.get('listTracked')),
+    }),
+
+    // 表格本体：根在两种排布下都不带角色，表格排布只是多出这一层；新增把手留在根里、排在它之后
+    getTableProps: () => normalize.element({
+      ...parts.table.attrs,
+      'role': table ? 'table' : undefined,
+      // 表头算第 1 行
+      'aria-rowcount': table ? count + 1 : undefined,
+      'data-layout': layout,
+      // 没给列时不写，皮肤按一条弹性轨道兜底
+      'style': { '--xh-_field-array-cols': table ? columnTracks : '' },
+    }),
+
+    getHeaderProps: () => normalize.element({
+      ...parts.header.attrs,
+      'role': table ? 'row' : undefined,
+      'aria-rowindex': table ? 1 : undefined,
+      'data-layout': layout,
+      'hidden': !table || undefined,
+    }),
+
+    getColumnHeaderProps: column => normalize.element({
+      ...parts['column-header'].attrs,
+      'role': table ? 'columnheader' : undefined,
+      'data-value': column.value,
+      'data-layout': layout,
+      'style': { gridColumn: (table && columnLine(column.value)) || '' },
+      'hidden': !table || undefined,
     }),
 
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
       ...itemAttrs(item),
+      'role': table ? 'row' : undefined,
+      // 表头算第 1 行，数据行从第 2 行起
+      'aria-rowindex': table ? item.index + 2 : undefined,
       'data-first': dataAttr(item.index === 0),
       'data-last': dataAttr(item.index + 1 === count),
     }),
 
-    // 行前的行号或名目。纯标注：与行里的控件不建 for 关联，那一层的名字归作者
+    // 行前的行号或名目。纯标注：与行里的控件不建 for 关联，那一层的名字归作者；表格排布下是这一行的行头
     getItemLabelProps: item => normalize.element({
       ...parts['item-label'].attrs,
       ...itemAttrs(item),
+      role: table ? 'rowheader' : undefined,
+    }),
+
+    getItemCellProps: cell => normalize.element({
+      ...parts['item-cell'].attrs,
+      ...itemAttrs(cell),
+      'role': table ? 'cell' : undefined,
+      'data-value': cell.value,
+      'style': { gridColumn: (table && columnLine(cell.value)) || '' },
     }),
 
     getItemContentProps: item => normalize.element({
@@ -194,9 +253,12 @@ export function connectFieldArray<T extends PropTypes>(
       ...itemAttrs(item),
     }),
 
+    // 表格排布下把手这一格落在最后一条轨道上
     getItemActionProps: item => normalize.element({
       ...parts['item-action'].attrs,
       ...itemAttrs(item),
+      role: table ? 'cell' : undefined,
+      style: { gridColumn: table ? '-2 / -1' : '' },
     }),
 
     getAddTriggerProps: () => normalize.button({

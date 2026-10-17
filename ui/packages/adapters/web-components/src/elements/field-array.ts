@@ -6,7 +6,7 @@
 // 提供 field array 相关实现。
 
 import type { Service } from '@xihan-ui/core'
-import type { FieldArrayApi, FieldArrayItemProps, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails, FormControlState, FormPath, FormSchema } from '@xihan-ui/headless'
+import type { FieldArrayApi, FieldArrayColumn, FieldArrayItemProps, FieldArrayLayout, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails, FormControlState, FormPath, FormSchema } from '@xihan-ui/headless'
 import { connectFieldArray, fieldArrayAnatomy, fieldArrayMachine, fieldArrayMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -49,9 +49,15 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} disabled - 禁用：新增、删除、换序三路都不可按下
  * @attr {boolean} read-only - 只读：行数不可修改，行内的控件由作者自行设置只读
  * @attr {boolean} invalid - 校验失败标注；写在根与每一行上
+ * @attr {'list'|'table'} layout - 排布：list（缺省）一行一条纵向堆叠；table 是 role=table 的表格，表头与各行共用一套列宽
  * @attr {string} name - 整份数组的表单字段名；嵌套 Form 时自动使用同一条 FormPath 真源
  * @fires value-change - 数据数组变化；detail 为 `{ value: unknown[], mutation? }`，本组的增、删、移与整份写值带上 mutation（insert / remove / move / replace）
- * @csspart root - 整份列表的容器，承载 data-disabled / data-empty / data-at-min / data-at-max / data-movable
+ * @csspart root - 整份列表的容器，承载 data-disabled / data-empty / data-at-min / data-at-max / data-movable / data-layout；两种排布下都不带角色
+ * @csspart table - 表格排布的表格本体（role=table），表头与各行放在它里面，add-trigger 仍是 root 的最后一个子节点；
+ *   放进字段时字段的标签与说明接到它上面，不在字段里时宿主上的 aria-label 转给它。列表排布下不带角色
+ * @csspart header - 表格排布的表头行（role=row，第 1 行）；列表排布下收起
+ * @csspart column-header - 列头（role=columnheader），须自带 value 属性写列 id；留空即由元素填入这一列的 label
+ * @csspart item-cell - 行里的一格（role=cell），须自带 value 属性写列 id；只在表格排布下使用
  * @csspart item - 一行一个，可自带 index 属性声明下标，默认按文档序
  * @csspart item-label - 一行前面的行号或名目；纯标注
  * @csspart item-content - 一行中放置作者自己控件的位置
@@ -63,6 +69,13 @@ function declaredIndex(el: HTMLElement, position: number): number {
  */
 export class XhFieldArrayElement extends XhElement {
   static override partContract = { anatomy: fieldArrayAnatomy, meta: fieldArrayMeta }
+  // 放进字段时字段的标签与说明落在表格本体上（组类接线）
+  static override fieldTarget = { parts: ['table'], kind: 'group' } as const
+
+  // 列表排布下表格部件不带角色，不承接字段的名字与说明
+  protected override acceptsFieldWiring(): boolean {
+    return this.layout === 'table'
+  }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
@@ -76,6 +89,9 @@ export class XhFieldArrayElement extends XhElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
+    layout: { converter: STRING_CONVERTER },
+    // 列定义是数组，只走 property
+    columns: { attribute: false },
     name: { converter: STRING_CONVERTER },
     translations: { attribute: false },
   }
@@ -89,6 +105,8 @@ export class XhFieldArrayElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
+  declare layout?: FieldArrayLayout
+  declare columns?: FieldArrayColumn[]
   declare name?: FormPath
   declare translations?: Partial<FieldArrayTranslations>
 
@@ -127,6 +145,8 @@ export class XhFieldArrayElement extends XhElement {
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,
+      layout: this.layout,
+      columns: this.columns,
       name: this.name,
       translations: this.translations,
       onValueChange: this.notifyValue,
@@ -175,6 +195,22 @@ export class XhFieldArrayElement extends XhElement {
     this.commands().moveDown(index)
   }
 
+  /** 作者在表格节点上自己写没写名字：头一回见到它时定案。 */
+  private tableOwnName: boolean | undefined
+
+  /** 元素代填的文字：首次见到该节点时若已有内容则归作者，之后不再改写。 */
+  private readonly ownsText = new WeakMap<HTMLElement, boolean>()
+
+  private fillText(el: HTMLElement, text: string): void {
+    let owned = this.ownsText.get(el)
+    if (owned === undefined) {
+      owned = (el.textContent ?? '').trim() === ''
+      this.ownsText.set(el, owned)
+    }
+    if (owned && el.textContent !== text)
+      el.textContent = text
+  }
+
   // 行内的子部件：getParts 收的是整个元素范围，按子树过滤才归得对。
   private partsIn(owner: HTMLElement, name: string): HTMLElement[] {
     return this.getParts(name).filter(el => owner.contains(el))
@@ -191,6 +227,20 @@ export class XhFieldArrayElement extends XhElement {
         this.spreader.spread(el, props)
     }
     put('root', api.getRootProps() as Record<string, unknown>)
+    // 宿主上的 aria-label 转给表格本体；作者在表格节点上自己写了名字时不覆盖
+    const tableEl = this.getPart('table')
+    if (tableEl && this.tableOwnName === undefined)
+      this.tableOwnName = tableEl.hasAttribute('aria-label') || tableEl.hasAttribute('aria-labelledby')
+    const hostName = this.tableOwnName ? undefined : this.getAttribute('aria-label') ?? undefined
+    put('table', { ...api.getTableProps() as Record<string, unknown>, 'aria-label': hostName })
+    put('header', api.getHeaderProps() as Record<string, unknown>)
+    for (const el of this.getParts('column-header')) {
+      const value = el.getAttribute('value') ?? ''
+      this.spreader.spread(el, api.getColumnHeaderProps({ value }) as Record<string, unknown>)
+      const label = api.columns.find(column => column.id === value)?.label
+      if (label != null)
+        this.fillText(el, label)
+    }
     put('add-trigger', api.getAddTriggerProps() as Record<string, unknown>)
 
     // 行是多实例 part，逐个打：身份取作者写在节点上的 index，缺省按文档序
@@ -201,6 +251,8 @@ export class XhFieldArrayElement extends XhElement {
         this.spreader.spread(label, api.getItemLabelProps(item) as Record<string, unknown>)
       for (const content of this.partsIn(el, 'item-content'))
         this.spreader.spread(content, api.getItemContentProps(item) as Record<string, unknown>)
+      for (const cell of this.partsIn(el, 'item-cell'))
+        this.spreader.spread(cell, api.getItemCellProps({ index: item.index, value: cell.getAttribute('value') ?? '' }) as Record<string, unknown>)
       for (const action of this.partsIn(el, 'item-action'))
         this.spreader.spread(action, api.getItemActionProps(item) as Record<string, unknown>)
       for (const trigger of this.partsIn(el, 'item-delete-trigger'))

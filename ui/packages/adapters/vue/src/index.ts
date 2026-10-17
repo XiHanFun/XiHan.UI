@@ -515,7 +515,7 @@ export { useExpressionInput } from './components/expression-input/use-expression
 export type { ExpressionInputContext } from './components/expression-input/use-expression-input'
 export { provideFieldArray, provideFieldArrayItem, useFieldArrayContext, useFieldArrayItemContext } from './components/field-array/context'
 export type { FieldArrayItemContext } from './components/field-array/context'
-export { XhFieldArrayAddTrigger, XhFieldArrayItem, XhFieldArrayItemAction, XhFieldArrayItemContent, XhFieldArrayItemDeleteTrigger, XhFieldArrayItemLabel, XhFieldArrayMoveDownTrigger, XhFieldArrayMoveUpTrigger, XhFieldArrayRoot } from './components/field-array/field-array'
+export { XhFieldArrayAddTrigger, XhFieldArrayColumnHeader, XhFieldArrayHeader, XhFieldArrayItem, XhFieldArrayItemAction, XhFieldArrayItemCell, XhFieldArrayItemContent, XhFieldArrayItemDeleteTrigger, XhFieldArrayItemLabel, XhFieldArrayMoveDownTrigger, XhFieldArrayMoveUpTrigger, XhFieldArrayRoot, XhFieldArrayTable } from './components/field-array/field-array'
 export type { FieldArrayRootSlotProps } from './components/field-array/field-array'
 export { useFieldArray } from './components/field-array/use-field-array'
 export type { FieldArrayContext } from './components/field-array/use-field-array'

@@ -26955,8 +26955,24 @@
           "name": "XhFieldArrayElement",
           "cssParts": [
             {
-              "description": "整份列表的容器，承载 data-disabled / data-empty / data-at-min / data-at-max / data-movable",
+              "description": "整份列表的容器，承载 data-disabled / data-empty / data-at-min / data-at-max / data-movable / data-layout；两种排布下都不带角色",
               "name": "root"
+            },
+            {
+              "description": "表格排布的表格本体（role=table），表头与各行放在它里面，add-trigger 仍是 root 的最后一个子节点； 放进字段时字段的标签与说明接到它上面，不在字段里时宿主上的 aria-label 转给它。列表排布下不带角色",
+              "name": "table"
+            },
+            {
+              "description": "表格排布的表头行（role=row，第 1 行）；列表排布下收起",
+              "name": "header"
+            },
+            {
+              "description": "列头（role=columnheader），须自带 value 属性写列 id；留空即由元素填入这一列的 label",
+              "name": "column-header"
+            },
+            {
+              "description": "行里的一格（role=cell），须自带 value 属性写列 id；只在表格排布下使用",
+              "name": "item-cell"
             },
             {
               "description": "一行一个，可自带 index 属性声明下标，默认按文档序",
@@ -27000,6 +27016,25 @@
               },
               "static": true,
               "default": "{ anatomy: fieldArrayAnatomy, meta: fieldArrayMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['table'], kind: 'group' }",
+              "type": {
+                "text": "{ parts: ['table'], kind: 'group' }"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "acceptsFieldWiring",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
             },
             {
               "kind": "field",
@@ -27078,6 +27113,23 @@
                 "text": "boolean | undefined"
               },
               "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "layout",
+              "privacy": "public",
+              "type": {
+                "text": "FieldArrayLayout | undefined"
+              },
+              "attribute": "layout"
+            },
+            {
+              "kind": "field",
+              "name": "columns",
+              "privacy": "public",
+              "type": {
+                "text": "FieldArrayColumn[] | undefined"
+              }
             },
             {
               "kind": "field",
@@ -27288,6 +27340,47 @@
               "description": "第 index 行下移一格。"
             },
             {
+              "kind": "field",
+              "name": "tableOwnName",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "privacy": "private",
+              "description": "作者在表格节点上自己写没写名字：头一回见到它时定案。"
+            },
+            {
+              "kind": "field",
+              "name": "ownsText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "元素代填的文字：首次见到该节点时若已有内容则归作者，之后不再改写。"
+            },
+            {
+              "kind": "method",
+              "name": "fillText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
               "kind": "method",
               "name": "partsIn",
               "privacy": "private",
@@ -27382,6 +27475,14 @@
             },
             {
               "type": {
+                "text": "FieldArrayLayout | undefined"
+              },
+              "description": "排布：list（缺省）一行一条纵向堆叠；table 是 role=table 的表格，表头与各行共用一套列宽",
+              "name": "layout",
+              "fieldName": "layout"
+            },
+            {
+              "type": {
                 "text": "FormPath | undefined"
               },
               "description": "整份数组的表单字段名；嵌套 Form 时自动使用同一条 FormPath 真源",
@@ -27433,10 +27534,25 @@
               "name": "--xh-field-array-add-radius"
             },
             {
+              "name": "--xh-field-array-cell-px"
+            },
+            {
+              "name": "--xh-field-array-cell-py"
+            },
+            {
+              "name": "--xh-field-array-column-header-fg"
+            },
+            {
+              "name": "--xh-field-array-column-header-font-weight"
+            },
+            {
               "name": "--xh-field-array-content-gap"
             },
             {
               "name": "--xh-field-array-gap"
+            },
+            {
+              "name": "--xh-field-array-header-bg"
             },
             {
               "name": "--xh-field-array-icon-size"
@@ -27458,6 +27574,15 @@
             },
             {
               "name": "--xh-field-array-item-radius"
+            },
+            {
+              "name": "--xh-field-array-row-divider"
+            },
+            {
+              "name": "--xh-field-array-table-border"
+            },
+            {
+              "name": "--xh-field-array-table-radius"
             },
             {
               "name": "--xh-field-array-trigger-bg"

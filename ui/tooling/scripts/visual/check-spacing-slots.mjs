@@ -91,6 +91,8 @@ const CROSS_PART = {
   'code-view.header': ['fold-trigger'],
   // 条目是两列网格，第一列的宽度与列间距由它自己排，槽按被排的那一列取名
   'descriptions.label': ['item'],
+  // 表头底色的圆角跟着表格本体收边，取的是表格本体那支圆角槽
+  'field-array.table': ['header'],
   // 横排布局下标签的上下留白由控件高度算出来，算的就是「与控件首行对齐」这件事
   'field.control': ['label'],
   // 区间分隔符两侧的留白是「自己那份 px 减去输入行的常规 gap」：算式必然读 control 的 gap，否则收不回来

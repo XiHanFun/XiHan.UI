@@ -103,7 +103,7 @@ export type { ExpressionCompletionInput, ExpressionInputApi, ExpressionInputAuto
 export { connectField, fieldAnatomy, fieldControlWiring, fieldGroupAttrs, fieldKeyboard, fieldMeta, fieldStateAttrs, withFieldDescription, withFieldLabel } from './field'
 export type { FieldApi, FieldControlWiring, FieldProps, FieldRenderedParts, FieldTranslations } from './field'
 export { connectFieldArray, fieldArrayAnatomy, fieldArrayInsertIndex, fieldArrayKeyboard, fieldArrayMachine, fieldArrayMeta, fieldArrayTriggerId } from './field-array'
-export type { FieldArrayApi, FieldArrayItem, FieldArrayItemProps, FieldArrayPressedKey, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails } from './field-array'
+export type { FieldArrayApi, FieldArrayColumn, FieldArrayColumnProps, FieldArrayItem, FieldArrayItemCellProps, FieldArrayItemProps, FieldArrayLayout, FieldArrayPressedKey, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails } from './field-array'
 export { connectFieldset, fieldsetAnatomy, fieldsetKeyboard, fieldsetMeta } from './fieldset'
 export type { FieldsetApi, FieldsetProps, FieldsetRenderedParts, FieldsetTranslations } from './fieldset'
 export { acceptAttr, acceptsFile, connectFileUpload, FILE_UPLOAD_MAX_FILES, fileUploadAnatomy, fileUploadHiddenInputId, fileUploadKeyboard, fileUploadMachine, fileUploadMeta, formatFileSize, normalizeAccept, normalizeMaxConcurrentUploads, normalizeMaxFiles, sameFiles, sameRemoteFiles, validateFiles } from './file-upload'

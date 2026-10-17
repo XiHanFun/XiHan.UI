@@ -4969,10 +4969,105 @@
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
+/* —— 表格排布 ——
+   table 部件是 role=table：表头与各行共用一套轨道（行头一条、每列一条、把手一条），列宽由连接层写进
+   --xh-_field-array-cols，行头与把手按内容取宽。表头取淡底与中等字重，行与行之间画内部分隔线，
+   格内衬与表格单元格同一档；行不带悬停、选中这些行态 */
+.xh-scope-field-array[data-part='table'][data-layout='table'] {
+  /* 列轨道由连接层写在表格本体的内联样式上；没给列时落一条弹性轨道 */
+  --xh-_field-array-cols: minmax(0, 1fr);
+  --xh-_field-array-tracks: max-content var(--xh-_field-array-cols) max-content;
+
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+  border: var(--xh-stroke-thin) solid var(--xh-field-array-table-border, var(--xh-border-default));
+  border-radius: var(--xh-field-array-table-radius, var(--xh-shape-surface));
+}
+
+/* 列表排布下表格本体不成一层：它里面的行照常作为一条一条排列 */
+.xh-scope-field-array[data-part='table'][data-layout='list'] {
+  display: contents;
+}
+
+/* 表头与各行：不认子网格的引擎里各自按同一套轨道排，认子网格时（见下面的守卫块）改为继承表格本体的轨道 */
+.xh-scope-field-array[data-part='header'][data-layout='table'],
+.xh-scope-field-array[data-part='item'][data-layout='table'] {
+  grid-template-columns: var(--xh-_field-array-tracks);
+  gap: 0;
+  align-items: center;
+  padding: 0;
+  border-radius: 0;
+}
+
+/* 行的 [hidden] 兜底排在文件前面，这里避开收起的节点 */
+.xh-scope-field-array[data-part='header'][data-layout='table']:not([hidden]),
+.xh-scope-field-array[data-part='item'][data-layout='table']:not([hidden]) {
+  display: grid;
+}
+
+/* 表头底色贴着表格本体的圆角收边 */
+.xh-scope-field-array[data-part='header'][data-layout='table'] {
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-field-array-row-divider, var(--xh-border-subtle));
+  border-start-start-radius: calc(var(--xh-field-array-table-radius, var(--xh-shape-surface)) - var(--xh-stroke-thin));
+  border-start-end-radius: calc(var(--xh-field-array-table-radius, var(--xh-shape-surface)) - var(--xh-stroke-thin));
+  background: var(--xh-field-array-header-bg, var(--xh-bg-subtle));
+}
+
+.xh-scope-field-array[data-part='item'][data-layout='table']
+  + .xh-scope-field-array[data-part='item'][data-layout='table'] {
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-field-array-row-divider, var(--xh-border-subtle));
+}
+
+/* 列头与格子同一档内衬；列头与正文同色、加一档字重，与表格的列头一致 */
+.xh-scope-field-array[data-part='column-header'][data-layout='table'],
+.xh-scope-field-array:is([data-part='item-cell'], [data-part='item-label'], [data-part='item-action'])[data-layout='table'] {
+  display: flex;
+  align-items: center;
+  min-inline-size: 0;
+  padding-block: var(--xh-field-array-cell-py, var(--xh-table-cell-py-md));
+  padding-inline: var(--xh-field-array-cell-px, var(--xh-table-cell-px-md));
+}
+
+.xh-scope-field-array[data-part='column-header'][data-layout='table'] {
+  color: var(--xh-field-array-column-header-fg, var(--xh-fg-default));
+  font-weight: var(--xh-field-array-column-header-font-weight, var(--xh-font-weight-medium));
+  text-align: start;
+}
+
+/* 格子里放的字段族控件铺满这一格，与放进 Field 时一样 */
+.xh-scope-field-array[data-part='item-cell'][data-layout='table'] {
+  --xh-control-w: 100%;
+}
+
+@supports (grid-template-columns: subgrid) {
+  .xh-scope-field-array[data-part='table'][data-layout='table'] {
+    display: grid;
+    grid-template-columns: var(--xh-_field-array-tracks);
+  }
+
+  .xh-scope-field-array[data-part='header'][data-layout='table'],
+  .xh-scope-field-array[data-part='item'][data-layout='table'] {
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+  }
+
+  /* 删掉的行的替身绝对定位、不在网格流里，按同一套轨道自己排 */
+  .xh-scope-field-array[data-part='item'][data-layout='table'][data-state='closed'] {
+    grid-template-columns: var(--xh-_field-array-tracks);
+  }
+}
+
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
    写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
 .xh-scope-field-array[data-part='item-content'][hidden],
 .xh-scope-field-array[data-part='item-action'][hidden] {
+  display: none;
+}
+.xh-scope-field-array[data-part='table'][hidden],
+.xh-scope-field-array[data-part='header'][hidden],
+.xh-scope-field-array[data-part='column-header'][hidden],
+.xh-scope-field-array[data-part='item-cell'][hidden] {
   display: none;
 }
 

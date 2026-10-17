@@ -5,11 +5,12 @@
 
 // 提供 field array 相关实现。
 
-import type { FieldArrayApi, FieldArrayItemProps, FieldArraySchema, FieldArrayTranslations, FormPath } from '@xihan-ui/headless'
+import type { FieldArrayApi, FieldArrayColumn, FieldArrayItemProps, FieldArrayLayout, FieldArraySchema, FieldArrayTranslations, FormPath } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useOptionalFormContext } from '../form/context'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideFieldArray, provideFieldArrayItem, useFieldArrayContext, useFieldArrayItemContext } from './context'
@@ -50,6 +51,10 @@ export const XhFieldArrayRoot = defineComponent({
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
+    /** 排布：list（缺省）一行一条纵向堆叠；table 是 role=table 的表格，表头与各行共用一套列宽。 */
+    layout: { type: String as PropType<FieldArrayLayout> },
+    /** 表格排布的各列，只在 table 排布下生效；顺序即列序。 */
+    columns: { type: Array as PropType<FieldArrayColumn[]> },
     name: { type: [String, Array] as PropType<FormPath> },
     translations: { type: Object as PropType<Partial<FieldArrayTranslations>> },
   },
@@ -86,6 +91,55 @@ export const XhFieldArrayRoot = defineComponent({
       moveUp: ctx.api.value.moveUp,
       moveDown: ctx.api.value.moveDown,
     }))
+  },
+})
+
+export const XhFieldArrayTable = defineComponent({
+  name: 'XhFieldArrayTable',
+  setup(_, { slots }) {
+    // 表格排布下放进字段时，字段的标签并进表格的名字链、说明与错误文案进描述链；列表排布下表格不带角色，不接线
+    const fieldWiring = useFieldGroupWiring()
+    const fieldLabel = useFieldLabelWiring()
+    const ctx = useFieldArrayContext()
+    return () => {
+      const props = ctx.api.value.getTableProps() as Record<string, unknown>
+      return h('div', ctx.api.value.layout === 'table' ? fieldLabel.value({ ...fieldWiring.value, ...props }) : props, slots.default?.())
+    }
+  },
+})
+
+export const XhFieldArrayHeader = defineComponent({
+  name: 'XhFieldArrayHeader',
+  setup(_, { slots }) {
+    const ctx = useFieldArrayContext()
+    return () => h('div', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhFieldArrayColumnHeader = defineComponent({
+  name: 'XhFieldArrayColumnHeader',
+  props: {
+    /** 列 id，与 columns 里的 id 对应。 */
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useFieldArrayContext()
+    // 没写内容时显示这一列的 label
+    return () => h('div', ctx.api.value.getColumnHeaderProps({ value: props.value }) as Record<string, unknown>, slots.default?.()
+      ?? ctx.api.value.columns.find(column => column.id === props.value)?.label)
+  },
+})
+
+export const XhFieldArrayItemCell = defineComponent({
+  name: 'XhFieldArrayItemCell',
+  props: {
+    /** 列 id，与 columns 里的 id 对应。 */
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useFieldArrayContext()
+    const { item } = useFieldArrayItemContext()
+    return () => h('div', ctx.api.value.getItemCellProps({ index: item.value.index, value: props.value }) as Record<string, unknown>, slots.default?.())
   },
 })
 

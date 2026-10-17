@@ -37,6 +37,29 @@ export interface FieldArrayItemProps {
   index: number
 }
 
+/** 排布：list 一行一条纵向堆叠（缺省）；table 是 role=table 的表格，表头与各行共用一套列宽。 */
+export type FieldArrayLayout = 'list' | 'table'
+
+/** 表格排布的一列：id 是行里 item-cell 与表头 column-header 的 value。 */
+export interface FieldArrayColumn {
+  id: string
+  /** 列头文字；作者没给 column-header 写内容时显示它。 */
+  label?: string
+  /** 列宽：数字按 px，字符串原样作轨道宽（fr、%、rem…），不写按 1fr。 */
+  width?: string | number
+}
+
+/** 表头的一格：value 是列 id。 */
+export interface FieldArrayColumnProps {
+  value: string
+}
+
+/** 行里的一格：index 是第几行，value 是列 id。 */
+export interface FieldArrayItemCellProps {
+  index: number
+  value: string
+}
+
 /** 一行的完整读侧投影，作者用它铺设行。 */
 export interface FieldArrayItem {
   index: number
@@ -94,6 +117,14 @@ export interface FieldArraySchema extends MachineSchema {
     readOnly?: boolean
     /** 校验失败标注：写在根与每一行上。 */
     invalid?: boolean
+    /**
+     * 排布，缺省 list。table 时 table 部件是 role=table，header 与各行是 role=row，item-label 是 rowheader，
+     * item-cell 与 item-action 是 cell；行里的字段一格一个 item-cell，item-content 在这种排布下不用。
+     * 不带键盘模型：Tab 依次经过每格里的控件与把手，与普通表单一致。窄屏横向滚动交给外层容器。
+     */
+    layout?: FieldArrayLayout
+    /** 表格排布的各列，只在 table 排布下生效；顺序即列序。 */
+    columns?: FieldArrayColumn[]
     /**
      * 整份数组的表单字段名。嵌套在 Form 中时会自动接入其值、规则、错误与校验真源；
      * 每一行经 `item.name` 获得显式数组 FormPath，不拼接字符串下标。
@@ -169,6 +200,9 @@ export interface FieldArrayApi<T extends PropTypes = PropTypes> {
   readOnly: boolean
   invalid: boolean
   movable: boolean
+  layout: FieldArrayLayout
+  /** 表格排布的各列，原样取自 columns；没给时为空数组。 */
+  columns: FieldArrayColumn[]
   /** 已到下限：再删除会少于 min。 */
   atMin: boolean
   /** 已到上限：再新增会多于 max。 */
@@ -188,7 +222,18 @@ export interface FieldArrayApi<T extends PropTypes = PropTypes> {
   moveUp: (index: number) => void
   moveDown: (index: number) => void
   getRootProps: () => T['element']
+  /**
+   * 表格排布的表格本体：role=table，表头与各行放在它里面，新增把手仍在 root 里、排在它之后。
+   * 名字来自外层字段的标签（经字段接线），不在字段里时由作者在它上面写 aria-label。列表排布下不带角色。
+   */
+  getTableProps: () => T['element']
+  /** 表头行：role=row，第 1 行。列表排布下收起。 */
+  getHeaderProps: () => T['element']
+  /** 列头：role=columnheader，value 是列 id。列表排布下收起。 */
+  getColumnHeaderProps: (column: FieldArrayColumnProps) => T['element']
   getItemProps: (item: FieldArrayItemProps) => T['element']
+  /** 行里的一格：role=cell，value 是列 id，落在这一列的轨道上。只在表格排布下使用。 */
+  getItemCellProps: (cell: FieldArrayItemCellProps) => T['element']
   /** 行前的行号或名目：纯标注，不与行内的控件建立 for 关联。 */
   getItemLabelProps: (item: FieldArrayItemProps) => T['element']
   getItemContentProps: (item: FieldArrayItemProps) => T['element']
