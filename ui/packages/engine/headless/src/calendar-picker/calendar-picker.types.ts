@@ -6,7 +6,7 @@
 // 定义 calendar picker 类型契约。
 
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
-import type { CalendarBaseAction, CalendarBaseApi, CalendarBaseContext, CalendarBaseEffect, CalendarBaseEvent, CalendarBaseProps, CalendarBaseRefs } from '../shared/calendar'
+import type { CalendarBaseAction, CalendarBaseApi, CalendarBaseContext, CalendarBaseEffect, CalendarBaseEvent, CalendarBaseProps, CalendarBaseRefs, CalendarNavTranslations } from '../shared/calendar'
 
 /**
  * 选择模式：
@@ -23,7 +23,7 @@ export interface CalendarPickerValueChangeDetails {
 }
 
 /** 读屏文案，默认英文。 */
-export interface CalendarPickerTranslations {
+export interface CalendarPickerTranslations extends CalendarNavTranslations {
   /** 今天所在格的可及名：把日期包装为「今天，……」。 */
   todayDate: (date: string) => string
 }

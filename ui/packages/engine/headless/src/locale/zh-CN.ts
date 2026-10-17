@@ -6,9 +6,11 @@
 // 简体中文语言包。
 
 import type { KeyTextTable } from '@xihan-ui/core/hotkey'
+import type { CalendarView } from '../shared/calendar/grid'
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { XhLocale, XhLocaleTranslations } from './types'
 import { keyText } from '@xihan-ui/core/hotkey'
+import { calendarStepSpan } from './calendar-step'
 import { expressionFunctionZhCN, expressionIssueZhCN, expressionParamZhCN } from './expression-input-messages'
 
 /** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
@@ -77,7 +79,16 @@ const tagged = {
 
 const segments = { hour: '小时', minute: '分钟', second: '秒', dayPeriod: '上午/下午' }
 
-const calendar = { todayDate: (date: string) => `今天，${date}` }
+const CALENDAR_PREV = ['上个月', '上一年', '上一个十年', '上一个百年'] as const
+const CALENDAR_NEXT = ['下个月', '下一年', '下一个十年', '下一个百年'] as const
+
+const calendar = {
+  todayDate: (date: string) => `今天，${date}`,
+  prevTrigger: (view: CalendarView) => CALENDAR_PREV[calendarStepSpan(view, false)],
+  nextTrigger: (view: CalendarView) => CALENDAR_NEXT[calendarStepSpan(view, false)],
+  prevYearTrigger: (view: CalendarView) => CALENDAR_PREV[calendarStepSpan(view, true)],
+  nextYearTrigger: (view: CalendarView) => CALENDAR_NEXT[calendarStepSpan(view, true)],
+}
 
 const rangeCalendar = {
   ...calendar,

@@ -6,9 +6,11 @@
 // 俄语语言包。
 
 import type { KeyTextTable } from '@xihan-ui/core/hotkey'
+import type { CalendarView } from '../shared/calendar/grid'
 import type { ChartDatumDetails } from '../shared/chart/types'
 import type { XhLocale, XhLocaleTranslations } from './types'
 import { keyText } from '@xihan-ui/core/hotkey'
+import { calendarStepSpan } from './calendar-step'
 import { FILTER_BUILDER_EN_US, FORMAT_INPUT_EN_US } from './en-US'
 import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
 
@@ -89,7 +91,16 @@ const tagged = {
 
 const segments = { hour: 'час', minute: 'минута', second: 'секунда', dayPeriod: 'ДП/ПП' }
 
-const calendar = { todayDate: (date: string) => `Сегодня, ${date}` }
+const CALENDAR_PREV = ['Предыдущий месяц', 'Предыдущий год', 'Предыдущее десятилетие', 'Предыдущий век'] as const
+const CALENDAR_NEXT = ['Следующий месяц', 'Следующий год', 'Следующее десятилетие', 'Следующий век'] as const
+
+const calendar = {
+  todayDate: (date: string) => `Сегодня, ${date}`,
+  prevTrigger: (view: CalendarView) => CALENDAR_PREV[calendarStepSpan(view, false)],
+  nextTrigger: (view: CalendarView) => CALENDAR_NEXT[calendarStepSpan(view, false)],
+  prevYearTrigger: (view: CalendarView) => CALENDAR_PREV[calendarStepSpan(view, true)],
+  nextYearTrigger: (view: CalendarView) => CALENDAR_NEXT[calendarStepSpan(view, true)],
+}
 
 const rangeCalendar = {
   ...calendar,

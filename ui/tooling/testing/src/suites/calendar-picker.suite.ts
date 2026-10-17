@@ -237,9 +237,9 @@ export const calendarPickerSuite: ConformanceSuite = {
           'week-row[1]': { role: 'row' },
           'week-day[0]': { 'role': 'columnheader', 'aria-label': '星期一', 'data-value': '0' },
           'week-day[6]': { 'role': 'columnheader', 'aria-label': '星期日', 'data-value': '6' },
-          // 方向钮接 Action Control icon ghost xs 档
-          'prev-trigger': { 'type': 'button', 'disabled': null, 'data-disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'xs' },
-          'next-trigger': { 'type': 'button', 'disabled': null, 'data-disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost' },
+          // 方向钮接 Action Control icon ghost xs 档；读屏名按视图取 translations，日视图翻的是一个月
+          'prev-trigger': { 'type': 'button', 'aria-label': 'Previous month', 'disabled': null, 'data-disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'xs' },
+          'next-trigger': { 'type': 'button', 'aria-label': 'Next month', 'disabled': null, 'data-disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost' },
           [`cell[${at(ANCHOR)}]`]: {
             'role': 'gridcell',
             'data-value': ANCHOR,
@@ -760,6 +760,23 @@ export const calendarPickerSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '作者在翻页钮上写了名字：以作者的为准，没写的那颗照旧取缺省名',
+      spec: { apg: APG },
+      props: { ...BASE_PROPS },
+      fixture: (base) => {
+        const named = (node: FixtureNode): FixtureNode => node.part === 'prev-trigger'
+          ? { ...node, attrs: { ...node.attrs, 'aria-label': '去上个月' } }
+          : { ...node, children: node.children?.map(named) }
+        return named(base)
+      },
+      initial: {
+        parts: {
+          'prev-trigger': { 'aria-label': '去上个月' },
+          'next-trigger': { 'aria-label': 'Next month' },
+        },
+      },
+    },
+    {
       name: '一开始就在十年格：年那一截到顶按不动，月那一截压根没有',
       spec: { apg: APG },
       props: { ...BASE_PROPS, defaultActiveView: 'year' },
@@ -769,6 +786,9 @@ export const calendarPickerSuite: ConformanceSuite = {
           'heading-year-trigger': { 'disabled': '', 'data-view': 'year' },
           'heading-month-trigger': { 'hidden': '', 'data-view': 'year' },
           'grid': { 'data-view': 'year' },
+          // 十年格翻一页是十年
+          'prev-trigger': { 'aria-label': 'Previous decade' },
+          'next-trigger': { 'aria-label': 'Next decade' },
         },
       },
     },
@@ -784,6 +804,9 @@ export const calendarPickerSuite: ConformanceSuite = {
           'heading-year-trigger': { 'disabled': null, 'data-view': 'month' },
           'heading-month-trigger': { hidden: '' },
           'grid': { 'data-view': 'month' },
+          // 月格翻一页是一年
+          'prev-trigger': { 'aria-label': 'Previous year' },
+          'next-trigger': { 'aria-label': 'Next year' },
           'week-row[0]': { 'role': 'row', 'data-view': 'month' },
           'cell[0]': { 'role': 'gridcell', 'data-value': '2024-01-01' },
           'cell-trigger[0]': { 'aria-label': '1月', 'data-view': 'month' },

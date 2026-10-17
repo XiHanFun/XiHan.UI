@@ -6413,6 +6413,7 @@
       "CalendarMonthGridOptions",
       "CalendarNavIntent",
       "CalendarNavKeyEventLike",
+      "CalendarNavTranslations",
       "CalendarPanel",
       "CalendarPanelProps",
       "CalendarPart",

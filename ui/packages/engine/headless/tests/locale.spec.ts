@@ -85,9 +85,13 @@ const EXPRESSION_ISSUES = [
  * 每个函数式文案的样例入参，一条一组，覆盖空数据、单数与多数等分支。
  * 语言包新增函数键而这里没有样例时用例直接报缺，不会静默跳过。
  */
+/** 四颗翻页钮的名字按视图给出：日、周、月、季度、年各走一遍。 */
+const CALENDAR_VIEWS = [['day'], ['week'], ['month'], ['quarter'], ['year']]
+const CALENDAR_NAV = { prevTrigger: CALENDAR_VIEWS, nextTrigger: CALENDAR_VIEWS, prevYearTrigger: CALENDAR_VIEWS, nextYearTrigger: CALENDAR_VIEWS }
+
 const SAMPLES: Record<string, Record<string, unknown[][]>> = {
-  'calendar-picker': { todayDate: [['October 4, 2026']] },
-  'calendar-range-picker': { todayDate: [['October 4, 2026']], selectedRange: [['October 1, 2026', 'October 4, 2026']] },
+  'calendar-picker': { todayDate: [['October 4, 2026']], ...CALENDAR_NAV },
+  'calendar-range-picker': { todayDate: [['October 4, 2026']], selectedRange: [['October 1, 2026', 'October 4, 2026']], ...CALENDAR_NAV },
   'carousel': { indicator: [[2]], item: [[1, 6]] },
   'cartesian-chart': {
     datumLabel: [[DATUM]],
@@ -126,8 +130,8 @@ const SAMPLES: Record<string, Record<string, unknown[][]>> = {
   },
   'color-swatch-picker': { swatch: [['#ff0000']] },
   'combobox': TAGGED,
-  'date-picker': { ...TAGGED, todayDate: [['October 4, 2026']] },
-  'date-range-picker': { todayDate: [['October 4, 2026']], selectedRange: [['October 1, 2026', 'October 4, 2026']] },
+  'date-picker': { ...TAGGED, todayDate: [['October 4, 2026']], ...CALENDAR_NAV },
+  'date-range-picker': { todayDate: [['October 4, 2026']], selectedRange: [['October 1, 2026', 'October 4, 2026']], ...CALENDAR_NAV },
   'diff-view': { expandGap: [[1], [5]], truncated: [[1], [20]], commentOn: [[3, 'old'], [3, 'new']] },
   'expression-input': {
     position: [[null, 5], [2, 5]],

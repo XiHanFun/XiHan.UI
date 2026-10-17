@@ -27384,15 +27384,6 @@
             },
             {
               "kind": "field",
-              "name": "tableOwnName",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "privacy": "private",
-              "description": "作者在表格节点上自己写没写名字：头一回见到它时定案。"
-            },
-            {
-              "kind": "field",
               "name": "ownsText",
               "privacy": "private",
               "readonly": true,
