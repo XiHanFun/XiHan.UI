@@ -17,7 +17,7 @@ const PLACES_LIMIT = 64
 const POWER_LIMIT = 999
 
 function rounding(name: string, mode: RoundingMode): FunctionEntry {
-  return builtin(name, 1, 2, (args) => {
+  return builtin(name, ['number', 'places'], 1, 2, (args) => {
     if (anyNull(args))
       return null
     const value = numberArg(args, 0)
@@ -32,7 +32,7 @@ function rounding(name: string, mode: RoundingMode): FunctionEntry {
 
 /** 数学函数。 */
 export const MATH_FUNCTIONS: readonly FunctionEntry[] = [
-  builtin('ABS', 1, 1, (args) => {
+  builtin('ABS', ['number'], 1, 1, (args) => {
     if (anyNull(args))
       return null
     const value = numberArg(args, 0)
@@ -42,13 +42,13 @@ export const MATH_FUNCTIONS: readonly FunctionEntry[] = [
   rounding('FLOOR', 'floor'),
   rounding('CEIL', 'ceil'),
   rounding('TRUNC', 'down'),
-  builtin('SQRT', 1, 1, (args) => {
+  builtin('SQRT', ['number'], 1, 1, (args) => {
     if (anyNull(args))
       return null
     const value = numberArg(args, 0)
     return value instanceof Fault ? value : squareRoot(value)
   }),
-  builtin('POWER', 2, 2, (args) => {
+  builtin('POWER', ['base', 'exponent'], 2, 2, (args) => {
     if (anyNull(args))
       return null
     const base = numberArg(args, 0)

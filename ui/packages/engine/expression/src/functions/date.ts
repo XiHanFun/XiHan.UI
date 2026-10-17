@@ -22,7 +22,7 @@ function dateArg(args: readonly ExprValue[], index: number): ExprDate | Fault {
 }
 
 function datePart(name: string, read: (parts: DateParts, date: ExprDate) => number): FunctionEntry {
-  return builtin(name, 1, 1, (args) => {
+  return builtin(name, ['date'], 1, 1, (args) => {
     if (anyNull(args))
       return null
     const date = dateArg(args, 0)
@@ -41,9 +41,9 @@ const PART_RANGES: readonly (readonly [number, number])[] = [[1, 9999], [1, 12],
 
 /** 日期函数：日期不带时区，`NOW()` / `TODAY()` 取宿主提供的当前时间。 */
 export const DATE_FUNCTIONS: readonly FunctionEntry[] = [
-  builtin('NOW', 0, 0, (_args, runtime) => runtime.now ?? new Fault('XH_EXPR_NOW_UNAVAILABLE')),
-  builtin('TODAY', 0, 0, (_args, runtime) => (runtime.now === null ? new Fault('XH_EXPR_NOW_UNAVAILABLE') : startOfDay(runtime.now))),
-  builtin('DATE', 3, 7, (args) => {
+  builtin('NOW', [], 0, 0, (_args, runtime) => runtime.now ?? new Fault('XH_EXPR_NOW_UNAVAILABLE')),
+  builtin('TODAY', [], 0, 0, (_args, runtime) => (runtime.now === null ? new Fault('XH_EXPR_NOW_UNAVAILABLE') : startOfDay(runtime.now))),
+  builtin('DATE', ['year', 'month', 'day', 'hour', 'minute', 'second', 'millisecond'], 3, 7, (args) => {
     if (anyNull(args))
       return null
     const parts: number[] = []
@@ -57,7 +57,7 @@ export const DATE_FUNCTIONS: readonly FunctionEntry[] = [
     const [year = 1, month = 1, day = 1, hour = 0, minute = 0, second = 0, millisecond = 0] = parts
     return ExprDate.fromParts(year, month, day, hour, minute, second, millisecond)
   }),
-  builtin('TO_DATE', 1, 1, (args) => {
+  builtin('TO_DATE', ['value'], 1, 1, (args) => {
     const value = args[0]!
     if (value === null || value instanceof ExprDate)
       return value
@@ -70,7 +70,7 @@ export const DATE_FUNCTIONS: readonly FunctionEntry[] = [
   datePart('MINUTE', parts => parts.minute),
   datePart('SECOND', parts => parts.second),
   datePart('WEEKDAY', (_parts, date) => date.weekday),
-  builtin('DATE_ADD', 3, 3, (args) => {
+  builtin('DATE_ADD', ['date', 'amount', 'unit'], 3, 3, (args) => {
     if (anyNull(args))
       return null
     const date = dateArg(args, 0)
@@ -87,7 +87,7 @@ export const DATE_FUNCTIONS: readonly FunctionEntry[] = [
     const count = amount.toJs()
     return Math.abs(count) > AMOUNT_LIMIT ? new Fault('XH_EXPR_DATE_OUT_OF_RANGE') : addToDate(date, count, unit)
   }),
-  builtin('DATE_DIFF', 3, 3, (args) => {
+  builtin('DATE_DIFF', ['start', 'end', 'unit'], 3, 3, (args) => {
     if (anyNull(args))
       return null
     const start = dateArg(args, 0)
@@ -99,7 +99,7 @@ export const DATE_FUNCTIONS: readonly FunctionEntry[] = [
     const unit = unitArg(args, 2)
     return unit instanceof Fault ? unit : numberFromInteger(diffDates(start, end, unit))
   }),
-  builtin('FORMAT_DATE', 2, 2, (args, runtime) => {
+  builtin('FORMAT_DATE', ['date', 'pattern'], 2, 2, (args, runtime) => {
     if (anyNull(args))
       return null
     const date = dateArg(args, 0)

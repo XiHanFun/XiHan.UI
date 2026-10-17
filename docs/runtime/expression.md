@@ -312,6 +312,7 @@ const functions = createFunctionTable({
       name: "MASK_PHONE",
       minArgs: 1,
       maxArgs: 1,
+      params: ["phone"],
       call: ([phone], context) => {
         if (phone === null)
           return null;
@@ -328,8 +329,9 @@ const functions = createFunctionTable({
 - `call` 收到的是表达式值，返回值可以是表达式值，也可以是能转换的 JS 值（数字、字符串、数组、普通对象）。
 - `context.invalidArgument(i)`、`context.typeMismatch(i)` 返回失败标记，直接 `return` 即可；抛出的异常记为 `XH_EXPR_FUNCTION_FAILED`。
 - `call` 必须是纯函数：只依赖实参与 `context.now`，不读时钟、随机数或外部状态，否则「结果确定」的承诺不成立。
+- `params` 是参数名，可省略：给出时是小写字母开头的英文键，互不重复，个数等于 `maxArgs`，不限个数时等于 `max(minArgs, 1)`，最后一个表示可重复。编辑器按键取显示文字，省略时显示为「参数 1」「参数 2」。内置函数的参数名都已给出，如 `IF` 是 `condition`、`whenTrue`、`whenFalse`。
 
-`check` 与 `evaluate` 都接受同一个 `functions` 选项。`table.names` 列出全部函数名，`table.lookup(name)` 返回签名，可用来做编辑器里的自动补全与参数提示。
+`check` 与 `evaluate` 都接受同一个 `functions` 选项。`table.names` 列出全部函数名，`table.lookup(name)` 返回签名（名字、实参个数与 `params`），可用来做编辑器里的自动补全与参数提示。
 
 ## 格式化
 
@@ -381,6 +383,8 @@ const functions = createFunctionTable({
 | `isPlainName(text)` | 能否不加反引号写成标识符 |
 | `createExpressionEngine(options?)` | 四款设计器统一注入的引擎，见「注入引擎」 |
 | `formatValue(value, spec, options?)` | 数字、百分比、日期、人民币大写的格式化，见「格式化」 |
+| `scanTokens(source)` | 容错的词法扫描：把源码切成名字、数字、字符串、运算符、标点与 `unknown` 六类词，遇到错误不中断，未闭合的字符串到源码末尾；给编辑器判断光标所在的词 |
+| `createExpressionCheck(engine, options?)` | 用引擎的 `compile` 做检查，返回 `(source) => issues`：失败时是全部问题，成功时为空；可直接作为表达式输入框的 `check`，`identifiers` 同 `compile` |
 
 ### 按引用改名
 

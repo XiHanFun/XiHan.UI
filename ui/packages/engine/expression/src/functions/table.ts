@@ -11,6 +11,7 @@ import { Fault } from '../issues'
 import { fromHost } from '../value'
 import { AGGREGATE_FUNCTIONS } from './aggregate'
 import { DATE_FUNCTIONS } from './date'
+import { paramCount } from './entry'
 import { invalidArgument, typeMismatch } from './helpers'
 import { LOGIC_FUNCTIONS } from './logic'
 import { MATH_FUNCTIONS } from './math'
@@ -33,8 +34,10 @@ export interface FunctionContext {
  * 宿主登记的函数。`name` 是大写 ASCII 字母、数字与下划线，以字母开头；
  * `call` 必须是纯函数：同样的实参永远返回同样的结果，不读时钟、随机数或外部状态。
  * 返回值可以是表达式值，也可以是能转换成表达式值的 JS 值；抛出的异常记为 `XH_EXPR_FUNCTION_FAILED`。
+ * `params` 可省略；给出时是小写字母开头的英文键，互不重复，个数与签名里的规定一致。
  */
-export interface FunctionDefinition extends FunctionSignature {
+export interface FunctionDefinition extends Omit<FunctionSignature, 'params'> {
+  readonly params?: readonly string[]
   readonly call: (args: readonly ExprValue[], context: FunctionContext) => unknown
 }
 
@@ -47,6 +50,7 @@ export interface FunctionTableOptions {
 }
 
 const FUNCTION_NAME = /^[A-Z][A-Z0-9_]*$/
+const PARAM_NAME = /^[a-z][A-Za-z0-9]*$/
 
 /** 全部内置函数。 */
 export const BUILTIN_FUNCTIONS: readonly FunctionEntry[] = [
@@ -61,6 +65,7 @@ function wrapDefinition(definition: FunctionDefinition): FunctionEntry {
   const { name, minArgs, maxArgs, call } = definition
   return Object.freeze({
     name,
+    params: Object.freeze([...definition.params ?? []]),
     minArgs,
     maxArgs,
     invoke: (args: readonly ExprValue[], runtime: Runtime) => {
@@ -89,6 +94,15 @@ function assertSignature(definition: FunctionDefinition): void {
     throw new TypeError(`函数 ${name} 的 minArgs 必须是非负整数`)
   if (maxArgs !== null && (!Number.isSafeInteger(maxArgs) || maxArgs < minArgs))
     throw new TypeError(`函数 ${name} 的 maxArgs 必须是不小于 minArgs 的整数或 null`)
+  const { params } = definition
+  if (params !== undefined) {
+    if (!Array.isArray(params) || params.some(param => typeof param !== 'string' || !PARAM_NAME.test(param)))
+      throw new TypeError(`函数 ${name} 的 params 必须是小写字母开头的英文键`)
+    if (new Set(params).size !== params.length)
+      throw new TypeError(`函数 ${name} 的 params 有重复的键`)
+    if (params.length !== paramCount(minArgs, maxArgs))
+      throw new TypeError(`函数 ${name} 的 params 应有 ${paramCount(minArgs, maxArgs)} 个`)
+  }
   if (typeof call !== 'function')
     throw new TypeError(`函数 ${name} 的 call 必须是函数`)
 }
@@ -137,7 +151,7 @@ export class FunctionTable {
   /** 按名字查签名；名字不区分 ASCII 大小写。 */
   lookup(name: string): FunctionSignature | undefined {
     const entry = resolveEntry(this, name)
-    return entry === undefined ? undefined : { name: entry.name, minArgs: entry.minArgs, maxArgs: entry.maxArgs }
+    return entry === undefined ? undefined : { name: entry.name, minArgs: entry.minArgs, maxArgs: entry.maxArgs, params: entry.params }
   }
 }
 
