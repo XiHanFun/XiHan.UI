@@ -1,6 +1,6 @@
-import type { FontSpec, TextMeasurer } from '../src'
+import type { FontSpec, TextMeasurer, WrappedRunLine } from '../src'
 import { describe, expect, it } from 'vitest'
-import { createCanvasMeasurer, createEstimatingMeasurer, ellipsize, wrapText } from '../src'
+import { createCanvasMeasurer, createEstimatingMeasurer, ellipsize, wrapRuns, wrapText } from '../src'
 import { forAll, integer } from './helpers/property'
 
 const font: FontSpec = { family: 'sans-serif', size: 10, weight: 400, lineHeight: 16 }
@@ -117,6 +117,71 @@ describe('字间距', () => {
 
   it('字间距不是有限数时报错', () => {
     expect(() => wrapText('abc', 4, font, mono, { letterSpacing: Number.NaN })).toThrow(/letterSpacing/)
+  })
+})
+
+describe('多样式折行', () => {
+  /** 每个字符宽「字号 / 10」，上伸取字号的 0.8、下伸取 0.2。 */
+  const sized: TextMeasurer = { version: 1, measure: (text, spec) => ({ width: Array.from(text).length * spec.size / 10, ascent: spec.size * 0.8, descent: spec.size * 0.2 }) }
+  const small: FontSpec = { family: 'serif', size: 10, weight: 400, lineHeight: 14 }
+  const large: FontSpec = { family: 'serif', size: 20, weight: 700, lineHeight: 28 }
+  const texts = (lines: readonly WrappedRunLine[]): string[] => lines.map(line => line.segments.map(segment => segment.text).join(''))
+
+  it('性质：只有一段时与 wrapText 折出同样的行', () => {
+    const alphabet = ['a', 'b', ' ', '中', '文', '，', 'Q', '\n']
+    forAll(300, 271, random => ({
+      text: Array.from({ length: integer(random, 0, 50) }, () => alphabet[integer(random, 0, alphabet.length - 1)]).join(''),
+      maxWidth: integer(random, 4, 40),
+    }), ({ text, maxWidth }) => {
+      expect(texts(wrapRuns([{ text, font }], maxWidth, measurer))).toEqual(wrapText(text, maxWidth, font, measurer))
+    })
+  })
+
+  it('各截给出所在段、段内起止、横向位置与宽度，行宽与上下伸按各截汇总', () => {
+    const [line] = wrapRuns([{ text: '小字', font: small }, { text: '大字', font: large }], 100, sized)
+    expect(line).toEqual({
+      segments: [
+        { run: 0, start: 0, end: 2, text: '小字', x: 0, width: 2 },
+        { run: 1, start: 0, end: 2, text: '大字', x: 2, width: 4 },
+      ],
+      width: 6,
+      ascent: 16,
+      descent: 4,
+    })
+  })
+
+  it('单词跨两段样式时不拆开，整个换到下一行', () => {
+    const lines = wrapRuns([{ text: 'go inter', font: small }, { text: 'national', font: large }], 22, sized)
+    expect(texts(lines)).toEqual(['go', 'international'])
+    expect(lines[1]!.segments).toEqual([
+      { run: 0, start: 3, end: 8, text: 'inter', x: 0, width: 5 },
+      { run: 1, start: 0, end: 8, text: 'national', x: 5, width: 16 },
+    ])
+  })
+
+  it('显式换行跨段也断行，\\r\\n 当一个换行；空行是一截长度为 0 的文字', () => {
+    const lines = wrapRuns([{ text: '甲\r\n', font: small }, { text: '\n乙', font: large }], 100, sized)
+    expect(texts(lines)).toEqual(['甲', '', '乙'])
+    expect(lines[1]).toEqual({ segments: [{ run: 1, start: 0, end: 0, text: '', x: 0, width: 0 }], width: 0, ascent: 16, descent: 4 })
+  })
+
+  it('行首行尾的空白去掉，起止下标跟着收', () => {
+    const [line] = wrapRuns([{ text: '  ab ', font: small }, { text: ' cd  ', font: small }], 100, sized)
+    expect(line!.segments).toEqual([
+      { run: 0, start: 2, end: 5, text: 'ab ', x: 0, width: 3 },
+      { run: 1, start: 0, end: 3, text: ' cd', x: 3, width: 3 },
+    ])
+  })
+
+  it('每段各自的字间距计入宽度', () => {
+    expect(texts(wrapRuns([{ text: 'abc', font: small, letterSpacing: 1 }, { text: 'def', font: small }], 6, sized))).toEqual(['abc', 'def'])
+    expect(texts(wrapRuns([{ text: 'abc', font: small }, { text: 'def', font: small }], 6, sized))).toEqual(['abcdef'])
+  })
+
+  it('没有段时返回空数组；字间距不是有限数或宽度为负时报错', () => {
+    expect(wrapRuns([], 10, sized)).toEqual([])
+    expect(() => wrapRuns([{ text: 'a', font: small, letterSpacing: Number.POSITIVE_INFINITY }], 10, sized)).toThrow(/letterSpacing/)
+    expect(() => wrapRuns([{ text: 'a', font: small }], -1, sized)).toThrow()
   })
 })
 
