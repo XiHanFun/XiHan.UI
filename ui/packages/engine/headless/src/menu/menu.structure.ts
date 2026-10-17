@@ -39,6 +39,9 @@ type MenuStructureNode = StructureNode<(typeof MENU_STRUCTURE_PARTS)[number]>
 
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
+/** 按数据铺条目要读的元信息：菜单栏的条目没有标记位文字。 */
+export type MenuNodesStructureMeta = Omit<MenuNodeMeta, 'indicator'> & { readonly indicator?: string | null }
+
 /** 按数据铺条目时的选项。 */
 export interface MenuNodesStructureOptions {
   /** item 插槽接管哪一格：item 是整条（缺省，菜单的写法），item-text 只接管条目文字（右键菜单与菜单栏的写法）。 */
@@ -49,7 +52,7 @@ export interface MenuNodesStructureOptions {
  * 一条条目：带 children 的是嵌套的子菜单；item 插槽有内容时整条或条目文字归作者；其余按数据铺标记位、文字、说明、
  * 快捷键与行尾，没有的格不铺。勾选与单选条目没写标记位时也留一格空的给勾。
  */
-function itemStructure(meta: MenuNodeMeta, slotted: StructureSlotted, options: MenuNodesStructureOptions): StructureChild<MenuStructureNode['part']> {
+function itemStructure(meta: MenuNodesStructureMeta, slotted: StructureSlotted, options: MenuNodesStructureOptions): StructureChild<MenuStructureNode['part']> {
   if (meta.children) {
     return structureInstance(`submenu:${meta.value}`, 'menu', {
       collection: [...meta.children],
@@ -82,7 +85,7 @@ function itemStructure(meta: MenuNodeMeta, slotted: StructureSlotted, options: M
   return { ...base, children }
 }
 
-function separator(meta: MenuNodeMeta): MenuStructureNode {
+function separator(meta: MenuNodesStructureMeta): MenuStructureNode {
   return { key: `separator:${meta.value}`, tag: 'div', part: 'separator' }
 }
 
@@ -91,7 +94,7 @@ function separator(meta: MenuNodeMeta): MenuStructureNode {
  * 段首的分隔线落在 group 外面；整份菜单的第一条不铺分隔线。
  */
 export function menuNodesStructure(
-  collection: readonly MenuNodeMeta[],
+  collection: readonly MenuNodesStructureMeta[],
   slotted: StructureSlotted = NOTHING_SLOTTED,
   options: MenuNodesStructureOptions = {},
 ): StructureChild<MenuStructureNode['part']>[] {

@@ -64,6 +64,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 
 - 同一时间只展开一个顶层菜单。
 - 展开后移向相邻入口会直接切换菜单。
+- 不写结构时照标准结构铺：一排入口按钮（文字取入口的 `label`），其后是各自菜单的定位层，里面按这张菜单的 `items` 铺条目、分组与分隔线；条目的 `item` 插槽只接管条目文字，带 `children` 的条目是一个嵌套的子菜单。Vue / React 不写默认插槽与 Web Components 不写部件（或只写 root）时生成的节点出自同一个结构函数；Web Components 里条目文字、行首、行尾可用宿主直接子节点 `slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 给出，子菜单生成嵌套的 `<xh-menu submenu>`。指向锚点的箭头要手写结构时自己摆。
 - 支持方向键、首字符检索、禁用项、分组与子菜单。数据驱动时菜单里的条目写 `children`（一组菜单条目）即为子菜单入口，默认树按 `children` 递归铺出下一层，深度不限；子层条目按数据铺，不经本层的插槽。手写时用 `XhMenubarSub`。
 - 条目可逐条声明语气；顶层入口表达的是位置，不接语气。
 - 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。
@@ -186,6 +187,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `XhMenubarRoot` | `renderItemSuffix` | `(node: MenubarNodeMeta) => ReactNode` |  | 只接管条目行尾那一格（计数、徽标、次级图标）；其余槽仍由数据铺。 |
 | `XhMenubarRoot` | `children` | `SlotChildren<MenubarRootSlotProps>` |  |  |
 | `XhMenubarSub` | `value` | `string` | 是 | 它在所属菜单中的条目身份。 |
+| `XhMenubarSub` | `label` | `string` |  | 按数据铺设时触发条目的文字；缺省取所属菜单 items 里这一条的 label。 |
 | `XhMenubarSub` | `disabled` | `boolean` |  |  |
 | `XhMenubarSub` | `collection` | `MenuNode[]` |  | 子层的条目数据：显示文本与禁用的事实源，按数据铺子层时由默认树代填。 |
 | `XhMenubarSub` | `placement` | `Placement` |  |  |

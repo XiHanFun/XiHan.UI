@@ -7,10 +7,11 @@
 
 import type { Cleanup, Direction, IdGenerator, Layer, Orientation, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { MenubarAnyItemProps, MenubarCheckboxValueChangeDetails, MenubarNode, MenubarRadioValue, MenubarRadioValueChangeDetails, MenubarSchema, MenubarSelectDetails, MenubarTranslations, MenubarValueChangeDetails } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectMenubar, createMenuTreeNode, menubarAnatomy, menubarMachine, menubarMeta } from '@xihan-ui/headless'
+import { connectMenubar, createMenuTreeNode, menubarAnatomy, menubarMachine, menubarMeta, menubarStructure } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
@@ -18,6 +19,7 @@ import { MachineController } from '../runtime/machine-controller'
 import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
 import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
+import { XhMenuElement } from './menu'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -43,6 +45,11 @@ function authorDisabled(el: HTMLElement): boolean {
  *
  * 标签由作者编写：trigger 必须是 `<button>`。
  * trigger / positioner / content 三者依靠各自的 value 属性配对，同一项写同一个值。
+ *
+ * 不写部件（或只写 root）时元素按标准结构生成：一排入口按钮（文字取入口的 label），其后是各自菜单的定位层，
+ * 里面的 content 按这张菜单的 items 铺条目、分组与分隔线；条目文字、行首、行尾可用 `slot="item:<值>"`、
+ * `slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 给出。带 children 的条目生成一个嵌套的 `<xh-menu submenu>`，
+ * 它的触发条目写着 value、文字取 label，子菜单那一层按数据铺。
  *
  * @customElement xh-menubar
  * @attr {string} value - 受控展开项；未提供该属性即非受控
@@ -114,6 +121,15 @@ export class XhMenubarElement extends XhPortalHostElement {
   })
 
   static override partContract = { anatomy: menubarAnatomy, meta: menubarMeta }
+
+  /** 结构里带 children 的条目生成嵌套的子菜单。 */
+  static override dependencies = { 'xh-menu': XhMenuElement }
+
+  static override structure: ElementStructure<XhMenubarElement> = {
+    build: host => host.ctrl.service
+      ? menubarStructure(connectMenubar(host.ctrl.service, wcNormalize), { slotted: (name, key) => host.slotted(name, key) })
+      : undefined,
+  }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
