@@ -71,6 +71,13 @@ const CASES: Case[] = [
     markup: attrs => `<xh-transfer ${attrs}><div data-xh-part="root"><div data-xh-part="source-panel"><div data-xh-part="list"></div></div><div data-xh-part="target-panel"><div data-xh-part="list"></div></div></div></xh-transfer>`,
     host: root => root.querySelector<HTMLElement>('[data-scope="transfer"][data-part="target-panel"] [data-scope="transfer"][data-part="list"]')!,
   },
+  {
+    name: 'combobox',
+    axes: { required: 'aria-required' },
+    markup: attrs => `<xh-combobox ${attrs}><div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div><div data-xh-part="positioner"><div data-xh-part="content"></div></div></div></xh-combobox>`,
+    host: root => root.querySelector<HTMLElement>('[data-scope="combobox"][data-part="input"]')!,
+    wired: true,
+  },
 ]
 
 const ARIA_RULES = ['aria-allowed-attr', 'aria-valid-attr-value', 'aria-prohibited-attr', 'aria-required-attr', 'aria-allowed-role']

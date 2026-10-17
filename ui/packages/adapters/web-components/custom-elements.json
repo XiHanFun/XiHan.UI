@@ -15554,6 +15554,15 @@
             },
             {
               "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
               "name": "loading",
               "privacy": "public",
               "type": {
@@ -16132,6 +16141,14 @@
               "description": "校验失败标注",
               "name": "invalid",
               "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填：输入框报告 aria-required；没选值时表单的空值占位影子带原生 required",
+              "name": "required",
+              "fieldName": "required"
             },
             {
               "type": {

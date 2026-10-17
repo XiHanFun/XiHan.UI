@@ -10,6 +10,8 @@ import {
   XhCascaderTrigger,
   XhColorPickerHiddenInput,
   XhColorPickerRoot,
+  XhComboboxHiddenInput,
+  XhComboboxRoot,
   XhRatingHiddenInput,
   XhRatingRoot,
   XhToggleGroupHiddenInput,
@@ -46,6 +48,7 @@ async function renderErrors(node: ReactElement): Promise<{ errors: string[], hos
 const CASES: Array<[string, ReactElement]> = [
   ['toggle-group', <XhToggleGroupRoot key="t" name="t" collection={[{ value: 'a', label: '甲' }]}><XhToggleGroupHiddenInput /></XhToggleGroupRoot>],
   ['cascader', <XhCascaderRoot key="c" name="c" required collection={[]}><XhCascaderControl><XhCascaderTrigger>选择</XhCascaderTrigger></XhCascaderControl></XhCascaderRoot>],
+  ['combobox', <XhComboboxRoot key="b" name="b" required collection={[]}><XhComboboxHiddenInput /></XhComboboxRoot>],
   ['tree-select', <XhTreeSelectRoot key="s" name="s" required collection={[]}><XhTreeSelectHiddenInput /></XhTreeSelectRoot>],
   ['transfer', <XhTransferRoot key="r" name="r" required collection={[]} />],
   ['rating', <XhRatingRoot key="g" name="g" required><XhRatingHiddenInput /></XhRatingRoot>],

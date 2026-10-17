@@ -13,6 +13,7 @@ import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, ov
 import { connectSelectionTags } from '../shared/selection-tags'
 import { resolveTranslations } from '../shared/translations'
 import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionTarget } from '../shared/virtual-collection'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { comboboxAnatomy, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 import { COMBOBOX_DEFAULT_PLACEMENT } from './combobox.machine'
 
@@ -71,6 +72,7 @@ export function connectCombobox<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
+  const required = !!prop('required')
   const loading = !!prop('loading')
   const loop = prop('loop') ?? true
   const inputBehavior = prop('inputBehavior') ?? 'none'
@@ -232,6 +234,7 @@ export function connectCombobox<T extends PropTypes>(
     disabled,
     readOnly,
     invalid,
+    required,
     empty,
     canClear,
     tags,
@@ -258,6 +261,7 @@ export function connectCombobox<T extends PropTypes>(
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
       'data-loading': dataAttr(loading),
+      'data-required': dataAttr(required),
     }),
 
     getLabelProps: () => normalize.label({
@@ -266,6 +270,7 @@ export function connectCombobox<T extends PropTypes>(
       // for 须指向真正的 input，指到外层包裹会丢掉名字与聚焦
       'for': ids.input,
       'data-disabled': dataAttr(disabled),
+      'data-required': dataAttr(required),
     }),
 
     // 定位锚点取整个输入行，浮层因此与输入框对齐。
@@ -344,6 +349,7 @@ export function connectCombobox<T extends PropTypes>(
       // 收起态没有高亮可指，属性整个缺席（aria-activedescendant 没有"假值"写法）
       'aria-activedescendant': open && highlighted != null ? itemId(highlighted) : undefined,
       'aria-invalid': invalid ? 'true' : 'false',
+      'aria-required': required ? 'true' : 'false',
       // 盒内的原生输入：家族按这一条重置它的边框 / 底 / 内距，并按布局值排单行或多行
       // （皮肤只认 data-*、不认标签名，多行宿主靠布局值认出来）
       'data-xh-field-input': '',
@@ -726,17 +732,31 @@ export function connectCombobox<T extends PropTypes>(
       'hidden': !(open && loading && itemCount === 0) || undefined,
     }),
 
-    getHiddenInputProps: input => normalize.input({
-      // type 先于 value 写入：改 type 会重置输入的值
-      type: 'hidden',
-      ...parts['hidden-input'].attrs,
-      // name 缺省即不产出该属性，此时不参与提交
-      name: prop('name'),
-      form: prop('form'),
-      // 每个选中值对应一个同名原生控件，值内的逗号保持原样。
-      value: input.value,
-      // 单体控件用原生 disabled，禁用时不提交值
-      disabled: disabled || undefined,
-    }),
+    getHiddenInputProps: input => input
+      ? normalize.input({
+          // type 先于 value 写入：改 type 会重置输入的值
+          type: 'hidden',
+          ...parts['hidden-input'].attrs,
+          // name 缺省即不产出该属性，此时不参与提交
+          name: prop('name'),
+          form: prop('form'),
+          // 每个选中值对应一个同名原生控件，值内的逗号保持原样。
+          value: input.value,
+          // 单体控件用原生 disabled，禁用时不提交值
+          disabled: disabled || undefined,
+        })
+      // 空值占位：hidden 不参与约束校验，写成视觉隐藏的文本输入，required 才拦得住
+      : normalize.input({
+          'type': 'text',
+          ...parts['hidden-input'].attrs,
+          'name': prop('name'),
+          'form': prop('form'),
+          'value': '',
+          'required': required || undefined,
+          'disabled': disabled || undefined,
+          'tabindex': -1,
+          'aria-hidden': true,
+          'style': VISUALLY_HIDDEN_STYLE,
+        }),
   }
 }

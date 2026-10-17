@@ -64,6 +64,8 @@ export interface XhComboboxRootProps extends RootElementProps {
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
+  /** 必填：输入框报告 aria-required；没选值时表单的空值占位影子带原生 required。 */
+  required?: boolean
   loading?: boolean
   loop?: boolean
   placeholder?: string
@@ -111,6 +113,7 @@ export function XhComboboxRoot({
   disabled,
   readOnly,
   invalid,
+  required,
   loading,
   loop,
   placeholder,
@@ -151,6 +154,7 @@ export function XhComboboxRoot({
     disabled,
     readOnly,
     invalid,
+    required,
     loading,
     loop,
     placeholder,
@@ -481,13 +485,17 @@ export interface XhComboboxHiddenInputProps extends Omit<ComponentPropsWithRef<'
 /** 表单出口，未写该部件即不参与表单提交。 */
 export function XhComboboxHiddenInput({ ...rest }: XhComboboxHiddenInputProps): ReactNode {
   const ctx = useComboboxContext()
-  return ctx.api.value.map(value => (
+  // 必填且没选值：补一份空值占位，原生 required 才拦得住空表单
+  const inputs: Array<{ value: string } | undefined> = ctx.api.value.length === 0 && ctx.api.required
+    ? [undefined]
+    : ctx.api.value.map(value => ({ value }))
+  return inputs.map(input => (
     <input
-      key={value}
+      key={input?.value ?? 'required'}
       {...mergeReactProps(
-        ctx.api.getHiddenInputProps({ value }) as Record<string, unknown>,
+        ctx.api.getHiddenInputProps(input) as Record<string, unknown>,
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
-        // 交出一个出口，否则在开发构建里逐帧告警；节点是 hidden，这个出口不会被调用
+        // 交出一个出口，否则在开发构建里逐帧告警；这个出口不会被调用
         { onChange: noop },
         rest as Record<string, unknown>,
       )}

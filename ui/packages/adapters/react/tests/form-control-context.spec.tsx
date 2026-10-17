@@ -115,7 +115,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'Cascader')
     return <XhCascaderRoot {...props} collection={[]}><XhCascaderControl><XhCascaderTrigger>选择</XhCascaderTrigger></XhCascaderControl></XhCascaderRoot>
   if (kind === 'Combobox')
-    return <XhComboboxRoot {...nonRequiredState(props)} collection={[]}><XhComboboxControl><XhComboboxInput /></XhComboboxControl></XhComboboxRoot>
+    return <XhComboboxRoot {...props} collection={[]}><XhComboboxControl><XhComboboxInput /></XhComboboxControl></XhComboboxRoot>
   if (kind === 'TreeSelect')
     return <XhTreeSelectRoot {...props} collection={[]}><XhTreeSelectControl><XhTreeSelectTrigger>选择</XhTreeSelectTrigger></XhTreeSelectControl></XhTreeSelectRoot>
   if (kind === 'DatePicker') {
@@ -262,6 +262,10 @@ function expectAtomicState(container: HTMLElement, kind: AtomicControl, enabled:
     expect(input.disabled).toBe(enabled)
     expect(input.readOnly).toBe(enabled)
     expect(input.getAttribute('aria-invalid')).toBe(String(enabled))
+    if (kind === 'Combobox') {
+      expect(input.getAttribute('aria-required')).toBe(String(enabled))
+      expect(container.querySelector('[data-scope="combobox"][data-part="root"]')!.hasAttribute('data-required')).toBe(enabled)
+    }
     return
   }
   if (kind === 'DatePicker' || kind === 'TimePicker' || kind === 'ColorPicker') {

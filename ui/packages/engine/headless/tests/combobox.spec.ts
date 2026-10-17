@@ -1473,3 +1473,29 @@ describe('副文本', () => {
     expect(h.api().collection.map(node => node.description)).toEqual(['青苹果', null])
   })
 })
+
+describe('combobox 必填', () => {
+  it('输入框报 aria-required，缺省显式 false；根与标题带 data-required', () => {
+    expect(mount().input.getAttribute('aria-required')).toBe('false')
+    const h = mount({ required: true })
+    expect(h.input.getAttribute('aria-required')).toBe('true')
+    const api = h.api()
+    expect((api.getRootProps() as Record<string, unknown>)['data-required']).toBe('')
+    expect((api.getLabelProps() as Record<string, unknown>)['data-required']).toBe('')
+    expect(api.required).toBe(true)
+  })
+
+  it('不给 value 是空值占位：视觉隐藏的文本输入、值为空串，必填时带原生 required；有值的影子照旧是 hidden', () => {
+    const api = mount({ required: true, name: 'fruit' }).api()
+    const placeholder = api.getHiddenInputProps() as Record<string, unknown>
+    expect(placeholder.type).toBe('text')
+    expect(placeholder.value).toBe('')
+    expect(placeholder.name).toBe('fruit')
+    expect(placeholder.required).toBe(true)
+    expect(placeholder.tabindex).toBe(-1)
+    expect(placeholder['aria-hidden']).toBe(true)
+    const filled = api.getHiddenInputProps({ value: 'apple' }) as Record<string, unknown>
+    expect(filled.type).toBe('hidden')
+    expect(filled.required).toBeUndefined()
+  })
+})
