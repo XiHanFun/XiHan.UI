@@ -20,9 +20,10 @@ import type {
   ComboboxValueChangeDetails,
   FormControlState,
 } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { comboboxAnatomy, comboboxMachine, comboboxMeta, connectCombobox, resolveFormControlState } from '@xihan-ui/headless'
+import { comboboxAnatomy, comboboxMachine, comboboxMeta, comboboxStructure, connectCombobox, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -53,7 +54,15 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 形态按盒的面派生；节点中只有文字时元素为它包一层 tag 的 label。item-delete-trigger 接线为所在标签
  * 那份 tag 的 close-trigger，不占 Tab 位、按下不夺焦。overflow-tag 留空即由元素填入 +N。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成整套节点：标题（label）、盒（多选的标签行、输入框、
+ * 带不带清空钮看 clearable、展开钮）、浮层里的候选与空态（empty）、表单影子。标题、空态、条目文字与行首行尾
+ * 可以由宿主直接子节点接管：`slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、
+ * `slot="item-suffix:<值>"`。
+ *
  * @customElement xh-combobox
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
+ * @attr {string} empty - 空态文字：生成结构时写进 empty 部件；手写部件时不使用它
+ * @attr {boolean} clearable - 生成结构时盒里带清空按钮；手写部件时不使用它，写了 clear-trigger 即可清空
  * @attr {string} value - 受控选中值（单选简写）；未提供该属性即非受控，多选通过 property 传入数组
  * @attr {string} default-value - 非受控初始选中值
  * @attr {string} input-value - 受控输入串；未提供该属性即非受控
@@ -123,11 +132,25 @@ export class XhComboboxElement extends XhPortalHostElement {
 
   static override fieldTarget = { parts: ['input'], kind: 'state' } as const
 
+  static override structure: ElementStructure<XhComboboxElement> = {
+    build: host => host.ctrl.service
+      ? comboboxStructure(connectCombobox(host.ctrl.service, wcNormalize), {
+          label: host.label,
+          empty: host.empty,
+          clearable: host.clearable,
+          slotted: (name, key) => host.slotted(name, key),
+        })
+      : undefined,
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     // 数组只走 property，属性表达不了；给了它候选的文本与禁用即以数据为准
     collection: { attribute: false },
     virtualizer: { attribute: false },
+    label: { converter: STRING_CONVERTER },
+    empty: { converter: STRING_CONVERTER },
+    clearable: { type: Boolean },
     // 文案对象只走 property
     translations: { attribute: false },
     name: { converter: STRING_CONVERTER },
@@ -161,6 +184,9 @@ export class XhComboboxElement extends XhPortalHostElement {
   }
 
   declare collection?: ComboboxNode[]
+  declare label?: string
+  declare empty?: string
+  declare clearable?: boolean
   declare virtualizer?: CollectionVirtualizer
   declare translations?: ComboboxSchema['props']['translations']
   declare value?: string | string[]

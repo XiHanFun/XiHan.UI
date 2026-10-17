@@ -6,15 +6,17 @@
 // 提供 combobox 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, ComboboxApi, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxNode, ComboboxNodeMeta, ComboboxSchema, ComboboxTagMeta } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, ComboboxApi, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { comboboxStructure } from '@xihan-ui/headless'
 import { useEffect, useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotIsPlainText } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -197,20 +199,7 @@ export function XhComboboxRoot({
         clear: api.clear,
         deselect: api.deselect,
       })
-    : collection
-      ? (
-          <DefaultTree
-            collection={api.collection}
-            tags={multiple ? api.tags : null}
-            label={label}
-            empty={empty}
-            clearable={clearable}
-            renderItem={renderItem}
-            renderItemPrefix={renderItemPrefix}
-            renderItemSuffix={renderItemSuffix}
-          />
-        )
-      : null
+    : renderDefaultStructure(api, { label, empty, clearable, renderItem, renderItemPrefix, renderItemSuffix })
 
   return (
     <ComboboxProvider value={ctx}>
@@ -519,58 +508,74 @@ export function XhComboboxLoading({ children, ...rest }: XhComboboxLoadingProps)
 
 function noop(): void {}
 
-/**
- * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
- * 过滤仍归调用方：collection 就是当前应显示的候选。
- */
-function DefaultTree(props: {
-  collection: readonly ComboboxNodeMeta[]
-  tags: readonly ComboboxTagMeta[] | null
+/** 标准结构里各部件对应的组件；标签、标签文字、删除钮与 +N 委派给 tag，按「tag/部件名」找。 */
+const COMBOBOX_PARTS = {
+  'label': XhComboboxLabel,
+  'control': XhComboboxControl,
+  'tag-list': XhComboboxTagList,
+  'tag/tag': XhComboboxTag,
+  'tag/tag-label': XhComboboxTagLabel,
+  'tag/item-delete-trigger': XhComboboxItemDeleteTrigger,
+  'tag/overflow-tag': XhComboboxOverflowTag,
+  'input': XhComboboxInput,
+  'clear-trigger': XhComboboxClearTrigger,
+  'trigger': XhComboboxTrigger,
+  'positioner': XhComboboxPositioner,
+  'content': XhComboboxContent,
+  'item': XhComboboxItem,
+  'item-prefix': XhComboboxItemPrefix,
+  'item-text': XhComboboxItemText,
+  'item-description': XhComboboxItemDescription,
+  'item-suffix': XhComboboxItemSuffix,
+  'item-indicator': XhComboboxItemIndicator,
+  'empty': XhComboboxEmpty,
+  'hidden-input': XhComboboxHiddenInput,
+}
+
+interface ComboboxStructureContent {
   label?: ReactNode
   empty?: ReactNode
   clearable?: boolean
   renderItem?: (node: ComboboxNodeMeta) => ReactNode
   renderItemPrefix?: (node: ComboboxNodeMeta) => ReactNode
   renderItemSuffix?: (node: ComboboxNodeMeta) => ReactNode
-}): ReactNode {
-  return (
-    <>
-      {props.label != null ? <XhComboboxLabel>{props.label}</XhComboboxLabel> : null}
-      <XhComboboxControl>
-        {/* 多选的已选项排在输入框之前：一枚一个带删除钮的标签，摆不下的折进 +N */}
-        {props.tags
-          ? (
-              <XhComboboxTagList>
-                {props.tags.map(tag => (
-                  <XhComboboxTag key={tag.value} value={tag.value}>
-                    <XhComboboxTagLabel>{tag.label}</XhComboboxTagLabel>
-                    <XhComboboxItemDeleteTrigger />
-                  </XhComboboxTag>
-                ))}
-                <XhComboboxOverflowTag />
-              </XhComboboxTagList>
-            )
-          : null}
-        <XhComboboxInput />
-        {props.clearable ? <XhComboboxClearTrigger /> : null}
-        <XhComboboxTrigger />
-      </XhComboboxControl>
-      <XhComboboxPositioner>
-        <XhComboboxContent>
-          {props.collection.map(node => (
-            <XhComboboxItem key={node.value} value={node.value}>
-              {props.renderItemPrefix ? <XhComboboxItemPrefix>{props.renderItemPrefix(node)}</XhComboboxItemPrefix> : null}
-              <XhComboboxItemText>{props.renderItem?.(node) ?? node.label}</XhComboboxItemText>
-              {node.description != null ? <XhComboboxItemDescription>{node.description}</XhComboboxItemDescription> : null}
-              {props.renderItemSuffix ? <XhComboboxItemSuffix>{props.renderItemSuffix(node)}</XhComboboxItemSuffix> : null}
-              <XhComboboxItemIndicator />
-            </XhComboboxItem>
-          ))}
-        </XhComboboxContent>
-        {/* 空态节点是 content 的兄弟，不进 role=listbox */}
-        <XhComboboxEmpty>{props.empty}</XhComboboxEmpty>
-      </XhComboboxPositioner>
-    </>
-  )
+}
+
+/**
+ * 未写 children 时铺开的整套结构，作者只提供数据：照 headless 的 comboboxStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题与空态、条目文字与行首行尾由对应的值或渲染函数接管。
+ * 过滤仍归调用方：collection 就是当前应显示的候选。
+ */
+function renderDefaultStructure(api: ComboboxApi, content: ComboboxStructureContent): ReactNode[] {
+  const { label, empty, renderItem, renderItemPrefix, renderItemSuffix } = content
+  const slotted: Readonly<Record<string, boolean>> = {
+    'label': label != null && typeof label !== 'string',
+    'empty': empty != null && typeof empty !== 'string',
+    'item': renderItem != null,
+    'item-prefix': renderItemPrefix != null,
+    'item-suffix': renderItemSuffix != null,
+  }
+  const nodes = comboboxStructure(api, {
+    label: typeof label === 'string' ? label : undefined,
+    empty: typeof empty === 'string' ? empty : undefined,
+    clearable: content.clearable,
+    slotted: name => slotted[name] === true,
+  })
+  return renderStructure(nodes, COMBOBOX_PARTS, (node) => {
+    const meta = node.data as ComboboxNodeMeta
+    switch (node.slot?.name) {
+      case 'label':
+        return label
+      case 'empty':
+        return empty
+      case 'item':
+        return renderItem?.(meta) ?? meta.label
+      case 'item-prefix':
+        return renderItemPrefix?.(meta)
+      case 'item-suffix':
+        return renderItemSuffix?.(meta)
+      default:
+        return undefined
+    }
+  })
 }

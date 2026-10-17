@@ -8,6 +8,7 @@ import {
   XhComboboxContent,
   XhComboboxControl,
   XhComboboxEmpty,
+  XhComboboxHiddenInput,
   XhComboboxInput,
   XhComboboxItem,
   XhComboboxItemIndicator,
@@ -42,7 +43,7 @@ function mountFromCollection(value: string[], clearable = true) {
   }), { attachTo: document.body })
 }
 
-/** 手写全套部件，条目只报 value，文本与禁用交给 collection */
+/** 手写全套部件，条目只报 value，文本与禁用交给 collection；末尾一份表单影子 */
 function mountFromParts(value: string[]) {
   return mount(defineComponent({
     setup: () => () => h(XhComboboxRoot, {
@@ -65,6 +66,7 @@ function mountFromParts(value: string[]) {
         )),
         h(XhComboboxEmpty, () => '无匹配水果'),
       ]),
+      h(XhComboboxHiddenInput),
     ]),
   }), { attachTo: document.body })
 }
