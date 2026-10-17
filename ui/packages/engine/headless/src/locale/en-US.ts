@@ -9,46 +9,9 @@
 // 打包器按引用摇树，单个组件不会把整张英文表带进产物；enUS 这一整份只在作者引用它时才进包。
 
 import type { ChartDatumDetails } from '../shared/chart/types'
-import type { KeyTextTable } from './key-text'
 import type { XhLocale, XhLocaleBucket, XhLocaleTranslations } from './types'
+import { HOTKEY_TEXT_EN_US } from '@xihan-ui/core/hotkey'
 import { expressionFunctionEnUS, expressionIssueEnUS, expressionParamEnUS } from './expression-input-messages'
-import { keyText } from './key-text'
-
-/** 读屏念的键名：修饰键在 Mac 与其余平台上叫法不同。 */
-const KEY_NAME: KeyTextTable = {
-  'Alt': { mac: 'Option', other: 'Alt' },
-  'Control': 'Control',
-  'Meta': { mac: 'Command', other: 'Windows' },
-  'Shift': 'Shift',
-  ' ': 'Space',
-  'ArrowDown': 'Arrow Down',
-  'ArrowLeft': 'Arrow Left',
-  'ArrowRight': 'Arrow Right',
-  'ArrowUp': 'Arrow Up',
-  'Backspace': 'Backspace',
-  'Delete': 'Delete',
-  'Enter': 'Enter',
-  'Escape': 'Escape',
-  'Tab': 'Tab',
-}
-
-/** 键帽上写的字：Mac 用系统符号。 */
-const KEY_LABEL: KeyTextTable = {
-  'Alt': { mac: '⌥', other: 'Alt' },
-  'Control': { mac: '⌃', other: 'Ctrl' },
-  'Meta': { mac: '⌘', other: 'Win' },
-  'Shift': { mac: '⇧', other: 'Shift' },
-  ' ': 'Space',
-  'ArrowDown': '↓',
-  'ArrowLeft': '←',
-  'ArrowRight': '→',
-  'ArrowUp': '↑',
-  'Backspace': { mac: '⌫', other: 'Backspace' },
-  'Delete': { mac: '⌦', other: 'Del' },
-  'Enter': { mac: '⏎', other: 'Enter' },
-  'Escape': { mac: '⎋', other: 'Esc' },
-  'Tab': { mac: '⇥', other: 'Tab' },
-}
 
 const EDGE = {
   n: 'top edge',
@@ -551,8 +514,8 @@ export const JSON_VIEWER_EN_US: XhLocaleBucket<'json-viewer'> = {
 }
 
 export const KBD_EN_US: XhLocaleBucket<'kbd'> = {
-  keyName: (key, platform) => keyText(KEY_NAME, key, platform),
-  keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform),
+  keyName: (key, platform) => HOTKEY_TEXT_EN_US.keyName(key, platform),
+  keyLabel: (key, platform) => HOTKEY_TEXT_EN_US.keyLabel(key, platform),
   hotkey: names => names.join(' + '),
 }
 

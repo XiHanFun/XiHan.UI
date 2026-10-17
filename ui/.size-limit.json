@@ -18,6 +18,12 @@
     "limit": "1.9 kB"
   },
   {
+    "name": "core/hotkey",
+    "path": "packages/engine/core/dist/hotkey.js",
+    "gzip": true,
+    "limit": "1.1 kB"
+  },
+  {
     "name": "core/url",
     "path": "packages/engine/core/dist/url.js",
     "gzip": true,
@@ -160,7 +166,7 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "143 kB"
+    "limit": "144 kB"
   },
   {
     "name": "designer-shell/locale",
@@ -202,7 +208,7 @@
     "name": "headless/locale（十种语言整份）",
     "path": "packages/engine/headless/dist/locale.js",
     "gzip": true,
-    "limit": "58 kB"
+    "limit": "62 kB"
   },
   {
     "name": "vue",
@@ -235,7 +241,7 @@
     "name": "react",
     "path": "packages/adapters/react/dist/index.js",
     "gzip": true,
-    "limit": "773 kB",
+    "limit": "774 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -285,7 +291,7 @@
     "path": "packages/adapters/vue/dist/locale.js",
     "import": "{ zhCN }",
     "gzip": true,
-    "limit": "8.1 kB"
+    "limit": "11 kB"
   },
   {
     "name": "web-components",
@@ -297,7 +303,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "776 kB"
+    "limit": "777 kB"
   },
   {
     "name": "web-components/define：只按需注册一个元素（defineXhElement + XhStatisticElement）",

@@ -7,14 +7,7 @@
 import type { KbdProps, KbdTriggerDetails } from '../src/kbd'
 import { normalizeProps } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'
-import {
-  connectKbd,
-  detectKbdPlatform,
-  formatHotkey,
-  isTypingTarget,
-  matchesHotkey,
-  resolveKbdPlatform,
-} from '../src/kbd'
+import { connectKbd, isTypingTarget } from '../src/kbd'
 
 afterEach(() => {
   document.body.innerHTML = ''
@@ -29,34 +22,6 @@ function press(key: string, init: KeyboardEventInit = {}, target: EventTarget = 
   target.dispatchEvent(event)
   return event
 }
-
-describe('kbd 平台格式化', () => {
-  it('auto 与缺省在探测前按非 Mac 输出', () => {
-    expect(resolveKbdPlatform('auto')).toBe('other')
-    expect(resolveKbdPlatform(undefined)).toBe('other')
-    expect(['mac', 'other']).toContain(detectKbdPlatform())
-  })
-
-  it('mod 随平台变化，主键别名仍映射为标准键名', () => {
-    expect(formatHotkey(['Mod', 'Esc'], 'mac')).toMatchObject([
-      { key: 'Meta', label: '⌘', name: 'Command', modifier: true },
-      { key: 'Escape', label: '⎋', name: 'Escape', modifier: false },
-    ])
-    expect(formatHotkey(['Mod', 'Esc'], 'other')).toMatchObject([
-      { key: 'Control', label: 'Ctrl', name: 'Control', modifier: true },
-      { key: 'Escape', label: 'Esc', name: 'Escape', modifier: false },
-    ])
-  })
-
-  it('未知键保留作者值并以大写形式显示', () => {
-    expect(formatHotkey(['constructor'], 'other')[0]).toMatchObject({
-      source: 'constructor',
-      key: 'constructor',
-      label: 'CONSTRUCTOR',
-      modifier: false,
-    })
-  })
-})
 
 describe('kbd 展示契约', () => {
   it('单键与组合键共用 root，整组只提供一个可读名称', () => {
@@ -157,10 +122,12 @@ describe('kbd 快捷键注册', () => {
     expect(plain.hits).toHaveLength(1)
   })
 
-  it('组合判定要求修饰键精确一致，并能回退物理键位', () => {
-    expect(matchesHotkey(press('s', { ctrlKey: true }), ['Mod', 'S'], 'other')).toBe(true)
-    expect(matchesHotkey(press('S', { ctrlKey: true, shiftKey: true }), ['Mod', 'S'], 'other')).toBe(false)
-    expect(matchesHotkey(press('ß', { altKey: true, code: 'KeyS' }), ['Alt', 'S'], 'mac')).toBe(true)
+  it('打字的地方：文本域、文本输入与可编辑区算，复选框不算', () => {
     expect(isTypingTarget(document.createElement('textarea'))).toBe(true)
+    expect(isTypingTarget(document.createElement('input'))).toBe(true)
+    const checkbox = document.createElement('input')
+    checkbox.type = 'checkbox'
+    expect(isTypingTarget(checkbox)).toBe(false)
+    expect(isTypingTarget(null)).toBe(false)
   })
 })

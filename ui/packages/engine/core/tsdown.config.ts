@@ -11,6 +11,7 @@ export default defineXihanPackage({
     'vanilla': 'src/machine/vanilla.ts',
     'presence': 'src/behavior/presence.ts',
     'date': 'src/date/index.ts',
+    'hotkey': 'src/hotkey/index.ts',
     'json': 'src/json/index.ts',
     'url': 'src/url/index.ts',
     'rich-text': 'src/rich-text/index.ts',

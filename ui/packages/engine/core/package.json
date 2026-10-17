@@ -37,6 +37,10 @@
       "types": "./dist/date.d.ts",
       "import": "./dist/date.js"
     },
+    "./hotkey": {
+      "types": "./dist/hotkey.d.ts",
+      "import": "./dist/hotkey.js"
+    },
     "./json": {
       "types": "./dist/json.d.ts",
       "import": "./dist/json.js"

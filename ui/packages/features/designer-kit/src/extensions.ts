@@ -7,13 +7,13 @@
 // 规则执行、命令的快捷键，以及模板里各扩展自己的数据。
 
 import type { DIAGNOSTIC_CODES } from '@xihan-ui/core'
+import type { HotkeyEvent, KbdPlatform } from '@xihan-ui/core/hotkey'
 import type { JsonObject, JsonPath, JsonValue } from '@xihan-ui/core/json'
-import type { KbdPlatform } from '@xihan-ui/headless'
 import type { PathOperation } from './path-operation'
 import type { ControlKind, PropertyEditor, PropertyEditorLayer, PropertyEditorTable } from './properties'
 import type { SchemaIssue } from './schema'
+import { formatHotkey, matchesHotkey } from '@xihan-ui/core/hotkey'
 import { isPlainObject } from '@xihan-ui/core/json'
-import { formatHotkey, matchesHotkey } from '@xihan-ui/headless'
 import { BUILTIN_CONTROL_KINDS, mergePropertyEditorTables } from './properties'
 
 /** 校验规则：给出文档的问题。问题码必须以扩展 id 的末段加点开头，如 xihan-workflow.decision-no-default。 */
@@ -268,7 +268,7 @@ export function formatShortcut(keys: readonly string[], platform: KbdPlatform): 
 /** 找出这次按键命中的命令：快捷键恰好命中、此刻可用的那一条；没有时为 undefined。platform 由调用方测出（detectKbdPlatform）。 */
 export function commandForShortcut<Ctx>(
   commands: Iterable<DesignerCommand<Ctx>>,
-  event: KeyboardEvent,
+  event: HotkeyEvent,
   context: Ctx,
   platform: KbdPlatform,
 ): DesignerCommand<Ctx> | undefined {

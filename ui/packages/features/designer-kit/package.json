@@ -60,7 +60,6 @@
   },
   "dependencies": {
     "@xihan-ui/core": "workspace:^",
-    "@xihan-ui/headless": "workspace:^",
     "@xihan-ui/pointer": "workspace:^"
   },
   "devDependencies": {
