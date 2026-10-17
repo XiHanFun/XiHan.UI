@@ -6,31 +6,7 @@
 // 条件树编辑器的编辑模型：按路径在条件树上增删改与移动节点、按字段类型取运算符、操作数随运算符换形、条件的问题码。
 // 全部是纯函数，不改入参；组与条件上不认识的键原样保留。
 
-import type { FilterCondition, FilterGroup, FilterNode, FilterOperator } from '@xihan-ui/viz'
-
-/** 字段与参数的取值类型。 */
-export type FilterBuilderValueType = 'string' | 'number' | 'boolean' | 'date' | 'datetime'
-
-/** 可筛选的字段。 */
-export interface FilterBuilderField {
-  /** 写进条件的 field。 */
-  readonly name: string
-  readonly label?: string
-  readonly type: FilterBuilderValueType
-  /** 固定候选值：eq / neq / in / notIn 改用下拉选择。 */
-  readonly options?: readonly { readonly value: string | number | boolean, readonly label?: string }[]
-  /** 这个字段可用的运算符，缺省按类型取。 */
-  readonly operators?: readonly FilterOperator[]
-}
-
-/** 可引用的参数。 */
-export interface FilterBuilderParameter {
-  readonly name: string
-  readonly label?: string
-  readonly type: FilterBuilderValueType
-  /** 多值参数只能整个用作 in / notIn 的操作数。 */
-  readonly multiple?: boolean
-}
+import type { FilterCondition, FilterField, FilterGroup, FilterNode, FilterOperator, FilterParameter, FilterValueType } from '@xihan-ui/viz'
 
 /** 操作数写成参数引用。 */
 export interface FilterParameterRef {
@@ -50,7 +26,7 @@ export type FilterConditionIssue = 'field-missing' | 'operator-invalid' | 'opera
 export type FilterBuilderCreateId = (kind: 'condition' | 'group') => string
 
 /** 各类型缺省可用的运算符，第一个是新条件的运算符。 */
-export const FILTER_BUILDER_OPERATORS: Readonly<Record<FilterBuilderValueType, readonly FilterOperator[]>> = /* @__PURE__ */ Object.freeze({
+export const FILTER_BUILDER_OPERATORS: Readonly<Record<FilterValueType, readonly FilterOperator[]>> = /* @__PURE__ */ Object.freeze({
   string: ['eq', 'neq', 'in', 'notIn', 'contains', 'notContains', 'startsWith', 'endsWith', 'isEmpty', 'isNotEmpty'],
   number: ['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'between', 'in', 'notIn', 'isEmpty', 'isNotEmpty'],
   date: ['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'between', 'isEmpty', 'isNotEmpty'],
@@ -74,7 +50,7 @@ export function isParameterRef(value: unknown): value is FilterParameterRef {
 }
 
 /** 这个字段可用的运算符。 */
-export function filterOperatorsFor(field: FilterBuilderField): readonly FilterOperator[] {
+export function filterOperatorsFor(field: FilterField): readonly FilterOperator[] {
   return field.operators ?? FILTER_BUILDER_OPERATORS[field.type]
 }
 
@@ -95,7 +71,7 @@ export function filterOperandShape(operator: FilterOperator): FilterOperandShape
 }
 
 /** 字符串字段上可以忽略大小写的运算符。 */
-export function isCaseOperator(field: FilterBuilderField | undefined, operator: FilterOperator): boolean {
+export function isCaseOperator(field: FilterField | undefined, operator: FilterOperator): boolean {
   return field?.type === 'string' && filterOperandShape(operator) !== 'none' && filterOperandShape(operator) !== 'range'
 }
 
@@ -125,7 +101,7 @@ function withOperand<C extends FilterCondition>(condition: C, value: unknown): C
 }
 
 /** 新条件：字段取第一个，运算符取它可用的第一个，操作数为空。 */
-export function createFilterCondition(fields: readonly FilterBuilderField[], createId?: FilterBuilderCreateId): FilterCondition {
+export function createFilterCondition(fields: readonly FilterField[], createId?: FilterBuilderCreateId): FilterCondition {
   const field = fields[0]
   const condition: FilterCondition = { field: field?.name ?? '', operator: field ? filterOperatorsFor(field)[0] ?? 'eq' : 'eq' }
   return createId ? { ...condition, id: createId('condition') } as FilterCondition : condition
@@ -138,7 +114,7 @@ export function createFilterGroup(createId?: FilterBuilderCreateId): FilterGroup
 }
 
 /** 换字段：运算符不在新字段可用的运算符里时换成第一个；字段类型变了时清空操作数；不能忽略大小写时去掉 ignoreCase。 */
-export function changeFilterField<C extends FilterCondition>(condition: C, name: string, fields: readonly FilterBuilderField[]): C {
+export function changeFilterField<C extends FilterCondition>(condition: C, name: string, fields: readonly FilterField[]): C {
   const next = fields.find(field => field.name === name)
   if (!next || condition.field === name)
     return condition
@@ -156,7 +132,7 @@ export function changeFilterField<C extends FilterCondition>(condition: C, name:
 }
 
 /** 换运算符：操作数随之换形，不能忽略大小写时去掉 ignoreCase。 */
-export function changeFilterOperator<C extends FilterCondition>(condition: C, operator: FilterOperator, field: FilterBuilderField | undefined): C {
+export function changeFilterOperator<C extends FilterCondition>(condition: C, operator: FilterOperator, field: FilterField | undefined): C {
   if (condition.operator === operator)
     return condition
   let changed = withOperand({ ...condition, operator } as C, reshapeOperand(condition.value, filterOperandShape(operator)))
@@ -173,7 +149,7 @@ export function changeFilterOperand<C extends FilterCondition>(condition: C, val
 }
 
 /** 这一处能引用的参数：类型与字段相同，多值参数只配一组值，单值参数配单值或区间的一端。 */
-export function compatibleFilterParameters(parameters: readonly FilterBuilderParameter[], field: FilterBuilderField | undefined, operator: FilterOperator): FilterBuilderParameter[] {
+export function compatibleFilterParameters(parameters: readonly FilterParameter[], field: FilterField | undefined, operator: FilterOperator): FilterParameter[] {
   const shape = filterOperandShape(operator)
   if (!field || shape === 'none')
     return []
@@ -181,7 +157,7 @@ export function compatibleFilterParameters(parameters: readonly FilterBuilderPar
 }
 
 /** 条件的问题；没有问题时为 undefined。 */
-export function filterConditionIssue(condition: FilterCondition, fields: readonly FilterBuilderField[], parameters: readonly FilterBuilderParameter[] = []): FilterConditionIssue | undefined {
+export function filterConditionIssue(condition: FilterCondition, fields: readonly FilterField[], parameters: readonly FilterParameter[] = []): FilterConditionIssue | undefined {
   const field = fields.find(item => item.name === condition.field)
   if (!field)
     return 'field-missing'

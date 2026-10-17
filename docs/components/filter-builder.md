@@ -93,8 +93,8 @@
 | --- | --- | --- | --- |
 | `value` | `FilterGroup` |  | 受控的条件树；undefined 表示非受控。 |
 | `defaultValue` | `FilterGroup` |  |  |
-| `fields` | `readonly FilterBuilderField[]` |  | 可筛选的字段；条件的字段下拉按它的顺序。 |
-| `parameters` | `readonly FilterBuilderParameter[]` |  | 可引用的参数；不给或为空时不显示「值 / 参数」切换。 |
+| `fields` | `readonly FilterField[]` |  | 可筛选的字段；条件的字段下拉按它的顺序。 |
+| `parameters` | `readonly FilterParameter[]` |  | 可引用的参数；不给或为空时不显示「值 / 参数」切换。 |
 | `createId` | `FilterBuilderCreateId` |  | 新节点的 id；不给时新建的条件与组不带 id，也就没有扩展位。 |
 | `maxDepth` | `number` |  | 子组最多嵌套几层，缺省 2；0 表示不能加子组。 |
 | `ignoreCase` | `boolean` |  | 字符串运算符旁给不给「忽略大小写」开关，缺省 true。 |

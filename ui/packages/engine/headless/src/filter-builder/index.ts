@@ -36,9 +36,6 @@ export {
 } from './filter-builder.model'
 export type {
   FilterBuilderCreateId,
-  FilterBuilderField,
-  FilterBuilderParameter,
-  FilterBuilderValueType,
   FilterConditionIssue,
   FilterOperandShape,
   FilterParameterRef,

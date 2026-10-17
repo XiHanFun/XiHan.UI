@@ -658,6 +658,9 @@ importers:
       '@xihan-ui/pointer':
         specifier: workspace:^
         version: link:../../engine/pointer
+      '@xihan-ui/viz':
+        specifier: workspace:^
+        version: link:../../engine/viz
     devDependencies:
       '@xihan-ui/build':
         specifier: workspace:*
@@ -680,6 +683,9 @@ importers:
       '@xihan-ui/pointer':
         specifier: workspace:^
         version: link:../../engine/pointer
+      '@xihan-ui/viz':
+        specifier: workspace:^
+        version: link:../../engine/viz
       '@xihan-ui/web-components':
         specifier: workspace:^
         version: link:../../adapters/web-components

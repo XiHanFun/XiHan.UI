@@ -54,6 +54,30 @@ export const FILTER_OPERATORS: readonly FilterOperator[] = Object.freeze([
   'isNotEmpty',
 ])
 
+/** 可筛选字段与参数的值类型。 */
+export type FilterValueType = 'string' | 'number' | 'boolean' | 'date' | 'datetime'
+
+/** 可筛选的字段：编辑条件树时的字段清单，条件的 field 写它的 name。 */
+export interface FilterField {
+  /** 写进条件的 field。 */
+  readonly name: string
+  readonly label?: string
+  readonly type: FilterValueType
+  /** 固定候选值：eq / neq / in / notIn 改用下拉选择。 */
+  readonly options?: readonly { readonly value: string | number | boolean, readonly label?: string }[]
+  /** 这个字段可用的运算符，缺省按类型取。 */
+  readonly operators?: readonly FilterOperator[]
+}
+
+/** 可引用的参数：条件的操作数可以写成 { parameter: name }。 */
+export interface FilterParameter {
+  readonly name: string
+  readonly label?: string
+  readonly type: FilterValueType
+  /** 多值参数只能整个用作 in / notIn 的操作数。 */
+  readonly multiple?: boolean
+}
+
 /** 一个筛选条件。 */
 export interface FilterCondition {
   /** 字段名。 */

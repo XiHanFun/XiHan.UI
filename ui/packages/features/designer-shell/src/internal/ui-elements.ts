@@ -11,6 +11,7 @@ import {
   XhColorFieldElement,
   XhContextMenuElement,
   XhFieldElement,
+  XhFilterBuilderElement,
   XhFormatInputElement,
   XhIconElement,
   XhNumberFieldElement,
@@ -38,6 +39,7 @@ export function definePropertyFieldElements(): void {
   defineXhElement('xh-toggle-group', XhToggleGroupElement)
   defineXhElement('xh-tree-select', XhTreeSelectElement)
   defineXhElement('xh-format-input', XhFormatInputElement)
+  defineXhElement('xh-filter-builder', XhFilterBuilderElement)
   defineXhElement('xh-accordion', XhAccordionElement)
 }
 

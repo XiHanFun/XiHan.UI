@@ -8,6 +8,7 @@
 
 import type { JsonObject, JsonPath, JsonPrimitive, JsonValue } from '@xihan-ui/core/json'
 import type { FormatSpec } from '@xihan-ui/expression'
+import type { FilterField, FilterParameter } from '@xihan-ui/viz'
 import type { DataField, DataFieldKind } from './data-fields'
 import type { SchemaIssue, SchemaIssueTarget } from './schema'
 import { formatJsonPath, getJsonAt, isJsonPathText, isPlainObject, jsonEquals, setJsonAt } from '@xihan-ui/core/json'
@@ -53,6 +54,10 @@ export type PropertySides = Readonly<Record<PropertySide, number>>
  *   同 listDataFields）。fields、kinds、base 只给编辑器用。
  * - sides：四边各一个数字的对象 { top, right, bottom, left }，每边都按 PropertyNumberConstraints 检查。
  * - format：@xihan-ui/expression 的格式说明，按 checkFormatSpec 检查；kinds 是允许的格式种类，缺省全部。
+ * - filter：条件树（@xihan-ui/viz 的 FilterGroup）：每个组是 { logic: 'and' | 'or', conditions }，条件是 { field, operator }，
+ *   只查这层形状，字段在不在、运算符合不合由各款自己的校验报。可筛选的字段：描述里写了 fields 就用它，没写时用属性面板
+ *   给的 dataFields 按 listFilterFields 列出的 value 字段；parameters 是可引用的参数，maxDepth 限子组层数，ids 为 true 时
+ *   新建的条件与组带 id。fields、parameters、maxDepth、ids 只给编辑器用。
  */
 export type PropertyControl
   = | { readonly kind: 'text', readonly multiline?: boolean, readonly placeholder?: string }
@@ -70,6 +75,13 @@ export type PropertyControl
     | { readonly kind: 'dataField', readonly fields?: readonly DataField[], readonly kinds?: readonly DataFieldKind[], readonly base?: JsonPath }
     | ({ readonly kind: 'sides' } & PropertyNumberConstraints)
     | { readonly kind: 'format', readonly kinds?: readonly FormatSpec['kind'][] }
+    | {
+      readonly kind: 'filter'
+      readonly fields?: readonly FilterField[]
+      readonly parameters?: readonly FilterParameter[]
+      readonly maxDepth?: number
+      readonly ids?: boolean
+    }
 
 /** 内建编辑方式的种类。 */
 export type PropertyControlKind = PropertyControl['kind']
@@ -212,10 +224,19 @@ function checkNumber(constraints: PropertyNumberConstraints, value: JsonValue | 
   return undefined
 }
 
+/** 条件树这一层的形状：组有 logic 与 conditions，条件有 field 与 operator，子组同样检查。 */
+function isFilterGroupShape(value: unknown): boolean {
+  if (!isPlainObject(value) || (value.logic !== 'and' && value.logic !== 'or') || !Array.isArray(value.conditions))
+    return false
+  return value.conditions.every(node => isPlainObject(node) && ('conditions' in node
+    ? isFilterGroupShape(node)
+    : typeof node.field === 'string' && typeof node.operator === 'string'))
+}
+
 /**
  * 检查值是否符合内建编辑方式的约束；符合时为 undefined，否则给出问题码。
  * dataField 不是路径写法报 invalid-value；sides 多出四边以外的键报 unknown-key，缺边或某边不是数字报 invalid-type；
- * format 不是对象报 invalid-type，没过 checkFormatSpec 报 invalid-value。
+ * format 不是对象报 invalid-type，没过 checkFormatSpec 报 invalid-value；filter 不是对象报 invalid-type，条件树的形状不对报 invalid-value。
  */
 export function checkPropertyValue(control: PropertyControl, value: JsonValue): PropertyValueIssueCode | undefined {
   switch (control.kind) {
@@ -262,11 +283,15 @@ export function checkPropertyValue(control: PropertyControl, value: JsonValue): 
       if (!isPlainObject(value))
         return 'invalid-type'
       return checkFormatSpec(value, control.kinds === undefined ? {} : { kinds: control.kinds }).length === 0 ? undefined : 'invalid-value'
+    case 'filter':
+      if (!isPlainObject(value))
+        return 'invalid-type'
+      return isFilterGroupShape(value) ? undefined : 'invalid-value'
   }
 }
 
 /** 内建编辑方式的种类名；登记的新编辑方式不能与它们重名。 */
-export const BUILTIN_CONTROL_KINDS: readonly PropertyControlKind[] = ['text', 'number', 'boolean', 'select', 'tags', 'color', 'json', 'dataField', 'sides', 'format']
+export const BUILTIN_CONTROL_KINDS: readonly PropertyControlKind[] = ['text', 'number', 'boolean', 'select', 'tags', 'color', 'json', 'dataField', 'sides', 'format', 'filter']
 
 /** 新的编辑方式：属性描述里 control.kind 等于登记的键时，checkProperties 用它校验取值。 */
 export interface ControlKind {

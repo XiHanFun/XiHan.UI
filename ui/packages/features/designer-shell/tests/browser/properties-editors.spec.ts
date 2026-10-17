@@ -1,5 +1,5 @@
 // 属性面板的三种复合内建编辑器在真实 Chromium 与组件皮肤下：绑定字段的树选择点开即选、四边在窄面板里排成两列不越界、
-// 格式输入框放得进窄面板，三者一起时没有 wc.* 诊断，axe 也没有违规。
+// 格式输入框放得进窄面板，三者一起时没有 wc.* 诊断，axe 也没有违规；条件编辑器放得进窄面板，真实指针加条件写入新树。
 import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { DesignerPropertiesEventMap, XhDesignerPropertiesElement } from '../../src'
 import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
@@ -107,5 +107,32 @@ describe('属性面板的绑定字段、四边与格式（Chromium）', () => {
     const format = row('format').querySelector('xh-format-input > [data-xh-part="root"]')!
     expect(inside(format, row('format'))).toBe(true)
     await expectNoAxeViolations(panel!)
+  })
+
+  it('条件树：条件编辑器放得进窄面板，真实指针点「加条件」写入一棵新树，axe 无违规', async () => {
+    resetDiagnostics()
+    panel = document.createElement('xh-designer-properties')
+    panel.style.inlineSize = '280px'
+    panel.dataFields = [{ name: 'region', kind: 'value', label: 'Region' }, { name: 'amount', kind: 'value', type: 'number', label: 'Amount' }]
+    panel.targets = [{
+      kind: 'card',
+      id: 'x',
+      value: { filter: { logic: 'and', conditions: [{ id: 'c1', field: 'amount', operator: 'gt', value: 10 }] } },
+      descriptors: [{ path: ['filter'], control: { kind: 'filter', ids: true }, label: 'Filter' }],
+    }]
+    const changes: unknown[] = []
+    panel.addEventListener('property-change', event => void changes.push((event as DesignerPropertiesEventMap['property-change']).detail.value))
+    document.body.append(panel)
+    await panel.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const row = panel.querySelector<HTMLElement>('[data-part="property"][data-path="filter"]')!
+    const builder = row.querySelector('xh-filter-builder')!
+    expect(inside(builder, row)).toBe(true)
+    // 行里看得见的控件盒与删除钮都不越出这一行；收着的下拉浮层不在其列
+    for (const control of builder.querySelectorAll('[data-scope="select"][data-part="control"], [data-scope="number-field"][data-part="root"], [data-scope="filter-builder"][data-part="condition-delete-trigger"]'))
+      expect(inside(control, row)).toBe(true)
+    await userEvent.click(builder.querySelector('[data-scope="filter-builder"][data-part="add-condition-trigger"]')!)
+    expect(changes.at(-1)).toEqual({ logic: 'and', conditions: [{ id: 'c1', field: 'amount', operator: 'gt', value: 10 }, { field: 'region', operator: 'eq', id: 'c2' }] })
+    await expectNoAxeViolations(panel)
   })
 })

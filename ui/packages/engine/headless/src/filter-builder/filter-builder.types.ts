@@ -6,16 +6,9 @@
 // 定义 filter builder 类型契约。
 
 import type { ControlVariant, MachineSchema, PropTypes, Size } from '@xihan-ui/core'
-import type { FilterCondition, FilterGroup, FilterOperator } from '@xihan-ui/viz'
+import type { FilterCondition, FilterField, FilterGroup, FilterOperator, FilterParameter } from '@xihan-ui/viz'
 import type { StructureInstanceProps } from '../shared/structure-instance'
-import type {
-  FilterBuilderCreateId,
-  FilterBuilderField,
-  FilterBuilderParameter,
-  FilterConditionIssue,
-  FilterOperandShape,
-  FilterPath,
-} from './filter-builder.model'
+import type { FilterBuilderCreateId, FilterConditionIssue, FilterOperandShape, FilterPath } from './filter-builder.model'
 
 export interface FilterBuilderValueChangeDetails {
   /** 新的条件树；每次增删改派发一棵新树，不改原树。 */
@@ -44,7 +37,7 @@ export interface FilterBuilderConditionView {
   /** 条件的 id；没有 id 的条件不提供扩展位。 */
   readonly id: string | undefined
   readonly condition: FilterCondition
-  readonly field: FilterBuilderField | undefined
+  readonly field: FilterField | undefined
   readonly operators: readonly FilterOperator[]
   readonly shape: FilterOperandShape
   readonly source: FilterOperandSource
@@ -72,9 +65,9 @@ export interface FilterBuilderSchema extends MachineSchema {
     value?: FilterGroup
     defaultValue?: FilterGroup
     /** 可筛选的字段；条件的字段下拉按它的顺序。 */
-    fields?: readonly FilterBuilderField[]
+    fields?: readonly FilterField[]
     /** 可引用的参数；不给或为空时不显示「值 / 参数」切换。 */
-    parameters?: readonly FilterBuilderParameter[]
+    parameters?: readonly FilterParameter[]
     /** 新节点的 id；不给时新建的条件与组不带 id，也就没有扩展位。 */
     createId?: FilterBuilderCreateId
     /** 子组最多嵌套几层，缺省 2；0 表示不能加子组。 */

@@ -6,8 +6,8 @@
 // 提供 filter builder 相关实现。
 
 import type { ControlVariant, Size } from '@xihan-ui/core'
-import type { FilterBuilderApi, FilterBuilderCreateId, FilterBuilderField, FilterBuilderParameter, FilterBuilderSchema, FilterBuilderValueChangeDetails, FilterPath, FormControlState } from '@xihan-ui/headless'
-import type { FilterGroup, FilterOperator } from '@xihan-ui/viz'
+import type { FilterBuilderApi, FilterBuilderCreateId, FilterBuilderSchema, FilterBuilderValueChangeDetails, FilterPath, FormControlState } from '@xihan-ui/headless'
+import type { FilterField, FilterGroup, FilterOperator, FilterParameter } from '@xihan-ui/viz'
 import type { ElementStructure } from '../element-base'
 import { connectFilterBuilder, filterBuilderAnatomy, filterBuilderMachine, filterBuilderMeta, filterBuilderStructure, filterBuilderTranslations, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -71,8 +71,8 @@ function notConnected(method: string): Error {
  * @customElement xh-filter-builder
  * @prop {FilterGroup} value - 受控的条件树，未赋值即非受控
  * @prop {FilterGroup} defaultValue - 非受控初值
- * @prop {FilterBuilderField[]} fields - 可筛选的字段；条件的字段下拉按它的顺序
- * @prop {FilterBuilderParameter[]} parameters - 可引用的参数；不给或为空时不显示「值 / 参数」切换
+ * @prop {FilterField[]} fields - 可筛选的字段；条件的字段下拉按它的顺序
+ * @prop {FilterParameter[]} parameters - 可引用的参数；不给或为空时不显示「值 / 参数」切换
  * @prop {FilterBuilderCreateId} createId - 新节点的 id；不给时新建的条件与组不带 id，也就没有扩展位
  * @prop {object} translations - 文案（只能通过 property 设置）
  * @attr {number} max-depth - 子组最多嵌套几层，缺省 2；0 表示不能加子组
@@ -150,8 +150,8 @@ export class XhFilterBuilderElement extends XhElement {
 
   declare value?: FilterGroup
   declare defaultValue?: FilterGroup
-  declare fields?: readonly FilterBuilderField[]
-  declare parameters?: readonly FilterBuilderParameter[]
+  declare fields?: readonly FilterField[]
+  declare parameters?: readonly FilterParameter[]
   declare createId?: FilterBuilderCreateId
   declare maxDepth?: number
   declare ignoreCase?: boolean

@@ -1,11 +1,10 @@
 // 基础用法 | 组里是条件，每个条件是字段、运算符与值；运算符按字段类型给出，值的控件随运算符换，增删改都派发一棵新树
-import type { FilterBuilderField } from "@xihan-ui/headless";
-import type { FilterGroup } from "@xihan-ui/viz";
+import type { FilterField, FilterGroup } from "@xihan-ui/viz";
 import type { ReactNode } from "react";
 import { XhFilterBuilderRoot } from "@xihan-ui/react";
 import { useState } from "react";
 
-const fields: FilterBuilderField[] = [
+const fields: FilterField[] = [
   { name: "region", type: "string", label: "区域", options: [{ value: "east", label: "华东" }, { value: "south", label: "华南" }, { value: "north", label: "华北" }] },
   { name: "customer", type: "string", label: "客户" },
   { name: "amount", type: "number", label: "金额" },

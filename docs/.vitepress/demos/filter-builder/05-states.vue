@@ -1,9 +1,9 @@
 <!-- 只读与禁用 | 只读时里面的控件可聚焦、不可修改，加删钮不可用；禁用时整棵树不可操作 -->
 <script setup lang="ts">
-import type { FilterBuilderField } from "@xihan-ui/headless";
+import type { FilterField } from "@xihan-ui/viz";
 import { XhFilterBuilderRoot } from "@xihan-ui/vue";
 
-const fields: FilterBuilderField[] = [
+const fields: FilterField[] = [
   { name: "region", type: "string", label: "区域", options: [{ value: "east", label: "华东" }, { value: "south", label: "华南" }, { value: "north", label: "华北" }] },
   { name: "customer", type: "string", label: "客户" },
   { name: "amount", type: "number", label: "金额" },

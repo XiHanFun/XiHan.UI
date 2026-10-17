@@ -6,8 +6,8 @@
 // 提供 filter builder 相关实现。
 
 import type { Params as MachineParams, PropFn } from '@xihan-ui/core'
-import type { FilterCondition, FilterGroup, FilterNode } from '@xihan-ui/viz'
-import type { FilterBuilderField, FilterPath } from './filter-builder.model'
+import type { FilterCondition, FilterField, FilterGroup, FilterNode } from '@xihan-ui/viz'
+import type { FilterPath } from './filter-builder.model'
 import type { FilterBuilderSchema, FilterBuilderTranslations } from './filter-builder.types'
 import { focusFirst, getTabbables, setup } from '@xihan-ui/core'
 import { FILTER_BUILDER_EN_US } from '../locale/en-US'
@@ -77,7 +77,7 @@ function treeOf(params: Pick<Params, 'context'>): FilterGroup {
   return params.context.get('value') ?? emptyFilter()
 }
 
-function fieldsOf(prop: PropFn<FilterBuilderSchema>): readonly FilterBuilderField[] {
+function fieldsOf(prop: PropFn<FilterBuilderSchema>): readonly FilterField[] {
   return prop('fields') ?? []
 }
 

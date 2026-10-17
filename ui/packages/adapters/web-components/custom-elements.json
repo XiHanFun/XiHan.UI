@@ -29485,7 +29485,7 @@
               "name": "fields",
               "privacy": "public",
               "type": {
-                "text": "FilterBuilderField[]"
+                "text": "FilterField[]"
               },
               "description": "可筛选的字段；条件的字段下拉按它的顺序"
             },
@@ -29494,7 +29494,7 @@
               "name": "parameters",
               "privacy": "public",
               "type": {
-                "text": "FilterBuilderParameter[]"
+                "text": "FilterParameter[]"
               },
               "description": "可引用的参数；不给或为空时不显示「值 / 参数」切换"
             },
