@@ -95,6 +95,8 @@ export interface XhCascaderRootProps extends RootElementProps {
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
+  /** 必填：trigger 报告 aria-required，没选值时补一份带原生 required 的占位影子。 */
+  required?: boolean
   loading?: boolean
   translations?: CascaderProps['translations']
   variant?: ControlVariant
@@ -136,6 +138,7 @@ export function XhCascaderRoot({
   disabled,
   readOnly,
   invalid,
+  required,
   loading,
   translations,
   variant,
@@ -176,6 +179,7 @@ export function XhCascaderRoot({
     disabled,
     readOnly,
     invalid,
+    required,
     loading,
     translations,
     variant,
@@ -224,6 +228,8 @@ export function XhCascaderRoot({
           deselect: api.deselect,
         })}
         {api.value.map(path => <input key={JSON.stringify(path)} {...api.getHiddenInputProps({ path }) as Record<string, unknown>} />)}
+        {/* 必填且没选值：补一份空值占位，原生 required 才拦得住空表单 */}
+        {api.value.length === 0 && api.required && <input {...api.getHiddenInputProps() as Record<string, unknown>} />}
       </div>
     </CascaderProvider>
   )

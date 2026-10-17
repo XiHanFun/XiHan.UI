@@ -136,6 +136,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 使用原生 disabled，浮层不可展开。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开与浏览，但选中值不可修改、也不可清空。 |
 | `invalid` | `boolean` |  | 校验失败：trigger 报告 aria-invalid，各角色节点带 data-invalid。 |
+| `required` | `boolean` |  | 必填：trigger 报告 aria-required，根与标题带 data-required（标题据此画星号）。 一条完整路径一份表单影子，没选值时没有影子；此时补一份空值的占位影子带原生 required，拦下空表单的提交。 |
 | `loading` | `boolean` |  | 候选加载中：浮层报告 aria-busy；当前视图无候选时显示在途占位。 |
 | `translations` | `Partial<CascaderTranslations>` |  | 空态占位的文案覆盖，默认英文。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色使用方式。默认 outline。 |
@@ -254,6 +255,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
+| `required` | `boolean` |  |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
 | `tags` | `CascaderTagMeta[]` | 可见标签（受 maxTagCount 截断），与 value 同序；文字是整条路径的显示名按 separator 连缀。 |
 | `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
@@ -278,7 +280,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `retryBranch` | `(value: string) => void` | 重新取这个懒分支的直接子项，与失败提示里的重试按钮同一语义。 |
 | `deselect` | `(path: readonly string[]) => void` | 移除一条选中路径，其余保持选中先后。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getHiddenInputProps` | `(props: { path: readonly string[] }) => T['input']` | 每条路径独立编码，适配器按 value 渲染重复同名字段。 |
+| `getHiddenInputProps` | `(props?: { path: readonly string[] }) => T['input']` | 一条完整路径的表单影子；不给 path 是必填且没选值时的空值占位，带原生 required。 |
 | `getLabelProps` | `() => T['element']` |  |
 | `getControlProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
@@ -353,12 +355,14 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `hidden-input` | `aria-hidden` | 'true' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'listbox' |
 | `trigger` | `aria-invalid` | 'true' \| 'false' |
 | `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id |
 | `trigger` | `aria-readonly` | 'true' \| 'false' |
+| `trigger` | `aria-required` | 'true' \| 'false' |
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
@@ -414,11 +418,13 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
+| `label` | `data-required` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |

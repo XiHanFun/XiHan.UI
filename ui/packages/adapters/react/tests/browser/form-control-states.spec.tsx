@@ -6,6 +6,10 @@ import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
+  XhCascaderControl,
+  XhCascaderRoot,
+  XhCascaderTrigger,
+  XhCascaderValueText,
   XhColorPickerControl,
   XhColorPickerRoot,
   XhColorPickerTrigger,
@@ -62,6 +66,13 @@ const CASES: Case[] = [
     axes: { readOnly: 'aria-disabled' },
     render: state => <XhFileUploadRoot {...state}><XhFileUploadDropzone>把文件拖到这里</XhFileUploadDropzone></XhFileUploadRoot>,
     host: root => root.querySelector<HTMLElement>('[data-scope="file-upload"][data-part="dropzone"]')!,
+  },
+  {
+    name: 'cascader',
+    axes: { required: 'aria-required' },
+    render: state => <XhCascaderRoot collection={[{ value: 'zj', label: '浙江' }]} {...state}><XhCascaderControl><XhCascaderTrigger><XhCascaderValueText /></XhCascaderTrigger></XhCascaderControl></XhCascaderRoot>,
+    host: root => root.querySelector<HTMLElement>('[data-scope="cascader"][data-part="trigger"]')!,
+    wired: true,
   },
 ]
 
@@ -120,7 +131,8 @@ describe('字段控件的 readOnly / invalid / required（React）', () => {
 
     if (c.wired) {
       it(`${c.name}：字段的标签并进名字链、错误文案并进描述链`, async () => {
-        const root = await mountInField(c, allOn(c), {})
+        // 错误文案只在字段 invalid 时渲出来
+        const root = await mountInField(c, { ...allOn(c), invalid: true }, {})
         const label = root.querySelector<HTMLElement>('[data-scope="field"][data-part="label"]')!.id
         const error = root.querySelector<HTMLElement>('[data-scope="field"][data-part="error-text"]')!.id
         expect(c.host(root).getAttribute('aria-labelledby')?.split(/\s+/)).toContain(label)

@@ -74,6 +74,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {boolean} disabled - 整个控件禁用：trigger 使用原生 disabled，浮层不可展开
  * @attr {boolean} read-only - 只读：浮层照常展开、列照常浏览，但选中值不可修改、也不可清空
  * @attr {boolean} invalid - 校验失败标注
+ * @attr {boolean} required - 必填：trigger 报告 aria-required，没选值时补一份带原生 required 的占位影子
  * @attr {boolean} loading - 候选加载中：浮层报告 aria-busy；当前视图无候选时显示在途占位
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
@@ -159,6 +160,7 @@ export class XhCascaderElement extends XhPortalHostElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
+    required: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
@@ -193,6 +195,7 @@ export class XhCascaderElement extends XhPortalHostElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
+  declare required?: boolean
   declare loading?: boolean
   declare variant?: ControlVariant
   declare tone?: Tone
@@ -386,6 +389,7 @@ export class XhCascaderElement extends XhPortalHostElement {
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
+      required: this.required,
     }, this.inheritedControl)
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
@@ -409,6 +413,7 @@ export class XhCascaderElement extends XhPortalHostElement {
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,
+      required: control.required,
       loading: this.loading ?? false,
       variant: this.variant,
       tone: this.tone,
@@ -598,8 +603,10 @@ export class XhCascaderElement extends XhPortalHostElement {
   protected wire(): void {
     const api = connectCascader(this.ctrl.service, wcNormalize)
 
-    // 每条完整路径一个原生字段，空集合没有空字段；自动节点不进入作者部件发现。
-    while (this.formInputs.length > api.value.length) {
+    // 每条完整路径一个原生字段；空集合没有空字段，必填时补一条空值占位（原生 required 才拦得住）。
+    // 自动节点不进入作者部件发现。
+    const inputCount = api.value.length || (api.required ? 1 : 0)
+    while (this.formInputs.length > inputCount) {
       const input = this.formInputs.pop()!
       this.spreader.release(input)
       input.remove()
@@ -609,10 +616,11 @@ export class XhCascaderElement extends XhPortalHostElement {
     // 原位，出口若追加在末尾就排到了它后面。搬迁中以租约留在原位的占位节点为落点。
     const parent = this.getPart('root') ?? this
     const anchor = this.hiddenInputAnchor(parent)
-    for (let index = 0; index < api.value.length; index++) {
+    for (let index = 0; index < inputCount; index++) {
       const input = this.formInputs[index] ?? this.ownerDocument.createElement('input')
       this.formInputs[index] = input
-      this.spreader.spread(input, api.getHiddenInputProps({ path: api.value[index]! }) as Record<string, unknown>)
+      const path = api.value[index]
+      this.spreader.spread(input, api.getHiddenInputProps(path ? { path } : undefined) as Record<string, unknown>)
       const previous = this.formInputs[index - 1]
       if (previous) {
         if (previous.nextSibling !== input)
