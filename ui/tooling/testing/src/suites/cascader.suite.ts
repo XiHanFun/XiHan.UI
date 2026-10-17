@@ -411,6 +411,29 @@ export const cascaderSuite: ConformanceSuite = {
   fixture: FIXTURE,
   cases: [
     {
+      name: '作者不写结构：三端都照 cascaderStructure 铺出标题、盒（触发钮与清空钮）与浮层里的根列、空态与在途，点开后点分支展开下一列',
+      spec: { apg: `${APG_COMBOBOX}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: props({ label: '地区', clearable: true }),
+      initial: {
+        order: ['root', 'label', 'control', 'trigger', 'value-text', 'indicator', 'clear-trigger', 'positioner', 'content', 'column', 'item[0]', 'item-text[0]', 'item-indicator[0]', 'item[1]', 'item-text[1]', 'item-indicator[1]', 'item[2]', 'item-text[2]', 'item-indicator[2]', 'item[3]', 'item-text[3]', 'item-indicator[3]', 'empty', 'loading'],
+        parts: { trigger: { 'role': 'combobox', 'aria-labelledby': '@part(label) @part(value-text)' } },
+      },
+      steps: [
+        { kind: 'click', part: 'trigger', expect: { parts: { content: { hidden: null } } } },
+        { kind: 'click', part: 'item[0]', expect: { counts: { column: 2 } } },
+      ],
+    },
+    {
+      name: '作者不写结构的多选与搜索：触发钮里铺标签行，浮层顶部铺搜索框与候选列表',
+      spec: { apg: `${APG_COMBOBOX}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: props({ multiple: true, searchable: true, defaultValue: [TAG_MACAU] }),
+      initial: {
+        order: ['root', 'control', 'trigger', 'value-text', 'tag-list', 'indicator', 'hidden-input', 'positioner', 'content', 'input', 'search-list', 'column', 'item[0]', 'item-text[0]', 'item-indicator[0]', 'item[1]', 'item-text[1]', 'item-indicator[1]', 'item[2]', 'item-text[2]', 'item-indicator[2]', 'item[3]', 'item-text[3]', 'item-indicator[3]', 'empty', 'loading'],
+      },
+    },
+    {
       name: '初始收起：trigger 是 combobox 指向浮层壳，列是 listbox，只有根列的条目露面且全体退出 Tab 序列',
       spec: { apg: `${APG_COMBOBOX}#roles_states_properties` },
       props: props({ placeholder: '请选择' }),

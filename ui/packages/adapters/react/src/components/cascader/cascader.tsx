@@ -13,9 +13,11 @@ import type {
   CascaderSchema,
   CascaderSearchResult,
   CascaderValue,
+  StructureChild,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { cascaderStructure } from '@xihan-ui/headless'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
@@ -23,6 +25,7 @@ import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotIsPlainText } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -73,6 +76,10 @@ export type CascaderRootSlotProps = Pick<
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhCascaderRootProps extends RootElementProps {
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
+  /** 不给 children 时盒里带清空按钮；给了 children 时放 clear-trigger 部件即可清空。 */
+  clearable?: boolean
   /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
   ariaLabel?: string
   collection?: CascaderNode[]
@@ -121,6 +128,8 @@ export interface XhCascaderRootProps extends RootElementProps {
 }
 
 export function XhCascaderRoot({
+  label,
+  clearable,
   ariaLabel,
   collection,
   loadChildren,
@@ -206,31 +215,33 @@ export function XhCascaderRoot({
   return (
     <CascaderProvider value={ctx}>
       <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>, { ref: ctx.rootRef })}>
-        {renderSlot(children, {
-          open: api.open,
-          // levels 每层一列、层内节点各一条目，供作者渲染；columns 只读当前展开的列
-          levels: api.levels,
-          columns: api.columns,
-          value: api.value,
-          valuePath: api.valuePath,
-          activePath: api.activePath,
-          focusedPath: api.focusedPath,
-          displayText: api.displayText,
-          canClear: api.canClear,
-          tags: api.tags,
-          overflowCount: api.overflowCount,
-          overflowText: api.overflowText,
-          isSelected: api.isSelected,
-          isIndeterminate: api.isIndeterminate,
-          isActive: api.isActive,
-          isVisible: api.isVisible,
-          setOpen: api.setOpen,
-          setValue: api.setValue,
-          setActivePath: api.setActivePath,
-          select: api.select,
-          clear: api.clear,
-          deselect: api.deselect,
-        })}
+        {children == null
+          ? renderDefaultStructure(api, label, { clearable, searchable })
+          : renderSlot(children, {
+              open: api.open,
+              // levels 每层一列、层内节点各一条目，供作者渲染；columns 只读当前展开的列
+              levels: api.levels,
+              columns: api.columns,
+              value: api.value,
+              valuePath: api.valuePath,
+              activePath: api.activePath,
+              focusedPath: api.focusedPath,
+              displayText: api.displayText,
+              canClear: api.canClear,
+              tags: api.tags,
+              overflowCount: api.overflowCount,
+              overflowText: api.overflowText,
+              isSelected: api.isSelected,
+              isIndeterminate: api.isIndeterminate,
+              isActive: api.isActive,
+              isVisible: api.isVisible,
+              setOpen: api.setOpen,
+              setValue: api.setValue,
+              setActivePath: api.setActivePath,
+              select: api.select,
+              clear: api.clear,
+              deselect: api.deselect,
+            })}
         {api.value.map(path => <input key={JSON.stringify(path)} {...api.getHiddenInputProps({ path }) as Record<string, unknown>} />)}
         {/* 必填且没选值：补一份空值占位，原生 required 才拦得住空表单。它是带 value 的文本输入，
             交一个不会被调用的 onChange，免得 React 在开发构建里报受控输入告警 */}
@@ -686,4 +697,49 @@ export interface XhCascaderFooterProps extends ComponentPropsWithRef<'div'> {}
 export function XhCascaderFooter({ children, ...rest }: XhCascaderFooterProps): ReactNode {
   const ctx = useCascaderContext()
   return <div {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+}
+
+/** 标准结构里各部件对应的组件；委派部件按「组件名/部件名」查。 */
+const CASCADER_PARTS = {
+  'label': XhCascaderLabel,
+  'control': XhCascaderControl,
+  'trigger': XhCascaderTrigger,
+  'value-text': XhCascaderValueText,
+  'tag-list': XhCascaderTagList,
+  'indicator': XhCascaderIndicator,
+  'clear-trigger': XhCascaderClearTrigger,
+  'positioner': XhCascaderPositioner,
+  'content': XhCascaderContent,
+  'input': XhCascaderInput,
+  'search-list': XhCascaderSearchList,
+  'column': XhCascaderColumn,
+  'item': XhCascaderItem,
+  'item-text': XhCascaderItemText,
+  'item-description': XhCascaderItemDescription,
+  'item-indicator': XhCascaderItemIndicator,
+  'tag/tag': XhCascaderTag,
+  'tag/overflow-tag': XhCascaderOverflowTag,
+}
+
+/** 浮层自己铺空态与在途，候选列表自己铺每条候选，列自己铺懒分支的三块状态：铺结构时去掉这些格子。 */
+const SELF_ASSEMBLED: ReadonlySet<string> = new Set(['empty', 'loading', 'search-item', 'branch-loading', 'branch-error', 'branch-retry-trigger'])
+
+function withoutSelfAssembled(nodes: readonly StructureChild[]): StructureChild[] {
+  return nodes.flatMap((node): StructureChild[] => {
+    if (!('part' in node))
+      return [node]
+    if (SELF_ASSEMBLED.has(node.part))
+      return []
+    return [node.children ? { ...node, children: withoutSelfAssembled(node.children) } : node]
+  })
+}
+
+/**
+ * 未写 children 时铺开的整套结构：照 headless 的 cascaderStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容交给 label 部件；表单影子仍由根按选中路径装配在后面。
+ */
+function renderDefaultStructure(api: CascaderApi, label: ReactNode, options: { clearable?: boolean, searchable?: boolean }): ReactNode[] {
+  const slotted = label != null && typeof label !== 'string'
+  const nodes = cascaderStructure(api, { ...options, label: typeof label === 'string' ? label : undefined, slotted: name => name === 'label' && slotted })
+  return renderStructure(withoutSelfAssembled(nodes), CASCADER_PARTS, node => (node.slot ? label : undefined))
 }

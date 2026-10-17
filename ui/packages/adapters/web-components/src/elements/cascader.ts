@@ -21,9 +21,10 @@ import type {
   CascaderValueChangeDetails,
   FormControlState,
 } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { cascaderAnatomy, cascaderMachine, cascaderMeta, connectCascader, resolveFormControlState } from '@xihan-ui/headless'
+import { cascaderAnatomy, cascaderMachine, cascaderMeta, cascaderStructure, connectCascader, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
@@ -51,6 +52,11 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * 标记是静态的：列按树的深度写满（第 L 列放置第 L 层的全部节点），当前应显示的条目
  * 由元素加 hidden 收口，作者节点一个都不卸载。可先取 `cascaderBuildLevels(collection)` 按此编写。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）、盒（触发钮，带不带清空钮看 clearable）与浮层；
+ * 触发钮里是值串、多选的标签行与展开箭头，浮层里开了 searchable 时先是搜索框与候选，再是当前展开的各列与
+ * 懒分支那一列的三块状态，末尾是空态与在途占位。标题可以由宿主直接子节点 `slot="label"` 接管；
+ * 分组、条目行尾与底部操作区不在生成的结构里，要用时手写部件。
+ *
  * 所在列、整条路径、禁用与显示文本都查询 `collection` 这份树数据，不从 DOM 反推。
  * collection 必须与标记同源且 value 全树唯一。
  *
@@ -60,6 +66,8 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * `el.value = ['zhejiang','hangzhou']`）。
  *
  * @customElement xh-cascader
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
+ * @attr {boolean} clearable - 生成结构时盒里带清空按钮；手写部件时不使用它，写了 clear-trigger 即可清空
  * @attr {string} name - 原生字段名，每条选中路径作为 JSON 字符串数组独立提交
  * @attr {string} form - 关联的原生表单 ID，指定后覆盖祖先归属
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
@@ -136,9 +144,22 @@ export class XhCascaderElement extends XhPortalHostElement {
 
   static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const
 
+  static override structure: ElementStructure<XhCascaderElement> = {
+    build: host => host.ctrl.service
+      ? cascaderStructure(connectCascader(host.ctrl.service, wcNormalize), {
+          label: host.label,
+          clearable: host.clearable,
+          searchable: host.searchable,
+          slotted: name => host.slotted(name),
+        })
+      : undefined,
+  }
+
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    label: { converter: STRING_CONVERTER },
+    clearable: { type: Boolean },
     collection: { attribute: false },
     // 函数只走 property，属性表达不了
     loadChildren: { attribute: false },
@@ -174,6 +195,8 @@ export class XhCascaderElement extends XhPortalHostElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
   }
 
+  declare label?: string
+  declare clearable?: boolean
   declare collection?: CascaderNode[]
   /** 取回懒分支（hasChildren 且没给 children）的直接子项；展开路径走到它时自动调用。只能作为 property 设置。 */
   declare loadChildren?: CascaderSchema['props']['loadChildren']

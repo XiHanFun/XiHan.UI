@@ -32,6 +32,8 @@ export {
 } from './cascader.machine'
 export { cascaderMeta } from './cascader.meta'
 export { cascaderFilterCandidates, cascaderSearchCandidates } from './cascader.search'
+export { cascaderStructure } from './cascader.structure'
+export type { CascaderStructureOptions } from './cascader.structure'
 export type {
   CascaderApi,
   CascaderBranchLoadDetails,
