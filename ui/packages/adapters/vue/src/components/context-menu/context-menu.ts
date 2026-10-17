@@ -6,15 +6,17 @@
 // 提供 context menu 相关实现。
 
 import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { ContextMenuAnyItemProps, ContextMenuApi, ContextMenuGroupProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuRadioValue, ContextMenuSchema, MenuApi, MenuNode } from '@xihan-ui/headless'
+import type { ContextMenuAnyItemProps, ContextMenuApi, ContextMenuGroupProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuRadioValue, ContextMenuSchema, MenuApi, MenuNode, StructureNode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { groupAdjacentRuns, mergeProps } from '@xihan-ui/core'
+import { mergeProps } from '@xihan-ui/core'
+import { contextMenuStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps as mergeVueProps, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { provideMenu, useMenuContext } from '../menu/context'
 import { MenuDefaultNodes, XhMenuContent, XhMenuPositioner } from '../menu/menu'
@@ -130,9 +132,7 @@ export const XhContextMenuRoot = defineComponent({
             setCheckboxValue: ctx.api.value.setCheckboxValue,
             setRadioValue: ctx.api.value.setRadioValue,
           })
-        : props.collection
-          ? renderDefaultTree(ctx.api.value.collection, slots.trigger?.() ?? null, { 'item': slots.item, 'item-prefix': slots['item-prefix'], 'item-suffix': slots['item-suffix'] })
-          : [],
+        : renderDefaultStructure(ctx.api.value, slots.trigger, { 'item': slots.item, 'item-prefix': slots['item-prefix'], 'item-suffix': slots['item-suffix'] }),
     )
   },
 })
@@ -298,9 +298,13 @@ export const XhContextMenuRadioItem = /* @__PURE__ */ createContextMenuItemCompo
  */
 export const XhContextMenuSub = defineComponent({
   name: 'XhContextMenuSub',
+  // 本身不渲染节点，作为组合节点收到的 submenu 等标记无处可落
+  inheritAttrs: false,
   props: {
     /** 它在父右键菜单中的条目身份。 */
     value: { type: String, required: true },
+    /** 按数据铺设时触发条目的文字；缺省取父层 collection 里这一条的 label。 */
+    label: { type: String },
     disabled: { type: Boolean, default: undefined },
     /** 子层的条目数据：显示文本与禁用的事实源，按数据铺子层时由默认树代填。 */
     collection: { type: Array as PropType<MenuNode[]> },
@@ -341,7 +345,9 @@ export const XhContextMenuSub = defineComponent({
       if (!open)
         sub.api.value.setOpen(false)
     })
-    return () => slots.default?.({ open: sub.api.value.open, setOpen: sub.api.value.setOpen })
+    return () => slots.default
+      ? slots.default({ open: sub.api.value.open, setOpen: sub.api.value.setOpen })
+      : renderSubLayer(props.label ?? parent.api.value.collection.find(node => node.value === props.value)?.label ?? props.value)
   },
 })
 
@@ -428,80 +434,79 @@ export const XhContextMenuArrow = defineComponent({
   },
 })
 
-/** 一段连续的同组条目；不分组的条目各自单独成段。 */
-/**
- * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
- * 触发区中放置的内容由作者决定，经 trigger 插槽给出。
- */
-function renderDefaultTree(
-  collection: readonly ContextMenuNodeMeta[],
-  trigger: (VNode | string)[] | null,
-  itemSlots: ContextMenuItemSlots,
-): VNode[] {
+/** 子菜单不写插槽时那一层：触发条目、定位层与按本层 collection 铺的条目；子层不经根上的条目插槽。 */
+function renderSubLayer(label: string): VNode[] {
   return [
-    h(XhContextMenuTrigger, null, () => trigger ?? []),
-    h(XhContextMenuPositioner, null, () => [
-      h(XhContextMenuContent, null, () => renderNodes(collection, itemSlots)),
-    ]),
+    h(XhContextMenuSubTrigger, null, () => [label]),
+    h(XhMenuPositioner, null, () => [h(XhMenuContent, null, () => [h(MenuDefaultNodes)])]),
   ]
 }
 
-/** content 的内容：分组段铺为 group，段首的分隔线落在 group 外面。 */
-function renderNodes(
-  collection: readonly ContextMenuNodeMeta[],
-  itemSlots: ContextMenuItemSlots,
-): VNode[] {
-  return groupAdjacentRuns(collection, node => node.group).flatMap((run, runIndex) => {
-    const head = run[0]
-    // 首条上的标记不产出分隔线：菜单开头不留一道空隔
-    const lead = runIndex > 0 && head.separatorBefore
-      ? [h(XhContextMenuSeparator, { key: `separator:${head.value}` })]
-      : []
-    if (head.group == null)
-      return [...lead, renderItem(head, itemSlots)]
-    const groupLabel = run.find(node => node.groupLabel != null)?.groupLabel ?? null
-    return [
-      ...lead,
-      h(head.kind === 'radio' ? XhContextMenuRadioGroup : XhContextMenuGroup, { key: `group:${head.group}`, value: head.group }, () => [
-        ...(groupLabel != null ? [h(XhContextMenuGroupLabel, null, () => groupLabel)] : []),
-        ...run.flatMap((node, index) => [
-          ...(index > 0 && node.separatorBefore ? [h(XhContextMenuSeparator, { key: `separator:${node.value}` })] : []),
-          renderItem(node, itemSlots),
-        ]),
-      ]),
-    ]
-  })
+/** 按数据铺的条目：kind 取 collection 里这一条，勾选与单选条目各用自己的部件组件。 */
+const ContextMenuStructureItem = /* @__PURE__ */ defineComponent({
+  name: 'ContextMenuStructureItem',
+  props: {
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useContextMenuContext()
+    return () => {
+      const meta = ctx.api.value.collection.find(node => node.value === props.value)
+      const Item = meta?.kind === 'checkbox' ? XhContextMenuCheckboxItem : meta?.kind === 'radio' ? XhContextMenuRadioItem : XhContextMenuItem
+      return h(Item, { value: props.value, closeOnSelect: meta?.closeOnSelect }, slots)
+    }
+  },
+})
+
+/** 按数据铺的分组：组里有单选条目时是单选组。 */
+const ContextMenuStructureGroup = /* @__PURE__ */ defineComponent({
+  name: 'ContextMenuStructureGroup',
+  props: {
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useContextMenuContext()
+    return () => {
+      const radio = ctx.api.value.collection.some(node => node.kind === 'radio' && node.group === props.value)
+      return h(radio ? XhContextMenuRadioGroup : XhContextMenuGroup, { value: props.value }, slots)
+    }
+  },
+})
+
+/** 标准结构里各部件对应的组件。 */
+const CONTEXT_MENU_PARTS = {
+  'trigger': XhContextMenuTrigger,
+  'positioner': XhContextMenuPositioner,
+  'content': XhContextMenuContent,
+  'item': ContextMenuStructureItem,
+  'item-text': XhContextMenuItemText,
+  'item-indicator': XhContextMenuItemIndicator,
+  'item-description': XhContextMenuItemDescription,
+  'item-shortcut': XhContextMenuItemShortcut,
+  'item-suffix': XhContextMenuItemSuffix,
+  'separator': XhContextMenuSeparator,
+  'group': ContextMenuStructureGroup,
+  'group-label': XhContextMenuGroupLabel,
 }
 
+/** 结构里组合进来的组件：带 children 的条目是嵌套的子菜单。 */
+const CONTEXT_MENU_INSTANCES = { menu: XhContextMenuSub }
+
 /**
- * 单个条目：标记位排在文字前面，未提供标记位时不铺该部件。
- * `item-prefix` / `item-suffix` 插槽各接管首尾一格，其余槽照旧由数据铺；
- * 行首那一格与数据里的 `indicator` 同一个部件，插槽在场时以它为准。
+ * 未写默认插槽时照 contextMenuStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 触发区的内容归作者（trigger 插槽）；条目文字、行首、行尾可由 item 系插槽逐槽接管，其余照数据铺。
  */
-function renderItem(
-  meta: ContextMenuNodeMeta,
-  itemSlots: ContextMenuItemSlots,
-): VNode {
-  // 带 children 的条目铺成子菜单：子层跑的是 menu 机器，条目按数据铺、不经本层的插槽
-  if (meta.children) {
-    return h(XhContextMenuSub, { key: meta.value, value: meta.value, disabled: meta.disabled || undefined, collection: meta.children as MenuNode[] }, () => [
-      h(XhContextMenuSubTrigger, null, () => [meta.label]),
-      h(XhMenuPositioner, null, () => [h(XhMenuContent, null, () => [h(MenuDefaultNodes)])]),
-    ])
-  }
-  const prefix = itemSlots['item-prefix']
-  const suffix = itemSlots['item-suffix']
-  const Item = meta.kind === 'checkbox' ? XhContextMenuCheckboxItem : meta.kind === 'radio' ? XhContextMenuRadioItem : XhContextMenuItem
-  return h(Item, { key: meta.value, value: meta.value, closeOnSelect: meta.closeOnSelect }, () => [
-    ...(prefix
-      ? [h(XhContextMenuItemIndicator, null, () => prefix(meta))]
-      : meta.indicator != null
-        ? [h(XhContextMenuItemIndicator, null, () => meta.indicator)]
-        : meta.kind !== 'item' ? [h(XhContextMenuItemIndicator)] : []),
-    h(XhContextMenuItemText, null, () => itemSlots.item?.(meta) ?? meta.label),
-    ...(meta.description != null ? [h(XhContextMenuItemDescription, null, () => meta.description)] : []),
-    ...(meta.shortcut != null ? [h(XhContextMenuItemShortcut, null, () => meta.shortcut)] : []),
-    ...(suffix ? [h(XhContextMenuItemSuffix, null, () => suffix(meta))] : []),
-  ])
+function renderDefaultStructure(api: ContextMenuApi, trigger: (() => VNode[]) | undefined, itemSlots: ContextMenuItemSlots): VNode[] {
+  const nodes = contextMenuStructure(api, {
+    slotted: name => name === 'trigger' ? trigger != null : itemSlots[name as keyof ContextMenuItemSlots] != null,
+  })
+  return renderStructure(nodes, CONTEXT_MENU_PARTS, (node: StructureNode) => {
+    const name = node.slot?.name
+    if (name === 'trigger')
+      return trigger?.()
+    if (name !== 'item' && name !== 'item-prefix' && name !== 'item-suffix')
+      return undefined
+    const meta = (node.data as ContextMenuNodeMeta | undefined) ?? api.collection.find(item => item.value === node.slot!.key)
+    return meta ? itemSlots[name]?.(meta) : undefined
+  }, CONTEXT_MENU_INSTANCES)
 }

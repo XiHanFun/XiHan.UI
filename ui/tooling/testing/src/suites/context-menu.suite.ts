@@ -73,6 +73,14 @@ function fixture(copyDisabled = false): FixtureNode {
 
 const FIXTURE = fixture()
 
+/** 不写结构时按数据铺的条目：快捷键、说明、带标题的勾选分组（段首有分隔线）。 */
+const STRUCTURE_COLLECTION = [
+  { value: 'open', label: '打开', shortcut: 'Ctrl+O' },
+  { value: 'rename', label: '重命名', description: '改文件名' },
+  { value: 'bold', label: '粗体', kind: 'checkbox', group: 'format', groupLabel: '格式', separatorBefore: true },
+  { value: 'italic', label: '斜体', kind: 'checkbox', group: 'format' },
+]
+
 function requireTrigger(doc: Document): HTMLElement {
   const el = doc.querySelector<HTMLElement>(TRIGGER_SELECTOR)
   if (!el)
@@ -792,6 +800,56 @@ export const contextMenuSuite: ConformanceSuite = {
       fixture: () => fixture(true),
       props: { open: true },
       steps: [heldPressIgnored('context-menu', 'item', '禁用条目不接受按压')],
+    },
+    {
+      name: '作者不写结构：三端都照 contextMenuStructure 铺出触发区、定位层与条目（快捷键、说明、带标题的勾选分组）；勾选可多选，换数据按值复用条目',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { collection: STRUCTURE_COLLECTION },
+      initial: {
+        order: [
+          'root',
+          'trigger',
+          'positioner',
+          'content',
+          'item[0]',
+          'item-text[0]',
+          'item-shortcut',
+          'item[1]',
+          'item-text[1]',
+          'item-description',
+          'separator',
+          'group',
+          'group-label',
+          'item[2]',
+          'item-indicator[0]',
+          'item-text[2]',
+          'item[3]',
+          'item-indicator[1]',
+          'item-text[3]',
+        ],
+        parts: {
+          'trigger': { 'aria-haspopup': 'menu', 'tabindex': '0' },
+          'item[0]': { 'role': 'menuitem', 'data-value': 'open' },
+          'item[2]': { 'role': 'menuitemcheckbox', 'aria-checked': 'false' },
+          'group': { 'role': 'group', 'aria-labelledby': '@part(group-label)' },
+        },
+      },
+      steps: [
+        { kind: 'raw', why: 'contextmenu 只能手写：坐标即锚点，必须由事件带进来', run: rightClickAt(10, 10) },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        { kind: 'click', part: 'item[2]', expect: { parts: { 'item[2]': { 'aria-checked': 'true' } } } },
+        { kind: 'click', part: 'item[3]', expect: { parts: { 'item[2]': { 'aria-checked': 'true' }, 'item[3]': { 'aria-checked': 'true' } } } },
+        { kind: 'click', part: 'item[0]', expect: { parts: { content: { 'hidden': '', 'data-state': 'closed' } } } },
+        {
+          kind: 'setProps',
+          props: { collection: [STRUCTURE_COLLECTION[1], { value: 'delete', label: '删除' }] },
+          expect: {
+            order: ['root', 'trigger', 'positioner', 'content', 'item[0]', 'item-text[0]', 'item-description', 'item[1]', 'item-text[1]'],
+            parts: { 'item[0]': { 'data-value': 'rename' }, 'item[1]': { 'data-value': 'delete' } },
+          },
+        },
+      ],
     },
   ],
 }
