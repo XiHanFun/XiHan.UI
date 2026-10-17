@@ -4,6 +4,7 @@ import type { ExitLease, PresenceHandle } from '@xihan-ui/core/presence'
 import type { VanillaRuntime } from '@xihan-ui/core/vanilla'
 import type { DatePickerTimeUnit } from '../src/date-picker'
 import type { DateRangePickerApi, DateRangePickerEndIndex, DateRangePickerSchema, DateRangePickerServices } from '../src/date-range-picker'
+import type { StructureChild, StructureNode } from '../src/shared/structure'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
 import { PlainDate, today } from '@xihan-ui/core/date'
 import { createPresence } from '@xihan-ui/core/presence'
@@ -20,6 +21,7 @@ import {
   dateRangePickerPresetMonth,
   dateRangePickerPresetRange,
   dateRangePickerPresetYear,
+  dateRangePickerStructure,
   findDateRangePickerCellEl,
 } from '../src/date-range-picker'
 
@@ -2070,5 +2072,56 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed', () =
     expect(cleared.value()).toEqual([])
     expect(cleared.clear.hidden).toBe(true)
     expect(pressed(cleared.clear)).toBe(false)
+  })
+})
+
+describe('dateRangePickerStructure', () => {
+  const parts = (nodes: readonly StructureChild[]): string[] => nodes.map(node => ('part' in node ? node.part : 'literal' in node ? `literal:${node.literal}` : 'instance'))
+
+  it('标题、盒里的起止两组段与分隔符、两颗钮、两份表单影子、浮层里一份日历；段与表单影子委派给分段输入', () => {
+    const api = mount({ defaultValue: ['2026-07-01', '2026-07-09'] }).api()
+    const nodes = dateRangePickerStructure(api, { label: '有效期' })
+    expect(parts(nodes)).toEqual(['label', 'control', 'hidden-input', 'hidden-input', 'positioner'])
+    expect(nodes.slice(2, 4)).toMatchObject([{ component: 'date-field', attrs: { index: '0' } }, { component: 'date-field', attrs: { index: '1' } }])
+    const control = nodes[1]!.children! as StructureNode[]
+    expect(parts(control)).toEqual(['segment-group', 'range-separator', 'segment-group', 'clear-trigger', 'trigger'])
+    expect(control.map(node => node.attrs?.index)).toEqual(['0', undefined, '1', undefined, undefined])
+    expect(control[1]).toMatchObject({ text: '-' })
+    expect(parts(control[0]!.children!)).toEqual(['segment', 'literal:/', 'segment', 'literal:/', 'segment'])
+    expect(control[2]!.children![0]).toMatchObject({ component: 'date-field', part: 'segment' })
+    const content = (nodes[4]!.children![0] as StructureNode).children! as StructureNode[]
+    expect(parts(content)).toEqual(['calendar'])
+    expect(content[0]!.children![0]).toMatchObject({ component: 'calendar-range-picker', part: 'header' })
+  })
+
+  it('快捷选项、两个面板、带时间：翻页钮分在首末两个面板，起止两组时间列各带小标题，最后是底栏的确认钮', () => {
+    const api = mount({
+      defaultValue: ['2026-07-01T09:30', '2026-07-09T18:00'],
+      presets: [{ value: '2026-07-01/2026-07-07', label: '首周' }],
+      showTime: true,
+      visibleCount: 2,
+    }).api()
+    const nodes = dateRangePickerStructure(api, { slotted: name => name === 'label' })
+    expect(nodes[0]).toMatchObject({ part: 'label', slot: { name: 'label' } })
+    const content = (nodes.at(-1)!.children![0] as StructureNode).children! as StructureNode[]
+    expect(parts(content)).toEqual(['preset-group', 'calendar', 'calendar', 'column-group', 'column-group', 'footer'])
+    const header = (index: number): string[] => parts((content[index]!.children![0] as StructureNode).children!)
+    expect(header(1)).toEqual(['prev-year-trigger', 'prev-trigger', 'heading'])
+    expect(header(2)).toEqual(['heading', 'next-trigger', 'next-year-trigger'])
+    const groups = content.slice(3, 5)
+    expect(groups.map(group => group.attrs?.index)).toEqual(['0', '1'])
+    expect(groups.map(group => parts(group.children!))).toEqual([
+      ['column-group-label', 'time-column', 'time-column'],
+      ['column-group-label', 'time-column', 'time-column'],
+    ])
+    expect(groups.map(group => group.children![0])).toMatchObject([{ text: api.translations.startTime }, { text: api.translations.endTime }])
+    expect((groups[0]!.children![1] as StructureNode).children!.length).toBe(24)
+    expect(content.at(-1)!.children![0]).toMatchObject({ part: 'confirm-trigger', text: api.translations.confirmTrigger })
+  })
+
+  it('不给标题文字也没有 label 插槽时不铺标题；没有快捷选项与时间时浮层里只有日历', () => {
+    const nodes = dateRangePickerStructure(mount().api())
+    expect(parts(nodes)).toEqual(['control', 'hidden-input', 'hidden-input', 'positioner'])
+    expect(parts((nodes.at(-1)!.children![0] as StructureNode).children!)).toEqual(['calendar'])
   })
 })

@@ -31,6 +31,8 @@ export {
 } from './date-range-picker.presets'
 export { dateRangePickerFieldAt, resolveDateRangePickerFieldIndex, resolveDateRangePickerPanelIndex } from './date-range-picker.projection'
 export type { DateRangePickerFieldIndex } from './date-range-picker.projection'
+export { dateRangePickerStructure } from './date-range-picker.structure'
+export type { DateRangePickerStructureOptions } from './date-range-picker.structure'
 export type {
   DateRangePickerActiveIndexChangeDetails,
   DateRangePickerApi,

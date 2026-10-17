@@ -256,6 +256,7 @@ const translations = {
     endTime: '結束時間',
     presets: '快速選項',
     clearTrigger: '清除',
+    confirmTrigger: '確定',
   },
   'dialog': {
     close: '關閉',

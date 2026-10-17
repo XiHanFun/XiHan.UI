@@ -27,11 +27,12 @@ import type {
 } from '@xihan-ui/headless'
 import type { ComputedRef, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { dateRangePickerFieldAt, resolveDateRangePickerFieldIndex, resolveDateRangePickerPanelIndex } from '@xihan-ui/headless'
+import { dateRangePickerFieldAt, dateRangePickerStructure, resolveDateRangePickerFieldIndex, resolveDateRangePickerPanelIndex } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onUnmounted, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
@@ -39,12 +40,16 @@ import { useFormControlProps } from '../form/use-form-control'
 import {
   provideDateRangePicker,
   provideDateRangePickerCell,
+  provideDateRangePickerColumnGroup,
   provideDateRangePickerPanel,
   provideDateRangePickerSegmentGroup,
+  provideDateRangePickerTimeColumn,
   useDateRangePickerCellContext,
+  useDateRangePickerColumnGroupContext,
   useDateRangePickerContext,
   useDateRangePickerPanelContext,
   useDateRangePickerSegmentGroupContext,
+  useDateRangePickerTimeColumnContext,
 } from './context'
 import { useDateRangePickerWithRoot } from './use-date-range-picker'
 
@@ -109,6 +114,8 @@ export const XhDateRangePickerRoot = defineComponent({
   props: {
     /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
     ariaLabel: { type: String },
+    /** 标题文字：不写默认插槽时铺带这段文字的 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
     /** 区间两端 [start, end]；空缺的一端用空串占位。 */
     value: { type: Array as PropType<string[]> },
     defaultValue: { type: Array as PropType<string[]> },
@@ -189,6 +196,8 @@ export const XhDateRangePickerRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: DateRangePickerRootSlotProps) => VNode[]
+    /** 不写默认插槽时标题的内容，盖过 label 文字。 */
+    label?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const rootRef = ref<HTMLElement | null>(null)
@@ -218,30 +227,33 @@ export const XhDateRangePickerRoot = defineComponent({
       onActiveIndexChange: notifyActiveIndex,
     }, rootRef)
     provideDateRangePicker(ctx)
-    // 网格与段位由作者照插槽里的 weeks（日视图）/ rows（周期视图）/ segments 自行渲染
-    return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: rootRef }, slots.default?.({
-      open: ctx.api.value.open,
-      value: ctx.api.value.value,
-      start: ctx.api.value.start,
-      end: ctx.api.value.end,
-      periodValue: ctx.api.value.periodValue,
-      focusedValue: ctx.api.value.focusedValue,
-      visibleMonth: ctx.api.value.calendar.visibleMonth,
-      panels: ctx.api.value.calendar.panels,
-      periods: ctx.api.value.calendar.periods,
-      rows: ctx.api.value.calendar.rows,
-      weeks: ctx.api.value.calendar.weeks,
-      weekDays: ctx.api.value.calendar.weekDays,
-      headingLabel: ctx.api.value.calendar.headingLabel,
-      canGoPrev: ctx.api.value.calendar.canGoPrev,
-      canGoNext: ctx.api.value.calendar.canGoNext,
-      segments: ctx.api.value.field.segments,
-      endSegments: ctx.api.value.fieldEnd.segments,
-      canClear: ctx.api.value.canClear,
-      setOpen: ctx.api.value.setOpen,
-      setValue: ctx.api.value.setValue,
-      clear: ctx.api.value.clear,
-    }))
+    // 写了默认插槽时网格与段位由作者照插槽里的 weeks（日视图）/ rows（周期视图）/ segments 自行渲染；
+    // 没写时照 dateRangePickerStructure 铺整套结构
+    return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: rootRef }, !slots.default
+      ? renderDefaultStructure(ctx.api.value, props.label, slots.label)
+      : slots.default({
+          open: ctx.api.value.open,
+          value: ctx.api.value.value,
+          start: ctx.api.value.start,
+          end: ctx.api.value.end,
+          periodValue: ctx.api.value.periodValue,
+          focusedValue: ctx.api.value.focusedValue,
+          visibleMonth: ctx.api.value.calendar.visibleMonth,
+          panels: ctx.api.value.calendar.panels,
+          periods: ctx.api.value.calendar.periods,
+          rows: ctx.api.value.calendar.rows,
+          weeks: ctx.api.value.calendar.weeks,
+          weekDays: ctx.api.value.calendar.weekDays,
+          headingLabel: ctx.api.value.calendar.headingLabel,
+          canGoPrev: ctx.api.value.calendar.canGoPrev,
+          canGoNext: ctx.api.value.calendar.canGoNext,
+          segments: ctx.api.value.field.segments,
+          endSegments: ctx.api.value.fieldEnd.segments,
+          canClear: ctx.api.value.canClear,
+          setOpen: ctx.api.value.setOpen,
+          setValue: ctx.api.value.setValue,
+          clear: ctx.api.value.clear,
+        }))
   },
 })
 
@@ -487,15 +499,48 @@ export const XhDateRangePickerPreset = defineComponent({
   },
 })
 
-/** 一列时间选项连同贴在它盒子上的竖条：每列一台滚动条机器，列数随精度与小时制变时组件实例跟着增减。 */
-const XhDateRangePickerTimeColumnHost = defineComponent({
-  name: 'XhDateRangePickerTimeColumnHost',
+/** 一格时间选项：value 写两位补零的值（上下午列写 '00' / '01'）；没写内容时显示按 locale 译好的文字。要放在 XhDateRangePickerTimeColumn 里。 */
+export const XhDateRangePickerTimeItem = defineComponent({
+  name: 'XhDateRangePickerTimeItem',
   props: {
-    index: { type: Number as PropType<DateRangePickerEndIndex>, required: true },
+    /** 这一格的值，与时间列的可选值逐字对应。 */
+    value: { type: String, required: true },
+  },
+  slots: Object as SlotsType<{
+    /** 格里的内容；未写时显示按 locale 译好的文字。 */
+    default?: () => VNode[]
+  }>,
+  setup(props, { slots }) {
+    const ctx = useDateRangePickerContext()
+    const group = useDateRangePickerColumnGroupContext()
+    const column = useDateRangePickerTimeColumnContext()
+    return () => {
+      const api = ctx.api.value
+      const item = { index: group.index.value, unit: column.unit.value, value: props.value }
+      const authored = slots.default?.()
+      return h('div', api.getTimeItemProps(item) as Record<string, unknown>, slotPaints(authored) ? authored : api.getTimeItemText({ unit: item.unit, value: item.value }))
+    }
+  },
+})
+
+/**
+ * 一端的一列时间选项连同贴在它盒子上的竖条：每列一台滚动条机器。端号取所在的 XhDateRangePickerColumnGroup；
+ * 不写默认插槽时按这一列的可选值铺 XhDateRangePickerTimeItem；这一单位不在当前精度里（如没开秒）时整列不渲染。
+ */
+export const XhDateRangePickerTimeColumn = defineComponent({
+  name: 'XhDateRangePickerTimeColumn',
+  props: {
+    /** 这一列的单位：hour、minute、second 或 dayPeriod。 */
     unit: { type: String as PropType<DatePickerTimeUnit>, required: true },
   },
-  setup(props) {
+  slots: Object as SlotsType<{
+    /** 自行铺 XhDateRangePickerTimeItem；未写时按这一列的可选值自动铺。 */
+    default?: () => VNode[]
+  }>,
+  setup(props, { slots }) {
     const ctx = useDateRangePickerContext()
+    const group = useDateRangePickerColumnGroupContext()
+    provideDateRangePickerTimeColumn({ unit: computed(() => props.unit) })
     const timeColumnRef = ref<HTMLElement | null>(null)
     // 定高的时间列自己竖滚：条子贴在本列的盒子上、紧跟在它后面（浮层 4px 档）
     const bars = useScrollbars({
@@ -506,26 +551,67 @@ const XhDateRangePickerTimeColumnHost = defineComponent({
     onUpdated(() => bars.measure())
     return () => {
       const api = ctx.api.value
-      const column = api.timeColumnGroups[props.index].columns.find(item => item.unit === props.unit)
+      const column = api.timeColumnGroups[group.index.value].columns.find(item => item.unit === props.unit)
       if (!column)
         return null
       return [
         h(
           'div',
           {
-            ...api.getTimeColumnProps({ index: props.index, unit: column.unit }) as Record<string, unknown>,
+            ...api.getTimeColumnProps({ index: group.index.value, unit: column.unit }) as Record<string, unknown>,
             ref: (el: unknown) => { timeColumnRef.value = el as HTMLElement },
           },
-          column.options.map(option =>
-            h(
-              'div',
-              { ...api.getTimeItemProps({ index: props.index, unit: column.unit, value: option }) as Record<string, unknown>, key: option },
-              api.getTimeItemText({ unit: column.unit, value: option }),
-            ),
-          ),
+          slots.default?.() ?? column.options.map(option => h(XhDateRangePickerTimeItem, { key: option, value: option })),
         ),
         ...bars.render(),
       ]
+    }
+  },
+})
+
+/** 时间组顶部的小标题，纯视觉：没写内容时显示 translations.startTime / endTime。要放在 XhDateRangePickerColumnGroup 里。 */
+export const XhDateRangePickerColumnGroupLabel = defineComponent({
+  name: 'XhDateRangePickerColumnGroupLabel',
+  slots: Object as SlotsType<{
+    /** 小标题的内容；未写时显示这一端的名字。 */
+    default?: () => VNode[]
+  }>,
+  setup(_, { slots }) {
+    const ctx = useDateRangePickerContext()
+    const group = useDateRangePickerColumnGroupContext()
+    return () => {
+      const api = ctx.api.value
+      const authored = slots.default?.()
+      return h('div', api.getColumnGroupLabelProps({ index: group.index.value }) as Record<string, unknown>, slotPaints(authored) ? authored : api.timeColumnGroups[group.index.value].label)
+    }
+  },
+})
+
+/**
+ * 一端的时间组外壳（role=group）：index 写 0 起点、1 终点。不写默认插槽时铺小标题与这一端的各列；
+ * 没开 showTime 时连接层写 hidden。
+ */
+export const XhDateRangePickerColumnGroup = defineComponent({
+  name: 'XhDateRangePickerColumnGroup',
+  props: {
+    /** 0 起点、1 终点，兼收字符串以支持模板里写 index="1"。 */
+    index: { type: [Number, String] as PropType<number | string>, default: 0 },
+  },
+  slots: Object as SlotsType<{
+    /** 自行铺小标题与各列；未写时按这一端的列自动铺。 */
+    default?: () => VNode[]
+  }>,
+  setup(props, { slots }) {
+    const ctx = useDateRangePickerContext()
+    const index = computed<DateRangePickerEndIndex>(() => resolveDateRangePickerFieldIndex(props.index))
+    // 组内的小标题、时间列与时间项据此认领起止
+    provideDateRangePickerColumnGroup({ index })
+    return () => {
+      const api = ctx.api.value
+      return h('div', api.getColumnGroupProps({ index: index.value }) as Record<string, unknown>, slots.default?.() ?? [
+        h(XhDateRangePickerColumnGroupLabel),
+        ...api.timeColumnGroups[index.value].columns.map(column => h(XhDateRangePickerTimeColumn, { unit: column.unit, key: column.unit })),
+      ])
     }
   },
 })
@@ -535,14 +621,7 @@ export const XhDateRangePickerTimePanel = defineComponent({
   setup() {
     const ctx = useDateRangePickerContext()
     // 起止两组时间列整组自动铺：每组一个外壳、一行小标题与时/分[/秒][/上下午]各一列；没开 showTime 时整组带 hidden
-    return () => ctx.api.value.timeColumnGroups.map(group =>
-      h('div', { ...ctx.api.value.getColumnGroupProps({ index: group.index }) as Record<string, unknown>, key: group.index }, [
-        h('div', ctx.api.value.getColumnGroupLabelProps({ index: group.index }) as Record<string, unknown>, group.label),
-        ...group.columns.map(column =>
-          h(XhDateRangePickerTimeColumnHost, { index: group.index, unit: column.unit, key: column.unit }),
-        ),
-      ]),
-    )
+    return () => ctx.api.value.timeColumnGroups.map(group => h(XhDateRangePickerColumnGroup, { index: group.index, key: group.index }))
   },
 })
 
@@ -786,3 +865,50 @@ export const XhDateRangePickerHiddenInput = defineComponent({
     }
   },
 })
+
+/** 结构里的部件 → 部件组件；委派出去的部件按「组件名/部件名」查。 */
+const DATE_RANGE_PICKER_PARTS = {
+  'label': XhDateRangePickerLabel,
+  'control': XhDateRangePickerControl,
+  'segment-group': XhDateRangePickerSegmentGroup,
+  'range-separator': XhDateRangePickerRangeSeparator,
+  'trigger': XhDateRangePickerTrigger,
+  'clear-trigger': XhDateRangePickerClearTrigger,
+  'positioner': XhDateRangePickerPositioner,
+  'content': XhDateRangePickerContent,
+  'preset-group': XhDateRangePickerPresetGroup,
+  'preset': XhDateRangePickerPreset,
+  'calendar': XhDateRangePickerCalendar,
+  'column-group': XhDateRangePickerColumnGroup,
+  'column-group-label': XhDateRangePickerColumnGroupLabel,
+  'time-column': XhDateRangePickerTimeColumn,
+  'time-item': XhDateRangePickerTimeItem,
+  'footer': XhDateRangePickerFooter,
+  'confirm-trigger': XhDateRangePickerConfirmTrigger,
+  'date-field/segment': XhDateRangePickerSegment,
+  'date-field/hidden-input': XhDateRangePickerHiddenInput,
+  'calendar-range-picker/header': XhDateRangePickerHeader,
+  'calendar-range-picker/prev-year-trigger': XhDateRangePickerPrevYearTrigger,
+  'calendar-range-picker/prev-trigger': XhDateRangePickerPrevTrigger,
+  'calendar-range-picker/heading': XhDateRangePickerHeading,
+  'calendar-range-picker/heading-year-trigger': XhDateRangePickerHeadingYearTrigger,
+  'calendar-range-picker/heading-month-trigger': XhDateRangePickerHeadingMonthTrigger,
+  'calendar-range-picker/next-trigger': XhDateRangePickerNextTrigger,
+  'calendar-range-picker/next-year-trigger': XhDateRangePickerNextYearTrigger,
+  'calendar-range-picker/grid': XhDateRangePickerGrid,
+  'calendar-range-picker/grid-head': XhDateRangePickerGridHead,
+  'calendar-range-picker/week-row': XhDateRangePickerWeekRow,
+  'calendar-range-picker/week-day': XhDateRangePickerWeekDay,
+  'calendar-range-picker/grid-body': XhDateRangePickerGridBody,
+  'calendar-range-picker/cell': XhDateRangePickerCell,
+  'calendar-range-picker/cell-trigger': XhDateRangePickerCellTrigger,
+}
+
+/**
+ * 未写默认插槽时照 dateRangePickerStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 标题文字由 label 给出，需要放置其他内容时由 label 插槽接管。
+ */
+function renderDefaultStructure(api: DateRangePickerApi, label: string | undefined, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = dateRangePickerStructure(api, { label, slotted: name => name === 'label' && labelSlot != null })
+  return renderStructure(nodes, DATE_RANGE_PICKER_PARTS, node => node.slot?.name === 'label' ? labelSlot?.() : undefined)
+}

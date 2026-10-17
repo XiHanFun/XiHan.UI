@@ -38,6 +38,8 @@ export interface DateRangePickerTranslations extends CalendarRangePickerTranslat
   presets: string
   /** 清空按钮的名字。 */
   clearTrigger: string
+  /** showTime 时浮层底部确认钮的文字，标准结构铺这颗钮时用它。 */
+  confirmTrigger: string
   /** showTime 下起点那组时间列的名字，也是那一组的小标题。 */
   startTime: string
   /** showTime 下终点那组时间列的名字，也是那一组的小标题。 */
@@ -462,6 +464,8 @@ export interface DateRangePickerApi<T extends PropTypes = PropTypes> {
   field: DateRangePickerFieldApi<T>
   /** 终点分段输入。 */
   fieldEnd: DateRangePickerFieldApi<T>
+  /** 解析后的文案：作者给的 translations 盖在当前语言包上。 */
+  translations: DateRangePickerTranslations
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getControlProps: () => T['element']

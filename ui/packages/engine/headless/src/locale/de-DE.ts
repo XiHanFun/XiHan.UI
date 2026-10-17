@@ -256,6 +256,7 @@ const translations = {
     endTime: 'Endzeit',
     presets: 'Schnellauswahl',
     clearTrigger: 'Leeren',
+    confirmTrigger: 'Übernehmen',
   },
   'dialog': {
     close: 'Schließen',

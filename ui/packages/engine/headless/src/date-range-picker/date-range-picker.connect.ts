@@ -403,6 +403,7 @@ export function connectDateRangePicker<T extends PropTypes>(
     calendar,
     field,
     fieldEnd,
+    translations: label,
     setOpen: (next) => {
       if (next !== open)
         send({ type: next ? 'OPEN' : 'CLOSE' })

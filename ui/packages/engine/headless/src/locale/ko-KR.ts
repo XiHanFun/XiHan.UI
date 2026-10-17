@@ -256,6 +256,7 @@ const translations = {
     endTime: '종료 시간',
     presets: '바로 가기',
     clearTrigger: '지우기',
+    confirmTrigger: '확인',
   },
   'dialog': {
     close: '닫기',

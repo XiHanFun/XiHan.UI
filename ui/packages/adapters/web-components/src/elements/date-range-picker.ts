@@ -37,9 +37,10 @@ import type {
   TimeHourCycle,
   TimeStep,
 } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { calendarRangePickerAnatomy, calendarRangePickerMachine, connectDateRangePicker, dateFieldAnatomy, dateFieldMachine, dateRangePickerAnatomy, dateRangePickerCalendarProps, dateRangePickerFieldAt, dateRangePickerFieldEndProps, dateRangePickerFieldProps, dateRangePickerMachine, dateRangePickerMeta, resolveDateRangePickerPanelIndex, resolveFormControlState } from '@xihan-ui/headless'
+import { calendarRangePickerAnatomy, calendarRangePickerMachine, connectDateRangePicker, dateFieldAnatomy, dateFieldMachine, dateRangePickerAnatomy, dateRangePickerCalendarProps, dateRangePickerFieldAt, dateRangePickerFieldEndProps, dateRangePickerFieldProps, dateRangePickerMachine, dateRangePickerMeta, dateRangePickerStructure, resolveDateRangePickerPanelIndex, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { END_INDEX_CONVERTER } from '../dom/end-index'
 import { HOUR_CYCLE_CONVERTER } from '../dom/hour-cycle'
@@ -110,7 +111,11 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * 本元素是编排状态机，只持有开合与分段输入 ↔ 日历之间的值同步；选日期、翻月、网格键盘导航
  * 委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各带各自的 data-scope。
  *
- * 网格由作者渲染，元素不生成节点：读取 `panels` / `weeks` / `rows` / `weekDays` / `headingLabel` 几个只读属性，
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label），盒里的起止两组段、分隔符、清空钮与触发钮，起止两份表单影子，
+ * 浮层里的快捷选项、每页一份日历、showTime 的起止两组时间列与底栏的确认钮；状态变了（翻月、换层级、选中变化）随之重生成。
+ * 标题可以由宿主直接子节点 `slot="label"` 接管。
+ *
+ * 手写部件时网格由作者渲染：读取 `panels` / `weeks` / `rows` / `weekDays` / `headingLabel` 几个只读属性，
  * 监听 `focused-value-change` 与 `active-view-change` 重绘。并排多页时读取 `panels`，每页自带
  * 日期矩阵、按行切好的粗粒度格子与标题；输入行铺设的段读取 `fieldSegments` 与 `fieldEndSegments`。
  * 日期身份取 cell 节点上的 `value`（ISO 串），
@@ -123,6 +128,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * hidden-input 写在 segment-group 之外（如与 control 平级）时按文档序对应起止两端。
  *
  * @customElement xh-date-range-picker
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @prop {string[]} value - 受控的区间两端 [start, end]（数组只能通过 property 设置）；空缺的一端用空串占位；未提供即非受控
  * @prop {string[]} default-value - 非受控初始区间
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
@@ -218,8 +224,16 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
 
   static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const
 
+  /** 作者没写结构时按标准结构生成：标题、盒、两份表单影子与浮层里的快捷选项、日历、起止两组时间列与底栏。 */
+  static override structure: ElementStructure<XhDateRangePickerElement> = {
+    build: host => host.rootCtrl.service
+      ? dateRangePickerStructure(connectDateRangePicker(host.services(), wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key) })
+      : undefined,
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    label: { converter: STRING_CONVERTER },
     // 区间两端是数组，只能走 property
     value: { attribute: false },
     defaultValue: { attribute: false },
@@ -272,6 +286,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     activeIndex: { converter: END_INDEX_CONVERTER, attribute: 'active-index' },
   }
 
+  declare label?: string
   declare value?: string[]
   declare defaultValue?: string[]
   declare open?: boolean

@@ -255,6 +255,7 @@ const translations = {
     endTime: '结束时间',
     presets: '快捷选项',
     clearTrigger: '清空',
+    confirmTrigger: '确定',
   },
   'dialog': {
     close: '关闭',

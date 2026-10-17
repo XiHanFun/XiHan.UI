@@ -77,6 +77,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 ### 特性
 
 - 值始终为区间两端 `[start, end]`，按位存放：只填了终点时是 `['', 终点]`，受控回写按同一下标对应。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：标题（`label` 给文字），盒里的起止两组段位、分隔符、清空钮与日历钮，起止两份表单影子，浮层里依次是快捷选项列、每个面板一份日历、`showTime` 的起止两组时间列（各带小标题）与底栏的确认钮（文字取 `translations.confirmTrigger`）。翻月、换层级与选中变化时结构随之重铺。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。自己写结构时，Vue / React 的时间列可以用 `XhDateRangePickerTimePanel` 整组铺，也可以逐组写 `XhDateRangePickerColumnGroup`（`index`），组里不写内容时铺小标题 `XhDateRangePickerColumnGroupLabel` 与各列 `XhDateRangePickerTimeColumn`（`unit`），列里不写内容时按可选值铺 `XhDateRangePickerTimeItem`。
 - 起止各一组段位，`range-separator` 隔在中间；方向键换段不跨组，`name` 与 `endName` 各自决定两份隐藏输入参不参与提交。
 - 输入行与别的字段同取缺省宽 `--xh-control-w`。起止两组按日带时刻放不进时，两组按各自内容宽一起收、各在组内裁掉放不下的段位，键盘走到被裁的段位时组跟着滚过去；分隔符与日历钮始终留在框里。要整段露出，经 `--xh-date-range-picker-control-w` 钉宽。
 - `startPlaceholder` / `endPlaceholder` 是两组段位各自的整条占位：哪一端一段都没填、焦点也不在它的段上，就在那一组显示这句文字（「开始日期」「结束日期」）；`placeholder` 是两端共用的逐段占位串。
@@ -123,7 +124,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-date-range-picker>` |
-| Vue 组件 | `XhDateRangePickerCalendar` `XhDateRangePickerCell` `XhDateRangePickerCellTrigger` `XhDateRangePickerClearTrigger` `XhDateRangePickerConfirmTrigger` `XhDateRangePickerContent` `XhDateRangePickerControl` `XhDateRangePickerFooter` `XhDateRangePickerGrid` `XhDateRangePickerGridBody` `XhDateRangePickerGridHead` `XhDateRangePickerHeader` `XhDateRangePickerHeading` `XhDateRangePickerHeadingMonthTrigger` `XhDateRangePickerHeadingYearTrigger` `XhDateRangePickerHiddenInput` `XhDateRangePickerLabel` `XhDateRangePickerNextTrigger` `XhDateRangePickerNextYearTrigger` `XhDateRangePickerPositioner` `XhDateRangePickerPreset` `XhDateRangePickerPresetGroup` `XhDateRangePickerPrevTrigger` `XhDateRangePickerPrevYearTrigger` `XhDateRangePickerRangeSeparator` `XhDateRangePickerRoot` `XhDateRangePickerSegment` `XhDateRangePickerSegmentGroup` `XhDateRangePickerTimePanel` `XhDateRangePickerTrigger` `XhDateRangePickerWeekDay` `XhDateRangePickerWeekNumber` `XhDateRangePickerWeekRow` |
+| Vue 组件 | `XhDateRangePickerCalendar` `XhDateRangePickerCell` `XhDateRangePickerCellTrigger` `XhDateRangePickerClearTrigger` `XhDateRangePickerColumnGroup` `XhDateRangePickerColumnGroupLabel` `XhDateRangePickerConfirmTrigger` `XhDateRangePickerContent` `XhDateRangePickerControl` `XhDateRangePickerFooter` `XhDateRangePickerGrid` `XhDateRangePickerGridBody` `XhDateRangePickerGridHead` `XhDateRangePickerHeader` `XhDateRangePickerHeading` `XhDateRangePickerHeadingMonthTrigger` `XhDateRangePickerHeadingYearTrigger` `XhDateRangePickerHiddenInput` `XhDateRangePickerLabel` `XhDateRangePickerNextTrigger` `XhDateRangePickerNextYearTrigger` `XhDateRangePickerPositioner` `XhDateRangePickerPreset` `XhDateRangePickerPresetGroup` `XhDateRangePickerPrevTrigger` `XhDateRangePickerPrevYearTrigger` `XhDateRangePickerRangeSeparator` `XhDateRangePickerRoot` `XhDateRangePickerSegment` `XhDateRangePickerSegmentGroup` `XhDateRangePickerTimeColumn` `XhDateRangePickerTimeItem` `XhDateRangePickerTimePanel` `XhDateRangePickerTrigger` `XhDateRangePickerWeekDay` `XhDateRangePickerWeekNumber` `XhDateRangePickerWeekRow` |
 | 组合式函数 | `useDateRangePicker` |
 | 状态机 | `dateRangePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/date-range-picker.css` |
@@ -202,10 +203,15 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
+| `XhDateRangePickerColumnGroup` | `default` | — | 自行铺小标题与各列；未写时按这一端的列自动铺。 |
+| `XhDateRangePickerColumnGroupLabel` | `default` | — | 小标题的内容；未写时显示这一端的名字。 |
 | `XhDateRangePickerPreset` | `default` | — | 条目内容；未写时使用数据中的 label。 |
 | `XhDateRangePickerPresetGroup` | `default` | `DateRangePickerPresetsSlotProps` | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
 | `XhDateRangePickerRoot` | `default` | `DateRangePickerRootSlotProps` |  |
+| `XhDateRangePickerRoot` | `label` | — | 不写默认插槽时标题的内容，盖过 label 文字。 |
 | `XhDateRangePickerSegment` | `default` | `DateRangePickerSegmentSlotProps` |  |
+| `XhDateRangePickerTimeColumn` | `default` | — | 自行铺 XhDateRangePickerTimeItem；未写时按这一列的可选值自动铺。 |
+| `XhDateRangePickerTimeItem` | `default` | — | 格里的内容；未写时显示按 locale 译好的文字。 |
 
 ### React 适配器 props
 
@@ -216,6 +222,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `XhDateRangePickerCalendar` | `index` | `number \| string` |  | 并排的第几张面板，默认 0。写在这里，面板内的标题、网格与格子就不必各写一遍。 |
 | `XhDateRangePickerCell` | `value` | `string` | 是 | ISO 日期串。 |
 | `XhDateRangePickerCell` | `index` | `number \| string` |  | 属于第几个面板；未写时跟随所在的日历。同一天会同时出现在两个面板中 （8 月末的几天也铺在 9 月的首行），是否为本月只有连同面板一起看才能判定。 |
+| `XhDateRangePickerColumnGroup` | `index` | `number \| string` |  | 0 起点、1 终点，兼收字符串。 |
 | `XhDateRangePickerGrid` | `index` | `number \| string` |  | 属于第几个面板；未写时跟随所在的日历。 |
 | `XhDateRangePickerHeading` | `index` | `number \| string` |  | 属于第几个面板；未写时跟随所在的日历。 |
 | `XhDateRangePickerHeadingMonthTrigger` | `index` | `number \| string` |  | 属于第几个面板；未写时跟随所在的日历。 |
@@ -224,11 +231,14 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `XhDateRangePickerPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
 | `XhDateRangePickerPreset` | `value` | `string` | 是 | 该条目的身份，与 presets 数据中的 value 逐字对应。 |
 | `XhDateRangePickerPresetGroup` | `children` | `SlotChildren<DateRangePickerPresetsSlotProps>` |  | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
-| `XhDateRangePickerRoot` | `children` | `SlotChildren<DateRangePickerRootSlotProps>` |  |  |
+| `XhDateRangePickerRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhDateRangePickerRoot` | `children` | `SlotChildren<DateRangePickerRootSlotProps>` |  | 不给时照标准结构铺整套部件。 |
 | `XhDateRangePickerSegment` | `index` | `number \| string` |  | 段位下标，兼收字符串。 |
 | `XhDateRangePickerSegment` | `segment` | `DateSegmentType` |  | 按段名声明该格。段集中没有该段时它收起；与 index 二选一，两个都写时按段名计算。 |
 | `XhDateRangePickerSegment` | `children` | `SlotChildren<DateRangePickerSegmentSlotProps>` |  |  |
 | `XhDateRangePickerSegmentGroup` | `index` | `number \| string` |  | 组号：0 起点、1 终点，兼收字符串。 |
+| `XhDateRangePickerTimeColumn` | `unit` | `DatePickerTimeUnit` | 是 | 这一列的单位：hour、minute、second 或 dayPeriod。 |
+| `XhDateRangePickerTimeItem` | `value` | `string` | 是 | 这一格的值，与时间列的可选值逐字对应：两位补零（上下午列写 '00' / '01'）。 |
 | `XhDateRangePickerWeekDay` | `value` | `number \| string` | 是 | 列序 0-6，兼收字符串。 |
 | `XhDateRangePickerWeekNumber` | `value` | `string` | 是 | 该行行首那一天的 ISO 串。 |
 
@@ -290,6 +300,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `calendar` | `CalendarRangePickerApi<T>` | 内嵌日历：选区间、翻月、键盘导航都在它身上。 |
 | `field` | `DateRangePickerFieldApi<T>` | 起点分段输入。 |
 | `fieldEnd` | `DateRangePickerFieldApi<T>` | 终点分段输入。 |
+| `translations` | `DateRangePickerTranslations` | 解析后的文案：作者给的 translations 盖在当前语言包上。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getControlProps` | `() => T['element']` |  |
