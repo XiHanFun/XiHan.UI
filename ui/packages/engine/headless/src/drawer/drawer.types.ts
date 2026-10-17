@@ -7,6 +7,7 @@
 
 import type { OverlayBackdropVariant, OverlayCloseReason, PropTypes, Size } from '@xihan-ui/core'
 import type { DialogPoint, DialogRefs, DialogSchema } from '../dialog/dialog.types'
+import type { TitleDescriptionParts } from '../shared/title-description'
 
 /** 抽屉贴靠的视口边，也是滑入方向的来源。 */
 export type DrawerSide = 'top' | 'right' | 'bottom' | 'left'
@@ -71,6 +72,12 @@ export interface DrawerSchema extends Omit<DialogSchema, 'props' | 'context' | '
      * 适合反复开合、内容又重（设置面板、长表单）的抽屉。
      */
     unmountOnExit?: boolean
+    /**
+     * 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。
+     * title 不在场时 content 不写 aria-labelledby，名字由作者在 content 上写 aria-label；
+     * description 不在场、或渲染了但读不出一句话（判断同 `hasNamingContent`）时不写 aria-describedby。
+     */
+    parts?: TitleDescriptionParts
     translations?: Partial<DrawerTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: DrawerOpenChangeDetails) => void

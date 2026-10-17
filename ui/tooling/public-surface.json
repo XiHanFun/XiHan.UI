@@ -12952,6 +12952,7 @@
       "onPanelSizeChange",
       "open",
       "panelSize",
+      "parts",
       "resizable",
       "restoreFocus",
       "role",
