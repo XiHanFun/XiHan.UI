@@ -80,7 +80,7 @@ describe('属性面板的绑定字段、四边与格式（Chromium）', () => {
     expect(changes).toEqual([['field', 'order.buyer.name']])
   })
 
-  it('四边：面板窄时四个框排成两列、不越出行；点开关在一个框与四个框之间切换，改一边写入整个对象', async () => {
+  it('四边：面板窄时四个框排成两列、不越出行，边名在框上方、输入框留得下数字；点开关在一个框与四个框之间切换，改一边写入整个对象', async () => {
     const { changes, row } = await mountComposite()
     const padding = row('padding')
     const roots = (): HTMLElement[] => Array.from(padding.querySelectorAll<HTMLElement>('xh-number-field > [data-xh-part="root"]'))
@@ -93,7 +93,10 @@ describe('属性面板的绑定字段、四边与格式（Chromium）', () => {
     for (const root of roots())
       expect(inside(root, padding)).toBe(true)
     const input = roots()[1]!.querySelector('input')!
-    expect(input.getAttribute('aria-label')).toBe('Right')
+    expect(input.labels?.[0]?.textContent).toBe('Right')
+    // 边名在框上方，输入框留得下三四位数
+    for (const root of roots())
+      expect(root.querySelector('input')!.getBoundingClientRect().width).toBeGreaterThanOrEqual(64)
     await userEvent.clear(input)
     await userEvent.type(input, '3')
     expect(changes.at(-1)).toEqual(['padding', { top: 2, right: 3, bottom: 2, left: 2 }])

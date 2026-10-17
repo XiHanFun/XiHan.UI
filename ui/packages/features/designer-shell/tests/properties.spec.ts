@@ -442,9 +442,9 @@ describe('<xh-designer-properties>', () => {
     expect(panel.querySelector(`#${group.getAttribute('aria-labelledby')}`)!.textContent).toBe('页边距')
     const toggle = group.querySelector<HTMLElement & { checked?: boolean }>('xh-switch')!
     const boxes = (): (HTMLElement & { value?: string })[] => Array.from(group.querySelectorAll('xh-number-field'))
-    const shown = (): unknown[] => boxes().map(box => [box.value, box.querySelector('input')!.getAttribute('aria-label'), box.querySelector('[data-xh-part="prefix"]')?.textContent])
+    const shown = (): unknown[] => boxes().map(box => [box.value, box.getAttribute('aria-label') ?? box.querySelector('[data-xh-part="label"]')?.textContent])
     expect([toggle.checked, toggle.querySelector('[data-xh-part="text"]')!.textContent]).toEqual([true, 'Same on all sides'])
-    expect(shown()).toEqual([['5', 'All sides', undefined]])
+    expect(shown()).toEqual([['5', 'All sides']])
     expect(boxes()[0]!.querySelector('[data-xh-part="suffix"]')!.textContent).toBe('毫米')
 
     const changes = record(panel, 'property-change')
@@ -454,7 +454,7 @@ describe('<xh-designer-properties>', () => {
 
     emit(toggle, 'checked-change', { checked: false })
     expect(toggle.checked).toBe(false)
-    expect(shown()).toEqual([['5', 'Top', 'Top'], ['5', 'Right', 'Right'], ['5', 'Bottom', 'Bottom'], ['5', 'Left', 'Left']])
+    expect(shown()).toEqual([['5', 'Top'], ['5', 'Right'], ['5', 'Bottom'], ['5', 'Left']])
     const error = (): string | undefined => group.hasAttribute('data-invalid') ? group.querySelector('[data-part="property-error"]')!.textContent! : undefined
     emit(boxes()[1]!, 'value-change', { value: '' })
     expect([error(), boxes()[1]!.hasAttribute('invalid')]).toEqual(['Fill in all four sides', true])
@@ -471,7 +471,7 @@ describe('<xh-designer-properties>', () => {
     expect(boxes()).toHaveLength(4)
     emit(toggle, 'checked-change', { checked: true })
     expect(changes.at(-1)!.value).toEqual({ top: 5, right: 5, bottom: 5, left: 5 })
-    expect(shown()).toEqual([['5', 'All sides', undefined]])
+    expect(shown()).toEqual([['5', 'All sides']])
     expect(commits.length).toBeGreaterThan(0)
 
     // 换成四边不同的对象：开关跟着关掉
