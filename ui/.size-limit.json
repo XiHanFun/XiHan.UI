@@ -160,7 +160,7 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "125 kB"
+    "limit": "126 kB"
   },
   {
     "name": "designer-shell/locale",
@@ -196,7 +196,7 @@
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "703 kB"
+    "limit": "724 kB"
   },
   {
     "name": "headless/locale（十种语言整份）",
@@ -208,7 +208,7 @@
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "753 kB",
+    "limit": "774 kB",
     "ignore": [
       "vue"
     ]
@@ -235,7 +235,7 @@
     "name": "react",
     "path": "packages/adapters/react/dist/index.js",
     "gzip": true,
-    "limit": "751 kB",
+    "limit": "773 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -297,7 +297,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "755 kB"
+    "limit": "776 kB"
   },
   {
     "name": "web-components/define：只按需注册一个元素（defineXhElement + XhStatisticElement）",
@@ -316,7 +316,7 @@
     "name": "web-components/services",
     "path": "packages/adapters/web-components/dist/services.js",
     "gzip": true,
-    "limit": "66 kB"
+    "limit": "67 kB"
   },
   {
     "name": "styles",

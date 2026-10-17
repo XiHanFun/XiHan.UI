@@ -75,6 +75,7 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 ### 特性
 
 - `locale` 决定日期段的顺序和分隔方式。
+- 不写结构时按标准结构铺出标题、段组与清空按钮、表单影子（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：段按当前段序铺，段与段之间的分隔符从 `locale` 现取（zh-CN 是 `2026/07/28`，en-US 到分钟是 `07/28/2026, 13:45`），`label` 给标题文字。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
 - `min` 与 `max` 限制可输入范围。
 - `placeholder` 给对象是逐段的占位串；给字符串是整条占位，一段都没填、焦点也不在段上时段位与分隔符让位给这句文字，焦点一进来就换回段位。
 - `granularity` 支持日期或精确到分钟的日期时间；`hourCycle={12}` 时小时段收 1-12，时刻段后面多出上下午段，值仍是 24 小时制的 ISO 串。
@@ -156,6 +157,7 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhDateFieldRoot` | `default` | `DateFieldRootSlotProps` |  |
+| `XhDateFieldRoot` | `label` | — |  |
 | `XhDateFieldSegment` | `default` | `DateFieldSegmentSlotProps` |  |
 
 ### React 适配器 props
@@ -164,6 +166,7 @@ hourCycle=12 时小时段收 1-12，分钟段之后多出上下午段（按 a / 
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhDateFieldRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
 | `XhDateFieldRoot` | `children` | `SlotChildren<DateFieldRootSlotProps>` |  |  |
 | `XhDateFieldSegment` | `index` | `number \| string` |  | 下标由作者声明，对应哪一段由 locale 与段集计算；兼收字符串。 |
 | `XhDateFieldSegment` | `segment` | `DateSegmentType` |  | 按段名声明该格。段集中没有该段时它收起；与 index 二选一，两个都写时按段名计算。 |

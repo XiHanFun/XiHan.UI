@@ -78,8 +78,23 @@ export interface StructureInstanceNode {
   readonly props?: Readonly<Record<string, unknown>>
 }
 
-/** 结构里的一个子节点：部件节点或组合节点。 */
-export type StructureChild<P extends string = string> = StructureNode<P> | StructureInstanceNode
+/**
+ * 装饰文字：段与段之间的分隔符这类不是部件、不接线的文字。三端都渲成一个只装这段文字的 span，
+ * 不带部件名；Web Components 生成的这个 span 照样带生成标记，按 key 复用。
+ */
+export interface StructureLiteralNode {
+  /** 同一父节点下唯一，按它复用节点。 */
+  readonly key: string
+  readonly literal: string
+}
+
+/** 结构里的一个子节点：部件节点、组合节点或装饰文字。 */
+export type StructureChild<P extends string = string> = StructureNode<P> | StructureInstanceNode | StructureLiteralNode
+
+/** 是不是装饰文字。 */
+export function isStructureLiteral(node: StructureChild): node is StructureLiteralNode {
+  return 'literal' in node
+}
 
 /** 是不是组合节点。 */
 export function isStructureInstance(node: StructureChild): node is StructureInstanceNode {

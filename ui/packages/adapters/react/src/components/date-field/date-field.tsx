@@ -9,11 +9,13 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { DateFieldApi, DateFieldSchema, DateFieldSegmentState, DateFieldTranslations, DateGranularity, DateHourCycle, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { dateFieldStructure } from '@xihan-ui/headless'
 import { useEffect } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFormControlProps } from '../form/use-form-control'
 import { DateFieldProvider, useDateFieldContext } from './context'
 import { useDateField } from './use-date-field'
@@ -44,6 +46,8 @@ export interface DateFieldSegmentSlotProps {
 }
 
 export interface XhDateFieldRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
   value?: string | null
   defaultValue?: string | null
   min?: string
@@ -73,6 +77,7 @@ export interface XhDateFieldRootProps extends Omit<ComponentPropsWithRef<'div'>,
 }
 
 export function XhDateFieldRoot({
+  label,
   value,
   defaultValue,
   min,
@@ -131,7 +136,7 @@ export function XhDateFieldRoot({
         )}
       >
         {children == null
-          ? null
+          ? renderDefaultStructure(api, label)
           : renderSlot(children, {
               value: api.value,
               valueAsDate: api.valueAsDate,
@@ -217,4 +222,24 @@ export function XhDateFieldHiddenInput({ ...rest }: XhDateFieldHiddenInputProps)
       )}
     />
   )
+}
+
+/** 标准结构里各部件对应的组件。 */
+const DATE_FIELD_PARTS = {
+  'label': XhDateFieldLabel,
+  'control': XhDateFieldControl,
+  'segment-group': XhDateFieldSegmentGroup,
+  'segment': XhDateFieldSegment,
+  'clear-trigger': XhDateFieldClearTrigger,
+  'hidden-input': XhDateFieldHiddenInput,
+}
+
+/**
+ * 未写 children 时铺开的整套结构：照 headless 的 dateFieldStructure 渲，段按当前段序铺、段间是 locale 的分隔符，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容交给 label 部件。
+ */
+function renderDefaultStructure(api: DateFieldApi, label: ReactNode): ReactNode[] {
+  const slotted = label != null && typeof label !== 'string'
+  const nodes = dateFieldStructure(api, { label: typeof label === 'string' ? label : undefined, slotted: name => name === 'label' && slotted })
+  return renderStructure(nodes, DATE_FIELD_PARTS, node => (node.slot ? label : undefined))
 }
