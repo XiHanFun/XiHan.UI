@@ -141,3 +141,10 @@ describe('名字链与描述链只收在场的部件', () => {
     expect(withFieldLabel({ 'aria-labelledby': 'own' }, wiring.labelId)['aria-labelledby']).toBe('own')
   })
 })
+
+describe('库内控件直接放进字段：标签不写 for', () => {
+  it('control 不在场时不写 for；省略 parts 时照旧指向 controlId', () => {
+    expect(labelProps({ parts: { control: false } }).for).toBeUndefined()
+    expect(labelProps({ controlId: 'amount' }).for).toBe('amount')
+  })
+})

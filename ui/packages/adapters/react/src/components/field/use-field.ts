@@ -21,7 +21,7 @@ export interface FieldContext {
   registerPart: (part: FieldPartName) => () => void
 }
 
-const NO_PARTS: Record<FieldPartName, number> = { label: 0, description: 0, errorText: 0 }
+const NO_PARTS: Record<FieldPartName, number> = { label: 0, description: 0, errorText: 0, control: 0 }
 
 /**
  * Field 没有状态机：一份实例级 scope 派生部件 id，属性每帧由 connect 现算。
@@ -37,7 +37,7 @@ export function useField(props: FieldProps): FieldContext {
     return () => setCounts(c => ({ ...c, [part]: c[part] - 1 }))
   }, [])
   const parts: FieldRenderedParts | undefined = mounted
-    ? { label: counts.label > 0, description: counts.description > 0, errorText: counts.errorText > 0 }
+    ? { label: counts.label > 0, description: counts.description > 0, errorText: counts.errorText > 0, control: counts.control > 0 }
     : undefined
   return { api: connectField({ ...props, parts }, scope, reactNormalize), registerPart }
 }

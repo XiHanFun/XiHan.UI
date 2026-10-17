@@ -33,6 +33,26 @@ export function connectField<T extends PropTypes>(
     invalid && rendered?.errorText !== false ? ids['error-text'] : null,
   ].filter(Boolean).join(' ') || undefined
 
+  /**
+   * 库内控件直接放进字段：焦点宿主由字段接线认出，就是本字段里 aria-labelledby 带着本标签 id 的第一个节点。
+   * 它能聚焦就聚焦它，否则聚焦它里面第一个可 tab 的节点；一律不触发按钮的激活。
+   */
+  const focusWiredHost = (event: MouseEvent): void => {
+    const label = event.currentTarget as HTMLElement | null
+    const root = label?.closest(parts.root.selector)
+    if (!root)
+      return
+    const host = [...root.querySelectorAll<HTMLElement>('[aria-labelledby]')].find(el =>
+      el !== label
+      && el.closest(parts.root.selector) === root
+      && (el.getAttribute('aria-labelledby') ?? '').split(/\s+/).includes(ids.label))
+    const target = host && (host.tabIndex >= 0 ? host : getTabbables(host)[0])
+    if (!target)
+      return
+    event.preventDefault()
+    target.focus()
+  }
+
   return {
     invalid,
     required,
@@ -51,7 +71,8 @@ export function connectField<T extends PropTypes>(
       ...parts.label.attrs,
       // 自带 id，供 for 不生效时改用 aria-labelledby 指过来
       'id': ids.label,
-      'for': controlId,
+      // 库内控件直接放进字段时没有 control 部件，for 无处可指，不写
+      'for': rendered?.control === false ? undefined : controlId,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       // 必填星号与无效字色由 label.css 公共层按标签自己的这两位画；root 上的同名两位留给横排布局等规则
@@ -62,8 +83,10 @@ export function connectField<T extends PropTypes>(
       // 控件根本身就是真控件时这里查的是它的子节点，查不到东西，浏览器的 for 照旧管用。
       'onClick': (event: MouseEvent) => {
         const control = scope.getById(controlId)
-        if (!control)
+        if (!control) {
+          focusWiredHost(event)
           return
+        }
         // for 指向弹出式触发钮（select、日期选择器等）时只聚焦、不开合，与原生 select 一致：
         // 浮层展开时按下标题先被判在外面收起，原生激活又会把触发钮点开，标题就永远收不起浮层
         const popup = control.getAttribute('aria-haspopup')

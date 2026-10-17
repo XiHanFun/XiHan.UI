@@ -21,6 +21,7 @@ export interface FieldProps {
    * 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。
    * 不在场的部件不进控件的名字链与描述链：指向不存在的 id 会被判为无效引用。
    * description 渲染了但读不出一句话（判断同 `hasNamingContent`）也按不在场处理。
+   * control 不在场（库内控件直接放进字段）时 label 不写 for，点 label 由字段聚焦控件的焦点宿主。
    */
   parts?: FieldRenderedParts
 }
@@ -30,6 +31,8 @@ export interface FieldRenderedParts {
   label?: boolean
   description?: boolean
   errorText?: boolean
+  /** 作者写了 control 部件（原生控件或自写的封装）；库内控件直接放进字段时不在场。 */
+  control?: boolean
 }
 
 export interface FieldApi<T extends PropTypes = PropTypes> {

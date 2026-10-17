@@ -90,6 +90,8 @@ export interface XhFieldControlProps {
 /** 控件节点由作者渲染，这里只把 connect 产出的属性合并上去。 */
 export function XhFieldControl({ asChild = true, children }: XhFieldControlProps): ReactNode {
   const ctx = useFieldContext()
+  // control 在场：label 的 for 指向它；不在场时由字段代为聚焦库内控件
+  useFieldPartPresence(ctx, 'control')
   const controlProps = ctx.api.getControlProps() as Record<string, unknown>
   // control props 经函数式 children 交给作者，控件节点由作者渲染
   const rendered = renderSlot(children, controlProps)
