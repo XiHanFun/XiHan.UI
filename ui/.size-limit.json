@@ -202,7 +202,7 @@
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "734 kB"
+    "limit": "735 kB"
   },
   {
     "name": "headless/locale（十种语言整份）",

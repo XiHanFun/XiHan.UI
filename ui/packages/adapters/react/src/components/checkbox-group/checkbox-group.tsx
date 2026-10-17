@@ -6,12 +6,14 @@
 // 提供 checkbox group 相关实现。
 
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
-import type { CheckboxGroupApi, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupSchema, CheckboxGroupVariant } from '@xihan-ui/headless'
+import type { CheckboxGroupApi, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupSchema, CheckboxGroupVariant, StructureChild } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { checkboxGroupStructure } from '@xihan-ui/headless'
 import { useEffect, useMemo } from 'react'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import {
@@ -116,9 +118,7 @@ export function XhCheckboxGroupRoot({
         setValue: api.setValue,
         toggleValue: api.toggleValue,
       })
-    : collection
-      ? <DefaultTree collection={api.collection} label={label} renderItem={renderItem} />
-      : title
+    : renderDefaultStructure(api, label, renderItem)
 
   return (
     <CheckboxGroupProvider value={ctx}>
@@ -203,26 +203,44 @@ export function XhCheckboxGroupSelectAllTrigger({ children, ...rest }: XhCheckbo
 
 function noop(): void {}
 
+/** 标准结构里各部件对应的组件；条目里的表单影子由 XhCheckboxGroupItem 自行装配，铺结构时去掉这一格。 */
+const CHECKBOX_GROUP_PARTS = {
+  'label': XhCheckboxGroupLabel,
+  'item': XhCheckboxGroupItem,
+  'indicator': XhCheckboxGroupIndicator,
+  'item-text': XhCheckboxGroupItemText,
+  'item-description': XhCheckboxGroupItemDescription,
+}
+
+function withoutSelfAssembled(nodes: readonly StructureChild[]): StructureChild[] {
+  return nodes.flatMap((node): StructureChild[] => {
+    if (!('part' in node))
+      return [node]
+    if (node.part === 'hidden-input')
+      return []
+    return [node.children ? { ...node, children: withoutSelfAssembled(node.children) } : node]
+  })
+}
+
 /**
- * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
- * 全选控件不在其中：它是可选部件，需要时写 children。
+ * 未写 children 时铺开的整套结构：照 headless 的 checkboxGroupStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容交给 label 部件，条目文字交给 renderItem；
+ * 全选控件要用时写 children。
  */
-function DefaultTree(props: {
-  collection: readonly CheckboxGroupNodeMeta[]
-  label?: ReactNode
-  renderItem?: (node: CheckboxGroupNodeMeta) => ReactNode
-}): ReactNode {
-  return (
-    <>
-      {props.label != null ? <XhCheckboxGroupLabel>{props.label}</XhCheckboxGroupLabel> : null}
-      {props.collection.map(node => (
-        <XhCheckboxGroupItem key={node.value} value={node.value}>
-          <XhCheckboxGroupIndicator />
-          <XhCheckboxGroupItemText>{props.renderItem?.(node) ?? node.label}</XhCheckboxGroupItemText>
-          {node.description != null ? <XhCheckboxGroupItemDescription>{node.description}</XhCheckboxGroupItemDescription> : null}
-        </XhCheckboxGroupItem>
-      ))}
-    </>
-  )
+function renderDefaultStructure(api: CheckboxGroupApi, label: ReactNode, renderItem?: (node: CheckboxGroupNodeMeta) => ReactNode): ReactNode[] {
+  const slotted: Readonly<Record<string, boolean>> = {
+    label: label != null && typeof label !== 'string',
+    item: renderItem != null,
+  }
+  const nodes = checkboxGroupStructure(api, { label: typeof label === 'string' ? label : undefined, slotted: name => slotted[name] === true })
+  return renderStructure(withoutSelfAssembled(nodes), CHECKBOX_GROUP_PARTS, (node) => {
+    switch (node.slot?.name) {
+      case 'label':
+        return label
+      case 'item':
+        return renderItem?.(node.data as CheckboxGroupNodeMeta) ?? (node.data as CheckboxGroupNodeMeta).label
+      default:
+        return undefined
+    }
+  })
 }
