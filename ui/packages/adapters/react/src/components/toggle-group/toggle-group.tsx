@@ -6,12 +6,14 @@
 // 提供 toggle group 相关实现。
 
 import type { ActionVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupValue } from '@xihan-ui/headless'
+import type { ToggleGroupApi, ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupValue } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactElement, ReactNode } from 'react'
+import { toggleGroupStructure } from '@xihan-ui/headless'
 import { Children, Fragment, isValidElement, useEffect, useRef } from 'react'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { ToggleGroupProvider, useToggleGroupContext } from './context'
@@ -107,7 +109,7 @@ export function XhToggleGroupRoot({
   const fieldLabel = useFieldLabelWiring()
   const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...api.getRootProps() as Record<string, unknown> }), ['onFocus'])
 
-  const body = children ?? (collection ? renderDefaultTree(api.collection, renderItem) : null)
+  const body = children ?? renderDefaultStructure(api, renderItem)
 
   return (
     <ToggleGroupProvider value={ctx}>
@@ -192,20 +194,24 @@ export function XhToggleGroupHiddenInput({ ...rest }: XhToggleGroupHiddenInputPr
 
 function noop(): void {}
 
+/** 标准结构里各部件对应的组件。 */
+const TOGGLE_GROUP_PARTS = {
+  'item': XhToggleGroupItem,
+  'hidden-input': XhToggleGroupHiddenInput,
+}
+
 /**
- * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
- * 条目下没有文本部件，文字直接落在条目中。
+ * 未写 children 时铺开的整套结构，作者只提供数据：照 headless 的 toggleGroupStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。条目的内容由 renderItem 接管。
  */
-function renderDefaultTree(
-  collection: readonly ToggleGroupNodeMeta[],
-  renderItem?: (node: ToggleGroupNodeMeta) => ReactNode,
-): ReactNode[] {
-  return collection.map(node => (
-    <XhToggleGroupItem key={node.value} value={node.value}>
-      {renderItem?.(node) ?? node.label}
-    </XhToggleGroupItem>
-  ))
+function renderDefaultStructure(api: ToggleGroupApi, renderItem?: (node: ToggleGroupNodeMeta) => ReactNode): ReactNode[] {
+  const nodes = toggleGroupStructure(api, { slotted: name => name === 'item' && renderItem != null })
+  return renderStructure(nodes, TOGGLE_GROUP_PARTS, (node) => {
+    if (node.slot?.name !== 'item')
+      return undefined
+    const meta = node.data as ToggleGroupNodeMeta
+    return renderItem?.(meta) ?? meta.label
+  })
 }
 
 function flattenChildren(children: ReactNode): ReactNode[] {

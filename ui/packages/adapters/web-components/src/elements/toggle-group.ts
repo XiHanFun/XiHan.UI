@@ -7,8 +7,9 @@
 
 import type { ActionVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, ToggleGroupItemProps, ToggleGroupNode, ToggleGroupSchema, ToggleGroupValueChangeDetails } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectToggleGroup, resolveFormControlState, toggleGroupAnatomy, toggleGroupMachine, toggleGroupMeta } from '@xihan-ui/headless'
+import { connectToggleGroup, resolveFormControlState, toggleGroupAnatomy, toggleGroupMachine, toggleGroupMeta, toggleGroupStructure } from '@xihan-ui/headless'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -31,6 +32,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 多选 root=group、条目保持原生按钮 + aria-pressed。
  *
  * 受控值的多选形态只能通过 property 设置（`el.value = ['a','b']`）：HTML 属性只能承载一个字符串。
+ *
+ * 不写部件（或只写 root）时元素按标准结构生成：collection 的每一条一个按钮，末尾一份表单影子；
+ * 条目的内容可以由宿主直接子节点 `slot="item:<值>"` 接管。
  *
  * @customElement xh-toggle-group
  * @attr {string} value - 受控选中值（属性形式只能表达单值）；未提供该属性即非受控
@@ -60,6 +64,12 @@ export class XhToggleGroupElement extends XhElement {
   static override partContract = { anatomy: toggleGroupAnatomy, meta: toggleGroupMeta }
 
   static override fieldTarget = { parts: ['root'], kind: 'group' } as const
+
+  static override structure: ElementStructure<XhToggleGroupElement> = {
+    build: host => host.ctrl.service
+      ? toggleGroupStructure(connectToggleGroup(host.ctrl.service, wcNormalize), { slotted: (name, key) => host.slotted(name, key) })
+      : undefined,
+  }
 
   // dir 占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。别名保留原生行为，
