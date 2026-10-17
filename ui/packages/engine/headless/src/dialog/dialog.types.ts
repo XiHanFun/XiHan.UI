@@ -7,6 +7,7 @@
 
 import type { Cleanup, Layer, MachineSchema, OverlayBackdropVariant, OverlayCloseReason, PropTypes, RuntimeConfig, Size } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { TitleDescriptionParts } from '../shared/title-description'
 
 export interface DialogTranslations {
   close: string
@@ -127,6 +128,12 @@ export interface DialogSchema extends MachineSchema {
      * 适合反复开合、内容又重（设置面板、长表单）的浮层。
      */
     unmountOnExit?: boolean
+    /**
+     * 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。
+     * title 不在场时 content 不写 aria-labelledby，名字由作者在 content 上写 aria-label；
+     * description 不在场、或渲染了但读不出一句话（判断同 `hasNamingContent`）时不写 aria-describedby。
+     */
+    parts?: TitleDescriptionParts
     translations?: Partial<DialogTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: DialogOpenChangeDetails) => void

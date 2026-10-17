@@ -8,11 +8,13 @@
 import type { Layer, Service } from '@xihan-ui/core'
 import type { DialogApi, DialogSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
+import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import type { OverlayWiring } from '../../runtime/use-overlay'
 import { connectDialog, dialogMachine } from '@xihan-ui/headless'
 import { useCallback, useRef } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
+import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
 
@@ -21,6 +23,8 @@ export interface DialogContext extends OverlayWiring {
   api: DialogApi
   contentRef: RefObject<HTMLElement | null>
   backdropRef: RefObject<HTMLElement | null>
+  /** 标题与说明在不在场，由 XhDialogTitle / XhDialogDescription 登记；content 只引用在场的部件。 */
+  presence: TitleDescriptionPresence
 }
 
 export function useDialog(props: DialogSchema['props']): DialogContext {
@@ -58,11 +62,12 @@ export function useDialog(props: DialogSchema['props']): DialogContext {
     },
   })
 
-  const service = useMachine(dialogMachine, () => props, {
+  const presence = useTitleDescriptionPresence()
+  const service = useMachine(dialogMachine, () => ({ ...props, parts: presence.parts }), {
     scope,
     onCreate: overlay.onCreate as never,
   })
   serviceRef.current = service
 
-  return { ...overlay, service, api: connectDialog(service, reactNormalize), contentRef, backdropRef }
+  return { ...overlay, service, api: connectDialog(service, reactNormalize), contentRef, backdropRef, presence }
 }

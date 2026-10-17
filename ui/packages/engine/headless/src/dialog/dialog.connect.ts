@@ -34,6 +34,7 @@ export function connectDialog<T extends PropTypes>(
   const modal = prop('modal') ?? true
   const role = prop('role') ?? 'dialog'
   const ids = scope.ids('dialog', 'trigger', 'content', 'title', 'description')
+  const rendered = prop('parts')
   const stateAttr = open ? 'open' : 'closed'
   const draggable = !!prop('draggable')
   const offset = context.get('offset')
@@ -135,8 +136,9 @@ export function connectDialog<T extends PropTypes>(
       'aria-hidden': !open || undefined,
       // 显式写 false 而非省略：读屏对未声明与声明为非模态处理不同
       'aria-modal': modal ? 'true' : 'false',
-      'aria-labelledby': ids.title,
-      'aria-describedby': ids.description,
+      // 只引用作者渲染了的标题与说明：省略 parts 按都在场
+      'aria-labelledby': rendered?.title !== false ? ids.title : undefined,
+      'aria-describedby': rendered?.description !== false ? ids.description : undefined,
       'data-state': stateAttr,
       'data-instant': instant,
       // 尺寸轴落在 content 上：解剖里没有 root，positioner 非必需，且 content 会被 portal 走

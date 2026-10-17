@@ -15,6 +15,7 @@ import { renderAsChild } from '../../runtime/as-child'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
+import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { OVERLAY_STOWED_PROPS } from '../../runtime/use-overlay-exit'
 import { DialogProvider, useDialogContext } from './context'
 import { useDialog } from './use-dialog'
@@ -131,13 +132,16 @@ export function XhDialogIndicator({ children, ...rest }: XhDialogIndicatorProps)
 export interface XhDialogTitleProps extends ComponentPropsWithRef<'h2'> {}
 export function XhDialogTitle({ children, ...rest }: XhDialogTitleProps): ReactNode {
   const ctx = useDialogContext()
+  useTitleDescriptionPart(ctx.presence, 'title')
   return <h2 {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</h2>
 }
 
 export interface XhDialogDescriptionProps extends ComponentPropsWithRef<'p'> {}
 export function XhDialogDescription({ children, ...rest }: XhDialogDescriptionProps): ReactNode {
   const ctx = useDialogContext()
-  return <p {...mergeReactProps(ctx.api.getDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</p>
+  // 读不出一句话的说明不进描述链
+  const el = useDescriptionPart<HTMLParagraphElement>(ctx.presence)
+  return <p {...mergeReactProps({ ...ctx.api.getDescriptionProps() as Record<string, unknown>, ref: el }, rest as Record<string, unknown>)}>{children}</p>
 }
 
 export interface XhDialogBodyProps extends ComponentPropsWithRef<'div'> {}
