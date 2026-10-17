@@ -1566,6 +1566,10 @@ export const selectSuite: ConformanceSuite = {
           'item[2]',
           'item-text[2]',
           'item-indicator[2]',
+          'empty',
+          'loading',
+          'error',
+          'retry-trigger',
         ],
         parts: {
           'trigger': { 'type': 'button', 'aria-labelledby': '@part(label) @part(value-text)' },

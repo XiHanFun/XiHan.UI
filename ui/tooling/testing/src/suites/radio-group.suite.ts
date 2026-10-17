@@ -714,7 +714,7 @@ export const radioGroupSuite: ConformanceSuite = {
           'item[0]',
           'hidden-input[0]',
           'indicator[0]',
-          'item-icon',
+          'item-icon[0]',
           'item-text[0]',
           'item[1]',
           'hidden-input[1]',
