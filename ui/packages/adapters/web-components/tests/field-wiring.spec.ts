@@ -129,6 +129,7 @@ const CONTROLS: ReadonlyArray<readonly [tag: string, target: string, markup: str
   ['date-range-picker', 'trigger', '<div data-xh-part="root"><div data-xh-part="control"><div data-xh-part="segment-group"></div><div data-xh-part="segment-group"></div><button data-xh-part="trigger">选择</button></div><input data-xh-part="hidden-input"><input data-xh-part="hidden-input"><div data-xh-part="positioner"><div data-xh-part="content"></div></div></div>'],
   ['time-picker', 'trigger', '<div data-xh-part="root"><div data-xh-part="control"><div data-xh-part="segment-group"></div><button data-xh-part="trigger">选择</button></div><input data-xh-part="hidden-input"><div data-xh-part="positioner"><div data-xh-part="content"></div></div></div>'],
   ['time-range-picker', 'trigger', '<div data-xh-part="root"><div data-xh-part="control"><div data-xh-part="segment-group"></div><div data-xh-part="segment-group"></div><button data-xh-part="trigger">选择</button></div><input data-xh-part="hidden-input"><input data-xh-part="hidden-input"><div data-xh-part="positioner"><div data-xh-part="content"></div></div></div>'],
+  ['color-picker', 'trigger', '<div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger">选择</button></div></div>'],
   ['checkbox', 'root', '<button data-xh-part="root"><span data-xh-part="indicator"></span></button>'],
   ['switch', 'root', '<button data-xh-part="root"><span data-xh-part="thumb"></span></button>'],
   ['radio-group', 'root', '<div data-xh-part="root"><div data-xh-part="item" value="a"><input data-xh-part="hidden-input"><span data-xh-part="item-text">甲</span></div></div>'],
@@ -140,7 +141,7 @@ const CONTROLS: ReadonlyArray<readonly [tag: string, target: string, markup: str
   ['slider', 'thumb', '<div data-xh-part="root"><div data-xh-part="control"><div data-xh-part="track"></div><div data-xh-part="thumb" index="0"></div></div></div>'],
 ]
 
-describe('23 个库内控件放进 xh-field', () => {
+describe(`${CONTROLS.length} 个库内控件放进 xh-field`, () => {
   it.each(CONTROLS)('%s：描述链与字段标签落在 %s 部件上', async (tag, target, markup) => {
     const field = mountField(`<xh-${tag}>${markup}</xh-${tag}>`, 'invalid')
     const el = () => field.querySelector(`xh-${tag} [data-xh-part="${target}"], xh-${tag} > [data-xh-part="${target}"]`)!

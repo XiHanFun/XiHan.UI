@@ -299,13 +299,20 @@ describe('createNotificationService 的默认模板', () => {
     notify.dispose()
   })
 
-  it('不给正文也恒渲染那个部件：aria-describedby 不能指着一个不存在的 id', async () => {
+  it('不给正文时说明部件照样渲染，但读不出一句话，卡片不引用它：aria-describedby 既不指向空说明，也不悬空', async () => {
     const notify = createNotificationService()
     notify.info('只有标题')
     await tick()
-    const description = partOf('item-description')
-    expect(description).not.toBeNull()
-    expect(card().getAttribute('aria-describedby')).toBe(description!.id)
+    expect(partOf('item-description')).not.toBeNull()
+    expect(card().hasAttribute('aria-describedby')).toBe(false)
+    notify.dispose()
+  })
+
+  it('给了正文时卡片引用说明部件', async () => {
+    const notify = createNotificationService()
+    notify.info('标题', { description: '正文' })
+    await tick()
+    expect(card().getAttribute('aria-describedby')).toBe(partOf('item-description')!.id)
     notify.dispose()
   })
 
