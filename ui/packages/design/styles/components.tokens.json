@@ -38400,6 +38400,27 @@
       "description": "grid 的 root 部件 grid-template-columns 覆盖槽。"
     },
     {
+      "name": "--xh-grid-divider",
+      "component": "grid",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "border",
+        "border-block-end",
+        "border-inline-end"
+      ],
+      "state": [
+        "split"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "grid 的 item、root 部件 border、border-block-end、border-inline-end 覆盖槽。"
+    },
+    {
       "name": "--xh-grid-gap",
       "component": "grid",
       "part": [
@@ -38470,6 +38491,25 @@
       ],
       "visibility": "public",
       "description": "grid 的 root 部件 grid-template-rows 覆盖槽。"
+    },
+    {
+      "name": "--xh-grid-ruled-padding",
+      "component": "grid",
+      "part": [
+        "item",
+        "root"
+      ],
+      "property": [
+        "padding"
+      ],
+      "state": [
+        "split"
+      ],
+      "defaultToken": [
+        "--xh-space-1_5"
+      ],
+      "visibility": "public",
+      "description": "grid 的 item、root 部件 padding 覆盖槽。"
     },
     {
       "name": "--xh-grid-list-bg",

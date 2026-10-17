@@ -31940,7 +31940,7 @@
           "name": "XhGridElement",
           "cssParts": [
             {
-              "description": "排布容器，承载 data-cols（及逐档的 data-cols-sm/-md/-lg/-xl）/ data-rows / data-min-col / data-gap / data-row-gap / data-column-gap / data-align / data-justify-items",
+              "description": "排布容器，承载 data-cols（及逐档的 data-cols-sm/-md/-lg/-xl）/ data-rows / data-min-col / data-gap / data-row-gap / data-column-gap / data-align / data-justify-items / data-split",
               "name": "root"
             },
             {
@@ -32031,6 +32031,15 @@
               "attribute": "justify-items"
             },
             {
+              "kind": "field",
+              "name": "ruled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "ruled"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -32105,6 +32114,14 @@
               "description": "每一项在所在格中的行内对齐",
               "name": "justify-items",
               "fieldName": "justifyItems"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "画外框与格线（写为 root 上的 data-split）；画格线时行列间距为 0，gap 档位不生效",
+              "name": "ruled",
+              "fieldName": "ruled"
             }
           ],
           "superclass": {
@@ -32121,6 +32138,9 @@
               "name": "--xh-grid-columns"
             },
             {
+              "name": "--xh-grid-divider"
+            },
+            {
               "name": "--xh-grid-gap"
             },
             {
@@ -32128,6 +32148,9 @@
             },
             {
               "name": "--xh-grid-rows"
+            },
+            {
+              "name": "--xh-grid-ruled-padding"
             }
           ]
         }

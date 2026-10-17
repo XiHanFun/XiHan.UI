@@ -43,6 +43,8 @@ export interface XhGridRootProps extends ComponentPropsWithRef<'div'> {
   align?: GridAlign
   /** 每一项在自己格子中的行内对齐。 */
   justifyItems?: GridJustifyItems
+  /** 画外框与格线；画格线时行列间距为 0。 */
+  ruled?: boolean
 }
 
 /** 二维排布容器：列数、间距档位与两条对齐轴写为根上的 data-*，换算为哪条 CSS 规则由皮肤决定。 */
@@ -55,6 +57,7 @@ export function XhGridRoot({
   columnGap,
   align,
   justifyItems,
+  ruled,
   children,
   ...rest
 }: XhGridRootProps): ReactNode {
@@ -67,6 +70,7 @@ export function XhGridRoot({
     columnGap,
     align,
     justifyItems,
+    ruled,
   }, reactNormalize)
   return (
     <GridProvider value={{ api }}>

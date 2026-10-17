@@ -37,6 +37,7 @@ export const gridSuite: ConformanceSuite = {
             'data-column-gap': null,
             'data-align': null,
             'data-justify-items': null,
+            'data-split': null,
           },
           'item[0]': {
             'role': null,
@@ -176,6 +177,19 @@ export const gridSuite: ConformanceSuite = {
           root: {
             'data-align': 'center',
             'data-justify-items': 'end',
+          },
+        },
+      },
+    },
+    {
+      name: 'ruled 在根上写 data-split，与间距档位各落各的',
+      spec: { apg: APG },
+      props: { cols: 2, ruled: true, gap: 'md' },
+      initial: {
+        parts: {
+          root: {
+            'data-split': '',
+            'data-gap': 'md',
           },
         },
       },

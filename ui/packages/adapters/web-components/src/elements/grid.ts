@@ -15,6 +15,8 @@ type ColsByBreakpoint = Exclude<GridProps['cols'], GridColumnCount | undefined>
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
+// 三态：没写为 undefined，写 "false" 为 false，其余为 true
+const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 /**
  * 列数写整数就是各档同一个列数（`cols="3"`），写 JSON 对象就是逐档的列数
  * （`cols='{"base":1,"md":3}'`）。解析不出对象时当没写：落一个半截对象进去，
@@ -55,7 +57,8 @@ function authorTier(el: HTMLElement, name: string): number | Record<string, numb
  * @attr {'xs'|'sm'|'md'|'lg'|'xl'} column-gap - 只改列间距，未提供时跟随 gap
  * @attr {'start'|'center'|'end'|'stretch'|'baseline'} align - 每一项在所在格中的块向对齐
  * @attr {'start'|'center'|'end'|'stretch'} justify-items - 每一项在所在格中的行内对齐
- * @csspart root - 排布容器，承载 data-cols（及逐档的 data-cols-sm/-md/-lg/-xl）/ data-rows / data-min-col / data-gap / data-row-gap / data-column-gap / data-align / data-justify-items
+ * @attr {boolean} ruled - 画外框与格线（写为 root 上的 data-split）；画格线时行列间距为 0，gap 档位不生效
+ * @csspart root - 排布容器，承载 data-cols（及逐档的 data-cols-sm/-md/-lg/-xl）/ data-rows / data-min-col / data-gap / data-row-gap / data-column-gap / data-align / data-justify-items / data-split
  * @csspart item - 一格，承载声明的 data-span / data-offset / data-row-span（及各自逐档的 -sm/-md/-lg/-xl）
  */
 export class XhGridElement extends XhElement {
@@ -71,6 +74,7 @@ export class XhGridElement extends XhElement {
     columnGap: { converter: STRING_CONVERTER, attribute: 'column-gap' },
     align: { converter: STRING_CONVERTER },
     justifyItems: { converter: STRING_CONVERTER, attribute: 'justify-items' },
+    ruled: { converter: BOOLEAN_CONVERTER },
   }
 
   declare cols?: GridColumnCount | ColsByBreakpoint
@@ -81,6 +85,7 @@ export class XhGridElement extends XhElement {
   declare columnGap?: string
   declare align?: string
   declare justifyItems?: string
+  declare ruled?: boolean
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
@@ -93,6 +98,7 @@ export class XhGridElement extends XhElement {
       columnGap: this.columnGap as GridProps['columnGap'],
       align: this.align as GridProps['align'],
       justifyItems: this.justifyItems as GridProps['justifyItems'],
+      ruled: this.ruled,
     } satisfies GridProps, wcNormalize)
 
     const root = this.getPart('root')
