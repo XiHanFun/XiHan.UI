@@ -9,9 +9,10 @@ import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { RatingApi, RatingItemState, RatingSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { hasNamingContent } from '@xihan-ui/headless'
+import { hasNamingContent, ratingStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onBeforeUnmount, onMounted, onUnmounted, onUpdated, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideRating, useRatingContext } from './context'
@@ -38,6 +39,8 @@ export type RatingItemSlotProps = RatingItemState
 export const XhRatingRoot = defineComponent({
   name: 'XhRatingRoot',
   props: {
+    /** 标题文字。不写默认插槽时铺 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
     /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
     ariaLabel: { type: String },
     // 缺席值 undefined 表示非受控
@@ -64,6 +67,7 @@ export const XhRatingRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: RatingRootSlotProps) => VNode[]
+    label?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const onValueChange: RatingProps['onValueChange'] = (details) => {
@@ -75,17 +79,22 @@ export const XhRatingRoot = defineComponent({
     }
     const ctx = useRating(withXhConfig('rating', useFormControlProps(props)) as RatingProps, { onValueChange, onHoverChange })
     provideRating(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      value: ctx.api.value.value,
-      hoveredValue: ctx.api.value.hoveredValue,
-      highlightedValue: ctx.api.value.highlightedValue,
-      count: ctx.api.value.count,
-      empty: ctx.api.value.empty,
-      // 条目序号列表，供 v-for 渲染星星
-      items: ctx.api.value.items,
-      getItemState: ctx.api.value.getItemState,
-      setValue: ctx.api.value.setValue,
-    }))
+    return () => {
+      const api = ctx.api.value
+      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+        ? slots.default({
+            value: api.value,
+            hoveredValue: api.hoveredValue,
+            highlightedValue: api.highlightedValue,
+            count: api.count,
+            empty: api.empty,
+            // 条目序号列表，供 v-for 渲染星星
+            items: api.items,
+            getItemState: api.getItemState,
+            setValue: api.setValue,
+          })
+        : renderDefaultStructure(api, props.label, props.name !== undefined, slots.label))
+    }
   },
 })
 
@@ -182,3 +191,20 @@ export const XhRatingHiddenInput = defineComponent({
     return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
   },
 })
+
+/** 标准结构里各部件对应的组件。 */
+const RATING_PARTS = {
+  'label': XhRatingLabel,
+  'control': XhRatingControl,
+  'item': XhRatingItem,
+  'hidden-input': XhRatingHiddenInput,
+}
+
+/**
+ * 未写默认插槽时铺开的整套结构：照 headless 的 ratingStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题由 label 插槽接管。
+ */
+function renderDefaultStructure(api: RatingApi, label: string | undefined, hiddenInput: boolean, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = ratingStructure(api, { label, hiddenInput, slotted: name => name === 'label' && labelSlot != null })
+  return renderStructure(nodes, RATING_PARTS, node => (node.slot ? labelSlot?.() : undefined))
+}
