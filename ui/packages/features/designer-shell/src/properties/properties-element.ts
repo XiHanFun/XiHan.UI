@@ -12,14 +12,17 @@ import type { PropertyControl, PropertyDescriptor, PropertyEditor, PropertyEdito
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { DesignerPropertiesTranslations } from '../translations'
 import type { FieldContext, FieldInstance } from './editors'
+import type { FieldRow } from './field-row'
 import { createCounterIdGenerator } from '@xihan-ui/core'
 import { formatJsonPath, getJsonAt, jsonEquals } from '@xihan-ui/core/json'
 import { groupProperties, isPropertyVisible, resolvePropertyEditor } from '@xihan-ui/designer-kit/properties'
-import { createAuthoredElement, createGeneratedElement, emitEvent, setAttributes, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
+import { createAuthoredElement, createGeneratedElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { placeChildren } from '../internal/dom'
 import { adoptSlots } from '../internal/slots'
 import { definePropertyFieldElements } from '../internal/ui-elements'
 import { builtinEditor, PROPERTIES_SCOPE } from './editors'
+import { DEFAULT_PROPERTIES_TRANSLATIONS } from './field'
+import { createFieldRow, placeAsGroup, placeInField, refreshFieldRow } from './field-row'
 
 /** 属性描述，编辑方式可以是内建种类之外的产品种类。 */
 export type DesignerPropertyDescriptor = PropertyDescriptor<PropertyControl | { readonly kind: string }>
@@ -54,21 +57,6 @@ export interface DesignerPropertiesEventMap {
   'property-commit': CustomEvent<{ path: JsonPath }>
 }
 
-const DEFAULT_TRANSLATIONS: DesignerPropertiesTranslations = {
-  title: 'Properties',
-  empty: 'No properties to edit',
-  mixed: 'Multiple values',
-  invalidJson: 'Not valid JSON',
-  notInteger: 'Must be a whole number',
-  belowMinimum: min => `Must be at least ${min}`,
-  aboveMaximum: max => `Must be at most ${max}`,
-  notAboveMinimum: min => `Must be greater than ${min}`,
-  invalidDataField: 'Not a valid field path',
-  sidesLinked: 'Same on all sides',
-  sides: { all: 'All sides', top: 'Top', right: 'Right', bottom: 'Bottom', left: 'Left' },
-  sidesIncomplete: 'Fill in all four sides',
-}
-
 const TAG = 'xh-designer-properties'
 /** 属性面板生成的部件都带这个 data-scope，样式只认它，不碰插槽与自定义编辑器里的作者内容。 */
 const SCOPE = PROPERTIES_SCOPE
@@ -91,17 +79,12 @@ interface Parts {
 /**
  * 一行属性：
  * - 内建编辑器与标了 data-xh-part="control" 的宿主编辑器放进 xh-field，由字段接线；
- * - 其余宿主编辑器是一组控件，整行 role=group，标签与说明经 aria-labelledby / aria-describedby 接上；
+ * - 内建的一组控件（sides）与其余宿主编辑器整行 role=group，标签与说明经 aria-labelledby / aria-describedby 接上；
  * - 没有编辑器时是只读的一行，左边标签文字、右边占位说明。
  * 后两种没有 field。
  */
-interface Row {
+interface Row extends FieldRow {
   readonly key: string
-  readonly element: HTMLElement
-  field: HTMLElement | undefined
-  label: HTMLElement
-  readonly hint: HTMLElement
-  readonly error: HTMLElement
   readonly control: { readonly update?: (context: FieldContext) => void, readonly destroy?: () => void }
   descriptor: DesignerPropertyDescriptor
   localError: string | undefined
@@ -183,7 +166,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
   #shownGroups: string[] = []
   #editorIds = new WeakMap<object, number>()
   #editorCount = 0
-  #t: DesignerPropertiesTranslations = DEFAULT_TRANSLATIONS
+  #t: DesignerPropertiesTranslations = DEFAULT_PROPERTIES_TRANSLATIONS
 
   constructor() {
     super()
@@ -206,7 +189,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
   protected override update(changed: PropertyValues): void {
     super.update(changed)
     const parts = this.#ensureParts()
-    const t = this.#config.translations<DesignerPropertiesTranslations>(TAG, DEFAULT_TRANSLATIONS, this.translations)
+    const t = this.#config.translations<DesignerPropertiesTranslations>(TAG, DEFAULT_PROPERTIES_TRANSLATIONS, this.translations)
     this.#t = t
     setText(parts.title, t.title)
     setText(parts.heading, this.heading ?? '')
@@ -412,51 +395,32 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
 
   #createRow(key: string, descriptor: DesignerPropertyDescriptor, editor: DesignerPropertyEditor | undefined, targets: readonly DesignerPropertyTarget[]): Row {
     const doc = this.ownerDocument
-    const element = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'property', 'data-path': formatJsonPath(descriptor.path) })
-    const hint = createAuthoredElement(doc, 'p', { 'data-scope': SCOPE, 'data-part': 'property-hint', 'id': this.#ids.scopeId() })
-    const error = createAuthoredElement(doc, 'p', { 'data-scope': SCOPE, 'data-part': 'property-error', 'id': this.#ids.scopeId() })
-    const label = createAuthoredElement(doc, 'span', { 'data-scope': SCOPE, 'data-part': 'property-label', 'id': this.#ids.scopeId() })
-    const row: Row = { key, element, field: undefined, label, hint, error, control: {}, descriptor, localError: undefined }
+    const row: Row = { ...createFieldRow(doc, this.#ids, { 'data-path': formatJsonPath(descriptor.path) }), key, control: {}, descriptor, localError: undefined }
     const builtin = editor ? undefined : builtinEditor(descriptor.control.kind)
     if (builtin) {
       const created: FieldInstance = builtin(this.#context(row, targets))
       Object.assign(row, { control: created })
-      if (created.group) {
-        setAttributes(element, { 'role': 'group', 'aria-labelledby': label.id })
-        element.append(label, created.element, hint, error)
-        return row
-      }
-      this.#placeInField(row, created.element)
+      if (created.group)
+        placeAsGroup(row, created.element)
+      else
+        placeInField(doc, row, created.element)
       return row
     }
     if (editor) {
       const created = editor(plainContext(this.#context(row, targets), targets))
       Object.assign(row, { control: { update: (next: FieldContext) => created.update?.(plainContext(next, targets)), destroy: created.destroy } })
       const custom = createAuthoredElement(doc, 'div', { 'data-control': 'custom' }, [created.element])
-      if (created.element.getAttribute('data-xh-part') === 'control') {
-        this.#placeInField(row, custom)
-        return row
-      }
-      setAttributes(element, { 'role': 'group', 'aria-labelledby': label.id })
-      element.append(label, custom, hint, error)
+      if (created.element.getAttribute('data-xh-part') === 'control')
+        placeInField(doc, row, custom)
+      else
+        placeAsGroup(row, custom)
       return row
     }
-    element.append(createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'property-line' }, [
-      label,
+    row.element.append(createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'property-line' }, [
+      row.label,
       createAuthoredElement(doc, 'span', { 'data-scope': SCOPE, 'data-control': 'unsupported' }, [descriptor.control.kind]),
-    ]), hint, error)
+    ]), row.hint, row.error)
     return row
-  }
-
-  /** 把控件放进 xh-field：标签、说明与错误换成字段的部件，由字段接到控件上。 */
-  #placeInField(row: Row, control: HTMLElement): void {
-    const doc = this.ownerDocument
-    const label = createAuthoredElement(doc, 'label', { 'data-xh-part': 'label' })
-    setAttributes(row.hint, { 'data-scope': undefined, 'data-part': undefined, 'id': undefined, 'data-xh-part': 'description' })
-    setAttributes(row.error, { 'data-scope': undefined, 'data-part': undefined, 'id': undefined, 'data-xh-part': 'error-text' })
-    const field = createAuthoredElement(doc, 'xh-field', {}, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [label, control, row.hint, row.error])])
-    row.element.append(field)
-    Object.assign(row, { field, label })
   }
 
   #message(row: Row, targets: readonly DesignerPropertyTarget[]): string | undefined {
@@ -505,26 +469,13 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
 
   #refresh(row: Row, targets: readonly DesignerPropertyTarget[]): void {
     const descriptor = row.descriptor
-    setText(row.label, this.labelOf?.(descriptor) ?? descriptor.label ?? formatJsonPath(descriptor.path))
-    const hint = this.hintOf?.(descriptor)
-    setText(row.hint, hint ?? '')
-    row.hint.hidden = hint === undefined
-    const message = this.#message(row, targets)
-    setText(row.error, message ?? '')
-    if (row.field) {
-      row.field.toggleAttribute('invalid', message !== undefined)
-      row.field.toggleAttribute('required', descriptor.required === true)
-      row.field.toggleAttribute('read-only', this.readonly)
-    }
-    else {
-      row.error.hidden = message === undefined
-      row.label.toggleAttribute('data-required', descriptor.required === true)
-      if (row.element.getAttribute('role') === 'group') {
-        const described = [hint === undefined ? '' : row.hint.id, message === undefined ? '' : row.error.id].filter(Boolean).join(' ')
-        setAttributes(row.element, { 'aria-describedby': described || undefined })
-      }
-    }
-    row.element.toggleAttribute('data-invalid', message !== undefined)
+    refreshFieldRow(row, {
+      label: this.labelOf?.(descriptor) ?? descriptor.label ?? formatJsonPath(descriptor.path),
+      hint: this.hintOf?.(descriptor),
+      error: this.#message(row, targets),
+      required: descriptor.required === true,
+      readonly: this.readonly,
+    })
     row.control.update?.(this.#context(row, targets))
   }
 
