@@ -10,6 +10,8 @@ export { connectMention } from './mention.connect'
 export { mentionKeyboard } from './mention.keyboard'
 export { MENTION_DEFAULT_PLACEMENT, mentionMachine } from './mention.machine'
 export { mentionMeta } from './mention.meta'
+export { mentionStructure } from './mention.structure'
+export type { MentionStructureOptions } from './mention.structure'
 export { findMentionTrigger, insertMention, MENTION_DEFAULT_PREFIX, normalizeMentionPrefixes } from './mention.trigger'
 export type {
   MentionApi,

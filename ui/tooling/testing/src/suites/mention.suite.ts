@@ -91,6 +91,41 @@ export const mentionSuite: ConformanceSuite = {
   fixture: tree(),
   cases: [
     {
+      name: '作者不写结构：三端都照 mentionStructure 铺出标题、输入框与浮层（候选与空态），敲下前缀即开、高亮落到首条',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: {
+        label: '正文',
+        collection: [
+          { value: 'lilei', label: 'Lilei', description: '前端' },
+          { value: 'ghost', label: 'Ghost', disabled: true },
+          { value: 'poly', label: 'Poly' },
+        ],
+      },
+      initial: {
+        order: ['root', 'label', 'input', 'positioner', 'content', 'item[0]', 'item-text[0]', 'item-description', 'item[1]', 'item-text[1]', 'item[2]', 'item-text[2]', 'empty'],
+        parts: {
+          'input': { 'role': 'combobox', 'aria-expanded': 'false', 'aria-controls': '@part(content)' },
+          'content': { role: 'listbox', hidden: '' },
+          'item[1]': { 'aria-disabled': 'true' },
+          'empty': { hidden: '' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'type 步骤改不动输入框的值，而提及的入口正是原生 input 事件加那一刻的光标位置',
+          run: ({ doc, flush }) => typeInto(doc, '@', flush),
+          expect: { parts: { input: { 'aria-expanded': 'true' }, content: { hidden: null } } },
+        },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'item[0]', name: 'data-highlighted', value: '' } },
+          expect: { parts: { input: { 'aria-activedescendant': '@part(item[0])' } } },
+        },
+      ],
+    },
+    {
       name: '初始收起：单行宿主写足组合框那一套属性，彼此互指',
       spec: { apg: `${APG}#roles_states_properties` },
       initial: {

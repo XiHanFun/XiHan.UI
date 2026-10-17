@@ -9,11 +9,13 @@ import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui
 import type { MentionApi, MentionInputEl, MentionInputHost, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { mentionStructure } from '@xihan-ui/headless'
 import { useEffect, useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -44,6 +46,8 @@ export interface XhMentionRootProps extends RootElementProps {
   /** 打开候选的前缀字符，默认 '@'；传数组即多种前缀并存。 */
   triggerPrefix?: string | string[]
   collection?: MentionNode[]
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
   value?: string
   defaultValue?: string
   disabled?: boolean
@@ -81,6 +85,7 @@ export function XhMentionRoot({
   ariaLabel,
   triggerPrefix,
   collection,
+  label,
   value,
   defaultValue,
   disabled,
@@ -151,9 +156,7 @@ export function XhMentionRoot({
         setValue: api.setValue,
         close: api.close,
       })
-    : collection
-      ? <DefaultTree collection={api.collection} empty={empty} renderItem={renderItem} renderItemPrefix={renderItemPrefix} renderItemSuffix={renderItemSuffix} />
-      : null
+    : renderDefaultStructure(api, { label, empty, renderItem, renderItemPrefix, renderItemSuffix })
 
   return (
     <MentionProvider value={ctx}>
@@ -325,36 +328,62 @@ export function XhMentionItemDescription({ children, ...rest }: XhMentionItemDes
   return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
-/**
- * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
- * 过滤仍归调用方：collection 就是当前应显示的候选。
- */
-function DefaultTree(props: {
-  collection: readonly MentionNodeMeta[]
+/** 标准结构里各部件对应的组件。 */
+const MENTION_PARTS = {
+  'label': XhMentionLabel,
+  'input': XhMentionInput,
+  'positioner': XhMentionPositioner,
+  'content': XhMentionContent,
+  'item': XhMentionItem,
+  'item-prefix': XhMentionItemPrefix,
+  'item-text': XhMentionItemText,
+  'item-description': XhMentionItemDescription,
+  'item-suffix': XhMentionItemSuffix,
+  'empty': XhMentionEmpty,
+}
+
+interface MentionStructureContent {
+  label?: ReactNode
   empty?: ReactNode
   renderItem?: (node: MentionNodeMeta) => ReactNode
   renderItemPrefix?: (node: MentionNodeMeta) => ReactNode
   renderItemSuffix?: (node: MentionNodeMeta) => ReactNode
-}): ReactNode {
-  const ctx = useMentionContext()
-  return (
-    <>
-      <XhMentionInput />
-      <XhMentionPositioner>
-        <XhMentionContent>
-          {props.collection.map(node => (
-            <XhMentionItem key={node.value} value={node.value}>
-              {props.renderItemPrefix ? <XhMentionItemPrefix>{props.renderItemPrefix(node)}</XhMentionItemPrefix> : null}
-              <XhMentionItemText>{props.renderItem?.(node) ?? node.label}</XhMentionItemText>
-              {node.description != null ? <XhMentionItemDescription>{node.description}</XhMentionItemDescription> : null}
-              {props.renderItemSuffix ? <XhMentionItemSuffix>{props.renderItemSuffix(node)}</XhMentionItemSuffix> : null}
-            </XhMentionItem>
-          ))}
-        </XhMentionContent>
-        {/* 空态节点是 content 的兄弟，不进 role=listbox */}
-        <XhMentionEmpty>{props.empty ?? ctx.api.emptyText}</XhMentionEmpty>
-      </XhMentionPositioner>
-    </>
-  )
+}
+
+/**
+ * 未写 children 时铺开的整套结构，作者只提供数据：照 headless 的 mentionStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题、空态、候选文字与行首行尾由对应渲染函数接管。
+ * 过滤仍归调用方：collection 就是当前应显示的候选。
+ */
+function renderDefaultStructure(api: MentionApi, content: MentionStructureContent): ReactNode[] {
+  const { label, empty, renderItem, renderItemPrefix, renderItemSuffix } = content
+  const slotted: Readonly<Record<string, boolean>> = {
+    'label': label != null && typeof label !== 'string',
+    'empty': empty != null && typeof empty !== 'string',
+    'item': renderItem != null,
+    'item-prefix': renderItemPrefix != null,
+    'item-suffix': renderItemSuffix != null,
+  }
+  const nodes = mentionStructure(api, {
+    label: typeof label === 'string' ? label : undefined,
+    empty: typeof empty === 'string' ? empty : undefined,
+    slotted: name => slotted[name] === true,
+  })
+  return renderStructure(nodes, MENTION_PARTS, (node) => {
+    const meta = node.data as MentionNodeMeta
+    switch (node.slot?.name) {
+      case 'label':
+        return label
+      case 'empty':
+        return empty
+      case 'item':
+        return renderItem?.(meta) ?? meta.label
+      case 'item-prefix':
+        return renderItemPrefix?.(meta)
+      case 'item-suffix':
+        return renderItemSuffix?.(meta)
+      default:
+        return undefined
+    }
+  })
 }
