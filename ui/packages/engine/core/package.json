@@ -49,17 +49,25 @@
       "types": "./dist/presence.d.ts",
       "import": "./dist/presence.js"
     },
+    "./rich-text": {
+      "types": "./dist/rich-text.d.ts",
+      "import": "./dist/rich-text.js"
+    },
+    "./rich-text-dom": {
+      "types": "./dist/rich-text-dom.d.ts",
+      "import": "./dist/rich-text-dom.js"
+    },
     "./skin-check": {
       "types": "./dist/skin-check.d.ts",
       "import": "./dist/skin-check.js"
     },
-    "./url": {
-      "types": "./dist/url.d.ts",
-      "import": "./dist/url.js"
-    },
     "./template": {
       "types": "./dist/template.d.ts",
       "import": "./dist/template.js"
+    },
+    "./url": {
+      "types": "./dist/url.d.ts",
+      "import": "./dist/url.js"
     },
     "./vanilla": {
       "types": "./dist/vanilla.d.ts",
