@@ -35,6 +35,8 @@ export const XhTextFieldRoot = defineComponent({
   props: {
     /** 标题文字。不写默认插槽时铺 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
+    /** 不写默认插槽时输入框铺 textarea（多行，接入 autoSize 自动高度）；手写部件时由 XhTextFieldInput 的 as 决定。 */
+    multiline: Boolean,
     // 缺席值 undefined 表示非受控
     value: { type: String },
     defaultValue: { type: String },
@@ -84,7 +86,7 @@ export const XhTextFieldRoot = defineComponent({
             setValue: api.setValue,
             clear: api.clear,
           })
-        : renderDefaultStructure(api, props.label, slots.label))
+        : renderDefaultStructure(api, { label: props.label, multiline: props.multiline }, slots.label))
     }
   },
 })
@@ -205,11 +207,21 @@ const TEXT_FIELD_PARTS = {
   'count': XhTextFieldCount,
 }
 
+/** 多行时标准结构里的输入框：XhTextFieldInput 以 textarea 渲染。 */
+const XhTextFieldTextarea = defineComponent({
+  name: 'XhTextFieldTextarea',
+  inheritAttrs: false,
+  setup(_, { attrs, slots }) {
+    return () => h(XhTextFieldInput, { ...attrs, as: 'textarea' }, slots)
+  },
+})
+
 /**
  * 未写默认插槽时铺开的整套结构：照 headless 的 textFieldStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。标题由 label 插槽接管。
  */
-function renderDefaultStructure(api: TextFieldApi, label: string | undefined, labelSlot?: () => VNode[]): VNode[] {
-  const nodes = textFieldStructure(api, { label, slotted: name => name === 'label' && labelSlot != null })
-  return renderStructure(nodes, TEXT_FIELD_PARTS, node => (node.slot ? labelSlot?.() : undefined))
+function renderDefaultStructure(api: TextFieldApi, options: { label?: string, multiline: boolean }, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = textFieldStructure(api, { ...options, slotted: name => name === 'label' && labelSlot != null })
+  const parts = options.multiline ? { ...TEXT_FIELD_PARTS, input: XhTextFieldTextarea } : TEXT_FIELD_PARTS
+  return renderStructure(nodes, parts, node => (node.slot ? labelSlot?.() : undefined))
 }

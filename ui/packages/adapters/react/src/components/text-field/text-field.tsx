@@ -35,6 +35,8 @@ export type TextFieldCountSlotProps = Pick<TextFieldApi, 'count' | 'maxLength' |
 export interface XhTextFieldRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** 标题。不给 children 时铺 label 部件。 */
   label?: ReactNode
+  /** 不给 children 时输入框铺 textarea（多行，接入 autoSize 自动高度）；手写部件时由 XhTextFieldInput 的 as 决定。 */
+  multiline?: boolean
   value?: string
   defaultValue?: string
   type?: TextFieldType
@@ -61,6 +63,7 @@ export interface XhTextFieldRootProps extends Omit<ComponentPropsWithRef<'div'>,
 
 export function XhTextFieldRoot({
   label,
+  multiline,
   value,
   defaultValue,
   type,
@@ -124,7 +127,7 @@ export function XhTextFieldRoot({
               setValue: api.setValue,
               clear: api.clear,
             })
-          : renderDefaultStructure(api, label)}
+          : renderDefaultStructure(api, label, multiline)}
       </div>
     </TextFieldProvider>
   )
@@ -270,12 +273,18 @@ const TEXT_FIELD_PARTS = {
   'count': XhTextFieldCount,
 }
 
+/** 多行时标准结构里的输入框：XhTextFieldInput 以 textarea 渲染。 */
+function XhTextFieldTextarea(props: Omit<XhTextFieldInputProps, 'as'>): ReactNode {
+  return <XhTextFieldInput {...props} as="textarea" />
+}
+
 /**
  * 未写 children 时铺开的整套结构：照 headless 的 textFieldStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容交给 label 部件。
  */
-function renderDefaultStructure(api: TextFieldApi, label: ReactNode): ReactNode[] {
+function renderDefaultStructure(api: TextFieldApi, label: ReactNode, multiline: boolean | undefined): ReactNode[] {
   const slotted = label != null && typeof label !== 'string'
-  const nodes = textFieldStructure(api, { label: typeof label === 'string' ? label : undefined, slotted: name => name === 'label' && slotted })
-  return renderStructure(nodes, TEXT_FIELD_PARTS, node => (node.slot ? label : undefined))
+  const nodes = textFieldStructure(api, { label: typeof label === 'string' ? label : undefined, multiline, slotted: name => name === 'label' && slotted })
+  const parts = multiline ? { ...TEXT_FIELD_PARTS, input: XhTextFieldTextarea } : TEXT_FIELD_PARTS
+  return renderStructure(nodes, parts, node => (node.slot ? label : undefined))
 }

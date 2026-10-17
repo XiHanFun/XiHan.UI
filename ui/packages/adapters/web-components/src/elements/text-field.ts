@@ -30,11 +30,12 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 键盘只额外接管一个 Escape（clearable 且有值时清空），其余光标与选区行为全部归浏览器。
  * 清空按钮对读屏隐藏、不占 Tab 位：它只是指针用户的快捷方式，键盘路径使用 Escape。
  *
- * 不写部件（或只写 root）时元素按标准结构生成：标题（label）、盒里的单行输入框与清空按钮（开了 clearable）、
- * 字数（开了 show-count）；标题可以由宿主直接子节点 `slot="label"` 接管。多行宿主要写 textarea，照旧手写部件。
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）、盒里的输入框（开了 multiline 是 textarea，否则是单行 input）
+ * 与清空按钮（开了 clearable）、字数（开了 show-count）；标题可以由宿主直接子节点 `slot="label"` 接管。
  *
  * @customElement xh-text-field
  * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
+ * @attr {boolean} multiline - 生成结构时输入框铺 textarea（多行，接入 auto-size 自动高度）；手写部件时看作者写的是 input 还是 textarea
  * @attr {string} value - 受控值；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值
  * @attr {'text'|'password'|'email'|'tel'|'url'|'search'} type - 单行输入类型，默认 text；宿主写为 textarea 时该属性不发出
@@ -70,13 +71,18 @@ export class XhTextFieldElement extends XhElement {
 
   static override structure: ElementStructure<XhTextFieldElement> = {
     build: host => host.ctrl.service
-      ? textFieldStructure(connectTextField(host.ctrl.service, wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key) })
+      ? textFieldStructure(connectTextField(host.ctrl.service, wcNormalize), {
+          label: host.label,
+          multiline: host.multiline,
+          slotted: (name, key) => host.slotted(name, key),
+        })
       : undefined,
   }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     label: { converter: STRING_CONVERTER },
+    multiline: { type: Boolean },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     type: { converter: STRING_CONVERTER },
@@ -97,6 +103,7 @@ export class XhTextFieldElement extends XhElement {
   }
 
   declare label?: string
+  declare multiline?: boolean
   declare value?: string
   declare defaultValue?: string
   declare type?: TextFieldType

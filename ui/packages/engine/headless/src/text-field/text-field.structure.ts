@@ -33,12 +33,14 @@ type TextFieldNode = StructureNode<(typeof TEXT_FIELD_STRUCTURE_PARTS)[number]>
 export interface TextFieldStructureOptions {
   /** 标题文字：给了就铺带这段文字的 label；label 插槽有内容时铺内容归作者的 label。 */
   label?: string
+  /** 多行：输入框铺 textarea，缺省铺单行 input。 */
+  multiline?: boolean
   /** 作者给了哪些插槽的内容：只有 label。 */
   slotted?: StructureSlotted
 }
 
 /**
- * 文本框在 root 里的标准结构，次序是标题、盒、字数。输入框是单行的 input；多行宿主要写 textarea，作者手写结构。
+ * 文本框在 root 里的标准结构，次序是标题、盒、字数。输入框缺省是单行的 input，开了 multiline 是 textarea。
  * 开了 clearable 才在盒里铺清空按钮，开了 showCount 才铺字数（文字由组件按「已用 / 上限」填）。
  */
 export function textFieldStructure(model: Pick<TextFieldApi, 'clearable' | 'showCount'>, options: TextFieldStructureOptions = {}): TextFieldNode[] {
@@ -47,7 +49,7 @@ export function textFieldStructure(model: Pick<TextFieldApi, 'clearable' | 'show
     nodes.push({ key: 'label', tag: 'label', part: 'label', slot: { name: 'label' } })
   else if (options.label != null)
     nodes.push({ key: 'label', tag: 'label', part: 'label', text: options.label })
-  const control: TextFieldNode[] = [{ key: 'input', tag: 'input', part: 'input' }]
+  const control: TextFieldNode[] = [{ key: 'input', tag: options.multiline ? 'textarea' : 'input', part: 'input' }]
   if (model.clearable)
     control.push({ key: 'clear-trigger', tag: 'button', part: 'clear-trigger' })
   nodes.push({ key: 'control', tag: 'div', part: 'control', children: control })

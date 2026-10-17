@@ -13,6 +13,7 @@ interface TextFieldHost extends HTMLElement {
   clearable?: boolean
   showCount?: boolean
   maxLength?: number
+  multiline?: boolean
 }
 
 const stops: Array<() => void> = []
@@ -65,6 +66,17 @@ describe('xh-text-field 生成结构', () => {
 
     expect(partsOf(part(el, 'root')!)).toEqual(['control'])
     expect(partsOf(part(el, 'control')!)).toEqual(['input'])
+  })
+
+  it('multiline：输入框生成 textarea，不带 type，标题的 for 照样指向它；关掉换回单行 input', async () => {
+    const el = mount({ label: '备注', multiline: true })
+    await settle(el)
+    const input = part(el, 'input')!
+    expect([input.localName, input.hasAttribute('type')]).toEqual(['textarea', false])
+    expect(part(el, 'label')!.getAttribute('for')).toBe(input.id)
+    el.multiline = false
+    await settle(el)
+    expect([part(el, 'input')!.localName, part(el, 'input')!.getAttribute('type')]).toEqual(['input', 'text'])
   })
 
   it('slot="label" 接管标题', async () => {

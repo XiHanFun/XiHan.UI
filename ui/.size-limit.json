@@ -214,7 +214,7 @@
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "776 kB",
+    "limit": "777 kB",
     "ignore": [
       "vue"
     ]

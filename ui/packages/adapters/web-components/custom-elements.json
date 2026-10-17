@@ -69165,7 +69165,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-text-field>`：Light-DOM 行为宿主：作者写 root / label / input / clear-trigger 四类角色节点，\n元素运行 text-field 状态机并把 connect 产出接上。\n\nlabel 的 `for` 恒指向 input 的 id，因此 label 角色节点必须是原生 `<label>`、\ninput 角色节点必须是原生 `<input>`：任一边换为 `<div>`，点击标题不聚焦、读屏也无法朗读名字。\n\n键盘只额外接管一个 Escape（clearable 且有值时清空），其余光标与选区行为全部归浏览器。\n清空按钮对读屏隐藏、不占 Tab 位：它只是指针用户的快捷方式，键盘路径使用 Escape。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）、盒里的单行输入框与清空按钮（开了 clearable）、\n字数（开了 show-count）；标题可以由宿主直接子节点 `slot=\"label\"` 接管。多行宿主要写 textarea，照旧手写部件。",
+          "description": "`<xh-text-field>`：Light-DOM 行为宿主：作者写 root / label / input / clear-trigger 四类角色节点，\n元素运行 text-field 状态机并把 connect 产出接上。\n\nlabel 的 `for` 恒指向 input 的 id，因此 label 角色节点必须是原生 `<label>`、\ninput 角色节点必须是原生 `<input>`：任一边换为 `<div>`，点击标题不聚焦、读屏也无法朗读名字。\n\n键盘只额外接管一个 Escape（clearable 且有值时清空），其余光标与选区行为全部归浏览器。\n清空按钮对读屏隐藏、不占 Tab 位：它只是指针用户的快捷方式，键盘路径使用 Escape。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）、盒里的输入框（开了 multiline 是 textarea，否则是单行 input）\n与清空按钮（开了 clearable）、字数（开了 show-count）；标题可以由宿主直接子节点 `slot=\"label\"` 接管。",
           "name": "XhTextFieldElement",
           "cssParts": [
             {
@@ -69227,7 +69227,7 @@
                 "text": "ElementStructure<XhTextFieldElement>"
               },
               "static": true,
-              "default": "{ build: host => host.ctrl.service ? textFieldStructure(connectTextField(host.ctrl.service, wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key) }) : undefined, }"
+              "default": "{ build: host => host.ctrl.service ? textFieldStructure(connectTextField(host.ctrl.service, wcNormalize), { label: host.label, multiline: host.multiline, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
             },
             {
               "kind": "field",
@@ -69237,6 +69237,15 @@
                 "text": "string | undefined"
               },
               "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "multiline",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "multiline"
             },
             {
               "kind": "field",
@@ -69567,6 +69576,14 @@
               "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
               "name": "label",
               "fieldName": "label"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "生成结构时输入框铺 textarea（多行，接入 auto-size 自动高度）；手写部件时看作者写的是 input 还是 textarea",
+              "name": "multiline",
+              "fieldName": "multiline"
             },
             {
               "type": {
