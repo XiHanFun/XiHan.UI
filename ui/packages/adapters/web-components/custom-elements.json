@@ -28035,7 +28035,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-file-upload>`：Light-DOM 行为宿主：作者写 root / label / dropzone / trigger / hidden-input\n与列表若干角色节点，元素运行 file-upload 状态机并把 connect 产出接上。\n\n投放区接收 dragover / dragleave / drop，悬停期间带 data-dragging；点击投放区、点击 trigger、\n或在投放区上按 Enter / Space 都打开系统文件选择框（经隐藏输入的 click）。\n接收的文件先经过校验（类型 / 大小 / 数量），接受的进入列表并派发 file-accept，\n被拒绝的连同原因派发 file-reject。\n\n条目节点由作者按 `acceptedFiles` 渲染（监听 files-change 重渲染），元素不生成节点。\n条目按文档序对应列表中的文件，也可以自带 `index` 属性显式声明。\nitem-name 与 item-size-text 的文字由元素填入（作者自行写了内容则不修改）。",
+          "description": "`<xh-file-upload>`：Light-DOM 行为宿主：作者写 root / label / dropzone / trigger / hidden-input\n与列表若干角色节点，元素运行 file-upload 状态机并把 connect 产出接上。\n\n投放区接收 dragover / dragleave / drop，悬停期间带 data-dragging；点击投放区、点击 trigger、\n或在投放区上按 Enter / Space 都打开系统文件选择框（经隐藏输入的 click）。\n接收的文件先经过校验（类型 / 大小 / 数量），接受的进入列表并派发 file-accept，\n被拒绝的连同原因派发 file-reject。\n\n条目节点由作者按 `allFiles` 渲染（远程附件在前、本地文件在后；监听 files-change 与 remote-files-change 重渲染），\n元素不生成节点。条目按文档序对应 allFiles 中的文件，也可以自带 `index` 属性显式声明。\nitem-name 与 item-size-text 的文字由元素填入（作者自行写了内容则不修改）。",
           "name": "XhFileUploadElement",
           "cssParts": [
             {
@@ -28419,7 +28419,16 @@
               "type": {
                 "text": "File[]"
               },
-              "description": "当前已接收的文件；作者据此渲染条目节点。",
+              "description": "当前已接收的本地文件。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "allFiles",
+              "type": {
+                "text": "FileUploadFile[]"
+              },
+              "description": "远程附件在前、本地文件在后的整份列表；作者据此渲染条目节点，条目按这份的下标对应。",
               "readonly": true
             },
             {
@@ -28480,11 +28489,11 @@
                 {
                   "name": "file",
                   "type": {
-                    "text": "File"
+                    "text": "FileUploadFile"
                   }
                 }
               ],
-              "description": "按引用移除某一个文件。"
+              "description": "按引用移除某一个文件：本地文件或远程附件。"
             },
             {
               "kind": "method",

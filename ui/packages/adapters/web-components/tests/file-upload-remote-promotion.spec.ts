@@ -11,7 +11,7 @@ afterEach(() => {
 })
 
 describe('file-upload 上传返回 id 转入远程附件', () => {
-  it('非受控：传完即转入，upload-complete 带上 id，本地那一行撤下', async () => {
+  it('非受控：传完即转入，upload-complete 带上 id，那一行仍在、改报远程附件、名字照旧', async () => {
     document.body.innerHTML = `
       <xh-file-upload max-files="5">
         <div data-xh-part="root">
@@ -35,6 +35,10 @@ describe('file-upload 上传返回 id 转入远程附件', () => {
     await vi.waitFor(() => expect(el.acceptedFiles).toEqual([]))
     expect(log).toEqual(['files:a.txt', 'complete:r1', 'remote:r1', 'files:'])
     expect(remote).toEqual([{ id: 'r1', name: 'a.txt', size: 3, type: 'text/plain', url: '/files/r1' }])
-    await vi.waitFor(() => expect(el.querySelector<HTMLElement>('[data-xh-part="item"]')!.style.display).toBe('none'))
+    const item = el.querySelector<HTMLElement>('[data-xh-part="item"]')!
+    await vi.waitFor(() => expect(item.hasAttribute('data-remote')).toBe(true))
+    expect(item.style.display).not.toBe('none')
+    expect(item.querySelector('[data-xh-part="item-name"]')!.textContent).toBe('a.txt')
+    expect(el.allFiles).toEqual(remote)
   })
 })
