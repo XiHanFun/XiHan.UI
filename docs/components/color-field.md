@@ -64,6 +64,7 @@
 - 空串是合法的“无颜色”：`clearable` 开启清空按钮与 Escape 清空，空值时色块只绘制棋盘格。
 - 表单出口经 `hidden-input`：提交的是已确认的值，框内未提交的草稿不会随表单提交；提供 `name` 后才参与提交。
 - 视觉盒使用 Field Chrome，色块使用 Swatch 家族，清空按钮使用 Action Control 的 field-inset 档，与文本字段外观一致。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，盒里依次是色块、输入框与清空按钮（开了 `clearable` 才铺），给了 `name` 再带表单影子。Web Components 里标题可以写在宿主的直接子节点 `slot="label"` 上接管。
 
 ### 组合
 
@@ -133,6 +134,7 @@
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhColorFieldRoot` | `default` | `ColorFieldRootSlotProps` |  |
+| `XhColorFieldRoot` | `label` | — |  |
 
 ### React 适配器 props
 
@@ -140,6 +142,7 @@
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhColorFieldRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
 | `XhColorFieldRoot` | `children` | `SlotChildren<ColorFieldRootSlotProps>` |  |  |
 
 ### 状态

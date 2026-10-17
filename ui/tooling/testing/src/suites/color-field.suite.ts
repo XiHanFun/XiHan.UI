@@ -1,4 +1,4 @@
-import type { ConformanceSuite, RawStepContext } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { colorFieldAnatomy, colorFieldKeyboard } from '@xihan-ui/headless'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
@@ -397,6 +397,30 @@ export const colorFieldSuite: ConformanceSuite = {
         heldPressIgnored('color-field', 'clear-trigger', '只读时清空钮藏着，不接受按压'),
         { kind: 'setProps', props: { readOnly: false, value: '' } },
         heldPressIgnored('color-field', 'clear-trigger', '没有值可清时清空钮藏着，不接受按压'),
+      ],
+    },
+    {
+      name: '作者不写结构：三端都照 colorFieldStructure 铺出标题、盒里的色块、输入框与清空钮、表单影子',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '主题色', clearable: true, defaultValue: '#3b82f6', name: 'accent' },
+      initial: {
+        order: ['root', 'label', 'control', 'swatch', 'input', 'clear-trigger', 'hidden-input'],
+        parts: {
+          'label': { for: '@part(input)' },
+          'clear-trigger': { hidden: null },
+          'hidden-input': { name: 'accent' },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'clear-trigger',
+          expect: {
+            parts: { 'root': { 'data-empty': '' }, 'clear-trigger': { hidden: '' } },
+            events: [{ type: 'value-change', detail: { value: '' } }, { type: 'clear', detail: null }],
+          },
+        },
       ],
     },
   ],

@@ -12076,7 +12076,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-color-field>`：Light-DOM 行为宿主，运行 color-field 状态机并把 connect 产出接到\nroot / label / control / swatch / input / clear-trigger / hidden-input 等角色节点。\n\n一个可手动输入颜色串的字段：框中的文字是草稿，回车或失焦时接受，可解析时按 format 重写为值，\n不可解析时留在框中并标为无效；旁边的色块经色块面家族绘制当前颜色。",
+          "description": "`<xh-color-field>`：Light-DOM 行为宿主，运行 color-field 状态机并把 connect 产出接到\nroot / label / control / swatch / input / clear-trigger / hidden-input 等角色节点。\n\n一个可手动输入颜色串的字段：框中的文字是草稿，回车或失焦时接受，可解析时按 format 重写为值，\n不可解析时留在框中并标为无效；旁边的色块经色块面家族绘制当前颜色。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）、盒里的色块与输入框、清空按钮（开了 clearable 才有）、\n表单影子（给了 name 才有）；标题可以由宿主直接子节点 `slot=\"label\"` 接管。",
           "name": "XhColorFieldElement",
           "cssParts": [
             {
@@ -12126,6 +12126,24 @@
               "type": {
                 "text": "{ parts: ['input'], kind: 'state' }"
               }
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhColorFieldElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? colorFieldStructure(connectColorField(host.ctrl.service, wcNormalize), { label: host.label, hiddenInput: host.name !== undefined, slotted: (name, key) => host.slotted(name, key) }) : undefined, }"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
             },
             {
               "kind": "field",
@@ -12399,6 +12417,14 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
             {
               "type": {
                 "text": "string | undefined"
