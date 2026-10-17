@@ -44,6 +44,7 @@ export function connectAlert<T extends PropTypes>(
   const closable = prop('closable') ?? true
   const banner = !!prop('banner')
   const ids = scope.ids('alert', 'title', 'description')
+  const rendered = prop('parts')
   const stateAttr = open ? 'open' : 'closed'
   // 收起后先播完退场（淡出、再收起占位）才藏起：这几帧里根还留着，但已不接交互
   const exiting = !open && context.get('rendered')
@@ -68,8 +69,9 @@ export function connectAlert<T extends PropTypes>(
       'aria-live': live,
       // 整条一起念，否则用户会听到半截话
       'aria-atomic': 'true',
-      'aria-labelledby': ids.title,
-      'aria-describedby': ids.description,
+      // 只引用作者渲染了的标题与说明：省略 parts 按都在场
+      'aria-labelledby': rendered?.title !== false ? ids.title : undefined,
+      'aria-describedby': rendered?.description !== false ? ids.description : undefined,
       // 机器按 id 找到它：收起前量高度，并等它的退场动画播完再藏起
       'id': scope.partId('alert', 'root'),
       // 语气轴只挂在 root 上，子部件靠继承拿到语气槽

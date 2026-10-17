@@ -10,6 +10,7 @@ import type { AlertSchema, AlertTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
+import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { AlertProvider, useAlertContext } from './context'
 import { useAlert } from './use-alert'
 
@@ -75,13 +76,16 @@ export function XhAlertContent({ children, ...rest }: XhAlertContentProps): Reac
 export interface XhAlertTitleProps extends ComponentPropsWithRef<'div'> {}
 export function XhAlertTitle({ children, ...rest }: XhAlertTitleProps): ReactNode {
   const ctx = useAlertContext()
+  useTitleDescriptionPart(ctx.presence, 'title')
   return <div {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
 }
 
 export interface XhAlertDescriptionProps extends ComponentPropsWithRef<'div'> {}
 export function XhAlertDescription({ children, ...rest }: XhAlertDescriptionProps): ReactNode {
   const ctx = useAlertContext()
-  return <div {...mergeReactProps(ctx.api.getDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  // 读不出一句话的说明不进描述链
+  const el = useDescriptionPart(ctx.presence)
+  return <div {...mergeReactProps({ ...ctx.api.getDescriptionProps() as Record<string, unknown>, ref: el }, rest as Record<string, unknown>)}>{children}</div>
 }
 
 export interface XhAlertActionProps extends ComponentPropsWithRef<'div'> {}

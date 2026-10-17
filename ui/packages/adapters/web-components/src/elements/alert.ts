@@ -8,7 +8,9 @@
 import type { Tone } from '@xihan-ui/core'
 import type { AlertOpenChangeDetails, AlertSchema } from '@xihan-ui/headless'
 import { alertAnatomy, alertMachine, alertMeta, connectAlert } from '@xihan-ui/headless'
+import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
+import { renderedTitleDescription } from '../dom/title-description'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
@@ -74,11 +76,22 @@ export class XhAlertElement extends XhElement {
       open: this.open,
       defaultOpen: this.defaultOpen,
       translations: this.translations,
+      // 只引用作者写了的标题与说明
+      parts: renderedTitleDescription(this.getPart('title'), this.getPart('description')),
       onOpenChange: this.notify,
     }
   }
 
+  /** 说明部件的内容从无到有、从有到无时重新接线：读不出一句话的说明不进描述链。 */
+  private readonly descriptionWatch = createNamingContentWatch(() => this.requestUpdate())
+
+  override disconnectedCallback(): void {
+    this.descriptionWatch.disconnect()
+    super.disconnectedCallback()
+  }
+
   protected wire(): void {
+    this.descriptionWatch.watch(this.getPart('description'))
     const api = connectAlert(this.ctrl.service, wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {

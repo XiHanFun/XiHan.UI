@@ -11,6 +11,7 @@ import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { provideAlert, useAlertContext } from './context'
 import { useAlert } from './use-alert'
 
@@ -63,6 +64,7 @@ export const XhAlertTitle = defineComponent({
   name: 'XhAlertTitle',
   setup(_, { slots }) {
     const ctx = useAlertContext()
+    useTitleDescriptionPart(ctx.presence, 'title')
     return () => h('div', ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -71,7 +73,9 @@ export const XhAlertDescription = defineComponent({
   name: 'XhAlertDescription',
   setup(_, { slots }) {
     const ctx = useAlertContext()
-    return () => h('div', ctx.api.value.getDescriptionProps() as Record<string, unknown>, slots.default?.())
+    // 读不出一句话的说明不进描述链
+    const el = useDescriptionPart(ctx.presence)
+    return () => h('div', { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el }, slots.default?.())
   },
 })
 
