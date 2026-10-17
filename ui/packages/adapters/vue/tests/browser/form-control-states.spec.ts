@@ -20,6 +20,7 @@ import {
   XhFieldLabel,
   XhFieldRoot,
   XhFileUploadDropzone,
+  XhFileUploadHiddenInput,
   XhFileUploadRoot,
   XhRatingControl,
   XhRatingItem,
@@ -75,9 +76,10 @@ const CASES: Case[] = [
   },
   {
     name: 'file-upload',
-    axes: { readOnly: 'aria-disabled' },
-    render: props => h(XhFileUploadRoot, { ...props }, () => [h(XhFileUploadDropzone, null, () => '把文件拖到这里')]),
+    axes: { readOnly: 'aria-disabled', invalid: 'aria-invalid' },
+    render: props => h(XhFileUploadRoot, { ...props }, () => [h(XhFileUploadDropzone, null, () => ['把文件拖到这里', h(XhFileUploadHiddenInput)])]),
     host: root => root.querySelector<HTMLElement>('[data-scope="file-upload"][data-part="dropzone"]')!,
+    wired: true,
   },
   {
     name: 'cascader',
@@ -210,4 +212,15 @@ describe('字段控件的 readOnly / invalid / required（Vue）', () => {
       expect(violations.filter(v => ARIA_RULES.includes(v.id)).map(v => v.id)).toEqual([])
     })
   }
+})
+
+describe('file-upload 放进字段', () => {
+  it('投放区与隐藏输入都接上字段的标签，axe 不报未标注与属性问题', async () => {
+    const root = await mountInField(CASES.find(c => c.name === 'file-upload')!, {}, {})
+    const { violations } = await runAxe(root)
+    expect(violations.filter(v => ['label', ...ARIA_RULES].includes(v.id)).map(v => v.id)).toEqual([])
+    const label = root.querySelector<HTMLElement>('[data-scope="field"][data-part="label"]')!.id
+    const input = root.querySelector<HTMLElement>('[data-scope="file-upload"][data-part="hidden-input"]')!
+    expect(input.getAttribute('aria-labelledby')?.split(/\s+/)).toContain(label)
+  })
 })

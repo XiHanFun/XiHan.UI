@@ -14,6 +14,7 @@ import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { FileUploadItemProvider, FileUploadProvider, useFileUploadContext, useFileUploadItemContext } from './context'
 import { useFileUpload } from './use-file-upload'
@@ -209,9 +210,12 @@ export function XhFileUploadLabel({ children, ...rest }: XhFileUploadLabelProps)
 export interface XhFileUploadDropzoneProps extends ComponentPropsWithRef<'div'> {}
 
 export function XhFileUploadDropzone({ children, ...rest }: XhFileUploadDropzoneProps): ReactNode {
+  // 放进字段时字段的标签并进名字链、说明与错误文案进描述链；投放区是按钮，只取描述链，aria-invalid 由组件自己投影
+  const fieldWiring = useFieldGroupWiring()
+  const fieldLabel = useFieldLabelWiring()
   const ctx = useFileUploadContext()
   return (
-    <div {...mergeReactProps(ctx.api.getDropzoneProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(fieldLabel({ ...fieldWiring, ...ctx.api.getDropzoneProps() as Record<string, unknown> }), rest as Record<string, unknown>)}>
       {children}
     </div>
   )
@@ -232,8 +236,10 @@ export interface XhFileUploadHiddenInputProps extends Omit<ComponentPropsWithRef
 
 /** 选择框入口：状态机打开它依靠该原生输入，对键盘与读屏不可见。 */
 export function XhFileUploadHiddenInput({ ...rest }: XhFileUploadHiddenInputProps): ReactNode {
+  // 隐藏输入也并进字段的标签：原生表单控件没有名字会被判为未标注
+  const fieldLabel = useFieldLabelWiring()
   const ctx = useFileUploadContext()
-  return <input {...mergeReactProps(ctx.api.getHiddenInputProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return <input {...mergeReactProps(fieldLabel(ctx.api.getHiddenInputProps() as Record<string, unknown>), rest as Record<string, unknown>)} />
 }
 
 export interface XhFileUploadListProps extends ComponentPropsWithRef<'div'> {}

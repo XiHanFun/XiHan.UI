@@ -97,6 +97,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  */
 export class XhFileUploadElement extends XhElement {
   static override partContract = { anatomy: fileUploadAnatomy, meta: fileUploadMeta }
+  // 放进字段时标签与描述链落在投放区上（按钮只取描述链），隐藏输入也并进字段的标签
+  static override fieldTarget = { parts: ['dropzone', 'hidden-input'], kind: 'group' } as const
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {

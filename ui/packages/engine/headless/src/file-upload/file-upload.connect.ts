@@ -177,6 +177,8 @@ export function connectFileUpload<T extends PropTypes>(
       'aria-labelledby': prop('labelled') ? `${ids.label} ${ids.dropzone}` : ids.dropzone,
       // div 上原生 disabled 不生效，显式写 aria-disabled 并退出 Tab 序列；只读也报按不动，但留在 Tab 序列里
       'aria-disabled': editable ? 'false' : 'true',
+      // aria-invalid 是全局属性，role=button 也收；按钮不收 aria-required，必填只落 data-required
+      'aria-invalid': invalid ? 'true' : 'false',
       'tabindex': disabled ? -1 : 0,
       'data-dragging': dataAttr(dragging),
       'data-disabled': dataAttr(disabled),
@@ -245,26 +247,28 @@ export function connectFileUpload<T extends PropTypes>(
     getHiddenInputProps: () => normalize.input({
       ...parts['hidden-input'].attrs,
       // id 是机器打开选择框时找回本节点的依据
-      id: hiddenInputId,
-      type: 'file',
+      'id': hiddenInputId,
+      'type': 'file',
       // name 缺省即不产出该属性，此时不参与表单提交
-      name: prop('name'),
-      accept: acceptAttr(prop('accept')),
+      'name': prop('name'),
+      'accept': acceptAttr(prop('accept')),
       // 是否多选由数量上限决定
-      multiple: maxFiles > 1 || undefined,
-      webkitdirectory: prop('directory') || undefined,
-      capture: prop('capture'),
-      disabled: disabled || undefined,
+      'multiple': maxFiles > 1 || undefined,
+      'webkitdirectory': prop('directory') || undefined,
+      'capture': prop('capture'),
+      'disabled': disabled || undefined,
       // 只在列表为空时带：选完文件输入就被清空，恒带会把已经选了文件的表单也拦下
-      required: (required && empty) || undefined,
+      'required': (required && empty) || undefined,
       // 隐藏输入不占 Tab 位，键盘入口是投放区与 trigger
-      tabindex: -1,
-      style: VISUALLY_HIDDEN_STYLE,
-      onClick: (event: MouseEvent) => {
+      'tabindex': -1,
+      // 名字与投放区同源：它是原生表单控件，没有名字会被判为未标注
+      'aria-labelledby': prop('labelled') ? `${ids.label} ${ids.dropzone}` : ids.dropzone,
+      'style': VISUALLY_HIDDEN_STYLE,
+      'onClick': (event: MouseEvent) => {
         // 打开选择框调的就是本节点 click()，冒到投放区会被当成再次打开
         event.stopPropagation()
       },
-      onChange: (event: Event) => {
+      'onChange': (event: Event) => {
         const el = event.currentTarget as HTMLInputElement
         send({ type: 'FILES.ADD', files: Array.from(el.files ?? []) })
         // 拨回空串：不清掉的话再选同一个文件，浏览器认为"值没变"，change 不会再来一次。

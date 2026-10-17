@@ -28103,6 +28103,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['dropzone', 'hidden-input'], kind: 'group' }",
+              "type": {
+                "text": "{ parts: ['dropzone', 'hidden-input'], kind: 'group' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "files",
               "privacy": "public",
               "type": {

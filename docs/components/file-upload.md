@@ -299,9 +299,11 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `dropzone` | `aria-disabled` | 'false' \| 'true' |
+| `dropzone` | `aria-invalid` | 'true' \| 'false' |
 | `dropzone` | `aria-labelledby` | `label` 部件的 id `dropzone` 部件的 id \| `dropzone` 部件的 id |
 | `dropzone` | `role` | 'button' |
 | `trigger` | `aria-disabled` | 'true' \| undefined |
+| `hidden-input` | `aria-labelledby` | `label` 部件的 id `dropzone` 部件的 id \| `dropzone` 部件的 id |
 | `list` | `role` | 'list' |
 | `item` | `role` | 'listitem' |
 | `item-preview` | `aria-hidden` | 'true' |
