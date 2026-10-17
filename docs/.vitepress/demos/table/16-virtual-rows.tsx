@@ -37,11 +37,11 @@ const rowStyle: CSSProperties = { blockSize: 36, borderBlockEnd: "var(--xh-strok
 
 export default function Demo(): ReactNode {
   return (
-    // 表体里的视口负责滚动：表格自己不再定高、不再滚；视口不占 Tab 位，键盘归表体
+    // 表格根节点自己滚：虚拟滚动取最近的可滚动祖先（ancestor），吸顶表头、横向溢出与行在同一个滚动面里；视口不定高、不滚动，也不占 Tab 位
     <XhVirtualizerRoot
       count={people.length}
       estimateSize={36}
-      viewportTabIndex={-1}
+      scrollContainer="ancestor"
       style={{ inlineSize: "100%", maxInlineSize: 520 }}
     >
       {({ virtualItems, collectionVirtualizer }) => (
@@ -49,7 +49,7 @@ export default function Demo(): ReactNode {
           columns={columns}
           rows={rows}
           virtualizer={collectionVirtualizer}
-          style={{ maxBlockSize: "none", overflow: "visible" }}
+          stickyHeader
         >
           <XhTableHeader>
             <XhTableRow>
@@ -61,7 +61,7 @@ export default function Demo(): ReactNode {
             </XhTableRow>
           </XhTableHeader>
           <XhTableBody>
-            <XhVirtualizerViewport style={{ blockSize: 320 }}>
+            <XhVirtualizerViewport>
               <XhVirtualizerContent>
                 {virtualItems.map((item) => {
                   const p = people[item.index]!;

@@ -37,19 +37,19 @@ const rowStyle = "block-size: 36px; border-block-end: var(--xh-stroke-thin) soli
 </script>
 
 <template>
-  <!-- 表体里的视口负责滚动：表格自己不再定高、不再滚；视口不占 Tab 位，键盘归表体 -->
+  <!-- 表格根节点自己滚：虚拟滚动取最近的可滚动祖先（ancestor），吸顶表头、横向溢出与行在同一个滚动面里；视口不定高、不滚动，也不占 Tab 位 -->
   <XhVirtualizerRoot
     v-slot="{ virtualItems, collectionVirtualizer }"
     :count="people.length"
     :estimate-size="36"
-    :viewport-tab-index="-1"
+    scroll-container="ancestor"
     style="inline-size: 100%; max-inline-size: 520px"
   >
     <XhTableRoot
       :columns="columns"
       :rows="rows"
       :virtualizer="collectionVirtualizer"
-      style="max-block-size: none; overflow: visible"
+      sticky-header
     >
       <XhTableHeader>
         <XhTableRow>
@@ -59,7 +59,7 @@ const rowStyle = "block-size: 36px; border-block-end: var(--xh-stroke-thin) soli
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
-        <XhVirtualizerViewport style="block-size: 320px">
+        <XhVirtualizerViewport>
           <XhVirtualizerContent>
             <XhVirtualizerItem v-for="item in virtualItems" :key="item.key" :value="item.index">
               <XhTableRow :value="people[item.index]!.id" :style="rowStyle">

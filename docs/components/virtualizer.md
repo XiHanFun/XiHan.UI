@@ -89,7 +89,7 @@ stickyIndices 登记标题的下标：滚过它之后它钉在起点，下一组
 - 支持动态高度（测量而非估算）、横向列表与多列。
 - `overscan` 决定窗口外多渲染的条数，滚动时不露白。
 - 可以滚到指定条目。
-- 滚动容器由 `scrollContainer` 决定：缺省 `viewport` 是视口自己滚；`window` 是列表铺在页面里、随整页滚动，视口不再是滚动框也不占 Tab 位，列表在页面里的起点由内核现量（每次滚动都重量，页头折叠、上方内容加载完都跟得上），不必再算 `scrollMargin`。
+- 滚动容器由 `scrollContainer` 决定：缺省 `viewport` 是视口自己滚；`window` 是列表铺在页面里、随整页滚动，视口不再是滚动框也不占 Tab 位，列表在页面里的起点由内核现量（每次滚动都重量，页头折叠、上方内容加载完都跟得上），不必再算 `scrollMargin`。`ancestor` 滚视口最近的、在主轴上可滚动的祖先（computed overflow 为 auto / scroll / overlay），找不到时随整页滚；视口同样不滚动、不占 Tab 位，列表在祖先里的起点每次滚动现量，适合组合进自己会滚的容器（表格根节点）。
 - 条目增删时视口不跳：缺省（`anchor` 为 `start`）把视口里第一条按身份放回原处，往前插入条目（向上翻出历史）时它仍停在原来的位置。身份来自 `getItemKey`，没给时身份就是下标，往前插入只保住下标、内容会整体后移。
 - `anchor` 为 `end` 时从最新一条看起：滚到底后内容再长（追加条目、条目长高）也继续贴底；用户往上翻离开底部就不再拽回，翻回底部重新贴底。列表不足一屏时条目贴着底部排。适合聊天与日志。
 - `stickyIndices` 登记要钉在视口起点的条目（分组标题）：滚过它之后它一直钉着，直到下一个登记过的条目接替；它的条目外壳带 `data-fixed`，按 `position: sticky` 留在文档流里，自带实底 `--xh-virtualizer-sticky-bg`。钉住的标题读屏照常读到，不另建一份。
@@ -141,8 +141,8 @@ stickyIndices 登记标题的下标：滚过它之后它钉在起点，下一组
 | `paddingStart` | `number` |  | 列表前后的内边距（px），默认 0。计入总长，第一条从 paddingStart 处起算。 |
 | `paddingEnd` | `number` |  |  |
 | `lanes` | `number` |  | 多列网格的列数，默认 1（单列）。条目按下标轮流落到各列上。 |
-| `viewportTabIndex` | `number` |  | viewport 的 Tab 位；独立列表默认 0，组合进有自身焦点模型的集合时设为 -1。window 形态下视口不滚动，不占 Tab 位。 |
-| `scrollContainer` | `VirtualizerScrollContainer` |  | 滚动容器：viewport（缺省）是视口节点自己滚；window 是列表铺在页面里、随整页滚动， 列表在页面里的起点由内核现量，不必再给 scrollMargin。 |
+| `viewportTabIndex` | `number` |  | viewport 的 Tab 位；独立列表默认 0，组合进有自身焦点模型的集合时设为 -1。window 与 ancestor 形态下视口不滚动，不占 Tab 位。 |
+| `scrollContainer` | `VirtualizerScrollContainer` |  | 滚动容器：viewport（缺省）是视口节点自己滚；window 是列表铺在页面里、随整页滚动； ancestor 滚视口最近的、在主轴上可滚动的祖先（computed overflow 为 auto / scroll / overlay），找不到时随整页滚。 后两种形态下列表在滚动容器里的起点由内核现量，不必再给 scrollMargin。 |
 | `anchor` | `VirtualizerAnchor` |  | 条目增删时钉住哪一头。start（缺省）把视口里第一条按身份放回原处：往前插入条目（向上翻出历史）视口不跳， 需要 getItemKey 给出稳定身份。end 另外从底部看起、已经滚到底时内容再长也继续贴底（聊天流）， 列表不足一屏时条目贴着底部排。 |
 | `stickyIndices` | `number[]` |  | 钉在视口起点的条目下标（分组标题）：滚过它之后它一直钉着，直到下一个钉住的条目接替。 |
 
@@ -226,10 +226,11 @@ stickyIndices 登记标题的下标：滚过它之后它钉在起点，下一组
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `root` | `data-scroll-container` | undefined \| props.scrollContainer |
 | `root` | `data-scrolling` | ''（条件成立时才出现） |
 | `viewport` | `data-anchor` | 'end' \| undefined |
 | `viewport` | `data-orientation` | 'horizontal' \| 'vertical' |
-| `viewport` | `data-scroll-container` | 'window' \| undefined |
+| `viewport` | `data-scroll-container` | undefined \| props.scrollContainer |
 | `content` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `item` | `data-fixed` | ''（条件成立时才出现） |
 | `item` | `data-index` | props.index |

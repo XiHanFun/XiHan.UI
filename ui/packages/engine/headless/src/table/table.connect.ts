@@ -15,6 +15,7 @@ import {
   dataAttr,
   focusItem,
   isComposingEvent,
+  isDev,
   isItemDisabled,
   ITEM_VALUE_ATTR,
   itemQuerySelector,
@@ -173,6 +174,9 @@ function resizeStepFromKey(key: string, rtl: boolean): number | null {
   return null
 }
 
+/** 表体用自滚视口的提醒只发一次。 */
+let viewportScrollWarned = false
+
 export function connectTable<T extends PropTypes>(
   service: Service<TableSchema>,
   normalize: NormalizeProps<T>,
@@ -271,6 +275,11 @@ export function connectTable<T extends PropTypes>(
   // 接了 Virtualizer：方向键按完整行序走，DOM 里只有窗口那一段
   const virtualizer = prop('virtualizer')
   assertCollectionVirtualizer('Table', virtualizer, dataRows.length, true)
+  // 表体里的视口自己滚：表头与冻结列落在另一个滚动面上，列宽一溢出就和行错开；只在开发模式提醒一次
+  if (isDev() && !viewportScrollWarned && virtualizer?.scrollContainer === 'viewport') {
+    viewportScrollWarned = true
+    console.warn('[xh:table] 表体的虚拟滚动由视口自己滚，横向溢出、冻结列与吸顶表头会和行错开。给 Virtualizer 写 scrollContainer="ancestor"，让表格根节点自己滚')
+  }
 
   const rowReorderable = !!prop('rowReorderable')
   const draggingRow = context.get('draggingRow')
