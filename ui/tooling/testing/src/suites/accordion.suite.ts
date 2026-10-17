@@ -91,6 +91,17 @@ export const accordionSuite: ConformanceSuite = {
       },
     },
     {
+      name: 'contentRole=group：正文改作以标题命名的组，不当地标',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { contentRole: 'group', defaultValue: ['one'] },
+      initial: {
+        parts: {
+          'content[0]': { 'role': 'group', 'aria-labelledby': '@part(trigger[0])' },
+          'content[1]': { 'role': 'group', 'aria-labelledby': '@part(trigger[1])' },
+        },
+      },
+    },
+    {
       name: '每个 trigger 都不输出 tabindex 属性：无 roving，整组条目都是独立 Tab 停靠点',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['accordion.kbd.tab'],

@@ -199,6 +199,15 @@
             },
             {
               "kind": "field",
+              "name": "contentRole",
+              "privacy": "public",
+              "type": {
+                "text": "AccordionSchema['props']['contentRole'] | undefined"
+              },
+              "attribute": "content-role"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -347,6 +356,14 @@
               "description": "收起动画播完后卸载条目内容，再展开时从 `<template>` 重新克隆（没写模板时原样放回）",
               "name": "unmount-on-exit",
               "fieldName": "unmountOnExit"
+            },
+            {
+              "type": {
+                "text": "AccordionSchema['props']['contentRole'] | undefined"
+              },
+              "description": "条目正文的角色：region 是以标题命名的地标（默认），group 不进地标导航",
+              "name": "content-role",
+              "fieldName": "contentRole"
             }
           ],
           "superclass": {
