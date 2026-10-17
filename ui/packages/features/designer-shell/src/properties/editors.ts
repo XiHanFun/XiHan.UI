@@ -30,7 +30,7 @@ export interface FieldContext extends PropertyEditorContext<PropertyDescriptor<{
   readonly unitLabel: (unit: string) => string
   /** select 的 appearance 为 auto、单选且选项不超过它时改用切换按钮组；0 不用。 */
   readonly toggleLimit: number
-  /** dataField 选字段用的字段树；undefined 时 dataField 是输入路径的文本框。 */
+  /** 面板给的字段树：dataField 的描述没写 fields 时用它；两处都没有时 dataField 是输入路径的文本框。 */
   readonly dataFields: readonly DataField[] | undefined
   /** 报告编辑框自己发现的错误（如文字不是 JSON），undefined 表示没有。 */
   readonly setLocalError: (message: string | undefined) => void
@@ -526,11 +526,16 @@ function dataFieldItems(fields: readonly DataField[], control: Extract<PropertyC
   return build(roots)
 }
 
+/** 绑定字段的字段树：描述里写了 fields 就用它，没写时用面板给的；都没有时为 undefined。 */
+export function dataFieldsOf(control: { readonly kind: string, readonly fields?: readonly DataField[] }, panel: readonly DataField[] | undefined): readonly DataField[] | undefined {
+  return control.fields ?? panel
+}
+
 /** 绑定字段：有字段树时是可搜索的树选择，分支起初都展开；没有时是输入路径的文本框。 */
 function dataFieldEditor(initial: FieldContext): FieldInstance {
-  if (initial.dataFields === undefined)
-    return dataPathEditor(initial)
   const control = controlOf<'dataField'>(initial)
+  if (dataFieldsOf(control, initial.dataFields) === undefined)
+    return dataPathEditor(initial)
   const field: TreeSelectControl = createAuthoredElement(initial.ownerDocument, 'xh-tree-select', {
     'data-xh-part': 'control',
     'size': 'sm',
@@ -561,8 +566,9 @@ function dataFieldEditor(initial: FieldContext): FieldInstance {
   })
   const update = (next: FieldContext): void => {
     context = next
-    if (next.dataFields !== fields) {
-      fields = next.dataFields
+    const source = dataFieldsOf(control, next.dataFields)
+    if (source !== fields) {
+      fields = source
       branches = []
       field.collection = dataFieldItems(fields ?? [], control, branches)
       field.expandedValue = branches.filter(branch => !collapsed.has(branch))

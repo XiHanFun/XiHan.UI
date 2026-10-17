@@ -20,7 +20,7 @@ import { createAuthoredElement, createGeneratedElement, emitEvent, setText, XhCo
 import { placeChildren } from '../internal/dom'
 import { adoptSlots } from '../internal/slots'
 import { definePropertyFieldElements } from '../internal/ui-elements'
-import { builtinEditor, PROPERTIES_SCOPE } from './editors'
+import { builtinEditor, dataFieldsOf, PROPERTIES_SCOPE } from './editors'
 import { DEFAULT_PROPERTIES_TRANSLATIONS } from './field'
 import { createFieldRow, placeAsGroup, placeInField, refreshFieldRow } from './field-row'
 
@@ -133,7 +133,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
   declare optionLabel: ((descriptor: DesignerPropertyDescriptor, option: PropertyOption) => string) | undefined
   /** number 与 sides 后缀的单位文案，缺省原样显示。 */
   declare unitLabel: ((unit: string) => string) | undefined
-  /** dataField 选字段用的字段树；不给时 dataField 是输入字段路径的文本框。 */
+  /** dataField 选字段用的字段树：描述里没写 fields 的用它；两处都没有时 dataField 是输入字段路径的文本框。 */
   declare dataFields: readonly DataField[] | undefined
   /** 落在字段上的错误。 */
   declare errors: readonly DesignerPropertyError[] | undefined
@@ -362,7 +362,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
   #editorKey(kind: string, descriptor: DesignerPropertyDescriptor): { key: string, editor: DesignerPropertyEditor | undefined } {
     const editor = this.editors ? resolvePropertyEditor(this.editors, kind, descriptor) : undefined
     if (!editor)
-      return { key: `builtin:${JSON.stringify(descriptor.control)}:${this.#builtinVariant(descriptor.control.kind)}`, editor }
+      return { key: `builtin:${JSON.stringify(descriptor.control)}:${this.#builtinVariant(descriptor.control)}`, editor }
     let id = this.#editorIds.get(editor)
     if (id === undefined) {
       id = ++this.#editorCount
@@ -371,12 +371,12 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     return { key: `editor:${id}`, editor }
   }
 
-  /** 内建编辑器的元素随面板设置而变的那部分：select 看 toggle-limit，dataField 看有没有字段树。 */
-  #builtinVariant(kind: string): string {
-    if (kind === 'select')
+  /** 内建编辑器的元素随面板设置而变的那部分：select 看 toggle-limit，dataField 看描述或面板有没有字段树。 */
+  #builtinVariant(control: DesignerPropertyDescriptor['control']): string {
+    if (control.kind === 'select')
       return String(this.toggleLimit ?? 0)
-    if (kind === 'dataField')
-      return this.dataFields === undefined ? 'path' : 'tree'
+    if (control.kind === 'dataField')
+      return dataFieldsOf(control, this.dataFields) === undefined ? 'path' : 'tree'
     return ''
   }
 
