@@ -1099,6 +1099,7 @@ export const comboboxSuite: ConformanceSuite = {
           'item-text[2]',
           'item-indicator[2]',
           'empty',
+          'loading',
         ],
         parts: {
           input: { 'aria-labelledby': '@part(label)' },
