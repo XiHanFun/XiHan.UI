@@ -5075,6 +5075,27 @@
     --xh-control-w: 100%;
   }
 
+  /* 格里的内容顶对齐；行头与把手占一条控件高（加上同一档内衬）并在里面居中，与格里控件那一行同一条中线，
+     格里报错撑高这一行时也不错开 */
+  .xh-scope-field-array:is([data-part='item-cell'], [data-part='item-label'], [data-part='item-action'])[data-layout='table'] {
+    align-self: start;
+  }
+
+  .xh-scope-field-array:is([data-part='item-label'], [data-part='item-action'])[data-layout='table'] {
+    box-sizing: content-box;
+    min-block-size: var(--xh-field-array-cell-control-h, var(--xh-control-h-md));
+  }
+
+  /* 格里的字段不留辅助行占位：没报错时一行一格紧凑排，报错时错误文案再把这一行撑开 */
+  .xh-scope-field-array[data-part='item'][data-layout='table']
+    > .xh-scope-field-array[data-part='item-cell'][data-layout='table']
+    .xh-scope-field[data-part='root']
+    > .xh-scope-field[data-part='error-text'][hidden] {
+    position: absolute;
+    block-size: 0;
+    transition: none;
+  }
+
   @supports (grid-template-columns: subgrid) {
     .xh-scope-field-array[data-part='table'][data-layout='table'] {
       display: grid;

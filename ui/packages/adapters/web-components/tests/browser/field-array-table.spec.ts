@@ -118,3 +118,68 @@ describe('field-array 表格排布', () => {
     expectAligned()
   })
 })
+
+describe('格里放字段：控件、行号与把手同一条中线', () => {
+  function fieldRow(index: number): string {
+    const cells = COLUMNS.map(column => `
+      <div data-xh-part="item-cell" value="${column.id}">
+        <xh-field>
+          <div data-xh-part="root">
+            <xh-text-field aria-label="${column.label} ${index + 1}"><div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div></xh-text-field>
+            <p data-xh-part="error-text">必填</p>
+          </div>
+        </xh-field>
+      </div>`).join('')
+    return `<div data-xh-part="item"><span data-xh-part="item-label">${index + 1}</span>${cells}<div data-xh-part="item-action"><button data-xh-part="item-delete-trigger"></button></div></div>`
+  }
+
+  async function mountFields(): Promise<void> {
+    document.body.innerHTML = `
+      <div style="inline-size: 640px">
+        <xh-field-array layout="table">
+          <div data-xh-part="root">
+            <div data-xh-part="table">
+              <div data-xh-part="header">${COLUMNS.map(column => `<div data-xh-part="column-header" value="${column.id}"></div>`).join('')}</div>
+              ${fieldRow(0)}${fieldRow(1)}
+            </div>
+            <button data-xh-part="add-trigger">添加一行</button>
+          </div>
+        </xh-field-array>
+      </div>`
+    const el = document.querySelector<XhFieldArrayElement>('xh-field-array')!
+    el.columns = COLUMNS
+    el.defaultValue = [{}, {}]
+    await settle()
+  }
+
+  const middle = (el: Element): number => {
+    const box = el.getBoundingClientRect()
+    return box.top + box.height / 2
+  }
+
+  function expectCentered(item: HTMLElement): void {
+    const label = middle(item.querySelector('[data-part="item-label"]')!)
+    const action = middle(item.querySelector('[data-part="item-action"]')!)
+    for (const control of item.querySelectorAll('[data-scope="text-field"][data-part="control"]')) {
+      expect(Math.abs(middle(control) - label)).toBeLessThan(1)
+      expect(Math.abs(middle(control) - action)).toBeLessThan(1)
+    }
+  }
+
+  it('不报错时格里不留辅助行占位，三者中线一致；一格报错撑高这一行后照旧一致', async () => {
+    await mountFields()
+    const items = all('item')
+    for (const item of items) expectCentered(item)
+    // 一行就是控件高加上下内衬，辅助行没有占位
+    const control = items[0]!.querySelector('[data-scope="text-field"][data-part="control"]')!.getBoundingClientRect().height
+    const cell = items[0]!.querySelector<HTMLElement>('[data-part="item-cell"]')!
+    const padding = Number.parseFloat(getComputedStyle(cell).paddingTop) + Number.parseFloat(getComputedStyle(cell).paddingBottom)
+    expect(Math.abs(cell.getBoundingClientRect().height - (control + padding))).toBeLessThan(1)
+
+    items[1]!.querySelector('xh-field')!.setAttribute('invalid', '')
+    await settle()
+    expect(getComputedStyle(items[1]!.querySelector('[data-scope="field"][data-part="error-text"]')!).visibility).toBe('visible')
+    expect(items[1]!.getBoundingClientRect().height).toBeGreaterThan(items[0]!.getBoundingClientRect().height)
+    for (const item of items) expectCentered(item)
+  })
+})

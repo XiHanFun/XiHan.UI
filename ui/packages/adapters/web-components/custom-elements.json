@@ -27560,6 +27560,9 @@
               "name": "--xh-field-array-add-radius"
             },
             {
+              "name": "--xh-field-array-cell-control-h"
+            },
+            {
               "name": "--xh-field-array-cell-px"
             },
             {

@@ -1730,6 +1730,7 @@ export type ComponentTokenName
     | '--xh-field-array-add-height'
     | '--xh-field-array-add-px'
     | '--xh-field-array-add-radius'
+    | '--xh-field-array-cell-control-h'
     | '--xh-field-array-cell-px'
     | '--xh-field-array-cell-py'
     | '--xh-field-array-column-header-fg'
