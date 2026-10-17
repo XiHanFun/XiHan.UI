@@ -9,7 +9,7 @@
 // 收起的条目在菜单里叫什么、是不是开关、与上一条之间有没有分组边界。
 // 只在挂载后的效应与事件处理器里调用，渲染期不得读 DOM。
 
-import type { Orientation, Service } from '@xihan-ui/core'
+import type { Orientation, Service, Tone } from '@xihan-ui/core'
 import type { MenuSchema } from '../menu/menu.types'
 import type { ToolbarOverflowItem, ToolbarSchema } from './toolbar.types'
 import { fitOverflowCount, isItemDisabled, itemQuerySelector, itemValue, measureOverflowLayout, queryItems } from '@xihan-ui/core'
@@ -54,7 +54,7 @@ function segmentsOf(root: HTMLElement): Map<HTMLElement, string> {
   return segments
 }
 
-/** 收起的条目在菜单里的样子：文字、禁用、按下态与分组边界，一律从条目当下的 DOM 读。 */
+/** 收起的条目在菜单里的样子：文字、禁用、按下态、语气与分组边界，一律从条目当下的 DOM 读。 */
 function describe(root: HTMLElement, collapsed: readonly HTMLElement[]): ToolbarOverflowItem[] {
   const segments = segmentsOf(root)
   let previous: string | undefined
@@ -68,6 +68,7 @@ function describe(root: HTMLElement, collapsed: readonly HTMLElement[]): Toolbar
       disabled: isItemDisabled(el),
       pressed: pressed == null ? null : pressed === 'true',
       separatorBefore: index > 0 && segment !== previous,
+      tone: el.getAttribute('data-tone') as Tone | null,
     }
     previous = segment
     return item
@@ -115,6 +116,7 @@ export function sameOverflowItems(a: readonly ToolbarOverflowItem[], b: unknown)
       && item.disabled === other.disabled
       && item.pressed === other.pressed
       && item.separatorBefore === other.separatorBefore
+      && item.tone === other.tone
   })
 }
 
@@ -132,6 +134,7 @@ export function toolbarOverflowMenuProps(service: Service<ToolbarSchema>): MenuS
       disabled: item.disabled,
       checked: item.pressed,
       separatorBefore: item.separatorBefore,
+      tone: item.tone,
     })),
     orientation: prop('orientation') ?? 'horizontal',
     dir: prop('dir'),

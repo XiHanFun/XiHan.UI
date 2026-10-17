@@ -284,6 +284,16 @@ describe('toolbar 「更多」菜单的条目', () => {
     expect(menu.checkboxValue).toEqual(['bold'])
   })
 
+  it('条目上写的 data-tone 照搬到菜单项，没写的不带语气', () => {
+    const bar = mountToolbar([
+      { kind: 'item', value: 'a' },
+      { kind: 'item', value: 'delete', attrs: { 'data-tone': 'danger' } },
+      { kind: 'item', value: 'copy' },
+    ], {}, 80)
+    expect(bar.service.context.get('overflowItems').map(item => item.tone)).toEqual(['danger', null])
+    expect(toolbarOverflowMenuProps(bar.service).collection!.map(node => node.tone)).toEqual(['danger', undefined])
+  })
+
   it('分组与分隔线在菜单里画成分隔线：跨段的相邻两项之间才有', () => {
     const bar = mountToolbar([
       { kind: 'item', value: 'a' },

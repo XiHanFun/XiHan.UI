@@ -43,10 +43,10 @@ interface Mounted {
   menuItem: (label: string) => HTMLElement | null
 }
 
-async function mount(width: number): Promise<Mounted> {
+async function mount(width: number, tones: Readonly<Record<string, string>> = {}): Promise<Mounted> {
   const box = document.createElement('div')
   box.style.inlineSize = `${width}px`
-  const items = LABELS.map(label => `<button data-xh-part="item" type="button" value="${label}" style="inline-size: ${ITEM_WIDTH}px">${label}</button>`).join('')
+  const items = LABELS.map(label => `<button data-xh-part="item" type="button" value="${label}"${tones[label] ? ` data-tone="${tones[label]}"` : ''} style="inline-size: ${ITEM_WIDTH}px">${label}</button>`).join('')
   box.innerHTML = `<xh-toolbar><div data-xh-part="root" aria-label="编辑">${items}<button data-xh-part="overflow-trigger"></button></div></xh-toolbar>`
   document.body.append(box)
   const clicks: string[] = []
@@ -106,6 +106,17 @@ describe('wc toolbar 溢出收纳（真实排版）', () => {
     expect(bar.clicks).toEqual([target])
     await expect.poll(() => bar.trigger().getAttribute('aria-expanded')).toBe('false')
     await expect.poll(() => document.activeElement).toBe(bar.trigger())
+  })
+
+  it('条目上写的 data-tone 随条目收进菜单：菜单项带同一语气，字色与没写语气的菜单项不同', async () => {
+    const bar = await mount(240, { 粘贴: 'danger' })
+    await expect.poll(() => bar.trigger().hidden).toBe(false)
+    await userEvent.click(bar.trigger())
+    await expect.poll(() => bar.menuItem('粘贴')).not.toBeNull()
+    expect(bar.menuItem('粘贴')!.getAttribute('data-tone')).toBe('danger')
+    expect(bar.menuItem('复制')!.hasAttribute('data-tone')).toBe(false)
+    expect(getComputedStyle(bar.menuItem('粘贴')!).color).not.toBe(getComputedStyle(bar.menuItem('复制')!).color)
+    await userEvent.keyboard('{Escape}')
   })
 
   it('键盘：End 落到「更多」钮，下方向键展开并落到菜单首项，Escape 收起并把焦点还给钮', async () => {
