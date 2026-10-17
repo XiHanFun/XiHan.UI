@@ -27400,7 +27400,7 @@
               }
             },
             {
-              "description": "单个文件传输完成；detail 为 `{ file, url? }`",
+              "description": "单个文件传输完成；detail 为 `{ file, url?, id? }`，带 id 时这个文件随后转入 remoteFiles",
               "name": "upload-complete",
               "type": {
                 "text": "FileUploadCompleteDetails"

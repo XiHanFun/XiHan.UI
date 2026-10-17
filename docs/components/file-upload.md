@@ -110,6 +110,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 - 焦点在组件里时可以直接粘贴文件（`allowPaste`，默认开启），与选择、投放走同一道校验。
 - 上传生命周期（完成、失败、取消）各有回调；`maxConcurrentUploads` 限定同时在传的份数，其余排队。
 - `cancelUpload` 中止传输但保留文件，`startUpload` 让取消或失败的文件重新开传；删除文件同样中止它的传输。
+- `upload` 返回 `{ id }` 时，传完的文件转成服务器已有附件：从 `files` 移出、追加进 `remoteFiles`，表单值直接是附件记录。`remoteFiles` 受控时宿主写回含这个 id 的列表之后才移出。
 
 ### 组合
 
@@ -192,7 +193,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `files-change` | `FileUploadFilesChangeDetails` | 列表变化；detail 为 `{ files: File[] }` |
 | `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `remote-files-change` | `FileUploadRemoteFilesChangeDetails` | 远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }` |
-| `upload-complete` | `FileUploadCompleteDetails` | 单个文件传输完成；detail 为 `{ file, url? }` |
+| `upload-complete` | `FileUploadCompleteDetails` | 单个文件传输完成；detail 为 `{ file, url?, id? }`，带 id 时这个文件随后转入 remoteFiles |
 | `upload-error` | `FileUploadErrorDetails` | 单个文件传输失败；detail 为 `{ file, error }` |
 | `upload-cancel` | `FileUploadCancelDetails` | 单个文件的传输被 cancelUpload 取消（文件留在列表里）；detail 为 `{ file }` |
 | `file-accept` | `FileUploadFileAcceptDetails` | 本次接受了哪些文件；detail 为 `{ files: File[] }` |
