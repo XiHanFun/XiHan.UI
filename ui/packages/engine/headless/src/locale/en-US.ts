@@ -347,6 +347,7 @@ export const FIELD_ARRAY_EN_US: XhLocaleBucket<'field-array'> = {
   deleteItem: (index, count) => `Remove row ${index} of ${count}`,
   moveUpTrigger: (index, count) => `Move row ${index} of ${count} up`,
   moveDownTrigger: (index, count) => `Move row ${index} of ${count} down`,
+  addTrigger: 'Add row',
 }
 
 export const FILE_UPLOAD_EN_US: XhLocaleBucket<'file-upload'> = {

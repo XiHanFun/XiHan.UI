@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
 import type { FieldArraySchema } from '../src/field-array'
 import type { FormRule, FormSchema } from '../src/form'
+import type { StructureChild, StructureNode } from '../src/shared/structure'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { connectFieldArray, fieldArrayMachine, fieldArrayTriggerId } from '../src/field-array'
+import { connectFieldArray, fieldArrayMachine, fieldArrayStructure, fieldArrayTriggerId } from '../src/field-array'
 import { atRowMax, atRowMin, fieldArrayInsertIndex, moveRow, rowBound, sameRows } from '../src/field-array/field-array.machine'
 import { connectForm, createFormPathRecord, formMachine, formPathKey, getFormPathValue } from '../src/form'
 
@@ -805,5 +806,58 @@ describe('表格排布：角色、行号与列轨道', () => {
     expect((a.getItemProps({ index: 2 }) as Record<string, unknown>)['aria-rowindex']).toBe(4)
     a.remove(0)
     expect((api(service).getTableProps() as Record<string, unknown>)['aria-rowcount']).toBe(3)
+  })
+})
+
+describe('value-change 处理函数里读到的行号', () => {
+  it('增、删、移的通知派发时 items 已是随后落定的号：作者能当场按行 key 补上或删掉这一行的内容', async () => {
+    const seen: string[][] = []
+    const props: Props = { defaultValue: ['甲', '乙'], movable: true, createItem: () => '新' }
+    const service = makeService(props)
+    props.onValueChange = () => seen.push(keys(service))
+    api(service).add()
+    await settle()
+    expect(seen.at(-1)).toEqual(keys(service))
+    expect(seen.at(-1)!.every(key => !key.includes('@'))).toBe(true)
+    api(service).moveDown(0)
+    await settle()
+    expect(seen.at(-1)).toEqual(keys(service))
+    api(service).remove(1)
+    await settle()
+    expect(seen.at(-1)).toEqual(keys(service))
+  })
+})
+
+describe('fieldArrayStructure', () => {
+  const parts = (nodes: readonly StructureChild[]): string[] => nodes.map(node => ('part' in node ? node.part : 'other'))
+
+  it('列表排布：每行是行号、带行 key 插槽的内容格与删除钮，最后是新增钮', () => {
+    const a = api(makeService({ defaultValue: ['甲', '乙'] }))
+    const nodes = fieldArrayStructure(a) as StructureNode[]
+    expect(parts(nodes)).toEqual(['item', 'item', 'add-trigger'])
+    expect(nodes.at(-1)).toMatchObject({ text: a.translations.addTrigger })
+    const row = nodes[0]!
+    expect(row.attrs).toEqual({ index: '0' })
+    expect(parts(row.children!)).toEqual(['item-label', 'item-content', 'item-action'])
+    expect(row.children![0]).toMatchObject({ text: '1' })
+    expect(row.children![1]).toMatchObject({ slot: { name: 'item-content', key: a.items[0]!.key }, data: a.items[0] })
+    expect(parts((row.children![2] as StructureNode).children!)).toEqual(['item-delete-trigger'])
+  })
+
+  it('开了 movable 时把手是上移、下移、删除', () => {
+    const nodes = fieldArrayStructure(api(makeService({ defaultValue: ['甲'], movable: true }))) as StructureNode[]
+    expect(parts((nodes[0]!.children![2] as StructureNode).children!)).toEqual(['move-up-trigger', 'move-down-trigger', 'item-delete-trigger'])
+  })
+
+  it('表格排布：表格本体里是表头（每列一个列头）与各行，行里每列一格，插槽 key 是「行 key:列 id」', () => {
+    const a = api(makeService({ layout: 'table', columns: [{ id: 'name' }, { id: 'amount' }], defaultValue: [{}] }))
+    const nodes = fieldArrayStructure(a) as StructureNode[]
+    expect(parts(nodes)).toEqual(['table', 'add-trigger'])
+    const table = nodes[0]!.children! as StructureNode[]
+    expect(parts(table)).toEqual(['header', 'item'])
+    expect((table[0]!.children! as StructureNode[]).map(header => header.attrs?.value)).toEqual(['name', 'amount'])
+    const cells = table[1]!.children! as StructureNode[]
+    expect(parts(cells)).toEqual(['item-label', 'item-cell', 'item-cell', 'item-action'])
+    expect(cells[2]).toMatchObject({ attrs: { value: 'amount' }, slot: { name: 'item-cell', key: `${a.items[0]!.key}:amount` }, data: { item: a.items[0], column: { id: 'amount' } } })
   })
 })

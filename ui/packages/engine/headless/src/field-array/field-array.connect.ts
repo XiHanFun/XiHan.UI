@@ -12,7 +12,7 @@ import { formArrayItemPath } from '../form'
 import { FIELD_ARRAY_EN_US } from '../locale/en-US'
 import { resolveTranslations } from '../shared/translations'
 import { fieldArrayAnatomy, fieldArrayTriggerId } from './field-array.anatomy'
-import { atRowMax, atRowMin, fieldArrayValue, rowBound } from './field-array.machine'
+import { atRowMax, atRowMin, fieldArrayValue, rowBound, sameRows } from './field-array.machine'
 
 /** 没写宽度的列取的轨道：分剩余宽度，内容再宽也不撑破表格。 */
 const FLEX_TRACK = 'minmax(0, 1fr)'
@@ -28,10 +28,13 @@ export function connectFieldArray<T extends PropTypes>(
   service: Service<FieldArraySchema>,
   normalize: NormalizeProps<T>,
 ): FieldArrayApi<T> {
-  const { context, prop, scope, send } = service
+  const { context, prop, refs, scope, send } = service
 
   const value = fieldArrayValue(service)
-  const keys = context.get('keys')
+  // 增删换序刚写了值、号还搁在 pending 里时（value-change 正是这一刻派发），直接用它算好的号：
+  // 处理函数里读到的 items 与随后落定的一致，作者能当场按行 key 补上这一行的内容
+  const pending = refs.get('pending')
+  const keys = pending && sameRows(pending.value, value) ? pending.keys : context.get('keys')
   const count = value.length
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
@@ -172,6 +175,7 @@ export function connectFieldArray<T extends PropTypes>(
     atMin,
     atMax,
     canAdd,
+    translations: label,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     add: () => send({ type: 'ITEM.ADD' }),
     insert: (index, item) => send({ type: 'ITEM.ADD', index, item: item === undefined ? undefined : { value: item } }),

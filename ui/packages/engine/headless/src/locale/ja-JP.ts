@@ -293,6 +293,7 @@ const translations = {
     deleteItem: (index, count) => `${count} 行中 ${index} 行目を削除`,
     moveUpTrigger: (index, count) => `${count} 行中 ${index} 行目を上へ移動`,
     moveDownTrigger: (index, count) => `${count} 行中 ${index} 行目を下へ移動`,
+    addTrigger: '行を追加',
   },
   'file-upload': {
     deleteItem: file => `${file.name} を削除`,

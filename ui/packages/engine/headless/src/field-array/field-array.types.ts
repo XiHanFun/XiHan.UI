@@ -20,13 +20,15 @@ export interface FieldArrayValueChangeDetails {
 }
 
 /**
- * 行内三个把手的读屏文案，默认英文。行号一律从 1 起，与用户看到的行序一致。
- * 新增把手不在此列：它没有行号，名字取自身内容。
+ * 行内三个把手的读屏文案与新增把手的文字，默认英文。行号一律从 1 起，与用户看到的行序一致。
+ * 新增把手的名字取自身内容：作者写了内容用作者的，标准结构铺它时填 addTrigger。
  */
 export interface FieldArrayTranslations {
   deleteItem: (index: number, count: number) => string
   moveUpTrigger: (index: number, count: number) => string
   moveDownTrigger: (index: number, count: number) => string
+  /** 标准结构铺新增把手时的文字。 */
+  addTrigger: string
 }
 
 /**
@@ -213,6 +215,8 @@ export interface FieldArrayApi<T extends PropTypes = PropTypes> {
   /** 已到上限：再新增会多于 max。 */
   atMax: boolean
   canAdd: boolean
+  /** 解析后的文案：作者给的 translations 盖在当前语言包上。 */
+  translations: FieldArrayTranslations
   /** 整份替换，不受 min / max 约束。 */
   setValue: (next: unknown[]) => void
   /** 在末尾追加一行，数据由 createItem 造；受 max 约束。 */

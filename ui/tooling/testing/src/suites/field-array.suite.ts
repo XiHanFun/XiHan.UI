@@ -519,5 +519,97 @@ export const fieldArraySuite: ConformanceSuite = {
         },
       },
     },
+    {
+      name: '作者不写结构（列表排布）：三端都照 fieldArrayStructure 铺出每行的行号、内容格与把手，最后是新增钮；点删除钮摘掉那一行',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { defaultValue: ['甲', '乙'], movable: true },
+      initial: {
+        order: [
+          'root',
+          ...Array.from({ length: 2 }, (_, i) => [
+            `item[${i}]`,
+            `item-label[${i}]`,
+            `item-content[${i}]`,
+            `item-action[${i}]`,
+            `move-up-trigger[${i}]`,
+            `move-down-trigger[${i}]`,
+            `item-delete-trigger[${i}]`,
+          ]).flat(),
+          'add-trigger',
+        ],
+        parts: {
+          'item[1]': { 'data-index': '1' },
+          'item-delete-trigger[1]': { 'aria-label': 'Remove row 2 of 2' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '行号与新增钮的文字不进属性快照',
+          run: ({ doc }) => {
+            const labels = [...doc.querySelectorAll('[data-scope="field-array"][data-part="item-label"]')].map(el => el.textContent)
+            if (labels.join('|') !== '1|2')
+              throw new Error(`行号期望 [1,2]，实际 [${labels.join(',')}]`)
+            const add = doc.querySelector('[data-scope="field-array"][data-part="add-trigger"]')?.textContent
+            if (add !== 'Add row')
+              throw new Error(`新增钮期望显示 "Add row"，实际 ${JSON.stringify(add)}`)
+          },
+        },
+        {
+          kind: 'click',
+          part: 'item-delete-trigger[0]',
+          expect: {
+            events: [{ type: 'value-change', detail: { value: ['乙'], mutation: { type: 'remove', index: 0 } } }],
+            counts: { 'item': 1, 'item-content': 1 },
+          },
+        },
+      ],
+    },
+    {
+      name: '作者不写结构（表格排布）：表格本体里是表头与各行，行里每列一格；角色与行号照表格排布',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/table/' },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      // 表格的名字由作者给：不在字段里时宿主上的 aria-label 转给表格本体
+      props: { defaultValue: ['甲', '乙'], layout: 'table', columns: COLUMNS, ariaLabel: '费用明细' },
+      initial: {
+        order: [
+          'root',
+          'table',
+          'header',
+          'column-header[0]',
+          'column-header[1]',
+          ...Array.from({ length: 2 }, (_, i) => [
+            `item[${i}]`,
+            `item-label[${i}]`,
+            `item-cell[${i * 2}]`,
+            `item-cell[${i * 2 + 1}]`,
+            `item-action[${i}]`,
+            `item-delete-trigger[${i}]`,
+          ]).flat(),
+          'add-trigger',
+        ],
+        counts: { 'item-content': 0 },
+        parts: {
+          'table': { 'role': 'table', 'aria-rowcount': '3' },
+          'column-header[1]': { 'role': 'columnheader', 'data-value': 'amount' },
+          'item[1]': { 'role': 'row', 'aria-rowindex': '3' },
+          'item-label[0]': { role: 'rowheader' },
+          'item-cell[1]': { 'role': 'cell', 'data-value': 'amount' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '列头的文字不进属性快照',
+          run: ({ doc }) => {
+            const headers = [...doc.querySelectorAll('[data-scope="field-array"][data-part="column-header"]')].map(el => el.textContent)
+            const want = COLUMNS.map(column => column.label)
+            if (headers.join('|') !== want.join('|'))
+              throw new Error(`列头期望 [${want.join(',')}]，实际 [${headers.join(',')}]`)
+          },
+        },
+      ],
+    },
   ],
 }
