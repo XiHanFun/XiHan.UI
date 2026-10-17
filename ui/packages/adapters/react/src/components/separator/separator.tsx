@@ -7,10 +7,11 @@
 
 import type { SeparatorAlign, SeparatorProps, SeparatorVariant } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { connectSeparator } from '@xihan-ui/headless'
+import { connectSeparator, separatorStructure } from '@xihan-ui/headless'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { SeparatorProvider, useSeparatorContext } from './context'
 
 /** 分隔本身的取值，两种写法共用这一份。 */
@@ -76,21 +77,26 @@ export function XhSeparatorContent({ children, ...rest }: XhSeparatorContentProp
 
 export interface XhSeparatorProps extends XhSeparatorRootProps {}
 
+/** 标准结构里各部件对应的组件。 */
+const SEPARATOR_PARTS = {
+  line: XhSeparatorLine,
+  content: XhSeparatorContent,
+}
+
 /**
- * 一步到位的写法：未提供 children 即为一条线；提供后自动排为线、文字、线三段。
+ * 一步到位的写法：未提供 children 即为一条线；提供后照 headless 的 separatorStructure 排为线、文字、线三段，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。
  *
  * 需要在分节文字中放置自定义结构（例如一个图标加一段文字）时改用
  * XhSeparatorRoot + XhSeparatorLine + XhSeparatorContent。
  */
 export function XhSeparator({ children, ...rest }: XhSeparatorProps): ReactNode {
   // 空白与假分支不算给了文案：包进三段就是一条断开的线
-  if (!slotPaints(children))
-    return <XhSeparatorRoot {...rest} />
+  const painted = slotPaints(children)
+  const nodes = separatorStructure({ slotted: name => name === 'content' && painted })
   return (
     <XhSeparatorRoot {...rest}>
-      <XhSeparatorLine />
-      <XhSeparatorContent>{children}</XhSeparatorContent>
-      <XhSeparatorLine />
+      {renderStructure(nodes, SEPARATOR_PARTS, node => (node.slot ? children : undefined))}
     </XhSeparatorRoot>
   )
 }

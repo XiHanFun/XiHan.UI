@@ -6,7 +6,8 @@
 // 提供 separator 相关实现。
 
 import type { SeparatorProps } from '@xihan-ui/headless'
-import { connectSeparator, separatorAnatomy, separatorMeta } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { connectSeparator, separatorAnatomy, separatorMeta, separatorStructure } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -14,6 +15,9 @@ import { XhElement } from '../element-base'
  * `<xh-separator>`：Light-DOM 行为宿主，无状态机，把 connectSeparator 产出接到三个角色节点上。
  *
  * 只写 root 即为一条线；在 root 中放置 line · content · line 三个节点，即为带分节文字的档位。
+ *
+ * 不写部件（或只写 root）时元素按标准结构生成：什么都不给就是一条线；宿主直接子节点写 `slot="content"` 时
+ * 生成线、文字、线三段，那个节点搬进中间的 content。
  *
  * @customElement xh-separator
  * @attr {'horizontal'|'vertical'} orientation - 朝向，默认 horizontal
@@ -27,6 +31,10 @@ import { XhElement } from '../element-base'
  */
 export class XhSeparatorElement extends XhElement {
   static override partContract = { anatomy: separatorAnatomy, meta: separatorMeta }
+
+  static override structure: ElementStructure<XhSeparatorElement> = {
+    build: host => separatorStructure({ slotted: (name, key) => host.slotted(name, key) }),
+  }
 
   // 属性缺席翻成 undefined，缺省值由 connect 决定
   static override properties = {

@@ -61400,7 +61400,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-separator>`：Light-DOM 行为宿主，无状态机，把 connectSeparator 产出接到三个角色节点上。\n\n只写 root 即为一条线；在 root 中放置 line · content · line 三个节点，即为带分节文字的档位。",
+          "description": "`<xh-separator>`：Light-DOM 行为宿主，无状态机，把 connectSeparator 产出接到三个角色节点上。\n\n只写 root 即为一条线；在 root 中放置 line · content · line 三个节点，即为带分节文字的档位。\n\n不写部件（或只写 root）时元素按标准结构生成：什么都不给就是一条线；宿主直接子节点写 `slot=\"content\"` 时\n生成线、文字、线三段，那个节点搬进中间的 content。",
           "name": "XhSeparatorElement",
           "cssParts": [
             {
@@ -61425,6 +61425,15 @@
               },
               "static": true,
               "default": "{ anatomy: separatorAnatomy, meta: separatorMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhSeparatorElement>"
+              },
+              "static": true,
+              "default": "{ build: host => separatorStructure({ slotted: (name, key) => host.slotted(name, key) }), }"
             },
             {
               "kind": "field",

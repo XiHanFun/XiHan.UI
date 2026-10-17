@@ -7,10 +7,11 @@
 
 import type { SeparatorAlign, SeparatorProps, SeparatorVariant } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
-import { connectSeparator } from '@xihan-ui/headless'
+import { connectSeparator, separatorStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { provideSeparator, useSeparatorContext } from './context'
 
 const separatorProps = {
@@ -53,8 +54,15 @@ export const XhSeparatorContent = defineComponent({
   },
 })
 
+/** 标准结构里各部件对应的组件。 */
+const SEPARATOR_PARTS = {
+  line: XhSeparatorLine,
+  content: XhSeparatorContent,
+}
+
 /**
- * 一步到位的写法：未提供插槽即为一条线；提供插槽后自动排为线、文字、线三段。
+ * 一步到位的写法：未提供插槽即为一条线；提供插槽后照 headless 的 separatorStructure 排为线、文字、线三段，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。
  *
  * 需要在分节文字中放置自定义结构（例如一个图标加一段文字）时改用
  * XhSeparatorRoot + XhSeparatorLine + XhSeparatorContent。
@@ -66,13 +74,9 @@ export const XhSeparator = defineComponent({
     return () => {
       const content = slots.default?.()
       // 注释与空白不算给了文案：假分支与模板缩进都会留下节点，包进三段就是一条断开的线
-      if (!slotPaints(content))
-        return h(XhSeparatorRoot, props)
-      return h(XhSeparatorRoot, props, () => [
-        h(XhSeparatorLine),
-        h(XhSeparatorContent, null, () => content),
-        h(XhSeparatorLine),
-      ])
+      const painted = slotPaints(content)
+      const nodes = separatorStructure({ slotted: name => name === 'content' && painted })
+      return h(XhSeparatorRoot, props, () => renderStructure(nodes, SEPARATOR_PARTS, node => (node.slot ? content : undefined)))
     }
   },
 })
