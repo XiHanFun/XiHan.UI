@@ -5610,7 +5610,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-card>`：Light-DOM 行为宿主，无状态机，把 connectCard 产出接到各角色节点。\n除 root 外的部件全部可省略：头部、内容、脚部按需放置，一个都不写也是合法的卡片。\n\n根上不写 role：卡片是否为地标、是否需要可及名，由其中放置的内容决定，作者自行声明。\n整卡可交互时在 title 里放一个原生链接或按钮作 trigger（`<a data-xh-part=\"trigger\" href>`），\n再给元素写 interactive：trigger 的点击区铺满整张卡片，Tab 位与可及名都只归它。",
+          "description": "`<xh-card>`：Light-DOM 行为宿主，无状态机，把 connectCard 产出接到各角色节点。\n除 root 外的部件全部可省略：头部、内容、脚部按需放置，一个都不写也是合法的卡片。\n\n根上不写 role：卡片是否为地标、是否需要可及名，由其中放置的内容决定，作者自行声明。\n整卡可交互时在 title 里放一个原生链接或按钮作 trigger（`<a data-xh-part=\"trigger\" href>`），\n再给元素写 interactive：trigger 的点击区铺满整张卡片，Tab 位与可及名都只归它。\n\n不写部件（或只写 root）时元素按标准结构生成：宿主直接子节点写 `slot=\"title\"`、`slot=\"description\"`、\n`slot=\"content\"`、`slot=\"footer\"` 的，生成对应的页头标题与说明、正文、页脚并把节点搬进去；整卡可交互的 trigger 要用时手写部件。",
           "name": "XhCardElement",
           "cssParts": [
             {
@@ -5651,6 +5651,15 @@
               },
               "static": true,
               "default": "{ anatomy: cardAnatomy, meta: cardMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhCardElement>"
+              },
+              "static": true,
+              "default": "{ build: host => cardStructure({ slotted: (name, key) => host.slotted(name, key) }), }"
             },
             {
               "kind": "field",

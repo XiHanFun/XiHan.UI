@@ -7,13 +7,14 @@
 
 import type { ControlVariant } from '@xihan-ui/core'
 import type { CardProps } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
-import { connectCard } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
+import { cardStructure, connectCard } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { vueNormalize } from '../../runtime/normalize-props'
+import { renderStructure } from '../../runtime/structure'
 import { provideCard, useCardContext } from './context'
 
 export const XhCardRoot = defineComponent({
@@ -24,12 +25,21 @@ export const XhCardRoot = defineComponent({
     /** 整卡可交互：标题里的 trigger 把点击区铺满整张卡片。 */
     interactive: { type: Boolean, default: undefined },
   },
+  slots: Object as SlotsType<{
+    default?: () => VNode[]
+    title?: () => VNode[]
+    description?: () => VNode[]
+    content?: () => VNode[]
+    footer?: () => VNode[]
+  }>,
   setup(props, { slots }) {
     // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
     const configured = withXhConfig('card', props)
     const api = computed(() => connectCard(configured as CardProps, vueNormalize))
     provideCard({ api })
-    return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default
+      ? slots.default()
+      : renderDefaultStructure({ title: slots.title, description: slots.description, content: slots.content, footer: slots.footer }))
   },
 })
 
@@ -100,3 +110,23 @@ export const XhCardFooter = defineComponent({
     return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+/** 标准结构里各部件对应的组件。 */
+const CARD_PARTS = {
+  header: XhCardHeader,
+  title: XhCardTitle,
+  description: XhCardDescription,
+  content: XhCardContent,
+  footer: XhCardFooter,
+}
+
+type CardSectionSlots = Readonly<Partial<Record<'title' | 'description' | 'content' | 'footer', () => VNode[]>>>
+
+/**
+ * 未写默认插槽时铺开的整套结构：照 headless 的 cardStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。给了哪个插槽才铺哪一段。
+ */
+function renderDefaultStructure(sections: CardSectionSlots): VNode[] {
+  const nodes = cardStructure({ slotted: name => sections[name as keyof CardSectionSlots] != null })
+  return renderStructure(nodes, CARD_PARTS, node => (node.slot ? sections[node.slot.name as keyof CardSectionSlots]?.() : undefined))
+}

@@ -7,7 +7,8 @@
 
 import type { ControlVariant } from '@xihan-ui/core'
 import type { CardProps } from '@xihan-ui/headless'
-import { cardAnatomy, cardMeta, connectCard } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { cardAnatomy, cardMeta, cardStructure, connectCard } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -23,6 +24,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 整卡可交互时在 title 里放一个原生链接或按钮作 trigger（`<a data-xh-part="trigger" href>`），
  * 再给元素写 interactive：trigger 的点击区铺满整张卡片，Tab 位与可及名都只归它。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：宿主直接子节点写 `slot="title"`、`slot="description"`、
+ * `slot="content"`、`slot="footer"` 的，生成对应的页头标题与说明、正文、页脚并把节点搬进去；整卡可交互的 trigger 要用时手写部件。
+ *
  * @customElement xh-card
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline 为带影的抬起面，subtle 为淡底，ghost 无底无影；默认 outline
  * @attr {boolean} interactive - 整卡可交互：title 里的 trigger 把点击区铺满整张卡片
@@ -36,6 +40,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  */
 export class XhCardElement extends XhElement {
   static override partContract = { anatomy: cardAnatomy, meta: cardMeta }
+
+  static override structure: ElementStructure<XhCardElement> = {
+    build: host => cardStructure({ slotted: (name, key) => host.slotted(name, key) }),
+  }
 
   // 属性缺席翻成 undefined，缺省值由 connect 决定
   static override properties = {

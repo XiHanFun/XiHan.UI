@@ -9,27 +9,36 @@ import type { ControlVariant } from '@xihan-ui/core'
 import type { CardProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
-import { connectCard } from '@xihan-ui/headless'
+import { cardStructure, connectCard } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { renderStructure } from '../../runtime/structure'
 import { CardProvider, useCardContext } from './context'
 
-export interface XhCardRootProps extends ComponentPropsWithRef<'div'> {
+export interface XhCardRootProps extends Omit<ComponentPropsWithRef<'div'>, 'title' | 'content'> {
   /** 形态：outline 为带影的抬起面，subtle 为淡底，ghost 无底无影。默认 outline。 */
   variant?: ControlVariant
   /** 整卡可交互：标题里的 trigger 把点击区铺满整张卡片。 */
   interactive?: boolean
+  /** 标题。不给 children 时铺进页头的 title 部件。 */
+  title?: ReactNode
+  /** 标题下的说明。不给 children 时铺进页头的 description 部件。 */
+  description?: ReactNode
+  /** 正文。不给 children 时铺进 content 部件。 */
+  content?: ReactNode
+  /** 页脚，通常放操作。不给 children 时铺进 footer 部件。 */
+  footer?: ReactNode
 }
 
 /** 卡片外壳。形态只落在这一层。 */
-export function XhCardRoot({ variant, interactive, children, ...rest }: XhCardRootProps): ReactNode {
+export function XhCardRoot({ variant, interactive, title, description, content, footer, children, ...rest }: XhCardRootProps): ReactNode {
   const api = connectCard(withXhConfig('card', { variant, interactive }) as CardProps, reactNormalize)
   return (
     <CardProvider value={{ api }}>
       <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-        {children}
+        {children ?? renderDefaultStructure({ title, description, content, footer })}
       </div>
     </CardProvider>
   )
@@ -102,4 +111,24 @@ export function XhCardFooter({ children, ...rest }: XhCardFooterProps): ReactNod
       {children}
     </div>
   )
+}
+
+/** 标准结构里各部件对应的组件。 */
+const CARD_PARTS = {
+  header: XhCardHeader,
+  title: XhCardTitle,
+  description: XhCardDescription,
+  content: XhCardContent,
+  footer: XhCardFooter,
+}
+
+type CardSections = Readonly<Partial<Record<'title' | 'description' | 'content' | 'footer', ReactNode>>>
+
+/**
+ * 未写 children 时铺开的整套结构：照 headless 的 cardStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。给了哪段内容才铺哪一段。
+ */
+function renderDefaultStructure(sections: CardSections): ReactNode[] {
+  const nodes = cardStructure({ slotted: name => sections[name as keyof CardSections] != null })
+  return renderStructure(nodes, CARD_PARTS, node => (node.slot ? sections[node.slot.name as keyof CardSections] : undefined))
 }
