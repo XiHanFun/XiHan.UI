@@ -60,6 +60,7 @@ export const XhPasswordInputRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: PasswordInputRootSlotProps) => VNode[]
+    /** 不写默认插槽时标题的内容，代替 label 文字。 */
     label?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
