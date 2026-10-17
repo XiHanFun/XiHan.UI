@@ -141,7 +141,7 @@ function textEditor(initial: FieldContext): FieldInstance {
   return { element: field, update }
 }
 
-/** 一个数字框：库内 xh-number-field，带约束的上下限与步长，单位放在 suffix，prefix 是框前的短名。 */
+/** 一个数字框：库内 xh-number-field，带约束的上下限与步长，单位放在 suffix；给了 label 时它是框上方的标题。 */
 interface NumberBox {
   readonly field: ControlElement
   readonly input: HTMLElement
@@ -149,12 +149,11 @@ interface NumberBox {
   readonly setUnit: (unit: string) => void
 }
 
-function numberBox(doc: Document, constraints: PropertyNumberConstraints, part: string | undefined, prefix?: HTMLElement): NumberBox {
+function numberBox(doc: Document, constraints: PropertyNumberConstraints, part: string | undefined, label?: HTMLElement): NumberBox {
   const input = createAuthoredElement(doc, 'input', { 'data-xh-part': 'input' })
   const increment = createAuthoredElement(doc, 'button', { 'data-xh-part': 'increment-trigger', 'type': 'button' })
   const suffix = createAuthoredElement(doc, 'span', { 'data-xh-part': 'suffix' })
   const box = createAuthoredElement(doc, 'div', { 'data-xh-part': 'control' }, [
-    ...(prefix ? [prefix] : []),
     createAuthoredElement(doc, 'button', { 'data-xh-part': 'decrement-trigger', 'type': 'button' }),
     input,
     increment,
@@ -165,7 +164,7 @@ function numberBox(doc: Document, constraints: PropertyNumberConstraints, part: 
     'min': constraints.min,
     'max': constraints.max,
     'step': constraints.step ?? (constraints.integer ? 1 : undefined),
-  }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [box])])
+  }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, label ? [label, box] : [box])])
   const setUnit = (unit: string): void => {
     if (unit === '') {
       suffix.remove()
@@ -628,7 +627,7 @@ function sidesOf(value: JsonValue | undefined): Readonly<Record<PropertySide, nu
 }
 
 /**
- * 四边：「四边相同」开关加一个数字框，关掉时换成上、右、下、左四个；四边都按描述的数值约束校验，
+ * 四边：「四边相同」开关加一个数字框，关掉时换成上、右、下、左四个，各自带标题；四边都按描述的数值约束校验，
  * 有边没填或违反约束时就地报错、不派发。取值不同时开关禁用，只能四边一起改。
  */
 function sidesEditor(initial: FieldContext): FieldInstance {
@@ -642,11 +641,11 @@ function sidesEditor(initial: FieldContext): FieldInstance {
     ]),
   ])
   const all = numberBox(doc, control, undefined)
-  const prefixes = new Map<PropertySide, HTMLElement>()
+  const labels = new Map<PropertySide, HTMLElement>()
   const sides = new Map<PropertySide, NumberBox>(PROPERTY_SIDES.map((side) => {
-    const prefix = createAuthoredElement(doc, 'span', { 'data-xh-part': 'prefix' })
-    prefixes.set(side, prefix)
-    return [side, numberBox(doc, control, undefined, prefix)]
+    const label = createAuthoredElement(doc, 'label', { 'data-xh-part': 'label' })
+    labels.set(side, label)
+    return [side, numberBox(doc, control, undefined, label)]
   }))
   const boxes = [all, ...sides.values()]
   const fields = createAuthoredElement(doc, 'div', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'sides-fields' })
@@ -747,10 +746,10 @@ function sidesEditor(initial: FieldContext): FieldInstance {
     context = next
     const t = next.translations
     setText(linkText, t.sidesLinked)
-    all.input.setAttribute('aria-label', t.sides.all)
+    if (all.field.getAttribute('aria-label') !== t.sides.all)
+      all.field.setAttribute('aria-label', t.sides.all)
     for (const side of PROPERTY_SIDES) {
-      setText(prefixes.get(side)!, t.sides[side])
-      sides.get(side)!.input.setAttribute('aria-label', t.sides[side])
+      setText(labels.get(side)!, t.sides[side])
     }
     const unit = control.unit === undefined ? '' : next.unitLabel(control.unit)
     for (const box of boxes) {
