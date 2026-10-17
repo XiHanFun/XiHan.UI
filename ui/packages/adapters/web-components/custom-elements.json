@@ -62568,7 +62568,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-signature-pad>`：Light-DOM 行为宿主：作者写 root / control / path 三个必需角色节点\n（可再写 label、guide、undo-trigger、redo-trigger、clear-trigger、status 与 hidden-input），\n元素运行 signature-pad 状态机并把 connect 产出接上。\n\ncontrol 必须是 `<svg>`，guide 是其中的 `<line>`、path 是其中的 `<path>`：\n笔迹是一条填充轮廓，粗细随压感变化，描边无法实现该效果。viewBox 由元素按第一笔落下时\n测得的画布尺寸写入，作者不应自行编写。\n\n画布本身不接受键盘。签名天然依赖指针，要求签名的流程必须另提供一条不依赖指针的替代路径。\n\n签名数据（value / defaultValue）、笔迹外形（drawing）与读屏文案（translations）是对象，只能通过 property 设置。\n回显已存的签名把存下的数据赋给 `defaultValue`；清空、撤销、重做与获取 SVG 另有\n`clear()` / `undo()` / `redo()` / `toSvg()` 四个方法，此刻的签名数据读 `currentValue`。",
+          "description": "`<xh-signature-pad>`：Light-DOM 行为宿主：作者写 root / control / path 三个必需角色节点\n（可再写 label、guide、undo-trigger、redo-trigger、clear-trigger、status 与 hidden-input），\n元素运行 signature-pad 状态机并把 connect 产出接上。\n\ncontrol 必须是 `<svg>`，guide 是其中的 `<line>`、path 是其中的 `<path>`：\n笔迹是一条填充轮廓，粗细随压感变化，描边无法实现该效果。viewBox 由元素按第一笔落下时\n测得的画布尺寸写入，作者不应自行编写。\n\n画布本身不接受键盘。签名天然依赖指针，要求签名的流程必须另提供一条不依赖指针的替代路径。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）、画布（基准线与笔迹）、清空按钮、状态，\n给了 name 再带表单影子；清空按钮与状态的字取 translations。标题可以由宿主直接子节点 `slot=\"label\"` 接管。\n撤销与重做按钮不在生成的结构里，要用时手写部件。\n\n签名数据（value / defaultValue）、笔迹外形（drawing）与读屏文案（translations）是对象，只能通过 property 设置。\n回显已存的签名把存下的数据赋给 `defaultValue`；清空、撤销、重做与获取 SVG 另有\n`clear()` / `undo()` / `redo()` / `toSvg()` 四个方法，此刻的签名数据读 `currentValue`。",
           "name": "XhSignaturePadElement",
           "cssParts": [
             {
@@ -62621,6 +62621,24 @@
               },
               "static": true,
               "default": "{ anatomy: signaturePadAnatomy, meta: signaturePadMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhSignaturePadElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? signaturePadStructure(connectSignaturePad(host.ctrl.service, wcNormalize), { label: host.label, hiddenInput: host.name !== undefined, slotted: name => host.slotted(name), }) : undefined, }"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
             },
             {
               "kind": "field",
@@ -62943,6 +62961,14 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
             {
               "type": {
                 "text": "boolean | undefined"

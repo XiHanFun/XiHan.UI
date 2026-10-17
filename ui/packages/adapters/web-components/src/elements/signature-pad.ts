@@ -17,7 +17,8 @@ import type {
   SignaturePadValue,
   SignaturePadValueChangeDetails,
 } from '@xihan-ui/headless'
-import { connectSignaturePad, EMPTY_SIGNATURE, resolveFormControlState, signaturePadAnatomy, signaturePadMachine, signaturePadMeta } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { connectSignaturePad, EMPTY_SIGNATURE, resolveFormControlState, signaturePadAnatomy, signaturePadMachine, signaturePadMeta, signaturePadStructure } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -39,11 +40,16 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  *
  * 画布本身不接受键盘。签名天然依赖指针，要求签名的流程必须另提供一条不依赖指针的替代路径。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）、画布（基准线与笔迹）、清空按钮、状态，
+ * 给了 name 再带表单影子；清空按钮与状态的字取 translations。标题可以由宿主直接子节点 `slot="label"` 接管。
+ * 撤销与重做按钮不在生成的结构里，要用时手写部件。
+ *
  * 签名数据（value / defaultValue）、笔迹外形（drawing）与读屏文案（translations）是对象，只能通过 property 设置。
  * 回显已存的签名把存下的数据赋给 `defaultValue`；清空、撤销、重做与获取 SVG 另有
  * `clear()` / `undo()` / `redo()` / `toSvg()` 四个方法，此刻的签名数据读 `currentValue`。
  *
  * @customElement xh-signature-pad
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {boolean} disabled - 整块不可交互：不响应落笔，清空按钮也不可按下
  * @attr {boolean} read-only - 只读：已绘制的签名照常显示，但不可修改
  * @attr {boolean} required - 必填标注；表单影子据此参与原生校验
@@ -67,8 +73,19 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 export class XhSignaturePadElement extends XhElement {
   static override partContract = { anatomy: signaturePadAnatomy, meta: signaturePadMeta }
 
+  static override structure: ElementStructure<XhSignaturePadElement> = {
+    build: host => host.ctrl.service
+      ? signaturePadStructure(connectSignaturePad(host.ctrl.service, wcNormalize), {
+          label: host.label,
+          hiddenInput: host.name !== undefined,
+          slotted: name => host.slotted(name),
+        })
+      : undefined,
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    label: { converter: STRING_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     required: { converter: BOOLEAN_CONVERTER },
@@ -81,6 +98,7 @@ export class XhSignaturePadElement extends XhElement {
     translations: { attribute: false },
   }
 
+  declare label?: string
   declare disabled?: boolean
   declare readOnly?: boolean
   declare required?: boolean

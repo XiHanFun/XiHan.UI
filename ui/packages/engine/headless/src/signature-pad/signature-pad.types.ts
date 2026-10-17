@@ -196,6 +196,8 @@ export interface SignaturePadApi<T extends PropTypes = PropTypes> {
   canRedo: boolean
   /** 是否已签名的文案，写入 status 部件；适配器在作者未自行编写文字时把它填入节点。 */
   statusText: string
+  /** 合上作者覆盖后的文案。 */
+  translations: SignaturePadTranslations
   /** 当前签名的独立 SVG 文档，与表单影子提交的是同一份；空签名为空串。 */
   toSvg: () => string
   clear: () => void

@@ -18,6 +18,8 @@ export {
 export { signaturePadKeyboard } from './signature-pad.keyboard'
 export { EMPTY_SIGNATURE, signaturePadMachine } from './signature-pad.machine'
 export { signaturePadMeta } from './signature-pad.meta'
+export { signaturePadStructure } from './signature-pad.structure'
+export type { SignaturePadStructureOptions } from './signature-pad.structure'
 export type {
   SignaturePadApi,
   SignaturePadDraft,

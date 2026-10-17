@@ -8,10 +8,12 @@
 import type { SignaturePadApi, SignaturePadDrawingOptions, SignaturePadSchema, SignaturePadTranslations, SignaturePadValue } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { signaturePadStructure } from '@xihan-ui/headless'
 import { useEffect } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFormControlProps } from '../form/use-form-control'
 import { SignaturePadProvider, useSignaturePadContext } from './context'
 import { useSignaturePad } from './use-signature-pad'
@@ -39,6 +41,8 @@ export type SignaturePadRootSlotProps = Pick<
 >
 
 export interface XhSignaturePadRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
   /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
   ariaLabel?: string
   disabled?: boolean
@@ -62,6 +66,7 @@ export interface XhSignaturePadRootProps extends Omit<ComponentPropsWithRef<'div
 }
 
 export function XhSignaturePadRoot({
+  label,
   ariaLabel,
   disabled,
   readOnly,
@@ -105,21 +110,23 @@ export function XhSignaturePadRoot({
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
-        {renderSlot(children, {
-          value: api.value,
-          paths: api.paths,
-          empty: api.empty,
-          drawing: api.drawing,
-          disabled: api.disabled,
-          readOnly: api.readOnly,
-          canUndo: api.canUndo,
-          canRedo: api.canRedo,
-          statusText: api.statusText,
-          toSvg: api.toSvg,
-          clear: api.clear,
-          undo: api.undo,
-          redo: api.redo,
-        })}
+        {children != null
+          ? renderSlot(children, {
+              value: api.value,
+              paths: api.paths,
+              empty: api.empty,
+              drawing: api.drawing,
+              disabled: api.disabled,
+              readOnly: api.readOnly,
+              canUndo: api.canUndo,
+              canRedo: api.canRedo,
+              statusText: api.statusText,
+              toSvg: api.toSvg,
+              clear: api.clear,
+              undo: api.undo,
+              redo: api.redo,
+            })
+          : renderDefaultStructure(api, label, name !== undefined)}
       </div>
     </SignaturePadProvider>
   )
@@ -230,4 +237,25 @@ export function XhSignaturePadHiddenInput({ ...rest }: XhSignaturePadHiddenInput
       )}
     />
   )
+}
+
+/** 标准结构里各部件对应的组件。 */
+const SIGNATURE_PAD_PARTS = {
+  'label': XhSignaturePadLabel,
+  'control': XhSignaturePadControl,
+  'guide': XhSignaturePadGuide,
+  'path': XhSignaturePadPath,
+  'clear-trigger': XhSignaturePadClearTrigger,
+  'status': XhSignaturePadStatus,
+  'hidden-input': XhSignaturePadHiddenInput,
+}
+
+/**
+ * 未写 children 时铺开的整套结构：照 headless 的 signaturePadStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容交给 label 部件。
+ */
+function renderDefaultStructure(api: SignaturePadApi, label: ReactNode, hiddenInput: boolean): ReactNode[] {
+  const slotted = label != null && typeof label !== 'string'
+  const nodes = signaturePadStructure(api, { label: typeof label === 'string' ? label : undefined, hiddenInput, slotted: name => name === 'label' && slotted })
+  return renderStructure(nodes, SIGNATURE_PAD_PARTS, node => (node.slot ? label : undefined))
 }

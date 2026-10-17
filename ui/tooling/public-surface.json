@@ -7838,6 +7838,7 @@
       "SignaturePadPointerPoint",
       "SignaturePadSchema",
       "SignaturePadStroke",
+      "SignaturePadStructureOptions",
       "SignaturePadSurface",
       "SignaturePadTranslations",
       "SignaturePadTrigger",
@@ -9514,6 +9515,7 @@
       "signaturePadKeyboard",
       "signaturePadMachine",
       "signaturePadMeta",
+      "signaturePadStructure",
       "signaturePadSvg",
       "simulatedPressure",
       "skeletonAnatomy",
@@ -23356,6 +23358,7 @@
       "attributes": [
         "disabled",
         "invalid",
+        "label",
         "name",
         "read-only",
         "required"

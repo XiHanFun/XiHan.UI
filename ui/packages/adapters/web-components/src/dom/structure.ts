@@ -10,10 +10,13 @@ import type { StructureChild, StructureInstanceNode, StructureSlot, StructureTag
 import type { KeyedChildren } from './generated-nodes'
 import { DIAGNOSTIC_CODES, isDev, reportDiagnostic } from '@xihan-ui/core'
 import { isStructureInstance, isStructureLiteral } from '@xihan-ui/headless'
-import { createGeneratedElement, GEN_ATTR, generatedChildren, reconcile } from './generated-nodes'
+import { createGeneratedElement, GEN_ATTR, generatedChildren, reconcile, SVG_NS } from './generated-nodes'
 
 /** 标准结构生成的节点在 data-xh-gen 上写的值。 */
 export const STRUCTURE_MARK = 'structure'
+
+/** 结构标签里属于 SVG 命名空间的图元。 */
+const SVG_TAGS: ReadonlySet<string> = new Set(['svg', 'line', 'path'])
 
 /** 作者在宿主直接子节点上写的 slot 值：单例为插槽名，重复部件为 `名:键`。 */
 export function slotAttrOf(slot: StructureSlot): string {
@@ -47,7 +50,7 @@ export function placeStructure(parent: Element, nodes: readonly StructureChild[]
         el.textContent = node.literal
       return el
     }
-    const el = reuse instanceof HTMLElement && reuse.localName === node.tag
+    const el = reuse !== undefined && reuse.localName === node.tag
       ? reuse
       : createStructureElement(doc, node.tag)
     setAttr(el, 'data-xh-part', node.part)
@@ -70,8 +73,16 @@ export function placeStructure(parent: Element, nodes: readonly StructureChild[]
   }, STRUCTURE_MARK)
 }
 
-/** 建一个结构节点；结构里组合进来的库内元素还没注册时，开发期告警：它不会升级，那一块是空的。 */
-function createStructureElement(doc: Document, tag: StructureTag | `xh-${string}`): HTMLElement {
+/**
+ * 建一个结构节点：SVG 图元按 SVG 命名空间建，挂在 HTML 命名空间下什么都不显示。
+ * 结构里组合进来的库内元素还没注册时，开发期告警：它不会升级，那一块是空的。
+ */
+function createStructureElement(doc: Document, tag: StructureTag | `xh-${string}`): Element {
+  if (SVG_TAGS.has(tag)) {
+    const svg = doc.createElementNS(SVG_NS, tag)
+    svg.setAttribute(GEN_ATTR, STRUCTURE_MARK)
+    return svg
+  }
   const el = createGeneratedElement(doc, tag, { [GEN_ATTR]: STRUCTURE_MARK })
   if (tag.startsWith('xh-') && isDev() && typeof customElements !== 'undefined' && !customElements.get(tag)) {
     reportDiagnostic({
@@ -174,14 +185,14 @@ function placeInstance(doc: Document, node: StructureInstanceNode, reuse: Elemen
 }
 
 /**
- * 宿主名下作者写的部件节点，按部件名归组：跳过生成的节点（连同其中搬进去的作者内容）、
+ * 宿主名下作者写的部件节点（含 SVG 图元），按部件名归组：跳过生成的节点（连同其中搬进去的作者内容）、
  * 宿主直接子节点里待搬的 slot 节点，以及嵌套库内元素的内部（嵌套元素本身当部件时照算）。
  */
-export function authoredParts(host: Element): Map<string, HTMLElement[]> {
-  const out = new Map<string, HTMLElement[]>()
+export function authoredParts(host: Element): Map<string, Element[]> {
+  const out = new Map<string, Element[]>()
   const walk = (parent: Element, top: boolean): void => {
     for (const child of Array.from(parent.children)) {
-      if (!(child instanceof HTMLElement) || child.hasAttribute(GEN_ATTR) || (top && child.hasAttribute('slot')))
+      if (child.hasAttribute(GEN_ATTR) || (top && child.hasAttribute('slot')))
         continue
       const part = child.getAttribute('data-xh-part')
       if (part) {
@@ -246,7 +257,7 @@ function checkTakeoverOrder(host: Element, nodes: readonly StructureChild[], tak
 }
 
 /** 作者接管了末尾部件时，把末尾那一段按登记的先后排好：接管的用作者节点，其余用生成节点；已在位的不动。 */
-function placeTrailing(root: Element, takeover: ReadonlyMap<string, StructureTakeoverPosition>, taken: ReadonlySet<string>, authored: ReadonlyMap<string, HTMLElement[]>): void {
+function placeTrailing(root: Element, takeover: ReadonlyMap<string, StructureTakeoverPosition>, taken: ReadonlySet<string>, authored: ReadonlyMap<string, Element[]>): void {
   const tail: Element[] = []
   for (const [part, position] of takeover) {
     if (position !== 'trailing')

@@ -88,6 +88,7 @@ export function connectSignaturePad<T extends PropTypes>(
     canUndo,
     canRedo,
     statusText,
+    translations,
     toSvg,
     clear: () => send({ type: 'STROKES.CLEAR' }),
     undo: () => send({ type: 'HISTORY.UNDO' }),

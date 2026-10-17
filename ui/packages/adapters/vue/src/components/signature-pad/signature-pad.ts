@@ -8,8 +8,10 @@
 import type { SignaturePadApi, SignaturePadDrawingOptions, SignaturePadSchema, SignaturePadTranslations, SignaturePadValue } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { signaturePadStructure } from '@xihan-ui/headless'
 import { defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideSignaturePad, useSignaturePadContext } from './context'
@@ -39,6 +41,8 @@ export const XhSignaturePadRoot = defineComponent({
   name: 'XhSignaturePadRoot',
   // 缺省值由 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
+    /** 标题文字。不写默认插槽时铺 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
     /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
     ariaLabel: { type: String },
     disabled: { type: Boolean, default: undefined },
@@ -62,6 +66,7 @@ export const XhSignaturePadRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: SignaturePadRootSlotProps) => VNode[]
+    label?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const onDraw: SignaturePadProps['onDraw'] = details => emit('draw', details)
@@ -72,21 +77,26 @@ export const XhSignaturePadRoot = defineComponent({
     }
     const ctx = useSignaturePad(withHandlers(withXhConfig('signature-pad', useFormControlProps(props)), { onClear: () => emit('clear') }) as SignaturePadProps, { onDraw, onDrawEnd, onValueChange })
     provideSignaturePad(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      value: ctx.api.value.value,
-      paths: ctx.api.value.paths,
-      empty: ctx.api.value.empty,
-      drawing: ctx.api.value.drawing,
-      disabled: ctx.api.value.disabled,
-      readOnly: ctx.api.value.readOnly,
-      canUndo: ctx.api.value.canUndo,
-      canRedo: ctx.api.value.canRedo,
-      statusText: ctx.api.value.statusText,
-      toSvg: ctx.api.value.toSvg,
-      clear: ctx.api.value.clear,
-      undo: ctx.api.value.undo,
-      redo: ctx.api.value.redo,
-    }))
+    return () => {
+      const api = ctx.api.value
+      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+        ? slots.default({
+            value: api.value,
+            paths: api.paths,
+            empty: api.empty,
+            drawing: api.drawing,
+            disabled: api.disabled,
+            readOnly: api.readOnly,
+            canUndo: api.canUndo,
+            canRedo: api.canRedo,
+            statusText: api.statusText,
+            toSvg: api.toSvg,
+            clear: api.clear,
+            undo: api.undo,
+            redo: api.redo,
+          })
+        : renderDefaultStructure(api, props.label, props.name !== undefined, slots.label))
+    }
   },
 })
 
@@ -178,3 +188,23 @@ export const XhSignaturePadHiddenInput = defineComponent({
     return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
   },
 })
+
+/** 标准结构里各部件对应的组件。 */
+const SIGNATURE_PAD_PARTS = {
+  'label': XhSignaturePadLabel,
+  'control': XhSignaturePadControl,
+  'guide': XhSignaturePadGuide,
+  'path': XhSignaturePadPath,
+  'clear-trigger': XhSignaturePadClearTrigger,
+  'status': XhSignaturePadStatus,
+  'hidden-input': XhSignaturePadHiddenInput,
+}
+
+/**
+ * 未写默认插槽时铺开的整套结构：照 headless 的 signaturePadStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题由 label 插槽接管。
+ */
+function renderDefaultStructure(api: SignaturePadApi, label: string | undefined, hiddenInput: boolean, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = signaturePadStructure(api, { label, hiddenInput, slotted: name => name === 'label' && labelSlot != null })
+  return renderStructure(nodes, SIGNATURE_PAD_PARTS, node => (node.slot ? labelSlot?.() : undefined))
+}
