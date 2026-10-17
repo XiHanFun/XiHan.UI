@@ -79,7 +79,7 @@ const PENDING = {
   'drawer': ['open', 'side', 'setOpen'],
   'field-array': ['items', 'value', 'count', 'empty', 'atMin', 'atMax', 'canAdd'],
   'editable': ['value', 'displayValue', 'editing', 'empty', 'setValue', 'edit', 'submit', 'cancel'],
-  'file-upload': ['remoteFiles', 'allFiles', 'dragging', 'empty', 'disabled', 'maxFiles', 'getFileSizeText'],
+  'file-upload': ['remoteFiles', 'dragging', 'empty', 'disabled', 'maxFiles', 'getFileSizeText'],
   'float-button': ['open', 'setOpen'],
   'floating-panel': ['open', 'windowState', 'position', 'dimensions', 'dragging', 'resizing', 'canDrag', 'canResize', 'setOpen', 'setPosition', 'setDimensions', 'setWindowState'],
   'form': ['values', 'errors', 'validating'],

@@ -53,8 +53,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * 接收的文件先经过校验（类型 / 大小 / 数量），接受的进入列表并派发 file-accept，
  * 被拒绝的连同原因派发 file-reject。
  *
- * 条目节点由作者按 `acceptedFiles` 渲染（监听 files-change 重渲染），元素不生成节点。
- * 条目按文档序对应列表中的文件，也可以自带 `index` 属性显式声明。
+ * 条目节点由作者按 `allFiles` 渲染（远程附件在前、本地文件在后；监听 files-change 与 remote-files-change 重渲染），
+ * 元素不生成节点。条目按文档序对应 allFiles 中的文件，也可以自带 `index` 属性显式声明。
  * item-name 与 item-size-text 的文字由元素填入（作者自行写了内容则不修改）。
  *
  * @customElement xh-file-upload
@@ -253,9 +253,15 @@ export class XhFileUploadElement extends XhElement {
     return connectFileUpload(this.ctrl.service, wcNormalize)
   }
 
-  /** 当前已接收的文件；作者据此渲染条目节点。 */
+  /** 当前已接收的本地文件。 */
   get acceptedFiles(): File[] {
     return this.commands().acceptedFiles
+  }
+
+  /** 远程附件在前、本地文件在后的整份列表；作者据此渲染条目节点，条目按这份的下标对应。 */
+  get allFiles(): FileUploadFile[] {
+    // 机器没建起来时给空列表：作者可能在元素进文档之前就读它来铺条目
+    return this.ctrl.service ? connectFileUpload(this.ctrl.service, wcNormalize).allFiles : []
   }
 
   /** 打开系统文件选择框（等价于点击投放区或 trigger）。 */
@@ -273,8 +279,8 @@ export class XhFileUploadElement extends XhElement {
     this.commands().addFiles(files)
   }
 
-  /** 按引用移除某一个文件。 */
-  deleteFile(file: File): void {
+  /** 按引用移除某一个文件：本地文件或远程附件。 */
+  deleteFile(file: FileUploadFile): void {
     this.commands().deleteFile(file)
   }
 
@@ -351,8 +357,8 @@ export class XhFileUploadElement extends XhElement {
     put('list', api.getListProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
 
-    // 条目逐个打，身份取列表里对应位置的那个文件
-    const files = api.acceptedFiles
+    // 条目逐个打，身份取 allFiles 里对应位置的那个文件：远程附件在前，上传后转入远程的那一条行照样在
+    const files = api.allFiles
     this.getParts('item').forEach((el, position) => {
       const file = files[declaredIndex(el, position)]
       if (!file) {

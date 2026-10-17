@@ -501,6 +501,33 @@ export const fileUploadSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '上传返回 id：文件转入远程附件，原来那一行仍在、改报 data-remote，名字照旧',
+      spec: { apg: APG },
+      fixture: withItems(1),
+      props: { maxFiles: 3, upload: () => Promise.resolve({ id: 'att-1', url: 'https://example.com/att-1' }) },
+      steps: [
+        stubPicker([NOTES]),
+        { kind: 'click', part: 'trigger' },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'item[0]', name: 'data-remote', value: '' } },
+          expect: { parts: { 'item[0]': { 'data-remote': '', 'hidden': null } } },
+        },
+        {
+          kind: 'raw',
+          why: '文件名是文字内容，快照不收；转入远程后这一行仍要显示原来的名字',
+          run: ({ doc }) => {
+            const name = partEl(doc, 'item-name').textContent
+            if (name !== NOTES.name)
+              throw new Error(`转入远程附件后这一行的名字应仍是 ${NOTES.name}，实际是 ${name}`)
+            const item = partEl(doc, 'item')
+            if (item.hidden || item.style.display === 'none')
+              throw new Error('转入远程附件后这一行被收起了')
+          },
+        },
+      ],
+    },
+    {
       name: '并发上限：到了 maxConcurrentUploads 的文件排队，条目与进度条投影 queued',
       spec: { apg: APG },
       fixture: withItems(2),
