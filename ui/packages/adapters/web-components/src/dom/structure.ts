@@ -421,14 +421,25 @@ export function syncStructure(
   }
 
   // 部件随结构被摘掉时，里面的作者节点跟着离场：放回宿主，等下一个同名部件出现再搬；作者自己挪走的不管。
-  // 部件跟着浮层搬进 portal 落点时仍在文档里，不算摘掉
+  // 部件跟着浮层搬进 portal 落点时仍在文档里，不算摘掉。
+  // 同一插槽这一轮另有落点时当场挪过去；没有时排到微任务里再放回宿主：列表动效在删行那一刻入队的观察器回调
+  // 先克隆离场的行，替身里还带着作者内容
   for (const [node, target] of state.adopted) {
     if (node.parentElement !== target) {
       state.adopted.delete(node)
     }
     else if (!target.isConnected) {
-      host.append(node)
       state.adopted.delete(node)
+      const name = node.getAttribute('slot')
+      if (name !== null && slots.has(name)) {
+        host.append(node)
+      }
+      else {
+        queueMicrotask(() => {
+          if (node.parentElement === target && !target.isConnected)
+            host.append(node)
+        })
+      }
     }
   }
   for (const child of Array.from(host.children)) {

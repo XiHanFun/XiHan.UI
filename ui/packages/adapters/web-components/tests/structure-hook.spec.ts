@@ -254,6 +254,24 @@ describe('标准结构的基类钩子', () => {
     expect(parts(root)).toEqual(['list', 'panel', 'panel', 'footer'])
   })
 
+  it('部件随结构摘掉时，作者内容先留在离场的部件里，下一个微任务再回到宿主：列表动效先克隆离场节点', async () => {
+    const el = await mount('<p slot="panel:a">content a</p>')
+    const a = el.querySelector('[slot="panel:a"]')!
+    const panel = a.parentElement!
+    expect(panel.getAttribute('data-xh-part')).toBe('panel')
+    const seen: Array<Element | null> = []
+    const watch = new MutationObserver(() => seen.push(a.parentElement))
+    watch.observe(el, { childList: true, subtree: true })
+
+    el.items = [B]
+    await settle(el)
+    // 摘下部件那一批变更的观察器回调里，作者内容仍在离场的部件里；之后才回到宿主
+    expect(panel.isConnected).toBe(false)
+    expect(seen[0]).toBe(panel)
+    expect(a.parentElement).toBe(el)
+    watch.disconnect()
+  })
+
   it('slot 节点搬进对应部件；后加的照样搬；部件没了搬回宿主，作者自己挪走的不再管', async () => {
     const el = await mount('<p slot="panel:a">content a</p><p slot="panel:z">no target</p>')
     const panel = (value: string) => el.querySelector(`[data-xh-part="panel"][value="${value}"]`)
