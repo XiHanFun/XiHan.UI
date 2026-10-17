@@ -244,6 +244,8 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   required: boolean
   oneWay: boolean
   searchable: boolean
+  /** 合上作者覆盖后的文案。 */
+  translations: TransferTranslations
   /** 某一侧当前可见的条目（分侧 + 搜索 + 分页之后），顺序恒为 collection 原序。 */
   visibleItems: (side: TransferSide) => readonly TransferItem[]
   /** 某一侧分侧 + 搜索之后的全部条目（不分页）；全选、三态、计数与搬运都按它算。 */
@@ -309,4 +311,14 @@ export interface TransferTranslations {
   toTarget: string
   /** 移回左侧按钮的可访问名，同样总会发出。 */
   toSource: string
+  /** 标准结构里左侧面板的标题。 */
+  sourceTitle: string
+  /** 标准结构里右侧面板的标题。 */
+  targetTitle: string
+  /** 标准结构里全选格的文字。 */
+  selectAll: string
+  /** 标准结构里空态占位的文字。 */
+  empty: string
+  /** 标准结构里在途占位的文字。 */
+  loading: string
 }

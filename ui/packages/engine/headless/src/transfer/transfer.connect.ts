@@ -244,6 +244,7 @@ export function connectTransfer<T extends PropTypes>(
     required,
     oneWay,
     searchable,
+    translations: label,
     visibleItems: side => visible[side],
     filteredItems: side => filtered[side],
     pageSize,

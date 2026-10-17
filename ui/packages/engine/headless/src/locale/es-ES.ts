@@ -696,7 +696,7 @@ const translations = {
   },
   'toolbar': { overflowTrigger: 'Más' },
   'tour': { close: 'Cerrar', progress: (step, count) => `Paso ${step} de ${count}` },
-  'transfer': { toTarget: 'Mover a la lista de destino', toSource: 'Mover a la lista de origen' },
+  'transfer': { toTarget: 'Mover a la lista de destino', toSource: 'Mover a la lista de origen', sourceTitle: 'Lista de origen', targetTitle: 'Lista de destino', selectAll: 'Seleccionar todo', empty: 'Sin datos', loading: 'Cargando' },
   'tree': drag,
   'tree-select': {
     ...tagged,

@@ -704,7 +704,7 @@ const translations = {
   },
   'toolbar': { overflowTrigger: 'Plus' },
   'tour': { close: 'Fermer', progress: (step, count) => `Étape ${step} sur ${count}` },
-  'transfer': { toTarget: 'Déplacer vers la liste cible', toSource: 'Déplacer vers la liste source' },
+  'transfer': { toTarget: 'Déplacer vers la liste cible', toSource: 'Déplacer vers la liste source', sourceTitle: 'Liste source', targetTitle: 'Liste cible', selectAll: 'Tout sélectionner', empty: 'Aucune donnée', loading: 'Chargement' },
   'tree': drag,
   'tree-select': {
     ...tagged,

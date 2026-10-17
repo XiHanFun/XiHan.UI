@@ -78101,7 +78101,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-transfer>`：Light-DOM 行为宿主：作者写\nroot / source-panel / target-panel / panel-header / panel-title / panel-count / search / list / item / ...\n角色节点，元素运行 transfer 状态机并把 connect 产出接上。\n\n条目全集由 `collection` 属性（property）给出，它是标签与禁用的唯一事实源；\n两侧面板各挂一份全集，不属于本侧、或被搜索筛掉的条目由元素写上 hidden，\n节点不卸载。条目身份取节点上的 `value` 属性，所属侧取它所在的面板。\n\n过滤由本元素完成，不由作者完成：搜索串存放在状态机中，作者最多提供一个 `filter` 谓词。\n\n导航与勾选在事件发生时按 data-scope + data-part 查询 DOM，依赖 connect 回写的 data-value，\n因此 wire 必须先于交互运行（基类 updated 已保证）。\n\n集合类输入（collection / value / selection / filter）都无法表达为属性，只能通过 property 设置：\n`el.collection = [...]`、`el.value = ['a']`。",
+          "description": "`<xh-transfer>`：Light-DOM 行为宿主：作者写\nroot / source-panel / target-panel / panel-header / panel-title / panel-count / search / list / item / ...\n角色节点，元素运行 transfer 状态机并把 connect 产出接上。\n\n条目全集由 `collection` 属性（property）给出，它是标签与禁用的唯一事实源；\n两侧面板各挂一份全集，不属于本侧、或被搜索筛掉的条目由元素写上 hidden，\n节点不卸载。条目身份取节点上的 `value` 属性，所属侧取它所在的面板。\n\n过滤由本元素完成，不由作者完成：搜索串存放在状态机中，作者最多提供一个 `filter` 谓词。\n\n导航与勾选在事件发生时按 data-scope + data-part 查询 DOM，依赖 connect 回写的 data-value，\n因此 wire 必须先于交互运行（基类 updated 已保证）。\n\n不写部件（或只写 root）时元素按标准结构生成：左侧面板、移到右侧、移回左侧（one-way 时不生成）、右侧面板；\n每侧依次是头部（标题、计数、全选）、搜索框（searchable 时才有）、本侧当前可见的条目（勾选标记、文字与副文本）、\n空态与在途占位。标题、全选、空态与在途的字取 translations（sourceTitle / targetTitle / selectAll / empty / loading）；\n分组与条目行尾不在生成的结构里，要用时手写部件。\n\n集合类输入（collection / value / selection / filter）都无法表达为属性，只能通过 property 设置：\n`el.collection = [...]`、`el.value = ['a']`。",
           "name": "XhTransferElement",
           "cssParts": [
             {
@@ -78198,6 +78198,15 @@
               },
               "static": true,
               "default": "{ anatomy: transferAnatomy, meta: transferMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhTransferElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? transferStructure(connectTransfer(host.ctrl.service, wcNormalize)) : undefined, }"
             },
             {
               "kind": "field",

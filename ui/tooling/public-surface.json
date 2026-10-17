@@ -9779,6 +9779,7 @@
       "transferPageSize",
       "transferQueryKey",
       "transferSideOf",
+      "transferStructure",
       "transferToggleAll",
       "transferToggleValue",
       "transferVisibleItems",

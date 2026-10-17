@@ -695,7 +695,7 @@ const translations = {
   },
   'toolbar': { overflowTrigger: 'その他' },
   'tour': { close: '閉じる', progress: (step, count) => `${count} ステップ中 ${step} ステップ目` },
-  'transfer': { toTarget: '移動先のリストへ移動', toSource: '移動元のリストへ戻す' },
+  'transfer': { toTarget: '移動先のリストへ移動', toSource: '移動元のリストへ戻す', sourceTitle: '移動元のリスト', targetTitle: '移動先のリスト', selectAll: 'すべて選択', empty: 'データがありません', loading: '読み込み中' },
   'tree': drag,
   'tree-select': {
     ...tagged,

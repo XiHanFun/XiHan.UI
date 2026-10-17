@@ -17,8 +17,9 @@ import type {
   TransferTranslations,
   TransferValueChangeDetails,
 } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTransfer, resolveFormControlState, transferAnatomy, transferFocusKey, transferMachine, transferMeta } from '@xihan-ui/headless'
+import { connectTransfer, resolveFormControlState, transferAnatomy, transferFocusKey, transferMachine, transferMeta, transferStructure } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -59,6 +60,11 @@ function stripNativeDisabled(el: HTMLElement): void {
  *
  * 导航与勾选在事件发生时按 data-scope + data-part 查询 DOM，依赖 connect 回写的 data-value，
  * 因此 wire 必须先于交互运行（基类 updated 已保证）。
+ *
+ * 不写部件（或只写 root）时元素按标准结构生成：左侧面板、移到右侧、移回左侧（one-way 时不生成）、右侧面板；
+ * 每侧依次是头部（标题、计数、全选）、搜索框（searchable 时才有）、本侧当前可见的条目（勾选标记、文字与副文本）、
+ * 空态与在途占位。标题、全选、空态与在途的字取 translations（sourceTitle / targetTitle / selectAll / empty / loading）；
+ * 分组与条目行尾不在生成的结构里，要用时手写部件。
  *
  * 集合类输入（collection / value / selection / filter）都无法表达为属性，只能通过 property 设置：
  * `el.collection = [...]`、`el.value = ['a']`。
@@ -104,6 +110,10 @@ function stripNativeDisabled(el: HTMLElement): void {
  */
 export class XhTransferElement extends XhElement {
   static override partContract = { anatomy: transferAnatomy, meta: transferMeta }
+
+  static override structure: ElementStructure<XhTransferElement> = {
+    build: host => host.ctrl.service ? transferStructure(connectTransfer(host.ctrl.service, wcNormalize)) : undefined,
+  }
 
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。

@@ -721,7 +721,7 @@ const translations = {
   },
   'toolbar': { overflowTrigger: 'Ещё' },
   'tour': { close: 'Закрыть', progress: (step, count) => `Шаг ${step} из ${count}` },
-  'transfer': { toTarget: 'Переместить в целевой список', toSource: 'Переместить в исходный список' },
+  'transfer': { toTarget: 'Переместить в целевой список', toSource: 'Переместить в исходный список', sourceTitle: 'Исходный список', targetTitle: 'Целевой список', selectAll: 'Выбрать все', empty: 'Нет данных', loading: 'Загрузка' },
   'tree': drag,
   'tree-select': {
     ...tagged,
