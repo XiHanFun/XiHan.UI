@@ -7,8 +7,9 @@
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { CollectionVirtualizer, FormControlState, ListboxItemProps, ListboxNode, ListboxSchema, ListboxSelectionMode, ListboxValueChangeDetails } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectListbox, listboxAnatomy, listboxMachine, listboxMeta, resolveFormControlState } from '@xihan-ui/headless'
+import { connectListbox, listboxAnatomy, listboxMachine, listboxMeta, listboxStructure, resolveFormControlState } from '@xihan-ui/headless'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -37,7 +38,12 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  *
  * 条目的禁用也可以交给数据：`el.collection = [{ value, label, disabled }]`，此时条目部件只需声明 value。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）与列表，列表里 collection 的每条数据一个条目
+ * （文字、有副文本时的副文本与选中标记）。标题、条目文字与行首行尾可以由宿主直接子节点接管：`slot="label"`、
+ * `slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"`。
+ *
  * @customElement xh-listbox
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控选中值（单选简写）；未提供该属性即非受控，多选通过 property 设置
  * @attr {string} default-value - 非受控初始选中值
  * @attr {'single'|'multiple'|'extended'} selection-mode - 选择模式，默认 single
@@ -70,6 +76,15 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 export class XhListboxElement extends XhElement {
   static override partContract = { anatomy: listboxAnatomy, meta: listboxMeta }
 
+  static override structure: ElementStructure<XhListboxElement> = {
+    build: host => host.ctrl.service
+      ? listboxStructure(connectListbox(host.ctrl.service, wcNormalize), {
+          label: host.label,
+          slotted: (name, key) => host.slotted(name, key),
+        })
+      : undefined,
+  }
+
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。别名保留原生行为，
   // 同时让 dir 进 observedAttributes——运行期改 dir 才会重跑 wire 换掉按键处理器。
@@ -78,6 +93,7 @@ export class XhListboxElement extends XhElement {
     // 数组只走 property，属性表达不了；给了它条目的禁用即以数据为准
     collection: { attribute: false },
     virtualizer: { attribute: false },
+    label: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
@@ -95,6 +111,7 @@ export class XhListboxElement extends XhElement {
 
   declare collection?: ListboxNode[]
   declare virtualizer?: CollectionVirtualizer
+  declare label?: string
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare selectionMode?: ListboxSelectionMode

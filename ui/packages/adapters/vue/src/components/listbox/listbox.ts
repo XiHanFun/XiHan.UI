@@ -9,7 +9,9 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { CollectionVirtualizer, ListboxApi, ListboxGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { listboxStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUnmounted, onUpdated, ref, watch } from 'vue'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFormControlProps } from '../form/use-form-control'
 import {
@@ -87,15 +89,12 @@ export const XhListboxRoot = defineComponent({
           select: ctx.api.value.select,
           toggle: ctx.api.value.toggle,
         }) ?? []
-        : props.collection
-          ? renderDefaultTree(
-              ctx.api.value.collection,
-              slots.label?.() ?? (props.label != null ? [props.label] : null),
-              slots.item,
-              slots['item-prefix'],
-              slots['item-suffix'],
-            )
-          : []),
+        : renderDefaultStructure(ctx.api.value, props.label, {
+            'label': slots.label,
+            'item': slots.item,
+            'item-prefix': slots['item-prefix'],
+            'item-suffix': slots['item-suffix'],
+          })),
     ])
   },
 })
@@ -279,27 +278,44 @@ export const XhListboxItemIndicator = defineComponent({
   },
 })
 
+/** 标准结构里各部件对应的组件。 */
+const LISTBOX_PARTS = {
+  'label': XhListboxLabel,
+  'content': XhListboxContent,
+  'item': XhListboxItem,
+  'item-prefix': XhListboxItemPrefix,
+  'item-text': XhListboxItemText,
+  'item-description': XhListboxItemDescription,
+  'item-suffix': XhListboxItemSuffix,
+  'item-indicator': XhListboxItemIndicator,
+}
+
+interface ListboxStructureSlots {
+  'label'?: () => VNode[]
+  'item'?: (node: ListboxNodeMeta) => VNode[]
+  'item-prefix'?: (node: ListboxNodeMeta) => VNode[]
+  'item-suffix'?: (node: ListboxNodeMeta) => VNode[]
+}
+
 /**
- * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构（分组、条目外的节点）时写默认插槽。
+ * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 listboxStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题、条目文字与行首行尾由对应插槽接管。
  */
-function renderDefaultTree(
-  collection: readonly ListboxNodeMeta[],
-  label: (VNode | string)[] | null,
-  itemSlot?: (node: ListboxNodeMeta) => VNode[],
-  prefixSlot?: (node: ListboxNodeMeta) => VNode[],
-  suffixSlot?: (node: ListboxNodeMeta) => VNode[],
-): VNode[] {
-  return [
-    ...(label ? [h(XhListboxLabel, null, () => label)] : []),
-    h(XhListboxContent, null, () => collection.map(node =>
-      h(XhListboxItem, { key: node.value, value: node.value }, () => [
-        ...(prefixSlot ? [h(XhListboxItemPrefix, null, () => prefixSlot(node))] : []),
-        h(XhListboxItemText, null, () => itemSlot?.(node) ?? node.label),
-        ...(node.description != null ? [h(XhListboxItemDescription, null, () => node.description)] : []),
-        ...(suffixSlot ? [h(XhListboxItemSuffix, null, () => suffixSlot(node))] : []),
-        h(XhListboxItemIndicator),
-      ]),
-    )),
-  ]
+function renderDefaultStructure(api: ListboxApi, label: string | undefined, authored: ListboxStructureSlots): VNode[] {
+  const nodes = listboxStructure(api, { label, slotted: name => authored[name as keyof ListboxStructureSlots] != null })
+  return renderStructure(nodes, LISTBOX_PARTS, (node) => {
+    const meta = node.data as ListboxNodeMeta
+    switch (node.slot?.name) {
+      case 'label':
+        return authored.label?.()
+      case 'item':
+        return authored.item?.(meta) ?? meta.label
+      case 'item-prefix':
+        return authored['item-prefix']?.(meta)
+      case 'item-suffix':
+        return authored['item-suffix']?.(meta)
+      default:
+        return undefined
+    }
+  })
 }
