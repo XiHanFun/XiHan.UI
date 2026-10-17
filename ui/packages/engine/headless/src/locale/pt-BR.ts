@@ -681,7 +681,7 @@ const translations = {
   'tags-input': { deleteItem: value => `Remover ${value}`, editTagInput: value => `Editar ${value}`, clearTrigger: 'Limpar' },
   'text-field': { clearTrigger: 'Limpar' },
   'time-field': { ...segments, clearTrigger: 'Limpar' },
-  'time-picker': { ...tagged, ...segments, presets: 'Atalhos', clearTrigger: 'Limpar' },
+  'time-picker': { ...tagged, ...segments, presets: 'Atalhos', clearTrigger: 'Limpar', confirmTrigger: 'Adicionar' },
   'time-range-picker': { ...segments, startTime: 'Hora de início', endTime: 'Hora de término', presets: 'Atalhos', clearTrigger: 'Limpar' },
   'timer': {
     time: ({ days, hours, minutes, seconds }) => {

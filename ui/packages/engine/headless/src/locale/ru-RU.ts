@@ -702,7 +702,7 @@ const translations = {
   'tags-input': { deleteItem: value => `Удалить: ${value}`, editTagInput: value => `Изменить: ${value}`, clearTrigger: 'Очистить' },
   'text-field': { clearTrigger: 'Очистить' },
   'time-field': { ...segments, clearTrigger: 'Очистить' },
-  'time-picker': { ...tagged, ...segments, presets: 'Быстрый выбор', clearTrigger: 'Очистить' },
+  'time-picker': { ...tagged, ...segments, presets: 'Быстрый выбор', clearTrigger: 'Очистить', confirmTrigger: 'Добавить' },
   'time-range-picker': { ...segments, startTime: 'Время начала', endTime: 'Время окончания', presets: 'Быстрый выбор', clearTrigger: 'Очистить' },
   'timer': {
     time: ({ days, hours, minutes, seconds }) =>

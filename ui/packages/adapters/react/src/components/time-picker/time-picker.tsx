@@ -22,12 +22,14 @@ import type {
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { timePickerStructure } from '@xihan-ui/headless'
 import { useEffect, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotIsPlainText, slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -109,11 +111,15 @@ export interface XhTimePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
   onClear?: () => void
   onOpenChange?: TimePickerProps['onOpenChange']
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
+  /** 不给时照标准结构铺整套部件。 */
   children?: SlotChildren<TimePickerRootSlotProps>
 }
 
 export function XhTimePickerRoot({
   ariaLabel,
+  label,
   value,
   defaultValue,
   selectionMode,
@@ -193,7 +199,7 @@ export function XhTimePickerRoot({
         )}
       >
         {children == null
-          ? null
+          ? renderDefaultStructure(api, label)
           : renderSlot(children, {
               open: api.open,
               value: api.value,
@@ -540,4 +546,38 @@ export function XhTimePickerHiddenInput({ ...rest }: XhTimePickerHiddenInputProp
       )}
     />
   )
+}
+
+/** 结构里的部件 → 部件组件；委派出去的部件按「组件名/部件名」查。 */
+const TIME_PICKER_PARTS = {
+  'label': XhTimePickerLabel,
+  'control': XhTimePickerControl,
+  'tag-list': XhTimePickerTagList,
+  'segment-group': XhTimePickerSegmentGroup,
+  'segment': XhTimePickerSegment,
+  'trigger': XhTimePickerTrigger,
+  'clear-trigger': XhTimePickerClearTrigger,
+  'positioner': XhTimePickerPositioner,
+  'content': XhTimePickerContent,
+  'preset-group': XhTimePickerPresetGroup,
+  'preset': XhTimePickerPreset,
+  'column': XhTimePickerColumn,
+  'item': XhTimePickerItem,
+  'footer': XhTimePickerFooter,
+  'confirm-trigger': XhTimePickerConfirmTrigger,
+  'hidden-input': XhTimePickerHiddenInput,
+  'tag/tag': XhTimePickerTag,
+  'tag/tag-label': XhTimePickerTagLabel,
+  'tag/item-delete-trigger': XhTimePickerItemDeleteTrigger,
+  'tag/overflow-tag': XhTimePickerOverflowTag,
+}
+
+/**
+ * 不给 children 时照 timePickerStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 文字以外的标题内容交给 label 部件。
+ */
+function renderDefaultStructure(api: TimePickerApi, label: ReactNode): ReactNode[] {
+  const slotted = label != null && typeof label !== 'string'
+  const nodes = timePickerStructure(api, { label: typeof label === 'string' ? label : undefined, slotted: name => name === 'label' && slotted })
+  return renderStructure(nodes, TIME_PICKER_PARTS, node => (node.slot ? label : undefined))
 }

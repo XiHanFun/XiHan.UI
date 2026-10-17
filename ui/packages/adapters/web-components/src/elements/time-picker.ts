@@ -21,9 +21,10 @@ import type {
   TimeSegmentType,
   TimeStep,
 } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectTimePicker, resolveFormControlState, timePickerAnatomy, timePickerMachine, timePickerMeta } from '@xihan-ui/headless'
+import { connectTimePicker, resolveFormControlState, timePickerAnatomy, timePickerMachine, timePickerMeta, timePickerStructure } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
@@ -73,7 +74,12 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  *
  * 段与格子上的文字由元素填入；作者自行写了内容的不修改。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label），盒里的段组（多选时是带删除钮的标签行）、清空钮与触发钮，
+ * 表单影子，浮层里的快捷选项、各时间列，多选时再加底栏的添加钮；精度、小时制与选中变化时随之重生成。
+ * 标题可以由宿主直接子节点 `slot="label"` 接管。
+ *
  * @customElement xh-time-picker
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控值，ISO 时间串（'13:45' / '13:45:30'）；未提供该属性即非受控。多选的一组时刻是数组，只走 property
  * @attr {string} default-value - 非受控初值；多选的数组只走 property
  * @attr {'single'|'multiple'} selection-mode - 选择模式，默认 single；multiple 时列上拼草稿、按 confirm-trigger 收进值，输入行里排成标签
@@ -138,8 +144,16 @@ export class XhTimePickerElement extends XhPortalHostElement {
 
   static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const
 
+  /** 作者没写结构时按标准结构生成：标题、盒、表单影子与浮层里的快捷选项、时间列与（多选时的）底栏。 */
+  static override structure: ElementStructure<XhTimePickerElement> = {
+    build: host => host.ctrl.service
+      ? timePickerStructure(connectTimePicker(host.ctrl.service, wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key) })
+      : undefined,
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    label: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
@@ -173,6 +187,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
   }
 
+  declare label?: string
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare selectionMode?: TimePickerSelectionMode

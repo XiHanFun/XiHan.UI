@@ -876,6 +876,7 @@ export const TIME_PICKER_EN_US: XhLocaleBucket<'time-picker'> = {
   dayPeriod: 'AM/PM',
   presets: 'Shortcuts',
   clearTrigger: 'Clear',
+  confirmTrigger: 'Add',
 }
 
 export const TIME_RANGE_PICKER_EN_US: XhLocaleBucket<'time-range-picker'> = {

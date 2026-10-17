@@ -386,6 +386,8 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   overflowCount: number
   /** +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 */
   overflowText: string
+  /** 解析后的文案：作者给的 translations 盖在当前语言包上。 */
+  translations: TimePickerTranslations
   /** 某一段应显示的文字（空段是占位串）。各适配器都用它填充文本，保证同构。 */
   getSegmentText: (props: TimePickerSegmentProps) => string
   /**
@@ -455,6 +457,8 @@ export interface TimePickerTranslations {
   presets: string
   /** 清空按钮的可及名。 */
   clearTrigger: string
+  /** 多选时浮层底部添加钮（confirm-trigger）的文字，标准结构铺这颗钮时用它。 */
+  confirmTrigger: string
   /** 多选标签删除按钮的可及名，接收标签文本；默认 `Delete <label>`。 */
   deleteItem: (label: string) => string
   /** 被折叠的标签（+N）显示的文字，接收折叠的个数；默认 +N。 */

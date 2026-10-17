@@ -109,6 +109,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 
 ### 特性
 
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：标题（`label` 给文字，是原生 `label`），盒里的段组（时、分、秒之间是冒号，挨着上下午段的是空格；多选时换成带删除钮的标签行）、清空钮与日历钮，表单影子，浮层里依次是快捷选项列、按精度与小时制铺的各列，多选时再加底栏的「添加」（文字取 `translations.confirmTrigger`）。精度、小时制与选中变化时结构随之重铺。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
 - `timeStep` 按单位设定时、分、秒各列的步长（`{ minute: 15 }`）。
 - `max` 直接把界外的格从列中裁掉；分钟列还会随已选的小时再裁一次。
 - `isTimeUnavailable` 逐格判断可选性：时列按 24 小时制给值，第三个参数带已选的时与分，写得出「9 点只能选 30 分以后」。
@@ -222,6 +223,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `XhTimePickerPreset` | `default` | — | 条目内容；未写时使用数据中的 label。 |
 | `XhTimePickerPresetGroup` | `default` | `TimePickerPresetsSlotProps` | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
 | `XhTimePickerRoot` | `default` | `TimePickerRootSlotProps` |  |
+| `XhTimePickerRoot` | `label` | — | 不写默认插槽时标题的内容，盖过 label 文字。 |
 
 ### React 适配器 props
 
@@ -235,7 +237,8 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `XhTimePickerPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
 | `XhTimePickerPreset` | `value` | `string` | 是 | 该条目的身份，与 presets 数据中的 value 逐字对应。 |
 | `XhTimePickerPresetGroup` | `children` | `SlotChildren<TimePickerPresetsSlotProps>` |  | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
-| `XhTimePickerRoot` | `children` | `SlotChildren<TimePickerRootSlotProps>` |  |  |
+| `XhTimePickerRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhTimePickerRoot` | `children` | `SlotChildren<TimePickerRootSlotProps>` |  | 不给时照标准结构铺整套部件。 |
 | `XhTimePickerSegment` | `segment` | `TimeSegmentType` | 是 | 段的身份由作者声明。 |
 | `XhTimePickerTag` | `value` | `string` | 是 | 它代表哪个选中值。 |
 
@@ -291,6 +294,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `tags` | `TimePickerTagMeta[]` | 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组。 |
 | `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
 | `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
+| `translations` | `TimePickerTranslations` | 解析后的文案：作者给的 translations 盖在当前语言包上。 |
 | `getSegmentText` | `(props: TimePickerSegmentProps) => string` | 某一段应显示的文字（空段是占位串）。各适配器都用它填充文本，保证同构。 |
 | `getItemText` | `(props: TimePickerItemProps) => string` | 某一格应显示的文字。数字列即格子自身的值，上下午列按 locale 给出「上午 / 下午」。 各适配器都用它填充文本，保证同构。 |
 | `isItemSelected` | `(props: TimePickerItemProps) => boolean` |  |
