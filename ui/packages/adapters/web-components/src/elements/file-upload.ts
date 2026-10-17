@@ -74,7 +74,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @fires files-change - 列表变化；detail 为 `{ files: File[] }`
  * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @fires remote-files-change - 远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }`
- * @fires upload-complete - 单个文件传输完成；detail 为 `{ file, url? }`
+ * @fires upload-complete - 单个文件传输完成；detail 为 `{ file, url?, id? }`，带 id 时这个文件随后转入 remoteFiles
  * @fires upload-error - 单个文件传输失败；detail 为 `{ file, error }`
  * @fires upload-cancel - 单个文件的传输被 cancelUpload 取消（文件留在列表里）；detail 为 `{ file }`
  * @fires file-accept - 本次接受了哪些文件；detail 为 `{ files: File[] }`

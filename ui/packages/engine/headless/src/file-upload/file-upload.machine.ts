@@ -248,6 +248,22 @@ function patchUpload(context: ContextFacade<FileUploadSchema>, id: string, patch
 }
 
 /**
+ * 传完且服务端给了标识的文件转成服务器已有附件：追加进 remoteFiles（已有同 id 的不重复追加），再从 files 移出。
+ * remoteFiles 受控时写入只是发出变化意图：记下待转入，等宿主写回含这个 id 的列表时再移出（settleRemotePromotions）。
+ */
+function promoteToRemote(params: UploadActionParams, file: File, record: FileUploadRemoteFile): void {
+  const { context, prop, refs } = params
+  const remote = context.get('remoteFiles')
+  if (!remote.some(existing => existing.id === record.id))
+    context.set('remoteFiles', [...remote, record])
+  if (prop('remoteFiles') !== undefined) {
+    refs.get('pendingRemote').set(record.id, file)
+    return
+  }
+  context.set('acceptedFiles', context.get('acceptedFiles').filter(existing => existing !== file))
+}
+
+/**
  * 空出来的传输位按列表顺序补给排队的文件：在传的传完、失败或被取消后调用。
  * 只补 queued 的：idle（等作者开传）与 canceled（等作者重开）不自己动。
  */
@@ -305,8 +321,12 @@ function beginUpload(params: UploadActionParams, file: File): void {
       release()
       if (controller.signal.aborted)
         return
-      patchUpload(context, id, { status: 'done', progress: 100, url: result?.url ?? undefined })
-      prop('onUploadComplete')?.({ file, url: result?.url ?? undefined })
+      const url = result?.url ?? undefined
+      const remoteId = typeof result?.id === 'string' && result.id !== '' ? result.id : undefined
+      patchUpload(context, id, { status: 'done', progress: 100, url })
+      prop('onUploadComplete')?.(remoteId === undefined ? { file, url } : { file, url, id: remoteId })
+      if (remoteId !== undefined)
+        promoteToRemote(params, file, { id: remoteId, name: file.name, size: file.size, type: file.type || undefined, url })
       pumpQueue(params)
     })
     .catch((error) => {
@@ -353,11 +373,14 @@ export const fileUploadMachine = createMachine({
     fileIds: new WeakMap<File, string>(),
     fileSeq: { n: 0 },
     uploadControllers: new Map<string, AbortController>(),
+    pendingRemote: new Map<string, File>(),
   }),
   initialState: () => 'idle',
   watch: ({ track, prop, context, action }) => {
     // 列表变了要对齐传输：新收下的按 autoUpload 开传，移出的中止并清快照
     track([context.dep('acceptedFiles')], () => action(['syncUploads']))
+    // 受控的 remoteFiles 写回了待转入的标识：把对应的文件从 files 移出
+    track([context.dep('remoteFiles')], () => action(['settleRemotePromotions']))
     // 按住途中转入禁用，或按住的删除钮随文件一起离开列表（Enter 在 keydown 即删）：不会再来 keyup，按压面由机器自己收
     track([() => prop('disabled'), context.dep('acceptedFiles'), context.dep('remoteFiles')], () => action(['releaseWhenInert']))
   },
@@ -510,6 +533,28 @@ export const fileUploadMachine = createMachine({
         patchUpload(context, id, { status: 'canceled', progress: 0 })
         prop('onUploadCancel')?.({ file: e.file })
         pumpQueue(params)
+      },
+
+      // 待转入的文件：宿主写回的 remoteFiles 里有它的标识就从 files 移出；文件已经不在 files 里的不再等
+      settleRemotePromotions: ({ context, refs }) => {
+        const pending = refs.get('pendingRemote')
+        if (pending.size === 0)
+          return
+        const ids = new Set(context.get('remoteFiles').map(file => file.id))
+        const files = context.get('acceptedFiles')
+        const leaving = new Set<File>()
+        for (const [remoteId, file] of pending) {
+          if (!files.includes(file)) {
+            pending.delete(remoteId)
+            continue
+          }
+          if (ids.has(remoteId)) {
+            leaving.add(file)
+            pending.delete(remoteId)
+          }
+        }
+        if (leaving.size)
+          context.set('acceptedFiles', files.filter(file => !leaving.has(file)))
       },
 
       deleteRemoteFile: ({ context, event }) => {

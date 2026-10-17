@@ -73,11 +73,20 @@ export interface FileUploadRequest {
 export interface FileUploadResult {
   /** 传输完成后的访问地址，记入该文件的传输快照。 */
   url?: string
+  /**
+   * 服务端给这个文件的稳定标识。给了即把它转成服务器已有附件：以 `{ id, name, size, type, url }` 追加进 remoteFiles
+   * （name、size、type 取自原文件，已有同 id 的不重复追加），再从 files 移出；先发 onRemoteFilesChange，再发 onFilesChange。
+   * remoteFiles 受控时只发 onRemoteFilesChange，宿主写回含这个 id 的列表之后才从 files 移出，在此之前它留在 files 里、状态为 done。
+   * 不给时行为不变：文件留在 files 里。
+   */
+  id?: string
 }
 
 export interface FileUploadCompleteDetails {
   file: File
   url?: string
+  /** upload 返回的标识；给了即表示这个文件随后转入 remoteFiles。 */
+  id?: string
 }
 
 export interface FileUploadErrorDetails {
@@ -251,6 +260,8 @@ export interface FileUploadSchema extends MachineSchema {
     fileSeq: { n: number }
     /** 传输中的中止句柄，键同 uploads。 */
     uploadControllers: Map<string, AbortController>
+    /** remoteFiles 受控时等宿主写回的转入：远程标识 → 还留在 files 里的那个文件。 */
+    pendingRemote: Map<string, File>
   }
   /** dragging = 有内容正悬停在投放区上方，样式据此绘制高亮边框。 */
   state: 'idle' | 'dragging'
@@ -284,7 +295,7 @@ export interface FileUploadSchema extends MachineSchema {
     | { type: 'PROGRESS.SETTLED', id: string }
   tag: never
   guard: 'canChange' | 'canDrop' | 'canPaste'
-  action: 'setFiles' | 'addFiles' | 'deleteFile' | 'clearFiles' | 'openFilePicker' | 'resetToDefault' | 'syncUploads' | 'startUpload' | 'cancelUpload' | 'deleteRemoteFile' | 'startPress' | 'endPress' | 'releaseWhenInert' | 'markListTracked' | 'settleProgress'
+  action: 'setFiles' | 'addFiles' | 'deleteFile' | 'clearFiles' | 'openFilePicker' | 'resetToDefault' | 'syncUploads' | 'startUpload' | 'cancelUpload' | 'deleteRemoteFile' | 'settleRemotePromotions' | 'startPress' | 'endPress' | 'releaseWhenInert' | 'markListTracked' | 'settleProgress'
   effect: 'trackUploads' | 'trackListMotion' | 'trackProgressExit'
 }
 
