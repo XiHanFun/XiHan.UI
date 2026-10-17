@@ -13106,6 +13106,7 @@
       "onPositionChange",
       "onWindowStateChange",
       "open",
+      "parts",
       "position",
       "resizable",
       "translations",

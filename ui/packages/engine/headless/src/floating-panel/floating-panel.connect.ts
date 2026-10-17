@@ -55,6 +55,7 @@ export function connectFloatingPanel<T extends PropTypes>(
   const canResize = !disabled && (prop('resizable') ?? true) && windowState === 'default'
 
   const ids = scope.ids('floating-panel', 'content', 'title')
+  const rendered = prop('parts')
 
   // 按压通道：三种按钮各自合成一份跟踪器，真源是机器 context 里「正被按住的那颗」；
   // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，皮肤两者同一档
@@ -167,7 +168,8 @@ export function connectFloatingPanel<T extends PropTypes>(
       'role': 'dialog',
       // 显式写 false 而非省略：浮动面板不挡住页面，读屏对未声明与声明为非模态处理不同
       'aria-modal': 'false',
-      'aria-labelledby': ids.title,
+      // 只引用作者渲染了的标题：省略 parts 按在场
+      'aria-labelledby': rendered?.title !== false ? ids.title : undefined,
       'tabindex': -1,
       // Esc 只在焦点落在面板里时管用：面板不是模态的，页面别处的 Esc 不归它
       'onKeyDown': (event: KeyboardEvent) => {

@@ -20,6 +20,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
+import { useTitleDescriptionPart } from '../../runtime/title-description'
 import { FloatingPanelProvider, useFloatingPanelContext } from './context'
 import { useFloatingPanel } from './use-floating-panel'
 
@@ -192,6 +193,7 @@ export function XhFloatingPanelHeader({ children, ...rest }: XhFloatingPanelHead
 export interface XhFloatingPanelTitleProps extends ComponentPropsWithRef<'h2'> {}
 export function XhFloatingPanelTitle({ children, ...rest }: XhFloatingPanelTitleProps): ReactNode {
   const ctx = useFloatingPanelContext()
+  useTitleDescriptionPart(ctx.presence, 'title')
   return (
     <h2 {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}

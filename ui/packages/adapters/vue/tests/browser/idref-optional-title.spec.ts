@@ -8,24 +8,28 @@ import { createVueHarness } from '../harness'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-const COMPONENTS = ['dialog', 'drawer', 'popover', 'popconfirm', 'alert', 'approval', 'tour']
+const COMPONENTS = ['dialog', 'drawer', 'popover', 'popconfirm', 'alert', 'approval', 'tour', 'floating-panel']
 
 type Variant = 'full' | 'drop' | 'empty-description'
 
 /** 挂载用的 props：收起时内容不渲染，部件也就无从登记，这几个要先展开。 */
 const MOUNT_PROPS: Record<string, (suite: ConformanceSuite, variant: Variant) => Record<string, unknown>> = {
-  dialog: () => ({ defaultOpen: true }),
-  drawer: () => ({ defaultOpen: true }),
-  popover: () => ({ defaultOpen: true }),
-  popconfirm: () => ({ defaultOpen: true }),
-  tour: (suite, variant) => {
+  'dialog': () => ({ defaultOpen: true }),
+  'drawer': () => ({ defaultOpen: true }),
+  'popover': () => ({ defaultOpen: true }),
+  'popconfirm': () => ({ defaultOpen: true }),
+  'tour': (suite, variant) => {
     const props = suite.cases.find(c => c.props?.defaultOpen)?.props ?? {}
     if (variant !== 'empty-description')
       return props
     const steps = props.steps as Array<Record<string, unknown>>
     return { ...props, steps: steps.map(({ description: _, ...step }) => step) }
   },
+  'floating-panel': () => ({ defaultOpen: true }),
 }
+
+/** 没有说明部件的组件：只验标题。 */
+const TITLE_ONLY = ['floating-panel']
 
 const harness = createVueHarness()
 
@@ -94,13 +98,17 @@ describe('只引用在场的标题与说明', () => {
       const suite = suites.find(s => s.component === component)!
       const part = (name: string): string => `[data-scope="${component}"][data-part="${name}"]`
 
+      const titleOnly = TITLE_ONLY.includes(component)
+
       await mountTree(suite, 'full')
       const title = document.querySelector(part('title'))
       expect(title?.id).toBeTruthy()
       expect(refIds('aria-labelledby')).toContain(title!.id)
-      const description = document.querySelector(part('description'))
-      expect(description?.id).toBeTruthy()
-      expect(refIds('aria-describedby')).toContain(description!.id)
+      if (!titleOnly) {
+        const description = document.querySelector(part('description'))
+        expect(description?.id).toBeTruthy()
+        expect(refIds('aria-describedby')).toContain(description!.id)
+      }
       expect(danglingRefs()).toEqual([])
       await harness.unmount()
 
@@ -110,6 +118,9 @@ describe('只引用在场的标题与说明', () => {
       expect(danglingRefs()).toEqual([])
       expect(await invalidRefs()).toEqual([])
       await harness.unmount()
+
+      if (titleOnly)
+        return
 
       await mountTree(suite, 'empty-description')
       const empty = document.querySelector(part('description'))

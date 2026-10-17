@@ -186,6 +186,8 @@ export class XhFloatingPanelElement extends XhElement {
       resizable: this.resizable,
       disabled: this.disabled,
       translations: this.translations,
+      // content 只引用作者写了的标题
+      parts: { title: this.getPart('title') != null },
       onOpenChange: this.notifyOpen,
       onPositionChange: this.notifyPosition,
       onDimensionsChange: this.notifyDimensions,

@@ -132,6 +132,7 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 | `draggable` | `boolean` |  | 是否允许移动面板，默认 true；铺满形态下恒不可移动。 |
 | `resizable` | `boolean` |  | 是否允许改尺寸，默认 true；只有常规形态下可以改尺寸。 |
 | `disabled` | `boolean` |  | 禁用：不可移动、不可改尺寸、不可切换形态；开合与关闭不受影响。 |
+| `parts` | `Pick<TitleDescriptionParts, 'title'>` |  | 作者实际渲染了哪些部件，由适配器统计；省略即按在场处理（服务端直出与挂载前）。 title 不在场时 content 不写 aria-labelledby，名字由作者在 content 上写 aria-label。 |
 | `translations` | `Partial<FloatingPanelTranslations>` |  |  |
 | `onOpenChange` | `(details: FloatingPanelOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onPositionChange` | `(details: FloatingPanelPositionChangeDetails) => void` |  | 位置变化意图回调；拖动过程中连续发出。 |
@@ -244,7 +245,7 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `content` | `aria-labelledby` | `title` 部件的 id |
+| `content` | `aria-labelledby` | `title` 部件的 id \| undefined |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
 | `drag-trigger` | `aria-disabled` | 'false' \| 'true' |
