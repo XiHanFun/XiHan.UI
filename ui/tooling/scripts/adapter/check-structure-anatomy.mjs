@@ -13,7 +13,9 @@
 //   ⑤ 结构节点的 attrs 只放身份属性：结构文件里不出现 role、aria-*、data-state、tabindex，这些归 connect；
 //   ⑥ 可接管部件登记在结构文件的 <名>_STRUCTURE_TAKEOVER（部件 → trailing / portal）里，部件都在 PARTS 里，
 //      Web Components 元素的 takeover 直接引用这张表，不另写一份。trailing 的确实排在 root 末尾，
-//      由钩子在生成时核对（wc.structure-takeover-order），一致性套件的 defaultStructure 场景断言它不出现。
+//      由钩子在生成时核对（wc.structure-takeover-order），一致性套件的 defaultStructure 场景断言它不出现；
+//   ⑦ 组合节点：结构文件里出现的组件（instance: '<名>' 或 structureInstance(key, '<名>'）都要登记在 Web Components 元素的
+//      static dependencies（'xh-<名>'）与 Vue / React 的 <名>_INSTANCES 组件表里；反过来，登记了却从不生成的也报。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
@@ -106,11 +108,36 @@ for (const comp of components) {
   if (wcTakeover !== undefined && wcTakeover !== takeover?.[1])
     errors.push(`${comp}：Web Components 元素的 takeover 要直接引用结构文件的 ${takeover?.[1] ?? '<名>_STRUCTURE_TAKEOVER'}`)
   const vue = await read(join(VUE, comp, `${comp}.ts`))
+  const react = await read(join(REACT, comp, `${comp}.tsx`))
+  const used = new Set([
+    ...[...code.matchAll(/instance:\s*'([a-z0-9-]+)'/g)].map(m => m[1]),
+    ...[...code.matchAll(/structureInstance\([^,]+,\s*'([a-z0-9-]+)'/g)].map(m => m[1]),
+  ])
+  const keysOf = block => new Set([...(block ?? '').matchAll(/'?([a-z0-9-]+)'?\s*:/g)].map(m => m[1]))
+  const dependencies = new Set([...keysOf(wc?.match(/static override dependencies = \{([\s\S]*?)\}/)?.[1])].filter(tag => tag.startsWith('xh-')).map(tag => tag.slice(3)))
+  for (const [side, src] of [['Vue', vue], ['React', react]]) {
+    const table = keysOf(src?.match(/const [A-Z0-9_]+_INSTANCES\b[^=]*=\s*\{([\s\S]*?)\}/)?.[1])
+    for (const name of used) {
+      if (!table.has(name))
+        errors.push(`${comp}：结构里组合了 ${name}，${side} 的 _INSTANCES 组件表里没有它`)
+    }
+    for (const name of table) {
+      if (!used.has(name))
+        errors.push(`${comp}：${side} 的 _INSTANCES 组件表登记了 ${name}，结构里却从不生成`)
+    }
+  }
+  for (const name of used) {
+    if (!dependencies.has(name))
+      errors.push(`${comp}：结构里组合了 ${name}，Web Components 元素的 static dependencies 没有登记 xh-${name}`)
+  }
+  for (const name of dependencies) {
+    if (!used.has(name))
+      errors.push(`${comp}：Web Components 元素的 static dependencies 登记了 xh-${name}，结构里却从不生成`)
+  }
   if (!vue?.includes(fn))
     errors.push(`${comp}：Vue 的缺省树没有调 ${fn.slice(0, -1)}`)
   if (vue?.includes('function renderDefaultTree'))
     errors.push(`${comp}：Vue 仍手写 renderDefaultTree`)
-  const react = await read(join(REACT, comp, `${comp}.tsx`))
   if (!react?.includes(fn))
     errors.push(`${comp}：React 的缺省树没有调 ${fn.slice(0, -1)}`)
   if (react?.includes('function renderDefaultTree'))

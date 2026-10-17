@@ -9,9 +9,9 @@
 
 /**
  * 结构里用得到的标签：与 Vue / React 部件组件渲出的标签一致，按需要补，不放开成任意字符串。
- * `xh-*` 是结构里组合进来的另一个库内元素（如筛选器条件里的下拉），它自己的结构由它自己生成。
+ * 组合进来的另一个库内组件不走标签，走组合节点（StructureInstanceNode）。
  */
-export type StructureTag = 'div' | 'span' | 'button' | 'label' | 'input' | 'textarea' | 'p' | 'ul' | 'li' | 'fieldset' | 'legend' | `xh-${string}`
+export type StructureTag = 'div' | 'span' | 'button' | 'label' | 'input' | 'textarea' | 'p' | 'ul' | 'li' | 'fieldset' | 'legend'
 
 /**
  * 可接管部件在 root 里的位置：trailing 排在 root 子节点的末尾，portal 经 Portal 脱离文档流。
@@ -45,9 +45,34 @@ export interface StructureNode<P extends string = string> {
   readonly attrs?: Readonly<Record<string, string>>
   /** 节点里的文字；与 children、slot 互斥。 */
   readonly text?: string
-  readonly children?: readonly StructureNode<P>[]
+  readonly children?: readonly StructureChild<P>[]
   /** 这个部件的内容归作者；与 text、children 互斥。 */
   readonly slot?: StructureSlot
   /** 这个部件对应的模型数据（一格的取值、一个选项等），作为作者内容插槽的参数，不写进 DOM。 */
   readonly data?: unknown
+}
+
+/**
+ * 组合节点：这个位置是另一个库内组件的一个实例，它自己的结构由它自己生成。
+ * 不是外层组件的部件：没有 part，外层的 connect 也不往它身上铺属性；要定位、加样式时放进外层的某个部件里。
+ * Web Components 生成 `<xh-${instance}>`，Vue / React 渲那个组件的根组件，都不写结构，内层走它自己的缺省结构。
+ */
+export interface StructureInstanceNode {
+  /** 同一父节点下唯一，按它复用实例：实例里的展开、输入中的文字等状态跟着保留。 */
+  readonly key: string
+  /** 组件名，即那个组件的 anatomy 名，如 'select'、'number-field'。 */
+  readonly instance: string
+  /**
+   * 交给内层组件的属性与回调，形状是那个组件的 headless props。
+   * Web Components 按 property 赋值（不写 attribute），`onXxx` 回调换成 `xxx` 事件的监听；Vue / React 原样当 props。
+   */
+  readonly props?: Readonly<Record<string, unknown>>
+}
+
+/** 结构里的一个子节点：部件节点或组合节点。 */
+export type StructureChild<P extends string = string> = StructureNode<P> | StructureInstanceNode
+
+/** 是不是组合节点。 */
+export function isStructureInstance(node: StructureChild): node is StructureInstanceNode {
+  return 'instance' in node
 }

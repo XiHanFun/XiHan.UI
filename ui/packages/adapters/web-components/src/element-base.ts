@@ -5,7 +5,7 @@
 
 // 提供 element base 相关实现。
 
-import type { FieldControlWiring, StructureNode } from '@xihan-ui/headless'
+import type { FieldControlWiring, StructureChild } from '@xihan-ui/headless'
 import type { PartContract } from './dom/part-contract'
 import type { Spreader } from './dom/spread'
 import type { StructureSpec } from './dom/structure'
@@ -28,7 +28,7 @@ let instanceSeq = 0
  * 状态还算不出时返回 undefined，这一轮不动。
  */
 export interface ElementStructure<H> extends StructureSpec {
-  readonly build: (host: H, taken: ReadonlySet<string>) => readonly StructureNode[] | undefined
+  readonly build: (host: H, taken: ReadonlySet<string>) => readonly StructureChild[] | undefined
 }
 
 /**

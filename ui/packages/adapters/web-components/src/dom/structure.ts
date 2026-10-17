@@ -6,9 +6,10 @@
 // 按组件的标准结构生成作者没写的部件节点：节点写成作者会写的样子（data-xh-part 与身份属性），
 // 带生成标记（值为 structure，与元素别的生成节点分开）、按 key 复用，接线照常经部件发现。
 
-import type { StructureNode, StructureSlot, StructureTag, StructureTakeoverPosition } from '@xihan-ui/headless'
+import type { StructureChild, StructureInstanceNode, StructureSlot, StructureTag, StructureTakeoverPosition } from '@xihan-ui/headless'
 import type { KeyedChildren } from './generated-nodes'
 import { DIAGNOSTIC_CODES, isDev, reportDiagnostic } from '@xihan-ui/core'
+import { isStructureInstance } from '@xihan-ui/headless'
 import { createGeneratedElement, GEN_ATTR, generatedChildren, reconcile } from './generated-nodes'
 
 /** 标准结构生成的节点在 data-xh-gen 上写的值。 */
@@ -33,9 +34,11 @@ function setAttr(el: Element, name: string, value: string): void {
  * 节点上逐个写作者会写的身份属性，上一轮写过、这一轮没有的删掉。
  * 带 slot 的节点内容归作者，这里不碰，只把它记进 slots（slot 值 → 节点），由调用方把作者节点搬进去。
  */
-export function placeStructure(parent: Element, nodes: readonly StructureNode[], keys: KeyedChildren, slots?: Map<string, Element>): void {
+export function placeStructure(parent: Element, nodes: readonly StructureChild[], keys: KeyedChildren, slots?: Map<string, Element>): void {
   const doc = parent.ownerDocument
   reconcile(parent, nodes, keys, node => node.key, (node, reuse) => {
+    if (isStructureInstance(node))
+      return placeInstance(doc, node, reuse)
     const el = reuse instanceof HTMLElement && reuse.localName === node.tag
       ? reuse
       : createStructureElement(doc, node.tag)
@@ -60,7 +63,7 @@ export function placeStructure(parent: Element, nodes: readonly StructureNode[],
 }
 
 /** 建一个结构节点；结构里组合进来的库内元素还没注册时，开发期告警：它不会升级，那一块是空的。 */
-function createStructureElement(doc: Document, tag: StructureTag): HTMLElement {
+function createStructureElement(doc: Document, tag: StructureTag | `xh-${string}`): HTMLElement {
   const el = createGeneratedElement(doc, tag, { [GEN_ATTR]: STRUCTURE_MARK })
   if (tag.startsWith('xh-') && isDev() && typeof customElements !== 'undefined' && !customElements.get(tag)) {
     reportDiagnostic({
@@ -71,6 +74,94 @@ function createStructureElement(doc: Document, tag: StructureTag): HTMLElement {
       detail: { tag },
     })
   }
+  return el
+}
+
+/** 组合节点上一轮赋过的属性、各事件这一轮的回调，以及已经挂了监听的事件。 */
+interface InstanceState {
+  props: Readonly<Record<string, unknown>>
+  readonly handlers: Map<string, (detail: unknown) => void>
+  readonly listening: Set<string>
+}
+
+const instanceStates = new WeakMap<Element, InstanceState>()
+
+/** `onValueChange` → `value-change`；不是回调名时为 undefined。 */
+function eventOf(key: string): string | undefined {
+  return /^on[A-Z]/.test(key) ? key.slice(2).replace(/[A-Z]/g, c => `-${c.toLowerCase()}`).slice(1) : undefined
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  if (value === null || typeof value !== 'object')
+    return false
+  const proto = Object.getPrototypeOf(value) as unknown
+  return proto === Object.prototype || proto === null
+}
+
+/** 属性值相等：函数比引用，数组与普通对象逐项比，其余比引用。 */
+function sameProp(a: unknown, b: unknown): boolean {
+  if (Object.is(a, b))
+    return true
+  if (Array.isArray(a))
+    return Array.isArray(b) && a.length === b.length && a.every((item, index) => sameProp(item, b[index]))
+  if (isPlainObject(a) && isPlainObject(b)) {
+    const keys = Object.keys(a)
+    return keys.length === Object.keys(b).length && keys.every(key => key in b && sameProp(a[key], b[key]))
+  }
+  return false
+}
+
+/**
+ * 放一个组合节点：生成（或复用）`<xh-${instance}>`，props 里的数据按 property 赋值，与上一轮相等就不写，免得重设数组
+ * 打断内层的输入；上一轮有、这一轮没了的设回 undefined。`onXxx` 回调换成 `xxx` 事件的监听，每个事件只挂一个，
+ * 监听里调这一轮最新的回调、传事件的 detail，并且不让事件冒出外层宿主。
+ */
+function placeInstance(doc: Document, node: StructureInstanceNode, reuse: Element | undefined): Element {
+  const tag = `xh-${node.instance}` as const
+  const el = reuse instanceof HTMLElement && reuse.localName === tag ? reuse : createStructureElement(doc, tag)
+  let state = instanceStates.get(el)
+  if (!state) {
+    state = { props: {}, handlers: new Map(), listening: new Set() }
+    instanceStates.set(el, state)
+  }
+  const target = el as unknown as Record<string, unknown>
+  const data: Record<string, unknown> = {}
+  const events = new Set<string>()
+  for (const [key, value] of Object.entries(node.props ?? {})) {
+    const event = eventOf(key)
+    if (event === undefined) {
+      data[key] = value
+      continue
+    }
+    if (typeof value !== 'function')
+      continue
+    events.add(event)
+    state.handlers.set(event, value as (detail: unknown) => void)
+    if (!state.listening.has(event)) {
+      state.listening.add(event)
+      const handlers = state.handlers
+      el.addEventListener(event, (e) => {
+        const handler = handlers.get(event)
+        if (!handler)
+          return
+        e.stopPropagation()
+        handler((e as CustomEvent).detail)
+      })
+    }
+  }
+  for (const event of [...state.handlers.keys()]) {
+    if (!events.has(event))
+      state.handlers.delete(event)
+  }
+  for (const key of Object.keys(state.props)) {
+    if (!(key in data))
+      target[key] = undefined
+  }
+  for (const [key, value] of Object.entries(data)) {
+    if (!(key in state.props) || !sameProp(state.props[key], value))
+      target[key] = value
+  }
+  state.props = data
   return el
 }
 
@@ -112,19 +203,20 @@ export interface StructureSpec {
  * 开发期核对：排在末尾的可接管部件必须在 root 子节点的最后、按登记的先后排列；不然作者接管它时，
  * 作者节点与生成节点的先后会和缺省结构不一致，DOM 序与 Tab 序跟着错。经 portal 的部件不受限。
  */
-function checkTakeoverOrder(host: Element, nodes: readonly StructureNode[], takeover: ReadonlyMap<string, StructureTakeoverPosition>): void {
+function checkTakeoverOrder(host: Element, nodes: readonly StructureChild[], takeover: ReadonlyMap<string, StructureTakeoverPosition>): void {
   if (takeover.size === 0 || !isDev())
     return
   const order = [...takeover].filter(([, position]) => position === 'trailing').map(([part]) => part)
   let rank = -1
   let last: string | undefined
   for (const node of nodes) {
-    const position = takeover.get(node.part)
+    const part = isStructureInstance(node) ? undefined : node.part
+    const position = part === undefined ? undefined : takeover.get(part)
     if (position === 'portal')
       continue
-    const next = position === 'trailing' ? order.indexOf(node.part) : -1
+    const next = position === 'trailing' ? order.indexOf(part!) : -1
     // 末尾部件后面又出现了普通部件，错的是那个末尾部件；末尾部件之间先后不对，错的是排到前面的这一个
-    const misplaced = position === undefined ? (rank >= 0 ? last : undefined) : (next < rank ? node.part : undefined)
+    const misplaced = position === undefined ? (rank >= 0 ? last : undefined) : (next < rank ? part : undefined)
     if (misplaced !== undefined) {
       reportDiagnostic({
         code: DIAGNOSTIC_CODES.wcStructureTakeoverOrder,
@@ -138,7 +230,7 @@ function checkTakeoverOrder(host: Element, nodes: readonly StructureNode[], take
     }
     if (position === 'trailing') {
       rank = next
-      last = node.part
+      last = part
     }
   }
 }
@@ -184,7 +276,7 @@ export function createStructureState(): StructureState {
 export function syncStructure(
   host: HTMLElement,
   spec: StructureSpec,
-  build: (taken: ReadonlySet<string>) => readonly StructureNode[] | undefined,
+  build: (taken: ReadonlySet<string>) => readonly StructureChild[] | undefined,
   state: StructureState,
 ): void {
   const doc = host.ownerDocument
