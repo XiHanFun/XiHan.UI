@@ -1132,7 +1132,7 @@ export const comboboxSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '多选不写结构：盒里铺标签行，每枚标签带文字与删除钮，摆不下的折进 +N',
+      name: '多选不写结构：盒里铺标签行，每枚标签带文字与删除钮，摆不下的折进 +N；没有标题时输入框以 ariaLabel 为名',
       spec: { apg: `${APG}#roles_states_properties` },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
       props: {
@@ -1144,9 +1144,12 @@ export const comboboxSuite: ConformanceSuite = {
         multiple: true,
         maxTagCount: 2,
         defaultValue: ['apple', 'banana', 'cherry'],
+        // 不铺标题时名字只能来自 ariaLabel，落在生成的输入框上
+        ariaLabel: '水果',
       },
       initial: {
         counts: { 'tag-list': 1, 'item': 3, 'label': 0, 'clear-trigger': 0 },
+        parts: { input: { 'aria-label': '水果' } },
       },
       steps: [
         {
