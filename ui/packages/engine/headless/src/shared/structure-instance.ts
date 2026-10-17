@@ -10,6 +10,8 @@ import type { ComboboxStructureOptions } from '../combobox/combobox.structure'
 import type { ComboboxSchema } from '../combobox/combobox.types'
 import type { DateFieldStructureOptions } from '../date-field/date-field.structure'
 import type { DateFieldSchema } from '../date-field/date-field.types'
+import type { MenuStructureOptions } from '../menu/menu.structure'
+import type { MenuSchema } from '../menu/menu.types'
 import type { NumberFieldStructureOptions } from '../number-field/number-field.structure'
 import type { NumberFieldSchema } from '../number-field/number-field.types'
 import type { SelectStructureOptions } from '../select/select.structure'
@@ -34,6 +36,7 @@ type InstanceProps<Schema extends { props: object }, Options> = Schema['props'] 
 export interface StructureInstanceProps {
   'combobox': InstanceProps<ComboboxSchema, ComboboxStructureOptions>
   'date-field': InstanceProps<DateFieldSchema, DateFieldStructureOptions>
+  'menu': InstanceProps<MenuSchema, MenuStructureOptions>
   'number-field': InstanceProps<NumberFieldSchema, NumberFieldStructureOptions>
   'select': InstanceProps<SelectSchema, SelectStructureOptions>
   'switch': InstanceProps<SwitchSchema, SwitchStructureOptions>

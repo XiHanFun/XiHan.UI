@@ -41,6 +41,17 @@ function menuTree(disabled?: string): FixtureNode {
   }
 }
 
+/**
+ * 标准结构场景的数据：带快捷键的条目、带说明的条目、带标题的勾选分组。
+ * 子菜单的定位层在三端落进 portal 的时机不同，文档序对不齐，子菜单另在各端单测里断言。
+ */
+const STRUCTURE_COLLECTION = [
+  { value: 'open', label: '打开', shortcut: 'Ctrl+O' },
+  { value: 'rename', label: '重命名', description: '改文件名' },
+  { value: 'bold', label: '粗体', kind: 'checkbox', group: 'format', groupLabel: '格式', separatorBefore: true },
+  { value: 'italic', label: '斜体', kind: 'checkbox', group: 'format' },
+]
+
 // content 始终在 DOM，展开态靠 hidden 属性显隐，不卸载作者节点。
 // 位置由引擎异步回填，快照不采集 style，因此这里只在收起态断言 data-placement 这类语义属性。
 export const menuSuite: ConformanceSuite = {
@@ -481,6 +492,54 @@ export const menuSuite: ConformanceSuite = {
       fixture: () => menuTree('copy'),
       props: { open: true },
       steps: [heldPressIgnored('menu', 'item', '禁用条目不接受按压')],
+    },
+    {
+      name: '作者不写结构：三端都照 menuStructure 铺出触发按钮、定位层与条目（快捷键、说明、带标题的勾选分组）；勾选可多选，换数据按值复用条目',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ defaultStructure: true }),
+      props: { collection: STRUCTURE_COLLECTION, label: '文件' },
+      initial: {
+        order: [
+          'trigger',
+          'positioner',
+          'content',
+          'item[0]',
+          'item-text[0]',
+          'item-shortcut',
+          'item[1]',
+          'item-text[1]',
+          'item-description',
+          'separator',
+          'group',
+          'group-label',
+          'item[2]',
+          'item-indicator[0]',
+          'item-text[2]',
+          'item[3]',
+          'item-indicator[1]',
+          'item-text[3]',
+        ],
+        parts: {
+          'trigger': { 'type': 'button', 'aria-haspopup': 'menu', 'aria-expanded': 'false' },
+          'item[0]': { 'role': 'menuitem', 'data-value': 'open' },
+          'item[2]': { 'role': 'menuitemcheckbox', 'aria-checked': 'false' },
+          'group': { 'role': 'group', 'aria-labelledby': '@part(group-label)' },
+        },
+      },
+      steps: [
+        { kind: 'click', part: 'trigger', expect: { parts: { trigger: { 'aria-expanded': 'true' } } } },
+        { kind: 'click', part: 'item[2]', expect: { parts: { 'item[2]': { 'aria-checked': 'true' } } } },
+        { kind: 'click', part: 'item[3]', expect: { parts: { 'item[2]': { 'aria-checked': 'true' }, 'item[3]': { 'aria-checked': 'true' } } } },
+        { kind: 'click', part: 'item[0]', expect: { parts: { trigger: { 'aria-expanded': 'false' } } } },
+        {
+          kind: 'setProps',
+          props: { collection: [STRUCTURE_COLLECTION[1], { value: 'delete', label: '删除' }] },
+          expect: {
+            order: ['trigger', 'positioner', 'content', 'item[0]', 'item-text[0]', 'item-description', 'item[1]', 'item-text[1]'],
+            parts: { 'item[0]': { 'data-value': 'rename' }, 'item[1]': { 'data-value': 'delete' } },
+          },
+        },
+      ],
     },
   ],
 }

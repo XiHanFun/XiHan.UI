@@ -75,6 +75,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 ### 特性
 
 - `collection` 可直接生成条目、分组、标记位、说明、快捷键提示和分隔线。
+- 只给 `collection` 时照标准结构铺：触发按钮（内容归作者，没写时取 `label`），定位层里的条目、分组与分隔线；带 `children` 的条目是一个嵌套的子菜单，它的触发条目文字取 `label`。Vue / React 不写默认插槽与 Web Components 不写部件时生成的节点出自同一个结构函数；Web Components 的部件直接长在 `<xh-menu>` 里，触发按钮的内容与条目可用宿主直接子节点 `slot="trigger"`、`slot="item:<值>"` 等接管（只到根菜单这一层），子菜单生成嵌套的 `<xh-menu submenu>`，触发条目写着它的 `value`。指向锚点的箭头要手写结构时自己摆。
 - 条目可逐条声明语气，删除一类命令自带该族字色与高亮底。
 - 快捷键提示贴行尾，与说明同档同色；它是纯装饰，读屏从命令文字取意。
 - 支持方向键、首字符检索、禁用条目和多级子菜单。数据驱动时节点写 `children` 即为子菜单入口，Vue / React 的默认树按 `children` 递归铺出下一层，深度不限，路由菜单这类按数据生成的多级菜单不必手写 `Sub` 部件；子层与本层同用 `item` / `item-prefix` / `item-suffix` 插槽，叶子的选中汇到根级 `select`。入口只能是普通条目，勾选与单选条目带 `children` 直接报错。
@@ -198,11 +199,13 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `XhMenuRadioGroup` | `value` | `string` | 是 |  |
 | `XhMenuRoot` | `trigger` | `ReactNode` |  | 触发器中放置的内容；只提供 collection 时由它承载。 |
 | `XhMenuRoot` | `triggerAsChild` | `boolean` |  | 只提供 collection 时，trigger 给出的节点直接作为触发器使用，不再外包一个 button。 |
+| `XhMenuRoot` | `label` | `string` |  | 按数据铺设时触发按钮的文字；给了 trigger 时以它为准。 |
 | `XhMenuRoot` | `renderItem` | `(node: MenuNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
 | `XhMenuRoot` | `renderItemPrefix` | `(node: MenuNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
 | `XhMenuRoot` | `renderItemSuffix` | `(node: MenuNodeMeta) => ReactNode` |  | 只接管条目行尾那一格（计数、徽标、次级图标）；其余槽仍由数据铺。 |
 | `XhMenuRoot` | `children` | `SlotChildren<MenuRootSlotProps>` |  |  |
 | `XhMenuSub` | `value` | `string` | 是 | 它在父菜单中的条目身份。 |
+| `XhMenuSub` | `label` | `string` |  | 按数据铺设时触发条目的文字；缺省取父菜单 collection 里这一条的 label。 |
 | `XhMenuSub` | `disabled` | `boolean` |  |  |
 | `XhMenuSub` | `collection` | `MenuNode[]` |  |  |
 | `XhMenuSub` | `checkboxValue` | `string[]` |  |  |

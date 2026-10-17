@@ -4,7 +4,7 @@
 // 每份 headless/<组件>/<组件>.structure.ts 登记两张表：<名>_STRUCTURE_PARTS（结构会产出的部件）
 // 与 <名>_STRUCTURE_OMITS（anatomy 里不进标准结构的部件）。类型已经管住两张表只收 anatomy 里的名字、
 // 结构函数只产出 PARTS 里的部件；这里核类型核不到的：
-//   ① PARTS、OMITS 与 root（由组件或元素自己给出）正好分完 anatomy，不重不漏——
+//   ① PARTS、OMITS 与 root（由组件或元素自己给出；菜单这类没有 root 的组件不算它）正好分完 anatomy，不重不漏——
 //      anatomy 加了部件、结构既不产出也不登记时判红；
 //   ② meta 的必备部件（root 以外）都在 PARTS 里；
 //   ③ 有结构文件的组件：Web Components 元素声明了 structure，Vue / React 的缺省树调结构函数渲、
@@ -66,7 +66,7 @@ for (const comp of components) {
     continue
   }
   const anatomy = names(anatomyBlock[1])
-  const listed = ['root', ...produced, ...omitted]
+  const listed = [...(anatomy.includes('root') ? ['root'] : []), ...produced, ...omitted]
   for (const part of anatomy) {
     const count = listed.filter(name => name === part).length
     if (count === 0)

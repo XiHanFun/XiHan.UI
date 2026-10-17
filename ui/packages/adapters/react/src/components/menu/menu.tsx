@@ -6,12 +6,13 @@
 // 提供 menu 相关实现。
 
 import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { MenuAnyItemProps, MenuApi, MenuCheckboxItemProps, MenuGroupProps, MenuNode, MenuNodeMeta, MenuRadioItemProps, MenuRadioValue, MenuSchema, MenuTranslations } from '@xihan-ui/headless'
+import type { MenuAnyItemProps, MenuApi, MenuCheckboxItemProps, MenuGroupProps, MenuNode, MenuNodeMeta, MenuRadioItemProps, MenuRadioValue, MenuSchema, MenuTranslations, StructureNode } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { groupAdjacentRuns, mergeProps } from '@xihan-ui/core'
-import { Fragment, useEffect, useMemo, useRef } from 'react'
+import { mergeProps } from '@xihan-ui/core'
+import { menuNodesStructure, menuStructure } from '@xihan-ui/headless'
+import { createContext, useContext, useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
@@ -19,6 +20,7 @@ import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import {
   MenuGroupProvider,
@@ -43,6 +45,12 @@ interface MenuItemRenderers {
   prefix?: (node: MenuNodeMeta) => ReactNode
   suffix?: (node: MenuNodeMeta) => ReactNode
 }
+
+/** 空的渲染函数表，缺省值共用这一份。 */
+const NO_RENDERERS: MenuItemRenderers = {}
+
+/** 根菜单传给各层子菜单的条目渲染函数。 */
+const MenuItemRenderersContext = createContext<MenuItemRenderers>(NO_RENDERERS)
 
 export interface XhMenuRootProps {
   /** 条目数据；提供后不必逐条放置部件。 */
@@ -70,6 +78,8 @@ export interface XhMenuRootProps {
   trigger?: ReactNode
   /** 只提供 collection 时，trigger 给出的节点直接作为触发器使用，不再外包一个 button。 */
   triggerAsChild?: boolean
+  /** 按数据铺设时触发按钮的文字；给了 trigger 时以它为准。 */
+  label?: string
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: MenuNodeMeta) => ReactNode
   /** 只接管条目行首那一格；其余槽仍由数据铺。 */
@@ -86,6 +96,7 @@ export interface XhMenuRootProps {
 export function XhMenuRoot({
   trigger,
   triggerAsChild,
+  label,
   renderItem,
   renderItemPrefix,
   renderItemSuffix,
@@ -93,6 +104,11 @@ export function XhMenuRoot({
   ...props
 }: XhMenuRootProps): ReactNode {
   const ctx = useMenu(withXhConfig('menu', props) as MenuProps)
+  // 各层子菜单按数据铺条目时与本层同用这几个渲染函数
+  const renderers = useMemo<MenuItemRenderers>(
+    () => ({ item: renderItem, prefix: renderItemPrefix, suffix: renderItemSuffix }),
+    [renderItem, renderItemPrefix, renderItemSuffix],
+  )
 
   const body = children != null
     ? renderSlot(children, {
@@ -103,11 +119,13 @@ export function XhMenuRoot({
         setCheckboxValue: ctx.api.setCheckboxValue,
         setRadioValue: ctx.api.setRadioValue,
       })
-    : props.collection
-      ? <DefaultTree collection={ctx.api.collection} trigger={trigger} triggerAsChild={triggerAsChild} renderers={{ item: renderItem, prefix: renderItemPrefix, suffix: renderItemSuffix }} />
-      : null
+    : renderDefaultStructure(ctx.api, renderers, { trigger, triggerAsChild, label })
 
-  return <MenuProvider value={ctx}>{body}</MenuProvider>
+  return (
+    <MenuProvider value={ctx}>
+      <MenuItemRenderersContext.Provider value={renderers}>{body}</MenuItemRenderersContext.Provider>
+    </MenuProvider>
+  )
 }
 
 XhMenuRoot.xhEvents = ['open-change', 'select', 'checkbox-value-change', 'radio-value-change'] as const
@@ -346,6 +364,8 @@ export type MenuSubSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 export interface XhMenuSubProps {
   /** 它在父菜单中的条目身份。 */
   value: string
+  /** 按数据铺设时触发条目的文字；缺省取父菜单 collection 里这一条的 label。 */
+  label?: string
   disabled?: boolean
   collection?: MenuNode[]
   checkboxValue?: string[]
@@ -372,8 +392,9 @@ export interface XhMenuSubProps {
 /**
  * 子菜单：内部再运行一台 menu 状态机（submenu 模式），触发条目由 XhMenuSubTrigger
  * 渲染为父菜单条目与本子菜单触发器的双重身份。本身不渲染节点。
+ * 不给 children 时照标准结构铺自己那一层：触发条目、定位层与按 collection 铺的条目。
  */
-export function XhMenuSub({ value, disabled, children, ...props }: XhMenuSubProps): ReactNode {
+export function XhMenuSub({ value, label, disabled, children, ...props }: XhMenuSubProps): ReactNode {
   const parent = useMenuContext()
   const ctx = useMenuWithParent({
     ...props,
@@ -395,10 +416,14 @@ export function XhMenuSub({ value, disabled, children, ...props }: XhMenuSubProp
       setOpenRef.current(false)
   }, [parentOpen])
 
+  const renderers = useContext(MenuItemRenderersContext)
+
   return (
     <MenuProvider value={ctx}>
       <MenuSubProvider value={handle}>
-        {renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })}
+        {children != null
+          ? renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })
+          : renderSubStructure(ctx.api, parent.api, value, label, renderers)}
       </MenuSubProvider>
     </MenuProvider>
   )
@@ -432,115 +457,112 @@ export function XhMenuSubTrigger({ children, ...rest }: XhMenuSubTriggerProps): 
   )
 }
 
-/**
- * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
- */
-function DefaultTree(props: {
-  collection: readonly MenuNodeMeta[]
-  trigger?: ReactNode
-  triggerAsChild?: boolean
-  renderers: MenuItemRenderers
-}): ReactNode {
-  return (
-    <>
-      <XhMenuTrigger asChild={props.triggerAsChild}>{props.trigger}</XhMenuTrigger>
-      <XhMenuPositioner>
-        <XhMenuContent>{renderNodes(props.collection, props.renderers)}</XhMenuContent>
-      </XhMenuPositioner>
-    </>
-  )
-}
-
-/** content 的内容：分组段铺为 group，段首的分隔线落在 group 外面。 */
-function renderNodes(
-  collection: readonly MenuNodeMeta[],
-  renderers: MenuItemRenderers,
-): ReactNode[] {
-  return groupAdjacentRuns(collection, node => node.group).map((run, runIndex) => {
-    const head = run[0]!
-    // 首条上的标记不产出分隔线：菜单开头不留一道空隔
-    const lead = runIndex > 0 && head.separatorBefore ? <XhMenuSeparator /> : null
-    if (head.group == null) {
-      return (
-        <Fragment key={head.value}>
-          {lead}
-          {renderItemNode(head, renderers)}
-        </Fragment>
-      )
-    }
-    const groupLabel = run.find(node => node.groupLabel != null)?.groupLabel ?? null
-    const Group = head.kind === 'radio' ? XhMenuRadioGroup : XhMenuGroup
-    return (
-      <Fragment key={`group:${head.group}`}>
-        {lead}
-        <Group value={head.group}>
-          {groupLabel != null ? <XhMenuGroupLabel>{groupLabel}</XhMenuGroupLabel> : null}
-          {run.map((node, index) => (
-            <Fragment key={node.value}>
-              {index > 0 && node.separatorBefore ? <XhMenuSeparator /> : null}
-              {renderItemNode(node, renderers)}
-            </Fragment>
-          ))}
-        </Group>
-      </Fragment>
-    )
-  })
-}
-
-/**
- * 单个条目：按数据铺标记位、文字、说明与快捷键，未提供的那几个不铺对应部件。
- * 写了 renderItem 即整条交给作者——它是整条的接管口，不是文字槽的填充口，
- * 作者自己放置 XhMenuItemText 等部件（与 ContextMenu 的 renderItem 语义不同，那边填的是文字槽）。
- */
-function renderItemNode(
-  meta: MenuNodeMeta,
-  renderers: MenuItemRenderers,
-): ReactNode {
-  if (meta.children)
-    return renderSubmenu(meta, renderers)
-  const content = renderers.item?.(meta) ?? (
-    <>
-      {renderers.prefix
-        ? <XhMenuItemIndicator>{renderers.prefix(meta)}</XhMenuItemIndicator>
-        : meta.indicator != null
-          ? <XhMenuItemIndicator>{meta.indicator}</XhMenuItemIndicator>
-          : meta.kind !== 'item' ? <XhMenuItemIndicator /> : null}
-      <XhMenuItemText>{meta.label}</XhMenuItemText>
-      {meta.description != null ? <XhMenuItemDescription>{meta.description}</XhMenuItemDescription> : null}
-      {meta.shortcut != null ? <XhMenuItemShortcut>{meta.shortcut}</XhMenuItemShortcut> : null}
-      {renderers.suffix ? <XhMenuItemSuffix>{renderers.suffix(meta)}</XhMenuItemSuffix> : null}
-    </>
-  )
-  if (meta.kind === 'checkbox')
-    return <XhMenuCheckboxItem key={meta.value} value={meta.value} closeOnSelect={meta.closeOnSelect}>{content}</XhMenuCheckboxItem>
-  if (meta.kind === 'radio')
-    return <XhMenuRadioItem key={meta.value} value={meta.value} closeOnSelect={meta.closeOnSelect}>{content}</XhMenuRadioItem>
-  return <XhMenuItem key={meta.value} value={meta.value}>{content}</XhMenuItem>
-}
-
-/**
- * 带 children 的条目铺成子菜单：本条是入口，下一层交给子菜单机器的 collection 现铺，深度不限。
- * 子层与本层同用这几个渲染函数，入参是子层自己的条目元信息。
- */
-function renderSubmenu(meta: MenuNodeMeta, renderers: MenuItemRenderers): ReactNode {
-  return (
-    <XhMenuSub key={meta.value} value={meta.value} disabled={meta.disabled || undefined} collection={meta.children as MenuNode[]}>
-      <XhMenuSubTrigger>{renderers.item?.(meta) ?? meta.label}</XhMenuSubTrigger>
-      <XhMenuPositioner>
-        <XhMenuContent>
-          <MenuDefaultNodes renderers={renderers} />
-        </XhMenuContent>
-      </XhMenuPositioner>
-    </XhMenuSub>
-  )
-}
-
-/**
- * 子菜单那一层的条目：从本层机器的 collection 现铺，条目带 children 的再往下一层。
- * 默认树内部用；Menubar 与 ContextMenu 按数据铺子层时也用它。不作为公开组件导出。
- */
-export function MenuDefaultNodes({ renderers = {} }: { renderers?: MenuItemRenderers }): ReactNode {
+/** 按数据铺的条目：kind 取 collection 里这一条，勾选与单选条目各用自己的部件组件。 */
+function MenuStructureItem({ value, children }: { value: string, children?: ReactNode }): ReactNode {
   const ctx = useMenuContext()
-  return <>{renderNodes(ctx.api.collection, renderers)}</>
+  const meta = ctx.api.collection.find(node => node.value === value)
+  if (meta?.kind === 'checkbox')
+    return <XhMenuCheckboxItem value={value} closeOnSelect={meta.closeOnSelect}>{children}</XhMenuCheckboxItem>
+  if (meta?.kind === 'radio')
+    return <XhMenuRadioItem value={value} closeOnSelect={meta.closeOnSelect}>{children}</XhMenuRadioItem>
+  return <XhMenuItem value={value}>{children}</XhMenuItem>
+}
+
+/** 按数据铺的分组：组里有单选条目时是单选组。 */
+function MenuStructureGroup({ value, children }: { value: string, children?: ReactNode }): ReactNode {
+  const ctx = useMenuContext()
+  return ctx.api.collection.some(node => node.kind === 'radio' && node.group === value)
+    ? <XhMenuRadioGroup value={value}>{children}</XhMenuRadioGroup>
+    : <XhMenuGroup value={value}>{children}</XhMenuGroup>
+}
+
+/** 根菜单借作者节点当触发器（triggerAsChild）。 */
+function MenuAsChildTrigger({ children }: { children?: ReactNode }): ReactNode {
+  return <XhMenuTrigger asChild>{children}</XhMenuTrigger>
+}
+
+/** 子菜单的触发条目：身份取子菜单上下文，结构写在节点上的 value 不落到 DOM。 */
+function MenuStructureSubTrigger({ children }: { children?: ReactNode }): ReactNode {
+  return <XhMenuSubTrigger>{children}</XhMenuSubTrigger>
+}
+
+/** 标准结构里各部件对应的组件。 */
+const MENU_PARTS = {
+  'trigger': XhMenuTrigger,
+  'positioner': XhMenuPositioner,
+  'content': XhMenuContent,
+  'item': MenuStructureItem,
+  'item-text': XhMenuItemText,
+  'item-indicator': XhMenuItemIndicator,
+  'item-description': XhMenuItemDescription,
+  'item-shortcut': XhMenuItemShortcut,
+  'item-suffix': XhMenuItemSuffix,
+  'separator': XhMenuSeparator,
+  'group': MenuStructureGroup,
+  'group-label': XhMenuGroupLabel,
+}
+
+/** 结构里组合进来的组件：带 children 的条目是嵌套的子菜单。 */
+const MENU_INSTANCES = { menu: XhMenuSub }
+
+/** 条目三处渲染的接管：item 整条、item-prefix 行首、item-suffix 行尾，入参是这一条的元信息。 */
+function itemContent(renderers: MenuItemRenderers, lookup: (value: string) => MenuNodeMeta | undefined): (node: StructureNode) => ReactNode | undefined {
+  return (node) => {
+    const name = node.slot?.name
+    const render = name === 'item' ? renderers.item : name === 'item-prefix' ? renderers.prefix : name === 'item-suffix' ? renderers.suffix : undefined
+    if (!render)
+      return undefined
+    const meta = (node.data as MenuNodeMeta | undefined) ?? lookup(node.slot!.key ?? '')
+    return meta ? render(meta) : undefined
+  }
+}
+
+function slottedBy(renderers: MenuItemRenderers): (name: string) => boolean {
+  return name => (name === 'item' ? renderers.item : name === 'item-prefix' ? renderers.prefix : name === 'item-suffix' ? renderers.suffix : undefined) != null
+}
+
+/**
+ * 未写 children 时照 menuStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 触发按钮的内容由 trigger 承载，没给时取 label；条目内容默认按数据铺，可由三处渲染函数逐槽接管。
+ */
+function renderDefaultStructure(
+  api: MenuApi,
+  renderers: MenuItemRenderers,
+  trigger: { trigger?: ReactNode, triggerAsChild?: boolean, label?: string },
+): ReactNode[] {
+  const slotted = slottedBy(renderers)
+  const nodes = menuStructure(api, {
+    ...(trigger.label === undefined ? {} : { label: trigger.label }),
+    slotted: name => name === 'trigger' ? trigger.trigger != null : slotted(name),
+  })
+  const items = itemContent(renderers, value => api.collection.find(node => node.value === value))
+  const parts = trigger.triggerAsChild ? { ...MENU_PARTS, trigger: MenuAsChildTrigger } : MENU_PARTS
+  return renderStructure(nodes, parts, node => node.slot?.name === 'trigger' ? trigger.trigger : items(node), MENU_INSTANCES)
+}
+
+/** 子菜单那一层照 menuStructure 铺：触发条目的文字与 renderItem 的入参取父菜单里这一条。 */
+function renderSubStructure(api: MenuApi, parent: MenuApi, value: string, label: string | undefined, renderers: MenuItemRenderers): ReactNode[] {
+  const meta = parent.collection.find(node => node.value === value)
+  const nodes = menuStructure(api, { submenu: true, value, label: label ?? meta?.label ?? value, slotted: slottedBy(renderers) })
+  const lookup = (key: string): MenuNodeMeta | undefined => key === value ? meta : api.collection.find(node => node.value === key)
+  return renderStructure(nodes, { ...MENU_PARTS, trigger: MenuStructureSubTrigger }, itemContent(renderers, lookup), MENU_INSTANCES)
+}
+
+/**
+ * 子菜单那一层的条目：从本层机器的 collection 照 menuNodesStructure 现铺，条目带 children 的再往下一层。
+ * Menubar 与 ContextMenu 按数据铺子层时用它。不作为公开组件导出。
+ */
+export function MenuDefaultNodes({ renderers = NO_RENDERERS }: { renderers?: MenuItemRenderers }): ReactNode {
+  const ctx = useMenuContext()
+  const api = ctx.api
+  return (
+    <MenuItemRenderersContext.Provider value={renderers}>
+      {renderStructure(
+        menuNodesStructure(api.collection, slottedBy(renderers)),
+        MENU_PARTS,
+        itemContent(renderers, value => api.collection.find(node => node.value === value)),
+        MENU_INSTANCES,
+      )}
+    </MenuItemRenderersContext.Provider>
+  )
 }

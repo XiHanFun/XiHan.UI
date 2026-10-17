@@ -7298,6 +7298,7 @@
       "MenuRefs",
       "MenuSchema",
       "MenuSelectDetails",
+      "MenuStructureOptions",
       "MenuTranslations",
       "MenuTreeNode",
       "MenuTreeNodeOptions",
@@ -8970,6 +8971,8 @@
       "menuKeyboard",
       "menuMachine",
       "menuMeta",
+      "menuNodesStructure",
+      "menuStructure",
       "menubarAnatomy",
       "menubarContentQuery",
       "menubarItemQuery",
@@ -22329,6 +22332,7 @@
         "disabled",
         "hover-close-delay",
         "hover-open-delay",
+        "label",
         "loop",
         "offset",
         "open",
@@ -22337,7 +22341,8 @@
         "size",
         "submenu",
         "tone",
-        "typeahead"
+        "typeahead",
+        "value"
       ],
       "events": [
         "checkbox-value-change",
