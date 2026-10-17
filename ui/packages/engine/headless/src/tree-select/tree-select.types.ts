@@ -220,6 +220,11 @@ export interface TreeSelectSchema extends MachineSchema {
     readOnly?: boolean
     /** 校验失败：trigger 报告 aria-invalid，各角色节点带 data-invalid。 */
     invalid?: boolean
+    /**
+     * 必填：trigger 报告 aria-required，根与标题带 data-required（标题据此画星号）。
+     * 一个选中值一份表单影子，没选值时没有影子；此时补一份空值的占位影子带原生 required，拦下空表单的提交。
+     */
+    required?: boolean
     /** 节点加载中：树报告 aria-busy，显示在途占位、隐藏空态占位。 */
     loading?: boolean
     /** 形态：outline / subtle / ghost，决定触发框的描边与底色使用方式。默认 outline。 */
@@ -404,6 +409,7 @@ export interface TreeSelectApi<T extends PropTypes = PropTypes> {
   disabled: boolean
   readOnly: boolean
   invalid: boolean
+  required: boolean
   /** 清空按钮当前是否可按。 */
   canClear: boolean
   /** 可见标签（受 maxTagCount 截断），与 value 同序；文字取自 collection 的 label。 */
@@ -485,5 +491,6 @@ export interface TreeSelectApi<T extends PropTypes = PropTypes> {
   /** 浮层底部的操作区：放在 content 中、tree 的兄弟，不进入树的拥有关系，方向键也无法到达。 */
   getFooterProps: () => T['element']
   /** 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。 */
-  getHiddenInputProps: (props: { value: string }) => T['input']
+  /** 一个选中值的表单影子；不给 value 是必填且没选值时的空值占位，带原生 required。 */
+  getHiddenInputProps: (props?: { value: string }) => T['input']
 }

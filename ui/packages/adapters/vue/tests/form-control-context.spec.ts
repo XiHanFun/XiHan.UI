@@ -119,7 +119,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'Combobox')
     return h(XhComboboxRoot, { ...nonRequiredState(props), collection: [] }, () => h(XhComboboxControl, null, () => h(XhComboboxInput)))
   if (kind === 'TreeSelect')
-    return h(XhTreeSelectRoot, { ...nonRequiredState(props), collection: [] }, () => h(XhTreeSelectControl, null, () => h(XhTreeSelectTrigger, null, () => '选择')))
+    return h(XhTreeSelectRoot, { ...props, collection: [] }, () => h(XhTreeSelectControl, null, () => h(XhTreeSelectTrigger, null, () => '选择')))
   if (kind === 'DatePicker')
     return h(XhDatePickerRoot, { ...props, segments: ['year'] }, () => [h(XhDatePickerControl, null, () => [h(XhDatePickerSegmentGroup, null, () => h(XhDatePickerSegment, { segment: 'year' })), h(XhDatePickerTrigger, null, () => '选择')]), h(XhDatePickerHiddenInput)])
   if (kind === 'TimePicker')
@@ -262,8 +262,9 @@ function expectAtomicState(wrapper: ReturnType<typeof mount>, kind: AtomicContro
     expect(trigger.attributes('aria-invalid')).toBe(String(enabled))
     if (kind === 'Select')
       expect(wrapper.find('select[data-part="hidden-select"]').attributes('required') !== undefined).toBe(enabled)
-    if (kind === 'Cascader') {
+    if (kind === 'Cascader' || kind === 'TreeSelect')
       expect(trigger.attributes('aria-required')).toBe(String(enabled))
+    if (kind === 'Cascader') {
       // 没选值：必填时补一份空值占位影子带原生 required，不必填时没有影子
       expect(wrapper.find('input[required]').exists()).toBe(enabled)
     }

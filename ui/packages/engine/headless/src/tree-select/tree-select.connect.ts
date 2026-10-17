@@ -14,6 +14,7 @@ import { overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
 import { resolveTranslations } from '../shared/translations'
 import { assertCollectionVirtualizer, virtualCollectionMatch, virtualCollectionTarget } from '../shared/virtual-collection'
+import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { flattenTree, indexTree } from '../tree'
 import { treeSelectAnatomy } from './tree-select.anatomy'
 import { findTreeSelectNode, isTreeSelectLazyBranch, resolveTreeSelectCollection, TREE_SELECT_DEFAULT_PLACEMENT, TREE_SELECT_NODE_SELECTOR, treeSelectNodeEls } from './tree-select.machine'
@@ -76,6 +77,7 @@ export function connectTreeSelect<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
+  const required = !!prop('required')
   const loading = !!prop('loading')
   // collection 与手写部件的节点事实来源不同，但空态判据只在这里汇合。
   const counted = prop('collection') != null
@@ -322,6 +324,7 @@ export function connectTreeSelect<T extends PropTypes>(
     disabled,
     readOnly,
     invalid,
+    required,
     canClear,
     tags,
     overflowCount,
@@ -355,12 +358,14 @@ export function connectTreeSelect<T extends PropTypes>(
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
       'data-loading': dataAttr(loading),
+      'data-required': dataAttr(required),
     }),
 
     getLabelProps: () => normalize.element({
       ...parts.label.attrs,
       'id': ids.label,
       'data-disabled': dataAttr(disabled),
+      'data-required': dataAttr(required),
     }),
 
     /**
@@ -394,6 +399,7 @@ export function connectTreeSelect<T extends PropTypes>(
       'aria-labelledby': prop('labelled') ? `${ids.label} ${ids['value-text']}` : ids['value-text'],
       'aria-invalid': invalid ? 'true' : 'false',
       'aria-readonly': readOnly ? 'true' : 'false',
+      'aria-required': required ? 'true' : 'false',
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
@@ -984,17 +990,31 @@ export function connectTreeSelect<T extends PropTypes>(
     }),
 
     // 表单出口：选中值随表单提交，对键盘与读屏不存在
-    getHiddenInputProps: input => normalize.input({
-      // type 先于 value 写入：改 type 会重置输入的值
-      type: 'hidden',
-      ...parts['hidden-input'].attrs,
-      // name 缺省即不产出该属性，此时不参与提交
-      name: prop('name'),
-      form: prop('form'),
-      // 每个选中值对应一个同名原生控件，值内的逗号保持原样。
-      value: input.value,
-      // 单体控件用原生 disabled，禁用时不提交值
-      disabled: disabled || undefined,
-    }),
+    getHiddenInputProps: input => input
+      ? normalize.input({
+          // type 先于 value 写入：改 type 会重置输入的值
+          type: 'hidden',
+          ...parts['hidden-input'].attrs,
+          // name 缺省即不产出该属性，此时不参与提交
+          name: prop('name'),
+          form: prop('form'),
+          // 每个选中值对应一个同名原生控件，值内的逗号保持原样。
+          value: input.value,
+          // 单体控件用原生 disabled，禁用时不提交值
+          disabled: disabled || undefined,
+        })
+      // 空值占位：hidden 不参与约束校验，写成视觉隐藏的文本输入，required 才拦得住
+      : normalize.input({
+          'type': 'text',
+          ...parts['hidden-input'].attrs,
+          'name': prop('name'),
+          'form': prop('form'),
+          'value': '',
+          'required': required || undefined,
+          'disabled': disabled || undefined,
+          'tabindex': -1,
+          'aria-hidden': true,
+          'style': VISUALLY_HIDDEN_STYLE,
+        }),
   }
 }

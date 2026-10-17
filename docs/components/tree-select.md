@@ -186,6 +186,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 使用原生 disabled，表单出口不参与提交。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开、树照常浏览与展开收起，但选中值不可修改、也不可清空。 disabled 则连键盘入口都没有。 |
 | `invalid` | `boolean` |  | 校验失败：trigger 报告 aria-invalid，各角色节点带 data-invalid。 |
+| `required` | `boolean` |  | 必填：trigger 报告 aria-required，根与标题带 data-required（标题据此画星号）。 一个选中值一份表单影子，没选值时没有影子；此时补一份空值的占位影子带原生 required，拦下空表单的提交。 |
 | `loading` | `boolean` |  | 节点加载中：树报告 aria-busy，显示在途占位、隐藏空态占位。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色使用方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中使用哪族颜色。 |
@@ -316,6 +317,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
+| `required` | `boolean` |  |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
 | `tags` | `TreeSelectTagMeta[]` | 可见标签（受 maxTagCount 截断），与 value 同序；文字取自 collection 的 label。 |
 | `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
@@ -368,7 +370,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `getEmptyProps` | `() => T['element']` | 空态占位：放在 content 中、tree 的兄弟。 collection 与手写节点都由连接层按 Headless 空态收放；作者可更换内容，不必自行重新计算。 |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 collection 与手写节点都由连接层按 Headless 空态收放。 |
 | `getFooterProps` | `() => T['element']` | 浮层底部的操作区：放在 content 中、tree 的兄弟，不进入树的拥有关系，方向键也无法到达。 |
-| `getHiddenInputProps` | `(props: { value: string }) => T['input']` | 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。 |
+| `getHiddenInputProps` | `(props?: { value: string }) => T['input']` | 一个选中值的表单影子；不给 value 是必填且没选值时的空值占位，带原生 required。 |
 
 ## 无障碍
 
@@ -413,6 +415,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `trigger` | `aria-invalid` | 'true' \| 'false' |
 | `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id |
 | `trigger` | `aria-readonly` | 'true' \| 'false' |
+| `trigger` | `aria-required` | 'true' \| 'false' |
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
@@ -451,6 +454,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `branch-empty` | `role` | 'status' |
 | `empty` | `role` | 'status' |
 | `loading` | `role` | 'status' |
+| `hidden-input` | `aria-hidden` | 'true' |
 
 ## 样式参考
 
@@ -470,11 +474,13 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
+| `label` | `data-required` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
