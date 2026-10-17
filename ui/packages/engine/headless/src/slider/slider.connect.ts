@@ -40,6 +40,7 @@ export function connectSlider<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
+  const required = !!prop('required')
   const editable = !disabled && !readOnly
   const vertical = orientation === 'vertical'
   const inverted = !!prop('inverted')
@@ -138,6 +139,7 @@ export function connectSlider<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       ...stateAttrs(),
+      'data-required': dataAttr(required),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
     }),
@@ -145,9 +147,10 @@ export function connectSlider<T extends PropTypes>(
     getLabelProps: () => normalize.label({
       ...parts.label.attrs,
       ...stateAttrs(),
+      'data-required': dataAttr(required),
       // 不写 for：拇指是 div、不是可被 label 关联的表单控件，写了浏览器也不认。
       // 名字经拇指上的 aria-labelledby 反向挂过去。
-      id: ids.label,
+      'id': ids.label,
     }),
 
     getControlProps: () => normalize.element({

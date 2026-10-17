@@ -168,7 +168,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'TagGroup')
     return <XhTagGroupRoot {...disabledReadOnlyState(props)} collection={[{ value: 'a', label: '甲' }]} />
   return (
-    <XhSliderRoot {...nonRequiredState(props)} defaultValue={[50]}>
+    <XhSliderRoot {...props} defaultValue={[50]}>
       <XhSliderControl>
         <XhSliderTrack />
         <XhSliderThumb index={0} />
@@ -330,6 +330,8 @@ function expectAtomicState(container: HTMLElement, kind: AtomicControl, enabled:
     expect(thumb.getAttribute('aria-disabled')).toBe(String(enabled))
     expect(root.hasAttribute('data-readonly')).toBe(enabled)
     expect(root.hasAttribute('data-invalid')).toBe(enabled)
+    expect(root.hasAttribute('data-required')).toBe(enabled)
+    expect(thumb.hasAttribute('aria-required')).toBe(false)
     return
   }
   if (kind === 'DateField' || kind === 'TimeField') {

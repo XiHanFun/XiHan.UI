@@ -56,6 +56,11 @@ export interface SliderSchema extends MachineSchema {
     disabled?: boolean
     readOnly?: boolean
     invalid?: boolean
+    /**
+     * 必填：根与标题带 data-required（标题据此画星号）。拇指是 role=slider，不收 aria-required；
+     * 滑块恒有值，表单影子不带原生 required。
+     */
+    required?: boolean
     /** 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色 */
     tone?: Tone
     /** 尺寸：sm / md / lg，决定拇指直径与轨道厚度 */

@@ -622,3 +622,14 @@ describe('slider 不填充轨道', () => {
     expect(api(on).getTickProps({ value: 20 })).toMatchObject({ 'data-passed': '' })
   })
 })
+
+describe('slider 必填', () => {
+  it('根与标题写 data-required；拇指不写 aria-required，影子不带 required', () => {
+    const s = makeService({ required: true, name: 'volume', defaultValue: [40] })
+    expect((api(s).getRootProps() as Record<string, unknown>)['data-required']).toBe('')
+    expect((api(s).getLabelProps() as Record<string, unknown>)['data-required']).toBe('')
+    expect(thumbProps(s)['aria-required']).toBeUndefined()
+    expect((api(s).getHiddenInputProps(0) as Record<string, unknown>).required).toBeUndefined()
+    expect((api(makeService()).getRootProps() as Record<string, unknown>)['data-required']).toBeUndefined()
+  })
+})

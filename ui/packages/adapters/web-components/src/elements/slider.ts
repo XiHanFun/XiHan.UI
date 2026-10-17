@@ -61,12 +61,13 @@ const NUMBER_LIST_CONVERTER = {
  * @attr {boolean} disabled - 禁用：拇指退出 Tab 序列、不可推动、不参与表单提交
  * @attr {boolean} read-only - 只读：仍可聚焦与被读屏朗读，不可推动
  * @attr {boolean} invalid - 校验失败标注
+ * @attr {boolean} required - 必填：根与标题带 data-required；拇指是 role=slider，不收 aria-required
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {string} name - 表单字段名；提供后才参与提交，多滑块逐个同名 append
  * @fires value-change - 值变化（拖动途中连续发出）；detail 为 `{ value: number[] }`
  * @fires value-change-end - 一次操作收尾时发出一次；detail 为 `{ value: number[], index: number }`
- * @csspart root - 承载 data-orientation / data-disabled / data-readonly / data-invalid / data-dragging 的容器
+ * @csspart root - 承载 data-orientation / data-disabled / data-readonly / data-invalid / data-required / data-dragging 的容器
  * @csspart label - 组标题（拇指的 aria-labelledby 目标）
  * @csspart control - 指针命中区，按下即跳到落点并接管拖动
  * @csspart track - 轨道本体，值与坐标的换算以它的矩形为准
@@ -104,6 +105,7 @@ export class XhSliderElement extends XhElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
+    required: { converter: BOOLEAN_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     name: { converter: STRING_CONVERTER },
@@ -129,6 +131,7 @@ export class XhSliderElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
+  declare required?: boolean
   declare tone?: Tone
   declare size?: Size
   declare name?: string
@@ -165,6 +168,7 @@ export class XhSliderElement extends XhElement {
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
+      required: this.required,
     }, this.inheritedControl)
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
@@ -186,6 +190,7 @@ export class XhSliderElement extends XhElement {
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,
+      required: control.required,
       tone: this.tone,
       size: this.size,
       name: this.name,

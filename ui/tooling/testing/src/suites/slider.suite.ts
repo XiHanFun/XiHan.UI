@@ -144,6 +144,18 @@ export const sliderSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '必填：根与标题带 data-required，拇指不收 aria-required',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { defaultValue: [40], name: 'volume', required: true },
+      initial: {
+        parts: {
+          root: { 'data-required': '' },
+          label: { 'data-required': '' },
+          thumb: { 'aria-required': null },
+        },
+      },
+    },
+    {
       name: '方向键按 step 推动；上下与左右同义（水平轨道、ltr）',
       spec: { apg: APG_KBD },
       covers: ['slider.kbd.increment', 'slider.kbd.decrement'],
