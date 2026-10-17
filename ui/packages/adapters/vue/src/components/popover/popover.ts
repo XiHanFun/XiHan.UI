@@ -14,6 +14,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
+import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { providePopover, usePopoverContext } from './context'
 import { usePopover } from './use-popover'
@@ -126,6 +127,7 @@ export const XhPopoverTitle = defineComponent({
   name: 'XhPopoverTitle',
   setup(_, { slots }) {
     const ctx = usePopoverContext()
+    useTitleDescriptionPart(ctx.presence, 'title')
     return () => h('h2', ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -134,7 +136,9 @@ export const XhPopoverDescription = defineComponent({
   name: 'XhPopoverDescription',
   setup(_, { slots }) {
     const ctx = usePopoverContext()
-    return () => h('p', ctx.api.value.getDescriptionProps() as Record<string, unknown>, slots.default?.())
+    // 读不出一句话的说明不进描述链
+    const el = useDescriptionPart(ctx.presence)
+    return () => h('p', { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el }, slots.default?.())
   },
 })
 

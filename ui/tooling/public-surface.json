@@ -13746,6 +13746,7 @@
       "onConfirmError",
       "onOpenChange",
       "open",
+      "parts",
       "placement",
       "size"
     ],
@@ -13759,6 +13760,7 @@
       "offset",
       "onOpenChange",
       "open",
+      "parts",
       "placement",
       "size",
       "translations"

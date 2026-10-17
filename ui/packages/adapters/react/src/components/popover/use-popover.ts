@@ -8,12 +8,14 @@
 import type { Layer, Service } from '@xihan-ui/core'
 import type { PopoverApi, PopoverSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
+import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import type { OverlayWiring } from '../../runtime/use-overlay'
 import { connectPopover, popoverMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { useCallback, useRef } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
+import { useTitleDescriptionPresence } from '../../runtime/title-description'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
 
@@ -26,6 +28,8 @@ export interface PopoverContext extends OverlayWiring {
   positionerRef: RefObject<HTMLElement | null>
   /** 浮层本体，退场动画从它上面探测。 */
   contentRef: RefObject<HTMLElement | null>
+  /** 标题与说明在不在场，由 XhPopoverTitle / XhPopoverDescription 登记；content 只引用在场的部件。 */
+  presence: TitleDescriptionPresence
 }
 
 export function usePopover(props: PopoverSchema['props']): PopoverContext {
@@ -64,7 +68,8 @@ export function usePopover(props: PopoverSchema['props']): PopoverContext {
     },
   })
 
-  const service = useMachine(popoverMachine, () => props, {
+  const presence = useTitleDescriptionPresence()
+  const service = useMachine(popoverMachine, () => ({ ...props, parts: presence.parts }), {
     scope,
     onCreate: overlay.onCreate as never,
   })
@@ -77,5 +82,6 @@ export function usePopover(props: PopoverSchema['props']): PopoverContext {
     triggerRef,
     positionerRef,
     contentRef,
+    presence,
   }
 }

@@ -7,6 +7,7 @@
 
 import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { TitleDescriptionParts } from '../shared/title-description'
 
 export interface PopoverTranslations {
   close: string
@@ -69,6 +70,12 @@ export interface PopoverSchema extends MachineSchema {
      * 与 Tooltip、HoverCard 的 disabled 同名同义：关掉的是浮层这件事。受控写回 open 仍按宿主的意思来。
      */
     disabled?: boolean
+    /**
+     * 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。
+     * title 不在场时 content 不写 aria-labelledby，名字由作者在 content 上写 aria-label；
+     * description 不在场、或渲染了但读不出一句话（判断同 `hasNamingContent`）时不写 aria-describedby。
+     */
+    parts?: TitleDescriptionParts
     translations?: Partial<PopoverTranslations>
     /** 尺寸：sm / md / lg，决定面板的内边距档位。 */
     size?: Size

@@ -25,6 +25,7 @@ export function connectPopover<T extends PropTypes>(
   const open = state.get() === 'open'
   const modal = prop('modal') ?? false
   const ids = scope.ids('popover', 'trigger', 'content', 'title', 'description')
+  const rendered = prop('parts')
   const stateAttr = open ? 'open' : 'closed'
   const disabled = !!prop('disabled')
   // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
@@ -113,8 +114,9 @@ export function connectPopover<T extends PropTypes>(
       'inert': !open || undefined,
       'aria-hidden': !open || undefined,
       'aria-modal': modal ? 'true' : 'false',
-      'aria-labelledby': ids.title,
-      'aria-describedby': ids.description,
+      // 只引用作者渲染了的标题与说明：省略 parts 按都在场
+      'aria-labelledby': rendered?.title !== false ? ids.title : undefined,
+      'aria-describedby': rendered?.description !== false ? ids.description : undefined,
       'data-state': stateAttr,
       // 挂载时就开着的这一段直接呈现，不播进场
       'data-instant': dataAttr(context.get('openedAtMount')),
