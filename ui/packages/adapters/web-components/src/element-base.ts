@@ -10,6 +10,7 @@ import type { PartContract } from './dom/part-contract'
 import type { Spreader } from './dom/spread'
 import type { StructureSpec } from './dom/structure'
 import type { FieldTarget } from './runtime/form-control-host'
+import { GHOST_ATTR } from '@xihan-ui/core'
 import { fieldGroupAttrs, fieldStateAttrs, withFieldDescription, withFieldLabel } from '@xihan-ui/headless'
 import { onXhConfigChange, withXhConfig } from './config'
 import { mergeAsChildProps } from './dom/as-child'
@@ -486,8 +487,8 @@ export abstract class XhElement extends XhReactiveElement {
   protected override updated(changed: Map<PropertyKey, unknown>): void {
     super.updated(changed)
     // 断开的宿主机器已停机，再接线只会把指向死机器的监听器挂回去、覆盖已接管这些节点的存活宿主；
-    // 重连时 connectedCallback 会排一轮补上
-    if (!this.isConnected)
+    // 重连时 connectedCallback 会排一轮补上。列表离场替身里克隆出来的实例同样不接线：重建结构会把克隆时带过来的值写回空
+    if (!this.isConnected || this.closest(`[${GHOST_ATTR}]`))
       return
     const ctor = this.constructor as typeof XhElement
     const contract = ctor.partContract
