@@ -70,6 +70,12 @@ export interface FormatOptions {
   readonly timeZone?: string
 }
 
+/**
+ * 值格式化器：签名与 {@link formatValue} 相同。设计器把格式化作为注入项时用它声明类型，宿主直接传 `formatValue`；
+ * 格式说明或值不合法时抛 `TypeError`，message 是问题码。
+ */
+export type ValueFormatter = (value: unknown, spec: FormatSpec, options: FormatOptions) => string
+
 /** 全部格式种类。 */
 export const FORMAT_KINDS: readonly FormatSpec['kind'][] = /* @__PURE__ */ Object.freeze(['number', 'percent', 'date', 'rmb-upper', 'numeral'] as const)
 
