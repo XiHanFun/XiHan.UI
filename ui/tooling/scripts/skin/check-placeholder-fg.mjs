@@ -72,6 +72,7 @@ const GENERATED = {
   'date-picker': ['segment-group', 'tag-list'],
   'date-range-picker': ['segment-group'],
   'time-picker': ['segment-group', 'tag-list'],
+  'time-range-picker': ['segment-group'],
 }
 
 /** 三条通道共用的默认前景。改这一支等于同时改全部占位前景，正是它存在的意义。 */

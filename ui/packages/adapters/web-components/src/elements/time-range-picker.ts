@@ -99,6 +99,8 @@ function declaredEnd(el: HTMLElement, position: number): TimeRangePickerEndIndex
  * @attr {boolean} required - 必填标注，写入每段的 aria-required
  * @attr {string} name - 起点隐藏输入的表单字段名；提供后才带 name
  * @attr {string} end-name - 终点隐藏输入的表单字段名；未提供时终点不参与提交
+ * @attr {string} start-placeholder - 起点那组段位的整条占位：一段都没填、焦点也不在段上时显示这句文字
+ * @attr {string} end-placeholder - 终点那组段位的整条占位，规则同 start-placeholder
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -157,6 +159,8 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
     required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     endName: { converter: STRING_CONVERTER, attribute: 'end-name' },
+    startPlaceholder: { converter: STRING_CONVERTER, attribute: 'start-placeholder' },
+    endPlaceholder: { converter: STRING_CONVERTER, attribute: 'end-placeholder' },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -186,6 +190,8 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
   declare required?: boolean
   declare name?: string
   declare endName?: string
+  declare startPlaceholder?: string
+  declare endPlaceholder?: string
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
@@ -263,6 +269,8 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
       required: control.required,
       name: this.name,
       endName: this.endName,
+      startPlaceholder: this.startPlaceholder,
+      endPlaceholder: this.endPlaceholder,
       variant: this.variant,
       tone: this.tone,
       size: this.size,

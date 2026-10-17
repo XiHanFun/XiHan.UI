@@ -202,6 +202,17 @@ export const timeRangePickerSuite: ConformanceSuite = {
   },
   cases: [
     {
+      name: '整条占位：两组段位各带各的占位文字，起点有值时只有终点露出',
+      spec: { apg: APG },
+      props: { startPlaceholder: '开始时间', endPlaceholder: '结束时间', defaultValue: ['09:00'] },
+      initial: {
+        parts: {
+          'segment-group[0]': { 'data-placeholder-text': '开始时间', 'data-placeholder-shown': null },
+          'segment-group[1]': { 'data-placeholder-text': '结束时间', 'data-placeholder-shown': '' },
+        },
+      },
+    },
+    {
       name: '初始收起：control 是 group，两组段位与两组时列各报各的名字；秒段与秒列收起',
       spec: { apg: `${APG}#roles_states_properties` },
       props: { ...BASE, name: 'from', endName: 'to' },

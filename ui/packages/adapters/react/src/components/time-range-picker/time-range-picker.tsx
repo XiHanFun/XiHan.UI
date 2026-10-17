@@ -105,6 +105,10 @@ export interface XhTimeRangePickerRootProps extends Omit<ComponentPropsWithRef<'
   name?: string
   /** 终点隐藏输入的表单名；未提供时终点不参与提交。 */
   endName?: string
+  /** 起点那组段位的整条占位：一段都没填、焦点也不在段上时显示这句文字，焦点进到段上即换回段位。 */
+  startPlaceholder?: string
+  /** 终点那组段位的整条占位，规则同 startPlaceholder。 */
+  endPlaceholder?: string
   variant?: ControlVariant
   tone?: Tone
   size?: Size
@@ -139,6 +143,8 @@ export function XhTimeRangePickerRoot({
   required,
   name,
   endName,
+  startPlaceholder,
+  endPlaceholder,
   variant,
   tone,
   size,
@@ -171,6 +177,8 @@ export function XhTimeRangePickerRoot({
     required,
     name,
     endName,
+    startPlaceholder,
+    endPlaceholder,
     variant,
     tone,
     size,

@@ -83091,19 +83091,21 @@
       "name": "--xh-time-range-picker-placeholder-fg",
       "component": "time-range-picker",
       "part": [
-        "segment"
+        "segment",
+        "segment-group"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "placeholder"
+        "placeholder",
+        "placeholder-shown"
       ],
       "defaultToken": [
         "--xh-fg-subtle"
       ],
       "visibility": "public",
-      "description": "time-range-picker 的 segment 部件 color 覆盖槽。"
+      "description": "time-range-picker 的 segment、segment-group 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-preset-bg",
