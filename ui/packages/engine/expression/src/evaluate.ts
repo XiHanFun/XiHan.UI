@@ -48,7 +48,7 @@ class Located {
 
 type Outcome = ExprValue | Located
 
-const EMPTY_RANGE: NodeRange = Object.freeze({ start: 0, end: 0 })
+const EMPTY_RANGE: NodeRange = /* @__PURE__ */ Object.freeze({ start: 0, end: 0 })
 const ORDERED_TYPES: ReadonlySet<string> = new Set(['number', 'string', 'date'])
 
 function isRecordLike(value: unknown): value is Record<string, unknown> {

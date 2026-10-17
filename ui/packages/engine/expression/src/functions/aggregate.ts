@@ -28,6 +28,7 @@ function sum(args: readonly ExprValue[], runtime: Runtime): { total: ExprNumber,
   return failed ?? { total, count }
 }
 
+/* @__NO_SIDE_EFFECTS__ */
 function extreme(name: string, direction: 1 | -1): FunctionEntry {
   return builtin(name, ['value'], 1, null, (args, runtime) => {
     let best: ExprNumber | ExprDate | string | null = null

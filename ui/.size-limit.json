@@ -145,6 +145,13 @@
     "limit": "19 kB"
   },
   {
+    "name": "expression：只用 checkFormatSpec",
+    "path": "packages/engine/expression/dist/index.js",
+    "import": "{ checkFormatSpec }",
+    "gzip": true,
+    "limit": "0.9 kB"
+  },
+  {
     "name": "designer-kit",
     "path": "packages/features/designer-kit/dist/index.js",
     "gzip": true,
@@ -154,7 +161,7 @@
     "name": "designer-kit/properties",
     "path": "packages/features/designer-kit/dist/properties.js",
     "gzip": true,
-    "limit": "11.8 kB"
+    "limit": "3.7 kB"
   },
   {
     "name": "designer-kit/schema",

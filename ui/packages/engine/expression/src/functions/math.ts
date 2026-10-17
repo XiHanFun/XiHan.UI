@@ -16,6 +16,7 @@ const PLACES_LIMIT = 64
 /** `POWER` 指数绝对值上限。 */
 const POWER_LIMIT = 999
 
+/* @__NO_SIDE_EFFECTS__ */
 function rounding(name: string, mode: RoundingMode): FunctionEntry {
   return builtin(name, ['number', 'places'], 1, 2, (args) => {
     if (anyNull(args))

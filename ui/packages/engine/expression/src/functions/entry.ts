@@ -33,6 +33,7 @@ export interface FunctionEntry extends FunctionSignature {
 }
 
 /** 定义一项内置函数。 */
+/* @__NO_SIDE_EFFECTS__ */
 export function builtin(name: string, params: readonly string[], minArgs: number, maxArgs: number | null, invoke: FunctionEntry['invoke']): FunctionEntry {
   return Object.freeze({ name, params: Object.freeze([...params]), minArgs, maxArgs, invoke })
 }
