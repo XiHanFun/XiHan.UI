@@ -64,6 +64,7 @@
 - 点标题把焦点交给控件；控件是弹出式触发钮（选择器、日期选择器等）时只聚焦、不开合，与原生 select 一致，浮层展开时点标题即收起。
 - 字段的标签、说明、状态与控件 id 沿组件树（Web Components 沿 DOM 祖先链）交给子树里的库内控件。组合控件内嵌的输入（图标选择器里的搜索框、筛选框）不该被读成外层字段的名字时，包进 `XhFieldBoundary`（Web Components 为 `display: contents` 的 `<xh-field-boundary>`）：边界后面的控件不再继承外层字段与表单字段组。浮层内容经 Portal 搬到落点后已自动断开，放在弹出层、对话框里的输入框不归外层字段管。
 - 字段族控件（文本框、下拉、日期、数字等）放进字段即铺满字段宽，跟着表单的列走，不必再在根上写 `inline-size: 100%`；单独摆放时仍是 16rem 缺省宽。横排一行流（`layout="inline"`）的表单里字段按内容收，那一档仍取缺省宽。
+- 不写结构时按标准结构铺（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：次序是标题、控件、说明、错误文案。控件原样放在标题之后，外面不包部件（Vue 是 `control` 插槽，React 是 `control` 属性，Web Components 是宿主直接子节点上的 `slot="control"`）；标题、说明、错误文案取 `label`、`description`、`errorText` 的文字，给了才铺，也可由同名插槽接管。`errorText` 给空串时照样铺错误文案并常挂，表单里由字段自取该项的错误。原生控件要标成 `control` 部件时手写结构。
 
 ### 组合
 
@@ -115,6 +116,11 @@
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhFieldControl` | `default` | `FieldControlSlotProps` |  |
+| `XhFieldRoot` | `default` | — |  |
+| `XhFieldRoot` | `label` | — |  |
+| `XhFieldRoot` | `control` | — |  |
+| `XhFieldRoot` | `description` | — |  |
+| `XhFieldRoot` | `errorText` | — |  |
 
 ### React 适配器 props
 
@@ -125,6 +131,10 @@
 | `XhFieldBoundary` | `children` | `ReactNode` |  |  |
 | `XhFieldControl` | `asChild` | `boolean` |  | 把接线属性合并到唯一的子节点上，默认开启。 子节点是薄封装（根不是可聚焦元素）时关闭它：属性只经函数式 children 交出， 由封装内部调用 useFieldControl 绑定到真实控件上。 |
 | `XhFieldControl` | `children` | `SlotChildren<FieldControlSlotProps>` |  |  |
+| `XhFieldRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhFieldRoot` | `control` | `ReactNode` |  | 字段里的控件。不给 children 时原样放在标题之后，外面不包部件。 |
+| `XhFieldRoot` | `description` | `ReactNode` |  | 说明。不给 children 时铺说明部件。 |
+| `XhFieldRoot` | `errorText` | `ReactNode` |  | 错误文案。不给 children 时给了（空串也算）就铺错误文案部件，空串时在表单里自取该项的错误。 |
 
 ### connect API
 

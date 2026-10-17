@@ -7,9 +7,10 @@
 
 import type { Scope } from '@xihan-ui/core'
 import type { FieldProps, FormControlState } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { FormControlHost } from '../runtime/form-control-host'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { connectField, fieldAnatomy, fieldControlWiring, fieldMeta, hasNamingContent, resolveFormControlState } from '@xihan-ui/headless'
+import { connectField, fieldAnatomy, fieldControlWiring, fieldMeta, fieldStructure, hasNamingContent, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { XhReactiveElement } from '../reactive'
@@ -35,7 +36,15 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 字段标签并进自己真正可聚焦的部件（输入框、触发钮、组根、拇指），提示与错误文案因此能被读屏念到。
  * 控件离开作用域或字段断开时接线收回。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）、控件、说明（description）、错误文案（error-text），
+ * 标题、说明、错误文案给了属性或 slot 内容才有。宿主直接子节点写 `slot="control"` 的库内控件原样挪到标题之后，
+ * 外面不包部件；标题、说明、错误文案也可以由 `slot="label"`、`slot="description"`、`slot="error-text"` 接管。
+ * 原生控件要标成 control 部件时手写结构。
+ *
  * @customElement xh-field
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
+ * @attr {string} description - 说明文字：生成结构时铺带这段文字的说明部件；手写部件时不使用它
+ * @attr {string} error-text - 错误文案：生成结构时给了（空串也算）就铺错误文案部件，invalid 时显示；手写部件时不使用它
  * @attr {boolean} invalid - 校验失败态：控件 aria-invalid=true，错误文案接入描述链并显示
  * @attr {boolean} required - 必填：控件 aria-required=true
  * @attr {boolean} disabled - 禁用标注，只写 data-disabled，不代作者写原生 disabled
@@ -59,8 +68,20 @@ export class XhFieldElement extends XhElement {
     fulfilledBy: { control: FORM_CONTROL_HOST_SELECTOR },
   }
 
+  static override structure: ElementStructure<XhFieldElement> = {
+    build: host => fieldStructure({
+      label: host.label,
+      description: host.description,
+      errorText: host.errorText,
+      slotted: (name, key) => host.slotted(name, key),
+    }),
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    label: { converter: STRING_CONVERTER },
+    description: { converter: STRING_CONVERTER },
+    errorText: { converter: STRING_CONVERTER, attribute: 'error-text' },
     invalid: { converter: BOOLEAN_CONVERTER },
     required: { converter: BOOLEAN_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
@@ -68,6 +89,9 @@ export class XhFieldElement extends XhElement {
     controlId: { converter: STRING_CONVERTER, attribute: 'control-id' },
   }
 
+  declare label?: string
+  declare description?: string
+  declare errorText?: string
   declare invalid?: boolean
   declare required?: boolean
   declare disabled?: boolean
