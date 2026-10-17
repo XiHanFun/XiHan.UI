@@ -17,6 +17,7 @@
 //      由钩子在生成时核对（wc.structure-takeover-order），一致性套件的 defaultStructure 场景断言它不出现；
 //   ⑦ 组合节点：结构文件里出现的组件（instance: '<名>' 或 structureInstance(key, '<名>'）都要登记在 Web Components 元素的
 //      static dependencies（'xh-<名>'）与 Vue / React 的 <名>_INSTANCES 组件表里；反过来，登记了却从不生成的也报。
+//      结构文件借用别的组件结构文件里的函数时，那份文件里组合的组件也算生成。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
@@ -116,10 +117,13 @@ for (const comp of components) {
     errors.push(`${comp}：Web Components 元素的 takeover 要直接引用结构文件的 ${takeover?.[1] ?? '<名>_STRUCTURE_TAKEOVER'}`)
   const vue = await read(join(VUE, comp, `${comp}.ts`))
   const react = await read(join(REACT, comp, `${comp}.tsx`))
-  const used = new Set([
-    ...[...code.matchAll(/instance:\s*'([a-z0-9-]+)'/g)].map(m => m[1]),
-    ...[...code.matchAll(/structureInstance\([^,]+,\s*'([a-z0-9-]+)'/g)].map(m => m[1]),
-  ])
+  // 结构文件借用别的组件的结构函数时（如右键菜单铺条目用 menuNodesStructure），那份结构里组合的组件也算生成
+  const borrowed = await Promise.all([...code.matchAll(/from '\.\.\/([a-z0-9-]+)\/\1\.structure'/g)].map(m => read(join(HEADLESS, m[1], `${m[1]}.structure.ts`))))
+  const sources = [code, ...borrowed.filter(Boolean).map(src => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, ''))]
+  const used = new Set(sources.flatMap(src => [
+    ...[...src.matchAll(/instance:\s*'([a-z0-9-]+)'/g)].map(m => m[1]),
+    ...[...src.matchAll(/structureInstance\([^,]+,\s*'([a-z0-9-]+)'/g)].map(m => m[1]),
+  ]))
   const keysOf = block => new Set([...(block ?? '').matchAll(/'?([a-z0-9-]+)'?\s*:/g)].map(m => m[1]))
   const dependencies = new Set([...keysOf(wc?.match(/static override dependencies = \{([\s\S]*?)\}/)?.[1])].filter(tag => tag.startsWith('xh-')).map(tag => tag.slice(3)))
   for (const [side, src] of [['Vue', vue], ['React', react]]) {

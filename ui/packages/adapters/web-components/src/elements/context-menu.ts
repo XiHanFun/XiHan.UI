@@ -7,10 +7,11 @@
 
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { ContextMenuAnyItemProps, ContextMenuCheckboxValueChangeDetails, ContextMenuNode, ContextMenuOpenChangeDetails, ContextMenuRadioValue, ContextMenuRadioValueChangeDetails, ContextMenuSchema, ContextMenuSelectDetails } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectContextMenu, contextMenuAnatomy, contextMenuMachine, contextMenuMeta, createMenuTreeNode } from '@xihan-ui/headless'
+import { connectContextMenu, contextMenuAnatomy, contextMenuMachine, contextMenuMeta, contextMenuStructure, createMenuTreeNode } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -19,6 +20,7 @@ import { MachineController } from '../runtime/machine-controller'
 import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
 import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
+import { XhMenuElement } from './menu'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -36,6 +38,11 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 不是某个元素，因此没有 getAnchorEl。展开期间再次右键只移动坐标，不先关闭再打开。
  *
  * 条目身份取作者写在 item 上的 value 属性，禁用由部件声明（aria-disabled）。
+ *
+ * 不写部件（或只写 root）时元素按标准结构生成：触发区（宿主直接子节点 `slot="trigger"` 的搬进去），
+ * 定位层里的 content 按 collection 铺条目、分组与分隔线；条目文字、行首、行尾可用 `slot="item:<值>"`、
+ * `slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 给出。带 children 的条目生成一个嵌套的 `<xh-menu submenu>`，
+ * 它的触发条目写着 value、文字取 label，子菜单那一层按数据铺。
  *
  * @customElement xh-context-menu
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
@@ -73,6 +80,15 @@ export class XhContextMenuElement extends XhPortalHostElement {
   declare portalContainer?: () => Element | null
 
   static override partContract = { anatomy: contextMenuAnatomy, meta: contextMenuMeta }
+
+  /** 结构里带 children 的条目生成嵌套的子菜单。 */
+  static override dependencies = { 'xh-menu': XhMenuElement }
+
+  static override structure: ElementStructure<XhContextMenuElement> = {
+    build: host => host.ctrl.service
+      ? contextMenuStructure(connectContextMenu(host.ctrl.service, wcNormalize), { slotted: (name, key) => host.slotted(name, key) })
+      : undefined,
+  }
 
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。

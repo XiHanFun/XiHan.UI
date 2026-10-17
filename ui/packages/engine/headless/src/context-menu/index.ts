@@ -16,6 +16,8 @@ export {
   contextMenuMachine,
 } from './context-menu.machine'
 export { contextMenuMeta } from './context-menu.meta'
+export { contextMenuStructure } from './context-menu.structure'
+export type { ContextMenuStructureOptions } from './context-menu.structure'
 export type {
   ContextMenuAnyItemProps,
   ContextMenuApi,

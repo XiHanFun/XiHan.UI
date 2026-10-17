@@ -39,11 +39,17 @@ type MenuStructureNode = StructureNode<(typeof MENU_STRUCTURE_PARTS)[number]>
 
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
+/** 按数据铺条目时的选项。 */
+export interface MenuNodesStructureOptions {
+  /** item 插槽接管哪一格：item 是整条（缺省，菜单的写法），item-text 只接管条目文字（右键菜单与菜单栏的写法）。 */
+  readonly itemSlot?: 'item' | 'item-text'
+}
+
 /**
- * 一条条目：带 children 的是嵌套的子菜单；item 插槽有内容时整条归作者；否则按数据铺标记位、文字、说明、
+ * 一条条目：带 children 的是嵌套的子菜单；item 插槽有内容时整条或条目文字归作者；其余按数据铺标记位、文字、说明、
  * 快捷键与行尾，没有的格不铺。勾选与单选条目没写标记位时也留一格空的给勾。
  */
-function itemStructure(meta: MenuNodeMeta, slotted: StructureSlotted): StructureChild<MenuStructureNode['part']> {
+function itemStructure(meta: MenuNodeMeta, slotted: StructureSlotted, options: MenuNodesStructureOptions): StructureChild<MenuStructureNode['part']> {
   if (meta.children) {
     return structureInstance(`submenu:${meta.value}`, 'menu', {
       collection: [...meta.children],
@@ -54,7 +60,8 @@ function itemStructure(meta: MenuNodeMeta, slotted: StructureSlotted): Structure
     })
   }
   const base = { key: `item:${meta.value}`, tag: 'div', part: 'item', attrs: { value: meta.value } } as const
-  if (slotted('item', meta.value))
+  const itemSlotted = slotted('item', meta.value)
+  if (itemSlotted && options.itemSlot !== 'item-text')
     return { ...base, slot: { name: 'item', key: meta.value }, data: meta }
   const children: MenuStructureNode[] = []
   if (slotted('item-prefix', meta.value))
@@ -63,7 +70,9 @@ function itemStructure(meta: MenuNodeMeta, slotted: StructureSlotted): Structure
     children.push({ key: 'indicator', tag: 'span', part: 'item-indicator', text: meta.indicator })
   else if (meta.kind !== 'item')
     children.push({ key: 'indicator', tag: 'span', part: 'item-indicator' })
-  children.push({ key: 'text', tag: 'span', part: 'item-text', text: meta.label })
+  children.push(itemSlotted
+    ? { key: 'text', tag: 'span', part: 'item-text', slot: { name: 'item', key: meta.value }, data: meta }
+    : { key: 'text', tag: 'span', part: 'item-text', text: meta.label })
   if (meta.description != null)
     children.push({ key: 'description', tag: 'span', part: 'item-description', text: meta.description })
   if (meta.shortcut != null)
@@ -81,12 +90,16 @@ function separator(meta: MenuNodeMeta): MenuStructureNode {
  * content 里的节点：相邻且同组的条目铺成一个 group（有组标题时排在组首），条目上的 separatorBefore 在它前面铺一道分隔线，
  * 段首的分隔线落在 group 外面；整份菜单的第一条不铺分隔线。
  */
-export function menuNodesStructure(collection: readonly MenuNodeMeta[], slotted: StructureSlotted = NOTHING_SLOTTED): StructureChild<MenuStructureNode['part']>[] {
+export function menuNodesStructure(
+  collection: readonly MenuNodeMeta[],
+  slotted: StructureSlotted = NOTHING_SLOTTED,
+  options: MenuNodesStructureOptions = {},
+): StructureChild<MenuStructureNode['part']>[] {
   return groupAdjacentRuns(collection, node => node.group).flatMap((run, runIndex) => {
     const head = run[0]
     const lead = runIndex > 0 && head.separatorBefore ? [separator(head)] : []
     if (head.group == null)
-      return [...lead, itemStructure(head, slotted)]
+      return [...lead, itemStructure(head, slotted, options)]
     const groupLabel = run.find(node => node.groupLabel != null)?.groupLabel ?? null
     const group: MenuStructureNode = {
       key: `group:${head.group}`,
@@ -97,7 +110,7 @@ export function menuNodesStructure(collection: readonly MenuNodeMeta[], slotted:
         ...(groupLabel != null ? [{ key: 'label', tag: 'span', part: 'group-label', text: groupLabel } satisfies MenuStructureNode] : []),
         ...run.flatMap((node, index) => [
           ...(index > 0 && node.separatorBefore ? [separator(node)] : []),
-          itemStructure(node, slotted),
+          itemStructure(node, slotted, options),
         ]),
       ],
     }
