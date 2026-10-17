@@ -6,9 +6,10 @@
 // 提供 select 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, SelectApi, SelectNode, SelectNodeMeta, SelectSchema, SelectTagMeta } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, SelectApi, SelectNode, SelectNodeMeta, SelectSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { selectStructure } from '@xihan-ui/headless'
 import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
@@ -16,6 +17,7 @@ import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotIsPlainText } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -86,6 +88,22 @@ export interface XhSelectRootProps extends RootElementProps {
   children?: SlotChildren<SelectRootSlotProps>
 }
 
+/**
+ * 表单影子：由根部件装配，作者不必手写。空串选项打底，每个选中值一个 selected 选项，供 required 判定。
+ * 选中态一律靠选项的 selected 表达，多选下 select.value 表达不了集合。
+ */
+function SelectHiddenSelect(): ReactNode {
+  const { api } = useSelectContext()
+  return (
+    <select {...api.getHiddenSelectProps() as Record<string, unknown>}>
+      <option value="" />
+      {api.value.map((v, i) => (
+        <option key={v} value={v} selected>{api.valueText[i] ?? v}</option>
+      ))}
+    </select>
+  )
+}
+
 export function XhSelectRoot({
   collection,
   virtualizer,
@@ -154,33 +172,25 @@ export function XhSelectRoot({
   })) as SelectProps)
   const api = ctx.api
 
-  // 表单影子由根部件装配：空串选项打底，每个选中值一个 selected 选项，供 required 判定。
-  // 选中态一律靠选项的 selected 表达，多选下 select.value 表达不了集合
-  const hiddenSelect = (
-    <select {...api.getHiddenSelectProps() as Record<string, unknown>}>
-      <option value="" />
-      {api.value.map((v, i) => (
-        <option key={v} value={v} selected>{api.valueText[i] ?? v}</option>
-      ))}
-    </select>
-  )
-
   const body = children != null
-    ? renderSlot(children, {
-        open: api.open,
-        value: api.value,
-        displayText: api.displayText,
-        tags: api.tags,
-        overflowCount: api.overflowCount,
-        overflowText: api.overflowText,
-        setOpen: api.setOpen,
-        setValue: api.setValue,
-        clear: api.clear,
-        deselect: api.deselect,
-      })
-    : collection
-      ? <DefaultTree collection={api.collection} tags={multiple ? api.tags : null} label={label} clearable={clearable} renderItem={renderItem} renderItemPrefix={renderItemPrefix} renderItemSuffix={renderItemSuffix} />
-      : null
+    ? (
+        <>
+          <SelectHiddenSelect />
+          {renderSlot(children, {
+            open: api.open,
+            value: api.value,
+            displayText: api.displayText,
+            tags: api.tags,
+            overflowCount: api.overflowCount,
+            overflowText: api.overflowText,
+            setOpen: api.setOpen,
+            setValue: api.setValue,
+            clear: api.clear,
+            deselect: api.deselect,
+          })}
+        </>
+      )
+    : renderDefaultStructure(api, { label, clearable, renderItem, renderItemPrefix, renderItemSuffix })
 
   return (
     <SelectProvider value={ctx}>
@@ -191,7 +201,6 @@ export function XhSelectRoot({
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
-        {hiddenSelect}
         {body}
       </div>
     </SelectProvider>
@@ -523,59 +532,67 @@ export function XhSelectItemIndicator({ children, ...rest }: XhSelectItemIndicat
   return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
-/**
- * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
- */
-function DefaultTree(props: {
-  collection: readonly SelectNodeMeta[]
-  tags: readonly SelectTagMeta[] | null
+/** 标准结构里各部件对应的组件；标签与 +N 委派给 tag，按「tag/部件名」找。 */
+const SELECT_PARTS = {
+  'hidden-select': SelectHiddenSelect,
+  'label': XhSelectLabel,
+  'control': XhSelectControl,
+  'trigger': XhSelectTrigger,
+  'value-text': XhSelectValueText,
+  'indicator': XhSelectIndicator,
+  'clear-trigger': XhSelectClearTrigger,
+  'tag-list': XhSelectTagList,
+  'tag/tag': XhSelectTag,
+  'tag/overflow-tag': XhSelectOverflowTag,
+  'positioner': XhSelectPositioner,
+  'content': XhSelectContent,
+  'list': XhSelectList,
+  'item': XhSelectItem,
+  'item-prefix': XhSelectItemPrefix,
+  'item-text': XhSelectItemText,
+  'item-description': XhSelectItemDescription,
+  'item-suffix': XhSelectItemSuffix,
+  'item-indicator': XhSelectItemIndicator,
+}
+
+interface SelectStructureContent {
   label?: ReactNode
   clearable?: boolean
   renderItem?: (node: SelectNodeMeta) => ReactNode
   renderItemPrefix?: (node: SelectNodeMeta) => ReactNode
   renderItemSuffix?: (node: SelectNodeMeta) => ReactNode
-}): ReactNode {
-  // 多选的已选项在触发器里排成标签：占位文字与标签行同时写着，有选中时标签露面、占位让位；
-  // 触发器里的标签只作展示（按钮不能套按钮），摆不下的折进 +N
-  const trigger = (
-    <XhSelectTrigger>
-      <XhSelectValueText />
-      {props.tags
-        ? (
-            <XhSelectTagList>
-              {props.tags.map(tag => <XhSelectTag key={tag.value} value={tag.value}>{tag.label}</XhSelectTag>)}
-              <XhSelectOverflowTag />
-            </XhSelectTagList>
-          )
-        : null}
-      <XhSelectIndicator />
-    </XhSelectTrigger>
-  )
-  return (
-    <>
-      {props.label != null ? <XhSelectLabel>{props.label}</XhSelectLabel> : null}
-      {/* control 是盒：描边、底色与聚焦环都长在它上面，触发器与清空钮在里面并排。
-          清空钮排在触发器之后（按钮不能套按钮），展开箭头是触发器里的指示符 */}
-      <XhSelectControl>
-        {trigger}
-        {props.clearable ? <XhSelectClearTrigger /> : null}
-      </XhSelectControl>
-      <XhSelectPositioner>
-        <XhSelectContent>
-          <XhSelectList>
-            {props.collection.map(node => (
-              <XhSelectItem key={node.value} value={node.value}>
-                {props.renderItemPrefix ? <XhSelectItemPrefix>{props.renderItemPrefix(node)}</XhSelectItemPrefix> : null}
-                <XhSelectItemText>{props.renderItem?.(node) ?? node.label}</XhSelectItemText>
-                {node.description != null ? <XhSelectItemDescription>{node.description}</XhSelectItemDescription> : null}
-                {props.renderItemSuffix ? <XhSelectItemSuffix>{props.renderItemSuffix(node)}</XhSelectItemSuffix> : null}
-                <XhSelectItemIndicator />
-              </XhSelectItem>
-            ))}
-          </XhSelectList>
-        </XhSelectContent>
-      </XhSelectPositioner>
-    </>
-  )
+}
+
+/**
+ * 未写 children 时铺开的整套结构，作者只提供数据：照 headless 的 selectStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题、条目文字与行首行尾由对应渲染函数接管。
+ */
+function renderDefaultStructure(api: SelectApi, content: SelectStructureContent): ReactNode[] {
+  const { label, renderItem, renderItemPrefix, renderItemSuffix } = content
+  const slotted: Readonly<Record<string, boolean>> = {
+    'label': label != null && typeof label !== 'string',
+    'item': renderItem != null,
+    'item-prefix': renderItemPrefix != null,
+    'item-suffix': renderItemSuffix != null,
+  }
+  const nodes = selectStructure(api, {
+    label: typeof label === 'string' ? label : undefined,
+    clearable: content.clearable,
+    slotted: name => slotted[name] === true,
+  })
+  return renderStructure(nodes, SELECT_PARTS, (node) => {
+    const meta = node.data as SelectNodeMeta
+    switch (node.slot?.name) {
+      case 'label':
+        return label
+      case 'item':
+        return renderItem?.(meta) ?? meta.label
+      case 'item-prefix':
+        return renderItemPrefix?.(meta)
+      case 'item-suffix':
+        return renderItemSuffix?.(meta)
+      default:
+        return undefined
+    }
+  })
 }

@@ -11,7 +11,7 @@
  * 结构里用得到的标签：与 Vue / React 部件组件渲出的标签一致，按需要补，不放开成任意字符串。
  * 组合进来的另一个库内组件不走标签，走组合节点（StructureInstanceNode）。
  */
-export type StructureTag = 'div' | 'span' | 'button' | 'label' | 'input' | 'textarea' | 'p' | 'ul' | 'li' | 'fieldset' | 'legend'
+export type StructureTag = 'div' | 'span' | 'button' | 'label' | 'input' | 'textarea' | 'select' | 'p' | 'ul' | 'li' | 'fieldset' | 'legend'
 
 /**
  * 可接管部件在 root 里的位置：trailing 排在 root 子节点的末尾，portal 经 Portal 脱离文档流。
@@ -28,13 +28,22 @@ export interface StructureSlot {
   readonly key?: string
 }
 
+/**
+ * 作者有没有给某个插槽写内容：结构函数据此决定铺带 slot 的部件，还是照数据铺。重复部件的插槽带 key。
+ * Vue 看同名插槽、React 看同名渲染函数（都不分 key），Web Components 看宿主直接子节点上的 `slot="<name>"` / `slot="<name>:<key>"`。
+ */
+export type StructureSlotted = (name: string, key?: string) => boolean
+
 /** 标准结构里的一个部件节点；P 是组件结构会产出的部件名。 */
 export interface StructureNode<P extends string = string> {
   /** 同一父节点下唯一：渲染时按它复用节点。重复部件取身份值（`item:${value}`），不用下标。 */
   readonly key: string
   /** 部件名，与 anatomy 逐字相同；Web Components 写成 data-xh-part。 */
   readonly part: P
-  /** 部件属于哪个组件，缺省为本组件；委派给内嵌组件的部件写那个组件名，part 是它 anatomy 里的名字。 */
+  /**
+   * 部件属于哪个组件，缺省为本组件；委派给内嵌组件的部件写那个组件名，part 是元素委派声明里的名字
+   * （委派的是内嵌组件整份 anatomy 时就是它 anatomy 里的名字）。
+   */
   readonly component?: string
   /** Web Components 侧建节点用的标签，与 Vue / React 部件组件渲出的标签相同。 */
   readonly tag: StructureTag

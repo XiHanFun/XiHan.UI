@@ -7,9 +7,10 @@
 
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { CollectionVirtualizer, FormControlState, SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectSelect, resolveFormControlState, selectAnatomy, selectMachine, selectMeta } from '@xihan-ui/headless'
+import { connectSelect, resolveFormControlState, selectAnatomy, selectMachine, selectMeta, selectStructure } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -31,6 +32,10 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 锚点取 trigger、被定位的浮层取 positioner。
  * 条目身份取作者写在 item 上的 value 属性，禁用由部件声明（aria-disabled）。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成整套节点：表单影子、标题（label）、盒（带不带清空钮看 clearable）、
+ * 浮层与 collection 的条目。标题、条目文字与行首行尾可以由宿主直接子节点接管：`slot="label"`、
+ * `slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"`。
+ *
  * value-text 的显示文字、overflow-tag 的 +N 与表单影子 hidden-select 的选项由元素填入，作者只需提供空节点；
  * value-text / overflow-tag 中作者写了内容则由作者负责，元素不再改写。
  *
@@ -40,6 +45,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 作者自行写了子节点则原样保留。item-delete-trigger 接线为所在标签那份 tag 的 close-trigger。
  *
  * @customElement xh-select
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
+ * @attr {boolean} clearable - 生成结构时盒里带清空按钮；手写部件时不使用它，写了 clear-trigger 即可清空
  * @attr {string} value - 受控选中值；未提供该属性即非受控。多选集合通过 property 设置，属性只能传入单值
  * @attr {string} default-value - 非受控初始选中值。多选集合通过 property 设置，属性只能传入单值
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
@@ -104,6 +111,16 @@ export class XhSelectElement extends XhPortalHostElement {
 
   static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const
 
+  static override structure: ElementStructure<XhSelectElement> = {
+    build: host => host.ctrl.service
+      ? selectStructure(connectSelect(host.ctrl.service, wcNormalize), {
+          label: host.label,
+          clearable: host.clearable,
+          slotted: (name, key) => host.slotted(name, key),
+        })
+      : undefined,
+  }
+
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
@@ -111,6 +128,8 @@ export class XhSelectElement extends XhPortalHostElement {
     collection: { attribute: false },
     virtualizer: { attribute: false },
     lazyMount: { type: Boolean, attribute: 'lazy-mount' },
+    label: { converter: STRING_CONVERTER },
+    clearable: { type: Boolean },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     open: { converter: BOOLEAN_CONVERTER },
@@ -138,6 +157,8 @@ export class XhSelectElement extends XhPortalHostElement {
   declare collection?: SelectNode[]
   declare virtualizer?: CollectionVirtualizer
   declare lazyMount?: boolean
+  declare label?: string
+  declare clearable?: boolean
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare open?: boolean

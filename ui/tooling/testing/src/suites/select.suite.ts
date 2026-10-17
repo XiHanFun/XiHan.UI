@@ -6,6 +6,13 @@ const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/'
 
 const VALUES = ['apple', 'banana', 'cherry'] as const
 
+/** 标准结构场景的数据：第二条带副文本。 */
+const STRUCTURE_COLLECTION = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'banana', label: 'Banana', description: '黄色' },
+  { value: 'cherry', label: 'Cherry' },
+]
+
 const VALUE_TEXT = '[data-scope="select"][data-part="value-text"]'
 const HIDDEN_SELECT = '[data-scope="select"][data-part="hidden-select"]'
 /** 触发器里的标签与触发器外的标签都是 tag 的 root；+N 那一枚另带 data-count。 */
@@ -1482,6 +1489,93 @@ export const selectSuite: ConformanceSuite = {
         heldPressIgnored('select', 'clear-trigger', '只读时清空钮藏着，不接受按压'),
         { kind: 'setProps', props: { readOnly: false, value: [] } },
         heldPressIgnored('select', 'clear-trigger', '没有值可清时清空钮藏着，不接受按压'),
+      ],
+    },
+    {
+      name: '作者不写结构：三端都照 selectStructure 铺出同一棵树（表单影子、标题、盒与清空钮、浮层与条目）',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { collection: STRUCTURE_COLLECTION, label: '水果', clearable: true, defaultValue: 'banana', name: 'fruit' },
+      initial: {
+        order: [
+          'root',
+          'hidden-select',
+          'label',
+          'control',
+          'trigger',
+          'value-text',
+          'indicator',
+          'clear-trigger',
+          'positioner',
+          'content',
+          'list',
+          'item[0]',
+          'item-text[0]',
+          'item-indicator[0]',
+          'item[1]',
+          'item-text[1]',
+          'item-description',
+          'item-indicator[1]',
+          'item[2]',
+          'item-text[2]',
+          'item-indicator[2]',
+        ],
+        parts: {
+          'trigger': { 'type': 'button', 'aria-labelledby': '@part(label) @part(value-text)' },
+          'clear-trigger': { hidden: null },
+          'item[1]': { 'aria-selected': 'true', 'data-state': 'checked' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '显示文字与表单值都不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertValueText(doc, 'Banana')
+            assertHiddenSelect(doc, 'fruit', 'banana')
+          },
+        },
+        { kind: 'click', part: 'trigger', expect: { parts: { trigger: { 'aria-expanded': 'true' } } } },
+        {
+          kind: 'click',
+          part: 'item[2]',
+          expect: {
+            parts: { 'item[2]': { 'aria-selected': 'true' }, 'trigger': { 'aria-expanded': 'false' } },
+            events: [
+              { type: 'value-change', detail: { value: ['cherry'] } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
+            ],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '显示文字与表单值都不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertValueText(doc, 'Cherry')
+            assertHiddenSelect(doc, 'fruit', 'cherry')
+          },
+        },
+      ],
+    },
+    {
+      name: '多选不写结构：触发器里铺标签行，标签与 +N 是 tag 的 root，摆不下的折进 +N',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { collection: STRUCTURE_COLLECTION, multiple: true, maxTagCount: 2, defaultValue: ['apple', 'banana', 'cherry'], name: 'fruit' },
+      initial: {
+        counts: { 'tag-list': 1, 'item': 3, 'label': 0, 'clear-trigger': 0 },
+        parts: { 'tag-list': { hidden: null } },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '标签戴 tag 的 scope，表单值是 DOM property，都不进本组件的属性快照',
+          run: ({ doc }) => {
+            assertTags(doc, [{ 'data-part': 'root' }, { 'data-part': 'root' }])
+            assertOverflowText(doc, '+1')
+            assertMultiHiddenSelect(doc, 'fruit', ['apple', 'banana', 'cherry'])
+          },
+        },
       ],
     },
   ],
