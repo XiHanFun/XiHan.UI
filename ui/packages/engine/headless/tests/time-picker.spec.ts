@@ -2,6 +2,7 @@
 import type { RuntimeConfig } from '@xihan-ui/core'
 import type { ExitLease, PresenceHandle } from '@xihan-ui/core/presence'
 import type { VanillaRuntime } from '@xihan-ui/core/vanilla'
+import type { StructureChild, StructureNode } from '../src/shared/structure'
 import type { TimeSegmentType } from '../src/time-field'
 import type { TimePickerApi, TimePickerColumnUnit, TimePickerSchema } from '../src/time-picker'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
@@ -12,6 +13,7 @@ import { timeColumns } from '../src/shared/time-constraint'
 import {
   connectTimePicker,
   timePickerMachine,
+  timePickerStructure,
 } from '../src/time-picker'
 
 type Props = TimePickerSchema['props']
@@ -1318,5 +1320,50 @@ describe('time-picker 整条占位', () => {
     expect((empty.getSegmentGroupProps() as Record<string, unknown>)['data-placeholder-shown']).toBeUndefined()
     const picked = mount({ placeholder: '请选择时间', selectionMode: 'multiple', defaultValue: ['09:30'] }).api()
     expect((picked.getTagListProps() as Record<string, unknown>)['data-placeholder-shown']).toBeUndefined()
+  })
+})
+
+describe('timePickerStructure', () => {
+  const parts = (nodes: readonly StructureChild[]): string[] => nodes.map(node => ('part' in node ? node.part : 'literal' in node ? `literal:${node.literal}` : 'instance'))
+
+  it('单选：标题（原生 label）、盒里的段组与两颗钮、表单影子、浮层里按精度铺的各列', () => {
+    const api = mount({ defaultValue: '09:30' }).api()
+    const nodes = timePickerStructure(api, { label: '开始时间' })
+    expect(parts(nodes)).toEqual(['label', 'control', 'hidden-input', 'positioner'])
+    expect(nodes[0]).toMatchObject({ tag: 'label', text: '开始时间' })
+    const control = nodes[1]!.children! as StructureNode[]
+    expect(parts(control)).toEqual(['segment-group', 'clear-trigger', 'trigger'])
+    expect(parts(control[0]!.children!)).toEqual(['segment', 'literal::', 'segment'])
+    expect(control[0]!.children![0]).toMatchObject({ attrs: { segment: 'hour' } })
+    const content = (nodes[3]!.children![0] as StructureNode).children! as StructureNode[]
+    expect(parts(content)).toEqual(['column', 'column'])
+    expect(content.map(column => column.attrs?.unit)).toEqual(['hour', 'minute'])
+    expect(content[0]!.children!.length).toBe(24)
+  })
+
+  it('到秒的 12 小时制：时分秒之间是冒号、上下午段前是空格，格的文字取 getItemText', () => {
+    const api = mount({ granularity: 'second', hourCycle: 12 }).api()
+    const nodes = timePickerStructure(api)
+    const group = ((nodes[0]!.children! as StructureNode[])[0]!).children!
+    expect(parts(group)).toEqual(['segment', 'literal::', 'segment', 'literal::', 'segment', 'literal: ', 'segment'])
+    const content = (nodes.at(-1)!.children![0] as StructureNode).children! as StructureNode[]
+    const dayPeriod = content.at(-1)!
+    expect(dayPeriod.attrs?.unit).toBe('dayPeriod')
+    expect((dayPeriod.children! as StructureNode[]).map(item => item.text)).toEqual(['00', '01'].map(value => api.getItemText({ unit: 'dayPeriod', value })))
+  })
+
+  it('多选与快捷选项：盒里换成带删除钮的标签行，浮层里先铺快捷选项，各列之后是底栏的添加钮', () => {
+    const api = mount({ selectionMode: 'multiple', defaultValue: ['09:00', '14:30'], presets: [{ value: '09:00', label: '上班' }] }).api()
+    const nodes = timePickerStructure(api, { slotted: name => name === 'label' })
+    expect(nodes[0]).toMatchObject({ tag: 'label', slot: { name: 'label' } })
+    const control = nodes[1]!.children! as StructureNode[]
+    expect(parts(control)).toEqual(['tag-list', 'clear-trigger', 'trigger'])
+    const tags = control[0]!.children! as StructureNode[]
+    expect(parts(tags)).toEqual(['tag', 'tag', 'overflow-tag'])
+    expect(tags.every(tag => tag.component === 'tag')).toBe(true)
+    expect(parts(tags[0]!.children!)).toEqual(['tag-label', 'item-delete-trigger'])
+    const content = (nodes.at(-1)!.children![0] as StructureNode).children! as StructureNode[]
+    expect(parts(content)).toEqual(['preset-group', 'column', 'column', 'footer'])
+    expect(content.at(-1)!.children![0]).toMatchObject({ part: 'confirm-trigger', text: api.translations.confirmTrigger })
   })
 })

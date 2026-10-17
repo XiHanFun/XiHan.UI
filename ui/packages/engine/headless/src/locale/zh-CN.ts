@@ -690,7 +690,7 @@ const translations = {
   'tags-input': { deleteItem: value => `删除 ${value}`, editTagInput: value => `编辑 ${value}`, clearTrigger: '清空' },
   'text-field': { clearTrigger: '清空' },
   'time-field': { ...segments, clearTrigger: '清空' },
-  'time-picker': { ...tagged, ...segments, presets: '快捷选项', clearTrigger: '清空' },
+  'time-picker': { ...tagged, ...segments, presets: '快捷选项', clearTrigger: '清空', confirmTrigger: '添加' },
   'time-range-picker': { ...segments, startTime: '开始时间', endTime: '结束时间', presets: '快捷选项', clearTrigger: '清空' },
   'timer': {
     time: ({ days, hours, minutes, seconds }) => `${days > 0 ? `${days} 天 ` : ''}${hours} 小时 ${minutes} 分钟 ${seconds} 秒`,

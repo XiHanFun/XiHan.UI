@@ -22,10 +22,12 @@ import type {
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { timePickerStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onUnmounted, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText, slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
@@ -75,6 +77,8 @@ export const XhTimePickerRoot = defineComponent({
   props: {
     /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
     ariaLabel: { type: String },
+    /** 标题文字：不写默认插槽时铺带这段文字的 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
     /** 选中的时刻，ISO 时间串数组；单选可写裸串。 */
     value: { type: [String, Array] as PropType<string | string[]> },
     defaultValue: { type: [String, Array] as PropType<string | string[]> },
@@ -122,6 +126,8 @@ export const XhTimePickerRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: TimePickerRootSlotProps) => VNode[]
+    /** 不写默认插槽时标题的内容，盖过 label 文字。 */
+    label?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notifyValue: TimePickerProps['onValueChange'] = (details) => {
@@ -138,20 +144,23 @@ export const XhTimePickerRoot = defineComponent({
     })
     provideTimePicker(ctx)
 
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      open: ctx.api.value.open,
-      value: ctx.api.value.value,
-      empty: ctx.api.value.empty,
-      outOfRange: ctx.api.value.outOfRange,
-      segments: ctx.api.value.segments,
-      columns: ctx.api.value.columns,
-      canClear: ctx.api.value.canClear,
-      canAdd: ctx.api.value.canAdd,
-      setOpen: ctx.api.value.setOpen,
-      setValue: ctx.api.value.setValue,
-      clear: ctx.api.value.clear,
-      add: ctx.api.value.add,
-    }))
+    // 没写默认插槽时照 timePickerStructure 铺整套结构
+    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, !slots.default
+      ? renderDefaultStructure(ctx.api.value, props.label, slots.label)
+      : slots.default({
+          open: ctx.api.value.open,
+          value: ctx.api.value.value,
+          empty: ctx.api.value.empty,
+          outOfRange: ctx.api.value.outOfRange,
+          segments: ctx.api.value.segments,
+          columns: ctx.api.value.columns,
+          canClear: ctx.api.value.canClear,
+          canAdd: ctx.api.value.canAdd,
+          setOpen: ctx.api.value.setOpen,
+          setValue: ctx.api.value.setValue,
+          clear: ctx.api.value.clear,
+          add: ctx.api.value.add,
+        }))
   },
 })
 
@@ -487,3 +496,36 @@ export const XhTimePickerHiddenInput = defineComponent({
       : h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
   },
 })
+
+/** 结构里的部件 → 部件组件；委派出去的部件按「组件名/部件名」查。 */
+const TIME_PICKER_PARTS = {
+  'label': XhTimePickerLabel,
+  'control': XhTimePickerControl,
+  'tag-list': XhTimePickerTagList,
+  'segment-group': XhTimePickerSegmentGroup,
+  'segment': XhTimePickerSegment,
+  'trigger': XhTimePickerTrigger,
+  'clear-trigger': XhTimePickerClearTrigger,
+  'positioner': XhTimePickerPositioner,
+  'content': XhTimePickerContent,
+  'preset-group': XhTimePickerPresetGroup,
+  'preset': XhTimePickerPreset,
+  'column': XhTimePickerColumn,
+  'item': XhTimePickerItem,
+  'footer': XhTimePickerFooter,
+  'confirm-trigger': XhTimePickerConfirmTrigger,
+  'hidden-input': XhTimePickerHiddenInput,
+  'tag/tag': XhTimePickerTag,
+  'tag/tag-label': XhTimePickerTagLabel,
+  'tag/item-delete-trigger': XhTimePickerItemDeleteTrigger,
+  'tag/overflow-tag': XhTimePickerOverflowTag,
+}
+
+/**
+ * 未写默认插槽时照 timePickerStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 标题文字由 label 给出，需要放置其他内容时由 label 插槽接管。
+ */
+function renderDefaultStructure(api: TimePickerApi, label: string | undefined, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = timePickerStructure(api, { label, slotted: name => name === 'label' && labelSlot != null })
+  return renderStructure(nodes, TIME_PICKER_PARTS, node => node.slot?.name === 'label' ? labelSlot?.() : undefined)
+}

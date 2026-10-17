@@ -361,6 +361,7 @@ export function connectTimePicker<T extends PropTypes>(
     tags,
     overflowCount,
     overflowText,
+    translations,
     getSegmentText: ({ segment }) => segmentTextOf(segment),
     getItemText: itemTextOf,
     isItemSelected: itemSelected,

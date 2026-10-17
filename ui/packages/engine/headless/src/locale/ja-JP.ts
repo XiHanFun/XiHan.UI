@@ -677,7 +677,7 @@ const translations = {
   'tags-input': { deleteItem: value => `${value} を削除`, editTagInput: value => `${value} を編集`, clearTrigger: 'クリア' },
   'text-field': { clearTrigger: 'クリア' },
   'time-field': { ...segments, clearTrigger: 'クリア' },
-  'time-picker': { ...tagged, ...segments, presets: 'ショートカット', clearTrigger: 'クリア' },
+  'time-picker': { ...tagged, ...segments, presets: 'ショートカット', clearTrigger: 'クリア', confirmTrigger: '追加' },
   'time-range-picker': { ...segments, startTime: '開始時刻', endTime: '終了時刻', presets: 'ショートカット', clearTrigger: 'クリア' },
   'timer': {
     time: ({ days, hours, minutes, seconds }) => `${days > 0 ? `${days} 日 ` : ''}${hours} 時間 ${minutes} 分 ${seconds} 秒`,

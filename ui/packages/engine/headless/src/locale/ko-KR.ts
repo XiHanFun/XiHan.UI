@@ -677,7 +677,7 @@ const translations = {
   'tags-input': { deleteItem: value => `${value} 삭제`, editTagInput: value => `${value} 편집`, clearTrigger: '지우기' },
   'text-field': { clearTrigger: '지우기' },
   'time-field': { ...segments, clearTrigger: '지우기' },
-  'time-picker': { ...tagged, ...segments, presets: '바로 가기', clearTrigger: '지우기' },
+  'time-picker': { ...tagged, ...segments, presets: '바로 가기', clearTrigger: '지우기', confirmTrigger: '추가' },
   'time-range-picker': { ...segments, startTime: '시작 시간', endTime: '종료 시간', presets: '바로 가기', clearTrigger: '지우기' },
   'timer': {
     time: ({ days, hours, minutes, seconds }) => `${days > 0 ? `${days}일 ` : ''}${hours}시간 ${minutes}분 ${seconds}초`,

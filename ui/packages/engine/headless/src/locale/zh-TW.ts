@@ -677,7 +677,7 @@ const translations = {
   'tags-input': { deleteItem: value => `刪除 ${value}`, editTagInput: value => `編輯 ${value}`, clearTrigger: '清除' },
   'text-field': { clearTrigger: '清除' },
   'time-field': { ...segments, clearTrigger: '清除' },
-  'time-picker': { ...tagged, ...segments, presets: '快速選項', clearTrigger: '清除' },
+  'time-picker': { ...tagged, ...segments, presets: '快速選項', clearTrigger: '清除', confirmTrigger: '新增' },
   'time-range-picker': { ...segments, startTime: '開始時間', endTime: '結束時間', presets: '快速選項', clearTrigger: '清除' },
   'timer': {
     time: ({ days, hours, minutes, seconds }) => `${days > 0 ? `${days} 天 ` : ''}${hours} 小時 ${minutes} 分鐘 ${seconds} 秒`,

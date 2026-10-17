@@ -1427,5 +1427,65 @@ export const timePickerSuite: ConformanceSuite = {
         },
       ],
     },
+    {
+      name: '作者不写结构：三端都照 timePickerStructure 铺出标题、段组与两颗钮、表单影子与浮层里的各列',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { ...BASE, label: '开始时间', defaultValue: '09:30', name: 'start' },
+      initial: {
+        order: ['root', 'label', 'control', 'segment-group', 'segment[0]', 'segment[1]', 'clear-trigger', 'trigger', 'hidden-input', 'positioner', 'content', 'column[0]', 'item[0]', 'item[1]', 'item[2]', 'item[3]', 'column[1]', 'item[4]', 'item[5]'],
+        counts: { 'tag-list': 0, 'preset-group': 0, 'footer': 0 },
+        parts: {
+          'segment[0]': { 'role': 'spinbutton', 'data-value': 'hour' },
+          'segment[1]': { 'role': 'spinbutton', 'data-value': 'minute' },
+          'column[0]': { 'role': 'listbox', 'data-value': 'hour' },
+          'column[1]': { 'role': 'listbox', 'data-value': 'minute' },
+          'content': { hidden: '' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '段位文字、分隔符与表单值都不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            const text = doc.querySelector(`${SCOPE}[data-part="segment-group"]`)?.textContent
+            if (text !== '09:30')
+              throw new Error(`段组期望读作 "09:30"，实际 ${JSON.stringify(text)}`)
+            expectHidden(doc, '09:30', '表单影子带上整串')
+            const items = [...doc.querySelectorAll(`${SCOPE}[data-part="item"]`)].map(el => el.textContent)
+            if (items.join('|') !== '08|09|10|11|00|30')
+              throw new Error(`各列的格期望 [08,09,10,11,00,30]，实际 [${items.join(',')}]`)
+          },
+        },
+      ],
+    },
+    {
+      name: '作者不写结构（多选与快捷选项）：盒里换成标签行，浮层里先铺快捷选项列，各列之后是底栏的添加钮',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      // 添加钮的文字由作者经 translations 改写，生成的结构照改写后的那份填；表单影子一个选中值一份
+      props: { ...BASE, label: '提醒时间', selectionMode: 'multiple', defaultValue: ['09:00', '10:30'], presets: [...PRESETS], translations: { confirmTrigger: '添加' } },
+      initial: {
+        order: ['root', 'label', 'control', 'tag-list', 'clear-trigger', 'trigger', 'hidden-input[0]', 'hidden-input[1]', 'positioner', 'content', 'preset-group', 'preset[0]', 'preset[1]', 'preset[2]', 'column[0]', 'item[0]', 'item[1]', 'item[2]', 'item[3]', 'column[1]', 'item[4]', 'item[5]', 'footer', 'confirm-trigger'],
+        counts: { 'segment-group': 0 },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '标签戴的是 tag 的 scope，快捷选项与添加钮的文字不进属性快照',
+          run: ({ doc }) => {
+            const tags = [...doc.querySelectorAll<HTMLElement>(`${SCOPE}[data-part="tag-list"] [data-scope="tag"][data-part="root"]:not([hidden])`)]
+            if (tags.length !== 2 || tags.some(tag => tag.querySelector('[data-scope="tag"][data-part="close-trigger"]') == null))
+              throw new Error(`期望两枚带删除钮的标签，实际 ${tags.length} 枚`)
+            const presets = presetItems(doc).map(el => el.textContent)
+            if (presets.join('|') !== PRESETS.map(preset => preset.label).join('|'))
+              throw new Error(`快捷选项期望 [${PRESETS.map(preset => preset.label).join(',')}]，实际 [${presets.join(',')}]`)
+            const confirm = doc.querySelector(`${SCOPE}[data-part="confirm-trigger"]`)?.textContent
+            if (confirm !== '添加')
+              throw new Error(`添加钮期望显示 "添加"，实际 ${JSON.stringify(confirm)}`)
+          },
+        },
+      ],
+    },
   ],
 }
