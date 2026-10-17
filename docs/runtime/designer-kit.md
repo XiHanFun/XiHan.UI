@@ -360,7 +360,7 @@ const issues = checkProperties(descriptors, node, { path: ["nodes", 3], target: 
 | `{ kind: "tags" }` | 字符串数组 |
 | `{ kind: "color" }` | `transparent`，或 `#` 开头的 3、4、6、8 位十六进制色 |
 | `{ kind: "json" }` | 任意 JSON 值 |
-| `{ kind: "dataField", kinds?, base? }` | 字段路径的 `formatJsonPath` 写法，空串为没有绑定，写法不对报 `invalid-value`。字段树不写在描述里，由属性面板给出；`kinds` 是能选的字段种类，`base` 是相对路径的起点（从字段树根开始、只含键），同 `listDataFields` 的两个选项，只给编辑器用 |
+| `{ kind: "dataField", fields?, kinds?, base? }` | 字段路径的 `formatJsonPath` 写法，空串为没有绑定，写法不对报 `invalid-value`。字段树：描述里写了 `fields` 就用它，没写时用属性面板给的（`<xh-designer-properties>` 的 `dataFields`）；`kinds` 是能选的字段种类，`base` 是相对路径的起点（从字段树根开始、只含键），同 `listDataFields` 的两个选项。这三项只给编辑器用 |
 | `{ kind: "sides", integer?, min?, max?, exclusiveMin?, step?, unit? }` | `{ top, right, bottom, left }` 四个数字，每边按 number 的约束检查；缺边或某边不是数字报 `invalid-type`，多出别的键报 `unknown-key` |
 | `{ kind: "format", kinds? }` | `@xihan-ui/expression` 的格式说明，按 `checkFormatSpec` 检查，没过报 `invalid-value`；`kinds` 是允许的格式种类，缺省全部 |
 

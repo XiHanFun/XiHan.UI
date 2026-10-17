@@ -49,7 +49,7 @@ export interface PropertyFieldOptions {
   readonly optionLabel?: (option: PropertyOption) => string
   /** number 与 sides 后缀的单位文案，缺省原样显示，空串时不显示。 */
   readonly unitLabel?: (unit: string) => string
-  /** dataField 选字段用的字段树；不给时 dataField 是输入字段路径的文本框。 */
+  /** dataField 的描述没写 fields 时用的字段树；两处都没有时 dataField 是输入字段路径的文本框。 */
   readonly dataFields?: readonly DataField[]
   /** select 的 appearance 为 auto、单选且选项不超过它时改用切换按钮组；缺省不用。 */
   readonly toggleLimit?: number

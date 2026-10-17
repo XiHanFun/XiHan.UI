@@ -412,6 +412,25 @@ describe('<xh-designer-properties>', () => {
     diagnostics.stop()
   })
 
+  it('dataField 的字段树：描述里写了 fields 就用它，没写时用面板的 dataFields', async () => {
+    type TreeSelect = HTMLElement & { collection?: { value: string }[] }
+    const own: DataField[] = [{ name: 'dataset', kind: 'value' }]
+    const panel = await mount(element => element.targets = [{
+      kind: 'card',
+      id: 'c',
+      value: {},
+      descriptors: [
+        { path: ['own'], control: { kind: 'dataField', fields: own } },
+        { path: ['shared'], control: { kind: 'dataField' } },
+      ],
+    }])
+    const values = (path: string): string[] | undefined => row(panel, path).querySelector<TreeSelect>('xh-tree-select')?.collection?.map(item => item.value)
+    expect([values('own'), row(panel, 'shared').querySelector('xh-text-field') !== null]).toEqual([['dataset'], true])
+    panel.dataFields = [{ name: 'order', kind: 'value' }]
+    await panel.updateComplete
+    expect([values('own'), values('shared')]).toEqual([['dataset'], ['order']])
+  })
+
   it('dataField 没有字段树时是输入路径的文本框：写法不对就地报错、不派发', async () => {
     const panel = await mount(element => element.targets = [{ kind: 'text', id: 'x', value: { field: 'a.b' }, descriptors: [{ path: ['field'], control: { kind: 'dataField' } }] }])
     const field = row(panel, 'field').querySelector<HTMLElement & { value?: string }>('xh-text-field')!

@@ -8,7 +8,7 @@
 
 import type { JsonObject, JsonPath, JsonPrimitive, JsonValue } from '@xihan-ui/core/json'
 import type { FormatSpec } from '@xihan-ui/expression'
-import type { DataFieldKind } from './data-fields'
+import type { DataField, DataFieldKind } from './data-fields'
 import type { SchemaIssue, SchemaIssueTarget } from './schema'
 import { formatJsonPath, getJsonAt, isJsonPathText, isPlainObject, jsonEquals, setJsonAt } from '@xihan-ui/core/json'
 import { checkFormatSpec } from '@xihan-ui/expression'
@@ -48,8 +48,9 @@ export type PropertySides = Readonly<Record<PropertySide, number>>
  * - tags：字符串数组。
  * - color：transparent，或 # 开头的 3、4、6、8 位十六进制色。
  * - json：任意 JSON 值。
- * - dataField：绑定的数据字段，取值是字段路径的 formatJsonPath 写法，空串为没有绑定。字段树由属性面板给出；
- *   kinds 是能选的字段种类（缺省全部），base 是相对路径的起点（从字段树根开始、只含键，同 listDataFields），两者只给编辑器用。
+ * - dataField：绑定的数据字段，取值是字段路径的 formatJsonPath 写法，空串为没有绑定。字段树：描述里写了 fields 就用它，
+ *   没写时用属性面板给的；kinds 是能选的字段种类（缺省全部），base 是相对路径的起点（从字段树根开始、只含键，
+ *   同 listDataFields）。fields、kinds、base 只给编辑器用。
  * - sides：四边各一个数字的对象 { top, right, bottom, left }，每边都按 PropertyNumberConstraints 检查。
  * - format：@xihan-ui/expression 的格式说明，按 checkFormatSpec 检查；kinds 是允许的格式种类，缺省全部。
  */
@@ -66,7 +67,7 @@ export type PropertyControl
     | { readonly kind: 'tags' }
     | { readonly kind: 'color' }
     | { readonly kind: 'json' }
-    | { readonly kind: 'dataField', readonly kinds?: readonly DataFieldKind[], readonly base?: JsonPath }
+    | { readonly kind: 'dataField', readonly fields?: readonly DataField[], readonly kinds?: readonly DataFieldKind[], readonly base?: JsonPath }
     | ({ readonly kind: 'sides' } & PropertyNumberConstraints)
     | { readonly kind: 'format', readonly kinds?: readonly FormatSpec['kind'][] }
 
