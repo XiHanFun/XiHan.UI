@@ -221,7 +221,7 @@ export function XhTagGroupCell({ children, ...rest }: XhTagGroupCellProps): Reac
 
 export interface XhTagGroupItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
 
-/** 选中标记：落在格子内、文字之前，选中时展示、未选中时收起；内容留空时由皮肤绘制对号。 */
+/** 选中标记：落在格子内、文字之后与摘除钮之前，选中时展示、未选中时收起；内容留空时由皮肤绘制对号。 */
 export function XhTagGroupItemIndicator({ children, ...rest }: XhTagGroupItemIndicatorProps): ReactNode {
   const ctx = useTagGroupContext()
   const { item } = useTagGroupItemContext()

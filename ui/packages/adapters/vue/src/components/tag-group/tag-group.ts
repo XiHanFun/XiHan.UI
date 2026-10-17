@@ -162,7 +162,7 @@ export const XhTagGroupCell = defineComponent({
   },
 })
 
-/** 选中标记：落在格子内、文字之前，选中时展示、未选中时收起；内容留空时由皮肤绘制对号。 */
+/** 选中标记：落在格子内、文字之后与摘除钮之前，选中时展示、未选中时收起；内容留空时由皮肤绘制对号。 */
 export const XhTagGroupItemIndicator = defineComponent({
   name: 'XhTagGroupItemIndicator',
   setup(_, { slots }) {
