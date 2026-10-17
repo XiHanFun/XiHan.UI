@@ -9,7 +9,9 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { NumberFieldApi, NumberFieldSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { numberFieldStructure } from '@xihan-ui/headless'
 import { defineComponent, h, onUnmounted } from 'vue'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideNumberField, useNumberFieldContext } from './context'
@@ -26,6 +28,8 @@ export type NumberFieldRootSlotProps = Pick<
 export const XhNumberFieldRoot = defineComponent({
   name: 'XhNumberFieldRoot',
   props: {
+    /** 标题文字。不写默认插槽时铺 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
     // 值是原始输入串；缺席值 undefined 表示非受控
     value: { type: String },
     defaultValue: { type: String },
@@ -56,6 +60,7 @@ export const XhNumberFieldRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: NumberFieldRootSlotProps) => VNode[]
+    label?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notify: NumberFieldProps['onValueChange'] = (details) => {
@@ -64,17 +69,22 @@ export const XhNumberFieldRoot = defineComponent({
     }
     const ctx = useNumberField(useFormControlProps(props) as NumberFieldProps, notify)
     provideNumberField(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      value: ctx.api.value.value,
-      valueAsNumber: ctx.api.value.valueAsNumber,
-      empty: ctx.api.value.empty,
-      canIncrement: ctx.api.value.canIncrement,
-      canDecrement: ctx.api.value.canDecrement,
-      outOfRange: ctx.api.value.outOfRange,
-      setValue: ctx.api.value.setValue,
-      increment: ctx.api.value.increment,
-      decrement: ctx.api.value.decrement,
-    }))
+    return () => {
+      const api = ctx.api.value
+      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+        ? slots.default({
+            value: api.value,
+            valueAsNumber: api.valueAsNumber,
+            empty: api.empty,
+            canIncrement: api.canIncrement,
+            canDecrement: api.canDecrement,
+            outOfRange: api.outOfRange,
+            setValue: api.setValue,
+            increment: api.increment,
+            decrement: api.decrement,
+          })
+        : renderDefaultStructure(props.label, slots.label))
+    }
   },
 })
 
@@ -143,3 +153,21 @@ export const XhNumberFieldDecrementTrigger = defineComponent({
     return () => h('button', ctx.api.value.getDecrementTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+/** 标准结构里各部件对应的组件。 */
+const NUMBER_FIELD_PARTS = {
+  'label': XhNumberFieldLabel,
+  'control': XhNumberFieldControl,
+  'decrement-trigger': XhNumberFieldDecrementTrigger,
+  'input': XhNumberFieldInput,
+  'increment-trigger': XhNumberFieldIncrementTrigger,
+}
+
+/**
+ * 未写默认插槽时铺开的整套结构：照 headless 的 numberFieldStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题由 label 插槽接管。
+ */
+function renderDefaultStructure(label: string | undefined, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = numberFieldStructure({ label, slotted: name => name === 'label' && labelSlot != null })
+  return renderStructure(nodes, NUMBER_FIELD_PARTS, node => (node.slot ? labelSlot?.() : undefined))
+}

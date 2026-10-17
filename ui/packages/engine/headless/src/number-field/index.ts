@@ -17,4 +17,6 @@ export {
   numberFieldMachine,
 } from './number-field.machine'
 export { numberFieldMeta } from './number-field.meta'
+export { numberFieldStructure } from './number-field.structure'
+export type { NumberFieldStructureOptions } from './number-field.structure'
 export type { NumberFieldApi, NumberFieldPressedPart, NumberFieldSchema, NumberFieldTranslations, NumberFieldValueChangeDetails } from './number-field.types'

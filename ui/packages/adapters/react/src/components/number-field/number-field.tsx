@@ -9,10 +9,12 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { NumberFieldApi, NumberFieldSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { numberFieldStructure } from '@xihan-ui/headless'
 import { useEffect } from 'react'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { NumberFieldProvider, useNumberFieldContext } from './context'
@@ -30,6 +32,8 @@ export type NumberFieldRootSlotProps = Pick<
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'>
 
 export interface XhNumberFieldRootProps extends RootElementProps {
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
   /** 值是原始输入串。 */
   value?: string
   defaultValue?: string
@@ -61,6 +65,7 @@ export interface XhNumberFieldRootProps extends RootElementProps {
 }
 
 export function XhNumberFieldRoot({
+  label,
   value,
   defaultValue,
   min,
@@ -120,17 +125,19 @@ export function XhNumberFieldRoot({
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
-        {renderSlot(children, {
-          value: api.value,
-          valueAsNumber: api.valueAsNumber,
-          empty: api.empty,
-          canIncrement: api.canIncrement,
-          canDecrement: api.canDecrement,
-          outOfRange: api.outOfRange,
-          setValue: api.setValue,
-          increment: api.increment,
-          decrement: api.decrement,
-        })}
+        {children != null
+          ? renderSlot(children, {
+              value: api.value,
+              valueAsNumber: api.valueAsNumber,
+              empty: api.empty,
+              canIncrement: api.canIncrement,
+              canDecrement: api.canDecrement,
+              outOfRange: api.outOfRange,
+              setValue: api.setValue,
+              increment: api.increment,
+              decrement: api.decrement,
+            })
+          : renderDefaultStructure(label)}
       </div>
     </NumberFieldProvider>
   )
@@ -230,4 +237,23 @@ export function XhNumberFieldDecrementTrigger({ children, ...rest }: XhNumberFie
       {children}
     </button>
   )
+}
+
+/** 标准结构里各部件对应的组件。 */
+const NUMBER_FIELD_PARTS = {
+  'label': XhNumberFieldLabel,
+  'control': XhNumberFieldControl,
+  'decrement-trigger': XhNumberFieldDecrementTrigger,
+  'input': XhNumberFieldInput,
+  'increment-trigger': XhNumberFieldIncrementTrigger,
+}
+
+/**
+ * 未写 children 时铺开的整套结构：照 headless 的 numberFieldStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容交给 label 部件。
+ */
+function renderDefaultStructure(label: ReactNode): ReactNode[] {
+  const slotted = label != null && typeof label !== 'string'
+  const nodes = numberFieldStructure({ label: typeof label === 'string' ? label : undefined, slotted: name => name === 'label' && slotted })
+  return renderStructure(nodes, NUMBER_FIELD_PARTS, node => (node.slot ? label : undefined))
 }

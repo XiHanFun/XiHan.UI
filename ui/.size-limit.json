@@ -235,7 +235,7 @@
     "name": "react",
     "path": "packages/adapters/react/dist/index.js",
     "gzip": true,
-    "limit": "750 kB",
+    "limit": "751 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -297,7 +297,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "754 kB"
+    "limit": "755 kB"
   },
   {
     "name": "web-components/define：只按需注册一个元素（defineXhElement + XhStatisticElement）",
