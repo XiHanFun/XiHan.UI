@@ -485,3 +485,10 @@ describe('numberFieldMachine 失焦夹取开关', () => {
     f.stop()
   })
 })
+
+describe('number-field 占位', () => {
+  it('placeholder 落到输入框上；不给时不写', () => {
+    expect(makeField({ placeholder: '请输入数量' }).input().placeholder).toBe('请输入数量')
+    expect(makeField().input().placeholder).toBeUndefined()
+  })
+})

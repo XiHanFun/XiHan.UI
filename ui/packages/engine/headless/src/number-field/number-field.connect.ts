@@ -161,6 +161,7 @@ export function connectNumberField<T extends PropTypes>(
       'autocomplete': 'off',
       'name': prop('name'),
       'value': value,
+      'placeholder': prop('placeholder'),
       'disabled': disabled || undefined,
       'readonly': readOnly || undefined,
       'required': prop('required') || undefined,

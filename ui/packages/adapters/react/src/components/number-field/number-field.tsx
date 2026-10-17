@@ -43,6 +43,8 @@ export interface XhNumberFieldRootProps extends RootElementProps {
   invalid?: boolean
   /** 表单字段名；提供后才参与提交。 */
   name?: string
+  /** 值为空时输入框显示的提示文字。 */
+  placeholder?: string
   changeDelay?: number
   changeInterval?: number
   /** 按住加速后连发的最短间隔，默认 10ms；与 changeInterval 相同即关掉加速。 */
@@ -70,6 +72,7 @@ export function XhNumberFieldRoot({
   required,
   invalid,
   name,
+  placeholder,
   changeDelay,
   changeInterval,
   minChangeInterval,
@@ -95,6 +98,7 @@ export function XhNumberFieldRoot({
     required,
     invalid,
     name,
+    placeholder,
     changeDelay,
     changeInterval,
     minChangeInterval,

@@ -167,6 +167,7 @@ parse 把显示串读为数值、format 把数值写回显示串；两个方向�
 | `required` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |
 | `name` | `string` |  | 表单字段名；提供后才参与提交。 |
+| `placeholder` | `string` |  | 值为空时输入框显示的提示文字。 |
 | `changeDelay` | `number` |  | 按住加减按钮多久开始连发，默认 300ms。 |
 | `changeInterval` | `number` |  | 连发开始时的间隔，默认 50ms；按住越久间隔越短，逐次收到 minChangeInterval。 |
 | `minChangeInterval` | `number` |  | 连发加速后的最短间隔，默认 10ms：按住越久步进越快，每连发一次间隔缩到上一次的 0.85，缩到这里为止。 写成与 changeInterval 相同的数即关掉加速，按固定节奏连发。 |

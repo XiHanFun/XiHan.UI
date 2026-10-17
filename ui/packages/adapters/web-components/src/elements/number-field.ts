@@ -36,6 +36,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} required - 必填标注
  * @attr {boolean} invalid - 校验失败标注
  * @attr {string} name - 表单字段名；提供后才参与提交
+ * @attr {string} placeholder - 值为空时输入框显示的提示文字
  * @attr {number} change-delay - 按住加减按钮多久后开始连发，默认 300ms
  * @attr {number} change-interval - 连发开始时的间隔，默认 50ms；按住越久间隔越短
  * @attr {number} min-change-interval - 按住加速后连发的最短间隔，默认 10ms；与 change-interval 相同即关掉加速
@@ -73,6 +74,7 @@ export class XhNumberFieldElement extends XhElement {
     required: { converter: BOOLEAN_CONVERTER },
     invalid: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
+    placeholder: { converter: STRING_CONVERTER },
     changeDelay: { converter: NUMBER_CONVERTER, attribute: 'change-delay' },
     changeInterval: { converter: NUMBER_CONVERTER, attribute: 'change-interval' },
     minChangeInterval: { converter: NUMBER_CONVERTER, attribute: 'min-change-interval' },
@@ -96,6 +98,7 @@ export class XhNumberFieldElement extends XhElement {
   declare required?: boolean
   declare invalid?: boolean
   declare name?: string
+  declare placeholder?: string
   declare changeDelay?: number
   declare changeInterval?: number
   declare minChangeInterval?: number
@@ -140,6 +143,7 @@ export class XhNumberFieldElement extends XhElement {
       required: control.required,
       invalid: control.invalid,
       name: this.name,
+      placeholder: this.placeholder,
       changeDelay: this.changeDelay,
       changeInterval: this.changeInterval,
       minChangeInterval: this.minChangeInterval,
