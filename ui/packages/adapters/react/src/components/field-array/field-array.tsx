@@ -5,13 +5,14 @@
 
 // 提供 field array 相关实现。
 
-import type { FieldArrayApi, FieldArraySchema, FieldArrayTranslations, FormPath } from '@xihan-ui/headless'
+import type { FieldArrayApi, FieldArrayColumn, FieldArrayLayout, FieldArraySchema, FieldArrayTranslations, FormPath } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
-import { renderSlot } from '../../runtime/slot-content'
+import { renderSlot, slotPaints } from '../../runtime/slot-content'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useOptionalFormContext } from '../form/context'
 import { useFormControlProps } from '../form/use-form-control'
 import { FieldArrayItemProvider, FieldArrayProvider, useFieldArrayContext, useFieldArrayItemContext } from './context'
@@ -49,6 +50,10 @@ export interface XhFieldArrayRootProps extends Omit<ComponentPropsWithRef<'div'>
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
+  /** 排布：list（缺省）一行一条纵向堆叠；table 是 role=table 的表格，表头与各行共用一套列宽。 */
+  layout?: FieldArrayLayout
+  /** 表格排布的各列，只在 table 排布下生效；顺序即列序。 */
+  columns?: FieldArrayColumn[]
   name?: FormPath
   translations?: Partial<FieldArrayTranslations>
   onValueChange?: FieldArrayProps['onValueChange']
@@ -65,6 +70,8 @@ export function XhFieldArrayRoot({
   disabled,
   readOnly,
   invalid,
+  layout,
+  columns,
   name,
   translations,
   onValueChange,
@@ -82,6 +89,8 @@ export function XhFieldArrayRoot({
     disabled,
     readOnly,
     invalid,
+    layout,
+    columns,
     name,
     translations,
     onValueChange,
@@ -120,6 +129,52 @@ export function XhFieldArrayRoot({
 }
 
 XhFieldArrayRoot.xhEvents = ['value-change'] as const
+
+export interface XhFieldArrayTableProps extends ComponentPropsWithRef<'div'> {}
+/**
+ * 表格排布的表格本体：role=table，表头与各行放在它里面；放进字段时字段的标签与说明接到它上面。
+ * 列表排布下不带角色，也不接字段的线。
+ */
+export function XhFieldArrayTable({ children, ...rest }: XhFieldArrayTableProps): ReactNode {
+  const fieldWiring = useFieldGroupWiring()
+  const fieldLabel = useFieldLabelWiring()
+  const ctx = useFieldArrayContext()
+  const props = ctx.api.getTableProps() as Record<string, unknown>
+  const own = ctx.api.layout === 'table' ? fieldLabel({ ...fieldWiring, ...props }) : props
+  return <div {...mergeReactProps(own, rest as Record<string, unknown>)}>{children}</div>
+}
+
+export interface XhFieldArrayHeaderProps extends ComponentPropsWithRef<'div'> {}
+/** 表头行：role=row。 */
+export function XhFieldArrayHeader({ children, ...rest }: XhFieldArrayHeaderProps): ReactNode {
+  const ctx = useFieldArrayContext()
+  return <div {...mergeReactProps(ctx.api.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+}
+
+export interface XhFieldArrayColumnHeaderProps extends ComponentPropsWithRef<'div'> {
+  /** 列 id，与 columns 里的 id 对应。 */
+  value: string
+}
+/** 列头：role=columnheader；没写内容时显示这一列的 label。 */
+export function XhFieldArrayColumnHeader({ value, children, ...rest }: XhFieldArrayColumnHeaderProps): ReactNode {
+  const ctx = useFieldArrayContext()
+  return (
+    <div {...mergeReactProps(ctx.api.getColumnHeaderProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {slotPaints(children) ? children : ctx.api.columns.find(column => column.id === value)?.label}
+    </div>
+  )
+}
+
+export interface XhFieldArrayItemCellProps extends ComponentPropsWithRef<'div'> {
+  /** 列 id，与 columns 里的 id 对应。 */
+  value: string
+}
+/** 行里的一格：role=cell，落在这一列的轨道上。 */
+export function XhFieldArrayItemCell({ value, children, ...rest }: XhFieldArrayItemCellProps): ReactNode {
+  const ctx = useFieldArrayContext()
+  const item = useFieldArrayItemContext()
+  return <div {...mergeReactProps(ctx.api.getItemCellProps({ index: item.index, value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+}
 
 export interface XhFieldArrayItemProps extends ComponentPropsWithRef<'div'> {
   /** 下标由作者声明；兼收字符串，与另外两个适配器的属性口径对齐。 */

@@ -728,3 +728,82 @@ describe('value-change 带上行变更', () => {
     expect(onValuesChange.mock.calls.at(-1)![0]).not.toHaveProperty('arrayMutation')
   })
 })
+
+describe('表格排布：角色、行号与列轨道', () => {
+  const columns = [
+    { id: 'date', label: '日期', width: 120 },
+    { id: 'amount', width: '8rem' },
+    { id: 'note' },
+  ]
+
+  it('table 部件是 role=table，aria-rowcount 算上表头；列宽数字按 px、字符串原样、不写按 1fr', () => {
+    const service = makeService({ layout: 'table', columns, defaultValue: ['a', 'b'] })
+    const a = api(service)
+    expect(a.layout).toBe('table')
+    expect(a.columns).toBe(columns)
+    const table = a.getTableProps() as Record<string, unknown>
+    expect(table.role).toBe('table')
+    expect(table['aria-rowcount']).toBe(3)
+    expect((table.style as Record<string, string>)['--xh-_field-array-cols']).toBe('120px 8rem minmax(0, 1fr)')
+    expect((a.getRootProps() as Record<string, unknown>).role).toBeUndefined()
+  })
+
+  it('表头是第 1 行，数据行从第 2 行起；行头 rowheader，格子与把手格 cell；格子按列 id 落到对应轨道', () => {
+    const service = makeService({ layout: 'table', columns, defaultValue: ['a', 'b'] })
+    const a = api(service)
+    const header = a.getHeaderProps() as Record<string, unknown>
+    expect([header.role, header['aria-rowindex'], header.hidden]).toEqual(['row', 1, undefined])
+    const columnHeader = a.getColumnHeaderProps({ value: 'amount' }) as Record<string, unknown>
+    expect([columnHeader.role, columnHeader['data-value']]).toEqual(['columnheader', 'amount'])
+    expect((columnHeader.style as Record<string, string>).gridColumn).toBe('3')
+    const item = a.getItemProps({ index: 1 }) as Record<string, unknown>
+    expect([item.role, item['aria-rowindex']]).toEqual(['row', 3])
+    expect((a.getItemLabelProps({ index: 0 }) as Record<string, unknown>).role).toBe('rowheader')
+    const cell = a.getItemCellProps({ index: 0, value: 'date' }) as Record<string, unknown>
+    expect([cell.role, cell['data-value']]).toEqual(['cell', 'date'])
+    expect((cell.style as Record<string, string>).gridColumn).toBe('2')
+    const action = a.getItemActionProps({ index: 0 }) as Record<string, unknown>
+    expect(action.role).toBe('cell')
+    expect((action.style as Record<string, string>).gridColumn).toBe('-2 / -1')
+  })
+
+  it('格子的列 id 不在 columns 里：不指定轨道，由排布自然流入', () => {
+    const service = makeService({ layout: 'table', columns, defaultValue: ['a'] })
+    const cell = api(service).getItemCellProps({ index: 0, value: 'missing' }) as Record<string, unknown>
+    expect((cell.style as Record<string, string> | undefined)?.gridColumn ?? '').toBe('')
+  })
+
+  it('列表排布（缺省）：各部件不带表格角色，表头与列头收起，行与格不带行号和轨道', () => {
+    const service = makeService({ columns, defaultValue: ['a'] })
+    const a = api(service)
+    expect(a.layout).toBe('list')
+    const table = a.getTableProps() as Record<string, unknown>
+    expect([table.role, table['aria-rowcount']]).toEqual([undefined, undefined])
+    const header = a.getHeaderProps() as Record<string, unknown>
+    expect([header.role, header.hidden]).toEqual([undefined, true])
+    expect((a.getColumnHeaderProps({ value: 'date' }) as Record<string, unknown>).hidden).toBe(true)
+    const item = a.getItemProps({ index: 0 }) as Record<string, unknown>
+    expect([item.role, item['aria-rowindex'], item['data-layout']]).toEqual([undefined, undefined, 'list'])
+    expect((a.getItemLabelProps({ index: 0 }) as Record<string, unknown>).role).toBeUndefined()
+    expect((a.getItemActionProps({ index: 0 }) as Record<string, unknown>).role).toBeUndefined()
+  })
+
+  it('不认识的 layout 按 list；没给 columns 时 columns 为空数组，不写列轨道', () => {
+    const service = makeService({ layout: 'grid' as never, defaultValue: ['a'] })
+    expect(api(service).layout).toBe('list')
+    const tableService = makeService({ layout: 'table', defaultValue: ['a'] })
+    const a = api(tableService)
+    expect(a.columns).toEqual([])
+    expect(((a.getTableProps() as Record<string, unknown>).style as Record<string, string> | undefined)?.['--xh-_field-array-cols'] ?? '').toBe('')
+  })
+
+  it('增删之后行号与 aria-rowcount 跟着行数走', () => {
+    const service = makeService({ layout: 'table', columns, defaultValue: ['a', 'b'], createItem: () => 'n' })
+    api(service).add()
+    const a = api(service)
+    expect((a.getTableProps() as Record<string, unknown>)['aria-rowcount']).toBe(4)
+    expect((a.getItemProps({ index: 2 }) as Record<string, unknown>)['aria-rowindex']).toBe(4)
+    a.remove(0)
+    expect((api(service).getTableProps() as Record<string, unknown>)['aria-rowcount']).toBe(3)
+  })
+})

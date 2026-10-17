@@ -34893,6 +34893,86 @@
       "description": "field-array 的 add-trigger 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-field-array-cell-px",
+      "component": "field-array",
+      "part": [
+        "column-header",
+        "item-action",
+        "item-cell",
+        "item-label"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "is([data-part='item-cell'], [data-part='item-label'], [data-part='item-action'])",
+        "layout=table"
+      ],
+      "defaultToken": [
+        "--xh-table-cell-px-md"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 column-header、item-action、item-cell、item-label 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-array-cell-py",
+      "component": "field-array",
+      "part": [
+        "column-header",
+        "item-action",
+        "item-cell",
+        "item-label"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "is([data-part='item-cell'], [data-part='item-label'], [data-part='item-action'])",
+        "layout=table"
+      ],
+      "defaultToken": [
+        "--xh-table-cell-py-md"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 column-header、item-action、item-cell、item-label 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-array-column-header-fg",
+      "component": "field-array",
+      "part": [
+        "column-header"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "layout=table"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 column-header 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-array-column-header-font-weight",
+      "component": "field-array",
+      "part": [
+        "column-header"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "layout=table"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 column-header 部件 font-weight 覆盖槽。"
+    },
+    {
       "name": "--xh-field-array-content-gap",
       "component": "field-array",
       "part": [
@@ -34927,6 +35007,24 @@
       ],
       "visibility": "public",
       "description": "field-array 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-array-header-bg",
+      "component": "field-array",
+      "part": [
+        "header"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "layout=table"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 header 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-field-array-icon-size",
@@ -35062,6 +35160,65 @@
       ],
       "visibility": "public",
       "description": "field-array 的 item 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-array-row-divider",
+      "component": "field-array",
+      "part": [
+        "header",
+        "item"
+      ],
+      "property": [
+        "border-block-end",
+        "border-block-start"
+      ],
+      "state": [
+        "layout=table"
+      ],
+      "defaultToken": [
+        "--xh-border-subtle"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 header、item 部件 border-block-end、border-block-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-array-table-border",
+      "component": "field-array",
+      "part": [
+        "table"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "layout=table"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 table 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-array-table-radius",
+      "component": "field-array",
+      "part": [
+        "header",
+        "table"
+      ],
+      "property": [
+        "border-radius",
+        "border-start-end-radius",
+        "border-start-start-radius"
+      ],
+      "state": [
+        "layout=table"
+      ],
+      "defaultToken": [
+        "--xh-shape-surface"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 header、table 部件 border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
     },
     {
       "name": "--xh-field-array-trigger-bg",

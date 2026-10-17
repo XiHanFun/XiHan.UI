@@ -13,9 +13,13 @@ import { createAnatomy } from '@xihan-ui/core'
 // item-label 是这一行前面那一小段行号或名目，可选。
 export const fieldArrayAnatomy = createAnatomy('field-array', [
   'root',
+  'table',
+  'header',
+  'column-header',
   'item',
   'item-label',
   'item-content',
+  'item-cell',
   'item-action',
   'add-trigger',
   'item-delete-trigger',

@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="field-array"`：**`root`** · `item` · `item-label` · `item-content` · `item-action` · `add-trigger` · `item-delete-trigger` · `move-up-trigger` · `move-down-trigger`
+`data-scope="field-array"`：**`root`** · `table` · `header` · `column-header` · `item` · `item-label` · `item-content` · `item-cell` · `item-action` · `add-trigger` · `item-delete-trigger` · `move-up-trigger` · `move-down-trigger`
 
 ## 示例
 
@@ -48,6 +48,12 @@ insert(index) 在指定位置插入一行，后面的行往后挪；move(from, t
 
 <XhDemo src="field-array/05-insert" />
 
+### 表格排布
+
+layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽，列头留空即显示这一列的 label
+
+<XhDemo src="field-array/06-table" />
+
 ## 设计指引
 
 ### 何时使用
@@ -67,6 +73,7 @@ insert(index) 在指定位置插入一行，后面的行往后挪；move(from, t
 - `createItem` 设置新增行的初始值。
 - `insert(index, item?)` 在指定位置插入一行，后面的行往后挪；`move(from, to)` 一步挪到任意位置。两者与 `add` 同受 `max`、`movable` 与禁用约束。
 - 每行可以包含一个或多个字段。
+- `layout="table"` 换成表格排布：`table` 部件是 role=table，表头 `header` 与各行放在它里面，`add-trigger` 仍排在它之后；表头里一列一个 `column-header`，行里一列一个 `item-cell`，都用 `value` 写列 id。`columns` 给出列序、列头文字与列宽（数字按 px，字符串原样，不写按 1fr），表头与各行共用这一套列宽。不带键盘模型，Tab 依次经过各格里的控件与把手。放进字段时字段的标签接到表格上，不在字段里时在表格上写 `aria-label`。
 - 在 Form 中会同步迁移数组子字段的值、规则和错误。
 - 行的增删与移动有进退场：首次渲染时已有的行直接呈现，新增的行淡入，删掉的行在原处淡出，上移、下移与增删带来的换位滑到新位置。行照常按 `items` 渲染，删掉即卸载。
 
@@ -93,7 +100,7 @@ insert(index) 在指定位置插入一行，后面的行往后挪；move(from, t
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-field-array>` |
-| Vue 组件 | `XhFieldArrayAddTrigger` `XhFieldArrayItem` `XhFieldArrayItemAction` `XhFieldArrayItemContent` `XhFieldArrayItemDeleteTrigger` `XhFieldArrayItemLabel` `XhFieldArrayMoveDownTrigger` `XhFieldArrayMoveUpTrigger` `XhFieldArrayRoot` |
+| Vue 组件 | `XhFieldArrayAddTrigger` `XhFieldArrayColumnHeader` `XhFieldArrayHeader` `XhFieldArrayItem` `XhFieldArrayItemAction` `XhFieldArrayItemCell` `XhFieldArrayItemContent` `XhFieldArrayItemDeleteTrigger` `XhFieldArrayItemLabel` `XhFieldArrayMoveDownTrigger` `XhFieldArrayMoveUpTrigger` `XhFieldArrayRoot` `XhFieldArrayTable` |
 | 组合式函数 | `useFieldArray` |
 | 状态机 | `fieldArrayMachine` |
 | 皮肤 | `@xihan-ui/styles/field-array.css` |
@@ -111,9 +118,21 @@ insert(index) 在指定位置插入一行，后面的行往后挪；move(from, t
 | `disabled` | `boolean` |  | 禁用：新增、删除、换序三路都不可按下。 |
 | `readOnly` | `boolean` |  | 只读：行数不可修改（新增、删除、换序都不可按下），行内的控件仍由作者自行设置只读。 |
 | `invalid` | `boolean` |  | 校验失败标注：写在根与每一行上。 |
+| `layout` | `FieldArrayLayout` |  | 排布，缺省 list。table 时 table 部件是 role=table，header 与各行是 role=row，item-label 是 rowheader， item-cell 与 item-action 是 cell；行里的字段一格一个 item-cell，item-content 在这种排布下不用。 不带键盘模型：Tab 依次经过每格里的控件与把手，与普通表单一致。窄屏横向滚动交给外层容器。 |
+| `columns` | `FieldArrayColumn[]` |  | 表格排布的各列，只在 table 排布下生效；顺序即列序。 |
 | `name` | `FormPath` |  | 整份数组的表单字段名。嵌套在 Form 中时会自动接入其值、规则、错误与校验真源； 每一行经 `item.name` 获得显式数组 FormPath，不拼接字符串下标。 |
 | `translations` | `Partial<FieldArrayTranslations>` |  |  |
 | `onValueChange` | `(details: FieldArrayValueChangeDetails) => void` |  |  |
+
+### FieldArrayColumn
+
+`columns` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 |  |
+| `label` | `string` |  | 列头文字；作者没给 column-header 写内容时显示它。 |
+| `width` | `string \| number` |  | 列宽：数字按 px，字符串原样作轨道宽（fr、%、rem…），不写按 1fr。 |
 
 ### 事件
 
@@ -137,7 +156,9 @@ insert(index) 在指定位置插入一行，后面的行往后挪；move(from, t
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhFieldArrayColumnHeader` | `value` | `string` | 是 | 列 id，与 columns 里的 id 对应。 |
 | `XhFieldArrayItem` | `index` | `number \| string` | 是 | 下标由作者声明；兼收字符串，与另外两个适配器的属性口径对齐。 |
+| `XhFieldArrayItemCell` | `value` | `string` | 是 | 列 id，与 columns 里的 id 对应。 |
 | `XhFieldArrayRoot` | `children` | `SlotChildren<FieldArrayRootSlotProps>` |  |  |
 
 ### 状态
@@ -164,6 +185,8 @@ insert(index) 在指定位置插入一行，后面的行往后挪；move(from, t
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `movable` | `boolean` |  |
+| `layout` | `FieldArrayLayout` |  |
+| `columns` | `FieldArrayColumn[]` | 表格排布的各列，原样取自 columns；没给时为空数组。 |
 | `atMin` | `boolean` | 已到下限：再删除会少于 min。 |
 | `atMax` | `boolean` | 已到上限：再新增会多于 max。 |
 | `canAdd` | `boolean` |  |
@@ -175,7 +198,11 @@ insert(index) 在指定位置插入一行，后面的行往后挪；move(from, t
 | `moveUp` | `(index: number) => void` |  |
 | `moveDown` | `(index: number) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
+| `getTableProps` | `() => T['element']` | 表格排布的表格本体：role=table，表头与各行放在它里面，新增把手仍在 root 里、排在它之后。 名字来自外层字段的标签（经字段接线），不在字段里时由作者在它上面写 aria-label。列表排布下不带角色。 |
+| `getHeaderProps` | `() => T['element']` | 表头行：role=row，第 1 行。列表排布下收起。 |
+| `getColumnHeaderProps` | `(column: FieldArrayColumnProps) => T['element']` | 列头：role=columnheader，value 是列 id。列表排布下收起。 |
 | `getItemProps` | `(item: FieldArrayItemProps) => T['element']` |  |
+| `getItemCellProps` | `(cell: FieldArrayItemCellProps) => T['element']` | 行里的一格：role=cell，value 是列 id，落在这一列的轨道上。只在表格排布下使用。 |
 | `getItemLabelProps` | `(item: FieldArrayItemProps) => T['element']` | 行前的行号或名目：纯标注，不与行内的控件建立 for 关联。 |
 | `getItemContentProps` | `(item: FieldArrayItemProps) => T['element']` |  |
 | `getItemActionProps` | `(item: FieldArrayItemProps) => T['element']` |  |
@@ -200,6 +227,16 @@ insert(index) 在指定位置插入一行，后面的行往后挪；move(from, t
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `table` | `aria-rowcount` | count + 1 \| undefined |
+| `table` | `role` | 'table' \| undefined |
+| `header` | `aria-rowindex` | 1 \| undefined |
+| `header` | `role` | 'row' \| undefined |
+| `column-header` | `role` | 'columnheader' \| undefined |
+| `item` | `aria-rowindex` | item.index + 2 \| undefined |
+| `item` | `role` | 'row' \| undefined |
+| `item-label` | `role` | 'rowheader' \| undefined |
+| `item-cell` | `role` | 'cell' \| undefined |
+| `item-action` | `role` | 'cell' \| undefined |
 | `add-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `item-delete-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `item-delete-trigger` | `aria-label` | label.deleteItem(item.index + 1, count) |
@@ -224,8 +261,13 @@ insert(index) 在指定位置插入一行，后面的行往后挪；move(from, t
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-instant` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-layout` | 'table' \| 'list' |
 | `root` | `data-movable` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `table` | `data-layout` | 'table' \| 'list' |
+| `header` | `data-layout` | 'table' \| 'list' |
+| `column-header` | `data-layout` | 'table' \| 'list' |
+| `column-header` | `data-value` | column.value |
 | `item` | `data-at-max` | ''（条件成立时才出现） |
 | `item` | `data-at-min` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
@@ -233,24 +275,36 @@ insert(index) 在指定位置插入一行，后面的行往后挪；move(from, t
 | `item` | `data-index` | String(item.index) |
 | `item` | `data-invalid` | ''（条件成立时才出现） |
 | `item` | `data-last` | ''（条件成立时才出现） |
+| `item` | `data-layout` | 'table' \| 'list' |
 | `item` | `data-readonly` | ''（条件成立时才出现） |
 | `item-label` | `data-at-max` | ''（条件成立时才出现） |
 | `item-label` | `data-at-min` | ''（条件成立时才出现） |
 | `item-label` | `data-disabled` | ''（条件成立时才出现） |
 | `item-label` | `data-index` | String(item.index) |
 | `item-label` | `data-invalid` | ''（条件成立时才出现） |
+| `item-label` | `data-layout` | 'table' \| 'list' |
 | `item-label` | `data-readonly` | ''（条件成立时才出现） |
 | `item-content` | `data-at-max` | ''（条件成立时才出现） |
 | `item-content` | `data-at-min` | ''（条件成立时才出现） |
 | `item-content` | `data-disabled` | ''（条件成立时才出现） |
 | `item-content` | `data-index` | String(item.index) |
 | `item-content` | `data-invalid` | ''（条件成立时才出现） |
+| `item-content` | `data-layout` | 'table' \| 'list' |
 | `item-content` | `data-readonly` | ''（条件成立时才出现） |
+| `item-cell` | `data-at-max` | ''（条件成立时才出现） |
+| `item-cell` | `data-at-min` | ''（条件成立时才出现） |
+| `item-cell` | `data-disabled` | ''（条件成立时才出现） |
+| `item-cell` | `data-index` | String(item.index) |
+| `item-cell` | `data-invalid` | ''（条件成立时才出现） |
+| `item-cell` | `data-layout` | 'table' \| 'list' |
+| `item-cell` | `data-readonly` | ''（条件成立时才出现） |
+| `item-cell` | `data-value` | cell.value |
 | `item-action` | `data-at-max` | ''（条件成立时才出现） |
 | `item-action` | `data-at-min` | ''（条件成立时才出现） |
 | `item-action` | `data-disabled` | ''（条件成立时才出现） |
 | `item-action` | `data-index` | String(item.index) |
 | `item-action` | `data-invalid` | ''（条件成立时才出现） |
+| `item-action` | `data-layout` | 'table' \| 'list' |
 | `item-action` | `data-readonly` | ''（条件成立时才出现） |
 | `add-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `add-trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -264,6 +318,7 @@ insert(index) 在指定位置插入一行，后面的行往后挪；move(from, t
 | `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `item-delete-trigger` | `data-index` | String(item.index) |
 | `item-delete-trigger` | `data-invalid` | ''（条件成立时才出现） |
+| `item-delete-trigger` | `data-layout` | 'table' \| 'list' |
 | `item-delete-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `item-delete-trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `item-delete-trigger` | `data-xh-action-control` | '' |
@@ -303,8 +358,13 @@ insert(index) 在指定位置插入一行，后面的行往后挪；move(from, t
 | `--xh-field-array-add-height` | `add-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | field-array 的 add-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-field-array-add-px` | `add-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | field-array 的 add-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-field-array-add-radius` | `add-trigger` | `border-radius` | `default` | `--xh-shape-control` | field-array 的 add-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-field-array-cell-px` | `column-header`<br>`item-action`<br>`item-cell`<br>`item-label` | `padding-inline` | `is([data-part='item-cell'], [data-part='item-label'], [data-part='item-action'])`<br>`layout=table` | `--xh-table-cell-px-md` | field-array 的 column-header、item-action、item-cell、item-label 部件 padding-inline 覆盖槽。 |
+| `--xh-field-array-cell-py` | `column-header`<br>`item-action`<br>`item-cell`<br>`item-label` | `padding-block` | `is([data-part='item-cell'], [data-part='item-label'], [data-part='item-action'])`<br>`layout=table` | `--xh-table-cell-py-md` | field-array 的 column-header、item-action、item-cell、item-label 部件 padding-block 覆盖槽。 |
+| `--xh-field-array-column-header-fg` | `column-header` | `color` | `layout=table` | `--xh-fg-default` | field-array 的 column-header 部件 color 覆盖槽。 |
+| `--xh-field-array-column-header-font-weight` | `column-header` | `font-weight` | `layout=table` | `--xh-font-weight-medium` | field-array 的 column-header 部件 font-weight 覆盖槽。 |
 | `--xh-field-array-content-gap` | `item-content` | `gap` | `default` | `--xh-space-2` | field-array 的 item-content 部件 gap 覆盖槽。 |
 | `--xh-field-array-gap` | `root` | `gap` | `default` | `--xh-space-2` | field-array 的 root 部件 gap 覆盖槽。 |
+| `--xh-field-array-header-bg` | `header` | `background` | `layout=table` | `--xh-bg-subtle` | field-array 的 header 部件 background 覆盖槽。 |
 | `--xh-field-array-icon-size` | `add-trigger`<br>`item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | field-array 的 add-trigger、item-delete-trigger、move-down-trigger、move-up-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-field-array-item-delete-fg-hover` | `item-delete-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-danger-hover` | field-array 的 item-delete-trigger 部件 color 覆盖槽。 |
 | `--xh-field-array-item-gap` | `item` | `gap` | `default` | `--xh-space-2` | field-array 的 item 部件 gap 覆盖槽。 |
@@ -312,6 +372,9 @@ insert(index) 在指定位置插入一行，后面的行往后挪；move(from, t
 | `--xh-field-array-item-label-font-size` | `item-label` | `font-size` | `default` | `--xh-text-secondary-size` | field-array 的 item-label 部件 font-size 覆盖槽。 |
 | `--xh-field-array-item-padding` | `item` | `padding` | `default` | `--xh-space-0` | field-array 的 item 部件 padding 覆盖槽。 |
 | `--xh-field-array-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-surface` | field-array 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-field-array-row-divider` | `header`<br>`item` | `border-block-end`<br>`border-block-start` | `layout=table` | `--xh-border-subtle` | field-array 的 header、item 部件 border-block-end、border-block-start 覆盖槽。 |
+| `--xh-field-array-table-border` | `table` | `border` | `layout=table` | `--xh-border-default` | field-array 的 table 部件 border 覆盖槽。 |
+| `--xh-field-array-table-radius` | `header`<br>`table` | `border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `layout=table` | `--xh-shape-surface` | field-array 的 header、table 部件 border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-field-array-trigger-bg` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-field-array-trigger-bg-active` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。 |
 | `--xh-field-array-trigger-bg-hover` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。 |

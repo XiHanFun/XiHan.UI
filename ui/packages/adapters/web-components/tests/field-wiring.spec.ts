@@ -109,7 +109,7 @@ describe('字段接线的目标声明', () => {
   it('声明了 fieldTarget 的控件都在发现表里，字段接线到得了它', () => {
     const missing = tags.filter(tag => ctorOf(tag).fieldTarget && !listed.has(tag))
     expect(missing).toEqual([])
-    expect(tags.filter(tag => ctorOf(tag).fieldTarget)).toHaveLength(26)
+    expect(tags.filter(tag => ctorOf(tag).fieldTarget)).toHaveLength(27)
   })
 })
 
@@ -149,6 +149,35 @@ describe(`${CONTROLS.length} 个库内控件放进 xh-field`, () => {
     await vi.waitFor(() => expect(el().getAttribute('aria-describedby')).toBe(`${idOf(field, 'description')} ${idOf(field, 'error-text')}`))
     expect(el().getAttribute('aria-labelledby')?.split(' ')[0]).toBe(idOf(field, 'label'))
     expect(el().getAttribute('data-scope')).toBe(tag)
+  })
+})
+
+describe('field-array 的接线随排布', () => {
+  const ARRAY = (layout: string) => `
+    <xh-field-array ${layout}>
+      <div data-xh-part="root">
+        <div data-xh-part="table"><div data-xh-part="header"></div></div>
+        <button data-xh-part="add-trigger">添加一行</button>
+      </div>
+    </xh-field-array>`
+  const table = (field: HTMLElement) => field.querySelector<HTMLElement>('[data-xh-part="table"]')!
+
+  it('表格排布：描述链与字段标签落在 table 部件上', async () => {
+    const field = mountField(ARRAY('layout="table"'), 'invalid')
+    await vi.waitFor(() => expect(table(field).getAttribute('aria-describedby')).toBe(`${idOf(field, 'description')} ${idOf(field, 'error-text')}`))
+    expect(table(field).getAttribute('aria-labelledby')?.split(' ')[0]).toBe(idOf(field, 'label'))
+    expect(table(field).getAttribute('role')).toBe('table')
+  })
+
+  it('列表排布：table 部件不带角色，也不接字段的名字与描述链；改成表格排布后接上', async () => {
+    const field = mountField(ARRAY(''), 'invalid')
+    await vi.waitFor(() => expect(table(field).getAttribute('data-scope')).toBe('field-array'))
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(table(field).hasAttribute('role')).toBe(false)
+    expect(table(field).hasAttribute('aria-labelledby')).toBe(false)
+    expect(table(field).hasAttribute('aria-describedby')).toBe(false)
+    field.querySelector('xh-field-array')!.setAttribute('layout', 'table')
+    await vi.waitFor(() => expect(table(field).getAttribute('aria-labelledby')?.split(' ')[0]).toBe(idOf(field, 'label')))
   })
 })
 

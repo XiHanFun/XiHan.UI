@@ -110,12 +110,17 @@ export abstract class XhElement extends XhReactiveElement {
     const wiring = this.fieldWiring
     const ctor = this.constructor as typeof XhElement
     const target = ctor.fieldTarget
-    if (!wiring || !target || props['data-scope'] !== ctor.partContract?.anatomy.name)
+    if (!wiring || !target || !this.acceptsFieldWiring() || props['data-scope'] !== ctor.partContract?.anatomy.name)
       return props
     if (!target.parts.includes(props['data-part'] as string))
       return props
     const attrs = target.kind === 'state' ? fieldStateAttrs(wiring) : fieldGroupAttrs(wiring)
     return withFieldLabel(withFieldDescription({ ...attrs, ...props }, wiring.describedBy), wiring.labelId)
+  }
+
+  /** 声明的接线目标此刻是否承接字段接线；目标部件随状态失去角色时子类返回 false。 */
+  protected acceptsFieldWiring(): boolean {
+    return true
   }
 
   private readonly ownSpreader: Spreader = createSpreader()

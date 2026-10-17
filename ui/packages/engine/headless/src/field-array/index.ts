@@ -12,8 +12,12 @@ export { fieldArrayInsertIndex, fieldArrayMachine } from './field-array.machine'
 export { fieldArrayMeta } from './field-array.meta'
 export type {
   FieldArrayApi,
+  FieldArrayColumn,
+  FieldArrayColumnProps,
   FieldArrayItem,
+  FieldArrayItemCellProps,
   FieldArrayItemProps,
+  FieldArrayLayout,
   FieldArrayPressedKey,
   FieldArraySchema,
   FieldArrayTranslations,

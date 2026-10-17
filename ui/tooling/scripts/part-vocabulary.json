@@ -262,6 +262,7 @@
       "time-range-picker"
     ],
     "column-header": [
+      "field-array",
       "table"
     ],
     "column-label": [
@@ -663,6 +664,7 @@
       "dialog",
       "diff-view",
       "drawer",
+      "field-array",
       "floating-panel",
       "layout",
       "table"
@@ -844,6 +846,9 @@
     ],
     "item-action-trigger": [
       "notification"
+    ],
+    "item-cell": [
+      "field-array"
     ],
     "item-checkbox": [
       "transfer"
@@ -1807,6 +1812,7 @@
     ],
     "table": [
       "cartesian-chart",
+      "field-array",
       "funnel-chart",
       "graph-chart",
       "hierarchy-chart",

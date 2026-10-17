@@ -28,6 +28,38 @@ function row(index: number): FixtureNode {
 
 const addTrigger: FixtureNode = { part: 'add-trigger', tag: 'button', text: '新增一行' }
 
+const COLUMNS = [{ id: 'date', label: '日期' }, { id: 'amount', label: '金额' }]
+
+/** 表格排布的一行：行头、每列一格、把手格。 */
+function tableRow(index: number): FixtureNode {
+  return {
+    part: 'item',
+    attrs: { index: String(index) },
+    children: [
+      { part: 'item-label', text: String(index + 1) },
+      ...COLUMNS.map(column => ({ part: 'item-cell', attrs: { value: column.id }, text: `${column.label} ${index + 1}` })),
+      { part: 'item-action', children: [{ part: 'item-delete-trigger', tag: 'button' }] },
+    ],
+  }
+}
+
+/** 表格排布：表头与各行放在 table 部件里，新增把手仍是根的最后一个子节点。 */
+function tableFixture(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: [
+      {
+        part: 'table',
+        children: [
+          { part: 'header', children: COLUMNS.map(column => ({ part: 'column-header', attrs: { value: column.id } })) },
+          ...Array.from({ length: ROWS }, (_, i) => tableRow(i)),
+        ],
+      },
+      addTrigger,
+    ],
+  }
+}
+
 /** 某一行的把手：把手带着作者声明的行下标，按它选到那一行的。 */
 function handle(part: string, index: number): string {
   return `[data-scope="field-array"][data-part="${part}"][data-index="${index}"]`
@@ -422,6 +454,68 @@ export const fieldArraySuite: ConformanceSuite = {
           'item-delete-trigger[1]': { 'aria-label': '删除第 2 行，共 3 行' },
           'move-up-trigger[1]': { 'aria-label': '把第 2 行往上挪' },
           'move-down-trigger[1]': { 'aria-label': '把第 2 行往下挪' },
+        },
+      },
+    },
+    {
+      name: '表格排布：table 部件 role=table、aria-rowcount 算上表头；表头第 1 行，数据行从第 2 行起；行头 rowheader，格与把手格 cell；根仍不带角色',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/table/' },
+      props: { defaultValue: ['甲', '乙', '丙'], layout: 'table', columns: COLUMNS },
+      fixture: tableFixture,
+      initial: {
+        order: [
+          'root',
+          'table',
+          'header',
+          'column-header[0]',
+          'column-header[1]',
+          ...Array.from({ length: ROWS }, (_, i) => [
+            `item[${i}]`,
+            `item-label[${i}]`,
+            `item-cell[${i * 2}]`,
+            `item-cell[${i * 2 + 1}]`,
+            `item-action[${i}]`,
+            `item-delete-trigger[${i}]`,
+          ]).flat(),
+          'add-trigger',
+        ],
+        parts: {
+          'root': { 'role': null, 'data-layout': 'table' },
+          'table': { 'role': 'table', 'aria-rowcount': '4', 'data-layout': 'table' },
+          'header': { 'role': 'row', 'aria-rowindex': '1', 'hidden': null },
+          'column-header[1]': { 'role': 'columnheader', 'data-value': 'amount', 'hidden': null },
+          'item[0]': { 'role': 'row', 'aria-rowindex': '2', 'data-layout': 'table' },
+          'item[2]': { 'role': 'row', 'aria-rowindex': '4' },
+          'item-label[1]': { 'role': 'rowheader', 'data-index': '1' },
+          'item-cell[3]': { 'role': 'cell', 'data-index': '1', 'data-value': 'amount' },
+          'item-action[1]': { 'role': 'cell', 'data-index': '1' },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'item-delete-trigger[2]',
+          expect: {
+            events: [{ type: 'value-change', detail: { value: ['甲', '乙'], mutation: { type: 'remove', index: 2 } } }],
+            parts: { table: { 'aria-rowcount': '3' } },
+          },
+        },
+      ],
+    },
+    {
+      name: '列表排布（缺省）下写了表格部件：table 不带角色，表头与列头收起，行与格不带行号',
+      spec: { apg: APG },
+      props: { defaultValue: ['甲', '乙', '丙'], columns: COLUMNS },
+      fixture: tableFixture,
+      initial: {
+        parts: {
+          'table': { 'role': null, 'aria-rowcount': null, 'data-layout': 'list' },
+          'header': { role: null, hidden: '' },
+          'column-header[0]': { role: null, hidden: '' },
+          'item[0]': { 'role': null, 'aria-rowindex': null },
+          'item-label[0]': { role: null },
+          'item-cell[0]': { 'role': null, 'data-value': 'date' },
+          'item-action[0]': { role: null },
         },
       },
     },

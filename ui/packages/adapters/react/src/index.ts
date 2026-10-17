@@ -1076,19 +1076,26 @@ export type { ExpressionInputContext } from './components/expression-input/use-e
 export { useFieldArrayContext, useFieldArrayItemContext } from './components/field-array/context'
 export {
   XhFieldArrayAddTrigger,
+  XhFieldArrayColumnHeader,
+  XhFieldArrayHeader,
   XhFieldArrayItem,
   XhFieldArrayItemAction,
+  XhFieldArrayItemCell,
   XhFieldArrayItemContent,
   XhFieldArrayItemDeleteTrigger,
   XhFieldArrayItemLabel,
   XhFieldArrayMoveDownTrigger,
   XhFieldArrayMoveUpTrigger,
   XhFieldArrayRoot,
+  XhFieldArrayTable,
 } from './components/field-array/field-array'
 export type {
   FieldArrayRootSlotProps,
   XhFieldArrayAddTriggerProps,
+  XhFieldArrayColumnHeaderProps,
+  XhFieldArrayHeaderProps,
   XhFieldArrayItemActionProps,
+  XhFieldArrayItemCellProps,
   XhFieldArrayItemContentProps,
   XhFieldArrayItemDeleteTriggerProps,
   XhFieldArrayItemLabelProps,
@@ -1096,6 +1103,7 @@ export type {
   XhFieldArrayMoveDownTriggerProps,
   XhFieldArrayMoveUpTriggerProps,
   XhFieldArrayRootProps,
+  XhFieldArrayTableProps,
 } from './components/field-array/field-array'
 export { useFieldArray } from './components/field-array/use-field-array'
 export type { FieldArrayContext } from './components/field-array/use-field-array'
