@@ -50,6 +50,11 @@ export type {
   FilterBuilderSchema,
   FilterBuilderTranslations,
   FilterBuilderValueChangeDetails,
+  FilterCondition,
+  FilterField,
+  FilterGroup,
   FilterOperandControl,
   FilterOperandSource,
+  FilterOperator,
+  FilterParameter,
 } from './filter-builder.types'

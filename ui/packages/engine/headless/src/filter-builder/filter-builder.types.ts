@@ -10,6 +10,9 @@ import type { FilterCondition, FilterField, FilterGroup, FilterOperator, FilterP
 import type { StructureInstanceProps } from '../shared/structure-instance'
 import type { FilterBuilderCreateId, FilterConditionIssue, FilterOperandShape, FilterPath } from './filter-builder.model'
 
+/** 条件树与字段、参数的类型：转出 @xihan-ui/viz 的。 */
+export type { FilterCondition, FilterField, FilterGroup, FilterOperator, FilterParameter } from '@xihan-ui/viz'
+
 export interface FilterBuilderValueChangeDetails {
   /** 新的条件树；每次增删改派发一棵新树，不改原树。 */
   value: FilterGroup

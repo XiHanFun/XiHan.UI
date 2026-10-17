@@ -122,7 +122,8 @@
       "canDependOn": [
         "engine/core",
         "engine/pointer",
-        "engine/expression"
+        "engine/expression",
+        "engine/viz"
       ]
     },
     "features/designer-shell": {
@@ -130,6 +131,7 @@
       "canDependOn": [
         "engine/core",
         "engine/pointer",
+        "engine/viz",
         "features/designer-kit",
         "adapters/web-components"
       ]
