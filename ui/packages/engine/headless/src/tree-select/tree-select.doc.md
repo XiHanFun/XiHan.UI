@@ -15,6 +15,7 @@
 ## 特性
 
 - 选中与展开两套值各自可受控。
+- 只给 `collection` 时照标准结构铺：标题（给了 `label`）、盒（触发器，`clearable` 时再带清空钮）与浮层里的树，`searchable` 时树前面带搜索框，多选时触发器里铺标签行；没给 `collection` 也铺出盒与一棵空树。Vue / React 不写默认插槽与 Web Components 不写部件（或只写 `root`）时生成的节点出自同一个结构函数；Web Components 的标题可用宿主直接子节点 `slot="label"` 接管。节点副文本、行尾、表单影子与底部操作区要手写结构时自己摆。
 - 多选的已选项在触发器里排成标签，与[选择器](./select)同一套呈现：超出 `maxTagCount`（默认 3）合并为 `+N`，标签文字取 collection 的 label（收起子树里的选中值同样报得出名字）；Vue / React 的自动结构在多选时直接铺出标签行。
 - 原生表单按每个选中值生成一个同名隐藏字段；`['a,b', 'c']` 用 `FormData.getAll(name)` 读取为两个原值，不使用逗号拼接。零选中没有提交项，禁用不提交，只读仍提交。
 - 声明 `HiddenInput` 部件才参与原生表单。`form` 可指定外部表单 ID，提交与重置使用同一所有者；显式 ID 不存在时不回退祖先表单。非受控 reset 恢复 `defaultValue`，受控值由业务响应重置请求。

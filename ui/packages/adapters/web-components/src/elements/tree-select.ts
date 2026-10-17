@@ -22,9 +22,10 @@ import type {
   TreeSelectTagMeta,
   TreeSelectValueChangeDetails,
 } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTreeSelect, resolveFormControlState, treeSelectAnatomy, treeSelectMachine, treeSelectMeta } from '@xihan-ui/headless'
+import { connectTreeSelect, resolveFormControlState, treeSelectAnatomy, treeSelectMachine, treeSelectMeta, treeSelectStructure } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
@@ -61,6 +62,10 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * 树数据与展开 / 选中集合都是数组，只能通过 property 设置（`el.collection = [...]`）；
  * 单选的选中值可用 value 属性写为裸串。
  *
+ * 不写部件时元素按标准结构生成：标题（给了 label）、盒（触发器，clearable 时再带清空钮）与浮层里的树
+ * （searchable 时树前面带搜索框，多选时触发器里铺标签行）；只写 root 时生成在它里面。标题可用宿主直接子节点
+ * `slot="label"` 接管。要参与表单时手写 hidden-input。
+ *
  * @customElement xh-tree-select
  * @attr {string} value - 受控选中值（单选简写）；未提供该属性即非受控，多选通过 property 传入数组
  * @attr {string} default-value - 非受控初始选中值
@@ -80,6 +85,8 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {string} placeholder - 无选中时 value-text 显示的占位文字
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
+ * @attr {boolean} clearable - 生成结构时盒里带清空按钮；手写部件时不使用它，写了 clear-trigger 即可清空
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭；写 loop="true" 开启
@@ -139,6 +146,17 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     delegates: [{ name: 'tag', parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }],
   }
 
+  static override structure: ElementStructure<XhTreeSelectElement> = {
+    build: host => host.ctrl.service
+      ? treeSelectStructure(connectTreeSelect(host.ctrl.service, wcNormalize), {
+          label: host.label,
+          clearable: host.clearable ?? false,
+          searchable: host.searchable ?? false,
+          slotted: (name, key) => host.slotted(name, key),
+        })
+      : undefined,
+  }
+
   static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
@@ -169,6 +187,8 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
+    label: { converter: STRING_CONVERTER },
+    clearable: { converter: BOOLEAN_CONVERTER },
     translations: { attribute: false },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
@@ -205,6 +225,8 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   declare tone?: Tone
   declare size?: Size
   declare placeholder?: string
+  declare label?: string
+  declare clearable?: boolean
   /** 读屏文案（树容器的兜底名称）；对象无法表达为属性，只作为 property 暴露。 */
   declare translations?: TreeSelectSchema['props']['translations']
   declare placement?: Placement

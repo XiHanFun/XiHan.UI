@@ -76917,7 +76917,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tree-select>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content / tree\n与若干 item / branch 角色节点，元素运行 tree-select 状态机并把 connect 产出接上。\n浮层定位引擎在本元素中创建、经 refs 注入状态机，锚点取 trigger、被定位的浮层取 positioner；\n节点身份取节点上的 value 属性。\n\n层级（aria-level / aria-posinset / aria-setsize）、禁用与显示文本都查询 `collection` 这份树数据，\n不从 DOM 反推，因此 collection 必须与标记同源。\n\nvalue-text 的显示文字由元素填入；作者在该节点中写了内容则由作者负责，元素不再改写。\n\n树数据与展开 / 选中集合都是数组，只能通过 property 设置（`el.collection = [...]`）；\n单选的选中值可用 value 属性写为裸串。",
+          "description": "`<xh-tree-select>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content / tree\n与若干 item / branch 角色节点，元素运行 tree-select 状态机并把 connect 产出接上。\n浮层定位引擎在本元素中创建、经 refs 注入状态机，锚点取 trigger、被定位的浮层取 positioner；\n节点身份取节点上的 value 属性。\n\n层级（aria-level / aria-posinset / aria-setsize）、禁用与显示文本都查询 `collection` 这份树数据，\n不从 DOM 反推，因此 collection 必须与标记同源。\n\nvalue-text 的显示文字由元素填入；作者在该节点中写了内容则由作者负责，元素不再改写。\n\n树数据与展开 / 选中集合都是数组，只能通过 property 设置（`el.collection = [...]`）；\n单选的选中值可用 value 属性写为裸串。\n\n不写部件时元素按标准结构生成：标题（给了 label）、盒（触发器，clearable 时再带清空钮）与浮层里的树\n（searchable 时树前面带搜索框，多选时触发器里铺标签行）；只写 root 时生成在它里面。标题可用宿主直接子节点\n`slot=\"label\"` 接管。要参与表单时手写 hidden-input。",
           "name": "XhTreeSelectElement",
           "cssParts": [
             {
@@ -77074,6 +77074,15 @@
               },
               "static": true,
               "default": "{ anatomy: treeSelectAnatomy, meta: treeSelectMeta, delegates: [{ name: 'tag', parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }], }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhTreeSelectElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? treeSelectStructure(connectTreeSelect(host.ctrl.service, wcNormalize), { label: host.label, clearable: host.clearable ?? false, searchable: host.searchable ?? false, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
             },
             {
               "kind": "field",
@@ -77296,6 +77305,24 @@
                 "text": "string | undefined"
               },
               "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "clearable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "clearable"
             },
             {
               "kind": "field",
@@ -78080,6 +78107,22 @@
               "description": "无选中时 value-text 显示的占位文字",
               "name": "placeholder",
               "fieldName": "placeholder"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "生成结构时盒里带清空按钮；手写部件时不使用它，写了 clear-trigger 即可清空",
+              "name": "clearable",
+              "fieldName": "clearable"
             },
             {
               "type": {
