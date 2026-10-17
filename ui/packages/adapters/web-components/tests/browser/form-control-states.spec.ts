@@ -58,6 +58,13 @@ const CASES: Case[] = [
     host: root => root.querySelector<HTMLElement>('[data-scope="cascader"][data-part="trigger"]')!,
     wired: true,
   },
+  {
+    name: 'tree-select',
+    axes: { required: 'aria-required' },
+    markup: attrs => `<xh-tree-select ${attrs}><div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger"><span data-xh-part="value-text"></span></button></div><div data-xh-part="positioner"><div data-xh-part="content"><div data-xh-part="tree"></div></div></div></div></xh-tree-select>`,
+    host: root => root.querySelector<HTMLElement>('[data-scope="tree-select"][data-part="trigger"]')!,
+    wired: true,
+  },
 ]
 
 const ARIA_RULES = ['aria-allowed-attr', 'aria-valid-attr-value', 'aria-prohibited-attr', 'aria-required-attr', 'aria-allowed-role']

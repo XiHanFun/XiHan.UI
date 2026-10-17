@@ -122,6 +122,7 @@ export const XhTreeSelectRoot = defineComponent({
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
     loading: Boolean,
     variant: { type: String as PropType<ControlVariant> },
     tone: { type: String as PropType<Tone> },
@@ -678,10 +679,16 @@ export const XhTreeSelectHiddenInput = defineComponent({
     const ctx = useTreeSelectContext()
     // 表单出口，不写这个部件即不参与表单提交
     // 合并而不是展开：作者的 class 与部件的挂载类拼起来，不互相覆盖
-    return () => ctx.api.value.value.map(value => h('input', {
-      ...mergeProps(ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown>, attrs),
-      key: value,
-    }))
+    return () => [
+      ...ctx.api.value.value.map(value => h('input', {
+        ...mergeProps(ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown>, attrs),
+        key: value,
+      })),
+      // 必填且没选值：补一份空值占位，原生 required 才拦得住空表单
+      ...(ctx.api.value.value.length === 0 && ctx.api.value.required
+        ? [h('input', { ...mergeProps(ctx.api.value.getHiddenInputProps() as Record<string, unknown>, attrs), key: 'required' })]
+        : []),
+    ]
   },
 })
 

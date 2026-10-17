@@ -23,6 +23,10 @@ import {
   XhRatingItem,
   XhRatingRoot,
   XhToggleGroupRoot,
+  XhTreeSelectControl,
+  XhTreeSelectRoot,
+  XhTreeSelectTrigger,
+  XhTreeSelectValueText,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -72,6 +76,13 @@ const CASES: Case[] = [
     axes: { required: 'aria-required' },
     render: state => <XhCascaderRoot collection={[{ value: 'zj', label: '浙江' }]} {...state}><XhCascaderControl><XhCascaderTrigger><XhCascaderValueText /></XhCascaderTrigger></XhCascaderControl></XhCascaderRoot>,
     host: root => root.querySelector<HTMLElement>('[data-scope="cascader"][data-part="trigger"]')!,
+    wired: true,
+  },
+  {
+    name: 'tree-select',
+    axes: { required: 'aria-required' },
+    render: state => <XhTreeSelectRoot collection={[{ value: 'src', label: 'src' }]} {...state}><XhTreeSelectControl><XhTreeSelectTrigger><XhTreeSelectValueText /></XhTreeSelectTrigger></XhTreeSelectControl></XhTreeSelectRoot>,
+    host: root => root.querySelector<HTMLElement>('[data-scope="tree-select"][data-part="trigger"]')!,
     wired: true,
   },
 ]

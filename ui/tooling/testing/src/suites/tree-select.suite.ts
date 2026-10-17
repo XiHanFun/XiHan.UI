@@ -368,6 +368,7 @@ export const treeSelectSuite: ConformanceSuite = {
             'aria-labelledby': '@part(label) @part(value-text)',
             'aria-invalid': 'false',
             'aria-readonly': 'false',
+            'aria-required': 'false',
             'data-state': 'closed',
             'data-placeholder': '',
             'data-disabled': null,
@@ -495,6 +496,18 @@ export const treeSelectSuite: ConformanceSuite = {
           },
         },
       ],
+    },
+    {
+      name: '必填：trigger 报 aria-required，根与标题带 data-required',
+      spec: { apg: APG_COMBOBOX },
+      props: props({ required: true }),
+      initial: {
+        parts: {
+          trigger: { 'aria-required': 'true' },
+          root: { 'data-required': '' },
+          label: { 'data-required': '' },
+        },
+      },
     },
     {
       name: 'collection 真实空树自动露出 empty；外部 loading 与它不同屏',

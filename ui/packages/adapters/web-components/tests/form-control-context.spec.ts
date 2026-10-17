@@ -60,7 +60,7 @@ function atomicControl(kind: AtomicControl, markup = ''): string {
   if (kind === 'combobox')
     return `<xh-combobox ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input"></div></div></xh-combobox>`
   if (kind === 'tree-select')
-    return `<xh-tree-select ${nonRequiredMarkup}><div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger">选择</button></div></div></xh-tree-select>`
+    return `<xh-tree-select ${markup}><div data-xh-part="root"><div data-xh-part="control"><button data-xh-part="trigger">选择</button></div></div></xh-tree-select>`
   if (kind === 'date-picker')
     return `<xh-date-picker ${markup} segments="year"><div data-xh-part="root"><div data-xh-part="control"><div data-xh-part="segment-group"><span data-xh-part="segment" segment="year"></span></div><button data-xh-part="trigger">选择</button></div><input data-xh-part="hidden-input"><div data-xh-part="positioner"><div data-xh-part="content"><div data-xh-part="calendar"></div></div></div></div></xh-date-picker>`
   if (kind === 'time-picker')
@@ -218,8 +218,9 @@ async function expectAtomicState(form: XhFormElement, kind: AtomicControl, enabl
     expect(trigger.getAttribute('aria-invalid')).toBe(String(enabled))
     if (kind === 'select')
       expect((form.querySelector('xh-select select') as HTMLSelectElement).required).toBe(enabled)
-    if (kind === 'cascader') {
+    if (kind === 'cascader' || kind === 'tree-select')
       expect(trigger.getAttribute('aria-required')).toBe(String(enabled))
+    if (kind === 'cascader') {
       // 没选值：必填时补一份空值占位影子带原生 required，不必填时没有影子
       expect(form.querySelector<HTMLInputElement>('xh-cascader input[required]') != null).toBe(enabled)
     }

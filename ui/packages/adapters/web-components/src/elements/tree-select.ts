@@ -74,6 +74,7 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @attr {boolean} disabled - 整个控件禁用：trigger 使用原生 disabled，表单出口不参与提交
  * @attr {boolean} read-only - 只读：浮层照常展开、树照常浏览，但选中值不可修改、也不可清空
  * @attr {boolean} invalid - 校验失败标注
+ * @attr {boolean} required - 必填：trigger 报告 aria-required，没选值时补一份带原生 required 的占位影子
  * @attr {boolean} loading - 节点加载中：树报告 aria-busy，显示在途占位、隐藏空态占位
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
@@ -161,6 +162,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
+    required: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
     loadChildren: { attribute: false },
     variant: { converter: STRING_CONVERTER },
@@ -197,6 +199,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
+  declare required?: boolean
   declare loading?: boolean
   declare variant?: ControlVariant
   declare tone?: Tone
@@ -377,6 +380,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
+      required: this.required,
     }, this.inheritedControl)
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
@@ -400,6 +404,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,
+      required: control.required,
       loading: this.loading ?? false,
       variant: this.variant,
       tone: this.tone,
@@ -613,9 +618,10 @@ export class XhTreeSelectElement extends XhPortalHostElement {
       this.spreader.spread(loading, api.getLoadingProps() as Record<string, unknown>)
       this.fillFeedbackText(loading, api.translations.loading)
     }
-    // 表单出口可缺省
-    this.hiddenInputs.sync(this.getPart('hidden-input'), api.value.map(value =>
-      api.getHiddenInputProps({ value }) as Record<string, unknown>))
+    // 表单出口可缺省；必填且没选值时补一份空值占位，原生 required 才拦得住空表单
+    this.hiddenInputs.sync(this.getPart('hidden-input'), api.value.length === 0 && api.required
+      ? [api.getHiddenInputProps() as Record<string, unknown>]
+      : api.value.map(value => api.getHiddenInputProps({ value }) as Record<string, unknown>))
 
     // 属性先落，再填显示文字
     const valueText = this.getPart('value-text')
