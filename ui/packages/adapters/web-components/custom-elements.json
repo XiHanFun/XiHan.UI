@@ -8,7 +8,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-accordion>`：手风琴行为宿主，条目身份写在 item 节点的 value 属性上。",
+          "description": "`<xh-accordion>`：手风琴行为宿主，条目身份写在 item 节点的 value 属性上。\n\n不写部件时元素按标准结构生成：collection 里每条一个条目，标题里的按钮装标题文字与指示符，正文取 content；\n只写 root 时生成在它里面。某一条的正文可用宿主直接子节点 `slot=\"content:<值>\"` 接管；要按 lazy-mount 第一次展开才实例化，\n写成 `<template slot=\"content:<值>\">`。",
           "name": "XhAccordionElement",
           "cssParts": [
             {
@@ -53,8 +53,8 @@
               "name": "lazyContents",
               "privacy": "private",
               "readonly": true,
-              "default": "new Map<string, LazyContent>()",
-              "description": "每个面板里内容的挂卸落点，按条目 value 各持一个。"
+              "default": "new WeakMap<HTMLElement, LazyContent>()",
+              "description": "每个面板里内容的挂卸落点，按面板节点各持一个。"
             },
             {
               "kind": "field",
@@ -64,6 +64,15 @@
               },
               "static": true,
               "default": "{ anatomy: accordionAnatomy, meta: accordionMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhAccordionElement>"
+              },
+              "static": true,
+              "default": "{ build: (host) => { if (!host.ctrl.service) return undefined const api = connectAccordion(host.ctrl.service, wcNormalize) return accordionStructure(api, { slotted: (name, key) => host.slotted(name, key), // 正文挂不挂跟着各面板的退场闸门：这一轮要展开的面板闸门在接线时才打开，所以开着的按在场算 mounted: node => api.isContentMounted({ value: node.value }, api.isOpen(node.value) || (host.exits.get(node.value)?.visible ?? false)), }) }, }"
             },
             {
               "kind": "field",

@@ -5,10 +5,10 @@
 
 // 导出 src 模块的公共接口。
 
-export { accordionAnatomy, accordionKeyboard, accordionMachine, accordionMeta, connectAccordion } from './accordion'
+export { accordionAnatomy, accordionKeyboard, accordionMachine, accordionMeta, accordionStructure, connectAccordion } from './accordion'
 // @xihan-ui/headless —— 无头组件（anatomy + machine + connect，无样式）。
 
-export type { AccordionApi, AccordionItemProps, AccordionNode, AccordionNodeMeta, AccordionSchema, AccordionTranslations, AccordionValueChangeDetails } from './accordion'
+export type { AccordionApi, AccordionItemProps, AccordionNode, AccordionNodeMeta, AccordionSchema, AccordionStructureOptions, AccordionTranslations, AccordionValueChangeDetails } from './accordion'
 export { AFFIX_DEFAULT_OFFSET, affixAnatomy, affixKeyboard, affixMachine, affixMeta, connectAffix, isAffixed } from './affix'
 export type { AffixApi, AffixChangeDetails, AffixGeometry, AffixPin, AffixRefs, AffixSchema, AffixSide, AffixSize, AffixTranslations } from './affix'
 export { alertAnatomy, alertKeyboard, alertMachine, alertMeta, connectAlert } from './alert'

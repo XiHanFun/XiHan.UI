@@ -115,6 +115,7 @@ ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档�
 - 指示器可置于标题前或标题后，图形可自定义。
 - 支持嵌套；触发区大小由作者决定。
 - 条目内容缺省随组件一起挂载、收起只隐藏；`lazyMount` 让每个条目第一次展开才挂载内容，`unmountOnExit` 让条目在收起动画播完后卸载内容。content 节点本身始终在场。Web Components 里把面板内容写进一个 `<template>`，挂载时克隆、卸载时丢弃。
+- 只给 `collection` 时照标准结构铺：每条一个条目，标题（`h3`）里的按钮装标题文字与指示符，正文取 `content`；Vue / React 不写默认插槽与 Web Components 不写部件（或只写 `root`）时生成的节点出自同一个结构函数。正文可由 Vue 的 `content` 插槽、React 的 `renderContent` 或 Web Components 宿主直接子节点 `slot="content:<值>"` 接管。
 
 ### 组合
 
