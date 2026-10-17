@@ -84,6 +84,10 @@ export interface SelectTranslations {
   overflowTag: (count: number) => string
   /** 列表框容器的兜底名字，作者两个名字部件（label / value-text）都未渲染时才使用。 */
   content: string
+  /** 整表取数失败时 error 部件里的提示。 */
+  loadError: string
+  /** 整表取数失败后的重试按钮文字与可及名。 */
+  retry: string
 }
 
 /** 标签声明的身份：代表哪个选中值。 */
@@ -163,6 +167,11 @@ export interface SelectSchema extends MachineSchema {
     invalid?: boolean
     /** 条目加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位。 */
     loading?: boolean
+    /**
+     * 整表取数失败：浮层里露出 error 部件（role=alert）与 retry-trigger，空态占位让位；loading 同时为真时在途占位优先。
+     * 点重试钮、或浮层里没有高亮条目时按 Enter / Space，派发 onRetry；宿主重新取数时撤掉 error、置上 loading。
+     */
+    error?: boolean
     /** 读屏文案，默认英文。 */
     translations?: Partial<SelectTranslations>
     /** 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3（SELECT_DEFAULT_MAX_TAG_COUNT）。 */
@@ -191,6 +200,8 @@ export interface SelectSchema extends MachineSchema {
     onClear?: () => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: SelectOpenChangeDetails) => void
+    /** 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space。 */
+    onRetry?: () => void
   }
   context: {
     /**
@@ -287,6 +298,10 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   multiple: boolean
   /** 校验错误态。 */
   invalid: boolean
+  /** 整表取数失败。 */
+  error: boolean
+  /** 解析后的读屏文案；error 与 retry-trigger 没写内容时显示其中的 loadError 与 retry。 */
+  translations: SelectTranslations
   /** 只读态。 */
   readOnly: boolean
   /** 当前能否清空：有选中且既不禁用也不只读。 */
@@ -346,6 +361,10 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
    * 提供 collection 时由连接层按条数收放；条目手写时只按 loading 收放。
    */
   getLoadingProps: () => T['element']
+  /** 整表取数失败的提示：与空态、在途占位同一位置，role=alert；error 为真且不在途时露出。 */
+  getErrorProps: () => T['element']
+  /** 整表取数失败后的重试按钮：不占 Tab 位，键盘从浮层里按 Enter / Space 重试；点击派发 onRetry。 */
+  getRetryTriggerProps: () => T['button']
   /** 分组容器：role=group，条目挂在其中；分组标题经 aria-labelledby 关联。 */
   getGroupProps: (props: SelectGroupProps) => T['element']
   /** 分组标题：不是选项、不进入导航，只作为本组的可及名。 */

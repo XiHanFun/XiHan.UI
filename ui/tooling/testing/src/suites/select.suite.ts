@@ -173,6 +173,18 @@ function selectTree(disabled?: string): FixtureNode {
 }
 
 /** 带清空钮的变体：清空钮排在盒里 trigger 之后（按钮不能套按钮，清空钮只能是 trigger 的兄弟）。 */
+/** 浮层里加上整表取数失败的提示与重试钮（与 list 同为 content 的子节点），条目清空：取数失败时没有条目可看。 */
+function withLoadError(base: FixtureNode): FixtureNode {
+  const visit = (node: FixtureNode): FixtureNode => {
+    if (node.part === 'list')
+      return { ...node, children: [] }
+    if (node.part === 'content')
+      return { ...node, children: [...(node.children ?? []).map(visit), { part: 'error' }, { part: 'retry-trigger', tag: 'button' }] }
+    return { ...node, children: node.children?.map(visit) }
+  }
+  return visit(base)
+}
+
 function withClearTrigger(base: FixtureNode): FixtureNode {
   const children = (base.children ?? []).map(node =>
     node.part === 'control'
@@ -358,6 +370,41 @@ export const selectSuite: ConformanceSuite = {
           },
         },
       ],
+    },
+    {
+      name: '整表取数失败：error 部件是 role=alert，重试钮不占 Tab 位，两者随 error 露出',
+      spec: { apg: APG },
+      fixture: withLoadError,
+      props: { error: true },
+      initial: {
+        parts: {
+          'error': { role: 'alert', hidden: null },
+          'retry-trigger': { type: 'button', tabindex: '-1', hidden: null },
+        },
+      },
+    },
+    {
+      name: '整表取数失败时在浮层里按 Enter：没有条目可高亮，确认键派发重试，浮层不收起',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      fixture: withLoadError,
+      props: { error: true },
+      covers: ['select.kbd.retry'],
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter', expect: { parts: { trigger: { 'aria-expanded': 'true' } } } },
+        { kind: 'key', key: 'Enter', expect: { parts: { trigger: { 'aria-expanded': 'true' } }, events: [{ type: 'retry' }] } },
+      ],
+    },
+    {
+      name: '没有失败时提示与重试钮都收起',
+      spec: { apg: APG },
+      fixture: withLoadError,
+      initial: {
+        parts: {
+          'error': { hidden: '' },
+          'retry-trigger': { hidden: '' },
+        },
+      },
     },
     {
       name: '点击 trigger 展开：content 去掉 hidden，三处 ARIA 互指，无选中值不预落高亮，派发 open-change',

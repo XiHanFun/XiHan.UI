@@ -41302,6 +41302,29 @@
     block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
   }
 
+  /* 整表取数失败：与空态、在途占位同一个位置、同一副观感，三者至多露一种，露哪一种归连接层；
+     重试钮跟在提示下面 */
+  .xh-scope-select[data-part='error'] {
+    display: block;
+    flex: none;
+    padding-block: var(--xh-select-error-py, var(--xh-space-3));
+    padding-inline: var(--xh-select-error-px, var(--xh-_select-item-px));
+    color: var(--xh-select-error-fg, var(--xh-material-frosted-fg-muted));
+    font-size: var(--xh-select-error-font-size, var(--xh-_select-font-size));
+    line-height: var(--xh-leading-none);
+    text-align: center;
+  }
+
+  /* 重试钮是 Action Control 家族的 text ghost 档，盒与按压都归家族；这里只让它在浮层里居中 */
+  .xh-scope-select[data-part='retry-trigger'] {
+    align-self: center;
+  }
+
+  .xh-scope-select[data-part='error'][hidden],
+  .xh-scope-select[data-part='retry-trigger'][hidden] {
+    display: none;
+  }
+
   .xh-scope-select[data-part='group'] {
     display: flex;
     flex-direction: column;

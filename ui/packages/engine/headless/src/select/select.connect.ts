@@ -90,6 +90,8 @@ export function connectSelect<T extends PropTypes>(
   const tags = selectionTags.visible.map(tag => ({ value: tag.key, label: tag.label }))
   const { overflowCount, overflowText } = selectionTags
   const loading = !!prop('loading')
+  // 整表取数失败：在途优先，失败提示只在不在途时露出
+  const failed = !!prop('error') && !loading
   // 集合交给库时相位由库判；条目手写时库数不出有几条
   const counted = prop('collection') != null
   const invalid = !!prop('invalid')
@@ -201,6 +203,8 @@ export function connectSelect<T extends PropTypes>(
     valueText,
     displayText,
     multiple,
+    error: failed,
+    translations,
     invalid,
     readOnly,
     canClear,
@@ -445,6 +449,12 @@ export function connectSelect<T extends PropTypes>(
           send({ type: 'CLOSE', src: 'tab' })
           return
         }
+        // 取数失败、也没有条目可高亮时，确认键就是重试：重试钮不占 Tab 位，键盘从这里够得着它
+        if (failed && highlighted == null && (event.key === 'Enter' || event.key === ' ')) {
+          event.preventDefault()
+          prop('onRetry')?.()
+          return
+        }
         if (event.key === 'Enter') {
           activate(event)
           return
@@ -513,7 +523,7 @@ export function connectSelect<T extends PropTypes>(
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
       'data-state': stateAttr,
-      'hidden': counted ? (loading || collection.length > 0) || undefined : loading || undefined,
+      'hidden': counted ? (loading || failed || collection.length > 0) || undefined : (loading || failed) || undefined,
     }),
 
     // 在途占位：与空态占位同一个位置、同一套收放判据，只是条件相反。
@@ -525,6 +535,34 @@ export function connectSelect<T extends PropTypes>(
       'data-loading': dataAttr(loading),
       'data-state': stateAttr,
       'hidden': counted ? (!loading || collection.length > 0) || undefined : !loading || undefined,
+    }),
+
+    // 整表取数失败的提示：与空态、在途占位同一个位置，三者至多露一种
+    getErrorProps: () => normalize.element({
+      ...parts.error.attrs,
+      'role': 'alert',
+      'data-state': stateAttr,
+      'hidden': !failed || undefined,
+    }),
+
+    // 重试钮不占 Tab 位：浮层里的焦点走条目的 roving，键盘在浮层上按确认键重试
+    getRetryTriggerProps: () => normalize.button({
+      ...parts['retry-trigger'].attrs,
+      'type': 'button',
+      // 一颗文字动作钮：盒、悬停 / 按下与按压、焦点环、禁用面由 Action Control 家族的 text ghost 档给
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
+      'tabindex': -1,
+      'hidden': !failed || undefined,
+      // 按下不抢焦点：焦点留在浮层里，高亮锚点不丢
+      'onPointerDown': (event: PointerEvent) => {
+        if (event.button === 0)
+          event.preventDefault()
+      },
+      'onClick': () => prop('onRetry')?.(),
     }),
     getGroupLabelProps: group => normalize.element({
       ...parts['group-label'].attrs,

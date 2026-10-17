@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag-list` · `positioner` · **`content`** · **`list`** · `footer` · `group` · `group-label` · `item` · `item-prefix` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `empty` · `loading` · `hidden-select`
+`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag-list` · `positioner` · **`content`** · **`list`** · `footer` · `group` · `group-label` · `item` · `item-prefix` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `empty` · `loading` · `error` · `retry-trigger` · `hidden-select`
 
 ## 示例
 
@@ -210,7 +210,7 @@ outline、subtle 和 ghost
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-select>` |
-| Vue 组件 | `XhSelectClearTrigger` `XhSelectContent` `XhSelectControl` `XhSelectEmpty` `XhSelectFooter` `XhSelectGroup` `XhSelectGroupLabel` `XhSelectIndicator` `XhSelectItem` `XhSelectItemDeleteTrigger` `XhSelectItemDescription` `XhSelectItemIndicator` `XhSelectItemPrefix` `XhSelectItemSuffix` `XhSelectItemText` `XhSelectLabel` `XhSelectList` `XhSelectLoading` `XhSelectOverflowTag` `XhSelectPositioner` `XhSelectRoot` `XhSelectTag` `XhSelectTagLabel` `XhSelectTagList` `XhSelectTrigger` `XhSelectValueText` |
+| Vue 组件 | `XhSelectClearTrigger` `XhSelectContent` `XhSelectControl` `XhSelectEmpty` `XhSelectError` `XhSelectFooter` `XhSelectGroup` `XhSelectGroupLabel` `XhSelectIndicator` `XhSelectItem` `XhSelectItemDeleteTrigger` `XhSelectItemDescription` `XhSelectItemIndicator` `XhSelectItemPrefix` `XhSelectItemSuffix` `XhSelectItemText` `XhSelectLabel` `XhSelectList` `XhSelectLoading` `XhSelectOverflowTag` `XhSelectPositioner` `XhSelectRetryTrigger` `XhSelectRoot` `XhSelectTag` `XhSelectTagLabel` `XhSelectTagList` `XhSelectTrigger` `XhSelectValueText` |
 | 组合式函数 | `useSelect` |
 | 状态机 | `selectMachine` |
 | 皮肤 | `@xihan-ui/styles/select.css` |
@@ -232,6 +232,7 @@ outline、subtle 和 ghost
 | `readOnly` | `boolean` |  | 只读：浮层照常展开与浏览，但选中值不可修改、也不可清空。 |
 | `invalid` | `boolean` |  | 校验错误态：trigger 标红并输出 aria-invalid。 |
 | `loading` | `boolean` |  | 条目加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位。 |
+| `error` | `boolean` |  | 整表取数失败：浮层里露出 error 部件（role=alert）与 retry-trigger，空态占位让位；loading 同时为真时在途占位优先。 点重试钮、或浮层里没有高亮条目时按 Enter / Space，派发 onRetry；宿主重新取数时撤掉 error、置上 loading。 |
 | `translations` | `Partial<SelectTranslations>` |  | 读屏文案，默认英文。 |
 | `maxTagCount` | `number` |  | 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3（SELECT_DEFAULT_MAX_TAG_COUNT）。 |
 | `required` | `boolean` |  | 原生表单校验：无选中值时提交被拦截。 |
@@ -247,6 +248,7 @@ outline、subtle 和 ghost
 | `onValueChange` | `(details: SelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: SelectOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
+| `onRetry` | `() => void` |  | 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space。 |
 
 ### SelectNode
 
@@ -269,6 +271,7 @@ outline、subtle 和 ghost
 | `value-change` | `SelectValueChangeDetails` | 选中值变化；detail 为 `{ value: string[] }` |
 | `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `SelectOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `retry` | `` | 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space |
 
 ### 插槽
 
@@ -322,6 +325,7 @@ outline、subtle 和 ghost
 | `item-indicator` | 'checked' \| 'unchecked' |
 | `empty` | 'open' \| 'closed' |
 | `loading` | 'open' \| 'closed' |
+| `error` | 'open' \| 'closed' |
 
 以下名称仅用于内部状态机。
 
@@ -344,6 +348,8 @@ outline、subtle 和 ghost
 | `displayText` | `string` | value-text 实际显示的文字：有选中时取其文本（多选按半角逗号加空格连接），否则取 placeholder。 |
 | `multiple` | `boolean` | 是否允许多选。 |
 | `invalid` | `boolean` | 校验错误态。 |
+| `error` | `boolean` | 整表取数失败。 |
+| `translations` | `SelectTranslations` | 解析后的读屏文案；error 与 retry-trigger 没写内容时显示其中的 loadError 与 retry。 |
 | `readOnly` | `boolean` | 只读态。 |
 | `canClear` | `boolean` | 当前能否清空：有选中且既不禁用也不只读。 |
 | `tags` | `SelectTagMeta[]` | 可见标签（受 maxTagCount 截断），与 value / valueText 同序。 |
@@ -373,6 +379,8 @@ outline、subtle 和 ghost
 | `getFooterProps` | `() => T['element']` | 浮层底部的操作区，是 list 的兄弟；不在列表框的拥有关系中，也不参与方向键与连打检索。 |
 | `getEmptyProps` | `() => T['element']` | 空态占位：放在 content 中、list 的兄弟。 提供 collection 时由连接层按条数收放；条目手写时不写 hidden，是否显示由作者决定。 |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 提供 collection 时由连接层按条数收放；条目手写时只按 loading 收放。 |
+| `getErrorProps` | `() => T['element']` | 整表取数失败的提示：与空态、在途占位同一位置，role=alert；error 为真且不在途时露出。 |
+| `getRetryTriggerProps` | `() => T['button']` | 整表取数失败后的重试按钮：不占 Tab 位，键盘从浮层里按 Enter / Space 重试；点击派发 onRetry。 |
 | `getGroupProps` | `(props: SelectGroupProps) => T['element']` | 分组容器：role=group，条目挂在其中；分组标题经 aria-labelledby 关联。 |
 | `getGroupLabelProps` | `(props: SelectGroupProps) => T['element']` | 分组标题：不是选项、不进入导航，只作为本组的可及名。 |
 | `getItemProps` | `(props: SelectItemProps) => T['element']` |  |
@@ -405,6 +413,7 @@ outline、subtle 和 ghost
 | `Enter` / `Space` | open, 单选, 高亮条目未禁用 | 选中高亮条目并关闭列表，焦点归还 trigger |
 | `Enter` / `Space` | held in item / clear-trigger, 未禁用、未只读 | 按住期间该部件投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，条目随浮层收起一并撤下；没有值可清时清空按钮不进 |
 | `Enter` / `Space` | open, 多选, 高亮条目未禁用 | 切换高亮条目的选中态，列表不收起、焦点留在条目上 |
+| `Enter` / `Space` | open, 整表取数失败（error）且没有高亮条目 | 派发重试，浮层不收起；重试钮不占 Tab 位，键盘从这里重试 |
 | `Escape` | open | 关闭列表并把焦点归还 trigger，选中值不变 |
 | `Tab` / `Shift+Tab` | open | 关闭列表，焦点不归还 trigger，按 Tab 序列自然离开 |
 
@@ -436,6 +445,7 @@ outline、subtle 和 ghost
 | `item` | `role` | 'option' |
 | `item-prefix` | `aria-hidden` | 'true' |
 | `item-indicator` | `aria-hidden` | 'true' |
+| `error` | `role` | 'alert' |
 | `hidden-select` | `aria-hidden` | 'true' |
 
 ## 样式参考
@@ -528,6 +538,12 @@ outline、subtle 和 ghost
 | `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-xh-loading-ring` | '' |
+| `error` | `data-state` | 'open' \| 'closed' |
+| `retry-trigger` | `data-xh-action-control` | '' |
+| `retry-trigger` | `data-xh-action-display` | 'always' |
+| `retry-trigger` | `data-xh-action-profile` | 'text' |
+| `retry-trigger` | `data-xh-action-size` | props.size |
+| `retry-trigger` | `data-xh-action-variant` | 'ghost' |
 | `overflow-tag` | `data-count` | String(overflowCount) |
 | `tag` | `data-value` | v |
 
@@ -578,6 +594,10 @@ outline、subtle 和 ghost
 | `--xh-select-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_select-font-size` | select 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-select-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 empty 部件 padding-inline 覆盖槽。 |
 | `--xh-select-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | select 的 empty 部件 padding-block 覆盖槽。 |
+| `--xh-select-error-fg` | `error` | `color` | `default` | `--xh-material-frosted-fg-muted` | select 的 error 部件 color 覆盖槽。 |
+| `--xh-select-error-font-size` | `error` | `font-size` | `default` | `--xh-_select-font-size` | select 的 error 部件 font-size 覆盖槽。 |
+| `--xh-select-error-px` | `error` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 error 部件 padding-inline 覆盖槽。 |
+| `--xh-select-error-py` | `error` | `padding-block` | `default` | `--xh-space-3` | select 的 error 部件 padding-block 覆盖槽。 |
 | `--xh-select-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-frosted-separator` | select 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-select-footer-fg` | `footer` | `color` | `default` | `--xh-material-frosted-fg-muted` | select 的 footer 部件 color 覆盖槽。 |
 | `--xh-select-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-secondary-size` | select 的 footer 部件 font-size 覆盖槽。 |

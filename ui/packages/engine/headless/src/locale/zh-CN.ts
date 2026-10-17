@@ -542,7 +542,7 @@ const translations = {
     },
   },
   'scrollbar': { thumb: '滚动条' },
-  'select': { ...tagged, clearTrigger: '清空', content: '选项' },
+  'select': { ...tagged, clearTrigger: '清空', content: '选项', loadError: '无法加载选项', retry: '重试' },
   'side-nav': { root: '侧边栏', input: '筛选导航', noMatch: '无匹配结果' },
   'signature-pad': {
     label: '签名',

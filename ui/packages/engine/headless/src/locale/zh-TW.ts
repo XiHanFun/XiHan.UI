@@ -542,7 +542,7 @@ const translations = {
     },
   },
   'scrollbar': { thumb: '捲軸' },
-  'select': { ...tagged, clearTrigger: '清除', content: '選項' },
+  'select': { ...tagged, clearTrigger: '清除', content: '選項', loadError: '無法載入選項', retry: '重試' },
   'side-nav': { root: '側邊欄', input: '篩選導覽', noMatch: '沒有相符的結果' },
   'signature-pad': {
     label: '簽名',

@@ -64980,6 +64980,78 @@
       "description": "select 的 empty 部件 padding-block 覆盖槽。"
     },
     {
+      "name": "--xh-select-error-fg",
+      "component": "select",
+      "part": [
+        "error"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "select 的 error 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-select-error-font-size",
+      "component": "select",
+      "part": [
+        "error"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_select-font-size"
+      ],
+      "visibility": "public",
+      "description": "select 的 error 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-select-error-px",
+      "component": "select",
+      "part": [
+        "error"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_select-item-px"
+      ],
+      "visibility": "public",
+      "description": "select 的 error 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-select-error-py",
+      "component": "select",
+      "part": [
+        "error"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "select 的 error 部件 padding-block 覆盖槽。"
+    },
+    {
       "name": "--xh-select-footer-border",
       "component": "select",
       "part": [

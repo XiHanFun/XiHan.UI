@@ -35,6 +35,8 @@ export const selectAnatomy = createAnatomy('select', [
   'item-indicator',
   'empty',
   'loading',
+  'error',
+  'retry-trigger',
   'hidden-select',
 ])
 

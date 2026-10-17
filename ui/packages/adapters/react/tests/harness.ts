@@ -11,6 +11,7 @@ const PUBLIC_EVENTS = {
   'active-source-change': 'onActiveSourceChange',
   'checked-change': 'onCheckedChange',
   'clear': 'onClear',
+  'retry': 'onRetry',
   'decision': 'onDecision',
   'granted-scopes-change': 'onGrantedScopesChange',
   'clamp-toggle': 'onClampToggle',
