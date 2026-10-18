@@ -1,5 +1,6 @@
 // 横线页签（line 档）的当前页压在页面底与面上：静息、悬停、键盘高亮与按下四态的字底对比度都要够正文 4.5。
 // 示例取文档站的基础用法，亮、暗与两档高对比逐档量；带语气时交互三态的字跟着语气深一档。axe 在悬停那一刻再查一遍。
+// Tab 刚停到当前页上那一刻不等过渡播完：逐帧量字底对比度，并当场跑 axe，过渡途中的每一帧也要够。
 import { runAxe } from '@xihan-ui/testing/a11y'
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
@@ -49,15 +50,17 @@ function centerOf(element: HTMLElement): { x: number, y: number } {
   return { x: outer.left + x * (outer.width / window.innerWidth), y: outer.top + y * (outer.height / window.innerHeight) }
 }
 
-async function mountDemo(environment: Environment, backdrop: string, tone?: string): Promise<HTMLElement> {
+async function mountDemo(environment: Environment, backdrop: string, tone?: string, instant = true): Promise<HTMLElement> {
   stage = document.createElement('div')
   stage.dataset.theme = environment.theme
   stage.dataset.contrast = environment.contrast
   stage.style.background = `var(${backdrop})`
   stage.style.padding = '16px'
   // 过渡即时完成：量的是稳定态的颜色
-  for (const duration of ['micro', 'press', 'release'])
-    stage.style.setProperty(`--xh-motion-duration-${duration}`, '0ms')
+  if (instant) {
+    for (const duration of ['micro', 'press', 'release'])
+      stage.style.setProperty(`--xh-motion-duration-${duration}`, '0ms')
+  }
   // 键盘那一步从示例前面这枚按钮按 Tab 进来，焦点经键盘落到当前页上
   stage.innerHTML = `<button type="button" data-test-start>起点</button>${demo}`
   const tabs = stage.querySelector('xh-tabs') as HTMLElement & { updateComplete: Promise<unknown> }
@@ -158,6 +161,26 @@ describe('xh-tabs 横线档的当前页对比度', () => {
       }
     })
   }
+
+  it('键盘 Tab 刚停到当前页上：过渡途中逐帧都够 4.5，当场跑 axe 不报文字对比度', async () => {
+    for (const environment of ENVIRONMENTS) {
+      for (const backdrop of BACKDROPS) {
+        const trigger = await mountDemo(environment, backdrop, undefined, false)
+        stage!.querySelector<HTMLElement>('[data-test-start]')!.focus()
+        await userEvent.tab()
+        expect(document.activeElement, '键盘焦点落在当前页上').toBe(trigger)
+        const label = `${environment.theme} / ${environment.contrast} / ${backdrop}`
+        const { violations } = await runAxe(stage!)
+        expect(violations.filter(v => v.id === 'color-contrast').map(v => v.nodes.map(n => n.failureSummary)), label).toEqual([])
+        // 过渡缺省 120ms：量够十帧，从停住那一刻到落定
+        for (let i = 0; i < 10; i++) {
+          expect(read(trigger).ratio, `${label} 第 ${i} 帧`).toBeGreaterThanOrEqual(4.5)
+          await frame()
+        }
+        stage!.remove()
+      }
+    }
+  })
 
   it('悬停在当前页上时 axe 不报文字对比度', async () => {
     for (const environment of ENVIRONMENTS) {
