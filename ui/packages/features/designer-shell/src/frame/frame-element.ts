@@ -388,9 +388,13 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     return { element, content: body, zones: { actions }, signature, card: { title, subtitle, actions, help, helpTrigger, helpContent, close } }
   }
 
-  /** 按登记的区建好区容器，并把作者带 slot 的子节点搬进去；区的结构变了时连同已搬进的内容一起换到新容器。 */
+  /**
+   * 按登记的区建好区容器，并把作者带 slot 的子节点搬进去；区的结构变了时连同已搬进的内容一起换到新容器。
+   * 新结构里没有的段（卡片换成普通区时的操作区）里的作者内容放回宿主，等结构里再有这一段时由插槽重新领走。
+   */
   #syncRegions(): void {
     const names = new Set<string>()
+    const orphans: Element[] = []
     for (const region of this.#regionList()) {
       names.add(region.name)
       const existing = this.#regions.get(region.name)
@@ -405,6 +409,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
           const target = next.zones[zone]
           if (target)
             target.append(...Array.from(node.children))
+          else
+            orphans.push(...Array.from(node.children))
         }
         existing.element.replaceWith(next.element)
       }
@@ -415,6 +421,13 @@ export class XhDesignerFrameElement extends XhReactiveElement {
         this.#regions.get(name)!.element.remove()
         this.#regions.delete(name)
       }
+    }
+    if (orphans.length > 0) {
+      // 先停掉按旧区领内容的观察，放回宿主的节点才不会又被领进已经换下的旧段
+      this.#releaseSlots?.()
+      this.#releaseSlots = undefined
+      this.#slotsKey = ''
+      this.append(...orphans)
     }
     const center = this.#regionList().find(region => region.position === 'center')
     const signatures = [...this.#regions.entries()].map(([name, parts]) => `${name}=${parts.signature}`)
