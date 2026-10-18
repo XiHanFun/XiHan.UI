@@ -6,7 +6,8 @@
 // 提供 tooltip 相关实现。
 
 import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { TooltipApi, TooltipSchema } from '@xihan-ui/headless'
+import type { KbdPlatform } from '@xihan-ui/core/hotkey'
+import type { TooltipApi, TooltipSchema, TooltipTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
@@ -62,8 +63,13 @@ export interface XhTooltipRootProps {
   disabled?: boolean
   /** 跟随鼠标：由指针打开的提示锚在指针落点上并随移动更新；触屏与聚焦打开时锚回 trigger。 */
   followCursor?: boolean
+  /** 委托模式：CSS 选择器。trigger 是容器，命中它的元素悬停或键盘聚焦时打开提示并作锚点，文字与快捷键从锚点上读。 */
+  delegate?: string
+  /** 委托模式下快捷键按哪个平台的写法显示，默认 auto：指向锚点时测一次。 */
+  platform?: KbdPlatform
   tone?: Tone
   size?: Size
+  translations?: Partial<TooltipTranslations>
   onOpenChange?: TooltipProps['onOpenChange']
   children?: SlotChildren<TooltipRootSlotProps>
 }
@@ -84,8 +90,10 @@ export interface XhTooltipTriggerProps extends ComponentPropsWithRef<'button'>, 
 
 export function XhTooltipTrigger({ children, asChild, ...rest }: XhTooltipTriggerProps): ReactNode {
   const ctx = useTooltipContext()
-  // 指针进出、按下与聚焦装成原生监听器：这几个事件不冒泡，委派在根容器上的合成事件收不到
-  const bind = useNativeEvents(ctx.api.getTriggerProps() as Record<string, unknown>)
+  const part = ctx.api.getTriggerProps() as Record<string, unknown>
+  // 指针进出、按下与聚焦装成原生监听器：这几个事件不冒泡，委派在根容器上的合成事件收不到。
+  // 委托模式的 onFocus / onBlur 挂的是冒泡的 focusin / focusout，得留给合成事件，锚点得焦时容器才收得到
+  const bind = useNativeEvents(part, ctx.api.delegated ? Object.keys(part).filter(key => key !== 'onFocus' && key !== 'onBlur') : undefined)
   const props = mergePartProps(
     mergeReactProps(
       bind.attrs,
@@ -94,7 +102,8 @@ export function XhTooltipTrigger({ children, asChild, ...rest }: XhTooltipTrigge
     ),
     rest as Record<string, unknown>,
   )
-  return renderAsChild(asChild, children, props, 'tooltip', (p, kids) => <button {...p}>{kids}</button>)
+  // 委托模式下 trigger 是装着一个个锚点的容器，不是按钮
+  return renderAsChild(asChild, children, props, 'tooltip', (p, kids) => (ctx.api.delegated ? <div {...p}>{kids}</div> : <button {...p}>{kids}</button>))
 }
 
 export interface XhTooltipPositionerProps extends ComponentPropsWithRef<'div'> {
@@ -119,6 +128,20 @@ export function XhTooltipPositioner({ children, container, ...rest }: XhTooltipP
   )
 }
 
+export interface XhTooltipTextProps extends ComponentPropsWithRef<'span'> {}
+/** 委托模式下的提示文字：缺省显示当前锚点的文字。 */
+export function XhTooltipText({ children, ...rest }: XhTooltipTextProps): ReactNode {
+  const ctx = useTooltipContext()
+  return <span {...mergeReactProps(ctx.api.getTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.text}</span>
+}
+
+export interface XhTooltipShortcutProps extends ComponentPropsWithRef<'span'> {}
+/** 委托模式下的快捷键：缺省显示当前锚点的快捷键，按平台的写法。 */
+export function XhTooltipShortcut({ children, ...rest }: XhTooltipShortcutProps): ReactNode {
+  const ctx = useTooltipContext()
+  return <span {...mergeReactProps(ctx.api.getShortcutProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.shortcut}</span>
+}
+
 export interface XhTooltipContentProps extends ComponentPropsWithRef<'div'> {}
 export function XhTooltipContent({ children, ...rest }: XhTooltipContentProps): ReactNode {
   const ctx = useTooltipContext()
@@ -138,7 +161,16 @@ export function XhTooltipContent({ children, ...rest }: XhTooltipContentProps): 
         },
       )}
     >
-      {children}
+      {/* 委托模式下文字与快捷键由组件铺在作者写的节点（箭头）之后，没有快捷键时不铺 shortcut */}
+      {ctx.api.delegated
+        ? (
+            <>
+              {children}
+              <XhTooltipText />
+              {ctx.api.shortcut !== null && <XhTooltipShortcut />}
+            </>
+          )
+        : children}
     </div>
   )
 }

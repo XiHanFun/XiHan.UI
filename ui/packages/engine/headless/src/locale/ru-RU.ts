@@ -725,6 +725,7 @@ const translations = {
     outputError: 'Ошибка',
   },
   'toolbar': { overflowTrigger: 'Ещё' },
+  'tooltip': { keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform) },
   'tour': { close: 'Закрыть', progress: (step, count) => `Шаг ${step} из ${count}` },
   'transfer': { toTarget: 'Переместить в целевой список', toSource: 'Переместить в исходный список', sourceTitle: 'Исходный список', targetTitle: 'Целевой список', selectAll: 'Выбрать все', empty: 'Нет данных', loading: 'Загрузка' },
   'tree': drag,

@@ -288,6 +288,7 @@ const SAMPLES: Record<string, Record<string, unknown[][]>> = {
       [{ days: 1, hours: 21, minutes: 22, seconds: 0, milliseconds: 0 }],
     ],
   },
+  'tooltip': { keyLabel: KEY_SAMPLES },
   'tour': { progress: [[1, 4]] },
   'tree': DRAG,
   'tree-select': TAGGED,

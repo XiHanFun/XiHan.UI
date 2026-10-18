@@ -112,15 +112,15 @@
       "tree",
       "tree-select"
     ],
+    "branch-description": [
+      "tree"
+    ],
     "branch-empty": [
       "tree-select"
     ],
     "branch-error": [
       "cascader",
       "tree-select"
-    ],
-    "branch-description": [
-      "tree"
     ],
     "branch-indicator": [
       "json-viewer",
@@ -1782,6 +1782,9 @@
       "cartesian-chart",
       "radar-chart"
     ],
+    "shortcut": [
+      "tooltip"
+    ],
     "sider": [
       "layout"
     ],
@@ -1924,6 +1927,7 @@
       "citation",
       "json-viewer",
       "switch",
+      "tooltip",
       "typography"
     ],
     "threshold": [

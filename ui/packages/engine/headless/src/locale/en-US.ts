@@ -917,6 +917,10 @@ export const TOOL_CALL_EN_US: XhLocaleBucket<'tool-call'> = {
 
 export const TOOLBAR_EN_US: XhLocaleBucket<'toolbar'> = { overflowTrigger: 'More' }
 
+export const TOOLTIP_EN_US: XhLocaleBucket<'tooltip'> = {
+  keyLabel: (key, platform) => HOTKEY_TEXT_EN_US.keyLabel(key, platform),
+}
+
 export const TOUR_EN_US: XhLocaleBucket<'tour'> = { close: 'Close', progress: (step, count) => `Step ${step} of ${count}` }
 
 export const TRANSFER_EN_US: XhLocaleBucket<'transfer'> = { toTarget: 'Move to target list', toSource: 'Move to source list', sourceTitle: 'Source list', targetTitle: 'Target list', selectAll: 'Select all', empty: 'No data', loading: 'Loading' }
@@ -1028,6 +1032,7 @@ const translations = {
   'timer': TIMER_EN_US,
   'tool-call': TOOL_CALL_EN_US,
   'toolbar': TOOLBAR_EN_US,
+  'tooltip': TOOLTIP_EN_US,
   'tour': TOUR_EN_US,
   'transfer': TRANSFER_EN_US,
   'tree': TREE_EN_US,

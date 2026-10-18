@@ -31,6 +31,11 @@
     cursor: inherit;
   }
 
+  /* 委托模式：trigger 是装着一个个锚点的容器，不画成按钮、不占盒子，排布交给里面的内容 */
+  [data-scope='tooltip'][data-part='trigger'][data-delegate] {
+    display: contents;
+  }
+
   /* 坐标由定位引擎写在行内 style 上，这里只兜底 SSR 首帧 */
   [data-scope='tooltip'][data-part='positioner'] {
     /* 先截断祖先浮层的方向，再按本次实际 placement 只启用一侧。 */
@@ -125,6 +130,13 @@
      底色取自被墨色域改写的令牌，所以域只落在面内的子元素上，这里的取值仍按外层主题解析 */
   [data-scope='tooltip'][data-part='content'][data-xh-ink-surface] {
     --xh-ink-surface: var(--xh-tooltip-bg, var(--xh-_tooltip-solid));
+  }
+
+  /* 委托模式下组件铺的快捷键：跟在文字后面，取面内的次要墨色 */
+  [data-scope='tooltip'][data-part='shortcut'] {
+    margin-inline-start: var(--xh-space-2);
+    color: var(--xh-fg-muted);
+    white-space: nowrap;
   }
 
   /* 光学层单独承载 tint 与透明度；backdrop-filter 只采样元素背后，不处理正文。 */

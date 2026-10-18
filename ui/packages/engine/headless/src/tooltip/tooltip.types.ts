@@ -6,11 +6,26 @@
 // 定义 tooltip 类型契约。
 
 import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { KbdPlatform, KbdResolvedPlatform } from '@xihan-ui/core/hotkey'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { TooltipGroup } from './tooltip.group'
 
 export interface TooltipOpenChangeDetails {
   open: boolean
+}
+
+/** 委托模式下当前锚点上读到的内容。 */
+export interface TooltipAnchor {
+  /** 锚点元素：容器里命中 delegate 选择器的那个。 */
+  readonly el: HTMLElement
+  /** 提示文字：锚点的 data-xh-tooltip，没写时取锚点的可及名。 */
+  readonly text: string
+  /** 快捷键：锚点 aria-keyshortcuts 的第一条，拆成一组键；没写时为 null。 */
+  readonly keys: readonly string[] | null
+  /** 快捷键按哪个平台的写法显示。 */
+  readonly platform: KbdResolvedPlatform
+  /** 提示文字与锚点的名字不同：只有这时锚点才用 aria-describedby 指向 text 部件。 */
+  readonly described: boolean
 }
 
 /** 指针在视口里的落点：跟随鼠标时提示锚在这一点上。 */
@@ -40,6 +55,10 @@ export interface TooltipRefs {
   cursor: TooltipPoint | null
   /** 定位效应交出的重挂句柄：指针移动后调一次，提示按新落点重算一轮。 */
   reanchor: (() => void) | null
+  /** 委托模式下指针此刻停在哪个锚点上；在锚点之外为 null。 */
+  hovered: Element | null
+  /** 委托模式下指针按下的那个锚点：随按下而来的聚焦不打开提示。 */
+  pressed: Element | null
 }
 
 export interface TooltipSchema extends MachineSchema {
@@ -68,10 +87,19 @@ export interface TooltipSchema extends MachineSchema {
      * 触屏没有悬停落点、聚焦打开没有指针，这两种情形退回锚定到 trigger。
      */
     followCursor?: boolean
+    /**
+     * 委托模式：值是一个 CSS 选择器。trigger 此时是容器，容器里命中选择器的元素在悬停或键盘聚焦时打开提示，
+     * 提示锚在这个元素上；指针或焦点挪到另一个锚点时提示直接换过去。文字取锚点的 data-xh-tooltip，
+     * 没写时取锚点的可及名；快捷键取锚点的 aria-keyshortcuts。
+     */
+    delegate?: string
+    /** 委托模式下快捷键按哪个平台的写法显示：auto（缺省）在指向锚点时测一次。 */
+    platform?: KbdPlatform
     /** 语气：brand / neutral / success / warning / danger / info，决定提示的底色与其上的文字色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg，决定内边距与字号档位。 */
     size?: Size
+    translations?: Partial<TooltipTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: TooltipOpenChangeDetails) => void
   }
@@ -87,6 +115,8 @@ export interface TooltipSchema extends MachineSchema {
     focusOpened: boolean
     /** 本次展开是接替上一个提示（热窗口内打开）：浮层投影 data-instant，不播进场。收起即清。 */
     instant: boolean
+    /** 委托模式下提示锚在哪个元素上、显示什么；收起后留着，退场期间内容不变。 */
+    anchor: TooltipAnchor | null
   }
   computed: Record<string, never>
   refs: TooltipRefs
@@ -97,12 +127,12 @@ export interface TooltipSchema extends MachineSchema {
   state: 'closed' | 'opening' | 'visible' | 'visible.open' | 'visible.closing'
   event:
     /** 指针进入 trigger；带上落点与指针类型，跟随鼠标时据此落位。 */
-    | { type: 'POINTER.ENTER', point?: TooltipPoint, pointerType?: string }
+    | { type: 'POINTER.ENTER', point?: TooltipPoint, pointerType?: string, anchor?: TooltipAnchor }
     /** 指针在 trigger 上移动：只有跟随鼠标时才派发。 */
     | { type: 'POINTER.MOVE', point: TooltipPoint, pointerType?: string }
     | { type: 'POINTER.LEAVE' }
     | { type: 'POINTER.DOWN' }
-    | { type: 'FOCUS' }
+    | { type: 'FOCUS', anchor?: TooltipAnchor }
     | { type: 'BLUR' }
     | { type: 'ESCAPE' }
     | { type: 'OPEN' }
@@ -114,19 +144,29 @@ export interface TooltipSchema extends MachineSchema {
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
   tag: never
-  guard: 'isOpenControlled' | 'isDisabled' | 'isFocusOpened'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'markFocusOpened' | 'clearFocusOpened' | 'syncInstant' | 'clearInstant' | 'trackCursor' | 'clearOpenedAtMount'
-  effect: 'waitForOpenDelay' | 'waitForCloseDelay' | 'trackPosition' | 'trackLayer' | 'trackGroup'
+  guard: 'isOpenControlled' | 'isDisabled' | 'isFocusOpened' | 'hasAnchor'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'markFocusOpened' | 'clearFocusOpened' | 'syncInstant' | 'clearInstant' | 'trackCursor' | 'clearOpenedAtMount' | 'assignAnchor'
+  effect: 'waitForOpenDelay' | 'waitForCloseDelay' | 'trackPosition' | 'trackLayer' | 'trackGroup' | 'trackDescription'
 }
 
 export interface TooltipApi<T extends PropTypes = PropTypes> {
   open: boolean
   setOpen: (next: boolean) => void
+  /** 委托模式：trigger 是容器，content 里由组件铺 text 与 shortcut。 */
+  delegated: boolean
+  /** 委托模式下当前锚点的提示文字；还没有锚点时为空串。 */
+  text: string
+  /** 当前锚点的快捷键，按平台写成一串字（⌘⇧Z、Ctrl+Shift+Z）；没有时为 null。 */
+  shortcut: string | null
   getTriggerProps: () => T['button']
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
   getArrowProps: () => T['element']
+  getTextProps: () => T['element']
+  getShortcutProps: () => T['element']
 }
 
-/** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */
-export interface TooltipTranslations {}
+export interface TooltipTranslations {
+  /** 委托模式下快捷键里一枚键显示的字，与 Kbd 的 keyLabel 同一张表。 */
+  keyLabel: (key: string, platform: KbdResolvedPlatform) => string
+}

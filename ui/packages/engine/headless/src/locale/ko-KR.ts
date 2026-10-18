@@ -699,6 +699,7 @@ const translations = {
     outputError: '실패',
   },
   'toolbar': { overflowTrigger: '더 보기' },
+  'tooltip': { keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform) },
   'tour': { close: '닫기', progress: (step, count) => `총 ${count}단계 중 ${step}단계` },
   'transfer': { toTarget: '대상 목록으로 이동', toSource: '원본 목록으로 이동', sourceTitle: '원본 목록', targetTitle: '대상 목록', selectAll: '모두 선택', empty: '데이터 없음', loading: '로드 중' },
   'tree': drag,
