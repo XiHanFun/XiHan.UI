@@ -1,4 +1,5 @@
 import type { AdapterEvent, AdapterHarness, Fixture, FixtureNode } from '@xihan-ui/testing'
+import type { XhConfig } from '../src/config'
 import { attachHost } from '@xihan-ui/testing'
 import { defineXhElements } from '../src/define'
 
@@ -87,11 +88,28 @@ function applyInputs(host: HTMLElement, props: Record<string, unknown>): void {
   }
 }
 
+/**
+ * 夹具带了全局配置时外包一层 <xh-config>，locale、size、translations 写在这一层上。
+ * <xh-config> 不收 disabled：作用域禁用在 Web Components 里由字段集这类作用域经 xhConfig 压下来，
+ * 走的是同一条祖先链解析，这里给这一层的 xhConfig 补上 disabled，代替字段集给出的那份。
+ */
+function configScope(config: Readonly<Record<string, unknown>>): HTMLElement {
+  const scope = document.createElement('xh-config') as HTMLElement & XhConfig & { readonly xhConfig: XhConfig }
+  const { disabled, ...rest } = config
+  Object.assign(scope, rest)
+  if (disabled !== undefined) {
+    const own = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(scope), 'xhConfig')!.get!
+    Object.defineProperty(scope, 'xhConfig', { get: () => ({ ...own.call(scope), disabled }) })
+  }
+  return scope
+}
+
 /** settle 最多刷这么多轮；宿主一直自排新一轮时到此为止，不吊死。 */
 const MAX_SETTLE_ROUNDS = 10
 
 export function createWcHarness(): AdapterHarness {
   let host: Updatable | null = null
+  let scope: HTMLElement | null = null
   let events: AdapterEvent[] = []
   const onEvent = (e: Event): void => {
     // 语义事件一律是 CustomEvent；同名的原生事件要挡掉。
@@ -151,7 +169,14 @@ export function createWcHarness(): AdapterHarness {
         el.appendChild(renderNode(node, document))
       applyInputs(el, fixture.props as Record<string, unknown>)
       for (const t of PUBLIC_EVENTS) el.addEventListener(t, onEvent)
-      attachHost(el)
+      if (fixture.config) {
+        scope = configScope(fixture.config)
+        scope.appendChild(el)
+        attachHost(scope)
+      }
+      else {
+        attachHost(el)
+      }
       await el.updateComplete
       host = el
       return { root: el }
@@ -171,6 +196,8 @@ export function createWcHarness(): AdapterHarness {
     async unmount() {
       host?.remove()
       host = null
+      scope?.remove()
+      scope = null
       events = []
     },
   }

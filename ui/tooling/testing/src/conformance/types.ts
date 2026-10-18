@@ -56,7 +56,7 @@ export interface Fixture {
   readonly component: string
   readonly props: Readonly<Record<string, unknown>>
   readonly tree: FixtureNode
-  /** 挂载时外面包一层全局配置（Vue 的 provideXhConfig、React 的 XhConfigProvider）；省略 = 不包。 */
+  /** 挂载时外面包一层全局配置（Vue 的 provideXhConfig、React 的 XhConfigProvider、Web Components 的 <xh-config>）；省略 = 不包。 */
   readonly config?: Readonly<Record<string, unknown>>
 }
 
