@@ -997,7 +997,8 @@ export const menubarSuite: ConformanceSuite = {
           props: { collection: [{ value: 'file', label: '文件', items: [STRUCTURE_COLLECTION[0]!.items[1], { value: 'delete', label: '删除' }] }] },
           expect: {
             order: ['root', 'trigger', 'positioner', 'content', 'item[0]', 'item-text[0]', 'item-description', 'item[1]', 'item-text[1]'],
-            parts: { 'item[0]': { 'data-value': 'rename' }, 'item[1]': { 'data-value': 'delete' } },
+            // 持有焦点的入口（视图）随数据删掉了：roving 锚点跟着清掉，根节点兜底留在 Tab 序列里，菜单栏不至于整条退出 Tab 序列
+            parts: { 'root': { tabindex: '0' }, 'trigger': { tabindex: '-1' }, 'item[0]': { 'data-value': 'rename' }, 'item[1]': { 'data-value': 'delete' } },
           },
         },
       ],

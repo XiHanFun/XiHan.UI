@@ -200,16 +200,27 @@ export function XhMenubarTrigger({ value, disabled, asChild, children, ...rest }
   const ctx = useMenubarContext()
   // trigger 同时作为定位锚点与焦点归还目标
   const setEl = useMenubarPart(ctx.registerTrigger, value)
+  const triggerEl = useRef<HTMLElement | null>(null)
   // 入口的聚焦上报与指针掠过都不冒泡，改装成原生监听器
   const bind = useNativeEvents(
     ctx.api.getTriggerProps({ value, disabled }) as Record<string, unknown>,
     ['onFocus', 'onPointerEnter'],
   )
+  // 卸载时上报菜单栏失焦：按「本入口当下正持有焦点」判定，不按 value 比对
+  useIsomorphicLayoutEffect(() => () => {
+    const svc = ctx.service
+    // 整条栏一起卸载时根部件先停机，此刻送事件会在 dev 下抛
+    if (svc.getStatus() !== 'Started')
+      return
+    if (triggerEl.current && svc.scope.getActiveElement() === triggerEl.current)
+      svc.send({ type: 'MENUBAR.BLUR' })
+  }, [ctx.service])
   const props = mergePartProps(
     mergeReactProps(
       bind.attrs,
       { ref: bind.ref },
       { ref: setEl },
+      { ref: triggerEl },
     ),
     rest as Record<string, unknown>,
   )

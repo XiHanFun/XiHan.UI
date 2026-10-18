@@ -379,18 +379,25 @@ export class XhMenubarElement extends XhPortalHostElement {
     super.connectedCallback()
   }
 
-  /** 承载焦点的条目被移出 DOM 时上报 ITEM.LOST，让状态机按当前数据重新选择焦点锚点。 */
+  /**
+   * 承载焦点的条目被移出 DOM 时上报 ITEM.LOST，让状态机按当前数据重新选择焦点锚点；
+   * 承载焦点的入口被移出 DOM 时上报 MENUBAR.BLUR：焦点落回 body，等于离开整条菜单栏，
+   * roving 锚点随之清掉，根节点重新留在 Tab 序列里。与 Vue、React 卸载入口时上报的是同一件事。
+   */
   protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
-    const { context, getStatus, send } = this.ctrl.service
+    const { context, getStatus, scope, send } = this.ctrl.service
     // 机器已停机则跳过
     if (getStatus() !== 'Started')
       return
-    const focusedItem = context.get('focusedItem')
-    if (focusedItem == null)
-      return
+    const released = (part: string, value: string | null): boolean =>
+      value != null && nodes.some(el => el.dataset.xhPart === part && el.getAttribute(ITEM_VALUE_ATTR) === value)
     // 只认 item，trigger 与 content 也带 data-value
-    if (nodes.some(el => el.dataset.xhPart === 'item' && el.getAttribute(ITEM_VALUE_ATTR) === focusedItem))
+    if (released('item', context.get('focusedItem')))
       send({ type: 'ITEM.LOST' })
+    // 节点已经摘下，认不出它当时是否持有焦点：焦点落回 body 就是它带走的
+    const active = scope.getActiveElement()
+    if (released('trigger', context.get('focusedValue')) && (active == null || active === scope.getDoc().body))
+      send({ type: 'MENUBAR.BLUR' })
   }
 
   // 取 owner 子树内指定名字的角色节点。
