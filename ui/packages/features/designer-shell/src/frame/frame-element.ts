@@ -24,6 +24,22 @@ interface FrameSplitter {
   readonly triggers: readonly string[]
 }
 
+/** 分隔条里的一块面板：collapsed 的建出来就收着。 */
+interface FramePanel {
+  readonly node: HTMLElement
+  readonly id: string
+  readonly size: number
+  readonly min: number
+  readonly collapsible?: boolean
+  readonly collapsed?: boolean
+}
+
+/** 外框里的一条分隔条：所在分栏的方向与它的序号。 */
+interface FrameTriggerRef {
+  readonly orientation: 'horizontal' | 'vertical'
+  readonly index: number
+}
+
 /** 窄屏时收进抽屉的两侧位置。 */
 type DrawerPosition = 'start' | 'end'
 
@@ -135,6 +151,9 @@ const DEFAULT_MIN_SIZE = 10
 const CENTER_MIN_SIZE = 20
 /** 尺寸槽算出的下限变化不到这么多（百分比）时不重排。 */
 const MIN_SIZE_EPSILON = 0.5
+
+/** 分隔条报来的大小不超过它就算在分隔条上收起了（百分比）。 */
+const COLLAPSED_SIZE = 0.01
 const STRING_CONVERTER = { fromAttribute: (value: string | null) => value ?? undefined }
 
 interface Parts {
@@ -225,6 +244,10 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   #layoutKey = ''
   #splitters: FrameSplitter[] = []
   #current: Partial<Record<DesignerFrameResizable, number>> = {}
+  /** 在分隔条上收起的位置；收起期间 #current 里仍是收起前的大小。 */
+  readonly #collapsed = new Set<DesignerFrameResizable>()
+  /** 重排后要把焦点放回的分隔条。 */
+  #refocus: FrameTriggerRef | undefined
   #shares: Record<string, number> = {}
   /** 尺寸槽折成的下限（百分比），量不出来时没有。 */
   #measuredMin: Partial<Record<DesignerFrameResizable, number>> = {}
@@ -320,6 +343,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     if (key !== this.#layoutKey || changed.has('sizes')) {
       this.#layoutKey = key
       this.#build(parts, layout)
+      this.#restoreFocus()
     }
     for (const region of this.#regionList()) {
       const card = this.#regions.get(region.name)?.card
@@ -582,16 +606,26 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       .map((region) => {
         const listed = shown === undefined || shown.has(region.name)
         const drawer = this.#drawerOf(region)
-        return { name: region.name, label: region.title ?? region.label ?? region.name, shown: drawer === undefined ? listed : listed && this.#drawer === drawer }
+        const visible = drawer === undefined ? listed && this.#collapsedOf(region) === undefined : listed && this.#drawer === drawer
+        return { name: region.name, label: region.title ?? region.label ?? region.name, shown: visible }
       })
   }
 
   /**
    * 开关一块面板：列在 panels 里就去掉、否则加上，与面板头的关闭钮一样派发 panels-change。
    * 窄屏时左右两侧的区是开关它所在那一侧的抽屉（同时只开一侧）；没列在 panels 里的先列上。
+   * 所在位置在分隔条上收起着时是把那个位置放回收起前的大小，没列在 panels 里的同样先列上。
    */
   togglePanel(name: string): void {
     const region = this.#regionList().find(item => item.name === name)
+    const collapsed = region && this.#collapsedOf(region)
+    if (collapsed !== undefined) {
+      const shown = parseDesignerPanels(this.panels)
+      if (shown !== undefined && !shown.has(name))
+        this.#setPanel(name, true)
+      this.#expand(collapsed)
+      return
+    }
     const drawer = region && this.#drawerOf(region)
     const shown = parseDesignerPanels(this.panels)
     const listed = shown === undefined || shown.has(name)
@@ -605,6 +639,48 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       return
     }
     this.#setPanel(name, shown !== undefined && !shown.has(name))
+  }
+
+  /** 这个区所在的位置在分隔条上收起着时为那个位置；窄屏时左右两侧在抽屉里，不算。 */
+  #collapsedOf(region: DesignerFrameRegion): DesignerFrameResizable | undefined {
+    const position = region.position
+    if (position !== 'start' && position !== 'end' && position !== 'bottom')
+      return undefined
+    if (this.#drawerOf(region) !== undefined || !this.#collapsed.has(position))
+      return undefined
+    return position
+  }
+
+  /** 记下分隔条报来的大小：收到 0 记作收起，保留收起前的大小；还没记过时收起前的大小就是建出来时的 built。 */
+  #record(position: DesignerFrameResizable, size: number, built: number): void {
+    if (size <= COLLAPSED_SIZE) {
+      this.#collapsed.add(position)
+      if (this.#current[position] === undefined && built > COLLAPSED_SIZE)
+        this.#current[position] = built
+      return
+    }
+    this.#collapsed.delete(position)
+    this.#current[position] = size
+  }
+
+  /** 把收起的位置按收起前的大小放回：重排一次；refocus 给了就把焦点放回重排后的那条分隔条。 */
+  #expand(position: DesignerFrameResizable, refocus?: FrameTriggerRef): void {
+    this.#collapsed.delete(position)
+    this.#refocus = refocus
+    this.#layoutKey = ''
+    this.requestUpdate()
+  }
+
+  /** 重排后把焦点放回刚才按着的那条分隔条。 */
+  #restoreFocus(): void {
+    const refocus = this.#refocus
+    this.#refocus = undefined
+    if (refocus === undefined)
+      return
+    const splitter = this.#splitters.find(item => item.element.getAttribute('orientation') === refocus.orientation)?.element
+    const trigger = splitter?.querySelector<HTMLElement>(`:scope > [data-xh-part="root"] > [data-xh-part="resize-trigger"][index="${refocus.index}"]`)
+    if (splitter && trigger)
+      void splitter.updateComplete.then(() => trigger.focus())
   }
 
   /** 窄屏时这个区收在哪一侧的抽屉里；不在抽屉里时为 undefined。 */
@@ -680,9 +756,10 @@ export class XhDesignerFrameElement extends XhReactiveElement {
 
   /**
    * 两块以上面板的 <xh-splitter>：sizes 与 panels 按面板顺序，triggers 为每条分隔条名称里的区名，record 记下拖动后的大小。
-   * collapsible 的面板在分隔条上按 Enter 收起与展开。
+   * collapsible 的面板在分隔条上双击或按 Enter 收起与展开。collapsed 的面板建出来就收着，这个分隔条不知道它收起前的大小，
+   * 在它两侧双击或按 Enter 时由外框按记下的大小放回。
    */
-  #splitter(orientation: 'horizontal' | 'vertical', panels: readonly { readonly node: HTMLElement, readonly id: string, readonly size: number, readonly min: number, readonly collapsible?: boolean }[], triggers: readonly string[], record: (sizes: readonly number[]) => void): HTMLElement {
+  #splitter(orientation: 'horizontal' | 'vertical', panels: readonly FramePanel[], triggers: readonly string[], record: (sizes: readonly number[]) => void): HTMLElement {
     const doc = this.ownerDocument
     const children: HTMLElement[] = []
     panels.forEach((panel, index) => {
@@ -700,6 +777,22 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       'data-orientation': orientation,
     }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, children)]) as XhSplitterElement
     this.#splitters.push({ element: splitter, triggers })
+    const expandBuiltCollapsed = (event: Event): void => {
+      if (event.type === 'keydown' && (event as KeyboardEvent).key !== 'Enter')
+        return
+      const trigger = (event.target as Element).closest('[data-xh-part="resize-trigger"]')
+      if (!trigger || trigger.closest('xh-splitter') !== splitter)
+        return
+      const index = Number(trigger.getAttribute('index'))
+      const side = [panels[index], panels[index + 1]].find(panel => panel?.collapsed === true && this.#collapsed.has(panel.id as DesignerFrameResizable))
+      if (side === undefined)
+        return
+      event.preventDefault()
+      event.stopPropagation()
+      this.#expand(side.id as DesignerFrameResizable, { orientation, index })
+    }
+    splitter.addEventListener('dblclick', expandBuiltCollapsed, true)
+    splitter.addEventListener('keydown', expandBuiltCollapsed, true)
     splitter.addEventListener('sizes-change-end', event => event.stopPropagation())
     splitter.addEventListener('sizes-change', (event) => {
       event.stopPropagation()
@@ -743,13 +836,12 @@ export class XhDesignerFrameElement extends XhReactiveElement {
 
     let main: HTMLElement = this.#stack(layout.center, 'center')
     if (layout.bottom.length > 0) {
-      const bottom = this.#sizeOf('bottom', layout.bottom, 100 - CENTER_MIN_SIZE)
+      const collapsed = this.#collapsed.has('bottom')
+      const bottom = collapsed ? 0 : this.#sizeOf('bottom', layout.bottom, 100 - CENTER_MIN_SIZE)
       main = this.#splitter('vertical', [
         { node: main, id: 'center', size: 100 - bottom, min: CENTER_MIN_SIZE },
-        { node: this.#stack(layout.bottom, 'bottom'), id: 'bottom', size: bottom, min: this.#minOf('bottom', layout.bottom), collapsible: true },
-      ], [layout.bottom[0]!.name], (next) => {
-        this.#current.bottom = next[1]!
-      })
+        { node: this.#stack(layout.bottom, 'bottom'), id: 'bottom', size: bottom, min: this.#minOf('bottom', layout.bottom), collapsible: true, collapsed },
+      ], [layout.bottom[0]!.name], next => this.#record('bottom', next[1]!, bottom))
     }
 
     if (this.#narrow) {
@@ -768,24 +860,26 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       return
     }
 
-    const row: { node: HTMLElement, id: string, size: number, min: number, collapsible?: boolean }[] = []
+    const row: FramePanel[] = []
     const triggers: string[] = []
-    const start = layout.start.length > 0 ? this.#sizeOf('start', layout.start, 100 - CENTER_MIN_SIZE - (layout.end.length > 0 ? this.#minOf('end', layout.end) : 0)) : 0
-    const end = layout.end.length > 0 ? this.#sizeOf('end', layout.end, 100 - CENTER_MIN_SIZE - start) : 0
+    const startCollapsed = this.#collapsed.has('start')
+    const endCollapsed = this.#collapsed.has('end')
+    const start = layout.start.length > 0 && !startCollapsed ? this.#sizeOf('start', layout.start, 100 - CENTER_MIN_SIZE - (layout.end.length > 0 && !endCollapsed ? this.#minOf('end', layout.end) : 0)) : 0
+    const end = layout.end.length > 0 && !endCollapsed ? this.#sizeOf('end', layout.end, 100 - CENTER_MIN_SIZE - start) : 0
     if (layout.start.length > 0) {
-      row.push({ node: this.#stack(layout.start, 'start'), id: 'start', size: start, min: this.#minOf('start', layout.start), collapsible: true })
+      row.push({ node: this.#stack(layout.start, 'start'), id: 'start', size: start, min: this.#minOf('start', layout.start), collapsible: true, collapsed: startCollapsed })
       triggers.push(layout.start[0]!.name)
     }
     row.push({ node: createAuthoredElement(this.ownerDocument, 'div', { 'data-scope': SCOPE, 'data-part': 'main' }, [main]), id: 'center', size: 100 - start - end, min: CENTER_MIN_SIZE })
     if (layout.end.length > 0) {
-      row.push({ node: this.#stack(layout.end, 'end'), id: 'end', size: end, min: this.#minOf('end', layout.end), collapsible: true })
+      row.push({ node: this.#stack(layout.end, 'end'), id: 'end', size: end, min: this.#minOf('end', layout.end), collapsible: true, collapsed: endCollapsed })
       triggers.push(layout.end[0]!.name)
     }
     parts.body.replaceChildren(row.length > 1
       ? this.#splitter('horizontal', row, triggers, (next) => {
           row.forEach((panel, index) => {
             if (panel.id === 'start' || panel.id === 'end')
-              this.#current[panel.id] = next[index]!
+              this.#record(panel.id, next[index]!, panel.size)
           })
         })
       : row[0]!.node)

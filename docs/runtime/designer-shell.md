@@ -393,8 +393,8 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 | 方法 | 说明 |
 | --- | --- |
 | `showsPanel(name)` | 这个区是否显示：中间区总是显示，顶栏看有没有内容，状态栏看 `panels` 与有没有内容，其余按 `panels`，没登记的区为否 |
-| `panelEntries()` | 能开关的面板：`start`、`end`、`bottom` 三个位置上没写 `closable: false` 的区，按登记顺序，每项 `{ name, label, shown }`；`label` 依次取 `title`、`label`、`name`，`shown` 是它此刻是否列在 `panels` 里，窄屏时左右两侧的区还要它所在的抽屉开着。内置的「面板」命令用它铺菜单 |
-| `togglePanel(name)` | 开关一块面板：列在 `panels` 里就去掉、否则加上，与面板头的关闭钮一样派发 `panels-change`。窄屏时左右两侧的区是开关它所在那一侧的抽屉 |
+| `panelEntries()` | 能开关的面板：`start`、`end`、`bottom` 三个位置上没写 `closable: false` 的区，按登记顺序，每项 `{ name, label, shown }`；`label` 依次取 `title`、`label`、`name`，`shown` 是它此刻是否列在 `panels` 里；所在位置在分隔条上收起着时为 `false`，窄屏时左右两侧的区还要它所在的抽屉开着。内置的「面板」命令用它铺菜单 |
+| `togglePanel(name)` | 开关一块面板：列在 `panels` 里就去掉、否则加上，与面板头的关闭钮一样派发 `panels-change`。所在位置在分隔条上收起着时是按收起前的大小放回，`panels` 不变（没列上的先列上）；窄屏时左右两侧的区是开关它所在那一侧的抽屉 |
 
 | 事件 | detail |
 | --- | --- |
@@ -488,7 +488,8 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 | `--xh-designer-frame-status-h` | `--xh-control-h-sm` | 状态栏的最小高度 |
 
 - 三个下限是像素宽度，外框量出后按自己当前的宽高折成百分比交给分隔条，外框变宽变窄时重新折算。
-- 左右与下方的面板在分隔条上可以收起：分隔条聚焦后按 Enter 收起，再按一次展开回原来的大小。
+- 左右与下方的面板在分隔条上可以收起：双击分隔条，或聚焦后按 Enter，收起它旁边那一侧，再来一次按收起前的大小放回；左边那条管物料一侧，右边那条管属性一侧，中间一栏下方那条管下方。
+- 收着期间外框重排（换了显示的面板、外框变宽变窄、窄屏来回）后仍收着，再双击或按 Enter 照样放回收起前的大小，焦点留在那条分隔条上。`sizes-change` 与 `sizes` 记的是收起前的大小，不记 0。
 
 `parseDesignerPanels(value)` 按同一口径解析 `panels`：没写为 `undefined`（全部显示），空串为空集合（全部收起），多个空白与制表符都当分隔。设计器自己的 `panels` 属性可以直接转给外框。
 
