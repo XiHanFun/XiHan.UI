@@ -193,6 +193,51 @@ describe('vue 那份配置锁着布局里的滚动容器，WC 对话框锁页面
   })
 })
 
+describe('对话框与里面缺省展开的浮层同一刻打开', () => {
+  it('vue 对话框里缺省展开的 Vue popover：浮层先登记也排在上面，Esc 先关浮层', async () => {
+    host = document.createElement('div')
+    document.body.append(host)
+    mountVue(host, () => vueDialog(() => h(XhPopoverRoot, { defaultOpen: true }, () => [
+      h(XhPopoverTrigger, null, () => '浮层'),
+      h(XhPopoverPositioner, null, () => h(XhPopoverContent, { 'data-test': 'vue-popover' }, () => h('button', { 'type': 'button', 'data-test': 'vue-popover-target' }, '浮层里的按钮'))),
+    ])))
+    await settle()
+    const popover = document.querySelector<HTMLElement>('[data-test="vue-popover"]')!
+    expect(layerOf(popover)).toBeGreaterThan(layerOf(vueContent()))
+    expect(isOnTop(document.querySelector('[data-test="vue-popover-target"]')!)).toBe(true)
+
+    popover.querySelector<HTMLElement>('[data-test="vue-popover-target"]')!.focus()
+    await userEvent.keyboard('{Escape}')
+    await settle()
+    expect(document.querySelector('[data-test="vue-popover"]')?.getAttribute('data-state') ?? 'closed').not.toBe('open')
+    expect(vueContent().getAttribute('data-state')).toBe('open')
+  })
+
+  it('vue 对话框里缺省展开的 WC popover：浮层先登记也排在上面，Esc 先关浮层', async () => {
+    host = document.createElement('div')
+    document.body.append(host)
+    mountVue(host, () => vueDialog(() => h('div', {
+      innerHTML: `<xh-popover default-open placement="bottom-start" data-test="wc-popover">
+        <button data-xh-part="trigger">浮层</button>
+        <div data-xh-part="positioner"><div data-xh-part="content"><button type="button" data-test="wc-popover-target">浮层里的按钮</button></div></div>
+      </xh-popover>`,
+    })))
+    await settle()
+    const overlay = document.querySelector<XhElement>('[data-test="wc-popover"]')!
+    await overlay.updateComplete
+    await settle()
+    const target = document.querySelector<HTMLElement>('[data-test="wc-popover-target"]')!
+    expect(layerOf(target.closest('[data-part="content"]')!)).toBeGreaterThan(layerOf(vueContent()))
+    expect(isOnTop(target)).toBe(true)
+
+    target.focus()
+    await userEvent.keyboard('{Escape}')
+    await settle()
+    expect(target.closest('[data-part="content"]')?.getAttribute('data-state')).not.toBe('open')
+    expect(vueContent().getAttribute('data-state')).toBe('open')
+  })
+})
+
 describe('web Components 对话框里开 Vue 对话框', () => {
   it('后开的 Vue 对话框在上面，焦点在它里面，Esc 只关它', async () => {
     const outer = await mountWcDialog()

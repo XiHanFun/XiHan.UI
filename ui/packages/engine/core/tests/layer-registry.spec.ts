@@ -231,6 +231,66 @@ describe('layer registry 视觉层级', () => {
   })
 })
 
+describe('layer registry 嵌套顺序', () => {
+  /** 一个对话框（内容节点在 body 里）和开在它内容里的一个浮层（触发器在对话框内容里、浮层本体搬到 body 末尾）。 */
+  function nestedNodes(): { content: HTMLElement, trigger: HTMLElement, popover: HTMLElement, elsewhere: HTMLElement } {
+    const content = document.createElement('div')
+    const trigger = document.createElement('button')
+    const popover = document.createElement('div')
+    const elsewhere = document.createElement('div')
+    content.append(trigger)
+    document.body.append(content, popover, elsewhere)
+    return { content, trigger, popover, elsewhere }
+  }
+
+  it('浮层先登记、对话框后登记：浮层的触发器在对话框内容里，对话框插到浮层之下', () => {
+    const registry = createLayerRegistry(document)
+    const { content, trigger, popover } = nestedNodes()
+    const inner = registry.register({ ...layerInput(), node: () => popover, branches: () => [trigger, popover] })
+    const outer = registry.register({ ...layerInput(), kind: 'modal', isModal: () => true, node: () => content })
+    cleanups.push(inner.dispose, outer.dispose)
+
+    expect(registry.list()).toEqual([outer.layer, inner.layer])
+    expect(registry.top()).toBe(inner.layer)
+    expect(registry.visualOf(inner.layer).visualIndex).toBeGreaterThan(registry.visualOf(outer.layer).visualIndex)
+    expect(registry.elementsAbove(outer.layer)).toContain(popover)
+  })
+
+  it('对话框先登记、浮层后登记：照旧排在最上面', () => {
+    const registry = createLayerRegistry(document)
+    const { content, trigger, popover } = nestedNodes()
+    const outer = registry.register({ ...layerInput(), kind: 'modal', isModal: () => true, node: () => content })
+    const inner = registry.register({ ...layerInput(), node: () => popover, branches: () => [trigger, popover] })
+    cleanups.push(inner.dispose, outer.dispose)
+    expect(registry.list()).toEqual([outer.layer, inner.layer])
+  })
+
+  it('没有嵌套关系的层按登记先后排', () => {
+    const registry = createLayerRegistry(document)
+    const { content, popover, elsewhere } = nestedNodes()
+    const first = registry.register({ ...layerInput(), node: () => popover, branches: () => [elsewhere] })
+    const second = registry.register({ ...layerInput(), kind: 'modal', isModal: () => true, node: () => content })
+    cleanups.push(first.dispose, second.dispose)
+    expect(registry.list()).toEqual([first.layer, second.layer])
+  })
+
+  it('新层开在中间那层里、又罩着更早登记的层时，排在两者之间', () => {
+    const registry = createLayerRegistry(document)
+    const outerContent = document.createElement('div')
+    const innerContent = document.createElement('div')
+    const leafTrigger = document.createElement('button')
+    const leaf = document.createElement('div')
+    outerContent.append(innerContent)
+    innerContent.append(leafTrigger)
+    document.body.append(outerContent, leaf)
+    const leafLayer = registry.register({ ...layerInput(), node: () => leaf, branches: () => [leafTrigger] })
+    const outerLayer = registry.register({ ...layerInput(), kind: 'modal', isModal: () => true, node: () => outerContent })
+    const middle = registry.register({ ...layerInput(), kind: 'modal', isModal: () => true, node: () => innerContent })
+    cleanups.push(leafLayer.dispose, middle.dispose, outerLayer.dispose)
+    expect(registry.list()).toEqual([outerLayer.layer, middle.layer, leafLayer.layer])
+  })
+})
+
 describe('layer registry 注册事务', () => {
   it('通知失败会通知完全部订阅者、恢复原快照并跳过失败 ID', () => {
     const registry = createLayerRegistry(document)
