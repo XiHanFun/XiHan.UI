@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
 
 // 扩展的面板与命令：面板登记到外框的区、按引用比对创建与撤掉、区名冲突抛错；命令按排列分组，
-// 铺成工具栏按钮与菜单条目，点击与选中执行命令。
+// 铺成工具栏按钮与菜单条目，点击与选中执行命令；粘贴与拖放的数据列成导入来源。
 import type { DesignerCommand } from '@xihan-ui/designer-kit'
 import type { DesignerPanel, DesignerShellExtension, XhDesignerFrameElement } from '../src'
 import { DesignerExtensionError } from '@xihan-ui/designer-kit'
 import { afterEach, describe, expect, it } from 'vitest'
-import { arrangeCommands, createCommandToolbar, createPanelHost, defineDesignerShell, renderCommandMenu, runCommand } from '../src'
+import { arrangeCommands, createCommandToolbar, createPanelHost, defineDesignerShell, importSources, renderCommandMenu, runCommand } from '../src'
 
 defineDesignerShell()
 
@@ -141,5 +141,22 @@ describe('命令', () => {
     expect(runCommand(commands, 'delete', { selected: 1 })).toBe(true)
     expect(runCommand(commands, 'missing', { selected: 1 })).toBe(false)
     expect(ran).toEqual(['delete'])
+  })
+})
+
+describe('importSources', () => {
+  it('先列文件，再按链接、HTML、纯文本列出不为空的文本', () => {
+    const file = new File(['<svg/>'], 'logo.svg', { type: 'image/svg+xml' })
+    const texts: Record<string, string> = { 'text/plain': 'https://example.com/a.png', 'text/uri-list': 'https://example.com/a.png' }
+    const sources = importSources({ files: [file] as unknown as FileList, getData: mime => texts[mime] ?? '' }, 'drop')
+    expect(sources).toEqual([
+      { kind: 'drop', mime: 'image/svg+xml', name: 'logo.svg', file },
+      { kind: 'drop', mime: 'text/uri-list', text: 'https://example.com/a.png' },
+      { kind: 'drop', mime: 'text/plain', text: 'https://example.com/a.png' },
+    ])
+  })
+
+  it('什么都没有时是空列表', () => {
+    expect(importSources({ files: [] as unknown as FileList, getData: () => '' }, 'clipboard')).toEqual([])
   })
 })

@@ -355,7 +355,7 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 
 ## 扩展的面板与命令
 
-设计器扩展的骨架、合并查重与装卸在 `@xihan-ui/designer-kit`（见那一页的「设计器扩展」）。这里放跟界面有关的两样：面板登记到外框的区，命令铺成工具栏按钮与右键菜单条目。
+设计器扩展的骨架、合并查重与装卸在 `@xihan-ui/designer-kit`（见那一页的「设计器扩展」）。这里放跟界面有关的三样：面板登记到外框的区，命令铺成工具栏按钮与右键菜单条目，粘贴与拖放的数据列成导入来源。
 
 ### 面板
 
@@ -397,3 +397,20 @@ menu.addEventListener("select", event => runCommand(commands, event.detail.value
 | `commandLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；此刻能否执行 |
 
 两个铺法用到的 `<xh-toolbar>` 与 `<xh-context-menu>` 按需注册。快捷键的命中用 designer-kit 的 `commandForShortcut`。
+
+### 导入来源
+
+`importSources(data, kind)` 把粘贴事件的 `clipboardData` 或拖放事件的 `dataTransfer` 列成导入来源：先是每个文件（带类型与文件名），再按链接、HTML、纯文本的顺序列出不为空的文本。交给 designer-kit 的 `findImporter`，挑出第一个接下的导入器。
+
+```ts
+import { findImporter } from "@xihan-ui/designer-kit";
+import { importSources } from "@xihan-ui/designer-shell";
+
+canvas.addEventListener("drop", (event) => {
+  const found = findImporter(model.importers, importSources(event.dataTransfer!, "drop"));
+  if (!found)
+    return;
+  event.preventDefault();
+  void found.importer.import(found.source, context).then(place);
+});
+```

@@ -22,6 +22,7 @@ export {
   extensionDataPath,
   extensionEditors,
   extensionIssuePrefix,
+  findImporter,
   formatShortcut,
   getExtensionData,
   mergeExtensions,
