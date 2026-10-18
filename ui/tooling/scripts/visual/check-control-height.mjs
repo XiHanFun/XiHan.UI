@@ -55,7 +55,9 @@ const OFF_SCALE = {
  * 名单之外：[data-size='sm'] 块里只许引 sm 档、[data-size='lg'] 只许 lg，没有 data-size 的块里
  * 控件本体的高度槽只许引 md——md 是缺省档，皮肤的基础规则就是它。
  */
-const OFF_TIER = {}
+const OFF_TIER = {
+  'field-array.css item': '表格排布的一行按行里字段控件的尺寸档取控件高：sm / lg 两档挂在 :has([data-xh-field-size]) 块上，field-array 自己没有 size',
+}
 
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css'))
 const problems = []

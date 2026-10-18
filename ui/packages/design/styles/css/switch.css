@@ -16,6 +16,13 @@
     --xh-switch-skin: 1;
   }
 
+  /* Web Components 的宿主不占一层盒子：作者写的结构直接参与外层排布，与 Vue / React 直接渲染 root 一致；
+     放进弹性或网格容器时，按钮不再落在宿主的一行里按基线排。零特指度，作者给宿主写的 display 照层叠胜出；
+     带 hidden 的宿主不掀开 */
+  :where(xh-switch:not([hidden])) {
+    display: contents;
+  }
+
   [data-scope='switch'][data-part='root'] {
     /* 尺寸档只换轨道高度与留白两个私有槽，其余几何都从它们算出来：
        滑块边长 = 轨道高 − 两条留白，轨道宽 = 两倍轨道高 − 两条留白，滑块行程因此正好等于自身边长。
