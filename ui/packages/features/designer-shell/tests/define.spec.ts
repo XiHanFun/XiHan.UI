@@ -15,8 +15,8 @@ describe('登记与注册', () => {
       expect(customElements.get(tag)).toBe(ctor)
   })
 
-  it('中文语言包的键都是登记过的标签', () => {
-    const tags = Object.keys(DESIGNER_SHELL_ELEMENTS)
-    expect(Object.keys(designerShellZhCN.translations ?? {}).every(tag => tags.includes(tag))).toBe(true)
+  it('中文语言包的键都是登记过的标签，另有四款共用的命令文案那一桶', () => {
+    const buckets = [...Object.keys(DESIGNER_SHELL_ELEMENTS), 'xh-designer-commands']
+    expect(Object.keys(designerShellZhCN.translations ?? {}).every(key => buckets.includes(key))).toBe(true)
   })
 })

@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 零件的文案键：键是零件的标签名，类型补进 UI 的 XhTranslationOverrides。
+// 零件的文案键：键是零件的标签名，四款共用的命令文案另占一桶 xh-designer-commands；类型补进 UI 的 XhTranslationOverrides。
 
 /** 属性面板的文案。 */
 export interface DesignerPropertiesTranslations {
@@ -123,6 +123,64 @@ export interface DesignerSettingsTranslations {
   readonly languageHint: string
 }
 
+/** 四款设计器共用的命令文案：通用编辑、对齐与分布、层级、缩放与视图切换，以及命令工具栏的名字。 */
+export interface DesignerCommandsTranslations {
+  /** 命令工具栏的无障碍名称。 */
+  readonly toolbar: string
+  /** 撤销。 */
+  readonly undo: string
+  /** 重做。 */
+  readonly redo: string
+  /** 剪切。 */
+  readonly cut: string
+  /** 复制。 */
+  readonly copy: string
+  /** 粘贴。 */
+  readonly paste: string
+  /** 创建副本。 */
+  readonly duplicate: string
+  /** 删除。 */
+  readonly delete: string
+  /** 全选。 */
+  readonly selectAll: string
+  /** 左对齐。 */
+  readonly alignLeft: string
+  /** 水平居中。 */
+  readonly alignCenter: string
+  /** 右对齐。 */
+  readonly alignRight: string
+  /** 顶端对齐。 */
+  readonly alignTop: string
+  /** 垂直居中。 */
+  readonly alignMiddle: string
+  /** 底端对齐。 */
+  readonly alignBottom: string
+  /** 水平等距分布。 */
+  readonly distributeHorizontal: string
+  /** 垂直等距分布。 */
+  readonly distributeVertical: string
+  /** 置于顶层。 */
+  readonly bringToFront: string
+  /** 上移一层。 */
+  readonly bringForward: string
+  /** 下移一层。 */
+  readonly sendBackward: string
+  /** 置于底层。 */
+  readonly sendToBack: string
+  /** 放大。 */
+  readonly zoomIn: string
+  /** 缩小。 */
+  readonly zoomOut: string
+  /** 缩放到适合窗口。 */
+  readonly zoomToFit: string
+  /** 缩放到实际大小。 */
+  readonly zoomToActual: string
+  /** 切到设计视图。 */
+  readonly design: string
+  /** 切到预览视图。 */
+  readonly preview: string
+}
+
 declare module '@xihan-ui/web-components' {
   interface XhTranslationOverrides {
     'xh-designer-properties'?: Partial<DesignerPropertiesTranslations>
@@ -130,6 +188,7 @@ declare module '@xihan-ui/web-components' {
     'xh-designer-palette'?: Partial<DesignerPaletteTranslations>
     'xh-designer-ruler'?: Partial<DesignerRulerTranslations>
     'xh-designer-frame'?: Partial<DesignerFrameTranslations>
+    'xh-designer-commands'?: Partial<DesignerCommandsTranslations>
     'xh-designer-settings'?: Partial<DesignerSettingsTranslations>
   }
 }

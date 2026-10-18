@@ -1257,4 +1257,17 @@
   xh-designer-frame [data-scope='designer-frame'][data-part='splitter'] > [data-scope='splitter'][data-part='root'] > [data-scope='splitter'][data-part='panel'][hidden] {
     display: none;
   }
+
+  /* 命令工具栏的外壳：委托提示包着那条工具栏，布局上不占盒子，工具栏直接排进调用方的容器 */
+  xh-tooltip[data-scope='designer-commands'] {
+    display: contents;
+  }
+
+  /* 只显示图标：有图标的命令收起文字，名字由按钮的 aria-label 给 */
+  xh-tooltip[data-scope='designer-commands'][data-display='icon'] [data-scope='toolbar'][data-part='item'][data-icon] > [data-scope='designer-commands'][data-part='label'],
+  /* 只显示文字，或命令没有图标：收起图标 */
+  xh-tooltip[data-scope='designer-commands'][data-display='text'] [data-scope='toolbar'][data-part='item'] > [data-scope='designer-commands'][data-part='icon'],
+  [data-scope='toolbar'][data-part='item']:not([data-icon]) > [data-scope='designer-commands'][data-part='icon'] {
+    display: none;
+  }
 }

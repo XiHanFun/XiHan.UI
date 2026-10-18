@@ -573,7 +573,7 @@ panels.dispose();
 import { arrangeCommands, createCommandToolbar, renderCommandMenu, runCommand } from "@xihan-ui/designer-shell";
 
 const commands = extensionCommands(host.list); // designer-kit，内置在前
-const toolbar = createCommandToolbar(document);
+const toolbar = createCommandToolbar(document, { display: "icon" }); // 显示方式缺省 icon，快捷键的平台缺省当场测
 toolbar.update(arrangeCommands("toolbar", commands, BUILTIN_TOOLBAR, designer.commandLayout), commands, context, t.toolbar);
 
 renderCommandMenu(menuContent, arrangeCommands("menu:node", commands, BUILTIN_NODE_MENU, designer.commandLayout), commands, context, { platform });
@@ -583,12 +583,22 @@ menu.addEventListener("select", event => runCommand(commands, event.detail.value
 | 函数 | 说明 |
 | --- | --- |
 | `arrangeCommands(placement, commands, defaults, layout?)` | 排出某个位置的分组：`layout` 写了这个位置就只用它；否则用 `defaults`（各款内置的缺省排列），再把 `placement` 含这个位置、又不在缺省排列里的命令按登记顺序追加成一组。排列里写了没登记的命令 id 时抛 `TypeError` |
-| `createCommandToolbar(document)` | 一条 `<xh-toolbar>`：`update(groups, commands, context, label)` 分组变了才重铺按钮，文字、可用、`aria-pressed`（开关式命令）与 `data-tone`（命令的语气）每次刷新；点击按钮执行命令，放不下的收进行尾的「更多」菜单，语气随按钮带进菜单项 |
-| `renderCommandMenu(content, groups, commands, context, { platform? })` | 把分组铺成 `<xh-context-menu>` content 里的条目，组间一条分隔线；不可用的写 `aria-disabled`，命令的语气写 `data-tone`，带快捷键的在行尾写提示 |
+| `createCommandToolbar(document, { display?, platform? })` | 一条 `<xh-toolbar>`，外面包一个委托模式的 `<xh-tooltip>`（`element` 是这层外壳，布局上不占盒子；`toolbar` 是里面那条工具栏）。`update(groups, commands, context, label)` 分组变了才重铺按钮，文字、图标、`aria-label`、`aria-keyshortcuts`（快捷键按 `platform` 写成规范写法，如 `Control+Shift+Z`）、可用、`aria-pressed`（开关式命令）与 `data-tone`（命令的语气）每次刷新；点击按钮执行命令，放不下的收进行尾的「更多」菜单，图标与语气随按钮带进菜单项。`display` 是 `icon`（缺省）、`text` 或 `both`，没有图标的命令在 `icon` 档照样显示文字；`setDisplay(display)` 换显示方式不重铺按钮，「更多」里的条目按新的宽度重新收放。悬停或键盘聚焦到按钮时提示显示命令的文字与快捷键；文字看得见时只给带快捷键的按钮提示 |
+| `renderCommandMenu(content, groups, commands, context, { platform? })` | 把分组铺成 `<xh-context-menu>` content 里的条目，组间一条分隔线；不可用的写 `aria-disabled`，命令的语气写 `data-tone`，带图标的在文字前铺 `item-icon`，带快捷键的在行尾写提示并写进 `aria-keyshortcuts` |
 | `runCommand(commands, id, context)` | 命令存在且此刻可用才执行，返回是否执行了 |
 | `commandLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；此刻能否执行 |
 
-两个铺法用到的 `<xh-toolbar>` 与 `<xh-context-menu>` 按需注册。快捷键的命中用 designer-kit 的 `commandForShortcut`。
+两个铺法用到的 `<xh-toolbar>`、`<xh-context-menu>`、`<xh-tooltip>` 与 `<xh-icon>` 按需注册。快捷键的命中用 designer-kit 的 `commandForShortcut`。
+
+四款都有的通用命令，文案收在 designer-shell 语言包的 `xh-designer-commands` 一桶里：撤销、重做、剪切、复制、粘贴、创建副本、删除、全选，六种对齐、两种分布、四种层级，放大、缩小、适合窗口、实际大小，设计与预览，以及命令工具栏的名字 `toolbar`。各款引用这一桶，不再各写一份；产品专属的命令仍写在各款自己的语言包里。
+
+```ts
+import { DESIGNER_COMMANDS_EN_US } from "@xihan-ui/designer-shell";
+import { XhConfigController } from "@xihan-ui/web-components/authoring";
+
+const config = new XhConfigController(designer);
+const t = config.translations("xh-designer-commands", DESIGNER_COMMANDS_EN_US); // t.undo、t.alignCenter……
+```
 
 ### 设置分区
 
