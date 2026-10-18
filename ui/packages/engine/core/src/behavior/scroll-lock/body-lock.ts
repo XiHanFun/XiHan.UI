@@ -6,7 +6,8 @@
 // 提供 body lock 相关实现。
 
 import type { Cleanup, Disposable, RuntimeConfig } from '../../kernel'
-import { createPerDocumentRegistry, isDocument, isHTMLElement, isWindow } from '../../kernel'
+import { isDocument, isHTMLElement, isWindow } from '../../kernel'
+import { createPageSharedRegistry } from '../../kernel/structure/page-shared-registry'
 
 export interface ScrollLockOptions {
   config: RuntimeConfig
@@ -37,7 +38,7 @@ interface LockState {
   transitioning: boolean
 }
 
-const registry = createPerDocumentRegistry<LockState>(() => ({
+const registry = createPageSharedRegistry<LockState>('scroll-lock@1', () => ({
   count: 0,
   epoch: null,
   transitioning: false,

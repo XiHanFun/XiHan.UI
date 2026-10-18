@@ -4,7 +4,7 @@
  */
 
 // aria-hidden 引用计数表：同一元素可被多方同时要求藏起，计数归零才写回原始值。
-import { createPerDocumentRegistry } from '../../structure/per-document-registry'
+import { createPageSharedRegistry } from '../../structure/page-shared-registry'
 
 interface AriaHiddenEntry {
   /** 第一次被接管前的 aria-hidden 属性值；没写过为 null。 */
@@ -54,7 +54,7 @@ export function createAriaHiddenRegistry(_doc: Document): AriaHiddenRegistry {
   }
 }
 
-const registry = createPerDocumentRegistry(createAriaHiddenRegistry)
+const registry = createPageSharedRegistry('aria-hidden@1', createAriaHiddenRegistry)
 
 /** 取该 document 的共享 aria-hidden 引用计数表。 */
 export function getAriaHiddenRegistry(doc: Document): AriaHiddenRegistry {

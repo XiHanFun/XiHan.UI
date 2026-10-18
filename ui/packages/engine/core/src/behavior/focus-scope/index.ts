@@ -8,13 +8,13 @@
 import type { Disposable, FocusableElement, Layer, RuntimeConfig } from '../../kernel'
 import {
   contains,
-  createPerDocumentRegistry,
   EV_MOUNT_AUTO_FOCUS,
   EV_UNMOUNT_AUTO_FOCUS,
   getActiveElementDeep,
   isElement,
   isShadowRoot,
 } from '../../kernel'
+import { createPageSharedRegistry } from '../../kernel/structure/page-shared-registry'
 import { isRendered } from '../../kernel/utils/rendered'
 import { acquireFocusGuards } from './focus-guards'
 import { activeElementInRoot, focusFirst, focusSafely, getTabbables, removeLinks, tabbableEdges } from './tabbable'
@@ -60,7 +60,7 @@ interface FocusScopeDocumentState {
 }
 
 // 焦点归还只和同一 Document 中更晚建立的域竞争；其他窗口有自己的焦点生命周期。
-const focusScopesByDocument = createPerDocumentRegistry<FocusScopeDocumentState>(() => ({
+const focusScopesByDocument = createPageSharedRegistry<FocusScopeDocumentState>('focus-scopes@1', () => ({
   sequence: 0,
   live: new Set<number>(),
   ownershipListeners: new Set<() => void>(),

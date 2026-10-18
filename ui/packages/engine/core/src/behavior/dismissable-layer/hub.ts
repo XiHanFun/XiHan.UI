@@ -16,6 +16,7 @@ import {
   EV_POINTER_DOWN_OUTSIDE,
   isHTMLElement,
 } from '../../kernel'
+import { createPageSharedSlot } from '../../kernel/structure/page-shared-registry'
 import {
   dismissPathIncludes,
   isDismissRouteTerminal,
@@ -109,7 +110,8 @@ interface CandidateStage {
   readonly node: HTMLElement | null
 }
 
-const hubs = new WeakMap<Document, DismissHub>()
+/** 每个 Document 一个派发枢纽，存在 Document 上：页面上装了几份 core 也共用这一个。 */
+const hubs = createPageSharedSlot<DismissHub>('dismiss-hub@1')
 
 function drainCleanups(cleanups: Cleanup[]): unknown[] {
   const errors: unknown[] = []
@@ -389,7 +391,7 @@ class DismissHub {
 
   private teardown(): unknown[] {
     this.teardownPending = false
-    if (hubs.get(this.doc) === this)
+    if (hubs.peek(this.doc) === this)
       hubs.delete(this.doc)
     const errors = this.cancelTouchPending()
     if (!this.installed)
@@ -1231,7 +1233,7 @@ class DismissHub {
 }
 
 function getOrCreateHub(doc: Document, win: Window & typeof globalThis): DismissHub {
-  const current = hubs.get(doc)
+  const current = hubs.peek(doc)
   if (current) {
     if (current.win !== win)
       throw new Error('[xh] DismissableLayer 的同一 Document 不能绑定不同 Window')
@@ -1258,7 +1260,7 @@ export function registerDismissLayer(options: DismissLayerOptions): Disposable {
   if (typeof win.requestAnimationFrame !== 'function' || typeof win.cancelAnimationFrame !== 'function')
     throw new Error('[xh] DismissableLayer 所属 Window 不支持动画帧调度')
 
-  const existingHub = hubs.get(doc)
+  const existingHub = hubs.peek(doc)
   if (existingHub?.hasParticipant(registry, layer))
     throw new Error('[xh] 同一 LayerRegistry 的同一 Layer 只能创建一个 DismissableLayer')
 
