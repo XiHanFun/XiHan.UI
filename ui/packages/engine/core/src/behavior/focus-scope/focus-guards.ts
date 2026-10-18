@@ -6,7 +6,8 @@
 // 提供 focus guards 相关实现。
 
 import type { Cleanup } from '../../kernel'
-import { createPerDocumentRegistry, DATA_FOCUS_GUARD } from '../../kernel'
+import { DATA_FOCUS_GUARD } from '../../kernel'
+import { createPageSharedRegistry } from '../../kernel/structure/page-shared-registry'
 
 interface GuardState {
   count: number
@@ -14,7 +15,7 @@ interface GuardState {
   end?: HTMLSpanElement
 }
 
-const registry = createPerDocumentRegistry<GuardState>(() => ({ count: 0 }))
+const registry = createPageSharedRegistry<GuardState>('focus-guards@1', () => ({ count: 0 }))
 
 function createGuard(doc: Document): HTMLSpanElement {
   const el = doc.createElement('span')

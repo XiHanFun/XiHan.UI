@@ -103,7 +103,7 @@ export interface LayerRegistry {
 - `branches`（分支）：嵌套 portal 出去的子层。菜单开在对话框中、子菜单再 portal 到 body，DOM 上它们是兄弟，逻辑上是父子。漏登记分支会使点击子菜单被判定为点击外部，父层随之关闭。
 - `surfaces`（表面）：遮罩这类点击即应关闭的元素。它属于本层，但点击它的语义是关闭而不是点击层内。
 
-默认情况下同一 Document 共用一个注册表；自定义注册表也会在创建时固化唯一的 `ownerDocument`，公共记录本身被冻结。不同 Document（iframe、画中画窗口）的注册表不能混用。
+默认情况下同一 Document 共用一个注册表，Vue、React 与 Web Components 的浮层都登记在这里；注册表挂在 Document 上，页面上同时装了几份 `@xihan-ui/core`（应用与设计器各自打包、或装了两个版本）时取到的也是同一个。Esc 与外部点击的派发、焦点域、滚动锁与 `aria-hidden` 计数同样是每个 Document 一份。自定义注册表也会在创建时固化唯一的 `ownerDocument`，公共记录本身被冻结。不同 Document（iframe、画中画窗口）的注册表不能混用。
 
 视觉层级不再由各组件各自拿静态 `z-index` 猜。注册表按当前 Document 的逻辑栈派生
 `visualIndex`，再让 `kind` 与实时 `isModal()` 占用该序号内的 `visualLane`；后登记层的序号

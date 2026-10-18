@@ -61,6 +61,7 @@
 - **修复** Tree、TreeSelect、JsonViewer、Citation、FileUpload 的可访问名包含看得见的字；危险色文字与刷新中的集合在所有表面上达到 4.5:1 对比度；Tabs 横线档的当前页悬停、键盘高亮与按下时字深一档，在页面底与面上同样达到 4.5:1，带语气时不再退回品牌色；条件编辑器的删除钮在高对比档里按所在的面取字形色，悬停与禁用都分得开
 - **修复** Tree 叶子行的说明落在名称下面一行，窄的时候截断；Listbox、TagGroup、SignaturePad、Transfer 放进表单字段时接上字段的标题与说明；日期、时间选择器有值时点字段标题焦点落在第一段，放进字段时日历钮不再带按钮不允许的 `aria-readonly`
 - **修复** Table 表尾里的冻结格补上不透明底，横向滚动时压住的格子不再透出来；树形表里有子行的行不再写指向不存在详情行的 `aria-controls`；纵向合并格按行的内容盒铺开，行间线画在行下边框上时起点行不再被一次次撑高；ButtonGroup 里的分体按钮，Web Components 的下拉钮跟着组的形态与尺寸，与主按钮连成一条
+- **修复** 浮层层级栈、Esc 与外部点击的派发、焦点域、滚动锁与 `aria-hidden` 计数改为页面级单例：页面上装了几份 `@xihan-ui/core`（应用与设计器各自打包）时，Vue、React 与 Web Components 的对话框、菜单、Popover 与提示仍在同一个栈里，后打开的在上面，焦点与 Esc 只作用在最上层
 - **修复** 列表删行时淡出的替身显示删除前的值；条目禁用随作者的修改来回切换；多行文本自动增高在无排版环境里安静跳过
 - **修复** Fieldset 整组禁用时组内 Field 的标题与说明一起变淡，Scrollbar 不再随之禁用；React 的 Tooltip、Popover、Menu、DownloadTrigger 放进禁用的 Fieldset 时一并禁用，Tooltip 跟随全局 `size`；Web Components 的 FloatButton 接上全局 `size` 与文案
 

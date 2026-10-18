@@ -8,7 +8,7 @@ import type { Cleanup } from '../types'
 import { reportDiagnostic } from '../diagnostics/channel'
 import { DIAGNOSTIC_CODES } from '../diagnostics/codes'
 import { contains } from '../guards'
-import { createPerDocumentRegistry } from './per-document-registry'
+import { createPageSharedRegistry } from './page-shared-registry'
 
 export type LayerKind = 'modal' | 'popover' | 'inline'
 
@@ -388,9 +388,9 @@ export function bindLayerVisual(options: LayerVisualBindingOptions): Cleanup {
   }
 }
 
-const registry = createPerDocumentRegistry(createLayerRegistry)
+const registry = createPageSharedRegistry('layer-registry@1', createLayerRegistry)
 
-/** 取该 document 的共享 LayerRegistry。 */
+/** 取该 document 的共享 LayerRegistry；页面上装了几份 core 也是同一个。 */
 export function getLayerRegistry(doc: Document): LayerRegistry {
   return registry.get(doc)
 }
