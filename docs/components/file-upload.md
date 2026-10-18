@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="file-upload"`：`root` · `label` · `dropzone` · `trigger` · **`hidden-input`** · `list` · `item` · `item-name` · `item-size-text` · `item-preview` · `item-progress` · `item-delete-trigger` · `clear-trigger`
+`data-scope="file-upload"`：`root` · `label` · `dropzone` · `trigger` · **`hidden-input`** · `list` · `item` · `item-name` · `item-link` · `item-size-text` · `item-preview` · `item-progress` · `item-delete-trigger` · `clear-trigger`
 
 ## 示例
 
@@ -113,7 +113,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 - `cancelUpload` 中止传输但保留文件，`startUpload` 让取消或失败的文件重新开传；删除文件同样中止它的传输。
 - `upload` 返回 `{ id }` 时，传完的文件转成服务器已有附件：从 `files` 移出、追加进 `remoteFiles`，表单值直接是附件记录。`remoteFiles` 受控时宿主写回含这个 id 的列表之后才移出。
 - 点标题只把焦点交给投放区（没写投放区时交给选择钮），不弹出选择框；`label` 的 `for` 仍指向隐藏输入，原生关联与必填提示照旧。禁用时投放区退出 Tab 序列，只读时留在 Tab 序列里，两者都报 `aria-disabled`、不收拖放与粘贴。
-- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是投放区（说明文字取 `translations.dropzone`）、表单影子与文件列表，`clearable` 时末尾带清空钮。投放区是唯一可聚焦的打开入口，不另铺选择钮；列表里 `allFiles` 每个文件一行（缩略图、文件名、大小、进度与删除钮），按 `fileKey` 认行，删掉中间一行时替身留在原处淡出。Web Components 里标题与投放区的内容可以写在宿主的直接子节点 `slot="label"`、`slot="dropzone"` 上接管。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是投放区（说明文字取 `translations.dropzone`）、表单影子与文件列表，`clearable` 时末尾带清空钮。投放区是唯一可聚焦的打开入口，不另铺选择钮；列表里 `allFiles` 每个文件一行（缩略图、文件名、大小、进度与删除钮），按 `fileKey` 认行，删掉中间一行时替身留在原处淡出。远程附件的 `url` 经安全判定（只放行 http、https、mailto、tel 与相对地址）后，文件名铺成链接 `item-link`，打开方式取 `linkTarget`（缺省当前页，`_blank` 时带 `rel="noopener noreferrer"`）；地址不安全时文件名是纯文字。只读时链接照常可聚焦、可打开，禁用时退出 Tab 序列。Web Components 里标题与投放区的内容可以写在宿主的直接子节点 `slot="label"`、`slot="dropzone"` 上接管。
 
 ### 组合
 
@@ -136,7 +136,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-file-upload>` |
-| Vue 组件 | `XhFileUploadClearTrigger` `XhFileUploadDropzone` `XhFileUploadHiddenInput` `XhFileUploadItem` `XhFileUploadItemDeleteTrigger` `XhFileUploadItemName` `XhFileUploadItemPreview` `XhFileUploadItemProgress` `XhFileUploadItemSizeText` `XhFileUploadLabel` `XhFileUploadList` `XhFileUploadRoot` `XhFileUploadTrigger` |
+| Vue 组件 | `XhFileUploadClearTrigger` `XhFileUploadDropzone` `XhFileUploadHiddenInput` `XhFileUploadItem` `XhFileUploadItemDeleteTrigger` `XhFileUploadItemLink` `XhFileUploadItemName` `XhFileUploadItemPreview` `XhFileUploadItemProgress` `XhFileUploadItemSizeText` `XhFileUploadLabel` `XhFileUploadList` `XhFileUploadRoot` `XhFileUploadTrigger` |
 | 组合式函数 | `useFileUpload` |
 | 状态机 | `fileUploadMachine` |
 | 皮肤 | `@xihan-ui/styles/file-upload.css` |
@@ -164,6 +164,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `maxConcurrentUploads` | `number` |  | 同时在传的文件数上限，默认不限。到了上限的文件报 queued 排队，前面的传完、失败或被取消后按列表顺序补上。 |
 | `directory` | `boolean` |  | 选择目录而不是文件（隐藏输入带 webkitdirectory）。 |
 | `capture` | `'user' \| 'environment'` |  | 移动端直接调用摄像头 / 麦克风采集。 |
+| `linkTarget` | `string` |  | 附件链接（item-link）的打开方式，写到链接的 target 上；缺省在当前页打开。 写 _blank 时链接同时带 rel="noopener noreferrer"。 |
 | `remoteFiles` | `FileUploadRemoteFile[]` |  | 服务器已有附件（编辑表单回显）。提供即受控：cell 直读 prop，删改只发 onRemoteFilesChange 不落内部值。条目计入 maxFiles 总量，与本地文件一起渲染。 |
 | `defaultRemoteFiles` | `FileUploadRemoteFile[]` |  |  |
 | `upload` | `(request: FileUploadRequest) => Promise<FileUploadResult \| undefined \| void> \| FileUploadResult \| undefined \| void` |  | 每个文件的传输实现。提供后组件才是上传器：接受的文件按 autoUpload 自动开始传输， 进度、成败与返回地址都记入该文件的传输快照。未提供时保持纯选择器。 |
@@ -263,6 +264,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `maxFiles` | `number` | 生效的数量上限（已按默认值与非法值归一）。 |
 | `translations` | `FileUploadTranslations` | 合上作者覆盖后的文案。 |
 | `fileKey` | `(file: FileUploadFile) => string` | 文件在列表里的稳定标识：本地文件取机器发的内部 id，远程附件取 `remote:&lt;id&gt;`。 同名同大小的两份本地文件标识不同；列表增删时据此认出哪一行还是那一行。 |
+| `fileHref` | `(file: FileUploadFile) => string \| undefined` | 文件可打开的地址：远程附件的 url 经安全判定（只放行 http、https、mailto、tel 与相对地址）后的结果； 本地文件、没有 url 或地址不安全时为 undefined，此时标准结构只铺纯文字的文件名。 |
 | `getFileSizeText` | `(file: FileUploadFile) => string` | 字节数格式化为可读形式，供作者渲染 item-size-text；远程附件未报大小时为空串。 |
 | `uploadOf` | `(file: FileUploadFile) => FileUploadSnapshot \| null` | 该条目的传输快照：远程附件恒为 done；本地文件未配置 upload 时为 null， 已配置而尚未开始传输时为 idle。 |
 | `startUpload` | `(file: File) => void` | 手动开始传输（autoUpload 关闭时）、失败或取消后重试；不在列表中或传输中的文件调用无效。 |
@@ -280,6 +282,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `getListProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: FileUploadItemProps) => T['element']` |  |
 | `getItemNameProps` | `(props: FileUploadItemProps) => T['element']` |  |
+| `getItemLinkProps` | `(props: FileUploadItemProps) => T['element']` | 附件链接：落在文件名里、指向 fileHref 的 &lt;a&gt;。地址不安全时不写 href；target 取 linkTarget，_blank 时带 rel="noopener noreferrer"。只读时照常可聚焦、可打开；禁用时退出 Tab 序列、报 aria-disabled，点了不跳转。 |
 | `getItemSizeTextProps` | `(props: FileUploadItemProps) => T['element']` |  |
 | `getItemPreviewProps` | `(props: FileUploadItemProps) => T['element']` |  |
 | `getItemProgressProps` | `(props: FileUploadItemProps) => T['element']` | 该条目的传输进度条，纯装饰；进度比例写在私有槽上供皮肤计算宽度。 |
@@ -317,6 +320,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `hidden-input` | `aria-labelledby` | `label` 部件的 id `dropzone` 部件的 id \| `dropzone` 部件的 id |
 | `list` | `role` | 'list' |
 | `item` | `role` | 'listitem' |
+| `item-link` | `aria-disabled` | 'true' \| undefined |
 | `item-preview` | `aria-hidden` | 'true' |
 | `item-progress` | `aria-hidden` | 'true' |
 | `item-delete-trigger` | `aria-disabled` | 'true' \| undefined |
@@ -367,6 +371,7 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `item` | `data-remote` | ''（条件成立时才出现） |
 | `item` | `data-state` | uploadOf(file)?.status |
 | `item-name` | `data-disabled` | ''（条件成立时才出现） |
+| `item-link` | `data-disabled` | ''（条件成立时才出现） |
 | `item-size-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-size-text` | `data-file-size` | undefined \| String(file.size) \| String(file.size) |
 | `item-preview` | `data-disabled` | ''（条件成立时才出现） |
@@ -441,6 +446,10 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `--xh-file-upload-item-font-size` | `item` | `font-size` | `default` | `--xh-text-body-size` | file-upload 的 item 部件 font-size 覆盖槽。 |
 | `--xh-file-upload-item-gap` | `list` | `gap` | `default` | `--xh-space-3` | file-upload 的 list 部件 gap 覆盖槽。 |
 | `--xh-file-upload-item-inner-gap` | `item` | `gap` | `default` | `--xh-space-3` | file-upload 的 item 部件 gap 覆盖槽。 |
+| `--xh-file-upload-item-link-fg` | `item-link` | `color` | `default` | `--xh-fg-brand` | file-upload 的 item-link 部件 color 覆盖槽。 |
+| `--xh-file-upload-item-link-fg-hover` | `item-link` | `color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-brand-strong` | file-upload 的 item-link 部件 color 覆盖槽。 |
+| `--xh-file-upload-item-link-radius` | `item-link` | `border-radius` | `default` | `--xh-shape-inset` | file-upload 的 item-link 部件 border-radius 覆盖槽。 |
+| `--xh-file-upload-item-link-underline-offset` | `item-link` | `text-underline-offset` | `default` | `--xh-space-0_5` | file-upload 的 item-link 部件 text-underline-offset 覆盖槽。 |
 | `--xh-file-upload-item-mark-size` | `item` | `block-size`<br>`inline-size` | `has(> [data-part='item-progress'][data-state='done'])`<br>`has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=done`<br>`state=error` | `--xh-control-indicator-size` | file-upload 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-file-upload-item-name-min-w` | `item-name` | `min-inline-size` | `default` | `--xh-control-min-w` | file-upload 的 item-name 部件 min-inline-size 覆盖槽。 |
 | `--xh-file-upload-item-progress-fill` | `item-progress` | `background` | `default` | `--xh-bg-brand` | file-upload 的 item-progress 部件 background 覆盖槽。 |
@@ -482,9 +491,13 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 
 动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+### 响应式
+
+皮肤另按输入能力分档：`hover: hover`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

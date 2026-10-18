@@ -89,11 +89,12 @@ describe('文件上传的标准结构', () => {
   })
 
   it('禁用时投放区退出 Tab 序列、报禁用、不收拖放；只读时留在 Tab 序列、报不可用、不收拖放，按 Enter 不弹选择框', async () => {
-    await mount({ disabled: true })
+    await mount({ disabled: true, defaultRemoteFiles: [{ id: 'r1', name: '合同.pdf', url: '/files/r1' }] })
     wrap!.querySelector<HTMLElement>('#before')!.focus()
     await userEvent.keyboard('{Tab}')
     expect(document.activeElement).toBe(wrap!.querySelector('#after'))
     expect(part('dropzone').getAttribute('aria-disabled')).toBe('true')
+    expect([part('item-link').getAttribute('tabindex'), part('item-link').getAttribute('aria-disabled')]).toEqual(['-1', 'true'])
     expect(dragOver(part('dropzone'))).toBe(false)
     wrap!.remove()
 
@@ -111,24 +112,33 @@ describe('文件上传的标准结构', () => {
   })
 
   it('只读时已有附件照样能 Tab 走到、读得出：文件名与大小在场，删除钮报不可用、点了不删；作者写在行里的链接照常可用', async () => {
-    const remote: FileUploadRemoteFile[] = [{ id: 'r1', name: '合同.pdf', size: 2048, url: '/files/r1' }, { id: 'r2', name: '报价.pdf', size: 4096 }]
-    await mount({ readOnly: true, defaultRemoteFiles: remote })
+    const remote: FileUploadRemoteFile[] = [
+      { id: 'r1', name: '合同.pdf', size: 2048, url: '/files/r1' },
+      { id: 'r2', name: '报价.pdf', size: 4096 },
+      { id: 'r3', name: '坏.pdf', size: 1024, url: 'javascript:alert(1)' },
+    ]
+    await mount({ readOnly: true, linkTarget: '_blank', defaultRemoteFiles: remote })
     const rows = [...host!.querySelectorAll<HTMLElement>(ITEM)]
-    expect(rows.map(row => row.querySelector(`[data-part='item-name']`)!.textContent)).toEqual(['合同.pdf', '报价.pdf'])
-    expect(rows.map(row => row.querySelector(`[data-part='item-size-text']`)!.textContent)).toEqual(['2 KB', '4 KB'])
+    expect(rows.map(row => row.querySelector(`[data-part='item-name']`)!.textContent)).toEqual(['合同.pdf', '报价.pdf', '坏.pdf'])
+    expect(rows.map(row => row.querySelector(`[data-part='item-size-text']`)!.textContent)).toEqual(['2 KB', '4 KB', '1 KB'])
+    // 带安全地址的那份文件名就是链接，新窗口打开；地址不安全的那份不铺链接，文件名是纯文字
+    const link = rows[0]!.querySelector<HTMLAnchorElement>(`[data-part='item-link']`)!
+    expect([link.getAttribute('href'), link.target, link.rel, link.textContent]).toEqual(['/files/r1', '_blank', 'noopener noreferrer', '合同.pdf'])
+    expect([rows[1]!.querySelector('a'), rows[2]!.querySelector('a')]).toEqual([null, null])
     const deletes = rows.map(row => row.querySelector<HTMLElement>(`[data-part='item-delete-trigger']`)!)
-    expect(deletes.map(el => [el.getAttribute('aria-disabled'), el.getAttribute('aria-label')])).toEqual([['true', 'Delete 合同.pdf'], ['true', 'Delete 报价.pdf']])
+    expect(deletes.map(el => [el.getAttribute('aria-disabled'), el.getAttribute('aria-label')])).toEqual([['true', 'Delete 合同.pdf'], ['true', 'Delete 报价.pdf'], ['true', 'Delete 坏.pdf']])
     wrap!.querySelector<HTMLElement>('#before')!.focus()
     const stops: (Element | null)[] = []
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 6; i++) {
       await userEvent.keyboard('{Tab}')
       stops.push(document.activeElement)
     }
-    expect(stops).toEqual([part('dropzone'), deletes[0], deletes[1], wrap!.querySelector('#after')])
+    // 只读时链接照常在 Tab 序列里，排在它那一行的删除钮之前
+    expect(stops).toEqual([part('dropzone'), link, deletes[0], deletes[1], deletes[2], wrap!.querySelector('#after')])
     // 报不可用的按钮 Playwright 不肯点，直接派一次点击
     deletes[0]!.click()
     await settle()
-    expect(host!.querySelectorAll(ITEM)).toHaveLength(2)
+    expect(host!.querySelectorAll(ITEM)).toHaveLength(3)
     wrap!.remove()
 
     wrap = document.createElement('div')
@@ -146,10 +156,10 @@ describe('文件上传的标准结构', () => {
     host.defaultRemoteFiles = remote
     document.body.append(wrap)
     await settle()
-    const link = wrap.querySelector<HTMLAnchorElement>('#link-0')!
-    link.focus()
-    expect(document.activeElement).toBe(link)
-    expect(link.getAttribute('href')).toBe('/files/r1')
-    expect(link.closest('[inert]')).toBeNull()
+    const authored = wrap.querySelector<HTMLAnchorElement>('#link-0')!
+    authored.focus()
+    expect(document.activeElement).toBe(authored)
+    expect(authored.getAttribute('href')).toBe('/files/r1')
+    expect(authored.closest('[inert]')).toBeNull()
   })
 })

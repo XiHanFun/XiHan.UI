@@ -31549,6 +31549,26 @@
   color: var(--xh-fg-disabled);
 }
 
+/* 远程附件有地址时文件名本身就是链接：与正文里的行内链接同一种画法，省略号仍由外层的文件名收 */
+.xh-scope-file-upload[data-part='item-link'] {
+  border-radius: var(--xh-file-upload-item-link-radius, var(--xh-shape-inset));
+  color: var(--xh-file-upload-item-link-fg, var(--xh-fg-brand));
+  text-decoration: underline;
+  text-underline-offset: var(--xh-file-upload-item-link-underline-offset, var(--xh-space-0_5));
+  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 悬停只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
+@media (hover: hover) {
+  .xh-scope-file-upload[data-part='item-link']:not([data-disabled]):hover {
+    color: var(--xh-file-upload-item-link-fg-hover, var(--xh-fg-brand-strong));
+  }
+}
+
+.xh-scope-file-upload[data-part='item-link'][data-disabled] {
+  color: var(--xh-fg-disabled);
+}
+
 /* 删除是一行里的小图标钮：Action Control icon 档 ghost、xs 视觉盒，坐在淡底行上按淡底承载阶梯换面（行上声明），
    按压由家族给；悬停与按下时字换危险色，说明这一下会删掉。钮里的叉取指示符小档（12px），不抢文件名 */
 .xh-scope-file-upload[data-part='item-delete-trigger'] {

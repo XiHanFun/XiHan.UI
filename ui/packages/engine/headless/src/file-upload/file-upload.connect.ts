@@ -8,6 +8,7 @@
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { FileUploadApi, FileUploadFile, FileUploadPressedKey, FileUploadSchema, FileUploadSnapshot } from './file-upload.types'
 import { contains, createPressTracker, dataAttr, isHTMLElement } from '@xihan-ui/core'
+import { toSafeLinkHref } from '@xihan-ui/core/url'
 import { FILE_UPLOAD_EN_US } from '../locale/en-US'
 import { resolveTranslations } from '../shared/translations'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
@@ -99,6 +100,9 @@ export function connectFileUpload<T extends PropTypes>(
 
   const label = resolveTranslations(FILE_UPLOAD_EN_US, prop('translations'))
 
+  /** 远程附件的 url 经安全判定后的地址；本地文件没有可打开的地址。 */
+  const fileHref = (file: FileUploadFile): string | undefined => (isRemote(file) ? toSafeLinkHref(file.url) : undefined)
+
   /** 判断点击是否落在区内自带行为的节点上。只在事件回调里调用，渲染期不得调用。 */
   const fromInteractivePart = (target: EventTarget | null): boolean =>
     isHTMLElement(target) && target.closest(INTERACTIVE_SELECTOR) != null
@@ -131,6 +135,7 @@ export function connectFileUpload<T extends PropTypes>(
     maxFiles,
     translations: label,
     fileKey: file => (isRemote(file) ? `remote:${file.id}` : fileUploadFileKey(service.refs, file)),
+    fileHref,
     getFileSizeText: file => (isRemote(file) ? (file.size == null ? '' : formatFileSize(file.size)) : formatFileSize(file.size)),
     setFiles: files => send({ type: 'FILES.SET', files }),
     addFiles: files => send({ type: 'FILES.ADD', files }),
@@ -322,6 +327,25 @@ export function connectFileUpload<T extends PropTypes>(
       'title': file.name,
       'data-disabled': dataAttr(disabled),
     }),
+
+    getItemLinkProps: ({ file }) => {
+      const target = prop('linkTarget')
+      return normalize.element({
+        ...parts['item-link'].attrs,
+        'href': fileHref(file),
+        'target': target,
+        // 新窗口打开时切断 opener 并不带来源页，防被打开的页反向改写本页
+        'rel': target === '_blank' ? 'noopener noreferrer' : undefined,
+        // 只读照常可聚焦、可打开；禁用时退出 Tab 序列，点了也不跳转
+        'tabindex': disabled ? -1 : undefined,
+        'aria-disabled': disabled ? 'true' : undefined,
+        'data-disabled': dataAttr(disabled),
+        'onClick': (event: MouseEvent) => {
+          if (disabled)
+            event.preventDefault()
+        },
+      })
+    },
 
     getItemSizeTextProps: ({ file }) => normalize.element({
       ...parts['item-size-text'].attrs,

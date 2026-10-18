@@ -71,6 +71,8 @@ export const XhFileUploadRoot = defineComponent({
     maxConcurrentUploads: { type: Number },
     directory: Boolean,
     capture: { type: String as PropType<'user' | 'environment'> },
+    /** 附件链接的打开方式（target），缺省在当前页打开；写 _blank 时同时带 rel="noopener noreferrer"。 */
+    linkTarget: { type: String },
     translations: { type: Object as PropType<Partial<FileUploadTranslations>> },
     /** 标题文字。不写默认插槽时铺 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
@@ -245,6 +247,16 @@ export const XhFileUploadItemName = defineComponent({
   },
 })
 
+/** 附件链接：指向文件的安全地址，未提供内容时显示文件名。 */
+export const XhFileUploadItemLink = defineComponent({
+  name: 'XhFileUploadItemLink',
+  setup(_, { slots }) {
+    const ctx = useFileUploadContext()
+    const { item } = useFileUploadItemContext()
+    return () => h('a', ctx.api.value.getItemLinkProps(item.value) as Record<string, unknown>, slots.default?.() ?? item.value.file.name)
+  },
+})
+
 export const XhFileUploadItemSizeText = defineComponent({
   name: 'XhFileUploadItemSizeText',
   setup(_, { slots }) {
@@ -307,6 +319,7 @@ const FILE_UPLOAD_PARTS = {
   'item': XhFileUploadItem,
   'item-preview': XhFileUploadItemPreview,
   'item-name': XhFileUploadItemName,
+  'item-link': XhFileUploadItemLink,
   'item-size-text': XhFileUploadItemSizeText,
   'item-progress': XhFileUploadItemProgress,
   'item-delete-trigger': XhFileUploadItemDeleteTrigger,

@@ -488,6 +488,38 @@ describe('connectFileUpload 属性输出', () => {
     expect(document.activeElement).toBe(document.body)
   })
 
+  it('附件链接：远程附件的 url 经安全判定才写进 href，不安全的地址与本地文件都没有地址', () => {
+    const safe = { id: 'r1', name: '合同.pdf', url: 'https://example.com/r1' }
+    const unsafe = { id: 'r2', name: '坏.pdf', url: 'javascript:alert(1)' }
+    const local = makeFile('a.txt')
+    const m = open({ maxFiles: 5, defaultRemoteFiles: [safe, unsafe], defaultFiles: [local] })
+    const api = m.api()
+    expect([api.fileHref(safe), api.fileHref(unsafe), api.fileHref(local)]).toEqual(['https://example.com/r1', undefined, undefined])
+    const link = api.getItemLinkProps({ file: safe }) as Record<string, unknown>
+    expect([link.href, link.target, link.rel, link.tabindex, link['aria-disabled']]).toEqual(['https://example.com/r1', undefined, undefined, undefined, undefined])
+    expect((api.getItemLinkProps({ file: unsafe }) as Record<string, unknown>).href).toBeUndefined()
+  })
+
+  it('附件链接：linkTarget 写到 target，_blank 时带 rel="noopener noreferrer"；禁用时退出 Tab 序列、点了不跳转，只读照常', () => {
+    const file = { id: 'r1', name: '合同.pdf', url: '/files/r1' }
+    const blank = open({ defaultRemoteFiles: [file], linkTarget: '_blank' }).api().getItemLinkProps({ file }) as Record<string, unknown>
+    expect([blank.target, blank.rel]).toEqual(['_blank', 'noopener noreferrer'])
+    const self = open({ defaultRemoteFiles: [file], linkTarget: '_self' }).api().getItemLinkProps({ file }) as Record<string, unknown>
+    expect([self.target, self.rel]).toEqual(['_self', undefined])
+
+    const disabled = open({ defaultRemoteFiles: [file], disabled: true }).api().getItemLinkProps({ file }) as Record<string, unknown>
+    expect([disabled.tabindex, disabled['aria-disabled'], disabled.href]).toEqual([-1, 'true', '/files/r1'])
+    const event = new MouseEvent('click', { cancelable: true })
+    ;(disabled.onClick as (event: MouseEvent) => void)(event)
+    expect(event.defaultPrevented).toBe(true)
+
+    const readOnly = open({ defaultRemoteFiles: [file], readOnly: true }).api().getItemLinkProps({ file }) as Record<string, unknown>
+    expect([readOnly.tabindex, readOnly['aria-disabled']]).toEqual([undefined, undefined])
+    const free = new MouseEvent('click', { cancelable: true })
+    ;(readOnly.onClick as (event: MouseEvent) => void)(free)
+    expect(free.defaultPrevented).toBe(false)
+  })
+
   it('投放区是可聚焦的按钮，名字是 label 再接上它自己看得见的说明', () => {
     const m = open({ labelled: true })
     expect(m.dropzone.getAttribute('role')).toBe('button')

@@ -164,9 +164,11 @@ export const fileUploadSuite: ConformanceSuite = {
       name: '作者不写结构且有附件：列表里一个文件一行，行里依次是缩略图、文件名、大小、进度与删除钮',
       spec: { apg: `${APG}#wai-aria-roles-states-and-properties` },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
-      props: { defaultRemoteFiles: [{ id: 'r1', name: 'contract.pdf', size: 2048 }, { id: 'r2', name: 'notes.txt' }] },
+      props: { defaultRemoteFiles: [{ id: 'r1', name: 'contract.pdf', size: 2048, url: '/files/r1' }, { id: 'r2', name: 'notes.txt' }] },
       initial: {
-        order: ['root', 'dropzone', 'hidden-input', 'list', 'item[0]', 'item-preview[0]', 'item-name[0]', 'item-size-text[0]', 'item-progress[0]', 'item-delete-trigger[0]', 'item[1]', 'item-preview[1]', 'item-name[1]', 'item-size-text[1]', 'item-progress[1]', 'item-delete-trigger[1]'],
+        // 第一份带着地址：文件名里铺一条链接；第二份没有地址，文件名是纯文字
+        order: ['root', 'dropzone', 'hidden-input', 'list', 'item[0]', 'item-preview[0]', 'item-name[0]', 'item-link', 'item-size-text[0]', 'item-progress[0]', 'item-delete-trigger[0]', 'item[1]', 'item-preview[1]', 'item-name[1]', 'item-size-text[1]', 'item-progress[1]', 'item-delete-trigger[1]'],
+        // href 不在快照采的属性里，链接地址由 Web Components 生成用例与三端浏览器用例断言
         parts: { 'item-delete-trigger[0]': { 'aria-label': 'Delete contract.pdf' } },
       },
     },

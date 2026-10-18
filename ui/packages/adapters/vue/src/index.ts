@@ -542,6 +542,7 @@ export {
   XhFileUploadHiddenInput,
   XhFileUploadItem,
   XhFileUploadItemDeleteTrigger,
+  XhFileUploadItemLink,
   XhFileUploadItemName,
   XhFileUploadItemPreview,
   XhFileUploadItemProgress,

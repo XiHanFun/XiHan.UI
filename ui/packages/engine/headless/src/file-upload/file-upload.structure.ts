@@ -21,6 +21,7 @@ export const FILE_UPLOAD_STRUCTURE_PARTS = [
   'item',
   'item-preview',
   'item-name',
+  'item-link',
   'item-size-text',
   'item-progress',
   'item-delete-trigger',
@@ -48,7 +49,7 @@ export interface FileUploadStructureOptions {
   slotted?: StructureSlotted
 }
 
-type FileUploadStructureModel = Pick<FileUploadApi, 'allFiles' | 'fileKey' | 'translations'>
+type FileUploadStructureModel = Pick<FileUploadApi, 'allFiles' | 'fileKey' | 'fileHref' | 'translations'>
 
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
@@ -56,7 +57,7 @@ const NOTHING_SLOTTED: StructureSlotted = () => false
  * 文件上传在 root 里的标准结构，次序是标题、投放区、表单影子、文件列表、清空钮（clearable 时才铺）。
  * 标题是原生 label；投放区是唯一可聚焦的打开入口，说明文字取 translations（先取 dropzone 选项）。
  * 列表里 allFiles 每个文件一行，按 fileKey 认行、按下标绑定文件；行里依次是缩略图、文件名、大小、进度与删除钮，
- * 文件名与大小由组件按文件填。
+ * 文件名与大小由组件按文件填。远程附件有安全的地址（fileHref）时，文件名里铺一条写着文件名的链接。
  */
 export function fileUploadStructure(model: FileUploadStructureModel, options: FileUploadStructureOptions = {}): FileUploadStructureNode[] {
   const slotted = options.slotted ?? NOTHING_SLOTTED
@@ -81,7 +82,9 @@ export function fileUploadStructure(model: FileUploadStructureModel, options: Fi
         attrs: { index: String(index) },
         children: [
           { key: 'preview', tag: 'div', part: 'item-preview' },
-          { key: 'name', tag: 'span', part: 'item-name' },
+          model.fileHref(file) === undefined
+            ? { key: 'name', tag: 'span', part: 'item-name' }
+            : { key: 'name', tag: 'span', part: 'item-name', children: [{ key: 'link', tag: 'a', part: 'item-link', text: file.name }] },
           { key: 'size-text', tag: 'span', part: 'item-size-text' },
           { key: 'progress', tag: 'div', part: 'item-progress' },
           { key: 'delete-trigger', tag: 'button', part: 'item-delete-trigger' },

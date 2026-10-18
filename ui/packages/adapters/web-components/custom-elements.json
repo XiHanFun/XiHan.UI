@@ -28607,8 +28607,12 @@
               "name": "item-progress"
             },
             {
-              "description": "文件名（由元素填入）",
+              "description": "文件名（由元素填入；里面写了 item-link 时字归链接）",
               "name": "item-name"
+            },
+            {
+              "description": "附件链接，落在文件名里：href 是远程附件 url 经安全判定后的地址（不安全时不写），文字由元素填入；禁用时退出 Tab 序列",
+              "name": "item-link"
             },
             {
               "description": "可读的文件大小（由元素填入）",
@@ -28833,6 +28837,15 @@
                 "text": "'user' | 'environment' | undefined"
               },
               "attribute": "capture"
+            },
+            {
+              "kind": "field",
+              "name": "linkTarget",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "link-target"
             },
             {
               "kind": "field",
@@ -29181,9 +29194,9 @@
               "privacy": "private",
               "static": true,
               "readonly": true,
-              "default": "['item-preview', 'item-progress', 'item-name', 'item-size-text', 'item-delete-trigger']",
+              "default": "['item-preview', 'item-progress', 'item-name', 'item-link', 'item-size-text', 'item-delete-trigger']",
               "type": {
-                "text": "['item-preview', 'item-progress', 'item-name', 'item-size-text', 'item-delete-trigger']"
+                "text": "['item-preview', 'item-progress', 'item-name', 'item-link', 'item-size-text', 'item-delete-trigger']"
               },
               "description": "条目内的子部件名，交还与逐个打属性都按这一份走。"
             },
@@ -29403,6 +29416,14 @@
             },
             {
               "type": {
+                "text": "string | undefined"
+              },
+              "description": "附件链接（item-link）的打开方式，缺省在当前页打开；写 _blank 时链接同时带 rel=\"noopener noreferrer\"",
+              "name": "link-target",
+              "fieldName": "linkTarget"
+            },
+            {
+              "type": {
                 "text": "boolean | undefined"
               },
               "description": "接受后即自动开始传输（须配置 upload 实现），默认 true；写 auto-upload=\"false\" 关闭",
@@ -29545,6 +29566,18 @@
             },
             {
               "name": "--xh-file-upload-item-inner-gap"
+            },
+            {
+              "name": "--xh-file-upload-item-link-fg"
+            },
+            {
+              "name": "--xh-file-upload-item-link-fg-hover"
+            },
+            {
+              "name": "--xh-file-upload-item-link-radius"
+            },
+            {
+              "name": "--xh-file-upload-item-link-underline-offset"
             },
             {
               "name": "--xh-file-upload-item-mark-size"

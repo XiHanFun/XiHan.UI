@@ -965,6 +965,9 @@
       "format-input",
       "message-feed"
     ],
+    "item-link": [
+      "file-upload"
+    ],
     "item-media": [
       "list"
     ],
