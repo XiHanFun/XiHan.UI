@@ -14,6 +14,7 @@ import type {
 // 取值优先级：元素上的 property > 最近一个 <xh-config> > 外层 <xh-config> > setXhConfig 的全局值 > 组件内建默认。
 //
 import type { XhConfigBase, XhTranslationOverrides } from '@xihan-ui/headless'
+import { logicallyContains, logicalParentElement } from '@xihan-ui/core'
 import { createVisualEnvironmentController } from '@xihan-ui/core/visual-environment'
 import { mergeXhConfig as mergeBase, withXhConfigBase } from '@xihan-ui/headless'
 
@@ -45,13 +46,13 @@ export function xhConfigGeneration(): number {
 
 /**
  * 配置变了就叫一遍：全局那份改了、任一 <xh-config> 改了或进出文档，都走这里。
- * 给了 root（某个 <xh-config>）时只叫它子树里的订阅者：别处的元素解析到的那条链没变，
+ * 给了 root（某个 <xh-config>）时只叫它逻辑子树里的订阅者（含搬进 Portal 的浮层内容）：别处的元素解析到的那条链没变，
  * 叫醒它们只会让每个元素各自重新接线一遍。代号照样自增，各元素的解析缓存随之作废、下次用到时重算。
  */
 export function notifyXhConfigChange(root?: Node): void {
   generation += 1
   for (const [listener, host] of [...listeners]) {
-    if (!root || !host || root === host || root.contains(host))
+    if (!root || !host || root === host || logicallyContains(root, host))
       listener()
   }
 }
@@ -104,8 +105,9 @@ function isConfigScope(node: Element): node is XhConfigScope {
 }
 
 /**
- * 某个节点看到的配置：从全局那份起，沿祖先链自外向内逐层并进来。
+ * 某个节点看到的配置：从全局那份起，沿逻辑祖先链自外向内逐层并进来。
  *
+ * 逻辑祖先链走到 Portal 外壳时跳回浮层的来源，搬进 Portal 的浮层内容照它在原来 DOM 里的位置取配置。
  * 不传节点（或它还没进文档）就只有全局那份。跨 shadow root 不追：
  * 本适配器是 Light DOM，作者的 <xh-config> 与元素天然同树。
  */
@@ -113,7 +115,7 @@ export function resolveXhConfig(node: Element | null | undefined): XhConfig {
   if (!node)
     return current
   const chain: XhConfigScope[] = []
-  for (let el: Element | null = node; el; el = el.parentElement) {
+  for (let el: Element | null = node; el; el = logicalParentElement(el)) {
     if (isConfigScope(el))
       chain.push(el)
   }

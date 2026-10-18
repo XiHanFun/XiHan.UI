@@ -32,6 +32,36 @@ bridge.dispose();
 
 桥接的属性为 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency`、`dir`，以及语气 `data-tone` 与材质轴 `data-material`。三端物理 Portal 都从逻辑来源的 composed 祖先逐项取最近显式声明，并把它们与上述自定义属性投影到实例壳；来源变化、跨 realm 与退场回收均由 Core 桥接生命周期处理。
 
+### 逻辑父子
+
+浮层打开后内容搬进 Portal 落点，在 DOM 里已经不在来源的子树中，沿 `parentElement` 往上找不到原来包着它的作用域。视觉桥活着期间把实例壳登记为来源的逻辑子节点，`dispose()` 时撤销；三端的 Portal 都经视觉桥，所以 Vue、React 与 Web Components 的浮层都有这层关系。
+
+- `logicalParentElement(node)`：走到实例壳时返回它的来源，其余节点返回 `parentElement`，到文档根为 `null`。
+- `logicallyContains(ancestor, node)`：`node` 在 DOM 上落在 `ancestor` 里，或沿 `logicalParentElement` 穿过实例壳后落在里面；`node` 就是 `ancestor` 时也算。
+
+沿 DOM 找作用域、判定子树的一方用它们穿过 Portal。Web Components 的 `<xh-config>` 与字段集作用域就是这样管到搬进落点的浮层内容的，与 Vue / React 浮层沿组件树取配置一致；自己写的作用域元素照同一写法：
+
+```ts
+import { logicallyContains, logicalParentElement } from "@xihan-ui/core";
+
+// 从节点往上找最近的作用域，浮层里的节点也能找到包着浮层来源的那一层
+function closestScope(node: Element): Element | null {
+  for (let el: Element | null = node; el; el = logicalParentElement(el)) {
+    if (el.matches("my-scope"))
+      return el;
+  }
+  return null;
+}
+
+// 作用域变化时只通知它逻辑子树里的订阅者，含已经搬进 Portal 的
+for (const [listener, host] of subscribers) {
+  if (logicallyContains(scope, host))
+    listener();
+}
+```
+
+登记挂在 Document 上，页面上装了几份 core 时读到的是同一份。
+
 ## 在 Vue 中使用
 
 原语都是框架无关的：接收一份配置与几个元素 getter，返回一个需要自行释放的句柄。接入 Vue 只是把释放挂到作用域结束，这层包装位于 `@xihan-ui/vue/behavior`：

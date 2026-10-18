@@ -6199,6 +6199,8 @@
       "itemValue",
       "jsonEquals",
       "keyText",
+      "logicalParentElement",
+      "logicallyContains",
       "matchTypeahead",
       "matchesHotkey",
       "measureOverflowLayout",

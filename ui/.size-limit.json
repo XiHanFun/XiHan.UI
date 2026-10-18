@@ -3,7 +3,7 @@
     "name": "core",
     "path": "packages/engine/core/dist/index.js",
     "gzip": true,
-    "limit": "42 kB"
+    "limit": "43 kB"
   },
   {
     "name": "core/date",
@@ -185,7 +185,7 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "257 kB"
+    "limit": "258 kB"
   },
   {
     "name": "designer-shell/locale",
@@ -316,7 +316,7 @@
     "name": "web-components",
     "path": "packages/adapters/web-components/dist/index.js",
     "gzip": true,
-    "limit": "14 kB"
+    "limit": "15 kB"
   },
   {
     "name": "web-components/define",

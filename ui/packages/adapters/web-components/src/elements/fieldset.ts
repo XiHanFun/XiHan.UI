@@ -10,7 +10,7 @@ import type { FieldsetProps, FieldsetTranslations } from '@xihan-ui/headless'
 import type { XhConfig } from '../config'
 import type { ElementStructure } from '../element-base'
 import type { PropertyValues } from '../reactive'
-import { createCounterIdGenerator, createScope, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
+import { createCounterIdGenerator, createScope, DIAGNOSTIC_CODES, logicallyContains, reportDiagnostic } from '@xihan-ui/core'
 import { connectFieldset, fieldsetAnatomy, fieldsetMeta, fieldsetStructure, hasNamingContent } from '@xihan-ui/headless'
 import { notifyXhConfigChange } from '../config'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
@@ -89,7 +89,8 @@ export class XhFieldsetElement extends XhElement {
    * @internal
    */
   xhConfigFor(node: Element): XhConfig {
-    return this.getPart('legend')?.contains(node) ? {} : this.xhConfig
+    const legend = this.getPart('legend')
+    return legend && logicallyContains(legend, node) ? {} : this.xhConfig
   }
 
   override connectedCallback(): void {
