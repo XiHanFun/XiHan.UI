@@ -312,6 +312,7 @@ const translations = {
   'file-upload': {
     deleteItem: file => `Удалить: ${file.name}`,
     clearTrigger: 'Удалить все файлы',
+    dropzone: 'Перетащите файлы сюда или нажмите, чтобы выбрать',
   },
   'filter-builder': {
     logic: logic => (logic === 'and' ? 'Все' : 'Любое'),

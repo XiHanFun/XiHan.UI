@@ -298,6 +298,7 @@ const translations = {
   'file-upload': {
     deleteItem: file => `${file.name} 삭제`,
     clearTrigger: '모든 파일 지우기',
+    dropzone: '파일을 여기로 끌어오거나 클릭하여 선택',
   },
   'filter-builder': {
     logic: logic => (logic === 'and' ? '모두' : '하나라도'),

@@ -353,6 +353,7 @@ export const FIELD_ARRAY_EN_US: XhLocaleBucket<'field-array'> = {
 export const FILE_UPLOAD_EN_US: XhLocaleBucket<'file-upload'> = {
   deleteItem: file => `Delete ${file.name}`,
   clearTrigger: 'Clear all files',
+  dropzone: 'Drag files here or click to browse',
 }
 
 export const FILTER_BUILDER_EN_US: XhLocaleBucket<'filter-builder'> = {

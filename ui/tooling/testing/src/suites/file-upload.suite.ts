@@ -146,7 +146,32 @@ export const fileUploadSuite: ConformanceSuite = {
   fixture: BASE,
   cases: [
     {
-      name: '初始：投放区是可聚焦的按钮，标题点得开选择框，空列表下清空按钮在位且只打 data-empty',
+      name: '作者不写结构：三端都照 fileUploadStructure 铺出标题、投放区（唯一的打开入口）、表单影子与列表，clearable 时末尾带清空钮',
+      spec: { apg: `${APG}#wai-aria-roles-states-and-properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '附件', clearable: true },
+      initial: {
+        order: ['root', 'label', 'dropzone', 'hidden-input', 'list', 'clear-trigger'],
+        counts: { trigger: 0, item: 0 },
+        parts: {
+          'label': { for: '@part(hidden-input)' },
+          'dropzone': { 'role': 'button', 'tabindex': '0', 'aria-labelledby': '@part(label) @part(dropzone)' },
+          'clear-trigger': { 'aria-label': 'Clear all files', 'data-empty': '' },
+        },
+      },
+    },
+    {
+      name: '作者不写结构且有附件：列表里一个文件一行，行里依次是缩略图、文件名、大小、进度与删除钮',
+      spec: { apg: `${APG}#wai-aria-roles-states-and-properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { defaultRemoteFiles: [{ id: 'r1', name: 'contract.pdf', size: 2048 }, { id: 'r2', name: 'notes.txt' }] },
+      initial: {
+        order: ['root', 'dropzone', 'hidden-input', 'list', 'item[0]', 'item-preview[0]', 'item-name[0]', 'item-size-text[0]', 'item-progress[0]', 'item-delete-trigger[0]', 'item[1]', 'item-preview[1]', 'item-name[1]', 'item-size-text[1]', 'item-progress[1]', 'item-delete-trigger[1]'],
+        parts: { 'item-delete-trigger[0]': { 'aria-label': 'Delete contract.pdf' } },
+      },
+    },
+    {
+      name: '初始：投放区是可聚焦的按钮，标题的 for 指向隐藏输入，空列表下清空按钮在位且只打 data-empty',
       spec: { apg: `${APG}#wai-aria-roles-states-and-properties` },
       // Tab 位的形状就长在这几条 tabindex/disabled 断言里：
       // 投放区占一位、trigger 占一位、清空按钮占一位、藏起来的输入退出序列
@@ -166,7 +191,7 @@ export const fileUploadSuite: ConformanceSuite = {
         },
         parts: {
           'root': { 'data-empty': '', 'data-dragging': null, 'data-disabled': null, 'data-invalid': null },
-          // for 指向隐藏输入，点标题即打开选择框（原生就有的联动）
+          // for 指向隐藏输入，保留原生关联与必填提示；点标题时组件拦下原生激活，只把焦点交给投放区
           'label': { 'id': '@self', 'for': '@part(hidden-input)', 'data-disabled': null },
           'dropzone': {
             'id': '@self',

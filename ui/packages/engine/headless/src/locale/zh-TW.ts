@@ -298,6 +298,7 @@ const translations = {
   'file-upload': {
     deleteItem: file => `刪除 ${file.name}`,
     clearTrigger: '清除所有檔案',
+    dropzone: '將檔案拖曳到這裡，或點擊選取',
   },
   'filter-builder': {
     logic: logic => (logic === 'and' ? '全部符合' : '任一符合'),

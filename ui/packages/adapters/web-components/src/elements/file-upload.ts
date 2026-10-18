@@ -22,8 +22,9 @@ import type {
   FileUploadTranslations,
   FormControlState,
 } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { connectFileUpload, fileUploadAnatomy, fileUploadMachine, fileUploadMeta, resolveFormControlState } from '@xihan-ui/headless'
+import { connectFileUpload, fileUploadAnatomy, fileUploadMachine, fileUploadMeta, fileUploadStructure, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -57,7 +58,13 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * 元素不生成节点。条目按文档序对应 allFiles 中的文件，也可以自带 `index` 属性显式声明。
  * item-name 与 item-size-text 的文字由元素填入（作者自行写了内容则不修改）。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：标题（label）、投放区（字取 translations.dropzone）、表单影子、
+ * 按 allFiles 一个文件一行的列表（缩略图、文件名、大小、进度与删除钮），clearable 时末尾带清空钮。投放区是唯一
+ * 可聚焦的打开入口，不另铺选择钮。标题与投放区的内容可以由宿主直接子节点 `slot="label"`、`slot="dropzone"` 接管。
+ *
  * @customElement xh-file-upload
+ * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
+ * @attr {boolean} clearable - 生成结构时列表之后带清空钮；手写部件时不使用它，写了 clear-trigger 即可清空
  * @attr {string} accept - 允许的类型，写法同原生 input：'image/*'、'.png'、精确 MIME，逗号分隔；数组形态通过 property 设置
  * @attr {number} max-files - 最多保留的文件数，默认 1
  * @attr {number} max-file-size - 单个文件的字节上限，默认不限
@@ -100,6 +107,16 @@ export class XhFileUploadElement extends XhElement {
   // 放进字段时标签与描述链落在投放区上（按钮只取描述链），隐藏输入也并进字段的标签
   static override fieldTarget = { parts: ['dropzone', 'hidden-input'], kind: 'group' } as const
 
+  static override structure: ElementStructure<XhFileUploadElement> = {
+    build: host => host.ctrl.service
+      ? fileUploadStructure(connectFileUpload(host.ctrl.service, wcNormalize), {
+          label: host.label,
+          clearable: host.clearable,
+          slotted: (name, key) => host.slotted(name, key),
+        })
+      : undefined,
+  }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     // 文件与文案是对象，只走 property；files 给了即受控，内部写入只发 files-change
@@ -126,6 +143,8 @@ export class XhFileUploadElement extends XhElement {
     directory: { type: Boolean },
     capture: { converter: STRING_CONVERTER },
     translations: { attribute: false },
+    label: { converter: STRING_CONVERTER },
+    clearable: { type: Boolean },
   }
 
   declare files?: File[]
@@ -150,6 +169,8 @@ export class XhFileUploadElement extends XhElement {
   declare directory?: boolean
   declare capture?: 'user' | 'environment'
   declare translations?: Partial<FileUploadTranslations>
+  declare label?: string
+  declare clearable?: boolean
 
   // scope 绑在本元素上：打开选择框要在 scope 的 root 里按 id 找回隐藏输入
   private readonly uploadScope: Scope = createScope(this, createCounterIdGenerator())
