@@ -10,7 +10,7 @@ export type { DesignerShellTagMap } from './define'
 export { registerDropTarget, startDrag } from './drag/drag'
 export type { DragOptions, DragSession, DropOver, DropTargetHandlers, PanRequestDetail } from './drag/drag'
 export { arrangeCommands, commandEnabled, commandLabel, createCommandToolbar, renderCommandMenu, runCommand } from './extensions/commands'
-export type { CommandToolbar, DesignerCommandLayout, DesignerCommandTable } from './extensions/commands'
+export type { CommandToolbar, CommandToolbarDisplay, CommandToolbarOptions, DesignerCommandLayout, DesignerCommandTable } from './extensions/commands'
 export { importSources } from './extensions/importers'
 export { createPanelHost } from './extensions/panels'
 export type { DesignerPanel, DesignerPanelHost, DesignerPanelHostOptions, DesignerPanelInstance, DesignerShellExtension } from './extensions/panels'
@@ -18,6 +18,7 @@ export { DESIGNER_FRAME_REGIONS, parseDesignerPanels, XhDesignerFrameElement } f
 export type { DesignerFrameEventMap, DesignerFramePosition, DesignerFrameRegion, DesignerFrameResizable, DesignerFrameSizes } from './frame/frame-element'
 export { XhDesignerIssuesElement } from './issues/issues-element'
 export type { DesignerIssueItem, DesignerIssuesEventMap } from './issues/issues-element'
+export { DESIGNER_COMMANDS_EN_US } from './locale/en-US'
 export { XhDesignerMinimapElement } from './minimap/minimap-element'
 export type { DesignerMinimapEventMap, DesignerMinimapShape } from './minimap/minimap-element'
 export { XhDesignerPaletteElement } from './palette/palette-element'
@@ -67,6 +68,7 @@ export type {
   DesignerTransformKind,
 } from './transform/transform-element'
 export type {
+  DesignerCommandsTranslations,
   DesignerFrameTranslations,
   DesignerIssuesTranslations,
   DesignerPaletteTranslations,

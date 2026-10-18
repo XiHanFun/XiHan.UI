@@ -82,4 +82,6 @@ export function defineSettingsElements(): void {
 export function defineCommandElements(): void {
   defineXhElement('xh-toolbar', XhToolbarElement)
   defineXhElement('xh-context-menu', XhContextMenuElement)
+  defineXhElement('xh-tooltip', XhTooltipElement)
+  defineXhElement('xh-icon', XhIconElement)
 }

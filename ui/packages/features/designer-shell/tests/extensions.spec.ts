@@ -12,6 +12,8 @@ defineDesignerShell()
 
 interface Ctx { readonly selected: number }
 
+const GLYPH = { name: 'line', viewBox: '0 0 24 24', nodes: [{ tag: 'path' as const, attrs: { d: 'M4 12h16' } }] }
+
 afterEach(() => {
   document.body.replaceChildren()
 })
@@ -107,14 +109,14 @@ describe('命令', () => {
 
   it('工具栏：按分组铺按钮，文字、可用、选中状态与语气随上下文刷新，点击执行', async () => {
     ran.length = 0
-    const toolbar = createCommandToolbar<Ctx>(document)
+    const toolbar = createCommandToolbar<Ctx>(document, { platform: 'other' })
     document.body.append(toolbar.element)
     toolbar.update([['undo', 'delete'], ['sim.run']], commands, { selected: 0 }, '工具')
     const buttons = () => [...toolbar.element.querySelectorAll<HTMLButtonElement>('[data-xh-part="item"]')]
-    expect(buttons().map(button => [button.value, button.textContent, button.disabled, button.getAttribute('aria-pressed')])).toEqual([
-      ['undo', 'UNDO', false, null],
-      ['delete', 'DELETE', true, null],
-      ['sim.run', '运行 0', false, 'true'],
+    expect(buttons().map(button => [button.value, button.textContent, button.getAttribute('aria-label'), button.disabled, button.getAttribute('aria-pressed')])).toEqual([
+      ['undo', 'UNDO', 'UNDO', false, null],
+      ['delete', 'DELETE', 'DELETE', true, null],
+      ['sim.run', '运行 0', '运行 0', false, 'true'],
     ])
     expect(buttons().map(button => button.getAttribute('data-tone'))).toEqual([null, 'danger', null])
     expect(toolbar.element.querySelectorAll('[data-xh-part="separator"]')).toHaveLength(1)
@@ -127,6 +129,37 @@ describe('命令', () => {
     expect(ran).toEqual(['delete', 'sim.run'])
   })
 
+  it('工具栏：一个委托提示包着整条工具栏，按钮带图标、快捷键按平台写进 aria-keyshortcuts，收起的条目带图标', () => {
+    const iconic = new Map<string, DesignerCommand<Ctx>>([
+      ['undo', cmd('undo', { icon: GLYPH, shortcut: ['Mod', 'z'] })],
+      ['delete', cmd('delete', { shortcut: ['Delete'] })],
+    ])
+    const written = (['other', 'mac'] as const).map((platform) => {
+      const bar = createCommandToolbar<Ctx>(document, { platform })
+      document.body.append(bar.element)
+      bar.update([['undo', 'delete']], iconic, { selected: 1 }, '工具')
+      expect([bar.element.localName, bar.toolbar.localName, bar.element.getAttribute('platform')]).toEqual(['xh-tooltip', 'xh-toolbar', platform])
+      expect((bar.toolbar as HTMLElement & { itemIcons?: unknown }).itemIcons).toEqual({ undo: GLYPH })
+      const items = [...bar.toolbar.querySelectorAll<HTMLButtonElement>('[data-xh-part="item"]')]
+      expect(items.map(item => item.hasAttribute('data-icon'))).toEqual([true, false])
+      expect((items[0]!.querySelector('xh-icon') as HTMLElement & { icon?: unknown }).icon).toBe(GLYPH)
+      return items.map(item => item.getAttribute('aria-keyshortcuts'))
+    })
+    expect(written).toEqual([['Control+Z', 'Delete'], ['Meta+Z', 'Delete']])
+  })
+
+  it('工具栏：缺省只显示图标、提示管每个按钮；换显示方式不重铺按钮，文字看得见时提示只管带快捷键的按钮', () => {
+    const bar = createCommandToolbar<Ctx>(document, { platform: 'other' })
+    document.body.append(bar.element)
+    bar.update([['undo', 'delete']], commands, { selected: 1 }, '工具')
+    const first = bar.toolbar.querySelector('[data-xh-part="item"]')
+    expect([bar.display(), bar.element.getAttribute('data-display'), bar.element.getAttribute('delegate')]).toEqual(['icon', 'icon', 'button[data-xh-part=\'item\']'])
+    bar.setDisplay('both')
+    expect([bar.display(), bar.element.getAttribute('data-display'), bar.element.getAttribute('delegate')]).toEqual(['both', 'both', 'button[data-xh-part=\'item\'][aria-keyshortcuts]'])
+    expect(bar.toolbar.querySelector('[data-xh-part="item"]')).toBe(first)
+    expect(createCommandToolbar<Ctx>(document, { display: 'text' }).element.getAttribute('data-display')).toBe('text')
+  })
+
   it('菜单：铺条目与分隔线，不可用的写 aria-disabled，语气写 data-tone，带快捷键的写提示；runCommand 只执行可用的', () => {
     ran.length = 0
     const content = document.createElement('div')
@@ -137,10 +170,21 @@ describe('命令', () => {
       ['item', 'sim.run', null, '运行 0Ctrl+R'],
     ])
     expect([...content.children].map(item => item.getAttribute('data-tone'))).toEqual(['danger', null, null])
+    expect([...content.children].map(item => item.getAttribute('aria-keyshortcuts'))).toEqual([null, null, 'Control+R'])
     expect(runCommand(commands, 'delete', { selected: 0 })).toBe(false)
     expect(runCommand(commands, 'delete', { selected: 1 })).toBe(true)
     expect(runCommand(commands, 'missing', { selected: 1 })).toBe(false)
     expect(ran).toEqual(['delete'])
+  })
+
+  it('菜单：带图标的命令在文字前铺 item-icon，macOS 上快捷键写 Meta', () => {
+    const content = document.createElement('div')
+    const iconic = new Map<string, DesignerCommand<Ctx>>([['undo', cmd('undo', { icon: GLYPH, shortcut: ['Mod', 'z'] })]])
+    renderCommandMenu(content, [['undo']], iconic, { selected: 0 }, { platform: 'mac' })
+    const item = content.firstElementChild!
+    expect([...item.children].map(child => child.getAttribute('data-xh-part'))).toEqual(['item-icon', 'item-text', 'item-shortcut'])
+    expect((item.querySelector('xh-icon') as HTMLElement & { icon?: unknown }).icon).toBe(GLYPH)
+    expect([item.getAttribute('aria-keyshortcuts'), item.querySelector('[data-xh-part="item-shortcut"]')!.textContent]).toEqual(['Meta+Z', '⌘Z'])
   })
 })
 

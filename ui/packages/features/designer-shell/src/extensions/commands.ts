@@ -6,9 +6,12 @@
 // 命令的排列与呈现：按 commandLayout 或缺省排列分组，铺成 <xh-toolbar> 的按钮与 <xh-context-menu> 的条目，
 // 点击或选中时执行对应命令。内置命令与扩展命令同一条路。
 
+import type { IconRecord } from '@xihan-ui/core'
+import type { KbdPlatform, KbdResolvedPlatform } from '@xihan-ui/core/hotkey'
 import type { DesignerCommand, DesignerCommandPlacement } from '@xihan-ui/designer-kit'
+import { ariaKeyshortcut, detectKbdPlatform, resolveKbdPlatform } from '@xihan-ui/core/hotkey'
 import { formatShortcut } from '@xihan-ui/designer-kit'
-import { createAuthoredElement, setText } from '@xihan-ui/web-components/authoring'
+import { createAuthoredElement, setAttributes, setText } from '@xihan-ui/web-components/authoring'
 import { defineCommandElements } from '../internal/ui-elements'
 
 /** 各位置的命令排列：位置 → 若干组命令 id。写了某个位置就只显示列出的命令。 */
@@ -60,29 +63,104 @@ export function runCommand<Ctx>(commands: DesignerCommandTable<Ctx>, id: string,
   return true
 }
 
-/** 命令工具栏：一条 <xh-toolbar>，按分组铺按钮，放不下的收进行尾的「更多」菜单；命令的语气写成按钮的 data-tone。 */
+/** 工具栏按钮的显示方式：只显示图标、只显示文字、图标加文字。没有图标的命令在 icon 档照样显示文字。 */
+export type CommandToolbarDisplay = 'icon' | 'text' | 'both'
+
+/** 命令工具栏的选项。 */
+export interface CommandToolbarOptions {
+  /** 按钮的显示方式，缺省 icon。 */
+  readonly display?: CommandToolbarDisplay
+  /** 快捷键按哪个平台写进 aria-keyshortcuts、在提示里显示成什么样子：auto（缺省）建工具栏时测一次。 */
+  readonly platform?: KbdPlatform
+}
+
+/**
+ * 命令工具栏：一条 <xh-toolbar>，按分组铺按钮，放不下的收进行尾的「更多」菜单，收起的条目带着命令的图标；
+ * 命令的语气写成按钮的 data-tone，快捷键按平台写成按钮的 aria-keyshortcuts。
+ * 整条工具栏由一个委托模式的 <xh-tooltip> 包着：悬停或键盘聚焦到按钮时显示命令的文字与快捷键。
+ */
 export interface CommandToolbar<Ctx> {
-  /** 那条 <xh-toolbar>，由调用方放进页面。 */
+  /** 工具栏的外壳：包着 <xh-toolbar> 的那个 <xh-tooltip>，由调用方放进页面；布局上不占盒子。 */
   readonly element: HTMLElement
-  /** 换上这组分组与此刻的状态：分组变了才重铺按钮，文字、可用与选中状态每次都刷新。 */
+  /** 外壳里那条 <xh-toolbar>。 */
+  readonly toolbar: HTMLElement
+  /** 换上这组分组与此刻的状态：分组变了才重铺按钮，文字、图标、快捷键、可用与选中状态每次都刷新。 */
   readonly update: (groups: readonly (readonly string[])[], commands: DesignerCommandTable<Ctx>, context: Ctx, label: string) => void
+  /** 此刻的显示方式。 */
+  readonly display: () => CommandToolbarDisplay
+  /** 换显示方式：不重铺按钮，工具栏按换过之后的宽度重新收放「更多」里的条目。 */
+  readonly setDisplay: (display: CommandToolbarDisplay) => void
+}
+
+/** 工具栏按钮的选择器：委托提示认它作锚点，点击也按它找命令。 */
+const ITEM_SELECTOR = 'button[data-xh-part=\'item\']'
+
+/** 委托提示认哪些按钮：只显示图标时每个按钮都给提示；文字已经看得见时只给带快捷键的按钮。 */
+function tooltipAnchors(display: CommandToolbarDisplay): string {
+  return display === 'icon' ? ITEM_SELECTOR : `${ITEM_SELECTOR}[aria-keyshortcuts]`
+}
+
+/** 工具栏上一个命令按钮：图标与文字两段都铺着，显示哪段由外壳上的 data-display 决定。 */
+interface CommandButton {
+  readonly item: HTMLButtonElement
+  readonly icon: HTMLElement & { icon?: IconRecord }
+  readonly label: HTMLElement
+}
+
+function createCommandButton(doc: Document, id: string): CommandButton {
+  const icon = createAuthoredElement(doc, 'xh-icon', { 'data-scope': 'designer-commands', 'data-part': 'icon' }) as CommandButton['icon']
+  const label = createAuthoredElement(doc, 'span', { 'data-scope': 'designer-commands', 'data-part': 'label' })
+  const item = createAuthoredElement(doc, 'button', { 'data-xh-part': 'item', 'type': 'button', 'value': id }, [icon, label])
+  return { item, icon, label }
+}
+
+/** 两张图标表是否一样：同样的命令、同一份图标记录。 */
+function sameIcons(a: Readonly<Record<string, IconRecord>> | undefined, b: Readonly<Record<string, IconRecord>>): boolean {
+  const keys = Object.keys(b)
+  return a !== undefined && Object.keys(a).length === keys.length && keys.every(key => a[key] === b[key])
+}
+
+/** 快捷键落定按哪个平台写：auto 与不给都当场测一次。 */
+function resolvePlatform(platform: KbdPlatform | undefined): KbdResolvedPlatform {
+  return platform === undefined || platform === 'auto' ? detectKbdPlatform() : resolveKbdPlatform(platform)
 }
 
 /** 建一条命令工具栏；点击按钮执行对应命令，用的是最近一次 update 交来的命令表与上下文。 */
-export function createCommandToolbar<Ctx>(doc: Document): CommandToolbar<Ctx> {
+export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbarOptions = {}): CommandToolbar<Ctx> {
   defineCommandElements()
+  const platform = resolvePlatform(options.platform)
+  let display: CommandToolbarDisplay = options.display ?? 'icon'
   const root = createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' })
-  const element = createAuthoredElement(doc, 'xh-toolbar', { size: 'sm' }, [root])
-  const items = new Map<string, HTMLButtonElement>()
+  const toolbar = createAuthoredElement(doc, 'xh-toolbar', { size: 'sm' }, [root]) as HTMLElement & { itemIcons?: Readonly<Record<string, IconRecord>> }
+  const element = createAuthoredElement(doc, 'xh-tooltip', {
+    'data-scope': 'designer-commands',
+    'data-display': display,
+    'delegate': tooltipAnchors(display),
+    platform,
+  }, [
+    createAuthoredElement(doc, 'div', { 'data-xh-part': 'trigger' }, [toolbar]),
+    createAuthoredElement(doc, 'div', { 'data-xh-part': 'positioner' }, [
+      createAuthoredElement(doc, 'div', { 'data-xh-part': 'content' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'arrow' })]),
+    ]),
+  ])
+  const items = new Map<string, CommandButton>()
   let layoutKey: string | undefined
   let current: { commands: DesignerCommandTable<Ctx>, context: Ctx } | undefined
   root.addEventListener('click', (event) => {
-    const item = (event.target as Element | null)?.closest<HTMLButtonElement>('button[data-xh-part="item"]')
+    const item = (event.target as Element | null)?.closest<HTMLButtonElement>(ITEM_SELECTOR)
     if (item && !item.disabled && current)
       runCommand(current.commands, item.value, current.context)
   })
   return {
     element,
+    toolbar,
+    display: () => display,
+    setDisplay(next) {
+      if (next === display)
+        return
+      display = next
+      setAttributes(element, { 'data-display': next, 'delegate': tooltipAnchors(next) })
+    },
     update(groups, commands, context, label) {
       current = { commands, context }
       const key = JSON.stringify(groups)
@@ -94,9 +172,9 @@ export function createCommandToolbar<Ctx>(doc: Document): CommandToolbar<Ctx> {
           if (index > 0)
             children.push(createAuthoredElement(doc, 'div', { 'data-xh-part': 'separator' }))
           children.push(createAuthoredElement(doc, 'div', { 'data-xh-part': 'group' }, group.map((id) => {
-            const item = createAuthoredElement(doc, 'button', { 'data-xh-part': 'item', 'type': 'button', 'value': id })
-            items.set(id, item)
-            return item
+            const button = createCommandButton(doc, id)
+            items.set(id, button)
+            return button.item
           })))
         })
         children.push(createAuthoredElement(doc, 'button', { 'data-xh-part': 'overflow-trigger', 'type': 'button' }))
@@ -104,28 +182,37 @@ export function createCommandToolbar<Ctx>(doc: Document): CommandToolbar<Ctx> {
       }
       if (root.getAttribute('aria-label') !== label)
         root.setAttribute('aria-label', label)
-      for (const [id, item] of items) {
+      const icons: Record<string, IconRecord> = {}
+      for (const [id, button] of items) {
         const command = commands.get(id)!
-        setText(item, commandLabel(command, context))
+        const text = commandLabel(command, context)
+        setText(button.label, text)
+        // 名字写在按钮上：只显示图标时文字收起，名字照样在
+        setAttributes(button.item, {
+          'aria-label': text,
+          'aria-keyshortcuts': command.shortcut ? ariaKeyshortcut(command.shortcut, platform) : undefined,
+          'aria-pressed': command.checked ? String(command.checked(context)) : undefined,
+          'data-tone': command.tone,
+          'data-icon': command.icon !== undefined,
+        })
         const disabled = !commandEnabled(command, context)
-        if (item.disabled !== disabled)
-          item.disabled = disabled
-        if (command.checked)
-          item.setAttribute('aria-pressed', String(command.checked(context)))
-        else
-          item.removeAttribute('aria-pressed')
-        if (command.tone)
-          item.setAttribute('data-tone', command.tone)
-        else
-          item.removeAttribute('data-tone')
+        if (button.item.disabled !== disabled)
+          button.item.disabled = disabled
+        if (button.icon.icon !== command.icon)
+          button.icon.icon = command.icon
+        if (command.icon)
+          icons[id] = command.icon
       }
+      if (!sameIcons(toolbar.itemIcons, icons))
+        toolbar.itemIcons = icons
     },
   }
 }
 
 /**
  * 把分组铺成 <xh-context-menu> content 里的条目：组与组之间一条分隔线，条目的 value 是命令 id，
- * 此刻不可用的写 aria-disabled，命令的语气写 data-tone，带快捷键的在行尾写快捷键提示（platform 由调用方测出，缺省按非 macOS 写）。
+ * 此刻不可用的写 aria-disabled，命令的语气写 data-tone，带图标的在文字前铺图标，
+ * 带快捷键的在行尾写快捷键提示、并写进 aria-keyshortcuts（platform 由调用方测出，缺省按非 macOS 写）。
  * 选中条目时用 runCommand 执行。
  */
 export function renderCommandMenu<Ctx>(
@@ -137,6 +224,7 @@ export function renderCommandMenu<Ctx>(
 ): void {
   defineCommandElements()
   const doc = content.ownerDocument
+  const platform = options.platform ?? 'other'
   const children: HTMLElement[] = []
   groups.forEach((group, index) => {
     if (index > 0)
@@ -145,13 +233,20 @@ export function renderCommandMenu<Ctx>(
       const command = commands.get(id)
       if (!command)
         throw new TypeError(`[xh] 菜单里的 ${id} 不是登记过的命令`)
-      const parts = [createAuthoredElement(doc, 'span', { 'data-xh-part': 'item-text' }, [commandLabel(command, context)])]
+      const parts: HTMLElement[] = []
+      if (command.icon !== undefined) {
+        const glyph = createAuthoredElement(doc, 'xh-icon') as HTMLElement & { icon?: IconRecord }
+        glyph.icon = command.icon
+        parts.push(createAuthoredElement(doc, 'span', { 'data-xh-part': 'item-icon' }, [glyph]))
+      }
+      parts.push(createAuthoredElement(doc, 'span', { 'data-xh-part': 'item-text' }, [commandLabel(command, context)]))
       if (command.shortcut !== undefined)
-        parts.push(createAuthoredElement(doc, 'span', { 'data-xh-part': 'item-shortcut' }, [formatShortcut(command.shortcut, options.platform ?? 'other')]))
+        parts.push(createAuthoredElement(doc, 'span', { 'data-xh-part': 'item-shortcut' }, [formatShortcut(command.shortcut, platform)]))
       children.push(createAuthoredElement(doc, 'div', {
         'data-xh-part': 'item',
         'value': id,
         'aria-disabled': commandEnabled(command, context) ? undefined : 'true',
+        'aria-keyshortcuts': command.shortcut ? ariaKeyshortcut(command.shortcut, platform) : undefined,
         'data-tone': command.tone,
       }, parts))
     }

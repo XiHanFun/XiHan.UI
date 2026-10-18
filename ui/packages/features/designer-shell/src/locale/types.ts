@@ -6,6 +6,7 @@
 // 一份完整语言包的文案：每个零件的每个键都得给。零件新增文案键后，各语言包在类型检查里一并报缺。
 
 import type {
+  DesignerCommandsTranslations,
   DesignerFrameTranslations,
   DesignerIssuesTranslations,
   DesignerPaletteTranslations,
@@ -21,5 +22,6 @@ export interface DesignerShellLocaleTranslations {
   readonly 'xh-designer-palette': DesignerPaletteTranslations
   readonly 'xh-designer-ruler': DesignerRulerTranslations
   readonly 'xh-designer-frame': DesignerFrameTranslations
+  readonly 'xh-designer-commands': DesignerCommandsTranslations
   readonly 'xh-designer-settings': DesignerSettingsTranslations
 }

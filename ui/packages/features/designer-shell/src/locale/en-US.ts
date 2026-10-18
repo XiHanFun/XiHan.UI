@@ -73,12 +73,43 @@ export const DESIGNER_SETTINGS_EN_US: DesignerShellLocaleTranslations['xh-design
   languageHint: 'Leave empty to follow the page.',
 }
 
+export const DESIGNER_COMMANDS_EN_US: DesignerShellLocaleTranslations['xh-designer-commands'] = {
+  toolbar: 'Designer actions',
+  undo: 'Undo',
+  redo: 'Redo',
+  cut: 'Cut',
+  copy: 'Copy',
+  paste: 'Paste',
+  duplicate: 'Duplicate',
+  delete: 'Delete',
+  selectAll: 'Select all',
+  alignLeft: 'Align left',
+  alignCenter: 'Align centers horizontally',
+  alignRight: 'Align right',
+  alignTop: 'Align top',
+  alignMiddle: 'Align centers vertically',
+  alignBottom: 'Align bottom',
+  distributeHorizontal: 'Distribute horizontally',
+  distributeVertical: 'Distribute vertically',
+  bringToFront: 'Bring to front',
+  bringForward: 'Bring forward',
+  sendBackward: 'Send backward',
+  sendToBack: 'Send to back',
+  zoomIn: 'Zoom in',
+  zoomOut: 'Zoom out',
+  zoomToFit: 'Zoom to fit',
+  zoomToActual: 'Actual size',
+  design: 'Design',
+  preview: 'Preview',
+}
+
 const translations: DesignerShellLocaleTranslations = {
   'xh-designer-properties': DESIGNER_PROPERTIES_EN_US,
   'xh-designer-issues': DESIGNER_ISSUES_EN_US,
   'xh-designer-palette': DESIGNER_PALETTE_EN_US,
   'xh-designer-ruler': DESIGNER_RULER_EN_US,
   'xh-designer-frame': DESIGNER_FRAME_EN_US,
+  'xh-designer-commands': DESIGNER_COMMANDS_EN_US,
   'xh-designer-settings': DESIGNER_SETTINGS_EN_US,
 }
 
