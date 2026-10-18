@@ -6,7 +6,7 @@
 // 定义 reasoning 类型契约。
 
 import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/core'
-import type { ToolCallSchema } from '../tool-call'
+import type { ToolCallSchema } from '../tool-call/tool-call.types'
 
 /**
  * 公开属性。open、defaultOpen、autoDisclosure、disabled、onOpenChange 是与 tool-call 共用的状态机属性，
