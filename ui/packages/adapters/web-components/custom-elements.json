@@ -3125,7 +3125,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-breadcrumb>`：面包屑行为宿主，把 connectBreadcrumb 产出的 aria-* 接到角色节点上；机器只承载按压通道（data-pressed）。\n\n标签要求：root 为 `<nav>`，list 为 `<ol>`，item / separator / ellipsis 为 `<li>`，link 为 `<a>`。\n运行期改写 link 上的 `current` / `value` 属性不触发重新接线，需作者自行 requestUpdate。\n\n折叠路径：把完整路径逐层写成 item，在首层之后放一个 ellipsis（里面放 ellipsis-trigger），写上 max-items。\n元素按 max-items 收起中间层（写 hidden），紧跟在被收起层后面的分隔符由皮肤一并收起；按下触发器即放出全部层级，\n省略位收起，焦点落到第一条展开出来的链接上。",
+          "description": "`<xh-breadcrumb>`：面包屑行为宿主，把 connectBreadcrumb 产出的 aria-* 接到角色节点上；机器只承载按压通道（data-pressed）。\n\n标签要求：root 为 `<nav>`，list 为 `<ol>`，item / separator / ellipsis 为 `<li>`，link 为 `<a>`。\n运行期改写 link 上的 `current` / `value` 属性不触发重新接线，需作者自行 requestUpdate。\n\n折叠路径：把完整路径逐层写成 item，在首层之后放一个 ellipsis（里面放 ellipsis-trigger），写上 max-items。\n元素按 max-items 收起中间层（写 hidden），紧跟在被收起层后面的分隔符由皮肤一并收起；按下触发器即放出全部层级，\n省略位收起，焦点落到第一条展开出来的链接上。\n\n不写部件（或只写 root）时元素按标准结构生成：`<nav>` 里一个有序列表，按 collection 与 max-items 折叠后的序列\n一项一个 li，层与层之间是分隔符，被折叠的一段是装着展开按钮的折叠位。分隔符与折叠位按钮的内容可用宿主直接子节点\n`slot=\"separator:<后一项的值>\"`（折叠位前的写 `separator:ellipsis`）与 `slot=\"ellipsis\"` 给出。",
           "name": "XhBreadcrumbElement",
           "cssParts": [
             {
@@ -3170,6 +3170,15 @@
               },
               "static": true,
               "default": "{ anatomy: breadcrumbAnatomy, meta: breadcrumbMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhBreadcrumbElement>"
+              },
+              "static": true,
+              "default": "{ rootTag: 'nav', build: host => host.ctrl.service ? breadcrumbStructure(connectBreadcrumb(host.ctrl.service, wcNormalize), { slotted: (name, key) => host.slotted(name, key) }) : undefined, }"
             },
             {
               "kind": "field",

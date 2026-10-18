@@ -27,8 +27,8 @@ export { BADGE_DEFAULT_MAX, badgeAnatomy, badgeKeyboard, badgeMachine, badgeMeta
 export type { BadgeApi, BadgePlacement, BadgeProps, BadgeSchema, BadgeTranslations } from './badge'
 export { BAR_CODE_FORMATS, BAR_FNC1_CHAR, barCodeAnatomy, barCodeKeyboard, barCodeMeta, barEncode, checkBarCodeValue, connectBarCode, gs1CheckDigit, upceExpand } from './bar-code'
 export type { BarCodeApi, BarCodeFormat, BarCodeProps, BarCodeState, BarCodeTextRun, BarCodeTranslations, BarCodeValueIssue, BarEncodeOptions, BarSymbol, BarText } from './bar-code'
-export { breadcrumbAnatomy, breadcrumbCollapsedRange, breadcrumbKeyboard, breadcrumbMachine, breadcrumbMeta, buildBreadcrumbItems, connectBreadcrumb, normalizeBreadcrumbNodes } from './breadcrumb'
-export type { BreadcrumbApi, BreadcrumbCollapsedRange, BreadcrumbItem, BreadcrumbLinkProps, BreadcrumbNode, BreadcrumbNodeMeta, BreadcrumbProps, BreadcrumbSchema, BreadcrumbTranslations } from './breadcrumb'
+export { breadcrumbAnatomy, breadcrumbCollapsedRange, breadcrumbKeyboard, breadcrumbMachine, breadcrumbMeta, breadcrumbStructure, buildBreadcrumbItems, connectBreadcrumb, normalizeBreadcrumbNodes } from './breadcrumb'
+export type { BreadcrumbApi, BreadcrumbCollapsedRange, BreadcrumbItem, BreadcrumbLinkProps, BreadcrumbNode, BreadcrumbNodeMeta, BreadcrumbProps, BreadcrumbSchema, BreadcrumbStructureOptions, BreadcrumbTranslations } from './breadcrumb'
 export { buttonAnatomy, buttonKeyboard, buttonMachine, buttonMeta, connectButton } from './button'
 
 export type { ButtonApi, ButtonElement, ButtonProps, ButtonSchema, ButtonTranslations } from './button'

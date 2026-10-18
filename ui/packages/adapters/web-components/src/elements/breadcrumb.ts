@@ -7,7 +7,8 @@
 
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { BreadcrumbNode, BreadcrumbSchema, BreadcrumbTranslations } from '@xihan-ui/headless'
-import { breadcrumbAnatomy, breadcrumbMachine, breadcrumbMeta, connectBreadcrumb } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
+import { breadcrumbAnatomy, breadcrumbMachine, breadcrumbMeta, breadcrumbStructure, connectBreadcrumb } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -32,6 +33,10 @@ function authorFlag(el: HTMLElement, name: string): boolean {
  * 元素按 max-items 收起中间层（写 hidden），紧跟在被收起层后面的分隔符由皮肤一并收起；按下触发器即放出全部层级，
  * 省略位收起，焦点落到第一条展开出来的链接上。
  *
+ * 不写部件（或只写 root）时元素按标准结构生成：`<nav>` 里一个有序列表，按 collection 与 max-items 折叠后的序列
+ * 一项一个 li，层与层之间是分隔符，被折叠的一段是装着展开按钮的折叠位。分隔符与折叠位按钮的内容可用宿主直接子节点
+ * `slot="separator:<后一项的值>"`（折叠位前的写 `separator:ellipsis`）与 `slot="ellipsis"` 给出。
+ *
  * @customElement xh-breadcrumb
  * @attr {number} max-items - 最多展开的层数，超出的中间层收起、由省略位代替；未提供时全部列出
  * @attr {'ltr'|'rtl'} dir - 文字方向，写到 root 上；未提供时继承祖先
@@ -48,6 +53,13 @@ function authorFlag(el: HTMLElement, name: string): boolean {
  */
 export class XhBreadcrumbElement extends XhElement {
   static override partContract = { anatomy: breadcrumbAnatomy, meta: breadcrumbMeta }
+
+  static override structure: ElementStructure<XhBreadcrumbElement> = {
+    rootTag: 'nav',
+    build: host => host.ctrl.service
+      ? breadcrumbStructure(connectBreadcrumb(host.ctrl.service, wcNormalize), { slotted: (name, key) => host.slotted(name, key) })
+      : undefined,
+  }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
