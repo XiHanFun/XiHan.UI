@@ -27288,7 +27288,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-field-array>`：Light-DOM 行为宿主：作者写 root / item / item-content / item-action 与\nadd-trigger、item-delete-trigger、move-up-trigger、move-down-trigger 角色节点，\n元素运行 field-array 状态机并把 connect 产出接上。\n\n值是宿主自己的数据数组，元素只负责增删与换序这套动作，行中放置的控件由作者写进 item-content。\n不写部件（或只写 root）时元素按标准结构生成：列表排布下每行是行号、作者内容与把手（开了 movable 时有上移与下移，\n再是删除），表格排布下是表格本体里的表头与各行、行里每列一格；最后是新增把手（文字取 translations.addTrigger）。\n每行的作者内容写在宿主的直接子节点上：列表排布 `slot=\"item-content:<行 key>\"`，表格排布 `slot=\"item-cell:<行 key>:<列 id>\"`，\n元素把它挪进对应的格子；行 key 从只读的 `items` 上读，换序时内容跟着行走。没给内容的行就空着，不报缺部件。\nvalue-change 同步派发、早于结构重铺：在它的处理函数里按 `items` 补上新行的内容，新行在同一帧就带上内容。\n删掉的行的内容先别删：原处淡出的替身克隆的是离场的那一行，内容要还在行里；行离场后它回到宿主、\n成为宿主的直接子节点，下一帧再把对不上 `items` 的删掉。\n\n手写部件时行节点由作者按当前值渲染（一行一个 item，身份取节点上的 index 属性，默认按文档序），\n值变化时由作者侧增删行节点，修改后 MutationObserver 会自动重新接线。\n\n数据数组、造行工厂与读屏文案都无法表达为属性，三者只作为 property 暴露。",
+          "description": "`<xh-field-array>`：Light-DOM 行为宿主：作者写 root / item / item-content / item-action 与\nadd-trigger、item-delete-trigger、move-up-trigger、move-down-trigger 角色节点，\n元素运行 field-array 状态机并把 connect 产出接上。\n\n值是宿主自己的数据数组，元素只负责增删与换序这套动作，行中放置的控件由作者写进 item-content。\n不写部件（或只写 root）时元素按标准结构生成：列表排布下每行是行号、作者内容与把手（开了 movable 时有拖动、上移与下移，\n再是删除），表格排布下是表格本体里的表头与各行、行里每列一格；最后是新增把手（文字取 translations.addTrigger）。\n每行的作者内容写在宿主的直接子节点上：列表排布 `slot=\"item-content:<行 key>\"`，表格排布 `slot=\"item-cell:<行 key>:<列 id>\"`，\n元素把它挪进对应的格子；行 key 从只读的 `items` 上读，换序时内容跟着行走。没给内容的行就空着，不报缺部件。\nvalue-change 同步派发、早于结构重铺：在它的处理函数里按 `items` 补上新行的内容，新行在同一帧就带上内容。\n删掉的行的内容先别删：原处淡出的替身克隆的是离场的那一行，内容要还在行里；行离场后它回到宿主、\n成为宿主的直接子节点，下一帧再把对不上 `items` 的删掉。\n\n手写部件时行节点由作者按当前值渲染（一行一个 item，身份取节点上的 index 属性，默认按文档序），\n值变化时由作者侧增删行节点，修改后 MutationObserver 会自动重新接线。\n\n数据数组、造行工厂与读屏文案都无法表达为属性，三者只作为 property 暴露。",
           "name": "XhFieldArrayElement",
           "cssParts": [
             {
@@ -27336,6 +27336,10 @@
               "name": "item-delete-trigger"
             },
             {
+              "description": "拖动把手，须是原生 `<button>`；按住拖这一行换位，只接指针，不占 Tab 位、对读屏隐藏（键盘用上移、下移）",
+              "name": "item-drag-trigger"
+            },
+            {
               "description": "上移把手，须是原生 `<button>`；首行为 aria-disabled；自带 aria-label",
               "name": "move-up-trigger"
             },
@@ -27370,7 +27374,7 @@
                 "text": "ElementStructure<XhFieldArrayElement>"
               },
               "static": true,
-              "default": "{ build: host => host.ctrl.service ? fieldArrayStructure(connectFieldArray(host.ctrl.service, wcNormalize)) : undefined, }",
+              "default": "{ build: host => host.ctrl.service ? fieldArrayStructure(connectFieldArray(host.ctrl.service, wcNormalize, host.drag.service)) : undefined, }",
               "description": "作者没写结构时按标准结构生成：各行（或表格本体里的表头与各行）与新增把手。"
             },
             {
@@ -27507,6 +27511,13 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<FieldArraySchema>(this, fieldArrayMachine, () => this.machineProps(), { // 列表动效经它取行所在的根节点 onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')), })"
+            },
+            {
+              "kind": "field",
+              "name": "drag",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<SortableSchema>( this, sortableMachine, () => (this.ctrl.service ? fieldArrayDragProps(this.ctrl.service) : { ids: [], disabled: true }), { scope: createScope(null, createCounterIdGenerator()), onBuilt: (svc) => { svc.refs.set('getRootEl', () => fieldArrayDragContainer(this.getPart('root'))) svc.refs.set('getItemEls', () => fieldArrayDragItems(this.getPart('root'))) }, }, )"
             },
             {
               "kind": "field",
@@ -27792,7 +27803,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "是否显示换序把手；关闭时两个换序把手一律收起",
+              "description": "是否显示换序把手；关闭时拖动、上移与下移三个把手一律收起",
               "name": "movable",
               "fieldName": "movable"
             },
@@ -27899,6 +27910,12 @@
               "name": "--xh-field-array-content-gap"
             },
             {
+              "name": "--xh-field-array-drag-grip-h"
+            },
+            {
+              "name": "--xh-field-array-drag-grip-w"
+            },
+            {
               "name": "--xh-field-array-frozen-bg"
             },
             {
@@ -27917,6 +27934,9 @@
               "name": "--xh-field-array-icon-size"
             },
             {
+              "name": "--xh-field-array-item-bg-dragging"
+            },
+            {
               "name": "--xh-field-array-item-delete-fg-hover"
             },
             {
@@ -27933,6 +27953,9 @@
             },
             {
               "name": "--xh-field-array-item-radius"
+            },
+            {
+              "name": "--xh-field-array-item-shadow-dragging"
             },
             {
               "name": "--xh-field-array-row-divider"

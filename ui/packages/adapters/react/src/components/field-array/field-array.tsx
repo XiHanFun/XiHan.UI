@@ -242,6 +242,14 @@ export function XhFieldArrayItemDeleteTrigger({ children, ...rest }: XhFieldArra
   return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
 }
 
+/** 拖动把手：按住拖这一行换位，只接指针、不占 Tab 位（键盘用上移、下移）。不换序时收起。 */
+export interface XhFieldArrayItemDragTriggerProps extends ComponentPropsWithRef<'button'> {}
+export function XhFieldArrayItemDragTrigger({ children, ...rest }: XhFieldArrayItemDragTriggerProps): ReactNode {
+  const ctx = useFieldArrayContext()
+  const item = useFieldArrayItemContext()
+  return <button {...mergeReactProps(ctx.api.getItemDragTriggerProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+}
+
 export interface XhFieldArrayMoveUpTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhFieldArrayMoveUpTrigger({ children, ...rest }: XhFieldArrayMoveUpTriggerProps): ReactNode {
   const ctx = useFieldArrayContext()
@@ -268,6 +276,7 @@ const FIELD_ARRAY_PARTS = {
   'item-action': XhFieldArrayItemAction,
   'add-trigger': XhFieldArrayAddTrigger,
   'item-delete-trigger': XhFieldArrayItemDeleteTrigger,
+  'item-drag-trigger': XhFieldArrayItemDragTrigger,
   'move-up-trigger': XhFieldArrayMoveUpTrigger,
   'move-down-trigger': XhFieldArrayMoveDownTrigger,
 }

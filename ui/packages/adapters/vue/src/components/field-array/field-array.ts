@@ -220,6 +220,16 @@ export const XhFieldArrayItemDeleteTrigger = defineComponent({
   },
 })
 
+/** 拖动把手：按住拖这一行换位，只接指针、不占 Tab 位（键盘用上移、下移）。不换序时收起。 */
+export const XhFieldArrayItemDragTrigger = defineComponent({
+  name: 'XhFieldArrayItemDragTrigger',
+  setup(_, { slots }) {
+    const ctx = useFieldArrayContext()
+    const { item } = useFieldArrayItemContext()
+    return () => h('button', ctx.api.value.getItemDragTriggerProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhFieldArrayMoveUpTrigger = defineComponent({
   name: 'XhFieldArrayMoveUpTrigger',
   setup(_, { slots }) {
@@ -250,6 +260,7 @@ const FIELD_ARRAY_PARTS = {
   'item-action': XhFieldArrayItemAction,
   'add-trigger': XhFieldArrayAddTrigger,
   'item-delete-trigger': XhFieldArrayItemDeleteTrigger,
+  'item-drag-trigger': XhFieldArrayItemDragTrigger,
   'move-up-trigger': XhFieldArrayMoveUpTrigger,
   'move-down-trigger': XhFieldArrayMoveDownTrigger,
 }

@@ -191,7 +191,7 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "267 kB"
+    "limit": "275 kB"
   },
   {
     "name": "designer-shell/locale",
@@ -239,7 +239,7 @@
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "814 kB",
+    "limit": "815 kB",
     "ignore": [
       "vue"
     ]
@@ -266,7 +266,7 @@
     "name": "react",
     "path": "packages/adapters/react/dist/index.js",
     "gzip": true,
-    "limit": "811 kB",
+    "limit": "812 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -328,7 +328,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "812 kB"
+    "limit": "813 kB"
   },
   {
     "name": "web-components/define：只按需注册一个元素（defineXhElement + XhStatisticElement）",
@@ -353,7 +353,7 @@
     "name": "styles",
     "path": "packages/design/styles/css/*.css",
     "gzip": true,
-    "limit": "600 kB"
+    "limit": "601 kB"
   },
   {
     "name": "styles/index.css（主入口，扁平有层）",
@@ -439,7 +439,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhNotificationItem }",
     "gzip": true,
-    "limit": "27 kB",
+    "limit": "28 kB",
     "ignore": [
       "vue"
     ]

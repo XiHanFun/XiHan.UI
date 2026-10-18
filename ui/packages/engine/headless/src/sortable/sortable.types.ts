@@ -114,6 +114,11 @@ export interface SortableTranslations {
 
 export interface SortableRefs {
   getRootEl: () => HTMLElement | null
+  /**
+   * 项节点，按文档序。嵌在别的组件里、项是那个组件的部件时（字段数组的行）由适配器给出；
+   * 没给时按 sortable 自己的 item 部件在容器里找。离场替身一律不算。
+   */
+  getItemEls: (() => HTMLElement[]) | null
   /** 按下时的指针位置。跟手位移一律相对它计算，不相对上一帧。 */
   origin: { clientX: number, clientY: number } | null
   /** 放下那一刻被拖项在视口里的位置与松手速度：宿主按新顺序重排之后，拿它量出离新位置还差多少。 */

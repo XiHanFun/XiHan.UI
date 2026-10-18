@@ -9,7 +9,7 @@ import type { ContextFacade, PropFn, RefsFacade } from '@xihan-ui/core'
 import type { DndRect } from '@xihan-ui/pointer'
 import type { SortableAnnounceKind } from './sortable.announce'
 import type { SortableGroupPeer, SortableSchema } from './sortable.types'
-import { glideFrom, ITEM_VALUE_ATTR, itemValue, queryItems, setup } from '@xihan-ui/core'
+import { GHOST_ATTR, glideFrom, ITEM_VALUE_ATTR, itemValue, queryItems, setup } from '@xihan-ui/core'
 import { createSpringValue, frameLoop } from '@xihan-ui/motion'
 import {
   createPointerSession,
@@ -30,9 +30,13 @@ const { createMachine } = setup<SortableSchema>()
 const ZERO = { x: 0, y: 0 }
 const ITEM_QUERY = { scope: sortableAnatomy.name, part: 'item' }
 
-/** 项元素按文档序。几何一律从 DOM 量，`ids` 只管回调里那份顺序。 */
-function itemElements(root: HTMLElement | null): HTMLElement[] {
-  return queryItems(root, ITEM_QUERY)
+/**
+ * 项元素按文档序。几何一律从 DOM 量，`ids` 只管回调里那份顺序。适配器给了 getItemEls 就用它（嵌在别的组件里时），
+ * 否则按 sortable 自己的 item 部件在容器里找。离场替身不算：它是删掉那一项的克隆，还在原处播退场，不该参与让位与落点。
+ */
+function itemElements(refs: RefsFacade<SortableSchema>): HTMLElement[] {
+  const source = refs.get('getItemEls')
+  return (source ? source() : queryItems(refs.get('getRootEl')(), ITEM_QUERY)).filter(el => !el.hasAttribute(GHOST_ATTR))
 }
 
 export function toDndRect(el: HTMLElement): DndRect {
@@ -52,8 +56,8 @@ function rootOriginOf(root: HTMLElement | null): { x: number, y: number } | null
 }
 
 /** 这一项的节点。 */
-function itemEl(root: HTMLElement | null, id: string): HTMLElement | undefined {
-  return itemElements(root).find(item => item.getAttribute(ITEM_VALUE_ATTR) === id)
+function itemEl(refs: RefsFacade<SortableSchema>, id: string): HTMLElement | undefined {
+  return itemElements(refs).find(item => item.getAttribute(ITEM_VALUE_ATTR) === id)
 }
 
 /** 撤下放下归位的弹簧，那一项停在新位置上。 */
@@ -65,13 +69,13 @@ function stopSettle(refs: RefsFacade<SortableSchema>, context: ContextFacade<Sor
 }
 
 /** 这一项在 DOM 里排第几。找不到返回 -1。 */
-function indexOfId(root: HTMLElement | null, id: string): number {
-  return itemElements(root).findIndex(el => el.getAttribute(ITEM_VALUE_ATTR) === id)
+function indexOfId(refs: RefsFacade<SortableSchema>, id: string): number {
+  return itemElements(refs).findIndex(el => el.getAttribute(ITEM_VALUE_ATTR) === id)
 }
 
 /** 这一项屏幕上写着什么。节点不在、或里面一个字都没有时返回 null。 */
-function itemTextOf(root: HTMLElement | null, id: string): string | null {
-  const el = itemElements(root).find(item => item.getAttribute(ITEM_VALUE_ATTR) === id)
+function itemTextOf(refs: RefsFacade<SortableSchema>, id: string): string | null {
+  const el = itemElements(refs).find(item => item.getAttribute(ITEM_VALUE_ATTR) === id)
   const text = el?.textContent?.replace(/\s+/g, ' ').trim()
   return text || null
 }
@@ -189,6 +193,7 @@ export const sortableMachine = createMachine({
   }),
   refs: () => ({
     getRootEl: () => null,
+    getItemEls: null,
     origin: null,
     drop: null,
     settle: null,
@@ -295,7 +300,7 @@ export const sortableMachine = createMachine({
         // 起点与被按的那一项先记着；量几何要等真的开拖，点一下不该付这笔代价
         refs.set('origin', e.point)
         context.set('activeId', e.id)
-        context.set('from', indexOfId(refs.get('getRootEl')(), e.id))
+        context.set('from', indexOfId(refs, e.id))
         context.set('delta', ZERO)
       },
 
@@ -304,7 +309,7 @@ export const sortableMachine = createMachine({
         if (e.type !== 'POINTER.MOVE')
           return
         const root = refs.get('getRootEl')()
-        context.set('rects', itemElements(root).map(toDndRect))
+        context.set('rects', itemElements(refs).map(toDndRect))
         context.set('rootOrigin', rootOriginOf(root))
         context.set('mode', 'pointer')
         context.set('delta', deltaFrom(refs.get('origin'), e.point))
@@ -319,13 +324,13 @@ export const sortableMachine = createMachine({
         if (e.type !== 'ITEM.PICKUP')
           return
         const root = refs.get('getRootEl')()
-        const index = indexOfId(root, e.id)
+        const index = indexOfId(refs, e.id)
         context.set('activeId', e.id)
         context.set('from', index)
         context.set('to', index)
         context.set('mode', 'keyboard')
         context.set('delta', ZERO)
-        context.set('rects', itemElements(root).map(toDndRect))
+        context.set('rects', itemElements(refs).map(toDndRect))
         context.set('rootOrigin', rootOriginOf(root))
         say({ context, prop, refs }, 'picked')
         prop('onDragStart')?.({ id: e.id, from: index, mode: 'keyboard' })
@@ -485,7 +490,7 @@ export const sortableMachine = createMachine({
 
       captureDrop: ({ context, refs, event }) => {
         const id = context.get('activeId')
-        const el = id == null ? undefined : itemEl(refs.get('getRootEl')(), id)
+        const el = id == null ? undefined : itemEl(refs, id)
         if (id == null || !el) {
           refs.set('drop', null)
           return
@@ -510,7 +515,7 @@ export const sortableMachine = createMachine({
         if (!drop)
           return
         flush(() => {
-          const el = itemEl(refs.get('getRootEl')(), drop.id)
+          const el = itemEl(refs, drop.id)
           if (!el)
             return
           const rect = el.getBoundingClientRect()
@@ -547,7 +552,7 @@ export const sortableMachine = createMachine({
        */
       captureLayout: ({ context, refs, event }) => {
         const rects = new Map<string, { left: number, top: number }>()
-        for (const el of itemElements(refs.get('getRootEl')())) {
+        for (const el of itemElements(refs)) {
           const id = itemValue(el)
           if (id == null)
             continue
@@ -570,7 +575,7 @@ export const sortableMachine = createMachine({
         if (!layout)
           return
         flush(() => {
-          for (const el of itemElements(refs.get('getRootEl')())) {
+          for (const el of itemElements(refs)) {
             const id = itemValue(el)
             const from = id == null ? undefined : layout.rects.get(id)
             if (from && id !== layout.skip)
@@ -662,7 +667,7 @@ function deltaFrom(origin: { clientX: number, clientY: number } | null, point: {
 /** 拼一句播报塞进 context，适配器把它渲进 aria-live 区域。 */
 function say({ context, prop, refs }: SessionParams, kind: SortableAnnounceKind): void {
   const id = context.get('activeId') ?? ''
-  const text = itemTextOf(refs.get('getRootEl')(), id)
+  const text = itemTextOf(refs, id)
   const session = refs.get('group')
   const target = session?.target ?? null
   // 说到列表时说的是落点所在的那个：在别的列表上方就是它，否则是自己

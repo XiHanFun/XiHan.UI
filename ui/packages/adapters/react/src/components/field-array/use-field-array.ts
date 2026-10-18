@@ -6,9 +6,9 @@
 // 提供 use field array 相关实现。
 
 import type { Service } from '@xihan-ui/core'
-import type { FieldArrayApi, FieldArraySchema, FormSchema } from '@xihan-ui/headless'
+import type { FieldArrayApi, FieldArraySchema, FormSchema, SortableSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
-import { connectFieldArray, fieldArrayMachine } from '@xihan-ui/headless'
+import { connectFieldArray, fieldArrayDragContainer, fieldArrayDragItems, fieldArrayDragProps, fieldArrayMachine, sortableMachine } from '@xihan-ui/headless'
 import { useRef } from 'react'
 import { useFormReset } from '../../runtime/attach-form-reset'
 import { reactNormalize } from '../../runtime/normalize-props'
@@ -18,7 +18,9 @@ import { useMachine } from '../../runtime/use-machine'
 export interface FieldArrayContext {
   api: FieldArrayApi
   service: Service<FieldArraySchema>
-  /** 表单重置的锚点，也是列表动效所在的行容器：接在根节点上。 */
+  /** 拖动换序的 sortable 机器：项是这个字段数组自己的行。 */
+  drag: Service<SortableSchema>
+  /** 表单重置的锚点，也是列表动效与拖动换序所在的行容器：接在根节点上。 */
   rootRef: RefObject<HTMLElement | null>
 }
 
@@ -30,8 +32,14 @@ export function useFieldArray(props: FieldArraySchema['props'], form?: Service<F
   service.refs.set('form', form ?? null)
   service.refs.set('getRootEl', () => rootRef.current)
 
+  // 拖动换序：另一台机器跑 sortable，props 现取行 key 与换序开关，放下即发换位
+  const dragScope = useReactScope()
+  const drag = useMachine(sortableMachine, () => fieldArrayDragProps(service), { scope: dragScope })
+  drag.refs.set('getRootEl', () => fieldArrayDragContainer(rootRef.current))
+  drag.refs.set('getItemEls', () => fieldArrayDragItems(rootRef.current))
+
   // 整份数组攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置什么都不会发生
   useFormReset(service, rootRef)
 
-  return { api: connectFieldArray(service, reactNormalize), service, rootRef }
+  return { api: connectFieldArray(service, reactNormalize, drag), service, drag, rootRef }
 }

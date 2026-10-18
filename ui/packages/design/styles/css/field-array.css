@@ -56,6 +56,30 @@
     display: none;
   }
 
+  /* 拖动换序：每一行的位移由连接层每帧写进内联 translate（让位与跟手都在那儿算），皮肤只管观感。
+     拖动期间关掉选中；被让开的各行换位走一段轻推，跟手的那一行与放下后正由弹簧收进新位置的那一行不过渡 */
+  [data-scope='field-array'][data-part='root'][data-dragging] {
+    user-select: none;
+  }
+
+  [data-scope='field-array'][data-part='root'][data-dragging] [data-part='item']:where([data-scope='field-array']):not([data-dragging]) {
+    transition: translate var(--xh-motion-duration-nudge) var(--xh-motion-ease-continuous);
+  }
+
+  [data-scope='field-array'][data-part='item']:is([data-dragging], [data-animating]) {
+    transition: none;
+  }
+
+  [data-scope='field-array'][data-part='item'][data-animating] {
+    will-change: translate;
+  }
+
+  /* 拖起来的那一行浮在其余各行之上（层级由连接层写内联）：承载面底色盖住它划过的行，海拔取 lifted */
+  [data-scope='field-array'][data-part='item'][data-dragging] {
+    background: var(--xh-field-array-item-bg-dragging, var(--xh-bg-surface));
+    box-shadow: var(--xh-field-array-item-shadow-dragging, var(--xh-elevation-lifted));
+  }
+
   /* 行前的行号或名目：不参与分宽，弱一档前景把它与行里的内容分开 */
   [data-scope='field-array'][data-part='item-label'] {
     display: inline-flex;
@@ -97,6 +121,7 @@
      组件只映射既有使用者槽。静息透明，白底承载 hover 100 → pressed 200。
      按不动的把手由连接层同时打 aria-disabled 与 data-disabled，家族按后者收掉悬停与按下反馈 */
   [data-scope='field-array'][data-part='item-delete-trigger'],
+  [data-scope='field-array'][data-part='item-drag-trigger'],
   [data-scope='field-array'][data-part='move-up-trigger'],
   [data-scope='field-array'][data-part='move-down-trigger'] {
     --xh-action-visual-size: var(--xh-field-array-trigger-size, var(--xh-_action-profile-visual-size));
@@ -124,9 +149,25 @@
   /* 不换序时连接层给换序把手写 hidden；家族那条 display 会把 UA 的 [hidden]{display:none}
      盖掉，少了这条把手还留在原地。删除把手同样声明了 display，作者自己收起它时要的是同一条 */
   [data-scope='field-array'][data-part='item-delete-trigger'][hidden],
+  [data-scope='field-array'][data-part='item-drag-trigger'][hidden],
   [data-scope='field-array'][data-part='move-up-trigger'][hidden],
   [data-scope='field-array'][data-part='move-down-trigger'][hidden] {
     display: none;
+  }
+
+  /* 拖动把手：抓起来拖的东西给 grab，按住拖动中给 grabbing；家族的手型槽逐态映射 */
+  [data-scope='field-array'][data-part='item-drag-trigger'] {
+    --xh-action-cursor-rest: grab;
+    --xh-action-cursor-hover: grab;
+    --xh-action-cursor-focus-visible: grab;
+    --xh-action-cursor-pressed: grabbing;
+  }
+
+  [data-scope='field-array'][data-part='item-drag-trigger'][data-dragging] {
+    --xh-action-cursor-rest: grabbing;
+    --xh-action-cursor-hover: grabbing;
+    --xh-action-cursor-focus-visible: grabbing;
+    --xh-action-cursor-pressed: grabbing;
   }
 
   /* 删除把手悬停转危险色：它是这一行里唯一不可撤销的动作 */
@@ -188,6 +229,17 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
     mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
+  }
+
+  /* 抓手是两条竖线：盒子取边框盒，两侧描边就是那两条线，宽高与线宽都走令牌；画在 ::before，
+     家族给粗指针扩热区的 ::after 照常落下。描边取 currentColor，高对比档里随系统换色 */
+  [data-scope='field-array'][data-part='item-drag-trigger']:empty::before {
+    content: '';
+    display: block;
+    box-sizing: border-box;
+    inline-size: var(--xh-field-array-drag-grip-w, var(--xh-space-1));
+    block-size: var(--xh-field-array-drag-grip-h, var(--xh-space-3));
+    border-inline: var(--xh-stroke-thin) solid currentColor;
   }
 
   [data-scope='field-array'][data-part='item-delete-trigger']:empty::before {
@@ -413,6 +465,11 @@
   }
 
   @media (forced-colors: active) {
+    /* 拎起的那一行靠底色与投影浮出来，这一档里两样都没了：描一圈系统高亮色的轮廓，看得出拖着的是哪一行 */
+    [data-scope='field-array'][data-part='item'][data-dragging] {
+      outline: var(--xh-stroke-thin) solid Highlight;
+    }
+
     /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
        字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
        按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；

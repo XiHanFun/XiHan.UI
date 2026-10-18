@@ -107,7 +107,7 @@ describe('xh-field-array 生成结构', () => {
     const b = contentFor(el, `item-content:${second!.key}`, 'b')
     await settle(el)
     expect(parts(el, 'item-content').map(content => content.firstElementChild)).toEqual([a, b])
-    expect(parts(el, 'item-action')[0]!.children).toHaveLength(3)
+    expect(parts(el, 'item-action')[0]!.children).toHaveLength(4)
 
     el.moveDown(0)
     await settle(el)

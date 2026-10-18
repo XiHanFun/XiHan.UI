@@ -8,7 +8,7 @@
 export { fieldArrayAnatomy, fieldArrayTriggerId } from './field-array.anatomy'
 export { connectFieldArray } from './field-array.connect'
 export { fieldArrayKeyboard } from './field-array.keyboard'
-export { fieldArrayInsertIndex, fieldArrayMachine } from './field-array.machine'
+export { fieldArrayDragContainer, fieldArrayDragItems, fieldArrayDragProps, fieldArrayInsertIndex, fieldArrayMachine } from './field-array.machine'
 export { fieldArrayMeta } from './field-array.meta'
 export { fieldArrayStructure } from './field-array.structure'
 export type { FieldArrayCellSlotData } from './field-array.structure'

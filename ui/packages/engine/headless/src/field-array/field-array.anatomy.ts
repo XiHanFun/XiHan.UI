@@ -23,6 +23,7 @@ export const fieldArrayAnatomy = createAnatomy('field-array', [
   'item-action',
   'add-trigger',
   'item-delete-trigger',
+  'item-drag-trigger',
   'move-up-trigger',
   'move-down-trigger',
 ])

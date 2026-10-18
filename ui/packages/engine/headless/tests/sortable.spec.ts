@@ -175,6 +175,34 @@ describe('排序 · 指针拖动', () => {
   })
 })
 
+describe('排序 · 项节点的来源', () => {
+  it('适配器给了 getItemEls 就按它找项（嵌在别的组件里时项是那个组件的部件）；离场替身一律不算', () => {
+    const onSort = vi.fn()
+    const root = document.createElement('div')
+    const rows = IDS.map((id) => {
+      const row = document.createElement('div')
+      row.setAttribute('data-scope', 'field-array')
+      row.setAttribute('data-part', 'item')
+      row.setAttribute('data-value', id)
+      return row
+    })
+    const ghost = rows[0]!.cloneNode(true) as HTMLElement
+    ghost.setAttribute('data-xh-ghost', '')
+    root.append(ghost, ...rows)
+    document.body.append(root)
+    const s = makeSortable({ onSort }, root)
+    rows.forEach((row, i) => {
+      row.getBoundingClientRect = (): DOMRect => ({ x: 0, y: i * 100, width: 200, height: 100, top: i * 100, left: 0, right: 200, bottom: (i + 1) * 100, toJSON: () => ({}) }) as DOMRect
+    })
+    s.service.refs.set('getItemEls', () => [...root.querySelectorAll<HTMLElement>('[data-scope="field-array"][data-part="item"]')])
+    s.service.send({ type: 'ITEM.POINTER_DOWN', id: 'b', point: at(150), pointerId: 1 })
+    s.service.send({ type: 'POINTER.MOVE', point: at(260) })
+    expect(s.api().from).toBe(1)
+    s.service.send({ type: 'POINTER.END' })
+    expect(onSort).toHaveBeenCalledWith({ from: 1, to: 2, id: 'b', ids: ['a', 'c', 'b'] })
+  })
+})
+
 describe('排序 · 键盘拖动', () => {
   it('拾起即进拖动态，落点先等于原位', () => {
     const s = makeSortable()

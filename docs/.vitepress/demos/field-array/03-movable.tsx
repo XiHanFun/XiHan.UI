@@ -1,4 +1,4 @@
-// 排序 | 上移或下移字段
+// 排序 | 按住把手拖动，或上移、下移字段
 import type { ReactNode } from "react";
 import {
   XhFieldArrayAddTrigger,
@@ -6,6 +6,7 @@ import {
   XhFieldArrayItemAction,
   XhFieldArrayItemContent,
   XhFieldArrayItemDeleteTrigger,
+  XhFieldArrayItemDragTrigger,
   XhFieldArrayMoveDownTrigger,
   XhFieldArrayMoveUpTrigger,
   XhFieldArrayRoot,
@@ -47,6 +48,7 @@ export default function Demo(): ReactNode {
                 </XhTextFieldRoot>
               </XhFieldArrayItemContent>
               <XhFieldArrayItemAction>
+                <XhFieldArrayItemDragTrigger />
                 <XhFieldArrayMoveUpTrigger />
                 <XhFieldArrayMoveDownTrigger />
                 <XhFieldArrayItemDeleteTrigger />

@@ -1,4 +1,4 @@
-<!-- 排序 | 上移或下移字段 -->
+<!-- 排序 | 按住把手拖动，或上移、下移字段 -->
 <script setup lang="ts">
 import {
   XhFieldArrayAddTrigger,
@@ -6,6 +6,7 @@ import {
   XhFieldArrayItemAction,
   XhFieldArrayItemContent,
   XhFieldArrayItemDeleteTrigger,
+  XhFieldArrayItemDragTrigger,
   XhFieldArrayMoveDownTrigger,
   XhFieldArrayMoveUpTrigger,
   XhFieldArrayRoot,
@@ -44,6 +45,7 @@ function setAt(index: number, next: string) {
         </XhTextFieldRoot>
       </XhFieldArrayItemContent>
       <XhFieldArrayItemAction>
+        <XhFieldArrayItemDragTrigger />
         <XhFieldArrayMoveUpTrigger />
         <XhFieldArrayMoveDownTrigger />
         <XhFieldArrayItemDeleteTrigger />

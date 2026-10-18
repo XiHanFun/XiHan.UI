@@ -6,10 +6,10 @@
 // 提供 use field array 相关实现。
 
 import type { Service } from '@xihan-ui/core'
-import type { FieldArrayApi, FieldArraySchema, FormSchema } from '@xihan-ui/headless'
+import type { FieldArrayApi, FieldArraySchema, FormSchema, SortableSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createScope } from '@xihan-ui/core'
-import { connectFieldArray, fieldArrayMachine } from '@xihan-ui/headless'
+import { connectFieldArray, fieldArrayDragContainer, fieldArrayDragItems, fieldArrayDragProps, fieldArrayMachine, sortableMachine } from '@xihan-ui/headless'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
@@ -18,7 +18,9 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface FieldArrayContext {
   api: ComputedRef<FieldArrayApi>
   service: Service<FieldArraySchema>
-  /** 行所在的根节点：列表动效接在它上面。 */
+  /** 拖动换序的 sortable 机器：项是这个字段数组自己的行。 */
+  drag: Service<SortableSchema>
+  /** 行所在的根节点：列表动效与拖动换序都接在它上面。 */
   rootRef: Ref<HTMLElement | null>
 }
 
@@ -35,6 +37,10 @@ export function useFieldArray(
   const rootRef = ref<HTMLElement | null>(null)
   // 传 getter 而非节点本身，ref 在挂载后才有值
   service.refs.set('getRootEl', () => rootRef.value)
-  const api = computed(() => connectFieldArray(service, vueNormalize))
-  return { api, service, rootRef }
+  // 拖动换序：另一台机器跑 sortable，props 现取行 key 与换序开关，放下即发换位
+  const drag = useMachine(sortableMachine, () => fieldArrayDragProps(service), createScope(null, createVueIdGenerator()))
+  drag.refs.set('getRootEl', () => fieldArrayDragContainer(rootRef.value))
+  drag.refs.set('getItemEls', () => fieldArrayDragItems(rootRef.value))
+  const api = computed(() => connectFieldArray(service, vueNormalize, drag))
+  return { api, service, drag, rootRef }
 }

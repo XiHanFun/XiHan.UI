@@ -25,6 +25,7 @@ export const FIELD_ARRAY_STRUCTURE_PARTS = [
   'item-action',
   'add-trigger',
   'item-delete-trigger',
+  'item-drag-trigger',
   'move-up-trigger',
   'move-down-trigger',
 ] as const satisfies readonly FieldArrayPart[]
@@ -59,6 +60,7 @@ function itemNode(model: FieldArrayStructureModel, item: FieldArrayItem): FieldA
     : [{ key: 'content', tag: 'div', part: 'item-content', slot: { name: 'item-content', key: item.key }, data: item }]
   const actions: FieldArrayNode[] = model.movable
     ? [
+        { key: 'drag', tag: 'button', part: 'item-drag-trigger' },
         { key: 'move-up', tag: 'button', part: 'move-up-trigger' },
         { key: 'move-down', tag: 'button', part: 'move-down-trigger' },
       ]
@@ -82,7 +84,7 @@ function itemNode(model: FieldArrayStructureModel, item: FieldArrayItem): FieldA
  * - 列表排布：各行直接排在 root 里；每行是行号、作者内容（slot 名 item-content，key 是行 key）与把手。
  * - 表格排布：表格本体里先是表头（每列一个列头，文字由组件按列的 label 填），再是各行；行里每列一格作者内容
  *   （slot 名 item-cell，key 是「行 key:列 id」）。
- * - 把手：开了 movable 时先铺上移与下移，再是删除；最后是 root 里的新增把手，文字取 translations.addTrigger。
+ * - 把手：开了 movable 时先铺拖动、上移与下移，再是删除；最后是 root 里的新增把手，文字取 translations.addTrigger。
  * 行 key 由组件分配，换序时作者内容跟着行走。
  */
 export function fieldArrayStructure(model: FieldArrayStructureModel): FieldArrayNode[] {

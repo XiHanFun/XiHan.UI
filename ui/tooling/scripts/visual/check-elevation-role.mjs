@@ -65,6 +65,8 @@ const EXPECTED = {
   'color-picker': { 'content': ['floating'], 'area-thumb': ['raised'] },
   // 被指针拎起、跟着手走的条目：lifted（拖起的面是作者内容，不强加描边，raised 条款不适用）
   'sortable': { item: ['lifted'] },
+  // 字段数组的拖动把手拎起的那一行：同排序的条目，被指针拎着走，比贴在页面上的 raised 高一档
+  'field-array': { item: ['lifted'] },
   'cascader': { content: ['floating'] },
   // hover 档的来源预览是锚定在引用编号上的悬停卡片：与 HoverCard 同一副 frosted 面
   'citation': { preview: ['frosted'] },
