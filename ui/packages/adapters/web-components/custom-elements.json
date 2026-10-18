@@ -42033,6 +42033,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['content'], kind: 'group' }",
+              "type": {
+                "text": "{ parts: ['content'], kind: 'group' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "structure",
               "type": {
                 "text": "ElementStructure<XhListboxElement>"

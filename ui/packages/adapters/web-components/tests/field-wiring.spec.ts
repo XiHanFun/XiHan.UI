@@ -122,7 +122,7 @@ describe('字段接线的目标声明', () => {
   it('声明了 fieldTarget 的控件都在发现表里，字段接线到得了它', () => {
     const missing = tags.filter(tag => ctorOf(tag).fieldTarget && !listed.has(tag))
     expect(missing).toEqual([])
-    expect(tags.filter(tag => ctorOf(tag).fieldTarget)).toHaveLength(29)
+    expect(tags.filter(tag => ctorOf(tag).fieldTarget)).toHaveLength(30)
   })
 })
 
@@ -148,6 +148,7 @@ const CONTROLS: ReadonlyArray<readonly [tag: string, target: string, markup: str
   ['radio-group', 'root', '<div data-xh-part="root"><div data-xh-part="item" value="a"><input data-xh-part="hidden-input"><span data-xh-part="item-text">甲</span></div></div>'],
   ['checkbox-group', 'root', '<div data-xh-part="root"><div data-xh-part="item" value="a"><input data-xh-part="hidden-input"><span data-xh-part="item-text">甲</span></div></div>'],
   ['toggle-group', 'root', '<div data-xh-part="root"><button data-xh-part="item" value="a">甲</button></div>'],
+  ['listbox', 'content', '<div data-xh-part="root"><div data-xh-part="content"><div data-xh-part="item" value="a">甲</div></div></div>'],
   ['color-swatch-picker', 'root', '<div data-xh-part="root"><div data-xh-part="item" value="#3b82f6"><input data-xh-part="hidden-input"><span data-xh-part="swatch"></span></div></div>'],
   ['pin-input', 'root', '<div data-xh-part="root"><input data-xh-part="input" index="0"></div>'],
   ['rating', 'control', '<div data-xh-part="root"><div data-xh-part="control"><span data-xh-part="item" value="1"></span></div></div>'],

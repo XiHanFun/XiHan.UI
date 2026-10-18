@@ -14,6 +14,7 @@ import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUnmounted,
 import { withXhConfig } from '../../config/config'
 import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import {
   provideListbox,
@@ -123,6 +124,9 @@ export const XhListboxContent = defineComponent({
   inheritAttrs: false,
   setup(_, { slots, attrs }) {
     const ctx = useListboxContext()
+    // 放进表单字段时，字段的标题与说明接到列表上：读屏进列表时念字段名与说明
+    const fieldWiring = useFieldGroupWiring()
+    const fieldLabel = useFieldLabelWiring()
     const contentRef = ref<HTMLElement | null>(null)
     // 定高小列表走自绘条：条子是 content 的兄弟、挂在 root 这个定位盒上，贴在 content 自己的盒子上
     // （root 里还有标题与占位，贴壳边会盖到它们）；两条轴都摆——皮肤给的是两轴 overflow: auto。
@@ -137,7 +141,7 @@ export const XhListboxContent = defineComponent({
     onUpdated(() => bars.measure())
     return () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getContentProps() as Record<string, unknown>, attrs),
+        ...mergeProps(fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getContentProps() as Record<string, unknown> }), attrs),
         ref: (el: unknown) => { contentRef.value = el as HTMLElement | null },
       }, slots.default?.()),
       ...bars.render(),
