@@ -40,8 +40,8 @@
 
 - **新增** 标准结构：Select、Combobox、TreeSelect、Cascader、Menu、ContextMenu、Menubar、Accordion、Tabs、ToggleGroup、RadioGroup、CheckboxGroup、Checkbox、Switch、Slider、Rating、TextField、NumberField、PasswordInput、PinInput、DateField、DatePicker、DateRangePicker、TimePicker、TimeRangePicker、ColorField、ColorPicker、TagsInput、TagGroup、Listbox、Transfer、SignaturePad、Field、Fieldset、FieldArray、FileUpload、Mention、Command、ColorSwatchPicker、Breadcrumb、NavigationMenu、Card、Separator、Heatmap 等不写结构即可使用，Vue、React 与 Web Components 照同一个结构函数铺出同一棵树；Web Components 用 `slot="<名>"` / `slot="<名>:<键>"` 把作者内容放进对应部件
 - **新增** 条件编辑器 FilterBuilder、格式输入 FormatInput、表达式输入框 ExpressionInput，三端同时可用
-- **新增** 包 `@xihan-ui/designer-kit`（画布式设计器的公共内核：历史栈、视口、命中与变换、属性描述、扩展机制、表格与网格几何、剪贴板）、`@xihan-ui/designer-shell`（设计器界面零件：外框、属性面板、物料面板、问题列表、小地图、变换覆盖层、标尺、设置对话框，附与 UI 内建语言包对应的十种语言文案）、`@xihan-ui/expression`（受限表达式与格式化）、`@xihan-ui/xlsx`（零依赖的 xlsx 写出）
-- **新增** `@xihan-ui/core` 子入口 `json`、`rich-text`、`rich-text-dom`、`url`、`template`、`hotkey`、`color`（颜色换算，按 CSS Color 4 的语法解析，另认 `oklab()`、`color(srgb …)` 与色相单位 grad、rad、turn；不取整的 OKLCH 换算与按色域收彩度）、`svg-export`（SVG 导出成能单独打开的一份，并可栅格化成 PNG）；`core/date` 新增墙上时间与分桶键
+- **新增** 包 `@xihan-ui/designer-kit`（画布式设计器的公共内核：历史栈、视口、命中与变换、属性描述、扩展机制、表格与网格几何、剪贴板）、`@xihan-ui/designer-shell`（设计器界面零件：外框、属性面板、物料面板、问题列表、小地图、变换覆盖层与它的上下文工具条、标尺、设置对话框、命令工具栏与状态栏项，附与 UI 内建语言包对应的十种语言文案）、`@xihan-ui/expression`（受限表达式与格式化）、`@xihan-ui/xlsx`（零依赖的 xlsx 写出）
+- **新增** `@xihan-ui/core` 子入口 `json`、`rich-text`、`rich-text-dom`、`url`、`template`、`hotkey`（含与 `aria-keyshortcuts` 互转的 `ariaKeyshortcut` / `parseAriaKeyshortcuts` 与按平台显示的 `formatHotkeyLabel`）、`color`（颜色换算，按 CSS Color 4 的语法解析，另认 `oklab()`、`color(srgb …)` 与色相单位 grad、rad、turn；不取整的 OKLCH 换算与按色域收彩度）、`svg-export`（SVG 导出成能单独打开的一份，并可栅格化成 PNG）；`core/date` 新增墙上时间与分桶键
 - **新增** 库内表单控件统一新增 `ariaLabel`；ToggleGroup、Combobox、ColorPicker、Transfer、CheckboxGroup、Slider、TreeSelect、Cascader、FileUpload 补齐 `required` / `readOnly` / `invalid`，放进字段或表单时自动继承；字段标题点击聚焦库内控件，Web Components 的字段接线落到控件真正可聚焦的部件上
 - **新增** FileUpload 远程附件的文件名铺成链接（部件 `item-link`，打开方式 `linkTarget`），地址不安全时退回纯文字
 - **新增** ColorPicker 单选的未选状态（`placeholder`）与清空钮 `clear-trigger`（`clear` 事件）
@@ -49,17 +49,18 @@
 - **新增** Table 多行表尾 `footerRows` 与吸底 `stickyFooter`、行主操作 `onAction`、列的 `rowHeader`（也可按行给函数）、表尾单元格合并 `footerCellSpan`，Web Components 新增 `visibleRows`；Select 新增取数失败状态与重试，Combobox 新增在途占位；Heatmap 新增受控联动键 `activeKey`、`pending`、`empty` 与 `format`
 - **新增** TextField `multiline`、NumberField 与 TimePicker 的 `placeholder`、TimeRangePicker 的 `startPlaceholder` / `endPlaceholder`、Grid `ruled`、Accordion `contentRole`、TreeSelect 搜索框的占位文字 `translations.searchPlaceholder`；日历翻页钮带上按视图的缺省读屏名
 - **新增** Tree 分支行的说明部件 `branch-description`，带说明的分支与叶子一样折成两行，说明在名称下面
-- **新增** Menu、ContextMenu、Menubar 的条目图标（条目的 `icon`，部件 `item-icon`）；Toolbar 的 `itemIcons`，收进「更多」的条目带着各自的图标；Web Components 的 `<xh-icon>` 不写部件时自己生成，只给 `icon` 即可
-- **新增** 令牌的预设品牌 `BRAND_PRESETS`（如 `blue`、`green`、`orange`、`pink`），`data-brand` 直接换一套品牌原语、不必 `registerBrand`，各档的对比度与缺省品牌同样达标
+- **新增** Menu、ContextMenu、Menubar 的条目图标（条目的 `icon`，部件 `item-icon`）；Toolbar 的 `itemIcons`，收进「更多」的条目带着各自的图标；Web Components 的 `<xh-icon>` 一个部件都不写、或只写一个空的 `root` 时自己生成图形，只给 `icon` 即可
+- **新增** Tooltip 的委托模式 `delegate`：一个提示管一整个容器里的锚点，文字取锚点的 `data-xh-tooltip` 或可及名，快捷键取 `aria-keyshortcuts` 并按平台显示；提示新增 `translations.keyLabel`
+- **新增** 令牌的预设品牌 `BRAND_PRESETS`（如 `blue`、`green`、`orange`、`pink`）与各档代表色 `BRAND_PRESET_COLORS`，`data-brand` 直接换一套品牌原语、不必 `registerBrand`，各档的对比度与缺省品牌同样达标
 - **新增** Web Components 子入口 `authoring`（编写同形 Light DOM 元素的基类、布尔属性的三态转换器 `BOOLEAN_CONVERTER` 与工具）与按需注册 `defineXhElement`
 - **新增** 设计器画布与表格编辑命令用的一批图标（编辑、对齐与分布、层级、表格行列与合并等）
 - **新增** `@xihan-ui/viz` 有向图算法、分层布局与直角连线、折线工具、多样式折行 `wrapRuns`、表格数据处理与 `pivotWider`
 - **优化** 按需注册一个元素的产物从约 160 kB 降到约 15 kB（gzip）；`@xihan-ui/expression` 可摇树
 - **调整** Web Components 的 `<xh-dialog>`、`<xh-drawer>` 语义角色改写 `dialog-role`，宿主上不再带 `role`（详见升级须知）
 - **修复** 弹层、提示与图表族只引用实际渲染了的标题与说明（Dialog、Drawer、Popover、Popconfirm、Tour、Alert、Approval、Notification、FloatingPanel、Fieldset、Field、Table、图表），不再挂落空的 id
-- **修复** Tree、TreeSelect、JsonViewer、Citation、FileUpload 的可访问名包含看得见的字；危险色文字与刷新中的集合在所有表面上达到 4.5:1 对比度；Tabs 横线档的当前页悬停、键盘高亮与按下时字深一档，在页面底与面上同样达到 4.5:1，带语气时不再退回品牌色
+- **修复** Tree、TreeSelect、JsonViewer、Citation、FileUpload 的可访问名包含看得见的字；危险色文字与刷新中的集合在所有表面上达到 4.5:1 对比度；Tabs 横线档的当前页悬停、键盘高亮与按下时字深一档，在页面底与面上同样达到 4.5:1，带语气时不再退回品牌色；条件编辑器的删除钮在高对比档里按所在的面取字形色，悬停与禁用都分得开
 - **修复** Tree 叶子行的说明落在名称下面一行，窄的时候截断；Listbox、TagGroup、SignaturePad、Transfer 放进表单字段时接上字段的标题与说明；日期、时间选择器有值时点字段标题焦点落在第一段，放进字段时日历钮不再带按钮不允许的 `aria-readonly`
-- **修复** Table 表尾里的冻结格补上不透明底，横向滚动时压住的格子不再透出来；ButtonGroup 里的分体按钮，Web Components 的下拉钮跟着组的形态与尺寸，与主按钮连成一条
+- **修复** Table 表尾里的冻结格补上不透明底，横向滚动时压住的格子不再透出来；树形表里有子行的行不再写指向不存在详情行的 `aria-controls`；纵向合并格按行的内容盒铺开，行间线画在行下边框上时起点行不再被一次次撑高；ButtonGroup 里的分体按钮，Web Components 的下拉钮跟着组的形态与尺寸，与主按钮连成一条
 - **修复** 列表删行时淡出的替身显示删除前的值；条目禁用随作者的修改来回切换；多行文本自动增高在无排版环境里安静跳过
 - **修复** Fieldset 整组禁用时组内 Field 的标题与说明一起变淡，Scrollbar 不再随之禁用；React 的 Tooltip、Popover、Menu、DownloadTrigger 放进禁用的 Fieldset 时一并禁用，Tooltip 跟随全局 `size`；Web Components 的 FloatButton 接上全局 `size` 与文案
 
