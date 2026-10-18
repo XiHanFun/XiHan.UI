@@ -44,8 +44,8 @@ function ownedBy(el: Element, root: HTMLElement): boolean {
 
 /**
  * 量一次版面。只在效应里调：渲染期不碰 DOM。
- * 列宽取列头的边框盒宽度（占位格不算）；行位按 aria-rowindex 记，上沿扣掉行首那条分隔线，
- * 纵向合并格从起点行的内容盒上沿一直铺到最后一行的下沿。只用差值，root 自己滚动不影响结果。
+ * 列宽取列头的边框盒宽度（占位格不算）；行位按 aria-rowindex 记内容盒：上沿与下沿都扣掉画在行上的分隔线，
+ * 纵向合并格从起点行的内容盒上沿一直铺到最后一行的内容盒下沿。只用差值，root 自己滚动不影响结果。
  */
 export function measureTableLayout(root: HTMLElement, needs: TableLayoutNeeds): TableLayout {
   if (!needs.columns && !needs.rows)
@@ -71,8 +71,10 @@ export function measureTableLayout(root: HTMLElement, needs: TableLayoutNeeds): 
       if (!Number.isFinite(index))
         continue
       const rect = el.getBoundingClientRect()
-      const border = Number.parseFloat(win?.getComputedStyle(el).borderTopWidth ?? '') || 0
-      rowBoxes[index] = { top: round(rect.top - rootTop + border), bottom: round(rect.bottom - rootTop) }
+      const style = win?.getComputedStyle(el)
+      const borderTop = Number.parseFloat(style?.borderTopWidth ?? '') || 0
+      const borderBottom = Number.parseFloat(style?.borderBottomWidth ?? '') || 0
+      rowBoxes[index] = { top: round(rect.top - rootTop + borderTop), bottom: round(rect.bottom - rootTop - borderBottom) }
     }
   }
   return { columnWidths, rowBoxes }

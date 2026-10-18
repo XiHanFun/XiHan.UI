@@ -255,7 +255,7 @@ export interface TableCellSpan {
 export interface TableLayout {
   /** 列头宽度（px），按列 id（分组格按分组 id）。 */
   columnWidths: Record<string, number>
-  /** 行的纵向位置（px，相对 root），按 aria-rowindex；top 是内容盒上沿（已扣掉行首分隔线）。 */
+  /** 行的纵向位置（px，相对 root），按 aria-rowindex；top、bottom 是内容盒的上下沿（已扣掉画在行首、行尾的分隔线）。 */
   rowBoxes: Record<number, { top: number, bottom: number }>
 }
 
