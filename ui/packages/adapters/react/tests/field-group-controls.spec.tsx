@@ -14,6 +14,7 @@ import {
   XhFieldErrorText,
   XhFieldLabel,
   XhFieldRoot,
+  XhListboxRoot,
   XhPasswordInputCapsLockIndicator,
   XhPasswordInputControl,
   XhPasswordInputInput,
@@ -85,6 +86,11 @@ describe('组类控件直接放进字段', () => {
     expectWired(c, root, true)
     expect(part(c, 'checkbox-group', 'label').textContent).toBe('通知方式')
     expect(root.hasAttribute('aria-invalid')).toBe(false)
+  })
+
+  it('listbox：列表念字段标题，描述链挂说明与错误文案', () => {
+    const c = inField(<XhListboxRoot collection={[{ value: 'daily', label: '每天' }]} />, true)
+    expectWired(c, part(c, 'listbox', 'content'), true)
   })
 
   it('color-swatch-picker / toggle-group / rating：组根或星组念字段标题', () => {

@@ -18,6 +18,7 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import {
   ListboxGroupProvider,
@@ -160,7 +161,10 @@ export function XhListboxContent({ children, ...rest }: XhListboxContentProps): 
   // content 自身得焦时把焦点转交给锚点条目，收的是不冒泡的 DOM focus：合成事件挂在
   // 冒泡的 focusin 上，后代条目得焦也会把它叫起来，判据整个变味。
   // onFocusOut 不动——它经归一化落到 React 的 onBlur，挂的正是冒泡的 focusout
-  const bind = useNativeEvents(ctx.api.getContentProps() as Record<string, unknown>, ['onFocus'])
+  // 放进表单字段时，字段的标题与说明接到列表上：读屏进列表时念字段名与说明
+  const fieldWiring = useFieldGroupWiring()
+  const fieldLabel = useFieldLabelWiring()
+  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...ctx.api.getContentProps() as Record<string, unknown> }), ['onFocus'])
   const contentRef = useRef<HTMLDivElement | null>(null)
   // 定高小列表走自绘条：条子是 content 的兄弟、挂在 root 这个定位盒上，贴在 content 自己的盒子上
   // （root 里还有标题与占位，贴壳边会盖到它们）；两条轴都摆——皮肤给的是两轴 overflow: auto。

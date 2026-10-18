@@ -73,6 +73,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  */
 export class XhListboxElement extends XhElement {
   static override partContract = { anatomy: listboxAnatomy, meta: listboxMeta }
+  // 放进字段时字段的标题与说明落在列表（content）上（组类接线）
+  static override fieldTarget = { parts: ['content'], kind: 'group' } as const
 
   static override structure: ElementStructure<XhListboxElement> = {
     build: host => host.ctrl.service

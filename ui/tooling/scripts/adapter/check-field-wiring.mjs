@@ -46,6 +46,7 @@ const GROUP_CONTROLS = {
   'checkbox-group': '组根 role=group',
   'color-swatch-picker': '组根 role=radiogroup',
   'toggle-group': '组根 role=group（多选）/ radiogroup（单选）',
+  'listbox': '列表 content 部件 role=listbox，焦点在各条目上，字段的标题与说明落在列表上',
   'color-picker': '触发钮是按钮：不收 aria-required / aria-readonly，只取描述链，aria-invalid 由组件自己投影',
   'rating': '星组 control 部件 role=radiogroup',
   'slider': '每个拇指 role=slider，焦点落在拇指上',
@@ -60,7 +61,6 @@ const GROUP_CONTROLS = {
 const NOT_SINGLE_CONTROL = {
   'field': '它自己就是字段',
   'fieldset': '同上，分组容器',
-  'listbox': '分组：content 是 role=listbox，焦点在各条目上',
   'grid-list': '分组：root 是 role=grid，焦点在各行与行内按钮上',
   'transfer': '分组：两侧各一个 role=listbox，没有单一可聚焦控件',
   'date-field': '分段输入：焦点在各段上，没有单一可聚焦控件',

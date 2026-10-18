@@ -15,6 +15,7 @@ import {
   XhFieldErrorText,
   XhFieldLabel,
   XhFieldRoot,
+  XhListboxRoot,
   XhPasswordInputCapsLockIndicator,
   XhPasswordInputControl,
   XhPasswordInputInput,
@@ -109,6 +110,11 @@ describe('组类控件直接放进字段', () => {
   it('color-swatch-picker：组根念字段标题，描述链挂说明', async () => {
     await mountInField(() => h(XhColorSwatchPickerRoot, { swatches: [{ value: '#ff0000' }, { value: '#00ff00' }] }))
     expectWired(part('color-swatch-picker', 'root'), false)
+  })
+
+  it('listbox：列表念字段标题，描述链挂说明与错误文案', async () => {
+    await mountInField(() => h(XhListboxRoot, { collection: [{ value: 'daily', label: '每天' }] }), true)
+    expectWired(part('listbox', 'content'), true)
   })
 
   it('toggle-group：组根念字段标题，描述链挂说明', async () => {
