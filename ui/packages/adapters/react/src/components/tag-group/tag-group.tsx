@@ -17,6 +17,7 @@ import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { TagGroupItemProvider, TagGroupProvider, useTagGroupContext, useTagGroupItemContext } from './context'
 import { useTagGroup } from './use-tag-group'
@@ -46,6 +47,10 @@ export interface XhTagGroupRootProps extends RootElementProps {
   disabled?: boolean
   /** 只读：标签照常浏览与聚焦，但选中值不可修改、也不可移除。 */
   readOnly?: boolean
+  /** 校验失败：标签列表报告 aria-invalid，根与列表带 data-invalid。 */
+  invalid?: boolean
+  /** 必填：根与列表带 data-required。 */
+  required?: boolean
   loop?: boolean
   dir?: Direction
   orientation?: Orientation
@@ -73,6 +78,8 @@ export function XhTagGroupRoot({
   deletable,
   disabled,
   readOnly,
+  invalid,
+  required,
   loop,
   dir,
   orientation,
@@ -96,6 +103,8 @@ export function XhTagGroupRoot({
     deletable,
     disabled,
     readOnly,
+    invalid,
+    required,
     loop,
     dir,
     orientation,
@@ -148,7 +157,10 @@ export function XhTagGroupList({ children, ...rest }: XhTagGroupListProps): Reac
   // list 自身得焦时把焦点转交给锚点标签，收的是不冒泡的 DOM focus：合成事件挂在
   // 冒泡的 focusin 上，后代标签得焦也会把它叫起来，判据整个变味。
   // onFocusOut 不动——它经归一化落到 React 的 onBlur，挂的正是冒泡的 focusout
-  const bind = useNativeEvents(ctx.api.getListProps() as Record<string, unknown>, ['onFocus'])
+  // 放进表单字段时，字段的标题与说明接到标签列表上：读屏进列表时念字段名与说明
+  const fieldWiring = useFieldGroupWiring()
+  const fieldLabel = useFieldLabelWiring()
+  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...ctx.api.getListProps() as Record<string, unknown> }), ['onFocus'])
   return (
     <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
       {children}

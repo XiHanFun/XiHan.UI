@@ -47,6 +47,7 @@ const GROUP_CONTROLS = {
   'color-swatch-picker': '组根 role=radiogroup',
   'toggle-group': '组根 role=group（多选）/ radiogroup（单选）',
   'listbox': '列表 content 部件 role=listbox，焦点在各条目上，字段的标题与说明落在列表上',
+  'tag-group': '标签列表 list 部件 role=grid，焦点在各枚标签上，字段的标题与说明落在列表上；grid 不收 aria-required，必填只投成 data-required',
   'color-picker': '触发钮是按钮：不收 aria-required / aria-readonly，只取描述链，aria-invalid 由组件自己投影',
   'rating': '星组 control 部件 role=radiogroup',
   'slider': '每个拇指 role=slider，焦点落在拇指上',

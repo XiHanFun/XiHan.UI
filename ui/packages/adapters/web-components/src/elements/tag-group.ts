@@ -49,6 +49,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {boolean} deletable - 提供移除按钮，默认关闭；条目上写 deletable 可逐个覆盖
  * @attr {boolean} disabled - 整组禁用：不可修改选中值，也不可移除任何标签
  * @attr {boolean} read-only - 只读：可聚焦、可导航，但不可修改
+ * @attr {boolean} invalid - 校验失败标注：标签列表报告 aria-invalid，根与列表带 data-invalid
+ * @attr {boolean} required - 必填标注：根与列表带 data-required；grid 角色不收 aria-required，必填由字段的标题与错误文案告知
  * @attr {boolean} loop - 方向键到达末尾回绕，默认 true；写 loop="false" 关闭
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 horizontal
@@ -76,6 +78,9 @@ export class XhTagGroupElement extends XhElement {
     delegates: [{ name: 'tag', parts: ['item', 'item-text', 'item-delete-trigger'] }],
   }
 
+  // 放进字段时字段的标题与说明落在标签列表（list）上（组类接线）
+  static override fieldTarget = { parts: ['list'], kind: 'group' } as const
+
   static override structure: ElementStructure<XhTagGroupElement> = {
     build: host => host.ctrl.service
       ? tagGroupStructure(connectTagGroup(host.ctrl.service, wcNormalize), {
@@ -99,6 +104,8 @@ export class XhTagGroupElement extends XhElement {
     deletable: { converter: BOOLEAN_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    invalid: { converter: BOOLEAN_CONVERTER },
+    required: { converter: BOOLEAN_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     orientation: { converter: STRING_CONVERTER },
@@ -117,6 +124,8 @@ export class XhTagGroupElement extends XhElement {
   declare deletable?: boolean
   declare disabled?: boolean
   declare readOnly?: boolean
+  declare invalid?: boolean
+  declare required?: boolean
   declare loop?: boolean
   declare direction?: Direction
   declare orientation?: Orientation
@@ -129,7 +138,7 @@ export class XhTagGroupElement extends XhElement {
   private readonly declaredDisabled = createDisabledDeclarations()
   private inheritedControl: FormControlState | undefined
 
-  /** 最近的 Field/Form 只交状态；TagGroup 仅消费公开的禁用、只读两轴。 */
+  /** 最近的 Field/Form 只交状态；TagGroup 消费公开的禁用、只读、无效、必填四轴。 */
   setFormControlState(state: FormControlState | undefined): void {
     this.inheritedControl = state
     this.requestUpdate()
@@ -139,6 +148,8 @@ export class XhTagGroupElement extends XhElement {
     return resolveFormControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
+      invalid: this.invalid,
+      required: this.required,
     }, this.inheritedControl)
   }
 
@@ -168,6 +179,8 @@ export class XhTagGroupElement extends XhElement {
       deletable: this.deletable ?? false,
       disabled: control.disabled,
       readOnly: control.readOnly,
+      invalid: control.invalid,
+      required: control.required,
       loop: this.loop,
       dir: this.direction,
       orientation: this.orientation,

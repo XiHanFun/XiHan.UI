@@ -69004,6 +69004,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['list'], kind: 'group' }",
+              "type": {
+                "text": "{ parts: ['list'], kind: 'group' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "structure",
               "type": {
                 "text": "ElementStructure<XhTagGroupElement>"
@@ -69089,6 +69098,24 @@
                 "text": "boolean | undefined"
               },
               "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
             },
             {
               "kind": "field",
@@ -69184,7 +69211,7 @@
                   }
                 }
               ],
-              "description": "最近的 Field/Form 只交状态；TagGroup 仅消费公开的禁用、只读两轴。"
+              "description": "最近的 Field/Form 只交状态；TagGroup 消费公开的禁用、只读、无效、必填四轴。"
             },
             {
               "kind": "method",
@@ -69521,6 +69548,22 @@
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "校验失败标注：标签列表报告 aria-invalid，根与列表带 data-invalid",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填标注：根与列表带 data-required；grid 角色不收 aria-required，必填由字段的标题与错误文案告知",
+              "name": "required",
+              "fieldName": "required"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
               "description": "方向键到达末尾回绕，默认 true；写 loop=\"false\" 关闭",
               "name": "loop",
               "fieldName": "loop"
@@ -69592,6 +69635,9 @@
             },
             {
               "name": "--xh-tag-group-item-bg-pressed-solid"
+            },
+            {
+              "name": "--xh-tag-group-item-border-invalid"
             },
             {
               "name": "--xh-tag-group-item-indicator-fg"

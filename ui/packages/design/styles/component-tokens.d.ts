@@ -3898,6 +3898,7 @@ export type ComponentTokenName
     | '--xh-tag-group-item-bg-hover'
     | '--xh-tag-group-item-bg-pressed'
     | '--xh-tag-group-item-bg-pressed-solid'
+    | '--xh-tag-group-item-border-invalid'
     | '--xh-tag-group-item-indicator-fg'
     | '--xh-tag-group-item-indicator-size'
     | '--xh-tag-group-label-fg'

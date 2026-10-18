@@ -31,6 +31,7 @@ import {
   XhSliderControl,
   XhSliderRoot,
   XhSliderThumb,
+  XhTagGroupRoot,
   XhToggleGroupRoot,
 } from '../src'
 
@@ -115,6 +116,11 @@ describe('组类控件直接放进字段', () => {
   it('listbox：列表念字段标题，描述链挂说明与错误文案', async () => {
     await mountInField(() => h(XhListboxRoot, { collection: [{ value: 'daily', label: '每天' }] }), true)
     expectWired(part('listbox', 'content'), true)
+  })
+
+  it('tag-group：标签列表念字段标题，描述链挂说明与错误文案', async () => {
+    await mountInField(() => h(XhTagGroupRoot, { selectionMode: 'multiple', collection: [{ value: 'daily', label: '每天' }] }), true)
+    expectWired(part('tag-group', 'list'), true)
   })
 
   it('toggle-group：组根念字段标题，描述链挂说明', async () => {

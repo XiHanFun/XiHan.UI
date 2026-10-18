@@ -27,6 +27,8 @@ export function connectTagGroup<T extends PropTypes>(
   const focusedValue = context.get('focusedValue') ?? null
   const groupDisabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
+  const invalid = !!prop('invalid')
+  const required = !!prop('required')
   const orientation = prop('orientation') ?? 'horizontal'
   const dir = prop('dir') ?? 'ltr'
   const loop = prop('loop') ?? true
@@ -170,6 +172,8 @@ export function connectTagGroup<T extends PropTypes>(
     focusedValue,
     disabled: groupDisabled,
     readOnly,
+    invalid,
+    required,
     deletable: groupDeletable,
     isSelected,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
@@ -182,6 +186,8 @@ export function connectTagGroup<T extends PropTypes>(
       'data-orientation': orientation,
       'data-disabled': dataAttr(groupDisabled),
       'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
+      'data-required': dataAttr(required),
     }),
 
     getLabelProps: () => normalize.element({
@@ -203,12 +209,15 @@ export function connectTagGroup<T extends PropTypes>(
       // 列表动效接上之前，首帧的标签直接呈现
       'data-instant': dataAttr(!context.get('listTracked')),
       'aria-readonly': readOnly ? 'true' : 'false',
+      'aria-invalid': invalid ? 'true' : 'false',
       // 焦点在组外时容器进 Tab 序列，onFocus 再转投给条目。
       // 判据只能用 focusedValue：anchor 可能指向一枚已被摘掉、或压根不在列表里的标签，
       // 那时没有条目认领 tabindex=0，容器若也退出 Tab 序列，整组对键盘用户永久不可达
       'tabindex': focusedValue == null ? 0 : -1,
       'data-orientation': orientation,
       'data-disabled': dataAttr(groupDisabled),
+      'data-invalid': dataAttr(invalid),
+      'data-required': dataAttr(required),
       'onKeyDown': (event: KeyboardEvent) => {
         // 输入法组合中的按键归候选框，落在可编辑控件上的按键归那个控件
         if (groupDisabled || isComposingEvent(event) || isEditableTarget(event.target))

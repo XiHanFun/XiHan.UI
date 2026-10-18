@@ -78034,6 +78034,25 @@
       "description": "tag-group 的 list、root 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-tag-group-item-border-invalid",
+      "component": "tag-group",
+      "part": [
+        "list",
+        "root"
+      ],
+      "property": [
+        "--xh-tag-border"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "tag-group 的 list、root 部件 --xh-tag-border 覆盖槽。"
+    },
+    {
       "name": "--xh-tag-group-item-indicator-fg",
       "component": "tag-group",
       "part": [

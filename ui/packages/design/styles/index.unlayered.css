@@ -47026,6 +47026,11 @@
     translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
 }
 
+/* 校验失败标在每枚标签的描边上，与其余表单控件同一套表达：list 上的 data-invalid 是出处，标签自己不带这个属性 */
+.xh-scope-tag-group[data-part='list'][data-invalid] > .xh-scope-tag[data-part='root'] {
+  --xh-tag-border: var(--xh-tag-group-item-border-invalid, var(--xh-border-invalid));
+}
+
 /* 新加的标签原地弹出（横排胶囊不用竖向上浮），同一批按到达顺序错开；首帧就在的直接呈现 */
 .xh-scope-tag-group[data-part='list']:not([data-instant]) > .xh-scope-tag[data-part='root']:not([data-instant], [data-state='closed']) {
   animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;

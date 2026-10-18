@@ -305,6 +305,20 @@ describe('摘除钮是 tag 的 close-trigger', () => {
     expect(readOnly.deletes).toEqual([])
   })
 
+  it('校验失败与必填：列表报 aria-invalid，根与列表带 data-invalid、data-required；grid 不写 aria-required', () => {
+    const plain = mount({ selectionMode: 'multiple' })
+    expect(plain.list.getAttribute('aria-invalid')).toBe('false')
+    expect([plain.root.hasAttribute('data-invalid'), plain.root.hasAttribute('data-required')]).toEqual([false, false])
+    expect([plain.api().invalid, plain.api().required]).toEqual([false, false])
+
+    const flagged = mount({ selectionMode: 'multiple', invalid: true, required: true })
+    expect(flagged.list.getAttribute('aria-invalid')).toBe('true')
+    expect(flagged.list.hasAttribute('aria-required')).toBe(false)
+    expect([flagged.root.hasAttribute('data-invalid'), flagged.root.hasAttribute('data-required')]).toEqual([true, true])
+    expect([flagged.list.hasAttribute('data-invalid'), flagged.list.hasAttribute('data-required')]).toEqual([true, true])
+    expect([flagged.api().invalid, flagged.api().required]).toEqual([true, true])
+  })
+
   it('点按：报摘除意图；焦点在这一枚里才搬，交给前一枚，前面没有就交给后一枚', () => {
     const h = mount({ deletable: true })
     // 焦点在组外：点叉不把焦点拽进来
