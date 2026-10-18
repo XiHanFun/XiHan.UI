@@ -23124,7 +23124,7 @@
         "pause-on-page-idle",
         "paused",
         "preset",
-        "title",
+        "title-text",
         "tone"
       ],
       "events": [
