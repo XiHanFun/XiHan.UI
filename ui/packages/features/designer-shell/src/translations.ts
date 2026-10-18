@@ -81,6 +81,10 @@ export interface DesignerFrameTranslations {
   readonly layout: string
   /** 分隔条的无障碍名称，入参是它调整的那个区的名称。 */
   readonly resize: (label: string) => string
+  /** 面板头关闭钮的名字，入参是面板标题。 */
+  readonly closePanel: (label: string) => string
+  /** 面板头帮助钮的名字，入参是面板标题。 */
+  readonly panelHelp: (label: string) => string
 }
 
 declare module '@xihan-ui/web-components' {

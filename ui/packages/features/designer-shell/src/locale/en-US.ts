@@ -50,6 +50,8 @@ export const DESIGNER_RULER_EN_US: DesignerShellLocaleTranslations['xh-designer-
 export const DESIGNER_FRAME_EN_US: DesignerShellLocaleTranslations['xh-designer-frame'] = {
   layout: 'Designer layout',
   resize: label => `Resize ${label}`,
+  closePanel: label => `Close ${label}`,
+  panelHelp: label => `About ${label}`,
 }
 
 const translations: DesignerShellLocaleTranslations = {

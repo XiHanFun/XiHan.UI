@@ -3,15 +3,17 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// <xh-designer-frame>：设计器外框。按命名区布局：上方一条（工具栏），中间一行左、中、右（物料、画布、属性），
-// 中间一列的下方（问题列表）。区名由产品登记，作者内容用 slot="<区名>" 放进对应的区，没写 slot 的放进中间区。
+// <xh-designer-frame>：设计器外框。按命名区布局：最上一条顶栏、下面一条（工具栏），中间一行左、中、右（物料、画布、属性），
+// 中间一列的下方（问题列表），最下一条状态栏。区名由产品登记，作者内容用 slot="<区名>" 放进对应的区，没写 slot 的放进中间区。
 // panels 列出要显示的区（空格分隔），不写即全部显示，写空串则只留中间区。区间用 <xh-splitter>，宽度可拖；
 // 同一位置上下堆叠的几个区之间也有分隔条，缺省等分。
+// 左右与下方的区给了标题就画成一张卡片：面板头写标题与副标题，右侧是操作区、帮助与关闭。
+// 顶栏分左、中、右三段，状态栏分左、右两段，各段有内容才显示；画布区四角与右侧另有浮动条的落点。
 
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { XhSplitterElement } from '@xihan-ui/web-components/define'
 import type { DesignerFrameTranslations } from '../translations'
-import { createAuthoredElement, createGeneratedElement, emitEvent, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
+import { createAuthoredElement, createGeneratedElement, emitEvent, setAttributes, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { adoptSlots } from '../internal/slots'
 import { defineFrameElements } from '../internal/ui-elements'
 
@@ -21,8 +23,8 @@ interface FrameSplitter {
   readonly triggers: readonly string[]
 }
 
-/** 区的位置：上方一条、中间一行的左、中、右，以及中间一列的下方。 */
-export type DesignerFramePosition = 'top' | 'start' | 'center' | 'end' | 'bottom'
+/** 区的位置：最上的顶栏、下面一条、中间一行的左、中、右、中间一列的下方，以及最下的状态栏。 */
+export type DesignerFramePosition = 'header' | 'top' | 'start' | 'center' | 'end' | 'bottom' | 'status'
 
 /** 可以拖动调整大小的位置。 */
 export type DesignerFrameResizable = 'start' | 'end' | 'bottom'
@@ -35,10 +37,18 @@ export interface DesignerFrameRegion {
   readonly position: DesignerFramePosition
   /** 所在位置的缺省大小（百分比）：start、end 占中间一行的宽度，bottom 占中间一列的高度；取该位置第一个区的值。 */
   readonly size?: number
-  /** 拖动时所在位置的下限（百分比），缺省 10；取该位置第一个区的值。 */
+  /** 拖动时所在位置的下限（百分比），缺省 10；取该位置第一个区的值。外框按尺寸槽算出的下限更大时以那个为准。 */
   readonly minSize?: number
-  /** 分隔条无障碍名称里的区名，缺省用 name。 */
+  /** 分隔条无障碍名称里的区名，缺省用 title，再缺省用 name。 */
   readonly label?: string
+  /** 面板头的标题：给了就把这个区画成一张卡片，头部写标题；只对 start、end、bottom 三个位置生效。 */
+  readonly title?: string
+  /** 面板头标题下的一行副标题，如属性面板当前对象的名字。 */
+  readonly subtitle?: string
+  /** 面板头的帮助：给了就在右上角出帮助钮，悬停或聚焦时弹出这段说明。 */
+  readonly help?: string
+  /** 面板头出关闭钮，点了收起这块面板（从 panels 里去掉它）；缺省 true。 */
+  readonly closable?: boolean
 }
 
 /** 外框各处的大小（百分比）。 */
@@ -57,16 +67,35 @@ export interface DesignerFrameSizes {
 export interface DesignerFrameEventMap {
   /** 拖动或用键盘调整了某个位置或堆叠区的大小；拖动途中连续发出。 */
   'sizes-change': CustomEvent<{ sizes: DesignerFrameSizes }>
+  /** 点了面板头的关闭钮：外框已经收起这块面板，panels 是收起之后要显示的区（空格分隔），设计器据此同步自己的 panels。 */
+  'panels-change': CustomEvent<{ panels: string }>
 }
 
-/** 缺省的命名区：工具栏、物料、画布、属性、问题。 */
+/** 缺省的命名区：顶栏、工具栏、物料、画布、属性、问题、状态栏。 */
 export const DESIGNER_FRAME_REGIONS: readonly DesignerFrameRegion[] = [
+  { name: 'header', position: 'header' },
   { name: 'toolbar', position: 'top' },
   { name: 'palette', position: 'start', size: 18 },
   { name: 'canvas', position: 'center' },
   { name: 'properties', position: 'end', size: 24 },
   { name: 'issues', position: 'bottom', size: 28 },
+  { name: 'status', position: 'status' },
 ]
+
+/** 顶栏与状态栏的分段：作者内容写 slot="<区名>-<段名>"，只写 slot="<区名>" 的放进第一个缺省段。 */
+const ZONES: Readonly<Partial<Record<DesignerFramePosition, readonly string[]>>> = {
+  header: ['start', 'center', 'end'],
+  status: ['start', 'end'],
+}
+
+/** 只写区名的作者内容放进哪一段。 */
+const DEFAULT_ZONE: Readonly<Partial<Record<DesignerFramePosition, string>>> = { header: 'center', status: 'start' }
+
+/** 画布区上浮动条的落点：作者内容写 slot="<中间区名>-<落点>"。 */
+const OVERLAYS = ['top-start', 'top-end', 'bottom-start', 'bottom-end', 'end'] as const
+
+/** 会画成卡片的位置。 */
+const CARD_POSITIONS: ReadonlySet<DesignerFramePosition> = new Set(['start', 'end', 'bottom'])
 
 /**
  * 解析 panels：空格分隔的区名，多个空白与制表符都当分隔。没写（null 或 undefined）为 undefined，表示全部显示；
@@ -81,6 +110,8 @@ export function parseDesignerPanels(value: string | null | undefined): ReadonlyS
 const DEFAULT_TRANSLATIONS: DesignerFrameTranslations = {
   layout: 'Designer layout',
   resize: label => `Resize ${label}`,
+  closePanel: label => `Close ${label}`,
+  panelHelp: label => `About ${label}`,
 }
 
 const TAG = 'xh-designer-frame'
@@ -88,11 +119,40 @@ const TAG = 'xh-designer-frame'
 const SCOPE = 'designer-frame'
 const DEFAULT_MIN_SIZE = 10
 const CENTER_MIN_SIZE = 20
+/** 尺寸槽算出的下限变化不到这么多（百分比）时不重排。 */
+const MIN_SIZE_EPSILON = 0.5
 const STRING_CONVERTER = { fromAttribute: (value: string | null) => value ?? undefined }
 
 interface Parts {
+  readonly header: HTMLElement
   readonly top: HTMLElement
   readonly body: HTMLElement
+  readonly status: HTMLElement
+  /** 量尺寸槽用的三个隐形块：左右与下方的下限。 */
+  readonly probes: Readonly<Record<DesignerFrameResizable, HTMLElement>>
+}
+
+/** 一个区的容器与它生成的部件。 */
+interface RegionParts {
+  readonly element: HTMLElement
+  /** 作者内容放进哪里：卡片放在 panel-body，其余放在区本身。 */
+  readonly content: HTMLElement
+  /** 顶栏、状态栏的分段，画布区的浮动条落点。 */
+  readonly zones: Readonly<Record<string, HTMLElement>>
+  readonly card?: CardParts
+  /** 区结构的签名：位置与是不是卡片变了就重建。 */
+  readonly signature: string
+}
+
+/** 卡片的面板头。 */
+interface CardParts {
+  readonly title: HTMLElement
+  readonly subtitle: HTMLElement
+  readonly actions: HTMLElement
+  readonly help: HTMLElement & { disabled?: boolean }
+  readonly helpTrigger: HTMLElement
+  readonly helpContent: HTMLElement
+  readonly close: HTMLButtonElement
 }
 
 function isPositive(value: unknown): value is number {
@@ -131,7 +191,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
 
   /** 命名区，缺省为 DESIGNER_FRAME_REGIONS。 */
   declare regions: readonly DesignerFrameRegion[] | undefined
-  /** 要显示的区，空格分隔；不写即全部显示，写空串则只留中间区。中间区总是显示。同名 attribute。 */
+  /** 要显示的区，空格分隔；不写即全部显示，写空串则只留中间区。中间区总是显示，顶栏有内容就显示。同名 attribute。 */
   declare panels: string | undefined
   /** 各处的大小（百分比），用来恢复上次的布局；不给的位置用区的缺省大小，不给的堆叠区等分。 */
   declare sizes: DesignerFrameSizes | undefined
@@ -145,14 +205,19 @@ export class XhDesignerFrameElement extends XhReactiveElement {
 
   readonly #config = new XhConfigController(this)
   #parts: Parts | undefined
-  readonly #regions = new Map<string, HTMLElement>()
+  readonly #regions = new Map<string, RegionParts>()
   #releaseSlots: (() => void) | undefined
   #slotsKey = ''
   #layoutKey = ''
   #splitters: FrameSplitter[] = []
   #current: Partial<Record<DesignerFrameResizable, number>> = {}
   #shares: Record<string, number> = {}
+  /** 尺寸槽折成的下限（百分比），量不出来时没有。 */
+  #measuredMin: Partial<Record<DesignerFrameResizable, number>> = {}
   #dirObserver: MutationObserver | undefined
+  #zoneObserver: MutationObserver | undefined
+  #resizeObserver: ResizeObserver | undefined
+  #ids = 0
 
   override connectedCallback(): void {
     super.connectedCallback()
@@ -162,23 +227,35 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       this.#dirObserver ??= new MutationObserver(() => this.requestUpdate())
       this.#dirObserver.observe(this, { attributes: true, attributeFilter: ['dir'] })
     }
+    if (typeof ResizeObserver === 'function') {
+      this.#resizeObserver ??= new ResizeObserver(() => this.#measure())
+      this.#resizeObserver.observe(this)
+    }
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
     this.#dirObserver?.disconnect()
+    this.#zoneObserver?.disconnect()
+    this.#zoneObserver = undefined
+    this.#resizeObserver?.disconnect()
     this.#releaseSlots?.()
     this.#releaseSlots = undefined
     this.#slotsKey = ''
   }
 
-  /** 这个区是否显示：中间区总是显示，其余按 panels。 */
+  /** 这个区是否显示：中间区总是显示；顶栏有内容就显示；状态栏按 panels 且有内容才显示；其余按 panels。 */
   showsPanel(name: string): boolean {
     const region = this.#regionList().find(item => item.name === name)
-    if (region?.position === 'center')
+    if (region === undefined)
+      return false
+    if (region.position === 'center')
       return true
+    if (region.position === 'header')
+      return this.#hasContent(name)
     const shown = parseDesignerPanels(this.panels)
-    return region !== undefined && (shown === undefined || shown.has(name))
+    const listed = shown === undefined || shown.has(name)
+    return region.position === 'status' ? listed && this.#hasContent(name) : listed
   }
 
   protected override update(changed: PropertyValues): void {
@@ -192,14 +269,20 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     }
     const t = this.#config.translations<DesignerFrameTranslations>(TAG, DEFAULT_TRANSLATIONS, this.translations)
     const layout = this.#layout()
-    const key = JSON.stringify([this.#direction(), Object.entries(layout).map(([position, regions]) => [position, regions.map(region => region.name)])])
+    const mins = (['start', 'end', 'bottom'] as const).map(position => Math.round((this.#measuredMin[position] ?? 0) / MIN_SIZE_EPSILON))
+    const key = JSON.stringify([this.#direction(), mins, Object.entries(layout).map(([position, regions]) => [position, regions.map(region => region.name)])])
     if (key !== this.#layoutKey || changed.has('sizes')) {
       this.#layoutKey = key
       this.#build(parts, layout)
     }
+    for (const region of this.#regionList()) {
+      const card = this.#regions.get(region.name)?.card
+      if (card)
+        this.#paintCard(region, card, t)
+    }
     const labelOf = (name: string): string => {
       const region = this.#regionList().find(item => item.name === name)
-      return region?.label ?? name
+      return region?.label ?? region?.title ?? name
     }
     for (const { element, triggers } of this.#splitters)
       element.translations = { root: t.layout, resizeTrigger: index => t.resize(labelOf(triggers[index] ?? '')) }
@@ -214,43 +297,183 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     return this.regions ?? DESIGNER_FRAME_REGIONS
   }
 
+  /** 顶栏、状态栏的某一段有没有元素。 */
+  #hasContent(name: string): boolean {
+    const zones = this.#regions.get(name)?.zones ?? {}
+    return Object.values(zones).some(zone => zone.childElementCount > 0)
+  }
+
   #ensureParts(): Parts {
     if (this.#parts?.top.parentElement === this)
       return this.#parts
     const doc = this.ownerDocument
+    const header = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'header' })
     const top = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'top' })
     const body = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'body' })
-    this.append(top, body)
-    this.#parts = { top, body }
+    const status = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'status' })
+    const probe = (position: DesignerFrameResizable): HTMLElement => createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'probe', 'data-position': position, 'aria-hidden': 'true' })
+    const probes = { start: probe('start'), end: probe('end'), bottom: probe('bottom') }
+    const probeBox = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'probes', 'aria-hidden': 'true' }, Object.values(probes))
+    this.append(header, top, body, status, probeBox)
+    this.#parts = { header, top, body, status, probes }
     return this.#parts
   }
 
-  /** 按登记的区建好区容器，并把作者带 slot 的子节点搬进去。 */
-  #syncRegions(): void {
+  /** 把尺寸槽给的下限（像素）折成占外框的百分比；变化够大时重排。 */
+  #measure(): void {
+    const parts = this.#parts
+    if (!parts)
+      return
+    const width = parts.body.clientWidth
+    const height = parts.body.clientHeight
+    const next: Partial<Record<DesignerFrameResizable, number>> = {}
+    for (const position of ['start', 'end', 'bottom'] as const) {
+      const extent = position === 'bottom' ? height : width
+      const size = position === 'bottom' ? parts.probes[position].offsetHeight : parts.probes[position].offsetWidth
+      if (extent > 0 && size > 0)
+        next[position] = Math.min(size / extent * 100, 100 - CENTER_MIN_SIZE)
+    }
+    const changed = (['start', 'end', 'bottom'] as const).some(position => Math.abs((next[position] ?? 0) - (this.#measuredMin[position] ?? 0)) >= MIN_SIZE_EPSILON)
+    if (!changed)
+      return
+    this.#measuredMin = next
+    this.requestUpdate()
+  }
+
+  #nextId(part: string): string {
+    this.#ids += 1
+    return `xh-designer-frame-${part}-${this.#ids}`
+  }
+
+  /** 一个区的结构：卡片带面板头，顶栏与状态栏分段，画布区带浮动条的落点。 */
+  #createRegion(region: DesignerFrameRegion): RegionParts {
     const doc = this.ownerDocument
+    const card = CARD_POSITIONS.has(region.position) && region.title !== undefined
+    const center = region.position === 'center'
+    const signature = `${region.position}:${card}`
+    const element = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'region', 'data-region': region.name })
+    const zoneNames = ZONES[region.position] ?? []
+    const zones: Record<string, HTMLElement> = {}
+    for (const zone of zoneNames)
+      zones[zone] = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'zone', 'data-zone': zone })
+    if (center) {
+      for (const overlay of OVERLAYS)
+        zones[overlay] = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'overlay', 'data-overlay': overlay })
+    }
+    if (!card) {
+      element.append(...Object.values(zones))
+      return { element, content: element, zones, signature }
+    }
+    const titleId = this.#nextId('title')
+    const title = createAuthoredElement(doc, 'span', { 'data-scope': SCOPE, 'data-part': 'panel-title', 'id': titleId })
+    const subtitle = createAuthoredElement(doc, 'span', { 'data-scope': SCOPE, 'data-part': 'panel-subtitle' })
+    const actions = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'panel-actions' })
+    const helpTrigger = createAuthoredElement(doc, 'button', { 'data-xh-part': 'trigger', 'type': 'button' })
+    const helpContent = createAuthoredElement(doc, 'div', { 'data-xh-part': 'content' })
+    const help = createAuthoredElement(doc, 'xh-tooltip', { 'placement': 'bottom-end', 'size': 'sm', 'data-scope': SCOPE, 'data-part': 'panel-help-tip' }, [
+      helpTrigger,
+      createAuthoredElement(doc, 'div', { 'data-xh-part': 'positioner' }, [helpContent]),
+    ])
+    const close = createAuthoredElement(doc, 'button', { 'type': 'button', 'data-scope': SCOPE, 'data-part': 'panel-close' }) as HTMLButtonElement
+    close.addEventListener('click', () => this.#closePanel(region.name))
+    const header = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'panel-header' }, [
+      createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'panel-heading' }, [title, subtitle]),
+      actions,
+      help,
+      close,
+    ])
+    const body = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'panel-body' })
+    setAttributes(element, { 'data-card': '', 'role': 'region', 'aria-labelledby': titleId })
+    element.append(header, body)
+    return { element, content: body, zones: { actions }, signature, card: { title, subtitle, actions, help, helpTrigger, helpContent, close } }
+  }
+
+  /** 按登记的区建好区容器，并把作者带 slot 的子节点搬进去；区的结构变了时连同已搬进的内容一起换到新容器。 */
+  #syncRegions(): void {
     const names = new Set<string>()
     for (const region of this.#regionList()) {
       names.add(region.name)
-      if (!this.#regions.has(region.name))
-        this.#regions.set(region.name, createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'region', 'data-region': region.name }))
+      const existing = this.#regions.get(region.name)
+      const signature = `${region.position}:${CARD_POSITIONS.has(region.position) && region.title !== undefined}`
+      if (existing?.signature === signature)
+        continue
+      const next = this.#createRegion(region)
+      if (existing) {
+        const generated = new Set<Element>([...Object.values(existing.zones), ...(existing.card ? [existing.content.previousElementSibling!] : [])])
+        next.content.append(...Array.from(existing.content.children).filter(child => !generated.has(child)))
+        for (const [zone, node] of Object.entries(existing.zones)) {
+          const target = next.zones[zone]
+          if (target)
+            target.append(...Array.from(node.children))
+        }
+        existing.element.replaceWith(next.element)
+      }
+      this.#regions.set(region.name, next)
     }
     for (const name of [...this.#regions.keys()]) {
       if (!names.has(name)) {
-        this.#regions.get(name)!.remove()
+        this.#regions.get(name)!.element.remove()
         this.#regions.delete(name)
       }
     }
     const center = this.#regionList().find(region => region.position === 'center')
-    const key = JSON.stringify([[...names], center?.name])
+    const signatures = [...this.#regions.entries()].map(([name, parts]) => `${name}=${parts.signature}`)
+    const key = JSON.stringify([signatures, center?.name])
     if (!this.isConnected || key === this.#slotsKey)
       return
     this.#slotsKey = key
     this.#releaseSlots?.()
-    this.#releaseSlots = adoptSlots(this, Object.fromEntries(this.#regions), center === undefined ? undefined : this.#regions.get(center.name))
+    const targets: Record<string, HTMLElement> = {}
+    for (const region of this.#regionList()) {
+      const parts = this.#regions.get(region.name)!
+      const fallbackZone = DEFAULT_ZONE[region.position]
+      targets[region.name] = fallbackZone === undefined ? parts.content : parts.zones[fallbackZone]!
+      for (const [zone, node] of Object.entries(parts.zones))
+        targets[`${region.name}-${zone}`] = node
+    }
+    this.#releaseSlots = adoptSlots(this, targets, center === undefined ? undefined : this.#regions.get(center.name)!.content)
+    this.#observeZones()
+  }
+
+  /** 各段与面板头操作区的内容变了就重排：顶栏、状态栏有没有内容决定显不显示，操作区空着时收起。 */
+  #observeZones(): void {
+    if (typeof MutationObserver !== 'function')
+      return
+    this.#zoneObserver?.disconnect()
+    this.#zoneObserver = new MutationObserver(() => this.requestUpdate())
+    for (const parts of this.#regions.values()) {
+      for (const zone of Object.values(parts.zones))
+        this.#zoneObserver.observe(zone, { childList: true })
+    }
+  }
+
+  /** 面板头随区的描述与文案刷新。 */
+  #paintCard(region: DesignerFrameRegion, card: CardParts, t: DesignerFrameTranslations): void {
+    const title = region.title ?? region.name
+    setText(card.title, title)
+    setText(card.subtitle, region.subtitle ?? '')
+    card.subtitle.hidden = !region.subtitle
+    card.actions.hidden = card.actions.childElementCount === 0
+    setText(card.helpContent, region.help ?? '')
+    card.help.hidden = !region.help
+    setAttributes(card.helpTrigger, { 'aria-label': t.panelHelp(title) })
+    card.close.hidden = region.closable === false
+    setAttributes(card.close, { 'aria-label': t.closePanel(title) })
+  }
+
+  /** 收起一块面板：从 panels 里去掉它，派发 panels-change。 */
+  #closePanel(name: string): void {
+    const shown = parseDesignerPanels(this.panels)
+    const visible = this.#regionList()
+      .filter(region => region.position !== 'center' && region.name !== name && (shown === undefined || shown.has(region.name)))
+      .map(region => region.name)
+    const panels = visible.join(' ')
+    this.panels = panels
+    emitEvent(this, 'panels-change', { panels })
   }
 
   #layout(): Layout {
-    const layout: Record<DesignerFramePosition, DesignerFrameRegion[]> = { top: [], start: [], center: [], end: [], bottom: [] }
+    const layout: Record<DesignerFramePosition, DesignerFrameRegion[]> = { header: [], top: [], start: [], center: [], end: [], bottom: [], status: [] }
     for (const region of this.#regionList()) {
       if (this.showsPanel(region.name))
         layout[region.position].push(region)
@@ -258,9 +481,14 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     return layout
   }
 
+  /** 一个位置的下限（百分比）：区登记的与尺寸槽算出的取大的。 */
+  #minOf(position: DesignerFrameResizable, regions: readonly DesignerFrameRegion[]): number {
+    return Math.max(regions[0]?.minSize ?? DEFAULT_MIN_SIZE, this.#measuredMin[position] ?? 0)
+  }
+
   /** 位置的大小，夹在它的下限与 room 之间；room 是中间区留够下限后还剩的百分比。 */
   #sizeOf(position: DesignerFrameResizable, regions: readonly DesignerFrameRegion[], room: number): number {
-    const min = regions[0]?.minSize ?? DEFAULT_MIN_SIZE
+    const min = this.#minOf(position, regions)
     return Math.min(Math.max(this.#current[position] ?? regions[0]?.size ?? 20, min), Math.max(min, room))
   }
 
@@ -273,7 +501,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   /** 一个位置的区：一个区时直接放进去，多个区时上下排列并以分隔条隔开。 */
   #stack(regions: readonly DesignerFrameRegion[], position: DesignerFramePosition): HTMLElement {
     const stack = createAuthoredElement(this.ownerDocument, 'div', { 'data-scope': SCOPE, 'data-part': 'stack', 'data-position': position })
-    const nodes = regions.map(region => this.#regions.get(region.name)!)
+    const nodes = regions.map(region => this.#regions.get(region.name)!.element)
     if (regions.length < 2) {
       stack.append(...nodes)
       return stack
@@ -288,8 +516,11 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     return stack
   }
 
-  /** 两块以上面板的 <xh-splitter>：sizes 与 panels 按面板顺序，triggers 为每条分隔条名称里的区名，record 记下拖动后的大小。 */
-  #splitter(orientation: 'horizontal' | 'vertical', panels: readonly { readonly node: HTMLElement, readonly id: string, readonly size: number, readonly min: number }[], triggers: readonly string[], record: (sizes: readonly number[]) => void): HTMLElement {
+  /**
+   * 两块以上面板的 <xh-splitter>：sizes 与 panels 按面板顺序，triggers 为每条分隔条名称里的区名，record 记下拖动后的大小。
+   * collapsible 的面板在分隔条上按 Enter 收起与展开。
+   */
+  #splitter(orientation: 'horizontal' | 'vertical', panels: readonly { readonly node: HTMLElement, readonly id: string, readonly size: number, readonly min: number, readonly collapsible?: boolean }[], triggers: readonly string[], record: (sizes: readonly number[]) => void): HTMLElement {
     const doc = this.ownerDocument
     const children: HTMLElement[] = []
     panels.forEach((panel, index) => {
@@ -301,7 +532,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       'orientation': orientation,
       'dir': this.#direction(),
       'default-sizes': panels.map(panel => Math.round(panel.size * 1000) / 1000).join(','),
-      'panels': JSON.stringify(panels.map(panel => ({ id: panel.id, min: panel.min }))),
+      'panels': JSON.stringify(panels.map(panel => ({ id: panel.id, min: Math.round(panel.min * 1000) / 1000, ...(panel.collapsible ? { collapsible: true } : {}) }))),
       'data-scope': SCOPE,
       'data-part': 'splitter',
       'data-orientation': orientation,
@@ -330,33 +561,46 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     this.#splitters = []
     for (const [position, regions] of Object.entries(layout)) {
       for (const region of regions)
-        this.#regions.get(region.name)!.setAttribute('data-position', position)
+        this.#regions.get(region.name)!.element.setAttribute('data-position', position)
     }
-    parts.top.replaceChildren(...layout.top.map(region => this.#regions.get(region.name)!))
+    parts.header.replaceChildren(...layout.header.map(region => this.#regions.get(region.name)!.element))
+    parts.header.hidden = layout.header.length === 0
+    parts.top.replaceChildren(...layout.top.map(region => this.#regions.get(region.name)!.element))
     parts.top.hidden = layout.top.length === 0
+    parts.status.replaceChildren(...layout.status.map(region => this.#regions.get(region.name)!.element))
+    parts.status.hidden = layout.status.length === 0
+    // 不显示的顶栏、状态栏区仍要在文档里，作者内容搬进它的段里才看得到有没有内容
+    const parked = [...this.#regionList()].filter(region => ZONES[region.position] !== undefined && !layout[region.position].includes(region))
+    for (const region of parked) {
+      const element = this.#regions.get(region.name)!.element
+      element.hidden = true
+      parts.status.append(element)
+    }
+    for (const region of [...layout.header, ...layout.status])
+      this.#regions.get(region.name)!.element.hidden = false
 
     let main: HTMLElement = this.#stack(layout.center, 'center')
     if (layout.bottom.length > 0) {
       const bottom = this.#sizeOf('bottom', layout.bottom, 100 - CENTER_MIN_SIZE)
       main = this.#splitter('vertical', [
         { node: main, id: 'center', size: 100 - bottom, min: CENTER_MIN_SIZE },
-        { node: this.#stack(layout.bottom, 'bottom'), id: 'bottom', size: bottom, min: layout.bottom[0]!.minSize ?? DEFAULT_MIN_SIZE },
+        { node: this.#stack(layout.bottom, 'bottom'), id: 'bottom', size: bottom, min: this.#minOf('bottom', layout.bottom), collapsible: true },
       ], [layout.bottom[0]!.name], (next) => {
         this.#current.bottom = next[1]!
       })
     }
 
-    const row: { node: HTMLElement, id: string, size: number, min: number }[] = []
+    const row: { node: HTMLElement, id: string, size: number, min: number, collapsible?: boolean }[] = []
     const triggers: string[] = []
-    const start = layout.start.length > 0 ? this.#sizeOf('start', layout.start, 100 - CENTER_MIN_SIZE - (layout.end.length > 0 ? layout.end[0]!.minSize ?? DEFAULT_MIN_SIZE : 0)) : 0
+    const start = layout.start.length > 0 ? this.#sizeOf('start', layout.start, 100 - CENTER_MIN_SIZE - (layout.end.length > 0 ? this.#minOf('end', layout.end) : 0)) : 0
     const end = layout.end.length > 0 ? this.#sizeOf('end', layout.end, 100 - CENTER_MIN_SIZE - start) : 0
     if (layout.start.length > 0) {
-      row.push({ node: this.#stack(layout.start, 'start'), id: 'start', size: start, min: layout.start[0]!.minSize ?? DEFAULT_MIN_SIZE })
+      row.push({ node: this.#stack(layout.start, 'start'), id: 'start', size: start, min: this.#minOf('start', layout.start), collapsible: true })
       triggers.push(layout.start[0]!.name)
     }
     row.push({ node: createAuthoredElement(this.ownerDocument, 'div', { 'data-scope': SCOPE, 'data-part': 'main' }, [main]), id: 'center', size: 100 - start - end, min: CENTER_MIN_SIZE })
     if (layout.end.length > 0) {
-      row.push({ node: this.#stack(layout.end, 'end'), id: 'end', size: end, min: layout.end[0]!.minSize ?? DEFAULT_MIN_SIZE })
+      row.push({ node: this.#stack(layout.end, 'end'), id: 'end', size: end, min: this.#minOf('end', layout.end), collapsible: true })
       triggers.push(layout.end[0]!.name)
     }
     parts.body.replaceChildren(row.length > 1

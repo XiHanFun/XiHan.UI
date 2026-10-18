@@ -47,6 +47,8 @@ const translations: DesignerShellLocaleTranslations = {
   'xh-designer-frame': {
     layout: 'デザイナーのレイアウト',
     resize: label => `「${label}」のサイズを変更`,
+    closePanel: label => `「${label}」を閉じる`,
+    panelHelp: label => `「${label}」について`,
   },
 }
 

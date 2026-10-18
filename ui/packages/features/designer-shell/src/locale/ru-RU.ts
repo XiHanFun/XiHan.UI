@@ -58,6 +58,8 @@ const translations: DesignerShellLocaleTranslations = {
   'xh-designer-frame': {
     layout: 'Макет конструктора',
     resize: label => `Изменить размер: ${label}`,
+    closePanel: label => `Закрыть «${label}»`,
+    panelHelp: label => `О панели «${label}»`,
   },
 }
 

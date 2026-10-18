@@ -134,6 +134,7 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
     searchable: { converter: BOOLEAN_CONVERTER },
     collapsible: { converter: BOOLEAN_CONVERTER },
     readonly: { converter: BOOLEAN_CONVERTER },
+    headless: { converter: BOOLEAN_CONVERTER },
     translations: { attribute: false },
   }
 
@@ -145,6 +146,8 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
   declare collapsible?: boolean
   /** 只读：物料只能浏览，不派发 item-activate、不能拖出。 */
   declare readonly?: boolean
+  /** 放进外框的卡片时写上：不画自己的标题，标题由外框的面板头显示，仍作正文的可访问名。 */
+  declare headless?: boolean
   /** 元素自己的文案，压在全局配置之上。 */
   declare translations: Partial<DesignerPaletteTranslations> | undefined
 
@@ -168,6 +171,7 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
     this.searchable = false
     this.collapsible = false
     this.readonly = false
+    this.headless = false
   }
 
   protected override update(changed: PropertyValues): void {
@@ -175,7 +179,9 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
     const parts = this.#ensureParts()
     const t = this.#config.translations<DesignerPaletteTranslations>(TAG, DEFAULT_TRANSLATIONS, this.translations)
     setText(parts.title, t.title)
+    parts.title.hidden = this.headless === true
     parts.search.hidden = !this.searchable
+    parts.header.hidden = this.headless === true && !this.searchable
     parts.searchInput.setAttribute('aria-label', t.search)
     parts.searchInput.setAttribute('placeholder', t.search)
     const query = this.searchable ? this.#query.trim().toLocaleLowerCase() : ''
