@@ -8,6 +8,7 @@
 import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { ClipboardCopyErrorDetails, ClipboardSchema, ClipboardStatusChangeDetails, ClipboardTranslations } from '@xihan-ui/headless'
 import { clipboardAnatomy, clipboardMachine, clipboardMeta, connectClipboard } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -48,7 +49,7 @@ export class XhClipboardElement extends XhElement {
   static override properties = {
     value: { converter: STRING_CONVERTER },
     timeout: { converter: NUMBER_CONVERTER },
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },

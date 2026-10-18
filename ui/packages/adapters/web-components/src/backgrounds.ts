@@ -26,14 +26,9 @@ import type { PropertyValues } from './reactive'
 import { createBackgroundSurface, registerBuiltinEffects } from '@xihan-ui/backgrounds'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { version as VERSION } from '../package.json'
+import { BOOLEAN_CONVERTER } from './dom/converters'
 import { XhReactiveElement } from './reactive'
 import { defineElement } from './runtime/registry'
-
-/** 属性缺席转换为 undefined（使用引擎默认值），写为 "false" 才是关闭。 */
-const optionalBool = {
-  fromAttribute: (value: string | null): boolean | undefined =>
-    value === null ? undefined : value !== 'false',
-}
 
 /**
  * `<xh-background>`：视觉画面宿主。
@@ -55,10 +50,10 @@ export class XhBackgroundElement extends XhReactiveElement {
     effect: {},
     quality: {},
     params: { type: Object },
-    paused: { type: Boolean },
-    pointer: { converter: optionalBool },
-    reducedMotion: { attribute: 'reduced-motion', converter: optionalBool },
-    pauseOffscreen: { attribute: 'pause-offscreen', converter: optionalBool },
+    paused: { converter: BOOLEAN_CONVERTER },
+    pointer: { converter: BOOLEAN_CONVERTER },
+    reducedMotion: { attribute: 'reduced-motion', converter: BOOLEAN_CONVERTER },
+    pauseOffscreen: { attribute: 'pause-offscreen', converter: BOOLEAN_CONVERTER },
   }
 
   declare effect?: string | BackgroundEffect

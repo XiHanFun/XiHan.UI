@@ -26,6 +26,7 @@ import type {
 } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTable, tableAnatomy, tableMachine, tableMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -34,8 +35,6 @@ import { MachineController } from '../runtime/machine-controller'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 数值属性：属性缺席即 undefined，缺省值的唯一事实源留在 connect
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 行换位事件的 detail：从状态机 props 上的回调取，不在适配器中另抄一份类型。 */
 type TableRowMoveDetails = Parameters<NonNullable<TableSchema['props']['onRowMove']>>[0]
@@ -144,15 +143,15 @@ export class XhTableElement extends XhElement {
     defaultColumnPreference: { attribute: false },
     page: { converter: NUMBER_CONVERTER },
     pageSize: { converter: NUMBER_CONVERTER, attribute: 'page-size' },
-    loading: { type: Boolean },
+    loading: { converter: BOOLEAN_CONVERTER },
     empty: { converter: BOOLEAN_CONVERTER },
-    stickyHeader: { type: Boolean, attribute: 'sticky-header' },
-    striped: { type: Boolean },
+    stickyHeader: { converter: BOOLEAN_CONVERTER, attribute: 'sticky-header' },
+    striped: { converter: BOOLEAN_CONVERTER },
     variant: { converter: STRING_CONVERTER },
-    ruled: { type: Boolean },
+    ruled: { converter: BOOLEAN_CONVERTER },
     footerRows: { converter: NUMBER_CONVERTER, attribute: 'footer-rows' },
-    stickyFooter: { type: Boolean, attribute: 'sticky-footer' },
-    rowReorderable: { type: Boolean, attribute: 'row-reorderable' },
+    stickyFooter: { converter: BOOLEAN_CONVERTER, attribute: 'sticky-footer' },
+    rowReorderable: { converter: BOOLEAN_CONVERTER, attribute: 'row-reorderable' },
     // 落点校验是函数，走不了属性；只作为 property 暴露
     allowRowDrop: { attribute: false },
     loop: { converter: BOOLEAN_CONVERTER },

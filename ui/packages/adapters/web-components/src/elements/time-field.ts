@@ -8,15 +8,13 @@
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, TimeFieldSchema, TimeFieldValueChangeDetails, TimeGranularity, TimeHourCycle, TimeSegmentType } from '@xihan-ui/headless'
 import { connectTimeField, resolveFormControlState, timeFieldAnatomy, timeFieldMachine, timeFieldMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
-// Lit 默认的 Boolean 转换器是 v !== null，缺省为真的开关会因此永远关不掉
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 // 小时制只有 12 与 24 两个取值，写别的一律当作没写（回落到 locale 推断）
 const HOUR_CYCLE_CONVERTER = {
   fromAttribute: (v: string | null): TimeHourCycle | undefined => (v === '12' ? 12 : v === '24' ? 24 : undefined),

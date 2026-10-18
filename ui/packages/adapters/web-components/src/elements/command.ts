@@ -23,6 +23,7 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { commandAnatomy, commandMachine, commandMeta, commandStructure, connectCommand, resolveCommandGroups } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
@@ -32,8 +33,6 @@ import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-command>`：Light-DOM 行为宿主：作者写 trigger / backdrop / positioner / content / input / list / item / ...
@@ -109,11 +108,11 @@ export class XhCommandElement extends XhPortalHostElement {
     // 文案对象只走 property
     translations: { attribute: false },
     open: { converter: BOOLEAN_CONVERTER },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     inputValue: { converter: STRING_CONVERTER, attribute: 'input-value' },
     defaultInputValue: { converter: STRING_CONVERTER, attribute: 'default-input-value' },
     filter: { converter: BOOLEAN_CONVERTER },
-    caseSensitive: { type: Boolean, attribute: 'case-sensitive' },
+    caseSensitive: { converter: BOOLEAN_CONVERTER, attribute: 'case-sensitive' },
     closeOnSelect: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-select' },
     modal: { converter: BOOLEAN_CONVERTER },
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },

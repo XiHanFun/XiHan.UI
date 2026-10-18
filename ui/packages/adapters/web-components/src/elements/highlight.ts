@@ -8,6 +8,7 @@
 import type { Tone } from '@xihan-ui/core'
 import type { HighlightApi, HighlightProps } from '@xihan-ui/headless'
 import { connectHighlight, highlightAnatomy, highlightMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -41,7 +42,7 @@ export class XhHighlightElement extends XhElement {
   static override properties = {
     text: { converter: STRING_CONVERTER },
     keyword: { converter: STRING_CONVERTER },
-    caseSensitive: { type: Boolean, attribute: 'case-sensitive' },
+    caseSensitive: { converter: BOOLEAN_CONVERTER, attribute: 'case-sensitive' },
     tone: { converter: STRING_CONVERTER },
   }
 

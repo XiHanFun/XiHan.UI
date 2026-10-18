@@ -8,6 +8,7 @@
 import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { TogglePressedChangeDetails, ToggleSchema } from '@xihan-ui/headless'
 import { connectToggle, toggleAnatomy, toggleMachine, toggleMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -31,14 +32,14 @@ export class XhToggleElement extends XhElement {
   static override partContract = { anatomy: toggleAnatomy, meta: toggleMeta }
 
   static override properties = {
-    pressed: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
-    defaultPressed: { type: Boolean, attribute: 'default-pressed' },
-    disabled: { type: Boolean },
+    pressed: { converter: BOOLEAN_CONVERTER },
+    defaultPressed: { converter: BOOLEAN_CONVERTER, attribute: 'default-pressed' },
+    disabled: { converter: BOOLEAN_CONVERTER },
     variant: {},
     tone: {},
     size: {},
-    iconOnly: { type: Boolean, attribute: 'icon-only' },
-    fullWidth: { type: Boolean, attribute: 'full-width' },
+    iconOnly: { converter: BOOLEAN_CONVERTER, attribute: 'icon-only' },
+    fullWidth: { converter: BOOLEAN_CONVERTER, attribute: 'full-width' },
   }
 
   declare pressed?: boolean

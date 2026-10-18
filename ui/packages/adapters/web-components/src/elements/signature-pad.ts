@@ -19,15 +19,13 @@ import type {
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectSignaturePad, EMPTY_SIGNATURE, resolveFormControlState, signaturePadAnatomy, signaturePadMachine, signaturePadMeta, signaturePadStructure } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值的唯一事实源留在 connect。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 三态布尔：属性缺席 = undefined（用默认值）、="false" = false、其余 = true。
-// Lit 自带的 Boolean 转换器是 v !== null，缺省为真的开关会因此永远关不掉
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-signature-pad>`：Light-DOM 行为宿主：作者写 root / control / path 三个必需角色节点

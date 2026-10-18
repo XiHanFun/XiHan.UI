@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldTranslations, DateFieldValueChangeDetails, DateGranularity, DateHourCycle, DateSegmentSet, DateSegmentType, FormControlState } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta, dateFieldStructure, resolveFormControlState } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { HOUR_CYCLE_CONVERTER } from '../dom/hour-cycle'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -16,9 +17,6 @@ import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-// Lit 默认的 Boolean 转换器判的是 v !== null，写 disabled="false" 反而成了真
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 // 段集用属性也表达得了：逗号分隔的段名。空串与只剩分隔符的写法等同于没给
 const SEGMENT_SET_CONVERTER = {
   fromAttribute: (v: string | null): DateSegmentSet | undefined => {

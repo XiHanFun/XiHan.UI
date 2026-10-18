@@ -7,6 +7,7 @@
 
 import type { MarqueeDirection, MarqueePausedChangeDetails, MarqueeSchema, MarqueeTranslations } from '@xihan-ui/headless'
 import { connectMarquee, marqueeAnatomy, marqueeMachine, marqueeMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -14,8 +15,6 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 缺省为真的开关要写得出「关」：缺席是没给，写 "false" 才是关
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-marquee>`：Light-DOM 行为宿主，把 connectMarquee 产出接到 root、content 与 autoplay-trigger 上。
@@ -54,8 +53,8 @@ export class XhMarqueeElement extends XhElement {
     pauseOnHover: { converter: BOOLEAN_CONVERTER, attribute: 'pause-on-hover' },
     paused: { converter: BOOLEAN_CONVERTER },
     defaultPaused: { converter: BOOLEAN_CONVERTER, attribute: 'default-paused' },
-    autoFill: { type: Boolean, attribute: 'auto-fill' },
-    fade: { type: Boolean },
+    autoFill: { converter: BOOLEAN_CONVERTER, attribute: 'auto-fill' },
+    fade: { converter: BOOLEAN_CONVERTER },
     // 文案是对象，只走 property
     translations: { attribute: false },
   }

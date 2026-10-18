@@ -42,6 +42,7 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { calendarRangePickerAnatomy, calendarRangePickerMachine, connectDateRangePicker, dateFieldAnatomy, dateFieldMachine, dateRangePickerAnatomy, dateRangePickerCalendarProps, dateRangePickerFieldAt, dateRangePickerFieldEndProps, dateRangePickerFieldProps, dateRangePickerMachine, dateRangePickerMeta, dateRangePickerStructure, resolveDateRangePickerPanelIndex, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { END_INDEX_CONVERTER } from '../dom/end-index'
 import { HOUR_CYCLE_CONVERTER } from '../dom/hour-cycle'
 import { wcNormalize } from '../dom/normalize'
@@ -54,8 +55,6 @@ import { ScrollbarsController } from '../runtime/scrollbars-controller'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 九个段位的名字，按段名声明时据此识别。 */
 const SEGMENT_TYPES: readonly DateSegmentType[] = [
@@ -238,7 +237,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     value: { attribute: false },
     defaultValue: { attribute: false },
     open: { converter: BOOLEAN_CONVERTER },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     min: { converter: STRING_CONVERTER },
     max: { converter: STRING_CONVERTER },
     locale: { converter: STRING_CONVERTER },

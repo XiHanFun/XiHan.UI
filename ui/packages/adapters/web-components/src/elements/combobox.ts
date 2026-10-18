@@ -25,6 +25,7 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { comboboxAnatomy, comboboxMachine, comboboxMeta, comboboxStructure, connectCombobox, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
@@ -36,8 +37,6 @@ import { ScrollbarsController } from '../runtime/scrollbars-controller'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-combobox>`：Light-DOM 行为宿主：作者写 root / label / control / input / trigger / positioner / content / item / ...
@@ -150,7 +149,7 @@ export class XhComboboxElement extends XhPortalHostElement {
     virtualizer: { attribute: false },
     label: { converter: STRING_CONVERTER },
     empty: { converter: STRING_CONVERTER },
-    clearable: { type: Boolean },
+    clearable: { converter: BOOLEAN_CONVERTER },
     // 文案对象只走 property
     translations: { attribute: false },
     name: { converter: STRING_CONVERTER },
@@ -160,8 +159,8 @@ export class XhComboboxElement extends XhPortalHostElement {
     inputValue: { converter: STRING_CONVERTER, attribute: 'input-value' },
     defaultInputValue: { converter: STRING_CONVERTER, attribute: 'default-input-value' },
     open: { converter: BOOLEAN_CONVERTER },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
-    multiple: { type: Boolean },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
+    multiple: { converter: BOOLEAN_CONVERTER },
     maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
@@ -170,8 +169,8 @@ export class XhComboboxElement extends XhPortalHostElement {
     loading: { converter: BOOLEAN_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
-    allowCustomValue: { type: Boolean, attribute: 'allow-custom-value' },
-    openOnClick: { type: Boolean, attribute: 'open-on-click' },
+    allowCustomValue: { converter: BOOLEAN_CONVERTER, attribute: 'allow-custom-value' },
+    openOnClick: { converter: BOOLEAN_CONVERTER, attribute: 'open-on-click' },
     inputBehavior: { converter: STRING_CONVERTER, attribute: 'input-behavior' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },

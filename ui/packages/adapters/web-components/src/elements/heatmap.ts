@@ -39,6 +39,7 @@ import {
   normalizeHeatmapNumber,
   normalizeHeatmapString,
 } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createGeneratedElement, generatedChildren, hasAuthorContent } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -50,9 +51,6 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 // 数字属性：属性缺席或空串即 undefined，交回 connect 定缺省。
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-
-// 布尔三态：缺席是没给，`x="false"` 是关，其余写法都是开
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 往上找最近的某个角色节点，取它写着的 value：块把月份传给行，行把行身份传给格子。 */
 /** 作者写在 legend-item 上的 polarity 属性；只认两侧，其余一律当顺序色阶或中点那一格。 */

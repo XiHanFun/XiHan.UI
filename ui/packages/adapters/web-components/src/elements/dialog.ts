@@ -11,6 +11,7 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectDialog, dialogAnatomy, dialogMachine, dialogMeta } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
@@ -19,8 +20,6 @@ import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
-// 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 // 属性缺席翻成 undefined，缺省值由皮肤的缺省档决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
@@ -64,7 +63,7 @@ export class XhDialogElement extends XhPortalHostElement {
   // role 不声明为响应式属性，复用 HTMLElement 原生反射，在 machineProps 里经 getAttribute 读取。
   static override properties = {
     open: { converter: BOOLEAN_CONVERTER },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     modal: { converter: BOOLEAN_CONVERTER },
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },

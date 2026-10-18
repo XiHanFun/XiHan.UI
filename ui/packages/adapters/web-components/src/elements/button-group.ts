@@ -8,10 +8,9 @@
 import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { ButtonGroupProps } from '@xihan-ui/headless'
 import { buttonGroupAnatomy, buttonGroupMeta, connectButtonGroup } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-
-const BOOLEAN_CONVERTER = { fromAttribute: (value: string | null) => (value === null ? undefined : value !== 'false') }
 
 /** 组下发给段的三个视觉轴，与 disabled 走同一条路。 */
 type GroupAxis = 'variant' | 'tone' | 'size'
@@ -43,8 +42,8 @@ export class XhButtonGroupElement extends XhElement {
     variant: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     tone: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     size: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
-    disabled: { type: Boolean },
-    fullWidth: { type: Boolean, attribute: 'full-width' },
+    disabled: { converter: BOOLEAN_CONVERTER },
+    fullWidth: { converter: BOOLEAN_CONVERTER, attribute: 'full-width' },
     separators: { converter: BOOLEAN_CONVERTER },
   }
 

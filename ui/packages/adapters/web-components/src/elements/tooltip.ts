@@ -11,6 +11,7 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectTooltip, createTooltipGroup, tooltipAnatomy, tooltipMachine, tooltipMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { XhReactiveElement } from '../reactive'
@@ -66,8 +67,8 @@ export class XhTooltipElement extends XhPortalHostElement {
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
-    open: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
+    open: { converter: BOOLEAN_CONVERTER },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
@@ -76,8 +77,8 @@ export class XhTooltipElement extends XhPortalHostElement {
     openDelay: { converter: NUMBER_CONVERTER, attribute: 'open-delay' },
     closeDelay: { converter: NUMBER_CONVERTER, attribute: 'close-delay' },
     skipDelayDuration: { converter: NUMBER_CONVERTER, attribute: 'skip-delay-duration' },
-    disabled: { type: Boolean },
-    followCursor: { type: Boolean, attribute: 'follow-cursor' },
+    disabled: { converter: BOOLEAN_CONVERTER },
+    followCursor: { converter: BOOLEAN_CONVERTER, attribute: 'follow-cursor' },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
   }

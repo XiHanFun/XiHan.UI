@@ -7,6 +7,7 @@
 
 import type { GridColumnCount, GridItemProps, GridProps } from '@xihan-ui/headless'
 import { connectGrid, gridAnatomy, gridMeta, normalizeGridCount, normalizeGridTier } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -15,8 +16,6 @@ type ColsByBreakpoint = Exclude<GridProps['cols'], GridColumnCount | undefined>
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 三态：没写为 undefined，写 "false" 为 false，其余为 true
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 /**
  * 列数写整数就是各档同一个列数（`cols="3"`），写 JSON 对象就是逐档的列数
  * （`cols='{"base":1,"md":3}'`）。解析不出对象时当没写：落一个半截对象进去，

@@ -7,6 +7,7 @@
 
 import type { WatermarkImageSize, WatermarkSchema } from '@xihan-ui/headless'
 import { connectWatermark, watermarkAnatomy, watermarkMachine, watermarkMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -53,7 +54,7 @@ export class XhWatermarkElement extends XhElement {
     fontFamily: { converter: STRING_CONVERTER, attribute: 'font-family' },
     image: { converter: STRING_CONVERTER },
     imageSize: { attribute: false },
-    fullscreen: { type: Boolean },
+    fullscreen: { converter: BOOLEAN_CONVERTER },
   }
 
   declare text?: string | string[]

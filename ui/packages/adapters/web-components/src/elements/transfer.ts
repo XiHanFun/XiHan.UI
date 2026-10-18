@@ -20,6 +20,7 @@ import type {
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTransfer, resolveFormControlState, transferAnatomy, transferFocusKey, transferMachine, transferMeta, transferStructure } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -27,10 +28,6 @@ import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-// 缺省为真的开关（方向键回绕）只有三态才关得掉——
-// Lit 默认的 Boolean 转换器是 v !== null，写 loop="false" 照样是真。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 const SIDES: readonly TransferSide[] = ['source', 'target']
@@ -129,7 +126,7 @@ export class XhTransferElement extends XhElement {
     defaultSelection: { attribute: false },
     filter: { attribute: false },
     pageSize: { converter: NUMBER_CONVERTER, attribute: 'page-size' },
-    searchable: { type: Boolean },
+    searchable: { converter: BOOLEAN_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
@@ -137,7 +134,7 @@ export class XhTransferElement extends XhElement {
     loading: { converter: BOOLEAN_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
-    oneWay: { type: Boolean, attribute: 'one-way' },
+    oneWay: { converter: BOOLEAN_CONVERTER, attribute: 'one-way' },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     // 文案是对象，只走 property

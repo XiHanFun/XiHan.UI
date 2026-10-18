@@ -8,6 +8,7 @@
 import type { Tone } from '@xihan-ui/core'
 import type { AlertOpenChangeDetails, AlertSchema } from '@xihan-ui/headless'
 import { alertAnatomy, alertMachine, alertMeta, connectAlert } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
@@ -40,12 +41,12 @@ export class XhAlertElement extends XhElement {
   // 用 Lit 自带的 Boolean 转换器的话，缺省为真的 closable / default-open 永远关不掉
   static override properties = {
     tone: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
-    closable: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
-    banner: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
-    open: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
+    closable: { converter: BOOLEAN_CONVERTER },
+    banner: { converter: BOOLEAN_CONVERTER },
+    open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: {
       attribute: 'default-open',
-      converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') },
+      converter: BOOLEAN_CONVERTER,
     },
     // 文案是对象，只能走 property
     translations: { attribute: false },

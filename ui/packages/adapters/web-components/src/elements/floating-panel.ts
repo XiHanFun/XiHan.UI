@@ -20,6 +20,7 @@ import type {
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectFloatingPanel, floatingPanelAnatomy, floatingPanelMachine, floatingPanelMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
@@ -27,9 +28,6 @@ import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值的唯一事实源留在机器与 connect。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 三态布尔：缺席 = undefined（用默认值），="false" = false，其余 = true。
-// Lit 自带的 Boolean 转换器是 v !== null，缺省为真的 draggable / resizable 会因此永远关不掉。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 一对数写成逗号分隔（position="24,24"）；读不出两个有限数就当没写。 */
 function parsePair(v: string | null): [number, number] | undefined {

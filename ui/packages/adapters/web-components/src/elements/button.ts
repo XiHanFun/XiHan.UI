@@ -8,6 +8,7 @@
 import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { ButtonProps, ButtonSchema } from '@xihan-ui/headless'
 import { buttonAnatomy, buttonMachine, buttonMeta, connectButton } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -33,10 +34,10 @@ export class XhButtonElement extends XhElement {
 
   static override properties = {
     type: {},
-    disabled: { type: Boolean },
-    iconOnly: { type: Boolean, attribute: 'icon-only' },
-    fullWidth: { type: Boolean, attribute: 'full-width' },
-    loading: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
+    iconOnly: { converter: BOOLEAN_CONVERTER, attribute: 'icon-only' },
+    fullWidth: { converter: BOOLEAN_CONVERTER, attribute: 'full-width' },
+    loading: { converter: BOOLEAN_CONVERTER },
     variant: {},
     tone: {},
     size: {},

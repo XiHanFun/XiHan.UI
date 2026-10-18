@@ -17,6 +17,7 @@
 - **表单校验**：只含空白的字符串与元素全为空的数组算空，`required` 会拦下；`min` / `max` 对字符串改按字素计数。依赖原行为的改在 `validator` 里自行判断
 - **React Card**：`XhCardRoot` 的 `title`、`content` 改为卡片的标题与正文，不再作为原生属性写到根上
 - **Web Components FileUpload**：条目改按 `allFiles` 对应（远程附件在前、本地文件在后）；用了 `remoteFiles` 的改按 `allFiles` 铺行
+- **Web Components 布尔属性**：全部改为三态，显式写 `="false"` 为假、不写交给缺省；写过 `disabled="false"` 却想要真的改成 `disabled`，移除属性改为回到组件缺省
 - **缺省结构**：根组件不写默认插槽 / 不给 children、Web Components 元素不写部件时，原先渲出空的根，现在铺出整套部件
 - **外观**：渲染成 `<button>` 的部件清掉浏览器缺省样式，WC 作者自写的按钮部件接线后同样无壳，要按钮外观时把 Button 当作这个部件写进去
 :::

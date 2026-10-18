@@ -24,6 +24,7 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectMention, mentionAnatomy, mentionMachine, mentionMeta, mentionStructure, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
@@ -34,8 +35,6 @@ import { ScrollbarsController } from '../runtime/scrollbars-controller'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-mention>`：Light-DOM 行为宿主：作者写 root / input / positioner / content / item 角色节点，
@@ -116,13 +115,13 @@ export class XhMentionElement extends XhPortalHostElement {
     collection: { attribute: false },
     translations: { attribute: false },
     label: { converter: STRING_CONVERTER },
-    multiline: { type: Boolean },
+    multiline: { converter: BOOLEAN_CONVERTER },
     // prefix 撞 Element 的原生只读属性（命名空间前缀），属性名与字段名一并加 trigger- 前缀
     triggerPrefix: { converter: STRING_CONVERTER, attribute: 'trigger-prefix' },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     disabled: { converter: BOOLEAN_CONVERTER },
-    loading: { type: Boolean },
+    loading: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },

@@ -9,6 +9,7 @@ import type { Orientation, Size, Tone } from '@xihan-ui/core'
 import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails, CheckboxGroupVariant, FormControlState, ResolvedFormControlState } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, checkboxGroupStructure, connectCheckboxGroup, resolveFormControlState } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -19,9 +20,6 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 // 数值：缺席或空串翻成 undefined，由机器按「不设限」处理。
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-
-// 三态布尔：缺席=undefined（走机器默认值）、="false"=false、其余为真。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 // 值集合走逗号分隔（value="a,b"）：空串是空集合，只有 null 才翻成 undefined。
 // 条目值里不能带逗号，用 property 赋值则不受限。

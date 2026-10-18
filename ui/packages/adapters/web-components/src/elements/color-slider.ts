@@ -9,14 +9,13 @@ import type { Direction, IdGenerator, Orientation, Size } from '@xihan-ui/core'
 import type { ColorChannel, ColorFormat, ColorSliderSchema, ColorSliderServices, ColorSliderTranslations, ColorSliderValueChangeDetails, FormControlState, SliderSchema } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { colorSliderAnatomy, colorSliderMachine, colorSliderMeta, colorSliderSliderProps, connectColorSlider, resolveFormControlState, sliderMachine } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 /** 属性缺席转换为 undefined，默认值由状态机决定。 */
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-/** 布尔属性：出现即 true，写 "false" 才是 false；缺席不覆盖状态机默认值。 */
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-color-slider>`：Light-DOM 行为宿主，运行 color-slider 状态机并内嵌一台 slider 状态机，

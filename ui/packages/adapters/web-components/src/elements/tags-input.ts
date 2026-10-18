@@ -18,6 +18,7 @@ import type {
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTagsInput, resolveFormControlState, tagsInputAnatomy, tagsInputMachine, tagsInputMeta, tagsInputStructure } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -25,9 +26,6 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（走缺省）、="false"=false、其余=true。
-// Lit 默认的 Boolean 转换器是 v !== null，缺省为真的开关会因此永远关不掉
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 // 标签集合写进属性时一律按逗号拆（属性表达不了数组）。
 // 用别的 delimiter 时请走 property（`el.value = ['a;b']`）：转换器看不见同一元素上的另一个属性
 const ARRAY_CONVERTER = {

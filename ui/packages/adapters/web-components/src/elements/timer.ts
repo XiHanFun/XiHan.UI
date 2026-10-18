@@ -8,6 +8,7 @@
 import type { Size } from '@xihan-ui/core'
 import type { TimerCompleteDetails, TimerLive, TimerSchema, TimerTickDetails, TimerUnit } from '@xihan-ui/headless'
 import { connectTimer, isTimerUnit, timerAnatomy, timerMachine, timerMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -16,8 +17,6 @@ import { MachineController } from '../runtime/machine-controller'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 空串也当缺席：`start-ms=""` 经 Number() 会变成 0，那是「从零开始」，不是「没写」
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 布尔三态：缺席 = undefined（用默认值），="false" = false，其余 = true
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 条目没写段单位或写错时退回秒：秒是最常显示的那一段。 */
 const FALLBACK_UNIT: TimerUnit = 'seconds'

@@ -29,6 +29,7 @@ import {
   notificationMachine,
   notificationMeta,
 } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
@@ -40,10 +41,6 @@ import { MachineController } from '../runtime/machine-controller'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 空串也当缺席：max="" 经 Number() 会变成 0，那会被当成不限而不是缺省
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（用缺省）、在场=true、显式写 "false"=false。
-// 缺省为真的开关（closable）只有三态才关得掉——Lit 默认的 Boolean 转换器是 v !== null，
-// 写 closable="false" 照样是真，"这条不许关"在 HTML 里就说不出口
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * 该堆叠对应哪个位置。属性缺席时交 undefined，由 connect 回落到队列的 placement。

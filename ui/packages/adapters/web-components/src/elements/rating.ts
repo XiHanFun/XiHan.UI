@@ -10,6 +10,7 @@ import type { FormControlState, RatingHoverChangeDetails, RatingItemProps, Ratin
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectRating, hasNamingContent, ratingAnatomy, ratingMachine, ratingMeta, ratingStructure, resolveFormControlState } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -17,9 +18,6 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 三态布尔：属性缺席 = undefined（用默认值）、="false" = false、其余 = true。
-// Lit 默认的 Boolean 转换器是 v !== null，缺省为真的开关会因此永远关不掉
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-rating>`：Light-DOM 行为宿主：作者写 root / label / control 与若干 item 角色节点

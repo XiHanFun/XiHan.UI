@@ -20,6 +20,7 @@ import type {
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { citationAnatomy, citationMachine, citationMeta, connectCitation } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -84,10 +85,10 @@ export class XhCitationElement extends XhPortalHostElement {
     sources: { attribute: false },
     activeSourceId: { attribute: 'active-source-id' },
     defaultActiveSourceId: { attribute: 'default-active-source-id' },
-    open: { converter: { fromAttribute: (value: string | null) => (value === null ? undefined : value !== 'false') } },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
-    disabled: { type: Boolean },
-    loop: { type: Boolean },
+    open: { converter: BOOLEAN_CONVERTER },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
+    disabled: { converter: BOOLEAN_CONVERTER },
+    loop: { converter: BOOLEAN_CONVERTER },
     direction: { attribute: 'dir' },
     size: {},
     translations: { attribute: false },

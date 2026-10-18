@@ -26,6 +26,7 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectTimePicker, resolveFormControlState, timePickerAnatomy, timePickerMachine, timePickerMeta, timePickerStructure } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { TIME_STEP_CONVERTER } from '../dom/time-step'
@@ -37,8 +38,6 @@ import { ScrollbarsController } from '../runtime/scrollbars-controller'
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 // 小时制只认 12 与 24，写别的当作没写
 const HOUR_CYCLE_CONVERTER = {
   fromAttribute: (v: string | null): TimeHourCycle | undefined => (v === '12' ? 12 : v === '24' ? 24 : undefined),
@@ -160,7 +159,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
     maxSelected: { converter: NUMBER_CONVERTER, attribute: 'max-selected' },
     maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
     open: { converter: BOOLEAN_CONVERTER },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     min: { converter: STRING_CONVERTER },
     max: { converter: STRING_CONVERTER },
     locale: { converter: STRING_CONVERTER },

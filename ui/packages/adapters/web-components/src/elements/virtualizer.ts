@@ -17,6 +17,7 @@ import type {
 } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectVirtualizer, virtualizerAnatomy, virtualizerMachine, virtualizerMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -24,9 +25,6 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 三态：缺席 = undefined（用默认值），="false" = false，其余（含空串）= true。
-// Lit 自带的 Boolean 转换器是 v !== null，缺省为真的开关用它会永远关不掉
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 条目声明的下标；缺失或空串一律返回 NaN（见 wire 中的说明）。 */
 function itemIndex(el: HTMLElement): number {

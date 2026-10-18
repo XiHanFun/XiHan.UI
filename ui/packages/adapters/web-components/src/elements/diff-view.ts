@@ -19,6 +19,7 @@ import type {
   DiffViewTranslations,
 } from '@xihan-ui/headless'
 import { connectDiffView, diffViewAnatomy, diffViewMachine, diffViewMeta, diffViewSides } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -27,8 +28,6 @@ import { MachineController } from '../runtime/machine-controller'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 空串按缺席处理，避免 Number('') 落成 0
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 三态：属性缺席是 undefined，写了就是 true，显式 "false" 才是 false
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 铺出来的一个正文格：评论钮与评论容器跟着它，开合与挂评论只改这几处，不重铺整份差异。 */
 interface PaintedCell {

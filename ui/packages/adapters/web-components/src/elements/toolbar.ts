@@ -9,6 +9,7 @@ import type { ControlVariant, Direction, Orientation, Service, Size } from '@xih
 import type { ToolbarItemProps, ToolbarSchema, ToolbarTranslations } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectToolbar, toolbarAnatomy, toolbarMachine, toolbarMeta, toolbarOverflowMenuProps } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { MachineController } from '../runtime/machine-controller'
@@ -18,10 +19,6 @@ import { XhPortalHostElement } from '../runtime/portal-host'
 // 字符串属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在 connect。
 // Lit 默认转换器会在属性被移除时把值落成 null，那样就再也表达不了"未指定"。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-
-// 布尔三态：缺席 = undefined（用 connect 的默认值），="false" = false，其余 = true。
-// Lit 自带的 Boolean 转换器是 v !== null，缺省为真的 loop 会因此永远关不掉。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-toolbar>`：Light-DOM 行为宿主：作者写 root、若干 item，可选的 group、separator 与

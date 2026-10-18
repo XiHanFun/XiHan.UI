@@ -8,6 +8,7 @@
 import type { ControlVariant, Size } from '@xihan-ui/core'
 import type { PageHeaderProps } from '@xihan-ui/headless'
 import { connectPageHeader, pageHeaderAnatomy, pageHeaderMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -40,7 +41,7 @@ export class XhPageHeaderElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开
   static override properties = {
     size: { converter: STRING_CONVERTER },
-    split: { type: Boolean },
+    split: { converter: BOOLEAN_CONVERTER },
     variant: { converter: STRING_CONVERTER },
   }
 

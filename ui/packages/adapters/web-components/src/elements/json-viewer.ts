@@ -8,6 +8,7 @@
 import type { ControlVariant, Direction, Size } from '@xihan-ui/core'
 import type { HighlightSegment, JsonViewerApi, JsonViewerCopyErrorDetails, JsonViewerExpandedValueChangeDetails, JsonViewerNode, JsonViewerSchema, JsonViewerTool, JsonViewerToolTrigger, JsonViewerTranslations, JsonViewerViewChangeDetails, JsonViewerWrapChangeDetails } from '@xihan-ui/headless'
 import { connectJsonViewer, groupJsonViewerNodesByParent, jsonViewerAnatomy, jsonViewerMachine, jsonViewerMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -15,8 +16,6 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，缺省值由 connect 决定；Lit 自带转换器会把缺席落成 null/false，表达不了「未指定」。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 // 属性里写的是一段 JSON 文本；解析不了就当作一个字符串值展示，而不是整个视图空掉
 const JSON_CONVERTER = {
   fromAttribute: (v: string | null): unknown => {

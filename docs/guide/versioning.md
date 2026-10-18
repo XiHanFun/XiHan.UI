@@ -239,7 +239,7 @@ brand  neutral  success  warning  danger  info
 | `xh-tour` | `remeasure` |
 
 ::: tip 布尔 attribute 是三态的
-`modal="false"` 表示关闭，不写表示交由组件决定，这与原生 HTML 布尔属性（写出即为真）不同。把三态转换器换回原生语义是不改名字的语义收窄，按 major 处理。
+全部元素的布尔 attribute 用同一个转换器：`modal="false"` 表示关闭，不写表示交由组件决定，这与原生 HTML 布尔属性（写出即为真）不同。把三态转换器换回原生语义是不改名字的语义收窄，按 major 处理。
 :::
 
 以下与包结构有关的事实同样在承诺内：

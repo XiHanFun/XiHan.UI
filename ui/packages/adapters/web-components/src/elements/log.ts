@@ -9,6 +9,7 @@ import type { IdGenerator, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type { CollectionVirtualizer, LogApi, LogLevel, LogProps, LogSchema, LogStickChangeDetails, LogTranslations } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectLog, logAnatomy, logMachine, logMeta, parseAnsi } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -61,7 +62,7 @@ export class XhLogElement extends XhElement {
   // 描述符逐个写全，不用对象展开，CEM 分析器的 lit 插件读不了展开元素的名字
   static override properties = {
     rows: { converter: NUMBER_CONVERTER },
-    loading: { type: Boolean },
+    loading: { converter: BOOLEAN_CONVERTER },
     size: { converter: STRING_CONVERTER },
     levels: { converter: LEVELS_CONVERTER },
     // 对象值走不了 HTML 属性，只作为 property 暴露

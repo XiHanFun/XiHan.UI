@@ -10,6 +10,7 @@ import type { FormatSpec } from '@xihan-ui/expression'
 import type { FormatInputApi, FormatInputKind, FormatInputSchema, FormatInputValueChangeDetails, FormControlState } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectFormatInput, formatInputAnatomy, formatInputMachine, formatInputMeta, formatInputStructure, formatInputTranslations, resolveFormControlState } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -21,8 +22,6 @@ import { XhToggleGroupElement } from './toggle-group'
 
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 元素还没进文档时调命令式方法的报错。 */
 function notConnected(method: string): Error {

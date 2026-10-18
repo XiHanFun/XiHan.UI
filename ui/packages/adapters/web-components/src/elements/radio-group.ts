@@ -10,14 +10,11 @@ import type { FormControlState, RadioGroupItemProps, RadioGroupNode, RadioGroupS
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectRadioGroup, radioGroupAnatomy, radioGroupMachine, radioGroupMeta, radioGroupStructure, resolveFormControlState } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-// 布尔三态：缺席 = undefined（用 connect 的默认值），="false" = false，其余 = true。
-// Lit 自带的 Boolean 转换器是 v !== null，缺省为真的 loop 会因此永远关不掉。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-radio-group>`：Light-DOM 行为宿主：作者写 root / label 与若干 item 角色节点，

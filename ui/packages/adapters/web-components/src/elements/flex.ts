@@ -7,6 +7,7 @@
 
 import type { FlexProps } from '@xihan-ui/headless'
 import { connectFlex, flexAnatomy, flexMeta, normalizeFlexTier } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -41,8 +42,8 @@ export class XhFlexElement extends XhElement {
     align: { converter: { fromAttribute: normalizeFlexTier } },
     justify: { converter: { fromAttribute: normalizeFlexTier } },
     gap: { converter: { fromAttribute: normalizeFlexTier } },
-    wrap: { type: Boolean },
-    inline: { type: Boolean },
+    wrap: { converter: BOOLEAN_CONVERTER },
+    inline: { converter: BOOLEAN_CONVERTER },
   }
 
   declare orientation?: FlexProps['orientation']

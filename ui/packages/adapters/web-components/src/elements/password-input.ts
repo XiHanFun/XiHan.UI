@@ -9,15 +9,13 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, PasswordInputRevealedChangeDetails, PasswordInputSchema, PasswordInputTranslations, PasswordInputValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectPasswordInput, passwordInputAnatomy, passwordInputMachine, passwordInputMeta, passwordInputStructure, resolveFormControlState } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
-// Lit 默认的 Boolean 转换器是 v !== null，受控的 revealed 会因此再也表达不了「宿主没管」
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 // 数值缺席或空串翻成 undefined，以此区分"没给"与 0。
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 

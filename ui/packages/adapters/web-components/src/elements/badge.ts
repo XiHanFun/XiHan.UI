@@ -8,6 +8,7 @@
 import type { Size, Tone } from '@xihan-ui/core'
 import type { BadgePlacement, BadgeSchema } from '@xihan-ui/headless'
 import { badgeAnatomy, badgeMachine, badgeMeta, connectBadge } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -41,9 +42,9 @@ export class XhBadgeElement extends XhElement {
     size: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     count: { converter: { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) } },
     max: { converter: { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) } },
-    showZero: { type: Boolean, attribute: 'show-zero' },
-    dot: { type: Boolean },
-    pulse: { type: Boolean },
+    showZero: { converter: BOOLEAN_CONVERTER, attribute: 'show-zero' },
+    dot: { converter: BOOLEAN_CONVERTER },
+    pulse: { converter: BOOLEAN_CONVERTER },
     label: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
   }
 
