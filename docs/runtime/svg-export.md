@@ -27,13 +27,13 @@ const pngFile = await rasterizeSvg(copy, { scale: 2, background: "#ffffff" });
 - 去掉 `class`、`style`、`data-*`、事件属性（`on*`）与 ARIA、`role`、`tabindex`，不再依赖页面的样式表与脚本；`id` 留着，渐变、裁剪与遮罩靠它引用。
 - 计算出 `display: none` 的元素与 `include` 返回 `false` 的元素连同子树不进克隆。
 - 不支持 `foreignObject`：带它的 SVG 画进画布后导不出 PNG，遇到时抛 `TypeError`，把其中的内容画成 SVG 元素再导出。
-- 根上补 `xmlns`。`source` 必须在文档里；返回的克隆不在文档里，可以再改再拼。
+- 克隆的元素都建在 SVG 命名空间里，`xmlns` 由序列化时写出，根上不手写。`source` 必须在文档里；返回的克隆不在文档里，可以再改再拼。
 
 只处理 SVG 子树。HTML 画的部分（如节点的方框与文字）由产品读它的计算样式自己画成 SVG 元素，再与克隆拼在一起。
 
 ## 序列化
 
-`serializeSvg(svg)` 把 SVG 写成能单独存成 `.svg` 文件的文本，根上缺 `xmlns` 时补上。
+`serializeSvg(svg)` 把 SVG 写成能单独存成 `.svg` 文件的文本，`xmlns` 由序列化器按命名空间写出一份。只收 SVG 命名空间里的元素，别的抛 `TypeError`。自己拼 SVG 时用 `createElementNS` 建元素，不要再手写 `xmlns` 属性：有的序列化器会因此写出两份，得到的文本不是合法的 XML。
 
 ## 栅格化成 PNG
 
