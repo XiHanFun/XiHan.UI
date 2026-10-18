@@ -58,7 +58,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
 
   const dialog = document.createElement('xh-dialog') as XhDialogElement
   // 告知类弹窗一律 alertdialog：点外面不关，得明确按一下才算读过
-  dialog.setAttribute('role', 'alertdialog')
+  dialog.dialogRole = 'alertdialog'
   dialog.modal = true
 
   const backdrop = partNode('div', 'backdrop')

@@ -45,7 +45,7 @@ const NUMBER_CONVERTER = {
  * @attr {boolean} contained - 局部抽屉：遮罩与定位层从 fixed 改为 absolute，只覆盖最近的定位祖先而不是整屏。
  *   本元素是 Light DOM，浮层位于作者书写的位置，因此挂载容器本身不需要属性；写上它是为了让皮肤按容器绘制
  * @attr {'top'|'right'|'bottom'|'left'} side - 滑出的边，默认 right
- * @attr {'dialog'|'alertdialog'} role - 语义角色，默认 dialog
+ * @attr {'dialog'|'alertdialog'} dialog-role - 语义角色，写在 content 上，默认 dialog。不命名为 role：那是 HTML 全局属性，写在宿主上宿主自己就成了抽屉，连同里面的触发钮
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true
  * @attr {boolean} close-on-interact-outside - 点击浮层外关闭；默认跟随 modal，alertdialog 恒不关闭
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
@@ -80,10 +80,10 @@ export class XhDrawerElement extends XhPortalHostElement {
   static override partContract = { anatomy: drawerAnatomy, meta: drawerMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
-  // role 不声明为响应式属性，复用 HTMLElement 原生反射，在 machineProps 里经 getAttribute 读取。
   static override properties = {
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
+    dialogRole: { converter: STRING_CONVERTER, attribute: 'dialog-role' },
     modal: { converter: BOOLEAN_CONVERTER },
     contained: { converter: BOOLEAN_CONVERTER },
     side: { converter: STRING_CONVERTER },
@@ -104,6 +104,7 @@ export class XhDrawerElement extends XhPortalHostElement {
 
   declare open?: boolean
   declare defaultOpen?: boolean
+  declare dialogRole?: DrawerSchema['props']['role']
   declare modal?: boolean
   declare contained?: boolean
   declare side?: DrawerSchema['props']['side']
@@ -157,7 +158,7 @@ export class XhDrawerElement extends XhPortalHostElement {
       modal: this.modal,
       contained: this.contained ?? false,
       side: this.side,
-      role: (this.getAttribute('role') as DrawerSchema['props']['role']) ?? undefined,
+      role: this.dialogRole,
       closeOnEscape: this.closeOnEscape,
       closeOnInteractOutside: this.closeOnInteractOutside,
       restoreFocus: this.restoreFocus,

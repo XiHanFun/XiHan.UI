@@ -112,7 +112,7 @@ Shadow DOM 会封闭结构：无法更换标签、无法插入自定义节点、
 属性遵循自定义元素惯例：kebab-case 的 HTML attribute ↔ camelCase 的 JS property。
 
 ```html
-<xh-dialog default-open modal="false" role="alertdialog">
+<xh-dialog default-open modal="false" dialog-role="alertdialog">
 ```
 
 ```ts
