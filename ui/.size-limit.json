@@ -48,6 +48,12 @@
     "limit": "1.3 kB"
   },
   {
+    "name": "core/svg-export",
+    "path": "packages/engine/core/dist/svg-export.js",
+    "gzip": true,
+    "limit": "1.8 kB"
+  },
+  {
     "name": "tokens",
     "path": "packages/design/tokens/dist/index.js",
     "gzip": true,
