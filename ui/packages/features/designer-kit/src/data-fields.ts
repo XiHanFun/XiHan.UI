@@ -15,6 +15,15 @@ export type DataFieldKind = 'value' | 'object' | 'list'
 /** 字段的全部种类。 */
 export const DATA_FIELD_KINDS: readonly DataFieldKind[] = ['value', 'object', 'list']
 
+/**
+ * value 字段的值代表什么：text 文字；image 图片地址；barcode 一维条码的内容；qrcode 二维码的内容。
+ * 设计器据此决定生成哪种元素、用哪种控件；不写时按文本。数据类型由 type 管，两者互不相干。
+ */
+export type DataFieldContent = 'text' | 'image' | 'barcode' | 'qrcode'
+
+/** value 字段的全部内容种类。 */
+export const DATA_FIELD_CONTENTS: readonly DataFieldContent[] = ['text', 'image', 'barcode', 'qrcode']
+
 /** 字段树的一个节点。 */
 export interface DataField {
   /** 数据里的键，在同级字段里唯一。 */
@@ -24,6 +33,8 @@ export interface DataField {
   readonly kind: DataFieldKind
   /** value 字段的数据类型：条件编辑器据此给运算符与操作数控件；不写时按文本。 */
   readonly type?: FilterValueType
+  /** value 字段的值代表什么：设计器据此生成元素、选控件；不写时按文本。 */
+  readonly content?: DataFieldContent
   /** object 与 list 的子字段；list 的子字段相对数组的一个元素。 */
   readonly children?: readonly DataField[]
 }
@@ -50,6 +61,8 @@ function checkLevel(fields: readonly DataField[]): void {
       throw new RangeError(`[designer-kit] data field name must be a non-empty string, got ${String(field.name)}`)
     if (!DATA_FIELD_KINDS.includes(field.kind))
       throw new RangeError(`[designer-kit] data field "${field.name}" has unknown kind ${String(field.kind)}`)
+    if (field.content !== undefined && !DATA_FIELD_CONTENTS.includes(field.content))
+      throw new RangeError(`[designer-kit] data field "${field.name}" has unknown content ${String(field.content)}`)
     if (names.has(field.name))
       throw new RangeError(`[designer-kit] duplicate data field name "${field.name}"`)
     names.add(field.name)
@@ -58,7 +71,7 @@ function checkLevel(fields: readonly DataField[]): void {
 
 /**
  * 按路径找字段节点：路径从字段树根开始、只含键，经过 list 时进入它的元素字段；找不到时为 undefined。
- * 同级字段重名、名字为空或种类未知时抛 RangeError。
+ * 同级字段重名、名字为空、种类或内容未知时抛 RangeError。
  */
 export function findDataField(fields: readonly DataField[], path: JsonPath): DataField | undefined {
   let level = fields
@@ -77,7 +90,7 @@ export function findDataField(fields: readonly DataField[], path: JsonPath): Dat
 
 /**
  * 深度优先列出起点之下可以直接按路径读到的字段：进入 object 的子字段，不进入 list 的子字段（它们相对数组元素）。
- * 起点找不到或是 value 时为空数组；同级字段重名、名字为空或种类未知时抛 RangeError。
+ * 起点找不到或是 value 时为空数组；同级字段重名、名字为空、种类或内容未知时抛 RangeError。
  */
 export function listDataFields(fields: readonly DataField[], options: ListDataFieldsOptions = {}): DataFieldEntry[] {
   const base = options.base ?? []

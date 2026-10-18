@@ -9,8 +9,8 @@ export { alignRects, distributeRects } from './arrange'
 export type { AlignMode, DistributeAxis, DistributeSpacing } from './arrange'
 export { CLIPBOARD_FORMAT, clipboardMimeType, decodeClipboard, encodeClipboard } from './clipboard'
 export type { ClipboardDecodeError, ClipboardDecodeResult, ClipboardEnvelope } from './clipboard'
-export { DATA_FIELD_KINDS, findDataField, listDataFields, listFilterFields } from './data-fields'
-export type { DataField, DataFieldEntry, DataFieldKind, ListDataFieldsOptions } from './data-fields'
+export { DATA_FIELD_CONTENTS, DATA_FIELD_KINDS, findDataField, listDataFields, listFilterFields } from './data-fields'
+export type { DataField, DataFieldContent, DataFieldEntry, DataFieldKind, ListDataFieldsOptions } from './data-fields'
 export {
   checkExtensionData,
   commandForShortcut,

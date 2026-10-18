@@ -190,9 +190,16 @@ listDataFields(fields, { base: ["order", "items"] }); // qty，相对数组的�
 | `findDataField(fields, path)` | 按只含键的路径找字段，经过 `list` 时进入元素字段，找不到为 `undefined` |
 | `listFilterFields(fields)` | 条件编辑器用的字段清单（`@xihan-ui/viz` 的 `FilterField`）：根上与 `object` 里的 `value` 字段，`name` 是路径的 `formatJsonPath` 写法，不进入 `list`（条件筛的是行，不是行里数组的元素）；`type` 取字段的 `type`，没写时按文本（`"string"`） |
 
-`text` 是 `formatJsonPath` 写法，不是标识符的键写成 `["unit price"]`。同级字段重名、名字为空或种类未知时抛 `RangeError`。
+`text` 是 `formatJsonPath` 写法，不是标识符的键写成 `["unit price"]`。同级字段重名、名字为空、种类或内容未知时抛 `RangeError`。
 
-`value` 字段可以写 `type`（`"string" | "number" | "boolean" | "date" | "datetime"`，即 `@xihan-ui/viz` 的 `FilterValueType`）：条件编辑器据此给运算符与值的控件，不写时按文本。
+`value` 字段还有两项可写，各管一件事：
+
+| 项 | 取值 | 管什么 |
+| --- | --- | --- |
+| `type` | `"string" \| "number" \| "boolean" \| "date" \| "datetime"`，即 `@xihan-ui/viz` 的 `FilterValueType` | 数据类型，管筛选与格式化：条件编辑器据此给运算符与值的控件，设计器可以据此挑值格式；不写时按文本 |
+| `content` | `"text" \| "image" \| "barcode" \| "qrcode"`（`DATA_FIELD_CONTENTS`） | 这个值代表什么，管生成哪种元素、用哪种控件：文字、图片地址、一维条码的内容、二维码的内容。设计器把字段放上画布时据此生成元素；不写时按文本 |
+
+两项互不相干：商品图片地址是 `{ type: "string", content: "image" }`，条码号可以是 `{ type: "number", content: "barcode" }`。`content` 写了不认识的值时抛 `RangeError`。
 
 ## 视口
 
