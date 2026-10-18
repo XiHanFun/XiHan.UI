@@ -51,7 +51,7 @@ describe('standaloneSvg（Chromium）', () => {
 
     const copy = standaloneSvg(source, { include: element => !element.hasAttribute('data-hit') })
     expect(copy.isConnected).toBe(false)
-    expect(copy.getAttribute('xmlns')).toBe(SVG_NS)
+    expect([copy.namespaceURI, copy.hasAttribute('xmlns')]).toEqual([SVG_NS, false])
     expect([copy.getAttribute('width'), copy.getAttribute('viewBox'), copy.hasAttribute('class')]).toEqual(['40', '0 0 40 20', false])
     const line = copy.querySelector('path')!
     expect([line.getAttribute('stroke'), line.getAttribute('stroke-width'), line.getAttribute('stroke-dasharray'), line.getAttribute('fill')])
@@ -75,6 +75,7 @@ describe('standaloneSvg（Chromium）', () => {
     const source = svgFrom('<svg class="chart" width="10" height="10"><rect width="10" height="10"></rect></svg>')
     const text = serializeSvg(standaloneSvg(source))
     expect(text.startsWith('<svg')).toBe(true)
+    expect(text.match(/xmlns=/g)).toEqual(['xmlns='])
     expect(text).toContain(`xmlns="${SVG_NS}"`)
     expect(text).not.toContain('class=')
     const blob = await rasterizeSvg(text)

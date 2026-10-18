@@ -55,7 +55,8 @@ export interface StandaloneSvgOptions {
  * stroke-linecap / linejoin、opacity、fill-opacity / stroke-opacity、font-family / size / weight / style、
  * text-anchor、dominant-baseline、visibility）按计算值写成属性，设计令牌、currentColor 与继承来的值都换成具体值；
  * 去掉 class、style、data-*、事件与交互相关的属性，不再依赖页面的样式表与脚本；计算出 display: none 的元素不进克隆。
- * 遇到 foreignObject 抛 TypeError。source 必须在文档里（要读计算样式），返回的克隆不在文档里。
+ * 遇到 foreignObject 抛 TypeError。克隆的元素都建在 SVG 命名空间里，序列化时由序列化器写出 xmlns，根上不手写这个属性。
+ * source 必须在文档里（要读计算样式），返回的克隆不在文档里。
  */
 export function standaloneSvg(source: SVGSVGElement, options: StandaloneSvgOptions = {}): SVGSVGElement {
   const include = options.include ?? (() => true)
@@ -90,16 +91,18 @@ export function standaloneSvg(source: SVGSVGElement, options: StandaloneSvgOptio
     }
     return clone
   }
-  const root = copy(source) as SVGSVGElement | undefined ?? source.ownerDocument.createElementNS(SVG_NS, 'svg')
-  root.setAttribute('xmlns', SVG_NS)
-  return root
+  return copy(source) as SVGSVGElement | undefined ?? source.ownerDocument.createElementNS(SVG_NS, 'svg')
 }
 
-/** 把 SVG 序列化成能单独存成 .svg 文件的文本；根上缺 xmlns 时补上。 */
+/**
+ * 把 SVG 序列化成能单独存成 .svg 文件的文本。xmlns 由序列化器按元素的命名空间写出一份；
+ * 根上再手写 xmlns 属性时，有的序列化器（如 jsdom）会写出两份，得到的文本不是合法的 XML。
+ * 不在 SVG 命名空间里的元素抛 TypeError。
+ */
 export function serializeSvg(svg: SVGSVGElement): string {
-  const root = svg.hasAttribute('xmlns') ? svg : svg.cloneNode(true) as SVGSVGElement
-  root.setAttribute('xmlns', SVG_NS)
-  return new XMLSerializer().serializeToString(root)
+  if (svg.namespaceURI !== SVG_NS)
+    throw new TypeError('[xh] serializeSvg 只收 SVG 命名空间里的 <svg> 元素')
+  return new XMLSerializer().serializeToString(svg)
 }
 
 export interface RasterizeSvgOptions {
