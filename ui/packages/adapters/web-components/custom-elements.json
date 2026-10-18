@@ -19690,9 +19690,9 @@
               "kind": "field",
               "name": "fieldTarget",
               "static": true,
-              "default": "{ parts: ['trigger'], kind: 'state' }",
+              "default": "{ parts: ['trigger'], kind: 'group' }",
               "type": {
-                "text": "{ parts: ['trigger'], kind: 'state' }"
+                "text": "{ parts: ['trigger'], kind: 'group' }"
               }
             },
             {
@@ -21368,9 +21368,9 @@
               "kind": "field",
               "name": "fieldTarget",
               "static": true,
-              "default": "{ parts: ['trigger'], kind: 'state' }",
+              "default": "{ parts: ['trigger'], kind: 'group' }",
               "type": {
-                "text": "{ parts: ['trigger'], kind: 'state' }"
+                "text": "{ parts: ['trigger'], kind: 'group' }"
               }
             },
             {
@@ -72246,9 +72246,9 @@
               "kind": "field",
               "name": "fieldTarget",
               "static": true,
-              "default": "{ parts: ['trigger'], kind: 'state' }",
+              "default": "{ parts: ['trigger'], kind: 'group' }",
               "type": {
-                "text": "{ parts: ['trigger'], kind: 'state' }"
+                "text": "{ parts: ['trigger'], kind: 'group' }"
               }
             },
             {
@@ -73515,9 +73515,9 @@
               "kind": "field",
               "name": "fieldTarget",
               "static": true,
-              "default": "{ parts: ['trigger'], kind: 'state' }",
+              "default": "{ parts: ['trigger'], kind: 'group' }",
               "type": {
-                "text": "{ parts: ['trigger'], kind: 'state' }"
+                "text": "{ parts: ['trigger'], kind: 'group' }"
               }
             },
             {

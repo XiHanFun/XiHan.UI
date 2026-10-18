@@ -31,7 +31,7 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotIsPlainText, slotPaints } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
-import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { TimePickerColumnProvider, TimePickerProvider, TimePickerTagProvider, useTimePickerColumnContext, useTimePickerContext, useTimePickerTagContext } from './context'
 import { useTimePicker } from './use-time-picker'
@@ -342,8 +342,9 @@ export function XhTimePickerSegment({ segment, children, ...rest }: XhTimePicker
 export interface XhTimePickerTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhTimePickerTrigger({ children, ...rest }: XhTimePickerTriggerProps): ReactNode {
   const ctx = useTimePickerContext()
-  // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
-  const fieldWiring = useFieldStateWiring()
+  // 放进字段时字段的说明与错误文案接到触发钮上；按钮不收 aria-required / aria-readonly，只取描述链，
+  // 只读、必填与校验状态由各段自己按字段状态投影
+  const fieldWiring = useFieldGroupWiring()
   // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
   const fieldLabel = useFieldLabelWiring()
   return (

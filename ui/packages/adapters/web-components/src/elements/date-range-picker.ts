@@ -221,7 +221,8 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     delegates: [dateFieldAnatomy, calendarRangePickerAnatomy],
   }
 
-  static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const
+  // 放进字段时字段的标签与说明接到触发钮上；触发钮是按钮，不收 aria-required / aria-readonly，只走组类接线，状态由各段自己报
+  static override fieldTarget = { parts: ['trigger'], kind: 'group' } as const
 
   /** 作者没写结构时按标准结构生成：标题、盒、两份表单影子与浮层里的快捷选项、日历、起止两组时间列与底栏。 */
   static override structure: ElementStructure<XhDateRangePickerElement> = {

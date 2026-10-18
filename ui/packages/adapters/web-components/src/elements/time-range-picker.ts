@@ -139,7 +139,8 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
 
   static override partContract = { anatomy: timeRangePickerAnatomy, meta: timeRangePickerMeta }
 
-  static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const
+  // 放进字段时字段的标签与说明接到触发钮上；触发钮是按钮，不收 aria-required / aria-readonly，只走组类接线，状态由各段自己报
+  static override fieldTarget = { parts: ['trigger'], kind: 'group' } as const
 
   /** 作者没写结构时按标准结构生成：标题、盒、两份表单影子与浮层里的快捷选项、起止两组时间列。 */
   static override structure: ElementStructure<XhTimeRangePickerElement> = {
