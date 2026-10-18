@@ -101,4 +101,29 @@ describe('按钮组的三轴下发到组内每一段', () => {
     await host.updateComplete
     expect(plain.hasAttribute('variant')).toBe(false)
   })
+  it('分体按钮：段是 xh-menu 时组的形态写到它的触发器按钮上，菜单自己的 tone / size 不动', async () => {
+    const host = document.createElement('xh-button-group') as UpdatableGroup
+    host.setAttribute('variant', 'outline')
+    host.setAttribute('size', 'sm')
+    host.innerHTML = `
+      <div data-xh-part="root">
+        <xh-button><button data-xh-part="root">保存</button></xh-button>
+        <xh-menu>
+          <xh-button data-xh-part="trigger" icon-only><button data-xh-part="root" aria-label="更多保存方式">▾</button></xh-button>
+          <div data-xh-part="positioner"><div data-xh-part="content"><div data-xh-part="item" value="save-as">另存为</div></div></div>
+        </xh-menu>
+      </div>`
+    document.body.append(host)
+    await settle(host)
+    const [main, trigger] = roots(host)
+    expect(main!.getAttribute('data-xh-action-variant')).toBe('outline')
+    expect(trigger!.getAttribute('data-xh-action-variant')).toBe('outline')
+    expect(trigger!.getAttribute('data-xh-action-size')).toBe('sm')
+    const menu = host.querySelector('xh-menu')!
+    expect([menu.hasAttribute('variant'), menu.hasAttribute('size'), menu.hasAttribute('tone')]).toEqual([false, false, false])
+
+    host.setAttribute('variant', 'ghost')
+    await settle(host)
+    expect(trigger!.getAttribute('data-xh-action-variant')).toBe('ghost')
+  })
 })
