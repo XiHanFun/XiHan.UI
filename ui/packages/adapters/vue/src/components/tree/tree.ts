@@ -317,6 +317,16 @@ export const XhTreeBranchText = defineComponent({
   },
 })
 
+/** 分支行的第 2 行副文本，与叶子的说明同一档 */
+export const XhTreeBranchDescription = defineComponent({
+  name: 'XhTreeBranchDescription',
+  setup(_, { slots }) {
+    const ctx = useTreeContext()
+    const { node } = useTreeNodeContext()
+    return () => h('span', ctx.api.value.getBranchDescriptionProps(node.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhTreeBranchContent = defineComponent({
   name: 'XhTreeBranchContent',
   setup(_, { slots }) {

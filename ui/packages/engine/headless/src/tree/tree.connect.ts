@@ -805,6 +805,13 @@ export function connectTree<T extends PropTypes>(
       'data-xh-collection-slot': 'text',
     }),
 
+    // 分支行的第 2 行：与叶子的说明同一档，跨文字槽、走 muted 档，不跟语气
+    getBranchDescriptionProps: node => normalize.element({
+      ...parts['branch-description'].attrs,
+      ...branchState(node.value),
+      'data-xh-collection-slot': 'description',
+    }),
+
     // 收起只翻 branchState 里的 data-state，不卸载作者节点，子树里的输入框与滚动位置得留着
     getBranchContentProps: node => normalize.element({
       ...parts['branch-content'].attrs,

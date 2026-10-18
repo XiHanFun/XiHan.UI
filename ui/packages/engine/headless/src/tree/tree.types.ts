@@ -38,7 +38,7 @@ export interface TreeNode {
    */
   tone?: Tone
   /**
-   * 副文本，写入 item-description 部件；未提供时本条不铺该部件。
+   * 副文本：叶子写入 item-description、分支写入 branch-description 部件；未提供时本条不铺该部件。
    * 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它，
    * 一句话能说清的写进 label。
    */
@@ -369,6 +369,8 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   getBranchTriggerProps: (props: TreeNodeProps) => T['element']
   getBranchIndicatorProps: (props: TreeNodeProps) => T['element']
   getBranchTextProps: (props: TreeNodeProps) => T['element']
+  /** 分支行的第 2 行副文本，与叶子的 item-description 同一档。 */
+  getBranchDescriptionProps: (props: TreeNodeProps) => T['element']
   getBranchContentProps: (props: TreeNodeProps) => T['element']
 }
 

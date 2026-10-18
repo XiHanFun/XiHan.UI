@@ -20,7 +20,7 @@ collection 是层级元信息的唯一事实源，标记只负责外观；缩进
 
 加粗的是必需部件。
 
-`data-scope="tree"`：`root` · `label` · **`tree`** · `item` · `item-indicator` · `item-text` · `item-description` · `item-suffix` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `node-drag-trigger` · `empty` · `loading` · `live-region`
+`data-scope="tree"`：`root` · `label` · **`tree`** · `item` · `item-indicator` · `item-text` · `item-description` · `item-suffix` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-description` · `branch-content` · `node-drag-trigger` · `empty` · `loading` · `live-region`
 
 ## 示例
 
@@ -116,7 +116,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 
 ### 条目说明
 
-一句名称说不清的解释写进说明，落在名称下面一行；窄的时候截断，不把树撑宽
+一句名称说不清的解释写进说明，叶子与分支都可以带，落在名称下面一行；窄的时候截断，不把树撑宽
 
 <XhDemo src="tree/17-item-description" />
 
@@ -174,7 +174,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tree>` |
-| Vue 组件 | `XhTreeBranch` `XhTreeBranchContent` `XhTreeBranchControl` `XhTreeBranchIndicator` `XhTreeBranchText` `XhTreeBranchTrigger` `XhTreeEmpty` `XhTreeItem` `XhTreeItemDescription` `XhTreeItemIndicator` `XhTreeItemSuffix` `XhTreeItemText` `XhTreeLabel` `XhTreeLiveRegion` `XhTreeLoading` `XhTreeNodeDragTrigger` `XhTreeRoot` `XhTreeTree` |
+| Vue 组件 | `XhTreeBranch` `XhTreeBranchContent` `XhTreeBranchControl` `XhTreeBranchDescription` `XhTreeBranchIndicator` `XhTreeBranchText` `XhTreeBranchTrigger` `XhTreeEmpty` `XhTreeItem` `XhTreeItemDescription` `XhTreeItemIndicator` `XhTreeItemSuffix` `XhTreeItemText` `XhTreeLabel` `XhTreeLiveRegion` `XhTreeLoading` `XhTreeNodeDragTrigger` `XhTreeRoot` `XhTreeTree` |
 | 组合式函数 | `useTree` |
 | 状态机 | `treeMachine` |
 | 皮肤 | `@xihan-ui/styles/tree.css` |
@@ -221,7 +221,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `label` | `string` |  | 展示名，也是连打检索与分支可及名的取字来源；默认回退为 value。 |
 | `disabled` | `boolean` |  | 节点禁用：方向键与连打检索跳过它，但它仍可聚焦、仍是导航起点。不向下传导给子节点。 |
 | `tone` | `Tone` |  | 该节点自身的性质：已失效的写 danger、需要留意的写 warning。不写即与其余节点同档， 也不向下传导给子节点——每一层各自声明。只换字色与悬停 / 按下的面，不改字重与缩进， 也不表达选中或校验；选中的标记与禁用都压过它。彩字不是唯一通道，要紧的差别仍要配图标。 |
-| `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
+| `description` | `string` |  | 副文本：叶子写入 item-description、分支写入 branch-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
 | `children` | `TreeNode[]` |  | 子节点。提供数组即判定为分支，空数组也计入：暂时没有子项的目录仍要报告 aria-expanded。 |
 | `childrenOrientation` | `Orientation` |  | 该层子节点的排布方式，由作者在数据上标注。提供后以它为准，`vertical` 也优先于树级的 `leafOrientation`；未提供时才回退为 `leafOrientation` 加子节点全是叶子的结构判据。 标注在哪一层，横向排布就只落在哪一层：菜单授权中标注在按钮的父菜单上，其他目录不受影响， 也不随子节点增减漂移。只影响排布，不改变键盘。 |
 
@@ -264,6 +264,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `branch-trigger` | 'open' \| 'closed' |
 | `branch-indicator` | 'open' \| 'closed' |
 | `branch-text` | 'open' \| 'closed' |
+| `branch-description` | 'open' \| 'closed' |
 | `branch-content` | 'open' \| 'closed' |
 
 以下名称仅用于内部状态机。
@@ -314,6 +315,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `getBranchTriggerProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getBranchIndicatorProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getBranchTextProps` | `(props: TreeNodeProps) => T['element']` |  |
+| `getBranchDescriptionProps` | `(props: TreeNodeProps) => T['element']` | 分支行的第 2 行副文本，与叶子的 item-description 同一档。 |
 | `getBranchContentProps` | `(props: TreeNodeProps) => T['element']` |  |
 
 ## 无障碍
@@ -468,6 +470,12 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `branch-text` | `data-selected` | ''（条件成立时才出现） |
 | `branch-text` | `data-state` | 'open' \| 'closed' |
 | `branch-text` | `data-xh-collection-slot` | 'text' |
+| `branch-description` | `data-disabled` | ''（条件成立时才出现） |
+| `branch-description` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-description` | `data-indeterminate` | ''（条件成立时才出现） |
+| `branch-description` | `data-selected` | ''（条件成立时才出现） |
+| `branch-description` | `data-state` | 'open' \| 'closed' |
+| `branch-description` | `data-xh-collection-slot` | 'description' |
 | `branch-content` | `data-disabled` | ''（条件成立时才出现） |
 | `branch-content` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-content` | `data-indeterminate` | ''（条件成立时才出现） |
@@ -514,7 +522,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `--xh-tree-gap` | `root` | `gap` | `default` | `--xh-space-2` | tree 的 root 部件 gap 覆盖槽。 |
 | `--xh-tree-icon-size` | `branch-control`<br>`item`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-_collection-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | tree 的 branch-control、item、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tree-indent` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `inline-size`<br>`inset-inline-start`<br>`padding-inline-start` | `default`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-_tree-indent` | tree 的 branch、branch-content、branch-control、item、tree 部件 inline-size、inset-inline-start、padding-inline-start 覆盖槽。 |
-| `--xh-tree-indicator-size` | `branch`<br>`branch-content`<br>`branch-control`<br>`branch-indicator`<br>`branch-trigger`<br>`item`<br>`item-indicator`<br>`tree` | `--xh-icon-size`<br>`inline-size`<br>`inset-inline-start`<br>`padding-inline-start` | `default`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-_tree-indicator` | tree 的 branch、branch-content、branch-control、branch-indicator、branch-trigger、item、item-indicator、tree 部件 --xh-icon-size、inline-size、inset-inline-start、padding-inline-start 覆盖槽。 |
+| `--xh-tree-indicator-size` | `branch`<br>`branch-content`<br>`branch-control`<br>`branch-description`<br>`branch-indicator`<br>`branch-trigger`<br>`item`<br>`item-indicator`<br>`tree` | `--xh-icon-size`<br>`inline-size`<br>`inset-inline-start`<br>`padding-inline-start` | `default`<br>`has(> [data-scope='tree'][data-part='branch-trigger']:first-child)`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-_tree-indicator` | tree 的 branch、branch-content、branch-control、branch-description、branch-indicator、branch-trigger、item、item-indicator、tree 部件 --xh-icon-size、inline-size、inset-inline-start、padding-inline-start 覆盖槽。 |
 | `--xh-tree-item-check-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-tree-item-indicator-fg` | tree 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-item-indicator-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-fg-brand` | tree 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tree 的 label 部件 color 覆盖槽。 |
@@ -536,7 +544,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `--xh-tree-row-fg` | `branch-control`<br>`item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-fg-default` | tree 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-row-fg-selected` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-tree-row-fg` | tree 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-row-font-size` | `branch-control`<br>`item` | `font-size` | `default` | `--xh-_tree-font-size` | tree 的 branch-control、item 部件 font-size 覆盖槽。 |
-| `--xh-tree-row-gap` | `branch-control`<br>`item` | `gap`<br>`padding-inline-start` | `default`<br>`orientation=vertical` | `--xh-_tree-row-gap` | tree 的 branch-control、item 部件 gap、padding-inline-start 覆盖槽。 |
+| `--xh-tree-row-gap` | `branch-control`<br>`branch-description`<br>`item` | `gap`<br>`padding-inline-start` | `default`<br>`has(> [data-scope='tree'][data-part='branch-trigger']:first-child)`<br>`orientation=vertical` | `--xh-_tree-row-gap` | tree 的 branch-control、branch-description、item 部件 gap、padding-inline-start 覆盖槽。 |
 | `--xh-tree-row-leading` | `branch-control`<br>`item` | `line-height` | `default` | `--xh-leading-normal` | tree 的 branch-control、item 部件 line-height 覆盖槽。 |
 | `--xh-tree-row-loading-opacity` | `branch-control`<br>`item`<br>`tree` | `opacity` | `is([data-scope='tree'][data-part='item'], [data-scope='tree'][data-part='branch-control'])`<br>`loading` | `--xh-state-disabled-opacity` | tree 的 branch-control、item、tree 部件 opacity 覆盖槽。 |
 | `--xh-tree-row-px` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `inline-size`<br>`inset-inline-start`<br>`padding-inline`<br>`padding-inline-start` | `default`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-_tree-row-px` | tree 的 branch、branch-content、branch-control、item、tree 部件 inline-size、inset-inline-start、padding-inline、padding-inline-start 覆盖槽。 |

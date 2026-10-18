@@ -356,6 +356,14 @@ export function XhTreeBranchIndicator({ children, ...rest }: XhTreeBranchIndicat
   return <span {...mergeReactProps(ctx.api.getBranchIndicatorProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+export interface XhTreeBranchDescriptionProps extends ComponentPropsWithRef<'span'> {}
+/** 分支行的第 2 行副文本，与叶子的说明同一档 */
+export function XhTreeBranchDescription({ children, ...rest }: XhTreeBranchDescriptionProps): ReactNode {
+  const ctx = useTreeContext()
+  const node = useTreeNodeContext()
+  return <span {...mergeReactProps(ctx.api.getBranchDescriptionProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhTreeBranchTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhTreeBranchText({ children, ...rest }: XhTreeBranchTextProps): ReactNode {
   const ctx = useTreeContext()

@@ -119,6 +119,9 @@
       "cascader",
       "tree-select"
     ],
+    "branch-description": [
+      "tree"
+    ],
     "branch-indicator": [
       "json-viewer",
       "navigation-menu",

@@ -92052,6 +92052,7 @@
         "branch",
         "branch-content",
         "branch-control",
+        "branch-description",
         "branch-indicator",
         "branch-trigger",
         "item",
@@ -92066,6 +92067,7 @@
       ],
       "state": [
         "default",
+        "has(> [data-scope='tree'][data-part='branch-trigger']:first-child)",
         "lines",
         "not(:last-child)",
         "orientation=vertical"
@@ -92074,7 +92076,7 @@
         "--xh-_tree-indicator"
       ],
       "visibility": "public",
-      "description": "tree 的 branch、branch-content、branch-control、branch-indicator、branch-trigger、item、item-indicator、tree 部件 --xh-icon-size、inline-size、inset-inline-start、padding-inline-start 覆盖槽。"
+      "description": "tree 的 branch、branch-content、branch-control、branch-description、branch-indicator、branch-trigger、item、item-indicator、tree 部件 --xh-icon-size、inline-size、inset-inline-start、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-tree-item-check-fg",
@@ -92535,6 +92537,7 @@
       "component": "tree",
       "part": [
         "branch-control",
+        "branch-description",
         "item"
       ],
       "property": [
@@ -92543,13 +92546,14 @@
       ],
       "state": [
         "default",
+        "has(> [data-scope='tree'][data-part='branch-trigger']:first-child)",
         "orientation=vertical"
       ],
       "defaultToken": [
         "--xh-_tree-row-gap"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、item 部件 gap、padding-inline-start 覆盖槽。"
+      "description": "tree 的 branch-control、branch-description、item 部件 gap、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-tree-row-leading",

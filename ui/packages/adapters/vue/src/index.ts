@@ -1398,6 +1398,7 @@ export {
   XhTreeBranch,
   XhTreeBranchContent,
   XhTreeBranchControl,
+  XhTreeBranchDescription,
   XhTreeBranchIndicator,
   XhTreeBranchText,
   XhTreeBranchTrigger,

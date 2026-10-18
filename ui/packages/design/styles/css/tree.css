@@ -305,21 +305,29 @@
     text-overflow: ellipsis;
   }
 
-  /* 带说明的叶子行折成两行：名称、图标与行尾那几格排第 1 行，说明独占第 2 行，从行内容的起点开始；
+  /* 带说明的叶子行与分支行折成两行：名称、图标与行尾那几格排第 1 行，说明独占第 2 行，从行内容的起点开始；
      两行之间不留行距，与列表族的说明行同一种排法 */
-  [data-scope='tree'][data-part='item']:has(> [data-scope='tree'][data-part='item-description']) {
+  [data-scope='tree'][data-part='item']:has(> [data-scope='tree'][data-part='item-description']),
+  [data-scope='tree'][data-part='branch-control']:has(> [data-scope='tree'][data-part='branch-description']) {
     flex-wrap: wrap;
     row-gap: 0;
   }
 
   /* 排在对号之后，整行占满才折到第 2 行；放不下一行就截断，不把行撑出横向滚动 */
-  [data-scope='tree'][data-part='item-description'] {
+  [data-scope='tree'][data-part='item-description'],
+  [data-scope='tree'][data-part='branch-description'] {
     flex: 1 0 100%;
     order: 2;
     min-inline-size: 0;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+
+  /* 展开箭头排在分支行首时，说明让出箭头那一格，与分支名同一起点；叶子行的这一格由行首内距补出，同样对齐 */
+  [data-scope='tree'][data-part='branch-control']:has(> [data-scope='tree'][data-part='branch-trigger']:first-child)
+    > [data-scope='tree'][data-part='branch-description'] {
+    padding-inline-start: calc(var(--xh-_tree-indicator-size) + var(--xh-tree-row-gap, var(--xh-_tree-row-gap)));
   }
 
   /* 选中对号落在行尾，与树选择同位：作者在行里摆在哪儿都排到最后，

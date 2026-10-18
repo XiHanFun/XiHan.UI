@@ -79,6 +79,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @csspart branch-trigger - 展开箭头（aria-hidden 且不占 Tab 位，只切换展开态）
  * @csspart branch-indicator - 展开方向指示符（aria-hidden）
  * @csspart branch-text - 分支文本
+ * @csspart branch-description - 分支行的第 2 行副文本
  * @csspart branch-content - role=group 子层容器，收起时隐藏
  * @csspart node-drag-trigger - 节点拖拽把手，触屏路径的入口（自带 touch-action: none，按下即拖动）；对读屏隐藏且不占 Tab 位，键盘路径由树上的 Alt + 方向键承担
  */
@@ -271,6 +272,7 @@ export class XhTreeElement extends XhElement {
     putAll('branch-trigger', BRANCH_SELECTOR, node => api.getBranchTriggerProps(node))
     putAll('branch-indicator', BRANCH_SELECTOR, node => api.getBranchIndicatorProps(node))
     putAll('branch-text', BRANCH_SELECTOR, node => api.getBranchTextProps(node))
+    putAll('branch-description', BRANCH_SELECTOR, node => api.getBranchDescriptionProps(node))
     putAll('branch-content', BRANCH_SELECTOR, node => api.getBranchContentProps(node))
     // 把手写在叶子里还是分支里都行，身份跟着最近的那个节点走
     putAll('node-drag-trigger', NODE_SELECTOR, node => api.getNodeDragTriggerProps(node))
