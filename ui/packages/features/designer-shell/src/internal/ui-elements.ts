@@ -23,6 +23,7 @@ import {
   XhTextFieldElement,
   XhToggleGroupElement,
   XhToolbarElement,
+  XhTreeElement,
   XhTreeSelectElement,
 } from '@xihan-ui/web-components/define'
 
@@ -43,10 +44,11 @@ export function definePropertyFieldElements(): void {
   defineXhElement('xh-accordion', XhAccordionElement)
 }
 
-/** 物料面板的搜索框、折叠分组与图标用到的元素。 */
+/** 物料面板的搜索框、折叠分组、带下级的树与图标用到的元素。 */
 export function definePaletteElements(): void {
   defineXhElement('xh-text-field', XhTextFieldElement)
   defineXhElement('xh-accordion', XhAccordionElement)
+  defineXhElement('xh-tree', XhTreeElement)
   defineXhElement('xh-icon', XhIconElement)
 }
 

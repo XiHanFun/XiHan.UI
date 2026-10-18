@@ -185,8 +185,8 @@ palette.addEventListener("item-activate", event => addAtCenter(event.detail.payl
 
 | 属性 | 说明 |
 | --- | --- |
-| `groups` | `{ id, label, items }[]`，物料为 `{ id, label, icon?, description?, disabled?, payload? }`；`icon` 是图标记录，`description` 显示在名称下方 |
-| `searchable` | 显示搜索框，按名称过滤 |
+| `groups` | `{ id, label, items }[]`，物料为 `{ id, label, icon?, description?, disabled?, browseOnly?, payload?, children? }`；`icon` 是图标记录，`description` 是名称之外的一行说明，`children` 是下级物料 |
+| `searchable` | 显示搜索框，按名称与说明过滤；命中的条目连同它的上级一起展开显示 |
 | `collapsible` | 分组可折叠，折叠状态按分组 id 保留；搜索时匹配的分组一律展开 |
 | `readonly` | 物料只能浏览，不派发 `item-activate`、不能拖出 |
 
@@ -196,6 +196,29 @@ palette.addEventListener("item-activate", event => addAtCenter(event.detail.payl
 
 - 方向键、Home、End 在物料间移动焦点，禁用的物料也能停留，读屏照样念出。
 - 从物料拖出时的载荷是 `{ source: "palette", id, payload }`。
+- `disabled` 是用不了的物料：显示为禁用，不派发 `item-activate`、不能拖出。`browseOnly` 是只作浏览的物料：照常显示、能用方向键走到，同样不派发、不能拖出，用于只起分组作用的上级与只供查看的下级。
+
+### 带下级的物料
+
+组里有物料带了 `children` 时，这一组用 [`<xh-tree>`](../components/tree) 显示，没有下级的组仍是一列按钮。适合字段树这类有层级的物料：
+
+```ts
+palette.groups = [{
+  id: "fields",
+  label: "字段",
+  items: [
+    { id: "no", label: "单号", description: "no", payload: { field: "no" } },
+    { id: "items", label: "明细", description: "items", payload: { list: "items" }, children: [
+      { id: "items.qty", label: "数量", browseOnly: true },
+    ] },
+  ],
+}];
+```
+
+- 键盘与读屏按树的约定：这一组是一个 Tab 停靠点，上下键在看得见的物料间移动，右键展开、左键收起，回车与空格激活；层级、展开态与禁用报给读屏。
+- 带下级的物料缺省收起，展开状态按物料 id 保留，换了 `groups` 仍在；搜索时命中的物料连同上级一起展开，清空后回到原来的展开状态。
+- 点选与确认键只派发 `item-activate`，树上不留选中的痕迹；按在展开箭头上只展开、收起，不起拖。
+- 上级与下级都能激活、拖出，不需要的写 `browseOnly` 或 `disabled`。
 
 ### 通用拖放
 

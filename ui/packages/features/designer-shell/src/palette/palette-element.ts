@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// <xh-designer-palette>：物料面板。按分组列出物料，可按名称搜索、分组可折叠。
+// <xh-designer-palette>：物料面板。按分组列出物料，可按名称与说明搜索、分组可折叠；有条目带下级时这一组按树显示。
 // 点击、回车、空格或触屏轻点派发 item-activate；按下拖动（触屏长按）经 startDrag 拖向放置目标。
 
 import type { IconRecord } from '@xihan-ui/core'
@@ -23,8 +23,18 @@ export interface DesignerPaletteItem {
   /** 名称下方的一行说明。 */
   readonly description?: string
   readonly disabled?: boolean
+  /**
+   * 只作浏览：照常显示，能用方向键走到、能展开下级，但不派发 item-activate、不能拖出。
+   * 只用来分组的上级条目、只供查看的下级写它；用不了的条目写 disabled。
+   */
+  readonly browseOnly?: boolean
   /** 随 item-activate 与拖动交给设计器的数据。 */
   readonly payload?: unknown
+  /**
+   * 下级物料。组里有条目带了它时，这一组按树显示：带下级的条目可以展开、收起，展开状态按条目 id 保留，
+   * 键盘与读屏按树的约定（上下键在可见的条目间移动，左右键收起、展开）；下级与上级一样可以激活、拖出。
+   */
+  readonly children?: readonly DesignerPaletteItem[]
 }
 
 /** 一组物料。 */
@@ -55,6 +65,60 @@ const DEFAULT_TRANSLATIONS: DesignerPaletteTranslations = {
 
 const TAG = 'xh-designer-palette'
 
+/** 一组里要显示的条目，以及搜索时要展开的上级。 */
+interface Shown {
+  readonly items: readonly DesignerPaletteItem[]
+  readonly reveal: ReadonlySet<string>
+}
+
+function matches(item: DesignerPaletteItem, query: string): boolean {
+  return item.label.toLocaleLowerCase().includes(query) || (item.description?.toLocaleLowerCase().includes(query) ?? false)
+}
+
+/** 按搜索词留下命中的条目（连同它的全部下级）与命中条目的上级；上级记进 reveal 以便展开。 */
+function filterItems(items: readonly DesignerPaletteItem[], query: string, reveal: Set<string>): DesignerPaletteItem[] {
+  const kept: DesignerPaletteItem[] = []
+  for (const item of items) {
+    if (matches(item, query)) {
+      kept.push(item)
+      continue
+    }
+    const children = filterItems(item.children ?? [], query, reveal)
+    if (children.length > 0) {
+      reveal.add(item.id)
+      kept.push({ ...item, children })
+    }
+  }
+  return kept
+}
+
+function hierarchical(items: readonly DesignerPaletteItem[]): boolean {
+  return items.some(item => item.children !== undefined)
+}
+
+/** <xh-tree> 的节点数据里用到的几项。 */
+interface PaletteTreeNode {
+  readonly value: string
+  readonly label: string
+  readonly disabled?: boolean
+  readonly description?: string
+  readonly children?: PaletteTreeNode[]
+}
+
+/** 按组显示的树：节点数据、受控的选中与展开集合。 */
+type PaletteTree = HTMLElement & { collection?: PaletteTreeNode[], selection?: string[], expandedValue?: string[] }
+
+/** 树的节点数据：与标记同源，层级与禁用由它报给读屏。 */
+function treeNodes(items: readonly DesignerPaletteItem[]): PaletteTreeNode[] {
+  return items.map(item => ({
+    value: item.id,
+    label: item.label,
+    ...(item.disabled === true ? { disabled: true } : {}),
+    ...(item.description === undefined ? {} : { description: item.description }),
+    ...(item.children === undefined ? {} : { children: treeNodes(item.children) }),
+  }))
+}
+
 interface Parts {
   readonly header: HTMLElement
   readonly title: HTMLElement
@@ -75,7 +139,7 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
 
   /** 物料分组。 */
   declare groups: readonly DesignerPaletteGroup[] | undefined
-  /** 显示搜索框，按名称过滤。 */
+  /** 显示搜索框，按名称与说明过滤；命中的条目连同它的上级一起展开显示。 */
   declare searchable?: boolean
   /** 分组可折叠，折叠状态按分组 id 保留；搜索时匹配的分组一律展开。 */
   declare collapsible?: boolean
@@ -94,6 +158,8 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
   #parts: Parts | undefined
   #query = ''
   #collapsed = new Set<string>()
+  /** 树里展开着的条目 id；搜索时另按命中的条目展开，不改它。 */
+  #expanded = new Set<string>()
   #rendered: readonly unknown[] = []
   #suppressClick = false
 
@@ -114,8 +180,11 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
     parts.searchInput.setAttribute('placeholder', t.search)
     const query = this.searchable ? this.#query.trim().toLocaleLowerCase() : ''
     const groups = (this.groups ?? [])
-      .map(group => ({ group, items: query === '' ? group.items : group.items.filter(item => item.label.toLocaleLowerCase().includes(query)) }))
-      .filter(({ items }) => items.length > 0)
+      .map((group) => {
+        const reveal = new Set<string>()
+        return { group, shown: { items: query === '' ? group.items : filterItems(group.items, query, reveal), reveal } }
+      })
+      .filter(({ shown }) => shown.items.length > 0)
     setText(parts.empty, query === '' ? t.empty : t.noMatches)
     parts.empty.hidden = groups.length > 0
     const inputs = [this.groups, query, this.collapsible, this.readonly]
@@ -158,12 +227,14 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
     return this.#parts
   }
 
-  #render(groups: readonly { group: DesignerPaletteGroup, items: readonly DesignerPaletteItem[] }[], searching: boolean): void {
+  #render(groups: readonly { group: DesignerPaletteGroup, shown: Shown }[], searching: boolean): void {
     const parts = this.#parts!
     const focused = this.#focusedId()
     const doc = this.ownerDocument
-    const sections = groups.map(({ group, items }) => {
-      const list = createAuthoredElement(doc, 'div', { 'data-part': 'group-items' }, items.map(item => this.#item(item)))
+    const sections = groups.map(({ group, shown }) => {
+      const list = hierarchical(group.items)
+        ? this.#tree(group, shown, searching)
+        : createAuthoredElement(doc, 'div', { 'data-part': 'group-items' }, shown.items.map(item => this.#item(item)))
       if (this.collapsible) {
         return createAuthoredElement(doc, 'div', { 'data-xh-part': 'item', 'value': group.id }, [
           createAuthoredElement(doc, 'div', { 'data-xh-part': 'header' }, [
@@ -205,20 +276,93 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
     this.#rove(focused, focused !== undefined)
   }
 
+  #icon(item: DesignerPaletteItem): HTMLElement[] {
+    if (!item.icon)
+      return []
+    const doc = this.ownerDocument
+    const svg = doc.createElementNS(SVG_NS, 'svg')
+    svg.setAttribute('data-xh-part', 'root')
+    const glyph = doc.createElementNS(SVG_NS, 'g')
+    glyph.setAttribute('data-xh-part', 'glyph')
+    svg.append(glyph)
+    const icon: HTMLElement & { icon?: IconRecord } = createAuthoredElement(doc, 'xh-icon', { 'size': 'sm', 'data-part': 'item-icon' }, [svg])
+    icon.icon = item.icon
+    return [icon]
+  }
+
+  /** 条目不派发 item-activate、不能拖出：只读、禁用或只作浏览。 */
+  #inert(item: DesignerPaletteItem): boolean {
+    return this.readonly === true || item.disabled === true || item.browseOnly === true
+  }
+
+  /** 带下级的一组：一棵 <xh-tree>，选中集合受控为空，点选与确认键当作激活；展开集合按条目 id 保留。 */
+  #tree(group: DesignerPaletteGroup, shown: Shown, searching: boolean): HTMLElement {
+    const doc = this.ownerDocument
+    const tree: PaletteTree = createAuthoredElement(doc, 'xh-tree', { 'size': 'sm', 'data-part': 'group-tree' }, [
+      createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [
+        createAuthoredElement(doc, 'div', { 'data-xh-part': 'tree', 'aria-label': group.label }, shown.items.map(item => this.#node(item))),
+      ]),
+    ])
+    tree.collection = treeNodes(shown.items)
+    tree.selection = []
+    tree.expandedValue = searching ? [...shown.reveal] : [...this.#expanded]
+    tree.addEventListener('selection-change', (event) => {
+      event.stopPropagation()
+      const id = (event as CustomEvent<{ value: string[] }>).detail.value[0]
+      if (this.#suppressClick) {
+        this.#suppressClick = false
+        return
+      }
+      const item = id === undefined ? undefined : this.#find(id)
+      if (item && !this.#inert(item))
+        emitEvent(this, 'item-activate', { id: item.id, payload: item.payload })
+    })
+    tree.addEventListener('expanded-value-change', (event) => {
+      event.stopPropagation()
+      const open = (event as CustomEvent<{ value: string[] }>).detail.value
+      tree.expandedValue = open
+      if (searching)
+        return
+      const walk = (items: readonly DesignerPaletteItem[]): void => {
+        for (const item of items) {
+          if (open.includes(item.id))
+            this.#expanded.add(item.id)
+          else
+            this.#expanded.delete(item.id)
+          walk(item.children ?? [])
+        }
+      }
+      walk(shown.items)
+    })
+    return tree
+  }
+
+  /** 树里的一个条目：没有下级的是 item，有下级的是 branch；行上带 data-id 供拖动认领。 */
+  #node(item: DesignerPaletteItem): HTMLElement {
+    const doc = this.ownerDocument
+    const browse = item.browseOnly === true ? '' : undefined
+    if (item.children === undefined) {
+      return createAuthoredElement(doc, 'div', { 'data-xh-part': 'item', 'value': item.id, 'data-id': item.id, 'data-browse-only': browse }, [
+        ...this.#icon(item),
+        createAuthoredElement(doc, 'span', { 'data-xh-part': 'item-text' }, [item.label]),
+        ...(item.description === undefined ? [] : [createAuthoredElement(doc, 'span', { 'data-xh-part': 'item-description' }, [item.description])]),
+      ])
+    }
+    return createAuthoredElement(doc, 'div', { 'data-xh-part': 'branch', 'value': item.id }, [
+      createAuthoredElement(doc, 'div', { 'data-xh-part': 'branch-control', 'data-id': item.id, 'data-browse-only': browse }, [
+        createAuthoredElement(doc, 'span', { 'data-xh-part': 'branch-trigger' }, [createAuthoredElement(doc, 'span', { 'data-xh-part': 'branch-indicator' })]),
+        ...this.#icon(item),
+        createAuthoredElement(doc, 'span', { 'data-xh-part': 'branch-text' }, [item.label]),
+        ...(item.description === undefined ? [] : [createAuthoredElement(doc, 'span', { 'data-part': 'branch-description', 'data-xh-collection-slot': 'description' }, [item.description])]),
+      ]),
+      createAuthoredElement(doc, 'div', { 'data-xh-part': 'branch-content' }, item.children.map(child => this.#node(child))),
+    ])
+  }
+
   #item(item: DesignerPaletteItem): HTMLElement {
     const doc = this.ownerDocument
-    const inert = this.readonly || item.disabled === true
-    const children: Node[] = []
-    if (item.icon) {
-      const svg = doc.createElementNS(SVG_NS, 'svg')
-      svg.setAttribute('data-xh-part', 'root')
-      const glyph = doc.createElementNS(SVG_NS, 'g')
-      glyph.setAttribute('data-xh-part', 'glyph')
-      svg.append(glyph)
-      const icon: HTMLElement & { icon?: IconRecord } = createAuthoredElement(doc, 'xh-icon', { 'size': 'sm', 'data-part': 'item-icon' }, [svg])
-      icon.icon = item.icon
-      children.push(icon)
-    }
+    const inert = this.readonly === true || item.disabled === true
+    const children: Node[] = [...this.#icon(item)]
     children.push(createAuthoredElement(doc, 'span', { 'data-part': 'item-label' }, [item.label]))
     let describedBy: string | undefined
     if (item.description !== undefined) {
@@ -232,6 +376,7 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
       'tabindex': -1,
       'aria-disabled': inert ? 'true' : undefined,
       'aria-describedby': describedBy,
+      'data-browse-only': item.browseOnly === true ? '' : undefined,
     }, children)
   }
 
@@ -261,21 +406,38 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
   }
 
   #find(id: string): DesignerPaletteItem | undefined {
+    const search = (items: readonly DesignerPaletteItem[]): DesignerPaletteItem | undefined => {
+      for (const item of items) {
+        const found = item.id === id ? item : search(item.children ?? [])
+        if (found)
+          return found
+      }
+      return undefined
+    }
     for (const group of this.groups ?? []) {
-      const item = group.items.find(entry => entry.id === id)
+      const item = search(group.items)
       if (item)
         return item
     }
     return undefined
   }
 
+  /** 按下的条目行：按钮或树里带 data-id 的行；展开箭头不算。 */
+  #rowOf(event: Event): HTMLElement | undefined {
+    const target = event.target as Element | null
+    if (target?.closest('[data-scope="tree"][data-part="branch-trigger"]'))
+      return undefined
+    const row = target?.closest<HTMLElement>('button[data-part="item"], [data-scope="tree"][data-id]')
+    return row && this.#parts?.body.contains(row) ? row : undefined
+  }
+
   readonly #onPointerDown = (event: PointerEvent): void => {
     this.#suppressClick = false
-    const element = this.#itemOf(event)
-    if (!element || !event.isPrimary || event.button !== 0 || element.getAttribute('aria-disabled') === 'true')
+    const element = this.#rowOf(event)
+    if (!element || !event.isPrimary || event.button !== 0)
       return
     const item = this.#find(element.dataset.id!)
-    if (!item)
+    if (!item || this.#inert(item))
       return
     startDrag<DesignerPaletteDragPayload>(event, {
       source: element,
@@ -295,10 +457,8 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
       this.#suppressClick = false
       return
     }
-    if (element.getAttribute('aria-disabled') === 'true')
-      return
     const item = this.#find(element.dataset.id!)
-    if (item)
+    if (item && !this.#inert(item))
       emitEvent(this, 'item-activate', { id: item.id, payload: item.payload })
   }
 
