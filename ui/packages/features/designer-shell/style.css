@@ -22,7 +22,9 @@
     font-size: var(--xh-font-size-sm);
   }
 
-  xh-designer-properties [data-scope='designer-properties'][hidden] {
+  /* 部件规则带 data-part 且声明了 display，收起这条也带上 data-part，高一级特异度，写在哪里都盖得住 */
+  xh-designer-properties [data-scope='designer-properties'][hidden],
+  xh-designer-properties [data-scope='designer-properties'][data-part][hidden] {
     display: none;
   }
 
@@ -223,7 +225,9 @@
     font-size: var(--xh-font-size-sm);
   }
 
-  xh-designer-issues [hidden] {
+  /* 部件规则声明了 display，收起这条带上 data-part，高一级特异度，写在哪里都盖得住 */
+  xh-designer-issues [hidden],
+  xh-designer-issues [data-part][hidden] {
     display: none;
   }
 
@@ -234,11 +238,6 @@
     align-items: center;
     justify-content: space-between;
     padding: var(--xh-space-2) var(--xh-space-3);
-  }
-
-  /* headless 且开关移走后头部没有内容，收起 */
-  xh-designer-issues > [data-part='header'][hidden] {
-    display: none;
   }
 
   xh-designer-issues [data-part='title'] {
@@ -412,7 +411,9 @@
     font-size: var(--xh-font-size-sm);
   }
 
-  xh-designer-palette [hidden] {
+  /* 部件规则声明了 display，收起这条带上 data-part，高一级特异度，写在哪里都盖得住 */
+  xh-designer-palette [hidden],
+  xh-designer-palette [data-part][hidden] {
     display: none;
   }
 
