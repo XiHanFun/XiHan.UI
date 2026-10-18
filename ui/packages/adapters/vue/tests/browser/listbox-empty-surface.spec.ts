@@ -112,12 +112,14 @@ describe('列表框零候选与状态占位', () => {
       expect(row('pear').getAttribute('aria-selected')).toBe('true')
     })
 
-    it(`${selectionMode}：没有作者状态文案的默认结构收起空框，不制造空白状态节点`, async () => {
+    it(`${selectionMode}：默认结构收起空框，在途时只露出带缺省文字的在途占位`, async () => {
       const collection = ref<ListboxNode[]>([])
       mount(() => h(XhListboxRoot, { collection: collection.value, loading: true, selectionMode, label: '候选' }))
       await nextTick()
       expect(part('content').getBoundingClientRect().height).toBe(0)
-      expect(host?.querySelector(`[data-part='empty'], [data-part='loading']`)).toBeNull()
+      expect(part('empty').getBoundingClientRect().height).toBe(0)
+      expect(part('loading').textContent).toBe('Loading')
+      expect(part('loading').getBoundingClientRect().height).toBeGreaterThan(0)
       collection.value = [{ value: 'blocked', label: '暂不可选', disabled: true }]
       await nextTick()
       expect(part('content').getBoundingClientRect().height).toBeGreaterThan(0)

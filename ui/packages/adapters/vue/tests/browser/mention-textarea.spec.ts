@@ -85,6 +85,7 @@ describe('提及的多行形态', () => {
     expect(atLineStart.top).toBeLessThan(box.bottom)
     const afterText = await type('第一行\n一段文字 @')
     expect(afterText.left).toBeGreaterThan(atLineStart.left + 20)
-    expect(Math.round(afterText.top)).toBe(Math.round(atLineStart.top))
+    // 同一行：前面是中文时那一行的字形度量略有出入，上下差不到一行高
+    expect(Math.abs(afterText.top - atLineStart.top)).toBeLessThan(8)
   })
 })
