@@ -6,13 +6,15 @@
 // 提供 breadcrumb 相关实现。
 
 import type { Direction, Size, Tone } from '@xihan-ui/core'
-import type { BreadcrumbItem, BreadcrumbNode, BreadcrumbNodeMeta, BreadcrumbProps, BreadcrumbTranslations } from '@xihan-ui/headless'
+import type { BreadcrumbApi, BreadcrumbNode, BreadcrumbNodeMeta, BreadcrumbProps, BreadcrumbTranslations, StructureNode } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
+import { breadcrumbStructure } from '@xihan-ui/headless'
 import { useId } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
+import { renderStructure } from '../../runtime/structure'
 import { BreadcrumbProvider, useBreadcrumbContext } from './context'
 import { useBreadcrumb } from './use-breadcrumb'
 
@@ -46,9 +48,7 @@ export function XhBreadcrumbRoot({
   const ctx = useBreadcrumb(
     withXhConfig('breadcrumb', { collection, maxItems, dir, translations, tone, size }) as BreadcrumbProps,
   )
-  const body = children ?? (collection
-    ? <DefaultTree items={ctx.api.items} renderSeparator={renderSeparator} renderEllipsis={renderEllipsis} />
-    : null)
+  const body = children ?? renderDefaultStructure(ctx.api, renderSeparator, renderEllipsis)
   return (
     <BreadcrumbProvider value={ctx}>
       <nav {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
@@ -123,37 +123,37 @@ export function XhBreadcrumbEllipsisTrigger({ children, ...rest }: XhBreadcrumbE
   )
 }
 
+/** 按数据铺的链接：结构节点上的 current 是作者声明（在场即是），交给链接时换成布尔。 */
+function BreadcrumbStructureLink({ current, ...rest }: Omit<XhBreadcrumbLinkProps, 'current'> & { current?: string }): ReactNode {
+  return <XhBreadcrumbLink {...rest} current={current != null} />
+}
+
+/** 标准结构里各部件对应的组件。 */
+const BREADCRUMB_PARTS = {
+  'list': XhBreadcrumbList,
+  'item': XhBreadcrumbItem,
+  'link': BreadcrumbStructureLink,
+  'link-icon': XhBreadcrumbLinkIcon,
+  'separator': XhBreadcrumbSeparator,
+  'ellipsis': XhBreadcrumbEllipsis,
+  'ellipsis-trigger': XhBreadcrumbEllipsisTrigger,
+}
+
 /**
- * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
- * 层与层之间铺分隔符，被折叠的一段铺为一个省略位。
+ * 未写 children 时照 breadcrumbStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 分隔符的内容给了 renderSeparator 就由它提供，否则交给皮肤；折叠位按钮的内容给了 renderEllipsis 就由它提供。
  */
-function DefaultTree(props: {
-  items: readonly BreadcrumbItem[]
-  renderSeparator?: () => ReactNode
-  renderEllipsis?: (nodes: readonly BreadcrumbNodeMeta[]) => ReactNode
-}): ReactNode {
-  const out: ReactNode[] = []
-  props.items.forEach((item, index) => {
-    if (index > 0)
-      out.push(<XhBreadcrumbSeparator key={`sep-${index}`}>{props.renderSeparator?.()}</XhBreadcrumbSeparator>)
-    if (item.type === 'ellipsis') {
-      out.push(
-        <XhBreadcrumbEllipsis key="ellipsis">
-          <XhBreadcrumbEllipsisTrigger>{props.renderEllipsis?.(item.nodes)}</XhBreadcrumbEllipsisTrigger>
-        </XhBreadcrumbEllipsis>,
-      )
-      return
-    }
-    const node = item.node
-    out.push(
-      <XhBreadcrumbItem key={node.value}>
-        <XhBreadcrumbLink value={node.value} current={node.current} href={node.href}>
-          {node.icon ? <XhBreadcrumbLinkIcon>{node.icon}</XhBreadcrumbLinkIcon> : null}
-          {node.label}
-        </XhBreadcrumbLink>
-      </XhBreadcrumbItem>,
-    )
+function renderDefaultStructure(
+  api: BreadcrumbApi,
+  renderSeparator: (() => ReactNode) | undefined,
+  renderEllipsis: ((nodes: readonly BreadcrumbNodeMeta[]) => ReactNode) | undefined,
+): ReactNode[] {
+  const nodes = breadcrumbStructure(api, { slotted: name => (name === 'separator' ? renderSeparator : name === 'ellipsis' ? renderEllipsis : undefined) != null })
+  return renderStructure(nodes, BREADCRUMB_PARTS, (node: StructureNode) => {
+    if (node.slot?.name === 'separator')
+      return renderSeparator?.()
+    if (node.slot?.name === 'ellipsis')
+      return renderEllipsis?.(node.data as readonly BreadcrumbNodeMeta[])
+    return undefined
   })
-  return <XhBreadcrumbList>{out}</XhBreadcrumbList>
 }

@@ -6,12 +6,14 @@
 // 提供 breadcrumb 相关实现。
 
 import type { Direction, Size, Tone } from '@xihan-ui/core'
-import type { BreadcrumbItem, BreadcrumbNode, BreadcrumbNodeMeta, BreadcrumbProps, BreadcrumbTranslations } from '@xihan-ui/headless'
+import type { BreadcrumbApi, BreadcrumbNode, BreadcrumbNodeMeta, BreadcrumbProps, BreadcrumbTranslations, StructureNode } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
+import { breadcrumbStructure } from '@xihan-ui/headless'
 import { defineComponent, h, useId } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
+import { renderStructure } from '../../runtime/structure'
 import { provideBreadcrumb, useBreadcrumbContext } from './context'
 import { useBreadcrumb } from './use-breadcrumb'
 
@@ -35,9 +37,7 @@ export const XhBreadcrumbRoot = defineComponent({
       ctx.api.value.getRootProps() as Record<string, unknown>,
       slots.default
         ? slots.default()
-        : props.collection
-          ? renderDefaultTree(ctx.api.value.items, slots.separator, slots.ellipsis)
-          : [],
+        : renderDefaultStructure(ctx.api.value, slots.separator, slots.ellipsis),
     )
   },
 })
@@ -125,45 +125,32 @@ export const XhBreadcrumbEllipsisTrigger = defineComponent({
   },
 })
 
-/**
- * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
- * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
- * 分隔符与省略位触发器不写内容时由皮肤画字形，写同名插槽即由作者接管。
- */
-function renderDefaultTree(
-  items: readonly BreadcrumbItem[],
-  separatorSlot?: () => VNode[],
-  ellipsisSlot?: (nodes: readonly BreadcrumbNodeMeta[]) => VNode[],
-): VNode[] {
-  return [h(XhBreadcrumbList, null, () => renderItems(items, separatorSlot, ellipsisSlot))]
+/** 标准结构里各部件对应的组件。 */
+const BREADCRUMB_PARTS = {
+  'list': XhBreadcrumbList,
+  'item': XhBreadcrumbItem,
+  'link': XhBreadcrumbLink,
+  'link-icon': XhBreadcrumbLinkIcon,
+  'separator': XhBreadcrumbSeparator,
+  'ellipsis': XhBreadcrumbEllipsis,
+  'ellipsis-trigger': XhBreadcrumbEllipsisTrigger,
 }
 
-/** ol 中的序列：层与层之间铺分隔符，被折叠的一段铺为一个省略位。 */
-function renderItems(
-  items: readonly BreadcrumbItem[],
-  separatorSlot?: () => VNode[],
-  ellipsisSlot?: (nodes: readonly BreadcrumbNodeMeta[]) => VNode[],
+/**
+ * 未写默认插槽时照 breadcrumbStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 分隔符的内容给了 separator 插槽就由它提供，否则交给皮肤；折叠位按钮的内容给了 ellipsis 插槽就由它提供。
+ */
+function renderDefaultStructure(
+  api: BreadcrumbApi,
+  separator: (() => VNode[]) | undefined,
+  ellipsis: ((nodes: readonly BreadcrumbNodeMeta[]) => VNode[]) | undefined,
 ): VNode[] {
-  const out: VNode[] = []
-  items.forEach((item, index) => {
-    if (index > 0)
-      out.push(h(XhBreadcrumbSeparator, { key: `sep-${index}` }, () => separatorSlot?.()))
-    if (item.type === 'ellipsis') {
-      out.push(h(XhBreadcrumbEllipsis, { key: 'ellipsis' }, () =>
-        h(XhBreadcrumbEllipsisTrigger, null, () => ellipsisSlot?.(item.nodes))))
-      return
-    }
-    const node = item.node
-    out.push(h(XhBreadcrumbItem, { key: node.value }, () => [
-      h(
-        XhBreadcrumbLink,
-        { value: node.value, current: node.current, href: node.href },
-        () => [
-          node.icon ? h(XhBreadcrumbLinkIcon, null, () => node.icon) : null,
-          node.label,
-        ],
-      ),
-    ]))
+  const nodes = breadcrumbStructure(api, { slotted: name => (name === 'separator' ? separator : name === 'ellipsis' ? ellipsis : undefined) != null })
+  return renderStructure(nodes, BREADCRUMB_PARTS, (node: StructureNode) => {
+    if (node.slot?.name === 'separator')
+      return separator?.()
+    if (node.slot?.name === 'ellipsis')
+      return ellipsis?.(node.data as readonly BreadcrumbNodeMeta[])
+    return undefined
   })
-  return out
 }

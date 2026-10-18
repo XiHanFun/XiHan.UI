@@ -260,5 +260,52 @@ export const breadcrumbSuite: ConformanceSuite = {
       spec: { adr: 'press-channel' },
       steps: [heldPressIgnored('breadcrumb', 'link', '当前页链接不可点，不接受按压', { selector: `${LINK}[aria-current="page"]` })],
     },
+    {
+      name: '作者不写结构：三端都照 breadcrumbStructure 铺出折叠后的序列（带图标的首层、折叠位、当前页）；展开后按值复用并铺出全部层级',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', tag: 'nav', defaultStructure: true }),
+      props: {
+        maxItems: 3,
+        collection: [
+          { value: 'home', label: '首页', href: '/', icon: 'home' },
+          { value: 'docs', label: '文档', href: '/docs' },
+          { value: 'guide', label: '指南', href: '/docs/guide' },
+          { value: 'menu', label: '菜单', current: true },
+        ],
+      },
+      initial: {
+        order: [
+          'root',
+          'list',
+          'item[0]',
+          'link[0]',
+          'link-icon',
+          'separator[0]',
+          'ellipsis',
+          'ellipsis-trigger',
+          'separator[1]',
+          'item[1]',
+          'link[1]',
+          'separator[2]',
+          'item[2]',
+          'link[2]',
+        ],
+        parts: {
+          'link[0]': { 'aria-current': null },
+          'link[2]': { 'aria-current': 'page' },
+          'separator[0]': { 'aria-hidden': 'true' },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'ellipsis-trigger',
+          expect: {
+            order: ['root', 'list', 'item[0]', 'link[0]', 'link-icon', 'separator[0]', 'item[1]', 'link[1]', 'separator[1]', 'item[2]', 'link[2]', 'separator[2]', 'item[3]', 'link[3]'],
+            parts: { 'link[1]': { 'aria-current': null }, 'link[3]': { 'aria-current': 'page' } },
+          },
+        },
+      ],
+    },
   ],
 }
