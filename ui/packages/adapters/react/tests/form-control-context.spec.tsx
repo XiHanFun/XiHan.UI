@@ -401,6 +401,19 @@ describe('form control context 接线', () => {
     expect(input.getAttribute('aria-required')).toBe('false')
   })
 
+  // 触发钮是普通按钮：ARIA 不允许它带 aria-readonly，也不支持 aria-required；只读、必填与校验由各段（spinbutton）报
+  it.each(['DatePicker', 'TimePicker'] as const)('%s 放进字段时触发钮不带 aria-readonly / aria-required，各段报三种状态', (kind) => {
+    const { container } = renderAtomicControl(kind, {}, { readOnly: true, required: true, invalid: true })
+    const scope = kind === 'DatePicker' ? 'date-picker' : 'time-picker'
+    const trigger = container.querySelector<HTMLElement>(`[data-scope="${scope}"][data-part="trigger"]`)!
+    expect(trigger.hasAttribute('aria-readonly')).toBe(false)
+    expect(trigger.hasAttribute('aria-required')).toBe(false)
+    const segment = container.querySelector<HTMLElement>('[role="spinbutton"]')!
+    expect(segment.getAttribute('aria-readonly')).toBe('true')
+    expect(segment.getAttribute('aria-required')).toBe('true')
+    expect(segment.getAttribute('aria-invalid')).toBe('true')
+  })
+
   it.each(ATOMIC_CONTROLS)('%s 直接继承 Form 的四条状态轴', (kind) => {
     expectAtomicState(renderAtomicControl(kind).container, kind, true)
   })

@@ -78,4 +78,15 @@ describe('库内控件放进字段的无障碍接线', () => {
     expect(descriptions(trigger)).toEqual(['填工作用的那一个', '这一项必填'])
     await expectNoAxeViolations(root)
   })
+
+  // 日历钮、时钟钮是普通按钮：ARIA 不允许按钮带 aria-readonly，只读、必填与校验由各段报
+  it.each(['date-picker', 'date-range-picker', 'time-picker', 'time-range-picker'])('%s：日历钮念字段标题，描述链念说明与错误文案，只读时 axe 也无违规', async (tag) => {
+    const root = mount('出发', `<xh-${tag} read-only></xh-${tag}>`)
+    await settle()
+    const trigger = root.querySelector(`[data-scope="${tag}"][data-part="trigger"]`)!
+    expect(firstName(trigger)).toBe('出发')
+    expect(descriptions(trigger)).toEqual(['填工作用的那一个', '这一项必填'])
+    expect(trigger.hasAttribute('aria-readonly')).toBe(false)
+    await expectNoAxeViolations(root)
+  })
 })

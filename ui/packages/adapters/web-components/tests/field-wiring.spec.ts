@@ -167,6 +167,25 @@ describe(`${CONTROLS.length} 个库内控件放进 xh-field`, () => {
   })
 })
 
+describe('日期、时间选择器放进 xh-field', () => {
+  // 触发钮是普通按钮：ARIA 不允许它带 aria-readonly，也不支持 aria-required；只读、必填与校验由各段（spinbutton）报
+  it.each(['date-picker', 'date-range-picker', 'time-picker', 'time-range-picker'])('%s：触发钮只拿名字与描述链，不带 aria-readonly / aria-required，各段报三种状态', async (tag) => {
+    const field = mountField(`<xh-${tag}></xh-${tag}>`, 'invalid read-only required')
+    const trigger = () => field.querySelector<HTMLElement>(`[data-scope="${tag}"][data-part="trigger"]`)!
+    await vi.waitFor(() => expect(trigger().getAttribute('aria-describedby')).toBe(`${idOf(field, 'description')} ${idOf(field, 'error-text')}`))
+    expect(trigger().getAttribute('aria-labelledby')?.split(' ')[0]).toBe(idOf(field, 'label'))
+    expect(trigger().hasAttribute('aria-readonly')).toBe(false)
+    expect(trigger().hasAttribute('aria-required')).toBe(false)
+    const segments = [...field.querySelectorAll<HTMLElement>(`xh-${tag} [role="spinbutton"]`)]
+    expect(segments.length).toBeGreaterThan(0)
+    for (const segment of segments) {
+      expect(segment.getAttribute('aria-readonly')).toBe('true')
+      expect(segment.getAttribute('aria-required')).toBe('true')
+      expect(segment.getAttribute('aria-invalid')).toBe('true')
+    }
+  })
+})
+
 describe('field-array 的接线随排布', () => {
   const ARRAY = (layout: string) => `
     <xh-field-array ${layout}>
