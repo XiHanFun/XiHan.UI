@@ -3,8 +3,9 @@
 // 不复用被测代码。
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { colorParseOklch } from '@xihan-ui/core/color'
 import { afterEach, describe, expect, it } from 'vitest'
-import { brandScaleCss, deriveBrandScale, parseColorToOklch, registerBrand } from '../src/runtime'
+import { brandScaleCss, deriveBrandScale, registerBrand } from '../src/runtime'
 
 const STEPS = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950'] as const
 
@@ -36,54 +37,6 @@ const brandPrimitives = (() => {
   ) as { color: { brand: Record<string, { $value: string }> } }
   return raw.color.brand
 })()
-
-describe('parseColorToOklch', () => {
-  it('四种写法解析同一颜色到同一 OKLCH', () => {
-    const forms = ['#3b82f6', '#3B82F6', 'rgb(59 130 246)', 'rgb(59, 130, 246)', 'rgba(59,130,246,0.5)']
-    const results = forms.map(parseColorToOklch)
-    for (const r of results) {
-      expect(r.l).toBeCloseTo(results[0]!.l, 5)
-      expect(r.c).toBeCloseTo(results[0]!.c, 5)
-      expect(r.h).toBeCloseTo(results[0]!.h, 3)
-    }
-    expect(results.map(r => r.a)).toEqual([1, 1, 1, 1, 0.5])
-  })
-
-  it('短 hex 与长 hex 等价', () => {
-    const a = parseColorToOklch('#f00')
-    const b = parseColorToOklch('#ff0000')
-    expect(a.l).toBeCloseTo(b.l, 6)
-    expect(a.c).toBeCloseTo(b.c, 6)
-  })
-
-  it('纯红换算到已知 OKLCH 值', () => {
-    // oklch(0.6280 0.2577 29.23) 是 #ff0000 的公认换算结果
-    const red = parseColorToOklch('#ff0000')
-    expect(red.l).toBeCloseTo(0.628, 2)
-    expect(red.c).toBeCloseTo(0.2577, 2)
-    expect(red.h).toBeCloseTo(29.23, 0)
-  })
-
-  it('hsl 与等值 rgb 一致', () => {
-    const fromHsl = parseColorToOklch('hsl(0 100% 50%)')
-    const fromRgb = parseColorToOklch('rgb(255 0 0)')
-    expect(fromHsl.l).toBeCloseTo(fromRgb.l, 5)
-    expect(fromHsl.h).toBeCloseTo(fromRgb.h, 3)
-  })
-
-  it('oklch 直读，百分号明度与 0.4 基准彩度按规范折算', () => {
-    const a = parseColorToOklch('oklch(0.546 0.216 258)')
-    expect(a).toEqual({ l: 0.546, c: 0.216, h: 258, a: 1 })
-    const b = parseColorToOklch('oklch(54.6% 54% 258deg)')
-    expect(b.l).toBeCloseTo(0.546, 6)
-    expect(b.c).toBeCloseTo(0.216, 6)
-  })
-
-  it('解不了的输入直接抛', () => {
-    for (const bad of ['', 'blue', 'var(--x)', '#12345', 'rgb(1 2)', 'oklch(1)'])
-      expect(() => parseColorToOklch(bad), bad).toThrow()
-  })
-})
 
 describe('deriveBrandScale', () => {
   it('拒绝透明品牌种子，不把背景相关颜色静默当成实体品牌色', () => {
@@ -138,7 +91,7 @@ describe('deriveBrandScale', () => {
   })
 
   it('色相原样落到每一档', () => {
-    const seedHue = parseColorToOklch('#e11d48').h
+    const seedHue = colorParseOklch('#e11d48')!.h
     const scale = deriveBrandScale('#e11d48')
     for (const step of STEPS)
       expect(parseOklchString(scale[step]).h).toBeCloseTo(seedHue, 1)
@@ -181,7 +134,7 @@ describe('registerBrand', () => {
     registerBrand('acme', '#e11d48')
     const els = document.head.querySelectorAll(`style[data-xh-brand='acme']`)
     expect(els.length).toBe(1)
-    const seedHue = parseColorToOklch('#e11d48').h
+    const seedHue = colorParseOklch('#e11d48')!.h
     expect(els[0]!.textContent).toContain(`oklch(0.546`)
     expect(els[0]!.textContent).toContain(String(Number(seedHue.toFixed(2))))
   })

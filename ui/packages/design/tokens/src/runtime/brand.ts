@@ -5,7 +5,8 @@
 
 // 提供 brand 相关实现。
 
-import { formatOklch, parseColorToOklch } from './color'
+import { colorFormatOklch } from '@xihan-ui/core/color'
+import { parseColor } from './color'
 
 // 品牌轴的取值来源：把一枚种子色派生成整套 brand 原语（--xh-color-brand-50…950），
 // 以 [data-brand='<id>'] 取值块注入。派生只取种子的色相与彩度，明度曲线沿用基线，
@@ -56,13 +57,13 @@ const ANCHOR_STEP: BrandStep = '600'
  * sRGB 色域，明度曲线原样保留。用基线 600 档当种子会得到与基线逐值一致的一套。
  */
 export function deriveBrandScale(seed: string): BrandScale {
-  const { c, h, a } = parseColorToOklch(seed)
+  const { c, h, a } = parseColor(seed)
   if (a !== 1)
     throw new Error('品牌种子色必须完全不透明')
   const k = c / BASE_C[ANCHOR_STEP]
   const out = {} as BrandScale
   for (const step of BRAND_STEPS) {
-    out[step] = formatOklch({ l: BASE_L[step], c: BASE_C[step] * k, h, a: 1 })
+    out[step] = colorFormatOklch({ l: BASE_L[step], c: BASE_C[step] * k, h, a: 1 })
   }
   return out
 }

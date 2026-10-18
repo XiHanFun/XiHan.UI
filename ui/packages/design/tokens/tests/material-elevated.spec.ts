@@ -1,8 +1,9 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { colorParseOklch } from '@xihan-ui/core/color'
 import { describe, expect, it } from 'vitest'
 import { compileMaterialRecipes } from '../build/material-recipes.mjs'
-import { contrastRatio, parseColorToOklch } from '../src/runtime'
+import { contrastRatio } from '../src/runtime'
 
 const folder = join(import.meta.dirname, '..', 'tokens')
 const materials = compileMaterialRecipes(JSON.parse(readFileSync(join(folder, 'material.recipes.json'), 'utf8')))
@@ -41,14 +42,14 @@ describe('高层实体面 M4 材质', () => {
   it.each(['light', 'dark'] as const)('%s：模态主阅读面完全不透明，不采样背景', (theme) => {
     const values = load('primitive.json', 'semantic.base.json', `semantic.${theme}.json`)
     const surface = resolve('material.elevated.bg', values)
-    expect(parseColorToOklch(surface).a).toBe(1)
+    expect(colorParseOklch(surface)!.a).toBe(1)
     expect(resolve('material.elevated.backdrop', values)).toBe('none')
     // 一层投影：模态由遮罩隔开，通知面靠描边与这一层投影浮起来
     expect(resolve('material.elevated.shadow', values).split(',')).toHaveLength(1)
     expect(resolve('material.elevated.shadow', values)).not.toContain('inset')
-    expect(parseColorToOklch(resolve('material.elevated.highlight', values)).a).toBe(0)
+    expect(colorParseOklch(resolve('material.elevated.highlight', values))!.a).toBe(0)
     for (const name of ['border', 'separator'])
-      expect(parseColorToOklch(resolve(`material.elevated.${name}`, values)).a).toBeGreaterThan(0)
+      expect(colorParseOklch(resolve(`material.elevated.${name}`, values))!.a).toBeGreaterThan(0)
 
     const backgrounds = [
       '#000000',
@@ -62,13 +63,13 @@ describe('高层实体面 M4 材质', () => {
     ]
     for (const name of ['fg', 'fg-muted']) {
       const foreground = resolve(`material.elevated.${name}`, values)
-      expect(parseColorToOklch(foreground).a).toBe(1)
+      expect(colorParseOklch(foreground)!.a).toBe(1)
       for (const background of backgrounds)
         expect(contrastRatio(foreground, surface, background), `${theme}/${name}/${background}`).toBeGreaterThanOrEqual(4.5)
     }
 
     const focusSurface = resolve('material.elevated.focus-surface', values)
-    expect(parseColorToOklch(focusSurface).a).toBe(1)
+    expect(colorParseOklch(focusSurface)!.a).toBe(1)
     expect(contrastRatio(resolve('ring.focus', values), focusSurface)).toBeGreaterThanOrEqual(3)
   })
 
@@ -76,9 +77,9 @@ describe('高层实体面 M4 材质', () => {
     it.each([`semantic.${theme}.more.json`, 'semantic.transparency.reduce.json', 'semantic.print.json'])('%s：辅助模式在原位实体化', (extra) => {
       const values = load('primitive.json', 'semantic.base.json', `semantic.${theme}.json`, extra)
       const surface = resolve('material.elevated.bg', values)
-      expect(parseColorToOklch(surface).a).toBe(1)
+      expect(colorParseOklch(surface)!.a).toBe(1)
       expect(resolve('material.elevated.backdrop', values)).toBe('none')
-      expect(parseColorToOklch(resolve('material.elevated.highlight', values)).a).toBe(0)
+      expect(colorParseOklch(resolve('material.elevated.highlight', values))!.a).toBe(0)
       for (const name of ['fg', 'fg-muted'])
         expect(contrastRatio(resolve(`material.elevated.${name}`, values), surface)).toBeGreaterThanOrEqual(4.5)
       if (extra.endsWith('.more.json'))

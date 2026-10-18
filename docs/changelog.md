@@ -11,6 +11,18 @@
 - **热力图**：`cell-press` / `cell-active` 改名 `datum-press` / `datum-active`（`onCellPress` / `onCellActive` → `onDatumPress` / `onDatumActive`），删除 `cell-focus` / `onCellFocus`；`HeatmapCellDetails` 改名 `HeatmapDatumDetails`，删除 `HeatmapCellFocusDetails`
 - **表格**：删除 `footer`（WC `footer`），改写 `footerRows: 1`（WC `footer-rows="1"`）；`getFooterRowProps()` 改为 `getFooterRowProps({ level })`，多行表尾每行写 `level`
 - **颜色换算**：`colorParse`、`colorToString`、`colorRgbaToHex` 等 15 个颜色函数与 `ColorRgba`、`ColorHsva`、`ColorHsla`、`ColorOklch`、`ColorFormat` 改从 `@xihan-ui/core/color` 引入，`@xihan-ui/headless` 不再导出
+- **令牌的颜色换算**：`@xihan-ui/tokens` 不再导出下表左列的名字，改从 `@xihan-ui/core/color` 引入右列；`colorParseOklch` 解析不了时返回 `null`（原先抛错）；分量越界的颜色（如 `oklch(120% 0.1 30)`、透明度大于 1）不再夹回范围，令牌其余颜色函数遇到时抛错；白、灰、黑的色相写成 0
+  | 4.x（`@xihan-ui/tokens`） | 5.0（`@xihan-ui/core/color`） |
+  | --- | --- |
+  | `srgbToLinear` | `colorSrgbToLinear` |
+  | `linearToSrgb` | `colorLinearToSrgb` |
+  | `linearRgbToOklch` | `colorLinearRgbToOklch` |
+  | `oklchToLinearRgb` | `colorOklchToLinearRgb` |
+  | `parseColorToOklch` | `colorParseOklch` |
+  | `inSrgbGamut` | `colorInSrgbGamut` |
+  | `clampChroma` | `colorClampChroma` |
+  | `formatOklch` | `colorFormatOklch` |
+  | `Oklch`（类型） | `ColorOklch`（字段相同） |
 - **快捷键**：`formatHotkey`、`matchesHotkey`、`detectKbdPlatform`、`resolveKbdPlatform` 与 `KbdPlatform`、`KbdResolvedPlatform`、`HotkeySegment` 改从 `@xihan-ui/core/hotkey` 引入，`@xihan-ui/headless` 不再导出
 - **语言包**：删除 Citation 的 `openSource`、`source`，覆盖过的直接去掉；FileUpload 的 `dropzone` 改作标准结构里投放区那句看得见的说明，手写结构的投放区改由标题接上投放区里看得见的说明命名
 - **覆盖槽**：删除 `--xh-command-list-busy-opacity`
@@ -28,7 +40,7 @@
 - **新增** 标准结构：Select、Combobox、TreeSelect、Cascader、Menu、ContextMenu、Menubar、Accordion、Tabs、ToggleGroup、RadioGroup、CheckboxGroup、Checkbox、Switch、Slider、Rating、TextField、NumberField、PasswordInput、PinInput、DateField、DatePicker、DateRangePicker、TimePicker、TimeRangePicker、ColorField、ColorPicker、TagsInput、TagGroup、Listbox、Transfer、SignaturePad、Field、Fieldset、FieldArray、FileUpload、Mention、Command、ColorSwatchPicker、Breadcrumb、NavigationMenu、Card、Separator、Heatmap 等不写结构即可使用，Vue、React 与 Web Components 照同一个结构函数铺出同一棵树；Web Components 用 `slot="<名>"` / `slot="<名>:<键>"` 把作者内容放进对应部件
 - **新增** 条件编辑器 FilterBuilder、格式输入 FormatInput、表达式输入框 ExpressionInput，三端同时可用
 - **新增** 包 `@xihan-ui/designer-kit`（画布式设计器的公共内核：历史栈、视口、命中与变换、属性描述、扩展机制、表格与网格几何、剪贴板）、`@xihan-ui/designer-shell`（设计器界面零件：外框、属性面板、物料面板、问题列表、小地图、变换覆盖层、标尺，附与 UI 内建语言包对应的十种语言文案）、`@xihan-ui/expression`（受限表达式与格式化）、`@xihan-ui/xlsx`（零依赖的 xlsx 写出）
-- **新增** `@xihan-ui/core` 子入口 `json`、`rich-text`、`rich-text-dom`、`url`、`template`、`hotkey`、`color`（颜色换算，另认 `oklab()` 与 `color(srgb …)`）、`svg-export`（SVG 导出成能单独打开的一份，并可栅格化成 PNG）；`core/date` 新增墙上时间与分桶键
+- **新增** `@xihan-ui/core` 子入口 `json`、`rich-text`、`rich-text-dom`、`url`、`template`、`hotkey`、`color`（颜色换算，另认 `oklab()`、`color(srgb …)` 与色相单位 grad、rad、turn；不取整的 OKLCH 换算与按色域收彩度）、`svg-export`（SVG 导出成能单独打开的一份，并可栅格化成 PNG）；`core/date` 新增墙上时间与分桶键
 - **新增** 库内表单控件统一新增 `ariaLabel`；ToggleGroup、Combobox、ColorPicker、Transfer、CheckboxGroup、Slider、TreeSelect、Cascader、FileUpload 补齐 `required` / `readOnly` / `invalid`，放进字段或表单时自动继承；字段标题点击聚焦库内控件，Web Components 的字段接线落到控件真正可聚焦的部件上
 - **新增** FileUpload 远程附件的文件名铺成链接（部件 `item-link`，打开方式 `linkTarget`），地址不安全时退回纯文字
 - **新增** ColorPicker 单选的未选状态（`placeholder`）与清空钮 `clear-trigger`（`clear` 事件）

@@ -1,24 +1,32 @@
+import type { ColorOklch } from '@xihan-ui/core/color'
 // 颜色能力：亮度、对比度、择色、混色与深浅。
 // 最后一组把皮肤那份 CSS 配方的判据读出来与本模块对账——两处算的必须是同一件事。
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { colorFormatOklch, colorParseOklch } from '@xihan-ui/core/color'
 import { describe, expect, it } from 'vitest'
 import {
   compositeColors,
   CONTRAST_MIN,
   contrastRatio,
   darken,
-  formatOklch,
   lighten,
   meetsContrast,
   mixColors,
   ON_COLOR_CROSSOVER,
-  parseColorToOklch,
   pickAwayColor,
   pickOnColor,
   relativeLuminance,
   withAlpha,
 } from '../src/runtime/color'
+
+/** 读回本模块产出的颜色串，产出必须解析得了。 */
+function read(css: string): ColorOklch {
+  const color = colorParseOklch(css)
+  if (!color)
+    throw new Error(`解析不了：${css}`)
+  return color
+}
 
 const WHITE = '#ffffff'
 const BLACK = '#000000'
@@ -56,60 +64,26 @@ describe('相对亮度', () => {
 })
 
 describe('透明颜色与背景合成', () => {
-  it('hex、rgb、hsl 与 oklch 都保留 alpha，未声明时为 1', () => {
-    expect(parseColorToOklch('#1234').a).toBeCloseTo(0x44 / 255, 6)
-    expect(parseColorToOklch('#11223380').a).toBeCloseTo(0x80 / 255, 6)
-    expect(parseColorToOklch('rgb(17 34 51 / 40%)').a).toBeCloseTo(0.4, 6)
-    expect(parseColorToOklch('rgba(17, 34, 51, 0.4)').a).toBeCloseTo(0.4, 6)
-    expect(parseColorToOklch('hsl(210 50% 13.3% / 40%)').a).toBeCloseTo(0.4, 6)
-    expect(parseColorToOklch('hsla(210, 50%, 13.3%, 0.4)').a).toBeCloseTo(0.4, 6)
-    expect(parseColorToOklch('oklch(0.25 0.04 250 / 40%)').a).toBeCloseTo(0.4, 6)
-    expect(parseColorToOklch('#123').a).toBe(1)
-  })
-
-  it('现代 rgb 允许数值与百分比通道混用，逗号旧语法仍要求统一', () => {
-    const mixed = parseColorToOklch('rgb(17% 34 51% / 40%)')
-    const numeric = parseColorToOklch('rgb(43.35 34 130.05 / 0.4)')
-    expect(mixed.l).toBeCloseTo(numeric.l, 6)
-    expect(mixed.c).toBeCloseTo(numeric.c, 6)
-    expect(mixed.h).toBeCloseTo(numeric.h, 6)
-    expect(mixed.a).toBeCloseTo(0.4, 6)
-    expect(() => parseColorToOklch('rgb(17%, 34, 51%)')).toThrow(/统一/)
-  })
-
-  it('hsl 与 oklch 接受完整角度单位，并按 CSS 规则钳制 oklch 的 L/C', () => {
-    const hslHue = parseColorToOklch('hsl(180deg 50% 50%)').h
-    const equivalentHslHues = [
-      parseColorToOklch('hsl(200grad 50% 50%)').h,
-      parseColorToOklch(`hsl(${Math.PI}rad 50% 50%)`).h,
-      parseColorToOklch('hsl(0.5TURN 50% 50%)').h,
-    ]
-    for (const hue of equivalentHslHues) expect(hue).toBeCloseTo(hslHue, 6)
-    expect(parseColorToOklch('oklch(0.5 0.1 0.5turn)').h).toBeCloseTo(180, 6)
-    expect(parseColorToOklch('oklch(120% -0.1 20)')).toMatchObject({ l: 1, c: 0 })
-    expect(parseColorToOklch('oklch(-0.2 0.1 20)').l).toBe(0)
-  })
-
-  it('拒绝无法解释的 alpha，不把错误输入当成不透明色', () => {
+  it('写法错了或分量越界的颜色直接抛，不把错误输入当成不透明色', () => {
     for (const color of [
       'rgb(17 34 51 / nope)',
       'rgba(17, 34, 51, nope)',
-      'rgb(17 34, 51 / 40%)',
       'hsl(210 50% 13.3% / nope)',
-      'hsla(210 50%, 13.3%, 0.4)',
       'oklch(0.25 0.04 250 / nope)',
-    ]) expect(() => parseColorToOklch(color), color).toThrow()
+      'oklch(120% -0.1 20)',
+      'oklch(-0.2 0.1 20)',
+    ]) expect(() => relativeLuminance(color), color).toThrow(/无法解析/)
   })
 
-  it('按 CSS 规则把数值和百分比 alpha 钳在 0 到 1', () => {
-    expect(parseColorToOklch('rgb(17 34 51 / -0.2)').a).toBe(0)
-    expect(parseColorToOklch('hsl(210 50% 13.3% / 120%)').a).toBe(1)
-    expect(parseColorToOklch('oklch(0.25 0.04 250 / 2)').a).toBe(1)
+  it('透明度越出 0 到 1 的颜色直接抛', () => {
+    expect(() => relativeLuminance('rgb(17 34 51 / -0.2)', WHITE)).toThrow(/无法解析/)
+    expect(() => relativeLuminance('hsl(210 50% 13.3% / 120%)', WHITE)).toThrow(/无法解析/)
+    expect(() => relativeLuminance('oklch(0.25 0.04 250 / 2)', WHITE)).toThrow(/无法解析/)
   })
 
   it('按 CSS sRGB source-over 合成，再以合成像素计算亮度和对比度', () => {
     const composite = compositeColors('rgb(0 0 0 / 50%)', WHITE)
-    expect(parseColorToOklch(composite).a).toBe(1)
+    expect(read(composite).a).toBe(1)
     expect(relativeLuminance(composite)).toBeCloseTo(halfSrgbLuminance(), 3)
     expect(relativeLuminance('rgb(0 0 0 / 50%)', WHITE)).toBeCloseTo(halfSrgbLuminance(), 6)
     expect(contrastRatio('rgb(0 0 0 / 50%)', WHITE))
@@ -129,9 +103,9 @@ describe('透明颜色与背景合成', () => {
 
   it('连续合成保留结果 alpha，格式化不会再次丢失', () => {
     const composite = compositeColors('rgb(255 0 0 / 50%)', 'rgb(0 0 255 / 50%)')
-    const parsed = parseColorToOklch(composite)
+    const parsed = read(composite)
     expect(parsed.a).toBeCloseTo(0.75, 3)
-    expect(formatOklch(parsed)).toContain('/ 0.75')
+    expect(colorFormatOklch(parsed)).toContain('/ 0.75')
   })
 
   it('全透明前景不改变背景，全不透明前景完全覆盖背景', () => {
@@ -139,15 +113,15 @@ describe('透明颜色与背景合成', () => {
       .toBeCloseTo(relativeLuminance('#336699'), 3)
     expect(relativeLuminance(compositeColors('#ffffff', 'rgb(0 0 0 / 20%)')))
       .toBeCloseTo(1, 6)
-    expect(parseColorToOklch(compositeColors('rgb(255 0 0 / 0)', 'rgb(0 0 255 / 0)')))
+    expect(read(compositeColors('rgb(255 0 0 / 0)', 'rgb(0 0 255 / 0)')))
       .toEqual({ l: 0, c: 0, h: 0, a: 0 })
   })
 
   it('格式化与连续合成都保留接近不透明的 alpha 精度', () => {
-    const formatted = formatOklch({ l: 0.5, c: 0.1, h: 200, a: 0.9999999 })
+    const formatted = colorFormatOklch({ l: 0.5, c: 0.1, h: 200, a: 0.9999999 })
     expect(formatted).toContain('/ 0.9999999')
-    expect(parseColorToOklch(formatted).a).toBeCloseTo(0.9999999, 7)
-    expect(parseColorToOklch(compositeColors(
+    expect(read(formatted).a).toBeCloseTo(0.9999999, 7)
+    expect(read(compositeColors(
       'rgb(0 0 0 / 99.99%)',
       'rgb(255 255 255 / 99.99%)',
     )).a).toBeCloseTo(0.99999999, 8)
@@ -248,19 +222,19 @@ describe('混色与深浅', () => {
   })
 
   it('混色、提亮与压暗都保留透明度', () => {
-    const mixed = parseColorToOklch(mixColors('rgb(255 0 0 / 0%)', '#0000ff', 0.5))
-    const blue = parseColorToOklch('#0000ff')
+    const mixed = read(mixColors('rgb(255 0 0 / 0%)', '#0000ff', 0.5))
+    const blue = read('#0000ff')
     expect(mixed.a).toBeCloseTo(0.5, 3)
     expect(mixed.l).toBeCloseTo(blue.l, 2)
     expect(mixed.c).toBeCloseTo(blue.c, 2)
     expect(mixed.h).toBeCloseTo(blue.h, 1)
-    expect(parseColorToOklch(lighten('rgb(51 102 204 / 40%)', 0.2)).a).toBeCloseTo(0.4, 3)
-    expect(parseColorToOklch(darken('rgb(51 102 204 / 40%)', 0.2)).a).toBeCloseTo(0.4, 3)
+    expect(read(lighten('rgb(51 102 204 / 40%)', 0.2)).a).toBeCloseTo(0.4, 3)
+    expect(read(darken('rgb(51 102 204 / 40%)', 0.2)).a).toBeCloseTo(0.4, 3)
   })
 
   it('换不透明度产出带 alpha 的 oklch 串', () => {
     expect(withAlpha('#3366cc', 0.5)).toMatch(/^oklch\([\d.]+ [\d.]+ [\d.]+ \/ 0\.5\)$/)
-    expect(parseColorToOklch(withAlpha('rgb(51 102 204 / 20%)', 0.7)).a).toBeCloseTo(0.7, 3)
+    expect(read(withAlpha('rgb(51 102 204 / 20%)', 0.7)).a).toBeCloseTo(0.7, 3)
   })
 })
 

@@ -7,27 +7,19 @@
 
 export type { BrandScale, BrandStep, RegisterBrandOptions } from './brand'
 export { brandScaleCss, deriveBrandScale, registerBrand } from './brand'
-export type { Oklch, PickColorOptions } from './color'
+export type { PickColorOptions } from './color'
 export {
-  clampChroma,
   compositeColors,
   CONTRAST_MIN,
   contrastRatio,
   darken,
-  formatOklch,
-  inSrgbGamut,
   lighten,
-  linearRgbToOklch,
-  linearToSrgb,
   meetsContrast,
   mixColors,
-  oklchToLinearRgb,
   ON_COLOR_CROSSOVER,
-  parseColorToOklch,
   pickAwayColor,
   pickOnColor,
   relativeLuminance,
-  srgbToLinear,
   withAlpha,
 } from './color'
 export type { ThemeController, ThemeControllerOptions } from './controller'
