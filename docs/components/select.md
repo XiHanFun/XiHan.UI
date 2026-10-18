@@ -178,7 +178,7 @@ outline、subtle 和 ghost
 - 支持分组、加载、空状态、底部操作区和滚动加载。
 - 选项可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
 - 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
-- 选项来自模板或宿主数据时，用 `@xihan-ui/headless` 导出的 `findOptionViolation(collection, { tree?, unique?, requireLabel?, strict? })` 先校验结构，返回第一处问题的 JSON Pointer 与原因；单选组、复选组、组合框、树选择与级联吃同一套节点形状，同样适用。
+- 选项来自模板或宿主数据时，用 `@xihan-ui/core/options` 导出的 `findOptionViolation(collection, { tree?, unique?, requireLabel?, strict? })` 先校验结构，返回第一处问题的 JSON Pointer 与原因；单选组、复选组、组合框、树选择与级联吃同一套节点形状，同样适用。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - 控件使用 Field Chrome，浮层使用 M2 磨砂表面；候选面板与字段盒等宽，长选项在条目里截断。
 - 选中项保留普通文字，通过末端对号表示状态。

@@ -14,6 +14,7 @@ export default defineXihanPackage({
     'date': 'src/date/index.ts',
     'hotkey': 'src/hotkey/index.ts',
     'json': 'src/json/index.ts',
+    'options': 'src/options/index.ts',
     'url': 'src/url/index.ts',
     'rich-text': 'src/rich-text/index.ts',
     'rich-text-dom': 'src/rich-text/dom.ts',
