@@ -10,7 +10,7 @@ import type { IconRecord } from '@xihan-ui/core'
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { DesignerPaletteTranslations } from '../translations'
 import { createCounterIdGenerator } from '@xihan-ui/core'
-import { createAuthoredElement, createGeneratedElement, emitEvent, setText, SVG_NS, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
+import { BOOLEAN_CONVERTER, createAuthoredElement, createGeneratedElement, emitEvent, setText, SVG_NS, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { startDrag } from '../drag/drag'
 import { definePaletteElements } from '../internal/ui-elements'
 
@@ -67,20 +67,20 @@ interface Parts {
 export class XhDesignerPaletteElement extends XhReactiveElement {
   static override properties = {
     groups: { attribute: false },
-    searchable: { type: Boolean },
-    collapsible: { type: Boolean },
-    readonly: { type: Boolean },
+    searchable: { converter: BOOLEAN_CONVERTER },
+    collapsible: { converter: BOOLEAN_CONVERTER },
+    readonly: { converter: BOOLEAN_CONVERTER },
     translations: { attribute: false },
   }
 
   /** 物料分组。 */
   declare groups: readonly DesignerPaletteGroup[] | undefined
   /** 显示搜索框，按名称过滤。 */
-  declare searchable: boolean
+  declare searchable?: boolean
   /** 分组可折叠，折叠状态按分组 id 保留；搜索时匹配的分组一律展开。 */
-  declare collapsible: boolean
+  declare collapsible?: boolean
   /** 只读：物料只能浏览，不派发 item-activate、不能拖出。 */
-  declare readonly: boolean
+  declare readonly?: boolean
   /** 元素自己的文案，压在全局配置之上。 */
   declare translations: Partial<DesignerPaletteTranslations> | undefined
 

@@ -175,11 +175,12 @@ document.querySelector("xh-dialog")
 
 ## 编写自己的元素
 
-`@xihan-ui/web-components/authoring` 公开库内元素所用的那套基础件，供设计器等第三方编写同样形态的 Light DOM 元素：自研的响应式基类、按 key 复用生成节点、事件派发、元素注册，以及读取全局配置与文案的控制器。这个子入口不含库内的元素类，Node 下可以安全 import。
+`@xihan-ui/web-components/authoring` 公开库内元素所用的那套基础件，供设计器等第三方编写同样形态的 Light DOM 元素：自研的响应式基类、布尔属性的三态转换器、按 key 复用生成节点、事件派发、元素注册，以及读取全局配置与文案的控制器。这个子入口不含库内的元素类，Node 下可以安全 import。
 
 ```ts
 import type { KeyedChildren, PropertyValues } from "@xihan-ui/web-components/authoring";
 import {
+  BOOLEAN_CONVERTER,
   createGeneratedElement,
   emitEvent,
   reconcile,
@@ -198,7 +199,7 @@ interface Step {
 class XhStepList extends XhReactiveElement {
   static override properties = {
     steps: { attribute: false },
-    compact: { type: Boolean },
+    compact: { converter: BOOLEAN_CONVERTER },
   };
 
   declare steps: Step[] | undefined;
@@ -226,7 +227,8 @@ registerElement("xh-step-list", XhStepList);
 
 | 导出 | 说明 |
 | --- | --- |
-| `XhReactiveElement` | 响应式基类。渲染根就是元素自身（Light DOM）；`static properties` 声明字段，声明键只认 `attribute`（`false` 不观察，字符串指定属性名，缺省为字段名转小写）、`type`（`Boolean` / `Number` / `Object` / `Array`，其余按字符串）与 `converter`；属性单向转成字段，不回写；同一拍里的多次写入合并成一轮更新；生命周期为 `update(changed)`（覆盖时必须调 `super.update(changed)`）、`firstUpdated`、`updated`，另有 `requestUpdate()`、`updateComplete` 与控制器 |
+| `XhReactiveElement` | 响应式基类。渲染根就是元素自身（Light DOM）；`static properties` 声明字段，声明键只认 `attribute`（`false` 不观察，字符串指定属性名，缺省为字段名转小写）、`type`（`Boolean` / `Number` / `Object` / `Array`，其余按字符串）与 `converter`；布尔属性写 `converter: BOOLEAN_CONVERTER`，不写 `type: Boolean`（后者按 HTML 原生规矩，`="false"` 也是真）；属性单向转成字段，不回写；同一拍里的多次写入合并成一轮更新；生命周期为 `update(changed)`（覆盖时必须调 `super.update(changed)`）、`firstUpdated`、`updated`，另有 `requestUpdate()`、`updateComplete` 与控制器 |
+| `BOOLEAN_CONVERTER` | 布尔属性的三态转换器，与库内元素同一个：没写这个 attribute 为 `undefined`（交给缺省值），写 `"false"` 为 `false`，其余写法（空串、`"true"` 与别的值）为 `true`。缺省为真的开关因此写得出「关」，移除 attribute 回到缺省 |
 | `reconcile(parent, items, keys, keyOf, make, mark?)` | 按 key 把一组节点排进父节点：已有的复用、缺的新建、多的移除，次序与输入一致；作者写在父节点里的节点不动，生成的节点排在它们之后。给了 `mark` 时只认、只摘生成标记等于它的节点，同一父节点里另一套生成逻辑写的节点不动 |
 | `createGeneratedElement(doc, tag, attributes?, children?)` / `generatedChildren(parent)` | 建一个带生成标记（`GEN_ATTR`，即 `data-xh-gen`）的 HTML 节点，可同时按属性表写上属性、依次放入子节点（字符串作为文本） / 取父节点里生成的直接子节点（给了第二个参数时只取生成标记等于它的）；SVG 节点用 `createElementNS(SVG_NS, tag)` 建好后自己加 `GEN_ATTR` |
 | `createAuthoredElement(doc, tag, attributes?, children?)` | 同上，但不带生成标记，节点就像作者手写的：用代码搭库内元素的 Light DOM 结构（`data-xh-part` 角色节点、空状态与提示框里的自定义内容）时用它。带生成标记的子节点会被宿主当作自己生成的节点——补结构时收走，判断有没有作者内容时略过 |

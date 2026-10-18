@@ -13,7 +13,7 @@ import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { DesignerRulerTranslations } from '../translations'
 import { rotatedBounds, rulerTicks } from '@xihan-ui/designer-kit'
 import { createPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
-import { createGeneratedElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
+import { BOOLEAN_CONVERTER, createGeneratedElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { adoptSlots } from '../internal/slots'
 
 /** 参考线的方向：x 为竖线（x 等于定值），y 为横线。 */
@@ -86,7 +86,7 @@ export class XhDesignerRulerElement extends XhReactiveElement {
     highlight: { attribute: false },
     format: { attribute: false },
     snap: { attribute: false },
-    readonly: { type: Boolean },
+    readonly: { converter: BOOLEAN_CONVERTER },
     translations: { attribute: false },
   }
 
@@ -103,7 +103,7 @@ export class XhDesignerRulerElement extends XhReactiveElement {
   /** 拖动参考线时的吸附，入参与返回值都是世界单位。 */
   declare snap: ((axis: DesignerGuideAxis, value: number) => number) | undefined
   /** 只读：照常显示参考线，不能新建、挪动或删除。 */
-  declare readonly: boolean
+  declare readonly?: boolean
   /** 元素自己的文案，压在全局配置之上。 */
   declare translations: Partial<DesignerRulerTranslations> | undefined
 
@@ -147,7 +147,7 @@ export class XhDesignerRulerElement extends XhReactiveElement {
   protected override update(changed: PropertyValues): void {
     super.update(changed)
     const parts = this.#ensureParts()
-    this.toggleAttribute('data-readonly', this.readonly)
+    this.toggleAttribute('data-readonly', this.readonly === true)
     this.#size = { width: parts.canvas.clientWidth, height: parts.canvas.clientHeight }
     const viewport = this.viewport ?? DEFAULT_VIEWPORT
     const unit = this.unitSize ?? 1

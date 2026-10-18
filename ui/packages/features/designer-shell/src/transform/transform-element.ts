@@ -26,7 +26,7 @@ import {
   worldToScreen,
 } from '@xihan-ui/designer-kit'
 import { createPointerSession, edgeScrollDelta, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
-import { createGeneratedElement, emitEvent, setText, XhReactiveElement } from '@xihan-ui/web-components/authoring'
+import { BOOLEAN_CONVERTER, createGeneratedElement, emitEvent, setText, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 
 /** 一个选中项与它能做的变换。 */
 export interface DesignerTransformItem {
@@ -120,7 +120,7 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     getSnap: { attribute: false },
     formatMeasure: { attribute: false },
     rotateStep: { type: Number, attribute: 'rotate-step' },
-    readonly: { type: Boolean },
+    readonly: { converter: BOOLEAN_CONVERTER },
   }
 
   /** 画布的视口。 */
@@ -136,7 +136,7 @@ export class XhDesignerTransformElement extends XhReactiveElement {
   /** 按住 Shift 旋转时吸附的角度，缺省 15。 */
   declare rotateStep: number | undefined
   /** 只读：不画控制柄，startMove 不起作用；框选照常。 */
-  declare readonly: boolean
+  declare readonly?: boolean
 
   #parts: Parts | undefined
   #gesture: Gesture | undefined

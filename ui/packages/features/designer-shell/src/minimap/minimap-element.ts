@@ -10,7 +10,7 @@ import type { Point, Rect, Size, Viewport } from '@xihan-ui/designer-kit'
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import { fitRect, screenToWorld, unionRects, visibleWorldRect } from '@xihan-ui/designer-kit'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
-import { emitEvent, GEN_ATTR, SVG_NS, XhReactiveElement } from '@xihan-ui/web-components/authoring'
+import { BOOLEAN_CONVERTER, emitEvent, GEN_ATTR, SVG_NS, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 
 /** 小地图上的一个图形，世界坐标。 */
 export type DesignerMinimapShape
@@ -33,7 +33,7 @@ export class XhDesignerMinimapElement extends XhReactiveElement {
     bounds: { attribute: false },
     viewport: { attribute: false },
     canvasSize: { attribute: false },
-    readonly: { type: Boolean },
+    readonly: { converter: BOOLEAN_CONVERTER },
   }
 
   /** 要画的图形。 */
@@ -45,7 +45,7 @@ export class XhDesignerMinimapElement extends XhReactiveElement {
   /** 画布的屏幕尺寸，与 viewport 一起算出视口框；不给时不画视口框。 */
   declare canvasSize: Size | undefined
   /** 只读。小地图只做导航，只读时照常可用。 */
-  declare readonly: boolean
+  declare readonly?: boolean
 
   #svg: SVGSVGElement | undefined
   #world: SVGGElement | undefined

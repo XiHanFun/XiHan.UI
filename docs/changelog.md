@@ -17,7 +17,7 @@
 - **表单校验**：只含空白的字符串与元素全为空的数组算空，`required` 会拦下；`min` / `max` 对字符串改按字素计数。依赖原行为的改在 `validator` 里自行判断
 - **React Card**：`XhCardRoot` 的 `title`、`content` 改为卡片的标题与正文，不再作为原生属性写到根上
 - **Web Components FileUpload**：条目改按 `allFiles` 对应（远程附件在前、本地文件在后）；用了 `remoteFiles` 的改按 `allFiles` 铺行
-- **Web Components 布尔属性**：全部改为三态，显式写 `="false"` 为假、不写交给缺省；写过 `disabled="false"` 却想要真的改成 `disabled`，移除属性改为回到组件缺省
+- **Web Components 布尔属性**：全部改为三态（含 designer-shell 的零件），显式写 `="false"` 为假、不写交给缺省；写过 `disabled="false"` 却想要真的改成 `disabled`，移除属性改为回到组件缺省
 - **缺省结构**：根组件不写默认插槽 / 不给 children、Web Components 元素不写部件时，原先渲出空的根，现在铺出整套部件
 - **外观**：渲染成 `<button>` 的部件清掉浏览器缺省样式，WC 作者自写的按钮部件接线后同样无壳，要按钮外观时把 Button 当作这个部件写进去
 - **FileUpload**：点标题改为把焦点交给投放区，不再直接弹出选择框
@@ -31,7 +31,7 @@
 - **新增** FieldArray 表格排布 `layout="table"`、`insert` / `move`、`value-change` 带行变更；不写结构时只给每行内容即可
 - **新增** Table 多行表尾 `footerRows` 与吸底 `stickyFooter`、行主操作 `onAction`、列的 `rowHeader`，Web Components 新增 `visibleRows`；Select 新增取数失败状态与重试，Combobox 新增在途占位；Heatmap 新增受控联动键 `activeKey`、`pending`、`empty` 与 `format`
 - **新增** TextField `multiline`、NumberField 与 TimePicker 的 `placeholder`、TimeRangePicker 的 `startPlaceholder` / `endPlaceholder`、Grid `ruled`、Accordion `contentRole`；日历翻页钮带上按视图的缺省读屏名
-- **新增** Web Components 子入口 `authoring`（编写同形 Light DOM 元素的基类与工具）与按需注册 `defineXhElement`
+- **新增** Web Components 子入口 `authoring`（编写同形 Light DOM 元素的基类、布尔属性的三态转换器 `BOOLEAN_CONVERTER` 与工具）与按需注册 `defineXhElement`
 - **新增** `@xihan-ui/viz` 有向图算法、分层布局与直角连线、折线工具、多样式折行 `wrapRuns`、表格数据处理与 `pivotWider`
 - **优化** 按需注册一个元素的产物从约 160 kB 降到约 15 kB（gzip）；`@xihan-ui/expression` 可摇树
 - **修复** 弹层、提示与图表族只引用实际渲染了的标题与说明（Dialog、Drawer、Popover、Popconfirm、Tour、Alert、Approval、Notification、FloatingPanel、Fieldset、Field、Table、图表），不再挂落空的 id
