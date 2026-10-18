@@ -8,7 +8,7 @@
 @layer xihan.components {
   /* —— 宿主收起：零件宿主自带 display，hidden 要另写一条才收得起来 —— */
 
-  :is(xh-designer-properties, xh-designer-issues, xh-designer-minimap, xh-designer-palette, xh-designer-transform, xh-designer-ruler, xh-designer-frame)[hidden] {
+  :is(xh-designer-properties, xh-designer-issues, xh-designer-minimap, xh-designer-palette, xh-designer-transform, xh-designer-ruler, xh-designer-frame, xh-designer-settings)[hidden] {
     display: none;
   }
 
@@ -87,27 +87,27 @@
   }
 
   /* 不进字段的两种行：一组控件（宿主编辑器）与只读的一行（没有编辑器），文字层级与字段一致 */
-  xh-designer-properties [data-scope='designer-properties'][data-part='property'][role='group'] {
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='property'][role='group'] {
     display: flex;
     flex-direction: column;
     gap: var(--xh-space-2);
   }
 
-  xh-designer-properties [data-scope='designer-properties'][data-part='property-line'] {
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='property-line'] {
     display: flex;
     gap: var(--xh-space-2);
     align-items: baseline;
     justify-content: space-between;
   }
 
-  xh-designer-properties [data-scope='designer-properties'][data-part='property-label'] {
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='property-label'] {
     overflow-wrap: anywhere;
     color: var(--xh-fg-muted);
     font-size: var(--xh-text-label-size);
     font-weight: var(--xh-text-label-weight);
   }
 
-  xh-designer-properties [data-scope='designer-properties'][data-part='property-label'][data-required]::before {
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='property-label'][data-required]::before {
     content: var(--xh-glyph-mark-required);
     margin-inline-end: var(--xh-space-1);
     color: var(--xh-fg-danger);
@@ -115,41 +115,41 @@
   }
 
   @supports (content: '' / '') {
-    xh-designer-properties [data-scope='designer-properties'][data-part='property-label'][data-required]::before {
+    :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='property-label'][data-required]::before {
       content: var(--xh-glyph-mark-required) / '';
     }
   }
 
-  xh-designer-properties [data-scope='designer-properties']:is([data-part='property-hint'], [data-part='property-error']) {
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties']:is([data-part='property-hint'], [data-part='property-error']) {
     margin: 0;
     font-size: var(--xh-text-caption-size);
   }
 
-  xh-designer-properties [data-scope='designer-properties'][data-part='property-hint'] {
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='property-hint'] {
     color: var(--xh-fg-subtle);
   }
 
-  xh-designer-properties [data-scope='designer-properties'][data-part='property-error'] {
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='property-error'] {
     color: var(--xh-fg-danger);
   }
 
-  xh-designer-properties [data-scope='designer-properties'][data-control='unsupported'] {
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-control='unsupported'] {
     color: var(--xh-fg-muted);
     font-size: var(--xh-font-size-xs);
   }
 
-  xh-designer-properties [data-scope='designer-properties'][data-part='property'] > xh-field > * > [data-json] textarea {
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='property'] > xh-field > * > [data-json] textarea {
     font-family: var(--xh-font-family-mono);
   }
 
   /* 四边：开关在上，下面四边相同时一个数字框，分开时两列四个，框铺满所在的格 */
-  xh-designer-properties [data-scope='designer-properties'][data-part='sides'] {
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='sides'] {
     display: flex;
     flex-direction: column;
     gap: var(--xh-space-2);
   }
 
-  xh-designer-properties [data-scope='designer-properties'][data-part='sides-fields'] {
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='sides-fields'] {
     --xh-number-field-control-w: 100%;
 
     display: grid;
@@ -157,15 +157,62 @@
     gap: var(--xh-space-2);
   }
 
-  xh-designer-properties [data-scope='designer-properties'][data-part='sides'][data-linked] > [data-scope='designer-properties'][data-part='sides-fields'] {
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='sides'][data-linked] > [data-scope='designer-properties'][data-part='sides-fields'] {
     grid-template-columns: minmax(0, 1fr);
   }
 
   /* 颜色预设：色板在上，允许自定义时颜色框在下 */
-  xh-designer-properties [data-scope='designer-properties'][data-part='swatch'] {
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='swatch'] {
     display: flex;
     flex-direction: column;
     gap: var(--xh-space-2);
+  }
+
+  /* —— 设置对话框：宿主不占盒，对话框打开时内容搬到浮层根，样式认搬过去的 pages、items 两层 —— */
+
+  xh-designer-settings {
+    display: contents;
+  }
+
+  /* 分区页定高：换页时对话框不跳，条目多了在右侧滚动 */
+  [data-scope='designer-settings'][data-part='pages'] {
+    display: flex;
+    block-size: var(--xh-viewport-h-lg);
+    min-block-size: 0;
+  }
+
+  /* 标签页铺满这块定高：竖排标签带的分隔线拉到底，右侧的页占满余宽、条目多了只在这里滚 */
+  [data-scope='designer-settings'][data-part='pages'] > xh-tabs {
+    display: flex;
+    flex: 1;
+    min-inline-size: 0;
+  }
+
+  [data-scope='designer-settings'][data-part='pages'] > xh-tabs > [data-scope='tabs'][data-part='root'] {
+    flex: 1;
+    min-block-size: 0;
+  }
+
+  [data-scope='designer-settings'][data-part='pages'] > xh-tabs > [data-scope='tabs'][data-part='root'] > [data-scope='tabs'][data-part='content'] {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: auto;
+  }
+
+  /* 条目按正文行宽排：字段放进 Field 即铺满，页再宽也不拉到整页 */
+  [data-scope='designer-settings'][data-part='items'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-space-4);
+    min-inline-size: 0;
+    max-inline-size: var(--xh-measure-prose);
+    color: var(--xh-fg-default);
+    font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='designer-settings'][data-part='unsupported'] {
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-font-size-xs);
   }
 
   /* —— 问题列表 —— */

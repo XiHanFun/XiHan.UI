@@ -50,6 +50,24 @@ const translations: DesignerShellLocaleTranslations = {
     closePanel: label => `Cerrar ${label}`,
     panelHelp: label => `Acerca de ${label}`,
   },
+  'xh-designer-settings': {
+    title: 'Configuración',
+    sections: 'Secciones de configuración',
+    locked: 'Gestionado por la aplicación anfitriona',
+    general: 'General',
+    theme: 'Tema',
+    themeHint: 'Solo se aplica a este diseñador, no al resto de la página.',
+    themeFollow: 'Seguir la página',
+    themeSystem: 'Seguir el sistema',
+    themeLight: 'Claro',
+    themeDark: 'Oscuro',
+    brand: 'Color de énfasis',
+    brandHint: 'El color de los botones, la selección y los resaltados de este diseñador.',
+    statusBar: 'Barra de estado',
+    statusBarHint: 'Mostrar la barra de estado en la parte inferior del diseñador.',
+    language: 'Idioma',
+    languageHint: 'Déjalo vacío para seguir la página.',
+  },
 }
 
 /** 西班牙语。 */

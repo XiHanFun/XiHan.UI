@@ -61,6 +61,24 @@ const translations: DesignerShellLocaleTranslations = {
     closePanel: label => `Закрыть «${label}»`,
     panelHelp: label => `О панели «${label}»`,
   },
+  'xh-designer-settings': {
+    title: 'Настройки',
+    sections: 'Разделы настроек',
+    locked: 'Управляется основным приложением',
+    general: 'Общие',
+    theme: 'Тема',
+    themeHint: 'Применяется только к этому конструктору, а не ко всей странице.',
+    themeFollow: 'Как на странице',
+    themeSystem: 'Как в системе',
+    themeLight: 'Светлая',
+    themeDark: 'Тёмная',
+    brand: 'Акцентный цвет',
+    brandHint: 'Цвет кнопок, выделения и подсветки в этом конструкторе.',
+    statusBar: 'Строка состояния',
+    statusBarHint: 'Показывать строку состояния внизу конструктора.',
+    language: 'Язык',
+    languageHint: 'Оставьте пустым, чтобы использовать язык страницы.',
+  },
 }
 
 /** 俄语。 */

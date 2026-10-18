@@ -11,6 +11,7 @@ import {
   XhColorFieldElement,
   XhColorSwatchPickerElement,
   XhContextMenuElement,
+  XhDialogElement,
   XhFieldElement,
   XhFilterBuilderElement,
   XhFormatInputElement,
@@ -20,6 +21,7 @@ import {
   XhSelectElement,
   XhSplitterElement,
   XhSwitchElement,
+  XhTabsElement,
   XhTagElement,
   XhTagsInputElement,
   XhTextFieldElement,
@@ -67,6 +69,13 @@ export function defineFrameElements(): void {
 export function defineIssueListElements(): void {
   defineXhElement('xh-toggle-group', XhToggleGroupElement)
   defineXhElement('xh-tag', XhTagElement)
+}
+
+/** 设置对话框：对话框、竖排的分区页与属性字段用到的元素。 */
+export function defineSettingsElements(): void {
+  defineXhElement('xh-dialog', XhDialogElement)
+  defineXhElement('xh-tabs', XhTabsElement)
+  definePropertyFieldElements()
 }
 
 /** 命令工具栏与命令菜单用到的元素。 */

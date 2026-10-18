@@ -35,6 +35,29 @@ export type {
 } from './properties/properties-element'
 export { XhDesignerRulerElement } from './ruler/ruler-element'
 export type { DesignerGuideAxis, DesignerGuideChange, DesignerGuides, DesignerRulerEventMap } from './ruler/ruler-element'
+export { createDesignerSettingsHost } from './settings/host'
+export type { DesignerSettingsHost, DesignerSettingsHostOptions } from './settings/host'
+export {
+  collectSettingsSections,
+  DESIGNER_GENERAL_SETTINGS,
+  DESIGNER_SETTING_KEYS,
+  designerGeneralSettings,
+  settingKey,
+  settingPolicy,
+  settingValue,
+  sortSettingsSections,
+} from './settings/model'
+export type {
+  DesignerGeneralSettingsOptions,
+  DesignerSettingItem,
+  DesignerSettings,
+  DesignerSettingsPolicy,
+  DesignerSettingsSection,
+  DesignerSettingsSource,
+  DesignerThemeSetting,
+} from './settings/model'
+export { XhDesignerSettingsElement } from './settings/settings-element'
+export type { DesignerSettingEditor, DesignerSettingsEventMap } from './settings/settings-element'
 export { XhDesignerTransformElement } from './transform/transform-element'
 export type {
   DesignerGesturePhase,
@@ -49,4 +72,5 @@ export type {
   DesignerPaletteTranslations,
   DesignerPropertiesTranslations,
   DesignerRulerTranslations,
+  DesignerSettingsTranslations,
 } from './translations'

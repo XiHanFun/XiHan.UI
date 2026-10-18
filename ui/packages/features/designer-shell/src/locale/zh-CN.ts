@@ -50,6 +50,24 @@ const translations: DesignerShellLocaleTranslations = {
     closePanel: label => `关闭「${label}」`,
     panelHelp: label => `「${label}」说明`,
   },
+  'xh-designer-settings': {
+    title: '设置',
+    sections: '设置分区',
+    locked: '由所在系统管理',
+    general: '基础',
+    theme: '主题',
+    themeHint: '只作用于设计器，不影响页面其余部分。',
+    themeFollow: '跟随页面',
+    themeSystem: '跟随系统',
+    themeLight: '亮色',
+    themeDark: '暗色',
+    brand: '主题色',
+    brandHint: '设计器里按钮、选中与高亮的颜色。',
+    statusBar: '状态栏',
+    statusBarHint: '在设计器底部显示状态栏。',
+    language: '语言',
+    languageHint: '不选即跟随页面。',
+  },
 }
 
 /** 简体中文。 */
