@@ -3,6 +3,8 @@
 export { applyStep } from './conformance/apply-step'
 export type { ApplyContext } from './conformance/apply-step'
 export { attachHost } from './conformance/attach-host'
+export { runConfigParity } from './conformance/config-parity'
+export type { ConfigParityKey, ConfigParityOptions } from './conformance/config-parity'
 export { installCssAnimationMock } from './conformance/css-animation-mock'
 export { pendingFrames, settleFrame, settleTeardown } from './conformance/frame'
 export { checkExpectation } from './conformance/match'

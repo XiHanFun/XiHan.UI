@@ -2,6 +2,7 @@ import type { AdapterEvent, AdapterHarness, Fixture } from '@xihan-ui/testing'
 import type { App, Component } from 'vue'
 import { attachHost } from '@xihan-ui/testing'
 import { createApp, h, nextTick, reactive } from 'vue'
+import { provideXhConfig } from '../src'
 import { renderFixtureSlots, resolveRoot } from './fixture-vnode'
 
 const PUBLIC_EVENTS = {
@@ -171,8 +172,12 @@ export function createVueHarness(): AdapterHarness {
       // 根节点上作者写的属性（aria-label 之类的标注）跟着走：WC 侧本就把它们
       // setAttribute 到角色节点上，Vue 侧经透传落到根组件渲染出的那个元素上
       app = createApp({
-        setup: () => () =>
-          h(Root, { ...fixture.tree.attrs, ...props, ...listeners }, fixture.tree.defaultStructure ? undefined : renderFixtureSlots(fixture.tree.children, fixture.component)),
+        setup: () => {
+          if (fixture.config)
+            provideXhConfig(fixture.config)
+          return () =>
+            h(Root, { ...fixture.tree.attrs, ...props, ...listeners }, fixture.tree.defaultStructure ? undefined : renderFixtureSlots(fixture.tree.children, fixture.component))
+        },
       })
       app.config.warnHandler = (message) => {
         throw new Error(`[Vue warn]: ${message}`)
