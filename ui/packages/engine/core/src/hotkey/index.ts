@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// @xihan-ui/core/hotkey —— 快捷键：键数组的归一、按平台的写法、按键是否命中，以及键名表的查法。
+// @xihan-ui/core/hotkey —— 快捷键：键数组的归一、按平台的写法、按键是否命中、与 aria-keyshortcuts 互转，以及键名表的查法。
 //
 // 翻写与判定全程不读 navigator：服务端渲染时没有它，读了会炸；平台由调用方挂载后
 // 调 detectKbdPlatform 测出来往下传。
@@ -213,6 +213,62 @@ export function formatHotkey(
   const resolved = resolveKbdPlatform(platform)
   // 空串翻不出任何键，留着会铺出一枚没有字的键帽
   return (keys ?? []).filter(key => typeof key === 'string' && key !== '').map(key => toSegment(key, resolved, text))
+}
+
+/**
+ * 一组键在给定平台上显示成的一串字：Mac 上键帽字连写（⌘⇧Z），其余平台用 + 连（Ctrl+Shift+Z）。键帽字取 text，缺省是英文。
+ */
+export function formatHotkeyLabel(
+  keys: readonly string[] | undefined,
+  platform?: KbdPlatform,
+  text: HotkeyText = HOTKEY_TEXT_EN_US,
+): string {
+  const resolved = resolveKbdPlatform(platform)
+  return formatHotkey(keys, resolved, text).map(segment => segment.label).join(resolved === 'mac' ? '' : '+')
+}
+
+/** aria-keyshortcuts 认的四个修饰键名。 */
+const ARIA_MODIFIERS = new Set<string>(['Alt', 'Control', 'Meta', 'Shift'])
+
+/** 主键里在 aria-keyshortcuts 中另起名字的两枚：空格是条目分隔、加号是键名分隔。 */
+const ARIA_KEY_NAME: Record<string, string> = { ' ': 'Space', '+': 'Plus' }
+const ARIA_KEY_VALUE: Record<string, string> = { Space: ' ', Plus: '+' }
+
+/**
+ * 一组键写成 aria-keyshortcuts 的一条：修饰键写 Alt / Control / Meta / Shift 排在前面，
+ * 'Mod' 按平台落成 Meta（Mac）或 Control（其余平台）；主键排在最后，单个字母写成大写，空格写 Space、加号写 Plus。
+ * 组合里没有主键或不止一个主键时按不出来，返回 undefined。
+ *
+ * @example
+ * ariaKeyshortcut(['Mod', 'Shift', 'z'], 'mac') // 'Meta+Shift+Z'
+ * ariaKeyshortcut(['Mod', 'Shift', 'z'], 'other') // 'Control+Shift+Z'
+ */
+export function ariaKeyshortcut(keys: readonly string[] | undefined, platform?: KbdPlatform): string | undefined {
+  const segments = formatHotkey(keys, platform)
+  const mains = segments.filter(segment => !segment.modifier)
+  if (mains.length !== 1)
+    return undefined
+  const modifiers = new Set(segments.filter(segment => segment.modifier).map(segment => segment.key))
+  const main = mains[0]!.key
+  return [...modifiers, lookup(ARIA_KEY_NAME, main) ?? (/^[a-z]$/.test(main) ? main.toUpperCase() : main)].join('+')
+}
+
+/**
+ * 读 aria-keyshortcuts：空白分隔的每一条拆成一组键，键名是 formatHotkey 与 matchesHotkey 认得的写法（Space 还原成空格、Plus 还原成加号）。
+ * 一条里修饰键只认 Alt / Control / Meta / Shift 且排在前面、最后恰好一个主键；不合这个写法的那条按不出来，不收。
+ *
+ * @example
+ * parseAriaKeyshortcuts('Control+Shift+Z Meta+Z') // [['Control', 'Shift', 'Z'], ['Meta', 'Z']]
+ */
+export function parseAriaKeyshortcuts(value: string | null | undefined): readonly (readonly string[])[] {
+  return (value ?? '').split(/\s+/).filter(Boolean).flatMap((shortcut) => {
+    const keys = shortcut.split('+')
+    const main = keys.at(-1)!
+    const modifiers = keys.slice(0, -1)
+    if (main === '' || ARIA_MODIFIERS.has(main) || !modifiers.every(key => ARIA_MODIFIERS.has(key)))
+      return []
+    return [[...modifiers, lookup(ARIA_KEY_VALUE, main) ?? main]]
+  })
 }
 
 /**

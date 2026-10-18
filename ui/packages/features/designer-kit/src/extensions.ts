@@ -12,7 +12,7 @@ import type { JsonObject, JsonPath, JsonValue } from '@xihan-ui/core/json'
 import type { PathOperation } from './path-operation'
 import type { ControlKind, PropertyEditor, PropertyEditorLayer, PropertyEditorTable } from './properties'
 import type { SchemaIssue } from './schema'
-import { formatHotkey, matchesHotkey } from '@xihan-ui/core/hotkey'
+import { formatHotkey, formatHotkeyLabel, matchesHotkey } from '@xihan-ui/core/hotkey'
 import { isPlainObject } from '@xihan-ui/core/json'
 import { BUILTIN_CONTROL_KINDS, mergePropertyEditorTables } from './properties'
 
@@ -304,7 +304,7 @@ export function shortcutKey(keys: readonly string[]): string {
 
 /** 快捷键的显示文字：macOS 上键帽字连写（⌘⇧P），其余平台用 + 连（Ctrl+Shift+P）。 */
 export function formatShortcut(keys: readonly string[], platform: KbdPlatform): string {
-  return formatHotkey(keys, platform).map(segment => segment.label).join(platform === 'mac' ? '' : '+')
+  return formatHotkeyLabel(keys, platform)
 }
 
 /** 找出这次按键命中的命令：快捷键恰好命中、此刻可用的那一条；没有时为 undefined。platform 由调用方测出（detectKbdPlatform）。 */

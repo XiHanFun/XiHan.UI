@@ -1,7 +1,7 @@
 // 快捷键：键数组按平台归一与写法、按键是否恰好命中，以及键名表的查法。
 import type { HotkeyEvent } from '../src/hotkey'
 import { describe, expect, it } from 'vitest'
-import { detectKbdPlatform, formatHotkey, HOTKEY_TEXT_EN_US, keyText, matchesHotkey, resolveKbdPlatform } from '../src/hotkey'
+import { ariaKeyshortcut, detectKbdPlatform, formatHotkey, formatHotkeyLabel, HOTKEY_TEXT_EN_US, keyText, matchesHotkey, parseAriaKeyshortcuts, resolveKbdPlatform } from '../src/hotkey'
 
 function press(key: string, init: Partial<HotkeyEvent> = {}): HotkeyEvent {
   return { key, code: '', altKey: false, ctrlKey: false, metaKey: false, shiftKey: false, ...init }
@@ -89,5 +89,66 @@ describe('命中', () => {
   it('只有修饰键或有两个主键的组合不命中', () => {
     expect(matchesHotkey(press('Control', { ctrlKey: true }), ['Ctrl'], 'other')).toBe(false)
     expect(matchesHotkey(press('a'), ['A', 'B'], 'other')).toBe(false)
+  })
+})
+
+describe('显示成一串字', () => {
+  it('mac 上键帽字连写，其余平台用 + 连', () => {
+    expect(formatHotkeyLabel(['Mod', 'Shift', 'z'], 'mac')).toBe('⌘⇧Z')
+    expect(formatHotkeyLabel(['Mod', 'Shift', 'z'], 'other')).toBe('Ctrl+Shift+Z')
+    expect(formatHotkeyLabel(['Mod', 'Delete'])).toBe('Ctrl+Del')
+  })
+
+  it('键帽字可以换一张表', () => {
+    const text = { ...HOTKEY_TEXT_EN_US, keyLabel: (key: string) => (key === 'Control' ? 'Strg' : key.toUpperCase()) }
+    expect(formatHotkeyLabel(['Control', 's'], 'other', text)).toBe('Strg+S')
+  })
+})
+
+describe('aria-keyshortcuts', () => {
+  it('mod 按平台落成 Meta 或 Control，修饰键在前、字母大写', () => {
+    expect(ariaKeyshortcut(['Mod', 'Shift', 'z'], 'mac')).toBe('Meta+Shift+Z')
+    expect(ariaKeyshortcut(['Mod', 'Shift', 'z'], 'other')).toBe('Control+Shift+Z')
+    expect(ariaKeyshortcut(['z', 'Mod'], 'other')).toBe('Control+Z')
+  })
+
+  it('别名归成规范键名，空格写 Space、加号写 Plus，重复的修饰键只写一次', () => {
+    expect(ariaKeyshortcut(['ctrl', 'opt', 'Del'], 'other')).toBe('Control+Alt+Delete')
+    expect(ariaKeyshortcut(['Shift', 'Space'], 'other')).toBe('Shift+Space')
+    expect(ariaKeyshortcut(['Mod', '+'], 'mac')).toBe('Meta+Plus')
+    expect(ariaKeyshortcut(['Mod', 'Control', '='], 'other')).toBe('Control+=')
+    expect(ariaKeyshortcut(['Esc'], 'other')).toBe('Escape')
+  })
+
+  it('没有主键或不止一个主键时不写', () => {
+    expect(ariaKeyshortcut(['Shift'], 'other')).toBeUndefined()
+    expect(ariaKeyshortcut(['a', 'b'], 'other')).toBeUndefined()
+    expect(ariaKeyshortcut([], 'other')).toBeUndefined()
+    expect(ariaKeyshortcut(undefined, 'other')).toBeUndefined()
+  })
+
+  it('读回来的每一条是一组键，Space 与 Plus 还原', () => {
+    expect(parseAriaKeyshortcuts('Control+Shift+Z  Meta+Z')).toEqual([['Control', 'Shift', 'Z'], ['Meta', 'Z']])
+    expect(parseAriaKeyshortcuts('Shift+Space Control+Plus F1')).toEqual([['Shift', ' '], ['Control', '+'], ['F1']])
+    expect(parseAriaKeyshortcuts(null)).toEqual([])
+    expect(parseAriaKeyshortcuts('  ')).toEqual([])
+  })
+
+  it('不合写法的那条不收：修饰键在后、只有修饰键、空键名、不认的修饰键名、两个主键', () => {
+    expect(parseAriaKeyshortcuts('Z+Control Shift Control+ Ctrl+S Control+A+B Control+S')).toEqual([['Control', 'S']])
+  })
+
+  it('两个平台各写成什么、读回来又显示成什么', () => {
+    const mac = ariaKeyshortcut(['Mod', 'Shift', 'z'], 'mac')
+    const other = ariaKeyshortcut(['Mod', 'Shift', 'z'], 'other')
+    expect([mac, other]).toEqual(['Meta+Shift+Z', 'Control+Shift+Z'])
+    expect(formatHotkeyLabel(parseAriaKeyshortcuts(mac)[0], 'mac')).toBe('⌘⇧Z')
+    expect(formatHotkeyLabel(parseAriaKeyshortcuts(other)[0], 'other')).toBe('Ctrl+Shift+Z')
+  })
+
+  it('读回来的键交给 matchesHotkey 照样命中', () => {
+    const [keys] = parseAriaKeyshortcuts(ariaKeyshortcut(['Mod', 'Shift', 'z'], 'other'))
+    expect(matchesHotkey(press('Z', { code: 'KeyZ', ctrlKey: true, shiftKey: true }), keys, 'other')).toBe(true)
+    expect(matchesHotkey(press('z', { code: 'KeyZ', ctrlKey: true }), keys, 'other')).toBe(false)
   })
 })
