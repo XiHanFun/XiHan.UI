@@ -962,6 +962,11 @@
     contain: inline-size;
   }
 
+  /* 带 slot 而外框此刻没有对应位置的作者内容留在宿主下，不占版面 */
+  xh-designer-frame > [slot] {
+    display: none;
+  }
+
   xh-designer-frame > [data-scope='designer-frame'][data-part='top'] {
     display: flex;
     flex: none;

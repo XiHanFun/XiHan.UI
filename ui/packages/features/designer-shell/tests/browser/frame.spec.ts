@@ -340,4 +340,17 @@ describe('<xh-designer-frame>（Chromium）', () => {
     expect(['body', 'main', 'stack', 'region', 'splitter'].every(part => frame.querySelector(`[data-part="${part}"][data-scope="designer-frame"]`) !== null)).toBe(true)
     expect(['canvas', 'palette', 'properties', 'issues', 'toolbar'].map(name => frame.querySelector(`[data-region="${name}"]`)!.getAttribute('data-position'))).toEqual(['center', 'start', 'end', 'bottom', 'top'])
   })
+
+  it('带 slot 而外框没有对应位置的作者内容留在宿主下，不占版面', async () => {
+    const before = frame.querySelector('[data-part="body"]')!.getBoundingClientRect().height
+    const stray = document.createElement('div')
+    stray.slot = 'nowhere'
+    stray.style.blockSize = '120px'
+    stray.textContent = '没有位置'
+    frame.append(stray)
+    await frame.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    expect([stray.parentElement, getComputedStyle(stray).display]).toEqual([frame, 'none'])
+    expect(frame.querySelector('[data-part="body"]')!.getBoundingClientRect().height).toBe(before)
+  })
 })

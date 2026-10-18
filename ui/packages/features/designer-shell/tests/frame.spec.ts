@@ -153,6 +153,33 @@ describe('<xh-designer-frame>', () => {
     expect(frame.panels).toBe('header toolbar palette issues status')
   })
 
+  it('卡片先换成普通区再换回来：面板头操作区里的作者内容先回到宿主，再回到新面板头里', async () => {
+    const titled = [
+      { name: 'toolbar', position: 'top' },
+      { name: 'palette', position: 'start', title: '物料' },
+      { name: 'canvas', position: 'center' },
+      { name: 'properties', position: 'end', title: '属性' },
+      { name: 'issues', position: 'bottom', title: '问题' },
+    ] as const
+    await mount(element => element.regions = titled)
+    const counts = document.createElement('span')
+    counts.slot = 'issues-actions'
+    frame.append(counts)
+    await new Promise(resolve => setTimeout(resolve))
+    await frame.updateComplete
+    expect(counts.parentElement!.getAttribute('data-part')).toBe('panel-actions')
+
+    frame.regions = titled.map(({ name, position }) => ({ name, position }))
+    await frame.updateComplete
+    expect([counts.parentElement, counts.isConnected]).toEqual([frame, true])
+
+    frame.regions = titled
+    await frame.updateComplete
+    await new Promise(resolve => setTimeout(resolve))
+    const actions = region('issues')!.querySelector<HTMLElement>('[data-part="panel-actions"]')!
+    expect([counts.parentElement, counts.isConnected, actions.hidden]).toEqual([actions, true, false])
+  })
+
   it('区后来加了标题就换成卡片，已经搬进去的内容挪进正文；画布区的作者内容可以放进四角与右侧的浮动条', async () => {
     const content = await mount()
     expect(region('properties')!.hasAttribute('data-card')).toBe(false)
