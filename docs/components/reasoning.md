@@ -96,7 +96,12 @@ open 交给宿主：外部一个按钮统一开合几段思考，自动开合让
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `autoDisclosure` | `boolean` |  | 运行时自动展开、结束时自动收起，默认开启；用户手动开合过一次即永久停用。 |
+| `defaultOpen` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
 | `endTime` | `number` |  | 思考结束的时刻。可能缺席：流被中止时兜底收尾不写该字段。 |
+| `onOpenChange` | `(details: ToolCallOpenChangeDetails) => void` |  |  |
+| `open` | `boolean` |  |  |
 | `size` | `Size` |  |  |
 | `startTime` | `number` |  | 开始思考的时刻，毫秒时间戳。 |
 | `streaming` | `boolean` |  | 仍在思考。适配器把它折叠为状态机的 running。 |
@@ -126,11 +131,6 @@ open 交给宿主：外部一个按钮统一开合几段思考，自动开合让
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
-| `XhReasoningRoot` | `open` | `boolean` |  | 给定即受控。 |
-| `XhReasoningRoot` | `defaultOpen` | `boolean` |  |  |
-| `XhReasoningRoot` | `autoDisclosure` | `boolean` |  | 开始思考时自动展开、思考完成时自动收起，用户手动操作过即锁定。 |
-| `XhReasoningRoot` | `disabled` | `boolean` |  |  |
-| `XhReasoningRoot` | `onOpenChange` | `MachineProps['onOpenChange']` |  |  |
 | `XhReasoningRoot` | `children` | `SlotChildren<ReasoningRootSlotProps>` |  |  |
 
 ### 状态

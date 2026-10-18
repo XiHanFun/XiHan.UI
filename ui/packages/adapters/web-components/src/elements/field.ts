@@ -150,7 +150,8 @@ export class XhFieldElement extends XhElement {
         control: this.getPart('control') != null,
       },
     }
-    const api = connectField(props, this.fieldScope, wcNormalize)
+    // 字段集压下来的作用域禁用也落到字段上：标题与说明随组内控件一起变淡
+    const api = connectField(this.configured('field', props), this.fieldScope, wcNormalize)
 
     const put = (name: string, attrs: Record<string, unknown>): void => {
       const el = this.getPart(name)
