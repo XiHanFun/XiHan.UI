@@ -158,6 +158,9 @@ describe('命令工具栏（Chromium）', () => {
   })
 })
 
+/** 视图菜单的状态与选中记录：菜单按它现算勾选，select 记下点了哪一项。 */
+const viewState: { grid: boolean, layout: string, chosen: string[] } = { grid: true, layout: 'a', chosen: [] }
+
 const POPUP_COMMANDS = new Map<string, DesignerCommand<null>>([
   ...COMMANDS,
   ['page-setup', { id: 'page-setup', label: 'Page setup', icon: LINE, panel: () => {
@@ -170,6 +173,14 @@ const POPUP_COMMANDS = new Map<string, DesignerCommand<null>>([
     { value: '0', label: 'Cover', checked: true, group: 'page' },
     { value: '1', label: 'Details', checked: false, group: 'page' },
   ] }],
+  ['view-menu', { id: 'view-menu', label: 'View', icon: LINE, menu: () => [
+    { value: 'grid', label: 'Grid', checked: viewState.grid },
+    'separator',
+    { value: 'a', label: 'Layout A', checked: viewState.layout === 'a', group: 'layout' },
+    { value: 'b', label: 'Layout B', checked: viewState.layout === 'b', group: 'layout' },
+    'separator',
+    'undo',
+  ], select: value => void viewState.chosen.push(value) }],
 ])
 
 function mountPopups(options: Parameters<typeof createCommandToolbar>[1], style: string, groups: string[][]): ReturnType<typeof createCommandToolbar<null>> {
@@ -277,5 +288,35 @@ describe('弹层命令、菜单命令与竖排（Chromium）', () => {
     const strip = frame.querySelector('[data-part="overlay"][data-overlay="end"]')!.getBoundingClientRect()
     expect([strip.top >= canvas.top, strip.bottom <= canvas.bottom]).toEqual([true, true])
     frame.remove()
+  })
+
+  it('真实指针点菜单命令的各种条目：复选不收起、单选收起，都调 select；写成命令 id 的项执行那条命令', async () => {
+    viewState.chosen = []
+    let undone = 0
+    const commands = new Map(POPUP_COMMANDS).set('undo', command('undo', { label: 'Undo', run: () => void undone++ }))
+    host = document.createElement('div')
+    host.style.cssText = 'inline-size: 640px; padding: 48px'
+    const bar = createCommandToolbar<null>(document, { platform: 'other' })
+    host.append(bar.element)
+    document.body.append(host)
+    bar.update([['undo', 'view-menu']], commands, null, 'Designer actions')
+    await settle()
+    const entry = (value: string): HTMLElement | null => document.querySelector<HTMLElement>(`[data-scope="menu"][data-part="item"][data-value="${value}"]`)
+    const open = async (): Promise<void> => {
+      await userEvent.click(button('view-menu'))
+      await until(() => entry('item:grid') !== null && entry('item:grid')!.getBoundingClientRect().width > 0)
+    }
+    await open()
+    expect(entry('item:grid')!.getAttribute('aria-checked')).toBe('true')
+    await userEvent.click(entry('item:grid')!)
+    await until(() => viewState.chosen.length === 1)
+    expect([viewState.chosen, bar.opened()]).toEqual([['grid'], 'view-menu'])
+    await userEvent.click(entry('item:b')!)
+    await until(() => bar.opened() === undefined)
+    expect(viewState.chosen).toEqual(['grid', 'b'])
+    await open()
+    await userEvent.click(entry('command:undo')!)
+    await until(() => undone === 1)
+    expect(viewState.chosen).toEqual(['grid', 'b'])
   })
 })
