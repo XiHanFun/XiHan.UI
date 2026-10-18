@@ -113,6 +113,16 @@ export interface DesignerSettingsTranslations {
   readonly brand: string
   /** 主题色条目的说明。 */
   readonly brandHint: string
+  /** 工具栏显示方式条目的标签。 */
+  readonly toolbarDisplay: string
+  /** 工具栏显示方式条目的说明。 */
+  readonly toolbarDisplayHint: string
+  /** 工具栏显示方式：只显示图标。 */
+  readonly toolbarDisplayIcon: string
+  /** 工具栏显示方式：只显示文字。 */
+  readonly toolbarDisplayText: string
+  /** 工具栏显示方式：图标加文字。 */
+  readonly toolbarDisplayBoth: string
   /** 状态栏条目的标签。 */
   readonly statusBar: string
   /** 状态栏条目的说明。 */

@@ -11046,7 +11046,8 @@
       "settingPolicy",
       "settingValue",
       "sortSettingsSections",
-      "startDrag"
+      "startDrag",
+      "toolbarDisplayOf"
     ],
     "@xihan-ui/markdown": [
       "LIVE_BLOCK_KEY",

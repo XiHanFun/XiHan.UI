@@ -47,6 +47,7 @@ export {
   settingPolicy,
   settingValue,
   sortSettingsSections,
+  toolbarDisplayOf,
 } from './settings/model'
 export type {
   DesignerGeneralSettingsOptions,
