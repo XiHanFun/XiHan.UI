@@ -4,10 +4,11 @@
  */
 
 // 设置落到设计器上：主题与主题色写在设计器根的 data-theme、data-brand 上，只作用于设计器（浮层经视觉桥跟着走）；
+// 主题跟随页面又选了主题色时，根上照抄外层的 data-theme；根上写了主题时一并照抄外层的 data-contrast，外层变了跟着改。
 // 设置的读写走根所在窗口的 localStorage。状态栏与语言由各款自己接。
 
 import type { JsonValue } from '@xihan-ui/core/json'
-import type { VisualEnvironmentStorageError } from '@xihan-ui/core/visual-environment'
+import type { EnvSignals, VisualEnvironmentStorageError } from '@xihan-ui/core/visual-environment'
 import type { PropertySwatchOption } from '@xihan-ui/designer-kit/properties'
 import type { DesignerSettings, DesignerSettingsSection, DesignerThemeSetting } from './model'
 import { isJsonValue } from '@xihan-ui/core/json'
@@ -40,47 +41,79 @@ export interface DesignerSettingsHost {
   save: (settings: DesignerSettings, sections?: readonly DesignerSettingsSection[]) => void
   /** 把主题与主题色写到设计器根上。 */
   apply: (settings: DesignerSettings) => void
-  /** 撤掉跟随系统的监听与注册的主题色，根上的两个属性还原成接手前的样子。 */
+  /** 撤掉跟随系统与外层的监听、注册的主题色，根上的 data-theme、data-brand、data-contrast 还原成接手前的样子。 */
   dispose: () => void
 }
 
 let customBrands = 0
+
+/** 设置宿主会写到根上的三个属性。 */
+const AXES = ['data-theme', 'data-brand', 'data-contrast'] as const
+type Axis = (typeof AXES)[number]
 
 /** 建一个设置宿主：读写设置，并把主题与主题色落到设计器根上。 */
 export function createDesignerSettingsHost(options: DesignerSettingsHostOptions): DesignerSettingsHost {
   if (options.storageKey !== undefined && !options.onStorageError)
     throw new TypeError('启用 storageKey 必须提供 onStorageError')
   const { root } = options
-  const win = root.ownerDocument.defaultView ?? undefined
-  const initial = { theme: root.getAttribute('data-theme'), brand: root.getAttribute('data-brand') }
+  const doc = root.ownerDocument
+  const win = doc.defaultView ?? undefined
+  const initial: Readonly<Record<Axis, string | null>> = {
+    'data-theme': root.getAttribute('data-theme'),
+    'data-brand': root.getAttribute('data-brand'),
+    'data-contrast': root.getAttribute('data-contrast'),
+  }
   const brandId = `xh-designer-brand-${++customBrands}`
+  let theme: DesignerThemeSetting = 'follow'
+  /** 写到根上的品牌 id；不写时是 undefined。 */
+  let brand: string | undefined
+  let signals: EnvSignals | undefined
   let unsubscribeSystem: (() => void) | undefined
+  let observer: MutationObserver | undefined
   let unregisterBrand: (() => void) | undefined
   let registeredColor: string | undefined
 
-  const restore = (name: 'data-theme' | 'data-brand', value: string | null): void => {
+  /** 根以外最近的祖先上写的这个属性。 */
+  const inherited = (name: Axis): string | null => root.parentElement?.closest(`[${name}]`)?.getAttribute(name) ?? null
+
+  const write = (name: Axis, value: string | null): void => {
+    if (root.getAttribute(name) === value)
+      return
     if (value === null)
       root.removeAttribute(name)
     else
       root.setAttribute(name, value)
   }
 
-  const applyTheme = (theme: JsonValue | undefined): void => {
-    unsubscribeSystem?.()
-    unsubscribeSystem = undefined
-    const value = (['system', 'light', 'dark'] as const).includes(theme as never) ? theme as Exclude<DesignerThemeSetting, 'follow'> : 'follow'
-    if (value === 'follow') {
-      restore('data-theme', initial.theme)
+  /**
+   * 按此刻的设置与外层写好根上的三个属性：data-brand 要与 data-theme 在同一个元素上才换得动品牌，主题跟随页面又选了
+   * 主题色时照抄外层的主题（外层没写就是亮色）；根上新写了主题时，语义令牌在这里重新声明，外层的对比度也要照抄过来。
+   */
+  const sync = (): void => {
+    const ownTheme = theme === 'light' || theme === 'dark'
+      ? theme
+      : theme === 'system'
+        ? signals!.systemMode()
+        : brand === undefined ? initial['data-theme'] : initial['data-theme'] ?? inherited('data-theme') ?? 'light'
+    write('data-theme', ownTheme)
+    write('data-brand', brand ?? initial['data-brand'])
+    write('data-contrast', initial['data-contrast'] ?? (ownTheme === initial['data-theme'] ? null : inherited('data-contrast')))
+  }
+
+  /** 根上写了外层取来的值时，外层的主题与对比度变了就重写。 */
+  const watch = (on: boolean): void => {
+    if (!on) {
+      observer?.disconnect()
+      observer = undefined
       return
     }
-    if (value !== 'system') {
-      root.setAttribute('data-theme', value)
+    if (observer)
       return
-    }
-    const signals = createEnvSignals(win)
-    const sync = (): void => root.setAttribute('data-theme', signals.systemMode())
-    sync()
-    unsubscribeSystem = signals.subscribe(sync)
+    observer = new MutationObserver((records) => {
+      if (records.some(record => !root.contains(record.target)))
+        sync()
+    })
+    observer.observe(doc.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-contrast'], subtree: true })
   }
 
   const releaseBrand = (): void => {
@@ -89,28 +122,22 @@ export function createDesignerSettingsHost(options: DesignerSettingsHostOptions)
     registeredColor = undefined
   }
 
-  const applyBrand = (brand: JsonValue | undefined): void => {
-    if (typeof brand !== 'string' || brand === '') {
+  /** 主题色设置换成要写到根上的品牌 id：预设直接用，别的颜色经 registerBrand 注册成本设计器的品牌。 */
+  const resolveBrand = (value: JsonValue | undefined): string | undefined => {
+    if (typeof value === 'string' && value !== '' && options.brands?.some(option => option.value === value)) {
       releaseBrand()
-      restore('data-brand', initial.brand)
-      return
+      return value
     }
-    if (options.brands?.some(option => option.value === brand)) {
-      releaseBrand()
-      root.setAttribute('data-brand', brand)
-      return
+    if (typeof value === 'string' && value !== '' && options.registerBrand) {
+      if (registeredColor !== value) {
+        releaseBrand()
+        unregisterBrand = options.registerBrand(brandId, value)
+        registeredColor = value
+      }
+      return brandId
     }
-    if (!options.registerBrand) {
-      releaseBrand()
-      restore('data-brand', initial.brand)
-      return
-    }
-    if (registeredColor !== brand) {
-      releaseBrand()
-      unregisterBrand = options.registerBrand(brandId, brand)
-      registeredColor = brand
-    }
-    root.setAttribute('data-brand', brandId)
+    releaseBrand()
+    return undefined
   }
 
   return {
@@ -152,15 +179,27 @@ export function createDesignerSettingsHost(options: DesignerSettingsHostOptions)
       }
     },
     apply(settings) {
-      applyTheme(settings[DESIGNER_SETTING_KEYS.theme])
-      applyBrand(settings[DESIGNER_SETTING_KEYS.brand])
+      const next = settings[DESIGNER_SETTING_KEYS.theme]
+      theme = (['system', 'light', 'dark'] as const).includes(next as never) ? next as DesignerThemeSetting : 'follow'
+      unsubscribeSystem?.()
+      unsubscribeSystem = undefined
+      if (theme === 'system') {
+        signals ??= createEnvSignals(win)
+        unsubscribeSystem = signals.subscribe(sync)
+      }
+      brand = resolveBrand(settings[DESIGNER_SETTING_KEYS.brand])
+      sync()
+      watch(theme !== 'follow' || brand !== undefined)
     },
     dispose() {
       unsubscribeSystem?.()
       unsubscribeSystem = undefined
+      watch(false)
       releaseBrand()
-      restore('data-theme', initial.theme)
-      restore('data-brand', initial.brand)
+      theme = 'follow'
+      brand = undefined
+      for (const name of AXES)
+        write(name, initial[name])
     },
   }
 }
