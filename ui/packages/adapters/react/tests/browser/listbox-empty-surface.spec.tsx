@@ -47,10 +47,12 @@ afterEach(async () => {
   host = undefined
 })
 
-it('默认空集合不画框，只有禁用候选时仍保留真实列表', async () => {
+it('默认空集合不画框、在途时只露出带缺省文字的在途占位，只有禁用候选时仍保留真实列表', async () => {
   await render(<XhListboxRoot collection={[]} loading label="候选" />)
   expect(part('content').getBoundingClientRect().height).toBe(0)
-  expect(host?.querySelector('[data-part="empty"], [data-part="loading"]')).toBeNull()
+  expect(part('empty').getBoundingClientRect().height).toBe(0)
+  expect(part('loading').textContent).toBe('Loading')
+  expect(part('loading').getBoundingClientRect().height).toBeGreaterThan(0)
   await render(<XhListboxRoot collection={[{ value: 'blocked', label: '不可选', disabled: true }]} label="候选" />)
   expect(part('content').getBoundingClientRect().height).toBeGreaterThan(0)
   expect(part('item').getAttribute('aria-disabled')).toBe('true')
