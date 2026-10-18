@@ -3384,7 +3384,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-button-group>`：Light-DOM 行为宿主，无状态机，把 connectButtonGroup 产出接到 root 角色节点。\n\n组内每一段是作者自己的按钮，不是本组件的角色节点：三个视觉轴写在根上，\n并按整组禁用同一条路写到每个未自写该属性的 `<xh-button>` 子节点上（段自己写了的优先），\n段因此自带形态矩阵属性，颜色由家族配方给出。",
+          "description": "`<xh-button-group>`：Light-DOM 行为宿主，无状态机，把 connectButtonGroup 产出接到 root 角色节点。\n\n组内每一段是作者自己的按钮，不是本组件的角色节点：三个视觉轴写在根上，\n并按整组禁用同一条路写到每个未自写该属性的 `<xh-button>` 子节点上（段自己写了的优先）；\n段是 `<xh-menu>` 这类包着触发器的宿主时（分体按钮的下拉钮），写到它直接带的触发器 `<xh-button>` 上，\n段因此自带形态矩阵属性，颜色由家族配方给出。",
           "name": "XhButtonGroupElement",
           "cssParts": [
             {
@@ -3611,7 +3611,7 @@
                   }
                 }
               ],
-              "description": "把组的 variant / tone / size 写到每个未自写该属性的 `<xh-button>` 段上。\n段是 `<xh-button>` 宿主，属性即它的 props，写上去就经它自己的连接层投影成 data-xh-action-variant\n一类稳定属性；作者自写的那一档保留。只认 xh-button：作者放进组里的裸 <button> 不是本库的段。"
+              "description": "把组的 variant / tone / size 写到每个未自写该属性的 `<xh-button>` 段上。\n段是 `<xh-button>` 宿主，属性即它的 props，写上去就经它自己的连接层投影成 data-xh-action-variant\n一类稳定属性；作者自写的那一档保留。只认 xh-button：作者放进组里的裸 <button> 不是本库的段。\n段是菜单这类宿主时，写到它直接带的触发器 xh-button 上；宿主自己的 tone / size 管的是弹出的内容，不动它。"
             }
           ],
           "attributes": [

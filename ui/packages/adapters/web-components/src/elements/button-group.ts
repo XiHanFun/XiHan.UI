@@ -20,7 +20,8 @@ const GROUP_AXES: readonly GroupAxis[] = ['variant', 'tone', 'size']
  * `<xh-button-group>`：Light-DOM 行为宿主，无状态机，把 connectButtonGroup 产出接到 root 角色节点。
  *
  * 组内每一段是作者自己的按钮，不是本组件的角色节点：三个视觉轴写在根上，
- * 并按整组禁用同一条路写到每个未自写该属性的 `<xh-button>` 子节点上（段自己写了的优先），
+ * 并按整组禁用同一条路写到每个未自写该属性的 `<xh-button>` 子节点上（段自己写了的优先）；
+ * 段是 `<xh-menu>` 这类包着触发器的宿主时（分体按钮的下拉钮），写到它直接带的触发器 `<xh-button>` 上，
  * 段因此自带形态矩阵属性，颜色由家族配方给出。
  *
  * @customElement xh-button-group
@@ -166,25 +167,34 @@ export class XhButtonGroupElement extends XhElement {
    * 把组的 variant / tone / size 写到每个未自写该属性的 `<xh-button>` 段上。
    * 段是 `<xh-button>` 宿主，属性即它的 props，写上去就经它自己的连接层投影成 data-xh-action-variant
    * 一类稳定属性；作者自写的那一档保留。只认 xh-button：作者放进组里的裸 <button> 不是本库的段。
+   * 段是菜单这类宿主时，写到它直接带的触发器 xh-button 上；宿主自己的 tone / size 管的是弹出的内容，不动它。
    */
   private applyGroupAxes(root: HTMLElement, axes: Record<GroupAxis, string | undefined>, separators: readonly HTMLElement[]): void {
     for (const child of root.children) {
-      if (separators.includes(child as HTMLElement) || child.localName !== 'xh-button')
+      const button = separators.includes(child as HTMLElement) ? null : segmentButton(child)
+      if (!button)
         continue
-      let declared = this.declaredAxes.get(child)
+      let declared = this.declaredAxes.get(button)
       if (!declared) {
         declared = {}
-        this.declaredAxes.set(child, declared)
+        this.declaredAxes.set(button, declared)
       }
       for (const axis of GROUP_AXES) {
         if (!(axis in declared))
-          declared[axis] = child.getAttribute(axis)
+          declared[axis] = button.getAttribute(axis)
         const value = declared[axis] ?? axes[axis]
         if (value == null)
-          child.removeAttribute(axis)
+          button.removeAttribute(axis)
         else
-          child.setAttribute(axis, value)
+          button.setAttribute(axis, value)
       }
     }
   }
+}
+
+/** 一段里承接组形态的按钮：段本身是 xh-button 就是它，段是包着触发器的宿主时是它直接带的触发器 xh-button。 */
+function segmentButton(child: Element): Element | null {
+  if (child.localName === 'xh-button')
+    return child
+  return child.querySelector(':scope > xh-button[data-xh-part="trigger"]')
 }

@@ -3733,11 +3733,14 @@
     --xh-button-group-separator-opacity: 0.16;
   }
 
-  /* outline 的外框由组根统一绘制，组内每一段都不再各画一圈边框（段的形态矩阵描边被这一条压平）。 */
+  /* outline 的外框由组根统一绘制，组内每一段都不再各画一圈边框（段的形态矩阵描边被这一条压平）。
+     段是菜单这类包着触发器的宿主时（分体按钮的下拉钮），按钮在触发器宿主里，多一层 */
   .xh-scope-button-group[data-part='root'][data-variant='outline']
     > .xh-scope-button[data-part='root'],
   .xh-scope-button-group[data-part='root'][data-variant='outline']
-    > * > .xh-scope-button[data-part='root'] {
+    > * > .xh-scope-button[data-part='root'],
+  .xh-scope-button-group[data-part='root'][data-variant='outline']
+    > * > [data-xh-part='trigger'] > .xh-scope-button[data-part='root'] {
     border-color: transparent;
   }
 
@@ -3774,7 +3777,9 @@
   .xh-scope-button-group[data-part='root']
     > .xh-scope-button[data-part='root']:not([data-disabled]):not([data-loading]):is(:active, [data-pressed]),
   .xh-scope-button-group[data-part='root']
-    > * > .xh-scope-button[data-part='root']:not([data-disabled]):not([data-loading]):is(:active, [data-pressed]) {
+    > * > .xh-scope-button[data-part='root']:not([data-disabled]):not([data-loading]):is(:active, [data-pressed]),
+  .xh-scope-button-group[data-part='root']
+    > * > [data-xh-part='trigger'] > .xh-scope-button[data-part='root']:not([data-disabled]):not([data-loading]):is(:active, [data-pressed]) {
     scale: none;
   }
 
