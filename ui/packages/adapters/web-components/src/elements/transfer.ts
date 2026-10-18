@@ -108,6 +108,9 @@ function stripNativeDisabled(el: HTMLElement): void {
 export class XhTransferElement extends XhElement {
   static override partContract = { anatomy: transferAnatomy, meta: transferMeta }
 
+  // 放进字段时字段的标题并进两侧列表（role=listbox）的名字，排在面板标题前，说明与错误文案进描述链；走组类接线
+  static override fieldTarget = { parts: ['list'], kind: 'group' } as const
+
   static override structure: ElementStructure<XhTransferElement> = {
     build: host => host.ctrl.service ? transferStructure(connectTransfer(host.ctrl.service, wcNormalize)) : undefined,
   }

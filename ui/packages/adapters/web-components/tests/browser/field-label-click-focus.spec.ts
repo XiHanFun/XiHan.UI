@@ -83,6 +83,28 @@ describe('点字段标签聚焦控件', () => {
     expect(part(scope, 'trigger').getAttribute('aria-expanded')).toBe('false')
   })
 
+  // 签名板的画布是 role=img、不可聚焦：有笔迹时焦点交给第一颗可聚焦的按钮
+  it('signature-pad：有笔迹时点标题，焦点落在签名板里第一颗可聚焦的按钮上', async () => {
+    await mountMarkup('<xh-signature-pad></xh-signature-pad>')
+    const pad = document.querySelector<HTMLElement & { value?: unknown }>('xh-signature-pad')!
+    pad.value = { strokes: [{ points: [{ x: 10, y: 10, pressure: 0.5 }, { x: 60, y: 40, pressure: 0.5 }] }], surface: { width: 200, height: 80 } }
+    await settle()
+    await userEvent.click(label())
+    const active = document.activeElement as HTMLElement
+    expect(active.localName).toBe('button')
+    expect(active.closest('[data-scope="signature-pad"][data-part="root"]')).not.toBeNull()
+  })
+
+  it('transfer：点标题，焦点落在源侧列表里', async () => {
+    await mountMarkup('<xh-transfer></xh-transfer>')
+    const transfer = document.querySelector<HTMLElement & { collection?: unknown }>('xh-transfer')!
+    transfer.collection = [{ value: 'a', label: '甲' }, { value: 'b', label: '乙' }]
+    await settle()
+    await userEvent.click(label())
+    const active = document.activeElement as HTMLElement
+    expect(active.closest('[data-scope="transfer"][data-part="list"][data-side="source"]')).not.toBeNull()
+  })
+
   it('作者自写的 control：label 的 for 指着它，点标签走原生行为', async () => {
     await mount('native')
     const input = document.querySelector<HTMLInputElement>('[data-scope="field"][data-part="control"]')!

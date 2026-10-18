@@ -13,6 +13,7 @@ import { defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { renderStructure } from '../../runtime/structure'
 import { withHandlers } from '../../runtime/with-handlers'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideSignaturePad, useSignaturePadContext } from './context'
 import { useSignaturePad } from './use-signature-pad'
@@ -117,11 +118,14 @@ export const XhSignaturePadLabel = defineComponent({
 export const XhSignaturePadControl = defineComponent({
   name: 'XhSignaturePadControl',
   setup(_, { slots }) {
+    // 放进字段时字段的标题并进画布的名字，说明与错误文案进描述链；画布是 role=img，只取组类接线
+    const fieldWiring = useFieldGroupWiring()
+    const fieldLabel = useFieldLabelWiring()
     const ctx = useSignaturePadContext()
     // 画布是 svg：笔迹与基准线都是图元。viewBox 由连接层按钉住的尺寸给，
     // 基准线与笔迹都建在这棵 svg 子树里，命名空间由它带下去
     return () => h('svg', {
-      ...ctx.api.value.getControlProps() as Record<string, unknown>,
+      ...fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getControlProps() as Record<string, unknown> }),
       ref: ctx.controlRef,
     }, slots.default?.())
   },

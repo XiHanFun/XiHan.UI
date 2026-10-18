@@ -14,6 +14,7 @@ import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { SignaturePadProvider, useSignaturePadContext } from './context'
 import { useSignaturePad } from './use-signature-pad'
@@ -154,11 +155,14 @@ export interface XhSignaturePadControlProps extends ComponentPropsWithRef<'svg'>
  * viewBox 由连接层按固定的尺寸给出。
  */
 export function XhSignaturePadControl({ children, ...rest }: XhSignaturePadControlProps): ReactNode {
+  // 放进字段时字段的标题并进画布的名字，说明与错误文案进描述链；画布是 role=img，只取组类接线
+  const fieldWiring = useFieldGroupWiring()
+  const fieldLabel = useFieldLabelWiring()
   const ctx = useSignaturePadContext()
   return (
     <svg
       {...mergeReactProps(
-        ctx.api.getControlProps() as Record<string, unknown>,
+        fieldLabel({ ...fieldWiring, ...ctx.api.getControlProps() as Record<string, unknown> }),
         rest as Record<string, unknown>,
         { ref: (el: SVGSVGElement | null) => { ctx.controlRef.current = el } },
       )}

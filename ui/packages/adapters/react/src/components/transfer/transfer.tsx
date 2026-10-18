@@ -26,6 +26,7 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import {
   TransferGroupProvider,
@@ -270,11 +271,14 @@ export function XhTransferSearch({ ...rest }: XhTransferSearchProps): ReactNode 
 
 export interface XhTransferListProps extends ComponentPropsWithRef<'div'> {}
 export function XhTransferList({ children, ...rest }: XhTransferListProps): ReactNode {
+  // 放进字段时字段的标题并进两侧列表的名字（排在面板标题前），说明与错误文案进描述链
+  const fieldWiring = useFieldGroupWiring()
+  const fieldLabel = useFieldLabelWiring()
   const ctx = useTransferContext()
   const panel = useTransferPanelContext()
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，条目得焦也会把它叫起来，那一下会把焦点从条目抢回锚点上
-  const bind = useNativeEvents(ctx.api.getListProps(panel) as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...ctx.api.getListProps(panel) as Record<string, unknown> }), ['onFocus'])
   const listRef = useRef<HTMLDivElement | null>(null)
   // 两侧定高小列表各走一路自绘条：虚拟化时滚动层改为 Virtualizer viewport，
   // 条子仍紧跟在列表后面、贴实际滚动层自己的盒子上，

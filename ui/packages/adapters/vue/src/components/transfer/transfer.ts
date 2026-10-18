@@ -25,6 +25,7 @@ import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUpdated, r
 import { withXhConfig } from '../../config/config'
 import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import {
   provideTransfer,
@@ -229,6 +230,9 @@ export const XhTransferList = defineComponent({
   // 根是片段（列表节点 + 贴层的条子），Vue 不会把直通属性合上去：作者写的 class、style 与 data-* 自己接住落到列表节点上
   inheritAttrs: false,
   setup(_, { slots, attrs }) {
+    // 放进字段时字段的标题并进两侧列表的名字（排在面板标题前），说明与错误文案进描述链
+    const fieldWiring = useFieldGroupWiring()
+    const fieldLabel = useFieldLabelWiring()
     const ctx = useTransferContext()
     const { panel } = useTransferPanelContext()
     const listRef = ref<HTMLElement | null>(null)
@@ -246,7 +250,7 @@ export const XhTransferList = defineComponent({
     onUpdated(() => bars.measure())
     return () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getListProps(panel.value) as Record<string, unknown>, attrs),
+        ...mergeProps(fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getListProps(panel.value) as Record<string, unknown> }), attrs),
         ref: (el: unknown) => { listRef.value = el as HTMLElement | null },
       }, slots.default?.()),
       ...bars.render(),

@@ -89,4 +89,27 @@ describe('库内控件放进字段的无障碍接线', () => {
     expect(trigger.hasAttribute('aria-readonly')).toBe(false)
     await expectNoAxeViolations(root)
   })
+
+  it('签名板：画布念字段标题，描述链念说明与错误文案，axe 无违规', async () => {
+    const root = mount('申请人签名', '<xh-signature-pad></xh-signature-pad>')
+    await settle()
+    const canvas = root.querySelector('[data-scope="signature-pad"][data-part="control"]')!
+    expect(firstName(canvas)).toBe('申请人签名')
+    expect(descriptions(canvas)).toEqual(['填工作用的那一个', '这一项必填'])
+    await expectNoAxeViolations(root)
+  })
+
+  it('穿梭框：两侧列表念字段标题、再念面板标题，描述链念说明与错误文案，axe 无违规', async () => {
+    const root = mount('抄送人', '<xh-transfer></xh-transfer>')
+    const transfer = root.querySelector<HTMLElement & { collection?: unknown }>('xh-transfer')!
+    transfer.collection = [{ value: 'a', label: '甲' }]
+    await settle()
+    const lists = [...root.querySelectorAll('[data-scope="transfer"][data-part="list"]')]
+    expect(lists).toHaveLength(2)
+    for (const list of lists) {
+      expect(firstName(list)).toBe('抄送人')
+      expect(descriptions(list)).toEqual(['填工作用的那一个', '这一项必填'])
+    }
+    await expectNoAxeViolations(root)
+  })
 })

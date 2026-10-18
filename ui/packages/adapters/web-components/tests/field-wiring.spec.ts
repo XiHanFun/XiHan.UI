@@ -122,7 +122,7 @@ describe('字段接线的目标声明', () => {
   it('声明了 fieldTarget 的控件都在发现表里，字段接线到得了它', () => {
     const missing = tags.filter(tag => ctorOf(tag).fieldTarget && !listed.has(tag))
     expect(missing).toEqual([])
-    expect(tags.filter(tag => ctorOf(tag).fieldTarget)).toHaveLength(31)
+    expect(tags.filter(tag => ctorOf(tag).fieldTarget)).toHaveLength(33)
   })
 })
 
@@ -155,6 +155,8 @@ const CONTROLS: ReadonlyArray<readonly [tag: string, target: string, markup: str
   ['rating', 'control', '<div data-xh-part="root"><div data-xh-part="control"><span data-xh-part="item" value="1"></span></div></div>'],
   ['file-upload', 'dropzone', '<div data-xh-part="root"><div data-xh-part="dropzone">把文件拖到这里<input data-xh-part="hidden-input"></div></div>'],
   ['slider', 'thumb', '<div data-xh-part="root"><div data-xh-part="control"><div data-xh-part="track"></div><div data-xh-part="thumb" index="0"></div></div></div>'],
+  ['signature-pad', 'control', ''],
+  ['transfer', 'list', ''],
 ]
 
 describe(`${CONTROLS.length} 个库内控件放进 xh-field`, () => {

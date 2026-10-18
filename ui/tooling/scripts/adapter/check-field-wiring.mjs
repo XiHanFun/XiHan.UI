@@ -48,6 +48,8 @@ const GROUP_CONTROLS = {
   'toggle-group': '组根 role=group（多选）/ radiogroup（单选）',
   'listbox': '列表 content 部件 role=listbox，焦点在各条目上，字段的标题与说明落在列表上',
   'tag-group': '标签列表 list 部件 role=grid，焦点在各枚标签上，字段的标题与说明落在列表上；grid 不收 aria-required，必填只投成 data-required',
+  'transfer': '两侧各一个 list 部件 role=listbox，字段的标题排在面板标题前并进两侧的名字，说明与错误文案落在两侧列表上',
+  'signature-pad': '画布 control 部件 role=img，字段的标题并进画布的名字、说明落在画布上；按钮各有自己的名字',
   'color-picker': '触发钮是按钮：不收 aria-required / aria-readonly，只取描述链，aria-invalid 由组件自己投影',
   'date-picker': '触发钮是按钮：不收 aria-required / aria-readonly，只取描述链，只读、必填与校验由各段（spinbutton）投影',
   'date-range-picker': '同 date-picker：起止两组段各自报状态',
@@ -67,11 +69,9 @@ const NOT_SINGLE_CONTROL = {
   'field': '它自己就是字段',
   'fieldset': '同上，分组容器',
   'grid-list': '分组：root 是 role=grid，焦点在各行与行内按钮上',
-  'transfer': '分组：两侧各一个 role=listbox，没有单一可聚焦控件',
   'date-field': '分段输入：焦点在各段上，没有单一可聚焦控件',
   'time-field': '同 date-field',
   'color-slider': '图形控件：焦点在拇指上',
-  'signature-pad': '图形控件：画布自己承担名字与描述',
   'editable': '预览态与编辑态是两个不同的焦点目标',
 }
 
