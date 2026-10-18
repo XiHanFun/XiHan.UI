@@ -10,6 +10,9 @@ const SKINS = join(__dirname, '../../../design/styles/css')
 const ELEMENTS = join(__dirname, '../src/elements')
 const SIZED_BY_CONTROL_W = /^\s+inline-size: var\(--xh-[a-z-]+, var\(--xh-control-w\)\)/m
 
+/** 不按控件宽定宽、宿主同样不占盒子的皮肤：按钮直接参与外层的弹性 / 网格排布，不在宿主的一行里按基线排。 */
+const EXTRA_HOSTS = ['checkbox', 'switch']
+
 function skins(test: (source: string, name: string) => boolean): string[] {
   return readdirSync(SKINS)
     .filter(file => file.endsWith('.css'))
@@ -19,11 +22,11 @@ function skins(test: (source: string, name: string) => boolean): string[] {
 }
 
 describe('字段族的 WC 宿主', () => {
-  it('按控件宽定宽的皮肤都给宿主声明了 contents', () => {
+  it('按控件宽定宽的皮肤都给宿主声明了 contents，此外只有登记过的几份', () => {
     const sized = skins(source => SIZED_BY_CONTROL_W.test(source))
     const hosts = skins((source, name) => source.includes(`:where(xh-${name}:not([hidden])) {\n    display: contents;`))
     expect(sized.length).toBeGreaterThan(0)
-    expect(hosts).toEqual(sized)
+    expect(hosts).toEqual([...sized, ...EXTRA_HOSTS].sort())
   })
 
   it('声明了宿主规则的皮肤都有对应的元素', () => {
