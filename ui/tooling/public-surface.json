@@ -5645,6 +5645,7 @@
       "BASELINE_THEME",
       "BASELINE_VISUAL_ENVIRONMENT",
       "BRAND_PRESETS",
+      "BRAND_PRESET_COLORS",
       "BrandId",
       "BrandPreset",
       "BrandScale",

@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { deriveBrandPreset, relativeLuminance } from '../build/emit-brand-presets.mjs'
-import { BRAND_PRESETS } from '../src'
+import { BRAND_PRESET_COLORS, BRAND_PRESETS } from '../src'
 
 const STEPS = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950'] as const
 type Step = (typeof STEPS)[number]
@@ -34,6 +34,12 @@ function luminanceOf(css: string): number {
 describe('预设品牌', () => {
   it('导出的 BRAND_PRESETS 与 brand.presets.json 同一组 id、同一个顺序', () => {
     expect([...BRAND_PRESETS]).toEqual(ids)
+  })
+
+  it('bRAND_PRESET_COLORS 给每档预设一个代表色，就是那一档的 600', () => {
+    expect(Object.keys(BRAND_PRESET_COLORS)).toEqual(ids)
+    for (const id of ids)
+      expect(BRAND_PRESET_COLORS[id as keyof typeof BRAND_PRESET_COLORS], id).toBe((generated[id]!['600'] as { $value: string }).$value)
   })
 
   it.each(ids)('%s：生成物与派生结果逐级一致', (id) => {

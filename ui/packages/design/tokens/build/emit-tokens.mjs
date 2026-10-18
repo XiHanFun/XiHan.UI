@@ -456,6 +456,9 @@ export const BRAND_PRESETS = ${JSON.stringify(brandPresets.map(([id]) => id))} a
 
 /** 预设品牌的 id。 */
 export type BrandPreset = (typeof BRAND_PRESETS)[number]
+
+/** 每档预设品牌的代表色：品牌 600 档，与实心品牌底同一档。给色板格子、预设清单画颜色用。 */
+export const BRAND_PRESET_COLORS: Readonly<Record<BrandPreset, string>> = ${JSON.stringify(Object.fromEntries(brandPresets.map(([id, scale]) => [id, scale['600'].$value])))}
 `
 
   await writeFile(join(ROOT, 'tokens.css'), applyFileHeader(join(ROOT, 'tokens.css'), css))

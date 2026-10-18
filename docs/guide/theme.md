@@ -171,7 +171,7 @@ brand、density、dir、material 没有平台媒体查询，因此不接受伪�
 
 ## 预设品牌
 
-`@xihan-ui/tokens` 自带几档有名字的品牌，清单是 `BRAND_PRESETS`（如 `blue`、`green`、`orange`、`pink`），类型是 `BrandPreset`。每档在 `tokens.css` 里是一个 `[data-brand='<id>']` 取值块，只换品牌原语，不必 `registerBrand`：
+`@xihan-ui/tokens` 自带几档有名字的品牌，清单是 `BRAND_PRESETS`（如 `blue`、`green`、`orange`、`pink`），类型是 `BrandPreset`；`BRAND_PRESET_COLORS` 给每档一个代表色（那一档的品牌 600），画色板格子、预设清单时用。每档在 `tokens.css` 里是一个 `[data-brand='<id>']` 取值块，只换品牌原语，不必 `registerBrand`：
 
 ```ts
 visual.setPreference({ brand: brandId("green") });
