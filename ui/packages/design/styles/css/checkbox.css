@@ -14,6 +14,13 @@
     --xh-checkbox-skin: 1;
   }
 
+  /* Web Components 的宿主不占一层盒子：作者写的结构直接参与外层排布，与 Vue / React 直接渲染 root 一致；
+     放进弹性或网格容器时，按钮不再落在宿主的一行里按基线排。零特指度，作者给宿主写的 display 照层叠胜出；
+     带 hidden 的宿主不掀开 */
+  :where(xh-checkbox:not([hidden])) {
+    display: contents;
+  }
+
   [data-scope='checkbox'][data-part='root'] {
     /* 尺寸档只换方框边长这一个私有槽，勾的字号按边长的比例跟着走；
        指示器从 root 继承这两个槽，换档不必给每个部件各写一条选择器 */

@@ -5050,15 +5050,29 @@
   --xh-control-w: 100%;
 }
 
-/* 格里的内容顶对齐；行头与把手占一条控件高（加上同一档内衬）并在里面居中，与格里控件那一行同一条中线，
-   格里报错撑高这一行时也不错开 */
-.xh-scope-field-array:is([data-part='item-cell'], [data-part='item-label'], [data-part='item-action'])[data-layout='table'] {
-  align-self: start;
+/* 一行的控件高取这一行字段控件的尺寸档（data-xh-field-size），几档混排时取大的；行里没有字段族控件时按 md */
+.xh-scope-field-array[data-part='item'][data-layout='table'] {
+  --xh-_field-array-cell-control-h: var(--xh-control-h-md);
 }
 
-.xh-scope-field-array:is([data-part='item-label'], [data-part='item-action'])[data-layout='table'] {
+.xh-scope-field-array[data-part='item'][data-layout='table']:has([data-xh-field-size='sm']) {
+  --xh-_field-array-cell-control-h: var(--xh-control-h-sm);
+}
+
+.xh-scope-field-array[data-part='item'][data-layout='table']:has([data-xh-field-size='md']) {
+  --xh-_field-array-cell-control-h: var(--xh-control-h-md);
+}
+
+.xh-scope-field-array[data-part='item'][data-layout='table']:has([data-xh-field-size='lg']) {
+  --xh-_field-array-cell-control-h: var(--xh-control-h-lg);
+}
+
+/* 格子、行头与把手都顶对齐，各占一条控件高（加上同一档内衬）并在里面居中：格里比控件矮的复选框、开关
+   与文本框的控件落在同一条中线上，格里报错撑高这一行时也不错开 */
+.xh-scope-field-array:is([data-part='item-cell'], [data-part='item-label'], [data-part='item-action'])[data-layout='table'] {
+  align-self: start;
   box-sizing: content-box;
-  min-block-size: var(--xh-field-array-cell-control-h, var(--xh-control-h-md));
+  min-block-size: var(--xh-field-array-cell-control-h, var(--xh-_field-array-cell-control-h));
 }
 
 /* 行头钉在表格区的起始侧、把手钉在末端侧：表格区横向滚动时它们留在原处，其余格子从下面滑过，
@@ -22537,6 +22551,13 @@
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 .xh-scope-checkbox {
   --xh-checkbox-skin: 1;
+}
+
+/* Web Components 的宿主不占一层盒子：作者写的结构直接参与外层排布，与 Vue / React 直接渲染 root 一致；
+   放进弹性或网格容器时，按钮不再落在宿主的一行里按基线排。零特指度，作者给宿主写的 display 照层叠胜出；
+   带 hidden 的宿主不掀开 */
+:where(xh-checkbox:not([hidden])) {
+  display: contents;
 }
 
 .xh-scope-checkbox[data-part='root'] {
@@ -44680,6 +44701,13 @@
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 .xh-scope-switch {
   --xh-switch-skin: 1;
+}
+
+/* Web Components 的宿主不占一层盒子：作者写的结构直接参与外层排布，与 Vue / React 直接渲染 root 一致；
+   放进弹性或网格容器时，按钮不再落在宿主的一行里按基线排。零特指度，作者给宿主写的 display 照层叠胜出；
+   带 hidden 的宿主不掀开 */
+:where(xh-switch:not([hidden])) {
+  display: contents;
 }
 
 .xh-scope-switch[data-part='root'] {

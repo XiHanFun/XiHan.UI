@@ -277,15 +277,29 @@
     --xh-control-w: 100%;
   }
 
-  /* 格里的内容顶对齐；行头与把手占一条控件高（加上同一档内衬）并在里面居中，与格里控件那一行同一条中线，
-     格里报错撑高这一行时也不错开 */
-  [data-scope='field-array']:is([data-part='item-cell'], [data-part='item-label'], [data-part='item-action'])[data-layout='table'] {
-    align-self: start;
+  /* 一行的控件高取这一行字段控件的尺寸档（data-xh-field-size），几档混排时取大的；行里没有字段族控件时按 md */
+  [data-scope='field-array'][data-part='item'][data-layout='table'] {
+    --xh-_field-array-cell-control-h: var(--xh-control-h-md);
   }
 
-  [data-scope='field-array']:is([data-part='item-label'], [data-part='item-action'])[data-layout='table'] {
+  [data-scope='field-array'][data-part='item'][data-layout='table']:has([data-xh-field-size='sm']) {
+    --xh-_field-array-cell-control-h: var(--xh-control-h-sm);
+  }
+
+  [data-scope='field-array'][data-part='item'][data-layout='table']:has([data-xh-field-size='md']) {
+    --xh-_field-array-cell-control-h: var(--xh-control-h-md);
+  }
+
+  [data-scope='field-array'][data-part='item'][data-layout='table']:has([data-xh-field-size='lg']) {
+    --xh-_field-array-cell-control-h: var(--xh-control-h-lg);
+  }
+
+  /* 格子、行头与把手都顶对齐，各占一条控件高（加上同一档内衬）并在里面居中：格里比控件矮的复选框、开关
+     与文本框的控件落在同一条中线上，格里报错撑高这一行时也不错开 */
+  [data-scope='field-array']:is([data-part='item-cell'], [data-part='item-label'], [data-part='item-action'])[data-layout='table'] {
+    align-self: start;
     box-sizing: content-box;
-    min-block-size: var(--xh-field-array-cell-control-h, var(--xh-control-h-md));
+    min-block-size: var(--xh-field-array-cell-control-h, var(--xh-_field-array-cell-control-h));
   }
 
   /* 行头钉在表格区的起始侧、把手钉在末端侧：表格区横向滚动时它们留在原处，其余格子从下面滑过，
