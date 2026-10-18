@@ -74,9 +74,12 @@ export interface DesignerCommand<Ctx = unknown> {
   readonly id: string
   /** 按钮与菜单项上的文字；给函数时每次刷新现取，随语言变。 */
   readonly label: string | ((context: Ctx) => string)
-  /** 顶栏按钮图标下的短文字；不给用 label。名字（读屏与提示）仍取 label。 */
+  /**
+   * 按钮上看得见的短文字：顶栏按钮图标下的那一行，工具栏只显示图标时没有图标的按钮上也写它；不给用 label。
+   * 名字（读屏与提示）仍取 label，所以短文字要出现在 label 里（不分大小写），开发期不在时报一条告警。
+   */
   readonly shortLabel?: string | ((context: Ctx) => string)
-  /** 按钮与菜单项上的图标，图标集见 @xihan-ui/icons；工具栏按图标显示时，没有图标的命令退回显示文字。 */
+  /** 按钮与菜单项上的图标，图标集见 @xihan-ui/icons；工具栏按图标显示时，没有图标的命令退回显示短文字。 */
   readonly icon?: IconRecord
   /** 缺省排列里出现在哪些位置；不给即只经快捷键或 commandLayout 出现。 */
   readonly placement?: readonly DesignerCommandPlacement[]

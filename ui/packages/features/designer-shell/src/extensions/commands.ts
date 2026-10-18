@@ -10,6 +10,7 @@ import type { IconRecord } from '@xihan-ui/core'
 import type { KbdPlatform, KbdResolvedPlatform } from '@xihan-ui/core/hotkey'
 import type { DesignerCommand, DesignerCommandMenuEntry, DesignerCommandPanel, DesignerCommandPlacement } from '@xihan-ui/designer-kit'
 import type { XhMenuElement, XhPopoverElement } from '@xihan-ui/web-components/define'
+import { DIAGNOSTIC_WARN, isDev, reportDiagnostic } from '@xihan-ui/core'
 import { ariaKeyshortcut, detectKbdPlatform, resolveKbdPlatform } from '@xihan-ui/core/hotkey'
 import { formatShortcut, isCommandMenuSeparator } from '@xihan-ui/designer-kit'
 import { createAuthoredElement, setAttributes, setText } from '@xihan-ui/web-components/authoring'
@@ -50,7 +51,7 @@ export function commandLabel<Ctx>(command: DesignerCommand<Ctx>, context: Ctx): 
   return typeof command.label === 'function' ? command.label(context) : command.label
 }
 
-/** 命令的短文字：顶栏按钮图标下的那一行，没给 shortLabel 时就是 label。 */
+/** 命令的短文字：顶栏按钮图标下的那一行、只显示图标时没有图标的按钮上的字，没给 shortLabel 时就是 label。 */
 export function commandShortLabel<Ctx>(command: DesignerCommand<Ctx>, context: Ctx): string {
   const short = typeof command.shortLabel === 'function' ? command.shortLabel(context) : command.shortLabel
   return short ?? commandLabel(command, context)
@@ -72,7 +73,7 @@ export function runCommand<Ctx>(commands: DesignerCommandTable<Ctx>, id: string,
 
 /**
  * 工具栏按钮的显示方式：只显示图标、只显示文字、图标加文字；stacked 是图标在上、短文字在下，给顶栏的插入快捷钮用。
- * 没有图标的命令在 icon 档照样显示文字。
+ * 没有图标的命令在 icon 档照样显示文字，写短文字（shortLabel，没给就是 label）。
  */
 export type CommandToolbarDisplay = 'icon' | 'text' | 'both' | 'stacked'
 
@@ -131,20 +132,35 @@ interface CommandButton {
   readonly item: HTMLButtonElement
   readonly icon: HTMLElement & { icon?: IconRecord }
   readonly label: HTMLElement
-  /** 最近一次刷新时命令的文字与短文字：显示方式换了按它重写看得见的那段。 */
-  texts: { readonly label: string, readonly short: string }
+  /** 最近一次刷新时命令的文字、短文字与有没有图标：显示方式换了按它重写看得见的那段。 */
+  texts: { readonly label: string, readonly short: string, readonly icon: boolean }
 }
 
 function createCommandButton(doc: Document, id: string): CommandButton {
   const icon = createAuthoredElement(doc, 'xh-icon', { 'data-scope': 'designer-commands', 'data-part': 'icon' }) as CommandButton['icon']
   const label = createAuthoredElement(doc, 'span', { 'data-scope': 'designer-commands', 'data-part': 'label' })
   const item = createAuthoredElement(doc, 'button', { 'data-xh-part': 'item', 'type': 'button', 'value': id }, [icon, label])
-  return { item, icon, label, texts: { label: '', short: '' } }
+  return { item, icon, label, texts: { label: '', short: '', icon: false } }
 }
 
-/** 按显示方式写按钮上看得见的文字：叠放时是短文字，其余是全名。 */
+/** 按显示方式写按钮上看得见的文字：叠放时、只显示图标而这颗按钮没有图标时是短文字，其余是全名。 */
 function paintText(button: CommandButton, display: CommandToolbarDisplay): void {
-  setText(button.label, display === 'stacked' ? button.texts.short : button.texts.label)
+  const short = display === 'stacked' || (display === 'icon' && !button.texts.icon)
+  setText(button.label, short ? button.texts.short : button.texts.label)
+}
+
+/** 开发期核对短文字在不在名字里（不分大小写）：不在就报一条告警，一条命令只报一次。 */
+function checkShortLabel(id: string, label: string, short: string, warned: Set<string>): void {
+  if (warned.has(id) || label.toLowerCase().includes(short.toLowerCase()))
+    return
+  warned.add(id)
+  reportDiagnostic({
+    code: DIAGNOSTIC_WARN,
+    level: 'warn',
+    scope: 'designer-commands',
+    message: `命令 ${id} 的 shortLabel 不在 label 里：按钮上看得见的字要包含在按钮的名字里，把短文字写进 label`,
+    detail: { id, label, shortLabel: short },
+  })
 }
 
 /** 两张图标表是否一样：同样的命令、同一份图标记录。 */
@@ -269,6 +285,8 @@ export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbar
     ]),
   ])
   const items = new Map<string, CommandButton>()
+  /** 已经报过短文字不在名字里的命令。 */
+  const warnedShort = new Set<string>()
   let overflowTrigger: HTMLButtonElement | undefined
   let layoutKey: string | undefined
   let current: { commands: DesignerCommandTable<Ctx>, context: Ctx } | undefined
@@ -465,7 +483,10 @@ export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbar
       for (const [id, button] of items) {
         const command = commands.get(id)!
         const text = commandLabel(command, context)
-        button.texts = { label: text, short: commandShortLabel(command, context) }
+        const short = commandShortLabel(command, context)
+        if (command.shortLabel !== undefined && isDev())
+          checkShortLabel(id, text, short, warnedShort)
+        button.texts = { label: text, short, icon: command.icon !== undefined }
         paintText(button, display)
         // 名字写在按钮上：只显示图标时文字收起，名字照样在
         setAttributes(button.item, {

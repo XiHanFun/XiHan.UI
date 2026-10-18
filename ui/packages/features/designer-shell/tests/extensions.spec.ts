@@ -2,8 +2,10 @@
 
 // 扩展的面板与命令：面板登记到外框的区、按引用比对创建与撤掉、区名冲突抛错；命令按排列分组，
 // 铺成工具栏按钮与菜单条目，点击与选中执行命令；粘贴与拖放的数据列成导入来源。
+import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { DesignerCommand } from '@xihan-ui/designer-kit'
 import type { DesignerPanel, DesignerShellExtension, XhDesignerFrameElement } from '../src'
+import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
 import { DesignerExtensionError } from '@xihan-ui/designer-kit'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
@@ -192,6 +194,50 @@ describe('命令', () => {
     expect([label.textContent, item.getAttribute('aria-label'), bar.element.getAttribute('delegate')]).toEqual(['任务', '添加任务节点', 'button[data-xh-part=\'item\']'])
     bar.setDisplay('both')
     expect(label.textContent).toBe('添加任务节点')
+  })
+
+  it('工具栏 icon：没有图标的按钮写短文字，名字仍是全名；有图标的、换成 text 档写全名', () => {
+    const pages = new Map<string, DesignerCommand<Ctx>>([
+      ['page-menu', cmd('page-menu', { label: ctx => `第 ${ctx.selected} / 3 页：送货单`, shortLabel: ctx => `${ctx.selected} / 3` })],
+      ['zoom', cmd('zoom', { label: '缩放' })],
+      ['add-task', cmd('add-task', { icon: GLYPH, label: '添加任务节点', shortLabel: '任务' })],
+    ])
+    const bar = createCommandToolbar<Ctx>(document, { platform: 'other' })
+    document.body.append(bar.element)
+    bar.update([['page-menu', 'zoom', 'add-task']], pages, { selected: 1 }, '翻页')
+    const painted = (): (string | null)[][] => [...bar.toolbar.querySelectorAll<HTMLButtonElement>('[data-xh-part="item"]')]
+      .map(item => [item.querySelector('[data-part="label"]')!.textContent, item.getAttribute('aria-label')])
+    expect(painted()).toEqual([['1 / 3', '第 1 / 3 页：送货单'], ['缩放', '缩放'], ['添加任务节点', '添加任务节点']])
+    bar.update([['page-menu', 'zoom', 'add-task']], pages, { selected: 2 }, '翻页')
+    expect(painted()[0]).toEqual(['2 / 3', '第 2 / 3 页：送货单'])
+    bar.setDisplay('text')
+    expect(painted()[0]).toEqual(['第 2 / 3 页：送货单', '第 2 / 3 页：送货单'])
+  })
+
+  it('开发期：shortLabel 不在 label 里时报一条告警，一条命令只报一次；在 label 里（不分大小写）不报', () => {
+    const seen: DiagnosticRecord[] = []
+    resetDiagnostics()
+    setDiagnosticsConsoleOutput(false)
+    setDiagnosticsLevel('warn')
+    setDiagnosticsDedupe(false)
+    const off = onDiagnostic(record => void seen.push(record))
+    try {
+      const format = new Map<string, DesignerCommand<Ctx>>([
+        ['font-size', cmd('font-size', { label: 'Font size', shortLabel: ctx => String(10 + ctx.selected) })],
+        ['add-task', cmd('add-task', { icon: GLYPH, label: 'Add task node', shortLabel: 'Task' })],
+      ])
+      const bar = createCommandToolbar<Ctx>(document, { platform: 'other' })
+      document.body.append(bar.element)
+      bar.update([['font-size', 'add-task']], format, { selected: 1 }, '格式')
+      bar.update([['font-size', 'add-task']], format, { selected: 2 }, '格式')
+      expect(seen.map(record => [record.code, record.scope, record.detail])).toEqual([
+        ['core.warn', 'designer-commands', { id: 'font-size', label: 'Font size', shortLabel: '11' }],
+      ])
+    }
+    finally {
+      off()
+      resetDiagnostics()
+    }
   })
 
   it('内置命令：给了 openSettings 有 settings、给了 helpUrl 有 help，文案取 xh-designer-commands，图标由各款给', () => {
