@@ -63092,6 +63092,15 @@
             },
             {
               "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['control'], kind: 'group' }",
+              "type": {
+                "text": "{ parts: ['control'], kind: 'group' }"
+              }
+            },
+            {
+              "kind": "field",
               "name": "structure",
               "type": {
                 "text": "ElementStructure<XhSignaturePadElement>"
@@ -78691,6 +78700,15 @@
               },
               "static": true,
               "default": "{ anatomy: transferAnatomy, meta: transferMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "fieldTarget",
+              "static": true,
+              "default": "{ parts: ['list'], kind: 'group' }",
+              "type": {
+                "text": "{ parts: ['list'], kind: 'group' }"
+              }
             },
             {
               "kind": "field",

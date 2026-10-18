@@ -71,6 +71,9 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 export class XhSignaturePadElement extends XhElement {
   static override partContract = { anatomy: signaturePadAnatomy, meta: signaturePadMeta }
 
+  // 放进字段时字段的标题并进画布（role=img）的名字、说明与错误文案进描述链；画布不收 aria-required / aria-invalid，走组类接线
+  static override fieldTarget = { parts: ['control'], kind: 'group' } as const
+
   static override structure: ElementStructure<XhSignaturePadElement> = {
     build: host => host.ctrl.service
       ? signaturePadStructure(connectSignaturePad(host.ctrl.service, wcNormalize), {

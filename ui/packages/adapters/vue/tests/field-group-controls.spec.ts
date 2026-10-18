@@ -28,11 +28,13 @@ import {
   XhRatingControl,
   XhRatingItem,
   XhRatingRoot,
+  XhSignaturePadRoot,
   XhSliderControl,
   XhSliderRoot,
   XhSliderThumb,
   XhTagGroupRoot,
   XhToggleGroupRoot,
+  XhTransferRoot,
 } from '../src'
 
 let app: App | null = null
@@ -121,6 +123,21 @@ describe('组类控件直接放进字段', () => {
   it('tag-group：标签列表念字段标题，描述链挂说明与错误文案', async () => {
     await mountInField(() => h(XhTagGroupRoot, { selectionMode: 'multiple', collection: [{ value: 'daily', label: '每天' }] }), true)
     expectWired(part('tag-group', 'list'), true)
+  })
+
+  it('signature-pad：画布念字段标题，描述链挂说明与错误文案', async () => {
+    await mountInField(() => h(XhSignaturePadRoot), true)
+    expectWired(part('signature-pad', 'control'), true)
+  })
+
+  it('transfer：两侧列表都念字段标题，面板标题排在后面，描述链挂说明与错误文案', async () => {
+    await mountInField(() => h(XhTransferRoot, { collection: [{ value: 'a', label: '甲' }] }), true)
+    const lists = [...host!.querySelectorAll<HTMLElement>('[data-scope="transfer"][data-part="list"]')]
+    expect(lists).toHaveLength(2)
+    for (const list of lists) {
+      expectWired(list, true)
+      expect((list.getAttribute('aria-labelledby') ?? '').split(/\s+/)).toHaveLength(2)
+    }
   })
 
   it('toggle-group：组根念字段标题，描述链挂说明', async () => {

@@ -27,11 +27,13 @@ import {
   XhRatingControl,
   XhRatingItem,
   XhRatingRoot,
+  XhSignaturePadRoot,
   XhSliderControl,
   XhSliderRoot,
   XhSliderThumb,
   XhTagGroupRoot,
   XhToggleGroupRoot,
+  XhTransferRoot,
 } from '../src'
 
 function inField(control: ReactNode, invalid = false): HTMLElement {
@@ -97,6 +99,21 @@ describe('组类控件直接放进字段', () => {
   it('tag-group：标签列表念字段标题，描述链挂说明与错误文案', () => {
     const c = inField(<XhTagGroupRoot selectionMode="multiple" collection={[{ value: 'daily', label: '每天' }]} />, true)
     expectWired(c, part(c, 'tag-group', 'list'), true)
+  })
+
+  it('signature-pad：画布念字段标题，描述链挂说明与错误文案', () => {
+    const c = inField(<XhSignaturePadRoot />, true)
+    expectWired(c, part(c, 'signature-pad', 'control'), true)
+  })
+
+  it('transfer：两侧列表都念字段标题，面板标题排在后面，描述链挂说明与错误文案', () => {
+    const c = inField(<XhTransferRoot collection={[{ value: 'a', label: '甲' }]} />, true)
+    const lists = [...c.querySelectorAll<HTMLElement>('[data-scope="transfer"][data-part="list"]')]
+    expect(lists).toHaveLength(2)
+    for (const list of lists) {
+      expectWired(c, list, true)
+      expect((list.getAttribute('aria-labelledby') ?? '').split(/\s+/)).toHaveLength(2)
+    }
   })
 
   it('color-swatch-picker / toggle-group / rating：组根或星组念字段标题', () => {

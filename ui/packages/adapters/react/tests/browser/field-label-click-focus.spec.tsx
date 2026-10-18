@@ -20,6 +20,7 @@ import {
   XhRadioGroupRoot,
   XhSelectRoot,
   XhSelectTrigger,
+  XhSignaturePadRoot,
   XhTextFieldInput,
   XhTextFieldRoot,
   XhTimePickerClearTrigger,
@@ -29,6 +30,7 @@ import {
   XhTimePickerSegment,
   XhTimePickerSegmentGroup,
   XhTimePickerTrigger,
+  XhTransferRoot,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -48,6 +50,8 @@ const CONTROLS: Record<string, () => ReactNode> = {
   'select': () => <XhSelectRoot><XhSelectTrigger>请选择</XhSelectTrigger></XhSelectRoot>,
   'radio-group': () => <XhRadioGroupRoot collection={[{ value: 'a', label: '甲' }, { value: 'b', label: '乙' }]} />,
   'native': () => <XhFieldControl><input /></XhFieldControl>,
+  'signature-pad': () => <XhSignaturePadRoot defaultValue={{ strokes: [{ points: [{ x: 10, y: 10, pressure: 0.5 }, { x: 60, y: 40, pressure: 0.5 }] }], surface: { width: 200, height: 80 } }} />,
+  'transfer': () => <XhTransferRoot collection={[{ value: 'a', label: '甲' }, { value: 'b', label: '乙' }]} />,
   'date-picker': () => (
     <XhDatePickerRoot defaultValue="2026-10-18">
       <XhDatePickerControl>
@@ -127,6 +131,22 @@ describe('点字段标签聚焦控件', () => {
     expect(active.closest(`[data-scope="${scope}"][data-part="control"]`)).not.toBeNull()
     expect(active.getAttribute('role')).toBe('spinbutton')
     expect(part(scope, 'trigger').getAttribute('aria-expanded')).toBe('false')
+  })
+
+  // 签名板的画布是 role=img、不可聚焦：有笔迹时焦点交给第一颗可聚焦的按钮
+  it('signature-pad：有笔迹时点标题，焦点落在签名板里第一颗可聚焦的按钮上', async () => {
+    await mount('signature-pad')
+    await userEvent.click(label())
+    const active = document.activeElement as HTMLElement
+    expect(active.localName).toBe('button')
+    expect(active.closest('[data-scope="signature-pad"][data-part="root"]')).not.toBeNull()
+  })
+
+  it('transfer：点标题，焦点落在源侧列表里', async () => {
+    await mount('transfer')
+    await userEvent.click(label())
+    const active = document.activeElement as HTMLElement
+    expect(active.closest('[data-scope="transfer"][data-part="list"][data-side="source"]')).not.toBeNull()
   })
 
   it('作者自写的 control：label 的 for 指着它，点标签走原生行为', async () => {
