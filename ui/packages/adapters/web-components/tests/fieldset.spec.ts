@@ -71,6 +71,19 @@ describe('xh-fieldset 布尔属性三态', () => {
     expect(host.querySelector(ROOT)!.hasAttribute('disabled')).toBe(false)
   })
 
+  it('整组禁用时组内字段的根、标题与说明一起禁用，legend 里的字段不受连坐', async () => {
+    const field = (label: string): string => `<xh-field><div data-xh-part="root"><label data-xh-part="label">${label}</label><input data-xh-part="control"><p data-xh-part="description">说明</p></div></xh-field>`
+    const host = await mount(`<fieldset data-xh-part="root"><legend data-xh-part="legend">${field('组名')}</legend>${field('邮箱')}</fieldset>`)
+    host.setAttribute('disabled', '')
+    await host.updateComplete
+    await new Promise(resolve => setTimeout(resolve, 0))
+    const [inLegend, inGroup] = Array.from(host.querySelectorAll<HTMLElement & { updateComplete: Promise<unknown> }>('xh-field'))
+    await inGroup!.updateComplete
+    for (const part of ['root', 'label', 'description'])
+      expect(inGroup!.querySelector(`[data-xh-part="${part}"]`)!.hasAttribute('data-disabled'), part).toBe(true)
+    expect(inLegend!.querySelector('[data-xh-part="label"]')!.hasAttribute('data-disabled')).toBe(false)
+  })
+
   it('disabled 属性在场即真，原生 disabled 落到 root 上', async () => {
     const host = await mount(WELL_FORMED)
     host.setAttribute('disabled', '')

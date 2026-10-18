@@ -9,6 +9,7 @@ import type { FieldStructureOptions } from '@xihan-ui/headless'
 import type { SlotsType, VNode } from 'vue'
 import { fieldStructure, hasNamingContent } from '@xihan-ui/headless'
 import { defineComponent, h, ref } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { isRoleMarker, mergeIntoChild } from '../../runtime/as-child'
 import { renderStructure } from '../../runtime/structure'
 import { useOptionalFormContext, useOptionalFormField } from '../form/context'
@@ -41,7 +42,8 @@ export const XhFieldRoot = defineComponent({
     errorText?: () => VNode[]
   }>,
   setup(props, { slots }) {
-    const ctx = useField(useFormControlProps(props))
+    // 字段集压下来的作用域禁用也落到字段上：标题与说明随组内控件一起变淡
+    const ctx = useField(withXhConfig('field', useFormControlProps(props)))
     provideField(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default
       ? slots.default()

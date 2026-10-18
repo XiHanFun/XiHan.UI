@@ -9,6 +9,7 @@ import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { fieldStructure, hasNamingContent } from '@xihan-ui/headless'
 import { useRef } from 'react'
+import { withXhConfig } from '../../config/config'
 import { isRoleMarker, mergeIntoChild } from '../../runtime/as-child'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
@@ -64,7 +65,8 @@ export function XhFieldRoot({
   children,
   ...rest
 }: XhFieldRootProps): ReactNode {
-  const ctx = useField(useFormControlProps({ invalid, required, disabled, readOnly, controlId }))
+  // 字段集压下来的作用域禁用也落到字段上：标题与说明随组内控件一起变淡
+  const ctx = useField(withXhConfig('field', useFormControlProps({ invalid, required, disabled, readOnly, controlId })))
   return (
     <FieldProvider value={ctx}>
       <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
