@@ -28,7 +28,7 @@ describe('headless', () => {
   it('物料：标题收起，正文仍以标题为名；不搜索时整个页头收起，可搜索时只留搜索框', async () => {
     const palette = await mount<XhDesignerPaletteElement>('xh-designer-palette', (element) => {
       element.headless = true
-      element.groups = [{ id: 'basic', items: [{ id: 'text', label: '文本' }] }]
+      element.groups = [{ id: 'basic', label: '基础', items: [{ id: 'text', label: '文本' }] }]
     })
     const title = part(palette, 'title')
     expect([title.hidden, part(palette, 'header').hidden, part(palette, 'body').getAttribute('aria-labelledby')]).toEqual([true, true, title.id])
