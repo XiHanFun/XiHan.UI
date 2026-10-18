@@ -614,7 +614,7 @@ export const MARKDOWN_STREAM_EN_US: XhLocaleBucket<'markdown-stream'> = { comple
 
 export const MARQUEE_EN_US: XhLocaleBucket<'marquee'> = { autoplayTriggerPause: 'Pause scrolling', autoplayTriggerPlay: 'Resume scrolling' }
 
-export const MENTION_EN_US: XhLocaleBucket<'mention'> = { content: 'Mentions', empty: 'No results' }
+export const MENTION_EN_US: XhLocaleBucket<'mention'> = { content: 'Mentions', empty: 'No results', loading: 'Loading' }
 
 export const MENUBAR_EN_US: XhLocaleBucket<'menubar'> = { root: 'Menu bar' }
 

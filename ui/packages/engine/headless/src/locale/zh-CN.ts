@@ -517,7 +517,7 @@ const translations = {
   'log': { log: '日志', scrollToBottom: '滚动到底部' },
   'markdown-stream': { completed: '回复已完成' },
   'marquee': { autoplayTriggerPause: '暂停滚动', autoplayTriggerPlay: '继续滚动' },
-  'mention': { content: '提及', empty: '无匹配结果' },
+  'mention': { content: '提及', empty: '无匹配结果', loading: '加载中' },
   'menubar': { root: '菜单栏' },
   'message-feed': {
     feed: '对话',

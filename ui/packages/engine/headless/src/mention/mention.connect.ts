@@ -152,6 +152,7 @@ export function connectMention<T extends PropTypes>(
     collection,
     empty,
     emptyText: translations.empty,
+    loadingText: translations.loading,
     value,
     query: trigger?.query ?? null,
     activePrefix: trigger?.prefix ?? null,

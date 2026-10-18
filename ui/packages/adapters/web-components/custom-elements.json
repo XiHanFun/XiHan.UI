@@ -44288,7 +44288,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-mention>`：Light-DOM 行为宿主：作者写 root / input / positioner / content / item 角色节点，\n元素运行 mention 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点即输入框本身（浮层贴近整个输入框，不跟随光标）。\n\n与组合框的差别有两条。其一，浮层由光标处的前缀字符开合：前缀必须紧跟在行首或空白之后，\n邮箱地址中的 @ 因此不会误触发；前缀到光标之间的片段即查询串。其二，选中候选不是替换整个值，\n而是把该段查询串替换为候选文本、前后文不变，光标随后落在插入内容之后。\n\ninput 部件是单行 `<input>`，元素在其上写 role=combobox 与 aria-expanded；\n候选身份经 aria-controls、aria-autocomplete 与 aria-activedescendant 上报。\n\n过滤不由本元素完成：查询串变化时派发 query-change，作者据此增删 item 节点。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）、单行输入框与浮层，浮层里是 collection 的候选\n与空态（文字取 translations.empty）；这时过滤由作者改 collection。标题、空态、候选文字与行首行尾可以由宿主\n直接子节点接管：`slot=\"label\"`、`slot=\"empty\"`、`slot=\"item:<值>\"`、`slot=\"item-prefix:<值>\"`、\n`slot=\"item-suffix:<值>\"`。",
+          "description": "`<xh-mention>`：Light-DOM 行为宿主：作者写 root / input / positioner / content / item 角色节点，\n元素运行 mention 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点即输入框本身（浮层贴近整个输入框，不跟随光标）。\n\n与组合框的差别有两条。其一，浮层由光标处的前缀字符开合：前缀必须紧跟在行首或空白之后，\n邮箱地址中的 @ 因此不会误触发；前缀到光标之间的片段即查询串。其二，选中候选不是替换整个值，\n而是把该段查询串替换为候选文本、前后文不变，光标随后落在插入内容之后。\n\ninput 部件是单行 `<input>`，元素在其上写 role=combobox 与 aria-expanded；\n候选身份经 aria-controls、aria-autocomplete 与 aria-activedescendant 上报。\n\n过滤不由本元素完成：查询串变化时派发 query-change，作者据此增删 item 节点。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）、输入框（开了 multiline 是 textarea，否则是单行 input）\n与浮层，浮层里是 collection 的候选、空态与在途占位（字取 translations.empty / loading）；这时过滤由作者改 collection。标题、空态、候选文字与行首行尾可以由宿主\n直接子节点接管：`slot=\"label\"`、`slot=\"empty\"`、`slot=\"item:<值>\"`、`slot=\"item-prefix:<值>\"`、\n`slot=\"item-suffix:<值>\"`。",
           "name": "XhMentionElement",
           "cssParts": [
             {
@@ -44374,7 +44374,7 @@
                 "text": "ElementStructure<XhMentionElement>"
               },
               "static": true,
-              "default": "{ build: host => host.ctrl.service ? mentionStructure(connectMention(host.ctrl.service, wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
+              "default": "{ build: host => host.ctrl.service ? mentionStructure(connectMention(host.ctrl.service, wcNormalize), { label: host.label, multiline: host.multiline, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
             },
             {
               "kind": "field",
@@ -44400,6 +44400,15 @@
                 "text": "string | undefined"
               },
               "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "multiline",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "multiline"
             },
             {
               "kind": "field",
@@ -44801,6 +44810,14 @@
               "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
               "name": "label",
               "fieldName": "label"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "生成结构时输入框铺 textarea（多行，候选浮层锚在提及前缀处）；手写部件时看作者写的是 input 还是 textarea",
+              "name": "multiline",
+              "fieldName": "multiline"
             },
             {
               "type": {

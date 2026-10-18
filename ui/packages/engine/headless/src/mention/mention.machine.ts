@@ -7,7 +7,7 @@
 
 import type { PositionResult } from '@xihan-ui/core'
 import type { MentionRange, MentionSchema, MentionTrigger } from './mention.types'
-import { itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { caretClientRect, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { mentionItemQuery } from './mention.anatomy'
@@ -354,28 +354,44 @@ export const mentionMachine = createMachine({
     },
     effects: {
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
-      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
-        // 无引擎时不定位，其余照常
-        engine: refs.get('position'),
-        flush,
-        // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
-        // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
-        clear: () => context.set('position', null),
-        // 定位锚点就是输入框本体
-        getAnchor: () => refs.get('getInputEl')(),
-        getFloating: () => refs.get('getFloatingEl')(),
-        options: () => ({
-          placement: prop('placement') ?? MENTION_DEFAULT_PLACEMENT,
-          offset: prop('offset') ?? OVERLAY_OFFSET,
-          // positioner 渲染成 fixed，坐标系必须跟着走视口系
-          strategy: 'fixed',
-          // start / end 是逻辑对齐，RTL 下行内轴要翻过来
-          dir: prop('dir'),
-          // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
-          size: true,
-        }),
-        onResult: result => context.set('position', result),
-      }),
+      trackPosition: ({ refs, prop, context, flush, track }) => {
+        let reattach: (() => void) | null = null
+        // 多行时浮层锚在这条提及的前缀处：前缀换了位置就重挂一轮
+        track([context.dep('trigger')], () => {
+          if (refs.get('getInputEl')()?.localName === 'textarea')
+            reattach?.()
+        })
+        return trackOverlayPosition({
+          // 无引擎时不定位，其余照常
+          engine: refs.get('position'),
+          flush,
+          // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
+          // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
+          clear: () => context.set('position', null),
+          // 单行锚输入框本体；多行锚前缀所在的那个字符，量不出时退回输入框
+          getAnchor: () => {
+            const input = refs.get('getInputEl')()
+            if (!input || input.localName !== 'textarea')
+              return input
+            return { getBoundingClientRect: () => caretClientRect(input, context.get('trigger')?.index ?? input.selectionEnd ?? 0) ?? input.getBoundingClientRect() }
+          },
+          getFloating: () => refs.get('getFloatingEl')(),
+          options: () => ({
+            placement: prop('placement') ?? MENTION_DEFAULT_PLACEMENT,
+            offset: prop('offset') ?? OVERLAY_OFFSET,
+            // positioner 渲染成 fixed，坐标系必须跟着走视口系
+            strategy: 'fixed',
+            // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+            dir: prop('dir'),
+            // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+            size: true,
+          }),
+          onResult: result => context.set('position', result),
+          onSchedule: (schedule) => {
+            reattach = schedule
+          },
+        })
+      },
 
       // Layer 与 DismissableLayer 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
       // 焦点全程留在输入框，因此不给焦点域。

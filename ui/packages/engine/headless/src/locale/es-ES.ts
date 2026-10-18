@@ -504,7 +504,7 @@ const translations = {
   'log': { log: 'Registro', scrollToBottom: 'Desplazarse al final' },
   'markdown-stream': { completed: 'Respuesta completada' },
   'marquee': { autoplayTriggerPause: 'Pausar el desplazamiento', autoplayTriggerPlay: 'Reanudar el desplazamiento' },
-  'mention': { content: 'Menciones', empty: 'Sin resultados' },
+  'mention': { content: 'Menciones', empty: 'Sin resultados', loading: 'Cargando' },
   'menubar': { root: 'Barra de menús' },
   'message-feed': {
     feed: 'Conversación',
