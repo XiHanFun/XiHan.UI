@@ -297,6 +297,25 @@ describe('<xh-designer-properties>', () => {
     expect(contexts[0]!.target).toEqual([task])
   })
 
+  it('换了选中对象时同一行照样复用，宿主编辑器的 update 收到的 target 是新选中的对象', async () => {
+    const created: Parameters<DesignerPropertyEditor>[0][] = []
+    const updated: Parameters<DesignerPropertyEditor>[0][] = []
+    const editor: DesignerPropertyEditor = (context) => {
+      created.push(context)
+      return { element: document.createElement('div'), update: next => updated.push(next) }
+    }
+    const other: DesignerPropertyTarget = { ...task, id: 'task-2', value: { data: { who: ['u9'] } } }
+    const panel = await mount((element) => {
+      element.editors = { byControl: { assignees: editor } }
+      element.targets = [task]
+    })
+    panel.targets = [other]
+    await panel.updateComplete
+    expect(created).toHaveLength(1)
+    expect(updated.at(-1)!.target).toEqual([other])
+    expect(updated.at(-1)!.value).toEqual(['u9'])
+  })
+
   it('不合法的 JSON 就地报错、不派发', async () => {
     const panel = await mount(element => element.targets = [{ ...task, descriptors: [{ path: ['data', 'extra'], control: { kind: 'json' } }] }])
     const changes = record(panel, 'property-change')

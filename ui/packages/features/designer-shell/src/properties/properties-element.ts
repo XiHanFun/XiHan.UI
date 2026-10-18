@@ -422,8 +422,9 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
       return row
     }
     if (editor) {
-      const created = editor(plainContext(this.#context(row, targets), targets))
-      Object.assign(row, { control: { update: (next: FieldContext) => created.update?.(plainContext(next, targets)), destroy: created.destroy } })
+      const created = editor(plainContext(this.#context(row, targets)))
+      // 行按路径与编辑器复用：每次刷新的 target 取这一轮的选中对象
+      Object.assign(row, { control: { update: (next: FieldContext) => created.update?.(plainContext(next)), destroy: created.destroy } })
       const custom = createAuthoredElement(doc, 'div', { 'data-control': 'custom' }, [created.element])
       if (created.element.getAttribute('data-xh-part') === 'control')
         placeInField(doc, row, custom)
@@ -505,11 +506,12 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
   }
 }
 
-function plainContext(context: FieldContext, targets: readonly DesignerPropertyTarget[]): PropertyEditorContext<DesignerPropertyDescriptor, readonly DesignerPropertyTarget[]> {
+/** 交给宿主编辑器的上下文；target 是 #context 写进去的这一轮选中对象。 */
+function plainContext(context: FieldContext): PropertyEditorContext<DesignerPropertyDescriptor, readonly DesignerPropertyTarget[]> {
   return {
     value: context.value,
     descriptor: context.descriptor,
-    target: targets,
+    target: context.target as readonly DesignerPropertyTarget[],
     readonly: context.readonly,
     setValue: context.setValue,
     commit: context.commit,
