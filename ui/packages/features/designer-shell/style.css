@@ -653,6 +653,19 @@
     white-space: nowrap;
   }
 
+  /* 上下文工具条：接指针，实体底、描边与一层柔和投影，盖在框与控制柄之上 */
+  xh-designer-transform > [data-part='toolbar'] {
+    position: absolute;
+    inset: 0 auto auto 0;
+    z-index: 1;
+    padding: var(--xh-space-0_5);
+    border: var(--xh-stroke-thin) solid var(--xh-material-solid-border);
+    border-radius: var(--xh-shape-overlay);
+    background: var(--xh-material-solid-bg);
+    box-shadow: var(--xh-material-solid-shadow);
+    pointer-events: auto;
+  }
+
   @media (pointer: coarse) {
     xh-designer-transform [data-part='handle']::before {
       position: absolute;

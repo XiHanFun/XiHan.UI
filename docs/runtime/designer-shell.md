@@ -302,6 +302,7 @@ overlay.addEventListener("transform", (event) => {
 | `startMove(event, { copy? })` | 越过激活距离后移动全部选中项 |
 | `startMarquee(event, { additive? })` | 越过激活距离后开始框选 |
 | `cancel()` | 取消进行中的手势，派发 `cancel` |
+| `focusToolbar()` | 把焦点交给上下文工具条：先交给工具条里 roving 的当前条目，没有就交给第一个能聚焦的；工具条没显示时什么都不做。返回是否交了 |
 
 | 事件 | detail |
 | --- | --- |
@@ -314,6 +315,26 @@ overlay.addEventListener("transform", (event) => {
 - 单选按该项的能力出控制柄。多选画各自的细框与整体包围框，可以整体移动；每一项都能八向缩放时，包围框上出八个控制柄（不出旋转柄），拖动按包围框等比缩放全部选中项：位置与尺寸乘同一比例，旋转角不变，Alt 以中心为基准，任一项缩到 `minSize` 即停。`transform` 事件的 `kind` 为 `resize`，`rects` 带全部选中项。
 - 缩放时只吸附被拖动的那条边；单选时旋转过的矩形缩放时不吸附。
 - 控制柄是固定的屏幕尺寸，按旋转后的方向画，指针形状随角度换；粗指针设备放大命中区。
+- 画的框、线、控制柄与度量标签都是 `aria-hidden`；上下文工具条不是。
+
+### 上下文工具条
+
+写 `slot="toolbar"` 的子节点是选中时浮在选中框上的一条格式工具条，内容与按钮由各款放，通常是一条横排的 `<xh-toolbar>`：
+
+- 位置：在选中框（多选时是整体包围框）上方居中，有旋转柄时让开它；上方放不下时翻到下方；左右夹在覆盖层里。落在哪一侧写在工具条部件的 `data-placement` 上（`top` 或 `bottom`）。
+- 显示：有选中才显示；只读、手势进行中（移动、缩放、旋转、框选）或没有内容时收起，松手后再出现。工具条跟着画布裁剪，不进浮层。
+- 外观：实体底、描边与一层柔和投影，接指针。
+- 键盘：各款在画布的 keydown 里认 Alt+F10，调 `focusToolbar()` 把焦点交过去；在工具条里按 Esc，焦点回到交之前的位置。
+
+```ts
+const format = document.createElement("xh-toolbar");
+format.slot = "toolbar";
+overlay.append(format);
+canvas.addEventListener("keydown", (event) => {
+  if (event.altKey && event.key === "F10" && overlay.focusToolbar())
+    event.preventDefault();
+});
+```
 
 ## 标尺与参考线
 

@@ -7,6 +7,8 @@
 // 并跑移动、框选与控制柄的手势会话；命中判断归设计器。坐标只认 Viewport，覆盖层左上角就是视口的屏幕原点。
 // 覆盖层本身不接指针，只有控制柄接；移动与框选由设计器命中后调 startMove / startMarquee 开始。
 // 多选时控制柄画在整体包围框上，拖动按包围框等比缩放全部选中项。
+// 写 slot="toolbar" 的子节点是上下文工具条：浮在选中框上方，贴顶放不下时翻到下方，手势中收起；
+// focusToolbar() 把焦点交给它，在工具条里按 Esc 回到交之前的位置。画的框与控制柄都是 aria-hidden，工具条不是。
 
 import type { MarqueeMode, Point, Rect, ResizeHandle, Size, SnapGuide, SnapOptions, Viewport } from '@xihan-ui/designer-kit'
 import type { PointerEndDetails, PointerSession, PointerSessionDetails } from '@xihan-ui/pointer'
@@ -72,6 +74,10 @@ const HANDLE_ANGLES: Readonly<Record<ResizeHandle, number>> = { n: 0, ne: 45, e:
 const ROTATE_OFFSET = 24
 /** 吸附的屏幕距离。 */
 const SNAP_DISTANCE = 6
+/** 上下文工具条离选中框与覆盖层边缘的屏幕距离。 */
+const TOOLBAR_GAP = 8
+/** 工具条里先取 roving 的当前条目，再取第一个能聚焦的。 */
+const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
 const DEFAULT_VIEWPORT: Viewport = { x: 0, y: 0, zoom: 1 }
 
 interface Gesture {
@@ -110,6 +116,7 @@ interface Parts {
   readonly marquee: HTMLElement
   readonly handles: ReadonlyMap<ResizeHandle | 'rotate', HTMLElement>
   readonly measure: HTMLElement
+  readonly toolbar: HTMLElement
 }
 
 export class XhDesignerTransformElement extends XhReactiveElement {
@@ -140,6 +147,9 @@ export class XhDesignerTransformElement extends XhReactiveElement {
 
   #parts: Parts | undefined
   #gesture: Gesture | undefined
+  #childObserver: MutationObserver | undefined
+  /** focusToolbar 之前焦点所在的元素，Esc 时还回去。 */
+  #returnFocus: HTMLElement | undefined
 
   constructor() {
     super()
@@ -148,12 +158,32 @@ export class XhDesignerTransformElement extends XhReactiveElement {
 
   override connectedCallback(): void {
     super.connectedCallback()
-    this.setAttribute('aria-hidden', 'true')
+    // 后来放进来的工具条内容要挪进工具条部件
+    this.#childObserver ??= new MutationObserver(() => this.requestUpdate())
+    this.#childObserver.observe(this, { childList: true })
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
+    this.#childObserver?.disconnect()
     this.cancel()
+  }
+
+  /**
+   * 把焦点交给上下文工具条，各款在画布的 Alt+F10 里调用：先交给工具条里 roving 的当前条目，没有就交给第一个能聚焦的。
+   * 工具条没显示或里面没有能聚焦的时什么都不做。返回是否交了。在工具条里按 Esc，焦点回到交之前的位置。
+   */
+  focusToolbar(): boolean {
+    const toolbar = this.#parts?.toolbar
+    if (!toolbar || toolbar.hidden)
+      return false
+    const target = toolbar.querySelector<HTMLElement>('[tabindex="0"]') ?? toolbar.querySelector<HTMLElement>(FOCUSABLE)
+    if (!target)
+      return false
+    const active = this.ownerDocument.activeElement
+    this.#returnFocus = active instanceof HTMLElement && !toolbar.contains(active) ? active : undefined
+    target.focus()
+    return true
   }
 
   /** 设计器在选中项上按下后调用：越过激活距离开始移动全部选中项；按住 Alt 或 copy 为真时事件带 copy。 */
@@ -200,8 +230,12 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     this.#placeBox(parts.bounds, rects.length > 1 ? unionRects(rects.map(rotatedBounds)) : undefined, viewport)
     this.#placeGuides(parts.guides, gesture?.guides ?? [], viewport)
     this.#placeBox(parts.marquee, gesture?.marquee, viewport)
-    this.#placeHandles(parts.handles, this.readonly ? undefined : handleTargetOf(items, rects), viewport, gesture)
+    const target = this.readonly ? undefined : handleTargetOf(items, rects)
+    this.#placeHandles(parts.handles, target, viewport, gesture)
     this.#placeMeasure(parts.measure, gesture && gesture.kind !== 'marquee' ? unionRects(rects.map(rotatedBounds)) : undefined, viewport)
+    this.#adoptToolbar(parts.toolbar)
+    const toolbarFor = gesture || this.readonly || rects.length === 0 ? undefined : unionRects(rects.map(rotatedBounds))
+    this.#placeToolbar(parts.toolbar, toolbarFor, viewport, target?.allowed.has('rotate') === true)
   }
 
   #ensureParts(): Parts {
@@ -220,9 +254,55 @@ export class XhDesignerTransformElement extends XhReactiveElement {
       handles.set(handle, element)
     }
     const measure = createGeneratedElement(doc, 'div', { 'data-part': 'measure', 'hidden': true })
-    this.replaceChildren(hover, frames, bounds, guides, marquee, ...handles.values(), measure)
-    this.#parts = { hover, frames, bounds, guides, marquee, handles, measure }
+    for (const decorative of [hover, frames, bounds, guides, marquee, ...handles.values(), measure])
+      decorative.setAttribute('aria-hidden', 'true')
+    const toolbar = createGeneratedElement(doc, 'div', { 'data-part': 'toolbar', 'hidden': true })
+    toolbar.addEventListener('keydown', this.#onToolbarKey)
+    this.#adoptToolbar(toolbar)
+    this.replaceChildren(hover, frames, bounds, guides, marquee, ...handles.values(), measure, toolbar)
+    this.#parts = { hover, frames, bounds, guides, marquee, handles, measure, toolbar }
     return this.#parts
+  }
+
+  /** 把写 slot="toolbar" 的子节点挪进工具条部件。 */
+  #adoptToolbar(toolbar: HTMLElement): void {
+    for (const child of Array.from(this.children)) {
+      if (child.getAttribute('slot') === 'toolbar')
+        toolbar.append(child)
+    }
+  }
+
+  /**
+   * 上下文工具条：在选中框（整体包围框）上方居中，有旋转柄时让开它；上方放不下时翻到下方；左右夹在覆盖层里。
+   * 没有选中、只读、手势中或没有内容时收起。落在哪一侧写在 data-placement 上。
+   */
+  #placeToolbar(element: HTMLElement, bounds: Rect | undefined, viewport: Viewport, rotate: boolean): void {
+    const shown = bounds !== undefined && element.childElementCount > 0
+    element.hidden = !shown
+    if (!shown) {
+      delete element.dataset.placement
+      return
+    }
+    const start = worldToScreen(viewport, { x: bounds.x, y: bounds.y })
+    const end = worldToScreen(viewport, { x: bounds.x + bounds.width, y: bounds.y + bounds.height })
+    const box = element.getBoundingClientRect()
+    const above = start.y - (rotate ? ROTATE_OFFSET : 0) - TOOLBAR_GAP - box.height
+    const placement = above >= TOOLBAR_GAP ? 'top' : 'bottom'
+    const y = placement === 'top' ? above : end.y + TOOLBAR_GAP
+    const x = Math.min(Math.max((start.x + end.x - box.width) / 2, TOOLBAR_GAP), Math.max(TOOLBAR_GAP, this.clientWidth - box.width - TOOLBAR_GAP))
+    element.dataset.placement = placement
+    element.style.transform = `translate(${x}px, ${y}px)`
+  }
+
+  /** 工具条里按 Esc：焦点回到 focusToolbar 之前的位置。 */
+  readonly #onToolbarKey = (event: KeyboardEvent): void => {
+    if (event.key !== 'Escape' || !this.#returnFocus?.isConnected)
+      return
+    event.preventDefault()
+    event.stopPropagation()
+    const back = this.#returnFocus
+    this.#returnFocus = undefined
+    back.focus()
   }
 
   /** 按世界矩形（可带旋转）摆放一块：尺寸按 zoom 换成屏幕像素，绕中心旋转。 */

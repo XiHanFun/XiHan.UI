@@ -54,10 +54,11 @@ function rectOf(detail: TransformDetail | undefined, id = 'a') {
 }
 
 describe('<xh-designer-transform>', () => {
-  it('按视口把选中框画到屏幕坐标，绕中心旋转；整块 aria-hidden，容器带生成标记', async () => {
+  it('按视口把选中框画到屏幕坐标，绕中心旋转；画的部件 aria-hidden，容器带生成标记', async () => {
     const overlay = await mount(element => element.items = [{ id: 'a', rect: { x: 10, y: 20, width: 100, height: 50, rotation: 30 } }])
-    expect(overlay.getAttribute('aria-hidden')).toBe('true')
+    expect(overlay.hasAttribute('aria-hidden')).toBe(false)
     expect(Array.from(overlay.children).every(child => child.hasAttribute('data-xh-gen'))).toBe(true)
+    expect(Array.from(overlay.children).filter(child => child.getAttribute('aria-hidden') !== 'true').map(child => child.getAttribute('data-part'))).toEqual(['toolbar'])
     const frame = part(overlay, 'frame')
     expect(frame.style.inlineSize).toBe('200px')
     expect(frame.style.blockSize).toBe('100px')
@@ -291,5 +292,57 @@ describe('<xh-designer-transform>', () => {
     overlay.startMove(pointer('pointerdown', 0, 0))
     move(40, 0)
     expect(seen).toEqual([])
+  })
+
+  it('上下文工具条：slot="toolbar" 的子节点挪进工具条部件，有选中才显示；只读、没有选中或没有内容时收起；后放进来的也挪进去', async () => {
+    const bar = document.createElement('div')
+    bar.slot = 'toolbar'
+    bar.innerHTML = '<button type="button">B</button>'
+    const overlay = await mount((element) => {
+      element.append(bar)
+      element.items = [box]
+    })
+    const toolbar = part(overlay, 'toolbar')
+    expect([bar.parentElement, toolbar.hidden, toolbar.hasAttribute('aria-hidden')]).toEqual([toolbar, false, false])
+    overlay.readonly = true
+    await overlay.updateComplete
+    expect(toolbar.hidden).toBe(true)
+    overlay.readonly = false
+    overlay.items = []
+    await overlay.updateComplete
+    expect(toolbar.hidden).toBe(true)
+    bar.remove()
+    overlay.items = [box]
+    await overlay.updateComplete
+    expect(toolbar.hidden).toBe(true)
+    const later = document.createElement('div')
+    later.slot = 'toolbar'
+    later.innerHTML = '<button type="button">I</button>'
+    overlay.append(later)
+    await new Promise(resolve => setTimeout(resolve))
+    await overlay.updateComplete
+    expect([later.parentElement, toolbar.hidden]).toEqual([toolbar, false])
+  })
+
+  it('focusToolbar 先交给 roving 的当前条目；在工具条里按 Esc 焦点回到交之前的位置；收起时什么都不做', async () => {
+    const canvas = document.createElement('div')
+    canvas.tabIndex = 0
+    document.body.append(canvas)
+    const bar = document.createElement('div')
+    bar.slot = 'toolbar'
+    bar.innerHTML = '<button type="button" tabindex="-1">A</button><button type="button" tabindex="0">B</button>'
+    const overlay = await mount((element) => {
+      element.append(bar)
+      element.items = [box]
+    })
+    canvas.focus()
+    expect(overlay.focusToolbar()).toBe(true)
+    expect(document.activeElement!.textContent).toBe('B')
+    document.activeElement!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+    expect(document.activeElement).toBe(canvas)
+    overlay.items = []
+    await overlay.updateComplete
+    expect(overlay.focusToolbar()).toBe(false)
+    expect(document.activeElement).toBe(canvas)
   })
 })
