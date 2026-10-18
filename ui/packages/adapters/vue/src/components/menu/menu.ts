@@ -51,6 +51,8 @@ export const XhMenuRoot = /* @__PURE__ */ defineComponent({
     defaultRadioValue: { type: Object as PropType<MenuRadioValue> },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
+    /** 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger；按数据铺设时不铺触发按钮。 */
+    anchor: { type: Object as PropType<HTMLElement | null> },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
     loop: { type: Boolean, default: undefined },
@@ -114,7 +116,7 @@ export const XhMenuRoot = /* @__PURE__ */ defineComponent({
           'item': slots.item,
           'item-prefix': slots['item-prefix'],
           'item-suffix': slots['item-suffix'],
-        }, { label: props.label, trigger: slots.trigger, triggerAsChild: props.triggerAsChild }))
+        }, { label: props.label, trigger: slots.trigger, triggerAsChild: props.triggerAsChild, anchored: props.anchor !== undefined }))
   },
 })
 
@@ -158,7 +160,7 @@ export const XhMenuPositioner = /* @__PURE__ */ defineComponent({
     // 条目列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；浮层里的条子走 4px 档
     const bars = useScrollbars({ scrollable: () => ctx.contentRef.value, props: { size: 'sm' } })
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
-    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef, present: ctx.visible.value }, () => [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.portalSource.value, present: ctx.visible.value }, () => [
       h('div', {
         ...mergeVueProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
@@ -525,11 +527,12 @@ function slottedBy(slots: MenuItemSlots): (name: string) => boolean {
 function renderDefaultStructure(
   api: MenuApi,
   itemSlots: MenuItemSlots,
-  trigger: { label?: string, trigger?: () => VNode[], triggerAsChild?: boolean },
+  trigger: { label?: string, trigger?: () => VNode[], triggerAsChild?: boolean, anchored?: boolean },
 ): VNode[] {
   const slotted = slottedBy(itemSlots)
   const nodes = menuStructure(api, {
     ...(trigger.label === undefined ? {} : { label: trigger.label }),
+    anchored: trigger.anchored ?? false,
     slotted: name => name === 'trigger' ? trigger.trigger != null : slotted(name),
   })
   const items = itemContent(itemSlots, value => api.collection.find(node => node.value === value))

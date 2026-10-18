@@ -24,7 +24,7 @@ export interface MenuRefs {
   presence: PresenceHandle | null
   /** 浮层定位引擎；未提供时不产出位置结果。 */
   position: PositionEnginePort | null
-  /** 定位锚点，通常是 trigger。 */
+  /** trigger 部件；没给 anchor 时它就是定位锚点与焦点归还处。 */
   getAnchorEl: () => HTMLElement | null
   /** 被定位的浮层容器，通常是 positioner。 */
   getFloatingEl: () => HTMLElement | null
@@ -34,6 +34,8 @@ export interface MenuRefs {
   getHoverBranches: () => readonly HTMLElement[]
   /** 连打检索的缓冲区，收起时清空。 */
   typeahead: Typeahead
+  /** 重挂定位的句柄，由定位效应填写；anchor 变了由 watch 调它。 */
+  reanchor: (() => void) | null
 }
 
 export interface MenuOpenChangeDetails {
@@ -160,6 +162,12 @@ export interface MenuSchema extends MachineSchema {
     /** 展开态，提供即受控；受控下内部不自行修改，只发 onOpenChange。 */
     open?: boolean
     defaultOpen?: boolean
+    /**
+     * 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger；用于由别处的按钮受控打开菜单，按数据铺设时不再铺触发按钮。
+     * 展开期间它带 aria-haspopup、aria-expanded、aria-controls，收起或换锚点时还原；点它算层内交互，不会先被判为层外交互关掉。
+     * content 不再由触发器命名，名字写在 translations.content 上。只用于根菜单。
+     */
+    anchor?: HTMLElement | null
     placement?: Placement
     offset?: number
     /** 方向键到达末尾是否回绕，默认 true。 */
@@ -258,7 +266,8 @@ export interface MenuSchema extends MachineSchema {
     | 'setCheckboxValue'
     | 'setRadioValue'
     | 'clearOpenedAtMount'
-  effect: 'trackPosition' | 'trackLayer' | 'trackHover'
+    | 'reanchor'
+  effect: 'trackPosition' | 'trackLayer' | 'trackHover' | 'trackAnchorAria'
 }
 
 export interface MenuApi<T extends PropTypes = PropTypes> {
@@ -304,7 +313,7 @@ export interface MenuApi<T extends PropTypes = PropTypes> {
 
 /** 读屏文案，默认英文。 */
 export interface MenuTranslations {
-  /** 菜单容器的名字。默认不写，读屏改由 aria-labelledby 指向触发器取名。 */
+  /** 菜单容器的名字。默认不写，读屏改由 aria-labelledby 指向触发器取名；用 anchor 时没有触发器可指，要写上它。 */
   content: string
 }
 
@@ -316,6 +325,8 @@ export interface MenuStructureOptions {
   value?: string
   /** 触发器的文字：根菜单是按钮里的文字（trigger 插槽没有内容时），子菜单是触发条目的文字。 */
   label?: string
+  /** 根菜单锚在外部元素上（写了 anchor）：不铺触发按钮。 */
+  anchored?: boolean
   /**
    * 作者给了哪些插槽的内容：trigger（根菜单的触发按钮）；item（整条接管）、item-prefix（行首标记位）、
    * item-suffix（行尾），后三个按条目的值带 key。子菜单的触发条目也认 item。

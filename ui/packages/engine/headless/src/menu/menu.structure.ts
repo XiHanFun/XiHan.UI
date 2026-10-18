@@ -124,15 +124,18 @@ export function menuNodesStructure(
   })
 }
 
-/** 菜单的标准结构：触发器在前，定位层在后，定位层里是 content 与按数据铺的节点。 */
+/** 菜单的标准结构：触发器在前，定位层在后，定位层里是 content 与按数据铺的节点；锚在外部元素上的根菜单不铺触发器。 */
 export function menuStructure(model: Pick<MenuApi, 'collection'>, options: MenuStructureOptions = {}): StructureChild<MenuStructureNode['part']>[] {
   const slotted = options.slotted ?? NOTHING_SLOTTED
-  let trigger: MenuStructureNode
+  let trigger: MenuStructureNode | null
   if (options.submenu) {
     const value = options.value ?? ''
     trigger = slotted('item', value)
       ? { key: 'trigger', tag: 'div', part: 'trigger', attrs: { value }, slot: { name: 'item', key: value } }
       : { key: 'trigger', tag: 'div', part: 'trigger', attrs: { value }, text: options.label ?? value }
+  }
+  else if (options.anchored) {
+    trigger = null
   }
   else if (slotted('trigger')) {
     trigger = { key: 'trigger', tag: 'button', part: 'trigger', slot: { name: 'trigger' } }
@@ -141,7 +144,7 @@ export function menuStructure(model: Pick<MenuApi, 'collection'>, options: MenuS
     trigger = options.label != null ? { key: 'trigger', tag: 'button', part: 'trigger', text: options.label } : { key: 'trigger', tag: 'button', part: 'trigger' }
   }
   return [
-    trigger,
+    ...(trigger ? [trigger] : []),
     {
       key: 'positioner',
       tag: 'div',

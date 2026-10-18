@@ -45335,7 +45335,7 @@
           "name": "XhMenuElement",
           "cssParts": [
             {
-              "description": "触发按钮（aria-haspopup / aria-expanded / aria-controls 所在），同时是定位锚点",
+              "description": "触发按钮（aria-haspopup / aria-expanded / aria-controls 所在）；没给 anchor 时同时是定位锚点",
               "name": "trigger"
             },
             {
@@ -45426,7 +45426,7 @@
                 "text": "ElementStructure<XhMenuElement>"
               },
               "static": true,
-              "default": "{ rootless: true, build: host => host.ctrl.service ? menuStructure(connectMenu(host.ctrl.service, wcNormalize), { submenu: host.submenu ?? false, ...(host.value === undefined ? {} : { value: host.value }), ...(host.label === undefined ? {} : { label: host.label }), slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
+              "default": "{ rootless: true, build: host => host.ctrl.service ? menuStructure(connectMenu(host.ctrl.service, wcNormalize), { submenu: host.submenu ?? false, anchored: host.anchor !== undefined, ...(host.value === undefined ? {} : { value: host.value }), ...(host.label === undefined ? {} : { label: host.label }), slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
             },
             {
               "kind": "field",
@@ -45485,6 +45485,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "anchor",
+              "privacy": "public",
+              "type": {
+                "text": "HTMLElement | null | undefined"
+              },
+              "description": "外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger；用于由别处的按钮受控打开菜单，生成结构时不再铺触发按钮。\n展开期间它带 aria-haspopup、aria-expanded、aria-controls，收起或换锚点时还原；点它算层内交互。\n没有触发器替菜单命名，名字写在 translations.content 上。只用于根菜单，只作为 property 暴露。"
             },
             {
               "kind": "field",

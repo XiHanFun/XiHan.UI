@@ -14289,6 +14289,7 @@
       "variant"
     ],
     "menu": [
+      "anchor",
       "checkboxValue",
       "collection",
       "defaultCheckboxValue",

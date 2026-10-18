@@ -62,6 +62,8 @@ export interface XhMenuRootProps {
   defaultRadioValue?: MenuRadioValue
   open?: boolean
   defaultOpen?: boolean
+  /** 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger；按数据铺设时不铺触发按钮。 */
+  anchor?: HTMLElement | null
   placement?: Placement
   offset?: number
   loop?: boolean
@@ -121,7 +123,7 @@ export function XhMenuRoot({
         setCheckboxValue: ctx.api.setCheckboxValue,
         setRadioValue: ctx.api.setRadioValue,
       })
-    : renderDefaultStructure(ctx.api, renderers, { trigger, triggerAsChild, label })
+    : renderDefaultStructure(ctx.api, renderers, { trigger, triggerAsChild, label, anchored: props.anchor !== undefined })
 
   return (
     <MenuProvider value={ctx}>
@@ -155,7 +157,7 @@ export function XhMenuPositioner({ children, container, ...rest }: XhMenuPositio
   // 条目列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；浮层里的条子走 4px 档
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
   return (
-    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef} present={ctx.rendered}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.portalSource} present={ctx.rendered}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,
@@ -539,11 +541,12 @@ function slottedBy(renderers: MenuItemRenderers): (name: string) => boolean {
 function renderDefaultStructure(
   api: MenuApi,
   renderers: MenuItemRenderers,
-  trigger: { trigger?: ReactNode, triggerAsChild?: boolean, label?: string },
+  trigger: { trigger?: ReactNode, triggerAsChild?: boolean, label?: string, anchored?: boolean },
 ): ReactNode[] {
   const slotted = slottedBy(renderers)
   const nodes = menuStructure(api, {
     ...(trigger.label === undefined ? {} : { label: trigger.label }),
+    anchored: trigger.anchored ?? false,
     slotted: name => name === 'trigger' ? trigger.trigger != null : slotted(name),
   })
   const items = itemContent(renderers, value => api.collection.find(node => node.value === value))

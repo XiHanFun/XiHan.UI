@@ -7,8 +7,8 @@
 
 import type { ComponentMeta } from '../spec/types'
 
-// positioner/separator/arrow 可缺省。
+// positioner/separator/arrow 可缺省；trigger 可由 anchor 顶替，两者都没有时展开那一刻报诊断。
 export const menuMeta: ComponentMeta = {
   component: 'menu',
-  requiredParts: ['trigger', 'content', 'item'],
+  requiredParts: ['content', 'item'],
 }

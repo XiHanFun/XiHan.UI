@@ -185,7 +185,7 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "249 kB"
+    "limit": "250 kB"
   },
   {
     "name": "designer-shell/locale",
@@ -403,7 +403,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhMenuRoot }",
     "gzip": true,
-    "limit": "56 kB",
+    "limit": "54.9 kB",
     "ignore": [
       "vue"
     ]

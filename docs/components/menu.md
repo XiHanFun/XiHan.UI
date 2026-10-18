@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="menu"`：**`trigger`** · `positioner` · **`content`** · **`item`** · `item-icon` · `item-text` · `item-indicator` · `item-description` · `item-shortcut` · `item-suffix` · `separator` · `group` · `group-label` · `arrow`
+`data-scope="menu"`：`trigger` · `positioner` · **`content`** · **`item`** · `item-icon` · `item-text` · `item-indicator` · `item-description` · `item-shortcut` · `item-suffix` · `separator` · `group` · `group-label` · `arrow`
 
 ## 示例
 
@@ -76,6 +76,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 
 - `collection` 可直接生成条目、分组、标记位、图标、说明、快捷键提示和分隔线。条目的 `icon` 是图标记录，铺进文字之前的 `item-icon`（装饰态，读屏从条目文字取意）；勾选与单选条目的勾仍在 `item-indicator`，两者各占一格。
 - 只给 `collection` 时照标准结构铺：触发按钮（内容归作者，没写时取 `label`），定位层里的条目、分组与分隔线；带 `children` 的条目是一个嵌套的子菜单，它的触发条目文字取 `label`。Vue / React 不写默认插槽与 Web Components 不写部件时生成的节点出自同一个结构函数；Web Components 的部件直接长在 `<xh-menu>` 里，触发按钮的内容与条目可用宿主直接子节点 `slot="trigger"`、`slot="item:<值>"` 等接管（只到根菜单这一层），子菜单生成嵌套的 `<xh-menu submenu>`，触发条目写着它的 `value`。指向锚点的箭头要手写结构时自己摆。
+- `anchor` 换成外部锚点：由别处的按钮（工具栏命令等）受控打开时，把那颗按钮交给 `anchor`，菜单就贴着它定位、收起时焦点归还给它；按数据铺设时不再铺触发按钮。展开期间这颗按钮带 `aria-haspopup`、`aria-expanded` 与 `aria-controls`，收起或换锚点时还原；点它算菜单内的交互，开合交给打开它的那条命令。没有触发器替菜单命名，名字写在 `translations.content` 上。
 - 条目可逐条声明语气，删除一类命令自带该族字色与高亮底。
 - 快捷键提示贴行尾，与说明同档同色；它是纯装饰，读屏从命令文字取意。
 - 支持方向键、首字符检索、禁用条目和多级子菜单。数据驱动时节点写 `children` 即为子菜单入口，Vue / React 的默认树按 `children` 递归铺出下一层，深度不限，路由菜单这类按数据生成的多级菜单不必手写 `Sub` 部件；子层与本层同用 `item` / `item-prefix` / `item-suffix` 插槽，叶子的选中汇到根级 `select`。入口只能是普通条目，勾选与单选条目带 `children` 直接报错。
@@ -124,6 +125,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `defaultRadioValue` | `MenuRadioValue` |  |  |
 | `open` | `boolean` |  | 展开态，提供即受控；受控下内部不自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
+| `anchor` | `HTMLElement \| null` |  | 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger；用于由别处的按钮受控打开菜单，按数据铺设时不再铺触发按钮。 展开期间它带 aria-haspopup、aria-expanded、aria-controls，收起或换锚点时还原；点它算层内交互，不会先被判为层外交互关掉。 content 不再由触发器命名，名字写在 translations.content 上。只用于根菜单。 |
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
