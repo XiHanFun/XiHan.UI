@@ -220,6 +220,110 @@ describe('<xh-designer-palette>', () => {
     expect(item(palette, 'start').tabIndex).toBe(0)
   })
 
+  it('searchable 时也按说明过滤', async () => {
+    const palette = await mount((element) => {
+      element.groups = groups
+      element.searchable = true
+    })
+    await search(palette, '多人')
+    expect(items(palette).map(button => button.dataset.id)).toEqual(['approve'])
+  })
+
+  it('只作浏览的条目照常显示、能停留，不派发 item-activate', async () => {
+    const palette = await mount(element => element.groups = [{ id: 'g', label: '组', items: [{ id: 'a', label: 'A', browseOnly: true }, { id: 'b', label: 'B' }] }])
+    const activated = record(palette)
+    expect([item(palette, 'a').hasAttribute('aria-disabled'), item(palette, 'a').hasAttribute('data-browse-only')]).toEqual([false, true])
+    item(palette, 'a').click()
+    item(palette, 'b').click()
+    expect(activated.map(detail => detail.id)).toEqual(['b'])
+  })
+
+  describe('带下级的一组', () => {
+    const fields: DesignerPaletteGroup = {
+      id: 'fields',
+      label: '字段',
+      items: [
+        { id: 'no', label: '单号', description: 'no', payload: 'no' },
+        { id: 'customer', label: '客户', browseOnly: true, children: [
+          { id: 'customer.name', label: '名称', description: 'customer.name', payload: 'customer.name' },
+        ] },
+        { id: 'items', label: '明细', description: 'items', payload: 'items', children: [
+          { id: 'items.qty', label: '数量', description: 'qty', browseOnly: true },
+          { id: 'items.sku', label: '货号', disabled: true },
+        ] },
+      ],
+    }
+
+    function tree(palette: Element): HTMLElement & { expandedValue?: string[], selection?: string[] } {
+      return palette.querySelector('xh-tree')!
+    }
+
+    function row(palette: Element, id: string): HTMLElement {
+      return palette.querySelector<HTMLElement>(`[data-scope="tree"][data-id="${id}"]`)!
+    }
+
+    it('按树显示，以分组标题命名；层级报给读屏，下级缺省收起；平铺的组仍是按钮', async () => {
+      const palette = await mount(element => element.groups = [groups[0]!, fields])
+      expect(items(palette).map(button => button.dataset.id)).toEqual(['approve', 'notify'])
+      const container = tree(palette).querySelector('[data-scope="tree"][data-part="tree"]')!
+      expect([container.getAttribute('role'), container.getAttribute('aria-label')]).toEqual(['tree', '字段'])
+      const treeitems = Array.from(container.querySelectorAll('[role="treeitem"]'))
+      expect(treeitems.map(node => [node.getAttribute('value'), node.getAttribute('aria-level')])).toEqual([
+        ['no', '1'],
+        ['customer', '1'],
+        ['customer.name', '2'],
+        ['items', '1'],
+        ['items.qty', '2'],
+        ['items.sku', '2'],
+      ])
+      expect(treeitems[1]!.getAttribute('aria-expanded')).toBe('false')
+      expect(row(palette, 'no').querySelector('[data-part="item-description"]')!.textContent).toBe('no')
+      expect(row(palette, 'items').querySelector('[data-part="branch-description"]')!.textContent).toBe('items')
+      expect(treeitems[5]!.getAttribute('aria-disabled')).toBe('true')
+    })
+
+    it('点选与确认键派发 item-activate，选中集合不留痕；只作浏览、禁用与只读时不派发', async () => {
+      const palette = await mount(element => element.groups = [fields])
+      const activated = record(palette)
+      row(palette, 'no').click()
+      row(palette, 'no').click()
+      row(palette, 'items').click()
+      row(palette, 'customer').click()
+      expect(activated).toEqual([{ id: 'no', payload: 'no' }, { id: 'no', payload: 'no' }, { id: 'items', payload: 'items' }])
+      expect(tree(palette).selection).toEqual([])
+      expect(palette.querySelector('[aria-selected="true"]')).toBeNull()
+      palette.readonly = true
+      await palette.updateComplete
+      row(palette, 'no').click()
+      expect(activated).toHaveLength(3)
+    })
+
+    it('展开状态按条目 id 保留，换了 groups 仍在', async () => {
+      const palette = await mount(element => element.groups = [fields])
+      tree(palette).dispatchEvent(new CustomEvent('expanded-value-change', { detail: { value: ['items'] } }))
+      expect(tree(palette).expandedValue).toEqual(['items'])
+      palette.groups = [{ ...fields }]
+      await palette.updateComplete
+      expect(tree(palette).expandedValue).toEqual(['items'])
+    })
+
+    it('搜索匹配名称与说明，命中的条目连同上级展开显示；清空后回到原来的展开状态', async () => {
+      const palette = await mount((element) => {
+        element.groups = [fields]
+        element.searchable = true
+      })
+      await search(palette, 'customer.name')
+      expect(Array.from(palette.querySelectorAll('[role="treeitem"]'), node => node.getAttribute('value'))).toEqual(['customer', 'customer.name'])
+      expect(tree(palette).expandedValue).toEqual(['customer'])
+      await search(palette, '明细')
+      expect(Array.from(palette.querySelectorAll('[role="treeitem"]'), node => node.getAttribute('value'))).toEqual(['items', 'items.qty', 'items.sku'])
+      expect(tree(palette).expandedValue).toEqual([])
+      await search(palette, '')
+      expect(tree(palette).expandedValue).toEqual([])
+      expect(palette.querySelectorAll('[role="treeitem"]')).toHaveLength(6)
+    })
+  })
+
   it('元素自己的 translations 压在全局文案之上', async () => {
     setXhConfig(designerShellZhCN)
     const palette = await mount(element => element.translations = { title: '节点' })

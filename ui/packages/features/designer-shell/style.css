@@ -451,12 +451,12 @@
     cursor: not-allowed;
   }
 
-  xh-designer-palette [data-part='item-label'] {
+  xh-designer-palette button[data-part='item'] > [data-part='item-label'] {
     flex: 1;
     min-inline-size: 0;
   }
 
-  xh-designer-palette [data-part='item-description'] {
+  xh-designer-palette button[data-part='item'] > [data-part='item-description'] {
     flex-basis: 100%;
     overflow: hidden;
     color: var(--xh-fg-muted);
@@ -465,7 +465,17 @@
     white-space: nowrap;
   }
 
-  xh-designer-palette [data-part='empty'] {
+  /* 只作浏览的条目不能拖出 */
+  xh-designer-palette button[data-part='item'][data-browse-only] {
+    cursor: default;
+  }
+
+  /* 带下级的一组是一棵树：行的外观归树的皮肤，这里只把能拖出的行的指针换成抓手 */
+  xh-designer-palette [data-scope='tree'][data-id]:not([data-browse-only]) {
+    --xh-collection-cursor-rest: grab;
+  }
+
+  xh-designer-palette > [data-part='empty'] {
     margin: 0;
     padding-inline: var(--xh-space-3);
     padding-block-end: var(--xh-space-3);
