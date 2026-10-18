@@ -143,7 +143,11 @@ list.addEventListener("issue-hover", event => highlight(event.detail.issue?.targ
 | `group-by` | `severity`（缺省）错误在前、警告在后；`target` 按问题所在对象分组；`none` 按传入顺序 |
 | `empty-text` | 没有问题时的提示 |
 | `readonly` | 列表没有修改类操作，只读时照常浏览与定位 |
-| `headless` | 放进外框的卡片时写：不画自己的标题，由面板头显示；严重程度的过滤照旧显示，列表仍以标题为名 |
+| `headless` | 放进外框的卡片时写：不画自己的标题，由面板头显示，列表仍以标题为名；严重程度的过滤照旧显示，要放进面板头见下文 `summary` |
+
+| 只读属性 | 说明 |
+| --- | --- |
+| `summary` | 头部那组带计数的严重程度开关 |
 
 | 事件 | detail |
 | --- | --- |
@@ -151,6 +155,13 @@ list.addEventListener("issue-hover", event => highlight(event.detail.issue?.targ
 | `issue-hover` | `{ issue }`：指针移到条目上；移出列表时 `issue` 为 `undefined` |
 
 - 头部的错误、警告两个开关带条数，过滤状态在换 `items` 后保留。
+- 放进外框的卡片时，可以把 `summary` 移到面板头的操作区：写上 `slot="<区名>-actions"` 交给外框。零件照样更新计数与开关状态，不再把它收回头部；`headless` 时头部随之收起。
+
+  ```ts
+  issues.headless = true;
+  issues.summary.slot = "issues-actions";
+  frame.append(issues.summary);
+  ```
 - 按对象分组时，组按对象在 `items` 里第一次出现的先后排列，组内错误在前。组标题取组内第一条的 `subject`，都没有时显示对象的 `id`；条目里不再重复对象名。没有 `target` 的问题归在最后一组，标题取文案 `noTarget`。
 - 有 `target` 的条目是按钮，方向键、Home、End 在它们之间移动焦点；没有 `target` 的条目只显示，不可激活。
 

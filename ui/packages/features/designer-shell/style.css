@@ -238,6 +238,11 @@
     padding: var(--xh-space-2) var(--xh-space-3);
   }
 
+  /* headless 且开关移走后头部没有内容，收起 */
+  xh-designer-issues > [data-part='header'][hidden] {
+    display: none;
+  }
+
   xh-designer-issues [data-part='title'] {
     font-weight: var(--xh-font-weight-semibold);
   }
