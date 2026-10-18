@@ -13,19 +13,25 @@ import { DESIGNER_FRAME_REGIONS } from '../frame/frame-element'
 
 /** 面板实例：element 放进外框的区，设计器状态变化时调用 update，撤掉前调用 destroy。 */
 export interface DesignerPanelInstance<Ctx = unknown> {
+  /** 面板的根元素，以 slot 交给外框，放进登记的那个区。 */
   readonly element: HTMLElement
+  /** 设计器状态变化后调用，面板按新状态刷新。 */
   readonly update?: (context: Ctx) => void
+  /** 面板被撤掉前调用。 */
   readonly destroy?: () => void
 }
 
 /** 扩展登记的一个面板：占外框的一个命名区，区名不能与内置区或别的扩展的重名。 */
 export interface DesignerPanel<Ctx = unknown> {
+  /** 外框的命名区：名字、位置、缺省与最小大小、分隔条上的区名；追加在内置区之后。 */
   readonly region: DesignerFrameRegion
+  /** 面板装上时调用，建出面板实例；同一个面板对象只建一次。 */
   readonly create: (context: Ctx) => DesignerPanelInstance<Ctx>
 }
 
 /** 带面板的设计器层扩展；各款的设计器扩展在此之上加种类、渲染与物料。 */
 export interface DesignerShellExtension<Ctx = unknown, Editor = PropertyEditor, Doc = unknown, RuleCtx = unknown> extends DesignerExtensionBase<Ctx, Editor, Doc, RuleCtx> {
+  /** 面板：各占外框的一个命名区，同一位置按扩展顺序上下排。 */
   readonly panels?: readonly DesignerPanel<Ctx>[]
 }
 

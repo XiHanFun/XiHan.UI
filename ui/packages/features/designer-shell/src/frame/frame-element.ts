@@ -29,7 +29,9 @@ export type DesignerFrameResizable = 'start' | 'end' | 'bottom'
 
 /** 一个命名区。同一位置的多个区按登记顺序上下排列，共用一个可调整的大小，区与区之间可拖动分高度。 */
 export interface DesignerFrameRegion {
+  /** 区名：写 slot="<区名>" 的子元素放进这个区，panels 也按它开关。 */
   readonly name: string
+  /** 区在外框里的位置。 */
   readonly position: DesignerFramePosition
   /** 所在位置的缺省大小（百分比）：start、end 占中间一行的宽度，bottom 占中间一列的高度；取该位置第一个区的值。 */
   readonly size?: number
@@ -41,9 +43,11 @@ export interface DesignerFrameRegion {
 
 /** 外框各处的大小（百分比）。 */
 export interface DesignerFrameSizes {
-  /** start、end 占中间一行的宽度，bottom 占中间一列的高度。 */
+  /** start 位置占中间一行的宽度。 */
   readonly start?: number
+  /** end 位置占中间一行的宽度。 */
   readonly end?: number
+  /** bottom 位置占中间一列的高度。 */
   readonly bottom?: number
   /** 同一位置上下堆叠的区各自占该位置高度的百分比，键为区名；只有一个区的位置不出现。 */
   readonly regions?: Readonly<Record<string, number>>

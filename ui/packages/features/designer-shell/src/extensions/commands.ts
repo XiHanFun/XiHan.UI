@@ -62,6 +62,7 @@ export function runCommand<Ctx>(commands: DesignerCommandTable<Ctx>, id: string,
 
 /** 命令工具栏：一条 <xh-toolbar>，按分组铺按钮，放不下的收进行尾的「更多」菜单；命令的语气写成按钮的 data-tone。 */
 export interface CommandToolbar<Ctx> {
+  /** 那条 <xh-toolbar>，由调用方放进页面。 */
   readonly element: HTMLElement
   /** 换上这组分组与此刻的状态：分组变了才重铺按钮，文字、可用与选中状态每次都刷新。 */
   readonly update: (groups: readonly (readonly string[])[], commands: DesignerCommandTable<Ctx>, context: Ctx, label: string) => void
