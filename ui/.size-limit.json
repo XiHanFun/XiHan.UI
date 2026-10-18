@@ -347,13 +347,13 @@
     "name": "styles",
     "path": "packages/design/styles/css/*.css",
     "gzip": true,
-    "limit": "599 kB"
+    "limit": "600 kB"
   },
   {
     "name": "styles/index.css（主入口，扁平有层）",
     "path": "packages/design/styles/index.css",
     "gzip": true,
-    "limit": "194 kB"
+    "limit": "196 kB"
   },
   {
     "name": "icons：只用 CheckIcon",

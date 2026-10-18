@@ -77472,8 +77472,13 @@
         "current",
         "disabled",
         "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
         "is([data-variant='card'], [data-variant='segment'])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
         "state=active",
         "variant=card",
         "variant=line",
@@ -77481,7 +77486,8 @@
         "xh-collection-context=nav"
       ],
       "defaultToken": [
-        "--xh-_tabs-accent-text"
+        "--xh-_tabs-accent-text",
+        "--xh-_tabs-accent-text-strong"
       ],
       "visibility": "public",
       "description": "tabs 的 root、trigger 部件 color 覆盖槽。"
