@@ -47,6 +47,8 @@ const translations: DesignerShellLocaleTranslations = {
   'xh-designer-frame': {
     layout: '设计器布局',
     resize: label => `调整「${label}」的大小`,
+    closePanel: label => `关闭「${label}」`,
+    panelHelp: label => `「${label}」说明`,
   },
 }
 

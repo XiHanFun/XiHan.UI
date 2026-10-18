@@ -64,6 +64,7 @@ panel.addEventListener("property-commit", () => history.seal());
 | `toggle-limit` | select 单选且选项不超过它时改用切换按钮组；缺省不用。描述写了 `appearance: "dropdown"` 或 `"toggle"` 的 select 不看它，总是下拉或总是切换按钮组（多选也可以），绑定字段这类运行时生成的选项宜写 `dropdown` |
 | `collapsible` | 分组可折叠，折叠状态按分组 id 保留，换选择不重置 |
 | `readonly` | 字段只读，不派发修改 |
+| `headless` | 放进外框的卡片时写：不画自己的标题与 `heading`，由面板头显示；页头插槽有内容时页头照旧显示 |
 
 | 事件 | detail |
 | --- | --- |
@@ -142,6 +143,7 @@ list.addEventListener("issue-hover", event => highlight(event.detail.issue?.targ
 | `group-by` | `severity`（缺省）错误在前、警告在后；`target` 按问题所在对象分组；`none` 按传入顺序 |
 | `empty-text` | 没有问题时的提示 |
 | `readonly` | 列表没有修改类操作，只读时照常浏览与定位 |
+| `headless` | 放进外框的卡片时写：不画自己的标题，由面板头显示；严重程度的过滤照旧显示，列表仍以标题为名 |
 
 | 事件 | detail |
 | --- | --- |
@@ -191,6 +193,7 @@ palette.addEventListener("item-activate", event => addAtCenter(event.detail.payl
 | `searchable` | 显示搜索框，按名称与说明过滤；命中的条目连同它的上级一起展开显示 |
 | `collapsible` | 分组可折叠，折叠状态按分组 id 保留；搜索时匹配的分组一律展开 |
 | `readonly` | 物料只能浏览，不派发 `item-activate`、不能拖出 |
+| `headless` | 放进外框的卡片时写：不画自己的标题，由面板头显示；标题仍作正文的可访问名，搜索框照旧 |
 
 | 事件 | detail |
 | --- | --- |
@@ -337,7 +340,7 @@ ruler.addEventListener("guides-change", event => setGuides(event.detail.guides))
 
 ## 外框
 
-`<xh-designer-frame>` 是设计器的整体版式：上方一条，中间一行左、中、右三栏，中间一栏的下方再分一块。版式按命名区排，缺省登记工具栏 `toolbar`、物料 `palette`、画布 `canvas`、属性 `properties`、问题 `issues` 五个区。作者内容用 `slot="<区名>"` 标在直接子节点上，没写 `slot` 的进中间区。区与区之间是 `<xh-splitter>` 的分隔条，可以拖动或用键盘调整大小。
+`<xh-designer-frame>` 是设计器的整体版式：最上一条顶栏，下面一条工具栏，中间一行左、中、右三栏，中间一栏的下方再分一块，最下一条状态栏。版式按命名区排，缺省登记顶栏 `header`、工具栏 `toolbar`、物料 `palette`、画布 `canvas`、属性 `properties`、问题 `issues`、状态栏 `status` 七个区。作者内容用 `slot="<区名>"` 标在直接子节点上，没写 `slot` 的进中间区。区与区之间是 `<xh-splitter>` 的分隔条，可以拖动或用键盘调整大小。
 
 ```ts
 const frame = document.createElement("xh-designer-frame");
@@ -349,23 +352,24 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 
 | 属性 | 说明 |
 | --- | --- |
-| `panels` | 要显示的区，空格分隔；不写即全部显示，写空串则只留中间区。中间区总是显示。同名 attribute |
+| `panels` | 要显示的区，空格分隔；不写即全部显示，写空串则只留中间区。中间区总是显示，顶栏有内容就显示，状态栏按 `panels` 且有内容才显示。同名 attribute |
 | `regions` | 产品登记的命名区，缺省为 `DESIGNER_FRAME_REGIONS` |
 | `sizes` | `{ start, end, bottom, regions }`：各处的大小（百分比），用来恢复上次的布局。`start`、`end`、`bottom` 是位置的大小，不给的用区的缺省大小；`regions` 是同一位置堆叠的区各自占该位置高度的百分比，键为区名，不给的等分 |
 
 | 方法 | 说明 |
 | --- | --- |
-| `showsPanel(name)` | 这个区是否显示：中间区总是显示，其余按 `panels`，没登记的区为否 |
+| `showsPanel(name)` | 这个区是否显示：中间区总是显示，顶栏看有没有内容，状态栏看 `panels` 与有没有内容，其余按 `panels`，没登记的区为否 |
 
 | 事件 | detail |
 | --- | --- |
 | `sizes-change` | `{ sizes }`：拖动或用键盘调整后的大小，形状同 `sizes`；拖动途中连续发出 |
+| `panels-change` | `{ panels }`：点了面板头的关闭钮，外框已收起这块面板；`panels` 是收起之后要显示的区（空格分隔），设计器据此同步自己的 `panels` |
 
-命名区是 `{ name, position, size?, minSize?, label? }`：
+命名区是 `{ name, position, size?, minSize?, label?, title?, subtitle?, help?, closable? }`：
 
-- `position` 取 `top`、`start`、`center`、`end`、`bottom`。同一位置的多个区按登记顺序上下排列，共用一个大小；除 `top` 外，区与区之间有分隔条，可拖动，也可聚焦后用上下方向键调整（Shift 加大步长）。
-- `size` 是位置的缺省大小：`start`、`end` 占中间一行的宽度，`bottom` 占中间一栏的高度；`minSize` 是拖动的下限，缺省 10。都取该位置第一个区的值。中间区至少留 20。
-- `label` 是分隔条无障碍名称里的区名，缺省用 `name`；名称取文案 `resize`，分隔条所在的布局取文案 `layout`。
+- `position` 取 `header`、`top`、`start`、`center`、`end`、`bottom`、`status`。同一位置的多个区按登记顺序上下排列，共用一个大小；除 `top` 外，区与区之间有分隔条，可拖动，也可聚焦后用上下方向键调整（Shift 加大步长）。
+- `size` 是位置的缺省大小：`start`、`end` 占中间一行的宽度，`bottom` 占中间一栏的高度；`minSize` 是拖动的下限，缺省 10。都取该位置第一个区的值。中间区至少留 20。外框还按尺寸槽给的像素下限折算，两者取大的，见下文「尺寸槽」。
+- `label` 是分隔条无障碍名称里的区名，缺省用 `title`，再缺省用 `name`；名称取文案 `resize`，分隔条所在的布局取文案 `layout`。
 - 收起的区移出文档，内容保留，再展开时原样放回。
 - 外框自己生成的结构（上方条、中间行、位置、分隔条与区容器）都带 `data-scope="designer-frame"`，区容器另带 `data-region`（区名）与 `data-position`（所在位置）。外框的样式只认这个 scope，区里的作者内容即使也用了 `data-part="region"` 之类的部件名，也不受外框样式影响。
 
@@ -375,6 +379,57 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 - 每个区至少占 10%（区多到放不下时取等分）；归一后低于下限的区定在下限，其余区按比例分剩下的高度。
 - 收起其中一个区时，其余区按各自的比例分掉它的高度；记录仍在，再展开时恢复拖过的比例。
 - 回填的 `sizes` 里有已不存在的区名、或不是正数的值，一律忽略；`sizes-change` 只带当前登记着的区。
+
+### 顶栏与状态栏
+
+顶栏与状态栏是整宽的一条，不可拖动，按段放内容：
+
+| 区 | 段与插槽 | 只写区名时进 |
+| --- | --- | --- |
+| `header` | `header-start`（标志与名称）、`header-center`（插入快捷按钮）、`header-end`（主操作） | `header-center` |
+| `status` | `status-start`（选中对象的信息）、`status-end`（缩放、保存与连接状态） | `status-start` |
+
+- 各段有内容才显示这一条，内容拿走就收起。顶栏不受 `panels` 控制；状态栏另外要在 `panels` 里。
+- 段用 `data-part="zone"` 与 `data-zone` 标出，左段贴左、中段居中、右段贴右；状态栏的文字取弱一档的颜色与小一号的字。
+
+### 面板卡片
+
+左右与下方的区给了 `title` 就画成一张卡片：承载面的底、描边与圆角，四周留出间距，上面是面板头，下面是可以滚动的正文，作者内容放进正文。
+
+- 面板头左边是标题与一行副标题（`subtitle`，不给不显示）；右边是操作区、帮助钮与关闭钮。
+- 操作区放 `slot="<区名>-actions"` 的作者内容，没有内容时收起。
+- `help` 给了才出帮助钮，悬停或聚焦时用 `<xh-tooltip>` 弹出这段说明，按钮的名字取文案 `panelHelp`。
+- 关闭钮缺省出现（`closable: false` 时不出），名字取文案 `closePanel`；点了收起这块面板，并派发 `panels-change`。
+- 卡片是 `role="region"`，以标题为名。区后来加了或去掉标题，外框连同已经搬进去的内容一起换成新的结构。
+- 物料、属性、问题三个零件放进卡片时写 `headless`：不画自己的标题，由面板头显示。
+
+### 画布区的浮动条
+
+中间区的四角与右侧中间各有一个落点，放浮动在画布内容之上的小工具条或小地图：
+
+| 插槽 | 落点 |
+| --- | --- |
+| `<中间区名>-top-start` / `-top-end` | 左上、右上 |
+| `<中间区名>-bottom-start` / `-bottom-end` | 左下、右下 |
+| `<中间区名>-end` | 右侧中间，竖排 |
+
+缺省中间区名是 `canvas`，所以插槽是 `canvas-top-start` 等。落点没有内容时不占位置。
+
+### 尺寸槽
+
+外框上的几个 CSS 自定义属性，缺省取 UI 的语义令牌：
+
+| 尺寸槽 | 缺省 | 作用 |
+| --- | --- | --- |
+| `--xh-designer-frame-start-min` | `--xh-layout-col-min-sm` | 左栏拖动的下限 |
+| `--xh-designer-frame-end-min` | `--xh-layout-col-min-md` | 右栏拖动的下限 |
+| `--xh-designer-frame-bottom-min` | `--xh-layout-col-min-xs` | 下方拖动的下限 |
+| `--xh-designer-frame-gap` | `--xh-space-2` | 卡片与四周、画布浮动条与边缘的间距 |
+| `--xh-designer-frame-panel-px` / `-py` | `--xh-space-3` / `--xh-space-2` | 面板头、顶栏与状态栏的内边距 |
+| `--xh-designer-frame-status-h` | `--xh-control-h-sm` | 状态栏的最小高度 |
+
+- 三个下限是像素宽度，外框量出后按自己当前的宽高折成百分比交给分隔条，外框变宽变窄时重新折算。
+- 左右与下方的面板在分隔条上可以收起：分隔条聚焦后按 Enter 收起，再按一次展开回原来的大小。
 
 `parseDesignerPanels(value)` 按同一口径解析 `panels`：没写为 `undefined`（全部显示），空串为空集合（全部收起），多个空白与制表符都当分隔。设计器自己的 `panels` 属性可以直接转给外框。
 

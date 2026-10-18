@@ -62,6 +62,112 @@ describe('<xh-designer-frame>', () => {
     expect(region('canvas')!.closest('[data-part="stack"]')!.getAttribute('data-position')).toBe('center')
   })
 
+  it('顶栏与状态栏按段放内容：只写区名的进缺省段，有内容才显示，内容拿走就收起；状态栏另受 panels 控制', async () => {
+    await mount()
+    const header = frame.querySelector<HTMLElement>(':scope > [data-part="header"]')!
+    const status = frame.querySelector<HTMLElement>(':scope > [data-part="status"]')!
+    expect([header.hidden, status.hidden, frame.showsPanel('header'), frame.showsPanel('status')]).toEqual([true, true, false, false])
+
+    const logo = document.createElement('span')
+    logo.slot = 'header-start'
+    const insert = document.createElement('div')
+    insert.slot = 'header'
+    const save = document.createElement('button')
+    save.slot = 'header-end'
+    const selection = document.createElement('span')
+    selection.slot = 'status'
+    const zoom = document.createElement('span')
+    zoom.slot = 'status-end'
+    frame.append(logo, insert, save, selection, zoom)
+    await new Promise(resolve => setTimeout(resolve))
+    await frame.updateComplete
+    const zone = (element: Element): string | null => element.parentElement!.getAttribute('data-zone')
+    expect([logo, insert, save, selection, zoom].map(zone)).toEqual(['start', 'center', 'end', 'start', 'end'])
+    expect([header.hidden, status.hidden, region('header')!.parentElement, region('status')!.parentElement]).toEqual([false, false, header, status])
+
+    frame.panels = 'palette properties issues'
+    await frame.updateComplete
+    expect([status.hidden, frame.showsPanel('status'), frame.showsPanel('header')]).toEqual([true, false, true])
+
+    logo.remove()
+    insert.remove()
+    save.remove()
+    await new Promise(resolve => setTimeout(resolve))
+    await frame.updateComplete
+    expect(header.hidden).toBe(true)
+  })
+
+  it('左右与下方的区给了标题就是卡片：面板头写标题、副标题，帮助与关闭钮，操作区按 slot 放内容；点关闭收起这块并派发 panels-change', async () => {
+    const content = await mount((element) => {
+      element.regions = [
+        { name: 'toolbar', position: 'top' },
+        { name: 'palette', position: 'start', title: '物料' },
+        { name: 'canvas', position: 'center' },
+        { name: 'properties', position: 'end', title: '属性', subtitle: '审批', help: '选中节点或连线，在这里编辑它们的属性', closable: false },
+        { name: 'issues', position: 'bottom', title: '问题' },
+      ]
+    })
+    const card = region('properties')!
+    const title = card.querySelector('[data-part="panel-title"]')!
+    expect([card.hasAttribute('data-card'), card.getAttribute('role'), card.getAttribute('aria-labelledby')]).toEqual([true, 'region', title.id])
+    expect([title.textContent, card.querySelector('[data-part="panel-subtitle"]')!.textContent]).toEqual(['属性', '审批'])
+    expect(content.properties!.parentElement!.getAttribute('data-part')).toBe('panel-body')
+    const help = card.querySelector<HTMLElement>('[data-part="panel-help-tip"] > button')!
+    expect([help.getAttribute('aria-label'), card.querySelector('[data-xh-part="content"]')!.textContent]).toEqual(['About 属性', '选中节点或连线，在这里编辑它们的属性'])
+    expect(card.querySelector<HTMLElement>('[data-part="panel-close"]')!.hidden).toBe(true)
+
+    const palette = region('palette')!
+    expect([palette.querySelector<HTMLElement>('[data-part="panel-subtitle"]')!.hidden, palette.querySelector<HTMLElement>('[data-part="panel-help-tip"]')!.hidden]).toEqual([true, true])
+    expect(palette.querySelector<HTMLElement>('[data-part="panel-actions"]')!.hidden).toBe(true)
+    const counts = document.createElement('span')
+    counts.slot = 'issues-actions'
+    frame.append(counts)
+    await new Promise(resolve => setTimeout(resolve))
+    await frame.updateComplete
+    expect(counts.parentElement!.getAttribute('data-part')).toBe('panel-actions')
+    expect(counts.parentElement!.hidden).toBe(false)
+
+    const changes: string[] = []
+    frame.addEventListener('panels-change', event => changes.push((event as DesignerFrameEventMap['panels-change']).detail.panels))
+    const close = palette.querySelector<HTMLElement>('[data-part="panel-close"]')!
+    expect(close.getAttribute('aria-label')).toBe('Close 物料')
+    close.click()
+    await frame.updateComplete
+    expect([changes, frame.panels, region('palette')]).toEqual([['toolbar properties issues'], 'toolbar properties issues', null])
+  })
+
+  it('区后来加了标题就换成卡片，已经搬进去的内容挪进正文；画布区的作者内容可以放进四角与右侧的浮动条', async () => {
+    const content = await mount()
+    expect(region('properties')!.hasAttribute('data-card')).toBe(false)
+    frame.regions = [
+      { name: 'toolbar', position: 'top' },
+      { name: 'palette', position: 'start' },
+      { name: 'canvas', position: 'center' },
+      { name: 'properties', position: 'end', title: '属性' },
+      { name: 'issues', position: 'bottom' },
+    ]
+    await frame.updateComplete
+    expect(region('properties')!.hasAttribute('data-card')).toBe(true)
+    expect(content.properties!.parentElement!.getAttribute('data-part')).toBe('panel-body')
+
+    const minimap = document.createElement('div')
+    minimap.slot = 'canvas-bottom-end'
+    const pager = document.createElement('div')
+    pager.slot = 'canvas-end'
+    frame.append(minimap, pager)
+    await new Promise(resolve => setTimeout(resolve))
+    expect([minimap.parentElement!.getAttribute('data-overlay'), pager.parentElement!.getAttribute('data-overlay')]).toEqual(['bottom-end', 'end'])
+    expect(minimap.parentElement!.parentElement).toBe(region('canvas'))
+    expect(content.canvas!.parentElement).toBe(region('canvas'))
+  })
+
+  it('左右与下方的面板在分隔条上可以收起：分隔条的面板配置写着 collapsible', async () => {
+    await mount()
+    const panels = (orientation: string): unknown => JSON.parse(splitter(orientation)!.getAttribute('panels')!)
+    expect(panels('horizontal')).toEqual([{ id: 'start', min: 10, collapsible: true }, { id: 'center', min: 20 }, { id: 'end', min: 10, collapsible: true }])
+    expect(panels('vertical')).toEqual([{ id: 'center', min: 20 }, { id: 'bottom', min: 10, collapsible: true }])
+  })
+
   it('panels 只列出的区显示：收起的区不在文档里，再展开时内容还在；中间区总是显示', async () => {
     const content = await mount(element => element.setAttribute('panels', 'palette'))
     expect(frame.showsPanel('palette')).toBe(true)

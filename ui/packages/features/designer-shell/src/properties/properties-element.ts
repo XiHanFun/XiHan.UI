@@ -123,6 +123,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     toggleLimit: { converter: NUMBER_CONVERTER, attribute: 'toggle-limit' },
     collapsible: { converter: BOOLEAN_CONVERTER },
     readonly: { converter: BOOLEAN_CONVERTER },
+    headless: { converter: BOOLEAN_CONVERTER },
     translations: { attribute: false },
   }
 
@@ -156,6 +157,8 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
   declare collapsible?: boolean
   /** 只读：字段只读，不派发 property-change。 */
   declare readonly?: boolean
+  /** 放进外框的卡片时写上：不画自己的标题与副标题，由外框的面板头显示；页头插槽有内容时照旧显示。 */
+  declare headless?: boolean
   /** 元素自己的文案，压在全局配置之上。 */
   declare translations: Partial<DesignerPropertiesTranslations> | undefined
 
@@ -181,6 +184,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     super()
     this.collapsible = false
     this.readonly = false
+    this.headless = false
   }
 
   override connectedCallback(): void {
@@ -202,7 +206,9 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     this.#t = t
     setText(parts.title, t.title)
     setText(parts.heading, this.heading ?? '')
-    parts.heading.hidden = !this.heading
+    parts.title.hidden = this.headless === true
+    parts.heading.hidden = this.headless === true || !this.heading
+    parts.header.hidden = this.headless === true && parts.headerSlot.childElementCount === 0
     if (changed.has('collapsible'))
       this.#clear()
     const targets = this.targets ?? []

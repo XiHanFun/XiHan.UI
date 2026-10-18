@@ -50,7 +50,7 @@ describe('createPanelHost', () => {
     host.assign(extensions, { selected: 1 })
     await frame.updateComplete
 
-    expect(frame.regions!.map(region => region.name)).toEqual(['toolbar', 'palette', 'canvas', 'properties', 'issues', 'layers', 'simulation'])
+    expect(frame.regions!.map(region => region.name)).toEqual(['header', 'toolbar', 'palette', 'canvas', 'properties', 'issues', 'status', 'layers', 'simulation'])
     expect(frame.querySelector('[data-region="layers"]')!.textContent).toBe('layers')
     expect(log.splice(0)).toEqual(['create layers 1', 'create simulation 1'])
 
@@ -65,7 +65,7 @@ describe('createPanelHost', () => {
     host.dispose()
     await frame.updateComplete
     expect(log.splice(0)).toEqual(['destroy layers'])
-    expect(frame.regions!.map(region => region.name)).toEqual(['toolbar', 'palette', 'canvas', 'properties', 'issues'])
+    expect(frame.regions!.map(region => region.name)).toEqual(['header', 'toolbar', 'palette', 'canvas', 'properties', 'issues', 'status'])
   })
 
   it('区名与内置区或别的扩展重名时抛错，什么都不变', async () => {

@@ -196,6 +196,61 @@ describe('<xh-designer-frame>（Chromium）', () => {
     expect(height('properties')).toBeCloseTo(before - total() * 0.1, -1)
     expect(seen.at(-1)!.sizes.regions).toEqual({ properties: expect.closeTo(65, 0), minimap: expect.closeTo(35, 0) })
   })
+  it('尺寸槽给的下限按外框的宽高折成百分比：外框窄时侧栏不小于槽的像素宽；在分隔条上按 Enter 收起，再按一次展开回来', async () => {
+    frame.style.width = '800px'
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    await frame.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const rem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize)
+    expect(width('palette')).toBeGreaterThanOrEqual(14 * rem - 1)
+    expect(width('properties')).toBeGreaterThanOrEqual(18 * rem - 1)
+    const trigger = rowTriggers()[0] as HTMLElement
+    const enter = async (): Promise<void> => {
+      trigger.focus()
+      trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+      await frame.updateComplete
+      await new Promise(resolve => requestAnimationFrame(resolve))
+    }
+    await enter()
+    expect(width('palette')).toBeLessThan(1)
+    await enter()
+    expect(width('palette')).toBeGreaterThanOrEqual(14 * rem - 1)
+  })
+
+  it('给了标题的区画成卡片：承载面的底、描边与圆角，面板头在上、正文滚动；顶栏与状态栏有内容时各占一条', async () => {
+    frame.regions = [
+      { name: 'header', position: 'header' },
+      { name: 'toolbar', position: 'top' },
+      { name: 'palette', position: 'start', title: '物料', subtitle: '拖到画布上', help: '点一下放到视口中间' },
+      { name: 'canvas', position: 'center' },
+      { name: 'properties', position: 'end', title: '属性' },
+      { name: 'issues', position: 'bottom', title: '问题' },
+      { name: 'status', position: 'status' },
+    ]
+    const name = document.createElement('strong')
+    name.slot = 'header-start'
+    name.textContent = '流程设计器'
+    const zoom = document.createElement('span')
+    zoom.slot = 'status-end'
+    zoom.textContent = '100%'
+    frame.append(name, zoom)
+    await new Promise(resolve => setTimeout(resolve))
+    await frame.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const card = frame.querySelector<HTMLElement>('[data-part="region"][data-region="palette"]')!
+    const style = getComputedStyle(card)
+    expect([style.borderTopStyle, Number.parseFloat(style.borderTopWidth) > 0, Number.parseFloat(style.borderTopLeftRadius) > 0, style.overflow]).toEqual(['solid', true, true, 'hidden'])
+    const header = card.querySelector<HTMLElement>('[data-part="panel-header"]')!.getBoundingClientRect()
+    const body = card.querySelector<HTMLElement>('[data-part="panel-body"]')!.getBoundingClientRect()
+    expect(header.bottom).toBeLessThanOrEqual(body.top + 1)
+    expect(getComputedStyle(card.querySelector('[data-part="panel-body"]')!).overflowY).toBe('auto')
+    const top = frame.querySelector<HTMLElement>(':scope > [data-part="header"]')!.getBoundingClientRect()
+    const status = frame.querySelector<HTMLElement>(':scope > [data-part="status"]')!.getBoundingClientRect()
+    const frameBox = frame.getBoundingClientRect()
+    expect([top.height > 0, Math.round(top.top), status.height > 0, Math.round(status.bottom)]).toEqual([true, Math.round(frameBox.top), true, Math.round(frameBox.bottom)])
+    expect(zoom.getBoundingClientRect().right).toBeGreaterThan(frameBox.right - 40)
+  })
+
   it('区里的作者内容不受外框样式影响：带同名部件的作者元素保持自己的 display 与 overflow', async () => {
     const plant = (host: Element): HTMLElement[] => {
       host.insertAdjacentHTML('beforeend', [

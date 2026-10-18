@@ -99,6 +99,7 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
     groupBy: { converter: STRING_CONVERTER, attribute: 'group-by' },
     emptyText: { converter: STRING_CONVERTER, attribute: 'empty-text' },
     readonly: { converter: BOOLEAN_CONVERTER },
+    headless: { converter: BOOLEAN_CONVERTER },
     translations: { attribute: false },
   }
 
@@ -113,6 +114,8 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
   declare emptyText: string | undefined
   /** 只读。问题列表没有修改类操作，只读时照常浏览与定位。 */
   declare readonly?: boolean
+  /** 放进外框的卡片时写上：不画自己的标题，标题由外框的面板头显示，仍作正文的可访问名。 */
+  declare headless?: boolean
   /** 元素自己的文案，压在全局配置之上。 */
   declare translations: Partial<DesignerIssuesTranslations> | undefined
 
@@ -131,6 +134,7 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
   constructor() {
     super()
     this.readonly = false
+    this.headless = false
   }
 
   protected override update(changed: PropertyValues): void {
@@ -139,6 +143,7 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
     const t = this.#config.translations<DesignerIssuesTranslations>(TAG, DEFAULT_TRANSLATIONS, this.translations)
     const items = this.items ?? []
     setText(parts.title, t.title)
+    parts.title.hidden = this.headless === true
     parts.filter.querySelector('[data-xh-part="root"]')!.setAttribute('aria-label', t.filter)
     const errors = items.filter(item => issueSeverity(item.issue) === 'error').length
     setText(parts.errorCount, t.errors(errors))
