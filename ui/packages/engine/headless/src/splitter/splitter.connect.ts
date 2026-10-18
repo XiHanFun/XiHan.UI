@@ -91,6 +91,15 @@ export function connectSplitter<T extends PropTypes>(
     send({ type: panel.collapsed ? 'PANEL.EXPAND' : 'PANEL.COLLAPSE', index: panel.index })
   }
 
+  /**
+   * 分隔条折叠 / 展开的是它哪一侧的面板：两侧有折叠着的先展开它，否则折叠可折叠的那一侧，前一块优先。
+   * 两侧都不可折叠时为 undefined，Enter 与双击都不接。
+   */
+  const toggleTargetOf = (boundary: number): SplitterPanelState | undefined => {
+    const sides = [panelAt(boundary), panelAt(boundary + 1)].filter(panel => panel.collapsible)
+    return sides.find(panel => panel.collapsed) ?? sides[0]
+  }
+
   // 屏幕方向转语义方向：上下两键与 dir 无关，左右两键在 rtl 下对调
   const growKey = vertical ? 'ArrowDown' : (flipHorizontal ? 'ArrowLeft' : 'ArrowRight')
   const shrinkKey = vertical ? 'ArrowUp' : (flipHorizontal ? 'ArrowRight' : 'ArrowLeft')
@@ -137,6 +146,7 @@ export function connectSplitter<T extends PropTypes>(
     getResizeTriggerProps: (index) => {
       const boundary = clampBoundary(index)
       const panel = panelAt(boundary)
+      const toggleTarget = toggleTargetOf(boundary)
       const stepBy = (direction: 1 | -1, large: boolean): void => {
         send({ type: 'BOUNDARY.STEP', index: boundary, direction, large })
       }
@@ -175,6 +185,13 @@ export function connectSplitter<T extends PropTypes>(
           // 上一句挡掉了浏览器自带的聚焦，这里补回来
           focusSafely(event.currentTarget as HTMLElement)
         },
+        // 双击与 Enter 同一件事：折叠 / 展开这条分隔条一侧可折叠的面板，展开回到折叠前的尺寸
+        'onDblClick': (event: MouseEvent) => {
+          if (disabled || !toggleTarget)
+            return
+          event.preventDefault()
+          togglePanel(toggleTarget.index)
+        },
         'onFocus': () => send({ type: 'BOUNDARY.FOCUS', index: boundary }),
         'onKeyDown': (event: KeyboardEvent) => {
           // 推不动时不吞键；Shift 是大步长开关要放行，带其余修饰键的组合一律不接
@@ -185,8 +202,8 @@ export function connectSplitter<T extends PropTypes>(
             [shrinkKey]: () => stepBy(-1, event.shiftKey),
             Home: () => send({ type: 'BOUNDARY.TO_MIN', index: boundary }),
             End: () => send({ type: 'BOUNDARY.TO_MAX', index: boundary }),
-            // 面板不可折叠时不接 Enter，留给作者自己挂的处理器
-            Enter: panel.collapsible ? () => togglePanel(panel.index) : undefined,
+            // 两侧都不可折叠时不接 Enter，留给作者自己挂的处理器
+            Enter: toggleTarget ? () => togglePanel(toggleTarget.index) : undefined,
           }
           const handler = run[event.key]
           // 不在表里的键既不动布局也不 preventDefault，原样放行

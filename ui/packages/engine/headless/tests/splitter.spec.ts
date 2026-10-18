@@ -716,6 +716,92 @@ describe('connectSplitter 键盘', () => {
     expect(s.context.get('activeIndex')).toBe(1)
     expect(s.context.get('sizes')).toEqual([30, 41, 29])
   })
+
+  it('前一块不可折叠、后一块可折叠时 Enter 管后一块', () => {
+    const s = makeService({
+      defaultSizes: [30, 40, 30],
+      panels: [{ id: 'a' }, { id: 'b' }, { id: 'c', collapsible: true }],
+    })
+    expect(pressKey(s, 'Enter', 1).defaultPrevented).toBe(true)
+    expect(s.context.get('sizes')).toEqual([30, 70, 0])
+    expect(api(s).panels[2]!.collapsed).toBe(true)
+    pressKey(s, 'Enter', 1)
+    expect(s.context.get('sizes')).toEqual([30, 40, 30])
+  })
+})
+
+describe('connectSplitter 双击', () => {
+  function doubleClick(service: Service<SplitterSchema>, index = 0): MouseEvent {
+    const event = new MouseEvent('dblclick', { cancelable: true, bubbles: true })
+    ;(triggerProps(service, index).onDblClick as (e: MouseEvent) => void)(event)
+    return event
+  }
+
+  it('双击折叠可折叠的那一侧，再双击回到折叠前的尺寸', () => {
+    const s = makeService({
+      defaultSizes: [30, 70],
+      panels: [{ id: 'a', min: 20, collapsible: true }, { id: 'b' }],
+    })
+    expect(doubleClick(s).defaultPrevented).toBe(true)
+    expect(s.context.get('sizes')).toEqual([0, 100])
+    expect(api(s).panels[0]!.collapsed).toBe(true)
+    doubleClick(s)
+    expect(s.context.get('sizes')).toEqual([30, 70])
+    expect(api(s).panels[0]!.collapsed).toBe(false)
+  })
+
+  it('前一块不可折叠时双击折叠后一块', () => {
+    const s = makeService({
+      defaultSizes: [30, 40, 30],
+      panels: [{ id: 'a' }, { id: 'b' }, { id: 'c', collapsible: true }],
+    })
+    doubleClick(s, 1)
+    expect(s.context.get('sizes')).toEqual([30, 70, 0])
+    doubleClick(s, 1)
+    expect(s.context.get('sizes')).toEqual([30, 40, 30])
+  })
+
+  it('两侧都可折叠时先管前一块；后一块折叠着时先展开它', () => {
+    const s = makeService({
+      defaultSizes: [30, 70],
+      panels: [{ id: 'a', collapsible: true }, { id: 'b', collapsible: true }],
+    })
+    doubleClick(s)
+    expect(s.context.get('sizes')).toEqual([0, 100])
+    doubleClick(s)
+    expect(s.context.get('sizes')).toEqual([30, 70])
+
+    api(s).collapsePanel(1)
+    expect(s.context.get('sizes')).toEqual([100, 0])
+    doubleClick(s)
+    expect(s.context.get('sizes')).toEqual([30, 70])
+  })
+
+  it('双击与 Enter 交替：一个折叠的，另一个展开得回来', () => {
+    const s = makeService({
+      defaultSizes: [30, 70],
+      panels: [{ id: 'a', collapsible: true }, { id: 'b' }],
+    })
+    doubleClick(s)
+    pressKey(s, 'Enter')
+    expect(s.context.get('sizes')).toEqual([30, 70])
+  })
+
+  it('两侧都不可折叠时双击不动布局，也不拦默认行为', () => {
+    const s = makeService({ defaultSizes: [30, 70] })
+    expect(doubleClick(s).defaultPrevented).toBe(false)
+    expect(s.context.get('sizes')).toEqual([30, 70])
+  })
+
+  it('禁用时双击不动布局', () => {
+    const s = makeService({
+      disabled: true,
+      defaultSizes: [30, 70],
+      panels: [{ id: 'a', collapsible: true }, { id: 'b' }],
+    })
+    expect(doubleClick(s).defaultPrevented).toBe(false)
+    expect(s.context.get('sizes')).toEqual([30, 70])
+  })
 })
 
 describe('connectSplitter 属性输出', () => {

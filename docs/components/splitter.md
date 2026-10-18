@@ -26,7 +26,7 @@
 
 ### 垂直与折叠
 
-垂直调整并折叠面板
+垂直调整；中间那块可折叠：双击它上下任一条分隔条，或聚焦分隔条按 Enter，折叠后再来一次回到原来的大小
 
 <XhDemo src="splitter/02-vertical-collapsible" />
 
@@ -59,6 +59,7 @@
 - 支持水平、垂直和嵌套分栏。
 - 支持最小/最大尺寸和面板折叠。
 - 支持方向键、Shift、Enter 和 Escape。
+- 双击分隔条折叠它一侧可折叠的面板，再双击回到折叠前的尺寸；键盘上是 Enter。两侧都可折叠时先管前一块，有折叠着的先展开它。
 - 调整中和调整结束分别提供回调。
 
 ### 组合
@@ -186,7 +187,7 @@
 | `Home` | focus in resize-trigger, not disabled | 把前一块面板收到它眼下能到的最小尺寸 |
 | `End` | focus in resize-trigger, not disabled | 把前一块面板撑到它眼下能到的最大尺寸 |
 | `Escape` | 拖动中 | 放弃这一场拖拽，布局退回按下那一刻；收尾回调不发 |
-| `Enter` | focus in resize-trigger 且它调整的面板 collapsible，not disabled | 折叠 / 展开该面板；展开回到折叠前的尺寸。面板不可折叠时不接这个键 |
+| `Enter` | focus in resize-trigger 且它两侧有 collapsible 的面板，not disabled | 折叠 / 展开这条分隔条一侧的面板，与双击分隔条相同：两侧有折叠着的先展开它，否则折叠前一块，前一块不可折叠时折叠后一块；展开回到折叠前的尺寸。两侧都不可折叠时不接这个键 |
 
 ### ARIA
 
