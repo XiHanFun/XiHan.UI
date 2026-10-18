@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { findOptionViolation } from '../src'
+import { findOptionViolation } from '../src/options'
 
 describe('选项结构校验', () => {
   it('合法的选项列表没有问题，label 等都可省略', () => {

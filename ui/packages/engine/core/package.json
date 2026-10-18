@@ -53,6 +53,10 @@
       "types": "./dist/metadata.d.ts",
       "import": "./dist/metadata.js"
     },
+    "./options": {
+      "types": "./dist/options.d.ts",
+      "import": "./dist/options.js"
+    },
     "./presence": {
       "types": "./dist/presence.d.ts",
       "import": "./dist/presence.js"

@@ -3,10 +3,11 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 选项与选项树的结构校验：选择、单选组、复选组、树选择、级联等组件吃的节点形状，供模板保存与宿主数据校验。
+// @xihan-ui/core/options —— 选项与选项树的结构校验：选择、单选组、复选组、树选择、级联等组件吃的节点形状，
+// 供模板保存、宿主数据与设计器的属性检查共用。只看数据的结构，不碰状态机与 DOM。
 
-import type { Tone } from '@xihan-ui/core'
-import { appendJsonPointer, isPlainObject } from '@xihan-ui/core/json'
+import type { Tone } from '../kernel/types'
+import { appendJsonPointer, isPlainObject } from '../json'
 
 /**
  * 选项结构的问题码：

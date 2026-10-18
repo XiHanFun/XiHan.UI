@@ -24,6 +24,12 @@
     "limit": "1.7 kB"
   },
   {
+    "name": "core/options",
+    "path": "packages/engine/core/dist/options.js",
+    "gzip": true,
+    "limit": "0.9 kB"
+  },
+  {
     "name": "core/url",
     "path": "packages/engine/core/dist/url.js",
     "gzip": true,
