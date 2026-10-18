@@ -1,4 +1,4 @@
-// 垂直与折叠 | 垂直调整并折叠面板
+// 垂直与折叠 | 垂直调整；中间那块可折叠：双击它上下任一条分隔条，或聚焦分隔条按 Enter，折叠后再来一次回到原来的大小
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhSplitterPanel,

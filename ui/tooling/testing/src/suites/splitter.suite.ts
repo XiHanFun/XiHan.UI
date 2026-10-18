@@ -199,6 +199,62 @@ export const splitterSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '双击分隔条折叠可折叠的那一侧，再双击回到折叠前的尺寸',
+      spec: { apg: APG },
+      props: { defaultSizes: [30, 70], panels: [{ id: 'side', min: 20, collapsible: true }, { id: 'main' }] },
+      steps: [
+        {
+          kind: 'dblclick',
+          part: 'resize-trigger',
+          expect: { parts: { 'panel[0]': { 'data-collapsed': '' }, 'resize-trigger': { 'aria-valuenow': '0' } } },
+        },
+        {
+          kind: 'dblclick',
+          part: 'resize-trigger',
+          expect: { parts: { 'panel[0]': { 'data-collapsed': null }, 'resize-trigger': { 'aria-valuenow': '30' } } },
+        },
+      ],
+    },
+    {
+      name: '两侧都不可折叠时双击不动布局',
+      spec: { apg: APG },
+      props: { defaultSizes: [30, 70] },
+      steps: [
+        { kind: 'dblclick', part: 'resize-trigger', expect: { parts: { 'resize-trigger': { 'aria-valuenow': '30' } } } },
+      ],
+    },
+    {
+      name: '三栏：前一块不可折叠、后一块可折叠时，中间那条分隔条的 Enter 与双击都管后一块',
+      spec: { apg: APG },
+      covers: ['splitter.kbd.toggle'],
+      fixture: threePanels,
+      props: { defaultSizes: [30, 40, 30], panels: [{ id: 'a' }, { id: 'b' }, { id: 'c', collapsible: true }] },
+      steps: [
+        { kind: 'focus', part: 'resize-trigger[1]' },
+        {
+          kind: 'key',
+          key: 'Enter',
+          // 后一块折叠腾出的地方回头给前一块；最前面那块的分隔条没被碰，一动不动
+          expect: {
+            parts: {
+              'panel[2]': { 'data-collapsed': '' },
+              'resize-trigger': [{ 'aria-valuenow': '30' }, { 'aria-valuenow': '70' }],
+            },
+          },
+        },
+        {
+          kind: 'dblclick',
+          part: 'resize-trigger[1]',
+          expect: {
+            parts: {
+              'panel[2]': { 'data-collapsed': null },
+              'resize-trigger': [{ 'aria-valuenow': '30' }, { 'aria-valuenow': '40' }],
+            },
+          },
+        },
+      ],
+    },
+    {
       name: '竖直排布：分隔条自身变横的，方向键跟着换轴',
       spec: { apg: `${APG}#wai-ariaroles,statesandproperties` },
       props: { defaultSizes: [50, 50], orientation: 'vertical' },
