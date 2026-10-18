@@ -13,6 +13,7 @@ import {
   XhColorSwatchPickerElement,
   XhContextMenuElement,
   XhDialogElement,
+  XhDrawerElement,
   XhFieldElement,
   XhFilterBuilderElement,
   XhFormatInputElement,
@@ -62,9 +63,10 @@ export function definePaletteElements(): void {
   defineXhElement('xh-icon', XhIconElement)
 }
 
-/** 外框的分隔条用到的元素。 */
+/** 外框的分隔条、面板头的帮助与窄屏抽屉用到的元素。 */
 export function defineFrameElements(): void {
   defineXhElement('xh-splitter', XhSplitterElement)
+  defineXhElement('xh-drawer', XhDrawerElement)
   defineXhElement('xh-tooltip', XhTooltipElement)
 }
 
