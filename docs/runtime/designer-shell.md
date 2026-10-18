@@ -540,9 +540,10 @@ dialog.show();
 | `onStorageError` | 读写失败（无痕窗口、配额满、内容不是对象）时回调 `{ operation, key, error }`，设置留在内存里。给了 `storageKey` 就必须给，否则抛 `TypeError` |
 
 - `apply(settings)`：主题跟随页面时把根的 `data-theme` 还原成接手前的值，跟随系统时按 `prefers-color-scheme` 写、系统改了跟着改；主题色是预设就写它的 `value`，否则经 `registerBrand` 注册成这台设计器自己的品牌，换走时撤销。
+- `data-brand` 要与 `data-theme` 在同一个元素上才换得动品牌：主题跟随页面又选了主题色时，根上照抄外层的 `data-theme`（外层没写就是亮色）。根上新写了主题时，语义令牌在这里重新声明，外层的 `data-contrast` 也一并照抄。外层这两个属性变了，根上跟着改。
 - `save(settings, sections?)`：`sections` 里标了 `secret` 的文本条目不存。
 - `load()`：没给存储键、没存过或读不出时是空对象。
-- `dispose()`：撤掉跟随系统的监听与注册的主题色，根上的两个属性还原成接手前的样子。
+- `dispose()`：撤掉跟随系统与外层的监听、注册的主题色，根上的 `data-theme`、`data-brand`、`data-contrast` 还原成接手前的样子。
 
 ## 扩展的面板与命令
 

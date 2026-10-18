@@ -307,6 +307,53 @@ describe('createDesignerSettingsHost', () => {
     expect([element.hasAttribute('data-brand'), unregister.mock.calls.length]).toEqual([false, 2])
   })
 
+  it('主题跟随页面又选了主题色：根上照抄外层的 data-theme（外层没写是 light），外层改了跟着改，去掉主题色后还原', async () => {
+    const page = document.createElement('div')
+    document.body.append(page)
+    const element = document.createElement('div')
+    page.append(element)
+    const host = createDesignerSettingsHost({ root: element, brands: [{ value: 'green', color: '#16a34a' }] })
+    host.apply({})
+    expect(element.hasAttribute('data-theme')).toBe(false)
+    host.apply({ 'general.brand': 'green' })
+    expect([element.getAttribute('data-theme'), element.getAttribute('data-brand')]).toEqual(['light', 'green'])
+    page.setAttribute('data-theme', 'dark')
+    await Promise.resolve()
+    expect(element.getAttribute('data-theme')).toBe('dark')
+    host.apply({ 'general.brand': 'green', 'general.theme': 'light' })
+    expect(element.getAttribute('data-theme')).toBe('light')
+    host.apply({})
+    page.setAttribute('data-theme', 'light')
+    await Promise.resolve()
+    expect([element.hasAttribute('data-theme'), element.hasAttribute('data-brand')]).toEqual([false, false])
+  })
+
+  it('根上新写了主题时照抄外层的 data-contrast，外层改了跟着改；根上原本写了的保留，dispose 还原', async () => {
+    document.documentElement.setAttribute('data-contrast', 'more')
+    try {
+      const element = root()
+      const host = createDesignerSettingsHost({ root: element })
+      host.apply({ 'general.theme': 'dark' })
+      expect(element.getAttribute('data-contrast')).toBe('more')
+      document.documentElement.setAttribute('data-contrast', 'default')
+      await Promise.resolve()
+      expect(element.getAttribute('data-contrast')).toBe('default')
+      host.apply({})
+      expect(element.hasAttribute('data-contrast')).toBe(false)
+      host.dispose()
+      const own = root()
+      own.setAttribute('data-contrast', 'more')
+      const second = createDesignerSettingsHost({ root: own })
+      second.apply({ 'general.theme': 'dark' })
+      expect(own.getAttribute('data-contrast')).toBe('more')
+      second.dispose()
+      expect([own.getAttribute('data-contrast'), own.hasAttribute('data-theme')]).toEqual(['more', false])
+    }
+    finally {
+      document.documentElement.removeAttribute('data-contrast')
+    }
+  })
+
   it('没给 registerBrand 时不是预设的主题色不生效', () => {
     const element = root()
     const host = createDesignerSettingsHost({ root: element, brands: [{ value: 'blue', color: '#1677ff' }] })

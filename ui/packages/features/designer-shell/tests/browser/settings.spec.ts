@@ -91,6 +91,31 @@ describe('设置对话框', () => {
     host.dispose()
   })
 
+  it('主题跟随页面时选了预设主题色：设计器里的品牌令牌换成那一档，外面的不变', async () => {
+    const page = document.createElement('div')
+    page.setAttribute('data-theme', 'light')
+    root = document.createElement('div')
+    page.append(root)
+    document.body.append(page)
+    const tokenColor = (scope: Element, token: string): string => {
+      const probe = document.createElement('span')
+      probe.style.setProperty('color', `var(${token})`)
+      scope.append(probe)
+      const value = getComputedStyle(probe).color
+      probe.remove()
+      return value
+    }
+    const before = tokenColor(root, '--xh-bg-brand')
+    const host = createDesignerSettingsHost({ root, brands: [{ value: 'green', color: '#16a34a' }] })
+    host.apply({ 'general.brand': 'green' })
+    expect(tokenColor(root, '--xh-bg-brand')).not.toBe(before)
+    expect(tokenColor(root, '--xh-bg-brand')).toBe(tokenColor(root, '--xh-color-brand-600'))
+    expect(tokenColor(page, '--xh-bg-brand')).toBe(before)
+    host.dispose()
+    expect(tokenColor(root, '--xh-bg-brand')).toBe(before)
+    page.remove()
+  })
+
   it('打开时没有 wc.* 诊断，axe 也没有违规', async () => {
     const records: DiagnosticRecord[] = []
     resetDiagnostics()
