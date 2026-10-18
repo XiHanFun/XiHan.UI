@@ -91,7 +91,7 @@ export const mentionSuite: ConformanceSuite = {
   fixture: tree(),
   cases: [
     {
-      name: '作者不写结构：三端都照 mentionStructure 铺出标题、输入框与浮层（候选与空态），敲下前缀即开、高亮落到首条',
+      name: '作者不写结构：三端都照 mentionStructure 铺出标题、输入框与浮层（候选、空态与在途占位），敲下前缀即开、高亮落到首条',
       spec: { apg: `${APG}#roles_states_properties` },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
       props: {
@@ -103,12 +103,13 @@ export const mentionSuite: ConformanceSuite = {
         ],
       },
       initial: {
-        order: ['root', 'label', 'input', 'positioner', 'content', 'item[0]', 'item-text[0]', 'item-description', 'item[1]', 'item-text[1]', 'item[2]', 'item-text[2]', 'empty'],
+        order: ['root', 'label', 'input', 'positioner', 'content', 'item[0]', 'item-text[0]', 'item-description', 'item[1]', 'item-text[1]', 'item[2]', 'item-text[2]', 'empty', 'loading'],
         parts: {
           'input': { 'role': 'combobox', 'aria-expanded': 'false', 'aria-controls': '@part(content)' },
           'content': { role: 'listbox', hidden: '' },
           'item[1]': { 'aria-disabled': 'true' },
           'empty': { hidden: '' },
+          'loading': { hidden: '' },
         },
       },
       steps: [
@@ -122,6 +123,24 @@ export const mentionSuite: ConformanceSuite = {
           kind: 'settle',
           until: { attr: { part: 'item[0]', name: 'data-highlighted', value: '' } },
           expect: { parts: { input: { 'aria-activedescendant': '@part(item[0])' } } },
+        },
+      ],
+    },
+    {
+      name: '作者不写结构的多行形态：输入框铺成 textarea，撤掉组合框角色；候选没取回来时由在途占位顶上',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { label: '评论', multiline: true, loading: true, collection: [] },
+      initial: {
+        order: ['root', 'label', 'input', 'positioner', 'content', 'empty', 'loading'],
+        parts: { input: { 'role': null, 'aria-expanded': null, 'type': null } },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'type 步骤改不动输入框的值，而提及的入口正是原生 input 事件加那一刻的光标位置',
+          run: ({ doc, flush }) => typeInto(doc, '第一行\n@', flush),
+          expect: { parts: { content: { hidden: null }, empty: { hidden: '' }, loading: { 'hidden': null, 'data-loading': '' } } },
         },
       ],
     },

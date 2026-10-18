@@ -12,7 +12,9 @@ interface MentionHost extends HTMLElement {
   updateComplete: Promise<unknown>
   collection?: MentionNode[]
   label?: string
-  translations?: { empty?: string }
+  multiline?: boolean
+  loading?: boolean
+  translations?: { empty?: string, loading?: string }
 }
 
 const COLLECTION: MentionNode[] = [
@@ -80,7 +82,7 @@ describe('xh-mention 生成结构', () => {
     const input = part(el, 'input')!
     expect([label.localName, input.localName]).toEqual(['label', 'input'])
     expect(label.getAttribute('for')).toBe(input.id)
-    expect(partsOf(part(el, 'positioner')!)).toEqual(['content', 'empty'])
+    expect(partsOf(part(el, 'positioner')!)).toEqual(['content', 'empty', 'loading'])
     const items = parts(el, 'item')
     expect(items.map(item => item.getAttribute('data-value'))).toEqual(['lilei', 'hanmeimei', 'poly'])
     expect(partsOf(items[1]!)).toEqual(['item-text', 'item-description'])
@@ -114,6 +116,19 @@ describe('xh-mention 生成结构', () => {
     const slotted = mount({ collection: [] }, '<strong slot="empty">空空如也</strong>')
     await settle(slotted)
     expect(part(slotted, 'empty')!.innerHTML).toBe('<strong slot="empty">空空如也</strong>')
+  })
+
+  it('multiline：输入框生成为 textarea、撤掉组合框角色；取数在途且没有候选时在途占位顶上，字取 translations.loading', async () => {
+    const el = mount({ collection: [], multiline: true, loading: true, translations: { loading: '正在找人' } })
+    await settle(el)
+    const input = part(el, 'input')!
+    expect(input.localName).toBe('textarea')
+    expect([input.getAttribute('role'), input.hasAttribute('aria-expanded')]).toEqual([null, false])
+
+    await type(el, '第一行\n@')
+    const loading = part(document, 'loading')!
+    expect([loading.hidden, loading.textContent]).toEqual([false, '正在找人'])
+    expect(part(document, 'empty')!.hidden).toBe(true)
   })
 
   it('slot 接管标题、候选文字与行首行尾：作者节点搬进对应部件，没写的候选照数据铺', async () => {

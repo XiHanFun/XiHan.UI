@@ -1,5 +1,5 @@
 // 提及的多行形态：输入框自己就是字段外壳，写成 textarea 之后随 rows 定起始高度、不钉单行控件高；
-// 上下内衬与文本字段的多行档同一支令牌，正文不贴着描边。候选浮层仍贴着整个输入框落位。
+// 上下内衬与文本字段的多行档同一支令牌，正文不贴着描边。候选浮层锚在提及前缀所在的那个字符处。
 //
 // 只有真实浏览器量得出来：高度、内衬与浮层的位置都是布局结果。
 import type { App } from 'vue'
@@ -65,17 +65,26 @@ describe('提及的多行形态', () => {
     expect(style.resize).toBe('vertical')
   })
 
-  it('多行形态里换行之后敲前缀照样弹候选，浮层落在整个输入框之下', async () => {
+  it('多行形态里候选浮层锚在提及前缀处：换行后敲前缀落在那一行之下，前缀往右挪浮层跟着往右', async () => {
     const el = await mountMention('textarea') as HTMLTextAreaElement
     el.focus()
-    el.value = '第一行\n@'
-    el.setSelectionRange(el.value.length, el.value.length)
-    el.dispatchEvent(new Event('input', { bubbles: true }))
-    await nextTick()
-    await new Promise(resolve => requestAnimationFrame(resolve))
-    await new Promise(resolve => requestAnimationFrame(resolve))
-    const content = document.querySelector<HTMLElement>(`[data-scope='mention'][data-part='content']`)!
-    expect(content.hidden).toBe(false)
-    expect(content.getBoundingClientRect().top).toBeGreaterThanOrEqual(el.getBoundingClientRect().bottom)
+    const type = async (text: string): Promise<DOMRect> => {
+      el.value = text
+      el.setSelectionRange(text.length, text.length)
+      el.dispatchEvent(new Event('input', { bubbles: true }))
+      await nextTick()
+      for (let i = 0; i < 3; i++)
+        await new Promise(resolve => requestAnimationFrame(resolve))
+      return document.querySelector<HTMLElement>(`[data-scope='mention'][data-part='content']`)!.getBoundingClientRect()
+    }
+    const box = el.getBoundingClientRect()
+    const atLineStart = await type('第一行\n@')
+    expect(document.querySelector<HTMLElement>(`[data-scope='mention'][data-part='content']`)!.hidden).toBe(false)
+    // 前缀在第二行：浮层贴着那一行落下，顶边还在三行高的输入框里，不落到整个输入框之下
+    expect(atLineStart.top).toBeGreaterThan(box.top)
+    expect(atLineStart.top).toBeLessThan(box.bottom)
+    const afterText = await type('第一行\n一段文字 @')
+    expect(afterText.left).toBeGreaterThan(atLineStart.left + 20)
+    expect(Math.round(afterText.top)).toBe(Math.round(atLineStart.top))
   })
 })

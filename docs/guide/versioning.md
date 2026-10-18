@@ -217,7 +217,7 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 148（`defineXhElements()` 注册 147 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1658 条声明 / 493 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| observed attribute | 1659 条声明 / 493 个不同名字 | **受约束**（具体元素上的具体属性名） |
 | attribute 名词汇表本身 | 493 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
 | `CustomEvent` 名 | 122 个名字 / 288 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（274 处中 272 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |

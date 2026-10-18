@@ -504,7 +504,7 @@ const translations = {
   'log': { log: 'ログ', scrollToBottom: '最下部へスクロール' },
   'markdown-stream': { completed: '応答が完了しました' },
   'marquee': { autoplayTriggerPause: 'スクロールを一時停止', autoplayTriggerPlay: 'スクロールを再開' },
-  'mention': { content: 'メンション', empty: '一致する項目がありません' },
+  'mention': { content: 'メンション', empty: '一致する項目がありません', loading: '読み込み中' },
   'menubar': { root: 'メニューバー' },
   'message-feed': {
     feed: '会話',

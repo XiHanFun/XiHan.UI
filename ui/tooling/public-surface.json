@@ -22818,6 +22818,7 @@
         "label",
         "loading",
         "loop",
+        "multiline",
         "name",
         "offset",
         "placeholder",

@@ -506,7 +506,7 @@ const translations = {
   'log': { log: 'Journal', scrollToBottom: 'Faire défiler jusqu’en bas' },
   'markdown-stream': { completed: 'Réponse terminée' },
   'marquee': { autoplayTriggerPause: 'Suspendre le défilement', autoplayTriggerPlay: 'Reprendre le défilement' },
-  'mention': { content: 'Mentions', empty: 'Aucun résultat' },
+  'mention': { content: 'Mentions', empty: 'Aucun résultat', loading: 'Chargement' },
   'menubar': { root: 'Barre de menus' },
   'message-feed': {
     feed: 'Conversation',

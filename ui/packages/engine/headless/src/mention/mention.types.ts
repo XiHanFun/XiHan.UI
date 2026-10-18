@@ -101,6 +101,8 @@ export interface MentionTranslations {
   input?: string
   /** 没有候选时空态的缺省文字。 */
   empty?: string
+  /** 候选取数在途时在途占位的缺省文字。 */
+  loading?: string
 }
 
 export interface MentionValueChangeDetails {
@@ -304,6 +306,8 @@ export interface MentionApi<T extends PropTypes = PropTypes> {
   empty: boolean
   /** 空态部件的缺省文字，取自 translations.empty；作者自己往空态里写了内容就不用它。 */
   emptyText: string
+  /** 在途占位的缺省文字，取自 translations.loading；作者自己往在途占位里写了内容就不用它。 */
+  loadingText: string
   isHighlighted: (value: string) => boolean
   /** 整段改写正文，浮层随之收起。 */
   setValue: (next: string) => void

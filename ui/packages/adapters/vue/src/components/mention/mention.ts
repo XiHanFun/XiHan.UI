@@ -45,6 +45,8 @@ export const XhMentionRoot = defineComponent({
     collection: { type: Array as PropType<MentionNode[]> },
     /** 标题文字。不写默认插槽时铺 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
+    /** 不写默认插槽时输入框铺成多行的 textarea；写了默认插槽时在 XhMentionInput 上写 as="textarea"。 */
+    multiline: Boolean,
     value: { type: String },
     defaultValue: { type: String },
     disabled: { type: Boolean, default: undefined },
@@ -118,7 +120,7 @@ export const XhMentionRoot = defineComponent({
             setValue: ctx.api.value.setValue,
             close: ctx.api.value.close,
           })
-        : renderDefaultStructure(ctx.api.value, props.label, {
+        : renderDefaultStructure(ctx.api.value, { label: props.label, multiline: props.multiline }, {
             'label': slots.label,
             'empty': slots.empty,
             'item': slots.item,
@@ -292,7 +294,17 @@ const MENTION_PARTS = {
   'item-description': XhMentionItemDescription,
   'item-suffix': XhMentionItemSuffix,
   'empty': XhMentionEmpty,
+  'loading': XhMentionLoading,
 }
+
+/** 多行形态的输入框：标准结构开了 multiline 时顶替 input 部件。 */
+const MentionTextarea = defineComponent({
+  name: 'XhMentionTextarea',
+  inheritAttrs: false,
+  setup(_, { attrs }) {
+    return () => h(XhMentionInput, { ...attrs, as: 'textarea' })
+  },
+})
 
 interface MentionStructureSlots {
   'label'?: () => VNode[]
@@ -304,12 +316,13 @@ interface MentionStructureSlots {
 
 /**
  * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 mentionStructure 渲，
- * 与 Web Components 不写部件时元素生成的节点出自同一份。标题、空态、候选文字与行首行尾由对应插槽接管。
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题、空态、候选文字与行首行尾由对应插槽接管；开了 multiline 时输入框是 textarea。
  * 过滤仍归调用方：collection 就是当前应显示的候选。
  */
-function renderDefaultStructure(api: MentionApi, label: string | undefined, authored: MentionStructureSlots): VNode[] {
-  const nodes = mentionStructure(api, { label, slotted: name => authored[name as keyof MentionStructureSlots] != null })
-  return renderStructure(nodes, MENTION_PARTS, (node) => {
+function renderDefaultStructure(api: MentionApi, options: { label?: string, multiline: boolean }, authored: MentionStructureSlots): VNode[] {
+  const nodes = mentionStructure(api, { ...options, slotted: name => authored[name as keyof MentionStructureSlots] != null })
+  const parts = options.multiline ? { ...MENTION_PARTS, input: MentionTextarea } : MENTION_PARTS
+  return renderStructure(nodes, parts, (node) => {
     const meta = node.data as MentionNodeMeta
     switch (node.slot?.name) {
       case 'label':

@@ -48,6 +48,8 @@ export interface XhMentionRootProps extends RootElementProps {
   collection?: MentionNode[]
   /** 标题。不给 children 时铺 label 部件。 */
   label?: ReactNode
+  /** 不给 children 时输入框铺成多行的 textarea；给了 children 时在 XhMentionInput 上写 as="textarea"。 */
+  multiline?: boolean
   value?: string
   defaultValue?: string
   disabled?: boolean
@@ -86,6 +88,7 @@ export function XhMentionRoot({
   triggerPrefix,
   collection,
   label,
+  multiline,
   value,
   defaultValue,
   disabled,
@@ -156,7 +159,7 @@ export function XhMentionRoot({
         setValue: api.setValue,
         close: api.close,
       })
-    : renderDefaultStructure(api, { label, empty, renderItem, renderItemPrefix, renderItemSuffix })
+    : renderDefaultStructure(api, { label, multiline, empty, renderItem, renderItemPrefix, renderItemSuffix })
 
   return (
     <MentionProvider value={ctx}>
@@ -340,10 +343,17 @@ const MENTION_PARTS = {
   'item-description': XhMentionItemDescription,
   'item-suffix': XhMentionItemSuffix,
   'empty': XhMentionEmpty,
+  'loading': XhMentionLoading,
+}
+
+/** 多行形态的输入框：标准结构开了 multiline 时顶替 input 部件。 */
+function MentionTextarea(props: Omit<XhMentionInputProps, 'as'>): ReactNode {
+  return <XhMentionInput {...props} as="textarea" />
 }
 
 interface MentionStructureContent {
   label?: ReactNode
+  multiline?: boolean
   empty?: ReactNode
   renderItem?: (node: MentionNodeMeta) => ReactNode
   renderItemPrefix?: (node: MentionNodeMeta) => ReactNode
@@ -352,7 +362,8 @@ interface MentionStructureContent {
 
 /**
  * 未写 children 时铺开的整套结构，作者只提供数据：照 headless 的 mentionStructure 渲，
- * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题、空态、候选文字与行首行尾由对应渲染函数接管。
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题、空态、候选文字与行首行尾由对应渲染函数接管；
+ * 开了 multiline 时输入框是 textarea。
  * 过滤仍归调用方：collection 就是当前应显示的候选。
  */
 function renderDefaultStructure(api: MentionApi, content: MentionStructureContent): ReactNode[] {
@@ -367,9 +378,11 @@ function renderDefaultStructure(api: MentionApi, content: MentionStructureConten
   const nodes = mentionStructure(api, {
     label: typeof label === 'string' ? label : undefined,
     empty: typeof empty === 'string' ? empty : undefined,
+    multiline: content.multiline,
     slotted: name => slotted[name] === true,
   })
-  return renderStructure(nodes, MENTION_PARTS, (node) => {
+  const parts = content.multiline ? { ...MENTION_PARTS, input: MentionTextarea } : MENTION_PARTS
+  return renderStructure(nodes, parts, (node) => {
     const meta = node.data as MentionNodeMeta
     switch (node.slot?.name) {
       case 'label':

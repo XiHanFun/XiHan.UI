@@ -504,7 +504,7 @@ const translations = {
   'log': { log: '로그', scrollToBottom: '맨 아래로 스크롤' },
   'markdown-stream': { completed: '응답 완료' },
   'marquee': { autoplayTriggerPause: '스크롤 일시 중지', autoplayTriggerPlay: '스크롤 재개' },
-  'mention': { content: '멘션', empty: '일치하는 항목 없음' },
+  'mention': { content: '멘션', empty: '일치하는 항목 없음', loading: '로드 중' },
   'menubar': { root: '메뉴 모음' },
   'message-feed': {
     feed: '대화',

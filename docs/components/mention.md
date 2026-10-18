@@ -75,7 +75,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 
 ### 特性
 
-- 输入框缺省单行，与其他输入控件使用同一档行高与内衬；`input` 部件写 `as="textarea"` 即多行形态，正文可以换行，候选浮层贴着整个输入框落位。
+- 输入框缺省单行，与其他输入控件使用同一档行高与内衬；`input` 部件写 `as="textarea"`（不写结构时开 `multiline`）即多行形态，正文可以换行，候选浮层锚在这条提及的前缀处、随前缀所在的行与列落位，单行时贴着整个输入框。
 - 多种前缀各自映射一份候选。
 - 插入后的引用是一个整体：光标紧贴它时 Backspace（在它之后）或 Delete（在它之前）整条删掉，不逐字退格；在它内部改字即退回普通文字。光标停在一条插完的引用里不再弹候选。
 - `api.mentions` 列出正文里仍然完整的引用（值、文本、前缀与起止下标），宿主据此取出被 @ 到的是哪几条。
@@ -92,7 +92,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 - `name` 让整段正文随表单提交，表单重置回落到 `defaultValue`。
 - 输入框投影 Field Chrome，描边式静息无影，唯一候选面使用 M2 磨砂面与细顶光；空态和加载文字位于材质之上，不另绘框。浮层使用四向短位移，不缩放文字；增强对比度时切为实体，减弱动效时取消位移。
 - 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
-- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字（原生 `<label>`），接着是单行输入框与浮层，浮层里是 `collection` 的候选（文字、有副文本时的副文本）与空态（文字取 `translations.empty`）；过滤仍由宿主改 `collection`。多行形态与在途占位不在其中，要用时手写结构。Web Components 里标题、空态、候选文字与行首行尾可以写在宿主的直接子节点 `slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 上接管。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字（原生 `<label>`），接着是输入框（缺省单行，开了 `multiline` 是 textarea）与浮层，浮层里是 `collection` 的候选（文字、有副文本时的副文本）、空态与在途占位（文字取 `translations.empty`、`translations.loading`，按状态收放）；过滤仍由宿主改 `collection`。Web Components 里标题、空态、候选文字与行首行尾可以写在宿主的直接子节点 `slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 上接管。
 
 ### 组合
 
@@ -198,6 +198,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `XhMentionItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
 | `XhMentionPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
 | `XhMentionRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhMentionRoot` | `multiline` | `boolean` |  | 不给 children 时输入框铺成多行的 textarea；给了 children 时在 XhMentionInput 上写 as="textarea"。 |
 | `XhMentionRoot` | `renderItem` | `(node: MentionNodeMeta) => ReactNode` |  | 铺开 collection 时每条候选的内容；未提供时使用 collection 中的 label。 |
 | `XhMentionRoot` | `renderItemPrefix` | `(node: MentionNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
 | `XhMentionRoot` | `renderItemSuffix` | `(node: MentionNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
@@ -241,6 +242,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `disabled` | `boolean` |  |
 | `empty` | `boolean` | 没有候选可显示：提供了 collection 且没有剩余条目。作者据此显示空态部件。 |
 | `emptyText` | `string` | 空态部件的缺省文字，取自 translations.empty；作者自己往空态里写了内容就不用它。 |
+| `loadingText` | `string` | 在途占位的缺省文字，取自 translations.loading；作者自己往在途占位里写了内容就不用它。 |
 | `isHighlighted` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string) => void` | 整段改写正文，浮层随之收起。 |
 | `close` | `() => void` |  |

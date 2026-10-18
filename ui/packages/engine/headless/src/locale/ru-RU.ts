@@ -522,7 +522,7 @@ const translations = {
   'log': { log: 'Журнал', scrollToBottom: 'Прокрутить в конец' },
   'markdown-stream': { completed: 'Ответ готов' },
   'marquee': { autoplayTriggerPause: 'Приостановить прокрутку', autoplayTriggerPlay: 'Возобновить прокрутку' },
-  'mention': { content: 'Упоминания', empty: 'Нет совпадений' },
+  'mention': { content: 'Упоминания', empty: 'Нет совпадений', loading: 'Загрузка' },
   'menubar': { root: 'Строка меню' },
   'message-feed': {
     feed: 'Беседа',

@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 提及的标准结构：标题、输入框与按 collection 铺候选的浮层。
+// 提及的标准结构：标题、输入框与浮层（按 collection 铺的候选、空态与在途占位）。
 // Vue / React 不写默认插槽时的缺省树、Web Components 不写部件（或只写 root）时元素生成的节点，都照这一份渲。
 
 import type { StructureNode, StructureSlotted } from '../shared/structure'
@@ -24,12 +24,11 @@ export const MENTION_STRUCTURE_PARTS = [
   'item-description',
   'item-suffix',
   'empty',
-] as const satisfies readonly MentionPart[]
-
-/** anatomy 里不进标准结构的部件：在途占位由作者手写结构时自己摆。 */
-export const MENTION_STRUCTURE_OMITS = [
   'loading',
 ] as const satisfies readonly MentionPart[]
+
+/** anatomy 里不进标准结构的部件。 */
+export const MENTION_STRUCTURE_OMITS = [] as const satisfies readonly MentionPart[]
 
 type MentionStructurePart = (typeof MENTION_STRUCTURE_PARTS)[number]
 
@@ -41,6 +40,8 @@ export interface MentionStructureOptions {
   label?: string
   /** 空态文字：给了就写进 empty，没给时取 emptyText（translations.empty）；empty 插槽有内容时内容归作者。 */
   empty?: string
+  /** 输入框铺成多行的 textarea，缺省是单行的 input。 */
+  multiline?: boolean
   /**
    * 作者给了哪些插槽的内容：label、empty、item（候选文字）、item-prefix、item-suffix，后三个按候选的值带 key。
    * 候选文字没给插槽时铺 collection 里的 label；行首、行尾没给插槽时不铺这两格。
@@ -48,7 +49,7 @@ export interface MentionStructureOptions {
   slotted?: StructureSlotted
 }
 
-type MentionStructureModel = Pick<MentionApi, 'collection' | 'emptyText'>
+type MentionStructureModel = Pick<MentionApi, 'collection' | 'emptyText' | 'loadingText'>
 
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
@@ -68,8 +69,8 @@ function itemStructure(node: MentionNodeMeta, slotted: StructureSlotted): Mentio
 }
 
 /**
- * 提及在 root 里的标准结构，次序是标题、输入框、浮层；标题是原生 label。
- * 浮层里先是候选列表（collection 每条一个候选，过滤归调用方），再是空态，露不露归连接层。
+ * 提及在 root 里的标准结构，次序是标题、输入框、浮层；标题是原生 label，输入框缺省单行、开了 multiline 是 textarea。
+ * 浮层里先是候选列表（collection 每条一个候选，过滤归调用方），再是空态与在途占位，露哪一块归连接层。
  */
 export function mentionStructure(model: MentionStructureModel, options: MentionStructureOptions = {}): MentionStructureNode[] {
   const slotted = options.slotted ?? NOTHING_SLOTTED
@@ -79,7 +80,7 @@ export function mentionStructure(model: MentionStructureModel, options: MentionS
   else if (options.label != null)
     nodes.push({ key: 'label', tag: 'label', part: 'label', text: options.label })
   nodes.push(
-    { key: 'input', tag: 'input', part: 'input' },
+    { key: 'input', tag: options.multiline ? 'textarea' : 'input', part: 'input' },
     {
       key: 'positioner',
       tag: 'div',
@@ -89,6 +90,7 @@ export function mentionStructure(model: MentionStructureModel, options: MentionS
         slotted('empty')
           ? { key: 'empty', tag: 'div', part: 'empty', slot: { name: 'empty' } }
           : { key: 'empty', tag: 'div', part: 'empty', text: options.empty ?? model.emptyText },
+        { key: 'loading', tag: 'div', part: 'loading', text: model.loadingText },
       ],
     },
   )

@@ -504,7 +504,7 @@ const translations = {
   'log': { log: '記錄', scrollToBottom: '捲動到底部' },
   'markdown-stream': { completed: '回應已完成' },
   'marquee': { autoplayTriggerPause: '暫停捲動', autoplayTriggerPlay: '繼續捲動' },
-  'mention': { content: '提及', empty: '沒有相符的結果' },
+  'mention': { content: '提及', empty: '沒有相符的結果', loading: '載入中' },
   'menubar': { root: '選單列' },
   'message-feed': {
     feed: '對話',
