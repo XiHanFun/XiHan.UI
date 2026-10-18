@@ -3,9 +3,10 @@
 import type { App } from 'vue'
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
-import { createApp, h, nextTick, ref } from 'vue'
+import { createApp, defineComponent, h, nextTick, ref } from 'vue'
 import { defineXhElements } from '../../../web-components/src/define'
 import {
+  provideXhConfig,
   XhDialogBody,
   XhDialogContent,
   XhDialogRoot,
@@ -140,6 +141,55 @@ describe('vue 对话框里开 Web Components 对话框', () => {
     await settle()
     expect(inner.open).toBe(false)
     expect(vueContent().getAttribute('data-state')).toBe('open')
+  })
+})
+
+describe('vue 那份配置锁着布局里的滚动容器，WC 对话框锁页面', () => {
+  /** 应用经 provideXhConfig 给了 scrollRoot，WC 元素读的全局配置没给：外层锁滚动容器、里层锁页面。 */
+  async function mountWithScrollRoot(): Promise<{ inner: XhElement, trigger: HTMLElement }> {
+    host = document.createElement('div')
+    host.innerHTML = '<div data-test="scroller" style="block-size: 300px; overflow: auto"><div style="block-size: 2000px"></div></div>'
+    document.body.append(host)
+    const scroller = host.querySelector<HTMLElement>('[data-test="scroller"]')!
+    const mount = document.createElement('div')
+    host.append(mount)
+    const Shell = defineComponent({
+      setup() {
+        provideXhConfig({ scrollRoot: () => scroller })
+        return () => vueDialog(() => h('div', {
+          innerHTML: WC_DIALOG.replace('<div data-xh-part="backdrop">', '<button type="button" data-xh-part="trigger" data-test="wc-trigger">设置</button><div data-xh-part="backdrop">'),
+        }))
+      },
+    })
+    const app = createApp(Shell)
+    app.mount(mount)
+    apps.push(app)
+    await settle()
+    const inner = document.querySelector<XhElement>('[data-test="wc-dialog"]')!
+    await inner.updateComplete
+    return { inner, trigger: document.querySelector<HTMLElement>('[data-test="wc-trigger"]')! }
+  }
+
+  it('经 open 打开：WC 对话框在上面、焦点在里面，Esc 只关它', async () => {
+    const { inner } = await mountWithScrollRoot()
+    await openWcDialog(inner)
+    expect(layerOf(wcContent())).toBeGreaterThan(layerOf(vueContent()))
+    expect(isOnTop(document.querySelector('[data-test="wc-confirm"]')!)).toBe(true)
+    expect(wcContent().contains(document.activeElement)).toBe(true)
+    await userEvent.keyboard('{Escape}')
+    await settle()
+    expect(inner.open).toBe(false)
+    expect(vueContent().getAttribute('data-state')).toBe('open')
+  })
+
+  it('点触发钮打开：打开后一直开着，不被外层收回', async () => {
+    const { inner, trigger } = await mountWithScrollRoot()
+    await userEvent.click(trigger)
+    await settle()
+    await new Promise(resolve => setTimeout(resolve, 300))
+    expect(wcContent().getAttribute('data-state')).toBe('open')
+    expect(isOnTop(document.querySelector('[data-test="wc-confirm"]')!)).toBe(true)
+    expect(inner.open).not.toBe(false)
   })
 })
 

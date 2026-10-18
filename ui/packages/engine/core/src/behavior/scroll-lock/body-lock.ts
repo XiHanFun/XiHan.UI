@@ -32,15 +32,20 @@ interface LockEpoch extends LockTarget {
   readonly cleanups: Cleanup[]
 }
 
-interface LockState {
+/** 一个目标上的锁：首个句柄建 epoch，后来的句柄共用它并计数。 */
+interface TargetLock {
+  readonly epoch: LockEpoch
   count: number
-  epoch: LockEpoch | null
+}
+
+/** 同一 Document 里每个锁定目标各一把锁：页面与某个滚动容器可以同时锁着，各自计数、各自释放。 */
+interface LockState {
+  readonly locks: Map<HTMLElement, TargetLock>
   transitioning: boolean
 }
 
-const registry = createPageSharedRegistry<LockState>('scroll-lock@1', () => ({
-  count: 0,
-  epoch: null,
+const registry = createPageSharedRegistry<LockState>('scroll-lock@2', () => ({
+  locks: new Map<HTMLElement, TargetLock>(),
   transitioning: false,
 }))
 
@@ -217,7 +222,10 @@ function releaseEpoch(epoch: LockEpoch): void {
   )
 }
 
-/** 加一把滚动锁。相同 Document 与规范化目标共享；同一时刻混用不同目标会明确失败。 */
+/**
+ * 加一把滚动锁。相同 Document 与规范化目标共享一把锁、按句柄计数；不同目标各锁各的，
+ * 比如外层对话框锁着布局里的滚动容器、里层对话框锁页面，两处都锁住，谁先放手都不影响另一处。
+ */
 export function acquireScrollLock(options: ScrollLockOptions): ScrollLockHandle {
   const { config } = options
   const { doc, win } = resolveRealm(config)
@@ -225,30 +233,26 @@ export function acquireScrollLock(options: ScrollLockOptions): ScrollLockHandle 
   if (state.transitioning)
     throw new Error('[xh] ScrollLock 正在切换当前 Document 的锁定 epoch')
 
-  let epoch: LockEpoch
+  let lock: TargetLock
   state.transitioning = true
   try {
     const target = resolveTarget(config, doc)
-    const current = state.epoch
-    if (state.count > 0) {
-      if (!current)
+    const current = state.locks.get(target.el)
+    if (current) {
+      if (current.count <= 0)
         throw new Error('[xh] ScrollLock 引用计数与当前 epoch 不一致')
-      if (current.el !== target.el || current.page !== target.page)
-        throw new Error('[xh] 同一 Document 的 ScrollLock 不能同时锁定不同目标')
-      epoch = current
-      state.count += 1
+      current.count += 1
+      lock = current
     }
     else {
-      if (current)
-        throw new Error('[xh] ScrollLock 空闲状态不能保留旧 epoch')
-      epoch = createEpoch(target, doc, win)
-      state.epoch = epoch
-      state.count = 1
+      lock = { epoch: createEpoch(target, doc, win), count: 1 }
+      state.locks.set(target.el, lock)
     }
   }
   finally {
     state.transitioning = false
   }
+  const { epoch } = lock
 
   let disposed = false
   return {
@@ -258,14 +262,14 @@ export function acquireScrollLock(options: ScrollLockOptions): ScrollLockHandle 
       if (state.transitioning)
         throw new Error('[xh] ScrollLock 正在切换当前 Document 的锁定 epoch')
       disposed = true
-      if (state.epoch !== epoch || state.count <= 0)
+      if (state.locks.get(epoch.el) !== lock || lock.count <= 0)
         throw new Error('[xh] ScrollLock 句柄与当前 epoch 不一致')
-      state.count -= 1
-      if (state.count > 0)
+      lock.count -= 1
+      if (lock.count > 0)
         return
 
       // 先发布终态，再完整尝试本轮全部清理；异常也不会复活句柄或 epoch。
-      state.epoch = null
+      state.locks.delete(epoch.el)
       state.transitioning = true
       try {
         releaseEpoch(epoch)
