@@ -19,6 +19,7 @@ export const CONTEXT_MENU_STRUCTURE_PARTS = [
   'positioner',
   'content',
   'item',
+  'item-icon',
   'item-text',
   'item-indicator',
   'item-description',

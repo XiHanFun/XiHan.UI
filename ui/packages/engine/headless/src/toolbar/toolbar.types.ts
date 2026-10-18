@@ -5,7 +5,7 @@
 
 // 定义 toolbar 类型契约。
 
-import type { ControlVariant, Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { ControlVariant, Direction, IconRecord, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /**
  * 条目的声明：值与禁用由作者在部件上声明，connect 据此产出属性。
@@ -66,6 +66,8 @@ export interface ToolbarSchema extends MachineSchema {
     size?: Size
     /** 读屏文案：「更多」钮的可及名，缺省 More。 */
     translations?: Partial<ToolbarTranslations>
+    /** 条目的图标，键是条目的 value：收起进「更多」菜单的条目带着它，排在文字之前。条目自己（工具条上的那颗按钮）里放不放图标归作者。 */
+    itemIcons?: Readonly<Record<string, IconRecord>>
   }
   context: {
     /**

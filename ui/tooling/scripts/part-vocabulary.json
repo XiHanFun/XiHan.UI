@@ -941,6 +941,9 @@
       "sortable"
     ],
     "item-icon": [
+      "context-menu",
+      "menu",
+      "menubar",
       "radio-group"
     ],
     "item-indicator": [

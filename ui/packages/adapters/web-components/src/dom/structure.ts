@@ -17,7 +17,7 @@ import { createGeneratedElement, GEN_ATTR, generatedChildren, reconcile, SVG_NS 
 export const STRUCTURE_MARK = 'structure'
 
 /** 结构标签里属于 SVG 命名空间的图元。 */
-const SVG_TAGS: ReadonlySet<string> = new Set(['svg', 'line', 'path'])
+const SVG_TAGS: ReadonlySet<string> = new Set(['svg', 'g', 'line', 'path'])
 
 /** 作者在宿主直接子节点上写的 slot 值：单例为插槽名，重复部件为 `名:键`。 */
 export function slotAttrOf(slot: StructureSlot): string {

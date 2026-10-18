@@ -23,13 +23,16 @@ const MENUS: readonly MenuDecl[] = [
   { value: 'view', text: '视图', items: [{ value: 'zoom', text: 'Zoom' }, { value: 'full', text: 'Fullscreen' }, { value: 'zen', text: 'Zen' }] },
 ]
 
+/** 条目上的图标：一枚只有一条横线的记录，够看出 item-icon 铺没铺、里面有没有 svg。 */
+const ITEM_ICON = { name: 'line', viewBox: '0 0 24 24', nodes: [{ tag: 'path', attrs: { d: 'M4 12h16' } }] }
+
 /** 不写结构时按数据铺的两张菜单：快捷键、说明，以及带标题的勾选分组。 */
 const STRUCTURE_COLLECTION = [
   {
     value: 'file',
     label: '文件',
     items: [
-      { value: 'open', label: '打开', shortcut: 'Ctrl+O' },
+      { value: 'open', label: '打开', shortcut: 'Ctrl+O', icon: ITEM_ICON },
       { value: 'rename', label: '重命名', description: '改文件名' },
     ],
   },
@@ -37,7 +40,7 @@ const STRUCTURE_COLLECTION = [
     value: 'format',
     label: '格式',
     items: [
-      { value: 'bold', label: '粗体', kind: 'checkbox', group: 'style', groupLabel: '样式' },
+      { value: 'bold', label: '粗体', kind: 'checkbox', icon: ITEM_ICON, group: 'style', groupLabel: '样式' },
       { value: 'italic', label: '斜体', kind: 'checkbox', group: 'style' },
     ],
   },
@@ -958,6 +961,7 @@ export const menubarSuite: ConformanceSuite = {
           'positioner[0]',
           'content[0]',
           'item[0]',
+          'item-icon[0]',
           'item-text[0]',
           'item-shortcut',
           'item[1]',
@@ -969,6 +973,7 @@ export const menubarSuite: ConformanceSuite = {
           'group-label',
           'item[2]',
           'item-indicator[0]',
+          'item-icon[1]',
           'item-text[2]',
           'item[3]',
           'item-indicator[1]',

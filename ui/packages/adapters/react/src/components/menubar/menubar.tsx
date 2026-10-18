@@ -25,6 +25,7 @@ import { renderSlot } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { XhIcon } from '../icon/icon'
 import { MenuProvider, useMenuContext } from '../menu/context'
 import { MenuDefaultNodes, XhMenuContent, XhMenuPositioner } from '../menu/menu'
 import { useMenuWithParent } from '../menu/use-menu'
@@ -470,6 +471,14 @@ export function XhMenubarItemDescription({ children, ...rest }: XhMenubarItemDes
   return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+export interface XhMenubarItemIconProps extends ComponentPropsWithRef<'span'> {}
+/** 条目文字之前的图标格；装饰态，读屏从条目文字取意。 */
+export function XhMenubarItemIcon({ children, ...rest }: XhMenubarItemIconProps): ReactNode {
+  const ctx = useMenubarContext()
+  const item = useMenubarItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemIconProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhMenubarItemShortcutProps extends ComponentPropsWithRef<'span'> {}
 /** 条目中的快捷键提示，贴行尾；纯装饰，读屏从条目文字取意。 */
 export function XhMenubarItemShortcut({ children, ...rest }: XhMenubarItemShortcutProps): ReactNode {
@@ -639,6 +648,7 @@ const MENUBAR_PARTS = {
   'positioner': XhMenubarPositioner,
   'content': XhMenubarContent,
   'item': MenubarStructureItem,
+  'item-icon': XhMenubarItemIcon,
   'item-text': XhMenubarItemText,
   'item-indicator': XhMenubarItemIndicator,
   'item-description': XhMenubarItemDescription,
@@ -650,7 +660,7 @@ const MENUBAR_PARTS = {
 }
 
 /** 结构里组合进来的组件：带 children 的条目是嵌套的子菜单。 */
-const MENUBAR_INSTANCES = { menu: XhMenubarSub }
+const MENUBAR_INSTANCES = { menu: XhMenubarSub, icon: XhIcon }
 
 /**
  * 未写 children 时照 menubarStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。

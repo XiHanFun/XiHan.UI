@@ -8,12 +8,13 @@
 import type { ActionVariant, IconNode, IconRecord, Tone } from '@xihan-ui/core'
 import type { IconFlip, IconProps, IconRotate, IconSize, IconWeight } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactElement, ReactNode } from 'react'
-import { connectIcon } from '@xihan-ui/headless'
+import { connectIcon, iconStructure } from '@xihan-ui/headless'
 import { createElement } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { slotPaints } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 
 /**
  * 把一个图元节点建为元素，递归到底。
@@ -26,6 +27,16 @@ function renderNode(node: IconNode, key: number): ReactElement {
     node.children?.map((child, index) => renderNode(child, index)),
   )
 }
+
+const NO_PROPS: IconProps = {}
+
+/** glyph 空壳：只带解剖标记，图元由标准结构的内容回调铺进来。 */
+function XhIconGlyph({ children }: { children?: ReactNode }): ReactNode {
+  return <g {...connectIcon(NO_PROPS, reactNormalize).getGlyphProps() as Record<string, unknown>}>{children}</g>
+}
+
+/** 标准结构里各部件对应的组件。 */
+const ICON_PARTS = { glyph: XhIconGlyph }
 
 export interface XhIconProps extends Omit<ComponentPropsWithRef<'svg'>, 'rotate'> {
   /** 要绘制的图标，传入的是记录本身而不是名字。 */
@@ -43,7 +54,7 @@ export interface XhIconProps extends Omit<ComponentPropsWithRef<'svg'>, 'rotate'
 }
 
 /**
- * 根 svg 加一层 g 空壳，图元铺在空壳中。
+ * 根 svg 里照 headless 的 iconStructure 铺一层 g 空壳，图元铺在空壳中。
  *
  * children 给出内容时改由它填充根，元素不再生成 glyph 与图元；
  * 判据是 children 中有真正会渲染出内容的节点，而不是 children 是否存在：
@@ -67,11 +78,7 @@ export function XhIcon({
     <svg {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {slotPaints(children)
         ? children
-        : (
-            <g {...api.getGlyphProps() as Record<string, unknown>}>
-              {api.nodes.map((node, index) => renderNode(node, index))}
-            </g>
-          )}
+        : renderStructure(iconStructure(), ICON_PARTS, () => api.nodes.map((node, index) => renderNode(node, index)))}
     </svg>
   )
 }

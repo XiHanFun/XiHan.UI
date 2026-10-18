@@ -74,7 +74,7 @@
 
 - 使用 `group` 收紧相关操作。
 - 使用 `separator` 区分操作组。
-- 使用 `overflow-trigger` 放在 `root` 的最后，承接放不下的条目。菜单里的文字取条目的 `aria-label`（没有时取条目文字），写了 `aria-pressed` 的开关条目在菜单里显示为勾选项，条目上写的 `data-tone`（如破坏性操作的 `danger`）随条目带进菜单项，工具条上的分组与分隔线在菜单里画成分隔线。不写内容时由皮肤画一枚横排三点，可及名缺省为 `More`，用 `translations.overflowTrigger` 换成本地文案。
+- 使用 `overflow-trigger` 放在 `root` 的最后，承接放不下的条目。菜单里的文字取条目的 `aria-label`（没有时取条目文字），写了 `aria-pressed` 的开关条目在菜单里显示为勾选项，条目上写的 `data-tone`（如破坏性操作的 `danger`）随条目带进菜单项，工具条上的分组与分隔线在菜单里画成分隔线。`itemIcons` 按条目的 `value` 给图标记录，收起的条目带着它进菜单，排在文字之前；工具条上那颗按钮里放不放图标归作者。不写内容时由皮肤画一枚横排三点，可及名缺省为 `More`，用 `translations.overflowTrigger` 换成本地文案。
 - Web Components 只写一颗空的 `<button data-xh-part="overflow-trigger">`，菜单的浮层与条目由元素自己建。
 
 ### 最佳实践
@@ -112,6 +112,7 @@
 | `variant` | `ControlVariant` |  | 形态：ghost 只组织控件不画面（默认），outline 为附着式工具面，subtle 为淡底。默认 ghost。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，同时调整排布与默认条目尺寸。 |
 | `translations` | `Partial<ToolbarTranslations>` |  | 读屏文案：「更多」钮的可及名，缺省 More。 |
+| `itemIcons` | `Readonly<Record<string, IconRecord>>` |  | 条目的图标，键是条目的 value：收起进「更多」菜单的条目带着它，排在文字之前。条目自己（工具条上的那颗按钮）里放不放图标归作者。 |
 
 ### 插槽
 

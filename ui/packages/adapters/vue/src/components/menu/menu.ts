@@ -18,6 +18,7 @@ import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { XhIcon } from '../icon/icon'
 import { provideMenu, provideMenuGroup, provideMenuItem, provideMenuSub, useMenuContext, useMenuGroupContext, useMenuItemContext, useMenuSubContext } from './context'
 import { useMenu, useMenuWithParent } from './use-menu'
 
@@ -353,6 +354,16 @@ export const XhMenuItemDescription = /* @__PURE__ */ defineComponent({
   },
 })
 
+/** 条目文字之前的图标格；装饰态，读屏从条目文字取意 */
+export const XhMenuItemIcon = /* @__PURE__ */ defineComponent({
+  name: 'XhMenuItemIcon',
+  setup(_, { slots }) {
+    const ctx = useMenuContext()
+    const { item } = useMenuItemContext()
+    return () => h('span', ctx.api.value.getItemIconProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /** 条目中的快捷键提示，贴行尾；纯装饰，读屏从条目文字取意 */
 export const XhMenuItemShortcut = /* @__PURE__ */ defineComponent({
   name: 'XhMenuItemShortcut',
@@ -478,6 +489,7 @@ const MENU_PARTS = {
   'positioner': XhMenuPositioner,
   'content': XhMenuContent,
   'item': MenuStructureItem,
+  'item-icon': XhMenuItemIcon,
   'item-text': XhMenuItemText,
   'item-indicator': XhMenuItemIndicator,
   'item-description': XhMenuItemDescription,
@@ -489,7 +501,7 @@ const MENU_PARTS = {
 }
 
 /** 结构里组合进来的组件：带 children 的条目是嵌套的子菜单。 */
-const MENU_INSTANCES = { menu: XhMenuSub }
+const MENU_INSTANCES = { menu: XhMenuSub, icon: XhIcon }
 
 /** 条目三个插槽的接管：item 整条、item-prefix 行首、item-suffix 行尾，载荷是这一条的元信息。 */
 function itemContent(slots: MenuItemSlots, lookup: (value: string) => MenuNodeMeta | undefined): (node: StructureNode) => VNode[] | undefined {

@@ -18113,6 +18113,10 @@
               "name": "item-description"
             },
             {
+              "description": "条目文字之前的图标格（aria-hidden，读屏从条目文字取意）；按数据铺时里面是一枚 xh-icon",
+              "name": "item-icon"
+            },
+            {
               "description": "条目中的快捷键提示（aria-hidden，读屏从条目文字取意）",
               "name": "item-shortcut"
             },
@@ -18162,7 +18166,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ 'xh-menu': XhMenuElement }",
+              "default": "{ 'xh-menu': XhMenuElement, 'xh-icon': XhIconElement }",
               "description": "结构里带 children 的条目生成嵌套的子菜单。"
             },
             {
@@ -37851,7 +37855,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-icon>`：图标宿主，无状态机，把命名与档位写到 root 上，把图元铺进 glyph 空壳。\n\n作者在 `<svg data-xh-part=\"root\">` 中留一个空的 `<g data-xh-part=\"glyph\"></g>` 即授权本元素\n在其内部铺设图元；未写 glyph 时元素不修改任何节点，几何归作者（手写内联 SVG 或 `<use>`），\n命名与档位照常写在 root 上。\n\n图标记录是对象，只能通过 property 设置：`el.icon = checkIcon`。",
+          "description": "`<xh-icon>`：图标宿主，无状态机，把命名与档位写到 root 上，把图元铺进 glyph 空壳。\n\n作者在 `<svg data-xh-part=\"root\">` 中留一个空的 `<g data-xh-part=\"glyph\"></g>` 即授权本元素\n在其内部铺设图元；在 root 里写了几何（手写内联 SVG 或 `<use>`）而没写 glyph 时元素不修改任何节点，\n命名与档位照常写在 root 上。只写一个空的 root 时，元素在里面生成 glyph 空壳；一个部件都不写时连 `<svg>` 根一起生成。\n\n图标记录是对象，只能通过 property 设置：`el.icon = checkIcon`。",
           "name": "XhIconElement",
           "cssParts": [
             {
@@ -37872,6 +37876,15 @@
               },
               "static": true,
               "default": "{ anatomy: iconAnatomy, meta: iconMeta, // root 不是 <svg> 时 viewBox 会被小写化而静默失效；glyph 不是 <g> 时铺进去的图元挂在 HTML 元素下，什么都不显示 tags: { root: ['svg'], glyph: ['g'] }, }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhIconElement>"
+              },
+              "static": true,
+              "default": "{ rootTag: 'svg', build: (host) => { const root = host.querySelector(`:scope > [data-xh-part='root']:not([${GEN_ATTR}])`) return root && Array.from(root.children).some(child => !child.hasAttribute(GEN_ATTR)) ? [] : iconStructure() }, }"
             },
             {
               "kind": "field",
@@ -38025,7 +38038,7 @@
                   }
                 }
               ],
-              "description": "把记录的图元铺进 glyph。\n本元素其余各处都不替作者生成节点，这里是唯一的例外：图元是计算得出的派生数据，作者无法自行编写，\n且铺设范围限定在作者显式留出的空壳中。\n内容判据是记录的引用相等：记录是模块级常量，同一个图标永远是同一个对象。\nchildElementCount 一条覆盖外部代码清空过 glyph 的情形。"
+              "description": "把记录的图元铺进 glyph。\n除了按标准结构生成的 <svg> 根与 glyph 空壳，本元素只在这里往节点里写内容：图元是计算得出的派生数据，\n作者无法自行编写，且铺设范围限定在 glyph 空壳中。\n内容判据是记录的引用相等：记录是模块级常量，同一个图标永远是同一个对象。\nchildElementCount 一条覆盖外部代码清空过 glyph 的情形。"
             },
             {
               "kind": "method",
@@ -45330,6 +45343,10 @@
               "name": "item-description"
             },
             {
+              "description": "条目文字之前的图标格（aria-hidden，读屏从条目文字取意）；按数据铺时里面是一枚 xh-icon",
+              "name": "item-icon"
+            },
+            {
               "description": "条目中的快捷键提示（aria-hidden，读屏从条目文字取意）",
               "name": "item-shortcut"
             },
@@ -45379,7 +45396,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ 'xh-menu': XhMenuElement }",
+              "default": "{ 'xh-menu': XhMenuElement, 'xh-icon': XhIconElement }",
               "description": "结构里带 children 的条目生成嵌套的子菜单。"
             },
             {
@@ -46304,6 +46321,10 @@
               "name": "item-description"
             },
             {
+              "description": "条目文字之前的图标格（aria-hidden，读屏从条目文字取意）；按数据铺时里面是一枚 xh-icon",
+              "name": "item-icon"
+            },
+            {
               "description": "条目中的快捷键提示（aria-hidden，读屏从条目文字取意）",
               "name": "item-shortcut"
             },
@@ -46386,7 +46407,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ 'xh-menu': XhMenuElement }",
+              "default": "{ 'xh-menu': XhMenuElement, 'xh-icon': XhIconElement }",
               "description": "结构里带 children 的条目生成嵌套的子菜单。"
             },
             {
@@ -76978,6 +76999,15 @@
             },
             {
               "kind": "field",
+              "name": "dependencies",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ 'xh-icon': XhIconElement }"
+            },
+            {
+              "kind": "field",
               "name": "orientation",
               "privacy": "public",
               "type": {
@@ -77037,6 +77067,15 @@
               "type": {
                 "text": "Partial<ToolbarTranslations> | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "itemIcons",
+              "privacy": "public",
+              "type": {
+                "text": "Readonly<Record<string, IconRecord>> | undefined"
+              },
+              "description": "条目的图标，键是条目的 value：收起进「更多」菜单的条目带着它，排在文字之前。条目自己（工具条上的那颗按钮）里放不放图标归作者。"
             },
             {
               "kind": "field",

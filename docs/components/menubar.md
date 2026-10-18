@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="menubar"`：**`root`** · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `item-shortcut` · `item-suffix` · `separator` · `group` · `group-label` · `arrow`
+`data-scope="menubar"`：**`root`** · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-icon` · `item-text` · `item-indicator` · `item-description` · `item-shortcut` · `item-suffix` · `separator` · `group` · `group-label` · `arrow`
 
 ## 示例
 
@@ -95,7 +95,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-menubar>` |
-| Vue 组件 | `XhMenubarArrow` `XhMenubarCheckboxItem` `XhMenubarContent` `XhMenubarGroup` `XhMenubarGroupLabel` `XhMenubarItem` `XhMenubarItemDescription` `XhMenubarItemIndicator` `XhMenubarItemShortcut` `XhMenubarItemSuffix` `XhMenubarItemText` `XhMenubarPositioner` `XhMenubarRadioGroup` `XhMenubarRadioItem` `XhMenubarRoot` `XhMenubarSeparator` `XhMenubarSub` `XhMenubarSubTrigger` `XhMenubarTrigger` |
+| Vue 组件 | `XhMenubarArrow` `XhMenubarCheckboxItem` `XhMenubarContent` `XhMenubarGroup` `XhMenubarGroupLabel` `XhMenubarItem` `XhMenubarItemDescription` `XhMenubarItemIcon` `XhMenubarItemIndicator` `XhMenubarItemShortcut` `XhMenubarItemSuffix` `XhMenubarItemText` `XhMenubarPositioner` `XhMenubarRadioGroup` `XhMenubarRadioItem` `XhMenubarRoot` `XhMenubarSeparator` `XhMenubarSub` `XhMenubarSubTrigger` `XhMenubarTrigger` |
 | 组合式函数 | `useMenubar` |
 | 状态机 | `menubarMachine` |
 | 皮肤 | `@xihan-ui/styles/menubar.css` |
@@ -135,6 +135,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `value` | `string` | 是 |  |
 | `kind` | `MenuChoiceKind` |  | items 中的条目语义；顶层入口忽略该字段。 |
 | `label` | `string` |  | 展示文本，也是菜单内连打检索的取字来源；默认回退为 value。 |
+| `icon` | `IconRecord` |  | 图标，写入 item-icon 部件，排在条目文字之前；只在条目上读取，未提供时本条不铺该部件。 纯装饰：读屏从条目文字取意，不念它。勾选与单选条目的勾仍在 item-indicator，两者各占一格。 |
 | `description` | `string` |  | 副文本，写入 item-description 部件；只在条目上读取。 |
 | `shortcut` | `string` |  | 快捷键提示，写入 item-shortcut 部件；未提供时本条不铺该部件。 纯装饰：读屏从条目文字取意，不念它；只为真正注册了的组合写提示。 |
 | `disabled` | `boolean` |  | 禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
@@ -251,6 +252,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `getItemProps` | `(props: MenubarItemProps) => T['element']` |  |
 | `getCheckboxItemProps` | `(props: MenubarCheckboxItemProps) => T['element']` |  |
 | `getRadioItemProps` | `(props: MenubarRadioItemProps) => T['element']` |  |
+| `getItemIconProps` | `(props: MenubarAnyItemProps) => T['element']` | 条目文字之前的图标格；装饰态，读屏不念。 |
 | `getItemTextProps` | `(props: MenubarAnyItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: MenubarAnyItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: MenubarAnyItemProps) => T['element']` |  |
@@ -305,6 +307,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `content` | `aria-hidden` | !isOpen \|\| undefined |
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
 | `content` | `role` | 'menu' |
+| `item-icon` | `aria-hidden` | 'true' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `item-shortcut` | `aria-hidden` | 'true' |
 | `separator` | `aria-orientation` | 'horizontal' |
@@ -353,6 +356,9 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `content` | `data-xh-material` | 'frosted' |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
+| `item-icon` | `data-disabled` | ''（条件成立时才出现） |
+| `item-icon` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-icon` | `data-xh-collection-slot` | 'icon' |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-text` | `data-xh-collection-slot` | 'text' |

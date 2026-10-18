@@ -35,6 +35,7 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { XhIcon } from '../icon/icon'
 import { MenuProvider, useMenuContext } from '../menu/context'
 import { MenuDefaultNodes, XhMenuContent, XhMenuPositioner } from '../menu/menu'
 import { useMenuWithParent } from '../menu/use-menu'
@@ -345,6 +346,14 @@ export function XhContextMenuItemDescription({ children, ...rest }: XhContextMen
   return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+export interface XhContextMenuItemIconProps extends ComponentPropsWithRef<'span'> {}
+/** 条目文字之前的图标格；装饰态，读屏从条目文字取意。 */
+export function XhContextMenuItemIcon({ children, ...rest }: XhContextMenuItemIconProps): ReactNode {
+  const ctx = useContextMenuContext()
+  const item = useContextMenuItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemIconProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhContextMenuItemShortcutProps extends ComponentPropsWithRef<'span'> {}
 /** 条目中的快捷键提示，贴行尾；纯装饰，读屏从条目文字取意。 */
 export function XhContextMenuItemShortcut({ children, ...rest }: XhContextMenuItemShortcutProps): ReactNode {
@@ -529,6 +538,7 @@ const CONTEXT_MENU_PARTS = {
   'positioner': XhContextMenuPositioner,
   'content': XhContextMenuContent,
   'item': ContextMenuStructureItem,
+  'item-icon': XhContextMenuItemIcon,
   'item-text': XhContextMenuItemText,
   'item-indicator': XhContextMenuItemIndicator,
   'item-description': XhContextMenuItemDescription,
@@ -540,7 +550,7 @@ const CONTEXT_MENU_PARTS = {
 }
 
 /** 结构里组合进来的组件：带 children 的条目是嵌套的子菜单。 */
-const CONTEXT_MENU_INSTANCES = { menu: XhContextMenuSub }
+const CONTEXT_MENU_INSTANCES = { menu: XhContextMenuSub, icon: XhIcon }
 
 /**
  * 未写 children 时照 contextMenuStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。

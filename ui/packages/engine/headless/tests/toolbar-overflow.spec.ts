@@ -294,6 +294,17 @@ describe('toolbar 「更多」菜单的条目', () => {
     expect(toolbarOverflowMenuProps(bar.service).collection!.map(node => node.tone)).toEqual(['danger', undefined])
   })
 
+  it('itemIcons 按条目的 value 给收起的菜单项配图标，没给的不带', () => {
+    const icon = { name: 'line', viewBox: '0 0 24 24', nodes: [{ tag: 'path' as const, attrs: { d: 'M4 12h16' } }] }
+    const bar = mountToolbar([
+      { kind: 'item', value: 'a' },
+      { kind: 'item', value: 'cut' },
+      { kind: 'item', value: 'copy' },
+    ], { itemIcons: { cut: icon } }, 80)
+    const collection = toolbarOverflowMenuProps(bar.service).collection!
+    expect([collection.find(node => node.value === 'cut')?.icon, collection.find(node => node.value === 'copy')?.icon]).toEqual([icon, undefined])
+  })
+
   it('分组与分隔线在菜单里画成分隔线：跨段的相邻两项之间才有', () => {
     const bar = mountToolbar([
       { kind: 'item', value: 'a' },
