@@ -53,6 +53,9 @@ const axis = layoutAxis({
 - 坐标轴的厚度按标签实测；`minThickness` 给一个下限，上下叠放的几张图写同一个值，`solvePlotRect` 求出的绘图区那一边就对齐。
 - 大数据走 `@xihan-ui/viz/columns` 子路径：`createColumnStore({ fields, capacity })` 是列式数据仓（每个字段一列 `Float64Array`，缺失写 `NaN`；`append` / `setLast` / `shift` / `clear`，`capacity` 是滑动窗口的行数上限，只有最后一行能改写）；`decimateLine` 按像素列保留首、末、最小、最大（M4，画出来与全量逐像素相同）；`bucketOhlc` / `bucketPeak` 把窄到画不出实体的 K 线与柱按 2 的幂根一组合并，组边界按序号对齐；`thinPoints` 按像素格稀疏散点；`createExtentIndex` 分块求区间极值；`createPointIndex` 按像素网格找最近点；`ordinalTimeTicks` 给等距排列的时间轴（交易时段）取刻度。
 - 画布绘制的原语走 `@xihan-ui/viz/canvas` 子路径：`tracePolyline` / `traceBand` 把类型化数组上的像素坐标写成折线、面积与区间带（写进 PathSink，Canvas 2D 上下文就是一个）；`parseCssColor` / `mixCssColor` / `createColorRamp` 按 CSS `color-mix` 的同一规则解析与插值颜色，结果写回原空间的函数式，交给画布与 CSS 走同一条换算。
+- 颜色换算（`toOklab`、`toOklch`、`fromOklch`、`parseColor` 等）是包里自带的一份，与 `@xihan-ui/core/color` 是两条独立的实现，viz 因此不依赖任何包。两边共同的 sRGB 伽马、OKLab 矩阵与 OKLCH 极坐标换算结果逐位一致，由测试工具里的一致性用例守着，改坏任一边都会报出来。有两处是刻意不同的口径：
+  - 出色域的颜色：`fromOklch` / `fromOklab` 固定明度与色相，降低彩度收回 sRGB，色相不漂；core 按通道截断。
+  - 解析：`parseColor` 宽松，认不带 `#` 的十六进制，认逗号与空格混写、数与百分数混用，越界的通道与透明度钳回；core 的 `colorParse` 按 CSS Color 4 严格解析，认不出就返回 null。
 
 ## 装
 
