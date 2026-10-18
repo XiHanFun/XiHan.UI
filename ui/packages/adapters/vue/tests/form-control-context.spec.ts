@@ -145,7 +145,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'Listbox')
     return h(XhListboxRoot, { ...nonRequiredState(props), collection: [{ value: 'a', label: '甲' }] })
   if (kind === 'TagGroup')
-    return h(XhTagGroupRoot, { ...disabledReadOnlyState(props), collection: [{ value: 'a', label: '甲' }] })
+    return h(XhTagGroupRoot, { ...props, collection: [{ value: 'a', label: '甲' }] })
   return h(XhSliderRoot, { ...props, defaultValue: [50] }, () => h(XhSliderControl, null, () => [h(XhSliderTrack), h(XhSliderThumb, { index: 0 })]))
 }
 
@@ -169,8 +169,9 @@ function expectAtomicState(wrapper: ReturnType<typeof mount>, kind: AtomicContro
     const root = wrapper.find(`[data-scope="${scope}"][data-part="root"]`)
     expect(root.attributes('data-disabled') !== undefined).toBe(enabled)
     expect(root.attributes('data-readonly') !== undefined).toBe(enabled)
-    if (kind === 'Listbox')
-      expect(root.attributes('data-invalid') !== undefined).toBe(enabled)
+    expect(root.attributes('data-invalid') !== undefined).toBe(enabled)
+    if (kind === 'TagGroup')
+      expect(root.attributes('data-required') !== undefined).toBe(enabled)
     return
   }
   if (kind === 'FieldArray') {

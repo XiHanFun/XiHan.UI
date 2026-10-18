@@ -166,7 +166,7 @@ function atomicControl(kind: AtomicControl, props: ControlState) {
   if (kind === 'Listbox')
     return <XhListboxRoot {...nonRequiredState(props)} collection={[{ value: 'a', label: '甲' }]} />
   if (kind === 'TagGroup')
-    return <XhTagGroupRoot {...disabledReadOnlyState(props)} collection={[{ value: 'a', label: '甲' }]} />
+    return <XhTagGroupRoot {...props} collection={[{ value: 'a', label: '甲' }]} />
   return (
     <XhSliderRoot {...props} defaultValue={[50]}>
       <XhSliderControl>
@@ -194,8 +194,9 @@ function expectAtomicState(container: HTMLElement, kind: AtomicControl, enabled:
     const root = container.querySelector<HTMLElement>(`[data-scope="${scope}"][data-part="root"]`)!
     expect(root.hasAttribute('data-disabled')).toBe(enabled)
     expect(root.hasAttribute('data-readonly')).toBe(enabled)
-    if (kind === 'Listbox')
-      expect(root.hasAttribute('data-invalid')).toBe(enabled)
+    expect(root.hasAttribute('data-invalid')).toBe(enabled)
+    if (kind === 'TagGroup')
+      expect(root.hasAttribute('data-required')).toBe(enabled)
     return
   }
   if (kind === 'FieldArray') {

@@ -117,6 +117,10 @@ export interface TagGroupSchema extends MachineSchema {
     disabled?: boolean
     /** 只读：仍可聚焦、可导航与朗读，但选中值不可修改、标签也不可移除。 */
     readOnly?: boolean
+    /** 校验失败：标签列表报告 aria-invalid，根与列表带 data-invalid。 */
+    invalid?: boolean
+    /** 必填：根与列表带 data-required。grid 角色不收 aria-required，必填由字段的标题与错误文案告知。 */
+    required?: boolean
     /** 方向键到达末尾是否回绕，默认 true。 */
     loop?: boolean
     /** 文字方向，默认 ltr。 */
@@ -205,6 +209,8 @@ export interface TagGroupApi<T extends PropTypes = PropTypes> {
   focusedValue: string | null
   disabled: boolean
   readOnly: boolean
+  invalid: boolean
+  required: boolean
   /** 整组是否提供移除按钮。 */
   deletable: boolean
   isSelected: (value: string) => boolean

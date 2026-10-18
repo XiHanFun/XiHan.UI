@@ -71,13 +71,14 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 - 移除一个之后焦点交给前一个；前面没有则交给后一个，没有剩余时交给列表容器。
 - `collection` 是文本、禁用与可移除的事实源；也可以逐个编写。
 - 连续输入按首字母跳转，只移动焦点、不改变选中值。
+- `invalid` 时标签列表报 `aria-invalid`，根与列表带 `data-invalid`；`required` 在根与列表上带 `data-required`。`grid` 角色不收 `aria-required`，放进[表单字段](./field)时必填由字段标题的星号与错误文案告知。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是标签列表，`collection` 的每条数据一枚标签，格子里依次是文字、选中标记与移除按钮；没给 `collection` 时列表是空的，移除标签由宿主改 `collection`。Web Components 里标题与标签文字可以写在宿主的直接子节点 `slot="label"`、`slot="item:<值>"` 上接管。
 
 ### 组合
 
 - 每一个标签就是[标签](./tag)本身：形态、语气、尺寸三轴写在组上，逐个落到每个标签的 `root`，外观全部由 `tag.css` 决定，`--xh-tag-*` 覆盖槽在组内同样生效。
 - 标签内的图元使用[图标](./icon)。
-- 外层放[表单字段](./field)，为标题提供位置。
+- 直接放进[表单字段](./field)即可：字段的标题并进标签列表的名字、说明与错误文案进描述链，读屏进列表时一起念出；点字段标题，焦点落到当前标签。
 
 ### 最佳实践
 
@@ -117,6 +118,8 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | `deletable` | `boolean` |  | 是否提供移除按钮，默认 false。false 时该按钮同时被禁用与收起。 |
 | `disabled` | `boolean` |  | 整组禁用：键盘与点击都不再修改选中值，也不可移除任何标签。 |
 | `readOnly` | `boolean` |  | 只读：仍可聚焦、可导航与朗读，但选中值不可修改、标签也不可移除。 |
+| `invalid` | `boolean` |  | 校验失败：标签列表报告 aria-invalid，根与列表带 data-invalid。 |
+| `required` | `boolean` |  | 必填：根与列表带 data-required。grid 角色不收 aria-required，必填由字段的标题与错误文案告知。 |
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal：标签成排出现。 |
@@ -193,6 +196,8 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | `focusedValue` | `string \| null` | 焦点锚点；焦点不在组内时为 null。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
+| `invalid` | `boolean` |  |
+| `required` | `boolean` |  |
 | `deletable` | `boolean` | 整组是否提供移除按钮。 |
 | `isSelected` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string[]) => void` |  |
@@ -234,6 +239,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `list` | `aria-disabled` | 'true' \| 'false' |
+| `list` | `aria-invalid` | 'true' \| 'false' |
 | `list` | `aria-label` | props.ariaLabel |
 | `list` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `list` | `aria-multiselectable` | 'true' \| 'false' |
@@ -262,12 +268,16 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-instant` | ''（条件成立时才出现） |
+| `list` | `data-invalid` | ''（条件成立时才出现） |
 | `list` | `data-orientation` | props.orientation |
+| `list` | `data-required` | ''（条件成立时才出现） |
 | `cell` | `data-disabled` | ''（条件成立时才出现） |
 | `cell` | `data-highlighted` | ''（条件成立时才出现） |
 | `cell` | `data-selected` | ''（条件成立时才出现） |
@@ -291,6 +301,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | `--xh-tag-group-item-bg-hover` | `list`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])`<br>`not([data-tone])`<br>`not([data-variant='solid'])`<br>`tone`<br>`variant=ghost`<br>`variant=solid` | `--xh-_tone-subtle-hover`<br>`--xh-bg-subtle`<br>`--xh-bg-subtle-hover` | tag-group 的 list、root 部件 background 覆盖槽。 |
 | `--xh-tag-group-item-bg-pressed` | `list`<br>`root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-tone])`<br>`not([data-variant='solid'])`<br>`pressed`<br>`selectable`<br>`tone`<br>`variant=ghost`<br>`variant=solid` | `--xh-_tone-subtle-active`<br>`--xh-bg-subtle-active`<br>`--xh-bg-subtle-hover` | tag-group 的 list、root 部件 background 覆盖槽。 |
 | `--xh-tag-group-item-bg-pressed-solid` | `list`<br>`root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`pressed`<br>`selectable`<br>`tone`<br>`variant=solid` | `--xh-_tone-active`<br>`--xh-bg-brand-active` | tag-group 的 list、root 部件 background 覆盖槽。 |
+| `--xh-tag-group-item-border-invalid` | `list`<br>`root` | `--xh-tag-border` | `invalid` | `--xh-border-invalid` | tag-group 的 list、root 部件 --xh-tag-border 覆盖槽。 |
 | `--xh-tag-group-item-indicator-fg` | `item-indicator`<br>`root` | `color` | `default`<br>`variant=solid` | `--xh-_tone-fg`<br>`currentColor` | tag-group 的 item-indicator、root 部件 color 覆盖槽。 |
 | `--xh-tag-group-item-indicator-size` | `item-indicator` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | tag-group 的 item-indicator 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tag-group-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tag-group 的 label 部件 color 覆盖槽。 |

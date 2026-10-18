@@ -13,6 +13,7 @@ import { tagGroupStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { renderStructure } from '../../runtime/structure'
+import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideTagGroup, provideTagGroupItem, useTagGroupContext, useTagGroupItemContext } from './context'
 import { useTagGroup } from './use-tag-group'
@@ -40,6 +41,10 @@ export const XhTagGroupRoot = defineComponent({
     deletable: Boolean,
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
+    /** 校验失败：标签列表报告 aria-invalid，根与列表带 data-invalid。 */
+    invalid: { type: Boolean, default: undefined },
+    /** 必填：根与列表带 data-required。 */
+    required: { type: Boolean, default: undefined },
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction> },
     orientation: { type: String as PropType<Orientation> },
@@ -105,7 +110,10 @@ export const XhTagGroupList = defineComponent({
   name: 'XhTagGroupList',
   setup(_, { slots }) {
     const ctx = useTagGroupContext()
-    return () => h('div', ctx.api.value.getListProps() as Record<string, unknown>, slots.default?.())
+    // 放进表单字段时，字段的标题与说明接到标签列表上：读屏进列表时念字段名与说明
+    const fieldWiring = useFieldGroupWiring()
+    const fieldLabel = useFieldLabelWiring()
+    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getListProps() as Record<string, unknown> }), slots.default?.())
   },
 })
 
