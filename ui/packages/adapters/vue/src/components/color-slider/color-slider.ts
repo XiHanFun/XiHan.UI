@@ -6,7 +6,8 @@
 // 提供 color slider 相关实现。
 
 import type { Direction, Orientation, Size } from '@xihan-ui/core'
-import type { ColorChannel, ColorFormat, ColorSliderApi, ColorSliderSchema, ColorSliderTranslations } from '@xihan-ui/headless'
+import type { ColorFormat } from '@xihan-ui/core/color'
+import type { ColorChannel, ColorSliderApi, ColorSliderSchema, ColorSliderTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, onUnmounted } from 'vue'

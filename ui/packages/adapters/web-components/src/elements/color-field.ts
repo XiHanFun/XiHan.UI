@@ -6,7 +6,8 @@
 // 提供 color field 相关实现。
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { ColorFieldSchema, ColorFieldValueChangeDetails, ColorFormat, FormControlState } from '@xihan-ui/headless'
+import type { ColorFormat } from '@xihan-ui/core/color'
+import type { ColorFieldSchema, ColorFieldValueChangeDetails, FormControlState } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { colorFieldAnatomy, colorFieldMachine, colorFieldMeta, colorFieldStructure, connectColorField, resolveFormControlState } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'

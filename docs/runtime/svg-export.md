@@ -22,7 +22,12 @@ const pngFile = await rasterizeSvg(copy, { scale: 2, background: "#ffffff" });
 - `opacity`、`fill-opacity`、`stroke-opacity`、`visibility`；
 - `font-family`、`font-size`、`font-weight`、`font-style`、`text-anchor`、`dominant-baseline`。
 
-令牌、`currentColor` 与继承来的值都换成算好的具体值；等于初始值的不写，白名单以外的计算样式不抄。另外：
+令牌、`currentColor` 与继承来的值都换成算好的具体值，白名单以外的计算样式不抄。写哪些、不写哪些：
+
+- 根上等于初始值的不写。会继承的属性（除 `opacity` 与 `dominant-baseline` 外都是）与父元素的值相同时不写，交给继承；与父元素不同时照写，哪怕等于初始值。一张图里成百上千个文字元素的字体、字号不再逐个重复。
+- `fill` 与 `stroke` 的颜色一律换成 sRGB 的 `#rrggbb`，办公软件与矢量编辑器这类只认 sRGB 的工具也能打开。换算用 [`@xihan-ui/core/color`](/npm-package-dependency) 的 `colorParse`：认 `#hex`、`rgb()`、`hsl()`、`oklch()`、`oklab()` 与 `color(srgb …)` / `color(srgb-linear …)`，本库令牌与 `color-mix()` 算出来的颜色都在其中；超出 sRGB 色域的颜色按通道裁剪，每一路夹回 0–255，不做感知映射。颜色自带的透明度乘进 `fill-opacity` / `stroke-opacity`。认不出的写法（`lab()`、`lch()`、`color(display-p3 …)` 等）原样保留。
+
+另外：
 
 - 去掉 `class`、`style`、`data-*`、事件属性（`on*`）与 ARIA、`role`、`tabindex`，不再依赖页面的样式表与脚本；`id` 留着，渐变、裁剪与遮罩靠它引用。
 - 计算出 `display: none` 的元素与 `include` 返回 `false` 的元素连同子树不进克隆。

@@ -6,7 +6,8 @@
 // 提供 color slider 相关实现。
 
 import type { Direction, IdGenerator, Orientation, Size } from '@xihan-ui/core'
-import type { ColorChannel, ColorFormat, ColorSliderSchema, ColorSliderServices, ColorSliderTranslations, ColorSliderValueChangeDetails, FormControlState, SliderSchema } from '@xihan-ui/headless'
+import type { ColorFormat } from '@xihan-ui/core/color'
+import type { ColorChannel, ColorSliderSchema, ColorSliderServices, ColorSliderTranslations, ColorSliderValueChangeDetails, FormControlState, SliderSchema } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { colorSliderAnatomy, colorSliderMachine, colorSliderMeta, colorSliderSliderProps, connectColorSlider, resolveFormControlState, sliderMachine } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
