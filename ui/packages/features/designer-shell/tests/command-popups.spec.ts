@@ -160,6 +160,15 @@ describe('菜单命令', () => {
     expect([t.bar.opened(), t.menu().open]).toEqual([undefined, false])
   })
 
+  it('复选条目只派发 checkbox-value-change：与此刻的勾选比出点的那一条，调 select', () => {
+    const log: string[] = []
+    const t = mount({ page: 1, log })
+    t.button('page-menu').click()
+    expect(t.menu().checkboxValue).toEqual(['item:grid'])
+    t.menu().dispatchEvent(new CustomEvent('checkbox-value-change', { detail: { value: [] } }))
+    expect(log).toEqual(['select grid'])
+  })
+
   it('菜单命令的项写了没登记的命令 id 时抛错；没有 run 的弹层与菜单命令放进右键菜单时抛错', () => {
     const t = mount({ page: 0, log: [] })
     const broken = new Map(t.commands).set('page-menu', { ...t.commands.get('page-menu')!, menu: () => ['nope'] })

@@ -319,8 +319,7 @@ export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbar
       if (!(event as CustomEvent<{ open: boolean }>).detail.open)
         close()
     })
-    host.addEventListener('select', (event) => {
-      const value = (event as CustomEvent<{ value: string }>).detail.value
+    const choose = (value: string): void => {
       const command = popup?.kind === 'menu' && current ? current.commands.get(popup.id) : undefined
       if (!command || !current)
         return
@@ -328,6 +327,15 @@ export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbar
         runCommand(current.commands, value.slice(MENU_COMMAND_PREFIX.length), current.context)
       else if (value.startsWith(MENU_ITEM_PREFIX))
         command.select?.(value.slice(MENU_ITEM_PREFIX.length), current.context)
+    }
+    // 普通条目、命令与单选条目（选中即收起）派发 select
+    host.addEventListener('select', event => choose((event as CustomEvent<{ value: string }>).detail.value))
+    // 复选条目选中后菜单不收起，只派发 checkbox-value-change：与此刻的勾选比出点的是哪一条
+    host.addEventListener('checkbox-value-change', (event) => {
+      const next = new Set((event as CustomEvent<{ value: string[] }>).detail.value)
+      const before = new Set(host.checkboxValue ?? [])
+      for (const value of [...next].filter(item => !before.has(item)).concat([...before].filter(item => !next.has(item))))
+        choose(value)
     })
     trigger.append(host)
     menu = host
