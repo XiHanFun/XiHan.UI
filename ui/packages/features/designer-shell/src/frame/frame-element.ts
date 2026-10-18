@@ -370,7 +370,10 @@ export class XhDesignerFrameElement extends XhReactiveElement {
         createAuthoredElement(doc, 'div', { 'data-xh-part': 'positioner' }, [content]),
       ]),
     ]) as XhDrawerElement
+    // 只认抽屉自己的开合；区里的提示、下拉等冒泡上来的 open-change 照常往外传
     element.addEventListener('open-change', (event) => {
+      if (event.target !== element)
+        return
       event.stopPropagation()
       if (!(event as CustomEvent<{ open: boolean }>).detail.open && this.#drawer === position) {
         this.#drawer = undefined

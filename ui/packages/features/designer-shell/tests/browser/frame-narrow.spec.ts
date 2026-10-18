@@ -123,6 +123,37 @@ describe('<xh-designer-frame> 窄屏（Chromium）', () => {
     expect(frame.panelEntries().find(entry => entry.name === 'palette')!.shown).toBe(false)
   })
 
+  it('抽屉里的提示开了又收起，抽屉仍开着；提示的 open-change 照常冒泡到外框外面', async () => {
+    frame.regions = frame.regions!.map(item => item.name === 'palette' ? { ...item, help: '拖进画布添加' } : item)
+    await settle()
+    // 捕获阶段记下提示的每次开合，冒泡阶段记下传到外框外面的
+    const seen: unknown[] = []
+    const bubbled: unknown[] = []
+    const record = (list: unknown[]) => (event: Event): void => {
+      if ((event.target as Element).localName === 'xh-tooltip')
+        list.push((event as CustomEvent<{ open: boolean }>).detail.open)
+    }
+    const capture = record(seen)
+    const bubble = record(bubbled)
+    document.addEventListener('open-change', capture, true)
+    document.addEventListener('open-change', bubble)
+    try {
+      // 抽屉打开后焦点落在面板头的帮助钮上，提示随之打开；Tab 移到关闭钮，提示收起
+      frame.togglePanel('palette')
+      await until(() => inPlace('palette') && seen.includes(true))
+      expect(document.activeElement?.closest('[data-part="panel-help-tip"]')).not.toBeNull()
+      await userEvent.tab()
+      await until(() => seen.includes(false))
+      await settle()
+      const shown = frame.panelEntries().find(entry => entry.name === 'palette')!.shown
+      expect([shown, visible('palette'), bubbled]).toEqual([true, true, [true, false]])
+    }
+    finally {
+      document.removeEventListener('open-change', capture, true)
+      document.removeEventListener('open-change', bubble)
+    }
+  })
+
   it('视口变宽回到三栏，抽屉收起；再变窄时两侧仍收着', async () => {
     frame.togglePanel('palette')
     await until(() => visible('palette'))
