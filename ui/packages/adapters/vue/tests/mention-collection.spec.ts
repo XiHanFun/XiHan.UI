@@ -9,6 +9,7 @@ import {
   XhMentionInput,
   XhMentionItem,
   XhMentionItemText,
+  XhMentionLoading,
   XhMentionPositioner,
   XhMentionRoot,
 } from '../src/components/mention/mention'
@@ -42,6 +43,7 @@ function mountFromParts() {
           ]),
         )),
         h(XhMentionEmpty, () => 'No results'),
+        h(XhMentionLoading, () => 'Loading'),
       ]),
     ]),
   }), { attachTo: document.body })
@@ -90,6 +92,7 @@ describe('mention 的 collection', () => {
       'item',
       'item-text',
       'empty',
+      'loading',
     ])
     w.unmount()
   })

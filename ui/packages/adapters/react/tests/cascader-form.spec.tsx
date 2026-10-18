@@ -104,7 +104,8 @@ describe('react 级联结构化表单', () => {
 
   it('sSR 原生字段保持 JSON 结构并正确转义', () => {
     const value = [['<"&', 'a,b'], ['']]
-    const html = renderToString(<XhCascaderRoot name="paths" multiple defaultValue={value} />)
+    // 给个空 children 只留根与表单影子：jsdom 里有 document，缺省结构的浮层会在服务端渲染时走 createPortal
+    const html = renderToString(<XhCascaderRoot name="paths" multiple defaultValue={value}>{() => null}</XhCascaderRoot>)
     const template = document.createElement('template')
     template.innerHTML = html
     expect([...template.content.querySelectorAll<HTMLInputElement>('input')].map(input => JSON.parse(input.value))).toEqual(value)
