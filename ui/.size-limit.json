@@ -63,7 +63,7 @@
     "name": "tokens",
     "path": "packages/design/tokens/dist/index.js",
     "gzip": true,
-    "limit": "15 kB"
+    "limit": "15.1 kB"
   },
   {
     "name": "tokens/tokens.css",

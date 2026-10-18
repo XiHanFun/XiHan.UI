@@ -450,9 +450,9 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 
 ```ts
 import { collectSettingsSections, createDesignerSettingsHost } from "@xihan-ui/designer-shell";
-import { registerBrand } from "@xihan-ui/tokens";
+import { BRAND_PRESET_COLORS, BRAND_PRESETS, registerBrand } from "@xihan-ui/tokens";
 
-const brands = [{ value: "blue", color: "#1677ff", label: "蓝" }];
+const brands = BRAND_PRESETS.map(id => ({ value: id, color: BRAND_PRESET_COLORS[id] }));
 const host = createDesignerSettingsHost({
   root: designerRoot,
   brands,
@@ -534,7 +534,7 @@ dialog.show();
 | 选项 | 说明 |
 | --- | --- |
 | `root` | 设计器根：主题写成它的 `data-theme`，主题色写成它的 `data-brand`，只作用于设计器 |
-| `brands` | 预设的主题色，与「基础」分区给的同一份 |
+| `brands` | 预设的主题色，与「基础」分区给的同一份；直接用 tokens 的 `BRAND_PRESETS`，色块取 `BRAND_PRESET_COLORS` |
 | `registerBrand` | 注册自定义主题色，形状与 `@xihan-ui/tokens` 的 `registerBrand` 相同；不给时不是预设的颜色不生效 |
 | `storageKey` | 设置存在根所在窗口 localStorage 的哪个键下；不给就不读写 |
 | `onStorageError` | 读写失败（无痕窗口、配额满、内容不是对象）时回调 `{ operation, key, error }`，设置留在内存里。给了 `storageKey` 就必须给，否则抛 `TypeError` |

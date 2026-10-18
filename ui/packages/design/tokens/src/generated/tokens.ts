@@ -820,3 +820,6 @@ export const BRAND_PRESETS = ["blue","cyan","teal","green","orange","red","pink"
 
 /** 预设品牌的 id。 */
 export type BrandPreset = (typeof BRAND_PRESETS)[number]
+
+/** 每档预设品牌的代表色：品牌 600 档，与实心品牌底同一档。给色板格子、预设清单画颜色用。 */
+export const BRAND_PRESET_COLORS: Readonly<Record<BrandPreset, string>> = {"blue":"oklch(0.522 0.163 237)","cyan":"oklch(0.516 0.128 215)","teal":"oklch(0.511 0.13 180)","green":"oklch(0.506 0.203 149)","orange":"oklch(0.557 0.216 50)","red":"oklch(0.566 0.216 25)","pink":"oklch(0.568 0.216 345)","purple":"oklch(0.565 0.216 302)"}
