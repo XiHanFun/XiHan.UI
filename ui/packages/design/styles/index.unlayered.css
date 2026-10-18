@@ -32012,12 +32012,25 @@
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
-/* 高对比档里掩码字形的底色会被换成 Canvas：取消强制配色，改用 ButtonText 着色 */
 @media (forced-colors: active) {
+  /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+     字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
+     按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText；
+     禁用取 GrayText */
   .xh-scope-filter-builder[data-part='condition-delete-trigger']:empty::before,
   .xh-scope-filter-builder[data-part='group-delete-trigger']:empty::before {
     forced-color-adjust: none;
     background-color: ButtonText;
+  }
+
+  .xh-scope-filter-builder[data-part='condition-delete-trigger']:not([data-disabled]):is(:hover, :active, [data-pressed]):empty::before,
+  .xh-scope-filter-builder[data-part='group-delete-trigger']:not([data-disabled]):is(:hover, :active, [data-pressed]):empty::before {
+    background-color: HighlightText;
+  }
+
+  .xh-scope-filter-builder[data-part='condition-delete-trigger'][data-disabled]:empty::before,
+  .xh-scope-filter-builder[data-part='group-delete-trigger'][data-disabled]:empty::before {
+    background-color: GrayText;
   }
 }
 
