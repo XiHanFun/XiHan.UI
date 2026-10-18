@@ -101,6 +101,9 @@ const translations: DesignerShellLocaleTranslations = {
     zoomToActual: '실제 크기',
     design: '디자인',
     preview: '미리 보기',
+    panels: '패널',
+    settings: '설정',
+    help: '도움말',
   },
 }
 

@@ -101,6 +101,9 @@ const translations: DesignerShellLocaleTranslations = {
     zoomToActual: 'Tamanho real',
     design: 'Design',
     preview: 'Visualização',
+    panels: 'Painéis',
+    settings: 'Configurações',
+    help: 'Ajuda',
   },
 }
 

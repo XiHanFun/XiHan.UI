@@ -189,6 +189,12 @@ export interface DesignerCommandsTranslations {
   readonly design: string
   /** 切到预览视图。 */
   readonly preview: string
+  /** 内置命令：面板（勾选显示哪些区）。 */
+  readonly panels: string
+  /** 内置命令：打开设置。 */
+  readonly settings: string
+  /** 内置命令：打开帮助。 */
+  readonly help: string
 }
 
 declare module '@xihan-ui/web-components' {

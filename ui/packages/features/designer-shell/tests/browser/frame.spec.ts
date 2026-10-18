@@ -2,7 +2,7 @@
 // 收起再展开时保留拖过的大小；中间区始终填满剩下的空间；同一位置堆叠的区按分隔条等分，不随内容多少分高度。
 import type { DesignerFrameEventMap, XhDesignerFrameElement } from '../../src'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { defineDesignerShell } from '../../src'
+import { createStatusItem, defineDesignerShell } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '../../style.css'
 
@@ -275,6 +275,41 @@ describe('<xh-designer-frame>（Chromium）', () => {
     expect([box.width > 0, box.top >= header.top - 1, box.bottom <= header.bottom + 1, box.left >= title.right]).toEqual([true, true, true, true])
     expect(summary.textContent).toContain('1')
     expect(issues.querySelector<HTMLElement>(':scope > [data-part="header"]')!.getBoundingClientRect().height).toBe(0)
+  })
+
+  it('状态栏：状态项标签弱一档、值按语气着色，相邻两项之间一道分隔；可点的项是 ghost 小按钮，不撑高状态栏', async () => {
+    frame.regions = [
+      { name: 'canvas', position: 'center' },
+      { name: 'status', position: 'status' },
+    ]
+    const selection = createStatusItem(document, { label: '已选', value: '2 个节点' })
+    const saved = createStatusItem(document, { value: '保存失败', tone: 'danger' })
+    const zoom = createStatusItem(document, { label: '缩放', value: '80%', action: () => {} })
+    selection.element.slot = 'status-start'
+    saved.element.slot = 'status-end'
+    zoom.element.slot = 'status-end'
+    frame.append(selection.element, saved.element, zoom.element)
+    await new Promise(resolve => setTimeout(resolve))
+    await frame.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const color = (element: Element): string => getComputedStyle(element).color
+    const probe = (token: string): string => {
+      const span = document.createElement('span')
+      span.style.color = `var(${token})`
+      frame.append(span)
+      const value = getComputedStyle(span).color
+      span.remove()
+      return value
+    }
+    expect(color(selection.element.querySelector('[data-part="status-label"]')!)).toBe(probe('--xh-fg-subtle'))
+    expect(color(saved.element.querySelector('[data-part="status-value"]')!)).toBe(probe('--xh-fg-danger'))
+    expect(getComputedStyle(zoom.element).borderInlineStartStyle).toBe('solid')
+    expect(getComputedStyle(saved.element).borderInlineStartStyle).toBe('none')
+    const bar = frame.querySelector<HTMLElement>(':scope > [data-part="status"]')!.getBoundingClientRect()
+    const button = zoom.element.querySelector('button')!.getBoundingClientRect()
+    const rest = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--xh-control-h-sm'))
+    expect([button.top >= bar.top - 1, button.bottom <= bar.bottom + 1, bar.height <= rest + 2]).toEqual([true, true, true])
+    expect(zoom.element.getBoundingClientRect().left).toBeGreaterThan(saved.element.getBoundingClientRect().right - 1)
   })
 
   it('区里的作者内容不受外框样式影响：带同名部件的作者元素保持自己的 display 与 overflow', async () => {
