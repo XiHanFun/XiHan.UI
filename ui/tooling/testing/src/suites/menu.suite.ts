@@ -41,14 +41,17 @@ function menuTree(disabled?: string): FixtureNode {
   }
 }
 
+/** 条目上的图标：一枚只有一条横线的记录，够看出 item-icon 铺没铺、里面有没有 svg。 */
+const ITEM_ICON = { name: 'line', viewBox: '0 0 24 24', nodes: [{ tag: 'path', attrs: { d: 'M4 12h16' } }] }
+
 /**
  * 标准结构场景的数据：带快捷键的条目、带说明的条目、带标题的勾选分组。
  * 子菜单的定位层在三端落进 portal 的时机不同，文档序对不齐，子菜单另在各端单测里断言。
  */
 const STRUCTURE_COLLECTION = [
-  { value: 'open', label: '打开', shortcut: 'Ctrl+O' },
+  { value: 'open', label: '打开', shortcut: 'Ctrl+O', icon: ITEM_ICON },
   { value: 'rename', label: '重命名', description: '改文件名' },
-  { value: 'bold', label: '粗体', kind: 'checkbox', group: 'format', groupLabel: '格式', separatorBefore: true },
+  { value: 'bold', label: '粗体', kind: 'checkbox', icon: ITEM_ICON, group: 'format', groupLabel: '格式', separatorBefore: true },
   { value: 'italic', label: '斜体', kind: 'checkbox', group: 'format' },
 ]
 
@@ -504,6 +507,7 @@ export const menuSuite: ConformanceSuite = {
           'positioner',
           'content',
           'item[0]',
+          'item-icon[0]',
           'item-text[0]',
           'item-shortcut',
           'item[1]',
@@ -514,6 +518,7 @@ export const menuSuite: ConformanceSuite = {
           'group-label',
           'item[2]',
           'item-indicator[0]',
+          'item-icon[1]',
           'item-text[2]',
           'item[3]',
           'item-indicator[1]',
@@ -522,6 +527,7 @@ export const menuSuite: ConformanceSuite = {
         parts: {
           'trigger': { 'type': 'button', 'aria-haspopup': 'menu', 'aria-expanded': 'false' },
           'item[0]': { 'role': 'menuitem', 'data-value': 'open' },
+          'item-icon[0]': { 'aria-hidden': 'true', 'data-xh-collection-slot': 'icon' },
           'item[2]': { 'role': 'menuitemcheckbox', 'aria-checked': 'false' },
           'group': { 'role': 'group', 'aria-labelledby': '@part(group-label)' },
         },

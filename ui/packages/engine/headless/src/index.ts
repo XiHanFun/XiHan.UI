@@ -136,7 +136,7 @@ export { connectHighlight, highlightAnatomy, highlightKeyboard, highlightMeta, n
 export type { HighlightApi, HighlightProps, HighlightSegment, HighlightTranslations } from './highlight'
 export { connectHoverCard, HOVER_CARD_DEFAULT_PLACEMENT, hoverCardAnatomy, hoverCardKeyboard, hoverCardMachine, hoverCardMeta } from './hover-card'
 export type { HoverCardApi, HoverCardOpenChangeDetails, HoverCardRefs, HoverCardSchema, HoverCardTranslations } from './hover-card'
-export { connectIcon, iconAnatomy, iconKeyboard, iconMeta } from './icon'
+export { connectIcon, iconAnatomy, iconKeyboard, iconMeta, iconStructure } from './icon'
 export type { IconApi, IconFlip, IconProps, IconRotate, IconSize, IconTranslations, IconWeight } from './icon'
 export { connectImage, imageAnatomy, imageKeyboard, imageMachine, imageMeta, resolveFallbackDelay } from './image'
 export type { ImageApi, ImageSchema, ImageStatus, ImageStatusChangeDetails, ImageTranslations } from './image'

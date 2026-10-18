@@ -5,7 +5,7 @@
 
 // 提供 toolbar 相关实现。
 
-import type { ControlVariant, Direction, Orientation, Size } from '@xihan-ui/core'
+import type { ControlVariant, Direction, IconRecord, Orientation, Size } from '@xihan-ui/core'
 import type { ToolbarApi, ToolbarSchema, ToolbarTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ElementType, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
@@ -33,6 +33,8 @@ export interface XhToolbarRootProps extends Omit<ComponentPropsWithRef<'div'>, '
   variant?: ControlVariant
   size?: Size
   translations?: Partial<ToolbarTranslations>
+  /** 条目的图标，键是条目的 value：收起进「更多」菜单的条目带着它，排在文字之前。条目自己（工具条上的那颗按钮）里放不放图标归作者。 */
+  itemIcons?: Readonly<Record<string, IconRecord>>
   children?: SlotChildren<ToolbarRootSlotProps>
 }
 
@@ -45,10 +47,11 @@ export function XhToolbarRoot({
   variant,
   size,
   translations,
+  itemIcons,
   children,
   ...rest
 }: XhToolbarRootProps): ReactNode {
-  const ctx = useToolbar(withXhConfig('toolbar', { orientation, dir, loop, disabled, variant, size, translations }) as ToolbarProps)
+  const ctx = useToolbar(withXhConfig('toolbar', { orientation, dir, loop, disabled, variant, size, translations, itemIcons }) as ToolbarProps)
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，条目得焦也会把它叫起来，那一下会把焦点从条目抢回锚点上——
   // 装成原生监听器，到达路径才与另外两家一致。onFocusOut 归到的 onBlur 本就是冒泡的 focusout，不动它

@@ -1,5 +1,5 @@
 import type { IconNode, IconRecord } from '@xihan-ui/core'
-import type { ConformanceSuite, RawStepContext } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { iconAnatomy, iconKeyboard } from '@xihan-ui/headless'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/'
@@ -124,9 +124,9 @@ function expectOnlyAuthorNode({ doc, adapterName }: RawStepContext): void {
  * root 必须是 `<svg>`、glyph 必须是 `<g>`：前者关系到 viewBox 的大小写，后者关系到图元挂在哪个命名空间下。
  * 图元本身不进属性快照（快照只采 role / aria-* / data-*），故用 raw 步骤直接读 DOM 核对。
  *
- * 默认 fixture 只写 root：glyph 在 Vue 版由组件内部渲染，在 WC 版由作者手写，
- * 后者在 WC 的套件清单里把 glyph 补进 fixture。两侧铺设后的 DOM 形状相同，
- * 故 glyph 的断言写在共享用例里，两端各跑一遍。
+ * 默认 fixture 只写 root：glyph 在 Vue / React 版由组件照 iconStructure 渲染，WC 的套件清单把作者手写的 glyph 补进 fixture，
+ * 走作者留空壳的那条路；不写结构的场景三侧都由组件照 iconStructure 生成 glyph。两侧铺设后的 DOM 形状相同，
+ * 故 glyph 的断言写在共享用例里，各端各跑一遍。
  */
 export const iconSuite: ConformanceSuite = {
   component: 'icon',
@@ -322,6 +322,24 @@ export const iconSuite: ConformanceSuite = {
           kind: 'raw',
           why: '"没铺任何东西"是子元素个数，不是属性',
           run: expectNoChildElements('glyph'),
+        },
+      ],
+    },
+    {
+      name: '作者不写结构：三端都照 iconStructure 生成 glyph 空壳，图元铺进去',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', tag: 'svg', defaultStructure: true }),
+      props: { icon: CHECK },
+      initial: {
+        order: ['root', 'glyph'],
+        counts: { root: 1, glyph: 1 },
+        parts: { root: { 'aria-hidden': 'true', 'data-icon': 'check' } },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '图元不进属性快照，逐层核对标签与属性只能直接读 DOM',
+          run: expectGlyphPainted(CHECK),
         },
       ],
     },

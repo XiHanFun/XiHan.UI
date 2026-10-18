@@ -74,6 +74,7 @@ export function connectContextMenu<T extends PropTypes>(
       disabled: !!node.disabled,
       tone: node.tone ?? null,
       indicator: node.indicator ?? null,
+      icon: node.icon ?? null,
       description: node.description ?? null,
       shortcut: node.shortcut ?? null,
       group: node.group ?? null,
@@ -459,6 +460,14 @@ export function connectContextMenu<T extends PropTypes>(
     }),
 
     // 快捷键提示落家族的 shortcut 列（行尾、suffix 之前）。纯装饰：可及名由条目文字承担，
+    // 条目文字之前的图标格：装饰态，读屏只念条目文字；勾选与单选的勾在 item-indicator，两格互不相让
+    getItemIconProps: item => normalize.element({
+      ...parts['item-icon'].attrs,
+      ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'icon',
+      'aria-hidden': true,
+    }),
+
     // 连打检索也只取 item-text，这串按键记号不进检索串
     getItemShortcutProps: item => normalize.element({
       ...parts['item-shortcut'].attrs,

@@ -21,6 +21,7 @@ import { MachineController } from '../runtime/machine-controller'
 import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
 import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
+import { XhIconElement } from './icon'
 import { XhMenuElement } from './menu'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -66,6 +67,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @csspart item-text - 条目文本（连打检索的取字来源）
  * @csspart item-indicator - 条目标记位（勾选符号 / 图标 / 快捷键提示），aria-hidden
  * @csspart item-description - 条目副文本，排在文字下一行
+ * @csspart item-icon - 条目文字之前的图标格（aria-hidden，读屏从条目文字取意）；按数据铺时里面是一枚 xh-icon
  * @csspart item-shortcut - 条目中的快捷键提示（aria-hidden，读屏从条目文字取意）
  * @csspart item-suffix - 条目行尾的作者内容（计数、徽标、次级图标）
  * @csspart separator - 分隔线（role=separator，不进入方向键导航）
@@ -80,7 +82,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
   static override partContract = { anatomy: contextMenuAnatomy, meta: contextMenuMeta }
 
   /** 结构里带 children 的条目生成嵌套的子菜单。 */
-  static override dependencies = { 'xh-menu': XhMenuElement }
+  static override dependencies = { 'xh-menu': XhMenuElement, 'xh-icon': XhIconElement }
 
   static override structure: ElementStructure<XhContextMenuElement> = {
     build: host => host.ctrl.service
@@ -423,6 +425,8 @@ export class XhContextMenuElement extends XhPortalHostElement {
       this.spreader.spread(el, itemProps as Record<string, unknown>)
       this.declaredDisabled.commit(el)
       // 条目内的文本与标记位跟着同一份声明走，样式层各处状态一致
+      for (const icon of this.partsIn(el, 'item-icon'))
+        this.spreader.spread(icon, api.getItemIconProps(item) as Record<string, unknown>)
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
       for (const indicator of this.partsIn(el, 'item-indicator'))

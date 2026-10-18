@@ -5,6 +5,9 @@ import { focusSettled, menuExited, overflowMenuItem } from './shared/overflow-me
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/'
+
+/** 收起条目在「更多」菜单里带的图标：一枚只有一条横线的记录。 */
+const OVERFLOW_ICON = { name: 'line', viewBox: '0 0 24 24', nodes: [{ tag: 'path', attrs: { d: 'M4 12h16' } }] }
 const KBD = `${APG}#keyboardinteraction`
 const ARIA = `${APG}#roles_states_properties`
 
@@ -530,6 +533,33 @@ export const toolbarSuite: ConformanceSuite = {
               throw new Error('「更多」菜单里应当恰好是收起的 left 与 right')
             if (left.textContent?.trim() !== '左对齐' || left.getAttribute('role') !== 'menuitem')
               throw new Error('菜单项取条目的文字、角色是 menuitem')
+          },
+        },
+      ],
+    },
+    {
+      name: '收起的条目带着 itemIcons 里的图标进「更多」菜单，排在文字之前；没给图标的条目不铺图标格',
+      spec: { apg: ARIA },
+      fixture: withOverflowTrigger,
+      environment: overflowRow(130),
+      props: { itemIcons: { left: OVERFLOW_ICON } },
+      steps: [
+        {
+          kind: 'raw',
+          why: '菜单条目归 menu 的 scope，不进工具条的快照',
+          run: ({ doc }) => {
+            const left = overflowMenuItem(doc, 'left')
+            const right = overflowMenuItem(doc, 'right')
+            if (!left || !right)
+              throw new Error('「更多」菜单里应当有收起的 left 与 right')
+            const icon = left.querySelector('[data-scope="menu"][data-part="item-icon"]')
+            const text = left.querySelector('[data-scope="menu"][data-part="item-text"]')
+            if (!icon || !text || !(icon.compareDocumentPosition(text) & 4))
+              throw new Error('带图标的条目要有 item-icon，且排在 item-text 之前')
+            if (icon.getAttribute('aria-hidden') !== 'true' || !icon.querySelector('svg path'))
+              throw new Error('图标格是装饰态，里面画出了图标的 svg')
+            if (right.querySelector('[data-scope="menu"][data-part="item-icon"]'))
+              throw new Error('没给图标的条目不铺图标格')
           },
         },
       ],

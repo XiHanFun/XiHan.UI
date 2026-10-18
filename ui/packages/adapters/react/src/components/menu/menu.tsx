@@ -22,6 +22,7 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { XhIcon } from '../icon/icon'
 import {
   MenuGroupProvider,
   MenuItemProvider,
@@ -298,6 +299,14 @@ export function XhMenuItemDescription({ children, ...rest }: XhMenuItemDescripti
   return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+export interface XhMenuItemIconProps extends ComponentPropsWithRef<'span'> {}
+/** 条目文字之前的图标格；装饰态，读屏从条目文字取意。 */
+export function XhMenuItemIcon({ children, ...rest }: XhMenuItemIconProps): ReactNode {
+  const ctx = useMenuContext()
+  const item = useMenuItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemIconProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhMenuItemShortcutProps extends ComponentPropsWithRef<'span'> {}
 /** 条目中的快捷键提示，贴行尾；纯装饰，读屏从条目文字取意。 */
 export function XhMenuItemShortcut({ children, ...rest }: XhMenuItemShortcutProps): ReactNode {
@@ -493,6 +502,7 @@ const MENU_PARTS = {
   'positioner': XhMenuPositioner,
   'content': XhMenuContent,
   'item': MenuStructureItem,
+  'item-icon': XhMenuItemIcon,
   'item-text': XhMenuItemText,
   'item-indicator': XhMenuItemIndicator,
   'item-description': XhMenuItemDescription,
@@ -504,7 +514,7 @@ const MENU_PARTS = {
 }
 
 /** 结构里组合进来的组件：带 children 的条目是嵌套的子菜单。 */
-const MENU_INSTANCES = { menu: XhMenuSub }
+const MENU_INSTANCES = { menu: XhMenuSub, icon: XhIcon }
 
 /** 条目三处渲染的接管：item 整条、item-prefix 行首、item-suffix 行尾，入参是这一条的元信息。 */
 function itemContent(renderers: MenuItemRenderers, lookup: (value: string) => MenuNodeMeta | undefined): (node: StructureNode) => ReactNode | undefined {

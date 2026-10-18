@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="context-menu"`：`root` · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `item-shortcut` · `item-suffix` · `separator` · `group` · `group-label` · `arrow`
+`data-scope="context-menu"`：`root` · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-icon` · `item-text` · `item-indicator` · `item-description` · `item-shortcut` · `item-suffix` · `separator` · `group` · `group-label` · `arrow`
 
 ## 示例
 
@@ -96,7 +96,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-context-menu>` |
-| Vue 组件 | `XhContextMenuArrow` `XhContextMenuCheckboxItem` `XhContextMenuContent` `XhContextMenuGroup` `XhContextMenuGroupLabel` `XhContextMenuItem` `XhContextMenuItemDescription` `XhContextMenuItemIndicator` `XhContextMenuItemShortcut` `XhContextMenuItemSuffix` `XhContextMenuItemText` `XhContextMenuPositioner` `XhContextMenuRadioGroup` `XhContextMenuRadioItem` `XhContextMenuRoot` `XhContextMenuSeparator` `XhContextMenuSub` `XhContextMenuSubTrigger` `XhContextMenuTrigger` |
+| Vue 组件 | `XhContextMenuArrow` `XhContextMenuCheckboxItem` `XhContextMenuContent` `XhContextMenuGroup` `XhContextMenuGroupLabel` `XhContextMenuItem` `XhContextMenuItemDescription` `XhContextMenuItemIcon` `XhContextMenuItemIndicator` `XhContextMenuItemShortcut` `XhContextMenuItemSuffix` `XhContextMenuItemText` `XhContextMenuPositioner` `XhContextMenuRadioGroup` `XhContextMenuRadioItem` `XhContextMenuRoot` `XhContextMenuSeparator` `XhContextMenuSub` `XhContextMenuSubTrigger` `XhContextMenuTrigger` |
 | 组合式函数 | `useContextMenu` |
 | 状态机 | `contextMenuMachine` |
 | 皮肤 | `@xihan-ui/styles/context-menu.css` |
@@ -139,6 +139,7 @@
 | `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
 | `tone` | `Tone` |  | 该条命令自身动作的性质：删除写 danger、停用写 warning。不写即与其余条目同档。 只换字色与悬停 / 按下的面，不改字重与缩进，也不表达选中或校验；禁用压过它。 红字不是唯一通道，破坏性命令仍要配图标。整张菜单的 tone 不下发给条目。 |
 | `indicator` | `string` |  | 标记位文字（勾选符号等装饰）；未提供时本条不铺 item-indicator。 |
+| `icon` | `IconRecord` |  | 图标，写入 item-icon 部件，排在条目文字之前；未提供时本条不铺该部件。 纯装饰：读屏从条目文字取意，不念它。勾选与单选条目的勾仍在 item-indicator，两者各占一格。 |
 | `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 |
 | `shortcut` | `string` |  | 快捷键提示，写入 item-shortcut 部件；未提供时本条不铺该部件。 纯装饰：读屏从条目文字取意，不念它；只为真正注册了的组合写提示。 |
 | `group` | `string` |  | 归属分组的身份值；相邻同值的条目收进同一个 group 部件。未提供时本条直接落在 content 上。 |
@@ -249,6 +250,7 @@
 | `getItemProps` | `(props: ContextMenuItemProps) => T['element']` |  |
 | `getCheckboxItemProps` | `(props: ContextMenuCheckboxItemProps) => T['element']` |  |
 | `getRadioItemProps` | `(props: ContextMenuRadioItemProps) => T['element']` |  |
+| `getItemIconProps` | `(props: ContextMenuAnyItemProps) => T['element']` | 条目文字之前的图标格；装饰态，读屏不念。 |
 | `getItemTextProps` | `(props: ContextMenuAnyItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: ContextMenuAnyItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: ContextMenuAnyItemProps) => T['element']` |  |
@@ -291,6 +293,7 @@
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-label` | translations.content |
 | `content` | `role` | 'menu' |
+| `item-icon` | `aria-hidden` | 'true' |
 | `item-indicator` | `aria-hidden` | 'true' |
 | `item-shortcut` | `aria-hidden` | 'true' |
 | `separator` | `aria-orientation` | 'horizontal' |
@@ -333,6 +336,9 @@
 | `content` | `data-xh-material` | 'frosted' |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
+| `item-icon` | `data-disabled` | ''（条件成立时才出现） |
+| `item-icon` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-icon` | `data-xh-collection-slot` | 'icon' |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-text` | `data-xh-collection-slot` | 'text' |

@@ -5,7 +5,7 @@
 
 // 提供 toolbar 相关实现。
 
-import type { ControlVariant, Direction, Orientation, Service, Size } from '@xihan-ui/core'
+import type { ControlVariant, Direction, IconRecord, Orientation, Service, Size } from '@xihan-ui/core'
 import type { ToolbarItemProps, ToolbarSchema, ToolbarTranslations } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectToolbar, toolbarAnatomy, toolbarMachine, toolbarMeta, toolbarOverflowMenuProps } from '@xihan-ui/headless'
@@ -15,6 +15,7 @@ import { wcNormalize } from '../dom/normalize'
 import { MachineController } from '../runtime/machine-controller'
 import { OverflowMenuController } from '../runtime/overflow-menu-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
+import { XhIconElement } from './icon'
 
 // 字符串属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在 connect。
 // Lit 默认转换器会在属性被移除时把值落成 null，那样就再也表达不了"未指定"。
@@ -56,6 +57,9 @@ export class XhToolbarElement extends XhPortalHostElement {
 
   static override partContract = { anatomy: toolbarAnatomy, meta: toolbarMeta }
 
+  // 「更多」菜单里带图标的条目放一枚 xh-icon
+  static override dependencies = { 'xh-icon': XhIconElement }
+
   // dir 占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。别名保留原生行为，
   // 同时让 dir 进 observedAttributes——运行期改 dir 才会重跑 wire 换掉按键处理器。
@@ -69,6 +73,8 @@ export class XhToolbarElement extends XhPortalHostElement {
     size: { converter: STRING_CONVERTER },
     // 文案是对象，走不了属性；只作为 property 暴露，与 Vue 侧的 translations prop 对齐
     translations: { attribute: false },
+    // 图标记录是对象，同样只走 property
+    itemIcons: { attribute: false },
   }
 
   declare orientation?: Orientation
@@ -78,6 +84,8 @@ export class XhToolbarElement extends XhPortalHostElement {
   declare variant?: ControlVariant
   declare size?: Size
   declare translations?: Partial<ToolbarTranslations>
+  /** 条目的图标，键是条目的 value：收起进「更多」菜单的条目带着它，排在文字之前。条目自己（工具条上的那颗按钮）里放不放图标归作者。 */
+  declare itemIcons?: Readonly<Record<string, IconRecord>>
 
   /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时要跳过这些写回值，只认作者写的。 */
   private readonly declaredDisabled = createDisabledDeclarations()
@@ -106,6 +114,7 @@ export class XhToolbarElement extends XhPortalHostElement {
       variant: this.variant,
       size: this.size,
       translations: this.translations,
+      itemIcons: this.itemIcons,
     }
   }
 

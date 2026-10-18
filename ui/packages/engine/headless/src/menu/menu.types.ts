@@ -5,7 +5,7 @@
 
 // 定义 menu 类型契约。
 
-import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
+import type { Cleanup, Direction, IconRecord, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { MenuCheckboxValueChangeDetails, MenuChoiceGroupProps, MenuChoiceKind, MenuRadioValue, MenuRadioValueChangeDetails, MenuCheckboxItemProps as SharedMenuCheckboxItemProps, MenuRadioItemProps as SharedMenuRadioItemProps } from '../shared/menu-choice'
 import type { StructureSlotted } from '../shared/structure'
@@ -66,6 +66,11 @@ export interface MenuNode {
   tone?: Tone
   /** 标记位文字（勾选符号等装饰）；未提供时本条不铺 item-indicator。 */
   indicator?: string
+  /**
+   * 图标，写入 item-icon 部件，排在条目文字之前；未提供时本条不铺该部件。
+   * 纯装饰：读屏从条目文字取意，不念它。勾选与单选条目的勾仍在 item-indicator，两者各占一格。
+   */
+  icon?: IconRecord
   /** 副文本，写入 item-description 部件；未提供时本条不铺该部件。 */
   description?: string
   /**
@@ -100,6 +105,8 @@ export interface MenuNodeMeta {
   tone: Tone | null
   /** 标记位文字；未提供时为 null。 */
   indicator: string | null
+  /** 图标；未提供时为 null。 */
+  icon: IconRecord | null
   /** 副文本；未提供时为 null。 */
   description: string | null
   /** 快捷键提示；未提供时为 null。 */
@@ -275,6 +282,8 @@ export interface MenuApi<T extends PropTypes = PropTypes> {
   getItemProps: (props: MenuItemProps) => T['element']
   getCheckboxItemProps: (props: MenuCheckboxItemProps) => T['element']
   getRadioItemProps: (props: MenuRadioItemProps) => T['element']
+  /** 条目文字之前的图标格；装饰态，读屏不念。 */
+  getItemIconProps: (props: MenuAnyItemProps) => T['element']
   getItemTextProps: (props: MenuAnyItemProps) => T['element']
   getItemIndicatorProps: (props: MenuAnyItemProps) => T['element']
   getItemDescriptionProps: (props: MenuAnyItemProps) => T['element']

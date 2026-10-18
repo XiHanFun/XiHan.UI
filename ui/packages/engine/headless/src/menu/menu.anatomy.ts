@@ -14,6 +14,7 @@ export const menuAnatomy = createAnatomy('menu', [
   'positioner',
   'content',
   'item',
+  'item-icon',
   'item-text',
   'item-indicator',
   'item-description',

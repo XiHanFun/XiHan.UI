@@ -7,8 +7,10 @@
 
 import type { ActionVariant, IconNode, IconRecord, Tone } from '@xihan-ui/core'
 import type { IconApi, IconFlip, IconProps, IconSize, IconWeight } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
-import { connectIcon, iconAnatomy, iconMeta } from '@xihan-ui/headless'
+import { connectIcon, iconAnatomy, iconMeta, iconStructure } from '@xihan-ui/headless'
+import { GEN_ATTR } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -37,8 +39,8 @@ function buildNode(doc: Document, node: IconNode): SVGElement {
  * `<xh-icon>`：图标宿主，无状态机，把命名与档位写到 root 上，把图元铺进 glyph 空壳。
  *
  * 作者在 `<svg data-xh-part="root">` 中留一个空的 `<g data-xh-part="glyph"></g>` 即授权本元素
- * 在其内部铺设图元；未写 glyph 时元素不修改任何节点，几何归作者（手写内联 SVG 或 `<use>`），
- * 命名与档位照常写在 root 上。
+ * 在其内部铺设图元；在 root 里写了几何（手写内联 SVG 或 `<use>`）而没写 glyph 时元素不修改任何节点，
+ * 命名与档位照常写在 root 上。只写一个空的 root 时，元素在里面生成 glyph 空壳；一个部件都不写时连 `<svg>` 根一起生成。
  *
  * 图标记录是对象，只能通过 property 设置：`el.icon = checkIcon`。
  *
@@ -59,6 +61,15 @@ export class XhIconElement extends XhElement {
     meta: iconMeta,
     // root 不是 <svg> 时 viewBox 会被小写化而静默失效；glyph 不是 <g> 时铺进去的图元挂在 HTML 元素下，什么都不显示
     tags: { root: ['svg'], glyph: ['g'] },
+  }
+
+  // 作者在 root 里写了几何就不往里生成 glyph；root 是空的时在里面生成 glyph 空壳，一个部件都不写时连 <svg> 根一起生成
+  static override structure: ElementStructure<XhIconElement> = {
+    rootTag: 'svg',
+    build: (host) => {
+      const root = host.querySelector(`:scope > [data-xh-part='root']:not([${GEN_ATTR}])`)
+      return root && Array.from(root.children).some(child => !child.hasAttribute(GEN_ATTR)) ? [] : iconStructure()
+    },
   }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -132,8 +143,8 @@ export class XhIconElement extends XhElement {
 
   /**
    * 把记录的图元铺进 glyph。
-   * 本元素其余各处都不替作者生成节点，这里是唯一的例外：图元是计算得出的派生数据，作者无法自行编写，
-   * 且铺设范围限定在作者显式留出的空壳中。
+   * 除了按标准结构生成的 <svg> 根与 glyph 空壳，本元素只在这里往节点里写内容：图元是计算得出的派生数据，
+   * 作者无法自行编写，且铺设范围限定在 glyph 空壳中。
    * 内容判据是记录的引用相等：记录是模块级常量，同一个图标永远是同一个对象。
    * childElementCount 一条覆盖外部代码清空过 glyph 的情形。
    */

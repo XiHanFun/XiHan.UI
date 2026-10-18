@@ -42,7 +42,7 @@ const wcProgressSuite: ConformanceSuite = {
   fixture: { ...progressSuite.fixture, children: [{ part: 'track', children: [{ part: 'range' }] }] },
 }
 
-// icon 的 glyph 空壳在 Vue 版由组件内部渲染，WC 版要作者手写，故只换 fixture；
+// icon 的共享用例在 WC 版走作者手写 glyph 空壳的那条路，故只换 fixture（不写结构时元素自己生成，由 defaultStructure 场景覆盖）；
 // 铺设后两侧 DOM 形状相同，用例整份复用。空壳写成 <g> 而不是 <div>：
 // SVG 图元挂在非 SVG 命名空间里什么都不显示。
 const wcIconSuite: ConformanceSuite = {

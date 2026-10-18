@@ -18,6 +18,7 @@ import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { XhIcon } from '../icon/icon'
 import { provideMenu, useMenuContext } from '../menu/context'
 import { MenuDefaultNodes, XhMenuContent, XhMenuPositioner } from '../menu/menu'
 import { useMenuWithParent } from '../menu/use-menu'
@@ -398,6 +399,16 @@ export const XhContextMenuItemDescription = defineComponent({
   },
 })
 
+/** 条目文字之前的图标格；装饰态，读屏从条目文字取意 */
+export const XhContextMenuItemIcon = defineComponent({
+  name: 'XhContextMenuItemIcon',
+  setup(_, { slots }) {
+    const ctx = useContextMenuContext()
+    const { item } = useContextMenuItemContext()
+    return () => h('span', ctx.api.value.getItemIconProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /** 条目中的快捷键提示，贴行尾；纯装饰，读屏从条目文字取意 */
 export const XhContextMenuItemShortcut = defineComponent({
   name: 'XhContextMenuItemShortcut',
@@ -479,6 +490,7 @@ const CONTEXT_MENU_PARTS = {
   'positioner': XhContextMenuPositioner,
   'content': XhContextMenuContent,
   'item': ContextMenuStructureItem,
+  'item-icon': XhContextMenuItemIcon,
   'item-text': XhContextMenuItemText,
   'item-indicator': XhContextMenuItemIndicator,
   'item-description': XhContextMenuItemDescription,
@@ -490,7 +502,7 @@ const CONTEXT_MENU_PARTS = {
 }
 
 /** 结构里组合进来的组件：带 children 的条目是嵌套的子菜单。 */
-const CONTEXT_MENU_INSTANCES = { menu: XhContextMenuSub }
+const CONTEXT_MENU_INSTANCES = { menu: XhContextMenuSub, icon: XhIcon }
 
 /**
  * 未写默认插槽时照 contextMenuStructure 铺开的整套结构，与 Web Components 不写部件时元素生成的节点出自同一份。

@@ -242,7 +242,7 @@ describe('xh-icon glyph 缺席', () => {
   })
 
   it('传了 icon 却没写 glyph 报一条 warn', async () => {
-    const el = await mount(create('<svg data-xh-part="root"></svg>', { icon: CHECK }))
+    const el = await mount(create('<svg data-xh-part="root"><path d="M1 1h2"></path></svg>', { icon: CHECK }))
     const hits = warns()
 
     expect(hits).toHaveLength(1)
@@ -251,7 +251,7 @@ describe('xh-icon glyph 缺席', () => {
   })
 
   it('没传 icon 时不报', async () => {
-    await mount(create('<svg data-xh-part="root"></svg>'))
+    await mount(create('<svg data-xh-part="root"><path d="M1 1h2"></path></svg>'))
     expect(warns()).toEqual([])
   })
 })
@@ -372,11 +372,39 @@ describe('xh-icon 部件标签契约', () => {
     await mount(create(SHELL, { icon: CHECK }))
     expect(seen.filter(r => r.code === DIAGNOSTIC_CODES.wcWrongPartTag)).toEqual([])
   })
+})
 
-  it('缺 root 时报 wcMissingPart，glyph 可省不报', async () => {
-    await mount(create('<svg></svg>'))
+describe('xh-icon 自己生成结构', () => {
+  it('一个部件都不写时生成 <svg> 根与 glyph 空壳，图元铺进去，不报缺部件', async () => {
+    const el = await mount(create('', { icon: CHECK }))
+    const svg = el.querySelector('svg[data-scope="icon"][data-part="root"]')!
+    expect(svg.namespaceURI).toBe('http://www.w3.org/2000/svg')
+    expect(svg.getAttribute('viewBox')).toBe('0 0 24 24')
+    const shell = svg.querySelector('g[data-scope="icon"][data-part="glyph"]')!
+    expect(shell.namespaceURI).toBe('http://www.w3.org/2000/svg')
+    expect(shell.querySelector('path')?.getAttribute('d')).toBe('M20 6 9 17l-5-5')
+    expect(seen.filter(r => r.code === DIAGNOSTIC_CODES.wcMissingPart)).toEqual([])
+  })
 
-    expect(seen.filter(r => r.code === DIAGNOSTIC_CODES.wcMissingPart)).toHaveLength(1)
-    expect(seen.filter(r => r.part === 'glyph')).toEqual([])
+  it('作者写了 root 却没写 glyph 时不往里生成，手写的几何原样不动', async () => {
+    const el = await mount(create('<svg data-xh-part="root"><path d="M1 1h2"/></svg>'))
+    expect(Array.from(root(el).children, child => child.localName)).toEqual(['path'])
+    expect(el.querySelectorAll('svg')).toHaveLength(1)
+  })
+
+  it('只写一个空的 root 时在里面生成 glyph 空壳，图元铺进去，不报缺部件', async () => {
+    const el = await mount(create('<svg data-xh-part="root"></svg>', { icon: CHECK }))
+    expect(el.querySelectorAll('svg')).toHaveLength(1)
+    const shell = root(el).querySelector('g[data-scope="icon"][data-part="glyph"]')!
+    expect(shell.namespaceURI).toBe('http://www.w3.org/2000/svg')
+    expect(shell.querySelector('path')?.getAttribute('d')).toBe('M20 6 9 17l-5-5')
+    expect(warns()).toEqual([])
+  })
+
+  it('换记录时在生成的 glyph 里重铺', async () => {
+    const el = await mount(create('', { icon: CHECK }))
+    el.icon = CLOSE
+    await el.updateComplete
+    expect(Array.from(el.querySelector('[data-part="glyph"]')!.children, child => child.localName)).toEqual(['line', 'line'])
   })
 })

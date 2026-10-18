@@ -121,12 +121,13 @@ export function sameOverflowItems(a: readonly ToolbarOverflowItem[], b: unknown)
 }
 
 /**
- * 「更多」菜单的机器 props，从工具条的机器现读：条目随收纳走，开关条目是勾选项，
+ * 「更多」菜单的机器 props，从工具条的机器现读：条目随收纳走，开关条目是勾选项，图标按条目的 value 从 itemIcons 取，
  * 选中一项即替它触发条目自己的点击。落位、选完收起与「一个都没收时受控关着」归共用的 overflowMenuProps。
  * 三端都用它喂菜单：Vue / React 交给 XhMenuRoot，Web Components 交给元素内自建的菜单机器。
  */
 export function toolbarOverflowMenuProps(service: Service<ToolbarSchema>): MenuSchema['props'] {
   const { context, prop, send } = service
+  const icons = prop('itemIcons')
   return overflowMenuProps({
     entries: context.get('overflowItems').map(item => ({
       value: item.value,
@@ -135,6 +136,7 @@ export function toolbarOverflowMenuProps(service: Service<ToolbarSchema>): MenuS
       checked: item.pressed,
       separatorBefore: item.separatorBefore,
       tone: item.tone,
+      icon: icons?.[item.value] ?? null,
     })),
     orientation: prop('orientation') ?? 'horizontal',
     dir: prop('dir'),

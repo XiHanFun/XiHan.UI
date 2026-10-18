@@ -20,6 +20,7 @@ export const MENU_STRUCTURE_PARTS = [
   'positioner',
   'content',
   'item',
+  'item-icon',
   'item-text',
   'item-indicator',
   'item-description',
@@ -49,8 +50,8 @@ export interface MenuNodesStructureOptions {
 }
 
 /**
- * 一条条目：带 children 的是嵌套的子菜单；item 插槽有内容时整条或条目文字归作者；其余按数据铺标记位、文字、说明、
- * 快捷键与行尾，没有的格不铺。勾选与单选条目没写标记位时也留一格空的给勾。
+ * 一条条目：带 children 的是嵌套的子菜单；item 插槽有内容时整条或条目文字归作者；其余按数据铺标记位、图标、文字、
+ * 说明、快捷键与行尾，没有的格不铺。勾选与单选条目没写标记位时也留一格空的给勾。
  */
 function itemStructure(meta: MenuNodesStructureMeta, slotted: StructureSlotted, options: MenuNodesStructureOptions): StructureChild<MenuStructureNode['part']> {
   if (meta.children) {
@@ -73,6 +74,8 @@ function itemStructure(meta: MenuNodesStructureMeta, slotted: StructureSlotted, 
     children.push({ key: 'indicator', tag: 'span', part: 'item-indicator', text: meta.indicator })
   else if (meta.kind !== 'item')
     children.push({ key: 'indicator', tag: 'span', part: 'item-indicator' })
+  if (meta.icon != null)
+    children.push({ key: 'icon', tag: 'span', part: 'item-icon', children: [structureInstance('glyph', 'icon', { icon: meta.icon })] })
   children.push(itemSlotted
     ? { key: 'text', tag: 'span', part: 'item-text', slot: { name: 'item', key: meta.value }, data: meta }
     : { key: 'text', tag: 'span', part: 'item-text', text: meta.label })

@@ -5,7 +5,7 @@
 
 // 定义 menubar 类型契约。
 
-import type { Cleanup, Direction, Layer, MachineSchema, Orientation, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
+import type { Cleanup, Direction, IconRecord, Layer, MachineSchema, Orientation, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { MenuNode } from '../menu/menu.types'
 import type { MenuCheckboxValueChangeDetails, MenuChoiceGroupProps, MenuChoiceKind, MenuRadioValue, MenuRadioValueChangeDetails, MenuCheckboxItemProps as SharedMenuCheckboxItemProps, MenuRadioItemProps as SharedMenuRadioItemProps } from '../shared/menu-choice'
@@ -67,6 +67,11 @@ export interface MenubarNode {
   kind?: MenuChoiceKind
   /** 展示文本，也是菜单内连打检索的取字来源；默认回退为 value。 */
   label?: string
+  /**
+   * 图标，写入 item-icon 部件，排在条目文字之前；只在条目上读取，未提供时本条不铺该部件。
+   * 纯装饰：读屏从条目文字取意，不念它。勾选与单选条目的勾仍在 item-indicator，两者各占一格。
+   */
+  icon?: IconRecord
   /** 副文本，写入 item-description 部件；只在条目上读取。 */
   description?: string
   /**
@@ -106,6 +111,8 @@ export interface MenubarNodeMeta {
   kind: MenuChoiceKind
   /** node.label ?? node.value，恒为字符串。 */
   label: string
+  /** 图标原样透传，未提供时为 null。 */
+  icon: IconRecord | null
   /** 副文本原样透传，未提供时为 null。 */
   description: string | null
   /** 快捷键提示；未提供时为 null。 */
@@ -336,6 +343,8 @@ export interface MenubarApi<T extends PropTypes = PropTypes> {
   getItemProps: (props: MenubarItemProps) => T['element']
   getCheckboxItemProps: (props: MenubarCheckboxItemProps) => T['element']
   getRadioItemProps: (props: MenubarRadioItemProps) => T['element']
+  /** 条目文字之前的图标格；装饰态，读屏不念。 */
+  getItemIconProps: (props: MenubarAnyItemProps) => T['element']
   getItemTextProps: (props: MenubarAnyItemProps) => T['element']
   getItemIndicatorProps: (props: MenubarAnyItemProps) => T['element']
   getItemDescriptionProps: (props: MenubarAnyItemProps) => T['element']

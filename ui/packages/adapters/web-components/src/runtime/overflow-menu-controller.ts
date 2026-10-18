@@ -10,7 +10,7 @@
 // 宿主那份属性（菜单的解剖标记让位、宿主的处理器先跑），与 Vue / React 落到节点上的逐字一样。
 // 建出来的节点归 menu 的 scope，不写 data-xh-part（与每页条数下拉、自绘滚动条同一条路）。
 
-import type { Cleanup, IdGenerator, Layer, RuntimeConfig, Scope, Service } from '@xihan-ui/core'
+import type { Cleanup, IconRecord, IdGenerator, Layer, RuntimeConfig, Scope, Service } from '@xihan-ui/core'
 import type { MenuAnyItemProps, MenuApi, MenuSchema } from '@xihan-ui/headless'
 import type { Spreader } from '../dom/spread'
 import type { OverlayExit } from '../overlay-exit'
@@ -42,6 +42,8 @@ export interface OverflowMenuControllerOptions {
 interface OverflowEntry {
   item: HTMLElement
   indicator: HTMLElement | null
+  /** 图标格与里面那枚 xh-icon；条目没有图标时为 null。 */
+  icon: { cell: HTMLElement, glyph: HTMLElement & { icon?: IconRecord } } | null
   text: HTMLElement
   /** 这一条之前的分隔线；没有时为 null。 */
   separator: HTMLElement | null
@@ -199,16 +201,23 @@ export class OverflowMenuController {
       alive.add(meta.value)
       let entry = nodes.entries.get(meta.value)
       const wantsIndicator = meta.kind !== 'item'
-      if (!entry || (entry.indicator != null) !== wantsIndicator) {
+      const wantsIcon = meta.icon != null
+      if (!entry || (entry.indicator != null) !== wantsIndicator || (entry.icon != null) !== wantsIcon) {
         if (entry)
           this.removeEntry(entry)
         const item = doc.createElement('div')
         const indicator = wantsIndicator ? doc.createElement('span') : null
+        // 图标格里放一枚 xh-icon，它不写部件时自己生成 <svg> 与 glyph
+        const icon = wantsIcon ? { cell: doc.createElement('span'), glyph: doc.createElement('xh-icon') } : null
         const text = doc.createElement('span')
         if (indicator)
           item.append(indicator)
+        if (icon) {
+          icon.cell.append(icon.glyph)
+          item.append(icon.cell)
+        }
         item.append(text)
-        entry = { item, indicator, text, separator: null }
+        entry = { item, indicator, icon, text, separator: null }
         nodes.entries.set(meta.value, entry)
       }
       // 首条上的分隔线标记不产出分隔线：菜单开头不留一道空隔
@@ -232,6 +241,11 @@ export class OverflowMenuController {
       spreader.spread(entry.item, itemProps as Record<string, unknown>)
       if (entry.indicator)
         spreader.spread(entry.indicator, menu.getItemIndicatorProps(declaration) as Record<string, unknown>)
+      if (entry.icon) {
+        spreader.spread(entry.icon.cell, menu.getItemIconProps(declaration) as Record<string, unknown>)
+        if (entry.icon.glyph.icon !== meta.icon)
+          entry.icon.glyph.icon = meta.icon ?? undefined
+      }
       spreader.spread(entry.text, menu.getItemTextProps(declaration) as Record<string, unknown>)
       if (entry.text.textContent !== meta.label)
         entry.text.textContent = meta.label
@@ -250,7 +264,7 @@ export class OverflowMenuController {
   }
 
   private removeEntry(entry: OverflowEntry): void {
-    for (const node of [entry.separator, entry.item, entry.indicator, entry.text]) {
+    for (const node of [entry.separator, entry.item, entry.indicator, entry.icon?.cell ?? null, entry.text]) {
       if (node)
         this.options.spreader.release(node)
     }

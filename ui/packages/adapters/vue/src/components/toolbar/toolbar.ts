@@ -5,7 +5,7 @@
 
 // 提供 toolbar 相关实现。
 
-import type { ControlVariant, Direction, Orientation, Size } from '@xihan-ui/core'
+import type { ControlVariant, Direction, IconRecord, Orientation, Size } from '@xihan-ui/core'
 import type { ToolbarApi, ToolbarSchema, ToolbarTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import { toolbarOverflowMenuProps } from '@xihan-ui/headless'
@@ -32,6 +32,7 @@ export const XhToolbarRoot = defineComponent({
     variant: { type: String as PropType<ControlVariant> },
     size: { type: String as PropType<Size> },
     translations: { type: Object as PropType<Partial<ToolbarTranslations>> },
+    itemIcons: { type: Object as PropType<Readonly<Record<string, IconRecord>>> },
   },
   slots: Object as SlotsType<{
     default?: (props: ToolbarRootSlotProps) => VNode[]

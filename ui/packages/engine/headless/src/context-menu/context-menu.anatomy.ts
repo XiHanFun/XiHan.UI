@@ -14,6 +14,7 @@ export const contextMenuAnatomy = createAnatomy('context-menu', [
   'positioner',
   'content',
   'item',
+  'item-icon',
   'item-text',
   'item-indicator',
   'item-description',
