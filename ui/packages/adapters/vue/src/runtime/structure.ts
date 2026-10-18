@@ -9,7 +9,7 @@ import type { StructureChild, StructureNode, StructureOutletNode } from '@xihan-
 import type { Component, VNode, VNodeChild } from 'vue'
 import { isStructureInstance, isStructureLiteral, isStructureOutlet } from '@xihan-ui/headless'
 import { Fragment, h } from 'vue'
-import { XhFieldBoundary } from '../components/field/field'
+import { XhFieldBoundary } from '../components/field/boundary'
 
 /**
  * 部件的内容由作者插槽接管时返回要放进去的内容；返回 undefined 时照结构渲（子节点或文字，带 slot 的节点为空）。

@@ -93,7 +93,8 @@ describe('xh-field 给库内控件接线', () => {
   })
 
   it('组合节点生成的控件（带 data-xh-gen="structure"）归生成它的组件管，不接外层字段的线', async () => {
-    const field = mountField(`${TEXT_FIELD}${SELECT.replace('<xh-select>', '<xh-select data-xh-gen="structure">')}`, 'required')
+    // 组合节点生成的实例落在生成它的组件的根里，外面这层 div 代替那个根
+    const field = mountField(`${TEXT_FIELD}<div>${SELECT.replace('<xh-select>', '<xh-select data-xh-gen="structure">')}</div>`, 'required')
     const input = field.querySelector('input')!
     const trigger = field.querySelector<HTMLElement>('xh-select [data-xh-part="trigger"]')!
     await vi.waitFor(() => expect(input.getAttribute('aria-describedby')).toBe(idOf(field, 'description')))
