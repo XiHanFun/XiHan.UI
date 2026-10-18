@@ -12,13 +12,13 @@ import type { PropertyEditor, PropertyEditorContext, PropertyEditorInstance } fr
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { PropertyField } from '../properties/field'
 import type { FieldRow } from '../properties/field-row'
-import type { DesignerPropertiesTranslations, DesignerSettingsTranslations } from '../translations'
+import type { DesignerSettingsTranslations } from '../translations'
 import type { DesignerGeneralSettingsOptions, DesignerSettingItem, DesignerSettings, DesignerSettingsPolicy, DesignerSettingsSection } from './model'
 import { createCounterIdGenerator } from '@xihan-ui/core'
 import { BUILTIN_CONTROL_KINDS } from '@xihan-ui/designer-kit/properties'
 import { BOOLEAN_CONVERTER, createAuthoredElement, createGeneratedElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { defineSettingsElements } from '../internal/ui-elements'
-import { createPropertyField, DEFAULT_PROPERTIES_TRANSLATIONS } from '../properties/field'
+import { createPropertyField } from '../properties/field'
 import { createFieldRow, placeAsGroup, refreshFieldRow } from '../properties/field-row'
 import { designerGeneralSettings, settingKey, settingPolicy, settingValue, sortSettingsSections } from './model'
 
@@ -129,8 +129,6 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
   #parts: Parts | undefined
   readonly #pages = new Map<string, Page>()
   readonly #rows = new Map<string, Row>()
-  /** 字段的文案：对话框打开时内容搬到浮层根，字段从那里找不到设计器的配置，由对话框在原位解析好交给它们。 */
-  readonly #fieldTranslations: Record<string, unknown> = {}
   #pagesKey = ''
 
   constructor() {
@@ -155,7 +153,6 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
     super.update(changed)
     const parts = this.#ensureParts()
     const t = this.#config.translations<DesignerSettingsTranslations>(TAG, DEFAULT_TRANSLATIONS, this.translations)
-    Object.assign(this.#fieldTranslations, this.#config.translations<DesignerPropertiesTranslations>('xh-designer-properties', DEFAULT_PROPERTIES_TRANSLATIONS))
     setText(parts.title, t.title)
     parts.list.setAttribute('aria-label', t.sections)
     const sections = this.#visibleSections(t)
@@ -286,7 +283,6 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
       required: item.required,
       setValue: write,
       commit: () => {},
-      translations: this.#fieldTranslations as Partial<DesignerPropertiesTranslations>,
     }, { value: undefined })
     field.element.setAttribute('data-setting', key)
     return { element: field.element, update: state => field.update(state) }

@@ -1,18 +1,24 @@
 // 设置对话框在真实 Chromium 与组件皮肤下：左边竖排分区、右边条目，换页时对话框不跳高；
-// 主题写在设计器根上，搬到浮层根的对话框经视觉桥跟着变暗；没有 wc.* 诊断，axe 也没有违规。
+// 主题写在设计器根上，搬到浮层根的对话框经视觉桥跟着变暗；设计器外面包一层局部 <xh-config> 时，搬到浮层根的
+// 标题、字段与对话框自己的文案都取这一层的语言；没有 wc.* 诊断，axe 也没有违规。
 import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { DesignerSettingsSection, XhDesignerSettingsElement } from '../../src'
 import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
 import { expectNoAxeViolations } from '@xihan-ui/testing/a11y'
 import { BRAND_PRESET_COLORS, BRAND_PRESETS } from '@xihan-ui/tokens'
+import { mergeXhConfig } from '@xihan-ui/web-components'
+import { defineXhElement, XhConfigElement } from '@xihan-ui/web-components/define'
+import { zhCN } from '@xihan-ui/web-components/locale'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { createDesignerSettingsHost, defineDesignerShell } from '../../src'
+import { designerShellZhCN } from '../../src/locale'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 import '../../style.css'
 
 defineDesignerShell()
+defineXhElement('xh-config', XhConfigElement)
 
 const flowSection: DesignerSettingsSection = {
   id: 'flow',
@@ -128,6 +134,28 @@ describe('设置对话框', () => {
     host.dispose()
     expect(tokenColor(root, '--xh-bg-brand')).toBe(before)
     page.remove()
+  })
+
+  it('设计器外面包一层局部 <xh-config>：对话框搬到浮层根以后，标题、字段与关闭钮的文案都取这一层的语言', async () => {
+    const scope = document.createElement('xh-config') as HTMLElement & { translations?: unknown }
+    scope.translations = mergeXhConfig(zhCN, designerShellZhCN).translations
+    root = scope
+    const element = document.createElement('xh-designer-settings')
+    element.general = { brands: [{ value: 'blue', color: '#1677ff' }], customBrand: true }
+    element.sections = [flowSection]
+    scope.append(element)
+    document.body.append(scope)
+    element.show()
+    await element.updateComplete
+    await settle()
+    const dialog = content()
+    // 内容确实搬离了设计器所在的位置
+    expect(scope.contains(dialog)).toBe(false)
+    const brand = dialog.querySelector<HTMLElement>('[data-setting="general.brand"]')!
+    const names = Array.from(brand.querySelectorAll('[aria-label]'), node => node.getAttribute('aria-label'))
+    const close = dialog.querySelector<HTMLElement>('[data-xh-part="close-trigger"], [data-part="close-trigger"]')!
+    expect([dialog.querySelector('[data-xh-part="title"], [data-part="title"]')!.textContent, names.includes('自定义颜色'), close.getAttribute('aria-label')])
+      .toEqual(['设置', true, '关闭'])
   })
 
   it('打开时没有 wc.* 诊断，axe 也没有违规', async () => {
