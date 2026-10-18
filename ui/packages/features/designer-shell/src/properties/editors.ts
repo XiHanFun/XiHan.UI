@@ -1028,10 +1028,10 @@ const OPTION_COLUMNS = ['value', 'label', 'disabled'] as const
 
 type OptionColumn = (typeof OPTION_COLUMNS)[number]
 
-/** 选项表的一行：每列一个字段，字段的控件是这一格的输入。 */
+/** 选项表的一行：每列一个字段，字段的控件是这一格的输入；不许禁用时没有禁用那一格。 */
 interface OptionRow {
-  readonly fields: Readonly<Record<OptionColumn, FieldHost>>
-  readonly controls: Readonly<Record<OptionColumn, ControlElement>>
+  readonly fields: Readonly<Partial<Record<OptionColumn, FieldHost>>>
+  readonly controls: Readonly<Partial<Record<OptionColumn, ControlElement>>>
   /** 写上行 key 之后为 true。 */
   placed: boolean
 }
@@ -1057,14 +1057,15 @@ function withOptionKey(item: JsonValue | undefined, key: OptionColumn, value: st
   return next
 }
 
-/** 问题落在一项的哪一格：值、文字、禁用三个键落在各自那一格，别的键与这一项本身落在值上。 */
-function optionColumnOf(path: PropertyEditorContext['issues'][number]['path']): OptionColumn {
+/** 问题落在一项的哪一格：值、文字、禁用三个键落在各自那一格（没有禁用那一列时落在值上），别的键与这一项本身落在值上。 */
+function optionColumnOf(path: PropertyEditorContext['issues'][number]['path'], columns: readonly OptionColumn[]): OptionColumn {
   const key = path[1]
-  return key === 'label' || key === 'disabled' ? key : 'value'
+  return (key === 'label' || key === 'disabled') && columns.includes(key) ? key : 'value'
 }
 
 /**
- * 选项列表：库内 xh-field-array 的表格排布，一项一行，三格依次是值、文字与禁用，行号、上移下移与删除把手、新增把手由它铺出；
+ * 选项列表：库内 xh-field-array 的表格排布，一项一行，三格依次是值、文字与禁用（allowDisabled 为 false 时没有禁用这一列），
+ * 行号、拖动、上移下移与删除把手、新增把手由它铺出；
  * 每格是一个字段，控件以「列名 + 第几项」为名。值与文字边输入边写入、失焦封口；勾选禁用，以及增删与换序，各是一步。
  * 新增的一项只有空的 value，新增后焦点落到它的值上。文字为空、不禁用时不写这两个键，别的键（tone、description）原样留着。
  * 里层的问题按路径标到格上：[i, "value"] 等落在那一格的字段上（aria-invalid 与错误文案由字段接到控件上），
@@ -1072,6 +1073,7 @@ function optionColumnOf(path: PropertyEditorContext['issues'][number]['path']): 
  */
 function optionsEditor(initial: FieldContext): FieldInstance {
   const doc = initial.ownerDocument
+  const columns: readonly OptionColumn[] = controlOf<'options'>(initial).allowDisabled === false ? ['value', 'label'] : OPTION_COLUMNS
   const array: FieldArrayControl = createAuthoredElement(doc, 'xh-field-array', { 'data-xh-part': 'control' })
   array.layout = 'table'
   array.movable = true
@@ -1132,10 +1134,10 @@ function optionsEditor(initial: FieldContext): FieldInstance {
     return { field, control }
   }
   const createRow = (token: object): OptionRow => {
-    const cells = OPTION_COLUMNS.map(column => createCell(token, column))
+    const cells = columns.map(column => createCell(token, column))
     return {
-      fields: Object.fromEntries(OPTION_COLUMNS.map((column, index) => [column, cells[index]!.field])) as Record<OptionColumn, FieldHost>,
-      controls: Object.fromEntries(OPTION_COLUMNS.map((column, index) => [column, cells[index]!.control])) as Record<OptionColumn, ControlElement>,
+      fields: Object.fromEntries(columns.map((column, index) => [column, cells[index]!.field])),
+      controls: Object.fromEntries(columns.map((column, index) => [column, cells[index]!.control])),
       placed: false,
     }
   }
@@ -1152,9 +1154,9 @@ function optionsEditor(initial: FieldContext): FieldInstance {
       const row = rows.get(token)
       if (row === undefined || row.placed)
         return
-      for (const column of OPTION_COLUMNS) {
-        row.fields[column].setAttribute('slot', `item-cell:${items[index]!.key}:${column}`)
-        row.fields[column].hidden = false
+      for (const column of columns) {
+        row.fields[column]!.setAttribute('slot', `item-cell:${items[index]!.key}:${column}`)
+        row.fields[column]!.hidden = false
       }
       row.placed = true
     })
@@ -1165,24 +1167,25 @@ function optionsEditor(initial: FieldContext): FieldInstance {
     const item = options[index]
     const t = context.translations
     const issues = context.issues.filter(issue => issue.path[0] === index)
-    for (const column of OPTION_COLUMNS) {
-      const control = row.controls[column]
+    for (const column of columns) {
+      const control = row.controls[column]!
       setAttributes(control, { 'aria-label': t.optionCell(t.optionColumns[column], index + 1) })
       control.toggleAttribute('read-only', context.readonly)
-      const message = issues.find(issue => optionColumnOf(issue.path) === column)?.message
-      const field = row.fields[column]
+      const message = issues.find(issue => optionColumnOf(issue.path, columns) === column)?.message
+      const field = row.fields[column]!
       if (field.errorText !== (message ?? ''))
         field.errorText = message ?? ''
       if (field.invalid !== (message !== undefined))
         field.invalid = message !== undefined
     }
+    const checkbox = row.controls.disabled
     const checked = isPlainObject(item) && item.disabled === true
-    if (row.controls.disabled.checked !== checked)
-      row.controls.disabled.checked = checked
+    if (checkbox && checkbox.checked !== checked)
+      checkbox.checked = checked
     for (const column of ['value', 'label'] as const) {
       const text = optionText(item, column)
-      if (row.controls[column].value !== text)
-        row.controls[column].value = text
+      if (row.controls[column]!.value !== text)
+        row.controls[column]!.value = text
     }
   }
 
@@ -1235,7 +1238,7 @@ function optionsEditor(initial: FieldContext): FieldInstance {
     context.commit()
     if (mutation.type === 'insert') {
       const row = rows.get(tokens[mutation.index]!)
-      void array.updateComplete?.then(() => row?.controls.value.querySelector<HTMLElement>('input')?.focus())
+      void array.updateComplete?.then(() => row?.controls.value!.querySelector<HTMLElement>('input')?.focus())
     }
   })
 
@@ -1244,7 +1247,7 @@ function optionsEditor(initial: FieldContext): FieldInstance {
     const t = next.translations
     array.readOnly = next.readonly
     if (array.columns === undefined || array.columns.some(column => column.label !== t.optionColumns[column.id as OptionColumn]))
-      array.columns = OPTION_COLUMNS.map(id => ({ id, label: t.optionColumns[id], ...(id === 'disabled' ? { width: 'auto' } : { minWidth: OPTION_TEXT_MIN_WIDTH }) }))
+      array.columns = columns.map(id => ({ id, label: t.optionColumns[id], ...(id === 'disabled' ? { width: 'auto' } : { minWidth: OPTION_TEXT_MIN_WIDTH }) }))
     const value = next.mixed || !Array.isArray(next.value) ? [] : next.value
     if (!jsonEquals(value, options)) {
       options = value

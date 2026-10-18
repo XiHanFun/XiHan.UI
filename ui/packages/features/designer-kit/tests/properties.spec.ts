@@ -162,6 +162,8 @@ describe('checkPropertyValue', () => {
     [{ kind: 'options' }, [{ value: 'a', tone: 'pink' }], 'invalid-option'],
     [{ kind: 'options' }, [{ value: 'a', children: [] }], 'unknown-key'],
     [{ kind: 'options' }, ['a'], 'invalid-type'],
+    [{ kind: 'options', allowDisabled: false }, [{ value: 'a', label: '甲' }], undefined],
+    [{ kind: 'options', allowDisabled: false }, [{ value: 'a', disabled: false }], 'unknown-key'],
   ]
   it('内建编辑方式的取值约束', () => {
     for (const [control, value, code] of cases)
@@ -179,6 +181,7 @@ describe('findPropertyValueIssue', () => {
     expect(findPropertyValueIssue({ kind: 'options' }, [{ 'value': 'a', 'x/y': 1 }])).toEqual({ code: 'unknown-key', path: [0, 'x/y'] })
     expect(findPropertyValueIssue({ kind: 'options' }, 'a')).toEqual({ code: 'invalid-type', path: [] })
     expect(findPropertyValueIssue({ kind: 'options' }, [{ value: 'a' }])).toBeUndefined()
+    expect(findPropertyValueIssue({ kind: 'options', allowDisabled: false }, [{ value: 'a' }, { value: 'b', disabled: true }])).toEqual({ code: 'unknown-key', path: [1, 'disabled'] })
   })
 
   it('别的编辑方式的问题落在值本身', () => {
