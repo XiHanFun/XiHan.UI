@@ -77,6 +77,7 @@ export { createPerDocumentRegistry } from './structure/per-document-registry'
 export type { PortalLease, PortalLeaseOptions } from './structure/portal-lease'
 export { createPortalLease } from './structure/portal-lease'
 export { ensurePortalRoot } from './structure/portal-root'
+export { logicallyContains, logicalParentElement } from './structure/portal-source'
 export type { PortalVisualBridge, PortalVisualBridgeOptions } from './structure/portal-visual-bridge'
 export { createPortalVisualBridge } from './structure/portal-visual-bridge'
 // 类型与生命周期

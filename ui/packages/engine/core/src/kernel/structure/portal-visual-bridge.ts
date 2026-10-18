@@ -19,9 +19,13 @@
 // 「壳自己解析不出来」由两层判据收窄，见 portal-visual-index：只由文档根或桥复制过去的那些
 // 属性选中的规则（令牌层的 :where(:root) 与 :where([data-density='compact']) 之类），壳带着
 // 同样的属性会把同一条规则再命中一次，不必逐名字复制；只有别处声明的名字才需要读与比对。
+//
+// 桥活着期间还把壳登记为来源的逻辑子节点（portal-source），沿逻辑祖先链取作用域配置的一方
+// 走到壳时跳回来源。
 
 import type { PortalVisualIndex } from './portal-visual-index'
 import { isShadowRoot } from '../guards'
+import { bindPortalSource } from './portal-source'
 import { collectReferences, portalVisualIndex } from './portal-visual-index'
 
 const VISUAL_AXES = [
@@ -740,6 +744,7 @@ export function createPortalVisualBridge(options: PortalVisualBridgeOptions): Po
     }
     throw collectedError(error, rollbackErrors, '[xh] Portal 视觉环境初始化与回滚同时失败')
   }
+  const unbindSource = bindPortalSource(shell, source)
 
   return {
     sync,
@@ -751,6 +756,7 @@ export function createPortalVisualBridge(options: PortalVisualBridgeOptions): Po
       for (const slot of attachedSlots)
         slot.removeEventListener('slotchange', onSlotChange)
       attachedSlots = []
+      unbindSource()
       applyAttributes(shell, initial)
       restoreCustomProperties(shell, initialCustom)
     },

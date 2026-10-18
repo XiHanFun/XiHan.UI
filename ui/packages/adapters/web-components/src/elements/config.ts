@@ -21,6 +21,7 @@ import type {
 import type { XhTranslationOverrides } from '@xihan-ui/headless'
 import type { XhConfig, XhConfigScope } from '../config'
 import type { PropertyValues } from '../reactive'
+import { logicalParentElement } from '@xihan-ui/core'
 import { createVisualEnvironmentController } from '@xihan-ui/core/visual-environment'
 import { notifyXhConfigChange } from '../config'
 import { XhReactiveElement } from '../reactive'
@@ -159,7 +160,7 @@ export class XhConfigElement extends XhReactiveElement implements XhConfigScope 
   }
 
   private parentVisualEnvironment(): VisualEnvironmentController | undefined {
-    for (let parent = this.parentElement; parent; parent = parent.parentElement) {
+    for (let parent = logicalParentElement(this); parent; parent = logicalParentElement(parent)) {
       if ('xhConfig' in parent && 'visualEnvironmentController' in parent)
         return (parent as XhConfigScope).visualEnvironmentController
     }
