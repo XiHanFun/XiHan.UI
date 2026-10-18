@@ -129,18 +129,33 @@ describe('acquireScrollLock 目标合同', () => {
     expect(el.style.overflow).toBe('')
   })
 
-  it('同一 Document 已锁一个目标时，第二个不同目标明确失败且不改变首锁', () => {
+  it('同一 Document 里不同目标各锁各的：先放手的只还原自己那处，另一处照旧锁着', () => {
     const first = scrollableBox()
     const second = scrollableBox()
-    const handle = lock(configFor(() => first))
-
-    expect(() => acquireScrollLock({ config: configFor(() => second) }))
-      .toThrow(/同一 Document.*不能同时锁定不同目标/)
+    const outer = acquireScrollLock({ config: configFor(() => first) })
+    const inner = acquireScrollLock({ config: configFor(() => second) })
     expect(first.style.overflow).toBe('hidden')
-    expect(second.style.overflow).toBe('')
+    expect(second.style.overflow).toBe('hidden')
 
-    handle.dispose()
+    outer.dispose()
     expect(first.style.overflow).toBe('')
+    expect(second.style.overflow).toBe('hidden')
+    inner.dispose()
+    expect(second.style.overflow).toBe('')
+  })
+
+  it('外层锁着滚动容器时里层锁页面：两处都锁住，按里层先放手的顺序各自还原', () => {
+    const scroller = scrollableBox()
+    const outer = acquireScrollLock({ config: configFor(() => scroller) })
+    const inner = acquireScrollLock({ config: configFor(() => null) })
+    expect(scroller.style.overflow).toBe('hidden')
+    expect(document.body.style.overflow).toBe('hidden')
+
+    inner.dispose()
+    expect(document.body.style.overflow).toBe('')
+    expect(scroller.style.overflow).toBe('hidden')
+    outer.dispose()
+    expect(scroller.style.overflow).toBe('')
   })
 
   it('scrollRoot getter 的 acquire/dispose 重入均被拒绝，既有句柄仍可正常释放', () => {
