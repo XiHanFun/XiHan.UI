@@ -788,3 +788,134 @@ describe('<xh-designer-properties> 里层的问题', () => {
     expect(invalid()).toEqual([false])
   })
 })
+
+describe('<xh-designer-properties> 选项表', () => {
+  interface FieldArray extends HTMLElement {
+    readonly items: readonly { readonly key: string }[]
+    add: () => void
+    removeItem: (index: number) => void
+    move: (from: number, to: number) => void
+    readonly updateComplete: Promise<unknown>
+  }
+  const field = (value: JsonValue): DesignerPropertyTarget => ({
+    kind: 'field',
+    id: 'f1',
+    value: { data: { options: value } },
+    descriptors: [{ path: ['data', 'options'], control: { kind: 'options' }, label: '选项' }],
+  })
+  const tableOf = (panel: Element): FieldArray => row(panel, 'data.options').querySelector<FieldArray>('xh-field-array')!
+  /** 第 index 行（从 0 数）某一列那一格的字段。 */
+  const cell = (panel: Element, index: number, column: string): HTMLElement & { errorText?: string, invalid?: boolean } => {
+    const array = tableOf(panel)
+    return array.querySelector(`[slot="item-cell:${array.items[index]!.key}:${column}"]`)!
+  }
+  const control = (panel: Element, index: number, column: string): HTMLElement & { value?: string, checked?: boolean } =>
+    cell(panel, index, column).querySelector<HTMLElement & { value?: string, checked?: boolean }>(column === 'disabled' ? 'xh-checkbox' : 'xh-text-field')!
+  async function settle(panel: XhDesignerPropertiesElement): Promise<void> {
+    await panel.updateComplete
+    await tableOf(panel).updateComplete
+    await tableOf(panel).updateComplete
+  }
+
+  it('一项一行：值、文字与禁用三格放进字段，控件以「列名 + 第几项」为名，选项表放进这一行的字段', async () => {
+    const diagnostics = recordWcDiagnostics()
+    const panel = await mount((element) => {
+      element.targets = [field([{ value: 'a', label: '甲' }, { value: 'b', disabled: true, tone: 'danger' }])]
+    })
+    await settle(panel)
+    const array = tableOf(panel)
+    expect(array.closest('xh-field')!.closest('[data-part="property"]')).toBe(row(panel, 'data.options'))
+    expect(array.items).toHaveLength(2)
+    expect([control(panel, 0, 'value').value, control(panel, 0, 'label').value, control(panel, 0, 'disabled').checked]).toEqual(['a', '甲', false])
+    expect([control(panel, 1, 'value').value, control(panel, 1, 'label').value, control(panel, 1, 'disabled').checked]).toEqual(['b', '', true])
+    expect(['value', 'label', 'disabled'].map(column => control(panel, 1, column).getAttribute('aria-label'))).toEqual(['Value, option 2', 'Label, option 2', 'Disabled, option 2'])
+    expect(diagnostics.codes()).toEqual([])
+    diagnostics.stop()
+  })
+
+  it('改格子写回整份选项：文字为空、不禁用时去掉这两个键，别的键原样留着；输入失焦封口，勾选即封口', async () => {
+    const panel = await mount((element) => {
+      element.targets = [field([{ value: 'a', label: '甲' }, { value: 'b', disabled: true, tone: 'danger' }])]
+    })
+    await settle(panel)
+    const changes = record(panel, 'property-change')
+    const commits = record(panel, 'property-commit')
+    emit(control(panel, 1, 'label'), 'value-change', { value: '乙' })
+    expect(changes.at(-1)!).toMatchObject({ path: ['data', 'options'], value: [{ value: 'a', label: '甲' }, { value: 'b', disabled: true, tone: 'danger', label: '乙' }] })
+    expect(commits).toHaveLength(0)
+    control(panel, 1, 'label').dispatchEvent(new FocusEvent('focusout', { bubbles: true }))
+    expect(commits).toHaveLength(1)
+    emit(control(panel, 0, 'label'), 'value-change', { value: '' })
+    expect(changes.at(-1)!.value).toEqual([{ value: 'a' }, { value: 'b', disabled: true, tone: 'danger', label: '乙' }])
+    emit(control(panel, 1, 'disabled'), 'checked-change', { checked: false })
+    expect([changes.at(-1)!.value, commits.length]).toEqual([[{ value: 'a' }, { value: 'b', tone: 'danger', label: '乙' }], 2])
+  })
+
+  it('增删与换序各是一步：新增的一项只有空的 value，删掉最后一项即清除；面板换回同一份值时格子不重建', async () => {
+    let value: JsonValue = [{ value: 'a' }, { value: 'b' }]
+    const panel = await mount((element) => {
+      element.targets = [field(value)]
+    })
+    await settle(panel)
+    const changes = record(panel, 'property-change')
+    const commits = record(panel, 'property-commit')
+    const follow = async (): Promise<void> => {
+      value = changes.at(-1)!.value as JsonValue
+      panel.targets = [field(value)]
+      await settle(panel)
+    }
+    const first = control(panel, 0, 'value')
+    tableOf(panel).add()
+    expect([changes.at(-1)!.value, commits.length]).toEqual([[{ value: 'a' }, { value: 'b' }, { value: '' }], 1])
+    await follow()
+    expect([tableOf(panel).items.length, control(panel, 0, 'value')]).toEqual([3, first])
+    tableOf(panel).move(0, 2)
+    expect([changes.at(-1)!.value, commits.length]).toEqual([[{ value: 'b' }, { value: '' }, { value: 'a' }], 2])
+    await follow()
+    expect(control(panel, 2, 'value')).toBe(first)
+    tableOf(panel).removeItem(1)
+    expect([changes.at(-1)!.value, commits.length]).toEqual([[{ value: 'b' }, { value: 'a' }], 3])
+    await follow()
+    tableOf(panel).removeItem(0)
+    tableOf(panel).removeItem(0)
+    expect(changes.at(-1)!.value).toBeUndefined()
+  })
+
+  it('里层的问题标到格上：[i, "value"] 等落在那一格的字段，别的键与这一项本身落在值上；行下不重复，清掉后收回', async () => {
+    const panel = await mount((element) => {
+      element.targets = [field([{ value: 'a' }, { value: 'b', tone: 'pink' }, { value: '' }])]
+      element.errors = [
+        { target: { kind: 'field', id: 'f1' }, path: ['data', 'options', 2, 'value'], message: '第 3 项的值不能为空' },
+        { target: { kind: 'field', id: 'f1' }, path: ['data', 'options', 1, 'tone'], message: '色调不对' },
+        { target: { kind: 'field', id: 'f1' }, path: ['data', 'options', 0, 'label'], message: '缺文字' },
+      ]
+    })
+    await settle(panel)
+    const marked = (): [string, string | undefined][] => [0, 1, 2].flatMap(index => ['value', 'label', 'disabled'].map((column): [string, string | undefined] => {
+      const found = cell(panel, index, column)
+      return [`${index}.${column}`, found.invalid ? found.errorText : undefined]
+    })).filter(([, message]) => message !== undefined)
+    expect(marked()).toEqual([['0.label', '缺文字'], ['1.value', '色调不对'], ['2.value', '第 3 项的值不能为空']])
+    const own = row(panel, 'data.options').querySelector<HTMLElement>(':scope > xh-field > [data-xh-part="root"] > [data-xh-part="error-text"]')
+    expect(own === null || own.hidden || own.textContent === '').toBe(true)
+    panel.errors = []
+    await settle(panel)
+    expect(marked()).toEqual([])
+  })
+
+  it('只读时格子只读、不派发，多个对象取值不同时没有行', async () => {
+    const panel = await mount((element) => {
+      element.readonly = true
+      element.targets = [field([{ value: 'a' }])]
+    })
+    await settle(panel)
+    const changes = record(panel, 'property-change')
+    expect([control(panel, 0, 'value').hasAttribute('read-only'), (tableOf(panel) as FieldArray & { readOnly?: boolean }).readOnly]).toEqual([true, true])
+    emit(control(panel, 0, 'value'), 'value-change', { value: 'x' })
+    expect(changes).toHaveLength(0)
+    panel.readonly = false
+    panel.targets = [field([{ value: 'a' }]), { ...field([{ value: 'b' }]), id: 'f2' }]
+    await settle(panel)
+    expect(tableOf(panel).items).toHaveLength(0)
+  })
+})

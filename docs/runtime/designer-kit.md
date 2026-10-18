@@ -30,7 +30,7 @@ const { dx, dy, guides } = snapRect(draggingRect, { targets, threshold: 6 / view
 pnpm add @xihan-ui/designer-kit
 ```
 
-运行时只依赖 `@xihan-ui/core` 的 `./json` 与 `./hotkey` 子入口（`./hotkey` 是快捷键的平台写法与按键命中）和 `@xihan-ui/pointer` 的滚轮换算，子入口 `./properties` 另用 `@xihan-ui/expression` 的 `checkFormatSpec` 检查格式说明；import 无副作用，浏览器与服务端都能运行。属性描述与结构校验分别在子入口 `./properties` 与 `./schema`，只做画布的页面（如流程查看器）不为它们付字节。
+运行时只依赖 `@xihan-ui/core` 的 `./json` 与 `./hotkey` 子入口（`./hotkey` 是快捷键的平台写法与按键命中）和 `@xihan-ui/pointer` 的滚轮换算，子入口 `./properties` 另用 `@xihan-ui/expression` 的 `checkFormatSpec` 检查格式说明、`@xihan-ui/core` 的 `./options` 检查选项列表；import 无副作用，浏览器与服务端都能运行。属性描述与结构校验分别在子入口 `./properties` 与 `./schema`，只做画布的页面（如流程查看器）不为它们付字节。
 
 ## 撤销重做
 
@@ -375,6 +375,7 @@ const issues = checkProperties(descriptors, node, { path: ["nodes", 3], target: 
 | `{ kind: "format", kinds? }` | `@xihan-ui/expression` 的格式说明，按 `checkFormatSpec` 检查，没过报 `invalid-value`；`kinds` 是允许的格式种类，缺省全部 |
 | `{ kind: "filter", fields?, parameters?, maxDepth?, ids? }` | 条件树（`@xihan-ui/viz` 的 `FilterGroup`）：组是 `{ logic: "and" \| "or", conditions }`，条件是 `{ field, operator }`，不是对象报 `invalid-type`，这层形状不对报 `invalid-value`；字段在不在、运算符合不合由各款自己的校验报。可筛选的字段：描述里写了 `fields`（`FilterField`）就用它，没写时用属性面板给的 `dataFields` 按 `listFilterFields` 列出的值字段。`parameters` 是可引用的参数（`FilterParameter`），`maxDepth` 限子组层数，`ids` 为 true 时新建的条件与组带 id。这四项只给编辑器用 |
 | `{ kind: "swatch", options, custom? }` | 某个选项的 `value`；选项是 `PropertySwatchOption`：`value` 是选中时写入的值，`color` 是格子画出的颜色（能解析的 CSS 颜色串），`label` 是读屏念的名字。`custom` 为 true 时另可填任意颜色，取值是 `#` 开头的 3、4、6、8 位十六进制色。不是字符串报 `invalid-type`，两样都不是报 `invalid-option` |
+| `{ kind: "options", requireLabel? }` | 选项列表，每项是 `{ value, label?, disabled?, tone?, description? }`，与选择类组件的选项同一形状，按 `@xihan-ui/core/options` 的 `findOptionViolation` 严格检查：不是数组或某项、某个键的类型不对报 `invalid-type`，有别的键报 `unknown-key`，`tone` 不是色调名报 `invalid-option`；`value` 是空串或缺了 `value` 报 `required`，与前面的项重复报 `duplicate-value`；`requireLabel` 为 true 时每项都要有不为空的 `label`，缺了报 `required`。问题落在那一项的那个键上，路径如 `[2, "value"]`，按项的先后只报第一处 |
 
 number 与 sides 的数值约束是同一个类型 `PropertyNumberConstraints`；四边的键与次序是 `PROPERTY_SIDES`（`top`、`right`、`bottom`、`left`），取值类型是 `PropertySides`。
 
@@ -383,8 +384,9 @@ number 与 sides 的数值约束是同一个类型 `PropertyNumberConstraints`�
 | `evaluateCondition(condition, target)` / `isPropertyVisible(descriptor, target)` | 求值显示条件，equals 与 oneOf 按 JSON 值比较 |
 | `groupProperties(descriptors, target, order?)` | 只收显示中的属性；`order` 里的组在前，其余按出现先后，无组的排最后，空组不出现 |
 | `nestProperties(prefix, descriptors)` | 把相对子对象的描述换成相对上级对象：`path` 与显示条件里的 `path` 都接在 `prefix` 之后，产品扩展的字段原样保留；同一组描述既给子对象的面板用，又拼进上级对象的描述时用它 |
-| `checkPropertyValue(control, value)` | 内建编辑方式的取值检查，返回 `invalid-type`、`invalid-value`、`out-of-range`、`not-integer`、`invalid-option`、`invalid-color`、`unknown-key` 或 `undefined` |
-| `checkProperties(descriptors, target, { path?, target?, controls? })` | 只看显示中的属性：必填未填报 `required`，内建取值不合法报对应码，登记在 `controls` 里的编辑方式交给它的 `check`，既不是内建也没登记的报 `unknown-control`；返回结构问题，路径以 `path` 为前缀 |
+| `checkPropertyValue(control, value)` | 内建编辑方式的取值检查，返回 `invalid-type`、`invalid-value`、`out-of-range`、`not-integer`、`invalid-option`、`invalid-color`、`unknown-key`、`required`、`duplicate-value` 或 `undefined` |
+| `findPropertyValueIssue(control, value)` | 同 `checkPropertyValue`，另给出问题落在值里的哪一处（`PropertyValueIssue`：`{ code, path }`，`path` 相对这个值）：`options` 落在那一项的那个键上，别的编辑方式落在值本身（`[]`） |
+| `checkProperties(descriptors, target, { path?, target?, controls? })` | 只看显示中的属性：必填未填报 `required`，内建取值不合法报对应码（路径接到值里出问题的那一处，如选项列表的 `[...属性路径, 2, "value"]`），登记在 `controls` 里的编辑方式交给它的 `check`，既不是内建也没登记的报 `unknown-control`；返回结构问题，路径以 `path` 为前缀 |
 | `mergePropertyEditorTables(layers)` | 把几层编辑器表叠成一张，逐键合并，后面的压前面的 |
 | `applyDefaults(target, descriptors)` | 写入缺省值，中间缺少的对象键补成空对象；没有可写的返回同一个对象 |
 | `resolvePropertyEditor(table, targetKind, descriptor)` | 按「对象种类 + 路径」→「路径」→「编辑方式」查编辑器；表里放 `PropertyEditor` 或编辑器 id 都可以，路径键用 `formatJsonPath` 的写法 |
@@ -432,7 +434,7 @@ interface SchemaIssue<C extends string = string> {
 }
 ```
 
-通用问题码：`required`、`invalid-type`、`invalid-value`、`out-of-range`、`not-integer`、`invalid-option`、`invalid-color`、`empty`、`unknown-key`、`duplicate-key`、`duplicate-id`、`unknown-control`。
+通用问题码：`required`、`invalid-type`、`invalid-value`、`out-of-range`、`not-integer`、`invalid-option`、`invalid-color`、`empty`、`unknown-key`、`duplicate-key`、`duplicate-id`、`duplicate-value`（选项列表里 value 重复）、`unknown-control`。
 
 ```ts
 import { createIssueSink, readNumber, readObject, readString, withSeverity } from "@xihan-ui/designer-kit/schema";

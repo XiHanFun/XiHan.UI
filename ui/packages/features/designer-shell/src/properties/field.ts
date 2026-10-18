@@ -31,6 +31,8 @@ export const DEFAULT_PROPERTIES_TRANSLATIONS: DesignerPropertiesTranslations = {
   sides: { all: 'All sides', top: 'Top', right: 'Right', bottom: 'Bottom', left: 'Left' },
   sidesIncomplete: 'Fill in all four sides',
   customColor: 'Custom color',
+  optionColumns: { value: 'Value', label: 'Label', disabled: 'Disabled' },
+  optionCell: (column, row) => `${column}, option ${row}`,
 }
 
 /** createPropertyField 的选项：建好后不再变的部分。 */

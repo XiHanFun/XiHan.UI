@@ -23,6 +23,8 @@ const translations: DesignerShellLocaleTranslations = {
     sides: { all: '네 변', top: '위', right: '오른쪽', bottom: '아래', left: '왼쪽' },
     sidesIncomplete: '네 변을 모두 입력하세요',
     customColor: '사용자 지정 색',
+    optionColumns: { value: '값', label: '레이블', disabled: '비활성' },
+    optionCell: (column, row) => `${row}번째 항목의 ${column}`,
   },
   'xh-designer-issues': {
     title: '문제',

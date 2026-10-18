@@ -33,6 +33,10 @@ export interface DesignerPropertiesTranslations {
   readonly sidesIncomplete: string
   /** 颜色预设旁边自定义颜色框的名字。 */
   readonly customColor: string
+  /** 选项表三列的列名：值、文字与禁用。 */
+  readonly optionColumns: Readonly<{ value: string, label: string, disabled: string }>
+  /** 选项表一格里控件的名字：column 是这一列的列名，row 是第几项（从 1 数）。 */
+  readonly optionCell: (column: string, row: number) => string
 }
 
 /** 问题列表的文案。 */

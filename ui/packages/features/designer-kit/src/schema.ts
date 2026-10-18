@@ -50,6 +50,7 @@ export type CommonIssueCode
     | 'unknown-key'
     | 'duplicate-key'
     | 'duplicate-id'
+    | 'duplicate-value'
     | 'unknown-control'
 
 /** 问题的严重程度；没写时为 error。 */

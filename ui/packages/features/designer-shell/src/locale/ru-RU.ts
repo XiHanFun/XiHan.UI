@@ -34,6 +34,8 @@ const translations: DesignerShellLocaleTranslations = {
     sides: { all: 'Все стороны', top: 'Сверху', right: 'Справа', bottom: 'Снизу', left: 'Слева' },
     sidesIncomplete: 'Заполните все четыре стороны',
     customColor: 'Свой цвет',
+    optionColumns: { value: 'Значение', label: 'Подпись', disabled: 'Отключено' },
+    optionCell: (column, row) => `${column}, вариант ${row}`,
   },
   'xh-designer-issues': {
     title: 'Проблемы',

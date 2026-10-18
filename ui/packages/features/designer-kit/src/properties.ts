@@ -7,11 +7,13 @@
 // 显示条件、分组、缺省值，以及自定义编辑器接口与编辑器查找。
 
 import type { JsonObject, JsonPath, JsonPrimitive, JsonValue } from '@xihan-ui/core/json'
+import type { OptionViolation } from '@xihan-ui/core/options'
 import type { FormatSpec } from '@xihan-ui/expression'
 import type { FilterField, FilterParameter } from '@xihan-ui/viz'
 import type { DataField, DataFieldKind } from './data-fields'
 import type { SchemaIssue, SchemaIssueTarget } from './schema'
 import { formatJsonPath, getJsonAt, isJsonPathText, isPlainObject, jsonEquals, setJsonAt } from '@xihan-ui/core/json'
+import { findOptionViolation } from '@xihan-ui/core/options'
 import { checkFormatSpec } from '@xihan-ui/expression'
 
 /** 选择类编辑方式的一项。 */
@@ -74,6 +76,8 @@ export type PropertySides = Readonly<Record<PropertySide, number>>
  *   给的 dataFields 按 listFilterFields 列出的 value 字段；parameters 是可引用的参数，maxDepth 限子组层数，ids 为 true 时
  *   新建的条件与组带 id。fields、parameters、maxDepth、ids 只给编辑器用。
  * - swatch：options 里某一项的 value，编辑器画成一排色块；custom 为 true 时另可填任意颜色，取值是 # 开头的 3、4、6、8 位十六进制色。
+ * - options：选项列表，每项是 { value, label?, disabled?, tone?, description? }（选择类组件的选项形状），
+ *   按 @xihan-ui/core/options 的 findOptionViolation 严格检查：不许别的键，同一列表里 value 不重复；value 不能是空串。requireLabel 为 true 时每项都要有不为空的 label。
  */
 export type PropertyControl
   = | { readonly kind: 'text', readonly multiline?: boolean, readonly placeholder?: string, readonly secret?: boolean }
@@ -99,6 +103,7 @@ export type PropertyControl
       readonly ids?: boolean
     }
     | { readonly kind: 'swatch', readonly options: readonly PropertySwatchOption[], readonly custom?: boolean }
+    | { readonly kind: 'options', readonly requireLabel?: boolean }
 
 /** 内建编辑方式的种类。 */
 export type PropertyControlKind = PropertyControl['kind']
@@ -144,7 +149,22 @@ export interface PropertyGroup<D> {
 }
 
 /** 内建编辑方式的取值问题。 */
-export type PropertyValueIssueCode = 'invalid-type' | 'invalid-value' | 'out-of-range' | 'not-integer' | 'invalid-option' | 'invalid-color' | 'unknown-key'
+export type PropertyValueIssueCode
+  = | 'invalid-type'
+    | 'invalid-value'
+    | 'out-of-range'
+    | 'not-integer'
+    | 'invalid-option'
+    | 'invalid-color'
+    | 'unknown-key'
+    | 'required'
+    | 'duplicate-value'
+
+/** 取值里的一处问题：path 相对这个值，落在值本身时是 []。 */
+export interface PropertyValueIssue {
+  readonly code: PropertyValueIssueCode
+  readonly path: JsonPath
+}
 
 /** 判断值是否已填写：undefined、null、空串、空数组与空对象视为未填写。 */
 export function isFilled(value: JsonValue | undefined): boolean {
@@ -253,13 +273,82 @@ function isFilterGroupShape(value: unknown): boolean {
     : typeof node.field === 'string' && typeof node.operator === 'string'))
 }
 
+/** findOptionViolation 的问题码换成取值问题码：缺了 value 或要求的 label 是 required，tone 不是色调名是 invalid-option，其余是类型不对。 */
+function optionCode(found: OptionViolation, item: Readonly<Record<string, unknown>>): PropertyValueIssueCode {
+  switch (found.code) {
+    case 'unknown-key':
+      return 'unknown-key'
+    case 'duplicate-value':
+      return 'duplicate-value'
+    case 'invalid-value':
+      return item.value === undefined ? 'required' : 'invalid-type'
+    case 'invalid-label':
+      return item.label === undefined ? 'required' : 'invalid-type'
+    case 'invalid-tone':
+      return typeof item.tone === 'string' ? 'invalid-option' : 'invalid-type'
+    default:
+      return 'invalid-type'
+  }
+}
+
+/** JSON Pointer 的一段换回键名：~1 是 /，~0 是 ~。 */
+function pointerToken(token: string): string {
+  return token.replaceAll('~1', '/').replaceAll('~0', '~')
+}
+
+/**
+ * 选项列表里按先后的第一处问题：这一项不是对象，有别的键或某个键的取值不对，value 是空串，要求 label 时 label 为空，
+ * 或 value 与前面的项重复。问题落在这一项的那个键上，这一项不是对象时落在这一项上。
+ */
+function optionsIssue(control: Extract<PropertyControl, { kind: 'options' }>, value: JsonValue): PropertyValueIssue | undefined {
+  if (!Array.isArray(value))
+    return { code: 'invalid-type', path: [] }
+  const requireLabel = control.requireLabel === true
+  const seen = new Set<string>()
+  for (const [index, item] of value.entries()) {
+    if (!isPlainObject(item))
+      return { code: 'invalid-type', path: [index] }
+    const found = findOptionViolation([item], { strict: true, requireLabel })
+    if (found !== undefined) {
+      const key = found.pointer.split('/')[2]
+      return { code: optionCode(found, item), path: key === undefined ? [index] : [index, pointerToken(key)] }
+    }
+    const option = item as { readonly value: string, readonly label?: string }
+    if (option.value === '')
+      return { code: 'required', path: [index, 'value'] }
+    if (requireLabel && option.label === '')
+      return { code: 'required', path: [index, 'label'] }
+    if (seen.has(option.value))
+      return { code: 'duplicate-value', path: [index, 'value'] }
+    seen.add(option.value)
+  }
+  return undefined
+}
+
+/**
+ * 找出值里第一处不符合内建编辑方式约束的地方；符合时为 undefined。问题落在值本身时 path 是 []，
+ * options 的问题落在那一项的那个键上（如 [2, "value"]）。各种类的问题码见 checkPropertyValue。
+ */
+export function findPropertyValueIssue(control: PropertyControl, value: JsonValue): PropertyValueIssue | undefined {
+  if (control.kind === 'options')
+    return optionsIssue(control, value)
+  const code = valueCode(control, value)
+  return code === undefined ? undefined : { code, path: [] }
+}
+
 /**
  * 检查值是否符合内建编辑方式的约束；符合时为 undefined，否则给出问题码。
  * dataField 不是路径写法报 invalid-value；sides 多出四边以外的键报 unknown-key，缺边或某边不是数字报 invalid-type；
  * format 不是对象报 invalid-type，没过 checkFormatSpec 报 invalid-value；filter 不是对象报 invalid-type，条件树的形状不对报 invalid-value；
- * swatch 不是字符串报 invalid-type，既不是选项也不是允许的自定义颜色报 invalid-option。
+ * swatch 不是字符串报 invalid-type，既不是选项也不是允许的自定义颜色报 invalid-option；
+ * options 不是数组或某项、某个键的类型不对报 invalid-type，有别的键报 unknown-key，tone 不是色调名报 invalid-option，
+ * value 为空或缺了要求的 label 报 required，value 重复报 duplicate-value。问题落在值里哪一处用 findPropertyValueIssue。
  */
 export function checkPropertyValue(control: PropertyControl, value: JsonValue): PropertyValueIssueCode | undefined {
+  return findPropertyValueIssue(control, value)?.code
+}
+
+function valueCode(control: Exclude<PropertyControl, { kind: 'options' }>, value: JsonValue): PropertyValueIssueCode | undefined {
   switch (control.kind) {
     case 'text':
       return typeof value === 'string' ? undefined : 'invalid-type'
@@ -316,7 +405,7 @@ export function checkPropertyValue(control: PropertyControl, value: JsonValue): 
 }
 
 /** 内建编辑方式的种类名；登记的新编辑方式不能与它们重名。 */
-export const BUILTIN_CONTROL_KINDS: readonly PropertyControlKind[] = ['text', 'number', 'boolean', 'select', 'tags', 'color', 'json', 'dataField', 'sides', 'format', 'filter', 'swatch']
+export const BUILTIN_CONTROL_KINDS: readonly PropertyControlKind[] = ['text', 'number', 'boolean', 'select', 'tags', 'color', 'json', 'dataField', 'sides', 'format', 'filter', 'swatch', 'options']
 
 /** 新的编辑方式：属性描述里 control.kind 等于登记的键时，checkProperties 用它校验取值。 */
 export interface ControlKind {
@@ -336,7 +425,7 @@ export interface CheckPropertiesOptions {
 
 /**
  * 按描述检查被编辑的对象，只看当前显示的属性：必填却未填报 required，
- * 已填的值不符合内建编辑方式报对应问题码，登记的编辑方式交给它的 check；
+ * 已填的值不符合内建编辑方式报对应问题码（路径落在值里那一处，见 findPropertyValueIssue），登记的编辑方式交给它的 check；
  * 既不是内建也没登记的编辑方式报 unknown-control。
  */
 export function checkProperties<C extends { readonly kind: string } = PropertyControl>(
@@ -346,8 +435,8 @@ export function checkProperties<C extends { readonly kind: string } = PropertyCo
 ): SchemaIssue[] {
   const base = options.path ?? []
   const issues: SchemaIssue[] = []
-  const push = (code: string, descriptor: PropertyDescriptor<C>): void => {
-    issues.push({ code, path: [...base, ...descriptor.path], ...(options.target ? { target: options.target } : {}) })
+  const push = (code: string, descriptor: PropertyDescriptor<C>, inner: JsonPath = []): void => {
+    issues.push({ code, path: [...base, ...descriptor.path, ...inner], ...(options.target ? { target: options.target } : {}) })
   }
   for (const descriptor of descriptors) {
     if (!isPropertyVisible(descriptor, target))
@@ -361,11 +450,13 @@ export function checkProperties<C extends { readonly kind: string } = PropertyCo
     }
     const kind = descriptor.control.kind
     const controls = options.controls ?? {}
-    const code = (BUILTIN_CONTROL_KINDS as readonly string[]).includes(kind)
-      ? checkPropertyValue(descriptor.control as unknown as PropertyControl, value!)
-      : Object.hasOwn(controls, kind)
-        ? controls[kind]!.check?.(value!, descriptor.control)
-        : 'unknown-control'
+    if ((BUILTIN_CONTROL_KINDS as readonly string[]).includes(kind)) {
+      const issue = findPropertyValueIssue(descriptor.control as unknown as PropertyControl, value!)
+      if (issue !== undefined)
+        push(issue.code, descriptor, issue.path)
+      continue
+    }
+    const code = Object.hasOwn(controls, kind) ? controls[kind]!.check?.(value!, descriptor.control) : 'unknown-control'
     if (code !== undefined)
       push(code, descriptor)
   }

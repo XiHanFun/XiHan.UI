@@ -23,6 +23,8 @@ const translations: DesignerShellLocaleTranslations = {
     sides: { all: '4 辺', top: '上', right: '右', bottom: '下', left: '左' },
     sidesIncomplete: '4 辺すべてを入力してください',
     customColor: 'カスタムカラー',
+    optionColumns: { value: '値', label: 'ラベル', disabled: '無効' },
+    optionCell: (column, row) => `${row} 番目の項目の${column}`,
   },
   'xh-designer-issues': {
     title: '問題',

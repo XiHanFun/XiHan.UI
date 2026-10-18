@@ -6,7 +6,7 @@
 // 属性面板的内建编辑器：每种内建编辑方式用库内元素。多数是一个字段元素，放在 <xh-field> 里作为它的 control 部件，
 // 标签、说明、错误、必填、只读与无效由字段接到控件真正可聚焦的部件上；四边（sides）是一组控件，整行按组排。
 
-import type { JsonValue } from '@xihan-ui/core/json'
+import type { JsonObject, JsonValue } from '@xihan-ui/core/json'
 import type { DataField, DataFieldKind } from '@xihan-ui/designer-kit'
 import type { PropertyControl, PropertyDescriptor, PropertyEditorContext, PropertyNumberConstraints, PropertyOption, PropertySide } from '@xihan-ui/designer-kit/properties'
 import type { FilterField, FilterParameter } from '@xihan-ui/viz'
@@ -37,11 +37,15 @@ export interface FieldContext extends PropertyEditorContext<PropertyDescriptor<{
   readonly setLocalError: (message: string | undefined) => void
 }
 
-/** 内建编辑器实例：element 是放进字段的 control 部件；group 为 true 时它是一组控件，整行按组排、不进字段。 */
+/**
+ * 内建编辑器实例：element 是放进字段的 control 部件；group 为 true 时它是一组控件，整行按组排、不进字段。
+ * nestedIssues 为 true 时编辑器自己把里层的问题标到子项上，行下不重复。
+ */
 export interface FieldInstance {
   readonly element: HTMLElement
   readonly update: (context: FieldContext) => void
   readonly group?: boolean
+  readonly nestedIssues?: boolean
 }
 
 type FieldEditor = (context: FieldContext) => FieldInstance
@@ -102,6 +106,7 @@ const EDITORS: Readonly<Record<PropertyControl['kind'], FieldEditor>> = {
   format: formatEditor,
   filter: filterEditor,
   swatch: swatchEditor,
+  options: optionsEditor,
 }
 
 /** 按编辑方式取内建编辑器；不是内建种类时为 undefined。 */
@@ -999,3 +1004,262 @@ function formatEditor(initial: FieldContext): FieldInstance {
   update(initial)
   return { element: field, update }
 }
+
+/** 字段数组上受控的行与表格排布。 */
+interface FieldArrayControl extends HTMLElement {
+  value?: unknown[]
+  readonly items?: readonly { readonly key: string, readonly value: unknown }[]
+  readonly updateComplete?: Promise<unknown>
+  createItem?: () => unknown
+  layout?: string
+  movable?: boolean
+  readOnly?: boolean
+  columns?: readonly { readonly id: string, readonly label?: string, readonly width?: string | number, readonly minWidth?: string | number }[]
+}
+
+/** 字段上受控的错误文案与校验态。 */
+interface FieldHost extends HTMLElement {
+  errorText?: string
+  invalid?: boolean
+}
+
+/** 选项表的三列，也是一项里这三格写的键。 */
+const OPTION_COLUMNS = ['value', 'label', 'disabled'] as const
+
+type OptionColumn = (typeof OPTION_COLUMNS)[number]
+
+/** 选项表的一行：每列一个字段，字段的控件是这一格的输入。 */
+interface OptionRow {
+  readonly fields: Readonly<Record<OptionColumn, FieldHost>>
+  readonly controls: Readonly<Record<OptionColumn, ControlElement>>
+  /** 写上行 key 之后为 true。 */
+  placed: boolean
+}
+
+/** 值与文字两列的最小宽：面板放不下时表格横向滚动，行号与把手钉在两侧。 */
+const OPTION_TEXT_MIN_WIDTH = '5rem'
+
+/** 还不知道行 key 时格子内容的 slot：对不上任何格子，字段数组不把它当作者写的结构。 */
+const PENDING_SLOT = 'designer-option-pending'
+
+/** 选项里某个键的文字；不是对象、没有这个键时为空串。 */
+function optionText(item: JsonValue | undefined, key: 'value' | 'label'): string {
+  return isPlainObject(item) ? textOf(item[key]) : ''
+}
+
+/** 改一项的一个键：label 为空、disabled 为 false 时去掉这个键；这一项不是对象时换成只有这个键的对象。 */
+function withOptionKey(item: JsonValue | undefined, key: OptionColumn, value: string | boolean): JsonObject {
+  const next: Record<string, JsonValue> = isPlainObject(item) ? { ...item } : {}
+  if ((key === 'label' && value === '') || (key === 'disabled' && value === false))
+    delete next[key]
+  else
+    next[key] = value
+  return next
+}
+
+/** 问题落在一项的哪一格：值、文字、禁用三个键落在各自那一格，别的键与这一项本身落在值上。 */
+function optionColumnOf(path: PropertyEditorContext['issues'][number]['path']): OptionColumn {
+  const key = path[1]
+  return key === 'label' || key === 'disabled' ? key : 'value'
+}
+
+/**
+ * 选项列表：库内 xh-field-array 的表格排布，一项一行，三格依次是值、文字与禁用，行号、上移下移与删除把手、新增把手由它铺出；
+ * 每格是一个字段，控件以「列名 + 第几项」为名。值与文字边输入边写入、失焦封口；勾选禁用，以及增删与换序，各是一步。
+ * 新增的一项只有空的 value，新增后焦点落到它的值上。文字为空、不禁用时不写这两个键，别的键（tone、description）原样留着。
+ * 里层的问题按路径标到格上：[i, "value"] 等落在那一格的字段上（aria-invalid 与错误文案由字段接到控件上），
+ * 落在这一项别的键上或这一项本身的标在它的值上。多个对象取值不同时没有行，新增的一项整体写给这几个对象。
+ */
+function optionsEditor(initial: FieldContext): FieldInstance {
+  const doc = initial.ownerDocument
+  const array: FieldArrayControl = createAuthoredElement(doc, 'xh-field-array', { 'data-xh-part': 'control' })
+  array.layout = 'table'
+  array.movable = true
+  array.createItem = () => ({})
+  // 面板窄：格子用表格的紧凑内衬
+  array.style.setProperty('--xh-field-array-cell-px', 'var(--xh-table-cell-px-sm)')
+  array.style.setProperty('--xh-field-array-cell-py', 'var(--xh-table-cell-py-sm)')
+  let context = initial
+  /** 显示着的选项：最近一次读到或写出的值。 */
+  let options: readonly JsonValue[] = []
+  /** 一项一个令牌对象，交给字段数组作行数据：它按令牌跟踪行，换序时行内容跟着走。 */
+  let tokens: object[] = []
+  const rows = new Map<object, OptionRow>()
+  /** 删掉的行已放进格子的内容：离场的替身克隆完、回到字段数组下面后再摘掉。 */
+  const departing = new Set<HTMLElement>()
+  new MutationObserver(() => {
+    for (const node of departing) {
+      if (node.parentElement !== array)
+        continue
+      node.remove()
+      departing.delete(node)
+    }
+  }).observe(array, { childList: true })
+
+  const write = (next: readonly JsonValue[]): void => {
+    options = next
+    context.setValue(next.length === 0 ? undefined : [...next])
+  }
+  const edit = (token: object, key: OptionColumn, value: string | boolean): void => {
+    const index = tokens.indexOf(token)
+    if (index >= 0)
+      write(options.map((item, at) => (at === index ? withOptionKey(item, key, value) : item)))
+  }
+
+  const createCell = (token: object, column: OptionColumn): { field: FieldHost, control: ControlElement } => {
+    const control: ControlElement = createAuthoredElement(doc, column === 'disabled' ? 'xh-checkbox' : 'xh-text-field', { slot: 'control', size: 'sm' })
+    const field: FieldHost = createAuthoredElement(doc, 'xh-field', { slot: PENDING_SLOT, hidden: true }, [control])
+    field.errorText = ''
+    if (column === 'disabled') {
+      control.addEventListener('checked-change', (event) => {
+        event.stopPropagation()
+        const { checked } = (event as CustomEvent<{ checked: boolean }>).detail
+        control.checked = checked
+        edit(token, column, checked)
+        context.commit()
+      })
+    }
+    else {
+      control.addEventListener('value-change', (event) => {
+        event.stopPropagation()
+        const { value } = (event as ValueChange<string>).detail
+        control.value = value
+        edit(token, column, value)
+      })
+      control.addEventListener('focusout', () => context.commit())
+    }
+    array.append(field)
+    return { field, control }
+  }
+  const createRow = (token: object): OptionRow => {
+    const cells = OPTION_COLUMNS.map(column => createCell(token, column))
+    return {
+      fields: Object.fromEntries(OPTION_COLUMNS.map((column, index) => [column, cells[index]!.field])) as Record<OptionColumn, FieldHost>,
+      controls: Object.fromEntries(OPTION_COLUMNS.map((column, index) => [column, cells[index]!.control])) as Record<OptionColumn, ControlElement>,
+      placed: false,
+    }
+  }
+
+  /** 按令牌对上字段数组的 items，给还没写上 slot 的行写上；对不上时等它更新完再对一次。 */
+  const place = (deferred: boolean): void => {
+    const items = array.items ?? []
+    if (items.length !== tokens.length || items.some((item, index) => item.value !== tokens[index])) {
+      if (!deferred)
+        void array.updateComplete?.then(() => place(true))
+      return
+    }
+    tokens.forEach((token, index) => {
+      const row = rows.get(token)
+      if (row === undefined || row.placed)
+        return
+      for (const column of OPTION_COLUMNS) {
+        row.fields[column].setAttribute('slot', `item-cell:${items[index]!.key}:${column}`)
+        row.fields[column].hidden = false
+      }
+      row.placed = true
+    })
+  }
+
+  /** 按这一项与这一轮的上下文刷新一行：格里的值、控件的名字、只读，以及落在这一项的问题。 */
+  const paint = (row: OptionRow, index: number): void => {
+    const item = options[index]
+    const t = context.translations
+    const issues = context.issues.filter(issue => issue.path[0] === index)
+    for (const column of OPTION_COLUMNS) {
+      const control = row.controls[column]
+      setAttributes(control, { 'aria-label': t.optionCell(t.optionColumns[column], index + 1) })
+      control.toggleAttribute('read-only', context.readonly)
+      const message = issues.find(issue => optionColumnOf(issue.path) === column)?.message
+      const field = row.fields[column]
+      if (field.errorText !== (message ?? ''))
+        field.errorText = message ?? ''
+      if (field.invalid !== (message !== undefined))
+        field.invalid = message !== undefined
+    }
+    const checked = isPlainObject(item) && item.disabled === true
+    if (row.controls.disabled.checked !== checked)
+      row.controls.disabled.checked = checked
+    for (const column of ['value', 'label'] as const) {
+      const text = optionText(item, column)
+      if (row.controls[column].value !== text)
+        row.controls[column].value = text
+    }
+  }
+
+  /** 按显示着的选项对行：令牌按位置截短或补齐，删掉的行连格子一起摘掉，新的行建好格子，再交给字段数组。 */
+  const reconcile = (): void => {
+    if (tokens.length !== options.length)
+      tokens = [...tokens.slice(0, options.length), ...Array.from({ length: Math.max(0, options.length - tokens.length) }, () => ({}))]
+    const alive = new Set(tokens)
+    for (const [token, row] of rows) {
+      if (alive.has(token))
+        continue
+      for (const field of Object.values(row.fields)) {
+        if (row.placed && array.isConnected)
+          departing.add(field)
+        else
+          field.remove()
+      }
+      rows.delete(token)
+    }
+    tokens.forEach((token, index) => {
+      let row = rows.get(token)
+      if (row === undefined) {
+        row = createRow(token)
+        rows.set(token, row)
+      }
+      paint(row, index)
+    })
+    if (array.value !== tokens)
+      array.value = tokens
+    place(false)
+  }
+
+  array.addEventListener('value-change', (event) => {
+    if (event.target !== array)
+      return
+    event.stopPropagation()
+    const { value, mutation } = (event as CustomEvent<{ value: object[], mutation?: FieldArrayMutation }>).detail
+    if (mutation === undefined || mutation.type === 'replace')
+      return
+    const next = [...options]
+    if (mutation.type === 'insert')
+      next.splice(mutation.index, 0, { value: '' })
+    else if (mutation.type === 'remove')
+      next.splice(mutation.index, 1)
+    else
+      next.splice(mutation.to, 0, ...next.splice(mutation.from, 1))
+    tokens = value
+    write(next)
+    reconcile()
+    context.commit()
+    if (mutation.type === 'insert') {
+      const row = rows.get(tokens[mutation.index]!)
+      void array.updateComplete?.then(() => row?.controls.value.querySelector<HTMLElement>('input')?.focus())
+    }
+  })
+
+  const update = (next: FieldContext): void => {
+    context = next
+    const t = next.translations
+    array.readOnly = next.readonly
+    if (array.columns === undefined || array.columns.some(column => column.label !== t.optionColumns[column.id as OptionColumn]))
+      array.columns = OPTION_COLUMNS.map(id => ({ id, label: t.optionColumns[id], ...(id === 'disabled' ? { width: 'auto' } : { minWidth: OPTION_TEXT_MIN_WIDTH }) }))
+    const value = next.mixed || !Array.isArray(next.value) ? [] : next.value
+    if (!jsonEquals(value, options)) {
+      options = value
+      reconcile()
+      return
+    }
+    tokens.forEach((token, index) => paint(rows.get(token)!, index))
+  }
+  update(initial)
+  return { element: array, update, nestedIssues: true }
+}
+
+/** 字段数组一次增删换序的载荷。 */
+type FieldArrayMutation
+  = | { readonly type: 'insert', readonly index: number }
+    | { readonly type: 'remove', readonly index: number }
+    | { readonly type: 'move', readonly from: number, readonly to: number }
+    | { readonly type: 'replace', readonly length: number }

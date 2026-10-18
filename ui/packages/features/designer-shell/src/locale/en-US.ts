@@ -22,6 +22,8 @@ export const DESIGNER_PROPERTIES_EN_US: DesignerShellLocaleTranslations['xh-desi
   sides: { all: 'All sides', top: 'Top', right: 'Right', bottom: 'Bottom', left: 'Left' },
   sidesIncomplete: 'Fill in all four sides',
   customColor: 'Custom color',
+  optionColumns: { value: 'Value', label: 'Label', disabled: 'Disabled' },
+  optionCell: (column, row) => `${column}, option ${row}`,
 }
 
 export const DESIGNER_ISSUES_EN_US: DesignerShellLocaleTranslations['xh-designer-issues'] = {
