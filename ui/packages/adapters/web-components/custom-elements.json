@@ -48856,7 +48856,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "attribute": "title"
+              "attribute": "title-text"
             },
             {
               "kind": "field",
@@ -49053,8 +49053,8 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "标题文案；作者未在 item-title 部件中写内容时由元素填入",
-              "name": "title",
+              "description": "标题文案；作者未在 item-title 部件中写内容时由元素填入。不用 HTML 全局属性 title：写在宿主上会出浏览器原生提示，还会进宿主的可及描述",
+              "name": "title-text",
               "fieldName": "titleText"
             },
             {

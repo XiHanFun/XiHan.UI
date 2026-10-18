@@ -57,9 +57,20 @@ function hasCustomConverter(host: HTMLElement, key: string): boolean {
   return typeof declared?.get(key)?.converter === 'object'
 }
 
+/**
+ * headless 的 prop 名在 WC 侧换了名字的元素：HTML 全局属性不拿来当配置，元素用另一个 property 收。
+ * harness 照 prop 名落属性，先按这张表把键换过来；共享套件与 parity 两侧跑的因此是同一份用例。
+ */
+const WC_PROP_NAMES: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+  // title 写在宿主上会出浏览器原生提示，还会进宿主的可及描述
+  'xh-notification-item': { title: 'titleText' },
+}
+
 // 标量 → 属性，对象/函数 → 属性(property)
 function applyInputs(host: HTMLElement, props: Record<string, unknown>): void {
-  for (const [k, v] of Object.entries(props)) {
+  const names = WC_PROP_NAMES[host.localName]
+  for (const [name, v] of Object.entries(props)) {
+    const k = names?.[name] ?? name
     if (v === undefined || v === null)
       continue
     if (typeof v === 'object' || typeof v === 'function') {

@@ -241,7 +241,7 @@ const ITEM_CONTRACT = { anatomy: notificationAnatomy, meta: { component: 'notifi
  * @customElement xh-notification-item
  * @attr {string} id - 队列身份，`<xh-notification>` 按它寻址；未提供时使用实例自身的 scope id
  * @attr {'card'|'toast'} preset - 形态预设，默认 card；toast 是轻提示：一行排版、叉 xs 排在行尾
- * @attr {string} title - 标题文案；作者未在 item-title 部件中写内容时由元素填入
+ * @attr {string} title-text - 标题文案；作者未在 item-title 部件中写内容时由元素填入。不用 HTML 全局属性 title：写在宿主上会出浏览器原生提示，还会进宿主的可及描述
  * @attr {string} description - 补充说明；作者未在 item-description 部件中写内容时由元素填入
  * @attr {'info'|'success'|'warning'|'danger'} tone - 语气，默认 info；danger 使用 alert + assertive
  * @attr {boolean} loading - 事情尚未完成：行首换为加载环，且不自动消失
@@ -263,13 +263,14 @@ const ITEM_CONTRACT = { anatomy: notificationAnatomy, meta: { component: 'notifi
 export class XhNotificationItemElement extends XhElement {
   static override partContract = ITEM_CONTRACT
 
-  // 字段名与属性名分家的两处都是躲原生访问器：HTMLElement 的 id 与 title 都是原生反射属性，
-  // 同名声明会盖掉它们（`el.id` 从此不再是 DOM id）。属性名保持与 Vue 侧的 prop 同名。
+  // 字段名不用 id 与 title 是躲原生访问器：HTMLElement 的 id 与 title 都是原生反射属性，
+  // 同名声明会盖掉它们（`el.id` 从此不再是 DOM id）。队列身份的属性名仍是 id，与 DOM id 同义；
+  // 标题的属性名是 title-text，不占全局属性 title。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     itemId: { converter: STRING_CONVERTER, attribute: 'id' },
     preset: { converter: STRING_CONVERTER },
-    titleText: { converter: STRING_CONVERTER, attribute: 'title' },
+    titleText: { converter: STRING_CONVERTER, attribute: 'title-text' },
     description: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
