@@ -219,6 +219,27 @@ describe('<xh-designer-ruler>', () => {
     expect(top.hidden).toBe(true)
   })
 
+  it('readonly attribute 三态：="false" 不只读，空串只读，移除后回到不只读，重绘也不来回翻转', async () => {
+    const root = await mount()
+    const settle = async (): Promise<void> => {
+      await (root as unknown as { updateComplete: Promise<unknown> }).updateComplete
+    }
+    root.setAttribute('readonly', 'false')
+    await settle()
+    expect(root.readonly).toBe(false)
+    expect(root.hasAttribute('data-readonly')).toBe(false)
+    root.setAttribute('readonly', '')
+    await settle()
+    expect(root.hasAttribute('data-readonly')).toBe(true)
+    root.removeAttribute('readonly')
+    await settle()
+    expect(root.readonly).toBeUndefined()
+    expect(root.hasAttribute('data-readonly')).toBe(false)
+    root.guides = { x: [10], y: [] }
+    await settle()
+    expect(root.hasAttribute('data-readonly')).toBe(false)
+  })
+
   it('只读时照常显示参考线，不能新建、挪动或删除', async () => {
     const root = await mount((element) => {
       element.guides = { x: [], y: [40] }

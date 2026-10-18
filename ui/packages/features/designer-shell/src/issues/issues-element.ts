@@ -11,7 +11,7 @@ import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { DesignerIssuesTranslations } from '../translations'
 import { createCounterIdGenerator } from '@xihan-ui/core'
 import { issueSeverity } from '@xihan-ui/designer-kit/schema'
-import { createAuthoredElement, createGeneratedElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
+import { BOOLEAN_CONVERTER, createAuthoredElement, createGeneratedElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { defineIssueListElements } from '../internal/ui-elements'
 
 /** 列表里的一条：问题本身与设计器换好的文字。 */
@@ -98,7 +98,7 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
     items: { attribute: false },
     groupBy: { converter: STRING_CONVERTER, attribute: 'group-by' },
     emptyText: { converter: STRING_CONVERTER, attribute: 'empty-text' },
-    readonly: { type: Boolean },
+    readonly: { converter: BOOLEAN_CONVERTER },
     translations: { attribute: false },
   }
 
@@ -112,7 +112,7 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
   /** 没有问题时的提示，缺省取文案 empty。 */
   declare emptyText: string | undefined
   /** 只读。问题列表没有修改类操作，只读时照常浏览与定位。 */
-  declare readonly: boolean
+  declare readonly?: boolean
   /** 元素自己的文案，压在全局配置之上。 */
   declare translations: Partial<DesignerIssuesTranslations> | undefined
 

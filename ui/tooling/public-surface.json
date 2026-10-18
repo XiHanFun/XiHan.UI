@@ -5147,6 +5147,7 @@
     "@xihan-ui/web-components": [
       "AlertOptions",
       "AttributeConverter",
+      "BOOLEAN_CONVERTER",
       "ColumnRow",
       "ColumnSource",
       "ColumnStore",

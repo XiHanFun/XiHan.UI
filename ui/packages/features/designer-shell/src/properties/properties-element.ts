@@ -16,7 +16,7 @@ import type { FieldRow } from './field-row'
 import { createCounterIdGenerator } from '@xihan-ui/core'
 import { formatJsonPath, getJsonAt, jsonEquals } from '@xihan-ui/core/json'
 import { groupProperties, isPropertyVisible, resolvePropertyEditor } from '@xihan-ui/designer-kit/properties'
-import { createAuthoredElement, createGeneratedElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
+import { BOOLEAN_CONVERTER, createAuthoredElement, createGeneratedElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { placeChildren } from '../internal/dom'
 import { adoptSlots } from '../internal/slots'
 import { definePropertyFieldElements } from '../internal/ui-elements'
@@ -121,8 +121,8 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     heading: { converter: STRING_CONVERTER },
     emptyText: { converter: STRING_CONVERTER, attribute: 'empty-text' },
     toggleLimit: { converter: NUMBER_CONVERTER, attribute: 'toggle-limit' },
-    collapsible: { type: Boolean },
-    readonly: { type: Boolean },
+    collapsible: { converter: BOOLEAN_CONVERTER },
+    readonly: { converter: BOOLEAN_CONVERTER },
     translations: { attribute: false },
   }
 
@@ -153,9 +153,9 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
   /** select 的 appearance 为 auto（缺省）、单选且选项不超过它时改用切换按钮组；缺省不用。 */
   declare toggleLimit: number | undefined
   /** 分组可折叠，折叠状态按分组 id 保留。 */
-  declare collapsible: boolean
+  declare collapsible?: boolean
   /** 只读：字段只读，不派发 property-change。 */
-  declare readonly: boolean
+  declare readonly?: boolean
   /** 元素自己的文案，压在全局配置之上。 */
   declare translations: Partial<DesignerPropertiesTranslations> | undefined
 
@@ -452,7 +452,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
       value: mixed ? undefined : values[0],
       descriptor,
       target: targets,
-      readonly: this.readonly,
+      readonly: this.readonly === true,
       mixed,
       translations: this.#t,
       optionLabel: option => this.optionLabel?.(descriptor, option) ?? option.label ?? String(option.value),
@@ -483,7 +483,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
       hint: this.hintOf?.(descriptor),
       error: this.#message(row, targets),
       required: descriptor.required === true,
-      readonly: this.readonly,
+      readonly: this.readonly === true,
     })
     row.control.update?.(this.#context(row, targets))
   }
