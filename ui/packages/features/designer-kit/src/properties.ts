@@ -16,17 +16,25 @@ import { checkFormatSpec } from '@xihan-ui/expression'
 
 /** 选择类编辑方式的一项。 */
 export interface PropertyOption {
+  /** 选中这一项时写入的值。 */
   readonly value: JsonPrimitive
+  /** 显示的文字；不给时由产品按值决定怎么显示。 */
   readonly label?: string
 }
 
 /** number 与 sides 共用的数值约束：integer 只收整数，min / max 含端点，exclusiveMin 不含，step 与 unit 只给编辑器用。 */
 export interface PropertyNumberConstraints {
+  /** 只收整数。 */
   readonly integer?: boolean
+  /** 下限，含端点。 */
   readonly min?: number
+  /** 上限，含端点。 */
   readonly max?: number
+  /** 下限，不含端点。 */
   readonly exclusiveMin?: number
+  /** 编辑器的步进幅度；校验不看。 */
   readonly step?: number
+  /** 编辑器里显示的单位；校验不看。 */
   readonly unit?: string
 }
 
@@ -102,6 +110,7 @@ export type PropertyCondition
 export interface PropertyDescriptor<C extends { readonly kind: string } = PropertyControl> {
   /** 值相对被编辑对象（节点、元素、字段本身）的路径。 */
   readonly path: JsonPath
+  /** 编辑方式：kind 定用哪种编辑器、按什么校验，其余字段是这种方式的选项（选项表、数值约束等）。 */
   readonly control: C
   /** 分组 id；分组的先后与文案由产品决定。 */
   readonly group?: string
@@ -119,7 +128,9 @@ export interface PropertyDescriptor<C extends { readonly kind: string } = Proper
 
 /** 一组属性。 */
 export interface PropertyGroup<D> {
+  /** 分组 id；没写分组的属性归 undefined 这一组。 */
   readonly group: string | undefined
+  /** 这一组里此刻显示的属性，按描述的先后。 */
   readonly properties: readonly D[]
 }
 
@@ -361,8 +372,11 @@ export function applyDefaults<T extends JsonValue>(target: T, descriptors: reado
 export interface PropertyEditorContext<D = unknown, T = unknown> {
   /** 属性的当前值，未设置时为 undefined。 */
   readonly value: JsonValue | undefined
+  /** 正在编辑的这个属性的描述。 */
   readonly descriptor: D
+  /** 被编辑的对象。 */
   readonly target: T
+  /** 只读：编辑器只显示，不写值。 */
   readonly readonly: boolean
   /** 写入新值，undefined 表示清除；连续输入由设计器并为一步撤销。 */
   readonly setValue: (value: JsonValue | undefined) => void
@@ -372,8 +386,11 @@ export interface PropertyEditorContext<D = unknown, T = unknown> {
 
 /** 编辑器实例：设计器把 element 放进属性面板，值或只读状态变化时调用 update，移除前调用 destroy。 */
 export interface PropertyEditorInstance<D = unknown, T = unknown> {
+  /** 编辑器的根元素，设计器把它放进属性面板。 */
   readonly element: HTMLElement
+  /** 值、只读状态或被编辑的对象变了时调用。 */
   readonly update?: (context: PropertyEditorContext<D, T>) => void
+  /** 从属性面板撤掉前调用。 */
   readonly destroy?: () => void
 }
 

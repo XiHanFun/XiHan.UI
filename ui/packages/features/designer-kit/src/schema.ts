@@ -17,17 +17,23 @@ export type IssueParamValue = JsonPrimitive | readonly JsonPrimitive[]
 
 /** 问题落在的对象，如 { kind: 'node', id: 'approve' }。 */
 export interface SchemaIssueTarget {
+  /** 对象种类，如 node、edge、element、field。 */
   readonly kind: string
+  /** 对象 id。 */
   readonly id: string
 }
 
 /** 一条结构问题。path 从文档根算起，只用对象键与数组下标；按对象定位看 target。 */
 export interface SchemaIssue<C extends string = string> {
+  /** 问题码；产品与扩展的问题码带前缀，如 node.unreachable。 */
   readonly code: C
+  /** 问题落在文档里的位置，从文档根算起。 */
   readonly path: JsonPath
+  /** 问题落在的对象，如某个节点；不落在具体对象上的问题不给。 */
   readonly target?: SchemaIssueTarget
   /** 缺省按 error 处理。 */
   readonly severity?: IssueSeverity
+  /** 填进问题说明的参数，如 { max: 1, count: 2 }。 */
   readonly params?: Readonly<Record<string, IssueParamValue>>
 }
 

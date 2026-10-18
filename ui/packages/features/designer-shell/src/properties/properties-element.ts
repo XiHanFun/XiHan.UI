@@ -29,22 +29,31 @@ export type DesignerPropertyDescriptor = PropertyDescriptor<PropertyControl | { 
 
 /** 被编辑的对象：种类（用于按对象种类查编辑器）、id、对象本身与它的属性描述。 */
 export interface DesignerPropertyTarget {
+  /** 对象种类，如 node、edge、element；按它查 byTarget 的编辑器。 */
   readonly kind: string
+  /** 对象 id，与种类一起认出对象。 */
   readonly id: string
+  /** 对象本身，属性按描述的 path 从它里面读值。 */
   readonly value: JsonValue
+  /** 这个对象的属性描述。 */
   readonly descriptors: readonly DesignerPropertyDescriptor[]
 }
 
 /** 对象的身份。 */
 export interface DesignerPropertyTargetRef {
+  /** 对象种类。 */
   readonly kind: string
+  /** 对象 id。 */
   readonly id: string
 }
 
 /** 落在字段上的错误，文字由设计器换好，path 相对对象。 */
 export interface DesignerPropertyError {
+  /** 错误落在的对象。 */
   readonly target: DesignerPropertyTargetRef
+  /** 字段的路径，相对对象。 */
   readonly path: JsonPath
+  /** 显示在字段下的文字。 */
   readonly message: string
 }
 

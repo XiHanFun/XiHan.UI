@@ -26,6 +26,7 @@ export type DesignerCommandPlacement = 'toolbar' | `menu:${string}`
 export interface DesignerCommand<Ctx = unknown> {
   /** 全局唯一；扩展的命令用扩展 id 加点加名字，如 @xihan-flow-pro/simulation.run。 */
   readonly id: string
+  /** 按钮与菜单项上的文字；给函数时每次刷新现取，随语言变。 */
   readonly label: string | ((context: Ctx) => string)
   /** 缺省排列里出现在哪些位置；不给即只经快捷键或 commandLayout 出现。 */
   readonly placement?: readonly DesignerCommandPlacement[]
@@ -37,31 +38,43 @@ export interface DesignerCommand<Ctx = unknown> {
   readonly checked?: (context: Ctx) => boolean
   /** 语气：按钮与菜单项按这族色显示，破坏性命令写 danger。不给即不带语气。 */
   readonly tone?: Tone
+  /** 执行命令；按钮、菜单项与快捷键都只在命令此刻可用时调用它。 */
   readonly run: (context: Ctx) => void
 }
 
 /** 导入的来源：粘贴、拖放与打开文件三处共用。 */
 export interface DesignerImportSource {
+  /** 从哪里来：clipboard 粘贴，drop 拖放，file 打开文件。 */
   readonly kind: 'clipboard' | 'drop' | 'file'
+  /** 内容的类型：文件取文件自己的类型，文本是 text/uri-list、text/html 或 text/plain。 */
   readonly mime?: string
+  /** 文件名；只有文件有。 */
   readonly name?: string
+  /** 文本内容；只有文本有，文件的内容要从 file 里读。 */
   readonly text?: string
+  /** 文件；只有文件有。 */
   readonly file?: Blob
 }
 
 /** 导入：把外部内容换成片段或文档，结果的形状由各款定。 */
 export interface DesignerImporter<Ctx = unknown, Result = unknown> {
+  /** 全局唯一，写法同命令 id；不能与内置或别的扩展的导入器重名。 */
   readonly id: string
+  /** 接不接这个来源：只看类型、文件名或文本，不读文件内容，当场返回。 */
   readonly accepts: (source: DesignerImportSource) => boolean
+  /** 把接下的来源换成结果，可以是异步的；结果的形状与抛错后怎么报由各款定。 */
   readonly import: (source: DesignerImportSource, context: Ctx) => Result | Promise<Result>
 }
 
 /** 导出：把当前文档或渲染结果换成文件。 */
 export interface DesignerExporter<Ctx = unknown> {
+  /** 全局唯一，写法同命令 id；不能与内置或别的扩展的导出器重名。 */
   readonly id: string
+  /** 导出项的名称，列导出入口时显示；给函数时现取，随语言变。 */
   readonly label: string | ((context: Ctx) => string)
   /** 能导出的格式，如 svg、png、xlsx。 */
   readonly formats: readonly string[]
+  /** 按格式导出，format 是 formats 里的一个；得到文件内容（Blob）或文本。 */
   readonly export: (format: string, context: Ctx) => Promise<Blob | string>
 }
 
@@ -71,6 +84,7 @@ export interface DesignerExtensionCore<Doc = unknown, RuleCtx = unknown> {
   readonly id: string
   /** 新的编辑方式，键是 control.kind，不能与内建的重名。 */
   readonly controls?: Readonly<Record<string, ControlKind>>
+  /** 校验规则，问题与内置校验的一起进问题列表；问题码以 id 的末段加点开头。 */
   readonly rules?: readonly SchemaRule<Doc, RuleCtx>[]
 }
 
@@ -78,8 +92,11 @@ export interface DesignerExtensionCore<Doc = unknown, RuleCtx = unknown> {
 export interface DesignerExtensionBase<Ctx = unknown, Editor = PropertyEditor, Doc = unknown, RuleCtx = unknown> extends DesignerExtensionCore<Doc, RuleCtx> {
   /** 属性编辑器，按扩展顺序压在设计器内建的之上。 */
   readonly editors?: PropertyEditorLayer<Editor>
+  /** 命令：工具栏按钮、右键菜单项与快捷键共用；命令 id 与快捷键不能与内置或别的扩展的重名。 */
   readonly commands?: readonly DesignerCommand<Ctx>[]
+  /** 导入器：粘贴、拖放与打开文件共用，按扩展顺序问 accepts，第一个接下的导入。 */
   readonly importers?: readonly DesignerImporter<Ctx>[]
+  /** 导出器：把当前文档换成文件，交给登记了所要格式的第一个。 */
   readonly exporters?: readonly DesignerExporter<Ctx>[]
   /** 装上时调用，返回卸下时的清理。 */
   readonly setup?: (context: Ctx) => (() => void) | void
@@ -87,9 +104,11 @@ export interface DesignerExtensionBase<Ctx = unknown, Editor = PropertyEditor, D
 
 /** 扩展冲突：同一个名字在两处登记。 */
 export class DesignerExtensionError extends Error {
+  /** 诊断码，恒为 designer.extension-conflict。 */
   readonly code: typeof DIAGNOSTIC_CODES.designerExtensionConflict = 'designer.extension-conflict'
   /** 冲突的名字空间：extension、command、shortcut、control、importer、exporter，或各款传入的。 */
   readonly space: string
+  /** 重名的那个名字。 */
   readonly key: string
   /** 先后登记这个名字的两个扩展的 id。 */
   readonly extensions: readonly [string, string]
@@ -222,8 +241,11 @@ export interface ExtensionHost<E> {
   dispose: () => void
 }
 
+/** createExtensionHost 的参数。 */
 export interface ExtensionHostOptions<E, Ctx> {
+  /** 设计器自带的扩展，排在传入的之前；dispose 时一并卸下。 */
   readonly builtins?: readonly E[]
+  /** 各款自己的名字空间，与内建的那几个一起查重。 */
   readonly spaces?: ExtensionKeySpaces<E>
   /** 交给 setup 的上下文；给函数时每次装上现取。 */
   readonly context: Ctx | (() => Ctx)
