@@ -363,7 +363,7 @@ const issues = checkProperties(descriptors, node, { path: ["nodes", 3], target: 
 
 | 内建编辑方式 | 取值约束 |
 | --- | --- |
-| `{ kind: "text", multiline?, placeholder? }` | 字符串 |
+| `{ kind: "text", multiline?, placeholder?, secret? }` | 字符串；`secret` 为密钥这类不该明文显示的文字，编辑器用密码框，与 `multiline` 不并用 |
 | `{ kind: "number", integer?, min?, max?, exclusiveMin?, step?, unit? }` | 有限数字；min / max 含端点，exclusiveMin 不含；step 与 unit 只给编辑器用 |
 | `{ kind: "boolean" }` | 布尔 |
 | `{ kind: "select", options, multiple?, appearance? }` | 某个选项的 `value`；`multiple` 时是这些值组成的数组。`appearance` 只给编辑器用：`auto`（缺省）由编辑器定，`dropdown` 总是下拉，`toggle` 总是切换按钮组 |
@@ -374,6 +374,7 @@ const issues = checkProperties(descriptors, node, { path: ["nodes", 3], target: 
 | `{ kind: "sides", integer?, min?, max?, exclusiveMin?, step?, unit? }` | `{ top, right, bottom, left }` 四个数字，每边按 number 的约束检查；缺边或某边不是数字报 `invalid-type`，多出别的键报 `unknown-key` |
 | `{ kind: "format", kinds? }` | `@xihan-ui/expression` 的格式说明，按 `checkFormatSpec` 检查，没过报 `invalid-value`；`kinds` 是允许的格式种类，缺省全部 |
 | `{ kind: "filter", fields?, parameters?, maxDepth?, ids? }` | 条件树（`@xihan-ui/viz` 的 `FilterGroup`）：组是 `{ logic: "and" \| "or", conditions }`，条件是 `{ field, operator }`，不是对象报 `invalid-type`，这层形状不对报 `invalid-value`；字段在不在、运算符合不合由各款自己的校验报。可筛选的字段：描述里写了 `fields`（`FilterField`）就用它，没写时用属性面板给的 `dataFields` 按 `listFilterFields` 列出的值字段。`parameters` 是可引用的参数（`FilterParameter`），`maxDepth` 限子组层数，`ids` 为 true 时新建的条件与组带 id。这四项只给编辑器用 |
+| `{ kind: "swatch", options, custom? }` | 某个选项的 `value`；选项是 `PropertySwatchOption`：`value` 是选中时写入的值，`color` 是格子画出的颜色（能解析的 CSS 颜色串），`label` 是读屏念的名字。`custom` 为 true 时另可填任意颜色，取值是 `#` 开头的 3、4、6、8 位十六进制色。不是字符串报 `invalid-type`，两样都不是报 `invalid-option` |
 
 number 与 sides 的数值约束是同一个类型 `PropertyNumberConstraints`；四边的键与次序是 `PROPERTY_SIDES`（`top`、`right`、`bottom`、`left`），取值类型是 `PropertySides`。
 

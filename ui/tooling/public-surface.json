@@ -10782,6 +10782,7 @@
       "PropertyOption",
       "PropertySide",
       "PropertySides",
+      "PropertySwatchOption",
       "PropertyValueIssueCode",
       "Rect",
       "ResizeHandle",

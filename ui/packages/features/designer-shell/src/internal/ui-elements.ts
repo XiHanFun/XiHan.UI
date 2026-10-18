@@ -9,12 +9,14 @@ import {
   defineXhElement,
   XhAccordionElement,
   XhColorFieldElement,
+  XhColorSwatchPickerElement,
   XhContextMenuElement,
   XhFieldElement,
   XhFilterBuilderElement,
   XhFormatInputElement,
   XhIconElement,
   XhNumberFieldElement,
+  XhPasswordInputElement,
   XhSelectElement,
   XhSplitterElement,
   XhSwitchElement,
@@ -37,6 +39,8 @@ export function definePropertyFieldElements(): void {
   defineXhElement('xh-tag', XhTagElement)
   defineXhElement('xh-tags-input', XhTagsInputElement)
   defineXhElement('xh-color-field', XhColorFieldElement)
+  defineXhElement('xh-color-swatch-picker', XhColorSwatchPickerElement)
+  defineXhElement('xh-password-input', XhPasswordInputElement)
   defineXhElement('xh-toggle-group', XhToggleGroupElement)
   defineXhElement('xh-tree-select', XhTreeSelectElement)
   defineXhElement('xh-format-input', XhFormatInputElement)

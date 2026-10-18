@@ -22,6 +22,7 @@ const translations: DesignerShellLocaleTranslations = {
     sidesLinked: '네 변 모두 같음',
     sides: { all: '네 변', top: '위', right: '오른쪽', bottom: '아래', left: '왼쪽' },
     sidesIncomplete: '네 변을 모두 입력하세요',
+    customColor: '사용자 지정 색',
   },
   'xh-designer-issues': {
     title: '문제',

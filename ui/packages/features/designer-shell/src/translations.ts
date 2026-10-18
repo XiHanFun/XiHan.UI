@@ -31,6 +31,8 @@ export interface DesignerPropertiesTranslations {
   readonly sides: Readonly<{ all: string, top: string, right: string, bottom: string, left: string }>
   /** 四边分开填时有边空着。 */
   readonly sidesIncomplete: string
+  /** 颜色预设旁边自定义颜色框的名字。 */
+  readonly customColor: string
 }
 
 /** 问题列表的文案。 */

@@ -22,6 +22,7 @@ const translations: DesignerShellLocaleTranslations = {
     sidesLinked: 'Alle Seiten gleich',
     sides: { all: 'Alle Seiten', top: 'Oben', right: 'Rechts', bottom: 'Unten', left: 'Links' },
     sidesIncomplete: 'Alle vier Seiten ausfüllen',
+    customColor: 'Eigene Farbe',
   },
   'xh-designer-issues': {
     title: 'Probleme',

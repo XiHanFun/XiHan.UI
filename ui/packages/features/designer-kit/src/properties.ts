@@ -22,6 +22,13 @@ export interface PropertyOption {
   readonly label?: string
 }
 
+/** swatch 的一项：选中时写入 value，格子画成 color（能解析的 CSS 颜色串），label 是读屏念的名字。 */
+export interface PropertySwatchOption {
+  readonly value: string
+  readonly color: string
+  readonly label?: string
+}
+
 /** number 与 sides 共用的数值约束：integer 只收整数，min / max 含端点，exclusiveMin 不含，step 与 unit 只给编辑器用。 */
 export interface PropertyNumberConstraints {
   /** 只收整数。 */
@@ -49,7 +56,7 @@ export type PropertySides = Readonly<Record<PropertySide, number>>
 
 /**
  * 内建编辑方式与取值约束：
- * - text：字符串；multiline 为多行。
+ * - text：字符串；multiline 为多行；secret 为密钥这类不该明文显示的文字，编辑器用密码框，与 multiline 不并用。
  * - number：有限数字，约束见 PropertyNumberConstraints。
  * - boolean：布尔。
  * - select：options 里某一项的 value；multiple 为这些 value 组成的数组。appearance 只给编辑器用：
@@ -66,9 +73,10 @@ export type PropertySides = Readonly<Record<PropertySide, number>>
  *   只查这层形状，字段在不在、运算符合不合由各款自己的校验报。可筛选的字段：描述里写了 fields 就用它，没写时用属性面板
  *   给的 dataFields 按 listFilterFields 列出的 value 字段；parameters 是可引用的参数，maxDepth 限子组层数，ids 为 true 时
  *   新建的条件与组带 id。fields、parameters、maxDepth、ids 只给编辑器用。
+ * - swatch：options 里某一项的 value，编辑器画成一排色块；custom 为 true 时另可填任意颜色，取值是 # 开头的 3、4、6、8 位十六进制色。
  */
 export type PropertyControl
-  = | { readonly kind: 'text', readonly multiline?: boolean, readonly placeholder?: string }
+  = | { readonly kind: 'text', readonly multiline?: boolean, readonly placeholder?: string, readonly secret?: boolean }
     | ({ readonly kind: 'number' } & PropertyNumberConstraints)
     | { readonly kind: 'boolean' }
     | {
@@ -90,6 +98,7 @@ export type PropertyControl
       readonly maxDepth?: number
       readonly ids?: boolean
     }
+    | { readonly kind: 'swatch', readonly options: readonly PropertySwatchOption[], readonly custom?: boolean }
 
 /** 内建编辑方式的种类。 */
 export type PropertyControlKind = PropertyControl['kind']
@@ -247,7 +256,8 @@ function isFilterGroupShape(value: unknown): boolean {
 /**
  * 检查值是否符合内建编辑方式的约束；符合时为 undefined，否则给出问题码。
  * dataField 不是路径写法报 invalid-value；sides 多出四边以外的键报 unknown-key，缺边或某边不是数字报 invalid-type；
- * format 不是对象报 invalid-type，没过 checkFormatSpec 报 invalid-value；filter 不是对象报 invalid-type，条件树的形状不对报 invalid-value。
+ * format 不是对象报 invalid-type，没过 checkFormatSpec 报 invalid-value；filter 不是对象报 invalid-type，条件树的形状不对报 invalid-value；
+ * swatch 不是字符串报 invalid-type，既不是选项也不是允许的自定义颜色报 invalid-option。
  */
 export function checkPropertyValue(control: PropertyControl, value: JsonValue): PropertyValueIssueCode | undefined {
   switch (control.kind) {
@@ -298,11 +308,15 @@ export function checkPropertyValue(control: PropertyControl, value: JsonValue): 
       if (!isPlainObject(value))
         return 'invalid-type'
       return isFilterGroupShape(value) ? undefined : 'invalid-value'
+    case 'swatch':
+      if (typeof value !== 'string')
+        return 'invalid-type'
+      return control.options.some(option => option.value === value) || (control.custom === true && HEX_COLOR.test(value)) ? undefined : 'invalid-option'
   }
 }
 
 /** 内建编辑方式的种类名；登记的新编辑方式不能与它们重名。 */
-export const BUILTIN_CONTROL_KINDS: readonly PropertyControlKind[] = ['text', 'number', 'boolean', 'select', 'tags', 'color', 'json', 'dataField', 'sides', 'format', 'filter']
+export const BUILTIN_CONTROL_KINDS: readonly PropertyControlKind[] = ['text', 'number', 'boolean', 'select', 'tags', 'color', 'json', 'dataField', 'sides', 'format', 'filter', 'swatch']
 
 /** 新的编辑方式：属性描述里 control.kind 等于登记的键时，checkProperties 用它校验取值。 */
 export interface ControlKind {

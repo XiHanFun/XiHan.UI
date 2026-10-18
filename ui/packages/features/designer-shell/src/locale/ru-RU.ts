@@ -33,6 +33,7 @@ const translations: DesignerShellLocaleTranslations = {
     sidesLinked: 'Одинаково со всех сторон',
     sides: { all: 'Все стороны', top: 'Сверху', right: 'Справа', bottom: 'Снизу', left: 'Слева' },
     sidesIncomplete: 'Заполните все четыре стороны',
+    customColor: 'Свой цвет',
   },
   'xh-designer-issues': {
     title: 'Проблемы',

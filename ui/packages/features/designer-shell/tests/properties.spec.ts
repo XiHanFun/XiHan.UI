@@ -586,6 +586,65 @@ describe('<xh-designer-properties>', () => {
     diagnostics.stop()
   })
 
+  it('text 写了 secret 时是密码框：缺省不显示明文、浏览器不代填，输入照常派发', async () => {
+    const diagnostics = recordWcDiagnostics()
+    const panel = await mount((element) => {
+      element.targets = [{ kind: 'client', id: 'c1', value: { key: 'k1' }, descriptors: [{ path: ['key'], control: { kind: 'text', secret: true }, label: '密钥' }] }]
+    })
+    const field = row(panel, 'key').querySelector<HTMLElement & { value?: string }>('xh-password-input')!
+    await (field as HTMLElement & { updateComplete?: Promise<unknown> }).updateComplete
+    const input = field.querySelector('input')!
+    expect([field.value, input.type, input.getAttribute('autocomplete')]).toEqual(['k1', 'password', 'off'])
+    expect(row(panel, 'key').querySelector('xh-field')).not.toBeNull()
+    const changes = record(panel, 'property-change')
+    emit(field, 'value-change', { value: 'k2' })
+    emit(field, 'value-change', { value: '' })
+    expect(changes.map(change => change.value)).toEqual(['k2', undefined])
+    expect(diagnostics.codes()).toEqual([])
+    diagnostics.stop()
+  })
+
+  it('swatch 是一组色块：格子画选项的颜色，选中写入选项的值；custom 时另有颜色框，取值不在选项里时显示在框里、色板不选中', async () => {
+    const diagnostics = recordWcDiagnostics()
+    const options = [{ value: 'ocean', color: '#2563eb', label: '海蓝' }, { value: 'forest', color: '#16a34a', label: '森绿' }]
+    const theme = (value: JsonValue, custom = true): DesignerPropertyTarget => ({
+      kind: 'settings',
+      id: 's1',
+      value: { brand: value },
+      descriptors: [{ path: ['brand'], control: { kind: 'swatch', options, custom }, label: '主题色' }],
+    })
+    const panel = await mount((element) => {
+      element.targets = [theme('forest')]
+    })
+    const group = row(panel, 'brand')
+    expect([group.getAttribute('role'), group.querySelector('xh-field')]).toEqual(['group', null])
+    const picker = group.querySelector<HTMLElement & { value?: string, swatches?: unknown }>('xh-color-swatch-picker')!
+    const custom = group.querySelector<HTMLElement & { value?: string }>('xh-color-field')!
+    expect(picker.swatches).toEqual([{ value: '#2563eb', label: '海蓝' }, { value: '#16a34a', label: '森绿' }])
+    expect([picker.value, picker.getAttribute('aria-label'), custom.value, custom.getAttribute('aria-label')]).toEqual(['#16a34a', '主题色', '', 'Custom color'])
+
+    const changes = record(panel, 'property-change')
+    const commits = record(panel, 'property-commit')
+    emit(picker, 'value-change', { value: '#2563eb' })
+    expect([changes.at(-1)!.value, commits.length]).toEqual(['ocean', 1])
+    emit(custom, 'value-change', { value: '#ff8800' })
+    expect([changes.at(-1)!.value, picker.value, commits.length]).toEqual(['#ff8800', '', 2])
+
+    panel.targets = [theme('#123456')]
+    await panel.updateComplete
+    expect([picker.value, custom.value]).toEqual(['', '#123456'])
+    panel.targets = [theme('ocean')]
+    await panel.updateComplete
+    expect([picker.value, custom.value]).toEqual(['#2563eb', ''])
+
+    // 没写 custom 时只有色板
+    panel.targets = [{ ...theme('ocean', false), id: 's2' }]
+    await panel.updateComplete
+    expect(row(panel, 'brand').querySelector('xh-color-field')).toBeNull()
+    expect(diagnostics.codes()).toEqual([])
+    diagnostics.stop()
+  })
+
   it('只读时字段只读、不派发；focusField 把焦点交给字段', async () => {
     const panel = await mount((element) => {
       element.readonly = true

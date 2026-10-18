@@ -22,6 +22,7 @@ const translations: DesignerShellLocaleTranslations = {
     sidesLinked: 'Identique sur les quatre côtés',
     sides: { all: 'Quatre côtés', top: 'Haut', right: 'Droite', bottom: 'Bas', left: 'Gauche' },
     sidesIncomplete: 'Renseignez les quatre côtés',
+    customColor: 'Couleur personnalisée',
   },
   'xh-designer-issues': {
     title: 'Problèmes',

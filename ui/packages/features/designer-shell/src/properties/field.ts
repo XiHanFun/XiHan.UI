@@ -30,6 +30,7 @@ export const DEFAULT_PROPERTIES_TRANSLATIONS: DesignerPropertiesTranslations = {
   sidesLinked: 'Same on all sides',
   sides: { all: 'All sides', top: 'Top', right: 'Right', bottom: 'Bottom', left: 'Left' },
   sidesIncomplete: 'Fill in all four sides',
+  customColor: 'Custom color',
 }
 
 /** createPropertyField 的选项：建好后不再变的部分。 */
