@@ -17,6 +17,7 @@ import {
   settingPolicy,
   settingValue,
   sortSettingsSections,
+  toolbarDisplayOf,
 } from '../src'
 import { designerShellZhCN } from '../src/locale'
 import { DESIGNER_SETTINGS_EN_US } from '../src/locale/en-US'
@@ -96,13 +97,18 @@ describe('设置模型', () => {
     ]).toEqual([undefined, 'locked', 'hidden'])
   })
 
-  it('「基础」分区：主题与状态栏总有；主题色要给了预设或许自定义，语言要给了可选语言', () => {
+  it('「基础」分区：主题、工具栏显示方式与状态栏总有；主题色要给了预设或许自定义，语言要给了可选语言', () => {
     const keys = (section: DesignerSettingsSection): string[] => section.items.map(item => settingKey(section, item))
-    expect(keys(designerGeneralSettings(english))).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.statusBar])
+    expect(keys(designerGeneralSettings(english))).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.toolbarDisplay, DESIGNER_SETTING_KEYS.statusBar])
     const full = designerGeneralSettings(english, { brands: [{ value: 'blue', color: '#1677ff' }], customBrand: true, languages: [{ value: 'zh-CN', label: '简体中文' }] })
-    expect(keys(full)).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.brand, DESIGNER_SETTING_KEYS.statusBar, DESIGNER_SETTING_KEYS.language])
+    expect(keys(full)).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.brand, DESIGNER_SETTING_KEYS.toolbarDisplay, DESIGNER_SETTING_KEYS.statusBar, DESIGNER_SETTING_KEYS.language])
     expect(full.items[1]!.control).toEqual({ kind: 'swatch', options: [{ value: 'blue', color: '#1677ff' }], custom: true })
-    expect([full.id, full.order, full.items[0]!.default, full.items[2]!.default]).toEqual(['general', 0, 'follow', true])
+    expect([full.id, full.order, full.items[0]!.default, full.items[2]!.default, full.items[3]!.default]).toEqual(['general', 0, 'follow', 'icon', true])
+    expect(full.items[2]!.control).toMatchObject({ kind: 'select', appearance: 'toggle', options: [{ value: 'icon' }, { value: 'text' }, { value: 'both' }] })
+  })
+
+  it('toolbarDisplayOf 取设置里的工具栏显示方式，没写或不认识的值是 icon', () => {
+    expect([toolbarDisplayOf(undefined), toolbarDisplayOf({ 'general.toolbarDisplay': 'both' }), toolbarDisplayOf({ 'general.toolbarDisplay': 'text' }), toolbarDisplayOf({ 'general.toolbarDisplay': 'large' })]).toEqual(['icon', 'both', 'text', 'icon'])
   })
 })
 

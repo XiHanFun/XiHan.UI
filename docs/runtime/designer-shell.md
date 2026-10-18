@@ -446,7 +446,7 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 
 ## 设置
 
-设计器的设置是用户偏好，每人每机一份，不是模板数据：主题、主题色、状态栏与语言，再加各款与扩展自己的条目。`<xh-designer-settings>` 是设置对话框；`createDesignerSettingsHost` 把主题与主题色落到设计器上，并读写存储。
+设计器的设置是用户偏好，每人每机一份，不是模板数据：主题、主题色、工具栏显示方式、状态栏与语言，再加各款与扩展自己的条目。`<xh-designer-settings>` 是设置对话框；`createDesignerSettingsHost` 把主题与主题色落到设计器上，并读写存储。
 
 ```ts
 import { collectSettingsSections, createDesignerSettingsHost } from "@xihan-ui/designer-shell";
@@ -496,10 +496,11 @@ dialog.show();
 | --- | --- | --- | --- | --- |
 | 主题 | `general.theme` | 分段：跟随页面、跟随系统、亮色、暗色 | `follow` | 总有 |
 | 主题色 | `general.brand` | 色板 | 不写即跟随页面 | 给了 `brands` 或 `customBrand` |
+| 工具栏显示方式 | `general.toolbarDisplay` | 分段：图标、文字、图标和文字 | `icon` | 总有 |
 | 状态栏 | `general.statusBar` | 开关 | `true` | 总有 |
 | 语言 | `general.language` | 下拉 | 不选即跟随页面 | 给了 `languages` |
 
-键也在 `DESIGNER_SETTING_KEYS` 里。主题与主题色由 `createDesignerSettingsHost` 落到设计器上；状态栏与语言由各款自己接，例如状态栏关掉时从外框的 `panels` 里去掉 `status`，语言换成对应的产品语言包。
+键也在 `DESIGNER_SETTING_KEYS` 里。工具栏显示方式只走设置，各款不另设属性：用 `toolbarDisplayOf(settings)` 取出来（没写或不认识的值是 `icon`），交给命令工具栏的 `setDisplay`。主题与主题色由 `createDesignerSettingsHost` 落到设计器上；状态栏与语言由各款自己接，例如状态栏关掉时从外框的 `panels` 里去掉 `status`，语言换成对应的产品语言包。
 
 ### 设置对话框
 
