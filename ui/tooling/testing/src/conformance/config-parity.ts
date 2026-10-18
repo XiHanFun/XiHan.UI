@@ -1,7 +1,7 @@
 import type { AdapterHarness, ConformanceSuite, FixtureNode, TestHooks } from './types'
 import { SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
 
-/** 全局配置能替组件供给的 prop：经 provideXhConfig / XhConfigProvider 给，与写在实例上等价。 */
+/** 全局配置能替组件供给的 prop：经 provideXhConfig / XhConfigProvider / <xh-config> 给，与写在实例上等价。 */
 export type ConfigParityKey = 'size' | 'locale' | 'disabled' | 'translations'
 
 const KEYS: readonly ConfigParityKey[] = ['size', 'locale', 'disabled', 'translations']
@@ -45,7 +45,8 @@ function probe(key: ConfigParityKey, component: string, options: ConfigParityOpt
 }
 
 /**
- * 文档快照：生成的 id 换成按出现次序的编号，React useId 的片段统一抹平，内联样式去掉。
+ * 文档快照：生成的 id 换成按出现次序的编号，React useId 的片段统一抹平，内联样式去掉，
+ * Web Components 外包的 <xh-config> 这层外壳去掉（Vue / React 的配置不出节点）。
  * 两次挂载的 id 计数器不同步，引用 id 的属性（aria-controls 之类）指向的节点未必在文档里。
  */
 function normalizedBody(doc: Document): string {
@@ -59,7 +60,7 @@ function normalizedBody(doc: Document): string {
   ids.sort((a, b) => b.length - a.length).forEach((id, i) => {
     out = out.split(id).join(`#id${i}`)
   })
-  return out.replace(/\sstyle="[^"]*"/g, '').replace(/_r_[a-z0-9]+_/g, '_r_')
+  return out.replace(/\sstyle="[^"]*"/g, '').replace(/_r_[a-z0-9]+_/g, '_r_').replace(/<\/?xh-config\b[^>]*>/g, '')
 }
 
 /** 两份快照第一处分歧前后的那几段，失败信息里给人看。 */
@@ -76,12 +77,22 @@ function firstDifference(a: string, b: string): string {
   return `写在实例上：${clip(left)}\n  经全局配置：${clip(right)}`
 }
 
-async function snapshotOf(harness: AdapterHarness, suite: ConformanceSuite, tree: FixtureNode, props: Record<string, unknown>, config?: Record<string, unknown>): Promise<string> {
+/**
+ * 去掉 Web Components 宿主开头标签上作者写的这个 attribute：写在实例上的值落成宿主的同名 attribute，
+ * 那是作者写的标记，不是组件渲出来的。Vue / React 渲不出 <xh-*> 宿主，碰不到这一步。
+ */
+function withoutHostInput(html: string, component: string, attr: string | undefined): string {
+  if (attr === undefined)
+    return html
+  return html.replace(new RegExp(`<xh-${component}\\b[^>]*>`), tag => tag.replace(new RegExp(`\\s${attr}(?:="[^"]*")?(?=[\\s>])`), ''))
+}
+
+async function snapshotOf(harness: AdapterHarness, suite: ConformanceSuite, tree: FixtureNode, props: Record<string, unknown>, hostAttr: string | undefined, config?: Record<string, unknown>): Promise<string> {
   const { root } = await harness.mount({ component: suite.component, props, tree, config })
   try {
     await harness.flush()
     await harness.flush()
-    return normalizedBody(root.ownerDocument)
+    return withoutHostInput(normalizedBody(root.ownerDocument), suite.component, hostAttr)
   }
   finally {
     await harness.unmount()
@@ -133,11 +144,12 @@ export function runConfigParity(
             variants.push(['标准结构', { ...authored, children: undefined, defaultStructure: true }])
           const diverged: string[] = []
           for (const [label, tree] of variants) {
-            const bare = await snapshotOf(harness, suite, tree, base)
-            const own = await snapshotOf(harness, suite, tree, { ...base, ...instance })
+            const hostAttr = key === 'translations' ? undefined : key
+            const bare = await snapshotOf(harness, suite, tree, base, hostAttr)
+            const own = await snapshotOf(harness, suite, tree, { ...base, ...instance }, hostAttr)
             if (own === bare)
               continue
-            const inherited = await snapshotOf(harness, suite, tree, base, config)
+            const inherited = await snapshotOf(harness, suite, tree, base, hostAttr, config)
             if (inherited !== own)
               diverged.push(`${label}：\n  ${firstDifference(own, inherited)}`)
           }
