@@ -39,6 +39,11 @@
     "theme": "light",
     "tone": null
   },
+  "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-invalid][data-part='list'][data-scope='tag-group'] [data-part='close-trigger'][data-pressed][data-scope='tag']": {
+    "ratio": 2.41,
+    "theme": "dark",
+    "tone": "warning"
+  },
   "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
     "ratio": 2.89,
     "theme": "light",
@@ -46,11 +51,6 @@
   },
   "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag']:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
     "ratio": 1.81,
-    "theme": "dark",
-    "tone": "warning"
-  },
-  "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-variant='ghost']:not([data-disabled]):not([data-tone]) [data-part='close-trigger'][data-pressed][data-scope='tag']": {
-    "ratio": 2.41,
     "theme": "dark",
     "tone": "warning"
   },
