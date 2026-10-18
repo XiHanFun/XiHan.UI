@@ -6,7 +6,30 @@ import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
-import { XhFieldControl, XhFieldLabel, XhFieldRoot, XhRadioGroupRoot, XhSelectRoot, XhSelectTrigger, XhTextFieldInput, XhTextFieldRoot } from '../../src'
+import {
+  XhDatePickerClearTrigger,
+  XhDatePickerControl,
+  XhDatePickerHiddenInput,
+  XhDatePickerRoot,
+  XhDatePickerSegment,
+  XhDatePickerSegmentGroup,
+  XhDatePickerTrigger,
+  XhFieldControl,
+  XhFieldLabel,
+  XhFieldRoot,
+  XhRadioGroupRoot,
+  XhSelectRoot,
+  XhSelectTrigger,
+  XhTextFieldInput,
+  XhTextFieldRoot,
+  XhTimePickerClearTrigger,
+  XhTimePickerControl,
+  XhTimePickerHiddenInput,
+  XhTimePickerRoot,
+  XhTimePickerSegment,
+  XhTimePickerSegmentGroup,
+  XhTimePickerTrigger,
+} from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -25,6 +48,30 @@ const CONTROLS: Record<string, () => ReactNode> = {
   'select': () => <XhSelectRoot><XhSelectTrigger>请选择</XhSelectTrigger></XhSelectRoot>,
   'radio-group': () => <XhRadioGroupRoot collection={[{ value: 'a', label: '甲' }, { value: 'b', label: '乙' }]} />,
   'native': () => <XhFieldControl><input /></XhFieldControl>,
+  'date-picker': () => (
+    <XhDatePickerRoot defaultValue="2026-10-18">
+      <XhDatePickerControl>
+        <XhDatePickerSegmentGroup>
+          {(['year', 'month', 'day'] as const).map(segment => <XhDatePickerSegment key={segment} segment={segment} />)}
+        </XhDatePickerSegmentGroup>
+        <XhDatePickerClearTrigger />
+        <XhDatePickerTrigger />
+      </XhDatePickerControl>
+      <XhDatePickerHiddenInput />
+    </XhDatePickerRoot>
+  ),
+  'time-picker': () => (
+    <XhTimePickerRoot defaultValue="05:03" granularity="minute">
+      <XhTimePickerControl>
+        <XhTimePickerSegmentGroup>
+          {(['hour', 'minute'] as const).map(segment => <XhTimePickerSegment key={segment} segment={segment} />)}
+        </XhTimePickerSegmentGroup>
+        <XhTimePickerClearTrigger />
+        <XhTimePickerTrigger />
+      </XhTimePickerControl>
+      <XhTimePickerHiddenInput />
+    </XhTimePickerRoot>
+  ),
 }
 
 async function mount(kind: string): Promise<void> {
@@ -69,6 +116,17 @@ describe('点字段标签聚焦控件', () => {
     await mount('radio-group')
     await userEvent.click(label())
     expect(document.activeElement?.closest('[data-scope="radio-group"][data-part="item"]')).not.toBeNull()
+  })
+
+  // 有值时清空钮顶替日历钮（或时钟钮），日历钮 display: none；字段接线的宿主看不见时，焦点交给控件里第一个可 tab 的节点
+  it.each(['date-picker', 'time-picker'])('%s：有值时日历钮让位给清空钮，点标题焦点落在控件的第一段', async (scope) => {
+    await mount(scope)
+    expect(getComputedStyle(part(scope, 'trigger')).display).toBe('none')
+    await userEvent.click(label())
+    const active = document.activeElement as HTMLElement
+    expect(active.closest(`[data-scope="${scope}"][data-part="control"]`)).not.toBeNull()
+    expect(active.getAttribute('role')).toBe('spinbutton')
+    expect(part(scope, 'trigger').getAttribute('aria-expanded')).toBe('false')
   })
 
   it('作者自写的 control：label 的 for 指着它，点标签走原生行为', async () => {

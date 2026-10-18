@@ -34,19 +34,33 @@ export function connectField<T extends PropTypes>(
   ].filter(Boolean).join(' ') || undefined
 
   /**
-   * 库内控件直接放进字段：焦点宿主由字段接线认出，就是本字段里 aria-labelledby 带着本标签 id 的第一个节点。
-   * 它能聚焦就聚焦它，否则聚焦它里面第一个可 tab 的节点；一律不触发按钮的激活。
+   * 库内控件直接放进字段：焦点宿主由字段接线认出，就是本字段里 aria-labelledby 带着本标签 id 的节点。
+   * 按文档顺序取第一个此刻落得了焦的：宿主本身可 tab 就是它，否则是它里面第一个可 tab 的节点；
+   * 看不见的宿主跳过（有值时被清空钮顶替的日历钮）。宿主都落不了焦时，焦点交给第一个宿主所在控件里
+   * 第一个可 tab 的节点（日期的第一段、签名板的第一颗按钮）。一律不触发按钮的激活。
    */
   const focusWiredHost = (event: MouseEvent): void => {
     const label = event.currentTarget as HTMLElement | null
     const root = label?.closest(parts.root.selector)
     if (!root)
       return
-    const host = [...root.querySelectorAll<HTMLElement>('[aria-labelledby]')].find(el =>
+    const hosts = [...root.querySelectorAll<HTMLElement>('[aria-labelledby]')].filter(el =>
       el !== label
       && el.closest(parts.root.selector) === root
       && (el.getAttribute('aria-labelledby') ?? '').split(/\s+/).includes(ids.label))
-    const target = host && (host.tabIndex >= 0 ? host : getTabbables(host)[0])
+    if (hosts.length === 0)
+      return
+    const tabbables = getTabbables(root)
+    let target: ReturnType<typeof getTabbables>[number] | undefined
+    for (const host of hosts) {
+      target = tabbables.find(el => host.contains(el))
+      if (target)
+        break
+    }
+    for (let box = hosts[0]!.parentElement; !target && box && box !== root; box = box.parentElement) {
+      const scope = box
+      target = tabbables.find(el => scope.contains(el))
+    }
     if (!target)
       return
     event.preventDefault()
