@@ -171,7 +171,7 @@ export class XhFloatButtonElement extends XhElement {
   }
 
   protected wire(): void {
-    const api = connectFloatButton(this.ctrl.service, this.appearance(), wcNormalize)
+    const api = connectFloatButton(this.ctrl.service, this.configured('float-button', this.appearance()), wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)
