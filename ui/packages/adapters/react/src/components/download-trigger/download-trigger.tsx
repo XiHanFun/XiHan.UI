@@ -43,7 +43,8 @@ export interface XhDownloadTriggerProps {
  * 取数在途时可以据 `preparing` 替换按钮上的文字。
  */
 export function XhDownloadTrigger({ children, ...props }: XhDownloadTriggerProps): ReactNode {
-  const ctx = useDownloadTrigger(withXhConfig('download-trigger', props) as DownloadTriggerProps)
+  // disabled 写成自有键：作者没写时，字段集压下来的作用域禁用也要落得进来
+  const ctx = useDownloadTrigger(withXhConfig('download-trigger', { ...props, disabled: props.disabled }) as DownloadTriggerProps)
   // 用原生 button，激活交给平台
   return (
     <button {...ctx.api.getRootProps() as Record<string, unknown>}>
