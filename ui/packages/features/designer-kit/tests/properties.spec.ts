@@ -1,5 +1,5 @@
 // 属性描述模型：判空、显示条件、给描述加路径前缀、分组、内建编辑方式的取值检查、按描述检查对象、写入缺省值与编辑器查找。
-import type { JsonObject } from '@xihan-ui/core/json'
+import type { JsonObject, JsonValue } from '@xihan-ui/core/json'
 import type { PropertyControl, PropertyDescriptor } from '../src/properties'
 import { describe, expect, it } from 'vitest'
 import {
@@ -7,6 +7,7 @@ import {
   checkProperties,
   checkPropertyValue,
   evaluateCondition,
+  findPropertyValueIssue,
   groupProperties,
   isFilled,
   isPropertyVisible,
@@ -149,10 +150,40 @@ describe('checkPropertyValue', () => {
     [{ kind: 'swatch', options: [{ value: 'ocean', color: '#2563eb' }], custom: true }, '#ff8800', undefined],
     [{ kind: 'swatch', options: [{ value: 'ocean', color: '#2563eb' }], custom: true }, 'orange', 'invalid-option'],
     [{ kind: 'swatch', options: [] }, 1, 'invalid-type'],
+    [{ kind: 'options' }, [{ value: 'a', label: '甲', disabled: true, tone: 'danger', description: '说明' }, { value: 'b' }], undefined],
+    [{ kind: 'options' }, [], undefined],
+    [{ kind: 'options' }, { value: 'a' }, 'invalid-type'],
+    [{ kind: 'options' }, [{ value: 'a' }, { value: 'a' }], 'duplicate-value'],
+    [{ kind: 'options' }, [{ value: '' }], 'required'],
+    [{ kind: 'options' }, [{ label: '甲' }], 'required'],
+    [{ kind: 'options', requireLabel: true }, [{ value: 'a' }], 'required'],
+    [{ kind: 'options', requireLabel: true }, [{ value: 'a', label: '' }], 'required'],
+    [{ kind: 'options' }, [{ value: 'a', label: 1 }], 'invalid-type'],
+    [{ kind: 'options' }, [{ value: 'a', tone: 'pink' }], 'invalid-option'],
+    [{ kind: 'options' }, [{ value: 'a', children: [] }], 'unknown-key'],
+    [{ kind: 'options' }, ['a'], 'invalid-type'],
   ]
   it('内建编辑方式的取值约束', () => {
     for (const [control, value, code] of cases)
       expect(checkPropertyValue(control, value as never), JSON.stringify([control, value])).toBe(code)
+  })
+})
+
+describe('findPropertyValueIssue', () => {
+  it('选项列表的问题落在那一项的那个键上，按项的先后报第一处', () => {
+    const options: JsonValue = [{ value: 'a', label: '甲' }, { value: 'b' }, { value: 'a', label: '丙', note: 'x' }]
+    expect(findPropertyValueIssue({ kind: 'options' }, options)).toEqual({ code: 'unknown-key', path: [2, 'note'] })
+    expect(findPropertyValueIssue({ kind: 'options', requireLabel: true }, options)).toEqual({ code: 'required', path: [1, 'label'] })
+    expect(findPropertyValueIssue({ kind: 'options' }, [{ value: 'a' }, { value: 'b' }, { value: 'a' }])).toEqual({ code: 'duplicate-value', path: [2, 'value'] })
+    expect(findPropertyValueIssue({ kind: 'options' }, [{ value: 'a' }, 'b'])).toEqual({ code: 'invalid-type', path: [1] })
+    expect(findPropertyValueIssue({ kind: 'options' }, [{ 'value': 'a', 'x/y': 1 }])).toEqual({ code: 'unknown-key', path: [0, 'x/y'] })
+    expect(findPropertyValueIssue({ kind: 'options' }, 'a')).toEqual({ code: 'invalid-type', path: [] })
+    expect(findPropertyValueIssue({ kind: 'options' }, [{ value: 'a' }])).toBeUndefined()
+  })
+
+  it('别的编辑方式的问题落在值本身', () => {
+    expect(findPropertyValueIssue({ kind: 'number', max: 1 }, 2)).toEqual({ code: 'out-of-range', path: [] })
+    expect(findPropertyValueIssue({ kind: 'text' }, 'a')).toBeUndefined()
   })
 })
 
@@ -184,6 +215,14 @@ describe('checkProperties', () => {
   it('登记了却没给 check 的编辑方式不检查取值；缺省路径为空', () => {
     expect(checkProperties(descriptors, { label: 'a', data: { rules: 1, mode: 'Fallback' } }, { controls: { assignees: {} } })).toEqual([
       { code: 'required', path: ['data', 'fallback'] },
+    ])
+  })
+
+  it('选项列表的问题路径接到属性路径之后，落在那一项的那个键上', () => {
+    const options: PropertyDescriptor[] = [{ path: ['data', 'options'], control: { kind: 'options' } }]
+    const target: JsonObject = { data: { options: [{ value: 'a' }, { value: 'b' }, { value: '' }] } }
+    expect(checkProperties(options, target, { path: ['children', 0] })).toEqual([
+      { code: 'required', path: ['children', 0, 'data', 'options', 2, 'value'] },
     ])
   })
 

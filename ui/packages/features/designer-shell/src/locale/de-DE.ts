@@ -23,6 +23,8 @@ const translations: DesignerShellLocaleTranslations = {
     sides: { all: 'Alle Seiten', top: 'Oben', right: 'Rechts', bottom: 'Unten', left: 'Links' },
     sidesIncomplete: 'Alle vier Seiten ausfüllen',
     customColor: 'Eigene Farbe',
+    optionColumns: { value: 'Wert', label: 'Beschriftung', disabled: 'Deaktiviert' },
+    optionCell: (column, row) => `${column}, Option ${row}`,
   },
   'xh-designer-issues': {
     title: 'Probleme',

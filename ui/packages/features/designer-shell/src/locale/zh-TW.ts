@@ -23,6 +23,8 @@ const translations: DesignerShellLocaleTranslations = {
     sides: { all: '四邊', top: '上', right: '右', bottom: '下', left: '左' },
     sidesIncomplete: '四邊都要填寫',
     customColor: '自訂顏色',
+    optionColumns: { value: '值', label: '文字', disabled: '停用' },
+    optionCell: (column, row) => `第 ${row} 項的${column}`,
   },
   'xh-designer-issues': {
     title: '問題',

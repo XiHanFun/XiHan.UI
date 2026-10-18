@@ -98,7 +98,7 @@ interface Row extends FieldRow {
   readonly control: { readonly update?: (context: FieldContext) => void, readonly destroy?: () => void }
   descriptor: DesignerPropertyDescriptor
   localError: string | undefined
-  /** 宿主编辑器自己把里层的问题标到子项上，行下不重复。 */
+  /** 编辑器自己把里层的问题标到子项上，行下不重复。 */
   nestedIssues: boolean
 }
 
@@ -421,6 +421,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     if (builtin) {
       const created: FieldInstance = builtin(this.#context(row, targets))
       Object.assign(row, { control: created })
+      row.nestedIssues = created.nestedIssues === true
       if (created.group)
         placeAsGroup(row, created.element)
       else
