@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="popover"`：**`trigger`** · `positioner` · **`content`** · `title` · `description` · `close-trigger` · `arrow`
+`data-scope="popover"`：`trigger` · `positioner` · **`content`** · `title` · `description` · `close-trigger` · `arrow`
 
 ## 示例
 
@@ -103,6 +103,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 - `modal` 可选：需要锁定下层时开启；展开期间可动态切换，模态档会锁定页面滚动并让背景失活。
 - 可以与触发器同宽，也可以落在指针位置。
 - `end` 等对齐是逻辑方向，跟随书写方向，不是物理左右。
+- `anchor` 换成外部锚点：由别处的按钮（工具栏命令等）受控打开时，把那颗按钮交给 `anchor`，浮层就贴着它定位、收起时焦点归还给它，可以不写触发器。展开期间这颗按钮带 `aria-haspopup`、`aria-expanded` 与 `aria-controls`，收起或换锚点时还原；点它算浮层内的交互，开合交给打开它的那条命令。
 - `disabled` 让浮层不可打开：触发器转原生 disabled（退出 Tab 序列、画禁用面），点按与 `setOpen(true)` 都不展开，展开途中转为禁用即收起；与文字提示、悬浮卡片的 `disabled` 同名同义。
 
 默认内容面走 frosted 配方：实体底、1px 描边与一层浮层投影，圆角 4px；箭头复用底色和边界。内衬纵 12 横 16（`sm` 纵 8 横 12、`lg` 纵 16 横 20），标题 14px / medium / 正文色，说明即气泡正文，14px 次级色，与标题相距 4px。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`，与指针按下同一副按压面。系统减少透明度、高对比与强制色时，原位切换为实体表面；打印时收起交互浮层。
@@ -140,6 +141,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | --- | --- | --- | --- |
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
+| `anchor` | `HTMLElement \| null` |  | 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger；用于由别处的按钮受控打开浮层，此时通常不渲染 trigger。 展开期间它带 aria-haspopup、aria-expanded、aria-controls，收起或换锚点时还原；点它算层内交互，不会先被判为层外交互关掉。 |
 | `placement` | `Placement` |  |  |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |

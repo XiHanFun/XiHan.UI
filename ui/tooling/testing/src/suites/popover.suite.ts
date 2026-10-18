@@ -1,10 +1,66 @@
-import type { ConformanceSuite } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode, RawStepContext, StepWithExpect } from '../conformance/types'
 import { popoverAnatomy, popoverKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
+import { settled } from './shared/overflow-menu'
 import { heldPress } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/'
+
+/** 外部锚点：组件之外的一颗按钮，用例在运行时造出来交给 anchor。 */
+const EXTERNAL_ANCHOR = 'xh-popover-external-anchor'
+
+function externalAnchor(doc: Document): HTMLElement {
+  const el = doc.getElementById(EXTERNAL_ANCHOR)
+  if (!el)
+    throw new Error('外部锚点还没造出来')
+  return el
+}
+
+/** 不写 trigger 的结构：锚点全交给 anchor。 */
+function withoutTrigger(base: FixtureNode): FixtureNode {
+  return { ...base, children: base.children?.filter(child => child.part !== 'trigger') }
+}
+
+/** 造出外部锚点并交给 anchor。 */
+const mountExternalAnchor: StepWithExpect = {
+  kind: 'raw',
+  why: '外部锚点不是部件，只能在运行时造出来、经宿主交给 anchor',
+  run: async ({ doc, setProps }: RawStepContext) => {
+    const el = doc.createElement('button')
+    el.id = EXTERNAL_ANCHOR
+    el.type = 'button'
+    el.textContent = '页面设置'
+    doc.body.append(el)
+    await setProps({ anchor: el })
+  },
+}
+
+/** 断言外部锚点上的三条读屏属性；null 即该属性不在场。 */
+function anchorAria(expected: { haspopup: string | null, expanded: string | null, controlsContent: boolean }): StepWithExpect {
+  return {
+    kind: 'raw',
+    why: '外部锚点在组件之外，部件快照采不到它',
+    run: ({ doc }: RawStepContext) => {
+      const el = externalAnchor(doc)
+      const content = doc.querySelector('[data-scope="popover"][data-part="content"]')
+      const actual = {
+        haspopup: el.getAttribute('aria-haspopup'),
+        expanded: el.getAttribute('aria-expanded'),
+        controls: el.getAttribute('aria-controls'),
+      }
+      const controls = expected.controlsContent ? (content?.id ?? '(content 没有 id)') : null
+      if (actual.haspopup !== expected.haspopup || actual.expanded !== expected.expanded || actual.controls !== controls)
+        throw new Error(`外部锚点的读屏属性不对：${JSON.stringify(actual)}`)
+    },
+  }
+}
+
+const removeExternalAnchor: StepWithExpect = {
+  kind: 'raw',
+  why: '外部锚点挂在文档上，用例结束时摘掉',
+  run: ({ doc }: RawStepContext) => externalAnchor(doc).remove(),
+}
 
 // content 始终在 DOM，展开态靠 hidden 属性显隐，不卸载作者节点。
 // 位置由引擎异步回填，快照不采集 style，因此这里只断言 data-placement 这类语义属性。
@@ -231,6 +287,59 @@ export const popoverSuite: ConformanceSuite = {
             },
           },
         },
+      ],
+    },
+    {
+      name: 'anchor：外部锚点顶替 trigger，展开期间带 aria-haspopup / aria-expanded / aria-controls，Escape 收起后还原并把焦点还给它',
+      spec: { apg: `${APG}#keyboardinteraction`, adr: 'popover-anchor' },
+      fixture: withoutTrigger,
+      // 先写上 anchor：元素要等挂载后才造得出来，写了 anchor 就不再找 trigger 取视觉环境
+      props: { open: false, anchor: null },
+      steps: [
+        mountExternalAnchor,
+        anchorAria({ haspopup: null, expanded: null, controlsContent: false }),
+        { kind: 'setProps', props: { open: true } },
+        { kind: 'settle', until: { activeElement: 'content' } },
+        anchorAria({ haspopup: 'dialog', expanded: 'true', controlsContent: true }),
+        // 受控：Escape 只发收起意图，宿主写回才收
+        { kind: 'key', key: 'Escape', expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }] } },
+        { kind: 'setProps', props: { open: false } },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: '' } } },
+        anchorAria({ haspopup: null, expanded: null, controlsContent: false }),
+        {
+          kind: 'raw',
+          why: '焦点归还的落点是组件之外的外部锚点，settle 只认部件',
+          run: async ({ doc, flush }) => {
+            const anchor = externalAnchor(doc)
+            if (!await settled(doc, flush, () => doc.activeElement === anchor))
+              throw new Error(`焦点没有归还外部锚点，落在 ${doc.activeElement?.tagName ?? 'null'}`)
+          },
+        },
+        removeExternalAnchor,
+      ],
+    },
+    {
+      name: 'anchor：点外部锚点算层内交互，不发收起意图——开合交给打开它的那条命令',
+      spec: { adr: 'popover-anchor' },
+      fixture: withoutTrigger,
+      props: { open: true, anchor: null },
+      steps: [
+        mountExternalAnchor,
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        {
+          kind: 'raw',
+          why: '外部锚点不是部件，click 步骤够不着它',
+          run: async ({ doc, flush }) => {
+            const anchor = externalAnchor(doc)
+            anchor.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true }))
+            anchor.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+            await flush()
+          },
+          expect: { events: [], parts: { content: { hidden: null } } },
+        },
+        // 对照：层外的点击照常发收起意图
+        { kind: 'outside', action: 'click', expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'interact-outside' } }] } },
+        removeExternalAnchor,
       ],
     },
     {

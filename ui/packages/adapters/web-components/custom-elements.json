@@ -53826,11 +53826,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-popover>`：Light-DOM 行为宿主：作者写 trigger / positioner / content / ... 角色节点，\n元素运行 popover 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 trigger、被定位的浮层取 positioner；状态机只识别端口，不识别具体引擎。",
+          "description": "`<xh-popover>`：Light-DOM 行为宿主：作者写 trigger / positioner / content / ... 角色节点，\n元素运行 popover 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 anchor property，没给时取 trigger；被定位的浮层取 positioner。状态机只识别端口，不识别具体引擎。",
           "name": "XhPopoverElement",
           "cssParts": [
             {
-              "description": "触发按钮（aria-haspopup / aria-expanded / aria-controls 所在），同时是定位锚点",
+              "description": "触发按钮（aria-haspopup / aria-expanded / aria-controls 所在）；没给 anchor 时同时是定位锚点",
               "name": "trigger"
             },
             {
@@ -53965,6 +53965,15 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "anchor",
+              "privacy": "public",
+              "type": {
+                "text": "HTMLElement | null | undefined"
+              },
+              "description": "外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger；用于由别处的按钮受控打开浮层，此时通常不写 trigger。\n展开期间它带 aria-haspopup、aria-expanded、aria-controls，收起或换锚点时还原；点它算层内交互。只作为 property 暴露。"
             },
             {
               "kind": "field",

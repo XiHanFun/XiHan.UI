@@ -30,6 +30,10 @@ export interface PopoverContext {
   visible: Ref<boolean>
   /** 浮层迁移到的位置：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
+  /**
+   * 落点的视觉环境从哪取：缺省取 trigger；写了 anchor（哪怕暂时是 null）时为空，由 Portal 在 positioner 原位放来源标记。
+   */
+  portalSource: ComputedRef<Ref<HTMLElement | null> | undefined>
   /** 标题与说明在不在场，由 XhPopoverTitle / XhPopoverDescription 登记；content 只引用在场的部件。 */
   presence: TitleDescriptionPresence
 }
@@ -58,9 +62,9 @@ export function usePopover(
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'popover',
       node: () => contentRef.value,
-      // trigger 记为本层分支，点它算层内交互；
+      // trigger 记为本层分支，点它算层内交互；外部锚点同理，点它交给打开它的那条命令去切换。
       // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉
-      branches: () => [triggerRef.value, positionerRef.value].filter(Boolean) as Element[],
+      branches: () => [triggerRef.value, props.anchor, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => props.modal ?? false,
       surfaces: () => [],
     })
@@ -85,5 +89,7 @@ export function usePopover(
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, triggerRef, positionerRef, contentRef, portalTarget, presence }
+  const portalSource = computed(() => (props.anchor !== undefined ? undefined : triggerRef))
+
+  return { visible, service, api, triggerRef, positionerRef, contentRef, portalTarget, portalSource, presence }
 }

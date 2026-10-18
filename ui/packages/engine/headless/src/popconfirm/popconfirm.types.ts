@@ -10,9 +10,10 @@ import type { PopoverOpenChangeDetails, PopoverSchema } from '../popover/popover
 
 /**
  * 开合与浮层部分与 popover 相同：气泡确认运行的即 popover 状态机。
- * 去除两项：modal（气泡确认不陷入焦点）与 translations（两个按钮的文案是作者写在节点中的内容）。
+ * 去除三项：modal（气泡确认不陷入焦点）、translations（两个按钮的文案是作者写在节点中的内容）
+ * 与 anchor（确认气泡总是贴着发起这次操作的触发器）。
  */
-export type PopconfirmOverlayProps = Omit<PopoverSchema['props'], 'modal' | 'translations' | 'onOpenChange'>
+export type PopconfirmOverlayProps = Omit<PopoverSchema['props'], 'modal' | 'translations' | 'onOpenChange' | 'anchor'>
 
 /** 确认动作失败；cause 保留回调同步抛出或 thenable 拒绝时的原值。 */
 export interface PopconfirmConfirmErrorDetails {

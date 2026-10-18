@@ -27,7 +27,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
 /**
  * `<xh-popover>`：Light-DOM 行为宿主：作者写 trigger / positioner / content / ... 角色节点，
  * 元素运行 popover 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，
- * 锚点取 trigger、被定位的浮层取 positioner；状态机只识别端口，不识别具体引擎。
+ * 锚点取 anchor property，没给时取 trigger；被定位的浮层取 positioner。状态机只识别端口，不识别具体引擎。
  *
  * @customElement xh-popover
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
@@ -41,7 +41,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @attr {boolean} disabled - 浮层不可打开：触发器转原生 disabled，展开途中转为禁用即收起
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
- * @csspart trigger - 触发按钮（aria-haspopup / aria-expanded / aria-controls 所在），同时是定位锚点
+ * @csspart trigger - 触发按钮（aria-haspopup / aria-expanded / aria-controls 所在）；没给 anchor 时同时是定位锚点
  * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - 浮层内容（role=dialog；焦点域与消解层的根节点），收起时带 hidden
  * @csspart title - 标题（aria-labelledby 目标）
@@ -70,6 +70,7 @@ export class XhPopoverElement extends XhPortalHostElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     size: { converter: STRING_CONVERTER },
     // 对象值进不了属性，只作为 property 暴露
+    anchor: { attribute: false },
     translations: { attribute: false },
   }
 
@@ -83,6 +84,11 @@ export class XhPopoverElement extends XhPortalHostElement {
   declare closeOnInteractOutside?: boolean
   declare disabled?: boolean
   declare size?: Size
+  /**
+   * 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger；用于由别处的按钮受控打开浮层，此时通常不写 trigger。
+   * 展开期间它带 aria-haspopup、aria-expanded、aria-controls，收起或换锚点时还原；点它算层内交互。只作为 property 暴露。
+   */
+  declare anchor?: HTMLElement | null
   /** 关闭按钮的无障碍名；connect 每帧重写 aria-label，作者写在节点上的值会被覆盖，只能从此处提供。 */
   declare translations?: Partial<PopoverTranslations>
 
@@ -95,7 +101,8 @@ export class XhPopoverElement extends XhPortalHostElement {
   private readonly portal = this.createAnchoredPortalController({
     name: 'Popover',
     config: () => this.config,
-    source: () => this.getPart('trigger'),
+    // 视觉环境取自作者树：写了 anchor（哪怕暂时是 null）取宿主自己，否则取 trigger
+    source: () => (this.anchor !== undefined ? this : this.getPart('trigger')),
     root: () => this.getPart('positioner'),
     onChange: () => this.requestUpdate(),
   })
@@ -122,6 +129,7 @@ export class XhPopoverElement extends XhPortalHostElement {
     return {
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
+      anchor: this.anchor,
       placement: this.placement,
       offset: this.offset,
       dir: this.direction,
@@ -166,8 +174,9 @@ export class XhPopoverElement extends XhPortalHostElement {
       node: () => this.getPart('content'),
       // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。
       // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，浮层等于关不掉。
-      // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉
-      branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
+      // 浮层壳一并记上：面板之外还浮着自绘滚动条，按住它拖动不该把面板消解掉。
+      // 外部锚点同理：点它是交给打开它的那条命令去切换
+      branches: () => [this.getPart('trigger'), this.anchor, this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => this.ctrl.service.prop('modal') ?? false,
       // 非模态浮层不自带遮罩，没有"点它就该关本层"的表面
       surfaces: () => [],

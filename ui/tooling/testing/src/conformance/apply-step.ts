@@ -227,6 +227,7 @@ export async function applyStep(ctx: ApplyContext, step: Step): Promise<void> {
         doc: ctx.doc,
         adapterName: ctx.harness.adapterName,
         flush: () => ctx.harness.flush(),
+        setProps: next => ctx.harness.setProps(next),
       })
       break
     }

@@ -7,11 +7,13 @@
 
 import type { PositionResult } from '@xihan-ui/core'
 import type { PopoverPressedPart, PopoverSchema } from './popover.types'
-import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
+import { createDismissLayer, createFocusScope, DIAGNOSTIC_CODES, reportDiagnostic, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
+import { trackExternalAnchorAria } from '../shared/external-anchor'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
-import { createModalLayerResources, setupLayerTransaction } from '../shared/overlay-shell'
+import { createModalLayerResources, setupLayerTransaction, trackOverlayPosition } from '../shared/overlay-shell'
+import { popoverAnatomy } from './popover.anatomy'
 
 /** 没传 placement 时浮层交给定位引擎的落点。 */
 export const POPOVER_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
@@ -39,10 +41,12 @@ export const popoverMachine = createMachine({
     getFloatingEl: () => null,
     getContentEl: () => null,
     getInitialFocusEl: () => null,
+    reanchor: null,
   }),
   initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // 层、焦点域和模态资源由机器持有；逻辑关闭后继续保留到 Presence 完成真实退场。
-  effects: ['trackLayer'],
+  // 外部锚点上的读屏属性跟着展开态与 anchor 走，同样常驻。
+  effects: ['trackLayer', 'trackAnchorAria'],
   // 受控（open prop 给定）时，用户事件只发意图回调、不自改状态；宿主写回 open 后
   // 由此 watch 追踪 open 变化，派发影子事件 CONTROLLED.* 无条件回写状态。
   watch: ({ track, prop, action }) => {
@@ -50,6 +54,8 @@ export const popoverMachine = createMachine({
     track([() => prop('modal')], () => action(['syncModalResources']))
     // 展开途中转为禁用：收起（受控时只发意图）
     track([() => prop('disabled')], () => action(['closeWhenDisabled']))
+    // 展开期间换了外部锚点：定位跟着重挂，层与焦点域原地不动
+    track([() => prop('anchor')], () => action(['reanchor']))
   },
   // 按压通道：trigger 与 close-trigger 都不受开合状态影响，两个状态都认 PRESS.*
   on: {
@@ -132,6 +138,7 @@ export const popoverMachine = createMachine({
         send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
       syncModalResources: ({ refs }) => refs.get('syncModalResources')?.(),
+      reanchor: ({ refs }) => refs.get('reanchor')?.(),
       closeWhenDisabled: ({ prop, state, send }) => {
         if (prop('disabled') && state.get() === 'open')
           send({ type: 'CLOSE' })
@@ -139,51 +146,53 @@ export const popoverMachine = createMachine({
     },
     effects: {
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读。
-      trackPosition: ({ refs, prop, context, flush }) => {
+      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
+        // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
+        engine: refs.get('position'),
+        // 必须等 DOM 落定再挂：进入展开态这一刻 content 仍带 hidden，量到的浮层尺寸为 0。
+        flush,
         // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
         // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
-        context.set('position', null)
-        const engine = refs.get('position')
-        // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
-        if (!engine)
-          return undefined
-
-        let stop: (() => void) | undefined
-        let disposed = false
-
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 仍带 hidden，量到的浮层尺寸为 0。
-        flush(() => {
-          if (disposed)
-            return
-          const anchor = refs.get('getAnchorEl')()
-          const floating = refs.get('getFloatingEl')()
-          if (!anchor || !floating)
-            return
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('placement') ?? POPOVER_DEFAULT_PLACEMENT,
-              offset: prop('offset') ?? OVERLAY_OFFSET,
-              // positioner 渲染成 fixed，坐标系必须跟着走视口系
-              strategy: 'fixed',
-              // start / end 是逻辑对齐，RTL 下行内轴要翻过来
-              dir: prop('dir'),
-              // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
-              arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
-              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高。
-              // 这台机器由 popconfirm 共用，落不落槽各自的 connect 说了算
-              size: true,
-            },
-            result => context.set('position', result),
-          )
-        })
-
-        return () => {
-          disposed = true
-          stop?.()
-        }
-      },
+        clear: () => context.set('position', null),
+        // anchor 变了由 watch 调这个句柄重挂一轮
+        onSchedule: schedule => refs.set('reanchor', schedule),
+        getAnchor: () => {
+          const anchor = prop('anchor') ?? refs.get('getAnchorEl')()
+          if (!anchor) {
+            reportDiagnostic({
+              code: DIAGNOSTIC_CODES.overlayMissingAnchor,
+              level: 'warn',
+              scope: popoverAnatomy.name,
+              message: '浮层展开了却没有锚点：既没给 anchor，也找不到 trigger 部件。'
+                + '渲染一个 trigger，或者把打开它的按钮交给 anchor',
+            })
+          }
+          return anchor
+        },
+        getFloating: () => refs.get('getFloatingEl')(),
+        options: () => ({
+          placement: prop('placement') ?? POPOVER_DEFAULT_PLACEMENT,
+          offset: prop('offset') ?? OVERLAY_OFFSET,
+          // positioner 渲染成 fixed，坐标系必须跟着走视口系
+          strategy: 'fixed',
+          // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+          dir: prop('dir'),
+          // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
+          arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
+          // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高。
+          // 这台机器由 popconfirm 共用，落不落槽各自的 connect 说了算
+          size: true,
+        }),
+        onResult: result => context.set('position', result),
+      }),
+      // 外部锚点上的 aria-haspopup / aria-expanded / aria-controls：展开期间写上，收起或换锚点时还原
+      trackAnchorAria: ({ prop, state, scope, track }) => trackExternalAnchorAria({
+        anchor: () => prop('anchor'),
+        open: () => state.get() === 'open',
+        haspopup: 'dialog',
+        controls: () => scope.ids('popover', 'content').content,
+        track,
+      }),
       // 层、消解层、焦点域与模态资源共用一轮生命周期；关闭后等 Presence 真退场再逆序释放。
       trackLayer: ({ refs, prop, send, context, flush, state, track }) => {
         const config = refs.get('config')
@@ -227,8 +236,8 @@ export const popoverMachine = createMachine({
             initialFocus: () => refs.get('getInitialFocusEl')(),
             restoreFocus: () => context.get('returnFocus'),
             // 归还落点显式给锚点：指针打开那一刻焦点未必真在它身上（Safari 点按不给按钮焦点），
-            // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
-            restoreTarget: () => refs.get('getAnchorEl')(),
+            // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上。给了外部锚点就还给它
+            restoreTarget: () => prop('anchor') ?? refs.get('getAnchorEl')(),
           })
           reactivateFocus = focus.reactivate
           returnFocusNow = focus.returnFocus

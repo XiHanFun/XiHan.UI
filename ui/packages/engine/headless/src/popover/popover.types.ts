@@ -24,7 +24,7 @@ export interface PopoverRefs {
   syncModalResources: (() => void) | null
   /** 浮层定位引擎；未提供时不产出位置结果。 */
   position: PositionEnginePort | null
-  /** 定位锚点，通常是 trigger。 */
+  /** trigger 部件；没给 anchor 时它就是定位锚点与焦点归还处。 */
   getAnchorEl: () => HTMLElement | null
   /** 被定位的浮层容器，通常是 positioner。 */
   getFloatingEl: () => HTMLElement | null
@@ -36,6 +36,8 @@ export interface PopoverRefs {
    * 探测按文档序取 content 的可 tab 后代，作者放在集合前面的搜索框会夺走焦点。
    */
   getInitialFocusEl: () => HTMLElement | null
+  /** 重挂定位的句柄，由定位效应填写；anchor 变了由 watch 调它。 */
+  reanchor: (() => void) | null
 }
 
 /**
@@ -57,6 +59,11 @@ export interface PopoverSchema extends MachineSchema {
   props: {
     open?: boolean
     defaultOpen?: boolean
+    /**
+     * 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger；用于由别处的按钮受控打开浮层，此时通常不渲染 trigger。
+     * 展开期间它带 aria-haspopup、aria-expanded、aria-controls，收起或换锚点时还原；点它算层内交互，不会先被判为层外交互关掉。
+     */
+    anchor?: HTMLElement | null
     placement?: Placement
     /** 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 */
     dir?: Direction
@@ -113,8 +120,8 @@ export interface PopoverSchema extends MachineSchema {
     | { type: 'PRESS.END', part: PopoverPressedPart }
   tag: never
   guard: 'isOpenControlled' | 'isDisabled'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'setReturnFocus' | 'syncOpen' | 'syncModalResources' | 'startPress' | 'endPress' | 'releasePress' | 'closeWhenDisabled' | 'clearOpenedAtMount'
-  effect: 'trackPosition' | 'trackLayer'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'setReturnFocus' | 'syncOpen' | 'syncModalResources' | 'startPress' | 'endPress' | 'releasePress' | 'closeWhenDisabled' | 'clearOpenedAtMount' | 'reanchor'
+  effect: 'trackPosition' | 'trackLayer' | 'trackAnchorAria'
 }
 
 export interface PopoverApi<T extends PropTypes = PropTypes> {
