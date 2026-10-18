@@ -6,9 +6,13 @@
 // 定义 reasoning 类型契约。
 
 import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { ToolCallSchema } from '../tool-call'
 
-/** 视图属性，经 connect 的第二个参数传入。状态机属性与 tool-call 共用一组。 */
-export interface ReasoningProps {
+/**
+ * 公开属性。open、defaultOpen、autoDisclosure、disabled、onOpenChange 是与 tool-call 共用的状态机属性，
+ * 适配器交给状态机，connect 从状态机读；其余是视图属性，经 connect 的第二个参数传入。
+ */
+export interface ReasoningProps extends Pick<ToolCallSchema['props'], 'open' | 'defaultOpen' | 'autoDisclosure' | 'disabled' | 'onOpenChange'> {
   /** 仍在思考。适配器把它折叠为状态机的 running。 */
   streaming?: boolean
   /** 开始思考的时刻，毫秒时间戳。 */
