@@ -11,7 +11,7 @@
 - **热力图**：`cell-press` / `cell-active` 改名 `datum-press` / `datum-active`（`onCellPress` / `onCellActive` → `onDatumPress` / `onDatumActive`），删除 `cell-focus` / `onCellFocus`；`HeatmapCellDetails` 改名 `HeatmapDatumDetails`，删除 `HeatmapCellFocusDetails`
 - **表格**：删除 `footer`（WC `footer`），改写 `footerRows: 1`（WC `footer-rows="1"`）；`getFooterRowProps()` 改为 `getFooterRowProps({ level })`，多行表尾每行写 `level`
 - **快捷键**：`formatHotkey`、`matchesHotkey`、`detectKbdPlatform`、`resolveKbdPlatform` 与 `KbdPlatform`、`KbdResolvedPlatform`、`HotkeySegment` 改从 `@xihan-ui/core/hotkey` 引入，`@xihan-ui/headless` 不再导出
-- **语言包**：删除 Citation 的 `openSource`、`source` 与 FileUpload 的 `dropzone`，覆盖过的直接去掉；投放区改由标题接上投放区里看得见的说明命名
+- **语言包**：删除 Citation 的 `openSource`、`source`，覆盖过的直接去掉；FileUpload 的 `dropzone` 改作标准结构里投放区那句看得见的说明，手写结构的投放区改由标题接上投放区里看得见的说明命名
 - **覆盖槽**：删除 `--xh-command-list-busy-opacity`
 - **HoverCard**：`HoverCardRefs` 删去 `getTitleEl` / `getDescriptionEl`，Vue 的 `HoverCardContext` 删去 `titleRef` / `descriptionRef`，React 的删去 `setTitleEl` / `setDescriptionEl`；自写标题、说明部件的改为经 `parts` 报告在场
 - **表单校验**：只含空白的字符串与元素全为空的数组算空，`required` 会拦下；`min` / `max` 对字符串改按字素计数。依赖原行为的改在 `validator` 里自行判断
@@ -20,9 +20,10 @@
 - **Web Components 布尔属性**：全部改为三态，显式写 `="false"` 为假、不写交给缺省；写过 `disabled="false"` 却想要真的改成 `disabled`，移除属性改为回到组件缺省
 - **缺省结构**：根组件不写默认插槽 / 不给 children、Web Components 元素不写部件时，原先渲出空的根，现在铺出整套部件
 - **外观**：渲染成 `<button>` 的部件清掉浏览器缺省样式，WC 作者自写的按钮部件接线后同样无壳，要按钮外观时把 Button 当作这个部件写进去
+- **FileUpload**：点标题改为把焦点交给投放区，不再直接弹出选择框
 :::
 
-- **新增** 标准结构：Select、Combobox、TreeSelect、Cascader、Menu、ContextMenu、Menubar、Accordion、Tabs、ToggleGroup、RadioGroup、CheckboxGroup、Checkbox、Switch、Slider、Rating、TextField、NumberField、PasswordInput、PinInput、DateField、DatePicker、DateRangePicker、TimePicker、TimeRangePicker、ColorField、ColorPicker、TagsInput、TagGroup、Listbox、Transfer、SignaturePad、Field、Fieldset、FieldArray、Card、Separator、Heatmap 等不写结构即可使用，Vue、React 与 Web Components 照同一个结构函数铺出同一棵树；Web Components 用 `slot="<名>"` / `slot="<名>:<键>"` 把作者内容放进对应部件
+- **新增** 标准结构：Select、Combobox、TreeSelect、Cascader、Menu、ContextMenu、Menubar、Accordion、Tabs、ToggleGroup、RadioGroup、CheckboxGroup、Checkbox、Switch、Slider、Rating、TextField、NumberField、PasswordInput、PinInput、DateField、DatePicker、DateRangePicker、TimePicker、TimeRangePicker、ColorField、ColorPicker、TagsInput、TagGroup、Listbox、Transfer、SignaturePad、Field、Fieldset、FieldArray、FileUpload、Mention、Command、ColorSwatchPicker、Breadcrumb、NavigationMenu、Card、Separator、Heatmap 等不写结构即可使用，Vue、React 与 Web Components 照同一个结构函数铺出同一棵树；Web Components 用 `slot="<名>"` / `slot="<名>:<键>"` 把作者内容放进对应部件
 - **新增** 条件编辑器 FilterBuilder、格式输入 FormatInput、表达式输入框 ExpressionInput，三端同时可用
 - **新增** 包 `@xihan-ui/designer-kit`（画布式设计器的公共内核：历史栈、视口、命中与变换、属性描述、扩展机制、表格与网格几何、剪贴板）、`@xihan-ui/designer-shell`（设计器界面零件：外框、属性面板、物料面板、问题列表、小地图、变换覆盖层、标尺）、`@xihan-ui/expression`（受限表达式与格式化）、`@xihan-ui/xlsx`（零依赖的 xlsx 写出）
 - **新增** `@xihan-ui/core` 子入口 `json`、`rich-text`、`rich-text-dom`、`url`、`template`、`hotkey`；`core/date` 新增墙上时间与分桶键
@@ -36,6 +37,7 @@
 - **修复** 弹层、提示与图表族只引用实际渲染了的标题与说明（Dialog、Drawer、Popover、Popconfirm、Tour、Alert、Approval、Notification、FloatingPanel、Fieldset、Field、Table、图表），不再挂落空的 id
 - **修复** Tree、TreeSelect、JsonViewer、Citation、FileUpload 的可访问名包含看得见的字；危险色文字与刷新中的集合在所有表面上达到 4.5:1 对比度
 - **修复** 列表删行时淡出的替身显示删除前的值；条目禁用随作者的修改来回切换；多行文本自动增高在无排版环境里安静跳过
+- **修复** Fieldset 整组禁用时组内 Field 的标题与说明一起变淡，Scrollbar 不再随之禁用；React 的 Tooltip、Popover、Menu、DownloadTrigger 放进禁用的 Fieldset 时一并禁用，Tooltip 跟随全局 `size`；Web Components 的 FloatButton 接上全局 `size` 与文案
 
 ## v4.2.0 (2026-10-15)
 

@@ -12,4 +12,4 @@
 - Citation：来源列表的每一行不再显式给名字，序号、标题与出处都看得见，名字取这一行的内容；预览里的打开钮改由 `aria-labelledby` 取「它自己那句 + 预览标题」，`preview-title` 因此带上 id。
 - FileUpload：投放区的名字改为字段标题再接上投放区自己看得见的说明（`aria-labelledby` 指向 label 与它自己），不再另给 `aria-label` 兜底。
 
-迁移：`translations` 里删掉了随之不用的三句——Citation 的 `openSource` 与 `source`、FileUpload 的 `dropzone`；覆盖过它们的直接去掉。投放区里请写一句看得见的说明（例如「把文件拖到这里」），它就是名字的后半句。
+迁移：`translations` 里删掉了随之不用的两句——Citation 的 `openSource` 与 `source`，覆盖过它们的直接去掉。FileUpload 的投放区不再取 `translations.dropzone` 作兜底名字，手写结构时请在投放区里写一句看得见的说明（例如「把文件拖到这里」），它就是名字的后半句；`translations.dropzone` 改作标准结构里投放区的那句说明（见文件上传的标准结构）。
