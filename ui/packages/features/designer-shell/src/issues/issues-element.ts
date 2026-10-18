@@ -194,8 +194,8 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
     const header = createGeneratedElement(doc, 'div', { 'data-part': 'header' }, [title, filter])
     // 开关被宿主移走时头部跟着收起
     new MutationObserver(() => this.requestUpdate()).observe(header, { childList: true })
-    const list = createGeneratedElement(doc, 'ul', { 'data-part': 'list', 'role': 'list', 'aria-labelledby': title.id })
-    const empty = createGeneratedElement(doc, 'p', { 'data-part': 'empty' })
+    const list = createGeneratedElement(doc, 'div', { 'data-part': 'list', 'role': 'list', 'aria-labelledby': title.id })
+    const empty = createGeneratedElement(doc, 'div', { 'data-part': 'empty' })
     list.addEventListener('click', this.#onClick)
     list.addEventListener('keydown', this.#onKeyDown)
     list.addEventListener('mouseover', this.#onHover)
@@ -231,14 +231,14 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
         : createAuthoredElement(doc, 'div', { 'data-part': 'issue', 'data-severity': severity, 'data-index': index }, children)
       if (activatable)
         first = false
-      return createAuthoredElement(doc, 'li', {}, [body])
+      return createAuthoredElement(doc, 'div', { role: 'listitem' }, [body])
     }
     if (this.groupBy === 'target') {
       parts.list.replaceChildren(...byTarget(indexed).map((group, position) => {
         const id = `${parts.title.id}-group-${position}`
-        return createAuthoredElement(doc, 'li', { 'data-part': 'group' }, [
+        return createAuthoredElement(doc, 'div', { 'data-part': 'group', 'role': 'listitem' }, [
           createAuthoredElement(doc, 'div', { 'data-part': 'group-label', id }, [group.label ?? t.noTarget]),
-          createAuthoredElement(doc, 'ul', { 'data-part': 'group-items', 'role': 'list', 'aria-labelledby': id }, group.entries.map(entry => row(entry, false))),
+          createAuthoredElement(doc, 'div', { 'data-part': 'group-items', 'role': 'list', 'aria-labelledby': id }, group.entries.map(entry => row(entry, false))),
         ])
       }))
     }

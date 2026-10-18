@@ -31,8 +31,8 @@ export interface FieldRowState {
 /** 建一行的外壳：data-part 为 property，attrs 补在它上面（如 data-path）。 */
 export function createFieldRow(doc: Document, ids: IdGenerator, attrs: Readonly<Record<string, string>> = {}): FieldRow {
   const element = createAuthoredElement(doc, 'div', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'property', ...attrs })
-  const hint = createAuthoredElement(doc, 'p', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'property-hint', 'id': ids.scopeId() })
-  const error = createAuthoredElement(doc, 'p', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'property-error', 'id': ids.scopeId() })
+  const hint = createAuthoredElement(doc, 'div', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'property-hint', 'id': ids.scopeId() })
+  const error = createAuthoredElement(doc, 'div', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'property-error', 'id': ids.scopeId() })
   const label = createAuthoredElement(doc, 'span', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'property-label', 'id': ids.scopeId() })
   return { element, field: undefined, label, hint, error }
 }

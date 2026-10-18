@@ -31,6 +31,7 @@ defineDesignerShell();
 - 零件不持有文档、不碰历史栈：只吃数据、吐事件。改文档与记撤销由设计器做。
 - 坐标只认 `@xihan-ui/designer-kit` 的视口：屏幕 = 世界 × `zoom` + (`x`, `y`)。世界单位由设计器定，`zoom` 就是一个世界单位等于多少屏幕像素。控制柄大小、吸附阈值、标尺厚度等固定尺寸一律按屏幕像素。
 - 事件一律 `CustomEvent`，冒泡并穿过 shadow 边界，名字用短横线、不带前缀。
+- 零件自己生成的结构只用 `div`、`span`、`button` 这类没有正文排版的标签，列表靠 `role="list"` 与 `role="listitem"` 标出。宿主按标签名重置 `p`、`ul`、`li` 等的边距与列表样式（文档站的示例舞台、CSS 框架的基础重置），影响不到零件。
 - 每个零件都有 `readonly`：只能浏览与选择，不出编辑手势、不派发修改类事件。零件的布尔 attribute 与库内元素同一个三态读法：`readonly="false"` 不只读，不写交给缺省。
 - 文案键是零件的标签名，自带英文缺省。各语言的文案在 `@xihan-ui/designer-shell/locale`，与 UI 的内建语言包一一对应，导出名是 `designerShell` 加 UI 的语言包名，如 `jaJP` 对 `designerShellJaJP`。各产品把同一语言的这一份并进自己的语言包，宿主只合并一份产品包。
 

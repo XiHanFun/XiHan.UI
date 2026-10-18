@@ -223,7 +223,7 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
     })
     const header = createGeneratedElement(doc, 'div', { 'data-part': 'header' }, [title, search])
     const body = createGeneratedElement(doc, 'div', { 'data-part': 'body', 'role': 'region', 'aria-labelledby': title.id })
-    const empty = createGeneratedElement(doc, 'p', { 'data-part': 'empty' })
+    const empty = createGeneratedElement(doc, 'div', { 'data-part': 'empty' })
     body.addEventListener('pointerdown', this.#onPointerDown)
     body.addEventListener('click', this.#onClick)
     body.addEventListener('keydown', this.#onKeyDown)

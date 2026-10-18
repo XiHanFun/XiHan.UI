@@ -241,7 +241,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     const heading = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'heading', 'hidden': true })
     const headerSlot = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'header-slot' })
     const header = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'header' }, [title, heading, headerSlot])
-    const empty = createAuthoredElement(doc, 'p', { 'data-scope': SCOPE, 'data-part': 'empty' })
+    const empty = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'empty' })
     const groups = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'groups' })
     const footerSlot = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'footer-slot' })
     const body = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'body' }, [empty, groups, footerSlot])
