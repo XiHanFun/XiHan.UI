@@ -8,7 +8,7 @@
 import type { Params } from '@xihan-ui/core'
 import type { ColorFieldSchema } from './color-field.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
-import { colorParse, colorResolveFormat, colorToString } from '../shared/color'
+import { colorHexToRgba, colorParse, colorResolveFormat, colorToString } from '../shared/color'
 
 const { createMachine } = setup<ColorFieldSchema>()
 
@@ -16,7 +16,7 @@ type MachineParams = Params<ColorFieldSchema>
 
 /**
  * 把一串字收成规范的值串：解析不出返回 null；格式写错时也返回 null（静默换成 hex 会让宿主收到一种它没要过的写法）。
- * 空串是合法的「没有颜色」，原样返回。
+ * 空串是合法的「没有颜色」，原样返回。CSS 颜色写法之外，还认不带 `#` 的十六进制（`f00`、`ff0000`）。
  */
 export function colorFieldNormalize(raw: string, format: string | undefined, alpha: boolean): string | null {
   const trimmed = raw.trim()
@@ -25,7 +25,7 @@ export function colorFieldNormalize(raw: string, format: string | undefined, alp
   const resolved = colorResolveFormat(format)
   if (!resolved)
     return null
-  const rgba = colorParse(trimmed)
+  const rgba = colorParse(trimmed) ?? colorHexToRgba(trimmed)
   return rgba ? colorToString(rgba, resolved, alpha) : null
 }
 

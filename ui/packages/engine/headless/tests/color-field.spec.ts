@@ -37,6 +37,14 @@ describe('colorFieldNormalize', () => {
     expect(colorFieldNormalize('#f00', 'hsb' as never, false)).toBeNull()
     expect(colorFieldNormalize('#f00', 'oklch', false)).toBe('oklch(62.8% 0.2577 29.23)')
   })
+
+  it('不带 # 的十六进制照收；浏览器不认的写法是 null，草稿留着', () => {
+    expect(colorFieldNormalize('ff000080', 'hex', true)).toBe('#ff000080')
+    expect(colorFieldNormalize('rgb(255, 0 0)', 'hex', false)).toBeNull()
+    expect(colorFieldNormalize('rgb(100%, 0%, 0%)', 'hex', false)).toBe('#ff0000')
+    expect(colorFieldNormalize('rgb(100%, 0, 0)', 'hex', false)).toBeNull()
+    expect(colorFieldNormalize('hsl(0, 100, 50)', 'hex', false)).toBeNull()
+  })
 })
 
 describe('colorFieldMachine 草稿与收下', () => {

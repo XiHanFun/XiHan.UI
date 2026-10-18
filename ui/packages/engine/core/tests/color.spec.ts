@@ -367,7 +367,7 @@ describe('colorParseOklch', () => {
 
   it('rgb 通道的百分数与小数照实换算，不取整', () => {
     const numeric = colorParseOklch('rgb(43.35 34 130.05 / 0.4)')!
-    for (const mixed of ['rgb(17% 34 51% / 40%)', 'rgb(17%, 34, 51%, 0.4)']) {
+    for (const mixed of ['rgb(17% 34 51% / 40%)', 'rgba(17% 34 51% / 0.4)']) {
       const color = colorParseOklch(mixed)!
       expect(color.l, mixed).toBeCloseTo(numeric.l, 12)
       expect(color.c, mixed).toBeCloseTo(numeric.c, 12)
@@ -378,14 +378,12 @@ describe('colorParseOklch', () => {
     expect(colorParseOklch('rgb(43.35 34 130.05)')).toEqual(colorLinearRgbToOklch(...linear))
   })
 
-  it('hex、rgb、hsl、oklch 都保留 alpha，未声明时为 1；分隔符混写照样认', () => {
+  it('hex、rgb、hsl、oklch 都保留 alpha，未声明时为 1', () => {
     expect(colorParseOklch('#1234')!.a).toBeCloseTo(0x44 / 255, 6)
     expect(colorParseOklch('#11223380')!.a).toBeCloseTo(0x80 / 255, 6)
     expect(colorParseOklch('hsl(210 50% 13.3% / 40%)')!.a).toBeCloseTo(0.4, 6)
     expect(colorParseOklch('hsla(210, 50%, 13.3%, 0.4)')!.a).toBeCloseTo(0.4, 6)
     expect(colorParseOklch('oklch(0.25 0.04 250 / 40%)')!.a).toBeCloseTo(0.4, 6)
-    expect(colorParseOklch('rgb(17 34, 51 / 40%)')!.a).toBeCloseTo(0.4, 6)
-    expect(colorParseOklch('hsla(210 50%, 13.3%, 0.4)')!.a).toBeCloseTo(0.4, 6)
     expect(colorParseOklch('#123')!.a).toBe(1)
   })
 
@@ -486,5 +484,53 @@ describe('colorFormatOklch', () => {
   it('无彩色写出的色相是 0', () => {
     expect(colorFormatOklch(colorParseOklch('#ffffff')!)).toBe('oklch(1 0 0)')
     expect(colorFormatOklch(colorParseOklch('#808080')!)).toBe('oklch(0.6 0 0)')
+  })
+})
+
+describe('按 CSS Color 4 的语法认写法', () => {
+  function expectAccepted(texts: readonly string[]): void {
+    for (const text of texts) {
+      expect(colorParse(text), text).not.toBeNull()
+      expect(colorParseOklch(text), text).not.toBeNull()
+    }
+  }
+
+  function expectRejected(texts: readonly string[]): void {
+    for (const text of texts) {
+      expect(colorParse(text), text).toBeNull()
+      expect(colorParseOklch(text), text).toBeNull()
+    }
+  }
+
+  it('rgb 旧式写法：分隔符全是逗号，三路同为数或同为百分数，透明度是第四个参数', () => {
+    expectAccepted(['rgb(59, 130, 246)', 'rgba(59,130,246,0.5)', 'rgb(23.14%, 50.98%, 96.47%)', 'rgba(59, 130, 246, 50%)', 'rgb( 59 , 130 , 246 )'])
+    expect(colorParse('rgb(23.14%, 50.98%, 96.47%)')).toEqual(BLUE)
+    expectRejected(['rgb(23.14%, 130, 246)', 'rgb(17%, 34, 51%)', 'rgb(59, 130 246)', 'rgb(17 34, 51 / 40%)', 'rgb(59, 130, 246 / 0.5)', 'rgb(none, 130, 246)', 'rgb(59, 130, 246,)', 'rgb(59,, 130, 246)'])
+  })
+
+  it('rgb 新式写法：分量之间用空白，透明度写在 / 后面，数与百分数可混用，可写 none', () => {
+    expectAccepted(['rgb(59 130 246)', 'rgb(59 130 246 / 50%)', 'rgb(23.14% 130 96.47% / 0.5)', 'rgb(none 130 246)', 'rgba(59 130 246 / 0.5)', 'rgb(59 130 246 / none)'])
+    expect(colorParse('rgb(59 130 246 / none)')).toEqual({ ...BLUE, a: 0 })
+    expectRejected(['rgb(59 130 246 0.5)', 'rgb(59 130 246 /)', 'rgb(59 130 / 246 / 1)', 'rgb(59 130 246 / 0.5 1)', 'rgb(59 130)'])
+  })
+
+  it('hsl：旧式写法的饱和度与明度写百分数，新式写法另认数与 none；色相写数或角度', () => {
+    expectAccepted(['hsl(217, 91%, 60%)', 'hsla(217deg, 91%, 60%, 50%)', 'hsl(217 91% 60%)', 'hsl(217 91 60)', 'hsl(0.6turn 91% 60% / 50%)', 'hsl(none 0% 50%)'])
+    expect(colorParse('hsl(217 91 60)')).toEqual(colorParse('hsl(217, 91%, 60%)'))
+    expectRejected(['hsl(217, 91, 60)', 'hsl(217 91%, 60%)', 'hsla(210 50%, 13.3%, 0.4)', 'hsl(50%, 91%, 60%)', 'hsl(50% 91% 60%)', 'hsl(217, 91%, 60% / 0.5)', 'hsl(none, 91%, 60%)'])
+  })
+
+  it('oklch、oklab、color() 只有新式写法，各分量只认规范里的种类', () => {
+    expectAccepted(['oklch(60% 0.1 30deg / 0.5)', 'oklab(0.5 10% -10%)', 'color(srgb 1 0 0 / 50%)', 'color(srgb-linear 50% none 0)'])
+    expectRejected(['oklch(0.6, 0.1, 30)', 'oklab(0.5, 0.1, 0.1)', 'color(srgb, 1, 0, 0)', 'oklch(0.6 0.1 30%)', 'oklch(0.6 0.1deg 30)', 'oklab(0.5 0.1deg 0.1)', 'color(srgb 1deg 0 0)'])
+  })
+
+  it('数要合 CSS 的写法：十六进制要带 #，不认 0x、小数点结尾、无穷与别的单位', () => {
+    expectAccepted(['#3b82f6', 'rgb(1e2 0 0)', 'rgb(+10 0.5e1 .5)'])
+    expect(colorParse('rgb(1e2 0 0)')).toEqual({ r: 100, g: 0, b: 0, a: 1 })
+    expect(colorParse('rgb(+10 0.5e1 0)')).toEqual({ r: 10, g: 5, b: 0, a: 1 })
+    expectRejected(['3b82f6', 'ff0000', 'rgb(0x10 0 0)', 'rgb(1. 2 3)', 'rgb(10deg 0 0)', 'rgb(10px 0 0)', 'rgb(infinity 0 0)', 'rgb(1e999 0 0)', 'rgb(1e 0 0)'])
+    // 不带 # 的十六进制只有 colorHexToRgba 收：它管的是十六进制通道的输入，不是 CSS 写法
+    expect(colorHexToRgba('3b82f6')).toEqual(BLUE)
   })
 })

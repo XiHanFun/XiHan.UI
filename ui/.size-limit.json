@@ -51,19 +51,19 @@
     "name": "core/color",
     "path": "packages/engine/core/dist/color.js",
     "gzip": true,
-    "limit": "3.3 kB"
+    "limit": "3.5 kB"
   },
   {
     "name": "core/svg-export",
     "path": "packages/engine/core/dist/svg-export.js",
     "gzip": true,
-    "limit": "3.9 kB"
+    "limit": "4.1 kB"
   },
   {
     "name": "tokens",
     "path": "packages/design/tokens/dist/index.js",
     "gzip": true,
-    "limit": "15.1 kB"
+    "limit": "15.3 kB"
   },
   {
     "name": "tokens/tokens.css",
