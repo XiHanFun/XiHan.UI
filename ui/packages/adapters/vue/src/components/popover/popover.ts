@@ -29,6 +29,8 @@ export const XhPopoverRoot = defineComponent({
   props: {
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
+    /** 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger。 */
+    anchor: { type: Object as PropType<HTMLElement | null> },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
     /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
@@ -100,7 +102,7 @@ export const XhPopoverPositioner = defineComponent({
     // 面板内容的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；浮层里走 4px 档
     const bars = useScrollbars({ scrollable: () => ctx.contentRef.value, props: { size: 'sm' } })
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
-    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef, present: ctx.visible.value }, () => [
+    return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.portalSource.value, present: ctx.visible.value }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },

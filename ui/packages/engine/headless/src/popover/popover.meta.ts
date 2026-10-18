@@ -7,8 +7,8 @@
 
 import type { ComponentMeta } from '../spec/types'
 
-// trigger 与 content 缺一即违约（aria-controls 无从指向）；title/description/arrow 可缺省。
+// content 缺席即违约；trigger 可由 anchor 顶替，两者都没有时展开那一刻报诊断。title/description/arrow 可缺省。
 export const popoverMeta: ComponentMeta = {
   component: 'popover',
-  requiredParts: ['trigger', 'content'],
+  requiredParts: ['content'],
 }

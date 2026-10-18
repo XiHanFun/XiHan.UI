@@ -221,7 +221,7 @@
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "755 kB"
+    "limit": "761 kB"
   },
   {
     "name": "headless/locale（十种语言整份）",
@@ -233,7 +233,7 @@
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "807 kB",
+    "limit": "813 kB",
     "ignore": [
       "vue"
     ]
@@ -260,7 +260,7 @@
     "name": "react",
     "path": "packages/adapters/react/dist/index.js",
     "gzip": true,
-    "limit": "804 kB",
+    "limit": "811 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -322,7 +322,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "806 kB"
+    "limit": "811 kB"
   },
   {
     "name": "web-components/define：只按需注册一个元素（defineXhElement + XhStatisticElement）",

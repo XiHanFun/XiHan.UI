@@ -28,6 +28,8 @@ export interface PopoverRootSlotProps extends Pick<PopoverApi, 'open' | 'setOpen
 export interface XhPopoverRootProps {
   open?: boolean
   defaultOpen?: boolean
+  /** 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger。 */
+  anchor?: HTMLElement | null
   placement?: Placement
   offset?: number
   /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
@@ -79,7 +81,7 @@ export function XhPopoverPositioner({ children, container, ...rest }: XhPopoverP
   // 面板内容的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；浮层里走 4px 档
   const bars = useScrollbars({ scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
   return (
-    <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef} present={ctx.rendered}>
+    <XhPortal container={container ?? ctx.portalContainer} source={ctx.portalSource} present={ctx.rendered}>
       <div
         {...mergeReactProps(
           ctx.api.getPositionerProps() as Record<string, unknown>,

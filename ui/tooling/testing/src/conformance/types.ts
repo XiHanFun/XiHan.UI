@@ -131,6 +131,8 @@ export interface RawStepContext {
   readonly adapterName: AdapterName
   /** 等适配器把这一轮改动提交到 DOM。 */
   readonly flush: () => Promise<void>
+  /** 由宿主改 prop：值要在运行时才造得出来（组件之外的元素）时用它，固定值仍写 setProps 步骤。 */
+  readonly setProps: (next: Readonly<Record<string, unknown>>) => Promise<void>
 }
 
 export type Step
