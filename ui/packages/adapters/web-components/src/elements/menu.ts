@@ -55,7 +55,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @fires select - 条目被选中（菜单随之关闭）；detail 为 `{ value: string }`
  * @fires checkbox-value-change - checkbox 选中集合变化；detail 为 `{ value: string[] }`
  * @fires radio-value-change - RadioGroup 选中映射变化；detail 为 `{ value: Record<string, string> }`
- * @csspart trigger - 触发按钮（aria-haspopup / aria-expanded / aria-controls 所在），同时是定位锚点
+ * @csspart trigger - 触发按钮（aria-haspopup / aria-expanded / aria-controls 所在）；没给 anchor 时同时是定位锚点
  * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - role=menu 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart item - role=menuitem 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
@@ -85,6 +85,7 @@ export class XhMenuElement extends XhPortalHostElement {
     build: host => host.ctrl.service
       ? menuStructure(connectMenu(host.ctrl.service, wcNormalize), {
           submenu: host.submenu ?? false,
+          anchored: host.anchor !== undefined,
           ...(host.value === undefined ? {} : { value: host.value }),
           ...(host.label === undefined ? {} : { label: host.label }),
           slotted: (name, key) => host.slotted(name, key),
@@ -104,6 +105,8 @@ export class XhMenuElement extends XhPortalHostElement {
     defaultRadioValue: { attribute: false },
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
+    // 元素只走 property
+    anchor: { attribute: false },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
@@ -129,6 +132,12 @@ export class XhMenuElement extends XhPortalHostElement {
   declare defaultRadioValue?: MenuRadioValue
   declare open?: boolean
   declare defaultOpen?: boolean
+  /**
+   * 外部锚点：给了就锚在它上面、收起时焦点归还到它，不再取 trigger；用于由别处的按钮受控打开菜单，生成结构时不再铺触发按钮。
+   * 展开期间它带 aria-haspopup、aria-expanded、aria-controls，收起或换锚点时还原；点它算层内交互。
+   * 没有触发器替菜单命名，名字写在 translations.content 上。只用于根菜单，只作为 property 暴露。
+   */
+  declare anchor?: HTMLElement | null
   declare placement?: Placement
   declare offset?: number
   declare loop?: boolean
@@ -191,7 +200,8 @@ export class XhMenuElement extends XhPortalHostElement {
   private readonly portal = this.createAnchoredPortalController({
     name: 'Menu',
     config: () => this.config,
-    source: () => this.getPart('trigger'),
+    // 视觉环境取自作者树：写了 anchor（哪怕暂时是 null）取宿主自己，否则取 trigger
+    source: () => (this.anchor !== undefined ? this : this.getPart('trigger')),
     root: () => this.getPart('positioner'),
     onShellReady: (shell) => {
       // 先公布所有权，再移动：嵌套子菜单重连时沿 Portal 壳找回逻辑父级。
@@ -250,6 +260,7 @@ export class XhMenuElement extends XhPortalHostElement {
       defaultRadioValue: this.defaultRadioValue,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
+      anchor: this.anchor,
       placement: this.placement,
       offset: this.offset,
       loop: this.loop,
@@ -353,7 +364,7 @@ export class XhMenuElement extends XhPortalHostElement {
       // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。
       // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，菜单等于关不掉。
       // 浮层壳一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉
-      branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
+      branches: () => [this.getPart('trigger'), this.anchor, this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
       // 菜单不带遮罩，没有"点它就该关本层"的表面
       surfaces: () => [],
@@ -424,10 +435,9 @@ export class XhMenuElement extends XhPortalHostElement {
     const triggerEl = this.getPart('trigger')
     this.syncParentTrigger(triggerEl)
     const positionerEl = this.getPart('positioner')
-    if (api.open) {
-      if (!triggerEl || !positionerEl)
-        throw new Error('[xh] 展开的 Menu 必须同时具备 trigger 与 positioner')
-    }
+    // 锚点可以是 trigger 也可以是 anchor，两者都缺由 headless 在定位时报诊断；positioner 缺了浮层无处可放
+    if (api.open && !positionerEl)
+      throw new Error('[xh] 展开的 Menu 必须具备 positioner')
     if (this.submenu && triggerEl) {
       this.spreader.spread(triggerEl, api.getSubmenuTriggerProps({ value: triggerEl.getAttribute('value') ?? '' }) as Record<string, unknown>)
     }

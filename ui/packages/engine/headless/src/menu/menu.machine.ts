@@ -7,13 +7,14 @@
 
 import type { Layer, Placement, PositionResult } from '@xihan-ui/core'
 import type { MenuFocusIntent, MenuSchema } from './menu.types'
-import { createTypeahead, itemValue, navigateItems, queryItems, setup, trackHoverIntent } from '@xihan-ui/core'
+import { createTypeahead, DIAGNOSTIC_CODES, itemValue, navigateItems, queryItems, reportDiagnostic, setup, trackHoverIntent } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
+import { trackExternalAnchorAria } from '../shared/external-anchor'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { equalMenuRadioValue, setMenuRadioValue, toggleMenuCheckboxValue } from '../shared/menu-choice'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
-import { menuItemQuery } from './menu.anatomy'
+import { menuAnatomy, menuItemQuery } from './menu.anatomy'
 
 const { createMachine } = setup<MenuSchema>()
 
@@ -63,15 +64,19 @@ export const menuMachine = createMachine({
     getContentEl: () => null,
     getHoverBranches: () => [],
     typeahead: createTypeahead(),
+    reanchor: null,
   }),
   initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // 悬停意图跟机器不跟状态位：关着要接得住进入、开着要接得住离开
-  effects: ['trackHover', 'trackLayer'],
+  // 外部锚点上的读屏属性跟着展开态与 anchor 走，同样常驻
+  effects: ['trackHover', 'trackLayer', 'trackAnchorAria'],
   // 受控时用户事件只发意图，宿主写回 open 后由 watch 派发 CONTROLLED.*
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
     // 按住途中整张菜单被禁用：条目不再派 keyup，按压面由机器自己收
     track([() => prop('disabled')], () => action(['releaseWhenDisabled']))
+    // 展开期间换了外部锚点：定位跟着重挂，层与焦点域原地不动
+    track([() => prop('anchor')], () => action(['reanchor']))
   },
   // 按压通道：条目按 value 记按住的那条，两个状态都认 PRESS.*；禁用的菜单与条目不进
   on: {
@@ -142,6 +147,7 @@ export const menuMachine = createMachine({
     },
     actions: {
       clearOpenedAtMount,
+      reanchor: ({ refs }) => refs.get('reanchor')?.(),
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'PRESS.START')
@@ -280,7 +286,21 @@ export const menuMachine = createMachine({
         // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
         // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
         clear: () => context.set('position', null),
-        getAnchor: () => refs.get('getAnchorEl')(),
+        // anchor 变了由 watch 调这个句柄重挂一轮
+        onSchedule: schedule => refs.set('reanchor', schedule),
+        getAnchor: () => {
+          const anchor = prop('anchor') ?? refs.get('getAnchorEl')()
+          if (!anchor) {
+            reportDiagnostic({
+              code: DIAGNOSTIC_CODES.overlayMissingAnchor,
+              level: 'warn',
+              scope: menuAnatomy.name,
+              message: '菜单展开了却没有锚点：既没给 anchor，也找不到 trigger 部件。'
+                + '渲染一个 trigger，或者把打开它的按钮交给 anchor',
+            })
+          }
+          return anchor
+        },
         getFloating: () => refs.get('getFloatingEl')(),
         options: () => ({
           placement: prop('placement') ?? menuFallbackPlacement(prop('submenu'), prop('dir')),
@@ -296,8 +316,16 @@ export const menuMachine = createMachine({
         }),
         onResult: result => context.set('position', result),
       }),
+      // 外部锚点上的 aria-haspopup / aria-expanded / aria-controls：展开期间写上，收起或换锚点时还原
+      trackAnchorAria: ({ prop, state, scope, track }) => trackExternalAnchorAria({
+        anchor: () => prop('anchor'),
+        open: () => state.get() === 'open',
+        haspopup: 'menu',
+        controls: () => scope.ids('menu', 'content').content,
+        track,
+      }),
       // Layer、DismissableLayer 与 FocusScope 共用本实例 Presence；父子菜单各自保留自己的 Layer。
-      trackLayer: ({ refs, context, send, flush, scope, state, track }) => {
+      trackLayer: ({ refs, prop, context, send, flush, scope, state, track }) => {
         let reactivateFocus: (() => void) | null = null
         let behaviorLayer: Layer | null = null
         return trackPresenceResources({
@@ -324,7 +352,8 @@ export const menuMachine = createMachine({
                 return queryItems(content, menuItemQuery).find(el => itemValue(el) === anchor) ?? null
               },
               restoreFocus: () => context.get('returnFocus'),
-              restoreTarget: () => refs.get('getAnchorEl')(),
+              // 给了外部锚点就还给它
+              restoreTarget: () => prop('anchor') ?? refs.get('getAnchorEl')(),
               onReactivate: reactivate => reactivateFocus = reactivate,
             },
           }),

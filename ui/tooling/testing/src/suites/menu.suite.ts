@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { menuAnatomy, menuKeyboard } from '@xihan-ui/headless'
+import { clickExternalAnchor, externalAnchorAria, focusReturnsToExternalAnchor, mountExternalAnchor, removeExternalAnchor, withoutTrigger } from './shared/external-anchor'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/'
@@ -545,6 +546,53 @@ export const menuSuite: ConformanceSuite = {
             parts: { 'item[0]': { 'data-value': 'rename' }, 'item[1]': { 'data-value': 'delete' } },
           },
         },
+      ],
+    },
+    {
+      name: 'anchor：外部锚点顶替 trigger，展开期间带 aria-haspopup="menu" / aria-expanded / aria-controls，Escape 收起后还原并把焦点还给它',
+      spec: { apg: `${APG}#keyboardinteraction`, adr: 'menu-anchor' },
+      fixture: () => withoutTrigger(menuTree()),
+      // 先写上 anchor：元素要等挂载后才造得出来。没有触发器替菜单命名，名字写在 translations.content 上
+      props: { open: false, anchor: null, translations: { content: '操作' } },
+      initial: { parts: { content: { 'aria-label': '操作', 'aria-labelledby': null } } },
+      steps: [
+        mountExternalAnchor(),
+        externalAnchorAria('menu', { haspopup: null, expanded: null, controlsContent: false }),
+        { kind: 'setProps', props: { open: true } },
+        { kind: 'settle', until: { activeElement: 'item[0]' } },
+        externalAnchorAria('menu', { haspopup: 'menu', expanded: 'true', controlsContent: true }),
+        // 受控：Escape 只发收起意图，宿主写回才收
+        { kind: 'key', key: 'Escape', expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }] } },
+        { kind: 'setProps', props: { open: false } },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: '' } } },
+        externalAnchorAria('menu', { haspopup: null, expanded: null, controlsContent: false }),
+        focusReturnsToExternalAnchor,
+        removeExternalAnchor,
+      ],
+    },
+    {
+      name: 'anchor：点外部锚点算层内交互，不发收起意图——开合交给打开它的那条命令',
+      spec: { adr: 'menu-anchor' },
+      fixture: () => withoutTrigger(menuTree()),
+      props: { open: true, anchor: null, translations: { content: '操作' } },
+      steps: [
+        mountExternalAnchor(),
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        clickExternalAnchor({ events: [], parts: { content: { hidden: null } } }),
+        // 对照：层外的点击照常发收起意图
+        { kind: 'outside', action: 'click', expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'interact-outside' } }] } },
+        removeExternalAnchor,
+      ],
+    },
+    {
+      name: 'anchor：作者不写结构时，交给外部锚点后不再铺触发按钮，定位层与条目照旧',
+      spec: { adr: 'menu-anchor' },
+      fixture: (): FixtureNode => ({ defaultStructure: true }),
+      props: { collection: STRUCTURE_COLLECTION, label: '文件', translations: { content: '文件' } },
+      initial: { counts: { trigger: 1, positioner: 1, content: 1, item: 4 } },
+      steps: [
+        mountExternalAnchor({ counts: { trigger: 0, positioner: 1, content: 1, item: 4 } }),
+        removeExternalAnchor,
       ],
     },
   ],

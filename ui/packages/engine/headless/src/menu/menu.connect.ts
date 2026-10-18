@@ -289,9 +289,9 @@ export function connectMenu<T extends PropTypes>(
       'data-xh-material': 'frosted',
       'id': ids.content,
       'role': 'menu',
-      // 作者给了名字就用它，没给仍由触发器代为命名
+      // 作者给了名字就用它，没给仍由触发器代为命名；锚在外部元素上时没有触发器可指
       'aria-label': prop('translations')?.content,
-      'aria-labelledby': prop('translations')?.content == null ? ids.trigger : undefined,
+      'aria-labelledby': prop('translations')?.content == null && prop('anchor') === undefined ? ids.trigger : undefined,
       // Tab 位归锚点条目，展开却无锚点时由容器兜底
       'tabindex': open && anchor == null ? 0 : -1,
       'data-state': stateAttr,
