@@ -9,9 +9,10 @@
 // 同一位置上下堆叠的几个区之间也有分隔条，缺省等分。
 // 左右与下方的区给了标题就画成一张卡片：面板头写标题与副标题，右侧是操作区、帮助与关闭。
 // 顶栏分左、中、右三段，状态栏分左、右两段，各段有内容才显示；画布区四角与右侧另有浮动条的落点。
+// 视口窄于 --xh-breakpoint-md 时进窄屏：中间一列占满整行，左右两侧的区收进从两边滑出的抽屉，缺省收着，由「面板」开关。
 
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
-import type { XhSplitterElement } from '@xihan-ui/web-components/define'
+import type { XhDrawerElement, XhSplitterElement } from '@xihan-ui/web-components/define'
 import type { DesignerFrameTranslations } from '../translations'
 import { createAuthoredElement, createGeneratedElement, emitEvent, setAttributes, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { adoptSlots } from '../internal/slots'
@@ -22,6 +23,19 @@ interface FrameSplitter {
   readonly element: XhSplitterElement
   readonly triggers: readonly string[]
 }
+
+/** 窄屏时收进抽屉的两侧位置。 */
+type DrawerPosition = 'start' | 'end'
+
+/** 窄屏时一侧的抽屉：抽屉元素与放区的正文。 */
+interface FrameDrawer {
+  readonly element: XhDrawerElement
+  readonly content: HTMLElement
+  readonly body: HTMLElement
+}
+
+/** 进窄屏的断点令牌：视口窄于它就进窄屏。 */
+const NARROW_BREAKPOINT = '--xh-breakpoint-md'
 
 /** 区的位置：最上的顶栏、下面一条、中间一行的左、中、右、中间一列的下方，以及最下的状态栏。 */
 export type DesignerFramePosition = 'header' | 'top' | 'start' | 'center' | 'end' | 'bottom' | 'status'
@@ -218,6 +232,20 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   #zoneObserver: MutationObserver | undefined
   #resizeObserver: ResizeObserver | undefined
   #ids = 0
+  /** 视口窄于断点：左右两侧收进抽屉。 */
+  #narrow = false
+  #narrowQuery: MediaQueryList | undefined
+  /** 窄屏时开着的那一侧抽屉；同时只开一侧。 */
+  #drawer: DrawerPosition | undefined
+  readonly #drawers: Partial<Record<DrawerPosition, FrameDrawer>> = {}
+  readonly #onNarrowChange = (): void => {
+    const narrow = this.#narrowQuery !== undefined && !this.#narrowQuery.matches
+    if (narrow === this.#narrow)
+      return
+    this.#narrow = narrow
+    this.#drawer = undefined
+    this.requestUpdate()
+  }
 
   override connectedCallback(): void {
     super.connectedCallback()
@@ -231,6 +259,22 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       this.#resizeObserver ??= new ResizeObserver(() => this.#measure())
       this.#resizeObserver.observe(this)
     }
+    this.#watchNarrow()
+  }
+
+  /** 按断点令牌盯视口宽度；没有 matchMedia 或令牌缺席时不进窄屏。 */
+  #watchNarrow(): void {
+    const win = this.ownerDocument.defaultView
+    const width = win?.getComputedStyle(this.ownerDocument.documentElement).getPropertyValue(NARROW_BREAKPOINT).trim()
+    this.#narrowQuery?.removeEventListener('change', this.#onNarrowChange)
+    this.#narrowQuery = width && typeof win?.matchMedia === 'function' ? win.matchMedia(`(min-width: ${width})`) : undefined
+    this.#narrowQuery?.addEventListener('change', this.#onNarrowChange)
+    this.#onNarrowChange()
+  }
+
+  /** 视口窄于断点（--xh-breakpoint-md）时为真：中间一列占满整行，左右两侧的区收进抽屉。 */
+  get narrow(): boolean {
+    return this.#narrow
   }
 
   override disconnectedCallback(): void {
@@ -242,6 +286,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     this.#releaseSlots?.()
     this.#releaseSlots = undefined
     this.#slotsKey = ''
+    this.#narrowQuery?.removeEventListener('change', this.#onNarrowChange)
+    this.#narrowQuery = undefined
   }
 
   /** 这个区是否显示：中间区总是显示；顶栏有内容就显示；状态栏按 panels 且有内容才显示；其余按 panels。 */
@@ -270,7 +316,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     const t = this.#config.translations<DesignerFrameTranslations>(TAG, DEFAULT_TRANSLATIONS, this.translations)
     const layout = this.#layout()
     const mins = (['start', 'end', 'bottom'] as const).map(position => Math.round((this.#measuredMin[position] ?? 0) / MIN_SIZE_EPSILON))
-    const key = JSON.stringify([this.#direction(), mins, Object.entries(layout).map(([position, regions]) => [position, regions.map(region => region.name)])])
+    const key = JSON.stringify([this.#direction(), mins, this.#narrow, Object.entries(layout).map(([position, regions]) => [position, regions.map(region => region.name)])])
     if (key !== this.#layoutKey || changed.has('sizes')) {
       this.#layoutKey = key
       this.#build(parts, layout)
@@ -286,6 +332,54 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     }
     for (const { element, triggers } of this.#splitters)
       element.translations = { root: t.layout, resizeTrigger: index => t.resize(labelOf(triggers[index] ?? '')) }
+    this.toggleAttribute('data-narrow', this.#narrow)
+    for (const position of ['start', 'end'] as const) {
+      const drawer = this.#drawers[position]
+      if (!drawer)
+        continue
+      const open = this.#narrow && this.#drawer === position && layout[position].length > 0
+      if (drawer.element.open !== open)
+        drawer.element.open = open
+      drawer.element.side = this.#sideOf(position)
+      drawer.content.setAttribute('aria-label', layout[position].map(region => region.title ?? region.label ?? region.name).join('、'))
+    }
+  }
+
+  /** 抽屉从哪条边滑出：行首一侧从左往右写时在左边。 */
+  #sideOf(position: DrawerPosition): 'left' | 'right' {
+    const rtl = this.#direction() === 'rtl'
+    return (position === 'start') !== rtl ? 'left' : 'right'
+  }
+
+  /** 一侧的抽屉：局部、非模态，Esc 收起；第一次用到时建。 */
+  #ensureDrawer(position: DrawerPosition): FrameDrawer {
+    const existing = this.#drawers[position]
+    if (existing)
+      return existing
+    const doc = this.ownerDocument
+    const body = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'drawer-body' })
+    const content = createAuthoredElement(doc, 'div', { 'data-xh-part': 'content' }, [body])
+    const element = createAuthoredElement(doc, 'xh-drawer', {
+      'contained': '',
+      'modal': 'false',
+      'close-on-interact-outside': 'false',
+      'size': 'md',
+      'side': this.#sideOf(position),
+    }, [
+      createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [
+        createAuthoredElement(doc, 'div', { 'data-xh-part': 'positioner' }, [content]),
+      ]),
+    ]) as XhDrawerElement
+    element.addEventListener('open-change', (event) => {
+      event.stopPropagation()
+      if (!(event as CustomEvent<{ open: boolean }>).detail.open && this.#drawer === position) {
+        this.#drawer = undefined
+        this.requestUpdate()
+      }
+    })
+    const drawer = { element, content, body }
+    this.#drawers[position] = drawer
+    return drawer
   }
 
   /** 外框所在的文字方向，交给分隔条换算左右键与指针位移的正负。 */
@@ -482,17 +576,47 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     const shown = parseDesignerPanels(this.panels)
     return this.#regionList()
       .filter(region => CARD_POSITIONS.has(region.position) && region.closable !== false)
-      .map(region => ({ name: region.name, label: region.title ?? region.label ?? region.name, shown: shown === undefined || shown.has(region.name) }))
+      .map((region) => {
+        const listed = shown === undefined || shown.has(region.name)
+        const drawer = this.#drawerOf(region)
+        return { name: region.name, label: region.title ?? region.label ?? region.name, shown: drawer === undefined ? listed : listed && this.#drawer === drawer }
+      })
   }
 
-  /** 开关一块面板：列在 panels 里就去掉、否则加上，与面板头的关闭钮一样派发 panels-change。 */
+  /**
+   * 开关一块面板：列在 panels 里就去掉、否则加上，与面板头的关闭钮一样派发 panels-change。
+   * 窄屏时左右两侧的区是开关它所在那一侧的抽屉（同时只开一侧）；没列在 panels 里的先列上。
+   */
   togglePanel(name: string): void {
+    const region = this.#regionList().find(item => item.name === name)
+    const drawer = region && this.#drawerOf(region)
     const shown = parseDesignerPanels(this.panels)
+    const listed = shown === undefined || shown.has(name)
+    if (drawer !== undefined) {
+      const open = this.#drawer === drawer && listed
+      this.#drawer = open ? undefined : drawer
+      if (!listed)
+        this.#setPanel(name, true)
+      else
+        this.requestUpdate()
+      return
+    }
     this.#setPanel(name, shown !== undefined && !shown.has(name))
   }
 
-  /** 收起一块面板：从 panels 里去掉它，派发 panels-change。 */
+  /** 窄屏时这个区收在哪一侧的抽屉里；不在抽屉里时为 undefined。 */
+  #drawerOf(region: DesignerFrameRegion): DrawerPosition | undefined {
+    return this.#narrow && (region.position === 'start' || region.position === 'end') ? region.position : undefined
+  }
+
+  /** 收起一块面板：从 panels 里去掉它，派发 panels-change；窄屏时左右两侧的区只是收起抽屉。 */
   #closePanel(name: string): void {
+    const region = this.#regionList().find(item => item.name === name)
+    if (region && this.#drawerOf(region) !== undefined) {
+      this.#drawer = undefined
+      this.requestUpdate()
+      return
+    }
     this.#setPanel(name, false)
   }
 
@@ -623,6 +747,22 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       ], [layout.bottom[0]!.name], (next) => {
         this.#current.bottom = next[1]!
       })
+    }
+
+    if (this.#narrow) {
+      // 窄屏：中间一列占满整行，左右两侧的区收进抽屉
+      const drawers: HTMLElement[] = []
+      for (const position of ['start', 'end'] as const) {
+        if (layout[position].length === 0) {
+          this.#drawers[position]?.body.replaceChildren()
+          continue
+        }
+        const drawer = this.#ensureDrawer(position)
+        drawer.body.replaceChildren(this.#stack(layout[position], position))
+        drawers.push(drawer.element)
+      }
+      parts.body.replaceChildren(createAuthoredElement(this.ownerDocument, 'div', { 'data-scope': SCOPE, 'data-part': 'main' }, [main]), ...drawers)
+      return
     }
 
     const row: { node: HTMLElement, id: string, size: number, min: number, collapsible?: boolean }[] = []

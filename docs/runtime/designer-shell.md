@@ -387,12 +387,13 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 | `panels` | 要显示的区，空格分隔；不写即全部显示，写空串则只留中间区。中间区总是显示，顶栏有内容就显示，状态栏按 `panels` 且有内容才显示。同名 attribute |
 | `regions` | 产品登记的命名区，缺省为 `DESIGNER_FRAME_REGIONS` |
 | `sizes` | `{ start, end, bottom, regions }`：各处的大小（百分比），用来恢复上次的布局。`start`、`end`、`bottom` 是位置的大小，不给的用区的缺省大小；`regions` 是同一位置堆叠的区各自占该位置高度的百分比，键为区名，不给的等分 |
+| `narrow` | 只读：视口窄于断点、左右两侧收进抽屉时为 `true`，见下文「窄屏」 |
 
 | 方法 | 说明 |
 | --- | --- |
 | `showsPanel(name)` | 这个区是否显示：中间区总是显示，顶栏看有没有内容，状态栏看 `panels` 与有没有内容，其余按 `panels`，没登记的区为否 |
-| `panelEntries()` | 能开关的面板：`start`、`end`、`bottom` 三个位置上没写 `closable: false` 的区，按登记顺序，每项 `{ name, label, shown }`；`label` 依次取 `title`、`label`、`name`，`shown` 是它此刻是否列在 `panels` 里。内置的「面板」命令用它铺菜单 |
-| `togglePanel(name)` | 开关一块面板：列在 `panels` 里就去掉、否则加上，与面板头的关闭钮一样派发 `panels-change` |
+| `panelEntries()` | 能开关的面板：`start`、`end`、`bottom` 三个位置上没写 `closable: false` 的区，按登记顺序，每项 `{ name, label, shown }`；`label` 依次取 `title`、`label`、`name`，`shown` 是它此刻是否列在 `panels` 里，窄屏时左右两侧的区还要它所在的抽屉开着。内置的「面板」命令用它铺菜单 |
+| `togglePanel(name)` | 开关一块面板：列在 `panels` 里就去掉、否则加上，与面板头的关闭钮一样派发 `panels-change`。窄屏时左右两侧的区是开关它所在那一侧的抽屉 |
 
 | 事件 | detail |
 | --- | --- |
@@ -489,6 +490,16 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 - 左右与下方的面板在分隔条上可以收起：分隔条聚焦后按 Enter 收起，再按一次展开回原来的大小。
 
 `parseDesignerPanels(value)` 按同一口径解析 `panels`：没写为 `undefined`（全部显示），空串为空集合（全部收起），多个空白与制表符都当分隔。设计器自己的 `panels` 属性可以直接转给外框。
+
+### 窄屏
+
+视口窄于断点令牌 `--xh-breakpoint-md` 时外框进窄屏，外框上写 `data-narrow`，`narrow` 为 `true`：
+
+- 中间一栏占满整行，下方的区照旧在中间一栏下面；左右两侧的区收进从两边滑出的 `<xh-drawer>`，缺省收着。抽屉在外框里面（`contained`）、非模态，压在画布上，不挤窄画布。
+- 「面板」命令与 `togglePanel` 开关抽屉，同时只开一侧，开另一侧时这一侧收起；不改 `panels`，不派发 `panels-change`。没列在 `panels` 里的区，开抽屉时先列上并派发一次 `panels-change`。
+- 面板头的关闭钮与 Esc 只收起抽屉，`panels` 不变。抽屉以它里面各区的标题为名，从右往左写时两侧对调。
+- 视口变宽回到三栏，抽屉收起；左右两侧仍按 `panels` 显示，再变窄时两侧都收着。
+- 没有 `matchMedia` 或断点令牌缺席时不进窄屏。
 
 ## 设置
 
@@ -645,6 +656,7 @@ menu.addEventListener("select", event => runCommand(commands, event.detail.value
 - 按钮收在「更多」里时，从「更多」菜单里点它，打开的是同一块面板或同一张菜单，锚在「更多」钮上。开着的时候工具栏变窄把它收进「更多」、或变宽又放回来，弹层与菜单跟着换锚点，不关掉。
 - 锚点按钮上的 `aria-haspopup`、`aria-expanded`、`aria-controls` 由弹层与菜单在展开期间写上，收起后还原；Escape 或点在外面收起时焦点回到锚点。
 - 重铺按钮（分组变了）、命令不在了或此刻不可用时，开着的弹层与菜单关掉。
+- 菜单里点了复选条目、菜单仍开着时，按点过之后的上下文重算条目与勾选，不必等设计器下一次 `update`。
 - `open(id)` 打开一条弹层命令或菜单命令，给快捷键用：命令的 `run` 里调它；不是这两类命令、不在工具栏上或此刻不可用时返回 `false`。`close()` 关掉开着的那一个，`opened()` 是开着的命令 id。
 
 四款都有的通用命令，文案收在 designer-shell 语言包的 `xh-designer-commands` 一桶里：撤销、重做、剪切、复制、粘贴、创建副本、删除、全选，六种对齐、两种分布、四种层级，放大、缩小、适合窗口、实际大小，设计与预览，内置命令的面板、设置与帮助，以及命令工具栏的名字 `toolbar`。各款引用这一桶，不再各写一份；产品专属的命令仍写在各款自己的语言包里。

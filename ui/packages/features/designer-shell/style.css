@@ -1003,6 +1003,24 @@
     min-block-size: 0;
   }
 
+  /* 窄屏：左右两侧的区收进局部抽屉，抽屉以中间这一行为容器；抽屉里只放区的卡片，不再套一层内衬 */
+  xh-designer-frame[data-narrow] > [data-scope='designer-frame'][data-part='body'] {
+    position: relative;
+  }
+
+  xh-designer-frame > [data-scope='designer-frame'][data-part='body'] > xh-drawer {
+    --xh-drawer-px: 0px;
+    --xh-drawer-py: 0px;
+    --xh-drawer-gap: 0px;
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='drawer-body'] {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-block-size: 0;
+  }
+
   xh-designer-frame [data-scope='designer-frame']:is([data-part='main'], [data-part='stack']) {
     display: flex;
     flex: 1 1 auto;

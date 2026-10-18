@@ -309,6 +309,15 @@ export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbar
     return popover
   }
 
+  /** 按此刻的命令表与上下文刷新菜单的条目、勾选与名字。 */
+  const paintMenu = (host: MenuHost, command: DesignerCommand<Ctx>, commands: DesignerCommandTable<Ctx>, context: Ctx): void => {
+    const data = commandMenuData(command.menu?.(context) ?? [], commands, context)
+    host.collection = data.collection
+    host.checkboxValue = data.checkboxValue
+    host.radioValue = data.radioValue
+    host.translations = { content: commandLabel(command, context) }
+  }
+
   const ensureMenu = (): MenuHost => {
     if (menu)
       return menu
@@ -327,6 +336,9 @@ export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbar
         runCommand(current.commands, value.slice(MENU_COMMAND_PREFIX.length), current.context)
       else if (value.startsWith(MENU_ITEM_PREFIX))
         command.select?.(value.slice(MENU_ITEM_PREFIX.length), current.context)
+      // 菜单还开着（复选条目）时按此刻的状态重铺：选中改的状态不一定让设计器重新刷新命令栏
+      if (popup?.kind === 'menu' && host.open && current)
+        paintMenu(host, command, current.commands, current.context)
     }
     // 普通条目、命令与单选条目（选中即收起）派发 select
     host.addEventListener('select', event => choose((event as CustomEvent<{ value: string }>).detail.value))
@@ -340,15 +352,6 @@ export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbar
     trigger.append(host)
     menu = host
     return menu
-  }
-
-  /** 按此刻的命令表与上下文刷新菜单的条目、勾选与名字。 */
-  const paintMenu = (host: MenuHost, command: DesignerCommand<Ctx>, commands: DesignerCommandTable<Ctx>, context: Ctx): void => {
-    const data = commandMenuData(command.menu?.(context) ?? [], commands, context)
-    host.collection = data.collection
-    host.checkboxValue = data.checkboxValue
-    host.radioValue = data.radioValue
-    host.translations = { content: commandLabel(command, context) }
   }
 
   function close(): void {
