@@ -712,6 +712,7 @@ const translations = {
     retry: '重試',
     branchEmpty: '沒有下層選項',
     searchInput: '搜尋',
+    searchPlaceholder: '搜尋選項',
     noMatch: '沒有相符的結果',
   },
   'truncate': { expand: '展開', collapse: '收合' },

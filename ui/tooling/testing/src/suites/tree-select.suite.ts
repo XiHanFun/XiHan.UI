@@ -1623,6 +1623,15 @@ export const treeSelectSuite: ConformanceSuite = {
         { kind: 'settle', until: { activeElement: 'input' } },
         {
           kind: 'raw',
+          why: 'placeholder 不进归一化快照，直接读搜索框',
+          run: ({ doc }) => {
+            const placeholder = doc.querySelector<HTMLInputElement>(SEARCH_INPUT)!.getAttribute('placeholder')
+            if (placeholder !== 'Search options')
+              throw new Error(`搜索框应带缺省占位文字 Search options，实际 ${placeholder}`)
+          },
+        },
+        {
+          kind: 'raw',
           why: '检索词只能直接写进输入框再派 input 事件',
           run: ({ doc, flush }) => typeInto(doc, 'dom', flush),
           expect: {

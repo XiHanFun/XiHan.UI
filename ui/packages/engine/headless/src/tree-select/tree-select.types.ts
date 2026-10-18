@@ -151,6 +151,8 @@ export interface TreeSelectTranslations {
   branchEmpty: string
   /** 浮层里搜索框的可及名：字段标签命名的是整个控件，浮层中的该框需要单独命名。 */
   searchInput: string
+  /** 浮层里搜索框的占位文字。 */
+  searchPlaceholder: string
   /** 搜索无匹配时空态的默认文案。 */
   noMatch: string
   /** 标签删除按钮的可及名，接收标签文本；默认 `Delete <label>`。 */

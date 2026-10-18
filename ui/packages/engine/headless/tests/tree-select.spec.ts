@@ -528,6 +528,11 @@ describe('浮层内搜索', () => {
     expect(h.searchBox.getAttribute('aria-controls')).toBe(h.treeEl.id)
   })
 
+  it('搜索框带缺省占位文字，translations.searchPlaceholder 可以覆盖', () => {
+    expect(mount({ searchable: true }).searchBox.getAttribute('placeholder')).toBe('Search options')
+    expect(mount({ searchable: true, translations: { searchPlaceholder: '按名称或编码搜索' } }).searchBox.getAttribute('placeholder')).toBe('按名称或编码搜索')
+  })
+
   it('输入检索词：可见行只剩命中的节点与它们的祖先，祖先自动展开，作者的 expandedValue 不动', async () => {
     const h = mount({ searchable: true, defaultOpen: true })
     await settle()

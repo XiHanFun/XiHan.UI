@@ -719,6 +719,7 @@ const translations = {
     retry: 'Tentar novamente',
     branchEmpty: 'Nenhum subitem',
     searchInput: 'Pesquisar',
+    searchPlaceholder: 'Pesquisar opções',
     noMatch: 'Nenhum resultado',
   },
   'truncate': { expand: 'Mostrar mais', collapse: 'Mostrar menos' },

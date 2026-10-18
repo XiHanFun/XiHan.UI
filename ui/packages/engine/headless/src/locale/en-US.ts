@@ -934,6 +934,7 @@ export const TREE_SELECT_EN_US: XhLocaleBucket<'tree-select'> = {
   retry: 'Retry',
   branchEmpty: 'No children',
   searchInput: 'Search',
+  searchPlaceholder: 'Search options',
   noMatch: 'No matches',
 }
 

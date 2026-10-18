@@ -721,6 +721,7 @@ const translations = {
     retry: 'Réessayer',
     branchEmpty: 'Aucun sous-élément',
     searchInput: 'Rechercher',
+    searchPlaceholder: 'Rechercher une option',
     noMatch: 'Aucun résultat',
   },
   'truncate': { expand: 'Afficher plus', collapse: 'Afficher moins' },
