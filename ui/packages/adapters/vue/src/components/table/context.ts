@@ -28,6 +28,7 @@ const SECTION_KEY: InjectionKey<TableSection> = Symbol.for('xh-table-section')
 const ROW_KEY: InjectionKey<TableRowContext> = Symbol.for('xh-table-row')
 const COLUMN_KEY: InjectionKey<TableColumnContext> = Symbol.for('xh-table-column')
 const HEADER_LEVEL_KEY: InjectionKey<ComputedRef<number | undefined>> = Symbol.for('xh-table-header-level')
+const FOOTER_LEVEL_KEY: InjectionKey<ComputedRef<number | undefined>> = Symbol.for('xh-table-footer-level')
 
 /** 表头行写明的层号，供行里的列头定位自己在多级表头里的哪一格。 */
 export function provideTableHeaderLevel(level: ComputedRef<number | undefined>): void {
@@ -36,6 +37,15 @@ export function provideTableHeaderLevel(level: ComputedRef<number | undefined>):
 
 export function useOptionalTableHeaderLevel(): ComputedRef<number | undefined> | null {
   return inject(HEADER_LEVEL_KEY, null)
+}
+
+/** 表尾行写明的层号，供行里的格子按 footerCellSpan 定位自己在第几行表尾。 */
+export function provideTableFooterLevel(level: ComputedRef<number | undefined>): void {
+  provide(FOOTER_LEVEL_KEY, level)
+}
+
+export function useOptionalTableFooterLevel(): ComputedRef<number | undefined> | null {
+  return inject(FOOTER_LEVEL_KEY, null)
 }
 
 export function provideTable(ctx: TableContext): void {

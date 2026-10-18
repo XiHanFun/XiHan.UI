@@ -179,6 +179,58 @@ describe('单元格合并', () => {
   })
 })
 
+describe('表尾单元格合并', () => {
+  const COLUMNS: NonNullable<Props['columns']> = [
+    { id: 'region', width: 96 },
+    { id: 'city', width: 96 },
+    { id: 'q1', width: 64 },
+    { id: 'q2', width: 64 },
+  ]
+  const ROWS = [{ id: 'a' }, { id: 'b' }]
+  // 两行表尾：标题格从第一列横跨行维度两列；第二行表尾的 q1、q2 纵向不合并，q2 列第一行起纵跨两行
+  const footerCellSpan: Props['footerCellSpan'] = ({ level, column }) => {
+    if (column.id === 'region')
+      return level === 1 ? { colSpan: 2, rowSpan: 2 } : null
+    if (column.id === 'q2' && level === 1)
+      return { rowSpan: 2 }
+    return null
+  }
+
+  it('起点报 aria-colspan / aria-rowspan、宽度按跨过的列相加；同一行被横向跨过的不渲染，下面一行留占位', () => {
+    const api = mount({ columns: COLUMNS, rows: ROWS, footerRows: 2, footerCellSpan }).api()
+    const origin = api.getCellProps({ value: 'region', footer: 1 }) as Dict
+    expect(origin).toMatchObject({ 'aria-colspan': 2, 'aria-rowspan': 2, 'data-row-span': '' })
+    expect((origin.style as Dict).inlineSize).toBe('calc(96px + 96px)')
+    expect(api.getCellProps({ value: 'city', footer: 1 })).toMatchObject({ 'hidden': true, 'aria-hidden': true })
+    const spacer = api.getCellProps({ value: 'region', footer: 2 }) as Dict
+    expect(spacer).toMatchObject({ 'aria-hidden': true, 'data-covered': '' })
+    expect(spacer.hidden).toBeUndefined()
+    expect((spacer.style as Dict).inlineSize).toBe('calc(96px + 96px)')
+    expect(api.getCellProps({ value: 'city', footer: 2 })).toMatchObject({ hidden: true })
+    expect((api.getCellProps({ value: 'q1', footer: 2 }) as Dict).role).toBe('gridcell')
+    expect(api.getCellProps({ value: 'q2', footer: 1 })).toMatchObject({ 'aria-rowspan': 2 })
+  })
+
+  it('纵向截在最后一行表尾，横向截在最后一列；不写 footer 的格子不参与合并', () => {
+    const api = mount({ columns: COLUMNS, rows: ROWS, footerRows: 1, footerCellSpan: () => ({ rowSpan: 3, colSpan: 9 }) }).api()
+    const origin = api.getCellProps({ value: 'region', footer: 1 }) as Dict
+    expect(origin['aria-colspan']).toBe(4)
+    expect(origin['aria-rowspan']).toBeUndefined()
+    expect((api.getCellProps({ value: 'q2', footer: 1 }) as Dict).hidden).toBe(true)
+    expect((api.getCellProps({ value: 'q2' }) as Dict).hidden).toBeUndefined()
+  })
+
+  it('表体的合并不受影响；量到表尾行位后，纵跨的起点格铺满两行', () => {
+    const t = mount({ columns: COLUMNS, rows: ROWS, footerRows: 2, footerCellSpan })
+    expect(t.api().cellSpanOf('a', 'region')).toEqual({ rowSpan: 1, colSpan: 1, covered: false })
+    // 表头第 1 行、两行数据第 2–3 行，表尾是第 4、5 行
+    t.service.context.set('layout', { columnWidths: {}, rowBoxes: { 4: { top: 100, bottom: 130 }, 5: { top: 131, bottom: 160 } } })
+    const style = (t.api().getCellProps({ value: 'q2', footer: 1 }) as Dict).style as Dict
+    expect(style['--xh-_table-span-block']).toBe('60px')
+    expect(style['--xh-_table-span-overhang']).toBe('30px')
+  })
+})
+
 describe('冻结列按实测宽度累加偏移', () => {
   const COLUMNS: NonNullable<Props['columns']> = [
     { id: 'a', sticky: true },

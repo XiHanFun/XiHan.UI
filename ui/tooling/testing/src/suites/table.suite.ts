@@ -961,6 +961,23 @@ export const tableSuite: ConformanceSuite = {
       },
     },
     {
+      name: '表尾合并：footerCellSpan 的起点报 aria-colspan，同一行被跨过的格子不渲染，表体不受影响',
+      spec: { apg: APG },
+      props: props({
+        // 表尾的合计从 select 起横跨 select、name 两列
+        footerCellSpan: ({ column, level }: { column: TableColumnDef, level: number }) =>
+          level === 1 && column.id === 'select' ? { colSpan: 2 } : null,
+      }),
+      initial: {
+        parts: {
+          'cell[15]': { 'aria-colspan': '2', 'aria-hidden': null },
+          'cell[16]': { 'aria-hidden': 'true', 'data-covered': '', 'hidden': '' },
+          'cell[17]': { 'aria-colspan': null, 'hidden': null },
+          'cell[1]': { 'aria-colspan': null, 'hidden': null },
+        },
+      },
+    },
+    {
       name: '树形表级联勾选：勾一个子行，父行把手半选；子行全勾上，父行跟着选中',
       spec: { apg: `${APG}#keyboardinteraction` },
       props: props({ rows: TREE_ROWS, selectionMode: 'multiple', cascade: true, defaultExpandedValue: ['a'] }),

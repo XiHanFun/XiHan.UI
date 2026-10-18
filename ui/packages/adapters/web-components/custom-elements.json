@@ -67123,7 +67123,7 @@
               "name": "column-label"
             },
             {
-              "description": "role=gridcell，须自带 value 属性标识列身份；可写 colspan 属性声明跨列数。cellSpan 合并掉的格子由元素写上 hidden 或占位，作者照常逐格写",
+              "description": "role=gridcell，须自带 value 属性标识列身份；可写 colspan 属性声明跨列数。cellSpan（表尾是 footerCellSpan）合并掉的格子由元素写上 hidden 或占位，作者照常逐格写",
               "name": "cell"
             },
             {
@@ -67283,6 +67283,15 @@
               "type": {
                 "text": "TableSchema['props']['cellSpan'] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "footerCellSpan",
+              "privacy": "public",
+              "type": {
+                "text": "(details: TableFooterCellSpanDetails) => TableCellSpan | null | undefined"
+              },
+              "description": "表尾单元格合并，与 cellSpan 同一种写法，逐格询问第几行表尾的哪一格；合并掉的表尾格子由元素写上 hidden 或占位"
             },
             {
               "kind": "field",
@@ -67836,7 +67845,10 @@
             },
             {
               "description": "列偏好变化；detail 为 `{ value: TableColumnPreference }`",
-              "name": "column-preference-change"
+              "name": "column-preference-change",
+              "type": {
+                "text": "TableFooterCellSpanDetails"
+              }
             },
             {
               "description": "选中集合变化；detail 为 `{ value: string[] | 'all' }`",

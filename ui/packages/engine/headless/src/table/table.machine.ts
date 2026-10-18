@@ -223,7 +223,7 @@ export const tableMachine = createMachine({
         let disposed = false
         let frame = 0
         let stop: (() => void) | null = null
-        const needs = (): TableLayoutNeeds => tableLayoutNeeds(prop('columns') ?? [], context.get('columnPreference'), !!prop('cellSpan'))
+        const needs = (): TableLayoutNeeds => tableLayoutNeeds(prop('columns') ?? [], context.get('columnPreference'), !!prop('cellSpan') || !!prop('footerCellSpan'))
         const measure = (): void => {
           frame = 0
           const root = refs.get('getRootEl')()
