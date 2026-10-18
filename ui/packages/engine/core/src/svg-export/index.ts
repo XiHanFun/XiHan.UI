@@ -6,6 +6,8 @@
 // @xihan-ui/core/svg-export —— 把页面上的 SVG 导出成文件：克隆成能独立打开的一份（计算样式内联成属性），
 // 序列化成文本，再按倍率与背景栅格化成 PNG。只在浏览器里用：要读计算样式、要用 Image 与 canvas。
 
+import { colorParse, colorRgbaToHex } from '../color'
+
 const SVG_NS = 'http://www.w3.org/2000/svg'
 
 /**
@@ -31,6 +33,27 @@ const PRESENTATION: Readonly<Record<string, string | undefined>> = {
   'dominant-baseline': 'auto',
 }
 
+/** 会继承的表现属性：子元素的值与父元素相同时不写，交给继承。opacity 不继承；dominant-baseline 在 SVG 1.1 里不继承，也逐个照写。 */
+const INHERITED: ReadonlySet<string> = new Set([
+  'fill',
+  'fill-opacity',
+  'stroke',
+  'stroke-width',
+  'stroke-opacity',
+  'stroke-dasharray',
+  'stroke-linecap',
+  'stroke-linejoin',
+  'visibility',
+  'font-family',
+  'font-size',
+  'font-style',
+  'font-weight',
+  'text-anchor',
+])
+
+/** 颜色属性与它的透明度属性：颜色写成 #rrggbb，颜色自带的透明度乘进透明度属性。 */
+const PAINT_OPACITY: Readonly<Record<string, string>> = { fill: 'fill-opacity', stroke: 'stroke-opacity' }
+
 /** 克隆时去掉的属性：依赖页面样式表与脚本的那些（class、style、data-*、事件与交互）。id 留着，渐变、裁剪与遮罩靠它引用。 */
 const DROPPED = /^(?:class|style|data-.*|on.*|aria-.*|role|tabindex)$/
 
@@ -45,6 +68,30 @@ function rejectForeignObject(): never {
   throw new TypeError('[xh] svg-export 不支持 foreignObject：带它的 SVG 画进画布后导不出 PNG，请把其中的内容画成 SVG 元素')
 }
 
+/** 透明度的小数留三位，避免浮点尾巴。 */
+function opacityText(value: number): string {
+  return String(Math.round(value * 1000) / 1000)
+}
+
+/**
+ * 一个元素要写的表现属性值：取计算值，fill 与 stroke 认得出的颜色换成 sRGB 的 #rrggbb，
+ * 颜色自带的透明度乘进 fill-opacity / stroke-opacity；认不出的颜色写法原样保留。
+ */
+function presentationOf(style: CSSStyleDeclaration): Record<string, string> {
+  const values: Record<string, string> = {}
+  for (const name of Object.keys(PRESENTATION))
+    values[name] = style.getPropertyValue(name)
+  for (const [paint, opacity] of Object.entries(PAINT_OPACITY)) {
+    const color = colorParse(values[paint]!)
+    if (!color)
+      continue
+    values[paint] = colorRgbaToHex(color)
+    if (color.a < 1)
+      values[opacity] = opacityText(Number.parseFloat(values[opacity] || '1') * color.a)
+  }
+  return values
+}
+
 export interface StandaloneSvgOptions {
   /** 返回 false 的元素连同子树不进克隆，如只供命中的透明粗线。缺省全收。 */
   readonly include?: (element: Element) => boolean
@@ -53,14 +100,20 @@ export interface StandaloneSvgOptions {
 /**
  * 克隆一份能独立打开的 SVG：逐个元素把白名单里的表现属性（fill、stroke、stroke-width、stroke-dasharray、
  * stroke-linecap / linejoin、opacity、fill-opacity / stroke-opacity、font-family / size / weight / style、
- * text-anchor、dominant-baseline、visibility）按计算值写成属性，设计令牌、currentColor 与继承来的值都换成具体值；
+ * text-anchor、dominant-baseline、visibility）按计算值写成属性，设计令牌、currentColor 与继承来的值都换成具体值。
+ * 根上等于初始值的不写；会继承的属性（除 opacity 与 dominant-baseline 外都是）与父元素的值相同时不写，交给继承。
+ * fill 与 stroke 的颜色换成 sRGB 的 #rrggbb，供只认 sRGB 的工具（办公软件、矢量编辑器）打开：
+ * 认得的写法是 @xihan-ui/core/color 的 colorParse 收的那些（含 oklch、oklab 与 color(srgb …)），
+ * 超出 sRGB 色域的按通道裁剪（每一路夹回 0-255），颜色自带的透明度乘进 fill-opacity / stroke-opacity；
+ * 认不出的写法（lab、lch、display-p3 等）原样保留。
  * 去掉 class、style、data-*、事件与交互相关的属性，不再依赖页面的样式表与脚本；计算出 display: none 的元素不进克隆。
  * 遇到 foreignObject 抛 TypeError。克隆的元素都建在 SVG 命名空间里，序列化时由序列化器写出 xmlns，根上不手写这个属性。
  * source 必须在文档里（要读计算样式），返回的克隆不在文档里。
  */
 export function standaloneSvg(source: SVGSVGElement, options: StandaloneSvgOptions = {}): SVGSVGElement {
   const include = options.include ?? (() => true)
-  const copy = (element: Element): Element | undefined => {
+  const initial = PRESENTATION as Readonly<Record<string, string | undefined>>
+  const copy = (element: Element, inherited: Readonly<Record<string, string | undefined>>): Element | undefined => {
     if (!include(element))
       return undefined
     if (element.localName === 'foreignObject')
@@ -73,9 +126,9 @@ export function standaloneSvg(source: SVGSVGElement, options: StandaloneSvgOptio
       if (!DROPPED.test(attribute.name))
         clone.setAttribute(attribute.name, attribute.value)
     }
-    for (const [name, initial] of Object.entries(PRESENTATION)) {
-      const value = style.getPropertyValue(name)
-      if (value !== '' && value !== initial)
+    const values = presentationOf(style)
+    for (const [name, value] of Object.entries(values)) {
+      if (value !== '' && value !== (INHERITED.has(name) ? inherited[name] : initial[name]))
         clone.setAttribute(name, value)
     }
     for (const child of Array.from(element.childNodes)) {
@@ -84,14 +137,14 @@ export function standaloneSvg(source: SVGSVGElement, options: StandaloneSvgOptio
         continue
       }
       if (child instanceof Element) {
-        const next = copy(child)
+        const next = copy(child, values)
         if (next)
           clone.append(next)
       }
     }
     return clone
   }
-  return copy(source) as SVGSVGElement | undefined ?? source.ownerDocument.createElementNS(SVG_NS, 'svg')
+  return copy(source, initial) as SVGSVGElement | undefined ?? source.ownerDocument.createElementNS(SVG_NS, 'svg')
 }
 
 /**

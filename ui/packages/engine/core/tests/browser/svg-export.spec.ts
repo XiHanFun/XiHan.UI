@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
+import { colorOklchToRgba, colorParse, colorRgbaToHex } from '../../src/color'
 import { rasterizeSvg, serializeSvg, standaloneSvg } from '../../src/svg-export'
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
@@ -53,16 +54,68 @@ describe('standaloneSvg（Chromium）', () => {
     expect(copy.isConnected).toBe(false)
     expect([copy.namespaceURI, copy.hasAttribute('xmlns')]).toEqual([SVG_NS, false])
     expect([copy.getAttribute('width'), copy.getAttribute('viewBox'), copy.hasAttribute('class')]).toEqual(['40', '0 0 40 20', false])
+    expect([copy.getAttribute('font-size'), copy.getAttribute('font-weight'), copy.getAttribute('font-family')]).toEqual(['14px', '600', 'serif'])
     const line = copy.querySelector('path')!
     expect([line.getAttribute('stroke'), line.getAttribute('stroke-width'), line.getAttribute('stroke-dasharray'), line.getAttribute('fill')])
-      .toEqual(['rgb(255, 0, 0)', '3px', '4px, 2px', 'none'])
+      .toEqual(['#ff0000', '3px', '4px, 2px', 'none'])
     expect(['data-part', 'class', 'onclick', 'style', 'stroke-miterlimit'].filter(name => line.hasAttribute(name))).toEqual([])
     const text = copy.querySelector('text')!
-    expect([text.textContent, text.getAttribute('fill'), text.getAttribute('font-size'), text.getAttribute('font-weight'), text.getAttribute('font-style')])
-      .toEqual(['审批', 'rgb(0, 0, 255)', '14px', '600', 'italic'])
+    expect([text.textContent, text.getAttribute('fill'), text.getAttribute('font-style')]).toEqual(['审批', '#0000ff', 'italic'])
+    // 字号、字重与字体和根相同，交给继承
+    expect(['font-size', 'font-weight', 'font-family'].filter(name => text.hasAttribute(name))).toEqual([])
     expect(text.hasAttribute('style') || text.hasAttribute('letter-spacing')).toBe(false)
     expect(copy.querySelectorAll('rect')).toHaveLength(1)
     expect(copy.querySelector('clipPath')!.id).toBe('clip')
+  })
+
+  it('会继承的属性与父元素的值相同时不写，交给继承；与父元素不同时照写，哪怕等于初始值；不继承的照旧逐个看', () => {
+    sheet(`
+      .doc { font: 400 12px serif; fill: rgb(0, 128, 0); }
+      .doc .em { font-style: italic; }
+      .doc .plain { font-style: normal; }
+      .doc .faded { opacity: 0.5; }
+    `)
+    const source = svgFrom(`<svg class="doc" width="40" height="40">
+      <g class="em">${Array.from({ length: 20 }, (_, index) => `<text class="same" y="${index}">${index}</text>`).join('')}<text class="plain">正</text></g>
+      <g class="faded"><rect width="4" height="4"></rect></g>
+    </svg>`)
+    const copy = standaloneSvg(source)
+    expect([copy.getAttribute('font-family'), copy.getAttribute('font-size'), copy.getAttribute('fill')]).toEqual(['serif', '12px', '#008000'])
+    const group = copy.querySelector('g')!
+    expect(group.getAttribute('font-style')).toBe('italic')
+    expect(['font-family', 'font-size', 'font-weight', 'fill'].filter(name => group.hasAttribute(name))).toEqual([])
+    const same = copy.querySelector('text')!
+    expect(['font-family', 'font-size', 'font-weight', 'font-style', 'fill'].filter(name => same.hasAttribute(name))).toEqual([])
+    expect(copy.querySelector('text:last-of-type')!.getAttribute('font-style')).toBe('normal')
+    expect(copy.querySelector('g:last-of-type')!.getAttribute('opacity')).toBe('0.5')
+    expect(copy.querySelector('rect')!.hasAttribute('opacity')).toBe(false)
+    const text = serializeSvg(copy)
+    expect([text.match(/font-family=/g)!.length, text.match(/fill=/g)!.length]).toEqual([1, 1])
+  })
+
+  it('oklch、oklab 与 color(srgb …) 算出的颜色写成 sRGB 的 #rrggbb，色域外的按通道裁剪，自带的透明度乘进透明度属性', () => {
+    sheet(`
+      .tokens { --brand: oklch(0.62 0.19 255); --soft: oklch(0.62 0.19 255 / 0.5); }
+      .tokens .solid { fill: var(--brand); }
+      .tokens .soft { fill: var(--soft); fill-opacity: 0.8; stroke: color-mix(in oklab, var(--brand) 40%, white); }
+      .tokens .mixed { fill: color-mix(in srgb, var(--brand) 50%, transparent); }
+      .tokens .wide { stroke: oklch(0.7 0.4 145); }
+    `)
+    const source = svgFrom(`<svg class="tokens" width="10" height="10">
+      <rect class="solid" width="2" height="2"></rect>
+      <rect class="soft" width="2" height="2"></rect>
+      <rect class="mixed" width="2" height="2"></rect>
+      <line class="wide" x2="10"></line>
+    </svg>`)
+    const copy = standaloneSvg(source)
+    const brand = colorRgbaToHex(colorParse('oklch(0.62 0.19 255)')!)
+    const [solid, soft, mixed] = Array.from(copy.querySelectorAll('rect'))
+    expect(solid!.getAttribute('fill')).toBe(brand)
+    expect([soft!.getAttribute('fill'), soft!.getAttribute('fill-opacity')]).toEqual([brand, '0.4'])
+    expect(soft!.getAttribute('stroke')).toMatch(/^#[0-9a-f]{6}$/)
+    expect([mixed!.getAttribute('fill')!.match(/^#[0-9a-f]{6}$/) !== null, mixed!.getAttribute('fill-opacity')]).toEqual([true, '0.5'])
+    expect(copy.querySelector('line')!.getAttribute('stroke')).toBe(colorRgbaToHex(colorOklchToRgba({ l: 0.7, c: 0.4, h: 145, a: 1 })))
+    expect(serializeSvg(copy)).not.toMatch(/oklch|oklab|color\(/)
   })
 
   it('遇到 foreignObject 抛 TypeError，不悄悄丢掉', () => {

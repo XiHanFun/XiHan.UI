@@ -6,8 +6,8 @@
 // 提供 color picker 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size } from '@xihan-ui/core'
+import type { ColorFormat } from '@xihan-ui/core/color'
 import type {
-  ColorFormat,
   ColorPickerApi,
   ColorPickerInputChannel,
   ColorPickerSchema,

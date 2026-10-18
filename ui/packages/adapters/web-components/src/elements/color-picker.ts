@@ -6,8 +6,8 @@
 // 提供 color picker 相关实现。
 
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { ColorFormat } from '@xihan-ui/core/color'
 import type {
-  ColorFormat,
   ColorPickerErrorDetails,
   ColorPickerErrors,
   ColorPickerOpenChangeDetails,

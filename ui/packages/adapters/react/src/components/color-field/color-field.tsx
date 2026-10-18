@@ -6,7 +6,8 @@
 // 提供 color field 相关实现。
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { ColorFieldApi, ColorFieldSchema, ColorFormat } from '@xihan-ui/headless'
+import type { ColorFormat } from '@xihan-ui/core/color'
+import type { ColorFieldApi, ColorFieldSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { colorFieldStructure } from '@xihan-ui/headless'
