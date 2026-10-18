@@ -167,7 +167,7 @@
     "name": "designer-kit",
     "path": "packages/features/designer-kit/dist/index.js",
     "gzip": true,
-    "limit": "14 kB"
+    "limit": "13.5 kB"
   },
   {
     "name": "designer-kit/properties",
@@ -185,7 +185,7 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "250 kB"
+    "limit": "253 kB"
   },
   {
     "name": "designer-shell/locale",

@@ -4,13 +4,14 @@
  */
 
 // 命令的排列与呈现：按 commandLayout 或缺省排列分组，铺成 <xh-toolbar> 的按钮与 <xh-context-menu> 的条目，
-// 点击或选中时执行对应命令。内置命令与扩展命令同一条路。
+// 点击或选中时执行对应命令；弹层命令与菜单命令在工具栏上点开锚在按钮上的弹层与菜单。内置命令与扩展命令同一条路。
 
 import type { IconRecord } from '@xihan-ui/core'
 import type { KbdPlatform, KbdResolvedPlatform } from '@xihan-ui/core/hotkey'
-import type { DesignerCommand, DesignerCommandPlacement } from '@xihan-ui/designer-kit'
+import type { DesignerCommand, DesignerCommandMenuEntry, DesignerCommandPanel, DesignerCommandPlacement } from '@xihan-ui/designer-kit'
+import type { XhMenuElement, XhPopoverElement } from '@xihan-ui/web-components/define'
 import { ariaKeyshortcut, detectKbdPlatform, resolveKbdPlatform } from '@xihan-ui/core/hotkey'
-import { formatShortcut } from '@xihan-ui/designer-kit'
+import { formatShortcut, isCommandMenuSeparator } from '@xihan-ui/designer-kit'
 import { createAuthoredElement, setAttributes, setText } from '@xihan-ui/web-components/authoring'
 import { defineCommandElements } from '../internal/ui-elements'
 
@@ -60,10 +61,10 @@ export function commandEnabled<Ctx>(command: DesignerCommand<Ctx>, context: Ctx)
   return command.enabled?.(context) ?? true
 }
 
-/** 执行一条命令：命令存在且此刻可用才执行，返回是否执行了。 */
+/** 执行一条命令：命令存在、有 run 且此刻可用才执行，返回是否执行了。没给 run 的弹层命令与菜单命令由命令工具栏打开。 */
 export function runCommand<Ctx>(commands: DesignerCommandTable<Ctx>, id: string, context: Ctx): boolean {
   const command = commands.get(id)
-  if (!command || !commandEnabled(command, context))
+  if (!command?.run || !commandEnabled(command, context))
     return false
   command.run(context)
   return true
@@ -75,10 +76,15 @@ export function runCommand<Ctx>(commands: DesignerCommandTable<Ctx>, id: string,
  */
 export type CommandToolbarDisplay = 'icon' | 'text' | 'both' | 'stacked'
 
+/** 命令工具栏的排列方向。 */
+export type CommandToolbarOrientation = 'horizontal' | 'vertical'
+
 /** 命令工具栏的选项。 */
 export interface CommandToolbarOptions {
   /** 按钮的显示方式，缺省 icon。 */
   readonly display?: CommandToolbarDisplay
+  /** 排列方向，缺省 horizontal。竖排时提示与弹层在按钮的行首一侧弹出，放不下的按高度收进「更多」。 */
+  readonly orientation?: CommandToolbarOrientation
   /** 快捷键按哪个平台写进 aria-keyshortcuts、在提示里显示成什么样子：auto（缺省）建工具栏时测一次。 */
   readonly platform?: KbdPlatform
 }
@@ -87,18 +93,29 @@ export interface CommandToolbarOptions {
  * 命令工具栏：一条 <xh-toolbar>，按分组铺按钮，放不下的收进行尾的「更多」菜单，收起的条目带着命令的图标；
  * 命令的语气写成按钮的 data-tone，快捷键按平台写成按钮的 aria-keyshortcuts。
  * 整条工具栏由一个委托模式的 <xh-tooltip> 包着：悬停或键盘聚焦到按钮时显示命令的文字与快捷键。
+ * 弹层命令点开一个锚在按钮上的 <xh-popover>，菜单命令点开一个锚在按钮上的 <xh-menu>；命令收在「更多」里时锚在「更多」钮上，
+ * 开着的时候命令被收进「更多」或又放回工具栏，弹层与菜单跟着换锚点。
  */
 export interface CommandToolbar<Ctx> {
   /** 工具栏的外壳：包着 <xh-toolbar> 的那个 <xh-tooltip>，由调用方放进页面；布局上不占盒子。 */
   readonly element: HTMLElement
   /** 外壳里那条 <xh-toolbar>。 */
   readonly toolbar: HTMLElement
-  /** 换上这组分组与此刻的状态：分组变了才重铺按钮，文字、图标、快捷键、可用与选中状态每次都刷新。 */
+  /** 换上这组分组与此刻的状态：分组变了才重铺按钮，文字、图标、快捷键、可用与选中状态每次都刷新，开着的弹层与菜单一并刷新。 */
   readonly update: (groups: readonly (readonly string[])[], commands: DesignerCommandTable<Ctx>, context: Ctx, label: string) => void
   /** 此刻的显示方式。 */
   readonly display: () => CommandToolbarDisplay
   /** 换显示方式：不重铺按钮，工具栏按换过之后的宽度重新收放「更多」里的条目。 */
   readonly setDisplay: (display: CommandToolbarDisplay) => void
+  /**
+   * 打开一条弹层命令或菜单命令，给快捷键用：锚在它的按钮上，按钮收在「更多」里时锚在「更多」上。
+   * 已经开着就不动。命令不在工具栏上、不是这两类命令、或此刻不可用时返回 false。
+   */
+  readonly open: (id: string) => boolean
+  /** 关掉开着的弹层或菜单。 */
+  readonly close: () => void
+  /** 开着的那条弹层命令或菜单命令的 id；都没开时为 undefined。 */
+  readonly opened: () => string | undefined
 }
 
 /** 工具栏按钮的选择器：委托提示认它作锚点，点击也按它找命令。 */
@@ -141,31 +158,252 @@ function resolvePlatform(platform: KbdPlatform | undefined): KbdResolvedPlatform
   return platform === undefined || platform === 'auto' ? detectKbdPlatform() : resolveKbdPlatform(platform)
 }
 
+/** <xh-menu> 的一个条目。 */
+type MenuNode = NonNullable<XhMenuElement['collection']>[number]
+
+/** 菜单命令的一项在 <xh-menu> 里的值：条目与命令各占一个前缀，彼此不撞。 */
+const MENU_ITEM_PREFIX = 'item:'
+const MENU_COMMAND_PREFIX = 'command:'
+
+/** 菜单命令现算出的一份 <xh-menu> 数据。 */
+interface CommandMenuData {
+  readonly collection: MenuNode[]
+  readonly checkboxValue: string[]
+  readonly radioValue: Record<string, string>
+}
+
+/**
+ * 把菜单命令的各项换成 <xh-menu> 的数据：分隔线落到下一项的 separatorBefore 上，打头与收尾的分隔线不画；
+ * 写成命令 id 的项按那条命令的文字、图标、可用与语气铺；可勾选的条目按 group 分复选与单选。
+ */
+function commandMenuData<Ctx>(entries: readonly DesignerCommandMenuEntry[], commands: DesignerCommandTable<Ctx>, context: Ctx): CommandMenuData {
+  const collection: MenuNode[] = []
+  const checkboxValue: string[] = []
+  const radioValue: Record<string, string> = {}
+  let separate = false
+  for (const entry of entries) {
+    if (isCommandMenuSeparator(entry)) {
+      separate = collection.length > 0
+      continue
+    }
+    const base = separate ? { separatorBefore: true } : {}
+    separate = false
+    if (typeof entry === 'string') {
+      const command = commands.get(entry)
+      if (!command)
+        throw new TypeError(`[xh] 菜单命令里的 ${entry} 不是登记过的命令`)
+      collection.push({
+        ...base,
+        value: `${MENU_COMMAND_PREFIX}${entry}`,
+        label: commandLabel(command, context),
+        disabled: !commandEnabled(command, context),
+        ...(command.icon ? { icon: command.icon } : {}),
+        ...(command.tone ? { tone: command.tone } : {}),
+      })
+      continue
+    }
+    const value = `${MENU_ITEM_PREFIX}${entry.value}`
+    const node: MenuNode = {
+      ...base,
+      value,
+      label: entry.label,
+      ...(entry.disabled ? { disabled: true } : {}),
+      ...(entry.icon ? { icon: entry.icon } : {}),
+      ...(entry.tone ? { tone: entry.tone } : {}),
+    }
+    if (entry.checked !== undefined && entry.group !== undefined) {
+      collection.push({ ...node, kind: 'radio', group: entry.group, closeOnSelect: true })
+      if (entry.checked)
+        radioValue[entry.group] = value
+    }
+    else if (entry.checked !== undefined) {
+      collection.push({ ...node, kind: 'checkbox' })
+      if (entry.checked)
+        checkboxValue.push(value)
+    }
+    else {
+      collection.push(node)
+    }
+  }
+  return { collection, checkboxValue, radioValue }
+}
+
+/** 弹层与菜单在按钮的哪一侧：横排在下方，竖排在行首一侧（从左往右写时是左边）。 */
+function popupSide(orientation: CommandToolbarOrientation, rtl: boolean): 'bottom' | 'left' | 'right' {
+  if (orientation === 'horizontal')
+    return 'bottom'
+  return rtl ? 'right' : 'left'
+}
+
+type PopoverHost = XhPopoverElement
+type MenuHost = XhMenuElement
+type OverlayPlacement = NonNullable<XhPopoverElement['placement']>
+
+/** 开着的弹层或菜单。 */
+type OpenPopup<Ctx>
+  = | { readonly kind: 'panel', readonly id: string, readonly instance: DesignerCommandPanel<Ctx>, readonly observer: MutationObserver | undefined }
+    | { readonly kind: 'menu', readonly id: string, readonly observer: MutationObserver | undefined }
+
 /** 建一条命令工具栏；点击按钮执行对应命令，用的是最近一次 update 交来的命令表与上下文。 */
 export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbarOptions = {}): CommandToolbar<Ctx> {
   defineCommandElements()
   const platform = resolvePlatform(options.platform)
+  const orientation = options.orientation ?? 'horizontal'
   let display: CommandToolbarDisplay = options.display ?? 'icon'
   const root = createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' })
-  const toolbar = createAuthoredElement(doc, 'xh-toolbar', { size: 'sm' }, [root]) as HTMLElement & { itemIcons?: Readonly<Record<string, IconRecord>> }
+  const toolbar = createAuthoredElement(doc, 'xh-toolbar', {
+    size: 'sm',
+    orientation: orientation === 'vertical' ? 'vertical' : undefined,
+  }, [root]) as HTMLElement & { itemIcons?: Readonly<Record<string, IconRecord>> }
+  const trigger = createAuthoredElement(doc, 'div', { 'data-xh-part': 'trigger' }, [toolbar])
   const element = createAuthoredElement(doc, 'xh-tooltip', {
     'data-scope': 'designer-commands',
     'data-display': display,
+    'data-orientation': orientation,
     'delegate': tooltipAnchors(display),
     platform,
   }, [
-    createAuthoredElement(doc, 'div', { 'data-xh-part': 'trigger' }, [toolbar]),
+    trigger,
     createAuthoredElement(doc, 'div', { 'data-xh-part': 'positioner' }, [
       createAuthoredElement(doc, 'div', { 'data-xh-part': 'content' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'arrow' })]),
     ]),
   ])
   const items = new Map<string, CommandButton>()
+  let overflowTrigger: HTMLButtonElement | undefined
   let layoutKey: string | undefined
   let current: { commands: DesignerCommandTable<Ctx>, context: Ctx } | undefined
+  let popover: { readonly host: PopoverHost, readonly content: HTMLElement } | undefined
+  let menu: MenuHost | undefined
+  let popup: OpenPopup<Ctx> | undefined
+
+  /** 按钮收在「更多」里时锚在「更多」上。 */
+  const anchorOf = (button: HTMLButtonElement): HTMLElement => (button.hidden && overflowTrigger ? overflowTrigger : button)
+  const rtl = (): boolean => doc.defaultView?.getComputedStyle(trigger).direction === 'rtl'
+  const side = (): 'bottom' | 'left' | 'right' => popupSide(orientation, rtl())
+
+  /** 按钮被收进「更多」或放回来时，开着的弹层与菜单跟着换锚点。 */
+  const watchAnchor = (button: HTMLButtonElement, host: PopoverHost | MenuHost): MutationObserver | undefined => {
+    const Observer = doc.defaultView?.MutationObserver
+    if (!Observer)
+      return undefined
+    const observer = new Observer(() => {
+      host.anchor = anchorOf(button)
+    })
+    observer.observe(button, { attributes: true, attributeFilter: ['hidden'] })
+    return observer
+  }
+
+  const ensurePopover = (): { readonly host: PopoverHost, readonly content: HTMLElement } => {
+    if (popover)
+      return popover
+    const content = createAuthoredElement(doc, 'div', { 'data-xh-part': 'content' })
+    const host = createAuthoredElement(doc, 'xh-popover', {}, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'positioner' }, [content])]) as PopoverHost
+    host.anchor = null
+    host.open = false
+    host.addEventListener('open-change', (event) => {
+      if (!(event as CustomEvent<{ open: boolean }>).detail.open)
+        close()
+    })
+    trigger.append(host)
+    popover = { host, content }
+    return popover
+  }
+
+  const ensureMenu = (): MenuHost => {
+    if (menu)
+      return menu
+    const host = createAuthoredElement(doc, 'xh-menu') as MenuHost
+    host.anchor = null
+    host.open = false
+    host.addEventListener('open-change', (event) => {
+      if (!(event as CustomEvent<{ open: boolean }>).detail.open)
+        close()
+    })
+    host.addEventListener('select', (event) => {
+      const value = (event as CustomEvent<{ value: string }>).detail.value
+      const command = popup?.kind === 'menu' && current ? current.commands.get(popup.id) : undefined
+      if (!command || !current)
+        return
+      if (value.startsWith(MENU_COMMAND_PREFIX))
+        runCommand(current.commands, value.slice(MENU_COMMAND_PREFIX.length), current.context)
+      else if (value.startsWith(MENU_ITEM_PREFIX))
+        command.select?.(value.slice(MENU_ITEM_PREFIX.length), current.context)
+    })
+    trigger.append(host)
+    menu = host
+    return menu
+  }
+
+  /** 按此刻的命令表与上下文刷新菜单的条目、勾选与名字。 */
+  const paintMenu = (host: MenuHost, command: DesignerCommand<Ctx>, commands: DesignerCommandTable<Ctx>, context: Ctx): void => {
+    const data = commandMenuData(command.menu?.(context) ?? [], commands, context)
+    host.collection = data.collection
+    host.checkboxValue = data.checkboxValue
+    host.radioValue = data.radioValue
+    host.translations = { content: commandLabel(command, context) }
+  }
+
+  function close(): void {
+    const open = popup
+    if (!open)
+      return
+    popup = undefined
+    open.observer?.disconnect()
+    if (open.kind === 'panel' && popover) {
+      popover.host.open = false
+      open.instance.destroy?.()
+      open.instance.element.remove()
+    }
+    else if (open.kind === 'menu' && menu) {
+      menu.open = false
+    }
+  }
+
+  function open(id: string): boolean {
+    if (popup?.id === id)
+      return true
+    const button = items.get(id)
+    const command = current?.commands.get(id)
+    if (!button || !command || !current || (command.panel === undefined && command.menu === undefined) || !commandEnabled(command, current.context))
+      return false
+    close()
+    const { commands, context } = current
+    const placement: OverlayPlacement = `${side()}-start`
+    if (command.panel) {
+      const { host, content } = ensurePopover()
+      const instance = command.panel(context)
+      content.replaceChildren(instance.element)
+      content.setAttribute('aria-label', commandLabel(command, context))
+      host.placement = placement
+      host.anchor = anchorOf(button.item)
+      popup = { kind: 'panel', id, instance, observer: watchAnchor(button.item, host) }
+      host.open = true
+    }
+    else {
+      const host = ensureMenu()
+      paintMenu(host, command, commands, context)
+      host.placement = placement
+      host.anchor = anchorOf(button.item)
+      popup = { kind: 'menu', id, observer: watchAnchor(button.item, host) }
+      host.open = true
+    }
+    return true
+  }
+
   root.addEventListener('click', (event) => {
     const item = (event.target as Element | null)?.closest<HTMLButtonElement>(ITEM_SELECTOR)
-    if (item && !item.disabled && current)
-      runCommand(current.commands, item.value, current.context)
+    if (!item || item.disabled || !current)
+      return
+    const command = current.commands.get(item.value)
+    if (command?.panel !== undefined || command?.menu !== undefined) {
+      // 点开着的那一条是收起，点别的弹层或菜单命令是换过去
+      if (popup?.id === item.value)
+        close()
+      else
+        open(item.value)
+      return
+    }
+    runCommand(current.commands, item.value, current.context)
   })
   return {
     element,
@@ -179,11 +417,16 @@ export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbar
       for (const button of items.values())
         paintText(button, next)
     },
+    open,
+    close,
+    opened: () => popup?.id,
     update(groups, commands, context, label) {
       current = { commands, context }
       const key = JSON.stringify(groups)
       if (key !== layoutKey) {
         layoutKey = key
+        // 按钮要重铺：开着的弹层或菜单锚着的那颗按钮会被换掉，先关掉
+        close()
         items.clear()
         const children: HTMLElement[] = []
         groups.forEach((group, index) => {
@@ -195,11 +438,18 @@ export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbar
             return button.item
           })))
         })
-        children.push(createAuthoredElement(doc, 'button', { 'data-xh-part': 'overflow-trigger', 'type': 'button' }))
+        overflowTrigger = createAuthoredElement(doc, 'button', { 'data-xh-part': 'overflow-trigger', 'type': 'button' })
+        children.push(overflowTrigger)
         root.replaceChildren(...children)
       }
       if (root.getAttribute('aria-label') !== label)
         root.setAttribute('aria-label', label)
+      // 竖排时提示在行首一侧弹出，不盖住下一颗按钮
+      if (orientation === 'vertical') {
+        const placement = side()
+        if (element.getAttribute('placement') !== placement)
+          element.setAttribute('placement', placement)
+      }
       const icons: Record<string, IconRecord> = {}
       for (const [id, button] of items) {
         const command = commands.get(id)!
@@ -224,6 +474,21 @@ export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbar
       }
       if (!sameIcons(toolbar.itemIcons, icons))
         toolbar.itemIcons = icons
+      // 开着的弹层或菜单：命令不在了或此刻不可用就关掉，否则按新状态刷新
+      if (popup) {
+        const command = commands.get(popup.id)
+        const button = items.get(popup.id)
+        if (!command || !button || !commandEnabled(command, context)) {
+          close()
+        }
+        else if (popup.kind === 'panel') {
+          popover?.content.setAttribute('aria-label', commandLabel(command, context))
+          popup.instance.update?.(context)
+        }
+        else if (menu) {
+          paintMenu(menu, command, commands, context)
+        }
+      }
     },
   }
 }
@@ -252,6 +517,8 @@ export function renderCommandMenu<Ctx>(
       const command = commands.get(id)
       if (!command)
         throw new TypeError(`[xh] 菜单里的 ${id} 不是登记过的命令`)
+      if (!command.run)
+        throw new TypeError(`[xh] 菜单里的 ${id} 是没有 run 的弹层或菜单命令，只能放在工具栏上`)
       const parts: HTMLElement[] = []
       if (command.icon !== undefined) {
         const glyph = createAuthoredElement(doc, 'xh-icon') as HTMLElement & { icon?: IconRecord }

@@ -12,7 +12,7 @@ export type { DragOptions, DragSession, DropOver, DropTargetHandlers, PanRequest
 export { DESIGNER_SHELL_COMMANDS, designerShellCommands } from './extensions/builtin-commands'
 export type { DesignerShellCommandsOptions } from './extensions/builtin-commands'
 export { arrangeCommands, commandEnabled, commandLabel, commandShortLabel, createCommandToolbar, renderCommandMenu, runCommand } from './extensions/commands'
-export type { CommandToolbar, CommandToolbarDisplay, CommandToolbarOptions, DesignerCommandLayout, DesignerCommandTable } from './extensions/commands'
+export type { CommandToolbar, CommandToolbarDisplay, CommandToolbarOptions, CommandToolbarOrientation, DesignerCommandLayout, DesignerCommandTable } from './extensions/commands'
 export { importSources } from './extensions/importers'
 export { createPanelHost } from './extensions/panels'
 export type { DesignerPanel, DesignerPanelHost, DesignerPanelHostOptions, DesignerPanelInstance, DesignerShellExtension } from './extensions/panels'

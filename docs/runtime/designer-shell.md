@@ -391,11 +391,13 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 | 方法 | 说明 |
 | --- | --- |
 | `showsPanel(name)` | 这个区是否显示：中间区总是显示，顶栏看有没有内容，状态栏看 `panels` 与有没有内容，其余按 `panels`，没登记的区为否 |
+| `panelEntries()` | 能开关的面板：`start`、`end`、`bottom` 三个位置上没写 `closable: false` 的区，按登记顺序，每项 `{ name, label, shown }`；`label` 依次取 `title`、`label`、`name`，`shown` 是它此刻是否列在 `panels` 里。内置的「面板」命令用它铺菜单 |
+| `togglePanel(name)` | 开关一块面板：列在 `panels` 里就去掉、否则加上，与面板头的关闭钮一样派发 `panels-change` |
 
 | 事件 | detail |
 | --- | --- |
 | `sizes-change` | `{ sizes }`：拖动或用键盘调整后的大小，形状同 `sizes`；拖动途中连续发出 |
-| `panels-change` | `{ panels }`：点了面板头的关闭钮，外框已收起这块面板；`panels` 是收起之后要显示的区（空格分隔），设计器据此同步自己的 `panels` |
+| `panels-change` | `{ panels }`：点了面板头的关闭钮或调了 `togglePanel`，外框已经收起或展开这块面板；`panels` 是收起之后要显示的区（空格分隔），设计器据此同步自己的 `panels` |
 
 命名区是 `{ name, position, size?, minSize?, label?, title?, subtitle?, help?, closable? }`：
 
@@ -467,7 +469,7 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 | `<中间区名>-bottom-start` / `-bottom-end` | 左下、右下 |
 | `<中间区名>-end` | 右侧中间，竖排 |
 
-缺省中间区名是 `canvas`，所以插槽是 `canvas-top-start` 等。落点没有内容时不占位置。
+缺省中间区名是 `canvas`，所以插槽是 `canvas-top-start` 等。落点没有内容时不占位置。右侧中间的竖条不超出中间区，里面放竖排的命令工具栏（`createCommandToolbar(document, { orientation: "vertical" })`）时，画布矮了放不下的条目按高度收进「更多」。
 
 ### 尺寸槽
 
@@ -627,13 +629,21 @@ menu.addEventListener("select", event => runCommand(commands, event.detail.value
 | 函数 | 说明 |
 | --- | --- |
 | `arrangeCommands(placement, commands, defaults, layout?)` | 排出某个位置的分组：`layout` 写了这个位置就只用它；否则用 `defaults`（各款内置的缺省排列），再把 `placement` 含这个位置、又不在缺省排列里的命令按登记顺序追加成一组。排列里写了没登记的命令 id 时抛 `TypeError` |
-| `createCommandToolbar(document, { display?, platform? })` | 一条 `<xh-toolbar>`，外面包一个委托模式的 `<xh-tooltip>`（`element` 是这层外壳，布局上不占盒子；`toolbar` 是里面那条工具栏）。`update(groups, commands, context, label)` 分组变了才重铺按钮，文字、图标、`aria-label`、`aria-keyshortcuts`（快捷键按 `platform` 写成规范写法，如 `Control+Shift+Z`）、可用、`aria-pressed`（开关式命令）与 `data-tone`（命令的语气）每次刷新；点击按钮执行命令，放不下的收进行尾的「更多」菜单，图标与语气随按钮带进菜单项。`display` 是 `icon`（缺省）、`text`、`both` 或 `stacked`，没有图标的命令在 `icon` 档照样显示文字；`stacked` 是图标在上、短文字（`shortLabel`）在下、钮高随内容，给顶栏的插入快捷钮用，名字仍是全名，每个按钮都给提示；`setDisplay(display)` 换显示方式不重铺按钮，「更多」里的条目按新的宽度重新收放。悬停或键盘聚焦到按钮时提示显示命令的文字与快捷键；文字看得见时只给带快捷键的按钮提示 |
-| `renderCommandMenu(content, groups, commands, context, { platform? })` | 把分组铺成 `<xh-context-menu>` content 里的条目，组间一条分隔线；不可用的写 `aria-disabled`，命令的语气写 `data-tone`，带图标的在文字前铺 `item-icon`，带快捷键的在行尾写提示并写进 `aria-keyshortcuts` |
-| `runCommand(commands, id, context)` | 命令存在且此刻可用才执行，返回是否执行了 |
+| `createCommandToolbar(document, { display?, orientation?, platform? })` | 一条 `<xh-toolbar>`，外面包一个委托模式的 `<xh-tooltip>`（`element` 是这层外壳，布局上不占盒子；`toolbar` 是里面那条工具栏）。`update(groups, commands, context, label)` 分组变了才重铺按钮，文字、图标、`aria-label`、`aria-keyshortcuts`（快捷键按 `platform` 写成规范写法，如 `Control+Shift+Z`）、可用、`aria-pressed`（开关式命令）与 `data-tone`（命令的语气）每次刷新；点击按钮执行命令，放不下的收进行尾的「更多」菜单，图标与语气随按钮带进菜单项。`display` 是 `icon`（缺省）、`text`、`both` 或 `stacked`，没有图标的命令在 `icon` 档照样显示文字；`stacked` 是图标在上、短文字（`shortLabel`）在下、钮高随内容，给顶栏的插入快捷钮用，名字仍是全名，每个按钮都给提示；`setDisplay(display)` 换显示方式不重铺按钮，「更多」里的条目按新的宽度重新收放。悬停或键盘聚焦到按钮时提示显示命令的文字与快捷键；文字看得见时只给带快捷键的按钮提示。`orientation` 缺省 `horizontal`；`vertical` 时按钮上下排，提示、弹层与菜单在按钮的行首一侧弹出（从左往右写时在左边），放不下的按高度收进「更多」。弹层命令与菜单命令见下文 |
+| `renderCommandMenu(content, groups, commands, context, { platform? })` | 把分组铺成 `<xh-context-menu>` content 里的条目，组间一条分隔线；不可用的写 `aria-disabled`，命令的语气写 `data-tone`，带图标的在文字前铺 `item-icon`，带快捷键的在行尾写提示并写进 `aria-keyshortcuts`。没有 `run` 的弹层命令与菜单命令只能放在工具栏上，排进右键菜单时抛 `TypeError` |
+| `runCommand(commands, id, context)` | 命令存在、有 `run` 且此刻可用才执行，返回是否执行了 |
 | `commandLabel(command, context)` / `commandShortLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；短文字（没给 `shortLabel` 时同 `label`）；此刻能否执行 |
-| `designerShellCommands({ translations, openSettings?, helpUrl?, icons? })` | designer-shell 内置的命令：给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用）。文案取 `xh-designer-commands` 那一桶的 `settings`、`help`，图标由各款从 `@xihan-ui/icons` 传入，缺省都放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
+| `designerShellCommands({ translations, frame?, openSettings?, helpUrl?, icons? })` | designer-shell 内置的命令：给了 `frame`（返回设计器的外框）有 `panels`，点开一张菜单列出外框的 `panelEntries()`，勾选的显示，选中经 `togglePanel` 开关；给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用）。文案取 `xh-designer-commands` 那一桶的 `panels`、`settings`、`help`，图标由各款从 `@xihan-ui/icons` 传入，缺省都放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
 
-两个铺法用到的 `<xh-toolbar>`、`<xh-context-menu>`、`<xh-tooltip>` 与 `<xh-icon>` 按需注册。快捷键的命中用 designer-kit 的 `commandForShortcut`。
+两个铺法用到的 `<xh-toolbar>`、`<xh-context-menu>`、`<xh-tooltip>`、`<xh-icon>`，以及弹层命令与菜单命令用到的 `<xh-popover>`、`<xh-menu>` 按需注册。快捷键的命中用 designer-kit 的 `commandForShortcut`。
+
+命令工具栏上的弹层命令与菜单命令（命令的 `panel` 与 `menu`，见 designer-kit 那一页的「弹层命令与菜单命令」）：
+
+- 点按钮打开锚在它上面的 `<xh-popover>` 或 `<xh-menu>`（用两个组件的 `anchor`），再点一下收起，点别的弹层或菜单命令是换过去。弹层的 content 与菜单都以命令文字命名；弹层里放 `panel` 建出的元素，开着时每次 `update` 调它的 `update`，收起后调 `destroy`；菜单每次 `update` 按上下文重算条目与勾选。
+- 按钮收在「更多」里时，从「更多」菜单里点它，打开的是同一块面板或同一张菜单，锚在「更多」钮上。开着的时候工具栏变窄把它收进「更多」、或变宽又放回来，弹层与菜单跟着换锚点，不关掉。
+- 锚点按钮上的 `aria-haspopup`、`aria-expanded`、`aria-controls` 由弹层与菜单在展开期间写上，收起后还原；Escape 或点在外面收起时焦点回到锚点。
+- 重铺按钮（分组变了）、命令不在了或此刻不可用时，开着的弹层与菜单关掉。
+- `open(id)` 打开一条弹层命令或菜单命令，给快捷键用：命令的 `run` 里调它；不是这两类命令、不在工具栏上或此刻不可用时返回 `false`。`close()` 关掉开着的那一个，`opened()` 是开着的命令 id。
 
 四款都有的通用命令，文案收在 designer-shell 语言包的 `xh-designer-commands` 一桶里：撤销、重做、剪切、复制、粘贴、创建副本、删除、全选，六种对齐、两种分布、四种层级，放大、缩小、适合窗口、实际大小，设计与预览，内置命令的面板、设置与帮助，以及命令工具栏的名字 `toolbar`。各款引用这一桶，不再各写一份；产品专属的命令仍写在各款自己的语言包里。
 
