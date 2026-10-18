@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // 门禁：三个适配器的全局配置面必须一致，且配了要真能生效。
 //
-// 四条判据各对应一种静默失效：
+// 五条判据各对应一种静默失效：
 //   某一侧少了字段 → 同一份配置在别处生效、在这一侧没反应，谁也不会报错
 //   size 同名不同义的组件没进豁免名单 → 全局垫一个 'md' 进去，那个组件当场坏掉
+//   不吃作用域禁用的名单里登了没声明 disabled 的组件 → 名单过期，豁免指着空处
 //   headless 声明了 size / translations 的组件在某一侧没接配置 → 全局值对它永远不命中
 //   XhConfig 的字段没有任何人真读它 → 配置是死的，写了也不生效
 //
@@ -36,11 +37,11 @@ function fieldsOf(source, name, where) {
   return new Set([...body.matchAll(/^\s{2}(\w+)\?:/gm)].map(hit => hit[1]))
 }
 
-/** 取 `SIZE_IS_NOT_AXIS ... = new Set([...])` 里的组件名。 */
-function exemptSizes(source, where) {
-  const hit = source.match(/SIZE_IS_NOT_AXIS[^=]*= new Set\(\[([^\]]*)\]\)/)
+/** 取 `<名单> ... = new Set([...])` 里的组件名。 */
+function exemptSet(source, name, where) {
+  const hit = source.match(new RegExp(`${name}[^=]*= new Set\\(\\[([^\\]]*)\\]\\)`))
   if (!hit)
-    throw new Error(`[check-config-wiring] ${where} 里找不到 SIZE_IS_NOT_AXIS`)
+    throw new Error(`[check-config-wiring] ${where} 里找不到 ${name}`)
   return new Set([...hit[1].matchAll(/'([\w-]+)'/g)].map(m => m[1]))
 }
 
@@ -66,7 +67,9 @@ for (const field of allFields) {
 }
 
 // —— 二、size 同名不同义的豁免名单 ——
-const exempt = exemptSizes(mergeSource, MERGE)
+const exempt = exemptSet(mergeSource, 'SIZE_IS_NOT_AXIS', MERGE)
+const unscoped = exemptSet(mergeSource, 'DISABLED_IS_NOT_SCOPED', MERGE)
+const declaresDisabled = new Set()
 
 const components = []
 for (const entry of await readdir(HEADLESS, { withFileTypes: true })) {
@@ -77,6 +80,8 @@ for (const entry of await readdir(HEADLESS, { withFileTypes: true })) {
   if (source === null)
     continue
   components.push(entry.name)
+  if (/^ {2,4}disabled\?: boolean$/m.test(source))
+    declaresDisabled.add(entry.name)
   // props 块里的 size 声明缩进四格；两格那些在别的接口里，与机器 props 无关
   const declared = source.match(/^ {4}size\?: (.+)$/m)
   if (!declared)
@@ -90,6 +95,10 @@ for (const entry of await readdir(HEADLESS, { withFileTypes: true })) {
 for (const name of exempt) {
   if (!components.includes(name))
     errors.push(`SIZE_IS_NOT_AXIS 里的 '${name}' 不是组件`)
+}
+for (const name of unscoped) {
+  if (!declaresDisabled.has(name))
+    errors.push(`DISABLED_IS_NOT_SCOPED 里的 '${name}' 没有声明 disabled（或不是组件）：作用域禁用本来就压不到它，名单过期了，删掉这一条`)
 }
 
 // —— 三、声明了 size / translations 的组件，每个适配器都要真接得到全局配置 ——
@@ -340,4 +349,4 @@ const deferredNote = deferred.length > 0
   ? `，另 ${new Set(deferred).size} 个字段（${[...new Set(deferred)].join(' / ')}）在 React 侧等读它的组件铺到`
   : ''
 console.log(`[check-config-wiring] 通过：配置面 Vue ${vueFields.size} / React ${reactFields.size} / Web Components ${wcFields.size} 个字段，其中 ${probed} 个逐一验过有人真读（另 ${MERGED_BY_WITH.size} 个经 withXhConfig 统一垫底）${deferredNote}`)
-console.log(`  接了全局配置的组件：Vue ${wiredCount.vue} 个 / React ${wiredCount.react} 个 / Web Components ${wiredCount.wc} 个，size 豁免 ${exempt.size} 个（${reactProgress(covered, components.length)}，这一段跳过 React 还没铺的 ${new Set(reactSkipped).size} 个组件）`)
+console.log(`  接了全局配置的组件：Vue ${wiredCount.vue} 个 / React ${wiredCount.react} 个 / Web Components ${wiredCount.wc} 个，size 豁免 ${exempt.size} 个、不吃作用域禁用 ${unscoped.size} 个（${reactProgress(covered, components.length)}，这一段跳过 React 还没铺的 ${new Set(reactSkipped).size} 个组件）`)

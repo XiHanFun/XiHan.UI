@@ -13,7 +13,7 @@ import type {
 import type { XhConfigBase, XhTranslationOverrides } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey, MaybeRefOrGetter } from 'vue'
 import { createVisualEnvironmentController } from '@xihan-ui/core/visual-environment'
-import { componentTranslations, mergeXhConfig as mergeBase, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
+import { componentTranslations, DISABLED_IS_NOT_SCOPED, mergeXhConfig as mergeBase, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
 import { computed, inject, onScopeDispose, provide, shallowRef, toValue, watch } from 'vue'
 
 export type { XhTranslationOverrides }
@@ -119,7 +119,7 @@ export function withXhConfig<T extends object>(component: keyof XhTranslationOve
       if (key === 'size' && !SIZE_IS_NOT_AXIS.has(component))
         return value ?? toValue(injected)?.size
       // 作用域禁用（字段集）压过实例自己的值
-      if (key === 'disabled' && toValue(injected)?.disabled === true)
+      if (key === 'disabled' && !DISABLED_IS_NOT_SCOPED.has(component) && toValue(injected)?.disabled === true)
         return true
       return value
     },

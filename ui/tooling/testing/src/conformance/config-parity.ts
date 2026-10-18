@@ -1,5 +1,5 @@
 import type { AdapterHarness, ConformanceSuite, FixtureNode, TestHooks } from './types'
-import { SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
+import { DISABLED_IS_NOT_SCOPED, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
 
 /** 全局配置能替组件供给的 prop：经 provideXhConfig / XhConfigProvider / <xh-config> 给，与写在实例上等价。 */
 export type ConfigParityKey = 'size' | 'locale' | 'disabled' | 'translations'
@@ -87,6 +87,22 @@ function withoutHostInput(html: string, component: string, attr: string | undefi
   return html.replace(new RegExp(`<xh-${component}\\b[^>]*>`), tag => tag.replace(new RegExp(`\\s${attr}(?:="[^"]*")?(?=[\\s>])`), ''))
 }
 
+/**
+ * 比这个键用的底稿与两种结构：夹具自己写了这个键时实例值压过全局，比不出接线，props 与根节点属性里都摘掉；
+ * 作者写结构之外再加一份组件铺的标准结构。
+ */
+function variantsOf(suite: ConformanceSuite, key: ConfigParityKey): { base: Record<string, unknown>, variants: Array<[string, FixtureNode]> } {
+  const base: Record<string, unknown> = { ...suite.defaultProps }
+  delete base[key]
+  const attrs = { ...suite.fixture.attrs }
+  delete attrs[key]
+  const authored: FixtureNode = { ...suite.fixture, attrs }
+  const variants: Array<[string, FixtureNode]> = [['作者写结构', authored]]
+  if (!authored.defaultStructure)
+    variants.push(['标准结构', { ...authored, children: undefined, defaultStructure: true }])
+  return { base, variants }
+}
+
 async function snapshotOf(harness: AdapterHarness, suite: ConformanceSuite, tree: FixtureNode, props: Record<string, unknown>, hostAttr: string | undefined, config?: Record<string, unknown>): Promise<string> {
   const { root } = await harness.mount({ component: suite.component, props, tree, config })
   try {
@@ -116,13 +132,30 @@ export function runConfigParity(
   const exempt = options.exempt ?? {}
   const plan = suites.map((suite) => {
     const declared = new Set(options.props[suite.component] ?? [])
-    return { suite, keys: KEYS.filter(key => declared.has(key) && !(key === 'size' && SIZE_IS_NOT_AXIS.has(suite.component))) }
+    // 同名不同义的 size、不吃作用域禁用的 disabled 本就不随全局配置，不比
+    const notGlobal = (key: ConfigParityKey): boolean => (key === 'size' && SIZE_IS_NOT_AXIS.has(suite.component)) || (key === 'disabled' && DISABLED_IS_NOT_SCOPED.has(suite.component))
+    const unscoped = declared.has('disabled') && DISABLED_IS_NOT_SCOPED.has(suite.component)
+    return { suite, keys: KEYS.filter(key => declared.has(key) && !notGlobal(key)), unscoped }
   })
   const covered = new Set(plan.flatMap(({ suite, keys }) => keys.map(key => `${suite.component}:${key}`)))
-  for (const { suite, keys } of plan) {
-    if (keys.length === 0)
+  for (const { suite, keys, unscoped } of plan) {
+    if (keys.length === 0 && !unscoped)
       continue
     hooks.describe(`config parity: ${suite.component} (${harness.adapterName})`, () => {
+      if (unscoped) {
+        hooks.it('全局 disabled 压不到它（不吃作用域禁用）', async () => {
+          const { base, variants } = variantsOf(suite, 'disabled')
+          const leaked: string[] = []
+          for (const [label, tree] of variants) {
+            const bare = await snapshotOf(harness, suite, tree, base, 'disabled')
+            const inherited = await snapshotOf(harness, suite, tree, base, 'disabled', { disabled: true })
+            if (inherited !== bare)
+              leaked.push(`${label}：\n  ${firstDifference(bare, inherited).replace('写在实例上', '不给配置')}`)
+          }
+          if (leaked.length)
+            throw new Error(`${suite.component} 在 DISABLED_IS_NOT_SCOPED 里，经全局配置给 disabled 却渲得不一样，作用域禁用压到了它：\n${leaked.join('\n')}`)
+        })
+      }
       for (const key of keys) {
         const id = `${suite.component}:${key}`
         // 这一桶的键语言包一概不收（作者自写的名字、随 Intl 的说法）：英文包里没有它，造不出标记
@@ -133,15 +166,7 @@ export function runConfigParity(
         const reason = exempt[id]
         hooks.it(reason ? `全局 ${key} 与写在实例上一致（豁免：${reason}）` : `全局 ${key} 与写在实例上一致`, async () => {
           const { instance, config } = probe(key, suite.component, options)
-          // 夹具自己写了这个键时实例值压过全局，比不出接线：props 与根节点属性里都摘掉
-          const base: Record<string, unknown> = { ...suite.defaultProps }
-          delete base[key]
-          const attrs = { ...suite.fixture.attrs }
-          delete attrs[key]
-          const authored: FixtureNode = { ...suite.fixture, attrs }
-          const variants: Array<[string, FixtureNode]> = [['作者写结构', authored]]
-          if (!authored.defaultStructure)
-            variants.push(['标准结构', { ...authored, children: undefined, defaultStructure: true }])
+          const { base, variants } = variantsOf(suite, key)
           const diverged: string[] = []
           for (const [label, tree] of variants) {
             const hostAttr = key === 'translations' ? undefined : key

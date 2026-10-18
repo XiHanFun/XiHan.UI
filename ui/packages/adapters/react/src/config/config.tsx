@@ -13,7 +13,7 @@ import type {
 import type { XhConfigBase, XhTranslationOverrides } from '@xihan-ui/headless'
 import type { ReactNode } from 'react'
 import { createVisualEnvironmentController } from '@xihan-ui/core/visual-environment'
-import { componentTranslations, mergeXhConfig as mergeBase, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
+import { componentTranslations, DISABLED_IS_NOT_SCOPED, mergeXhConfig as mergeBase, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
 import { createContext, useContext, useLayoutEffect, useMemo, useState } from 'react'
 
 export type { XhTranslationOverrides }
@@ -121,7 +121,7 @@ export function withXhConfig<T extends object>(component: keyof XhTranslationOve
     if (key === 'size' && !SIZE_IS_NOT_AXIS.has(component))
       return value ?? config.config.size
     // 作用域禁用（字段集）压过实例自己的值；只落在本来就带 disabled 这个键的 props 上
-    if (key === 'disabled' && config.config.disabled === true && Reflect.has(target, key))
+    if (key === 'disabled' && config.config.disabled === true && !DISABLED_IS_NOT_SCOPED.has(component) && Reflect.has(target, key))
       return true
     return value
   }
