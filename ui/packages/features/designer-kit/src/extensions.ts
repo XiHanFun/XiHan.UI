@@ -6,7 +6,7 @@
 // @xihan-ui/designer-kit —— 设计器扩展：按实例传入的扩展对象的公共骨架、合并与查重、装上与卸下、
 // 规则执行、命令的快捷键，以及模板里各扩展自己的数据。
 
-import type { DIAGNOSTIC_CODES, Tone } from '@xihan-ui/core'
+import type { DIAGNOSTIC_CODES, IconRecord, Tone } from '@xihan-ui/core'
 import type { HotkeyEvent, KbdPlatform } from '@xihan-ui/core/hotkey'
 import type { JsonObject, JsonPath, JsonValue } from '@xihan-ui/core/json'
 import type { PathOperation } from './path-operation'
@@ -28,6 +28,8 @@ export interface DesignerCommand<Ctx = unknown> {
   readonly id: string
   /** 按钮与菜单项上的文字；给函数时每次刷新现取，随语言变。 */
   readonly label: string | ((context: Ctx) => string)
+  /** 按钮与菜单项上的图标，图标集见 @xihan-ui/icons；工具栏按图标显示时，没有图标的命令退回显示文字。 */
+  readonly icon?: IconRecord
   /** 缺省排列里出现在哪些位置；不给即只经快捷键或 commandLayout 出现。 */
   readonly placement?: readonly DesignerCommandPlacement[]
   /** 快捷键，写法同 xh-kbd 的 keys：['Mod', 'Shift', 'P']，Mod 在 macOS 上是 ⌘，其余平台是 Ctrl。 */
