@@ -10,6 +10,7 @@ import type { FormControlState, SliderSchema, SliderValueChangeDetails, SliderVa
 import type { ElementStructure } from '../element-base'
 import { createCounterIdGenerator, createScope, normalizeItemIndex } from '@xihan-ui/core'
 import { connectSlider, resolveFormControlState, sliderAnatomy, sliderMachine, sliderMeta, sliderStructure } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -18,9 +19,6 @@ import { MachineController } from '../runtime/machine-controller'
 // 那样就表达不了"未指定"（value 尤其：落成 null 分不出"非受控"与"受控且当前为空"）。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-// Lit 默认的 Boolean 转换器是 v !== null，缺省为真的开关会因此永远关不掉。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 /**
  * 值恒是数组，属性写成逗号分隔（单滑块 value="30"，双滑块 value="20,80"）。
  * 解析不出任何有限数就当没写：留下 NaN 会一路写进 aria-valuenow 与定位百分比。

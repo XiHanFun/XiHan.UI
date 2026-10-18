@@ -11,6 +11,7 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectHoverCard, hoverCardAnatomy, hoverCardMachine, hoverCardMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
@@ -30,8 +31,6 @@ const NUMBER_CONVERTER = {
     return Number.isFinite(n) ? n : undefined
   },
 }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-hover-card>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content / arrow 角色节点，
@@ -70,7 +69,7 @@ export class XhHoverCardElement extends XhPortalHostElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     open: { converter: BOOLEAN_CONVERTER },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     openDelay: { converter: NUMBER_CONVERTER, attribute: 'open-delay' },
@@ -78,7 +77,7 @@ export class XhHoverCardElement extends XhPortalHostElement {
     // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
     // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     size: { converter: STRING_CONVERTER },
   }
 

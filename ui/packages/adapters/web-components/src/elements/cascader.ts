@@ -26,6 +26,7 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { cascaderAnatomy, cascaderMachine, cascaderMeta, cascaderStructure, connectCascader, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
 import { createOverlayExit } from '../overlay-exit'
@@ -36,9 +37,6 @@ import { ScrollbarsController } from '../runtime/scrollbars-controller'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定；Lit 自带转换器会把缺席落成 null/false，表达不了"未指定"。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-// Lit 默认的 Boolean 转换器是 v !== null，写 loop="false" 照样是真，缺省为真的开关就关不掉。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 条目一系的归属容器：文本与勾选标记向上找最近的那个条目。 */
 const ITEM_SELECTOR = '[data-xh-part="item"]'
@@ -159,7 +157,7 @@ export class XhCascaderElement extends XhPortalHostElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     label: { converter: STRING_CONVERTER },
-    clearable: { type: Boolean },
+    clearable: { converter: BOOLEAN_CONVERTER },
     collection: { attribute: false },
     // 函数只走 property，属性表达不了
     loadChildren: { attribute: false },
@@ -168,15 +166,15 @@ export class XhCascaderElement extends XhPortalHostElement {
     name: { converter: STRING_CONVERTER },
     form: { converter: STRING_CONVERTER },
     open: { converter: BOOLEAN_CONVERTER },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     expandTrigger: { converter: STRING_CONVERTER, attribute: 'expand-trigger' },
     changeOnSelect: { converter: BOOLEAN_CONVERTER, attribute: 'change-on-select' },
-    multiple: { type: Boolean },
+    multiple: { converter: BOOLEAN_CONVERTER },
     maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
-    searchable: { type: Boolean },
+    searchable: { converter: BOOLEAN_CONVERTER },
     // 函数只走 property，属性表达不了
     filter: { attribute: false },
-    cascade: { type: Boolean },
+    cascade: { converter: BOOLEAN_CONVERTER },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },

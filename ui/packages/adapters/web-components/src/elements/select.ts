@@ -12,6 +12,7 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectSelect, resolveFormControlState, selectAnatomy, selectMachine, selectMeta, selectStructure } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
@@ -23,8 +24,6 @@ import { ScrollbarsController } from '../runtime/scrollbars-controller'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-select>`：Light-DOM 行为宿主：作者写 root / trigger / value-text / positioner / content / item / ...
@@ -134,26 +133,26 @@ export class XhSelectElement extends XhPortalHostElement {
     // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
     collection: { attribute: false },
     virtualizer: { attribute: false },
-    lazyMount: { type: Boolean, attribute: 'lazy-mount' },
+    lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
     label: { converter: STRING_CONVERTER },
-    clearable: { type: Boolean },
+    clearable: { converter: BOOLEAN_CONVERTER },
     empty: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     open: { converter: BOOLEAN_CONVERTER },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
-    loading: { type: Boolean },
-    error: { type: Boolean },
+    loading: { converter: BOOLEAN_CONVERTER },
+    error: { converter: BOOLEAN_CONVERTER },
     required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
-    multiple: { type: Boolean },
+    multiple: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },

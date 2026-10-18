@@ -7,13 +7,12 @@
 
 import type { MatrixCodeApi, MatrixCodeFormat, MatrixCodeLevel, MatrixCodeProps } from '@xihan-ui/headless'
 import { connectMatrixCode, matrixCodeAnatomy, matrixCodeMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 布尔三态：缺席是没给，`x="false"` 是关，其余写法都是开——没给与关在 connect 里是两回事
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 

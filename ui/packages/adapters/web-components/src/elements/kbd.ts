@@ -9,11 +9,11 @@ import type { KbdPlatform } from '@xihan-ui/core/hotkey'
 import type { KbdApi, KbdProps, KbdTarget, KbdTranslations, KbdTriggerDetails, KbdVariant } from '@xihan-ui/headless'
 import { detectKbdPlatform } from '@xihan-ui/core/hotkey'
 import { connectKbd, kbdAnatomy, kbdMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 const ARRAY_CONVERTER = { fromAttribute: (v: string | null) => (v == null ? undefined : v.split(',').map(s => s.trim()).filter(Boolean)) }
 
 /**

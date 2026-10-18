@@ -27,6 +27,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectFunnelChart, funnelChartAnatomy, funnelChartMachine, funnelChartMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createGeneratedElement, GEN_ATTR, generatedChildren, hasAuthorContent, reconcile, SVG_NS } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -34,8 +35,6 @@ import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 布尔三态：缺席是没给，`x="false"` 是关，其余写法都是开
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-funnel-chart>`：漏斗图宿主，一行数据一个阶段，看各阶段的保留量与逐级转化率。

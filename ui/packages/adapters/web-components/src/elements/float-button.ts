@@ -19,6 +19,7 @@ import type {
 } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectFloatButton, floatButtonAnatomy, floatButtonMachine, floatButtonMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -26,8 +27,6 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 三态：属性缺席 = 非受控，写了才是受控的那个布尔。
-const TRISTATE_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-float-button>`：悬浮按钮行为宿主：固定在视口一角的触发器，展开一组动作。
@@ -68,14 +67,14 @@ export class XhFloatButtonElement extends XhElement {
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
-    open: { converter: TRISTATE_CONVERTER },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
-    disabled: { type: Boolean },
+    open: { converter: BOOLEAN_CONVERTER },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
+    disabled: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     // 避开原生的 draggable：那是 HTML 全局枚举属性，同名的响应式字段还会与 HTMLElement.draggable 访问器打架
-    buttonDraggable: { type: Boolean, attribute: 'button-draggable' },
+    buttonDraggable: { converter: BOOLEAN_CONVERTER, attribute: 'button-draggable' },
     snap: { converter: STRING_CONVERTER },
     // 位置是对象，只走 property
     position: { attribute: false },

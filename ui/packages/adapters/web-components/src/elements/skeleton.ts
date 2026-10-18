@@ -7,13 +7,13 @@
 
 import type { SkeletonAnimation, SkeletonSchema, SkeletonShape } from '@xihan-ui/headless'
 import { connectSkeleton, skeletonAnatomy, skeletonMachine, skeletonMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 允许的形状名，作者写错时落回容器的默认值。 */
 const SHAPES: readonly string[] = ['text', 'circle', 'rect']

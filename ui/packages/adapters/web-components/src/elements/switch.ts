@@ -9,11 +9,10 @@ import type { Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, SwitchCheckedChangeDetails, SwitchSchema } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectSwitch, resolveFormControlState, switchAnatomy, switchMachine, switchMeta, switchStructure } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-switch>`：Light-DOM 行为宿主，运行 switch 状态机并把 connect 产出接到 root / thumb 角色节点。
@@ -50,13 +49,13 @@ export class XhSwitchElement extends XhElement {
   }
 
   static override properties = {
-    checked: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
-    defaultChecked: { type: Boolean, attribute: 'default-checked' },
+    checked: { converter: BOOLEAN_CONVERTER },
+    defaultChecked: { converter: BOOLEAN_CONVERTER, attribute: 'default-checked' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
     required: { converter: BOOLEAN_CONVERTER },
-    loading: { type: Boolean },
+    loading: { converter: BOOLEAN_CONVERTER },
     name: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     value: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     tone: {},

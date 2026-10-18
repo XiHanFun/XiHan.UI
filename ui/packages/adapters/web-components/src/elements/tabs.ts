@@ -10,6 +10,7 @@ import type { TabsActivationMode, TabsNode, TabsSchema, TabsTranslations, TabsVa
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTabs, tabsAnatomy, tabsMachine, tabsMeta, tabsOverflowMenuProps, tabsStructure } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { MachineController } from '../runtime/machine-controller'
@@ -18,9 +19,6 @@ import { XhPortalHostElement } from '../runtime/portal-host'
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-
-// 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 换位事件的 detail：从状态机 props 上的回调取，不在适配器中另抄一份类型。 */
 type TabsMoveDetails = Parameters<NonNullable<TabsSchema['props']['onTabMove']>>[0]
@@ -109,10 +107,10 @@ export class XhTabsElement extends XhPortalHostElement {
     size: { converter: STRING_CONVERTER },
     // 缺席即关，没有第二种来路，用 Lit 自带的 Boolean 转换器就够；
     // 三态转换器只留给缺省为真的开关（如 loop），那种开关摘属性会落回默认值、写 "false" 才关得掉
-    reorderable: { type: Boolean },
-    closable: { type: Boolean },
-    lazyMount: { type: Boolean, attribute: 'lazy-mount' },
-    unmountOnExit: { type: Boolean, attribute: 'unmount-on-exit' },
+    reorderable: { converter: BOOLEAN_CONVERTER },
+    closable: { converter: BOOLEAN_CONVERTER },
+    lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
     // 对象走不了属性，只作为 property 暴露
     translations: { attribute: false },
   }

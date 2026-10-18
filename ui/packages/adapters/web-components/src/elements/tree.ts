@@ -9,16 +9,13 @@ import type { Direction, Orientation } from '@xihan-ui/core'
 import type { CollectionVirtualizer, TreeExpandedValueChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeTranslations } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTree, treeAnatomy, treeMachine, treeMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-// 缺省为真的开关（连打检索）只有三态才关得掉——
-// Lit 默认的 Boolean 转换器是 v !== null，写 typeahead="false" 照样是真。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 移动事件的 detail：从状态机 props 上的回调取，不在适配器中另抄一份类型。 */
 type TreeNodeMoveDetails = Parameters<NonNullable<TreeSchema['props']['onNodeMove']>>[0]
@@ -103,19 +100,19 @@ export class XhTreeElement extends XhElement {
     defaultSelection: { attribute: false },
     multiple: { converter: BOOLEAN_CONVERTER },
     leafOrientation: { converter: STRING_CONVERTER, attribute: 'leaf-orientation' },
-    cascade: { type: Boolean },
+    cascade: { converter: BOOLEAN_CONVERTER },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
     expandOnClick: { converter: BOOLEAN_CONVERTER, attribute: 'expand-on-click' },
     lines: { converter: BOOLEAN_CONVERTER },
     loadingValue: { attribute: false },
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     loading: { converter: BOOLEAN_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     typeahead: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     // 缺席即关，没有第二种来路，用 Lit 自带的 Boolean 转换器就够；
     // 属性名让开 HTML 全局的 draggable，见类注释里的 @attr node-draggable
-    nodeDraggable: { type: Boolean, attribute: 'node-draggable' },
+    nodeDraggable: { converter: BOOLEAN_CONVERTER, attribute: 'node-draggable' },
     // 函数与对象走不了属性，只作为 property 暴露
     allowDrop: { attribute: false },
     translations: { attribute: false },

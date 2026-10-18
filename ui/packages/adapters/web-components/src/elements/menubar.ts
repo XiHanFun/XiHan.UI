@@ -13,6 +13,7 @@ import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectMenubar, createMenuTreeNode, menubarAnatomy, menubarMachine, menubarMeta, menubarStructure } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -24,8 +25,6 @@ import { XhMenuElement } from './menu'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 读角色节点的禁用声明，并摘掉作者写的原生 disabled，禁用态归一到 aria-disabled。 */
 function authorDisabled(el: HTMLElement): boolean {

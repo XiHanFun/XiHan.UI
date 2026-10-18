@@ -11,6 +11,7 @@ import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { isItemDisabled } from '@xihan-ui/core'
 import { accordionAnatomy, accordionMachine, accordionMeta, accordionStructure, connectAccordion } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { GEN_ATTR } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { STRUCTURE_MARK } from '../dom/structure'
@@ -77,18 +78,18 @@ export class XhAccordionElement extends XhElement {
     // 展开集合是字符串数组，只走 property
     value: { attribute: false },
     defaultValue: { attribute: false },
-    multiple: { type: Boolean },
-    collapsible: { type: Boolean },
-    loop: { type: Boolean },
-    disabled: { type: Boolean },
+    multiple: { converter: BOOLEAN_CONVERTER },
+    collapsible: { converter: BOOLEAN_CONVERTER },
+    loop: { converter: BOOLEAN_CONVERTER },
+    disabled: { converter: BOOLEAN_CONVERTER },
     variant: {},
     orientation: {},
     // property 另起名字，避开 HTMLElement 自带的 dir 存取器
     textDir: { attribute: 'dir' },
     tone: {},
     size: {},
-    lazyMount: { type: Boolean, attribute: 'lazy-mount' },
-    unmountOnExit: { type: Boolean, attribute: 'unmount-on-exit' },
+    lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
     contentRole: { attribute: 'content-role' },
   }
 

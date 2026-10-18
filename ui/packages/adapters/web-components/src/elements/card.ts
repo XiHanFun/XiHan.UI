@@ -9,12 +9,11 @@ import type { ControlVariant } from '@xihan-ui/core'
 import type { CardProps } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { cardAnatomy, cardMeta, cardStructure, connectCard } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 出现即 true、缺席即 undefined（缺省交给 connect）；写成 "false" 显式关
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-card>`：Light-DOM 行为宿主，无状态机，把 connectCard 产出接到各角色节点。

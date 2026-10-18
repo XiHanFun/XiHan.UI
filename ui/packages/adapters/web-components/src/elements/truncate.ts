@@ -9,6 +9,7 @@ import type { IdGenerator, Service } from '@xihan-ui/core'
 import type { TruncateOpenChangeDetails, TruncateOverflowChangeDetails, TruncatePosition, TruncateSchema, TruncateTranslations } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectTruncate, truncateAnatomy, truncateMachine, truncateMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -16,8 +17,6 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 三态：属性缺席 = 非受控，写了才是受控的那个布尔。
-const TRISTATE_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-truncate>`：省略行为宿主：把一段文字限制在给定行数内，并如实报告是否被裁剪。
@@ -51,10 +50,10 @@ export class XhTruncateElement extends XhElement {
   static override properties = {
     lines: { converter: NUMBER_CONVERTER },
     position: { converter: STRING_CONVERTER },
-    expandable: { type: Boolean },
-    open: { converter: TRISTATE_CONVERTER },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
-    tooltip: { type: Boolean },
+    expandable: { converter: BOOLEAN_CONVERTER },
+    open: { converter: BOOLEAN_CONVERTER },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
+    tooltip: { converter: BOOLEAN_CONVERTER },
     // 文案是对象，只走 property
     translations: { attribute: false },
   }

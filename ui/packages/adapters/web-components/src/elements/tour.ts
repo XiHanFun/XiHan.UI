@@ -19,6 +19,7 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectTour, tourAnatomy, tourMachine, tourMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
@@ -29,9 +30,6 @@ import { XhPortalHostElement } from '../runtime/portal-host'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-// 缺省为真的开关（Esc 退出、画遮罩）只有三态才关得掉。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 读作者写在部件上的下标，缺席或写坏了退回文档序。 */
 function declaredIndex(el: HTMLElement, position: number): number {
@@ -90,7 +88,7 @@ export class XhTourElement extends XhPortalHostElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     open: { converter: BOOLEAN_CONVERTER },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     value: { converter: NUMBER_CONVERTER },
     defaultValue: { converter: NUMBER_CONVERTER, attribute: 'default-value' },
     placement: { converter: STRING_CONVERTER },

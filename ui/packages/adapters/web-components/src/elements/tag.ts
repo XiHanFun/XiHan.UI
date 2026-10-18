@@ -8,16 +8,13 @@
 import type { Size, Tone } from '@xihan-ui/core'
 import type { TagOpenChangeDetails, TagSchema, TagVariant } from '@xihan-ui/headless'
 import { connectTag, tagAnatomy, tagMachine, tagMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 // 字符串属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在 connect。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-
-// 布尔三态：缺席 = undefined（用 connect 的默认值），="false" = false，其余 = true。
-// Lit 自带的 Boolean 转换器是 v !== null，缺省为真的 default-open 会因此永远关不掉。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-tag>`：Light-DOM 行为宿主：作者写 root、label、close-trigger 角色节点，

@@ -9,6 +9,7 @@ import type { IdGenerator, RuntimeConfig, Service } from '@xihan-ui/core'
 import type { LayoutBreakpoint, LayoutSchema, LayoutSiderBreakpointDetails, LayoutSiderCollapsedChangeDetails, LayoutSiderPlacement, LayoutSiderPresentation } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectLayout, layoutAnatomy, layoutMachine, layoutMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -60,17 +61,17 @@ export class XhLayoutElement extends XhElement {
   static override properties = {
     siderCollapsed: {
       attribute: 'sider-collapsed',
-      converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') },
+      converter: BOOLEAN_CONVERTER,
     },
-    defaultSiderCollapsed: { type: Boolean, attribute: 'default-sider-collapsed' },
+    defaultSiderCollapsed: { converter: BOOLEAN_CONVERTER, attribute: 'default-sider-collapsed' },
     siderWidth: { attribute: 'sider-width', converter: STRING_CONVERTER },
     siderCollapsedWidth: { attribute: 'sider-collapsed-width', converter: STRING_CONVERTER },
     siderPlacement: { attribute: 'sider-placement', converter: STRING_CONVERTER },
     siderBreakpoint: { attribute: 'sider-breakpoint', converter: STRING_CONVERTER },
     siderPresentation: { attribute: 'sider-presentation', converter: STRING_CONVERTER },
-    headerFixed: { type: Boolean, attribute: 'header-fixed' },
-    siderFixed: { type: Boolean, attribute: 'sider-fixed' },
-    split: { type: Boolean },
+    headerFixed: { converter: BOOLEAN_CONVERTER, attribute: 'header-fixed' },
+    siderFixed: { converter: BOOLEAN_CONVERTER, attribute: 'sider-fixed' },
+    split: { converter: BOOLEAN_CONVERTER },
   }
 
   declare siderCollapsed?: boolean

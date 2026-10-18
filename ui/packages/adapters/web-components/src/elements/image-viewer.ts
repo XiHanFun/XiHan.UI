@@ -11,13 +11,12 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectImageViewer, imageViewerAnatomy, imageViewerCounterText, imageViewerMachine, imageViewerMeta } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
-// 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
 // 属性缺席翻成 undefined，缺省值由皮肤的缺省档决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -70,7 +69,7 @@ export class XhImageViewerElement extends XhPortalHostElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     open: { converter: BOOLEAN_CONVERTER },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     index: { converter: NUMBER_CONVERTER },
     defaultIndex: { converter: NUMBER_CONVERTER, attribute: 'default-index' },
     loop: { converter: BOOLEAN_CONVERTER },

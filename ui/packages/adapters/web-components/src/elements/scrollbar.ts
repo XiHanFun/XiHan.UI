@@ -8,6 +8,7 @@
 import type { Direction, Orientation, Service, Size } from '@xihan-ui/core'
 import type { ScrollbarAnchor, ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
 import { connectScrollbar, scrollbarAnatomy, scrollbarMachine, scrollbarMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -15,8 +16,6 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 布尔三态：缺席 = undefined（用 connect 的默认值），="false" = false，其余 = true。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-scrollbar>`：Light-DOM 行为宿主：作者写 root / track / thumb 三个角色节点，

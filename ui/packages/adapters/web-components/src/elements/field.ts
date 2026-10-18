@@ -11,6 +11,7 @@ import type { ElementStructure } from '../element-base'
 import type { FormControlHost } from '../runtime/form-control-host'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectField, fieldAnatomy, fieldControlWiring, fieldMeta, fieldStructure, hasNamingContent, resolveFormControlState } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { XhReactiveElement } from '../reactive'
@@ -24,7 +25,6 @@ export const FIELD_SCOPE_SELECTOR = 'xh-field, xh-field-boundary'
 const DESCRIPTION_NAMING_ATTRS = ['aria-label', 'aria-labelledby', 'alt', 'title', 'aria-hidden', 'hidden']
 
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-field>`：Light-DOM 行为宿主，无状态机，把 connectField 产出的 id 与 aria-* 接到

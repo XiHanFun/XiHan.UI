@@ -16,6 +16,7 @@ import type {
 } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectMessageFeed, messageFeedAnatomy, messageFeedMachine, messageFeedMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -62,7 +63,7 @@ export class XhMessageFeedElement extends XhElement {
     count: { converter: NUMBER_CONVERTER },
     status: { converter: STRING_CONVERTER },
     threshold: { converter: NUMBER_CONVERTER },
-    loop: { type: Boolean },
+    loop: { converter: BOOLEAN_CONVERTER },
     size: { converter: STRING_CONVERTER },
     // 对象值走不了 HTML 属性，只作为 property 暴露
     translations: { attribute: false },

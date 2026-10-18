@@ -10,6 +10,7 @@ import type { FormControlState, TagGroupApi, TagGroupItemDeleteDetails, TagGroup
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTagGroup, resolveFormControlState, tagGroupAnatomy, tagGroupMachine, tagGroupMeta, tagGroupStructure } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -18,9 +19,6 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定
 // （value 尤其：落成 null 就分不出「非受控」与「受控且当前无选中」）。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-// 缺省为真的开关（方向键回绕、连打检索）只有三态才关得掉
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-tag-group>`：Light-DOM 行为宿主：作者写 root / label / list 与若干 item（内含 cell）角色节点，
@@ -98,7 +96,7 @@ export class XhTagGroupElement extends XhElement {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
-    deletable: { type: Boolean },
+    deletable: { converter: BOOLEAN_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     loop: { converter: BOOLEAN_CONVERTER },

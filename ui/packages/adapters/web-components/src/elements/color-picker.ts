@@ -48,6 +48,7 @@ import {
   sliderMachine,
 } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { createOverlayExit } from '../overlay-exit'
@@ -58,8 +59,6 @@ import { ScrollbarsController } from '../runtime/scrollbars-controller'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 /** 预设色板写成逗号分隔（swatches="#ff0000,#00ff00"），空串当没写。 */
 const STRING_LIST_CONVERTER = {
   fromAttribute: (v: string | null) => {
@@ -184,7 +183,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
     maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
     format: { converter: STRING_CONVERTER },
     open: { converter: BOOLEAN_CONVERTER },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },

@@ -20,6 +20,7 @@ import type {
   CalendarWeekdayFormat,
 } from '@xihan-ui/headless'
 import { calendarRangePickerAnatomy, calendarRangePickerMachine, calendarRangePickerMeta, connectCalendarRangePicker } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { END_INDEX_CONVERTER } from '../dom/end-index'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -102,12 +103,11 @@ export class XhCalendarRangePickerElement extends XhElement {
     firstDayOfWeek: { converter: NUMBER_CONVERTER, attribute: 'first-day-of-week' },
     timeZone: { converter: STRING_CONVERTER, attribute: 'time-zone' },
     weekdayFormat: { converter: STRING_CONVERTER, attribute: 'weekday-format' },
-    // 三个开关缺省为假，属性在场即真
-    disabled: { type: Boolean },
-    readOnly: { type: Boolean, attribute: 'read-only' },
-    fixedWeeks: { type: Boolean, attribute: 'fixed-weeks' },
-    invalid: { type: Boolean },
-    allowsNonContiguousRanges: { type: Boolean, attribute: 'allows-non-contiguous-ranges' },
+    disabled: { converter: BOOLEAN_CONVERTER },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    fixedWeeks: { converter: BOOLEAN_CONVERTER, attribute: 'fixed-weeks' },
+    invalid: { converter: BOOLEAN_CONVERTER },
+    allowsNonContiguousRanges: { converter: BOOLEAN_CONVERTER, attribute: 'allows-non-contiguous-ranges' },
     activeIndex: { converter: END_INDEX_CONVERTER, attribute: 'active-index' },
     granularity: { converter: STRING_CONVERTER },
     activeView: { converter: STRING_CONVERTER, attribute: 'active-view' },

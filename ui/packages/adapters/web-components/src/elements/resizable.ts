@@ -10,6 +10,7 @@ import type { ResizableDimensions, ResizableDimensionsChangeDetails, ResizableDi
 import type { ResizeEdge } from '@xihan-ui/pointer'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectResizable, resizableAnatomy, resizableMachine, resizableMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -17,7 +18,6 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 /** 尺寸写成 `宽x高`（如 `320x200`）。解析不出两个有限数就当没写。 */
 const SIZE_CONVERTER = {
   fromAttribute: (v: string | null): ResizableDimensions | undefined => {

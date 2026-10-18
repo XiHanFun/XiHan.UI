@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, NumberFieldSchema, NumberFieldValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectNumberField, numberFieldAnatomy, numberFieldMachine, numberFieldMeta, numberFieldStructure, resolveFormControlState } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -16,7 +17,6 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-number-field>`：Light-DOM 行为宿主：作者写 root / label / input / 加减按钮四类角色节点，

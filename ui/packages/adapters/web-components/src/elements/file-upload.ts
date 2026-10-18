@@ -25,6 +25,7 @@ import type {
 import type { ElementStructure } from '../element-base'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectFileUpload, fileUploadAnatomy, fileUploadMachine, fileUploadMeta, fileUploadStructure, resolveFormControlState } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -33,8 +34,6 @@ import { MachineController } from '../runtime/machine-controller'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 空串也当缺席，避免 Number('') 落成 0
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 取作者写在条目上的 index，缺席或写坏了退回文档序。 */
 function declaredIndex(el: HTMLElement, position: number): number {
@@ -140,11 +139,11 @@ export class XhFileUploadElement extends XhElement {
     // 作者的准入判定是函数，只走 property
     validate: { attribute: false },
     maxConcurrentUploads: { converter: NUMBER_CONVERTER, attribute: 'max-concurrent-uploads' },
-    directory: { type: Boolean },
+    directory: { converter: BOOLEAN_CONVERTER },
     capture: { converter: STRING_CONVERTER },
     translations: { attribute: false },
     label: { converter: STRING_CONVERTER },
-    clearable: { type: Boolean },
+    clearable: { converter: BOOLEAN_CONVERTER },
   }
 
   declare files?: File[]

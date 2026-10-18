@@ -9,6 +9,7 @@ import type { HighlighterPort, IdGenerator } from '@xihan-ui/core'
 import type { CodeViewApi, CodeViewClampToggleDetails, CodeViewFoldedChangeDetails, CodeViewProps, CodeViewSchema, CodeViewTranslations } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { codeViewAnatomy, codeViewMachine, codeViewMeta, connectCodeView, createCodeViewHighlighterResource } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -17,8 +18,6 @@ const defaultHighlighter = createCodeViewHighlighterResource(() => import('@xiha
 
 // 属性缺席翻成 undefined，缺省值由 connect 给出
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 三态布尔：缺席为 undefined、"false" 为 false、其余为 true
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 // 空串按缺席处理，避免 Number('') 落成 0
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 // 逗号分隔的行号表；缺席为 undefined，空串是一张空表（受控地一个都不折叠）
@@ -82,13 +81,13 @@ export class XhCodeViewElement extends XhElement {
     codeLang: { converter: STRING_CONVERTER, attribute: 'code-lang' },
     filename: { converter: STRING_CONVERTER },
     complete: { converter: BOOLEAN_CONVERTER },
-    wrap: { type: Boolean },
-    lineNumbers: { type: Boolean, attribute: 'line-numbers' },
+    wrap: { converter: BOOLEAN_CONVERTER },
+    lineNumbers: { converter: BOOLEAN_CONVERTER, attribute: 'line-numbers' },
     startLine: { converter: NUMBER_CONVERTER, attribute: 'start-line' },
     highlightLines: { converter: STRING_CONVERTER, attribute: 'highlight-lines' },
     clamp: { converter: NUMBER_CONVERTER },
     clamped: { converter: BOOLEAN_CONVERTER },
-    blockFolding: { type: Boolean, attribute: 'block-folding' },
+    blockFolding: { converter: BOOLEAN_CONVERTER, attribute: 'block-folding' },
     folded: { converter: LINE_LIST_CONVERTER },
     defaultFolded: { converter: LINE_LIST_CONVERTER, attribute: 'default-folded' },
     highlightWhileStreaming: { converter: BOOLEAN_CONVERTER, attribute: 'highlight-while-streaming' },

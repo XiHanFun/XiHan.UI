@@ -10,6 +10,7 @@ import type { CollapsibleOpenChangeDetails, CollapsibleSchema } from '@xihan-ui/
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { collapsibleAnatomy, collapsibleMachine, collapsibleMeta, connectCollapsible } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { createOverlayExit } from '../overlay-exit'
@@ -52,15 +53,15 @@ export class XhCollapsibleElement extends XhElement {
   static override partContract = { anatomy: collapsibleAnatomy, meta: collapsibleMeta }
 
   static override properties = {
-    open: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
-    disabled: { type: Boolean },
+    open: { converter: BOOLEAN_CONVERTER },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
+    disabled: { converter: BOOLEAN_CONVERTER },
     tone: {},
     size: {},
     // property 另起名字，避开 HTMLElement 自带的 dir 存取器
     textDir: { attribute: 'dir' },
-    lazyMount: { type: Boolean, attribute: 'lazy-mount' },
-    unmountOnExit: { type: Boolean, attribute: 'unmount-on-exit' },
+    lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
+    unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
   }
 
   declare open?: boolean

@@ -28,6 +28,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { FormControlHost } from '../runtime/form-control-host'
 import { connectForm, formAnatomy, formMachine, formMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { FORM_CONTROL_HOST_SELECTOR, isComposedControl } from '../runtime/form-control-host'
@@ -35,9 +36,6 @@ import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-// Lit 自带的 Boolean 转换器判的是 v !== null，写 disabled="false" 反而成了真
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 // 仅限本适配器复合控件的私有服务槽；不用导出函数，避免误变成自定义元素公开 API。
 const FORM_SERVICE = Symbol.for('xh.form.service')
 

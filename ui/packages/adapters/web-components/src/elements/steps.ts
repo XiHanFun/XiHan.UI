@@ -9,6 +9,7 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { StepNode, StepsItemProps, StepsSchema, StepStatus, StepsTranslations, StepsValueChangeDetails, StepsVariant } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectSteps, stepsAnatomy, stepsMachine, stepsMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -17,9 +18,6 @@ import { MachineController } from '../runtime/machine-controller'
 // 空串也当缺席：`value=""` 经 Number() 会变成 0，那是一个真实存在的步序，不该由笔误产生。
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 三态布尔：属性缺席 = undefined（用默认值），="false" = false，其余 = true。
-// Lit 自带的 Boolean 转换器判的是 v !== null，写 ="false" 反而成了真。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 const ITEM_SELECTOR = '[data-xh-part="item"]'
 

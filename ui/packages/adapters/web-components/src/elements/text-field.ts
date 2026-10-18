@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, TextFieldSchema, TextFieldType, TextFieldValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { autoSizeTextarea, connectTextField, resolveFormControlState, textFieldAnatomy, textFieldMachine, textFieldMeta, textFieldStructure } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -16,9 +17,6 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
-// Lit 默认的 Boolean 转换器是 v !== null，缺省为真的开关会因此永远关不掉
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-text-field>`：Light-DOM 行为宿主：作者写 root / label / input / clear-trigger 四类角色节点，
@@ -82,7 +80,7 @@ export class XhTextFieldElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     label: { converter: STRING_CONVERTER },
-    multiline: { type: Boolean },
+    multiline: { converter: BOOLEAN_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     type: { converter: STRING_CONVERTER },

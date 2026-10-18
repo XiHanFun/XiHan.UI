@@ -9,6 +9,7 @@ import type { Service } from '@xihan-ui/core'
 import type { FieldArrayApi, FieldArrayColumn, FieldArrayItem, FieldArrayItemProps, FieldArrayLayout, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails, FormControlState, FormPath, FormSchema } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectFieldArray, fieldArrayAnatomy, fieldArrayMachine, fieldArrayMeta, fieldArrayStructure, resolveFormControlState } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -20,8 +21,6 @@ type FormHost = HTMLElement & { [FORM_SERVICE]?: Service<FormSchema> }
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 三态布尔：缺席=undefined（走缺省）、="false"=false、其余=true。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 作者写在行上的下标。缺席或写错时退回文档序：把行按顺序排列本身就是声明。 */
 function declaredIndex(el: HTMLElement, position: number): number {

@@ -8,6 +8,7 @@
 import type { ControlVariant, Size } from '@xihan-ui/core'
 import type { ListProps } from '@xihan-ui/headless'
 import { connectList, listAnatomy, listMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -40,8 +41,8 @@ export class XhListElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开
   static override properties = {
     variant: { converter: STRING_CONVERTER },
-    hoverable: { type: Boolean },
-    split: { type: Boolean },
+    hoverable: { converter: BOOLEAN_CONVERTER },
+    split: { converter: BOOLEAN_CONVERTER },
     size: { converter: STRING_CONVERTER },
   }
 

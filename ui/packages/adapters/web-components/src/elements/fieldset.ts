@@ -13,12 +13,10 @@ import type { PropertyValues } from '../reactive'
 import { createCounterIdGenerator, createScope, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { connectFieldset, fieldsetAnatomy, fieldsetMeta, fieldsetStructure, hasNamingContent } from '@xihan-ui/headless'
 import { notifyXhConfigChange } from '../config'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-
-// 属性缺席翻成 undefined，="false" 为假，其余在场即真。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-fieldset>`：Light-DOM 行为宿主，无状态机，把 connectFieldset 产出的属性接到

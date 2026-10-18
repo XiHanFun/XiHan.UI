@@ -19,6 +19,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectSparkline, sparklineAnatomy, sparklineMachine, sparklineMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { GEN_ATTR, reconcile, SVG_NS } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -29,8 +30,6 @@ const SUMMARY_KEY = 'summary'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 布尔三态：缺席是没给，`x="false"` 是关，其余写法都是开
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 // 参考线：mean / median 原样，其余按数读；读不成数的也原样交给机器，由它报出规格问题
 const REFERENCE_CONVERTER = {
   fromAttribute: (v: string | null): SparklineReference | undefined => {

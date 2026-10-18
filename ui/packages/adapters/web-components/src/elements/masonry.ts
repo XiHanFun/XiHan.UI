@@ -7,6 +7,7 @@
 
 import type { MasonryColumns, MasonryProps } from '@xihan-ui/headless'
 import { connectMasonry, distributeMasonry, masonryAnatomy, masonryMeta, resolveMasonryColumns } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -15,9 +16,6 @@ type ColumnsByBreakpoint = Exclude<MasonryColumns, number>
 
 // 属性缺席翻成 undefined，缺省值由 connect 与落格算法决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-
-// 布尔三态：缺席 = undefined（用默认值），="false" = false，其余 = true。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * 列数写整数即各档同一个列数（`columns="3"`），写 JSON 对象即逐档的列数

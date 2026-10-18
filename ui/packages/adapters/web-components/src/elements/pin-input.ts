@@ -9,6 +9,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, PinInputSchema, PinInputTranslations, PinInputType, PinInputValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { connectPinInput, pinInputAnatomy, pinInputMachine, pinInputMeta, pinInputStructure, resolveFormControlState } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -19,7 +20,6 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 // 值在属性里是一整串（value="1234"），逐字符摊成数组；长度归一交给机器。
 // 直接给 property 赋数组时不过转换器，两种写法都通
 const ARRAY_CONVERTER = { fromAttribute: (v: string | null) => (v == null ? undefined : [...v]) }
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 作者写在格子上的下标。缺席或写错时退回文档序：手写 HTML 时把格子按顺序排列本身就是声明。 */
 function declaredIndex(el: HTMLElement, position: number): number {
@@ -91,14 +91,14 @@ export class XhPinInputElement extends XhElement {
     length: { converter: NUMBER_CONVERTER },
     type: { converter: STRING_CONVERTER },
     pattern: { converter: STRING_CONVERTER },
-    mask: { type: Boolean },
-    otp: { type: Boolean },
+    mask: { converter: BOOLEAN_CONVERTER },
+    otp: { converter: BOOLEAN_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     required: { converter: BOOLEAN_CONVERTER },
     invalid: { converter: BOOLEAN_CONVERTER },
-    blurOnComplete: { type: Boolean, attribute: 'blur-on-complete' },
+    blurOnComplete: { converter: BOOLEAN_CONVERTER, attribute: 'blur-on-complete' },
     name: { converter: STRING_CONVERTER },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },

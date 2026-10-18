@@ -13,6 +13,7 @@ import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectContextMenu, contextMenuAnatomy, contextMenuMachine, contextMenuMeta, contextMenuStructure, createMenuTreeNode } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
@@ -25,9 +26,6 @@ import { XhMenuElement } from './menu'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-// 缺省为真的开关（方向键回绕、连打检索）只有三态才关得掉。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-context-menu>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content 与若干
@@ -101,7 +99,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
     radioValue: { attribute: false },
     defaultRadioValue: { attribute: false },
     open: { converter: BOOLEAN_CONVERTER },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },

@@ -18,6 +18,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectProgress, progressAnatomy, progressMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { GEN_ATTR, reconcile, SVG_NS } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -96,19 +97,19 @@ export class XhProgressElement extends XhElement {
     strokeWidth: { type: Number, attribute: 'stroke-width' },
     gapDegree: { type: Number, attribute: 'gap-degree' },
     gapPosition: { attribute: 'gap-position' },
-    indeterminate: { type: Boolean },
+    indeterminate: { converter: BOOLEAN_CONVERTER },
     valueText: { attribute: 'value-text' },
     tone: {},
     size: {},
     semantics: {},
     thresholds: { attribute: false },
     // 写属性 scale 即开启缺省刻度；要指定刻度数量与数字格式时走 property 给对象
-    scale: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
+    scale: { converter: BOOLEAN_CONVERTER },
     translations: { attribute: false },
     target: { type: Number },
     indicator: {},
     steps: { type: Number },
-    striped: { type: Boolean },
+    striped: { converter: BOOLEAN_CONVERTER },
     buffer: { type: Number },
     locale: {},
   }

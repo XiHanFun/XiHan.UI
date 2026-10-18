@@ -27,6 +27,7 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTreeSelect, resolveFormControlState, treeSelectAnatomy, treeSelectMachine, treeSelectMeta, treeSelectStructure } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
@@ -39,9 +40,6 @@ import { ScrollbarsController } from '../runtime/scrollbars-controller'
 // value 落成 null 就分不出"非受控"与"受控且当前无选中"。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-// Lit 默认的 Boolean 转换器是 v !== null，写 loop="false" 照样是真。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /** 叶子一系的归属容器。 */
 const ITEM_SELECTOR = '[data-xh-part="item"]'
@@ -169,13 +167,13 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     expandedValue: { attribute: false },
     defaultExpandedValue: { attribute: false },
     open: { converter: BOOLEAN_CONVERTER },
-    defaultOpen: { type: Boolean, attribute: 'default-open' },
-    multiple: { type: Boolean },
+    defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
+    multiple: { converter: BOOLEAN_CONVERTER },
     maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
-    searchable: { type: Boolean },
+    searchable: { converter: BOOLEAN_CONVERTER },
     // 函数只走 property，属性表达不了
     filter: { attribute: false },
-    cascade: { type: Boolean },
+    cascade: { converter: BOOLEAN_CONVERTER },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },

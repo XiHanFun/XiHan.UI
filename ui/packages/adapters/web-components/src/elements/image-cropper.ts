@@ -23,6 +23,7 @@ import type {
 } from '@xihan-ui/headless'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { connectImageCropper, IMAGE_CROPPER_NO_FLIP, imageCropperAnatomy, imageCropperMachine, imageCropperMeta, resolveFormControlState } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -31,8 +32,6 @@ import { MachineController } from '../runtime/machine-controller'
 // Lit 默认转换器会落成 null / false，那样就表达不了"未指定"。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 /**
  * 裁切矩形写成逗号分隔的四个数：`x,y,width,height`。
  * 读不出四个有限数就当没写：留下 NaN 会一路写进定位百分比与表单值。

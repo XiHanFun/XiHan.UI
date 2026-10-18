@@ -7,13 +7,12 @@
 
 import type { MarkdownBlock, MarkdownInlineMount, MarkdownStreamApi, MarkdownStreamProps, MarkdownStreamTranslations } from '@xihan-ui/headless'
 import { connectMarkdownStream, markdownBlockHtml, markdownStreamAnatomy, markdownStreamMeta, queryMarkdownInlines } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 // 属性缺席翻成 undefined，缺省值由 connect 给出
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 缺省为真的开关：缺席翻成 undefined 交给 connect，要关掉写 caret="false"
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 const BLOCK_SELECTOR = markdownStreamAnatomy.build().block.selector
 
 /**
@@ -48,7 +47,7 @@ export class XhMarkdownStreamElement extends XhElement {
 
   // 描述符逐个写全，不用对象展开，CEM 分析器的 lit 插件读不了展开元素的名字
   static override properties = {
-    streaming: { type: Boolean },
+    streaming: { converter: BOOLEAN_CONVERTER },
     announce: { converter: STRING_CONVERTER },
     caret: { converter: BOOLEAN_CONVERTER },
     size: { converter: STRING_CONVERTER },

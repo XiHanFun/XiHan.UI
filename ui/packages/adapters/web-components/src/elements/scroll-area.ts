@@ -9,6 +9,7 @@ import type { Direction, IdGenerator, Orientation, Service, Size } from '@xihan-
 import type { ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollAreaScrollDetails, ScrollAreaVariant, ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectScrollArea, scrollAreaAnatomy, scrollAreaMeta, scrollAreaScrollbarProps, scrollbarAnatomy, scrollbarMachine } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -16,8 +17,6 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，缺省值由 scrollbar 的机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-// 布尔三态：缺席 = undefined（用 connect 的默认值），="false" = false，其余 = true。
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-scroll-area>`：Light-DOM 行为宿主：作者写 root / viewport / content 与两条 scrollbar

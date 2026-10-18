@@ -11,6 +11,7 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectPagination, paginationAnatomy, paginationMachine, paginationMeta, paginationPageSizeSelectProps, selectMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -105,7 +106,7 @@ export class XhPaginationElement extends XhPortalHostElement {
     defaultPage: { converter: NUMBER_CONVERTER, attribute: 'default-page' },
     siblingCount: { converter: NUMBER_CONVERTER, attribute: 'sibling-count' },
     // 缺席即关，没有第二种来路，用 Lit 自带的 Boolean 转换器就够
-    disabled: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },

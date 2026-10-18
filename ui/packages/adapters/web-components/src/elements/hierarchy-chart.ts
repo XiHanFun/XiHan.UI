@@ -26,6 +26,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { KeyedChildren } from '../dom/generated-nodes'
 import { connectHierarchyChart, hierarchyChartAnatomy, hierarchyChartMachine, hierarchyChartMeta } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createGeneratedElement, GEN_ATTR, generatedChildren, hasAuthorContent, reconcile, SVG_NS } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -33,8 +34,6 @@ import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 布尔三态：缺席是没给，`x="false"` 是关，其余写法都是开
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /** 最顶层那一项没有身份：路径项的 key 表里给它一个占位。 */

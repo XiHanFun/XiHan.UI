@@ -9,11 +9,10 @@ import type { Size, Tone } from '@xihan-ui/core'
 import type { CheckboxCheckedChangeDetails, CheckboxCheckedState, CheckboxSchema, FormControlState } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { checkboxAnatomy, checkboxMachine, checkboxMeta, checkboxStructure, connectCheckbox, resolveFormControlState } from '@xihan-ui/headless'
+import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
-
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-checkbox>`：Light-DOM 行为宿主，运行 checkbox 状态机并把 connect 产出接到 root / indicator 角色节点。
