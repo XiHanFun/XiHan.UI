@@ -75107,21 +75107,24 @@
       "name": "--xh-table-footer-bg",
       "component": "table",
       "part": [
-        "footer"
+        "cell",
+        "footer",
+        "row"
       ],
       "property": [
         "background"
       ],
       "state": [
         "default",
-        "fixed"
+        "fixed",
+        "frozen"
       ],
       "defaultToken": [
         "--xh-bg-subtle",
         "--xh-bg-subtle-opaque"
       ],
       "visibility": "public",
-      "description": "table 的 footer 部件 background 覆盖槽。"
+      "description": "table 的 cell、footer、row 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-table-footer-border",

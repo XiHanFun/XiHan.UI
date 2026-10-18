@@ -70,6 +70,43 @@ describe('表格表尾吸底（Vue）', () => {
     expect(alphaOf(getComputedStyle(footer).backgroundColor)).toBe(1)
   })
 
+  it('表尾的冻结格是实色：横向滚动时被它压住的格子不从底下透出来，吸不吸底都一样', async () => {
+    for (const stickyFooter of [true, false]) {
+      app?.unmount()
+      host?.remove()
+      host = document.createElement('div')
+      host.style.inlineSize = '320px'
+      document.body.append(host)
+      const columns = [
+        { id: 'name', label: '名称', width: 120, sticky: 'start' as const },
+        { id: 'q1', label: 'Q1', width: 160 },
+        { id: 'q2', label: 'Q2', width: 160 },
+      ]
+      app = createApp({
+        render: () => h(XhTableRoot, { columns, rows: [{ id: 'r0' }], footerRows: 1, stickyFooter }, () => [
+          h(XhTableHeader, null, () => [h(XhTableRow, null, () => columns.map(c => h(XhTableColumnHeader, { key: c.id, value: c.id }, () => [h(XhTableColumnLabel, null, () => c.label)])))]),
+          h(XhTableBody, null, () => [h(XhTableRow, { value: 'r0' }, () => columns.map(c => h(XhTableCell, { key: c.id, value: c.id }, () => c.label)))]),
+          h(XhTableFooter, null, () => [h(XhTableRow, null, () => columns.map(c => h(XhTableCell, { key: c.id, value: c.id }, () => (c.id === 'name' ? '合计' : '100'))))]),
+        ]),
+      })
+      app.mount(host)
+      await nextTick()
+      for (let i = 0; i < 3; i++)
+        await new Promise(resolve => requestAnimationFrame(resolve))
+      const root = host.querySelector<HTMLElement>('[data-scope="table"][data-part="root"]')!
+      const frozen = host.querySelector<HTMLElement>('[data-scope="table"][data-part="footer"] [data-scope="table"][data-part="cell"][data-value="name"]')!
+      expect(frozen.getAttribute('data-frozen')).toBe('start')
+      expect(alphaOf(getComputedStyle(frozen).backgroundColor), String(stickyFooter)).toBe(1)
+      root.scrollLeft = 80
+      await new Promise(resolve => requestAnimationFrame(resolve))
+      const box = frozen.getBoundingClientRect()
+      expect(root.scrollLeft).toBeGreaterThan(0)
+      // 冻结格的中心点被 q1 那一格从底下滑过：最上面的仍是冻结格自己
+      const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)
+      expect(frozen.contains(hit), String(stickyFooter)).toBe(true)
+    }
+  })
+
   it('不写 stickyFooter：表尾跟着内容走，滚到顶时在可视区之外', async () => {
     const { root, footer } = await mount(false)
     root.scrollTop = 0

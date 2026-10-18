@@ -756,7 +756,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `--xh-table-expand-fg` | `expand-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-subtle` | table 的 expand-trigger 部件 color 覆盖槽。 |
 | `--xh-table-fg` | `root` | `color` | `default` | `--xh-fg-default` | table 的 root 部件 color 覆盖槽。 |
 | `--xh-table-font-size` | `root`<br>`row` | `font-size` | `default` | `--xh-_table-font-size` | table 的 root、row 部件 font-size 覆盖槽。 |
-| `--xh-table-footer-bg` | `footer` | `background` | `default`<br>`fixed` | `--xh-bg-subtle`<br>`--xh-bg-subtle-opaque` | table 的 footer 部件 background 覆盖槽。 |
+| `--xh-table-footer-bg` | `cell`<br>`footer`<br>`row` | `background` | `default`<br>`fixed`<br>`frozen` | `--xh-bg-subtle`<br>`--xh-bg-subtle-opaque` | table 的 cell、footer、row 部件 background 覆盖槽。 |
 | `--xh-table-footer-border` | `footer` | `border-block-start` | `default` | `--xh-border-subtle` | table 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-table-footer-font-weight` | `footer` | `font-weight` | `default` | `--xh-font-weight-medium` | table 的 footer 部件 font-weight 覆盖槽。 |
 | `--xh-table-frozen-edge` | `cell`<br>`column-header` | `background` | `frozen-edge`<br>`is([data-part='column-header'], [data-part='cell'])` | `--xh-border-default` | table 的 cell、column-header 部件 background 覆盖槽。 |

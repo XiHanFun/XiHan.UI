@@ -412,6 +412,12 @@
     background: var(--xh-table-header-bg, var(--xh-_table-header-bg));
   }
 
+  /* 表尾行同样透明，露出的表尾淡底本身是半透明的：吸附的表尾格子自带不透明的表尾底，
+     否则横向滚动时其它格子从它下面透出来 */
+  [data-scope='table'][data-part='footer'] > [data-scope='table'][data-part='row'] > [data-scope='table'][data-part='cell'][data-frozen] {
+    background: var(--xh-table-footer-bg, var(--xh-bg-subtle-opaque));
+  }
+
   /* 冻结列的边界：紧挨滚动区的那一列在朝向滚动区的一侧画一道描边，只在确有内容被压住时出现——
      行首冻结列在滚离起始端之后、行尾冻结列在还没滚到末端时。冻结列与被压住的内容同在一个平面上，
      层级靠描边而不是阴影；线常驻、按 micro 淡入淡出，不改格子的盒尺寸 */
