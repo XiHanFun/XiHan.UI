@@ -9,11 +9,13 @@ import type { FileUploadApi, FileUploadFile, FileUploadRemoteFile, FileUploadSch
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { fileUploadStructure } from '@xihan-ui/headless'
 import { useEffect, useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { FileUploadItemProvider, FileUploadProvider, useFileUploadContext, useFileUploadItemContext } from './context'
@@ -89,6 +91,12 @@ export interface XhFileUploadRootProps extends Omit<ComponentPropsWithRef<'div'>
   onUploadComplete?: FileUploadProps['onUploadComplete']
   onUploadError?: FileUploadProps['onUploadError']
   onUploadCancel?: FileUploadProps['onUploadCancel']
+  /** 标题。不给 children 时铺 label 部件。 */
+  label?: ReactNode
+  /** 不给 children 时投放区里的内容；未写时取 translations.dropzone。 */
+  dropzone?: ReactNode
+  /** 不给 children 时列表之后带清空整份列表的按钮；给了 children 时放 clear-trigger 部件即可清空。 */
+  clearable?: boolean
   children?: SlotChildren<FileUploadRootSlotProps>
 }
 
@@ -124,6 +132,9 @@ export function XhFileUploadRoot({
   onUploadComplete,
   onUploadError,
   onUploadCancel,
+  label,
+  dropzone,
+  clearable,
   children,
   ...rest
 }: XhFileUploadRootProps): ReactNode {
@@ -171,24 +182,26 @@ export function XhFileUploadRoot({
           { ref: ctx.rootRef },
         )}
       >
-        {renderSlot(children, {
-          acceptedFiles: api.acceptedFiles,
-          remoteFiles: api.remoteFiles,
-          allFiles: api.allFiles,
-          uploadOf: api.uploadOf,
-          startUpload: api.startUpload,
-          cancelUpload: api.cancelUpload,
-          dragging: api.dragging,
-          empty: api.empty,
-          disabled: api.disabled,
-          maxFiles: api.maxFiles,
-          getFileSizeText: api.getFileSizeText,
-          setFiles: api.setFiles,
-          addFiles: api.addFiles,
-          deleteFile: api.deleteFile,
-          clear: api.clear,
-          openFilePicker: api.openFilePicker,
-        })}
+        {children == null
+          ? renderDefaultStructure(api, { label, dropzone, clearable })
+          : renderSlot(children, {
+              acceptedFiles: api.acceptedFiles,
+              remoteFiles: api.remoteFiles,
+              allFiles: api.allFiles,
+              uploadOf: api.uploadOf,
+              startUpload: api.startUpload,
+              cancelUpload: api.cancelUpload,
+              dragging: api.dragging,
+              empty: api.empty,
+              disabled: api.disabled,
+              maxFiles: api.maxFiles,
+              getFileSizeText: api.getFileSizeText,
+              setFiles: api.setFiles,
+              addFiles: api.addFiles,
+              deleteFile: api.deleteFile,
+              clear: api.clear,
+              openFilePicker: api.openFilePicker,
+            })}
       </div>
     </FileUploadProvider>
   )
@@ -361,4 +374,53 @@ export function XhFileUploadClearTrigger({ children, ...rest }: XhFileUploadClea
       {children}
     </button>
   )
+}
+
+/** 标准结构里各部件对应的组件。 */
+const FILE_UPLOAD_PARTS = {
+  'label': XhFileUploadLabel,
+  'dropzone': XhFileUploadDropzone,
+  'hidden-input': XhFileUploadHiddenInput,
+  'list': XhFileUploadList,
+  'item': XhFileUploadItem,
+  'item-preview': XhFileUploadItemPreview,
+  'item-name': XhFileUploadItemName,
+  'item-size-text': XhFileUploadItemSizeText,
+  'item-progress': XhFileUploadItemProgress,
+  'item-delete-trigger': XhFileUploadItemDeleteTrigger,
+  'clear-trigger': XhFileUploadClearTrigger,
+}
+
+interface FileUploadStructureContent {
+  label?: ReactNode
+  dropzone?: ReactNode
+  clearable?: boolean
+}
+
+/**
+ * 未写 children 时铺开的整套结构，作者只提供数据：照 headless 的 fileUploadStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题与投放区内容原样放进对应部件。
+ */
+function renderDefaultStructure(api: FileUploadApi, content: FileUploadStructureContent): ReactNode[] {
+  const { label, dropzone } = content
+  const slotted: Readonly<Record<string, boolean>> = {
+    label: label != null && typeof label !== 'string',
+    dropzone: dropzone != null && typeof dropzone !== 'string',
+  }
+  const nodes = fileUploadStructure(api, {
+    label: typeof label === 'string' ? label : undefined,
+    dropzone: typeof dropzone === 'string' ? dropzone : undefined,
+    clearable: content.clearable,
+    slotted: name => slotted[name] === true,
+  })
+  return renderStructure(nodes, FILE_UPLOAD_PARTS, (node) => {
+    switch (node.slot?.name) {
+      case 'label':
+        return label
+      case 'dropzone':
+        return dropzone
+      default:
+        return undefined
+    }
+  })
 }

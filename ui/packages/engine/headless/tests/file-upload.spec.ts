@@ -464,10 +464,28 @@ describe('connectFileUpload 属性输出', () => {
     expect(many.hidden.hasAttribute('accept')).toBe(false)
   })
 
-  it('label 的 for 指向隐藏输入，点标题即打开选择框', () => {
+  it('label 的 for 指向隐藏输入；点标题拦下原生激活，只把焦点交给投放区，不弹选择框', () => {
     const m = open()
     expect(m.label.getAttribute('for')).toBe(m.hidden.getAttribute('id'))
     expect(m.hidden.getAttribute('id')).toBeTruthy()
+    const picker = vi.spyOn(m.hidden, 'click')
+    const event = new MouseEvent('click', { bubbles: true, cancelable: true })
+    m.label.dispatchEvent(event)
+    expect(event.defaultPrevented).toBe(true)
+    expect(document.activeElement).toBe(m.dropzone)
+    expect(picker).not.toHaveBeenCalled()
+  })
+
+  it('没写投放区时点标题把焦点交给选择钮；禁用时谁都不给', () => {
+    const m = open()
+    m.dropzone.removeAttribute('data-scope')
+    m.label.click()
+    expect(document.activeElement).toBe(m.trigger)
+
+    const off = open({ disabled: true })
+    ;(document.activeElement as HTMLElement | null)?.blur()
+    off.label.click()
+    expect(document.activeElement).toBe(document.body)
   })
 
   it('投放区是可聚焦的按钮，名字是 label 再接上它自己看得见的说明', () => {

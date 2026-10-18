@@ -8,10 +8,12 @@
 import type { FileUploadApi, FileUploadFile, FileUploadItemProps, FileUploadRemoteFile, FileUploadSchema, FileUploadTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { fileUploadStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onUnmounted } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
+import { renderStructure } from '../../runtime/structure'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -70,6 +72,10 @@ export const XhFileUploadRoot = defineComponent({
     directory: Boolean,
     capture: { type: String as PropType<'user' | 'environment'> },
     translations: { type: Object as PropType<Partial<FileUploadTranslations>> },
+    /** 标题文字。不写默认插槽时铺 label 部件；需要放置其他内容时改用 label 插槽。 */
+    label: { type: String },
+    /** 不写默认插槽时列表之后带清空整份列表的按钮；写了默认插槽时放 clear-trigger 部件即可清空。 */
+    clearable: Boolean,
   },
   // files-change 携带 { files }，update:files 携带裸数组；file-accept / file-reject 逐个文件报告
   emits: {
@@ -86,6 +92,9 @@ export const XhFileUploadRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: FileUploadRootSlotProps) => VNode[]
+    label?: () => VNode[]
+    /** 不写默认插槽时投放区里的内容；未写时取 translations.dropzone。 */
+    dropzone?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const onFilesChange: FileUploadProps['onFilesChange'] = (details) => {
@@ -103,24 +112,26 @@ export const XhFileUploadRoot = defineComponent({
     const onUploadCancel: FileUploadProps['onUploadCancel'] = details => emit('upload-cancel', details)
     const ctx = useFileUpload(withHandlers(withXhConfig('file-upload', useFormControlProps(props)), { onClear: () => emit('clear') }) as FileUploadProps, { onFilesChange, onFileAccept, onFileReject, onRemoteFilesChange, onUploadComplete, onUploadError, onUploadCancel })
     provideFileUpload(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      acceptedFiles: ctx.api.value.acceptedFiles,
-      remoteFiles: ctx.api.value.remoteFiles,
-      allFiles: ctx.api.value.allFiles,
-      uploadOf: ctx.api.value.uploadOf,
-      startUpload: ctx.api.value.startUpload,
-      cancelUpload: ctx.api.value.cancelUpload,
-      dragging: ctx.api.value.dragging,
-      empty: ctx.api.value.empty,
-      disabled: ctx.api.value.disabled,
-      maxFiles: ctx.api.value.maxFiles,
-      getFileSizeText: ctx.api.value.getFileSizeText,
-      setFiles: ctx.api.value.setFiles,
-      addFiles: ctx.api.value.addFiles,
-      deleteFile: ctx.api.value.deleteFile,
-      clear: ctx.api.value.clear,
-      openFilePicker: ctx.api.value.openFilePicker,
-    }))
+    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, !slots.default
+      ? renderDefaultStructure(ctx.api.value, { label: props.label, clearable: props.clearable }, { label: slots.label, dropzone: slots.dropzone })
+      : slots.default({
+          acceptedFiles: ctx.api.value.acceptedFiles,
+          remoteFiles: ctx.api.value.remoteFiles,
+          allFiles: ctx.api.value.allFiles,
+          uploadOf: ctx.api.value.uploadOf,
+          startUpload: ctx.api.value.startUpload,
+          cancelUpload: ctx.api.value.cancelUpload,
+          dragging: ctx.api.value.dragging,
+          empty: ctx.api.value.empty,
+          disabled: ctx.api.value.disabled,
+          maxFiles: ctx.api.value.maxFiles,
+          getFileSizeText: ctx.api.value.getFileSizeText,
+          setFiles: ctx.api.value.setFiles,
+          addFiles: ctx.api.value.addFiles,
+          deleteFile: ctx.api.value.deleteFile,
+          clear: ctx.api.value.clear,
+          openFilePicker: ctx.api.value.openFilePicker,
+        }))
   },
 })
 
@@ -286,3 +297,41 @@ export const XhFileUploadClearTrigger = defineComponent({
     return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+/** 标准结构里各部件对应的组件。 */
+const FILE_UPLOAD_PARTS = {
+  'label': XhFileUploadLabel,
+  'dropzone': XhFileUploadDropzone,
+  'hidden-input': XhFileUploadHiddenInput,
+  'list': XhFileUploadList,
+  'item': XhFileUploadItem,
+  'item-preview': XhFileUploadItemPreview,
+  'item-name': XhFileUploadItemName,
+  'item-size-text': XhFileUploadItemSizeText,
+  'item-progress': XhFileUploadItemProgress,
+  'item-delete-trigger': XhFileUploadItemDeleteTrigger,
+  'clear-trigger': XhFileUploadClearTrigger,
+}
+
+interface FileUploadStructureSlots {
+  label?: () => VNode[]
+  dropzone?: () => VNode[]
+}
+
+/**
+ * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 fileUploadStructure 渲，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。标题与投放区的内容由对应插槽接管。
+ */
+function renderDefaultStructure(api: FileUploadApi, options: { label?: string, clearable: boolean }, authored: FileUploadStructureSlots): VNode[] {
+  const nodes = fileUploadStructure(api, { ...options, slotted: name => authored[name as keyof FileUploadStructureSlots] != null })
+  return renderStructure(nodes, FILE_UPLOAD_PARTS, (node) => {
+    switch (node.slot?.name) {
+      case 'label':
+        return authored.label?.()
+      case 'dropzone':
+        return authored.dropzone?.()
+      default:
+        return undefined
+    }
+  })
+}

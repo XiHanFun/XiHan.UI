@@ -23,6 +23,8 @@ export {
 } from './file-upload.machine'
 export type { FileValidationOptions } from './file-upload.machine'
 export { fileUploadMeta } from './file-upload.meta'
+export { fileUploadStructure } from './file-upload.structure'
+export type { FileUploadStructureOptions } from './file-upload.structure'
 export type {
   FileRejectReason,
   FileUploadApi,

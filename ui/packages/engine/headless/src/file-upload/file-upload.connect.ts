@@ -129,6 +129,8 @@ export function connectFileUpload<T extends PropTypes>(
     required,
     empty,
     maxFiles,
+    translations: label,
+    fileKey: file => (isRemote(file) ? `remote:${file.id}` : fileUploadFileKey(service.refs, file)),
     getFileSizeText: file => (isRemote(file) ? (file.size == null ? '' : formatFileSize(file.size)) : formatFileSize(file.size)),
     setFiles: files => send({ type: 'FILES.SET', files }),
     addFiles: files => send({ type: 'FILES.ADD', files }),
@@ -164,6 +166,15 @@ export function connectFileUpload<T extends PropTypes>(
       'for': hiddenInputId,
       'data-disabled': dataAttr(disabled),
       'data-required': dataAttr(required),
+      // 原生激活会点中隐藏输入、当场弹出选择框：拦下，只把焦点交给投放区，没写投放区时交给选择钮；禁用时谁都不给
+      'onClick': (event: MouseEvent) => {
+        event.preventDefault()
+        if (disabled)
+          return
+        const root = isHTMLElement(event.currentTarget) ? event.currentTarget.closest<HTMLElement>(parts.root.selector) : null
+        const entry = root?.querySelector<HTMLElement>(parts.dropzone.selector) ?? root?.querySelector<HTMLElement>(parts.trigger.selector)
+        entry?.focus()
+      },
     }),
 
     /** 投放区兼作打开选择框的按钮，故报 role=button；trigger 宜放在投放区之外。 */

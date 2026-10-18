@@ -298,6 +298,7 @@ const translations = {
   'file-upload': {
     deleteItem: file => `Eliminar ${file.name}`,
     clearTrigger: 'Quitar todos los archivos',
+    dropzone: 'Arrastra archivos aquí o haz clic para examinar',
   },
   'filter-builder': {
     logic: logic => (logic === 'and' ? 'Todas' : 'Alguna'),

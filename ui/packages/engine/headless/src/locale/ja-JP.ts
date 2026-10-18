@@ -298,6 +298,7 @@ const translations = {
   'file-upload': {
     deleteItem: file => `${file.name} を削除`,
     clearTrigger: 'すべてのファイルをクリア',
+    dropzone: 'ここにファイルをドラッグするか、クリックして選択',
   },
   'filter-builder': {
     logic: logic => (logic === 'and' ? 'すべて' : 'いずれか'),

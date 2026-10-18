@@ -141,6 +141,8 @@ export interface FileUploadTranslations {
   deleteItem: (file: FileUploadFile) => string
   /** 清空按钮的可及名。 */
   clearTrigger: string
+  /** 标准结构里投放区的说明文字，也是它名字的一部分。 */
+  dropzone: string
 }
 
 /**
@@ -330,6 +332,13 @@ export interface FileUploadApi<T extends PropTypes = PropTypes> {
   empty: boolean
   /** 生效的数量上限（已按默认值与非法值归一）。 */
   maxFiles: number
+  /** 合上作者覆盖后的文案。 */
+  translations: FileUploadTranslations
+  /**
+   * 文件在列表里的稳定标识：本地文件取机器发的内部 id，远程附件取 `remote:<id>`。
+   * 同名同大小的两份本地文件标识不同；列表增删时据此认出哪一行还是那一行。
+   */
+  fileKey: (file: FileUploadFile) => string
   /** 字节数格式化为可读形式，供作者渲染 item-size-text；远程附件未报大小时为空串。 */
   getFileSizeText: (file: FileUploadFile) => string
   /**

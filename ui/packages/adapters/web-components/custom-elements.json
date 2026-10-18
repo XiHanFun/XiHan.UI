@@ -28567,7 +28567,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-file-upload>`：Light-DOM 行为宿主：作者写 root / label / dropzone / trigger / hidden-input\n与列表若干角色节点，元素运行 file-upload 状态机并把 connect 产出接上。\n\n投放区接收 dragover / dragleave / drop，悬停期间带 data-dragging；点击投放区、点击 trigger、\n或在投放区上按 Enter / Space 都打开系统文件选择框（经隐藏输入的 click）。\n接收的文件先经过校验（类型 / 大小 / 数量），接受的进入列表并派发 file-accept，\n被拒绝的连同原因派发 file-reject。\n\n条目节点由作者按 `allFiles` 渲染（远程附件在前、本地文件在后；监听 files-change 与 remote-files-change 重渲染），\n元素不生成节点。条目按文档序对应 allFiles 中的文件，也可以自带 `index` 属性显式声明。\nitem-name 与 item-size-text 的文字由元素填入（作者自行写了内容则不修改）。",
+          "description": "`<xh-file-upload>`：Light-DOM 行为宿主：作者写 root / label / dropzone / trigger / hidden-input\n与列表若干角色节点，元素运行 file-upload 状态机并把 connect 产出接上。\n\n投放区接收 dragover / dragleave / drop，悬停期间带 data-dragging；点击投放区、点击 trigger、\n或在投放区上按 Enter / Space 都打开系统文件选择框（经隐藏输入的 click）。\n接收的文件先经过校验（类型 / 大小 / 数量），接受的进入列表并派发 file-accept，\n被拒绝的连同原因派发 file-reject。\n\n条目节点由作者按 `allFiles` 渲染（远程附件在前、本地文件在后；监听 files-change 与 remote-files-change 重渲染），\n元素不生成节点。条目按文档序对应 allFiles 中的文件，也可以自带 `index` 属性显式声明。\nitem-name 与 item-size-text 的文字由元素填入（作者自行写了内容则不修改）。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）、投放区（字取 translations.dropzone）、表单影子、\n按 allFiles 一个文件一行的列表（缩略图、文件名、大小、进度与删除钮），clearable 时末尾带清空钮。投放区是唯一\n可聚焦的打开入口，不另铺选择钮。标题与投放区的内容可以由宿主直接子节点 `slot=\"label\"`、`slot=\"dropzone\"` 接管。",
           "name": "XhFileUploadElement",
           "cssParts": [
             {
@@ -28641,6 +28641,15 @@
               "type": {
                 "text": "{ parts: ['dropzone', 'hidden-input'], kind: 'group' }"
               }
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhFileUploadElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? fileUploadStructure(connectFileUpload(host.ctrl.service, wcNormalize), { label: host.label, clearable: host.clearable, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
             },
             {
               "kind": "field",
@@ -28832,6 +28841,24 @@
               "type": {
                 "text": "Partial<FileUploadTranslations> | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "clearable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "clearable"
             },
             {
               "kind": "field",
@@ -29246,6 +29273,22 @@
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它",
+              "name": "label",
+              "fieldName": "label"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "生成结构时列表之后带清空钮；手写部件时不使用它，写了 clear-trigger 即可清空",
+              "name": "clearable",
+              "fieldName": "clearable"
+            },
             {
               "type": {
                 "text": "string | string[] | undefined"

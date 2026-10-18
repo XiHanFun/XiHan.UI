@@ -112,6 +112,8 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 - `readOnly` 时列表改不动（选择、拖放、粘贴、删除与清空都不收），已经开始的传输照常；`required` 时标题画星号，列表为空时文件输入带原生 `required`。
 - `cancelUpload` 中止传输但保留文件，`startUpload` 让取消或失败的文件重新开传；删除文件同样中止它的传输。
 - `upload` 返回 `{ id }` 时，传完的文件转成服务器已有附件：从 `files` 移出、追加进 `remoteFiles`，表单值直接是附件记录。`remoteFiles` 受控时宿主写回含这个 id 的列表之后才移出。
+- 点标题只把焦点交给投放区（没写投放区时交给选择钮），不弹出选择框；`label` 的 `for` 仍指向隐藏输入，原生关联与必填提示照旧。禁用时投放区退出 Tab 序列，只读时留在 Tab 序列里，两者都报 `aria-disabled`、不收拖放与粘贴。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是投放区（说明文字取 `translations.dropzone`）、表单影子与文件列表，`clearable` 时末尾带清空钮。投放区是唯一可聚焦的打开入口，不另铺选择钮；列表里 `allFiles` 每个文件一行（缩略图、文件名、大小、进度与删除钮），按 `fileKey` 认行，删掉中间一行时替身留在原处淡出。Web Components 里标题与投放区的内容可以写在宿主的直接子节点 `slot="label"`、`slot="dropzone"` 上接管。
 
 ### 组合
 
@@ -210,6 +212,8 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhFileUploadRoot` | `default` | `FileUploadRootSlotProps` |  |
+| `XhFileUploadRoot` | `label` | — |  |
+| `XhFileUploadRoot` | `dropzone` | — | 不写默认插槽时投放区里的内容；未写时取 translations.dropzone。 |
 
 ### React 适配器 props
 
@@ -219,6 +223,9 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | --- | --- | --- | --- | --- |
 | `XhFileUploadItem` | `file` | `FileUploadFile` |  | 该行显示哪个文件（本地或远程附件）。 |
 | `XhFileUploadItem` | `index` | `number \| string` |  | 改用下标从 allFiles（远程在前、本地在后）中取文件，兼收字符串。 |
+| `XhFileUploadRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhFileUploadRoot` | `dropzone` | `ReactNode` |  | 不给 children 时投放区里的内容；未写时取 translations.dropzone。 |
+| `XhFileUploadRoot` | `clearable` | `boolean` |  | 不给 children 时列表之后带清空整份列表的按钮；给了 children 时放 clear-trigger 部件即可清空。 |
 | `XhFileUploadRoot` | `children` | `SlotChildren<FileUploadRootSlotProps>` |  |  |
 
 ### 状态
@@ -254,6 +261,8 @@ max-concurrent-uploads 限定同时在传的份数，多出来的排队依次补
 | `required` | `boolean` |  |
 | `empty` | `boolean` | 没有任何文件。清空按钮据此写 data-empty，空列表据此显示占位。 |
 | `maxFiles` | `number` | 生效的数量上限（已按默认值与非法值归一）。 |
+| `translations` | `FileUploadTranslations` | 合上作者覆盖后的文案。 |
+| `fileKey` | `(file: FileUploadFile) => string` | 文件在列表里的稳定标识：本地文件取机器发的内部 id，远程附件取 `remote:&lt;id&gt;`。 同名同大小的两份本地文件标识不同；列表增删时据此认出哪一行还是那一行。 |
 | `getFileSizeText` | `(file: FileUploadFile) => string` | 字节数格式化为可读形式，供作者渲染 item-size-text；远程附件未报大小时为空串。 |
 | `uploadOf` | `(file: FileUploadFile) => FileUploadSnapshot \| null` | 该条目的传输快照：远程附件恒为 done；本地文件未配置 upload 时为 null， 已配置而尚未开始传输时为 idle。 |
 | `startUpload` | `(file: File) => void` | 手动开始传输（autoUpload 关闭时）、失败或取消后重试；不在列表中或传输中的文件调用无效。 |
