@@ -33,6 +33,7 @@ const EXPECTED = [
   'arrow-up-right',
   'at-sign',
   'ban',
+  'barcode',
   'bell',
   'bell-off',
   'bold',
