@@ -3,6 +3,7 @@ import type { Root } from 'react-dom/client'
 import { attachHost } from '@xihan-ui/testing'
 import { act, createElement } from 'react'
 import { createRoot } from 'react-dom/client'
+import { XhConfigProvider } from '../src'
 import { declaredEvents, renderFixtureSlots, resolveRoot } from './fixture-element'
 
 /** 对外语义事件 → React 侧的回调 prop 名。跨适配器一致的那一份。 */
@@ -154,11 +155,12 @@ export function createReactHarness(): AdapterHarness {
         ? { children: undefined, slots: {} }
         : renderFixtureSlots(fixture.tree.children, fixture.component)
       render = (next) => {
-        root!.render(createElement(
+        const element = createElement(
           Root,
           { ...fixture.tree.attrs, ...slots, ...next, ...listeners },
           children,
-        ))
+        )
+        root!.render(fixture.config ? createElement(XhConfigProvider, { config: fixture.config }, element) : element)
       }
       await inAct(async () => {
         render!(props)
