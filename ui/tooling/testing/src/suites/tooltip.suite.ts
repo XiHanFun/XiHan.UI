@@ -409,7 +409,9 @@ export const tooltipSuite: ConformanceSuite = {
       name: '委托：指针移出容器收起，锚点上的 aria-describedby 随之撤掉',
       spec: { apg: APG },
       fixture: delegateFixture,
-      props: { delegate: '[data-anchor]', platform: 'other', openDelay: 50, closeDelay: 0, skipDelayDuration: 0 },
+      // 收起延时不写 0：0 毫秒的定时器落在哪一步取决于宿主冲刷时让不让出宏任务，逐帧比对会把同一个行为比成两样；
+      // 写一段真实的延时，移出那一步三端都还开着，下一步一起等到收起
+      props: { delegate: '[data-anchor]', platform: 'other', openDelay: 50, closeDelay: 50, skipDelayDuration: 0 },
       steps: [
         { kind: 'raw', why: '悬停写了 data-xh-tooltip 的锚点', run: dispatchOnAnchor('delete', 'pointerover') },
         { kind: 'settle', until: { attr: { part: 'content', name: 'data-state', value: 'open' } } },
