@@ -78,6 +78,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {number} max-concurrent-uploads - 同时在传的文件数上限，默认不限；到了上限的报 queued 排队
  * @attr {boolean} directory - 选择目录而不是文件（隐藏输入带 webkitdirectory）
  * @attr {'user'|'environment'} capture - 移动端直接调用摄像头 / 麦克风采集
+ * @attr {string} link-target - 附件链接（item-link）的打开方式，缺省在当前页打开；写 _blank 时链接同时带 rel="noopener noreferrer"
  * @attr {boolean} auto-upload - 接受后即自动开始传输（须配置 upload 实现），默认 true；写 auto-upload="false" 关闭
  * @fires files-change - 列表变化；detail 为 `{ files: File[] }`
  * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
@@ -96,7 +97,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart item - role=listitem 的一行，可自带 index 属性声明对应第几个文件
  * @csspart item-preview - 缩略图占位（aria-hidden），带 data-file-type 供皮肤选择图标
  * @csspart item-progress - 传输进度条（aria-hidden），带 data-state 与写有进度比例的私有槽
- * @csspart item-name - 文件名（由元素填入）
+ * @csspart item-name - 文件名（由元素填入；里面写了 item-link 时字归链接）
+ * @csspart item-link - 附件链接，落在文件名里：href 是远程附件 url 经安全判定后的地址（不安全时不写），文字由元素填入；禁用时退出 Tab 序列
  * @csspart item-size-text - 可读的文件大小（由元素填入）
  * @csspart item-delete-trigger - 删除该条
  * @csspart clear-trigger - 清空整份列表；列表为空时写 data-empty，按钮照常在位可聚焦
@@ -141,6 +143,7 @@ export class XhFileUploadElement extends XhElement {
     maxConcurrentUploads: { converter: NUMBER_CONVERTER, attribute: 'max-concurrent-uploads' },
     directory: { converter: BOOLEAN_CONVERTER },
     capture: { converter: STRING_CONVERTER },
+    linkTarget: { converter: STRING_CONVERTER, attribute: 'link-target' },
     translations: { attribute: false },
     label: { converter: STRING_CONVERTER },
     clearable: { converter: BOOLEAN_CONVERTER },
@@ -167,6 +170,7 @@ export class XhFileUploadElement extends XhElement {
   declare maxConcurrentUploads?: number
   declare directory?: boolean
   declare capture?: 'user' | 'environment'
+  declare linkTarget?: string
   declare translations?: Partial<FileUploadTranslations>
   declare label?: string
   declare clearable?: boolean
@@ -255,6 +259,7 @@ export class XhFileUploadElement extends XhElement {
       maxConcurrentUploads: this.maxConcurrentUploads,
       directory: this.directory ?? false,
       capture: this.capture,
+      linkTarget: this.linkTarget,
       translations: this.translations,
       onFilesChange: this.notifyChange,
       onClear: this.notifyClear,
@@ -345,7 +350,7 @@ export class XhFileUploadElement extends XhElement {
   }
 
   /** 条目内的子部件名，交还与逐个打属性都按这一份走。 */
-  private static readonly ITEM_PARTS = ['item-preview', 'item-progress', 'item-name', 'item-size-text', 'item-delete-trigger'] as const
+  private static readonly ITEM_PARTS = ['item-preview', 'item-progress', 'item-name', 'item-link', 'item-size-text', 'item-delete-trigger'] as const
 
   /** 位子比文件多时整条交还：撤掉上一帧写的属性与处理器，代填的文字一并抹掉。 */
   private releaseItem(el: HTMLElement): void {
@@ -395,7 +400,13 @@ export class XhFileUploadElement extends XhElement {
         this.spreader.spread(progress, api.getItemProgressProps(item) as Record<string, unknown>)
       for (const name of this.partsIn(el, 'item-name')) {
         this.spreader.spread(name, api.getItemNameProps(item) as Record<string, unknown>)
-        this.fillText(name, file.name)
+        // 文件名里写了链接时字归链接
+        if (this.partsIn(name, 'item-link').length === 0)
+          this.fillText(name, file.name)
+      }
+      for (const link of this.partsIn(el, 'item-link')) {
+        this.spreader.spread(link, api.getItemLinkProps(item) as Record<string, unknown>)
+        this.fillText(link, file.name)
       }
       for (const size of this.partsIn(el, 'item-size-text')) {
         this.spreader.spread(size, api.getItemSizeTextProps(item) as Record<string, unknown>)

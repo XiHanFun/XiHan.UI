@@ -18,6 +18,7 @@ export const fileUploadAnatomy = createAnatomy('file-upload', [
   'list',
   'item',
   'item-name',
+  'item-link',
   'item-size-text',
   'item-preview',
   'item-progress',

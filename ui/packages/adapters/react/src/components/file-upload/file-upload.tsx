@@ -81,6 +81,8 @@ export interface XhFileUploadRootProps extends Omit<ComponentPropsWithRef<'div'>
   /** 选择整个目录。 */
   directory?: boolean
   capture?: 'user' | 'environment'
+  /** 附件链接的打开方式（target），缺省在当前页打开；写 _blank 时同时带 rel="noopener noreferrer"。 */
+  linkTarget?: string
   translations?: Partial<FileUploadTranslations>
   onFilesChange?: FileUploadProps['onFilesChange']
   /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
@@ -123,6 +125,7 @@ export function XhFileUploadRoot({
   maxConcurrentUploads,
   directory,
   capture,
+  linkTarget,
   translations,
   onFilesChange,
   onClear,
@@ -161,6 +164,7 @@ export function XhFileUploadRoot({
     maxConcurrentUploads,
     directory,
     capture,
+    linkTarget,
     translations,
     onFilesChange,
     onClear,
@@ -315,6 +319,19 @@ export function XhFileUploadItemName({ children, ...rest }: XhFileUploadItemName
   )
 }
 
+export interface XhFileUploadItemLinkProps extends ComponentPropsWithRef<'a'> {}
+
+/** 附件链接：指向文件的安全地址，未提供内容时显示文件名。 */
+export function XhFileUploadItemLink({ children, ...rest }: XhFileUploadItemLinkProps): ReactNode {
+  const ctx = useFileUploadContext()
+  const item = useFileUploadItemContext()
+  return (
+    <a {...mergeReactProps(ctx.api.getItemLinkProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children ?? item.file.name}
+    </a>
+  )
+}
+
 export interface XhFileUploadItemSizeTextProps extends ComponentPropsWithRef<'span'> {}
 
 /** 未提供内容时显示格式化后的文件大小。 */
@@ -385,6 +402,7 @@ const FILE_UPLOAD_PARTS = {
   'item': XhFileUploadItem,
   'item-preview': XhFileUploadItemPreview,
   'item-name': XhFileUploadItemName,
+  'item-link': XhFileUploadItemLink,
   'item-size-text': XhFileUploadItemSizeText,
   'item-progress': XhFileUploadItemProgress,
   'item-delete-trigger': XhFileUploadItemDeleteTrigger,

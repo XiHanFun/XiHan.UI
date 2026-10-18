@@ -36545,6 +36545,81 @@
       "description": "file-upload 的 item 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-file-upload-item-link-fg",
+      "component": "file-upload",
+      "part": [
+        "item-link"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand"
+      ],
+      "visibility": "public",
+      "description": "file-upload 的 item-link 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-file-upload-item-link-fg-hover",
+      "component": "file-upload",
+      "part": [
+        "item-link"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "@media (hover: hover)",
+        "disabled",
+        "hover",
+        "not([data-disabled])"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand-strong"
+      ],
+      "visibility": "public",
+      "description": "file-upload 的 item-link 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-file-upload-item-link-radius",
+      "component": "file-upload",
+      "part": [
+        "item-link"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "file-upload 的 item-link 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-file-upload-item-link-underline-offset",
+      "component": "file-upload",
+      "part": [
+        "item-link"
+      ],
+      "property": [
+        "text-underline-offset"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "file-upload 的 item-link 部件 text-underline-offset 覆盖槽。"
+    },
+    {
       "name": "--xh-file-upload-item-mark-size",
       "component": "file-upload",
       "part": [

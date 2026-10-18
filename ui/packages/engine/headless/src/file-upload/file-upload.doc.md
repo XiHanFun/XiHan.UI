@@ -23,7 +23,7 @@
 - `cancelUpload` 中止传输但保留文件，`startUpload` 让取消或失败的文件重新开传；删除文件同样中止它的传输。
 - `upload` 返回 `{ id }` 时，传完的文件转成服务器已有附件：从 `files` 移出、追加进 `remoteFiles`，表单值直接是附件记录。`remoteFiles` 受控时宿主写回含这个 id 的列表之后才移出。
 - 点标题只把焦点交给投放区（没写投放区时交给选择钮），不弹出选择框；`label` 的 `for` 仍指向隐藏输入，原生关联与必填提示照旧。禁用时投放区退出 Tab 序列，只读时留在 Tab 序列里，两者都报 `aria-disabled`、不收拖放与粘贴。
-- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是投放区（说明文字取 `translations.dropzone`）、表单影子与文件列表，`clearable` 时末尾带清空钮。投放区是唯一可聚焦的打开入口，不另铺选择钮；列表里 `allFiles` 每个文件一行（缩略图、文件名、大小、进度与删除钮），按 `fileKey` 认行，删掉中间一行时替身留在原处淡出。Web Components 里标题与投放区的内容可以写在宿主的直接子节点 `slot="label"`、`slot="dropzone"` 上接管。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是投放区（说明文字取 `translations.dropzone`）、表单影子与文件列表，`clearable` 时末尾带清空钮。投放区是唯一可聚焦的打开入口，不另铺选择钮；列表里 `allFiles` 每个文件一行（缩略图、文件名、大小、进度与删除钮），按 `fileKey` 认行，删掉中间一行时替身留在原处淡出。远程附件的 `url` 经安全判定（只放行 http、https、mailto、tel 与相对地址）后，文件名铺成链接 `item-link`，打开方式取 `linkTarget`（缺省当前页，`_blank` 时带 `rel="noopener noreferrer"`）；地址不安全时文件名是纯文字。只读时链接照常可聚焦、可打开，禁用时退出 Tab 序列。Web Components 里标题与投放区的内容可以写在宿主的直接子节点 `slot="label"`、`slot="dropzone"` 上接管。
 
 ## 组合
 

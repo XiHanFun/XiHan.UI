@@ -219,6 +219,11 @@ export interface FileUploadSchema extends MachineSchema {
     /** 移动端直接调用摄像头 / 麦克风采集。 */
     capture?: 'user' | 'environment'
     /**
+     * 附件链接（item-link）的打开方式，写到链接的 target 上；缺省在当前页打开。
+     * 写 _blank 时链接同时带 rel="noopener noreferrer"。
+     */
+    linkTarget?: string
+    /**
      * 服务器已有附件（编辑表单回显）。提供即受控：cell 直读 prop，删改只发
      * onRemoteFilesChange 不落内部值。条目计入 maxFiles 总量，与本地文件一起渲染。
      */
@@ -339,6 +344,11 @@ export interface FileUploadApi<T extends PropTypes = PropTypes> {
    * 同名同大小的两份本地文件标识不同；列表增删时据此认出哪一行还是那一行。
    */
   fileKey: (file: FileUploadFile) => string
+  /**
+   * 文件可打开的地址：远程附件的 url 经安全判定（只放行 http、https、mailto、tel 与相对地址）后的结果；
+   * 本地文件、没有 url 或地址不安全时为 undefined，此时标准结构只铺纯文字的文件名。
+   */
+  fileHref: (file: FileUploadFile) => string | undefined
   /** 字节数格式化为可读形式，供作者渲染 item-size-text；远程附件未报大小时为空串。 */
   getFileSizeText: (file: FileUploadFile) => string
   /**
@@ -365,6 +375,11 @@ export interface FileUploadApi<T extends PropTypes = PropTypes> {
   getListProps: () => T['element']
   getItemProps: (props: FileUploadItemProps) => T['element']
   getItemNameProps: (props: FileUploadItemProps) => T['element']
+  /**
+   * 附件链接：落在文件名里、指向 fileHref 的 <a>。地址不安全时不写 href；target 取 linkTarget，_blank 时带
+   * rel="noopener noreferrer"。只读时照常可聚焦、可打开；禁用时退出 Tab 序列、报 aria-disabled，点了不跳转。
+   */
+  getItemLinkProps: (props: FileUploadItemProps) => T['element']
   getItemSizeTextProps: (props: FileUploadItemProps) => T['element']
   getItemPreviewProps: (props: FileUploadItemProps) => T['element']
   /** 该条目的传输进度条，纯装饰；进度比例写在私有槽上供皮肤计算宽度。 */
