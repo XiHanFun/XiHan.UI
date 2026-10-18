@@ -712,6 +712,7 @@ const translations = {
     retry: '再試行',
     branchEmpty: '下位の項目はありません',
     searchInput: '検索',
+    searchPlaceholder: '選択肢を検索',
     noMatch: '一致する項目がありません',
   },
   'truncate': { expand: 'もっと見る', collapse: '一部を表示' },

@@ -725,6 +725,7 @@ const translations = {
     retry: '重试',
     branchEmpty: '没有下级选项',
     searchInput: '搜索',
+    searchPlaceholder: '搜索选项',
     noMatch: '无匹配结果',
   },
   'truncate': { expand: '展开', collapse: '收起' },

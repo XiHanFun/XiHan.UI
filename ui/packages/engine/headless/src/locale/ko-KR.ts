@@ -712,6 +712,7 @@ const translations = {
     retry: '다시 시도',
     branchEmpty: '하위 항목 없음',
     searchInput: '검색',
+    searchPlaceholder: '옵션 검색',
     noMatch: '일치하는 항목 없음',
   },
   'truncate': { expand: '더 보기', collapse: '접기' },

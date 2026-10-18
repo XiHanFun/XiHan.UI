@@ -738,6 +738,7 @@ const translations = {
     retry: 'Повторить',
     branchEmpty: 'Нет вложенных элементов',
     searchInput: 'Поиск',
+    searchPlaceholder: 'Поиск вариантов',
     noMatch: 'Нет совпадений',
   },
   'truncate': { expand: 'Показать больше', collapse: 'Свернуть' },
