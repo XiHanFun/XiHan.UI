@@ -529,7 +529,7 @@ export function connectTable<T extends PropTypes>(
   }
 
   /**
-   * 纵向合并格的高度：从起点行的内容盒上沿铺到合并区里最后一条在场的行的下沿；多出自己那一行的部分用负的
+   * 纵向合并格的高度：从起点行的内容盒上沿铺到合并区里最后一条在场的行的内容盒下沿；多出自己那一行的部分用负的
    * 下外边距让回去，自己那一行的高度因此不被它撑高。行位还没量到时不写，合并格先按普通格子排。
    */
   const rowSpanStyle = (startRowIndex: number, rowSpan: number): Record<string, string> => {

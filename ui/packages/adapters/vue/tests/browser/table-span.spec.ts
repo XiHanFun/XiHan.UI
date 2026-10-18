@@ -96,6 +96,24 @@ describe('单元格合并', () => {
     expect(Math.round(rect(cellSel('b', 'name')).left)).toBe(Math.round(rect(cellSel('a', 'name')).left))
   })
 
+  it('行间线画在行的下边框上时，纵向合并格铺到最后一行的内容盒下沿，起点行不会一帧帧被撑高', async () => {
+    const style = document.createElement('style')
+    style.textContent = '[data-scope="table"][data-part="body"] > [data-scope="table"][data-part="row"] { border-block-end: 1px solid; }'
+    document.head.append(style)
+    try {
+      mount(render)
+      await expect.poll(() => Math.round(rect(cellSel('a', 'dept')).bottom)).toBe(Math.round(rect(rowSel('b')).bottom) - 1)
+      for (let i = 0; i < 10; i++)
+        await new Promise(resolve => requestAnimationFrame(resolve))
+      // 起点行的格子与别的行一样高：首行没有行首分隔线，比的是格子不是行
+      expect(Math.round(rect(cellSel('a', 'name')).height)).toBe(Math.round(rect(cellSel('c', 'name')).height))
+      expect(Math.round(rect(cellSel('a', 'dept')).bottom)).toBe(Math.round(rect(rowSel('b')).bottom) - 1)
+    }
+    finally {
+      style.remove()
+    }
+  })
+
   it('横向合并：起点格的宽度等于跨过的两列，同一行被跨过的格子不渲染', async () => {
     mount(render)
     await expect.poll(() => document.querySelector(cellSel('c', 'q2'))?.getBoundingClientRect().width).toBe(0)
