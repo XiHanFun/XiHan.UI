@@ -41,6 +41,13 @@ export interface XhConfigBase {
  */
 export const SIZE_IS_NOT_AXIS: ReadonlySet<string> = new Set(['floating-panel', 'resizable'])
 
+/**
+ * 不吃作用域禁用的组件：字段集（或全局配置里的 disabled）压不到它们，disabled 只认实例上写的值。
+ * 选择器这类控件的列表里内嵌的滚动条因此不随控件一起禁用。
+ * 判据由 check-config-wiring 守住：名单里的每一项都得是 props 声明了 disabled 的组件。
+ */
+export const DISABLED_IS_NOT_SCOPED: ReadonlySet<string> = new Set(['scrollbar'])
+
 /** 逐组件合并文案：同名组件下按键并，内层胜出。 */
 export function mergeTranslations(
   base: XhTranslationOverrides | undefined,
@@ -123,7 +130,7 @@ export function fillXhConfigDefaults<T extends object>(
     ;(out as Record<string, unknown>)[key] = value
   }
   // 作用域禁用不是「没给才填」，是压过：外层禁了，组件自己写 false 也照样禁用
-  if (config.disabled === true && 'disabled' in props && (props as Record<string, unknown>).disabled !== true) {
+  if (config.disabled === true && !DISABLED_IS_NOT_SCOPED.has(component) && 'disabled' in props && (props as Record<string, unknown>).disabled !== true) {
     out ??= { ...props }
     ;(out as Record<string, unknown>).disabled = true
   }

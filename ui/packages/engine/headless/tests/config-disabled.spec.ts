@@ -2,7 +2,7 @@
 // 与原生 fieldset[disabled] 同一条语义：外面禁了，里面写 false 也拦不住；外面没禁，里面自己禁的照旧禁。
 // 只落在声明了 disabled 的组件上，别的组件不平白多出一个键。
 import { describe, expect, it } from 'vitest'
-import { fillXhConfigDefaults, mergeXhConfig } from '../src/config/config-merge'
+import { DISABLED_IS_NOT_SCOPED, fillXhConfigDefaults, mergeXhConfig } from '../src/config/config-merge'
 
 describe('配置里的 disabled', () => {
   it('作用域禁用压过组件自己的 false 与 undefined', () => {
@@ -15,6 +15,14 @@ describe('配置里的 disabled', () => {
     expect(fillXhConfigDefaults('checkbox', own, { disabled: false })).toBe(own)
     const open = { disabled: false }
     expect(fillXhConfigDefaults('checkbox', open, {})).toBe(open)
+  })
+
+  it('不吃作用域禁用的组件（滚动条）只认自己的值', () => {
+    expect([...DISABLED_IS_NOT_SCOPED]).toEqual(['scrollbar'])
+    const open = { disabled: undefined }
+    expect(fillXhConfigDefaults('scrollbar', open, { disabled: true })).toBe(open)
+    const own = { disabled: true }
+    expect(fillXhConfigDefaults('scrollbar', own, { disabled: true })).toBe(own)
   })
 
   it('没声明 disabled 的组件不多出这个键', () => {

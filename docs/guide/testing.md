@@ -102,7 +102,7 @@ interface DomSnapshot {
 
 ### 全局配置与逐实例等价
 
-`runConfigParity` 用同一批规格核对全局配置：组件根上声明了 `size`、`locale`、`disabled`、`translations` 中的哪几个，就把它们各写一次在实例上、再经全局配置（Vue 的 `provideXhConfig`、React 的 `XhConfigProvider`、Web Components 外包的 `<xh-config>`）给一次，两次渲出的文档必须逐字相同。哪些组件声明了哪些键取公开面基线的 `componentProps`；文案用英文包每一条换成带键名的标记。作者写结构与组件铺标准结构各比一次。
+`runConfigParity` 用同一批规格核对全局配置：组件根上声明了 `size`、`locale`、`disabled`、`translations` 中的哪几个，就把它们各写一次在实例上、再经全局配置（Vue 的 `provideXhConfig`、React 的 `XhConfigProvider`、Web Components 外包的 `<xh-config>`）给一次，两次渲出的文档必须逐字相同。哪些组件声明了哪些键取公开面基线的 `componentProps`；文案用英文包每一条换成带键名的标记。作者写结构与组件铺标准结构各比一次。`size` 同名不同义的组件（`SIZE_IS_NOT_AXIS`）不比 size，不吃作用域禁用的组件（`DISABLED_IS_NOT_SCOPED`，即滚动条）不比 disabled。
 
 组件没把全局配置接进来时，全局值到不了它，两边在这里分岔：没经 `withXhConfig`（Web Components 是 `this.configured`）、桶名写错、读了原始 props，或者 React 交出去的 props 里缺了那个键（React 的 props 只有作者写了的键，全局值只垫进已有的键）。这一项比整份文档而不是 `DomSnapshot`：文案与按 locale 写的数字只在文本里。夹具看不出某个键（收起的浮层）时无从比较，按通过处理；还没定论的分歧登记在豁免表里，两边一致后豁免判过期。
 
