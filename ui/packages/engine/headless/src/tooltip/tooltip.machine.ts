@@ -7,11 +7,12 @@
 
 import type { PositionResult, Transition, VirtualAnchor } from '@xihan-ui/core'
 import type { TooltipGroup } from './tooltip.group'
-import type { TooltipRefs, TooltipSchema } from './tooltip.types'
+import type { TooltipAnchor, TooltipRefs, TooltipSchema } from './tooltip.types'
 import { createDismissLayer, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 import { setupLayerTransaction, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
+import { linkDescription, unlinkDescription } from './tooltip.delegate'
 import { pageTooltipGroup } from './tooltip.group'
 
 /** 没传 placement 时浮层交给定位引擎的落点。 */
@@ -65,8 +66,8 @@ const CLOSE_FROM_CLOSING: Array<Transition<TooltipSchema>> = [
 function openNow(mark: 'markFocusOpened' | 'clearFocusOpened'): Array<Transition<TooltipSchema>> {
   return [
     { guard: 'isDisabled', target: 'closed' },
-    { guard: 'isOpenControlled', target: 'closed', actions: [mark, 'syncInstant', 'invokeOnOpen'] },
-    { target: 'visible.open', actions: [mark, 'syncInstant', 'invokeOnOpen'] },
+    { guard: 'isOpenControlled', target: 'closed', actions: [mark, 'assignAnchor', 'syncInstant', 'invokeOnOpen'] },
+    { target: 'visible.open', actions: [mark, 'assignAnchor', 'syncInstant', 'invokeOnOpen'] },
   ]
 }
 
@@ -84,6 +85,7 @@ export const tooltipMachine = createMachine({
     // 记住这次是被聚焦打开的：聚焦态的提示不该被一次纯鼠标移出收走
     focusOpened: cell<boolean>(() => ({ defaultValue: false })),
     instant: cell<boolean>(() => ({ defaultValue: false })),
+    anchor: cell<TooltipAnchor | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({
     config: null,
@@ -95,6 +97,8 @@ export const tooltipMachine = createMachine({
     group: null,
     cursor: null,
     reanchor: null,
+    hovered: null,
+    pressed: null,
   }),
   initialState: ({ prop }) => (openAtMount(prop) ? 'visible' : 'closed'),
   // Layer 与消解资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
@@ -112,7 +116,7 @@ export const tooltipMachine = createMachine({
         // 悬停先进等待态，到点才展开，避免指针路过就闪一堆提示
         'POINTER.ENTER': [
           { guard: 'isDisabled' },
-          { target: 'opening', actions: ['trackCursor'] },
+          { target: 'opening', actions: ['trackCursor', 'assignAnchor'] },
         ],
         // 聚焦与命令式展开都不走延时
         'FOCUS': OPEN_FROM_FOCUS,
@@ -124,6 +128,8 @@ export const tooltipMachine = createMachine({
       effects: ['waitForOpenDelay'],
       on: {
         'after.openDelay': OPEN_FROM_POINTER,
+        // 委托模式下等待期内指针挪到另一个锚点：换锚点，等待照旧
+        'POINTER.ENTER': { actions: ['assignAnchor'] },
         'FOCUS': OPEN_FROM_FOCUS,
         // 等待期内的命令式展开与 closed 态一致，立即展开
         'OPEN': OPEN_FROM_POINTER,
@@ -139,7 +145,7 @@ export const tooltipMachine = createMachine({
     // 复合态：两个子态下浮层都可见，定位挂在这一层，指针在两态间来回不重挂
     visible: {
       initial: 'open',
-      effects: ['trackPosition', 'trackGroup'],
+      effects: ['trackPosition', 'trackGroup', 'trackDescription'],
       exit: ['clearInstant'],
       on: {
         'CONTROLLED.CLOSE': { target: 'closed' },
@@ -147,6 +153,9 @@ export const tooltipMachine = createMachine({
       states: {
         open: {
           on: {
+            // 委托模式下指针或焦点挪到另一个锚点：提示直接换过去，不等延时、不重播进场
+            'POINTER.ENTER': { guard: 'hasAnchor', actions: ['clearFocusOpened', 'assignAnchor'] },
+            'FOCUS': { guard: 'hasAnchor', actions: ['markFocusOpened', 'assignAnchor'] },
             // 移出先进等待态，指针在 trigger 与浮层之间穿行时不闪断。
             // 聚焦打开的提示例外，由 BLUR 负责收起（无 target 即消费掉事件、原地不动）
             'POINTER.LEAVE': [
@@ -164,8 +173,8 @@ export const tooltipMachine = createMachine({
           on: {
             'after.closeDelay': CLOSE_FROM_CLOSING,
             // 等待期内回到锚点即撤销收起
-            'POINTER.ENTER': { target: 'visible.open', actions: ['trackCursor'] },
-            'FOCUS': { target: 'visible.open' },
+            'POINTER.ENTER': { target: 'visible.open', actions: ['trackCursor', 'assignAnchor'] },
+            'FOCUS': { target: 'visible.open', actions: ['assignAnchor'] },
             'BLUR': CLOSE_FROM_CLOSING,
             'ESCAPE': CLOSE_FROM_CLOSING,
             'POINTER.DOWN': CLOSE_FROM_CLOSING,
@@ -181,6 +190,10 @@ export const tooltipMachine = createMachine({
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
       isDisabled: ({ prop }) => !!prop('disabled'),
       isFocusOpened: ({ context }) => context.get('focusOpened'),
+      hasAnchor: ({ event }) => {
+        const e = event.current()
+        return (e.type === 'POINTER.ENTER' || e.type === 'FOCUS') && e.anchor !== undefined
+      },
     },
     actions: {
       clearOpenedAtMount,
@@ -194,6 +207,16 @@ export const tooltipMachine = createMachine({
         context.set('instant', group.isWarm(scope.id, skipDelayOf(prop('skipDelayDuration'), group)))
       },
       clearInstant: ({ context }) => context.set('instant', false),
+      // 委托模式：事件带着锚点来时记下它，换了元素就按新锚点重挂一轮定位
+      assignAnchor: ({ context, event, refs }) => {
+        const e = event.current()
+        if ((e.type !== 'POINTER.ENTER' && e.type !== 'FOCUS') || !e.anchor)
+          return
+        const previous = context.get('anchor')
+        context.set('anchor', e.anchor)
+        if (previous?.el !== e.anchor.el)
+          refs.get('reanchor')?.()
+      },
       // 只记指针的落点：触屏没有悬停落点，锚回 trigger；没带落点的进入（指针移进浮层）不动已记的那一点
       trackCursor: ({ refs, prop, event }) => {
         const e = event.current()
@@ -247,7 +270,9 @@ export const tooltipMachine = createMachine({
             }
             return anchor
           }
-          return refs.get('getAnchorEl')()
+          // 委托模式锚在当前锚点上；还没有锚点（命令式打开）时锚回容器
+          const anchor = prop('delegate') ? context.get('anchor') : null
+          return anchor?.el ?? refs.get('getAnchorEl')()
         },
         getFloating: () => refs.get('getFloatingEl')(),
         options: () => ({
@@ -262,6 +287,31 @@ export const tooltipMachine = createMachine({
         }),
         onResult: result => context.set('position', result),
       }),
+      /**
+       * 委托模式下提示文字与锚点的名字不同时，锚点的 aria-describedby 引用 text 部件；换锚点时挪过去，收起时撤掉。
+       * 文字与名字相同就不引用，读屏不念两遍；shortcut 部件从不进描述，快捷键由锚点自己的 aria-keyshortcuts 报。
+       */
+      trackDescription: ({ context, prop, scope, track }) => {
+        const { text: id } = scope.ids('tooltip', 'text')
+        let linked: Element | null = null
+        const sync = (): void => {
+          const anchor = prop('delegate') ? context.get('anchor') : null
+          const next = anchor?.described ? anchor.el : null
+          if (next === linked)
+            return
+          if (linked)
+            unlinkDescription(linked, id)
+          if (next)
+            linkDescription(next, id)
+          linked = next
+        }
+        sync()
+        track([context.dep('anchor')], sync)
+        return () => {
+          if (linked)
+            unlinkDescription(linked, id)
+        }
+      },
       /** 露面即登记进所在组的热窗口：组里别的开着的提示随之收起；收起时撤下并记下收起时刻。 */
       trackGroup: ({ scope, send, refs }) => groupOf(refs).join(scope.id, () => send({ type: 'CLOSE' })),
       /** 浮层退场完成前保留原栈位；关闭后不再响应消解，不建焦点域、不锁滚动。 */

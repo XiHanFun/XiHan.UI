@@ -708,6 +708,7 @@ const translations = {
     outputError: 'Échec',
   },
   'toolbar': { overflowTrigger: 'Plus' },
+  'tooltip': { keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform) },
   'tour': { close: 'Fermer', progress: (step, count) => `Étape ${step} sur ${count}` },
   'transfer': { toTarget: 'Déplacer vers la liste cible', toSource: 'Déplacer vers la liste source', sourceTitle: 'Liste source', targetTitle: 'Liste cible', selectAll: 'Tout sélectionner', empty: 'Aucune donnée', loading: 'Chargement' },
   'tree': drag,

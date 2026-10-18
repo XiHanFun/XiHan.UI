@@ -705,6 +705,7 @@ const translations = {
     outputError: 'Fehlgeschlagen',
   },
   'toolbar': { overflowTrigger: 'Mehr' },
+  'tooltip': { keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform) },
   'tour': { close: 'Schließen', progress: (step, count) => `Schritt ${step} von ${count}` },
   'transfer': { toTarget: 'In Zielliste verschieben', toSource: 'In Quellliste verschieben', sourceTitle: 'Quellliste', targetTitle: 'Zielliste', selectAll: 'Alle auswählen', empty: 'Keine Daten', loading: 'Wird geladen' },
   'tree': drag,

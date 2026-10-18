@@ -1308,6 +1308,8 @@ export {
   XhTooltipPositioner,
   XhTooltipProvider,
   XhTooltipRoot,
+  XhTooltipShortcut,
+  XhTooltipText,
   XhTooltipTrigger,
 } from './components/tooltip/tooltip'
 export type { TooltipRootSlotProps } from './components/tooltip/tooltip'

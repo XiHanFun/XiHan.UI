@@ -712,6 +712,7 @@ const translations = {
     outputError: '失败',
   },
   'toolbar': { overflowTrigger: '更多' },
+  'tooltip': { keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform) },
   'tour': { close: '关闭', progress: (step, count) => `第 ${step} 步，共 ${count} 步` },
   'transfer': { toTarget: '移到目标列表', toSource: '移回源列表', sourceTitle: '源列表', targetTitle: '目标列表', selectAll: '全选', empty: '暂无数据', loading: '加载中' },
   'tree': drag,

@@ -8,8 +8,12 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TooltipApi, TooltipSchema } from './tooltip.types'
 import { dataAttr } from '@xihan-ui/core'
+import { formatHotkeyLabel, HOTKEY_TEXT_EN_US } from '@xihan-ui/core/hotkey'
+import { TOOLTIP_EN_US } from '../locale/en-US'
 import { overlayArrowVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
+import { resolveTranslations } from '../shared/translations'
 import { tooltipAnatomy } from './tooltip.anatomy'
+import { readTooltipAnchor } from './tooltip.delegate'
 import { TOOLTIP_DEFAULT_PLACEMENT } from './tooltip.machine'
 
 const parts = tooltipAnatomy.build()
@@ -18,14 +22,29 @@ export function connectTooltip<T extends PropTypes>(
   service: Service<TooltipSchema>,
   normalize: NormalizeProps<T>,
 ): TooltipApi<T> {
-  const { state, context, prop, send, scope } = service
+  const { state, context, prop, send, scope, refs } = service
   // visible 的两个子态下浮层都可见（closing 是收起前的等待态）
   const open = state.matches('visible')
   // 展开等待期：浮层还没入栈，Escape 由 trigger 就地撤销
   const pending = state.matches('opening')
   const disabled = !!prop('disabled')
   const followCursor = !!prop('followCursor')
-  const ids = scope.ids('tooltip', 'trigger', 'content')
+  const ids = scope.ids('tooltip', 'trigger', 'content', 'text')
+  // 委托模式：空串与没写一样，不进委托
+  const delegate = prop('delegate') || undefined
+  const anchor = delegate ? context.get('anchor') : null
+  const translations = resolveTranslations(TOOLTIP_EN_US, prop('translations'))
+  const shortcut = anchor?.keys
+    ? formatHotkeyLabel(anchor.keys, anchor.platform, { keyName: HOTKEY_TEXT_EN_US.keyName, keyLabel: translations.keyLabel })
+    : null
+  // 事件落点所在的锚点；容器是绑着监听器的那个 trigger
+  const anchorAt = (event: Event): ReturnType<typeof readTooltipAnchor> =>
+    readTooltipAnchor(event.currentTarget as Element, event.target, delegate!, prop('platform'))
+  // 委托模式下指针或焦点挪到了容器外：relatedTarget 不在容器里（或没有）
+  const leftContainer = (event: PointerEvent | FocusEvent): boolean => {
+    const next = event.relatedTarget as Node | null
+    return !next || !(event.currentTarget as Element).contains(next)
+  }
   const stateAttr = open ? 'open' : 'closed'
   // 定位结果由 trackPosition 效应写进 context，这里只读结果，不查 DOM、不调引擎
   const position = context.get('position')
@@ -41,34 +60,83 @@ export function connectTooltip<T extends PropTypes>(
   return {
     open,
     setOpen,
-    getTriggerProps: () => normalize.button({
-      ...parts.trigger.attrs,
-      'id': ids.trigger,
-      'type': 'button',
-      // tooltip 是描述不是名字，故用 describedby 而非 labelledby；收起时不指向隐藏节点
-      'aria-describedby': open ? ids.content : undefined,
-      'data-state': stateAttr,
-      // 只标记不输出原生 disabled/aria-disabled：关掉的是提示，被包裹的控件仍可用
-      'data-disabled': dataAttr(disabled),
-      // 跟随鼠标时把落点与指针类型一并带上：触屏没有悬停落点，机器据此锚回 trigger
-      'onPointerenter': (event: PointerEvent) => send(followCursor
-        ? { type: 'POINTER.ENTER', point: { x: event.clientX, y: event.clientY }, pointerType: event.pointerType }
-        : { type: 'POINTER.ENTER' }),
-      // 只有跟随鼠标才听移动：其余时候提示锚在 trigger 上，指针在上面怎么挪都与它无关
-      'onPointermove': followCursor
-        ? (event: PointerEvent) => send({ type: 'POINTER.MOVE', point: { x: event.clientX, y: event.clientY }, pointerType: event.pointerType })
-        : undefined,
-      'onPointerleave': () => send({ type: 'POINTER.LEAVE' }),
-      // 按下即让位给真正的操作
-      'onPointerdown': () => send({ type: 'POINTER.DOWN' }),
-      'onFocus': () => send({ type: 'FOCUS' }),
-      'onBlur': () => send({ type: 'BLUR' }),
-      // 浮层可见时 Escape 归消解层按层栈仲裁；这里只管等待展开期那一段
-      'onKeydown': (event: KeyboardEvent) => {
-        if (event.key === 'Escape' && pending)
-          send({ type: 'ESCAPE' })
-      },
-    }),
+    delegated: delegate !== undefined,
+    text: anchor?.text ?? '',
+    shortcut,
+    getTriggerProps: () => delegate !== undefined
+      ? normalize.element({
+          ...parts.trigger.attrs,
+          'id': ids.trigger,
+          'data-state': stateAttr,
+          'data-disabled': dataAttr(disabled),
+          // 容器不是按钮，皮肤据此让它不占盒子、不接按钮的样子
+          'data-delegate': '',
+          // 进出锚点用冒泡的 over / out：指针在锚点里面的子节点之间挪动不算换锚点
+          'onPointerover': (event: PointerEvent) => {
+            const next = anchorAt(event)
+            if ((next?.el ?? null) === refs.get('hovered'))
+              return
+            refs.set('hovered', next?.el ?? null)
+            refs.set('pressed', null)
+            send(next ? { type: 'POINTER.ENTER', anchor: next } : { type: 'POINTER.LEAVE' })
+          },
+          'onPointerout': (event: PointerEvent) => {
+            if (!leftContainer(event))
+              return
+            refs.set('hovered', null)
+            refs.set('pressed', null)
+            send({ type: 'POINTER.LEAVE' })
+          },
+          // 按下即让位给真正的操作；随按下而来的聚焦不再把提示打开
+          'onPointerdown': () => {
+            refs.set('pressed', refs.get('hovered'))
+            send({ type: 'POINTER.DOWN' })
+          },
+          'onFocusin': (event: FocusEvent) => {
+            const next = anchorAt(event)
+            if (next && next.el === refs.get('pressed'))
+              return
+            send(next ? { type: 'FOCUS', anchor: next } : { type: 'BLUR' })
+          },
+          'onFocusout': (event: FocusEvent) => {
+            if (leftContainer(event))
+              send({ type: 'BLUR' })
+          },
+          'onKeydown': (event: KeyboardEvent) => {
+            // 动了键盘，之后的聚焦都算键盘聚焦
+            refs.set('pressed', null)
+            if (event.key === 'Escape' && pending)
+              send({ type: 'ESCAPE' })
+          },
+        })
+      : normalize.button({
+          ...parts.trigger.attrs,
+          'id': ids.trigger,
+          'type': 'button',
+          // tooltip 是描述不是名字，故用 describedby 而非 labelledby；收起时不指向隐藏节点
+          'aria-describedby': open ? ids.content : undefined,
+          'data-state': stateAttr,
+          // 只标记不输出原生 disabled/aria-disabled：关掉的是提示，被包裹的控件仍可用
+          'data-disabled': dataAttr(disabled),
+          // 跟随鼠标时把落点与指针类型一并带上：触屏没有悬停落点，机器据此锚回 trigger
+          'onPointerenter': (event: PointerEvent) => send(followCursor
+            ? { type: 'POINTER.ENTER', point: { x: event.clientX, y: event.clientY }, pointerType: event.pointerType }
+            : { type: 'POINTER.ENTER' }),
+          // 只有跟随鼠标才听移动：其余时候提示锚在 trigger 上，指针在上面怎么挪都与它无关
+          'onPointermove': followCursor
+            ? (event: PointerEvent) => send({ type: 'POINTER.MOVE', point: { x: event.clientX, y: event.clientY }, pointerType: event.pointerType })
+            : undefined,
+          'onPointerleave': () => send({ type: 'POINTER.LEAVE' }),
+          // 按下即让位给真正的操作
+          'onPointerdown': () => send({ type: 'POINTER.DOWN' }),
+          'onFocus': () => send({ type: 'FOCUS' }),
+          'onBlur': () => send({ type: 'BLUR' }),
+          // 浮层可见时 Escape 归消解层按层栈仲裁；这里只管等待展开期那一段
+          'onKeydown': (event: KeyboardEvent) => {
+            if (event.key === 'Escape' && pending)
+              send({ type: 'ESCAPE' })
+          },
+        }),
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
       // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写，交给落点处的继承
@@ -120,6 +188,16 @@ export function connectTooltip<T extends PropTypes>(
       // 箭头交叉轴上的落点由定位引擎给：上下两侧走行内轴、左右两侧走块轴。
       // 两根轴每帧都写，翻面后另一根不会留着上一帧的值；空串即撤掉声明，皮肤退回居中
       'style': overlayArrowVars('tooltip', arrowAt),
+    }),
+    // 锚点的 aria-describedby 只在文字与名字不同时引用这里（由机器的效应挂上）
+    getTextProps: () => normalize.element({
+      ...parts.text.attrs,
+      id: ids.text,
+    }),
+    // 快捷键只是看的：锚点自己的 aria-keyshortcuts 已经报给读屏
+    getShortcutProps: () => normalize.element({
+      ...parts.shortcut.attrs,
+      'aria-hidden': true,
     }),
   }
 }

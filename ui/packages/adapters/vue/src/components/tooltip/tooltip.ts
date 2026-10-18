@@ -6,11 +6,13 @@
 // 提供 tooltip 相关实现。
 
 import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { TooltipApi, TooltipSchema } from '@xihan-ui/headless'
+import type { KbdPlatform } from '@xihan-ui/core/hotkey'
+import type { TooltipApi, TooltipSchema, TooltipTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { createTooltipGroup } from '@xihan-ui/headless'
 import { defineComponent, h, mergeProps } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
@@ -63,8 +65,13 @@ export const XhTooltipRoot = defineComponent({
     disabled: Boolean,
     /** 跟随鼠标：由指针打开的提示锚在指针落点上并随移动更新；触屏与聚焦打开时锚回 trigger。 */
     followCursor: { type: Boolean, default: undefined },
+    /** 委托模式：CSS 选择器。trigger 是容器，命中它的元素悬停或键盘聚焦时打开提示并作锚点，文字与快捷键从锚点上读。 */
+    delegate: { type: String },
+    /** 委托模式下快捷键按哪个平台的写法显示，默认 auto：指向锚点时测一次。 */
+    platform: { type: String as PropType<KbdPlatform> },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
+    translations: { type: Object as PropType<Partial<TooltipTranslations>> },
   },
   // open-change 携带 { open }；update:open 携带裸布尔，支持 v-model:open
   emits: {
@@ -79,7 +86,7 @@ export const XhTooltipRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useTooltip(props as TooltipProps, notify)
+    const ctx = useTooltip(withXhConfig('tooltip', props) as TooltipProps, notify)
     provideTooltip(ctx)
     return () => slots.default?.({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
   },
@@ -107,7 +114,8 @@ export const XhTooltipTrigger = defineComponent({
         if (merged)
           return merged
       }
-      return h('button', part, children)
+      // 委托模式下 trigger 是装着一个个锚点的容器，不是按钮
+      return h(ctx.api.value.delegated ? 'div' : 'button', part, children)
     }
   },
 })
@@ -132,17 +140,39 @@ export const XhTooltipPositioner = defineComponent({
   },
 })
 
+/** 委托模式下的提示文字：缺省显示当前锚点的文字。 */
+export const XhTooltipText = defineComponent({
+  name: 'XhTooltipText',
+  setup(_, { slots }) {
+    const ctx = useTooltipContext()
+    return () => h('span', ctx.api.value.getTextProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.text)
+  },
+})
+
+/** 委托模式下的快捷键：缺省显示当前锚点的快捷键，按平台的写法。 */
+export const XhTooltipShortcut = defineComponent({
+  name: 'XhTooltipShortcut',
+  setup(_, { slots }) {
+    const ctx = useTooltipContext()
+    return () => h('span', ctx.api.value.getShortcutProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.shortcut ?? undefined)
+  },
+})
+
 export const XhTooltipContent = defineComponent({
   name: 'XhTooltipContent',
   setup(_, { slots }) {
     const ctx = useTooltipContext()
+    // 委托模式下文字与快捷键由组件铺在作者写的节点（箭头）之后，没有快捷键时不铺 shortcut
+    const children = (): unknown => ctx.api.value.delegated
+      ? [...(slots.default?.() ?? []), h(XhTooltipText), ctx.api.value.shortcut === null ? null : h(XhTooltipShortcut)]
+      : slots.default?.()
     return () => h('div', {
       ...ctx.api.value.getContentProps() as Record<string, unknown>,
       // 收起跟着退场闸门走：皮肤给 content 声明了 display 来盖掉 UA 的 [hidden]{display:none}
       // （盒子得先在，退场才播得出来），所以真正的收起落成内联 display
       style: ctx.visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
-    }, slots.default?.())
+    }, children() as VNode[] | undefined)
   },
 })
 

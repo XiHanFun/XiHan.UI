@@ -77334,7 +77334,7 @@
           "name": "XhTooltipElement",
           "cssParts": [
             {
-              "description": "悬停 / 聚焦的锚点按钮（aria-describedby 指向 content）",
+              "description": "悬停 / 聚焦的锚点按钮（aria-describedby 指向 content）；委托模式下是装着锚点的容器",
               "name": "trigger"
             },
             {
@@ -77344,6 +77344,14 @@
             {
               "description": "role=tooltip 的提示内容（收起时 hidden）",
               "name": "content"
+            },
+            {
+              "description": "委托模式下元素生成在 content 里的提示文字",
+              "name": "text"
+            },
+            {
+              "description": "委托模式下元素生成在 content 里的快捷键，锚点有快捷键时才有",
+              "name": "shortcut"
             },
             {
               "description": "指向锚点的箭头，装饰性",
@@ -77470,6 +77478,24 @@
             },
             {
               "kind": "field",
+              "name": "delegate",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "delegate"
+            },
+            {
+              "kind": "field",
+              "name": "platform",
+              "privacy": "public",
+              "type": {
+                "text": "KbdPlatform | undefined"
+              },
+              "attribute": "platform"
+            },
+            {
+              "kind": "field",
               "name": "tone",
               "privacy": "public",
               "type": {
@@ -77488,12 +77514,31 @@
             },
             {
               "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<TooltipTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "engine",
               "type": {
                 "text": "PositionEnginePort | null"
               },
               "privacy": "private",
               "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "generated",
+              "type": {
+                "text": "KeyedChildren"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap()",
+              "description": "委托模式下生成在 content 里的 text 与 shortcut。"
             },
             {
               "kind": "field",
@@ -77613,6 +77658,31 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "syncDelegated",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "content",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "TooltipApi"
+                  }
+                }
+              ],
+              "description": "委托模式下在 content 里生成 text 与 shortcut，排在作者写的节点（箭头）之后；没有快捷键时不生成 shortcut，退出委托时都摘掉。"
             }
           ],
           "events": [
@@ -77704,6 +77774,22 @@
               "description": "跟随鼠标：由指针打开的提示锚在指针落点上并随移动更新；触屏与聚焦打开时锚回 trigger",
               "name": "follow-cursor",
               "fieldName": "followCursor"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "委托模式：CSS 选择器。trigger 是容器，命中它的元素悬停或键盘聚焦时打开提示并作锚点，文字取锚点的 data-xh-tooltip 或可及名，快捷键取 aria-keyshortcuts",
+              "name": "delegate",
+              "fieldName": "delegate"
+            },
+            {
+              "type": {
+                "text": "KbdPlatform | undefined"
+              },
+              "description": "委托模式下快捷键按哪个平台的写法显示，默认 auto：指向锚点时测一次",
+              "name": "platform",
+              "fieldName": "platform"
             },
             {
               "type": {

@@ -2774,6 +2774,10 @@
       "XhTooltipProviderProps",
       "XhTooltipRoot",
       "XhTooltipRootProps",
+      "XhTooltipShortcut",
+      "XhTooltipShortcutProps",
+      "XhTooltipText",
+      "XhTooltipTextProps",
       "XhTooltipTrigger",
       "XhTooltipTriggerProps",
       "XhTourArrow",
@@ -4779,6 +4783,8 @@
       "XhTooltipPositioner",
       "XhTooltipProvider",
       "XhTooltipRoot",
+      "XhTooltipShortcut",
+      "XhTooltipText",
       "XhTooltipTrigger",
       "XhTourArrow",
       "XhTourBackdrop",
@@ -8281,6 +8287,7 @@
       "ToolbarRefs",
       "ToolbarSchema",
       "ToolbarTranslations",
+      "TooltipAnchor",
       "TooltipApi",
       "TooltipGroup",
       "TooltipGroupOptions",
@@ -12735,6 +12742,8 @@
       "arrow",
       "content",
       "positioner",
+      "shortcut",
+      "text",
       "trigger"
     ],
     "tour": [
@@ -15267,6 +15276,7 @@
     "tooltip": [
       "closeDelay",
       "defaultOpen",
+      "delegate",
       "dir",
       "disabled",
       "followCursor",
@@ -15275,9 +15285,11 @@
       "open",
       "openDelay",
       "placement",
+      "platform",
       "size",
       "skipDelayDuration",
-      "tone"
+      "tone",
+      "translations"
     ],
     "tour": [
       "autoScroll",
@@ -15506,6 +15518,7 @@
     "data-covered",
     "data-current",
     "data-dashed",
+    "data-delegate",
     "data-deletable",
     "data-depth",
     "data-digits",
@@ -24070,6 +24083,7 @@
       "attributes": [
         "close-delay",
         "default-open",
+        "delegate",
         "dir",
         "disabled",
         "follow-cursor",
@@ -24077,6 +24091,7 @@
         "open",
         "open-delay",
         "placement",
+        "platform",
         "size",
         "skip-delay-duration",
         "tone"

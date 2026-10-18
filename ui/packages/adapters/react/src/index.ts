@@ -3052,6 +3052,8 @@ export {
   XhTooltipPositioner,
   XhTooltipProvider,
   XhTooltipRoot,
+  XhTooltipShortcut,
+  XhTooltipText,
   XhTooltipTrigger,
 } from './components/tooltip/tooltip'
 export type {
@@ -3061,6 +3063,8 @@ export type {
   XhTooltipPositionerProps,
   XhTooltipProviderProps,
   XhTooltipRootProps,
+  XhTooltipShortcutProps,
+  XhTooltipTextProps,
   XhTooltipTriggerProps,
 } from './components/tooltip/tooltip'
 export { useTooltip } from './components/tooltip/use-tooltip'

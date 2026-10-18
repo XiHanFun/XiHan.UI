@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="tooltip"`：**`trigger`** · `positioner` · **`content`** · `arrow`
+`data-scope="tooltip"`：**`trigger`** · `positioner` · **`content`** · `text` · `shortcut` · `arrow`
 
 ## 示例
 
@@ -78,6 +78,12 @@ followCursor 让提示锚在指针落点上并随移动更新；触屏与键盘�
 
 <XhDemo src="tooltip/10-follow-cursor" />
 
+### 委托
+
+delegate 让一个提示管一整排按钮：文字取按钮的 data-xh-tooltip 或可及名，快捷键取 aria-keyshortcuts；指针在按钮之间挪动时提示直接换过去
+
+<XhDemo src="tooltip/11-delegate" />
+
 ## 设计指引
 
 ### 何时使用
@@ -97,6 +103,13 @@ followCursor 让提示锚在指针落点上并随移动更新；触屏与键盘�
 - 同页的提示共用一个接替窗口（`skipDelayDuration`，默认 300ms）：另一个提示还开着、或刚收起一个不到这么久时，指向下一个不再等 `openDelay`、也不播进场，直接接替，上一个随之收起。横扫一排工具栏钮时提示一个个跟上。
 - `XhTooltipProvider`（Web Components 为 `<xh-tooltip-provider>` 容器元素）把子树里的提示放进同一组：组内共用接替窗口、同一时刻只开一个，不同组之间互不接替、互不收起；组上的 `openDelay` / `closeDelay` / `skipDelayDuration` 是组内提示的缺省，提示自己写了就以提示为准。没放进 Provider 的提示同属页面级的那一组。Provider 自身不渲染节点，Web Components 那个元素是 `display: contents`。
 - `followCursor` 让由指针打开的提示锚在指针落点上，指针在触发器上挪动时跟过去；触屏没有悬停落点、键盘聚焦没有指针，这两种情形仍锚在触发器上。跟随中的浮层不接指针，免得挡住触发器上的移动；位置跟手，不做过渡。
+- `delegate` 让一个提示管一整个容器，一条工具栏不必每个按钮各包一个提示：
+  - 值是 CSS 选择器。trigger 此时是容器，皮肤让它不占盒子；容器里命中选择器的元素就是一个个锚点。
+  - 悬停或键盘聚焦到锚点时打开，提示锚在这个元素上；指针或焦点挪到另一个锚点时直接换过去，不再等延时、也不重播进场。
+  - 指针移出容器、焦点离开容器或按 Esc 时收起；按下仍让位给真正的操作，随按下而来的聚焦不打开。
+  - 文字取锚点的 `data-xh-tooltip`，没写时取锚点的可及名；快捷键取锚点的 `aria-keyshortcuts`（规范写法，如 `Control+Shift+Z`），按 `platform` 写成 ⌘⇧Z 或 Ctrl+Shift+Z。两者铺在 content 里的 `text` 与 `shortcut` 部件里，排在作者写的箭头之后。
+  - 提示文字与锚点的名字不同（写了 `data-xh-tooltip`）时，锚点的 `aria-describedby` 引用 `text`；相同就不引用，读屏不念两遍。快捷键只由锚点自己的 `aria-keyshortcuts` 报给读屏。
+  - 原生禁用的按钮仍收得到指针事件，悬停照样出提示；键盘本来就停不到它。
 - 聚焦也能触发，键盘用户可以访问。
 - 语气与尺寸两轴。
 - 默认是反白的实底小面（compact 档 frosted），与承载操作的 Popover 分开：底取正文色、字取承载面色，浅色主题下是深底白字，深色主题下整块翻成浅底深字；六种语气同样是实心语气底配不透明文字，箭头和气泡同色同边。边界由 on 色 20% 的拼色描边承担（中性描边压在反白底上看不见），不画顶部高光；圆角取 2px 控件档。
@@ -130,7 +143,7 @@ followCursor 让提示锚在指针落点上并随移动更新；触屏与键盘�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tooltip>` |
-| Vue 组件 | `XhTooltipArrow` `XhTooltipContent` `XhTooltipPositioner` `XhTooltipProvider` `XhTooltipRoot` `XhTooltipTrigger` |
+| Vue 组件 | `XhTooltipArrow` `XhTooltipContent` `XhTooltipPositioner` `XhTooltipProvider` `XhTooltipRoot` `XhTooltipShortcut` `XhTooltipText` `XhTooltipTrigger` |
 | 组合式函数 | `useTooltip` |
 | 状态机 | `tooltipMachine` |
 | 皮肤 | `@xihan-ui/styles/tooltip.css` |
@@ -149,8 +162,11 @@ followCursor 让提示锚在指针落点上并随移动更新；触屏与键盘�
 | `skipDelayDuration` | `number` |  | 跳过等待的窗口毫秒，默认 300：另一个提示还开着，或刚收起一个不到这么久时，指向这一个不等 openDelay、 也不播进场，直接接替（上一个随之收起）。0 或负数表示不参与接替，每次都等 openDelay。 |
 | `disabled` | `boolean` |  | 只关闭提示本身，不影响被包裹控件的可用性。 |
 | `followCursor` | `boolean` |  | 跟随鼠标：由指针打开的提示锚在指针落点上，随指针在 trigger 上移动而更新，默认 false。 触屏没有悬停落点、聚焦打开没有指针，这两种情形退回锚定到 trigger。 |
+| `delegate` | `string` |  | 委托模式：值是一个 CSS 选择器。trigger 此时是容器，容器里命中选择器的元素在悬停或键盘聚焦时打开提示， 提示锚在这个元素上；指针或焦点挪到另一个锚点时提示直接换过去。文字取锚点的 data-xh-tooltip， 没写时取锚点的可及名；快捷键取锚点的 aria-keyshortcuts。 |
+| `platform` | `KbdPlatform` |  | 委托模式下快捷键按哪个平台的写法显示：auto（缺省）在指向锚点时测一次。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定提示的底色与其上的文字色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定内边距与字号档位。 |
+| `translations` | `Partial<TooltipTranslations>` |  |  |
 | `onOpenChange` | `(details: TooltipOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ### 事件
@@ -198,7 +214,7 @@ followCursor 让提示锚在指针落点上并随移动更新；触屏与键盘�
 
 **事件**：`POINTER.ENTER` · `POINTER.MOVE` · `POINTER.LEAVE` · `POINTER.DOWN` · `FOCUS` · `BLUR` · `ESCAPE` · `OPEN` · `CLOSE` · `after.openDelay` · `after.closeDelay` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
 
-**判据**：`isOpenControlled` · `isDisabled` · `isFocusOpened`
+**判据**：`isOpenControlled` · `isDisabled` · `isFocusOpened` · `hasAnchor`
 
 ### connect API
 
@@ -208,10 +224,15 @@ followCursor 让提示锚在指针落点上并随移动更新；触屏与键盘�
 | --- | --- | --- |
 | `open` | `boolean` |  |
 | `setOpen` | `(next: boolean) => void` |  |
+| `delegated` | `boolean` | 委托模式：trigger 是容器，content 里由组件铺 text 与 shortcut。 |
+| `text` | `string` | 委托模式下当前锚点的提示文字；还没有锚点时为空串。 |
+| `shortcut` | `string \| null` | 当前锚点的快捷键，按平台写成一串字（⌘⇧Z、Ctrl+Shift+Z）；没有时为 null。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getArrowProps` | `() => T['element']` |  |
+| `getTextProps` | `() => T['element']` |  |
+| `getShortcutProps` | `() => T['element']` |  |
 
 ## 无障碍
 
@@ -233,6 +254,7 @@ followCursor 让提示锚在指针落点上并随移动更新；触屏与键盘�
 | `trigger` | `aria-describedby` | `content` 部件的 id \| undefined |
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `role` | 'tooltip' |
+| `shortcut` | `aria-hidden` | 'true' |
 | `arrow` | `aria-hidden` | 'true' |
 
 ## 样式参考
@@ -249,6 +271,7 @@ followCursor 让提示锚在指针落点上并随移动更新；触屏与键盘�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `trigger` | `data-delegate` | '' |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-follow-cursor` | ''（条件成立时才出现） |

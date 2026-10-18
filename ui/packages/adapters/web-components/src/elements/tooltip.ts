@@ -6,12 +6,15 @@
 // 提供 tooltip 相关实现。
 
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { TooltipGroup, TooltipOpenChangeDetails, TooltipSchema } from '@xihan-ui/headless'
+import type { KbdPlatform } from '@xihan-ui/core/hotkey'
+import type { TooltipApi, TooltipGroup, TooltipOpenChangeDetails, TooltipSchema, TooltipTranslations } from '@xihan-ui/headless'
+import type { KeyedChildren } from '../dom/generated-nodes'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectTooltip, createTooltipGroup, tooltipAnatomy, tooltipMachine, tooltipMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { createGeneratedElement, reconcile, setText } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { XhReactiveElement } from '../reactive'
@@ -48,12 +51,16 @@ const NUMBER_CONVERTER = {
  * @attr {number} skip-delay-duration - 跳过等待的窗口毫秒，默认 300：另一个提示开着或刚收起时，指向这一个直接接替、不播进场；0 不参与
  * @attr {boolean} disabled - 只关闭提示，被包裹的控件仍可用
  * @attr {boolean} follow-cursor - 跟随鼠标：由指针打开的提示锚在指针落点上并随移动更新；触屏与聚焦打开时锚回 trigger
+ * @attr {string} delegate - 委托模式：CSS 选择器。trigger 是容器，命中它的元素悬停或键盘聚焦时打开提示并作锚点，文字取锚点的 data-xh-tooltip 或可及名，快捷键取 aria-keyshortcuts
+ * @attr {'auto'|'mac'|'other'} platform - 委托模式下快捷键按哪个平台的写法显示，默认 auto：指向锚点时测一次
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
- * @csspart trigger - 悬停 / 聚焦的锚点按钮（aria-describedby 指向 content）
+ * @csspart trigger - 悬停 / 聚焦的锚点按钮（aria-describedby 指向 content）；委托模式下是装着锚点的容器
  * @csspart positioner - 浮层定位容器（坐标写为内联样式，落定朝向在 data-placement）
  * @csspart content - role=tooltip 的提示内容（收起时 hidden）
+ * @csspart text - 委托模式下元素生成在 content 里的提示文字
+ * @csspart shortcut - 委托模式下元素生成在 content 里的快捷键，锚点有快捷键时才有
  * @csspart arrow - 指向锚点的箭头，装饰性
  */
 export class XhTooltipElement extends XhPortalHostElement {
@@ -79,8 +86,11 @@ export class XhTooltipElement extends XhPortalHostElement {
     skipDelayDuration: { converter: NUMBER_CONVERTER, attribute: 'skip-delay-duration' },
     disabled: { converter: BOOLEAN_CONVERTER },
     followCursor: { converter: BOOLEAN_CONVERTER, attribute: 'follow-cursor' },
+    delegate: { converter: STRING_CONVERTER },
+    platform: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    translations: { attribute: false },
   }
 
   declare open?: boolean
@@ -93,10 +103,15 @@ export class XhTooltipElement extends XhPortalHostElement {
   declare skipDelayDuration?: number
   declare disabled?: boolean
   declare followCursor?: boolean
+  declare delegate?: string
+  declare platform?: KbdPlatform
   declare tone?: Tone
   declare size?: Size
+  declare translations?: Partial<TooltipTranslations>
 
   private engine: PositionEnginePort | null = null
+  /** 委托模式下生成在 content 里的 text 与 shortcut。 */
+  private readonly generated: KeyedChildren = new WeakMap()
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly tooltipScope = createScope(() => this, this.idGen)
 
@@ -133,8 +148,11 @@ export class XhTooltipElement extends XhPortalHostElement {
       skipDelayDuration: this.skipDelayDuration,
       disabled: this.disabled ?? false,
       followCursor: this.followCursor ?? false,
+      delegate: this.delegate,
+      platform: this.platform,
       tone: this.tone,
       size: this.size,
+      translations: this.translations,
       onOpenChange: this.notify,
     }
   }
@@ -217,6 +235,9 @@ export class XhTooltipElement extends XhPortalHostElement {
     // 才必须用内联样式盖过）。
     put('content', api.getContentProps() as Record<string, unknown>)
     put('arrow', api.getArrowProps() as Record<string, unknown>)
+    const shell = this.getPart('content')
+    if (shell)
+      this.syncDelegated(shell, api)
 
     // 本仓自带的 tooltip.css 确实没给 content 设 display，但宿主不该指望作者装了这份样式：
     // 作者层只要给 content 来一句 display（Tailwind 的 flex/block 也算），
@@ -235,6 +256,17 @@ export class XhTooltipElement extends XhPortalHostElement {
     if (content)
       this.setPartHidden(content, !this.exit.visible)
     this.portal.sync(this.exit.visible)
+  }
+
+  /** 委托模式下在 content 里生成 text 与 shortcut，排在作者写的节点（箭头）之后；没有快捷键时不生成 shortcut，退出委托时都摘掉。 */
+  private syncDelegated(content: HTMLElement, api: TooltipApi): void {
+    const items: Array<'text' | 'shortcut'> = !api.delegated ? [] : api.shortcut === null ? ['text'] : ['text', 'shortcut']
+    reconcile(content, items, this.generated, item => item, (item, reuse) => {
+      const node = (reuse as HTMLElement | undefined) ?? createGeneratedElement(this.ownerDocument, 'span')
+      this.spreader.spread(node, (item === 'text' ? api.getTextProps() : api.getShortcutProps()) as Record<string, unknown>)
+      setText(node, item === 'text' ? api.text : api.shortcut ?? '')
+      return node
+    })
   }
 
   override disconnectedCallback(): void {
