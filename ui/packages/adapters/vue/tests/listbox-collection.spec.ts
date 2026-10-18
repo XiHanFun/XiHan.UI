@@ -5,10 +5,12 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'
 import {
   XhListboxContent,
+  XhListboxEmpty,
   XhListboxItem,
   XhListboxItemIndicator,
   XhListboxItemText,
   XhListboxLabel,
+  XhListboxLoading,
   XhListboxRoot,
 } from '../src'
 
@@ -47,6 +49,8 @@ function mountFromParts(value: string[]) {
           h(XhListboxItemIndicator),
         ]),
       )),
+      h(XhListboxEmpty, () => 'No data'),
+      h(XhListboxLoading, () => 'Loading'),
     ]),
   }), { attachTo: document.body })
 }
@@ -92,6 +96,8 @@ describe('listbox 的 collection', () => {
       'item',
       'item-text',
       'item-indicator',
+      'empty',
+      'loading',
     ])
     w.unmount()
   })
@@ -138,11 +144,11 @@ describe('listbox 的 collection', () => {
     w.unmount()
   })
 
-  it('不给 collection 时不铺开任何部件，禁用仍由条目自报', () => {
+  it('不给 collection 时铺出空列表与两块占位，禁用仍由条目自报', () => {
     const bare = mount(defineComponent({
       setup: () => () => h(XhListboxRoot),
     }), { attachTo: document.body })
-    expect(partNames(bare.element)).toEqual([])
+    expect(partNames(bare.element)).toEqual(['content', 'empty', 'loading'])
     bare.unmount()
 
     const w = mount(defineComponent({
