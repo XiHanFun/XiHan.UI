@@ -89,6 +89,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @fires action - 行主操作：点在数据行上或焦点在行上按 Enter；detail 为 `{ value, column }`，value 是行 id，column 是点中那一格的列 id、键盘触发时为 null
  * @fires row-move - 行换位；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在该层的落位（已经过先移除后插入的修正），ids 是重排后的整份行序
+ * @prop {(details: TableFooterCellSpanDetails) => TableCellSpan | null | undefined} footerCellSpan - 表尾单元格合并，与 cellSpan 同一种写法，逐格询问第几行表尾的哪一格；合并掉的表尾格子由元素写上 hidden 或占位
  * @prop {(move: TableRowMoveDetails) => boolean} allowRowDrop - 本次移动是否允许，收到的是折算后的落点；未提供时全部允许
  * @csspart root - role=grid 容器（rows 中有可展开的行时为 treegrid），报告行列总数与多选声明
  * @csspart caption - 表格标题（aria-labelledby 目标）
@@ -101,7 +102,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @csspart row - role=row；写在 body 里的须自带 value 属性标识行身份
  * @csspart column-header - role=columnheader，须自带 value 属性标识列身份；承载 aria-sort
  * @csspart column-label - 列名的容器，列头里唯一可收窄的一格：列名太长时由它出省略号，排序 / 列宽 / 列拖拽把手写在它之外作为兄弟；不可排序、不可改宽的列也用它（裸写在列头里的文本是匿名 flex item，缩不下去，窄列上会把把手挤出列头盒）；不带角色与状态
- * @csspart cell - role=gridcell，须自带 value 属性标识列身份；可写 colspan 属性声明跨列数。cellSpan 合并掉的格子由元素写上 hidden 或占位，作者照常逐格写
+ * @csspart cell - role=gridcell，须自带 value 属性标识列身份；可写 colspan 属性声明跨列数。cellSpan（表尾是 footerCellSpan）合并掉的格子由元素写上 hidden 或占位，作者照常逐格写
  * @csspart select-all-trigger - 全选把手，三态（aria-checked 半选为 mixed），自占一个 Tab 位
  * @csspart row-select-trigger - 行选择把手（aria-hidden 且不占 Tab 位，键盘路径由 Space 承担）
  * @csspart sort-trigger - 排序钮，独立的定尺图标钮，不包列名（列名留在 column-header 里、钮写在列名之后），可及名取 translations.sort(列名)；自占一个 Tab 位，按住 Shift 点击是追加到排序链
@@ -134,6 +135,7 @@ export class XhTableElement extends XhElement {
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
     // 合并询问是函数，走不了属性；只作为 property 暴露
     cellSpan: { attribute: false },
+    footerCellSpan: { attribute: false },
     // Virtualizer 的接线口是对象，只走 property：el.virtualizer = virtualizerEl.collectionVirtualizer
     virtualizer: { attribute: false },
     // 前缀列是数组，走不了属性；只作为 property 暴露
@@ -173,6 +175,7 @@ export class XhTableElement extends XhElement {
   declare cascade?: boolean
   declare checkedStrategy?: CascadeStrategy
   declare cellSpan?: TableSchema['props']['cellSpan']
+  declare footerCellSpan?: TableSchema['props']['footerCellSpan']
   declare virtualizer?: TableSchema['props']['virtualizer']
   declare prefixColumns?: TableColumnKind[]
   declare columnPreference?: TableColumnPreference
@@ -250,6 +253,7 @@ export class XhTableElement extends XhElement {
       cascade: this.cascade,
       checkedStrategy: this.checkedStrategy,
       cellSpan: this.cellSpan,
+      footerCellSpan: this.footerCellSpan,
       virtualizer: this.virtualizer,
       prefixColumns: this.prefixColumns,
       columnPreference: this.columnPreference,
@@ -463,14 +467,17 @@ export class XhTableElement extends XhElement {
     putAll('column-header', el => api.getColumnHeaderProps(this.columnOf(el)))
     // 列名容器无状态，只投部件属性；身份不用查，它不区分列
     putAll('column-label', () => api.getColumnLabelProps())
-    // 单元格自报列身份，行身份跟着所在行走；表头与脚注的格子没有行可跟
+    // 单元格自报列身份，行身份跟着所在行走；表尾的格子跟着所在表尾行写的 level 走，表头的没有行可跟
     putAll('cell', (el) => {
       const row = el.closest<HTMLElement>(ROW_SELECTOR)
-      const inBody = !!row && this.contains(row) && this.sectionOf(el) === 'body'
+      const owned = !!row && this.contains(row)
+      const section = this.sectionOf(el)
+      const level = owned && section === 'footer' ? row.getAttribute('level') : null
       const colspan = el.getAttribute('colspan')
       return api.getCellProps({
         value: el.getAttribute('value') ?? '',
-        row: inBody ? (row.getAttribute('value') ?? '') : undefined,
+        row: owned && section === 'body' ? (row.getAttribute('value') ?? '') : undefined,
+        footer: owned && section === 'footer' ? (level == null ? 1 : Number(level)) : undefined,
         colSpan: colspan == null ? undefined : Number(colspan),
       })
     })

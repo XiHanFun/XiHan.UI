@@ -28,6 +28,7 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
 import {
   TableColumnProvider,
+  TableFooterLevelProvider,
   TableHeaderLevelProvider,
   TableProvider,
   TableRowProvider,
@@ -36,6 +37,7 @@ import {
   useOptionalTableRowContext,
   useTableColumnContext,
   useTableContext,
+  useTableFooterLevel,
   useTableHeaderLevel,
   useTableRowContext,
   useTableSection,
@@ -149,6 +151,8 @@ export interface XhTableRootProps extends RootElementProps {
   checkedStrategy?: CascadeStrategy
   /** 单元格合并：逐格询问合并区的大小，与 antd 的 spanMethod 同一种写法。 */
   cellSpan?: TableProps['cellSpan']
+  /** 表尾单元格合并：与 cellSpan 同一种写法，逐格询问第几行表尾的哪一格。 */
+  footerCellSpan?: TableProps['footerCellSpan']
   /** 与 Virtualizer 的正式接线口：传 Virtualizer 的 collectionVirtualizer，count 等于可见数据行的条数。 */
   virtualizer?: TableProps['virtualizer']
   /** 需要哪几列前缀列（序号 / 多选 / 展开），按给定顺序插入最前面并占用列号。 */
@@ -207,6 +211,7 @@ export function XhTableRoot({
   cascade,
   checkedStrategy,
   cellSpan,
+  footerCellSpan,
   virtualizer,
   prefixColumns,
   columnPreference,
@@ -250,6 +255,7 @@ export function XhTableRoot({
     cascade,
     checkedStrategy,
     cellSpan,
+    footerCellSpan,
     virtualizer,
     prefixColumns,
     columnPreference,
@@ -438,7 +444,7 @@ export function XhTableFooter({ children, ...rest }: XhTableFooterProps): ReactN
 export interface XhTableRowProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
   /** 行 id：数据行必须提供，表头行与脚注行省略。 */
   value?: string
-  /** 多级表头下写明这是第几行表头（1 起算），行里的列头据此定位；单行表头省略。 */
+  /** 多级表头写明这是第几行表头、多行表尾写明这是第几行表尾（1 起算），行里的列头与表尾格子据此定位；只有一行时省略。 */
   level?: number
 }
 
@@ -458,7 +464,9 @@ function TableSectionRow({ section, value: _value, level, children, ...rest }: X
   const attrs = (section === 'header' ? ctx.api.getHeaderRowProps({ level }) : ctx.api.getFooterRowProps({ level })) as Record<string, unknown>
   return (
     <TableHeaderLevelProvider value={section === 'header' ? level : undefined}>
-      <div {...mergeReactProps(attrs, rest as Record<string, unknown>)}>{children}</div>
+      <TableFooterLevelProvider value={section === 'footer' ? level : undefined}>
+        <div {...mergeReactProps(attrs, rest as Record<string, unknown>)}>{children}</div>
+      </TableFooterLevelProvider>
     </TableHeaderLevelProvider>
   )
 }
@@ -524,11 +532,14 @@ export interface XhTableCellProps extends Omit<ComponentPropsWithRef<'div'>, 'va
 }
 export function XhTableCell({ value, colspan, children, ...rest }: XhTableCellProps): ReactNode {
   const ctx = useTableContext()
-  // 行上下文可选：脚注单元格不属于任何数据行
+  // 行上下文可选：脚注单元格不属于任何数据行，改按所在表尾行的层号定位
   const rowCtx = useOptionalTableRowContext()
+  const section = useTableSection()
+  const footerLevel = useTableFooterLevel()
   const attrs = ctx.api.getCellProps({
     value,
     row: rowCtx?.value,
+    footer: section === 'footer' && !rowCtx ? (footerLevel ?? 1) : undefined,
     colSpan: colspan == null ? undefined : Number(colspan),
   }) as Record<string, unknown>
   return <div {...mergeReactProps(attrs, rest as Record<string, unknown>)}>{children}</div>

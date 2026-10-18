@@ -221,7 +221,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 - 树形表（行声明了 `parentId`）在 `multiple` 下可以打开 `cascade` 级联勾选，与[树](./tree)的 `cascade` 同一套算法：勾父行整枝传导，子行全勾上父行跟着勾中，勾了一部分的父行把手显示半选（`data-indeterminate`），禁用行的子树整棵冻结。对外值按 `checkedStrategy` 收敛，缺省 `child` 只收叶行；`parent` 收到最高的整枝，`all` 收全部勾中的行。全选的基数是够得着的叶行，禁用子树冻结着的父行不妨碍全选把手勾满。级联下不接 Shift 范围选。
 - 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐接出：设置区按 `columnSettings` 渲染，隐藏的列也包含在内。两块都放在 `root` 之外：`root` 是 grid 系角色，子节点只能是行与行组。
 - 行主操作 `onAction`（事件名 `action`）：指针主键点在数据行上时报 `{ value: 行 id, column: 点中那一格的列 id }`（纵向合并格算它的起点行），焦点停在行上按 Enter 时 `column` 为 null，用来下钻或把表格当联动源。点在行内的交互控件与表格自己的把手上、行拖动松手的那一次点击、禁用行、详情行、表头与脚注都不触发；选中、展开与 Space 不受影响，点行本身不选中。
-- 表尾可以有多行：`footerRows` 声明表尾行数，行号空间的最后几行留给它们，每一行表尾写明 `level`（与多级表头同一写法，只有一行时可省）；`aria-rowcount` 把它们都计入。`stickyFooter` 把表尾钉在滚动容器的下沿（`data-fixed`），与 `stickyHeader` 对称，滚动之后总计行仍看得见；接了虚拟滚动、滚动面在根节点上时同样钉在根的下沿。
+- 表尾可以有多行：`footerRows` 声明表尾行数，行号空间的最后几行留给它们，每一行表尾写明 `level`（与多级表头同一写法，只有一行时可省）；`aria-rowcount` 把它们都计入。表尾的格子合并用 `footerCellSpan`，与 `cellSpan` 同一种写法，逐格询问第几行表尾（`level`）的哪一格：总计的标题格可以横跨行表头的几列、纵跨几行表尾，被跨过的格子同样由表格藏起或留占位，表尾格子照常逐格渲染。纵向只在表尾行之间。`stickyFooter` 把表尾钉在滚动容器的下沿（`data-fixed`），与 `stickyHeader` 对称，滚动之后总计行仍看得见；接了虚拟滚动、滚动面在根节点上时同样钉在根的下沿。
 - 三种非条目相位各有部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。取下一页按钮的行为由作者决定，取数在途时自动停用。
 - 在途分两种：表体为空时 `loading` 占位露面，一枚加载环排在文案之前；已有行时重新取数（排序、翻页、筛选）不换成占位，表体与表尾原样保留、照常可操作，不淡化（淡到禁用透明度会把文字压到 4.5:1 以下）。两种都由 `root` 报告 `aria-busy`。
 
@@ -268,6 +268,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `selectionMode` | `TableSelectionMode` |  | 默认 none：未声明则没有选择机制，行也不报告 aria-selected。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 与 Virtualizer 的正式接线口（Virtualizer 的 `collectionVirtualizer`）：count 必须等于可见数据行的条数， 每个虚拟条目装一行数据行（展开的详情行跟在同一个条目里）。接上后上下键与 Home / End 按完整行序计算， 落点不在窗口里时先把它滚进来再交焦点；行号照旧按完整行序报；行拖动换位不可用（窗口外的行没有落点）。 |
 | `cellSpan` | `(details: TableCellSpanDetails) => TableCellSpan \| null \| undefined` |  | 单元格合并（与 antd 的 spanMethod 同一种写法）：逐格询问，返回合并区的大小。 表格按它算出起点格的 aria-rowspan / aria-colspan：同一行里被横向合并的格子不渲染（hidden）， 下面被纵向跨过的行在那一列留一格占位保住列宽、对读屏隐藏。作者照常逐格渲染，由连接层决定谁显谁藏。 合并只在可见数据行之间，遇到展开的详情行截断。焦点仍是行级：上下键逐行走，合并格随它的起点行读出。 |
+| `footerCellSpan` | `(details: TableFooterCellSpanDetails) => TableCellSpan \| null \| undefined` |  | 表尾单元格合并，与 cellSpan 同一种写法：逐格询问第几行表尾的哪一格，返回合并区的大小。 起点格报 aria-colspan / aria-rowspan，同一行里被横向合并的格子不渲染（hidden），下面的表尾行里被纵向跨过的 在那一列留一格占位、对读屏隐藏。纵向只在表尾行之间，不跨进表体。表尾格子须写明所在的第几行（getCellProps 的 footer）。 |
 | `cascade` | `boolean` |  | 树形表（行声明了 parentId）在 multiple 下父子级联勾选，与 Tree 的 cascade 同一套算法： 勾父整枝传导、子全勾父勾、部分勾选的父行把手显示半选，禁用行的子树整棵冻结。 级联下不接 Shift 范围选。默认 false；平表与 single 下无效。 |
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外选中值的收敛策略，默认 child（只收叶行）；parent = 最高整枝，all = 全部勾中的行。与 Tree 同义。 |
 | `prefixColumns` | `TableColumnKind[]` |  | 需要的前缀列，按给定顺序插在最前面，默认不插入任何列。 它们由库插入并占用列号：不占用时右侧所有列的 aria-colindex 会整体错位， 这正是使用者手工向 columns 中添加假列的原因。作者按 `api.columns` 渲染即可， 每一项都声明 `kind`。 |
@@ -342,7 +343,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `sort-change` | `TableSortChangeDetails` | 排序链变化；detail 为 `{ value: { id, direction }[] }` |
-| `column-preference-change` | `` | 列偏好变化；detail 为 `{ value: TableColumnPreference }` |
+| `column-preference-change` | `TableFooterCellSpanDetails` | 列偏好变化；detail 为 `{ value: TableColumnPreference }` |
 | `selection-change` | `TableSelectionChangeDetails` | 选中集合变化；detail 为 `{ value: string[] \| 'all' }` |
 | `expanded-value-change` | `TableExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 | `action` | `TableActionDetails` | 行主操作：点在数据行上或焦点在行上按 Enter；detail 为 `{ value, column }`，value 是行 id，column 是点中那一格的列 id、键盘触发时为 null |
@@ -372,7 +373,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `XhTableRoot` | `toolbar` | `SlotChildren<TableToolbarSlotProps>` |  | 工具条槽：搜索、筛选、密度与列设置等作用于整张表的控件写在这里。 它渲染为 root 的兄弟排在表前：root 是 grid 系角色，子节点只能是 row 与 rowgroup。 |
 | `XhTableRoot` | `children` | `SlotChildren<TableRootSlotProps>` |  |  |
 | `XhTableRow` | `value` | `string` |  | 行 id：数据行必须提供，表头行与脚注行省略。 |
-| `XhTableRow` | `level` | `number` |  | 多级表头下写明这是第几行表头（1 起算），行里的列头据此定位；单行表头省略。 |
+| `XhTableRow` | `level` | `number` |  | 多级表头写明这是第几行表头、多行表尾写明这是第几行表尾（1 起算），行里的列头与表尾格子据此定位；只有一行时省略。 |
 
 ### 状态
 

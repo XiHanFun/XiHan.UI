@@ -27,10 +27,12 @@ import { withXhConfig } from '../../config/config'
 import {
   provideTable,
   provideTableColumn,
+  provideTableFooterLevel,
   provideTableHeaderLevel,
   provideTableRow,
   provideTableSection,
   useOptionalTableColumnContext,
+  useOptionalTableFooterLevel,
   useOptionalTableHeaderLevel,
   useOptionalTableRowContext,
   useTableColumnContext,
@@ -133,6 +135,8 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
     selectionMode: { type: String as PropType<TableSelectionMode> },
     /** 单元格合并：逐格询问合并区的大小，与 antd 的 spanMethod 同一种写法。 */
     cellSpan: { type: Function as PropType<TableProps['cellSpan']> },
+    /** 表尾单元格合并：与 cellSpan 同一种写法，逐格询问第几行表尾的哪一格。 */
+    footerCellSpan: { type: Function as PropType<TableProps['footerCellSpan']> },
     /** 与 Virtualizer 的正式接线口：传 Virtualizer 的 collectionVirtualizer，count 等于可见数据行的条数。 */
     virtualizer: { type: Object as PropType<TableProps['virtualizer']> },
     /** 树形表在 multiple 下父子级联勾选，与 Tree 的 cascade 同义。 */
@@ -382,6 +386,8 @@ export const XhTableRow = /* @__PURE__ */ defineComponent({
     if (section !== 'body') {
       if (section === 'header')
         provideTableHeaderLevel(computed(() => props.level))
+      else
+        provideTableFooterLevel(computed(() => props.level))
       return () => h(
         'div',
         (section === 'header'
@@ -446,13 +452,16 @@ export const XhTableCell = /* @__PURE__ */ defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useTableContext()
-    // 行上下文可选：脚注单元格不属于任何数据行
+    // 行上下文可选：脚注单元格不属于任何数据行，改按所在表尾行的层号定位
     const rowCtx = useOptionalTableRowContext()
+    const section = useTableSection()
+    const footerLevel = useOptionalTableFooterLevel()
     return () => h(
       'div',
       ctx.api.value.getCellProps({
         value: props.value,
         row: rowCtx?.row.value.value,
+        footer: section === 'footer' && !rowCtx ? (footerLevel?.value ?? 1) : undefined,
         colSpan: props.colspan == null ? undefined : Number(props.colspan),
       }) as Record<string, unknown>,
       slots.default?.(),

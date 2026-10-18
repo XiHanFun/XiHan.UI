@@ -454,6 +454,34 @@ export function connectTable<T extends PropTypes>(
     }
   }
   /**
+   * 表尾单元格合并：逐格问 footerCellSpan，记法与表体相同，行身份是第几行表尾。
+   * 纵向只在表尾行之间，横向不越过最后一列。
+   */
+  const footerSpanRow = (level: number): string => `\u0001footer:${level}`
+  const footerCellSpan = prop('footerCellSpan')
+  if (footerCellSpan) {
+    for (let level = 1; level <= footerRowCount; level++) {
+      columns.forEach((column, c) => {
+        const key = spanKey(footerSpanRow(level), column.id)
+        if (spanCovers.has(key))
+          return
+        const span = footerCellSpan({ level, column, columnIndex: c })
+        const rowSpan = Math.max(1, Math.min(Math.trunc(span?.rowSpan ?? 1) || 1, footerRowCount - level + 1))
+        const colSpan = Math.max(1, Math.min(Math.trunc(span?.colSpan ?? 1) || 1, columns.length - c))
+        if (rowSpan === 1 && colSpan === 1)
+          return
+        spanOrigins.set(key, { rowSpan, colSpan, rowIndex: headerRowCount + visibleRows.length + level, columnId: column.id })
+        for (let dr = 0; dr < rowSpan; dr++) {
+          for (let dc = 0; dc < colSpan; dc++) {
+            if (dr === 0 && dc === 0)
+              continue
+            spanCovers.set(spanKey(footerSpanRow(level + dr), columns[c + dc]!.id), { origin: key, spacer: dr > 0 && dc === 0, colSpan, columnIndex: c })
+          }
+        }
+      })
+    }
+  }
+  /**
    * 实测过行位之后，只渲了一段行（接了虚拟滚动，或宿主只渲了一页）时：起点行不在 DOM 里的合并区，
    * 由区里第一条在场的行接替起点，跨度是从它往下剩下的行数。还没量过时不接替，全部在场时没有可接替的。
    */
@@ -1170,8 +1198,10 @@ export function connectTable<T extends PropTypes>(
     getCellProps: (cell) => {
       const def = columnOf(cell.value)
       const sticky = stickyAttrs(def)
+      // 合并区按行身份查：表体格子是行 id，表尾格子是第几行表尾
+      const spanRow = cell.row ?? (cell.footer != null ? footerSpanRow(Math.trunc(cell.footer) || 1) : undefined)
       const relay = cell.row != null ? spanRelays.get(spanKey(cell.row, cell.value)) : undefined
-      const cover = relay ? undefined : cell.row != null ? spanCovers.get(spanKey(cell.row, cell.value)) : undefined
+      const cover = relay ? undefined : spanRow != null ? spanCovers.get(spanKey(spanRow, cell.value)) : undefined
       // 被合并掉的格子：同一行里横向跨过的不渲染；下面行里合并区最左那一列留占位保住宽度，其余不渲染
       if (cover) {
         return normalize.element({
@@ -1184,7 +1214,7 @@ export function connectTable<T extends PropTypes>(
           'style': { ...sticky.style as Record<string, unknown>, ...spanColumnsStyle(cover.columnIndex, cover.colSpan) },
         })
       }
-      const origin = relay ?? (cell.row != null ? spanOrigins.get(spanKey(cell.row, cell.value)) : undefined)
+      const origin = relay ?? (spanRow != null ? spanOrigins.get(spanKey(spanRow, cell.value)) : undefined)
       // 跨列数只在真的跨了列时报，1 是默认值；合并区算出来的与作者写的取大者
       const spanCols = Math.max(cell.colSpan ?? 1, origin?.colSpan ?? 1)
       const colSpan = spanCols > 1 ? spanCols : undefined

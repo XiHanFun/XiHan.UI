@@ -229,7 +229,16 @@ export interface TableCellSpanDetails {
   columnIndex: number
 }
 
-/** 合并区的大小。省略即 1；超出表体（或遇到展开的详情行）的部分截掉。 */
+/** 表尾单元格合并的询问：第几行表尾的哪一格是合并区的起点、往下往右各跨几格。 */
+export interface TableFooterCellSpanDetails {
+  /** 第几行表尾，1 起算，即表尾行写的 level。 */
+  level: number
+  column: TableColumn
+  /** 在生效列里的序号，0 起算。 */
+  columnIndex: number
+}
+
+/** 合并区的大小。省略即 1；超出表体（或遇到展开的详情行）的部分截掉，表尾的超出表尾行数的部分截掉。 */
 export interface TableCellSpan {
   rowSpan?: number
   colSpan?: number
@@ -363,6 +372,8 @@ export interface TableFooterRowProps {
 export interface TableCellProps {
   value: string
   row?: string
+  /** 表尾里的格子所在的第几行表尾，1 起算；写了才按 footerCellSpan 合并。表体格子不写。 */
+  footer?: number
   /** 跨列数，从 value 所在列向后计算；详情行中的格子整行铺开依靠它。1 与省略同义。 */
   colSpan?: number
 }
@@ -415,6 +426,12 @@ export interface TableSchema extends MachineSchema {
      * 合并只在可见数据行之间，遇到展开的详情行截断。焦点仍是行级：上下键逐行走，合并格随它的起点行读出。
      */
     cellSpan?: (details: TableCellSpanDetails) => TableCellSpan | null | undefined
+    /**
+     * 表尾单元格合并，与 cellSpan 同一种写法：逐格询问第几行表尾的哪一格，返回合并区的大小。
+     * 起点格报 aria-colspan / aria-rowspan，同一行里被横向合并的格子不渲染（hidden），下面的表尾行里被纵向跨过的
+     * 在那一列留一格占位、对读屏隐藏。纵向只在表尾行之间，不跨进表体。表尾格子须写明所在的第几行（getCellProps 的 footer）。
+     */
+    footerCellSpan?: (details: TableFooterCellSpanDetails) => TableCellSpan | null | undefined
     /**
      * 树形表（行声明了 parentId）在 multiple 下父子级联勾选，与 Tree 的 cascade 同一套算法：
      * 勾父整枝传导、子全勾父勾、部分勾选的父行把手显示半选，禁用行的子树整棵冻结。
