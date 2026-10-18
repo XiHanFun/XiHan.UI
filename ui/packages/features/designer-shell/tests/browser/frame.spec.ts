@@ -251,6 +251,32 @@ describe('<xh-designer-frame>（Chromium）', () => {
     expect(zoom.getBoundingClientRect().right).toBeGreaterThan(frameBox.right - 40)
   })
 
+  it('问题列表的 summary 移进面板头的操作区：带计数的开关排在标题右边，零件自己的头部收起', async () => {
+    frame.regions = [
+      { name: 'canvas', position: 'center' },
+      { name: 'issues', position: 'bottom', title: '问题' },
+    ]
+    const issues = document.createElement('xh-designer-issues')
+    issues.headless = true
+    issues.items = [{ issue: { code: 'graph.no-end', path: [] }, message: '缺少结束节点' }]
+    issues.slot = 'issues'
+    frame.append(issues)
+    await issues.updateComplete
+    const summary = issues.summary
+    summary.slot = 'issues-actions'
+    frame.append(summary)
+    await new Promise(resolve => setTimeout(resolve))
+    await issues.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const card = frame.querySelector<HTMLElement>('[data-part="region"][data-region="issues"]')!
+    const header = card.querySelector<HTMLElement>('[data-part="panel-header"]')!.getBoundingClientRect()
+    const title = card.querySelector<HTMLElement>('[data-part="panel-title"]')!.getBoundingClientRect()
+    const box = summary.getBoundingClientRect()
+    expect([box.width > 0, box.top >= header.top - 1, box.bottom <= header.bottom + 1, box.left >= title.right]).toEqual([true, true, true, true])
+    expect(summary.textContent).toContain('1')
+    expect(issues.querySelector<HTMLElement>(':scope > [data-part="header"]')!.getBoundingClientRect().height).toBe(0)
+  })
+
   it('区里的作者内容不受外框样式影响：带同名部件的作者元素保持自己的 display 与 overflow', async () => {
     const plant = (host: Element): HTMLElement[] => {
       host.insertAdjacentHTML('beforeend', [

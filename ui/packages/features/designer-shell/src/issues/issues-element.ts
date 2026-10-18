@@ -5,6 +5,7 @@
 
 // <xh-designer-issues>：问题列表。列出设计器换好文字的结构问题，按严重程度排列、按对象分组或按传入顺序；头部的
 // 错误、警告开关带计数，过滤状态保留。方向键在条目间移动，回车或点击派发 issue-activate，悬停派发 issue-hover。
+// 这组开关是 summary：宿主可以把它移到外框面板头的操作区，零件照样更新它，不再收回。
 
 import type { IssueSeverity, SchemaIssue } from '@xihan-ui/designer-kit/schema'
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
@@ -137,6 +138,14 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
     this.headless = false
   }
 
+  /**
+   * 严重程度的开关，各带这一级问题的计数。缺省在零件自己的头部；放进外框的卡片时，宿主可以把它移到面板头的操作区
+   * （写上 slot="<区名>-actions" 交给外框），零件照样更新计数与开关状态，不再把它收回头部。
+   */
+  get summary(): HTMLElement {
+    return this.#ensureParts().filter
+  }
+
   protected override update(changed: PropertyValues): void {
     super.update(changed)
     const parts = this.#ensureParts()
@@ -144,6 +153,7 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
     const items = this.items ?? []
     setText(parts.title, t.title)
     parts.title.hidden = this.headless === true
+    parts.header.hidden = parts.title.hidden && parts.filter.parentElement !== parts.header
     parts.filter.querySelector('[data-xh-part="root"]')!.setAttribute('aria-label', t.filter)
     const errors = items.filter(item => issueSeverity(item.issue) === 'error').length
     setText(parts.errorCount, t.errors(errors))
@@ -162,7 +172,7 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
   }
 
   #ensureParts(): Parts {
-    if (this.#parts?.header.isConnected && this.#parts.header.parentElement === this)
+    if (this.#parts?.header.parentElement === this)
       return this.#parts
     const doc = this.ownerDocument
     const title = createAuthoredElement(doc, 'span', { 'data-part': 'title', 'id': this.#ids.scopeId() })
@@ -182,6 +192,8 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
       this.requestUpdate()
     })
     const header = createGeneratedElement(doc, 'div', { 'data-part': 'header' }, [title, filter])
+    // 开关被宿主移走时头部跟着收起
+    new MutationObserver(() => this.requestUpdate()).observe(header, { childList: true })
     const list = createGeneratedElement(doc, 'ul', { 'data-part': 'list', 'role': 'list', 'aria-labelledby': title.id })
     const empty = createGeneratedElement(doc, 'p', { 'data-part': 'empty' })
     list.addEventListener('click', this.#onClick)

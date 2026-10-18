@@ -135,6 +135,31 @@ describe('<xh-designer-issues>', () => {
     expect(list.querySelector<HTMLElement>('[data-part="empty"]')!.hidden).toBe(false)
   })
 
+  it('summary 是带计数的过滤开关：宿主移到别处后零件照样更新它、不收回；headless 时头部随之收起', async () => {
+    setXhConfig(designerShellZhCN)
+    const list = await mount((element) => {
+      element.items = items
+      element.headless = true
+    })
+    const summary = list.summary
+    const header = list.querySelector<HTMLElement>('[data-part="header"]')!
+    expect([summary.parentElement, header.hidden]).toEqual([header, false])
+    const actions = document.createElement('div')
+    document.body.append(actions)
+    actions.append(summary)
+    list.items = items.slice(1)
+    await list.updateComplete
+    expect([summary.parentElement, header.hidden]).toEqual([actions, true])
+    expect(summary.querySelector('button[value="error"]')!.textContent).toBe('3 个错误')
+    expect(summary.querySelector('button[value="warning"]')!.textContent).toBe('0 个警告')
+    summary.querySelector<HTMLButtonElement>('button[value="error"]')!.click()
+    await list.updateComplete
+    expect(rows(list)).toEqual([])
+    list.headless = false
+    await list.updateComplete
+    expect([summary.parentElement, header.hidden, list.summary]).toEqual([actions, false, summary])
+  })
+
   it('有 target 的条目是原生按钮，点击派发 issue-activate；没有 target 的不可激活', async () => {
     const list = await mount((element) => {
       element.items = items
