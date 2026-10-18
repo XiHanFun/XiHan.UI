@@ -903,6 +903,29 @@ describe('<xh-designer-properties> 选项表', () => {
     expect(marked()).toEqual([])
   })
 
+  it('allowDisabled 为 false 时只有值与文字两列、没有复选框；落在 disabled 上的问题标在值上，改文字不写 disabled', async () => {
+    const plain = (value: JsonValue): DesignerPropertyTarget => ({
+      kind: 'field',
+      id: 'f1',
+      value: { data: { options: value } },
+      descriptors: [{ path: ['data', 'options'], control: { kind: 'options', allowDisabled: false }, label: '值映射' }],
+    })
+    const panel = await mount((element) => {
+      element.targets = [plain([{ value: '1', label: '男' }, { value: '2', disabled: true }])]
+      element.errors = [{ target: { kind: 'field', id: 'f1' }, path: ['data', 'options', 1, 'disabled'], message: '不能禁用' }]
+    })
+    await settle(panel)
+    const array = tableOf(panel) as FieldArray & { columns?: { id: string }[] }
+    expect(array.columns!.map(column => column.id)).toEqual(['value', 'label'])
+    expect(array.querySelector('xh-checkbox')).toBeNull()
+    expect(array.querySelector('[slot$=":disabled"]')).toBeNull()
+    const valueCell = cell(panel, 1, 'value')
+    expect([valueCell.invalid, valueCell.errorText]).toEqual([true, '不能禁用'])
+    const changes = record(panel, 'property-change')
+    emit(control(panel, 0, 'label'), 'value-change', { value: '男士' })
+    expect(changes.at(-1)!.value).toEqual([{ value: '1', label: '男士' }, { value: '2', disabled: true }])
+  })
+
   it('只读时格子只读、不派发，多个对象取值不同时没有行', async () => {
     const panel = await mount((element) => {
       element.readonly = true

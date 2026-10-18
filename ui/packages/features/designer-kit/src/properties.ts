@@ -77,7 +77,8 @@ export type PropertySides = Readonly<Record<PropertySide, number>>
  *   新建的条件与组带 id。fields、parameters、maxDepth、ids 只给编辑器用。
  * - swatch：options 里某一项的 value，编辑器画成一排色块；custom 为 true 时另可填任意颜色，取值是 # 开头的 3、4、6、8 位十六进制色。
  * - options：选项列表，每项是 { value, label?, disabled?, tone?, description? }（选择类组件的选项形状），
- *   按 @xihan-ui/core/options 的 findOptionViolation 严格检查：不许别的键，同一列表里 value 不重复；value 不能是空串。requireLabel 为 true 时每项都要有不为空的 label。
+ *   按 @xihan-ui/core/options 的 findOptionViolation 严格检查：不许别的键，同一列表里 value 不重复；value 不能是空串。requireLabel 为 true 时每项都要有不为空的 label；
+ *   allowDisabled 为 false 时选项没有禁用这回事：每项不能带 disabled，编辑器也不显示禁用那一列。
  */
 export type PropertyControl
   = | { readonly kind: 'text', readonly multiline?: boolean, readonly placeholder?: string, readonly secret?: boolean }
@@ -103,7 +104,7 @@ export type PropertyControl
       readonly ids?: boolean
     }
     | { readonly kind: 'swatch', readonly options: readonly PropertySwatchOption[], readonly custom?: boolean }
-    | { readonly kind: 'options', readonly requireLabel?: boolean }
+    | { readonly kind: 'options', readonly requireLabel?: boolean, readonly allowDisabled?: boolean }
 
 /** 内建编辑方式的种类。 */
 export type PropertyControlKind = PropertyControl['kind']
@@ -297,8 +298,8 @@ function pointerToken(token: string): string {
 }
 
 /**
- * 选项列表里按先后的第一处问题：这一项不是对象，有别的键或某个键的取值不对，value 是空串，要求 label 时 label 为空，
- * 或 value 与前面的项重复。问题落在这一项的那个键上，这一项不是对象时落在这一项上。
+ * 选项列表里按先后的第一处问题：这一项不是对象，有别的键或某个键的取值不对，不许禁用时带了 disabled，value 是空串，
+ * 要求 label 时 label 为空，或 value 与前面的项重复。问题落在这一项的那个键上，这一项不是对象时落在这一项上。
  */
 function optionsIssue(control: Extract<PropertyControl, { kind: 'options' }>, value: JsonValue): PropertyValueIssue | undefined {
   if (!Array.isArray(value))
@@ -313,6 +314,8 @@ function optionsIssue(control: Extract<PropertyControl, { kind: 'options' }>, va
       const key = found.pointer.split('/')[2]
       return { code: optionCode(found, item), path: key === undefined ? [index] : [index, pointerToken(key)] }
     }
+    if (control.allowDisabled === false && Object.hasOwn(item, 'disabled'))
+      return { code: 'unknown-key', path: [index, 'disabled'] }
     const option = item as { readonly value: string, readonly label?: string }
     if (option.value === '')
       return { code: 'required', path: [index, 'value'] }
@@ -341,7 +344,7 @@ export function findPropertyValueIssue(control: PropertyControl, value: JsonValu
  * dataField 不是路径写法报 invalid-value；sides 多出四边以外的键报 unknown-key，缺边或某边不是数字报 invalid-type；
  * format 不是对象报 invalid-type，没过 checkFormatSpec 报 invalid-value；filter 不是对象报 invalid-type，条件树的形状不对报 invalid-value；
  * swatch 不是字符串报 invalid-type，既不是选项也不是允许的自定义颜色报 invalid-option；
- * options 不是数组或某项、某个键的类型不对报 invalid-type，有别的键报 unknown-key，tone 不是色调名报 invalid-option，
+ * options 不是数组或某项、某个键的类型不对报 invalid-type，有别的键（allowDisabled 为 false 时含 disabled）报 unknown-key，tone 不是色调名报 invalid-option，
  * value 为空或缺了要求的 label 报 required，value 重复报 duplicate-value。问题落在值里哪一处用 findPropertyValueIssue。
  */
 export function checkPropertyValue(control: PropertyControl, value: JsonValue): PropertyValueIssueCode | undefined {
