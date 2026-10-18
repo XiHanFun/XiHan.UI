@@ -349,51 +349,77 @@ export function colorClampChroma(l: number, c: number, h: number): number {
   return lo
 }
 
-/* ---------- 写法解析 ---------- */
+/* ---------- 写法解析（CSS Color 4） ---------- */
 
-/** 函数式记法里的一个参数：`50%` 按 scale 换算，`210deg` 去掉单位，`none`（缺省分量）取 0，其余按裸数取。 */
-function functionArg(token: string, scale: number): number {
-  const raw = token.trim()
-  if (raw === 'none')
-    return 0
-  if (raw.endsWith('%'))
-    return Number(raw.slice(0, -1)) * scale
-  if (raw.endsWith('deg'))
-    return Number(raw.slice(0, -3))
-  return Number(raw)
-}
+/** CSS 的数：可带正负号与指数，小数点后必须有数字。输入已转成小写。 */
+const CSS_NUMBER = /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)(?:e[+-]?\d+)?$/
 
-/** 色相参数：在 functionArg 之外再认 grad、rad、turn，一律折成度。grad 要排在 rad 前面比。 */
-const HUE_UNITS: ReadonlyArray<readonly [string, number]> = [['grad', 0.9], ['rad', 180 / Math.PI], ['turn', 360]]
+/** 角度单位折成度。grad 要排在 rad 前面比。 */
+const ANGLE_UNITS: ReadonlyArray<readonly [string, number]> = [['deg', 1], ['grad', 0.9], ['rad', 180 / Math.PI], ['turn', 360]]
 
-function hueArg(token: string): number {
-  const raw = token.trim()
-  for (const [unit, degrees] of HUE_UNITS) {
-    if (raw.endsWith(unit))
-      return Number(raw.slice(0, -unit.length)) * degrees
+type ComponentKind = 'number' | 'percent' | 'angle' | 'none'
+
+/** 一个分量记号：数、百分数、带单位的角度或 none；写法不合 CSS 返回 null。 */
+function readToken(token: string): { readonly kind: ComponentKind, readonly value: number } | null {
+  if (token === 'none')
+    return { kind: 'none', value: 0 }
+  if (token.endsWith('%')) {
+    const digits = token.slice(0, -1)
+    return CSS_NUMBER.test(digits) ? { kind: 'percent', value: Number(digits) } : null
   }
-  return functionArg(raw, 1)
+  for (const [unit, degrees] of ANGLE_UNITS) {
+    if (token.endsWith(unit)) {
+      const digits = token.slice(0, -unit.length)
+      return CSS_NUMBER.test(digits) ? { kind: 'angle', value: Number(digits) * degrees } : null
+    }
+  }
+  return CSS_NUMBER.test(token) ? { kind: 'number', value: Number(token) } : null
 }
 
-function splitArgs(body: string): string[] {
-  // 逗号、空白、斜杠三种分隔写法都收：rgb(1 2 3 / 50%) 与 rgba(1,2,3,0.5) 是同一件事
-  return body.split(/[\s,/]+/).filter(Boolean)
+/** 读一个分量：accepts 列出这一位认的种类，百分数乘 percentScale 折算，none 取 0；不认返回 NaN。 */
+function readComponent(token: string, accepts: readonly ComponentKind[], percentScale = 1): number {
+  const read = readToken(token)
+  if (!read || !accepts.includes(read.kind))
+    return Number.NaN
+  return read.kind === 'percent' ? read.value * percentScale : read.value
 }
 
-/** 现代写法的参数：三个分量只认空白分隔，透明度跟在斜杠后面、可省；分量个数不对返回 null。 */
-function modernArgs(body: string): { readonly channels: string[], readonly alpha: number } | null {
-  const [channels, alphaPart, ...rest] = body.split('/')
-  if (rest.length > 0 || channels === undefined)
-    return null
-  const args = channels.trim().split(/\s+/).filter(Boolean)
-  const alpha = alphaPart === undefined ? 1 : functionArg(alphaPart, 0.01)
-  if (args.length !== 3 || !Number.isFinite(alpha) || alpha < 0 || alpha > 1)
-    return null
-  return { channels: args, alpha }
+/** 函数式记法拆出的参数。legacy 是逗号分隔的旧式写法。 */
+interface FunctionArgs {
+  readonly channels: readonly string[]
+  readonly alpha: string | undefined
+  readonly legacy: boolean
 }
 
 /**
- * 一个颜色串解析成哪个色彩空间里的几路数，不取整、不截断；写法错了或分量越界返回 null。
+ * 拆参数：有逗号就按旧式写法逐个逗号切开（分量与透明度共三或四项），否则按新式写法，分量按空白切开、透明度取斜杠后面那段。
+ * 只切不验：每一项还要经 readToken 按 CSS 的记号校验，两种分隔混写、空项、斜杠后面空着都在那一步过不了。
+ */
+function splitFunctionArgs(body: string, allowLegacy: boolean): FunctionArgs | null {
+  if (body.includes(',')) {
+    if (!allowLegacy)
+      return null
+    const parts = body.split(',').map(part => part.trim())
+    if (parts.length !== 3 && parts.length !== 4)
+      return null
+    return { channels: parts.slice(0, 3), alpha: parts[3], legacy: true }
+  }
+  const [main, alpha, ...rest] = body.split('/')
+  if (rest.length > 0)
+    return null
+  return { channels: main!.trim().split(/\s+/).filter(Boolean), alpha: alpha?.trim(), legacy: false }
+}
+
+/** 透明度：数或百分数（新式写法另认 none），落在 0-1 之外返回 NaN；不写时为 1。 */
+function readAlpha(args: FunctionArgs): number {
+  if (args.alpha === undefined)
+    return 1
+  const alpha = readComponent(args.alpha, args.legacy ? ['number', 'percent'] : ['number', 'percent', 'none'], 0.01)
+  return alpha >= 0 && alpha <= 1 ? alpha : Number.NaN
+}
+
+/**
+ * 一个颜色串解析成哪个色彩空间里的几路数，不取整、不截断；写法不合 CSS Color 4 或分量越界返回 null。
  * rgb 是 0-255 的 sRGB 编码值（hex、rgb()、hsl() 与 color(srgb …) 都落到这里），linear 是线性光，
  * oklab、oklch 照写法原样。
  */
@@ -405,99 +431,112 @@ type ParsedColor
 
 function parseColorParts(input: string): ParsedColor | null {
   const raw = input.trim().toLowerCase()
-  if (raw === '')
-    return null
-
-  const modern = /^(oklch|oklab|color)\(([^)]*)\)$/.exec(raw)
-  if (modern) {
-    if (modern[1] === 'oklch')
-      return parseOklch(modern[2]!)
-    if (modern[1] === 'oklab')
-      return parseOklab(modern[2]!)
-    return parseColorFunction(modern[2]!)
-  }
-
-  const matched = /^(rgba?|hsla?)\(([^)]*)\)$/.exec(raw)
-  if (!matched) {
+  if (/^#[0-9a-f]+$/.test(raw)) {
     const hex = colorHexToRgba(raw)
     return hex && { space: 'rgb', r: hex.r, g: hex.g, b: hex.b, alpha: hex.a }
   }
-
-  const kind = matched[1]!
-  const args = splitArgs(matched[2]!)
-  if (args.length !== 3 && args.length !== 4)
+  const call = /^([a-z]+)\(([^()]*)\)$/.exec(raw)
+  if (!call)
     return null
-  // 第四个参数（alpha）可以省；`50%` 与 `0.5` 是同一个意思
-  const alpha = args.length > 3 ? functionArg(args[3]!, 0.01) : 1
-  if (!Number.isFinite(alpha) || alpha < 0 || alpha > 1)
+  const [, name, body] = call as unknown as [string, string, string]
+  if (name === 'rgb' || name === 'rgba')
+    return parseRgb(splitFunctionArgs(body, true))
+  if (name === 'hsl' || name === 'hsla')
+    return parseHsl(splitFunctionArgs(body, true))
+  if (name === 'oklch')
+    return parseOklch(splitFunctionArgs(body, false))
+  if (name === 'oklab')
+    return parseOklab(splitFunctionArgs(body, false))
+  if (name === 'color')
+    return parseColorFunction(splitFunctionArgs(body, false))
+  return null
+}
+
+/** rgb()：分量是 0-255 的数或百分数（100% 即 255）；旧式写法三路必须同为数或同为百分数，新式写法可混用、可写 none。 */
+function parseRgb(args: FunctionArgs | null): ParsedColor | null {
+  if (!args || args.channels.length !== 3)
     return null
+  const tokens = args.channels.map(readToken)
+  if (tokens.some(token => !token || token.kind === 'angle'))
+    return null
+  if (args.legacy && (tokens.some(token => token!.kind === 'none') || new Set(tokens.map(token => token!.kind)).size !== 1))
+    return null
+  const [r, g, b] = tokens.map(token => token!.kind === 'percent' ? token!.value * 2.55 : token!.value) as [number, number, number]
+  const alpha = readAlpha(args)
+  if ([r, g, b].some(n => n < 0 || n > 255) || Number.isNaN(alpha))
+    return null
+  return { space: 'rgb', r, g, b, alpha }
+}
 
-  if (kind.startsWith('rgb')) {
-    // r/g/b 写成百分比时以 255 为满值
-    const nums = [args[0]!, args[1]!, args[2]!].map(token => functionArg(token, 2.55))
-    if (nums.some(n => !Number.isFinite(n) || n < 0 || n > 255))
-      return null
-    return { space: 'rgb', r: nums[0]!, g: nums[1]!, b: nums[2]!, alpha }
-  }
-
-  const h = hueArg(args[0]!)
-  const s = functionArg(args[1]!, 1)
-  const l = functionArg(args[2]!, 1)
-  if (![h, s, l].every(Number.isFinite) || s < 0 || s > 100 || l < 0 || l > 100)
+/** hsl()：色相写数或角度；饱和度与明度旧式写法只认百分数，新式写法另认 0-100 的数与 none。 */
+function parseHsl(args: FunctionArgs | null): ParsedColor | null {
+  if (!args || args.channels.length !== 3)
+    return null
+  const [hueToken, satToken, lightToken] = args.channels as [string, string, string]
+  const level: readonly ComponentKind[] = args.legacy ? ['percent'] : ['percent', 'number', 'none']
+  const h = readComponent(hueToken, args.legacy ? ['number', 'angle'] : ['number', 'angle', 'none'])
+  const s = readComponent(satToken, level)
+  const l = readComponent(lightToken, level)
+  const alpha = readAlpha(args)
+  if (![h, s, l, alpha].every(Number.isFinite) || s < 0 || s > 100 || l < 0 || l > 100)
     return null
   const [r, g, b] = hslToRgb255(toDegree(h), s / 100, l / 100)
   return { space: 'rgb', r, g, b, alpha }
 }
 
-/** oklch() 的参数：明度写百分数或 0-1 的数，彩度写数或百分数（100% 即 0.4），色相写角度。 */
-function parseOklch(body: string): ParsedColor | null {
-  const args = modernArgs(body)
-  if (!args)
+/** oklch()：明度写百分数或 0-1 的数，彩度写数或百分数（100% 即 0.4），色相写数或角度；三路都可写 none。 */
+function parseOklch(args: FunctionArgs | null): ParsedColor | null {
+  if (!args || args.channels.length !== 3)
     return null
-  const l = functionArg(args.channels[0]!, 0.01)
-  const c = functionArg(args.channels[1]!, 0.004)
-  const h = hueArg(args.channels[2]!)
-  if (![l, c, h].every(Number.isFinite) || l < 0 || l > 1 || c < 0)
+  const [lToken, cToken, hToken] = args.channels as [string, string, string]
+  const l = readComponent(lToken, ['number', 'percent', 'none'], 0.01)
+  const c = readComponent(cToken, ['number', 'percent', 'none'], 0.004)
+  const h = readComponent(hToken, ['number', 'angle', 'none'])
+  const alpha = readAlpha(args)
+  if (![l, c, h, alpha].every(Number.isFinite) || l < 0 || l > 1 || c < 0)
     return null
-  return { space: 'oklch', l, c, h, alpha: args.alpha }
+  return { space: 'oklch', l, c, h, alpha }
 }
 
-/** oklab() 的参数：明度写百分数或 0-1 的数，a、b 两轴写数或百分数（100% 即 0.4）。 */
-function parseOklab(body: string): ParsedColor | null {
-  const args = modernArgs(body)
-  if (!args)
+/** oklab()：明度写百分数或 0-1 的数，a、b 两轴写数或百分数（100% 即 0.4）；三路都可写 none。 */
+function parseOklab(args: FunctionArgs | null): ParsedColor | null {
+  if (!args || args.channels.length !== 3)
     return null
-  const l = functionArg(args.channels[0]!, 0.01)
-  const a = functionArg(args.channels[1]!, 0.004)
-  const b = functionArg(args.channels[2]!, 0.004)
-  if (![l, a, b].every(Number.isFinite) || l < 0 || l > 1)
+  const [lToken, aToken, bToken] = args.channels as [string, string, string]
+  const l = readComponent(lToken, ['number', 'percent', 'none'], 0.01)
+  const a = readComponent(aToken, ['number', 'percent', 'none'], 0.004)
+  const b = readComponent(bToken, ['number', 'percent', 'none'], 0.004)
+  const alpha = readAlpha(args)
+  if (![l, a, b, alpha].every(Number.isFinite) || l < 0 || l > 1)
     return null
-  return { space: 'oklab', l, a, b, alpha: args.alpha }
+  return { space: 'oklab', l, a, b, alpha }
 }
 
-/** color() 的参数：色彩空间只认 srgb 与 srgb-linear，三路写 0-1 的数或百分数。 */
-function parseColorFunction(body: string): ParsedColor | null {
-  const trimmed = body.trim()
-  const gap = trimmed.search(/\s/)
-  const space = gap < 0 ? trimmed : trimmed.slice(0, gap)
+/** color()：色彩空间只认 srgb 与 srgb-linear，三路写数或百分数（100% 即 1）、可写 none，不限 0-1。 */
+function parseColorFunction(args: FunctionArgs | null): ParsedColor | null {
+  if (!args || args.channels.length !== 4)
+    return null
+  const [space, ...channels] = args.channels as [string, string, string, string]
   if (space !== 'srgb' && space !== 'srgb-linear')
     return null
-  const args = modernArgs(trimmed.slice(space.length))
-  if (!args)
-    return null
-  const [r, g, b] = args.channels.map(token => functionArg(token, 0.01)) as [number, number, number]
-  if (![r, g, b].every(Number.isFinite))
+  const [r, g, b] = channels.map(token => readComponent(token, ['number', 'percent', 'none'], 0.01)) as [number, number, number]
+  const alpha = readAlpha(args)
+  if (![r, g, b, alpha].every(Number.isFinite))
     return null
   if (space === 'srgb-linear')
-    return { space: 'linear', r, g, b, alpha: args.alpha }
-  return { space: 'rgb', r: r * 255, g: g * 255, b: b * 255, alpha: args.alpha }
+    return { space: 'linear', r, g, b, alpha }
+  return { space: 'rgb', r: r * 255, g: g * 255, b: b * 255, alpha }
 }
 
 /**
  * 任意受支持写法 → RGBA；解析不出返回 null。
- * 支持 `#rgb` / `#rgba` / `#rrggbb` / `#rrggbbaa`、`rgb()` / `rgba()`、`hsl()` / `hsla()`、`oklch()`、`oklab()`
- * 与 `color(srgb …)` / `color(srgb-linear …)`；分量写 `none` 时取 0，色相认 deg、grad、rad、turn。
- * 超出 sRGB 的颜色按通道裁剪；分量本身越界（如 `rgb(300 0 0)`、透明度大于 1）返回 null。
+ * 按 CSS Color 4 的语法认 `#rgb` / `#rgba` / `#rrggbb` / `#rrggbbaa`、`rgb()` / `rgba()`、`hsl()` / `hsla()`、
+ * `oklch()`、`oklab()` 与 `color(srgb …)` / `color(srgb-linear …)`：
+ * - rgb / hsl 的旧式写法分隔符全是逗号，rgb 三路同为数或同为百分数，hsl 的饱和度与明度写百分数；
+ * - 新式写法分量之间用空白、透明度写在 `/` 后面，数与百分数可混用，分量可写 `none`（取 0）；
+ * - 色相写数或 deg、grad、rad、turn。
+ * 浏览器不认的写法（分隔符混写、旧式写法里数与百分数混用、十六进制不带 `#` 等）返回 null；
+ * 分量本身越界（如 `rgb(300 0 0)`、透明度大于 1）也返回 null。超出 sRGB 的颜色按通道裁剪。
  * 不认颜色关键字（`red`、`transparent`），也不认 lab、lch 与其余色彩空间。
  */
 export function colorParse(input: string): ColorRgba | null {
