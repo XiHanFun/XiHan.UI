@@ -142,6 +142,13 @@ describe('checkPropertyValue', () => {
     [{ kind: 'filter' }, { logic: 'and', conditions: [{ field: 'a' }] }, 'invalid-value'],
     [{ kind: 'filter' }, { logic: 'and', conditions: [{ logic: 'or', conditions: 'x' }] }, 'invalid-value'],
     [{ kind: 'filter' }, [], 'invalid-type'],
+    [{ kind: 'text', secret: true }, 'k3y', undefined],
+    [{ kind: 'text', secret: true }, 1, 'invalid-type'],
+    [{ kind: 'swatch', options: [{ value: 'ocean', color: '#2563eb' }, { value: 'forest', color: '#16a34a' }] }, 'forest', undefined],
+    [{ kind: 'swatch', options: [{ value: 'ocean', color: '#2563eb' }] }, '#2563eb', 'invalid-option'],
+    [{ kind: 'swatch', options: [{ value: 'ocean', color: '#2563eb' }], custom: true }, '#ff8800', undefined],
+    [{ kind: 'swatch', options: [{ value: 'ocean', color: '#2563eb' }], custom: true }, 'orange', 'invalid-option'],
+    [{ kind: 'swatch', options: [] }, 1, 'invalid-type'],
   ]
   it('内建编辑方式的取值约束', () => {
     for (const [control, value, code] of cases)

@@ -14,7 +14,7 @@ import type { DesignerPropertiesTranslations } from '../translations'
 import { formatJsonPath, isJsonPathText, isPlainObject, jsonEquals } from '@xihan-ui/core/json'
 import { createIdAllocator, listDataFields, listFilterFields } from '@xihan-ui/designer-kit'
 import { PROPERTY_SIDES } from '@xihan-ui/designer-kit/properties'
-import { createAuthoredElement, setText } from '@xihan-ui/web-components/authoring'
+import { createAuthoredElement, setAttributes, setText } from '@xihan-ui/web-components/authoring'
 import { placeChildren } from '../internal/dom'
 
 /** 属性面板生成的部件都带这个 data-scope，样式只认它。 */
@@ -101,6 +101,7 @@ const EDITORS: Readonly<Record<PropertyControl['kind'], FieldEditor>> = {
   sides: sidesEditor,
   format: formatEditor,
   filter: filterEditor,
+  swatch: swatchEditor,
 }
 
 /** 按编辑方式取内建编辑器；不是内建种类时为 undefined。 */
@@ -194,12 +195,40 @@ function placeholder(field: HTMLElement, context: FieldContext, own: string | un
 function textEditor(initial: FieldContext): FieldInstance {
   const doc = initial.ownerDocument
   const control = controlOf<'text'>(initial)
+  if (control.secret)
+    return secretEditor(initial)
   const input = createAuthoredElement(doc, control.multiline ? 'textarea' : 'input', { 'data-xh-part': 'input' })
   const field: ControlElement = createAuthoredElement(doc, 'xh-text-field', { 'data-xh-part': 'control', 'size': 'sm' }, [
     createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'control' }, [input])]),
   ])
   if (control.multiline)
     field.autoSize = { minRows: 2, maxRows: 6 }
+  let context = initial
+  field.addEventListener('value-change', (event) => {
+    event.stopPropagation()
+    const { value } = (event as ValueChange<string>).detail
+    field.value = value
+    context.setValue(value === '' ? undefined : value)
+  })
+  field.addEventListener('focusout', () => context.commit())
+  const update = (next: FieldContext): void => {
+    context = next
+    placeholder(field, next, control.placeholder)
+    const value = next.mixed ? '' : textOf(next.value)
+    if (field.value !== value)
+      field.value = value
+  }
+  update(initial)
+  return { element: field, update }
+}
+
+/** 密钥这类文字：库内 xh-password-input，缺省不显示明文，浏览器不代填也不记住。 */
+function secretEditor(initial: FieldContext): FieldInstance {
+  const doc = initial.ownerDocument
+  const control = controlOf<'text'>(initial)
+  const field: ControlElement = createAuthoredElement(doc, 'xh-password-input', { 'data-xh-part': 'control', 'size': 'sm', 'auto-complete': 'off' }, [
+    createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }),
+  ])
   let context = initial
   field.addEventListener('value-change', (event) => {
     event.stopPropagation()
@@ -512,6 +541,75 @@ function colorEditor(initial: FieldContext): FieldInstance {
   }
   update(initial)
   return { element: field, update }
+}
+
+/** 色板上受控的格子与选中的颜色串。 */
+interface SwatchControl extends HTMLElement {
+  value?: string
+  swatches?: { value: string, label?: string }[]
+}
+
+/**
+ * 颜色预设：库内 xh-color-swatch-picker 一格一项，格子画选项的 color，选中写入选项的 value；
+ * custom 为 true 时下面另有一个颜色框，填任意颜色，取值不在选项里时显示在这里、色板不选中任何一格。整组按一组控件排。
+ */
+function swatchEditor(initial: FieldContext): FieldInstance {
+  const doc = initial.ownerDocument
+  const control = controlOf<'swatch'>(initial)
+  const picker: SwatchControl = createAuthoredElement(doc, 'xh-color-swatch-picker', { size: 'sm' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' })])
+  picker.swatches = control.options.map(option => ({ value: option.color, ...(option.label === undefined ? {} : { label: option.label }) }))
+  const custom: ControlElement | undefined = control.custom
+    ? createAuthoredElement(doc, 'xh-color-field', { size: 'sm' }, [
+        createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'control' }, [
+          createAuthoredElement(doc, 'span', { 'data-xh-part': 'swatch' }),
+          createAuthoredElement(doc, 'input', { 'data-xh-part': 'input' }),
+        ])]),
+      ])
+    : undefined
+  const element = createAuthoredElement(doc, 'div', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'swatch' }, custom ? [picker, custom] : [picker])
+  let context = initial
+  picker.addEventListener('value-change', (event) => {
+    event.stopPropagation()
+    const { value } = (event as ValueChange<string | null>).detail
+    const option = control.options.find(item => item.color === value)
+    if (!option)
+      return
+    picker.value = option.color
+    if (custom)
+      custom.value = ''
+    context.setValue(option.value)
+    context.commit()
+  })
+  custom?.addEventListener('value-change', (event) => {
+    event.stopPropagation()
+    const { value } = (event as ValueChange<string>).detail
+    custom.value = value
+    if (value === '')
+      return
+    picker.value = ''
+    context.setValue(value)
+    context.commit()
+  })
+  const update = (next: FieldContext): void => {
+    context = next
+    const label = next.descriptor.label
+    setAttributes(picker, { 'aria-label': label })
+    picker.toggleAttribute('read-only', next.readonly)
+    const option = next.mixed ? undefined : control.options.find(item => item.value === next.value)
+    const color = option?.color ?? ''
+    if (picker.value !== color)
+      picker.value = color
+    if (custom) {
+      setAttributes(custom, { 'aria-label': next.translations.customColor })
+      custom.toggleAttribute('read-only', next.readonly)
+      placeholder(custom, next, '#rrggbb')
+      const text = !next.mixed && !option && typeof next.value === 'string' ? next.value : ''
+      if (custom.value !== text)
+        custom.value = text
+    }
+  }
+  update(initial)
+  return { element, update, group: true }
 }
 
 function jsonEditor(initial: FieldContext): FieldInstance {

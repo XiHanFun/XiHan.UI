@@ -21,6 +21,7 @@ export const DESIGNER_PROPERTIES_EN_US: DesignerShellLocaleTranslations['xh-desi
   sidesLinked: 'Same on all sides',
   sides: { all: 'All sides', top: 'Top', right: 'Right', bottom: 'Bottom', left: 'Left' },
   sidesIncomplete: 'Fill in all four sides',
+  customColor: 'Custom color',
 }
 
 export const DESIGNER_ISSUES_EN_US: DesignerShellLocaleTranslations['xh-designer-issues'] = {

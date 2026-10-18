@@ -22,6 +22,7 @@ const translations: DesignerShellLocaleTranslations = {
     sidesLinked: '4 辺とも同じ',
     sides: { all: '4 辺', top: '上', right: '右', bottom: '下', left: '左' },
     sidesIncomplete: '4 辺すべてを入力してください',
+    customColor: 'カスタムカラー',
   },
   'xh-designer-issues': {
     title: '問題',

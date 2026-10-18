@@ -22,6 +22,7 @@ const translations: DesignerShellLocaleTranslations = {
     sidesLinked: '四边相同',
     sides: { all: '四边', top: '上', right: '右', bottom: '下', left: '左' },
     sidesIncomplete: '四边都要填写',
+    customColor: '自定义颜色',
   },
   'xh-designer-issues': {
     title: '问题',
