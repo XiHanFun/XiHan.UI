@@ -242,6 +242,19 @@ export function connectTable<T extends PropTypes>(
   // 摊平与索引都是 (rows, 展开集合) 的纯函数；connect 在 Vue 的 render 期求值，此时 DOM 尚不存在。
   const visibleRows = flattenTableRows(rows, expandedValue)
   const dataRows = visibleRows.filter(row => row.kind === 'data')
+  /** 行表头：列标的是函数时按行问，入参是行定义与它在可见数据行里的序号；表尾格子不问、按行表头处理。 */
+  const rowDefById = new Map(rows.map(row => [row.id, row]))
+  const dataRowOrder = new Map(dataRows.map((row, index) => [row.id, index]))
+  const isRowHeader = (def: TableColumnDef | undefined, rowId: string | undefined, footer: boolean): boolean => {
+    const flag = def?.rowHeader
+    if (typeof flag !== 'function')
+      return !!flag
+    if (rowId == null)
+      return footer
+    const row = rowDefById.get(rowId)
+    const index = dataRowOrder.get(rowId)
+    return row != null && index != null && flag(row, index)
+  }
   const metaIndex = new Map<string, TableVisibleRow>()
   // 行号：表头占了第 1 行，可见序往后顺推。数据行与它的详情行共用 id，分开两张表存
   const dataRowIndex = new Map<string, number>()
@@ -409,7 +422,6 @@ export function connectTable<T extends PropTypes>(
   const spanCovers = new Map<string, SpanCover>()
   const cellSpan = prop('cellSpan')
   if (cellSpan) {
-    const rowDefs = new Map(rows.map(row => [row.id, row]))
     // 数据行在可见序列里的位置；中间夹了详情行的两行不算相邻
     const runs: TableVisibleRow[][] = []
     let run: TableVisibleRow[] = []
@@ -427,7 +439,7 @@ export function connectTable<T extends PropTypes>(
     let dataIndex = 0
     for (const segment of runs) {
       segment.forEach((row, r) => {
-        const rowDef = rowDefs.get(row.id)
+        const rowDef = rowDefById.get(row.id)
         const index = dataIndex + r
         columns.forEach((column, c) => {
           const key = spanKey(row.id, column.id)
@@ -1229,7 +1241,7 @@ export function connectTable<T extends PropTypes>(
         // 同一列在表头与表体分到的余量就不一样，列边界跟着错开
         [ITEM_VALUE_ATTR]: cell.value,
         // 行表头列的格子报 rowheader：读屏念某一格时连着念出这一行的表头
-        'role': def?.rowHeader ? 'rowheader' : 'gridcell',
+        'role': isRowHeader(def, cell.row, cell.footer != null) ? 'rowheader' : 'gridcell',
         'aria-colindex': columnIndex.get(cell.value),
         'aria-colspan': colSpan,
         'aria-rowspan': rowSpan,

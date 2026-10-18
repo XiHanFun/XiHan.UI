@@ -170,8 +170,12 @@ export interface TableColumnDef {
   /**
    * 行表头列：表体与脚注里这一列的格子写 role="rowheader"，读屏报某一格时连着念出它所在行的表头
    * （交叉表的行维度、分组标签、合计行的标题格）。列头不受影响，仍是 columnheader；合并格的起点跟着所在的列走。
+   *
+   * 给函数时按行决定：表体里这一列的格子问一次，入参是行定义与它在可见数据行里的序号（0 起算，与 cellSpan 的
+   * rowIndex 相同），返回 true 才报 rowheader。分组报表只让组头行与小计行的分组格报行表头，明细行照旧是 gridcell。
+   * 表尾格子没有行定义，函数不调用，按行表头处理。
    */
-  rowHeader?: boolean
+  rowHeader?: boolean | ((row: TableRowDef, rowIndex: number) => boolean)
 }
 
 /**
