@@ -81215,6 +81215,10 @@
               "name": "branch-text"
             },
             {
+              "description": "分支行的第 2 行副文本",
+              "name": "branch-description"
+            },
+            {
               "description": "role=group 子层容器，收起时隐藏",
               "name": "branch-content"
             },

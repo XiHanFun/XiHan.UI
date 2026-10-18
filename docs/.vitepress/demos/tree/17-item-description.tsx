@@ -1,9 +1,10 @@
-// 条目说明 | 一句名称说不清的解释写进说明，落在名称下面一行；窄的时候截断，不把树撑宽
+// 条目说明 | 一句名称说不清的解释写进说明，叶子与分支都可以带，落在名称下面一行；窄的时候截断，不把树撑宽
 import type { ReactNode } from "react";
 import {
   XhTreeBranch,
   XhTreeBranchContent,
   XhTreeBranchControl,
+  XhTreeBranchDescription,
   XhTreeBranchText,
   XhTreeBranchTrigger,
   XhTreeItem,
@@ -19,6 +20,7 @@ const collection = [
   {
     value: "order",
     label: "订单",
+    description: "一笔订单抬头上的字段",
     children: [
       { value: "no", label: "订单号", description: "系统生成的唯一编号，打印在单据抬头与条码里" },
       { value: "date", label: "下单日期", description: "按下单时所在时区记" },
@@ -38,6 +40,7 @@ export default function Demo(): ReactNode {
               <XhTreeBranchControl>
                 <XhTreeBranchTrigger />
                 <XhTreeBranchText>{group.label}</XhTreeBranchText>
+                <XhTreeBranchDescription>{group.description}</XhTreeBranchDescription>
               </XhTreeBranchControl>
               <XhTreeBranchContent>
                 {group.children.map(field => (
