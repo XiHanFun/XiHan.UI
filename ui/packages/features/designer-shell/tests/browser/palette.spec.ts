@@ -111,13 +111,14 @@ describe('物料面板带下级的一组（Chromium）', () => {
     expect(activated).toEqual([])
   })
 
-  it('名称与说明都排得开：面板的按钮样式不落到树的部件上，能拖出的行是抓手', async () => {
+  it('名称与说明都排得开：说明落在名称下面一行，面板的按钮样式不落到树的部件上，能拖出的行是抓手', async () => {
     const { palette } = await mount()
-    for (const [id, description] of [['no', '[data-part="item-description"]'], ['items', '[data-part="branch-description"]']] as const) {
+    for (const [id, description] of [['no', '[data-scope="tree"][data-part="item-description"]'], ['items', '[data-scope="tree"][data-part="branch-description"]']] as const) {
       const line = row(palette, id)
       const label = line.querySelector('[data-part="item-text"], [data-part="branch-text"]')!.getBoundingClientRect()
       const text = line.querySelector(description)!.getBoundingClientRect()
       expect([label.width > 0, text.width > 0], id).toEqual([true, true])
+      expect(text.top, id).toBeGreaterThanOrEqual(label.bottom - 1)
     }
     expect(getComputedStyle(row(palette, 'no')).cursor).toBe('grab')
     await userEvent.click(row(palette, 'items').querySelector('[data-part="branch-trigger"]')!)

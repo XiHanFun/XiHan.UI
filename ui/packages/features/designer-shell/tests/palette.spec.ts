@@ -277,8 +277,8 @@ describe('<xh-designer-palette>', () => {
         ['items.sku', '2'],
       ])
       expect(treeitems[1]!.getAttribute('aria-expanded')).toBe('false')
-      expect(row(palette, 'no').querySelector('[data-part="item-description"]')!.textContent).toBe('no')
-      expect(row(palette, 'items').querySelector('[data-part="branch-description"]')!.textContent).toBe('items')
+      expect(row(palette, 'no').querySelector('[data-scope="tree"][data-part="item-description"]')!.textContent).toBe('no')
+      expect(row(palette, 'items').querySelector('[data-scope="tree"][data-part="branch-description"]')!.textContent).toBe('items')
       expect(treeitems[5]!.getAttribute('aria-disabled')).toBe('true')
     })
 

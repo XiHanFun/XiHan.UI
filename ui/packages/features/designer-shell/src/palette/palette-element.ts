@@ -359,7 +359,7 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
         createAuthoredElement(doc, 'span', { 'data-xh-part': 'branch-trigger' }, [createAuthoredElement(doc, 'span', { 'data-xh-part': 'branch-indicator' })]),
         ...this.#icon(item),
         createAuthoredElement(doc, 'span', { 'data-xh-part': 'branch-text' }, [item.label]),
-        ...(item.description === undefined ? [] : [createAuthoredElement(doc, 'span', { 'data-part': 'branch-description', 'data-xh-collection-slot': 'description' }, [item.description])]),
+        ...(item.description === undefined ? [] : [createAuthoredElement(doc, 'span', { 'data-xh-part': 'branch-description' }, [item.description])]),
       ]),
       createAuthoredElement(doc, 'div', { 'data-xh-part': 'branch-content' }, item.children.map(child => this.#node(child))),
     ])
