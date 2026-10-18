@@ -79,7 +79,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 - `createItem` 设置新增行的初始值。
 - `insert(index, item?)` 在指定位置插入一行，后面的行往后挪；`move(from, to)` 一步挪到任意位置。两者与 `add` 同受 `max`、`movable` 与禁用约束。
 - 每行可以包含一个或多个字段。
-- `layout="table"` 换成表格排布：`table` 部件是 role=table，表头 `header` 与各行放在它里面，`add-trigger` 仍排在它之后；表头里一列一个 `column-header`，行里一列一个 `item-cell`，都用 `value` 写列 id。`columns` 给出列序、列头文字与列宽（数字按 px，字符串原样，不写按 1fr），表头与各行共用这一套列宽。不带键盘模型，Tab 依次经过各格里的控件与把手。放进字段时字段的标签接到表格上，不在字段里时在表格上写 `aria-label`。
+- `layout="table"` 换成表格排布：`table` 部件是 role=table，表头 `header` 与各行放在它里面，`add-trigger` 仍排在它之后；表头里一列一个 `column-header`，行里一列一个 `item-cell`，都用 `value` 写列 id。`columns` 给出列序、列头文字与列宽（数字按 px，字符串原样，不写按 1fr），表头与各行共用这一套列宽。列上写 `minWidth` 给出下限，这一列不再随容器压窄到它以下；各列下限之和超过容器时，表格本体横向滚动，表头与各行一起滚，行号（`item-label`）钉在起始侧、把手（`item-action`）钉在末端侧，紧挨滚动区的一侧只在确有内容被压住时画分隔线，与表格的冻结列一致。窄的属性面板里放多列时给文字列写上 `minWidth`。不带键盘模型，Tab 依次经过各格里的控件与把手。放进字段时字段的标签接到表格上，不在字段里时在表格上写 `aria-label`。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：列表排布下每行是行号（`item-label`，第几行）、内容格与把手（开了 `movable` 时先是上移与下移，再是删除），表格排布下是表格本体里的表头（每列一个列头）与各行、行里每列一格；最后是新增把手，文字取 `translations.addTrigger`。每行的内容归作者：Vue 写 `item-content` 插槽（载荷 `{ item }`），表格排布写 `item-cell` 插槽（载荷 `{ item, column }`）；React 给 `renderItemContent(item)` / `renderItemCell(item, column)`；Web Components 在宿主的直接子节点上写 `slot="item-content:<行 key>"`，表格排布写 `slot="item-cell:<行 key>:<列 id>"`，元素把它挪进对应的格子，换序时内容跟着行走。没给内容的行就空着，不报缺部件。
 - Web Components 里行 key 从元素只读的 `items` 读（每项的 `key`，由组件分配、跟着这一行走）。`value-change` 同步派发、早于结构重铺，在它的处理函数里（受控时先写回 `value`）按 `items` 补上新行的内容，新行在同一帧就带上内容。删掉的行的内容先别删：原处淡出的替身克隆的是离场的那一行，内容要还在行里才带得上；行离场后它回到宿主、成为宿主的直接子节点，下一帧再把对不上 `items` 的删掉，不删会留在根的后面。
 - 在 Form 中会同步迁移数组子字段的值、规则和错误。
@@ -142,6 +142,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `id` | `string` | 是 |  |
 | `label` | `string` |  | 列头文字；作者没给 column-header 写内容时显示它。 |
 | `width` | `string \| number` |  | 列宽：数字按 px，字符串原样作轨道宽（fr、%、rem…），不写按 1fr。 |
+| `minWidth` | `string \| number` |  | 列的最小宽度：数字按 px，字符串原样（rem、%…）。给了之后这一列不再随容器压窄到它以下，轨道写成 minmax(minWidth, width)，width 是一条 minmax 时把下限写进它里面、不写这一项。各列下限之和超过容器时， 表格区横向滚动，表头与各行一起滚，行头与把手钉在两侧。 |
 
 ### 事件
 
@@ -279,6 +280,8 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `root` | `data-layout` | 'table' \| 'list' |
 | `root` | `data-movable` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `table` | `data-at-max-horizontal` | ''（条件成立时才出现） |
+| `table` | `data-at-min-horizontal` | ''（条件成立时才出现） |
 | `table` | `data-layout` | 'table' \| 'list' |
 | `header` | `data-layout` | 'table' \| 'list' |
 | `column-header` | `data-layout` | 'table' \| 'list' |
@@ -379,6 +382,9 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `--xh-field-array-column-header-fg` | `column-header` | `color` | `layout=table` | `--xh-fg-default` | field-array 的 column-header 部件 color 覆盖槽。 |
 | `--xh-field-array-column-header-font-weight` | `column-header` | `font-weight` | `layout=table` | `--xh-font-weight-medium` | field-array 的 column-header 部件 font-weight 覆盖槽。 |
 | `--xh-field-array-content-gap` | `item-content` | `gap` | `default` | `--xh-space-2` | field-array 的 item-content 部件 gap 覆盖槽。 |
+| `--xh-field-array-frozen-bg` | `item-action`<br>`item-label` | `background` | `is([data-part='item-label'], [data-part='item-action'])`<br>`layout=table` | `--xh-field-array-table-bg` | field-array 的 item-action、item-label 部件 background 覆盖槽。 |
+| `--xh-field-array-frozen-edge` | `header`<br>`item`<br>`item-action`<br>`item-label`<br>`table` | `border-inline-end-color`<br>`border-inline-start-color` | `at-max-horizontal`<br>`at-min-horizontal`<br>`is([data-part='item'], [data-part='header'])`<br>`layout=table`<br>`not([data-at-max-horizontal])`<br>`not([data-at-min-horizontal])` | `--xh-border-default` | field-array 的 header、item、item-action、item-label、table 部件 border-inline-end-color、border-inline-start-color 覆盖槽。 |
+| `--xh-field-array-frozen-header-bg` | `header` | `background` | `layout=table` | `--xh-bg-subtle-opaque` | field-array 的 header 部件 background 覆盖槽。 |
 | `--xh-field-array-gap` | `root` | `gap` | `default` | `--xh-space-2` | field-array 的 root 部件 gap 覆盖槽。 |
 | `--xh-field-array-header-bg` | `header` | `background` | `layout=table` | `--xh-bg-subtle` | field-array 的 header 部件 background 覆盖槽。 |
 | `--xh-field-array-icon-size` | `add-trigger`<br>`item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | field-array 的 add-trigger、item-delete-trigger、move-down-trigger、move-up-trigger 部件 --xh-icon-size 覆盖槽。 |
@@ -389,6 +395,8 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `--xh-field-array-item-padding` | `item` | `padding` | `default` | `--xh-space-0` | field-array 的 item 部件 padding 覆盖槽。 |
 | `--xh-field-array-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-surface` | field-array 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-field-array-row-divider` | `header`<br>`item` | `border-block-end`<br>`border-block-start` | `layout=table` | `--xh-border-subtle` | field-array 的 header、item 部件 border-block-end、border-block-start 覆盖槽。 |
+| `--xh-field-array-sticky-column-layer` | `header`<br>`item-action`<br>`item-label` | `z-index` | `is([data-part='item-label'], [data-part='item-action'])`<br>`layout=table` | `1` | field-array 的 header、item-action、item-label 部件 z-index 覆盖槽。 |
+| `--xh-field-array-table-bg` | `item-action`<br>`item-label`<br>`table` | `background` | `is([data-part='item-label'], [data-part='item-action'])`<br>`layout=table` | `--xh-bg-surface` | field-array 的 item-action、item-label、table 部件 background 覆盖槽。 |
 | `--xh-field-array-table-border` | `table` | `border` | `layout=table` | `--xh-border-default` | field-array 的 table 部件 border 覆盖槽。 |
 | `--xh-field-array-table-radius` | `header`<br>`table` | `border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `layout=table` | `--xh-shape-surface` | field-array 的 header、table 部件 border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-field-array-trigger-bg` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
@@ -405,7 +413,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 
 动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`border-color` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

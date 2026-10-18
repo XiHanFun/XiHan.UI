@@ -768,6 +768,23 @@ describe('表格排布：角色、行号与列轨道', () => {
     expect((action.style as Record<string, string>).gridColumn).toBe('-2 / -1')
   })
 
+  it('给了 minWidth 的列写成 minmax(下限, 列宽)：数字按 px，不写列宽时上限是 1fr', () => {
+    const service = makeService({
+      layout: 'table',
+      columns: [{ id: 'name', minWidth: 120 }, { id: 'type', minWidth: '6rem', width: '2fr' }, { id: 'flag', minWidth: 48, width: 64 }, { id: 'note' }],
+      defaultValue: ['a'],
+    })
+    const table = api(service).getTableProps() as Record<string, unknown>
+    expect((table.style as Record<string, string>)['--xh-_field-array-cols']).toBe('minmax(120px, 1fr) minmax(6rem, 2fr) minmax(48px, 64px) minmax(0, 1fr)')
+  })
+
+  it('表格本体报横向滚动离两端：没量过时两端都贴着；列表排布不报', () => {
+    const table = api(makeService({ layout: 'table', columns, defaultValue: ['a'] })).getTableProps() as Record<string, unknown>
+    expect([table['data-at-min-horizontal'], table['data-at-max-horizontal']]).toEqual(['', ''])
+    const list = api(makeService({ columns, defaultValue: ['a'] })).getTableProps() as Record<string, unknown>
+    expect([list['data-at-min-horizontal'], list['data-at-max-horizontal']]).toEqual([undefined, undefined])
+  })
+
   it('格子的列 id 不在 columns 里：不指定轨道，由排布自然流入', () => {
     const service = makeService({ layout: 'table', columns, defaultValue: ['a'] })
     const cell = api(service).getItemCellProps({ index: 0, value: 'missing' }) as Record<string, unknown>

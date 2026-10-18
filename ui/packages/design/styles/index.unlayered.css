@@ -4981,8 +4981,13 @@
   display: flex;
   flex-direction: column;
   min-inline-size: 0;
+  /* 列宽下限之和超过容器时在这里横向滚动：表头与各行同在这一个滚动容器里，一起滚 */
+  overflow-x: auto;
+  /* 钉在两侧的行头与把手的层级关在表格本体里 */
+  isolation: isolate;
   border: var(--xh-stroke-thin) solid var(--xh-field-array-table-border, var(--xh-border-default));
   border-radius: var(--xh-field-array-table-radius, var(--xh-shape-surface));
+  background: var(--xh-field-array-table-bg, var(--xh-bg-surface));
 }
 
 /* 列表排布下表格本体不成一层：它里面的行照常作为一条一条排列 */
@@ -5051,6 +5056,67 @@
   min-block-size: var(--xh-field-array-cell-control-h, var(--xh-control-h-md));
 }
 
+/* 行头钉在表格区的起始侧、把手钉在末端侧：表格区横向滚动时它们留在原处，其余格子从下面滑过，
+   与表格的冻结列同一种做法。底取表格本体的底，压住滑过去的格子。表头里这两条轨道没有格子，
+   由表头自己的两个伪元素占住，带表头底。紧挨滚动区的一侧常驻一道透明分隔线，见下面按两端换色的那条 */
+.xh-scope-field-array:is([data-part='item-label'], [data-part='item-action'])[data-layout='table'],
+.xh-scope-field-array[data-part='header'][data-layout='table']::before,
+.xh-scope-field-array[data-part='header'][data-layout='table']::after {
+  position: sticky;
+  z-index: var(--xh-field-array-sticky-column-layer, 1);
+  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+.xh-scope-field-array:is([data-part='item-label'], [data-part='item-action'])[data-layout='table'] {
+  background: var(--xh-field-array-frozen-bg, var(--xh-field-array-table-bg, var(--xh-bg-surface)));
+}
+
+.xh-scope-field-array[data-part='header'][data-layout='table']::before,
+.xh-scope-field-array[data-part='header'][data-layout='table']::after {
+  content: '';
+  grid-row: 1;
+  align-self: stretch;
+  /* 表头底可能是透明的一层淡色，叠在滑过去的列头上会透出来：钉住的这两格取不透明的那一档 */
+  background: var(--xh-field-array-frozen-header-bg, var(--xh-bg-subtle-opaque));
+}
+
+.xh-scope-field-array[data-part='item-label'][data-layout='table'],
+.xh-scope-field-array[data-part='header'][data-layout='table']::before {
+  inset-inline-start: 0;
+  border-inline-end: var(--xh-stroke-thin) solid transparent;
+}
+
+.xh-scope-field-array[data-part='header'][data-layout='table']::before {
+  grid-column: 1;
+}
+
+.xh-scope-field-array[data-part='item-action'][data-layout='table'],
+.xh-scope-field-array[data-part='header'][data-layout='table']::after {
+  inset-inline-end: 0;
+  border-inline-start: var(--xh-stroke-thin) solid transparent;
+}
+
+.xh-scope-field-array[data-part='header'][data-layout='table']::after {
+  grid-column: -2 / -1;
+}
+
+/* 分隔线只在确有内容被压住时出现：行头一侧在滚离起始端之后、把手一侧在还没滚到末端时 */
+.xh-scope-field-array[data-part='table'][data-layout='table']:not([data-at-min-horizontal])
+  > .xh-scope-field-array:is([data-part='item'], [data-part='header'])
+  > .xh-scope-field-array[data-part='item-label'],
+.xh-scope-field-array[data-part='table'][data-layout='table']:not([data-at-min-horizontal])
+  > .xh-scope-field-array[data-part='header']::before {
+  border-inline-end-color: var(--xh-field-array-frozen-edge, var(--xh-border-default));
+}
+
+.xh-scope-field-array[data-part='table'][data-layout='table']:not([data-at-max-horizontal])
+  > .xh-scope-field-array:is([data-part='item'], [data-part='header'])
+  > .xh-scope-field-array[data-part='item-action'],
+.xh-scope-field-array[data-part='table'][data-layout='table']:not([data-at-max-horizontal])
+  > .xh-scope-field-array[data-part='header']::after {
+  border-inline-start-color: var(--xh-field-array-frozen-edge, var(--xh-border-default));
+}
+
 /* 格里的字段不留辅助行占位：没报错时一行一格紧凑排，报错时错误文案再把这一行撑开 */
 .xh-scope-field-array[data-part='item'][data-layout='table']
   > .xh-scope-field-array[data-part='item-cell'][data-layout='table']
@@ -5059,6 +5125,14 @@
   position: absolute;
   block-size: 0;
   transition: none;
+}
+
+/* 不认子网格的引擎里各行各排一套轨道：行至少撑到最小内容宽，横向滚动时表头底与行间分隔线跟着到头 */
+@supports not (grid-template-columns: subgrid) {
+  .xh-scope-field-array[data-part='header'][data-layout='table'],
+  .xh-scope-field-array[data-part='item'][data-layout='table'] {
+    min-inline-size: min-content;
+  }
 }
 
 @supports (grid-template-columns: subgrid) {

@@ -48,6 +48,7 @@ const EXEMPT = {
   'code-view pre': '纵向高度由行数算出来写进内联样式，折叠时夹到 clamp 行，不是预设的档',
   'date-picker content': '日历面板是定高结构：天然高度是按 px 排的网格、时间列与确认行之和，只受定位引擎给出的可用高度限制；按 rem 的滚动面档随根字号缩小，会把确认行挤进滚动里',
   'date-range-picker content': '同 date-picker content：两块日历与两组时间列都按 px 排，只受可用高度限制',
+  'field-array table': '滚的是行内方向（overflow-x）：块轴的高度就是表头与各行自己的高度',
   'floating-panel body': '面板高度由用户拖出来、存在机器里，不是预设的档',
   'heatmap root': '热力图滚的是横向的周列，纵向就是七行格子的高度',
   'drawer content': '贴边抽屉的厚度走 --xh-overlay-drawer-w-* 档，不是滚动面高度',

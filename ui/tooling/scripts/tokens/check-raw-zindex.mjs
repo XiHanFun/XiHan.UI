@@ -37,6 +37,7 @@ const IN_COMPONENT_STACKING = {
   'clipboard.css': { reason: '输入框与复制按钮共边，靠聚焦或悬停项抬一层覆盖接缝', isolatedBy: 'root' },
   'color-slider.css': { reason: '隔离的 track 内，透明度那一路的棋盘格伪元素压在渐变后方且不参与页面层序', isolatedBy: 'track', levels: new Set(['-1']) },
   'expression-input.css': { reason: '输入框抬一层压在镜像层之上：文字由输入框画，镜像层只露出问题区间的下划线', isolatedBy: 'control' },
+  'field-array.css': { reason: '表格排布的行头与把手钉在表格区两侧，抬一层压住横向滑过去的格子，层号只在表格本体内部排序', isolatedBy: 'table' },
   'heatmap.css': { reason: '行首那一列钉住时抬到格子之上，详情条再抬一层压住它', isolatedBy: 'root' },
   'image-viewer.css': { reason: '工具条与关闭钮压在图上，浮层内部的两层', isolatedBy: 'content' },
   'input-group.css': { reason: '相邻段的边框重叠，靠悬停或聚焦的那一段抬一层盖住邻段边框', isolatedBy: 'root' },
