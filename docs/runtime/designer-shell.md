@@ -59,7 +59,7 @@ panel.addEventListener("property-commit", () => history.seal());
 | `labelOf` / `hintOf` | 字段的标签与说明；标签缺省取描述的 `label`，再缺省取 `formatJsonPath(path)` |
 | `optionLabel` / `unitLabel` | select 选项与 number、sides 单位的文案；单位文案为空串时不显示后缀 |
 | `dataFields` | `dataField` 选字段与 `filter` 列字段用的字段树（designer-kit 的 `DataField`）：描述里没写 `fields` 的绑定字段与条件树共用这一份；两处都没有时 `dataField` 是输入字段路径的文本框，`filter` 没有可选的字段 |
-| `errors` | 字段错误 `{ target, path, message }`，文字由设计器换好，`path` 相对对象 |
+| `errors` | 字段错误 `{ target, path, message }`，文字由设计器换好，`path` 相对对象；落在属性里层的错误归到它所属的那一行，见下文 |
 | `heading` | 标题下一行，如「表格 · t1」「已选中 3 个」 |
 | `empty-text` | 空状态文案 |
 | `toggle-limit` | select 单选且选项不超过它时改用切换按钮组；缺省不用。描述写了 `appearance: "dropdown"` 或 `"toggle"` 的 select 不看它，总是下拉或总是切换按钮组（多选也可以），绑定字段这类运行时生成的选项宜写 `dropdown` |
@@ -84,6 +84,9 @@ panel.addEventListener("property-commit", () => history.seal());
 - 写了 `secret` 的文本是 `<xh-password-input>`：缺省不显示明文，可切换显隐，浏览器不代填也不记住。
 - 颜色预设（`swatch`）是一组控件，整行 `role="group"`：上面是 `<xh-color-swatch-picker>`，一项一格，格子画选项的 `color`，选中写入选项的 `value`；描述写了 `custom` 时下面另有一个颜色框，填任意颜色。取值不在选项里时显示在颜色框里，色板不选中任何一格。
 - 条件树（`filter`）是 `<xh-filter-builder>`：字段先取描述里的 `fields`，没写时由面板的 `dataFields` 按 `listFilterFields` 列出值字段（字段没写 `type` 的按文本）；参数与子组层数取描述的 `parameters`、`maxDepth`，`ids` 为 true 时新建的条件与组按 `c1`、`g1` 这样取树里没用过的 id。一次增删改就是一步：写入即封口。多个对象取值不同时显示空树，空态写「多个值」，在上面加的条件整体写给这几个对象。
+- 错误按路径段归到行：路径以某一行属性的路径开头（含相等）就属于那一行，有嵌套描述时归路径最长的那一行；按段比较，`options` 不沾 `optionsExtra` 的错误。哪一行都不沾的不显示。
+- 行下的文字依次取：控件自己发现的错误、恰好落在这一行的错误；只有里层错误时显示第一条，宿主编辑器的实例写了 `nestedIssues: true` 的不显示，由编辑器自己标到子项上。
+- 宿主编辑器与内建编辑器的上下文都带 `issues`（designer-kit 的 `PropertyIssue`）：这一行的错误，路径相对这个属性，按路径排；多选时合并各对象的，同一路径只留先出现的一条。四边按 `["top"]` 这类路径把那一边的数字框标成无效（四边相同时标那一个框），文字仍在行下。
 - 插槽 `header` 在标题下方（如部位导航），`footer` 在字段之后（如「删除列」）。
 - `focusField(path)` 把焦点交给该属性的字段，找不到时返回 `false`。
 
@@ -125,7 +128,41 @@ const stroke: DesignerPropertyEditor = (initial) => {
 | `optionLabel` / `unitLabel` / `dataFields` / `toggleLimit` | 同属性面板的同名属性 |
 | `translations` | 压在配置文案之上；配置取字段所在位置的（`xh-designer-properties` 那一桶） |
 
-`update(state)` 每次整份给状态：`value`、`readonly`、`mixed`（多个值）、`label`（给了就换掉建字段时的标题，如切换语言后）、`hint`（说明）与 `error`（外面给的错误，控件自己发现的错误优先显示）。返回的 `element` 是一整行：控件在 `<xh-field>` 里，标题、说明与错误由字段接上；四边（`sides`）这类一组控件时整行是 `role="group"`。
+`update(state)` 每次整份给状态：`value`、`readonly`、`mixed`（多个值）、`label`（给了就换掉建字段时的标题，如切换语言后）、`hint`（说明）、`error`（外面给的错误，控件自己发现的错误优先显示）与 `issues`（落在这个字段值里层的问题，路径相对字段的值，四边按它标出对应那一边；行下的文字仍取 `error`）。返回的 `element` 是一整行：控件在 `<xh-field>` 里，标题、说明与错误由字段接上；四边（`sides`）这类一组控件时整行是 `role="group"`。
+
+复合编辑器把里层的问题标到子项上（如选项表某一行的错）：读 `context.issues`，按路径分给子项，实例上写 `nestedIssues: true`，行下就不重复。读屏与 UI 字段接线同一个约定：
+
+- 子项控件的名字仍是子项自己的标题（「选项 3」），问题文字不并进名字。
+- 问题落在子项控件可聚焦的部件上：`aria-invalid="true"`，错误文字经 `aria-describedby` 接上，与 `<xh-field>` 的 `error-text` 一样。子项用 `createPropertyField` 拼时把那一项的问题交给它的 `error`，字段会接好；自己铺的控件就自己写这两个属性，错误文字放在那一项旁边看得见的地方。
+- 问题清掉后收回 `aria-invalid` 与描述。写了 `nestedIssues` 的编辑器必须自己显示这些问题，不然它们就看不到了。
+
+```ts
+const options: DesignerPropertyEditor = (initial) => {
+  let context = initial;
+  const element = document.createElement("div");
+  let rows: PropertyField[] = [];
+  const render = (): void => {
+    const items = Array.isArray(context.value) ? context.value : [];
+    if (rows.length !== items.length) {
+      rows = items.map((_, index) => createPropertyField({
+        ownerDocument: document,
+        control: { kind: "text" },
+        label: `选项 ${index + 1}`,
+        setValue: value => context.setValue(items.map((item, i) => (i === index ? { ...item, label: value } : item))),
+        commit: () => context.commit(),
+      }, { value: undefined }));
+      element.replaceChildren(...rows.map(row => row.element));
+    }
+    rows.forEach((row, index) => row.update({
+      value: items[index]?.label,
+      readonly: context.readonly,
+      error: context.issues.find(issue => issue.path[0] === index)?.message,
+    }));
+  };
+  render();
+  return { element, nestedIssues: true, update: (next) => { context = next; render(); } };
+};
+```
 
 ## 问题列表
 

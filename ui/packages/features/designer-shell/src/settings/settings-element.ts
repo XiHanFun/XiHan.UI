@@ -305,6 +305,7 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
           write(next)
       },
       commit: () => {},
+      issues: [],
     })
     const instance: PropertyEditorInstance<DesignerSettingItem, DesignerSettings> | undefined = editor?.(context())
     const body = instance?.element ?? createAuthoredElement(doc, 'span', { 'data-scope': SCOPE, 'data-part': 'unsupported' })

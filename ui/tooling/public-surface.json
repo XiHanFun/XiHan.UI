@@ -10811,6 +10811,7 @@
       "PropertyEditorLayer",
       "PropertyEditorTable",
       "PropertyGroup",
+      "PropertyIssue",
       "PropertyNumberConstraints",
       "PropertyOption",
       "PropertySide",

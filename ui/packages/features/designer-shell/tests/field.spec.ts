@@ -80,6 +80,16 @@ describe('createPropertyField', () => {
     expect(error()).toBe('要填整数')
   })
 
+  it('issues 是字段值里层的问题：四边按路径标出对应那一边，行下的文字仍取 error', () => {
+    const { field } = mountField({ kind: 'sides', min: 0 }, { value: { top: 1, right: 2, bottom: 3, left: 4 } })
+    const invalid = (): boolean[] => Array.from(field.element.querySelectorAll('xh-number-field'), box => box.hasAttribute('invalid'))
+    expect(invalid()).toEqual([false, false, false, false])
+    field.update({ value: { top: 1, right: 2, bottom: 3, left: 4 }, issues: [{ path: ['bottom'], message: '下边太窄' }], error: '下边太窄' })
+    expect([invalid(), field.element.querySelector('[data-part="property-error"]')!.textContent]).toEqual([[false, false, true, false], '下边太窄'])
+    field.update({ value: { top: 1, right: 2, bottom: 3, left: 4 } })
+    expect(invalid()).toEqual([false, false, false, false])
+  })
+
   it('只认内建的编辑方式，别的种类抛 TypeError', () => {
     expect(() => createPropertyField({ ownerDocument: document, control: { kind: 'stroke' } as never, label: 'x', setValue: () => {}, commit: () => {} }, { value: undefined })).toThrow(TypeError)
   })

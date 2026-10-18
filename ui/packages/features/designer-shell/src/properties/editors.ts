@@ -843,15 +843,29 @@ function sidesEditor(initial: FieldContext): FieldInstance {
     context.setValue(value)
   }
   const uniform = (value: number): JsonValue => Object.fromEntries(PROPERTY_SIDES.map(side => [side, value]))
+  // 自己就地发现错误的那个框
+  let local: NumberBox | undefined
+  // 标出无效的框：就地发现错误的那个，加上外面的问题落在的那一边（四边相同时是那一个框）
+  const paint = (): void => {
+    const marked = new Set<NumberBox>()
+    for (const issue of context.issues) {
+      const side = issue.path[0]
+      if (typeof side === 'string' && (PROPERTY_SIDES as readonly string[]).includes(side))
+        marked.add(linked ? all : sides.get(side as PropertySide)!)
+    }
+    for (const box of boxes)
+      box.field.toggleAttribute('invalid', box === local || marked.has(box))
+  }
   const report = (box: NumberBox | undefined, message: string | undefined): void => {
-    for (const item of boxes)
-      item.field.toggleAttribute('invalid', item === box && message !== undefined)
+    local = message === undefined ? undefined : box
+    paint()
     context.setLocalError(message)
   }
   const layout = (): void => {
     link.checked = linked
     element.toggleAttribute('data-linked', linked)
     placeChildren(fields, linked ? [all.field] : PROPERTY_SIDES.map(side => sides.get(side)!.field))
+    paint()
   }
   const fill = (value: JsonValue | undefined): void => {
     const numbers = sidesOf(value)

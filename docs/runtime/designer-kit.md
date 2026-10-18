@@ -399,14 +399,24 @@ type PropertyEditor<D, T> = (context: {
   readonly: boolean;
   setValue: (value: JsonValue | undefined) => void; // 写入，连续输入并为一步撤销
   commit: () => void; // 一次编辑结束（如失焦），此后的写入另起一步
+  issues: readonly PropertyIssue[]; // 落在这个属性及其里层的问题
 }) => {
   element: HTMLElement;
   update?: (context: PropertyEditorContext<D, T>) => void;
   destroy?: () => void;
+  nestedIssues?: boolean; // 编辑器自己把里层的问题标到子项上
 };
+
+interface PropertyIssue {
+  path: JsonPath; // 相对这个属性，恰好落在属性上的是 []
+  message: string; // 显示给用户的文字，由设计器换好
+}
 ```
 
-设计器把 `element` 放进属性面板，值或只读状态变化时调用 `update`，移除前调用 `destroy`。接口本身只是类型，内核不创建任何 DOM。
+设计器把 `element` 放进属性面板，值、只读状态或问题变化时调用 `update`，移除前调用 `destroy`。接口本身只是类型，内核不创建任何 DOM。
+
+- `issues` 按路径排，同一路径只留一条，没有问题时是空数组。复合编辑器（选项表、列配置、条件格式）据此把里层的问题标到对应的子项上，如 `[2, "value"]` 是第 3 项的值。
+- 实例写了 `nestedIssues: true`，表示编辑器自己显示里层的问题：只有里层问题时，设计器不在这一行下面重复。没写时设计器在行下显示第一条里层问题，保证问题不会看不到。
 
 ## 结构校验
 

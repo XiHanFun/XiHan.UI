@@ -8,7 +8,7 @@
 
 import type { JsonPath, JsonValue } from '@xihan-ui/core/json'
 import type { DataField } from '@xihan-ui/designer-kit'
-import type { PropertyControl, PropertyDescriptor, PropertyEditor, PropertyEditorContext, PropertyEditorTable, PropertyOption } from '@xihan-ui/designer-kit/properties'
+import type { PropertyControl, PropertyDescriptor, PropertyEditor, PropertyEditorContext, PropertyEditorTable, PropertyIssue, PropertyOption } from '@xihan-ui/designer-kit/properties'
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { DesignerPropertiesTranslations } from '../translations'
 import type { FieldContext, FieldInstance } from './editors'
@@ -23,6 +23,7 @@ import { definePropertyFieldElements } from '../internal/ui-elements'
 import { builtinEditor, dataFieldsOf, PROPERTIES_SCOPE } from './editors'
 import { DEFAULT_PROPERTIES_TRANSLATIONS } from './field'
 import { createFieldRow, placeAsGroup, placeInField, refreshFieldRow } from './field-row'
+import { propertyIssuesAt } from './issues'
 
 /** 属性描述，编辑方式可以是内建种类之外的产品种类。 */
 export type DesignerPropertyDescriptor = PropertyDescriptor<PropertyControl | { readonly kind: string }>
@@ -97,6 +98,8 @@ interface Row extends FieldRow {
   readonly control: { readonly update?: (context: FieldContext) => void, readonly destroy?: () => void }
   descriptor: DesignerPropertyDescriptor
   localError: string | undefined
+  /** 宿主编辑器自己把里层的问题标到子项上，行下不重复。 */
+  nestedIssues: boolean
 }
 
 interface Group {
@@ -172,6 +175,8 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
   #parts: Parts | undefined
   #releaseSlots: (() => void) | undefined
   #rows = new Map<string, Row>()
+  /** 这一轮显示的各行属性的路径：问题按它们找最长前缀。 */
+  #rowPaths: readonly JsonPath[] = []
   #groups = new Map<string, Group>()
   #collapsed = new Set<string>()
   #accordion: HTMLElement & { value?: string[] } | undefined
@@ -268,6 +273,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
 
   #render(targets: readonly DesignerPropertyTarget[], descriptors: readonly DesignerPropertyDescriptor[]): void {
     const parts = this.#parts!
+    this.#rowPaths = descriptors.map(descriptor => descriptor.path)
     // 显示条件已逐个对象判过，分组时不再按单个对象求值
     const plain = descriptors.map(descriptor => ({ ...descriptor, visibleWhen: undefined }))
     const original = new Map(plain.map((descriptor, index) => [descriptor, descriptors[index]!]))
@@ -410,7 +416,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
 
   #createRow(key: string, descriptor: DesignerPropertyDescriptor, editor: DesignerPropertyEditor | undefined, targets: readonly DesignerPropertyTarget[]): Row {
     const doc = this.ownerDocument
-    const row: Row = { ...createFieldRow(doc, this.#ids, { 'data-path': formatJsonPath(descriptor.path) }), key, control: {}, descriptor, localError: undefined }
+    const row: Row = { ...createFieldRow(doc, this.#ids, { 'data-path': formatJsonPath(descriptor.path) }), key, control: {}, descriptor, localError: undefined, nestedIssues: false }
     const builtin = editor ? undefined : builtinEditor(descriptor.control.kind)
     if (builtin) {
       const created: FieldInstance = builtin(this.#context(row, targets))
@@ -423,6 +429,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     }
     if (editor) {
       const created = editor(plainContext(this.#context(row, targets)))
+      row.nestedIssues = created.nestedIssues === true
       // 行按路径与编辑器复用：每次刷新的 target 取这一轮的选中对象
       Object.assign(row, { control: { update: (next: FieldContext) => created.update?.(plainContext(next)), destroy: created.destroy } })
       const custom = createAuthoredElement(doc, 'div', { 'data-control': 'custom' }, [created.element])
@@ -439,13 +446,21 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     return row
   }
 
+  /** 落在这一行的问题：选中对象的错误按路径段归到最长前缀那一行，路径相对这一行的属性。 */
+  #issuesOf(row: Row, targets: readonly DesignerPropertyTarget[]): PropertyIssue[] {
+    const errors = (this.errors ?? []).filter(error => targets.some(target => target.kind === error.target.kind && target.id === error.target.id))
+    return propertyIssuesAt(row.descriptor.path, this.#rowPaths, errors)
+  }
+
+  /** 行下的文字：控件自己发现的错误优先，其次恰好落在这一行的问题；只有里层问题时显示第一条，编辑器自己标子项的不显示。 */
   #message(row: Row, targets: readonly DesignerPropertyTarget[]): string | undefined {
     if (row.localError !== undefined)
       return row.localError
-    const key = formatJsonPath(row.descriptor.path)
-    return this.errors?.find(error =>
-      targets.some(target => target.kind === error.target.kind && target.id === error.target.id)
-      && formatJsonPath(error.path) === key)?.message
+    const issues = this.#issuesOf(row, targets)
+    const own = issues.find(issue => issue.path.length === 0)
+    if (own !== undefined)
+      return own.message
+    return row.nestedIssues ? undefined : issues[0]?.message
   }
 
   #context(row: Row, targets: readonly DesignerPropertyTarget[]): FieldContext {
@@ -458,6 +473,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
       ownerDocument: this.ownerDocument,
       value: mixed ? undefined : values[0],
       descriptor,
+      issues: this.#issuesOf(row, targets),
       target: targets,
       readonly: this.readonly === true,
       mixed,
@@ -515,6 +531,7 @@ function plainContext(context: FieldContext): PropertyEditorContext<DesignerProp
     readonly: context.readonly,
     setValue: context.setValue,
     commit: context.commit,
+    issues: context.issues,
   }
 }
 
