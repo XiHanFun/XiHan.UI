@@ -12,6 +12,7 @@ import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { createTooltipGroup } from '@xihan-ui/headless'
 import { useRef, useState } from 'react'
+import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -68,7 +69,8 @@ export interface XhTooltipRootProps {
 }
 
 export function XhTooltipRoot({ children, ...props }: XhTooltipRootProps): ReactNode {
-  const ctx = useTooltip(props as TooltipProps)
+  // disabled 写成自有键：作者没写时，字段集压下来的作用域禁用也要落得进来
+  const ctx = useTooltip(withXhConfig('tooltip', { ...props, disabled: props.disabled }) as TooltipProps)
   return (
     <TooltipProvider value={ctx}>
       {renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })}

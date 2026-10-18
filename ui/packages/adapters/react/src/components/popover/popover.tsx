@@ -44,7 +44,8 @@ export interface XhPopoverRootProps {
 }
 
 export function XhPopoverRoot({ children, ...props }: XhPopoverRootProps): ReactNode {
-  const ctx = usePopover(withXhConfig('popover', props) as PopoverProps)
+  // disabled 写成自有键：作者没写时，字段集压下来的作用域禁用也要落得进来
+  const ctx = usePopover(withXhConfig('popover', { ...props, disabled: props.disabled }) as PopoverProps)
   return (
     <PopoverProvider value={ctx}>
       {renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })}

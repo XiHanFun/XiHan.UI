@@ -103,7 +103,8 @@ export function XhMenuRoot({
   children,
   ...props
 }: XhMenuRootProps): ReactNode {
-  const ctx = useMenu(withXhConfig('menu', props) as MenuProps)
+  // disabled 写成自有键：作者没写时，字段集压下来的作用域禁用也要落得进来
+  const ctx = useMenu(withXhConfig('menu', { ...props, disabled: props.disabled }) as MenuProps)
   // 各层子菜单按数据铺条目时与本层同用这几个渲染函数
   const renderers = useMemo<MenuItemRenderers>(
     () => ({ item: renderItem, prefix: renderItemPrefix, suffix: renderItemSuffix }),
