@@ -5,8 +5,20 @@
 import type { DesignerCommand } from '@xihan-ui/designer-kit'
 import type { DesignerPanel, DesignerShellExtension, XhDesignerFrameElement } from '../src'
 import { DesignerExtensionError } from '@xihan-ui/designer-kit'
-import { afterEach, describe, expect, it } from 'vitest'
-import { arrangeCommands, createCommandToolbar, createPanelHost, defineDesignerShell, importSources, renderCommandMenu, runCommand } from '../src'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import {
+  arrangeCommands,
+  commandShortLabel,
+  createCommandToolbar,
+  createPanelHost,
+  createStatusItem,
+  defineDesignerShell,
+  DESIGNER_COMMANDS_EN_US,
+  designerShellCommands,
+  importSources,
+  renderCommandMenu,
+  runCommand,
+} from '../src'
 
 defineDesignerShell()
 
@@ -160,6 +172,57 @@ describe('命令', () => {
     expect(createCommandToolbar<Ctx>(document, { display: 'text' }).element.getAttribute('data-display')).toBe('text')
   })
 
+  it('顶栏位置 header 与工具栏一样排；短文字没给时用 label，可以是函数', () => {
+    const header = new Map<string, DesignerCommand<Ctx>>([
+      ['add-task', cmd('add-task', { placement: ['header'], label: '添加任务节点', shortLabel: '任务' })],
+      ['add-end', cmd('add-end', { placement: ['header'], shortLabel: ctx => `结束 ${ctx.selected}` })],
+      ['undo', cmd('undo', { placement: ['toolbar'] })],
+    ])
+    expect(arrangeCommands('header', header, [])).toEqual([['add-task', 'add-end']])
+    expect([...header.values()].map(command => commandShortLabel(command, { selected: 2 }))).toEqual(['任务', '结束 2', 'UNDO'])
+  })
+
+  it('工具栏 stacked：按钮上看得见的是短文字，名字仍是全名，提示管每个按钮；换回 both 显示全名', () => {
+    const header = new Map<string, DesignerCommand<Ctx>>([['add-task', cmd('add-task', { icon: GLYPH, label: '添加任务节点', shortLabel: '任务' })]])
+    const bar = createCommandToolbar<Ctx>(document, { display: 'stacked', platform: 'other' })
+    document.body.append(bar.element)
+    bar.update([['add-task']], header, { selected: 0 }, '插入')
+    const item = bar.toolbar.querySelector<HTMLButtonElement>('[data-xh-part="item"]')!
+    const label = item.querySelector('[data-part="label"]')!
+    expect([label.textContent, item.getAttribute('aria-label'), bar.element.getAttribute('delegate')]).toEqual(['任务', '添加任务节点', 'button[data-xh-part=\'item\']'])
+    bar.setDisplay('both')
+    expect(label.textContent).toBe('添加任务节点')
+  })
+
+  it('内置命令：给了 openSettings 有 settings、给了 helpUrl 有 help，文案取 xh-designer-commands，图标由各款给', () => {
+    expect(designerShellCommands<Ctx>({ translations: () => DESIGNER_COMMANDS_EN_US })).toEqual([])
+    const opened: Ctx[] = []
+    let url: string | undefined = 'https://flow.docs.xihanfun.com/guide/designer'
+    const built = designerShellCommands<Ctx>({
+      translations: () => ({ ...DESIGNER_COMMANDS_EN_US, settings: '设置' }),
+      openSettings: context => void opened.push(context),
+      helpUrl: () => url,
+      icons: { settings: GLYPH },
+    })
+    const table = new Map(built.map(command => [command.id, command]))
+    expect([...table.keys()]).toEqual(['settings', 'help'])
+    expect([commandShortLabel(table.get('settings')!, { selected: 0 }), table.get('settings')!.icon, table.get('help')!.icon]).toEqual(['设置', GLYPH, undefined])
+    expect(built.map(command => command.placement)).toEqual([['toolbar'], ['toolbar']])
+    runCommand(table, 'settings', { selected: 3 })
+    expect(opened).toEqual([{ selected: 3 }])
+    const open = vi.spyOn(window, 'open').mockReturnValue(null)
+    try {
+      expect(runCommand(table, 'help', { selected: 0 })).toBe(true)
+      expect(open).toHaveBeenCalledWith('https://flow.docs.xihanfun.com/guide/designer', '_blank', 'noopener,noreferrer')
+      url = undefined
+      expect(runCommand(table, 'help', { selected: 0 })).toBe(false)
+      expect(open).toHaveBeenCalledTimes(1)
+    }
+    finally {
+      open.mockRestore()
+    }
+  })
+
   it('菜单：铺条目与分隔线，不可用的写 aria-disabled，语气写 data-tone，带快捷键的写提示；runCommand 只执行可用的', () => {
     ran.length = 0
     const content = document.createElement('div')
@@ -185,6 +248,26 @@ describe('命令', () => {
     expect([...item.children].map(child => child.getAttribute('data-xh-part'))).toEqual(['item-icon', 'item-text', 'item-shortcut'])
     expect((item.querySelector('xh-icon') as HTMLElement & { icon?: unknown }).icon).toBe(GLYPH)
     expect([item.getAttribute('aria-keyshortcuts'), item.querySelector('[data-xh-part="item-shortcut"]')!.textContent]).toEqual(['Meta+Z', '⌘Z'])
+  })
+})
+
+describe('createStatusItem', () => {
+  it('一段文字：标签弱一档、值按语气着色，update 换内容；不给标签时标签收起', () => {
+    const item = createStatusItem(document, { label: '已选', value: '2 个节点' })
+    const label = item.element.querySelector<HTMLElement>('[data-part="status-label"]')!
+    const value = item.element.querySelector<HTMLElement>('[data-part="status-value"]')!
+    expect([item.element.localName, item.element.getAttribute('data-part'), label.textContent, value.textContent, label.hidden]).toEqual(['span', 'status-item', '已选', '2 个节点', false])
+    item.update({ value: '保存失败', tone: 'danger' })
+    expect([label.hidden, value.textContent, value.getAttribute('data-tone')]).toEqual([true, '保存失败', 'danger'])
+  })
+
+  it('给了 action 是一颗 ghost 小按钮，点了调用它', () => {
+    let clicks = 0
+    const item = createStatusItem(document, { label: '缩放', value: '80%', action: () => void clicks++ })
+    document.body.append(item.element)
+    expect([item.element.localName, item.element.getAttribute('variant'), item.element.getAttribute('size')]).toEqual(['xh-button', 'ghost', 'sm'])
+    item.element.querySelector('button')!.click()
+    expect(clicks).toBe(1)
   })
 })
 

@@ -106,6 +106,9 @@ export const DESIGNER_COMMANDS_EN_US: DesignerShellLocaleTranslations['xh-design
   zoomToActual: 'Actual size',
   design: 'Design',
   preview: 'Preview',
+  panels: 'Panels',
+  settings: 'Settings',
+  help: 'Help',
 }
 
 const translations: DesignerShellLocaleTranslations = {

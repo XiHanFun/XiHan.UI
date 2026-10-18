@@ -19,8 +19,11 @@ import { BUILTIN_CONTROL_KINDS, mergePropertyEditorTables } from './properties'
 /** 校验规则：给出文档的问题。问题码必须以扩展 id 的末段加点开头，如 xihan-workflow.decision-no-default。 */
 export type SchemaRule<Doc = unknown, RuleCtx = unknown> = (document: Doc, context: RuleCtx) => readonly SchemaIssue[]
 
-/** 命令出现的位置：工具栏，或某种主体的右键菜单（主体由各款定，如 node、edge、element、card、blank）。 */
-export type DesignerCommandPlacement = 'toolbar' | `menu:${string}`
+/**
+ * 命令出现的位置：工具栏；顶栏中段（插入快捷钮，图标在上、短文字在下）；或某种主体的右键菜单
+ * （主体由各款定，如 node、edge、element、card、blank）。
+ */
+export type DesignerCommandPlacement = 'toolbar' | 'header' | `menu:${string}`
 
 /** 一条命令：工具栏按钮、右键菜单项与快捷键共用。 */
 export interface DesignerCommand<Ctx = unknown> {
@@ -28,6 +31,8 @@ export interface DesignerCommand<Ctx = unknown> {
   readonly id: string
   /** 按钮与菜单项上的文字；给函数时每次刷新现取，随语言变。 */
   readonly label: string | ((context: Ctx) => string)
+  /** 顶栏按钮图标下的短文字；不给用 label。名字（读屏与提示）仍取 label。 */
+  readonly shortLabel?: string | ((context: Ctx) => string)
   /** 按钮与菜单项上的图标，图标集见 @xihan-ui/icons；工具栏按图标显示时，没有图标的命令退回显示文字。 */
   readonly icon?: IconRecord
   /** 缺省排列里出现在哪些位置；不给即只经快捷键或 commandLayout 出现。 */

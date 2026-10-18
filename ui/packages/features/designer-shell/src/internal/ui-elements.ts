@@ -8,6 +8,7 @@
 import {
   defineXhElement,
   XhAccordionElement,
+  XhButtonElement,
   XhColorFieldElement,
   XhColorSwatchPickerElement,
   XhContextMenuElement,
@@ -69,6 +70,11 @@ export function defineFrameElements(): void {
 export function defineIssueListElements(): void {
   defineXhElement('xh-toggle-group', XhToggleGroupElement)
   defineXhElement('xh-tag', XhTagElement)
+}
+
+/** 状态栏上可点的状态项用到的按钮。 */
+export function defineStatusElements(): void {
+  defineXhElement('xh-button', XhButtonElement)
 }
 
 /** 设置对话框：对话框、竖排的分区页与属性字段用到的元素。 */

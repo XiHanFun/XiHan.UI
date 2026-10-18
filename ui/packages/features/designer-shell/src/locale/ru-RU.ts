@@ -112,6 +112,9 @@ const translations: DesignerShellLocaleTranslations = {
     zoomToActual: 'Фактический размер',
     design: 'Конструктор',
     preview: 'Предпросмотр',
+    panels: 'Панели',
+    settings: 'Настройки',
+    help: 'Справка',
   },
 }
 

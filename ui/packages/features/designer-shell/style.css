@@ -1103,6 +1103,49 @@
     justify-content: flex-end;
   }
 
+  /* 状态项：标签弱一档、值取正常字色并按语气着色；相邻两项之间一道细分隔 */
+  [data-scope='designer-frame'][data-part='status-item'] {
+    display: inline-flex;
+    gap: var(--xh-space-1);
+    align-items: center;
+    min-inline-size: 0;
+    white-space: nowrap;
+  }
+
+  [data-scope='designer-frame'][data-part='status-item'] + [data-scope='designer-frame'][data-part='status-item'] {
+    padding-inline-start: var(--xh-space-2);
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-border-subtle);
+  }
+
+  [data-scope='designer-frame'][data-part='status-label'] {
+    color: var(--xh-fg-subtle);
+  }
+
+  [data-scope='designer-frame'][data-part='status-value'] {
+    color: var(--xh-fg-default);
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-scope='designer-frame'][data-part='status-value'][data-tone='success'] {
+    color: var(--xh-fg-success);
+  }
+
+  [data-scope='designer-frame'][data-part='status-value'][data-tone='warning'] {
+    color: var(--xh-fg-warning);
+  }
+
+  [data-scope='designer-frame'][data-part='status-value'][data-tone='danger'] {
+    color: var(--xh-fg-danger);
+  }
+
+  [data-scope='designer-frame'][data-part='status-value'][data-tone='info'] {
+    color: var(--xh-fg-info);
+  }
+
+  [data-scope='designer-frame'][data-part='status-label'][hidden] {
+    display: none;
+  }
+
   /* 卡片：左右与下方给了标题的区，留出间距，底与描边取承载面，面板头下面是可以滚动的正文 */
   xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-card] {
     overflow: hidden;
@@ -1269,5 +1312,16 @@
   xh-tooltip[data-scope='designer-commands'][data-display='text'] [data-scope='toolbar'][data-part='item'] > [data-scope='designer-commands'][data-part='icon'],
   [data-scope='toolbar'][data-part='item']:not([data-icon]) > [data-scope='designer-commands'][data-part='icon'] {
     display: none;
+  }
+
+  /* 叠放（顶栏的插入快捷钮）：图标在上、短文字在下，钮高随内容，文字取说明一档 */
+  xh-tooltip[data-scope='designer-commands'][data-display='stacked'] [data-scope='toolbar'][data-part='item'] {
+    --xh-toolbar-item-h: auto;
+    --xh-toolbar-item-px: var(--xh-space-2);
+    --xh-toolbar-item-gap: var(--xh-space-0_5);
+    --xh-toolbar-item-font-size: var(--xh-text-caption-size);
+
+    flex-direction: column;
+    padding-block: var(--xh-space-1);
   }
 }
