@@ -114,6 +114,12 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 
 <XhDemo src="tree/16-size" />
 
+### 条目说明
+
+一句名称说不清的解释写进说明，落在名称下面一行；窄的时候截断，不把树撑宽
+
+<XhDemo src="tree/17-item-description" />
+
 ## 设计指引
 
 ### 何时使用
