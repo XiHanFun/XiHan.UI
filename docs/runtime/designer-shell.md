@@ -533,6 +533,7 @@ dialog.show();
 | `sortSettingsSections(sections)` | 按 `order` 排好，同值按传入顺序 |
 | `settingKey(section, item)` | 条目的键 |
 | `settingValue(settings, section, item)` | 条目此刻的值：写了用写的，没写取缺省值 |
+| `resolveSettings(sections, settings)` | 此刻生效的设置：写了的键原样保留，各分区里没写的条目取缺省值（没有缺省值的不写）。交给命令、面板与扩展的上下文用这一份；`sections` 通常是 `collectSettingsSections` 合出的分区，基础分区要缺省值时把 `designerGeneralSettings` 的分区也传进来 |
 | `settingPolicy(policy, section, item)` | 条目在宿主管控下的状态：先看条目键，再看分区 id |
 | `designerGeneralSettings(t, options?)` | 内建的「基础」分区；对话框自己会生成，各款要单独拿条目时用 |
 

@@ -13,6 +13,7 @@ import {
   defineDesignerShell,
   DESIGNER_SETTING_KEYS,
   designerGeneralSettings,
+  resolveSettings,
   settingKey,
   settingPolicy,
   settingValue,
@@ -68,6 +69,15 @@ describe('设置模型', () => {
     const grid = flowSection.items[0]!
     expect(settingKey(flowSection, grid)).toBe('flow.grid')
     expect([settingValue(undefined, flowSection, grid), settingValue({ 'flow.grid': false }, flowSection, grid), settingValue({}, flowSection, flowSection.items[1]!)]).toEqual([true, false, undefined])
+  })
+
+  it('生效的设置：写了的键原样保留（分区里没有的也留着），没写的条目取缺省值，没有缺省值的不写', () => {
+    expect(resolveSettings([flowSection], undefined)).toEqual({ 'flow.grid': true })
+    expect(resolveSettings([flowSection], { 'flow.grid': false, 'flow.token': 'k', 'other.x': 1 })).toEqual({ 'flow.grid': false, 'flow.token': 'k', 'other.x': 1 })
+    expect(resolveSettings([], { 'general.theme': 'dark' })).toEqual({ 'general.theme': 'dark' })
+    // 基础分区要缺省值时把它也传进来
+    const general = designerGeneralSettings(DESIGNER_SETTINGS_EN_US)
+    expect(resolveSettings([general, flowSection], {})).toMatchObject({ 'general.theme': 'follow', 'general.toolbarDisplay': 'icon', 'flow.grid': true })
   })
 
   it('合起各来源的分区：分区 id 重名或占用 general 时抛 DesignerExtensionError，名字空间是 settings-section', () => {

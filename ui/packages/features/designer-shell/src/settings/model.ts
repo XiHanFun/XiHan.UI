@@ -60,6 +60,23 @@ export function settingValue(settings: DesignerSettings | undefined, section: Pi
   return settings !== undefined && Object.hasOwn(settings, key) ? settings[key] : item.default
 }
 
+/**
+ * 此刻生效的设置：settings 里写了的键原样保留（分区里没有的键也保留），各分区里没写的条目取缺省值，没有缺省值的不写。
+ * 交给命令、面板与扩展的上下文用这一份。sections 通常是 collectSettingsSections 合出的分区；基础分区只有写了的键，
+ * 要它的缺省值时把 designerGeneralSettings 的分区也传进来。
+ */
+export function resolveSettings(sections: readonly DesignerSettingsSection[], settings: DesignerSettings | undefined): DesignerSettings {
+  const resolved: Record<string, JsonValue> = { ...settings }
+  for (const section of sections) {
+    for (const item of section.items) {
+      const value = settingValue(settings, section, item)
+      if (value !== undefined)
+        resolved[settingKey(section, item)] = value
+    }
+  }
+  return resolved
+}
+
 /** 带设置分区的一个来源：扩展 id 与它登记的分区。 */
 export interface DesignerSettingsSource {
   readonly id: string

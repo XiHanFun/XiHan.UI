@@ -11055,6 +11055,7 @@
       "parseDesignerPanels",
       "registerDropTarget",
       "renderCommandMenu",
+      "resolveSettings",
       "runCommand",
       "settingKey",
       "settingPolicy",

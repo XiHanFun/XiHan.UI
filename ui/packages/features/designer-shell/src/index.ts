@@ -47,6 +47,7 @@ export {
   DESIGNER_GENERAL_SETTINGS,
   DESIGNER_SETTING_KEYS,
   designerGeneralSettings,
+  resolveSettings,
   settingKey,
   settingPolicy,
   settingValue,
