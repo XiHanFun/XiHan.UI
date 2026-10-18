@@ -1,4 +1,5 @@
 // 行表头列：列定义标了 rowHeader 的那一列，表体与脚注里的格子报 rowheader，列头仍是 columnheader，角色结构 axe 不报。
+import type { TableColumnDef } from '@xihan-ui/headless'
 import { runAxe } from '@xihan-ui/testing/a11y'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../../src/define'
@@ -16,7 +17,7 @@ afterEach(() => {
 
 const ROLE_RULES = ['aria-required-children', 'aria-required-parent', 'aria-allowed-role', 'aria-valid-attr-value']
 
-async function mount(rowHeader: boolean): Promise<HTMLElement> {
+async function mount(rowHeader: TableColumnDef['rowHeader']): Promise<HTMLElement> {
   host = document.createElement('div')
   host.innerHTML = `
     <xh-table footer-rows="1">
@@ -61,5 +62,13 @@ describe('行表头列', () => {
   it('没标时格子一律是 gridcell', async () => {
     const box = await mount(false)
     expect(roles(box, '[data-scope="table"][data-part="cell"]')).toEqual(Array.from({ length: 6 }).fill('gridcell'))
+  })
+
+  it('给函数时按行决定：返回 false 的那一行照旧是 gridcell，表尾按行表头，角色结构 axe 不报', async () => {
+    const box = await mount(row => row.id === 'l1')
+    expect(roles(box, '[data-scope="table"][data-part="cell"][data-value="item"]')).toEqual(['rowheader', 'gridcell', 'rowheader'])
+    expect(roles(box, '[data-scope="table"][data-part="cell"][data-value="count"]')).toEqual(['gridcell', 'gridcell', 'gridcell'])
+    const { violations } = await runAxe(box)
+    expect(violations.filter(v => ROLE_RULES.includes(v.id)).map(v => v.id)).toEqual([])
   })
 })

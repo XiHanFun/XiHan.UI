@@ -588,6 +588,21 @@ export const tableSuite: ConformanceSuite = {
       },
     },
     {
+      name: '行表头按行决定：rowHeader 给函数时逐行问，返回 false 的那一行照旧是 gridcell，表尾按行表头',
+      spec: { apg: APG },
+      props: props({
+        columns: COLUMNS.map(column => (column.id === 'name' ? { ...column, rowHeader: (row: TableRowDef) => row.id !== 'b' } : column)),
+      }),
+      initial: {
+        parts: {
+          'cell[1]': { role: 'rowheader' },
+          'cell[5]': { role: 'gridcell' },
+          'cell[8]': { role: 'rowheader' },
+          'cell[16]': { role: 'rowheader' },
+        },
+      },
+    },
+    {
       name: '行主操作：点在数据行的格子上报行与列，焦点停在行上按 Enter 报行、列为 null；把手上的点击不报',
       spec: { apg: `${APG}#keyboardinteraction` },
       props: props(),

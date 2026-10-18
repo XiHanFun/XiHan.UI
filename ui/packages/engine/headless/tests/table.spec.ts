@@ -1599,6 +1599,27 @@ describe('行表头列 rowHeader', () => {
     const api = h.api()
     expect((api.getCellProps({ value: 'name' }) as Record<string, unknown>).role).toBe('rowheader')
   })
+
+  it('给函数时按行决定：入参是行定义与可见数据行里的序号；表尾格子不问、按行表头处理', () => {
+    const asked: [string, number][] = []
+    const columns: TableColumnDef[] = [
+      { id: 'select', label: 'Select', width: 40 },
+      { id: 'name', label: 'Name', rowHeader: (row, rowIndex) => {
+        asked.push([row.id, rowIndex])
+        return row.id !== 'b'
+      } },
+      { id: 'size', label: 'Size' },
+    ]
+    const api = mount({ columns, footerRows: 1 }).api()
+    const role = (props: Parameters<typeof api.getCellProps>[0]): unknown => (api.getCellProps(props) as Record<string, unknown>).role
+    expect(role({ value: 'name', row: 'a' })).toBe('rowheader')
+    expect(role({ value: 'name', row: 'b' })).toBe('gridcell')
+    expect(role({ value: 'name', row: 'd' })).toBe('rowheader')
+    expect(role({ value: 'size', row: 'a' })).toBe('gridcell')
+    expect(role({ value: 'name', footer: 1 })).toBe('rowheader')
+    // 每一行问到的序号都是它在可见数据行里的位置
+    expect(Object.fromEntries(asked)).toEqual({ a: 0, b: 1, c: 2, d: 3 })
+  })
 })
 
 describe('多行表尾 footerRows 与吸底 stickyFooter', () => {
