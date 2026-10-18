@@ -46217,6 +46217,11 @@
      没写 data-tone 时 --xh-_tone 一族没被声明，两个槽都退回原来的取色 */
   --xh-_tabs-accent: var(--xh-_tone, var(--xh-bg-brand));
   --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand));
+  /* line 档当前页叠了悬停、高亮或按下的淡底时的字，比静息深一档：没写语气时取 fg-brand-strong，
+     写了语气时把语气字往 fg-default 兑三成。没写语气时 --xh-_tone-fg 没被声明，下面这个兑色槽在计算期失效，
+     取用处就落到 fg-brand-strong */
+  --xh-_tabs-tone-text-strong: color-mix(in oklab, var(--xh-_tone-fg) 70%, var(--xh-fg-default));
+  --xh-_tabs-accent-text-strong: var(--xh-_tabs-tone-text-strong, var(--xh-fg-brand-strong));
 
   /* 翻页钮的盖底：标签带放不下时它浮在两端，挪到它底下的那截标签要被盖住。line / card 档的标签带是透明的，
      盖底取 surface；坐在别的面上（画布、淡底面板）时由使用者槽换成所在的面。segment 档取轨道的淡底。
@@ -46402,7 +46407,8 @@
 
 /* line 档（导航当前页）：把公开槽映射到 Collection Item 的 nav 语境桥接槽。静息 muted / regular，
    悬停 100 + default 字，按下 200 只换面；当前页透明面 + 品牌深字（随语气的 --xh-_tabs-accent-text）+
-   medium，叠悬停 100。2px 指示线不由家族按条目画：放了 indicator 部件是 list 上的滑动部件，
+   medium，叠悬停 100。当前页的悬停、键盘高亮与按下三态字取 --xh-_tabs-accent-text-strong，三态都随语气。
+   2px 指示线不由家族按条目画：放了 indicator 部件是 list 上的滑动部件，
    没放则由下面的静态线规则画在选中标签自己身上。高度由 block-size 定，块向内边距归零 */
 .xh-scope-tabs[data-part='root'][data-variant='line'] .xh-scope-tabs[data-part='trigger'] {
   --xh-collection-block-padding: var(--xh-space-0);
@@ -46416,6 +46422,9 @@
   --xh-collection-bg-current: var(--xh-tabs-trigger-bg-active, transparent);
   --xh-collection-bg-current-hover: var(--xh-tabs-trigger-bg-active-hover, var(--xh-bg-subtle));
   --xh-collection-fg-current: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text));
+  --xh-collection-fg-current-hover: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text-strong));
+  --xh-collection-fg-current-highlight: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text-strong));
+  --xh-collection-fg-current-pressed: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text-strong));
   --xh-collection-font-weight-current: var(--xh-tabs-trigger-font-weight-active, var(--xh-font-weight-medium));
 }
 
