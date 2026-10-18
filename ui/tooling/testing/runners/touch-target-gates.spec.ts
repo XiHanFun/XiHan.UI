@@ -32,6 +32,18 @@ function createFixture(css: string): string {
   block-size: max(var(--xh-_thumb-size), var(--xh-_track-thickness));
 }
 `)
+  // 档位例外表（OFF_TIER）同理：登记过的错位声明要在夹具里真的出现，名单增减时这里跟着改
+  write(root, 'packages/design/styles/css/field-array.css', `
+[data-scope='field-array'][data-part='item'][data-layout='table'] {
+  --xh-_field-array-cell-control-h: var(--xh-control-h-md);
+}
+[data-scope='field-array'][data-part='item'][data-layout='table']:has([data-xh-field-size='sm']) {
+  --xh-_field-array-cell-control-h: var(--xh-control-h-sm);
+}
+[data-scope='field-array'][data-part='item-cell'][data-layout='table'] {
+  min-block-size: var(--xh-_field-array-cell-control-h);
+}
+`)
   write(root, 'packages/design/tokens/src/generated/tokens.ts', `
 export const tokens = {
   "--xh-control-action-size": "24px",
