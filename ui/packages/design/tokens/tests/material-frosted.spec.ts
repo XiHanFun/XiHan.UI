@@ -1,8 +1,9 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { colorParseOklch } from '@xihan-ui/core/color'
 import { describe, expect, it } from 'vitest'
 import { compileMaterialRecipes } from '../build/material-recipes.mjs'
-import { contrastRatio, parseColorToOklch } from '../src/runtime'
+import { contrastRatio } from '../src/runtime'
 
 const TOKENS_DIR = join(import.meta.dirname, '..', 'tokens')
 const MATERIALS = compileMaterialRecipes(JSON.parse(readFileSync(join(TOKENS_DIR, 'material.recipes.json'), 'utf8')))
@@ -105,13 +106,13 @@ describe('m2 Frosted Surface 材质令牌', () => {
     const tokens = themeTokens(theme)
     expect(materialNames(tokens)).toEqual(REQUIRED_RECIPE)
 
-    expect(parseColorToOklch(resolve('material.frosted.bg', tokens)).a).toBe(1)
-    expect(parseColorToOklch(resolve('material.frosted.fg', tokens)).a).toBe(1)
-    expect(parseColorToOklch(resolve('material.frosted.fg-muted', tokens)).a).toBe(1)
-    expect(parseColorToOklch(resolve('material.frosted.focus-surface', tokens)).a).toBe(1)
+    expect(colorParseOklch(resolve('material.frosted.bg', tokens))!.a).toBe(1)
+    expect(colorParseOklch(resolve('material.frosted.fg', tokens))!.a).toBe(1)
+    expect(colorParseOklch(resolve('material.frosted.fg-muted', tokens))!.a).toBe(1)
+    expect(colorParseOklch(resolve('material.frosted.focus-surface', tokens))!.a).toBe(1)
     // 描边取装饰边（中性色原值，墨色比例由构建另行换算），不再是半透明的磨砂边缘
     expect(tokens.get('material.frosted.border')?.value).toBe('{border.default}')
-    expect(parseColorToOklch(resolve('material.frosted.highlight', tokens)).a).toBe(0)
+    expect(colorParseOklch(resolve('material.frosted.highlight', tokens))!.a).toBe(0)
     expect(resolve('material.frosted.backdrop', tokens)).toBe('none')
     expect(Number(resolve('material.frosted.compact.alpha', tokens))).toBe(1)
     expect(resolve('material.frosted.compact.backdrop', tokens)).toBe('none')
@@ -150,7 +151,7 @@ describe('m2 Frosted Surface 材质令牌', () => {
     ]
 
     for (const [solid, foreground, name] of pairs) {
-      const color = parseColorToOklch(solid)
+      const color = colorParseOklch(solid)!
       const surface = `oklch(${color.l} ${color.c} ${color.h} / ${alpha})`
       for (const backdrop of backdrops) {
         expect(contrastRatio(foreground, surface, backdrop), `${theme} ${name} / ${backdrop}`)
@@ -183,7 +184,7 @@ describe('m2 Frosted Surface 材质令牌', () => {
   it.each(['light', 'dark'] as const)('%s 焦点隔离底是不透明实体，并与品牌环达到 3:1', (theme) => {
     const tokens = themeTokens(theme)
     const focusSurface = resolve('material.frosted.focus-surface', tokens)
-    expect(parseColorToOklch(focusSurface).a).toBe(1)
+    expect(colorParseOklch(focusSurface)!.a).toBe(1)
     expect(contrastRatio(resolve('ring.focus', tokens), focusSurface)).toBeGreaterThanOrEqual(3)
   })
 
@@ -202,13 +203,13 @@ describe('m2 Frosted Surface 材质令牌', () => {
     ])
     const tokens = themeTokens(theme, true)
     const bg = resolve('material.frosted.bg', tokens)
-    expect(parseColorToOklch(bg).a).toBe(1)
+    expect(colorParseOklch(bg)!.a).toBe(1)
     expect(resolve('material.frosted.backdrop', tokens)).toBe('none')
     expect(Number(resolve('material.frosted.compact.alpha', tokens))).toBe(1)
     expect(resolve('material.frosted.compact.backdrop', tokens)).toBe('none')
     expect(resolve('material.frosted.compact.shadow', tokens)).toBe('none')
     expect(contrastRatio(resolve('material.frosted.border', tokens), bg)).toBeGreaterThanOrEqual(4.5)
-    expect(parseColorToOklch(resolve('material.frosted.highlight', tokens)).a).toBe(0)
+    expect(colorParseOklch(resolve('material.frosted.highlight', tokens))!.a).toBe(0)
   })
 
   it('减少透明与打印用同名令牌原位换成实体表面', () => {
@@ -227,7 +228,7 @@ describe('m2 Frosted Surface 材质令牌', () => {
     for (const extra of ['semantic.transparency.reduce.json', 'semantic.print.json']) {
       for (const theme of ['light', 'dark'] as const) {
         const tokens = themeTokens(theme, false, extra)
-        expect(parseColorToOklch(resolve('material.frosted.bg', tokens)).a).toBe(1)
+        expect(colorParseOklch(resolve('material.frosted.bg', tokens))!.a).toBe(1)
         expect(resolve('material.frosted.backdrop', tokens)).toBe('none')
         expect(Number(resolve('material.frosted.compact.alpha', tokens))).toBe(1)
         expect(resolve('material.frosted.compact.backdrop', tokens)).toBe('none')
@@ -235,7 +236,7 @@ describe('m2 Frosted Surface 材质令牌', () => {
           expect(resolve('material.frosted.compact.shadow', tokens)).toBe('none')
         else
           expect(resolve('material.frosted.compact.shadow', tokens)).not.toBe('none')
-        expect(parseColorToOklch(resolve('material.frosted.highlight', tokens)).a).toBe(0)
+        expect(colorParseOklch(resolve('material.frosted.highlight', tokens))!.a).toBe(0)
       }
     }
   })

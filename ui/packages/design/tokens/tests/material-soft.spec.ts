@@ -1,8 +1,9 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { colorParseOklch } from '@xihan-ui/core/color'
 import { describe, expect, it } from 'vitest'
 import { compileMaterialRecipes } from '../build/material-recipes.mjs'
-import { contrastRatio, parseColorToOklch } from '../src/runtime'
+import { contrastRatio } from '../src/runtime'
 
 const TOKENS_DIR = join(import.meta.dirname, '..', 'tokens')
 const MATERIALS = compileMaterialRecipes(JSON.parse(readFileSync(join(TOKENS_DIR, 'material.recipes.json'), 'utf8')))
@@ -83,9 +84,9 @@ describe('m1 Soft Surface 材质令牌', () => {
 
     const bg = resolve('material.soft.bg', tokens)
     const focusSurface = resolve('material.soft.focus-surface', tokens)
-    const highlight = parseColorToOklch(resolve('material.soft.highlight', tokens))
+    const highlight = colorParseOklch(resolve('material.soft.highlight', tokens))!
 
-    expect(parseColorToOklch(bg).a).toBe(1)
+    expect(colorParseOklch(bg)!.a).toBe(1)
     expect(focusSurface).toBe(bg)
     expect(resolve('material.soft.backdrop', tokens)).toBe('none')
     expect(resolve('material.soft.shadow', tokens)).not.toBe('none')
@@ -115,7 +116,7 @@ describe('m1 Soft Surface 材质令牌', () => {
     const bg = resolve('material.soft.bg', tokens)
     expect(contrastRatio(resolve('material.soft.border', tokens), bg)).toBeGreaterThanOrEqual(4.5)
     expect(contrastRatio(resolve('material.soft.separator', tokens), bg)).toBeGreaterThanOrEqual(4.5)
-    expect(parseColorToOklch(resolve('material.soft.highlight', tokens)).a).toBe(0)
+    expect(colorParseOklch(resolve('material.soft.highlight', tokens))!.a).toBe(0)
   })
 
   it('打印档在组件作用域明确清掉材质高光与接触影', () => {
@@ -127,7 +128,7 @@ describe('m1 Soft Surface 材质令牌', () => {
 
     for (const theme of ['light', 'dark'] as const) {
       const tokens = themeTokens(theme, false, true)
-      expect(parseColorToOklch(resolve('material.soft.highlight', tokens)).a).toBe(0)
+      expect(colorParseOklch(resolve('material.soft.highlight', tokens))!.a).toBe(0)
       expect(resolve('material.soft.shadow', tokens)).toBe('none')
     }
   })
