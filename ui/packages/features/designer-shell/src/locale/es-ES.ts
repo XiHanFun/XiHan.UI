@@ -21,7 +21,7 @@ const translations: DesignerShellLocaleTranslations = {
     invalidDataField: 'No es una ruta de campo válida',
     sidesLinked: 'Igual en los cuatro lados',
     sides: { all: 'Cuatro lados', top: 'Arriba', right: 'Derecha', bottom: 'Abajo', left: 'Izquierda' },
-    sidesIncomplete: 'Rellene los cuatro lados',
+    sidesIncomplete: 'Rellena los cuatro lados',
   },
   'xh-designer-issues': {
     title: 'Problemas',
